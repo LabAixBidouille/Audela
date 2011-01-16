@@ -2,7 +2,7 @@
 # Fichier : eshelvisu.tcl
 # Description : Visionneuse d'images eShel
 # Auteurs : Michel Pujol
-# Mise a jour $Id: eshelvisu.tcl,v 1.13 2010-12-10 22:48:43 michelpujol Exp $
+# Mise a jour $Id: eshelvisu.tcl,v 1.14 2011-01-16 19:15:18 michelpujol Exp $
 #
 
 namespace eval ::eshelvisu {
@@ -354,7 +354,7 @@ proc ::eshelvisu::onSelectHdu { visuNo args } {
    variable private
 
    #--- je recupere le nom du HDU courant
-   set private($visuNo,hduName) [::confVisu::getHduName $visuNo]
+   set private($visuNo,hduName) [::confVisu::getCurrentHduName $visuNo]
    #--- j'affiche les marques (les marques dependent du nom du HDU
    showOrderLabel $visuNo
    showCalibrationLine $visuNo
@@ -420,34 +420,6 @@ proc ::eshelvisu::deleteBaloon { w  lambda } {
 proc ::eshelvisu::showOrderLabel { visuNo } {
    variable private
 
-###   // Image check  : j'ajoute le numero des ordres
-###   for (int n=0;n<MAX_ORDRE;n++)
-###   {
-###      if (ordre[n].flag==1)
-###      {
-###         write_wave(check,spectro.imax,spectro.jmax,(double)spectro.imax/2.0,ref_dx,n,ordre,spectro);
-###     int write_wave( short *check, int imax, int jmax, double posx,double dx,int k,ORDRE *ordre,INFOSPECTRO spectro)
-###            double alpha=spectro.alpha*PI/180.0;
-###            double gamma=spectro.gamma*PI/180.0;
-###            double m=spectro.m;
-###            double focale=spectro.focale;
-###            double pixel=spectro.pixel;
-###            char ligne[256];
-###
-###            int py=(int)ordre[k].yc;
-###            int px=(int)posx;
-###
-###            double beta=(posx-(double)imax/2-dx)*pixel/focale;
-###
-###            double lambda;
-###            lambda=cos(gamma)*(sin(alpha)+sin(beta+alpha))/m/(double)k*1.0e7;
-###
-###            sprintf(ligne,"%.1f A",lambda);
-###            write_text(check,imax,jmax,ligne,px-25,py-25,32000);
-###
-###      }
-###   }
-
    set hCanvas [confVisu::getCanvas $visuNo]
    $hCanvas delete orderLabel
 
@@ -475,11 +447,13 @@ proc ::eshelvisu::showOrderLabel { visuNo } {
       for {set n 1 } { $n <= $nbOrder } { incr n } {
          set numOrder [lindex [lindex [$hFile get table "order" $n ] 0] 0]
          set yc       [lindex [lindex [$hFile get table "yc" $n ] 0] 0]
-         set yc [expr $yc + 8 ]
-         set centralLambda [$hFile get table "central" $n ]
-         set orderlabel "N°$numOrder: $centralLambda"
-         set coord [::confVisu::picture2Canvas $visuNo [list $x $yc]]
-         $hCanvas create text [lindex $coord 0] [lindex $coord 1] -text $orderlabel -tag orderLabel -state normal -fill yellow
+         if { $yc > 0 } {
+            set yc [expr $yc + 8 ]
+            set centralLambda [$hFile get table "central" $n ]
+            set orderlabel "N°$numOrder: $centralLambda"
+            set coord [::confVisu::picture2Canvas $visuNo [list $x $yc]]
+            $hCanvas create text [lindex $coord 0] [lindex $coord 1] -text $orderlabel -tag orderLabel -state normal -fill yellow
+         }
       }
    }]
    if { $catchResult == 1 } {
@@ -489,6 +463,133 @@ proc ::eshelvisu::showOrderLabel { visuNo } {
       $hFile close
    }
 }
+
+
+#------------------------------------------------------------
+#  showOrderLine
+#    affiche le numero des ordres dans l'image2D
+#  Parameters
+#     visuNo : numero de la fenetre de profil
+#------------------------------------------------------------
+proc ::eshelvisu::showOrderLine { visuNo } {
+   variable private
+
+   set hCanvas [confVisu::getCanvas $visuNo]
+   $hCanvas delete orderLine
+
+     #--- je verifie que la table des ordres est presente
+   if { $private($visuNo,orderHduNum) == 0 } {
+      ##console::affiche_erreur "::eshelvisu::showOrderLabel Order table missing in $private($visuNo,fileName)\n"
+      return
+   }
+
+   #--- je pointe la table des ordres
+   set hFile ""
+   set catchResult [catch {
+      set hFile [fits open $private($visuNo,fileName) 0]
+      $hFile move $private($visuNo,orderHduNum)
+      #--- je recupere les parametres de l'image
+      set width      [getKeyword $hFile WIDTH]
+      set nbOrder    [getKeyword $hFile NAXIS2]
+      set alpha      [getKeyword $hFile ALPHA]
+      set gamma      [getKeyword $hFile GAMMA]
+      set m          [getKeyword $hFile M]
+      set pixel      [getKeyword $hFile PIXEL]
+      set width      [getKeyword $hFile WIDTH]
+      set dx_ref     [getKeyword $hFile DX_REF]
+      set foclen     [getKeyword $hFile FOCLEN]
+      set min_order  [getKeyword $hFile MIN_ORDER]
+      set max_order  [getKeyword $hFile MAX_ORDER]
+
+      set PI      [expr acos(-1)]
+      set alpha   [expr $alpha*$PI/180.0]
+      set gamma   [expr $gamma*$PI/180.0]
+      set xc      [expr $width / 2 ]
+      set previousMinLambda 0
+
+      for {set orderNum $min_order } { $orderNum <= $max_order } { incr orderNum } {
+         set n [expr $orderNum - $min_order +1 ]
+         set flag [string trim [lindex [lindex [$hFile get table "flag" $n ] 0 ] 0]]
+         if { $flag != 1 } {
+            #--- j'ignore les ordres qui n'ont pas flag=1
+            continue
+         }
+         set minX [string trim [lindex [lindex [$hFile get table "min_x" $n ] 0 ] 0]]
+         set maxX [string trim [lindex [lindex [$hFile get table "max_x" $n ] 0 ] 0]]
+         set p0 [string trim [lindex [lindex [$hFile get table "P0" $n ] 0 ] 0]]
+         set p1 [string trim [lindex [lindex [$hFile get table "P1" $n ] 0 ] 0]]
+         set p2 [string trim [lindex [lindex [$hFile get table "P2" $n ] 0 ] 0]]
+         set p3 [string trim [lindex [lindex [$hFile get table "P3" $n ] 0 ] 0]]
+         set p4 [string trim [lindex [lindex [$hFile get table "P4" $n ] 0 ] 0]]
+         #--- je calcule le polynome d'ordre 5 (ou d'ordre 4 pour l'ancienne version
+         set p5NotFound [catch {
+            set p5 [string trim [lindex [lindex [$hFile get table "P5" $n ] 0 ] 0]]
+         }]
+         if { $p5NotFound != 0 } {
+            set p5 0
+         }
+
+         #--- je calcule l'abcisse de l'ordre précédent
+         if { $orderNum != $min_order } {
+            set beta [expr asin(($orderNum*$m*$previousMinLambda/10000000.0 - cos($gamma) * sin($alpha))/cos($gamma))]
+            set beta2 [expr $beta - $alpha]
+            set previousMinX [expr $foclen * $beta2 / $pixel + $xc + $dx_ref]
+         } else {
+            set previousMinX $width
+         }
+
+         #--- je calcule l'abcisse de l'ordre suivant
+         if { $orderNum != $max_order } {
+            set nextMaxX [string trim [lindex [lindex [$hFile get table "max_x" [expr $n +1] ] 0 ] 0]]
+            set beta2 [expr ( $nextMaxX - $xc - $dx_ref) * $pixel / $foclen]
+            set beta  [expr $beta2 + $alpha]
+            set nextMaxLambda [expr 10000000.0 * cos($gamma) * (sin($alpha) + sin($beta))/ [expr $orderNum + 1] / $m ]
+
+            set beta [expr asin(($orderNum *$m*$nextMaxLambda/10000000.0 - cos($gamma) * sin($alpha))/cos($gamma))]
+            set beta2 [expr $beta - $alpha]
+            set nextMaxX [expr $foclen * $beta2 / $pixel + $xc + $dx_ref]
+         } else {
+            set nextMaxX 0
+         }
+
+         set coordlist {}
+         set previousCoordList {}
+         set nextCoordList {}
+         for { set x $minX } { $x < $maxX } { incr x } {
+            #--- je calcule l'ordonnee y
+            set y [expr (((($p5 * $x + $p4) * $x + $p3) * $x + $p2) *$x + $p1) * $x + $p0 ]
+            set coord [::confVisu::picture2Canvas $visuNo [list $x $y ]]
+            lappend coordlist [lindex $coord 0] [lindex $coord 1]
+            if { $x >= $previousMinX } {
+               lappend previousCoordList [lindex $coord 0] [expr [lindex $coord 1] -5 ]
+            }
+            if { $x <= $nextMaxX } {
+               lappend nextCoordList [lindex $coord 0] [expr [lindex $coord 1] +5 ]
+            }
+         }
+         $hCanvas create line $coordlist -fill green -width 2 -offset center -tag orderLine
+         if { [llength $previousCoordList ] > 0 } {
+            $hCanvas create line $previousCoordList -fill blue -width 2 -offset center -tag orderLine
+         }
+         if { [llength $nextCoordList ] > 0 } {
+            $hCanvas create line $nextCoordList -fill blue -width 2 -offset center -tag orderLine
+         }
+         $hCanvas lower  orderLine calibrationLine
+
+         #--- je calcule la longueur d'onde correspondant a maxX
+         set beta2 [expr ( $minX -$xc - $dx_ref) * $pixel / $foclen]
+         set beta  [expr $beta2 + $alpha]
+         set previousMinLambda [expr 10000000.0 * cos($gamma) * (sin($alpha) + sin($beta))/ $orderNum / $m ]
+      }
+   }]
+   if { $catchResult == 1 } {
+      ::console::affiche_erreur "$::errorInfo\n"
+   }
+   if { $hFile != "" } {
+      $hFile close
+   }
+}
+
 
 ##------------------------------------------------------------
 # retourne la valeur d'un mot clef
@@ -562,15 +663,6 @@ proc ::eshelvisu::showCalibrationLine { visuNo } {
          #--- je recupere les parametres du spectre dans la table des ordres
          $hFile move $private($visuNo,orderHduNum)
 
-         ##set nbOrder [lindex [lindex [$hFile get keyword "NAXIS2"] 0] 1]
-         ##set alpha   [lindex [lindex [$hFile get keyword "ALPHA"]  0] 1]
-         ##set gamma   [lindex [lindex [$hFile get keyword "GAMMA"]  0] 1]
-         ##set m       [lindex [lindex [$hFile get keyword "M"    ] 19] 1]
-         ##set pixel   [lindex [lindex [$hFile get keyword "PIXEL"]  0] 1]
-         ##set width   [lindex [lindex [$hFile get keyword "WIDTH"]  0] 1]
-         ##set dx_ref  [lindex [lindex [$hFile get keyword "DX_REF"] 0] 1]
-         ##set foclen  [lindex [lindex [$hFile get keyword "FOCLEN"] 0] 1]
-         ##set min_order [lindex [lindex [$hFile get keyword "MIN_ORDER"] 0] 1]
          set nbOrder    [getKeyword $hFile NAXIS2]
          set alpha      [getKeyword $hFile ALPHA]
          set gamma      [getKeyword $hFile GAMMA]
@@ -614,22 +706,22 @@ proc ::eshelvisu::showCalibrationLine { visuNo } {
                }
                $hFile move $private($visuNo,orderHduNum)
                set n [expr $orderNum - $min_order +1 ]
-               set min_x [string trim [lindex [lindex [$hFile get table "min_x" $n ] 0] 0]]
-               set x [expr $x - $min_x]
+               ###set min_x [string trim [lindex [lindex [$hFile get table "min_x" $n ] 0] 0]]
+               ###set x [expr $x - $min_x]
                #--- je calcule l'ordonnee y
                set y 0
                for { set k 0 } { $k<= 5 } { incr k } {
                   #--- je calcule le polynome d'ordre 5 (ou d'ordre 4 pour l'ancienne version
                   set coeffNotFound [catch {
                      set a [lindex [lindex [$hFile get table "P$k" $n ] 0] 0]
-                     set y [expr $y + $a *pow($x+$min_x-1.0 , $k)]
+                     set y [expr $y + $a *pow($x - 1.0 , $k)]
                   }]
                   if { $coeffNotFound != 0 } {
                      break
                   }
                }
-               set x [ expr int($x+0.5) + $min_x ]
-               set y [ expr int($y+0.5) +1]
+               set x [ expr int($x+0.5) + 1 ]
+               set y [ expr int($y+0.5) + 1 ]
                #--- je calcule les ccordonnees de la boite dans le buffer
                set x1 [expr int($x) - $wide_x/2]
                set x2 [expr int($x) + $wide_x/2]
