@@ -1,14 +1,13 @@
 set visuNo 1
 set bufNo [::confVisu::getBufNo $visuNo]
-set w ".audace.prtr.usr"
-
+#--   le nom de la tablelist des fichiers
+set w ".audace.prtr.usr.choix.tablelist"
+#--   le nom de la zone de cmd
+set z ".audace.prtr.usr.table"
 
 #-----------------------------------------------------------------------------
 #--   le test REC2POL a pour entree une image RGB a traiter
-#--   l'option jpegfile est testee systematiquement
-#--   le test porte sur :
-#        l'existence de 3 fichiers jpeg
-#        naxis1 = 361
+#--   le test porte sur naxis1 = 361
 #-----------------------------------------------------------------------------
 #--   IMA/SERIES REC2POL :
 test imaseries_rec2pol {coordonnees polaires de rz_rgbr_8} -constraints {AUDACE} -setup {
@@ -20,42 +19,29 @@ test imaseries_rec2pol {coordonnees polaires de rz_rgbr_8} -constraints {AUDACE}
    #--   clic sur le menu "Images/Transformer/Cartésien-->polaire..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,transform)" "$::caption(audace,menu,cart2pol)..."
    #--   selectionne rz_rgbr_8
-   set k [lsearch [$w.choix getcolumns 1] rz_rgbr_8]
-   ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+   ::testaudela::clicCheckButton [$w windowpath rz_rgbr_8,0] 1
    #--   entre les coordonnees du centre
-   ::testaudela::putLabelEntry $w.funoptions.x0 "173"
-   ::testaudela::putLabelEntry $w.funoptions.y0 "96.5"
+   ::testaudela::putLabelEntry $z.funoptions.x0 "173"
+   ::testaudela::putLabelEntry $z.funoptions.y0 "96.5"
    #--   pm scale_theta et scale_rho valent 1
-   #--   selectionne l'option "Options"
-   ::testaudela::clicCheckButton $w.ttoptions.che "1"
-   #--   selectionne l'option "jpegfile"
-   ::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
    #-- saisit le nom de sortie
    set name_out "polaire"
-   ::testaudela::putLabelEntry $w.sortie.out "$name_out"
+   ::testaudela::putLabelEntry $z.sortie.out "$name_out"
    #--   clic sur le bouton Appliquer
-   ::testaudela::clicButton $w.cmd.appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
 
    #--   polaire est chargée automatiquement
    set result 0
    if {[lindex [buf$bufNo getkwd NAXIS1] 1] == "361"} {incr result}
-   foreach file [list ${name_out}r.jpg ${name_out}g.jpg ${name_out}b.jpg] {
-      if {[file exists $file]} {incr result}
-   }
    return $result
 } -cleanup {
    #--   clic sur le bouton Fermer
-   ::testaudela::clicButton $w.cmd.fermer
-   #---  efface l'image
-  file delete "./${name_out}r.jpg" "./${name_out}g.jpg" "./${name_out}b.jpg"
-} -result "4"
+   ::testaudela::clicButton $z.cmd.fermer
+} -result "1"
 
 #-----------------------------------------------------------------------------
 #--   le test REC2POL a pour entree une image polaire cree lors du test rect2pol
-#--   l'option jpegfile est testee systematiquement
-#--   le test porte sur :
-#        l'existence de 3 fichiers jpeg
-#        naxis1 et naxis2
+#--   le test porte sur naxis1 et naxis2
 #     les intensites ne sont pas conservees
 #-----------------------------------------------------------------------------
 #--   nature du test IMA/SERIES POL2REC :
@@ -67,40 +53,30 @@ test imaseries_pol2rec {coordonnees rectangulaires polaire.fit} -constraints {AU
    #--   clic sur le menu "Rotation2" de le fenetre de 'Images' restee ouverte
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,transform)" "$::caption(audace,menu,pol2cart)..."
    #--   selectionne polaire
-   set k [lsearch [$w.choix getcolumns 1] polaire]
-   ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+   ::testaudela::clicCheckButton [$w windowpath polaire,0] 1
    #--   restitue les coordonnees du centre
-   ::testaudela::putLabelEntry $w.funoptions.x0 "173"
-   ::testaudela::putLabelEntry $w.funoptions.y0 "96.5"
+   ::testaudela::putLabelEntry $z.funoptions.x0 "173"
+   ::testaudela::putLabelEntry $z.funoptions.y0 "96.5"
    #--   restitue les dimensions
-   ::testaudela::putLabelEntry $w.funoptions.width "337"
-   ::testaudela::putLabelEntry $w.funoptions.height "218"
-   #--   selectionne l'option "Options"
-   ::testaudela::clicCheckButton $w.ttoptions.che "1"
-   #--   selectionne l'option jpegfile
-   ::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
-   ::testaudela::putLabelEntry $w.ttoptions.jpeg_quality "100"
+   ::testaudela::putLabelEntry $z.funoptions.width "337"
+   ::testaudela::putLabelEntry $z.funoptions.height "218"
    #-- saisit le nom de sortie
    set name_out "rectangle"
-   ::testaudela::putLabelEntry $w.sortie.out "$name_out"
+   ::testaudela::putLabelEntry $z.sortie.out "$name_out"
    #--   clic sur le bouton Appliquer
-   ::testaudela::clicButton $w.cmd.appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
 
    #--   procedure de controle
    set result 0
    if {[lindex [buf$bufNo getkwd NAXIS1] 1] == "337"} {incr result}
    if {[lindex [buf$bufNo getkwd NAXIS2] 1] == "218"} {incr result}
-   foreach file [list ${name_out}r.jpg ${name_out}g.jpg ${name_out}b.jpg] {
-      if {[file exists $file]} {incr result}
-   }
    set liste [list rz_rgbr_8 polaire rectangle]
-   file delete "./${name_out}r.jpg" "./${name_out}g.jpg" "./${name_out}b.jpg"
    return $result
 } -cleanup {
    #--   clic sur le bouton Fermer
-   ::testaudela::clicButton $w.cmd.fermer
+   ::testaudela::clicButton $z.cmd.fermer
    #---  efface l'image
    ::confVisu::deleteImage $visuNo
    ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
-} -result "5"
+} -result "2"
 

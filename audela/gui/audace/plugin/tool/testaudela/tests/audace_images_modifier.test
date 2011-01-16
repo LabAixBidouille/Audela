@@ -1,6 +1,9 @@
 set visuNo 1
 set bufNo [::confVisu::getBufNo $visuNo]
-set w ".audace.prtr.usr"
+#--   le nom de la tablelist des fichiers
+set w ".audace.prtr.usr.choix.tablelist"
+#--   le nom de la zone de cmd
+set z ".audace.prtr.usr.table"
 
 variable SETUP {
    set ::conf(extension,defaut) .fit
@@ -18,23 +21,18 @@ variable SETUP {
 
 variable CLEANUP {
    #--   clic sur le bouton Fermer
-   ::testaudela::clicButton $w.cmd.fermer
+   ::testaudela::clicButton $z.cmd.fermer
    #---  efface l'image
    ::confVisu::deleteImage $visuNo
    set liste [list rz_rgbr_8 rz_rgbr_15 ${name_out}1 ${name_out}2]
    ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
-   file delete "./${name_out}1r.jpg" "./${name_out}1g.jpg" "./${name_out}1b.jpg"
-   file delete "./${name_out}2r.jpg" "./${name_out}2g.jpg" "./${name_out}2b.jpg"
    ::blt::vector destroy attendu mesure temp
 }
 
 #-----------------------------------------------------------------------------
 #--   chaque test ADD SUB DIV PROD a pour entree deux images RGB a traiter
 #--   avec une troisième image venant de testaudela (sans recopie)
-#--   l'option jpegfile est testee systematiquement
-#--   le test porte sur :
-#        l'existence de six fichiers jpeg
-#        la concordance entre les valeurs au point {1 1} et les valeurs calculees
+#--   le test porte sur la concordance entre les valeurs au point {1 1} et les valeurs calculees
 #-----------------------------------------------------------------------------
 
 variable SETUP2 {
@@ -59,26 +57,23 @@ test imaseries_add {additionner rz_rgbr_8 et rz_rgbr_15 avec rz_rgbr_30} -constr
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,arithm)" "$::caption(audace,menu,addition)..."
    #-- selectionne les deux images a traiter
    foreach img {rz_rgbr_8 rz_rgbr_15} {
-      set k [lsearch [$w.choix getcolumns 1] $img]
-      ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+      ::testaudela::clicCheckButton [$w windowpath $img,0] 1
    }
    #-- saisit le nom du fichier a ajouter
-   ::testaudela::putLabelEntry $w.funoptions.file "[file join $::conf(testaudela,rep_images) rz_rgbr_30.fit]"
+   ::testaudela::putLabelEntry $z.funoptions.file "[file join $::conf(testaudela,rep_images) rz_rgbr_30.fit]"
    #--   selectionne l'option "Options"
-   ::testaudela::clicCheckButton $w.ttoptions.che "1"
+   ::testaudela::clicCheckButton $z.ttoptions.che "1"
    #-- saisit l'offset
    set offset "500"
-   ::testaudela::putLabelEntry $w.ttoptions.offset $offset
-   #--   selectionne l'option "jpegfile"
-   ::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
+   ::testaudela::putLabelEntry $z.ttoptions.offset $offset
    #--   saisit nullpixel
    set nullpixel "0"
-   #::testaudela::putLabelEntry $w.ttoptions.nullpixel $nullpixel
+   #::testaudela::putLabelEntry $z.ttoptions.nullpixel $nullpixel
    #-- saisit le nom de sortie
    set name_out "ajout"
-   ::testaudela::putLabelEntry $w.sortie.out "$name_out"
+   ::testaudela::putLabelEntry $z.sortie.out "$name_out"
    #--   clic sur le bouton Appliquer
-   ::testaudela::clicButton $w.cmd.appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
 
    #--   procedure de controle
    attendu expr {attendu+mesure}
@@ -94,12 +89,8 @@ test imaseries_add {additionner rz_rgbr_8 et rz_rgbr_15 avec rz_rgbr_30} -constr
    attendu expr {round(attendu-mesure)}
    #--   compte le nombre de resultats nuls
    set result [llength [attendu search 0]]
-   foreach file [list ${name_out}1r.jpg ${name_out}1g.jpg ${name_out}1b.jpg \
-      ${name_out}2r.jpg ${name_out}2g.jpg ${name_out}2b.jpg] {
-      if {[file exists $file]} {incr result}
-   }
    return $result
-} -cleanup $CLEANUP -result "9"
+} -cleanup $CLEANUP -result "3"
 
 #--   IMA/SERIES SUB
 test imaseries_sub {soustraire rz_rgbr_30 de rz_rgbr_8 et de rz_rgbr_15}  -constraints {AUDACE} -setup $SETUP2 -body {
@@ -107,26 +98,23 @@ test imaseries_sub {soustraire rz_rgbr_30 de rz_rgbr_8 et de rz_rgbr_15}  -const
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,arithm)" "$::caption(audace,menu,soust)..."
    #-- selectionne les deux images a traiter
    foreach img {rz_rgbr_8 rz_rgbr_15} {
-      set k [lsearch [$w.choix getcolumns 1] $img]
-      ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+      ::testaudela::clicCheckButton [$w windowpath $img,0] 1
    }
    #-- saisit le nom du fichier a soustraire
-   ::testaudela::putLabelEntry $w.funoptions.file "[file join $::conf(testaudela,rep_images) rz_rgbr_30.fit]"
+   ::testaudela::putLabelEntry $z.funoptions.file "[file join $::conf(testaudela,rep_images) rz_rgbr_30.fit]"
    #--   selectionne l'option "Options"
-   ::testaudela::clicCheckButton $w.ttoptions.che "1"
+   ::testaudela::clicCheckButton $z.ttoptions.che "1"
    #--   saisit l'offset
    set offset "-100"
-   ::testaudela::putLabelEntry $w.ttoptions.offset $offset
+   ::testaudela::putLabelEntry $z.ttoptions.offset $offset
    #--   saisit bitpix
    set bitpix "-32"
    set prtr::bitpix "$bitpix"
-   #--   selectionne l'option "jpegfile"
-   ::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
    #-- saisit le nom de sortie
    set name_out "soustraction"
-   ::testaudela::putLabelEntry $w.sortie.out "$name_out"
+   ::testaudela::putLabelEntry $z.sortie.out "$name_out"
    #--   clic sur le bouton Appliquer
-   ::testaudela::clicButton $w.cmd.appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
 
    #--   procedure de controle
    attendu expr {attendu-mesure}
@@ -138,12 +126,8 @@ test imaseries_sub {soustraire rz_rgbr_30 de rz_rgbr_8 et de rz_rgbr_15}  -const
    #--   compte le nombre de resultats nuls
    set result [llength [attendu search 0]]
    if {[lindex [buf$bufNo getkwd BITPIX] 1] eq $bitpix} {incr result}
-   foreach file [list ${name_out}1r.jpg ${name_out}1g.jpg ${name_out}1b.jpg \
-      ${name_out}2r.jpg ${name_out}2g.jpg ${name_out}2b.jpg] {
-      if {[file exists $file]} {incr result}
-   }
    return $result
-} -cleanup $CLEANUP -result "10"
+} -cleanup $CLEANUP -result "4"
 
 #--   IMA/SERIES DIV
 test imaseries_div {division de rz_rgbr_8 et rz_rgbr_15 par rgb_30} -constraints {AUDACE} -setup $SETUP2 -body {
@@ -151,23 +135,20 @@ test imaseries_div {division de rz_rgbr_8 et rz_rgbr_15 par rgb_30} -constraints
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,arithm)" "$::caption(audace,menu,division)..."
    #-- selectionne les deux images a traiter
    foreach img {rz_rgbr_8 rz_rgbr_15} {
-      set k [lsearch [$w.choix getcolumns 1] $img]
-      ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+      ::testaudela::clicCheckButton [$w windowpath $img,0] 1
    }
    #-- saisit le nom du fichier diviseur
-   ::testaudela::putLabelEntry $w.funoptions.file "[file join $::conf(testaudela,rep_images) rz_rgbr_30.fit]"
+   ::testaudela::putLabelEntry $z.funoptions.file "[file join $::conf(testaudela,rep_images) rz_rgbr_30.fit]"
    #--   selectionne l'option "Options"
-   ::testaudela::clicCheckButton $w.ttoptions.che "1"
+   ::testaudela::clicCheckButton $z.ttoptions.che "1"
    #--   saisit la constante multiplicative
    set constante "5"
-   ::testaudela::putLabelEntry $w.ttoptions.constant $constante
-   #--   selectionne l'option "jpegfile"
-   ::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
+   ::testaudela::putLabelEntry $z.ttoptions.constant $constante
    #-- saisit le nom de sortie
    set name_out "division"
-   ::testaudela::putLabelEntry $w.sortie.out "$name_out"
+   ::testaudela::putLabelEntry $z.sortie.out "$name_out"
    #--   clic sur le bouton Appliquer
-   ::testaudela::clicButton $w.cmd.appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
 
    #--   procedure de controle
    attendu expr {attendu/mesure}
@@ -179,12 +160,8 @@ test imaseries_div {division de rz_rgbr_8 et rz_rgbr_15 par rgb_30} -constraints
    #--   compte le nombre de resultats concordants
    attendu expr {abs(attendu) <= 1}
    set result [llength [attendu search 1]]
-   foreach file [list ${name_out}1r.jpg ${name_out}1g.jpg ${name_out}1b.jpg \
-      ${name_out}2r.jpg ${name_out}2g.jpg ${name_out}2b.jpg] {
-      if {[file exists $file]} {incr result}
-   }
    return $result
-} -cleanup $CLEANUP -result "9"
+} -cleanup $CLEANUP -result "3"
 
 #--   IMA/SERIES PROD
 test imaseries_prod {produit de rz_rgbr_8 et rz_rgbr_15 par rgb_30} -constraints {AUDACE} -setup {
@@ -206,25 +183,22 @@ test imaseries_prod {produit de rz_rgbr_8 et rz_rgbr_15 par rgb_30} -constraints
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,arithm)" "$::caption(audace,menu,multipli)..."
    #-- selectionne les deux images a traiter
    foreach img {rz_rgbr_8 rz_rgbr_15} {
-      set k [lsearch [$w.choix getcolumns 1] $img]
-      ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+      ::testaudela::clicCheckButton [$w windowpath $img,0] 1
    }
    #-- saisit le nom du fichier multiplicateur
-   ::testaudela::putLabelEntry $w.funoptions.file "[file join $::conf(testaudela,rep_images) rz_rgbr_30.fit]"
+   ::testaudela::putLabelEntry $z.funoptions.file "[file join $::conf(testaudela,rep_images) rz_rgbr_30.fit]"
    #--   selectionne l'option "Options"
-   ::testaudela::clicCheckButton $w.ttoptions.che "1"
+   ::testaudela::clicCheckButton $z.ttoptions.che "1"
    #--   saisit la constante multiplicative
-   ::testaudela::putLabelEntry $w.ttoptions.constant $constante
+   ::testaudela::putLabelEntry $z.ttoptions.constant $constante
    #--   saisit bitpix
    set bitpix "-64"
-   ::testaudela::clicCombobox $w.ttoptions.combobitpix.bitpix $bitpix
-   #--   selectionne l'option "jpegfile"
-   ::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
+   ::testaudela::clicCombobox $z.ttoptions.combobitpix.bitpix $bitpix
    #-- saisit le nom de sortie
    set name_out "produit"
-   ::testaudela::putLabelEntry $w.sortie.out "$name_out"
+   ::testaudela::putLabelEntry $z.sortie.out "$name_out"
    #--   clic sur le bouton Appliquer
-   ::testaudela::clicButton $w.cmd.appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
 
    #--   procedure de controle
    #--   charge le resultat obtenu
@@ -234,19 +208,12 @@ test imaseries_prod {produit de rz_rgbr_8 et rz_rgbr_15 par rgb_30} -constraints
    #--   compte le nombre de resultats nuls
    set result [llength [attendu search 0]]
    if {[lindex [buf$bufNo getkwd BITPIX] 1] eq "$bitpix"} {incr result}
-   foreach file [list ${name_out}1r.jpg ${name_out}1g.jpg ${name_out}1b.jpg \
-      ${name_out}2r.jpg ${name_out}2g.jpg ${name_out}2b.jpg] {
-      if {[file exists $file]} {incr result}
-   }
    return $result
-} -cleanup $CLEANUP -result "10"
+} -cleanup $CLEANUP -result "4"
 
 #-----------------------------------------------------------------------------
 #--   chaque test OFFSET MULT LOG  a pour entree deux images RGB a traiter
-#--   l'option jpegfile est testee systematiquement
-#--   le test porte sur :
-#        l'existence de six fichiers jpeg
-#        la concordance entre les valeurs au point {110 100} et les valeurs calculees
+#--   le test porte sur la concordance entre les valeurs au point {110 100} et les valeurs calculees
 #-----------------------------------------------------------------------------
 #--   IMA/SERIES OFFSET
 test imaseries_offset {ajouter une constante a rz_rgbr_8 rz_rgbr_15} -constraints {AUDACE} -setup $SETUP -body {
@@ -254,21 +221,16 @@ test imaseries_offset {ajouter une constante a rz_rgbr_8 rz_rgbr_15} -constraint
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,arithm)" "$::caption(audace,menu,offset)..."
    #--   selectionne rz_rgbr_8 rz_rgbr_15
    foreach img {rz_rgbr_8 rz_rgbr_15} {
-      set k [lsearch [$w.choix getcolumns 1] $img]
-      ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+      ::testaudela::clicCheckButton [$w windowpath $img,0] 1
    }
    #-- saisit l'offset
    set offset 1000
-   ::testaudela::putLabelEntry $w.funoptions.offset $offset
-   #--   selectionne l'option "Options"
-   ::testaudela::clicCheckButton $w.ttoptions.che "1"
-   #--   selectionne l'option "jpegfile"
-   ::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
+   ::testaudela::putLabelEntry $z.funoptions.offset $offset
    #-- saisit le nom de sortie
    set name_out "offset"
-   ::testaudela::putLabelEntry $w.sortie.out "$name_out"
+   ::testaudela::putLabelEntry $z.sortie.out "$name_out"
    #--   clic sur le bouton Appliquer
-   ::testaudela::clicButton $w.cmd.appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
 
    #--   procedure de controle
    #--   charge le resultat obtenu
@@ -278,12 +240,8 @@ test imaseries_offset {ajouter une constante a rz_rgbr_8 rz_rgbr_15} -constraint
    attendu expr {round(attendu-mesure)}
    #--   compte le nombre de resultats nuls
    set result [llength [attendu search 0]]
-   foreach file [list ${name_out}1r.jpg ${name_out}1g.jpg ${name_out}1b.jpg \
-      ${name_out}2r.jpg ${name_out}2g.jpg ${name_out}2b.jpg] {
-      if {[file exists $file]} {incr result}
-   }
    return $result
-} -cleanup $CLEANUP -result "9"
+} -cleanup $CLEANUP -result "3"
 
 #--   IMA/SERIES MULT
 test imaseries_mult {multiplier rz_rgbr_8 rz_rgbr_15 par constante} -constraints {AUDACE} -setup $SETUP -body {
@@ -291,24 +249,21 @@ test imaseries_mult {multiplier rz_rgbr_8 rz_rgbr_15 par constante} -constraints
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,arithm)" "$::caption(audace,menu,mult_cte)..."
    #--   selectionne rz_rgbr_8 rz_rgbr_15
    foreach img {rz_rgbr_8 rz_rgbr_15} {
-     set k [lsearch [$w.choix getcolumns 1] $img]
-      ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+      ::testaudela::clicCheckButton [$w windowpath $img,0] 1
    }
    #-- saisit la constante (valeur entiere pour eviter les pb d'arrondi)
    set constante "0.5"
-   ::testaudela::putLabelEntry $w.funoptions.constant $constante
+   ::testaudela::putLabelEntry $z.funoptions.constant $constante
    #--   selectionne l'option "Options"
-   ::testaudela::clicCheckButton $w.ttoptions.che "1"
+   ::testaudela::clicCheckButton $z.ttoptions.che "1"
    #--   saisit bitpix
    set bitpix "32"
    set prtr::bitpix $bitpix
-   #--   selectionne l'option "jpegfile"
-   ::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
    #-- saisit le nom de sortie
    set name_out "mult"
-   ::testaudela::putLabelEntry $w.sortie.out "$name_out"
+   ::testaudela::putLabelEntry $z.sortie.out "$name_out"
    #--   clic sur le bouton Appliquer
-   ::testaudela::clicButton $w.cmd.appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
 
    #--   procedure de controle
    #--   charge le resultat obtenu
@@ -325,13 +280,10 @@ test imaseries_mult {multiplier rz_rgbr_8 rz_rgbr_15 par constante} -constraints
    #--   compte le nombre de resultats nuls
    set result [llength [attendu search 0]]
    if {[lindex [buf$bufNo getkwd BITPIX] 1] eq "$bitpix"} {incr result}
-   foreach file [list ${name_out}1r.jpg ${name_out}1g.jpg ${name_out}1b.jpg ${name_out}2r.jpg ${name_out}2g.jpg ${name_out}2b.jpg] {
-      if {[file exists $file]} {incr result}
-   }
    #--   saisit bitpix
    buf$bufNo bitpix short
    return $result
-} -cleanup $CLEANUP -result "10"
+} -cleanup $CLEANUP -result "4"
 
 #--   IMA/SERIES LOG
 test imaseries_log {appliquer logarithme a rz_rgbr_8 rz_rgbr_15} -constraints {AUDACE} -setup $SETUP -body {
@@ -339,27 +291,24 @@ test imaseries_log {appliquer logarithme a rz_rgbr_8 rz_rgbr_15} -constraints {A
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,arithm)" "$::caption(audace,menu,log)..."
    #--   selectionne rz_rgbr_8 rz_rgbr_15
    foreach img {rz_rgbr_8 rz_rgbr_15} {
-      set k [lsearch [$w.choix getcolumns 1] $img]
-      ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+      ::testaudela::clicCheckButton [$w windowpath $img,0] 1
    }
    #--   saisit la constante
    set coef 20
-   ::testaudela::putLabelEntry $w.funoptions.coef $coef
+   ::testaudela::putLabelEntry $z.funoptions.coef $coef
    #--   saisit l'offset_log
    set offsetlog 10
-   ::testaudela::putLabelEntry $w.funoptions.offsetlog $offsetlog
+   ::testaudela::putLabelEntry $z.funoptions.offsetlog $offsetlog
    #--   selectionne l'option "Options"
-   ::testaudela::clicCheckButton $w.ttoptions.che "1"
+   ::testaudela::clicCheckButton $z.ttoptions.che "1"
    #--   saisit bitpix
    set bitpix "16"
    set prtr::bitpix $bitpix
-   #--   selectionne l'option "jpegfile"
-   ::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
    #-- saisit le nom de sortie
    set name_out "log"
-   ::testaudela::putLabelEntry $w.sortie.out "$name_out"
+   ::testaudela::putLabelEntry $z.sortie.out "$name_out"
    #--   clic sur le bouton Appliquer
-   ::testaudela::clicButton $w.cmd.appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
 
    #--   procedure de controle
    #--   charge le resultat obtenu
@@ -374,12 +323,8 @@ test imaseries_log {appliquer logarithme a rz_rgbr_8 rz_rgbr_15} -constraints {A
    attendu expr {round(mesure/attendu)}
    #--   compte le nombre de resultats nuls (bizarre bizarre)
    set result [llength [attendu search 363]]
-   foreach file [list ${name_out}1r.jpg ${name_out}1g.jpg ${name_out}1b.jpg \
-      ${name_out}2r.jpg ${name_out}2g.jpg ${name_out}2b.jpg] {
-      if {[file exists $file]} {incr result}
-   }
    return $result
-} -cleanup $CLEANUP -result "9"
+} -cleanup $CLEANUP -result "3"
 
 #--   IMA/SERIES NORMGAIN
 test imaseries_normgain {normaliser le gain de rz_rgbr_8 rz_rgbr_15} -constraints {AUDACE} -setup {
@@ -404,21 +349,16 @@ test imaseries_normgain {normaliser le gain de rz_rgbr_8 rz_rgbr_15} -constraint
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,arithm)" "$::caption(audace,menu,ngain)..."
   #--   selectionne rz_rgbr_8 rz_rgbr_15
    foreach img {rz_rgbr_8 rz_rgbr_15} {
-      set k [lsearch [$w.choix getcolumns 1] $img]
-      ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+      ::testaudela::clicCheckButton [$w windowpath $img,0] 1
    }
    #--   saisit la valeur de normalisation du gain
    set normgain_value "5000"
-   ::testaudela::putLabelEntry $w.funoptions.normgain_value $normgain_value
-   #--   selectionne l'option "Options"
-   ::testaudela::clicCheckButton $w.ttoptions.che "1"
-   #--   selectionne l'option "jpegfile"
-   ::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
+   ::testaudela::putLabelEntry $z.funoptions.normgain_value $normgain_value
    #-- saisit le nom de sortie
    set name_out "norm"
-   ::testaudela::putLabelEntry $w.sortie.out "$name_out"
+   ::testaudela::putLabelEntry $z.sortie.out "$name_out"
    #--   clic sur le bouton Appliquer
-   ::testaudela::clicButton $w.cmd.appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
 
    #--   procedure de controle
    mesure set [lrange [buf$bufNo getpix $coords] 1 end]
@@ -429,20 +369,13 @@ test imaseries_normgain {normaliser le gain de rz_rgbr_8 rz_rgbr_15} -constraint
    #--   compte le nombre de resultats nuls
    attendu expr {abs(attendu) <= 1}
    set result [llength [attendu search 1]]
-   foreach file [list ${name_out}1r.jpg ${name_out}1g.jpg ${name_out}1b.jpg \
-      ${name_out}2r.jpg ${name_out}2g.jpg ${name_out}2b.jpg] {
-      if {[file exists $file]} {incr result}
-   }
    return $result
-} -cleanup $CLEANUP -result "9"
+} -cleanup $CLEANUP -result "3"
 
 #-----------------------------------------------------------------------------
 #--   chaque test NORMOFFSET a pour entree une images RGB
-#--   l'option jpegfile est testee systematiquement
-#--   le test porte sur :
-#        l'existence de trois fichiers jpeg
-#        la concordance entre les valeurs au point {110 100} et
-#        les valeurs obtenues dans une image de reference
+#--   le test porte sur la concordance entre les valeurs au point {110 100} et
+#     les valeurs obtenues dans une image de reference
 #-----------------------------------------------------------------------------
 #--   IMA/SERIES NORMOFFSET
 test imaseries_normoffset {normaliser le fond du ciel de rz_rgbr_8} -constraints {AUDACE} -setup {
@@ -452,50 +385,39 @@ test imaseries_normoffset {normaliser le fond du ciel de rz_rgbr_8} -constraints
    #--   clic sur le menu "Images/Modifier/Normaliser le fond du ciel..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,arithm)" "$::caption(audace,menu,noffset)..."
    #--   selectionne rz_rgbr_8
-   set k [lsearch [$w.choix getcolumns 1] rz_rgbr_8]
-   ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+   ::testaudela::clicCheckButton [$w windowpath rz_rgbr_8,0] 1
    #--   saisit la valeur de normalisation
-   set normoffset_value "100"
-   ::testaudela::putLabelEntry $w.funoptions.normoffset_value $normoffset_value
-   #--   selectionne l'option "Options"
-   ::testaudela::clicCheckButton $w.ttoptions.che "1"
-   #--   selectionne l'option "jpegfile"
-   ::testaudela::clicCheckButton $w.ttoptions.jpegfile "1"
+   set normoffset_value "0"
+   ::testaudela::putLabelEntry $z.funoptions.normoffset_value $normoffset_value
    #-- saisit le nom de sortie
    set name_out "noffset"
-   ::testaudela::putLabelEntry $w.sortie.out "$name_out"
+   ::testaudela::putLabelEntry $z.sortie.out "$name_out"
    #--   clic sur le bouton Appliquer
-   ::testaudela::clicButton $w.cmd.appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
 
    #--   procedure de controle
    mesure set [lrange [buf$bufNo getpix $coords] 1 end]
    #--   valeurs mesurees sur une image obtenue par la voie classique
-   attendu set [list 0 0 28737]
+   attendu set [list -1362 -787 28637]
    #--   calcule la difference
    attendu expr {round(attendu-mesure)}
    #--   compte le nombre de resultats concordants
-   attendu expr {abs(attendu) <=1}
-   set result [llength [attendu search 1]]
-   foreach file [list ${name_out}r.jpg ${name_out}g.jpg ${name_out}b.jpg] {
-      if {[file exists $file]} {incr result}
-   }
+   set result [llength [attendu search 0]]
    return $result
 } -cleanup {
    #--   clic sur le bouton Fermer
-   ::testaudela::clicButton $w.cmd.fermer
+   ::testaudela::clicButton $z.cmd.fermer
    #---  efface l'image
    ::confVisu::deleteImage $visuNo
    set liste [list rz_rgbr_8 noffset_rgbr_8 noffset]
    ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
-   file delete "./${name_out}r.jpg" "./${name_out}g.jpg" "./${name_out}b.jpg"
    ::blt::vector destroy attendu mesure
-} -result "6"
+} -result "3"
 
 #-----------------------------------------------------------------------------
 #--   chaque test clip_min_clip_max a pour entree une images RGB
-#--   le test porte sur :
-#        la concordance entre les valeurs aux points {110 100} et {227 108} et
-#        les valeurs calculees
+#--   le test porte sur la concordance entre les valeurs aux points {110 100} et {227 108} et
+#     les valeurs calculees
 #-----------------------------------------------------------------------------
 #--   clip_min_clip_max
 #     concordance des intensites R G B constatees avec celles calculees
@@ -513,23 +435,22 @@ test ecreter_les_extremes {ecreter rz_rgbr_8} -constraints {AUDACE} -setup {
    #--   clic sur le menu "Images/Modifier/Ecrêter les extrêmes..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,arithm)" "$::caption(audace,menu,clip)..."
    #--   selectionne rz_rgbr_8
-   set k [lsearch [$w.choix getcolumns 1] rz_rgbr_8]
-  ::testaudela::clicCheckButton [$w.choix windowpath $k,0] 1
+  ::testaudela::clicCheckButton [$w windowpath rz_rgbr_8,0] 1
    #--   saisit la valeur du minimum
    set mini "350"
-   ::testaudela::putLabelEntry $w.funoptions.mini $mini
+   ::testaudela::putLabelEntry $z.funoptions.mini $mini
    #--   saisit la valeur du maximum
    set maxi "3000"
-   ::testaudela::putLabelEntry $w.funoptions.maxi $maxi
+   ::testaudela::putLabelEntry $z.funoptions.maxi $maxi
    #-- saisit le nom de sortie
    set name_out "clip"
-   ::testaudela::putLabelEntry $w.sortie.out $name_out
+   ::testaudela::putLabelEntry $z.sortie.out $name_out
    #--   clic sur le bouton Appliquer
-   ::testaudela::clicButton $w.cmd.appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
 
    #--   procedure de controle
    set result 0
-   mesure1 set [lrange [buf$bufNo getpix $coord1] 1 end]
+  mesure1 set [lrange [buf$bufNo getpix $coord1] 1 end]
    mesure2 set [lrange [buf$bufNo getpix $coord2] 1 end]
    for {set i 0} {$i < 3} {incr i} {
       if {$attendu1($i) <= $mini} {set attendu1($i) $mini}
@@ -548,7 +469,7 @@ test ecreter_les_extremes {ecreter rz_rgbr_8} -constraints {AUDACE} -setup {
    return $result
 } -cleanup {
    #--   clic sur le bouton Fermer
-   ::testaudela::clicButton $w.cmd.fermer
+   ::testaudela::clicButton $z.cmd.fermer
    #---  efface l'image
    ::confVisu::deleteImage $visuNo
    set liste [list rz_rgbr_8 clip]
