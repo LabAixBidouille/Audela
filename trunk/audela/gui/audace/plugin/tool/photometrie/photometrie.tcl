@@ -5,7 +5,7 @@
 #
 # @brief Outil pour l'analyse photométrique d'une image.
 #
-# $Id: photometrie.tcl,v 1.3 2011-01-15 14:23:07 jacquesmichelet Exp $
+# $Id: photometrie.tcl,v 1.4 2011-01-16 19:43:49 jacquesmichelet Exp $
 #
 
 namespace eval ::Photometrie {
@@ -442,6 +442,7 @@ namespace eval ::Photometrie {
         set liste_choix [ list manuel ]
         if { $photometrie(internet) == 1 } {
             lappend liste_choix auto_internet
+            set photometrie(choix_mode) auto_internet
         }
 
         # Si le choix est réduit, pas d'écran de sélection
@@ -592,9 +593,9 @@ namespace eval ::Photometrie {
 
     ##
     # @brief Gestion des retours de Aladin
-    # param canal : canal de comm (ou "pipe")
-    # mode : fermé si la minuterie a déclenché, ouvert sinon
-    # @
+    # @param canal : canal de comm (ou "pipe")
+    # @param mode : fermé si la minuterie a déclenché, ouvert sinon
+    #
     proc AttenteAladin { canal mode } {
         variable attente
         variable photometrie
@@ -626,7 +627,7 @@ namespace eval ::Photometrie {
         variable attente
 
         set attente rien
-        set commande "$::conf(exec_java) -jar $::conf(exec_aladin) -script $script_aladin 2>@1"
+        set commande "\"$::conf(exec_java)\" -jar \"$::conf(exec_aladin)\" -script \"$script_aladin\" 2>@1"
         set canal [ open "| $commande" r ]
         fconfigure $canal -blocking 0 -encoding binary
         fileevent $canal readable { ::Photometrie::AttenteAladin $::Photometrie::canal ouvert }
