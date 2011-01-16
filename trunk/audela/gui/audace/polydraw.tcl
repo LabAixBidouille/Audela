@@ -2,7 +2,7 @@
 # Fichier : polydraw.tcl
 # Description : Dessine un polygone
 # Auteur : Michel PUJOL
-# Mise à jour $Id: polydraw.tcl,v 1.9 2010-05-16 14:21:06 robertdelmas Exp $
+# Mise à jour $Id: polydraw.tcl,v 1.10 2011-01-16 19:14:17 michelpujol Exp $
 #
 
 namespace eval ::polydraw {
@@ -22,6 +22,7 @@ proc ::polydraw::init { visuNo } {
 
    set private($visuNo,mouseAddItem) "0"
    set private($visuNo,mouseAddNode) "0"
+   set private($visuNo,mouseMoveLine) "1"
 
    set private($visuNo,previousZoom)  [confVisu::getZoom $visuNo]
    ::confVisu::addZoomListener $visuNo "::polydraw::setZoom $visuNo"
@@ -49,20 +50,21 @@ proc ::polydraw::init { visuNo } {
 proc ::polydraw::close { visuNo } {
    variable private
 
-   #--- je supprime les binds
-   $private($visuNo,hCanvas) bind polydraw <Button-1>         ""
-   $private($visuNo,hCanvas) bind polydraw <B1-Motion>        ""
-   $private($visuNo,hCanvas) bind polydraw <Shift-B1-Motion>  ""
-   $private($visuNo,hCanvas) bind polydraw <Button-3>         ""
-   $private($visuNo,hCanvas) bind polydraw <Double-1>         ""
-   $private($visuNo,hCanvas) bind polydraw <Button-2>         ""
-   $private($visuNo,hCanvas) bind polydraw <Shift-2>          ""
-   $private($visuNo,hCanvas) bind polydraw <Button-3>         ""
-   $private($visuNo,hCanvas) bind polydraw <Shift-3>          ""
-
+   if { [info exists private($visuNo,hCanvas)] } {
+      #--- je supprime les binds ( si le canvas avit déjà été memorisé)
+      $private($visuNo,hCanvas) bind polydraw <Button-1>         ""
+      $private($visuNo,hCanvas) bind polydraw <B1-Motion>        ""
+      $private($visuNo,hCanvas) bind polydraw <Shift-B1-Motion>  ""
+      $private($visuNo,hCanvas) bind polydraw <Button-3>         ""
+      $private($visuNo,hCanvas) bind polydraw <Double-1>         ""
+      $private($visuNo,hCanvas) bind polydraw <Button-2>         ""
+      $private($visuNo,hCanvas) bind polydraw <Shift-2>          ""
+      $private($visuNo,hCanvas) bind polydraw <Button-3>         ""
+      $private($visuNo,hCanvas) bind polydraw <Shift-3>          ""
+      $private($visuNo,hCanvas) delete polydraw
+   }
    confVisu::removeZoomListener $visuNo "::polydraw::setZoom $visuNo"
 
-   $private($visuNo,hCanvas) delete polydraw
 }
 
 #------------------------------------------------------------
@@ -92,6 +94,21 @@ proc ::polydraw::setMouseAddNode { visuNo value } {
 
    set private($visuNo,mouseAddNode) $value
 }
+
+#------------------------------------------------------------
+#  setMouseMoveLine
+#     autorise/interdit le deplacement d'une ligne avec la souris
+#  parametres
+#     visuNo : numero de visu
+#     value  : 1=autorise  0=interdit
+#  return :
+#------------------------------------------------------------
+proc ::polydraw::setMouseMoveLine { visuNo value } {
+   variable private
+
+   set private($visuNo,mouseMoveLine) $value
+}
+
 
 #------------------------------------------------------------
 #  setZoom
@@ -142,17 +159,18 @@ proc ::polydraw::setZoom { visuNo args } {
 #     points : liste des points { {x1 y1 x2 y2} }
 #  return : numero de l'item dans le canvas
 #------------------------------------------------------------
-proc ::polydraw::createLine {visuNo points } {
+proc ::polydraw::createLine {visuNo points { moveCommand ""} } {
    variable private
 
-   if {  [llength $points] != "4"  } {
-      console::affiche_erreur "::polydraw::createLine must be 4 coordinates\n"
+   if {  [llength $points] < 4  } {
+      console::affiche_erreur "::polydraw::createLine must be >= 4 coordinates\n"
       return ""
    }
-   set itemNo [$private($visuNo,hCanvas) create line $points -fill yellow -width 2 -activewidth 4 ]
-   $private($visuNo,hCanvas) itemconfigure $itemNo -tags { line polydraw }
-   ::polydraw::markNodes $visuNo $private($visuNo,hCanvas) $itemNo
-   return $itemNo
+   set lineNo [$private($visuNo,hCanvas) create line $points -fill yellow -width 2 -activewidth 4 ]
+   $private($visuNo,hCanvas) itemconfigure $lineNo -tags { line polydraw }
+   ::polydraw::markNodes $visuNo $private($visuNo,hCanvas) $lineNo
+   set private($visuNo,moveCommand,$lineNo) $moveCommand
+   return $lineNo
 }
 
 #------------------------------------------------------------
@@ -343,16 +361,19 @@ proc ::polydraw::mark {visuNo w x y} {
 
 #------------------------------------------------------------
 #  markNodes
-#     dessine les rectangles des noeuds
-#  return :
+#     dessine les rectangles des noeuds sur les points d'inflexion d'une ligne
+#  @param visuNo   numero de la visu
+#  @param hCanvas  nom tk du canvas
+#  @param lineNo   numero de l'item de la ligne dans le canvas
+#  @return void
 #------------------------------------------------------------
-proc ::polydraw::markNodes {visuNo w item} {
+proc ::polydraw::markNodes {visuNo hCanvas lineNo} {
    #-- decorate a polygon with square marks at its nodes
-   $w delete of:$item
+   $hCanvas delete of:$lineNo
    set pos 0
-   foreach {x y} [$w coords $item] {
-      set coo [list [expr $x-2] [expr $y-2] [expr $x+2] [expr $y+2]]
-      $w create rect $coo -fill blue -activefill turquoise -tags "node of:$item at:$pos polydraw"
+   foreach {x y} [$hCanvas coords $lineNo] {
+      set coord [list [expr $x-2] [expr $y-2] [expr $x+2] [expr $y+2]]
+      $hCanvas create rect $coord -fill blue -activefill turquoise -tags "node of:$lineNo at:$pos polydraw"
       incr pos 2
    }
 }
@@ -367,7 +388,6 @@ proc ::polydraw::move {visuNo w x y {all 0}} {
 
    #-- move a node of, or a whole polygon
    set x [$w canvasx $x]; set y [$w canvasy $y]
-   ##set visuNo [::confVisu::getVisuNo $w]
    if {[info exists private($visuNo,currentItem)]} {
       set dx [expr {$x - $private($visuNo,currentx)}]
       set dy [expr {$y - $private($visuNo,currenty)}]
@@ -377,17 +397,16 @@ proc ::polydraw::move {visuNo w x y {all 0}} {
          set tags [tags$w]
          set typeItem [lindex $tags 0]
          if { $typeItem == "node" } {
-            regexp {of:([^ ]+)} $tags -> itemNo
-            ::polydraw::redraw $w $dx $dy
-            $w move $private($visuNo,currentItem) $dx $dy
+            #--- je translate le point d'inflexion de la ligne
+            ::polydraw::moveNode $visuNo $w $dx $dy
          } elseif  { $typeItem == "line" } {
-            set itemNo $private($visuNo,currentItem)
-            $w move $itemNo    $dx $dy
-            $w move of:$itemNo $dx $dy
+            if { $private($visuNo,mouseMoveLine) == 1 } {
+               $w move $private($visuNo,currentItem)    $dx $dy
+               $w move of:$private($visuNo,currentItem) $dx $dy
+            }
          } elseif  { $typeItem == "polygon" } {
-            set itemNo $private($visuNo,currentItem)
-            $w move $itemNo    $dx $dy
-            $w move of:$itemNo $dx $dy
+            $w move $private($visuNo,currentItem)   $dx $dy
+            $w move of:$private($visuNo,currentItem) $dx $dy
          }
       } elseif [regexp {of:([^ ]+)} [tags$w] -> itemNo] {
           ###::console::disp "move all itemNo=$itemNo\n"
@@ -396,9 +415,9 @@ proc ::polydraw::move {visuNo w x y {all 0}} {
       }
 
       #--- je lance le listener de deplacement s'il existe
-      if { [info exists private($visuNo,item$itemNo)] } {
-         #--- j'ecris dans la variable pour activer les listener
-         set private($visuNo,item$itemNo) "1"
+      if { [info exists private($visuNo,listener,$private($visuNo,currentItem))] } {
+         #--- j'ecris dans la variable pour activer le listener
+         set private($visuNo,listener,$private($visuNo,currentItem)) "1"
       }
    }
 }
@@ -415,8 +434,8 @@ proc ::polydraw::move {visuNo w x y {all 0}} {
 proc ::polydraw::addMoveItemListener { visuNo item cmd } {
    variable private
 
-   set private($visuNo,item$item) "1"
-   trace add variable "::polydraw::private($visuNo,item$item)" write $cmd
+   set private($visuNo,listener,$item) "1"
+   trace add variable "::polydraw::private($visuNo,listener,$item)" write $cmd
 }
 
 #------------------------------------------------------------
@@ -431,22 +450,45 @@ proc ::polydraw::addMoveItemListener { visuNo item cmd } {
 proc ::polydraw::removeMoveItemListener { visuNo item cmd } {
    variable private
 
-   trace remove variable "::polydraw::private($visuNo,item$item)" write $cmd
-   if { [ info exists ::polydraw::private($visuNo,item$item) ] } {
-      unset ::polydraw::private($visuNo,item$item)
+   trace remove variable "::polydraw::private($visuNo,listener,$item)" write $cmd
+   if { [ info exists ::polydraw::private($visuNo,listener,$item) ] } {
+      unset ::polydraw::private($visuNo,listener,$item)
    }
 }
 
-proc ::polydraw::redraw {w dx dy} {
-   #-- update a polygon when one node was moved
-   set tags [tags$w]
-   if [regexp {of:([^ ]+)} $tags -> poly] {
-      regexp {at:([^ ]+)} $tags -> from
-      set coords [$w coords $poly]
-      set to [expr {$from + 1}]
-      set x [expr {[lindex $coords $from] + $dx}]
-      set y [expr {[lindex $coords $to]   + $dy}]
-      $w coords $poly [lreplace $coords $from $to $x $y]
+#------------------------------------------------------------
+# moveNode
+#    deplace un point d'inflexion de la ligne
+# @param hCanvas : nom tk du canvas
+# @param dx : translation horizontale (en coordonnees canvas)
+# @param dy :  translation verticale (en coordonnees canvas)
+# @return void
+#------------------------------------------------------------
+proc ::polydraw::moveNode { visuNo hCanvas dx dy} {
+   variable private
+
+   set tags [tags$hCanvas]
+
+   if [regexp {of:([^ ]+)} $tags -> lineNo] {
+      #--- je deplace l'extemite de la ligne
+      regexp {at:([^ ]+)} $tags -> xPos
+      set yPos [expr {$xPos + 1}]
+      set coords [$hCanvas coords $lineNo]
+      if { $private($visuNo,moveCommand,$lineNo) ne "" } {
+          #--- je corrige la translation en avec la procedure specifique si elle existe
+          set nodeNo [expr $xPos / 2 + 1 ]
+          set dCoord [eval $private($visuNo,moveCommand,$lineNo) $nodeNo [lindex $coords $xPos] [lindex $coords $yPos] $dx $dy ]
+          set dx [lindex $dCoord 0]
+          set dy [lindex $dCoord 1]
+      }
+      #--- je calcule les nouvelles coordonnees en faisnt une translation
+      set x [expr [lindex $coords $xPos] + $dx ]
+      set y [expr [lindex $coords $yPos] + $dy ]
+      $hCanvas coords $lineNo [lreplace $coords $xPos $yPos $x $y]
+
+      #--- je deplace le carre autour du point
+      $hCanvas move $private($visuNo,currentItem) $dx $dy
+      ###console::disp "::polydraw::moveNode hCanvas=$hCanvas lineNo=$lineNo itemNo=$private($visuNo,currentItem) xPos=$xPos yPos=$yPos dx=$dx dy=$dy\n"
    }
 }
 
