@@ -2,7 +2,7 @@
 # Fichier : prtr.tcl
 # Description : Script dedie au menu deroulant pretraitement
 # Auteur : Raymond ZACHANTKE
-# Mise à jour $Id: prtr.tcl,v 1.10 2011-01-16 18:45:24 robertdelmas Exp $
+# Mise à jour $Id: prtr.tcl,v 1.11 2011-01-16 23:24:31 robertdelmas Exp $
 #
 
 namespace eval ::prtr {
@@ -504,7 +504,7 @@ namespace eval ::prtr {
       if {![info exists private(oldTableHeight)]} {set private(oldTableHeight) 220}
       set variableHeight [expr {($private(fun_lignes)+$private(tt_lignes))*34}]
       #--   fixe la hauteur de la table
-      set newTableHeight [expr {186+$variableHeight}]
+      set newTableHeight [expr {204+$variableHeight}]
       ::blt::table configure $private(table) -reqheight $newTableHeight
       #--   ote les + et x
       regsub -all {[x\+]} [wm geometry $private(this)] " " data
@@ -1499,7 +1499,7 @@ namespace eval ::prtr {
       global caption help conf
 
        if {![info exists conf(clip_mini)] && ![info exists conf(prtr,clip,clip_mini)]}  {
-         set conf(prtr,back,clip_mini) "0"
+         set conf(prtr,clip,clip_mini) "0"
       } elseif {[info exists conf(clip_mini)]} {
          set conf(prtr,clip,clip_mini) $conf(clip_mini)
         unset conf(clip_mini)
