@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: keyword.tcl,v 1.48 2010-12-10 22:47:19 michelpujol Exp $
+# Mise à jour $Id: keyword.tcl,v 1.49 2011-01-16 19:16:05 michelpujol Exp $
 #
 
 namespace eval ::keyword {
@@ -83,9 +83,9 @@ proc ::keyword::header { visuNo args } {
          set catchResult [ catch {
              #--- j'ouvre le fichier d'entree
              set hFile [fits open $fileName 0]
-             set hduNo [::confVisu::getHduNo $visuNo]
+             set hduNo [::confVisu::getCurrentHduNo $visuNo]
              #--- je pointe le HDU courant
-             $hFile move [::confVisu::getHduNo $visuNo]
+             $hFile move [::confVisu::getCurrentHduNo $visuNo]
              #--- je lis les mot cles du HDU
              set keywords [$hFile get keyword ]
              $hFile close
@@ -112,7 +112,7 @@ proc ::keyword::header { visuNo args } {
 
          if { $catchResult !=0 } {
             #--- je transmets l'erreur en ajoutant le nom du mot clé
-            error "load keywords hduNo=[::confVisu::getHduNo $visuNo]\n$::errorInfo"
+            error "load keywords hduNo=[::confVisu::getCurrentHduNo $visuNo]\n$::errorInfo"
          }
 
       } else {
@@ -796,14 +796,25 @@ proc ::keyword::setKeywordsEquinoxManuel { } {
 
 #------------------------------------------------------------------------------
 # getKeywords
-#    retourne la liste des mots cles coches
+#    retourne la liste de valeurs des mots cles coches
 #
-# Parametres :
-#    visuNo          : Numero de la visu:
-#    keywordNameList : Liste des mots cles
-# Return :
-#    retourne la liste des mots cles coches
-#    exemple : {LATITUDE N43d39m59s} {OBSERVER mpujol} {SITENAME Beauzelle}
+# @param visuNo      Numero de la visu:
+# @param configName  Nom de la configuration des mots cles
+# @param keywordNameList Liste des de noms mots cles demandes (parametre optionnel)
+#     Si le parametre n'est pas precise ou s'il vaut une chaine vite
+#     la fonction retourne les valeurs de tous les mots cles qui sont coches.
+#
+# @return  liste de liste des valeurs de mots cles
+#    La valeur de chaque mot cle est une liste de 5 elements.
+#    { {nom valeur type commentaire unite } {nom valeur type commentaire unite } ...}
+#
+# Exemple 1:
+#    ::keyword::getKeywords 1 default
+#    { {SITENAME {Haute Provence} string {Observatory name} {}} {GEODSYS WGS84 string {Geodetic datum for observatory position} {}} ...}
+#
+# Exemple 2:
+#    ::keyword::getKeywords 1 default {IMAGETYP SITENAME }
+#    {{IMAGETYP Object string {Image type} {}} {SITENAME {Haute Provence} string {Observatory name} {}} }
 #------------------------------------------------------------------------------
 proc ::keyword::getKeywords { visuNo configName { keywordNameList "" } } {
    variable private
