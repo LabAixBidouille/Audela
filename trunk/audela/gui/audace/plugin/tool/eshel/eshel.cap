@@ -1,6 +1,6 @@
 #
 # Fichier : eshel.cap
-# Mise a jour $Id: eshel.cap,v 1.11 2010-12-12 11:19:42 michelpujol Exp $
+# Mise a jour $Id: eshel.cap,v 1.12 2011-01-16 19:05:10 michelpujol Exp $
 #
 
 #=========================================================================
@@ -220,6 +220,7 @@ set caption(eshel,process,calibrationResult)                 "Calibration result
 set caption(eshel,process,with)                              "with"
 set caption(eshel,process,fileNotFound)                      "%s not found"
 set caption(eshel,process,serieAlreadyExist)                 "Series SERIESID=%s already exists with keyword %s=%s different than %s"
+
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {

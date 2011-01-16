@@ -80,7 +80,7 @@ CCfits::FITS * Fits_createFits(char *sourcefileName, char *fileName)  {
 // return:
 //   retourne une std::exception en cas d'erreur
 // ---------------------------------------------------------------------------
-CCfits::FITS * Fits_createFits(char *fileName, std::valarray<double> profile, double lambda1, double step)  {
+CCfits::FITS * Fits_createFits(char *fileName, std::valarray<double> &profile, double lambda1, double step)  {
    CCfits::FITS * pOutFits = NULL;
 
    try {        
@@ -155,6 +155,39 @@ CCfits::FITS * Fits_createFits(char *fileName, INFOIMAGE *pinfoImage)  {
       Fits_closeFits(pOutFits);
       char message[1024];
       sprintf(message,"createFits %s : %s", fileName, e.message().c_str());
+      throw std::exception(message);
+   }
+}
+
+// ---------------------------------------------------------------------------
+// Fits_createFits 
+//      cree un fichier FITS "fileName" et copie une image 2D dans le PHDU
+// return:
+//   retourne une std::exception en cas d'erreur
+// ---------------------------------------------------------------------------
+CCfits::FITS * Fits_createFits(char *fileName, std::valarray<PIC_TYPE> &imageValue, int width, int height)  {
+   CCfits::FITS * pOutFits = NULL;
+
+   try {        
+      // j'efface le fichier s'il existait deja
+      remove(fileName);
+      // prepare naxis array
+      long naxis[2];
+      naxis[0] = (long) width;
+      naxis[1] = (long) height;
+      // create a new FITS object 
+      pOutFits = new CCfits::FITS(fileName, LONG_IMG, 2, naxis ); 
+      // copy data to valarray
+      // copy image to Primary HDU
+      PHDU& imageHDU = pOutFits->pHDU();
+      long firstElement = 1;
+      imageHDU.write(firstElement,imageValue.size(), imageValue);
+      return pOutFits;
+   }
+   catch (CCfits::FitsException e) {
+      Fits_closeFits(pOutFits);
+      char message[1024];
+      sprintf(message,"createFits %s : %s size=%dx%d", fileName, width, height, e.message().c_str());
       throw std::exception(message);
    }
 }
@@ -1313,3 +1346,294 @@ void Fits_setKeyword(FITS *pOutFits, FITS *pInFits) {
       throw std::exception(message);
    }
 }
+
+// ---------------------------------------------------------------------------
+// Fits_setImageLine 
+//    ajoute la table des ordres et les parametres du spectro 
+//    dans l'extension "ORDERS"
+// return:
+//   retourne une std::exception en cas d'erreur
+// ---------------------------------------------------------------------------
+void Fits_setImageLine (FITS *pFits, ::std::list<REFERENCE_LINE> &imageLine ) {
+
+   string tableName("ORDERS");
+   int nbLine = imageLine.size();
+   std::vector<string> colName(13,"");
+   std::vector<string> colForm(13,"");
+   std::vector<string> colUnit(13,"");
+   std::vector<string> colDisp(13,"");
+   
+   // titre des colonnes, format des colonnes, unites des colonnes, format d'affichage par defaut,  valeur des colonnes
+   colName[0] = "x_coordinate";
+   colForm[0] = "1D";
+   colUnit[0] = "pixel";
+   colDisp[0] = "E14.6E3";    
+   std::vector<double>    x(nbLine);
+
+   colName[1] = "y_coordinate";
+   colForm[1] = "1D";
+   colUnit[1] = "pixel";
+   colDisp[1] = "E14.6E3";   
+   std::vector<double>    y(nbLine);
+ 
+   colName[2] = "identification";
+   colForm[2] = "1I";
+   colUnit[2] = "symbol";
+   colDisp[2] = "I1.1";    
+   std::vector<int>    identification(nbLine);
+  
+   colName[3] = "flux";
+   colForm[3] = "1D";
+   colUnit[3] = "adu";  
+   colDisp[3] = "E14.6E3";    
+   std::vector<double>    flux(nbLine);
+
+   colName[4] = "ra";
+   colForm[4] = "1D";
+   colUnit[4] = "deg";  
+   colDisp[4] = "E14.6E3";    
+   std::vector<double>    ra(nbLine);
+
+   colName[5] = "dec";
+   colForm[5] = "1D";
+   colUnit[5] = "deg";  
+   colDisp[5] = "E14.6E3"; 
+   std::vector<double> dec(nbLine);
+   
+   colName[6] = "mag";
+   colForm[6] = "1D";
+   colUnit[6] = "mag";  
+   colDisp[6] = "E14.6E3";
+   std::vector<double> mag1(nbLine);
+   
+   colName[7] = "background";
+   colForm[7] = "1D";
+   colUnit[7] = "adu";
+   colDisp[7] = "E14.6E3"; //P2
+   std::vector<double> background(nbLine);
+
+   colName[8] = "fwhmx";
+   colForm[8] = "1D";
+   colUnit[8] = "pixel";  
+   colDisp[8] = "E14.6E3"; //P3
+   std::vector<double> fwhmx(nbLine);
+
+   colName[9] = "fwhmy";
+   colForm[9] = "1D";
+   colUnit[9] = "pixel";  
+   colDisp[9] = "E14.6E3"; //P4
+   std::vector<double> fwhmy(nbLine);
+
+   colName[10] = "intensity";
+   colForm[10] = "1D";
+   colUnit[10] = "adu";  
+   colDisp[10] = "E14.6E3"; //P4
+   std::vector<double> intensity(nbLine);
+
+   colName[11] = "abratio";
+   colForm[11] = "1D";
+   colUnit[11] = "deg";  
+   colDisp[11] = "E14.6E3"; //P4
+   std::vector<double> abratio(nbLine);
+
+   colName[12] = "position angle";
+   colForm[12] = "1D";
+   colUnit[12] = "";  
+   colDisp[12] = "E14.6E3"; //P4
+   std::vector<double> angle(nbLine);
+
+
+   // je copie les valeurs dans les vecteurs
+   ::std::list<REFERENCE_LINE>::iterator iter;
+   int nbRow = 0; 
+   for (iter=imageLine.begin(); iter != imageLine.end(); ++iter) {
+      REFERENCE_LINE line = *iter;
+      x[nbRow] = line.posx;
+      y[nbRow] = line.posy;
+      identification[nbRow] = 1;
+      flux[nbRow] = line.lambda;
+      ra[nbRow] = line.posx;
+      dec[nbRow] = line.posy;
+      mag1[nbRow] = 1.0;
+      background[nbRow] = 1.0;
+      fwhmx[nbRow] = 1.0;
+      fwhmy[nbRow] = 1.0;
+      intensity[nbRow] = 1.0;
+      abratio[nbRow] = 1.0;
+      angle[nbRow] = 1.0;
+
+      nbRow++;
+   }
+
+   try {
+      ExtHDU *orderTable = NULL;
+      try {
+         orderTable = &(pFits->extension("CATALIST"));
+      } catch ( CCfits::FITS::NoSuchHDU e ) {
+         // je cree la table si elle n'existait pas
+         orderTable = pFits->addTable(tableName,nbRow,colName,colForm,colUnit);
+         // j'ajoute les mots clefs decrivant l'affichage par defaut de chaque colonne de la table
+         for(size_t c=0; c<colDisp.size(); c++ ) {
+            char keyName[10];
+            sprintf(keyName,"TDISP%d",c+1);
+            orderTable->addKey(keyName,colDisp[c],"default display format"); 
+         }
+      }
+  
+      // j'ajoute les valeurs des colonnes
+      orderTable->column(colName[0]).write(x,1);
+      orderTable->column(colName[1]).write(y,1);
+      orderTable->column(colName[2]).write(identification,1);
+      orderTable->column(colName[3]).write(flux,1); 
+      orderTable->column(colName[4]).write(ra,1);    
+      orderTable->column(colName[5]).write(dec,1);    
+      orderTable->column(colName[6]).write(mag1,1);    
+      orderTable->column(colName[7]).write(background,1);    
+      orderTable->column(colName[8]).write(fwhmx,1);    
+      orderTable->column(colName[9]).write(fwhmy,1);  
+      orderTable->column(colName[10]).write(intensity,1);
+      orderTable->column(colName[11]).write(abratio,1);
+      orderTable->column(colName[12]).write(angle,1);
+      
+      // j'ajoute les parametre du specrographe dans le header
+      orderTable->addKey("TTNAME","OBJELIST","name of this table"); 
+      orderTable->addKey("OBJEKEY","test",""); 
+      orderTable->addKey("CATASTAR",nbRow,""); 
+      
+      // je force l'ecriture sur le disque immediatement
+      pFits->flush();
+   } catch ( CCfits::FitsException e) {
+      char message[1024];
+      sprintf(message,"setOrders %s : %s", pFits->name().c_str(), e.message().c_str());      
+      throw std::exception(message);
+   }
+}
+
+// ---------------------------------------------------------------------------
+// Fits_setReferenceLine 
+//    ajoute la table des ordres et les parametres du spectro 
+//    dans l'extension "ORDERS"
+// return:
+//   retourne une std::exception en cas d'erreur
+// ---------------------------------------------------------------------------
+void Fits_setCatalogLine (FITS *pFits, ::std::list<REFERENCE_LINE> &catalogLine ) {
+
+   string tableName("CATALIST");
+   int nbLine = catalogLine.size();
+   std::vector<string> colName(9,"");
+   std::vector<string> colForm(9,"");
+   std::vector<string> colUnit(9,"");
+   std::vector<string> colDisp(9,"");
+   
+   // titre des colonnes, format des colonnes, unites des colonnes, format d'affichage par defaut,  valeur des colonnes
+   colName[0] = "x_coordinate";
+   colForm[0] = "1D";
+   colUnit[0] = "pixel";
+   colDisp[0] = "E14.6E3";    
+   std::vector<double>    x(nbLine);
+
+   colName[1] = "y_coordinate";
+   colForm[1] = "1D";
+   colUnit[1] = "pixel";
+   colDisp[1] = "E14.6E3";   
+   std::vector<double>    y(nbLine);
+ 
+   colName[2] = "identification";
+   colForm[2] = "1I";
+   colUnit[2] = "symbol";
+   colDisp[2] = "I1.1";    
+   std::vector<int>    identification(nbLine);
+  
+   colName[3] = "ra";
+   colForm[3] = "1D";
+   colUnit[3] = "deg";  
+   colDisp[3] = "E14.6E3";    
+   std::vector<double>    ra(nbLine);
+
+   colName[4] = "dec";
+   colForm[4] = "1D";
+   colUnit[4] = "deg";  
+   colDisp[4] = "E14.6E3"; 
+   std::vector<double> dec(nbLine);
+   
+   colName[5] = "magb";
+   colForm[5] = "1D";
+   colUnit[5] = "";  
+   colDisp[5] = "E14.6E3";
+   std::vector<double> magb(nbLine);
+   
+   colName[6] = "magv";
+   colForm[6] = "1D";
+   colUnit[6] = "";
+   colDisp[6] = "E14.6E3"; 
+   std::vector<double> magv(nbLine);
+
+   colName[7] = "magr";
+   colForm[7] = "1D";
+   colUnit[7] = "";  
+   colDisp[7] = "E14.6E3"; 
+   std::vector<double> magr(nbLine);
+
+   colName[8] = "magi";
+   colForm[8] = "1D";
+   colUnit[8] = "";  
+   colDisp[8] = "E14.6E3"; //P4
+   std::vector<double> magi(nbLine);
+
+   // je copie les valeurs dans les vecteurs
+   ::std::list<REFERENCE_LINE>::iterator iter;
+   int nbRow = 0; 
+   for (iter=catalogLine.begin(); iter != catalogLine.end(); ++iter) {
+      REFERENCE_LINE line = *iter;
+      x[nbRow] = line.posx;
+      y[nbRow] = line.posy;
+      identification[nbRow] = 1;
+      ra[nbRow] = line.posx;
+      dec[nbRow] = line.posy;
+      magb[nbRow] = 1.0;
+      magv[nbRow] = 1.0;
+      magr[nbRow] = line.lambda;
+      magi[nbRow] = 1.0;
+      nbRow++;
+   }
+
+   try {
+      ExtHDU *orderTable = NULL;
+      try {
+         orderTable = &(pFits->extension("CATALIST"));
+      } catch ( CCfits::FITS::NoSuchHDU e ) {
+         // je cree la table si elle n'existait pas
+         orderTable = pFits->addTable(tableName,nbRow,colName,colForm,colUnit);
+         // j'ajoute les mots clefs decrivant l'affichage par defaut de chaque colonne de la table
+         for(size_t c=0; c<colDisp.size(); c++ ) {
+            char keyName[10];
+            sprintf(keyName,"TDISP%d",c+1);
+            orderTable->addKey(keyName,colDisp[c],"default display format"); 
+         }
+      }
+  
+      // j'ajoute les valeurs des colonnes
+      orderTable->column(colName[0]).write(x,1);
+      orderTable->column(colName[1]).write(y,1);
+      orderTable->column(colName[2]).write(identification,1);
+      orderTable->column(colName[3]).write(ra,1);    
+      orderTable->column(colName[4]).write(dec,1);    
+      orderTable->column(colName[5]).write(magb,1);    
+      orderTable->column(colName[6]).write(magv,1);    
+      orderTable->column(colName[7]).write(magr,1);    
+      orderTable->column(colName[8]).write(magi,1);  
+      
+      // j'ajoute les parametre du specrographe dans le header
+      orderTable->addKey("TTNAME","CATALIST","name of this table"); 
+      orderTable->addKey("OBJEKEY","test",""); 
+      orderTable->addKey("CATASTAR",nbRow,""); 
+      
+      // je force l'ecriture sur le disque immediatement
+      pFits->flush();
+   } catch ( CCfits::FitsException e) {
+      char message[1024];
+      sprintf(message,"Fits_setCatalogLine %s : %s", pFits->name().c_str(), e.message().c_str());      
+      throw std::exception(message);
+   }
+}
+

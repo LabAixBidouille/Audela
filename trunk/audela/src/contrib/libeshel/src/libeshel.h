@@ -11,9 +11,6 @@
 #include "order.h"
 #include "linegap.h"
 
-#define LIBESHEL_VERSION 2.0
-
-
 void Eshel_processFlat(
    char *ledfileName,      // nom du fichier led (image pretraitee pour la calibration geometrique)
    char *tungstenFileName, // nom du fichier tungsten (image pretraitee pour le blaze)

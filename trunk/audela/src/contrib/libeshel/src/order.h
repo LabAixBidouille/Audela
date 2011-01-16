@@ -4,6 +4,8 @@
 #ifndef _INC_LIBESHEL_ORDER
 #define _INC_LIBESHEL_ORDER
 
+#define LIBESHEL_VERSION 2.0
+
 #define MAX_ORDRE 100
 #define MAX_LINES 400 
 #define POLY_ORDER_DEGREE 5
@@ -31,6 +33,8 @@ typedef struct
    int nb_lines;           // nombre de raies utilisées pour la calibration spectrale (v1.4) 
    //int position_lines[MAX_LINES];  
       //double dx;              // position théorique de raie de calibration dans le profil spectral  
+   double backgroundLevel;
+   double backgroundSigma;
 } ORDRE;
 
 typedef struct {
@@ -65,6 +69,14 @@ typedef struct {
     double minLambda;    // min wave length
     double maxLambda;      //  max wave length
 } CROP_LAMBDA;
+
+typedef struct {
+    int    order;     
+    double lambda;    
+    double posx;      
+    double posy;      
+} REFERENCE_LINE;
+
 
 void startTimer();
 double stopTimer(char * lpFormat, ...);

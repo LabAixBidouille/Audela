@@ -195,6 +195,10 @@ void find_y_pos(INFOIMAGE &buffer,PROCESS_INFO &processInfo,ORDRE *ordre,
          if (v < -processInfo.detectionThreshold) // on a trouvé un ordre
          {
             nb_ordre++;
+            if ( nb_ordre >= MAX_ORDRE ) {
+               break;
+            }
+            
             if (abs(j - (processInfo.referenceOrderY - 1)) < delta_y)
             {
                delta_y = abs(j - (processInfo.referenceOrderY - 1));
@@ -213,6 +217,9 @@ void find_y_pos(INFOIMAGE &buffer,PROCESS_INFO &processInfo,ORDRE *ordre,
          if (v < -processInfo.detectionThreshold) // on a trouvé un ordre
          {
             nb_ordre++;
+            if ( nb_ordre >= MAX_ORDRE ) {
+               break;
+            }
             if (rang-nb_ordre + processInfo.referenceOrderNum >= min_order) // on ne calcule que les ordres au dessus de 31
             {
                int n = rang - nb_ordre + processInfo.referenceOrderNum ;
@@ -681,7 +688,7 @@ void flat_rectif(std::valarray<double> &object ,std::valarray<double> &flat, std
 /* La position théorique est marquée dans l'image de vérification par un carré en pointillé. */
 /*********************************************************************************************/
 int calib_prediction(double lambda0,int ordre0,int imax, int jmax,double posx0,
-                     ORDRE *ordre,double *ddx,INFOSPECTRO spectro,::std::list<double> lineList )
+                     double *ddx,INFOSPECTRO spectro,::std::list<double> lineList )
 {
    double k;
    k=(double)ordre0;
@@ -894,21 +901,26 @@ for (xadd=1.0-x;idx<ndim;xadd+=1.0)
 /* mode = 2 -> spline 32 pixels (bons résultats aussi) */
 /* mode = 3 -> sinc (trop lent)                        */
 /*******************************************************/
-/*
-int translate_col_1(INFOIMAGE *buffer,int colonne,double delta_y)
+
+int translate_col_1(INFOIMAGE *buffer, int colonne, double delta_y, 
+                    ORDRE *ordre, int n, int jmax_result, 
+                    std::valarray<PIC_TYPE> &buf_result)
 {
 int imax,jmax,i,j,adr;
 PIC_TYPE *p,*p2,*tampon;
 double x,y;
 
-int mode=1;
+int mode=0;
 
 if (buffer->pic==NULL) return 1;
 
+int hauteur = jmax_result; // hauteur du crop dans le buffer d'entré
 imax=buffer->imax;
-jmax=buffer->jmax;
+int jmin =(int)(ordre[n].yc - hauteur/2);
+jmax=(int)(ordre[n].yc + hauteur/2);
 int imax1=imax-1;
 int jmax1=jmax-1;
+
 
 if ((tampon=(PIC_TYPE *)calloc(jmax,sizeof(PIC_TYPE)))==NULL)
    {
@@ -917,11 +929,11 @@ if ((tampon=(PIC_TYPE *)calloc(jmax,sizeof(PIC_TYPE)))==NULL)
    }
 
 p=buffer->pic;
-p2=tampon;
+p2=&tampon[jmin];
 
 i=colonne;
 
-for (j=0;j<jmax;j++,p2++)
+for (j=jmin;j<jmax;j++,p2++)
 	{
    x=(double)i;
 	y=(double)j-delta_y;
@@ -1107,16 +1119,17 @@ for (j=0;j<jmax;j++,p2++)
       }
 	}
 
-for (j=0;j<jmax;j++)
+for (j=jmin;j<jmax;j++)
    {
-   adr=(int)j*imax+(int)i;
-   *(p+adr)=tampon[j];
+   adr=(int)(j-jmin)*imax+(int)i;
+   //*(p+adr)=tampon[j];
+   buf_result[adr]=tampon[j];
    }
 
 free(tampon);
 return 0;
 }
-*/
+
 
 // /////////////////////////////////////////////
 // InitialCausalCoefficient
@@ -1303,7 +1316,7 @@ void SamplesToCoefficients(float *Image,		/* in-place processing */
             Line[x]=(double)Image[adr];
          }
          // attention Christian a redefini DBL_EPSILON=0.0  (C++ a deja defini DBL_EPSILON dans float.h)
-         //ConvertToInterpolationCoefficients(Line, Width, Pole, NbPoles, DBL_EPSILON);
+         //ConvertToInterpolationCoefficients(Line, Width, Pole, NbPoles, 1000.0 *DBL_EPSILON);
          ConvertToInterpolationCoefficients(Line, Width, Pole, NbPoles, 0.0);
          for (int x=0; x<Width;x++)  // PutRow
          {
@@ -1323,7 +1336,7 @@ void SamplesToCoefficients(float *Image,		/* in-place processing */
             Line[y]=(double)Image[adr]; 
          }
          // attention Christian a redefini DBL_EPSILON=0.0  (C++ a deja defini DBL_EPSILON dans float.h)
-         //ConvertToInterpolationCoefficients(Line, Height, Pole, NbPoles, DBL_EPSILON);
+         //ConvertToInterpolationCoefficients(Line, Height, Pole, NbPoles, 1000.0 *DBL_EPSILON);
          ConvertToInterpolationCoefficients(Line, Height, Pole, NbPoles, 0.0);
          for (int y=0;y<Height;y++)   // PutColumm
          {
@@ -2575,12 +2588,24 @@ void extract_order(INFOIMAGE *buffer, PROCESS_INFO &processInfo, int n, ORDRE *o
          y1 = jmax2 / 2 - (ordre[n].yc - ordre[n + 1].yc) / 2;
       else
          y1 = jmax2 / 2 - (ordre[n - 1].yc - ordre[n].yc) / 2;
+      if ( y1 < 0 ) {
+         y1 = 0;
+      }
+      if ( y1 >= jmax2 ) {
+         y1 = jmax2 -1;
+      }
+
 
       if (ordre[n - 1].flag == 1)   // position + par rapport à l'axe du spectre
          y2 = jmax2 / 2 + (ordre[n-1].yc - ordre[n].yc) / 2;
       else
          y2 = jmax2 / 2 + (ordre[n].yc - ordre[n+1].yc) / 2;
-
+      if ( y2 <= y1 ) {
+         y2 = y1+1;
+      }
+      if ( y2 >= jmax2 ) {
+         y2 = jmax2 -1;
+      }
 
       // -------------------------------------------------------------
       // Le "fond de ciel" est déterminé par un ajustement
@@ -2597,25 +2622,56 @@ void extract_order(INFOIMAGE *buffer, PROCESS_INFO &processInfo, int n, ORDRE *o
       // Calcul du niveau moyen du fond sous la trace 
       // (sera utilisé pour exclure les plus forts cosmiques)
       // ---------------------------------------------------------
-      double moyenne = 0.0;
+      double moyenne1 = 0.0;
       k = 0;
       for (int i = ordre[n].min_x - 1; i < ordre[n].max_x - 1; i++, k++) {
-         moyenne += p2[y1 * imax2 + i];
+         moyenne1 += p2[y1 * imax2 + i];
       }
-      moyenne = moyenne / (double)k;
+      moyenne1 = moyenne1 / (double)k;
 
       // -------------------------------------------------------------
       // Calcul du fond sous le spectre (en dessous de la trace)
       // On exclue les points qui sont à 1000 ADU au desssus du fond
       // -------------------------------------------------------------
+      double prev_i=0;
+      double prev_mu_i = moyenne1;
+      double prev_mu_ii=0;
+      double prev_sx_i = 0;
+      double prev_sx_ii=0;
+      int prev_k = 1;
+      double epsdouble=1.0e-300;
+
       k = 0;
-      moyenne = moyenne + 1000.0;
+      double cosmicLevel = moyenne1 + 1000.0;
       for (int i = ordre[n].min_x - 1; i < ordre[n].max_x - 1; i++) {
-         if ((double)p2[y1 * imax2 + i] < moyenne) {
+         if ((double)p2[y1 * imax2 + i] < cosmicLevel) {
+            double valeur = (double)p2[y1 * imax2 + i];  // en dessous de la trace du spectre
             x[k] = (double)i;
-            y[k] = (double)p2[y1 * imax2 + i];  // en dessous de la trace du spectre
+            y[k] = valeur;  // en dessous de la trace du spectre
             w[k] = 1.0;
             k++;
+
+            prev_i= (prev_k+1);
+            prev_k++;
+            double delta=valeur-prev_mu_i;
+            if ( fabs(delta) < epsdouble) {
+               if ( delta < 0 ) {
+                  delta = -epsdouble ;
+               } else {
+                  delta = epsdouble ;
+               }
+            }
+            prev_mu_ii=prev_mu_i+delta/(prev_i);
+            prev_sx_ii=prev_sx_i+delta*(valeur-prev_mu_ii);
+            if ( fabs(prev_sx_ii) < epsdouble) {
+               if ( prev_sx_ii < 0 ) {
+                  prev_sx_ii = -epsdouble ;
+               } else {
+                  prev_sx_ii = epsdouble ;
+               }
+            }
+            prev_mu_i=prev_mu_ii;
+            prev_sx_i=prev_sx_ii;
          }
       }
 
@@ -2634,28 +2690,63 @@ void extract_order(INFOIMAGE *buffer, PROCESS_INFO &processInfo, int n, ORDRE *o
       // Calcul du niveau moyen du fond sous la trace 
       // (sera utilisé pour exclure les plus forts cosmiques)
       // ---------------------------------------------------------
-      moyenne = 0.0;
+      double moyenne2 = 0.0;
       k = 0;
       for (int i = ordre[n].min_x - 1; i < ordre[n].max_x - 1; i++, k++)
       {
-         moyenne += (double)p2[y2 * imax2 + i];
+         moyenne2 += (double)p2[y2 * imax2 + i];
       }
-      moyenne = moyenne / (double)k;
+      moyenne2 = moyenne2 / (double)k;
 
       // -------------------------------------------------------------
       // Calcul du fond sur le spectre (en dessus de la trace)
       // On exclue les points qui sont à 1000 ADU au desssus du fond
       // -------------------------------------------------------------
+      double next_i=0;
+      double next_mu_i = moyenne2;
+      double next_mu_ii=0;
+      double next_sx_i = 0;
+      double next_sx_ii=0;
+      int next_k = 1;
+
       k = 0;
-      moyenne = moyenne + 1000.0;  // seuil codé en dur
+      cosmicLevel = moyenne2 + 1000.0;  // seuil codé en dur
       for (int i = ordre[n].min_x - 1; i < ordre[n].max_x - 1; i++) {
-         if ((double)p2[y2 * imax2 + i] < moyenne) {
+         if ((double)p2[y2 * imax2 + i] < cosmicLevel) {
+            double valeur = (double)p2[y2 * imax2 + i];  // au dessus de la trace du spectre
             x[k] = (double)i;
-            y[k] = (double)p2[y2 * imax2 + i];  // au dessus de la trace du spectre
+            y[k] = valeur; 
             w[k] = 1.0;
             k++;
+            // calcul de sigma
+            next_i= (next_k+1);
+            next_k++;
+            double delta=valeur-next_mu_i;
+            if ( fabs(delta) < epsdouble) {
+               if ( delta < 0 ) {
+                  delta = -epsdouble ;
+               } else {
+                  delta = epsdouble ;
+               }
+            }
+            next_mu_ii=next_mu_i+delta/(next_i);
+            next_sx_ii=next_sx_i+delta*(valeur-next_mu_ii);
+            if ( fabs(next_sx_ii) < epsdouble) {
+               if ( next_sx_ii < 0 ) {
+                  next_sx_ii = -epsdouble ;
+               } else {
+                  next_sx_ii = epsdouble ;
+               }
+            }
+            next_mu_i=next_mu_ii;
+            next_sx_i=next_sx_ii;
          }
       }
+
+      double prev_sigma=((prev_sx_ii>=0)&&(prev_i>0.))?sqrt(prev_sx_ii/prev_i):0.0;
+      double next_sigma=((next_sx_ii>=0)&&(next_i>0.))?sqrt(next_sx_ii/next_i):0.0;
+      ordre[n].backgroundLevel = (moyenne1 + moyenne2  )/2;
+      ordre[n].backgroundSigma = (prev_sigma + next_sigma)/2;
 
       rms = 0.0;
       a2 = new double[degre2 + 1];
@@ -2719,13 +2810,15 @@ void extract_order(INFOIMAGE *buffer, PROCESS_INFO &processInfo, int n, ORDRE *o
       // -------------------------------------------------------------
       // Calcul du profil spectral optimal
       // -------------------------------------------------------------
-      int wide_y = ordre[n].wide_y;
-      int biny1 = jmax2 / 2 - wide_y / 2;
-      int biny2 = jmax2 / 2 + wide_y / 2;
-      if (flag_opt == 0) {
-         l_opt(p2, imax2, jmax2, biny1, biny2, ordre[n].min_x, ordre[n].max_x, processInfo.bordure, profile);
-      } else {
-         l_opt2(p2, imax2, jmax2, biny1, biny2, ordre[n].min_x, ordre[n].max_x, processInfo.bordure, profile);
+      if ( flag_opt != -1) {
+         int wide_y = ordre[n].wide_y;
+         int biny1 = jmax2 / 2 - wide_y / 2;
+         int biny2 = jmax2 / 2 + wide_y / 2;
+         if (flag_opt == 0) {
+            l_opt(p2, imax2, jmax2, biny1, biny2, ordre[n].min_x, ordre[n].max_x, processInfo.bordure, profile);
+         } else {
+            l_opt2(p2, imax2, jmax2, biny1, biny2, ordre[n].min_x, ordre[n].max_x, processInfo.bordure, profile);
+         }
       }
 
       //stopTimer("extract %d ",n);

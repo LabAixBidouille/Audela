@@ -2,7 +2,7 @@
 # Fichier : instrument.tcl
 # Description : commande des instruments de l'outil eShel
 # Auteur : Michel PUJOL
-# Mise à jour $Id: instrument.tcl,v 1.6 2010-12-12 11:21:00 michelpujol Exp $
+# Mise à jour $Id: instrument.tcl,v 1.7 2011-01-16 19:05:10 michelpujol Exp $
 #
 
 namespace eval ::eshel::instrument {
@@ -46,6 +46,21 @@ proc ::eshel::instrument::getCurrentConfig { } {
 }
 
 #------------------------------------------------------------
+# getCurrentConfigId
+#  retourne l'identifiant de la configuration courante
+#
+# Parameters :
+#    rien
+# Return
+#    identifiant de la configuration
+#------------------------------------------------------------
+proc ::eshel::instrument::getCurrentConfigId { } {
+
+   return $::conf(eshel,currentInstrument)
+}
+
+
+#------------------------------------------------------------
 # setCurrentConfig
 #    selectionne la configuration courante
 #
@@ -64,7 +79,7 @@ proc ::eshel::instrument::setCurrentConfig { configId } {
    }
 
    #--- je verifie qu'il n'y a pas de traitement en cours
-   #--- TODO  (est ce bien n�cessaire ?)
+   #--- TODO  (est ce bien n�cessaire ?)
 
    #--- j'ajoute les parametres manquants (en cas d'evolution de eShel)
    if { $configId != "default" } {
