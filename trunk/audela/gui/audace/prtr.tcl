@@ -2,14 +2,14 @@
 # Fichier : prtr.tcl
 # Description : Script dedie au menu deroulant pretraitement
 # Auteur : Raymond ZACHANTKE
-# Mise à jour $Id: prtr.tcl,v 1.9 2011-01-09 15:17:35 robertdelmas Exp $
+# Mise à jour $Id: prtr.tcl,v 1.10 2011-01-16 18:45:24 robertdelmas Exp $
 #
 
 namespace eval ::prtr {
 
    #--------------------------------------------------------------------------
    #  ::prtr::run nom_de_fonction
-   #  Liste les operations proposees dans le menubutton de la fenetre
+   #  Liste les operations proposees dans le bouton de menu de la fenetre
    #--------------------------------------------------------------------------
    proc run {oper} {
       variable private
@@ -17,41 +17,32 @@ namespace eval ::prtr {
 
       set visuNo $audace(visuNo)
       set ::prtr::operation $oper
-      set private(in_visu) ""
+      set private(inVisu) ""
       set private(profil) ""
 
-      ::prtr::changeDir $visuNo
-      ::prtr::changeExtension $visuNo
       ::prtr::searchFunction $oper
       ::prtr::getTypeVar
 
-      #--   surveille le changement de fonction
-      trace add variable "::prtr::operation" write "::prtr::changeOp $visuNo"
-      #--   surveille le changement de repertoire
-      trace add variable "::audace(rep_images)" write "::prtr::updateTbl $audace(base).prtr.usr.choix $visuNo"
-      #--   surveille le chargement d'une image
-      trace add variable "::confVisu::private($visuNo,lastFileName)" write "::prtr::changeDir $visuNo"
-      #--   surveille le dessin d'une boite de selection
-      trace add variable "::confVisu::private($visuNo,boxSize)" write "::prtr::updateBox $visuNo"
-      #--   surveille le changement d'extension
-      trace add variable "::conf(extension,defaut)" write "::prtr::changeExtension $visuNo"
-      #--   surveille le changement de compression
-      trace add variable "::conf(fichier,compres)" write "::prtr::changeExtension $visuNo"
+      if {![ winfo exists $audace(base).prtr]} {
+         #--   surveille le changement de fonction
+         trace add variable "::prtr::operation" write "::prtr::changeOp $visuNo"
+         #--   surveille le changement de repertoire
+         trace add variable "::audace(rep_images)" write "::prtr::updateTbl $visuNo"
+         #--   surveille le chargement d'une image
+         trace add variable "::confVisu::private($visuNo,lastFileName)" write "::prtr::changeDir $visuNo"
+         #--   surveille le dessin d'une boite de selection
+         trace add variable "::confVisu::private($visuNo,boxSize)" write "::prtr::updateBox $visuNo"
+         #--   surveille le changement d'extension
+         trace add variable "::conf(extension,defaut)" write "::prtr::changeExtension $visuNo"
+         #--   surveille le changement de compression
+         trace add variable "::conf(fichier,compres)" write "::prtr::changeExtension $visuNo"
 
-      #---
-      set private(this) "$audace(base).prtr"
-      ::prtr::initConf
-      ::prtr::confToWidget
-      if { [ winfo exists $private(this) ] } {
-         wm withdraw $private(this)
-         wm deiconify $private(this)
-         focus $private(this)
-      } else {
-         if { [ info exists pretraitement(geometry) ] } {
-            set deb [ expr 1 + [ string first + $pretraitement(geometry) ] ]
-            set fin [ string length $pretraitement(geometry) ]
-            set widget(pretraitement,position) "+[string range $pretraitement(geometry) $deb $fin]"
+         #--   intialise et/ou charge les variables de configuration dans des variables locales
+         if {![info exists ::conf(prtr,geometry)]} {
+            set ::conf(prtr,geometry) "388x420+350+75"
          }
+         set private(prtr,geometry) $::conf(prtr,geometry)
+         set private(this) "$audace(base).prtr"
          ::prtr::createDialog $visuNo
       }
    }
@@ -72,44 +63,40 @@ namespace eval ::prtr {
       set ::prtr::ttoptions   "0"   ; # booleen, affichage des options
       set ::prtr::disp        "1"   ; # booleen, affichage de la derniere image
       set ::prtr::script      "0"   ; # booleen, edition ud script
-      set ::prtr::out         ""    ; # nom de sortie
+      set ::prtr::out         "./"  ; # nom de sortie
+      set private(fun_lignes) "0"
 
       toplevel $This
-      wm resizable $This 0 0
-      wm deiconify $This
-      ::prtr::configTitle
-      wm geometry $This $widget(prtr,position)
+      wm resizable $This 1 1
+      wm geometry $This $private(prtr,geometry)
+      wm minsize $private(this) 380 420
       wm transient $This $audace(base)
       wm protocol $This WM_DELETE_WINDOW "::prtr::cmdClose $visuNo"
 
       frame $This.usr -borderwidth 0 -relief raised
+      pack $This.usr -fill both -expand 1
 
-      set this [::blt::table $This.usr]
+      frame $This.usr.select -height 40
+      #--   configure la fenetre
+      ::prtr::configWindow
+      pack $This.usr.select -side top -fill x -expand 0
+
+      frame $This.usr.choix
+      set tbl $This.usr.choix.tablelist
+      set private(tbl) $tbl
+      scrollbar $This.usr.choix.vscroll -command "$tbl yview" -width 18
+
+      frame $This.usr.table
+      set this [::blt::table $This.usr.table]
       set private(table) $this
-
-      #--   cree 8 frames permamnents
-      foreach fr {select scroll all sortie affiche edit info cmd} {
+      foreach fr {all sortie affiche edit info cmd} {
          frame $this.$fr -borderwidth 1 -relief raised
       }
 
-      ::prtr::configMenuButton
-
-      set tbl $this.choix
-      #--- definit la structure et les caracteristiques
-      ::tablelist::tablelist $tbl \
-         -height 9 -width 60 -borderwidth 2 \
-         -columns [list 0 "" center \
-            0 $caption(prtr,src) left \
-            0 $caption(prtr,type) center \
-            0 $caption(prtr,dimension) center] \
-         -xscrollcommand [list $this.hscroll set] \
-         -yscrollcommand [list $this.vscroll set] \
-         -editendcommand {::prtr::applyValue} \
-         -exportselection 0 -setfocus 1 \
-         -activestyle none -stretch all
-      scrollbar $this.hscroll -orient horizontal -command [list $tbl xview]
-      scrollbar $this.vscroll -command [list $tbl yview]
-      pack $tbl -side top
+      scrollbar $this.hscroll -orient horizontal -command "$tbl xview"
+      pack $this.hscroll -side left -anchor w
+      frame $this.nihil
+      pack $this.nihil -side right -anchor e
 
       #---  le check bouton pour selectionner tout
       checkbutton $this.all.select -variable ::prtr::all \
@@ -124,14 +111,9 @@ namespace eval ::prtr {
       pack $this.sortie.out -side left -padx 5 -pady 5 -fill x -expand 1
 
       button $this.sortie.explore -text "$caption(prtr,parcourir)" -width 1 \
-         -command "::prtr::parcourir \"$this.sortie\" out"
+         -command "::prtr::getDirName"
       pack $this.sortie.explore -side left -pady 5 -ipady 5 \
-         -padx [$private(table).vscroll cget -width] -pady 5 -ipady 5
-
-      #---  le check bouton pour la compression
-      checkbutton $this.affiche.compress -variable ::prtr::compress \
-         -text "$caption(prtr,compress)"
-      pack $this.affiche.compress -side left -padx 10 -pady 5
+         -padx [$This.usr.choix.vscroll cget -width] -pady 5 -ipady 5
 
       #---  le check bouton pour l'affichage
       checkbutton $this.affiche.disp -variable ::prtr::disp \
@@ -139,9 +121,9 @@ namespace eval ::prtr {
       pack $this.affiche.disp -side left -padx 10 -pady 5
 
       #---  le check bouton pour l'edition du script
-      checkbutton $this.edit.script -variable ::prtr::script \
+      checkbutton $this.affiche.script -variable ::prtr::script \
          -text "$caption(prtr,afficher_script)"
-      pack $this.edit.script -side left -padx 10 -pady 5
+      pack $this.affiche.script -side left -padx 10 -pady 5
 
       #---  frame pour l'affichage du deroulement du traitement
       label $this.info.labURL1 -textvariable ::prtr::avancement -fg $color(blue)
@@ -168,26 +150,42 @@ namespace eval ::prtr {
       pack $this.cmd.hlp -side right -padx 3 -pady 3
 
       #--- positionne les elements dans la table
-      ::blt::table  $this \
-         $this.select 0,0 -fill x -cspan 2 \
-         $this.choix 1,0 -fill both \
-         $this.vscroll 1,1 -fill y -anchor e -width $this.vscroll \
-         $this.hscroll 2,0 -fill x -height $this.hscroll \
-         $this.all 3,0 -fill x -cspan 2 \
-         $this.sortie 6,0 -fill x -cspan 2 \
-         $this.affiche 7,0 -fill x -cspan 2 \
-         $this.edit 8,0 -fill x -cspan 2 \
-         $this.info 9,0 -fill x -cspan 2 \
-         $this.cmd 10,0 -fill x -cspan 2
-      pack $This.usr -in $This -side top -fill both -expand 1
+      ::blt::table $this \
+         $this.hscroll 1,0 -fill both -height {18} \
+         $this.nihil 1,1 \
+         $this.all 2,0 -fill both -cspan 2 -height {34} \
+         $this.sortie 5,0 -fill both -cspan 2 -height {34} \
+         $this.affiche 6,0 -fill both -cspan 2 -height {34} \
+         $this.info 7,0 -fill both -cspan 2 -height {34} \
+         $this.cmd 8,0 -fill both -cspan 2 -height {50}
+      pack $this -in $This.usr -side bottom -fill both -expand 0
+      ::blt::table configure $this c1 -width 18 -resize none
+      #::blt::table configure $this r5 r6 r7 r8 -resize none
+
+      #--- definit la structure et les caracteristiques
+      ::tablelist::tablelist $tbl -borderwidth 2 \
+         -columns [list \
+            4 "" center \
+            0 $caption(prtr,src) left \
+            5 $caption(prtr,type) center \
+            10 $caption(prtr,dimension) center] \
+         -xscrollcommand [list $this.hscroll set] \
+         -yscrollcommand [list $This.usr.choix.vscroll set] \
+         -exportselection 0 -setfocus 1 \
+        -activestyle none -stretch {1}
+
+      #--- place la table et le vscrollbar dans la frame
+      pack $tbl -anchor w -side left -fill both -expand 1
+      pack $This.usr.choix.vscroll -side right -anchor e -fill y
+      pack $This.usr.choix -side top -fill both -expand 1
 
       #--   remplit la tablelist
-      ::prtr::updateTbl $tbl $visuNo
+      ::prtr::updateTbl $visuNo
 
       #--- selectionne le traitement
       set i [lsearch -exact $private(fonctions) $::prtr::operation]
       incr i
-      $this.select.but.menu invoke $i
+      $This.usr.select.but.menu invoke $i
 
       bind $This <Key-Return> [list ::prtr::cmdOk $tbl $visuNo]
       bind $This <Key-Escape> [list ::prtr::cmdClose $visuNo]
@@ -201,11 +199,11 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::configTitle
-   #  Gere le nom de la fenetre
+   #  ::prtr::configWindow
+   #  Gere le titre de la fenetre, le libelle et le bouton de menu
    #  Lancee par ::prtr::createDialog et par ::prtr::changeOp
    #--------------------------------------------------------------------------
-   proc configTitle {} {
+   proc configWindow {} {
       variable private
       global caption
 
@@ -219,32 +217,32 @@ namespace eval ::prtr {
          MAITRE      { set titre "$caption(audace,menu,images) - $caption(audace,menu,maitre)"}
          PRETRAITEE  { set titre "$caption(audace,menu,images) - $caption(audace,menu,pretraitee)"}
          ROTATION    { set titre "$caption(audace,menu,images) - $caption(audace,menu,geometry)"}
-         TRANSFORM   { set titre "$caption(audace,menu,images)  - $caption(audace,menu,transform)"}
-         STACK       { set titre "$caption(audace,menu,images)  - $caption(audace,menu,pile)"}
+         TRANSFORM   { set titre "$caption(audace,menu,images) - $caption(audace,menu,transform)"}
+         STACK       { set titre "$caption(audace,menu,images) - $caption(audace,menu,pile)"}
          default     { set titre "$caption(audace,menu,images) - $caption(audace,menu,[string tolower $private(ima)])"}
       }
       wm title $private(this) "$titre"
-   }
 
-   #--------------------------------------------------------------------------
-   #  ::prtr::configMenuButton
-   #  Construit la zone du menubutton
-   #  Lancee par ::prtr::createDialog et par ::prtr::changeOp
-   #--------------------------------------------------------------------------
-   proc configMenuButton {} {
-      variable private
+      #--   detruit le libelle et bouton de menu
+      set this $private(this).usr.select
+      if {[winfo exists $this]} {destroy $this.lbl $this.but}
 
-      set this $private(table).select
-
-      #--   detruit le bouton de menu
-      if {[winfo exists $this]} {destroy $this.but}
+      #--   selectionne le libelle apparaissant a cote du bouton de menu
+      if {$private(ima) eq "PILE" || $private(ima) eq "MAITRE"} {
+         set texte "$::caption(prtr,operation_lot)"
+      } else {
+         set texte "$::caption(prtr,operation_disk)"
+      }
+      label $this.lbl -text $texte
+      pack $this.lbl -side left -padx 10 -pady 10
 
       #--- cherche la longueur maximale du libelle des formules
-      #--- pour dimensionner la largeur du menuboutton
+      #--- pour dimensionner la largeur du bouton de menu
       set bwidth "0"
       foreach formule $private(fonctions) {
-         set bwidth [expr {max([ string length $formule ],$bwidth)}]
+         set bwidth [expr {max([string length $formule],$bwidth)}]
       }
+      if {$bwidth < "20"} {set bwidth 20}
 
       menubutton $this.but -relief raised -width $bwidth -borderwidth 2 \
          -textvariable ::prtr::operation -menu $this.but.menu
@@ -267,15 +265,15 @@ namespace eval ::prtr {
    proc changeOp {visuNo args} {
       variable private
 
-      #--   cherche le dictionnaire
-      ::prtr::searchFunction $::prtr::operation
-      #--   configure le titre de la fenetre
-      ::prtr::configTitle
-      #--   configure le bouton de menu
-      ::prtr::configMenuButton
+      if {$::prtr::operation ni $private(fonctions)} {
+         #--   cherche le nouveau dictionnaire
+         ::prtr::searchFunction $::prtr::operation
+         #--   configure la fenetre
+         ::prtr::configWindow
+      }
 
       #--   detruit les zones, les widgets et les variables
-      destroy $private(table).select.lbl
+      destroy $private(table).lbl
       foreach frame {funoptions ttoptions} liste {obligatoire optionnel} {
          set w $private(table).$frame
          if {![winfo exists $w]} {
@@ -291,19 +289,11 @@ namespace eval ::prtr {
       lassign [${private(ima)}Functions "$::prtr::operation"] private(function) \
          private(l_obligatoire) private(l_optionnel) private(aide)
 
-      #--   selectionne le libelle apparaissant a cote du bouton de menu
-      if {$private(ima) eq "STACK" || $private(function) in {BIAS DARK FLAT}} {
-         set texte "$::caption(prtr,operation_lot)"
-      } else {
-         set texte "$::caption(prtr,operation_disk)"
-      }
-      label $private(table).select.lbl -text $texte
-      pack $private(table).select.lbl -side left -padx 10 -pady 10
-
       ::prtr::configOutName
 
-      #--   actualise le checkbutton "Comprimer les images"
-      set ::prtr::compress $::conf(fichier,compres)
+      #--   initialise les compteurs de lignes
+      set private(fun_lignes) 0
+      set private(tt_lignes) 1
 
       #--   cree et initialise les variables lies aux parametres
       foreach liste {obligatoire optionnel} child {funoptions ttoptions} {
@@ -328,19 +318,18 @@ namespace eval ::prtr {
       variable private
 
       set obligatoire $private(obligatoire)
-      set l [llength $obligatoire]
-      set lignes [expr {$l/2+int(fmod($l,2))}]
 
       frame $w -borderwidth 1 -relief raised
       #--   la case du titre
       label $w.label  -text "$::caption(prtr,param)"
-      grid $w.label -row 0 -column 0 -padx 10 -pady 5 -rowspan $lignes
-      ::blt::table $private(table) $w 4,0 -fill x -cspan 2
+      set private(fun_lignes) [::prtr::configZone $w obligatoire]
+      grid $w.label -row 0 -column 0 -padx 10 -pady 5 -rowspan $private(fun_lignes)
+      ::blt::table $private(table) $w 3,0 -fill both -cspan 2 \
+         -height [list [expr {$private(fun_lignes)*34}]]
 
-      ::prtr::configZone $w obligatoire
 
       #--   modifie les variables initiales
-      if {$private(in_visu) ne ""} {
+      if {$private(inVisu) ne ""} {
          if {"x0" in $obligatoire || "xcenter" in $obligatoire} {
             ::prtr::getCenterCoord
          }
@@ -361,16 +350,14 @@ namespace eval ::prtr {
    proc buildParam_optionnel {w visuNo} {
       variable private
 
+      #--   premiere construction
       if {![winfo exists $w]} {
-         #--   premire construction
-         set l [llength $private(optionnel)]
-         set lignes [expr {$l/2+int(fmod($l,2))}]
          frame $w -borderwidth 1 -relief raised
          checkbutton $w.che -indicatoron 1 -offvalue 0 -onvalue 1 \
             -variable ::prtr::ttoptions -text "$::caption(prtr,options)" \
             -command "::prtr::dispOptions $w"
-         grid $w.che -row 0 -column 0 -padx 10 -pady 5 -rowspan $lignes
-         ::blt::table $private(table) $w 5,0 -fill x -cspan 2
+         grid $w.che -row 0 -column 0 -padx 10 -pady 5 -rowspan 1
+         ::blt::table $private(table) $w 4,0 -fill both -cspan 2
       }
       dispOptions $w
    }
@@ -380,7 +367,7 @@ namespace eval ::prtr {
    #  Selectionne le widget a appliquer a une variable
    #  Parametres : nom du parent, nom de la liste (obligatoire ou optionnel)
    #--------------------------------------------------------------------------
-   proc configZone {w liste} {
+   proc configZone { w liste } {
       variable private
       variable Var
 
@@ -404,14 +391,14 @@ namespace eval ::prtr {
                if {$valuewidth < "6"} {set valuewidth 6}
                LabelEntry $w.$child -label "$child" -labelanchor e\
                   -labelwidth $labelwidth -textvariable ::prtr::$child \
-                  -padx 3 -width $valuewidth -justify center
+                  -padx $d -width $valuewidth -justify center
                grid $w.$child -row $row -column $col -padx $d -pady 5 -sticky e
                if {$child in {file bias dark flat image_ref}} {
                   $w.$child configure -width 30
                   incr col
                   button $w.explore_$child -text "$::caption(prtr,parcourir)" -width 1 \
-                     -command "::prtr::parcourir $w $child"
-                  grid $w.explore_$child -row $row -column $col -padx 3 -pady 5 -sticky w
+                     -command "::prtr::getFileName $w $child"
+                  grid $w.explore_$child -row $row -column $col -padx $d -pady 5 -sticky w
                }
             }
             "radiobutton" {
@@ -449,6 +436,8 @@ namespace eval ::prtr {
                }
             }
          }
+         #--   memorise le nb de lignes
+         set lignes $row
          incr col
          if {$col > $nb_max} {
             incr row
@@ -456,7 +445,9 @@ namespace eval ::prtr {
          }
       }
       grid columnconfigure $w 1 -minsize 120
-      grid columnconfigure $w 3 -minsize [$private(table).vscroll cget -width]
+      grid columnconfigure $w 3 -minsize [$private(this).usr.choix.vscroll cget -width]
+      incr lignes
+      return $lignes
    }
 
    #--------------------------------------------------------------------------
@@ -476,27 +467,57 @@ namespace eval ::prtr {
       set cmd "deselect"
       if {$::prtr::all == 1} {set cmd "select"}
 
-      for {set row 0} {$row < $private(size)} {incr row} {
-         #--   selectionne/deselectionne l'image de profil identique a celui de la premiere image
-         if {[ string match $private(profil) [lrange [$tbl get $row] 2 end]]} {
-            [$tbl windowpath $row,0] $cmd
+      #--   selectionne/deselectionne l'image de profil identique a celui de la premiere image
+      foreach file $private(listFiles) {
+         if {[ string match $private(profil) [lrange [$tbl get $file] 2 end]]} {
+           [$tbl windowpath $file,0] $cmd
          }
       }
-      ::prtr::selectFiles $tbl $row
+      ::prtr::selectFiles $tbl $file
    }
 
    #--------------------------------------------------------------------------
    #  ::prtr::dispOptions
    #  Commande du checkbutton pour afficher les options
    #--------------------------------------------------------------------------
-   proc dispOptions {w} {
+   proc dispOptions { w } {
+     variable private
 
       if {$::prtr::ttoptions == "1"} {
-         ::prtr::configZone $w optionnel
+         set private(tt_lignes) [::prtr::configZone $w optionnel]
       } else {
          set children [lreplace [winfo children "$w"] 0 0]
          destroy {*}$children
+         #--   il y a toujours au moins une ligne
+         set private(tt_lignes) "1"
       }
+      ::prtr::changeGeometry
+   }
+
+   #--------------------------------------------------------------------------
+   #    ::prtr::changeGeometry
+   #  Adapte la geometrie de la fenetre
+   #--------------------------------------------------------------------------
+    proc changeGeometry { } {
+      variable private
+
+      if {![info exists private(oldTableHeight)]} {set private(oldTableHeight) 220}
+      set variableHeight [expr {($private(fun_lignes)+$private(tt_lignes))*34}]
+      #--   fixe la hauteur de la table
+      set newTableHeight [expr {186+$variableHeight}]
+      ::blt::table configure $private(table) -reqheight $newTableHeight
+      #--   ote les + et x
+      regsub -all {[x\+]} [wm geometry $private(this)] " " data
+
+      #--   calcule la hauteur totale de la fenetre
+      set totalHeight [expr {[lindex $data 1]-$private(oldTableHeight)+$newTableHeight}]
+      if {$totalHeight < "420"} {set totalHeight "420"}
+      #--   memorise le reglage
+      set private(oldTableHeight) "$newTableHeight"
+      #--   actualise la geometrie
+      set private(prtr,geometry) "[lindex $data 0]x$totalHeight+[lindex $data 2]+[lindex $data 3]"
+      wm geometry $private(this) $private(prtr,geometry)
+      update
    }
 
    #--------------------------------------------------------------------------
@@ -505,7 +526,7 @@ namespace eval ::prtr {
    #  Lancee lors de la construction de la fenetre et
    #  par la selection d'une image dans la table
    #--------------------------------------------------------------------------
-   proc selectFiles {tbl row} {
+   proc selectFiles { tbl row } {
       variable bd
       variable private
       global caption
@@ -529,6 +550,7 @@ namespace eval ::prtr {
          if {$::prtr::operation in $filtre} {
             set function_type 1
          }
+
          for {set row 0} {$row < $private(size)} {incr row} {
             set w [$tbl windowpath $row,0]
             set select_state [set ::prtr::private(file_$row)]
@@ -550,15 +572,15 @@ namespace eval ::prtr {
 
       #--   autorise toutes les selections si la liste est vide
       if {$private(todo) eq ""} {
-         for {set row 0} {$row < $private(size)} {incr row} {
-            [$tbl windowpath $row,0] configure -state normal
+         foreach file $private(listFiles) {
+            [$tbl windowpath $file,0] configure -state normal
          }
          #--   detruit le profil s'il existe
          set private(profil) ""
          #--   retablit la valeur par defaut de bitpix
          ::prtr::confBitPix
       } else {
-         #--   cherche la valeur de bitpix
+        #--   cherche la valeur de bitpix
          set info [lindex [array get bd [lindex $private(todo) 0]] 1]
          set ::prtr::bitpix [lindex [lindex $info 4]]
       }
@@ -590,11 +612,13 @@ namespace eval ::prtr {
    #  Lancee lors de la construction de la fenetre, apres execution d'une commande
    #  et au changement de repertoire images
    #--------------------------------------------------------------------------
-   proc updateTbl {w visuNo args} {
+   proc updateTbl { visuNo args} {
       variable private
       variable bd
 
+      set w $private(tbl)
       set dir $::audace(rep_images)
+
       #if {![info exists ::prtr::ext]} {::prtr::changeExtension $visuNo}
       set ::prtr::ext "$::conf(extension,defaut)"
       #--   rajoute l'extension de compression
@@ -631,41 +655,35 @@ namespace eval ::prtr {
       }
 
       #--   rafraichit la tablelist
-      set list_files [lsort -dictionary [ array names bd]]
-      set private(size) [array size bd]
+      set private(listFiles) [lsort -dictionary [ array names bd]]
+      set private(size) [llength $private(listFiles)]
 
       #--   arrete si la bd est vide et que le répertoire n'est pas vide
       ::prtr::configTableState $w normal
       if {$private(size) == "0"} {return}
 
       set nb 0
-      for {set i 0} {$i < $private(size)} {incr i} {
-         set cible [lindex $list_files $i]
+      foreach cible $private(listFiles) {
          foreach {naxis naxis3 naxis1 naxis2} [lindex [array get bd $cible] 1] {break}
          if {$naxis eq 2} {set type "M"} else {set type "C"}
          if {$type eq "M" || ($type eq "C" && $private(ima) ni {MAITRE PRETRAITEE})} {
-            incr nb
             $w insert end [list "" "$cible" "$type" "${naxis1} X ${naxis2}"]
-            #--- insere le checkbutton
             $w cellconfigure end,0 -window [list ::prtr::createCheckButton]
-            set z [$w windowpath end,0]
-            $z deselect
+            $w configrows $nb -name "$cible"
+            [$w windowpath $cible,0] deselect
+            incr nb
          }
       }
       set private(size) $nb
       if {$private(size) == "0"} {return}
 
       #--   coche l'image dans la visu si elle est dans le repertoire
-      set w $private(table).choix
-      if {[buf[visu$visuNo buf] imageready]} {
+      if {[buf[visu$visuNo buf] imageready] && [file exists [::confVisu::getFileName $visuNo]]} {
          #--   decompose le nom en dir nom_court
          lassign [::prtr::getInfoFile [::confVisu::getFileName $visuNo]] dir nom_court
          if {$dir eq "$::audace(rep_images)"} {
-            set private(in_visu) $nom_court
-            set k [lsearch [$w  getcolumns 1] $private(in_visu)]
-            if {$k ne "-1"} {
-               [$w windowpath $k,0] invoke
-            }
+            set private(inVisu) $nom_court
+            [$w windowpath $nom_court,0] invoke
          }
       }
    }
@@ -674,7 +692,7 @@ namespace eval ::prtr {
    #  ::prtr::analyseFitsHeader $file (nom complet)
    #  Retourne les caractéristiques d'une image ou rien (si erreur)
    #--------------------------------------------------------------------------
-   proc analyseFitsHeader {file} {
+   proc analyseFitsHeader { file } {
 
       set result ""
       if {![catch {set kwds_list [fitsheader $file]}]} {
@@ -702,7 +720,7 @@ namespace eval ::prtr {
                   set crpix1 [expr {$naxis1/2}]
                   set crpix2 [expr {$naxis2/2}]
                }
-               set result [list $naxis $naxis3 $naxis1 $naxis2 $bitpix $crpix1 $crpix2 mean]
+               set result [list $naxis $naxis3 $naxis1 $naxis2 $bitpix $crpix1 $crpix2 $mean]
             }
          }
       }
@@ -784,6 +802,7 @@ namespace eval ::prtr {
    #--------------------------------------------------------------------------
    proc updateBox {visuNo args} {
       variable private
+      variable bd
 
       #--   arrete si pas fonction avec une box
       if {$private(function) ni {WINDOW MATRIX}} {return}
@@ -797,11 +816,11 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::parcourir nom_de_variable
+   #  ::prtr::getFileName nom_de_variable
    #  Ouvre un explorateur pour choisir un fichier de sortie ou une image operande
    #  Produit ::prtr::nom_de_variable
    #--------------------------------------------------------------------------
-   proc parcourir {w var} {
+   proc getFileName { w var } {
       variable private
 
       #--   ouvre la fenetre de choix des images
@@ -845,6 +864,27 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
+   #  ::prtr::getDirName
+   #  Capture le nom d'un repertoire
+   #  Commande du bouton "..." de saisie du nom générique de sortie
+   #--------------------------------------------------------------------------
+   proc getDirName { } {
+      variable private
+
+      set dirname [tk_chooseDirectory -title "$::caption(prtr,outfolder)" \
+         -initialdir $::audace(rep_images)]
+      if {$dirname eq "" || $dirname eq "$::audace(rep_images)"} {
+         set dirname "./"
+      }
+      if {$dirname ne "" && [string index $dirname end] ne "/"} {
+         append dirname "/"
+      }
+
+      set ::prtr::out $dirname
+      $private(table).sortie.out.e xview end
+   }
+
+   #--------------------------------------------------------------------------
    #  ::prtr::changeExtension
    #  Trace les options d'extension
    #--------------------------------------------------------------------------
@@ -852,22 +892,17 @@ namespace eval ::prtr {
       variable private
 
       set ::prtr::ext $::conf(extension,defaut)
-      #--   actualise le checkbutton "Comprimer les images"
-      set ::prtr::compress $::conf(fichier,compres)
       #--   rajoute l'extension de compression
       if {$::conf(fichier,compres) eq "1"} {
          append ::prtr::ext ".gz"
       }
       set private(profil) ""
-      if {[info exists private(table)]} {
-         updateTbl $private(table).choix $visuNo
-      }
+      if {[info exists private(table)]} {::prtr::updateTbl $visuNo}
    }
 
    #--------------------------------------------------------------------------
    #  ::prtr::changeDir
-   #  Change de repertoire
-   #  Lancee par trace de "::confVisu::private($visuNo,lastFileName)"
+   #  Actualise la liste des fichiers
    #--------------------------------------------------------------------------
    proc changeDir {visuNo args} {
       variable private
@@ -877,11 +912,9 @@ namespace eval ::prtr {
          set info [::prtr::getInfoFile [::confVisu::getFileName $visuNo]]
          set dir [lindex $info 0]
          if {$dir eq "$::audace(rep_images)"} {
-            set private(in_visu) "[lindex $info 1]"
+            set private(inVisu) "[lindex $info 1]"
             set private(profil) ""
-            if {[info exists private(table)]} {
-               updateTbl $private(table).choix $visuNo
-            }
+            ::prtr::updateTbl $visuNo
          }
       }
    }
@@ -907,7 +940,6 @@ namespace eval ::prtr {
       set imgList "$private(todo)"
       set nbImg [llength $imgList]
       set data [list "$imgList" "$dir" "$generique" "$::prtr::ext"]
-
 
       #--   selectionne la fonction a activer
       switch -exact $private(function) {
@@ -951,20 +983,26 @@ namespace eval ::prtr {
 
          set ext "$::conf(extension,defaut)"
          if {$dir eq "."} {set dir $::audace(rep_images)}
-         if {$private(ima) in [list MAITRE PILE] || $nbImg eq "1"} {
+
+         #--   image de reference en plus dans ce cas
+         if {$private(function) eq "CENTER"} {incr nbImg}
+         #--   ces fonctions ne produisent qu'une image
+         if {$private(ima) in [list MAITRE PILE] || $nbImg eq "1"} { set nbImg "1"}
+
+         #--   designe l'image a afficher
+         if {$nbImg eq "1"} {
             set lastImage [file join "$dir" $generique$ext]
-            if {$::prtr::compress eq 1 } {
-               ::prtr::compressFiles "$dir" "$generique" 1 "$ext"
-               append lastImage ".gz"
-            }
          } else {
-            if {$private(function) eq "CENTER"} {incr nbImg}
-            #--   cas d'images multiples
             set lastImage [file join "$dir" $generique$nbImg$ext]
-            if {$::prtr::compress eq 1 } {
-               ::prtr::compressFiles "$dir" "$generique" $nbImg "$ext"
-               append lastImage ".gz"
-            }
+         }
+
+         #--   compresse les images
+         if {$::conf(fichier,compres) eq 1 && $nbImg eq "1"} {
+             ::prtr::compressFiles "$dir" "$generique" 1 "$ext"
+             append lastImage ".gz"
+         } elseif {$::conf(fichier,compres) eq 1 && $nbImg ne "1"} {
+             ::prtr::compressFiles "$dir" "$generique" $nbImg "$ext"
+             append lastImage ".gz"
          }
 
          #--  charge la derniere image si demande
@@ -975,7 +1013,7 @@ namespace eval ::prtr {
       ::prtr::windowActive $tbl normal
 
       #--   rafraichit la tablelist
-      ::prtr::updateTbl $tbl $visuNo
+      ::prtr::updateTbl $visuNo
 
       return $private(error)
    }
@@ -991,7 +1029,7 @@ namespace eval ::prtr {
       set this $private(table)
 
       #--   inhibe/desinhibe tous les checkbutton et le nom de sortie
-      set children [list "all.select" "affiche.compress" "affiche.disp" "edit.script" "sortie.out"]
+      set children [list "all.select" "affiche.disp" "affiche.script" "sortie.out"]
       foreach child $children {
          $this.$child configure -state $etat
       }
@@ -1039,9 +1077,7 @@ namespace eval ::prtr {
       }
 
       #--   inhibe/desinhibe tous les frames
-      foreach frame $private(frames) {
-         $frame configure -state $etat
-      }
+      foreach frame $private(frames) {$frame configure -state $etat}
 
       #--- inhibe/desinhibe uniquement les checkbuttons selectionnables
       if {$etat eq "disabled"} {
@@ -1052,22 +1088,23 @@ namespace eval ::prtr {
                $w configure -state $etat
             } else {
                #--   memorise le nom de l'image
+
                lappend private(disabled) "[$tbl windowpath $row,1]"
             }
          }
       } elseif {$etat eq "normal"} {
          #--   active uniquement la liste qui etait selectionnable
-         for {set row 0} {$row < $private(size)} {incr row} {
+         foreach file $private(listFiles) {
             if {![info exists private(disabled)]} {
                set state $etat
             } else {
-               if {[$tbl windowpath $row,1] ni $private(disabled)} {
+               if {[$tbl windowpath $file,1] ni $private(disabled)} {
                   set state normal
                } else {
                   set state disabled
                }
             }
-            [$tbl windowpath $row,0] configure -state $etat
+            [$tbl windowpath $file,0] configure -state $etat
          }
          ::prtr::configOutName
       }
@@ -1078,14 +1115,14 @@ namespace eval ::prtr {
    #  ::prtr::compressFiles
    #  Compresse le ou les fichiers de sortie
    #--------------------------------------------------------------------------
-   proc compressFiles {dir_out nom_out l ext_out} {
+   proc compressFiles {dirOut nameOut l ext_out} {
 
       set fileToCompres ""
       if {$l eq "1"} {
-         lappend fileToCompress [file join $dir_out $nom_out$ext_out]
+         lappend fileToCompress [file join $dirOut $nameOut$ext_out]
       } else {
          for {set i 1} {$i <=$l} {incr i} {
-            lappend fileToCompress "[file join $dir_out $nom_out$i$ext_out]"
+            lappend fileToCompress "[file join $dirOut $nameOut$i$ext_out]"
          }
       }
       #--   compresse tous les fichiers
@@ -1098,7 +1135,7 @@ namespace eval ::prtr {
    #  avec la valeur par defaut ou avec la valeur demandee par l'utilisateur
    #  Lancee par cmdApply
    #--------------------------------------------------------------------------
-   proc loadImg {name} {
+   proc loadImg { name } {
 
       set visuNo $::audace(visuNo)
       set bufNo [visu$visuNo buf]
@@ -1138,14 +1175,16 @@ namespace eval ::prtr {
    proc cmdClose {visuNo} {
       variable private
       variable bd
+      global conf
 
       trace remove variable "::prtr::operation" write "::prtr::changeOp $visuNo"
-      trace remove variable "::audace(rep_images)" write "::prtr::updateTbl $private(table).choix $visuNo"
+      trace remove variable "::audace(rep_images)" write "::prtr::updateTbl $visuNo"
       trace remove variable "::confVisu::private($visuNo,boxSize)" write "::prtr::updateBox $visuNo"
       trace remove variable "::confVisu::private($visuNo,lastFileName)" write "::prtr::changeDir $visuNo"
       trace remove variable "::conf(extension,defaut)" write "::prtr::changeExtension $visuNo"
       trace remove variable "::conf(fichier,compres)" write "::prtr::changeExtension $visuNo"
-      ::prtr::recupPosition
+      #--   recupere et sauve la position de la fenetre
+      set conf(prtr,geometry) [wm geometry $private(this)]
       destroy $private(this)
       array unset bd
       array unset private
@@ -1215,51 +1254,6 @@ namespace eval ::prtr {
       checkbutton $w -height 1 -indicatoron 1 -onvalue 1 -offvalue 0 \
          -variable ::prtr::private(file_$row) \
          -command [list ::prtr::selectFiles $tbl $row]
-   }
-
-   #--------------------------------------------------------------------------
-   #  ::prtr::recupPosition
-   #  Recupere la position de la fenetre
-   #--------------------------------------------------------------------------
-   proc recupPosition { } {
-      variable private
-      variable widget
-
-      set private(geometry) [wm geometry $private(this)]
-      set deb [expr {1 + [string first + $private(geometry)] }]
-      set fin [string length $private(geometry)]
-      set widget(prtr,position) "+[string range $private(geometry) $deb $fin]"
-      widgetToConf
-   }
-
-   #-----------------------------------------------------------------------
-   #  ::prtr::widgetToConf
-   #  Charge les variables locales dans des variables de configuration
-   #--------------------------------------------------------------------------
-   proc widgetToConf { } {
-      variable widget
-
-      set ::conf(prtr,position) "$widget(prtr,position)"
-   }
-
-   #--------------------------------------------------------------------------
-   #  ::prtr::initConf
-   # Initialise les variables de configuration
-   #--------------------------------------------------------------------------
-   proc initConf { } {
-
-      if {![info exists ::conf(prtr,position)]} {set ::conf(prtr,position) "+350+75"}
-      return
-   }
-
-   #--------------------------------------------------------------------------
-   #  ::prtr::confToWidget
-   # Charge les variables de configuration dans des variables locales
-   #--------------------------------------------------------------------------
-   proc confToWidget { } {
-      variable widget
-
-     set widget(prtr,position) "$::conf(prtr,position)"
    }
 
    #--   chaque fonction est accompagnee de quatre variables (eventuellement vides) :
@@ -1339,39 +1333,39 @@ namespace eval ::prtr {
       dict set STACK "$caption(audace,menu,somme)"                fun ADD
       dict set STACK "$caption(audace,menu,somme)"                hlp "$help(dir,prog) ttus1-fr.htm stackADD"
       dict set STACK "$caption(audace,menu,somme)"                par ""
-      dict set STACK "$caption(audace,menu,somme)"                opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set STACK "$caption(audace,menu,somme)"                opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set STACK "$caption(audace,menu,moyenne)"              fun MEAN
       dict set STACK "$caption(audace,menu,moyenne)"              hlp "$help(dir,prog) ttus1-fr.htm MEAN"
       dict set STACK "$caption(audace,menu,moyenne)"              par ""
-      dict set STACK "$caption(audace,menu,moyenne)"              opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set STACK "$caption(audace,menu,moyenne)"              opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set STACK "$caption(audace,menu,mediane)"              fun MED
       dict set STACK "$caption(audace,menu,mediane)"              hlp "$help(dir,prog) ttus1-fr.htm MED"
       dict set STACK "$caption(audace,menu,mediane)"              par ""
-      dict set STACK "$caption(audace,menu,mediane)"              opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set STACK "$caption(audace,menu,mediane)"              opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set STACK "$caption(audace,menu,produit)"              fun PROD
       dict set STACK "$caption(audace,menu,produit)"              hlp "$help(dir,prog) ttus1-fr.htm stackPROD"
       dict set STACK "$caption(audace,menu,produit)"              par ""
-      dict set STACK "$caption(audace,menu,produit)"              opt "powernorm 0 bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set STACK "$caption(audace,menu,produit)"              opt "powernorm 0 bitpix 16 skylevel 0 nullpixel 0"
       dict set STACK "$caption(audace,menu,racine_carree)"        fun PYTHAGORE
       dict set STACK "$caption(audace,menu,racine_carree)"        hlp "$help(dir,prog) ttus1-fr.htm PYTHAGORE"
       dict set STACK "$caption(audace,menu,racine_carree)"        par ""
-      dict set STACK "$caption(audace,menu,racine_carree)"        opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set STACK "$caption(audace,menu,racine_carree)"        opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set STACK "$caption(audace,menu,ecart_type)"           fun SIG
       dict set STACK "$caption(audace,menu,ecart_type)"           hlp "$help(dir,prog) ttus1-fr.htm SIG"
       dict set STACK "$caption(audace,menu,ecart_type)"           par ""
-      dict set STACK "$caption(audace,menu,ecart_type)"           opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set STACK "$caption(audace,menu,ecart_type)"           opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set STACK "$caption(audace,menu,moyenne_k)"            fun SK
       dict set STACK "$caption(audace,menu,moyenne_k)"            hlp "$help(dir,prog) ttus1-fr.htm SK"
       dict set STACK "$caption(audace,menu,moyenne_k)"            par ""
-      dict set STACK "$caption(audace,menu,moyenne_k)"            opt "kappa 3. bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set STACK "$caption(audace,menu,moyenne_k)"            opt "kappa 3. bitpix 16 skylevel 0 nullpixel 0"
       dict set STACK "$caption(audace,menu,moyenne_tri)"          fun SORT
       dict set STACK "$caption(audace,menu,moyenne_tri)"          hlp "$help(dir,prog) ttus1-fr.htm SORT"
       dict set STACK "$caption(audace,menu,moyenne_tri)"          par ""
-      dict set STACK "$caption(audace,menu,moyenne_tri)"          opt "percent 50 bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set STACK "$caption(audace,menu,moyenne_tri)"          opt "percent 50 bitpix 16 skylevel 0 nullpixel 0"
       dict set STACK "$caption(audace,menu,obturateur)"           fun SHUTTER
       dict set STACK "$caption(audace,menu,obturateur)"           hlp "$help(dir,prog) ttus1-fr.htm SHUTTER"
       dict set STACK "$caption(audace,menu,obturateur)"           par ""
-      dict set STACK "$caption(audace,menu,obturateur)"           opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set STACK "$caption(audace,menu,obturateur)"           opt "bitpix 16 skylevel 0 nullpixel 0"
 
       return [::prtr::consultDic STACK $function]
    }
@@ -1408,40 +1402,47 @@ namespace eval ::prtr {
    #--------------------------------------------------------------------------
     proc GEOMETRYFunctions {function} {
       variable SERIES
-      global caption help
+      global caption help conf
+
+      if {![info exists conf(multx)] && ![info exists conf(multy)] && ![info exists conf(prtr,resample,paramresample)]} {
+         set conf(prtr,resample,paramresample) "0.5 0 0 0 0.5 0"
+      } elseif {[info exists conf(multx)] && [info exists conf(multy)]} {
+         set conf(prtr,resample,paramresample) "$conf(multx) 0 0 0 $conf(multy) 0"
+         unset conf(multx) conf(multy)
+      }
 
       dict set SERIES "$caption(audace,menu,miroir_x)"            fun "INVERT mirror"
       dict set SERIES "$caption(audace,menu,miroir_x)"            hlp "$help(dir,prog) ttus1-fr.htm INVERT"
       dict set SERIES "$caption(audace,menu,miroir_x)"            par ""
-      dict set SERIES "$caption(audace,menu,miroir_x)"            opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,miroir_x)"            opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,miroir_y)"            fun "INVERT flip"
       dict set SERIES "$caption(audace,menu,miroir_y)"            hlp "$help(dir,prog) ttus1-fr.htm INVERT"
       dict set SERIES "$caption(audace,menu,miroir_y)"            par ""
-      dict set SERIES "$caption(audace,menu,miroir_y)"            opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,miroir_y)"            opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,miroir_xy)"           fun "INVERT xy"
       dict set SERIES "$caption(audace,menu,miroir_xy)"           hlp "$help(dir,prog) ttus1-fr.htm INVERT"
       dict set SERIES "$caption(audace,menu,miroir_xy)"           par ""
-      dict set SERIES "$caption(audace,menu,miroir_xy)"           opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,miroir_xy)"           opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,window1)"             fun WINDOW
       dict set SERIES "$caption(audace,menu,window1)"             hlp "$help(dir,prog) ttus1-fr.htm WINDOW"
       dict set SERIES "$caption(audace,menu,window1)"             par "x1 1 y1 1 x2 2 y2 2"
-      dict set SERIES "$caption(audace,menu,window1)"             opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,window1)"             opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,scale)"               fun RESAMPLE
       dict set SERIES "$caption(audace,menu,scale)"               hlp "$help(dir,prog) ttus1-fr.htm RESAMPLE"
-      dict set SERIES "$caption(audace,menu,scale)"               par "paramresample \"1.  0  0  0  1.  0\""
-      dict set SERIES "$caption(audace,menu,scale)"               opt "normaflux 0 bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,scale)"               par "paramresample \"$conf(prtr,resample,paramresample)\" normaflux 1"
+      dict set SERIES "$caption(audace,menu,scale)"               opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,translate)"           fun TRANS
       dict set SERIES "$caption(audace,menu,translate)"           hlp "$help(dir,prog) ttus1-fr.htm TRANS"
       dict set SERIES "$caption(audace,menu,translate)"           par "trans_x 1. trans_y 1."
-      dict set SERIES "$caption(audace,menu,translate)"           opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,translate)"           opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,rotation1)"           fun ROT
       dict set SERIES "$caption(audace,menu,rotation1)"           hlp "$help(dir,prog) ttus1-fr.htm ROT"
       dict set SERIES "$caption(audace,menu,rotation1)"           par "x0 1. y0 1. angle 1."
-      dict set SERIES "$caption(audace,menu,rotation1)"           opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,rotation1)"           opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,rotation2)"           fun ROTENTIERE
       dict set SERIES "$caption(audace,menu,rotation2)"           hlp "$help(dir,prog) ttus1-fr.htm ROTENTIERE"
       dict set SERIES "$caption(audace,menu,rotation2)"           par "x0 1. y0 1. angle 1."
-      dict set SERIES "$caption(audace,menu,rotation2)"           opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,rotation2)"           opt "bitpix 16 skylevel 0 nullpixel 0"
 
       return [::prtr::consultDic SERIES $function]
    }
@@ -1453,27 +1454,40 @@ namespace eval ::prtr {
    #--------------------------------------------------------------------------
     proc IMPROVEFunctions {function} {
       variable SERIES
-      global caption help
+      global caption help conf
+
+      if {![info exists conf(back_kernel)] && ![info exists conf(prtr,back,back_kernel)]}  {
+         set conf(prtr,back,back_kernel) "15"
+      } elseif {[info exists conf(back_kernel)]} {
+         set conf(prtr,back,back_kernel) $conf(back_kernel)
+         unset conf(back_kernel)
+      }
+      if {![info exists conf(back_threshold)] && ![info exists conf(prtr,back,back_threshold)]}  {
+         set conf(prtr,back,back_threshold) "0.2"
+      } elseif {[info exists conf(back_threshold)]} {
+         set conf(prtr,back,back_threshold) $conf(back_threshold)
+         unset conf(back_threshold)
+      }
 
       dict set SERIES "$caption(audace,menu,trainee)"             fun UNSMEARING
       dict set SERIES "$caption(audace,menu,trainee)"             hlp "$help(dir,prog) ttus1-fr.htm UNSMEARING"
       dict set SERIES "$caption(audace,menu,trainee)"             par "unsmearing 0.0005"
-      dict set SERIES "$caption(audace,menu,trainee)"             opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,trainee)"             opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,cosmic)"              fun COSMIC
       dict set SERIES "$caption(audace,menu,cosmic)"              hlp "$help(dir,prog) ttus1-fr.htm COSMIC"
       dict set SERIES "$caption(audace,menu,cosmic)"              par "cosmic_threshold 400"
-      dict set SERIES "$caption(audace,menu,cosmic)"              opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,cosmic)"              opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,opt_noir)"            fun OPT
       dict set SERIES "$caption(audace,menu,opt_noir)"            hlp "$help(dir,prog) ttus1-fr.htm OPT"
       dict set SERIES "$caption(audace,menu,opt_noir)"            par "bias img dark img therm_kappa 0.25"
-      dict set SERIES "$caption(audace,menu,opt_noir)"            opt "unsmearing 0.0005 bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,opt_noir)"            opt "unsmearing 0.0005 bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,subsky)"              fun BACK
       dict set SERIES "$caption(audace,menu,subsky)"              hlp "$help(dir,prog) ttus1-fr.htm BACK"
-      dict set SERIES "$caption(audace,menu,subsky)"              par "back_kernel 4 back_threshold 0."
-      dict set SERIES "$caption(audace,menu,subsky)"              opt "sub 0 div 0 bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,subsky)"              par "back_kernel $conf(prtr,back,back_kernel) back_threshold $conf(prtr,back,back_threshold)"
+      dict set SERIES "$caption(audace,menu,subsky)"              opt "sub 0 div 0 bitpix 16 skylevel 0 nullpixel 0"
 
       return [::prtr::consultDic SERIES $function]
-   }
+  }
 
    #--------------------------------------------------------------------------
    #  ::prtr::ARITHMFunctions {0|nom_de_fonction}
@@ -1482,48 +1496,61 @@ namespace eval ::prtr {
    #--------------------------------------------------------------------------
     proc ARITHMFunctions {function} {
       variable SERIES
-      global caption help
+      global caption help conf
+
+       if {![info exists conf(clip_mini)] && ![info exists conf(prtr,clip,clip_mini)]}  {
+         set conf(prtr,back,clip_mini) "0"
+      } elseif {[info exists conf(clip_mini)]} {
+         set conf(prtr,clip,clip_mini) $conf(clip_mini)
+        unset conf(clip_mini)
+      }
+      if {![info exists conf(clip_maxi)] && ![info exists conf(prtr,clip,clip_maxi)]}  {
+         set conf(prtr,clip,clip_maxi) "32767"
+      } elseif {[info exists conf(clip_maxi)]} {
+         set conf(prtr,clip,clip_maxi) $conf(clip_maxi)
+         unset conf(clip_maxi)
+      }
 
       dict set SERIES "$caption(audace,menu,addition)"            fun ADD
       dict set SERIES "$caption(audace,menu,addition)"            hlp "$help(dir,prog) ttus1-fr.htm seriesADD"
       dict set SERIES "$caption(audace,menu,addition)"            par "file img"
-      dict set SERIES "$caption(audace,menu,addition)"            opt "offset 0 bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,addition)"            opt "offset 0 bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,soust)"               fun SUB
       dict set SERIES "$caption(audace,menu,soust)"               hlp "$help(dir,prog) ttus1-fr.htm SUB"
       dict set SERIES "$caption(audace,menu,soust)"               par "file img"
-      dict set SERIES "$caption(audace,menu,soust)"               opt "offset 0 bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,soust)"               opt "offset 0 bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,division)"            fun DIV
       dict set SERIES "$caption(audace,menu,division)"            hlp "$help(dir,prog) ttus1-fr.htm DIV"
       dict set SERIES "$caption(audace,menu,division)"            par "file img"
-      dict set SERIES "$caption(audace,menu,division)"            opt "constant 1. bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,division)"            opt "constant 1. bitpix 16 skylevel 0 nullpixel"
       dict set SERIES "$caption(audace,menu,multipli)"            fun PROD
       dict set SERIES "$caption(audace,menu,multipli)"            hlp "$help(dir,prog) ttus1-fr.htm seriesPROD"
       dict set SERIES "$caption(audace,menu,multipli)"            par "file img"
-      dict set SERIES "$caption(audace,menu,multipli)"            opt "constant 1. bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,multipli)"            opt "constant 1. bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,offset)"              fun OFFSET
       dict set SERIES "$caption(audace,menu,offset)"              hlp "$help(dir,prog) ttus1-fr.htm OFFSET"
       dict set SERIES "$caption(audace,menu,offset)"              par "offset 0"
-      dict set SERIES "$caption(audace,menu,offset)"              opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,offset)"              opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,mult_cte)"            fun MULT
       dict set SERIES "$caption(audace,menu,mult_cte)"            hlp "$help(dir,prog) ttus1-fr.htm MULT"
       dict set SERIES "$caption(audace,menu,mult_cte)"            par "constant 1."
-      dict set SERIES "$caption(audace,menu,mult_cte)"            opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,mult_cte)"            opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,log)"                 fun LOG
       dict set SERIES "$caption(audace,menu,log)"                 hlp "$help(dir,prog) ttus1-fr.htm LOG"
       dict set SERIES "$caption(audace,menu,log)"                 par "coef 20. offsetlog 1."
-      dict set SERIES "$caption(audace,menu,log)"                 opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,log)"                 opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,noffset)"             fun NORMOFFSET
       dict set SERIES "$caption(audace,menu,noffset)"             hlp "$help(dir,prog) ttus1-fr.htm NORMOFFSET"
       dict set SERIES "$caption(audace,menu,noffset)"             par "normoffset_value 0."
-      dict set SERIES "$caption(audace,menu,noffset)"             opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,noffset)"             opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,ngain)"               fun NORMGAIN
       dict set SERIES "$caption(audace,menu,ngain)"               hlp "$help(dir,prog) ttus1-fr.htm NORMGAIN"
       dict set SERIES "$caption(audace,menu,ngain)"               par "normgain_value 200."
-      dict set SERIES "$caption(audace,menu,ngain)"               opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,ngain)"               opt "bitpix 16 skylevel 0 nullpixel 0"
       #--   CLIP fonction artificielle inexistante dans IMA/SERIES
       dict set SERIES "$caption(audace,menu,clip)"                fun CLIP
       dict set SERIES "$caption(audace,menu,clip)"                hlp "$help(dir,images) 1080ecreter.htm"
-      dict set SERIES "$caption(audace,menu,clip)"                par "mini 0. maxi 32767."
+      dict set SERIES "$caption(audace,menu,clip)"                par "mini $conf(prtr,clip,clip_mini) maxi $conf(prtr,clip,clip_maxi)"
       dict set SERIES "$caption(audace,menu,clip)"                opt "bitpix 16"
 
       return [::prtr::consultDic SERIES $function]
@@ -1536,73 +1563,86 @@ namespace eval ::prtr {
    #--------------------------------------------------------------------------
     proc FILTERFunctions {function} {
       variable SERIES
-      global caption help
+      global caption help conf
+
+      if {![info exists conf(coef_etal)] && ![info exists conf(prtr,flou,sigma)]} {
+         set conf(prtr,flou,sigma) "2.0"
+      } elseif {[info exists conf(coef_etal)]} {
+         set conf(prtr,flou,sigma) $conf(coef_etal)
+         unset conf(coef_etal)
+      }
+      if {![info exists conf(coef_mult)] && ![info exists conf(prtr,flou,constant)]} {
+         set conf(prtr,flou,constant) "5.0"
+      } elseif {[info exists conf(coef_mult)]} {
+         set conf(prtr,flou,constant) $conf(coef_mult)
+         unset conf(coef_mult)
+     }
 
       #--   FLOU fonction artificielle inexistante dans IMA/SERIES
       dict set SERIES "$caption(audace,menu,masque_flou)"         fun FLOU
       dict set SERIES "$caption(audace,menu,masque_flou)"         hlp "$help(dir,images) 1090masque_flou.htm"
-      dict set SERIES "$caption(audace,menu,masque_flou)"         par "sigma 0.8 constant 1.3"
+      dict set SERIES "$caption(audace,menu,masque_flou)"         par "sigma $conf(prtr,flou,sigma) constant $conf(prtr,flou,constant)"
       dict set SERIES "$caption(audace,menu,masque_flou)"         opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,filtre_passe-bas)"    fun "FILTER kernel_type=fb"
       dict set SERIES "$caption(audace,menu,filtre_passe-bas)"    hlp "$help(dir,images) 1100passe_bas.htm"
       dict set SERIES "$caption(audace,menu,filtre_passe-bas)"    par "kernel_width 3 kernel_coef 0 threshold 0 type_threshold 0"
-      dict set SERIES "$caption(audace,menu,filtre_passe-bas)"    opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,filtre_passe-bas)"    opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,filtre_passe-haut)"   fun "FILTER kernel_type=fh"
       dict set SERIES "$caption(audace,menu,filtre_passe-haut)"   hlp "$help(dir,images) 1110passe_haut.htm"
       dict set SERIES "$caption(audace,menu,filtre_passe-haut)"   par "kernel_width 3 kernel_coef 0 threshold 0 type_threshold 0"
-      dict set SERIES "$caption(audace,menu,filtre_passe-haut)"   opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,filtre_passe-haut)"   opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,filtre_median)"       fun "FILTER kernel_type=med"
       dict set SERIES "$caption(audace,menu,filtre_median)"       hlp "$help(dir,prog) ttus1-fr.htm FILTER"
       dict set SERIES "$caption(audace,menu,filtre_median)"       par "kernel_width 3 kernel_coef 0 threshold 0 type_threshold 0"
-      dict set SERIES "$caption(audace,menu,filtre_median)"       opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,filtre_median)"       opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,filtre_mean)"         fun "FILTER kernel_type=mean"
       dict set SERIES "$caption(audace,menu,filtre_mean)"         hlp "$help(dir,prog) ttus1-fr.htm FILTER"
       dict set SERIES "$caption(audace,menu,filtre_mean)"         par "kernel_width 3 kernel_coef 0 threshold 0 type_threshold 0"
-      dict set SERIES "$caption(audace,menu,filtre_mean)"         opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,filtre_mean)"         opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,filtre_minimum)"      fun "FILTER kernel_type=min"
       dict set SERIES "$caption(audace,menu,filtre_minimum)"      hlp "$help(dir,prog) ttus1-fr.htm FILTER"
       dict set SERIES "$caption(audace,menu,filtre_minimum)"      par "kernel_width 3 kernel_coef 0 threshold 0 type_threshold 0"
-      dict set SERIES "$caption(audace,menu,filtre_minimum)"      opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,filtre_minimum)"      opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,filtre_maximum)"      fun "FILTER kernel_type=max"
       dict set SERIES "$caption(audace,menu,filtre_maximum)"      hlp "$help(dir,prog) ttus1-fr.htm FILTER"
       dict set SERIES "$caption(audace,menu,filtre_maximum)"      par "kernel_width 3 kernel_coef 0 threshold 0 type_threshold 0"
-      dict set SERIES "$caption(audace,menu,filtre_maximum)"      opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,filtre_maximum)"      opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,filtre_up)"           fun "FILTER kernel_type=gradup"
       dict set SERIES "$caption(audace,menu,filtre_up)"           hlp "$help(dir,prog) ttus1-fr.htm FILTER"
       dict set SERIES "$caption(audace,menu,filtre_up)"           par "kernel_width 3 kernel_coef 0 threshold 0 type_threshold 0"
-      dict set SERIES "$caption(audace,menu,filtre_up)"           opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,filtre_up)"           opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,filtre_left)"         fun "FILTER kernel_type=gradleft"
       dict set SERIES "$caption(audace,menu,filtre_left)"         hlp "$help(dir,prog) ttus1-fr.htm FILTER"
       dict set SERIES "$caption(audace,menu,filtre_left)"         par "kernel_width 3 kernel_coef 0 threshold 0 type_threshold 0"
-      dict set SERIES "$caption(audace,menu,filtre_left)"         opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,filtre_left)"         opt "bitpix 16 skylevel 0 nullpixel"
       dict set SERIES "$caption(audace,menu,filtre_down)"         fun "FILTER kernel_type=graddown"
       dict set SERIES "$caption(audace,menu,filtre_down)"         hlp "$help(dir,prog) ttus1-fr.htm FILTER"
       dict set SERIES "$caption(audace,menu,filtre_down)"         par "kernel_width 3 kernel_coef 0 threshold 0 type_threshold 0"
-      dict set SERIES "$caption(audace,menu,filtre_down)"         opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,filtre_down)"         opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,filtre_right)"        fun "FILTER kernel_type=gradright"
       dict set SERIES "$caption(audace,menu,filtre_right)"        hlp "$help(dir,prog) ttus1-fr.htm FILTER"
       dict set SERIES "$caption(audace,menu,filtre_right)"        par "kernel_width 3 kernel_coef 0 threshold 0 type_threshold 0"
-      dict set SERIES "$caption(audace,menu,filtre_right)"        opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,filtre_right)"        opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,filtre_gaussien)"     fun "CONV kernel_type=gaussian"
       dict set SERIES "$caption(audace,menu,filtre_gaussien)"     hlp "$help(dir,prog) ttus1-fr.htm CONV"
       dict set SERIES "$caption(audace,menu,filtre_gaussien)"     par ""
-      dict set SERIES "$caption(audace,menu,filtre_gaussien)"     opt "sigma 2. bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,filtre_gaussien)"     opt "sigma 0.5 bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,ond_morlet)"          fun "CONV kernel_type=morlet"
       dict set SERIES "$caption(audace,menu,ond_morlet)"          hlp "$help(dir,prog) ttus1-fr.htm CONV"
       dict set SERIES "$caption(audace,menu,ond_morlet)"          par ""
-      dict set SERIES "$caption(audace,menu,ond_morlet)"          opt "sigma 2. bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,ond_morlet)"          opt "sigma 2. bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,ond_mexicain)"        fun "CONV kernel_type=mexican"
       dict set SERIES "$caption(audace,menu,ond_mexicain)"        hlp "$help(dir,prog) ttus1-fr.htm CONV"
       dict set SERIES "$caption(audace,menu,ond_mexicain)"        par ""
-      dict set SERIES "$caption(audace,menu,ond_mexicain)"        opt "sigma 2. bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,ond_mexicain)"        opt "sigma 2. bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,grad_rot)"            fun RGRADIENT
       dict set SERIES "$caption(audace,menu,grad_rot)"            hlp "$help(dir,prog) ttus1-fr.htm RGRADIENT"
       dict set SERIES "$caption(audace,menu,grad_rot)"            par "xcenter 1. ycenter 1. radius 1. angle 1."
-      dict set SERIES "$caption(audace,menu,grad_rot)"            opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,grad_rot)"            opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,radial)"              fun RADIAL
       dict set SERIES "$caption(audace,menu,radial)"              hlp "$help(dir,prog) ttus1-fr.htm RADIAL"
       dict set SERIES "$caption(audace,menu,radial)"              par "sigma 10 power 2 xcenter 1. ycenter 1. radius 1."
-      dict set SERIES "$caption(audace,menu,radial)"              opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,radial)"              opt "bitpix 16 skylevel 0 nullpixel 0"
 
       return [::prtr::consultDic SERIES $function]
    }
@@ -1619,15 +1659,15 @@ namespace eval ::prtr {
       dict set SERIES "$caption(audace,menu,cart2pol)"            fun REC2POL
       dict set SERIES "$caption(audace,menu,cart2pol)"            hlp "$help(dir,prog) ttus1-fr.htm REC2POL"
       dict set SERIES "$caption(audace,menu,cart2pol)"            par "x0 1. y0 1. scale_theta 1. scale_rho 1."
-      dict set SERIES "$caption(audace,menu,cart2pol)"            opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,cart2pol)"            opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,pol2cart)"            fun POL2REC
       dict set SERIES "$caption(audace,menu,pol2cart)"            hlp "$help(dir,prog) ttus1-fr.htm POL2REC"
       dict set SERIES "$caption(audace,menu,pol2cart)"            par "x0 1.  y0 1. scale_theta 1. scale_rho 1. width 100 height 100"
-      dict set SERIES "$caption(audace,menu,pol2cart)"            opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,pol2cart)"            opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,hough)"               fun HOUGH
       dict set SERIES "$caption(audace,menu,hough)"               hlp "$help(dir,prog) ttus1-fr.htm HOUGH"
       dict set SERIES "$caption(audace,menu,hough)"               par ""
-      dict set SERIES "$caption(audace,menu,hough)"               opt "threshold 0 binary 0 bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,hough)"               opt "threshold 0 binary 0 bitpix 16 skylevel 0 nullpixel 0"
 
       return [::prtr::consultDic SERIES $function]
    }
@@ -1641,42 +1681,42 @@ namespace eval ::prtr {
       variable SERIES
       global caption help
 
-      dict set SERIES "$caption(audace,menu,bin_x)"               fun BINX
-      dict set SERIES "$caption(audace,menu,bin_x)"               hlp "$help(dir,prog) ttus1-fr.htm BINX"
-      dict set SERIES "$caption(audace,menu,bin_x)"               par "x1 1 x2 2 width 20"
-      dict set SERIES "$caption(audace,menu,bin_x)"               opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
-      dict set SERIES "$caption(audace,menu,med_x)"               fun "MEDIANX"
-      dict set SERIES "$caption(audace,menu,med_x)"               hlp "$help(dir,prog) ttus1-fr.htm MEDIANX"
-      dict set SERIES "$caption(audace,menu,med_x)"               par "x1 1 x2 2 width 20"
-      dict set SERIES "$caption(audace,menu,med_x)"               opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
-      dict set SERIES "$caption(audace,menu,sort_x)"              fun "SORTX"
-      dict set SERIES "$caption(audace,menu,sort_x)"              hlp "$help(dir,prog) ttus1-fr.htm SORTX"
-      dict set SERIES "$caption(audace,menu,sort_x)"              par "x1 1 x2 2 width 20 percent 50"
-      dict set SERIES "$caption(audace,menu,sort_x)"              opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
-      dict set SERIES "$caption(audace,menu,bin_y)"               fun BINY
-      dict set SERIES "$caption(audace,menu,bin_y)"               hlp "$help(dir,prog) ttus1-fr.htm BINY"
-      dict set SERIES "$caption(audace,menu,bin_y)"               par "y1 1 y2 2 height 20"
-      dict set SERIES "$caption(audace,menu,bin_y)"               opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
-      dict set SERIES "$caption(audace,menu,med_y)"               fun "MEDIANY"
-      dict set SERIES "$caption(audace,menu,med_y)"               hlp "$help(dir,prog) ttus1-fr.htm MEDIANY"
-      dict set SERIES "$caption(audace,menu,med_y)"               par "y1 1 y2 2 height 20"
-      dict set SERIES "$caption(audace,menu,med_y)"               opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
-      dict set SERIES "$caption(audace,menu,sort_y)"              fun "SORTY"
-      dict set SERIES "$caption(audace,menu,sort_y)"              hlp "$help(dir,prog) ttus1-fr.htm SORTY"
-      dict set SERIES "$caption(audace,menu,sort_y)"              par "y1 1 y2 2 height 20 percent 50"
-      dict set SERIES "$caption(audace,menu,sort_y)"              opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
       dict set SERIES "$caption(audace,menu,ligne)"               fun "PROFILE direction=x"
       dict set SERIES "$caption(audace,menu,ligne)"               hlp "$help(dir,prog) ttus1-fr.htm PROFILE"
       dict set SERIES "$caption(audace,menu,ligne)"               par "offset 1 filename row "
-      dict set SERIES "$caption(audace,menu,ligne)"               opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,ligne)"               opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,bin_y)"               fun BINY
+      dict set SERIES "$caption(audace,menu,bin_y)"               hlp "$help(dir,prog) ttus1-fr.htm BINY"
+      dict set SERIES "$caption(audace,menu,bin_y)"               par "y1 1 y2 2 height 20"
+      dict set SERIES "$caption(audace,menu,bin_y)"               opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,med_y)"               fun "MEDIANY"
+      dict set SERIES "$caption(audace,menu,med_y)"               hlp "$help(dir,prog) ttus1-fr.htm MEDIANY"
+      dict set SERIES "$caption(audace,menu,med_y)"               par "y1 1 y2 2 height 20"
+      dict set SERIES "$caption(audace,menu,med_y)"               opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,sort_y)"              fun "SORTY"
+      dict set SERIES "$caption(audace,menu,sort_y)"              hlp "$help(dir,prog) ttus1-fr.htm SORTY"
+      dict set SERIES "$caption(audace,menu,sort_y)"              par "y1 1 y2 2 height 20 percent 50"
+      dict set SERIES "$caption(audace,menu,sort_y)"              opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,colonne)"             fun "PROFILE direction=y"
       dict set SERIES "$caption(audace,menu,colonne)"             hlp "$help(dir,prog) ttus1-fr.htm PROFILE"
       dict set SERIES "$caption(audace,menu,colonne)"             par "offset 1 filename col"
-      dict set SERIES "$caption(audace,menu,colonne)"             opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,colonne)"             opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,bin_x)"               fun BINX
+      dict set SERIES "$caption(audace,menu,bin_x)"               hlp "$help(dir,prog) ttus1-fr.htm BINX"
+      dict set SERIES "$caption(audace,menu,bin_x)"               par "x1 1 x2 2 width 20"
+      dict set SERIES "$caption(audace,menu,bin_x)"               opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,med_x)"               fun "MEDIANX"
+      dict set SERIES "$caption(audace,menu,med_x)"               hlp "$help(dir,prog) ttus1-fr.htm MEDIANX"
+      dict set SERIES "$caption(audace,menu,med_x)"               par "x1 1 x2 2 width 20"
+      dict set SERIES "$caption(audace,menu,med_x)"               opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,sort_x)"              fun "SORTX"
+      dict set SERIES "$caption(audace,menu,sort_x)"              hlp "$help(dir,prog) ttus1-fr.htm SORTX"
+      dict set SERIES "$caption(audace,menu,sort_x)"              par "x1 1 x2 2 width 20 percent 50"
+      dict set SERIES "$caption(audace,menu,sort_x)"              opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set SERIES "$caption(audace,menu,matrice)"             fun MATRIX
       dict set SERIES "$caption(audace,menu,matrice)"             hlp "$help(dir,prog) ttus1-fr.htm MATRIX"
       dict set SERIES "$caption(audace,menu,matrice)"             par "x1 1 y1 1 x2 2 y2 2 filematrix matrice"
-      dict set SERIES "$caption(audace,menu,matrice)"             opt "bitpix 16 skylevel 0 nullpixel 0 jpegfile 0 jpeg_quality 75"
+      dict set SERIES "$caption(audace,menu,matrice)"             opt "bitpix 16 skylevel 0 nullpixel 0"
 
       return [::prtr::consultDic SERIES $function]
    }
@@ -1703,7 +1743,7 @@ namespace eval ::prtr {
 
    #--------------------------------------------------------------------------
    #  ::prtr::searchFunction nom_de_fonction
-   #  Recherche le dictionnaire de la fonction et afficher la liste dans le menubutton
+   #  Recherche le dictionnaire de la fonction et afficher la liste dans le bouton de menu
    #--------------------------------------------------------------------------
    proc searchFunction {oper} {
       variable private
@@ -1745,21 +1785,19 @@ namespace eval ::prtr {
       dict set Var   bitpix            "integer combobox"            ;#options IMA
       dict set Var   skylevel          "boolean checkbutton"         ;#options IMA
       dict set Var   nullpixel         "double labelentry"           ;#options IMA
-      dict set Var   jpegfile          "boolean checkbutton"         ;#options IMA
-      dict set Var   jpeg_quality      "integer 100 labelentry"      ;#options IMA
       dict set Var   powernorm         "boolean checkbutton"         ;#PROD
       dict set Var   percent           "double 100 labelentry"       ;#IMA/STACK SORT
       dict set Var   kappa             "double labelentry"           ;#SK
       dict set Var   offset            "integer labelentry"          ;#OFFSET ADD SUB PROFILE
-      dict set Var   constant          "double labelentry"           ;#MULT flat
+      dict set Var   constant          "double labelentry"           ;#MULT FLAT
       dict set Var   coef              "double labelentry"           ;#LOG
       dict set Var   offsetlog         "double labelentry"           ;#LOG
       dict set Var   back_threshold    "double 1. labelentry"        ;#BACK
-      dict set Var   back_kernel       "integer 4 labelentry"        ;#BACK
+      dict set Var   back_kernel       "integer 50 labelentry"       ;#BACK
       dict set Var   sub               "boolean checkbutton"         ;#BACK
       dict set Var   div               "boolean checkbutton"         ;#BACK
       dict set Var   binary            "boolean checkbutton"         ;#HOUGH
-      dict set Var   normoffset_value  "double labelentry"           ;#NORMOFFSET flat
+      dict set Var   normoffset_value  "double labelentry"           ;#NORMOFFSET FLAT
       dict set Var   normgain_value    "double labelentry"           ;#NORMGAIN
       dict set Var   unsmearing        "double labelentry"           ;#UNSMEARING
       dict set Var   cosmic_threshold  "double labelentry"           ;#COSMIC
@@ -1788,13 +1826,13 @@ namespace eval ::prtr {
       dict set Var   filename          "filename labelentry"         ;#PROFILE
       dict set Var   filematrix        "filename labelentry"         ;#MATRIX
       dict set Var   file              "img labelentry"              ;#ADD SUB DIV PROD
-      dict set Var   bias              "img labelentry"              ;#OPT flat prt
-      dict set Var   dark              "img labelentry"              ;#OPT flat prt
-      dict set Var   flat              "img labelentry"              ;#prt
+      dict set Var   bias              "img labelentry"              ;#OPT FLAT PRETRAITEMENT
+      dict set Var   dark              "img labelentry"              ;#OPT FLAT PRETRAITEMENT
+      dict set Var   flat              "img labelentry"              ;#PRETRAITEMENT
       dict set Var   mini              "double labelentry"           ;#CLIP
       dict set Var   maxi              "double labelentry"           ;#CLIP
-      dict set Var   opt_black         "boolean checkbutton"         ;#prt
-      dict set Var   methode           "boolean radiobutton"         ;#dark
+      dict set Var   opt_black         "boolean checkbutton"         ;#PRETRAITEMENT
+      dict set Var   methode           "boolean radiobutton"         ;#DARK
       dict set Var   kernel_width      "integer combobox"            ;#FILTER
       dict set Var   kernel_coef       "integer combobox"            ;#FILTER
       dict set Var   type_threshold    "integer combobox"            ;#FILTER
@@ -1932,9 +1970,6 @@ namespace eval ::prtr {
             #--   si pas controle dimensionnel
             return "$parametre=$value"
          } else {
-            if {($parametre eq "jpeg_quality") && ($::prtr::jpegfile == "0")} {
-               return ""
-            }
             #--   si controle dimmensionnel
             set mini "0"
             if {$seuil in {naxis1 naxis2}} {
@@ -1972,9 +2007,9 @@ namespace eval ::prtr {
             return [avertiUser err_par_name $parametre]
          }
 
-         set row [lsearch [$private(table).choix getcolumns 1] $nom_court]
+         set row [lsearch [$private(tbl) getcolumns 1] $nom_court]
          if {$row >=0} {
-            if {[lrange [$private(table).choix get $row] 2 end] eq $private(profil)} {
+            if {[lrange [$private(tbl) get $row] 2 end] eq $private(profil)} {
                #--   l'image est du meme type que celles selectionnee
                if {$nom_court ni $private(todo)} {
                   #--   cas ou l'image n'a pas deja ete selectionnee
@@ -1997,7 +2032,7 @@ namespace eval ::prtr {
             #--   verifie les dimensions des images
             lassign [::prtr::analyseFitsHeader $value] naxis naxis3 naxis1 naxis2
             if {[lindex $private(profil) 1] ne "${naxis1} X ${naxis2}"} {
-               return [avertiUser err_file_dim $value]
+              return [avertiUser err_file_dim $value]
             }
 
             if {$naxis eq "2"} {
@@ -2064,7 +2099,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::cmdExec { {IMA/STACK|IMA/SERIES} in name_out fonctionTT parametres }
+   #  ::prtr::cmdExec { {IMA/STACK|IMA/SERIES} in nameOut fonctionTT parametres }
    #  Exemple ::prtr::cmdExec [ list "IMA/SERIES" "$liste_generique_avec_index" "$nom_sortie" "ADD" "bitpix=16" ]
    #  Procedure lancee par le bouton Appliquer
    #--------------------------------------------------------------------------
@@ -2072,16 +2107,27 @@ namespace eval ::prtr {
 
       set dir  $::audace(rep_images)
       cd $dir
-      foreach {select in dir_out name_out extension function} $data {break}
+      foreach {select imgList dirOut nameOut extension function} $data {break}
 
       #--   fonctions necessitant une indexation de parametres en .fit ou .txt
       set filtre_file [list ADD SUB DIV PROD OPT]
       set filtre_txt [list "PROFILE direction=x" "PROFILE direction=y" MATRIX]
       set filtres [concat $filtre_file $filtre_txt]
-      set nb_img [llength $in]
+      set nb_img [llength $imgList]
+
+      #--   sauvegarde des parametres utilisateur
+      if {$function eq "BACK"} {
+         foreach var {back_kernel back_threshold} {
+            set result [lsearch -regexp -inline $options "${var}"]
+            regsub "${var}=" $result "" ::conf($var)
+         }
+      } elseif {$function eq "RESAMPLE"} {
+         set result [lsearch -regexp -inline $options "paramresample"]
+         regsub "paramresample=" $result "" ::conf(paramresample)
+      }
 
       #--   identifie le type d'images
-      set type [::prtr::getImgType $in]
+      set type [::prtr::getImgType $imgList]
 
       #--   si compression
       if {$::conf(fichier,compres) eq "0"} {
@@ -2090,7 +2136,7 @@ namespace eval ::prtr {
          set to_compress ""
          regsub ".gz" $extension "" ext
          #--   decompresse les fichiers .gz
-         foreach img $in {
+         foreach img $imgList {
             gunzip $img$extension
             #--   prepare la liste des compressions
             lappend to_compress [file join $dir $img$ext]
@@ -2100,7 +2146,7 @@ namespace eval ::prtr {
       #--   examine chaque fichier et
       #--   constitue la liste des nom en entree et en sortie
       if {$type eq "C"} {
-         foreach file $in {
+         foreach file $imgList {
             decompRGB $file
             #--   liste les fichiers a traiter
             foreach k {r g b} {
@@ -2109,25 +2155,25 @@ namespace eval ::prtr {
             }
          }
          set list_in [list "$list_r" "$list_g" "$list_b"]
-         set list_out [list ${name_out}r ${name_out}g ${name_out}b]
+         set list_out [list ${nameOut}r ${nameOut}g ${nameOut}b]
       } else {
-         set gray "$in"
+         set gray "$imgList"
          set list_in [list $gray]
-         set list_out [list $name_out]
+         set list_out [list $nameOut]
       }
 
       #--   gere le repertoire de sortie
-      set rep $dir_out
-      if {$dir_out eq "."} {set rep "$::audace(rep_images)"}
+      set rep $dirOut
+      if {$dirOut eq "."} {set rep "$::audace(rep_images)"}
 
       #--   gere les indices de sortie
-      set indice_out "."
+      set indiceOut "."
       #--   si plusieurs images de sortie
-      if {$select eq "IMA/SERIES" && $nb_img ne "1"} {set indice_out "1"}
+      if {$select eq "IMA/SERIES" && $nb_img ne "1"} {set indiceOut "1"}
 
       #--   RGB2R+G+B des images RGB passees en parametres
       if {$select eq "IMA/SERIES" && $function in {ADD SUB DIV PROD} && $type == "C"} {
-         set data [traiteImg $options file]
+         set data [::prtr::traiteImg $options file]
          set options [lindex $data 0]
          set img [lindex $data 1]
          ::prtr::decompRGB $img
@@ -2135,7 +2181,7 @@ namespace eval ::prtr {
       }
 
       #--   fixe le generique de sortie sans indice ni plan couleur ni extension
-      set racine [file join $rep $name_out]
+      set racine [file join $rep $nameOut]
 
       set catchError [catch {
 
@@ -2148,7 +2194,7 @@ namespace eval ::prtr {
                regsub -all ".txt" $options "${color}.txt" options
             }
 
-            set script "$select . \"$file_type\" * * $ext \"$rep\" $file_out $indice_out $ext $function $options"
+            set script "$select . \"$file_type\" * * $ext \"$rep\" $file_out $indiceOut $ext $function $options"
             ::prtr::editScript $script
             ttscript2 $script
 
@@ -2157,19 +2203,16 @@ namespace eval ::prtr {
                regsub -all "(r|g|b)\.txt" $options ".txt" options
             }
 
-            if {$type eq "C" && $indice_out eq "1"} {
+            if {$type eq "C" && $indiceOut eq "1"} {
                for {set i 1} {$i <= $nb_img} {incr i} {
                   #--   intervertit le nom du plan et l'indice
                   file rename -force "$racine$color$i$ext" "$racine$i$color$ext"
-                  if {[lsearch -regexp $options "jpegfile"] >= 0} {
-                     file rename -force $racine$color$i.jpg $racine$i$color.jpg
-                  }
                }
             }
          }
 
          #--   convertir en RGB
-         if {$indice_out eq "."} {
+         if {$indiceOut eq "."} {
             if {$type eq "C"} {::prtr::convertitRGB $racine$ext}
          } else {
             for {set i 1} {$i <= $nb_img} {incr i} {
@@ -2235,10 +2278,10 @@ namespace eval ::prtr {
    #  Reconstitue l'image couleur et efface les plans couleurs
    #  Parametre : nom de sortie (avec ou sans indice) de l'image
    #--------------------------------------------------------------------------
-   proc convertitRGB {name_out} {
+   proc convertitRGB {nameOut} {
 
-      set file [file rootname $name_out]
-      set ext [file extension $name_out]
+      set file [file rootname $nameOut]
+      set ext [file extension $nameOut]
       #--   convertit les plans couleurs en RGB
       ::conv2::Do_r+g+b2rgb $file $file
       #--   efface les plans couleurs
@@ -2257,7 +2300,7 @@ namespace eval ::prtr {
 
       #--   accelere pour le cas particulier d'une image isolee
       if {[llength $files] eq "1"} {
-         set w "$private(table).choix"
+         set w "$private(tbl)"
          set k [lsearch [$w getcolumns 1] $files]
          return "[$w cellcget $k,2 -text]"
       }
@@ -2291,21 +2334,25 @@ namespace eval ::prtr {
    #--------------------------------------------------------------------------
    proc clipMinMax { data options } {
 
-      lassign $data imgList dir out ext
+      lassign $data imgList dirOut nameOut extOut
       set l [llength $imgList]
 
-      if {$dir eq "."} {set dir $::audace(rep_images)}
+      if {$dirOut eq "."} {set dirOut $::audace(rep_images)}
 
       #---  extrait les valeurs numeriques
       foreach type {mini maxi bitpix} {
-        lassign [extractData $options "$type"] options $type
+        lassign [::prtr::extractData $options "$type"] options $type
       }
       set bitpix [::prtr::convertBitPix2BitPix $bitpix]
+
+      #--   sauvegarde les reglages utilisateurs
+      set ::conf(clip_mini) $mini
+      set ::conf(clip_maxi) $maxi
 
       set catchError [catch {
 
          set buf_clip [::buf::create]
-         buf$buf_clip extension $ext
+         buf$buf_clip extension $extOut
          if {$bitpix ne ""} {buf$buf_clip bitpix $bitpix}
          set l [llength $imgList]
 
@@ -2313,36 +2360,36 @@ namespace eval ::prtr {
          set type [::prtr::getImgType $imgList]
 
          foreach in $imgList {
-            set index [lsearch $imgList $in]
+            set index [lsearch $imgList $imgList]
             #--   decompose l'image RGB
             if {$type eq "C"} {
                decompRGB $in
                foreach color {r g b} {
-                  buf$buf_clip load [file join $dir $in$color$ext]
+                  buf$buf_clip load [file join $dirOut $imgList$color$extOut]
                   buf$buf_clip clipmin $mini
                   buf$buf_clip clipmax $maxi
                   if {$l == "1"} {
-                     set name_out [file join $dir $out]
+                     set nameOut [file join $dirOut $nameOut]
                   } else {
-                     set name_out [file join $dir $out$index]
+                     set nameOut [file join $dirOut $nameOut$index]
                   }
-                  buf$buf_clip save $name_out$color$ext
+                  buf$buf_clip save $nameOut$color$extOut
                }
                #--   convertit en RGB
-               ::prtr::convertitRGB $name_out$ext
+               ::prtr::convertitRGB $nameOut$extOut
                #--   efface les plans couleurs intermediaires
-               file delete [file join $dir ${in}r$ext] [file join $dir ${in}g$ext] \
-                  [file join $dir ${in}b$ext]
+               file delete [file join $dirOut ${imgList}r$extOut] [file join $dirOut ${imgList}g$extOut] \
+                  [file join $dirOut ${imgList}b$extOut]
             }  else {
-               buf$buf_clip load [file join $dir $in$ext]
+               buf$buf_clip load [file join $dirOut $imgList$extOut]
                buf$buf_clip clipmin $mini
                buf$buf_clip clipmax $maxi
                if {$l == "1"} {
-                  set name_out [file join $dir $out]
+                  set nameOut [file join $dirOut $nameOut]
                } else {
-                  set name_out [file join $dir $out$index]
+                  set nameOut [file join $dirOut $nameOut$index]
                }
-               buf$buf_clip save $name_out$ext
+               buf$buf_clip save $nameOut$extOut
             }
          }
          ::buf::delete $buf_clip
@@ -2359,10 +2406,10 @@ namespace eval ::prtr {
 
       set dir  $::audace(rep_images)
       cd $dir
-      foreach {select in dir_out name_out extension function} $data {break}
-      set nb_img [llength $in]
+      foreach {select imgList dirOut nameOut extension function} $data {break}
+      set nb_img [llength $imgList]
       #--   identifie le type d'images
-      set type [getImgType $in]
+      set type [getImgType $imgList]
 
       #--   si compression
       if {$::conf(fichier,compres) eq "0"} {
@@ -2371,7 +2418,7 @@ namespace eval ::prtr {
          set to_compress ""
          regsub ".gz" $extension "" ext
          #--   decompresse les fichiers .gz
-         foreach img $in {
+         foreach img $imgList {
             gunzip $img$extension
             #--   prepare la liste des compressions
             lappend to_compress [file join $dir $img$ext]
@@ -2381,7 +2428,7 @@ namespace eval ::prtr {
       #--   examine chaque fichier et
       #--   constitue la liste des nom en entree et en sortie
       if {$type eq "C"} {
-         foreach file $in {
+         foreach file $imgList {
             decompRGB $file
             #--   liste les fichiers a traiter
             foreach k {r g b} {
@@ -2390,28 +2437,28 @@ namespace eval ::prtr {
             }
          }
          set list_in [list "$list_r" "$list_g" "$list_b"]
-         set list_out [list ${name_out}r ${name_out}g ${name_out}b]
+         set list_out [list ${nameOut}r ${nameOut}g ${nameOut}b]
       } else {
-         set gray "$in"
+         set gray "$imgList"
          set list_in [list $gray]
-         set list_out [list $name_out]
+         set list_out [list $nameOut]
       }
 
       #--   gere le repertoire de sortie
-      set rep $dir_out
-      if {$dir_out eq "."} {set rep "$::audace(rep_images)"}
+      set rep $dirOut
+      if {$dirOut eq "."} {set rep "$::audace(rep_images)"}
 
       #--   gere les indices de sortie
       if {$nb_img eq "1"} {
-         set indice_out "."
+         set indiceOut "."
          set indFinal "."
       } else {
-         set indice_out "1"
+         set indiceOut "1"
          set indFinal $nb_img
       }
 
       #--   fixe le generique de sortie sans indice ni plan couleur ni extension
-      set racine [file join $rep $name_out]
+      set racine [file join $rep $nameOut]
 
       set catchError [catch {
 
@@ -2420,14 +2467,14 @@ namespace eval ::prtr {
             if {$type eq "C"} {set color [string index [lindex $file_type 0] end]}
 
             switch -exact $function {
-               "ROT+90" {  set script1 "$select . \"$file_type\" * * $ext . temp $indice_out $ext INVERT xy $options"
-                           set script2 "$select . temp $indice_out $indFinal $ext \"$rep\" $file_out $indice_out $ext INVERT flip $options"
+               "ROT+90" {  set script1 "$select . \"$file_type\" * * $ext . temp $indiceOut $ext INVERT xy $options"
+                           set script2 "$select . temp $indiceOut $indFinal $ext \"$rep\" $file_out $indiceOut $ext INVERT flip $options"
                         }
-               "ROT180" {  set script1 "$select . \"$file_type\" * * $ext . temp $indice_out $ext INVERT mirror $options"
-                           set script2 "$select . temp $indice_out $indFinal $ext \"$rep\" $file_out $indice_out $ext INVERT flip $options"
+               "ROT180" {  set script1 "$select . \"$file_type\" * * $ext . temp $indiceOut $ext INVERT mirror $options"
+                           set script2 "$select . temp $indiceOut $indFinal $ext \"$rep\" $file_out $indiceOut $ext INVERT flip $options"
                         }
-               "ROT-90" {  set script1 "$select . \"$file_type\" * * $ext . temp $indice_out $ext INVERT flip $options"
-                           set script2 "$select . temp $indice_out $indFinal $ext \"$rep\" $file_out $indice_out $ext INVERT xy $options"
+               "ROT-90" {  set script1 "$select . \"$file_type\" * * $ext . temp $indiceOut $ext INVERT flip $options"
+                           set script2 "$select . temp $indiceOut $indFinal $ext \"$rep\" $file_out $indiceOut $ext INVERT xy $options"
                         }
             }
 
@@ -2444,19 +2491,16 @@ namespace eval ::prtr {
             ::prtr::editScript $script2
             ttscript2 $script2
 
-            if {$type eq "C" && $indice_out eq "1"} {
+            if {$type eq "C" && $indiceOut eq "1"} {
                for {set i 1} {$i <= $nb_img} {incr i} {
                   #--   intervertit le nom du plan et l'indice
                   file rename -force "$racine$color$i$ext" "$racine$i$color$ext"
-                  if {[lsearch -regexp $options "jpegfile"] >= 0} {
-                     file rename -force $racine$color$i.jpg $racine$i$color.jpg
-                  }
                }
             }
          }
 
          #--   convertir en RGB
-         if {$indice_out eq "."} {
+         if {$indiceOut eq "."} {
             if {$type eq "C"} {::prtr::convertitRGB $racine$ext}
          } else {
             for {set i 1} {$i <= $nb_img} {incr i} {
@@ -2488,20 +2532,20 @@ namespace eval ::prtr {
 
       set dir  $::audace(rep_images)
       cd $dir
-      foreach {select in dir_out name_out extension function} $data {break}
-      set nb_img [llength $in]
+      foreach {select imgList dirOut nameOut extOut function} $data {break}
+      set nb_img [llength $imgList]
       #--   identifie le type d'images
-      set type [getImgType $in]
+      set type [getImgType $imgList]
 
       #--   si compression
       if {$::conf(fichier,compres) eq "0"} {
-         set ext $extension
+         set ext $extOut
       } else {
          set to_compress ""
-         regsub ".gz" $extension "" ext
+         regsub ".gz" $extOut "" ext
          #--   decompresse les fichiers .gz
-         foreach img $in {
-            gunzip $img$extension
+         foreach img $imgList {
+            gunzip $img$extOut
             #--   prepare la liste des compressions
             lappend to_compress [file join $dir $img$ext]
          }
@@ -2510,7 +2554,7 @@ namespace eval ::prtr {
       #--   examine chaque fichier et
       #--   constitue la liste des nom en entree et en sortie
       if {$type eq "C"} {
-         foreach file $in {
+         foreach file $imgList {
             decompRGB $file
             #--   liste les fichiers a traiter
             foreach k {r g b} {
@@ -2519,36 +2563,40 @@ namespace eval ::prtr {
             }
          }
          set list_in [list "$list_r" "$list_g" "$list_b"]
-         set list_out [list ${name_out}r ${name_out}g ${name_out}b]
+         set list_out [list ${nameOut}r ${nameOut}g ${nameOut}b]
       } else {
-        set gray "$in"
+        set gray "$imgList"
          set list_in [list $gray]
-         set list_out [list $name_out]
+         set list_out [list $nameOut]
       }
 
       #--   gere le repertoire de sortie
-      set rep $dir_out
-      if {$dir_out eq "."} {set rep "$::audace(rep_images)"}
+      set rep $dirOut
+      if {$dirOut eq "."} {set rep "$::audace(rep_images)"}
 
       #--   gere les indices de sortie
-      set indice_out "."
+      set indiceOut "."
       #--   si plusieurs images de sortie
       if {$nb_img eq "1"} {
-         set indice_out "."
+         set indiceOut "."
          set indFinal "."
       } else {
-         set indice_out "1"
+         set indiceOut "1"
          set indFinal $nb_img
       }
 
       #--   fixe le generique de sortie sans indice ni plan couleur ni extension
-      set racine [file join $rep $name_out]
+      set racine [file join $rep $nameOut]
 
       #--   extrait la valeur de sigma
-      lassign [extractData $options sigma] options sigma
+      lassign [::prtr::extractData $options sigma] options sigma
 
       #--   extrait la valeur de la constante multiplicative
-      lassign [extractData $options constant] options constant
+      lassign [::prtr::extractData $options constant] options constant
+
+      #--   sauvegarde les reglages utilisateurs
+      set ::conf(coef_etal) $sigma
+      set ::conf(coef_mult) $constant
 
       #--   il ne reste dans options que les options TT classiques (bitpix, skylevel, nullpixel)
 
@@ -2557,10 +2605,10 @@ namespace eval ::prtr {
          foreach file_type $list_in file_out $list_out {
 
             if {$type eq "C"} {set color [string index [lindex $file_type 0] end]}
-            set script1 "$select . \"$file_type\" * * $ext . $file_out $indice_out $ext CONV kernel_type=gaussian sigma=$sigma $options"
-            set script2 "$select . \"$file_type\" * * $ext . $file_out $indice_out $ext SUB \"file=./$file_out\" $options"
-            set script3 "$select . \"$file_out\" $indice_out $indFinal $ext . $file_out $indice_out $ext MULT constant=$constant $options"
-            set script4 "$select . \"$file_type\" * * $ext . $file_out $indice_out $ext ADD \"file=./$file_out\" $options"
+            set script1 "$select . \"$file_type\" * * $ext . $file_out $indiceOut $ext CONV kernel_type=gaussian sigma=$sigma $options"
+            set script2 "$select . \"$file_type\" * * $ext . $file_out $indiceOut $ext SUB \"file=./$file_out\" $options"
+            set script3 "$select . \"$file_out\" $indiceOut $indFinal $ext . $file_out $indiceOut $ext MULT constant=$constant $options"
+            set script4 "$select . \"$file_type\" * * $ext . $file_out $indiceOut $ext ADD \"file=./$file_out\" $options"
 
             ::prtr::editScript $script1
             ttscript2 $script1
@@ -2571,19 +2619,16 @@ namespace eval ::prtr {
             ::prtr::editScript $script4
             ttscript2 $script4
 
-            if {$type eq "C" && $indice_out eq "1"} {
+            if {$type eq "C" && $indiceOut eq "1"} {
                for {set i 1} {$i <= $nb_img} {incr i} {
                   #--   intervertit le nom du plan et l'indice
                   file rename -force "$racine$color$i$ext" "$racine$i$color$ext"
-                  if {[lsearch -regexp $options "jpegfile"] >= 0} {
-                     file rename -force $racine$color$i.jpg $racine$i$color.jpg
-                  }
                }
             }
          }
 
          #--   convertir en RGB
-         if {$indice_out eq "."} {
+         if {$indiceOut eq "."} {
             if {$type eq "C"} {::prtr::convertitRGB $racine$ext}
          } else {
             for {set i 1} {$i <= $nb_img} {incr i} {
@@ -2641,7 +2686,9 @@ namespace eval ::prtr {
       set l [llength $imgList]
 
       #--   cherche le nom de l'offset
-      lassign [extractData $options "bias"] options bias
+      lassign [::prtr::extractData $options "bias"] options bias
+
+      if {$bias eq ""} {::prtr::informeUser "faire_dark" "faire_offset"}
 
       set catchError [catch {
          if {$bias ne ""} {
@@ -2662,6 +2709,7 @@ namespace eval ::prtr {
          if {$options ne ""} {append script " " $options}
          ::prtr::editScript $script
          ttscript2 $script
+
 
          #--   detruit les fichiers temporaires
          if {[lsearch -regexp $imgList temp] >= "0"} {
@@ -2685,8 +2733,11 @@ namespace eval ::prtr {
 
       #--   isole le nom complet de l'image d'offset et de dark
       foreach type {bias dark} {
-        lassign [extractData $options "$type"] options $type
+        lassign [::prtr::extractData $options "$type"] options $type
       }
+
+      if {$bias eq ""} {::prtr::informeUser "faire_flat_field" "faire_offset"}
+      if {$dark eq ""} {::prtr::informeUser "faire_flat_field" "faire_dark"}
 
       #--   cree l'image Offset+Dark si l'offset et/ou le dark existe
       if {$dark ne "" || $bias ne ""} {
@@ -2701,7 +2752,7 @@ namespace eval ::prtr {
             set imgList [buildNewList temp $l]
 
             #--   extrait la valeur de normalisation de l'offset
-            lassign [extractData $options "normoffset_value"] options opt
+            lassign [::prtr::extractData $options "normoffset_value"] options opt
 
             #--   normalise l'offset
             set script "IMA/SERIES . \"$imgList\" * * $extOut . temp 1 $extOut NORMOFFSET normoffset_value=$opt"
@@ -2746,12 +2797,14 @@ namespace eval ::prtr {
       }
 
       #--   ote opt_black des options
-      lassign [extractData $options "opt_black"] options opt
+      lassign [::prtr::extractData $options "opt_black"] options opt
 
       #--   extrait le nom des fichiers operandes
       foreach type {bias dark flat} {
-        lassign [extractData $options "$type"] options $type
+        lassign [::prtr::extractData $options "$type"] options $type
       }
+
+      if {$flat eq ""} {::prtr::informeUser "pretraitee" "faire_flat_field"}
 
       set catchError [catch {
          #--   cree les images optimisees dans le repertoire de destination
@@ -2793,8 +2846,12 @@ namespace eval ::prtr {
 
       #--   extrait le nom des fichiers operandes
       foreach type {bias dark flat} {
-        lassign [extractData $options "$type"] options $type
+        lassign [::prtr::extractData $options "$type"] options $type
       }
+
+      if {$bias eq ""} {::prtr::informeUser "pretraitee" "faire_offset"}
+      if {$dark eq ""} {::prtr::informeUser "pretraitee" "faire_dark"}
+      if {$flat eq ""} {::prtr::informeUser "pretraitee" "faire_flat_field"}
 
       if {$dark ne "" || $bias ne ""} {
          if {[createOffset+Dark $dark $bias] ne "0"} {return 1}
@@ -2827,7 +2884,7 @@ namespace eval ::prtr {
             #--   renomme les fichiers temp en l'absence de flat
             foreach file $private(todo) {
                regsub "temp" $file "$nameOut" newName
-               file rename-force [file join $dir_out $file$ext_out] [file join $dir_out $newName$extOut]
+               file rename-force [file join $dirOut $file$ext_out] [file join $dirOut $newName$extOut]
             }
          }
        }  ErrInfo]
@@ -2848,9 +2905,9 @@ namespace eval ::prtr {
       set nameOut "Offset+Dark"
       set extOut $::conf(extension,defaut)
       if {$file1 eq ""} {
-         file copy -force $file2 [file join $::audace(rep_images) $nameOut$extOut]
+         file copy -force $file2 $nameOut$extOut
       } elseif  {$file2 eq ""} {
-         file copy -force $file1 [file join $::audace(rep_images) $nameOut$extOut]
+         file copy -force $file1 $nameOut$extOut
       } else {
          #--   cas de deux fichiers
          set catchError [catch {
@@ -2933,6 +2990,17 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
+   #  ::prtr::informeUser
+   #  Affiche une info sur la console sur l'absence d'une image maître
+   #--------------------------------------------------------------------------
+   proc informeUser { v1 v2 } {
+      global caption
+
+      ::console::affiche_resultat "[format $caption(prtr,sans) \
+         $caption(audace,menu,$v1) $caption(audace,menu,$v2)]\n"
+   }
+
+   #--------------------------------------------------------------------------
    #  ::prtr::cmdAligner
    #  Renvoie une nouvelle liste d'images a traiter
    #  Parametres : nouveau nom, nb d'images
@@ -2943,12 +3011,17 @@ namespace eval ::prtr {
       cd $::audace(rep_images)
       set extOut $::conf(extension,defaut)
       lassign $data imgList dirOut nameOut extIn
-      set l [llength $imgList]
+      set nbImg [llength $imgList]
       set b [::buf::create]
-      set fileToDestroy ""
+      set toResize ""
+      set toDestroy ""
 
       #--   extrait le nom de l'image de reference
-      lassign [extractData $options "image_ref"] options img_ref
+      lassign [::prtr::extractData $options "image_ref"] options imgRef
+
+      #--   travaille sur une copie de l'image de refrence
+      file copy -force $imgRef reference$extOut
+      set toDestroy [concat $toDestroy reference]
 
       #--   saisit le nom de sortie de l'image de correlation croisee
       set dest crosscorrelation$extOut
@@ -2956,10 +3029,46 @@ namespace eval ::prtr {
       #--   cree deux vecteurs
       ::blt::vector create Vx Vy -watchunset 1
 
+      #--   si compression
+      if {$::conf(fichier,compres) eq "0"} {
+         set ext $extOut
+      } else {
+         set toCompress ""
+         regsub ".gz" $extIn "" ext
+         #--   decompresse les fichiers .gz
+         foreach img $imgList {
+            gunzip $img$$extIn
+            #--   prepare la liste des compressions
+            lappend toCompress [file join $dir $img$ext]
+         }
+      }
+
+      #--   identifie le type d'images
+      set type [getImgType $imgList]
+
+      if {$type ne "C"} {
+         set ref "reference$extOut"
+      } else {
+         #--   decompose toutes les images en plans couleurs
+         foreach file "$imgList reference" {
+            decompRGB $file
+            set toDestroy [concat $toDestroy ${file}r ${file}g ${file}b]
+         }
+         #--   indique le plan vert de l'image de reference
+         set ref "referenceg$extOut"
+      }
+
+      #--   gere le repertoire de sortie
+      set rep $dirOut
+      if {$dirOut eq "."} {set rep "$::audace(rep_images)"}
+
       #--   cherche la correlation
       foreach img $imgList {
 
-         set catchError [catch {icorr2d $img_ref ${img}$extIn $dest} ErrInfo]
+         set plan $img
+        if {$type eq "C"} {set plan ${img}g}
+
+         set catchError [catch {icorr2d $ref ${plan}$extIn $dest} ErrInfo]
 
          if {$catchError eq "1"} {
             ::prtr::Error "$ErrInfo"
@@ -2987,14 +3096,31 @@ namespace eval ::prtr {
             Vx append $dx
             Vy append $dy
 
-            #--   translate chaque image
+            if {$type ne "C"} {
+               set todo $img
+               lassign [list . . .] indiceDeb  indiceFin  indiceOut
+            } else {
+               set todo [list ${img}r ${img}g ${img}b]
+               lassign [list * * 1] indiceDeb  indiceFin  indiceOut
+            }
+
+            #--   translate chaque image ou les 3 plans couleurs
             set catchError [catch {
-               set script "IMA/SERIES . $img . . $extIn . temp${img} . $extOut TRANS trans_x=$dx trans_y=$dy $options"
+               set script "IMA/SERIES . \"$todo\" $indiceDeb $indiceFin $extIn . temp$img $indiceOut $extOut TRANS trans_x=$dx trans_y=$dy $options"
                ::prtr::editScript $script
                ttscript2 "$script"
 
-               #--   liste les fichiers provisoires
-               lappend fileToDestroy "temp${img}"
+               #--   memorise la liste des fichiers
+               if {$indiceOut ne "1"} {
+                  lappend toResize temp$img
+                  set toDestroy [concat $toDestroy temp$img]
+               } else {
+                  foreach i {1 2 3} p {r g b} {
+                     file rename -force "temp$img$i$extOut" "temp$img$p$extOut"
+                     lappend toResize temp$img$p
+                     set toDestroy [concat $toDestroy temp$img$p]
+                  }
+               }
             } ErrInfo]
 
             if {$catchError eq "1"} {
@@ -3002,7 +3128,6 @@ namespace eval ::prtr {
                return $catchError
             }
 
-            #--   supprime l'image de correlation sur le disque
             file delete $dest
          }
       }
@@ -3013,7 +3138,7 @@ namespace eval ::prtr {
       #--   calcule les limites du fenetrage
       foreach {vector var} [list Vx x Vy y] {
 
-         if {$var eq "x"} {
+        if {$var eq "x"} {
             set naxis $naxis1
          } else {
             set naxis $naxis2
@@ -3031,24 +3156,53 @@ namespace eval ::prtr {
          } else {
             set ${var}1 [expr {int($max+1)}]
             set ${var}2 [expr {int($naxis+$min)}]
-         }
+        }
       }
       ::blt::vector destroy Vx Vy
 
       #--   liste les fichiers a fenetrer
-      set liste [list [file rootname [file tail $img_ref]]]
-      foreach file $imgList {lappend liste temp$file}
+      if {$type ne "C"} {
+         set toResize [concat reference $toResize]
+      } else {
+         set toResize [concat referencer referenceg referenceb $toResize]
+      }
 
-      set script "IMA/SERIES \"$dirOut\" \"$liste\" * * $extOut . $nameOut 1 $extOut WINDOW x1=$x1 x2=$x2 y1=$y1 y2=$y2 $options"
+      set script "IMA/SERIES \"$dirOut\" \"$toResize\" * * $extOut \"$dirOut\" temp 1 $extOut WINDOW x1=$x1 x2=$x2 y1=$y1 y2=$y2 $options"
       ::prtr::editScript $script
-      set catchError [catch {
-         ttscript2 $script
-         #--   detruit les fichiers provisoires
-         ttscript2 "IMA/SERIES . \"$fileToDestroy\" * * $extOut . . . . DELETE"
-      } ErrInfo]
+      set catchError [catch {ttscript2 $script} ErrInfo]
+      if {$catchError eq "1"} {
+         ::prtr::Error "$ErrInfo"
+          return $catchError
+      }
 
-      if {$catchError eq "1"} {::prtr::Error "$ErrInfo"}
+      #--   convertit en RGB
+      if {$type eq "C"} {
+         set limite [llength $toResize]
+         set k "0"
+         for {set i 1} {$i <= $limite} {incr i 3} {
+            incr k
+            foreach p [list $i [expr {$i+1}] [expr {$i+2}]] c {r g b } {
+               file rename -force temp$p$extOut ${nameOut}$k$c$extOut
+               set toDestroy [concat $toDestroy temp$p ${nameOut}$k$c]
+            }
+           ::prtr::convertitRGB ${nameOut}$k$extOut
+         }
+      } else {
+         set limite [llength $toResize]
+         for {set i 1} {$i <= $limite} {incr i} {
+            file rename -force temp$i$extOut ${nameOut}$i$extOut
+            set toDestroy [concat $toDestroy temp$i]
+         }
+      }
 
+      #--   recompresse les fichiers d'entree et les fichiers de sortie
+      if {$::conf(fichier,compres) eq "1"} {
+         foreach file $toCompress {gzip $file}
+         set ext "$ext.gz"
+      }
+
+      #--   detruit les fichiers provisoires
+      ttscript2 "IMA/SERIES . \"$toDestroy\" * * $extOut . . . . DELETE"
       return $catchError
    }
 
@@ -3060,17 +3214,19 @@ namespace eval ::prtr {
 
       lassign $box x1 y1 x2 y2
       set c [::buf::create]
+      set d [::buf::create]
       buf$buf copyto $c
+      buf$buf copyto $d
 
       #--   additionne les lignes et les colonnes
       set catchError [catch {
-         buf$buf imaseries "SORTY percent=100 y1=$y1 y2=$y2 height=1"
-         buf$buf imaseries "PROFILE direction=x offset=1 \"filename=./sortli.txt\" "
-         buf$c imaseries "SORTX percent=100 x1=$x1 x2=$x2 width=1"
-         buf$c imaseries "PROFILE direction=y offset=1 \"filename=./sortcol.txt\" "
+         buf$c imaseries "SORTY percent=100 y1=$y1 y2=$y2 height=1"
+         buf$c imaseries "PROFILE direction=x offset=1 \"filename=sortli.txt\" "
+         buf$d imaseries "SORTX percent=100 x1=$x1 x2=$x2 width=1"
+         buf$d imaseries "PROFILE direction=y offset=1 \"filename=sortcol.txt\" "
       }  ErrInfo]
 
-      ::buf::delete $c
+      ::buf::delete $c $d
 
       if {$catchError eq "1"} {
          ::prtr::Error "$ErrInfo"
@@ -3078,7 +3234,7 @@ namespace eval ::prtr {
       }
 
       foreach file {sortli.txt sortcol.txt} coord {x y} {
-         set fd [open [file join $::audace(rep_images) $file] r+ ]
+         set fd [open $file r+ ]
          set max "0"
          set $coord ""
          gets $fd value
@@ -3093,8 +3249,16 @@ namespace eval ::prtr {
             }
          }
          close $fd
-         file delete [file join $::audace(rep_images) $file]
+         file delete $file
       }
+
+      #--   cherche la fraction de pixel
+      set x1 [expr {int($x-5)}]
+      set y1 [expr {int($y-5)}]
+      set x2 [expr {int($x+5)}]
+      set y2 [expr {int($y+5)}]
+      set box [list $x1 $y1 $x2 $y2]
+      lassign  [buf$buf centro $box] x y
       return [list $x $y]
    }
 
