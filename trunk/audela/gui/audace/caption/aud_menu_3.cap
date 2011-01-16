@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.62 2011-01-09 15:17:35 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.63 2011-01-16 16:55:34 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -85,10 +85,10 @@ set caption(audace,menu,filtre_median)                  "Median Filter"
 set caption(audace,menu,filtre_mean)                    "Mean Filter"
 set caption(audace,menu,filtre_minimum)                 "Minimum Filter"
 set caption(audace,menu,filtre_maximum)                 "Maximum Filter"
-set caption(audace,menu,filtre_up)                      "#Filtre éclairement Haut->Bas"
+set caption(audace,menu,filtre_up)                      "# Filtre éclairement Haut->Bas"
 set caption(audace,menu,filtre_left)                    "# Filtre éclairement Gauche->Droite"
-set caption(audace,menu,filtre_down)                    "#Filtre éclairement Bas->Haut"
-set caption(audace,menu,filtre_right)                   "#Filtre éclairement Droite->Gauche"
+set caption(audace,menu,filtre_down)                    "# Filtre éclairement Bas->Haut"
+set caption(audace,menu,filtre_right)                   "# Filtre éclairement Droite->Gauche"
 set caption(audace,menu,filtre_gaussien)                "Gaussian Filter"
 set caption(audace,menu,ond_morlet)                     "Morlet Type Wavelet"
 set caption(audace,menu,ond_mexicain)                   "Mexican Hat Type Wavelet"
