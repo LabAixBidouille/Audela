@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: aud.tcl,v 1.159 2011-01-09 10:27:48 robertdelmas Exp $
+# Mise à jour $Id: aud.tcl,v 1.160 2011-01-18 20:03:46 robertdelmas Exp $
 #
 
 #--- Chargement du package BWidget
@@ -87,6 +87,9 @@ namespace eval ::audace {
       set confgene(EditScript,error_viewer) "1"
       set confgene(EditScript,error_java)   "1"
       set confgene(EditScript,error_aladin) "1"
+
+      #--- Je recupere l'annee en cours pour la borne haute du Copyright
+      set audace(endCopyright) [ clock format [ clock seconds ] -format "%Y" ]
 
       #--- On retourne dans le repertoire gui
       cd ..
@@ -1024,6 +1027,7 @@ namespace eval ::audace {
          interp expose $interpTemp source
          interp expose $interpTemp file
          #--- je transfere des variables globales a l'interpreteur temporaire
+         $interpTemp eval [ list set audace(endCopyright) $::audace(endCopyright) ]
          $interpTemp eval [ list set langage $::langage ]
          $interpTemp eval [ list set pkgIndexFileName "$pkgIndexFileName" ]
 
@@ -1069,7 +1073,7 @@ namespace eval ::audace {
             } else {
                set pluginTitle "$pluginNamespace"
             }
-           #--- je recupere le ou les OS supporte(s) par le plugin
+            #--- je recupere le ou les OS supporte(s) par le plugin
             if { [info commands $pluginNamespace\::getPluginOS] != "" } {
                set pluginOS [$pluginNamespace\::getPluginOS]
             } else {
