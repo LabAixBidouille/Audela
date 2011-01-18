@@ -1,4 +1,4 @@
-$Id: pkgIndex.tcl,v 1.2 2011-01-18 20:07:25 jacquesmichelet Exp $
+# $Id: pkgIndex.tcl,v 1.3 2011-01-18 20:16:11 jacquesmichelet Exp $
 
 proc load_tkhtml { dir } {
     if { $::tcl_platform(os) == "Linux" } {
