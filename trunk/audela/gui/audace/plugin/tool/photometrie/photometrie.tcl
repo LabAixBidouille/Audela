@@ -5,7 +5,7 @@
 #
 # @brief Outil pour l'analyse photométrique d'une image.
 #
-# $Id: photometrie.tcl,v 1.4 2011-01-16 19:43:49 jacquesmichelet Exp $
+# $Id: photometrie.tcl,v 1.5 2011-01-19 19:13:41 jacquesmichelet Exp $
 #
 
 namespace eval ::Photometrie {
@@ -49,13 +49,23 @@ namespace eval ::Photometrie {
         variable photometrie_texte
         variable photometrie
 
-        set photometrie(internet) 1
-        if { ![ file exists $::conf(exec_java) ] || ![ file executable $::conf(exec_java) ] } {
-            ::console::affiche_erreur "$photometrie_texte(err_java) \n"
-            set photometrie(internet) 0
-        }
-
-        if { ![ file exists $::conf(exec_aladin) ] } {
+        set photometrie(internet) 0
+        if { [ file exists $::conf(exec_aladin) ] } {
+            if { ( [ file executable $::conf(exec_aladin) ] ) && ( [ file extension $::conf(exec_aladin) ] == ".exe" ) } {
+                # Mode windows, avec aladin.exe
+                set photometrie(internet) 1
+                set photometrie(mode_aladin) exe
+            } else {
+                # On a un aladin.jar qui requiert java
+                if { [ file exists $::conf(exec_java) ] && [ file executable $::conf(exec_java) ] } {
+                    set photometrie(internet) 1
+                    set photometrie(mode_aladin) jar
+                } else {
+                    ::console::affiche_erreur "$photometrie_texte(err_java) \n"
+                    set photometrie(internet) 0
+                }
+            }
+        } else {
             ::console::affiche_erreur "$photometrie_texte(err_aladin) \n"
             set photometrie(internet) 0
         }
@@ -625,9 +635,15 @@ namespace eval ::Photometrie {
     proc ExecutionAladin { script_aladin } {
         variable canal
         variable attente
+        variable photometrie
 
         set attente rien
-        set commande "\"$::conf(exec_java)\" -jar \"$::conf(exec_aladin)\" -script \"$script_aladin\" 2>@1"
+        if { $photometrie(mode_aladin) == "jar" } {
+            set commande "\"$::conf(exec_java)\" -jar \"$::conf(exec_aladin)\" -script \"$script_aladin\" 2>@1"
+        } else {
+            # mode aladin.exe
+            set commande "\"$::conf(exec_aladin)\" -script \"$script_aladin\" 2>@1"
+        }
         set canal [ open "| $commande" r ]
         fconfigure $canal -blocking 0 -encoding binary
         fileevent $canal readable { ::Photometrie::AttenteAladin $::Photometrie::canal ouvert }
