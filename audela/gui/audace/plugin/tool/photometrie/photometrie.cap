@@ -5,7 +5,7 @@
 #
 # @brief Outil pour l'analyse photométrique d'une image.
 #
-# $Id: photometrie.cap,v 1.3 2011-01-17 19:49:29 jacquesmichelet Exp $
+# $Id: photometrie.cap,v 1.4 2011-01-19 19:13:07 jacquesmichelet Exp $
 #
 
 
@@ -28,7 +28,7 @@ set photometrie_texte(err_pas_de_sel)           "No selected star."
 set photometrie_texte(err_nombre_positif)       "The value must be positif or null."
 set photometrie_texte(err_dia_interieur)        "The aperture window (inner disk) must be smaller than the outer ring."
 set photometrie_texte(err_dia_exterieur)        "The ring inner diameter must be smaller than the outer diameter."
-set photometrie_texte(err_hors_clou)            "The start is too close from the image boundary."
+set photometrie_texte(err_hors_clou)            "The star is too close from the image boundary."
 set photometrie_texte(err_etoile_faible)        "Too weak star."
 set photometrie_texte(manuel)                   "Reference star selected manually."
 set photometrie_texte(auto_local)               "Reference star selected from a local catalog."
@@ -121,7 +121,7 @@ if { [ string compare $langage "french" ] == "0" } {
     set photometrie_texte(err_nombre_positif)       "The value must be positif or null."
     set photometrie_texte(err_dia_interieur)        "The aperture window (inner disk) must be smaller than the outer ring."
     set photometrie_texte(err_dia_exterieur)        "The ring inner diameter must be smaller than the outer diameter."
-    set photometrie_texte(err_hors_clou)            "The start is too close from the image boundary."
+    set photometrie_texte(err_hors_clou)            "The star is too close from the image boundary."
     set photometrie_texte(err_etoile_faible)        "Too weak star."
     set photometrie_texte(manuel)                   "Reference star selected manually."
     set photometrie_texte(auto_local)               "Reference star selected from a local catalog."
@@ -166,7 +166,7 @@ if { [ string compare $langage "french" ] == "0" } {
     set photometrie_texte(err_nombre_positif)       "The value must be positif or null."
     set photometrie_texte(err_dia_interieur)        "The aperture window (inner disk) must be smaller than the outer ring."
     set photometrie_texte(err_dia_exterieur)        "The ring inner diameter must be smaller than the outer diameter."
-    set photometrie_texte(err_hors_clou)            "The start is too close from the image boundary."
+    set photometrie_texte(err_hors_clou)            "The star is too close from the image boundary."
     set photometrie_texte(err_etoile_faible)        "Too weak star."
     set photometrie_texte(manuel)                   "Reference star selected manually."
     set photometrie_texte(auto_local)               "Reference star selected from a local catalog."
@@ -211,7 +211,7 @@ if { [ string compare $langage "french" ] == "0" } {
     set photometrie_texte(err_nombre_positif)       "The value must be positif or null."
     set photometrie_texte(err_dia_interieur)        "The aperture window (inner disk) must be smaller than the outer ring."
     set photometrie_texte(err_dia_exterieur)        "The ring inner diameter must be smaller than the outer diameter."
-    set photometrie_texte(err_hors_clou)            "The start is too close from the image boundary."
+    set photometrie_texte(err_hors_clou)            "The star is too close from the image boundary."
     set photometrie_texte(err_etoile_faible)        "Too weak star."
     set photometrie_texte(manuel)                   "Reference star selected manually."
     set photometrie_texte(auto_local)               "Reference star selected from a local catalog."
@@ -256,7 +256,7 @@ if { [ string compare $langage "french" ] == "0" } {
     set photometrie_texte(err_nombre_positif)       "The value must be positif or null."
     set photometrie_texte(err_dia_interieur)        "The aperture window (inner disk) must be smaller than the outer ring."
     set photometrie_texte(err_dia_exterieur)        "The ring inner diameter must be smaller than the outer diameter."
-    set photometrie_texte(err_hors_clou)            "The start is too close from the image boundary."
+    set photometrie_texte(err_hors_clou)            "The star is too close from the image boundary."
     set photometrie_texte(err_etoile_faible)        "Too weak star."
     set photometrie_texte(manuel)                   "Reference star selected manually."
     set photometrie_texte(auto_local)               "Reference star selected from a local catalog."
@@ -301,7 +301,7 @@ if { [ string compare $langage "french" ] == "0" } {
     set photometrie_texte(err_nombre_positif)       "The value must be positif or null."
     set photometrie_texte(err_dia_interieur)        "The aperture window (inner disk) must be smaller than the outer ring."
     set photometrie_texte(err_dia_exterieur)        "The ring inner diameter must be smaller than the outer diameter."
-    set photometrie_texte(err_hors_clou)            "The start is too close from the image boundary."
+    set photometrie_texte(err_hors_clou)            "The star is too close from the image boundary."
     set photometrie_texte(err_etoile_faible)        "Too weak star."
     set photometrie_texte(manuel)                   "Reference star selected manually."
     set photometrie_texte(auto_local)               "Reference star selected from a local catalog."
@@ -346,7 +346,7 @@ if { [ string compare $langage "french" ] == "0" } {
     set photometrie_texte(err_nombre_positif)       "The value must be positif or null."
     set photometrie_texte(err_dia_interieur)        "The aperture window (inner disk) must be smaller than the outer ring."
     set photometrie_texte(err_dia_exterieur)        "The ring inner diameter must be smaller than the outer diameter."
-    set photometrie_texte(err_hors_clou)            "The start is too close from the image boundary."
+    set photometrie_texte(err_hors_clou)            "The star is too close from the image boundary."
     set photometrie_texte(err_etoile_faible)        "Too weak star."
     set photometrie_texte(manuel)                   "Reference star selected manually."
     set photometrie_texte(auto_local)               "Reference star selected from a local catalog."
@@ -391,7 +391,7 @@ if { [ string compare $langage "french" ] == "0" } {
     set photometrie_texte(err_nombre_positif)       "The value must be positif or null."
     set photometrie_texte(err_dia_interieur)        "The aperture window (inner disk) must be smaller than the outer ring."
     set photometrie_texte(err_dia_exterieur)        "The ring inner diameter must be smaller than the outer diameter."
-    set photometrie_texte(err_hors_clou)            "The start is too close from the image boundary."
+    set photometrie_texte(err_hors_clou)            "The star is too close from the image boundary."
     set photometrie_texte(err_etoile_faible)        "Too weak star."
     set photometrie_texte(manuel)                   "Reference star selected manually."
     set photometrie_texte(auto_local)               "Reference star selected from a local catalog."
