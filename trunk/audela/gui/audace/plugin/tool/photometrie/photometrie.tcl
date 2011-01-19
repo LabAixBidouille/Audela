@@ -5,7 +5,7 @@
 #
 # @brief Outil pour l'analyse photométrique d'une image.
 #
-# $Id: photometrie.tcl,v 1.5 2011-01-19 19:13:41 jacquesmichelet Exp $
+# $Id: photometrie.tcl,v 1.6 2011-01-19 19:20:35 jacquesmichelet Exp $
 #
 
 namespace eval ::Photometrie {
@@ -639,7 +639,7 @@ namespace eval ::Photometrie {
 
         set attente rien
         if { $photometrie(mode_aladin) == "jar" } {
-            set commande "\"$::conf(exec_java)\" -jar \"$::conf(exec_aladin)\" -script \"$script_aladin\" 2>@1"
+            set commande "\"$::conf(exec_java)\" -Xmx1024m -jar \"$::conf(exec_aladin)\" -script \"$script_aladin\" 2>@1"
         } else {
             # mode aladin.exe
             set commande "\"$::conf(exec_aladin)\" -script \"$script_aladin\" 2>@1"
