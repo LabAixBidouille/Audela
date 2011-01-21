@@ -6,7 +6,7 @@
 # Description    : Configuration des variables globales bddconf
 #                  necessaires au service
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_config.tcl,v 1.8 2011-01-21 13:32:35 fredvachier Exp $
+# Mise à jour $Id: bddimages_config.tcl,v 1.9 2011-01-21 14:00:40 jberthier Exp $
 #
 #--------------------------------------------------
 #
@@ -25,7 +25,7 @@ namespace eval bddimages_config {
    global bddconf
 
    # Tous les parametres de configuration
-   set allparams { dbname login pass serv dirbase dirinco dirfits dircata direrr dirlog limit intellilists }
+   set allparams { sauve_xml dbname login pass serv dirbase dirinco dirfits dircata direrr dirlog limit intellilists }
 
    #--- Chargement des captions
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_config.cap ]\""
@@ -253,7 +253,7 @@ proc read_default_config { file_config } {
 #
 #    variables en sortie :
 #
-proc get_list_conf { selection } {
+proc get_list_conf { } {
 
    global audace
    global bddconf
@@ -271,28 +271,14 @@ proc get_list_conf { selection } {
    #::console::affiche_resultat "TXT=$txt_config \n"
 
    set xmlconfig [::dom::parse $txt_config]
-
+   set bddconf(list_config) {}
+   
    foreach n [::dom::selectNode $xmlconfig {descendant::bddimages}] {
 
-      set default [::dom::node stringValue [::dom::selectNode $n {attribute::default}]]
-      if {$default == "yes"} {
-         ::console::affiche_resultat "Lecture de la configuration \n"
-         set bddconf(name)        [::dom::node stringValue [::dom::selectNode $n {descendant::name/text()}]]
-         set bddconf(dbname)      [::dom::node stringValue [::dom::selectNode $n {descendant::dbname/text()}]]
-         set bddconf(login)       [::dom::node stringValue [::dom::selectNode $n {descendant::login/text()}]]
-         set bddconf(pass)        [::dom::node stringValue [::dom::selectNode $n {descendant::pass/text()}]]
-         set bddconf(serv)        [::dom::node stringValue [::dom::selectNode $n {descendant::ip/text()}]]
-         set bddconf(port)        [::dom::node stringValue [::dom::selectNode $n {descendant::port/text()}]]
-         set bddconf(dirbase)     [::dom::node stringValue [::dom::selectNode $n {descendant::root/text()}]]
-         set bddconf(dirinco)     [::dom::node stringValue [::dom::selectNode $n {descendant::incoming/text()}]]
-         set bddconf(dirfits)     [::dom::node stringValue [::dom::selectNode $n {descendant::fits/text()}]]
-         set bddconf(dircata)     [::dom::node stringValue [::dom::selectNode $n {descendant::cata/text()}]]
-         set bddconf(direrr)      [::dom::node stringValue [::dom::selectNode $n {descendant::error/text()}]]
-         set bddconf(dirlog)      [::dom::node stringValue [::dom::selectNode $n {descendant::log/text()}]]
-         set bddconf(limit)       [::dom::node stringValue [::dom::selectNode $n {descendant::screenlimit/text()}]]
-         }
-      }
-   return 0
+      lappend bddconf(list_config) [::dom::node stringValue [::dom::selectNode $n {descendant::name/text()}]]
+      
+   }
+   return 
    }
 
 
@@ -318,6 +304,8 @@ proc charge_selection { selection } {
 
    package require dom
 
+   ::console::affiche_resultat "SEL=$selection \n"
+   
    set inifile [ file join $audace(rep_home) bddimages_ini.xml ]
    
    set txt_config ""
@@ -459,9 +447,9 @@ proc charge_selection { selection } {
       global color
       global conf
       global bddconf
-      global current_config
-      global sauve_xml
       variable allparams
+      variable myconf
+      variable current_config
 
       #--- initConf
       if { ! [ info exists conf(bddimages,position_status) ] } { set conf(bddimages,position_status) "+80+40" } 
@@ -494,20 +482,17 @@ proc charge_selection { selection } {
          set bddconf(position_status) "+[ string range $bddconf(geometry_status) $deb $fin ]"
       }
 
-
+      #--- Charge les config bddimages depuis le fichier XML
       ::bddimages_config::charge_ini_xml
+      #--- Charge la liste des bddimages
+      ::bddimages_config::get_list_conf
       
-      set ::bddimages_config::sauve_xml 1
-      set ::bddimages_config::current_config "bdd1"
-      set config(bddimages) [list "bdd1" "bdd2" "bdd3" "bdd4" ] 
-     
-      
-         #---
-         toplevel $This -class Toplevel
-         wm geometry $This $bddconf(position_status)
-         wm resizable $This 1 1
-         wm title $This $caption(bddimages_config,main_title)
-         wm protocol $This WM_DELETE_WINDOW { ::bddimages_config::fermer }
+      #---
+      toplevel $This -class Toplevel
+      wm geometry $This $bddconf(position_status)
+      wm resizable $This 1 1
+      wm title $This $caption(bddimages_config,main_title)
+      wm protocol $This WM_DELETE_WINDOW { ::bddimages_config::fermer }
 
          #--- Cree un frame pour la liste des bddimages de l'utilisateur
          frame $This.conf -borderwidth 1 -relief groove
@@ -523,9 +508,9 @@ proc charge_selection { selection } {
    
              menubutton $This.conf.m.menu -relief raised -borderwidth 2 -textvariable $bddconf(name) -menu $This.conf.m.menu.list
              set m [menu $This.conf.m.menu.list -tearoff "0"]
-             foreach myconf $config(bddimages) {
+             foreach myconf $bddconf(list_config) {
                 $m add radiobutton -label "$myconf" -value "$myconf" -variable $bddconf(name) \
-                    -command { ::bddimages_config::charge_selection "$myconf" }
+                    -command { ::bddimages_config::charge_selection "$::bddimages_config::myconf" }
              }
              pack $This.conf.m.menu -in $This.conf.m -side left -anchor w -padx 3 -pady 3
 
@@ -541,7 +526,7 @@ proc charge_selection { selection } {
           pack $This.conf.c -in $This.conf -anchor w -side top -expand 0 -fill both -padx 3 -pady 0
 
              checkbutton $This.conf.c.sauve -indicatoron 1 -offvalue 0 -onvalue 1 \
-                -variable ::bddimages_config::sauve_xml -text "$::caption(bddimages_config,sauvexml)"
+                -variable $bddconf(sauve_xml) -text "$::caption(bddimages_config,sauvexml)"
              pack $This.conf.c.sauve -in $This.conf.c -anchor w -side left -padx 3 -pady 1
       
 
