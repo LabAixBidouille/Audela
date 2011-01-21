@@ -6,7 +6,7 @@
 # Description    : Configuration des variables globales bddconf
 #                  necessaires au service
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_config.tcl,v 1.6 2011-01-21 12:29:02 fredvachier Exp $
+# Mise à jour $Id: bddimages_config.tcl,v 1.7 2011-01-21 12:51:11 jberthier Exp $
 #
 #--------------------------------------------------
 #
@@ -29,7 +29,6 @@ namespace eval bddimages_config {
 
    #--- Chargement des captions
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_config.cap ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_config.tcl ]\""
 
 #--------------------------------------------------
 # run { this }
@@ -147,6 +146,7 @@ namespace eval bddimages_config {
 proc read_default_config { file_config } {
 
    global bddconf
+   global current_config
 
    set txt_config ""
    set f [open $file_config r]
@@ -205,7 +205,7 @@ proc read_default_config { file_config } {
 
 
       set inifile [ file join $audace(rep_home) bddimages_ini.xml ]
-      set defaultinifile [ file join $audace(rep_plugin) tool bddimages config ] bddimages_ini.xml ]
+      set defaultinifile [ file join $audace(rep_plugin) tool bddimages config bddimages_ini.xml]
 
       # Verifie que le fichier xml existe
 
@@ -250,12 +250,15 @@ proc read_default_config { file_config } {
 #    variables en sortie :
 #
 
-proc charge_selection { selection file_config } {
+proc charge_selection { selection } {
 
+   global audace
    global bddconf
 
+   set inifile [ file join $audace(rep_home) bddimages_ini.xml ]
+   
    set txt_config ""
-   set f [open $file_config r]
+   set f [open $inifile r]
    while {![eof $f]} {
        append txt_config [gets $f]
    }
@@ -393,6 +396,8 @@ proc charge_selection { selection file_config } {
       global color
       global conf
       global bddconf
+      global current_config
+      global sauve_xml
       variable allparams
 
       #--- initConf
@@ -427,6 +432,13 @@ proc charge_selection { selection file_config } {
       }
 
 
+      ::bddimages_config::charge_ini_xml
+      
+      set ::bddimages_config::sauve_xml 1
+      set ::bddimages_config::current_config "bdd1"
+      set config(bddimages) [list "bdd1" "bdd2" "bdd3" "bdd4" ] 
+     
+      
          #---
          toplevel $This -class Toplevel
          wm geometry $This $bddconf(position_status)
@@ -434,11 +446,45 @@ proc charge_selection { selection file_config } {
          wm title $This $caption(bddimages_config,main_title)
          wm protocol $This WM_DELETE_WINDOW { ::bddimages_config::fermer }
 
+         #--- Cree un frame pour la liste des bddimages de l'utilisateur
+         frame $This.conf -borderwidth 1 -relief groove
+         pack $This.conf -in $This -anchor w -side top -expand 0 -fill x -padx 10 -pady 5
 
+          #--- Cree un frame pour le titre et le menu deroulant
+          frame $This.conf.m -borderwidth 0 -relief solid
+          pack $This.conf.m -in $This.conf -anchor w -side top -expand 0 -fill both -padx 3 -pady 0
+ 
+             #--- Cree un label pour le titre
+             label $This.conf.m.titre -text "$caption(bddimages_config,titleconfig)" -borderwidth 0 -relief flat
+             pack $This.conf.m.titre -in $This.conf.m -side left -anchor w -padx 3 -pady 3
+   
+             menubutton $This.conf.m.menu -relief raised -borderwidth 2 -textvariable $bddconf(name) -menu $This.conf.m.menu.list
+             set m [menu $This.conf.m.menu.list -tearoff "0"]
+             foreach myconf $config(bddimages) {
+                $m add radiobutton -label "$myconf" -value "$myconf" -variable $bddconf(name) \
+                    -command { ::bddimages_config::charge_selection "$myconf" }
+             }
+             pack $This.conf.m.menu -in $This.conf.m -side left -anchor w -padx 3 -pady 3
 
-        #--- Cree un frame pour les acces a la bdd
-        frame $This.bdd -borderwidth 1 -relief groove
-        pack $This.bdd -in $This -anchor w -side top -expand 0 -fill x -padx 10 -pady 5
+             button $This.conf.m.operationP -state active -text "+" \
+                -command { }
+             pack $This.conf.m.operationP -in $This.conf.m -side left -anchor w -padx 1
+             button $This.conf.m.operationM -state active -text "-" \
+                -command { }
+             pack $This.conf.m.operationM -in $This.conf.m -side left -anchor w -padx 1
+
+          #--- Cree un checkbutton pour sauver le xml
+          frame $This.conf.c -borderwidth 0 -relief solid
+          pack $This.conf.c -in $This.conf -anchor w -side top -expand 0 -fill both -padx 3 -pady 0
+
+             checkbutton $This.conf.c.sauve -indicatoron 1 -offvalue 0 -onvalue 1 \
+                -variable ::bddimages_config::sauve_xml -text "$::caption(bddimages_config,sauvexml)"
+             pack $This.conf.c.sauve -in $This.conf.c -anchor w -side left -padx 3 -pady 1
+      
+
+         #--- Cree un frame pour les acces a la bdd
+         frame $This.bdd -borderwidth 1 -relief groove
+         pack $This.bdd -in $This -anchor w -side top -expand 0 -fill x -padx 10 -pady 5
 
           #--- Cree un label pour le titre
           label $This.bdd.titre -text "$caption(bddimages_config,access)" -borderwidth 0 -relief flat

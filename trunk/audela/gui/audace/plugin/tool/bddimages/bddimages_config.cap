@@ -1,6 +1,6 @@
 #
 # Fichier : bddimages_config.cap
-# Mise a jour $Id: bddimages_config.cap,v 1.4 2011-01-21 11:06:23 jberthier Exp $
+# Mise a jour $Id: bddimages_config.cap,v 1.5 2011-01-21 12:51:11 jberthier Exp $
 #
 
 #=========================================================================
@@ -21,6 +21,9 @@ set caption(bddimages_config,save)           "Sauver"
 set caption(bddimages_config,fermer)         "Fermer"
 set caption(bddimages_config,msg_erreur)     "Erreur"
 set caption(bddimages_config,msg_internet)   "Une connexion à Internet opérationnelle est nécessaire pour accéder à la base de données."
+
+set caption(bddimages_config,titleconfig)    "Liste des bases de données"
+set caption(bddimages_config,sauvexml)       "Enregistrer le fichier de config bddimages"
 
 set caption(bddimages_config,access)         "Accés à la base de données"
 set caption(bddimages_config,dbname)         " - Nom de la BDD"
@@ -67,6 +70,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bddimages_config,fermer)         "Fermer"
    set caption(bddimages_config,msg_erreur)     "Erreur"
    set caption(bddimages_config,msg_internet)   "Une connexion à Internet opérationnelle est nécessaire pour accéder à la base de données."
+
+   set caption(bddimages_config,titleconfig)    "Liste des bases de données"
+   set caption(bddimages_config,sauvexml)       "Enregistrer le fichier de config bddimages"
    
    set caption(bddimages_config,access)         "Accés à la base de données"
    set caption(bddimages_config,login)          " - Login"
