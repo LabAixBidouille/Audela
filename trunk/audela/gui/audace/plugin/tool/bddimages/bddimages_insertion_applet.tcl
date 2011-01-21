@@ -1,5 +1,5 @@
 #
-# Mise à jour $Id: bddimages_insertion_applet.tcl,v 1.2 2010-05-27 07:04:08 robertdelmas Exp $
+# Mise à jour $Id: bddimages_insertion_applet.tcl,v 1.3 2011-01-21 11:06:23 jberthier Exp $
 #
 
 #--------------------------------------------------
@@ -18,74 +18,74 @@
 #    variables en sortie :
 #
 #--------------------------------------------------
-   proc lecture_info { This } {
+proc lecture_info { This } {
 
    global conf
    global bddconf
    global caption
    global entetelog
 
-      set listeentiere [ $::bddimages_insertion::This.frame7.tbl get 0 end ]
-      set nbimg [ llength $listeentiere ]
+   set listeentiere [ $::bddimages_insertion::This.frame7.tbl get 0 end ]
+   set nbimg [ llength $listeentiere ]
 
-      set nbimgins 0
-      set nbimgerr 0
+   set nbimgins 0
+   set nbimgerr 0
 
-      set bddconf(listetotale) {}
-      if { $nbimg != "0" } {
-         for { set i 0 } { $i <= [ expr $nbimg - 1 ] } { incr i } {
+   set bddconf(listetotale) {}
+   if { $nbimg != "0" } {
+      for { set i 0 } { $i <= [ expr $nbimg - 1 ] } { incr i } {
 
-           set ligne     [lindex $listeentiere $i]
-           set nomfich   [lindex $ligne 1]
-           set result    [info_fichier $nomfich]
-           set erreur    [lindex $result 0]
-           set etat      [lindex $result 1]
-           set nomfich   [lindex $result 2]
-           set dateiso   [lindex $result 3]
-           set site      [lindex $result 4]
-           set sizefich  [lindex $result 5]
-           set tabkey    [lindex $result 6]
+         set ligne     [lindex $listeentiere $i]
+         set nomfich   [lindex $ligne 1]
 
-           set fic [file tail $nomfich]
-           set entetelog $fic
+         set result    [info_fichier $nomfich]
+         set erreur    [lindex $result 0]
+         set etat      [lindex $result 1]
+         set nomfich   [lindex $result 2]
+         set dateiso   [lindex $result 3]
+         set site      [lindex $result 4]
+         set sizefich  [lindex $result 5]
+         set tabkey    [lindex $result 6]
+         
+         set fic       [file tail $nomfich]
+         set entetelog $fic
 
-           if {$erreur!=0} {
-             incr nbimgerr
-             set dirpb "$conf(bddimages,direrr)"
-             createdir_ifnot_exist $dirpb
-             set dirpb "$conf(bddimages,direrr)/err$erreur"
-             createdir_ifnot_exist $dirpb
-             bddimages_sauve_fich "lecture_info: Deplacement du fichier $nomfich dans $dirpb"
-             set errnum [catch {file rename $nomfich $dirpb/} msg]
+         if {$erreur != 0} {
+            incr nbimgerr
+            set dirpb "$conf(bddimages,direrr)"
+            createdir_ifnot_exist $dirpb
+            set dirpb "$conf(bddimages,direrr)/err$erreur"
+            createdir_ifnot_exist $dirpb
+            bddimages_sauve_fich "lecture_info: Deplacement du fichier $nomfich dans $dirpb"
+            set errnum [catch {file rename $nomfich $dirpb/} msg]
 
-             set errcp [string first "file already exists" $msg]
-             if {$errcp>0||$errnum==0} {
+            set errcp [string first "file already exists" $msg]
+            if {$errcp>0||$errnum==0} {
                set errnum [catch {file delete $nomfich} msg]
                if {$errnum!=0} {
-                 bddimages_sauve_fich "lecture_info: ERREUR 111 : effacement de $nomfich impossible <err=$errnum> <msg=$msg>"
-                 return 111
-                 } else {
-                 bddimages_sauve_fich "lecture_info: Fichier $nomfich supprime"
-                 }
+                  bddimages_sauve_fich "lecture_info: ERREUR 111 : effacement de $nomfich impossible <err=$errnum> <msg=$msg>"
+                  return 111
+               } else {
+                  bddimages_sauve_fich "lecture_info: Fichier $nomfich supprime"
                }
-             set erreur "Erreur <$erreur> : $caption(bddimages_insertion,err$erreur)"
-             }
-           set ligne [list $etat $nomfich $dateiso $site $sizefich $erreur]
-           $::bddimages_insertion::This.frame7.tbl delete $i
-           $::bddimages_insertion::This.frame7.tbl insert $i $ligne
-           # Modifie l affichage de nbimg nbimgins nbimgerr
-           set bddconf(inserinfo) "Total($nbimg) Inser($nbimgins) Err($nbimgerr)"
-           lappend bddconf(listetotale) [list "!" $nomfich $dateiso $site $sizefich $erreur $tabkey]
-           update
-           }
+            }
+            set erreur "Erreur <$erreur> : $caption(bddimages_insertion,err$erreur)"
          }
+         set ligne [list $etat $nomfich $dateiso $site $sizefich $erreur]
+         $::bddimages_insertion::This.frame7.tbl delete $i
+         $::bddimages_insertion::This.frame7.tbl insert $i $ligne
+         # Modifie l affichage de nbimg nbimgins nbimgerr
+         set bddconf(inserinfo) "Total($nbimg) Inser($nbimgins) Err($nbimgerr)"
+         lappend bddconf(listetotale) [list "!" $nomfich $dateiso $site $sizefich $erreur $tabkey]
+         update
+      }
+   }
 
    set bddconf(nbimg)    $nbimg
    set bddconf(nbimgins) $nbimgins
    set bddconf(nbimgerr) $nbimgerr
-
    return
-   }
+}
 
 
 #--------------------------------------------------
@@ -107,7 +107,7 @@
 #    variables en sortie :
 #
 #--------------------------------------------------
-   proc insertion { This } {
+proc insertion { This } {
 
    global conf
    global bddconf
@@ -117,32 +117,29 @@
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_sub_insertion.tcl ]\""
 
 # Mode d insertion automatique
-  if {$bddconf(inserauto)==1} {
+   if {$bddconf(inserauto)==1} {
       insertion_auto
       return
-      }
-
+   }
 
 # Autre Mode d insertion
    ::console::affiche_resultat "Insertion ... \n"
 
    for { set i 0 } { $i <= [ expr [llength $bddconf(listetotale)] - 1 ] } { incr i } {
 
-     set selectfich [$::bddimages_insertion::This.frame7.tbl selection includes $i]
+      set selectfich [$::bddimages_insertion::This.frame7.tbl selection includes $i]
+      if {$selectfich == 1} {
 
-     if {$selectfich==1} {
-
-       set nomfich [lindex [$::bddimages_insertion::This.frame7.tbl get $i] 1]
-       set etat    [lindex [$::bddimages_insertion::This.frame7.tbl get $i] 0]
-
-       switch $etat {
-         "?" { }
-         "X" { }
-         "0" { }
-         "!" {
+         set nomfich [lindex [$::bddimages_insertion::This.frame7.tbl get $i] 1]
+         set etat    [lindex [$::bddimages_insertion::This.frame7.tbl get $i] 0]
+         switch $etat {
+           "?" { }
+           "X" { }
+           "0" { }
+           "!" {
               foreach ligne $bddconf(listetotale) {
-                set nomfichinfo [lindex $ligne 1]
-                if {$nomfichinfo==$nomfich} {
+                 set nomfichinfo [lindex $ligne 1]
+                 if {$nomfichinfo==$nomfich} {
                     set etat      [lindex $ligne 0]
                     set dateobs   [lindex $ligne 2]
                     set site      [lindex $ligne 3]
@@ -150,37 +147,33 @@
                     set liste     [bddimages_insertion_unfich $ligne]
                     set err       [lindex $liste 0]
                     set nomfich   [lindex $liste 1]
-                    if {$err==-1} {break}
-                    if {$err==0} {
-                      incr bddconf(nbimgins)
-                      set etat "O"
-                      set err "$caption(bddimages_insertion,err$err)"
+                    if {$err == -1} {
+                       break
+                    } elseif {$err == 0} {
+                       incr bddconf(nbimgins)
+                       set etat "O"
+                       set err "$caption(bddimages_insertion,err$err)"
                     } else {
-                      incr bddconf(nbimgerr)
-                      set etat "X"
-                      set err "Erreur <$err> : $caption(bddimages_insertion,err$err)"
+                       incr bddconf(nbimgerr)
+                       set etat "X"
+                       set err "Erreur <$err> : $caption(bddimages_insertion,err$err)"
                     }
                     set ligne [list $etat $nomfich $dateobs $site $sizefich $err]
                     $::bddimages_insertion::This.frame7.tbl delete $i
                     $::bddimages_insertion::This.frame7.tbl insert $i $ligne
                     # Modifie l affichage de nbimg nbimgins nbimgerr
                     set bddconf(inserinfo) "Total($bddconf(nbimg)) Inser($bddconf(nbimgins)) Err($bddconf(nbimgerr))"
-                    }
-                  update
-                  }
-                }
-
-         default { }
+                 }
+                 update
+              }
+           }
+           default { }
          }
-
 
        }
      }
 
-
-
    }
-
 
 #--------------------------------------------------
 #  insertion_auto {  }
@@ -198,58 +191,56 @@
 #    variables en sortie :
 #
 #--------------------------------------------------
-  proc insertion_auto { } {
+proc insertion_auto { } {
 
-  global conf
-  global bddconf
-  global caption
-  global entetelog
+   global conf
+   global bddconf
+   global caption
+   global entetelog
 
-  set nbimg             0
-  set nbimgins          0
-  set nbimgerr          0
-  set bddconf(nbimg)    0
-  set bddconf(nbimgerr) 0
-  set bddconf(nbimgins) 0
+   set nbimg             0
+   set nbimgins          0
+   set nbimgerr          0
+   set bddconf(nbimg)    0
+   set bddconf(nbimgerr) 0
+   set bddconf(nbimgins) 0
 
-  ::console::affiche_resultat "Insertion Automatique \n"
+   ::console::affiche_resultat "Insertion Automatique \n"
 
-  set fichlock "$conf(bddimages,dirinco)/lock"
+   set fichlock "$conf(bddimages,dirinco)/lock"
 
-  while { 0 < 1 } {
-    # RAZ de la Table
+   while { 0 < 1 } {
+      # RAZ de la Table
+      if {[file exists $fichlock]==1} {
+         update
+         after 60000
+      } else {
 
-    if {[file exists $fichlock]==1} {
-       update
-       after 60000
-       } else {
-
-        set bddconf(liste) {}
+         set bddconf(liste) {}
 
 #        ::bddimages_insertion::init_info
-        init_info
-        set listetitre [lindex $bddconf(liste) 0]
-        set listeval [lindex $bddconf(liste) 1]
-        set listeval [lrange $listeval 0 999]
-        set bddconf(liste) [list $listetitre $listeval]
+         init_info
+         set listetitre [lindex $bddconf(liste) 0]
+         set listeval [lindex $bddconf(liste) 1]
+         set listeval [lrange $listeval 0 999]
+         set bddconf(liste) [list $listetitre $listeval]
 
-       catch {
-           ::bddimages_insertion::getFormatColumn
-          $::bddimages_insertion::This.frame7.tbl delete 0 end
-          $::bddimages_insertion::This.frame7.tbl deletecolumns 0 end
-          }
+         catch {
+            ::bddimages_insertion::getFormatColumn
+            $::bddimages_insertion::This.frame7.tbl delete 0 end
+            $::bddimages_insertion::This.frame7.tbl deletecolumns 0 end
+         }
 
-        ::bddimages_insertion::Affiche_Results
+         ::bddimages_insertion::Affiche_Results
 
-        set nbcol        [ $::bddimages_insertion::This.frame7.tbl columncount ]
-        set listeentiere [ $::bddimages_insertion::This.frame7.tbl get 0 end ]
+         set nbcol        [ $::bddimages_insertion::This.frame7.tbl columncount ]
+         set listeentiere [ $::bddimages_insertion::This.frame7.tbl get 0 end ]
 
-        set nbimg        [ llength $listeentiere ]
-        if {$nbimg == 0} {
-          update
-          after 10000
-          }
-
+         set nbimg        [ llength $listeentiere ]
+         if {$nbimg == 0} {
+            update
+            after 10000
+         }
 
         set bddconf(listetotale) {}
 
@@ -345,4 +336,3 @@
    # Fin: while
 }
 # Fin: proc
-

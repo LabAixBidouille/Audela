@@ -6,7 +6,7 @@
 # Description    : Environnement de recherche des images
 #                  dans la base de donnees
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_recherche.tcl,v 1.5 2010-08-23 06:33:47 fredvachier Exp $
+# Mise à jour $Id: bddimages_recherche.tcl,v 1.6 2011-01-21 11:06:23 jberthier Exp $
 #
 #--------------------------------------------------
 #
@@ -305,22 +305,23 @@ namespace eval bddimages_recherche {
 #
 #--------------------------------------------------
    proc affiche_image_by_idbddimg { id } {
-    set sqlcmd "SELECT dirfilename,filename FROM images WHERE idbddimg = $id"
-    set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
-    if {$err} {
-      # TODO
-      return
-    }
-    set nbresult [llength $resultcount]
+     
+      set sqlcmd "SELECT dirfilename,filename FROM images WHERE idbddimg = $id"
+      set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
+      if {$err} {
+         tk_messageBox -message "$msg" -type ok
+         return
+      }
 
-    set colvar [lindex $resultcount 0]
-    set rowvar [lindex $resultcount 1]
-    set nbcol  [llength $colvar]
-    set line [lindex $rowvar 0]
-    set fp [file join $::bddconf(dirbase) [lindex $line 0] [lindex $line 1] ]
-    set bufno $::bddconf(bufno)
-#    set errnum [catch {buf$bufno load $fp} msg ]
-    charge $fp
+      set nbresult [llength $resultcount]
+      set colvar [lindex $resultcount 0]
+      set rowvar [lindex $resultcount 1]
+      set nbcol  [llength $colvar]
+      set line [lindex $rowvar 0]
+      set fp [file join $::bddconf(dirbase) [lindex $line 0] [lindex $line 1] ]
+      set bufno $::bddconf(bufno)
+#      set errnum [catch {buf$bufno load $fp} msg ]
+      charge $fp
 
    }
 
@@ -452,9 +453,11 @@ namespace eval bddimages_recherche {
          set bddconf(position_status) "+[ string range $bddconf(geometry_status) $deb $fin ]"
       }
 
-
       set nbintellilist 0
-      ::bddimages_liste::conf_load_intellilists
+      if { [catch {::bddimages_liste::conf_load_intellilists} msg] } {
+         tk_messageBox -message "$msg" -type ok
+         return
+      }
       set bddconf(inserinfo) "Total($nbintellilist)"
 
       #--- Lecture des champs de la table

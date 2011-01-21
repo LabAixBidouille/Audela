@@ -1,6 +1,6 @@
 #
 # Fichier : bddimages_status.cap
-# Mise a jour $Id: bddimages_status.cap,v 1.2 2009-11-07 14:11:58 robertdelmas Exp $
+# Mise a jour $Id: bddimages_status.cap,v 1.3 2011-01-21 11:06:23 jberthier Exp $
 #
 
 #=========================================================================
@@ -9,31 +9,93 @@
 
 global caption langage
 
+# *************** Version anglaise ****************************
 set caption(bddimages_status,main_title)     "BddImages - Statut"
 set caption(bddimages_status,titre)          "Statut de la base de données"
 
 set caption(bddimages_status,label_bdd)      "Information du Serveur Mysql"
 set caption(bddimages_status,label_connect)  "Connexion Serveur................"
-set caption(bddimages_status,label_nbimg)    "Nb d'images......................"
-set caption(bddimages_status,label_nbheader) "Nb de header....................."
+set caption(bddimages_status,label_nbimg)    "Nb images........................"
+set caption(bddimages_status,label_nbheader) "Nb header........................"
 
 set caption(bddimages_status,label_rep)      "Information du système de fichiers"
-set caption(bddimages_status,label_nbimgrep) "Nb d'images sur disque............"
-set caption(bddimages_status,label_nbimginc) "Nb d'images dans incoming........."
-set caption(bddimages_status,label_nbimgerr) "Nb d'images en erreur............."
+set caption(bddimages_status,label_nbimgrep) "Nb images sur disque............."
+set caption(bddimages_status,label_nbimginc) "Nb images dans incoming.........."
+set caption(bddimages_status,label_nbimgerr) "Nb images en erreur.............."
 
 set caption(bddimages_status,raz)            "RAZ Base de données"
 set caption(bddimages_status,verif)          "Vérification"
 set caption(bddimages_status,aide)           "Aide"
 set caption(bddimages_status,fermer)         "Fermer"
+set caption(bddimages_status,cancelRAZ)      "BDD reset canceled"
 
 set caption(bddimages_status,msg_erreur)     "Erreur"
 set caption(bddimages_status,msg_internet)   "Reconnexion à la base."
 
 set caption(bddimages_status,msg_prevent)    "Attention !"
-set caption(bddimages_status,msg_prevent2)   "Ceci va remettre à zéro la base de données. Cela va effacer les données sur le disque ainsi qu'effacer les données situées sur le serveur SQL. En êtes-vous sûr ?"
-set caption(bddimages_status,efface)         "Effacement de la base"
-set caption(bddimages_status,mdprootsql)     "Mot de passe root du serveur SQL"
+set caption(bddimages_status,msg_prevent2)   "Cette action va reinitialiser la base de données. Toutes les données seront définitivement effacer du disque. Etes-vous sûr ?"
+set caption(bddimages_status,efface)         "Effacement de la base de données"
+set caption(bddimages_status,mdprootsql)     "Veuillez saisir le mot de passe root du serveur SQL"
+
+# *************** Version française **** **********************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(bddimages_status,main_title)     "BddImages - Statut"
+   set caption(bddimages_status,titre)          "Statut de la base de données"
+   
+   set caption(bddimages_status,label_bdd)      "Information du Serveur Mysql"
+   set caption(bddimages_status,label_connect)  "Connexion Serveur................"
+   set caption(bddimages_status,label_nbimg)    "Nb images........................"
+   set caption(bddimages_status,label_nbheader) "Nb header........................"
+   
+   set caption(bddimages_status,label_rep)      "Information du système de fichiers"
+   set caption(bddimages_status,label_nbimgrep) "Nb images sur disque............."
+   set caption(bddimages_status,label_nbimginc) "Nb images dans incoming.........."
+   set caption(bddimages_status,label_nbimgerr) "Nb images en erreur.............."
+   
+   set caption(bddimages_status,raz)            "RAZ Base de données"
+   set caption(bddimages_status,verif)          "Vérification"
+   set caption(bddimages_status,aide)           "Aide"
+   set caption(bddimages_status,fermer)         "Fermer"
+   set caption(bddimages_status,cancelRAZ)      "RAZ BDD annulé"
+   
+   set caption(bddimages_status,msg_erreur)     "Erreur"
+   set caption(bddimages_status,msg_internet)   "Reconnexion à la base."
+   
+   set caption(bddimages_status,msg_prevent)    "Attention !"
+   set caption(bddimages_status,msg_prevent2)   "Cette action va reinitialiser la base de données. Toutes les données seront définitivement effacer du disque. Etes-vous sûr ?"
+   set caption(bddimages_status,efface)         "Effacement de la base de données"
+   set caption(bddimages_status,mdprootsql)     "Veuillez saisir le mot de passe root du serveur SQL"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+
+}
 
 #=========================================================================
 #   Fin de la déclaration des textes localisés (internationalisation)
