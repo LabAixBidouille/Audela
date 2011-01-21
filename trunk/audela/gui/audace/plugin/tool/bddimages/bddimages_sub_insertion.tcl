@@ -1,6 +1,6 @@
 # source audace/plugin/tool/bddimages/bddimages_subroutines.tcl
 
-# Mise à jour $Id: bddimages_sub_insertion.tcl,v 1.12 2011-01-21 18:37:49 fredvachier Exp $
+# Mise à jour $Id: bddimages_sub_insertion.tcl,v 1.13 2011-01-21 18:39:21 fredvachier Exp $
 
 #--------------------------------------------------
 #  init_info { }
@@ -447,7 +447,7 @@ proc bddimages_images_datainsert { tabkey idheader filename site dateobs sizefic
             bddimages_sauve_fich "bddimages_images_datainsert: ERREUR 103 : Impossible d acceder aux informations de bddimages.images <err=$err> <msg=$msg>"
             return 103
             }
-     }
+     } 
 
      set err [catch {::bddimages_sql::sql insertid} insert_idbddimg]
     # bddimages_sauve_fich "bddimages_images_datainsert: Insertion nouvel element dans la table images <$insert_idbddimg>"
