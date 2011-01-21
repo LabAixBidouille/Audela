@@ -6,7 +6,7 @@
 # Description    : Configuration des variables globales bddconf
 #                  necessaires au service
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_config.tcl,v 1.7 2011-01-21 12:51:11 jberthier Exp $
+# Mise à jour $Id: bddimages_config.tcl,v 1.8 2011-01-21 13:32:35 fredvachier Exp $
 #
 #--------------------------------------------------
 #
@@ -201,14 +201,16 @@ proc read_default_config { file_config } {
       variable This
       global audace
       global caption
+      global bddconf
 
 
+      package require dom
 
       set inifile [ file join $audace(rep_home) bddimages_ini.xml ]
       set defaultinifile [ file join $audace(rep_plugin) tool bddimages config bddimages_ini.xml]
 
       # Verifie que le fichier xml existe
-
+      ::console::affiche_resultat "charge_ini_xml : existance [file exists $inifile]\n"
       if {[file exists $inifile]==0} {
          ::console::affiche_resultat "charge_ini_xml : file $inifile doesn't exist\n"
          # S il n existe pas Creer le fichier 
@@ -235,6 +237,65 @@ proc read_default_config { file_config } {
       return
       }
 
+
+
+#--------------------------------------------------
+#  get_list_conf { }
+#--------------------------------------------------
+#
+#    fonction  :
+#       Charge le fichier d initialisation xml 
+#       
+#
+#    procedure externe :
+#
+#    variables en entree :
+#
+#    variables en sortie :
+#
+proc get_list_conf { selection } {
+
+   global audace
+   global bddconf
+
+   package require dom
+
+   set inifile [ file join $audace(rep_home) bddimages_ini.xml ]
+   
+   set txt_config ""
+   set f [open $inifile r]
+   while {![eof $f]} {
+       append txt_config [gets $f]
+   }
+   close $f
+   #::console::affiche_resultat "TXT=$txt_config \n"
+
+   set xmlconfig [::dom::parse $txt_config]
+
+   foreach n [::dom::selectNode $xmlconfig {descendant::bddimages}] {
+
+      set default [::dom::node stringValue [::dom::selectNode $n {attribute::default}]]
+      if {$default == "yes"} {
+         ::console::affiche_resultat "Lecture de la configuration \n"
+         set bddconf(name)        [::dom::node stringValue [::dom::selectNode $n {descendant::name/text()}]]
+         set bddconf(dbname)      [::dom::node stringValue [::dom::selectNode $n {descendant::dbname/text()}]]
+         set bddconf(login)       [::dom::node stringValue [::dom::selectNode $n {descendant::login/text()}]]
+         set bddconf(pass)        [::dom::node stringValue [::dom::selectNode $n {descendant::pass/text()}]]
+         set bddconf(serv)        [::dom::node stringValue [::dom::selectNode $n {descendant::ip/text()}]]
+         set bddconf(port)        [::dom::node stringValue [::dom::selectNode $n {descendant::port/text()}]]
+         set bddconf(dirbase)     [::dom::node stringValue [::dom::selectNode $n {descendant::root/text()}]]
+         set bddconf(dirinco)     [::dom::node stringValue [::dom::selectNode $n {descendant::incoming/text()}]]
+         set bddconf(dirfits)     [::dom::node stringValue [::dom::selectNode $n {descendant::fits/text()}]]
+         set bddconf(dircata)     [::dom::node stringValue [::dom::selectNode $n {descendant::cata/text()}]]
+         set bddconf(direrr)      [::dom::node stringValue [::dom::selectNode $n {descendant::error/text()}]]
+         set bddconf(dirlog)      [::dom::node stringValue [::dom::selectNode $n {descendant::log/text()}]]
+         set bddconf(limit)       [::dom::node stringValue [::dom::selectNode $n {descendant::screenlimit/text()}]]
+         }
+      }
+   return 0
+   }
+
+
 #--------------------------------------------------
 #  charge_selection { }
 #--------------------------------------------------
@@ -254,6 +315,8 @@ proc charge_selection { selection } {
 
    global audace
    global bddconf
+
+   package require dom
 
    set inifile [ file join $audace(rep_home) bddimages_ini.xml ]
    
