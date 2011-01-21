@@ -6,7 +6,7 @@
 # Description    : Configuration des variables globales bddconf
 #                  necessaires au service
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_config.tcl,v 1.5 2011-01-21 12:24:45 fredvachier Exp $
+# Mise à jour $Id: bddimages_config.tcl,v 1.6 2011-01-21 12:29:02 fredvachier Exp $
 #
 #--------------------------------------------------
 #
@@ -234,6 +234,58 @@ proc read_default_config { file_config } {
 
       return
       }
+
+#--------------------------------------------------
+#  charge_selection { }
+#--------------------------------------------------
+#
+#    fonction  :
+#       Charge le fichier d initialisation xml 
+#       
+#
+#    procedure externe :
+#
+#    variables en entree :
+#
+#    variables en sortie :
+#
+
+proc charge_selection { selection file_config } {
+
+   global bddconf
+
+   set txt_config ""
+   set f [open $file_config r]
+   while {![eof $f]} {
+       append txt_config [gets $f]
+   }
+   close $f
+   #::console::affiche_resultat "TXT=$txt_config \n"
+
+   set xmlconfig [::dom::parse $txt_config]
+
+   foreach n [::dom::selectNode $xmlconfig {descendant::bddimages}] {
+
+      set default [::dom::node stringValue [::dom::selectNode $n {attribute::default}]]
+      if {$default == "yes"} {
+         ::console::affiche_resultat "Lecture de la configuration \n"
+         set bddconf(name)        [::dom::node stringValue [::dom::selectNode $n {descendant::name/text()}]]
+         set bddconf(dbname)      [::dom::node stringValue [::dom::selectNode $n {descendant::dbname/text()}]]
+         set bddconf(login)       [::dom::node stringValue [::dom::selectNode $n {descendant::login/text()}]]
+         set bddconf(pass)        [::dom::node stringValue [::dom::selectNode $n {descendant::pass/text()}]]
+         set bddconf(serv)        [::dom::node stringValue [::dom::selectNode $n {descendant::ip/text()}]]
+         set bddconf(port)        [::dom::node stringValue [::dom::selectNode $n {descendant::port/text()}]]
+         set bddconf(dirbase)     [::dom::node stringValue [::dom::selectNode $n {descendant::root/text()}]]
+         set bddconf(dirinco)     [::dom::node stringValue [::dom::selectNode $n {descendant::incoming/text()}]]
+         set bddconf(dirfits)     [::dom::node stringValue [::dom::selectNode $n {descendant::fits/text()}]]
+         set bddconf(dircata)     [::dom::node stringValue [::dom::selectNode $n {descendant::cata/text()}]]
+         set bddconf(direrr)      [::dom::node stringValue [::dom::selectNode $n {descendant::error/text()}]]
+         set bddconf(dirlog)      [::dom::node stringValue [::dom::selectNode $n {descendant::log/text()}]]
+         set bddconf(limit)       [::dom::node stringValue [::dom::selectNode $n {descendant::screenlimit/text()}]]
+         }
+      }
+   return 0
+   }
 
 
 
