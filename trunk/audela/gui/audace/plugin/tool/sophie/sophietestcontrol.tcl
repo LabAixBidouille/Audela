@@ -2,7 +2,7 @@
 # @file     sophiesimulcontrol.tcl
 # @brief    Fichier du namespace ::sophie::testcontrol
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophietestcontrol.tcl,v 1.13 2010-05-23 16:20:53 michelpujol Exp $
+# @version  $Id: sophietestcontrol.tcl,v 1.14 2011-01-21 18:45:16 michelpujol Exp $
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------
@@ -266,7 +266,7 @@ proc ::sophie::testcontrol::readTelescopeCommandSocket { channel } {
                      set response [format "!RADEC GOTO %d @" $returnCode ]
                      writeTelescopeCommandSocket $channel $response
                   }
-                   GUIDING {
+                  GUIDING {
                      set returnCode 0
                      #--- j'envoie le code retour
                      set response [format "!RADEC GUIDING %d @" $returnCode ]
@@ -1013,6 +1013,8 @@ proc ::sophie::testcontrol::simulateMotor { } {
             if { $private(focus,position) == $private(focus,targetPosition) } {
                #--- je memorise l'arret du GOTO
                set private(focus,mode) "NONE"
+               #--- j'arrete l'nvoi des notifications
+               stopFocusNotification
                #--- j'envoie une notification pour signaler que le GOTO est termine
                ::sophie::testcontrol::sendFocusPosition
             }
