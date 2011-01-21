@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config version="1.0" id="KalliopeSystem" xmlns="http://vo.imcce.fr/xml/genoide/genoide.xsd"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://vo.imcce.fr/xml/genoide http://vo.imcce.fr/xml/genoide/genoide.xsd">
+  
+  <document>
+    <version>0.1</version>
+    <date>2010-10-06T12:00:00</date>
+    <ticket>1</ticket>
+    <author>F.Vachier</author>
+  </document>
+
+  <bddimages id="1" default="yes">
+     <name>cador_fv</name>
+     <sql>
+        <dbname>bddimages_cador_fv</dbname>
+        <login>ros</login>
+        <pass>ros123</pass>
+        <ip>localhost</ip>
+        <port>3306</port>
+     </sql>
+     <files>
+       <root>/data/astrodata/Observations/Images/bddimages/bddimages_cador_fv</root>
+       <incoming>/data/astrodata/Observations/Images/bddimages/bddimages_cador_fv/incoming</incoming>
+       <fits>/data/astrodata/Observations/Images/bddimages/bddimages_cador_fv/fits</fits>
+       <cata>/data/astrodata/Observations/Images/bddimages/bddimages_cador_fv/cata</cata>
+       <error>/data/astrodata/Observations/Images/bddimages/bddimages_cador_fv/errors</error>
+       <log>/data/astrodata/Observations/Images/bddimages/bddimages_cador_fv/logs</log>
+     </files>
+     <screenlimit>40</screenlimit>
+  </bddimages>
+
+</config>
