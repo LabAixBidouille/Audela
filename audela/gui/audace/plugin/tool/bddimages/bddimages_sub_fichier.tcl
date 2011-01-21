@@ -1,5 +1,5 @@
 # source audace/plugin/tool/bddimages/bddimages_sub_fichier.tcl
-# Mise à jour $Id: bddimages_sub_fichier.tcl,v 1.4 2010-10-18 16:07:07 fredvachier Exp $
+# Mise à jour $Id: bddimages_sub_fichier.tcl,v 1.5 2011-01-21 10:59:10 jberthier Exp $
 
 proc bddimages_sauve_fich {texte} {
 
@@ -46,28 +46,28 @@ proc bddimages_sauve_fich {texte} {
 
 proc globrdk { {dir .} limit } {
 
-  global maliste
-
-    set liste [glob -nocomplain $dir/*]
-
-    foreach i $liste {
-       if { [llength $maliste]==$limit && $limit!=0 } {
-         break
+   global maliste
+   set liste [glob -nocomplain $dir/*]
+   foreach i $liste {
+      if { [llength $maliste]==$limit && $limit!=0 } {
+        break
+      }
+      if {[file type $i]=="directory"} {
+         if {[llength $maliste]<$limit || $limit==0} {
+            globrdk $i $limit
+         } else {
+            break
          }
-       if {[file type $i]=="directory"} {
-                 if {[llength $maliste]<$limit || $limit==0} {
-                   globrdk $i $limit
-                   } else {
-                   break
-                   }
-        } else {
-           set result [bddimages_formatfichier $i]
-           set form2  [lindex $result 0]
-           if { ([llength $maliste]<$limit || $limit==0) && ( $form2=="fit" || $form2=="fit.gz" || $form2=="fits" || $form2=="fits.gz" || $form2=="cata.txt" || $form2=="cata.txt.gz" ) } {
-              lappend maliste $i
-              } else {
-              }
-        }
+       } else {
+          set result [bddimages_formatfichier $i]
+          set form2  [lindex $result 0]
+          if { ([llength $maliste]<$limit || $limit==0) &&
+               ( $form2=="fit" || $form2=="fit.gz" || $form2=="fits" || $form2=="fits.gz" || $form2=="cata.txt" || $form2=="cata.txt.gz" ) } {
+             lappend maliste $i
+          } else {
+             
+          }
+       }
     }
  }
 
