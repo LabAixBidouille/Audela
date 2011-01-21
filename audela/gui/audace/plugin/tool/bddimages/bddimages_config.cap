@@ -1,6 +1,6 @@
 #
 # Fichier : bddimages_config.cap
-# Mise a jour $Id: bddimages_config.cap,v 1.5 2011-01-21 12:51:11 jberthier Exp $
+# Mise a jour $Id: bddimages_config.cap,v 1.6 2011-01-21 18:37:49 fredvachier Exp $
 #
 
 #=========================================================================
@@ -17,7 +17,7 @@ set caption(bddimages_config,label_nbimg)    "Nb d'images......................"
 set caption(bddimages_config,label_nbheader) "Nb de header....................."
 
 set caption(bddimages_config,aide)           "Aide"
-set caption(bddimages_config,save)           "Sauver"
+set caption(bddimages_config,save)           "Ok"
 set caption(bddimages_config,fermer)         "Fermer"
 set caption(bddimages_config,msg_erreur)     "Erreur"
 set caption(bddimages_config,msg_internet)   "Une connexion à Internet opérationnelle est nécessaire pour accéder à la base de données."
@@ -66,7 +66,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bddimages_config,label_nbheader) "Nb de header....................."
    
    set caption(bddimages_config,aide)           "Aide"
-   set caption(bddimages_config,save)           "Sauver"
+   set caption(bddimages_config,save)           "Ok"
    set caption(bddimages_config,fermer)         "Fermer"
    set caption(bddimages_config,msg_erreur)     "Erreur"
    set caption(bddimages_config,msg_internet)   "Une connexion à Internet opérationnelle est nécessaire pour accéder à la base de données."

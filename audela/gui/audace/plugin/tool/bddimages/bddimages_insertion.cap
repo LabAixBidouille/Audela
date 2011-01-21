@@ -1,6 +1,6 @@
 #
 # Fichier : bddimages_insertion.cap
-# Mise a jour $Id: bddimages_insertion.cap,v 1.3 2011-01-21 11:06:23 jberthier Exp $
+# Mise a jour $Id: bddimages_insertion.cap,v 1.4 2011-01-21 18:37:49 fredvachier Exp $
 #
 
 #=========================================================================
@@ -54,9 +54,9 @@ set caption(bddimages_insertion,err9)           "Renommage du fichier impossible
 set caption(bddimages_insertion,err101)         "Création table images impossible"
 set caption(bddimages_insertion,err102)         ""
 set caption(bddimages_insertion,err103)         ""
-set caption(bddimages_insertion,err104)         ""
-set caption(bddimages_insertion,err105)         "Impossible de supprimer l'image dans incoming"
-set caption(bddimages_insertion,err106)         ""
+set caption(bddimages_insertion,err104)         "Creation table common impossible"
+set caption(bddimages_insertion,err105)         "Impossible d inserer un element dans la table commun"
+set caption(bddimages_insertion,err106)         "Impossible d acceder aux informations de commun"
 set caption(bddimages_insertion,err107)         "Impossible de supprimer l'image de la table images"
 set caption(bddimages_insertion,err108)         "Impossible de supprimer l'image de la table images"
 set caption(bddimages_insertion,err109)         ""
