@@ -1,6 +1,6 @@
 # source audace/plugin/tool/bddimages/bddimages_subroutines.tcl
 
-# Mise à jour $Id: bddimages_sub_insertion.tcl,v 1.9 2010-10-18 16:07:07 fredvachier Exp $
+# Mise à jour $Id: bddimages_sub_insertion.tcl,v 1.10 2011-01-21 10:59:10 jberthier Exp $
 
 #--------------------------------------------------
 #  init_info { }
@@ -19,43 +19,41 @@
 #    variables en sortie :
 #
 #--------------------------------------------------
-   proc init_info { } {
+proc init_info { } {
 
-      global bddconf
-      global caption
-      global maliste
+   global bddconf
+   global caption
+   global maliste
 
-      #--- Chargement des captions
-      uplevel #0 "source \"[ file join $bddconf(rep_plug) bddimages_insertion.cap ]\""
+   #--- Chargement des captions
+   uplevel #0 "source \"[ file join $bddconf(rep_plug) bddimages_insertion.cap ]\""
 
-      set bddconf(liste) [list "$caption(bddimages_insertion,etat) \
-                                $caption(bddimages_insertion,nom) \
-                                $caption(bddimages_insertion,dateobs) \
-                                $caption(bddimages_insertion,telescope)\
-                                $caption(bddimages_insertion,taille) \
-                                $caption(bddimages_insertion,erreur)" ]
+   set bddconf(liste) [list "$caption(bddimages_insertion,etat) \
+                             $caption(bddimages_insertion,nom) \
+                             $caption(bddimages_insertion,dateobs) \
+                             $caption(bddimages_insertion,telescope)\
+                             $caption(bddimages_insertion,taille) \
+                             $caption(bddimages_insertion,erreur)" ]
 
-      set listfile {}
-      set maliste {}
+   set listfile {}
+   set maliste {}
 
-      globrdk $bddconf(dirinco) $bddconf(limit)
+   globrdk $bddconf(dirinco) $bddconf(limit)
 
-      set err [catch {set list_file [lsort -increasing $maliste]} result]
+   set err [catch {set list_file [lsort -increasing $maliste]} result]
 
-      if {$err==0} {
-
+   if {$err==0} {
       foreach fichier $list_file {
         set fic [file tail "$fichier"]
         lappend listfile [list "?" "$fichier" "NULL" "NULL" "NULL" "NULL"]
-        }
-        
-      } else {
-        bddimages_sauve_fich "init_info: pas de fichier"
       }
-
-      lappend bddconf(liste) $listfile
-      return
+   } else {
+      bddimages_sauve_fich "init_info: pas de fichier"
    }
+
+   lappend bddconf(liste) $listfile
+   return
+}
 
 #--------------------------------------------------
 #  init_info_non_recursif { }
@@ -73,43 +71,41 @@
 #    variables en sortie :
 #
 #--------------------------------------------------
-   proc init_info_non_recursif { } {
+proc init_info_non_recursif { } {
 
-      global bddconf
-      global caption
-      global maliste
+   global bddconf
+   global caption
+   global maliste
 
-      #--- Chargement des captions
-      uplevel #0 "source \"[ file join $bddconf(rep_plug) bddimages_insertion.cap ]\""
+   #--- Chargement des captions
+   uplevel #0 "source \"[ file join $bddconf(rep_plug) bddimages_insertion.cap ]\""
 
-      set bddconf(liste) [list "$caption(bddimages_insertion,etat) \
-                                $caption(bddimages_insertion,nom) \
-                                $caption(bddimages_insertion,dateobs) \
-                                $caption(bddimages_insertion,telescope)\
-                                $caption(bddimages_insertion,taille) \
-                                $caption(bddimages_insertion,erreur)" ]
+   set bddconf(liste) [list "$caption(bddimages_insertion,etat) \
+                             $caption(bddimages_insertion,nom) \
+                             $caption(bddimages_insertion,dateobs) \
+                             $caption(bddimages_insertion,telescope)\
+                             $caption(bddimages_insertion,taille) \
+                             $caption(bddimages_insertion,erreur)" ]
 
-      set listfile {}
-      set maliste {}
+   set listfile {}
+   set maliste {}
 
-      globrdknr $bddconf(dirinco) $bddconf(limit)
+   globrdknr $bddconf(dirinco) $bddconf(limit)
 
+   set err [catch {set list_file [lsort -increasing $maliste]} result]
 
-      set err [catch {set list_file [lsort -increasing $maliste]} result]
-
-      if {$err==0} {
-
+   if {$err==0} {
       foreach fichier $list_file {
-        set fic [file tail "$fichier"]
-        lappend listfile [list "?" "$fichier" "NULL" "NULL" "NULL" "NULL"]
-        }
-      } else {
-        bddimages_sauve_fich "init_info: pas de fichier"
+         set fic [file tail "$fichier"]
+         lappend listfile [list "?" "$fichier" "NULL" "NULL" "NULL" "NULL"]
       }
-
-      lappend bddconf(liste) $listfile
-      return
+   } else {
+      bddimages_sauve_fich "init_info: pas de fichier"
    }
+
+   lappend bddconf(liste) $listfile
+   return
+}
 
 #--------------------------------------------------
 #  info_fichier { nomfich dir }
@@ -127,7 +123,6 @@
 #              des champs necessaires a l'insertion de
 #              l'image dans la base
 #
-#
 #    variables en entree :
 #       nomfich = Nom de l image
 #       dir     = repertoire de l image
@@ -136,156 +131,150 @@
 #       list = $erreur $sizefich $list_keys
 #
 #--------------------------------------------------
+proc info_fichier { nomfich } {
 
-   proc info_fichier { nomfich } {
+   global bddconf
 
-     global bddconf
+   set erreur    0
+   set err       0
+   set etat      "X"
+   set dateiso   "-"
+   set site      "-"
+   set sizefich  "Unknown"
+   set tabkey    "-"
+   set bufno $bddconf(bufno)
 
+   # --- Recupere la taille de l'image
+   set errnum [catch {set sizefich [file size $nomfich]} msg ]
+   if {$errnum != 0} { 
+      return [list 1 $etat $nomfich $dateiso $site $sizefich $tabkey] 
+   }
 
-     set erreur    0
-     set err       0
-     set etat      "X"
-     set dateiso   "-"
-     set site      "-"
-     set sizefich  "Unknown"
-     set tabkey    "-"
-     set bufno $bddconf(bufno)
+   # --- Recupere l'extension du fichier
+   set result     [bddimages_formatfichier $nomfich]
+   set form2      [lindex $result 0]
+   set racinefich [lindex $result 1]
+   set form3      [lindex $result 2]
 
-     # --- Recupere la taille de l'image
-     set errnum [catch {set sizefich [file size $nomfich]} msg ]
-     if {$errnum!=0} { return [list 1 $etat $nomfich $dateiso $site $sizefich $tabkey] }
-
-     # --- Recupere l'extension du fichier
-     set result     [bddimages_formatfichier $nomfich]
-     set form2      [lindex $result 0]
-     set racinefich [lindex $result 1]
-     set form3      [lindex $result 2]
-
-     # --- renomme le fichier pour que l'extension soit en minuscule
-     if {$form3=="img"} {
-        set errnum [catch {file rename $nomfich "$racinefich.$form2"} msg]
-        }
-     if {$form3=="cata"} {
-        set errnum [catch {file rename $nomfich "$racinefich\_$form2"} msg]
-        }
-     if {$errnum!=0} {
-       if {[string last "file already exists" $msg]<=1} {
+   # --- renomme le fichier pour que l'extension soit en minuscule
+   if {$form3 == "img"} {
+      set errnum [catch {file rename $nomfich "$racinefich.$form2"} msg]
+   }
+   if {$form3 == "cata"} {
+      set errnum [catch {file rename $nomfich "$racinefich\_$form2"} msg]
+   }
+   if {$errnum != 0} {
+      if {[string last "file already exists" $msg] <= 1} {
          bddimages_sauve_fich "info_fichier: ERREUR 9 : Renommage du fichier $nomfich impossible <err:$errnum> <msg:$msg>"
          return [list "9" $etat $nomfich $dateiso $site $sizefich $tabkey]
-         }
-       } else {
-       set nomfich "$racinefich.$form2"
-       }
+      }
+   } else {
+      set nomfich "$racinefich.$form2"
+   }
 
-     # --- dezippe le fichier s il est zippé
-     if {$form2=="fit.gz"||$form2=="fits.gz"||$form2=="cata.txt.gz"} {
-       set fileformat zipped
-       set errnum [catch {file mkdir "$bddconf(dirfits)"} msg]
-       if {$errnum==1} {
-          ::console::affiche_resultat "msg=$msg\n"
-          ::console::affiche_resultat "array names bddconf=[array names bddconf]\n"
-       }
+   # --- dezippe le fichier s il est zippé
+   if {$form2 == "fit.gz" || $form2 == "fits.gz" || $form2 == "cata.txt.gz"} {
+      set fileformat zipped
+      set errnum [catch {file mkdir "$bddconf(dirfits)"} msg]
+      if {$errnum==1} {
+         ::console::affiche_resultat "msg=$msg\n"
+         ::console::affiche_resultat "array names bddconf=[array names bddconf]\n"
+      }
 
-       set tmpfile [ file join $bddconf(dirfits) tmpbddimage.fits ]
-       set nomfichdata $tmpfile
+      set tmpfile [ file join $bddconf(dirfits) tmpbddimage.fits ]
+      set nomfichdata $tmpfile
 
-       file delete -force -- $tmpfile
-       if { $::tcl_platform(os) == "Linux" } {
-          set errnum [catch {exec gunzip -c $nomfich > $tmpfile} msgzip ]
-       } else {
-          set errnum [catch {file copy "$nomfich" "${tmpfile}.gz" ; gunzip "$tmpfile"} msgzip ]
-       }
-       if {$errnum==0} {
+      file delete -force -- $tmpfile
+      if { $::tcl_platform(os) == "Linux" } {
+         set errnum [catch {exec gunzip -c $nomfich > $tmpfile} msgzip ]
+      } else {
+         set errnum [catch {file copy "$nomfich" "${tmpfile}.gz" ; gunzip "$tmpfile"} msgzip ]
+      }
+      if {$errnum == 0} {
          set nomfichfits [string range $nomfich 0 [expr [string last .gz $nomfich] -1]]
-        } else {
+      } else {
          file delete -force -- $tmpfile
          bddimages_sauve_fich "info_fichier: ERREUR 8 : Archive invalide <err:$errnum> <msg:$msgzip>"
          return [list "8" $etat $nomfich $dateiso $site $sizefich $tabkey]
-        }
-       } else {
-       set fileformat unzipped
-       set nomfichfits $nomfich
-       set nomfichdata $nomfich
-       }
-
-     # --- Charge l'image en memoire
-     if {$form3=="img"} {
-        set errnum [catch {buf$bufno load $nomfichdata} msg ]
-        if { $errnum != 0 } {
-           bddimages_sauve_fich "info_fichier: ERREUR 3 : Erreur de Chargement de l image en memoire <err:$errnum> <msg:$msg>"
-           return [list "3" $etat $nomfichfits $dateiso $site $sizefich $tabkey]
-           }
-        }
-
-     # --- zip/rezip le fichier
-     if {$fileformat == "unzipped"} {
-       set nomfich "$nomfichfits.gz"
-       set errnum [catch {exec gzip -c $nomfichdata > $nomfich} msg ]
-       if {$errnum!=0} {
-           file delete -force -- $nomfich
-           bddimages_sauve_fich "info_fichier: ERREUR 2 : Erreur lors de la recompression de l'image $nomfichfits  <err:$errnum> <msg:$msg>"
-           return [list "2" $etat $nomfichfits $dateiso $site $sizefich $tabkey]
-         }
-       file delete -force -- $nomfichdata
-     }
-
-     if {[ info exists tmpfile ]} then {
-       file delete -force -- $tmpfile
-     }
-
-     # --- Recuperation des champs du header FITS
-     if {$form3=="img"} {
-        set errnum [catch {set list_keys [buf$bufno getkwds]} msg ]
-        if {$errnum!=0} {
-           bddimages_sauve_fich "info_fichier: ERREUR 4 : Erreur lors de la lecture du header de l'image <err:$errnum> <msg:$msg>"
-           return [list 4 $etat $nomfich $dateiso $site $sizefich $tabkey]
-           }
-
-        # Creation de la liste des champs et valeurs
-        set tabkey {}
-        foreach key $list_keys {
-          set garde "ok"
-          if {$key==""} {set garde "no"}
-          foreach rekey $tabkey {
-            if {$key==$rekey} {set garde "no"}
-            }
-          if {$garde=="ok"} {
-            lappend tabkey [list $key [buf$bufno getkwd $key] ]
-            }
-          }
-
-        set champs  [bddimages_entete_preminforecon $tabkey]
-        set err     [lindex $champs 0]
-        set dateiso [lindex $champs 1]
-        set site    [lindex $champs 2]
-        }
-
-     if {$form3=="cata"} {
-        set tabkey  {}
-        set site    {}
-        set dateiso {}
-        }
-
-
-     switch $err {
-        "0" { set etat  "!" }
-        "1" { set erreur 5 }
-        "2" { set erreur 6 }
-         default { set erreur 7 }
-        }
-
-
-    return [list $erreur $etat $nomfich $dateiso $site $sizefich $tabkey $form3]
+      }
+   } else {
+      set fileformat unzipped
+      set nomfichfits $nomfich
+      set nomfichdata $nomfich
    }
 
+   # --- Charge l'image en memoire
+   if {$form3 == "img"} {
+      set errnum [catch {buf$bufno load $nomfichdata} msg ]
+      if { $errnum != 0 } {
+         bddimages_sauve_fich "info_fichier: ERREUR 3 : Erreur de Chargement de l image en memoire <err:$errnum> <msg:$msg>"
+         return [list "3" $etat $nomfichfits $dateiso $site $sizefich $tabkey]
+      }
+   }
 
+   # --- zip/rezip le fichier
+   if {$fileformat == "unzipped"} {
+      set nomfich "$nomfichfits.gz"
+      set errnum [catch {exec gzip -c $nomfichdata > $nomfich} msg ]
+      if {$errnum!=0} {
+         file delete -force -- $nomfich
+         bddimages_sauve_fich "info_fichier: ERREUR 2 : Erreur lors de la recompression de l'image $nomfichfits  <err:$errnum> <msg:$msg>"
+         return [list "2" $etat $nomfichfits $dateiso $site $sizefich $tabkey]
+      }
+      file delete -force -- $nomfichdata
+   }
+
+   if {[ info exists tmpfile ]} then {
+      file delete -force -- $tmpfile
+   }
+
+   # --- Recuperation des champs du header FITS
+   if {$form3 == "img"} {
+      set errnum [catch {set list_keys [buf$bufno getkwds]} msg ]
+      if {$errnum!=0} {
+         bddimages_sauve_fich "info_fichier: ERREUR 4 : Erreur lors de la lecture du header de l'image <err:$errnum> <msg:$msg>"
+         return [list 4 $etat $nomfich $dateiso $site $sizefich $tabkey]
+      }
+
+      # Creation de la liste des champs et valeurs
+      set tabkey {}
+      foreach key $list_keys {
+         set garde "ok"
+         if {$key==""} {set garde "no"}
+         foreach rekey $tabkey {
+            if {$key==$rekey} {set garde "no"}
+         }
+         if {$garde=="ok"} {
+            lappend tabkey [list $key [buf$bufno getkwd $key] ]
+         }
+      }
+
+      set champs  [bddimages_entete_preminforecon $tabkey]
+      set err     [lindex $champs 0]
+      set dateiso [lindex $champs 1]
+      set site    [lindex $champs 2]
+   }
+
+   if {$form3 == "cata"} {
+      set tabkey  {}
+      set site    {}
+      set dateiso {}
+   }
+
+   switch $err {
+      "0" { set etat  "!" }
+      "1" { set erreur 5 }
+      "2" { set erreur 6 }
+      default { set erreur 7 }
+   }
+
+   return [list $erreur $etat $nomfich $dateiso $site $sizefich $tabkey $form3]
+}
 
 # ----------------------------------------
 # Fonction : bddimages_insertion_unfich
 # ----------------------------------------
-
 # Insere une image
-
 # ---------------------------------------
 proc bddimages_insertion_unfich { ligne } {
 
@@ -385,17 +374,9 @@ proc bddimages_insertion_unfich { ligne } {
   }
   # fin de bddimages_insertion
 
-
-
-
-
 # ---------------------------------------
-
 # bddimages_images_datainsert
-
 # Insere nouvelle image dans la BDD
-#
-
 # ---------------------------------------
 proc bddimages_images_datainsert { tabkey idheader filename site dateobs sizefich } {
 
