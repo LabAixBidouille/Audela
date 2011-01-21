@@ -6,7 +6,7 @@
 # Description    : Configuration des variables globales bddconf
 #                  necessaires au service
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_config.tcl,v 1.10 2011-01-21 16:35:21 fredvachier Exp $
+# Mise à jour $Id: bddimages_config.tcl,v 1.11 2011-01-21 17:07:18 fredvachier Exp $
 #
 #--------------------------------------------------
 #
@@ -162,7 +162,7 @@ proc read_default_config { file_config } {
 
       set default [::dom::node stringValue [::dom::selectNode $n {attribute::default}]]
       if {$default == "yes"} {
-         ::console::affiche_resultat "Lecture de la configuration \n"
+         #::console::affiche_resultat "Lecture de la configuration \n"
          set bddconf(name)        [::dom::node stringValue [::dom::selectNode $n {descendant::name/text()}]]
          set bddconf(dbname)      [::dom::node stringValue [::dom::selectNode $n {descendant::dbname/text()}]]
          set bddconf(login)       [::dom::node stringValue [::dom::selectNode $n {descendant::login/text()}]]
@@ -178,19 +178,19 @@ proc read_default_config { file_config } {
          set bddconf(limit)       [::dom::node stringValue [::dom::selectNode $n {descendant::screenlimit/text()}]]
          }
       }
-      ::console::affiche_resultat "NAME)       =$bddconf(name)    \n"
-      ::console::affiche_resultat "DBNAME)     =$bddconf(dbname)  \n"
-      ::console::affiche_resultat "LOGIN)      =$bddconf(login)   \n"
-      ::console::affiche_resultat "PASS)       =$bddconf(pass)    \n"
-      ::console::affiche_resultat "IP)         =$bddconf(serv)    \n"
-      ::console::affiche_resultat "PORT)       =$bddconf(port)    \n"
-      ::console::affiche_resultat "ROOT)       =$bddconf(dirbase) \n"
-      ::console::affiche_resultat "INCOMING)   =$bddconf(dirinco) \n"
-      ::console::affiche_resultat "FITS)       =$bddconf(dirfits) \n"
-      ::console::affiche_resultat "CATA)       =$bddconf(dircata) \n"
-      ::console::affiche_resultat "ERROR)      =$bddconf(direrr)  \n"
-      ::console::affiche_resultat "LOG)        =$bddconf(dirlog)  \n"
-      ::console::affiche_resultat "SCREENLIMIT)=$bddconf(limit)   \n"
+      #::console::affiche_resultat "NAME)       =$bddconf(name)    \n"
+      #::console::affiche_resultat "DBNAME)     =$bddconf(dbname)  \n"
+      #::console::affiche_resultat "LOGIN)      =$bddconf(login)   \n"
+      #::console::affiche_resultat "PASS)       =$bddconf(pass)    \n"
+      #::console::affiche_resultat "IP)         =$bddconf(serv)    \n"
+      #::console::affiche_resultat "PORT)       =$bddconf(port)    \n"
+      #::console::affiche_resultat "ROOT)       =$bddconf(dirbase) \n"
+      #::console::affiche_resultat "INCOMING)   =$bddconf(dirinco) \n"
+      #::console::affiche_resultat "FITS)       =$bddconf(dirfits) \n"
+      #::console::affiche_resultat "CATA)       =$bddconf(dircata) \n"
+      #::console::affiche_resultat "ERROR)      =$bddconf(direrr)  \n"
+      #::console::affiche_resultat "LOG)        =$bddconf(dirlog)  \n"
+      #::console::affiche_resultat "SCREENLIMIT)=$bddconf(limit)   \n"
    return 0
    }
 
@@ -223,7 +223,7 @@ proc read_default_config { file_config } {
       set defaultinifile [ file join $audace(rep_plugin) tool bddimages config bddimages_ini.xml]
 
       # Verifie que le fichier xml existe
-      ::console::affiche_resultat "charge_ini_xml : existance [file exists $inifile]\n"
+      #::console::affiche_resultat "charge_ini_xml : existance [file exists $inifile]\n"
       if {[file exists $inifile]==0} {
          ::console::affiche_resultat "charge_ini_xml : file $inifile doesn't exist\n"
          # S il n existe pas Creer le fichier 
@@ -232,20 +232,6 @@ proc read_default_config { file_config } {
 
       # Charge le fichier de config
       set err [read_default_config $inifile]
-
-      ::console::affiche_resultat "NAME)       =$bddconf(name)    \n"
-      ::console::affiche_resultat "DBNAME)     =$bddconf(dbname)  \n"
-      ::console::affiche_resultat "LOGIN)      =$bddconf(login)   \n"
-      ::console::affiche_resultat "PASS)       =$bddconf(pass)    \n"
-      ::console::affiche_resultat "IP)         =$bddconf(serv)    \n"
-      ::console::affiche_resultat "PORT)       =$bddconf(port)    \n"
-      ::console::affiche_resultat "ROOT)       =$bddconf(dirbase) \n"
-      ::console::affiche_resultat "INCOMING)   =$bddconf(dirinco) \n"
-      ::console::affiche_resultat "FITS)       =$bddconf(dirfits) \n"
-      ::console::affiche_resultat "CATA)       =$bddconf(dircata) \n"
-      ::console::affiche_resultat "ERROR)      =$bddconf(direrr)  \n"
-      ::console::affiche_resultat "LOG)        =$bddconf(dirlog)  \n"
-      ::console::affiche_resultat "SCREENLIMIT)=$bddconf(limit)   \n"
 
       return
       }
@@ -312,6 +298,7 @@ proc get_list_conf { } {
 
 proc charge_selection { selection } {
 
+   variable This
    global audace
    global bddconf
 
@@ -333,9 +320,9 @@ proc charge_selection { selection } {
 
    foreach n [::dom::selectNode $xmlconfig {descendant::bddimages}] {
 
-      set default [::dom::node stringValue [::dom::selectNode $n {attribute::default}]]
-      if {$default == "yes"} {
-         ::console::affiche_resultat "Lecture de la configuration \n"
+      set tempconf [::dom::node stringValue [::dom::selectNode $n {descendant::name/text()}]]
+      if {$selection == $tempconf} {
+         #::console::affiche_resultat "Lecture de la configuration \n"
          set bddconf(name)        [::dom::node stringValue [::dom::selectNode $n {descendant::name/text()}]]
          set bddconf(dbname)      [::dom::node stringValue [::dom::selectNode $n {descendant::dbname/text()}]]
          set bddconf(login)       [::dom::node stringValue [::dom::selectNode $n {descendant::login/text()}]]
@@ -351,19 +338,34 @@ proc charge_selection { selection } {
          set bddconf(limit)       [::dom::node stringValue [::dom::selectNode $n {descendant::screenlimit/text()}]]
          }
       }
-      ::console::affiche_resultat "NAME)       =$bddconf(name)    \n"
-      ::console::affiche_resultat "DBNAME)     =$bddconf(dbname)  \n"
-      ::console::affiche_resultat "LOGIN)      =$bddconf(login)   \n"
-      ::console::affiche_resultat "PASS)       =$bddconf(pass)    \n"
-      ::console::affiche_resultat "IP)         =$bddconf(serv)    \n"
-      ::console::affiche_resultat "PORT)       =$bddconf(port)    \n"
-      ::console::affiche_resultat "ROOT)       =$bddconf(dirbase) \n"
-      ::console::affiche_resultat "INCOMING)   =$bddconf(dirinco) \n"
-      ::console::affiche_resultat "FITS)       =$bddconf(dirfits) \n"
-      ::console::affiche_resultat "CATA)       =$bddconf(dircata) \n"
-      ::console::affiche_resultat "ERROR)      =$bddconf(direrr)  \n"
-      ::console::affiche_resultat "LOG)        =$bddconf(dirlog)  \n"
-      ::console::affiche_resultat "SCREENLIMIT)=$bddconf(limit)   \n"
+      #::console::affiche_resultat "NAME)       =$bddconf(name)    \n"
+      #::console::affiche_resultat "DBNAME)     =$bddconf(dbname)  \n"
+      #::console::affiche_resultat "LOGIN)      =$bddconf(login)   \n"
+      #::console::affiche_resultat "PASS)       =$bddconf(pass)    \n"
+      #::console::affiche_resultat "IP)         =$bddconf(serv)    \n"
+      #::console::affiche_resultat "PORT)       =$bddconf(port)    \n"
+      #::console::affiche_resultat "ROOT)       =$bddconf(dirbase) \n"
+      #::console::affiche_resultat "INCOMING)   =$bddconf(dirinco) \n"
+      #::console::affiche_resultat "FITS)       =$bddconf(dirfits) \n"
+      #::console::affiche_resultat "CATA)       =$bddconf(dircata) \n"
+      #::console::affiche_resultat "ERROR)      =$bddconf(direrr)  \n"
+      #::console::affiche_resultat "LOG)        =$bddconf(dirlog)  \n"
+      #::console::affiche_resultat "SCREENLIMIT)=$bddconf(limit)   \n"
+
+
+      set $This.bdd.name.dat $bddconf(dbname) 
+      set $This.bdd.login.dat $bddconf(login)  
+      set $This.bdd.pass.dat $bddconf(pass)   
+      set $This.bdd.serv.dat $bddconf(serv)   
+      set $This.bdd.port.dat $bddconf(port)   
+      set $This.bdd.dirbase.dat $bddconf(dirbase)
+      set $This.bdd.dirinco.dat $bddconf(dirinco)
+      set $This.bdd.dirfits.dat $bddconf(dirfits)
+      set $This.bdd.dircata.dat $bddconf(dircata)
+      set $This.bdd.direrr.dat $bddconf(direrr) 
+      set $This.bdd.dirlog.dat $bddconf(dirlog) 
+      set $This.bdd.limit.dat $bddconf(limit)  
+
    return 0
    }
 
@@ -535,8 +537,8 @@ proc charge_selection { selection } {
              menubutton $This.conf.m.menu -relief raised -borderwidth 2 -textvariable $bddconf(name) -menu $This.conf.m.menu.list
              set m [menu $This.conf.m.menu.list -tearoff "0"]
              foreach myconf $bddconf(list_config) {
-                $m add radiobutton -label "$myconf" -value "$myconf" -variable $bddconf(name) \
-                    -command { ::bddimages_config::charge_selection "$::bddimages_config::myconf" }
+                $m add radiobutton -label "$myconf" -value "$myconf" -variable bddconf(name) \
+                    -command { ::bddimages_config::charge_selection "$bddconf(name)" }
              }
              pack $This.conf.m.menu -in $This.conf.m -side left -anchor w -padx 3 -pady 3
 
@@ -552,7 +554,7 @@ proc charge_selection { selection } {
           pack $This.conf.c -in $This.conf -anchor w -side top -expand 0 -fill both -padx 3 -pady 0
 
              checkbutton $This.conf.c.sauve -indicatoron 1 -offvalue 0 -onvalue 1 \
-                -variable $bddconf(sauve_xml) -text "$::caption(bddimages_config,sauvexml)"
+                -variable bddconf(sauve_xml) -text "$::caption(bddimages_config,sauvexml)"
              pack $This.conf.c.sauve -in $This.conf.c -anchor w -side left -padx 3 -pady 1
       
 
