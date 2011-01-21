@@ -6,7 +6,7 @@
 # Description    : Configuration des variables globales bddconf
 #                  necessaires au service
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_config.tcl,v 1.9 2011-01-21 14:00:40 jberthier Exp $
+# Mise à jour $Id: bddimages_config.tcl,v 1.10 2011-01-21 16:35:21 fredvachier Exp $
 #
 #--------------------------------------------------
 #
@@ -178,6 +178,19 @@ proc read_default_config { file_config } {
          set bddconf(limit)       [::dom::node stringValue [::dom::selectNode $n {descendant::screenlimit/text()}]]
          }
       }
+      ::console::affiche_resultat "NAME)       =$bddconf(name)    \n"
+      ::console::affiche_resultat "DBNAME)     =$bddconf(dbname)  \n"
+      ::console::affiche_resultat "LOGIN)      =$bddconf(login)   \n"
+      ::console::affiche_resultat "PASS)       =$bddconf(pass)    \n"
+      ::console::affiche_resultat "IP)         =$bddconf(serv)    \n"
+      ::console::affiche_resultat "PORT)       =$bddconf(port)    \n"
+      ::console::affiche_resultat "ROOT)       =$bddconf(dirbase) \n"
+      ::console::affiche_resultat "INCOMING)   =$bddconf(dirinco) \n"
+      ::console::affiche_resultat "FITS)       =$bddconf(dirfits) \n"
+      ::console::affiche_resultat "CATA)       =$bddconf(dircata) \n"
+      ::console::affiche_resultat "ERROR)      =$bddconf(direrr)  \n"
+      ::console::affiche_resultat "LOG)        =$bddconf(dirlog)  \n"
+      ::console::affiche_resultat "SCREENLIMIT)=$bddconf(limit)   \n"
    return 0
    }
 
@@ -338,6 +351,19 @@ proc charge_selection { selection } {
          set bddconf(limit)       [::dom::node stringValue [::dom::selectNode $n {descendant::screenlimit/text()}]]
          }
       }
+      ::console::affiche_resultat "NAME)       =$bddconf(name)    \n"
+      ::console::affiche_resultat "DBNAME)     =$bddconf(dbname)  \n"
+      ::console::affiche_resultat "LOGIN)      =$bddconf(login)   \n"
+      ::console::affiche_resultat "PASS)       =$bddconf(pass)    \n"
+      ::console::affiche_resultat "IP)         =$bddconf(serv)    \n"
+      ::console::affiche_resultat "PORT)       =$bddconf(port)    \n"
+      ::console::affiche_resultat "ROOT)       =$bddconf(dirbase) \n"
+      ::console::affiche_resultat "INCOMING)   =$bddconf(dirinco) \n"
+      ::console::affiche_resultat "FITS)       =$bddconf(dirfits) \n"
+      ::console::affiche_resultat "CATA)       =$bddconf(dircata) \n"
+      ::console::affiche_resultat "ERROR)      =$bddconf(direrr)  \n"
+      ::console::affiche_resultat "LOG)        =$bddconf(dirlog)  \n"
+      ::console::affiche_resultat "SCREENLIMIT)=$bddconf(limit)   \n"
    return 0
    }
 
