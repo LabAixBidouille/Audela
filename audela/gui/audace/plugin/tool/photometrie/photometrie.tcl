@@ -5,7 +5,7 @@
 #
 # @brief Outil pour l'analyse photométrique d'une image.
 #
-# $Id: photometrie.tcl,v 1.6 2011-01-19 19:20:35 jacquesmichelet Exp $
+# $Id: photometrie.tcl,v 1.7 2011-01-21 18:11:44 jacquesmichelet Exp $
 #
 
 namespace eval ::Photometrie {
@@ -98,12 +98,36 @@ namespace eval ::Photometrie {
             if { [ lsearch -exact $liste_cle $cle_majuscule ] > 0 } {
                 set photometrie($cle) [ lindex [ buf$::audace(bufNo) getkwd $cle_majuscule ] 1 ]
             } else {
+                ::console::affiche_erreur "$photometrie_texte(err_pas_astrometrie) \n"
                 set photometrie(astrometrie) 0
             }
         }
 
         set fwhm [ buf$::audace(bufNo) fwhm [ list 1 1 $photometrie(naxis1) $photometrie(naxis1) ] ]
         set photometrie(fwhm) [ expr ( [ lindex $fwhm 0 ] + [ lindex $fwhm 1 ] ) / 2 ]
+
+        # Récupération des coordonnées et du champ
+        set res [ buf$::audace(bufNo) xy2radec [ list [ expr $photometrie(naxis1) / 2 ] [ expr $photometrie(naxis2) / 2 ] ] ]
+        set ra [ mc_angle2hms [ lindex $res 0 ] ]
+        set dec [ mc_angle2dms [ lindex $res 1 ] 90 ]
+        set coords "$ra $dec"
+
+        set tgte1 [ expr $photometrie(naxis1) * $photometrie(pixsize1) * 1e-6 / $photometrie(foclen) ]
+        set tgte2 [ expr $photometrie(naxis2) * $photometrie(pixsize2) * 1e-6 / $photometrie(foclen) ]
+        set champ1 [ expr atan($tgte1) ]
+        set champ2 [ expr atan($tgte2) ]
+        # Conversion de radian en minutes d'arc
+        if { $champ1 > $champ2 } {
+            set champarcmin [ expr round( $champ1 * 3437.75 ) ]
+        } else {
+            set champarcmin [ expr round( $champ2 * 3437.75 ) ]
+        }
+
+        # Limite à 30 minutes d'arc
+        if { $champarcmin > 30 } {
+            ::console::affiche_erreur "$photometrie_texte(err_champ_trop_large) : $champarcmin ' \n"
+            set photometrie(internet) 0
+        }
 
         return 0
     }
@@ -427,12 +451,22 @@ namespace eval ::Photometrie {
         tkwait window $tl
     }
 
+    ##
+    # @brief Permet de choisir entre le mode manuel, le mode catalogue local (plus tard) ou le mode catalogue internet
     proc ChoixManuelAutomatique {} {
         variable photometrie_texte
         variable photometrie
 
+        # Si pas de racalage astrométrique, pas de possibilité de récupérer un catalogue local ou distant
         if { $photometrie(astrometrie) == 0 } {
-            ::console::affiche_erreur "$photometrie_texte(err_pas_astrometrie) \n"
+            ::console::affiche_erreur "$photometrie_texte(err_pas_internet) \n"
+            set photometrie(choix_mode) manuel
+            return
+        }
+
+        # Temporaire en attendant le mode catalogue local qui pourra être valide
+        if { $photometrie(internet) == 0 } {
+            ::console::affiche_erreur "$photometrie_texte(err_pas_internet) \n"
             set photometrie(choix_mode) manuel
             return
         }
