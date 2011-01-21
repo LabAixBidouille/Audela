@@ -1,5 +1,5 @@
 # source audace/plugin/tool/bddimages/bddimages_sub_fichier.tcl
-# Mise à jour $Id: bddimages_sub_fichier.tcl,v 1.5 2011-01-21 10:59:10 jberthier Exp $
+# Mise à jour $Id: bddimages_sub_fichier.tcl,v 1.6 2011-01-21 11:24:54 fredvachier Exp $
 
 proc bddimages_sauve_fich {texte} {
 
@@ -62,7 +62,7 @@ proc globrdk { {dir .} limit } {
           set result [bddimages_formatfichier $i]
           set form2  [lindex $result 0]
           if { ([llength $maliste]<$limit || $limit==0) &&
-               ( $form2=="fit" || $form2=="fit.gz" || $form2=="fits" || $form2=="fits.gz" || $form2=="cata.txt" || $form2=="cata.txt.gz" ) } {
+               ( $form2=="fit" || $form2=="fit.gz" || $form2=="fits" || $form2=="fits.gz" || $form2=="cata.txt" || $form2=="cata.txt.gz" || $form2=="cata.xml" || $form2=="cata.xml.gz" ) } {
              lappend maliste $i
           } else {
              
@@ -84,7 +84,7 @@ proc globrdknr { {dir .} limit } {
 
        set result [bddimages_formatfichier $i]
        set form2  [lindex $result 0]
-       if { ([llength $maliste]<$limit || $limit==0) && ( $form2=="fit" || $form2=="fit.gz" || $form2=="fits" || $form2=="fits.gz" || $form2=="cata.txt" || $form2=="cata.txt.gz" ) } {
+       if { ([llength $maliste]<$limit || $limit==0) && ( $form2=="fit" || $form2=="fit.gz" || $form2=="fits" || $form2=="fits.gz" || $form2=="cata.txt" || $form2=="cata.txt.gz" || $form2=="cata.xml" || $form2=="cata.xml.gz"  ) } {
           lappend maliste $i
           } else {
           }
@@ -191,6 +191,12 @@ proc bddimages_formatfichier {fichierorig} {
        if {$form>1} {
           set form2 "cata.txt.gz"
           set form3 "cata"
+          } else {
+          set form [string last cata.xml.gz $fichier]
+          if {$form>1} {
+             set form2 "cata.xml.gz"
+             set form3 "cata"
+             }
           }
        }
 
@@ -199,6 +205,12 @@ proc bddimages_formatfichier {fichierorig} {
        if {$form>1} {
           set form2 "cata.txt"
           set form3 "cata"
+          } else {
+          set form [string last cata.xml $fichier]
+          if {$form>1} {
+             set form2 "cata.xml"
+             set form3 "cata"
+             }
           }
        }
 

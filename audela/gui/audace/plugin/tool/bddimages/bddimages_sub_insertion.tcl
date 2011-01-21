@@ -1,6 +1,6 @@
 # source audace/plugin/tool/bddimages/bddimages_subroutines.tcl
 
-# Mise à jour $Id: bddimages_sub_insertion.tcl,v 1.10 2011-01-21 10:59:10 jberthier Exp $
+# Mise à jour $Id: bddimages_sub_insertion.tcl,v 1.11 2011-01-21 11:24:54 fredvachier Exp $
 
 #--------------------------------------------------
 #  init_info { }
@@ -173,7 +173,7 @@ proc info_fichier { nomfich } {
    }
 
    # --- dezippe le fichier s il est zippé
-   if {$form2 == "fit.gz" || $form2 == "fits.gz" || $form2 == "cata.txt.gz"} {
+   if {$form2 == "fit.gz" || $form2 == "fits.gz" || $form2 == "cata.txt.gz" || $form2=="cata.xml.gz" } {
       set fileformat zipped
       set errnum [catch {file mkdir "$bddconf(dirfits)"} msg]
       if {$errnum==1} {
@@ -367,7 +367,18 @@ proc bddimages_insertion_unfich { ligne } {
      }
 
   if {$form2=="cata.txt.gz"} {
-     set err [bddimages_catas_datainsert $nomfich $sizefich]
+     set err [bddimages_catas_datainsert $nomfich $sizefich $form2]
+     }
+
+  if {$form2=="cata.xml"} {
+     bddimages_sauve_fich "bddimages_insertion_unfich: Compression GZIP de $nomfich"
+     gzip $nomfich
+     set nomfich "$nomfich.gz"
+     set form2 "cata.xml.gz"
+     }
+
+  if {$form2=="cata.xml.gz"} {
+     set err [bddimages_catas_datainsert $nomfich $sizefich $form2]
      }
 
       return [list $err $nomfich]
@@ -641,7 +652,7 @@ return $etat
 #
 
 # ---------------------------------------
-proc bddimages_catas_datainsert { filename sizefich } {
+proc bddimages_catas_datainsert { filename sizefich form } {
 
   global bddconf
 
@@ -649,7 +660,6 @@ proc bddimages_catas_datainsert { filename sizefich } {
 
   # Detection de l'image coorespondante
   set fic [file tail "$filename"]
-  set form [string last cata.txt.gz $fic]
   set racinefich [string range $fic 0 [expr $form -2]]
 
   # -- ligne SQL
