@@ -1,6 +1,6 @@
 # source audace/plugin/tool/bddimages/bddimages_subroutines.tcl
 
-# Mise à jour $Id: bddimages_sub_insertion.tcl,v 1.11 2011-01-21 11:24:54 fredvachier Exp $
+# Mise à jour $Id: bddimages_sub_insertion.tcl,v 1.12 2011-01-21 18:37:49 fredvachier Exp $
 
 #--------------------------------------------------
 #  init_info { }
@@ -391,111 +391,110 @@ proc bddimages_insertion_unfich { ligne } {
 # ---------------------------------------
 proc bddimages_images_datainsert { tabkey idheader filename site dateobs sizefich } {
 
-  global bddconf
+   global bddconf
 
-  set etat 0
+   set etat 0
 
-  # Detection de la date et site
+   # Detection de la date et site
 
-  set annee [string range $dateobs 0 3]
-  set mois  [string range $dateobs 5 6]
-  set jour  [string range $dateobs 8 9]
+   set annee [string range $dateobs 0 3]
+   set mois  [string range $dateobs 5 6]
+   set jour  [string range $dateobs 8 9]
 
-  set dirfilename "fits/$site/$annee/$mois/$jour"
+   set dirfilename "fits/$site/$annee/$mois/$jour"
 
-  # Insere nouvelle image dans la table images
-   set fic [file tail "$filename"]
-   set sqlcmd "INSERT INTO images (idheader, tabname, filename, dirfilename,sizefich,datemodif) VALUES "
-   append sqlcmd "('$idheader', 'images_$idheader', '$fic', '$dirfilename','$sizefich',NOW())"
+   # Insere nouvelle image dans la table images
+    set fic [file tail "$filename"]
+    set sqlcmd "INSERT INTO images (idheader, tabname, filename, dirfilename,sizefich,datemodif) VALUES "
+    append sqlcmd "('$idheader', 'images_$idheader', '$fic', '$dirfilename','$sizefich',NOW())"
 
-     # -- Execute la ligne SQL
+      # -- Execute la ligne SQL
 
-   set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
-   if {$err} {
-      switch $msg {
-        "::mysql::query/db server: Table 'bddimages.images' doesn't exist" {
-          set sqlcmdcrea ""
-          append sqlcmdcrea "CREATE TABLE IF NOT EXISTS images ("
-          append sqlcmdcrea "  idbddimg bigint(20) NOT NULL auto_increment,"
-          append sqlcmdcrea "  idheader int(11) NOT NULL,"
-          append sqlcmdcrea "  tabname varchar(20) NOT NULL,"
-          append sqlcmdcrea "  filename varchar(128) NOT NULL,"
-          append sqlcmdcrea "  dirfilename varchar(128) NOT NULL,"
-          append sqlcmdcrea "  sizefich int(20) NOT NULL,"
-          append sqlcmdcrea "  datemodif DATETIME NOT NULL,"
-          append sqlcmdcrea "  PRIMARY KEY  (idbddimg)"
-          append sqlcmdcrea ") ENGINE=MyISAM;"
+    set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
+    if {$err} {
+       bddimages_sauve_fich "bddimages_images_datainsert: ERREUR : <$err> <$msg>"
+       ::console::affiche_erreur "bddimages_images_datainsert: ERREUR : <$err> <$msg>"
 
-          set err [catch {::bddimages_sql::sql query $sqlcmdcrea} msg]
-          if {$err} {
-             bddimages_sauve_fich "bddimages_images_datainsert: ERREUR 101 : Creation table images <err=$err> <msg=$msg> <sql=$sqlcmdcrea>"
-             return 101
+      if {[string last "images' doesn't exist" $msg]>0} {
+         set sqlcmdcrea ""
+         append sqlcmdcrea "CREATE TABLE IF NOT EXISTS images ("
+         append sqlcmdcrea "  idbddimg bigint(20) NOT NULL auto_increment,"
+         append sqlcmdcrea "  idheader int(11) NOT NULL,"
+         append sqlcmdcrea "  tabname varchar(20) NOT NULL,"
+         append sqlcmdcrea "  filename varchar(128) NOT NULL,"
+         append sqlcmdcrea "  dirfilename varchar(128) NOT NULL,"
+         append sqlcmdcrea "  sizefich int(20) NOT NULL,"
+         append sqlcmdcrea "  datemodif DATETIME NOT NULL,"
+         append sqlcmdcrea "  PRIMARY KEY  (idbddimg)"
+         append sqlcmdcrea ") ENGINE=MyISAM;"
+
+         set err [catch {::bddimages_sql::sql query $sqlcmdcrea} msg]
+         if {$err} {
+            bddimages_sauve_fich "bddimages_images_datainsert: ERREUR 101 : Creation table images <err=$err> <msg=$msg> <sql=$sqlcmdcrea>"
+            return 101
+            } else {
+            bddimages_sauve_fich "bddimages_images_datainsert: Creation table images..."
+           set resultsql ""
+           set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
+           if {$err} {
+             bddimages_sauve_fich "bddimages_images_datainsert: ERREUR 102 : Impossible d inserer un element dans la table images <err=$err> <msg=$msg>"
+             return 102
              } else {
-             bddimages_sauve_fich "bddimages_images_datainsert: Creation table images..."
+
+             }
+           }
+      } else {
+            bddimages_sauve_fich "bddimages_images_datainsert: ERREUR 103 : Impossible d acceder aux informations de bddimages.images <err=$err> <msg=$msg>"
+            return 103
+            }
+     }
+
+     set err [catch {::bddimages_sql::sql insertid} insert_idbddimg]
+    # bddimages_sauve_fich "bddimages_images_datainsert: Insertion nouvel element dans la table images <$insert_idbddimg>"
+
+   # -- Insere nouvelle image dans la table commun
+    set datejj  [ mc_date2jd $dateobs ]
+    set sqlcmd "INSERT INTO commun (idbddimg, datejj) VALUES "
+    append sqlcmd "('$insert_idbddimg', '$datejj')"
+
+      # -- Execute la ligne SQL
+
+    set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
+    if {$err} {
+       bddimages_sauve_fich "bddimages_images_datainsert: ERREUR : <$err> <$msg>"
+       ::console::affiche_erreur "bddimages_images_datainsert: ERREUR : <$err> <$msg>"
+
+      if {[string last "commun' doesn't exist" $msg]>0} {
+         set sqlcmdcrea ""
+         append sqlcmdcrea "CREATE TABLE IF NOT EXISTS commun ("
+         append sqlcmdcrea "  idbddimg bigint(20) NOT NULL,"
+         append sqlcmdcrea "  datejj double NOT NULL,"
+         append sqlcmdcrea "  exposure double NULL,"
+         append sqlcmdcrea "  alphaj2000 double NULL,"
+         append sqlcmdcrea "  deltaj2000 double NULL,"
+         append sqlcmdcrea "  PRIMARY KEY  (idbddimg)"
+         append sqlcmdcrea ") ENGINE=MyISAM;"
+
+         set err [catch {::bddimages_sql::sql query $sqlcmdcrea} msg]
+         if {$err} {
+            bddimages_sauve_fich "bddimages_images_datainsert: ERREUR 104 : $caption(bddimages_insertion,err104) <err=$err> <msg=$msg> <sql=$sqlcmdcrea>"
+            return 101
+           } else {
+            bddimages_sauve_fich "bddimages_images_datainsert: Creation table commun..."
             set resultsql ""
             set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
             if {$err} {
-              bddimages_sauve_fich "bddimages_images_datainsert: ERREUR 102 : Impossible d inserer un element dans la table images <err=$err> <msg=$msg>"
-              return 102
-              } else {
+             bddimages_sauve_fich "bddimages_images_datainsert: ERREUR 105 : $caption(bddimages_insertion,err105) <err=$err> <msg=$msg>"
+             return 102
+             } else {
 
-              }
-            }
-          }
-        default {
-           bddimages_sauve_fich "bddimages_images_datainsert: ERREUR 103 : Impossible d acceder aux informations de bddimages.images <err=$err> <msg=$msg>"
-           return 103
+             }
            }
-        }
-        # Fin switch
-    }
-    set err [catch {::bddimages_sql::sql insertid} insert_idbddimg]
-   # bddimages_sauve_fich "bddimages_images_datainsert: Insertion nouvel element dans la table images <$insert_idbddimg>"
-
-  # -- Insere nouvelle image dans la table commun
-   set datejj  [ mc_date2jd $dateobs ]
-   set sqlcmd "INSERT INTO commun (idbddimg, datejj) VALUES "
-   append sqlcmd "('$insert_idbddimg', '$datejj')"
-
-     # -- Execute la ligne SQL
-
-   set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
-   if {$err} {
-      switch $msg {
-        "::mysql::query/db server: Table 'bddimages.commun' doesn't exist" {
-          set sqlcmdcrea ""
-          append sqlcmdcrea "CREATE TABLE IF NOT EXISTS commun ("
-          append sqlcmdcrea "  idbddimg bigint(20) NOT NULL,"
-          append sqlcmdcrea "  datejj double NOT NULL,"
-          append sqlcmdcrea "  exposure double NULL,"
-          append sqlcmdcrea "  alphaj2000 double NULL,"
-          append sqlcmdcrea "  deltaj2000 double NULL,"
-          append sqlcmdcrea "  PRIMARY KEY  (idbddimg)"
-          append sqlcmdcrea ") ENGINE=MyISAM;"
-
-          set err [catch {::bddimages_sql::sql query $sqlcmdcrea} msg]
-          if {$err} {
-             bddimages_sauve_fich "bddimages_images_datainsert: ERREUR 101 : Creation table commun <err=$err> <msg=$msg> <sql=$sqlcmdcrea>"
-             return 101
-            } else {
-             bddimages_sauve_fich "bddimages_images_datainsert: Creation table commun..."
-             set resultsql ""
-             set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
-             if {$err} {
-              bddimages_sauve_fich "bddimages_images_datainsert: ERREUR 102 : Impossible d inserer un element dans la table commun <err=$err> <msg=$msg>"
-              return 102
-              } else {
-
-              }
-            }
-          }
-        default {
-           bddimages_sauve_fich "bddimages_images_datainsert: ERREUR 103 : Impossible d acceder aux informations de bddimages.commun <err=$err> <msg=$msg>"
-           return 103
-           }
-        }
-        # Fin switch
-    }
+      } else {
+         bddimages_sauve_fich "bddimages_images_datainsert: ERREUR 106 : $caption(bddimages_insertion,err106) <err=$err> <msg=$msg>"
+         return 103
+         }
+     }
 
 
 

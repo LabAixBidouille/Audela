@@ -1,5 +1,5 @@
 # source audace/plugin/tool/bddimages/bddimages_sub_fichier.tcl
-# Mise à jour $Id: bddimages_sub_fichier.tcl,v 1.6 2011-01-21 11:24:54 fredvachier Exp $
+# Mise à jour $Id: bddimages_sub_fichier.tcl,v 1.7 2011-01-21 18:37:49 fredvachier Exp $
 
 proc bddimages_sauve_fich {texte} {
 
@@ -132,6 +132,11 @@ proc globr {{dir .}} {
 
 # ---------------------------------------
 proc numberoffile { dir } {
+      
+      if {[file exists $dir]==0} {
+               set nbfile "Warning: $dir doesn't exist>"
+               }
+               
       set err [catch {set list_file [globr $dir/*]} result]
       if {$err==0} {
         set nbfile [llength $list_file]
