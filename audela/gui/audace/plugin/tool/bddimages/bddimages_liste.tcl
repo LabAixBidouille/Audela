@@ -6,7 +6,7 @@
 # Description    : Environnement de recherche des images
 #                  dans la base de donnees
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_liste.tcl,v 1.3 2010-07-17 14:01:32 robertdelmas Exp $
+# Mise à jour $Id: bddimages_liste.tcl,v 1.4 2011-01-21 11:06:23 jberthier Exp $
 #
 #--------------------------------------------------
 #
@@ -310,27 +310,27 @@ proc remove_requete { } {
 #--------------------------------------------------
 proc get_list_box_champs { } {
 
-  global list_key_to_var
+   global list_key_to_var
 
-  set list_box_champs [list ]
-  set nbl1 0
-  set sqlcmd "select distinct keyname,variable from header order by keyname;"
-  set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
-  if {$err} {bddimages_sauve_fich "Erreur de lecture de la liste des header par SQL"}
-  foreach line $resultsql {
-    set key [lindex $line 0]
-    set var [lindex $line 1]
-    set list_key_to_var($key) $var
-    if {$nbl1<[string length $key]} {
-      set nbl1 [string length $key]
+   set list_box_champs [list ]
+   set nbl1 0
+   set sqlcmd "select distinct keyname,variable from header order by keyname;"
+   set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
+   if {$err} {
+      bddimages_sauve_fich "Erreur de lecture de la liste des header par SQL"
+      return -code error "Erreur de lecture de la liste des header par SQL"
+   }
+   foreach line $resultsql {
+      set key [lindex $line 0]
+      set var [lindex $line 1]
+      set list_key_to_var($key) $var
+      if {$nbl1<[string length $key]} {
+         set nbl1 [string length $key]
       }
-    lappend list_box_champs $key
-    }
-    set nbl1 [expr $nbl1 + 3]
-
-
-
-return [list $nbl1 $list_box_champs]
+      lappend list_box_champs $key
+   }
+   set nbl1 [expr $nbl1 + 3]
+   return [list $nbl1 $list_box_champs]
 }
 
 #--------------------------------------------------
@@ -458,26 +458,27 @@ proc store_intellilist { l } {
 }
 
 proc conf_save_intellilists { } {
- set l ""
- for {set x 1} {$x<=$::nbintellilist} {incr x} {
-  lappend l [list $::intellilisttotal($x)]
- }
- set ::conf(bddimages,intellilists) $l
+   set l ""
+   for {set x 1} {$x<=$::nbintellilist} {incr x} {
+      lappend l [list $::intellilisttotal($x)]
+   }
+   set ::conf(bddimages,intellilists) $l
 }
 
 proc conf_load_intellilists { } {
- global nbintellilist
- global intellilisttotal
- set nbintellilist 0
-
- # hack pour initialisation
- get_list_box_champs
-
- if { ! [info exists ::conf(bddimages,intellilists) ] } then { return }
-  foreach l $::conf(bddimages,intellilists) {
-   incr nbintellilist
-   set intellilisttotal($nbintellilist) [lindex $l 0]
- }
+   global nbintellilist
+   global intellilisttotal
+   set nbintellilist 0
+   
+   # hack pour initialisation
+   if { [catch {get_list_box_champs} msg] } {
+      return -code error $msg
+   }
+   if { ! [info exists ::conf(bddimages,intellilists) ] } then { return }
+      foreach l $::conf(bddimages,intellilists) {
+         incr nbintellilist
+         set intellilisttotal($nbintellilist) [lindex $l 0]
+   }
 }
 
 proc accept { } {

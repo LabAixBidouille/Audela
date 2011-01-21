@@ -5,7 +5,7 @@
 # Fichier        : bddimages_go.tcl
 # Description    : Outil d'appel des fonctionnalites de l'observatoire virtuel
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_go.tcl,v 1.8 2010-10-24 17:47:19 jberthier Exp $
+# Mise à jour $Id: bddimages_go.tcl,v 1.9 2011-01-21 11:06:23 jberthier Exp $
 #
 
 #============================================================
@@ -113,10 +113,10 @@ proc ::bddimages::ressource {  } {
    #--- Chargement des captions
    source [ file join $audace(rep_plugin) tool bddimages bddimages_go.cap ]
    #--- Chargement des fichiers auxiliaires
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_go.tcl    ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_sql.tcl    ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_config.tcl    ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_status.tcl    ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_go.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_sql.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_config.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_status.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_insertion.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_recherche.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_identification.tcl ]\""
@@ -124,8 +124,8 @@ proc ::bddimages::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_sub_fichier.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_liste.tcl ]\""
 
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_config.cap    ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_status.cap    ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_config.cap ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_status.cap ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_insertion.cap ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_recherche.cap ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_liste.cap ]\""

@@ -6,7 +6,7 @@
 # Description    : Environnement d'inssertion des images
 #                  dans la base de donnees
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_insertion.tcl,v 1.3 2010-07-17 14:01:16 robertdelmas Exp $
+# Mise à jour $Id: bddimages_insertion.tcl,v 1.4 2011-01-21 11:06:23 jberthier Exp $
 #
 #--------------------------------------------------
 #
@@ -208,22 +208,21 @@ namespace eval bddimages_insertion {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_sub_fichier.tcl ]\""
 
 
-#--------------------------------------------------
-# run { this }
-#--------------------------------------------------
-#
-#    fonction  :
-#        Creation de la fenetre
-#
-#    procedure externe :
-#
-#    variables en entree :
-#        this = chemin de la fenetre
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-
+   #--------------------------------------------------
+   # run { this }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #        Creation de la fenetre
+   #
+   #    procedure externe :
+   #
+   #    variables en entree :
+   #        this = chemin de la fenetre
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
    proc run { this } {
       variable This
 
@@ -232,21 +231,21 @@ namespace eval bddimages_insertion {
       return
    }
 
-#--------------------------------------------------
-# fermer { }
-#--------------------------------------------------
-#
-#    fonction  :
-#        Fonction appellee lors de l'appui
-#        sur le bouton 'Fermer'
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
+   #--------------------------------------------------
+   # fermer { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #        Fonction appellee lors de l'appui
+   #        sur le bouton 'Fermer'
+   #
+   #    procedure externe :
+   #
+   #    variables en entree :
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
    proc fermer { } {
       variable This
 
@@ -255,24 +254,21 @@ namespace eval bddimages_insertion {
       return
    }
 
-
-
-
-#--------------------------------------------------
-#  recup_position { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Permet de recuperer et de sauvegarder
-#       la position de la fenetre
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
+   #--------------------------------------------------
+   #  recup_position { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       Permet de recuperer et de sauvegarder
+   #       la position de la fenetre
+   #
+   #    procedure externe :
+   #
+   #    variables en entree :
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
    proc recup_position { } {
       variable This
       global audace
@@ -288,90 +284,90 @@ namespace eval bddimages_insertion {
       return
    }
 
-#--------------------------------------------------
-#  affiche_entete { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Permet d afficher l entete d un fichier
-#       selectionné
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-proc affiche_entete { } {
+   #--------------------------------------------------
+   #  affiche_entete { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       Permet d afficher l entete d un fichier
+   #       selectionné
+   #
+   #    procedure externe :
+   #
+   #    variables en entree :
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
+   proc affiche_entete { } {
+   
+     variable This
+     global audace
+     global conf
+     global bddconf
+   
+     for { set i 0 } { $i <= [ expr [llength $bddconf(listetotale)] - 1 ] } { incr i } {
+       set selectfich [$::bddimages_insertion::This.frame7.tbl selection includes $i]
+       if {$selectfich==1} {
+         set nomfich [lindex [$::bddimages_insertion::This.frame7.tbl get $i] 1]
+         ::audace::header $nomfich
+         return # affiche seulement le premier fichier selectionné et sort de la procedure
+         }
+       }
+     return
+   }
 
-  variable This
-  global audace
-  global conf
-  global bddconf
+   #--------------------------------------------------
+   #  affiche_image { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       Permet d afficher l image d un fichier
+   #       selectionné
+   #
+   #    procedure externe :
+   #
+   #    variables en entree :
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
+   proc affiche_image { } {
+   
+     variable This
+     global audace
+     global conf
+     global bddconf
+   
+     for { set i 0 } { $i <= [ expr [llength $bddconf(listetotale)] - 1 ] } { incr i } {
+       set selectfich [$::bddimages_insertion::This.frame7.tbl selection includes $i]
+       if {$selectfich==1} {
+         set nomfich [lindex [$::bddimages_insertion::This.frame7.tbl get $i] 1]
+         set errnum [ catch { loadima $nomfich } msg ]
+         if { $errnum == "1" } {
+           tk_messageBox -message "$msg" -icon error
+           }
+           return
+           # affiche seulement le premier fichier selectionné et sort de la procedure
+         }
+       }
+     return
+   }
 
-  for { set i 0 } { $i <= [ expr [llength $bddconf(listetotale)] - 1 ] } { incr i } {
-    set selectfich [$::bddimages_insertion::This.frame7.tbl selection includes $i]
-    if {$selectfich==1} {
-      set nomfich [lindex [$::bddimages_insertion::This.frame7.tbl get $i] 1]
-      ::audace::header $nomfich
-      return # affiche seulement le premier fichier selectionné et sort de la procedure
-      }
-    }
-  return
-}
-
-#--------------------------------------------------
-#  affiche_image { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Permet d afficher l image d un fichier
-#       selectionné
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-proc affiche_image { } {
-
-  variable This
-  global audace
-  global conf
-  global bddconf
-
-  for { set i 0 } { $i <= [ expr [llength $bddconf(listetotale)] - 1 ] } { incr i } {
-    set selectfich [$::bddimages_insertion::This.frame7.tbl selection includes $i]
-    if {$selectfich==1} {
-      set nomfich [lindex [$::bddimages_insertion::This.frame7.tbl get $i] 1]
-      set errnum [ catch { loadima $nomfich } msg ]
-      if { $errnum == "1" } {
-        tk_messageBox -message "$msg" -icon error
-        }
-        return
-        # affiche seulement le premier fichier selectionné et sort de la procedure
-      }
-    }
-  return
-}
-
-#--------------------------------------------------
-#  createDialog { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Creation de l'interface graphique
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
+   #--------------------------------------------------
+   #  createDialog { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       Creation de l'interface graphique
+   #
+   #    procedure externe :
+   #
+   #    variables en entree :
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
    proc createDialog { } {
 
       variable This
@@ -419,15 +415,14 @@ proc affiche_image { } {
 
 
          #--- Cree un frame pour afficher le status de la base
-         frame $This.frame1 -borderwidth 0 -cursor arrow
-         pack $This.frame1 -in $This -anchor s -side top -expand 0 -fill x
+         frame $This.frame1 -borderwidth 0 -cursor arrow -relief groove
+         pack $This.frame1 -in $This -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
            #--- Cree un label pour le titre
            label $This.frame1.titre \
                  -text "$caption(bddimages_insertion,titre)"
            pack $This.frame1.titre \
                 -in $This.frame1 -side top -padx 3 -pady 3
-
 
          #--- Cree un frame pour l'affichage du resultat de la recherche
          frame $This.frame7 -borderwidth 0
@@ -448,8 +443,6 @@ proc affiche_image { } {
             #--- Creation de la table
             ::bddimages_insertion::createTbl $This.frame7
             pack $This.frame7.tbl -in $This.frame7 -expand yes -fill both
-
-
 
          #--- Cree un frame pour y mettre les boutons
          frame $This.frame11 \
@@ -473,19 +466,19 @@ proc affiche_image { } {
               -in $This.frame11 -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-           #--- Creation du bouton lecture entete
-           button $This.frame11.but_lectentete \
-              -text "$caption(bddimages_insertion,lectentete)" -borderwidth 2 \
-              -command {lecture_info This}
-           pack $This.frame11.but_lectentete \
+           #--- Creation du bouton insertion
+           button $This.frame11.but_insertion \
+              -text "2. $caption(bddimages_insertion,inser)" -borderwidth 2 \
+              -command { insertion This }
+           pack $This.frame11.but_insertion \
               -in $This.frame11 -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-           #--- Creation du bouton insertion
-           button $This.frame11.but_insertion \
-              -text "$caption(bddimages_insertion,inser)" -borderwidth 2 \
-              -command { insertion This }
-           pack $This.frame11.but_insertion \
+           #--- Creation du bouton lecture entete
+           button $This.frame11.but_lectentete \
+              -text "1. $caption(bddimages_insertion,lectentete)" -borderwidth 2 \
+              -command {lecture_info This}
+           pack $This.frame11.but_lectentete \
               -in $This.frame11 -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
@@ -529,25 +522,26 @@ proc affiche_image { } {
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
+      $This.frame1.titre configure -font $bddconf(font,arial_12_b)
+
    }
 
-#--------------------------------------------------
-#  createTbl { frame }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Affiche la table avec ses scrollbars dans une
-#	frame et cree le menu pop-up associe
-#
-#    procedure externe :
-#
-#    variables en entree :
-#        frame = Fenetre ou s affiche la table
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-
+   #--------------------------------------------------
+   #  createTbl { frame }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       Affiche la table avec ses scrollbars dans une
+   #	frame et cree le menu pop-up associe
+   #
+   #    procedure externe :
+   #
+   #    variables en entree :
+   #        frame = Fenetre ou s affiche la table
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
    proc createTbl { frame } {
       variable This
       global audace
@@ -614,23 +608,22 @@ proc affiche_image { } {
 
    }
 
-#--------------------------------------------------
-#  cmdFormatColumn { column_name }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Definit la largeur, la traduction du titre
-#	et la justification des colonnes
-#
-#    procedure externe :
-#
-#    variables en entree :
-#        column_name =
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-
+   #--------------------------------------------------
+   #  cmdFormatColumn { column_name }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       Definit la largeur, la traduction du titre
+   #	et la justification des colonnes
+   #
+   #    procedure externe :
+   #
+   #    variables en entree :
+   #        column_name =
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
    proc getFormatColumn { } {
       global column_format
       global caption
@@ -643,23 +636,22 @@ proc affiche_image { } {
       set column_format($caption(bddimages_insertion,erreur))    [ list [ $::bddimages_insertion::This.frame7.tbl columncget 5 -width] "$caption(bddimages_insertion,erreur)"	 left ]
    }
 
-#--------------------------------------------------
-#  cmdFormatColumn { column_name }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Definit la largeur, la traduction du titre
-#	et la justification des colonnes
-#
-#    procedure externe :
-#
-#    variables en entree :
-#        column_name =
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-
+   #--------------------------------------------------
+   #  cmdFormatColumn { column_name }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       Definit la largeur, la traduction du titre
+   #	et la justification des colonnes
+   #
+   #    procedure externe :
+   #
+   #    variables en entree :
+   #        column_name =
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
    proc cmdFormatColumn { column_name } {
       global column_format
 
@@ -676,62 +668,59 @@ proc affiche_image { } {
       return $format
    }
 
-#--------------------------------------------------
-#  cmdButton1Click { frame }
-#--------------------------------------------------
-#
-#    fonction  :
-#
-#    procedure externe :
-#
-#    variables en entree :
-#        frame = Fenetre ou s affiche la table
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-
+   #--------------------------------------------------
+   #  cmdButton1Click { frame }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #
+   #    procedure externe :
+   #
+   #    variables en entree :
+   #        frame = Fenetre ou s affiche la table
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
    proc cmdButton1Click { frame } {
    }
 
-#--------------------------------------------------
-#  cmdSortColumn { tbl col }
-#--------------------------------------------------
-#
-#    fonction  :
-#	Trie les lignes par ordre alphabetique de
-#	la colonne (est appele quand on clique sur
-#	le titre de la colonne)
-#
-#    procedure externe :
-#
-#    variables en entree :
-#        tbl =
-#        col =
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-
+   #--------------------------------------------------
+   #  cmdSortColumn { tbl col }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #	Trie les lignes par ordre alphabetique de
+   #	la colonne (est appele quand on clique sur
+   #	le titre de la colonne)
+   #
+   #    procedure externe :
+   #
+   #    variables en entree :
+   #        tbl =
+   #        col =
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
    proc cmdSortColumn { tbl col } {
       tablelist::sortByColumn $tbl $col
    }
 
-#--------------------------------------------------
-#  Affiche_Results
-#--------------------------------------------------
-#
-#    fonction  :
-#	Affiche la liste des objets de l'image
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-
+   #--------------------------------------------------
+   #  Affiche_Results
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #	Affiche la liste des objets de l'image
+   #
+   #    procedure externe :
+   #
+   #    variables en entree :
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
    proc Affiche_Results { } {
       variable This
       global audace caption color
@@ -767,8 +756,6 @@ proc affiche_image { } {
          ::bddimages_insertion::cmdSortColumn $::bddimages_insertion::This.frame7.tbl 1
       }
    }
-
-
 
 }
 
