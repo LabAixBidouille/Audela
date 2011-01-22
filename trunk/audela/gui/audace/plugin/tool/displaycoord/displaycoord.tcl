@@ -2,7 +2,7 @@
 # Fichier : displaycoord.tcl
 # Description : Affichage des coordonnees du telescope
 # Auteur : Michel PUJOL
-# Mise à jour $Id: displaycoord.tcl,v 1.9 2010-10-10 20:02:24 michelpujol Exp $
+# Mise à jour $Id: displaycoord.tcl,v 1.10 2011-01-22 07:48:55 michelpujol Exp $
 #
 
 #============================================================
@@ -643,11 +643,16 @@ proc ::displaycoord::readSocketCoord {  } {
       set private(ra0) "[string range $ra0 0 1]h [string range $ra0 3 4]m [string range $ra0) 6 7].[string range $ra0 9 10]s "
       set private(dec0) "[string range $dec0 0 2]° [string range $dec0 4 5]'   [string range $dec0) 7 8].[string range $dec0 10 10]0'' "
 
-      #--- je mets en forme la longitude et la latitude
+      #--- je mets en forme la longitude et la latitude de la position de l'observatoire
       set longitudeList [mc_angle2dms $longitudeDegres 180 nozero 1 auto list]
       set longitudeDms [format "%d° %2d' %0.1f''" [lindex $longitudeList 0] [lindex $longitudeList 1] [lindex $longitudeList 2] ]
       set latitudeList [mc_angle2dms $latitudeDegres 90 nozero 1 auto list]
       set latitudeDms [format "%d° %2d' %0.1f''" [lindex $latitudeList 0] [lindex $latitudeList 1] [lindex $latitudeList 2] ]
+      if { $estouest == "E" || $estouest == "e" } {
+         set estouest $::caption(displaycoord,east)
+      } else {
+         set estouest $::caption(displaycoord,west)
+      }
 
       #--- je calcule l'azimut, la hauteur et la secanteZ
       if { $returnCode == 0 } {
