@@ -1,6 +1,6 @@
 #
 # Fichier : displaycoord.cap
-# Mise à jour $Id: displaycoord.cap,v 1.8 2010-05-27 17:34:46 robertdelmas Exp $
+# Mise à jour $Id: displaycoord.cap,v 1.9 2011-01-22 07:48:55 michelpujol Exp $
 #
 
 #=========================================================================
@@ -38,6 +38,9 @@ global caption langage
    set caption(displaycoord,horizon)        "The target is below the horizon."
    set caption(displaycoord,enabled)        "MODEL ON"
    set caption(displaycoord,disabled)       "MODEL OFF"
+   set caption(displaycoord,east)           "East"
+   set caption(displaycoord,west)           "West"
+
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -69,6 +72,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(displaycoord,horizon)        "L'astre est sous l'horizon."
    set caption(displaycoord,enabled)        "MODELE ACTIF"
    set caption(displaycoord,disabled)       "MODELE INACTIF"
+   set caption(displaycoord,east)           "Est"
+   set caption(displaycoord,west)           "Ouest"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -100,6 +105,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(displaycoord,horizon)        "Il campo si trova sotto l'orizzonte."
    set caption(displaycoord,enabled)        "MODELLO ON"
    set caption(displaycoord,disabled)       "MODELLO OFF"
+   set caption(displaycoord,east)           "Est"
+   set caption(displaycoord,west)           "Ovest"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -131,6 +138,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(displaycoord,horizon)        "El astro está bajo el horizonte."
    set caption(displaycoord,enabled)        "MODELO ON"
    set caption(displaycoord,disabled)       "MODELO OFF"
+   set caption(displaycoord,east)           "Este"
+   set caption(displaycoord,west)           "Oeste"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -162,6 +171,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(displaycoord,horizon)        "Das Gestirn ist unter dem Horizont."
    set caption(displaycoord,enabled)        "MODELL ON"
    set caption(displaycoord,disabled)       "MODELL OFF"
+   set caption(displaycoord,east)           "Ost"
+   set caption(displaycoord,west)           "West"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -193,6 +204,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(displaycoord,horizon)        "O alvo é abaixo do horizonte."
    set caption(displaycoord,enabled)        "MODELO ACTIVO"
    set caption(displaycoord,disabled)       "MODELO INACTIVO"
+   set caption(displaycoord,east)           "Este"
+   set caption(displaycoord,west)           "Oeste"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -224,6 +237,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(displaycoord,horizon)        "The target is below the horizon."
    set caption(displaycoord,enabled)        "MODEL ON"
    set caption(displaycoord,disabled)       "MODEL OFF"
+   set caption(displaycoord,east)           "Øst"
+   set caption(displaycoord,west)           "Vest"
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -255,6 +270,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(displaycoord,horizon)        "The target is below the horizon."
    set caption(displaycoord,enabled)        "MODEL ON"
    set caption(displaycoord,disabled)       "MODEL OFF"
+   set caption(displaycoord,east)           "East"
+   set caption(displaycoord,west)           "West"
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -286,6 +303,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(displaycoord,horizon)        "The target is below the horizon."
    set caption(displaycoord,enabled)        "MODEL ON"
    set caption(displaycoord,disabled)       "MODEL OFF"
+   set caption(displaycoord,east)           "East"
+   set caption(displaycoord,west)           "West"
 
 }
 
