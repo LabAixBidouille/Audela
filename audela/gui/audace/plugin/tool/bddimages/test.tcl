@@ -3,7 +3,7 @@
 # Fichier        : test.tcl
 # Description    : Test de fonctionnement de procedures
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: test.tcl,v 1.2 2010-05-27 06:53:51 robertdelmas Exp $
+# Mise à jour $Id: test.tcl,v 1.3 2011-01-23 01:20:51 jberthier Exp $
 #
 
 namespace eval testprocedure {
@@ -12,10 +12,16 @@ namespace eval testprocedure {
    global conf
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_sub_fichier.tcl ]\""
 
+   if { [ package require dom ] == "2.6" } {
+      interp alias {} ::dom::parse {} ::dom::tcl::parse
+      interp alias {} ::dom::selectNode {} ::dom::tcl::selectNode
+      interp alias {} ::dom::node {} ::dom::tcl::node
+   }
+
 
    proc run {  } {
 
-      test6
+      test7
    }
 
 
@@ -330,7 +336,35 @@ proc test6 { } {
 }
 
 
+proc test7 { } {
+   
+   package require tdom
+   
+   set doc [dom createDocument example]
+ 
+   set root [$doc documentElement]
+   $root setAttribute version 1.0
+ 
+   set node [$doc createElement description]
+   $node appendChild [$doc createTextNode "Date and Time"]
+   $root appendChild $node
+ 
+   set subnode [$doc createElement dt]
+   $root appendChild $subnode
+ 
+   set node [$doc createElement date]
+   $node appendChild [$doc createTextNode 2006-12-03]
+   $subnode appendChild $node
+ 
+   set node [$doc createElement time]
+   $node appendChild [$doc createTextNode 09:22:14]
+   $subnode appendChild $node
+ 
+   set fxml [open "/tmp/toto.xml" "w"]
+   puts $fxml [$root asXML]
+   close $fxml
 
+}
 
 }
 # fin du namespace

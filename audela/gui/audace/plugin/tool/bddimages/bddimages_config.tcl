@@ -6,7 +6,7 @@
 # Description    : Configuration des variables globales bddconf
 #                  necessaires au service
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_config.tcl,v 1.11 2011-01-21 17:07:18 fredvachier Exp $
+# Mise à jour $Id: bddimages_config.tcl,v 1.12 2011-01-23 01:20:51 jberthier Exp $
 #
 #--------------------------------------------------
 #
@@ -21,6 +21,8 @@
 #--------------------------------------------------
 
 namespace eval bddimages_config {
+   package require bddimagesXML 1.0
+   
    global audace
    global bddconf
 
@@ -30,20 +32,20 @@ namespace eval bddimages_config {
    #--- Chargement des captions
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_config.cap ]\""
 
-#--------------------------------------------------
-# run { this }
-#--------------------------------------------------
-#
-#    fonction  :
-#        Cree la fenetre de tests
-#
-#    procedure externe :
-#
-#    variables en entree :
-#        this = chemin de la fenetre
-#
-#    variables en sortie :
-#
+   #--------------------------------------------------
+   # run { this }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #        Cree la fenetre de tests
+   #
+   #    procedure externe :
+   #
+   #    variables en entree :
+   #        this = chemin de la fenetre
+   #
+   #    variables en sortie :
+   #
    proc run { this } {
       variable This
 
@@ -51,20 +53,20 @@ namespace eval bddimages_config {
       createDialog
    }
 
-#--------------------------------------------------
-# fermer { }
-#--------------------------------------------------
-#
-#    fonction  :
-#        Fonction appellee lors de l'appui
-#        sur le bouton 'Fermer'
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
+   #--------------------------------------------------
+   # fermer { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #        Fonction appellee lors de l'appui
+   #        sur le bouton 'Fermer'
+   #
+   #    procedure externe :
+   #
+   #    variables en entree :
+   #
+   #    variables en sortie :
+   #
    proc fermer { } {
       variable This
 
@@ -72,20 +74,20 @@ namespace eval bddimages_config {
       destroy $This
    }
 
-#--------------------------------------------------
-#  save { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Fonction appellee lors de l'appui
-#       sur le bouton 'Sauver'
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
+   #--------------------------------------------------
+   #  save { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       Fonction appellee lors de l'appui
+   #       sur le bouton 'Sauver'
+   #
+   #    procedure externe :
+   #
+   #    variables en entree :
+   #
+   #    variables en sortie :
+   #
    proc save { } {
       variable This
       global audace
@@ -93,28 +95,34 @@ namespace eval bddimages_config {
       global bddconf
       variable allparams
 
+      # Sauve les preferences bddimages dans audela.ini
       foreach param $allparams {
         set conf(bddimages,$param) $bddconf($param)
       }
 
+      # Sauve le fichiers XML si demande
+      if {$bddconf(sauve_xml) == 1} {
+         ::bddimagesXML::save_xml_config
+      }
+      
       ::bddimages_config::recup_position
       destroy $This
    }
 
-#--------------------------------------------------
-#  recup_position { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Permet de recuperer et de sauvegarder
-#       la position de la fenetre
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
+   #--------------------------------------------------
+   #  recup_position { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       Permet de recuperer et de sauvegarder
+   #       la position de la fenetre
+   #
+   #    procedure externe :
+   #
+   #    variables en entree :
+   #
+   #    variables en sortie :
+   #
    proc recup_position { } {
       variable This
       global audace
@@ -129,266 +137,23 @@ namespace eval bddimages_config {
       set conf(bddimages,position_status) $bddconf(position_status)
    }
 
-#--------------------------------------------------
-#  read_default_config { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Charge le fichier d initialisation xml 
-#       
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
-proc read_default_config { file_config } {
-
-   global bddconf
-   global current_config
-
-   set txt_config ""
-   set f [open $file_config r]
-   while {![eof $f]} {
-       append txt_config [gets $f]
-   }
-   close $f
-   #::console::affiche_resultat "TXT=$txt_config \n"
-
-   set xmlconfig [::dom::parse $txt_config]
-
-   foreach n [::dom::selectNode $xmlconfig {descendant::bddimages}] {
-
-      set default [::dom::node stringValue [::dom::selectNode $n {attribute::default}]]
-      if {$default == "yes"} {
-         #::console::affiche_resultat "Lecture de la configuration \n"
-         set bddconf(name)        [::dom::node stringValue [::dom::selectNode $n {descendant::name/text()}]]
-         set bddconf(dbname)      [::dom::node stringValue [::dom::selectNode $n {descendant::dbname/text()}]]
-         set bddconf(login)       [::dom::node stringValue [::dom::selectNode $n {descendant::login/text()}]]
-         set bddconf(pass)        [::dom::node stringValue [::dom::selectNode $n {descendant::pass/text()}]]
-         set bddconf(serv)        [::dom::node stringValue [::dom::selectNode $n {descendant::ip/text()}]]
-         set bddconf(port)        [::dom::node stringValue [::dom::selectNode $n {descendant::port/text()}]]
-         set bddconf(dirbase)     [::dom::node stringValue [::dom::selectNode $n {descendant::root/text()}]]
-         set bddconf(dirinco)     [::dom::node stringValue [::dom::selectNode $n {descendant::incoming/text()}]]
-         set bddconf(dirfits)     [::dom::node stringValue [::dom::selectNode $n {descendant::fits/text()}]]
-         set bddconf(dircata)     [::dom::node stringValue [::dom::selectNode $n {descendant::cata/text()}]]
-         set bddconf(direrr)      [::dom::node stringValue [::dom::selectNode $n {descendant::error/text()}]]
-         set bddconf(dirlog)      [::dom::node stringValue [::dom::selectNode $n {descendant::log/text()}]]
-         set bddconf(limit)       [::dom::node stringValue [::dom::selectNode $n {descendant::screenlimit/text()}]]
-         }
-      }
-      #::console::affiche_resultat "NAME)       =$bddconf(name)    \n"
-      #::console::affiche_resultat "DBNAME)     =$bddconf(dbname)  \n"
-      #::console::affiche_resultat "LOGIN)      =$bddconf(login)   \n"
-      #::console::affiche_resultat "PASS)       =$bddconf(pass)    \n"
-      #::console::affiche_resultat "IP)         =$bddconf(serv)    \n"
-      #::console::affiche_resultat "PORT)       =$bddconf(port)    \n"
-      #::console::affiche_resultat "ROOT)       =$bddconf(dirbase) \n"
-      #::console::affiche_resultat "INCOMING)   =$bddconf(dirinco) \n"
-      #::console::affiche_resultat "FITS)       =$bddconf(dirfits) \n"
-      #::console::affiche_resultat "CATA)       =$bddconf(dircata) \n"
-      #::console::affiche_resultat "ERROR)      =$bddconf(direrr)  \n"
-      #::console::affiche_resultat "LOG)        =$bddconf(dirlog)  \n"
-      #::console::affiche_resultat "SCREENLIMIT)=$bddconf(limit)   \n"
-   return 0
-   }
-
-
-#--------------------------------------------------
-#  charge_ini_xml { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Charge le fichier d initialisation xml 
-#       
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
-
-   proc charge_ini_xml {  } {
-      variable This
-      global audace
-      global caption
-      global bddconf
-
-
-      package require dom
-
-      set inifile [ file join $audace(rep_home) bddimages_ini.xml ]
-      set defaultinifile [ file join $audace(rep_plugin) tool bddimages config bddimages_ini.xml]
-
-      # Verifie que le fichier xml existe
-      #::console::affiche_resultat "charge_ini_xml : existance [file exists $inifile]\n"
-      if {[file exists $inifile]==0} {
-         ::console::affiche_resultat "charge_ini_xml : file $inifile doesn't exist\n"
-         # S il n existe pas Creer le fichier 
-         set errnum [catch {file copy $defaultinifile $inifile} msg ]
-         }
-
-      # Charge le fichier de config
-      set err [read_default_config $inifile]
-
-      return
-      }
-
-
-
-#--------------------------------------------------
-#  get_list_conf { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Charge le fichier d initialisation xml 
-#       
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
-proc get_list_conf { } {
-
-   global audace
-   global bddconf
-
-   package require dom
-
-   set inifile [ file join $audace(rep_home) bddimages_ini.xml ]
-   
-   set txt_config ""
-   set f [open $inifile r]
-   while {![eof $f]} {
-       append txt_config [gets $f]
-   }
-   close $f
-   #::console::affiche_resultat "TXT=$txt_config \n"
-
-   set xmlconfig [::dom::parse $txt_config]
-   set bddconf(list_config) {}
-   
-   foreach n [::dom::selectNode $xmlconfig {descendant::bddimages}] {
-
-      lappend bddconf(list_config) [::dom::node stringValue [::dom::selectNode $n {descendant::name/text()}]]
-      
-   }
-   return 
-   }
-
-
-#--------------------------------------------------
-#  charge_selection { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Charge le fichier d initialisation xml 
-#       
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
-
-proc charge_selection { selection } {
-
-   variable This
-   global audace
-   global bddconf
-
-   package require dom
-
-   ::console::affiche_resultat "SEL=$selection \n"
-   
-   set inifile [ file join $audace(rep_home) bddimages_ini.xml ]
-   
-   set txt_config ""
-   set f [open $inifile r]
-   while {![eof $f]} {
-       append txt_config [gets $f]
-   }
-   close $f
-   #::console::affiche_resultat "TXT=$txt_config \n"
-
-   set xmlconfig [::dom::parse $txt_config]
-
-   foreach n [::dom::selectNode $xmlconfig {descendant::bddimages}] {
-
-      set tempconf [::dom::node stringValue [::dom::selectNode $n {descendant::name/text()}]]
-      if {$selection == $tempconf} {
-         #::console::affiche_resultat "Lecture de la configuration \n"
-         set bddconf(name)        [::dom::node stringValue [::dom::selectNode $n {descendant::name/text()}]]
-         set bddconf(dbname)      [::dom::node stringValue [::dom::selectNode $n {descendant::dbname/text()}]]
-         set bddconf(login)       [::dom::node stringValue [::dom::selectNode $n {descendant::login/text()}]]
-         set bddconf(pass)        [::dom::node stringValue [::dom::selectNode $n {descendant::pass/text()}]]
-         set bddconf(serv)        [::dom::node stringValue [::dom::selectNode $n {descendant::ip/text()}]]
-         set bddconf(port)        [::dom::node stringValue [::dom::selectNode $n {descendant::port/text()}]]
-         set bddconf(dirbase)     [::dom::node stringValue [::dom::selectNode $n {descendant::root/text()}]]
-         set bddconf(dirinco)     [::dom::node stringValue [::dom::selectNode $n {descendant::incoming/text()}]]
-         set bddconf(dirfits)     [::dom::node stringValue [::dom::selectNode $n {descendant::fits/text()}]]
-         set bddconf(dircata)     [::dom::node stringValue [::dom::selectNode $n {descendant::cata/text()}]]
-         set bddconf(direrr)      [::dom::node stringValue [::dom::selectNode $n {descendant::error/text()}]]
-         set bddconf(dirlog)      [::dom::node stringValue [::dom::selectNode $n {descendant::log/text()}]]
-         set bddconf(limit)       [::dom::node stringValue [::dom::selectNode $n {descendant::screenlimit/text()}]]
-         }
-      }
-      #::console::affiche_resultat "NAME)       =$bddconf(name)    \n"
-      #::console::affiche_resultat "DBNAME)     =$bddconf(dbname)  \n"
-      #::console::affiche_resultat "LOGIN)      =$bddconf(login)   \n"
-      #::console::affiche_resultat "PASS)       =$bddconf(pass)    \n"
-      #::console::affiche_resultat "IP)         =$bddconf(serv)    \n"
-      #::console::affiche_resultat "PORT)       =$bddconf(port)    \n"
-      #::console::affiche_resultat "ROOT)       =$bddconf(dirbase) \n"
-      #::console::affiche_resultat "INCOMING)   =$bddconf(dirinco) \n"
-      #::console::affiche_resultat "FITS)       =$bddconf(dirfits) \n"
-      #::console::affiche_resultat "CATA)       =$bddconf(dircata) \n"
-      #::console::affiche_resultat "ERROR)      =$bddconf(direrr)  \n"
-      #::console::affiche_resultat "LOG)        =$bddconf(dirlog)  \n"
-      #::console::affiche_resultat "SCREENLIMIT)=$bddconf(limit)   \n"
-
-
-      set $This.bdd.name.dat $bddconf(dbname) 
-      set $This.bdd.login.dat $bddconf(login)  
-      set $This.bdd.pass.dat $bddconf(pass)   
-      set $This.bdd.serv.dat $bddconf(serv)   
-      set $This.bdd.port.dat $bddconf(port)   
-      set $This.bdd.dirbase.dat $bddconf(dirbase)
-      set $This.bdd.dirinco.dat $bddconf(dirinco)
-      set $This.bdd.dirfits.dat $bddconf(dirfits)
-      set $This.bdd.dircata.dat $bddconf(dircata)
-      set $This.bdd.direrr.dat $bddconf(direrr) 
-      set $This.bdd.dirlog.dat $bddconf(dirlog) 
-      set $This.bdd.limit.dat $bddconf(limit)  
-
-   return 0
-   }
-
-
-
-
-#--------------------------------------------------
-#  getDir { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Permet de recuperer le nom des repertoires de travail
-#
-#    procedure externe :
-#
-#    variables en entree 
-#
-#
-#    variables en sortie :
-#
-#
-
+   #--------------------------------------------------
+   #  getDir { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       Permet de recuperer le nom des repertoires de travail
+   #
+   #    procedure externe :
+   #
+   #    variables en entree 
+   #
+   #
+   #    variables en sortie :
+   #
+   #
    proc getDir { {path ""} {title ""} } {
+
       variable This
       global audace
       global caption
@@ -411,30 +176,25 @@ proc charge_selection { selection } {
       }
    }
 
-
-
-
-
-#--------------------------------------------------
-#  GetInfo { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Affichage d'un message sur le format d'une saisie
-#       pour un element de la structure d une config pour 
-#       une base de donnees de forme bddimages
-#       La structure contient toutes les variables
-#
-#    procedure externe :
-#
-#    variables en entree 
-#
-#        subject : nom d une variable de configuration
-#
-#    variables en sortie :
-#
-#
-
+   #--------------------------------------------------
+   #  GetInfo { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       Affichage d'un message sur le format d'une saisie
+   #       pour un element de la structure d une config pour 
+   #       une base de donnees de forme bddimages
+   #       La structure contient toutes les variables
+   #
+   #    procedure externe :
+   #
+   #    variables en entree 
+   #
+   #        subject : nom d une variable de configuration
+   #
+   #    variables en sortie :
+   #
+   #
    proc GetInfo { subject } {
       global caption
       global voconf
@@ -455,19 +215,19 @@ proc charge_selection { selection } {
       return 1
    }
 
-#--------------------------------------------------
-#  createDialog { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Creation de l'interface graphique
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
+   #--------------------------------------------------
+   #  createDialog { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       Creation de l'interface graphique
+   #
+   #    procedure externe :
+   #
+   #    variables en entree :
+   #
+   #    variables en sortie :
+   #
    proc createDialog { } {
       variable This
       global audace
@@ -476,9 +236,8 @@ proc charge_selection { selection } {
       global conf
       global bddconf
       variable allparams
-      variable myconf
-      variable current_config
-
+      global myconf
+      global rbconfig
       #--- initConf
       if { ! [ info exists conf(bddimages,position_status) ] } { set conf(bddimages,position_status) "+80+40" } 
 
@@ -511,10 +270,12 @@ proc charge_selection { selection } {
       }
 
       #--- Charge les config bddimages depuis le fichier XML
-      ::bddimages_config::charge_ini_xml
-      #--- Charge la liste des bddimages
-      ::bddimages_config::get_list_conf
-      
+      set err [::bddimagesXML::load_xml_config]
+      #--- Recupere la config par defaut
+      set bddconf(current_config) $::bddimagesXML::default_config
+      #--- Recupere la liste des bddimages disponibles
+      set bddconf(list_config) $::bddimagesXML::list_bddimages
+
       #---
       toplevel $This -class Toplevel
       wm geometry $This $bddconf(position_status)
@@ -533,20 +294,34 @@ proc charge_selection { selection } {
              #--- Cree un label pour le titre
              label $This.conf.m.titre -text "$caption(bddimages_config,titleconfig)" -borderwidth 0 -relief flat
              pack $This.conf.m.titre -in $This.conf.m -side left -anchor w -padx 3 -pady 3
-   
-             menubutton $This.conf.m.menu -relief raised -borderwidth 2 -textvariable $bddconf(name) -menu $This.conf.m.menu.list
-             set m [menu $This.conf.m.menu.list -tearoff "0"]
+             #--- Cree un menu bouton pour choisir la config
+             menubutton $This.conf.m.menu -relief raised -borderwidth 2 -textvariable bddconf(current_config) -menu $This.conf.m.menu.list
+             set rbconfig [menu $This.conf.m.menu.list -tearoff "0"]
              foreach myconf $bddconf(list_config) {
-                $m add radiobutton -label "$myconf" -value "$myconf" -variable bddconf(name) \
-                    -command { ::bddimages_config::charge_selection "$bddconf(name)" }
+                $rbconfig add radiobutton -label [lindex "$myconf" 1] -value [lindex "$myconf" 1] -variable bddconf(current_config) \
+                    -command { set bddconf(current_config) [::bddimagesXML::get_config $bddconf(current_config)] }
              }
              pack $This.conf.m.menu -in $This.conf.m -side left -anchor w -padx 3 -pady 3
-
+             #--- Cree un bouton + pour ajouter une config
              button $This.conf.m.operationP -state active -text "+" \
-                -command { }
+                -command { 
+                   set new_config [::bddimagesXML::add_config]
+                   set bddconf(current_config) [::bddimagesXML::get_config $new_config]
+                   set bddconf(list_config) $::bddimagesXML::list_bddimages
+                   set myconf [lindex $bddconf(list_config) end]
+                   $rbconfig add radiobutton -label [lindex "$myconf" 1] -value [lindex "$myconf" 1] -variable bddconf(current_config) \
+                      -command { set bddconf(current_config) [::bddimagesXML::get_config $bddconf(current_config)] }
+                 }
              pack $This.conf.m.operationP -in $This.conf.m -side left -anchor w -padx 1
+             #--- Cree un bouton - pour effacer la config courante
              button $This.conf.m.operationM -state active -text "-" \
-                -command { }
+                -command { 
+#                   set new_config [::bddimagesXML::delete_config]
+#                   set bddconf(current_config) [::bddimagesXML::get_config $new_config]
+#                   set bddconf(list_config) $::bddimagesXML::list_bddimages
+#                   $rbconfig del radiobutton -label [lindex "$myconf" 1] -value [lindex "$myconf" 1] -variable bddconf(current_config) \
+#                      -command { set bddconf(current_config) [::bddimagesXML::get_config $bddconf(current_config)] }
+                 }
              pack $This.conf.m.operationM -in $This.conf.m -side left -anchor w -padx 1
 
           #--- Cree un checkbutton pour sauver le xml
@@ -556,7 +331,6 @@ proc charge_selection { selection } {
              checkbutton $This.conf.c.sauve -indicatoron 1 -offvalue 0 -onvalue 1 \
                 -variable bddconf(sauve_xml) -text "$::caption(bddimages_config,sauvexml)"
              pack $This.conf.c.sauve -in $This.conf.c -anchor w -side left -padx 3 -pady 1
-      
 
          #--- Cree un frame pour les acces a la bdd
          frame $This.bdd -borderwidth 1 -relief groove

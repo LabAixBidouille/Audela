@@ -1,33 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<config version="1.0" id="KalliopeSystem" xmlns="http://vo.imcce.fr/xml/genoide/genoide.xsd"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://vo.imcce.fr/xml/genoide http://vo.imcce.fr/xml/genoide/genoide.xsd">
-  
+<config version="1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
   <document>
     <version>0.1</version>
-    <date>2010-10-06T12:00:00</date>
+    <date>2011-01-21T19:00:00</date>
     <ticket>1</ticket>
     <author>F.Vachier</author>
   </document>
 
   <bddimages id="1" default="yes">
-     <name>cador_fv</name>
+     <name>bddimages</name>
      <sql>
-        <dbname>bddimages_cador_fv</dbname>
-        <login>ros</login>
-        <pass>ros123</pass>
+        <dbname>bddimages1</dbname>
+        <login>bddimagesAdmin</login>
+        <pass>1bddimages0</pass>
         <ip>localhost</ip>
         <port>3306</port>
      </sql>
      <files>
-       <root>/data/astrodata/Observations/Images/bddimages/bddimages_cador_fv</root>
-       <incoming>/data/astrodata/Observations/Images/bddimages/bddimages_cador_fv/incoming</incoming>
-       <fits>/data/astrodata/Observations/Images/bddimages/bddimages_cador_fv/fits</fits>
-       <cata>/data/astrodata/Observations/Images/bddimages/bddimages_cador_fv/cata</cata>
-       <error>/data/astrodata/Observations/Images/bddimages/bddimages_cador_fv/errors</error>
-       <log>/data/astrodata/Observations/Images/bddimages/bddimages_cador_fv/logs</log>
+       <root>/work/Observations/bddimages</root>
+       <incoming>/work/Observations/bddimages/incoming</incoming>
+       <fits>/work/Observations/bddimages/fits</fits>
+       <cata>/work/Observations/bddimages/cata</cata>
+       <error>/work/Observations/bddimages/error</error>
+       <log>/work/Observations/bddimages/log</log>
      </files>
-     <screenlimit>40</screenlimit>
+     <screenlimit>10</screenlimit>
+  </bddimages>
+
+  <bddimages id="2">
+     <name>bddimages2</name>
+     <sql>
+        <dbname>bddimages2</dbname>
+        <login>bddimagesAdmin</login>
+        <pass>1bddimages0</pass>
+        <ip>localhost</ip>
+        <port>3306</port>
+     </sql>
+     <files>
+       <root></root>
+       <incoming></incoming>
+       <fits></fits>
+       <cata></cata>
+       <error></error>
+       <log></log>
+     </files>
+     <screenlimit>5</screenlimit>
   </bddimages>
 
 </config>
