@@ -1,7 +1,7 @@
 /* camtcl.c
- * 
+ *
  * Copyright (C) 2002-2004 Michel MEUNIER <michel.meunier@tiscali.fr>
- * 
+ *
  * Mettre ici le texte de la license.
  *
  */
@@ -34,26 +34,26 @@ char *cam_shuttertypes[] = {
 };
 
 typedef struct {
-    char *dateobs;		/* Date du debut de l'observation (format FITS) */
-    char *dateend;		/* Date de fin de l'observation (format FITS) */
-    ClientData clientData;	/* Camera (CCamera*) */
-    Tcl_Interp *interp;		/* Interpreteur */
-    Tcl_TimerToken TimerToken;	/* Handler sur le timer */
-    int width;			/* Largeur de l'image */
-    int offset;			/* Offset en x (a partir de 1) */
-    int height;			/* Hauteur totale de l'image */
-    int bin;			/* binning across scan */
-    int biny;			/* binning along scan */
-    float dt;			/* intervalle de temps en millisecondes */
+    char *dateobs;      /* Date du debut de l'observation (format FITS) */
+    char *dateend;      /* Date de fin de l'observation (format FITS) */
+    ClientData clientData;  /* Camera (CCamera*) */
+    Tcl_Interp *interp;     /* Interpreteur */
+    Tcl_TimerToken TimerToken;  /* Handler sur le timer */
+    int width;          /* Largeur de l'image */
+    int offset;         /* Offset en x (a partir de 1) */
+    int height;         /* Hauteur totale de l'image */
+    int bin;            /* binning across scan */
+    int biny;           /* binning along scan */
+    float dt;           /* intervalle de temps en millisecondes */
     int idt;                    /* intervalle de temps en ms, valeur entiere */
-    int y;			/* nombre de lignes deja lues */
-    unsigned long t0;		/* instant de depart en microsecondes */
-    int line_size;		/* nombre de pixels par ligne */
-    unsigned short *pix;	/* stockage de l'image */
-    unsigned short *pix2;	/* pointeur defilant sur le contenu de pix */
-    int stop;			/* indicateur d'arret (1=>pose arretee au prochain coup) */
-    double ra;			/* RA at the bigining */
-    double dec;			/* DEC at the bigining */
+    int y;          /* nombre de lignes deja lues */
+    unsigned long t0;       /* instant de depart en microsecondes */
+    int line_size;      /* nombre de pixels par ligne */
+    unsigned short *pix;    /* stockage de l'image */
+    unsigned short *pix2;   /* pointeur defilant sur le contenu de pix */
+    int stop;           /* indicateur d'arret (1=>pose arretee au prochain coup) */
+    double ra;          /* RA at the bigining */
+    double dec;         /* DEC at the bigining */
 } ScanStruct;
 
 /* --- Global variable for TDI acquisition mode ---*/
@@ -97,18 +97,18 @@ int cmdEthernaudeDirectClear(ClientData clientData, Tcl_Interp * interp, int arg
     unsigned char a;
     cam = (struct camprop *) clientData;
     if (cam->direct == 1) {
-	if (argc != 3) {
-	    sprintf(ligne, "Usage: %s %s nb_wipe", argv[0], argv[1]);
-	    Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-	    result = TCL_ERROR;
-	} else {
-	    a = (unsigned char) argv[2][0];
-	    res = ETHERNAUDE_DIRECTMAIN(DIRECT_SERVICE_CLEARCCD, 1, &a);
-	    sprintf(ligne, "%d", res);
-	}
+    if (argc != 3) {
+        sprintf(ligne, "Usage: %s %s nb_wipe", argv[0], argv[1]);
+        Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+        result = TCL_ERROR;
     } else {
-	result = TCL_ERROR;
-	sprintf(ligne, "This function cannot be used with this driver");
+        a = (unsigned char) argv[2][0];
+        res = ETHERNAUDE_DIRECTMAIN(DIRECT_SERVICE_CLEARCCD, 1, &a);
+        sprintf(ligne, "%d", res);
+    }
+    } else {
+    result = TCL_ERROR;
+    sprintf(ligne, "This function cannot be used with this driver");
     }
     Tcl_SetResult(interp, ligne, TCL_VOLATILE);
     return result;
@@ -125,20 +125,20 @@ int cmdEthernaudeDirectReset(ClientData clientData, Tcl_Interp * interp, int arg
     int n = 2, k;
     cam = (struct camprop *) clientData;
     if (cam->direct == 1) {
-	res = ETHERNAUDE_DIRECTMAIN(DIRECT_SERVICE_RESET, n, &a[0], &a[1]);
-	sprintf(ligne, "%d", res);
-	if (res == DIRECT_OK) {
-	    sprintf(ligne, "{%d} {", res);
-	    for (k = 0; k < n; k++) {
-		strcpy(ligne2, ligne);
-		sprintf(ligne, "%s %u", ligne2, a[k]);
-	    }
-	    strcpy(ligne2, ligne);
-	    sprintf(ligne, "%s}", ligne2);
-	}
+    res = ETHERNAUDE_DIRECTMAIN(DIRECT_SERVICE_RESET, n, &a[0], &a[1]);
+    sprintf(ligne, "%d", res);
+    if (res == DIRECT_OK) {
+        sprintf(ligne, "{%d} {", res);
+        for (k = 0; k < n; k++) {
+        strcpy(ligne2, ligne);
+        sprintf(ligne, "%s %u", ligne2, a[k]);
+        }
+        strcpy(ligne2, ligne);
+        sprintf(ligne, "%s}", ligne2);
+    }
     } else {
-	result = TCL_ERROR;
-	sprintf(ligne, "This function cannot be used with this driver");
+    result = TCL_ERROR;
+    sprintf(ligne, "This function cannot be used with this driver");
     }
     Tcl_SetResult(interp, ligne, TCL_VOLATILE);
     return result;
@@ -155,20 +155,20 @@ int cmdEthernaudeDirectIdentity(ClientData clientData, Tcl_Interp * interp, int 
     int n = 28, k;
     cam = (struct camprop *) clientData;
     if (cam->direct == 1) {
-	res = ETHERNAUDE_DIRECTMAIN(DIRECT_SERVICE_IDENTITY, n, &a[0], &a[1], &a[2], &a[3], &a[4], &a[5], &a[6], &a[7], &a[8], &a[9], &a[10], &a[11], &a[12], &a[13], &a[14], &a[15], &a[16], &a[17], &a[18], &a[19], &a[20], &a[21], &a[22], &a[23], &a[24], &a[25], &a[26], &a[27]);
-	sprintf(ligne, "%d", res);
-	if (res == DIRECT_OK) {
-	    sprintf(ligne, "{%d} {", res);
-	    for (k = 0; k < n; k++) {
-		strcpy(ligne2, ligne);
-		sprintf(ligne, "%s %u", ligne2, a[k]);
-	    }
-	    strcpy(ligne2, ligne);
-	    sprintf(ligne, "%s}", ligne2);
-	}
+    res = ETHERNAUDE_DIRECTMAIN(DIRECT_SERVICE_IDENTITY, n, &a[0], &a[1], &a[2], &a[3], &a[4], &a[5], &a[6], &a[7], &a[8], &a[9], &a[10], &a[11], &a[12], &a[13], &a[14], &a[15], &a[16], &a[17], &a[18], &a[19], &a[20], &a[21], &a[22], &a[23], &a[24], &a[25], &a[26], &a[27]);
+    sprintf(ligne, "%d", res);
+    if (res == DIRECT_OK) {
+        sprintf(ligne, "{%d} {", res);
+        for (k = 0; k < n; k++) {
+        strcpy(ligne2, ligne);
+        sprintf(ligne, "%s %u", ligne2, a[k]);
+        }
+        strcpy(ligne2, ligne);
+        sprintf(ligne, "%s}", ligne2);
+    }
     } else {
-	result = TCL_ERROR;
-	sprintf(ligne, "This function cannot be used with this driver");
+    result = TCL_ERROR;
+    sprintf(ligne, "This function cannot be used with this driver");
     }
     Tcl_SetResult(interp, ligne, TCL_VOLATILE);
     return result;
@@ -196,8 +196,8 @@ int cmdEthernaudeReinit(ClientData clientData, Tcl_Interp * interp, int argc, ch
 #endif
     CAM_DRV.close(cam);
     if (CAM_DRV.init(cam, argc, argv) != 0) {
-	Tcl_SetResult(interp, cam->msg, TCL_VOLATILE);
-	return TCL_ERROR;
+    Tcl_SetResult(interp, cam->msg, TCL_VOLATILE);
+    return TCL_ERROR;
     }
     Tcl_SetResult(interp, "", TCL_VOLATILE);
     return TCL_OK;
@@ -237,15 +237,15 @@ int cmdEthernaudeReinit(ClientData clientData, Tcl_Interp * interp, int argc, ch
   */
 int cmdEthernaudeScan(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
-   int w;			/* parametre d'appel : largeur */
-   int h;			/* parametre d'appel : hauteur */
-   int b;			/* parametre d'appel : binning */
-   int by = 1;			/* binning en along scan */
-   double dt;			/* parametre d'appel : intervalle de temps */
+   int w;           /* parametre d'appel : largeur */
+   int h;           /* parametre d'appel : hauteur */
+   int b;           /* parametre d'appel : binning */
+   int by = 1;          /* binning en along scan */
+   double dt;           /* parametre d'appel : intervalle de temps */
    struct camprop *cam;
-   char ligne[200];		/* Texte pour le retour */
-   char ligne2[200];		/* Texte pour le retour */
-   char text[200];		/* Texte pour le retour */
+   char ligne[200];     /* Texte pour le retour */
+   char ligne2[200];        /* Texte pour le retour */
+//   char text[200];        /* Texte pour le retour */
    int offset = 1;
    int i;
    char result[256];
@@ -289,17 +289,17 @@ int cmdEthernaudeScan(ClientData clientData, Tcl_Interp * interp, int argc, char
    for (i = 6; i < argc; i++) {
       if ((strcmp(argv[i], "-offset") == 0) || (strcmp(argv[i], "-firstpix") == 0)) {
          if (Tcl_GetInt(interp, argv[++i], &offset) != TCL_OK) {
-	    sprintf(ligne, "Usage: %s %s width height bin dt ?-firstpix index? ?-blocking? ?-perfo?\nfirstpix index \"%s\" must be an integer", argv[0], argv[1], argv[i]);
-	    Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-	    return TCL_ERROR;
-	 }
+        sprintf(ligne, "Usage: %s %s width height bin dt ?-firstpix index? ?-blocking? ?-perfo?\nfirstpix index \"%s\" must be an integer", argv[0], argv[1], argv[i]);
+        Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+        return TCL_ERROR;
+     }
       }
       if (strcmp(argv[i], "-biny") == 0) {
-	 if (Tcl_GetInt(interp, argv[++i], &by) != TCL_OK) {
-	    sprintf(ligne, "Usage: %s %s width height bin dt ?-firstpix index? ?-biny int?\nfirstpix index \"%s\" must be an integer", argv[0], argv[1], argv[i]);
-	    Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-	    return TCL_ERROR;
-	 }
+     if (Tcl_GetInt(interp, argv[++i], &by) != TCL_OK) {
+        sprintf(ligne, "Usage: %s %s width height bin dt ?-firstpix index? ?-biny int?\nfirstpix index \"%s\" must be an integer", argv[0], argv[1], argv[i]);
+        Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+        return TCL_ERROR;
+     }
       }
    }
    /* --- c'est parti pour l'Ethernaude -- */
@@ -316,7 +316,7 @@ int cmdEthernaudeScan(ClientData clientData, Tcl_Interp * interp, int argc, char
    if (dt < 0) {
       dt = -dt;
    }
-   
+
    sprintf(ligne,"<LIBETHERNAUDE/cmdEthernaudeScan:%d> cam->mirrorv=%d",__LINE__,cam->mirrorv); util_log(ligne,0);
    sprintf(ligne,"<LIBETHERNAUDE/cmdEthernaudeScan:%d>   offset=%d, w=%d, cam->nb_photox=%d",__LINE__,offset,w,cam->nb_photox); util_log(ligne,0);
    if (cam->mirrorv == 0) {
@@ -359,22 +359,22 @@ int cmdEthernaudeScan(ClientData clientData, Tcl_Interp * interp, int argc, char
    } else {
       strcpy(ligne, "OpenCloseShutter=TRUE");
    }
-   
+
    paramCCD_put(-1, ligne, &ParamCCDIn, 1);
    AskForExecuteCCDCommand_Dump(&ParamCCDIn, &ParamCCDOut);
-	
+
    if (ParamCCDOut.NbreParam >= 1) {
       paramCCD_get(0, result, &ParamCCDOut);
       strcpy(cam->msg, "");
       if (strcmp(result, "FAILED") == 0) {
-	 if (ParamCCDOut.NbreParam >= 2) {
-	    paramCCD_get(1, result, &ParamCCDOut);
-	    sprintf(cam->msg, "INIT_TDIMode Failed : %s", result);
-	 } else {
-	    strcpy(cam->msg, "INIT_TDIMode Failed");
-	 }
-	 Tcl_SetResult(interp,cam->msg,TCL_VOLATILE);
-	 return TCL_ERROR;
+     if (ParamCCDOut.NbreParam >= 2) {
+        paramCCD_get(1, result, &ParamCCDOut);
+        sprintf(cam->msg, "INIT_TDIMode Failed : %s", result);
+     } else {
+        strcpy(cam->msg, "INIT_TDIMode Failed");
+     }
+     Tcl_SetResult(interp,cam->msg,TCL_VOLATILE);
+     return TCL_ERROR;
       }
    }
 
@@ -410,7 +410,7 @@ int cmdEthernaudeScan(ClientData clientData, Tcl_Interp * interp, int argc, char
 
    TheScanStruct->TimerToken = Tcl_CreateTimerHandler(TheScanStruct->idt, EthernaudeScanCallback, (ClientData) cam);
    libcam_GetCurrentFITSDate(interp, TheScanStruct->dateobs);
-   
+
    Tcl_ResetResult(interp);
    return TCL_OK;
 }
@@ -420,7 +420,7 @@ void EthernaudeScanCallback(ClientData clientData)
    struct camprop *cam;
    char ligne[200];
    int readok = 1;
-   
+
    cam = (struct camprop *)clientData;
    paramCCD_clearall(&ParamCCDIn, 1);
    paramCCD_put(-1, "ReadoutLine_TDIMode", &ParamCCDIn, 1);
@@ -430,12 +430,12 @@ void EthernaudeScanCallback(ClientData clientData)
    sprintf(ligne, "NumRow=%d", TheScanStruct->y+1);
    paramCCD_put(-1, ligne, &ParamCCDIn, 1);
    AskForExecuteCCDCommand_Dump(&ParamCCDIn, &ParamCCDOut);
-	
+
    if (ParamCCDOut.NbreParam >= 1) {
       paramCCD_get(0, ligne, &ParamCCDOut);
       //strcpy(cam->msg, "");
       if (strcmp(ligne, "FAILED") == 0) {
-	 readok = 0;
+     readok = 0;
       }
    }
 
@@ -539,7 +539,7 @@ void EthernaudeScanTransfer(ClientData clientData)
 
    // si cam->mirrorv vaut 0 , je redresse l'image  en inversant l'axe X
    // si cam->mirrorv vaut 1 , je laisse l'image inversee
-   sprintf(s, "buf%d setpixels CLASS_GRAY %d %d FORMAT_FLOAT COMPRESS_NONE %d -reverse_x %d", 
+   sprintf(s, "buf%d setpixels CLASS_GRAY %d %d FORMAT_FLOAT COMPRESS_NONE %d -reverse_x %d",
       cam->bufno, naxis1, naxis2, (int) pp, (cam->mirrorv == 0) );
    Tcl_Eval(interp, s);
    free(pp);
@@ -587,7 +587,7 @@ void EthernaudeScanTransfer(ClientData clientData)
    if (cam->ethvar.InfoCCD_HasGPSDatation == 1) {
       sprintf(s, "buf%d setkwd {CAMERA \"%s+GPS %s %s\" string \"\" \"\"}", cam->bufno, CAM_INI[cam->index_cam].name, CAM_INI[cam->index_cam].ccd, CAM_LIBNAME);
       Tcl_Eval(interp, s);
-      
+
       // Debut de la pose
       paramCCD_clearall(&ParamCCDIn, 1);
       paramCCD_put(-1, "Get_JulianDate_beginLastExp", &ParamCCDIn, 1);
@@ -812,12 +812,12 @@ int cmdEthernaudeGPS(ClientData clientData, Tcl_Interp * interp, int argc, char 
    char value[MAXLENGTH + 1];
    int paramtype;
    struct camprop *cam;
-   
+
    float longitude, latitude, altitude;
    char dir;
-   
+
    cam = (struct camprop *) clientData;
-   
+
    // je verifie qu'il n'y a pas d'acquisition en cours, car la lecture de la position GPS ne peut pas se faire pendant une acquisition.
    if ( cam->acquisitionInProgress != 0 ) {
       Tcl_SetResult(interp,"acquisition in progress",TCL_VOLATILE);
@@ -866,7 +866,7 @@ int cmdEthernaudeGPS(ClientData clientData, Tcl_Interp * interp, int argc, char 
       Tcl_SetResult(interp,"Internal error in longitude decoding.",TCL_VOLATILE);
       return TCL_ERROR;
    }
-   
+
    /* Requete de latitude */
    paramCCD_clearall(&ParamCCDIn, 1);
    paramCCD_put(-1, "Get_Latitude", &ParamCCDIn, 1);
@@ -893,7 +893,7 @@ int cmdEthernaudeGPS(ClientData clientData, Tcl_Interp * interp, int argc, char 
       Tcl_SetResult(interp,"Internal error in latitude decoding.",TCL_VOLATILE);
       return TCL_ERROR;
    }
-   
+
    /* Requete de altitude */
    paramCCD_clearall(&ParamCCDIn, 1);
    paramCCD_put(-1, "Get_Altitude", &ParamCCDIn, 1);
@@ -934,7 +934,7 @@ int cmdEthernaudeGetCCDInfos(ClientData clientData, Tcl_Interp * interp, int arg
    int k, paramtypek;
    Tcl_DString dsptr;
    struct camprop *cam;
-   
+
    cam = (struct camprop *) clientData;
    paramCCD_clearall(&ParamCCDIn, 1);
    paramCCD_put(-1, "GetCCD_infos", &ParamCCDIn, 1);
@@ -956,7 +956,7 @@ int cmdEthernaudeGetCCDInfos(ClientData clientData, Tcl_Interp * interp, int arg
          paramCCD_get(0, s, &ParamCCDOut);
          Tcl_DStringAppend(&dsptr,s,-1);
          Tcl_DStringAppend(&dsptr," ",-1);
-         
+
          for (k=1;k<ParamCCDOut.NbreParam;k++) {
             /* Decoder chaque argument ici */
             paramCCD_get(k, s, &ParamCCDOut);
@@ -976,7 +976,7 @@ int cmdEthernaudeGetCCDInfos(ClientData clientData, Tcl_Interp * interp, int arg
 int cmdEthernaudeHasEventaude(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
    struct camprop *cam = (struct camprop *) clientData;
-   
+
    if (cam->ethvar.InfoCCD_HasGPSDatation==1) {
       Tcl_SetResult(interp,"1",TCL_STATIC);
    } else {
@@ -988,7 +988,7 @@ int cmdEthernaudeHasEventaude(ClientData clientData, Tcl_Interp * interp, int ar
 int cmdEthernaudeHasRegulation(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
    struct camprop *cam = (struct camprop *) clientData;
-   
+
    if (cam->ethvar.InfoCCD_HasRegulationTempCaps==1) {
       Tcl_SetResult(interp,"1",TCL_STATIC);
    } else {

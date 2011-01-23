@@ -10,12 +10,12 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#if defined(OS_MACOS)
+
+/* === OS dependant includes files === */
+#if defined __linux__
 #include <unistd.h>
 #endif
 
-/* === OS dependant includes files === */
 #include "sysexp.h"
 #include "ethernaude_user.h"
 #include "ethernaude_util.h"
@@ -23,7 +23,7 @@
 #if defined(OS_WIN)
 HINSTANCE ethernaude;
 #endif
-#if defined(OS_UNX) || defined(OS_LIN) || defined(OS_MACOS)
+#if defined __linux__ || defined(OS_MACOS)
 void *ethernaude;
 #endif
 ETHERNAUDE_CALL *ETHERNAUDE_MAIN;
