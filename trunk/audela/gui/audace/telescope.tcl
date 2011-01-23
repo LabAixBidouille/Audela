@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise à jour $Id: telescope.tcl,v 1.68 2010-10-23 10:14:19 robertdelmas Exp $
+# Mise à jour $Id: telescope.tcl,v 1.69 2011-01-23 18:19:40 michelpujol Exp $
 #
 
 namespace eval ::telescope {
@@ -225,7 +225,7 @@ proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { 
       set catchError [catch {
          if { $audace(telescope,stopgoto) == "0" } {
             tel$audace(telNo) radec goto $list_radec -blocking $blocking -equinox $radecEquinox
-            if { $blocking == 0 && $::conf(telescope) != "t193" } {
+            if { $blocking == 0  } {
                #--- Boucle tant que la monture n'est pas arretee (si on n'utilise pas le mode bloquant du goto)
                set audace(telescope,goto) "1"
                set radec0 [ tel$audace(telNo) radec coord -equinox $radecEquinox ]
@@ -284,7 +284,8 @@ proc ::telescope::surveille_goto { radec0 radecEquinox } {
    if { $audace(telNo) != 0 } {
       set radec1 [::telescope::afficheCoord]
       if { $radec1 == "" } {
-         #--- j'arrete la boucle de surveillance  car les les coordonnees n'ont pas pu etre recuperees
+         #--- j'arrete la boucle de surveillance  car les coordonnees n'ont pas pu etre recuperees
+         console::affiche_erreur "surveille_goto pas de coordonnees\n"
          return 0
       }
       set ra0 [ mc_angle2deg [ lindex $radec0 0 ] 360 ]
@@ -294,7 +295,7 @@ proc ::telescope::surveille_goto { radec0 radecEquinox } {
 
       set sepangle [ mc_anglesep [ list $ra0 $dec0 $ra1 $dec1 ] ]
       if { [ lindex $sepangle 0 ] > 0.01 } {
-         after 1000 ::telescope::surveille_goto [ list $radec1 ] $radecEquinox
+         after 1100 ::telescope::surveille_goto [ list $radec1 ] $radecEquinox
          #--- je retourne 1 pour signaler que ce n'est pas pas la derniere boucle
          return 1
       } else {
