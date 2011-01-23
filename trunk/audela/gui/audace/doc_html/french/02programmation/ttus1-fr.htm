@@ -5,7 +5,7 @@
   <title>Librairie TT : Manuel Utilisateur</title>
 </head>
 <body>
-<p class="date">Date de mise &#224; jour : 15 janvier 2011</p>
+<p class="date">Date de mise &#224; jour : 23 janvier 2011</p>
 <h1>LIB TT - Librairie de pr&#233;traitement d'images
 astronomiques</h1>
 <h1>Manuel Utilisateur</h1>
@@ -33,7 +33,7 @@ d&#233;finition.</p>
 est interpr&#233;t&#233; comme une simple remarque. Le
 s&#233;parateur blanc est utilis&#233; pour les param&#232;tres
 suivants de la ligne.</p>
-<p>Il existe actuellement quatre mots-cl&#233;s de
+<p>Il existe actuellement quatre mots cl&#233;s de
 d&#233;finition :</p>
 <p>SET/VAR : initialise la valeur d'une variable de substitution.
 Cette d&#233;finition comporte deux arguments : le mot &#224;
@@ -401,9 +401,9 @@ entr&#233;e.</p>
 pr&#233;cis&#233;e :</p>
     <p>MIRROR : L'image est invers&#233;e gauche droite.</p>
     <p>FLIP : L'image est invers&#233;e haut bas.</p>
-    <p>XY : 'image est transpos&#233;e (&#233;change des lignes et
+    <p>XY : L'image est transpos&#233;e (&#233;change des lignes et
 des colonnes).</p>
-    <p>Les mots cl&#233; d'astrom&#233;trie (WCS),
+    <p>Les mots cl&#233;s d'astrom&#233;trie (WCS),
 &#233;ventuellement pr&#233;sents dans l'en-t&#234;te FITS, sont
 modifi&#233;s en cons&#233;quence.</p>
   </li>
@@ -441,7 +441,7 @@ les deux axes, sa dynamique sera r&#233;duite d'un facteur
 quatre). Pour imposer une normalisation autre du flux, utiliser
 le param&#232;tre [normaflux]. Par exemple, pour garder la
 dynamique originelle, utiliser normaflux=1.</p>
-    <p>Les mots cl&#233; d'astrom&#233;trie (WCS),
+    <p>Les mots cl&#233;s d'astrom&#233;trie (WCS),
 &#233;ventuellement pr&#233;sents dans l'en-t&#234;te FITS, sont
 modifi&#233;s en cons&#233;quence de la transformation
 g&#233;om&#233;trique.</p>
@@ -449,7 +449,7 @@ g&#233;om&#233;trique.</p>
   <li>
     <h3><a name="TRANS" id="TRANS"></a>Fonction TRANS</h3>
     <p>Effectue une translation constante de [trans_x] [trans_y]
-pixels de toutes les images. Les mots cl&#233; d'astrom&#233;trie
+pixels de toutes les images. Les mots cl&#233;s d'astrom&#233;trie
 (WCS), &#233;ventuellement pr&#233;sents dans l'en-t&#234;te
 FITS, sont modifi&#233;s en cons&#233;quence.<br>
     </p>
@@ -466,7 +466,7 @@ des "bords noirs" des images.</p>
     <h3><a name="ROT" id="ROT"></a>Fonction ROT</h3>
     <p>Effectue une rotation d'un [angle] (en degr&#233;s) autour du
 point d&#233;fini par les coordonn&#233;es [x0] [y0]. Les mots
-cl&#233; d'astrom&#233;trie (WCS), &#233;ventuellement
+cl&#233;s d'astrom&#233;trie (WCS), &#233;ventuellement
 pr&#233;sents dans l'en-t&#234;te FITS, sont modifi&#233;s en
 cons&#233;quence.</p>
     <p>Exemple de script pour tourner une image 15&#176; autour de
@@ -618,7 +618,7 @@ et [dexptime] le temps d'exposition du dark, le dark est
 corrig&#233; du rapport de ces valeurs. Si [exptime] et
 [dexptime] sont des cha&#238;nes de caract&#232;res, alors la
 valeur des temps d'int&#233;gration sera recherch&#233;e comme la
-valeur de ces mots cl&#233;.</p>
+valeur de ces mots cl&#233;s.</p>
     <p>Par d&#233;faut, [exptime]="EXPTIME" et
 [dexptime]="EXPTIME".</p>
     <p>Si l'argument UNSMEARING=[unsmearing] est pr&#233;sent, il est
@@ -997,7 +997,7 @@ une translation.</p>
     <p>translate=never : on effectue le calcul de r&#233;gistration
 uniquement par une transformation lin&#233;aire quelconque.</p>
     <p>Le mot d'option [matchwcs] indique que le recentrage ne sera
-fait qu'avec les mots cl&#233; WCS de l'image. A noter que dans
+fait qu'avec les mots cl&#233;s WCS de l'image. A noter que dans
 ce cas on peut effectuer une r&#233;gistration sur des images
 d'entr&#233;e de dimensions diff&#233;rentes. Cela est tr&#232;s
 utile pour combiner des images effectu&#233;es avec des
@@ -1008,7 +1008,7 @@ dynamique sera r&#233;duite d'un facteur 2). Pour imposer une
 normalisation autre du flux, utiliser le param&#232;tre
 [normaflux]. Par exemple, pour garder la dynamique originelle,
 utiliser normaflux=1.</p>
-    <p>Les mots cl&#233; d'astrom&#233;trie (WCS),
+    <p>Les mots cl&#233;s d'astrom&#233;trie (WCS),
 &#233;ventuellement pr&#233;sents dans l'en-t&#234;te FITS, sont
 modifi&#233;s en cons&#233;quence.</p>
   </li>
@@ -1056,7 +1056,7 @@ pixel (32,99) avec un fond de ciel de 150 A.D.U. :</p>
 </ol>
 <h2>3.8. Les fonctions 'en-t&#234;tes'</h2>
 <p style="color: rgb(0, 0, 0);">Elles compl&#232;tent ou
-modifient les mots-cl&#233;s des images. Elles produisent autant
+modifient les mots cl&#233;s des images. Elles produisent autant
 d 'images en sortie qu'il y en a en entr&#233;e.</p>
 <ol>
   <li>
@@ -1121,7 +1121,7 @@ l'image (alors qu'il peu devenir long pour la fonction STAT).</p>
   <li>
     <h3><a name="HEADERFITS" id="HEADERFITS"></a>Fonction
 HEADERFITS</h3>
-    <p>Ajoute des mots cl&#233; &#224; l'en-t&#234;te FITS. Les mots
+    <p>Ajoute des mots cl&#233;s &#224; l'en-t&#234;te FITS. Les mots
 cl&#233;s sont d&#233;finis dans un fichier texte ASCII dont le
 nom complet est l'argument de [file]. Chaque mot cl&#233; est
 d&#233;fini par 5 lignes dans le fichier texte :</p>
@@ -1134,7 +1134,7 @@ string)</p>
     <p>ligne 5 : unit&#233;s</p>
     <p>S'il n'y a pas de commentaire, laisser la ligne blanche. De
 m&#234;me pour l'unit&#233;. On peut ajouter autant de
-mots-cl&#233;s que l'on veut.</p>
+mots cl&#233;s que l'on veut.</p>
     <p>Exemple de script pour modifier l'en-t&#234;te FITS des images
 avec les donn&#233;es du kwdfile.txt contenu dans le
 r&#233;pertoire de travail :</p>
@@ -1182,7 +1182,7 @@ actif.</p>
     <h3><a name="ASTROMETRY" id="ASTROMETRY"></a>Fonction
 ASTROMETRY</h3>
     <p>Calcule les param&#232;tres astrom&#233;triques de l'image
-(mots cl&#233; CRVAL1, CRVAL2, CD1_1, CD1_2, CD2_1, CD2_2 de
+(mots cl&#233;s CRVAL1, CRVAL2, CD1_1, CD1_2, CD2_1, CD2_2 de
 l'en-t&#234;te FITS dans le cas d'une transformation
 lin&#233;aire). Il faut pr&#233;alablement que les images soient
 associ&#233;es &#224; des listes d'objets (voir fonction STAT) et

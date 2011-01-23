@@ -5,25 +5,25 @@
   <title>Convertir</title>
 </head>
 <body>
-<p class="date">Date de mise &#224; jour : 15 janvier 2011</p>
+<p class="date">Date de mise &#224; jour : 23 janvier 2011</p>
 <h1>Convertir</h1>
 <h2>1. Fonctions</h2>
 <p>Ce script a pour fonction de convertir des lots d'images en
 diff&#233;rents types :</p>
 <ul>
-  <li>Conversion RAW --&gt; FITS d'images issues d'appareils photo
+  <li>Convertir RAW --&gt; FITS d'images issues d'appareils photo
 num&#233;riques aux formats ARW, CR2, CRW, DNG, ERF, MRW, NEF,
 ORF, RAF, RW2, SR2, TIFF et X3F.</li>
-  <li>Conversion CFA --&gt; RVB (couleurs).</li>
-  <li>Conversion RVB --&gt; R+V+B (d&#233;composition d'une image
+  <li>Convertir CFA --&gt; RVB (couleurs).</li>
+  <li>Convertir RVB --&gt; R+V+B (d&#233;composition d'une image
 RVB en 3 plans couleurs).</li>
-  <li>Conversion R+V+B --&gt; RVB (agr&#233;gation de 3 plans
+  <li>Convertir R+V+B --&gt; RVB (agr&#233;gation de 3 plans
 couleurs en une seule image RVB).</li>
-  <li>D&#233;signer le plan R (conversion d'un plan Noir et Blanc
+  <li>Assigner le plan R (conversion d'un plan Noir et Blanc
 en plan Rouge).</li>
-  <li>D&#233;signer le plan V (conversion d'un plan Noir et Blanc
+  <li>Assigner le plan V (conversion d'un plan Noir et Blanc
 en plan Vert).</li>
-  <li>D&#233;signer le plan B (conversion d'un plan Noir et Blanc
+  <li>Assigner le plan B (conversion d'un plan Noir et Blanc
 en plan Bleu).</li>
 </ul>
 <p>L'extension de travail est l'extension par d&#233;faut
@@ -84,7 +84,7 @@ Console et le fichier est retir&#233; de la liste.</li>
   <li>Les images Noir et Blanc, qui ne sont ni des images issues
 d'appareils photos num&#233;riques, ni des images CFA, ni des
 plans couleurs, ni des images RVB, sont list&#233;es dans les
-trois commandes 'D&#233;signer le plan ...".</li>
+trois commandes 'Assigner le plan ...".</li>
   <li>La premi&#232;re conversion possible est
 s&#233;lectionn&#233;e.</li>
 </ul>
@@ -114,11 +114,11 @@ aux images sources. Pour permettre de v&#233;rifier le
 r&#233;sultat l'affichage est modifi&#233;
 instantan&#233;ment lors de la s&#233;lection d'une de ces
 trois options.</p>
-<p><b>D&#233;truire les sources</b> : cette option permet de
+<p><b>D&#233;truire les sources</b> : Cette option permet de
 limiter l'inflation du nombre et du volume des fichiers produits
 lors des op&#233;rations en s&#233;rie. Elle n'est pas
-activ&#233;e pour la conversion RAW --&gt; FITS et pour les
-fonctions 'D&#233;signer le plan ..." de mani&#232;re
+activ&#233;e pour la fonction 'Convertir RAW --&gt; FITS' et pour les
+fonctions 'Assigner le plan ..." de mani&#232;re
 &#224; &#233;viter de perdre les originaux par
 m&#233;garde.</p>
 <p>Le bouton <b>Menu</b> : Affiche la conversion
@@ -145,17 +145,17 @@ termin&#233;.</p>
 <ul>
   <li>Une conversion en cours est signal&#233;e par <img
  src="images/hourglass.gif" alt="conversion en cours" width="20"
- height="20">dans la colonne 'Remarque'.</li>
+ height="20"> dans la colonne 'Remarque'.</li>
   <li>La r&#233;ussite de la conversion est signal&#233;e par
 un <img src="images/ok.gif" alt="conversion termin&#233;e" width="20"
  height="20">.</li>
   <li>Si une conversion n'a pu &#234;tre men&#233;e &#224; son
 terme, la colonne 'Remarque' comporte un <img src="images/info.gif"
- alt="conversion non r&#233;alis&#233;e" width="20" height="20"><br>
-et la Console &#233;met un message 'Echec de conversion de (nom
+ alt="conversion non r&#233;alis&#233;e" width="20" height="20"> et la Console
+&#233;met un message 'Echec de conversion de (nom
 du fichier) : (erreur )'.</li>
   <li>Le symbole <img src="images/nop.gif" alt="conversion interdite"
- width="20" height="20">signifie que la
+ width="20" height="20"> signifie que la
 conversion ne sera pas effectu&#233;e car elle conduirait
 &#224; &#233;craser un fichier existant (voir Note sur les
 pi&#232;ges du traitement par lots).</li>
@@ -164,10 +164,10 @@ pi&#232;ges du traitement par lots).</li>
 <p>Sur la base de s&#233;ries de 100 images CR2 d'un canon
 350D, 3474x2314 pixels :</p>
 <ul>
-  <li>Conversion RAW --&gt; FITS : 2.9 secondes/image.</li>
-  <li>Conversion RVB --&gt; R+V+B : : 5.3 secondes/image.</li>
-  <li>Conversion R+V+B --&gt; RVB : 8.6 secondes/image.</li>
-  <li>Conversion CFA --&gt; RVB : 4.4 secondes/image.</li>
+  <li>Convertir RAW --&gt; FITS : 2.9 secondes/image.</li>
+  <li>Convertir RVB --&gt; R+V+B : : 5.3 secondes/image.</li>
+  <li>Convertir R+V+B --&gt; RVB : 8.6 secondes/image.</li>
+  <li>Convertir CFA --&gt; RVB : 4.4 secondes/image.</li>
   <li>Dur&#233;e du tri de 500 fichiers dans un r&#233;pertoire
 : De l'ordre de 1 seconde.</li>
 </ul>
@@ -215,7 +215,7 @@ des fichiers &#224; cr&#233;er.</p>
 <p>Si c'est le cas, le fichier est
 d&#233;s&#233;lectionn&#233; et la colonne Remarque
 comporte un <img src="images/nop.gif" alt="conversion interdite"
- width="20" height="20"></p>
+ width="20" height="20">.</p>
 <p>Si l'option 'Convertir tous les fichiers' &#233;tait
 s&#233;lectionn&#233;e elle ne l'est plus.</p>
 <p>Les solutions consistent &#224; :</p>
@@ -232,7 +232,7 @@ changement de nom g&#233;n&#233;rique, la
 renum&#233;rotation des fichiers produits et les index peuvent
 rendre d&#233;licate la conversion d'une longue liste de
 fichiers en une seule passe.</p>
-<h3>5.4 Conversion CFA --&gt; RVB</h3>
+<h3>5.4 Convertir CFA --&gt; RVB</h3>
 <p>Le but de cette fonction est d'obtenir &#224; partir d'une
 image CFA au format FITS (2 axes, NAXIS = 2) une image en
 couleurs (3 axes, NAXIS = 3), &#233;galement au format FITS,
@@ -253,7 +253,7 @@ automatiquement.</li>
 </ul>
 <p>Les images couleurs g&#233;n&#233;r&#233;es contiennent
 les seuils couleurs.</p>
-<h3>5.5 Conversion RVB --&gt; R+V+B</h3>
+<h3>5.5 Convertir RVB --&gt; R+V+B</h3>
 <p>Le but de cette fonction est d'obtenir &#224; partir d'une
 image couleur (RVB) au format FITS (3 axes, NAXIS = 3) les 3
 images composantes dans les bandes de couleur rouge (r), verte
@@ -271,13 +271,13 @@ sortie seront par exemple :</p>
 <b>nom_g&#233;n&#233;rique_sortie_</b></p>
 <p><b>index</b> identifie le rang de l'image dans la
 s&#233;rie.</p>
-<h3>5.6 D&#233;signer le plan R (ou V ou B)</h3>
+<h3>5.6 Assigner le plan R (ou V ou B)</h3>
 <p>Ces commandes s'adressent &#224; des utilisateurs souhaitant mettre en
 &#339;uvre la technique du <b>Mapped Color</b>.</p>
 <p>Pour transformer trois images Noir et Blanc en image RVB le
 processus suivant est conseill&#233; :</p>
 <ul>
-  <li>D&#233;signer l'image qui sera assimil&#233;e au plan R
+  <li>Assigner l'image qui sera assimil&#233;e au plan R
 en veillant &#224; lui donner un nouveau nom
 g&#233;n&#233;rique qui sera commun aux trois plans R, V et
 B.</li>
@@ -290,7 +290,7 @@ indiff&#233;rent.</li>
 les noms suivants : {nom_g&#233;n&#233;rique_sortie}r
 {nom_g&#233;n&#233;rique_sortie}g
 {nom_g&#233;n&#233;rique_sortie}b</li>
-  <li>S&#233;lectionner la commande Conversion R+V+B --&gt; RVB :
+  <li>S&#233;lectionner la commande Convertir R+V+B --&gt; RVB :
 Les trois sont propos&#233;es &#224; la conversion.</li>
   <li>Il est imp&#233;ratif de changer le nom
 g&#233;n&#233;rique de sortie pour &#233;viter de polluer
@@ -303,7 +303,7 @@ s&#233;lectionner l'option 'D&#233;truire les sources'.</li>
 conduirait &#224; une erreur.</p>
 <h3>6. Prise en compte des mots cl&#233;s FILTER et
 FILTERNU</h3>
-<p>Si ces mots cl&#233;s sont rencontr&#233;s lors de la Conversion R+V+B --
+<p>Si ces mots cl&#233;s sont rencontr&#233;s lors de la conversion R+V+B --
 &gt;RVB l'image finale comportera ces
 m&#234;mes mots cl&#233;s avec les mentions suivantes :</p>
 <ul>
@@ -311,7 +311,7 @@ m&#234;mes mots cl&#233;s avec les mentions suivantes :</p>
   <li>FILTERNU sum of {liste des num&#233;ros des filtres, dans
 l'ordre R V B}</li>
 </ul>
-<p>Lors d'une Conversion RVB --&gt; R+V+B les mots cl&#233;s
+<p>Lors d'une conversion RVB --&gt; R+V+B les mots cl&#233;s
 originels seront r&#233;tablis dans chacun des plans
 couleurs.</p>
 </body>
