@@ -2,7 +2,7 @@
 # Fichier : t193pad.tcl
 # Description : Raquette specifique au T193 de l'OHP
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: t193pad.tcl,v 1.18 2010-10-10 19:58:19 michelpujol Exp $
+# Mise à jour $Id: t193pad.tcl,v 1.19 2011-01-23 18:30:46 michelpujol Exp $
 #
 
 namespace eval ::t193pad {
@@ -406,9 +406,9 @@ proc ::t193pad::createDialog { } {
          pack $This.focus.pm.buttonPlus -expand 0 -side right -padx 10 -pady 4
 
          #--- Bind des boutons '+' et '-'
-         bind $This.focus.pm.buttonMoins <ButtonPress-1>   { ::t193pad::startFocus "-" }
+         bind $This.focus.pm.buttonMoins <ButtonPress-1>   { ::t193pad::moveFocus "-" }
          bind $This.focus.pm.buttonMoins <ButtonRelease-1> { ::t193pad::stopFocus }
-         bind $This.focus.pm.buttonPlus  <ButtonPress-1>   { ::t193pad::startFocus "+" }
+         bind $This.focus.pm.buttonPlus  <ButtonPress-1>   { ::t193pad::moveFocus "+" }
          bind $This.focus.pm.buttonPlus  <ButtonRelease-1> { ::t193pad::stopFocus }
 
          #--- Label de la vitesse du moteur de focalisation
@@ -447,7 +447,13 @@ proc ::t193pad::createDialog { } {
    pack $This.focus -side top -fill x -expand 0 -pady 4
 
    #--- Recuperation de la position courante du focuser
-   ::focus::displayCurrentPosition $conf(t193pad,focuserLabel)
+   set catchError [catch {
+      ::focus::displayCurrentPosition $conf(t193pad,focuserLabel)
+   }]
+   if { $catchError != 0 } {
+      console::affiche_erreur "Il n'est pas encore possible de recuperer la position du focuser car le telescope n'est pas encore connecte"
+   }
+
 
    #--- Frame du DOME
    frame $This.dome -borderwidth 1 -relief groove -bg $color(blue_pad)
@@ -499,7 +505,7 @@ proc ::t193pad::createDialog { } {
    pack $This.dome -side top -fill x -expand 0
 
    #--- Initialise et affiche la vitesse du focuser
-   ::focus::setSpeed "$conf(t193pad,focuserLabel)" "0"
+   ::focus::setSpeed $conf(t193pad,focuserLabel) "0"
 
    #--- active ou descative le choix de l'impulsion
    setRadecPulseEnabled
@@ -509,6 +515,10 @@ proc ::t193pad::createDialog { } {
 
    #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
    bind $This <Key-F1> { ::console::GiveFocus }
+
+   #--- je recupere la position du
+   set ::audace(focus,currentFocus) [::focus::getPosition $conf(t193pad,focuserLabel)]
+   set ::audace(focus,targetFocus)  $::audace(focus,currentFocus)
 }
 
 #------------------------------------------------------------
@@ -664,12 +674,13 @@ proc ::t193pad::cmdStartGoto { } {
 }
 
 #------------------------------------------------------------
-#  startFocus
+#  moveFocus
 #     demarre le mouvement du focus du T193
 #------------------------------------------------------------
-proc ::t193pad::startFocus { direction } {
+proc ::t193pad::moveFocus { direction } {
    set catchError [catch {
       ::focus::move $::conf(t193pad,focuserLabel) $direction
+
    }]
 
    if { $catchError != 0 } {
@@ -696,8 +707,10 @@ proc ::t193pad::stopFocus { } {
 #     lance un goto du focus
 #------------------------------------------------------------
 proc ::t193pad::gotoFocus { } {
+   variable This
    set catchError [catch {
-      ::focus::goto $::conf(t193pad,focuserLabel)
+      set blocking 0
+      ::focus::goto $::conf(t193pad,focuserLabel) $blocking $This.focus.goto.buttonGotoFoc
    }]
 
    if { $catchError != 0 } {
