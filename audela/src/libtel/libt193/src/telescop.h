@@ -64,6 +64,7 @@ struct telprop {
    //int radecNotification ; // 1=marche 0=arret des notifications des coordonnees radec
    int radecIsMoving ;   // 1=mouvement en cours 0=pas de mouvement en cours 
    int focusIsMoving ;   // 1=mouvement en cours 0=pas de mouvement en cours de la focalisation
+   float focusCurrentPosition;  // position courante du focuser
    Tcl_Channel telescopeCoordServerSocket;
 };
 
