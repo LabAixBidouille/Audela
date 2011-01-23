@@ -2,7 +2,7 @@
 # @file     sophiesimulcontrol.tcl
 # @brief    Fichier du namespace ::sophie::testcontrol
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophietestcontrol.tcl,v 1.14 2011-01-21 18:45:16 michelpujol Exp $
+# @version  $Id: sophietestcontrol.tcl,v 1.15 2011-01-23 18:21:25 michelpujol Exp $
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------
@@ -322,7 +322,18 @@ proc ::sophie::testcontrol::readTelescopeCommandSocket { channel } {
                         "2" {
                            #--- je retourne la position immediatement dans la reponse
                            set returnCode 0
-                           set response [format "!FOC COORD %d %s @" $returnCode $private(focus,position) ]
+                           switch $private(focus,mode) {
+                              "NONE" {
+                                 #--- le focus n'est pas  en mouvement
+                                 set moveCode 0
+                              }
+                              default {
+                                 #--- le focus est en mouvement
+                                 set moveCode 1
+                              }
+                           }
+
+                           set response [format "!FOC COORD %d %d %s @" $returnCode $moveCode $private(focus,position) ]
                            writeTelescopeCommandSocket $channel $response
                         }
                      }
@@ -898,7 +909,7 @@ proc ::sophie::testcontrol::sendFocusPosition { } {
       }
    }
    set returnCode 0
-   set response [format "!FOC COORD %d %d %s @" $returnCode $moveCode $private(focus,position)]
+   set response [format "!FOC COORD %d %d %0.2f @" $returnCode $moveCode $private(focus,position)]
    disp "sendFocusPosition $response \n"
    ::sophie::testcontrol::writeTelescopeNotificationSocket $response
 }
