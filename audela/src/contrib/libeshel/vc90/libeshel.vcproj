@@ -79,7 +79,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				AdditionalDependencies="gsl.lib cfitsio.lib ccfits.lib tclstub85.lib ..\..\..\audela\libtt\vc90\Release\libtt.lib"
+				AdditionalDependencies="libgsl.lib cfitsio.lib ccfits.lib tclstub85.lib ..\..\..\audela\libtt\vc90\Release\libtt.lib"
 				OutputFile="..\..\..\..\gui\audace\plugin\tool\eshel\libeshel.dll"
 				Version="2.2"
 				LinkIncremental="1"
@@ -183,7 +183,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="false"
-				AdditionalDependencies="gsl.lib  ccfits_debug.lib tclstub85.lib cfitsio.lib ..\..\..\audela\libtt\vc90\Release\libtt.lib"
+				AdditionalDependencies="libgsl.lib  ccfits_debug.lib tclstub85.lib cfitsio.lib ..\..\..\audela\libtt\vc90\Release\libtt.lib"
 				OutputFile="..\..\..\..\gui\audace\plugin\tool\eshel\libeshel.dll"
 				Version="2.2"
 				LinkIncremental="2"
