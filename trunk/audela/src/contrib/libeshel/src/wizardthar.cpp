@@ -501,6 +501,10 @@ void Eshel_findReferenceLine(
          bestMatchLineString << "{" << matchLine.posx << " " << posy1 << " " << matchLine.posy << " " << posy2 << "} "  ;
       }
       bestMatchLineString << "} ";
+      remove(dummyfilename);
+      remove(iDummyfilename);
+      remove(cDummyfilename);
+
 
       returnMessage = stringOrderNum.str() + bestRefCoord.str() + bestImageLineString.str() + catalogLineString.str() + bestMatchLineString.str() + orderMatchString.str();
    } catch( std::exception e ) {
@@ -918,7 +922,7 @@ int createImageFile (PIC_TYPE fwhm, int radius, PIC_TYPE threshin,
          imageLineList.resize(maxLineNb);
       }
 
-      INFOIMAGE * pinfoImage = createImage(0,0);
+      INFOIMAGE * pinfoImage = createImage(1,1);
       CCfits::PFitsFile pImageLineFits = Fits_createFits(filename,pinfoImage);
       freeImage(pinfoImage);
       Fits_setImageLine(pImageLineFits, imageLineList );
@@ -971,7 +975,7 @@ int  createCatalogFile ( char * cDummyfilename, int orderNo, INFOSPECTRO &spectr
 
 
    if ( catalogLineList.size() > 0 ) {
-      INFOIMAGE * pinfoImage = createImage(0,0);
+      INFOIMAGE * pinfoImage = createImage(1,1);
       CCfits::PFitsFile pCatalogLineFits = Fits_createFits(cDummyfilename,pinfoImage);
       freeImage(pinfoImage);
       Fits_setCatalogLine (pCatalogLineFits, catalogLineList );
