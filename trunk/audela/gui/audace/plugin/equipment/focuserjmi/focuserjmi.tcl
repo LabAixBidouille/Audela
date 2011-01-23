@@ -2,7 +2,7 @@
 # Fichier : focuserjmi.tcl
 # Description : Gere un focuser sur port parallele ou quickremote
 # Auteur : Michel PUJOL
-# Mise à jour $Id: focuserjmi.tcl,v 1.18 2010-10-10 19:53:55 michelpujol Exp $
+# Mise à jour $Id: focuserjmi.tcl,v 1.19 2011-01-23 18:27:06 michelpujol Exp $
 #
 
 #
@@ -470,4 +470,14 @@ proc ::focuserjmi::possedeControleEtendu { } {
       set result "0"
    }
 }
+
+#------------------------------------------------------------
+#  getPosition
+#     retourne la position courante du focuser
+#------------------------------------------------------------
+proc ::focuserjmi::getPosition { } {
+   return [tel$::audace(telNo) focus coord]
+}
+
+
 

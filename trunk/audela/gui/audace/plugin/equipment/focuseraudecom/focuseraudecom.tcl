@@ -2,7 +2,7 @@
 # Fichier : focuseraudecom.tcl
 # Description : Gere le focuser associe a la monture AudeCom
 # Auteur : Robert DELMAS
-# Mise à jour $Id: focuseraudecom.tcl,v 1.18 2010-10-10 19:53:55 michelpujol Exp $
+# Mise à jour $Id: focuseraudecom.tcl,v 1.19 2011-01-23 18:27:06 michelpujol Exp $
 #
 
 #
@@ -291,6 +291,15 @@ proc ::focuseraudecom::initPosition { } {
       ::confTel::run
    }
 }
+
+#------------------------------------------------------------
+#  getPosition
+#     retourne la position courante du focuser
+#------------------------------------------------------------
+proc ::focuseraudecom::getPosition { } {
+   return [tel$::audace(telNo) focus coord]
+}
+
 
 #------------------------------------------------------------
 #  ::focuseraudecom::incrementSpeed
