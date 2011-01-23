@@ -1,6 +1,6 @@
 #
 # Fichier : bddimages_config.cap
-# Mise a jour $Id: bddimages_config.cap,v 1.6 2011-01-21 18:37:49 fredvachier Exp $
+# Mise a jour $Id: bddimages_config.cap,v 1.7 2011-01-23 01:20:51 jberthier Exp $
 #
 
 #=========================================================================
@@ -22,7 +22,7 @@ set caption(bddimages_config,fermer)         "Fermer"
 set caption(bddimages_config,msg_erreur)     "Erreur"
 set caption(bddimages_config,msg_internet)   "Une connexion à Internet opérationnelle est nécessaire pour accéder à la base de données."
 
-set caption(bddimages_config,titleconfig)    "Liste des bases de données"
+set caption(bddimages_config,titleconfig)    "Choisir une base de données"
 set caption(bddimages_config,sauvexml)       "Enregistrer le fichier de config bddimages"
 
 set caption(bddimages_config,access)         "Accés à la base de données"
@@ -32,12 +32,12 @@ set caption(bddimages_config,pass)           " - Mot de passe"
 set caption(bddimages_config,serv)           " - Adresse IP du serveur Mysql"
 set caption(bddimages_config,dir)            "Répertoires de travail"
 set caption(bddimages_config,dirbase)        " - Répertoire de base"
-set caption(bddimages_config,dirinco)        " - Répertoire incoming par défaut"
+set caption(bddimages_config,dirinco)        " - Répertoire incoming"
 set caption(bddimages_config,dirfits)        " - Répertoire des fichiers FITS"
 set caption(bddimages_config,dircata)        " - Répertoire des catalogues"
 set caption(bddimages_config,direrr)         " - Répertoire des fichiers en erreur"
 set caption(bddimages_config,dirlog)         " - Répertoire des logs"
-set caption(bddimages_config,variables)      "Variables diverses"
+set caption(bddimages_config,variables)      "Autres paramètres"
 set caption(bddimages_config,listlimit)      " - Limite pour la liste d'insertion"
 
 set caption(bddimages_config,getdir)         "Choisir le répertoire"
@@ -71,7 +71,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bddimages_config,msg_erreur)     "Erreur"
    set caption(bddimages_config,msg_internet)   "Une connexion à Internet opérationnelle est nécessaire pour accéder à la base de données."
 
-   set caption(bddimages_config,titleconfig)    "Liste des bases de données"
+   set caption(bddimages_config,titleconfig)    "Choisir une base de données"
    set caption(bddimages_config,sauvexml)       "Enregistrer le fichier de config bddimages"
    
    set caption(bddimages_config,access)         "Accés à la base de données"
@@ -80,12 +80,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bddimages_config,serv)           " - Adresse IP du serveur Mysql"
    set caption(bddimages_config,dir)            "Répertoires de travail"
    set caption(bddimages_config,dirbase)        " - Répertoire de base"
-   set caption(bddimages_config,dirinco)        " - Répertoire incoming par défaut"
+   set caption(bddimages_config,dirinco)        " - Répertoire incoming"
    set caption(bddimages_config,dirfits)        " - Répertoire des fichiers FITS"
    set caption(bddimages_config,dircata)        " - Répertoire des catalogues"
    set caption(bddimages_config,direrr)         " - Répertoire des fichiers en erreur"
    set caption(bddimages_config,dirlog)         " - Répertoire des logs"
-   set caption(bddimages_config,variables)      "Variables diverses"
+   set caption(bddimages_config,variables)      "Autres paramètres"
    set caption(bddimages_config,listlimit)      " - Limite pour la liste d'insertion"
    
    set caption(bddimages_config,getdir)         "Choisir le répertoire"
