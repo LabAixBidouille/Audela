@@ -2,7 +2,7 @@
 # Fichier : visu.tcl
 # Description : otuil d'affichages des lignes de controles
 # Auteur : Michel PUJOL
-# Mise à jour $Id: visu.tcl,v 1.1 2011-01-16 19:05:10 michelpujol Exp $
+# Mise à jour $Id: visu.tcl,v 1.2 2011-01-23 18:23:20 michelpujol Exp $
 #
 
 ################################################################
@@ -326,12 +326,12 @@ proc ::eshel::visu::showTangenteDraw { visuNo tangenteList cameraAxisCoord refer
    set coordMin [::confVisu::picture2Canvas $visuNo [lrange $cameraAxisCoord  0 1 ]]
    set coordMax [::confVisu::picture2Canvas $visuNo [lrange $cameraAxisCoord  2 3 ]]
    set coordList [list [lindex $coordMin 0] [lindex $coordMin 1] [lindex $coordMax 0]  [lindex $coordMax 1]   ]
-   $hCanvas create line $coordList -fill orange -width 1 -offset center -tag tangente
+   $hCanvas create line $coordList -fill orange -width 1 -dash {2 4} -offset center -tag tangente
 
    set coordMin [::confVisu::picture2Canvas $visuNo [lrange $referenceAxisCoord  0 1 ]]
    set coordMax [::confVisu::picture2Canvas $visuNo [lrange $referenceAxisCoord  2 3 ]]
    set coordList [list [lindex $coordMin 0] [lindex $coordMin 1] [lindex $coordMax 0]  [lindex $coordMax 1]   ]
-   $hCanvas create line $coordList -fill orange -width 1 -dash {2 4} -offset center -tag tangente
+   $hCanvas create line $coordList -fill orange -width 1 -offset center -tag tangente
 
    return
 }
