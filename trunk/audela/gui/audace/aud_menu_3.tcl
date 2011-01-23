@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Images
-# Mise à jour $Id: aud_menu_3.tcl,v 1.80 2011-01-09 10:27:48 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_3.tcl,v 1.81 2011-01-23 18:06:18 robertdelmas Exp $
 #
 
 namespace eval ::conv2 {
@@ -80,6 +80,17 @@ namespace eval ::conv2 {
       set private(conv2,bwidth) "0"
       foreach formule $private(conv2,formules) {
          set private(conv2,bwidth) [ expr { max([ string length $formule ],$private(conv2,bwidth)) } ]
+      }
+
+      #--- definit le nom generique propose pour le fichier de sortie des RAW
+      set dir "[ file tail [ file rootname $private(conv2,rep) ] ]_"
+
+      #--- remplace les caracteres
+      regsub -all {[^\w_-]} $dir {} dir
+
+      set liste_generiques [ list $dir "rgb_" "plan_" "img3d_" ]
+      foreach op $private(conv2,operations) generique $liste_generiques {
+         set private(conv2,$op,generique) $generique
       }
 
       #--- classe et liste les fichiers convertibles par type de conversion
@@ -1953,10 +1964,13 @@ namespace eval ::traiteFilters {
    # Lance la boite de dialogue pour les traitements sur une image
    # this : Chemin de la fenetre
    #
-   proc run { sousMenu typeFiltre this } {
+   #proc run { sousMenu typeFiltre this } #
+   proc run { sousMenu typeFiltre } {
       variable This
       variable widget
       global caption traiteFilters
+
+      set this $::audace(base).traiteFilters
 
       #---
       ::traiteFilters::initConf
@@ -2701,6 +2715,32 @@ namespace eval ::traiteFilters {
       $This.usr.tfd_sortie2.1.explore configure -state normal
       $This.usr.tfd_sortie2.2.e configure -state normal
       $This.usr.tfd_sortie2.2.explore configure -state normal
+   }
+
+   #--------------------------------------------------------------------------
+   #  ::traiteFilters::JMFunctions {0|nom_de_fonction}
+   #  Cree le dictionnaire des fonctions de conversion
+   #  Retourne la liste des fonctions ou les parametres d'une fonction
+   #--------------------------------------------------------------------------
+
+   proc JMFunctions {function} {
+      variable JM
+      global caption
+
+      dict set JM "$caption(audace,menu,tfd)"            fun "tfd"
+      dict set JM "$caption(audace,menu,tfdi)"           fun "tfdi"
+      dict set JM "$caption(audace,menu,acorr)"          fun "acorr"
+      dict set JM "$caption(audace,menu,icorr)"          fun "icorr"
+      dict set JM "$caption(audace,menu,convolution)"    fun "convolution"
+
+      if {$function ne "0"} {
+         foreach key {fun} {
+            lappend result "[dict get $JM $function $key]"
+         }
+      } else {
+         set result "[dict keys $JM]"
+      }
+      return $result
    }
 
 }

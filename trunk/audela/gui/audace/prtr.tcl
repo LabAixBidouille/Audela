@@ -2,8 +2,7 @@
 # Fichier : prtr.tcl
 # Description : Script dedie au menu deroulant pretraitement
 # Auteur : Raymond ZACHANTKE
-# Mise à jour $Id: prtr.tcl,v 1.11 2011-01-16 23:24:31 robertdelmas Exp $
-#
+# Mise à jour $Id: prtr.tcl,v 1.12 2011-01-23 18:06:18 robertdelmas Exp $#
 
 namespace eval ::prtr {
 
@@ -37,11 +36,10 @@ namespace eval ::prtr {
          #--   surveille le changement de compression
          trace add variable "::conf(fichier,compres)" write "::prtr::changeExtension $visuNo"
 
-         #--   intialise et/ou charge les variables de configuration dans des variables locales
+         #--   intialise la variable si elle n'existe pas
          if {![info exists ::conf(prtr,geometry)]} {
-            set ::conf(prtr,geometry) "388x420+350+75"
+            set ::conf(prtr,geometry) "410x193+350+75"
          }
-         set private(prtr,geometry) $::conf(prtr,geometry)
          set private(this) "$audace(base).prtr"
          ::prtr::createDialog $visuNo
       }
@@ -68,9 +66,10 @@ namespace eval ::prtr {
 
       toplevel $This
       wm resizable $This 1 1
-      wm geometry $This $private(prtr,geometry)
-      wm minsize $private(this) 380 420
+      #--   pm la geometrie est fixee ::prtr::confToWidget
+      wm minsize $private(this) 410 420
       wm transient $This $audace(base)
+      wm geometry $private(this) $conf(prtr,geometry)
       wm protocol $This WM_DELETE_WINDOW "::prtr::cmdClose $visuNo"
 
       frame $This.usr -borderwidth 0 -relief raised
@@ -95,25 +94,13 @@ namespace eval ::prtr {
 
       scrollbar $this.hscroll -orient horizontal -command "$tbl xview"
       pack $this.hscroll -side left -anchor w
-      frame $this.nihil
+      frame $this.nihil -width 18
       pack $this.nihil -side right -anchor e
 
       #---  le check bouton pour selectionner tout
       checkbutton $this.all.select -variable ::prtr::all \
-         -text "$caption(prtr,select_all)" -command "::prtr::selectAll $tbl"
+         -text "$caption(prtr,select_all)" -command "::prtr::selectAll"
       pack $this.all.select -side left -padx 10 -pady 5
-
-      #---  frame pour le fichier de sortie
-      LabelEntry $this.sortie.out \
-         -label "$caption(prtr,image_sortie)" -labelanchor w \
-         -labelwidth [string length "$caption(prtr,image_sortie)"]\
-         -textvariable ::prtr::out -padx 10 -justify center
-      pack $this.sortie.out -side left -padx 5 -pady 5 -fill x -expand 1
-
-      button $this.sortie.explore -text "$caption(prtr,parcourir)" -width 1 \
-         -command "::prtr::getDirName"
-      pack $this.sortie.explore -side left -pady 5 -ipady 5 \
-         -padx [$This.usr.choix.vscroll cget -width] -pady 5 -ipady 5
 
       #---  le check bouton pour l'affichage
       checkbutton $this.affiche.disp -variable ::prtr::disp \
@@ -124,6 +111,18 @@ namespace eval ::prtr {
       checkbutton $this.affiche.script -variable ::prtr::script \
          -text "$caption(prtr,afficher_script)"
       pack $this.affiche.script -side left -padx 10 -pady 5
+
+      #---  frame pour le fichier de sortie
+      LabelEntry $this.sortie.out \
+         -label "$caption(prtr,image_sortie)" -labelanchor w \
+         -labelwidth [string length "$caption(prtr,image_sortie)"]\
+         -textvariable ::prtr::out -padx 10 -justify center
+      pack $this.sortie.out -side left -padx 5 -pady 5 -fill x -expand 1
+
+      button $this.sortie.explore -text "$caption(prtr,parcourir)" \
+         -width 1 -command "::prtr::getDirName"
+      pack $this.sortie.explore -side left -pady 5 -ipady 5 \
+         -padx [$This.usr.choix.vscroll cget -width] -pady 5 -ipady 5
 
       #---  frame pour l'affichage du deroulement du traitement
       label $this.info.labURL1 -textvariable ::prtr::avancement -fg $color(blue)
@@ -167,8 +166,8 @@ namespace eval ::prtr {
          -columns [list \
             4 "" center \
             0 $caption(prtr,src) left \
-            5 $caption(prtr,type) center \
-            10 $caption(prtr,dimension) center] \
+            0 $caption(prtr,type) center \
+            0 $caption(prtr,dimension) center] \
          -xscrollcommand [list $this.hscroll set] \
          -yscrollcommand [list $This.usr.choix.vscroll set] \
          -exportselection 0 -setfocus 1 \
@@ -265,12 +264,10 @@ namespace eval ::prtr {
    proc changeOp {visuNo args} {
       variable private
 
-      if {$::prtr::operation ni $private(fonctions)} {
-         #--   cherche le nouveau dictionnaire
-         ::prtr::searchFunction $::prtr::operation
-         #--   configure la fenetre
-         ::prtr::configWindow
-      }
+      #--   cherche le nouveau dictionnaire
+      ::prtr::searchFunction $::prtr::operation
+      #--   configure la fenetre
+      ::prtr::configWindow
 
       #--   detruit les zones, les widgets et les variables
       destroy $private(table).lbl
@@ -388,7 +385,7 @@ namespace eval ::prtr {
             }
             "labelentry"   {
                set valuewidth [expr {[string length [set ::prtr::$child]]+4}]
-               if {$valuewidth < "6"} {set valuewidth 6}
+               if {$valuewidth < "6"} {set valuewidth 7}
                LabelEntry $w.$child -label "$child" -labelanchor e\
                   -labelwidth $labelwidth -textvariable ::prtr::$child \
                   -padx $d -width $valuewidth -justify center
@@ -398,7 +395,7 @@ namespace eval ::prtr {
                   incr col
                   button $w.explore_$child -text "$::caption(prtr,parcourir)" -width 1 \
                      -command "::prtr::getFileName $w $child"
-                  grid $w.explore_$child -row $row -column $col -padx $d -pady 5 -sticky w
+                  grid $w.explore_$child -row $row -column $col -padx $d -pady 5
                }
             }
             "radiobutton" {
@@ -410,9 +407,9 @@ namespace eval ::prtr {
                   foreach radio {somme moyenne mediane} function {ADD MEAN MED} {
                      radiobutton $w.methode.$radio -text "$::caption(audace,menu,$radio)" \
                         -indicatoron 1 -variable ::prtr::methode -value $function
-                     pack $w.methode.$radio -side left
+                     pack $w.methode.$radio -side left -expand 1
                   }
-                  grid $w.methode -row $row -column $col -columnspan 2 -padx $d -pady 5 -sticky e
+                  grid $w.methode -row $row -column $col -columnspan 2 -padx $d -pady 5 -sticky ew
                }
                incr col "1"
             }
@@ -444,7 +441,8 @@ namespace eval ::prtr {
             set col "1"
          }
       }
-      grid columnconfigure $w 1 -minsize 120
+      grid columnconfigure $w 1 -minsize 120 -weight 1
+      grid columnconfigure $w 2 -weight 1
       grid columnconfigure $w 3 -minsize [$private(this).usr.choix.vscroll cget -width]
       incr lignes
       return $lignes
@@ -455,25 +453,32 @@ namespace eval ::prtr {
    #  Selectionne/deselectionne tous les checkbuttons de la tablelist
    #  Commande du checkbutton "Sélectionner tout"
    #--------------------------------------------------------------------------
-   proc selectAll {tbl} {
+   proc selectAll { } {
       variable private
 
-      #--   arrete si fonction d'extraction ou aucune selection
+      #--   arrete si fonction d'extraction sur une image unique ou aucune selection
       if {$::prtr::operation in [list $::caption(audace,menu,ligne) $::caption(audace,menu,colonne) \
             $::caption(audace,menu,matrice)] || $private(profil) eq ""} {
          return
       }
 
-      set cmd "deselect"
-      if {$::prtr::all == 1} {set cmd "select"}
-
-      #--   selectionne/deselectionne l'image de profil identique a celui de la premiere image
-      foreach file $private(listFiles) {
-         if {[ string match $private(profil) [lrange [$tbl get $file] 2 end]]} {
-           [$tbl windowpath $file,0] $cmd
+      set tbl $private(tbl)
+      set size [$tbl size]
+      if {$::prtr::all == 0} {
+         set cmd deselect
+      } else {
+         set cmd select
+      }
+      for {set row 0} {$row <= $size} {incr row} {
+         #--   cherche le contenu
+         set content "[lrange [$tbl get $row] 2 end]"
+         #--   compare le contenu au profil
+         if {[ string match $content  $private(profil)]} {
+            #--   selectionne l'image de profil identique a celui de la premiere image
+            [$tbl windowpath $row,0] $cmd
          }
       }
-      ::prtr::selectFiles $tbl $file
+      ::prtr::selectFiles 0
    }
 
    #--------------------------------------------------------------------------
@@ -491,45 +496,21 @@ namespace eval ::prtr {
          #--   il y a toujours au moins une ligne
          set private(tt_lignes) "1"
       }
-      ::prtr::changeGeometry
+      ::prtr::confToWidget
    }
 
    #--------------------------------------------------------------------------
-   #    ::prtr::changeGeometry
-   #  Adapte la geometrie de la fenetre
-   #--------------------------------------------------------------------------
-    proc changeGeometry { } {
-      variable private
-
-      if {![info exists private(oldTableHeight)]} {set private(oldTableHeight) 220}
-      set variableHeight [expr {($private(fun_lignes)+$private(tt_lignes))*34}]
-      #--   fixe la hauteur de la table
-      set newTableHeight [expr {204+$variableHeight}]
-      ::blt::table configure $private(table) -reqheight $newTableHeight
-      #--   ote les + et x
-      regsub -all {[x\+]} [wm geometry $private(this)] " " data
-
-      #--   calcule la hauteur totale de la fenetre
-      set totalHeight [expr {[lindex $data 1]-$private(oldTableHeight)+$newTableHeight}]
-      if {$totalHeight < "420"} {set totalHeight "420"}
-      #--   memorise le reglage
-      set private(oldTableHeight) "$newTableHeight"
-      #--   actualise la geometrie
-      set private(prtr,geometry) "[lindex $data 0]x$totalHeight+[lindex $data 2]+[lindex $data 3]"
-      wm geometry $private(this) $private(prtr,geometry)
-      update
-   }
-
-   #--------------------------------------------------------------------------
-   #  ::prtr::selectFiles table row
+   #  ::prtr::selectFiles row
    #  Rafraichit la liste des fichiers selectionnes
    #  Lancee lors de la construction de la fenetre et
    #  par la selection d'une image dans la table
    #--------------------------------------------------------------------------
-   proc selectFiles { tbl row } {
+   proc selectFiles { row } {
       variable bd
       variable private
       global caption
+
+      set tbl $private(tbl)
 
       #--   arrete si le repertoire est vide
       if {[$tbl cellcget 0,1 -text] eq "$caption(prtr,no_file)" } {return}
@@ -817,7 +798,7 @@ namespace eval ::prtr {
 
    #--------------------------------------------------------------------------
    #  ::prtr::getFileName nom_de_variable
-   #  Ouvre un explorateur pour choisir un fichier de sortie ou une image operande
+   #  Ouvre un explorateur pour choisir une image operande
    #  Produit ::prtr::nom_de_variable
    #--------------------------------------------------------------------------
    proc getFileName { w var } {
@@ -833,9 +814,9 @@ namespace eval ::prtr {
       lassign [::prtr::getInfoFile $file] dir nom_court ext
 
       #--   verifie que l'extension est identique a celle des fichiers traites
-      #if {$ext ne "$::prtr::ext"} {
-      #   return [avertiUser err_file_ext "$::prtr:ext"]
-      #}
+      if {$ext ne "$::prtr::ext"} {
+         return [::prtr::avertiUser err_file_ext "$::prtr:ext"]
+      }
 
       #--   affiche la valeur moyenne du flat dans la constante
       if {$var eq "flat"} {
@@ -873,6 +854,7 @@ namespace eval ::prtr {
 
       set dirname [tk_chooseDirectory -title "$::caption(prtr,outfolder)" \
          -initialdir $::audace(rep_images)]
+
       if {$dirname eq "" || $dirname eq "$::audace(rep_images)"} {
          set dirname "./"
       }
@@ -943,33 +925,27 @@ namespace eval ::prtr {
 
       #--   selectionne la fonction a activer
       switch -exact $private(function) {
-         "BIAS"            {  set private(error) [faireOffset $data $opt]}
-         "CENTER"          {  set private(error) [cmdAligner $data $opt]}
-         "CLIP"            {  set private(error) [clipMinMax $data $opt]}
+         "BIAS"            {  set private(error) [::prtr::faireOffset $data $opt]}
+         "CENTER"          {  set private(error) [::prtr::cmdAligner $data $opt]}
+         "CLIP"            {  set private(error) [::prtr::clipMinMax $data $opt]}
          "DARK"            {  lappend data $prtr::methode
-                              set private(error) [faireDark $data $opt]}
-         "FLAT"            {  set private(error) [faireFlat $data $opt]}
-         "FLOU"            {  set data [linsert $data 0 "IMA/SERIES"]
-                              lappend data "$private(function)"
-                              set private(error) [cmdMasqueFlou $data $opt]
-                           }
+                              set private(error) [::prtr::faireDark $data $opt]}
+         "FLAT"            {  set private(error) [::prtr::faireFlat $data $opt]}
+         "FLOU"            {  set private(error) [::prtr::cmdMasqueFlou $data $opt]}
          "PRETRAITEMENT"   {  if {$::prtr::opt_black eq "1"} {
-                                 set private(error) [faireOptNoir $data $opt]
+                                 set private(error) [::prtr::faireOptNoir $data $opt]
                               } else {
-                                 set private(error) [fairePretraitement $data $opt]
+                                 set private(error) [::prtr::fairePretraitement $data $opt]
                               }
                            }
-         "ROT+90"          {  set data [linsert $data 0 "IMA/SERIES"]
-                              lappend data "$private(function)"
-                              set private(error) [cmdRot $data $opt]
+         "ROT+90"          {  lappend data "$private(function)"
+                              set private(error) [::prtr::cmdRot $data $opt]
                            }
-         "ROT-90"          {  set data [linsert $data 0 "IMA/SERIES"]
-                              lappend data "$private(function)"
-                              set private(error) [cmdRot $data $opt]
+         "ROT-90"          {  lappend data "$private(function)"
+                              set private(error) [::prtr::cmdRot $data $opt]
                            }
-         "ROT180"          {  set data [linsert $data 0 "IMA/SERIES"]
-                              lappend data "$private(function)"
-                              set private(error) [cmdRot $data $opt]
+         "ROT180"          {  lappend data "$private(function)"
+                              set private(error) [::prtr::cmdRot $data $opt]
                            }
          default           {  switch $private(ima) PILE {set appl "IMA/STACK"} default {set appl "IMA/SERIES"}
                               set data [linsert $data 0 $appl]
@@ -982,10 +958,11 @@ namespace eval ::prtr {
       if {$private(error) eq "0"} {
 
          set ext "$::conf(extension,defaut)"
-         if {$dir eq "."} {set dir $::audace(rep_images)}
+         if {$dir eq "." || $dir eq "./"} {set dir $::audace(rep_images)}
 
          #--   image de reference en plus dans ce cas
          if {$private(function) eq "CENTER"} {incr nbImg}
+
          #--   ces fonctions ne produisent qu'une image
          if {$private(ima) in [list MAITRE PILE] || $nbImg eq "1"} { set nbImg "1"}
 
@@ -997,11 +974,8 @@ namespace eval ::prtr {
          }
 
          #--   compresse les images
-         if {$::conf(fichier,compres) eq 1 && $nbImg eq "1"} {
-             ::prtr::compressFiles "$dir" "$generique" 1 "$ext"
-             append lastImage ".gz"
-         } elseif {$::conf(fichier,compres) eq 1 && $nbImg ne "1"} {
-             ::prtr::compressFiles "$dir" "$generique" $nbImg "$ext"
+         if {$::conf(fichier,compres) eq "1"} {
+             ::prtr::compressFiles "$dir" "$generique" $nbImg
              append lastImage ".gz"
          }
 
@@ -1115,14 +1089,16 @@ namespace eval ::prtr {
    #  ::prtr::compressFiles
    #  Compresse le ou les fichiers de sortie
    #--------------------------------------------------------------------------
-   proc compressFiles {dirOut nameOut l ext_out} {
+   proc compressFiles { dirOut nameOut nb } {
 
+      set ext "$::conf(extension,defaut)"
       set fileToCompres ""
-      if {$l eq "1"} {
-         lappend fileToCompress [file join $dirOut $nameOut$ext_out]
+
+      if {$nb eq "1"} {
+         lappend fileToCompress [file join $dirOut $nameOut$ext]
       } else {
-         for {set i 1} {$i <=$l} {incr i} {
-            lappend fileToCompress "[file join $dirOut $nameOut$i$ext_out]"
+         for {set i 1} {$i <=$nb} {incr i} {
+            lappend fileToCompress "[file join $dirOut $nameOut$i$ext]"
          }
       }
       #--   compresse tous les fichiers
@@ -1165,7 +1141,7 @@ namespace eval ::prtr {
    proc cmdOk {tbl visuNo} {
 
       if {[::prtr::cmdApply $tbl $visuNo] eq "1"} {return}
-      cmdClose $visuNo
+      ::prtr::cmdClose $visuNo
    }
 
    #--------------------------------------------------------------------------
@@ -1183,12 +1159,71 @@ namespace eval ::prtr {
       trace remove variable "::confVisu::private($visuNo,lastFileName)" write "::prtr::changeDir $visuNo"
       trace remove variable "::conf(extension,defaut)" write "::prtr::changeExtension $visuNo"
       trace remove variable "::conf(fichier,compres)" write "::prtr::changeExtension $visuNo"
-      #--   recupere et sauve la position de la fenetre
-      set conf(prtr,geometry) [wm geometry $private(this)]
+      ::prtr::widgetToConf
       destroy $private(this)
       array unset bd
       array unset private
       array unset ::prtr
+   }
+
+   #--------------------------------------------------------------------------
+   #  ::prtr::widgetToConf
+   #  Calcul et sauvegarde de la geometrie avec la hauteur fixe
+   #--------------------------------------------------------------------------
+   proc widgetToConf { } {
+      variable private
+      global conf
+
+      #--   cherche la hauteur totale de la fenetre
+      regexp {.x([0-9]+)\+.} [wm geometry $private(this)] match widgetHeight
+      #--   cherche la largeur de la fenetre
+      if {$widgetHeight ne ""} {
+         #--   cherche la hauteur totale de la table
+         regexp {[0-9]+} [::blt::table configure $private(table) -reqheight] tableHeight
+         #--   cherche la hauteur sans la table
+         set fixeHeight [expr {$widgetHeight-$tableHeight}]
+         #--   sauve la position de la fenetre avec la hauteur fixe
+         regsub {x([0-9]+)\+} [wm geometry $private(this)] "x$fixeHeight+" conf(prtr,geometry)
+      } else {
+         #--   configuration par defaut
+         set ::conf(prtr,geometry) "410x193+350+75"
+      }
+   }
+
+   #--------------------------------------------------------------------------
+   #  ::prtr::confToWidget
+   #  Adapte la geometrie de la fenetre
+   #--------------------------------------------------------------------------
+    proc confToWidget { } {
+      variable private
+
+      #--   fixe la hauteur de la table
+      set TableHeight [expr {($private(fun_lignes)+$private(tt_lignes))*34+204}]
+      ::blt::table configure $private(table) -reqheight $TableHeight
+
+      #--   cherche la hauteur fixe de la fenetre
+      regexp {.x([0-9]+)\+.} $::conf(prtr,geometry) match fixeHeight
+      #--   calcule la hauteur totale de la fenetre
+      set totalHeight [expr {$fixeHeight+$TableHeight}]
+
+      #--   remplace la hauteur fixe par la hauteur totale
+      regsub {x([0-9]+)\+} $::conf(prtr,geometry) "x$totalHeight+" private(prtr,geometry)
+
+      #--   si la position existe (pas au demarrage)
+      regsub {\+} [wm geometry $private(this)] " " data
+      set position [lindex $data 1]
+      if {$position ne "0+0"} {
+         #--   met a jour la position
+         regsub {\+([0-9]+\+[0-9]+)} $private(prtr,geometry) "+$position" private(prtr,geometry)
+      }
+
+      #--   recherche la largeur
+      regexp {^([0-9]+)} [wm geometry $private(this)] match widgetWidth
+      regsub {^([0-9]+)} $private(prtr,geometry) $widgetWidth private(prtr,geometry)
+
+      #--   actualise la geometrie de la fenetre
+      wm geometry $private(this) $private(prtr,geometry)
+      update
    }
 
    #--------------------------------------------------------------------------
@@ -1253,7 +1288,7 @@ namespace eval ::prtr {
 
       checkbutton $w -height 1 -indicatoron 1 -onvalue 1 -offvalue 0 \
          -variable ::prtr::private(file_$row) \
-         -command [list ::prtr::selectFiles $tbl $row]
+         -command [list ::prtr::selectFiles $row]
    }
 
    #--   chaque fonction est accompagnee de quatre variables (eventuellement vides) :
@@ -1328,7 +1363,9 @@ namespace eval ::prtr {
    #--------------------------------------------------------------------------
    proc PILEFunctions {function} {
       variable STACK
-      global caption help
+      global caption help conf
+
+      if {![info exists conf(prtr,sk,kappa)]} {set conf(prtr,sk,kappa) "0.8"}
 
       dict set STACK "$caption(audace,menu,somme)"                fun ADD
       dict set STACK "$caption(audace,menu,somme)"                hlp "$help(dir,prog) ttus1-fr.htm stackADD"
@@ -1356,8 +1393,8 @@ namespace eval ::prtr {
       dict set STACK "$caption(audace,menu,ecart_type)"           opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set STACK "$caption(audace,menu,moyenne_k)"            fun SK
       dict set STACK "$caption(audace,menu,moyenne_k)"            hlp "$help(dir,prog) ttus1-fr.htm SK"
-      dict set STACK "$caption(audace,menu,moyenne_k)"            par ""
-      dict set STACK "$caption(audace,menu,moyenne_k)"            opt "kappa 3. bitpix 16 skylevel 0 nullpixel 0"
+      dict set STACK "$caption(audace,menu,moyenne_k)"            par "kappa $conf(prtr,sk,kappa)"
+      dict set STACK "$caption(audace,menu,moyenne_k)"            opt "bitpix 16 skylevel 0 nullpixel 0"
       dict set STACK "$caption(audace,menu,moyenne_tri)"          fun SORT
       dict set STACK "$caption(audace,menu,moyenne_tri)"          hlp "$help(dir,prog) ttus1-fr.htm SORT"
       dict set STACK "$caption(audace,menu,moyenne_tri)"          par ""
@@ -1498,11 +1535,11 @@ namespace eval ::prtr {
       variable SERIES
       global caption help conf
 
-       if {![info exists conf(clip_mini)] && ![info exists conf(prtr,clip,clip_mini)]}  {
+      if {![info exists conf(clip_mini)] && ![info exists conf(prtr,clip,clip_mini)]}  {
          set conf(prtr,clip,clip_mini) "0"
       } elseif {[info exists conf(clip_mini)]} {
          set conf(prtr,clip,clip_mini) $conf(clip_mini)
-        unset conf(clip_mini)
+         unset conf(clip_mini)
       }
       if {![info exists conf(clip_maxi)] && ![info exists conf(prtr,clip,clip_maxi)]}  {
          set conf(prtr,clip,clip_maxi) "32767"
@@ -1574,9 +1611,9 @@ namespace eval ::prtr {
       if {![info exists conf(coef_mult)] && ![info exists conf(prtr,flou,constant)]} {
          set conf(prtr,flou,constant) "5.0"
       } elseif {[info exists conf(coef_mult)]} {
-         set conf(prtr,flou,constant) $conf(coef_mult)
+        set conf(prtr,flou,constant) $conf(coef_mult)
          unset conf(coef_mult)
-     }
+      }
 
       #--   FLOU fonction artificielle inexistante dans IMA/SERIES
       dict set SERIES "$caption(audace,menu,masque_flou)"         fun FLOU
@@ -1854,41 +1891,41 @@ namespace eval ::prtr {
 
       #--   nb d'images est inferieur au seuil ?
       if {![info exists private(todo)] || [llength $private(todo)] < $nb_images} {
-         return [avertiUser err_file_nb $nb_images]
+         return [::prtr::avertiUser err_file_nb $nb_images]
       }
 
       #--   nom de sortie defini ?
       if {$private(function) ni [list "PROFILE direction=x" "PROFILE direction=y" "MATRIX"]} {
 
          if {$prtr::out eq "" || $prtr::out eq "\"\""} {
-            return [avertiUser sortie_generique]
+            return [::prtr::avertiUser sortie_generique]
          }
 
          #--   separe les elements
-         set info [getInfoFile $::prtr::out]
+         set info [::prtr::getInfoFile $::prtr::out]
          set dir "[lindex $info 0]"
          set ::prtr::generique "[lindex $info 1]"
          set extension "[lindex $info 2]"
 
          if {![file exists $dir]} {
-            return [avertiUser err_file_dir $dir]
+            return [::prtr::avertiUser err_file_dir $dir]
          } else {
             set ::prtr::dir_out $dir
          }
 
          #--   verifie l'extension si l'utilisateur en a donnee une
          if {$extension ne "" && $extension ne "$::prtr::ext"} {
-            return [avertiUser err_file_ext "$prtr::out" "$::prtr::ext"]
+            return [::prtr::avertiUser err_file_ext "$prtr::out" "$::prtr::ext"]
          }
 
          #--   nom_court correct ?
          regexp -all {[\w_-]+} $::prtr::generique match
          if {![ info exists match] || $match ne $::prtr::generique} {
-            return [avertiUser err_file_generique]
+            return [::prtr::avertiUser err_file_generique]
          }
 
       } else {
-         set ::prtr::dir_out "."
+         set ::prtr::dir_out "./"
          set ::prtr::out ""
          #--      definit le nom de sortie comme le premier de la liste
          set ::prtr::generique "[lindex $private(todo) 0]"
@@ -1946,7 +1983,7 @@ namespace eval ::prtr {
       #--   teste si une valeur existe
       if {$value eq ""} {
          if {$parametre ni {bias dark flat}} {
-            return [avertiUser err_par_def $parametre ]
+            return [::prtr::avertiUser err_par_def $parametre ]
          } else {
             return ""
          }
@@ -1956,7 +1993,7 @@ namespace eval ::prtr {
          #--   teste un parametre booleen
          if {$value == "1"}  {
                if {$parametre eq "opt_black" && ($::prtr::bias eq "" || $::prtr::dark eq "")} {
-                  return [avertiUser err_opt_noir $parametre]
+                  return [::prtr::avertiUser err_opt_noir $parametre]
                } else {
                   return "$parametre"
                }
@@ -1964,7 +2001,7 @@ namespace eval ::prtr {
       } elseif {$test in {double integer}} {
          #--   teste la nature de la variable
          if {![string is $test -strict $value]} {
-            return [avertiUser err_par_type $parametre $test]
+            return [::prtr::avertiUser err_par_type $parametre $test]
          }
          if {$seuil eq ""} {
             #--   si pas controle dimensionnel
@@ -1981,7 +2018,7 @@ namespace eval ::prtr {
                set mini "1"
             }
             if {$value < $mini || $value > $seuil}  {
-               return [avertiUser err_par_bornes $parametre]
+               return [::prtr::avertiUser err_par_bornes $parametre]
             } else {
                return "$parametre=$value"
             }
@@ -1999,12 +2036,12 @@ namespace eval ::prtr {
 
          #--   verifie l'extension
          if {$extension ne "$::conf(extension,defaut)" && $extension ne "$::conf(extension,defaut).gz"} {
-            return [avertiUser err_file_ext $parametre $::conf(extension,defaut)]
+            return [::prtr::avertiUser err_file_ext $parametre $::conf(extension,defaut)]
          }
          #--   verifie son orthographe
          regexp -all {[\w_-]+} $nom_court match
          if {![info exists match] || $nom_court ne "$match"} {
-            return [avertiUser err_par_name $parametre]
+            return [::prtr::avertiUser err_par_name $parametre]
          }
 
          set row [lsearch [$private(tbl) getcolumns 1] $nom_court]
@@ -2016,23 +2053,23 @@ namespace eval ::prtr {
                   return "\"$parametre=$value\""
                } else {
                   #--   cas ou l'image deja ete selectionnee
-                  return [avertiUser err_file_select $value]
+                  return [::prtr::avertiUser err_file_select $value]
                }
             } else {
                #--   cas du fichier de type different
-               return [avertiUser err_file_type $parametre]
+               return [::prtr::avertiUser err_file_type $parametre]
             }
          } else {
            #--   l'image vient d'un autre repertoire
             #--   verifie si elle existe
             if {![file exists $value]} {
-               return [avertiUser err_no_file $value]
+               return [::prtr::avertiUser err_no_file $value]
             }
 
             #--   verifie les dimensions des images
             lassign [::prtr::analyseFitsHeader $value] naxis naxis3 naxis1 naxis2
             if {[lindex $private(profil) 1] ne "${naxis1} X ${naxis2}"} {
-              return [avertiUser err_file_dim $value]
+              return [::prtr::avertiUser err_file_dim $value]
             }
 
             if {$naxis eq "2"} {
@@ -2044,17 +2081,17 @@ namespace eval ::prtr {
             switch $private(function) {
                OPT      {  #--   verifie que l'image est de meme nature que l'image d'entree
                            if {$type ne "[lindex $private(profil) 0]"} {
-                              return [avertiUser err_file_type $parametre]
+                              return [::prtr::avertiUser err_file_type $parametre]
                            }
                         }
                MAITRE   {  #--   verifie que l'image n'est pas une image RGB
                            if {$naxis eq "3" && $naxis3 eq "3"} {
-                              return [avertiUser err_par_file $parametre]
+                              return [::prtr::avertiUser err_par_file $parametre]
                            }
                         }
                CENTER   {  #--   verifie que l'image n'est pas une image RGB
                            if {$naxis eq "3" && $naxis3 eq "3"} {
-                              return [avertiUser err_par_file $parametre]
+                              return [::prtr::avertiUser err_par_file $parametre]
                            }
                         }
             }
@@ -2064,18 +2101,18 @@ namespace eval ::prtr {
       } elseif {$test eq "liste"} {
          #--   il doit y avoir exactement 6 parametres
          if {[llength $value] ne 6 } {
-            return [avertiUser err_par_def $parametre]
+            return [::prtr::avertiUser err_par_def $parametre]
          }
          #--   tous les parametres doivent etre numeriques
          ::blt::vector create temp -watchunset 1
          if {[catch {temp append $value}]} {
             ::blt::vector destroy temp
-            return [avertiUser err_par_def $parametre]
+            return [::prtr::avertiUser err_par_def $parametre]
          }
          #--   teste les valeurs
          if {[expr {$temp(1)*$temp(3)-$temp(0)*$temp(4)}] == "0"} {
             ::blt::vector destroy temp
-            return [avertiUser err_list_val $parametre]
+            return [::prtr::avertiUser err_list_val $parametre]
          }
          ::blt::vector destroy temp
          return "\"paramresample=$value\""
@@ -2089,6 +2126,7 @@ namespace eval ::prtr {
    proc getInfoFile {file} {
 
       set dir [file dirname $file]
+      if {$dir eq "."} {append dir /}
       set nom_avec_extensions "[file tail $file]"
       #--   extrait l'extension
       set extensions ""
@@ -2104,10 +2142,11 @@ namespace eval ::prtr {
    #  Procedure lancee par le bouton Appliquer
    #--------------------------------------------------------------------------
    proc cmdExec { data options } {
+      global conf
 
       set dir  $::audace(rep_images)
       cd $dir
-      foreach {select imgList dirOut nameOut extension function} $data {break}
+      foreach {select imgList dirOut nameOut extIn function} $data {break}
 
       #--   fonctions necessitant une indexation de parametres en .fit ou .txt
       set filtre_file [list ADD SUB DIV PROD OPT]
@@ -2119,11 +2158,14 @@ namespace eval ::prtr {
       if {$function eq "BACK"} {
          foreach var {back_kernel back_threshold} {
             set result [lsearch -regexp -inline $options "${var}"]
-            regsub "${var}=" $result "" ::conf($var)
+            regsub "${var}=" $result "" conf(prtr,back,$var)
          }
       } elseif {$function eq "RESAMPLE"} {
          set result [lsearch -regexp -inline $options "paramresample"]
-         regsub "paramresample=" $result "" ::conf(paramresample)
+         regsub "paramresample=" $result "" conf(prtr,resample,paramresample)
+      } elseif {$function eq "SK"} {
+         set result [lsearch -regexp -inline $options "kappa"]
+         regsub "kappa=" $result "" conf(prtr,sk,kappa)
       }
 
       #--   identifie le type d'images
@@ -2131,13 +2173,13 @@ namespace eval ::prtr {
 
       #--   si compression
       if {$::conf(fichier,compres) eq "0"} {
-         set ext $extension
+         set ext $extIn
       } else {
          set to_compress ""
-         regsub ".gz" $extension "" ext
+         regsub ".gz" $extIn "" ext
          #--   decompresse les fichiers .gz
          foreach img $imgList {
-            gunzip $img$extension
+            gunzip $img$extIn
             #--   prepare la liste des compressions
             lappend to_compress [file join $dir $img$ext]
          }
@@ -2147,7 +2189,7 @@ namespace eval ::prtr {
       #--   constitue la liste des nom en entree et en sortie
       if {$type eq "C"} {
          foreach file $imgList {
-            decompRGB $file
+            ::prtr::decompRGB $file
             #--   liste les fichiers a traiter
             foreach k {r g b} {
                lappend list_$k ${file}$k
@@ -2346,8 +2388,8 @@ namespace eval ::prtr {
       set bitpix [::prtr::convertBitPix2BitPix $bitpix]
 
       #--   sauvegarde les reglages utilisateurs
-      set ::conf(clip_mini) $mini
-      set ::conf(clip_maxi) $maxi
+      set ::conf(prtr,clip,clip_mini) $mini
+      set ::conf(prtr,clip,clip_maxi) $maxi
 
       set catchError [catch {
 
@@ -2356,14 +2398,20 @@ namespace eval ::prtr {
          if {$bitpix ne ""} {buf$buf_clip bitpix $bitpix}
          set l [llength $imgList]
 
+         buf$buf_clip load  [file join $dirOut [lindex $imgList 0]$extOut]
          #--   identifie le type d'images
-         set type [::prtr::getImgType $imgList]
+         foreach kwd {NAXIS NAXIS3} {
+            set [string tolower $kwd] [lindex [buf$buf_clip getkwd $kwd] 1]
+         }
+
+         set type M
+         if {$naxis eq "3" && $naxis eq "3"} {set type C}
 
          foreach in $imgList {
             set index [lsearch $imgList $imgList]
             #--   decompose l'image RGB
             if {$type eq "C"} {
-               decompRGB $in
+               ::prtr::decompRGB $in
                foreach color {r g b} {
                   buf$buf_clip load [file join $dirOut $imgList$color$extOut]
                   buf$buf_clip clipmin $mini
@@ -2404,22 +2452,20 @@ namespace eval ::prtr {
    #--------------------------------------------------------------------------
    proc cmdRot { data options } {
 
-      set dir  $::audace(rep_images)
+      set dir $::audace(rep_images)
       cd $dir
-      foreach {select imgList dirOut nameOut extension function} $data {break}
+      foreach {imgList dirOut nameOut extIn function} $data {break}
       set nb_img [llength $imgList]
-      #--   identifie le type d'images
-      set type [getImgType $imgList]
 
       #--   si compression
       if {$::conf(fichier,compres) eq "0"} {
-         set ext $extension
+         set ext $extIn
       } else {
          set to_compress ""
-         regsub ".gz" $extension "" ext
+         regsub ".gz" $extIn "" ext
          #--   decompresse les fichiers .gz
          foreach img $imgList {
-            gunzip $img$extension
+            gunzip $img$extIn
             #--   prepare la liste des compressions
             lappend to_compress [file join $dir $img$ext]
          }
@@ -2427,9 +2473,19 @@ namespace eval ::prtr {
 
       #--   examine chaque fichier et
       #--   constitue la liste des nom en entree et en sortie
+      #--   identifie le type d'images
+      set b [::buf::create]
+      buf$b load [lindex $imgList 0]$extIn
+      foreach kwd {NAXIS NAXIS3} {
+         set [string tolower $kwd] [lindex [buf$b getkwd $kwd] 1]
+      }
+      ::buf::delete $b
+
+      set type M
+      if {$naxis eq "3" && $naxis eq "3"} {set type C}
       if {$type eq "C"} {
          foreach file $imgList {
-            decompRGB $file
+            ::prtr::decompRGB $file
             #--   liste les fichiers a traiter
             foreach k {r g b} {
                lappend list_$k ${file}$k
@@ -2467,14 +2523,14 @@ namespace eval ::prtr {
             if {$type eq "C"} {set color [string index [lindex $file_type 0] end]}
 
             switch -exact $function {
-               "ROT+90" {  set script1 "$select . \"$file_type\" * * $ext . temp $indiceOut $ext INVERT xy $options"
-                           set script2 "$select . temp $indiceOut $indFinal $ext \"$rep\" $file_out $indiceOut $ext INVERT flip $options"
+               "ROT+90" {  set script1 "IMA/SERIES . \"$file_type\" * * $ext . temp $indiceOut $ext INVERT xy $options"
+                           set script2 "IMA/SERIES . temp $indiceOut $indFinal $ext \"$rep\" $file_out $indiceOut $ext INVERT flip $options"
                         }
-               "ROT180" {  set script1 "$select . \"$file_type\" * * $ext . temp $indiceOut $ext INVERT mirror $options"
-                           set script2 "$select . temp $indiceOut $indFinal $ext \"$rep\" $file_out $indiceOut $ext INVERT flip $options"
+               "ROT180" {  set script1 "IMA/SERIES . \"$file_type\" * * $ext . temp $indiceOut $ext INVERT mirror $options"
+                           set script2 "IMA/SERIES . temp $indiceOut $indFinal $ext \"$rep\" $file_out $indiceOut $ext INVERT flip $options"
                         }
-               "ROT-90" {  set script1 "$select . \"$file_type\" * * $ext . temp $indiceOut $ext INVERT flip $options"
-                           set script2 "$select . temp $indiceOut $indFinal $ext \"$rep\" $file_out $indiceOut $ext INVERT xy $options"
+               "ROT-90" {  set script1 "IMA/SERIES . \"$file_type\" * * $ext . temp $indiceOut $ext INVERT flip $options"
+                           set script2 "IMA/SERIES . temp $indiceOut $indFinal $ext \"$rep\" $file_out $indiceOut $ext INVERT xy $options"
                         }
             }
 
@@ -2508,7 +2564,7 @@ namespace eval ::prtr {
             }
          }
 
-         #--   recompresse les fichiers d'entree et les fichiers de sortie
+         #--   recompresse les fichiers d'entree
          if {$::conf(fichier,compres) eq "1"} {
             foreach file $to_compress {gzip $file}
             set ext "$ext.gz"
@@ -2520,7 +2576,7 @@ namespace eval ::prtr {
          }
 
       }  ErrInfo]
-      if {$catchError eq "1"} {::prtr::Error "$ErrInfo"}
+     if {$catchError eq "1"} {::prtr::Error "$ErrInfo"}
       return $catchError
    }
 
@@ -2529,13 +2585,21 @@ namespace eval ::prtr {
    #  Procedure lancee par le bouton Appliquer
    #--------------------------------------------------------------------------
    proc cmdMasqueFlou { data options } {
+      global conf
 
       set dir  $::audace(rep_images)
       cd $dir
-      foreach {select imgList dirOut nameOut extOut function} $data {break}
+      foreach {imgList dirOut nameOut extOut} $data {break}
       set nb_img [llength $imgList]
-      #--   identifie le type d'images
-      set type [getImgType $imgList]
+
+      set b [::buf::create]
+      buf$b load [lindex $imgList 0]
+      foreach kwd {NAXIS NAXIS3} {
+         set [string tolower $kwd] [lindex [buf$b getkwd $kwd] 1]
+      }
+      set type M
+      if {$naxis eq "3" && $naxis eq "3"} {set type C}
+      ::buf::delete $b
 
       #--   si compression
       if {$::conf(fichier,compres) eq "0"} {
@@ -2555,7 +2619,7 @@ namespace eval ::prtr {
       #--   constitue la liste des nom en entree et en sortie
       if {$type eq "C"} {
          foreach file $imgList {
-            decompRGB $file
+            ::prtr::decompRGB $file
             #--   liste les fichiers a traiter
             foreach k {r g b} {
                lappend list_$k ${file}$k
@@ -2595,8 +2659,8 @@ namespace eval ::prtr {
       lassign [::prtr::extractData $options constant] options constant
 
       #--   sauvegarde les reglages utilisateurs
-      set ::conf(coef_etal) $sigma
-      set ::conf(coef_mult) $constant
+      set conf(prtr,flou,sigma) $sigma
+      set conf(prtr,flou,constant) $constant
 
       #--   il ne reste dans options que les options TT classiques (bitpix, skylevel, nullpixel)
 
@@ -2605,10 +2669,10 @@ namespace eval ::prtr {
          foreach file_type $list_in file_out $list_out {
 
             if {$type eq "C"} {set color [string index [lindex $file_type 0] end]}
-            set script1 "$select . \"$file_type\" * * $ext . $file_out $indiceOut $ext CONV kernel_type=gaussian sigma=$sigma $options"
-            set script2 "$select . \"$file_type\" * * $ext . $file_out $indiceOut $ext SUB \"file=./$file_out\" $options"
-            set script3 "$select . \"$file_out\" $indiceOut $indFinal $ext . $file_out $indiceOut $ext MULT constant=$constant $options"
-            set script4 "$select . \"$file_type\" * * $ext . $file_out $indiceOut $ext ADD \"file=./$file_out\" $options"
+            set script1 "IMA/SERIES . \"$file_type\" * * $ext . $file_out $indiceOut $ext CONV kernel_type=gaussian sigma=$sigma $options"
+            set script2 "IMA/SERIES . \"$file_type\" * * $ext . $file_out $indiceOut $ext SUB \"file=./$file_out\" $options"
+            set script3 "IMA/SERIES . \"$file_out\" $indiceOut $indFinal $ext . $file_out $indiceOut $ext MULT constant=$constant $options"
+            set script4 "IMA/SERIES . \"$file_type\" * * $ext . $file_out $indiceOut $ext ADD \"file=./$file_out\" $options"
 
             ::prtr::editScript $script1
             ttscript2 $script1
@@ -2636,7 +2700,7 @@ namespace eval ::prtr {
             }
          }
 
-         #--   recompresse les fichiers d'entree et les fichiers de sortie
+         #--   recompresse les fichiers d'entree
          if {$::conf(fichier,compres) eq "1"} {
             foreach file $to_compress {gzip $file}
             set ext "$ext.gz"
@@ -2649,6 +2713,7 @@ namespace eval ::prtr {
 
       }  ErrInfo]
       if {$catchError eq "1"} {::prtr::Error "$ErrInfo"}
+
       return $catchError
    }
 
@@ -2699,7 +2764,7 @@ namespace eval ::prtr {
             ttscript2 "$script"
 
             #--   met a jour la liste des images a traiter
-            set imgList [buildNewList temp $l]
+            set imgList [::prtr::buildNewList temp $l]
 
             #--   change l'extension des fichiers entrants
             set extIn $::conf(extension,defaut)
@@ -2741,15 +2806,15 @@ namespace eval ::prtr {
 
       #--   cree l'image Offset+Dark si l'offset et/ou le dark existe
       if {$dark ne "" || $bias ne ""} {
-         if {[createOffset+Dark $dark $bias] ne "0"} {return 1}
+         if {[::prtr::createOffset+Dark $dark $bias] ne "0"} {return 1}
 
          set file Offset+Dark$extOut
 
          if {[file exists $file]} {
-            if {[subsOffset+Dark $data $file] ne "0"} {return 1}
+            if {[::prtr::subsOffset+Dark $data $file] ne "0"} {return 1}
 
             #--   met a jour la liste des images a traiter
-            set imgList [buildNewList temp $l]
+            set imgList [::prtr::buildNewList temp $l]
 
             #--   extrait la valeur de normalisation de l'offset
             lassign [::prtr::extractData $options "normoffset_value"] options opt
@@ -2816,7 +2881,7 @@ namespace eval ::prtr {
          if {$flat ne ""} {
 
             #--   met a jour la liste des images a traiter
-            set imgList [buildNewList $nameOut $l]
+            set imgList [::prtr::buildNewList $nameOut $l]
 
             #--   divise les images par le flat
             set script "IMA/SERIES \"$dirOut\" \"$imgList\" $indexIn $indexIn $extOut \"$dirOut\" $nameOut $extOut $extOut DIV \"file=$flat\" $options"
@@ -2853,15 +2918,15 @@ namespace eval ::prtr {
       if {$dark eq ""} {::prtr::informeUser "pretraitee" "faire_dark"}
       if {$flat eq ""} {::prtr::informeUser "pretraitee" "faire_flat_field"}
 
-      if {$dark ne "" || $bias ne ""} {
-         if {[createOffset+Dark $dark $bias] ne "0"} {return 1}
+     if {$dark ne "" || $bias ne ""} {
+         if {[::prtr::createOffset+Dark $dark $bias] ne "0"} {return 1}
          set file Offset+Dark$extOut
          if {[file exists $file]} {
 
-            if {[subsOffset+Dark $data $file] ne "0"} {return 1}
+            if {[::prtr::subsOffset+Dark $data $file] ne "0"} {return 1}
 
             #--   met a jour la liste des images a traiter
-            set imgList [buildNewList temp $l]
+            set imgList [::prtr::buildNewList temp $l]
             set extIn $extOut
          }
       }
@@ -3002,12 +3067,10 @@ namespace eval ::prtr {
 
    #--------------------------------------------------------------------------
    #  ::prtr::cmdAligner
-   #  Renvoie une nouvelle liste d'images a traiter
-   #  Parametres : nouveau nom, nb d'images
+   #  Aligne une ou plusieurs images sur une image de reference et les fenetre
    #--------------------------------------------------------------------------
    proc cmdAligner { data options } {
 
-      #--   cree un buffer provisoire
       cd $::audace(rep_images)
       set extOut $::conf(extension,defaut)
       lassign $data imgList dirOut nameOut extIn
@@ -3037,21 +3100,28 @@ namespace eval ::prtr {
          regsub ".gz" $extIn "" ext
          #--   decompresse les fichiers .gz
          foreach img $imgList {
-            gunzip $img$$extIn
+            gunzip $img$extIn
             #--   prepare la liste des compressions
             lappend toCompress [file join $dir $img$ext]
          }
       }
 
       #--   identifie le type d'images
-      set type [getImgType $imgList]
+      buf$b load $imgRef reference$extOut
+      foreach kwd {NAXIS NAXIS1 NAXIS2 NAXIS3} {
+         set [string tolower $kwd] [lindex [buf$b getkwd $kwd] 1]
+      }
+
+      set type M
+      if {$naxis eq "3" && $naxis eq "3"} {set type C}
+      set box [list 1 1 $naxis1 $naxis2]
 
       if {$type ne "C"} {
          set ref "reference$extOut"
       } else {
          #--   decompose toutes les images en plans couleurs
          foreach file "$imgList reference" {
-            decompRGB $file
+            ::prtr::decompRGB $file
             set toDestroy [concat $toDestroy ${file}r ${file}g ${file}b]
          }
          #--   indique le plan vert de l'image de reference
@@ -3077,9 +3147,6 @@ namespace eval ::prtr {
 
          #--   charge l'image d'intercorrelation
          buf$b load $dest
-         set naxis1 [lindex [buf$b getkwd NAXIS1] 1]
-         set naxis2 [lindex [buf$b getkwd NAXIS2] 1]
-         set box [list 1 1 $naxis1 $naxis2]
 
          #--cherche les coordonnees du maximum
          set result [::prtr::searchMax $box $b]
@@ -3105,6 +3172,7 @@ namespace eval ::prtr {
             }
 
             #--   translate chaque image ou les 3 plans couleurs
+            #--   ca marche aussi si dx=0 et/ou dy=0
             set catchError [catch {
                set script "IMA/SERIES . \"$todo\" $indiceDeb $indiceFin $extIn . temp$img $indiceOut $extOut TRANS trans_x=$dx trans_y=$dy $options"
                ::prtr::editScript $script
@@ -3167,6 +3235,7 @@ namespace eval ::prtr {
          set toResize [concat referencer referenceg referenceb $toResize]
       }
 
+      #--   ca marche aussi si x1=1, y1=1, x2=naxis1 ou y2=naxis2
       set script "IMA/SERIES \"$dirOut\" \"$toResize\" * * $extOut \"$dirOut\" temp 1 $extOut WINDOW x1=$x1 x2=$x2 y1=$y1 y2=$y2 $options"
       ::prtr::editScript $script
       set catchError [catch {ttscript2 $script} ErrInfo]
@@ -3226,7 +3295,8 @@ namespace eval ::prtr {
          buf$d imaseries "PROFILE direction=y offset=1 \"filename=sortcol.txt\" "
       }  ErrInfo]
 
-      ::buf::delete $c $d
+      ::buf::delete $c
+      ::buf::delete $d
 
       if {$catchError eq "1"} {
          ::prtr::Error "$ErrInfo"
