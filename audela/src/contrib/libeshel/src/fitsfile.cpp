@@ -86,6 +86,14 @@ CCfits::FITS * Fits_createFits(char *fileName, std::valarray<double> &profile, d
    try {        
       // j'efface le fichier s'il existait deja
       remove(fileName);
+   }
+   catch (CCfits::FitsException e) {
+      char message[1024];
+      sprintf(message,"createFits remove %s : %s", fileName, e.message().c_str());
+      throw std::exception(message);
+   }
+
+   try {  
       // create a new FITS object 
       long naxis = (long) profile.size();
       pOutFits = new CCfits::FITS(fileName, DOUBLE_IMG, 1, &naxis );
@@ -118,7 +126,7 @@ CCfits::FITS * Fits_createFits(char *fileName, std::valarray<double> &profile, d
    catch (CCfits::FitsException e) {
       Fits_closeFits(pOutFits);
       char message[1024];
-      sprintf(message,"createFits %s : %s", fileName, e.message().c_str());
+      sprintf(message,"createFits %s naxis1=%d: %s ", fileName, profile.size(), e.message().c_str());
       throw std::exception(message);
    }
 }
@@ -174,10 +182,18 @@ CCfits::FITS * Fits_createFits(char *fileName, std::valarray<PIC_TYPE> &imageVal
       // prepare naxis array
       long naxis[2];
       naxis[0] = (long) width;
-      naxis[1] = (long) height;
+      //naxis[1] = (long) height;
+      naxis[1] = (long) imageValue.size() / width;
+      if ( width * height != imageValue.size() ) {
+         char message[1024];
+         sprintf(message,"Fits_createFits %s : size=%dx%d != %d", fileName, width, height, imageValue.size());
+         throw std::exception(message);
+      }
       // create a new FITS object 
-      pOutFits = new CCfits::FITS(fileName, LONG_IMG, 2, naxis ); 
-      // copy data to valarray
+      string stringFileName;
+      stringFileName.assign(fileName);
+      pOutFits = new CCfits::FITS(stringFileName, LONG_IMG, 2, naxis ); 
+      pOutFits->flush();
       // copy image to Primary HDU
       PHDU& imageHDU = pOutFits->pHDU();
       long firstElement = 1;
@@ -187,7 +203,7 @@ CCfits::FITS * Fits_createFits(char *fileName, std::valarray<PIC_TYPE> &imageVal
    catch (CCfits::FitsException e) {
       Fits_closeFits(pOutFits);
       char message[1024];
-      sprintf(message,"createFits %s : %s size=%dx%d", fileName, width, height, e.message().c_str());
+      sprintf(message,"Fits_createFits %s : size=%dx%d  %s ", fileName, width, height, e.message().c_str());
       throw std::exception(message);
    }
 }
