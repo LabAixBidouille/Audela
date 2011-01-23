@@ -2,7 +2,7 @@
 # Fichier : focusert193.tcl
 # Description : Gere le focuser associe a la monture T193
 # Auteur : Robert DELMAS
-# Mise à jour $Id: focusert193.tcl,v 1.2 2010-10-10 19:53:55 michelpujol Exp $
+# Mise à jour $Id: focusert193.tcl,v 1.3 2011-01-23 18:28:42 michelpujol Exp $
 #
 
 #
@@ -120,7 +120,7 @@ proc ::focusert193::fillConfigPage { frm } {
 #  return nothing
 #------------------------------------------------------------
 proc ::focusert193::configurePlugin { } {
-   #--- copie les variables des widgets dans le tableau conf()
+
 }
 
 #------------------------------------------------------------
@@ -134,6 +134,7 @@ proc ::focusert193::createPlugin { } {
 
    if { [ info exists audace(focus,speed) ] == "0" } {
       set audace(focus,speed) "0"
+      set audace(focus,labelspeed) "0"
    }
 }
 
@@ -187,7 +188,6 @@ proc ::focusert193::move { command } {
            tel$audace(telNo) focus move + $audace(focus,speed)
          } elseif { $command == "stop" } {
            tel$audace(telNo) focus stop
-           ::focusert193::displayCurrentPosition
          }
       }
    } else {
@@ -202,42 +202,21 @@ proc ::focusert193::move { command } {
 #     envoie le focus a la position audace(focus,targetFocus)
 #     et met la nouvelle valeur de la position dans la variable audace(focus,currentFocus)
 #------------------------------------------------------------
-proc ::focusert193::goto { } {
-   global audace
+proc ::focusert193::goto { blocking } {
 
    #--- Lance le GOTO du focuser
    #--- Format de la commande : tel1 focus goto number ?-rate value? ?-blocking boolean?
-   tel$audace(telNo) focus goto $audace(focus,targetFocus) -blocking 0
-   #--- Boucle tant que la foc n'est pas arretee
-   ::focusert193::displayCurrentPosition
-}
-
-#------------------------------------------------------------
-#  ::focusert193::displayCurrentPosition
-#     affiche la position courante du focaliseur a moteur pas a pas audace(focus,currentFocus)
-#------------------------------------------------------------
-proc ::focusert193::displayCurrentPosition { } {
-   global audace
-
-   #--- Boucle tant que la foc n'est pas arretee
-   set foc0 [ tel$audace(telNo) focus coord ]
-   after 500
-   set foc1 [ tel$audace(telNo) focus coord ]
-   while { $foc0 != "$foc1" } {
-      set foc0 $foc1
-      after 500
-      set foc1 [ tel$audace(telNo) focus coord ]
-   }
-   set currentPosition $foc1
-   split $currentPosition "\n"
-   set audace(focus,currentFocus) [ string trimleft [ lindex $currentPosition 0 ] 0 ]
-   if { $audace(focus,currentFocus) == "" } {
-      set audace(focus,currentFocus) "0"
+   #--- La variable ::audace(focus,currentFocus) est mise a jour automatiquement
+   #--- pendant l'excution de tel1 focus goto
+   if { [ ::tel::list ] != "" } {
+      tel$::audace(telNo) focus goto $::audace(focus,targetFocus) -blocking $blocking
+   } else {
+      ::confTel::run
    }
 }
 
 #------------------------------------------------------------
-#  ::focusert193::possedeControleEtendu
+#  possedeControleEtendu
 #     retourne 1 si la monture possede un controle etendu du focus (T193)
 #     retourne 0 sinon
 #------------------------------------------------------------
@@ -250,4 +229,26 @@ proc ::focusert193::possedeControleEtendu { } {
       set result "0"
    }
 }
+
+#------------------------------------------------------------
+#  setSpeed
+#     change la vitesse du focus
+#------------------------------------------------------------
+proc ::focusert193::setSpeed { { value "0" } } {
+   # non supportee donc rien a faire
+}
+
+#------------------------------------------------------------
+#  getPosition
+#     retourne la position courante du focuser
+#------------------------------------------------------------
+proc ::focusert193::getPosition { } {
+   if { [ ::tel::list ] != "" } {
+      return [tel$::audace(telNo) focus coord]
+   } else {
+      ::confTel::run
+   }
+}
+
+
 
