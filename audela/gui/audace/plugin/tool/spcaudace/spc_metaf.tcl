@@ -2,7 +2,7 @@
 # A130 : source $audace(rep_scripts)/spcaudace/spc_metaf.tcl
 # A140 : source [ file join $audace(rep_plugin) tool spcaudace spc_metaf.tcl ]
 
-# Mise a jour $Id: spc_metaf.tcl,v 1.23 2010-12-29 11:48:38 bmauclaire Exp $
+# Mise a jour $Id: spc_metaf.tcl,v 1.24 2011-01-23 09:41:33 bmauclaire Exp $
 
 
 
@@ -1478,6 +1478,8 @@ proc spc_traite2srinstrum { args } {
           } elseif { [ file exists "$audace(rep_images)/${prefixe_lampe}2$conf(extension,defaut)" ]==1 } {
              ::console::affiche_resultat "\n\n******* Appariement horizontal de $nbimg images *******\n\n"
              set fhreg [ spc_registerh "$lampe" "$fgeom" ]
+          } else {
+             set fhreg "$fgeom"
           }
        } else {
           set fhreg "$fgeom"
