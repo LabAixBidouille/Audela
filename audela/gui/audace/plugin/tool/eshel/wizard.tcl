@@ -2,7 +2,7 @@
 # Fichier : wizard.tcl
 # Description : assistant pour le reglage des parametres de traitement
 # Auteur : Michel PUJOL
-# Mise à jour $Id: wizard.tcl,v 1.1 2011-01-16 19:05:10 michelpujol Exp $
+# Mise à jour $Id: wizard.tcl,v 1.2 2011-01-23 18:22:16 michelpujol Exp $
 #
 
 ################################################################
@@ -54,8 +54,8 @@ proc ::eshel::wizard::run { tkbase visuNo } {
    set caption(eshel,wizard,selectRefLine,title)               "Identification de la raie de référence"
    set caption(eshel,wizard,selectRefLine,action)               "Vérifier que la position de la raie de référence a été trouvée.\nSi elle n'est pas trouvée, ajuster la FWHM moyenne en s'aidant des mesures des raies avec le menu Analyse>Fwhm, ou bien refaire une image avec un temps de pose plus long."
 
-   set caption(eshel,wizard,selectJoinMargin,title)            "Identification de la raie de référence"
-   set caption(eshel,wizard,selectJoinMargin,action)           "Le recouvrement des ordres est représenté par les lignes parallèles aux ordres (le recouvrement par l'odre supérieur apparaît à droite, le recouvrement par l'ordre inférieur apparaît à gauche).\n\nRégler la largeur des marges d'aboutement délimitées par les lignes jaunes en pointillé de façon à ne pas trop utiliser l'extrémité des ordres de faible intensité."
+   set caption(eshel,wizard,selectJoinMargin,title)            "Réglage des marges de recouvrement"
+   set caption(eshel,wizard,selectJoinMargin,action)           "Le recouvrement des ordres est représenté par les lignes parallèles aux ordres (le recouvrement par l'ordre supérieur apparaît à droite, le recouvrement par l'ordre inférieur apparaît à gauche).\n\nRégler la largeur des marges d'aboutement délimitées par les lignes jaunes en pointillé de façon à ne pas trop utiliser l'extrémité des ordres de faible intensité."
    set caption(eshel,wizard,selectJoinMargin,width)            "Largeur des marges d'aboutement (Angtrom)"
 
    set caption(eshel,wizard,showLine)                          "Options d'affichage"
