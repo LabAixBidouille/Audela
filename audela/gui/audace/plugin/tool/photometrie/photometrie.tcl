@@ -5,7 +5,7 @@
 #
 # @brief Outil pour l'analyse photométrique d'une image.
 #
-# $Id: photometrie.tcl,v 1.7 2011-01-21 18:11:44 jacquesmichelet Exp $
+# $Id: photometrie.tcl,v 1.8 2011-01-23 12:57:16 jacquesmichelet Exp $
 #
 
 namespace eval ::Photometrie {
@@ -26,10 +26,9 @@ namespace eval ::Photometrie {
         set photometrie(defaut,diametre,exterieur2) 8.0
         set photometrie(defaut,carre,modelisation) 3.0
 
+        if { [ PresenceImage ] < 0 } { return }
         AnalyseEnvironnement
-
-        if { [ AnalyseImage ] < 0 } { return }
-
+        AnalyseImage
         ChoixManuelAutomatique
 
         set erreur 0
@@ -58,8 +57,16 @@ namespace eval ::Photometrie {
             } else {
                 # On a un aladin.jar qui requiert java
                 if { [ file exists $::conf(exec_java) ] && [ file executable $::conf(exec_java) ] } {
-                    set photometrie(internet) 1
-                    set photometrie(mode_aladin) jar
+                    # On teste la version de aladin.jar
+                    set retour_version [ exec $::conf(exec_java) -jar $::conf(exec_aladin) -version ]
+                    set version_aladin [ string range [ lindex $retour_version 2 ] 1 end ]
+                    if { $version_aladin > 7.0 } {
+                        set photometrie(internet) 1
+                        set photometrie(mode_aladin) jar
+                    } else {
+                        ::console::affiche_erreur "$photometrie_texte(err_version_aladin) \n"
+                        set photometrie(internet) 0
+                    }
                 } else {
                     ::console::affiche_erreur "$photometrie_texte(err_java) \n"
                     set photometrie(internet) 0
@@ -72,10 +79,10 @@ namespace eval ::Photometrie {
     }
 
     ##
-    # @brief Recherche de mots-clés typiques d'une image recalée astrométriquement
+    # @brief Détecte la présence d'une image valide
     # @param[out] photometrie(astrometrie) = 1 si l'image contient tous les mot-clés, 0 sinon
-    # @return
-    proc AnalyseImage {} {
+    # @return -1 si l'image est absente ou non pertinente
+    proc PresenceImage {} {
         variable photometrie_texte
         variable photometrie
 
@@ -90,6 +97,15 @@ namespace eval ::Photometrie {
             tk_messageBox -message "$photometrie_texte(err_spectro)" -title "$photometrie_texte(titre_menu)" -icon error
             return -1
         }
+        return 0
+    }
+
+    ##
+    # @brief Recherche de mots-clés typiques d'une image recalée astrométriquement
+    # @param[out] photometrie(astrometrie) = 1 si l'image contient tous les mot-clés, 0 sinon
+    proc AnalyseImage {} {
+        variable photometrie_texte
+        variable photometrie
 
         set photometrie(astrometrie) 1
         set liste_cle [ buf$::audace(bufNo) getkwds ]
@@ -128,8 +144,6 @@ namespace eval ::Photometrie {
             ::console::affiche_erreur "$photometrie_texte(err_champ_trop_large) : $champarcmin ' \n"
             set photometrie(internet) 0
         }
-
-        return 0
     }
 
 
@@ -592,6 +606,8 @@ namespace eval ::Photometrie {
         close $f
         # Toutes les données sont dans data(), plus besoin du fichier catalogue
         file delete $photometrie(catalogue)
+        # Là, on est sur que Aladin s'est bien terminé, puisqu'on a pu lire le catalogue
+        file delete $photometrie(script_aladin)
 
         return 0
     }
@@ -663,17 +679,17 @@ namespace eval ::Photometrie {
     }
 
     ##
-    # @brief Execution de Aladin en mode non bloquant
+    # @brief Exécution de Aladin en mode non bloquant
     # @param nom du fichier script Aladin à exécuter.
     # @return -1 en cas d'échec, 0 sinon
-    proc ExecutionAladin { script_aladin } {
+    proc ExecutionAladin { script_aladin temps_attente_max } {
         variable canal
         variable attente
         variable photometrie
 
         set attente rien
         if { $photometrie(mode_aladin) == "jar" } {
-            set commande "\"$::conf(exec_java)\" -Xmx1024m -jar \"$::conf(exec_aladin)\" -script \"$script_aladin\" 2>@1"
+            set commande "\"$::conf(exec_java)\" -jar \"$::conf(exec_aladin)\" -script \"$script_aladin\" 2>@1"
         } else {
             # mode aladin.exe
             set commande "\"$::conf(exec_aladin)\" -script \"$script_aladin\" 2>@1"
@@ -681,7 +697,7 @@ namespace eval ::Photometrie {
         set canal [ open "| $commande" r ]
         fconfigure $canal -blocking 0 -encoding binary
         fileevent $canal readable { ::Photometrie::AttenteAladin $::Photometrie::canal ouvert }
-        set troptard [ after 15000 { ::Photometrie::AttenteAladin $::Photometrie::canal ferme } ]
+        set troptard [ after $temps_attente_max { ::Photometrie::AttenteAladin $::Photometrie::canal ferme } ]
 
         vwait ::Photometrie::attente
         after cancel $troptard
@@ -756,6 +772,11 @@ namespace eval ::Photometrie {
         set f [ open "$script_aladin" w ]
         puts -nonewline $f $texte
         close $f
+        set photometrie(script_aladin) $script_aladin
+
+        # Calcul du temps d'attente max
+        # Empirisme : 2s pour minute d'arc
+        set temps_attente_max [ expr $champarcmin * 2000 ]
 
         # Fenêtre informative pour faire patienter
         set tl [ toplevel $::audace(base).photometrie_exec_aladin \
@@ -764,16 +785,16 @@ namespace eval ::Photometrie {
         wm title $tl $photometrie_texte(titre_menu)
         wm protocol $tl WM_DELETE_WINDOW ::Photometrie::Suppression
         wm transient $tl .audace
-        label $tl.l -text $photometrie_texte(attente_aladin)
-        pack $tl.l
+        label $tl.l1 -text "$photometrie_texte(temps_attente_aladin) [ expr $temps_attente_max / 1000 ] s"
+        label $tl.l2 -text $photometrie_texte(patience)
+        pack $tl.l1 $tl.l2
         ::confColor::applyColor $tl
         update
 
         # Exécution de Aladin
-        set erreur_aladin [ ExecutionAladin $script_aladin ]
+        set erreur_aladin [ ExecutionAladin $script_aladin $temps_attente_max ]
 
         destroy $tl
-        file delete $script_aladin
 
         if { $erreur_aladin != 0 } {
             tk_messageBox -message "$photometrie_texte(err_exec_aladin)" -title "$photometrie_texte(titre_menu)" -icon error
@@ -874,6 +895,7 @@ namespace eval ::Photometrie {
             -class Toplevel \
             -borderwidth 2 \
             -relief groove ]
+        wm title $tl $photometrie_texte(titre_menu)
         wm resizable $tl 0 0
         wm protocol $tl WM_DELETE_WINDOW ::Photometrie::Suppression
         wm transient $tl .audace
@@ -985,7 +1007,11 @@ namespace eval ::Photometrie {
         set liste_rouge_triee [ lsort -real  [ array names index_rouge ] ]
         set liste_bleue_triee [ lsort -real  [ array names index_bleu ] ]
 
-        set tl [ toplevel $::audace(base).photometrie_selection_internet -class Toplevel -borderwidth 2 -relief groove ]
+        set tl [ toplevel $::audace(base).photometrie_selection_internet \
+            -class Toplevel \
+            -borderwidth 2 \
+            -relief groove ]
+        wm title $tl $photometrie_texte(titre_menu)
         wm resizable $tl 0 0
         wm protocol $tl WM_DELETE_WINDOW ::Photometrie::Suppression
         wm transient $tl .audace
