@@ -1,17 +1,15 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
   <title>Aligner une s&#233;rie d'images</title>
 </head>
 <body>
-<p class="date">Date de mise &#224; jour : 16 janvier 2011</p>
+<p class="date">Date de mise &#224; jour : 23 janvier 2011</p>
 <h1><a name="MANUEL" id="MANUEL">Aligner une s&#233;rie
 d'images</a></h1>
 <h2>1. Aligner manuellement</h2>
-<pre>
-
-</pre>
+<pre></pre>
 <h2><a name="AUTO" id="AUTO">2. Aligner automatiquement</a></h2>
 <h3>2.1 Principe</h3>
 <p>Cette fonction ex&#233;cute automatiquement les &#233;tapes
@@ -47,5 +45,26 @@ suivi d'un index d&#233;butant &#224; 1.</p>
 <p>Apr&#232;s v&#233;rification de la qualit&#233; de
 l'alignement, il suffit de les additionner, de faire la moyenne,
 etc. avec l'une des commandes Images/Combiner.</p>
+<br>
+<h3>2.4 Ex&#233;cution en ligne de commande</h3>
+<p>Cette fonction est ex&#233;cutable en ligne de commande dans
+la Console. Le r&#233;pertoire images doit &#234;tre celui
+contenant la ou les images &#224; traiter. Le nom de la fonction
+<b>::prtr::cmdAligner</b> doit &#234;tre suivi de deux listes de
+param&#232;tres.</p>
+<p>La premi&#232;re liste contient :</p>
+<ul>
+  <li>Le nom g&#233;n&#233;rique (ou la liste des noms) des images
+d'entr&#233;e.</li>
+  <li>Le chemin d'acc&#232;s aux fichiers des images de sortie (mettre
+un point si c'est le r&#233;pertoire images).</li>
+  <li>Le nom g&#233;n&#233;rique des images de sortie.</li>
+  <li>L'extension du ou des fichiers.</li>
+</ul>
+La seconde liste contient le nom de l'image de r&#233;f&#233;rence
+(chemin complet si l'image est situ&#233;e dans un autre
+r&#233;pertoire que les images &#224; traiter).
+<pre>::prtr::cmdAligner {"trans1 trans2 trans3 trans4" . recadre .fit} {"image_ref=C:/Documents and Settings/1/Mes documents/audela/images/m45_champ.fit"}<br></pre>
+Elle renvoie 0 s'il n'y a pas d'erreur, sinon 1 en cas d'erreur.<br>
 </body>
 </html>
