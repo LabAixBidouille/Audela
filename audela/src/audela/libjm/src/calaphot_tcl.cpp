@@ -3,7 +3,7 @@
  * @brief : interface TCL pour les routines de photométrie et de modélisation
  * @author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
- * Mise à jour $Id: calaphot_tcl.cpp,v 1.6 2011-01-02 16:56:30 jacquesmichelet Exp $
+ * Mise à jour $Id: calaphot_tcl.cpp,v 1.7 2011-01-23 16:36:18 jacquesmichelet Exp $
  *
  * <pre>
  * This program is free software; you can redistribute it and/or modify
@@ -168,7 +168,7 @@ int Calaphot::CmdMagnitude(ClientData clientData, Tcl_Interp *interp, int argc, 
 /***************************************************************/
 int Calaphot::CmdAjustementGaussien (ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
-    char s[256];
+    char s[1024];
     int carre[4], tampon;
     double fgauss[10], stat[10], chi2, erreur;
     int n_carre, iterations, n_fgauss, n_stat;
