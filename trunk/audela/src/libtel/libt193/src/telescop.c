@@ -19,7 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-// @version  $Id: telescop.c,v 1.30 2010-07-11 12:32:57 michelpujol Exp $
+// @version  $Id: telescop.c,v 1.31 2011-01-23 18:07:51 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -238,6 +238,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    tel->radec_motor = 0; 
    tel->radecIsMoving = 0;
    tel->focus_goto_blocking = 0;
+   tel->focusCurrentPosition = 0;
 
    // je lis les parametres optionels
    for (i=3;i<argc-1;i++) {
@@ -1334,14 +1335,26 @@ int tel_focus_coord(struct telprop *tel,char *position)
 {
    int result;
    if (tel->telescopeCommandSocket != NULL) {
-      char command[NOTIFICATION_MAX_SIZE];
-      char response[NOTIFICATION_MAX_SIZE];
-      sprintf(command,"!FOC COORD 2 @\n" );
-      result = socket_writeTelescopeCommandSocket(tel,command,response);
-      if ( result == 0 ) {
-         int returnCode;
-         int readValue = sscanf(response,"!FOC COORD %d %s @", &returnCode, position);
-         result = mytel_checkControlInterfaceResponse(tel, "tel_focus_coord", command, response, returnCode, 2, readValue);
+      if ( tel->focusIsMoving == 0 ) {
+         char command[NOTIFICATION_MAX_SIZE];
+         char response[NOTIFICATION_MAX_SIZE];
+         sprintf(command,"!FOC COORD 2 @\n" );
+         result = socket_writeTelescopeCommandSocket(tel,command,response);
+         if ( result == 0 ) {
+            int returnCode;
+            int etatM2;
+            int readValue = sscanf(response,"!FOC COORD %d %d %s @", &returnCode, &etatM2, position);
+            result = mytel_checkControlInterfaceResponse(tel, "tel_focus_coord", command, response, returnCode, 3, readValue);
+            if ( result == 0 ) {
+                // je memorise la position
+               tel->focusCurrentPosition = (float) atof(position);
+               sprintf(position,"%0.2f",tel->focusCurrentPosition);
+            }
+         }
+      } else {
+         // Pour eviter d'envoyer une commande pendant un mouvement en cours
+         // je retourne la position recuperee dans la derniere notification (voir mytel_processNotification )
+         sprintf(position,"%0.2f", tel->focusCurrentPosition );
       }
    } else {
       // je retourne une reponse par defaut 
@@ -1390,7 +1403,7 @@ int tel_focus_goto(struct telprop *tel)
                   int foundEvent = 1;
                   tel->focusIsMoving = 1;
                   // j'attend la fin du mouvement (tel->moving est mis a jour par mytel_processNotification ) 
-                  while (tel->focusIsMoving && foundEvent) {
+                  while (tel->focusIsMoving /*&& foundEvent*/ ) {
                      foundEvent = Tcl_DoOneEvent(TCL_ALL_EVENTS);
                      Tcl_Sleep(1);
                   }
@@ -2202,13 +2215,15 @@ void mytel_processNotification(struct telprop *tel, char * notification) {
                if ( returnCode == 0) {
                   char ligne[1024];
                   
-                  // je memorise le mouvement
+                  // je memorise le mouvement et la position
                   tel->focusIsMoving = moveCode;
+                  tel->focusCurrentPosition = position;
+
                   // je notifie les nouvelles coordonnes au thread principal                
                   if ( strcmp(tel->telThreadId,"") == 0 ) {
-                     sprintf(ligne,"set ::audace(telescope,currentFocus) %s", position); 
+                     sprintf(ligne,"set ::audace(focus,currentFocus) %s", position); 
                   } else {
-                     sprintf(ligne,"::thread::send -async %s { set ::audace(telescope,currentFocus) %6.2f ; update }" , tel->mainThreadId, position); 
+                     sprintf(ligne,"::thread::send -async %s { set ::audace(focus,currentFocus) %6.2f ; update }" , tel->mainThreadId, position); 
                   }
                   Tcl_Eval(tel->interp,ligne);
                }
@@ -2357,7 +2372,7 @@ void mytel_logConsole(struct telprop *tel, char *messageFormat, ...) {
  *   retoune le libellé d'un message d'erreur de l'interface de controle
  * @param tel  
  * @param messageFormat chaine de formatage du message suivi d'un nombre variable de parametres
- * @return  void
+ * @return  0=OK, 1=nombre de parametres incorrect, sinon retourne le code d'erreur extrait de la reponse de l'interface
  */
 int mytel_checkControlInterfaceResponse(struct telprop *tel, char *fonction, char *command, char *response, int returnCode, int requiredValue, int readValue) {
    int result;
