@@ -93,7 +93,7 @@ test imaseries_add {additionner rz_rgbr_8 et rz_rgbr_15 avec rz_rgbr_30} -constr
 } -cleanup $CLEANUP -result "3"
 
 #--   IMA/SERIES SUB
-test imaseries_sub {soustraire rz_rgbr_30 de rz_rgbr_8 et de rz_rgbr_15}  -constraints {AUDACE} -setup $SETUP2 -body {
+test imaseries_sub {soustraire rz_rgbr_30 de rz_rgbr_8 et de rz_rgbr_15} -constraints {AUDACE} -setup $SETUP2 -body {
    #--   clic sur le menu "Images/Modifier/Soustraire une image..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,arithm)" "$::caption(audace,menu,soust)..."
    #-- selectionne les deux images a traiter
@@ -398,7 +398,8 @@ test imaseries_normoffset {normaliser le fond du ciel de rz_rgbr_8} -constraints
    #--   procedure de controle
    mesure set [lrange [buf$bufNo getpix $coords] 1 end]
    #--   valeurs mesurees sur une image obtenue par la voie classique
-   attendu set [list -1362 -787 28637]
+   attendu set [list 0 0 28637]
+
    #--   calcule la difference
    attendu expr {round(attendu-mesure)}
    #--   compte le nombre de resultats concordants
@@ -473,6 +474,59 @@ test ecreter_les_extremes {ecreter rz_rgbr_8} -constraints {AUDACE} -setup {
    #---  efface l'image
    ::confVisu::deleteImage $visuNo
    set liste [list rz_rgbr_8 clip]
+   ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
+   ::blt::vector destroy attendu1 attendu2 mesure1 mesure2
+} -result "6"
+
+#-----------------------------------------------------------------------------
+#--   chaque test clip_min_clip_max a pour entree une images RGB
+#--   le test porte sur la concordance entre les valeurs aux points {110 100} et {227 108} et
+#     les valeurs calculees
+#-----------------------------------------------------------------------------
+#--   clip_min_clip_max
+#     concordance des intensites R G B constatees avec celles calculees
+test ecreter_les_extremes_ligne_de_commande {ecreter rz_rgbr_8} -constraints {AUDACE} -setup {
+   ::blt::vector create attendu1 attendu2 mesure1 mesure2 -watchunset 1
+   file copy -force [file join $::conf(testaudela,rep_images) rz_rgbr_8.fit] $::audace(rep_images)
+   loadima [file join $::audace(rep_images) rz_rgbr_8.fit]
+   set coord1 [list 110 100]
+   set coord2 [list 227 108]
+   attendu1 set [lrange [buf$bufNo getpix $coord1] 1 end]
+   attendu2 set [lrange [buf$bufNo getpix $coord2] 1 end]
+   #---  efface l'image
+   ::confVisu::deleteImage $visuNo
+} -body {
+   set data "rz_rgbr_8 . ecreter .fit"
+   set options "mini=350 maxi=3000"
+   ::console::GiveFocus
+   set .console.ent1.e [list ::prtr::clipMinMax $data $options]
+   ::console::disp "[list ::prtr::clipMinMax $data $options]\n"
+   ::console::execute [list ::prtr::clipMinMax $data $options]
+
+   #--   procedure de controle
+   buf$bufNo load [file join $::audace(rep_images) ecreter.fit]
+   set result 0
+   mesure1 set [lrange [buf$bufNo getpix $coord1] 1 end]
+   mesure2 set [lrange [buf$bufNo getpix $coord2] 1 end]
+   for {set i 0} {$i < 3} {incr i} {
+      if {$attendu1($i) <= $mini} {set attendu1($i) $mini}
+      if {$attendu2($i) <= $mini} {set attendu2($i) $mini}
+      if {$attendu1($i) >= $maxi} {set attendu1($i) $maxi}
+      if {$attendu2($i) >= $maxi} {set attendu2($i) $maxi}
+   }
+   #--   calcule la difference
+   attendu1 expr {round(attendu1-mesure1)}
+   #--   compte le nombre de resultats nuls
+   incr result [llength [attendu1 search 0]]
+   #--   calcule la difference
+   attendu2 expr {round(attendu2-mesure2)}
+   #--   compte le nombre de resultats nuls
+   incr result [llength [attendu2 search 0]]
+   return $result
+} -cleanup {
+   #---  efface l'image
+   ::confVisu::deleteImage $visuNo
+   set liste [list rz_rgbr_8 ecreter]
    ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
    ::blt::vector destroy attendu1 attendu2 mesure1 mesure2
 } -result "6"

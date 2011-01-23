@@ -128,6 +128,7 @@ test imaseries_optimisation_du_noir {optimisation du noir de rz_cfa_rgbr_8} -con
  } -cleanup {
    set ::conf(extension,defaut) .fit
    set ::conf(fichier,compres) 0
+   update
    #--   clic sur le bouton Fermer
    ::testaudela::clicButton $z.cmd.fermer
    #---  efface l'image

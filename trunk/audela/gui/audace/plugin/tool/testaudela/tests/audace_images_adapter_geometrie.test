@@ -117,6 +117,32 @@ test rotation180 {rotation de rz_rgbr_8} -constraints {AUDACE} -setup $SETUP -bo
    return $result
  } -cleanup $CLEANUP -result "1"
 
+#--   test rotation -90°
+test rotation-90_ligne_de_commande {rotation de rz_rgbr_8} -constraints {AUDACE} -setup $SETUP -body {
+   set data "rz_rgbr_8 . rotation-90 .fit ROT-90"
+   set options ""
+   ::console::GiveFocus
+   set .console.ent1.e [list ::prtr::cmdRot  $data $options]
+   ::console::disp "[list ::prtr::cmdRot $data $options]\n"
+   ::console::execute [list ::prtr::cmdRot $data $options]
+
+   #--   controle
+   set result 0
+   loadima rotation-90.fit
+   if {[file exists rotation-90.fit]} {incr result}
+   #--   verifie le deplacement du point {245 100}
+   set x [expr {int($naxis2-100+1)}]
+   set y 245
+   set mesure [lrange [buf$bufNo getpix [list $x $y]] 1 end]
+   if {$attendu eq "$mesure"} {incr result}
+   set liste [list rz_rgbr_8 rotation-90]
+   return $result
+ } -cleanup {
+   #---  efface l'image
+   ::confVisu::deleteImage $visuNo
+   ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
+ } -result "2"
+
 
 #-----------------------------------------------------------------------------
 #--   chaque test INVERT a pour entree trois images RGB a traiter
@@ -354,7 +380,7 @@ test imaseries_rotation1 {rotation de rz_rgbr_30} -constraints {AUDACE} -setup {
 #-----------------------------------------------------------------------------
 
 #--   test IMA/SERIES ROTENTIERE
-test imaseries_rotation2 {rotation de untour} -constraints {AUDACE} -setup {
+test imaseries_rotation2 {rotation de un_tour} -constraints {AUDACE} -setup {
    loadima [file join $::audace(rep_images) un_tour.fit]
 } -body {
    #--   clic sur le menu "Images/Adapter la géométrie/Rotation libre (image redimensionnée)"..."
@@ -372,7 +398,7 @@ test imaseries_rotation2 {rotation de untour} -constraints {AUDACE} -setup {
    set result 0
    #--   verifie le deplacement du point {227 108}
    set mesure "[lrange [buf$bufNo getpix [list 226 108]] 1 end]"
-   if {$mesure eq [list 1304.000000 1191.000000 537.000000]} {incr result}
+   if {$mesure eq [list 1304.000000 1192.000000 537.000000]} {incr result}
    #--   les naxis ne sont pas conservés
    set liste [ list un_tour deux_tours]
    return $result
