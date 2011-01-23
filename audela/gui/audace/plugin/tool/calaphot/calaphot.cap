@@ -1,6 +1,6 @@
 #
 # Fichier : calaphot.cap
-# Mise a jour $Id: calaphot.cap,v 1.19 2011-01-18 20:01:20 robertdelmas Exp $
+# Mise a jour $Id: calaphot.cap,v 1.20 2011-01-23 09:42:17 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -15,7 +15,7 @@ set calaphot(texte,copyright)              "(c)2001-$::audace(endCopyright)   O.
 
 # *************** Version anglaise ****************************
 
-set calaphot(texte,titre_menu)             "Light curve (Calaphot)"
+set calaphot(texte,titre_menu)             "Light Curves (Calaphot)"
 set calaphot(texte,titre_saisie)           "Photometry Script Parameters"
 set calaphot(texte,operateur)              "Operator Name"
 set calaphot(texte,objet)                  "Object Name"
@@ -257,7 +257,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set calaphot(texte,titre_menu)          "Fotometria differenziale (Calaphot)"
+   set calaphot(texte,titre_menu)          "# Fotometria differenziale (Calaphot)"
    set calaphot(texte,titre_saisie)        "Parametri dello script di fotometria"
    set calaphot(texte,operateur)           "Nome dell'operatore"
    set calaphot(texte,objet)               "Nome oggetto"
@@ -366,20 +366,19 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,pas_image_valide)    "Nessuna immagine valida. Verificare il rapporto S/N minimo."
    set calaphot(texte,image)               "Immagine"
    set calaphot(texte,temps_pose_nul)      "Tempo do posa nulla"
-#### Ajout JM
-   set calaphot(texte,mag_relative)        "Relative Magnitude"
-   set calaphot(texte,err_modelisation)    "Error in fitting"
-   set calaphot(texte,plus_jeune)          " is older than the previous one"
-   set calaphot(texte,implication_defoc)   "The processing of very defocused images implies Aperture Photometry"
-   set calaphot(texte,defocalisation)      "Very defocused images"
+   set calaphot(texte,mag_relative)        "# Relative Magnitude"
+   set calaphot(texte,err_modelisation)    "# Error in fitting"
+   set calaphot(texte,plus_jeune)          "#  is older than the previous one"
+   set calaphot(texte,implication_defoc)   "# The processing of very defocused images implies Aperture Photometry"
+   set calaphot(texte,defocalisation)      "# Very defocused images"
    set calaphot(texte,defocalisation_0)    $calaphot(texte,non)
    set calaphot(texte,defocalisation_1)    $calaphot(texte,oui)
-   set calaphot(texte,aucune_valide)       "Not any valid image"
+   set calaphot(texte,aucune_valide)       "# Not any valid image"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set calaphot(texte,titre_menu)          "Photometria diferencial (Calaphot)"
+   set calaphot(texte,titre_menu)          "# Photometria diferencial (Calaphot)"
    set calaphot(texte,titre_saisie)        "Parámetros del script de fotometría"
    set calaphot(texte,operateur)           "Nombre del operador"
    set calaphot(texte,objet)               "Nombre del objecto"
@@ -488,20 +487,19 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,pas_image_valide)    "Imagen no valida. Verificar el limite S/R."
    set calaphot(texte,image)               "Imagen"
    set calaphot(texte,temps_pose_nul)      "Tiempo de exposición nulo"
-#### Ajout JM
-   set calaphot(texte,mag_relative)        "Relative Magnitude"
-   set calaphot(texte,err_modelisation)    "Error in fitting"
-   set calaphot(texte,plus_jeune)          " is older than the previous one"
-   set calaphot(texte,implication_defoc)   "The processing of very defocused images implies Aperture Photometry"
-   set calaphot(texte,defocalisation)      "Very defocused images"
+   set calaphot(texte,mag_relative)        "# Relative Magnitude"
+   set calaphot(texte,err_modelisation)    "# Error in fitting"
+   set calaphot(texte,plus_jeune)          "#  is older than the previous one"
+   set calaphot(texte,implication_defoc)   "# The processing of very defocused images implies Aperture Photometry"
+   set calaphot(texte,defocalisation)      "# Very defocused images"
    set calaphot(texte,defocalisation_0)    $calaphot(texte,non)
    set calaphot(texte,defocalisation_1)    $calaphot(texte,oui)
-   set calaphot(texte,aucune_valide)       "Not any valid image"
+   set calaphot(texte,aucune_valide)       "# Not any valid image"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set calaphot(texte,titre_menu)          "Differential Licht Messung (Calaphot)"
+   set calaphot(texte,titre_menu)          "# Differential Licht Messung (Calaphot)"
    set calaphot(texte,titre_saisie)        "Skript Photomessung Parametern"
    set calaphot(texte,operateur)           "Bedienungsperson Namen"
    set calaphot(texte,objet)               "Objekt Namen"
@@ -610,20 +608,19 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,pas_image_valide)    "Kein Bild ist gültig. Überprüfen Sie die S/N Grenze."
    set calaphot(texte,image)               "Bild"
    set calaphot(texte,temps_pose_nul)      "Null Erleuchtung Zeit"
-#### Ajout JM
-   set calaphot(texte,mag_relative)        "Relative Magnitude"
-   set calaphot(texte,err_modelisation)    "Error in fitting"
-   set calaphot(texte,plus_jeune)          " is older than the previous one"
-   set calaphot(texte,implication_defoc)   "The processing of very defocused images implies Aperture Photometry"
-   set calaphot(texte,defocalisation)      "Very defocused images"
+   set calaphot(texte,mag_relative)        "# Relative Magnitude"
+   set calaphot(texte,err_modelisation)    "# Error in fitting"
+   set calaphot(texte,plus_jeune)          "#  is older than the previous one"
+   set calaphot(texte,implication_defoc)   "# The processing of very defocused images implies Aperture Photometry"
+   set calaphot(texte,defocalisation)      "# Very defocused images"
    set calaphot(texte,defocalisation_0)    $calaphot(texte,non)
    set calaphot(texte,defocalisation_1)    $calaphot(texte,oui)
-   set calaphot(texte,aucune_valide)       "Not any valid image"
+   set calaphot(texte,aucune_valide)       "# Not any valid image"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set calaphot(texte,titre_menu)          "Fotometria diferencial (Calaphot)"
+   set calaphot(texte,titre_menu)          "# Fotometria diferencial (Calaphot)"
    set calaphot(texte,titre_saisie)        "Parâmetros do script de fotometria"
    set calaphot(texte,operateur)           "Nome do operador"
    set calaphot(texte,objet)               "Nome do objecto"
@@ -732,20 +729,19 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,pas_image_valide)    "Nenhuma imagem válida. Verifique o limite de SNR."
    set calaphot(texte,image)               "Imagem"
    set calaphot(texte,temps_pose_nul)      "Tempo de exposição nulo"
-#### Ajout JM
-   set calaphot(texte,mag_relative)        "Relative Magnitude"
-   set calaphot(texte,err_modelisation)    "Error in fitting"
-   set calaphot(texte,plus_jeune)          " is older than the previous one"
-   set calaphot(texte,implication_defoc)   "The processing of very defocused images implies Aperture Photometry"
-   set calaphot(texte,defocalisation)      "Very defocused images"
+   set calaphot(texte,mag_relative)        "# Relative Magnitude"
+   set calaphot(texte,err_modelisation)    "# Error in fitting"
+   set calaphot(texte,plus_jeune)          "#  is older than the previous one"
+   set calaphot(texte,implication_defoc)   "# The processing of very defocused images implies Aperture Photometry"
+   set calaphot(texte,defocalisation)      "# Very defocused images"
    set calaphot(texte,defocalisation_0)    $calaphot(texte,non)
    set calaphot(texte,defocalisation_1)    $calaphot(texte,oui)
-   set calaphot(texte,aucune_valide)       "Not any valid image"
+   set calaphot(texte,aucune_valide)       "# Not any valid image"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set calaphot(texte,titre_menu)          "Differential Photometry (Calaphot)"
+   set calaphot(texte,titre_menu)          "Light Curves (Calaphot)"
    set calaphot(texte,titre_saisie)        "Photometry Script Parameters"
    set calaphot(texte,operateur)           "Operator Name"
    set calaphot(texte,objet)               "Object Name"
@@ -866,7 +862,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
-   set calaphot(texte,titre_menu)          "Differential Photometry (Calaphot)"
+   set calaphot(texte,titre_menu)          "Light Curves (Calaphot)"
    set calaphot(texte,titre_saisie)        "Photometry Script Parameters"
    set calaphot(texte,operateur)           "Operator Name"
    set calaphot(texte,objet)               "Object Name"
@@ -988,7 +984,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
-   set calaphot(texte,titre_menu)          "Differential Photometry (Calaphot)"
+   set calaphot(texte,titre_menu)          "Light Curves (Calaphot)"
    set calaphot(texte,titre_saisie)        "Photometry Script Parameters"
    set calaphot(texte,operateur)           "Operator Name"
    set calaphot(texte,objet)               "Object Name"

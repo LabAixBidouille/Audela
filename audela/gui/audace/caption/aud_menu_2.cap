@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_2.cap
-# Mise a jour $Id: aud_menu_2.cap,v 1.29 2011-01-09 10:25:12 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_2.cap,v 1.30 2011-01-23 09:41:41 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -28,8 +28,8 @@ set caption(audace,menu,seuils)                       "Thresholds"
 set caption(audace,menu,balance_rvb)                  "RGB Balance"
 set caption(audace,menu,zoom)                         "Zoom"
 set caption(audace,menu,plein_ecran)                  "Full Screen"
-set caption(audace,menu,display_miroir_x)             "# Vertical Mirror"
-set caption(audace,menu,display_miroir_y)             "# Horizontal Mirror"
+set caption(audace,menu,display_miroir_x)             "Left/Right Reversal"
+set caption(audace,menu,display_miroir_y)             "Top/Bottom Reversal"
 set caption(audace,menu,window)                       "Window"
 set caption(audace,menu,vision_nocturne)              "Night Vision"
 
@@ -72,7 +72,7 @@ set caption(seuilCouleur,pas_selection_blanc)         "No white area selected."
 set caption(seuilCouleur,pas_couleur)                 "This is not a color image."
 set caption(seuilCouleur,attention)                   "Warning"
 set caption(seuilCouleur,header_noimage)              "No Image in Memory."
-set caption(seuilCouleur,en_cours)                    "# En cours... Patientez..."
+set caption(seuilCouleur,en_cours)                    "In Progress... Please Wait..."
 set caption(seuilCouleur,fin_traitement)              "End of Processing."
 
 # *************** Version française ***************************
@@ -497,8 +497,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,balance_rvb)               "RGB Balance"
    set caption(audace,menu,zoom)                      "Zoom"
    set caption(audace,menu,plein_ecran)               "Full Screen"
-   set caption(audace,menu,display_miroir_x)          "# Vertical Mirror"
-   set caption(audace,menu,display_miroir_y)          "# Horizontal Mirror"
+   set caption(audace,menu,display_miroir_x)          "Left/Right Reversal"
+   set caption(audace,menu,display_miroir_y)          "Top/Bottom Reversal"
    set caption(audace,menu,window)                    "Window"
    set caption(audace,menu,vision_nocturne)           "Night Vision"
 
@@ -541,7 +541,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilCouleur,pas_couleur)              "This is not a color image."
    set caption(seuilCouleur,attention)                "Warning"
    set caption(seuilCouleur,header_noimage)           "No Image in Memory."
-   set caption(seuilCouleur,en_cours)                 "# En cours... Patientez..."
+   set caption(seuilCouleur,en_cours)                 "In Progress... Please Wait..."
    set caption(seuilCouleur,fin_traitement)           "End of Processing."
 
 # *************** Version russe *******************************
@@ -564,8 +564,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,balance_rvb)               "RGB Balance"
    set caption(audace,menu,zoom)                      "Zoom"
    set caption(audace,menu,plein_ecran)               "Full Screen"
-   set caption(audace,menu,display_miroir_x)          "# Vertical Mirror"
-   set caption(audace,menu,display_miroir_y)          "# Horizontal Mirror"
+   set caption(audace,menu,display_miroir_x)          "Left/Right Reversal"
+   set caption(audace,menu,display_miroir_y)          "Top/Bottom Reversal"
    set caption(audace,menu,window)                    "Window"
    set caption(audace,menu,vision_nocturne)           "Night Vision"
 
@@ -608,7 +608,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilCouleur,pas_couleur)              "This is not a color image."
    set caption(seuilCouleur,attention)                "Warning"
    set caption(seuilCouleur,header_noimage)           "No Image in Memory."
-   set caption(seuilCouleur,en_cours)                 "# En cours... Patientez..."
+   set caption(seuilCouleur,en_cours)                 "In Progress... Please Wait..."
    set caption(seuilCouleur,fin_traitement)           "End of Processing."
 
 }

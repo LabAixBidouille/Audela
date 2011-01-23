@@ -1,6 +1,6 @@
 #
 # Fichier : displaycoord.cap
-# Mise à jour $Id: displaycoord.cap,v 1.9 2011-01-22 07:48:55 michelpujol Exp $
+# Mise à jour $Id: displaycoord.cap,v 1.10 2011-01-23 09:42:28 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -40,7 +40,6 @@ global caption langage
    set caption(displaycoord,disabled)       "MODEL OFF"
    set caption(displaycoord,east)           "East"
    set caption(displaycoord,west)           "West"
-
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
