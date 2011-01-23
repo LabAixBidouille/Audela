@@ -314,10 +314,8 @@ test imastack_moyenne_kappa_sigma {moyenne K de rz_rgbr_8, rz_rgbr_15 et rz_rgbr
    foreach  img {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
       ::testaudela::clicCheckButton [$w windowpath $img,0] 1
    }
-   #--   selectionne l'option "Options"
-   ::testaudela::clicCheckButton $z.ttoptions.che 1
    #--   selectionne l'option "kappa"
-   ::testaudela::putLabelEntry $z.ttoptions.kappa 2.
+   ::testaudela::putLabelEntry $z.funoptions.kappa "0.8"
    #-- saisit le nom de sortie
    set nom_image [file join $rep Comb moyenneSK$ext]
    ::testaudela::putLabelEntry $z.sortie.out $nom_image
@@ -326,17 +324,13 @@ test imastack_moyenne_kappa_sigma {moyenne K de rz_rgbr_8, rz_rgbr_15 et rz_rgbr
 
    #--   procedure de controle
    mesure set [lrange [buf$bufNo getpix $coords] 1 end ]
-   #--   conclusion experimentale : les valeurs sont egale à la moyenne
-   attendu set [list $red_value(mean) $green_value(mean) $blue_value(mean)]
+   attendu set [list 100 300 0]
    #--   calcule la difference
    attendu expr {round(attendu-mesure)}
-   #--   nb de differences <+-1
-   attendu expr {abs(attendu) <= 1}
+   #--   nb de differences
+   attendu expr {attendu == 0}
    set result [llength [attendu search 1]]
-   #--   exposure est bon si la difference est inferieur a 0.001 sec
-   if {[expr {$exposure(mean)-[lindex [buf$bufNo getkwd EXPOSURE] 1]}] < "0.001"} {
-      incr result
-   }
+   if {[lindex [buf$bufNo getkwd EXPOSURE] 1] == 0.069} {incr result}
    return $result
 } -cleanup $CLEANUP -result "4"
 

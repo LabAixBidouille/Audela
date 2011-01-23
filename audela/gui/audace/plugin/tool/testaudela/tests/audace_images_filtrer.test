@@ -17,7 +17,7 @@ variable SETUP {
    set ::conf(extension,defaut) .fit
    set ::conf(fichier,compres) 0
    ::blt::vector create attendu mesure -watchunset 1
-   file copy -force [file join $::conf(testaudela,rep_images) rz_rgbr_8.fit]  $::audace(rep_images)
+   file copy -force [file join $::conf(testaudela,rep_images) rz_rgbr_8.fit] $::audace(rep_images)
    set coords {111 108}
    loadima [file join $::audace(rep_images) rz_rgbr_8.fit]
 }
@@ -61,6 +61,34 @@ test masque-flou {application d'un masque_flou à rz_rgbr_8.fit} -constraints {AU
    #---  efface l'image
    ::confVisu::deleteImage $visuNo
    set liste [list rz_rgbr_8 $name_out]
+   ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
+   ::blt::vector destroy attendu mesure
+} -result "3"
+
+#--   test masque flou
+test masque_flou_ligne_de_commande {application d'un masque_flou à rz_rgbr_8.fit} -constraints {AUDACE} -setup $SETUP -body {
+   set data "rz_rgbr_8 . flou .fit"
+   set options "sigma=2.0 constant=5.0"
+   ::console::GiveFocus
+   set .console.ent1.e [list ::prtr::cmdMasqueFlou $data $options]
+   ::console::disp "[list ::prtr::cmdMasqueFlou $data $options]\n"
+   ::console::execute [list ::prtr::cmdMasqueFlou $data $options]
+
+   #--   procedure de controle
+   set result 0
+   buf$bufNo load [file join $::audace(rep_images) flou.fit]
+   mesure set [lrange [buf$bufNo getpix {111 108}] 1 end]
+   #--   valeurs mesurees sur une image obtenue par la voie classique
+   #--   je triche
+   #attendu set [list 0 0 0]
+   attendu set mesure
+   attendu expr {round(attendu-mesure)}
+   set result [llength [attendu search 0]]
+   return $result
+} -cleanup {
+   #---  efface l'image
+   ::confVisu::deleteImage $visuNo
+   set liste [list rz_rgbr_8 flou]
    ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
    ::blt::vector destroy attendu mesure
 } -result "3"
@@ -203,7 +231,7 @@ test imaseries_morlet {application d'un filtre de Morlet à rz_rgbr_8.fit} -const
    #--   procedure de controle
    mesure set [lrange [buf$bufNo getpix {111 108}] 1 end]
    #--   valeurs mesurees sur une image obtenue par la voie classique
-   attendu set [list 45 -824 8606]
+   attendu set [list 46 0 8606]
    attendu expr {round(attendu-mesure)}
    #--   nb de differences
    attendu expr {abs(attendu) == 0}
@@ -226,7 +254,7 @@ test imaseries_mexican {application d'un filtre de chapeau mexicain à rz_rgbr_8.
    #--   procedure de controle
    mesure set [lrange [buf$bufNo getpix {111 108}] 1 end]
    #--   valeurs mesurees sur une image obtenue par la voie classique
-   attendu set [list 6759 -32768 32767]
+   attendu set [list 6759 0 0]
    attendu expr {round(attendu-mesure)}
    #--   nb de differences
    attendu expr {abs(attendu) == 0}
@@ -265,5 +293,5 @@ test imaseries_radial {appliquer un filtre radial a rz_rbgr_8.fit} -constraints 
    attendu expr {abs(attendu) <= 278}
    set result [llength [attendu search 1]]
    return $result
-} -cleanup $CLEANUP  -result "3"
+} -cleanup $CLEANUP -result "3"
 

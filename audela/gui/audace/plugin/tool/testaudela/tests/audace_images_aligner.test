@@ -53,6 +53,41 @@ test aligner_automatique_NB {aligner des translatees de m45_champ.fit} -constrai
    file delete m45_champ.fit trans1.fit trans2.fit trans3.fit trans4.fit
 } -result "10"
 
+test aligner_automatique_ligne_de_commandes {aligner des translatees de m45_champ.fit} -constraints {AUDACE} -setup {
+   file copy -force [file join $::conf(testaudela,rep_images) m45_champ.fit] $::audace(rep_images)
+   buf$bufNo load [file join $::audace(rep_images) m45_champ.fit]
+   set coords [list 491 320]
+   set attendu [lindex [buf$bufNo getpix $coords] 1]
+   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans1 . .fit TRANS trans_x=20 trans_y=20"
+   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans2 . .fit TRANS trans_x=20 trans_y=-20"
+   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans3 . .fit TRANS trans_x=-20 trans_y=20"
+   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans4 . .fit TRANS trans_x=-20 trans_y=-20"
+ } -body {
+   set data "\"[list trans1 trans2 trans3 trans4]\" . recadre .fit"
+   set options "\"image_ref=[file join $::audace(rep_images) m45_champ.fit]\""
+   ::console::GiveFocus
+   set .console.ent1.e [list ::prtr::cmdAligner $data $options]
+   ::console::disp "[list ::prtr::cmdAligner $data $options]\n"
+   ::console::execute [list ::prtr::cmdAligner $data $options]
+
+   #-- procédure de controle
+   set result 0
+   set coord2 [list 471 300]
+   #--   verifie l'existence de 5 images recadrees
+   for {set i 1} {$i <= 5} {incr i} {
+      set file [file join $::audace(rep_images) recadre$i.fit]
+      if {[file exists $file]} {
+         incr result
+         buf$bufNo load $file
+         if {[lindex [buf$bufNo getpix $coord2] 1] eq $attendu} {incr result}
+         file delete $file
+      }
+   }
+   return $result
+} -cleanup {
+   file delete m45_champ.fit trans1.fit trans2.fit trans3.fit trans4.fit
+} -result "10"
+
 test aligner_automatique_RGB {aligner deux images RGB} -constraints {AUDACE} -setup {
    #--   configure l'extension et la compression
    set ::conf(extension,defaut) ".fit"

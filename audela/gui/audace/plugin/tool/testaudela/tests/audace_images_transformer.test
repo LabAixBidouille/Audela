@@ -14,12 +14,15 @@ test imaseries_rec2pol {coordonnees polaires de rz_rgbr_8} -constraints {AUDACE}
    #--   configure l'extension et la compression
    set ::conf(extension,defaut) ".fit"
    set ::conf(fichier,compres) 0
+   update
    file copy -force [file join $::conf(testaudela,rep_images) rz_rgbr_8.fit] $::audace(rep_images)
 } -body {
    #--   clic sur le menu "Images/Transformer/Cartésien-->polaire..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,transform)" "$::caption(audace,menu,cart2pol)..."
    #--   selectionne rz_rgbr_8
-   ::testaudela::clicCheckButton [$w windowpath rz_rgbr_8,0] 1
+   set k [lsearch [$w getcolumns 1] rz_rgbr_8]
+   ::testaudela::clicCheckButton [$w windowpath $k,0] 1
+   #::testaudela::clicCheckButton [$w windowpath rz_rgbr_8,0] 1
    #--   entre les coordonnees du centre
    ::testaudela::putLabelEntry $z.funoptions.x0 "173"
    ::testaudela::putLabelEntry $z.funoptions.y0 "96.5"
@@ -53,7 +56,8 @@ test imaseries_pol2rec {coordonnees rectangulaires polaire.fit} -constraints {AU
    #--   clic sur le menu "Rotation2" de le fenetre de 'Images' restee ouverte
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,transform)" "$::caption(audace,menu,pol2cart)..."
    #--   selectionne polaire
-   ::testaudela::clicCheckButton [$w windowpath polaire,0] 1
+    set k [lsearch [$w getcolumns 1] polaire]
+   ::testaudela::clicCheckButton [$w windowpath $k,0] 1
    #--   restitue les coordonnees du centre
    ::testaudela::putLabelEntry $z.funoptions.x0 "173"
    ::testaudela::putLabelEntry $z.funoptions.y0 "96.5"
