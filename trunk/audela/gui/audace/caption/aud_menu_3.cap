@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.64 2011-01-23 09:41:54 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.65 2011-01-24 18:02:36 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -167,7 +167,6 @@ set caption(pretraitement,tfd_images_differentes)       "The output files must h
 set caption(pretraitement,choix_image_dd)               "Please select an image on the hard disk."
 set caption(pretraitement,header_noimage)               "No Image in Memory."
 set caption(pretraitement,entree)                       "Input Image:"
-set caption(pretraitement,sortie)                       "Output Image:"
 set caption(pretraitement,image_affichee)               "On Image Displayed"
 set caption(pretraitement,image_a_choisir)              "To an Image on the Hard Disk"
 
@@ -330,7 +329,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,choix_image_dd)            "Choisissez une image stockée sur le disque dur."
    set caption(pretraitement,header_noimage)            "Il n'y a pas d'image actuellement en mémoire."
    set caption(pretraitement,entree)                    "Image d'entrée :"
-   set caption(pretraitement,sortie)                    "Image de sortie :"
    set caption(pretraitement,image_affichee)            "Sur l'image affichée"
    set caption(pretraitement,image_a_choisir)           "Sur une image du disque dur"
 
@@ -493,7 +491,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,choix_image_dd)            "Scegliere una immagine sull'hard disk."
    set caption(pretraitement,header_noimage)            "Nessuna immagine in memoria."
    set caption(pretraitement,entree)                    "Immagine iniziali:"
-   set caption(pretraitement,sortie)                    "Immagine finali:"
    set caption(pretraitement,image_affichee)            "Sull'immagine visualizzata"
    set caption(pretraitement,image_a_choisir)           "Su una immagine del disco fisso"
 
@@ -656,7 +653,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,choix_image_dd)            "Por favor, seleccione una imagenen el disco duro."
    set caption(pretraitement,header_noimage)            "No existe una imágen cargada en la memoria."
    set caption(pretraitement,entree)                    "Imagen de entrada:"
-   set caption(pretraitement,sortie)                    "Imagen de salida:"
    set caption(pretraitement,image_affichee)            "En la imagen mostrada"
    set caption(pretraitement,image_a_choisir)           "A una imagen en el disco duro"
 
@@ -819,7 +815,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,choix_image_dd)            "Wählen sie ein Bild von die Festplatte."
    set caption(pretraitement,header_noimage)            "Es ist jetzt kein Bild im Speicher."
    set caption(pretraitement,entree)                    "Eingang Bild:"
-   set caption(pretraitement,sortie)                    "Hinaus Bild:"
    set caption(pretraitement,image_affichee)            "In ezeigtes Bild"
    set caption(pretraitement,image_a_choisir)           "Von eine Festplatte Bild"
 
@@ -982,7 +977,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,choix_image_dd)            "Por favor escolha uma imagem no disco duro."
    set caption(pretraitement,header_noimage)            "Não existe imagem carregada em memória."
    set caption(pretraitement,entree)                    "Imagem de entrada:"
-   set caption(pretraitement,sortie)                    "Imagem de saída:"
    set caption(pretraitement,image_affichee)            "Na imagem apresentada"
    set caption(pretraitement,image_a_choisir)           "Sobre uma imagem do disco rígido"
 
@@ -1145,7 +1139,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,choix_image_dd)            "Vælg et billede på harddisken."
    set caption(pretraitement,header_noimage)            "Intet billede i memory."
    set caption(pretraitement,entree)                    "Indlæs billede:"
-   set caption(pretraitement,sortie)                    "Output billede:"
    set caption(pretraitement,image_affichee)            "På det viste billede"
    set caption(pretraitement,image_a_choisir)           "På et billede på harddisken"
 
@@ -1308,7 +1301,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,choix_image_dd)            "Please select an image on the hard disk."
    set caption(pretraitement,header_noimage)            "No Image in Memory."
    set caption(pretraitement,entree)                    "Input Image:"
-   set caption(pretraitement,sortie)                    "Output Image:"
    set caption(pretraitement,image_affichee)            "On Image Displayed"
    set caption(pretraitement,image_a_choisir)           "To an Image on the Hard Disk"
 
@@ -1471,7 +1463,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,choix_image_dd)            "Please select an image on the hard disk."
    set caption(pretraitement,header_noimage)            "No Image in Memory."
    set caption(pretraitement,entree)                    "Input Image:"
-   set caption(pretraitement,sortie)                    "Output Image:"
    set caption(pretraitement,image_affichee)            "On Image Displayed"
    set caption(pretraitement,image_a_choisir)           "To an Image on the Hard Disk"
 
