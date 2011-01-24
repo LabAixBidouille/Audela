@@ -1,6 +1,6 @@
 #
 # Fichier : bddimages_config.cap
-# Mise a jour $Id: bddimages_config.cap,v 1.7 2011-01-23 01:20:51 jberthier Exp $
+# Mise a jour $Id: bddimages_config.cap,v 1.8 2011-01-24 00:35:08 jberthier Exp $
 #
 
 #=========================================================================
@@ -29,7 +29,7 @@ set caption(bddimages_config,access)         "Accés à la base de données"
 set caption(bddimages_config,dbname)         " - Nom de la BDD"
 set caption(bddimages_config,login)          " - Login"
 set caption(bddimages_config,pass)           " - Mot de passe"
-set caption(bddimages_config,serv)           " - Adresse IP du serveur Mysql"
+set caption(bddimages_config,server)         " - Serveur Mysql"
 set caption(bddimages_config,dir)            "Répertoires de travail"
 set caption(bddimages_config,dirbase)        " - Répertoire de base"
 set caption(bddimages_config,dirinco)        " - Répertoire incoming"
@@ -77,7 +77,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bddimages_config,access)         "Accés à la base de données"
    set caption(bddimages_config,login)          " - Login"
    set caption(bddimages_config,pass)           " - Mot de passe"
-   set caption(bddimages_config,serv)           " - Adresse IP du serveur Mysql"
+   set caption(bddimages_config,server)         " - Serveur Mysql"
    set caption(bddimages_config,dir)            "Répertoires de travail"
    set caption(bddimages_config,dirbase)        " - Répertoire de base"
    set caption(bddimages_config,dirinco)        " - Répertoire incoming"

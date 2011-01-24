@@ -5,7 +5,7 @@
 # Fichier        : bddimages_status.tcl
 # Description    : Affiche le status de la base de donnees
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_status.tcl,v 1.6 2011-01-21 18:37:49 fredvachier Exp $
+# Mise à jour $Id: bddimages_status.tcl,v 1.7 2011-01-24 00:35:08 jberthier Exp $
 #
 
 namespace eval bddimages_status {
@@ -113,9 +113,6 @@ namespace eval bddimages_status {
 
       toplevel .passwd
       wm title .passwd "Root password"
-#      wm maxsize .passwd 300 100
-#      wm minsize .passwd 200 100
-   
       wm positionfrom .passwd user
       wm sizefrom .passwd user
       frame .passwd.f -relief groove
@@ -286,6 +283,17 @@ namespace eval bddimages_status {
       #--- Interrogation de la base de donnees
       #set erreur [ catch { bddimages_status_sql } msg ]
 
+      # Config courante
+      if { ![info exists bddconf(default_config)] } {
+         #--- Charge les config bddimages depuis le fichier XML
+         set err [::bddimagesXML::load_xml_config]
+         #--- et recupere la config par defaut
+         set bddconf(current_config) $::bddimagesXML::current_config
+      } else {
+         # Charge la config par defaut
+         set bddconf(current_config) [::bddimagesXML::get_config $bddconf(default_config)]
+      }
+
       #--- Mise en forme du resultat
       set errconn   [catch {::bddimages_sql::connect} status]
       set nbimg     [sql_nbimg]
@@ -295,24 +303,21 @@ namespace eval bddimages_status {
       set nbficherr [numberoffile $conf(bddimages,direrr)]
       set erreur    0
 
+#      ::console::affiche_resultat "NAME)       =$bddconf(name)    \n"
+#      ::console::affiche_resultat "DBNAME)     =$bddconf(dbname)  \n"
+#      ::console::affiche_resultat "LOGIN)      =$bddconf(login)   \n"
+#      ::console::affiche_resultat "PASS)       =$bddconf(pass)    \n"
+#      ::console::affiche_resultat "IP)         =$bddconf(serv)    \n"
+#      ::console::affiche_resultat "PORT)       =$bddconf(port)    \n"
+#      ::console::affiche_resultat "ROOT)       =$bddconf(dirbase) \n"
+#      ::console::affiche_resultat "INCOMING)   =$bddconf(dirinco) \n"
+#      ::console::affiche_resultat "FITS)       =$bddconf(dirfits) \n"
+#      ::console::affiche_resultat "CATA)       =$bddconf(dircata) \n"
+#      ::console::affiche_resultat "ERROR)      =$bddconf(direrr)  \n"
+#      ::console::affiche_resultat "LOG)        =$bddconf(dirlog)  \n"
+#      ::console::affiche_resultat "SCREENLIMIT)=$bddconf(limit)   \n"
 
-      ::console::affiche_resultat "NAME)       =$bddconf(name)    \n"
-      ::console::affiche_resultat "DBNAME)     =$bddconf(dbname)  \n"
-      ::console::affiche_resultat "LOGIN)      =$bddconf(login)   \n"
-      ::console::affiche_resultat "PASS)       =$bddconf(pass)    \n"
-      ::console::affiche_resultat "IP)         =$bddconf(serv)    \n"
-      ::console::affiche_resultat "PORT)       =$bddconf(port)    \n"
-      ::console::affiche_resultat "ROOT)       =$bddconf(dirbase) \n"
-      ::console::affiche_resultat "INCOMING)   =$bddconf(dirinco) \n"
-      ::console::affiche_resultat "FITS)       =$bddconf(dirfits) \n"
-      ::console::affiche_resultat "CATA)       =$bddconf(dircata) \n"
-      ::console::affiche_resultat "ERROR)      =$bddconf(direrr)  \n"
-      ::console::affiche_resultat "LOG)        =$bddconf(dirlog)  \n"
-      ::console::affiche_resultat "SCREENLIMIT)=$bddconf(limit)   \n"
-
-
-
-       #--- Gestion des erreurs
+      #--- Gestion des erreurs
       if { $erreur == "0"} {
 
          #---

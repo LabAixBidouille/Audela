@@ -3,7 +3,7 @@
 # Fichier        : test.tcl
 # Description    : Test de fonctionnement de procedures
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: test.tcl,v 1.3 2011-01-23 01:20:51 jberthier Exp $
+# Mise à jour $Id: test.tcl,v 1.4 2011-01-24 00:35:08 jberthier Exp $
 #
 
 namespace eval testprocedure {
@@ -21,7 +21,7 @@ namespace eval testprocedure {
 
    proc run {  } {
 
-      test7
+      test6
    }
 
 
