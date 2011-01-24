@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Images
-# Mise à jour $Id: aud_menu_3.tcl,v 1.81 2011-01-23 18:06:18 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_3.tcl,v 1.82 2011-01-24 18:03:58 robertdelmas Exp $
 #
 
 namespace eval ::conv2 {
@@ -93,30 +93,25 @@ namespace eval ::conv2 {
          set private(conv2,$op,generique) $generique
       }
 
-      #--- classe et liste les fichiers convertibles par type de conversion
-      #--- les sept listes sont contenues dans l'array bdd
-      #--- ouvre la fenetre de selection de la conversion
-      if { [ ::conv2::ListFiles ] != "0" } {
-         #--- positionne sur l'operation demandee
-         #set private(conv2,conversion) "$type_conversion"
-         #--- ouvre la fenetre de conversion
-         set this "$audace(base).dialog"
-         if { [ winfo exists $this ] } {
-            wm withdraw $this
-            wm deiconify $this
-            focus $this
-            #--- selectionne la conversion
-            set i [ lsearch -exact $private(conv2,formules) $private(conv2,conversion) ]
-            incr i
-            $this.but.menu invoke $i
-        } else {
-            if { [ info exists widget(geometry) ] } {
-               set deb [ expr 1 + [ string first + $widget(geometry) ] ]
-               set fin [ string length $widget(geometry) ]
-               set widget(conv2,position) "+[string range $widget(geometry) $deb $fin]"
-            }
-            ::conv2::CreateDialog "$audace(base).dialog"
+      set this "$audace(base).dialog"
+      if { [ winfo exists $this ] } {
+         wm withdraw $this
+         wm deiconify $this
+         focus $this
+         #--- selectionne la conversion
+         set i [ lsearch -exact $private(conv2,formules) $private(conv2,conversion) ]
+         incr i
+         $this.but.menu invoke $i
+      } else {
+         #--- classe et liste les fichiers convertibles par type de conversion
+         #--- les sept listes sont contenues dans l'array bdd
+         ::conv2::ListFiles
+         if { [ info exists widget(geometry) ] } {
+            set deb [ expr 1 + [ string first + $widget(geometry) ] ]
+            set fin [ string length $widget(geometry) ]
+            set widget(conv2,position) "+[string range $widget(geometry) $deb $fin]"
          }
+         ::conv2::CreateDialog "$this"
          #--- initialise les listes de fichiers in & out
          #--- evite une erreur si on appuie sur 'Appliquer'
          lassign { "" "" } private(conv2,in) private(conv2,out)
@@ -1960,22 +1955,19 @@ proc scar { visuNo } {
 namespace eval ::traiteFilters {
 
    #
-   # ::traiteFilters::run sousMenu typeFiltre this
+   # ::traiteFilters::run sousMenu typeFiltre
    # Lance la boite de dialogue pour les traitements sur une image
-   # this : Chemin de la fenetre
    #
-   #proc run { sousMenu typeFiltre this } #
    proc run { sousMenu typeFiltre } {
       variable This
       variable widget
       global caption traiteFilters
 
-      set this $::audace(base).traiteFilters
-
       #---
       ::traiteFilters::initConf
       ::traiteFilters::confToWidget
       #---
+      set this $::audace(base).traiteFilters
       set This $this
       if { [ winfo exists $This ] } {
          wm withdraw $This
@@ -2172,21 +2164,6 @@ namespace eval ::traiteFilters {
             pack $This.usr.3.1 -side top -fill both
         # pack $This.usr.3 -side top -fill both
 
-         frame $This.usr.8 -borderwidth 1 -relief raised
-            frame $This.usr.8.1 -borderwidth 0 -relief flat
-               checkbutton $This.usr.8.1.che1 -text "$traiteFilters(afficher_image)" -variable traiteFilters(disp_1) \
-                  -state disabled
-               pack $This.usr.8.1.che1 -side left -padx 10 -pady 5
-            pack $This.usr.8.1 -side top -fill both
-        # pack $This.usr.8 -side top -fill both
-
-         frame $This.usr.9 -borderwidth 1 -relief raised
-            frame $This.usr.9.1 -borderwidth 0 -relief flat
-               label $This.usr.9.1.labURL1 -textvariable "traiteFilters(avancement)" -fg $color(blue)
-               pack $This.usr.9.1.labURL1 -side top -padx 10 -pady 5
-            pack $This.usr.9.1 -side top -fill both
-        # pack $This.usr.9 -side top -fill both
-
          set f [ frame $This.usr.tfd_ordre -borderwidth 0 -relief raised ]
          set g [ frame ${f}.1 -borderwidth 0 -relief flat ]
          label ${g}.l -text "$caption(pretraitement,tfd_ordre)"
@@ -2244,16 +2221,6 @@ namespace eval ::traiteFilters {
          button ${h}.explore -text "$caption(pretraitement,parcourir)" -width 1 -command { ::traiteFilters::parcourir 6 }
          pack ${h}.explore -side left -padx 10 -pady 5 -ipady 5
          pack $g $h -side top -fill both
-
-         set f [ frame $This.usr.tfd_sortie1 -borderwidth 0 -relief raised ]
-         set g [ frame ${f}.1 -borderwidth 0 -relief flat ]
-         label ${g}.l -text "$caption(pretraitement,sortie)"
-         pack ${g}.l -side left -padx 5 -pady 5
-         entry ${g}.e -textvariable traiteFilters(image_out)
-         pack ${g}.e -side left -padx 10 -pady 5 -fill x -expand 1
-         button ${g}.explore -text "$caption(pretraitement,parcourir)" -width 1 -command { ::traiteFilters::parcourir 2 }
-         pack ${g}.explore -side left -padx 10 -pady 5 -ipady 5
-         pack $g -side top -fill both
 
          set f [ frame $This.usr.icorr_entree2 -borderwidth 0 -relief raised ]
          set g [ frame ${f}.1 -borderwidth 0 -relief flat ]
@@ -2521,10 +2488,6 @@ namespace eval ::traiteFilters {
             if { $traiteFilters(choix_mode) == "0" } {
                pack $This.usr.1.radiobutton -side left -padx 10 -pady 5 -before $This.usr.1.but1
                pack $This.usr.3 $This.usr.tfd_sortie2 -in $This.usr.2 -side top -fill both
-               pack forget $This.usr.tfd_sortie1
-               pack forget $This.usr.7
-               pack forget $This.usr.8
-               pack forget $This.usr.9
                pack $This.usr.tfd_ordre -in $This.usr.2 -side top -fill both
                pack $This.usr.tfd_format -in $This.usr.2 -side top -fill both
                pack forget $This.usr.tfd_entree2
@@ -2532,12 +2495,8 @@ namespace eval ::traiteFilters {
             } elseif { $traiteFilters(choix_mode) == "1" } {
                pack $This.usr.1.radiobutton -side left -padx 10 -pady 5 -before $This.usr.1.but1
                pack $This.usr.3 $This.usr.tfd_sortie2 -in $This.usr.2 -side top -fill both
-               pack forget $This.usr.7
-               pack forget $This.usr.8
-               pack forget $This.usr.9
                pack $This.usr.tfd_ordre -in $This.usr.2 -side top -fill both
                pack $This.usr.tfd_format -in $This.usr.2 -side top -fill both
-               pack forget $This.usr.tfd_sortie1
                pack forget $This.usr.tfd_entree2
                pack forget $This.usr.icorr_entree2
             }
@@ -2546,25 +2505,17 @@ namespace eval ::traiteFilters {
             pack forget $This.usr.1.radiobutton
             pack forget $This.usr.3
             pack $This.usr.tfd_entree2 -in $This.usr.2 -side top -fill both
-            pack forget $This.usr.7
-            pack forget $This.usr.8
-            pack forget $This.usr.9
             pack forget $This.usr.tfd_ordre
             pack forget $This.usr.tfd_format
-            pack forget $This.usr.tfd_sortie1
             pack forget $This.usr.tfd_sortie2
             pack forget $This.usr.icorr_entree2
          } \
          "$caption(audace,menu,acorr)" {
             pack $This.usr.1.radiobutton -side left -padx 10 -pady 5 -before $This.usr.1.but1
             pack $This.usr.3 -in $This.usr.2 -side top -fill both
-            pack forget $This.usr.7
-            pack forget $This.usr.8
-            pack forget $This.usr.9
             pack forget $This.usr.tfd_ordre
             pack forget $This.usr.tfd_format
             pack forget $This.usr.tfd_entree2
-            pack forget $This.usr.tfd_sortie1
             pack forget $This.usr.tfd_sortie2
             pack forget $This.usr.icorr_entree2
          } \
@@ -2572,12 +2523,8 @@ namespace eval ::traiteFilters {
             pack forget $This.usr.1.radiobutton
             pack forget $This.usr.3
             pack $This.usr.icorr_entree2 -in $This.usr.2 -side top -fill both
-            pack forget $This.usr.7
-            pack forget $This.usr.8
-            pack forget $This.usr.9
             pack forget $This.usr.tfd_ordre
             pack forget $This.usr.tfd_format
-            pack forget $This.usr.tfd_sortie1
             pack forget $This.usr.tfd_sortie2
             pack forget $This.usr.tfd_entree2
          } \
@@ -2585,12 +2532,8 @@ namespace eval ::traiteFilters {
             pack forget $This.usr.1.radiobutton
             pack forget $This.usr.3
             pack $This.usr.icorr_entree2 -in $This.usr.2 -side top -fill both
-            pack forget $This.usr.7
-            pack forget $This.usr.8
-            pack forget $This.usr.9
             pack forget $This.usr.tfd_ordre
             pack forget $This.usr.tfd_format
-            pack forget $This.usr.tfd_sortie1
             pack forget $This.usr.tfd_sortie2
             pack forget $This.usr.tfd_entree2
          }
@@ -2623,12 +2566,7 @@ namespace eval ::traiteFilters {
          $This.usr.3.1.ent1 xview end
       } elseif { $In_Out == "2" } {
          set traiteFilters(image_out) [ file rootname $filename ]
-      } elseif { $In_Out == "3" } {
-         set traiteFilters(image_out1) [ file rootname $filename ]
-         $This.usr.tfd_sortie2.1.e xview end
-      } elseif { $In_Out == "4" } {
-         set traiteFilters(image_out2) [ file rootname $filename ]
-         $This.usr.tfd_sortie2.2.e xview end
+::console::disp "::traiteFilters::parcourir 2 \n"
       } elseif { $In_Out == "5" } {
          set traiteFilters(image_in1) [ file rootname $filename ]
          $This.usr.tfd_entree2.1.e xview end
@@ -2653,25 +2591,12 @@ namespace eval ::traiteFilters {
       #--- Ouvre la fenetre de choix des images
       set filename [ ::tkutil::box_save $fenetre $audace(rep_images) $audace(bufNo) "1" ]
       #--- Nom du fichier avec le chemin et sans son extension
-      if { $In_Out == "1" } {
-         set traiteFilters(image_in) [ file rootname $filename ]
-         $This.usr.3.1.ent1 xview end
-      } elseif { $In_Out == "2" } {
-         set traiteFilters(image_out) [ file rootname $filename ]
-      } elseif { $In_Out == "3" } {
+      if { $In_Out == "3" } {
          set traiteFilters(image_out1) [ file rootname $filename ]
          $This.usr.tfd_sortie2.1.e xview end
       } elseif { $In_Out == "4" } {
          set traiteFilters(image_out2) [ file rootname $filename ]
          $This.usr.tfd_sortie2.2.e xview end
-      } elseif { $In_Out == "5" } {
-         set traiteFilters(image_in1) [ file rootname $filename ]
-         $This.usr.tfd_entree2.1.e xview end
-         $This.usr.icorr_entree2.1.e xview end
-      } elseif { $In_Out == "6" } {
-         set traiteFilters(image_in2) [ file rootname $filename ]
-         $This.usr.tfd_entree2.2.e xview end
-         $This.usr.icorr_entree2.2.e xview end
       }
    }
 
