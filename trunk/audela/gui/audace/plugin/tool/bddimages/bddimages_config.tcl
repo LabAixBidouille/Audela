@@ -6,7 +6,7 @@
 # Description    : Configuration des variables globales bddconf
 #                  necessaires au service
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_config.tcl,v 1.12 2011-01-23 01:20:51 jberthier Exp $
+# Mise à jour $Id: bddimages_config.tcl,v 1.13 2011-01-24 00:35:08 jberthier Exp $
 #
 #--------------------------------------------------
 #
@@ -27,7 +27,7 @@ namespace eval bddimages_config {
    global bddconf
 
    # Tous les parametres de configuration
-   set allparams { sauve_xml dbname login pass serv dirbase dirinco dirfits dircata direrr dirlog limit intellilists }
+   set allparams { sauve_xml dbname login pass server dirbase dirinco dirfits dircata direrr dirlog limit intellilists }
 
    #--- Chargement des captions
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_config.cap ]\""
@@ -67,9 +67,10 @@ namespace eval bddimages_config {
    #
    #    variables en sortie :
    #
+   #--------------------------------------------------
    proc fermer { } {
       variable This
-
+      
       ::bddimages_config::recup_position
       destroy $This
    }
@@ -88,6 +89,7 @@ namespace eval bddimages_config {
    #
    #    variables en sortie :
    #
+   #--------------------------------------------------
    proc save { } {
       variable This
       global audace
@@ -100,11 +102,17 @@ namespace eval bddimages_config {
         set conf(bddimages,$param) $bddconf($param)
       }
 
+      # Defini et charge la config par defaut comme etant la config courante
+      set bddconf(default_config) [::bddimagesXML::get_config $bddconf(current_config)]
       # Sauve le fichiers XML si demande
       if {$bddconf(sauve_xml) == 1} {
-         ::bddimagesXML::save_xml_config
+         # Defini la config par defaut
+         set ::bddimagesXML::default_config $bddconf(default_config) 
+         # Enregistre la config
+         ::bddimagesXML::save_xml_config 
       }
-      
+
+      # Fin
       ::bddimages_config::recup_position
       destroy $This
    }
@@ -123,6 +131,7 @@ namespace eval bddimages_config {
    #
    #    variables en sortie :
    #
+   #--------------------------------------------------
    proc recup_position { } {
       variable This
       global audace
@@ -152,6 +161,7 @@ namespace eval bddimages_config {
    #    variables en sortie :
    #
    #
+   #--------------------------------------------------
    proc getDir { {path ""} {title ""} } {
 
       variable This
@@ -195,6 +205,7 @@ namespace eval bddimages_config {
    #    variables en sortie :
    #
    #
+   #--------------------------------------------------
    proc GetInfo { subject } {
       global caption
       global voconf
@@ -228,6 +239,7 @@ namespace eval bddimages_config {
    #
    #    variables en sortie :
    #
+   #--------------------------------------------------
    proc createDialog { } {
       variable This
       global audace
@@ -238,6 +250,7 @@ namespace eval bddimages_config {
       variable allparams
       global myconf
       global rbconfig
+      
       #--- initConf
       if { ! [ info exists conf(bddimages,position_status) ] } { set conf(bddimages,position_status) "+80+40" } 
 
@@ -272,7 +285,9 @@ namespace eval bddimages_config {
       #--- Charge les config bddimages depuis le fichier XML
       set err [::bddimagesXML::load_xml_config]
       #--- Recupere la config par defaut
-      set bddconf(current_config) $::bddimagesXML::default_config
+      set bddconf(default_config) $::bddimagesXML::default_config
+      #--- Recupere la config par courante
+      set bddconf(current_config) $::bddimagesXML::current_config
       #--- Recupere la liste des bddimages disponibles
       set bddconf(list_config) $::bddimagesXML::list_bddimages
 
@@ -296,7 +311,8 @@ namespace eval bddimages_config {
              pack $This.conf.m.titre -in $This.conf.m -side left -anchor w -padx 3 -pady 3
              #--- Cree un menu bouton pour choisir la config
              menubutton $This.conf.m.menu -relief raised -borderwidth 2 -textvariable bddconf(current_config) -menu $This.conf.m.menu.list
-             set rbconfig [menu $This.conf.m.menu.list -tearoff "0"]
+             set rbconfig [menu $This.conf.m.menu.list -tearoff "1"]
+             set idx 0
              foreach myconf $bddconf(list_config) {
                 $rbconfig add radiobutton -label [lindex "$myconf" 1] -value [lindex "$myconf" 1] -variable bddconf(current_config) \
                     -command { set bddconf(current_config) [::bddimagesXML::get_config $bddconf(current_config)] }
@@ -316,11 +332,10 @@ namespace eval bddimages_config {
              #--- Cree un bouton - pour effacer la config courante
              button $This.conf.m.operationM -state active -text "-" \
                 -command { 
-#                   set new_config [::bddimagesXML::delete_config]
-#                   set bddconf(current_config) [::bddimagesXML::get_config $new_config]
-#                   set bddconf(list_config) $::bddimagesXML::list_bddimages
-#                   $rbconfig del radiobutton -label [lindex "$myconf" 1] -value [lindex "$myconf" 1] -variable bddconf(current_config) \
-#                      -command { set bddconf(current_config) [::bddimagesXML::get_config $bddconf(current_config)] }
+                    $rbconfig delete  $bddconf(current_config)
+                    set new_config [::bddimagesXML::delete_config $bddconf(current_config)]
+                    set bddconf(current_config) [::bddimagesXML::get_config $new_config]
+                    set bddconf(list_config) $::bddimagesXML::list_bddimages
                  }
              pack $This.conf.m.operationM -in $This.conf.m -side left -anchor w -padx 1
 
@@ -390,10 +405,10 @@ namespace eval bddimages_config {
           pack $This.bdd.serv -in $This.bdd -anchor w -side top -expand 0 -fill both -padx 3 -pady 0
 
             #--- Cree un label
-            label $This.bdd.serv.lab -text "$caption(bddimages_config,serv)" -width 30 -anchor w -borderwidth 0 -relief flat
+            label $This.bdd.serv.lab -text "$caption(bddimages_config,server)" -width 30 -anchor w -borderwidth 0 -relief flat
             pack $This.bdd.serv.lab -in $This.bdd.serv -side left -anchor w -padx 1
             #--- Cree une ligne d'entree pour la variable
-            entry $This.bdd.serv.dat -textvariable bddconf(serv) -borderwidth 1 -relief groove -width 25 -justify left
+            entry $This.bdd.serv.dat -textvariable bddconf(server) -borderwidth 1 -relief groove -width 25 -justify left
             pack $This.bdd.serv.dat -in $This.bdd.serv -side left -anchor w -padx 1
             #--- Cree un bouton info
             button $This.bdd.serv.help -state active -borderwidth 0 -relief flat -anchor c -height 1 \

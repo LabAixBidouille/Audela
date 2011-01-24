@@ -1,6 +1,6 @@
 #
 # Fichier : bddimages_xml.cap
-# Mise a jour $Id: bddimages_xml.cap,v 1.1 2011-01-23 01:20:51 jberthier Exp $
+# Mise a jour $Id: bddimages_xml.cap,v 1.2 2011-01-24 00:35:08 jberthier Exp $
 #
 
 #=========================================================================
@@ -11,12 +11,14 @@ global caption langage
 
 # *************** Version anglaise ****************************
 set caption(bddimages_xml,defaultxml)     "Création du fichier de config XML bddimages..."
-
+set caption(bddimages_xml,errorxml)       "Erreur d'enregistrement du fichier de configuration XML de bddimages"
+set caption(bddimages_xml,successxml)     "Fichier XML de configuration de bddimages enregistré"
 
 # *************** Version française **** **********************
 if { [ string compare $langage "french" ] == "0" } {
    set caption(bddimages_xml,defaultxml)     "Création du fichier de config XML bddimages..."
-
+   set caption(bddimages_xml,errorxml)       "Erreur d'enregistrement du fichier de configuration XML de bddimages"
+   set caption(bddimages_xml,successxml)     "Fichier XML de configuration de bddimages enregistré"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
