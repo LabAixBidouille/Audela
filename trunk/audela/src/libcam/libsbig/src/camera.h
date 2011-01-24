@@ -23,6 +23,10 @@
 #ifndef __CAMERA_H__
 #define __CAMERA_H__
 
+#ifdef OS_WIN
+#define TARGET	 ENV_WIN  // definition de l'OS pour sbigudrv.h
+#endif
+
 #ifdef OS_LIN
 #define __KERNEL__
 #   include <sys/io.h>
