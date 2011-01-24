@@ -5,7 +5,7 @@
 # Fichier        : bddimages_status.tcl
 # Description    : Affiche le status de la base de donnees
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_status.tcl,v 1.7 2011-01-24 00:35:08 jberthier Exp $
+# Mise à jour $Id: bddimages_status.tcl,v 1.8 2011-01-24 00:54:39 jberthier Exp $
 #
 
 namespace eval bddimages_status {
@@ -307,7 +307,7 @@ namespace eval bddimages_status {
 #      ::console::affiche_resultat "DBNAME)     =$bddconf(dbname)  \n"
 #      ::console::affiche_resultat "LOGIN)      =$bddconf(login)   \n"
 #      ::console::affiche_resultat "PASS)       =$bddconf(pass)    \n"
-#      ::console::affiche_resultat "IP)         =$bddconf(serv)    \n"
+#      ::console::affiche_resultat "SERVER)     =$bddconf(server)  \n"
 #      ::console::affiche_resultat "PORT)       =$bddconf(port)    \n"
 #      ::console::affiche_resultat "ROOT)       =$bddconf(dirbase) \n"
 #      ::console::affiche_resultat "INCOMING)   =$bddconf(dirinco) \n"
