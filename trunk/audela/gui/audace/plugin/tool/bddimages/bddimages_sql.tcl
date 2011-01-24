@@ -4,7 +4,7 @@
 # Fichier        : bddimages_sql.tcl
 # Description    : Routines sql
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_sql.tcl,v 1.3 2011-01-21 11:06:23 jberthier Exp $
+# Mise à jour $Id: bddimages_sql.tcl,v 1.4 2011-01-24 00:54:39 jberthier Exp $
 #
 
 namespace eval bddimages_sql {
@@ -80,7 +80,7 @@ namespace eval bddimages_sql {
       set err [catch {sql query "use $bddconf(dbname);"} msg]
       if {$err} {
          # -- Connexion a MySql --
-         set err [catch {sql connect $bddconf(serv) $bddconf(login) $bddconf(pass)} msg]
+         set err [catch {sql connect $bddconf(server) $bddconf(login) $bddconf(pass)} msg]
          if {$err} {
             gren_info "Erreur de connexion a MySql <$err> <$msg>\n"
             return -code error "Erreur de connexion a MySql <$err> <$msg>" 
@@ -106,8 +106,9 @@ namespace eval bddimages_sql {
 
    #--- namespace
    global sql
+   global audace
    #--- extension MySQL
-   set err [catch {load "/usr/local/src/audela/bin/libmysqltcl[info sharedlibextension]"} msg]
+   set err [catch {load [concat $audace(rep_install) "/bin/libmysqltcl[info sharedlibextension]"]} msg]
    if {$err==1} {
       set err [catch {package require mysqltcl} msg]
    }
