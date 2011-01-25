@@ -1,6 +1,6 @@
 # source audace/plugin/tool/bddimages/bddimages_subroutines.tcl
 
-# Mise à jour $Id: bddimages_sub_insertion.tcl,v 1.13 2011-01-21 18:39:21 fredvachier Exp $
+# Mise à jour $Id: bddimages_sub_insertion.tcl,v 1.14 2011-01-25 23:11:20 jberthier Exp $
 
 #--------------------------------------------------
 #  init_info { }
@@ -162,6 +162,7 @@ proc info_fichier { nomfich } {
    }
    if {$form3 == "cata"} {
       set errnum [catch {file rename $nomfich "$racinefich\_$form2"} msg]
+      set errnum [catch {file rename $nomfich "$racinefich.$form2"} msg]
    }
    if {$errnum != 0} {
       if {[string last "file already exists" $msg] <= 1} {
