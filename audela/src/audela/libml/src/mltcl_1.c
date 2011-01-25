@@ -1081,7 +1081,7 @@ int Cmd_mltcl_geostatident2(ClientData clientData, Tcl_Interp *interp, int argc,
 "C:/Program Files/Apache Group/Apache2/htdocs/ros/geostat/bdd_20060927.txt" */
 
 {
-	int result,retour,n_in,n_in1,kimage,nimages,kimage2,nimages2,k,k1,k2,k3,k4,date,temp,nsat;
+	int result,retour,n_in,n_in1,kimage,nimages,kimage2,nimages2,k,k1,k2,k3,date,temp,nsat;
 	int kmin,kmini,pareil;	
 	int code;
 	double distmin,ra0,dec0, ra,dec,dist,angl,anglmin;
@@ -1492,7 +1492,7 @@ int Cmd_mltcl_geostatident2(ClientData clientData, Tcl_Interp *interp, int argc,
 					//vaut 2 si pas geo
 					k1=269 ; for (k=k1;k<k1+1;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 					lignes[n_in].typesatellite=atoi(s);
-			    
+retour=0;			    
 					if (((retour==0) || (result<=3)) && ((lignes[n_in].typesatellite!=2) )) {
 					//	WriteDisk("le satellite n'est pas identifie");
 						/* --- le satellite n'est pas identifiée --- */
@@ -1543,28 +1543,10 @@ int Cmd_mltcl_geostatident2(ClientData clientData, Tcl_Interp *interp, int argc,
 								if (result<111) {
 									continue;
 								}
-								//recherche de ra dans la tle
-								for (k1=60;k1<70;k1++){
-									if (argvv[k][k1]== '}') {
-										break;
-									}
-								}
-								for (k2=76;k2<89;k2++){
-									if (argvv[k][k2]== ' ') {
-										break;
-									}
-								}
-								k1= k1+3; for (k3=k1;k3<k2;k3++) { s[k3-k1]=argvv[k][k3]; } ; s[k3-k1]='\0';
-								ra=atof(s);
-								//recherche de dec dans la tle
-								for (k1=96;k1<111;k1++){
-									if (argvv[k][k1]== ' ') {
-										break;
-									}
-								}	
-								k4=k2+1; for (k3=k4;k3<k1;k3++) { s[k3-k4]=argvv[k][k3]; } ; s[k3-k4]='\0';
-								dec=atof(s);
-
+								code = Tcl_SplitList(interp,argvv[k],&argc2,&argv2);
+								ra=atof(argv2[1]);
+								dec=atof(argv2[2]);
+								Tcl_Free((char *) argv2);
 								/* calcul la distance et angle entre les deux coordonnées */
 								sprintf(lign,"mc_anglesep {%14.12f %14.12f %14.12f %14.12f}",ra0,dec0,ra,dec);
 								result = Tcl_Eval(interp,lign);
@@ -1577,21 +1559,9 @@ int Cmd_mltcl_geostatident2(ClientData clientData, Tcl_Interp *interp, int argc,
 									list3 = Tcl_GetObjResult  (interp);
 									distang = Tcl_GetString (list3);
 									code = Tcl_SplitList(interp,distang,&argc2,&argv2);
+									dist=atof(argv2[0]);
+									angl=atof(argv2[1]);
 									Tcl_Free((char *) argv2);
-
-									k2=0;
-									k3=0;
-									for (k1=0;k1<20;k1++){
-										if (distang[k1]== ' ') {
-											k2=k1;
-											break;
-										}
-									}
-
-									k1= 0; for (k3=k1;k3<k2;k3++) { s[k3-k1]=distang[k3]; } ; s[k3-k1]='\0';
-									dist=atof(s);
-									k1= k2+1; for (k3=k1;k3<=k2+13;k3++) { s[k3-k1]=distang[k3]; } ; s[k3-k1]='\0';
-									angl=atof(s);
 									if (dist <= distmin) {
 										distmin = dist;
 										kmini=kmin;
