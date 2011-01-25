@@ -5,7 +5,7 @@
 # Fichier        : bddimages_go.tcl
 # Description    : Outil d'appel des fonctionnalites de l'observatoire virtuel
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_go.tcl,v 1.13 2011-01-23 01:24:18 jberthier Exp $
+# Mise à jour $Id: bddimages_go.tcl,v 1.14 2011-01-25 22:49:43 jberthier Exp $
 #
 
 #============================================================
@@ -70,6 +70,7 @@ proc ::bddimages::initPlugin { tkbase } {
    set bddconf(font,arial_14_b) "{Arial} 14 bold"
 
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_xml.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_admin.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_config.tcl ]\""
 
    foreach param $::bddimages_config::allparams {
@@ -127,6 +128,7 @@ proc ::bddimages::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_sub_insertion.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_liste.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_xml.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_admin.tcl ]\""
 
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_config.cap ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_status.cap ]\""
