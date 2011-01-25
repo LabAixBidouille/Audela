@@ -1492,7 +1492,6 @@ int Cmd_mltcl_geostatident2(ClientData clientData, Tcl_Interp *interp, int argc,
 					//vaut 2 si pas geo
 					k1=269 ; for (k=k1;k<k1+1;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 					lignes[n_in].typesatellite=atoi(s);
-retour=0;			    
 					if (((retour==0) || (result<=3)) && ((lignes[n_in].typesatellite!=2) )) {
 					//	WriteDisk("le satellite n'est pas identifie");
 						/* --- le satellite n'est pas identifiée --- */
