@@ -5,10 +5,12 @@
 # Fichier        : bddimages_status.tcl
 # Description    : Affiche le status de la base de donnees
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_status.tcl,v 1.8 2011-01-24 00:54:39 jberthier Exp $
+# Mise à jour $Id: bddimages_status.tcl,v 1.9 2011-01-25 22:49:43 jberthier Exp $
 #
 
 namespace eval bddimages_status {
+   package require bddimagesAdmin 1.0
+
    global audace
    global bddconf
 
@@ -42,45 +44,6 @@ namespace eval bddimages_status {
    }
 
    #
-   # bddimages_status::sql_nbimg
-   # Permet de recuperer le nombre d images
-   #
-   proc sql_nbimg { } {
-      set sqlcmd ""
-      append sqlcmd "SELECT count(*) FROM images;"
-      set err [catch {set status [::bddimages_sql::sql query $sqlcmd]} msg]
-      if {$err} {
-         ::console::affiche_resultat "ERREUR sql_nbimg\n"
-         ::console::affiche_resultat "  SQL : <$sqlcmd>\n"
-         ::console::affiche_resultat "  ERR : <$err>\n"
-         ::console::affiche_resultat "  MSG : <$msg>\n"
-         set status "Table 'images' inexistantes"
-      }
-      return $status
-   }
-
-   #
-   # bddimages_status::sql_nbimg
-   # Permet de recuperer le nombre d images
-   #
-   proc sql_header { } {
-      set sqlcmd ""
-      append sqlcmd "SELECT distinct idheader FROM header;"
-      set err [catch {set status [::bddimages_sql::sql query $sqlcmd]} msg]
-      if {$err} {
-         ::console::affiche_resultat "ERREUR sql_nbimg\n"
-         ::console::affiche_resultat "  SQL : <$sqlcmd>\n"
-         ::console::affiche_resultat "  ERR : <$err>\n"
-         ::console::affiche_resultat "  MSG : <$msg>\n"
-         set status "Table 'header' inexistantes"
-         return $status
-      } else {
-         set nb [llength $status]
-         return $nb
-      }
-   }
-
-   #
    # bddimages_status::recup_position
    # Permet de recuperer et de sauvegarder la position de la fenetre
    #
@@ -98,152 +61,6 @@ namespace eval bddimages_status {
       set conf(bddimages,position_status) $bddconf(position_status)
    }
 
-   #
-   # bddimages_status::GetPassword
-   # Demande d'un mot de passe utilisateur
-   #
-   proc GetPassword { msg } {
-      global getPassword
-      # getPassword est un tableau qui va contenir 3 entrées:
-      # name qui va contenir le nom de l'utilisateur
-      # passwd qui va contenir son mot de passe
-      # result qui va contenir 1 si et seulement si l'utilisateur a cliqué sur Ok
-      set getPassword(result) 0
-      set getPassword(passwd) ""
-
-      toplevel .passwd
-      wm title .passwd "Root password"
-      wm positionfrom .passwd user
-      wm sizefrom .passwd user
-      frame .passwd.f -relief groove
-      pack configure .passwd.f -side top -fill both -expand 1 -padx 10 -pady 10
-
-      # Frame qui va contenir le label "Type your password:" et une entrée pour le rentrer
-      frame .passwd.f.pass
-      pack configure .passwd.f.pass -side top -fill x
-        label .passwd.f.pass.e -text $msg
-        pack configure .passwd.f.pass.e -side left -anchor c
-
-      # L'option -show permet de masquer la véritable entrée, 
-      # et de mettre une étoile à la place des caractères saisis
-      frame .passwd.f.gpass
-      pack configure .passwd.f.gpass -side top -fill x
-        entry .passwd.f.gpass.v -textvariable getPassword(passwd) -show "*"
-        pack configure .passwd.f.gpass.v -side bottom -anchor c
-
-      # Frame qui va contenir les boutons Cancel et Ok
-      frame .passwd.f.buttons
-      pack configure .passwd.f.buttons -side top -fill x
-        button .passwd.f.buttons.cancel -text Cancel -command {destroy .passwd}
-        pack configure .passwd.f.buttons.cancel -side left
-        button .passwd.f.buttons.ok -text Ok -command { set getPassword(result) 1; destroy .passwd }
-        pack configure .passwd.f.buttons.ok -side right
-
-      grab set .passwd
-      tkwait window .passwd
-      if {$getPassword(result)} {
-         return -code 0 $getPassword(passwd)
-      } else {
-         return -code error ""
-      }
-   }
-
-   #
-   # bddimages_status::razbdd
-   # reinitialisation de la base;
-   #
-   proc razbdd { } {
-      global audace
-      global caption
-      global conf
-
-      set answer [tk_messageBox -title $caption(bddimages_status,msg_prevent) -message $caption(bddimages_status,msg_prevent2) \
-              -icon question -type okcancel ]
-      switch -- $answer {
-         ok {
-            if { [catch {GetPassword $caption(bddimages_status,mdprootsql)} passwd ] != 0 } {
-               ::console::affiche_erreur "$caption(bddimages_status,cancelRAZ)\n"
-               return
-            }
-            # Supprime la BDD
-            set status "ok"
-            if { [catch {::mysql::connect -host $conf(bddimages,serv) -user root -password $passwd} dblink] != 0 } {
-               ::console::affiche_erreur "$dblink\n"
-               set status "Error: $dblink"
-            } else {
-               if {$status == "ok"} {
-                  set sqlcmd "DROP DATABASE IF EXISTS $conf(bddimages,dbname);"
-                  set err [catch {::mysql::query $dblink $sqlcmd} msg]
-                  if {$err} {
-                     set status "Failed : \n <$sqlcmd> \n <$err> \n <$msg>"
-                  }
-               }
-               if {$status == "ok"} {
-                  set sqlcmd "CREATE DATABASE IF NOT EXISTS $conf(bddimages,dbname);"
-                  set err [catch {::mysql::query $dblink $sqlcmd} msg]
-                  if {$err} {
-                     set status "Failed : \n <$sqlcmd> \n <$err> \n <$msg>"
-                  }
-               }
-   #            if {$status=="ok"} {
-   #               set sqlcmd "GRANT ALL PRIVILEGES ON `bddimages` . * TO '$conf(login)'@'$conf(serv)' WITH GRANT OPTION ;"
-   #               set err [catch {::mysql::query $dblink $sqlcmd} msg]
-   #               if {$err} {
-   #                  set status "Failed : \n <$sqlcmd> \n <$err> \n <$msg>"
-   #               }
-   #            }
-               # Fermeture connection
-               ::mysql::close $dblink
-               unset dblink
-            }
-            # Message 
-            tk_messageBox -message "$caption(bddimages_status,efface): $status" -type ok
-
-            # Supprime le repertoire fits
-            set errnum [catch {file delete -force $conf(bddimages,dirfits)} msg]
-            if {$errnum==0} {
-               ::console::affiche_resultat "Effacement du repertoire : $conf(bddimages,dirfits) \n"
-               set errnum [catch {file mkdir  $conf(bddimages,dirfits)} msg]
-               if {$errnum==0} {
-                  ::console::affiche_resultat "Creation du repertoire : $conf(bddimages,dirfits) \n"
-               } else {
-                  ::console::affiche_resultat "ERREUR: Creation du repertoire : $conf(bddimages,dirfits) impossible <$errnum>\n"
-               }
-            } else {
-               ::console::affiche_resultat "ERREUR: Effacement du repertoire : $conf(bddimages,dirfits) impossible <$errnum>\n"
-            }
-            
-            # Supprime le repertoire logs
-            set errnum [catch {file delete -force $conf(bddimages,dirlog)} msg]
-            if {$errnum==0} {
-               ::console::affiche_resultat "Effacement du repertoire : $conf(bddimages,dirlog) \n"
-               set errnum [catch {file mkdir  $conf(bddimages,dirlog)} msg]
-               if {$errnum==0} {
-                  ::console::affiche_resultat "Creation du repertoire : $conf(bddimages,dirlog) \n"
-               } else {
-                  ::console::affiche_resultat "ERREUR: Creation du repertoire : $conf(bddimages,dirlog) impossible <$errnum>\n"
-               }
-            } else {
-               ::console::affiche_resultat "ERREUR: Effacement du repertoire : $conf(bddimages,dirlog) impossible <$errnum>\n"
-            }
-            
-            # Supprime le repertoire probleme
-            set errnum [catch {file delete -force $conf(bddimages,direrr)} msg]
-            if {$errnum==0} {
-               ::console::affiche_resultat "Effacement du repertoire : $conf(bddimages,direrr) \n"
-               set errnum [catch {file mkdir  $conf(bddimages,direrr)} msg]
-               if {$errnum==0} {
-                  ::console::affiche_resultat "Creation du repertoire : $conf(bddimages,direrr) \n"
-               } else {
-                  ::console::affiche_resultat "ERREUR: Creation du repertoire : $conf(bddimages,direrr) impossible <$errnum>\n"
-               }
-            } else {
-               ::console::affiche_resultat "ERREUR: Effacement du repertoire : $conf(bddimages,direrr) impossible <$errnum>\n"
-            }
-
-         }
-      }
-   }
 
    #
    # bddimages_status::createDialog
@@ -296,8 +113,8 @@ namespace eval bddimages_status {
 
       #--- Mise en forme du resultat
       set errconn   [catch {::bddimages_sql::connect} status]
-      set nbimg     [sql_nbimg]
-      set nbheader  [sql_header]
+      set nbimg     [catch {::bddimagesAdmin::sql_nbimg} status]
+      set nbheader  [catch {::bddimagesAdmin::sql_header} status]
       set nbfichbdd [numberoffile $conf(bddimages,dirfits)]
       set nbfichinc [numberoffile $conf(bddimages,dirinco)]
       set nbficherr [numberoffile $conf(bddimages,direrr)]
@@ -465,7 +282,7 @@ namespace eval bddimages_status {
            #--- Creation du bouton RAZ
            button $This.frame11.but_raz \
               -text "$caption(bddimages_status,raz)" -borderwidth 2 \
-              -command { ::bddimages_status::razbdd }
+              -command { ::bddimagesAdmin::RAZBdd }
            pack $This.frame11.but_raz \
               -in $This.frame11 -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0

@@ -1,6 +1,6 @@
 #
 # Fichier : bddimages_config.cap
-# Mise a jour $Id: bddimages_config.cap,v 1.8 2011-01-24 00:35:08 jberthier Exp $
+# Mise a jour $Id: bddimages_config.cap,v 1.9 2011-01-25 22:49:43 jberthier Exp $
 #
 
 #=========================================================================
@@ -43,7 +43,7 @@ set caption(bddimages_config,listlimit)      " - Limite pour la liste d'insertio
 set caption(bddimages_config,getdir)         "Choisir le répertoire"
 set caption(bddimages_config,test)           "Test"
 
-set caption(bddimages_config,info)           "\[ ? \]"
+set caption(bddimages_config,info)           "?"
 set caption(bddimages_config,info_title)     "Format de la saisie"
 set caption(bddimages_config,info_dbname)    "Nom de la base de données (e.g. bddimages)"
 set caption(bddimages_config,info_login)     "Saisir le nom de l'administrateur/utilisateur de la base de données 'bddimages' (e.g. bddimagesAdmin)"
@@ -91,7 +91,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bddimages_config,getdir)         "Choisir le répertoire"
    set caption(bddimages_config,test)           "Test"
    
-   set caption(bddimages_config,info)           "\[ ? \]"
+   set caption(bddimages_config,info)           "?"
    set caption(bddimages_config,info_title)     "Format de la saisie"
    set caption(bddimages_config,info_dbname)    "Nom de la base de données (e.g. bddimages)"
    set caption(bddimages_config,info_login)     "Saisir le nom de l'administrateur/utilisateur de la base de données 'bddimages' (e.g. bddimagesAdmin)"

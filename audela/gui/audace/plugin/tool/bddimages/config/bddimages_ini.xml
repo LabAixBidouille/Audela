@@ -18,12 +18,12 @@
         <port>3306</port>
      </sql>
      <files>
-       <root>?</root>
-       <incoming>?</incoming>
-       <fits>?</fits>
-       <cata>?</cata>
-       <error>?</error>
-       <log>?</log>
+       <root></root>
+       <incoming></incoming>
+       <fits></fits>
+       <cata></cata>
+       <error></error>
+       <log></log>
      </files>
      <screenlimit>10</screenlimit>
   </bddimages>

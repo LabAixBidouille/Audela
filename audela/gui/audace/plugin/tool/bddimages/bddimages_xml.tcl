@@ -3,13 +3,12 @@
 # Description : Manipulation des fichiers de config XML de bddimages
 #
 # Auteur : J. Berthier & F. Vachier
-# Mise à jour $Id: bddimages_xml.tcl,v 1.2 2011-01-24 00:35:08 jberthier Exp $
+# Mise à jour $Id: bddimages_xml.tcl,v 1.3 2011-01-25 22:49:43 jberthier Exp $
 #
 
 namespace eval ::bddimagesXML {
    package provide bddimagesXML 1.0
    global audace
-   global bddconf
 
    # Compatibilite ascendante
    if { [ package require dom ] == "2.6" } {
@@ -21,12 +20,12 @@ namespace eval ::bddimagesXML {
    # Lecture des captions
    source [ file join [file dirname [info script]] bddimages_xml.cap ]
 
-   # Structure contenant la config xml
+   # Structure contenant les config xml
    variable xmlConfig
    # Defini le nom du fichier de config XML
-   variable xmlConfigFile [ file join $audace(rep_home) bddimages_ini.xml ]
+   variable xmlConfigFile [file join $audace(rep_home) bddimages_ini.xml]
    # Defini le fichier par defaut de config XML
-   variable xmlDefaultConfigFile [ file join $audace(rep_plugin) tool bddimages config bddimages_ini.xml]
+   variable xmlDefaultConfigFile [file join $audace(rep_plugin) tool bddimages config bddimages_ini.xml]
 
    # Liste des bddimages lues dans la config : xmlConfig(i,name)
    variable list_bddimages
@@ -41,7 +40,7 @@ namespace eval ::bddimagesXML {
    variable xml_nsxsi "http://www.w3.org/2001/XMLSchema-instance"
 
    #--------------------------------------------------
-   #  get_default_dir { base dir }
+   # ::bddimagesXML::get_default_dir { base dir }
    #--------------------------------------------------
    # Methode privee pour construire le chemin d'un repertoire base/dir
    # si base=='' alors le repertoire de base est audace(rep_images)
@@ -58,6 +57,59 @@ namespace eval ::bddimagesXML {
          set fullpath [file join $audace(rep_images) $dir]
       }
       return $fullpath 
+   }
+
+   #--------------------------------------------------
+   # ::bddimagesXML::get_id_from_name { name }
+   #--------------------------------------------------
+   # Methode privee fournissant l'id d'une config a partir de son nom
+   # Renvoie id=1 si la config demandee n'est pas trouvee
+   # @param name nom de la config
+   # @return id de la config correspondante
+   #--------------------------------------------------
+   proc get_id_from_name { name } {
+      set id 1
+      foreach l $::bddimagesXML::list_bddimages {
+         if {[lindex $l 1] == $name} {
+            set id [lindex $l 0]
+         }
+      }
+      return $id
+   }
+
+   #--------------------------------------------------
+   # ::bddimagesXML::get_name_from_id { id }
+   #--------------------------------------------------
+   # Methode privee fournissant le nom d'une config a partir de son id
+   # Renvoie name="?" si la config demandee n'est pas trouvee
+   # @param id id de la config
+   # @return nom de la config correspondante
+   #--------------------------------------------------
+   proc get_name_from_id { id } {
+      set name ""
+      foreach l $::bddimagesXML::list_bddimages {
+         if {[lindex $l 0] == $id} {
+            set name [lindex $l 1]
+         }
+      }
+      return $name
+   }
+
+   #--------------------------------------------------
+   # ::bddimagesXML::get_last_id_config { }
+   #--------------------------------------------------
+   # Methode privee fournissant l'id le plus grand
+   # Renvoie id=1 si la config demandee n'est pas trouvee
+   # @return id le plus grand
+   #--------------------------------------------------
+   proc get_last_id_config { } {
+      set id 1
+      foreach l $::bddimagesXML::list_bddimages {
+         if {[lindex $l 0] >= $id} {
+            set id [lindex $l 0]
+         }
+      }
+      return $id
    }
 
 }
@@ -91,16 +143,23 @@ proc ::bddimagesXML::load_xml_config {  } {
 # @return 0
 #--------------------------------------------------
 proc ::bddimagesXML::read_xml_config { file_config } {
-   
-   # Structure contenant la config
+
+   # Force la mise a null, car array set arrayName list ne le fait
+   # que si la variable n'existe pas
+   array unset ::bddimagesXML::xmlConfig
+   array unset ::bddimagesXML::list_bddimages
+
+   # Structure contenant la config: force la mise a null
    array set ::bddimagesXML::xmlConfig {}
-   # Structure contenant la liste des bdd
-   set ::bddimagesXML::list_bddimages {}
-   # Initialise le nom de la config par defaut
-   set ::bddimagesXML::default_config ""
-   # Par defaut c'est la config id=1
+   # Par defaut on considere la config id=1
    set ::bddimagesXML::xmlConfigDef(default_id) 1
-   # Initialise le nom de la config courante
+   # Par defaut il n'y a aucune config
+   set ::bddimagesXML::xmlConfigDef(nb_id) 0
+   # Structure contenant la liste des config sous la forme {id name}
+   set ::bddimagesXML::list_bddimages {}
+   # Nom de la config par defaut
+   set ::bddimagesXML::default_config ""
+   # Nom de la config courante
    set ::bddimagesXML::current_config ""
    
    # Lecture du fichier
@@ -111,72 +170,80 @@ proc ::bddimagesXML::read_xml_config { file_config } {
    }
    close $f
 
-   # Parse le doc XML pour charger la config par defaut dans bddconf
-   set idx 0
+   # Analyse du doc XML pour charger la config dans xmlConfig
    set xml [::dom::parse $xmldoc]
    foreach node [::dom::selectNode $xml {descendant::bddimages}] {
 
-      if { [catch {::dom::node stringValue [::dom::selectNode $node {attribute::id}]} val] == 0 } { 
-         set idx [expr $idx + 1]
-         set ::bddimagesXML::xmlConfig($idx,id) $val
-         set ::bddimagesXML::xmlConfigDef(nb_id) $idx
+      if { [catch {::dom::node stringValue [::dom::selectNode $node {attribute::id}]} val] == 0 } {
+         # id de la config
+         set id $val
+         set ::bddimagesXML::xmlConfig($id,id) $id
+         # compteur de config
+         set ::bddimagesXML::xmlConfigDef(nb_id) [expr $::bddimagesXML::xmlConfigDef(nb_id) + 1]
       }
       if { [catch {::dom::node stringValue [::dom::selectNode $node {attribute::default}]} val] == 0 } { 
-         set ::bddimagesXML::xmlConfig($idx,default) $val
-         set ::bddimagesXML::xmlConfigDef(default_id) $idx
+         set ::bddimagesXML::xmlConfig($id,default) $val
+         set ::bddimagesXML::xmlConfigDef(default_id) $id
       } else {
-         set ::bddimagesXML::xmlConfig($idx,default) "no"
+         set ::bddimagesXML::xmlConfig($id,default) "no"
       }
       if { [catch {::dom::node stringValue [::dom::selectNode $node {descendant::name/text()}]} val] == 0 } { 
-         set ::bddimagesXML::xmlConfig($idx,name) $val
+         set ::bddimagesXML::xmlConfig($id,name) $val
       }
       if { [catch {::dom::node stringValue [::dom::selectNode $node {descendant::dbname/text()}]} val] == 0 } { 
-         set ::bddimagesXML::xmlConfig($idx,dbname) $val
+         set ::bddimagesXML::xmlConfig($id,dbname) $val
       }
       if { [catch {::dom::node stringValue [::dom::selectNode $node {descendant::login/text()}]} val] == 0 } { 
-         set ::bddimagesXML::xmlConfig($idx,login) $val
+         set ::bddimagesXML::xmlConfig($id,login) $val
       }
       if { [catch {::dom::node stringValue [::dom::selectNode $node {descendant::pass/text()}]} val] == 0 } { 
-         set ::bddimagesXML::xmlConfig($idx,pass) $val
+         set ::bddimagesXML::xmlConfig($id,pass) $val
       }
       if { [catch {::dom::node stringValue [::dom::selectNode $node {descendant::server/text()}]} val] == 0 } { 
-         set ::bddimagesXML::xmlConfig($idx,server) $val
+         set ::bddimagesXML::xmlConfig($id,server) $val
       }
       if { [catch {::dom::node stringValue [::dom::selectNode $node {descendant::port/text()}]} val] == 0 } { 
-         set ::bddimagesXML::xmlConfig($idx,port) $val
+         set ::bddimagesXML::xmlConfig($id,port) $val
       }
       if { [catch {::dom::node stringValue [::dom::selectNode $node {descendant::root/text()}]} val] == 0 } { 
-         set ::bddimagesXML::xmlConfig($idx,dirbase) [::bddimagesXML::get_default_dir $val ""]
+         set ::bddimagesXML::xmlConfig($id,dirbase) [::bddimagesXML::get_default_dir $val ""]
       }
       if { [catch {::dom::node stringValue [::dom::selectNode $node {descendant::incoming/text()}]} val] == 0 } { 
-         set ::bddimagesXML::xmlConfig($idx,dirinco) [::bddimagesXML::get_default_dir $val "incoming"]
+         set ::bddimagesXML::xmlConfig($id,dirinco) [::bddimagesXML::get_default_dir $val "incoming"]
       }
       if { [catch {::dom::node stringValue [::dom::selectNode $node {descendant::fits/text()}]} val] == 0 } { 
-         set ::bddimagesXML::xmlConfig($idx,dirfits) [::bddimagesXML::get_default_dir $val "fits"]
+         set ::bddimagesXML::xmlConfig($id,dirfits) [::bddimagesXML::get_default_dir $val "fits"]
       }
       if { [catch {::dom::node stringValue [::dom::selectNode $node {descendant::cata/text()}]} val] == 0 } { 
-         set ::bddimagesXML::xmlConfig($idx,dircata) [::bddimagesXML::get_default_dir $val "cata"]
+         set ::bddimagesXML::xmlConfig($id,dircata) [::bddimagesXML::get_default_dir $val "cata"]
       }
       if { [catch {::dom::node stringValue [::dom::selectNode $node {descendant::error/text()}]} val] == 0 } { 
-         set ::bddimagesXML::xmlConfig($idx,direrr) [::bddimagesXML::get_default_dir $val "error"]
+         set ::bddimagesXML::xmlConfig($id,direrr) [::bddimagesXML::get_default_dir $val "error"]
       }
       if { [catch {::dom::node stringValue [::dom::selectNode $node {descendant::log/text()}]} val] == 0 } { 
-         set ::bddimagesXML::xmlConfig($idx,dirlog) [::bddimagesXML::get_default_dir $val "log"]
+         set ::bddimagesXML::xmlConfig($id,dirlog) [::bddimagesXML::get_default_dir $val "log"]
       }
       if { [catch {::dom::node stringValue [::dom::selectNode $node {descendant::screenlimit/text()}]} val] == 0 } {
-         set ::bddimagesXML::xmlConfig($idx,limit) $val
+         set ::bddimagesXML::xmlConfig($id,limit) $val
       }
 
    }
-   
-   # Liste des bddimages disponibles
-   for { set i 1 } { $i <= $::bddimagesXML::xmlConfigDef(nb_id) } { incr i } {
-      lappend ::bddimagesXML::list_bddimages [list $::bddimagesXML::xmlConfig($i,id) $::bddimagesXML::xmlConfig($i,name)]
+
+   # Defini la liste des bddimages disponibles [list id name]
+   set prev_k 0
+   foreach key [lsort [array names ::bddimagesXML::xmlConfig]] {
+      set k [lindex [split $key ","] 0]
+      if {$k != $prev_k} {
+         lappend ::bddimagesXML::list_bddimages [list $::bddimagesXML::xmlConfig($k,id) $::bddimagesXML::xmlConfig($k,name)]
+         set prev_k $k
+      }
    }
 
-   # Charge la config par defaut et defini son nom
-   set ::bddimagesXML::default_config [::bddimagesXML::get_config $::bddimagesXML::xmlConfig($::bddimagesXML::xmlConfigDef(default_id),name)]
-   # et defini la config courante comme etant celle par defaut
+   # Charge la config par defaut
+   set def_conf $::bddimagesXML::xmlConfig($::bddimagesXML::xmlConfigDef(default_id),name)
+   set ::bddimagesXML::default_config [::bddimagesXML::get_config $def_conf]
+
+   # Defini la config courante comme etant celle par defaut
    set ::bddimagesXML::current_config $::bddimagesXML::default_config
 
    return 0
@@ -186,20 +253,16 @@ proc ::bddimagesXML::read_xml_config { file_config } {
 #  ::bddimagesXML::get_config { }
 #--------------------------------------------------
 # Selectionne la configuration d'index = id 
-# @param id numero d'id de la config a charger
-# @return nom de la config chargee
+# @param lconf liste contenant l'id et le nom de la config a charger
+# @return id et nom de la config chargee (liste)
 #--------------------------------------------------
 proc ::bddimagesXML::get_config { name } {
 
    global bddconf
 
    # Cherche l'id de la config demandee
-   set id 1
-   foreach l $::bddimagesXML::list_bddimages {
-      if {[lindex $l 1] == $name} {
-         set id [lindex $l 0]
-      }
-   }
+   set id [::bddimagesXML::get_id_from_name $name]
+   
    # Defini les parametres de la config demandee
    set err [catch {set bddconf(name)    $::bddimagesXML::xmlConfig($id,name)    }]
    set err [catch {set bddconf(dbname)  $::bddimagesXML::xmlConfig($id,dbname)  }]
@@ -214,7 +277,8 @@ proc ::bddimagesXML::get_config { name } {
    set err [catch {set bddconf(direrr)  $::bddimagesXML::xmlConfig($id,direrr)  }]
    set err [catch {set bddconf(dirlog)  $::bddimagesXML::xmlConfig($id,dirlog)  }]
    set err [catch {set bddconf(limit)   $::bddimagesXML::xmlConfig($id,limit)   }]
-   # Retourne le nom de la bddimages chargee
+   
+   # Retourne le nom de la config chargee
    return $bddconf(name)
 }
 
@@ -222,29 +286,24 @@ proc ::bddimagesXML::get_config { name } {
 #  ::bddimagesXML::add_config { }
 #--------------------------------------------------
 # Ajoute une config 
-# @return nom de la config chargee
+# @return nom de la config a charger
 #--------------------------------------------------
 proc ::bddimagesXML::add_config { } {
    
-   # Recherche la valeur max de l'id (xmlConfig($i,id))
-   set max_id 1
-   for { set i 1 } { $i <= $::bddimagesXML::xmlConfigDef(nb_id) } { incr i } {
-      set cid [lindex [array get ::bddimagesXML::xmlConfig "$i,id"] 1]
-       if {$cid > $max_id} {
-          set max_id $::bddimagesXML::xmlConfig($i,id)
-       }
-   }
+   # Valeur de l'id existant le plus grand
+   set max_id [::bddimagesXML::get_last_id_config]
+   # Nouvel id = max + 1
+   set new_id [expr $max_id + 1]
+   # Defini un template de nom pour la nouvelle config
+   set new_name "bddimages$new_id"
+
    # Incremente le nombre de config
    set ::bddimagesXML::xmlConfigDef(nb_id) [expr $::bddimagesXML::xmlConfigDef(nb_id) + 1]
-   # Increment le nombre max de config pour donner un id a la nouvelle config
-   set new_id [expr $max_id + 1]
-   # Defini un template de nouveau nom
-   set new_name "new$new_id"
    # Defini le template de la nouvelle config
    set ::bddimagesXML::xmlConfig($new_id,id)      $new_id 
    set ::bddimagesXML::xmlConfig($new_id,default) "no"
    set ::bddimagesXML::xmlConfig($new_id,name)    $new_name
-   set ::bddimagesXML::xmlConfig($new_id,dbname)  "?" 
+   set ::bddimagesXML::xmlConfig($new_id,dbname)  $new_name
    set ::bddimagesXML::xmlConfig($new_id,login)   "?"  
    set ::bddimagesXML::xmlConfig($new_id,pass)    ""   
    set ::bddimagesXML::xmlConfig($new_id,server)  ""   
@@ -258,77 +317,71 @@ proc ::bddimagesXML::add_config { } {
    set ::bddimagesXML::xmlConfig($new_id,limit)   "10" 
 
    # Met a jour la liste des config
-   lappend ::bddimagesXML::list_bddimages [list $::bddimagesXML::xmlConfig($new_id,id) $::bddimagesXML::xmlConfig($new_id,name)]
+   set new_config [list $new_id $new_name]
+   lappend ::bddimagesXML::list_bddimages $new_config
 
-   # Met a jour la config par defaut
-   set new_config [::bddimagesXML::get_config $new_name]
-   
-   # Retourne le template de nom de la nouvelle config
-   return $new_config
+   # Retourne le nom de la nouvelle config
+   return $new_name
 }
 
 #--------------------------------------------------
-#  ::bddimagesXML::delete_config { }
+# ::bddimagesXML::delete_config { name }
 #--------------------------------------------------
-# Efface une config 
-# @return nom de la config chargee
+# Efface la config de nom name 
+# @param name nom de la config a effacer
+# @return nom de la config a charger
 #--------------------------------------------------
-proc ::bddimagesXML::delete_config { conf } {
-
-   # Nouvelle liste des config
-   set new_list_bddimages {}
-   # Efface la config selectionnee de la liste des config
-   foreach l $::bddimagesXML::list_bddimages {
-      if {[lindex $l 1] != $conf} {
-         lappend new_list_bddimages $l
-      }
+proc ::bddimagesXML::delete_config { name } {
+   
+   # S'il ne reste qu'une config alors impossible de l'effacer
+   if {$::bddimagesXML::xmlConfigDef(nb_id) == 1} {
+      return -code 1
    }
-   # Mise a jour de la liste des config
-   set ::bddimagesXML::list_bddimages $new_list_bddimages
 
-   # Nouvelle structure des config
+   # Cherche l'id de la config demandee
+   set id [::bddimagesXML::get_id_from_name $name]
+
+   # Creation d'une nouvelle structure des config
    array set new_xmlConfig {}
-   # Efface la structure de config selectionnee
-   for { set i 1 } { $i <= $::bddimagesXML::xmlConfigDef(nb_id) } { incr i } {
-       set cname [lindex [array get ::bddimagesXML::xmlConfig "$i,name"] 1]
-       if {$cname != $conf} {
-          set err [catch {set new_xmlConfig($i,id)      $::bddimagesXML::xmlConfig($i,id)     }]
-          set err [catch {set new_xmlConfig($i,default) $::bddimagesXML::xmlConfig($i,default)}]
-          set err [catch {set new_xmlConfig($i,name)    $::bddimagesXML::xmlConfig($i,name)   }]
-          set err [catch {set new_xmlConfig($i,dbname)  $::bddimagesXML::xmlConfig($i,dbname) }]
-          set err [catch {set new_xmlConfig($i,login)   $::bddimagesXML::xmlConfig($i,login)  }]
-          set err [catch {set new_xmlConfig($i,pass)    $::bddimagesXML::xmlConfig($i,pass)   }]
-          set err [catch {set new_xmlConfig($i,server)  $::bddimagesXML::xmlConfig($i,server) }]
-          set err [catch {set new_xmlConfig($i,port)    $::bddimagesXML::xmlConfig($i,port)   }]
-          set err [catch {set new_xmlConfig($i,dirbase) $::bddimagesXML::xmlConfig($i,dirbase)}]
-          set err [catch {set new_xmlConfig($i,dirinco) $::bddimagesXML::xmlConfig($i,dirinco)}]
-          set err [catch {set new_xmlConfig($i,dirfits) $::bddimagesXML::xmlConfig($i,dirfits)}]
-          set err [catch {set new_xmlConfig($i,dircata) $::bddimagesXML::xmlConfig($i,dircata)}]
-          set err [catch {set new_xmlConfig($i,direrr)  $::bddimagesXML::xmlConfig($i,direrr) }]
-          set err [catch {set new_xmlConfig($i,dirlog)  $::bddimagesXML::xmlConfig($i,dirlog) }]
-          set err [catch {set new_xmlConfig($i,limit)   $::bddimagesXML::xmlConfig($i,limit)  }]
-       }
+   # Recopie toutes les config sauf celle a effacer
+   foreach key [lsort [array names ::bddimagesXML::xmlConfig]] {
+      set k [split $key ","]
+      if {[lindex $k 0] != $id} {
+         set err [catch {set new_xmlConfig($key) $::bddimagesXML::xmlConfig($key)}]
+      }
    }
    # Mise a jour de la structure des config
    array unset ::bddimagesXML::xmlConfig
    array set ::bddimagesXML::xmlConfig [array get new_xmlConfig]
-   # Mise a jour du nombre de bdi
+   
+   # Decremente le nombre de config
    set ::bddimagesXML::xmlConfigDef(nb_id) [expr $::bddimagesXML::xmlConfigDef(nb_id) - 1]
 
-   # DEBUG
-#   puts "---------------------------------------------------"
-#   foreach k [lsort [array names ::bddimagesXML::xmlConfig]] {
-#      puts "xmlConfig: $k --> $::bddimagesXML::xmlConfig($k)"
-#   }
+   # Re-initialise la liste des config
+   set ::bddimagesXML::list_bddimages {}
+   # Defini la liste des bddimages disponibles [list id name]
+   set prev_k 0
+   foreach key [lsort [array names ::bddimagesXML::xmlConfig]] {
+      set k [lindex [split $key ","] 0]
+      if {$k != $prev_k} {
+         lappend ::bddimagesXML::list_bddimages [list $::bddimagesXML::xmlConfig($k,id) $::bddimagesXML::xmlConfig($k,name)]
+         set prev_k $k
+      }
+   }
 
-   # Defini la config chargee comme etant la premiere
-   set ::bddimagesXML::xmlConfigDef(default_id) 1
-   set new_name $::bddimagesXML::xmlConfig($::bddimagesXML::xmlConfigDef(default_id),name)
-   # Met a jour la config par defaut
-   set new_config [::bddimagesXML::get_config $new_name]
+# DEBUG
+#puts "-- WRITE ------------------------------------------"
+#foreach k [lsort [array names ::bddimagesXML::xmlConfig]] {
+#   puts "xmlConfig: $k --> $::bddimagesXML::xmlConfig($k)"
+#}
+   
+   # Defini la config chargee comme etant la derniere de la liste
+   set last_id [::bddimagesXML::get_last_id_config]
+   # Recupere le nom de cette config
+   set new_name [::bddimagesXML::get_name_from_id $last_id]
    
    # Retourne le nom de la config chargee
-   return $new_config
+   return $new_name
 }
 
 
@@ -341,13 +394,13 @@ proc ::bddimagesXML::delete_config { conf } {
 proc ::bddimagesXML::save_xml_config {  } {
 
    # Enregistre la config xml
-   set err [::bddimagesXML::write_xml_config $::bddimagesXML::xmlConfigFile]
-   if {$err} {
+   if {[catch {::bddimagesXML::write_xml_config $::bddimagesXML::xmlConfigFile} bck] != 0} {
       ::console::affiche_erreur "$::caption(bddimages_xml,errorxml)\n"
+      return -code 1
    } else {
       ::console::affiche_resultat "$::caption(bddimages_xml,successxml)\n"
+      return -code 0
    }
-   return -code $err
 
 }
 
@@ -360,6 +413,17 @@ proc ::bddimagesXML::save_xml_config {  } {
 #--------------------------------------------------
 proc ::bddimagesXML::write_xml_config { file_config  } {
 
+# DEBUG
+#puts "-- WRITE ------------------------------------------"
+#foreach k [lsort [array names ::bddimagesXML::xmlConfig]] {
+#   puts "xmlConfig: $k --> $::bddimagesXML::xmlConfig($k)"
+#}
+
+   # Verifie que 2 config ne portent pas le meme nom
+#   if {[catch {} ok] != 0} {
+#      
+#   }
+   
    # Cree le doc xml
    set docxml [::dom::DOMImplementation create]
 
@@ -375,7 +439,7 @@ proc ::bddimagesXML::write_xml_config { file_config  } {
     ::dom::document createTextNode $subnode "0.1" 
     # --- element /config/document/date
     set subnode [::dom::document createElement $node "date"]
-    ::dom::document createTextNode $subnode "xx/xx/xx"
+    ::dom::document createTextNode $subnode [::fitsdate]
     # --- element /config/document/ticket
     set subnode [::dom::document createElement $node "ticket"]
     ::dom::document createTextNode $subnode "1"
@@ -383,101 +447,91 @@ proc ::bddimagesXML::write_xml_config { file_config  } {
     set subnode [::dom::document createElement $node "author"]
     ::dom::document createTextNode $subnode "F. Vachier et J. Berthier"
 
-   # Determine le lien entre index et numero d'id des config a enregistrer
-   set idx 0
-   set prev 0
-   foreach key [lsort [array names ::bddimagesXML::xmlConfig]] {
-      set i [lindex [split $key ","] 0]
-      if {$i != $prev} {
-         set idx [expr $idx + 1]
-         set cid($idx) $i
-         set prev $i
-      }
-   }
-
    # Cree les elements /config/bddimages
-   for { set i 1 } { $i <= $::bddimagesXML::xmlConfigDef(nb_id) } { incr i } {
-      # Id
-      set k $cid($i)
+   foreach conf $::bddimagesXML::list_bddimages {
+
+      # id, name
+      set i [lindex $conf 0]
+      set n [lindex $conf 1]
 
       # Cree l'element /config/bddimages
       set node [::dom::document createElement $root "bddimages"]
-      ::dom::element setAttribute $node "id" $i
-      if {$::bddimagesXML::xmlConfig($k,name) == $::bddimagesXML::default_config} {
+      ::dom::element setAttribute $node "id" $::bddimagesXML::xmlConfig($i,id)
+      if {$::bddimagesXML::xmlConfig($i,name) == $::bddimagesXML::default_config} {
          ::dom::element setAttribute $node "default" "yes"
       }
       
       # --- /config/bddimages/name
       set subnode [::dom::document createElement $node "name"]
-      if {[info exists ::bddimagesXML::xmlConfig($k,name)]} {
-         ::dom::document createTextNode $subnode $::bddimagesXML::xmlConfig($k,name)
+      if {[info exists ::bddimagesXML::xmlConfig($i,name)]} {
+         ::dom::document createTextNode $subnode $::bddimagesXML::xmlConfig($i,name)
       }
 
       # --- /config/bddimages/sql
       set subnode [::dom::document createElement $node "sql"]
         # --- /config/bddimages/sql/dbname
         set subsubnode [::dom::document createElement $subnode "dbname"]
-        if {[info exists ::bddimagesXML::xmlConfig($k,dbname)]} {
-           ::dom::document createTextNode $subsubnode $::bddimagesXML::xmlConfig($k,dbname)
+        if {[info exists ::bddimagesXML::xmlConfig($i,dbname)]} {
+           ::dom::document createTextNode $subsubnode $::bddimagesXML::xmlConfig($i,dbname)
         }
         # --- /config/bddimages/sql/login
         set subsubnode [::dom::document createElement $subnode "login"]
-        if {[info exists ::bddimagesXML::xmlConfig($k,login)]} {
-           ::dom::document createTextNode $subsubnode $::bddimagesXML::xmlConfig($k,login)
+        if {[info exists ::bddimagesXML::xmlConfig($i,login)]} {
+           ::dom::document createTextNode $subsubnode $::bddimagesXML::xmlConfig($i,login)
         }
         # --- /config/bddimages/sql/pass
         set subsubnode [::dom::document createElement $subnode "pass"]
-        if {[info exists ::bddimagesXML::xmlConfig($k,pass)]} {
-           ::dom::document createTextNode $subsubnode $::bddimagesXML::xmlConfig($k,pass)
+        if {[info exists ::bddimagesXML::xmlConfig($i,pass)]} {
+           ::dom::document createTextNode $subsubnode $::bddimagesXML::xmlConfig($i,pass)
         }
         # --- /config/bddimages/sql/ip
-        set subsubnode [::dom::document createElement $subnode "ip"]
-        if {[info exists ::bddimagesXML::xmlConfig($k,server)]} {
-           ::dom::document createTextNode $subsubnode $::bddimagesXML::xmlConfig($k,server)
+        set subsubnode [::dom::document createElement $subnode "server"]
+        if {[info exists ::bddimagesXML::xmlConfig($i,server)]} {
+           ::dom::document createTextNode $subsubnode $::bddimagesXML::xmlConfig($i,server)
         }
         # --- /config/bddimages/sql/port
         set subsubnode [::dom::document createElement $subnode "port"]
-        if {[info exists ::bddimagesXML::xmlConfig($k,port)]} {
-           ::dom::document createTextNode $subsubnode $::bddimagesXML::xmlConfig($k,port)
+        if {[info exists ::bddimagesXML::xmlConfig($i,port)]} {
+           ::dom::document createTextNode $subsubnode $::bddimagesXML::xmlConfig($i,port)
         }
 
       # --- /config/bddimages/files
       set subnode [::dom::document createElement $node "files"]
         # --- /config/bddimages/files/root
         set subsubnode [::dom::document createElement $subnode "root"]
-        if {[info exists ::bddimagesXML::xmlConfig($k,dirbase)]} {
-           ::dom::document createTextNode $subsubnode $::bddimagesXML::xmlConfig($k,dirbase)
+        if {[info exists ::bddimagesXML::xmlConfig($i,dirbase)]} {
+           ::dom::document createTextNode $subsubnode $::bddimagesXML::xmlConfig($i,dirbase)
         }
         # --- /config/bddimages/files/incoming
         set subsubnode [::dom::document createElement $subnode "incoming"]
-        if {[info exists ::bddimagesXML::xmlConfig($k,dirbase)]} {
-           ::dom::document createTextNode $subsubnode $::bddimagesXML::xmlConfig($k,dirinco)
+        if {[info exists ::bddimagesXML::xmlConfig($i,dirbase)]} {
+           ::dom::document createTextNode $subsubnode $::bddimagesXML::xmlConfig($i,dirinco)
         }
         # --- /config/bddimages/files/fits
         set subsubnode [::dom::document createElement $subnode "fits"]
-        if {[info exists ::bddimagesXML::xmlConfig($k,dirbase)]} {
-           ::dom::document createTextNode $subsubnode $::bddimagesXML::xmlConfig($k,dirfits)
+        if {[info exists ::bddimagesXML::xmlConfig($i,dirbase)]} {
+           ::dom::document createTextNode $subsubnode $::bddimagesXML::xmlConfig($i,dirfits)
         }
         # --- /config/bddimages/files/cata
         set subsubnode [::dom::document createElement $subnode "cata"]
-        if {[info exists ::bddimagesXML::xmlConfig($k,dirbase)]} {
-           ::dom::document createTextNode $subsubnode $::bddimagesXML::xmlConfig($k,dircata)
+        if {[info exists ::bddimagesXML::xmlConfig($i,dirbase)]} {
+           ::dom::document createTextNode $subsubnode $::bddimagesXML::xmlConfig($i,dircata)
         }
         # --- /config/bddimages/files/error
         set subsubnode [::dom::document createElement $subnode "error"]
-        if {[info exists ::bddimagesXML::xmlConfig($k,dirbase)]} {
-           ::dom::document createTextNode $subsubnode $::bddimagesXML::xmlConfig($k,direrr)
+        if {[info exists ::bddimagesXML::xmlConfig($i,dirbase)]} {
+           ::dom::document createTextNode $subsubnode $::bddimagesXML::xmlConfig($i,direrr)
         }
         # --- /config/bddimages/files/log
         set subsubnode [::dom::document createElement $subnode "log"]
-        if {[info exists ::bddimagesXML::xmlConfig($k,dirbase)]} {
-           ::dom::document createTextNode $subsubnode $::bddimagesXML::xmlConfig($k,dirlog)
+        if {[info exists ::bddimagesXML::xmlConfig($i,dirbase)]} {
+           ::dom::document createTextNode $subsubnode $::bddimagesXML::xmlConfig($i,dirlog)
         }
   
       # --- /config/bddimages/screenlimit
       set subnode [::dom::document createElement $node "screenlimit"]
-      if {[info exists ::bddimagesXML::xmlConfig($k,limit)]} {
-         ::dom::document createTextNode $subnode $::bddimagesXML::xmlConfig($k,limit)
+      if {[info exists ::bddimagesXML::xmlConfig($i,limit)]} {
+         ::dom::document createTextNode $subnode $::bddimagesXML::xmlConfig($i,limit)
       }
    }
    
@@ -488,3 +542,34 @@ proc ::bddimagesXML::write_xml_config { file_config  } {
 
    return 0
 }   
+
+#--------------------------------------------------
+#  ::bddimagesXML::set_config { name }
+#--------------------------------------------------
+# Defini la config a partir de son nom 
+# @param name nom de la config a charger
+# @return void
+#--------------------------------------------------
+proc ::bddimagesXML::set_config { name } {
+
+   global bddconf
+
+   # Defini l'id de la config
+   set id [::bddimagesXML::get_id_from_name $name]
+   
+   # Defini les parametres de la config demandee
+   set err [catch {set ::bddimagesXML::xmlConfig($id,name)    $bddconf(name)    }]
+   set err [catch {set ::bddimagesXML::xmlConfig($id,dbname)  $bddconf(dbname)  }]
+   set err [catch {set ::bddimagesXML::xmlConfig($id,login)   $bddconf(login)   }]
+   set err [catch {set ::bddimagesXML::xmlConfig($id,pass)    $bddconf(pass)    }]
+   set err [catch {set ::bddimagesXML::xmlConfig($id,server)  $bddconf(server)  }]
+   set err [catch {set ::bddimagesXML::xmlConfig($id,port)    $bddconf(port)    }]
+   set err [catch {set ::bddimagesXML::xmlConfig($id,dirbase) $bddconf(dirbase) }]
+   set err [catch {set ::bddimagesXML::xmlConfig($id,dirinco) $bddconf(dirinco) }]
+   set err [catch {set ::bddimagesXML::xmlConfig($id,dirfits) $bddconf(dirfits) }]
+   set err [catch {set ::bddimagesXML::xmlConfig($id,dircata) $bddconf(dircata) }]
+   set err [catch {set ::bddimagesXML::xmlConfig($id,direrr)  $bddconf(direrr)  }]
+   set err [catch {set ::bddimagesXML::xmlConfig($id,dirlog)  $bddconf(dirlog)  }]
+   set err [catch {set ::bddimagesXML::xmlConfig($id,limit)   $bddconf(limit)   }]
+   return 0
+}

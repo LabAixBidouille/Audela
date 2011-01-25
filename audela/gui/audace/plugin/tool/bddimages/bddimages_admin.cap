@@ -1,0 +1,66 @@
+#
+# Fichier : bddimages_admin.cap
+# Mise a jour $Id: bddimages_admin.cap,v 1.1 2011-01-25 22:49:43 jberthier Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+set caption(bddimages_admin,msg_prevent)     "Attention !"
+set caption(bddimages_admin,msg_prevent2)    "Cette action va reinitialiser la base de données. Toutes les données seront définitivement effacer du disque. Etes-vous sûr ?"
+set caption(bddimages_admin,efface)          "Effacement de la base de données"
+set caption(bddimages_admin,mdprootsql)      "Veuillez saisir le mot de passe root du serveur SQL"
+set caption(bddimages_admin,cancelRAZ)       "BDD reset canceled"
+set caption(bddimages_admin,mysqlconnecterr) "MySQL connection error:"
+set caption(bddimages_admin,mysqlshowerr)    "Show tables request failed:"
+set caption(bddimages_admin,mysqlok)         "Connection to the db:\n success"
+
+# *************** Version française **** **********************
+if { [ string compare $langage "french" ] == "0" } {
+   set caption(bddimages_admin,msg_prevent)     "Attention !"
+   set caption(bddimages_admin,msg_prevent2)    "Cette action va reinitialiser la base de données. Toutes les données seront définitivement effacer du disque. Etes-vous sûr ?"
+   set caption(bddimages_admin,efface)          "Effacement de la base de données"
+   set caption(bddimages_admin,mdprootsql)      "Veuillez saisir le mot de passe root du serveur SQL"
+   set caption(bddimages_admin,cancelRAZ)       "BDD reset canceled"
+   set caption(bddimages_admin,mysqlconnecterr) "Erreur de connection MySQL:"
+   set caption(bddimages_admin,mysqlshowerr)    "La requete a echouée:"
+   set caption(bddimages_admin,mysqlok)         "Connexion a la bdd:\n ok"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

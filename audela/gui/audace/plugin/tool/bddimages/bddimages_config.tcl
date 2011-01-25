@@ -6,7 +6,7 @@
 # Description    : Configuration des variables globales bddconf
 #                  necessaires au service
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_config.tcl,v 1.13 2011-01-24 00:35:08 jberthier Exp $
+# Mise à jour $Id: bddimages_config.tcl,v 1.14 2011-01-25 22:49:43 jberthier Exp $
 #
 #--------------------------------------------------
 #
@@ -22,7 +22,8 @@
 
 namespace eval bddimages_config {
    package require bddimagesXML 1.0
-   
+   package require bddimagesAdmin 1.0
+
    global audace
    global bddconf
 
@@ -102,6 +103,8 @@ namespace eval bddimages_config {
         set conf(bddimages,$param) $bddconf($param)
       }
 
+      # Defini la structure de la config courante a partir des champs de saisie
+      ::bddimagesXML::set_config $bddconf(current_config)
       # Defini et charge la config par defaut comme etant la config courante
       set bddconf(default_config) [::bddimagesXML::get_config $bddconf(current_config)]
       # Sauve le fichiers XML si demande
@@ -147,20 +150,12 @@ namespace eval bddimages_config {
    }
 
    #--------------------------------------------------
-   #  getDir { }
+   # getDir { }
    #--------------------------------------------------
-   #
-   #    fonction  :
-   #       Permet de recuperer le nom des repertoires de travail
-   #
-   #    procedure externe :
-   #
-   #    variables en entree 
-   #
-   #
-   #    variables en sortie :
-   #
-   #
+   # Recupere le nom d'un repertoire choisi par l'utilisateur
+   # @param path repertoire de base
+   # @param title titre a donner a la fenetre
+   # @return nom du repertoire selectionne ou une erreur (code 1)
    #--------------------------------------------------
    proc getDir { {path ""} {title ""} } {
 
@@ -172,45 +167,59 @@ namespace eval bddimages_config {
       set initDir $audace(rep_images)
       if {[info exists path]} { set initDir $path }
 
-      # Defini le titre de la fenetre
+      # Ouvre la fenetre de choix des repertoires
       set title [concat $caption(bddimages_config,getdir) $title]
-      
-      #--- Ouvre la fenetre de choix des repertoires
       set workDir [tk_chooseDirectory -title $title -initialdir $initDir -parent $This]
-      #--- Extraction et chargement du fichier
+      
+      # Extraction et chargement du fichier
       if { $workDir != "" } {
-        ::console::affiche_resultat "WORKDIR : $workDir\n"
         return $workDir
       } else {
-        return
+        return -code 1
       }
+   }
+
+   #--------------------------------------------------
+   # checkOtherDir { base }
+   #--------------------------------------------------
+   # Essaye de recuperer le nom des repertoires de travail 
+   # a partir du repertoire de base
+   # @param base le repertoire de base
+   # @return void
+   #--------------------------------------------------
+   proc checkOtherDir { base } {
+      global bddconf
+      
+      # Liste des repertoires a chercher
+      set listD [list "cata" "fits" "incoming" "error" "log"]
+      # Defini un repertoire de base -> rep_images
+      foreach d $listD {
+         if {[file isdirectory [file join $base $d]]} { 
+            switch $d {
+               "cata"     { set bddconf(dircata) [file join $base $d] }
+               "fits"     { set bddconf(dirfits) [file join $base $d] }
+               "incoming" { set bddconf(dirinco) [file join $base $d] }
+               "error"    { set bddconf(direrr)  [file join $base $d] }
+               "log"      { set bddconf(dirlog)  [file join $base $d] }
+            }
+         }
+      }
+      return 0
    }
 
    #--------------------------------------------------
    #  GetInfo { }
    #--------------------------------------------------
-   #
-   #    fonction  :
-   #       Affichage d'un message sur le format d'une saisie
-   #       pour un element de la structure d une config pour 
-   #       une base de donnees de forme bddimages
-   #       La structure contient toutes les variables
-   #
-   #    procedure externe :
-   #
-   #    variables en entree 
-   #
-   #        subject : nom d une variable de configuration
-   #
-   #    variables en sortie :
-   #
-   #
+   # Affichage d'un message sur le format d'une saisie pour un 
+   # element de la structure de config XML de bddimages
+   # @param subject le sujet a documenter
+   # @return void
    #--------------------------------------------------
    proc GetInfo { subject } {
       global caption
       global voconf
       switch $subject {
-         name      { set msg $caption(bddimages_config,info_dbname) }
+         dbname    { set msg $caption(bddimages_config,info_dbname) }
          login     { set msg $caption(bddimages_config,info_login) }
          passwd    { set msg $caption(bddimages_config,info_passwd) }
          host      { set msg $caption(bddimages_config,info_host) }
@@ -223,7 +232,7 @@ namespace eval bddimages_config {
          listlimit { set msg $caption(bddimages_config,info_listlimit) }
       }
       tk_messageBox -title $caption(bddimages_config,info_title) -type ok -message $msg
-      return 1
+      return -code 0
    }
 
    #--------------------------------------------------
@@ -282,15 +291,15 @@ namespace eval bddimages_config {
          set bddconf(position_status) "+[ string range $bddconf(geometry_status) $deb $fin ]"
       }
 
-      #--- Charge les config bddimages depuis le fichier XML
+      # Charge les config bddimages depuis le fichier XML
       set err [::bddimagesXML::load_xml_config]
-      #--- Recupere la config par defaut
-      set bddconf(default_config) $::bddimagesXML::default_config
-      #--- Recupere la config par courante
-      set bddconf(current_config) $::bddimagesXML::current_config
-      #--- Recupere la liste des bddimages disponibles
+      # Recupere la liste des bddimages disponibles
       set bddconf(list_config) $::bddimagesXML::list_bddimages
-
+      # Recupere la config par defaut [liste id name]
+      set bddconf(default_config) $::bddimagesXML::default_config
+      # Recupere la config par courante [liste id name]
+      set bddconf(current_config) $::bddimagesXML::current_config
+      
       #---
       toplevel $This -class Toplevel
       wm geometry $This $bddconf(position_status)
@@ -312,7 +321,6 @@ namespace eval bddimages_config {
              #--- Cree un menu bouton pour choisir la config
              menubutton $This.conf.m.menu -relief raised -borderwidth 2 -textvariable bddconf(current_config) -menu $This.conf.m.menu.list
              set rbconfig [menu $This.conf.m.menu.list -tearoff "1"]
-             set idx 0
              foreach myconf $bddconf(list_config) {
                 $rbconfig add radiobutton -label [lindex "$myconf" 1] -value [lindex "$myconf" 1] -variable bddconf(current_config) \
                     -command { set bddconf(current_config) [::bddimagesXML::get_config $bddconf(current_config)] }
@@ -324,18 +332,18 @@ namespace eval bddimages_config {
                    set new_config [::bddimagesXML::add_config]
                    set bddconf(current_config) [::bddimagesXML::get_config $new_config]
                    set bddconf(list_config) $::bddimagesXML::list_bddimages
-                   set myconf [lindex $bddconf(list_config) end]
-                   $rbconfig add radiobutton -label [lindex "$myconf" 1] -value [lindex "$myconf" 1] -variable bddconf(current_config) \
+                   $rbconfig add radiobutton -label $bddconf(current_config) -value $bddconf(current_config) -variable bddconf(current_config) \
                       -command { set bddconf(current_config) [::bddimagesXML::get_config $bddconf(current_config)] }
                  }
              pack $This.conf.m.operationP -in $This.conf.m -side left -anchor w -padx 1
              #--- Cree un bouton - pour effacer la config courante
              button $This.conf.m.operationM -state active -text "-" \
                 -command { 
-                    $rbconfig delete  $bddconf(current_config)
-                    set new_config [::bddimagesXML::delete_config $bddconf(current_config)]
-                    set bddconf(current_config) [::bddimagesXML::get_config $new_config]
-                    set bddconf(list_config) $::bddimagesXML::list_bddimages
+                   if {[catch {::bddimagesXML::delete_config $bddconf(current_config)} new_config] == 0} {
+                      $rbconfig delete $bddconf(current_config)
+                      set bddconf(current_config) [::bddimagesXML::get_config $new_config]
+                      set bddconf(list_config) $::bddimagesXML::list_bddimages
+                   }
                  }
              pack $This.conf.m.operationM -in $This.conf.m -side left -anchor w -padx 1
 
@@ -365,9 +373,13 @@ namespace eval bddimages_config {
             #--- Cree une ligne d'entree pour la variable
             entry $This.bdd.name.dat -textvariable bddconf(dbname) -borderwidth 1 -relief groove -width 25 -justify left
             pack $This.bdd.name.dat -in $This.bdd.name -side left -anchor w -padx 1
+            #--- Cree un bouton Create BDD
+            button $This.bdd.name.test -state active -relief groove -anchor c -width 4 -text "Create" \
+              -command { ::bddimagesAdmin::RAZBdd }
+            pack $This.bdd.name.test -in $This.bdd.name -side left -anchor w -padx 1
             #--- Cree un bouton info
-            button $This.bdd.name.help -state active -borderwidth 0 -relief flat -anchor c -height 1 \
-                    -text "$caption(bddimages_config,info)" -command { ::bddimages_config::GetInfo "dbname" }
+            button $This.bdd.name.help -state active -relief groove -anchor c \
+                 -text "$caption(bddimages_config,info)" -command { ::bddimages_config::GetInfo "dbname" }
             pack $This.bdd.name.help -in $This.bdd.name -side left -anchor w -padx 1
 
           #--- Cree un frame pour le login
@@ -380,9 +392,12 @@ namespace eval bddimages_config {
             #--- Cree une ligne d'entree pour la variable
             entry $This.bdd.login.dat -textvariable bddconf(login) -borderwidth 1 -relief groove -width 25 -justify left
             pack $This.bdd.login.dat -in $This.bdd.login -side left -anchor w -padx 1
+            #--- Cree un bouton vide
+            button $This.bdd.login.test -state disabled -relief flat -anchor c -width 4
+            pack $This.bdd.login.test -in $This.bdd.login -side left -anchor w -padx 1
             #--- Cree un bouton info
-            button $This.bdd.login.help -state active -borderwidth 0 -relief flat -anchor c -height 1 \
-                    -text "$caption(bddimages_config,info)" -command { ::bddimages_config::GetInfo "login" }
+            button $This.bdd.login.help -state active -relief groove -anchor c \
+                 -text "$caption(bddimages_config,info)" -command { ::bddimages_config::GetInfo "login" }
             pack $This.bdd.login.help -in $This.bdd.login -side left -anchor w -padx 1
 
           #--- Cree un frame pour le mot de passe
@@ -395,9 +410,12 @@ namespace eval bddimages_config {
             #--- Cree une ligne d'entree pour la variable
             entry $This.bdd.pass.dat -textvariable bddconf(pass) -borderwidth 1 -relief groove -width 25 -justify left -show "*"
             pack $This.bdd.pass.dat -in $This.bdd.pass -side left -anchor w -padx 1
+            #--- Cree un bouton vide
+            button $This.bdd.pass.test -state disabled -relief flat -anchor c -width 4
+            pack $This.bdd.pass.test -in $This.bdd.pass -side left -anchor w -padx 1
             #--- Cree un bouton info
-            button $This.bdd.pass.help -state active -borderwidth 0 -relief flat -anchor c -height 1 \
-                    -text "$caption(bddimages_config,info)" -command { ::bddimages_config::GetInfo "passwd" }
+            button $This.bdd.pass.help -state active -relief groove -anchor c \
+                 -text "$caption(bddimages_config,info)" -command { ::bddimages_config::GetInfo "passwd" }
             pack $This.bdd.pass.help -in $This.bdd.pass -side left -anchor w -padx 1
 
           #--- Cree un frame pour le serveur
@@ -410,9 +428,13 @@ namespace eval bddimages_config {
             #--- Cree une ligne d'entree pour la variable
             entry $This.bdd.serv.dat -textvariable bddconf(server) -borderwidth 1 -relief groove -width 25 -justify left
             pack $This.bdd.serv.dat -in $This.bdd.serv -side left -anchor w -padx 1
+            #--- Cree un bouton Test BDD
+            button $This.bdd.serv.test -state active -relief groove -anchor c -width 4 -text "Test" \
+                 -command { set err [catch {::bddimagesAdmin::TestConnectBdd} status] }
+            pack $This.bdd.serv.test -in $This.bdd.serv -side left -anchor w -padx 1
             #--- Cree un bouton info
-            button $This.bdd.serv.help -state active -borderwidth 0 -relief flat -anchor c -height 1 \
-                    -text "$caption(bddimages_config,info)" -command { ::bddimages_config::GetInfo "host" }
+            button $This.bdd.serv.help -state active -relief groove -anchor c \
+                 -text "$caption(bddimages_config,info)" -command { ::bddimages_config::GetInfo "host" }
             pack $This.bdd.serv.help -in $This.bdd.serv -side left -anchor w -padx 1
 
         #--- Cree un frame pour les repertoires
@@ -434,10 +456,14 @@ namespace eval bddimages_config {
             entry $This.dir.dirbase.dat -textvariable bddconf(dirbase) -borderwidth 1 -relief groove -width 25 -justify left
             pack $This.dir.dirbase.dat -in $This.dir.dirbase -side left -anchor w -padx 1
             #--- Cree un bouton charger
-            button $This.dir.dirbase.explore -text "..." -width 3 -command { set bddconf(dirbase) [::bddimages_config::getDir $bddconf(dirbase) "de base"] }
+            button $This.dir.dirbase.explore -text "..." -width 3 \
+               -command { 
+                  set bddconf(dirbase) [::bddimages_config::getDir $bddconf(dirbase) "de base"] 
+                  ::bddimages_config::checkOtherDir $bddconf(dirbase)
+               }
             pack $This.dir.dirbase.explore -in $This.dir.dirbase -side left -anchor c -fill x -padx 6
             #--- Cree un bouton info
-            button $This.dir.dirbase.help -state active -borderwidth 0 -relief flat -anchor c -height 1 \
+            button $This.dir.dirbase.help -state active -relief groove -anchor c \
                     -text "$caption(bddimages_config,info)" -command { ::bddimages_config::GetInfo "dir_base" }
             pack $This.dir.dirbase.help -in $This.dir.dirbase -side left -anchor w -padx 1
 
@@ -455,7 +481,7 @@ namespace eval bddimages_config {
             button $This.dir.dirinco.explore -text "..." -width 3 -command { set bddconf(dirinco) [::bddimages_config::getDir $bddconf(dirbase) "d'incoming"] }
             pack $This.dir.dirinco.explore -in $This.dir.dirinco -side left -anchor c -fill x -padx 6
             #--- Cree un bouton info
-            button $This.dir.dirinco.help -state active -borderwidth 0 -relief flat -anchor c -height 1 \
+            button $This.dir.dirinco.help -state active -relief groove -anchor c \
                     -text "$caption(bddimages_config,info)" -command { ::bddimages_config::GetInfo "dir_inco" }
             pack $This.dir.dirinco.help -in $This.dir.dirinco -side left -anchor w -padx 1
 
@@ -473,7 +499,7 @@ namespace eval bddimages_config {
             button $This.dir.dirfits.explore -text "..." -width 3 -command { set bddconf(dirfits) [::bddimages_config::getDir $bddconf(dirbase) "des images FITS"] }
             pack $This.dir.dirfits.explore -in $This.dir.dirfits -side left -anchor c -fill x -padx 6
             #--- Cree un bouton info
-            button $This.dir.dirfits.help -state active -borderwidth 0 -relief flat -anchor c -height 1 \
+            button $This.dir.dirfits.help -state active -relief groove -anchor c \
                     -text "$caption(bddimages_config,info)" -command { ::bddimages_config::GetInfo "dir_fits" }
             pack $This.dir.dirfits.help -in $This.dir.dirfits -side left -anchor w -padx 1
 
@@ -491,7 +517,7 @@ namespace eval bddimages_config {
             button $This.dir.dircata.explore -text "..." -width 3 -command { set bddconf(dircata) [::bddimages_config::getDir $bddconf(dirbase) "des CATA"] }
             pack $This.dir.dircata.explore -in $This.dir.dircata -side left -anchor c -fill x -padx 6
             #--- Cree un bouton info
-            button $This.dir.dircata.help -state active -borderwidth 0 -relief flat -anchor c -height 1 \
+            button $This.dir.dircata.help -state active -relief groove -anchor c \
                     -text "$caption(bddimages_config,info)" -command { ::bddimages_config::GetInfo "dir_cata" }
             pack $This.dir.dircata.help -in $This.dir.dircata -side left -anchor w -padx 1
 
@@ -509,7 +535,7 @@ namespace eval bddimages_config {
             button $This.dir.direrr.explore -text "..." -width 3 -command { set bddconf(direrr) [::bddimages_config::getDir $bddconf(dirbase) "des erreurs"] }
             pack $This.dir.direrr.explore -in $This.dir.direrr -side left -anchor c -fill x -padx 6
             #--- Cree un bouton info
-            button $This.dir.direrr.help -state active -borderwidth 0 -relief flat -anchor c -height 1 \
+            button $This.dir.direrr.help -state active -relief groove -anchor c \
                     -text "$caption(bddimages_config,info)" -command { ::bddimages_config::GetInfo "dir_err" }
             pack $This.dir.direrr.help -in $This.dir.direrr -side left -anchor w -padx 1
 
@@ -527,7 +553,7 @@ namespace eval bddimages_config {
             button $This.dir.dirlog.explore -text "..." -width 3 -command { set bddconf(dirlog) [::bddimages_config::getDir $bddconf(dirbase) "de log"] }
             pack $This.dir.dirlog.explore -in $This.dir.dirlog -side left -anchor c -fill x -padx 6
             #--- Cree un bouton info
-            button $This.dir.dirlog.help -state active -borderwidth 0 -relief flat -anchor c -height 1 \
+            button $This.dir.dirlog.help -state active -relief groove -anchor c \
                     -text "$caption(bddimages_config,info)" -command { ::bddimages_config::GetInfo "dir_log" }
             pack $This.dir.dirlog.help -in $This.dir.dirlog -side left -anchor w -padx 1
 
@@ -549,8 +575,11 @@ namespace eval bddimages_config {
             #--- Cree une ligne d'entree pour la variable
             entry $This.var.lim.dat -textvariable bddconf(limit) -borderwidth 1 -relief groove -width 25 -justify left
             pack $This.var.lim.dat -in $This.var.lim -side left -anchor w -padx 1
+            #--- Cree un bouton vide
+            button $This.var.lim.test -state disabled -relief flat -anchor c -width 4
+            pack $This.var.lim.test -in $This.var.lim -side left -anchor w -padx 1
             #--- Cree un bouton info
-            button $This.var.lim.help -state active -borderwidth 0 -relief flat -anchor c -height 1 \
+            button $This.var.lim.help -state active -relief groove -anchor c \
                     -text "$caption(bddimages_config,info)" -command { ::bddimages_config::GetInfo "listlimit" }
             pack $This.var.lim.help -in $This.var.lim -side left -anchor w -padx 1
 
