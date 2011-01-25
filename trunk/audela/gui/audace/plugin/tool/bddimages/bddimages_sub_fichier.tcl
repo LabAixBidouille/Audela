@@ -1,5 +1,5 @@
 # source audace/plugin/tool/bddimages/bddimages_sub_fichier.tcl
-# Mise à jour $Id: bddimages_sub_fichier.tcl,v 1.7 2011-01-21 18:37:49 fredvachier Exp $
+# Mise à jour $Id: bddimages_sub_fichier.tcl,v 1.8 2011-01-25 23:11:20 jberthier Exp $
 
 proc bddimages_sauve_fich {texte} {
 
@@ -26,7 +26,7 @@ proc bddimages_sauve_fich {texte} {
        if {$err} {set new ""}
        set new "0000000$new"
        set ext [string range $new [expr [string length $new]-5] end ]
-       catch {file rename $fichlog "$bddconf(dirlog)/log$ext.txt"}
+       catch {file rename $fichlog [file join $bddconf(dirlog) "log$ext.txt"]}
        }
      catch { set bddfileout [open $fichlog a] }
      catch { puts $bddfileout $texte }
