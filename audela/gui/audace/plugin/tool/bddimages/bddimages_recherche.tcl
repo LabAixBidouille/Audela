@@ -6,7 +6,7 @@
 # Description    : Environnement de recherche des images
 #                  dans la base de donnees
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_recherche.tcl,v 1.6 2011-01-21 11:06:23 jberthier Exp $
+# Mise à jour $Id: bddimages_recherche.tcl,v 1.7 2011-01-26 14:14:49 fredvachier Exp $
 #
 #--------------------------------------------------
 #
@@ -883,7 +883,7 @@ namespace eval bddimages_recherche {
       global color
       global list_of_columns
 
-::console::affiche_resultat "clock seconds [clock seconds] \n"
+      ::console::affiche_resultat "clock seconds [clock seconds] \n"
 
       set list_of_columns [list "idbddimg" "filename" "telescop" "date-obs" "object" ]
 
@@ -953,6 +953,7 @@ namespace eval bddimages_recherche {
 #--------------------------------------------------
 
    proc ::bddimages_recherche::Affiche_listes { } {
+
       variable This
       global audace caption color
       global bddconf popupTbl
@@ -960,9 +961,9 @@ namespace eval bddimages_recherche {
       global nbintellilist
       global intellilisttotal
 
-	catch {  $::bddimages_recherche::This.frame6.liste.tbl delete 0 end
-	  $::bddimages_recherche::This.frame6.liste.tbl deletecolumns 0 end
-	  }
+      catch {  $::bddimages_recherche::This.frame6.liste.tbl delete 0 end
+         $::bddimages_recherche::This.frame6.liste.tbl deletecolumns 0 end
+         }
 
       $::bddimages_recherche::This.frame6.liste.tbl insertcolumns end "20" "Listes" left
 
@@ -972,7 +973,8 @@ namespace eval bddimages_recherche {
          $::bddimages_recherche::This.frame6.liste.tbl columnconfigure 0 -sortmode dictionary
       }
 
-       ::console::affiche_resultat "--nbintellilist : $nbintellilist \n"
+      #::console::affiche_resultat "--nbintellilist : $nbintellilist \n"
+
       #--- Extraction du resultat
       for { set i 1 } { $i <= $nbintellilist } { incr i } {
         set intellilist  $intellilisttotal($i)
