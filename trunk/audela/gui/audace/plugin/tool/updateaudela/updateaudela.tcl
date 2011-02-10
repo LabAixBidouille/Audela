@@ -2,7 +2,7 @@
 # Fichier : updateaudela.tcl
 # Description : Outil de fabrication des fichiers Kit et de deploiement des plugins
 # Auteur : Michel Pujol
-# Mise a jour $Id: updateaudela.tcl,v 1.32 2010-12-30 10:09:06 robertdelmas Exp $
+# Mise a jour $Id: updateaudela.tcl,v 1.33 2011-02-10 19:17:58 robertdelmas Exp $
 #
 
 namespace eval ::updateaudela {
@@ -961,7 +961,6 @@ proc ::updateaudela::kit::fillConfigPage { frm visuNo } {
           -labeljustify left -width 0 -padx 2 -justify left -editable 0 \
           -textvariable ::updateaudela::private(kitDirectory)
 
-
       #--- Information du plugin
       frame $frm.kit.info -borderwidth 0
       #Label $frm.kit.info.title -text ""
@@ -1909,7 +1908,6 @@ proc ::updateaudela::makecore::makeFileList {  } {
    }
 }
 
-
 proc ::updateaudela::makecore::analdir { base } {
    global tab result resultfile f base0 make
    set listfiles ""
@@ -2059,7 +2057,6 @@ proc ::updateaudela::makecore::analdir { base } {
       }
    }
 }
-
 
 #------------------------------------------------------------
 #  ::updateaudela::makecore::addFile

@@ -2,7 +2,7 @@
 # Fichier : focusert193.tcl
 # Description : Gere le focuser associe a la monture T193
 # Auteur : Robert DELMAS
-# Mise à jour $Id: focusert193.tcl,v 1.3 2011-01-23 18:28:42 michelpujol Exp $
+# Mise à jour $Id: focusert193.tcl,v 1.4 2011-02-10 19:15:50 robertdelmas Exp $
 #
 
 #
@@ -249,6 +249,4 @@ proc ::focusert193::getPosition { } {
       ::confTel::run
    }
 }
-
-
 

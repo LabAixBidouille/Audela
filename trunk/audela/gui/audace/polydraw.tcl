@@ -2,7 +2,7 @@
 # Fichier : polydraw.tcl
 # Description : Dessine un polygone
 # Auteur : Michel PUJOL
-# Mise à jour $Id: polydraw.tcl,v 1.10 2011-01-16 19:14:17 michelpujol Exp $
+# Mise à jour $Id: polydraw.tcl,v 1.11 2011-02-10 19:16:00 robertdelmas Exp $
 #
 
 namespace eval ::polydraw {
@@ -108,7 +108,6 @@ proc ::polydraw::setMouseMoveLine { visuNo value } {
 
    set private($visuNo,mouseMoveLine) $value
 }
-
 
 #------------------------------------------------------------
 #  setZoom
