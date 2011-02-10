@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise à jour $Id: acqfen.tcl,v 1.48 2010-10-10 20:02:23 michelpujol Exp $
+# Mise à jour $Id: acqfen.tcl,v 1.49 2011-02-10 19:01:35 robertdelmas Exp $
 #
 
 # =========================================================
@@ -1346,6 +1346,12 @@ namespace eval ::acqfen {
          foreach keyword [ ::keyword::getKeywords $audace(visuNo) $::conf(acqfen,keywordConfigName) ] {
             buf$audace(bufNo) setkwd $keyword
          }
+
+         #--- Rajoute les coordonnees de la fenetre dans l'en-tete FITS
+         buf$::audace(bufNo) setkwd [list WINDOWX1 $panneau(acqfen,X1) integer "Window coordinate" "pixel"]
+         buf$::audace(bufNo) setkwd [list WINDOWY1 $panneau(acqfen,Y1) integer "Window coordinate" "pixel"]
+         buf$::audace(bufNo) setkwd [list WINDOWX2 $panneau(acqfen,X2) integer "Window coordinate" "pixel"]
+         buf$::audace(bufNo) setkwd [list WINDOWY2 $panneau(acqfen,Y2) integer "Window coordinate" "pixel"]
 
          #--- Mise a jour du nom du fichier dans le titre et de la fenetre de l'en-tete FITS
          ::confVisu::setFileName $audace(visuNo) ""
