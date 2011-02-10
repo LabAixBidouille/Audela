@@ -5,7 +5,7 @@
 #
 # @brief Outil pour l'analyse photométrique d'une image.
 #
-# $Id: photometrie.tcl,v 1.8 2011-01-23 12:57:16 jacquesmichelet Exp $
+# $Id: photometrie.tcl,v 1.9 2011-02-10 19:44:43 jacquesmichelet Exp $
 #
 
 namespace eval ::Photometrie {
@@ -101,26 +101,10 @@ namespace eval ::Photometrie {
     }
 
     ##
-    # @brief Recherche de mots-clés typiques d'une image recalée astrométriquement
-    # @param[out] photometrie(astrometrie) = 1 si l'image contient tous les mot-clés, 0 sinon
-    proc AnalyseImage {} {
-        variable photometrie_texte
+    # @brief Calcul du champ couvert par l'image
+    # return : le champ en arcmin sur la plus grande dimension
+    proc CalculChampImage {} {
         variable photometrie
-
-        set photometrie(astrometrie) 1
-        set liste_cle [ buf$::audace(bufNo) getkwds ]
-        foreach cle_majuscule [ list NAXIS1 NAXIS2 CRVAL1 CRVAL2 CRPIX1 CRPIX2 CROTA2 PIXSIZE1 PIXSIZE2 FOCLEN ] {
-            set cle [ string tolower $cle_majuscule ]
-            if { [ lsearch -exact $liste_cle $cle_majuscule ] > 0 } {
-                set photometrie($cle) [ lindex [ buf$::audace(bufNo) getkwd $cle_majuscule ] 1 ]
-            } else {
-                ::console::affiche_erreur "$photometrie_texte(err_pas_astrometrie) \n"
-                set photometrie(astrometrie) 0
-            }
-        }
-
-        set fwhm [ buf$::audace(bufNo) fwhm [ list 1 1 $photometrie(naxis1) $photometrie(naxis1) ] ]
-        set photometrie(fwhm) [ expr ( [ lindex $fwhm 0 ] + [ lindex $fwhm 1 ] ) / 2 ]
 
         # Récupération des coordonnées et du champ
         set res [ buf$::audace(bufNo) xy2radec [ list [ expr $photometrie(naxis1) / 2 ] [ expr $photometrie(naxis2) / 2 ] ] ]
@@ -138,11 +122,40 @@ namespace eval ::Photometrie {
         } else {
             set champarcmin [ expr round( $champ2 * 3437.75 ) ]
         }
+        return $champarcmin
+    }
 
-        # Limite à 30 minutes d'arc
-        if { $champarcmin > 30 } {
-            ::console::affiche_erreur "$photometrie_texte(err_champ_trop_large) : $champarcmin ' \n"
-            set photometrie(internet) 0
+    ##
+    # @brief Recherche de mots-clés typiques d'une image recalée astrométriquement
+    # @param[out] photometrie(astrometrie) = 1 si l'image contient tous les mot-clés, 0 sinon
+    # @param[out] photometrie(internet) si le champ a une taille inférieure à 30 min d'arc
+    proc AnalyseImage {} {
+        variable photometrie_texte
+        variable photometrie
+
+        set photometrie(astrometrie) 1
+        set liste_cle [ buf$::audace(bufNo) getkwds ]
+        foreach cle_majuscule [ list NAXIS1 NAXIS2 CRVAL1 CRVAL2 CRPIX1 CRPIX2 CROTA2 PIXSIZE1 PIXSIZE2 FOCLEN ] {
+            set cle [ string tolower $cle_majuscule ]
+            if { [ lsearch -exact $liste_cle $cle_majuscule ] > 0 } {
+                set photometrie($cle) [ lindex [ buf$::audace(bufNo) getkwd $cle_majuscule ] 1 ]
+            } else {
+                ::console::affiche_erreur "$photometrie_texte(err_pas_astrometrie) $cle_majuscule\n"
+                set photometrie(astrometrie) 0
+                break
+            }
+        }
+
+        set fwhm [ buf$::audace(bufNo) fwhm [ list 1 1 $photometrie(naxis1) $photometrie(naxis1) ] ]
+        set photometrie(fwhm) [ expr ( [ lindex $fwhm 0 ] + [ lindex $fwhm 1 ] ) / 2 ]
+
+        if { $photometrie(astrometrie) == 1 } {
+            set champ [ CalculChampImage ]
+            # Limite à 30 minutes d'arc
+            if { $champ > 30 } {
+                ::console::affiche_erreur "$photometrie_texte(err_champ_trop_large) : $champ ' \n"
+                set photometrie(internet) 0
+            }
         }
     }
 
@@ -649,7 +662,6 @@ namespace eval ::Photometrie {
             -width 1 \
             -tags [ list photom $tag carre ]
     }
-
 
     ##
     # @brief Gestion des retours de Aladin
