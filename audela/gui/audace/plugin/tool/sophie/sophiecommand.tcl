@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.58 2010-12-11 10:47:13 michelpujol Exp $
+# @version  $Id: sophiecommand.tcl,v 1.59 2011-02-10 19:38:11 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -618,7 +618,6 @@ proc ::sophie::setGuidingMode { visuNo } {
             "originSumCounter"   0
    }
 }
-
 
 ##------------------------------------------------------------
 # setFiberDetection
@@ -1627,11 +1626,9 @@ proc ::sophie::drawAxis { visuNo angle label1 label2} {
       set y2 $y
    }
 
-
    #--- je transforme les coordonnees dans le repere canvas
    set coord1 [::confVisu::picture2Canvas $visuNo [list $x1 $y1]]
    set coord2 [::confVisu::picture2Canvas $visuNo [list $x2 $y2]]
-
 
    #--- je trace l'axe et les libelles des extremites
    $private(hCanvas) create line [lindex $coord1 0] [lindex $coord1 1] [lindex $coord2 0] [lindex $coord2 1] -fill $::audace(color,drag_rectangle) -tag axis -state normal
@@ -1884,7 +1881,6 @@ proc ::sophie::startCenter { } {
          "mountEnabled"   $private(centerEnabled) \
          "mountRate"      $private(mountRate)
 
-
    #--- je mets a jour le voyant dans la fenetre de controle
    ::sophie::control::setCenterState $private(centerEnabled)
 }
@@ -1908,7 +1904,6 @@ proc ::sophie::stopCenter { } {
    if { $::audace(telNo) != 0 } {
       tel$::audace(telNo) radec guiding 0
    }
-
 
    #--- je mets a jour le voyant dans la fenetre de controle
    ::sophie::control::setCenterState $private(centerEnabled)
@@ -1934,7 +1929,6 @@ proc ::sophie::startGuide { } {
       ###::telescope::setSpeed 1
       #--- je signale au telescope que je demarre une session de guidage
       tel$::audace(telNo) radec guiding 1
-
 
       #--- j'active le guidage dans le thread de la camera
       ###set private(AsynchroneParameter) 1
@@ -2073,7 +2067,6 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
             set deltaCorrection      [lindex $args 15]
             set infoMessage          [lindex $args 16]
             ###::console::disp "::sophie::callbackAcquisition infoMessage=$infoMessage \n"
-
 
             #--- je modifie la position du carre de la cible
             if { $private(targetMove) == "AUTO" } {

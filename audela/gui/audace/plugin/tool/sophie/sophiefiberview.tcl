@@ -2,7 +2,7 @@
 # @file     fiberview.tcl
 # @brief    Fichier du namespace ::sophie::fiberview
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiefiberview.tcl,v 1.4 2010-02-20 07:55:30 robertdelmas Exp $
+# @version  $Id: sophiefiberview.tcl,v 1.5 2011-02-10 19:38:11 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -158,10 +158,4 @@ proc ::sophie::fiberview::refresh { visuNo args } {
    #--- je change le titre
    wm title [::confVisu::getBase $visuNo] $::caption(sophie,visuFibreA)
 }
-
-
-
-
-
-
 

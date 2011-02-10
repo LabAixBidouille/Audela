@@ -2,7 +2,7 @@
 # @file     sophiespectro.tcl
 # @brief    fichier du namespace ::sophie::spectro
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiespectro.tcl,v 1.16 2010-07-14 08:40:22 michelpujol Exp $
+# @version  $Id: sophiespectro.tcl,v 1.17 2011-02-10 19:38:11 robertdelmas Exp $
 # UTF8 (à)
 #------------------------------------------------------------
 
@@ -306,7 +306,6 @@ proc ::sophie::spectro::setSkyLevel { skyLevel } {
 
    set private(skyLevel)   $skyLevel
 }
-
 
 ##------------------------------------------------------------
 # setSeeing
