@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.65 2011-01-24 18:02:36 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.66 2011-02-10 19:04:32 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -534,8 +534,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,rot+90)                      "# Tourner 90° sens horaire"
    set caption(audace,menu,rot-90)                      "# Tourner 90° sens anti-horaire"
    set caption(audace,menu,rot180)                      "# Tourner 180°"
-   set caption(audace,menu,miroir_x)                    "# Inverser Gauche/Droite"
-   set caption(audace,menu,miroir_y)                    "# Inverser Haut/Bas"
+   set caption(audace,menu,miroir_x)                    "Invertir Izquierda/Derecha"
+   set caption(audace,menu,miroir_y)                    "Invertir Arriba/Abajo"
    set caption(audace,menu,miroir_xy)                   "# Symétrie diagonale"
    set caption(audace,menu,window1)                     "Recortar"
    set caption(audace,menu,scale)                       "Remuestreo"
@@ -629,7 +629,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(pretraitement,parcourir)                 "..."
    set caption(pretraitement,attention)                 "Cuidado"
-   set caption(pretraitement,en_cours)                  "# En cours... Patientez..."
+   set caption(pretraitement,en_cours)                  "En curso... Espere..."
    set caption(pretraitement,fin_traitement)            "Fin de procesando."
    set caption(pretraitement,ok)                        "OK"
    set caption(pretraitement,appliquer)                 "Aplicar"
@@ -1020,8 +1020,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,rot+90)                      "# Tourner 90° sens horaire"
    set caption(audace,menu,rot-90)                      "# Tourner 90° sens anti-horaire"
    set caption(audace,menu,rot180)                      "# Tourner 180°"
-   set caption(audace,menu,miroir_x)                    "# Inverser Gauche/Droite"
-   set caption(audace,menu,miroir_y)                    "# Inverser Haut/Bas"
+   set caption(audace,menu,miroir_x)                    "Ombyt Venstre/Højre"
+   set caption(audace,menu,miroir_y)                    "Ombyt Op/Ned"
    set caption(audace,menu,miroir_xy)                   "# Symétrie diagonale"
    set caption(audace,menu,window1)                     "Beskære"
    set caption(audace,menu,scale)                       "Resampling"
@@ -1115,7 +1115,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(pretraitement,parcourir)                 "..."
    set caption(pretraitement,attention)                 "Advarsel"
-   set caption(pretraitement,en_cours)                  "# En cours... Patientez..."
+   set caption(pretraitement,en_cours)                  "Udfører funktionen. Vent venligst!"
    set caption(pretraitement,fin_traitement)            "Slut på processing."
    set caption(pretraitement,ok)                        "OK"
    set caption(pretraitement,appliquer)                 "Anvend"

@@ -1,6 +1,6 @@
 #
 # Fichier : divers.cap
-# Mise a jour $Id: divers.cap,v 1.12 2010-12-11 14:31:00 robertdelmas Exp $
+# Mise a jour $Id: divers.cap,v 1.13 2011-02-10 19:06:47 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -121,7 +121,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(divers,copyjpeg)                       "Guardar JPEG"
    set caption(divers,libgsl)                         "\nLas librerias libgsl y libgslcblas no se encuentran."
    set caption(divers,attention)                      "Aviso"
-   set caption(divers,err_list_of_number)             "# {%s} n'est pas une liste de nombres."
+   set caption(divers,err_list_of_number)             "{%s} no es una lista de números."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -175,7 +175,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(divers,copyjpeg)                       "Gem som Jpeg"
    set caption(divers,libgsl)                         "\nBibliotekerne libgsl og libgslcblas er ikke oprettet."
    set caption(divers,attention)                      "Advarsel"
-   set caption(divers,err_list_of_number)             "{%s} er ikke en tal-liste."
+   set caption(divers,err_list_of_number)             "{%s} er ikke en talrække."
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {

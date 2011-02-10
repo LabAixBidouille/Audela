@@ -1,6 +1,6 @@
 #
 # Fichier : satellite.cap
-# Mise a jour $Id: satellite.cap,v 1.1 2010-11-10 21:51:37 robertdelmas Exp $
+# Mise a jour $Id: satellite.cap,v 1.2 2011-02-10 19:09:22 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -18,7 +18,7 @@ set caption(satellite,tle_satelname)                         "Names of all satel
 set caption(satellite,tle_satelnamesearch)                   "List of satellites in TLE files name with: ..."
 set caption(satellite,gps_lieu)                              "GPS Coordinates"
 set caption(satellite,dateob)                                "Observation Date (UT)"
-set caption(satellite,tle_satelcoordnearest)                 "Nearest Satellite"
+set caption(satellite,tle_satelcoordnearest)                 "Nearest Satellite:"
 set caption(satellite,tle_satelra)                           "RA:"
 set caption(satellite,tle_sateldec)                          "Dec.:"
 
@@ -64,12 +64,12 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(satellite,tle_titre)                          "Satélites artificiales"
    set caption(satellite,tle_update)                         "Actualizar archivos TLE"
-   set caption(satellite,tle_satelcoord)                     "# Recherche les coordonnées"
-   set caption(satellite,tle_satelname)                      "# Nom de tous les satellites dans les TLE --> Console"
-   set caption(satellite,tle_satelnamesearch)                "# Liste des satellites ayant dans le nom : ..."
+   set caption(satellite,tle_satelcoord)                     "Buscar Coordenadas"
+   set caption(satellite,tle_satelname)                      "Nombres de todos los satélites en fichero TLE --> Consola"
+   set caption(satellite,tle_satelnamesearch)                "Lista de los satélites con el nombre: ..."
    set caption(satellite,gps_lieu)                           "Coordenadas GPS:"
-   set caption(satellite,dateob)                             "# Date de l'observation (TU)"
-   set caption(satellite,tle_satelcoordnearest)              "# Satellite le plus proche de :"
+   set caption(satellite,dateob)                             "Fecha de la observación (TU)"
+   set caption(satellite,tle_satelcoordnearest)              "Satélite más cercano:"
    set caption(satellite,tle_satelra)                        "RA:"
    set caption(satellite,tle_sateldec)                       "Dec.:"
 
@@ -120,7 +120,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(satellite,tle_satelnamesearch)                "List of satellites in TLE files name with: ..."
    set caption(satellite,gps_lieu)                           "GPS Coordinates"
    set caption(satellite,dateob)                             "Observation Date (UT)"
-   set caption(satellite,tle_satelcoordnearest)              "Nearest Satellite"
+   set caption(satellite,tle_satelcoordnearest)              "Nearest Satellite:"
    set caption(satellite,tle_satelra)                        "RA:"
    set caption(satellite,tle_sateldec)                       "Dec.:"
 
@@ -137,7 +137,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(satellite,tle_satelnamesearch)                "List of satellites in TLE files name with: ..."
    set caption(satellite,gps_lieu)                           "GPS Coordinates"
    set caption(satellite,dateob)                             "Observation Date (UT)"
-   set caption(satellite,tle_satelcoordnearest)              "Nearest Satellite"
+   set caption(satellite,tle_satelcoordnearest)              "Nearest Satellite:"
    set caption(satellite,tle_satelra)                        "RA:"
    set caption(satellite,tle_sateldec)                       "Dec.:"
 
@@ -154,7 +154,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(satellite,tle_satelnamesearch)                "List of satellites in TLE files name with: ..."
    set caption(satellite,gps_lieu)                           "GPS Coordinates"
    set caption(satellite,dateob)                             "Observation Date (UT)"
-   set caption(satellite,tle_satelcoordnearest)              "Nearest Satellite"
+   set caption(satellite,tle_satelcoordnearest)              "Nearest Satellite:"
    set caption(satellite,tle_satelra)                        "RA:"
    set caption(satellite,tle_sateldec)                       "Dec.:"
 
