@@ -2,7 +2,7 @@
 # @file     sophieconfig.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophieconfig.tcl,v 1.32 2010-10-03 14:49:46 robertdelmas Exp $
+# @version  $Id: sophieconfig.tcl,v 1.33 2011-02-10 19:38:11 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -294,7 +294,6 @@ proc ::sophie::config::fillConfigStandardPage { frm visuNo } {
          -padx 2 -pady 2
 
    pack $frm.fibre -side top -anchor w -fill x -expand 0
-
 
    #--- Frame pour la position des fibres
    TitleFrame $frm.angle -borderwidth 2 -relief ridge -text $::caption(sophie,angleBonnette)

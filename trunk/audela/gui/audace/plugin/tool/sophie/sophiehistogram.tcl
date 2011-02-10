@@ -1,12 +1,11 @@
 #
 # Fichier : sophiehistogram.tcl
 # Description : Fenetre affcihat l'histogramme des ecarts étoile/consigne
-# Mise à jour $Id: sophiehistogram.tcl,v 1.9 2010-12-11 10:35:34 robertdelmas Exp $
+# Mise à jour $Id: sophiehistogram.tcl,v 1.10 2011-02-10 19:38:11 robertdelmas Exp $
 #
 
 namespace eval ::sophie::histogram {
    variable private
-
 
    set private(realTimeFileName) ""
    set private(realTimeVisuNo) ""
@@ -64,7 +63,6 @@ proc ::sophie::histogram::run { visuNo } {
       focus $private($visuNo,this)
    }
 }
-
 
 #------------------------------------------------------------
 # getLabel
@@ -156,10 +154,8 @@ proc ::sophie::histogram::fillConfigPage { frm visuNo } {
       Menu_Command   $menuNo "$::caption(audace,menu,display)" "$::caption(sophie,histogram,preference)" \
       "::sophie::histogram::onRunPreference $visuNo"
 
-
     [MenuGet $menuNo $::caption(audace,menu,file)]      configure -tearoff 0
     [MenuGet $menuNo $::caption(audace,menu,display)]   configure -tearoff 0
-
 
    #--- Je memorise la reference de la frame
    set private($visuNo,frm)      $frm
@@ -213,7 +209,6 @@ proc ::sophie::histogram::fillConfigPage { frm visuNo } {
    ###pack $frm.pane.table -side top -fill both -expand 1
    $frm.pane add $frm.pane.table  -weight 0
 
-
    #--- je cree le graphique
    blt::barchart $frm.pane.graph
    ###pack $frm.pane.graph -side top -fill both -expand 1
@@ -223,7 +218,6 @@ proc ::sophie::histogram::fillConfigPage { frm visuNo } {
    update
    ::sophie::histogram::configureGraph $visuNo
 }
-
 
 #------------------------------------------------------------
 # configureGraph { }
@@ -264,7 +258,6 @@ proc ::sophie::histogram::configureGraph { visuNo } {
          -ydata ::sophieHistogramDeltaDiff \
          -foreground orange \
          -label $::caption(sophie,delta)
-
 
 }
 
@@ -338,7 +331,6 @@ proc ::sophie::histogram::onCopyClipboard { visuNo } {
    clipboard append -type STRING $data
 }
 
-
 #------------------------------------------------------------
 # onClearDisplay
 #    efface les données affichées
@@ -396,8 +388,6 @@ proc ::sophie::histogram::onSelectStart { visuNo } {
    displayData $visuNo $private($visuNo,fileName)  $inputStartList
 
 }
-
-
 
 #------------------------------------------------------------
 # displayData { }
@@ -536,7 +526,6 @@ proc ::sophie::histogram::loadData { fileName step { inputStartList "" } } {
             }
          }
 
-
       } else {
          set currentStarDate ""
          set currentRa ""
@@ -569,7 +558,6 @@ proc ::sophie::histogram::loadData { fileName step { inputStartList "" } } {
                   continue
                }
             }
-
 
             switch [lindex $line 1 ] {
                "DATA"  {
@@ -609,7 +597,6 @@ proc ::sophie::histogram::loadData { fileName step { inputStartList "" } } {
                   } else {
                      #--- j'ignore ce START car il n'y a pas de STOP depuis le START precendent
                   }
-
 
                }
                "STOP" {
@@ -752,7 +739,6 @@ proc ::sophie::histogram::writeGuidingStop { } {
 
 }
 
-
 # ------------------------------------------------------------
 # writeGuidingInformation
 #    enregistre un evenement de correction de guidage dans le fichier courant de log
@@ -775,7 +761,6 @@ proc ::sophie::histogram::writeGuidingInformation { alphaDiff deltaDiff alphaCor
       puts $hFile "$date DATA  $alphaDiff $deltaDiff $alphaCorrection $deltaCorrection $ra $dec"
       close $hFile
    }
-
 
    #--- j'ajoute la nouvelle valeur dans l'histogramme
    foreach visuNo $private(realTimeVisuNo)  {
@@ -891,7 +876,6 @@ proc ::sophie::histogram::getFileName { {update 0 } } {
          set private(realTimeFileName) $fileName
       }]
 
-
       if { $catchResult ==1 } {
           if { $hFile != "" } {
              close $hFile
@@ -902,7 +886,6 @@ proc ::sophie::histogram::getFileName { {update 0 } } {
       return $fileName
    }
 }
-
 
 ################################################################################
 #  fenetre des preferences
@@ -940,7 +923,6 @@ proc ::sophie::histogram::preference::run { visuNo } {
    }
 }
 
-
 #------------------------------------------------------------
 # getLabel
 #  retourne le nom de la fenetre de configuration
@@ -970,7 +952,6 @@ proc ::sophie::histogram::preference::apply { visuNo } {
    set private($visuNo,apply) 1
    return
 }
-
 
 #------------------------------------------------------------
 # closeWindow
@@ -1018,6 +999,4 @@ proc ::sophie::histogram::preference::fillConfigPage { frm visuNo } {
 
    pack $frm.form -side top -fill x -expand 0 -padx 4 -pady 4
 }
-
-
 

@@ -2,7 +2,7 @@
 # @file     sophiesimulcontrol.tcl
 # @brief    Fichier du namespace ::sophie::testcontrol
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophietestcontrol.tcl,v 1.15 2011-01-23 18:21:25 michelpujol Exp $
+# @version  $Id: sophietestcontrol.tcl,v 1.16 2011-02-10 19:38:11 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------
@@ -79,7 +79,6 @@ proc ::sophie::testcontrol::disp { message } {
    variable private
    ::thread::send -async $private(mainThreadNo) [list ::console::disp "$message" ]
 }
-
 
 #------------------------------------------------------------
 # openTelescopeControlSocket
@@ -176,7 +175,6 @@ proc ::sophie::testcontrol::acceptTelescopeNotificationSocket { channel address 
    #--- j'indique la procedure a appeler pour lire et traiter les donnees recues
    fileevent $channel readable [list ::sophie::testcontrol::readTelescopeNotificationSocket $channel ]
 }
-
 
 #------------------------------------------------------------
 # readTelescopeCommandSocket
@@ -451,7 +449,6 @@ proc ::sophie::testcontrol::stopRadecNotification { } {
    return 0
 }
 
-
 #------------------------------------------------------------
 # sendRadecNotification
 #   envoie une donnee au PC de guidage
@@ -525,7 +522,6 @@ proc ::sophie::testcontrol::setRadecSlew { slewMode } {
    }
    return $result
 }
-
 
 #------------------------------------------------------------
 # startRadecMove
@@ -733,13 +729,11 @@ proc ::sophie::testcontrol::startRadecGoto { ra dec } {
    return $result
 }
 
-
 #############################################################
 #
 #  FOCUS
 #
 #############################################################
-
 
 #------------------------------------------------------------
 # startFocusMove
@@ -1045,8 +1039,6 @@ proc ::sophie::testcontrol::simulateMotor { } {
    }
 }
 
-
-
 #------------------------------------------------------------
 # configure
 #   met a jour les parametres de configuration
@@ -1069,7 +1061,6 @@ proc ::sophie::testcontrol::configure { sideralSpeed lunarSpeed guidingSpeed cen
    set private(observaterPosition)  $observaterPosition
 }
 
-
 #------------------------------------------------------------
 # updateGui
 #  envoie les valeurs courantes au thread principal pour les afficher dans la fenetre du simulateur
@@ -1085,7 +1076,4 @@ proc ::sophie::testcontrol::updateGui { } {
        $private(motor,slewMode) $private(motor,slewSpeed,$private(motor,slewMode)) \
        [format "%6.2f" $private(focus,position)] $private(focus,speed) ]
 }
-
-
-
 

@@ -2,7 +2,7 @@
 # @file     sophiecontrol.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecontrol.tcl,v 1.45 2010-06-29 19:29:57 michelpujol Exp $
+# @version  $Id: sophiecontrol.tcl,v 1.46 2011-02-10 19:38:11 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -1784,7 +1784,6 @@ proc ::sophie::control::setGuideInformation { starDetection fiberStatus originX 
    set title [format "$::caption(sophie,ecartEtoile) Alpha MOY/RMS=%6.2f/%6.2f  Delta MOY/RMS=%6.2f/%6.2f %s" $alphaMoy $alphaRms $deltaMoy $deltaRms $::caption(sophie,arcsec)]
    $frm.guidage.ecarts configure -text $title
 
-
    #--- je mets a jour les logs des ecarts si le guidage est activé
    if { [$frm.voyant.guidage_color_invariant cget -bg ] ==  $private(activeColor) } {
       ::sophie::histogram::writeGuidingInformation \
@@ -2081,5 +2080,4 @@ proc ::sophie::control::showHistogram { visuNo } {
    ::sophie::histogram::displayData $visuNo [::sophie::histogram::getFileName]
 
 }
-
 

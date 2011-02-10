@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.51 2010-10-10 20:06:13 michelpujol Exp $
+# @version   $Id: sophie.tcl,v 1.52 2011-02-10 19:38:11 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -525,7 +525,6 @@ proc ::sophie::startTool { visuNo } {
    createOrigin $visuNo
    #--- j'affiche la fibreB sur l'image
    createFiberB $visuNo
-
 
    set catchError [ catch {
       #--- j'ouvre la liaison pour recevoir les commandes du PC Sophie

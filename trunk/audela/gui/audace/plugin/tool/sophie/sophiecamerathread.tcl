@@ -2,7 +2,7 @@
 # @file     sophiecamerathread.tcl
 # @brief    Fichier du namespace ::camerathread
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecamerathread.tcl,v 1.35 2010-07-02 06:08:30 michelpujol Exp $
+# @version  $Id: sophiecamerathread.tcl,v 1.36 2011-02-10 19:38:11 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -53,7 +53,6 @@ proc ::camerathread::guideSophie { exptime originCoord targetCoord cameraAngle t
    lappend  private(centerDeltaList) [list $private(targetBoxSize) $private(targetBoxSize)]
    lappend  private(centerDeltaList) [list $private(targetBoxSize) $private(targetBoxSize)]
    lappend  private(centerDeltaList) [list $private(targetBoxSize) $private(targetBoxSize)]
-
 
    ###::camerathread::disp "::camerathread::processAcquisition \n"
    #--- je parametre la camera
@@ -251,7 +250,6 @@ proc ::camerathread::sophieAcquisitionLoop { } {
          set maxIntensity     [lindex $result 9 ]
          set starFlux         [lindex $result 10 ]
          set infoMessage      [lindex $result 11 ]
-
 
          #--- je calcule le flux en ADU/seconde  (si exptime = 0 , je ne change pas la valeur)
          if { $private(exptime) != 0 } {
