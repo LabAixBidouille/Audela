@@ -5,7 +5,7 @@
   <title>Buffer</title>
 </head>
 <body>
-<p class="date">Date de mise &#224; jour : 01 janvier 2011</p>
+<p class="date">Date de mise &#224; jour : 30 janvier 2011</p>
 <h1>Buffer</h1>
 <p>Les commandes qui suivent peuvent &#234;tre appel&#233;es
 gr&#226;ce aux commandes <code>buf1</code>, <code>buf2</code>,
@@ -121,17 +121,52 @@ g&#233;r&#233;es.</p>
 fichier FITS lors des sauvegardes. Par d&#233;faut, ushort. En
 interne, AudeLA manipule des images de type float mais il est
 possible de les contraindre &#224; un autre type lors de
-l'enregistrement FITS avec cette fonction.</p>
-<p>byte : 8 bits non sign&#233;s (0 &#224; 255).</p>
-<p>short : 16 bits sign&#233;s (-32768 &#224; 32767).</p>
-<p>ushort : 16 bits non sign&#233;s (0 &#224; 65535).</p>
-<p>long : 32 bits sign&#233;s (-2 147 483 648 &#224; 2 147 483
-647).</p>
-<p>ulong : 32 bits non sign&#233;s (0 &#224; 4 294 967 295).</p>
-<p>float (-32) : flottant cod&#233; sur 32 bits
-(3,4*10<sup>-38</sup> &#224; 3,4*10<sup>+38</sup>).</p>
-<p>double : flottant cod&#233; sur 64 bits (1,7*10<sup>-308</sup>
-&#224; 1,7*10<sup>+308</sup>).</p>
+l'enregistrement FITS avec cette fonction.<br>
+</p>
+<p>byte : entiers &#224; 1 octet non sign&#233; soit 8 bits non sign&#233;s (0 &#224; 255).<br>
+</p>
+<p>short : entiers &#224; 2 octets sign&#233;s soit 16 bits sign&#233;s (-32768 &#224;
+32767).<br>
+</p>
+<p>ushort : entiers &#224; 2 octets non sign&#233;s soit 16 bits non sign&#233;s (0 &#224;
+65535) (Note 1).<br>
+</p>
+<p>long : entiers &#224; 4 octets sign&#233;s soit 32 bits sign&#233;s (-2 147 483 648
+&#224; 2 147 483
+647).<br>
+</p>
+<p>ulong : entiers &#224; 4 octets non sign&#233;s soit 32 bits non sign&#233;s (0 &#224; 4
+294 967 295) (Note 1).<br>
+</p>
+<p>float : flottants &#224; 4 octets soit 32 bits (-3,4*10<sup>+38</sup> &#224;
+3,4*10<sup>+38</sup>) (Note 2).<br>
+</p>
+<p>double : flottants &#224; 8 octets soit 64 bits (-1,7*10<sup>+308</sup>
+&#224; 1,7*10<sup>+308</sup>) (Note 3).<br>
+</p>
+<p><span style="text-decoration: underline;">Note 1 :</span> Les
+valeurs +16 et +32 ne sont pas des valeurs normalis&#233;es du standard
+FITS. Elles sont sp&#233;cifiques &#224; AudeLA et ne sont utilisables qu'en tant
+que param&#232;tres de certaines commandes de libaudela et de libtt.<big><span
+ style="font-size: 9pt; font-family: &quot;Arial&quot;,&quot;sans-serif&quot;;"></span></big><span
+ style="font-family: &quot;Arial&quot;,&quot;sans-serif&quot;;"><br>
+</span></p>
+<p><span style="font-family: &quot;Arial&quot;,&quot;sans-serif&quot;;"></span><span
+ style="text-decoration: underline;">Note 2 :</span> Cette notation
+pr&#233;sente 2 discontinuit&#233;s, en effet il est impossible d'affecter une
+valeur d'ADU dans les intervalles suivants :</p>
+<ul>
+  <li>0 &#224; +3,4*10<sup class="moz-txt-sup">-38</sup></li>
+  <li>-3,4*10<sup class="moz-txt-sup">-38</sup>&nbsp; &#224; 0</li>
+</ul>
+<p><span style="text-decoration: underline;">Note 3 :</span> Cette
+notation pr&#233;sente 2 discontinuit&#233;s, en effet il est impossible
+d'affecter une valeur d'ADU dans les intervalles suivants :</p>
+<ul>
+  <li>0 &#224; +1,7*10<sup class="moz-txt-sup">-308</sup></li>
+  <li>-1,7*10<sup class="moz-txt-sup">-308</sup>&nbsp; &#224; 0</li>
+</ul>
+<p></p>
 <p>Les r&#233;glages accessibles dans la fen&#234;tre <span
  style="font-weight: bold;">Configuration</span> --&gt; <span
  style="font-weight: bold;">Fichiers image</span> sont :</p>
@@ -203,7 +238,7 @@ L'extension par d&#233;faut est ajout&#233;e au nom du fichier
 taux de compression d'une image JPEG.</li>
 </ul>
 <p>Exemples :</p>
-<table width="100%" border="0">
+<table border="0" width="100%">
   <tbody>
     <tr>
       <td><code>buf1 save images/toto.fit</code></td>
