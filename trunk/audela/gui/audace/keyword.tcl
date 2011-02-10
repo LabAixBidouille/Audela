@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: keyword.tcl,v 1.49 2011-01-16 19:16:05 michelpujol Exp $
+# Mise à jour $Id: keyword.tcl,v 1.50 2011-02-10 19:18:50 robertdelmas Exp $
 #
 
 namespace eval ::keyword {
@@ -226,6 +226,10 @@ proc ::keyword::init { } {
    set private(temperature_ccd)     ""
    set private(equipement)          ""
    set private(detectorName)        ""
+   set private(CRVAL1)              ""
+   set private(CRVAL2)              ""
+   set private(CRPIX1)              ""
+   set private(CRPIX2)              ""
    set private(objName)             ""
    set private(ra)                  ""
    set private(dec)                 ""
@@ -270,6 +274,10 @@ proc ::keyword::init { } {
    lappend private(infosMotsClefs) [ list "CCD_TEMP" $::caption(keyword,instrument)  ::keyword::private(temperature_ccd)     readonly $::caption(keyword,rafraichir) "::keyword::onChangeTemperature"               ""                                  ""                                       "" "" "float"  "Actual CCD temperature"                          "degres Celsius" ]
    lappend private(infosMotsClefs) [ list "INSTRUME" $::caption(keyword,instrument)  ::keyword::private(equipement)          normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Instrument"                                      "" ]
    lappend private(infosMotsClefs) [ list "DETNAM"   $::caption(keyword,instrument)  ::keyword::private(detectorName)        normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Detector"                                        "" ]
+   lappend private(infosMotsClefs) [ list "CRVAL1"   $::caption(keyword,instrument)  ::keyword::private(CRVAL1)              readonly ""                             ""                                             ""                                  ""                                       "" "" "float"  "Reference coordinate for naxis1"                 "degres" ]
+   lappend private(infosMotsClefs) [ list "CRVAL2"   $::caption(keyword,instrument)  ::keyword::private(CRVAL2)              readonly ""                             ""                                             ""                                  ""                                       "" "" "float"  "Reference coordinate for naxis2"                 "degres" ]
+   lappend private(infosMotsClefs) [ list "CRPIX1"   $::caption(keyword,instrument)  ::keyword::private(CRPIX1)              readonly ""                             ""                                             ""                                  ""                                       "" "" "float"  "Reference pixel for naxis1"                      "pixel" ]
+   lappend private(infosMotsClefs) [ list "CRPIX2"   $::caption(keyword,instrument)  ::keyword::private(CRPIX2)              readonly ""                             ""                                             ""                                  ""                                       "" "" "float"  "Reference pixel for naxis2"                      "pixel" ]
    lappend private(infosMotsClefs) [ list "OBJNAME"  $::caption(keyword,cible)       ::keyword::private(objName)             normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::conf(keyword,GotoManuelAuto)           0  "" "string" "Object observed"                                 "" ]
    lappend private(infosMotsClefs) [ list "RA"       $::caption(keyword,cible)       ::keyword::private(ra)                  normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::conf(keyword,GotoManuelAutoBis)        0  "" "float"  "Object Right Ascension"                          "degres" ]
    lappend private(infosMotsClefs) [ list "DEC"      $::caption(keyword,cible)       ::keyword::private(dec)                 normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::conf(keyword,GotoManuelAutoBis)        0  "" "float"  "Object Declination"                              "degres" ]
@@ -318,6 +326,7 @@ proc ::keyword::run { visuNo configNameVariable } {
    #--- j'ajoute des listeners sur la camera et l'AlAudine
    ::confVisu::addCameraListener $visuNo [list ::keyword::onChangeConfOptic $visuNo]
    ::confVisu::addCameraListener $visuNo [list ::keyword::onChangeCellDim $visuNo]
+   ::confVisu::addCameraListener $visuNo [list ::keyword::onChangeCRPIXCRVAL $visuNo]
    ::confVisu::addCameraListener $visuNo [list ::keyword::onChangeTemperature $visuNo]
 
    #--- je recupere la configuration de l'observateur et de l'observatoire
@@ -328,6 +337,9 @@ proc ::keyword::run { visuNo configNameVariable } {
 
    #--- je recupere les dimensions des photosites
    onChangeCellDim $visuNo
+
+   #--- je recupere les mots cles CRPIX1, CRPIX2, CRVAL1 et CRVAL2
+   onChangeCRPIXCRVAL $visuNo
 
    #--- je recupere la consigne et la temperature du CCD
    onChangeTemperature $visuNo
@@ -452,7 +464,7 @@ proc ::keyword::onChangeCellDim { visuNo args } {
    variable private
 
    set camItem [ ::confVisu::getCamItem $visuNo ]
-   set camNo   [::confCam::getCamNo $camItem ]
+   set camNo   [ ::confCam::getCamNo $camItem ]
 
    if { $camNo != 0 } {
       set private(cell_dim_x) [ expr [ lindex [ cam$camNo celldim ] 0 ] * 1e6 ]
@@ -464,6 +476,41 @@ proc ::keyword::onChangeCellDim { visuNo args } {
       set private(cell_dim_y) ""
       set private(pix_dim_x)  ""
       set private(pix_dim_y)  ""
+   }
+}
+
+#------------------------------------------------------------------------------
+# onChangeCRPIXCRVAL
+#    met a jour les mots cles CRPIX1, CRPIX2,CRVAL1 et CRVAL2
+#
+# Parametres :
+#    visuNo
+#    args : valeurs fournies par le gestionnaire de listener
+# Return :
+#    rien
+#------------------------------------------------------------------------------
+proc ::keyword::onChangeCRPIXCRVAL { visuNo args } {
+   variable private
+
+   set camItem [ ::confVisu::getCamItem $visuNo ]
+   set camNo   [ ::confCam::getCamNo $camItem ]
+
+   if { $camNo != 0 } {
+      set private(CRPIX1) [ expr [ lindex [ cam$camNo nbpix ] 0 ] / 2.0 ]
+      set private(CRPIX2) [ expr [ lindex [ cam$camNo nbpix ] 1 ] / 2.0 ]
+   } else {
+      set private(CRPIX1) ""
+      set private(CRPIX2) ""
+   }
+
+   set telNo [ ::confCam::getCamNo $camItem ]
+
+   if { [ ::confTel::isReady ] == 1 } {
+      set private(CRVAL1) $::audace(telescope,getra)
+      set private(CRVAL2) $::audace(telescope,getdec)
+   } else {
+      set private(CRVAL1) ""
+      set private(CRVAL2) ""
    }
 }
 
@@ -836,6 +883,9 @@ proc ::keyword::getKeywords { visuNo configName { keywordNameList "" } } {
 
    #--- je recupere les dimensions des photosites
    onChangeCellDim $visuNo
+
+   #--- je recupere les mots cles CRPIX1, CRPIX2, CRVAL1 et CRVAL2
+   onChangeCRPIXCRVAL $visuNo
 
    #--- je recupere le nom de l'objet (si mode automatique)
    onChangeObjname $visuNo
@@ -1332,6 +1382,7 @@ proc ::keyword::cmdClose { visuNo } {
 
    #--- je supprime des listeners sur la camera et l'AlAudine
    ::confVisu::removeCameraListener $visuNo [list ::keyword::onChangeTemperature $visuNo]
+   ::confVisu::removeCameraListener $visuNo [list ::keyword::onChangeCRPIXCRVAL $visuNo]
    ::confVisu::removeCameraListener $visuNo [list ::keyword::onChangeCellDim $visuNo]
    ::confVisu::removeCameraListener $visuNo [list ::keyword::onChangeConfOptic $visuNo]
 
