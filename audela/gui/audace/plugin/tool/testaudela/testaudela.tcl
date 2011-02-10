@@ -2,7 +2,7 @@
 # Fichier : testaudela.tcl
 # Description : Outil de test automatique pour AudeLA
 # Auteurs : Michel Pujol
-# Mise Ã  jour $Id: testaudela.tcl,v 1.18 2010-12-05 14:13:58 michelpujol Exp $
+# Mise Ã  jour $Id: testaudela.tcl,v 1.19 2011-02-10 19:17:46 robertdelmas Exp $
 #
 
 #####################
@@ -586,8 +586,6 @@ proc ::testaudela::selectImageDirectory { tkEntry } {
    }
 }
 
-
-
 #------------------------------------------------------------
 # selectAllTests
 #  selectionne tous les fichiers de test
@@ -980,7 +978,6 @@ proc ::testaudela::updateResult { channel } {
 
 }
 
-
 ######################################################################
 #  ::testaudela::simul
 #     simulation du namespace ::tcltest
@@ -1048,24 +1045,24 @@ proc ::testaudela::clicCheckButton { buttonPath { state "" } } {
 #----------------------------------------------------
 #  ::testaudela::clicCombobox
 #    simule un clic sur une combobox pour selectionner un valeur
-#    la valeur peut être
+#    la valeur peut é³²e
 #       - le numero de ligne (numero precede de @)
 #       - une position predefine (first last next previous)
-#       - la valeur affichee dans une ligne (attention : dépend de la langue choisie)
+#       - la valeur affichee dans une ligne (attention : dè¯¥nd de la langue choisie)
 # @param comboPath : chemin complet du bouton de la combobox
 # @param value : numero de la ligne ou valeur de la ligne a selectionner
 #            Le numero de la premiere est 0
-#            Valeurs prédefinies : first last next previous
+#            Valeurs prè£¥finies : first last next previous
 # @return void
 # @exemples :
 #    clicCheckButton .audace.acqfc.mode @0
 #    clicCheckButton .audace.acqfc.mode first
 #    clicCheckButton .audace.acqfc.mode last
-#    clicCheckButton .audace.acqfc.mode "Une série"
+#    clicCheckButton .audace.acqfc.mode "Une sè±©e"
 #----------------------------------------------------
 proc ::testaudela::clicCombobox { comboPath value} {
    if { [string first "@" $value ] != -1 } {
-      #--- c'est un numero d'index commençant par @
+      #--- c'est un numero d'index commenæ ®t par @
       $comboPath setvalue $value
    } elseif { [string first "first last next previous" $value ] != -1 } {
       #--- c'est une valeur predefinie ( first last next previous)

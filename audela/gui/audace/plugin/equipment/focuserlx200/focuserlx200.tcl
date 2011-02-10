@@ -2,7 +2,7 @@
 # Fichier : focuserlx200.tcl
 # Description : Gere le focuser associe a la monture LX200
 # Auteur : Michel PUJOL
-# Mise à jour $Id: focuserlx200.tcl,v 1.19 2011-01-23 18:27:06 michelpujol Exp $
+# Mise à jour $Id: focuserlx200.tcl,v 1.20 2011-02-10 19:15:37 robertdelmas Exp $
 #
 
 #
@@ -297,5 +297,4 @@ proc ::focuserlx200::possedeControleEtendu { } {
 proc ::focuserlx200::getPosition { } {
    return [tel$::audace(telNo) focus coord]
 }
-
 

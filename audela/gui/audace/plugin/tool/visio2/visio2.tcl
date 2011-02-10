@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise à jour $Id: visio2.tcl,v 1.56 2010-12-28 17:01:09 michelpujol Exp $
+# Mise à jour $Id: visio2.tcl,v 1.57 2011-02-10 19:16:19 robertdelmas Exp $
 #
 
 namespace eval ::visio2 {
@@ -1116,7 +1116,6 @@ proc ::visio2::localTable::loadItem { visuNo index { doubleClick 0 } } {
          #--- je masque le nom pour que ".." n'apparaisse pas dans la barre de titre
          set name ""
       }
-
 
       #--- j'affiche le widget dans le canvas
       set private($visuNo,previousType)     "$type"
