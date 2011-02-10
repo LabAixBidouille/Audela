@@ -58,7 +58,6 @@ test libaudela_img_buf1 {save JPEG NB} { ignore } {
    return ""
 } ""
 
-
 #-------------------------------------------------------------------------------
 test libaudela_img_save_gif {sauve gif} { ignore } {
 

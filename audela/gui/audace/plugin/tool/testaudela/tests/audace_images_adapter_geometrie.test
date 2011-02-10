@@ -142,7 +142,6 @@ test rotation-90_ligne_de_commande {rotation de rz_rgbr_8} -constraints {AUDACE}
    ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
  } -result "2"
 
-
 #-----------------------------------------------------------------------------
 #--   chaque test INVERT a pour entree trois images RGB a traiter
 #--   le test porte sur la constance des intensites RGB lors du deplacement du point {227 108}

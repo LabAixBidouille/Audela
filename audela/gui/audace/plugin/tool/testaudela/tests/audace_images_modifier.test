@@ -374,7 +374,6 @@ test imaseries_normoffset {normaliser le fond du ciel de rz_rgbr_8} -constraints
    ::blt::vector destroy attendu mesure
 } -result "3"
 
-
 #--   IMA/SERIES NORMGAIN
 test imaseries_normgain {normaliser le gain de rz_rgbr_8 rz_rgbr_15} -constraints {AUDACE} -setup {
    ::blt::vector create attendu mesure moyenne temp -watchunset 1
@@ -420,7 +419,6 @@ test imaseries_normgain {normaliser le gain de rz_rgbr_8 rz_rgbr_15} -constraint
    set result [llength [attendu search 1]]
    return $result
 } -cleanup $CLEANUP -result "3"
-
 
 #-----------------------------------------------------------------------------
 #--   chaque test clip_min_clip_max a pour entree une images RGB

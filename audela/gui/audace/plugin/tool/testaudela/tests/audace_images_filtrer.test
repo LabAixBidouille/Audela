@@ -195,7 +195,6 @@ test imaseries_filter_max {application d'un filtre maximum à rz_rgbr_8.fit} -con
    return $result
 } -cleanup $CLEANUP -result "3"
 
-
 #--   test IMA/SERIES CONV kernel_type=gauss
 test imaseries_gauss {application d'un filtre gaussien à rz_rgbr_8.fit} -constraints {AUDACE} -setup $SETUP -body {
    #--   clic sur le menu "Images/Améliorer/Filtre gaussien..."
