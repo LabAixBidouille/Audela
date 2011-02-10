@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.176 2011-01-23 18:06:18 robertdelmas Exp $
+# Mise à jour $Id: confvisu.tcl,v 1.177 2011-02-10 19:17:05 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -4636,7 +4636,6 @@ proc ::confVisu::getHduNo { visuNo hduName } {
       return ""
    }
 }
-
 
 #------------------------------------------------------------
 # ::confVisu::showHduList

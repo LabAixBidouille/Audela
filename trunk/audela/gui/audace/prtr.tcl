@@ -2,7 +2,7 @@
 # Fichier : prtr.tcl
 # Description : Script dedie au menu deroulant pretraitement
 # Auteur : Raymond ZACHANTKE
-# Mise à jour $Id: prtr.tcl,v 1.12 2011-01-23 18:06:18 robertdelmas Exp $#
+# Mise à jour $Id: prtr.tcl,v 1.13 2011-02-10 19:17:19 robertdelmas Exp $#
 
 namespace eval ::prtr {
 
@@ -28,7 +28,7 @@ namespace eval ::prtr {
          #--   surveille le changement de repertoire
          trace add variable "::audace(rep_images)" write "::prtr::updateTbl $visuNo"
          #--   surveille le chargement d'une image
-         trace add variable "::confVisu::private($visuNo,lastFileName)" write "::prtr::changeDir $visuNo"
+         trace add variable "::confVisu::private($visuNo,lastFileName)" write "::prtr::updateTbl $visuNo"
          #--   surveille le dessin d'une boite de selection
          trace add variable "::confVisu::private($visuNo,boxSize)" write "::prtr::updateBox $visuNo"
          #--   surveille le changement d'extension
@@ -324,7 +324,6 @@ namespace eval ::prtr {
       ::blt::table $private(table) $w 3,0 -fill both -cspan 2 \
          -height [list [expr {$private(fun_lignes)*34}]]
 
-
       #--   modifie les variables initiales
       if {$private(inVisu) ne ""} {
          if {"x0" in $obligatoire || "xcenter" in $obligatoire} {
@@ -356,6 +355,7 @@ namespace eval ::prtr {
          grid $w.che -row 0 -column 0 -padx 10 -pady 5 -rowspan 1
          ::blt::table $private(table) $w 4,0 -fill both -cspan 2
       }
+      ::prtr::confBitPix
       dispOptions $w
    }
 
@@ -486,7 +486,7 @@ namespace eval ::prtr {
    #  Commande du checkbutton pour afficher les options
    #--------------------------------------------------------------------------
    proc dispOptions { w } {
-     variable private
+      variable private
 
       if {$::prtr::ttoptions == "1"} {
          set private(tt_lignes) [::prtr::configZone $w optionnel]
@@ -571,6 +571,7 @@ namespace eval ::prtr {
          set k [lsearch [$private(table).ttoptions.combobitpix.bitpix cget -values] $::prtr::bitpix]
          $private(table).ttoptions.combobitpix.bitpix setvalue @$k
       }
+
       ::prtr::displayAvancement "3"
    }
 
@@ -600,7 +601,6 @@ namespace eval ::prtr {
       set w $private(tbl)
       set dir $::audace(rep_images)
 
-      #if {![info exists ::prtr::ext]} {::prtr::changeExtension $visuNo}
       set ::prtr::ext "$::conf(extension,defaut)"
       #--   rajoute l'extension de compression
       if {$::conf(fichier,compres) eq "1"} {append ::prtr::ext ".gz"}
@@ -658,22 +658,36 @@ namespace eval ::prtr {
       set private(size) $nb
       if {$private(size) == "0"} {return}
 
-      #--   coche l'image dans la visu si elle est dans le repertoire
-      if {[buf[visu$visuNo buf] imageready] && [file exists [::confVisu::getFileName $visuNo]]} {
-         #--   decompose le nom en dir nom_court
-         lassign [::prtr::getInfoFile [::confVisu::getFileName $visuNo]] dir nom_court
-         if {$dir eq "$::audace(rep_images)"} {
-            set private(inVisu) $nom_court
-            [$w windowpath $nom_court,0] invoke
+      set img  [::confVisu::getFileName $visuNo]
+      if {[file exists $img]} {
+         #--   image dans la visu
+         lassign [::prtr::getInfoFile $img] dir nom
+         set row [lsearch [$w getcolumns 1] $nom]
+         if {$row ne "-1"} {
+            set private(inVisu) $nom
+            $w seecell $row,0
+            [$w windowpath $nom,0] invoke
+         }
+      } else {
+         #--   pas image dans la visu
+         if {[info exists private(lastImage)]} {
+            lassign [getInfoFile $private(lastImage)] dir nom
+            unset private(lastImage)
+            set row [lsearch [$w getcolumns 1] $nom]
+            if {$row ne "-1"} {
+               $w seecell $row,0
+               [$w windowpath $nom,0] invoke
+             }
          }
       }
    }
 
    #--------------------------------------------------------------------------
    #  ::prtr::analyseFitsHeader $file (nom complet)
-   #  Retourne les caractéristiques d'une image ou rien (si erreur)
+   #  Retourne les caracteristiques d'une image ou rien (si erreur)
    #--------------------------------------------------------------------------
    proc analyseFitsHeader { file } {
+      variable private
 
       set result ""
       if {![catch {set kwds_list [fitsheader $file]}]} {
@@ -691,9 +705,10 @@ namespace eval ::prtr {
          }
          if { $error == "0" } {
             #--   affecte les valeurs aux variables
-            foreach var {bitpix crpix1 crpix2 mean naxis naxis1 naxis2 naxis3} {
+            foreach var {bitpix bzero crpix1 crpix2 mean naxis naxis1 naxis2 naxis3} {
                set $var  [lindex [array get kwds [ string toupper $var]] 1]
             }
+            if {[info exists bzero] && $bzero ne ""} {set bitpix "+$bitpix"}
             array unset kwds
             if {$naxis eq "2" || $naxis eq "3"} {
                #--   si CRPIX1 et CRPIX2 indefinis, calcule le centre de l'image
@@ -706,7 +721,11 @@ namespace eval ::prtr {
          }
       }
       if {$result eq ""} {
-         ::console::affiche_erreur "$file $::caption(prtr,err_file_header) $::errorInfo\n\n"
+         set bad [info exists private(bad_file)]
+         if {$bad == "0" || ($bad == "1" && $file ni $private(bad_file))} {
+            ::console::affiche_erreur "$file $::caption(prtr,err_file_header) $::errorInfo\n\n"
+            lappend private(bad_file) "$file"
+         }
       }
       return $result
    }
@@ -883,25 +902,6 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::changeDir
-   #  Actualise la liste des fichiers
-   #--------------------------------------------------------------------------
-   proc changeDir {visuNo args} {
-      variable private
-
-      if {[buf[visu$visuNo buf] imageready]} {
-         #--   decompose le nom en dir nom_court et extension(s)
-         set info [::prtr::getInfoFile [::confVisu::getFileName $visuNo]]
-         set dir [lindex $info 0]
-         if {$dir eq "$::audace(rep_images)"} {
-            set private(inVisu) "[lindex $info 1]"
-            set private(profil) ""
-            ::prtr::updateTbl $visuNo
-         }
-      }
-   }
-
-   #--------------------------------------------------------------------------
    #  ::prtr::cmdApply
    #  Procedure du bouton Appliquer
    #  Retourne 0 si la verification a echoue, 1 si la procedure a ete a son terme
@@ -980,14 +980,14 @@ namespace eval ::prtr {
          }
 
          #--  charge la derniere image si demande
-         if {$::prtr::disp eq 1} {::prtr::loadImg $lastImage}
+         set private(lastImage) $lastImage
+         if {$::prtr::disp eq 1} {::prtr::loadImg}
       }
+
+      ::prtr::updateTbl $visuNo
 
       #--   desinhibe les zones sensibles
       ::prtr::windowActive $tbl normal
-
-      #--   rafraichit la tablelist
-      ::prtr::updateTbl $visuNo
 
       return $private(error)
    }
@@ -1106,12 +1106,13 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::loadImg $nom_complet
+   #  ::prtr::loadImg
    #  Charge une image dans un buffer avec bitpix en accord
    #  avec la valeur par defaut ou avec la valeur demandee par l'utilisateur
    #  Lancee par cmdApply
    #--------------------------------------------------------------------------
-   proc loadImg { name } {
+   proc loadImg { } {
+      variable private
 
       set visuNo $::audace(visuNo)
       set bufNo [visu$visuNo buf]
@@ -1128,10 +1129,12 @@ namespace eval ::prtr {
          buf$bufNo bitpix $bitpix
       }
 
+      trace remove variable "::confVisu::private($visuNo,lastFileName)" write "::prtr::updateTbl $visuNo"
       #--   charge, affiche et nomme l'image
-      buf$bufNo load $name
+      buf$bufNo load $private(lastImage)
       ::confVisu::autovisu $visuNo
-      ::confVisu::setFileName $visuNo $name
+      ::confVisu::setFileName $visuNo $private(lastImage)
+      trace add variable "::confVisu::private($visuNo,lastFileName)" write "::prtr::updateTbl $visuNo"
    }
 
    #--------------------------------------------------------------------------
@@ -1155,8 +1158,8 @@ namespace eval ::prtr {
 
       trace remove variable "::prtr::operation" write "::prtr::changeOp $visuNo"
       trace remove variable "::audace(rep_images)" write "::prtr::updateTbl $visuNo"
+      trace remove variable "::confVisu::private($visuNo,lastFileName)" write "::prtr::updateTbl $visuNo"
       trace remove variable "::confVisu::private($visuNo,boxSize)" write "::prtr::updateBox $visuNo"
-      trace remove variable "::confVisu::private($visuNo,lastFileName)" write "::prtr::changeDir $visuNo"
       trace remove variable "::conf(extension,defaut)" write "::prtr::changeExtension $visuNo"
       trace remove variable "::conf(fichier,compres)" write "::prtr::changeExtension $visuNo"
       ::prtr::widgetToConf
@@ -1194,7 +1197,7 @@ namespace eval ::prtr {
    #  ::prtr::confToWidget
    #  Adapte la geometrie de la fenetre
    #--------------------------------------------------------------------------
-    proc confToWidget { } {
+   proc confToWidget { } {
       variable private
 
       #--   fixe la hauteur de la table
@@ -1302,22 +1305,24 @@ namespace eval ::prtr {
    #  Cree le dictionnaire des fonctions de pretraitement creant des maitres (offset,dark et flat)
    #  Retourne la liste des fonctions ou les parametres d'une fonction
    #--------------------------------------------------------------------------
-    proc MAITREFunctions {function} {
+   proc MAITREFunctions {function} {
       variable MAITRE
       global caption help
+
+      set options "bitpix +16 skylevel 0 nullpixel 0."
 
       dict set MAITRE "$caption(audace,menu,faire_offset)"        fun "BIAS"
       dict set MAITRE "$caption(audace,menu,faire_offset)"        hlp "$help(dir,images) 1020elaborer_maitre.htm BIAS"
       dict set MAITRE "$caption(audace,menu,faire_offset)"        par ""
-      dict set MAITRE "$caption(audace,menu,faire_offset)"        opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set MAITRE "$caption(audace,menu,faire_offset)"        opt $options
       dict set MAITRE "$caption(audace,menu,faire_dark)"          fun "DARK"
       dict set MAITRE "$caption(audace,menu,faire_dark)"          hlp "$help(dir,images) 1020elaborer_maitre.htm DARK"
       dict set MAITRE "$caption(audace,menu,faire_dark)"          par "methode MED bias \"\" "
-      dict set MAITRE "$caption(audace,menu,faire_dark)"          opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set MAITRE "$caption(audace,menu,faire_dark)"          opt $options
       dict set MAITRE "$caption(audace,menu,faire_flat_field)"    fun "FLAT"
       dict set MAITRE "$caption(audace,menu,faire_flat_field)"    hlp "$help(dir,images) 1020elaborer_maitre.htm FLAT"
       dict set MAITRE "$caption(audace,menu,faire_flat_field)"    par "bias  \"\" dark \"\" normoffset_value 0."
-      dict set MAITRE "$caption(audace,menu,faire_flat_field)"    opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set MAITRE "$caption(audace,menu,faire_flat_field)"    opt $options
 
       return [consultDic MAITRE $function]
    }
@@ -1327,14 +1332,14 @@ namespace eval ::prtr {
    #  Cree le dictionnaire des fonctions de pretraitement
    #  Retourne la liste des fonctions ou les parametres d'une fonction
    #--------------------------------------------------------------------------
-    proc PRETRAITEEFunctions {function} {
+   proc PRETRAITEEFunctions {function} {
       variable PRETRAITEE
       global caption help
 
       dict set PRETRAITEE "$caption(audace,menu,pretraitee)"      fun "PRETRAITEMENT"
       dict set PRETRAITEE "$caption(audace,menu,pretraitee)"      hlp "$help(dir,images) 1020elaborer_maitre.htm PRETRAITER"
       dict set PRETRAITEE "$caption(audace,menu,pretraitee)"      par "bias \"\" dark \"\" opt_black 0 flat \"\" constant 1."
-      dict set PRETRAITEE "$caption(audace,menu,pretraitee)"      opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set PRETRAITEE "$caption(audace,menu,pretraitee)"      opt "bitpix +16 skylevel 0 nullpixel 0."
 
       return [consultDic PRETRAITEE $function]
    }
@@ -1344,14 +1349,14 @@ namespace eval ::prtr {
    #  Cree le dictionnaire pour la fonction de recentrage
    #  Retourne la liste des fonctions ou les parametres d'une fonction
    #--------------------------------------------------------------------------
-    proc CENTERFunctions {function} {
+   proc CENTERFunctions {function} {
       variable CENTER
       global caption help
 
       dict set CENTER "$caption(audace,menu,recentrer_auto)"      fun "CENTER"
       dict set CENTER "$caption(audace,menu,recentrer_auto)"      hlp "$help(dir,images) 1040aligner.htm AUTO"
       dict set CENTER "$caption(audace,menu,recentrer_auto)"      par "image_ref \"\" "
-      dict set CENTER "$caption(audace,menu,recentrer_auto)"      opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set CENTER "$caption(audace,menu,recentrer_auto)"      opt "bitpix +16 skylevel 0 nullpixel 0."
 
       return [consultDic CENTER $function]
    }
@@ -1366,43 +1371,44 @@ namespace eval ::prtr {
       global caption help conf
 
       if {![info exists conf(prtr,sk,kappa)]} {set conf(prtr,sk,kappa) "0.8"}
+      set options "bitpix +16 skylevel 0 nullpixel 0."
 
       dict set STACK "$caption(audace,menu,somme)"                fun ADD
       dict set STACK "$caption(audace,menu,somme)"                hlp "$help(dir,prog) ttus1-fr.htm stackADD"
       dict set STACK "$caption(audace,menu,somme)"                par ""
-      dict set STACK "$caption(audace,menu,somme)"                opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set STACK "$caption(audace,menu,somme)"                opt $options
       dict set STACK "$caption(audace,menu,moyenne)"              fun MEAN
       dict set STACK "$caption(audace,menu,moyenne)"              hlp "$help(dir,prog) ttus1-fr.htm MEAN"
       dict set STACK "$caption(audace,menu,moyenne)"              par ""
-      dict set STACK "$caption(audace,menu,moyenne)"              opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set STACK "$caption(audace,menu,moyenne)"              opt $options
       dict set STACK "$caption(audace,menu,mediane)"              fun MED
       dict set STACK "$caption(audace,menu,mediane)"              hlp "$help(dir,prog) ttus1-fr.htm MED"
       dict set STACK "$caption(audace,menu,mediane)"              par ""
-      dict set STACK "$caption(audace,menu,mediane)"              opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set STACK "$caption(audace,menu,mediane)"              opt $options
       dict set STACK "$caption(audace,menu,produit)"              fun PROD
       dict set STACK "$caption(audace,menu,produit)"              hlp "$help(dir,prog) ttus1-fr.htm stackPROD"
       dict set STACK "$caption(audace,menu,produit)"              par ""
-      dict set STACK "$caption(audace,menu,produit)"              opt "powernorm 0 bitpix 16 skylevel 0 nullpixel 0"
+      dict set STACK "$caption(audace,menu,produit)"              opt "powernorm 0 $options"
       dict set STACK "$caption(audace,menu,racine_carree)"        fun PYTHAGORE
       dict set STACK "$caption(audace,menu,racine_carree)"        hlp "$help(dir,prog) ttus1-fr.htm PYTHAGORE"
       dict set STACK "$caption(audace,menu,racine_carree)"        par ""
-      dict set STACK "$caption(audace,menu,racine_carree)"        opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set STACK "$caption(audace,menu,racine_carree)"        opt $options
       dict set STACK "$caption(audace,menu,ecart_type)"           fun SIG
       dict set STACK "$caption(audace,menu,ecart_type)"           hlp "$help(dir,prog) ttus1-fr.htm SIG"
       dict set STACK "$caption(audace,menu,ecart_type)"           par ""
-      dict set STACK "$caption(audace,menu,ecart_type)"           opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set STACK "$caption(audace,menu,ecart_type)"           opt $options
       dict set STACK "$caption(audace,menu,moyenne_k)"            fun SK
       dict set STACK "$caption(audace,menu,moyenne_k)"            hlp "$help(dir,prog) ttus1-fr.htm SK"
       dict set STACK "$caption(audace,menu,moyenne_k)"            par "kappa $conf(prtr,sk,kappa)"
-      dict set STACK "$caption(audace,menu,moyenne_k)"            opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set STACK "$caption(audace,menu,moyenne_k)"            opt $options
       dict set STACK "$caption(audace,menu,moyenne_tri)"          fun SORT
       dict set STACK "$caption(audace,menu,moyenne_tri)"          hlp "$help(dir,prog) ttus1-fr.htm SORT"
       dict set STACK "$caption(audace,menu,moyenne_tri)"          par ""
-      dict set STACK "$caption(audace,menu,moyenne_tri)"          opt "percent 50 bitpix 16 skylevel 0 nullpixel 0"
+      dict set STACK "$caption(audace,menu,moyenne_tri)"          opt "percent 50 $options"
       dict set STACK "$caption(audace,menu,obturateur)"           fun SHUTTER
       dict set STACK "$caption(audace,menu,obturateur)"           hlp "$help(dir,prog) ttus1-fr.htm SHUTTER"
       dict set STACK "$caption(audace,menu,obturateur)"           par ""
-      dict set STACK "$caption(audace,menu,obturateur)"           opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set STACK "$caption(audace,menu,obturateur)"           opt $options
 
       return [::prtr::consultDic STACK $function]
    }
@@ -1412,22 +1418,24 @@ namespace eval ::prtr {
    #  Cree le dictionnaire des fonctions de rotation a angles droit
    #  Retourne la liste des fonctions ou les parametres d'une fonction
    #--------------------------------------------------------------------------
-    proc ROTATIONFunctions {function} {
+   proc ROTATIONFunctions {function} {
       variable ROTATION
       global caption help
+
+      set options "bitpix +16 skylevel 0 nullpixel 0."
 
       dict set ROTATION "$caption(audace,menu,rot+90)"            fun "ROT+90"
       dict set ROTATION "$caption(audace,menu,rot+90)"            hlp "$help(dir,images) 1050tourner.htm ROT+90"
       dict set ROTATION "$caption(audace,menu,rot+90)"            par ""
-      dict set ROTATION "$caption(audace,menu,rot+90)"            opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set ROTATION "$caption(audace,menu,rot+90)"            opt $options
       dict set ROTATION "$caption(audace,menu,rot-90)"            fun "ROT-90"
       dict set ROTATION "$caption(audace,menu,rot-90)"            hlp "$help(dir,images) 1050tourner.htm ROT-90"
       dict set ROTATION "$caption(audace,menu,rot-90)"            par ""
-      dict set ROTATION "$caption(audace,menu,rot-90)"            opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set ROTATION "$caption(audace,menu,rot-90)"            opt $options
       dict set ROTATION "$caption(audace,menu,rot180)"            fun "ROT180"
       dict set ROTATION "$caption(audace,menu,rot180)"            hlp "$help(dir,images) 1050tourner.htm ROT180"
       dict set ROTATION "$caption(audace,menu,rot180)"            par ""
-      dict set ROTATION "$caption(audace,menu,rot180)"            opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set ROTATION "$caption(audace,menu,rot180)"            opt $options
 
       return [consultDic ROTATION $function]
    }
@@ -1437,7 +1445,7 @@ namespace eval ::prtr {
    #  Cree le dictionnaire des fonctions qui modifient la geometrie
    #  Retourne la liste des fonctions ou les parametres d'une fonction
    #--------------------------------------------------------------------------
-    proc GEOMETRYFunctions {function} {
+   proc GEOMETRYFunctions {function} {
       variable SERIES
       global caption help conf
 
@@ -1448,38 +1456,40 @@ namespace eval ::prtr {
          unset conf(multx) conf(multy)
       }
 
+      set options "bitpix +16 skylevel 0 nullpixel 0."
+
       dict set SERIES "$caption(audace,menu,miroir_x)"            fun "INVERT mirror"
       dict set SERIES "$caption(audace,menu,miroir_x)"            hlp "$help(dir,prog) ttus1-fr.htm INVERT"
       dict set SERIES "$caption(audace,menu,miroir_x)"            par ""
-      dict set SERIES "$caption(audace,menu,miroir_x)"            opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,miroir_x)"            opt $options
       dict set SERIES "$caption(audace,menu,miroir_y)"            fun "INVERT flip"
       dict set SERIES "$caption(audace,menu,miroir_y)"            hlp "$help(dir,prog) ttus1-fr.htm INVERT"
       dict set SERIES "$caption(audace,menu,miroir_y)"            par ""
-      dict set SERIES "$caption(audace,menu,miroir_y)"            opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,miroir_y)"            opt $options
       dict set SERIES "$caption(audace,menu,miroir_xy)"           fun "INVERT xy"
       dict set SERIES "$caption(audace,menu,miroir_xy)"           hlp "$help(dir,prog) ttus1-fr.htm INVERT"
       dict set SERIES "$caption(audace,menu,miroir_xy)"           par ""
-      dict set SERIES "$caption(audace,menu,miroir_xy)"           opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,miroir_xy)"           opt $options
       dict set SERIES "$caption(audace,menu,window1)"             fun WINDOW
       dict set SERIES "$caption(audace,menu,window1)"             hlp "$help(dir,prog) ttus1-fr.htm WINDOW"
       dict set SERIES "$caption(audace,menu,window1)"             par "x1 1 y1 1 x2 2 y2 2"
-      dict set SERIES "$caption(audace,menu,window1)"             opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,window1)"             opt $options
       dict set SERIES "$caption(audace,menu,scale)"               fun RESAMPLE
       dict set SERIES "$caption(audace,menu,scale)"               hlp "$help(dir,prog) ttus1-fr.htm RESAMPLE"
       dict set SERIES "$caption(audace,menu,scale)"               par "paramresample \"$conf(prtr,resample,paramresample)\" normaflux 1"
-      dict set SERIES "$caption(audace,menu,scale)"               opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,scale)"               opt $options
       dict set SERIES "$caption(audace,menu,translate)"           fun TRANS
       dict set SERIES "$caption(audace,menu,translate)"           hlp "$help(dir,prog) ttus1-fr.htm TRANS"
       dict set SERIES "$caption(audace,menu,translate)"           par "trans_x 1. trans_y 1."
-      dict set SERIES "$caption(audace,menu,translate)"           opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,translate)"           opt $options
       dict set SERIES "$caption(audace,menu,rotation1)"           fun ROT
       dict set SERIES "$caption(audace,menu,rotation1)"           hlp "$help(dir,prog) ttus1-fr.htm ROT"
       dict set SERIES "$caption(audace,menu,rotation1)"           par "x0 1. y0 1. angle 1."
-      dict set SERIES "$caption(audace,menu,rotation1)"           opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,rotation1)"           opt $options
       dict set SERIES "$caption(audace,menu,rotation2)"           fun ROTENTIERE
       dict set SERIES "$caption(audace,menu,rotation2)"           hlp "$help(dir,prog) ttus1-fr.htm ROTENTIERE"
       dict set SERIES "$caption(audace,menu,rotation2)"           par "x0 1. y0 1. angle 1."
-      dict set SERIES "$caption(audace,menu,rotation2)"           opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,rotation2)"           opt $options
 
       return [::prtr::consultDic SERIES $function]
    }
@@ -1489,7 +1499,7 @@ namespace eval ::prtr {
    #  Cree le dictionnaire des fonctions IMA/SERIES qui ameliorent les images
    #  Retourne la liste des fonctions ou les parametres d'une fonction
    #--------------------------------------------------------------------------
-    proc IMPROVEFunctions {function} {
+   proc IMPROVEFunctions {function} {
       variable SERIES
       global caption help conf
 
@@ -1506,32 +1516,34 @@ namespace eval ::prtr {
          unset conf(back_threshold)
       }
 
+      set options "bitpix +16 skylevel 0 nullpixel 0."
+
       dict set SERIES "$caption(audace,menu,trainee)"             fun UNSMEARING
       dict set SERIES "$caption(audace,menu,trainee)"             hlp "$help(dir,prog) ttus1-fr.htm UNSMEARING"
       dict set SERIES "$caption(audace,menu,trainee)"             par "unsmearing 0.0005"
-      dict set SERIES "$caption(audace,menu,trainee)"             opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,trainee)"             opt $options
       dict set SERIES "$caption(audace,menu,cosmic)"              fun COSMIC
       dict set SERIES "$caption(audace,menu,cosmic)"              hlp "$help(dir,prog) ttus1-fr.htm COSMIC"
       dict set SERIES "$caption(audace,menu,cosmic)"              par "cosmic_threshold 400"
-      dict set SERIES "$caption(audace,menu,cosmic)"              opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,cosmic)"              opt $options
       dict set SERIES "$caption(audace,menu,opt_noir)"            fun OPT
       dict set SERIES "$caption(audace,menu,opt_noir)"            hlp "$help(dir,prog) ttus1-fr.htm OPT"
       dict set SERIES "$caption(audace,menu,opt_noir)"            par "bias img dark img therm_kappa 0.25"
-      dict set SERIES "$caption(audace,menu,opt_noir)"            opt "unsmearing 0.0005 bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,opt_noir)"            opt "unsmearing 0.0005 $options"
       dict set SERIES "$caption(audace,menu,subsky)"              fun BACK
       dict set SERIES "$caption(audace,menu,subsky)"              hlp "$help(dir,prog) ttus1-fr.htm BACK"
       dict set SERIES "$caption(audace,menu,subsky)"              par "back_kernel $conf(prtr,back,back_kernel) back_threshold $conf(prtr,back,back_threshold)"
-      dict set SERIES "$caption(audace,menu,subsky)"              opt "sub 0 div 0 bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,subsky)"              opt "sub 0 div 0 $options"
 
       return [::prtr::consultDic SERIES $function]
-  }
+   }
 
    #--------------------------------------------------------------------------
    #  ::prtr::ARITHMFunctions {0|nom_de_fonction}
    #  Cree le dictionnaire des fonctions IMA/SERIES qui modifient les valeurs
    #  Retourne la liste des fonctions ou les parametres d'une fonction
    #--------------------------------------------------------------------------
-    proc ARITHMFunctions {function} {
+   proc ARITHMFunctions {function} {
       variable SERIES
       global caption help conf
 
@@ -1548,47 +1560,49 @@ namespace eval ::prtr {
          unset conf(clip_maxi)
       }
 
+      set options "bitpix +16 skylevel 0 nullpixel 0."
+
       dict set SERIES "$caption(audace,menu,addition)"            fun ADD
       dict set SERIES "$caption(audace,menu,addition)"            hlp "$help(dir,prog) ttus1-fr.htm seriesADD"
       dict set SERIES "$caption(audace,menu,addition)"            par "file img"
-      dict set SERIES "$caption(audace,menu,addition)"            opt "offset 0 bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,addition)"            opt "offset 0 $options"
       dict set SERIES "$caption(audace,menu,soust)"               fun SUB
       dict set SERIES "$caption(audace,menu,soust)"               hlp "$help(dir,prog) ttus1-fr.htm SUB"
       dict set SERIES "$caption(audace,menu,soust)"               par "file img"
-      dict set SERIES "$caption(audace,menu,soust)"               opt "offset 0 bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,soust)"               opt "offset 0 $options"
       dict set SERIES "$caption(audace,menu,division)"            fun DIV
       dict set SERIES "$caption(audace,menu,division)"            hlp "$help(dir,prog) ttus1-fr.htm DIV"
       dict set SERIES "$caption(audace,menu,division)"            par "file img"
-      dict set SERIES "$caption(audace,menu,division)"            opt "constant 1. bitpix 16 skylevel 0 nullpixel"
+      dict set SERIES "$caption(audace,menu,division)"            opt "constant 1. $options"
       dict set SERIES "$caption(audace,menu,multipli)"            fun PROD
       dict set SERIES "$caption(audace,menu,multipli)"            hlp "$help(dir,prog) ttus1-fr.htm seriesPROD"
       dict set SERIES "$caption(audace,menu,multipli)"            par "file img"
-      dict set SERIES "$caption(audace,menu,multipli)"            opt "constant 1. bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,multipli)"            opt "constant 1. $options"
       dict set SERIES "$caption(audace,menu,offset)"              fun OFFSET
       dict set SERIES "$caption(audace,menu,offset)"              hlp "$help(dir,prog) ttus1-fr.htm OFFSET"
       dict set SERIES "$caption(audace,menu,offset)"              par "offset 0"
-      dict set SERIES "$caption(audace,menu,offset)"              opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,offset)"              opt $options
       dict set SERIES "$caption(audace,menu,mult_cte)"            fun MULT
       dict set SERIES "$caption(audace,menu,mult_cte)"            hlp "$help(dir,prog) ttus1-fr.htm MULT"
       dict set SERIES "$caption(audace,menu,mult_cte)"            par "constant 1."
-      dict set SERIES "$caption(audace,menu,mult_cte)"            opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,mult_cte)"            opt $options
       dict set SERIES "$caption(audace,menu,log)"                 fun LOG
       dict set SERIES "$caption(audace,menu,log)"                 hlp "$help(dir,prog) ttus1-fr.htm LOG"
       dict set SERIES "$caption(audace,menu,log)"                 par "coef 20. offsetlog 1."
-      dict set SERIES "$caption(audace,menu,log)"                 opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,log)"                 opt $options
       dict set SERIES "$caption(audace,menu,noffset)"             fun NORMOFFSET
       dict set SERIES "$caption(audace,menu,noffset)"             hlp "$help(dir,prog) ttus1-fr.htm NORMOFFSET"
       dict set SERIES "$caption(audace,menu,noffset)"             par "normoffset_value 0."
-      dict set SERIES "$caption(audace,menu,noffset)"             opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,noffset)"             opt $options
       dict set SERIES "$caption(audace,menu,ngain)"               fun NORMGAIN
       dict set SERIES "$caption(audace,menu,ngain)"               hlp "$help(dir,prog) ttus1-fr.htm NORMGAIN"
       dict set SERIES "$caption(audace,menu,ngain)"               par "normgain_value 200."
-      dict set SERIES "$caption(audace,menu,ngain)"               opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,ngain)"               opt $options
       #--   CLIP fonction artificielle inexistante dans IMA/SERIES
       dict set SERIES "$caption(audace,menu,clip)"                fun CLIP
       dict set SERIES "$caption(audace,menu,clip)"                hlp "$help(dir,images) 1080ecreter.htm"
       dict set SERIES "$caption(audace,menu,clip)"                par "mini $conf(prtr,clip,clip_mini) maxi $conf(prtr,clip,clip_maxi)"
-      dict set SERIES "$caption(audace,menu,clip)"                opt "bitpix 16"
+      dict set SERIES "$caption(audace,menu,clip)"                opt "bitpix +16"
 
       return [::prtr::consultDic SERIES $function]
    }
@@ -1598,7 +1612,7 @@ namespace eval ::prtr {
    #  Cree le dictionnaire des fonctions IMA/SERIES avec les filtres
    #  Retourne la liste des fonctions ou les parametres d'une fonction
    #--------------------------------------------------------------------------
-    proc FILTERFunctions {function} {
+   proc FILTERFunctions {function} {
       variable SERIES
       global caption help conf
 
@@ -1614,72 +1628,73 @@ namespace eval ::prtr {
         set conf(prtr,flou,constant) $conf(coef_mult)
          unset conf(coef_mult)
       }
+      set options "bitpix +16 skylevel 0 nullpixel 0."
 
       #--   FLOU fonction artificielle inexistante dans IMA/SERIES
       dict set SERIES "$caption(audace,menu,masque_flou)"         fun FLOU
       dict set SERIES "$caption(audace,menu,masque_flou)"         hlp "$help(dir,images) 1090masque_flou.htm"
       dict set SERIES "$caption(audace,menu,masque_flou)"         par "sigma $conf(prtr,flou,sigma) constant $conf(prtr,flou,constant)"
-      dict set SERIES "$caption(audace,menu,masque_flou)"         opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,masque_flou)"         opt $options
       dict set SERIES "$caption(audace,menu,filtre_passe-bas)"    fun "FILTER kernel_type=fb"
       dict set SERIES "$caption(audace,menu,filtre_passe-bas)"    hlp "$help(dir,images) 1100passe_bas.htm"
       dict set SERIES "$caption(audace,menu,filtre_passe-bas)"    par "kernel_width 3 kernel_coef 0 threshold 0 type_threshold 0"
-      dict set SERIES "$caption(audace,menu,filtre_passe-bas)"    opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,filtre_passe-bas)"    opt $options
       dict set SERIES "$caption(audace,menu,filtre_passe-haut)"   fun "FILTER kernel_type=fh"
       dict set SERIES "$caption(audace,menu,filtre_passe-haut)"   hlp "$help(dir,images) 1110passe_haut.htm"
       dict set SERIES "$caption(audace,menu,filtre_passe-haut)"   par "kernel_width 3 kernel_coef 0 threshold 0 type_threshold 0"
-      dict set SERIES "$caption(audace,menu,filtre_passe-haut)"   opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,filtre_passe-haut)"   opt $options
       dict set SERIES "$caption(audace,menu,filtre_median)"       fun "FILTER kernel_type=med"
       dict set SERIES "$caption(audace,menu,filtre_median)"       hlp "$help(dir,prog) ttus1-fr.htm FILTER"
       dict set SERIES "$caption(audace,menu,filtre_median)"       par "kernel_width 3 kernel_coef 0 threshold 0 type_threshold 0"
-      dict set SERIES "$caption(audace,menu,filtre_median)"       opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,filtre_median)"       opt $options
       dict set SERIES "$caption(audace,menu,filtre_mean)"         fun "FILTER kernel_type=mean"
       dict set SERIES "$caption(audace,menu,filtre_mean)"         hlp "$help(dir,prog) ttus1-fr.htm FILTER"
       dict set SERIES "$caption(audace,menu,filtre_mean)"         par "kernel_width 3 kernel_coef 0 threshold 0 type_threshold 0"
-      dict set SERIES "$caption(audace,menu,filtre_mean)"         opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,filtre_mean)"         opt $options
       dict set SERIES "$caption(audace,menu,filtre_minimum)"      fun "FILTER kernel_type=min"
       dict set SERIES "$caption(audace,menu,filtre_minimum)"      hlp "$help(dir,prog) ttus1-fr.htm FILTER"
       dict set SERIES "$caption(audace,menu,filtre_minimum)"      par "kernel_width 3 kernel_coef 0 threshold 0 type_threshold 0"
-      dict set SERIES "$caption(audace,menu,filtre_minimum)"      opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,filtre_minimum)"      opt $options
       dict set SERIES "$caption(audace,menu,filtre_maximum)"      fun "FILTER kernel_type=max"
       dict set SERIES "$caption(audace,menu,filtre_maximum)"      hlp "$help(dir,prog) ttus1-fr.htm FILTER"
       dict set SERIES "$caption(audace,menu,filtre_maximum)"      par "kernel_width 3 kernel_coef 0 threshold 0 type_threshold 0"
-      dict set SERIES "$caption(audace,menu,filtre_maximum)"      opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,filtre_maximum)"      opt $options
       dict set SERIES "$caption(audace,menu,filtre_up)"           fun "FILTER kernel_type=gradup"
       dict set SERIES "$caption(audace,menu,filtre_up)"           hlp "$help(dir,prog) ttus1-fr.htm FILTER"
       dict set SERIES "$caption(audace,menu,filtre_up)"           par "kernel_width 3 kernel_coef 0 threshold 0 type_threshold 0"
-      dict set SERIES "$caption(audace,menu,filtre_up)"           opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,filtre_up)"           opt $options
       dict set SERIES "$caption(audace,menu,filtre_left)"         fun "FILTER kernel_type=gradleft"
       dict set SERIES "$caption(audace,menu,filtre_left)"         hlp "$help(dir,prog) ttus1-fr.htm FILTER"
       dict set SERIES "$caption(audace,menu,filtre_left)"         par "kernel_width 3 kernel_coef 0 threshold 0 type_threshold 0"
-      dict set SERIES "$caption(audace,menu,filtre_left)"         opt "bitpix 16 skylevel 0 nullpixel"
+      dict set SERIES "$caption(audace,menu,filtre_left)"         opt $options
       dict set SERIES "$caption(audace,menu,filtre_down)"         fun "FILTER kernel_type=graddown"
       dict set SERIES "$caption(audace,menu,filtre_down)"         hlp "$help(dir,prog) ttus1-fr.htm FILTER"
       dict set SERIES "$caption(audace,menu,filtre_down)"         par "kernel_width 3 kernel_coef 0 threshold 0 type_threshold 0"
-      dict set SERIES "$caption(audace,menu,filtre_down)"         opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,filtre_down)"         opt $options
       dict set SERIES "$caption(audace,menu,filtre_right)"        fun "FILTER kernel_type=gradright"
       dict set SERIES "$caption(audace,menu,filtre_right)"        hlp "$help(dir,prog) ttus1-fr.htm FILTER"
       dict set SERIES "$caption(audace,menu,filtre_right)"        par "kernel_width 3 kernel_coef 0 threshold 0 type_threshold 0"
-      dict set SERIES "$caption(audace,menu,filtre_right)"        opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,filtre_right)"        opt $options
       dict set SERIES "$caption(audace,menu,filtre_gaussien)"     fun "CONV kernel_type=gaussian"
       dict set SERIES "$caption(audace,menu,filtre_gaussien)"     hlp "$help(dir,prog) ttus1-fr.htm CONV"
       dict set SERIES "$caption(audace,menu,filtre_gaussien)"     par ""
-      dict set SERIES "$caption(audace,menu,filtre_gaussien)"     opt "sigma 0.5 bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,filtre_gaussien)"     opt "sigma 0.5 $options"
       dict set SERIES "$caption(audace,menu,ond_morlet)"          fun "CONV kernel_type=morlet"
       dict set SERIES "$caption(audace,menu,ond_morlet)"          hlp "$help(dir,prog) ttus1-fr.htm CONV"
       dict set SERIES "$caption(audace,menu,ond_morlet)"          par ""
-      dict set SERIES "$caption(audace,menu,ond_morlet)"          opt "sigma 2. bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,ond_morlet)"          opt "sigma 2. bitpix +16 skylevel 0 nullpixel 0."
       dict set SERIES "$caption(audace,menu,ond_mexicain)"        fun "CONV kernel_type=mexican"
       dict set SERIES "$caption(audace,menu,ond_mexicain)"        hlp "$help(dir,prog) ttus1-fr.htm CONV"
       dict set SERIES "$caption(audace,menu,ond_mexicain)"        par ""
-      dict set SERIES "$caption(audace,menu,ond_mexicain)"        opt "sigma 2. bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,ond_mexicain)"        opt "sigma 2. bitpix +16 skylevel 0 nullpixel 0."
       dict set SERIES "$caption(audace,menu,grad_rot)"            fun RGRADIENT
       dict set SERIES "$caption(audace,menu,grad_rot)"            hlp "$help(dir,prog) ttus1-fr.htm RGRADIENT"
       dict set SERIES "$caption(audace,menu,grad_rot)"            par "xcenter 1. ycenter 1. radius 1. angle 1."
-      dict set SERIES "$caption(audace,menu,grad_rot)"            opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,grad_rot)"            opt $options
       dict set SERIES "$caption(audace,menu,radial)"              fun RADIAL
       dict set SERIES "$caption(audace,menu,radial)"              hlp "$help(dir,prog) ttus1-fr.htm RADIAL"
       dict set SERIES "$caption(audace,menu,radial)"              par "sigma 10 power 2 xcenter 1. ycenter 1. radius 1."
-      dict set SERIES "$caption(audace,menu,radial)"              opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,radial)"              opt $options
 
       return [::prtr::consultDic SERIES $function]
    }
@@ -1693,18 +1708,20 @@ namespace eval ::prtr {
       variable SERIES
       global caption help
 
+      set options "bitpix +16 skylevel 0 nullpixel 0."
+
       dict set SERIES "$caption(audace,menu,cart2pol)"            fun REC2POL
       dict set SERIES "$caption(audace,menu,cart2pol)"            hlp "$help(dir,prog) ttus1-fr.htm REC2POL"
       dict set SERIES "$caption(audace,menu,cart2pol)"            par "x0 1. y0 1. scale_theta 1. scale_rho 1."
-      dict set SERIES "$caption(audace,menu,cart2pol)"            opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,cart2pol)"            opt $options
       dict set SERIES "$caption(audace,menu,pol2cart)"            fun POL2REC
       dict set SERIES "$caption(audace,menu,pol2cart)"            hlp "$help(dir,prog) ttus1-fr.htm POL2REC"
       dict set SERIES "$caption(audace,menu,pol2cart)"            par "x0 1.  y0 1. scale_theta 1. scale_rho 1. width 100 height 100"
-      dict set SERIES "$caption(audace,menu,pol2cart)"            opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,pol2cart)"            opt $options
       dict set SERIES "$caption(audace,menu,hough)"               fun HOUGH
       dict set SERIES "$caption(audace,menu,hough)"               hlp "$help(dir,prog) ttus1-fr.htm HOUGH"
       dict set SERIES "$caption(audace,menu,hough)"               par ""
-      dict set SERIES "$caption(audace,menu,hough)"               opt "threshold 0 binary 0 bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,hough)"               opt "threshold 0 binary 0 $options"
 
       return [::prtr::consultDic SERIES $function]
    }
@@ -1718,42 +1735,44 @@ namespace eval ::prtr {
       variable SERIES
       global caption help
 
+      set options "bitpix +16 skylevel 0 nullpixel 0."
+
       dict set SERIES "$caption(audace,menu,ligne)"               fun "PROFILE direction=x"
       dict set SERIES "$caption(audace,menu,ligne)"               hlp "$help(dir,prog) ttus1-fr.htm PROFILE"
       dict set SERIES "$caption(audace,menu,ligne)"               par "offset 1 filename row "
-      dict set SERIES "$caption(audace,menu,ligne)"               opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,ligne)"               opt $options
       dict set SERIES "$caption(audace,menu,bin_y)"               fun BINY
       dict set SERIES "$caption(audace,menu,bin_y)"               hlp "$help(dir,prog) ttus1-fr.htm BINY"
       dict set SERIES "$caption(audace,menu,bin_y)"               par "y1 1 y2 2 height 20"
-      dict set SERIES "$caption(audace,menu,bin_y)"               opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,bin_y)"               opt $options
       dict set SERIES "$caption(audace,menu,med_y)"               fun "MEDIANY"
       dict set SERIES "$caption(audace,menu,med_y)"               hlp "$help(dir,prog) ttus1-fr.htm MEDIANY"
       dict set SERIES "$caption(audace,menu,med_y)"               par "y1 1 y2 2 height 20"
-      dict set SERIES "$caption(audace,menu,med_y)"               opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,med_y)"               opt $options
       dict set SERIES "$caption(audace,menu,sort_y)"              fun "SORTY"
       dict set SERIES "$caption(audace,menu,sort_y)"              hlp "$help(dir,prog) ttus1-fr.htm SORTY"
       dict set SERIES "$caption(audace,menu,sort_y)"              par "y1 1 y2 2 height 20 percent 50"
-      dict set SERIES "$caption(audace,menu,sort_y)"              opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,sort_y)"              opt $options
       dict set SERIES "$caption(audace,menu,colonne)"             fun "PROFILE direction=y"
       dict set SERIES "$caption(audace,menu,colonne)"             hlp "$help(dir,prog) ttus1-fr.htm PROFILE"
       dict set SERIES "$caption(audace,menu,colonne)"             par "offset 1 filename col"
-      dict set SERIES "$caption(audace,menu,colonne)"             opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,colonne)"             opt $options
       dict set SERIES "$caption(audace,menu,bin_x)"               fun BINX
       dict set SERIES "$caption(audace,menu,bin_x)"               hlp "$help(dir,prog) ttus1-fr.htm BINX"
       dict set SERIES "$caption(audace,menu,bin_x)"               par "x1 1 x2 2 width 20"
-      dict set SERIES "$caption(audace,menu,bin_x)"               opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,bin_x)"               opt $options
       dict set SERIES "$caption(audace,menu,med_x)"               fun "MEDIANX"
       dict set SERIES "$caption(audace,menu,med_x)"               hlp "$help(dir,prog) ttus1-fr.htm MEDIANX"
       dict set SERIES "$caption(audace,menu,med_x)"               par "x1 1 x2 2 width 20"
-      dict set SERIES "$caption(audace,menu,med_x)"               opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,med_x)"               opt $options
       dict set SERIES "$caption(audace,menu,sort_x)"              fun "SORTX"
       dict set SERIES "$caption(audace,menu,sort_x)"              hlp "$help(dir,prog) ttus1-fr.htm SORTX"
       dict set SERIES "$caption(audace,menu,sort_x)"              par "x1 1 x2 2 width 20 percent 50"
-      dict set SERIES "$caption(audace,menu,sort_x)"              opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,sort_x)"              opt $options
       dict set SERIES "$caption(audace,menu,matrice)"             fun MATRIX
       dict set SERIES "$caption(audace,menu,matrice)"             hlp "$help(dir,prog) ttus1-fr.htm MATRIX"
       dict set SERIES "$caption(audace,menu,matrice)"             par "x1 1 y1 1 x2 2 y2 2 filematrix matrice"
-      dict set SERIES "$caption(audace,menu,matrice)"             opt "bitpix 16 skylevel 0 nullpixel 0"
+      dict set SERIES "$caption(audace,menu,matrice)"             opt $options
 
       return [::prtr::consultDic SERIES $function]
    }
@@ -2774,7 +2793,6 @@ namespace eval ::prtr {
          if {$options ne ""} {append script " " $options}
          ::prtr::editScript $script
          ttscript2 $script
-
 
          #--   detruit les fichiers temporaires
          if {[lsearch -regexp $imgList temp] >= "0"} {
