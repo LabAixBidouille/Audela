@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Images
-# Mise à jour $Id: aud_menu_3.tcl,v 1.82 2011-01-24 18:03:58 robertdelmas Exp $
+# Mise à jour $Id: aud_menu_3.tcl,v 1.83 2011-02-10 19:16:49 robertdelmas Exp $
 #
 
 namespace eval ::conv2 {
@@ -330,7 +330,7 @@ namespace eval ::conv2 {
       ::blt::table $this
       #--- rappel du repertoire
       Label $this.info -justify left\
-          -text "$caption(pretraitement,repertoire) ../[ file tail $private(conv2,rep) ]"
+          -text "$caption(pretraitement,repertoire) /[ file tail $private(conv2,rep) ]"
 
       #--- bouton de menu
       menubutton $this.but -relief raised -textvariable conversion \
@@ -751,7 +751,6 @@ namespace eval ::conv2 {
    #########################################################################
    proc Do_assigner_g { in out } {
       global audace
-
 
       set buf "buf$audace(bufNo)"
       set err [ catch {
@@ -1281,7 +1280,6 @@ namespace eval ::conv2 {
       regsub -all {[^\w\-_]} $private(conv2,new_name) {} private(conv2,new_name)
       ::conv2::UpdateDialog
    }
-
 
    #########################################################################
    # Affiche une fenetre d'erreur                                          #
@@ -2564,9 +2562,6 @@ namespace eval ::traiteFilters {
       if { $In_Out == "1" } {
          set traiteFilters(image_in) [ file rootname $filename ]
          $This.usr.3.1.ent1 xview end
-      } elseif { $In_Out == "2" } {
-         set traiteFilters(image_out) [ file rootname $filename ]
-::console::disp "::traiteFilters::parcourir 2 \n"
       } elseif { $In_Out == "5" } {
          set traiteFilters(image_in1) [ file rootname $filename ]
          $This.usr.tfd_entree2.1.e xview end
