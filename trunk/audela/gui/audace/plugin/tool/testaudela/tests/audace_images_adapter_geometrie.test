@@ -51,8 +51,7 @@ variable CLEANUP2 {
 
 #-----------------------------------------------------------------------------
 #--   le test ROTATION a pour entree une image RGB a traiter
-#--   le test porte sur :
-#        -constance des intensites RGB lors du deplacement du point {227 108}
+#--   le test porte sur la constance des intensites RGB lors du deplacement du point {227 108}
 #-----------------------------------------------------------------------------
 #--   test rotation +90°
 test rotation+90 {rotation de rz_rgbr_8} -constraints {AUDACE} -setup $SETUP -body {
@@ -146,10 +145,7 @@ test rotation-90_ligne_de_commande {rotation de rz_rgbr_8} -constraints {AUDACE}
 
 #-----------------------------------------------------------------------------
 #--   chaque test INVERT a pour entree trois images RGB a traiter
-#--   l'option jpegfile est testee systematiquement
-#--   le test porte sur :
-#        l'existence de 9 fichiers jpeg
-#        constance des intensites RGB lors du deplacement du point {227 108}
+#--   le test porte sur la constance des intensites RGB lors du deplacement du point {227 108}
 #-----------------------------------------------------------------------------
 
 #--   test IMA/SERIES INVERT mirror
@@ -232,9 +228,7 @@ test imaseries_mirror_xy {miroir diagonal de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -c
 #-----------------------------------------------------------------------------
 #--   chaque test TRANS a pour entree trois images RGB a traiter
 #--   l'option jpegfile est testee systematiquement
-#--   le test porte sur :
-#        l'existence de 9 fichiers jpeg
-#        constance des intensites RGB lors du deplacement du point {227 108}
+#--   le test porte sur la constance des intensites RGB lors du deplacement du point {227 108}
 #-----------------------------------------------------------------------------
 
 #--   nature du test IMA/SERIES TRANS :
@@ -267,9 +261,7 @@ test imaseries_trans {translation de de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -constr
 #-----------------------------------------------------------------------------
 #--   chaque test WINDOW et RESAMPLE a pour entree trois images RGB a traiter
 #--   l'option jpegfile est testee systematiquement
-#--   le test porte sur :
-#        l'existence de 9 fichiers jpeg
-#        les dimensions naxis1 et naxis2
+#--   le test porte sur les dimensions naxis1 et naxis2
 #-----------------------------------------------------------------------------
 
 #--   IMA/SERIES WINDOW
@@ -323,9 +315,7 @@ test imaseries_paramresample {re-echantillonage de rz_rgbr_8 rz_rgbr_15 rz_rgbr_
 
 #-----------------------------------------------------------------------------
 #--   le test ROT a pour entree une image RGB a traiter
-#--   l'option jpegfile est testee systematiquement
 #--   le test porte sur :
-#        l'existence de 3 fichiers jpeg
 #        constance des intensites RGB lors du deplacement du point {227 108}
 #        apres un demi-tour puis un autre demi_tour
 #-----------------------------------------------------------------------------
@@ -372,9 +362,7 @@ test imaseries_rotation1 {rotation de rz_rgbr_30} -constraints {AUDACE} -setup {
 
 #-----------------------------------------------------------------------------
 #--   le test ROTENTIERE a pour entree une image RGB a traiter
-#--   l'option jpegfile est testee systematiquement
 #--   le test porte sur :
-#        l'existence de 3 fichiers jpeg
 #        constance des intensites RGB lors du deplacement du point {227 108} apres un tour
 #     attention les naxis ne sont pas conserves
 #-----------------------------------------------------------------------------
@@ -397,10 +385,15 @@ test imaseries_rotation2 {rotation de un_tour} -constraints {AUDACE} -setup {
    #--   procedure de controle
    set result 0
    #--   verifie le deplacement du point {227 108}
-   set mesure "[lrange [buf$bufNo getpix [list 226 108]] 1 end]"
-   if {$mesure eq [list 1304.000000 1192.000000 537.000000]} {incr result}
+   ::blt::vector create attendu mesure -watchunset 1
+   mesure set [lrange [buf$bufNo getpix [list 226 108]] 1 end]
+   attendu set [list 1304.000000 1191.000000 537.000000]
+   attendu expr {attendu-mesure}
+   attendu expr {abs(attendu) <= 1}
+   set result [llength [attendu search 1]]
    #--   les naxis ne sont pas conservés
    set liste [ list un_tour deux_tours]
+   ::blt::vector destroy attendu mesure
    return $result
- } -cleanup $CLEANUP -result "1"
+ } -cleanup $CLEANUP -result "3"
 

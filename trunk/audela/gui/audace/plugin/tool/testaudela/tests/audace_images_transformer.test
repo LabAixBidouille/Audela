@@ -16,6 +16,7 @@ test imaseries_rec2pol {coordonnees polaires de rz_rgbr_8} -constraints {AUDACE}
    set ::conf(fichier,compres) 0
    update
    file copy -force [file join $::conf(testaudela,rep_images) rz_rgbr_8.fit] $::audace(rep_images)
+   loadima rz_rgbr_8.fit
 } -body {
    #--   clic sur le menu "Images/Transformer/Cartésien-->polaire..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,transform)" "$::caption(audace,menu,cart2pol)..."
@@ -30,12 +31,14 @@ test imaseries_rec2pol {coordonnees polaires de rz_rgbr_8} -constraints {AUDACE}
    #-- saisit le nom de sortie
    set name_out "polaire"
    ::testaudela::putLabelEntry $z.sortie.out "$name_out"
+   #::testaudela::clicCheckButton $z.affiche.script 1
    #--   clic sur le bouton Appliquer
    ::testaudela::clicButton $z.cmd.appliquer
 
    #--   polaire est chargée automatiquement
    set result 0
-   if {[lindex [buf$bufNo getkwd NAXIS1] 1] == "361"} {incr result}
+   set naxis1 [lindex [buf$bufNo getkwd NAXIS1] 1]
+   if {$naxis1 == "361"} {incr result}
    return $result
 } -cleanup {
    #--   clic sur le bouton Fermer
@@ -47,8 +50,6 @@ test imaseries_rec2pol {coordonnees polaires de rz_rgbr_8} -constraints {AUDACE}
 #--   le test porte sur naxis1 et naxis2
 #     les intensites ne sont pas conservees
 #-----------------------------------------------------------------------------
-#--   nature du test IMA/SERIES POL2REC :
-#     2- pol2rec((rect2pol(polaire.fit))==polaire.fit
 test imaseries_pol2rec {coordonnees rectangulaires polaire.fit} -constraints {AUDACE} -setup {
    set ::conf(extension,defaut) .fit
    set ::conf(fichier,compres) 0
@@ -72,8 +73,10 @@ test imaseries_pol2rec {coordonnees rectangulaires polaire.fit} -constraints {AU
 
    #--   procedure de controle
    set result 0
-   if {[lindex [buf$bufNo getkwd NAXIS1] 1] == "337"} {incr result}
-   if {[lindex [buf$bufNo getkwd NAXIS2] 1] == "218"} {incr result}
+   set naxis1 [lindex [buf$bufNo getkwd NAXIS1] 1]
+   set naxis2 [lindex [buf$bufNo getkwd NAXIS2] 1]
+   if {$naxis1 == "337"} {incr result}
+   if {$naxis2 == "218"} {incr result}
    set liste [list rz_rgbr_8 polaire rectangle]
    return $result
 } -cleanup {
@@ -83,4 +86,3 @@ test imaseries_pol2rec {coordonnees rectangulaires polaire.fit} -constraints {AU
    ::confVisu::deleteImage $visuNo
    ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
 } -result "2"
-
