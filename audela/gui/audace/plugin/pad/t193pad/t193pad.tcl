@@ -2,7 +2,7 @@
 # Fichier : t193pad.tcl
 # Description : Raquette specifique au T193 de l'OHP
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: t193pad.tcl,v 1.19 2011-01-23 18:30:46 michelpujol Exp $
+# Mise à jour $Id: t193pad.tcl,v 1.20 2011-02-10 19:20:09 robertdelmas Exp $
 #
 
 namespace eval ::t193pad {
@@ -451,9 +451,8 @@ proc ::t193pad::createDialog { } {
       ::focus::displayCurrentPosition $conf(t193pad,focuserLabel)
    }]
    if { $catchError != 0 } {
-      console::affiche_erreur "Il n'est pas encore possible de recuperer la position du focuser car le telescope n'est pas encore connecte"
+      ::console::affiche_erreur "$caption(t193pad,msg)\n"
    }
-
 
    #--- Frame du DOME
    frame $This.dome -borderwidth 1 -relief groove -bg $color(blue_pad)
