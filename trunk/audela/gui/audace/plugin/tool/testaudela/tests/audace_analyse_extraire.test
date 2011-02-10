@@ -79,7 +79,6 @@ test imaseries_profile_x {extraire une ligne de rz_rbgr_8} -constraints {AUDACE}
    return $result
 } -cleanup $CLEANUP -result "6"
 
-
 #--   test IMA/SERIES PROFILE direction=y
 test imaseries_profile_y {extraire une colonne de rz_rbgr_8b} -constraints {AUDACE} -setup $SETUP -body {
    #--   clic sur le menu "Analyse/Extraire/Une colonne..."

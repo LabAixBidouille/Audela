@@ -39,7 +39,6 @@ test hotpixel_subdark {imaseries SUBDARK corrige un pixel chaud } {  } {
    buf$bufNo offset 1000
    buf$bufNo save [file join $::audace(rep_images) "hotpixel-bias.fit"]
 
-
    #--- j'enregistre le DARK hotpixel-dark.fit
    buf$bufNo offset 100
    buf$bufNo setpix { 100 50 } 32000
@@ -72,8 +71,6 @@ test hotpixel_subdark {imaseries SUBDARK corrige un pixel chaud } {  } {
    file delete [file join $::audace(rep_images) "hotpixel-repared2.fit"]
    return $pix
 } "50"
-
-
 
 #-------------------------------------------------------------------------------
 test hotpixel_add_dark {imastack ADD corrige un pixel chaud } {  } {
@@ -108,8 +105,4 @@ test hotpixel_add_dark {imastack ADD corrige un pixel chaud } {  } {
 
    return $pix
 } "2400"
-
-
-
-
 

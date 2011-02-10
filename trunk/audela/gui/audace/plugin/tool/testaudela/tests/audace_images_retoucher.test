@@ -48,7 +48,6 @@ test imaseries_cosmic {corrige un pixel chaud de hd21620-5.fit} -constraints {AU
    ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
 } -result "0"
 
-
 #-----------------------------------------------------------------------------
 #--   Le test BACK a pour entree une images RGB a traiter
 #--   le test porte sur la concordance des intensites R G B constatees avec celles d'une image de reference
