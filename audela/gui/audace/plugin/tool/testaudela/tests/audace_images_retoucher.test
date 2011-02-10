@@ -58,7 +58,7 @@ test imaseries_cosmic {corrige un pixel chaud de hd21620-5.fit} -constraints {AU
 #     de l'image de reference obtenue par la voie classique
 test imaseries_back {soustraire le fond du ciel de rz_rgbr_8} -constraints {AUDACE} -setup {
    set ::conf(extension,defaut) .fit
-   set ::conf(fichier,compres) 0
+   set ::conf(fichier,compres) "0"
    ::blt::vector create attendu mesure -watchunset 1
    file copy -force [file join $::conf(testaudela,rep_images) rz_rgbr_8.fit] $::audace(rep_images)
 } -body {
@@ -103,12 +103,13 @@ test imaseries_back {soustraire le fond du ciel de rz_rgbr_8} -constraints {AUDA
 #--   le test porte sur la concordance des intensites R G B constatees avec celles d'une image de reference
 #-----------------------------------------------------------------------------
 test imaseries_optimisation_du_noir {optimisation du noir de rz_cfa_rgbr_8} -constraints {AUDACE} -setup {
-  set ::conf(extension,defaut) .fit
-   set ::conf(fichier,compres) 1
    file copy -force [file join $::conf(testaudela,rep_images) rz_cfa_rgbr_8.fit.gz] $::audace(rep_images)
    loadima [file join $::audace(rep_images) rz_cfa_rgbr_8.fit.gz]
    set coords [list 198 51]
+   set ::conf(extension,defaut) ".fit"
+   set ::conf(fichier,compres) "1"
 } -body {
+
    #--   clic sur le menu "Images/Retoucher/Soustraire le fond du ciel..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,improve)" "$::caption(audace,menu,opt_noir)..."
    ::testaudela::putLabelEntry $z.funoptions.bias [file join $::conf(testaudela,rep_images) rz_bias_rgbr_8.fit.gz]
@@ -126,15 +127,13 @@ test imaseries_optimisation_du_noir {optimisation du noir de rz_cfa_rgbr_8} -con
    if {[expr {$mesure-$attendu}] == 0} {incr result}
    return $result
  } -cleanup {
-   set ::conf(extension,defaut) .fit
-   set ::conf(fichier,compres) 0
-   update
    #--   clic sur le bouton Fermer
    ::testaudela::clicButton $z.cmd.fermer
    #---  efface l'image
    ::confVisu::deleteImage $visuNo
    set liste [list rz_cfa_rgbr_8 $name_out]
    ttscript2 "IMA/SERIES . \"$liste\" * * \".fit.gz\" . . . . DELETE"
-   set ::conf(fichier,compres) "0"
+   set ::conf(extension,defaut) .fit
+   set ::conf(fichier,compres) 0
  } -result "1"
 

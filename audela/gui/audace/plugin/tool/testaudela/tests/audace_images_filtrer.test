@@ -232,14 +232,18 @@ test imaseries_morlet {application d'un filtre de Morlet à rz_rgbr_8.fit} -const
    mesure set [lrange [buf$bufNo getpix {111 108}] 1 end]
    #--   valeurs mesurees sur une image obtenue par la voie classique
    attendu set [list 46 0 8606]
+   if {$mesure(:) ne $attendu(:)} {
+      ::console::affiche_resultat "imaseries_morlet la valeur mesurée $mesure(:) n'est pas égale à $attendu(:)\n"
+   }
    attendu expr {round(attendu-mesure)}
    #--   nb de differences
    attendu expr {abs(attendu) == 0}
    set result [llength [attendu search 1]]
-   #---  efface l'image
-   ::confVisu::deleteImage $visuNo
+   set bitpix [lindex [buf$bufNo getkwd BITPIX] 1]
+   set bzero [lindex [buf$bufNo getkwd BZERO] 1]
+   if {$bitpix eq "16" && $bzero eq "32768"} {incr result}
    return $result
-} -cleanup $CLEANUP -result "3"
+} -cleanup $CLEANUP -result "4"
 
 #--   IMA/SERIES CONV kernel_type=mexican
 test imaseries_mexican {application d'un filtre de chapeau mexicain à rz_rgbr_8.fit} -constraints {AUDACE} -setup $SETUP -body {
@@ -252,17 +256,22 @@ test imaseries_mexican {application d'un filtre de chapeau mexicain à rz_rgbr_8.
    ::testaudela::clicButton $z.cmd.appliquer
 
    #--   procedure de controle
+   update
    mesure set [lrange [buf$bufNo getpix {111 108}] 1 end]
    #--   valeurs mesurees sur une image obtenue par la voie classique
    attendu set [list 6759 0 0]
+   if {$mesure(:) ne $attendu(:)} {
+      ::console::affiche_resultat "imaseries_mexican la valeur mesurée $mesure(:) n'est pas égale à $attendu(:)\n"
+   }
    attendu expr {round(attendu-mesure)}
    #--   nb de differences
    attendu expr {abs(attendu) == 0}
    set result [llength [attendu search 1]]
-   #---  efface l'image
-   ::confVisu::deleteImage $visuNo
+   set bitpix [lindex [buf$bufNo getkwd BITPIX] 1]
+   set bzero [lindex [buf$bufNo getkwd BZERO] 1]
+   if {$bitpix eq "16" && $bzero eq "32768"} {incr result}
    return $result
-} -cleanup $CLEANUP -result "3"
+} -cleanup $CLEANUP -result "4"
 
 #--   test IMA/SERIES RADIAL
 test imaseries_radial {appliquer un filtre radial a rz_rbgr_8.fit} -constraints {AUDACE} -setup $SETUP -body {

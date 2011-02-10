@@ -50,7 +50,7 @@ test aligner_automatique_NB {aligner des translatees de m45_champ.fit} -constrai
    ::confVisu::deleteImage $visuNo
    #--   clic sur le bouton Fermer
    ::testaudela::clicButton $z.cmd.fermer
-   file delete m45_champ.fit trans1.fit trans2.fit trans3.fit trans4.fit
+   file delete m45_champ.fit trans1.fit trans2.fit trans3.fit trans4.fit trans5.fit
 } -result "10"
 
 test aligner_automatique_ligne_de_commandes {aligner des translatees de m45_champ.fit} -constraints {AUDACE} -setup {
@@ -85,7 +85,7 @@ test aligner_automatique_ligne_de_commandes {aligner des translatees de m45_cham
    }
    return $result
 } -cleanup {
-   file delete m45_champ.fit trans1.fit trans2.fit trans3.fit trans4.fit
+   file delete m45_champ.fit trans1.fit trans2.fit trans3.fit trans4.fit trans5.fit
 } -result "10"
 
 test aligner_automatique_RGB {aligner deux images RGB} -constraints {AUDACE} -setup {
@@ -101,7 +101,7 @@ test aligner_automatique_RGB {aligner deux images RGB} -constraints {AUDACE} -se
    #--   l'image de reference
    ::testaudela::putLabelEntry $z.funoptions.image_ref "./rz_rgbr_8.fit"
    #-- saisit le nom de sortie
-   set name_out "recadre"
+   set name_out "recadre_rgbr"
    ::testaudela::putLabelEntry $z.sortie.out "$name_out"
    #--   clic sur le bouton Appliquer
    ::testaudela::clicButton $z.cmd.appliquer
@@ -114,6 +114,7 @@ test aligner_automatique_RGB {aligner deux images RGB} -constraints {AUDACE} -se
       if {[file exists $file]} {
          incr result
       }
+      file delete $file
    }
    return $result
 } -cleanup {
@@ -121,6 +122,6 @@ test aligner_automatique_RGB {aligner deux images RGB} -constraints {AUDACE} -se
    ::confVisu::deleteImage $visuNo
    #--   clic sur le bouton Fermer
    ::testaudela::clicButton $z.cmd.fermer
-   file delete rz_rgbr_8.fit rz_rgbr_15.fit recadre1.fit recadre2.fit
+   file delete rz_rgbr_8.fit rz_rgbr_15.fit
 } -result "2"
 
