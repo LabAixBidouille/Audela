@@ -1,6 +1,6 @@
 #
 # Fichier : acqzadko.cap
-# Mise a jour $Id: acqzadko.cap,v 1.8 2010-09-26 06:49:45 robertdelmas Exp $
+# Mise a jour $Id: acqzadko.cap,v 1.9 2011-02-10 19:03:41 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -192,7 +192,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqzadko,acquisitionError)       "Erreur à l'acquisition. Détails dans la Console."
    set caption(acqzadko,connectioncamera)       "Connexion de la caméra"
    set caption(acqzadko,raquettetel)            "Contrôle du télescope"
-
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {

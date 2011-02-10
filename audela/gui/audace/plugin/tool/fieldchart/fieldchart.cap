@@ -1,6 +1,6 @@
 #
 # Fichier : fieldchart.cap
-# Mise a jour $Id: fieldchart.cap,v 1.9 2010-11-08 17:27:38 robertdelmas Exp $
+# Mise a jour $Id: fieldchart.cap,v 1.10 2011-02-10 19:07:38 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -137,18 +137,18 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fieldchart,usno)                       "USNO"
    set caption(fieldchart,parcourir)                  "..."
    set caption(fieldchart,x)                          " x "
-   set caption(fieldchart,champ_image)                "# Auto-recuperación de datos de la imagen"
+   set caption(fieldchart,champ_image)                "Recuperación automática de los parámetros de imagen"
    set caption(fieldchart,catalogue)                  "Mapa"
    set caption(fieldchart,cat_microcat)               "Catálogo MicroCat"
    set caption(fieldchart,magnitude_limite)           "Magnitud limite"
    set caption(fieldchart,largeur_image)              "Anchura de imagen"
    set caption(fieldchart,hauteur_image)              "Altura de imagen"
-   set caption(fieldchart,prendre_image)              "# Recuperar\ndatos de\nla imagen"
+   set caption(fieldchart,prendre_image)              "Recuperar\nparámetros\nde la imagen"
    set caption(fieldchart,ad_centre)                  "Ascensión Recta del centro"
    set caption(fieldchart,dec_centre)                 "Declinación del centro"
    set caption(fieldchart,inclinaison_camera)         "Inclinación de cámara (°)"
-   set caption(fieldchart,crpix1)                     "# Referencia del píxel para Naxis1"
-   set caption(fieldchart,crpix2)                     "# Referencia del píxel para Naxis2"
+   set caption(fieldchart,crpix1)                     "Pixel de referencia para Naxis1"
+   set caption(fieldchart,crpix2)                     "Pixel de referencia para Naxis2"
    set caption(fieldchart,focale_instrument)          "Distancia focal del equipo (m)"
    set caption(fieldchart,taille_pixels)              "Tamaño de píxeles (µm)"
    set caption(fieldchart,pas_etoile)                 "No hay estrellas en este campo."
@@ -254,18 +254,18 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fieldchart,usno)                       "USNO"
    set caption(fieldchart,parcourir)                  "..."
    set caption(fieldchart,x)                          " x "
-   set caption(fieldchart,champ_image)                "Auto-gendannelse af billede-data"
+   set caption(fieldchart,champ_image)                "Auto-gendannelse af billeddata"
    set caption(fieldchart,catalogue)                  "Kort"
    set caption(fieldchart,cat_microcat)               "MicroCat Katalog"
    set caption(fieldchart,magnitude_limite)           "Stjerne-Magnitude-grænse"
    set caption(fieldchart,largeur_image)              "Billedbredde"
    set caption(fieldchart,hauteur_image)              "Billedhøjde"
-   set caption(fieldchart,prendre_image)              "Gendan\nbillede-data"
+   set caption(fieldchart,prendre_image)              "Gendannelse\naf\nbilleddata"
    set caption(fieldchart,ad_centre)                  "Centerets Rektascension"
    set caption(fieldchart,dec_centre)                 "Centerets Deklination"
    set caption(fieldchart,inclinaison_camera)         "Kamera-hældning (°)"
-   set caption(fieldchart,crpix1)                     "Naxis1 reference-pixel"
-   set caption(fieldchart,crpix2)                     "Naxis2 reference-pixel"
+   set caption(fieldchart,crpix1)                     "Naxis1 Reference-pixel"
+   set caption(fieldchart,crpix2)                     "Naxis2 Reference-pixel"
    set caption(fieldchart,focale_instrument)          "Udstyrets brændvidde (m)"
    set caption(fieldchart,taille_pixels)              "Pixelstørrelse (µm)"
    set caption(fieldchart,pas_etoile)                 "Ingen stjerner i dette felt."

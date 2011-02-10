@@ -1,6 +1,6 @@
 #
 # Fichier : prtr.cap
-# Mise a jour $Id: prtr.cap,v 1.6 2011-01-16 18:45:24 robertdelmas Exp $
+# Mise a jour $Id: prtr.cap,v 1.7 2011-02-10 19:08:24 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -28,7 +28,7 @@ set caption(prtr,parcourir)                     "..."
 set caption(prtr,outfolder)                     "# Chemin du dossier de sortie"
 set caption(prtr,no_file)                       "# Pas de fichier"
 set caption(prtr,nb_select)                     "# Fichiers sélectionnés %s/%s"
-set caption(prtr,en_cours)                      "# En cours... Patientez..."
+set caption(prtr,en_cours)                      "In Progress... Please Wait..."
 set caption(prtr,fin_traitement)                "# Fin du traitement."
 set caption(prtr,attention)                     "# Attention"
 set caption(prtr,sortie_generique)              "# Définir le nom générique de sortie."
@@ -172,7 +172,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(prtr,outfolder)                  "# Chemin du dossier de sortie"
    set caption(prtr,no_file)                    "# Pas de fichier"
    set caption(prtr,nb_select)                  "# Fichiers sélectionnés %s/%s"
-   set caption(prtr,en_cours)                   "# En cours... Patientez..."
+   set caption(prtr,en_cours)                   "En curso... Espere..."
    set caption(prtr,fin_traitement)             "# Fin du traitement."
    set caption(prtr,attention)                  "# Attention"
    set caption(prtr,sortie_generique)           "# Définir le nom générique de sortie."
@@ -316,7 +316,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(prtr,outfolder)                  "# Chemin du dossier de sortie"
    set caption(prtr,no_file)                    "# Pas de fichier"
    set caption(prtr,nb_select)                  "# Fichiers sélectionnés %s/%s"
-   set caption(prtr,en_cours)                   "# En cours... Patientez..."
+   set caption(prtr,en_cours)                   "Udfører funktionen. Vent venligst!"
    set caption(prtr,fin_traitement)             "# Fin du traitement."
    set caption(prtr,attention)                  "# Attention"
    set caption(prtr,sortie_generique)           "# Définir le nom générique de sortie."
@@ -364,7 +364,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(prtr,outfolder)                  "# Chemin du dossier de sortie"
    set caption(prtr,no_file)                    "# Pas de fichier"
    set caption(prtr,nb_select)                  "# Fichiers sélectionnés %s/%s"
-   set caption(prtr,en_cours)                   "# En cours... Patientez..."
+   set caption(prtr,en_cours)                   "In Progress... Please Wait..."
    set caption(prtr,fin_traitement)             "# Fin du traitement."
    set caption(prtr,attention)                  "# Attention"
    set caption(prtr,sortie_generique)           "# Définir le nom générique de sortie."
@@ -412,7 +412,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(prtr,outfolder)                  "# Chemin du dossier de sortie"
    set caption(prtr,no_file)                    "# Pas de fichier"
    set caption(prtr,nb_select)                  "# Fichiers sélectionnés %s/%s"
-   set caption(prtr,en_cours)                   "# En cours... Patientez..."
+   set caption(prtr,en_cours)                   "In Progress... Please Wait..."
    set caption(prtr,fin_traitement)             "# Fin du traitement."
    set caption(prtr,attention)                  "# Attention"
    set caption(prtr,sortie_generique)           "# Définir le nom générique de sortie."

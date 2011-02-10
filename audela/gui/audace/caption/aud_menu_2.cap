@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_2.cap
-# Mise a jour $Id: aud_menu_2.cap,v 1.30 2011-01-23 09:41:41 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_2.cap,v 1.31 2011-02-10 19:04:09 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -229,8 +229,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,balance_rvb)               "Balance RVA"
    set caption(audace,menu,zoom)                      "Zoom"
    set caption(audace,menu,plein_ecran)               "Pantalla completa"
-   set caption(audace,menu,display_miroir_x)          "# Espejo vertical"
-   set caption(audace,menu,display_miroir_y)          "# Espejo horizontal"
+   set caption(audace,menu,display_miroir_x)          "Invertir Izquierda/Derecha"
+   set caption(audace,menu,display_miroir_y)          "Invertir Arriba/Abajo"
    set caption(audace,menu,window)                    "Extraer Ventana"
    set caption(audace,menu,vision_nocturne)           "Visión nocturna"
 
@@ -273,7 +273,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilCouleur,pas_couleur)              "No es una imagen en color."
    set caption(seuilCouleur,attention)                "Cuidado"
    set caption(seuilCouleur,header_noimage)           "No existe una imágen cargada en la memoria."
-   set caption(seuilCouleur,en_cours)                 "# En cours... Patientez..."
+   set caption(seuilCouleur,en_cours)                 "En curso... Espere..."
    set caption(seuilCouleur,fin_traitement)           "Fin de procesando."
 
 # *************** Version allemande ***************************
@@ -430,8 +430,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,balance_rvb)               "RGB balance"
    set caption(audace,menu,zoom)                      "Zoom"
    set caption(audace,menu,plein_ecran)               "Fuld skærm"
-   set caption(audace,menu,display_miroir_x)          "# Vertikal spejl"
-   set caption(audace,menu,display_miroir_y)          "# Horisontal spejl"
+   set caption(audace,menu,display_miroir_x)          "Ombyt Venstre/Højre"
+   set caption(audace,menu,display_miroir_y)          "Ombyt Op/Ned"
    set caption(audace,menu,window)                    "Vindue"
    set caption(audace,menu,vision_nocturne)           "Nattesyn"
 
@@ -474,7 +474,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilCouleur,pas_couleur)              "Dette er ikke et farvebillede."
    set caption(seuilCouleur,attention)                "Advarsel"
    set caption(seuilCouleur,header_noimage)           "Intet billede i memory."
-   set caption(seuilCouleur,en_cours)                 "# En cours... Patientez..."
+   set caption(seuilCouleur,en_cours)                 "Udfører funktionen. Vent venligst!"
    set caption(seuilCouleur,fin_traitement)           "Slut på processing."
 
 # *************** Version ukrainienne *************************

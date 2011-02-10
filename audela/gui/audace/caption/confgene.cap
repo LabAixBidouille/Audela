@@ -1,6 +1,6 @@
 #
 # Fichier : confgene.cap
-# Mise a jour $Id: confgene.cap,v 1.49 2010-11-10 21:46:17 robertdelmas Exp $
+# Mise a jour $Id: confgene.cap,v 1.50 2011-02-10 19:05:53 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -306,7 +306,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,position_mpc)                       "Formato MPC:"
    set caption(confgene,position_mpcstation)                "Formato MPCSTATION:"
    set caption(confgene,position_non_station_uai)           "Sitio no registrado en la IAU"
-   set caption(confgene,fichier_uai_msg)                    "# Une connexion à Internet est nécessaire pour cette mise à jour."
+   set caption(confgene,fichier_uai_msg)                    "Es necesaria una conexión de internet para actualizar."
    set caption(confgene,fichier_uai_erreur1)                "El número del sitio IAU debe"
    set caption(confgene,fichier_uai_erreur2)                "tener al menos 3 dígitos"
    set caption(confgene,fichier_uai_erreur3)                "(ej.:  000, 008, 013, 104, A05)."
@@ -546,7 +546,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,position_mpc)                       "MPC Format:"
    set caption(confgene,position_mpcstation)                "MPCSTATION Format:"
    set caption(confgene,position_non_station_uai)           "Observationssted ikke registreret hos IAU"
-   set caption(confgene,fichier_uai_msg)                    "Internet-forbindelse kræves til denne opdatering."
+   set caption(confgene,fichier_uai_msg)                    "En Internet-forbindelse kræves for at updatere."
    set caption(confgene,fichier_uai_erreur1)                "IAU observationssted-nr. skal"
    set caption(confgene,fichier_uai_erreur2)                "have mindst 3 cifre"
    set caption(confgene,fichier_uai_erreur3)                "(f.eks.:  000, 008, 013, 104, A05)."
