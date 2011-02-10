@@ -5,7 +5,7 @@
   <title>Images et Analyse</title>
 </head>
 <body>
-<p class="date">Date de mise &#224; jour : 22 janvier 2011</p>
+<p class="date">Date de mise &#224; jour : 31 janvier 2011</p>
 <h1>Images et Analyse</h1>
 <h2>1. Fonctions</h2>
 <p>Cette interface g&#232;re de tr&#232;s nombreuses fonctions
@@ -50,10 +50,10 @@ TT.</li>
 <p><b>Nota : Les param&#232;tres de chaque fonction sont
 appliqu&#233;s &#224; chaque plan couleur d'une image RGB. Si ce
 n'est pas le but recherch&#233; il faudra convertir l'image RGB
-en plans couleurs avec Pr&#233;traitement/Convertir/Convertir
+en plans couleurs avec Images/Convertir/Convertir
 RVB--&gt;R+V+B, traiter chaque plan comme souhait&#233; puis
-recomposer une image RGB avec
-Pr&#233;traitement/Convertir/Convertir R+V+B--&gt;RVB.</b></p>
+recomposer une image RGB avec </b><b>Images</b><b>/Convertir/Convertir
+R+V+B--&gt;RVB.</b></p>
 <h2>2. Lancement</h2>
 <p>Avant de lancer une fonction, il faut d&#233;finir l'extension
 et la compression par "Configuration" --&gt; "Fichiers
@@ -68,7 +68,7 @@ droite :</p>
 <ul>
   <li>Un bouton de menu pour s&#233;lectionner une fonction du
 groupe d'appartenance, pour changer de groupe il faut
-s&#233;lectionner le groupe dans le menu Pr&#233;traitement, la
+s&#233;lectionner le groupe dans le menu Images, la
 fen&#234;tre et le menu du bouton sont alors
 actualis&#233;s.</li>
   <li>La zone d'affichage des fichiers contenus dans le
@@ -178,13 +178,17 @@ affich&#233;e, les param&#232;tres sont actualis&#233;s
 automatiquement.</li>
 </ul>
 <p>La valeur par d&#233;faut affich&#233;e dans bitpix est
-&#233;gale la valeur de r&#233;glage dans Configuration/Fichiers
-images : +16 pour 16 bits et +32 pour 32 bits si aucune image
+&#233;gale &#224; la valeur de r&#233;glage dans Configuration/Fichiers
+image : +16 pour 16 bits et -32 pour 32 bits si aucune image
 n'est affich&#233;e dans la visu. Lorsqu'une image est
 s&#233;lectionn&#233;e dans la liste, la valeur affich&#233;e est
-celle du mot cl&#233; BITPIX dans l'image. Il convient donc de
+celle du mot cl&#233; BITPIX de l'image. Il convient donc de
 v&#233;rifier si la valeur affich&#233;e est conforme &#224; ce
-qui est souhait&#233; juste avant de lancer le traitement.</p>
+qui est souhait&#233; juste avant de lancer le traitement. Sans
+autre indication, le format de l'image est identique &#224; celui
+de l'image d'entr&#233;e. Le r&#233;glage de bitpix n'a donc de
+sens que si on veut r&#233;tr&#233;cir ou &#233;largir la plage des
+valeurs possibles (addition, multiplication par exemple).</p>
 <p>Tous les param&#232;tres optionnels, tant ceux de la fonction
 que les options g&#233;n&#233;rales, ne sont pris en compte que
 si leur valeur est diff&#233;rente de la valeur par
