@@ -2,7 +2,7 @@
 # Fichier : confoptic.tcl
 # Description : Affiche la fenetre de configuration des systemes optiques associes aux cameras A, B et C
 # Auteur : Robert DELMAS
-# Mise à jour $Id: confoptic.tcl,v 1.34 2010-05-16 10:27:43 robertdelmas Exp $
+# Mise à jour $Id: confoptic.tcl,v 1.35 2011-02-11 18:31:49 robertdelmas Exp $
 #
 
 namespace eval ::confOptic {
@@ -565,10 +565,10 @@ namespace eval ::confOptic {
 
       #--- Cas de la camera B
       #--- Je formate les entry pour permettre le calcul decimal
-      set widget(B,diametre) [ format "%.1f" $widget(B,diametre) ]
+      set widget(B,diametre) [ format "%.3f" $widget(B,diametre) ]
       $widget(frm).entDiametre configure -textvariable widget(B,diametre)
 
-      set widget(B,focale) [ format "%.1f" $widget(B,focale) ]
+      set widget(B,focale) [ format "%.3f" $widget(B,focale) ]
       $widget(frm).entFocale configure -textvariable ::confOptic::widget(B,focale)
 
       #--- Je mets a jour la combobox de configuration du systeme optique
@@ -630,10 +630,10 @@ namespace eval ::confOptic {
 
       #--- Cas de la camera C
       #--- Je formate les entry pour permettre le calcul decimal
-      set widget(C,diametre) [ format "%.1f" $widget(C,diametre) ]
+      set widget(C,diametre) [ format "%.3f" $widget(C,diametre) ]
       $widget(frm).entDiametre configure -textvariable ::confOptic::widget(C,diametre)
 
-      set widget(C,focale) [ format "%.1f" $widget(C,focale) ]
+      set widget(C,focale) [ format "%.3f" $widget(C,focale) ]
       $widget(frm).entFocale configure -textvariable ::confOptic::widget(C,focale)
 
       #--- Je mets a jour la combobox de configuration du systeme optique
@@ -862,13 +862,15 @@ namespace eval ::confOptic {
       label $widget(frm).labDiametre -text "$caption(confoptic,diametre)" -relief flat
       pack $widget(frm).labDiametre -in $widget(frm).frame7 -anchor w -side top -padx 30 -pady 5
 
-      entry $widget(frm).entDiametre -textvariable ::confOptic::widget(A,diametre) -width 8
+      entry $widget(frm).entDiametre -textvariable ::confOptic::widget(A,diametre) -width 8 \
+         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 99 }
       pack $widget(frm).entDiametre -in $widget(frm).frame8 -anchor w -side top -padx 10 -pady 5
 
       label $widget(frm).labFocale -text "$caption(confoptic,focale)" -relief flat
       pack $widget(frm).labFocale -in $widget(frm).frame7 -anchor w -side top -padx 30 -pady 5
 
-      entry $widget(frm).entFocale -textvariable ::confOptic::widget(A,focale) -width 8
+      entry $widget(frm).entFocale -textvariable ::confOptic::widget(A,focale) -width 8 \
+         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 999 }
       pack $widget(frm).entFocale -in $widget(frm).frame8 -anchor w -side top -padx 10 -pady 5
 
       label $widget(frm).labBarlow_Reduc -text "$caption(confoptic,barlow_reduc)" -relief flat
@@ -882,7 +884,8 @@ namespace eval ::confOptic {
          -borderwidth 2    \
          -editable 1       \
          -textvariable ::confOptic::widget(A,barlow_reduc) \
-         -values $list_combobox
+         -values $list_combobox \
+         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 99 }
       pack $widget(frm).comboboxBarlow_Reduc -in $widget(frm).frame8 -anchor w -side top -padx 10 -pady 5
 
       #--- Informations calculees du systeme optique
@@ -1078,13 +1081,15 @@ namespace eval ::confOptic {
       label $widget(frm).labDiametre -text "$caption(confoptic,diametre)" -relief flat
       pack $widget(frm).labDiametre -in $widget(frm).frame7 -anchor w -side top -padx 30 -pady 5
 
-      entry $widget(frm).entDiametre -textvariable ::confOptic::widget(B,diametre) -width 8
+      entry $widget(frm).entDiametre -textvariable ::confOptic::widget(B,diametre) -width 8 \
+         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 99 }
       pack $widget(frm).entDiametre -in $widget(frm).frame8 -anchor w -side top -padx 10 -pady 5
 
       label $widget(frm).labFocale -text "$caption(confoptic,focale)" -relief flat
       pack $widget(frm).labFocale -in $widget(frm).frame7 -anchor w -side top -padx 30 -pady 5
 
-      entry $widget(frm).entFocale -textvariable ::confOptic::widget(B,focale) -width 8
+      entry $widget(frm).entFocale -textvariable ::confOptic::widget(B,focale) -width 8 \
+         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 999 }
       pack $widget(frm).entFocale -in $widget(frm).frame8 -anchor w -side top -padx 10 -pady 5
 
       label $widget(frm).labBarlow_Reduc -text "$caption(confoptic,barlow_reduc)" -relief flat
@@ -1098,7 +1103,8 @@ namespace eval ::confOptic {
          -borderwidth 2    \
          -editable 1       \
          -textvariable ::confOptic::widget(B,barlow_reduc) \
-         -values $list_combobox
+         -values $list_combobox \
+         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 99 }
       pack $widget(frm).comboboxBarlow_Reduc -in $widget(frm).frame8 -anchor w -side top -padx 10 -pady 5
 
       #--- Informations calculees du systeme optique
@@ -1294,13 +1300,15 @@ namespace eval ::confOptic {
       label $widget(frm).labDiametre -text "$caption(confoptic,diametre)" -relief flat
       pack $widget(frm).labDiametre -in $widget(frm).frame7 -anchor w -side top -padx 30 -pady 5
 
-      entry $widget(frm).entDiametre -textvariable ::confOptic::widget(C,diametre) -width 8
+      entry $widget(frm).entDiametre -textvariable ::confOptic::widget(C,diametre) -width 8 \
+         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 99 }
       pack $widget(frm).entDiametre -in $widget(frm).frame8 -anchor w -side top -padx 10 -pady 5
 
       label $widget(frm).labFocale -text "$caption(confoptic,focale)" -relief flat
       pack $widget(frm).labFocale -in $widget(frm).frame7 -anchor w -side top -padx 30 -pady 5
 
-      entry $widget(frm).entFocale -textvariable ::confOptic::widget(C,focale) -width 8
+      entry $widget(frm).entFocale -textvariable ::confOptic::widget(C,focale) -width 8 \
+         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 999 }
       pack $widget(frm).entFocale -in $widget(frm).frame8 -anchor w -side top -padx 10 -pady 5
 
       label $widget(frm).labBarlow_Reduc -text "$caption(confoptic,barlow_reduc)" -relief flat
@@ -1314,7 +1322,8 @@ namespace eval ::confOptic {
          -borderwidth 2    \
          -editable 1       \
          -textvariable ::confOptic::widget(C,barlow_reduc) \
-         -values $list_combobox
+         -values $list_combobox \
+         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 99 }
       pack $widget(frm).comboboxBarlow_Reduc -in $widget(frm).frame8 -anchor w -side top -padx 10 -pady 5
 
       #--- Informations calculees du systeme optique
