@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: keyword.tcl,v 1.50 2011-02-10 19:18:50 robertdelmas Exp $
+# Mise à jour $Id: keyword.tcl,v 1.51 2011-02-11 18:18:51 robertdelmas Exp $
 #
 
 namespace eval ::keyword {
@@ -912,6 +912,13 @@ proc ::keyword::getKeywords { visuNo configName { keywordNameList "" } } {
                set type         [lindex $infosMotClef 10]
                set commentaire  [lindex $infosMotClef 11]
                set unite        [lindex $infosMotClef 12]
+               #--- je convertis CRVAL1 et CRVAL2 en degres decimaux
+               if { $motclef == "CRVAL1" } {
+                  set valeur [ mc_angle2deg $valeur ]
+               }
+               if { $motclef == "CRVAL2" } {
+                  set valeur [ mc_angle2deg $valeur ]
+               }
                #--- je convertis RA et DEC en degres decimaux
                if { $motclef == "RA" } {
                   set valeur [ mc_angle2deg $valeur ]
