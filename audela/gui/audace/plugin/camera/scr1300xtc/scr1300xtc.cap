@@ -1,6 +1,6 @@
 #
 # Fichier : scr1300xtc.cap
-# Mise a jour $Id: scr1300xtc.cap,v 1.5 2009-11-05 18:19:00 robertdelmas Exp $
+# Mise a jour $Id: scr1300xtc.cap,v 1.6 2011-02-12 11:43:12 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -16,8 +16,8 @@ set caption(scr1300xtc,camera)                       "SCR1300XTC"
 set caption(scr1300xtc,port)                         "Port"
 set caption(scr1300xtc,configurer)                   "Set up"
 set caption(scr1300xtc,acquisition)                  "Acquisition"
-set caption(scr1300xtc,miroir_x)                     "Horizontal Mirror"
-set caption(scr1300xtc,miroir_y)                     "Vertical Mirror"
+set caption(scr1300xtc,miroir_x)                     "Top/Bottom Reversal"
+set caption(scr1300xtc,miroir_y)                     "Left/Right Reversal"
 
 set caption(scr1300xtc,port_camera)                  "SCR1300XTC Port"
 set caption(scr1300xtc,2points)                      ":"
@@ -33,8 +33,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scr1300xtc,port)                      "Port"
    set caption(scr1300xtc,configurer)                "Configurer"
    set caption(scr1300xtc,acquisition)               "Acquisition"
-   set caption(scr1300xtc,miroir_x)                  "Miroir horizontal"
-   set caption(scr1300xtc,miroir_y)                  "Miroir vertical"
+   set caption(scr1300xtc,miroir_x)                  "Inverser Haut/Bas"
+   set caption(scr1300xtc,miroir_y)                  "Inverser Gauche/Droite"
 
    set caption(scr1300xtc,port_camera)               "Port SCR1300XTC"
    set caption(scr1300xtc,2points)                   ":"
@@ -50,8 +50,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scr1300xtc,port)                      "Porta"
    set caption(scr1300xtc,configurer)                "Configurare"
    set caption(scr1300xtc,acquisition)               "Acquisizione"
-   set caption(scr1300xtc,miroir_x)                  "Specchio orizzontale"
-   set caption(scr1300xtc,miroir_y)                  "Specchio verticale"
+   set caption(scr1300xtc,miroir_x)                  "# Specchio orizzontale"
+   set caption(scr1300xtc,miroir_y)                  "# Specchio verticale"
 
    set caption(scr1300xtc,port_camera)               "Porta SCR1300XTC"
    set caption(scr1300xtc,2points)                   ":"
@@ -67,8 +67,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scr1300xtc,port)                      "Puerto"
    set caption(scr1300xtc,configurer)                "Configurar"
    set caption(scr1300xtc,acquisition)               "Adquisición"
-   set caption(scr1300xtc,miroir_x)                  "Espejo horizontal"
-   set caption(scr1300xtc,miroir_y)                  "Espejo vertical"
+   set caption(scr1300xtc,miroir_x)                  "Invertir Arriba/Abajo"
+   set caption(scr1300xtc,miroir_y)                  "Invertir Izquierda/Derecha"
 
    set caption(scr1300xtc,port_camera)               "Puerto SCR1300XTC"
    set caption(scr1300xtc,2points)                   ":"
@@ -84,8 +84,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scr1300xtc,port)                      "Port"
    set caption(scr1300xtc,configurer)                "Konfigurieren"
    set caption(scr1300xtc,acquisition)               "Belichtung"
-   set caption(scr1300xtc,miroir_x)                  "Horizontale Spiegel"
-   set caption(scr1300xtc,miroir_y)                  "Verticale Spiegel"
+   set caption(scr1300xtc,miroir_x)                  "# Horizontale Spiegel"
+   set caption(scr1300xtc,miroir_y)                  "# Verticale Spiegel"
 
    set caption(scr1300xtc,port_camera)               "SCR1300XTC Port"
    set caption(scr1300xtc,2points)                   ":"
@@ -101,8 +101,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scr1300xtc,port)                      "Porto"
    set caption(scr1300xtc,configurer)                "Configurar"
    set caption(scr1300xtc,acquisition)               "Aquisição"
-   set caption(scr1300xtc,miroir_x)                  "Espelho Horizontal"
-   set caption(scr1300xtc,miroir_y)                  "Espelho Vertical"
+   set caption(scr1300xtc,miroir_x)                  "# Espelho Horizontal"
+   set caption(scr1300xtc,miroir_y)                  "# Espelho Vertical"
 
    set caption(scr1300xtc,port_camera)               "Porta SCR1300XTC"
    set caption(scr1300xtc,2points)                   ":"
@@ -118,8 +118,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scr1300xtc,port)                      "Port"
    set caption(scr1300xtc,configurer)                "Set up"
    set caption(scr1300xtc,acquisition)               "Acquisition"
-   set caption(scr1300xtc,miroir_x)                  "Horisontal spejl"
-   set caption(scr1300xtc,miroir_y)                  "Vertikal spejl"
+   set caption(scr1300xtc,miroir_x)                  "Top/Bottom Reversal"
+   set caption(scr1300xtc,miroir_y)                  "Left/Right Reversal"
 
    set caption(scr1300xtc,port_camera)               "SCR1300XTC Port"
    set caption(scr1300xtc,2points)                   ":"
@@ -135,8 +135,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scr1300xtc,port)                      "Port"
    set caption(scr1300xtc,configurer)                "Set up"
    set caption(scr1300xtc,acquisition)               "Acquisition"
-   set caption(scr1300xtc,miroir_x)                  "Horizontal Mirror"
-   set caption(scr1300xtc,miroir_y)                  "Vertical Mirror"
+   set caption(scr1300xtc,miroir_x)                  "Top/Bottom Reversal"
+   set caption(scr1300xtc,miroir_y)                  "Left/Right Reversal"
 
    set caption(scr1300xtc,port_camera)               "SCR1300XTC Port"
    set caption(scr1300xtc,2points)                   ":"
@@ -152,8 +152,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scr1300xtc,port)                      "Port"
    set caption(scr1300xtc,configurer)                "Set up"
    set caption(scr1300xtc,acquisition)               "Acquisition"
-   set caption(scr1300xtc,miroir_x)                  "Horizontal Mirror"
-   set caption(scr1300xtc,miroir_y)                  "Vertical Mirror"
+   set caption(scr1300xtc,miroir_x)                  "Top/Bottom Reversal"
+   set caption(scr1300xtc,miroir_y)                  "Left/Right Reversal"
 
    set caption(scr1300xtc,port_camera)               "SCR1300XTC Port"
    set caption(scr1300xtc,2points)                   ":"
