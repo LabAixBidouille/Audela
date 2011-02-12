@@ -1,6 +1,6 @@
 #
 # Fichier : cookbook.cap
-# Mise a jour $Id: cookbook.cap,v 1.5 2009-11-05 18:17:11 robertdelmas Exp $
+# Mise a jour $Id: cookbook.cap,v 1.6 2011-02-12 11:41:34 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -16,8 +16,8 @@ set caption(cookbook,camera)                       "CB245"
 set caption(cookbook,port)                         "Port"
 set caption(cookbook,configurer)                   "Set up"
 set caption(cookbook,acquisition)                  "Acquisition"
-set caption(cookbook,miroir_x)                     "Horizontal Mirror"
-set caption(cookbook,miroir_y)                     "Vertical Mirror"
+set caption(cookbook,miroir_x)                     "Top/Bottom Reversal"
+set caption(cookbook,miroir_y)                     "Left/Right Reversal"
 set caption(cookbook,delai)                        "Delay"
 
 set caption(cookbook,port_camera)                  "CB245 Port"
@@ -34,8 +34,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cookbook,port)                      "Port"
    set caption(cookbook,configurer)                "Configurer"
    set caption(cookbook,acquisition)               "Acquisition"
-   set caption(cookbook,miroir_x)                  "Miroir horizontal"
-   set caption(cookbook,miroir_y)                  "Miroir vertical"
+   set caption(cookbook,miroir_x)                  "Inverser Haut/Bas"
+   set caption(cookbook,miroir_y)                  "Inverser Gauche/Droite"
    set caption(cookbook,delai)                     "Délai"
 
    set caption(cookbook,port_camera)               "Port CB245"
@@ -52,8 +52,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cookbook,port)                      "Porta"
    set caption(cookbook,configurer)                "Configurare"
    set caption(cookbook,acquisition)               "Acquisizione"
-   set caption(cookbook,miroir_x)                  "Specchio orizzontale"
-   set caption(cookbook,miroir_y)                  "Specchio verticale"
+   set caption(cookbook,miroir_x)                  "# Specchio orizzontale"
+   set caption(cookbook,miroir_y)                  "# Specchio verticale"
    set caption(cookbook,delai)                     "Intervallo"
 
    set caption(cookbook,port_camera)               "Porta CB245"
@@ -70,8 +70,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cookbook,port)                      "Puerto"
    set caption(cookbook,configurer)                "Configurar"
    set caption(cookbook,acquisition)               "Adquisición"
-   set caption(cookbook,miroir_x)                  "Espejo horizontal"
-   set caption(cookbook,miroir_y)                  "Espejo vertical"
+   set caption(cookbook,miroir_x)                  "Invertir Arriba/Abajo"
+   set caption(cookbook,miroir_y)                  "Invertir Izquierda/Derecha"
    set caption(cookbook,delai)                     "Retraso"
 
    set caption(cookbook,port_camera)               "Puerto CB245"
@@ -88,8 +88,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cookbook,port)                      "Port"
    set caption(cookbook,configurer)                "Konfigurieren"
    set caption(cookbook,acquisition)               "Belichtung"
-   set caption(cookbook,miroir_x)                  "Horizontale Spiegel"
-   set caption(cookbook,miroir_y)                  "Verticale Spiegel"
+   set caption(cookbook,miroir_x)                  "# Horizontale Spiegel"
+   set caption(cookbook,miroir_y)                  "# Verticale Spiegel"
    set caption(cookbook,delai)                     "Zeitraum"
 
    set caption(cookbook,port_camera)               "CB245 Port"
@@ -106,8 +106,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cookbook,port)                      "Porto"
    set caption(cookbook,configurer)                "Configurar"
    set caption(cookbook,acquisition)               "Aquisição"
-   set caption(cookbook,miroir_x)                  "Espelho Horizontal"
-   set caption(cookbook,miroir_y)                  "Espelho Vertical"
+   set caption(cookbook,miroir_x)                  "# Espelho Horizontal"
+   set caption(cookbook,miroir_y)                  "# Espelho Vertical"
    set caption(cookbook,delai)                     "Atraso"
 
    set caption(cookbook,port_camera)               "Porta CB245"
@@ -124,8 +124,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cookbook,port)                      "Port"
    set caption(cookbook,configurer)                "Set up"
    set caption(cookbook,acquisition)               "Acquisition"
-   set caption(cookbook,miroir_x)                  "Horisontal spejl"
-   set caption(cookbook,miroir_y)                  "Vertikal spejl"
+   set caption(cookbook,miroir_x)                  "Top/Bottom Reversal"
+   set caption(cookbook,miroir_y)                  "Left/Right Reversal"
    set caption(cookbook,delai)                     "Delay"
 
    set caption(cookbook,port_camera)               "CB245 Port"
@@ -142,8 +142,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cookbook,port)                      "Port"
    set caption(cookbook,configurer)                "Set up"
    set caption(cookbook,acquisition)               "Acquisition"
-   set caption(cookbook,miroir_x)                  "Horizontal Mirror"
-   set caption(cookbook,miroir_y)                  "Vertical Mirror"
+   set caption(cookbook,miroir_x)                  "Top/Bottom Reversal"
+   set caption(cookbook,miroir_y)                  "Left/Right Reversal"
    set caption(cookbook,delai)                     "Delay"
 
    set caption(cookbook,port_camera)               "CB245 Port"
@@ -160,8 +160,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cookbook,port)                      "Port"
    set caption(cookbook,configurer)                "Set up"
    set caption(cookbook,acquisition)               "Acquisition"
-   set caption(cookbook,miroir_x)                  "Horizontal Mirror"
-   set caption(cookbook,miroir_y)                  "Vertical Mirror"
+   set caption(cookbook,miroir_x)                  "Top/Bottom Reversal"
+   set caption(cookbook,miroir_y)                  "Left/Right Reversal"
    set caption(cookbook,delai)                     "Delay"
 
    set caption(cookbook,port_camera)               "CB245 Port"

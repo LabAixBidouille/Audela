@@ -1,6 +1,6 @@
 #
 # Fichier : cemes.cap
-# Mise a jour $Id: cemes.cap,v 1.8 2009-11-08 14:26:42 robertdelmas Exp $
+# Mise a jour $Id: cemes.cap,v 1.9 2011-02-12 11:41:20 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -19,10 +19,10 @@ set caption(cemes,obtu_synchro)                 "Synchro"
 
 set caption(cemes,refroidissement)              "Cooling to Temperature"
 set caption(cemes,deg_c)                        "°C"
-set caption(cemes,refroidissement_1)            "°C"
+set caption(cemes,refroidissement_1)            ""
 set caption(cemes,temperature_CCD)              "CCD Temperature:"
-set caption(cemes,miroir_x)                     "Horizontal Mirror"
-set caption(cemes,miroir_y)                     "Vertical Mirror"
+set caption(cemes,miroir_x)                     "Top/Bottom Reversal"
+set caption(cemes,miroir_y)                     "Left/Right Reversal"
 set caption(cemes,fonc_obtu)                    "Shutter Operation"
 
 set caption(cemes,port_camera)                  "CEMES Port"
@@ -42,10 +42,10 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cemes,refroidissement)           "Refroidissement à la température de"
    set caption(cemes,deg_c)                     "°C"
-   set caption(cemes,refroidissement_1)         "°C"
+   set caption(cemes,refroidissement_1)         ""
    set caption(cemes,temperature_CCD)           "Température du CCD :"
-   set caption(cemes,miroir_x)                  "Miroir horizontal"
-   set caption(cemes,miroir_y)                  "Miroir vertical"
+   set caption(cemes,miroir_x)                  "Inverser Haut/Bas"
+   set caption(cemes,miroir_y)                  "Inverser Gauche/Droite"
    set caption(cemes,fonc_obtu)                 "Fonctionnement de l'obturateur"
 
    set caption(cemes,port_camera)               "Port CEMES"
@@ -65,10 +65,10 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cemes,refroidissement)           "Raffreddamento alla temperatura di"
    set caption(cemes,deg_c)                     "°C"
-   set caption(cemes,refroidissement_1)         "°C"
+   set caption(cemes,refroidissement_1)         ""
    set caption(cemes,temperature_CCD)           "CCD Temperatura:"
-   set caption(cemes,miroir_x)                  "Specchio orizzontale"
-   set caption(cemes,miroir_y)                  "Specchio verticale"
+   set caption(cemes,miroir_x)                  "# Specchio orizzontale"
+   set caption(cemes,miroir_y)                  "# Specchio verticale"
    set caption(cemes,fonc_obtu)                 "Funzionamento otturatore"
 
    set caption(cemes,port_camera)               "Porta CEMES"
@@ -88,10 +88,10 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cemes,refroidissement)           "Enfriar hasta temperatura"
    set caption(cemes,deg_c)                     "°C"
-   set caption(cemes,refroidissement_1)         "°C"
+   set caption(cemes,refroidissement_1)         ""
    set caption(cemes,temperature_CCD)           "Temperatura CCD:"
-   set caption(cemes,miroir_x)                  "Espejo horizontal"
-   set caption(cemes,miroir_y)                  "Espejo vertical"
+   set caption(cemes,miroir_x)                  "Invertir Arriba/Abajo"
+   set caption(cemes,miroir_y)                  "Invertir Izquierda/Derecha"
    set caption(cemes,fonc_obtu)                 "Funcionamiento del obturador"
 
    set caption(cemes,port_camera)               "Puerto CEMES"
@@ -111,10 +111,10 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cemes,refroidissement)           "Temperatur bis zu"
    set caption(cemes,deg_c)                     "°C"
-   set caption(cemes,refroidissement_1)         "°C kühlen"
+   set caption(cemes,refroidissement_1)         "kühlen"
    set caption(cemes,temperature_CCD)           "Temperatur CCD:"
-   set caption(cemes,miroir_x)                  "Horizontale Spiegel"
-   set caption(cemes,miroir_y)                  "Verticale Spiegel"
+   set caption(cemes,miroir_x)                  "# Horizontale Spiegel"
+   set caption(cemes,miroir_y)                  "# Verticale Spiegel"
    set caption(cemes,fonc_obtu)                 "Verschluss Arbeiten"
 
    set caption(cemes,port_camera)               "CEMES Port"
@@ -134,10 +134,10 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cemes,refroidissement)           "Arrefecendo até Temperatura"
    set caption(cemes,deg_c)                     "°C"
-   set caption(cemes,refroidissement_1)         "°C"
+   set caption(cemes,refroidissement_1)         ""
    set caption(cemes,temperature_CCD)           "Temperatura do CCD:"
-   set caption(cemes,miroir_x)                  "Espelho Horizontal"
-   set caption(cemes,miroir_y)                  "Espelho Vertical"
+   set caption(cemes,miroir_x)                  "# Espelho Horizontal"
+   set caption(cemes,miroir_y)                  "# Espelho Vertical"
    set caption(cemes,fonc_obtu)                 "Operação do obturador"
 
    set caption(cemes,port_camera)               "Porta CEMES"
@@ -157,10 +157,10 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cemes,refroidissement)           "Cooling to Temperature"
    set caption(cemes,deg_c)                     "°C"
-   set caption(cemes,refroidissement_1)         "°C"
+   set caption(cemes,refroidissement_1)         ""
    set caption(cemes,temperature_CCD)           "CCD Temperature:"
-   set caption(cemes,miroir_x)                  "Horisontal spejl"
-   set caption(cemes,miroir_y)                  "Vertikal spejl"
+   set caption(cemes,miroir_x)                  "Top/Bottom Reversal"
+   set caption(cemes,miroir_y)                  "Left/Right Reversal"
    set caption(cemes,fonc_obtu)                 "Shutter Operation"
 
    set caption(cemes,port_camera)               "CEMES Port"
@@ -180,10 +180,10 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cemes,refroidissement)           "Cooling to Temperature"
    set caption(cemes,deg_c)                     "°C"
-   set caption(cemes,refroidissement_1)         "°C"
+   set caption(cemes,refroidissement_1)         ""
    set caption(cemes,temperature_CCD)           "CCD Temperature:"
-   set caption(cemes,miroir_x)                  "Horizontal Mirror"
-   set caption(cemes,miroir_y)                  "Vertical Mirror"
+   set caption(cemes,miroir_x)                  "Top/Bottom Reversal"
+   set caption(cemes,miroir_y)                  "Left/Right Reversal"
    set caption(cemes,fonc_obtu)                 "Shutter Operation"
 
    set caption(cemes,port_camera)               "CEMES Port"
@@ -203,10 +203,10 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cemes,refroidissement)           "Cooling to Temperature"
    set caption(cemes,deg_c)                     "°C"
-   set caption(cemes,refroidissement_1)         "°C"
+   set caption(cemes,refroidissement_1)         ""
    set caption(cemes,temperature_CCD)           "CCD Temperature:"
-   set caption(cemes,miroir_x)                  "Horizontal Mirror"
-   set caption(cemes,miroir_y)                  "Vertical Mirror"
+   set caption(cemes,miroir_x)                  "Top/Bottom Reversal"
+   set caption(cemes,miroir_y)                  "Left/Right Reversal"
    set caption(cemes,fonc_obtu)                 "Shutter Operation"
 
    set caption(cemes,port_camera)               "CEMES Port"

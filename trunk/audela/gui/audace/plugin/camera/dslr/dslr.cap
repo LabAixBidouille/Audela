@@ -1,6 +1,6 @@
 #
 # Fichier : dslr.cap
-# Mise a jour $Id: dslr.cap,v 1.18 2009-11-05 18:17:27 robertdelmas Exp $
+# Mise a jour $Id: dslr.cap,v 1.19 2011-02-12 11:41:47 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -17,8 +17,8 @@ set caption(dslr,name)                      "Digital Camera"
 
 set caption(dslr,liaison)                   "Link"
 set caption(dslr,configurer)                "Set up"
-set caption(dslr,miroir_x)                  "Horizontal Mirror"
-set caption(dslr,miroir_y)                  "Vertical Mirror"
+set caption(dslr,miroir_x)                  "Top/Bottom Reversal"
+set caption(dslr,miroir_y)                  "Left/Right Reversal"
 set caption(dslr,longuepose)                "Long Exposure"
 set caption(dslr,quickremote)               "QuickRemote"
 set caption(dslr,externe)                   "Manual"
@@ -47,8 +47,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(dslr,liaison)                "Liaison"
    set caption(dslr,configurer)             "Configurer"
-   set caption(dslr,miroir_x)               "Miroir horizontal"
-   set caption(dslr,miroir_y)               "Miroir vertical"
+   set caption(dslr,miroir_x)               "Inverser Haut/Bas"
+   set caption(dslr,miroir_y)               "Inverser Gauche/Droite"
    set caption(dslr,longuepose)             "Longue pose"
    set caption(dslr,quickremote)            "QuickRemote"
    set caption(dslr,externe)                "Manuel"
@@ -77,8 +77,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(dslr,liaison)                "Collegamento"
    set caption(dslr,configurer)             "Configurare"
-   set caption(dslr,miroir_x)               "Specchio orizzontale"
-   set caption(dslr,miroir_y)               "Specchio verticale"
+   set caption(dslr,miroir_x)               "# Specchio orizzontale"
+   set caption(dslr,miroir_y)               "# Specchio verticale"
    set caption(dslr,longuepose)             "Lunga posa"
    set caption(dslr,quickremote)            "QuickRemote"
    set caption(dslr,externe)                "Manuale"
@@ -107,8 +107,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(dslr,liaison)                "Enlace"
    set caption(dslr,configurer)             "Configurar"
-   set caption(dslr,miroir_x)               "Espejo horizontal"
-   set caption(dslr,miroir_y)               "Espejo vertical"
+   set caption(dslr,miroir_x)               "Invertir Arriba/Abajo"
+   set caption(dslr,miroir_y)               "Invertir Izquierda/Derecha"
    set caption(dslr,longuepose)             "Exposición larga"
    set caption(dslr,quickremote)            "QuickRemote"
    set caption(dslr,externe)                "Manual"
@@ -137,8 +137,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(dslr,liaison)                "Link"
    set caption(dslr,configurer)             "Konfigurieren"
-   set caption(dslr,miroir_x)               "Horizontale Spiegel"
-   set caption(dslr,miroir_y)               "Verticale Spiegel"
+   set caption(dslr,miroir_x)               "# Horizontale Spiegel"
+   set caption(dslr,miroir_y)               "# Verticale Spiegel"
    set caption(dslr,longuepose)             "Lange Belichtung"
    set caption(dslr,quickremote)            "QuickRemote"
    set caption(dslr,externe)                "Manuell"
@@ -167,8 +167,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(dslr,liaison)                "Ligação"
    set caption(dslr,configurer)             "Configurar"
-   set caption(dslr,miroir_x)               "Espelho Horizontal"
-   set caption(dslr,miroir_y)               "Espelho Vertical"
+   set caption(dslr,miroir_x)               "# Espelho Horizontal"
+   set caption(dslr,miroir_y)               "# Espelho Vertical"
    set caption(dslr,longuepose)             "Longa Exposição"
    set caption(dslr,quickremote)            "QuickRemote"
    set caption(dslr,externe)                "Manual"
@@ -197,8 +197,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(dslr,liaison)                "Link"
    set caption(dslr,configurer)             "Set up"
-   set caption(dslr,miroir_x)               "Horisontal spejl"
-   set caption(dslr,miroir_y)               "Vertikal spejl"
+   set caption(dslr,miroir_x)               "Top/Bottom Reversal"
+   set caption(dslr,miroir_y)               "Left/Right Reversal"
    set caption(dslr,longuepose)             "Long Exposure"
    set caption(dslr,quickremote)            "QuickRemote"
    set caption(dslr,externe)                "Manual"
@@ -227,8 +227,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(dslr,liaison)                "Link"
    set caption(dslr,configurer)             "Set up"
-   set caption(dslr,miroir_x)               "Horizontal Mirror"
-   set caption(dslr,miroir_y)               "Vertical Mirror"
+   set caption(dslr,miroir_x)               "Top/Bottom Reversal"
+   set caption(dslr,miroir_y)               "Left/Right Reversal"
    set caption(dslr,longuepose)             "Long Exposure"
    set caption(dslr,quickremote)            "QuickRemote"
    set caption(dslr,externe)                "Manual"
@@ -257,8 +257,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(dslr,liaison)                "Link"
    set caption(dslr,configurer)             "Set up"
-   set caption(dslr,miroir_x)               "Horizontal Mirror"
-   set caption(dslr,miroir_y)               "Vertical Mirror"
+   set caption(dslr,miroir_x)               "Top/Bottom Reversal"
+   set caption(dslr,miroir_y)               "Left/Right Reversal"
    set caption(dslr,longuepose)             "Long Exposure"
    set caption(dslr,quickremote)            "QuickRemote"
    set caption(dslr,externe)                "Manual"
