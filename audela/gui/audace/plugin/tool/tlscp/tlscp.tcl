@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise à jour $Id: tlscp.tcl,v 1.50 2011-02-10 19:19:40 robertdelmas Exp $
+# Mise à jour $Id: tlscp.tcl,v 1.51 2011-02-12 18:35:58 robertdelmas Exp $
 #
 
 #============================================================
@@ -640,7 +640,7 @@ proc ::tlscp::stopTool { visuNo } {
       return -1
    }
 
-   #--- Les mots cles CRPIX1, CRPIX2, CRVAL1, CRVAL2, OBJNAME, RA, DEC et EQUINOX sont a nouveau modifiables
+   #--- Je supprime la liste des mots clefs non modifiables
    ::keyword::setKeywordState $visuNo $::conf(tlscp,keywordConfigName) [ list ]
 
    #--- Je force la capture des mots cles OBJNAME, RA, DEC et EQUINOX en manuel
@@ -698,7 +698,7 @@ proc ::tlscp::configToolKeywords { visuNo { configName "" } } {
    }
 
    #--- Je selectionne les mots cles optionnels a ajouter dans les images
-   #--- Ce sont les mots cles OBJNAME, RA, DEC et EQUINOX
+   #--- Ce sont les mots cles CRPIX1, CRPIX2, CRVAL1, CRVAL2, OBJNAME, RA, DEC et EQUINOX
    ::keyword::selectKeywords $visuNo $configName [ list CRPIX1 CRPIX2 CRVAL1 CRVAL2 OBJNAME RA DEC EQUINOX ]
 
    #--- Je selectionne la liste des mots cles non modifiables

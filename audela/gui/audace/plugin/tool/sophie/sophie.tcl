@@ -2,7 +2,7 @@
 # @file     sophie.tcl
 # @brief    Fichier du namespace ::sophie
 # @author   Michel PUJOL et Robert DELMAS
-# @version   $Id: sophie.tcl,v 1.52 2011-02-10 19:38:11 robertdelmas Exp $
+# @version   $Id: sophie.tcl,v 1.53 2011-02-12 18:36:11 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -594,7 +594,7 @@ proc ::sophie::stopTool { visuNo } {
    #--- je ferme la fenetre de controle
    ::sophie::control::closeWindow $visuNo
 
-   #--- je deselectionne la liste des mots cles non modifiables
+   #--- je supprime la liste des mots clefs non modifiables
    ::keyword::setKeywordState $visuNo $::conf(sophie,keywordConfigName) [list ]
 
    #--- je masque l'outil
@@ -623,9 +623,9 @@ proc ::sophie::configToolKeywords { visuNo { configName "" } } {
    }
 
    #--- je selectionne les mots cles optionnels a ajouter dans les images
-   ::keyword::selectKeywords $visuNo $configName [list RA_MEAN RA_RMS DEC_MEAN DEC_RMS DETNAM INSTRUME TELESCOP SITENAME SITELONG SITELAT SWCREATE]
+   ::keyword::selectKeywords $visuNo $configName [list CRPIX1 CRPIX2 CRVAL1 CRVAL2 RA_MEAN RA_RMS DEC_MEAN DEC_RMS DETNAM INSTRUME TELESCOP SITENAME SITELONG SITELAT SWCREATE]
 
    #--- je selectionne la liste des mots cles non modifiables
-   ::keyword::setKeywordState $visuNo $configName [list RA_MEAN RA_RMS DEC_MEAN DEC_RMS DETNAM INSTRUME TELESCOP ]
+   ::keyword::setKeywordState $visuNo $configName [list CRPIX1 CRPIX2 CRVAL1 CRVAL2 RA_MEAN RA_RMS DEC_MEAN DEC_RMS DETNAM INSTRUME TELESCOP ]
 }
 
