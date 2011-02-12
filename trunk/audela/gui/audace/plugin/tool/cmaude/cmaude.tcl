@@ -2,7 +2,7 @@
 # Fichier : cmaude.tcl
 # Description : Prototype for the Cloud Monitor panel
 # Auteur : Sylvain RONDI
-# Mise à jour $Id: cmaude.tcl,v 1.35 2010-10-10 20:02:24 michelpujol Exp $
+# Mise à jour $Id: cmaude.tcl,v 1.36 2011-02-12 18:37:13 robertdelmas Exp $
 #
 
 #============================================================
@@ -183,6 +183,9 @@ namespace eval ::cmaude {
       #--- On cree la variable de configuration des mots cles
       if { ! [ info exists ::conf(cmaude,keywordConfigName) ] } { set ::conf(cmaude,keywordConfigName) "default" }
 
+      #--- Je selectionne les mots cles selon les exigences de l'outil
+      ::cmaude::configToolKeywords $visuNo
+
       pack $This -side left -fill y
       ::console::affiche_prompt "----------------------------\n"
       ::console::affiche_prompt "| $caption(cmaude,titre_mascot)\n"
@@ -208,6 +211,9 @@ namespace eval ::cmaude {
       if { $panneau(cmaude,acquisition) == 1 } {
          return -1
       }
+
+      #--- Je supprime la liste des mots clefs non modifiables
+      ::keyword::setKeywordState $visuNo $::conf(cmaude,keywordConfigName) [ list ]
 
       pack forget $This
    }
@@ -607,6 +613,23 @@ namespace eval ::cmaude {
 
       #--- Visualisation
       ::audace::autovisu $audace(visuNo)
+   }
+
+   #===============================
+   #=== Configure FITS keywords ===
+
+   proc configToolKeywords { visuNo { configName "" } } {
+      #--- Je traite la variable configName
+      if { $configName == "" } {
+         set configName $::conf(cmaude,keywordConfigName)
+      }
+
+      #--- Je selectionne les mots cles optionnels a ajouter dans les images
+      #--- Ce sont les mots cles CRPIX1, CRPIX2
+      ::keyword::selectKeywords $visuNo $configName [ list CRPIX1 CRPIX2 ]
+
+      #--- Je selectionne la liste des mots cles non modifiables
+      ::keyword::setKeywordState $visuNo $configName [ list CRPIX1 CRPIX2 ]
    }
 
    #======================
