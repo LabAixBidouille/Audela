@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise à jour $Id: acqfen.tcl,v 1.49 2011-02-10 19:01:35 robertdelmas Exp $
+# Mise à jour $Id: acqfen.tcl,v 1.50 2011-02-12 18:36:48 robertdelmas Exp $
 #
 
 # =========================================================
@@ -307,6 +307,9 @@ namespace eval ::acqfen {
       #--- On cree la variable de configuration des mots cles
       if { ! [ info exists ::conf(acqfen,keywordConfigName) ] } { set ::conf(acqfen,keywordConfigName) "default" }
 
+      #--- Je selectionne les mots cles selon les exigences de l'outil
+      ::acqfen::configToolKeywords $visuNo
+
       pack $This -side left -fill y
    }
 
@@ -325,6 +328,9 @@ namespace eval ::acqfen {
 
       #--- Sauvegarde de la configuration de prise de vue
       ::acqfen::enregistrerParametres
+
+      #--- Je supprime la liste des mots clefs non modifiables
+      ::keyword::setKeywordState $visuNo $::conf(acqfen,keywordConfigName) [ list ]
 
       #--- Initialisation du fenetrage
       catch {
@@ -1396,6 +1402,24 @@ namespace eval ::acqfen {
             set panneau(acqfen,finAquisition) "acquisitionResult"
          }
       }
+   }
+
+   #------------------------------------------------------------
+   # configToolKeywords
+   #    configure les mots cles FITS de l'outil
+   #------------------------------------------------------------
+   proc configToolKeywords { visuNo { configName "" } } {
+      #--- Je traite la variable configName
+      if { $configName == "" } {
+         set configName $::conf(acqfen,keywordConfigName)
+      }
+
+      #--- Je selectionne les mots cles optionnels a ajouter dans les images
+      #--- Ce sont les mots cles CRPIX1, CRPIX2
+      ::keyword::selectKeywords $visuNo $configName [ list CRPIX1 CRPIX2 ]
+
+      #--- Je selectionne la liste des mots cles non modifiables
+      ::keyword::setKeywordState $visuNo $configName [ list CRPIX1 CRPIX2 ]
    }
 
    #------------------------------------------------------------

@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: scanfast.tcl,v 1.63 2010-10-10 20:05:42 michelpujol Exp $
+# Mise à jour $Id: scanfast.tcl,v 1.64 2011-02-12 18:37:48 robertdelmas Exp $
 #
 
 global panneau
@@ -575,7 +575,7 @@ proc ::scanfast::stopTool { visuNo } {
    #--- Sauvegarde de la configuration
    enregistrerVar
 
-   #--- Les mots cles RA et DEC sont a nouveau modifiables
+   #--- Je supprime la liste des mots clefs non modifiables
    ::keyword::setKeywordState $visuNo $::conf(scanfast,keywordConfigName) [ list ]
 
    #--- Arret de la surveillance de la connexion d'une camera
@@ -606,12 +606,16 @@ proc ::scanfast::configToolKeywords { visuNo { configName "" } } {
       set configName $::conf(scanfast,keywordConfigName)
    }
 
+   #--- Je selectionne les mots cles optionnels a ajouter dans les images
+   #--- Ce sont les mots cles CRPIX1, CRPIX2
+   ::keyword::selectKeywords $visuNo $configName [ list CRPIX1 CRPIX2 ]
+
    #--- Je selectionne les mots cles optionnels a decocher
    #--- Les mots cles RA et DEC doivent obligatoirement etre decoches
    ::keyword::deselectKeywords $visuNo $configName [ list RA DEC ]
 
    #--- Je selectionne la liste des mots cles non modifiables
-   ::keyword::setKeywordState $visuNo $configName [ list RA DEC ]
+   ::keyword::setKeywordState $visuNo $configName [ list CRPIX1 CRPIX2 RA DEC ]
 
    #--- Je force la capture des mots cles RA et DEC en manuel
    ::keyword::setKeywordsRaDecManuel

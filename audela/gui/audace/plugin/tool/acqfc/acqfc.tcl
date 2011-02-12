@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise à jour $Id: acqfc.tcl,v 1.109 2010-12-28 17:01:09 michelpujol Exp $
+# Mise à jour $Id: acqfc.tcl,v 1.110 2011-02-12 18:36:34 robertdelmas Exp $
 #
 
 #==============================================================
@@ -528,6 +528,9 @@ proc ::acqfc::startTool { { visuNo 1 } } {
       ::acqfc::Intervalle_continu_2 $visuNo
    }
 
+   #--- Je selectionne les mots cles selon les exigences de l'outil
+   ::acqfc::configToolKeywords $visuNo
+
    pack $panneau(acqfc,$visuNo,This) -side left -fill y
    ::acqfc::adaptOutilAcqFC $visuNo
 }
@@ -544,6 +547,9 @@ proc ::acqfc::stopTool { { visuNo 1 } } {
 
    #--- Sauvegarde de la configuration de prise de vue
    ::acqfc::enregistrerVariable $visuNo
+
+   #--- Je supprime la liste des mots clefs non modifiables
+   ::keyword::setKeywordState $visuNo $::conf(acqfc,keywordConfigName) [ list ]
 
    #--- Destruction des fenetres auxiliaires et sauvegarde de leurs positions si elles existent
    ::acqfc::recup_position $visuNo
@@ -1741,6 +1747,24 @@ proc ::acqfc::loadLastImage { visuNo camNo } {
    }
 }
 #***** Fin de la procedure chargement differe d'image **********
+
+#------------------------------------------------------------
+# configToolKeywords
+#    configure les mots cles FITS de l'outil
+#------------------------------------------------------------
+proc ::acqfc::configToolKeywords { visuNo { configName "" } } {
+   #--- Je traite la variable configName
+   if { $configName == "" } {
+      set configName $::conf(acqfc,keywordConfigName)
+   }
+
+   #--- Je selectionne les mots cles optionnels a ajouter dans les images
+   #--- Ce sont les mots cles CRPIX1, CRPIX2
+   ::keyword::selectKeywords $visuNo $configName [ list CRPIX1 CRPIX2 ]
+
+   #--- Je selectionne la liste des mots cles non modifiables
+   ::keyword::setKeywordState $visuNo $configName [ list CRPIX1 CRPIX2 ]
+}
 
 proc ::acqfc::dispTime { visuNo } {
    global caption panneau

@@ -2,7 +2,7 @@
 # Fichier : eshel.tcl
 # Description : outil de fabrication des fichier Kit et de deploiement des plugin
 # Auteurs : Michel Pujol
-# Mise à jour $Id: eshel.tcl,v 1.15 2011-01-16 19:05:10 michelpujol Exp $
+# Mise à jour $Id: eshel.tcl,v 1.16 2011-02-12 18:37:25 robertdelmas Exp $
 #
 
 ##------------------------------------------------------------
@@ -697,10 +697,10 @@ proc ::eshel::configToolKeywords { visuNo { configName "" } } {
    }
 
    #--- je selectionne les mots clefs optionnel a ajouter dans les images
-   ::keyword::selectKeywords $visuNo $configName [list IMAGETYP OBJNAME SERIESID DETNAM INSTRUME TELESCOP CONFNAME OBSERVER SITENAME SITELONG SITELAT SWCREATE]
+   ::keyword::selectKeywords $visuNo $configName [list CRPIX1 CRPIX2 IMAGETYP OBJNAME SERIESID DETNAM INSTRUME TELESCOP CONFNAME OBSERVER SITENAME SITELONG SITELAT SWCREATE]
 
    #--- je selectionne la liste des mots clefs non modifiables
-   ::keyword::setKeywordState $visuNo $configName [list IMAGETYP OBJNAME SERIESID DETNAM INSTRUME TELESCOP CONFNAME ]
+   ::keyword::setKeywordState $visuNo $configName [list CRPIX1 CRPIX2 IMAGETYP OBJNAME SERIESID DETNAM INSTRUME TELESCOP CONFNAME ]
 
 }
 

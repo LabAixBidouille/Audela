@@ -2,7 +2,7 @@
 # Fichier : acqzadko.tcl
 # Description : Outil d'acquisition
 # Auteurs : Francois Cochard et Myrtille Laas
-# Mise à jour $Id: acqzadko.tcl,v 1.28 2010-10-10 20:02:23 michelpujol Exp $
+# Mise à jour $Id: acqzadko.tcl,v 1.29 2011-02-12 18:37:01 robertdelmas Exp $
 #
 
 #==============================================================
@@ -535,6 +535,9 @@ proc ::acqzadko::startTool { { visuNo 1 } } {
       ::acqzadko::Intervalle_continu_2 $visuNo
    }
 
+   #--- Je selectionne les mots cles selon les exigences de l'outil
+   ::acqzadko::configToolKeywords $visuNo
+
    pack $panneau(acqzadko,$visuNo,This) -side left -fill y
    ::acqzadko::adaptOutilAcqzadko $visuNo
 }
@@ -551,6 +554,9 @@ proc ::acqzadko::stopTool { { visuNo 1 } } {
 
    #--- Sauvegarde de la configuration de prise de vue
    ::acqzadko::enregistrerVariable $visuNo
+
+   #--- Je supprime la liste des mots clefs non modifiables
+   ::keyword::setKeywordState $visuNo $::conf(acqzadko,keywordConfigName) [ list ]
 
    #--- Destruction des fenetres auxiliaires et sauvegarde de leurs positions si elles existent
    ::acqzadko::recup_position $visuNo
@@ -1752,6 +1758,24 @@ proc ::acqzadko::loadLastImage { visuNo camNo } {
    }
 }
 #***** Fin de la procedure chargement differe d'image **********
+
+#------------------------------------------------------------
+# configToolKeywords
+#    configure les mots cles FITS de l'outil
+#------------------------------------------------------------
+proc ::acqzadko::configToolKeywords { visuNo { configName "" } } {
+   #--- Je traite la variable configName
+   if { $configName == "" } {
+      set configName $::conf(acqzadko,keywordConfigName)
+   }
+
+   #--- Je selectionne les mots cles optionnels a ajouter dans les images
+   #--- Ce sont les mots cles CRPIX1, CRPIX2
+   ::keyword::selectKeywords $visuNo $configName [ list CRPIX1 CRPIX2 ]
+
+   #--- Je selectionne la liste des mots cles non modifiables
+   ::keyword::setKeywordState $visuNo $configName [ list CRPIX1 CRPIX2 ]
+}
 
 proc ::acqzadko::dispTime { visuNo } {
    global caption panneau
