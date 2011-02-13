@@ -988,6 +988,46 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;fi;fd"
 			>
+			<File
+				RelativePath="..\src\files.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\focas.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\libfiles.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\libtt.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\tt.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\tt_user1.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\tt_user2.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\tt_user3.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\tt_user4.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\tt_user5.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
