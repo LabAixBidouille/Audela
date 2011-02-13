@@ -114,7 +114,7 @@ int tt_fct_ima_stack(void *arg1)
    int save_level_index;
    char xvalue[FLEN_VALUE],yvalue[FLEN_VALUE];
    double *jj,*exptime,exptime_stack,jj_stack;
-   double *poids,poids_total;
+   double *poids,poids_total =0;
    double minDateObs = 0;
    double maxDateEnd = 0;
    TT_IMA_STACK pstack;
@@ -130,6 +130,7 @@ int tt_fct_ima_stack(void *arg1)
    int nombre,taille;
    double dateObs = 0.0;
    double dateEnd = 0.0;
+   int qualite;
 
 
    
@@ -520,8 +521,12 @@ int tt_fct_ima_stack(void *arg1)
          strcpy(fullname2,tt_imafilecater(path,name,suffix));
       }
       choix=0;dimx=dimy=0;
+
+      qualite=(int)(pstack.jpeg_qualite);
+      if (qualite>100) {qualite=100;}
+      if (qualite<5) {qualite=5;}
       /*if ((msg=libfiles_main(FS_MACR_FITS2JPG,7,fullname,fullname2,&choix,&sb,&sh,&dimx,&dimy))!=OK_DLL) {*/
-      if ((msg=libfiles_main(FS_MACR_FITS2JPG,7,fullname,fullname2,&choix,sb,sh,&dimx,&dimy))!=OK_DLL) {
+      if ((msg=libfiles_main(FS_MACR_FITS2JPG,8,fullname,fullname2,&choix,sb,sh,&dimx,&dimy,&qualite))!=OK_DLL) {
          sprintf(message,"Problem concerning creation of JPEG file %s ",fullname2);
          tt_errlog(msg,message);
          return(msg);
@@ -578,6 +583,7 @@ int tt_ima_stack_builder(char **keys,TT_IMA_STACK *pstack)
    pstack->powernorm=0;
    pstack->hotPixelList=NULL;
    pstack->cosmicThreshold = 0;
+   pstack->jpeg_qualite = 75;
    
    for (k=11;k<(pstack->nbkeys);k++) {
       int nombre, taille, msg;
@@ -642,6 +648,11 @@ int tt_ima_stack_builder(char **keys,TT_IMA_STACK *pstack)
          pstack->jpegfile_make=TT_YES;
          if (strcmp(argu,"")!=0) {
             strcpy(pstack->jpegfile,argu);
+         }
+      }
+      else if (strcmp(mot,"JPEG_QUALITY")==0) {
+         if (strcmp(argu,"")!=0) {
+            pstack->jpeg_qualite=(int)(atoi(argu));
          }
       }
       else if (strcmp(mot,"KAPPA")==0) {
