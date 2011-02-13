@@ -167,7 +167,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    cam->params = (PrivateParams*) calloc(sizeof(PrivateParams),1);
    
    // aucune trace n'est générée par défaut dans le fichier libascomcam.log
-   debug_level = LOG_DEBUG;
+   debug_level = LOG_NONE;
 
    // je recupere les parametres optionnels
    if (argc >= 5) {
