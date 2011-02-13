@@ -620,3 +620,60 @@ int mctcl_decode_date(Tcl_Interp *interp, char *argv0,double *jj)
    return(result);
 }
 
+ int Cmd_mctcl_date2equinox(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+/****************************************************************************/
+/* Calcul l'equinoxe d'une date gregorienne 				  			             */
+/****************************************************************************/
+/* Entrees : possibilites de type Date	(voir mctcl_decode_date              */
+/*																			                   */
+/* Sorties : equinoxe au format Jxxxx.x                                     */
+/* 																		                   */
+/****************************************************************************/
+   int result;
+   if(argc!=2) {
+      char s[100];
+      sprintf(s,"Usage: %s Date ", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else {
+      double jj =0;
+      char chaine[100];
+      int decodeResult;
+      // je decode la date et je la transforme en jour julien
+      decodeResult = mctcl_decode_date(interp,argv[1],&jj);
+      if ( decodeResult == TCL_OK ) {
+         double eps=1e-3,eps2=1e-4,a,annee;
+         char chaine0[80];
+         // calcul de l'equinox 
+         mc_jd_equinoxe( jj, chaine);
+         a=(jj-2451545.0)/365.25+2000.0;
+         strcpy(chaine,"J");
+         if (mc_frac(a)<eps2) {
+            annee=a+0.1;
+            mc_fstr(annee,PB,4,0,OK,chaine0);
+            strcat(chaine,chaine0);
+            strcat(chaine,".0");
+         } else {
+            // je formate la chaine avec 4 chiffres et 1 decimale
+            mc_fstr(a,PB,4,1,OK,chaine0);
+            strcat(chaine,chaine0);
+         }
+         if (fabs(jj-2415020.3135)<eps) {
+            strcpy(chaine,"B1900.0");
+         }
+         if (fabs(jj-2433282.4235)<eps) {
+            strcpy(chaine,"B1950.0");
+         }
+         Tcl_SetResult(interp,chaine,TCL_VOLATILE);
+         result = TCL_OK;
+      } else {
+         // je retourne un message d'erreur au TCL
+         char messageErreur[1024];
+         sprintf(messageErreur, "Erreur de decodage de la date %s",argv[1]);
+         Tcl_SetResult(interp,messageErreur,TCL_VOLATILE);
+         result = TCL_ERROR;
+      }
+   }
+   return result;
+}
+
