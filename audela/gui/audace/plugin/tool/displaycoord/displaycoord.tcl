@@ -2,7 +2,7 @@
 # Fichier : displaycoord.tcl
 # Description : Affichage des coordonnees du telescope
 # Auteur : Michel PUJOL
-# Mise à jour $Id: displaycoord.tcl,v 1.10 2011-01-22 07:48:55 michelpujol Exp $
+# Mise à jour $Id: displaycoord.tcl,v 1.11 2011-02-13 16:13:05 michelpujol Exp $
 #
 
 #============================================================
@@ -123,6 +123,7 @@ proc ::displaycoord::createPluginInstance { { tkParent "" } { visuNo 1 } } {
 
    set private(ra0)        "00h 00m 00.00s"
    set private(dec0)       "+00° 00' 00.00''"
+   set private(equinox0)   ""
    set private(azimutDms)  "000° 00' 00.0''"
    set private(hauteurDms) "+00° 00' 00.0''"
    set private(modelName)  ""
@@ -284,10 +285,14 @@ proc ::displaycoord::createWindow { visuNo } {
           -bg $private(color,back) -fg $private(color,text) \
           -font $private(font1)
       grid $base.f.coord.alpha_value -row 0 -column 1 -sticky w
+      label $base.f.coord.equinox -text "(J2000.0)" \
+            -bg $private(color,back) -fg $private(color,text) \
+            -font $private(font3)
+      grid $base.f.coord.equinox -row 0 -column 2 -sticky w
       label $base.f.coord.alpha_calage \
             -bg $private(color,back) -fg $private(color,text) \
             -font $private(font1)
-      grid $base.f.coord.alpha_calage -row 0 -column 2 -sticky w
+      grid $base.f.coord.alpha_calage -row 0 -column 3 -sticky w
 
       label $base.f.coord.delta_label -text $::caption(displaycoord,dec) \
          -bg $private(color,back) -fg $private(color,text) \
@@ -300,10 +305,11 @@ proc ::displaycoord::createWindow { visuNo } {
       label $base.f.coord.delta_calage \
          -bg $private(color,back) -fg $private(color,text) \
          -font $private(font1)
-      grid $base.f.coord.delta_calage -row 1 -column 2 -sticky w
+      grid $base.f.coord.delta_calage -row 1 -column 3 -sticky w
 
-      grid columnconfig $base.f.coord 0 -weight 1
-      grid columnconfig $base.f.coord 1 -weight 1
+      grid columnconfig $base.f.coord 0 -weight 2
+      grid columnconfig $base.f.coord 1 -weight 2
+      grid columnconfig $base.f.coord 2 -weight 1   ;# l'equinoxe a moins de poids
       grid columnconfig $base.f.coord 2 -weight 1
    pack $base.f.coord -fill x -pady 2 -padx 2 -anchor w
 
@@ -316,6 +322,9 @@ proc ::displaycoord::createWindow { visuNo } {
       label $base.f.brut.ra0_value -textvariable ::displaycoord::private(ra0) \
          -bg $private(color,back) -fg $couleur_bleuclair -font $private(font3)
       grid $base.f.brut.ra0_value -row 0 -column 1 -sticky w -padx 2
+      label $base.f.brut.equinox0 -textvariable ::displaycoord::private(equinox0) \
+         -bg $private(color,back) -fg $couleur_bleuclair -font $private(font3)
+      grid $base.f.brut.equinox0 -row 0 -column 2 -sticky w
 
       #--- declinaison brute
       label $base.f.brut.dec0_label -text $::caption(displaycoord,dec0) \
@@ -328,23 +337,24 @@ proc ::displaycoord::createWindow { visuNo } {
       #--- azimut
       label $base.f.brut.azimut_label -text $::caption(displaycoord,azimut) \
          -bg $private(color,back) -fg $couleur_bleuclair -font $private(font3)
-      grid $base.f.brut.azimut_label -row 0 -column 2 -sticky e -padx 2
+      grid $base.f.brut.azimut_label -row 0 -column 3 -sticky e -padx 2
       label $base.f.brut.azimut_value -textvariable ::displaycoord::private(azimutDms) \
          -bg $private(color,back) -fg $couleur_bleuclair -font $private(font3)
-      grid $base.f.brut.azimut_value -row 0 -column 3 -sticky w -padx 2
+      grid $base.f.brut.azimut_value -row 0 -column 4 -sticky w -padx 2
 
       #--- hauteur
       label $base.f.brut.hauteur_label -text $::caption(displaycoord,hauteur) \
          -bg $private(color,back) -fg $couleur_bleuclair -font $private(font3)
-      grid $base.f.brut.hauteur_label -row 1 -column 2 -sticky e -padx 2
+      grid $base.f.brut.hauteur_label -row 1 -column 3 -sticky e -padx 2
       label $base.f.brut.hauteur_value -textvariable ::displaycoord::private(hauteurDms) \
          -bg $private(color,back) -fg $couleur_bleuclair -font $private(font3)
-      grid $base.f.brut.hauteur_value -row 1 -column 3 -sticky w -padx 2
+      grid $base.f.brut.hauteur_value -row 1 -column 4 -sticky w -padx 2
 
       grid columnconfig $base.f.brut 0 -weight 1
       grid columnconfig $base.f.brut 1 -weight 1
       grid columnconfig $base.f.brut 2 -weight 1
       grid columnconfig $base.f.brut 3 -weight 1
+      grid columnconfig $base.f.brut 4 -weight 1
    pack $base.f.brut -fill x -pady 2 -anchor center
 
    #--- angle horaire
@@ -639,9 +649,16 @@ proc ::displaycoord::readSocketCoord {  } {
 
       #--- je mets en forme l'ascension droite et la declinaison
       set alpha "[string range $ra 0 1]h [string range $ra 3 4]m [string range $ra) 6 7].[string range $ra 9 10]s "
-      set delta "[string range $dec 0 2]° [string range $dec 4 5]'   [string range $dec) 7 8].[string range $dec 10 10]0'' "
+      set delta "[string range $dec 0 2]° [string range $dec 4 5]'   [string range $dec) 7 8].[string range $dec 10 10]'' "
+      #--- je mets en forme l'ascension droite et la declinaison des coordonnees brutes
       set private(ra0) "[string range $ra0 0 1]h [string range $ra0 3 4]m [string range $ra0) 6 7].[string range $ra0 9 10]s "
-      set private(dec0) "[string range $dec0 0 2]° [string range $dec0 4 5]'   [string range $dec0) 7 8].[string range $dec0 10 10]0'' "
+      set private(dec0) "[string range $dec0 0 2]° [string range $dec0 4 5]' [string range $dec0) 7 8].[string range $dec0 10 10]'' "
+      if { $tuy == "0" } {
+         #--- j'affiche l'equinoxe de la date courante si on n'a pas encore recu de message
+         set private(equinox0) "([mc_date2equinox now ])"
+      } else {
+         set private(equinox0) "([mc_date2equinox "$tuy $tumo $tud $tuh $tum $tus" ])"
+      }
 
       #--- je mets en forme la longitude et la latitude de la position de l'observatoire
       set longitudeList [mc_angle2dms $longitudeDegres 180 nozero 1 auto list]
