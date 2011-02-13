@@ -73,7 +73,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib ..\..\..\external\lib\gsl.lib ..\..\..\external\lib\gslcblas.lib ..\..\..\external\lib\tclstub85.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib ..\..\..\external\lib\libgsl.lib ..\..\..\external\lib\libgslcblas.lib ..\..\..\external\lib\tclstub85.lib"
 				OutputFile="..\..\..\..\bin\libgsltcl.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -170,7 +170,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib ..\..\..\external\lib\gsl.lib ..\..\..\external\lib\gslcblas.lib ..\..\..\external\lib\tclstub85.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib ..\..\..\external\lib\libgsl.lib ..\..\..\external\lib\libgslcblas.lib ..\..\..\external\lib\tclstub85.lib"
 				OutputFile="..\..\..\..\bin\libgsltcl.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
