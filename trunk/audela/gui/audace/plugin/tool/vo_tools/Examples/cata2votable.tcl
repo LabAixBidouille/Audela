@@ -3,7 +3,7 @@
 # Description : Exemple d'ecriture d'une VOTable
 #     source /usr/local/src/audela/gui/audace/plugin/tool/vo_tools/Examples/cata2votable.tcl
 # Auteur : Jerome BERTHIER
-# Mise à jour $Id: cata2votable.tcl,v 1.1 2010-10-24 17:49:06 jberthier Exp $
+# Mise à jour $Id: cata2votable.tcl,v 1.2 2011-02-13 22:53:37 robertdelmas Exp $
 #
 
 uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools votable.tcl ]\""
@@ -36,7 +36,7 @@ foreach header $headerList {
 set dataList [lindex $astroId 1]
 ::console::disp [concat "ASTROID DATA   : "  "\n\n"]
 
-
 set votable [::votableUtil::astroid2votable $astroId]
 
 #::console::disp $votable
+

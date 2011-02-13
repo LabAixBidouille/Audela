@@ -2,7 +2,7 @@
 # @file     sophieview.tcl
 # @brief    Fichier du namespace ::sophie::view
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophieview.tcl,v 1.16 2011-02-13 16:00:14 michelpujol Exp $
+# @version  $Id: sophieview.tcl,v 1.17 2011-02-13 22:52:18 robertdelmas Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -171,7 +171,6 @@ proc ::sophie::view::getPluginProperty { propertyName } {
       display      { return "window" }
    }
 }
-
 
 ##------------------------------------------------------------
 # setBuffer

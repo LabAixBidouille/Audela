@@ -2,11 +2,10 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise à jour $Id: autoguider.tcl,v 1.50 2010-12-05 14:25:42 michelpujol Exp $
+# Mise à jour $Id: autoguider.tcl,v 1.51 2011-02-13 22:54:23 robertdelmas Exp $
 #
 
 package provide autoguider 1.3
-
 
 #==============================================================
 #   Declaration du namespace autoguider
@@ -871,7 +870,6 @@ proc ::autoguider::setOrigin { visuNo coord } {
    return
 }
 
-
 ##------------------------------------------------------------
 # setTargetCoord
 #    initialise les coordonnees de la cible
@@ -1169,7 +1167,6 @@ proc ::autoguider::drawAxis { visuNo coord angle label1 label2} {
    set xmax [expr [lindex $windowCoords 2] - $margin]
    set ymax [expr [lindex $windowCoords 3] - $margin]
 
-
    set x  [lindex $coord 0]
    set y  [lindex $coord 1]
    set a  [expr tan($angle*3.14159265359/180)]
@@ -1375,8 +1372,6 @@ proc ::autoguider::onChangeSubWindow { visuNo args } {
    moveTarget $visuNo $private($visuNo,targetCoord)
 }
 
-
-
 ##------------------------------------------------------------
 # onMousePressButton1
 #   clique sur l'origine avec la souris
@@ -1398,7 +1393,6 @@ proc ::autoguider::onMouseLeave { visuNo  } {
 
      $private($visuNo,hCanvas) configure -cursor crosshair
 }
-
 
 ##------------------------------------------------------------
 # onMousePressButton1
@@ -1489,7 +1483,6 @@ proc ::autoguider::onMouseReleaseButton1 { visuNo w x y } {
          set coord [::confVisu::picture2Canvas $visuNo $::conf(autoguider,originCoord)]
          set moveCoord [::confVisu::screen2Canvas $visuNo [list [expr $x - $private($visuNo,startx)] [expr $y - $private($visuNo,starty)] ] ]
          set coord [list [expr [lindex $coord 0] + [lindex $moveCoord 0]] [expr [lindex $coord 1] + [lindex $moveCoord 1] ] ]
-
 
          set coord [::confVisu::picture2Canvas $visuNo $::conf(autoguider,originCoord)]
          set moveCoord [::confVisu::screen2Canvas $visuNo [list [expr $x - $private($visuNo,startx)] [expr $y - $private($visuNo,starty)] ] ]

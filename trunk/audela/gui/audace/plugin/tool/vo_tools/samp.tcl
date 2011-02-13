@@ -2,7 +2,7 @@
 # Fichier : samp.tcl
 # Description : Implementation du protocole SAMP de communication entre applications VO
 # Auteur : Stephane VAILLANT & Jerome Berthier
-# Mise à jour $Id: samp.tcl,v 1.1 2010-10-24 17:49:06 jberthier Exp $
+# Mise à jour $Id: samp.tcl,v 1.2 2011-02-13 22:53:17 robertdelmas Exp $
 #
 
 namespace eval Samp {
@@ -11,7 +11,7 @@ namespace eval Samp {
    package require XMLRPC
    package require rpcvar
    namespace import ::rpcvar::typedef
-   
+
    # Samp metadata structure
    typedef {
       samp.name string
@@ -21,7 +21,7 @@ namespace eval Samp {
       audela.version string
       home.page string
    } declareMetadataStruct
-   
+
    typedef { } emptymap
 
    # Samp msg subscription
@@ -39,7 +39,7 @@ namespace eval Samp {
       coord.pointAt.sky struct
       table.select.rowList struct
    } declareSubscriptions
-   
+
    # Samp msg load.image.fits
    typedef {
       name string
@@ -177,7 +177,7 @@ proc ::Samp::build { nsp } {
             -name "samp.hub.notifyAll"
 
    # Implementation des methodes SAMP
-   
+
    # Register AudeLA to Samp hub
    proc ${nsp}::register {} {
       global caption
@@ -189,7 +189,7 @@ proc ::Samp::build { nsp } {
       set err [catch { package present audela } audelaVersion ]
       if {$err != 0} { set audelaVersion "?" }
       set registerInfo [list samp.name AudeLA]
-      lappend registerInfo samp.description.text $caption(samp,description_text) 
+      lappend registerInfo samp.description.text $caption(samp,description_text)
       lappend registerInfo samp.icon.url {http://audela.org/download/audela-logo.png}
       lappend registerInfo samp.documentation.url {http://www.audela.org/dokuwiki/doku.php?do=index&id=start}
       lappend registerInfo audela.version $audelaVersion
@@ -222,7 +222,7 @@ proc ::Samp::build { nsp } {
       }
    }
 
-   # 
+   #
    proc ${nsp}::chanreadheader {chan} {
       variable buf
       variable datalen
@@ -238,11 +238,11 @@ proc ::Samp::build { nsp } {
             set datalen($chan) $len
          }
       } else {
-         
+
       }
    }
 
-   # 
+   #
    proc ${nsp}::chanread {chan} {
       variable buf
       variable datalen
@@ -387,7 +387,7 @@ proc ::Samp::build { nsp } {
                set url [::Samp::expandEntities $p(url)]
             }
          }
-      }      
+      }
       ::console::affiche_resultat "$caption(samp,reception_votable) $name ($url)\n"
       # Extrait le chemin pour charger la votable a partir des infos fournies
       set paths {}
@@ -441,7 +441,7 @@ proc ::Samp::build { nsp } {
                set url [::Samp::expandEntities $p(url)]
             }
          }
-      }      
+      }
       ::console::affiche_resultat "$caption(samp,reception_spectrum) $name ($url)\n"
       # Extrait le chemin pour charger le spectre a partir des infos fournies
       set paths {}
@@ -472,7 +472,7 @@ proc ::Samp::build { nsp } {
       # Mise a jour du statut du menu
       ::vo_tools::handleBroadcastBtnState
    }
-   
+
    # Samp msg coord.pointAt.sky
    proc ${nsp}::h_coord.pointAt.sky {args} {
       global caption
@@ -494,16 +494,16 @@ proc ::Samp::build { nsp } {
       ::console::disp "$caption(samp,tcpport) $port \n"
       set msg [m_setXmlrpcCallback $key "http://127.0.0.1:$port/"]
       set msg [m_declareSubscriptions $key { samp.app.ping {}
-                                              samp.hub.event.register {} 
+                                              samp.hub.event.register {}
                                               samp.hub.event.shutdown {}
-                                              samp.hub.event.unregister {} 
-                                              samp.hub.event.metadata {} 
+                                              samp.hub.event.unregister {}
+                                              samp.hub.event.metadata {}
                                               samp.hub.disconnect {}
                                               coord.pointAt.sky {}
-                                              image.load.fits {} 
+                                              image.load.fits {}
                                               table.load.votable {}
                                               spectrum.load.ssa-generic {}
-                                              table.highlight.row {} 
+                                              table.highlight.row {}
                                               table.select.rowList {} }]
       set [namespace current]::initialized 1
    }
@@ -695,3 +695,4 @@ proc ::Samp::convertEntities { chunk } {
    regsub -all {~}  $chunk {%7E} chunk
    return $chunk
 }
+

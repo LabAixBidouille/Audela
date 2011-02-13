@@ -2,7 +2,7 @@
 # Fichier : vo_tools_go.tcl
 # Description : Outil d'appel des fonctionnalites de l'observatoire virtuel
 # Auteur : Robert DELMAS
-# Mise à jour $Id: vo_tools_go.tcl,v 1.23 2010-10-24 17:49:06 jberthier Exp $
+# Mise à jour $Id: vo_tools_go.tcl,v 1.24 2011-02-13 22:52:00 robertdelmas Exp $
 #
 
 #============================================================
@@ -252,7 +252,7 @@ proc ::vo_tools::handleBroadcastBtnState { args } {
    set stateImg "disabled"
    set stateTab "disabled"
    set stateSpe "disabled"
-   
+
    # Determine l'etat
    if { $args ne "disabled" } {
       if {[::Samp::isConnected]} {
@@ -342,7 +342,7 @@ proc ::vo_tools::SampDisconnect {} {
 #------------------------------------------------------------
 proc ::vo_tools::LoadVotable { } {
    global audace caption
-   
+
    # Verifie qu'une image est presente dans le canvas
    set image [::confVisu::getFileName $::audace(visuNo)]
    if { [file exists $image] == 0 } {
@@ -480,7 +480,7 @@ proc ::vo_tools::InstallMenuInterop { frame } {
    Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_disconnect) ::vo_tools::SampDisconnect
    Menu_Separator $visuNo "Interop"
    Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_loadvotable) ::vo_tools::LoadVotable
-   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_cleardisplay) ::vo_tools::ClearDisplay 
+   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_cleardisplay) ::vo_tools::ClearDisplay
    Menu_Separator $visuNo "Interop"
    Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_broadcastImg) ::vo_tools::SampBroadcastImage
    Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_broadcastSpe) ::vo_tools::SampBroadcastSpectrum
@@ -489,7 +489,7 @@ proc ::vo_tools::InstallMenuInterop { frame } {
    Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_help) ::vo_tools::helpInterop
    #--- Mise a jour dynamique des couleurs et fontes
    ::confColor::applyColor [MenuGet $visuNo "Interop"]
-   # Destruction du bouton Interop du panneau VO 
+   # Destruction du bouton Interop du panneau VO
    destroy $frame
    # Tentative de connexion au hub Samp
    ::vo_tools::SampConnect
@@ -500,3 +500,4 @@ proc ::vo_tools::InstallMenuInterop { frame } {
    ::confVisu::addFileNameListener $visuNo "::vo_tools::ClearDisplay"
 
 }
+

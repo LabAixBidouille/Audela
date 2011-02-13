@@ -2,14 +2,14 @@
 # Fichier : votableUtil.tcl
 # Description : Outil de manipulation des VOTable (http://www.ivoa.net/Documents/latest/VOT.html)
 #
-# Sequence de test: 
+# Sequence de test:
 #    source /usr/local/src/audela/gui/audace/plugin/tool/vo_tools/votableUtil.tcl
 #    loadima "/surfer/Observations/telescopes/Tarot/IM_20091127_044139448_230749_59096501.fits.gz"
 #    ::votableUtil::loadVotable "/surfer/Observations/telescopes/Tarot/IM_20091127_044139448_230749_59096501_fov2.xml"
 #    ::votableUtil::displayVotable [::votableUtil::votable2list]
 #
 # Auteur : Jerome BERTHIER
-# Mise à jour $Id: votableUtil.tcl,v 1.1 2010-10-24 17:49:06 jberthier Exp $
+# Mise à jour $Id: votableUtil.tcl,v 1.2 2011-02-13 22:51:03 robertdelmas Exp $
 #
 
 namespace eval ::votableUtil {
@@ -36,7 +36,7 @@ namespace eval ::votableUtil {
    variable votBuf
 
    #
-   # @var array tableau contenant la liste des objets celestes charges depuis la VOTable et affiches dans la visu 
+   # @var array tableau contenant la liste des objets celestes charges depuis la VOTable et affiches dans la visu
    variable astroObject
 
    #
@@ -75,13 +75,13 @@ namespace eval ::votableUtil {
 #
 # Chargement de la VOTable:
 #   Si filename == "" ou "?" alors la VOTable est chargee a partir d'un fichier selectionne via une fenetre de selection
-#   Si filename == <string> alors la VOTable est chargee a partir du fichier fourni. 
+#   Si filename == <string> alors la VOTable est chargee a partir du fichier fourni.
 #   Si le nom du fichier est relatif alors le fichier est recherche dans le repertoire audace(rep_image)
 #
 proc ::votableUtil::loadVotable { { filename "?" } { visuNo 1 } } {
    global audace visu conf
 
-   # Recupere le buffer de la visu donnee (1 par defaut) 
+   # Recupere le buffer de la visu donnee (1 par defaut)
    set bufNo [ visu$visuNo buf ]
    # Recupere de l'extension par defaut
    buf$bufNo extension ".xml"
@@ -107,7 +107,7 @@ proc ::votableUtil::loadVotable { { filename "?" } { visuNo 1 } } {
       set fl [open $filename]
       ::votableUtil::setVotable $filename [read $fl]
       close $fl
-      return 1 
+      return 1
    }
    return 0
 }
@@ -130,7 +130,7 @@ proc ::votableUtil::getVotable {} {
 }
 
 #
-# Retourne le nom du fichier contenant la VOTable chargee dans le buffer 
+# Retourne le nom du fichier contenant la VOTable chargee dans le buffer
 # @return string le nom du fichier contenant la VOTable
 proc ::votableUtil::getVotableFilename {} {
    return $::votableUtil::votBuf(file)
@@ -146,7 +146,7 @@ proc ::votableUtil::clearVotable {} {
 }
 
 #
-# Efface les objets affiches dans l'image courante a partir de la VOTable 
+# Efface les objets affiches dans l'image courante a partir de la VOTable
 # @return void
 proc ::votableUtil::clearDisplay { } {
    global audace
@@ -249,37 +249,37 @@ proc ::votableUtil::astroid2votable { astroIdList } {
 # Charge les objets (astronomiques) contenus dans la VOTable chargee en memoire (::votableUtil::votBuf)
 # dans une liste contenant toutes les informations fournies par la VOTable sous la forme :
 #   {resource { {tableName tableDesc} {fieldName} {fieldUCD} {{row_1} {row_2} {row_3} {...}} } {table_suivante} {...} }
-# Les objets astronomiques sont definis par leurs coordonnees sur la sphere celeste fournies 
-# par les champs de la VOTable ayant pour UCD 'pos.eq.ra;meta.main' et 'pos.eq.dec;meta.main'. 
+# Les objets astronomiques sont definis par leurs coordonnees sur la sphere celeste fournies
+# par les champs de la VOTable ayant pour UCD 'pos.eq.ra;meta.main' et 'pos.eq.dec;meta.main'.
 #
 # Exemple:
 #   { I/239 {The Hipparcos and Tycho Catalogues (ESA 1997)} }
 #   {
 #     { I/239/hip_main {The Hipparcos Main Catalogue\vizContent{timeSerie}} }
-#     { HIP RAhms DEdms Vmag RA(ICRS) DE(ICRS) Plx pmRA pmDE e_Plx B-V Notes } 
+#     { HIP RAhms DEdms Vmag RA(ICRS) DE(ICRS) Plx pmRA pmDE e_Plx B-V Notes }
 #     { {meta.id;meta.main} {pos.eq.ra;meta.main} {pos.eq.dec;meta.main} {phot.mag;em.opt.V} pos.eq.ra pos.eq.dec pos.parallax.trig {pos.pm;pos.eq.ra} {pos.pm;pos.eq.dec} stat.error {phot.color;em.opt.B;em.opt.V} meta.note }
-#     { 1 2 } 
+#     { 1 2 }
 #     {
-#      {33545 {06 58 17.52} {+03 53 44.9} 7.05 104.57301302 3.89580223 3.08 -0.22 -4.59 0.96 1.340 { }} 
-#      {33603 {06 58 57.03} {+03 36 08.5} 5.96 104.73761182 3.60236429 3.52 -3.59 -3.65 0.87 1.056 { }} 
+#      {33545 {06 58 17.52} {+03 53 44.9} 7.05 104.57301302 3.89580223 3.08 -0.22 -4.59 0.96 1.340 { }}
+#      {33603 {06 58 57.03} {+03 36 08.5} 5.96 104.73761182 3.60236429 3.52 -3.59 -3.65 0.87 1.056 { }}
 #      {33689 {06 59 57.23} {+04 04 59.7} 7.79 104.98845210 4.08324024 3.55 40.84 -42.40 1.04 1.079 { }}
 #      ...
 #     }
-#   } 
+#   }
 #   {
-#     {I/239/tyc_main {The main part of Tycho Catalogue\vizContent{timeSerie}}} 
-#     {TYC RAhms DEdms Vmag RA(ICRS) DE(ICRS) BTmag VTmag B-V} 
-#     { {meta.id;meta.main} {pos.eq.ra;meta.main} {pos.eq.dec;meta.main} {phot.mag;em.opt.V} pos.eq.ra pos.eq.dec {phot.mag;em.opt.B} {phot.mag;em.opt.V} {phot.color;em.opt.B;em.opt.V} } 
+#     {I/239/tyc_main {The main part of Tycho Catalogue\vizContent{timeSerie}}}
+#     {TYC RAhms DEdms Vmag RA(ICRS) DE(ICRS) BTmag VTmag B-V}
+#     { {meta.id;meta.main} {pos.eq.ra;meta.main} {pos.eq.dec;meta.main} {phot.mag;em.opt.V} pos.eq.ra pos.eq.dec {phot.mag;em.opt.B} {phot.mag;em.opt.V} {phot.color;em.opt.B;em.opt.V} }
 #     { 1 2 }
 #     {
 #      {{ 157  1054 1} {06 58 07.82} {+03 53 38.8} 10.27 104.53257884 3.89410933 10.712 10.310 0.376}
-#      {{ 157  2266 1} {06 58 17.52} {+03 53 44.9} 7.02 104.57301266 3.89580356 8.769 7.170 1.340} 
+#      {{ 157  2266 1} {06 58 17.52} {+03 53 44.9} 7.02 104.57301266 3.89580356 8.769 7.170 1.340}
 #      {{ 157   900 1} {06 58 40.50} {+04 14 53.1} 10.35 104.66873787 4.24807664 10.913 10.405 0.477}
 #      ...
 #     }
 #   }
 #
-# Test: 
+# Test:
 #  ::votableUtil::loadVotable "/surfer/Observations/telescopes/Tarot/IM_20091127_044139448_230749_59096501_fov.xml"
 #  ::votableUtil::votable2list
 #
@@ -305,7 +305,7 @@ proc ::votableUtil::votable2list { } {
    set resourceName [::dom::node stringValue [::dom::selectNode $votable {descendant::RESOURCE/attribute::name}]]
    set resourceDesc [::dom::node stringValue [::dom::selectNode $votable {descendant::RESOURCE/DESCRIPTION/text()}]]
    lappend resource [list $resourceName $resourceDesc]
-   
+
    #-- Lecture des tables contenues dans la VOTable
    set idx 0
    foreach table [::dom::selectNode $votable {descendant::TABLE}] {
@@ -319,7 +319,7 @@ proc ::votableUtil::votable2list { } {
       if { $err != "0" } { set tableName "?" }
       set err [ catch { ::dom::node stringValue [::dom::selectNode $table {DESCRIPTION/text()}] } tableDesc ]
       if { $err != "0" } { set tableDesc "?" }
-      set tableInfo [list $tableName $tableDesc] 
+      set tableInfo [list $tableName $tableDesc]
       #-- Recupere les noms des champs
       foreach n [::dom::selectNode $table {FIELD/attribute::name}] {
          lappend name "[::dom::node stringValue $n]"
@@ -333,14 +333,14 @@ proc ::votableUtil::votable2list { } {
          set node [::dom::node stringValue $n]
          lappend ucd $node
          # determine l'index de RA
-         set comp [string equal -nocase $node "pos.eq.ra;meta.main"] 
+         set comp [string equal -nocase $node "pos.eq.ra;meta.main"]
          if {$comp == 1} { set indexRA $cpt }
-         set comp [string equal -nocase $node "pos.eq.ra"] 
+         set comp [string equal -nocase $node "pos.eq.ra"]
          if {$comp == 1 && $indexRA < 0} { set indexRA $cpt }
          # determine l'index de DEC
-         set comp [string equal -nocase $node "pos.eq.dec;meta.main"] 
+         set comp [string equal -nocase $node "pos.eq.dec;meta.main"]
          if {$comp == 1} { set indexDE $cpt }
-         set comp [string equal -nocase $node "pos.eq.dec"] 
+         set comp [string equal -nocase $node "pos.eq.dec"]
          if {$comp == 1 && $indexDE < 0} { set indexDE $cpt }
          # incremente le compteur
          incr cpt
@@ -362,7 +362,7 @@ proc ::votableUtil::votable2list { } {
          foreach td [::dom::selectNode $tr {descendant::TD/text()}] {
             set node [::dom::node stringValue $td]
             lappend row $node
-            # 
+            #
          }
          lappend rows $row
       }
@@ -539,3 +539,4 @@ proc ::votableUtil::pointAtSky { RA DEC } {
       }
    }
 }
+

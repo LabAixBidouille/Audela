@@ -3,7 +3,7 @@
 # Description : Implementation du schema VOTable de l'IVOA
 #               (http://www.ivoa.net/Documents/latest/VOT.html)
 # Auteur : Jerome BERTHIER
-# Mise à jour $Id: votable.tcl,v 1.1 2010-10-24 17:49:06 jberthier Exp $
+# Mise à jour $Id: votable.tcl,v 1.2 2011-02-13 22:51:22 robertdelmas Exp $
 #
 
 namespace eval ::votable {
@@ -105,7 +105,7 @@ namespace eval ::votable {
       variable UTYPE       "utype"
       variable TYPE        "type"
    }
-   
+
    #
    # Definition des attributs de l'element TABLE
    # @link http://www.ivoa.net/Documents/latest/VOT.html
@@ -124,7 +124,7 @@ namespace eval ::votable {
       variable REF         "ref"
       variable NROWS       "nrows"
    }
-   
+
    #
    # Definition des attributs de l'element STREAM
    # @link http://www.ivoa.net/Documents/latest/VOT.html
@@ -143,7 +143,7 @@ namespace eval ::votable {
       variable EXPIRES     "expires"
       variable RIGHTS      "rights"
    }
-   
+
    #
    # Definition des attributs de l'element FITS
    # @link http://www.ivoa.net/Documents/latest/VOT.html
@@ -152,7 +152,7 @@ namespace eval ::votable {
    namespace eval Fits {
       variable EXTNUM      "extnum"
    }
-   
+
    #
    # Definition des attributs de l'element COOSYS
    # @link http://www.ivoa.net/Documents/latest/VOT.html
@@ -167,7 +167,7 @@ namespace eval ::votable {
       variable EPOCH       "epoch"
       variable SYSTEM      "system"
    }
-   
+
    #
    # Definition des attributs de l'element GROUP
    # @link http://www.ivoa.net/Documents/latest/VOT.html
@@ -184,7 +184,7 @@ namespace eval ::votable {
       variable UCD         "ucd"
       variable UTYPE       "utype"
    }
-   
+
    #
    # Definition des attributs de l'element PARAM
    # @link http://www.ivoa.net/Documents/latest/VOT.html
@@ -213,7 +213,7 @@ namespace eval ::votable {
       variable ARRAYSIZE   "arraysize"
       variable VALUE       "value"
    }
-   
+
    #
    # Definition des attributs de l'element PARAMREF
    # @link http://www.ivoa.net/Documents/latest/VOT.html
@@ -222,7 +222,7 @@ namespace eval ::votable {
    namespace eval ParamRef {
       variable REF         "ref"
    }
-   
+
    #
    # Definition des attributs de l'element FIELD
    # @link http://www.ivoa.net/Documents/latest/VOT.html
@@ -251,7 +251,7 @@ namespace eval ::votable {
       variable ARRAYSIZE   "arraysize"
       variable TYPE        "type"
    }
-   
+
    #
    # Definition des attributs de l'element FIELDREF
    # @link http://www.ivoa.net/Documents/latest/VOT.html
@@ -260,7 +260,7 @@ namespace eval ::votable {
    namespace eval FieldRef {
       variable REF         "ref"
    }
-   
+
    #
    # Definition des attributs de l'element VALUES
    # @link http://www.ivoa.net/Documents/latest/VOT.html
@@ -275,7 +275,7 @@ namespace eval ::votable {
       variable NULL        "null"
       variable REF         "ref"
    }
-   
+
    #
    # Definition des attributs de l'element INFO
    # @link http://www.ivoa.net/Documents/latest/VOT.html
@@ -288,7 +288,7 @@ namespace eval ::votable {
       variable NAME        "name"
       variable VALUE       "value"
    }
-   
+
    #
    # Definition des attributs de l'element LINK
    # @link http://www.ivoa.net/Documents/latest/VOT.html
@@ -309,7 +309,7 @@ namespace eval ::votable {
       variable HREF        "href"
       variable ACTION      "action"
    }
-   
+
    #
    # Definition des attributs de l'element MIN
    # @link http://www.ivoa.net/Documents/latest/VOT.html
@@ -320,7 +320,7 @@ namespace eval ::votable {
       variable VALUE       "value"
       variable INCLUSIVE   "inclusive"
    }
-   
+
    #
    # Definition des attributs de l'element MAX
    # @link http://www.ivoa.net/Documents/latest/VOT.html
@@ -331,7 +331,7 @@ namespace eval ::votable {
       variable VALUE       "value"
       variable INCLUSIVE   "inclusive"
    }
-   
+
    #
    # Definition des attributs de l'element OPTION
    # @link http://www.ivoa.net/Documents/latest/VOT.html
@@ -375,8 +375,8 @@ proc ::votable::init { version prefix } {
 #
 proc ::votable::openVOTable { } {
    set v [::votable::addXMLHeader]
-   if [string length $::votable::xsluri] { 
-      set v [join [list $v [::votable::addXSLSheet]] ""] 
+   if [string length $::votable::xsluri] {
+      set v [join [list $v [::votable::addXSLSheet]] ""]
    }
    set v [join [list $v [::votable::openVOTableElement]] ""]
    return $v;
@@ -412,7 +412,7 @@ proc ::votable::addXMLHeader { } {
 #
 # Declaration de l'utilisation du feuille XSL
 # @access public
-# @return string element xml-stylesheet pour l'utilisation d'une feuille XSL 
+# @return string element xml-stylesheet pour l'utilisation d'une feuille XSL
 #
 proc ::votable::addXSLSheet { } {
    return [join [list "<?xml-stylesheet href=\"" $::votable::xsluri "\" type=\"text/xsl\"?>\n"] ""]
@@ -426,7 +426,7 @@ proc ::votable::addXSLSheet { } {
 proc ::votable::openVOTableElement { } {
    set o [join [list "<" $::votable::votablePrefix "VOTABLE version=\"" $::votable::votableVersion "\""] ""]
    set o [join [list $o " xmlns:xsi=\"" $::votable::xmlSchemaNs "\""] ""]
-   if {[string length $::votable::votablePrefix] > 0} { 
+   if {[string length $::votable::votablePrefix] > 0} {
       set o [join [list $o " xmlns:" [string range $::votable::votablePrefix 0 [expr [string length $::votable::votablePrefix]-2]] "=\"" $::votable::votableSchemaNS "\""] ""]
       set o [join [list $o " xsi:schemaLocation=\"" $::votable::votableSchemaNS " " $::votable::votableSchemaFile "\""] ""]
    } else {
@@ -477,20 +477,20 @@ proc ::votable::closeResourceElement { } {
 # @return string
 #
 proc ::votable::addParamElement { attributes description values link } {
-   if {[string length $description] == 0 && 
+   if {[string length $description] == 0 &&
         [string length $values] == 0 &&
         [string length $link] == 0} {
       set p [::votable::attributesClosedElement $::votable::Element::PARAM $attributes]
    } else {
       set p [::votable::attributesUnclosedElement $::votable::Element::PARAM $attributes]
       if {[string length $description] > 0} {
-         set p [join [list $p [::votable::addElement $::votable::Element::DESCRIPTION "" $description]] ""] 
+         set p [join [list $p [::votable::addElement $::votable::Element::DESCRIPTION "" $description]] ""]
       }
       if {[string length $values] > 0} {
-         set p [join [list $p [::votable::addElement $::votable::Element::VALUES "" $values]] ""] 
+         set p [join [list $p [::votable::addElement $::votable::Element::VALUES "" $values]] ""]
       }
       if {[string length $link] > 0} {
-         set p [join [list $p [::votable::addElement $::votable::Element::LINK $link ""]] ""] 
+         set p [join [list $p [::votable::addElement $::votable::Element::LINK $link ""]] ""]
       }
       set p [join [list $p [::votable::closeElement $::votable::Element::PARAM]] ""]
    }
@@ -526,20 +526,20 @@ proc ::votable::closeTableElement { } {
 # @return string element FIELD
 #
 proc ::votable::addFieldElement { attributes description values link } {
-   if {[string length $description] == 0 && 
+   if {[string length $description] == 0 &&
         [string length $values] == 0 &&
         [string length $link] == 0} {
       set p [::votable::attributesClosedElement $::votable::Element::FIELD $attributes]
     } else {
       set p [::votable::attributesUnclosedElement $::votable::Element::FIELD $attributes]
       if {[string length $description] > 0} {
-         set p [join [list $p [::votable::addElement $::votable::Element::DESCRIPTION "" $description]] ""] 
+         set p [join [list $p [::votable::addElement $::votable::Element::DESCRIPTION "" $description]] ""]
       }
       if {[string length $values] > 0} {
          set p [join [list $p [::votable::addElement $::votable::Element::VALUES "" $values]] ""]
       }
       if {[string length $link] > 0} {
-         set p [join [list $p [::votable::addElement $::votable::Element::LINK $link ""]] ""] 
+         set p [join [list $p [::votable::addElement $::votable::Element::LINK $link ""]] ""]
       }
       set p [join [list $p [::votable::closeElement $::votable::Element::FIELD]] ""]
     }
@@ -559,25 +559,25 @@ proc ::votable::addFieldElement { attributes description values link } {
 proc ::votable::addGroupElement { attributes description fieldRef param paramRe } {
    set p [::votable::attributesUnclosedElement $::votable::Element::GROUP $attributes]
    if {[string length $description] > 0} {
-      set p [join [list $p [::votable::addElement $::votable::Element::DESCRIPTION "" $description]] ""] 
+      set p [join [list $p [::votable::addElement $::votable::Element::DESCRIPTION "" $description]] ""]
    }
    if {[string length $param] > 0} {
-      set p [join [list $p [::votable::addParamElement $param "" "" ""]] ""] 
+      set p [join [list $p [::votable::addParamElement $param "" "" ""]] ""]
    }
    foreach f $fieldRef {
       set p [join [list $p [::votable::attributesClosedElement $::votable::Element::FIELDREF [lindex $f 1]]] ""]
    }
    if {[string length $paramRef] > 0} {
-      foreach p $paramRef { 
+      foreach p $paramRef {
          set p [join [list $p [::votable::attributesClosedElement $::votable::Element::PARAMREF [lindex $p 1]]] ""]
-      } 
+      }
    }
    set p [join [list $p [::votable::closeElement $::votable::Element::GROUP]] ""]
    return $p
 }
 
 #
-# Ajout d'un element avec ou sans attribut et avec ou sans valeur  
+# Ajout d'un element avec ou sans attribut et avec ou sans valeur
 # @access public
 # @param  string  $elementName  nom de l'element (e.g. Element::<$VAR>)
 # @param  list    $attributes   liste des attributs de l'element $elementName (e.g. [list $::votable::Element::ID "idElem"])
@@ -667,3 +667,4 @@ proc ::votable::attributesUnclosedElement { elementName attributes } {
 proc ::votable::attributesClosedElement { elementName attributes } {
    return [join [list [::votable::attributes $elementName $attributes] "/>\n"] ""]
 }
+
