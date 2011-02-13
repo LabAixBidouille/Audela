@@ -562,6 +562,7 @@ void audelaInit(Tcl_Interp *interp)
    Tcl_CreateCommand(interp,"::cam::create",(Tcl_CmdProc *)CmdCreatePoolItem,(void*)cam_pool,NULL);
    Tcl_CreateCommand(interp,"::cam::list",(Tcl_CmdProc *)CmdListPoolItems,(void*)cam_pool,NULL);
    Tcl_CreateCommand(interp,"::cam::delete",(Tcl_CmdProc *)CmdDeletePoolItem,(void*)cam_pool,NULL);
+   Tcl_CreateCommand(interp,"::cam::available",(Tcl_CmdProc *)CmdAvailablePoolItem,(void*)cam_pool,NULL);
 
    // pool_tcl.cpp : Gestion de la liste des telescopes
    Tcl_CreateCommand(interp,"::tel::create",(Tcl_CmdProc *)CmdCreatePoolItem,(void*)tel_pool,NULL);
