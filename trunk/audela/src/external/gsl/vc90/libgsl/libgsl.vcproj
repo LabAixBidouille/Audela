@@ -17,139 +17,6 @@
 	</ToolFiles>
 	<Configurations>
 		<Configuration
-			Name="Debug-StaticLib|Win32"
-			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="4"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
-			CharacterSet="2"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-				CommandLine="if not exist .\..\..\gsl-1.8\config.h goto COPY_CONFIG_H&#x0D;&#x0A;&#x0D;&#x0A;fc .\..\config.h.msvc .\..\..\gsl-1.8\config.h&#x0D;&#x0A;if NOT ERRORLEVEL 1 goto EXIT_BAT&#x0D;&#x0A;&#x0D;&#x0A;:COPY_CONFIG_H&#x0D;&#x0A;if exist .\..\..\gsl-1.8\config.h del .\..\..\gsl-1.8\config.h&#x0D;&#x0A;copy .\..\config.h.msvc .\..\..\gsl-1.8\config.h&#x0D;&#x0A;goto EXIT_BAT&#x0D;&#x0A;&#x0D;&#x0A;:EXIT_BAT&#x0D;&#x0A;"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				AdditionalIncludeDirectories=".\..;.\..\.."
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_DEPRECATE"
-				MinimalRebuild="true"
-				ExceptionHandling="0"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
-				UsePrecompiledHeader="0"
-				WarningLevel="4"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="4"
-				CompileAs="1"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)\$(ProjectName)_d.lib"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
-			Name="Release-StaticLib|Win32"
-			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="4"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
-			CharacterSet="2"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-				CommandLine="if not exist .\..\..\gsl-1.8\config.h goto COPY_CONFIG_H&#x0D;&#x0A;&#x0D;&#x0A;fc .\..\config.h.msvc .\..\..\gsl-1.8\config.h&#x0D;&#x0A;if NOT ERRORLEVEL 1 goto EXIT_BAT&#x0D;&#x0A;&#x0D;&#x0A;:COPY_CONFIG_H&#x0D;&#x0A;if exist .\..\..\gsl-1.8\config.h del .\..\..\gsl-1.8\config.h&#x0D;&#x0A;copy .\..\config.h.msvc .\..\..\gsl-1.8\config.h&#x0D;&#x0A;goto EXIT_BAT&#x0D;&#x0A;&#x0D;&#x0A;:EXIT_BAT&#x0D;&#x0A;"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories=".\..;.\..\.."
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_DEPRECATE"
-				ExceptionHandling="0"
-				RuntimeLibrary="0"
-				UsePrecompiledHeader="0"
-				WarningLevel="4"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="3"
-				CompileAs="1"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)\$(ProjectName).lib"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
@@ -353,24 +220,6 @@
 					RelativePath="..\..\gsl-1.8\cdf\binomial.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\$(InputName)1.obj"
-							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\$(InputName)1.obj"
-							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -453,24 +302,6 @@
 					RelativePath="..\..\gsl-1.8\cdf\geometric.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\$(InputName)1.obj"
-							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\$(InputName)1.obj"
-							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -537,24 +368,6 @@
 					RelativePath="..\..\gsl-1.8\cdf\nbinomial.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\$(InputName)1.obj"
-							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\$(InputName)1.obj"
-							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -585,24 +398,6 @@
 					RelativePath="..\..\gsl-1.8\cdf\pascal.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\$(InputName)1.obj"
-							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\$(InputName)1.obj"
-							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -624,24 +419,6 @@
 				<File
 					RelativePath="..\..\gsl-1.8\cdf\poisson.c"
 					>
-					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\$(InputName)1.obj"
-							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\$(InputName)1.obj"
-							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-						/>
-					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
@@ -701,22 +478,6 @@
 					RelativePath="..\..\gsl-1.8\cheb\init.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)2.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)2.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -749,22 +510,6 @@
 					RelativePath="..\..\gsl-1.8\combination\file.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -784,22 +529,6 @@
 				<File
 					RelativePath="..\..\gsl-1.8\combination\init.c"
 					>
-					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
@@ -832,22 +561,6 @@
 				<File
 					RelativePath="..\..\gsl-1.8\deriv\deriv.c"
 					>
-					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
@@ -981,22 +694,6 @@
 					RelativePath="..\..\gsl-1.8\histogram\file.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)2.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)2.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -1028,22 +725,6 @@
 				<File
 					RelativePath="..\..\gsl-1.8\histogram\init.c"
 					>
-					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)3.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)3.obj"
-						/>
-					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
@@ -1245,22 +926,6 @@
 					RelativePath="..\..\gsl-1.8\interpolation\linear.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -1304,22 +969,6 @@
 				<File
 					RelativePath="..\..\gsl-1.8\linalg\exponential.c"
 					>
-					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)2.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)2.obj"
-						/>
-					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
@@ -1401,22 +1050,6 @@
 					RelativePath="..\..\gsl-1.8\matrix\copy.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -1436,22 +1069,6 @@
 				<File
 					RelativePath="..\..\gsl-1.8\matrix\file.c"
 					>
-					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)3.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)3.obj"
-						/>
-					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
@@ -1477,22 +1094,6 @@
 					RelativePath="..\..\gsl-1.8\matrix\init.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)4.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)4.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -1517,22 +1118,6 @@
 					RelativePath="..\..\gsl-1.8\matrix\minmax.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -1552,22 +1137,6 @@
 				<File
 					RelativePath="..\..\gsl-1.8\matrix\oper.c"
 					>
-					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
@@ -1593,14 +1162,6 @@
 					RelativePath="..\..\gsl-1.8\matrix\rowcol.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							GeneratePreprocessedFile="0"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -1612,14 +1173,6 @@
 				<File
 					RelativePath="..\..\gsl-1.8\matrix\submatrix.c"
 					>
-					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							GeneratePreprocessedFile="0"
-						/>
-					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
@@ -1685,22 +1238,6 @@
 					RelativePath="..\..\gsl-1.8\multifit\convergence.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -1728,22 +1265,6 @@
 				<File
 					RelativePath="..\..\gsl-1.8\multifit\fsolver.c"
 					>
-					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
@@ -1793,22 +1314,6 @@
 					RelativePath="..\..\gsl-1.8\multimin\convergence.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)2.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)2.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -1828,22 +1333,6 @@
 				<File
 					RelativePath="..\..\gsl-1.8\multimin\diff.c"
 					>
-					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
@@ -1893,22 +1382,6 @@
 					RelativePath="..\..\gsl-1.8\multiroots\convergence.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)3.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)3.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -1933,22 +1406,6 @@
 					RelativePath="..\..\gsl-1.8\multiroots\fdfsolver.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -1972,22 +1429,6 @@
 				<File
 					RelativePath="..\..\gsl-1.8\multiroots\fsolver.c"
 					>
-					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)2.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)2.obj"
-						/>
-					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
@@ -2109,22 +1550,6 @@
 					RelativePath="..\..\gsl-1.8\permutation\file.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)5.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)5.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -2144,22 +1569,6 @@
 				<File
 					RelativePath="..\..\gsl-1.8\permutation\init.c"
 					>
-					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)6.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)6.obj"
-						/>
-					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
@@ -2196,22 +1605,6 @@
 				<File
 					RelativePath="..\..\gsl-1.8\poly\eval.c"
 					>
-					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
@@ -2281,22 +1674,6 @@
 					RelativePath="..\..\gsl-1.8\randist\beta.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)2.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)2.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -2329,22 +1706,6 @@
 					RelativePath="..\..\gsl-1.8\randist\cauchy.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -2364,22 +1725,6 @@
 				<File
 					RelativePath="..\..\gsl-1.8\randist\chisq.c"
 					>
-					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
@@ -2413,22 +1758,6 @@
 					RelativePath="..\..\gsl-1.8\randist\exponential.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -2448,22 +1777,6 @@
 				<File
 					RelativePath="..\..\gsl-1.8\randist\exppow.c"
 					>
-					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
@@ -2485,22 +1798,6 @@
 					RelativePath="..\..\gsl-1.8\randist\fdist.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -2520,22 +1817,6 @@
 				<File
 					RelativePath="..\..\gsl-1.8\randist\flat.c"
 					>
-					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
@@ -2557,22 +1838,6 @@
 					RelativePath="..\..\gsl-1.8\randist\gamma.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)2.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)2.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -2592,22 +1857,6 @@
 				<File
 					RelativePath="..\..\gsl-1.8\randist\gauss.c"
 					>
-					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
@@ -2645,22 +1894,6 @@
 					RelativePath="..\..\gsl-1.8\randist\hyperg.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -2684,22 +1917,6 @@
 				<File
 					RelativePath="..\..\gsl-1.8\randist\laplace.c"
 					>
-					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
@@ -2729,22 +1946,6 @@
 					RelativePath="..\..\gsl-1.8\randist\logistic.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -2764,22 +1965,6 @@
 				<File
 					RelativePath="..\..\gsl-1.8\randist\lognormal.c"
 					>
-					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
@@ -2809,22 +1994,6 @@
 					RelativePath="..\..\gsl-1.8\randist\pareto.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -2852,22 +2021,6 @@
 				<File
 					RelativePath="..\..\gsl-1.8\randist\rayleigh.c"
 					>
-					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
@@ -2897,22 +2050,6 @@
 					RelativePath="..\..\gsl-1.8\randist\tdist.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -2932,22 +2069,6 @@
 				<File
 					RelativePath="..\..\gsl-1.8\randist\weibull.c"
 					>
-					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
@@ -2988,22 +2109,6 @@
 				<File
 					RelativePath="..\..\gsl-1.8\rng\file.c"
 					>
-					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)6.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)6.obj"
-						/>
-					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
@@ -3177,22 +2282,6 @@
 					RelativePath="..\..\gsl-1.8\roots\brent.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -3212,22 +2301,6 @@
 				<File
 					RelativePath="..\..\gsl-1.8\roots\convergence.c"
 					>
-					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)4.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)4.obj"
-						/>
-					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
@@ -3253,22 +2326,6 @@
 					RelativePath="..\..\gsl-1.8\roots\fdfsolver.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)2.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)2.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -3289,22 +2346,6 @@
 					RelativePath="..\..\gsl-1.8\roots\fsolver.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)3.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)3.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -3324,22 +2365,6 @@
 				<File
 					RelativePath="..\..\gsl-1.8\roots\newton.c"
 					>
-					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
@@ -3380,22 +2405,6 @@
 				<File
 					RelativePath="..\..\gsl-1.8\sort\sort.c"
 					>
-					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
@@ -3561,22 +2570,6 @@
 					RelativePath="..\..\gsl-1.8\specfunc\beta.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -3660,22 +2653,6 @@
 				<File
 					RelativePath="..\..\gsl-1.8\specfunc\gamma.c"
 					>
-					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
@@ -3761,22 +2738,6 @@
 					RelativePath="..\..\gsl-1.8\specfunc\pow_int.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -3856,22 +2817,6 @@
 				<File
 					RelativePath="..\..\gsl-1.8\statistics\minmax.c"
 					>
-					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)3.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)3.obj"
-						/>
-					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
@@ -3993,22 +2938,6 @@
 					RelativePath="..\..\gsl-1.8\sys\minmax.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="GSL_BUILD_LIB"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							PreprocessorDefinitions="GSL_BUILD_LIB"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -4057,22 +2986,6 @@
 					RelativePath="..\..\gsl-1.8\vector\copy.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)2.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)2.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -4092,22 +3005,6 @@
 				<File
 					RelativePath="..\..\gsl-1.8\vector\file.c"
 					>
-					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)4.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)4.obj"
-						/>
-					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
@@ -4129,22 +3026,6 @@
 					RelativePath="..\..\gsl-1.8\vector\init.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)5.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)5.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -4164,22 +3045,6 @@
 				<File
 					RelativePath="..\..\gsl-1.8\vector\minmax.c"
 					>
-					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)2.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)2.obj"
-						/>
-					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
@@ -4201,22 +3066,6 @@
 					RelativePath="..\..\gsl-1.8\vector\oper.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)2.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)2.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -4236,22 +3085,6 @@
 				<File
 					RelativePath="..\..\gsl-1.8\vector\prop.c"
 					>
-					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
@@ -4281,22 +3114,6 @@
 					RelativePath="..\..\gsl-1.8\vector\swap.c"
 					>
 					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
@@ -4320,22 +3137,6 @@
 				<File
 					RelativePath="..\..\gsl-1.8\vector\view.c"
 					>
-					<FileConfiguration
-						Name="Debug-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release-StaticLib|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
