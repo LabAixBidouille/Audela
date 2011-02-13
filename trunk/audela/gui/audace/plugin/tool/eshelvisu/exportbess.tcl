@@ -2,7 +2,7 @@
 # Fichier : exportbess.tcl
 # Description : Export de fichier au format BeSS
 # Auteurs : Michel Pujol
-# Mise a jour $Id: exportbess.tcl,v 1.3 2010-12-10 22:49:37 michelpujol Exp $
+# Mise a jour $Id: exportbess.tcl,v 1.4 2011-02-13 16:08:42 michelpujol Exp $
 #
 
 ################################################################
@@ -22,6 +22,7 @@ namespace eval ::eshel::exportbess {
 
 }
 
+
    # OBJNAME
    # DATE-OBS
    # DATE-END
@@ -33,6 +34,7 @@ namespace eval ::eshel::exportbess {
    # BSS_ORD
    # BSS_VHEL
    # BSS_NORM
+   # EXPOSURE
 
    # NAXIS
    # NAXIS1
@@ -59,15 +61,18 @@ proc ::eshel::exportbess::run { visuNo inputFileName keywordHduIndex} {
 
    #--- Creation des variables si elles n'existaient pas
    if { ! [ info exists ::conf(eshel,exportbess,position) ] } { set ::conf(eshel,exportbess,position)     "420x440+100+15" }
-   if { ! [ info exists ::conf(eshel,exportbess,exportOrder) ] } { set ::conf(eshel,exportbess,exportOrder)  "P_1C_*" }
-   if { ! [ info exists ::conf(eshel,exportbess,zippedOutput) ] } { set ::conf(eshel,exportbess,zippedOutput)  1 }
+   ###if { ! [ info exists ::conf(eshel,exportbess,exportOrder) ] } { set ::conf(eshel,exportbess,exportOrder)  "P_1C_*" }
+   if { ! [ info exists ::conf(eshel,exportbess,zippedOutput) ] } { set ::conf(eshel,exportbess,zippedOutput)  0 }
    if { ! [ info exists ::conf(eshel,exportbess,outputDirectory) ] } { set ::conf(eshel,exportbess,outputDirectory)  $::audace(rep_images) }
    if { ! [ info exists ::conf(eshel,exportbess,outputBitpix) ] }    { set ::conf(eshel,exportbess,outputBitpix)  -32 }
 
-   set private(keywordNamesList) "OBJNAME BSS_RA BSS_DEC DATE-OBS DATE-END BSS_SITE BSS_INST DETNAM INSTRUME TELESCOP BSS_VHEL BSS_TELL BSS_NORM BSS_COSM OBSERVER"
+   set private(keywordNamesList) "OBJNAME BSS_RA BSS_DEC DATE-OBS DATE-END EXPOSURE BSS_SITE BSS_INST TELESCOP INSTRUME DETNAM BSS_VHEL BSS_TELL BSS_NORM BSS_COSM OBSERVER"
    set private(mandatoryList)    "OBJNAME DATE-OBS DATE-END BSS_SITE DETNAM INSTRUME TELESCOP BSS_VHEL OBSERVER"
    set private($visuNo,closeWindow)   1
    set private($visuNo,inputFileName) $inputFileName
+
+   #--- le zip des fichiers n'est pas implémenté pour l'instant
+   set ::conf(eshel,exportbess,zippedOutput) 0
 
    #--- je charge les mots clefs et le profil du fichier (
    set catchResult [catch {
@@ -117,7 +122,7 @@ proc ::eshel::exportbess::apply { visuNo } {
    variable private
    variable widget
 
-   set ::conf(eshel,exportbess,exportOrder)     $widget($visuNo,exportOrder)
+   ##set ::conf(eshel,exportbess,exportOrder)     $widget($visuNo,exportOrder)
    set ::conf(eshel,exportbess,zippedOutput)    $widget($visuNo,zippedOutput)
    set private($visuNo,outputFileName)          $widget($visuNo,outputFileName)
    set ::conf(eshel,exportbess,outputDirectory) [file normalize $widget($visuNo,outputDirectory)]
@@ -190,7 +195,7 @@ proc ::eshel::exportbess::fillConfigPage { frm visuNo } {
 
    set private($visuNo,frm) $frm
    #--- je copie les valeurs dans les variables temporaires
-   set widget($visuNo,exportOrder)   $::conf(eshel,exportbess,exportOrder)
+   ###set widget($visuNo,exportOrder)   $::conf(eshel,exportbess,exportOrder)
    set widget($visuNo,zippedOutput)    $::conf(eshel,exportbess,zippedOutput)
    set widget($visuNo,outputDirectory) [file nativename $::conf(eshel,exportbess,outputDirectory)]
 
@@ -240,13 +245,14 @@ proc ::eshel::exportbess::fillConfigPage { frm visuNo } {
    TitleFrame $frm.file  -borderwidth 2 -relief ridge -text $::caption(eshelvisu,exportBess,outputFile)
 
       Label $frm.file.orderLabel -text $::caption(eshelvisu,exportBess,outputProfile)
-      set list_combobox { "P_1C_*" "P_1C_FULL" }
-      ComboBox $frm.file.exportOrder \
-         -width 10  -height [ llength $list_combobox ] \
-         -relief sunken -borderwidth 1 -editable 1 \
-         -textvariable ::eshel::exportbess::widget($visuNo,exportOrder) \
-         -modifycmd "::eshel::exportbess::onSelectExportedOrder $visuNo" \
-         -values $list_combobox
+      ###set list_combobox { "P_1C_*" "P_1C_FULL" }
+      ###ComboBox $frm.file.exportOrder \
+      ###   -width 10  -height [ llength $list_combobox ] \
+      ###   -relief sunken -borderwidth 1 -editable 1 \
+      ###   -textvariable ::eshel::exportbess::widget($visuNo,exportOrder) \
+      ###   -modifycmd "::eshel::exportbess::onSelectExportedOrder $visuNo" \
+      ###   -values $list_combobox
+      Label $frm.file.exportOrder -text "P_1C_*"
 
       checkbutton $frm.file.zippedOutput -text $::caption(eshelvisu,exportBess,zippedOuput) \
          -variable ::eshel::exportbess::widget($visuNo,zippedOutput) \
@@ -322,7 +328,7 @@ proc ::eshel::exportbess::onSelectExportedOrder { visuNo } {
    variable widget
 
    set rootName [file rootname [file tail $private($visuNo,inputFileName)]]
-   set widget($visuNo,outputFileName) "${rootName}--$widget($visuNo,exportOrder).fit"
+   set widget($visuNo,outputFileName) "${rootName}--P_1C_*.fit"
    $private($visuNo,frm).file.zippedOutput configure -state disabled
    $private($visuNo,frm).file.nameEntry    configure -state disabled
 }
@@ -440,11 +446,11 @@ proc ::eshel::exportbess::loadFile { visuNo inputFileName keywordHduIndex } {
          set private($visuNo,value,DATE-END) "yyyy-mm-ddThh:mm:ss.ss"
       }
 
-      ###if { [catch {getKeyword $hFile "EXPOSURE"} value] == 0 } {
-      ###   set private($visuNo,value,EXPOSURE) $value
-      ###} else {
-      ###   set private($visuNo,value,EXPOSURE) ""
-      ###}
+      if { [catch {getKeyword $hFile "EXPOSURE"} value] == 0 } {
+         set private($visuNo,value,EXPOSURE) $value
+      } else {
+         set private($visuNo,value,EXPOSURE) ""
+      }
 
       if { [catch {getKeyword $hFile "SITENAME"} value] == 0 } {
          set private($visuNo,value,BSS_SITE) $value
@@ -671,14 +677,14 @@ proc ::eshel::exportbess::saveFile { visuNo } {
          append badKeywords "DATE-END: [format $::caption(eshelvisu,exportBess,keywordBadDate) $private($visuNo,value,DATE-END)]\n"
       }
 
-   ####--- controle EXPOSURE
-   ####---    Verifier le longueur du champ
-   ####---    Verifier que c'est un reel
-   ###if { [string length $private($visuNo,value,EXPOSURE)] < 1 } {
-   ###   append badKeywords ". [format $::caption(eshelvisu,exportBess,keywordEmpty) $::caption(eshelvisu,exportBess,label,EXPOSURE)]\n"
-   ###} elseif { [string is double $private($visuNo,value,EXPOSURE)] == 0  } {
-   ###   append badKeywords ". $::caption(eshelvisu,exportBess,label,EXPOSURE) is not decimal value\n"
-   ###}
+   #--- controle EXPOSURE
+   #---    Verifier le longueur du champ
+   #---    Verifier que c'est un reel
+   if { [string length $private($visuNo,value,EXPOSURE)] < 1 } {
+      append badKeywords ". [format $::caption(eshelvisu,exportBess,keywordEmpty) $::caption(eshelvisu,exportBess,label,EXPOSURE)]\n"
+   } elseif { [string is double $private($visuNo,value,EXPOSURE)] == 0  } {
+      append badKeywords ". $::caption(eshelvisu,exportBess,label,EXPOSURE) is not decimal value\n"
+   }
 
    #--- controle BSS_SITE
    #---    Verifier le longueur du champ
@@ -754,17 +760,8 @@ proc ::eshel::exportbess::saveFile { visuNo } {
          #--- je pointe le premier HDU
          $hFile move $hduNo
          if { [catch {getKeyword $hFile "EXTNAME"} hduName] == 0 } {
-            switch $::conf(eshel,exportbess,exportOrder) {
-               "P_1C_*" {
-                  if { [scan $hduName "P_1C_%d" orderNo]  == 1 } {
-                     lappend hduList $hduNo $hduName
-                  }
-               }
-               "P_1C_FULL" {
-                  if { $hduName == "P_1C_FULL" } {
-                     lappend hduList $hduNo $hduName
-                  }
-               }
+            if { [scan $hduName "P_1C_%d" orderNo]  == 1 } {
+               lappend hduList $hduNo $hduName
             }
          }
          incr hduNo
@@ -835,7 +832,7 @@ proc ::eshel::exportbess::saveFile { visuNo } {
          $hBess put keyword "OBJNAME  '$private($visuNo,value,OBJNAME)'  Object name "
          $hBess put keyword "DATE-OBS '$private($visuNo,value,DATE-OBS)' \[Iso 8601\] Start of exposure. FITS standard"
          $hBess put keyword "DATE-END '$private($visuNo,value,DATE-END)' \[Iso 8601\] Start of exposure. FITS standard"
-         ###$hBess put keyword "EXPOSURE  $private($visuNo,value,EXPOSURE)  \[s\] Total time of exposure"
+         $hBess put keyword "EXPOSURE  $private($visuNo,value,EXPOSURE)  \[s\] Total time of exposure"
          $hBess put keyword "BSS_SITE '$private($visuNo,value,BSS_SITE)' Site name"
          $hBess put keyword "DETNAM   '$private($visuNo,value,DETNAM)'   Camera name"
          $hBess put keyword "INSTRUME '$private($visuNo,value,INSTRUME)' Spectrograph name"
@@ -845,10 +842,9 @@ proc ::eshel::exportbess::saveFile { visuNo } {
          $hBess put keyword "BSS_NORM '$private($visuNo,value,BSS_NORM)' Continuum normalisation"
          $hBess put keyword "OBSERVER '$private($visuNo,value,OBSERVER)' Observer names"
 
-         if { [string compare -length 5 $hduName "P_1C_"] == 0 } {
-            set genericName "${rootName}-P_1C_"
-            $hBess put keyword "BSS_ORD '$genericName' generic file name"
-         }
+         #--- j'ajoute le mot cle BSS_ORD
+         set genericName "${rootName}-P_1C_"
+         $hBess put keyword "BSS_ORD '$genericName' generic file name"
 
          if { [string length $private($visuNo,value,BSS_INST) ] > 0 } {
             $hBess put keyword "BSS_INST '$private($visuNo,value,BSS_INST)' configuration name"
