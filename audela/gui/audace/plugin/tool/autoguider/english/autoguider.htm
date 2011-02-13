@@ -1,248 +1,274 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=windows-1252">
-	<TITLE>Autoguidage</TITLE>
-	<META NAME="GENERATOR" CONTENT="OpenOffice.org 3.2  (Win32)">
-	<META NAME="CREATED" CONTENT="0;0">
-	<META NAME="CHANGEDBY" CONTENT="Olivier Thizy">
-	<META NAME="CHANGED" CONTENT="20110203;13074300">
-	<META NAME="CHANGEDBY" CONTENT="Olivier Thizy">
-	<META NAME="CHANGEDBY" CONTENT="Olivier Thizy">
-	<STYLE TYPE="text/css">
+<html>
+<head>
+  <meta http-equiv="CONTENT-TYPE"
+ content="text/html; charset=windows-1252">
+  <title>Autoguidage</title>
+  <meta name="GENERATOR" content="OpenOffice.org 3.2  (Win32)">
+  <meta name="CREATED" content="0;0">
+  <meta name="CHANGEDBY" content="Olivier Thizy">
+  <meta name="CHANGED" content="20110203;13074300">
+  <meta name="CHANGEDBY" content="Olivier Thizy">
+  <meta name="CHANGEDBY" content="Olivier Thizy">
+  <style type="text/css">
 	<!--
 		H2.cjk { font-family: "SimSun" }
 	-->
-	</STYLE>
-</HEAD>
-<BODY LANG="fr-FR" DIR="LTR">
-<P>Updated : 3 february 2011</P>
-<H1><A NAME="mozTocId37595"></A>Autoguiding</H1>
-<P>Autoguiding tool allow to automatically guide from a continuous
+	</style>
+</head>
+<body dir="LTR" lang="fr-FR">
+<p>Updated : 13 February 2011</p>
+<h1>Autoguiding</h1>
+<p>Autoguiding tool allow to automatically guide from a continuous
 guiding camera flow on a star kept at the same location by adjusting
 the mount position. This will ensure better sleep or nice breaks
-during very long exposures!</P>
-<P>Guiding camera can be any camera supported by AudeLA: webcam, long
+during very long exposures!</p>
+<p>Guiding camera can be any camera supported by AudeLA: webcam, long
 exposure webcam, grabber (ex: Watec video camera through USB
-grabber), Audine, SBIG, ASCOM driven camera&hellip;.</P>
-<P>Your mount can be any mount supported by AudeLA with slow guiding
+grabber), Audine, SBIG, ASCOM driven camera…</p>
+<p>Your mount can be any mount supported by AudeLA with slow guiding
 movements: LX200, SkySensor, Gemini, Ite-lente, Mel Bartels,
-Celestron, Temma, Ouranos, AudeCom, Ascom driver...</P>
-<P><A HREF="#start">Starting</A></P>
-<P><A HREF="#param_principal">Setting up acquisition parameters</A> 
-</P>
-<P><A HREF="#configure">Configuring autoguiding</A></P>
-<BLOCKQUOTE><A HREF="#autoguidage_etoile">a) Autoguiding on star</A></BLOCKQUOTE>
-<BLOCKQUOTE><A HREF="#autoguidage_fente">b) Autoguiding on
-spectrograph slit</A></BLOCKQUOTE>
-<BLOCKQUOTE><A HREF="#apprentissage">c) Learning (optional)</A></BLOCKQUOTE>
-<BLOCKQUOTE><A HREF="#pre-traitement">d) Image preprocessing
-(optional)</A></BLOCKQUOTE>
-<P><A HREF="#demarrage">Running autoguiding</A></P>
-<P><A HREF="#correction">Corrections during autoguiding</A></P>
-<P><A HREF="#recommandation">Tips &amp; Tricks</A></P>
-<P>&nbsp;</P>
-<H1>Starting</H1>
-<UL>
-	<LI><P STYLE="margin-bottom: 0cm">Select a camera and a mount in
-	menu <B>Setup &gt;Camera</B> (or Camera &gt; Connection) and <B>Setup
-	&gt; Mount</B> (or Telescope &gt; Connection) in AudeLA. 
-	</P>
-	<LI><P>Select menu <B>Telescope &gt; Autoguiding</B></P>
-</UL>
-<P>Note: you can use a second camera for autoguiding and open a
+Celestron, Temma, Ouranos, AudeCom, Ascom driver...</p>
+<p><a href="#start">Starting</a></p>
+<p><a href="#param_principal">Setting up acquisition parameters</a> </p>
+<p><a href="#configure">Configuring autoguiding</a></p>
+<blockquote><a href="#autoguidage_etoile">a) Autoguiding on star</a></blockquote>
+<blockquote><a href="#autoguidage_fente">b) Autoguiding on
+spectrograph slit</a></blockquote>
+<blockquote><a href="#apprentissage">c) Learning (optional)</a></blockquote>
+<blockquote><a href="#pre-traitement">d) Image preprocessing
+(optional)</a></blockquote>
+<p><a href="#demarrage">Running autoguiding</a></p>
+<p><a href="#correction">Corrections during autoguiding</a></p>
+<p><a href="#recommandation">Tips &amp; Tricks</a></p>
+<p>&nbsp;</p>
+<h1><a name="start"></a>Starting</h1>
+<ul>
+  <li>
+    <p style="margin-bottom: 0cm;">Select a camera and a mount in menu <b>Setup
+&gt;Camera</b> (or Camera &gt; Connection) and <b>Setup &gt; Mount</b>
+(or Telescope &gt; Connection) in AudeLA. </p>
+  </li>
+  <li>
+    <p>Select menu <b>Telescope &gt; Autoguiding</b></p>
+  </li>
+</ul>
+<p>Note: you can use a second camera for autoguiding and open a
 second Visu (Visu2) to keep Visu1 for the main acquisition. If you
 select the Autoguiding tool in that second Visu, it will reopen
-automatically next time you connect your guiding camera.</P>
-<H1>Setting up acquisition parameters</H1>
-<P>Acquisition parameters are displayed on the main screen of the
-autoguiding tool:</P>
-<P ALIGN=CENTER><IMG SRC="mainframe.png" NAME="images1" ALIGN=BOTTOM WIDTH=636 HEIGHT=449 BORDER=0>
-</P>
-<P ALIGN=CENTER>Exemple of guiding on double star (Castor).</P>
-<P>&nbsp;</P>
-<P><B>Exp.</B><SPAN STYLE="font-weight: normal">: exposure time in
-seconds</SPAN>.</P>
-<P><B>Interval</B> : Waiting time between exposures; use 0.5 to begin
-with (see Tips &amp; Tricks).</P>
-<P><B>Consign</B> : Target position for the guiding star; this is
+automatically next time you connect your guiding camera.</p>
+<h1><a name="param_principal"></a>Setting up acquisition parameters</h1>
+<p>Acquisition parameters are displayed on the main screen of the
+autoguiding tool:</p>
+<p align="CENTER"><img src="mainframe.png" name="images1" align="BOTTOM"
+ border="0" width="636" height="449">
+</p>
+<p align="CENTER">Exemple of guiding on double star (Castor).</p>
+<p>&nbsp;</p>
+<p><b>Exp.</b><span style="font-weight: normal;">: exposure time in
+seconds</span>.</p>
+<p><b>Interval</b> : Waiting time between exposures; use 0.5 to begin
+with (see Tips &amp; Tricks).</p>
+<p><b>Consign</b> : Target position for the guiding star; this is
 mainly used in spectroscopy to bring the target on a specific
 location (slit or optical fiber hole). Could be sub-pixel values is
 required. The target position is shown as the center of the blue
 cross. You can also change this location by left clicking on one of
-the blue axis and move the mouse around.</P>
-<P><B>option &quot;Axes (AD, D&eacute;c.)&quot; </B>: display the
+the blue axis and move the mouse around.</p>
+<p><b>option "Axes (AD, Déc.)" </b>: display the
 blue axis whose center indicates the target location for the guiding
-star.</P>
-<P><B>option &quot;tracking On&quot;</B> : Guiding movements are sent
+star.</p>
+<p><b>option "tracking On"</b> : Guiding movements are sent
 to the mount only when this option is set ON. You can activate or
-desactivate this option anytime. <FONT COLOR="#993300">For safety
+desactivate this option anytime. <font color="#993300">For safety
 reasons, this option is set OFF when you maunch the autoguiding tool
 to avoid unwanted movements. Also, MAKE SURE TO SET TRACKING OFF when
-performing a GoTo on your next target &ndash; this is common mistake
+performing a GoTo on your next target – this is common mistake
 and some mount do not like receiving guiding movement while slewing
-on the sky...</FONT> It is recommended to set tracking ON after have
+on the sky...</font> It is recommended to set tracking ON after have
 the autoguiding configured (you can actually changed the parameters
-while autoguiding is ON).</P>
-<P><B>Deviation </B>: Difference in X &amp; Y position between the
-guiding star and the target position.</P>
-<P><B>Pulse.</B> : Pulse duration sent to motors RA &amp; Dec. Value
+while autoguiding is ON).</p>
+<p><b>Deviation </b>: Difference in X &amp; Y position between the
+guiding star and the target position.</p>
+<p><b>Pulse.</b> : Pulse duration sent to motors RA &amp; Dec. Value
 displayed is in milliseconds followed by direction (n=north, s=south,
-e=east, w=west).</P>
-<P><B>Interval</B> : Total duration between two movements (in
-milliseconds).</P>
-<H2 CLASS="western">&nbsp;</H2>
-<H1>Setting up acquisition parameters</H1>
-<H2 CLASS="western">Autoguiding on star</H2>
-<P>You can change the autoguiding parameters by clicking on
-&laquo;&nbsp;Setup&nbsp;&raquo;. This opens a new window:</P>
-<P ALIGN=CENTER><IMG SRC="configframe-star.png" NAME="images2" ALIGN=BOTTOM WIDTH=318 HEIGHT=456 BORDER=0></P>
-<P><B>Area size (in pixels)</B><BR>You can change the size of the <B>red
-square</B> which defines the area where the software look for the
+e=east, w=west).</p>
+<p><b>Interval</b> : Total duration between two movements (in
+milliseconds).</p>
+<h2 class="western">&nbsp;</h2>
+<h1><a name="configure"></a>Configuring autoguiding<br>
+</h1>
+<h2 class="western"><a name="autoguidage_etoile"></a>a) Autoguiding on
+star</h2>
+<p>You can change the autoguiding parameters by clicking on
+«&nbsp;Setup&nbsp;». This opens a new window:</p>
+<p align="CENTER"><img src="configframe-star.png" name="images2"
+ align="BOTTOM" border="0" width="318" height="456"></p>
+<p><b>Area size (in pixels)</b><br>
+You can change the size of the <b>red
+square</b> which defines the area where the software look for the
 guiding star. Increase this area if you have a bad tracking, bad
 seeing or cloudy skies; reduce this area if you have a good tracking
 and a double star for exemple (to select the right star and stay on
-it). This square is redrawn after each image acquisition:</P>
-<BLOCKQUOTE><FONT COLOR="#000000"><FONT COLOR="#000000"><IMG SRC="star-target.png" NAME="images3" ALIGN=BOTTOM WIDTH=93 HEIGHT=90 BORDER=3></FONT></FONT></BLOCKQUOTE>
-<P><B>Detection threshold (pixels)</B><BR>This parameters indicates
-if a guiding star is detected or not.</P>
-<P>The key figure is the number of pixels above <B>minIntensity =
-dbgmean + 6.0 * dbgsigma</B>&nbsp; <BR> with dbgmean : average
-background value in the red square (searching area)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+it). This square is redrawn after each image acquisition:</p>
+<blockquote><font color="#000000"><font color="#000000"><img
+ src="star-target.png" name="images3" align="BOTTOM" border="3"
+ width="93" height="90"></font></font></blockquote>
+<p><b>Detection threshold (pixels)</b><br>
+This parameters indicates
+if a guiding star is detected or not.</p>
+<p>The key figure is the number of pixels above <b>minIntensity =
+dbgmean + 6.0 * dbgsigma</b>&nbsp; <br>
+with dbgmean : average
+background value in the red square (searching area)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 dbsigma&nbsp; : standard deviation of the sky background in this
-searching area</P>
-<P>When the searching area includes a number of pixels below
+searching area</p>
+<p>When the searching area includes a number of pixels below
 minIntensity, the software consideres thay the star is not visible
 (sky becoming cloudy for exemple) and stop sending guiding movement
 to the mount until this value get back above the min Intensity.
 Intensity indicator is displayed in red in the autoguiding pannel and
-some help caption is displayed if you move your mouse on it:</P>
-<P STYLE="margin-left: 1.06cm"><IMG SRC="configframe-detection.png" NAME="images4" ALIGN=BOTTOM WIDTH=266 HEIGHT=98 BORDER=0></P>
-<P>If the detection threshold is set to 0 (zero), guiding movement
-are always sent to the mount even is no star is detected.</P>
-<P><B>Speed (in pixels/ms)</B><BR>Coefficient to convert number of
+some help caption is displayed if you move your mouse on it:</p>
+<p style="margin-left: 1.06cm;"><img src="configframe-detection.png"
+ name="images4" align="BOTTOM" border="0" width="266" height="98"></p>
+<p>If the detection threshold is set to 0 (zero), guiding movement
+are always sent to the mount even is no star is detected.</p>
+<p><b>Speed (in pixels/ms)</b><br>
+Coefficient to convert number of
 pixels in pulse duration (in millisecond) to send to the mount. Start
 with 10 on each axis then increase or descrease the value depending
-on mount reaction to guiding movements.</P>
-<P><B>Threshold (inn pixels)</B><BR>Below this distance, no movement
+on mount reaction to guiding movements.</p>
+<p><b>Threshold (inn pixels)</b><br>
+Below this distance, no movement
 is sent to the motor (to avoid back &amp; forth movement). A good
-value is 1 pixel usually.</P>
-<P><B>Angle (in degrees)</B><BR>Camera inclination from RA axis.</P>
-<H1>Autoguiding on spectrograph slit</H1>
-<H2 CLASS="western">Key principles</H2>
-<BLOCKQUOTE><B>Algorythm </B>: 
-</BLOCKQUOTE>
-<BLOCKQUOTE>- Measure received flux in two areas above &amp; below
+value is 1 pixel usually.</p>
+<p><b>Angle (in degrees)</b><br>
+Camera inclination from RA axis.</p>
+<h2><a name="autoguidage_fente"></a>b) Autoguiding on spectrograph slit</h2>
+<h3 class="western">Key principles</h3>
+<blockquote><b>Algorythm </b>: </blockquote>
+<blockquote>- Measure received flux in two areas above &amp; below
 the slit (defined by the target position and the slit width
-parameter) <BR>- Calculate the percentage of flux between those tao
-areas <BR>- Multiply the step percentage by the %/pixel ratio to
+parameter) <br>
+- Calculate the percentage of flux between those tao
+areas <br>
+- Multiply the step percentage by the %/pixel ratio to
 convert this value in a pixel shift of the guiding star in the image.
-<BR>- Divide this value by the speed (pixels/sec) to get the pulse
-duration to send to the Dec motor of the mount 
-</BLOCKQUOTE>
-<BLOCKQUOTE>If the star get too far from the slit (&gt; width of the
+  <br>
+- Divide this value by the speed (pixels/sec) to get the pulse
+duration to send to the Dec motor of the mount </blockquote>
+<blockquote>If the star get too far from the slit (&gt; width of the
 slit edge), the software switchs back to standard star guiding mode
-(gaussian adjustement).</BLOCKQUOTE>
-<H2 CLASS="western"><A NAME="configuration_fente"></A><BR>Setting up
-slit autoguiding</H2>
-<P>Select &laquo;&nbsp;slit&nbsp;&raquo; in the parameter Setup
-window.</P>
-<P ALIGN=CENTER><IMG SRC="configframe-slit.png" NAME="images5" ALIGN=BOTTOM WIDTH=318 HEIGHT=456 BORDER=0></P>
-<P ALIGN=CENTER>Default values for a C8 + Lhires III + webcam</P>
-<P><B>Area size (in pixels)</B><BR>Define the total size of the two
+(gaussian adjustement).</blockquote>
+<h3 class="western">Setting up
+slit autoguiding</h3>
+<p>Select «&nbsp;slit&nbsp;» in the parameter Setup
+window.</p>
+<p align="CENTER"><img src="configframe-slit.png" name="images5"
+ align="BOTTOM" border="0" width="318" height="456"></p>
+<p align="CENTER">Default values for a C8 + Lhires III + webcam</p>
+<p><b>Area size (in pixels)</b><br>
+Define the total size of the two
 rectangles limiting the searching areas. Those rectangles are redrawn
-after each image acquisition:</P>
-<BLOCKQUOTE><FONT COLOR="#000000"><FONT COLOR="#000000"><IMG SRC="slit-target.png" NAME="images6" ALIGN=BOTTOM WIDTH=134 HEIGHT=106 BORDER=3></FONT></FONT></BLOCKQUOTE>
-<P><B>slit Width (in pixels)</B><BR>Spacing between the two
+after each image acquisition:</p>
+<blockquote><font color="#000000"><font color="#000000"><img
+ src="slit-target.png" name="images6" align="BOTTOM" border="3"
+ width="134" height="106"></font></font></blockquote>
+<p><b>slit Width (in pixels)</b><br>
+Spacing between the two
 rectangle, defining the slit dark area. Flux received in this area is
-not taken into account in the flux measurement.</P>
-<P><B>Ratio (%/pixel)</B><BR>Ratio used to convert flux percentage
-into pixel shift.</P>
-<P><B>Angle (in degr&eacute;s)</B><FONT COLOR="#993300"><BR>&laquo;&nbsp;Angle&nbsp;&raquo;
+not taken into account in the flux measurement.</p>
+<p><b>Ratio (%/pixel)</b><br>
+Ratio used to convert flux percentage
+into pixel shift.</p>
+<p><b>Angle (in degrés)</b><font color="#993300"><br>
+«&nbsp;Angle&nbsp;»
 IS NOT USED in slit guiding mode. You have to align the slit with the
-X axis of the image. A rotation of few degrees is allowed.</FONT></P>
-<P><FONT COLOR="#000000"><B>Other parameters are the same as in star
-autoguiding mode (PSF: Point Spread Function, gaussian model) &ndash;
-see above.</B></FONT></P>
-<H1>Learning (optional) 
-</H1>
-<P>Learning allows to find the RA &amp; Dec speed as well as the
+X axis of the image. A rotation of few degrees is allowed.</font></p>
+<p><font color="#000000"><b>Other parameters are the same as in star
+autoguiding mode (PSF: Point Spread Function, gaussian model) –
+see above.</b></font></p>
+<h2><a name="apprentissage"></a>c) Learning (optional) </h2>
+<p>Learning allows to find the RA &amp; Dec speed as well as the
 camera angle. Set a delay for the pulse (in seconds). The software
 will ask you to click on the star after each acquisition. Make sure
-the backlash of your mount is properly adjusted for best results.</P>
-<BLOCKQUOTE>... to be completed...</BLOCKQUOTE>
-<P>&nbsp;</P>
-<H1><A NAME="pre-traitement"></A>Image preprocessing (optional)</H1>
-<P><B>Add exposures </B>
-</P>
-<BLOCKQUOTE>This option allows you to add multiple exposures before
+the backlash of your mount is properly adjusted for best results.</p>
+<blockquote>... to be completed...</blockquote>
+<p>&nbsp;</p>
+<h2><a name="pre-traitement"></a>d) Image preprocessing (optional)</h2>
+<p><b>Add exposures </b>
+</p>
+<blockquote>This option allows you to add multiple exposures before
 calculating the guiding movement to make. Useful when you camera
-doesn't have long exposure mode and for faint targets.</BLOCKQUOTE>
-<P><B>Dark frame substraction </B>
-</P>
-<BLOCKQUOTE>This option will allow to remove a dark frame before
+doesn't have long exposure mode and for faint targets.</blockquote>
+<p><b>Dark frame substraction </b>
+</p>
+<blockquote>This option will allow to remove a dark frame before
 calculating the guiding movement to make. This is very useful for
 some noisy camera to eliminate hot pixels (ex: long exposure webcam,
-PL1M or QHY5 cameras...).</BLOCKQUOTE>
-<H1>Running autoguiding</H1>
-<P>- Run continuous acquisition (GO CCD button on main panel)</P>
-<P>- Click &amp; Drag the blue axis to the desired target position</P>
-<P>- Double Left Click on the guide star to set the searching area
+PL1M or QHY5 cameras...).</blockquote>
+<h1><a name="demarrage"></a>Running autoguiding</h1>
+<p>- Run continuous acquisition (GO CCD button on main panel)</p>
+<p>- Click &amp; Drag the blue axis to the desired target position</p>
+<p>- Double Left Click on the guide star to set the searching area
 (red square) on the guiding star even if far from the target
 position; check that the red square follows the star movement
-(otherwise look at the detection threshold value)</P>
-<P>- Activate the Tracking ON</P>
-<P>- Monitor the movement of your guiding star and the pulses sent to
-the mount.</P>
-<P>&nbsp;</P>
-<H1>Corrections during autoguiding</H1>
-<P>All those parameters can be modified during autoguiding (no need
-to stop it to change one of them). <BR>Exemples :</P>
-<BLOCKQUOTE><B>Change the target position during the autoguiding</B>
+(otherwise look at the detection threshold value)</p>
+<p>- Activate the Tracking ON</p>
+<p>- Monitor the movement of your guiding star and the pulses sent to
+the mount.</p>
+<p>&nbsp;</p>
+<h1><a name="correction"></a>Corrections during autoguiding</h1>
+<p>All those parameters can be modified during autoguiding (no need
+to stop it to change one of them). <br>
+Exemples :</p>
+<blockquote><b>Change the target position during the autoguiding</b>
 : in spectrography, this allows to move the target position right on
 the slit; this can be seen when the star almost disapears in the slit
 and the flux on each side is minimum. Make sure to adjust your camera
 setting so the guiding star doesn't saturate (a Watec 120N+ video
 camera is best as you can adjust exposure and gain very precisely).
-Leave some intensity room if you sky is not too clear.</BLOCKQUOTE>
-<BLOCKQUOTE><B>Direction</B> : if your guiding star moves to the
+Leave some intensity room if you sky is not too clear.</blockquote>
+<blockquote><b>Direction</b> : if your guiding star moves to the
 wrong direction, change the direction of the guiding on the
 corresponding axis. This is the case on german mount when you do a
-pier side switch.</BLOCKQUOTE>
-<P><BR><BR>
-</P>
-<H1><A NAME="recommandation"></A>Tips &amp; Tricks</H1>
-<P><BR><B>=&gt; Do not saturate the guiding star </B>
-</P>
-<BLOCKQUOTE>A saturated star won't allow a precise guiding. Shoot for
-an intensity around 200 if saturation level is 255...</BLOCKQUOTE>
-<P><B>=&gt; Take long exposure to integrate in bad seeing</B></P>
-<BLOCKQUOTE>Ideally 1 to 2 sec exposure time but of course you have
-to avoid saturation.</BLOCKQUOTE>
-<BLOCKQUOTE>If exposure time is too short, best is to cumulate
-exposures to avoid guiding on turbulences...</BLOCKQUOTE>
-<P>=&gt; I<B>f your mount is tracking well</B></P>
-<P STYLE="margin-left: 1.06cm">Best is to increase the interval
-between exposures to limit wring guiding movement due to turbulence.</P>
-<P>=&gt; <B>Use your mount PEC</B> 
-</P>
-<P STYLE="margin-left: 1.06cm">After some experiment, we have found
+pier side switch.</blockquote>
+<p><br>
+<br>
+</p>
+<h1><a name="recommandation"></a>Tips &amp; Tricks</h1>
+<p><br>
+<b>=&gt; Do not saturate the guiding star </b>
+</p>
+<blockquote>A saturated star won't allow a precise guiding. Shoot for
+an intensity around 200 if saturation level is 255...</blockquote>
+<p><b>=&gt; Take long exposure to integrate in bad seeing</b></p>
+<blockquote>Ideally 1 to 2 sec exposure time but of course you have
+to avoid saturation.</blockquote>
+<blockquote>If exposure time is too short, best is to cumulate
+exposures to avoid guiding on turbulences...</blockquote>
+<p>=&gt; I<b>f your mount is tracking well</b></p>
+<p style="margin-left: 1.06cm;">Best is to increase the interval
+between exposures to limit wring guiding movement due to turbulence.</p>
+<p>=&gt; <b>Use your mount PEC</b> </p>
+<p style="margin-left: 1.06cm;">After some experiment, we have found
 the PID integration algorythm was not a good option to keep as it was
 conflicting with mount PEC. Final result seems better with mount PEC
-activated.</P>
-<P>=&gt; <B>Slightly unbalance your mount</B> (or a small polar
+activated.</p>
+<p>=&gt; <b>Slightly unbalance your mount</b> (or a small polar
 misalignment) is best if your mount has some backlash in order to
 have guiding movement always in the same direction. This is also true
-in case of manual guiding by the way! Specially in Dec.</P>
-<P><B>=&gt; Note on spectrograph slit guiding</B></P>
-<BLOCKQUOTE>Ratio %/pixel can have a value between 0.5 and 50 ! We
+in case of manual guiding by the way! Specially in Dec.</p>
+<p><b>=&gt; Note on spectrograph slit guiding</b></p>
+<blockquote>Ratio %/pixel can have a value between 0.5 and 50 ! We
 haven't found a way to calculate this paramter automatically. It
 depends on star luminosity, sky background, ratio between those two
-values and also on the rectangle size...</BLOCKQUOTE>
-<BLOCKQUOTE>When this ratio is too low, Dec movements are too slow or
-even null.</BLOCKQUOTE>
-<BLOCKQUOTE>When this ratio is too high, Dec movements are too large
-and provoques oscillations.</BLOCKQUOTE>
-<P>&nbsp;</P>
-</BODY>
-</HTML>
+values and also on the rectangle size...</blockquote>
+<blockquote>When this ratio is too low, Dec movements are too slow or
+even null.</blockquote>
+<blockquote>When this ratio is too high, Dec movements are too large
+and provoques oscillations.</blockquote>
+<p>&nbsp;</p>
+</body>
+</html>
