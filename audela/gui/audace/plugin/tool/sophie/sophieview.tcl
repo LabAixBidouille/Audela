@@ -2,7 +2,7 @@
 # @file     sophieview.tcl
 # @brief    Fichier du namespace ::sophie::view
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophieview.tcl,v 1.15 2010-02-20 07:55:47 robertdelmas Exp $
+# @version  $Id: sophieview.tcl,v 1.16 2011-02-13 16:00:14 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -28,12 +28,13 @@ proc ::sophie::view::run { sophieVisuNo } {
    set visuNo [::confVisu::create]
 
    #--- j'affiche l'outil
-   confVisu::selectTool $visuNo ""
-   Menu_Delete $visuNo $::caption(audace,menu,aiming) all
-   createPluginInstance [::confVisu::getBase $visuNo].tool $visuNo
-   lappend ::confVisu::private($visuNo,pluginInstanceList) "sophie::view"
-   set ::confVisu::private($visuNo,currentTool) "sophie::view"
-   startTool $visuNo
+   #confVisu::selectTool $visuNo ""
+   #Menu_Delete $visuNo $::caption(audace,menu,aiming) all
+   #createPluginInstance [::confVisu::getBase $visuNo].tool $visuNo
+   #lappend ::confVisu::private($visuNo,pluginInstanceList) "sophie::view"
+   #set ::confVisu::private($visuNo,currentTool) "sophie::view"
+   #startTool $visuNo
+   ::confVisu::selectTool $visuNo ::sophie::view
 
    #--- j'affiche la fenetre au dessus de la fenetre principale de sophie
    wm transient [::confVisu::getBase $visuNo] [::confVisu::getBase $private(sophieVisuNo)]
@@ -117,9 +118,13 @@ proc ::sophie::view::createPluginInstance { { in "" } { visuNo 1 } } {
 #    suppprime l'instance du plugin
 #------------------------------------------------------------
 proc ::sophie::view::deletePluginInstance { visuNo } {
-
-   #--- je restaure le numero du buffer initial
-   ##::sophie::setBuffer $visuNo ""
+   variable private
+   #--- j'arrete le listener
+   ::sophie::removeAcquisitionListener $private(sophieVisuNo) "::sophie::view::refresh $visuNo"
+   #--- je restaure le numero du buffer initial pour qu'il soit supprime par confVisu::close
+   visu$visuNo buf $private(initialBuffer,$visuNo)
+   #--- je masque l'outil
+   pack forget $private(frm)
 }
 
 ##------------------------------------------------------------
@@ -149,14 +154,24 @@ proc ::sophie::view::startTool { visuNo } {
 proc ::sophie::view::stopTool { visuNo } {
    variable private
 
-   #--- j'arrete le listener
-   ::sophie::removeAcquisitionListener $private(sophieVisuNo) "::sophie::view::refresh $visuNo"
-   ##after 1000
-   #--- je restaure le numero du buffer initial
-   visu$visuNo buf $private(initialBuffer,$visuNo)
-   #--- je masque l'outil
-   pack forget $private(frm)
 }
+
+#------------------------------------------------------------
+# getPluginProperty
+#    retourne la valeur de la propriete
+#
+# parametre :
+#    propertyName : nom de la propriete
+# return : valeur de la propriete ou "" si la propriete n'existe pas
+#------------------------------------------------------------
+proc ::sophie::view::getPluginProperty { propertyName } {
+   switch $propertyName {
+      function     { return "aiming" }
+      subfunction1 { return "guiding" }
+      display      { return "window" }
+   }
+}
+
 
 ##------------------------------------------------------------
 # setBuffer
