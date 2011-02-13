@@ -129,9 +129,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libfingerlakes", "libcam\li
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libgsltcl", "audela\libgsltcl\vc90\libgsltcl.vcproj", "{7A600ABA-E38E-4406-AFCC-3D51983B6941}"
-	ProjectSection(ProjectDependencies) = postProject
-		{A9083D05-21C8-4F17-B9AF-73B0057B603A} = {A9083D05-21C8-4F17-B9AF-73B0057B603A}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libgzip", "audela\libgzip\vc90\libgzip.vcproj", "{C57E8DE4-08A1-49FD-93DF-95F38C522C52}"
 EndProject
@@ -194,6 +191,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libwebcam", "libcam\libwebcam\vc90\libwebcam.vcproj", "{BDE9A95F-D118-4A10-A15A-97104609D1B7}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libyd", "audela\libyd\vc90\libyd.vcproj", "{112387A7-3557-487F-BC3C-F4AF03E33FB5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{91EC13AF-6E6D-4138-9545-86E10A740CD5} = {91EC13AF-6E6D-4138-9545-86E10A740CD5}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libt193", "libtel\libt193\vc90\libt193.vcproj", "{E71812D0-9F52-4F29-95A0-959993A2E8EF}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -207,8 +207,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_cemes", "external\cemes\vc90\external_cemes.vcproj", "{8AB5FE3D-8765-4EAC-869D-E24E773B734B}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_deltatau", "external\deltatau\vc90\external_deltatau.vcproj", "{35B48565-2BF1-4021-9A0E-E7CDF91701C1}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_gsl", "external\gsl\vc90\external_gsl.vcproj", "{A9083D05-21C8-4F17-B9AF-73B0057B603A}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_libusb", "external\libusb\vc90\external_libusb.vcproj", "{5EC2C537-87ED-4CA5-9456-637987910281}"
 EndProject
@@ -247,6 +245,13 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libcagire", "libcam\libcagire\vc90\libcagire.vcproj", "{4117BC2F-CAEC-4073-99FD-902CEAB7A44D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libeshel", "contrib\libeshel\vc90\libeshel.vcproj", "{C2A1CF0E-56F4-42D0-AFCD-E1951200EAE2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_libgsl", "external\gsl\vc90\libgsl\external_libgsl.vcproj", "{91EC13AF-6E6D-4138-9545-86E10A740CD5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F12C72B9-A7C8-4FE1-8CA7-00B06819033A} = {F12C72B9-A7C8-4FE1-8CA7-00B06819033A}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_libgslcblas", "external\gsl\vc90\libgslcblas\external_libgslcblas.vcproj", "{F12C72B9-A7C8-4FE1-8CA7-00B06819033A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -586,6 +591,14 @@ Global
 		{C2A1CF0E-56F4-42D0-AFCD-E1951200EAE2}.Debug|Win32.Build.0 = Debug|Win32
 		{C2A1CF0E-56F4-42D0-AFCD-E1951200EAE2}.Release|Win32.ActiveCfg = Release|Win32
 		{C2A1CF0E-56F4-42D0-AFCD-E1951200EAE2}.Release|Win32.Build.0 = Release|Win32
+		{91EC13AF-6E6D-4138-9545-86E10A740CD5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{91EC13AF-6E6D-4138-9545-86E10A740CD5}.Debug|Win32.Build.0 = Debug|Win32
+		{91EC13AF-6E6D-4138-9545-86E10A740CD5}.Release|Win32.ActiveCfg = Release|Win32
+		{91EC13AF-6E6D-4138-9545-86E10A740CD5}.Release|Win32.Build.0 = Release|Win32
+		{F12C72B9-A7C8-4FE1-8CA7-00B06819033A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F12C72B9-A7C8-4FE1-8CA7-00B06819033A}.Debug|Win32.Build.0 = Debug|Win32
+		{F12C72B9-A7C8-4FE1-8CA7-00B06819033A}.Release|Win32.ActiveCfg = Release|Win32
+		{F12C72B9-A7C8-4FE1-8CA7-00B06819033A}.Release|Win32.Build.0 = Release|Win32s		
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
