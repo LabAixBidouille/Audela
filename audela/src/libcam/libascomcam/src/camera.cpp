@@ -167,7 +167,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    cam->params = (PrivateParams*) calloc(sizeof(PrivateParams),1);
    
    // aucune trace n'est générée par défaut dans le fichier libascomcam.log
-   debug_level = LOG_NONE;
+   debug_level = LOG_DEBUG;
 
    // je recupere les parametres optionnels
    if (argc >= 5) {
@@ -431,17 +431,19 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
          VARIANT_BOOL imageReady = VARIANT_TRUE;
          
          // j'attends que l'image soit prete
-         if ( cam->params->isSimulator == 0 ) {
-             int nbLoop = 0;
-             while (cam->params->pCam->ImageReady == VARIANT_FALSE && nbLoop < 50){
-               Sleep(20);
+         int nbLoop = 0;
+         if ( cam->params->isSimulator >= 0 ) {
+             while (cam->params->pCam->ImageReady == VARIANT_FALSE && nbLoop < 30000){
+               Sleep(10);
                nbLoop ++; 
              }    
              imageReady = cam->params->pCam->ImageReady ;
+             ascomcam_log(LOG_DEBUG,"cam_read_ccd wait %d ms after end", nbLoop*10);
          } else {
-            // si c'est le simulateur Cam->ImageReady renvoiT n'importe quoi
+            // si c'est le simulateur Cam->ImageReady renvoit n'importe quoi
             // je considère que l'image est toujours disponible
             imageReady = VARIANT_TRUE;
+            ascomcam_log(LOG_DEBUG,"cam_read_ccd special simulator");
          }
          if ( imageReady == VARIANT_TRUE ) {
             // je reccupere le pointeur de l'image
