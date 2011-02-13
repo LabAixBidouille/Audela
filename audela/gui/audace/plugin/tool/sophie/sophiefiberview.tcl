@@ -2,7 +2,7 @@
 # @file     fiberview.tcl
 # @brief    Fichier du namespace ::sophie::fiberview
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiefiberview.tcl,v 1.5 2011-02-10 19:38:11 robertdelmas Exp $
+# @version  $Id: sophiefiberview.tcl,v 1.6 2011-02-13 16:01:25 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -36,11 +36,12 @@ proc ::sophie::fiberview::run { sophieVisuNo  } {
       set visuNo [::confVisu::create]
 
       #--- j'affiche l'outil
-      confVisu::selectTool $visuNo ""
-      createPluginInstance [::confVisu::getBase $visuNo].tool $visuNo
-      lappend ::confVisu::private($visuNo,pluginInstanceList) "sophie::fiberview"
-      set ::confVisu::private($visuNo,currentTool) "sophie::fiberview"
-      startTool $visuNo
+      #confVisu::selectTool $visuNo ""
+      #createPluginInstance [::confVisu::getBase $visuNo].tool $visuNo
+      #lappend ::confVisu::private($visuNo,pluginInstanceList) "sophie::fiberview"
+      #set ::confVisu::private($visuNo,currentTool) "sophie::fiberview"
+      ::confVisu::selectTool $visuNo ::sophie::fiberview
+      ###startTool $visuNo
    }
 }
 
@@ -94,8 +95,14 @@ proc ::sophie::fiberview::createPluginInstance { in visuNo  } {
 #------------------------------------------------------------
 proc ::sophie::fiberview::deletePluginInstance { visuNo } {
    variable private
-   set private(visuNo) 0
+   #--- j'arrete le listener
+   ::sophie::removeAcquisitionListener $private(sophieVisuNo) "::sophie::fiberview::refresh $visuNo"
+   #--- je restaure le numero du buffer initial pour qu'il soit supprime par confVisu::close
+   visu$visuNo buf $private(initialBufferNo)
 
+   #--- j'enregistre la position de la fenetre
+   set ::conf(sophie,fiberVisu,position) [winfo geometry [::confVisu::getBase $visuNo]]
+   set private(visuNo) 0
 }
 
 ##------------------------------------------------------------
@@ -116,12 +123,22 @@ proc ::sophie::fiberview::startTool { visuNo } {
 proc ::sophie::fiberview::stopTool { visuNo } {
    variable private
 
-   #--- j'arrete le listener
-   ::sophie::removeAcquisitionListener $private(sophieVisuNo) "::sophie::fiberview::refresh $visuNo"
-   #--- je restaure le numero du buffer initial
-   visu$visuNo buf $private(initialBufferNo)
-   #--- j'enregistre la position
-   set ::conf(sophie,fiberVisu,position) [winfo geometry [::confVisu::getBase $visuNo]]
+}
+
+#------------------------------------------------------------
+# getPluginProperty
+#    retourne la valeur de la propriete
+#
+# parametre :
+#    propertyName : nom de la propriete
+# return : valeur de la propriete ou "" si la propriete n'existe pas
+#------------------------------------------------------------
+proc ::sophie::fiberview::getPluginProperty { propertyName } {
+   switch $propertyName {
+      function     { return "aiming" }
+      subfunction1 { return "guiding" }
+      display      { return "window" }
+   }
 }
 
 ##------------------------------------------------------------
@@ -132,6 +149,9 @@ proc ::sophie::fiberview::stopTool { visuNo } {
 proc ::sophie::fiberview::refresh { visuNo args } {
    variable private
 
+   if { [info command visu$visuNo] == "" } {
+      return
+   }
    #--- j'applique un fenetrage centre sur la fibreAHR
    set dispWindowCoord [visu$visuNo window]
    set x  $::conf(sophie,fiberHRX)
