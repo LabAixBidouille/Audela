@@ -740,6 +740,7 @@ typedef struct {
    double nullpix_value;
    char jpegfile[FLEN_FILENAME];
    int jpegfile_make;
+   int jpeg_qualite;
    int powernorm;
    int *hotPixelList;
    TT_PTYPE cosmicThreshold;
