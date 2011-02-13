@@ -75,7 +75,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib ..\..\..\external\lib\tclstub85.lib ..\..\..\external\lib\tkstub85.lib ..\..\..\external\lib\gsl.lib ..\..\..\external\lib\gslcblas.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib ..\..\..\external\lib\tclstub85.lib ..\..\..\external\lib\tkstub85.lib ..\..\..\external\lib\libgsl.lib ..\..\..\external\lib\libgslcblas.lib"
 				OutputFile="..\..\..\..\bin\libak.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -172,7 +172,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib ..\..\..\external\lib\tclstub85.lib ..\..\..\external\lib\tkstub85.lib ..\..\..\external\lib\gsl.lib ..\..\..\external\lib\gslcblas.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib ..\..\..\external\lib\tclstub85.lib ..\..\..\external\lib\tkstub85.lib ..\..\..\external\lib\libgsl.lib ..\..\..\external\lib\libgslcblas.lib"
 				OutputFile="..\..\..\..\bin\libak.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
