@@ -2,7 +2,7 @@
 # Fichier : autoguiderconfig.tcl
 # Description : Fenetre de configuration de l'autoguidage
 # Auteur : Michel PUJOL
-# Mise à jour $Id: autoguiderconfig.tcl,v 1.24 2010-12-05 14:21:10 michelpujol Exp $
+# Mise à jour $Id: autoguiderconfig.tcl,v 1.25 2011-02-13 22:53:58 robertdelmas Exp $
 #
 
 ################################################################
@@ -115,7 +115,6 @@ proc ::autoguider::config::apply { visuNo } {
    set conf(autoguider,searchRadius)     $widget($visuNo,searchRadius)
    set conf(autoguider,searchThreshold)  $widget($visuNo,searchThreshold)
    set conf(autoguider,centerSpeed)      $widget($visuNo,centerSpeed)
-
 
    #--- je notifie la thread de la camera
    ::camera::setParam [::confVisu::getCamItem $visuNo] "seuilx" $::conf(autoguider,seuilx)
@@ -330,7 +329,6 @@ proc ::autoguider::config::fillConfigPage { frm visuNo } {
       pack $frm.telescope.speedList -in [$frm.telescope getframe] -anchor w -side left -fill x -expand 0
    grid $frm.telescope -row 4 -column 0 -columnspan 1 -sticky ewns
 
-
    #--- Frame Cumul
    TitleFrame $frm.cumul -borderwidth 2 -text "$caption(autoguider,cumulTitle)"
       LabelEntry $frm.cumul.nb -label "$caption(autoguider,cumulNb)" \
@@ -541,7 +539,6 @@ proc ::autoguider::config::selectDarkFile { visuNo } {
    $private($visuNo,frm).dark.fileName xview end
 
 }
-
 
 #------------------------------------------------------------
 # ::autoguider::config::selectStar

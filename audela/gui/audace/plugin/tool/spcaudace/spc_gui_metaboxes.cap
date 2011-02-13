@@ -1,6 +1,6 @@
 #
 # Fichier : spc_gui_metaboxes.cap
-# Mise a jour $Id: spc_gui_metaboxes.cap,v 1.3 2009-11-07 16:28:19 robertdelmas Exp $
+# Mise a jour $Id: spc_gui_metaboxes.cap,v 1.4 2011-02-13 22:55:49 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -62,7 +62,6 @@ set caption(spcaudace,metaboxes,geom2calibre,config,methsky)            "Subsky 
 set caption(spcaudace,metaboxes,geom2calibre,config,methbin)            "Raws binning method"
 set caption(spcaudace,metaboxes,geom2calibre,config,methinv)            "Invert left-right sides of lines profiles (y/n)"
 set caption(spcaudace,metaboxes,geom2calibre,config,smooth)             "Smoothing (y/n)"
-
 
 set caption(spcaudace,metaboxes,geom2rinstrum,titre2)                   "Geometrics corrections\n-> instrumental answer"
 set caption(spcaudace,metaboxes,geom2rinstrum,titre)                    "Geometrics corrections->ri"
@@ -1487,7 +1486,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spcaudace,metaboxes,geom2calibre,config,methinv)         "Invert left-right sides of lines profiles (y/n)"
    set caption(spcaudace,metaboxes,geom2calibre,config,smooth)          "Smoothing (y/n)"
 
-
    set caption(spcaudace,metaboxes,geom2rinstrum,titre2)                "Geometrics corrections\n-> instrumental answer"
    set caption(spcaudace,metaboxes,geom2rinstrum,titre)                 "Geometrics corrections->ri"
    set caption(spcaudace,metaboxes,geom2rinstrum,stop_button)           "Cancel"
@@ -1711,7 +1709,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spcaudace,metaboxes,geom2calibre,config,methinv)         "Invert left-right sides of lines profiles (y/n)"
    set caption(spcaudace,metaboxes,geom2calibre,config,smooth)          "Smoothing (y/n)"
 
-
    set caption(spcaudace,metaboxes,geom2rinstrum,titre2)                "Geometrics corrections\n-> instrumental answer"
    set caption(spcaudace,metaboxes,geom2rinstrum,titre)                 "Geometrics corrections->ri"
    set caption(spcaudace,metaboxes,geom2rinstrum,stop_button)           "Cancel"
@@ -1934,7 +1931,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spcaudace,metaboxes,geom2calibre,config,methbin)         "Raws binning method"
    set caption(spcaudace,metaboxes,geom2calibre,config,methinv)         "Invert left-right sides of lines profiles (y/n)"
    set caption(spcaudace,metaboxes,geom2calibre,config,smooth)          "Smoothing (y/n)"
-
 
    set caption(spcaudace,metaboxes,geom2rinstrum,titre2)                "Geometrics corrections\n-> instrumental answer"
    set caption(spcaudace,metaboxes,geom2rinstrum,titre)                 "Geometrics corrections->ri"
