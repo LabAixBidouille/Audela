@@ -787,19 +787,19 @@ _CrtMemCheckpoint(&startStateObject);
       // j'aboute les profils 1B 
       // --------------------------------------------------------------------
       std::valarray<double>  full1BProfile;
-      double fullLambda1;
-      abut1bOrder(object1BProfile, lambda1, minOrder, maxOrder,step, full1BProfile, fullLambda1);
+      double full1BLambda1;
+      abut1bOrder(object1BProfile, lambda1, minOrder, maxOrder,step, full1BProfile, full1BLambda1);
       stopTimer("Object abut1bOrder ");
 
       startTimer();
       // --------------------------------------------------------------------
       // Correction de la fonction de Planck
       // --------------------------------------------------------------------
-      planck_correct(full1BProfile, fullLambda1, step, 2750.0);
+      planck_correct(full1BProfile, full1BLambda1, step, 2750.0);
       stopTimer("Object planck correct ");
       //j'enregistre le resultat dans le fichier d'entree
-      //Fits_setFullProfile(objectFits,hduName,full1BProfile,fullLambda1, step1);
-      Fits_setFullProfile(pOutFits, "P_FULL", full1BProfile, fullLambda1, step); 
+      //Fits_setFullProfile(objectFits,hduName,full1BProfile,full1BLambda1, step1);
+      Fits_setFullProfile(pOutFits, "P_1B_FULL", full1BProfile, full1BLambda1, step); 
       
       
       // --------------------------------------------------------------------
@@ -840,8 +840,17 @@ _CrtMemCheckpoint(&startStateObject);
             }
          }
          stopTimer("Object division par la reponse instrumentale");
-      } 
 
+         // --------------------------------------------------------------------
+         // je divise le profile P_1B_FULL par la réponse instrumentale  
+         // --------------------------------------------------------------------
+         std::valarray<double>  full1CProfile(full1BProfile.size());
+         double full1CLambda1;
+         divideResponse(full1BProfile, full1BLambda1, responseProfile, responseLambda1, step, full1CProfile, full1CLambda1); 
+         if ( full1CProfile.size() > 0 ) {
+            Fits_setFullProfile(pOutFits, "P_1C_FULL", full1CProfile, full1CLambda1, step);
+         }
+      } 
             
       // j'enregistre la table des ordres dans le fichier de sortie
       Fits_setOrders(pOutFits,&spectro, &processInfo, ordre, dx_ref);
