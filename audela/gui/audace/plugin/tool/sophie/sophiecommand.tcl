@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.59 2011-02-10 19:38:11 robertdelmas Exp $
+# @version  $Id: sophiecommand.tcl,v 1.60 2011-02-13 16:06:37 michelpujol Exp $
 #------------------------------------------------------------
 
 ##------------------------------------------------------------
@@ -2016,6 +2016,10 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
             if { $zoom != [visu$visuNo zoom] } {
                ::confVisu::setZoom $::audace(visuNo) $zoom
             }
+            #--- j'ajoute des mots cles RA et DEC dans l'en-tete FITS
+            buf$private(bufNo) setkwd  [list "RA"  [ mc_angle2deg $::audace(telescope,getra)]  float "Telescope Right Ascension" "degres"]
+            buf$private(bufNo) setkwd  [list "DEC" [ mc_angle2deg $::audace(telescope,getdec)] float "Telescope Declination" "degres" ]
+
             #--- j'affiche l'image
             ::confVisu::autovisu $visuNo
 
