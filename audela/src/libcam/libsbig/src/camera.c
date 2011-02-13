@@ -250,7 +250,8 @@ int cam_init(struct camprop *cam, int argc, char **argv)
       for (kk = 3; kk < argc - 1; kk++) {
          if (strcmp(argv[kk], "-ip") == 0) {
             if (kk + 1 < argc) {
-               strcmp(cam->ip, argv[kk + 1]);
+               // je copie l'adresse (en controlant de ne pas depasser la taille de cam->ip)
+               strncpy(cam->ip, argv[kk + 1],sizeof(cam->ip)-1);
             }
          }
          if (strcmp(argv[kk], "-lptaddress") == 0) {
@@ -282,6 +283,10 @@ int cam_init(struct camprop *cam, int argc, char **argv)
             kk++;
          }
       }
+      // je copie le dernier digit
+      ip[kip] = (unsigned long) atoi(text);
+
+      
       ipAddress = (unsigned long) ip[3];
       ipAddress += (unsigned long) (ip[2] * 256);
       ipAddress += (unsigned long) (ip[1] * 256 * 256);
