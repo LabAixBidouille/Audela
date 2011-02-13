@@ -150,7 +150,6 @@ int cmdFingerlakesScan(ClientData clientData, Tcl_Interp * interp,
     unsigned long msloop, msloop10, msloops[10];
     char msgtcl[] =
 	"Usage: %s %s width height bin dt ?-firstpix index? ?-fast speed? ?-perfo? ?-tmpfile?";
-    char text[1024];
     ligne = (char *) calloc(200, sizeof(char));
     ligne2 = (char *) calloc(200, sizeof(char));
     if (argc < 6) {
