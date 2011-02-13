@@ -19,7 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-// @version  $Id: telescop.c,v 1.31 2011-01-23 18:07:51 michelpujol Exp $
+// @version  $Id: telescop.c,v 1.32 2011-02-13 15:37:44 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -836,7 +836,7 @@ int tel_radec_goto(struct telprop *tel) {
             gotoRa[12] = '\0';
          } // gotoRa	= "10h30m20s99" => OK
 
-         sprintf(ligne,"mc_angle2dms %.7f 90 zero 2 + string",tel->dec0);
+         sprintf(ligne,"mc_angle2dms %.7f 90 zero 1 + string",tel->dec0);
          if ( mytel_tcleval(tel,ligne) == TCL_ERROR) {
             sprintf(tel->msg, "tel_radec_goto %s error: %s", ligne, tel->interp->result);
             result = 1; 
@@ -2162,14 +2162,14 @@ void mytel_processNotification(struct telprop *tel, char * notification) {
                      tclResult = Tcl_Eval(tel->interp,ligne);
                      strcpy(radec,tel->interp->result);
                      // je convertis les angles en HMS et DMS
-                     sprintf(ligne,"mc_angle2hms [lindex {%s} 0] 360 zero 0 auto string",radec);
+                     sprintf(ligne,"mc_angle2hms [lindex {%s} 0] 360 zero 2 auto string",radec);
                      tclResult = Tcl_Eval(tel->interp,ligne);
                      if ( tclResult == TCL_ERROR) {
                         mytel_sendNotificationError(tel, 12, tel->interp->result);
                      } else {
                         strcpy(ra,tel->interp->result);                           
                      } 
-                     sprintf(ligne,"mc_angle2dms [lindex {%s} 1] 90 zero 0 + string",radec); 
+                     sprintf(ligne,"mc_angle2dms [lindex {%s} 1] 90 zero 1 + string",radec); 
                      tclResult = Tcl_Eval(tel->interp,ligne);
                      if ( tclResult == TCL_ERROR) {
                         mytel_sendNotificationError(tel, 13, tel->interp->result);
