@@ -366,6 +366,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    cam->interrupt = 0;
    
    cam->authorized = 1;
+   cam->pendingStop = 0;
    
    return 0;
 }
@@ -452,6 +453,9 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
    char s[100];
    int err;
    int time;
+
+   // je re-initilise l'indicateur de demande d'arret  qui sera utilisé dans cam_read_ccd
+   cam->pendingStop = 0;
    
    if (cam->authorized == 1) {
    /*
@@ -489,12 +493,16 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 void cam_stop_exp(struct camprop *cam)
 {
    int err;
+
+   // je positionne l'indicateur de demande d'arret qui sera utilisé dans cam_read_ccd
+   cam->pendingStop = 1;
+
    if (cam->authorized == 1) {
       // ca fait planter la lecture
-      //if ((err = FLICancelExposure(cam->device))) {
-      //   logfile("cam_stop_exp: refus d'arreter la pose\n");
-      //   return;
-      //}
+      if ((err = FLICancelExposure(cam->device))) {
+         logfile("cam_stop_exp: refus d'arreter la pose\n");
+         return;
+      }
       logfile("cam_stop_exp: pose arretee\n");
    }
 }
@@ -508,11 +516,21 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
       return;
    if (cam->authorized == 1) {
       
-      // Synchronisation avec l'obturateur
-      timeleft = 100;
-      while (timeleft !=  0) {
-         FLIGetExposureStatus(cam->device, &timeleft);
-         logfile("cam_read_ccd: attente de synchro obturateur\n");
+      if (cam->pendingStop == 0 ) {
+         // Si l'acquisition n'est pas interrompue par l'utilsateur 
+         // je verifie la synchronisation avec l'obturateur
+         timeleft = 100;
+         while (timeleft !=  0) {
+            FLIGetExposureStatus(cam->device, &timeleft);
+            logfile("cam_read_ccd: attente de synchro obturateur\n");
+         }
+      } else {
+         // Si l'acquisition est interrompue par l'utilsateur
+         // je ne verifie pas la synchonisation avec l'obturateur
+         // et je lis immediatement l'image
+
+         // reinitilisation de l'indicateur d'interruption
+         cam->pendingStop = 0;
       }
       
       /* Lecture de l'image */

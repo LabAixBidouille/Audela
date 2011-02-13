@@ -50,6 +50,7 @@ struct camprop {
     /* --- pour FingerLakes --- */
     flidev_t device;
     int nb_flushes;
+    int pendingStop;    // 1= une demande d'arret est en cours  0= pas de demande d'arret en cours
 };
 
 extern flidebug_t flidebuglevel;
