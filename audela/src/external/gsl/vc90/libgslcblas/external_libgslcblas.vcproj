@@ -66,10 +66,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)\$(ProjectName)_d.dll"
+				OutputFile="$(OutDir)\libgslcblas.dll"
+				GenerateManifest="false"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(TargetDir)$(ProjectName)_d.lib"
+				ImportLibrary="$(TargetDir)libgslcblas.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -140,9 +141,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				OutputFile="$(OutDir)\libgslcblas.dll"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(TargetDir)$(TargetName).lib"
+				ImportLibrary="$(TargetDir)libgslcblas.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -164,6 +166,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="install.bat Release"
 			/>
 		</Configuration>
 	</Configurations>
