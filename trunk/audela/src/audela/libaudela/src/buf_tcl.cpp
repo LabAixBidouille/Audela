@@ -20,9 +20,6 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <sstream>
-#include <iomanip>
-
 #include <math.h>
 #include <stdio.h>
 #ifdef WIN32
@@ -34,8 +31,6 @@
 #include "cpool.h"
 #include "cbuffer.h"
 #include "libtt.h"
-
-using namespace std;
 
 //------------------------------------------------------------------------------
 // La variable globale est definie de maniere unique ici.
@@ -213,10 +208,10 @@ int CmdBuf(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       sprintf(s,"%s choose sub-command among ",argv[0]);
       k=0;
       while (cmdlist[k].cmd!=NULL) {
-          sprintf(ss," %s",cmdlist[k].cmd);
-            strcat(s,ss);
-            k++;
-        }
+	      sprintf(ss," %s",cmdlist[k].cmd);
+			strcat(s,ss);
+			k++;
+		}
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       retour = TCL_ERROR;
    } else {
@@ -229,11 +224,11 @@ int CmdBuf(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       if(cmd->cmd==NULL) {
          sprintf(s,"%s %s : sub-command not found among ",argv[0], argv[1]);
          k=0;
-           while (cmdlist[k].cmd!=NULL) {
-               sprintf(ss," %s",cmdlist[k].cmd);
-               strcat(s,ss);
-               k++;
-           }
+		   while (cmdlist[k].cmd!=NULL) {
+			   sprintf(ss," %s",cmdlist[k].cmd);
+			   strcat(s,ss);
+			   k++;
+		   }
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          retour = TCL_ERROR;
       }
@@ -345,102 +340,87 @@ int cmdGetKwd(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
    CBuffer *buffer;
    CFitsKeywords *keywords;   // Objet de gestion des mots-cles
-   ostringstream oss;
+   char *ligne = (char*)calloc(1000,sizeof(char));
    int retour;
 
    if(argc!=3) {
-      oss << "Usage: " << argv[0] << " getkwd keyname";
+      sprintf(ligne,"Usage: %s getkwd keyname",argv[0]);
       retour = TCL_ERROR;
    } else {
       buffer = (CBuffer*)clientData;
       keywords = (CFitsKeywords*)buffer->GetKeywords();
       if(keywords==NULL) {
-         oss << CError::message(ELIBSTD_NO_KWDS);
+         strcpy(ligne,CError::message(ELIBSTD_NO_KWDS));
          retour = TCL_ERROR;
       } else {
          if ( strcmp(argv[2], "COMMENT") != 0 ) {
             CFitsKeyword *kwd;
             kwd = keywords->FindKeyword(argv[2]);
             if(kwd==NULL) {
-               oss << "{} {} {none} {} {}";
+               sprintf(ligne,"{} {} {none} {} {}");
             } else {
-               /* Sauvegarde de la configuration par défaut de l'oss */
-               std::ios_base::fmtflags ff = oss.flags();
-               int p = oss.precision();
-               int w = oss.width();
-
                switch(kwd->GetDatatype()) {
                   case TINT :
-                     oss << "{" << kwd->GetName() << "} " << kwd->GetIntValue() << " {int} { " << kwd->GetComment() << " } { " << kwd->GetUnit() << "}";
+                     sprintf(ligne,"{%s} %d {%s} {%s} {%s}",kwd->GetName(),kwd->GetIntValue(),"int",kwd->GetComment(),kwd->GetUnit());
                      break;
                   case TFLOAT :
                      if ((fabs(kwd->GetDoubleValue())<0.1)&&(fabs(kwd->GetDoubleValue())!=0.0)) {
-                        oss << "{" << kwd->GetName() << "} " << scientific << kwd->GetDoubleValue() << " {float} { " << kwd->GetComment() << " } { " << kwd->GetUnit() << "}";
+                        sprintf(ligne,"{%s} %e %s {%s} {%s}",kwd->GetName(),kwd->GetDoubleValue(),"float",kwd->GetComment(),kwd->GetUnit());
                      } else {
-                        oss << "{" << kwd->GetName() << "} " << setiosflags( ios::floatfield ) << kwd->GetDoubleValue() << " {float} { " << kwd->GetComment() << " } { " << kwd->GetUnit() << "}";
+                        sprintf(ligne,"{%s} %g %s {%s} {%s}",kwd->GetName(),kwd->GetDoubleValue(),"float",kwd->GetComment(),kwd->GetUnit());
                      }
                      break;
                   case TDOUBLE :
-                     oss << "{" << kwd->GetName() << "} " << setiosflags( ios::floatfield ) << setprecision(15) << kwd->GetDoubleValue() << " {double} { " << kwd->GetComment() << " } { " << kwd->GetUnit() << "}";
+                     sprintf(ligne,"{%s} %.15g %s {%s} {%s}",kwd->GetName(),kwd->GetDoubleValue(),"double",kwd->GetComment(),kwd->GetUnit());
                      break;
                   case TSTRING :
-                     oss << "{" << kwd->GetName() << "} {" << kwd->GetStringValue() << "} string { " << kwd->GetComment() << " } { " << kwd->GetUnit() << "}";
+                     sprintf(ligne,"{%s} {%s} %s {%s} {%s}",kwd->GetName(),kwd->GetStringValue(),"string",kwd->GetComment(),kwd->GetUnit());
                      break;
                   default :
-                     oss << "{} {} {none} {} {}";
+                     sprintf(ligne,"{} {} {none} {} {}");
                      break;
                }
-
-               /* Restauration de la configuration de l'oss */
-               oss.width( w );
-               oss.precision( p );
-               oss.flags( ff );
             }
          } else {
             std::list<CFitsKeyword *> keywordList = keywords->FindMultipleKeyword(argv[2]);
             std::list<CFitsKeyword *>::const_iterator iterator;
+            strcpy(ligne, "");
             for (iterator =  keywordList.begin(); iterator != keywordList.end(); ++iterator) {
+               char ligne2[1024];
                CFitsKeyword * kwd = *iterator;
-
-               /* Sauvegarde de la configuration par défaut de l'oss */
-               std::ios_base::fmtflags ff = oss.flags();
-               int p = oss.precision();
-               int w = oss.width();
 
                switch( kwd->GetDatatype()) {
                   case TINT :
-                     oss << "{" << kwd->GetName() << "} " << kwd->GetIntValue() << " {int} { " << kwd->GetComment() << " } { " << kwd->GetUnit() << "} ";
+                     sprintf(ligne2,"{%s} %d {%s} {%s} {%s} ",kwd->GetName(),kwd->GetIntValue(),"int",kwd->GetComment(),kwd->GetUnit());
                      break;
                   case TFLOAT :
                      if ((fabs(kwd->GetDoubleValue())<0.1)&&(fabs(kwd->GetDoubleValue())!=0.0)) {
-                        oss << "{" << kwd->GetName() << "} " << scientific << kwd->GetDoubleValue() << " {float} { " << kwd->GetComment() << " } { " << kwd->GetUnit() << "} ";
+                        sprintf(ligne2,"{%s} %e %s {%s} {%s} ",kwd->GetName(),kwd->GetDoubleValue(),"float",kwd->GetComment(),kwd->GetUnit());
                      } else {
-                        oss << "{" << kwd->GetName() << "} " << setiosflags( ios::floatfield ) << kwd->GetDoubleValue();
-                        oss << " {float} { " << kwd->GetComment() << " } { " << kwd->GetUnit() << "} ";
+                        sprintf(ligne2,"{%s} %g %s {%s} {%s} ",kwd->GetName(),kwd->GetDoubleValue(),"float",kwd->GetComment(),kwd->GetUnit());
                      }
                      break;
                   case TDOUBLE :
-                     oss << "{" << kwd->GetName() << "} " << setiosflags( ios::floatfield ) << setprecision(15) << setw(20) << kwd->GetDoubleValue();
-                     oss << " {double} { " << kwd->GetComment() << " } { " << kwd->GetUnit() << "} ";
+                     sprintf(ligne2,"{%s} %20.15g %s {%s} {%s} ",kwd->GetName(),kwd->GetDoubleValue(),"double",kwd->GetComment(),kwd->GetUnit());
                      break;
                   case TSTRING :
-                     oss << "{" << kwd->GetName() << "} {" << kwd->GetStringValue() << "} string { " << kwd->GetComment() << " } { " << kwd->GetUnit() << "} ";
+                     sprintf(ligne2,"{%s} {%s} %s {%s} {%s} ",kwd->GetName(),kwd->GetStringValue(),"string",kwd->GetComment(),kwd->GetUnit());
                      break;
                   default :
-                     oss << "{} {} {none} {} {} ";
+                     sprintf(ligne2,"{} {} {none} {} {} ");
                      break;
                }
 
-               /* Restauration de la configuration de l'oss */
-               oss.width( w );
-               oss.precision( p );
-               oss.flags( ff );
+               strcat(ligne, ligne2);
             }
+
+
          }
          retour = TCL_OK;
       }
    }
-   Tcl_SetResult(interp, const_cast<char*>(oss.str().c_str()),TCL_VOLATILE);
+   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+   free(ligne);
    return retour;
 }
 
@@ -457,25 +437,25 @@ int cmdDelKwd(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
    CFitsKeywords *keywords;
 
    if(argc!=3) {
-        ligne = (char*)calloc(1000,sizeof(char));
+		ligne = (char*)calloc(1000,sizeof(char));
       sprintf(ligne,"Usage: %s %s keyname",argv[0],argv[1]);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-        free(ligne);
+		free(ligne);
       return TCL_ERROR;
    }
 
    buffer = (CBuffer*)clientData;
    keywords = (CFitsKeywords*)buffer->GetKeywords();
    if(keywords==NULL) {
-       Tcl_SetResult(interp,CError::message(ELIBSTD_NO_KWDS),TCL_VOLATILE);
+	   Tcl_SetResult(interp,CError::message(ELIBSTD_NO_KWDS),TCL_VOLATILE);
       return TCL_ERROR;
    }
 
    res = keywords->Delete(argv[2]);
    if(res) {
-        Tcl_SetResult(interp,CError::message(res),TCL_VOLATILE);
+		Tcl_SetResult(interp,CError::message(res),TCL_VOLATILE);
       return TCL_ERROR;
-    }
+	}
    return TCL_OK;
 }
 
@@ -491,25 +471,25 @@ int cmdDelKwds(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
    CFitsKeywords *keywords;
 
    if(argc!=2) {
-        ligne = (char*)calloc(1000,sizeof(char));
+		ligne = (char*)calloc(1000,sizeof(char));
       sprintf(ligne,"Usage: %s %s",argv[0],argv[1]);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-        free(ligne);
+		free(ligne);
       return TCL_ERROR;
    }
 
    buffer = (CBuffer*)clientData;
    keywords = (CFitsKeywords*)buffer->GetKeywords();
    if(keywords==NULL) {
-       Tcl_SetResult(interp,CError::message(ELIBSTD_NO_KWDS),TCL_VOLATILE);
+	   Tcl_SetResult(interp,CError::message(ELIBSTD_NO_KWDS),TCL_VOLATILE);
       return TCL_ERROR;
    }
 
    res = keywords->DeleteAll();
    if(res) {
-        Tcl_SetResult(interp,CError::message(res),TCL_VOLATILE);
+		Tcl_SetResult(interp,CError::message(res),TCL_VOLATILE);
       return TCL_ERROR;
-    }
+	}
    return TCL_OK;
 }
 
@@ -544,28 +524,28 @@ int cmdGetKwds(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
             char *s;
             int len;
             len = 80*nb_kw;
-                s = new char[len];
-            memset(s,0,len);
-            kwd = keywords->GetFirstKeyword();
-             while(kwd) {
-             strcat(s,"\"");
-              strcat(s,kwd->GetName());
-               strcat(s,"\" ");
-                kwd = kwd->next;
-             }
-             delete[] s;
+				s = new char[len];
+         	memset(s,0,len);
+         	kwd = keywords->GetFirstKeyword();
+	         while(kwd) {
+   	         strcat(s,"\"");
+      	      strcat(s,kwd->GetName());
+         	   strcat(s,"\" ");
+            	kwd = kwd->next;
+	         }
+	         delete[] s;
             */
             std::set < std::string > keywordList;
-            kwd = keywords->GetFirstKeyword();
-             while(kwd) {
+         	kwd = keywords->GetFirstKeyword();
+	         while(kwd) {
                //char s[80];
                ::std::string ss ;
-             ss.append("\"");
-              ss.append(kwd->GetName());
-               ss.append("\" ");
+   	         ss.append("\"");
+      	      ss.append(kwd->GetName());
+         	   ss.append("\" ");
                keywordList.insert(ss);
-                kwd = kwd->next;
-             }
+            	kwd = kwd->next;
+	         }
 
             std::set < ::std::string > ::const_iterator iterator;
             strcpy(ligne, "");
@@ -574,11 +554,11 @@ int cmdGetKwds(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
             }
 
 
-          //Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-           retour = TCL_OK;
+   	      //Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      	   retour = TCL_OK;
          } else {
-          Tcl_SetResult(interp,CError::message(ELIBSTD_NO_KWDS),TCL_VOLATILE);
-             retour = TCL_ERROR;
+   	      Tcl_SetResult(interp,CError::message(ELIBSTD_NO_KWDS),TCL_VOLATILE);
+	         retour = TCL_ERROR;
          }
       }
    }
@@ -955,11 +935,11 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                //  lecture des parametres optionels
                for (int numArg = 3; numArg < argc; numArg++) {
                   if ( numArg + 1 <argc ) {
-                   if (strcmp(argv[numArg], "-quality") == 0) {
+   	               if (strcmp(argv[numArg], "-quality") == 0) {
                         quality = atoi(argv[numArg + 1]);
                      }
                   }
-                }
+	            }
 
                // je fabrique une palette par defaut
                palette[0] = pal0;
@@ -1246,7 +1226,7 @@ int cmdSave1d(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
         if (Buffer->GetCompressType()==BUFCOMPRESS_GZIP) {
             sprintf(ligne,"catch {file delete %s.gz}",nom_fichier); Tcl_Eval(interp,ligne);
             sprintf(ligne,"catch {gzip %s}",nom_fichier); Tcl_Eval(interp,ligne);
-        }
+       	}
 
       free(name);
       free(ext);
@@ -1322,7 +1302,7 @@ int cmdSave3d(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
         if (Buffer->GetCompressType()==BUFCOMPRESS_GZIP) {
             sprintf(ligne,"catch {file delete %s.gz}",nom_fichier); Tcl_Eval(interp,ligne);
             sprintf(ligne,"catch {gzip %s}",nom_fichier); Tcl_Eval(interp,ligne);
-        }
+       	}
 
       free(name);
       free(ext);
@@ -1900,30 +1880,30 @@ int cmdSetPixels(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
 
       //  lecture des parametres optionels
       for (i = 8; i < argc; i++) {
-       if (strcmp(argv[i], "-keep_keywords") == 0) {
+   	   if (strcmp(argv[i], "-keep_keywords") == 0) {
             keep_keywords = KEEP_KEYWORDS;
          }
 
-          if (strcmp(argv[i], "-pixels_size") == 0) {
-             pixelSize = atol(argv[i + 1]);
-          }
+	      if (strcmp(argv[i], "-pixels_size") == 0) {
+	         pixelSize = atol(argv[i + 1]);
+	      }
 
-          if (strcmp(argv[i], "-reverse_x") == 0) {
+	      if (strcmp(argv[i], "-reverse_x") == 0) {
             if ( strcmp(argv[i+1], "1" ) == 0) {
-                reverse_x = 1;
+	            reverse_x = 1;
             } else {
-                reverse_x = 0;
+	            reverse_x = 0;
             }
          }
 
-          if (strcmp(argv[i], "-reverse_y") == 0) {
+	      if (strcmp(argv[i], "-reverse_y") == 0) {
             if ( strcmp(argv[i+1], "1" ) == 0) {
-                reverse_y = 1;
+	            reverse_y = 1;
             } else {
-                reverse_y = 0;
+	            reverse_y = 0;
             }
-          }
-       }
+	      }
+	   }
    }
 
    if( retour != TCL_ERROR ) {
@@ -2414,7 +2394,7 @@ int cmdTtOffset(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       retour = TCL_ERROR;
    } else if(Tcl_GetDouble(interp,argv[2],&offset)!=TCL_OK) { // Decadage des arguments
-      sprintf(ligne,"Usage: %s %s offs\noffs = must be a     numerical value",argv[0],argv[1]);
+      sprintf(ligne,"Usage: %s %s offs\noffs = must be a	 numerical value",argv[0],argv[1]);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       retour = TCL_ERROR;
    } else {
@@ -4406,7 +4386,7 @@ int cmdA_StarList(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 
    threshin - pixels above threshin are taken by gauss filter,
          suggested:
-           threshin = (total average on the image) + 3*(total standard deviation of the image)
+		   threshin = (total average on the image) + 3*(total standard deviation of the image)
 
    filename - where save the star list - ?optional?
 
@@ -4435,58 +4415,58 @@ int cmdA_StarList(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
    }
    else
    {
-       if(Tcl_GetDouble(interp,argv[2],&threshin)!=TCL_OK)
-       {
-           sprintf(ligne,usage,argv[0],argv[1],"threshin is not double");
-           Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-           retour = TCL_ERROR;
-       }
-       else
-       {
-           if(argc>=4) filename = argv[3];
+	   if(Tcl_GetDouble(interp,argv[2],&threshin)!=TCL_OK)
+	   {
+		   sprintf(ligne,usage,argv[0],argv[1],"threshin is not double");
+		   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+		   retour = TCL_ERROR;
+	   }
+	   else
+	   {
+		   if(argc>=4) filename = argv[3];
 
-           if(argc>=5)
+		   if(argc>=5)
            {
-               if(strlen(argv[4])==1 && (argv[4][0]=='y' || argv[4][0]=='n'))
-               {
-                   if(argv[4][0]=='y')
-                       after_gauss = 1;
-               }
-               else
-               {
-                   sprintf(ligne,usage,argv[0],argv[1],"after_gauss is not y or n");
-                   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-                   retour = TCL_ERROR;
-               }
+			   if(strlen(argv[4])==1 && (argv[4][0]=='y' || argv[4][0]=='n'))
+			   {
+				   if(argv[4][0]=='y')
+					   after_gauss = 1;
+			   }
+			   else
+			   {
+				   sprintf(ligne,usage,argv[0],argv[1],"after_gauss is not y or n");
+				   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+				   retour = TCL_ERROR;
+			   }
            }
-           if(argc>=6 && retour == TCL_OK)
-               if(Tcl_GetDouble(interp,argv[5],&fwhm)!=TCL_OK)
-               {
-                   sprintf(ligne,usage,argv[0],argv[1],"fwhm is not double");
-                   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-                   retour = TCL_ERROR;
-               }
-           if(argc>=7 && retour == TCL_OK)
-               if(Tcl_GetInt(interp,argv[6],&radius)!=TCL_OK)
-               {
-                   sprintf(ligne,usage,argv[0],argv[1],"radius is not int");
-                   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-                   retour = TCL_ERROR;
-               }
-           if(argc>=8 && retour == TCL_OK)
-               if(Tcl_GetInt(interp,argv[7],&border)!=TCL_OK)
-               {
-                   sprintf(ligne,usage,argv[0],argv[1],"border is not int");
-                   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-                   retour = TCL_ERROR;
-               }
-           if(argc>=9 && retour == TCL_OK)
-               if(Tcl_GetDouble(interp,argv[8],&threshold)!=TCL_OK)
-               {
-                   sprintf(ligne,usage,argv[0],argv[1],"threshold is not double");
-                   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-                   retour = TCL_ERROR;
-               }
+		   if(argc>=6 && retour == TCL_OK)
+			   if(Tcl_GetDouble(interp,argv[5],&fwhm)!=TCL_OK)
+			   {
+				   sprintf(ligne,usage,argv[0],argv[1],"fwhm is not double");
+				   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+				   retour = TCL_ERROR;
+			   }
+		   if(argc>=7 && retour == TCL_OK)
+			   if(Tcl_GetInt(interp,argv[6],&radius)!=TCL_OK)
+			   {
+				   sprintf(ligne,usage,argv[0],argv[1],"radius is not int");
+				   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+				   retour = TCL_ERROR;
+			   }
+		   if(argc>=8 && retour == TCL_OK)
+			   if(Tcl_GetInt(interp,argv[7],&border)!=TCL_OK)
+			   {
+				   sprintf(ligne,usage,argv[0],argv[1],"border is not int");
+				   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+				   retour = TCL_ERROR;
+			   }
+		   if(argc>=9 && retour == TCL_OK)
+			   if(Tcl_GetDouble(interp,argv[8],&threshold)!=TCL_OK)
+			   {
+				   sprintf(ligne,usage,argv[0],argv[1],"threshold is not double");
+				   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+				   retour = TCL_ERROR;
+			   }
 
          if(argc>=10 && retour == TCL_OK) {
             if(Tcl_SplitList(interp,argv[9],&listArgc,&listArgv)!=TCL_OK) {
@@ -4517,37 +4497,37 @@ int cmdA_StarList(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
                }
             }
          }
-           if(argc>=11 && retour == TCL_OK)
+		   if(argc>=11 && retour == TCL_OK)
            {
-               if(Tcl_GetInt(interp,argv[10],&fileFormat)!=TCL_OK)
-               {
-                   sprintf(ligne,usage,argv[0],argv[1],"output format must be 1 or 2 (defaut=1)");
-                   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-                   retour = TCL_ERROR;
+			   if(Tcl_GetInt(interp,argv[10],&fileFormat)!=TCL_OK)
+			   {
+				   sprintf(ligne,usage,argv[0],argv[1],"output format must be 1 or 2 (defaut=1)");
+				   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+				   retour = TCL_ERROR;
                }
                else
                {
                    if ( fileFormat < 1 || fileFormat > 2 )
                    {
-                      sprintf(ligne,usage,argv[0],argv[1],"output format must be 1 or 2 (defaut=1)");
-                      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-                      retour = TCL_ERROR;
+				      sprintf(ligne,usage,argv[0],argv[1],"output format must be 1 or 2 (defaut=1)");
+				      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+				      retour = TCL_ERROR;
                    }
                }
            }
-           if(retour == TCL_OK)
-           {
+		   if(retour == TCL_OK)
+		   {
             try {
-               msg = buffer->A_StarList(x1-1,y1-1,x2-1,y2-1,threshin,filename, fileFormat, fwhm,radius,border,threshold,after_gauss);
-                   sprintf(ligne,"%d",msg);
+			   msg = buffer->A_StarList(x1-1,y1-1,x2-1,y2-1,threshin,filename, fileFormat, fwhm,radius,border,threshold,after_gauss);
+				   sprintf(ligne,"%d",msg);
                retour = TCL_OK;
             } catch(const CError& e) {
                sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
-                   retour = TCL_ERROR;
-               }
-                   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-           }
-       }
+				   retour = TCL_ERROR;
+			   }
+				   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+		   }
+	   }
    }
 
    delete[] ligne;
@@ -4767,7 +4747,7 @@ int cmdRegion(ClientData , Tcl_Interp *interp, int argc, char *argv[])
          isInRegion = PtInRegion(region, x, y);
          DeleteObject(region);
 
-          sprintf(ligne,"%d",isInRegion);
+	      sprintf(ligne,"%d",isInRegion);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          retour = TCL_OK;
       } catch(const CError& e) {
@@ -4937,7 +4917,7 @@ int cmdSlitCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 
 /*==============================================================================
 // buf$i cmdFiberCentro
-//  Fonction de calcul du centroide sur une entrée de fibre optique.
+//  Fonction de calcul du centroide sur une entrée de fibre optique. 
 //
 //
  *  Parameters IN:
