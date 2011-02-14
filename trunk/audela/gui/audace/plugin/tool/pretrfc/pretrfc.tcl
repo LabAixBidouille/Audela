@@ -2,7 +2,7 @@
 # Fichier : pretrfc.tcl
 # Description : Outil pour le pretraitement automatique
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise à jour $Id: pretrfc.tcl,v 1.32 2010-12-28 19:24:11 robertdelmas Exp $
+# Mise à jour $Id: pretrfc.tcl,v 1.33 2011-02-14 21:58:04 robertdelmas Exp $
 #
 
 #============================================================
@@ -1733,7 +1733,7 @@ proc getPluginHelp { } {
       if {[llength $valeur] > 1} {
          set test 0
       }
-      #--- Teste que le nom des images ne contient pas de caracters interdits
+      #--- Teste que le nom des images ne contient pas de caracteres interdits
       if {[TestChaine $valeur] == 0} {
          set test 0
       }
@@ -1773,21 +1773,6 @@ proc getPluginHelp { } {
       return $test
    }
 #***** Fin procedure de test de validite d'une chaine de caracteres **
-
-#***** Procedure de test de validite d'un nombre reel ****************
-#--- Cette procedure (inspiree de methking.tcl) verifie que la chaine passee en argument decrit
-#--- bien un reel. Elle retourne 1 si c'est la cas, et 0 si ce n'est pas un entier.
-   proc TestReel { valeur } {
-      set test 1
-      for {set i 0} {$i < [string length $valeur]} {incr i} {
-         set a [string index $valeur $i]
-         if {![string match {[0-9.]} $a]} {
-            set test 0
-         }
-      }
-      return $test
-   }
-#***** Fin de la procedure de test de validite d'un nombre reel ******
 
 #***** Procedure d'affichage des messages ****************************
 #--- Cette procedure est recopiee de methking.tcl, elle permet l'affichage de differents

@@ -2,7 +2,7 @@
 # Fichier : specLhIII.tcl
 # Description : Reduction complete des spectres Lhires III
 # Auteur : François COCHARD
-# Mise à jour $Id: specLhIII.tcl,v 1.6 2010-05-01 09:24:26 robertdelmas Exp $
+# Mise à jour $Id: specLhIII.tcl,v 1.7 2011-02-14 21:59:02 robertdelmas Exp $
 #
 
 #==============================================================
@@ -1720,21 +1720,6 @@ namespace eval ::spbmfc {
       return $test
    }
 #***** Fin de la procedure de test de validité d'une chaine de caractères *******
-
-#***** Procedure de test de validité d'un nombre réel *****************
-# Cette procédure (inspirée de Methking) vérifie que la chaine passée en argument décrit
-# bien un réel. Elle retourne 1 si c'est la cas, et 0 si ce n'est pas un entier.
-   proc TestReel { valeur } {
-      set test 1
-      for {set i 0} {$i < [string length $valeur]} {incr i} {
-         set a [string index $valeur $i]
-         if {![string match {[0-9.]} $a]} {
-            set test 0
-         }
-      }
-      return $test
-   }
-#***** Fin de la procedure de test de validité d'un nombre réel *******
 
 #***** Procedure d'affichage des messages ************************
 # Cette procédure est recopiée de Methking.tcl. Elle permet l'affichage de differents
