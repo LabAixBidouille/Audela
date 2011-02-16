@@ -1,6 +1,6 @@
 #
 # Fichier : bddimages_recherche.cap
-# Mise a jour $Id: bddimages_recherche.cap,v 1.4 2011-01-24 00:35:08 jberthier Exp $
+# Mise a jour $Id: bddimages_recherche.cap,v 1.5 2011-02-16 14:26:20 fredvachier Exp $
 #
 
 #=========================================================================
@@ -28,6 +28,8 @@ set caption(bddimages_recherche,fermer)         "Fermer"
 set caption(bddimages_recherche,selectall)      "Sélectionner tout"
 set caption(bddimages_recherche,voirimg)        "Voir l'image"
 set caption(bddimages_recherche,voirheader)     "Voir le header"
+set caption(bddimages_recherche,delete)         "Suppression"
+set caption(bddimages_recherche,define)         "Modification"
 set caption(bddimages_recherche,msg_erreur)     "Erreur"
 set caption(bddimages_recherche,msg_internet)   "Erreur connexion"
 
@@ -88,6 +90,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bddimages_recherche,selectall)      "Sélectionner tout"
    set caption(bddimages_recherche,voirimg)        "Voir l'image"
    set caption(bddimages_recherche,voirheader)     "Voir le header"
+   set caption(bddimages_recherche,delete)         "Suppression"
+   set caption(bddimages_recherche,define)         "Modification"
    set caption(bddimages_recherche,msg_erreur)     "Erreur"
    set caption(bddimages_recherche,msg_internet)   "Erreur connexion"
    

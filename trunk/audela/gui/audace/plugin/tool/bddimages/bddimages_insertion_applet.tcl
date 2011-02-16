@@ -1,5 +1,5 @@
 #
-# Mise à jour $Id: bddimages_insertion_applet.tcl,v 1.3 2011-01-21 11:06:23 jberthier Exp $
+# Mise à jour $Id: bddimages_insertion_applet.tcl,v 1.4 2011-02-16 14:26:20 fredvachier Exp $
 #
 
 #--------------------------------------------------
@@ -336,3 +336,71 @@ proc insertion_auto { } {
    # Fin: while
 }
 # Fin: proc
+
+
+
+proc insertion_solo { nomfich } {
+
+   global conf
+   global bddconf
+   global caption
+   global entetelog
+
+   ::console::affiche_resultat "Insertion Solo : $nomfich \n"
+
+   set fichlock "$conf(bddimages,dirinco)/lock"
+
+   if {[file exists $fichlock]==1} {
+      ::console::affiche_resultat "BDI lock : inserez plus tard \n"
+      return
+      }
+
+   set result    [info_fichier $nomfich]
+   set erreur    [lindex $result 0]
+   set etat      [lindex $result 1]
+   set nomfich   [lindex $result 2]
+   set dateiso   [lindex $result 3]
+   set site      [lindex $result 4]
+   set sizefich  [lindex $result 5]
+   set tabkey    [lindex $result 6]
+
+   #::console::affiche_resultat "site : $site \n"
+
+   set fic [file tail $nomfich]
+   set entetelog $fic
+
+   if {$erreur!=0} {
+      set dirpb "$conf(bddimages,direrr)"
+      createdir_ifnot_exist $dirpb
+      set dirpb "$conf(bddimages,direrr)/err$erreur"
+      createdir_ifnot_exist $dirpb
+      bddimages_sauve_fich "insertion_solo: Deplacement du fichier $nomfich dans $dirpb"
+      set errnum [catch {file rename $nomfich $dirpb/} msg]
+      set errcp [string first "file already exists" $msg]
+      if {$errcp>0||$errnum==0} {
+         set errnum [catch {file delete $nomfich} msg]
+         if {$errnum!=0} {
+            bddimages_sauve_fich "insertion_solo: ERREUR 111 : effacement de $nomfich impossible <err=$errnum> <msg=$msg>"
+            return 111
+            } else {
+            bddimages_sauve_fich "insertion_solo: Fichier $nomfich supprime"
+            }
+         }
+      set erreur "Erreur <$erreur> : $caption(bddimages_insertion,err$erreur)"
+      }
+
+   set ligne [list $etat $nomfich $dateiso $site $sizefich $erreur $tabkey]
+
+   if {$erreur==0} {
+
+      # Ici se fait l'Insertion de l image
+
+      set liste     [bddimages_insertion_unfich $ligne]
+
+      set err       [lindex $liste 0]
+      set nomfich   [lindex $liste 1]
+      if {$err==-1} {return}
+      }
+
+
+}

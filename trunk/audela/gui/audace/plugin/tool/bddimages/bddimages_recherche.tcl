@@ -6,7 +6,7 @@
 # Description    : Environnement de recherche des images
 #                  dans la base de donnees
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_recherche.tcl,v 1.7 2011-01-26 14:14:49 fredvachier Exp $
+# Mise à jour $Id: bddimages_recherche.tcl,v 1.8 2011-02-16 14:26:20 fredvachier Exp $
 #
 #--------------------------------------------------
 #
@@ -19,195 +19,12 @@
 #  bddimages_recherche.cap
 #
 #--------------------------------------------------
-#
-#   -- Procedures du namespace
-#
-#--------------------------------------------------
-# run { this }
-#--------------------------------------------------
-#
-#    fonction  :
-#        Creation de la fenetre
-#
-#    procedure externe :
-#
-#    variables en entree :
-#        this = chemin de la fenetre
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-# fermer { }
-#--------------------------------------------------
-#
-#    fonction  :
-#        Fonction appellee lors de l'appui
-#        sur le bouton 'Fermer'
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-#  init_info { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Initialisation de la liste des fichiers
-#       du repertoire "incoming" dans conf(dirinco)
-#       pour l affichage dans la table.
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-#  recup_position { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Permet de recuperer et de sauvegarder
-#       la position de la fenetre
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-#  affiche_entete { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Permet d afficher l entete d un fichier
-#       selectionné
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-#  affiche_image { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Permet d afficher l image d un fichier
-#       selectionné
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-#  createDialog { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Creation de l'interface graphique
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-#  createTbl { frame }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Affiche la table avec ses scrollbars dans une
-#	frame et cree le menu pop-up associe
-#
-#    procedure externe :
-#
-#    variables en entree :
-#        frame = Fenetre ou s affiche la table
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-#  cmdFormatColumn { column_name }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Definit la largeur, la traduction du titre
-#	et la justification des colonnes
-#
-#    procedure externe :
-#
-#    variables en entree :
-#        column_name =
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-#  cmdButton1Click { frame }
-#--------------------------------------------------
-#
-#    fonction  :
-#
-#    procedure externe :
-#
-#    variables en entree :
-#        frame = Fenetre ou s affiche la table
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-#  cmdSortColumn { tbl col }
-#--------------------------------------------------
-#
-#    fonction  :
-#	Trie les lignes par ordre alphabetique de
-#	la colonne (est appele quand on clique sur
-#	le titre de la colonne)
-#
-#    procedure externe :
-#
-#    variables en entree :
-#        tbl =
-#        col =
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-#  Affiche_Results
-#--------------------------------------------------
-#
-#    fonction  :
-#	Affiche la liste des objets de l'image
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
 
 namespace eval bddimages_recherche {
 
    global audace
    global bddconf
 
-   #--- Chargement des captions
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_recherche.cap ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_insertion_applet.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_sub_fichier.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_liste.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_liste.cap ]\""
-
-
 #--------------------------------------------------
 # run { this }
 #--------------------------------------------------
@@ -218,9 +35,10 @@ namespace eval bddimages_recherche {
 #    procedure externe :
 #
 #    variables en entree :
-#        this = chemin de la fenetre
+#        @param this = chemin de la fenetre
 #
 #    variables en sortie :
+#        @return
 #
 #--------------------------------------------------
 
@@ -290,7 +108,7 @@ namespace eval bddimages_recherche {
 
 
 #--------------------------------------------------
-#  affiche_image { }
+#  affiche_image_by_idbddimg { id }
 #--------------------------------------------------
 #
 #    fonction  :
@@ -298,8 +116,10 @@ namespace eval bddimages_recherche {
 #       selectionné
 #
 #    procedure externe :
+#        charge $fp : $fp est le chemin de l image sur le disque
 #
 #    variables en entree :
+#        @param id = identification de l image dans la base de donnees
 #
 #    variables en sortie :
 #
@@ -320,12 +140,27 @@ namespace eval bddimages_recherche {
       set line [lindex $rowvar 0]
       set fp [file join $::bddconf(dirbase) [lindex $line 0] [lindex $line 1] ]
       set bufno $::bddconf(bufno)
-#      set errnum [catch {buf$bufno load $fp} msg ]
       charge $fp
-
+      return
    }
 
 
+#--------------------------------------------------
+#  affiche_image { }
+#--------------------------------------------------
+#
+#    fonction  :
+#       Permet d afficher l image d un fichier
+#       selectionne par clic dans la liste du tk 
+#
+#    procedure externe :
+#        affiche_image_by_idbddimg $id : $id = identification de l image dans la base de donnees
+#
+#    variables en entree :
+#
+#    variables en sortie :
+#
+#--------------------------------------------------
    proc affiche_image { } {
       variable This
       global audace
@@ -345,39 +180,83 @@ namespace eval bddimages_recherche {
       ###     if { $errnum == "1" } {
       ###        tk_messageBox -message "$msg" -icon error
       ###     }
-	   ###     return # affiche seulement le premier fichier selectionné et sort de la procedure
-	   ###  }
+      ###     return # affiche seulement le premier fichier selectionné et sort de la procedure
+      ###  }
       ###}
-      ###return
+      return
    }
 
 
-# Lorsque le nom d'une liste a ete selectionne dans la table des listes
-  proc cmd_list_select { tbl } {
-   set i [$tbl curselection]
-   set row [$tbl get $i $i]
-   set name [lindex $row 0]
-   set num [::bddimages_liste::get_intellilist_by_name $name]
-#   set num [expr $i + 1]
-#   ::bddimages_recherche::Affiche_listes
-#   unset ::table_result($num)
-   ::bddimages_recherche::get_list $num
-   ::bddimages_recherche::Affiche_Results $num
-  }
+#--------------------------------------------------
+#  cmd_list_select { }
+#--------------------------------------------------
+#
+#    fonction  :
+#       Affiche les elements d une liste, selectionnee dans le frame list
+#       par clic dans la liste du tk 
+#
+#    procedure externe :
+#        get_intellilist_by_name
+#        get_list
+#        Affiche_Results
+#
+#    variables en entree :
+#        @param tbl = entree tk
+#
+#    variables en sortie :
+#
+#--------------------------------------------------
 
-  proc cmd_list_delete { tbl } {
-   set i [$tbl curselection]
-   set row [$tbl get $i $i]
-   set name [lindex $row 0]
-   set num [::bddimages_liste::get_intellilist_by_name $name]
-   for { set i 0 } { $i < $::nbintellilist } { incr i } {
-    set ::intellilisttotal($i) $::intellilisttotal([expr $i+1])
-   }
-   set ::nbintellilist [expr $::nbintellilist - 1]
-   ::bddimages_recherche::Affiche_listes
-   ::bddimages_liste::conf_save_intellilists
-#   unset ::table_result($num)
-  }
+   proc ::bddimages_recherche::cmd_list_select { tbl } {
+
+    variable ::bddimages_recherche::current_list_name
+    variable ::bddimages_recherche::current_list_id
+    variable ::bddimages_recherche::tbl_cmd_list_select
+
+      ::console::affiche_resultat "cmd_list_select $tbl \n"
+      
+      set ::bddimages_recherche::tbl_cmd_list_select $tbl
+      set i [$tbl curselection]
+      set row [$tbl get $i $i]
+      set ::bddimages_recherche::current_list_name [lindex $row 0]
+      set ::bddimages_recherche::current_list_id [::bddimages_liste::get_intellilist_by_name $::bddimages_recherche::current_list_name]
+      ::bddimages_recherche::get_list $::bddimages_recherche::current_list_id
+      ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id
+      return
+      }
+
+#--------------------------------------------------
+#  cmd_list_delete { }
+#--------------------------------------------------
+#
+#    fonction  :
+#       Supprime un element d une liste, selectionnee dans le frame list
+#       par clic dans la liste du tk 
+#
+#    procedure externe :
+#        get_intellilist_by_name
+#        Affiche_listes
+#        conf_save_intellilists
+#
+#    variables en entree :
+#        @param tbl = entree tk
+#
+#    variables en sortie :
+#
+#--------------------------------------------------
+   proc cmd_list_delete { tbl } {
+      set i [$tbl curselection]
+      set row [$tbl get $i $i]
+      set name [lindex $row 0]
+      set num [::bddimages_liste::get_intellilist_by_name $name]
+      for { set i 0 } { $i < $::nbintellilist } { incr i } {
+         set ::intellilisttotal($i) $::intellilisttotal([expr $i+1])
+         }
+      set ::nbintellilist [expr $::nbintellilist - 1]
+      ::bddimages_recherche::Affiche_listes
+      ::bddimages_liste::conf_save_intellilists
+      return
+      }
 
 #--------------------------------------------------
 #  createDialog { }
@@ -395,15 +274,19 @@ namespace eval bddimages_recherche {
 #--------------------------------------------------
 
 
-# |-------------------------------------------|
+# |-fenetre-----------------------------------|
 # |                                           |
-# | |-frame0-------------------------------|  |
+# | |-menu---------------------------------|  |
 # | |                                      |  |
 # | |--------------------------------------|  |
 # |                                           |
-# | |-frame1-------------------------------|  |
+# | |-boutons------------------------------|  |
 # | |                                      |  |
-# | | |---------| |----------------------| |  |
+# | |--------------------------------------|  |
+# |                                           |
+# | |-table--------------------------------|  |
+# | |                                      |  |
+# | | |-liste---| |-images---------------| |  |
 # | | |	        | |			 | |  |
 # | | |	        | |			 | |  |
 # | | |	        | |			 | |  |
@@ -415,7 +298,7 @@ namespace eval bddimages_recherche {
 # | |                                      |  |
 # | |--------------------------------------|  |
 # |					      |
-# | |--------------------------------------|  |
+# | |-frame2-------------------------------|  |
 # | |					   |  |
 # | |--------------------------------------|  |
 # |					      |
@@ -423,6 +306,7 @@ namespace eval bddimages_recherche {
 
 
    proc createDialog { } {
+
       variable This
       global audace
       global caption
@@ -462,10 +346,6 @@ namespace eval bddimages_recherche {
 
       #--- Lecture des champs de la table
 
-       #--- Gestion des erreurs
- #      if { [llength $bddconf(liste)] != 0} {
-#      if { $erreur == "0" && $status != "failed"} {}
-
          #---
          toplevel $This -class Toplevel
          wm geometry $This $bddconf(position_status)
@@ -475,19 +355,31 @@ namespace eval bddimages_recherche {
 
 
          #--- Cree un menu pour le panneau
+         
+         
+         
+         
+         
+         
+         
          frame $This.frame0 -borderwidth 1 -relief raised
          pack $This.frame0 -side top -fill x
+         
            #--- menu Fichier
            menubutton $This.frame0.file -text "$caption(search,fichier)" -underline 0 -menu $This.frame0.file.menu
-           menu $This.frame0.file.menu
+  
+             menu $This.frame0.file.menu
+
              $This.frame0.file.menu add command -label "$caption(bddimages_recherche,new_list)" -command { ::bddimages_liste::run $audace(base).bddimages_liste }
              $This.frame0.file.menu add command -label "$caption(bddimages_recherche,delete_list)" -command " ::bddimages_recherche::cmd_list_delete $This.frame6.liste.tbl "
-#             $This.frame0.file.menu add separator
-#             $This.frame0.file.menu add command -label "$caption(search,ouvre)" -command {  }
-#             $This.frame0.file.menu add command -label "$caption(search,sauve)" -command {  }
-#             $This.frame0.file.menu add command -label "$caption(search,sauvess)" -command {  }
-#             $This.frame0.file.menu add command -label "$caption(search,fermer_B)" -command {  }
+             # $This.frame0.file.menu add separator
+             # $This.frame0.file.menu add command -label "$caption(search,ouvre)" -command {  }
+             # $This.frame0.file.menu add command -label "$caption(search,sauve)" -command {  }
+             # $This.frame0.file.menu add command -label "$caption(search,sauvess)" -command {  }
+             # $This.frame0.file.menu add command -label "$caption(search,fermer_B)" -command {  }
+
            pack $This.frame0.file -side left
+
            #--- menu Image
            menubutton $This.frame0.image -text "$caption(search,image)" -underline 0 -menu $This.frame0.image.menu
            menu $This.frame0.image.menu
@@ -500,12 +392,12 @@ namespace eval bddimages_recherche {
            menu $This.frame0.aide.menu
              $This.frame0.aide.menu add command -label "$caption(search,aide)" -command { }
              #$This.frame0.aide.menu add command -label "$caption(search,aide_skybot)" -command {  }
-	     $This.frame0.aide.menu add separator
+             $This.frame0.aide.menu add separator
              $This.frame0.aide.menu add command -label "$caption(search,code_uai)" -command {  }
              # $This.frame0.aide.menu add separator
              # $This.frame0.aide.menu add command -label "$caption(search,apropos)" -command { ::skybot_Search::apropos }
            pack $This.frame0.aide -side right
-	 #--- barre de menu
+         #--- barre de menu
 	 tk_menuBar $This.frame0 $This.frame0.file $This.frame0.image $This.frame0.aide
 
 
@@ -622,17 +514,6 @@ namespace eval bddimages_recherche {
                -textvariable bddconf(inserinfo)
            pack $This.frame11.nbimg -in $This.frame11 -side left -padx 3 -pady 1 -anchor w
 
- #      } else {
- #
- #         tk_messageBox -title $caption(bddimages_recherche,msg_erreur) -type ok -message $caption(bddimages_recherche,msg_internet)
- # #         $audace(base).bddimages.fra5.but1 configure -relief raised -state normal
- #         return
- #
- #      }
-
-
- #      ::bddimages_recherche::Affiche_Results
-
        Affiche_listes
 
       #--- Lecture des info des images
@@ -651,17 +532,17 @@ namespace eval bddimages_recherche {
    }
 
 #--------------------------------------------------
-#  createTbl { frame }
+#  Tbl2Edit { tbl }
 #--------------------------------------------------
 #
 #    fonction  :
-#       Affiche la table avec ses scrollbars dans une
-#	frame et cree le menu pop-up associe
+#       
+#	
 #
 #    procedure externe :
 #
 #    variables en entree :
-#        frame = Fenetre ou s affiche la table
+#        tbl = frame tk
 #
 #    variables en sortie :
 #
@@ -675,6 +556,9 @@ namespace eval bddimages_recherche {
      puts "Tbl2GetListName : $name"
      ::bddimages_liste::run $audace(base).bddimages_liste $name
    }
+   
+   
+   
 
    proc createTbl2 { frame } {
       variable This
@@ -771,6 +655,21 @@ namespace eval bddimages_recherche {
         # Labels Lire le Header
         $popupTbl add command -label $caption(bddimages_recherche,voirheader) \
            -command { ::bddimages_recherche::affiche_entete}
+
+        # Separateur
+        $popupTbl add separator
+
+        # Labels Define
+        $popupTbl add command -label $caption(bddimages_recherche,define) \
+           -command { ::bddimages_recherche::bddimages_define }
+
+        # Separateur
+        $popupTbl add separator
+
+        # Labels Effacement de l image
+        $popupTbl add command -label $caption(bddimages_recherche,delete) \
+           -command { ::bddimages_recherche::bddimages_images_delete }
+
         # Separateur
         $popupTbl add separator
         # Acces a l'aide
@@ -783,6 +682,43 @@ namespace eval bddimages_recherche {
       bind [$tbl bodypath] <Double-ButtonPress-1> { ::bddimages_recherche::affiche_image }
 
    }
+
+
+
+proc bddimages_define {  } {
+
+   global audace
+   global bddconf
+
+   set l [$::bddimages_recherche::This.frame6.result.tbl curselection ]
+   set l [lsort -decreasing -integer $l]
+   set bddconf(define) ""
+   foreach i $l {
+      lappend bddconf(define) [lindex [$::bddimages_recherche::This.frame6.result.tbl get $i] 0]
+      }
+
+   ::console::affiche_resultat "\n**\n run define sur $audace(base).bddimages_define \n**\n"
+   ::bddimages_define::run $audace(base).bddimages_define
+
+   
+   }
+
+
+
+
+proc bddimages_images_delete {  } {
+
+   set l [$::bddimages_recherche::This.frame6.result.tbl curselection ]
+   set l [lsort -decreasing -integer $l]
+   foreach i $l {
+      set idbddimg  [lindex [$::bddimages_recherche::This.frame6.result.tbl get $i] 0]
+      bddimages_image_delete $idbddimg
+      $::bddimages_recherche::This.frame6.result.tbl delete $i
+      }
+   }
+
+
+
 
 #--------------------------------------------------
 #  cmdFormatColumn { column_name }
@@ -873,7 +809,7 @@ namespace eval bddimages_recherche {
 #
 #--------------------------------------------------
 
-   proc Affiche_Results { i } {
+   proc ::bddimages_recherche::Affiche_Results { i } {
       variable This
       global audace caption color
       global bddconf popupTbl
@@ -883,24 +819,29 @@ namespace eval bddimages_recherche {
       global color
       global list_of_columns
 
-      ::console::affiche_resultat "clock seconds [clock seconds] \n"
+      #::console::affiche_resultat "clock seconds [clock seconds] \n"
 
-      set list_of_columns [list "idbddimg" "filename" "telescop" "date-obs" "object" ]
+      set list_of_columns [list "idbddimg" "filename" "telescop" "date-obs" "exposure" "object" "filter" "bin1" "bin2" "bddimages_version" "bddimages_states" "bddimages_type" "bddimages_wcs"]
+      set empty [list "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-"]
 
       set table $table_result($i)
+      #::console::affiche_resultat "table: $i \n"
+      
       set nbobj [llength $table]
       set bddconf(inserinfo) "Total($nbobj)"
       set nbcol [llength $list_of_columns]
-       ::console::affiche_resultat "nbcol = $nbcol \n"
-       ::console::affiche_resultat "nbobj = $nbobj \n"
+      # ::console::affiche_resultat "nbcol = $nbcol \n"
+      # ::console::affiche_resultat "nbobj = $nbobj \n"
 
       set affich_table ""
+
+
       foreach line $table {
-       set lign_affich ""
+       set lign_affich $empty
        for { set i 0 } { $i < $nbcol} { incr i } {
            foreach var $line {
 	      if {[lindex $var 0] eq [lindex $list_of_columns $i]} {
-		lappend lign_affich [lindex $var 1]
+                set lign_affich [lreplace $lign_affich $i $i [lindex $var 1]]
                 break
 		}
               }
@@ -1024,6 +965,7 @@ proc ::bddimages_recherche::get_list { i } {
 
 
    set laliste  $intellilisttotal($i)
+   #::console::affiche_resultat "laliste = $laliste\n"
    set val [lindex $laliste 0]
    set intellilist(name) [lindex $val 1]
    set laliste [::ldelete $laliste 0]
@@ -1061,15 +1003,16 @@ proc ::bddimages_recherche::get_list { i } {
      }
 
 
-  ::console::affiche_resultat "-- affich_form_req\n "
-  ::console::affiche_resultat "name           		= $intellilist(name)\n"
-  ::console::affiche_resultat "type_req_check 		= $intellilist(type_req_check)\n"
-  ::console::affiche_resultat "type_requ 		= $intellilist(type_requ)\n"
-  ::console::affiche_resultat "choix_limit_result	= $intellilist(choix_limit_result)\n"
-  ::console::affiche_resultat "limit_result		= $intellilist(limit_result)\n"
-  ::console::affiche_resultat "type_result		= $intellilist(type_result)\n"
-  ::console::affiche_resultat "type_select		= $intellilist(type_select)\n"
-  ::console::affiche_resultat "nbcond			= $nbcond\n"
+  #::console::affiche_resultat "-- affich_form_req\n "
+  #::console::affiche_resultat "name           		= $intellilist(name)\n"
+  #::console::affiche_resultat "type_req_check 		= $intellilist(type_req_check)\n"
+  #::console::affiche_resultat "type_requ 		= $intellilist(type_requ)\n"
+  #::console::affiche_resultat "choix_limit_result	= $intellilist(choix_limit_result)\n"
+  #::console::affiche_resultat "limit_result		= $intellilist(limit_result)\n"
+  #::console::affiche_resultat "type_result		= $intellilist(type_result)\n"
+  #::console::affiche_resultat "type_select		= $intellilist(type_select)\n"
+  #::console::affiche_resultat "laliste			= $laliste\n"
+  #::console::affiche_resultat "nbcond			= $nbcond\n"
 
 
   if { $intellilist(type_req_check)==0} {
@@ -1087,6 +1030,7 @@ proc ::bddimages_recherche::get_list { i } {
 
   set cpt 0
   set sqlcriteres {}
+  
   for {set x 1} {$x<=$nbcond} {incr x} {
     if {$cpt==0} {
       set sqlcritere "`$list_key_to_var($intellilist($x,champ))` $intellilist($x,condition) '$intellilist($x,valeur)' "
@@ -1098,7 +1042,7 @@ proc ::bddimages_recherche::get_list { i } {
 
   set sqlcritere [join $sqlcriteres " $cond " ]
 
-  ::console::affiche_resultat "lecture des idheader : "
+  #::console::affiche_resultat "lecture des idheader : "
   set sqlcmd "SELECT DISTINCT idheader FROM header;"
   set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
   if {$err} {
@@ -1109,7 +1053,7 @@ proc ::bddimages_recherche::get_list { i } {
      set intellilist(nbimg) "Error"
      return
      }
-  ::console::affiche_resultat "[llength $resultsql ]\n"
+  #::console::affiche_resultat "[llength $resultsql ]\n"
 
   set intellilist(nbimg) 0
   set table ""
@@ -1117,7 +1061,7 @@ proc ::bddimages_recherche::get_list { i } {
 
   foreach line $resultsql {
     set idhd [lindex $line 0]
-    ::console::affiche_resultat "**+++ $idhd \n"
+    #::console::affiche_resultat "**+++ $idhd \n"
     set sqlcmd "SELECT images.idheader,images.tabname,images.filename,
                 images.dirfilename,images.sizefich,images.datemodif,
                 images_$idhd.* FROM images,images_$idhd
@@ -1132,7 +1076,7 @@ proc ::bddimages_recherche::get_list { i } {
 	  set intellilist(nbimg) "Error"
 	  return
 	  }
-      ::console::affiche_resultat "nb images [llength $resultcount ]\n"
+       #::console::affiche_resultat "nb images [llength $resultcount ]\n"
 
        set nbresult [llength $resultcount]
        set nbcol    [llength $resultcount]
@@ -1160,7 +1104,7 @@ proc ::bddimages_recherche::get_list { i } {
        }
     }
 
-  ::console::affiche_resultat "** nb data in table [llength $table] \n"
+  #::console::affiche_resultat "** nb data in table [llength $table] \n"
   set table_result($i) $table
 }
 
@@ -1168,6 +1112,7 @@ proc ::bddimages_recherche::get_list { i } {
 
 
  proc ::ldelete {liste index} {
+ 
     if {[llength $liste] <= 1} {return $liste}
     if {$index +1 > [llength $liste]} {return $liste}
     if {$index +1 == [llength $liste]} {set index end}

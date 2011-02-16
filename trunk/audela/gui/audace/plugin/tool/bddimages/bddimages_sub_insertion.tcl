@@ -1,6 +1,6 @@
 # source audace/plugin/tool/bddimages/bddimages_subroutines.tcl
 
-# Mise à jour $Id: bddimages_sub_insertion.tcl,v 1.14 2011-01-25 23:11:20 jberthier Exp $
+# Mise à jour $Id: bddimages_sub_insertion.tcl,v 1.15 2011-02-16 14:26:20 fredvachier Exp $
 
 #--------------------------------------------------
 #  init_info { }
@@ -161,9 +161,12 @@ proc info_fichier { nomfich } {
       set errnum [catch {file rename $nomfich "$racinefich.$form2"} msg]
    }
    if {$form3 == "cata"} {
+      # permet 
       set errnum [catch {file rename $nomfich "$racinefich\_$form2"} msg]
-      set errnum [catch {file rename $nomfich "$racinefich.$form2"} msg]
+     
+      #set errnum [catch {file rename $nomfich "$racinefich.$form2"} msg]
    }
+   
    if {$errnum != 0} {
       if {[string last "file already exists" $msg] <= 1} {
          bddimages_sauve_fich "info_fichier: ERREUR 9 : Renommage du fichier $nomfich impossible <err:$errnum> <msg:$msg>"
@@ -211,11 +214,19 @@ proc info_fichier { nomfich } {
          bddimages_sauve_fich "info_fichier: ERREUR 3 : Erreur de Chargement de l image en memoire <err:$errnum> <msg:$msg>"
          return [list "3" $etat $nomfichfits $dateiso $site $sizefich $tabkey]
       }
+      # --- verif si TELESCOP exist
+      set key [buf$bufno getkwd "TELESCOP"]
+      if {[lindex $key 0] == "" } {
+         buf$bufno setkwd [list "TELESCOP" "Unknown" string "Telescop name" ""]
+         }
+
+      
    }
 
    # --- zip/rezip le fichier
    if {$fileformat == "unzipped"} {
       set nomfich "$nomfichfits.gz"
+      ::console::affiche_resultat "fichier a zipper = $nomfich \n"
       set errnum [catch {exec gzip -c $nomfichdata > $nomfich} msg ]
       if {$errnum!=0} {
          file delete -force -- $nomfich
@@ -448,7 +459,7 @@ proc bddimages_images_datainsert { tabkey idheader filename site dateobs sizefic
             bddimages_sauve_fich "bddimages_images_datainsert: ERREUR 103 : Impossible d acceder aux informations de bddimages.images <err=$err> <msg=$msg>"
             return 103
             }
-     } 
+     }
 
      set err [catch {::bddimages_sql::sql insertid} insert_idbddimg]
     # bddimages_sauve_fich "bddimages_images_datainsert: Insertion nouvel element dans la table images <$insert_idbddimg>"
@@ -660,8 +671,9 @@ proc bddimages_catas_datainsert { filename sizefich form } {
 
   # Detection de l'image coorespondante
   set fic [file tail "$filename"]
-  set racinefich [string range $fic 0 [expr $form -2]]
-
+  set racinefich [string range $fic 0 [expr [string first $form $fic ] -2]]
+  ::console::affiche_resultat "racinefich = $racinefich \n"
+  
   # -- ligne SQL
   set sqlcmd "SELECT idbddimg,dirfilename FROM images WHERE filename='$racinefich.fits.gz' LIMIT 1"
 
@@ -716,8 +728,12 @@ proc bddimages_catas_datainsert { filename sizefich form } {
 
   set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
   if {$err} {
-      switch $msg {
-        "::mysql::query/db server: Table 'bddimages.catas' doesn't exist" {
+  
+      ::console::affiche_erreur "  SQL : <$sqlcmd>\n"
+      ::console::affiche_erreur "  ERR : <$err>\n"
+      ::console::affiche_erreur "  MSG : <$msg>\n"
+  
+      if {[string last "catas' doesn't exist" $msg]>0} {
           set sqlcmdcrea ""
           append sqlcmdcrea "CREATE TABLE catas (                                      "
           append sqlcmdcrea "  idbddcata bigint(20) unsigned NOT NULL auto_increment,  "
@@ -731,7 +747,6 @@ proc bddimages_catas_datainsert { filename sizefich form } {
           append sqlcmdcrea "  KEY istreated (istreated),                              "
           append sqlcmdcrea "  KEY ssp_date (ssp_date)                                 "
           append sqlcmdcrea ") ENGINE=MyISAM DEFAULT CHARSET=latin1;                   "
-
           set err [catch {::bddimages_sql::sql query $sqlcmdcrea} msg]
           if {$err} {
              bddimages_sauve_fich "bddimages_catas_datainsert: ERREUR 303 : Creation table catas <err=$err> <msg=$msg> <sql=$sqlcmdcrea>"
@@ -744,16 +759,12 @@ proc bddimages_catas_datainsert { filename sizefich form } {
               bddimages_sauve_fich "bddimages_catas_datainsert: ERREUR 304 : Impossible d inserer un element dans la table catas <err=$err> <msg=$msg>"
               return 304
               } else {
-
               }
             }
-          }
-        default {
+        } else {
            bddimages_sauve_fich "bddimages_catas_datainsert: ERREUR 305 : Impossible d acceder aux informations de bddimages.catas <err=$err> <msg=$msg>"
            return 305
-           }
         }
-        # Fin switch
     }
 
     # Recupere la valeur de l'autoincrement
@@ -767,8 +778,7 @@ proc bddimages_catas_datainsert { filename sizefich form } {
 
   set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
   if {$err} {
-      switch $msg {
-        "::mysql::query/db server: Table 'bddimages.cataimage' doesn't exist" {
+      if {[string last "cataimage' doesn't exist" $msg]>0} {
           set sqlcmdcrea ""
           append sqlcmdcrea "CREATE TABLE cataimage (                  "
           append sqlcmdcrea "  idbddcata bigint(20) unsigned NOT NULL, "
@@ -792,13 +802,10 @@ proc bddimages_catas_datainsert { filename sizefich form } {
 
               }
             }
+          } else {
+            bddimages_sauve_fich "bddimages_catas_datainsert: ERREUR 308 : Impossible d acceder aux informations de bddimages.cataimage <err=$err> <msg=$msg>"
+            return 308
           }
-        default {
-           bddimages_sauve_fich "bddimages_catas_datainsert: ERREUR 308 : Impossible d acceder aux informations de bddimages.cataimage <err=$err> <msg=$msg>"
-           return 308
-           }
-        }
-        # Fin switch
     }
 
 
@@ -948,4 +955,168 @@ proc move_unlinked_non_recursif { } {
 
     return
 }
+
+
+
+#--------------------------------------------------
+#  ::bddimagesAdmin::bddimages_image_identification { idbddimg }
+#--------------------------------------------------
+# verifie la compatibilite de l image
+# @return 1 si compatible 0 sinon
+#--------------------------------------------------
+proc bddimages_image_identification { idbddimg } {
+
+   global bddconf
+
+   set sqlcmd "SELECT dirfilename,filename,idheader
+               FROM images
+               WHERE images.idbddimg=$idbddimg 
+               LIMIT 1"
+
+   # -- Execute la ligne SQL
+   set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
+   if {$err} {
+      bddimages_sauve_fich "bddimages_image_delete: ERREUR 401"
+      bddimages_sauve_fich "bddimages_image_delete: NUM : <$err>"
+      bddimages_sauve_fich "bddimages_image_delete: MSG : <$msg>"
+      return 401
+      }
+
+   set idheader -1
+   set fileimg -1
+   foreach line $resultsql {
+      set dirfilename [lindex $line 0]
+      set filename [lindex $line 1]
+      set idheader [lindex $line 2]
+      set fileimg [ file join $bddconf(dirbase) $dirfilename $filename]
+      #::console::affiche_resultat "Image indentifiee : $fileimg \n"
+      }
+
+
+   set idbddcata -1
+   set filecata -1
+
+   set sqlcmd "SELECT catas.dirfilename,catas.filename,catas.idbddcata
+               FROM images, catas,cataimage 
+               WHERE images.idbddimg=$idbddimg 
+               AND cataimage.idbddimg = $idbddimg 
+               AND catas.idbddcata = cataimage.idbddcata
+               LIMIT 1"
+
+   # -- Execute la ligne SQL
+   set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
+   if {$err} {
+      bddimages_sauve_fich "bddimages_image_identification: ERREUR 401"
+      bddimages_sauve_fich "bddimages_image_identification: NUM : <$err>"
+      bddimages_sauve_fich "bddimages_image_identification: MSG : <$msg>"
+      ::console::affiche_erreur "bddimages_image_identification: ERREUR 401\n"
+      ::console::affiche_erreur "bddimages_image_identification: NUM : <$err>\n"
+      ::console::affiche_erreur "bddimages_image_identification: MSG : <$msg>\n"
+      } else {
+      foreach line $resultsql {
+         set dirfilename [lindex $line 0]
+         set filename [lindex $line 1]
+         set idbddcata [lindex $line 2]
+         set filecata [ file join $bddconf(dirbase) $dirfilename $filename]
+         #::console::affiche_resultat "Effacement de $filecata \n"
+         }
+      }
+
+   ::console::affiche_resultat "ident : IDI=$idbddimg IMG=$fileimg IDC=$idbddcata CATA=$filecata IDH=$idheader FIN\n"
+   return [list $idbddimg $fileimg $idbddcata $filecata $idheader]
+   }
+
+
+
+
+
+#--------------------------------------------------
+#  ::bddimagesAdmin::bddimages_image_delete_fromsql { ident }
+#--------------------------------------------------
+# verifie la compatibilite de l image
+# @return 1 si compatible 0 sinon
+#--------------------------------------------------
+proc bddimages_image_delete_fromsql { ident } {
+
+   set idbddimg  [lindex $ident 0]
+   set idbddcata [lindex $ident 2]
+   set idheader  [lindex $ident 4]
+
+
+   if {$idbddcata != -1 } {
+      # Effacement dans la table cata
+      set sqlcmd "DELETE FROM catas WHERE idbddcata = $idbddcata"
+      set err [catch {::bddimages_sql::sql query $sqlcmd} msg]
+      if {$err} {
+        bddimages_sauve_fich "bddimages_image_delete: ERREUR 407 : Impossible de supprimer l'image de la table images <idbddimg=$insert_idbddimg> <err=$err> <msg=$msg>"
+        return 407
+        }
+      # Effacement dans la table cataimage
+      set sqlcmd "DELETE FROM cataimage WHERE idbddcata = $idbddcata"
+      set err [catch {::bddimages_sql::sql query $sqlcmd} msg]
+      if {$err} {
+        bddimages_sauve_fich "bddimages_image_delete: ERREUR 407 : Impossible de supprimer l'image de la table images <idbddimg=$insert_idbddimg> <err=$err> <msg=$msg>"
+        return 407
+        }
+      }
+
+   if {$idheader != -1 } {
+    # Effacement dans la table images
+    set sqlcmd "DELETE FROM images_$idheader WHERE idbddimg = $idbddimg"
+    set err [catch {::bddimages_sql::sql query $sqlcmd} msg]
+    if {$err} {
+      bddimages_sauve_fich "bddimages_image_delete: ERREUR 407 : Impossible de supprimer l'image de la table images <idbddimg=$insert_idbddimg> <err=$err> <msg=$msg>"
+      return 407
+      }
+    
+    # Effacement dans la table images
+    set sqlcmd "DELETE FROM images WHERE idbddimg = $idbddimg"
+    set err [catch {::bddimages_sql::sql query $sqlcmd} msg]
+    if {$err} {
+      bddimages_sauve_fich "bddimages_image_delete: ERREUR 407 : Impossible de supprimer l'image de la table images <idbddimg=$insert_idbddimg> <err=$err> <msg=$msg>"
+      return 407
+      }
+    }
+    return
+}
+
+proc bddimages_image_delete_fromdisk { ident } {
+
+   set idbddcata [lindex $ident 2]
+   set idheader  [lindex $ident 4]
+   set fileimg  [lindex $ident 1]
+   set filecata [lindex $ident 3]
+   if {$idbddcata != -1 } {
+      file delete -force -- $filecata
+      }
+   if {$idheader != -1 } {
+      file delete -force -- $fileimg
+      }
+
+   return
+   }
+
+
+#--------------------------------------------------
+#  bddimages_images_delete { }
+#--------------------------------------------------
+#
+#    fonction  :
+#       Supprime l image de la base et du repertoire
+#       Supprime le cata s il existe
+#
+#    procedure externe :
+#
+#    variables en entree :
+#
+#    variables en sortie :
+#
+#--------------------------------------------------
+proc bddimages_image_delete { idbddimg } {
+
+   set ident [bddimages_image_identification $idbddimg]
+   bddimages_image_delete_fromsql $ident
+   bddimages_image_delete_fromdisk $ident
+   return
+   }
 

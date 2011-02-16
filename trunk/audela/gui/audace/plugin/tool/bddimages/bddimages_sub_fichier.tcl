@@ -1,5 +1,5 @@
 # source audace/plugin/tool/bddimages/bddimages_sub_fichier.tcl
-# Mise à jour $Id: bddimages_sub_fichier.tcl,v 1.8 2011-01-25 23:11:20 jberthier Exp $
+# Mise à jour $Id: bddimages_sub_fichier.tcl,v 1.9 2011-02-16 14:26:20 fredvachier Exp $
 
 proc bddimages_sauve_fich {texte} {
 
@@ -251,3 +251,18 @@ proc createdir_ifnot_exist {dirfilename} {
 
 }
 
+# ---------------------------------------
+
+# unzipedfilename
+
+# renvoi le nom du fichier sans l extension .gz
+
+# ---------------------------------------
+   proc unzipedfilename { filename } {
+   
+      set ext [file extension $filename]
+      set long [string length $filename ]
+      set last [expr [string first $ext $filename [expr $long-3] ]-1]
+      set filename [string range $filename 0 $last ]
+      return $filename
+      }
