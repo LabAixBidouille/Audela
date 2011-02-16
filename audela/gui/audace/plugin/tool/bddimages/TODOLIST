@@ -1,26 +1,30 @@
 TODOLIST
+partie 0 : Faire aparaitre la roadmap et todolist das doxygen
+
+
 partie 1 : Insertion Bddimages
 
 - Empecher la compression des fichiers lors de la lecture des entetes
 
 partie 2 : Gestion fenetre Recherche
 
-- ajouter barre de bouton dans le tk
 
 - Dans la fenetre recherche : nouvelle liste : 
    Ajouter champs date :
       date min date max
         ou
       depuis les X derniers jours
+
 - Dans la fenetre recherche : 
      permettre l affichage de l image lorsqu elle est selectionnne
      deplacement avec les fleches
+
 - Dans la fenetre recherche : 
      permettre l effacement de l image bdd+disque par la touche "suppr"
+     ajouter dialogue oui/non avant la suppression
+
 - Dans la fenetre recherche :
-     liste ma affichée parfois il y a la date dans le champ telescope
-      ou object dans le champ date
-      ou rien dans le champ object
+     faire aparaitre les champs BDI
 
 
 partie 3 : Gestions des images

@@ -6,7 +6,7 @@
 # Description    : Configuration des variables globales bddconf
 #                  necessaires au service
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_config.tcl,v 1.14 2011-01-25 22:49:43 jberthier Exp $
+# Mise à jour $Id: bddimages_config.tcl,v 1.15 2011-02-16 14:26:20 fredvachier Exp $
 #
 #--------------------------------------------------
 #
@@ -28,7 +28,7 @@ namespace eval bddimages_config {
    global bddconf
 
    # Tous les parametres de configuration
-   set allparams { sauve_xml dbname login pass server dirbase dirinco dirfits dircata direrr dirlog limit intellilists }
+   set allparams { sauve_xml dbname login pass server dirbase dirinco dirfits dircata direrr dirlog dirtmp limit intellilists }
 
    #--- Chargement des captions
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_config.cap ]\""
@@ -201,6 +201,7 @@ namespace eval bddimages_config {
                "incoming" { set bddconf(dirinco) [file join $base $d] }
                "error"    { set bddconf(direrr)  [file join $base $d] }
                "log"      { set bddconf(dirlog)  [file join $base $d] }
+               "tmp"      { set bddconf(dirtmp)  [file join $base $d] }
             }
          }
       }
@@ -229,6 +230,7 @@ namespace eval bddimages_config {
          dir_cata  { set msg $caption(bddimages_config,info_dircata) }
          dir_err   { set msg $caption(bddimages_config,info_direrr) }
          dir_log   { set msg $caption(bddimages_config,info_dirlog) }
+         dir_tmp   { set msg $caption(bddimages_config,info_dirtmp) }
          listlimit { set msg $caption(bddimages_config,info_listlimit) }
       }
       tk_messageBox -title $caption(bddimages_config,info_title) -type ok -message $msg
@@ -453,7 +455,7 @@ namespace eval bddimages_config {
             label $This.dir.dirbase.lab -text "$caption(bddimages_config,dirbase)" -width 30 -anchor w -borderwidth 0 -relief flat
             pack $This.dir.dirbase.lab -in $This.dir.dirbase -side left -anchor w -padx 1
             #--- Cree une ligne d'entree pour la variable
-            entry $This.dir.dirbase.dat -textvariable bddconf(dirbase) -borderwidth 1 -relief groove -width 25 -justify left
+            entry $This.dir.dirbase.dat -textvariable bddconf(dirbase) -borderwidth 1 -relief groove -width 70 -justify left
             pack $This.dir.dirbase.dat -in $This.dir.dirbase -side left -anchor w -padx 1
             #--- Cree un bouton charger
             button $This.dir.dirbase.explore -text "..." -width 3 \
@@ -475,7 +477,7 @@ namespace eval bddimages_config {
             label $This.dir.dirinco.lab -text "$caption(bddimages_config,dirinco)" -width 30 -anchor w -borderwidth 0 -relief flat
             pack $This.dir.dirinco.lab -in $This.dir.dirinco -side left -anchor w -padx 1
             #--- Cree une ligne d'entree pour la variable
-            entry $This.dir.dirinco.dat -textvariable bddconf(dirinco) -borderwidth 1 -relief groove -width 25 -justify left
+            entry $This.dir.dirinco.dat -textvariable bddconf(dirinco) -borderwidth 1 -relief groove -width 70 -justify left
             pack $This.dir.dirinco.dat -in $This.dir.dirinco -side left -anchor w -padx 1
             #--- Cree un bouton charger
             button $This.dir.dirinco.explore -text "..." -width 3 -command { set bddconf(dirinco) [::bddimages_config::getDir $bddconf(dirbase) "d'incoming"] }
@@ -493,7 +495,7 @@ namespace eval bddimages_config {
             label $This.dir.dirfits.lab -text "$caption(bddimages_config,dirfits)" -width 30 -anchor w -borderwidth 0 -relief flat
             pack $This.dir.dirfits.lab -in $This.dir.dirfits -side left -anchor w -padx 1
             #--- Cree une ligne d'entree pour la variable
-            entry $This.dir.dirfits.dat -textvariable bddconf(dirfits) -borderwidth 1 -relief groove -width 25 -justify left
+            entry $This.dir.dirfits.dat -textvariable bddconf(dirfits) -borderwidth 1 -relief groove -width 70 -justify left
             pack $This.dir.dirfits.dat -in $This.dir.dirfits -side left -anchor w -padx 1
             #--- Cree un bouton charger
             button $This.dir.dirfits.explore -text "..." -width 3 -command { set bddconf(dirfits) [::bddimages_config::getDir $bddconf(dirbase) "des images FITS"] }
@@ -511,7 +513,7 @@ namespace eval bddimages_config {
             label $This.dir.dircata.lab -text "$caption(bddimages_config,dircata)" -width 30 -anchor w -borderwidth 0 -relief flat
             pack $This.dir.dircata.lab -in $This.dir.dircata -side left -anchor w -padx 1
             #--- Cree une ligne d'entree pour la variable
-            entry $This.dir.dircata.dat -textvariable bddconf(dircata) -borderwidth 1 -relief groove -width 25 -justify left
+            entry $This.dir.dircata.dat -textvariable bddconf(dircata) -borderwidth 1 -relief groove -width 70 -justify left
             pack $This.dir.dircata.dat -in $This.dir.dircata -side left -anchor w -padx 1
             #--- Cree un bouton charger
             button $This.dir.dircata.explore -text "..." -width 3 -command { set bddconf(dircata) [::bddimages_config::getDir $bddconf(dirbase) "des CATA"] }
@@ -529,7 +531,7 @@ namespace eval bddimages_config {
             label $This.dir.direrr.lab -text "$caption(bddimages_config,direrr)" -width 30 -anchor w -borderwidth 0 -relief flat
             pack $This.dir.direrr.lab -in $This.dir.direrr -side left -anchor w -padx 1
             #--- Cree une ligne d'entree pour la variable
-            entry $This.dir.direrr.dat -textvariable bddconf(direrr) -borderwidth 1 -relief groove -width 25 -justify left
+            entry $This.dir.direrr.dat -textvariable bddconf(direrr) -borderwidth 1 -relief groove -width 70 -justify left
             pack $This.dir.direrr.dat -in $This.dir.direrr -side left -anchor w -padx 1
             #--- Cree un bouton charger
             button $This.dir.direrr.explore -text "..." -width 3 -command { set bddconf(direrr) [::bddimages_config::getDir $bddconf(dirbase) "des erreurs"] }
@@ -547,7 +549,7 @@ namespace eval bddimages_config {
             label $This.dir.dirlog.lab -text "$caption(bddimages_config,dirlog)" -width 30 -anchor w -borderwidth 0 -relief flat
             pack $This.dir.dirlog.lab -in $This.dir.dirlog -side left -anchor w -padx 1
             #--- Cree une ligne d'entree pour la variable
-            entry $This.dir.dirlog.dat -textvariable bddconf(dirlog) -borderwidth 1 -relief groove -width 25 -justify left
+            entry $This.dir.dirlog.dat -textvariable bddconf(dirlog) -borderwidth 1 -relief groove -width 70 -justify left
             pack $This.dir.dirlog.dat -in $This.dir.dirlog -side left -anchor w -padx 1
             #--- Cree un bouton charger
             button $This.dir.dirlog.explore -text "..." -width 3 -command { set bddconf(dirlog) [::bddimages_config::getDir $bddconf(dirbase) "de log"] }
@@ -556,6 +558,24 @@ namespace eval bddimages_config {
             button $This.dir.dirlog.help -state active -relief groove -anchor c \
                     -text "$caption(bddimages_config,info)" -command { ::bddimages_config::GetInfo "dir_log" }
             pack $This.dir.dirlog.help -in $This.dir.dirlog -side left -anchor w -padx 1
+
+          #--- Cree un frame pour le repertoire de log
+          frame $This.dir.dirtmp -borderwidth 0 -relief flat
+          pack $This.dir.dirtmp -in $This.dir -anchor w -side top -expand 0 -fill both -padx 3 -pady 0
+
+            #--- Cree un label
+            label $This.dir.dirtmp.lab -text "$caption(bddimages_config,dirtmp)" -width 30 -anchor w -borderwidth 0 -relief flat
+            pack $This.dir.dirtmp.lab -in $This.dir.dirtmp -side left -anchor w -padx 1
+            #--- Cree une ligne d'entree pour la variable
+            entry $This.dir.dirtmp.dat -textvariable bddconf(dirtmp) -borderwidth 1 -relief groove -width 70 -justify left
+            pack $This.dir.dirtmp.dat -in $This.dir.dirtmp -side left -anchor w -padx 1
+            #--- Cree un bouton charger
+            button $This.dir.dirtmp.explore -text "..." -width 3 -command { set bddconf(dirtmp) [::bddimages_config::getDir $bddconf(dirbase) "de tmp"] }
+            pack $This.dir.dirtmp.explore -in $This.dir.dirtmp -side left -anchor c -fill x -padx 6
+            #--- Cree un bouton info
+            button $This.dir.dirtmp.help -state active -relief groove -anchor c \
+                    -text "$caption(bddimages_config,info)" -command { ::bddimages_config::GetInfo "dir_tmp" }
+            pack $This.dir.dirtmp.help -in $This.dir.dirtmp -side left -anchor w -padx 1
 
         #--- Cree un frame pour les variables
         frame $This.var -borderwidth 1 -relief groove

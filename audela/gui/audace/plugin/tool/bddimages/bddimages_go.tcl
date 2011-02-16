@@ -5,7 +5,7 @@
 # Fichier        : bddimages_go.tcl
 # Description    : Outil d'appel des fonctionnalites de l'observatoire virtuel
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_go.tcl,v 1.14 2011-01-25 22:49:43 jberthier Exp $
+# Mise à jour $Id: bddimages_go.tcl,v 1.15 2011-02-16 14:26:20 fredvachier Exp $
 #
 
 #============================================================
@@ -92,15 +92,9 @@ proc ::bddimages::createPluginInstance { { in "" } { visuNo 1 } } {
    #--- Chargement du package Tablelist
    package require tablelist
 
-   #--- Chargement des fichiers auxiliaires
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_sql.tcl    ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_status.tcl    ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_insertion.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_recherche.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_identification.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_entete_preminforecon.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_sub_fichier.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages test.tcl ]\""
+   #--- Chargement des procedures
+   ::bddimages::ressource
+
    #--- Mise en place de l'interface graphique
    ::bddimages::createPanel $in.bddimages
 }
@@ -129,12 +123,14 @@ proc ::bddimages::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_liste.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_xml.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_admin.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_define.tcl ]\""
 
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_config.cap ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_status.cap ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_insertion.cap ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_recherche.cap ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_liste.cap ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_define.cap ]\""
 }
 
 #------------------------------------------------------------
@@ -252,15 +248,15 @@ proc ::bddimages::bddimagesBuildIF { This } {
 
       pack $This.fra5 -side top -fill x
 
-#     #--- Frame des services
-#     frame $This.fra6 -borderwidth 1 -relief groove
-#
-#        #--- Bouton d'ouverture de l'outil de recherche d images
-#        button $This.fra6.but1 -borderwidth 2 -text $panneau(bddimages,titre5) \
-#           -command "::testprocedure::run"
-#        pack $This.fra6.but1 -in $This.fra6 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
-#
-#     pack $This.fra6 -side top -fill x
+     #--- Frame des services
+     frame $This.fra6 -borderwidth 1 -relief groove
+
+        #--- Bouton d'ouverture de l'outil de recherche d images
+        button $This.fra6.but1 -borderwidth 2 -text $panneau(bddimages,titre5) \
+           -command "::testprocedure::run"
+        pack $This.fra6.but1 -in $This.fra6 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
+
+     pack $This.fra6 -side top -fill x
 
 
 #     #---
@@ -274,15 +270,15 @@ proc ::bddimages::bddimagesBuildIF { This } {
 #     pack $This.fra7 -side top -fill x
 #
 
-#      #--- Frame des services
-#      frame $This.ressource -borderwidth 1 -relief groove
-#
-#         #--- Bouton d'ouverture de l'outil de recherche d images
-#         button $This.ressource.but1 -borderwidth 2 -text $panneau(bddimages,titre6) \
-#            -command {::bddimages::ressource}
-#         pack $This.ressource.but1 -in $This.ressource -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
-#
-#      pack $This.ressource -side top -fill x
+      #--- Frame des services
+      frame $This.ressource -borderwidth 1 -relief groove
+
+         #--- Bouton d'ouverture de l'outil de recherche d images
+         button $This.ressource.but1 -borderwidth 2 -text $panneau(bddimages,titre6) \
+            -command {::bddimages::ressource}
+         pack $This.ressource.but1 -in $This.ressource -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
+
+      pack $This.ressource -side top -fill x
 
 
       #--- Mise a jour dynamique des couleurs

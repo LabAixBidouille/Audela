@@ -1,5 +1,5 @@
 # ----------------------------------------
-# Mise à jour $Id: bddimages_sub_header.tcl,v 1.3 2011-01-21 18:37:49 fredvachier Exp $
+# Mise à jour $Id: bddimages_sub_header.tcl,v 1.4 2011-02-16 14:26:20 fredvachier Exp $
 
 # bddimages_keywd_to_variable
 
@@ -12,6 +12,36 @@ proc bddimages_keywd_to_variable { key } {
 #  set tmp [string map {"-" "_"} [string tolower $key]]
   set tmp [string map {" " "_"} [string tolower $key]]
   return $tmp
+
+}
+
+
+
+proc bddimages_convert_type_variable { type } {
+
+       # -- Creation de la ligne sql pour la creation d une nouvelle table header
+       switch $type {
+         "string" {
+	   return "TEXT"
+	   }
+         "float" {
+	   return "DOUBLE"
+	   }
+         "double" {
+	   return "DOUBLE"
+	   }
+         "int" {
+	   return "INT"
+	   }
+         "" {
+            bddimages_sauve_fich "bddimages_header_id: ERREUR 203 : type de champ du header vide"
+            return -code error "203"
+	   }
+         default {
+            bddimages_sauve_fich "bddimages_header_id: ERREUR 204 : type de champ du header inconnu <$type>"
+            return -code error "204"
+	   }
+	 }
 
 }
 
@@ -30,7 +60,7 @@ proc bddimages_header_id { tabkey } {
 
    # --- Recuperation des champs des header de la base
    set sqlcmd ""
-   append sqlcmd "SELECT idheader,keyname FROM header;"
+   append sqlcmd "SELECT idheader,keyname,type FROM header;"
    set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
 
    if {$err} {
@@ -55,7 +85,7 @@ proc bddimages_header_id { tabkey } {
              bddimages_sauve_fich "bddimages_header_id: Creation table header..."
 	     set resultsql ""
 	     }
-      } else if {[string last "::mysql::query/db server: MySQL server has gone away" $msg]>=0} {
+      } elseif {[string last "::mysql::query/db server: MySQL server has gone away" $msg]>=0} {
           set err [catch {::bddimages_sql::connect} msg]
           set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
           if {$err} { return [list 208 0] }
@@ -66,26 +96,36 @@ proc bddimages_header_id { tabkey } {
           bddimages_sauve_fich "bddimages_header_id:    SQL : <$sqlcmd>"
           return [list 202 0]
       }
-      }   
+      }
 
    # -- Construction de chaque liste de mot-cles des header de la base
    foreach line $resultsql {
      set idheader [lindex $line 0]
      set key [lindex $line 1]
+     set type [lindex $line 2]
      lappend header($idheader) $key
+     #::console::affiche_resultat "$key = $type \n"
+     lappend matchkey($idheader) [concat $key $type ]
      }
 
    # -- Comparaison des mot-cles des header de la base avec le header de l image
-   set arrnames [array names header]
+   set arrnames [array names matchkey]
+   set keynames [array names header]
    set listidentique "no"
+   #::console::affiche_resultat "arrnames = $arrnames \n"
 
    foreach idhd $arrnames {
-     set listbase [lsort -ascii $header($idhd)]
+     #::console::affiche_resultat "idheader = $idhd \n"
+     set listbase [lsort -ascii $matchkey($idhd)]
      set listidentique "yes"
-     set list_keys [list ]
+     set list_keys ""
+
      foreach key $tabkey {
-       lappend list_keys [lindex $key 0]
+       #::console::affiche_resultat "key = $key \n"
+       #::console::affiche_resultat "list_keys = [lindex $key 0] T [lindex [lindex $key 1] 2] \n"
+       lappend list_keys [concat [lindex $key 0] [bddimages_convert_type_variable [lindex [lindex $key 1] 2] ] ]
        }
+       
      set list_keys [lsort -ascii $list_keys]
      if {[llength $list_keys]==[llength $listbase]} {
        foreach key $listbase {
@@ -107,11 +147,12 @@ proc bddimages_header_id { tabkey } {
    # -- Creation d un nouveau type de header
    if {$listidentique=="no"} {
 
+     ::console::affiche_erreur "Nouveau header \n"
      # -- determination du nouveau id (bouche les trous)
-     set idhdder [lindex [lsort -integer -decreasing $arrnames] 0]
+     set idhdder [lindex [lsort -integer -decreasing $keynames] 0]
      set idheader 0
      for {set x 1} {$x<=$idhdder} {incr x} {
-       if {[lsearch -exact $arrnames $x]<0} {
+       if {[lsearch -exact $keynames $x]<0} {
          set idheader $x
          break
          }
@@ -141,29 +182,12 @@ proc bddimages_header_id { tabkey } {
        set unit    [lindex $info 4]
        set comment [lindex $info 3]
 
-       # -- Creation de la ligne sql pour la creation d une nouvelle table header
-       switch $type {
-         "string" {
-	   set type TEXT
-	   }
-         "float" {
-	   set type DOUBLE
-	   }
-         "double" {
-	   set type DOUBLE
-	   }
-         "int" {
-	   set type INT
-	   }
-         "" {
-            bddimages_sauve_fich "bddimages_header_id: ERREUR 203 : type de champ du header vide"
-            return  [list 203 0]
-	   }
-         default {
-            bddimages_sauve_fich "bddimages_header_id: ERREUR 204 : type de champ du header inconnu <$type>"
-            return [list 204 0]
-	   }
-	 }
+       set err [catch {set type [bddimages_convert_type_variable $type]} msg]
+       if {$err} {
+           bddimages_sauve_fich "bddimages_header_id: ERREUR $err : Insertion table header <$err> <$msg>"
+           return [list $err 0]
+           }
+
        append sqlcmd2 "`$var` $type NULL,\n"
 
        # -- Creation de la ligne sql pour l insertion d un nouvel enregistrement de la table header

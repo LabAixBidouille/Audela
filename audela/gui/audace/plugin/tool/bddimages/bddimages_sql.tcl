@@ -4,7 +4,7 @@
 # Fichier        : bddimages_sql.tcl
 # Description    : Routines sql
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_sql.tcl,v 1.4 2011-01-24 00:54:39 jberthier Exp $
+# Mise à jour $Id: bddimages_sql.tcl,v 1.5 2011-02-16 14:26:20 fredvachier Exp $
 #
 
 namespace eval bddimages_sql {
@@ -85,14 +85,14 @@ namespace eval bddimages_sql {
             gren_info "Erreur de connexion a MySql <$err> <$msg>\n"
             return -code error "Erreur de connexion a MySql <$err> <$msg>" 
          } else {
-            gren_info "Connecté à MySql <$msg>\n"
+            gren_info "Connecte a� MySql <$msg>\n"
             # -- Connexion a bddimages --
             set err [catch {sql query "use $bddconf(dbname);"} msg]
             if {$err} {
-               gren_info "Erreur de connexion à $bddconf(dbname) <$err> <$msg>\n"
-               return -code error "Erreur de connexion à $bddconf(dbname) <$err> <$msg>"
+               gren_info "Erreur de connexion a� $bddconf(dbname) <$err> <$msg>\n"
+               return -code error "Erreur de connexion a� $bddconf(dbname) <$err> <$msg>"
             } else {
-               gren_info "Connecté à $bddconf(dbname)\n"
+               gren_info "Connecte a� $bddconf(dbname)\n"
                return -code 0 $connected
             }
          }

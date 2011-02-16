@@ -5,7 +5,7 @@
 # Fichier        : bddimages_status.tcl
 # Description    : Affiche le status de la base de donnees
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_status.tcl,v 1.9 2011-01-25 22:49:43 jberthier Exp $
+# Mise à jour $Id: bddimages_status.tcl,v 1.10 2011-02-16 14:26:20 fredvachier Exp $
 #
 
 namespace eval bddimages_status {
@@ -112,11 +112,14 @@ namespace eval bddimages_status {
       }
 
       #--- Mise en forme du resultat
-      set errconn   [catch {::bddimages_sql::connect} status]
-      set nbimg     [catch {::bddimagesAdmin::sql_nbimg} status]
-      set nbheader  [catch {::bddimagesAdmin::sql_header} status]
+      set errconn   [catch {::bddimages_sql::connect} connectstatus]
+      ::console::affiche_erreur "  errconn : <$errconn>\n"
+      ::console::affiche_erreur "  status  : <$connectstatus>\n"
+      set nbimg     [::bddimagesAdmin::sql_nbimg]
+      set nbheader  [::bddimagesAdmin::sql_header]
       set nbfichbdd [numberoffile $conf(bddimages,dirfits)]
       set nbfichinc [numberoffile $conf(bddimages,dirinco)]
+      ::console::affiche_erreur "  dir  : <$conf(bddimages,dirinco)>\n"
       set nbficherr [numberoffile $conf(bddimages,direrr)]
       set erreur    0
 
@@ -188,7 +191,7 @@ namespace eval bddimages_status {
 
                #--- Cree un label pour le status
                label $inparam.ok \
-                     -text $status -fg $color(green)
+                     -text $connectstatus -fg "#007f00"
                if {$errconn != 0} { $inparam.ok configure -fg $color(red) }
                pack $inparam.ok -in $inparam -side top -pady 1 -anchor w
                #--- Cree un label pour le nb image
@@ -236,7 +239,7 @@ namespace eval bddimages_status {
 
                #--- Cree un label pour le status
                label $inparam.nbimgrep  \
-                     -text $nbfichbdd -fg $color(green)
+                     -text $nbfichbdd -fg "#007f00"
                if {$nbfichbdd != $nbimg} { $inparam.nbimgrep configure -fg $color(red) }
                pack $inparam.nbimgrep -in $inparam -side top -pady 1 -anchor w
 
