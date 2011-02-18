@@ -1,5 +1,5 @@
 #
-# Update $Id: audela.tcl,v 1.25 2010-06-30 06:46:49 michelpujol Exp $
+# Update $Id: audela.tcl,v 1.26 2011-02-18 01:39:04 fredvachier Exp $
 #
 #--- Welcome to the AudeLA-Interfaces Easy Launcher
 #
@@ -35,8 +35,10 @@ if { [lsearch $::auto_path $audelaLibPath] == -1 } {
    lappend ::auto_path $audelaLibPath
 }
 
+
+
 set nameofexecutable [file tail [file rootname [info nameofexecutable]]]
-if {($nameofexecutable!="audela")&&([file exists ../ros]==1)} {
+if {($nameofexecutable!="audela")} {
    catch {source ros.tcl}
 }
 
