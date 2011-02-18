@@ -2,7 +2,7 @@
 # Fichier : cagire.tcl
 # Description : Configuration de la camera Cagire
 # Auteur : Robert DELMAS
-# Mise à jour $Id: cagire.tcl,v 1.7 2010-11-12 07:12:50 robertdelmas Exp $
+# Mise à jour $Id: cagire.tcl,v 1.8 2011-02-18 18:33:58 robertdelmas Exp $
 #
 
 namespace eval ::cagire {
@@ -107,14 +107,14 @@ proc ::cagire::confToWidget { } {
    global caption conf
 
    #--- Recupere la configuration de la camera Cagire dans le tableau private(...)
-   set private(cool)        $conf(cagire,cool)
-   set private(foncobtu)    [ lindex "$caption(cagire,obtu_ouvert) $caption(cagire,obtu_ferme) $caption(cagire,obtu_synchro)" $conf(cagire,foncobtu) ]
-   set private(config)      $conf(cagire,config)
-   set private(mirh)        $conf(cagire,mirh)
-   set private(mirv)        $conf(cagire,mirv)
-   set private(temp)        $conf(cagire,temp)
-   set private(ouvert_obtu) $conf(cagire,ipserver)
-   set private(ferm_obtu)   $conf(cagire,portserver)
+   set private(cool)       $conf(cagire,cool)
+   set private(foncobtu)   [ lindex "$caption(cagire,obtu_ouvert) $caption(cagire,obtu_ferme) $caption(cagire,obtu_synchro)" $conf(cagire,foncobtu) ]
+   set private(config)     $conf(cagire,config)
+   set private(mirh)       $conf(cagire,mirh)
+   set private(mirv)       $conf(cagire,mirv)
+   set private(temp)       $conf(cagire,temp)
+   set private(ipserver)   $conf(cagire,ipserver)
+   set private(portserver) $conf(cagire,portserver)
 }
 
 #
@@ -126,14 +126,14 @@ proc ::cagire::widgetToConf { camItem } {
    global caption conf
 
    #--- Memorise la configuration de la camera Cagire dans le tableau conf(cagire,...)
-   set conf(cagire,cool)        $private(cool)
-   set conf(cagire,foncobtu)    [ lsearch "$caption(cagire,obtu_ouvert) $caption(cagire,obtu_ferme) $caption(cagire,obtu_synchro)" "$private(foncobtu)" ]
-   set conf(cagire,config)      $private(config)
-   set conf(cagire,mirh)        $private(mirh)
-   set conf(cagire,mirv)        $private(mirv)
-   set conf(cagire,temp)        $private(temp)
-   set conf(cagire,ipserver)    $private(ouvert_obtu)
-   set conf(cagire,portserver)  $private(ferm_obtu)
+   set conf(cagire,cool)       $private(cool)
+   set conf(cagire,foncobtu)   [ lsearch "$caption(cagire,obtu_ouvert) $caption(cagire,obtu_ferme) $caption(cagire,obtu_synchro)" "$private(foncobtu)" ]
+   set conf(cagire,config)     $private(config)
+   set conf(cagire,mirh)       $private(mirh)
+   set conf(cagire,mirv)       $private(mirv)
+   set conf(cagire,temp)       $private(temp)
+   set conf(cagire,ipserver)   $private(ipserver)
+   set conf(cagire,portserver) $private(portserver)
 }
 
 #
@@ -196,33 +196,29 @@ proc ::cagire::fillConfigPage { frm camItem } {
 
          pack $frm.frame2.frame4.frame7 -side top -fill x -expand 1
 
-         #--- Frame du delai d'ouverture de l'obturateur
+         #--- Frame pour le serveur IP
          frame $frm.frame2.frame4.frame8 -borderwidth 0 -relief raised
 
-            #--- Delai d'ouverture de l'obturateur
+            #--- Seveur IP
             label $frm.frame2.frame4.frame8.lab4 -text "$caption(cagire,ipserver)"
             pack $frm.frame2.frame4.frame8.lab4 -anchor center -side left -padx 10 -pady 5
 
-            entry $frm.frame2.frame4.frame8.ouvert_obtu -textvariable ::cagire::private(ouvert_obtu) -width 20 -justify center
-            pack $frm.frame2.frame4.frame8.ouvert_obtu -anchor center -side left -padx 5 -pady 5
-
-            label $frm.frame2.frame4.frame8.lab5 -text "$caption(cagire,ms)"
-            pack $frm.frame2.frame4.frame8.lab5 -side left -fill x -padx 0 -pady 5
+            entry $frm.frame2.frame4.frame8.ipserver -textvariable ::cagire::private(ipserver) \
+               -width 20 -justify center
+            pack $frm.frame2.frame4.frame8.ipserver -anchor center -side left -padx 5 -pady 5
 
          pack $frm.frame2.frame4.frame8 -side top -fill x -expand 1
 
-         #--- Frame du delai de fermeture de l'obturateur
+         #--- Frame pour le port du serveur
          frame $frm.frame2.frame4.frame9 -borderwidth 0 -relief raised
 
-            #--- Delai de fermeture de l'obturateur
+            #--- Port du serveur
             label $frm.frame2.frame4.frame9.lab6 -text "$caption(cagire,portserver)"
             pack $frm.frame2.frame4.frame9.lab6 -anchor center -side left -padx 10 -pady 5
 
-            entry $frm.frame2.frame4.frame9.ferm_obtu -textvariable ::cagire::private(ferm_obtu) -width 6 -justify center
-            pack $frm.frame2.frame4.frame9.ferm_obtu -anchor center -side left -padx 5 -pady 5
-
-            label $frm.frame2.frame4.frame9.lab7 -text "$caption(cagire,ms)"
-            pack $frm.frame2.frame4.frame9.lab7 -side left -fill x -padx 0 -pady 5
+            entry $frm.frame2.frame4.frame9.portserver -textvariable ::cagire::private(portserver) \
+               -width 6 -justify center
+            pack $frm.frame2.frame4.frame9.portserver -anchor center -side left -padx 5 -pady 5
 
          pack $frm.frame2.frame4.frame9 -side top -fill x -expand 1
 
@@ -255,7 +251,8 @@ proc ::cagire::fillConfigPage { frm camItem } {
             pack $frm.frame2.frame6.frame10.cool -anchor center -side left -padx 0 -pady 5
 
             entry $frm.frame2.frame6.frame10.temp -textvariable ::cagire::private(temp) -width 4 \
-               -justify center
+               -justify center \
+               -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double -274 50 }
             pack $frm.frame2.frame6.frame10.temp -anchor center -side left -padx 5 -pady 5
 
             label $frm.frame2.frame6.frame10.tempdeg \
