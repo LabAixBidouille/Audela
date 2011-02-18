@@ -1,6 +1,6 @@
 #
 # Fichier : confgene.cap
-# Mise a jour $Id: confgene.cap,v 1.50 2011-02-10 19:05:53 robertdelmas Exp $
+# Mise a jour $Id: confgene.cap,v 1.51 2011-02-18 17:39:24 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -226,7 +226,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,position_mpc)                       "Formato MPC:"
    set caption(confgene,position_mpcstation)                "Formato MPCSTATION:"
    set caption(confgene,position_non_station_uai)           "Sino non registrato all'UAI"
-   set caption(confgene,fichier_uai_msg)                    "# Une connexion à Internet est nécessaire pour cette mise à jour."
+   set caption(confgene,fichier_uai_msg)                    "Per l'aggiornamento è necessaria una connessione ad Internet."
    set caption(confgene,fichier_uai_erreur1)                "Il numero UAI del sito deve"
    set caption(confgene,fichier_uai_erreur2)                "contenere almeno 3 caratteri"
    set caption(confgene,fichier_uai_erreur3)                "(esempio: 000, 008, 013, 104, A05)."

@@ -1,6 +1,6 @@
 #
 # Fichier : t193pad.cap
-# Mise a jour $Id: t193pad.cap,v 1.10 2011-02-10 19:09:37 robertdelmas Exp $
+# Mise a jour $Id: t193pad.cap,v 1.11 2011-02-18 17:42:51 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -76,12 +76,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193pad,moteur_foc)        "Motore della focheggiamento"
    set caption(t193pad,gotoFoc)           "GOTO focheg."
    set caption(t193pad,stopFoc)           "STOP"
-   set caption(t193pad,msg)               "# Il n'est pas possible de récupérer la position du focuser car le télescope n'est pas encore connecté."
+   set caption(t193pad,msg)               "Non è possibile determinare la posizione del focheggiatore perchè il telescopio non è connesso."
 
    set caption(t193pad,dome)              "Cupola"
    set caption(t193pad,synchroMonture)    "Sincronizza con il telescopio"
 
-   set caption(t193pad,radecPulse)        "# Pulse mode"
+   set caption(t193pad,radecPulse)        "Impulsivo"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {

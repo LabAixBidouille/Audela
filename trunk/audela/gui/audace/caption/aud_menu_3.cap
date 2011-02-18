@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.66 2011-02-10 19:04:32 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.67 2011-02-18 17:38:17 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -23,9 +23,9 @@ set caption(audace,menu,raw2fits)                       "Convert RAW ---> FITS"
 set caption(audace,menu,cfa2rvb)                        "Convert CFA ---> RGB"
 set caption(audace,menu,rvb2r+v+b)                      "Convert RGB ---> R+G+B"
 set caption(audace,menu,r+v+b2rvb)                      "Convert R+G+B ---> RGB"
-set caption(audace,menu,assigner_r)                     "Assign channel R"
-set caption(audace,menu,assigner_g)                     "Assign channel G"
-set caption(audace,menu,assigner_b)                     "Assign channel B"
+set caption(audace,menu,assigner_r)                     "Assign channel Red"
+set caption(audace,menu,assigner_g)                     "Assign channel Green"
+set caption(audace,menu,assigner_b)                     "Assign channel Blue"
 
 set caption(audace,menu,pretraitee)                     "Process raw image(s)"
 
@@ -185,9 +185,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,cfa2rvb)                     "Convertir CFA ---> RVB"
    set caption(audace,menu,rvb2r+v+b)                   "Convertir RVB ---> R+V+B"
    set caption(audace,menu,r+v+b2rvb)                   "Convertir R+V+B ---> RVB"
-   set caption(audace,menu,assigner_r)                  "Assigner le plan R"
-   set caption(audace,menu,assigner_g)                  "Assigner le plan V"
-   set caption(audace,menu,assigner_b)                  "Assigner le plan B"
+   set caption(audace,menu,assigner_r)                  "Assigner le plan Rouge"
+   set caption(audace,menu,assigner_g)                  "Assigner le plan Vert"
+   set caption(audace,menu,assigner_b)                  "Assigner le plan Bleu"
 
    set caption(audace,menu,pretraitee)                  "Prétraiter image(s) brute(s)"
 
@@ -335,21 +335,21 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(audace,menu,images)                      "# Images"
+   set caption(audace,menu,images)                      "Immagini"
 
-   set caption(audace,menu,maitre)                      "# Faire une image maître"
-   set caption(audace,menu,faire_offset)                "# Précharge"
-   set caption(audace,menu,faire_dark)                  "# Noir"
-   set caption(audace,menu,faire_flat_field)            "# P.L.U."
+   set caption(audace,menu,maitre)                      "Fare immagine master"
+   set caption(audace,menu,faire_offset)                "Bias Frame"
+   set caption(audace,menu,faire_dark)                  "Dark Frame"
+   set caption(audace,menu,faire_flat_field)            "Flat Field"
 
-   set caption(audace,menu,convertir)                   "# Convertir"
+   set caption(audace,menu,convertir)                   "Convertire"
    set caption(audace,menu,raw2fits)                    "Conversione RAW ---> FITS"
    set caption(audace,menu,cfa2rvb)                     "Conversione CFA ---> RVB"
    set caption(audace,menu,rvb2r+v+b)                   "Conversione RVB ---> R+V+B"
    set caption(audace,menu,r+v+b2rvb)                   "Conversione R+V+B ---> RVB"
-   set caption(audace,menu,assigner_r)                  "# Assigner le plan R"
-   set caption(audace,menu,assigner_g)                  "# Assigner le plan V"
-   set caption(audace,menu,assigner_b)                  "# Assigner le plan B"
+   set caption(audace,menu,assigner_r)                  "Assegnare il canale Rosso"
+   set caption(audace,menu,assigner_g)                  "Assegnare il canale Verde"
+   set caption(audace,menu,assigner_b)                  "Assegnare il canale Blu"
 
    set caption(audace,menu,pretraitee)                  "# Prétraiter image(s) brute(s)"
 
@@ -372,8 +372,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,rot+90)                      "# Tourner 90° sens horaire"
    set caption(audace,menu,rot-90)                      "# Tourner 90° sens anti-horaire"
    set caption(audace,menu,rot180)                      "# Tourner 180°"
-   set caption(audace,menu,miroir_x)                    "# Inverser Gauche/Droite"
-   set caption(audace,menu,miroir_y)                    "# Inverser Haut/Bas"
+   set caption(audace,menu,miroir_x)                    "Inversione Sinistra/Destra"
+   set caption(audace,menu,miroir_y)                    "Inversione Alto/Basso"
    set caption(audace,menu,miroir_xy)                   "# Symétrie diagonale"
    set caption(audace,menu,window1)                     "Reinquadrare"
    set caption(audace,menu,scale)                       "Ricampionamento"
@@ -467,7 +467,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(pretraitement,parcourir)                 "..."
    set caption(pretraitement,attention)                 "Attenzione"
-   set caption(pretraitement,en_cours)                  "# En cours... Patientez..."
+   set caption(pretraitement,en_cours)                  "In corso... Attendere..."
    set caption(pretraitement,fin_traitement)            "Fine del trattamento."
    set caption(pretraitement,ok)                        "OK"
    set caption(pretraitement,appliquer)                 "Applicare"
@@ -497,21 +497,21 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(audace,menu,images)                      "# Images"
+   set caption(audace,menu,images)                      "Imágenes"
 
-   set caption(audace,menu,maitre)                      "# Faire une image maître"
-   set caption(audace,menu,faire_offset)                "# Précharge"
-   set caption(audace,menu,faire_dark)                  "# Noir"
-   set caption(audace,menu,faire_flat_field)            "# P.L.U."
+   set caption(audace,menu,maitre)                      "Hacer una imagen maestra"
+   set caption(audace,menu,faire_offset)                "Bias"
+   set caption(audace,menu,faire_dark)                  "Dark"
+   set caption(audace,menu,faire_flat_field)            "P.L.U."
 
-   set caption(audace,menu,convertir)                   "# Convertir"
+   set caption(audace,menu,convertir)                   "Convertir"
    set caption(audace,menu,raw2fits)                    "Conversion RAW ---> FITS"
    set caption(audace,menu,cfa2rvb)                     "Conversion CFA --> RVA"
    set caption(audace,menu,rvb2r+v+b)                   "Conversion RVA ---> R+V+A"
    set caption(audace,menu,r+v+b2rvb)                   "Conversion R+V+A ---> RVA"
-   set caption(audace,menu,assigner_r)                  "# Assigner le plan R"
-   set caption(audace,menu,assigner_g)                  "# Assigner le plan V"
-   set caption(audace,menu,assigner_b)                  "# Assigner le plan A"
+   set caption(audace,menu,assigner_r)                  "Asignar plano Rojo"
+   set caption(audace,menu,assigner_g)                  "Asignar plano Verde"
+   set caption(audace,menu,assigner_b)                  "Asignar plano Azul"
 
    set caption(audace,menu,pretraitee)                  "# Prétraiter image(s) brute(s)"
 
@@ -983,14 +983,14 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(audace,menu,images)                      "# Images"
+   set caption(audace,menu,images)                      "Billeder"
 
-   set caption(audace,menu,maitre)                      "# Faire une image maître"
-   set caption(audace,menu,faire_offset)                "# Précharge"
-   set caption(audace,menu,faire_dark)                  "# Noir"
-   set caption(audace,menu,faire_flat_field)            "# P.L.U."
+   set caption(audace,menu,maitre)                      "Optag en Master Frame"
+   set caption(audace,menu,faire_offset)                "Bias Frame"
+   set caption(audace,menu,faire_dark)                  "Dark Frame"
+   set caption(audace,menu,faire_flat_field)            "Flat Field Frame"
 
-   set caption(audace,menu,convertir)                   "# Convertir"
+   set caption(audace,menu,convertir)                   "Konverter"
    set caption(audace,menu,raw2fits)                    "Konvertering: RAW ---> FITS"
    set caption(audace,menu,cfa2rvb)                     "Konvertering: CFA ---> RGB"
    set caption(audace,menu,rvb2r+v+b)                   "Konvertering: RGB ---> R+G+B"
@@ -1157,9 +1157,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,cfa2rvb)                     "Convert CFA ---> RGB"
    set caption(audace,menu,rvb2r+v+b)                   "Convert RGB ---> R+G+B"
    set caption(audace,menu,r+v+b2rvb)                   "Convert R+G+B ---> RGB"
-   set caption(audace,menu,assigner_r)                  "Assign channel R"
-   set caption(audace,menu,assigner_g)                  "Assign channel G"
-   set caption(audace,menu,assigner_b)                  "Assign channel B"
+   set caption(audace,menu,assigner_r)                  "Assign channel Red"
+   set caption(audace,menu,assigner_g)                  "Assign channel Green"
+   set caption(audace,menu,assigner_b)                  "Assign channel Blue"
 
    set caption(audace,menu,pretraitee)                  "Process raw image(s)"
 
@@ -1319,9 +1319,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,cfa2rvb)                     "Convert CFA ---> RGB"
    set caption(audace,menu,rvb2r+v+b)                   "Convert RGB ---> R+G+B"
    set caption(audace,menu,r+v+b2rvb)                   "Convert R+G+B ---> RGB"
-   set caption(audace,menu,assigner_r)                  "Assign channel R"
-   set caption(audace,menu,assigner_g)                  "Assign channel G"
-   set caption(audace,menu,assigner_b)                  "Assign channel B"
+   set caption(audace,menu,assigner_r)                  "Assign channel Red"
+   set caption(audace,menu,assigner_g)                  "Assign channel Green"
+   set caption(audace,menu,assigner_b)                  "Assign channel Blue"
 
    set caption(audace,menu,pretraitee)                  "Process raw image(s)"
 

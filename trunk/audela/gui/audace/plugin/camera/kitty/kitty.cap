@@ -1,6 +1,6 @@
 #
 # Fichier : kitty.cap
-# Mise a jour $Id: kitty.cap,v 1.10 2011-02-12 11:42:28 robertdelmas Exp $
+# Mise a jour $Id: kitty.cap,v 1.11 2011-02-18 17:41:40 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -65,8 +65,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(kitty,port)                      "Porta"
    set caption(kitty,configurer)                "Configurare"
    set caption(kitty,acquisition)               "Acquisizione"
-   set caption(kitty,miroir_x)                  "# Specchio orizzontale"
-   set caption(kitty,miroir_y)                  "# Specchio verticale"
+   set caption(kitty,miroir_x)                  "Inversione Alto/Basso"
+   set caption(kitty,miroir_y)                  "Inversione Sinistra/Destra"
    set caption(kitty,refroidissement_2)         "Raffreddamento:"
    set caption(kitty,refroidissement_on)        "On"
    set caption(kitty,refroidissement_off)       "Off"

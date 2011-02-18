@@ -1,6 +1,6 @@
 #
 # Fichier : divers.cap
-# Mise a jour $Id: divers.cap,v 1.13 2011-02-10 19:06:47 robertdelmas Exp $
+# Mise a jour $Id: divers.cap,v 1.14 2011-02-18 17:39:54 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -103,7 +103,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(divers,copyjpeg)                       "Salvare in JPEG"
    set caption(divers,libgsl)                         "\nLe librerie libgsl e libgslcblas sono mancanti."
    set caption(divers,attention)                      "Attenzione"
-   set caption(divers,err_list_of_number)             "# {%s} n'est pas une liste de nombres."
+   set caption(divers,err_list_of_number)             "{%s} non è una lista numerica."
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {

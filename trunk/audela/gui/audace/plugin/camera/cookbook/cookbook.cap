@@ -1,6 +1,6 @@
 #
 # Fichier : cookbook.cap
-# Mise a jour $Id: cookbook.cap,v 1.6 2011-02-12 11:41:34 robertdelmas Exp $
+# Mise a jour $Id: cookbook.cap,v 1.7 2011-02-18 17:39:44 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -52,8 +52,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cookbook,port)                      "Porta"
    set caption(cookbook,configurer)                "Configurare"
    set caption(cookbook,acquisition)               "Acquisizione"
-   set caption(cookbook,miroir_x)                  "# Specchio orizzontale"
-   set caption(cookbook,miroir_y)                  "# Specchio verticale"
+   set caption(cookbook,miroir_x)                  "Inversione Alto/Basso"
+   set caption(cookbook,miroir_y)                  "Inversione Sinistra/Destra"
    set caption(cookbook,delai)                     "Intervallo"
 
    set caption(cookbook,port_camera)               "Porta CB245"

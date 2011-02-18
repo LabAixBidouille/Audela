@@ -1,6 +1,6 @@
 #
 # Fichier : webcam.cap
-# Mise a jour $Id: webcam.cap,v 1.19 2011-02-12 11:43:55 robertdelmas Exp $
+# Mise a jour $Id: webcam.cap,v 1.20 2011-02-18 17:43:11 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -100,8 +100,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,port)                     "Porta"
    set caption(webcam,available)                "Camera disponibile:"
    set caption(webcam,refresh)                  "Rinfresca"
-   set caption(webcam,miroir_x)                 "# Specchio orizzontale"
-   set caption(webcam,miroir_y)                 "# Specchio verticale"
+   set caption(webcam,miroir_x)                 "Inversione Alto/Basso"
+   set caption(webcam,miroir_y)                 "Inversione Sinistra/Destra"
    set caption(webcam,select)                   "Scelta"
    set caption(webcam,webcam)                   "WebCam"
    set caption(webcam,grabber)                  "Grabber"

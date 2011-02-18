@@ -1,6 +1,6 @@
 #
 # Fichier : dslr.cap
-# Mise a jour $Id: dslr.cap,v 1.19 2011-02-12 11:41:47 robertdelmas Exp $
+# Mise a jour $Id: dslr.cap,v 1.20 2011-02-18 17:40:05 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -77,8 +77,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(dslr,liaison)                "Collegamento"
    set caption(dslr,configurer)             "Configurare"
-   set caption(dslr,miroir_x)               "# Specchio orizzontale"
-   set caption(dslr,miroir_y)               "# Specchio verticale"
+   set caption(dslr,miroir_x)               "Inversione Alto/Basso"
+   set caption(dslr,miroir_y)               "Inversione Sinistra/Destra"
    set caption(dslr,longuepose)             "Lunga posa"
    set caption(dslr,quickremote)            "QuickRemote"
    set caption(dslr,externe)                "Manuale"

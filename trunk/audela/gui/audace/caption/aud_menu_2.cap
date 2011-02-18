@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_2.cap
-# Mise a jour $Id: aud_menu_2.cap,v 1.31 2011-02-10 19:04:09 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_2.cap,v 1.32 2011-02-18 17:37:29 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -162,8 +162,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,balance_rvb)               "Bilanciamento RVB"
    set caption(audace,menu,zoom)                      "Zoom"
    set caption(audace,menu,plein_ecran)               "Tutto schermo"
-   set caption(audace,menu,display_miroir_x)          "# Specchio verticale"
-   set caption(audace,menu,display_miroir_y)          "# Specchio orizzontale"
+   set caption(audace,menu,display_miroir_x)          "Inversione Sinistra/Destra"
+   set caption(audace,menu,display_miroir_y)          "Inversione Alto/Basso"
    set caption(audace,menu,window)                    "Estrarre zona selezionata"
    set caption(audace,menu,vision_nocturne)           "Visione notturna"
 
@@ -206,7 +206,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilCouleur,pas_couleur)              "Questa non e' una immagine a colori."
    set caption(seuilCouleur,attention)                "Attenzione"
    set caption(seuilCouleur,header_noimage)           "Nessuna immagine in memoria."
-   set caption(seuilCouleur,en_cours)                 "# En cours... Patientez..."
+   set caption(seuilCouleur,en_cours)                 "In corso... Attendere..."
    set caption(seuilCouleur,fin_traitement)           "Fine del trattamento."
 
 # *************** Version espagnole ***************************
