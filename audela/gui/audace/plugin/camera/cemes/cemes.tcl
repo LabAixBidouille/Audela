@@ -2,7 +2,7 @@
 # Fichier : cemes.tcl
 # Description : Configuration de la camera Cemes
 # Auteur : Robert DELMAS
-# Mise à jour $Id: cemes.tcl,v 1.39 2010-10-10 19:50:42 michelpujol Exp $
+# Mise à jour $Id: cemes.tcl,v 1.40 2011-02-18 17:52:41 robertdelmas Exp $
 #
 
 namespace eval ::cemes {
@@ -178,7 +178,8 @@ proc ::cemes::fillConfigPage { frm camItem } {
                pack $frm.frame1.frame3.frame5.frame6.cool -anchor center -side left -padx 0 -pady 5
 
                entry $frm.frame1.frame3.frame5.frame6.temp -textvariable ::cemes::private(temp) -width 4 \
-                  -justify center
+                  -justify center \
+                  -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double -274 50 }
                pack $frm.frame1.frame3.frame5.frame6.temp -anchor center -side left -padx 5 -pady 5
 
                label $frm.frame1.frame3.frame5.frame6.tempdeg \

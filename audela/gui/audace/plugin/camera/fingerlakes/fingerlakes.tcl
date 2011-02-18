@@ -2,7 +2,7 @@
 # Fichier : fingerlakes.tcl
 # Description : Configuration de la camera FLI (Finger Lakes Instrumentation)
 # Auteur : Robert DELMAS
-# Mise à jour $Id: fingerlakes.tcl,v 1.41 2010-10-10 19:50:42 michelpujol Exp $
+# Mise à jour $Id: fingerlakes.tcl,v 1.42 2011-02-18 17:53:09 robertdelmas Exp $
 #
 
 namespace eval ::fingerlakes {
@@ -183,7 +183,8 @@ proc ::fingerlakes::fillConfigPage { frm camItem } {
                pack $frm.frame1.frame3.frame5.frame6.cool -anchor center -side left -padx 0 -pady 5
 
                entry $frm.frame1.frame3.frame5.frame6.temp -textvariable ::fingerlakes::private(temp) -width 4 \
-                  -justify center
+                  -justify center \
+                  -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double -274 50 }
                pack $frm.frame1.frame3.frame5.frame6.temp -anchor center -side left -padx 5 -pady 5
 
                label $frm.frame1.frame3.frame5.frame6.tempdeg \
