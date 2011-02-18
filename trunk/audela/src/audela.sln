@@ -54,12 +54,18 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_sextractor", "external\sextractor\vc90\external_sextractor.vcproj", "{7F8080A4-14CF-4782-B2A0-74A6134C9765}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libbm", "contrib\libbm\vc90\libbm.vcproj", "{D0161B41-A5C1-4309-9B28-F5BE8964CB33}"
+	ProjectSection(ProjectDependencies) = postProject
+		{91EC13AF-6E6D-4138-9545-86E10A740CD5} = {91EC13AF-6E6D-4138-9545-86E10A740CD5}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libgs", "contrib\libgs\vc90\libgs.vcproj", "{9DEFADA5-E5C9-4E89-8EB9-15C33C25CA5E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "audela", "audela\audela\vc90\audela.vcproj", "{46CEB12A-3D4D-4409-8036-AE0C7862D644}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libak", "audela\libak\vc90\libak.vcproj", "{3BC084DB-F4A7-4C88-B1BA-359FE55315AB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{91EC13AF-6E6D-4138-9545-86E10A740CD5} = {91EC13AF-6E6D-4138-9545-86E10A740CD5}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libandor", "libcam\libandor\vc90\libandor.vcproj", "{D3BE9328-C0A4-4A31-9C2E-3112827701F9}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -129,6 +135,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libfingerlakes", "libcam\li
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libgsltcl", "audela\libgsltcl\vc90\libgsltcl.vcproj", "{7A600ABA-E38E-4406-AFCC-3D51983B6941}"
+	ProjectSection(ProjectDependencies) = postProject
+		{91EC13AF-6E6D-4138-9545-86E10A740CD5} = {91EC13AF-6E6D-4138-9545-86E10A740CD5}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libgzip", "audela\libgzip\vc90\libgzip.vcproj", "{C57E8DE4-08A1-49FD-93DF-95F38C522C52}"
 EndProject
@@ -137,6 +146,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libjm", "audela\libjm\vc90\libjm.vcproj", "{EA2496D9-D481-499C-AC46-4674447DAFC7}"
 	ProjectSection(ProjectDependencies) = postProject
 		{5A1A1AAC-22A5-4E69-A441-0488B3F9DC4C} = {5A1A1AAC-22A5-4E69-A441-0488B3F9DC4C}
+		{91EC13AF-6E6D-4138-9545-86E10A740CD5} = {91EC13AF-6E6D-4138-9545-86E10A740CD5}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libk2", "libcam\libk2\vc90\libk2.vcproj", "{17B06CD7-168F-40B6-8166-F823F940A3E0}"
@@ -148,6 +158,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libmc", "audela\libmc\vc90\libmc.vcproj", "{EF16897E-3534-4CD7-BE80-4457EC24B4D3}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libml", "audela\libml\vc90\libml.vcproj", "{94077D5C-A75F-47D4-91DB-40824117F54B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{91EC13AF-6E6D-4138-9545-86E10A740CD5} = {91EC13AF-6E6D-4138-9545-86E10A740CD5}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libouranos", "libtel\libouranos\vc90\libouranos.vcproj", "{1F874F72-BABD-4C6E-AAC5-ED80DDDDE334}"
 EndProject
@@ -245,6 +258,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libcagire", "libcam\libcagire\vc90\libcagire.vcproj", "{4117BC2F-CAEC-4073-99FD-902CEAB7A44D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libeshel", "contrib\libeshel\vc90\libeshel.vcproj", "{C2A1CF0E-56F4-42D0-AFCD-E1951200EAE2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{91EC13AF-6E6D-4138-9545-86E10A740CD5} = {91EC13AF-6E6D-4138-9545-86E10A740CD5}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_libgsl", "external\gsl\vc90\libgsl\external_libgsl.vcproj", "{91EC13AF-6E6D-4138-9545-86E10A740CD5}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -523,10 +539,6 @@ Global
 		{35B48565-2BF1-4021-9A0E-E7CDF91701C1}.Debug|Win32.Build.0 = Debug|Win32
 		{35B48565-2BF1-4021-9A0E-E7CDF91701C1}.Release|Win32.ActiveCfg = Release|Win32
 		{35B48565-2BF1-4021-9A0E-E7CDF91701C1}.Release|Win32.Build.0 = Release|Win32
-		{A9083D05-21C8-4F17-B9AF-73B0057B603A}.Debug|Win32.ActiveCfg = Debug|Win32
-		{A9083D05-21C8-4F17-B9AF-73B0057B603A}.Debug|Win32.Build.0 = Debug|Win32
-		{A9083D05-21C8-4F17-B9AF-73B0057B603A}.Release|Win32.ActiveCfg = Release|Win32
-		{A9083D05-21C8-4F17-B9AF-73B0057B603A}.Release|Win32.Build.0 = Release|Win32
 		{5EC2C537-87ED-4CA5-9456-637987910281}.Debug|Win32.ActiveCfg = Debug|Win32
 		{5EC2C537-87ED-4CA5-9456-637987910281}.Debug|Win32.Build.0 = Debug|Win32
 		{5EC2C537-87ED-4CA5-9456-637987910281}.Release|Win32.ActiveCfg = Release|Win32
@@ -598,7 +610,7 @@ Global
 		{F12C72B9-A7C8-4FE1-8CA7-00B06819033A}.Debug|Win32.ActiveCfg = Debug|Win32
 		{F12C72B9-A7C8-4FE1-8CA7-00B06819033A}.Debug|Win32.Build.0 = Debug|Win32
 		{F12C72B9-A7C8-4FE1-8CA7-00B06819033A}.Release|Win32.ActiveCfg = Release|Win32
-		{F12C72B9-A7C8-4FE1-8CA7-00B06819033A}.Release|Win32.Build.0 = Release|Win32s		
+		{F12C72B9-A7C8-4FE1-8CA7-00B06819033A}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
