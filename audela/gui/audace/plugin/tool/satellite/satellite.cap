@@ -1,6 +1,6 @@
 #
 # Fichier : satellite.cap
-# Mise a jour $Id: satellite.cap,v 1.2 2011-02-10 19:09:22 robertdelmas Exp $
+# Mise a jour $Id: satellite.cap,v 1.3 2011-02-18 17:42:11 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -47,12 +47,12 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(satellite,tle_titre)                          "Satelliti artificiali"
    set caption(satellite,tle_update)                         "Aggiornare i file TLE"
-   set caption(satellite,tle_satelcoord)                     "# Recherche les coordonnées"
-   set caption(satellite,tle_satelname)                      "# Nom de tous les satellites dans les TLE --> Console"
-   set caption(satellite,tle_satelnamesearch)                "# Liste des satellites ayant dans le nom : ..."
+   set caption(satellite,tle_satelcoord)                     "Ricerca delle coordinate"
+   set caption(satellite,tle_satelname)                      "Nomi di tutti i satelliti nei file TLE --> Console"
+   set caption(satellite,tle_satelnamesearch)                "Elenco dei satelliti con nome: ..."
    set caption(satellite,gps_lieu)                           "Coordinate GPS:"
-   set caption(satellite,dateob)                             "# Date de l'observation (TU)"
-   set caption(satellite,tle_satelcoordnearest)              "# Satellite le plus proche de :"
+   set caption(satellite,dateob)                             "Data dell'osservazione (TU)"
+   set caption(satellite,tle_satelcoordnearest)              "Satellite più vicino:"
    set caption(satellite,tle_satelra)                        "AD:"
    set caption(satellite,tle_sateldec)                       "Déc.:"
 

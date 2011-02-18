@@ -1,6 +1,6 @@
 #
 # Fichier : fingerlakes.cap
-# Mise a jour $Id: fingerlakes.cap,v 1.17 2011-02-12 11:42:00 robertdelmas Exp $
+# Mise a jour $Id: fingerlakes.cap,v 1.18 2011-02-18 17:40:26 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -18,9 +18,9 @@ set caption(fingerlakes,obtu_ferme)                   "Closed"
 set caption(fingerlakes,obtu_synchro)                 "Synchro"
 
 set caption(fingerlakes,refroidissement)              "Cooling to Temperature"
-set caption(fingerlakes,deg_c)                        "°C"
-set caption(fingerlakes,refroidissement_1)            ""
+set caption(fingerlakes,refroidissement_1)            "°C"
 set caption(fingerlakes,temperature_CCD)              "CCD Temperature:"
+set caption(fingerlakes,deg_c)                        "°C"
 set caption(fingerlakes,power)                        "Peltier Stage Power:"
 set caption(fingerlakes,miroir_x)                     "Top/Bottom Reversal"
 set caption(fingerlakes,miroir_y)                     "Left/Right Reversal"
@@ -43,9 +43,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,obtu_synchro)              "Synchro"
 
    set caption(fingerlakes,refroidissement)           "Refroidissement à la température de"
-   set caption(fingerlakes,deg_c)                     "°C"
-   set caption(fingerlakes,refroidissement_1)         ""
+   set caption(fingerlakes,refroidissement_1)         "°C"
    set caption(fingerlakes,temperature_CCD)           "Température du CCD :"
+   set caption(fingerlakes,deg_c)                     "°C"
    set caption(fingerlakes,power)                     "Puissance Peltier :"
    set caption(fingerlakes,miroir_x)                  "Inverser Haut/Bas"
    set caption(fingerlakes,miroir_y)                  "Inverser Gauche/Droite"
@@ -68,12 +68,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,obtu_synchro)              "Sincronizza"
 
    set caption(fingerlakes,refroidissement)           "Raffreddamento alla temperatura di"
-   set caption(fingerlakes,deg_c)                     "°C"
-   set caption(fingerlakes,refroidissement_1)         ""
+   set caption(fingerlakes,refroidissement_1)         "°C"
    set caption(fingerlakes,temperature_CCD)           "CCD Temperatura:"
+   set caption(fingerlakes,deg_c)                     "°C"
    set caption(fingerlakes,power)                     "Potenza stadio Peltier:"
-   set caption(fingerlakes,miroir_x)                  "# Specchio orizzontale"
-   set caption(fingerlakes,miroir_y)                  "# Specchio verticale"
+   set caption(fingerlakes,miroir_x)                  "Inversione Alto/Basso"
+   set caption(fingerlakes,miroir_y)                  "Inversione Sinistra/Destra"
    set caption(fingerlakes,fonc_obtu)                 "Funzionamento otturatore"
    set caption(fingerlakes,readSpeed)                 "Velocità di lettura"
 
@@ -93,9 +93,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,obtu_synchro)              "Sincro"
 
    set caption(fingerlakes,refroidissement)           "Enfriar hasta temperatura"
-   set caption(fingerlakes,deg_c)                     "°C"
-   set caption(fingerlakes,refroidissement_1)         ""
+   set caption(fingerlakes,refroidissement_1)         "°C"
    set caption(fingerlakes,temperature_CCD)           "Temperatura CCD:"
+   set caption(fingerlakes,deg_c)                     "°C"
    set caption(fingerlakes,power)                     "Alimentación Etapa Peltier:"
    set caption(fingerlakes,miroir_x)                  "Invertir Arriba/Abajo"
    set caption(fingerlakes,miroir_y)                  "Invertir Izquierda/Derecha"
@@ -118,9 +118,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,obtu_synchro)              "Synchro"
 
    set caption(fingerlakes,refroidissement)           "Temperatur bis zu"
-   set caption(fingerlakes,deg_c)                     "°C"
-   set caption(fingerlakes,refroidissement_1)         "kühlen"
+   set caption(fingerlakes,refroidissement_1)         "°C kühlen"
    set caption(fingerlakes,temperature_CCD)           "Temperatur CCD:"
+   set caption(fingerlakes,deg_c)                     "°C"
    set caption(fingerlakes,power)                     "Peltier Stärke:"
    set caption(fingerlakes,miroir_x)                  "# Horizontale Spiegel"
    set caption(fingerlakes,miroir_y)                  "# Verticale Spiegel"
@@ -143,9 +143,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,obtu_synchro)              "Sincro"
 
    set caption(fingerlakes,refroidissement)           "Arrefecendo até Temperatura"
-   set caption(fingerlakes,deg_c)                     "°C"
-   set caption(fingerlakes,refroidissement_1)         ""
+   set caption(fingerlakes,refroidissement_1)         "°C"
    set caption(fingerlakes,temperature_CCD)           "Temperatura do CCD:"
+   set caption(fingerlakes,deg_c)                     "°C"
    set caption(fingerlakes,power)                     "Nível de Potência do Peltier:"
    set caption(fingerlakes,miroir_x)                  "# Espelho Horizontal"
    set caption(fingerlakes,miroir_y)                  "# Espelho Vertical"
@@ -168,9 +168,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,obtu_synchro)              "Synchro"
 
    set caption(fingerlakes,refroidissement)           "Cooling to Temperature"
-   set caption(fingerlakes,deg_c)                     "°C"
-   set caption(fingerlakes,refroidissement_1)         ""
+   set caption(fingerlakes,refroidissement_1)         "°C"
    set caption(fingerlakes,temperature_CCD)           "CCD Temperature:"
+   set caption(fingerlakes,deg_c)                     "°C"
    set caption(fingerlakes,power)                     "Peltier Stage Power:"
    set caption(fingerlakes,miroir_x)                  "Top/Bottom Reversal"
    set caption(fingerlakes,miroir_y)                  "Left/Right Reversal"
@@ -193,9 +193,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,obtu_synchro)              "Synchro"
 
    set caption(fingerlakes,refroidissement)           "Cooling to Temperature"
-   set caption(fingerlakes,deg_c)                     "°C"
-   set caption(fingerlakes,refroidissement_1)         ""
+   set caption(fingerlakes,refroidissement_1)         "°C"
    set caption(fingerlakes,temperature_CCD)           "CCD Temperature:"
+   set caption(fingerlakes,deg_c)                     "°C"
    set caption(fingerlakes,power)                     "Peltier Stage Power:"
    set caption(fingerlakes,miroir_x)                  "Top/Bottom Reversal"
    set caption(fingerlakes,miroir_y)                  "Left/Right Reversal"
@@ -218,9 +218,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,obtu_synchro)              "Synchro"
 
    set caption(fingerlakes,refroidissement)           "Cooling to Temperature"
-   set caption(fingerlakes,deg_c)                     "°C"
-   set caption(fingerlakes,refroidissement_1)         ""
+   set caption(fingerlakes,refroidissement_1)         "°C"
    set caption(fingerlakes,temperature_CCD)           "CCD Temperature:"
+   set caption(fingerlakes,deg_c)                     "°C"
    set caption(fingerlakes,power)                     "Peltier Stage Power:"
    set caption(fingerlakes,miroir_x)                  "Top/Bottom Reversal"
    set caption(fingerlakes,miroir_y)                  "Left/Right Reversal"

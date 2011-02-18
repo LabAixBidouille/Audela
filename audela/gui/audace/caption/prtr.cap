@@ -1,6 +1,6 @@
 #
 # Fichier : prtr.cap
-# Mise a jour $Id: prtr.cap,v 1.7 2011-02-10 19:08:24 robertdelmas Exp $
+# Mise a jour $Id: prtr.cap,v 1.8 2011-02-18 17:41:50 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -124,7 +124,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(prtr,outfolder)                  "# Chemin du dossier de sortie"
    set caption(prtr,no_file)                    "# Pas de fichier"
    set caption(prtr,nb_select)                  "# Fichiers sélectionnés %s/%s"
-   set caption(prtr,en_cours)                   "# En cours... Patientez..."
+   set caption(prtr,en_cours)                   "In corso... Attendere..."
    set caption(prtr,fin_traitement)             "# Fin du traitement."
    set caption(prtr,attention)                  "# Attention"
    set caption(prtr,sortie_generique)           "# Définir le nom générique de sortie."

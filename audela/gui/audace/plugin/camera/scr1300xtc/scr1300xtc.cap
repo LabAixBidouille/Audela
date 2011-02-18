@@ -1,6 +1,6 @@
 #
 # Fichier : scr1300xtc.cap
-# Mise a jour $Id: scr1300xtc.cap,v 1.6 2011-02-12 11:43:12 robertdelmas Exp $
+# Mise a jour $Id: scr1300xtc.cap,v 1.7 2011-02-18 17:42:30 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -50,8 +50,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scr1300xtc,port)                      "Porta"
    set caption(scr1300xtc,configurer)                "Configurare"
    set caption(scr1300xtc,acquisition)               "Acquisizione"
-   set caption(scr1300xtc,miroir_x)                  "# Specchio orizzontale"
-   set caption(scr1300xtc,miroir_y)                  "# Specchio verticale"
+   set caption(scr1300xtc,miroir_x)                  "Inversione Alto/Basso"
+   set caption(scr1300xtc,miroir_y)                  "Inversione Sinistra/Destra"
 
    set caption(scr1300xtc,port_camera)               "Porta SCR1300XTC"
    set caption(scr1300xtc,2points)                   ":"

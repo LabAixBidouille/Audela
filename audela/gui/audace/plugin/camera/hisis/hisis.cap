@@ -1,6 +1,6 @@
 #
 # Fichier : hisis.cap
-# Mise a jour $Id: hisis.cap,v 1.10 2011-02-12 11:42:15 robertdelmas Exp $
+# Mise a jour $Id: hisis.cap,v 1.11 2011-02-18 17:40:37 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -108,8 +108,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(hisis,port)                      "Porta"
    set caption(hisis,configurer)                "Configurare"
    set caption(hisis,acquisition)               "Acquisizione"
-   set caption(hisis,miroir_x)                  "# Specchio orizzontale"
-   set caption(hisis,miroir_y)                  "# Specchio verticale"
+   set caption(hisis,miroir_x)                  "Inversione Alto/Basso"
+   set caption(hisis,miroir_y)                  "Inversione Sinistra/Destra"
    set caption(hisis,can_resolution)            "Risoluzione"
    set caption(hisis,can_12bits)                "12 bits"
    set caption(hisis,can_14bits)                "14 bits"

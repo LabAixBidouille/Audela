@@ -1,6 +1,6 @@
 #
 # Fichier : audine.cap
-# Mise a jour $Id: audine.cap,v 1.9 2011-02-12 11:40:26 robertdelmas Exp $
+# Mise a jour $Id: audine.cap,v 1.10 2011-02-18 17:38:37 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -122,8 +122,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audine,port_liaison)              "Porta / Collegamento"
    set caption(audine,configurer)                "Configurare"
    set caption(audine,acquisition)               "Acquisizione"
-   set caption(audine,miroir_x)                  "# Specchio orizzontale"
-   set caption(audine,miroir_y)                  "# Specchio verticale"
+   set caption(audine,miroir_x)                  "Inversione Alto/Basso"
+   set caption(audine,miroir_y)                  "Inversione Sinistra/Destra"
    set caption(audine,ampli_ccd)                 "Amplificatore del CCD"
    set caption(audine,format_ccd)                "Formato CCD"
    set caption(audine,modele_can)                "Convertitore A/D"

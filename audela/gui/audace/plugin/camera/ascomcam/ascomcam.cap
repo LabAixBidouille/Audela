@@ -1,6 +1,6 @@
 #
 # Fichier : ascomcam.cap
-# Mise a jour $Id: ascomcam.cap,v 1.8 2011-02-12 11:40:11 robertdelmas Exp $
+# Mise a jour $Id: ascomcam.cap,v 1.9 2011-02-18 17:38:05 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -65,8 +65,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ascomcam,configurer)                "Configurare"
    set caption(ascomcam,install)                   "L'aggiornamento di %s V%s è terminato."
 
-   set caption(ascomcam,miroir_x)                  "# Specchio orizzontale"
-   set caption(ascomcam,miroir_y)                  "# Specchio verticale"
+   set caption(ascomcam,miroir_x)                  "Inversione Alto/Basso"
+   set caption(ascomcam,miroir_y)                  "Inversione Sinistra/Destra"
 
    set caption(ascomcam,port_camera)               "Driver ASCOM"
    set caption(ascomcam,2points)                   ":"

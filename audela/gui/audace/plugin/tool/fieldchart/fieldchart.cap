@@ -1,6 +1,6 @@
 #
 # Fichier : fieldchart.cap
-# Mise a jour $Id: fieldchart.cap,v 1.10 2011-02-10 19:07:38 robertdelmas Exp $
+# Mise a jour $Id: fieldchart.cap,v 1.11 2011-02-18 17:40:16 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -98,18 +98,18 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fieldchart,usno)                       "USNO"
    set caption(fieldchart,parcourir)                  "..."
    set caption(fieldchart,x)                          " x "
-   set caption(fieldchart,champ_image)                "# Auto-recupero dei dati di immagine"
+   set caption(fieldchart,champ_image)                "Recupero automatico dei parametri dell'immagine"
    set caption(fieldchart,catalogue)                  "Mappa"
    set caption(fieldchart,cat_microcat)               "Catalogo MicroCat"
    set caption(fieldchart,magnitude_limite)           "Limite magnitudine"
    set caption(fieldchart,largeur_image)              "Larghezza immagine"
    set caption(fieldchart,hauteur_image)              "Altezza immagine"
-   set caption(fieldchart,prendre_image)              "# Recupera\ndati di\nimmagini"
+   set caption(fieldchart,prendre_image)              "Recupero dei\nparametri\ndell'immagine"
    set caption(fieldchart,ad_centre)                  "Ascensione Retta centro immagine"
    set caption(fieldchart,dec_centre)                 "Declinazione centro immagine"
    set caption(fieldchart,inclinaison_camera)         "Inclinazione camera CCD (°)"
-   set caption(fieldchart,crpix1)                     "# Pixel di riferimento per Naxis1"
-   set caption(fieldchart,crpix2)                     "# Pixel di riferimento per Naxis2"
+   set caption(fieldchart,crpix1)                     "Pixel di riferimento per Naxis1"
+   set caption(fieldchart,crpix2)                     "Pixel di riferimento per Naxis2"
    set caption(fieldchart,focale_instrument)          "Lunghezza focale telescopio (m)"
    set caption(fieldchart,taille_pixels)              "Dimensione dei pixel (µm)"
    set caption(fieldchart,pas_etoile)                 "Nessuna stella nel campo."

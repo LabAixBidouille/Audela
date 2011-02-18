@@ -1,6 +1,6 @@
 #
 # Fichier : starlight.cap
-# Mise a jour $Id: starlight.cap,v 1.8 2011-02-12 11:43:27 robertdelmas Exp $
+# Mise a jour $Id: starlight.cap,v 1.9 2011-02-18 17:42:41 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -65,8 +65,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(starlight,port)                      "Porta"
    set caption(starlight,configurer)                "Configurare"
    set caption(starlight,acquisition)               "Acquisizione"
-   set caption(starlight,miroir_x)                  "# Specchio orizzontale"
-   set caption(starlight,miroir_y)                  "# Specchio verticale"
+   set caption(starlight,miroir_x)                  "Inversione Alto/Basso"
+   set caption(starlight,miroir_y)                  "Inversione Sinistra/Destra"
    set caption(starlight,accelerateur)              "Acceleratore per porta parallela"
    set caption(starlight,sans_accelerateur)         "senza"
    set caption(starlight,avec_accelerateur)         "con"

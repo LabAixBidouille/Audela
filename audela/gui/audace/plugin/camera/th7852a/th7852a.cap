@@ -1,6 +1,6 @@
 #
 # Fichier : th7852a.cap
-# Mise a jour $Id: th7852a.cap,v 1.7 2011-02-12 11:43:40 robertdelmas Exp $
+# Mise a jour $Id: th7852a.cap,v 1.8 2011-02-18 17:43:01 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -45,8 +45,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(th7852a,camera)                    "TH7852A"
 
-   set caption(th7852a,miroir_x)                  "# Specchio orizzontale"
-   set caption(th7852a,miroir_y)                  "# Specchio verticale"
+   set caption(th7852a,miroir_x)                  "Inversione Alto/Basso"
+   set caption(th7852a,miroir_y)                  "Inversione Sinistra/Destra"
    set caption(th7852a,coef)                      "Coefficiente"
 
    set caption(th7852a,port_camera)               "Porta TH7852A"
