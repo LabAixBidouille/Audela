@@ -1,11 +1,27 @@
 # Please use this TCL script with AudeLA to install ROS files
-# source [pwd]/../ros/ros_install.tcl
 
 namespace eval ::ros_install {
 
 
 
+#--------------------------------------------------
+#  ::ros_install::get_lastconfig { }
+#--------------------------------------------------
+# Chargement des chemins pour ros
+# @param positionxy position de la fenetre (par defaut : 20+20)
+# @return 
+#--------------------------------------------------
+   proc ::ros_install::get_lastconfig {  } {
 
+      global audace
+
+      puts "Chargement de ros_install_lastconfig.tcl "
+      set err [catch {source [file join $::audela_start_dir ros_install_lastconfig.tcl]} msg]
+      return -code $err $msg
+   }
+   
+   
+   
 #--------------------------------------------------
 #  ::ros_install::run { positionxy}
 #--------------------------------------------------
@@ -54,7 +70,6 @@ namespace eval ::ros_install {
 
 
       puts "Defauts..."
-      #set audace(ros_install,configure,config,conf)           [::ros_install::compact "$base/../ros_conf"]
       set audace(ros_install,configure,config,conf)           [::ros_install::compact "$base"]
       set audace(ros_install,configure,config,catalogs)       "$base/ressources"
       set audace(ros_install,configure,config,extinctionmaps) "$base/ressources"
@@ -459,7 +474,7 @@ namespace eval ::ros_install {
       }
       set fichier [::ros_install::compact "$ros(ros_install,audelabin)/.."]
       append roots "set ros(root,audela) \"$fichier\"\n"
-      set fichier [::ros_install::compact "$ros_install_base/root.tcl"]
+      set fichier [::ros_install::compact "$ros(ros_install,audelabin)/ros_root.tcl"]
       ::ros_install::print "CREATE $fichier\n"
       set f [open $fichier w]
       puts $f $roots
@@ -487,9 +502,9 @@ namespace eval ::ros_install {
             set fichiers [split [files_in_dir $base1] \n]
             set base2 [::ros_install::compact "$audace(ros_install,configure,config,$name)/${name}/ros/bin"]
             ::ros_install::copy $base1 $fichiers $base2
-            # root.tcl
-            set base1 [::ros_install::compact "$ros_install_base/"]
-            set fichiers [split [files_in_dir $base1 "root.tcl"] \n]
+            # ros_root.tcl
+            set base1 [::ros_install::compact "$ros(ros_install,audelabin)/"]
+            set fichiers [split [files_in_dir $base1 "ros_root.tcl"] \n]
             set base2 [::ros_install::compact "$audace(ros_install,configure,config,$name)/${name}/ros"]
             ::ros_install::copy $base1 $fichiers $base2
             # /lib
@@ -705,39 +720,3 @@ namespace eval ::ros_install {
 
 }
 
-# =================================================================================
-# =================================================================================
-# =================================================================================
-# =================================================================================
-# source [pwd]/ros_install.tcl
-# source $::audela_start_dir/ros.tcl
-# source $::audela_start_dir/ros_install.tcl
-puts "--------------------------------"
-puts "- Robotic Observatory Software -"
-puts "- Demarrage de ros_install.tcl -"
-puts "--------------------------------"
-
-set err [catch {wm withdraw .} msg]
-puts "err=$err"
-puts "msg=$msg"
-set ros(withtk) 1
-if {$err==1} {
-   set ros(withtk) 0
-}
-
-set errphot [ catch {
-   ::ros_install::run
-} msg ]
-puts "errphot=$errphot"
-puts "msg=$msg"
-
-if {$errphot==1} {
-   if {$ros(withtk)==1} {
-      ::console::affiche_erreur "$msg\n"
-   } else {
-      puts "$msg"
-   }
-}
-puts "--------------------------"
-puts "- Fin de ros_install.tcl -"
-puts "--------------------------"

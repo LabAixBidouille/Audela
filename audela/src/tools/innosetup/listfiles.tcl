@@ -3,7 +3,7 @@
 # Fichier : listfiles.tcl
 # Description : genere un fichier texte pour Inno setup
 # Auteur : Alain KLOTZ
-# $Id: listfiles.tcl,v 1.32 2011-01-16 08:09:06 michelpujol Exp $
+# $Id: listfiles.tcl,v 1.33 2011-02-18 03:28:27 fredvachier Exp $
 #
 # source $audace(rep_install)/src/tools/innosetup/listfiles.tcl
 
@@ -77,7 +77,7 @@ proc analdir { base } {
             if {$shortname=="modifications audela-1.4.0-beta1.xls"} {
                continue
             }
-            if {($make=="ros")&&(($shortname=="ros_install.log")||($shortname=="ros_install_lastconfig.tcl")||($shortname=="root.tcl"))} {
+            if {($make=="ros")&&(($shortname=="ros_install.log")||($shortname=="ros_install_lastconfig.tcl")||($shortname=="ros_root.tcl"))} {
                continue
             }
             if {(($make=="audela")||($make=="bin"))&&($shortname=="audace.txt")&&($level==3)} {

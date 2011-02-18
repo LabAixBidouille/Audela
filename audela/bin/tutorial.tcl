@@ -2,14 +2,14 @@
 # Fichier : tutorial.tcl
 # Description : Lancement du tutorial
 # Auteur : Michel PUJOL
-# Mise à jour $Id: tutorial.tcl,v 1.5 2010-10-24 17:53:25 jberthier Exp $
+# Mise à jour $Id: tutorial.tcl,v 1.6 2011-02-18 03:28:26 fredvachier Exp $
 #
 
 #--- Prise en compte du codage UTF8
 encoding system utf-8
 
 #---
-source version.tcl
+source [file join $::audela_start_dir version.tcl]
 #--- Prise en compte de la langue
 set langage english
 if { $::tcl_platform(platform) == "unix" } {
