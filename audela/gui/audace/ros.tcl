@@ -2,7 +2,7 @@
 # Fichier : ros.tcl
 # Description : Function to launch Robotic Observatory Software installation
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: ros.tcl,v 1.20 2011-02-18 03:28:26 fredvachier Exp $
+# Mise à jour $Id: ros.tcl,v 1.21 2011-02-18 04:34:12 fredvachier Exp $
 #
 
 proc ros { args } {
@@ -29,7 +29,7 @@ proc ros { args } {
       #set syntax "ros gardien send SET init|roof_open|roof_close|flatfield_on|flatfield_off|dark_on|dark_off|native ?params?"
       set action2 [lindex $args 1]
       set params [lrange $args 2 end]
-      set err [catch {source "$audace(rep_install)/bin/ros_root.tcl"}] ; if {$err==1} { source "$ros(root,ros)/ros_root.tcl" }
+      set err [catch {source [file join $::audela_start_dir ros_root.tcl]}]
       set ros(falsenameofexecutable) majordome
       source "$ros(root,ros)/src/common/variables_globales.tcl"
       unset ros(falsenameofexecutable)
