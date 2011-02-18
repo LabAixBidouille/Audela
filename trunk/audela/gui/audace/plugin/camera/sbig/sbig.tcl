@@ -2,7 +2,7 @@
 # Fichier : sbig.tcl
 # Description : Configuration de la camera SBIG
 # Auteur : Robert DELMAS
-# Mise à jour $Id: sbig.tcl,v 1.30 2010-10-24 14:13:22 michelpujol Exp $
+# Mise à jour $Id: sbig.tcl,v 1.31 2011-02-18 17:54:00 robertdelmas Exp $
 #
 
 namespace eval ::sbig {
@@ -281,7 +281,9 @@ proc ::sbig::fillConfigPage { frm camItem } {
                -variable ::sbig::widget(cool) -command "::sbig::checkConfigRefroidissement"
             pack $frm.frame2.frame6.frame7.cool -anchor center -side left -padx 0 -pady 5
 
-            entry $frm.frame2.frame6.frame7.temp -textvariable ::sbig::widget(temp) -width 4 -justify center
+            entry $frm.frame2.frame6.frame7.temp -textvariable ::sbig::widget(temp) -width 4 \
+               -justify center \
+               -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double -274 50 }
             pack $frm.frame2.frame6.frame7.temp -anchor center -side left -padx 5 -pady 5
 
             label $frm.frame2.frame6.frame7.tempdeg -text "$caption(sbig,refroidissement_1)"
