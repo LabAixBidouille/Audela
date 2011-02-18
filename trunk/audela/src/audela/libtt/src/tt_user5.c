@@ -477,8 +477,7 @@ int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries)
       fwhmsat=1.;
    }
    
-   //strcpy(filenamesat,"../ros/src/grenouille/catalog.cat");
-	strcpy(filenamesat,"./catalog.cat");
+   strcpy(filenamesat,"./catalog.cat");
 
    /* --- calcul ---*/
    tt_util_chercher_trainee(p_in,p_out,filenamesat,fwhmsat,seuil,seuila,xc,yc,exposure);

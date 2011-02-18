@@ -1,6 +1,8 @@
+source [file join $::audela_start_dir ros_install.tcl]
+
 #
 # Robotic Observatory Control
-# Mise à jour $Id: ros.tcl,v 1.9 2011-02-18 01:39:04 fredvachier Exp $
+# Mise à jour $Id: ros.tcl,v 1.10 2011-02-18 03:28:26 fredvachier Exp $
 #
 puts "--------------------------------"
 puts "- Robotic Observatory Software -"
@@ -45,20 +47,42 @@ if {$name=="audela"} {
    puts "log= Demarrage de l install automatique"
    puts "pwd= [pwd]"
    puts "Lancement= source [file join $::audela_start_dir ros_install.tcl]"
-   set errno [catch {source [file join $::audela_start_dir ros_install.tcl]} msg]
+
+   # Verification de l existance d une fenetre tk
+   set err [catch {wm withdraw .} msg]
+   if {$err==1} {
+      set ros(withtk) 0
+   } else {
+      set ros(withtk) 1
+   }
+
+   # lancement de l installation
+   set errno [ catch { ::ros_install::run } msg ]
+
 } else {
-   puts "log= Demarrage du programme"
-   # programme ros en mode console
-   cd ../ros/src/$name
-   set errno [catch {source $name.tcl} msg]
+   puts "log= Initialisation du programme"
+   set errno [catch { ::ros_install::get_lastconfig } msg]
+   if {$errno==0} {
+      puts "on se met dans le repertoire $audace(ros_install,configure,config,ros) !"
+      cd [file join $audace(ros_install,configure,config,ros) src $name]
+      puts "log= Demarrage du programme"
+      set errno [catch {source $name.tcl} msg]
+      if {$ros(withtk)==1&&$errno==0} {
+         puts "log= Fin sauvage du programme"
+         destroy .
+         exit
+      }  
+   } 
 }
+
 
 puts "errno=$errno"
 puts "msg=$msg"
+
 if {$errno==1} {
    puts "log= Erreur grave"
    # se met dans ros
-   cd ../..
+   cd $::audela_start_dir/..
    set f [open ros_check_error.txt a]
    puts $f "==============================\n[mc_date2iso8601 now] :"
    puts $f $msg
@@ -68,8 +92,5 @@ if {$errno==1} {
    } else {
       puts "error : $msg"
    }
-}
-if {$ros(withtk)==1} {
-   #exit
 }
 

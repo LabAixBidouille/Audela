@@ -1,5 +1,5 @@
 #
-# Update $Id: audela.tcl,v 1.26 2011-02-18 01:39:04 fredvachier Exp $
+# Update $Id: audela.tcl,v 1.27 2011-02-18 03:28:26 fredvachier Exp $
 #
 #--- Welcome to the AudeLA-Interfaces Easy Launcher
 #
@@ -42,7 +42,7 @@ if {($nameofexecutable!="audela")} {
    catch {source ros.tcl}
 }
 
-source version.tcl
+source [file join $::audela_start_dir version.tcl]
 
 #--- Creation du repertoire de configuration d'Aud'ACE
 if { $::tcl_platform(platform) == "unix" } {
@@ -83,7 +83,7 @@ if { [ file exists [ file join $::audace(rep_home) audace.txt ] ] == 1 } {
    set fichierLangage [ file join $::audace(rep_home) langage.tcl ]
    if { [ file exists $fichierLangage ] } { file rename -force "$fichierLangage" [ file join $::audace(rep_home) langage.ini ] }
    catch { source [ file join $::audace(rep_home) langage.ini ] }
-   cd ../gui/audace
+   cd [file join $::audela_start_dir ../gui/audace]
    source aud.tcl
    return
 }

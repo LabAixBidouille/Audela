@@ -2,7 +2,7 @@
 # Fichier : zadkopad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: zadkopad.tcl,v 1.50 2010-10-10 19:58:19 michelpujol Exp $
+# Mise à jour $Id: zadkopad.tcl,v 1.51 2011-02-18 03:28:26 fredvachier Exp $
 #
 
 namespace eval ::zadkopad {
@@ -158,12 +158,13 @@ namespace eval ::zadkopad {
     #     initialise le plugin
     #------------------------------------------------------------
     proc initPlugin { } {
+
         global port modetelescope stopcalcul paramhorloge telnum ros textloadfile
 
         set textloadfile ""
-        set err [catch {source "[pwd]/../ros/root.tcl"}]
+        set err [catch {source "$::audela_start_dir/ros_root.tcl"}]
         if {$err==1} {
-            append textloadfile "load problem of file root.tcl"
+            append textloadfile "load problem of file ros_root.tcl"
         }
         # --- Initialisation des variables ros du telescope
         set err [catch {source "$ros(root,conf)/conf/src/zadko/conf_zadko.tcl"}]
