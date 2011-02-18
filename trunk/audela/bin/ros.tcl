@@ -2,7 +2,7 @@ source [file join $::audela_start_dir ros_install.tcl]
 
 #
 # Robotic Observatory Control
-# Mise à jour $Id: ros.tcl,v 1.10 2011-02-18 03:28:26 fredvachier Exp $
+# Mise à jour $Id: ros.tcl,v 1.11 2011-02-18 03:45:59 fredvachier Exp $
 #
 puts "--------------------------------"
 puts "- Robotic Observatory Software -"
@@ -61,10 +61,10 @@ if {$name=="audela"} {
 
 } else {
    puts "log= Initialisation du programme"
-   set errno [catch { ::ros_install::get_lastconfig } msg]
+   set errno [catch { ::ros_install::get_root } msg]
    if {$errno==0} {
-      puts "on se met dans le repertoire $audace(ros_install,configure,config,ros) !"
-      cd [file join $audace(ros_install,configure,config,ros) src $name]
+      puts "on se met dans le repertoire $ros(root,ros) !"
+      cd [file join $ros(root,ros) src $name]
       puts "log= Demarrage du programme"
       set errno [catch {source $name.tcl} msg]
       if {$ros(withtk)==1&&$errno==0} {
