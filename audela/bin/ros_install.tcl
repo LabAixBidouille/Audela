@@ -21,6 +21,23 @@ namespace eval ::ros_install {
    }
    
    
+#--------------------------------------------------
+#  ::ros_install::get_root { }
+#--------------------------------------------------
+# Chargement des chemins pour ros
+# @param positionxy position de la fenetre (par defaut : 20+20)
+# @return 
+#--------------------------------------------------
+   proc ::ros_install::get_root {  } {
+
+      global ros
+
+      puts "Chargement de ros_root.tcl "
+      set err [catch {source [file join $::audela_start_dir ros_root.tcl]} msg]
+      return -code $err $msg
+   }
+   
+   
    
 #--------------------------------------------------
 #  ::ros_install::run { positionxy}
@@ -108,7 +125,7 @@ namespace eval ::ros_install {
       }
 
       set audace(ros_install,lastconfig) $audace(ros_install,base)/ros_install_lastconfig.tcl
-      set err [catch {source $audace(ros_install,lastconfig)} msg]
+      set err [catch {::ros_install::get_lastconfig} msg]
 
       puts "Demarrage..."
       if {$ros(withtk)==0} {
@@ -466,7 +483,6 @@ namespace eval ::ros_install {
       ::ros_install::copy $base1 $fichiers $base2
       #
       set roots ""
-      append roots "set ros(root,ros) \"$ros_install_base\"\n"
       set n [llength $audace(ros_install,variables)]
       for {set k 0} {$k<$n} {incr k} {
          set name [lindex $audace(ros_install,variables) $k]
