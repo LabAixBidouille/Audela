@@ -2,7 +2,7 @@
 # Fichier : andorusb.tcl
 # Description : Configuration de la camera Andor
 # Auteur : Frederic VACHIER
-# Mise à jour $Id: andorusb.tcl,v 1.11 2010-11-12 21:10:39 robertdelmas Exp $
+# Mise à jour $Id: andorusb.tcl,v 1.12 2011-02-18 17:45:09 robertdelmas Exp $
 #
 
 namespace eval ::andorusb {
@@ -203,7 +203,9 @@ proc ::andorusb::fillConfigPage { frm camItem } {
             label $frm.frame2.frame4.frame8.lab4 -text "$caption(andorusb,ouvert_obtu)"
             pack $frm.frame2.frame4.frame8.lab4 -anchor center -side left -padx 10 -pady 5
 
-            entry $frm.frame2.frame4.frame8.ouvert_obtu -textvariable ::andorusb::private(ouvert_obtu) -width 4 -justify center
+            entry $frm.frame2.frame4.frame8.ouvert_obtu -textvariable ::andorusb::private(ouvert_obtu) \
+               -width 4 -justify center \
+               -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 0 1000 }
             pack $frm.frame2.frame4.frame8.ouvert_obtu -anchor center -side left -padx 5 -pady 5
 
             label $frm.frame2.frame4.frame8.lab5 -text "$caption(andorusb,ms)"
@@ -218,7 +220,9 @@ proc ::andorusb::fillConfigPage { frm camItem } {
             label $frm.frame2.frame4.frame9.lab6 -text "$caption(andorusb,ferm_obtu)"
             pack $frm.frame2.frame4.frame9.lab6 -anchor center -side left -padx 10 -pady 5
 
-            entry $frm.frame2.frame4.frame9.ferm_obtu -textvariable ::andorusb::private(ferm_obtu) -width 4 -justify center
+            entry $frm.frame2.frame4.frame9.ferm_obtu -textvariable ::andorusb::private(ferm_obtu) \
+               -width 4 -justify center \
+               -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 0 1000 }
             pack $frm.frame2.frame4.frame9.ferm_obtu -anchor center -side left -padx 5 -pady 5
 
             label $frm.frame2.frame4.frame9.lab7 -text "$caption(andorusb,ms)"
@@ -255,11 +259,12 @@ proc ::andorusb::fillConfigPage { frm camItem } {
             pack $frm.frame2.frame6.frame10.cool -anchor center -side left -padx 0 -pady 5
 
             entry $frm.frame2.frame6.frame10.temp -textvariable ::andorusb::private(temp) -width 4 \
-               -justify center
+               -justify center \
+               -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double -274 50 }
             pack $frm.frame2.frame6.frame10.temp -anchor center -side left -padx 5 -pady 5
 
             label $frm.frame2.frame6.frame10.tempdeg \
-               -text "$caption(andorusb,deg_c) $caption(andorusb,refroidissement_1)"
+               -text "$caption(andorusb,refroidissement_1)"
             pack $frm.frame2.frame6.frame10.tempdeg -side left -fill x -padx 0 -pady 5
 
          pack $frm.frame2.frame6.frame10 -side top -fill x -padx 10
