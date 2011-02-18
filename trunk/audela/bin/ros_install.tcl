@@ -520,7 +520,7 @@ namespace eval ::ros_install {
             ::ros_install::copy $base1 $fichiers $base2
             # ros_root.tcl
             set base1 [::ros_install::compact "$ros(ros_install,audelabin)/"]
-            set fichiers [split [files_in_dir $base1 "ros_root.tcl"] \n]
+            set fichiers "ros_root.tcl"
             set base2 [::ros_install::compact "$audace(ros_install,configure,config,$name)/${name}/ros"]
             ::ros_install::copy $base1 $fichiers $base2
             # /lib
