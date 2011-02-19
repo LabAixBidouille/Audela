@@ -1,0 +1,57 @@
+#
+# Fichier : ros_xml.cap
+# Mise a jour $Id: ros_xml.cap,v 1.1 2011-02-19 20:43:49 fredvachier Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+set caption(ros_xml,defaultxml)     "Création du fichier de config XML ros..."
+set caption(ros_xml,errorxml)       "Erreur d'enregistrement du fichier de configuration XML de ros"
+set caption(ros_xml,successxml)     "Fichier XML de configuration de ros enregistré"
+
+# *************** Version française **** **********************
+if { [ string compare $langage "french" ] == "0" } {
+   set caption(ros_xml,defaultxml)     "Création du fichier de config XML ros..."
+   set caption(ros_xml,errorxml)       "Erreur d'enregistrement du fichier de configuration XML de ros"
+   set caption(ros_xml,successxml)     "Fichier XML de configuration de ros enregistré"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+
+}
+
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
