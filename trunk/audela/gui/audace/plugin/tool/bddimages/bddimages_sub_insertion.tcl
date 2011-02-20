@@ -1,6 +1,6 @@
 # source audace/plugin/tool/bddimages/bddimages_subroutines.tcl
 
-# Mise à jour $Id: bddimages_sub_insertion.tcl,v 1.15 2011-02-16 14:26:20 fredvachier Exp $
+# Mise à jour $Id: bddimages_sub_insertion.tcl,v 1.16 2011-02-20 16:06:13 fredvachier Exp $
 
 #--------------------------------------------------
 #  init_info { }
@@ -181,8 +181,7 @@ proc info_fichier { nomfich } {
       set fileformat zipped
       set errnum [catch {file mkdir "$bddconf(dirfits)"} msg]
       if {$errnum==1} {
-         ::console::affiche_resultat "msg=$msg\n"
-         ::console::affiche_resultat "array names bddconf=[array names bddconf]\n"
+         bddimages_sauve_fich "info_fichier: ERREUR 9b :  <err:$errnum> <msg:$msg>"
       }
 
       set tmpfile [ file join $bddconf(dirfits) tmpbddimage.fits ]
@@ -226,7 +225,6 @@ proc info_fichier { nomfich } {
    # --- zip/rezip le fichier
    if {$fileformat == "unzipped"} {
       set nomfich "$nomfichfits.gz"
-      ::console::affiche_resultat "fichier a zipper = $nomfich \n"
       set errnum [catch {exec gzip -c $nomfichdata > $nomfich} msg ]
       if {$errnum!=0} {
          file delete -force -- $nomfich
@@ -672,7 +670,6 @@ proc bddimages_catas_datainsert { filename sizefich form } {
   # Detection de l'image coorespondante
   set fic [file tail "$filename"]
   set racinefich [string range $fic 0 [expr [string first $form $fic ] -2]]
-  ::console::affiche_resultat "racinefich = $racinefich \n"
   
   # -- ligne SQL
   set sqlcmd "SELECT idbddimg,dirfilename FROM images WHERE filename='$racinefich.fits.gz' LIMIT 1"
@@ -989,7 +986,6 @@ proc bddimages_image_identification { idbddimg } {
       set filename [lindex $line 1]
       set idheader [lindex $line 2]
       set fileimg [ file join $bddconf(dirbase) $dirfilename $filename]
-      #::console::affiche_resultat "Image indentifiee : $fileimg \n"
       }
 
 
@@ -1018,11 +1014,9 @@ proc bddimages_image_identification { idbddimg } {
          set filename [lindex $line 1]
          set idbddcata [lindex $line 2]
          set filecata [ file join $bddconf(dirbase) $dirfilename $filename]
-         #::console::affiche_resultat "Effacement de $filecata \n"
          }
       }
 
-   ::console::affiche_resultat "ident : IDI=$idbddimg IMG=$fileimg IDC=$idbddcata CATA=$filecata IDH=$idheader FIN\n"
    return [list $idbddimg $fileimg $idbddcata $filecata $idheader]
    }
 

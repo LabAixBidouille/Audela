@@ -4,7 +4,7 @@
 # Fichier        : bddimages_sql.tcl
 # Description    : Routines sql
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_sql.tcl,v 1.5 2011-02-16 14:26:20 fredvachier Exp $
+# Mise à jour $Id: bddimages_sql.tcl,v 1.6 2011-02-20 16:06:13 fredvachier Exp $
 #
 
 namespace eval bddimages_sql {
@@ -64,6 +64,13 @@ namespace eval bddimages_sql {
       } elseif {$cmd=="insertid"} {
          set nb [::mysql::insertid $sql(h)]
          return $nb
+      } elseif {$cmd=="exec"} {
+         set texte [lindex $args 1]
+         set sql(q) [::mysql::exec $sql(h) "$texte"]
+         if {$sql(q)==-1} {
+            return ""
+         }
+         return $sql(q)
       } else {
          error "usage : sql connect|disconnect|selectdb|query|insertid|getcolname"
       }
