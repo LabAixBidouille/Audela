@@ -36,6 +36,7 @@
                     </users>
                 </base>
             </sql>
+            
             <computers>
                 <computer id="joe">
                     <ip/>
