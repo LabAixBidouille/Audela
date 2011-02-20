@@ -1,5 +1,5 @@
 # ----------------------------------------
-# Mise à jour $Id: bddimages_sub_header.tcl,v 1.4 2011-02-16 14:26:20 fredvachier Exp $
+# Mise à jour $Id: bddimages_sub_header.tcl,v 1.5 2011-02-20 16:06:13 fredvachier Exp $
 
 # bddimages_keywd_to_variable
 
@@ -22,26 +22,26 @@ proc bddimages_convert_type_variable { type } {
        # -- Creation de la ligne sql pour la creation d une nouvelle table header
        switch $type {
          "string" {
-	   return "TEXT"
-	   }
-         "float" {
-	   return "DOUBLE"
-	   }
-         "double" {
-	   return "DOUBLE"
-	   }
-         "int" {
-	   return "INT"
-	   }
-         "" {
-            bddimages_sauve_fich "bddimages_header_id: ERREUR 203 : type de champ du header vide"
-            return -code error "203"
-	   }
+          return "TEXT"
+          }
+        "float" {
+          return "DOUBLE"
+          }
+        "double" {
+          return "DOUBLE"
+          }
+        "int" {
+          return "INT"
+          }
+        "" {
+           bddimages_sauve_fich "bddimages_header_id: ERREUR 203 : type de champ du header vide"
+           return -code error "203"
+          }
          default {
             bddimages_sauve_fich "bddimages_header_id: ERREUR 204 : type de champ du header inconnu <$type>"
             return -code error "204"
-	   }
-	 }
+          }
+        }
 
 }
 
@@ -65,7 +65,6 @@ proc bddimages_header_id { tabkey } {
 
    if {$err} {
       bddimages_sauve_fich "bddimages_header_id: ERREUR : <$err> <$msg>"
-      ::console::affiche_erreur "bddimages_header_id: ERREUR : <$err> <$msg>"
 
       if {[string last "header' doesn't exist" $msg]>0} {
           unset sqlcmd
@@ -83,8 +82,8 @@ proc bddimages_header_id { tabkey } {
              return [list 201 0]
              } else {
              bddimages_sauve_fich "bddimages_header_id: Creation table header..."
-	     set resultsql ""
-	     }
+            set resultsql ""
+            }
       } elseif {[string last "::mysql::query/db server: MySQL server has gone away" $msg]>=0} {
           set err [catch {::bddimages_sql::connect} msg]
           set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
@@ -129,16 +128,16 @@ proc bddimages_header_id { tabkey } {
      set list_keys [lsort -ascii $list_keys]
      if {[llength $list_keys]==[llength $listbase]} {
        foreach key $listbase {
-	 if {[lsearch -exact $list_keys $key]<0} {
-	   set listidentique "no"
-	   }
-         }
-	 if {$listidentique=="yes"} {
-	   set idheader $idhd
-	   }
+        if {[lsearch -exact $list_keys $key]<0} {
+          set listidentique "no"
+          }
+        }
+        if {$listidentique=="yes"} {
+          set idheader $idhd
+          }
        } else {
          set listidentique "no"
-	 }
+       }
      if {$listidentique=="yes"} {
        break
        }
@@ -147,7 +146,6 @@ proc bddimages_header_id { tabkey } {
    # -- Creation d un nouveau type de header
    if {$listidentique=="no"} {
 
-     ::console::affiche_erreur "Nouveau header \n"
      # -- determination du nouveau id (bouche les trous)
      set idhdder [lindex [lsort -integer -decreasing $keynames] 0]
      set idheader 0
@@ -193,17 +191,17 @@ proc bddimages_header_id { tabkey } {
        # -- Creation de la ligne sql pour l insertion d un nouvel enregistrement de la table header
        if {$unit==""} {
          set unit "NULL"
-	 } else {
-	   set unit "'$unit'"
-	   }
-       if {$comment==""} {
-         set comment "NULL"
-	 } else {
-	   # attention au caractere ' dans la chaine de caractere
-	   # on remplace par le caractere blanc
-           set comment [string map {"'" " "} $comment]
-	   set comment "'$comment'"
-	   }
+        } else {
+          set unit "'$unit'"
+          }
+      if {$comment==""} {
+        set comment "NULL"
+        } else {
+          # attention au caractere ' dans la chaine de caractere
+          # on remplace par le caractere blanc
+          set comment [string map {"'" " "} $comment]
+          set comment "'$comment'"
+          }
        append sqlcmd "($idheader, '$key', '$type','$var', $unit, $comment),\n"
 
        }
@@ -227,23 +225,23 @@ proc bddimages_header_id { tabkey } {
            return [list 205 0]
            } else {
  #          bddimages_sauve_fich "bddimages_header_id: Insertion d un nouveau type de header dans la base <IDHD=$idheader>"
-	   }
-       # -- Creation d une nouvelle table header
-       set err [catch {::bddimages_sql::sql query $sqlcmd2} msg]
-       if {$err} {
-         bddimages_sauve_fich "bddimages_header_id: ERREUR 206 : Creation table images_$idheader <$err> <$msg> <$sqlcmd2> "
-         set sqlcmd "DELETE FROM header WHERE idheader=$idheader"
-         set err [catch {::bddimages_sql::sql query $sqlcmd} msg]
-         if {$err} {
-           bddimages_sauve_fich "bddimages_header_id: ERREUR 207 : Effacement impossible dans la table header pour l id = $idheader  <$err> <$msg> "
-           return [list 207 0]
-           } else {
-           bddimages_sauve_fich "bddimages_header_id: Effacement dans la table header pour IDHD=$idheader "
-	   }
-         return [list 206 0]
-         } else {
- #          bddimages_sauve_fich "bddimages_header_id: Insertion d un nouveau type de header dans la base <IDHD=$idheader> "
-	   }
+          }
+      # -- Creation d une nouvelle table header
+      set err [catch {::bddimages_sql::sql query $sqlcmd2} msg]
+      if {$err} {
+        bddimages_sauve_fich "bddimages_header_id: ERREUR 206 : Creation table images_$idheader <$err> <$msg> <$sqlcmd2> "
+        set sqlcmd "DELETE FROM header WHERE idheader=$idheader"
+        set err [catch {::bddimages_sql::sql query $sqlcmd} msg]
+        if {$err} {
+          bddimages_sauve_fich "bddimages_header_id: ERREUR 207 : Effacement impossible dans la table header pour l id = $idheader  <$err> <$msg> "
+          return [list 207 0]
+          } else {
+          bddimages_sauve_fich "bddimages_header_id: Effacement dans la table header pour IDHD=$idheader "
+          }
+        return [list 206 0]
+        } else {
+#          bddimages_sauve_fich "bddimages_header_id: Insertion d un nouveau type de header dans la base <IDHD=$idheader> "
+          }
 
 
      }
