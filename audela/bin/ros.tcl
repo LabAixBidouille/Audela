@@ -1,8 +1,10 @@
+global ros
+
 source [file join $::audela_start_dir ros_install.tcl]
 
 #
 # Robotic Observatory Control
-# Mise à jour $Id: ros.tcl,v 1.11 2011-02-18 03:45:59 fredvachier Exp $
+# Mise à jour $Id: ros.tcl,v 1.12 2011-02-20 16:02:35 fredvachier Exp $
 #
 puts "--------------------------------"
 puts "- Robotic Observatory Software -"
@@ -19,11 +21,11 @@ if { [lsearch $::auto_path $audelaLibPath] == -1 } {
 puts "::auto_path=$::auto_path"
 
 set err [catch {wm withdraw .} msg]
-set ros(withtk) 1
 if {$err==1} {
    set ros(withtk) 0
    puts "TK: Non actif"
 } else {
+   set ros(withtk) 1
    puts "TK: Actif"
 }
 
@@ -66,7 +68,8 @@ if {$name=="audela"} {
       puts "on se met dans le repertoire $ros(root,ros) !"
       cd [file join $ros(root,ros) src $name]
       puts "log= Demarrage du programme"
-      set errno [catch {source $name.tcl} msg]
+      source $name.tcl
+#      set errno [catch {source $name.tcl} msg]
       if {$ros(withtk)==1&&$errno==0} {
          puts "log= Fin sauvage du programme"
          destroy .
@@ -93,4 +96,7 @@ if {$errno==1} {
       puts "error : $msg"
    }
 }
-
+if {$ros(withtk)==1} {
+   exit
+}
+ puts "eject"
