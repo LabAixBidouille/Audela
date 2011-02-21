@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: aud.tcl,v 1.160 2011-01-18 20:03:46 robertdelmas Exp $
+# Mise à jour $Id: aud.tcl,v 1.161 2011-02-21 12:09:17 fredvachier Exp $
 #
 
 #--- Chargement du package BWidget
@@ -124,6 +124,7 @@ namespace eval ::audace {
       #--- Chargement de la configuration
       loadSetup
 
+
       #--- Creation du repertoire de travail
       set catchError [ catch {
          if { ! [ info exists conf(rep_travail) ] } {
@@ -144,6 +145,9 @@ namespace eval ::audace {
       }
 
       #--- On se place dans le repertoire de travail
+      if { ! [ info exists audace(rep_travail) ] } {
+         puts "The directory $conf(rep_travail) doesn't exist..."
+      }
       cd $audace(rep_travail)
 
       #--- Repertoire d'installation
