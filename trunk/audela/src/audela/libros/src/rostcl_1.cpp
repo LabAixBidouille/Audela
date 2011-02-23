@@ -33,6 +33,16 @@
 #if defined(OS_WIN)
 #include "Bc637pci.h"
 #include <process.h>
+
+#include <mbgdevio.h>
+
+//#include <mbgtime.h>
+#include <mbgutil.h>
+
+//#include <stdio.h>
+//#include <stdlib.h>
+
+
 //pour gerer la datation par GPS: declaration des variables globales
 HANDLE EventThreadGps;
 int ThreadGps;
@@ -410,7 +420,7 @@ int Cmd_rostcl_gps(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 /****************************************************************************/
 /* I/O with GPS cards                                                  */
 /****************************************************************************/
-/*
+/* type of card curently read : symmetricom or meinberg
 ros_gps open symmetricom
 ros_gps reset symmetricom
 ros_gps read symmetricom
@@ -419,11 +429,12 @@ ros_gps close symmetricom
 /****************************************************************************/
 {
    char s[100];
-#if defined OS_WIN
-   int mode,modele,i;
-#else
-	char * message;
-#endif
+   int mode,modele,i,k,devices_found;;
+   char ws[200];
+   char year[5], month[5], day[5], hour[5], minute[5], sec[5], msec[5], p[10];
+   MBG_DEV_HANDLE dh = mbg_open_device( 0 );
+   PCPS_UCAP_ENTRIES ucap_entries;
+   static PCPS_DEV dev;
 
    if(argc<3) {
       sprintf(s,"Usage: %s open|reset|read|close gpsdevice", argv[0]);
@@ -431,7 +442,7 @@ ros_gps close symmetricom
       return TCL_ERROR;
    } else {
       strcpy(s,"");
-#if defined OS_WIN
+
       /* --- decodage des arguments ---*/
       mode=0;
       if (strcmp(argv[1],"open")==0) {
@@ -454,12 +465,15 @@ ros_gps close symmetricom
       modele=0;
       if (strcmp(argv[2],"symmetricom")==0) {
          modele=1;
+      } else if (strcmp(argv[2],"meinberg")==0) {
+	      modele=2;
       }
       if (modele==0) {
-         strcpy(s,"GPS device must be symmetricom");
+         strcpy(s,"GPS device must be symmetricom or meinberg");
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          return TCL_ERROR;
       }
+#if defined OS_WIN
       /* --- open ---*/
       if ((mode==1)&&(modele==1)) {
 			// --- verif que ca marche dans le thread principal
@@ -522,17 +536,150 @@ ros_gps close symmetricom
 			Tcl_SetResult(interp,s,TCL_VOLATILE);
 			return TCL_OK;
       }
+#endif
+      /*There are 3 functions to deal with the meinberg capture events:
+
+	  \li mbg_clr_ucap_buff() clears the on-board FIFO buffer
+	  \li mbg_get_ucap_entries() returns the maximum number of entries
+	    and the currently saved number of entries in the buffer
+	  \li mbg_get_ucap_event() retrieves a capture event from the
+	    on-board FIFO, or 0000.0000 if the FIFO buffer is empty.
+	
+	  When using the time capture inputs the following hints might be helpful:
+	
+	  \li The corresponding DIP switches on the card must be set to the "ON"
+	  position in order to wire the input pins to the capture circuitry. See
+	  the user manual for the correct DIP switches.
+	  \li Capture events are stored in the on-board FIFO, and entries can be
+	  retrieved from the FIFO in different ways. Once an entry has been
+	  retrieved it is removed from the FIFO, so if several ways or
+	  applications are used at the same time to retrieve capture events from
+	  the FIFO then capture events may be missed by one application since they
+	  have already been retrieved by another application.
+	  \li The card provides 2 physical serial interfaces either of which may
+	  have been configured to send a serial ASCII string automatically
+	  whenever a capture event has occurred. Of course this would also remove
+	  those capture events from the FIFO buffer. So the settings of both
+	  serial ports should be checked to make sure none of the serial ports
+	  have been configured to send the capture string automatically. This has
+	  to be done only once for a card */
+      /* --- open meinberg ---*/
+      if ((mode==1)&&(modele==2)) {
+			devices_found = mbg_find_devices();
+			if ( devices_found == 0 ) {
+				printf(s,"No GPS meinberg card found %s",argv[2]);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				return TCL_ERROR;
+			}
+			i=devices_found-1;
+   			dh = mbg_open_device( i );
+    		if ( dh == MBG_INVALID_DEV_HANDLE ) {
+				printf(s,"Can't open GPS device %s",argv[2]);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				return TCL_ERROR;
+		    }
+			//print_dev_info( dh, &dev );
+			mbg_get_device_info( dh, &dev);
+    		sprintf(s,"Connection with %s is opened",argv[2]);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_OK;
+      }
+      /* --- reset meinberg ---*/
+      /* --- remove every event on the FIFO controler on the GPS board ---*/
+      if ((mode==2)&&(modele==2)) {
+		  if ( PCPS_SUCCESS == mbg_clr_ucap_buff( dh ) ) {
+      		sprintf(s,"Capture buffer cleared for %s",argv[2]);
+			Tcl_SetResult(interp,s,TCL_VOLATILE);
+      		return TCL_OK;
+		  }	else {
+      		sprintf(s,"Failed to clear capture buffer for %s",argv[2]);
+			Tcl_SetResult(interp,s,TCL_VOLATILE);
+      		return TCL_ERROR;
+		  }
+	   }
+      /* --- read time meinberg ---*/
+      if ((mode==3)&&(modele==2)) {
+			// on veut recuperer le dernier evenement entres si dispo
+		   if ( _pcps_has_ucap( &dev ) ) {
+				PCPS_HR_TIME ucap_event;
+				// read all entries from capture buffer
+				date=0;
+				for (;;) {
+      				if ( PCPS_SUCCESS != mbg_get_ucap_entries( dh, &ucap_entries )) {
+						sprintf(s,"Failed to read user capture buffer entries for %s",argv[2]);
+						break;
+					}
+					if ( PCPS_SUCCESS != mbg_get_ucap_event( dh, &ucap_event )) {
+						sprintf(s,"Failed to read user capture event for %s",argv[2]);
+						break;
+					}
+
+					// If a user capture event has been read
+					// then it it removed from the clock's buffer.
+
+					// If no new capture event is available, the ucap.tstamp structure
+					// is set to 0.
+					// Alternatively, PCPS_UCAP_ENTRIES.used can be checked for the 
+					// number of events pending in the buffer.
+					if ( ucap_event.tstamp.sec == 0 ) // no new user capture event
+       				 break;
+ 
+      				// Format function taken from mbgutil.h
+     				mbg_str_pcps_hr_tstamp_utc( ws, sizeof( ws ), &ucap_event );
+     				// format iso
+     				for (k=6;k<=9;k++) { p[k-6]=ws[k]; 	}; p[k-6]='\0';
+					strcpy(year,p); 
+					for (k=3;k<=4;k++) { p[k-3]=ws[k]; } ; p[k-3]='\0';
+					strcpy(month,p);
+					for (k=0;k<=1;k++) { p[k]=ws[k]; } ; p[k]='\0';
+					strcpy(day,p);
+					for (k=12;k<=13;k++) { p[k-12]=ws[k]; } ; p[k-12]='\0';
+					strcpy(hour,p);
+					for (k=15;k<=16;k++) { p[k-15]=ws[k]; } ; p[k-15]='\0';
+					strcpy(minute,p);
+					for (k=18;k<=19;k++) { p[k-18]=ws[k]; } ; p[k-18]='\0';
+					strcpy(sec,p);
+					for (k=21;k<=23;k++) { p[k-21]=ws[k]; } ; p[k-21]='\0';
+					strcpy(msec,p);
+					sprintf(DateGpst,"%s-%s-%sT%s:%s:%s.%s", year, month, day, hour, minute, sec, msec );
+					date=1;
+    			}
+				
+				if (date==0) {
+					sprintf(s,"No GPS date available");
+					Tcl_SetResult(interp,s,TCL_VOLATILE);
+					return TCL_ERROR;
+				} else {
+					sprintf(s,"%s",DateGpst);
+					Tcl_SetResult(interp,s,TCL_VOLATILE);
+					return TCL_OK;
+				}
+		   }
+      }
+      /* --- close meinberg ---*/
+     if ((mode==4)&&(modele==2)) {
+			mbg_close_device( &dh );  
+			sprintf(s,"Connection with %s is closed",argv[2]);
+			Tcl_SetResult(interp,s,TCL_VOLATILE);
+			return TCL_OK;
+      }
+#if defined OS_WIN
       /* --- ---*/
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       return TCL_ERROR;
 #else
-      message = strdup( "function not available" );
-      Tcl_SetResult(interp, message, TCL_VOLATILE);
-      free( message );
-      return TCL_ERROR;
+	  if (modele==1) {
+		  printf(s,"function not available");
+		  Tcl_SetResult(interp, s, TCL_VOLATILE);
+		  return TCL_ERROR;
+	  } else {
+		  Tcl_SetResult(interp,s,TCL_VOLATILE);
+		  return TCL_ERROR;  
+	  }
 #endif
    }
 }
+
 
 //***************************************************************************
 //
