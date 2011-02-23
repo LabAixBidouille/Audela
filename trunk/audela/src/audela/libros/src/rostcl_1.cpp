@@ -429,12 +429,16 @@ ros_gps close symmetricom
 /****************************************************************************/
 {
    char s[100];
+#if defined OS_WIN
    int mode,modele,i,k,devices_found;;
    char ws[200];
    char year[5], month[5], day[5], hour[5], minute[5], sec[5], msec[5], p[10];
    MBG_DEV_HANDLE dh = mbg_open_device( 0 );
    PCPS_UCAP_ENTRIES ucap_entries;
    static PCPS_DEV dev;
+#else
+	char * message;
+#endif
 
    if(argc<3) {
       sprintf(s,"Usage: %s open|reset|read|close gpsdevice", argv[0]);
@@ -442,7 +446,7 @@ ros_gps close symmetricom
       return TCL_ERROR;
    } else {
       strcpy(s,"");
-
+#if defined OS_WIN
       /* --- decodage des arguments ---*/
       mode=0;
       if (strcmp(argv[1],"open")==0) {
@@ -473,7 +477,6 @@ ros_gps close symmetricom
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          return TCL_ERROR;
       }
-#if defined OS_WIN
       /* --- open ---*/
       if ((mode==1)&&(modele==1)) {
 			// --- verif que ca marche dans le thread principal
@@ -536,7 +539,6 @@ ros_gps close symmetricom
 			Tcl_SetResult(interp,s,TCL_VOLATILE);
 			return TCL_OK;
       }
-#endif
       /*There are 3 functions to deal with the meinberg capture events:
 
 	  \li mbg_clr_ucap_buff() clears the on-board FIFO buffer
@@ -663,19 +665,14 @@ ros_gps close symmetricom
 			Tcl_SetResult(interp,s,TCL_VOLATILE);
 			return TCL_OK;
       }
-#if defined OS_WIN
       /* --- ---*/
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       return TCL_ERROR;
 #else
-	  if (modele==1) {
-		  printf(s,"function not available");
-		  Tcl_SetResult(interp, s, TCL_VOLATILE);
-		  return TCL_ERROR;
-	  } else {
-		  Tcl_SetResult(interp,s,TCL_VOLATILE);
-		  return TCL_ERROR;  
-	  }
+      message = strdup( "function not available" );
+      Tcl_SetResult(interp, message, TCL_VOLATILE);
+      free( message );
+      return TCL_ERROR;
 #endif
    }
 }
