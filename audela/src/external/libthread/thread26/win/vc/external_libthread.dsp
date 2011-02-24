@@ -7,19 +7,19 @@
 CFG=external_libthread - Win32 Debug
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
-!MESSAGE 
+!MESSAGE
 !MESSAGE NMAKE /f "external_libthread.mak".
-!MESSAGE 
+!MESSAGE
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
-!MESSAGE 
+!MESSAGE
 !MESSAGE NMAKE /f "external_libthread.mak" CFG="external_libthread - Win32 Debug"
-!MESSAGE 
+!MESSAGE
 !MESSAGE Possible choices for configuration are:
-!MESSAGE 
+!MESSAGE
 !MESSAGE "external_libthread - Win32 Release" (based on "Win32 (x86) External Target")
 !MESSAGE "external_libthread - Win32 Debug" (based on "Win32 (x86) External Target")
-!MESSAGE 
+!MESSAGE
 
 # Begin Project
 # PROP AllowPerConfigDependencies 0
@@ -68,7 +68,7 @@ CFG=external_libthread - Win32 Debug
 # PROP Bsc_Name ""
 # PROP Target_Dir ""
 
-!ENDIF 
+!ENDIF
 
 # Begin Target
 
@@ -79,7 +79,7 @@ CFG=external_libthread - Win32 Debug
 
 !ELSEIF  "$(CFG)" == "external_libthread - Win32 Debug"
 
-!ENDIF 
+!ENDIF
 
 # Begin Group "generic"
 

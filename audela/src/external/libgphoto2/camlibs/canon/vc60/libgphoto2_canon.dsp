@@ -7,19 +7,19 @@
 CFG=libgphoto2_canon - Win32 Debug
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
-!MESSAGE 
+!MESSAGE
 !MESSAGE NMAKE /f "libgphoto2_canon.mak".
-!MESSAGE 
+!MESSAGE
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
-!MESSAGE 
+!MESSAGE
 !MESSAGE NMAKE /f "libgphoto2_canon.mak" CFG="libgphoto2_canon - Win32 Debug"
-!MESSAGE 
+!MESSAGE
 !MESSAGE Possible choices for configuration are:
-!MESSAGE 
+!MESSAGE
 !MESSAGE "libgphoto2_canon - Win32 Release" (based on "Win32 (x86) Dynamic-Link Library")
 !MESSAGE "libgphoto2_canon - Win32 Debug" (based on "Win32 (x86) Dynamic-Link Library")
-!MESSAGE 
+!MESSAGE
 
 # Begin Project
 # PROP AllowPerConfigDependencies 0
@@ -83,7 +83,7 @@ LINK32=link.exe
 # ADD LINK32 libgphoto2_port.lib libgphoto2.lib /nologo /dll /debug /machine:I386 /out:"../../../../../../bin/libgphoto2_canon.dll" /implib:"../../../lib/libgphoto2_canon.lib" /pdbtype:sept /libpath:"../../../lib"
 # SUBTRACT LINK32 /pdb:none /nodefaultlib
 
-!ENDIF 
+!ENDIF
 
 # Begin Target
 

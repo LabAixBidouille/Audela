@@ -7,19 +7,19 @@
 CFG=libgphoto2 - Win32 Debug
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
-!MESSAGE 
+!MESSAGE
 !MESSAGE NMAKE /f "libgphoto2.mak".
-!MESSAGE 
+!MESSAGE
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
-!MESSAGE 
+!MESSAGE
 !MESSAGE NMAKE /f "libgphoto2.mak" CFG="libgphoto2 - Win32 Debug"
-!MESSAGE 
+!MESSAGE
 !MESSAGE Possible choices for configuration are:
-!MESSAGE 
+!MESSAGE
 !MESSAGE "libgphoto2 - Win32 Release" (based on "Win32 (x86) Dynamic-Link Library")
 !MESSAGE "libgphoto2 - Win32 Debug" (based on "Win32 (x86) Dynamic-Link Library")
-!MESSAGE 
+!MESSAGE
 
 # Begin Project
 # PROP AllowPerConfigDependencies 0
@@ -90,7 +90,7 @@ SOURCE="$(InputPath)"
 PostBuild_Cmds=copy ..\libgphoto2.h ..\..\..\include\libgphoto2.h	copy ..\..\lib\libgphoto2.lib  ..\..\..\lib\libgphoto2.lib
 # End Special Build Tool
 
-!ENDIF 
+!ENDIF
 
 # Begin Target
 

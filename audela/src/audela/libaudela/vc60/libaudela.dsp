@@ -7,19 +7,19 @@
 CFG=libaudela - Win32 Debug
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
-!MESSAGE 
+!MESSAGE
 !MESSAGE NMAKE /f "libaudela.mak".
-!MESSAGE 
+!MESSAGE
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
-!MESSAGE 
+!MESSAGE
 !MESSAGE NMAKE /f "libaudela.mak" CFG="libaudela - Win32 Debug"
-!MESSAGE 
+!MESSAGE
 !MESSAGE Possible choices for configuration are:
-!MESSAGE 
+!MESSAGE
 !MESSAGE "libaudela - Win32 Release" (based on "Win32 (x86) Dynamic-Link Library")
 !MESSAGE "libaudela - Win32 Debug" (based on "Win32 (x86) Dynamic-Link Library")
-!MESSAGE 
+!MESSAGE
 
 # Begin Project
 # PROP AllowPerConfigDependencies 0
@@ -92,7 +92,7 @@ SOURCE="$(InputPath)"
 PostBuild_Cmds=echo on	if not exist ..\..\lib (mkdir ..\..\lib)	copy debug\libaudela.lib ..\..\lib	if not exist ..\..\include (mkdir ..\..\include)	copy ..\src\audela.h ..\..\include	copy ..\src\cbuffer.h ..\..\include	copy ..\src\cdevice.h ..\..\include	copy ..\src\cerror.h ..\..\include	copy ..\src\cpixels.h ..\..\include	copy ..\src\cpool.h ..\..\include	copy ..\src\fitskw.h ..\..\include	copy ..\src\libstd.h ..\..\include	copy ..\src\libtt.h ..\..\include	copy ..\src\palette.h ..\..\include	copy ..\src\cpixelsgray.h ..\..\include	copy ..\src\cpixelsrgb.h ..\..\include copy ..\src\cpixelsrgb.h ..\..\include
 # End Special Build Tool
 
-!ENDIF 
+!ENDIF
 
 # Begin Target
 
