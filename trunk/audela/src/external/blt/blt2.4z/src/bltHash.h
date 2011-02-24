@@ -31,7 +31,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: bltHash.h,v 1.4 2011-02-18 03:28:26 fredvachier Exp $
+ * RCS: @(#) $Id: bltHash.h.in,v 1.1 2009-02-21 13:45:32 michelpujol Exp $
  */
 
 #ifndef BLT_HASH_H
