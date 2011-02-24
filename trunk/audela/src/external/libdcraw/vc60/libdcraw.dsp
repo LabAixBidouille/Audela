@@ -7,19 +7,19 @@
 CFG=libdcraw - Win32 Debug
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
-!MESSAGE 
+!MESSAGE
 !MESSAGE NMAKE /f "libdcraw.mak".
-!MESSAGE 
+!MESSAGE
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
-!MESSAGE 
+!MESSAGE
 !MESSAGE NMAKE /f "libdcraw.mak" CFG="libdcraw - Win32 Debug"
-!MESSAGE 
+!MESSAGE
 !MESSAGE Possible choices for configuration are:
-!MESSAGE 
+!MESSAGE
 !MESSAGE "libdcraw - Win32 Release" (based on "Win32 (x86) Dynamic-Link Library")
 !MESSAGE "libdcraw - Win32 Debug" (based on "Win32 (x86) Dynamic-Link Library")
-!MESSAGE 
+!MESSAGE
 
 # Begin Project
 # PROP AllowPerConfigDependencies 0
@@ -92,7 +92,7 @@ SOURCE="$(InputPath)"
 PostBuild_Cmds=copy Debug\*.dll     ..\..\..\..\bin	copy Debug\*.lib     ..\..\lib	copy ..\src\libdcraw.h ..\..\include
 # End Special Build Tool
 
-!ENDIF 
+!ENDIF
 
 # Begin Target
 

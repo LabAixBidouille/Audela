@@ -7,19 +7,19 @@
 CFG=libaudelatk - Win32 Debug
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
-!MESSAGE 
+!MESSAGE
 !MESSAGE NMAKE /f "libaudelatk.mak".
-!MESSAGE 
+!MESSAGE
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
-!MESSAGE 
+!MESSAGE
 !MESSAGE NMAKE /f "libaudelatk.mak" CFG="libaudelatk - Win32 Debug"
-!MESSAGE 
+!MESSAGE
 !MESSAGE Possible choices for configuration are:
-!MESSAGE 
+!MESSAGE
 !MESSAGE "libaudelatk - Win32 Release" (based on "Win32 (x86) Dynamic-Link Library")
 !MESSAGE "libaudelatk - Win32 Debug" (based on "Win32 (x86) Dynamic-Link Library")
-!MESSAGE 
+!MESSAGE
 
 # Begin Project
 # PROP AllowPerConfigDependencies 0
@@ -84,7 +84,7 @@ LINK32=link.exe
 # ADD LINK32 user32.lib tk85t.lib tkstub85.lib tclstub85.lib libaudela.lib /nologo /dll /debug /machine:I386 /nodefaultlib:"msvcrt" /out:"..\..\..\..\bin\libaudelatk.dll" /pdbtype:sept /libpath:"..\..\..\external\lib" /libpath:"..\..\lib"
 # SUBTRACT LINK32 /nodefaultlib
 
-!ENDIF 
+!ENDIF
 
 # Begin Target
 
