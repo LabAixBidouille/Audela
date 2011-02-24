@@ -511,6 +511,7 @@ namespace eval ::ros_install {
          if {$audace(ros_install,configure,config,${name}x)==0} {
             continue
          }
+         ::ros_install::print "\n DESTINATION : $audace(ros_install,configure,config,$name) \n \n"
          # --- cgi-bin : on copie d'abord les /bin et /lib de AudeLA
          if {($name=="cgi-bin")} {
             # /bin
