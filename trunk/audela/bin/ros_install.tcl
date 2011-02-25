@@ -69,6 +69,28 @@ namespace eval ::ros_install {
       #--- Initialisation of the variables
       puts "Initialisation..."
       set base $::audela_start_dir
+      set dirros $base
+      set b [::ros_install::compact ${base}/../../ros]
+      if {[file exists $b]==1} {
+         set dirros $b
+      }
+      set dirconf [::ros_install::compact ${base}/../../ros_private_template]
+      set b [::ros_install::compact ${base}/../../..]
+      set testsrv [file tail $b]
+      if {$testsrv=="srv"} {
+         set dirwork ${b}/work/ros
+         file mkdir $dirwork
+         set dirwww ${b}/www
+         set b [::ros_install::compact ${dirros}/../ros_private_*]
+         set c [glob -nocomplain $b]
+         if {$c!=""} {
+            set dirconf [lindex [lsort $c] 0]
+         }
+      } else {
+         set b [::ros_install::compact ${base}/..]
+         set dirwork $b
+         set dirwww $b
+      }
       puts "base= $base"
       set audace(ros_install,base) $base
       if {[info exists ros(ros_install,audelabin)]==0} {
@@ -81,47 +103,56 @@ namespace eval ::ros_install {
 
       set k 0
       foreach name $audace(ros_install,variables) {
-         set audace(ros_install,configure,config,${name}) ${base}
+         set b $base
+         if {[lsearch -exact "ros" $name]>=0} {
+            set b $dirros
+         }
+         if {[lsearch -exact "data ressources logs catalogs extinctionmaps" $name]>=0} {
+            set b $dirwork
+         }
+         if {[lsearch -exact "htdocs cgi-bin" $name]>=0} {
+            set b $dirwww
+         }
+         if {[lsearch -exact "conf" $name]>=0} {
+            set b $dirconf
+         }
+         set audace(ros_install,configure,config,${name}) ${b}
          set audace(ros_install,configure,config,${name}x) 1
       }
 
-
       puts "Defauts..."
-      set audace(ros_install,configure,config,conf)           [::ros_install::compact "$base"]
-      set audace(ros_install,configure,config,catalogs)       "$base/ressources"
-      set audace(ros_install,configure,config,extinctionmaps) "$base/ressources"
-      set audace(ros_install,configure,config,htdocs)         "$base/data/httpd"
-      set audace(ros_install,configure,config,cgi-bin)        "$base/data/httpd"
-      if { $::tcl_platform(os) == "Linux" } {
-         set fichiers [glob -nocomplain "/usr/local/*" "/opt/*"]
-      } else {
-         set fichiers [glob -nocomplain "C:/Program Files/*"]
-      }
-      set a ""
-      foreach fichier $fichiers {
-         if {([string first pache $fichier]>=0)&&([file isdirectory $fichier]==1)} {
-            set a $fichier
-            break
+      if {$testsrv!="srv"} {
+         if { $::tcl_platform(os) == "Linux" } {
+            set fichiers [glob -nocomplain "/usr/local/*" "/opt/*"]
+         } else {
+            set fichiers [glob -nocomplain "C:/Program Files/*"]
          }
-      }
-
-      if {$a!=""} {
-         #::console::affiche_resultat "a=$a\n"
-         for {set k 0} {$k<3} {incr k} {
-            set as [glob -nocomplain $a/htdocs]
-            #::console::affiche_resultat "$k as=$as\n"
-            if {$as!=""} { break }
-            set fichiers [glob -nocomplain $a/*]
-            #::console::affiche_resultat "$k fichiers=$fichiers\n"
-            foreach fichier $fichiers {
-               if {([string first pache $fichier]>=0)&&([file isdirectory $fichier]==1)} {
-                  set a $fichier
-                  break
-               }
+         set a ""
+         foreach fichier $fichiers {
+            if {([string first pache $fichier]>=0)&&([file isdirectory $fichier]==1)} {
+               set a $fichier
+               break
             }
          }
-         set audace(ros_install,configure,config,htdocs)     "$a"
-         set audace(ros_install,configure,config,cgi-bin)    "$a"
+   
+         if {$a!=""} {
+            #::console::affiche_resultat "a=$a\n"
+            for {set k 0} {$k<3} {incr k} {
+               set as [glob -nocomplain $a/htdocs]
+               #::console::affiche_resultat "$k as=$as\n"
+               if {$as!=""} { break }
+               set fichiers [glob -nocomplain $a/*]
+               #::console::affiche_resultat "$k fichiers=$fichiers\n"
+               foreach fichier $fichiers {
+                  if {([string first pache $fichier]>=0)&&([file isdirectory $fichier]==1)} {
+                     set a $fichier
+                     break
+                  }
+               }
+            }
+            set audace(ros_install,configure,config,htdocs)     "$a"
+            set audace(ros_install,configure,config,cgi-bin)    "$a"         
+         }
       }
 
       set audace(ros_install,lastconfig) $audace(ros_install,base)/ros_install_lastconfig.tcl
@@ -130,7 +161,7 @@ namespace eval ::ros_install {
       puts "Demarrage..."
       if {$ros(withtk)==0} {
          ::ros_install::print "======================================\n"
-         ::ros_install::print "ROBOTIC OBSERVATORY SOFTWARE Installer\n"
+         ::ros_install::print "ROBOTIC OBSERVATORY SOFTWARE Deployer \n"
          ::ros_install::print "======================================\n"
          if {($err==1)&&([file exists $audace(ros_install,lastconfig)]==1)} {
             ::ros_install::print "Error in $audace(ros_install,lastconfig): $msg\n"
@@ -145,7 +176,7 @@ namespace eval ::ros_install {
             ::ros_install::print "\n"
             set cap_name [lindex $audace(ros_install,variables,descr) $k]
             while {0==0} {
-               ::ros_install::print "Answer 1 if you want to install $cap_name (actual=$audace(ros_install,configure,config,${name}x)): "
+               ::ros_install::print "Answer 1 if you want to deploy $cap_name (actual=$audace(ros_install,configure,config,${name}x)): "
                if {$auto==0} {
                   gets stdin value
                } else {
@@ -198,16 +229,16 @@ namespace eval ::ros_install {
          ::ros_install::print "\n"
          ::ros_install::print "-----------------------------------------------\n"
          if {$auto==0} {
-            ::ros_install::print "Answer 1 if you want to install ROS (actual=0): "
+            ::ros_install::print "Answer 1 if you want to deploy ROS (actual=0): "
             gets stdin value
          } else {
-            ::ros_install::print "Answer 1 if you want to install ROS (actual=1): "
+            ::ros_install::print "Answer 1 if you want to deploy ROS (actual=1): "
             set value 1
          }
          if {$value=="1"} {
             ::ros_install::go $audace(ros_install,configure,config,ros)
          } else {
-            ::ros_install::print "QUIT WITH NO INSTALLATION\n\n"
+            ::ros_install::print "QUIT WITH NO DEPLOYEMENT\n\n"
          }
          cd $ros(ros_install,audelabin)
 
@@ -229,7 +260,7 @@ namespace eval ::ros_install {
          toplevel .ros_install -class Toplevel -bg $audace(ros_install,configure,color,backpad)
          wm geometry .ros_install $geomohp(larg)x$geomohp(long)+$positionxy
          wm resizable .ros_install 0 0
-         wm title .ros_install "ROBOTIC OBSERVATORY SOFTWARE"
+         wm title .ros_install "ROBOTIC OBSERVATORY SOFTWARE Deployer"
          puts "fonction quit"
          wm protocol .ros_install WM_DELETE_WINDOW "::ros_install::quit"
 
@@ -246,7 +277,7 @@ namespace eval ::ros_install {
          #--- Create the title
          #--- Cree le titre
          label .ros_install.title \
-            -font [ list {Arial} 16 bold ] -text "ROBOTIC OBSERVATORY SOFTWARE Installer" \
+            -font [ list {Arial} 16 bold ] -text "ROBOTIC OBSERVATORY SOFTWARE Deployer" \
             -borderwidth 0 -relief flat -bg $audace(ros_install,configure,color,backpad) \
             -fg $audace(ros_install,configure,color,textkey)
          pack .ros_install.title \
@@ -261,7 +292,7 @@ namespace eval ::ros_install {
             pack  .ros_install.load_button -in .ros_install.buttons -side left -fill none -padx 10
             button .ros_install.return_button \
                -font $audace(ros_install,configure,font,c12b) \
-               -text "INSTALL >>" \
+               -text "DEPLOY >>" \
                -command {::ros_install::go $audace(ros_install,configure,config,ros)}
             pack  .ros_install.return_button -in .ros_install.buttons -side left -fill none -padx 10
             pack .ros_install.buttons -in .ros_install -fill x -pady 3 -padx 3 -anchor s -side bottom
