@@ -2,7 +2,7 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: camera.tcl,v 1.42 2010-09-25 22:28:25 robertdelmas Exp $
+# Mise à jour $Id$
 #
 # Procedures utilisees par confCam
 #   ::camera::create : cree une camera

@@ -3,7 +3,7 @@
 # Description : procedures d'acquisition et de traitement avec
 #         plusieurs cameras simultanees exploitant le mode multithread
 # Auteur : Michel PUJOL
-# Mise à jour $Id: camerathread.tcl,v 1.26 2010-07-11 12:44:27 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::camerathread {

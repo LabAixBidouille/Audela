@@ -1,7 +1,7 @@
 # Fonctions de calculs numeriques : interpolation, ajustement...
 # source $audace(rep_scripts)/spcaudace/spc_numeric.tcl
 
-# Mise a jour $Id: spc_numeric.tcl,v 1.11 2010-12-13 18:44:59 bmauclaire Exp $
+# Mise a jour $Id$
 
 
 ####################################################################

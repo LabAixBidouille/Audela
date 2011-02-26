@@ -1,6 +1,6 @@
 # source audace/plugin/tool/bddimages/bddimages_subroutines.tcl
 
-# Mise à jour $Id: ros_sub_insertion.tcl,v 1.1 2011-02-19 20:43:49 fredvachier Exp $
+# Mise à jour $Id$
 
 #--------------------------------------------------
 #  init_info { }

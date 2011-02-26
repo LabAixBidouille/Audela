@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise à jour $Id: catagoto.tcl,v 1.39 2010-07-14 07:52:00 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval cataGoto {

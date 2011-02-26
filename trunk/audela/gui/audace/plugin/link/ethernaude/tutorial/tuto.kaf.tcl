@@ -1,5 +1,5 @@
 #
-# Mise à jour $Id: tuto.kaf.tcl,v 1.9 2010-05-23 08:26:29 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 #!/bin/sh

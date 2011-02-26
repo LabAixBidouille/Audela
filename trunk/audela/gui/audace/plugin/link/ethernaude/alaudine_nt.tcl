@@ -2,7 +2,7 @@
 # Fichier : alaudine_nt.tcl
 # Description : Permet de controler l'alimentation AlAudine NT avec port I2C
 # Auteur : Robert DELMAS
-# Mise à jour $Id: alaudine_nt.tcl,v 1.23 2010-05-22 16:48:38 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::AlAudineNT {

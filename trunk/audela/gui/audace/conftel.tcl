@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise à jour $Id: conftel.tcl,v 1.68 2010-07-27 17:27:47 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::confTel {

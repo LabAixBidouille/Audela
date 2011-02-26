@@ -1,5 +1,5 @@
 #
-# Mise à jour $Id: marly.tcl,v 1.1 2011-01-21 11:07:12 jberthier Exp $
+# Mise à jour $Id$
 #
 
 proc dateobs {tabkey} {

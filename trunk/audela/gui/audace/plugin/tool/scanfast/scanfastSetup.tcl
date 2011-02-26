@@ -2,7 +2,7 @@
 # Fichier : scanfastSetup.tcl
 # Description : Configuration de la temporisation entre l'arret du moteur d'AD et le debut de la pose du scan
 # Auteur : Robert DELMAS
-# Mise à jour $Id: scanfastSetup.tcl,v 1.12 2010-10-03 14:48:15 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::scanfastSetup {

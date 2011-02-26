@@ -2,7 +2,7 @@
 # @file     sophiesimulcontrol.tcl
 # @brief    Fichier du namespace ::sophie::testcontrol
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophietestcontrol.tcl,v 1.16 2011-02-10 19:38:11 robertdelmas Exp $
+# @version  $Id$
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------

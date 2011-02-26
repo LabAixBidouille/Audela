@@ -2,7 +2,7 @@
 # Fichier : audecom.tcl
 # Description : Parametrage et pilotage de la carte AudeCom (Ex-Kauffmann)
 # Auteur : Robert DELMAS
-# Mise à jour $Id: audecom.tcl,v 1.29 2010-10-31 07:21:30 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::audecom {

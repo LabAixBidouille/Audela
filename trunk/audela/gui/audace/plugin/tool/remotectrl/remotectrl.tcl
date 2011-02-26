@@ -2,7 +2,7 @@
 # Fichier : remotectrl.tcl
 # Description : Outil de controle a distance par RPC
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: remotectrl.tcl,v 1.41 2010-10-10 20:05:42 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 #============================================================

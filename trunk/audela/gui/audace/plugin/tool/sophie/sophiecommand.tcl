@@ -2,7 +2,7 @@
 # @file     sophiecommand.tcl
 # @brief    Fichier du namespace ::sophie (suite du fichier sophie.tcl)
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecommand.tcl,v 1.60 2011-02-13 16:06:37 michelpujol Exp $
+# @version  $Id$
 #------------------------------------------------------------
 
 ##------------------------------------------------------------

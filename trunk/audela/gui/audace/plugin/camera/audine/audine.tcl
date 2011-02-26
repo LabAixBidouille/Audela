@@ -2,7 +2,7 @@
 # Fichier : audine.tcl
 # Description : Configuration de la camera Audine
 # Auteur : Robert DELMAS
-# Mise à jour $Id: audine.tcl,v 1.30 2010-10-24 14:13:22 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::audine {

@@ -2,7 +2,7 @@
 # Fichier : audecomconfig.tcl
 # Description : Configuration et pilotage de la monture AudeCom (Ex-Kauffmann)
 # Auteurs : Robert DELMAS et Philippe KAUFFMANN
-# Mise à jour $Id: audecomconfig.tcl,v 1.8 2010-07-24 15:25:49 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 #

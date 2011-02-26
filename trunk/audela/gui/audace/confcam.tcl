@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise à jour $Id: confcam.tcl,v 1.134 2010-08-17 20:39:14 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::confCam {

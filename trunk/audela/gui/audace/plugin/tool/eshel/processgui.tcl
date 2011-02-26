@@ -2,7 +2,7 @@
 # @file processgui.tcl
 # Description : Fentre de configuration des traitements eShel
 # Auteur : Michel PUJOL
-# Mise à jour $Id: processgui.tcl,v 1.6 2011-01-16 19:05:10 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 ##------------------------------------------------------------

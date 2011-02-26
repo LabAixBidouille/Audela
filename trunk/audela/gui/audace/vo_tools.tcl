@@ -2,7 +2,7 @@
 # Fichier : vo_tools.tcl
 # Description : Outils pour l'Observatoire Virtuel
 # Auteur : Alain KLOTZ et Jerome BERTHIER
-# Mise à jour $Id: vo_tools.tcl,v 1.35 2011-02-10 19:36:36 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 # ------------------------------------------------------------------------------------

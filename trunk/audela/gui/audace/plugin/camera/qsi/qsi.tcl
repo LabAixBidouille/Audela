@@ -2,7 +2,7 @@
 # Fichier : qsi.tcl
 # Description : Configuration de la camera QSI
 # Auteur : Michel Pujol
-# Mise à jour $Id: qsi.tcl,v 1.15 2011-02-18 17:53:35 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::qsi {

@@ -2,7 +2,7 @@
 # Fichier : dlgshiftzadko.tcl
 # Description : Fenetre de dialogue pour saisir les parametres de deplacement entre 2 images
 # Auteur : Michel PUJOL
-# Mise à jour $Id: dlgshiftzadko.tcl,v 1.3 2010-05-24 14:09:12 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::DlgShiftZadko {

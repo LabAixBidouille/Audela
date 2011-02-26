@@ -2,7 +2,7 @@
 # Fichier : tkutil.tcl
 # Description : Regroupement d'utilitaires
 # Auteur : Robert DELMAS
-# Mise à jour $Id: tkutil.tcl,v 1.38 2011-01-09 10:27:48 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval tkutil:: {

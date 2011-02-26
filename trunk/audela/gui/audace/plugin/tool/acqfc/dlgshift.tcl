@@ -2,7 +2,7 @@
 # Fichier : dlgshift.tcl
 # Description : Fenetre de dialogue pour saisir les parametres de deplacement entre 2 images
 # Auteur : Michel PUJOL
-# Mise à jour $Id: dlgshift.tcl,v 1.8 2010-05-24 14:08:20 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::DlgShift {

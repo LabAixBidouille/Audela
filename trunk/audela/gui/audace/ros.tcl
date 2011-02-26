@@ -2,7 +2,7 @@
 # Fichier : ros.tcl
 # Description : Function to launch Robotic Observatory Software installation
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: ros.tcl,v 1.22 2011-02-20 07:14:04 myrtillelaas Exp $
+# Mise à jour $Id$
 #
 
 proc ros { args } {

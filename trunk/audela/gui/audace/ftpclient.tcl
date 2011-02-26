@@ -2,7 +2,7 @@
 # Fichier : ftpclient.tcl
 # Description : Connexion a un serveur FTP
 # Auteur : Michel PUJOL
-# Mise à jour $Id: ftpclient.tcl,v 1.14 2010-05-16 10:49:23 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 ##############################################################################

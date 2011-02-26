@@ -4,7 +4,7 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows et Linux
 # Auteur : Michel PUJOL
-# Mise à jour $Id: carteducielv3.tcl,v 1.31 2010-10-30 13:26:12 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval carteducielv3 {

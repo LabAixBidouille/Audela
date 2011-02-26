@@ -1,5 +1,5 @@
 #
-# Mise à jour $Id: bddimages_insertion_applet.tcl,v 1.4 2011-02-16 14:26:20 fredvachier Exp $
+# Mise à jour $Id$
 #
 
 #--------------------------------------------------

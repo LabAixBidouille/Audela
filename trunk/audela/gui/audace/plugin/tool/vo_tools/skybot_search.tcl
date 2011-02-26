@@ -2,7 +2,7 @@
 # Fichier : skybot_search.tcl
 # Description : Recherche d'objets dans le champ d'une image
 # Auteur : Jerome BERTHIER
-# Mise à jour $Id: skybot_search.tcl,v 1.35 2010-11-07 13:49:49 jberthier Exp $
+# Mise à jour $Id$
 #
 
 namespace eval skybot_Search {

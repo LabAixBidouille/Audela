@@ -1,5 +1,5 @@
 #
-# Mise à jour $Id: ohp-120.tcl,v 1.2 2010-05-28 10:33:44 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 proc dateobs {tabkey} {

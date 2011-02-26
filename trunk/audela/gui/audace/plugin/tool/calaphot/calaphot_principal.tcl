@@ -5,7 +5,7 @@
 #
 # @brief Script pour la photometrie d'asteroides ou d'etoiles variables.
 #
-# $Id: calaphot_principal.tcl,v 1.23 2011-01-02 13:09:52 jacquesmichelet Exp $
+# $Id$
 #
 
 ###catch {namespace delete ::Calaphot}

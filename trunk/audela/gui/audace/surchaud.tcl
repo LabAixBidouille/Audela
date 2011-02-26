@@ -2,7 +2,7 @@
 # Fichier : surchaud.tcl
 # Description : Surcharge des fonctions de AudeLA pour les rendre compatibles avec l'usage des repertoires de travail
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: surchaud.tcl,v 1.35 2010-05-30 08:20:13 robertdelmas Exp $
+# Mise à jour $Id$
 #
 # add  operand value
 # add1  in operand out const ?tt_options?

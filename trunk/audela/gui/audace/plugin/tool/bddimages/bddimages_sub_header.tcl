@@ -1,5 +1,5 @@
 # ----------------------------------------
-# Mise à jour $Id: bddimages_sub_header.tcl,v 1.5 2011-02-20 16:06:13 fredvachier Exp $
+# Mise à jour $Id$
 
 # bddimages_keywd_to_variable
 

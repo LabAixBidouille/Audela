@@ -2,7 +2,7 @@
 # Fichier : t193.tcl
 # Description : Configuration de la monture du T193 de l'OHP
 # Auteur : Michel PUJOL et Robert DELMAS
-# Mise à jour $Id: t193.tcl,v 1.33 2010-10-31 07:22:34 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::t193 {

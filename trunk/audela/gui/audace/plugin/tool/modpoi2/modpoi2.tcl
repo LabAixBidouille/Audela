@@ -2,7 +2,7 @@
 # Fichier : modpoi2.tcl
 # Description : Outil de fabrication des fichiers Kit et de deploiement des plugins
 # Auteur : Michel Pujol
-# Mise à jour $Id: modpoi2.tcl,v 1.4 2010-10-10 20:05:42 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::modpoi2 {

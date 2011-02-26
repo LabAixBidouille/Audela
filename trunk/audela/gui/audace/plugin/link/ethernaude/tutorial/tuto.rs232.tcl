@@ -1,5 +1,5 @@
 #
-# Mise à jour $Id: tuto.rs232.tcl,v 1.9 2010-05-23 08:31:48 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 #!/bin/sh

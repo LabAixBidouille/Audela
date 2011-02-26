@@ -2,7 +2,7 @@
 # Fichier : process.tcl
 # Description : traitements eShel
 # Auteur : Michel PUJOL
-# Mise à jour $Id: process.tcl,v 1.13 2011-01-16 19:05:10 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 ################################################################

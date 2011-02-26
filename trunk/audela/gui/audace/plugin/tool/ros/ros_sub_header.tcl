@@ -1,5 +1,5 @@
 # ----------------------------------------
-# Mise à jour $Id: ros_sub_header.tcl,v 1.1 2011-02-19 20:43:49 fredvachier Exp $
+# Mise à jour $Id$
 
 # bddimages_keywd_to_variable
 

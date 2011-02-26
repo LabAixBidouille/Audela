@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_8.tcl
 # Description : Script regroupant les fonctionnalites du menu Aide
-# Mise à jour $Id: aud_menu_8.tcl,v 1.7 2010-10-24 17:46:05 jberthier Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::audace {

@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_5.tcl
 # Description : Script regroupant les fonctionnalites du menu Analyse
-# Mise à jour $Id: aud_menu_5.tcl,v 1.16 2010-12-28 22:09:22 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::audace {

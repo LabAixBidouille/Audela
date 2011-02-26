@@ -2,7 +2,7 @@
 # Fichier : focuserjmi.tcl
 # Description : Gere un focuser sur port parallele ou quickremote
 # Auteur : Michel PUJOL
-# Mise à jour $Id: focuserjmi.tcl,v 1.20 2011-02-10 19:15:22 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 #

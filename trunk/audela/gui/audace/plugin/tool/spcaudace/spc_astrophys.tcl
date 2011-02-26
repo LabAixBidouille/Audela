@@ -1,7 +1,7 @@
 
 # Procédures d'exploitation astrophysique des spectres
 
-# Mise a jour $Id: spc_astrophys.tcl,v 1.22 2010-12-12 17:11:29 bmauclaire Exp $
+# Mise a jour $Id$
 
 
 

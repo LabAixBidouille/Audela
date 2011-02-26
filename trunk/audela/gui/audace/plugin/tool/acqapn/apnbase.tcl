@@ -2,7 +2,7 @@
 # Fichier : apnbase.tcl
 # Description : Base de donnees d'APN CoolPix de Nikon
 # Auteur : Raymond ZACHANTKE
-# Mise à jour $Id: apnbase.tcl,v 1.6 2010-05-25 16:32:09 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 #============================================================

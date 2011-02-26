@@ -3,7 +3,7 @@
 # Description : Manipulation des fichiers de config XML de bddimages
 #
 # Auteur : J. Berthier & F. Vachier
-# Mise à jour $Id: bddimages_xml.tcl,v 1.3 2011-01-25 22:49:43 jberthier Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::bddimagesXML {

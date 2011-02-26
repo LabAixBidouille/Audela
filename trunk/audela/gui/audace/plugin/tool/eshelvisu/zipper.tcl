@@ -2,7 +2,7 @@
 # Fichier : zipper.tcl
 # Description : Export de fichier au format BeSS
 # Auteurs : Michel Pujol
-# Mise a jour $Id: zipper.tcl,v 1.2 2010-01-31 11:47:18 michelpujol Exp $
+# Mise a jour $Id$
 #
 
 ################################################################

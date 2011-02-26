@@ -2,7 +2,7 @@
 # Fichier : acqzadko.tcl
 # Description : Outil d'acquisition
 # Auteurs : Francois Cochard et Myrtille Laas
-# Mise à jour $Id: acqzadko.tcl,v 1.29 2011-02-12 18:37:01 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 #==============================================================

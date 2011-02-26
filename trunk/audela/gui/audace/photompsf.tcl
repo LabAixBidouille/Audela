@@ -2,7 +2,7 @@
 # Fichier : photompsf.tcl
 # Description : Photometrie avec une PSF
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: photompsf.tcl,v 1.2 2010-09-17 20:56:50 robertdelmas Exp $
+# Mise à jour $Id$
 #
 # --- Haut niveaux
 # source photompsf.tcl ; photompsf_onebox ; # pour une seule etoile

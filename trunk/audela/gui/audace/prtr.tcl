@@ -2,7 +2,7 @@
 # Fichier : prtr.tcl
 # Description : Script dedie au menu deroulant pretraitement
 # Auteur : Raymond ZACHANTKE
-# Mise à jour $Id: prtr.tcl,v 1.13 2011-02-10 19:17:19 robertdelmas Exp $#
+# Mise à jour $Id$#
 
 namespace eval ::prtr {
 

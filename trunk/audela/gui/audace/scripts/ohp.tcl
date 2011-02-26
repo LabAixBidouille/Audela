@@ -2,7 +2,7 @@
 # Fichier : ohp.tcl
 # Auteur : Alain KLOTZ
 # Lancement du script : source audace/scripts/ohp.tcl
-# Mise à jour $Id: ohp.tcl,v 1.9 2010-09-04 22:09:26 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::ohp {

@@ -2,7 +2,7 @@
 # Fichier : andor.tcl
 # Description : Configuration de la camera Andor
 # Auteur : Robert DELMAS
-# Mise à jour $Id: andor.tcl,v 1.26 2011-02-18 17:44:28 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::andor {

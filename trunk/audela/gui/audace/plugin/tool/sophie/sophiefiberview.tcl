@@ -2,7 +2,7 @@
 # @file     fiberview.tcl
 # @brief    Fichier du namespace ::sophie::fiberview
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiefiberview.tcl,v 1.6 2011-02-13 16:01:25 michelpujol Exp $
+# @version  $Id$
 #------------------------------------------------------------
 
 ##------------------------------------------------------------

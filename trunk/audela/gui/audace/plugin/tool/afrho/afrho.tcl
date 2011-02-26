@@ -3,7 +3,7 @@
 # Description : Calcule le parametre Af[Rho] pour une comete
 #               Caracterise le taux de production de poussieres des cometes
 # Auteurs : Alain KLOTZ, Laurent JORDA et Jean-Francois COLIAC
-# Mise à jour $Id: afrho.tcl,v 1.6 2010-10-10 20:02:23 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 #============================================================

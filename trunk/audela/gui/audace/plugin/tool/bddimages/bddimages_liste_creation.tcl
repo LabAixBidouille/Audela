@@ -1,5 +1,5 @@
 #
-# Mise à jour $Id: bddimages_liste_creation.tcl,v 1.2 2010-05-27 07:01:44 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
    proc create_liste {  } {

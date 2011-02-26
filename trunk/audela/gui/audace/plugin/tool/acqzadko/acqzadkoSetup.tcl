@@ -2,7 +2,7 @@
 # Fichier : acqzadkoSetup.tcl
 # Description : Configuration de certains parametres de l'outil Acquisition
 # Auteur : Robert DELMAS
-# Mise à jour $Id: acqzadkoSetup.tcl,v 1.4 2010-10-03 14:47:17 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::acqzadkoSetup {

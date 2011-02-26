@@ -5,7 +5,7 @@
 #*********************************************************************************#
 # Chargement : source $audace(rep_scripts)/spcaudace/spc_gui_boxes.tcl
 
-# Mise a jour $Id: spc_gui_metaboxes.tcl,v 1.6 2010-03-20 21:21:49 bmauclaire Exp $
+# Mise a jour $Id$
 
 
 

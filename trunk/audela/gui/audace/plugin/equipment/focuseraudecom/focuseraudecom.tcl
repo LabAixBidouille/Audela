@@ -2,7 +2,7 @@
 # Fichier : focuseraudecom.tcl
 # Description : Gere le focuser associe a la monture AudeCom
 # Auteur : Robert DELMAS
-# Mise à jour $Id: focuseraudecom.tcl,v 1.20 2011-02-10 19:15:10 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 #

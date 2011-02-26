@@ -2,7 +2,7 @@
 # Fichier : satel.tcl
 # Description : Outil pour calculer les positions precises de satellites avec les TLE
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: satel.tcl,v 1.10 2010-11-05 19:55:00 alainklotz Exp $
+# Mise à jour $Id$
 #
 # source "$audace(rep_install)/gui/audace/satel.tcl"
 # utiliser le temps UTC

@@ -3,7 +3,7 @@
 # Description : Exemple d'ecriture d'une VOTable
 #     source /usr/local/src/audela/gui/audace/plugin/tool/vo_tools/Examples/ecrit_votable.tcl
 # Auteur : Jerome BERTHIER
-# Mise à jour $Id: ecrit_votable.tcl,v 1.1 2010-10-24 17:49:06 jberthier Exp $
+# Mise à jour $Id$
 #
 
 uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools votable.tcl ]\""

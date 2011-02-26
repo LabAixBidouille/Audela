@@ -2,7 +2,7 @@
 # Fichier : movie.tcl
 # Description : Lecture des films avi, mov, mpeg (pour plateforme Windows uniquement)
 # Auteur : Michel PUJOL
-# Mise à jour $Id: movie.tcl,v 1.7 2010-05-16 14:19:40 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 ##############################################################################

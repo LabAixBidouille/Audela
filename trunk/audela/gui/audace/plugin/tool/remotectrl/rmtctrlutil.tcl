@@ -2,7 +2,7 @@
 # Fichier : rmtctrlutil.tcl
 # Description : Script pour la configuration de l'outil
 # Auteur : Raymond ZACHANTKE
-# Mise à jour $Id: rmtctrlutil.tcl,v 1.5 2010-05-25 18:08:16 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
    #########################################################################

@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_7.tcl
 # Description : Script regroupant les fonctionnalites du menu Configuration
-# Mise à jour $Id: aud_menu_7.tcl,v 1.34 2010-11-12 08:29:59 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::cwdWindow {

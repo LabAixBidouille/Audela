@@ -2,7 +2,7 @@
 # Fichier : correctionfc.tcl
 # Description : Fonction pour nettoyer mes images (portions de lignes verticales mauvaises)
 # Auteur : Francois COCHARD
-# Mise à jour $Id: correctionfc.tcl,v 1.4 2010-05-27 06:09:44 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 proc corrigefc { } {

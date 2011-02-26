@@ -2,7 +2,7 @@
 # Fichier : visu.tcl
 # Description : otuil d'affichages des lignes de controles
 # Auteur : Michel PUJOL
-# Mise à jour $Id: visu.tcl,v 1.2 2011-01-23 18:23:20 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 ################################################################

@@ -5,7 +5,7 @@
 # Fichier        : bddimages_go.tcl
 # Description    : Outil d'appel des fonctionnalites de l'observatoire virtuel
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_go.tcl,v 1.15 2011-02-16 14:26:20 fredvachier Exp $
+# Mise à jour $Id$
 #
 
 #============================================================

@@ -2,7 +2,7 @@
 # Fichier : telshift_go.tcl
 # Description : Outil pour l'acquisition avec deplacement du telescope entre les poses
 # Auteur : Christian JASINSKI
-# Mise à jour $Id: telshift_go.tcl,v 1.13 2010-10-10 20:05:43 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 #============================================================

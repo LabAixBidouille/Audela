@@ -2,7 +2,7 @@
 # Fichier : exportfits.tcl
 # Description : Export de fichier au format Fits
 # Auteurs : Michel Pujol
-# Mise a jour $Id: exportfits.tcl,v 1.3 2010-02-05 18:44:08 robertdelmas Exp $
+# Mise a jour $Id$
 #
 
 ################################################################

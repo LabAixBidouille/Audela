@@ -2,7 +2,7 @@
 # Fichier : cmaude.tcl
 # Description : Prototype for the Cloud Monitor panel
 # Auteur : Sylvain RONDI
-# Mise à jour $Id: cmaude.tcl,v 1.36 2011-02-12 18:37:13 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 #============================================================

@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise à jour $Id: webcam.tcl,v 1.59 2010-10-10 19:50:42 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::webcam {

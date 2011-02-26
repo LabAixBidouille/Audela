@@ -2,7 +2,7 @@
 # Fichier : satellite.tcl
 # Description : Interfaces graphiques pour les satellites artificiels
 # Auteur : Myrtille LAAS-BOUREZ
-# Mise à jour $Id: satellite.tcl,v 1.1 2010-11-10 21:51:53 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 #============================================================

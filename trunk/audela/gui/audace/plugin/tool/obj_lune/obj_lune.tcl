@@ -2,7 +2,7 @@
 # Fichier : obj_lune.tcl
 # Description : Outil dedie a la Lune, avec Goto vers un site choisi, ephemerides et cartographie
 # Auteur : Robert DELMAS
-# Mise à jour $Id: obj_lune.tcl,v 1.22 2010-10-16 08:29:00 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 global audace

@@ -6,7 +6,7 @@
 # Description    : Environnement d'inssertion des images
 #                  dans la base de donnees
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: ros_insertion.tcl,v 1.1 2011-02-19 20:43:49 fredvachier Exp $
+# Mise à jour $Id$
 #
 #--------------------------------------------------
 #

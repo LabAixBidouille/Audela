@@ -3,7 +3,7 @@
 # Description : Ce script permet d'exécuter des commandes Iris depuis un script tcl
 # Documentation : Voir la page iris.htm dans le dossier \doc_html\french\02programmation
 # Auteur : Benoit MAUGIS
-# Mise à jour $Id: iris.tcl,v 1.9 2010-02-21 09:46:56 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 proc iris_initlinux { } {

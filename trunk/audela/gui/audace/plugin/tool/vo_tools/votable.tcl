@@ -3,7 +3,7 @@
 # Description : Implementation du schema VOTable de l'IVOA
 #               (http://www.ivoa.net/Documents/latest/VOT.html)
 # Auteur : Jerome BERTHIER
-# Mise à jour $Id: votable.tcl,v 1.2 2011-02-13 22:51:22 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::votable {

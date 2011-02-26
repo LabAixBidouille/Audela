@@ -1,7 +1,7 @@
 #
 # Fichier : socket_tools.tcl
 # Description : This tool box allow to connect ASCII sockets where messages termination is \n
-# Mise à jour $Id: socket_tools.tcl,v 1.4 2010-05-16 14:21:47 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 # ==========================================================================================

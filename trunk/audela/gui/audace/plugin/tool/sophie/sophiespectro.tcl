@@ -2,7 +2,7 @@
 # @file     sophiespectro.tcl
 # @brief    fichier du namespace ::sophie::spectro
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiespectro.tcl,v 1.17 2011-02-10 19:38:11 robertdelmas Exp $
+# @version  $Id$
 # UTF8 (à)
 #------------------------------------------------------------
 

@@ -2,7 +2,7 @@
 # Fichier : testaudela.tcl
 # Description : Outil de test automatique pour AudeLA
 # Auteurs : Michel Pujol
-# Mise à jour $Id: testaudela.tcl,v 1.20 2011-02-10 19:38:11 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 #####################

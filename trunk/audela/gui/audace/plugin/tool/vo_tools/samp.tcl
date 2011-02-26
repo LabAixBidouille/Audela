@@ -2,7 +2,7 @@
 # Fichier : samp.tcl
 # Description : Implementation du protocole SAMP de communication entre applications VO
 # Auteur : Stephane VAILLANT & Jerome Berthier
-# Mise à jour $Id: samp.tcl,v 1.2 2011-02-13 22:53:17 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval Samp {

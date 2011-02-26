@@ -2,7 +2,7 @@
 # Fichier : eshel.tcl
 # Description : fenetre saisie des mots clefs
 # Auteurs : Michel Pujol
-# Mise a jour $Id: editkeyword.tcl,v 1.2 2010-04-11 13:24:25 michelpujol Exp $
+# Mise a jour $Id$
 #
 
 ################################################################

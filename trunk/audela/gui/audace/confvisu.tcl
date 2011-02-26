@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise à jour $Id: confvisu.tcl,v 1.177 2011-02-10 19:17:05 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::confVisu {

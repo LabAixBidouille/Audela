@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Images
-# Mise à jour $Id: aud_menu_3.tcl,v 1.83 2011-02-10 19:16:49 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::conv2 {

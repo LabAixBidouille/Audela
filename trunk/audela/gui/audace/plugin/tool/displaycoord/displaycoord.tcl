@@ -2,7 +2,7 @@
 # Fichier : displaycoord.tcl
 # Description : Affichage des coordonnees du telescope
 # Auteur : Michel PUJOL
-# Mise à jour $Id: displaycoord.tcl,v 1.11 2011-02-13 16:13:05 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 #============================================================

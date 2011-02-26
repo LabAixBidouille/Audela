@@ -2,7 +2,7 @@
 # Fichier : lhires.tcl
 # Description : Gere un focuser sur port parallele ou quickremote
 # Auteur : Michel PUJOL
-# Mise à jour $Id: lhires.tcl,v 1.5 2010-10-10 19:53:56 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::lhires {

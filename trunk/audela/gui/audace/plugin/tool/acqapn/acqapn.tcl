@@ -2,7 +2,7 @@
 # Fichier : acqapn.tcl
 # Description : Outil d'acquisition pour APN Nikon CoolPix
 # Auteur : Raymond ZACHANTKE
-# Mise à jour $Id: acqapn.tcl,v 1.46 2010-10-30 13:19:21 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 #============================================================

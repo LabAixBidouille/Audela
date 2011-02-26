@@ -2,7 +2,7 @@
 # Fichier : sntkutil.tcl
 # Description : Utilitaires pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: sntkutil.tcl,v 1.8 2010-05-25 21:40:26 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 #--- Conventions pour ce script :

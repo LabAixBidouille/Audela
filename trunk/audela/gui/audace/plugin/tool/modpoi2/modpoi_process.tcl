@@ -2,7 +2,7 @@
 # Fichier : modpoi_process.tcl
 # Description : pipeline de pointage des etoiles
 # Auteur : Michel Pujol
-# Mise à jour $Id: modpoi_process.tcl,v 1.3 2010-07-11 12:36:24 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::modpoi2::process {

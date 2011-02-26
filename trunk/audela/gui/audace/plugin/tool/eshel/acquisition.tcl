@@ -2,7 +2,7 @@
 # Fichier : acquisition.tcl
 # Description : acquisition eShel
 # Auteur : Michel PUJOL
-# Mise a jour $Id: acquisition.tcl,v 1.6 2010-11-01 14:56:29 michelpujol Exp $
+# Mise a jour $Id$
 #
 
 namespace eval ::eshel::acquisition {

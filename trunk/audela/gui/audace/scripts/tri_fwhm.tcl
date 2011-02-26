@@ -2,7 +2,7 @@
 # Fichier : tri_fwmh.tcl
 # Description : Script pour le tri d'images par le critere de fwhm
 # Auteurs : Francois Cochard et Jacques Michelet
-# Mise à jour $Id: tri_fwhm.tcl,v 1.9 2010-05-27 06:18:21 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::TriFWHM {

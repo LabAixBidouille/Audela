@@ -3,7 +3,7 @@
 # Description : Exemple d'ecriture d'une VOTable
 #     source /usr/local/src/audela/gui/audace/plugin/tool/vo_tools/Examples/cata2votable.tcl
 # Auteur : Jerome BERTHIER
-# Mise à jour $Id: cata2votable.tcl,v 1.2 2011-02-13 22:53:37 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools votable.tcl ]\""

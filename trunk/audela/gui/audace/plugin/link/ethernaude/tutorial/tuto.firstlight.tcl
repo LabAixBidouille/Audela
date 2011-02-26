@@ -1,5 +1,5 @@
 #
-# Mise à jour $Id: tuto.firstlight.tcl,v 1.14 2010-06-18 17:27:34 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 #!/bin/sh

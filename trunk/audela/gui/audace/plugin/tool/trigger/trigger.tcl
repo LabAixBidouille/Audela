@@ -2,7 +2,7 @@
 # Fichier : trigger.tcl
 # Description : Outil de declenchement pour APN Canon non reconnu par libgphoto2_canon.dll
 # Auteur : Raymond Zachantke
-# Mise à jour $Id: trigger.tcl,v 1.7 2010-10-10 20:05:43 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 #============================================================

@@ -2,7 +2,7 @@
 # Fichier : external.tcl
 # Description : Interface de liaison manuelle
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: external.tcl,v 1.14 2010-10-10 19:55:23 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 namespace eval external {

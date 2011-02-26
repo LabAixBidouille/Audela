@@ -1,5 +1,5 @@
 # source audace/plugin/tool/bddimages/bddimages_sub_fichier.tcl
-# Mise à jour $Id: ros_sub_fichier.tcl,v 1.1 2011-02-19 20:43:49 fredvachier Exp $
+# Mise à jour $Id$
 
 proc bddimages_sauve_fich {texte} {
 

@@ -2,7 +2,7 @@
 # Fichier : t193pad.tcl
 # Description : Raquette specifique au T193 de l'OHP
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: t193pad.tcl,v 1.20 2011-02-10 19:20:09 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::t193pad {

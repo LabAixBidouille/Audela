@@ -3,7 +3,7 @@
 # @briefScripts pour un usage aise des fonctions d'AudeLA
 # @author Benjamin MAUCLAIRE (bmauclaire@underlands.org)
 #
-# $Id: filtrage.tcl,v 1.12 2010-05-23 08:07:22 robertdelmas Exp $
+# $Id$
 #
 
 #--------------------- Liste des fonctions -----------------------------------#

@@ -2,7 +2,7 @@
 # Fichier : lx200.tcl
 # Description : Configuration de la monture LX200
 # Auteur : Robert DELMAS
-# Mise à jour $Id: lx200.tcl,v 1.34 2010-10-31 07:22:12 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::lx200 {

@@ -2,7 +2,7 @@
 # @file     sophieconfig.tcl
 # @brief    Fichier du namespace ::sophie::config
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophieconfig.tcl,v 1.33 2011-02-10 19:38:11 robertdelmas Exp $
+# @version  $Id$
 #------------------------------------------------------------
 
 ##------------------------------------------------------------

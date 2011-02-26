@@ -2,7 +2,7 @@
 # @file     sophiecamerathread.tcl
 # @brief    Fichier du namespace ::camerathread
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophiecamerathread.tcl,v 1.36 2011-02-10 19:38:11 robertdelmas Exp $
+# @version  $Id$
 #------------------------------------------------------------
 
 ##------------------------------------------------------------

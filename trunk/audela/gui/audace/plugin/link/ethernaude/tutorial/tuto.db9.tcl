@@ -1,5 +1,5 @@
 #
-# Mise à jour $Id: tuto.db9.tcl,v 1.9 2010-05-23 08:23:29 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 #!/bin/sh

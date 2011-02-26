@@ -1,5 +1,5 @@
 #
-# Mise à jour $Id: tuto.plug3.tcl,v 1.9 2010-05-23 08:28:58 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 #!/bin/sh

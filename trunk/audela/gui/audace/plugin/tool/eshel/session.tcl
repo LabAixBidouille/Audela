@@ -2,7 +2,7 @@
 # Fichier : session.tcl
 # Description : configuration des parametres de session
 # Auteur : Michel PUJOL
-# Mise à jour $Id: session.tcl,v 1.5 2010-11-01 14:56:29 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 ################################################################

@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise à jour $Id: aud.tcl,v 1.161 2011-02-21 12:09:17 fredvachier Exp $
+# Mise à jour $Id$
 #
 
 #--- Chargement du package BWidget

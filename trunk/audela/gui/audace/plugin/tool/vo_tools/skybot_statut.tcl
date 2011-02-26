@@ -2,7 +2,7 @@
 # Fichier : skybot_statut.tcl
 # Description : Affiche le statut de la base de donnees SkyBoT
 # Auteur : Jerome BERTHIER
-# Mise à jour $Id: skybot_statut.tcl,v 1.22 2011-02-13 22:52:59 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval skybot_Statut {

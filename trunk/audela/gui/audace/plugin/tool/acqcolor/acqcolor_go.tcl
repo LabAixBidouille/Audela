@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition d'images en couleur
 # Compatibilite : Cameras Audine Couleur et SCR1300XTC
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: acqcolor_go.tcl,v 1.18 2010-10-10 20:02:23 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 #============================================================

@@ -3,7 +3,7 @@
 # Description : Exemple de requete pour connaitre le statut d'une tranche de temps de Skybot
 #     source /usr/local/src/audela/gui/audace/plugin/tool/vo_tools/Examples/skybot_status_example.tcl
 # Auteur : Jerome BERTHIER
-# Mise à jour $Id: skybot_status.tcl,v 1.1 2010-10-24 17:49:06 jberthier Exp $
+# Mise à jour $Id$
 #
 
 # Defini l'epoque demadee

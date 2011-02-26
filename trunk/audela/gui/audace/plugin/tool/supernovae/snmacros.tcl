@@ -2,7 +2,7 @@
 # Fichier : snmacros.tcl
 # Description : Macros des scripts pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: snmacros.tcl,v 1.18 2010-10-06 17:22:41 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 proc searchGalaxySn { files } {

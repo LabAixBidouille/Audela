@@ -2,7 +2,7 @@
 # Fichier : rmtctrlapn.tcl
 # Description : Script pour le controle de l'APN
 # Auteur : Raymond ZACHANTKE
-# Mise à jour $Id: rmtctrlapn.tcl,v 1.5 2010-05-25 18:03:50 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
    ######################################################################

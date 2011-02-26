@@ -8,7 +8,7 @@
 # Connected sites are found in http://gcn.gsfc.nasa.gov/sites_cfg.html
 # To create a new connected site http://gcn.gsfc.nasa.gov/gcn/config_builder.html
 #
-# Mise à jour $Id: gcn_tools.tcl,v 1.47 2010-11-18 15:35:26 alainklotz Exp $
+# Mise à jour $Id$
 #
 
 # ==========================================================================================

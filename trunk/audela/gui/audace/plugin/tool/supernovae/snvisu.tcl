@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: snvisu.tcl,v 1.45 2010-06-29 07:52:33 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 #--- Conventions pour ce script :

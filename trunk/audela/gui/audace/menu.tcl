@@ -2,7 +2,7 @@
 # Fichier : menu.tcl
 # Description : Package pour gerer facilement les menus
 # Auteur : Denis MARCHAIS d'apres B. Welsh, Practical Programming in Tcl and Tk, Ed. 2, p.319-322
-# Mise à jour $Id: menu.tcl,v 1.12 2011-01-09 10:27:48 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 proc Menu_Setup { visuNo menubar } {

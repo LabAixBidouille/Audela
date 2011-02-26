@@ -3,7 +3,7 @@
 # Description : Outil pour le controle de la focalisation
 # Compatibilité : Protocoles LX200 et AudeCom
 # Auteurs : Alain KLOTZ et Robert DELMAS
-# Mise à jour $Id: foc.tcl,v 1.37 2010-10-10 20:05:42 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 set ::graphik(compteur) {}

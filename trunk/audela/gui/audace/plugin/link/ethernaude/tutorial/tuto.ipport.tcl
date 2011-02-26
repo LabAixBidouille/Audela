@@ -1,5 +1,5 @@
 #
-# Mise à jour $Id: tuto.ipport.tcl,v 1.16 2010-09-10 19:35:16 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 #!/bin/sh

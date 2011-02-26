@@ -2,7 +2,7 @@
 # A130 : source $audace(rep_scripts)/spcaudace/spc_metaf.tcl
 # A140 : source [ file join $audace(rep_plugin) tool spcaudace spc_metaf.tcl ]
 
-# Mise a jour $Id: spc_metaf.tcl,v 1.24 2011-01-23 09:41:33 bmauclaire Exp $
+# Mise a jour $Id$
 
 
 

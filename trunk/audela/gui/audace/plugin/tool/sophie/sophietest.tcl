@@ -2,7 +2,7 @@
 # @file     sophietest.tcl
 # @brief    Fichier du namespace ::sophie::test
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophietest.tcl,v 1.29 2010-06-20 14:17:42 robertdelmas Exp $
+# @version  $Id$
 #------------------------------------------------------------
 
 ##-----------------------------------------------------------

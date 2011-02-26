@@ -3,7 +3,7 @@
 # Description : Manipulation des fichiers de config XML de ros
 #
 # Auteur : J. Berthier & F. Vachier
-# Mise à jour $Id: ros_admin.tcl,v 1.1 2011-02-19 20:43:49 fredvachier Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::rosAdmin {
