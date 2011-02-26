@@ -17,15 +17,11 @@ namespace eval ::Photometrie {
 
     ##
     # @brief Séquencement principal des opérations
-        proc Principal {} {
+    proc Principal {} {
         variable photometrie_texte
         variable photometrie
 
-        set photometrie(defaut,diametre,interieur) 2.25
-        set photometrie(defaut,diametre,exterieur1) 6.0
-        set photometrie(defaut,diametre,exterieur2) 8.0
-        set photometrie(defaut,carre,modelisation) 3.0
-
+        Initialisations
         if { [ PresenceImage ] < 0 } { return }
         AnalyseEnvironnement
         AnalyseImage
@@ -40,6 +36,30 @@ namespace eval ::Photometrie {
 
         if { $erreur != 0 } { return }
         PhotometrieEcran
+    }
+
+    ##
+    # @brief initialisation de valeurs par défaut
+    proc Initialisations {} {
+        variable photometrie
+        set photometrie(defaut,diametre,interieur) 2.25
+        set photometrie(defaut,diametre,exterieur1) 6.0
+        set photometrie(defaut,diametre,exterieur2) 8.0
+        set photometrie(defaut,carre,modelisation) 3.0
+
+        # Position des champs dans le catalogue Nomad1
+        set photometrie(position,nomad1,mag_b) 12
+        set photometrie(position,nomad1,mag_r) 16
+        set photometrie(position,nomad1,ad) 0
+        set photometrie(position,nomad1,dec) 1
+        set photometrie(position,nomad1,nom) 3
+
+        # Position des champs dans le catalogue USNO-B1
+        set photometrie(position,usnob1,mag_b) 12
+        set photometrie(position,usnob1,mag_r) 16
+        set photometrie(position,usnob1,ad) 0
+        set photometrie(position,usnob1,dec) 1
+        set photometrie(position,usnob1,nom) 3
     }
 
     ##
@@ -428,6 +448,9 @@ namespace eval ::Photometrie {
         CalculMagnitude
     }
 
+    ##
+    # @brief Permet de choisir entre le catalogue internet
+    # @return photometrie(cata_internet)
     proc ChoixCatalogueInternet {} {
         variable photometrie_texte
         variable photometrie
@@ -587,6 +610,8 @@ namespace eval ::Photometrie {
     proc CreationBaseDonnées {} {
         variable photometrie
 
+        set catalogue $photometrie(cata_internet)
+
         catch { unset data }
         catch { unset index_rouge }
         catch { unset index_bleu }
@@ -603,8 +628,8 @@ namespace eval ::Photometrie {
         set indice 0
         while { [ gets $f ligne ] > 0 } {
             set liste_ligne [ split $ligne \t ]
-            set cle_rouge [ lindex $liste_ligne 15 ]
-            set cle_bleue [ lindex $liste_ligne 11 ]
+            set cle_rouge [ lindex $liste_ligne $photometrie(position,$catalogue,mag_r) ]
+            set cle_bleue [ lindex $liste_ligne $photometrie(position,$catalogue,mag_b) ]
             # Base à double clé
             # index_rouge a pour clé la magnitude rouge, et pour valeur un id unique (idem pour index_bleu)
             # data a pour clé l'id unique, et contient toutes les données du catalogue.
@@ -1066,14 +1091,16 @@ namespace eval ::Photometrie {
         set zoom [ visu$::audace(visuNo) zoom ]
         set fwhm $photometrie(fwhm)
         set f3 [ expr $fwhm * 3 ]
+        set catalogue $photometrie(cata_internet)
         foreach cle $liste_rouge_triee {
             foreach id $index_rouge($cle) {
                 set param $data($id)
-                set ad [ expr [ lindex $param 0 ] * 1.0 ]
-                set dec [ expr [ lindex $param 1 ] * 1.0 ]
-                set nom [ lindex $param 2 ]
-                set mag_r [ lindex $param 15 ]
-                set mag_b [ lindex $param 11 ]
+                set ad [ expr [ lindex $param $photometrie(position,$catalogue,ad) ] * 1.0 ]
+                set dec [ expr [ lindex $param $photometrie(position,$catalogue,dec) ] * 1.0 ]
+                set nom [ lindex $param $photometrie(position,$catalogue,nom) ]
+                set mag_r [ lindex $param $photometrie(position,$catalogue,mag_r) ]
+                set mag_b [ lindex $param $photometrie(position,$catalogue,mag_b) ]
+                # Message console "n:%s ad:%f dec:%f r:%f b:%f\n" $nom $ad $dec $mag_r $mag_b
                 set xyi [ buf$::audace(bufNo) radec2xy [ list $ad $dec ] ]
                 set x [ expr round( [ lindex $xyi 0 ] ) ]
                 set y [ expr round( [ lindex $xyi 1 ] ) ]
@@ -1180,12 +1207,12 @@ namespace eval ::Photometrie {
         # Récupération des informations sur la référence
         set id $photometrie(selection,id)
         set param $data($id)
-        set photometrie(reference,nom) [ lindex $param 2 ]
-        set photometrie(reference,xy) [ buf$::audace(bufNo) radec2xy [ list [ expr [ lindex $param 0 ] * 1.0 ] [ expr [ lindex $param 1 ] * 1.0 ] ] ]
+        set photometrie(reference,nom) [ lindex $param $photometrie(position,$catalogue,nom) ]
+        set photometrie(reference,xy) [ buf$::audace(bufNo) radec2xy [ list [ expr [ lindex $param $photometrie(position,$catalogue,ad) ] * 1.0 ] [ expr [ lindex $param $photometrie(position,$catalogue,dec) ] * 1.0 ] ] ]
         if { $photometrie(selection_couleur) == "mag_r" } {
-            set photometrie(reference,magnitude) [ lindex $param 15 ]
+            set photometrie(reference,magnitude) [ lindex $param $photometrie(position,$catalogue,mag_r) ]
         } else {
-            set photometrie(reference,magnitude) [ lindex $param 11 ]
+            set photometrie(reference,magnitude) [ lindex $param $photometrie(position,$catalogue,mag_b) ]
         }
 
         return $photometrie(selection_aladin)
