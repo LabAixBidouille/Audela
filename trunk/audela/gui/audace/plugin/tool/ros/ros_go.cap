@@ -1,3 +1,7 @@
+#
+# Fichier : ros_go.cap
+# Mise a jour $Id:  $
+#
 
 #=========================================================================
 #   Début de la declaration des textes localises (internationalisation)
@@ -6,34 +10,35 @@
 global caption langage
 
 # *************** Version anglaise ****************************
-set caption(ros_go,titre)              "Robotic Observatory Software"
-set caption(ros_go,ros)                "Robotic Observatory Software"
-set caption(ros_go,help_titre)         "Aide de cet outil"
-set caption(ros_go,help_titre1)        "Aide de l'outil :"
 
-set caption(ros_go,configuration)      "Configuration"
-set caption(ros_go,status)             "Statut de Ros"
-set caption(ros_go,maintenance)        "Maintenance"
-set caption(ros_go,gestion)            "Requetes"
-set caption(ros_go,synchronisation)    "Synchronisation"
-set caption(ros_go,test)               "Test"
-set caption(ros_go,ressource)          "re-source"
+set caption(ros_go,titre)                 "Robotic Observatory Software"
+set caption(ros_go,ros)                   "Robotic Observatory Software"
+set caption(ros_go,help_titre)            "Help for this Tool"
+set caption(ros_go,help_titre1)           "Help for the Tool:"
+
+set caption(ros_go,configuration)         "Setup"
+set caption(ros_go,status)                "ROS Status"
+set caption(ros_go,maintenance)           "Maintenance"
+set caption(ros_go,gestion)               "Queries"
+set caption(ros_go,synchronisation)       "Synchronization"
+set caption(ros_go,test)                  "Test"
+set caption(ros_go,ressource)             "Re-Source"
 
 # *************** Version française **** **********************
 if { [ string compare $langage "french" ] == "0" } {
+
    set caption(ros_go,titre)              "Robotic Observatory Software"
    set caption(ros_go,ros)                "Robotic Observatory Software"
    set caption(ros_go,help_titre)         "Aide de cet outil"
    set caption(ros_go,help_titre1)        "Aide de l'outil :"
 
    set caption(ros_go,configuration)      "Configuration"
-   set caption(ros_go,status)             "Statut de Ros"
+   set caption(ros_go,status)             "Statut de ROS"
    set caption(ros_go,maintenance)        "Maintenance"
-   set caption(ros_go,gestion)            "Requetes"
+   set caption(ros_go,gestion)            "Requêtes"
    set caption(ros_go,synchronisation)    "Synchronisation"
    set caption(ros_go,test)               "Test"
-   set caption(ros_go,ressource)          "re-source"
-
+   set caption(ros_go,ressource)          "Re-Source"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
