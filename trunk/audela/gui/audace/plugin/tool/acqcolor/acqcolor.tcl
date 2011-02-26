@@ -56,8 +56,9 @@ set confcolor(indice)  "1"
 set confcolor(att)     "500"
 
 #--- Choix du nombre et des formats des fenetres scrollables
-set dimfenx 1016
+set dimfenx 1000
 set dimfeny 700
+#--- Choix du nombre et des formats des fenetres scrollables
 if { ! [ info exists conf(color_nb_fenetre) ] } { set conf(color_nb_fenetre) "2" }
 if { $conf(color_nb_fenetre) == "0" } {
    set dimx1 1000
@@ -66,7 +67,7 @@ if { $conf(color_nb_fenetre) == "0" } {
    set dimx1 500
    set dimy1 515
 } elseif { $conf(color_nb_fenetre) == "2" } {
-   set dimx1 769
+   set dimx1 750
    set dimy1 515
 }
 
@@ -106,7 +107,7 @@ toplevel $audace(base).test -class Toplevel -relief groove -borderwidth 0
 wm geometry $audace(base).test ${dimfenx}x${dimfeny}+0+0
 wm resizable $audace(base).test 1 1
 wm minsize $audace(base).test 600 400
-wm maxsize $audace(base).test 1800 1550
+wm maxsize $audace(base).test [ winfo screenwidth $audace(base).test ] [ winfo screenheight $audace(base).test ]
 wm title $audace(base).test "$caption(acqcolor,main_title) ($audace(acqvisu,ccd_model))"
 
 #--- La nouvelle fenetre est active
@@ -257,22 +258,6 @@ pack $audace(base).test.frame1 \
       set zone(attente) $audace(base).test.frame1.fra2.lab_attente
 
    pack $audace(base).test.frame1.fra2 \
-      -in $audace(base).test.frame1 -anchor n -side top -expand 0 -fill x
-
-   #--- Cree un frame pour le traitement (suite)
-   frame $audace(base).test.frame1.fra4 \
-      -borderwidth 1 -cursor arrow
-
-      #--- Cree le bouton 'smedianrvb'
-      button $audace(base).test.frame1.fra4.but_smedianrvb \
-         -text $caption(acqcolor,smedianrvb) -borderwidth 2 \
-         -command { smedianRGB }
-      pack $audace(base).test.frame1.fra4.but_smedianrvb \
-         -in $audace(base).test.frame1.fra4 -side left -anchor n \
-         -padx 3 -pady 3
-      set zone(smedianrvb) $audace(base).test.frame1.fra4.but_smedianrvb
-
-   pack $audace(base).test.frame1.fra4 \
       -in $audace(base).test.frame1 -anchor n -side top -expand 0 -fill x
 
    #--- Cree un frame pour un intercallaire
@@ -957,14 +942,6 @@ proc dispTime { labelTime colorLabel } {
    }
 }
 
-proc smedianRGB { } {
-   global audace
-
-   catch {
-      source [ file join $audace(rep_plugin) tool acqcolor smedianrvb.tcl ]
-   }
-}
-
 proc testrevisu { } {
    global infos
 
@@ -1598,16 +1575,21 @@ proc colorNbFenetre { } {
    global conf
    global zone
 
+   #--- Recuperation des dimensions de la fenetre
+   set largeur [ winfo width $audace(base).test ]
+   set hauteur [ winfo height $audace(base).test ]
+   #--- Calcul de la hauteur des canvas
+   set hauteurCanvas [ expr $hauteur - 185 ]
    #--- Choix du nombre et des formats des fenetres scrollables
    if { $conf(color_nb_fenetre) == "0" } {
-      set dimx1 1000
-      set dimy1 515
+      set dimx1 $largeur
+      set dimy1 $hauteurCanvas
    } elseif { $conf(color_nb_fenetre) == "1" } {
-      set dimx1 500
-      set dimy1 515
+      set dimx1 [ expr $largeur / 2 ]
+      set dimy1 $hauteurCanvas
    } elseif { $conf(color_nb_fenetre) == "2" } {
-      set dimx1 769
-      set dimy1 515
+      set dimx1 [ expr $largeur * 2 / 3 ]
+      set dimy1 $hauteurCanvas
    }
    #--- Configuration des canvas scrollables
    $zone(image1) configure -width $dimx1 -height $dimy1 -scrollregion {0 0 0 0} -cursor crosshair
