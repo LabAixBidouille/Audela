@@ -115,7 +115,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-    set photometrie_texte(titre_menu)               "Photometry"
+    set photometrie_texte(titre_menu)               "Fotometria"
     set photometrie_texte(err_pas_d_image)          "An image must be displayed"
     set photometrie_texte(err_spectro)              "Photometry cannot be achieved on a 1D image."
     set photometrie_texte(err_java)                 "Java cannot be run from Audela."
@@ -164,7 +164,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-    set photometrie_texte(titre_menu)               "Photometry"
+    set photometrie_texte(titre_menu)               "Fotometría"
     set photometrie_texte(err_pas_d_image)          "An image must be displayed"
     set photometrie_texte(err_spectro)              "Photometry cannot be achieved on a 1D image."
     set photometrie_texte(err_java)                 "Java cannot be run from Audela."
@@ -213,7 +213,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-    set photometrie_texte(titre_menu)               "Photometry"
+    set photometrie_texte(titre_menu)               "Lichtmessung"
     set photometrie_texte(err_pas_d_image)          "An image must be displayed"
     set photometrie_texte(err_spectro)              "Photometry cannot be achieved on a 1D image."
     set photometrie_texte(err_java)                 "Java cannot be run from Audela."
@@ -262,7 +262,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-    set photometrie_texte(titre_menu)               "Photometry"
+    set photometrie_texte(titre_menu)               "Fotometria"
     set photometrie_texte(err_pas_d_image)          "An image must be displayed"
     set photometrie_texte(err_spectro)              "Photometry cannot be achieved on a 1D image."
     set photometrie_texte(err_java)                 "Java cannot be run from Audela."
