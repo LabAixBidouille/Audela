@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: scan.tcl,v 1.64 2011-02-12 18:37:36 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 #============================================================

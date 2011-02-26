@@ -2,7 +2,7 @@
 # Fichier : acqvideo.tcl
 # Description : Outil d'acquisition video
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: acqvideo.tcl,v 1.23 2010-10-10 20:02:23 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 #==============================================================

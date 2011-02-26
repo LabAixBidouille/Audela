@@ -1,6 +1,6 @@
 
 # source audace/plugin/tool/bddimages/bddimages_entete_preminforecon.tcl
-# Mise à jour $Id: bddimages_entete_preminforecon.tcl,v 1.2 2010-05-27 07:07:49 robertdelmas Exp $
+# Mise à jour $Id$
 
 # ---------------------------------------
 # bddimages_entete_preminforecon {}

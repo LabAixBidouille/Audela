@@ -4,7 +4,7 @@
 # Fichier        : bddimages_sql.tcl
 # Description    : Routines sql
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_sql.tcl,v 1.6 2011-02-20 16:06:13 fredvachier Exp $
+# Mise à jour $Id$
 #
 
 namespace eval bddimages_sql {

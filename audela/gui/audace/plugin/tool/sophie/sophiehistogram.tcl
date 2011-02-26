@@ -1,7 +1,7 @@
 #
 # Fichier : sophiehistogram.tcl
 # Description : Fenetre affcihat l'histogramme des ecarts étoile/consigne
-# Mise à jour $Id: sophiehistogram.tcl,v 1.10 2011-02-10 19:38:11 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::sophie::histogram {

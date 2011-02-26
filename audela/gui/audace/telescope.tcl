@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise à jour $Id: telescope.tcl,v 1.69 2011-01-23 18:19:40 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::telescope {

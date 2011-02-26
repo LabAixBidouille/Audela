@@ -2,7 +2,7 @@
 # Fichier : eshelfile.tcl
 # Description : assistant pour le reglage des parametres de traitement
 # Auteur : Michel PUJOL
-# Mise à jour $Id: eshelfile.tcl,v 1.1 2011-01-16 19:05:10 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 ################################################################

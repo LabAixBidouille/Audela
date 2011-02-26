@@ -2,7 +2,7 @@
 # Fichier : celestron.tcl
 # Description : Configuration de la monture Celestron
 # Auteur : Robert DELMAS
-# Mise à jour $Id: celestron.tcl,v 1.19 2010-10-31 07:21:40 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::celestron {

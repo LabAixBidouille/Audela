@@ -2,7 +2,7 @@
 # Fichier : wizard.tcl
 # Description : pipeline de pointage des etoiles
 # Auteur : Michel Pujol
-# Mise à jour $Id: wizard.tcl,v 1.16 2010-09-17 21:30:33 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::modpoi2::wizard {

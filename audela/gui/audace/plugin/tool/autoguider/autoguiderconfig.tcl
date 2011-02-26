@@ -2,7 +2,7 @@
 # Fichier : autoguiderconfig.tcl
 # Description : Fenetre de configuration de l'autoguidage
 # Auteur : Michel PUJOL
-# Mise à jour $Id: autoguiderconfig.tcl,v 1.25 2011-02-13 22:53:58 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 ################################################################

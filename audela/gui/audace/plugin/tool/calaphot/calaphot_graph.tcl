@@ -5,7 +5,7 @@
 #
 # @brief Routines de gestion des affichages de Calaphot
 #
-# $Id: calaphot_graph.tcl,v 1.19 2011-01-02 13:08:31 jacquesmichelet Exp $
+# $Id$
 
 namespace eval ::CalaPhot {
 

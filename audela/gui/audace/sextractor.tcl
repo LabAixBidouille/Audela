@@ -2,7 +2,7 @@
 # Fichier : sextractor.tcl
 # Description : Functions to initialize configuration files for sextractor
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: sextractor.tcl,v 1.13 2010-09-12 19:23:16 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 proc sextractor_default_nnw { {filename default.nnw} } {

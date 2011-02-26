@@ -2,7 +2,7 @@
 # Fichier : eshel.tcl
 # Description : fenetre saisie des mots clefs
 # Auteurs : Michel Pujol
-# Mise a jour $Id: makeseries.tcl,v 1.3 2010-11-01 14:56:29 michelpujol Exp $
+# Mise a jour $Id$
 #
 
 ################################################################

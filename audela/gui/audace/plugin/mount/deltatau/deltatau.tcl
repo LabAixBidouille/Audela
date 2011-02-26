@@ -2,7 +2,7 @@
 # Fichier : deltatau.tcl
 # Description : Configuration de la monture Delta Tau
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: deltatau.tcl,v 1.14 2010-10-10 19:57:25 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::deltatau {

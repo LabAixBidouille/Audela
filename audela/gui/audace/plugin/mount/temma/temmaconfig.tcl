@@ -2,7 +2,7 @@
 # Fichier : temmaconfig.tcl
 # Description : Fenetre de configuration pour le parametrage du suivi d'objets mobiles pour le telescope Temma
 # Auteur : Robert DELMAS
-# Mise à jour $Id: temmaconfig.tcl,v 1.3 2010-05-23 16:06:17 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 #

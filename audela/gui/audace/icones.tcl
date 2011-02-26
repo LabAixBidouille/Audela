@@ -2,7 +2,7 @@
 # Fichier : icones.tcl
 # Description : Definition des icones utilisees dans les menus
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: icones.tcl,v 1.2 2011-01-15 17:45:06 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::icones {

@@ -9,7 +9,7 @@
 #    ::votableUtil::displayVotable [::votableUtil::votable2list]
 #
 # Auteur : Jerome BERTHIER
-# Mise à jour $Id: votableUtil.tcl,v 1.2 2011-02-13 22:51:03 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::votableUtil {

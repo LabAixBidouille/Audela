@@ -2,7 +2,7 @@
 # Fichier : eventaude_gps.tcl
 # Description : Permet de controler l'alimentation AlAudine NT avec port I2C
 # Auteur : Robert DELMAS
-# Mise à jour $Id: eventaude_gps.tcl,v 1.15 2010-05-22 16:51:07 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::eventAudeGPS {

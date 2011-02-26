@@ -3,7 +3,7 @@
 # Description : Scripts pour un usage aise des fonctions d'Aud'ACE
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
 #
-# Mise à jour $Id: mauclaire.tcl,v 1.34 2010-10-10 11:04:57 bmauclaire Exp $
+# Mise à jour $Id$
 #
 
 #

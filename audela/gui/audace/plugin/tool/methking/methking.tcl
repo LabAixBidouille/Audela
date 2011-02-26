@@ -2,7 +2,7 @@
 # Fichier : methking.tcl
 # Description : Outil d'aide a la mise en station par la methode de King
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise à jour $Id: methking.tcl,v 1.32 2010-10-10 20:05:42 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 #============================================================

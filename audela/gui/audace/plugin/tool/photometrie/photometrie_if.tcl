@@ -5,7 +5,7 @@
 #
 # @brief Outil pour l'analyse photométrique d'une image.
 #
-# $Id: photometrie_if.tcl,v 1.2 2011-01-16 19:46:35 jacquesmichelet Exp $
+# $Id$
 #
 
 namespace eval ::Photometrie {

@@ -1,5 +1,5 @@
 #
-# Mise à jour $Id: tuto.i2c.tcl,v 1.9 2010-05-23 08:25:10 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 #!/bin/sh

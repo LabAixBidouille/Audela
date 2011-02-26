@@ -2,7 +2,7 @@
 # Fichier : bifsconv.tcl
 # Description : Ce script permet de convertir de multiples formats d'images vers du fits
 # Auteur : Benoit MAUGIS
-# Mise à jour $Id: bifsconv.tcl,v 1.13 2010-09-25 22:06:49 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 #--- Documentation : Voir le fichier bifsconv.htm dans le dossier doc_html

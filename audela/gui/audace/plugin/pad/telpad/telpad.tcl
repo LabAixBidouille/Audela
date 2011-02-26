@@ -2,7 +2,7 @@
 # Fichier : telpad.tcl
 # Description : Raquette simplifiee a l'usage des telescopes
 # Auteur : Robert DELMAS
-# Mise à jour $Id: telpad.tcl,v 1.25 2010-10-10 19:58:19 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 namespace eval telpad {

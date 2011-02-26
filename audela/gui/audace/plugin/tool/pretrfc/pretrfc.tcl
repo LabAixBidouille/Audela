@@ -2,7 +2,7 @@
 # Fichier : pretrfc.tcl
 # Description : Outil pour le pretraitement automatique
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise à jour $Id: pretrfc.tcl,v 1.33 2011-02-14 21:58:04 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 #============================================================

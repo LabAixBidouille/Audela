@@ -2,7 +2,7 @@
 # Fichier : eshelvisu.tcl
 # Description : Visionneuse d'images eShel
 # Auteurs : Michel Pujol
-# Mise a jour $Id: eshelvisu.tcl,v 1.14 2011-01-16 19:15:18 michelpujol Exp $
+# Mise a jour $Id$
 #
 
 namespace eval ::eshelvisu {

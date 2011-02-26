@@ -2,7 +2,7 @@
 # Fichier : etel.tcl
 # Description : Configuration de la monture Etel
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: etel.tcl,v 1.15 2010-10-10 19:57:26 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::etel {

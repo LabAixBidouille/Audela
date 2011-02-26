@@ -5,7 +5,7 @@
 #               pose, choix des plugins, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise à jour $Id: confgene.tcl,v 1.92 2010-12-30 09:53:58 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 #

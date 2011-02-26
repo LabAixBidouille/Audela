@@ -2,7 +2,7 @@
 # Fichier : instrument.tcl
 # Description : commande des instruments de l'outil eShel
 # Auteur : Michel PUJOL
-# Mise à jour $Id: instrument.tcl,v 1.7 2011-01-16 19:05:10 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::eshel::instrument {

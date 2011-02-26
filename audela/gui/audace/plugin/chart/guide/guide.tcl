@@ -2,7 +2,7 @@
 # Fichier : guide.tcl
 # Description : Plugin de communication avec "guide"
 # Auteur : Robert DELMAS
-# Mise à jour $Id: guide.tcl,v 1.28 2010-10-23 16:06:46 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval guide {

@@ -5,7 +5,7 @@
 #
 # @brief Routines de calcul de photometrie de Calaphot
 #
-# $Id: calaphot_calcul.tcl,v 1.11 2011-01-02 13:08:31 jacquesmichelet Exp $
+# $Id$
 
 namespace eval ::CalaPhot {
 

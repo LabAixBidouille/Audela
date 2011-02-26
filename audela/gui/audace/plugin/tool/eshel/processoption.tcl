@@ -2,7 +2,7 @@
 # Fichier : processoption.tcl
 # Description : fenetre des options des traitements
 # Auteur : Michel PUJOL
-# Mise à jour $Id: processoption.tcl,v 1.2 2010-11-01 14:56:29 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 ################################################################

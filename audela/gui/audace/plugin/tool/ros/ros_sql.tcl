@@ -4,7 +4,7 @@
 # Fichier        : ros_sql.tcl
 # Description    : Routines sql
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: ros_sql.tcl,v 1.1 2011-02-19 20:43:49 fredvachier Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ros_sql {

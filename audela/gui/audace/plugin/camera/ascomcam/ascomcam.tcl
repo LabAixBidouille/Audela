@@ -2,7 +2,7 @@
 # Fichier : ascomcam.tcl
 # Description : Configuration de la camera ASCOM
 # Auteur : Michel PUJOL
-# Mise à jour $Id: ascomcam.tcl,v 1.13 2010-10-10 19:50:42 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::ascomcam {

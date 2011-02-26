@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: astrometry.tcl,v 1.21 2011-01-12 22:11:49 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 #============================================================

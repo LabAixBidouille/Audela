@@ -2,7 +2,7 @@
 # Fichier : temma.tcl
 # Description : Fenetre de configuration pour le parametrage du suivi d'objets mobiles pour la monture Temma
 # Auteur : Robert DELMAS
-# Mise à jour $Id: temma.tcl,v 1.27 2010-10-31 07:22:46 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::temma {

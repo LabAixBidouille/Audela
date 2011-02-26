@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise à jour $Id: visio2.tcl,v 1.57 2011-02-10 19:16:19 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::visio2 {

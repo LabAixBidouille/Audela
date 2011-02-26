@@ -2,7 +2,7 @@
 # Fichier : wizard.tcl
 # Description : assistant pour le reglage des parametres de traitement
 # Auteur : Michel PUJOL
-# Mise à jour $Id: wizard.tcl,v 1.2 2011-01-23 18:22:16 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 ################################################################

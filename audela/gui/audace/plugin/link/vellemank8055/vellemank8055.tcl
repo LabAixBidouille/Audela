@@ -2,7 +2,7 @@
 # Fichier : vellemank8055.tcl
 # Description : Interface pour la carte Velleman K8055
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise à jour $Id: vellemank8055.tcl,v 1.4 2010-10-10 19:55:23 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 namespace eval vellemank8055 {

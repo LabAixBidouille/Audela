@@ -2,7 +2,7 @@
 # Fichier : scr1300xtc.tcl
 # Description : Configuration de la camera SCR1300XTC
 # Auteur : Robert DELMAS
-# Mise à jour $Id: scr1300xtc.tcl,v 1.29 2010-10-24 14:13:22 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::scr1300xtc {

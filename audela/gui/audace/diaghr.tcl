@@ -1,7 +1,7 @@
 #
 # Fichier : diaghr.tcl
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: diaghr.tcl,v 1.5 2010-06-02 19:42:54 alainklotz Exp $
+# Mise à jour $Id$
 #
 # Utilitaire pour mesurer des diagrammes HR a partir de deux images filtrees
 # Les images doivent etre calibrees en WCS

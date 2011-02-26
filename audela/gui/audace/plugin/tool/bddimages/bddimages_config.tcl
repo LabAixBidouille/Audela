@@ -6,7 +6,7 @@
 # Description    : Configuration des variables globales bddconf
 #                  necessaires au service
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_config.tcl,v 1.15 2011-02-16 14:26:20 fredvachier Exp $
+# Mise à jour $Id$
 #
 #--------------------------------------------------
 #

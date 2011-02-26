@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: keyword.tcl,v 1.51 2011-02-11 18:18:51 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::keyword {

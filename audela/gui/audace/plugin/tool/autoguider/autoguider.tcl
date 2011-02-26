@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise à jour $Id: autoguider.tcl,v 1.51 2011-02-13 22:54:23 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 package provide autoguider 1.3

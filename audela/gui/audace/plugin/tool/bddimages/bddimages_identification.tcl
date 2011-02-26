@@ -5,7 +5,7 @@
 # Fichier        : bddimages_identification.tcl
 # Description    :
 # Auteur         :
-# Mise à jour $Id: bddimages_identification.tcl,v 1.2 2010-05-27 07:05:53 robertdelmas Exp $
+# Mise à jour $Id$
 #
 #--------------------------------------------------
 

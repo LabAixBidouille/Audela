@@ -5,7 +5,7 @@
 # Fichier        : ros_go.tcl
 # Description    : Outil d'appel des fonctionnalites de l'observatoire virtuel
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: ros_go.tcl,v 1.1 2011-02-19 20:43:49 fredvachier Exp $
+# Mise à jour $Id$
 #
 
 #============================================================

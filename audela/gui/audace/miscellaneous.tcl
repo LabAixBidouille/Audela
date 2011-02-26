@@ -2,7 +2,7 @@
 # Fichier : miscellaneous.tcl
 # Description : Procedures diverses
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: miscellaneous.tcl,v 1.1 2010-05-30 08:10:39 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 proc list2file { tcllist filename {attribut w} } {

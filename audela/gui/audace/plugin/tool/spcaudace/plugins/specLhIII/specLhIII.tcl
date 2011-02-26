@@ -2,7 +2,7 @@
 # Fichier : specLhIII.tcl
 # Description : Reduction complete des spectres Lhires III
 # Auteur : François COCHARD
-# Mise à jour $Id: specLhIII.tcl,v 1.7 2011-02-14 21:59:02 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 #==============================================================

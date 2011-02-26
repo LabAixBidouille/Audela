@@ -2,7 +2,7 @@
 # Fichier : confoptic.tcl
 # Description : Affiche la fenetre de configuration des systemes optiques associes aux cameras A, B et C
 # Auteur : Robert DELMAS
-# Mise à jour $Id: confoptic.tcl,v 1.35 2011-02-11 18:31:49 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::confOptic {

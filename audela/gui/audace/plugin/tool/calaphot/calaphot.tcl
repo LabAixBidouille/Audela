@@ -5,7 +5,7 @@
 #
 # @brief Script pour la photométrie d'asteroides ou d'etoiles variables.
 #
-# $Id: calaphot.tcl,v 1.6 2011-01-02 13:07:47 jacquesmichelet Exp $
+# $Id$
 #
 
 namespace eval ::CalaPhot {

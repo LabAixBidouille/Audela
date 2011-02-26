@@ -2,7 +2,7 @@
 # Fichier : rmtctrlccd.tcl
 # Description : Script pour le controle de la camera CCD
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: rmtctrlccd.tcl,v 1.3 2010-05-25 18:06:39 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
    proc fillCCDPanel {} {

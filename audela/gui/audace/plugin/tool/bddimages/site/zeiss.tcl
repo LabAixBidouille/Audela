@@ -1,5 +1,5 @@
 #
-# Mise à jour $Id: zeiss.tcl,v 1.2 2010-05-28 10:34:05 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 proc dateobs {tabkey} {

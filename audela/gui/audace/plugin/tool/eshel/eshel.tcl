@@ -2,7 +2,7 @@
 # Fichier : eshel.tcl
 # Description : outil de fabrication des fichier Kit et de deploiement des plugin
 # Auteurs : Michel Pujol
-# Mise à jour $Id: eshel.tcl,v 1.16 2011-02-12 18:37:25 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 ##------------------------------------------------------------

@@ -4,7 +4,7 @@
 # Observation en automatique
 # Camera : Script optimise pour une Audine Kaf-0400 pilotee par un port parallele
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: titania.tcl,v 1.6 2010-05-27 06:17:39 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 global audace

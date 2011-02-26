@@ -2,7 +2,7 @@
 # @file     sophielog.tcl
 # @brief    Fichier du namespace ::sophie::log
 # @author   Michel PUJOL et Robert DELMAS
-# @version  $Id: sophielog.tcl,v 1.3 2010-05-25 21:29:16 robertdelmas Exp $
+# @version  $Id$
 #------------------------------------------------------------
 
 ##------------------------------------------------------------

@@ -2,7 +2,7 @@
 # Fichier : vellemank8056.tcl
 # Description : Interface pour carte Velleman K8056
 # Auteurs : Michel PUJOL
-# Mise à jour $Id: vellemank8056.tcl,v 1.5 2010-10-30 13:18:43 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval vellemank8056 {

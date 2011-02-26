@@ -1,6 +1,6 @@
 # source audace/plugin/tool/bddimages/bddimages_subroutines.tcl
 
-# Mise à jour $Id: bddimages_sub_insertion.tcl,v 1.16 2011-02-20 16:06:13 fredvachier Exp $
+# Mise à jour $Id$
 
 #--------------------------------------------------
 #  init_info { }

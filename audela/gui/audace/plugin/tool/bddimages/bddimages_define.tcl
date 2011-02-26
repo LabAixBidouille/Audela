@@ -6,7 +6,7 @@
 # Description    : Environnement de recherche des images
 #                  dans la base de donnees
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_define.tcl,v 1.1 2011-02-16 14:26:20 fredvachier Exp $
+# Mise à jour $Id$
 #
 #--------------------------------------------------
 #

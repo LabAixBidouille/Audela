@@ -2,7 +2,7 @@
 # Fichier : celestial_mechanics.tcl
 # Description : Outils pour le calcul de coordonnees celestes
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: celestial_mechanics.tcl,v 1.9 2010-10-02 20:55:45 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 # ------------------------------------------------------------------------------------

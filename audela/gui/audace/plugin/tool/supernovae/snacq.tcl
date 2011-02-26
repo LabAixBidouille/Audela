@@ -3,7 +3,7 @@
 # Description : Outil d'acquisition d'images pour la recherche de supernovae
 #               Automatic supernovae research tool
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: snacq.tcl,v 1.34 2011-02-10 19:17:35 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 # ===================================================================

@@ -2,7 +2,7 @@
 # Fichier : google_earth.tcl
 # Description : Interaction avec Google Earth
 # Auteur : Alain KLOTZ
-# Mise � jour $Id: google_earth.tcl,v 1.3 2010-10-30 08:52:34 michelpujol Exp $
+# Mise � jour $Id$
 #
 
 # Procedures qui permettent d'interagir avec Google Earth

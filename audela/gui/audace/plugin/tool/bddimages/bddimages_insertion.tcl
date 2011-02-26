@@ -6,7 +6,7 @@
 # Description    : Environnement d'inssertion des images
 #                  dans la base de donnees
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_insertion.tcl,v 1.4 2011-01-21 11:06:23 jberthier Exp $
+# Mise à jour $Id$
 #
 #--------------------------------------------------
 #

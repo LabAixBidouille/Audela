@@ -1,6 +1,6 @@
 #
 # Fichier : obscgi.tcl
-# Mise à jour $Id: obscgi.tcl,v 1.5 2010-05-27 06:14:24 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 # - variables communes a tous les scripts

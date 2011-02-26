@@ -2,7 +2,7 @@
 # Fichier : ouranos.tcl
 # Description : Configuration de la monture Ouranos
 # Auteur : Robert DELMAS
-# Mise à jour $Id: ouranos.tcl,v 1.22 2010-10-31 07:22:23 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::ouranos {

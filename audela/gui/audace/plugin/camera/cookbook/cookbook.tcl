@@ -2,7 +2,7 @@
 # Fichier : cookbook.tcl
 # Description : Configuration de la camera Cookbook
 # Auteur : Robert DELMAS
-# Mise à jour $Id: cookbook.tcl,v 1.30 2010-10-24 14:13:22 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::cookbook {

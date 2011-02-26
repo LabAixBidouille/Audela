@@ -2,7 +2,7 @@
 # Fichier : acqdslr.tcl
 # Description : Outil d'acquisition pour APN Canon
 # Auteur : Raymond Zachantke
-# Mise à jour $Id: acqdslr.tcl,v 1.9 2010-10-10 20:02:23 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 #============================================================

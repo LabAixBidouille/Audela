@@ -2,7 +2,7 @@
 # Fichier : confLink.tcl
 # Description : Gere des objets 'liaison' pour la communication
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise à jour $Id: conflink.tcl,v 1.36 2010-05-23 08:05:18 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::confLink {

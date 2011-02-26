@@ -2,7 +2,7 @@
 # Fichier : cemes.tcl
 # Description : Configuration de la camera Cemes
 # Auteur : Robert DELMAS
-# Mise à jour $Id: cemes.tcl,v 1.40 2011-02-18 17:52:41 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::cemes {

@@ -1,5 +1,5 @@
 #
-# Mise à jour $Id: default.tcl,v 1.2 2010-05-28 10:33:24 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 proc dateobs {tabkey} {

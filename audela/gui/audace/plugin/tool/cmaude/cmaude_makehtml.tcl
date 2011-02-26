@@ -2,7 +2,7 @@
 # Fichier : cmaude_makehtml.tcl
 # Description : Ecrit une page HTML au fur et a mesure de la nuit, ou sont disponibles les images JPG et FITS
 # Auteur : Sylvain RONDI
-# Mise à jour $Id: cmaude_makehtml.tcl,v 1.5 2010-05-27 06:43:32 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 variable cmconf

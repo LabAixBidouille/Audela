@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise à jour $Id: acqfen.tcl,v 1.50 2011-02-12 18:36:48 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 # =========================================================

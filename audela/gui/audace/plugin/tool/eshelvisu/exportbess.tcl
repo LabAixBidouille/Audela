@@ -2,7 +2,7 @@
 # Fichier : exportbess.tcl
 # Description : Export de fichier au format BeSS
 # Auteurs : Michel Pujol
-# Mise a jour $Id: exportbess.tcl,v 1.4 2011-02-13 16:08:42 michelpujol Exp $
+# Mise a jour $Id$
 #
 
 ################################################################

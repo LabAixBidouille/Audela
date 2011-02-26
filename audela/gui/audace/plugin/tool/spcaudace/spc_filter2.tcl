@@ -1,6 +1,6 @@
 
 
-# Mise a jour $Id: spc_filter2.tcl,v 1.16 2010-12-12 17:09:50 bmauclaire Exp $
+# Mise a jour $Id$
 # Mise a jour Patrick Lailly 29 mai 2009
 
 

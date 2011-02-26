@@ -3,7 +3,7 @@
 # spc_fits2dat lmachholz_centre.fit
 # buf1 load lmachholz_centre.fit
 
-# Mise a jour $Id: spc_calibrage.tcl,v 1.22 2010-09-07 20:54:43 bmauclaire Exp $
+# Mise a jour $Id$
 
 
 

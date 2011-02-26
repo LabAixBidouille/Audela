@@ -1,7 +1,7 @@
 #
 # Fichier : select.tcl
 # Description : Interface permettant la selection d'images
-# Mise à jour $Id: select.tcl,v 1.5 2010-10-10 20:05:42 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 #============================================================

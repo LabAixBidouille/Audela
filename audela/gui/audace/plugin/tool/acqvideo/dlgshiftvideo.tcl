@@ -2,7 +2,7 @@
 # Fichier : dlgshiftvideo.tcl
 # Description : Fenetre de dialogue pour saisir les parametres de deplacement entre 2 images
 # Auteur : Michel PUJOL
-# Mise à jour $Id: dlgshiftvideo.tcl,v 1.3 2010-05-24 15:24:17 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::DlgShiftVideo {

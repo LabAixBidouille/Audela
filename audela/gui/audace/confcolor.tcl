@@ -2,7 +2,7 @@
 # Fichier : confcolor.tcl
 # Description : Selection et mise a jour en direct des couleurs de l'interface Aud'ACE
 # Auteurs : Denis MARCHAIS
-# Mise à jour $Id: confcolor.tcl,v 1.37 2010-12-12 10:50:22 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval confColor:: {

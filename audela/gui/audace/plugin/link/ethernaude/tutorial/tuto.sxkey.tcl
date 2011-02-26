@@ -1,5 +1,5 @@
 #
-# Mise à jour $Id: tuto.sxkey.tcl,v 1.9 2010-05-23 08:33:01 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 #!/bin/sh

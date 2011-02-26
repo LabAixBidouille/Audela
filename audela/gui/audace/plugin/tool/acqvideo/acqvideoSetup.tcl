@@ -2,7 +2,7 @@
 # Fichier : acqvideoSetup.tcl
 # Description : Configuration de certains parametres de l'outil Acquisition video
 # Auteur : Robert DELMAS
-# Mise à jour $Id: acqvideoSetup.tcl,v 1.3 2010-05-23 16:15:54 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::acqvideoSetup {

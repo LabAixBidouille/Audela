@@ -1,7 +1,7 @@
 
 
 
-# Mise a jour $Id: spc_filters.tcl,v 1.5 2010-02-28 14:40:07 bmauclaire Exp $
+# Mise a jour $Id$
 
 
 

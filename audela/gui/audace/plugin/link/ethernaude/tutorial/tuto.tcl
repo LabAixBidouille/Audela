@@ -1,5 +1,5 @@
 #
-# Mise à jour $Id: tuto.tcl,v 1.16 2010-05-23 08:34:20 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 #!/bin/sh

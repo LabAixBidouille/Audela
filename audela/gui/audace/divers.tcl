@@ -2,7 +2,7 @@
 # Fichier divers.tcl
 # Description : Ce script regroupe diverses petites fonctions
 # Auteur : Benoit MAUGIS
-# Mise à jour $Id: divers.tcl,v 1.18 2010-10-23 16:11:03 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 # Documentation : voir le fichier divers.htm dans le dossier doc_html

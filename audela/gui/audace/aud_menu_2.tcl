@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_2.tcl
 # Description : Script regroupant les fonctionnalites du menu Affichage
-# Mise à jour $Id: aud_menu_2.tcl,v 1.28 2011-01-09 10:27:48 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::audace {

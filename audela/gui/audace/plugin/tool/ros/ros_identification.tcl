@@ -5,7 +5,7 @@
 # Fichier        : bddimages_identification.tcl
 # Description    :
 # Auteur         :
-# Mise à jour $Id: ros_identification.tcl,v 1.1 2011-02-19 20:43:49 fredvachier Exp $
+# Mise à jour $Id$
 #
 #--------------------------------------------------
 

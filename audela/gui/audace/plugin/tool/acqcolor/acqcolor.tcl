@@ -2,7 +2,7 @@
 # Fichier : acqcolor.tcl
 # Description : Outil pour l'acquisition d'images en couleur
 # Auteurs : Alain KLOTZ et Pierre THIERRY
-# Mise à jour $Id: acqcolor.tcl,v 1.21 2010-06-18 17:16:11 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 proc testexit { } {

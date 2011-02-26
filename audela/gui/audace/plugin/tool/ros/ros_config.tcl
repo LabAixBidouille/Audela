@@ -6,7 +6,7 @@
 # Description    : Configuration des variables globales rosconf
 #                  necessaires au service
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: ros_config.tcl,v 1.1 2011-02-19 20:43:49 fredvachier Exp $
+# Mise à jour $Id$
 #
 #--------------------------------------------------
 #

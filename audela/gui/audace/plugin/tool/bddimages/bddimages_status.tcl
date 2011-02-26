@@ -5,7 +5,7 @@
 # Fichier        : bddimages_status.tcl
 # Description    : Affiche le status de la base de donnees
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_status.tcl,v 1.10 2011-02-16 14:26:20 fredvachier Exp $
+# Mise à jour $Id$
 #
 
 namespace eval bddimages_status {

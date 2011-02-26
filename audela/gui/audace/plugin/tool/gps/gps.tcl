@@ -2,7 +2,7 @@
 # Fichier : gps.tcl
 # Description : Outil de synchronisation GPS
 # Auteur : Jacques MICHELET
-# Mise à jour $Id: gps.tcl,v 1.26 2010-10-30 13:19:45 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::gps {

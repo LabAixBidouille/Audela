@@ -2,7 +2,7 @@
 # Fichier : modpoi_main.tcl
 # Description : fenetre principale
 # Auteur : Michel Pujol
-# Mise à jour $Id: modpoi_main.tcl,v 1.10 2010-07-11 12:36:24 michelpujol Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ::modpoi2::main {

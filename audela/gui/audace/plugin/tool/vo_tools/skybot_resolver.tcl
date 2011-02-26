@@ -2,7 +2,7 @@
 # Fichier : skybot_resolver.tcl
 # Description : Resolution du nom d'un objet du systeme solaire
 # Auteur : Jerome BERTHIER
-# Mise à jour $Id: skybot_resolver.tcl,v 1.32 2011-02-10 19:38:11 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 namespace eval skybot_Resolver {

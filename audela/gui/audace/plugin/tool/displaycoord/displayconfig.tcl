@@ -2,7 +2,7 @@
 # Fichier : session.tcl
 # Description : Configuration des parametres de session
 # Auteur : Michel PUJOL
-# Mise à jour $Id: displayconfig.tcl,v 1.4 2010-05-25 16:46:51 robertdelmas Exp $
+# Mise à jour $Id$
 #
 
 ################################################################

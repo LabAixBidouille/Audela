@@ -5,7 +5,7 @@
 # Fichier        : ros_status.tcl
 # Description    : Affiche le status de la base de donnees
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: ros_status.tcl,v 1.1 2011-02-19 20:43:49 fredvachier Exp $
+# Mise à jour $Id$
 #
 
 namespace eval ros_status {
