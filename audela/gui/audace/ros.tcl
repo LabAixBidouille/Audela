@@ -20,8 +20,8 @@ proc ros { args } {
    set syntax "ros Software Keyword Action ?parameters?"
 
    if {$action=="install"} {
-      source $audace(rep_install)/ros/ros_install.tcl
-
+      source $audace(rep_install)/bin/ros_install.tcl
+      ::ros_install::run
    } elseif {$action=="gardien"} {
       # source ../gui/audace/ros.tcl
       # ros gardien send SET init|roof_open|roof_close|flatfield_on|flatfield_off|dark_on|dark_off|native
