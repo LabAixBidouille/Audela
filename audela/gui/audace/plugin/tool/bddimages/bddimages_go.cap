@@ -10,17 +10,18 @@
 global caption langage
 
 # *************** Version anglaise ****************************
-set caption(bddimages_go,titre)              "Base de données d'images"
-set caption(bddimages_go,bddimages)          "Base de données\nd'images"
-set caption(bddimages_go,help_titre)         "Aide de cet outil"
-set caption(bddimages_go,help_titre1)        "Aide de l'outil :"
 
-set caption(bddimages_go,configuration)      "Configuration"
-set caption(bddimages_go,status)             "Statut de la BDD"
-set caption(bddimages_go,insertion)          "Insertion d'images"
-set caption(bddimages_go,recherche)          "Recherche"
-set caption(bddimages_go,test)               "Test"
-set caption(bddimages_go,ressource)          "re-source"
+set caption(bddimages_go,titre)                 "Images Database"
+set caption(bddimages_go,bddimages)             "Images Database"
+set caption(bddimages_go,help_titre)            "Help for this Tool"
+set caption(bddimages_go,help_titre1)           "Help for the Tool:"
+
+set caption(bddimages_go,configuration)         "Setup"
+set caption(bddimages_go,status)                "DB Status"
+set caption(bddimages_go,insertion)             "Inserting Images"
+set caption(bddimages_go,recherche)             "Search"
+set caption(bddimages_go,test)                  "Test"
+set caption(bddimages_go,ressource)             "Re-Source"
 
 # *************** Version française **** **********************
 if { [ string compare $langage "french" ] == "0" } {
@@ -28,14 +29,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bddimages_go,bddimages)          "Base de données\nd'images"
    set caption(bddimages_go,help_titre)         "Aide de cet outil"
    set caption(bddimages_go,help_titre1)        "Aide de l'outil :"
-   
+
    set caption(bddimages_go,configuration)      "Configuration"
    set caption(bddimages_go,status)             "Statut de la BDD"
    set caption(bddimages_go,insertion)          "Insertion d'images"
    set caption(bddimages_go,recherche)          "Recherche"
    set caption(bddimages_go,test)               "Test"
-   set caption(bddimages_go,ressource)          "re-source"
-
+   set caption(bddimages_go,ressource)          "Re-Source"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
