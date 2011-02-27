@@ -91,7 +91,7 @@ namespace eval ::acqfen {
    #------------------------------------------------------------
    proc createPluginInstance { { in "" } { visuNo 1 } } {
       variable This
-      global caption panneau
+      global audace caption panneau
 
       #--- Initialisation
       set This $in.acqfen
@@ -110,6 +110,9 @@ namespace eval ::acqfen {
 
       #--- Affichage du mode choisi
       pack $panneau(acqfen,mode,$panneau(acqfen,mode)) -anchor nw -fill x
+
+      #--- Surveillance de la connexion d'une camera
+      ::confVisu::addCameraListener $audace(visuNo) "::acqfen::adaptOutilAcqFen"
    }
 
    #------------------------------------------------------------
@@ -117,7 +120,10 @@ namespace eval ::acqfen {
    #    suppprime l'instance du plugin
    #------------------------------------------------------------
    proc deletePluginInstance { visuNo } {
+      global audace
 
+      #--- Je desactive la surveillance de la connexion d'une camera
+      ::confVisu::removeCameraListener $audace(visuNo) "::acqfen::adaptOutilAcqFen"
    }
 
    #------------------------------------------------------------
@@ -160,6 +166,16 @@ namespace eval ::acqfen {
       #--- Binning par defaut: 1x1
       if { ! [ info exists panneau(acqfen,bin) ] } {
          set panneau(acqfen,bin) "$parametres(acqfen,bin)"
+      }
+
+      #--- Entrer ici les valeurs pour l'obturateur a afficher dans le menu "obt"
+      set panneau(acqfen,obt,0) "$caption(acqfen,ouv)"
+      set panneau(acqfen,obt,1) "$caption(acqfen,ferme)"
+      set panneau(acqfen,obt,2) "$caption(acqfen,auto)"
+
+      #--- Obturateur par defaut : Synchro
+      if { ! [ info exists panneau(acqfen,obt) ] } {
+         set panneau(acqfen,obt) "$parametres(acqfen,obt)"
       }
 
       #--- Coordonnees de la fenetre
@@ -248,6 +264,7 @@ namespace eval ::acqfen {
          source $fichier
       }
       if { ! [ info exists parametres(acqfen,pose_centrage) ] }  { set parametres(acqfen,pose_centrage)  ".2" }  ; #--- Temps de pose : 0.2s
+      if { ! [ info exists parametres(acqfen,obt) ] }            { set parametres(acqfen,obt)            "2" }   ; #--- Obturateur : Synchro
       if { ! [ info exists parametres(acqfen,bin_centrage) ] }   { set parametres(acqfen,bin_centrage)   "4" }   ; #--- Binning : 4x4
       if { ! [ info exists parametres(acqfen,pose) ] }           { set parametres(acqfen,pose)           ".05" } ; #--- Temps de pose : 0.05s
       if { ! [ info exists parametres(acqfen,bin) ] }            { set parametres(acqfen,bin)            "1" }   ; #--- Binning : 1x1
@@ -272,6 +289,7 @@ namespace eval ::acqfen {
 
       #---
       set parametres(acqfen,pose_centrage)  $panneau(acqfen,pose_centrage)
+      set parametres(acqfen,obt)            $panneau(acqfen,obt)
       set parametres(acqfen,bin_centrage)   $panneau(acqfen,bin_centrage)
       set parametres(acqfen,pose)           $panneau(acqfen,pose)
       set parametres(acqfen,bin)            $panneau(acqfen,bin)
@@ -311,6 +329,7 @@ namespace eval ::acqfen {
       ::acqfen::configToolKeywords $visuNo
 
       pack $This -side left -fill y
+      ::acqfen::adaptOutilAcqFen
    }
 
    #------------------------------------------------------------
@@ -343,6 +362,57 @@ namespace eval ::acqfen {
    # ==================================================================
    # === definition des fonctions generales a executer dans l'outil ===
    # ==================================================================
+
+   #--- Procedure de changement de l'etat de l'obturateur
+   proc changeObt { } {
+      variable This
+      global audace panneau
+
+      #---
+      set camItem [ ::confVisu::getCamItem $audace(visuNo) ]
+      set result  [ ::confCam::setShutter $camItem $panneau(acqfen,obt) ]
+      if { $result != -1 } {
+         set panneau(acqfen,obt) $result
+         $This.obt.lab configure -text $panneau(acqfen,obt,$panneau(acqfen,obt))
+      }
+   }
+
+   #--- Procedure pour recuperer l'etat de l'obturateur a la connexion d'une camera
+   proc adaptOutilAcqFen { args } {
+      variable This
+      global audace conf panneau
+
+      #--- petits reccorcis bien utiles
+      set camItem [ ::confVisu::getCamItem $audace(visuNo) ]
+      set camNo   [ ::confCam::getCamNo $camItem ]
+      if { $camNo == "0" } {
+         #--- La camera n'a pas ete encore selectionnee
+         set camProduct ""
+      } else {
+         set camProduct [ cam$camNo product ]
+      }
+
+      #--- widgets de l'obturateur
+      if { [ ::confCam::getPluginProperty $camItem hasShutter ] == "1" } {
+         if { ! [ info exists conf($camProduct,foncobtu) ] } {
+            set conf($camProduct,foncobtu) "2"
+         } else {
+            if { $conf($camProduct,foncobtu) == "0" } {
+               set panneau(acqfen,obt) "0"
+            } elseif { $conf($camProduct,foncobtu) == "1" } {
+               set panneau(acqfen,obt) "1"
+            } elseif { $conf($camProduct,foncobtu) == "2" } {
+               set panneau(acqfen,obt) "2"
+            }
+         }
+         $This.obt.lab configure -text $panneau(acqfen,obt,$panneau(acqfen,obt))
+         #--- j'affiche la frame de l'obturateur
+         pack $This.obt -side top -fill x -after $This.config.but
+      } else {
+         #--- je masque la frame de l'obturateur
+         pack forget $This.obt
+      }
+   }
 
    #--- Procedure de changement du binning (acquisitions fenetrees)
    proc changerBinning { } {
@@ -1363,7 +1433,7 @@ namespace eval ::acqfen {
          ::confVisu::setFileName $audace(visuNo) ""
 
          #--- Fenetrage sur le buffer si la camera ne possede pas le mode fenetrage (APN et WebCam)
-         if { [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] hasWindow ] == "0" } {
+         if { [ ::confCam::getPluginProperty [ ::confVisu::getCamItem $audace(visuNo) ] hasWindow ] == "0" } {
             buf$audace(bufNo) window [list $panneau(acqfen,X1) $panneau(acqfen,Y1) \
             $panneau(acqfen,X2) $panneau(acqfen,Y2)]
          }
@@ -1828,6 +1898,16 @@ frame $This -borderwidth 2 -relief groove
       #--- Bonton de Configuration
       button $This.config.but -text $caption(acqfen,congiguration) -borderwidth 1 -command creeFenReglFen
       pack $This.config.but -in $This.config -anchor center -expand 1 -fill both -side top -ipadx 5
+
+   #--- Trame de l'obturateur
+   frame $This.obt -borderwidth 2 -relief ridge -width 16
+      button $This.obt.but -text $caption(acqfen,obt) -command ::acqfen::changeObt \
+         -state normal
+      pack $This.obt.but -side left -ipady 3
+      label $This.obt.lab -text $panneau(acqfen,obt,$panneau(acqfen,obt)) -width 6 \
+        -relief groove
+      pack $This.obt.lab -side left -fill x -expand true -ipady 3
+   pack $This.obt -side top -fill x
 
    #--- Trame acquisition centrage (version complete)
    frame $This.acqcent -borderwidth 1 -relief groove
