@@ -1,5 +1,5 @@
 #
-# Fichier : bddimages_liste.cap
+# Fichier : ros_liste.cap
 # Mise a jour $Id$
 #
 
@@ -10,77 +10,78 @@
 global caption langage
 
 # *************** Version anglaise ****************************
-set caption(bddimages_liste,main_title)     "BddImages - Navigation dans la base"
-set caption(bddimages_liste,titre)          "Insertion dans la base de données"
-set caption(bddimages_liste,label_nbimg)    "Nb d'images au total :"
-set caption(bddimages_liste,label_nbimgins) "Nb d'images insérées :"
-set caption(bddimages_liste,label_nbimgerr) "Nb d'images en erreur :"
-set caption(bddimages_liste,label_nbheader) "Nb de header :"
 
-set caption(bddimages_liste,connect)        "Connexion à MySql"
-set caption(bddimages_liste,inser)          "Insertion"
-set caption(bddimages_liste,refresh)        "Rafraîchir"
-set caption(bddimages_liste,lectentete)     "Lecture des en-têtes"
-set caption(bddimages_liste,inserauto)      "Insertion continue"
-set caption(bddimages_liste,inserall)       "Insérer tout"
-set caption(bddimages_liste,ok)             "OK"
-set caption(bddimages_liste,annuler)        "Annuler"
-set caption(bddimages_liste,aide)           "Aide"
-set caption(bddimages_liste,fermer)         "Fermer"
-set caption(bddimages_liste,selectall)      "Sélectionner tout"
-set caption(bddimages_liste,voirimg)        "Voir l'image"
-set caption(bddimages_liste,voirheader)     "Voir le header"
-set caption(bddimages_liste,msg_erreur)     "Erreur"
-set caption(bddimages_liste,msg_internet)   "Erreur connexion"
+set caption(bddimages_liste,main_title)        "BddImages - Navigation dans la base"
+set caption(bddimages_liste,titre)             "Insertion dans la base de données"
+set caption(bddimages_liste,label_nbimg)       "Nb d'images au total :"
+set caption(bddimages_liste,label_nbimgins)    "Nb d'images insérées :"
+set caption(bddimages_liste,label_nbimgerr)    "Nb d'images en erreur :"
+set caption(bddimages_liste,label_nbheader)    "Nb de header :"
+
+set caption(bddimages_liste,connect)           "Connexion à MySQL"
+set caption(bddimages_liste,inser)             "Insertion"
+set caption(bddimages_liste,refresh)           "Rafraîchir"
+set caption(bddimages_liste,lectentete)        "Lecture des en-têtes"
+set caption(bddimages_liste,inserauto)         "Insertion continue"
+set caption(bddimages_liste,inserall)          "Insérer tout"
+set caption(bddimages_liste,ok)                "OK"
+set caption(bddimages_liste,annuler)           "Annuler"
+set caption(bddimages_liste,aide)              "Aide"
+set caption(bddimages_liste,fermer)            "Fermer"
+set caption(bddimages_liste,selectall)         "Sélectionner tout"
+set caption(bddimages_liste,voirimg)           "Voir l'image"
+set caption(bddimages_liste,voirheader)        "Voir le header"
+set caption(bddimages_liste,msg_erreur)        "Erreur"
+set caption(bddimages_liste,msg_internet)      "Erreur connexion"
 
 # -- Colonnes de la table --
-set caption(bddimages_liste,etat)           "Etat"
-set caption(bddimages_liste,nom)            "Nom"
-set caption(bddimages_liste,dateobs)        "Date"
-set caption(bddimages_liste,telescope)      "Site"
-set caption(bddimages_liste,taille)         "Taille"
-set caption(bddimages_liste,erreur)         "Erreur"
+set caption(bddimages_liste,etat)              "Etat"
+set caption(bddimages_liste,nom)               "Nom"
+set caption(bddimages_liste,dateobs)           "Date"
+set caption(bddimages_liste,telescope)         "Site"
+set caption(bddimages_liste,taille)            "Taille"
+set caption(bddimages_liste,erreur)            "Erreur"
 
 # -- ListBox --
-set caption(bddimages_liste,toutes)         "toutes les"
-set caption(bddimages_liste,nimporte)       "n'importe laquelle des"
+set caption(bddimages_liste,toutes)            "toutes les"
+set caption(bddimages_liste,nimporte)          "n'importe laquelle des"
 
-set caption(bddimages_liste,elem)           "éléments"
+set caption(bddimages_liste,elem)              "éléments"
 
-set caption(bddimages_liste,alea)           "mode aléatoire"
-set caption(bddimages_liste,dateobs)        "DATE-OBS"
-set caption(bddimages_liste,telescope)      "Télescope"
-set caption(bddimages_liste,plrecmod)       "le(s) plus récemment modifié(s)"
-set caption(bddimages_liste,morecmod)       "le(s) moins récemment modifié(s)"
-set caption(bddimages_liste,plrecajo)       "le(s) plus récemment ajouté(s)"
-set caption(bddimages_liste,morecajo)       "le(s) moins récemment ajouté(s)"
+set caption(bddimages_liste,alea)              "mode aléatoire"
+set caption(bddimages_liste,dateobs)           "DATE-OBS"
+set caption(bddimages_liste,telescope)         "Télescope"
+set caption(bddimages_liste,plrecmod)          "le(s) plus récemment modifié(s)"
+set caption(bddimages_liste,morecmod)          "le(s) moins récemment modifié(s)"
+set caption(bddimages_liste,plrecajo)          "le(s) plus récemment ajouté(s)"
+set caption(bddimages_liste,morecajo)          "le(s) moins récemment ajouté(s)"
 
-set caption(bddimages_liste,contient)       "contient"
-set caption(bddimages_liste,notcontient)    "ne contient pas"
-set caption(bddimages_liste,voirvaleurs)    "voir valeurs"
+set caption(bddimages_liste,contient)          "contient"
+set caption(bddimages_liste,notcontient)       "ne contient pas"
+set caption(bddimages_liste,voirvaleurs)       "voir valeurs"
 
 # -- Erreurs --
-set caption(bddimages_liste,err0)           "Image insérée"
-set caption(bddimages_liste,err1)           "Image existante dans la base"
-set caption(bddimages_liste,err101)         "Création table images impossible"
-set caption(bddimages_liste,err102)         ""
-set caption(bddimages_liste,err103)         ""
-set caption(bddimages_liste,err104)         ""
-set caption(bddimages_liste,err105)         "Impossible de supprimer l'image dans incoming"
-set caption(bddimages_liste,err205)         ""
-set caption(bddimages_liste,err206)         "Création nouvelle table images_ impossible"
-
+set caption(bddimages_liste,err0)              "Image insérée"
+set caption(bddimages_liste,err1)              "Image existante dans la base"
+set caption(bddimages_liste,err101)            "Création table images impossible"
+set caption(bddimages_liste,err102)            ""
+set caption(bddimages_liste,err103)            ""
+set caption(bddimages_liste,err104)            ""
+set caption(bddimages_liste,err105)            "Impossible de supprimer l'image dans incoming"
+set caption(bddimages_liste,err205)            ""
+set caption(bddimages_liste,err206)            "Création nouvelle table images_ impossible"
 
 # *************** Version française **** **********************
 if { [ string compare $langage "french" ] == "0" } {
+
    set caption(bddimages_liste,main_title)     "BddImages - Navigation dans la base"
    set caption(bddimages_liste,titre)          "Insertion dans la base de données"
    set caption(bddimages_liste,label_nbimg)    "Nb d'images au total :"
    set caption(bddimages_liste,label_nbimgins) "Nb d'images insérées :"
    set caption(bddimages_liste,label_nbimgerr) "Nb d'images en erreur :"
    set caption(bddimages_liste,label_nbheader) "Nb de header :"
-   
-   set caption(bddimages_liste,connect)        "Connexion à MySql"
+
+   set caption(bddimages_liste,connect)        "Connexion à MySQL"
    set caption(bddimages_liste,inser)          "Insertion"
    set caption(bddimages_liste,refresh)        "Rafraîchir"
    set caption(bddimages_liste,lectentete)     "Lecture des en-têtes"
@@ -95,7 +96,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bddimages_liste,voirheader)     "Voir le header"
    set caption(bddimages_liste,msg_erreur)     "Erreur"
    set caption(bddimages_liste,msg_internet)   "Erreur connexion"
-   
+
    # -- Colonnes de la table --
    set caption(bddimages_liste,etat)           "Etat"
    set caption(bddimages_liste,nom)            "Nom"
@@ -103,13 +104,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bddimages_liste,telescope)      "Site"
    set caption(bddimages_liste,taille)         "Taille"
    set caption(bddimages_liste,erreur)         "Erreur"
-   
+
    # -- ListBox --
    set caption(bddimages_liste,toutes)         "toutes les"
    set caption(bddimages_liste,nimporte)       "n'importe laquelle des"
-   
+
    set caption(bddimages_liste,elem)           "éléments"
-   
+
    set caption(bddimages_liste,alea)           "mode aléatoire"
    set caption(bddimages_liste,dateobs)        "DATE-OBS"
    set caption(bddimages_liste,telescope)      "Télescope"
@@ -117,11 +118,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bddimages_liste,morecmod)       "le(s) moins récemment modifié(s)"
    set caption(bddimages_liste,plrecajo)       "le(s) plus récemment ajouté(s)"
    set caption(bddimages_liste,morecajo)       "le(s) moins récemment ajouté(s)"
-   
+
    set caption(bddimages_liste,contient)       "contient"
    set caption(bddimages_liste,notcontient)    "ne contient pas"
    set caption(bddimages_liste,voirvaleurs)    "voir valeurs"
-   
+
    # -- Erreurs --
    set caption(bddimages_liste,err0)           "Image insérée"
    set caption(bddimages_liste,err1)           "Image existante dans la base"
@@ -132,7 +133,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bddimages_liste,err105)         "Impossible de supprimer l'image dans incoming"
    set caption(bddimages_liste,err205)         ""
    set caption(bddimages_liste,err206)         "Création nouvelle table images_ impossible"
-
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
