@@ -1,5 +1,5 @@
 #
-# Fichier : bddimages_admin.cap
+# Fichier : ros_admin.cap
 # Mise a jour $Id$
 #
 
@@ -10,25 +10,27 @@
 global caption langage
 
 # *************** Version anglaise ****************************
-set caption(bddimages_admin,msg_prevent)     "Attention !"
-set caption(bddimages_admin,msg_prevent2)    "Cette action va reinitialiser la base de données. Toutes les données seront définitivement effacer du disque. Etes-vous sûr ?"
-set caption(bddimages_admin,efface)          "Effacement de la base de données"
-set caption(bddimages_admin,mdprootsql)      "Veuillez saisir le mot de passe root du serveur SQL"
-set caption(bddimages_admin,cancelRAZ)       "BDD reset canceled"
-set caption(bddimages_admin,mysqlconnecterr) "MySQL connection error:"
-set caption(bddimages_admin,mysqlshowerr)    "Show tables request failed:"
-set caption(bddimages_admin,mysqlok)         "Connection to the db:\n success"
+
+set caption(ros_admin,msg_prevent)        "Warning!"
+set caption(ros_admin,msg_prevent2)       "This will reset the database. All data will be deleted from the disk. Are you sure?"
+set caption(ros_admin,efface)             "Data base will be deleted"
+set caption(ros_admin,mdprootsql)         "Enter the root password for the SQL server"
+set caption(ros_admin,cancelRAZ)          "DB reset canceled"
+set caption(ros_admin,mysqlconnecterr)    "MySQL connection error:"
+set caption(ros_admin,mysqlshowerr)       "Request failed:"
+set caption(ros_admin,mysqlok)            "Connecting to DB:\n Success"
 
 # *************** Version française **** **********************
 if { [ string compare $langage "french" ] == "0" } {
-   set caption(bddimages_admin,msg_prevent)     "Attention !"
-   set caption(bddimages_admin,msg_prevent2)    "Cette action va reinitialiser la base de données. Toutes les données seront définitivement effacer du disque. Etes-vous sûr ?"
-   set caption(bddimages_admin,efface)          "Effacement de la base de données"
-   set caption(bddimages_admin,mdprootsql)      "Veuillez saisir le mot de passe root du serveur SQL"
-   set caption(bddimages_admin,cancelRAZ)       "BDD reset canceled"
-   set caption(bddimages_admin,mysqlconnecterr) "Erreur de connection MySQL:"
-   set caption(bddimages_admin,mysqlshowerr)    "La requete a echouée:"
-   set caption(bddimages_admin,mysqlok)         "Connexion a la bdd:\n ok"
+
+   set caption(ros_admin,msg_prevent)     "Attention !"
+   set caption(ros_admin,msg_prevent2)    "Cette action va réinitialiser la base de données. Toutes les données seront définitivement effacées du disque. Etes-vous sûr ?"
+   set caption(ros_admin,efface)          "Effacement de la base de données"
+   set caption(ros_admin,mdprootsql)      "Veuillez saisir le mot de passe root du serveur SQL"
+   set caption(ros_admin,cancelRAZ)       "RAZ annulée de la BDD"
+   set caption(ros_admin,mysqlconnecterr) "Erreur de connexion à MySQL :"
+   set caption(ros_admin,mysqlshowerr)    "La requête a échoué :"
+   set caption(ros_admin,mysqlok)         "Connexion à la bdd :\n OK"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
