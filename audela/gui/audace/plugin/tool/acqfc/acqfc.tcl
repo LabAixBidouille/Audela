@@ -72,6 +72,7 @@ proc ::acqfc::createPluginInstance { { in "" } { visuNo 1 } } {
    set panneau(acqfc,$visuNo,obt,0) "$caption(acqfc,ouv)"
    set panneau(acqfc,$visuNo,obt,1) "$caption(acqfc,ferme)"
    set panneau(acqfc,$visuNo,obt,2) "$caption(acqfc,auto)"
+
    #--- Obturateur par defaut : Synchro
    if { ! [ info exists panneau(acqfc,$visuNo,obt) ] } {
       set panneau(acqfc,$visuNo,obt) "$parametres(acqfc,$visuNo,obt)"
@@ -601,7 +602,7 @@ proc ::acqfc::ChangeObt { visuNo } {
 #***** Fin de la procedure de changement de l'obturateur *******
 
 #----------------------------------------------------------------------------
-# setObt
+# setShutter
 #   force l'obturateur de la camera a l'etat donnee en parametre
 #
 # parametres :
@@ -613,7 +614,7 @@ proc ::acqfc::setShutter { visuNo state } {
 
    set camItem [ ::confVisu::getCamItem $visuNo ]
    if { [ ::confCam::getPluginProperty $camItem hasShutter ] == 1 } {
-      set panneau(acqfc,$visuNo,obt) [::confCam::setShutter $camItem $state  "set" ]
+      set panneau(acqfc,$visuNo,obt) [::confCam::setShutter $camItem $state "set" ]
       $panneau(acqfc,$visuNo,This).obt.lab configure -text $panneau(acqfc,$visuNo,obt,$panneau(acqfc,$visuNo,obt))
    }
 }
@@ -1495,107 +1496,107 @@ proc ::acqfc::Go { visuNo } {
          }
       }  ; #--- fin de la boucle d'acquisition
 
-         #--- je deverrouille des widgets selon le mode d'acquisition
-         switch $panneau(acqfc,$visuNo,mode) {
-            1  {
-               #--- Deverrouille les boutons du mode "une image"
-               $panneau(acqfc,$visuNo,This).mode.une.nom.entr configure -state normal
-               $panneau(acqfc,$visuNo,This).mode.une.index.case configure -state normal
-               $panneau(acqfc,$visuNo,This).mode.une.index.entr configure -state normal
-               $panneau(acqfc,$visuNo,This).mode.une.index.but configure -state normal
-               $panneau(acqfc,$visuNo,This).mode.une.sauve configure -state normal
-            }
-            2  {
-               #--- Mode serie
-               #--- Fin de la derniere pose et intervalle mini entre 2 poses ou 2 series
-               if { $panneau(acqfc,$visuNo,simulation) == "1" } {
-                  #--- Affichage de l'intervalle mini simule
-                  set panneau(acqfc,$visuNo,fin) [ clock second ]
-                  set exposure [ lindex [ buf$bufNo getkwd EXPOSURE ] 1 ]
-                  if { $exposure == $panneau(acqfc,$visuNo,pose) } {
-                     set panneau(acqfc,$visuNo,intervalle) [ expr $panneau(acqfc,$visuNo,fin) - $panneau(acqfc,$visuNo,debut) ]
-                  } else {
-                     set panneau(acqfc,$visuNo,intervalle) "...."
-                  }
-                  set simu1 "$caption(acqfc,int_mini_serie) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
-                  $panneau(acqfc,$visuNo,base).intervalle_continu_1.lab3 configure -text "$simu1"
-                  #--- Je retablis les reglages initiaux
-                  set panneau(acqfc,$visuNo,simulation) "0"
-                  set panneau(acqfc,$visuNo,mode)       "4"
-                  set panneau(acqfc,$visuNo,index)      $panneau(acqfc,$visuNo,index_temp)
-                  set panneau(acqfc,$visuNo,nb_images)  $panneau(acqfc,$visuNo,nombre_temp)
-                  #--- Fin de la simulation
-                  Message $visuNo consolog $caption(acqfc,fin_simu)
-               } elseif { $panneau(acqfc,$visuNo,simulation) == "2" } {
-                  #--- Affichage de l'intervalle mini simule
-                  set panneau(acqfc,$visuNo,fin) [ clock second ]
-                  set exposure [ lindex [ buf$bufNo getkwd EXPOSURE ] 1 ]
-                  if { $exposure == $panneau(acqfc,$visuNo,pose) } {
-                     set panneau(acqfc,$visuNo,intervalle) [ expr $panneau(acqfc,$visuNo,fin) - $panneau(acqfc,$visuNo,debut) ]
-                  } else {
-                     set panneau(acqfc,$visuNo,intervalle) "...."
-                  }
-                  set simu2 "$caption(acqfc,int_mini_image) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
-                  $panneau(acqfc,$visuNo,base).intervalle_continu_2.lab3 configure -text "$simu2"
-                  #--- Je retablis les reglages initiaux
-                  set panneau(acqfc,$visuNo,simulation) "0"
-                  set panneau(acqfc,$visuNo,mode)       "5"
-                  set panneau(acqfc,$visuNo,index)      $panneau(acqfc,$visuNo,index_temp)
-                  set panneau(acqfc,$visuNo,nb_images)  $panneau(acqfc,$visuNo,nombre_temp)
-                  #--- Fin de la simulation
-                  Message $visuNo consolog $caption(acqfc,fin_simu)
+      #--- je deverrouille des widgets selon le mode d'acquisition
+      switch $panneau(acqfc,$visuNo,mode) {
+         1  {
+            #--- Deverrouille les boutons du mode "une image"
+            $panneau(acqfc,$visuNo,This).mode.une.nom.entr configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.une.index.case configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.une.index.entr configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.une.index.but configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.une.sauve configure -state normal
+         }
+         2  {
+            #--- Mode serie
+            #--- Fin de la derniere pose et intervalle mini entre 2 poses ou 2 series
+            if { $panneau(acqfc,$visuNo,simulation) == "1" } {
+               #--- Affichage de l'intervalle mini simule
+               set panneau(acqfc,$visuNo,fin) [ clock second ]
+               set exposure [ lindex [ buf$bufNo getkwd EXPOSURE ] 1 ]
+               if { $exposure == $panneau(acqfc,$visuNo,pose) } {
+                  set panneau(acqfc,$visuNo,intervalle) [ expr $panneau(acqfc,$visuNo,fin) - $panneau(acqfc,$visuNo,debut) ]
+               } else {
+                  set panneau(acqfc,$visuNo,intervalle) "...."
                }
-               #--- Chargement differre de l'image precedente
-               if { $loadMode == "3" } {
-                  #--- Chargement de la derniere image
-                  ::acqfc::loadLastImage $visuNo $panneau(acqfc,$visuNo,camNo)
+               set simu1 "$caption(acqfc,int_mini_serie) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
+               $panneau(acqfc,$visuNo,base).intervalle_continu_1.lab3 configure -text "$simu1"
+               #--- Je retablis les reglages initiaux
+               set panneau(acqfc,$visuNo,simulation) "0"
+               set panneau(acqfc,$visuNo,mode)       "4"
+               set panneau(acqfc,$visuNo,index)      $panneau(acqfc,$visuNo,index_temp)
+               set panneau(acqfc,$visuNo,nb_images)  $panneau(acqfc,$visuNo,nombre_temp)
+               #--- Fin de la simulation
+               Message $visuNo consolog $caption(acqfc,fin_simu)
+            } elseif { $panneau(acqfc,$visuNo,simulation) == "2" } {
+               #--- Affichage de l'intervalle mini simule
+               set panneau(acqfc,$visuNo,fin) [ clock second ]
+               set exposure [ lindex [ buf$bufNo getkwd EXPOSURE ] 1 ]
+               if { $exposure == $panneau(acqfc,$visuNo,pose) } {
+                  set panneau(acqfc,$visuNo,intervalle) [ expr $panneau(acqfc,$visuNo,fin) - $panneau(acqfc,$visuNo,debut) ]
+               } else {
+                  set panneau(acqfc,$visuNo,intervalle) "...."
                }
-               #--- Deverrouille les boutons du mode "serie"
-               $panneau(acqfc,$visuNo,This).mode.serie.nom.entr configure -state normal
-               $panneau(acqfc,$visuNo,This).mode.serie.nb.entr configure -state normal
-               $panneau(acqfc,$visuNo,This).mode.serie.index.entr configure -state normal
-               $panneau(acqfc,$visuNo,This).mode.serie.index.but configure -state normal
+               set simu2 "$caption(acqfc,int_mini_image) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
+               $panneau(acqfc,$visuNo,base).intervalle_continu_2.lab3 configure -text "$simu2"
+               #--- Je retablis les reglages initiaux
+               set panneau(acqfc,$visuNo,simulation) "0"
+               set panneau(acqfc,$visuNo,mode)       "5"
+               set panneau(acqfc,$visuNo,index)      $panneau(acqfc,$visuNo,index_temp)
+               set panneau(acqfc,$visuNo,nb_images)  $panneau(acqfc,$visuNo,nombre_temp)
+               #--- Fin de la simulation
+               Message $visuNo consolog $caption(acqfc,fin_simu)
             }
-            3  {
-               #--- Mode continu
-               #--- Chargement differre de l'image precedente
-               if { $loadMode == "3" } {
-                  #--- Chargement de la derniere image
-                  ::acqfc::loadLastImage $visuNo $panneau(acqfc,$visuNo,camNo)
-               }
-               #--- Deverrouille les boutons du mode "continu"
-               $panneau(acqfc,$visuNo,This).mode.continu.sauve.case configure -state normal
-               $panneau(acqfc,$visuNo,This).mode.continu.nom.entr configure -state normal
-               $panneau(acqfc,$visuNo,This).mode.continu.index.case configure -state normal
-               $panneau(acqfc,$visuNo,This).mode.continu.index.entr configure -state normal
-               $panneau(acqfc,$visuNo,This).mode.continu.index.but configure -state normal
+            #--- Chargement differre de l'image precedente
+            if { $loadMode == "3" } {
+               #--- Chargement de la derniere image
+               ::acqfc::loadLastImage $visuNo $panneau(acqfc,$visuNo,camNo)
             }
-            4  {
-               #--- Mode continu
-               #--- Chargement differre de l'image precedente
-               if { $loadMode == "3" } {
-                  #--- Chargement de la derniere image
-                  ::acqfc::loadLastImage $visuNo $panneau(acqfc,$visuNo,camNo)
-               }
-               #--- Deverrouille les boutons du mode "continu 1"
-               $panneau(acqfc,$visuNo,This).mode.serie_1.nom.entr configure -state normal
-               $panneau(acqfc,$visuNo,This).mode.serie_1.nb.entr configure -state normal
-               $panneau(acqfc,$visuNo,This).mode.serie_1.index.entr configure -state normal
-               $panneau(acqfc,$visuNo,This).mode.serie_1.index.but configure -state normal
+            #--- Deverrouille les boutons du mode "serie"
+            $panneau(acqfc,$visuNo,This).mode.serie.nom.entr configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.serie.nb.entr configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.serie.index.entr configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.serie.index.but configure -state normal
+         }
+         3  {
+            #--- Mode continu
+            #--- Chargement differre de l'image precedente
+            if { $loadMode == "3" } {
+               #--- Chargement de la derniere image
+               ::acqfc::loadLastImage $visuNo $panneau(acqfc,$visuNo,camNo)
             }
-            5  {
-               #--- Chargement differre de l'image precedente
-               if { $loadMode == "3" } {
-                  #--- Chargement de la derniere image
-                  ::acqfc::loadLastImage $visuNo $panneau(acqfc,$visuNo,camNo)
-               }
-               #--- Deverrouille les boutons du mode "continu 2"
-               $panneau(acqfc,$visuNo,This).mode.continu_1.sauve.case configure -state normal
-               $panneau(acqfc,$visuNo,This).mode.continu_1.nom.entr configure -state normal
-               $panneau(acqfc,$visuNo,This).mode.continu_1.index.entr configure -state normal
-               $panneau(acqfc,$visuNo,This).mode.continu_1.index.but configure -state normal
+            #--- Deverrouille les boutons du mode "continu"
+            $panneau(acqfc,$visuNo,This).mode.continu.sauve.case configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.continu.nom.entr configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.continu.index.case configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.continu.index.entr configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.continu.index.but configure -state normal
+         }
+         4  {
+            #--- Mode continu
+            #--- Chargement differre de l'image precedente
+            if { $loadMode == "3" } {
+               #--- Chargement de la derniere image
+               ::acqfc::loadLastImage $visuNo $panneau(acqfc,$visuNo,camNo)
             }
-         } ; #--- fin du switch de deverrouillage
+            #--- Deverrouille les boutons du mode "continu 1"
+            $panneau(acqfc,$visuNo,This).mode.serie_1.nom.entr configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.serie_1.nb.entr configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.serie_1.index.entr configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.serie_1.index.but configure -state normal
+         }
+         5  {
+            #--- Chargement differre de l'image precedente
+            if { $loadMode == "3" } {
+               #--- Chargement de la derniere image
+               ::acqfc::loadLastImage $visuNo $panneau(acqfc,$visuNo,camNo)
+            }
+            #--- Deverrouille les boutons du mode "continu 2"
+            $panneau(acqfc,$visuNo,This).mode.continu_1.sauve.case configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.continu_1.nom.entr configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.continu_1.index.entr configure -state normal
+            $panneau(acqfc,$visuNo,This).mode.continu_1.index.but configure -state normal
+         }
+      } ; #--- fin du switch de deverrouillage
    }] ; #--- fin du catch
 
    if { $catchResult == 1 } {
