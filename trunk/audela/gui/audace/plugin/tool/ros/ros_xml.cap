@@ -10,15 +10,17 @@
 global caption langage
 
 # *************** Version anglaise ****************************
-set caption(ros_xml,defaultxml)     "Création du fichier de config XML ros..."
-set caption(ros_xml,errorxml)       "Erreur d'enregistrement du fichier de configuration XML de ros"
-set caption(ros_xml,successxml)     "Fichier XML de configuration de ros enregistré"
+
+set caption(ros_xml,defaultxml)          "The ROS XML setup file will be created..."
+set caption(ros_xml,errorxml)            "Error when saving the ROS XML setup file"
+set caption(ros_xml,successxml)          "ROS XML setup file saved"
 
 # *************** Version française **** **********************
 if { [ string compare $langage "french" ] == "0" } {
-   set caption(ros_xml,defaultxml)     "Création du fichier de config XML ros..."
-   set caption(ros_xml,errorxml)       "Erreur d'enregistrement du fichier de configuration XML de ros"
-   set caption(ros_xml,successxml)     "Fichier XML de configuration de ros enregistré"
+
+   set caption(ros_xml,defaultxml)       "Création du fichier de config XML de ROS..."
+   set caption(ros_xml,errorxml)         "Erreur d'enregistrement du fichier de configuration XML de ROS"
+   set caption(ros_xml,successxml)       "Fichier XML de configuration de ROS enregistré"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
