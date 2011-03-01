@@ -239,6 +239,9 @@ namespace eval ::acqfen {
       set panneau(acqfen,fenreglfen3)     1
       set panneau(acqfen,fenreglfen4)     1
 
+      #--- Alarme sonore de fin de serie
+      set panneau(acqfen,fenreglfen5)     1
+
       #--- Pourcentage de correction des defauts de suivi (doit etre compris entre 1 et 100)
       set panneau(acqfen,fenreglfen42)    70
 
@@ -834,6 +837,18 @@ namespace eval ::acqfen {
                               #--- Corrections eventuelles de suivi
                               if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::deplacerFenetre}
                            }
+                           #--- Alerte sonore de fin de serie
+                           if { $panneau(acqfen,fenreglfen5) == "1" } {
+                              bell
+                              after 200
+                              bell
+                              after 200
+                              bell
+                              after 200
+                              bell
+                              after 200
+                              bell
+                           }
                         }
                         "21" {
                            set nbint 1
@@ -872,6 +887,18 @@ namespace eval ::acqfen {
                               #--- Corrections eventuelles de suivi
                               if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::deplacerFenetre}
                            }
+                           #--- Alerte sonore de fin de serie
+                           if { $panneau(acqfen,fenreglfen5) == "1" } {
+                              bell
+                              after 200
+                              bell
+                              after 200
+                              bell
+                              after 200
+                              bell
+                              after 200
+                              bell
+                           }
                         }
                         "31" {
                            for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
@@ -904,6 +931,18 @@ namespace eval ::acqfen {
                            }
                            #--- Affichage avec visu auto
                            ::audace::autovisu $audace(visuNo)
+                           #--- Alerte sonore de fin de serie
+                           if { $panneau(acqfen,fenreglfen5) == "1" } {
+                              bell
+                              after 200
+                              bell
+                              after 200
+                              bell
+                              after 200
+                              bell
+                              after 200
+                              bell
+                           }
                         }
                         "12" {
                            set liste_buffers ""
@@ -944,6 +983,18 @@ namespace eval ::acqfen {
                               ::confVisu::setFileName $audace(visuNo) $name$ext
                               #--- Sauvegarde de l'image
                               saveima $name $audace(visuNo)
+                           }
+                           #--- Alerte sonore de fin de serie
+                           if { $panneau(acqfen,fenreglfen5) == "1" } {
+                              bell
+                              after 200
+                              bell
+                              after 200
+                              bell
+                              after 200
+                              bell
+                              after 200
+                              bell
                            }
                            #--- On libere les buffers temporaires
                            foreach ima $liste_buffers {buf::delete [lindex $ima 0]}
@@ -994,6 +1045,18 @@ namespace eval ::acqfen {
                               #--- Sauvegarde de l'image
                               saveima $name $audace(visuNo)
                            }
+                           #--- Alerte sonore de fin de serie
+                           if { $panneau(acqfen,fenreglfen5) == "1" } {
+                              bell
+                              after 200
+                              bell
+                              after 200
+                              bell
+                              after 200
+                              bell
+                              after 200
+                              bell
+                           }
                            #--- On libere les buffers temporaires
                            foreach ima $liste_buffers {buf::delete [lindex $ima 0]}
                         }
@@ -1037,9 +1100,21 @@ namespace eval ::acqfen {
                            }
                            #--- Affichage avec visu auto
                            ::audace::autovisu $audace(visuNo)
+                           #--- Alerte sonore de fin de serie
+                           if { $panneau(acqfen,fenreglfen5) == "1" } {
+                              bell
+                              after 200
+                              bell
+                              after 200
+                              bell
+                              after 200
+                              bell
+                              after 200
+                              bell
+                           }
+                           #--- On libere les buffers temporaires
+                           foreach ima $liste_buffers {buf::delete [lindex $ima 0]}
                         }
-                        #--- On libere les buffers temporaires
-                        foreach ima $liste_buffers {buf::delete [lindex $ima 0]}
                      }
                   }
                   "3" {
@@ -2226,7 +2301,7 @@ proc creeFenReglFen { } {
    if {[winfo exists $audace(base).fenreglfen] == 0} {
       #--- Creation de la fenetre
       toplevel $audace(base).fenreglfen
-      wm geometry $audace(base).fenreglfen 400x370$panneau(acqfen,position)
+      wm geometry $audace(base).fenreglfen 400x405$panneau(acqfen,position)
       wm title $audace(base).fenreglfen $caption(acqfen,fenreglfen)
       wm protocol $audace(base).fenreglfen WM_DELETE_WINDOW ::acqfen::quitFenReglFen
 
@@ -2327,6 +2402,15 @@ proc creeFenReglFen { } {
       radiobutton $audace(base).fenreglfen.4.2.but -text $caption(acqfen,fenreglfen42) \
          -variable panneau(acqfen,fenreglfen4) -value 2
       pack $audace(base).fenreglfen.4.2.but -side left
+      frame $audace(base).fenreglfen.5
+      pack $audace(base).fenreglfen.5 -expand true -fill x
+      label $audace(base).fenreglfen.5.lab -text $caption(acqfen,fenreglfen5)
+      pack $audace(base).fenreglfen.5.lab
+      frame $audace(base).fenreglfen.5.1
+      pack $audace(base).fenreglfen.5.1 -expand true -fill x
+      checkbutton $audace(base).fenreglfen.5.1.check -text $caption(acqfen,fenreglfen51) \
+         -variable panneau(acqfen,fenreglfen5)
+      pack $audace(base).fenreglfen.5.1.check -side left
 
       #--- Sous-trame boutons OK & quitter
       frame $audace(base).fenreglfen.buttons
