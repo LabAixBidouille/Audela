@@ -55,6 +55,8 @@ set caption(acqfen,fenreglfen32)       "To Be Temporarily Kept in Memory"
 set caption(acqfen,fenreglfen4)        "Correction of Tracking Inaccuracies"
 set caption(acqfen,fenreglfen41)       "Do not correct"
 set caption(acqfen,fenreglfen42)       "Move the Window on the Photocenter"
+set caption(acqfen,fenreglfen5)        "Aural warning"
+set caption(acqfen,fenreglfen51)       "Aural warning when the series ends"
 set caption(acqfen,ok)                 "OK"
 set caption(acqfen,quitter)            "Exit"
 
@@ -129,6 +131,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,fenreglfen4)     "Correction des défauts de suivi"
    set caption(acqfen,fenreglfen41)    "Ne pas corriger"
    set caption(acqfen,fenreglfen42)    "Déplacer la fenêtre sur le photocentre"
+   set caption(acqfen,fenreglfen5)     "Alarme sonore"
+   set caption(acqfen,fenreglfen51)    "Alarme sonore de fin série"
    set caption(acqfen,ok)              "OK"
    set caption(acqfen,quitter)         "Quitter"
 
@@ -203,6 +207,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,fenreglfen4)     "Correzione difetti di inseguimento"
    set caption(acqfen,fenreglfen41)    "Non correggere"
    set caption(acqfen,fenreglfen42)    "Muovere la finestra sul centro fotometrico"
+   set caption(acqfen,fenreglfen5)     "Segnale acustico"
+   set caption(acqfen,fenreglfen51)    "Segnale acustico quando finisce la serie"
    set caption(acqfen,ok)              "OK"
    set caption(acqfen,quitter)         "Esci"
 
@@ -277,6 +283,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,fenreglfen4)     "Corrección de defectos de seguimiento "
    set caption(acqfen,fenreglfen41)    "No corregir "
    set caption(acqfen,fenreglfen42)    "Mover la ventana al fotocentro "
+   set caption(acqfen,fenreglfen5)     "Alarma sonora"
+   set caption(acqfen,fenreglfen51)    "Alarma sonora cuando la serie termina"
    set caption(acqfen,ok)              "OK"
    set caption(acqfen,quitter)         "Salir"
 
@@ -351,6 +359,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,fenreglfen4)     "Folgung Verbesserung"
    set caption(acqfen,fenreglfen41)    "Nicht Verbessern"
    set caption(acqfen,fenreglfen42)    "Das Fenster auf dem Photocentrum bewegen"
+   set caption(acqfen,fenreglfen5)     "Ton Alarm"
+   set caption(acqfen,fenreglfen51)    "Ton Alarm wenn die Serie endet"
    set caption(acqfen,ok)              "OK"
    set caption(acqfen,quitter)         "Programm beenden"
 
@@ -425,6 +435,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,fenreglfen4)     "Correcção dos defeitos de seguimento"
    set caption(acqfen,fenreglfen41)    "Não corrigir"
    set caption(acqfen,fenreglfen42)    "Deslocar a janela para o centro da imagem"
+   set caption(acqfen,fenreglfen5)     "Alarme sonoro"
+   set caption(acqfen,fenreglfen51)    "Alarme sonoro quando a série terminar"
    set caption(acqfen,ok)              "OK"
    set caption(acqfen,quitter)         "Sair"
 
@@ -499,6 +511,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,fenreglfen4)     "Correction of Tracking Inaccuracies"
    set caption(acqfen,fenreglfen41)    "Do not correct"
    set caption(acqfen,fenreglfen42)    "Move the Window on the Photocenter"
+   set caption(acqfen,fenreglfen5)     "Aural warning"
+   set caption(acqfen,fenreglfen51)    "Aural warning when the series ends"
    set caption(acqfen,ok)              "OK"
    set caption(acqfen,quitter)         "Exit"
 
@@ -573,6 +587,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,fenreglfen4)     "Correction of Tracking Inaccuracies"
    set caption(acqfen,fenreglfen41)    "Do not correct"
    set caption(acqfen,fenreglfen42)    "Move the Window on the Photocenter"
+   set caption(acqfen,fenreglfen5)     "Aural warning"
+   set caption(acqfen,fenreglfen51)    "Aural warning when the series ends"
    set caption(acqfen,ok)              "OK"
    set caption(acqfen,quitter)         "Exit"
 
@@ -647,6 +663,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,fenreglfen4)     "Correction of Tracking Inaccuracies"
    set caption(acqfen,fenreglfen41)    "Do not correct"
    set caption(acqfen,fenreglfen42)    "Move the Window on the Photocenter"
+   set caption(acqfen,fenreglfen5)     "Aural warning"
+   set caption(acqfen,fenreglfen51)    "Aural warning when the series ends"
    set caption(acqfen,ok)              "OK"
    set caption(acqfen,quitter)         "Exit"
 
