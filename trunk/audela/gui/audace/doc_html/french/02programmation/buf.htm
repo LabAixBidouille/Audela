@@ -1,10 +1,8 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
-  <title>Buffer</title>
-</head>
-<body>
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+
+
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" /><title>Buffer</title></head><body>
 <p class="date">Date de mise &#224; jour : 30 janvier 2011</p>
 <h1>Buffer</h1>
 <p>Les commandes qui suivent peuvent &#234;tre appel&#233;es
@@ -16,7 +14,7 @@ sur l'image port&#233;e par le buffer. Elles sont d&#233;crites
 avec la commande <code>buf1</code>, mais sont valables pour
 toutes les autres commandes de buffer.</p>
 <h2>1. Gestion du buffer</h2>
-<h3><a name="setpixels" id="setpixels"></a>buf1 setpixels class
+<h3><a name="setpixels" id="setpixels" />buf1 setpixels class
 width height format compression pixeldata ?-keep_keywords?
 ?-pixels_size? ?-reverse_x? ?-reverse_y?</h3>
 <p>Dimensionne l'image du buffer &#224; la taille
@@ -27,26 +25,29 @@ avant cette commande, elle est effac&#233;e. Si pixelData est
 nul, alors les pixels sont initialis&#233;s &#224; z&#233;ro.</p>
 <p>Param&#232;tres obligatoires :</p>
 <blockquote>
-  <p>class : CLASS_GRAY|CLASS_RGB<br>
-width : Nombre de colonnes (*)<br>
-height : Nombre de lignes (*)<br>
-format :
-FORMAT_BYTE|FORMAT_SHORT|FORMAT_USHORT|FORMAT_FLOAT<br>
-compression :
-COMPRESS_NONE|COMPRESS_I420|COMPRESS_JPEG|COMPRESS_RAW<br>
-pixeldata : Pointeur vers les valeurs des pixels (si pixelData
-est nul, cr&#233;e une image avec tous les pixels &#224;
-z&#233;ro)</p>
+  <p><span style="font-weight: bold;">class</span> : CLASS_GRAY|CLASS_RGB<br />
+  <span style="font-weight: bold;">width</span> : Nombre de colonnes (*)<br />
+  <span style="font-weight: bold;">height</span> : Nombre de lignes (*)<br />
+  <span style="font-weight: bold;">format</span> :
+FORMAT_BYTE|FORMAT_SHORT|FORMAT_USHORT|FORMAT_FLOAT<br />
+  <span style="font-weight: bold;">compression</span> :
+COMPRESS_NONE|COMPRESS_I420|COMPRESS_JPEG|COMPRESS_RAW<br />
+  <span style="font-weight: bold;">pixeldata</span> : Il faut mettre
+toujours 0 (z&#233;ro) quand on utilise cette commande depuis un script TCL.
+Quand on utilise cette commande depuis un programme C, ce param&#232;tre
+peut recevoir le pointeur d'un tableau de valeurs des pixels en m&#233;moire
+pour initiliaser le buffer, sinon mettre NULL.<br />
+</p>
 </blockquote>
 <p>Param&#232;tres facultatifs :</p>
 <blockquote>
-  <p>-keep_keywords : Conserve les mots cl&#233;s qui &#233;taient
-d&#233;j&#224; dans le buffer<br>
--pixelSize size : Nombre d'octets point&#233;s par pixelData pour
+  <p><span style="font-weight: bold;">-keep_keywords </span>: Conserve les mots cl&#233;s qui &#233;taient
+d&#233;j&#224; dans le buffer<br /><span style="font-weight: bold;">
+-pixelSize size</span> : Nombre d'octets point&#233;s par pixelData pour
 les images JPEG et RAW (*). Ce param&#232;tre est obligatoire
-pour les images JPEG et RAW.<br>
--reverseX : Si "1", applique un miroir vertical<br>
--reverseY : Si "1", applique un miroir horizontal</p>
+pour les images JPEG et RAW.<br /><span style="font-weight: bold;">
+-reverseX</span> : Si "1", applique un miroir vertical<br /><span style="font-weight: bold;">
+-reverseY</span> : Si "1", applique un miroir horizontal</p>
 </blockquote>
 <p>(*) Pour les images JPEG ou RAW
 (compression=COMPRESS_JPEG|COMPRESS_RAW), les param&#232;tres
@@ -90,16 +91,15 @@ ces donn&#233;es.</p>
   <p>Les donn&#233;es point&#233;es par "pixeldata" &#224;
 l'adresse 180412736 sont sous la forme d'un bloc de 7562236
 octets contenant une image RAW au format d&#233;fini par le
-constructeur Canon (voir <a
- href="http://www.cybercom.net/%7Edcoffin/dcraw">http://www.cybercom.net/~dcoffin/dcraw</a>
+constructeur Canon (voir <a href="http://www.cybercom.net/%7Edcoffin/dcraw">http://www.cybercom.net/~dcoffin/dcraw</a>
 ). La commande "setpixels" utilise la librairie "libdcraw" pour
 d&#233;compresser ces donn&#233;es.</p>
 </blockquote>
-<h3><a name="clear" id="clear"></a>buf1 clear</h3>
+<h3><a name="clear" id="clear" />buf1 clear</h3>
 <p>Efface l&#8217;image et l&#8217;en-t&#234;te contenues dans le
 buffer, mais il n'est pas retir&#233; de la liste des
 buffers.</p>
-<h3><a name="copyto" id="copyto"></a>buf1 copyto
+<h3><a name="copyto" id="copyto" />buf1 copyto
 <em>destnum</em></h3>
 <p>Copie le contenu du buffer dans le buffer dont le num&#233;ro
 est pass&#233; en argument (<em>destnum</em>). Si le buffer de
@@ -107,52 +107,49 @@ destination n&#8217;existe pas, il est cr&#233;&#233;, sinon il
 est &#233;cras&#233; (les donn&#233;es qui y &#233;taient sont
 effac&#233;es et remplac&#233;es par celles du buffer
 source).</p>
-<h3><a name="type" id="type"></a>buf1 type</h3>
+<h3><a name="type" id="type" />buf1 type</h3>
 <p>Renvoie le type des donn&#233;es de l'image : short, int,
 float, imag. Pour l'instant seules les images float sont
 g&#233;r&#233;es.</p>
-<h3><a name="pointer" id="pointer"></a>buf1 pointer</h3>
+<h3><a name="pointer" id="pointer" />buf1 pointer</h3>
 <p>Retourne l'adresse du pointeur de l'image du buffer, qui peut
 &#234;tre utilis&#233; dans une librairie.</p>
 <h2>2. Gestion des fichiers</h2>
-<h3><a name="bitpix" id="bitpix"></a>buf1 bitpix
+<h3><a name="bitpix" id="bitpix" />buf1 bitpix
 <em>?byte|short|ushort|long|ulong|float|double?</em></h3>
 <p>Indique le type de donn&#233;es &#224; &#233;crire dans le
 fichier FITS lors des sauvegardes. Par d&#233;faut, ushort. En
 interne, AudeLA manipule des images de type float mais il est
 possible de les contraindre &#224; un autre type lors de
-l'enregistrement FITS avec cette fonction.<br>
+l'enregistrement FITS avec cette fonction.<br />
 </p>
-<p>byte : entiers &#224; 1 octet non sign&#233; soit 8 bits non sign&#233;s (0 &#224; 255).<br>
+<p>byte : entiers &#224; 1 octet non sign&#233; soit 8 bits non sign&#233;s (0 &#224; 255).<br />
 </p>
 <p>short : entiers &#224; 2 octets sign&#233;s soit 16 bits sign&#233;s (-32768 &#224;
-32767).<br>
+32767).<br />
 </p>
 <p>ushort : entiers &#224; 2 octets non sign&#233;s soit 16 bits non sign&#233;s (0 &#224;
-65535) (Note 1).<br>
+65535) (Note 1).<br />
 </p>
 <p>long : entiers &#224; 4 octets sign&#233;s soit 32 bits sign&#233;s (-2 147 483 648
 &#224; 2 147 483
-647).<br>
+647).<br />
 </p>
 <p>ulong : entiers &#224; 4 octets non sign&#233;s soit 32 bits non sign&#233;s (0 &#224; 4
-294 967 295) (Note 1).<br>
+294 967 295) (Note 1).<br />
 </p>
 <p>float : flottants &#224; 4 octets soit 32 bits (-3,4*10<sup>+38</sup> &#224;
-3,4*10<sup>+38</sup>) (Note 2).<br>
+3,4*10<sup>+38</sup>) (Note 2).<br />
 </p>
 <p>double : flottants &#224; 8 octets soit 64 bits (-1,7*10<sup>+308</sup>
-&#224; 1,7*10<sup>+308</sup>) (Note 3).<br>
+&#224; 1,7*10<sup>+308</sup>) (Note 3).<br />
 </p>
 <p><span style="text-decoration: underline;">Note 1 :</span> Les
 valeurs +16 et +32 ne sont pas des valeurs normalis&#233;es du standard
 FITS. Elles sont sp&#233;cifiques &#224; AudeLA et ne sont utilisables qu'en tant
-que param&#232;tres de certaines commandes de libaudela et de libtt.<big><span
- style="font-size: 9pt; font-family: &quot;Arial&quot;,&quot;sans-serif&quot;;"></span></big><span
- style="font-family: &quot;Arial&quot;,&quot;sans-serif&quot;;"><br>
+que param&#232;tres de certaines commandes de libaudela et de libtt.<big><span style="font-size: 9pt; font-family: &quot;Arial&quot;,&quot;sans-serif&quot;;" /></big><span style="font-family: &quot;Arial&quot;,&quot;sans-serif&quot;;"><br />
 </span></p>
-<p><span style="font-family: &quot;Arial&quot;,&quot;sans-serif&quot;;"></span><span
- style="text-decoration: underline;">Note 2 :</span> Cette notation
+<p><span style="font-family: &quot;Arial&quot;,&quot;sans-serif&quot;;" /><span style="text-decoration: underline;">Note 2 :</span> Cette notation
 pr&#233;sente 2 discontinuit&#233;s, en effet il est impossible d'affecter une
 valeur d'ADU dans les intervalles suivants :</p>
 <ul>
@@ -166,10 +163,8 @@ d'affecter une valeur d'ADU dans les intervalles suivants :</p>
   <li>0 &#224; +1,7*10<sup class="moz-txt-sup">-308</sup></li>
   <li>-1,7*10<sup class="moz-txt-sup">-308</sup>&nbsp; &#224; 0</li>
 </ul>
-<p></p>
-<p>Les r&#233;glages accessibles dans la fen&#234;tre <span
- style="font-weight: bold;">Configuration</span> --&gt; <span
- style="font-weight: bold;">Fichiers image</span> sont :</p>
+<p />
+<p>Les r&#233;glages accessibles dans la fen&#234;tre <span style="font-weight: bold;">Configuration</span> --&gt; <span style="font-weight: bold;">Fichiers image</span> sont :</p>
 <ul>
   <li>Entiers (ushort, 16 bits non sign&#233;s).</li>
   <li>Flottant (float, cod&#233; sur 32 bits).</li>
@@ -179,12 +174,12 @@ d'appliquer cette option au buffer de chaque visu ouverte ou
 &#224; venir. Elle n'a pas d'effet sur un buffer non associ&#233;
 &#224; une visu. Dans ce cas il est pr&#233;f&#233;rable de
 d&#233;finir la valeur bitpix de ce buffer.</p>
-<h3><a name="extension" id="extension"></a>buf1 extension
+<h3><a name="extension" id="extension" />buf1 extension
 <em>?file_extension?</em></h3>
 <p>Indique le nom de l'extension par d&#233;faut &#224; donner au
 fichier FITS qui sera lu ou &#233;crit sur le disque (.fit par
 d&#233;faut).</p>
-<h3><a name="compress" id="compress"></a>buf1 compress
+<h3><a name="compress" id="compress" />buf1 compress
 <em>?none|gzip?</em></h3>
 <p>Indique si l'enregistrement de l'image va g&#233;n&#233;rer un
 fichier compress&#233; ou non (none par d&#233;faut). Si l'on
@@ -199,7 +194,7 @@ d'appliquer cette option au buffer de chaque visu ouverte ou
 &#224; venir. Elle n'a pas d'effet sur un buffer non associ&#233;
 &#224; une visu. Dans ce cas il est n&#233;cessaire de
 sp&#233;cifier la compression si elle est souhait&#233;e.</p>
-<h3><a name="load" id="load"></a>buf1 load <em>nom</em></h3>
+<h3><a name="load" id="load" />buf1 load <em>nom</em></h3>
 <p>Charge une image FITS stock&#233;e sur disque, ou sur un autre
 ordinateur reli&#233; en r&#233;seau. L'extension peut &#234;tre
 donn&#233;e ou non, auquel cas elle est prise par d&#233;faut
@@ -207,12 +202,12 @@ donn&#233;e ou non, auquel cas elle est prise par d&#233;faut
 indiqu&#233; avec de / au lieu de \, sachant qu'avec des \, il
 faut les doubler</p>
 <p>Exemple :</p>
-<code>buf1 load images/toto</code><br>
-<code>buf1 load images\\toto</code><br>
+<code>buf1 load images/toto</code><br />
+<code>buf1 load images\\toto</code><br />
 <p>charge l'image toto.fit contenue dans le sous-r&#233;pertoire
 images du r&#233;pertoire courant (peut &#234;tre obtenu
 gr&#226;ce &#224; la commande TCL pwd).</p>
-<h3><a name="save" id="save"></a>buf1 save <em>nom ?-quality
+<h3><a name="save" id="save" />buf1 save <em>nom ?-quality
 [1...100] ?</em></h3>
 <p>Enregistre l'image avec les mots cl&#233;s contenus dans le
 buffer.</p>
@@ -259,7 +254,7 @@ si l'extension par d&#233;faut est <b>.xxx</b></code></td>
     </tr>
   </tbody>
 </table>
-<h3><a name="savejpeg" id="savejpeg"></a>buf1 savejpeg
+<h3><a name="savejpeg" id="savejpeg" />buf1 savejpeg
 <em>filename ?quality? ?locut? ?hicut?</em></h3>
 <p>Enregistre l'image au format JPEG N&amp;B. Si l'extension est
 donn&#233;e, elle peut &#234;tre diff&#233;rente de
@@ -270,10 +265,10 @@ de <em>quality</em> est 75. <em>Locut</em> et <em>hicut</em> sont
 les seuils de visualisation correspondant respectivement au noir
 et au blanc.</p>
 <h2>3. Gestion des mots cl&#233;s FITS</h2>
-<h3><a name="getkwds" id="getkwds"></a>buf1 getkwds</h3>
+<h3><a name="getkwds" id="getkwds" />buf1 getkwds</h3>
 <p>Retourne la liste des mots cl&#233;s FITS du buffer sous forme
 d'une liste TCL.</p>
-<h3><a name="getkwd" id="getkwd"></a>buf1 getkwd
+<h3><a name="getkwd" id="getkwd" />buf1 getkwd
 <em>nom</em></h3>
 <p>Retourne une liste de cinq &#233;l&#233;ments qui
 caract&#233;rise compl&#232;tement le mot cl&#233; FITS
@@ -289,7 +284,7 @@ rep&#233;rer cela.</p>
 <code>buf1 getkwd NAXIS1</code>
 <p>retourne</p>
 <code>{NAXIS1 384 int "length of data axis 1" ""}.</code>
-<h3><a name="setkwd" id="setkwd"></a>buf1 setkwd
+<h3><a name="setkwd" id="setkwd" />buf1 setkwd
 <em>format_mot_cle</em></h3>
 <p>Cette commande permet de modifier un mot cl&#233; : L'argument
 donn&#233; doit &#234;tre une liste de cinq &#233;l&#233;ments
@@ -302,23 +297,23 @@ mot cl&#233; doit contenir au plus 9 caract&#232;res.</p>
 <code>buf1 setkwd [list "INSTRU" "T310" string "mon
 t&#233;lescope" ""]</code>
 <p>modifie ou cr&#233;&#233; le mot cl&#233; INSTRU.</p>
-<h3><a name="copykwd" id="copykwd"></a>buf1 copykwd
+<h3><a name="copykwd" id="copykwd" />buf1 copykwd
 <em>srcnum</em></h3>
 <p>Copie les mots cl&#233;s du buffer source vers le buffer qui
 ex&#233;cute cette sous-commande. L'argument est le num&#233;ro
 du buffer depuis lequel les mots cl&#233;s seront
 copi&#233;s.</p>
-<h3><a name="delkwd" id="delkwd"></a>buf1 delkwd
+<h3><a name="delkwd" id="delkwd" />buf1 delkwd
 <em>mot_cle</em></h3>
 <p>Efface un mot cl&#233; de la liste de ceux pr&#233;sents dans
 l'en-t&#234;te FITS.</p>
-<h3><a name="delkwds" id="delkwds"></a>buf1 delkwds</h3>
+<h3><a name="delkwds" id="delkwds" />buf1 delkwds</h3>
 <p>Efface tous les mots cl&#233;s de la liste de l'en-t&#234;te
 FITS.</p>
 <h2>4. Traitement d'image</h2>
 <p>Les fonctions de traitement d'images propos&#233;es par AudeLA
 agissent au niveau du buffer.</p>
-<h3><a name="getpix" id="getpix"></a>buf1 getpix
+<h3><a name="getpix" id="getpix" />buf1 getpix
 <em>coord</em></h3>
 <p>Renvoie la valeur du pixel ayant les coordonn&#233;es (x,y)
 pass&#233;es en param&#232;tre sous la forme d'une liste &#224;
@@ -329,17 +324,17 @@ couleur, et les &#233;l&#233;ments suivants sont les
 intensit&#233;s du pixel dans chaque plan.</p>
 <p>Exemple 1 : Pour une image en niveaux de gris, getpix retourne
 une seule intensit&#233;.</p>
-<pre>loadima m57<br>
-buf1 getpix [list 100 100]<br>
+<pre>loadima m57<br />
+buf1 getpix [list 100 100]<br />
 # 1 330.000
 </pre>
 <p>Exemple 2 : Pour une image couleur, getpix retourne les 3
 intensit&#233;s pour les plans R, G et B.</p>
-<pre>loadima 47toucan.jpg<br>
-buf1 getpix [list 100 100]<br>
+<pre>loadima 47toucan.jpg<br />
+buf1 getpix [list 100 100]<br />
 # 3 7.000 1.000 5.000
 </pre>
-<h3><a name="setpix" id="setpix"></a>buf1 setpix <em>coord
+<h3><a name="setpix" id="setpix" />buf1 setpix <em>coord
 (valgray | valred valgreen valblue)</em></h3>
 <p>Affecte la valeur du pixel ayant les coordonn&#233;es (x,y)
 pass&#233;es en param&#232;tre sous la forme d'une liste &#224;
@@ -349,51 +344,51 @@ affect&#233;e est valgrey pour une image en niveaux de gris ou
 valred,valgreen,valblue pour une image couleur.</p>
 <p>Exemple 1 : Pour une image en niveaux de gris, affecte 51 au
 pixel (100,100).</p>
-<pre>loadima m57<br>
+<pre>loadima m57<br />
 buf1 setpix [list 100 100] 51
 </pre>
 <p>Exemple 2 : Pour une image couleur, affecte rouge=51 vert=52
 bleu=53 au pixel (100,100).</p>
-<pre>loadima 47toucan.jpg<br>
+<pre>loadima 47toucan.jpg<br />
 buf1 setpix [list 100 100] 51 52 53
 </pre>
-<h3><a name="offset" id="offset"></a>buf1 offset
+<h3><a name="offset" id="offset" />buf1 offset
 <em>valeur</em></h3>
 <p>R&#233;alise un offset sur l'image : Tous les pixels de
 l'image sont d&#233;cal&#233;s de <code>valeur</code>.</p>
-<h3><a name="sub" id="sub"></a>buf1 sub <em>fichier</em>
+<h3><a name="sub" id="sub" />buf1 sub <em>fichier</em>
 <em>valeur</em></h3>
 <p>Soustrait l'image contenue dans <code>fichier</code> &#224;
 l'image courante, et ajoute un offset de <code>valeur</code>. Le
 r&#233;sultat est toujours stock&#233; dans le buffer.</p>
-<h3><a name="add" id="add"></a>buf1 add <em>fichier</em>
+<h3><a name="add" id="add" />buf1 add <em>fichier</em>
 <em>valeur</em></h3>
 <p>Ajoute l'image contenue dans <code>fichier</code> &#224;
 l'image du buffer, et ajoute un offset de
 <code>valeur</code>.</p>
-<h3><a name="div" id="div"></a>buf1 div <em>fichier</em>
+<h3><a name="div" id="div" />buf1 div <em>fichier</em>
 <em>valeur</em></h3>
 <p>Divise l'image du buffer par celle contenue dans
 <code>fichier</code> et multiplie le r&#233;sultat par
 <code>valeur</code>.</p>
-<h3><a name="mult" id="mult"></a>buf1 mult <em>cste</em></h3>
+<h3><a name="mult" id="mult" />buf1 mult <em>cste</em></h3>
 <p>Multiplie l'image du buffer par une valeur constante.</p>
-<h3><a name="noffset" id="noffset"></a>buf1 noffset
+<h3><a name="noffset" id="noffset" />buf1 noffset
 <em>valeur</em></h3>
 <p>Normalise le fond du ciel &#224; la valeur donn&#233;e en
 argument, par un offset.</p>
-<h3><a name="ngain" id="ngain"></a>buf1 ngain
+<h3><a name="ngain" id="ngain" />buf1 ngain
 <em>valeur</em></h3>
 <p>Normalise le fond du ciel &#224; la valeur donn&#233;e en
 argument, par une multiplication (gain).</p>
-<h3><a name="unsmear" id="unsmear"></a>buf1 unsmear
+<h3><a name="unsmear" id="unsmear" />buf1 unsmear
 <em>valeur</em></h3>
 <p>Retire la contribution apport&#233;e par le flux incident du
 ciel lors de la lecture du CCD lorsque la cam&#233;ra n'est pas
 &#233;quip&#233;e d'un obturateur. Le coefficient &#224; donner
 en param&#232;tre est le rapport du temps de lecture d'une ligne
 sur le temps de pose total de l'image.</p>
-<h3><a name="opt" id="opt"></a>buf1 opt <em>noir</em>
+<h3><a name="opt" id="opt" />buf1 opt <em>noir</em>
 <em>offset</em></h3>
 <p>Optimise le noir sur le buffer : Le noir qui sert &#224;
 l'optimisation est le premier argument. C'est un noir qui est
@@ -401,7 +396,7 @@ directement issu de l'acquisition, &#233;ventuellement issu d'une
 synth&#232;se m&#233;diane des images de noir acquises. De
 m&#234;me pour l'offset. Il est extr&#234;mement important que
 l'offset soit pr&#233;sent dans l'image de noir.</p>
-<h3><a name="stat" id="stat"></a>buf1 stat
+<h3><a name="stat" id="stat" />buf1 stat
 <em>?fenetre?</em></h3>
 <p>Analyse l'image du buffer, et retourne une liste compos&#233;e
 des 9 &#233;l&#233;ments suivants :</p>
@@ -423,13 +418,13 @@ des coins oppos&#233;s : [list $x1 $y1 $x2 $y2].</p>
 <p>Lorsque cet argument est pr&#233;sent, les valeurs des 9
 &#233;l&#233;ments ci-dessus sont limit&#233;es &#224; la
 fen&#234;tre incluse dans l'image.</p>
-<h3><a name="mirrorx" id="mirrorx"></a>buf1 mirrorx</h3>
+<h3><a name="mirrorx" id="mirrorx" />buf1 mirrorx</h3>
 <p>Retourne l'image horizontalement, c'est &#224; dire que ce
 sont les colonnes qui sont d&#233;plac&#233;es.</p>
-<h3><a name="mirrory" id="mirrory"></a>buf1 mirrory</h3>
+<h3><a name="mirrory" id="mirrory" />buf1 mirrory</h3>
 <p>Retourne l'image verticalement : Les lignes sont
 permut&#233;es.</p>
-<h3><a name="binx" id="binx"></a>buf1 binx <em>x1 x2
+<h3><a name="binx" id="binx" />buf1 binx <em>x1 x2
 ?largeur?</em></h3>
 <p>Cr&#233;e une nouvelle image de dimensions
 <em>largeur</em>*NAXIS2, dont toutes les colonnes sont
@@ -439,7 +434,7 @@ l'image &#224; laquelle est appliqu&#233; ce traitement. Cette
 commande est utile pour exploiter notamment les images
 d'occultations par des ast&#233;ro&#239;des, observ&#233;es par
 la m&#233;thode de fil&#233;.</p>
-<h3><a name="biny" id="biny"></a>buf1 biny y<em>1 y2
+<h3><a name="biny" id="biny" />buf1 biny y<em>1 y2
 ?hauteur?</em></h3>
 <p>Cette fonction de traitement est la transposition de la
 commande binx : Elle cr&#233;e une nouvelle image de dimensions
@@ -447,30 +442,29 @@ NAXIS1*<em>hauteur</em>, dont toutes les lignes sont identiques,
 et &#233;gales &#224; la somme de toutes les lignes comprises
 entre les ordonn&#233;es <em>y1</em> et <em>y2</em> de l'image
 &#224; laquelle est appliqu&#233; ce traitement.</p>
-<h3><a name="window" id="window"></a>buf1 window
+<h3><a name="window" id="window" />buf1 window
 <em>fen&#234;tre</em></h3>
 <p>Extrait une sous-image de l'image &#224; laquelle est
 appliqu&#233;e ce traitement. L'argument est une liste de quatre
 valeurs num&#233;riques indiquant les coordonn&#233;es de deux
 des coins oppos&#233;s : [list $x1 $y1 $x2 $y2].</p>
-<h3><a name="rot" id="rot"></a>buf1 rot <em>x1 x2 angle</em></h3>
+<h3><a name="rot" id="rot" />buf1 rot <em>x1 x2 angle</em></h3>
 <p>Rotation de l'image autour du centre (<em>x1</em>,<em>y1</em>)
 et d'un angle <em>angle</em> exprim&#233; en degr&#233;s
 d&#233;cimaux (15.5 = 15&#176;30'). Les pixels sont compris dans
 l'intervalle (1,1) - (NAXIS1,NAXIS2).</p>
-<h3><a name="log" id="log"></a>buf1 log <em>coef
+<h3><a name="log" id="log" />buf1 log <em>coef
 ?offset?</em></h3>
 <p>Applique la fonction suivante &#224; tous les pixels de
 l'image : p' = <em>coef</em> * log10(p - <em>offset</em>),
 o&#249; p et p' sont respectivement l'ancienne, et la nouvelle
 valeur des pixels. Par d&#233;faut, offset vaut 0, et pour les
 pixels o&#249; (p - <em>offset</em>) &lt; 0 alors p' =
-0.<br>
+0.<br />
 </p>
-<h3><a name="imaseries" id="imaseries"></a>buf1 imaseries
+<h3><a name="imaseries" id="imaseries" />buf1 imaseries
 <em>string</em></h3>
-<p>Effectue une commande de type IMA/SERIES de la <a
- href="ttus1-fr.htm#functions">librairie TT</a>. Cette commande est
+<p>Effectue une commande de type IMA/SERIES de la <a href="ttus1-fr.htm#functions">librairie TT</a>. Cette commande est
 extr&#234;mement importante car elle permet d'exploiter la
 plupart des richesses des fonctions IMA/SERIES ( ADD ASTROMETRY
 ASTROMETRY2 BACK BINX BINY CATCHART CONV CUTS DIV FILTER GRADIENT
@@ -478,25 +472,25 @@ HEADERFITS HOUGH INVERT LOG MATRIX MEDIANX MEDIANY MULT NORMGAIN
 NORMOFFSET OFFSET OPT POL2REC PROFILE REC2POL REGISTER
 REGISTERFINE RESAMPLE ROT SORTX SORTY SUB SUBDARK STAT TRANS
 UNSMEARING WINDOW ) de libTT.</p>
-<h3><a name="synthegauss" id="synthegauss"></a>buf1 synthegauss
+<h3><a name="synthegauss" id="synthegauss" />buf1 synthegauss
 {xc yc i0 fwhmx fwhmy} ?LimitAdu?</h3>
 <p>Ajoute une gaussienne sur l'image &#224; la position (xc,yc),
 de largeur &#224; mi hauteur fwhmx,fwhmy et d'intensit&#233; i0.
 L'option LimitAdu permet de fixer une valeur seuil au dessus de
 laquelle les valeurs auront la valeur du seuil (permet de
 reproduire l'effet d'une saturation).</p>
-<h3><a name="clipmin" id="clipmin"></a>buf1 clipmin value</h3>
+<h3><a name="clipmin" id="clipmin" />buf1 clipmin value</h3>
 <p>Remplace toutes les valeurs inf&#233;rieures &#224; value par
 value (&#233;cr&#234;tage).</p>
-<h3><a name="clipmax" id="clipmax"></a>buf1 clipmax value</h3>
+<h3><a name="clipmax" id="clipmax" />buf1 clipmax value</h3>
 <p>Remplace toutes les valeurs sup&#233;rieures &#224; value par
 value (&#233;cr&#234;tage).</p>
-<h3><a name="scar" id="scar"></a>buf1 scar {x1 y1 x2 y2}</h3>
+<h3><a name="scar" id="scar" />buf1 scar {x1 y1 x2 y2}</h3>
 <p>Cicatrise les valeurs des pixels &#224; l'int&#233;rieur de la
 fen&#234;tre {x1 y1 x2 y2} par un r&#233;seau de lignes et
 colonnes interpol&#233;es &#224; partir des pixels se situant sur
 le bord de la fen&#234;tre.</p>
-<h3><a name="scale" id="scale"></a>buf1 scale
+<h3><a name="scale" id="scale" />buf1 scale
 ListOfTwoScalingFactors ?NormaFlux?</h3>
 <p>Re&#233;chantillonne (bilin&#233;aire) l'image en tenant
 compte de facteurs d'&#233;chelle sur chaque axe. La valeur
@@ -506,11 +500,11 @@ facteurs d'&#233;chelle, la valeur par d&#233;faut de normaflux
 est 1./(sx*sy). Une valeur de normaflux=1 permet de garder la
 dynamique initiale.</p>
 <h2>5. Analyse</h2>
-<h3><a name="autocuts" id="autocuts"></a>buf1 autocuts</h3>
+<h3><a name="autocuts" id="autocuts" />buf1 autocuts</h3>
 <p>Calcule et retourne la valeur des seuils haut et bas de
 visualisation. Ces valeurs sont ajout&#233;s aux mots cl&#233;s
 MIPS-Hi et MIPS-LO de l'en-t&#234;te FITS de l'image.</p>
-<h3><a name="xy2radec" id="xy2radec"></a>buf1 xy2radec
+<h3><a name="xy2radec" id="xy2radec" />buf1 xy2radec
 <em>coord</em></h3>
 <p>Conversion des coordonn&#233;es image en coordonn&#233;es
 c&#233;lestes : Il faut que l'image soit pr&#233;alablement
@@ -519,7 +513,7 @@ d'entr&#233;e sont sous la forme d'une liste de deux nombres,
 entiers ou d&#233;cimaux. Le r&#233;sultat est une liste
 compos&#233;e de l'ascension droite, et de la d&#233;clinaison,
 exprim&#233;es en degr&#233;s d&#233;cimaux.</p>
-<h3><a name="radec2xy" id="radec2xy"></a>buf1 radec2xy
+<h3><a name="radec2xy" id="radec2xy" />buf1 radec2xy
 <em>coord</em></h3>
 <p>Conversion de coordonn&#233;es c&#233;lestes en
 coordonn&#233;es image : Il faut &#233;galement que l'image soit
@@ -528,7 +522,7 @@ d&#233;clinaison doivent &#234;tre exprim&#233;es en degr&#233;s
 d&#233;cimaux. Le r&#233;sultat est une liste des
 coordonn&#233;es x et y exprim&#233;es en pixels d&#233;cimaux
 (rarement des valeurs enti&#232;res).</p>
-<h3><a name="fwhm" id="fwhm"></a>buf1 fwhm
+<h3><a name="fwhm" id="fwhm" />buf1 fwhm
 <em>fen&#234;tre</em></h3>
 <p>Calcule la fwhm des pixels contenus dans la fen&#234;tre dont
 les coordonn&#233;es sont pass&#233;es dans la liste composant
@@ -539,12 +533,12 @@ repr&#233;sentatif (!). Cette commande retourne une liste de deux
 L'argument fen&#234;tre est une liste de quatre entiers qui
 indiquent les coordonn&#233;es des deux coins oppos&#233;s de la
 fen&#234;tre.</p>
-<h3><a name="flux" id="flux"></a>buf1 flux <em>coord</em></h3>
+<h3><a name="flux" id="flux" />buf1 flux <em>coord</em></h3>
 <p>Renvoie une liste de deux &#233;l&#233;ments : Le premier est
 le flux dans la fen&#234;tre (somme de tous les pixels contenus
 dans la fen&#234;tre), et le second est le nombre de pixels ayant
 servi &#224; &#233;tablir le flux.</p>
-<h3><a name="centro" id="centro"></a>buf1 centro <em>coord
+<h3><a name="centro" id="centro" />buf1 centro <em>coord
 ?sigma?</em></h3>
 <p>Calcule le centro&#239;de de la fen&#234;tre d&#233;crite par
 le premier argument. Le second param&#232;tre est optionnel : Il
@@ -561,7 +555,7 @@ intensit&#233; dans la fen&#234;tre. Cette distance doit rester
 petite si le calcul n'est pas affect&#233; par la contamination
 d'une autre &#233;toile dans la fen&#234;tre.</li>
 </ul>
-<h3><a name="phot" id="phot"></a>buf1 phot <em>coord
+<h3><a name="phot" id="phot" />buf1 phot <em>coord
 ?sigma?</em></h3>
 <p>Photom&#233;trie dans une fen&#234;tre : La valeur
 renvoy&#233;e est la diff&#233;rence entre le flux total sur la
@@ -573,7 +567,7 @@ l'ordre :</p>
   <li>N, le nombre de pixels entrant dans le calcul de F.</li>
   <li>B, le flux estim&#233; du fond de ciel.</li>
 </ul>
-<h3><a name="photom" id="photom"></a>buf1 photom {x1 y1 x2 y2}
+<h3><a name="photom" id="photom" />buf1 photom {x1 y1 x2 y2}
 square ?args?</h3>
 <p>Photom&#233;trie d'ouverture dans une fen&#234;tre : La valeur
 renvoy&#233;e est la diff&#233;rence entre le flux total sur la
@@ -613,7 +607,7 @@ cam&#233;ra, on peut approximer l'expression par :</p>
 <p>Si l'on connait le nombre de P de pixels ayant permis de
 mesurer la valeur du fond (r2&lt;r&lt;r3) alors on peut remplacer
 F5 par F5*(1+F5/P).</p>
-<h3><a name="fitgauss" id="fitgauss"></a>buf1 fitgauss {x1 y1 x2
+<h3><a name="fitgauss" id="fitgauss" />buf1 fitgauss {x1 y1 x2
 y2} ?-sub? ?-fwhmx value? ?-fwhmy value?</h3>
 <p>Calcule les param&#232;tres d'ajustement de deux gaussiennes
 &#224; partir des profils des valeurs cumul&#233;es sur les
@@ -639,7 +633,7 @@ sur l'axe Y.</li>
 l'image. L'option -fwhmx permet de contraindre la valeur de fwhmx
 &#224; une valeur. L'option -fwhmy permet de contraindre la
 valeur de fwhmy &#224; une valeur.</p>
-<h3><a name="histo" id="histo"></a>buf1 histo ?NbBins? ?min?
+<h3><a name="histo" id="histo" />buf1 histo ?NbBins? ?min?
 ?max?</h3>
 <p>Retourne trois listes contenant les informations sur
 l'histogramme de l'image. Chaque liste d&#233;finit :</p>
@@ -653,7 +647,7 @@ contient NbBins &#233;l&#233;ments.</li>
   <li>Liste des valeurs adumin;adumax (en adu) des pixels. Cette
 liste contient NbBins+1 &#233;l&#233;ments.</li>
 </ul>
-<h3><a name="slitCentro" id="slitCentro"></a>buf1 slitCentro {x1
+<h3><a name="slitCentro" id="slitCentro" />buf1 slitCentro {x1
 y1 x2 y2} starDetectionMode pixelMinCount ?slitWidth?
 ?signalRatio?</h3>
 <p>Calcule le centre de la fen&#234;tre avec un ajustement de
@@ -708,5 +702,5 @@ satur&#233;e).</li>
   <li><b>message</b>: Message d'erreur compl&#233;mentaire en cas
 d'erreur ou pour d&#233;bugage.</li>
 </ul>
-</body>
-</html>
+
+</body></html>
