@@ -72,8 +72,8 @@ proc spc_gausslist { args } {
 # 2 arguments  d'entree obligatoires : le nom du fichier dat contenant les donnees mesurees, nombre de maxima recherches
 # la procedure retourne une liste donnant les abscisses des echantillons correspondant aux maxima. Cette liste est ordonnee par valeur decroissante de l'intensite des maximas.
 # si la fonction varie rapidement dans sa partie droite, le resultat peut ne pas etre significatif et il convient d'appliquer prealablement un filtre coupe haut aux donnees supposees ici echantillonees regulierement.
-# Exemple : spc_maxsearch peridogramme.dat 3
-# reste a regler : pb lecture fichier dat
+# Exemple : spc_maxsearch periodogramme.dat 3
+#
 #############################################################################
 proc spc_maxsearch { args } {
    global audace
@@ -86,10 +86,7 @@ proc spc_maxsearch { args } {
       set contents [split [read $input] \n]
       close $input
       set nb_echant [llength $contents]
-      # modification ad hoc : a comprendre !!!!!!!!!!!!!!!!!!!!!!!!
-      set nb_echant [ expr $nb_echant -1 ]
       set nb_echant_1 [ expr $nb_echant - 1 ] 
-      #::console::affiche_resultat " donnees spc_maxsearch: $nom_dat $nb_max\n"
       set periods [ list ]
       set density [ list ]
       for {set k 0} { $k < $nb_echant } {incr k} {
@@ -100,18 +97,19 @@ proc spc_maxsearch { args } {
 	 lappend periods [lindex $ligne 0] 
 	 lappend density [lindex $ligne 1] 
       }
-   	
+      set nb_echant_periodo [ llength $density ]
+      set nb_echant_periodo [ expr $nb_echant_periodo -1 ]
       set detected_max 0
       set liste_max [ list ]
-      for {set k 0} { $k < $nb_echant } {incr k} {
-	 set kk [ expr $nb_echant - $k -1 ]
+      for {set k 1} { $k < $nb_echant_periodo } {incr k} {
+	 set kk [ expr $nb_echant_periodo - $k ]
 	 set kk_1 [ expr $kk - 1 ]
 	 set deriv [ expr [ lindex $density $kk ] - [ lindex $density $kk_1 ] ]
 	 set deriv_sign 1
 	 if { $deriv < 0. } {
 	    set deriv_sign -1
 	 }
-	 if { $k != 0 } {
+	 if { $k != 1 } {
 	    if { $prev_sign == -1 && $deriv_sign == 1 } {
 	       lappend liste_max $kk_1
 	       set detected_max [ expr $detected_max +1 ]
@@ -119,16 +117,26 @@ proc spc_maxsearch { args } {
 	 } 
 	 set prev_sign $deriv_sign
 	 if { $detected_max >= $nb_max } {
+	    ::console::affiche_resultat " Le nombre de maxima  $detected_max trouves est inferieur au nombre demande \n"
 	    break
 	 }
       }
+      if { $detected_max < $nb_max } {
+	 ::console::affiche_resultat " Le nombre de maxima  $detected_max trouves est inferieur au nombre demande \n"
+	 set nbmax $detected_max
+	 }
+      
       # mise en forme des maxima detectes
       set ldens [ list ]
       set lperiod [ list ]
+      if { $nb_max > [ llength $liste_max ] } {
+	 set nb_max [ llength $liste_max ]
+      }
       for {set k 0} { $k < $nb_max } {incr k} {
+      set kk [ expr $k + 1 ]
 	 set period [ lindex $periods [ lindex $liste_max $k ] ]
 	 set dens [ lindex $density [ lindex $liste_max $k ] ]
-	 ::console::affiche_resultat "Maximum N°$k trouve ($dens) pour une periode de $period\n"
+	 ::console::affiche_resultat "Maximum N°$kk trouve ($dens) pour une periode de $period\n"
 	 lappend lperiod $period
 	 lappend ldens $dens
       }
@@ -143,8 +151,8 @@ proc spc_maxsearch { args } {
       }
       return $ord_period
    } else {
-      ::console::affiche_erreur "Usage: spc_maxsearch data_filename.dat? nombre_max_recherches? \n\n"
-      return 0
+      ::console::affiche_erreur "Usage: spc_maxsearch data_filename.dat ?nombre_max_recherches?\n"
+      return ""
    }
 }
 #***************************************************************************#
@@ -158,15 +166,16 @@ proc spc_maxsearch { args } {
 # 3 arguments  d'entree obligatoires : le nom du fichier dat contenant les donnees mesurees, l'unite utilisee pour la
 # mesure du temps calendaire, la periode de la fonction sinusoidale.
 # la procedure retourne une liste constitue de l'amplitude et du decalage temporel caracterisant la sinusoide optimale et affiche le graphique illustrant l'ajustement des donnees par la fonction sinusoidale.  L'amplitude et le decalage temporel caracterisant la sinusoide optimale sont affiches a la console.
-# Exemple : spc_sinefit data.dat "jours juliens" period
+# Exemple : spc_sinefit data.dat "jours juliens" "vitesse radiale (m/s)" period
 # reste a regler : pb lecture fichier dat
 #############################################################################
 proc spc_sinefit { args } {
    global audace
-   if { [ llength $args ] ==3 } {
+   if { [ llength $args ] ==4 } {
       set nom_dat [ lindex $args 0 ]
       set unit_temps  [ lindex $args 1 ]
-      set period  [ lindex $args 2 ]
+      set measured_quantity [ lindex $args 2 ]
+      set period  [ lindex $args 3 ]
       #lecture du fichier dat
       set input [open "$audace(rep_images)/$nom_dat" r]
       set contents [split [read $input] \n]
@@ -188,7 +197,6 @@ proc spc_sinefit { args } {
 	 lappend ordonnees_orig [lindex $ligne 1] 
       }
       set temps_max [ expr [ lindex $abscisses $nb_echant_1 ] - [ lindex $abscisses 0 ] ]
-      #set inv_nb_period [ expr 1./ $nb_period ]
       # elimination de la composante continue
       set dc 0.
       for {set k 0} { $k < $nb_echant } {incr k} {
@@ -263,7 +271,7 @@ proc spc_sinefit { args } {
 	 lappend ltemps $temps
 	 lappend lintens [ expr $dc + $amplitude * sin($omega * ( $temps - $tau) ) ]
    	} 	
-      ::plotxy::figure 2 
+      ::plotxy::figure 1 
       ::plotxy::plot $abscisses $ordonnees_orig *b
       ::plotxy::hold on   
       ::plotxy::plot $ltemps $lintens r
@@ -271,7 +279,7 @@ proc spc_sinefit { args } {
       #::plotxy::plot $abscisses $newintens b 1
       ::plotxy::plotbackground #FFFFFF
       ::plotxy::xlabel "Time ($unit_temps)"
-      ::plotxy::ylabel " Measured quantity "
+      ::plotxy::ylabel $measured_quantity
       ::plotxy::title "Fit of data $nom_dat on estimated sine function \n "
       # fin de la proc
       ::console::affiche_resultat " Estimated amplitude : $amplitude and time shift : $tau \n"
@@ -280,8 +288,8 @@ proc spc_sinefit { args } {
       lappend liste_caract $tau
       return $liste_caract
    } else {
-      ::console::affiche_erreur "Usage: spc_sinefit data_filename.dat? time_unit? period ?\n\n"
-      return 0
+      ::console::affiche_erreur "Usage: spc_sinefit data_filename.dat \"time_unit\" \"measured_quantity\" data_period\n"
+      return ""
    }
 }
 #***************************************************************************#

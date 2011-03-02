@@ -4268,7 +4268,7 @@ namespace eval ::param_spc_audace_traitestellaire {
       # === Initialisation des variables qui seront changées
       #- set audace(param_spc_audace,traitestellaire,config,rinstrum) "none"
       set audace(param_spc_audace,traitestellaire,config,methinv) "n"
-      set audace(param_spc_audace,traitestellaire,config,methraie) "o"
+      set audace(param_spc_audace,traitestellaire,config,methraie) "n"
       set audace(param_spc_audace,traitestellaire,config,methcos) "n"
       # n
       set audace(param_spc_audace,traitestellaire,config,norma) "r"
@@ -4741,7 +4741,7 @@ namespace eval ::param_spc_audace_traitenebula {
       # === Initialisation des variables qui seront changées
       #- set audace(param_spc_audace,traitenebula,config,rinstrum) "none"
       set audace(param_spc_audace,traitenebula,config,methinv) "n"
-      set audace(param_spc_audace,traitenebula,config,methraie) "o"
+      set audace(param_spc_audace,traitenebula,config,methraie) "n"
       set audace(param_spc_audace,traitenebula,config,methcos) "n"
       set audace(param_spc_audace,traitenebula,config,norma) "n"
       set audace(param_spc_audace,traitenebula,config,offset) "none"

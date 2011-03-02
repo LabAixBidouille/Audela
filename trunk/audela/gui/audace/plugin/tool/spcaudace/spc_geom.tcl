@@ -5,7 +5,73 @@
 # Mise a jour $Id$
 
 
+####################################################################
+# Procédure de determination des bords de la base d'une raie.
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 07-02-2011
+# Date modification : 07-02-2011
+# Arguments : spectre 2D fits de lampe, type de raies a/e (absorption/émission)
+####################################################################
 
+proc spc_linewidth { args } {
+   global audace
+   global conf
+
+   if { [ llength $args ]==1 } {
+      set filenamespc [ lindex $args 0 ]
+
+      #--- Binning de toute l'image :
+      buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
+      set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
+      set xmid [ expr round($naxis1/2.) ]
+      set naxis2 [ lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1 ]
+      buf$audace(bufNo) imaseries "biny y1=1 y2=$naxis2 height=1"
+      buf$audace(bufNo) bitpix float
+      buf$audace(bufNo) save "$audace(rep_images)/${filenamespc}_spc"
+      set icont [ lindex [ buf$audace(bufNo) stat ] 4 ]
+      buf$audace(bufNo) bitpix short
+      #--- Détermiantion du centre de la raie la plus centrale :
+      set liste_raies [ spc_findbiglines ${filenamespc}_spc e ]
+      set liste_ecart [ list ]
+      foreach raie $liste_raies {
+         set xraie [ lindex $raie 0 ]
+         lappend liste_ecart [ list $xraie [ expr abs($xraie-$xmid) ] ]
+      }
+      set xraie_centre [ expr round([ lindex [ lindex [ lsort -increasing -index 1 $liste_ecart ] 0 ] 0 ]) ]
+      #::console::affiche_resultat "LE=$liste_ecart\nraiec=$xraie_centre\n"
+    
+      #--- Determination de la largeur de base de la raie centrale :
+      #-- Detection du bord lorsque i>=5% du continuum
+      #set imin [ expr 1.05*$icont ]
+      set spcdata [ spc_fits2data ${filenamespc}_spc ]
+      set abscisses [ lindex $spcdata 0 ]
+      set ordonnees [ lindex $spcdata 1 ]
+      set xraiec_index [ lsearch $abscisses $xraie_centre ]
+      #-- Recherche du bord droit :
+      set intensite [ lindex $ordonnees $xraiec_index ]
+      set k 0
+      while { $intensite>$icont } {
+         set intensite [ lindex $ordonnees [ expr $xraiec_index+$k ] ]
+         incr k
+      }
+      set x_bord_droit [ expr $xraiec_index+2*$k+1 ]
+      #-- Recherche du bord gauche :
+      set intensite [ lindex $ordonnees $xraiec_index ]
+      set k 0
+      while { $intensite>$icont } {
+         set intensite [ lindex $ordonnees [ expr $xraiec_index-$k ] ]
+         incr k
+      }
+      set x_bord_gauche [ expr $xraiec_index-2*$k+1 ]
+      file delete -force "$audace(rep_images)/${filenamespc}_spc$conf(extension,defaut)"
+      set results [ list $x_bord_gauche $x_bord_droit ]
+      return $results
+   } else {
+      ::console::affiche_erreur "Usage: spc_linewidth spectre_2D_lampe_fits\n"
+   }
+}
+#****************************************************************************
 
 
 ####################################################################
@@ -30,11 +96,11 @@ proc spc_rot180 { args } {
 	    if { [ file exists "$audace(rep_images)/$spctrouve$conf(extension,defaut)" ] == 1 } {
 		set filenamespc $spctrouve
 	    } else {
-		::console::affiche_erreur "Usage: spc_rot180 fichier_fits\n\n"
+		::console::affiche_erreur "Usage: spc_rot180 fichier_fits\n"
 		return 0
 	    }
 	} else {
-	    ::console::affiche_erreur "Usage: spc_rot180 fichier_fits\n\n"
+	    ::console::affiche_erreur "Usage: spc_rot180 fichier_fits\n"
 	    return 0
 	}
 
@@ -47,7 +113,7 @@ proc spc_rot180 { args } {
 	::console::affiche_resultat "Image sauvée sous ${filespc}_flip$conf(extension,defaut).\n"
 	return ${filespc}_flip
     } else {
-	::console::affiche_erreur "Usage: spc_rot180 fichier_fits\n\n"
+	::console::affiche_erreur "Usage: spc_rot180 fichier_fits\n"
     }
 }
 #****************************************************************************
@@ -799,101 +865,44 @@ proc spc_smilex { args } {
 		    ##set wincoords [ list $xdeb 1 $xfin $naxis2 ]
 		    #set wincoords [ list $xdeb $ydeb $xfin $yfin ]
 		    buf$audace(bufNo) window $wincoords
+               set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
+               set naxis2 [ lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1 ]
 		    #-- Suppression de la zone selectionnee avec la souris
 		    ::confVisu::deleteBox 1
 		} else {
 		    ::console::affiche_erreur "Usage: Select zone with mouse\n\n"
 		}
 	    } elseif { $flagmanuel == "n"} {
-		#------------------------------------------------------------------------#
+               #------------------------------------------------------------------------#
+               #-- Détermination de la largeur pour l'encadrement de la raie centrale :
+               set linemesure [ spc_linewidth $filenamespc ]
+               set x_bord_gauche [ lindex $linemesure 0 ]
+               set x_bord_droit [ lindex $linemesure 1 ]
 
-		#--- Détermine la zone à découper en traçant un profil en haut et en bas de l'image et détermine la fwhm du profil gaussien de la raie la plus à gauche de chaque profils :
-		# fichier fits du spectre spatial, ordonnée y de la ligne, ?hauteur à binner?
-		#-- Traitement du profil inférieur :
-		set hauteur 20
-		set yinf [ expr int($naxis2i*0.07) ]
-		if { [ expr $naxis2i-0.5*$hauteur ] >=1 } {
-		    set profil_inf [ spc_profily $filenamespc $yinf $hauteur ]
-		} else {
-		    set hauteur [ expr 2*int($yinf-1) ]
-		    set profil_inf [ spc_profily $filenamespc $yinf $hauteur ]
-		}
-		set xinf 0
-		set raies [ lsort -real -increasing -index 0 [ spc_findbiglines $profil_inf e 10 ] ]
-		foreach raie $raies {
-		    if { [ lindex $raie 1 ] != 0.0 } {
-			set xinf [ lindex $raie 0 ]
-			break
-		    }
-		}
-		#- Si n'a pas trouve de raie, prend la raie d'abscisse la plus petite (id. la plus a gauche) :
-		if { $xinf==0 } {
-		    set xinf [ lindex [ lindex $raies 0 ] 0 ]
-		}
-		file delete -force "$audace(rep_images)/$profil_inf$conf(extension,defaut)"
+               #-- Determination de la pente de slant :
+               loadima "$filenamespc"
+               set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
+               set naxis2 [ lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1 ]
+               buf$audace(bufNo) window [ list $x_bord_gauche 1 $x_bord_droit $naxis2 ]
+               set pas [ expr int($pourcentimg*$naxis2) ]
+               # buf$audace(bufNo) save "$audace(rep_images)/${filenamespc}_zone"
+            }
 
-		#-- Traitement du profil inférieur :
-		set hauteur 20
-		set ysup [ expr int($naxis2i*0.95) ]
-		if { [ expr $naxis2i-$hauteur*0.5 ] >=1 } {
-		    set profil_sup [ spc_profily $filenamespc $ysup $hauteur ]
-		} else {
-		    set hauteur [ expr 2*int($naxis2i-$yinf-1) ]
-		    set profil_sup [ spc_profily $filenamespc $ysup $hauteur ]
-		}
-		set raies [ lsort -real -increasing -index 0 [ spc_findbiglines $profil_sup e 10 ] ]
-		foreach raie $raies {
-		    if { [ lindex $raie 1 ] != 0.0 } {
-			set xsup [ lindex $raie 0 ]
-			break
-		    }
-		}
-		file delete -force "$audace(rep_images)/$profil_sup$conf(extension,defaut)"
+            #--- Calcul de points présents sur la raie penchée par centrage gaussien sur une ligne :
+            ::console::affiche_resultat "Traitement de [expr $naxis2/$pas] lignes.\n"
+            set yline 1
+            while {$yline<=$naxis2} {
+               set listcoords [ list 1 $yline $naxis1 $yline ]
+               lappend ycoords $yline
+               lappend xcoords [ lindex [ buf$audace(bufNo) fitgauss $listcoords ] 1 ]
+               set yline [ expr $yline+$pas-1 ]
+            }
 
-		#-- Calcul des coordonnees du coin sup droit et inf gauche :
-		if { $xsup>$xinf } {
-		    set xsupzone [ expr int($xsup+30) ]
-		    set xinfzone [ expr int($xinf-30) ]
-		} else {
-		    set xsupzone [ expr int($xsup+30) ]
-		    set xinfzone [ expr int($xinf-30) ]
-		}
+            #-- Calcul du polynome d'ajustement de degré 2 sur la raie courbee cx^2+bx+a :
+            set coefssmilex [ lindex [ spc_ajustdeg2 $ycoords $xcoords 1 ] 0 ]
+            set c [ expr $spcaudace(smilex_inv)*[ lindex $coefssmilex 2 ] ]
+            set b [ lindex $coefssmilex 1 ]
 
-		#-- Découpage de la zone :
-		##  -----------B
-		##  |          |
-		##  A-----------
-		##set wincoords [ list $xdeb 1 $xfin $naxis2 ]
-		#set wincoords [ list $xdeb $ydeb $xfin $yfin ]
-		set wincoords [ list $xinfzone $yinf $xsupzone $ysup ]
-		::console::affiche_resultat "Zone : $wincoords\n"
-		buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
-		buf$audace(bufNo) window $wincoords
-	    }
-
-	    #-- Détermination des dimensions de la zone sélectionnée
-	    set naxis1 [lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
-	    set naxis2 [lindex [ buf$audace(bufNo) getkwd "NAXIS2" ] 1 ]
-	    #-- Calcul de points présents sur la raie courbée par centrage gaussien sur une ligne
-	    ::console::affiche_resultat "Traitement de [expr $naxis2/$pas] lignes.\n"
-	    set yline 1
-	    while {$yline<=$naxis2} {
-		set listcoords [ list 1 $yline $naxis1 $yline ]
-		lappend ycoords $yline
-		#::console::affiche_resultat "Fit gaussien de la ligne $yline.\n"
-		lappend xcoords [ lindex [ buf$audace(bufNo) fitgauss $listcoords ] 1 ]
-		set yline [ expr $yline+$pas-1 ]
-	    }
-
-	    #-- Calcul du polynome d'ajustement de degré 2 sur la raie courbee cx^2+bx+a :
-	    set coefssmilex [ lindex [ spc_ajustdeg2 $ycoords $xcoords 1 ] 0 ]
-	    set c [ expr $spcaudace(smilex_inv)*[ lindex $coefssmilex 2 ] ]
-	    set b [ lindex $coefssmilex 1 ]
-
-	    #-- Pour l'instant (061220), evite de faire un slant :
-	    #if { $c == 0.0 } {
-	    #    set c 0.000001
-	    #}
 
 	    #--- Correction du smile selon l'axe horizontal X ou du slant :
 	    if { $c == 0.0 } {
@@ -933,7 +942,7 @@ proc spc_smilex { args } {
 	    }
 	} else {
 	    ::console::affiche_resultat "La seule déformation horizontale est du slant...\n"
-	    set results [ spc_slant $filenamespc e ]
+	    set results [ spc_autoslant $filenamespc ]
 	    return $results
 	}
     } else {
@@ -1192,6 +1201,75 @@ proc spc_smiley { args } {
 	return $results
     } else {
 	::console::affiche_erreur "Usage: spc_smiley spectre_2D_fits\n\n"
+    }
+}
+#****************************************************************************
+
+
+
+####################################################################
+# Procédure de correction du raies inclinées dans le spectre : translations de lignes.
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 08-06-2006
+# Date modification : 08-06-2008/061220/07-02-2011
+# Arguments 060806 : spectre 2D fits
+####################################################################
+
+proc spc_autoslant { args } {
+
+    global audace spcaudace
+    global conf
+    #global flag_ok
+    set pourcentimg 0.01
+
+    if {[llength $args]==1} {
+       set filenamespc [ file rootname [ lindex $args 0 ] ]
+
+       #--- Détermination de la largeur pour l'encadrement de la raie centrale :
+       set linemesure [ spc_linewidth $filenamespc ]
+       set x_bord_gauche [ lindex $linemesure 0 ]
+       set x_bord_droit [ lindex $linemesure 1 ]
+
+       #--- Determination de la pente de slant :
+       loadima "$filenamespc"
+       set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
+       set naxis2 [ lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1 ]
+       buf$audace(bufNo) window [ list $x_bord_gauche 1 $x_bord_droit $naxis2 ]
+       set pas [ expr int($pourcentimg*$naxis2) ]
+       # buf$audace(bufNo) save "$audace(rep_images)/${filenamespc}_zone"
+       #-- Calcul de points présents sur la raie penchée par centrage gaussien sur une ligne :
+       ::console::affiche_resultat "Traitement de [expr $naxis2/$pas] lignes.\n"
+       set yline 1
+       while {$yline<=$naxis2} {
+          set listcoords [ list 1 $yline $naxis1 $yline ]
+          lappend ycoords $yline
+          lappend xcoords [ lindex [ buf$audace(bufNo) fitgauss $listcoords ] 1 ]
+          set yline [ expr $yline+$pas-1 ]
+       }
+       #-- Calcul du polynome d'ajustement de degré 2 sur la raie courbee b*x+a :
+       set coefsajust [ lindex [ spc_ajustdeg1 $ycoords $xcoords 1 ] 0 ]
+       set b [ expr $spcaudace(smilex_inv)*[ lindex $coefsajust 1 ] ]
+       set a [ lindex $coefsajust 0 ]
+
+       #--- Correction du slant :
+       set pente $b
+       buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
+       ::console::affiche_resultat "Pente d'inclinaison de la raie : $pente pixels y/pixels x.\n"
+       buf$audace(bufNo) imaseries "TILT trans_x=$pente trans_y=0"
+       buf$audace(bufNo) setkwd [list "SPC_SLA" $pente float "Slant slope" ""]
+
+       #--- Sauvegarde
+       #if { [string compare $type "a"] == 0 } {
+       #   buf$audace(bufNo) mult -1.0
+       #}
+       buf$audace(bufNo) save "$audace(rep_images)/${filenamespc}_slant$conf(extension,defaut)"
+       ::console::affiche_resultat "Image sauvée sous ${filenamespc}_slant$conf(extension,defaut).\n"
+       loadima "$audace(rep_images)/${filenamespc}_slant$conf(extension,defaut)"
+       set results [ list ${filenamespc}_slant $pente ]
+       return $results
+    } else {
+       ::console::affiche_erreur "Usage: spc_autoslant spectre_2D_fits\n"
     }
 }
 #****************************************************************************
@@ -1523,24 +1601,30 @@ proc spc_findtilt { args } {
 	   set yinf [ expr round(0.5*($y1+$y2)) ]
            set xinf [ expr round($naxis1/2) ]
        } else {
-	   #-- Déterlmination du centre lumineux des profils de plusieurs colonnes :
+	   #-- Détermination du centre lumineux des profils de plusieurs colonnes :
            ::console::affiche_resultat "Angle ($angle °) trouvé par la méthode 1 trop grand : méthode 2...\n"
 	   set xpas [ expr int($naxis1/$spcaudace(nb_coupes)) ]
 	   ::console::affiche_resultat "Pas entre chaque point de détection : $xpas\n"
 	   set liste_x [ list ]
 	   set liste_y [ list ]
 	   for {set k $xpas} {$k <= $x_fin} {incr k} {
-	       set fsortie [ file rootname [ spc_profilx "$filename" $k $spcaudace(largeur_binning) ] ]
+	       # set fsortie [ file rootname [ spc_profilx "$filename" $k $spcaudace(largeur_binning) ] ]
+               buf$audace(bufNo) load "$audace(rep_images)/$filename"
+               set xdeb [ expr $k-$spcaudace(largeur_binning) ]
+               if { $xdeb<1 } { set xdeb 1 }
+               set xfin [ expr $k+$spcaudace(largeur_binning) ]
+               if { $xfin>$naxis1 } { set xfin $naxis1 }
+               buf$audace(bufNo) imaseries "BINX x1=$xdeb x2=$xfin width=1"
 	       lappend liste_x $k
 	       set y1 [ expr int($spcaudace(epaisseur_detect)*$naxis2) ]
 	       set y2 [ expr int((1-$spcaudace(epaisseur_detect))*$naxis2) ]
 	       set windowcoords [ list 1 $y1 1 $y2 ]
-	       buf$audace(bufNo) load "$audace(rep_images)/$fsortie"
+	       # buf$audace(bufNo) load "$audace(rep_images)/$fsortie"
                #- 2010-02-08 :
 	       lappend liste_y [ lindex [ buf$audace(bufNo) fitgauss $windowcoords ] 5 ]
                #- 091214 :
                #lappend liste_y [ lindex [ buf$audace(bufNo) centro $windowcoords ] 1 ]
-	       file delete -force "$audace(rep_images)/$fsortie$conf(extension,defaut)"
+	       # file delete -force "$audace(rep_images)/$fsortie$conf(extension,defaut)"
 	       set k [ expr $k+$xpas-1 ]
 	   }
 

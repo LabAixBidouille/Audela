@@ -525,11 +525,136 @@ proc spc_detectserre2 { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de creation : 23-06-2006
-# Date de mise a jour : 23-06-2006
+# Date de mise a jour : 8-02-2011
 # Arguments : fichier fits du spectre 2D
 ###############################################################
 
 proc spc_detectasym { args } {
+
+    global audace spcaudace
+    global conf
+
+    #-- Rappel des valeurs des paramètres par defaut :
+    set largeur_binning 1
+    # set epaisseur_detect 0.05
+    # set nb_coupes 10
+    # set nb_coupes 5
+
+
+    if { [ llength $args ] == 1 } {
+       set filenamespc [ file rootname [lindex $args 0 ] ]
+
+       #--- Binning de toute l'image :
+       buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
+       set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
+       set xmid [ expr round($naxis1/2.) ]
+       set naxis2 [ lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1 ]
+       set xfin [ expr (1-$spcaudace(epaisseur_detect))*$naxis1 ]
+       set xdeb [ expr int($naxis1/$spcaudace(nb_coupes)) ]
+       buf$audace(bufNo) imaseries "binx x1=$xdeb x2=$xfin height=1"
+       buf$audace(bufNo) bitpix float
+       buf$audace(bufNo) save "$audace(rep_images)/${filenamespc}_spcx"
+       set icont [ lindex [ buf$audace(bufNo) stat ] 4 ]
+       buf$audace(bufNo) bitpix short
+
+       #--- Détermination des paramètres du de l'épaisseur du spectre sur la coupe verticale
+       #set y1 [ expr int(.03*$naxis2) ]
+       #set y2 [ expr int(.97*$naxis2) ]
+       set y1 [ expr int($spcaudace(epaisseur_detect)*$naxis2) ]
+       set y2 [ expr int((1-$spcaudace(epaisseur_detect))*$naxis2) ]
+       set windowcoords [ list 1 $y1 1 $y2 ]
+       set gparams [ buf$audace(bufNo) fitgauss $windowcoords ]
+       set ycenter [ lindex $gparams 5 ]
+       #-- Choix : la largeur de la gaussienne est de 1.9*FWHM
+       set largeur [ expr 1.9*[ lindex $gparams 6 ] ]
+       
+       #--- Traitement des resultats :
+       file delete -force "$audace(rep_images)/${filenamespc}_spcx$conf(extension,defaut)"
+       return [ list $ycenter $largeur ]
+    } else {
+       ::console::affiche_erreur "Usage: spc_detectasym spectre_2D_fits\n\n"
+    }
+}
+###############################################################
+
+
+###############################################################
+# Détermine le centre vertical et la largeur d'un spectre 2D
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de creation : 23-06-2006
+# Date de mise a jour : 23-06-2006
+# Arguments : fichier fits du spectre 2D
+###############################################################
+
+proc spc_detectasym1 { args } {
+
+    global audace spcaudace
+    global conf
+
+    #-- Rappel des valeurs des paramètres par defaut :
+    set largeur_binning 1
+    # set epaisseur_detect 0.05
+    # set nb_coupes 10
+    # set nb_coupes 5
+
+
+    if { [ llength $args ] == 1 } {
+	set fichier [ file rootname [lindex $args 0 ] ]
+	buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+	set naxis1 [lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1]
+	set naxis2 [lindex [ buf$audace(bufNo) getkwd "NAXIS2" ] 1]
+	set x_fin [ expr (1-$spcaudace(epaisseur_detect))*$naxis1 ]
+
+	#--- Creations de profils de plusieurs colonnes
+	set xpas [ expr int($naxis1/$spcaudace(nb_coupes)) ]
+	#-- n° du profil resultant
+	::console::affiche_resultat "Pas entre chaque point de détection : $xpas\n"
+	set i 1
+	for {set k $xpas} {$k <= $x_fin} {incr k} {
+	    set fsortie [ file rootname [ spc_profilx $fichier $k $largeur_binning ] ]
+	    # ::console::affiche_resultat "$fsortie\n"
+	    file rename -force "$audace(rep_images)/$fsortie$conf(extension,defaut)" "$audace(rep_images)/profil-$i$conf(extension,defaut)"
+	    set k [ expr $k+$xpas-1 ]
+	    incr i
+	}
+	set nbimg [ expr $i-1 ]
+	#sadd profil- ${fichier}_spcx $nbimg
+	smean profil- ${fichier}_spcx $nbimg
+	delete2 profil- $nbimg
+
+	#--- Détermination des paramètres du de l'épaisseur du spectre sur la coupe verticale
+	buf$audace(bufNo) load "$audace(rep_images)/${fichier}_spcx"
+	##set windowcoords [ list 1 1 $naxis2 1 ]
+        #set y1 [ expr int(.03*$naxis2) ]
+        #set y2 [ expr int(.97*$naxis2) ]
+        set y1 [ expr int($spcaudace(epaisseur_detect)*$naxis2) ]
+        set y2 [ expr int((1-$spcaudace(epaisseur_detect))*$naxis2) ]
+	set windowcoords [ list 1 $y1 1 $y2 ]
+	set gparams [ buf$audace(bufNo) fitgauss $windowcoords ]
+	set ycenter [ lindex $gparams 5 ]
+	#-- Choix : la largeur de la gaussienne est de 1.9*FWHM
+	set largeur [ expr 1.9*[ lindex $gparams 6 ] ]
+	file delete -force "$audace(rep_images)/${fichier}_spcx$conf(extension,defaut)"
+	return [ list $ycenter $largeur ]
+    } else {
+	::console::affiche_erreur "Usage: spc_detectasym spectre_2D_fits\n\n"
+    }
+}
+###############################################################
+
+
+
+###############################################################
+# Détermine le centre vertical et la largeur d'un spectre 2D
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de creation : 23-06-2006
+# Date de mise a jour : 23-06-2006
+# Arguments : fichier fits du spectre 2D
+###############################################################
+
+proc spc_detectasym0 { args } {
 
     global audace spcaudace
     global conf
