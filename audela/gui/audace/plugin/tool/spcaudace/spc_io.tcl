@@ -1133,6 +1133,8 @@ proc spc_fits2data { args } {
      set listemotsclef [ buf$audace(bufNo) getkwds ]
      if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
          set lambda0 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+     } else {
+        set lambda0 1
      }
      if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
          set dispersion [ lindex [buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
@@ -1571,6 +1573,117 @@ proc spc_fit2pngopt { args } {
 
 
 ####################################################################
+#  Procedure de conversion d'une série de fichiers profil de raie calibré .fit en .png evec précision de la légende
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 03-01-2007
+# Date modification : 16-02-2007
+# Arguments : fichier .fit du profil de raie, titre, ?legende_x legende_y?
+####################################################################
+
+proc spc_fit2pnglarge { args } {
+    global audace spcaudace
+    global conf
+    global tcl_platform
+    set repertoire_gp [ file join $audace(rep_scripts) spcaudace gp ]
+    #-- 3%=0.03
+    set lpart 0
+
+    if { [llength $args] == 8 || [llength $args] == 6 || [llength $args] == 4 || [llength $args] == 2 } {
+        if { [llength $args] == 2 } {
+            set fichier [ file rootname [ lindex $args 0 ] ]
+            set titre [ lindex $args 1 ]
+            #-- Détermine les bornes du graphique :
+            buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+            set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
+            #-- Demarre et fini le graphe en deçca de "lpart" % des limites pour l'esthetique
+            set largeur [ expr $lpart*$naxis1 ]
+            set xdeb0 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+            set xdeb [ expr $xdeb0+$largeur ]
+            set xincr [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
+            set xfin [ expr $naxis1*$xincr+$xdeb-2*$largeur ]
+            set ydeb "*"
+            set yfin "*"
+            #-- Adapte la légende de l'abscisse
+            if { $xdeb0 == 1.0 && $legendex=="" } {
+                set legendex "Position (Pixel)"
+            } else {
+                set legendex "Wavelength (A)"
+            }
+            set legendey "Relative intensity"
+        } elseif { [llength $args] == 4 } {
+            set fichier [ file rootname [ lindex $args 0 ] ]
+            set titre [ lindex $args 1 ]
+            set legendex [ lindex $args 2 ]
+            set legendey [ lindex $args 3 ]
+
+            #-- Détermine les bornes du graphique :
+            buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+            set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
+            #-- Demarre et fini le graphe en deçca de "lpart" % des limites pour l'esthetique
+            set largeur [ expr $lpart*$naxis1 ]
+            set xdeb0 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+            set xdeb [ expr $xdeb0+$largeur ]
+            set xincr [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
+            set xfin [ expr $naxis1*$xincr+$xdeb-2*$largeur ]
+            set ydeb "*"
+            set yfin "*"
+        } elseif { [llength $args] == 6 } {
+            set fichier [ file rootname [ lindex $args 0 ] ]
+            set titre [ lindex $args 1 ]
+            set legendex [ lindex $args 2 ]
+            set legendey [ lindex $args 3 ]
+            set xdeb [ lindex $args 4 ]
+            set xfin [ lindex $args 5 ]
+        } elseif { [llength $args] == 8 } {
+            set fichier [ file rootname [ lindex $args 0 ] ]
+            set titre [ lindex $args 1 ]
+            set legendex [ lindex $args 2 ]
+            set legendey [ lindex $args 3 ]
+            set xdeb [ lindex $args 4 ]
+            set xfin [ lindex $args 5 ]
+            set ydeb [ lindex $args 6 ]
+            set yfin [ lindex $args 7 ]
+        } else {
+            ::console::affiche_erreur "Usage: spc_fit2pngopt fichier_fits \"Titre\" ?legende_x lende_y? ?xdeb xfin? ?ydeb yfin?\n\n"
+            return 0
+        }
+
+        #-- spc_fits2dat renvoie un nom avec une extension : fichier.dat
+        set fileout [ spc_fits2dat $fichier ]
+        #-- Retire l'extension .fit du nom du fichier
+        set spcfile [ file rootname $fichier ]
+
+        #--- Créée le fichier script pour gnuplot :
+        set file_id [open "$audace(rep_images)/${spcfile}.gp" w+]
+        puts $file_id "call \"$spcaudace(repgp)/gp_novisularge.cfg\" \"$audace(rep_images)/${spcfile}$spcaudace(extdat)\" \"$titre\" $ydeb $yfin $xdeb $xfin * \"$audace(rep_images)/${spcfile}.png\" \"$legendex\" \"$legendey\" "
+        close $file_id
+
+        #--- Détermine le chemin de l'executable Gnuplot selon le système d'exploitation :
+        if { $tcl_platform(platform)=="unix" } {
+            set answer [ catch { exec gnuplot $audace(rep_images)/${spcfile}.gp } ]
+            ::console::affiche_resultat "gnuplot résultat : $answer\n"
+        } else {
+            set answer [ catch { exec $spcaudace(repgp)/gpwin32/pgnuplot.exe $audace(rep_images)/${spcfile}.gp } ]
+            ::console::affiche_resultat "gnuplot résultat : $answer\n"
+        }
+
+        #--- Effacement des fichiers de batch :
+        file delete -force "$audace(rep_images)/${spcfile}$spcaudace(extdat)"
+        file delete -force "$audace(rep_images)/${spcfile}.gp"
+
+        #--- Fin du script :
+        ::console::affiche_resultat "Profil de raie exporté sous ${spcfile}.png\n"
+        return "${spcfile}.png"
+    } else {
+        ::console::affiche_erreur "Usage: spc_fit2pnglarge fichier_fits \"Titre\" ?legende_x lende_y? ?xdeb xfin? ?ydeb yfin?\n\n"
+    }
+}
+####################################################################
+
+
+
+####################################################################
 #  Procedure de conversion de fichier profil de raie calibré .fit en .png
 #
 # Auteur : Benjamin MAUCLAIRE
@@ -1804,8 +1917,10 @@ proc spc_fit2ps { args } {
 
     #-- 3%=0.03
     set lpart 0
+   set ydeb "*"
+   set yfin "*"
 
-    if { [llength $args] == 6 || [llength $args] == 4 || [llength $args] == 2 } {
+    if { [llength $args] == 8 || [llength $args] == 6 || [llength $args] == 4 || [llength $args] == 2 } {
         if { [llength $args] == 2 } {
             set fichier [ file rootname [ lindex $args 0 ] ]
             set titre [ lindex $args 1 ]
@@ -1841,6 +1956,15 @@ proc spc_fit2ps { args } {
             set legendey [ lindex $args 3 ]
             set xdeb [ lindex $args 4 ]
             set xfin [ lindex $args 5 ]
+        } elseif { [llength $args] == 8 } {
+            set fichier [ file rootname [ lindex $args 0 ] ]
+            set titre [ lindex $args 1 ]
+            set legendex [ lindex $args 2 ]
+            set legendey [ lindex $args 3 ]
+            set xdeb [ lindex $args 4 ]
+            set xfin [ lindex $args 5 ]
+            set ydeb [ lindex $args 6 ]
+            set yfin [ lindex $args 7 ]
         } else {
             ::console::affiche_erreur "Usage: spc_fit2ps fichier_fits \"Titre\" ?legende_x lende_y? ?xdeb xfin?\n\n"
         }
@@ -1853,7 +1977,7 @@ proc spc_fit2ps { args } {
 
         #--- Créée le fichier script pour gnuplot :
         set file_id [open "$audace(rep_images)/${spcfile}.gp" w+]
-        puts $file_id "call \"$spcaudace(repgp)/gp_ps.cfg\" \"$audace(rep_images)/${spcfile}$spcaudace(extdat)\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/${spcfile}.ps\" \"$legendex\" \"$legendey\" "
+        puts $file_id "call \"$spcaudace(repgp)/gp_ps.cfg\" \"$audace(rep_images)/${spcfile}$spcaudace(extdat)\" \"$titre\" $ydeb $yfin $xdeb $xfin * \"$audace(rep_images)/${spcfile}.eps\" \"$legendex\" \"$legendey\" "
         close $file_id
 
         #--- Détermine le chemin de l'executable Gnuplot selon le système d'exploitation :
@@ -1870,8 +1994,8 @@ proc spc_fit2ps { args } {
         file delete -force "$audace(rep_images)/${spcfile}.gp"
 
         #--- Fin du script :
-        ::console::affiche_resultat "Profil de raie exporté sous ${spcfile}.ps\n"
-        return "${spcfile}.ps"
+        ::console::affiche_resultat "Profil de raie exporté sous ${spcfile}.eps\n"
+        return "${spcfile}.eps"
     } else {
         ::console::affiche_erreur "Usage: spc_fit2ps fichier_fits \"Titre\" ?legende_x lende_y? ?xdeb xfin?\n\n"
     }
@@ -2018,8 +2142,221 @@ proc spc_dat2png { args } {
         ::console::affiche_resultat "Profil de raie exporté sous ${spcfile}.png\n"
         return ${spcfile}.png
     } else {
-        ::console::affiche_erreur "Usage: spc_dat2png fichier_fits \"Titre\" ?xdébut xfin?\n\n"
+        ::console::affiche_erreur "Usage: spc_dat2png spectre_dat \"Titre\" ?xdébut xfin?\n\n"
     }
+}
+####################################################################
+
+
+
+####################################################################
+#  Procedure de conversion de fichier profil de raie calibré .dat en .png
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 25-02-2011
+# Date modification : 25-02-2011
+# Arguments : fichier .dat du profil de raie, titre, ?xdeb, xfin?
+####################################################################
+
+proc spc_txt2png { args } {
+   global audace spcaudace
+   global conf
+   global tcl_platform
+
+   set nbargs [ llength $args ]
+   if { $nbargs==4 } {
+      set fichier [ lindex $args 0 ]
+      set titre [ lindex $args 1 ]
+      set legendex [ lindex $args 2 ]
+      set legendey [ lindex $args 3 ]
+      set joined "o"
+      set xdeb "*"
+      set xfin "*"
+      set ydeb "*"
+      set yfin "*"
+   } elseif { $nbargs==5 } {
+      set fichier [ lindex $args 0 ]
+      set titre [ lindex $args 1 ]
+      set legendex [ lindex $args 2 ]
+      set legendey [ lindex $args 3 ]
+      set joined [ lindex $args 4 ]
+      set xdeb "*"
+      set xfin "*"
+      set ydeb "*"
+      set yfin "*"
+   } elseif { $nbargs==7 } {
+      set fichier [ lindex $args 0 ]
+      set titre [ lindex $args 1 ]
+      set legendex [ lindex $args 2 ]
+      set legendey [ lindex $args 3 ]
+      set joined [ lindex $args 4 ]
+      set xdeb [ lindex $args 5 ]
+      set xfin [ lindex $args 6 ]
+      set ydeb "*"
+      set yfin "*"
+   } elseif { $nbargs==9 } {
+      set fichier [ lindex $args 0 ]
+      set titre [ lindex $args 1 ]
+      set legendex [ lindex $args 2 ]
+      set legendey [ lindex $args 3 ]
+      set joined [ lindex $args 4 ]
+      set xdeb [ lindex $args 5 ]
+      set xfin [ lindex $args 6 ]
+      set ydeb [ lindex $args 7 ]
+      set yfin [ lindex $args 8 ]
+   } else {
+      ::console::affiche_erreur "Usage: spc_txt2png fichier_data \"Titre\" \"Légende axe x\" \"Légende axe y\" ?joined_points (o/n)? ?xdébut xfin? ?ydeb yfin?\n"
+      return ""
+   }
+
+   #--- Recherche de xdeb et xfin :
+   if { $nbargs<=5 } {
+      set fileid [ open "$audace(rep_images)/$fichier" r+ ]
+      set contents [ split [read $fileid] \n]
+      close $fileid
+      set abscisses [ list ]
+      foreach ligne $contents {
+         set abscisse [ lindex $ligne 0 ]
+         if { $abscisse!="" } { lappend abscisses $abscisse }
+      }
+      set xfin1 [ lindex $abscisses [ expr [ llength $abscisses ]-1 ] ]
+      set abscisses [ lsort -dictionary -increasing $abscisses ]
+      set xdeb [ lindex $abscisses 0 ]
+      if { $xdeb=="" } { set xdeb [ lindex $abscisses 1 ] }
+      set xfin [ lindex $abscisses [ expr [ llength $abscisses ]-1 ] ]
+      if { $xfin=="" } {
+         set xfin $xfin1
+      } elseif { $xfin1<$xfin } { set xfin $xfin }
+      #::console::affiche_resultat "Xdeb=$xdeb ; Xfin=$xfin\n"
+   }
+
+   #--- Créée le fichier script pour gnuplot :
+   set fichier_nm [ file rootname $fichier ]
+   set file_id [open "$audace(rep_images)/${fichier_nm}.gp" w+]
+   if { $joined=="n" } {
+      puts $file_id "call \"$spcaudace(repgp)/gp_points.cfg\" \"$audace(rep_images)/$fichier\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/${fichier_nm}.png\" \"$legendex\" \"$legendey\" "
+   } else {
+      puts $file_id "call \"$spcaudace(repgp)/gp_novisu.cfg\" \"$audace(rep_images)/$fichier\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/${fichier_nm}.png\" \"$legendex\" \"$legendey\" "
+   }
+   close $file_id
+   
+   #--- Détermine le chemin de l'executable Gnuplot selon le système d'exploitation :
+   if { $tcl_platform(platform)=="unix" } {
+      set answer [ catch { exec gnuplot $audace(rep_images)/${fichier_nm}.gp } ]
+      ::console::affiche_resultat "Export Gnuplot (0=OK) : $answer\n"
+   } else {
+      set answer [ catch { exec $spcaudace(repgp)/gpwin32/pgnuplot.exe $audace(rep_images)/${fichier_nm}.gp } ]
+      ::console::affiche_resultat "Export Gnuplot (0=OK) : $answer\n"
+   }
+   
+   ::console::affiche_resultat "Graphique sauvé sous ${fichier_nm}.png\n"
+   return ${fichier_nm}.png
+}
+####################################################################
+
+
+####################################################################
+#  Procedure de conversion de fichier profil de raie calibré .dat en .ps
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 25-02-2011
+# Date modification : 25-02-2011
+# Arguments : fichier .dat du profil de raie, titre, ?xdeb, xfin?
+####################################################################
+
+proc spc_txt2ps { args } {
+   global audace spcaudace
+   global conf
+   global tcl_platform
+
+   set nbargs [ llength $args ]
+   if { $nbargs==4 } {
+      set fichier [ lindex $args 0 ]
+      set titre [ lindex $args 1 ]
+      set legendex [ lindex $args 2 ]
+      set legendey [ lindex $args 3 ]
+      set joined "o"
+      set xdeb "*"
+      set xfin "*"
+      set ydeb "*"
+      set yfin "*"
+   } elseif { $nbargs==5 } {
+      set fichier [ lindex $args 0 ]
+      set titre [ lindex $args 1 ]
+      set legendex [ lindex $args 2 ]
+      set legendey [ lindex $args 3 ]
+      set joined [ lindex $args 4 ]
+      set xdeb "*"
+      set xfin "*"
+      set ydeb "*"
+      set yfin "*"
+   } elseif { $nbargs==7 } {
+      set fichier [ lindex $args 0 ]
+      set titre [ lindex $args 1 ]
+      set legendex [ lindex $args 2 ]
+      set legendey [ lindex $args 3 ]
+      set joined [ lindex $args 4 ]
+      set xdeb [ lindex $args 5 ]
+      set xfin [ lindex $args 6 ]
+      set ydeb "*"
+      set yfin "*"
+   } elseif { $nbargs==9 } {
+      set fichier [ lindex $args 0 ]
+      set titre [ lindex $args 1 ]
+      set legendex [ lindex $args 2 ]
+      set legendey [ lindex $args 3 ]
+      set joined [ lindex $args 4 ]
+      set xdeb [ lindex $args 5 ]
+      set xfin [ lindex $args 6 ]
+      set ydeb [ lindex $args 7 ]
+      set yfin [ lindex $args 8 ]
+   } else {
+      ::console::affiche_erreur "Usage: spc_txt2ps fichier_data \"Titre\" \"Légende axe x\" \"Légende axe y\" ?joined_points (o/n)? ?xdébut xfin? ?ydeb yfin?\n"
+      return ""
+   }
+
+   #--- Recherche de xdeb et xfin :
+   if { $nbargs<=5 } {
+      set fileid [ open "$audace(rep_images)/$fichier" r+ ]
+      set contents [ split [read $fileid] \n]
+      close $fileid
+      set abscisses [ list ]
+      foreach ligne $contents {
+         set abscisse [ lindex $ligne 0 ]
+         if { $abscisse!="" } { lappend abscisses $abscisse }
+      }
+      set xfin1 [ lindex $abscisses [ expr [ llength $abscisses ]-1 ] ]
+      set abscisses [ lsort -dictionary -increasing $abscisses ]
+      set xdeb [ lindex $abscisses 0 ]
+      if { $xdeb=="" } { set xdeb [ lindex $abscisses 1 ] }
+      set xfin [ lindex $abscisses [ expr [ llength $abscisses ]-1 ] ]
+      if { $xfin=="" } {
+         set xfin $xfin1
+      } elseif { $xfin1<$xfin } { set xfin $xfin }
+      #::console::affiche_resultat "Xdeb=$xdeb ; Xfin=$xfin\n"
+   }
+
+   #--- Créée le fichier script pour gnuplot :
+   set fichier_nm [ file rootname $fichier ]
+   set file_id [open "$audace(rep_images)/${fichier_nm}.gp" w+]
+   if { $joined=="n" } {
+      puts $file_id "call \"$spcaudace(repgp)/gp_pointsps.cfg\" \"$audace(rep_images)/$fichier\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/${fichier_nm}.eps\" \"$legendex\" \"$legendey\" "
+   } else {
+      puts $file_id "call \"$spcaudace(repgp)/gp_dataps.cfg\" \"$audace(rep_images)/$fichier\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/${fichier_nm}.eps\" \"$legendex\" \"$legendey\" "
+   }
+   close $file_id
+   
+   #--- Détermine le chemin de l'executable Gnuplot selon le système d'exploitation :
+   if { $tcl_platform(platform)=="unix" } {
+      set answer [ catch { exec gnuplot $audace(rep_images)/${fichier_nm}.gp } ]
+      ::console::affiche_resultat "Export Gnuplot (0=OK) : $answer\n"
+   } else {
+      set answer [ catch { exec $spcaudace(repgp)/gpwin32/pgnuplot.exe $audace(rep_images)/${fichier_nm}.gp } ]
+      ::console::affiche_resultat "Export Gnuplot (0=OK) : $answer\n"
+   }
+   
+   ::console::affiche_resultat "Graphique sauvé sous ${fichier_nm}.eps\n"
+   return ${fichier_nm}.eps
 }
 ####################################################################
 
@@ -2381,7 +2718,6 @@ proc spc_autofit2png { args } {
         buf$audace(bufNo) load "$audace(rep_images)/$spectre"
         set listemotsclef [ buf$audace(bufNo) getkwds ]
 
-
         #--- Détermination du télescope :
         if { [ lsearch $listemotsclef "TELESCOP" ] !=-1 } {
             set telescope [ lindex [ buf$audace(bufNo) getkwd "TELESCOP" ] 1 ]
@@ -2463,20 +2799,25 @@ proc spc_autofit2png { args } {
         }
 
         #--- Récupération de la dispersion :
+        set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
         if { [ lsearch $listemotsclef "CDELT1" ] !=-1 && [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
-            if { [ llength $args ] == 3 } {
-                set xdeb [  lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+            if { [ llength $args ]==2 } {
+               set xdeb [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
             }
             if { $xdeb != 1. } {
                 set dispersion_precise [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
                 set dispersion [ expr round($dispersion_precise*1000.)/1000. ]
+                set xfin [ spc_calpoly $naxis1 1 $xdeb $dispersion_precise 0 0 ]
                 set labelx "Wavelength (A)"
             } else {
                 set dispersion 0
+                set xfin $naxis1
                 set labelx "Position (pixel)"
             }
         } else {
-            set dispersion 0
+           set dispersion 0
+           set xfin $naxis1
+           set labelx "Position (pixel)"
         }
 
         #--- Suppression des accents dans les variables :
@@ -2508,8 +2849,11 @@ proc spc_autofit2png { args } {
         }
 
         #--- Tracé du graphique :
-        set fileout [ spc_fit2pngopt "$spectre" "$titre_graphique" "$labelx" "$labely" $xdeb $xfin $ydeb $yfin ]
-
+       if { $naxis1<=3500 } {
+          set fileout [ spc_fit2pngopt "$spectre" "$titre_graphique" "$labelx" "$labely" $xdeb $xfin $ydeb $yfin ]
+       } else {
+          set fileout [ spc_fit2pnglarge "$spectre" "$titre_graphique" "$labelx" "$labely" $xdeb $xfin $ydeb $yfin ]
+       }
         #--- Fabrication de la date du fichier :
         set datefile [ bm_datefile $spectre ]
 

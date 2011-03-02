@@ -35,6 +35,7 @@
 ##########################################################
 
 
+
 #############################################################################################
 # Auteur : Patrick LAILLY
 # Date de création : 1-09-10
@@ -75,9 +76,11 @@ proc spc_periodogram { args } {
          return ""
       }
       set periodog_filename [ spc_periodog $nom_dat $unit_temps $nb_period ]
-      set labscisses_max [ spc_maxsearch $periodog_filename 3 ]
+      # set labscisses_max [ spc_maxsearch $periodog_filename 3 ]
+      set labscisses_max [ spc_maxsearch $periodog_filename 10 ]
       set period [ lindex $labscisses_max 0 ]
-      set sine_caract [ spc_sinefit $nom_dat $unit_temps $period ]
+      # set sine_caract [ spc_sinefit $nom_dat $unit_temps $period ]
+      ## set sine_cacact [ spc_sinefit $nom_dat $unit_temps "Quantity" $period ]
       return $periodog_filename
    } else {
       ::console::affiche_erreur "Usage: spc_periodogram data_filename.dat time_unit ?period_number?\n"
@@ -228,6 +231,79 @@ proc spc_periodog { args } {
 }
 #***************************************************************************#
 
+
+
+###########################################################################################
+# Auteur : Patrick LAILLY
+# Date de création : 23-02-11
+# Date de modification : 23-02-11
+# La procedure analyse le fit des donnees avec la fonction sinusoidale associee a la periode (on calcule au passage le dephasage optimal : cette analyse est menee en visualisant les données en fonction de la phase (export PNG) et les donnees en fonction du temps en superposition avec la sinusoide associee (plotxy).  Le decalage temporel caracterisant la sinusoide est affiche a la console.
+# 4 paramètres obligatoires : nom du fichier dat donnant l'evolution de la quantite physique en fonction du temps calendaire, unite de temps utilisee, nature de la quantite physique mesuree, periode sur laquelle l'utilisateur veut mener l'analyse 
+# La procedure retourne le nom du fichier .png representant les donnees en fonction de la phase.
+# Exemple : spc_periodana data.dat "julian days" "radial velocity (m/s)" 7.84
+###########################################################################################
+proc spc_phaseplot { args } {
+   global audace
+   set nb_args [ llength $args ]
+   if { $nb_args ==4 } {
+      set fileout data_phase.dat 
+      set nom_dat [ lindex $args 0 ]
+      set unit_temps [ lindex $args 1 ]
+      set measured_quantity [ lindex $args 2 ]
+      set period [ lindex $args 3 ]
+      set sine_caract [ spc_sinefit $nom_dat $unit_temps $measured_quantity $period ]
+      set time_shift [ lindex $sine_caract 1 ]
+      #lecture du fichier dat
+      set input [open "$audace(rep_images)/$nom_dat" r]
+      set contents [split [read $input] \n]
+      close $input
+      set nb_echant [llength $contents]
+      # modification ad hoc : a comprendre !!!!!!!!!!!!!!!!!!!!!!!!
+      set nb_echant [ expr $nb_echant -1 ]
+      set nb_echant_1 [ expr $nb_echant - 1 ] 
+      #::console::affiche_resultat " donnees spc_sinefit : $nom_dat $unit_temps $period \n"
+      set pi [ expr acos(-1.) ]
+      set abscisses [ list ]
+      set ordonnees_orig [ list ]
+      for {set k 0} { $k < $nb_echant } {incr k} {
+	 set ligne [lindex $contents $k]
+	 set x [lindex $ligne 0]
+	 set y [lindex $ligne 1]
+	 #::console::affiche_resultat " x= $x   y= $y \n"
+	 lappend abscisses [lindex $ligne 0] 
+	 lappend ordonnees [lindex $ligne 1] 
+      }
+      set temps_max [ expr [ lindex $abscisses $nb_echant_1 ] - [ lindex $abscisses 0 ] ]
+      set omega [ expr 2. *$pi / $period ]
+      # classement des donnees en fonction de la phase
+      set phase [ list ]
+      for {set k 0} { $k < $nb_echant } {incr k} {
+	 set phi [ expr $omega * ( [ lindex $abscisses $k ] - $time_shift ) ]
+	 set iphi [ expr int ($phi/$period) ]
+	 set phi [ expr ( $phi - $iphi *$period ) / $period ]
+	 lappend phase $phi
+      }
+      # ecriture des points de mesure en fonction de la phase sous forme de fichier dat
+      set file_id [open "$audace(rep_images)/$fileout" w+]
+      #--- configure le fichier de sortie avec les fin de ligne "xODx0A"
+      #-- independamment du systeme LINUX ou WINDOWS
+      fconfigure $file_id -translation crlf
+      for { set k 0 } { $k < $nb_echant } { incr k } {
+	 set x [ lindex $phase $k ]
+	 set y [ lindex $ordonnees $k ]
+         puts $file_id "$x\t$y"
+      }
+      close $file_id
+      ::console::affiche_resultat " le fichier $fileout a ete cree \n"
+      # creation du fichier png
+      set fich_png [ spc_txt2png $fileout "Measured quantity versus phase" "Phase" $measured_quantity n ]
+      return $fich_png
+   } else {
+      ::console::affiche_erreur "Usage: spc_phaseplot data_filename.dat \"time_unit\" \"measured_quantity\" data_period\n"
+      return ""
+   }
+}
+#***************************************************************************#
 
 
 
@@ -1015,7 +1091,6 @@ proc spc_autoew4 { args } {
          return ""
       }
 
-
       #--- Cas avec recherche des longueurs d'onde :
       if { $nb_args == 2 } {
          #-- Extraction des valeurs :
@@ -1062,44 +1137,17 @@ proc spc_autoew4 { args } {
 
 
       #--- Détermination de la largeur équivalente :
-      set ew [ spc_ew $filename $lambda_deb $lambda_fin $taux_doucissage ]
+      set lamesure [ spc_ew $filename $lambda_deb $lambda_fin $taux_doucissage ]
       set deltal [ expr abs($lambda_fin-$lambda_deb) ]
-
-      #--- Calcul de l'erreur (sigma) sur la mesure (doc Ernst Pollmann) :
-      set snr [ spc_snr $filename ]
-      set rapport [ expr $ew/$deltal ]
-      if { $rapport>=1.0 } {
-         set deltal [ expr $ew+0.1 ]
-         ::console::affiche_resultat "Attention : largeur d'intégration<EW !\n"
-      }
-      if { $snr != 0 } {
-         set sigma [ expr sqrt(1+1/(1-$ew/$deltal))*(($deltal-$ew)/$snr) ]
-         #set sigma [ expr sqrt(1+1/(1-abs($ew)/$deltal))*(($deltal-abs($ew))/$snr) ]
-      } else {
-         ::console::affiche_resultat "Incertitude non calculable car SNR non calculable\n"
-         set sigma 0
-      }
-
-
-      #--- Formatage des résultats :
-      set l_fin [ expr 0.01*round($lambda_fin*100) ]
-      set l_deb [ expr 0.01*round($lambda_deb*100) ]
-      set delta_l [ expr 0.01*round($deltal*100) ]
-      set ew_short [ expr 0.01*round($ew*100) ]
-      set sigma_ew [ expr 0.01*round($sigma*100) ]
-      set snr_short [ expr round($snr) ]
-
-      #--- Affichage des résultats :
-      ::console::affiche_resultat "\n"
-      ::console::affiche_resultat "EW($delta_l=$l_deb-$l_fin)=$ew_short A.\n"
-      ::console::affiche_resultat "Sigma(EW)=$sigma_ew A.\n"
-      ::console::affiche_resultat "SNR=$snr_short.\n\n"
-      #set resultats [ list $ew $sigma_ew ]
-      #return $ew
-      set results [ list $ew_short $sigma_ew $snr_short "EW($delta_l=$l_deb-$l_fin)" ]
+      set ew [ lindex $lamesure 0 ]
+      set sigma [ lindex $lamesure 1 ]
+      set snr [ lindex $lamesure 2 ]
+      set jd [ lindex $lamesure 3 ]
+      set ew_largeur [ lindex $lamesure 4 ]
+      set results [ list $ew $sigma $snr $jd "$ew_largeur" ]
       return $results
    } else {
-      ::console::affiche_erreur "Usage: spc_autoew4 nom_profil_raies_normalisé lambda_raie/lambda_deb lambda_fin ?taux_doucissage_continuum (1-100000000)?\n"
+      ::console::affiche_erreur "Usage: spc_autoew4 nom_profil_raies lambda_raie/lambda_deb lambda_fin ?taux_doucissage_continuum (1-100000000)?\n"
    }
 }
 #***************************************************************************#
@@ -1143,6 +1191,12 @@ proc spc_autoew3b { args } {
          return ""
       }
 
+      #--- Date JD :
+      buf$audace(bufNo) load "$audace(rep_images)/$filename"
+      set ladate [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ]
+      set jd [ mc_date2jd $ladate ]
+
+      #--- Calculs :
       set filename_norma [ spc_autonorma $filename ]
       if { $nb_args == 2 } {
          #--- Extraction des valeurs :
@@ -1227,7 +1281,7 @@ proc spc_autoew3b { args } {
       ::console::affiche_resultat "SNR=$snr_short.\n\n"
       #set resultats [ list $ew $sigma_ew ]
       #return $ew
-      set results [ list $ew_short $sigma_ew $snr_short "EW($delta_l=$l_deb-$l_fin)" ]
+      set results [ list $ew_short $sigma_ew $snr_short $jd "EW($delta_l=$l_deb-$l_fin)" ]
       return $results
    } else {
       ::console::affiche_erreur "Usage: spc_autoew3b nom_profil_raies_normalisé lambda_raie/lambda_deb lambda_fin\n"
@@ -1800,15 +1854,18 @@ proc spc_ew4 { args } {
    set ew_short [ expr 0.01*round($ew*100) ]
    set sigma_ew [ expr 0.01*round($sigma*100) ]
    set snr_short [ expr round($snr) ]
+   set jd_short [ expr 0.001*round($jd*1000) ]
+   set ew_large "EW($delta_l=$l_deb-$l_fin)=$ew_short\ A."
+   set lamesure [ list $ew_short $sigma_ew $snr_short $jd_short $ew_large ]
    
    #--- Affichage des résultats :
    ::console::affiche_resultat "\n"
    ::console::affiche_resultat "Date: $ladate\n"
-   ::console::affiche_resultat "JD: $jd\n"
+   ::console::affiche_resultat "JD: $jd_short\n"
    ::console::affiche_resultat "EW($delta_l=$l_deb-$l_fin)=$ew_short A.\n"
    ::console::affiche_resultat "Sigma(EW)=$sigma_ew A.\n"
    ::console::affiche_resultat "SNR=$snr_short.\n\n"
-   return $ew
+   return $lamesure
 }
 #***************************************************************************#
 
@@ -1908,6 +1965,7 @@ proc spc_ew3 { args } {
 	set ew_short [ expr 0.01*round($ew*100) ]
 	set sigma_ew [ expr 0.01*round($sigma*100) ]
 	set snr_short [ expr round($snr) ]
+        set lamesure [ list $ew_short $sigma_ew $snr_short $jd "EW($delta_l=$l_deb-$l_fin)" ]
 
 	#--- Affichage des résultats :
 	::console::affiche_resultat "\n"
@@ -1916,7 +1974,7 @@ proc spc_ew3 { args } {
 	::console::affiche_resultat "EW($delta_l=$l_deb-$l_fin)=$ew_short A.\n"
 	::console::affiche_resultat "Sigma(EW)=$sigma_ew A.\n"
 	::console::affiche_resultat "SNR=$snr_short.\n\n"
-	return $ew
+	return $lamesure
     } else {
 	::console::affiche_erreur "Usage: spc_ew3 nom_profil_raies_normalisé lanmba_dep lambda_fin\n"
     }
@@ -1987,13 +2045,14 @@ proc spc_ew2 { args } {
 	set ew_short [ expr 0.01*round($ew*100) ]
 	set sigma_ew [ expr 0.01*round($sigma*100) ]
 	set snr_short [ expr round($snr) ]
+        set lamesure [ list $ew_short $sigma_ew $snr_short $jd "EW($delta_l=$l_deb-$l_fin)" ]
 
 	#--- Affichage des résultats :
 	::console::affiche_resultat "\n"
 	::console::affiche_resultat "EW($delta_l=$l_deb-$l_fin)=$ew_short anstrom(s).\n"
 	::console::affiche_resultat "SNR=$snr_short.\n"
 	::console::affiche_resultat "Sigma(EW)=$sigma_ew angstrom.\n\n"
-	return $ew
+	return $lamesure
     } else {
 	::console::affiche_erreur "Usage: spc_ew2 nom_profil_raies_normalisé lanmba_dep lambda_fin\n"
     }
@@ -2160,8 +2219,12 @@ proc spc_ewcourbe { args } {
    } else {
       set invert_opt "noreverse"
    }
-   set titre "Evolution de la largeur equivalente EW ($ldeb-$lfin A) au cours du temps"
-   set legendey "Largeur equivalente EW (A)"
+   if { $nbargs==2 } {
+      set titre "Equivalent width EW ($ldeb-$lfin A) variations within time"
+   } else {
+      set titre "Equivalent width EW variations within time"
+   }
+   set legendey "Equivalent width EW (A)"
    set legendex "Date (JD-2400000)"
    set file_id2 [open "$audace(rep_images)/${ewfile}.gp" w+]
    puts $file_id2 "call \"$spcaudace(repgp)/gp_points_err.cfg\" \"$audace(rep_images)/${ewfile}.dat\" \"$titre\" * * * * $invert_opt \"$audace(rep_images)/ew_courbe.png\" \"$legendex\" \"$legendey\" "
@@ -2250,8 +2313,8 @@ proc spc_ewcourbe_opt { args } {
 	} else {
 	    set invert_opt "noreverse"
 	}
-	set titre "Evolution de la largeur equivalente au cours du temps"
-	set legendey "Largeur equivalente (A)"
+        set titre "Equivalent width EW variations within time"
+	set legendey "Equivalent width (A)"
 	set legendex "Date (JD-2400000)"
 	set file_id2 [open "$audace(rep_images)/${ewfile}.gp" w+]
 	puts $file_id2 "call \"$spcaudace(repgp)/gp_points.cfg\" \"$audace(rep_images)/${ewfile}.dat\" \"$titre\" * * * * $invert_opt \"$audace(rep_images)/ew_courbe.png\" \"$legendex\" \"$legendey\" "

@@ -527,6 +527,7 @@ proc spc_scar { args } {
 
        #--- Enregistrement :
        buf$audace(bufNo) bitpix float
+       buf$audace(bufNo) setkwd [ list BSS_COSM "yes" string "Cosmics correction by interpolation method" "" ]
        buf$audace(bufNo) save1d "$audace(rep_images)/${spectre}_cic"
        buf$audace(bufNo) bitpix short
        ::console::affiche_resultat "Profil de raies sauvée sous ${spectre}_cic.\n"
