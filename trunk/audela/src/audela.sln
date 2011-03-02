@@ -182,6 +182,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "librgb", "audela\librgb\vc9
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libros", "audela\libros\vc90\libros.vcproj", "{57EEE55E-350B-4630-948F-AFC095AB1D3C}"
 	ProjectSection(ProjectDependencies) = postProject
+		{43D31802-AFAF-4640-841F-2F3D159DF02C} = {43D31802-AFAF-4640-841F-2F3D159DF02C}
 		{EA31B717-A7E3-47EE-AA44-C8D3C4A002C0} = {EA31B717-A7E3-47EE-AA44-C8D3C4A002C0}
 		{4734BFE3-EBE4-4FAB-B810-ECBF54769212} = {4734BFE3-EBE4-4FAB-B810-ECBF54769212}
 	EndProjectSection
@@ -268,6 +269,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_libgsl", "external
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_libgslcblas", "external\gsl\vc90\libgslcblas\external_libgslcblas.vcproj", "{F12C72B9-A7C8-4FE1-8CA7-00B06819033A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_meinberg", "external\meinberg\vc90\external_meinberg.vcproj", "{43D31802-AFAF-4640-841F-2F3D159DF02C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -611,6 +614,10 @@ Global
 		{F12C72B9-A7C8-4FE1-8CA7-00B06819033A}.Debug|Win32.Build.0 = Debug|Win32
 		{F12C72B9-A7C8-4FE1-8CA7-00B06819033A}.Release|Win32.ActiveCfg = Release|Win32
 		{F12C72B9-A7C8-4FE1-8CA7-00B06819033A}.Release|Win32.Build.0 = Release|Win32
+		{43D31802-AFAF-4640-841F-2F3D159DF02C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{43D31802-AFAF-4640-841F-2F3D159DF02C}.Debug|Win32.Build.0 = Debug|Win32
+		{43D31802-AFAF-4640-841F-2F3D159DF02C}.Release|Win32.ActiveCfg = Release|Win32
+		{43D31802-AFAF-4640-841F-2F3D159DF02C}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
