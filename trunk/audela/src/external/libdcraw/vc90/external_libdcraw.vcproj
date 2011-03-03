@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="external_libdcraw"
 	ProjectGUID="{A20EEC71-6B59-4898-B47A-984AEA48DCC7}"
 	TargetFrameworkVersion="0"
@@ -106,7 +106,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy Debug\*.dll     ..\..\..\..\bin&#x0D;&#x0A;copy Debug\*.lib     ..\..\lib&#x0D;&#x0A;copy ..\src\libdcraw.h ..\..\include&#x0D;&#x0A;"
+				CommandLine="install.bat Debug"
 			/>
 		</Configuration>
 		<Configuration
