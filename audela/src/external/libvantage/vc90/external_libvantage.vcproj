@@ -26,7 +26,7 @@
 			<Tool
 				Name="VCNMakeTool"
 				BuildCommandLine="cd .. &amp; nmake /f Makefile.vc install"
-				ReBuildCommandLine="cd .. &amp; nmake /f Makefile.vc cleaninstall"
+				ReBuildCommandLine="cd .. &amp; nmake /f Makefile.vc clean install"
 				CleanCommandLine="cd .. &amp; nmake /f Makefile.vc clean"
 				Output=""
 				PreprocessorDefinitions="WIN32;_DEBUG"
