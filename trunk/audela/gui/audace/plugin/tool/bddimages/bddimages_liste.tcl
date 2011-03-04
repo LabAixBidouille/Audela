@@ -190,6 +190,7 @@ namespace eval bddimages_liste {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_insertion_applet.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_sub_fichier.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_liste_creation.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_calendrier.tcl ]\""
 
 
 #--------------------------------------------------
@@ -901,6 +902,47 @@ return
            # button $This.bdd.login.help -state active -borderwidth 0 -relief flat -anchor c -height 1 \
            #         -text "$caption(bddimages_config,test)" -command { ::skybot_Search::GetInfo "ad" }
            # pack $This.bdd.login.help -in $This.bdd.login -side left -anchor w -padx 1
+
+
+
+         #--- Cree un frame pour faire un saut
+         set framecurrent $This.frameblank00
+         frame $framecurrent -borderwidth 0 -cursor arrow
+         pack $framecurrent -in $This -anchor s -side top -expand 0 -fill x -padx 3 -pady 3
+
+           #--- Cree un label pour faire un saut
+           label $framecurrent.titre -font $bddconf(font,arial_10_b) \
+                 -text " "
+           pack $framecurrent.titre \
+                -in $framecurrent -side top -padx 3 -pady 3
+
+
+         #--- Cree un frame pour le nom de la liste
+         set framecurrent $This.datemindatemax
+         frame $framecurrent -borderwidth 0 -cursor arrow
+         pack $framecurrent -in $This -anchor s -side top -expand 0 -fill both -padx 3 -pady 3
+
+            #--- Cree un label
+            label $framecurrent.labmin -text "DATE-OBS min"  -anchor w -borderwidth 0 -relief flat
+            pack $framecurrent.labmin -in $framecurrent -side left -anchor w -padx 1
+            #--- Cree une ligne d'entree pour la variable form_req(datemin)
+            entry $framecurrent.datmin -textvariable form_req(datemin) -borderwidth 1 -relief groove  -justify left
+            pack $framecurrent.datmin -in $framecurrent -side left -anchor w -padx 1
+
+            #--- Creation du bouton ok
+            button $framecurrent.but_datmin \
+               -text "Cal" -borderwidth 2 \
+               -command { ::bddimages_calendar::run $audace(base).bddimages_liste }
+            pack $framecurrent.but_datmin \
+               -in $framecurrent -side right -anchor e \
+               -padx 2 -pady 2 -ipadx 2 -ipady 2 -expand 0
+
+           #--- Cree un label
+           label $framecurrent.labmax -text "DATE-OBS max"  -anchor w -borderwidth 0 -relief flat
+           pack $framecurrent.labmax -in $framecurrent -side left -anchor w -padx 1
+           #--- Cree une ligne d'entree pour la variable
+           entry $framecurrent.datmax -textvariable form_req(datemax) -borderwidth 1 -relief groove -justify left
+           pack $framecurrent.datmax -in $framecurrent -side left -anchor w -padx 1
 
 
 

@@ -10,14 +10,15 @@ partie 0 : Faire aparaitre la roadmap et todolist das doxygen
  - supprimer le bouton grisant, le mettre a actif auto ou le supprimer
 
 ** partie : Verification
+  - mettre un popup affichant ce qui sort dans le log : resultat verification
   - Comparaison des listes
     verif:-- Nombre d'images absentes sur le disque : 1
     ne dit pas quels sont les fichiers
 
 ** partie : Insertion Bddimages
 
+- Gerer le msg erreur a la sortie de l insrtion auto (bouton fermer)
 - Empecher la compression des fichiers lors de la lecture des entetes
-
 - Ajouter l action dans le menu clic droit : generer une image vide
 
 - lier les images brutes aux images corrigees
