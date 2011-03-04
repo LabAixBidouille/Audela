@@ -2,12 +2,21 @@ TODOLIST
 partie 0 : Faire aparaitre la roadmap et todolist das doxygen
 
 
-partie : Configuration 
+** partie : Configuration 
     boutoun clicable : "Mode Expert" 
     si la variable est active alors apparait les id, les boutons ressources/tests etc...
 
+ - propager le chemin automatique pour tmp.
+ - quand on change de conf , ca ne s applique pas tout le temps
+ - supprimer le bouton grisant, le mettre a actif auto ou le supprimer
 
-partie 1 : Insertion Bddimages
+** partie : Verification
+  -  
+Comparaison des listes
+verif:-- Nombre d'images absentes sur le disque : 1
+ne dit pas quels sont les fichiers
+
+** partie : Insertion Bddimages
 
 - Empecher la compression des fichiers lors de la lecture des entetes
 
