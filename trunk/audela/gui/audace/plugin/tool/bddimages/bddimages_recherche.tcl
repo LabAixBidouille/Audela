@@ -222,7 +222,7 @@ namespace eval bddimages_recherche {
       ::bddimages_recherche::get_list $::bddimages_recherche::current_list_id
       ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id
       return
-      }
+   }
 
 #--------------------------------------------------
 #  cmd_list_delete { }
@@ -402,9 +402,29 @@ namespace eval bddimages_recherche {
            #--- Cree un label pour le titre
            label $This.frame1.titre -font $bddconf(font,arial_10_b) \
                  -text "$caption(bddimages_recherche,titre)"
-           pack $This.frame1.titre \
-                -in $This.frame1 -side top -padx 3 -pady 3
+           pack $This.frame1.titre -in $This.frame1 -side top -padx 3 -pady 3
 
+           #--- Cree un frame pour afficher le status de la base
+           frame $This.frame1.action -borderwidth 1 -cursor arrow
+           pack $This.frame1.action -in $This.frame1 -side top -expand 1 -fill x
+              
+               #--- Boutons ACTIONS
+               button $This.frame1.action.unknown -state active -text "?" \
+                  -command { }
+               pack $This.frame1.action.unknown -in $This.frame1.action -side right -anchor w -padx 0
+               button $This.frame1.action.offset -state active -text "O" \
+                  -command { }
+               pack $This.frame1.action.offset -in $This.frame1.action -side right -anchor w -padx 0
+               button $This.frame1.action.dark -state active -text "D" \
+                  -command { ::bddimages_recherche::Affiche_Results  $::bddimages_recherche::current_list_id "NODARK" }
+               pack $This.frame1.action.dark -in $This.frame1.action -side right -anchor w -padx 0
+               button $This.frame1.action.flat -state active -text "F" \
+                  -command { }
+               pack $This.frame1.action.flat -in $This.frame1.action -side right -anchor w -padx 0
+               button $This.frame1.action.img -state active -text "I" \
+                  -command { }
+               pack $This.frame1.action.img -in $This.frame1.action -side right -anchor w -padx 0
+      
 	 #--- Cree un frame pour l'affichage des deux listes
 	 frame $This.frame6 -borderwidth 0
 	 pack $This.frame6 -expand yes -fill both -padx 3 -pady 6
@@ -803,7 +823,7 @@ proc bddimages_images_delete {  } {
 #
 #--------------------------------------------------
 
-   proc ::bddimages_recherche::Affiche_Results { i } {
+   proc ::bddimages_recherche::Affiche_Results { i {dark ""} } {
       variable This
       global audace caption color
       global bddconf popupTbl
@@ -814,8 +834,6 @@ proc bddimages_images_delete {  } {
       global list_of_columns
 
       #::console::affiche_resultat "clock seconds [clock seconds] \n"
-
-#      set list_of_columns [list "idbddimg" "filename" "telescop" "date-obs" "exposure" "object" "filter" "bin1" "bin2" "bddimages_version" "bddimages_states" "bddimages_type" "bddimages_wcs"]
 
       set empty [list "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-"]
       set list_of_columns [list [list "idbddimg"             "ID"] \
@@ -871,9 +889,10 @@ proc bddimages_images_delete {  } {
      catch { $::bddimages_recherche::This.frame6.result.tbl delete 0 end
               $::bddimages_recherche::This.frame6.result.tbl deletecolumns 0 end  }
 
+     # Entete des colonnes
      for { set i 0 } { $i < $nbcol} { incr i } {
        set current_columns [lindex $list_of_columns $i]
-       $::bddimages_recherche::This.frame6.result.tbl insertcolumns end "30" [lindex $current_columns 1] left
+       $::bddimages_recherche::This.frame6.result.tbl insertcolumns end 0 [lindex $current_columns 1] left
 	  }
 
       #--- Classement des objets par ordre alphabetique sans tenir compte des majuscules/minuscules
@@ -883,15 +902,57 @@ proc bddimages_images_delete {  } {
 
       #--- Extraction du resultat
       foreach line $affich_table {
-         $::bddimages_recherche::This.frame6.result.tbl insert end $line
-#         $::bddimages_recherche::This.frame6.result.tbl 
-        }
+         
+         if {[string equal -nocase [ string trim [lindex $line 11] ] "DARK"]} {
+            if {$dark != "NODARK"} {
+               $::bddimages_recherche::This.frame6.result.tbl insert end $line
+            }
+         } else {
+            $::bddimages_recherche::This.frame6.result.tbl insert end $line
+         }
+         
+      }
+      # Rafraichi le nombre d'elements dans la liste
+      set nbobj [expr $nbobj - 3]
+      
 
-      #---
+      #--- Configuration de la liste: couleur
       if { [ $::bddimages_recherche::This.frame6.result.tbl columncount ] != "0" } {
          #--- Les noms des objets sont en bleu
-         for { set i 0 } { $i < [ expr $nbobj - 1] } { incr i } {
-           # $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,1 -fg $color(blue)
+         for { set i 0 } { $i < $nbobj } { incr i } {
+           $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,1 -fg $color(blue)
+         }
+         #--- Les valeurs Unknown sont coloriees en rouge
+         image create photo icon_yes
+         icon_yes configure -file [file join $audace(rep_plugin) tool bddimages icons ok.gif]
+         image create photo icon_no
+         icon_no configure -file [file join $audace(rep_plugin) tool bddimages icons no.gif]
+         for { set i 0 } { $i < $nbobj } { incr i } {
+            
+            for { set j 9 } { $j < 20 } { incr j } {            
+               set val [$::bddimages_recherche::This.frame6.result.tbl getcells $i,$j]
+               # Si valeur cellule = 1 alors colorie en vert
+               if {[string equal -nocase [ string trim $val ] "-"]} {
+                  $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -text ""
+                  $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -image icon_no
+               }
+               if {[string equal -nocase [ string trim $val ] "1"]} {
+                  $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -text ""
+                  $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -image icon_yes
+               }
+               # Si valeur cellule = unknown alors colorie en rouge et marque ?
+               if {[string equal -nocase [ string trim $val ] "unknown"]} {
+                  $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -text ""
+                  $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -image icon_no
+               }
+            }
+
+#           for { set j 0 } { $j < [ expr $nbcol - 1] } { incr j } {
+#             $::bddimages_recherche::This.frame6.result.tbl getcells  
+#            if { } {
+#              $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,1 -fg $color(red)
+#            }
+#           }
          }
          #--- Trie par ordre alphabetique de la premiere colonne
          ::bddimages_recherche::cmdSortColumn $::bddimages_recherche::This.frame6.result.tbl 0
