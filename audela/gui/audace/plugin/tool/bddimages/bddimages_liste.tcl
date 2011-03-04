@@ -371,7 +371,14 @@ return [list "=" ">" "<" ">=" "<=" "!=" $caption(bddimages_liste,contient) $capt
 #--------------------------------------------------
 proc affich_form_req { } {
 
+  set jjdatemin [ mc_date2jd $form_req(datemin) ]
+  set jjdatemax [ mc_date2jd $form_req(datemax) ]
+
   ::console::affiche_resultat "-- affich_form_req"
+  ::console::affiche_resultat "datemin                  = $form_req(datemin)"
+  ::console::affiche_resultat "datemax                  = $form_req(datemax)"
+  ::console::affiche_resultat "jjdatemin                = $jjdatemin"
+  ::console::affiche_resultat "jjdatemax                = $jjdatemax"
   ::console::affiche_resultat "type_req_check 		= $form_req(type_req_check)"
   ::console::affiche_resultat "type_requ 		= $form_req(type_requ)"
   ::console::affiche_resultat "choix_limit_result	= $form_req(choix_limit_result)"
@@ -424,12 +431,14 @@ proc build_intellilist { name } {
   set intellilist ""
   lappend intellilist [list "name" "$name"]
 
-  lappend intellilist [list "type_req_check"	$form_req(type_req_check)]
-  lappend intellilist [list "type_requ"  	$form_req(type_requ)]
+  lappend intellilist [list "datemin"            $form_req(datemin)]              
+  lappend intellilist [list "datemax"            $form_req(datemax)]              
+  lappend intellilist [list "type_req_check"     $form_req(type_req_check)]       
+  lappend intellilist [list "type_requ"          $form_req(type_requ)]            
   lappend intellilist [list "choix_limit_result" $form_req(choix_limit_result)]
-  lappend intellilist [list "limit_result"	$form_req(limit_result)]
-  lappend intellilist [list "type_result"	$form_req(type_result)]
-  lappend intellilist [list "type_select"	$form_req(type_select)]
+  lappend intellilist [list "limit_result"       $form_req(limit_result)]         
+  lappend intellilist [list "type_result"        $form_req(type_result)]          
+  lappend intellilist [list "type_select"        $form_req(type_select)]          
 
   set y 0
   for {set x 1} {$x<=$indicereq} {incr x} {
@@ -450,6 +459,9 @@ proc build_intellilist { name } {
  return $intellilist
 }
 
+
+
+
 proc store_intellilist { l } {
   global nbintellilist
   global intellilisttotal
@@ -458,6 +470,9 @@ proc store_intellilist { l } {
   set intellilisttotal($nbintellilist) l
 }
 
+
+
+
 proc conf_save_intellilists { } {
    set l ""
    for {set x 1} {$x<=$::nbintellilist} {incr x} {
@@ -465,6 +480,9 @@ proc conf_save_intellilists { } {
    }
    set ::conf(bddimages,intellilists) $l
 }
+
+
+
 
 proc conf_load_intellilists { } {
    global nbintellilist
@@ -481,6 +499,10 @@ proc conf_load_intellilists { } {
          set intellilisttotal($nbintellilist) [lindex $l 0]
    }
 }
+
+
+
+
 
 proc accept { } {
 
@@ -506,6 +528,177 @@ proc accept { } {
    ::bddimages_liste::fermer
 }
 
+
+
+
+proc ::bddimages_liste::get_sqlcritere { table } {
+
+   global indicereq
+   global list_req
+   global form_req
+   global caption
+   global list_key_to_var
+
+
+   set intellilist(datemin)            $form_req(datemin)     
+   set intellilist(datemax)            $form_req(datemax)     
+   set intellilist(type_req_check)     $form_req(type_req_check)     
+   set intellilist(type_requ)          $form_req(type_requ)          
+   set intellilist(choix_limit_result) $form_req(choix_limit_result) 
+   set intellilist(limit_result)       $form_req(limit_result)       
+   set intellilist(type_result)        $form_req(type_result)        
+   set intellilist(type_select)        $form_req(type_select)        
+   set intellilist(nbimg)              $form_req(nbimg)              
+
+
+   for {set x 1} {$x<=$indicereq} {incr x} {
+    ::console::affiche_resultat "$list_req($x,champ) $list_req($x,condition) $list_req($x,valeur) $list_req($x,valide)\n"
+     }
+
+   set y 0
+   for {set x 1} {$x<=$indicereq} {incr x} {
+
+
+       if {$list_req($x,valide)=="ok"&&$list_req($x,valeur)!=""} {
+          incr y
+
+          if {$list_req($x,condition)==$caption(bddimages_liste,contient)} {
+             set intellilist($y,champ)     $list_req($x,champ)
+             set intellilist($y,condition) "LIKE"
+             set intellilist($y,valeur)    "%$list_req($x,valeur)%"
+             continue
+          }
+          if {$list_req($x,condition)== $caption(bddimages_liste,notcontient)} {
+             set intellilist($y,champ)     $list_req($x,champ)
+             set intellilist($y,condition) "NOT LIKE"
+             set intellilist($y,valeur) "%$list_req($x,valeur)%"
+             continue
+          }
+          set intellilist($y,champ)     $list_req($x,champ)
+          set intellilist($y,condition) $list_req($x,condition)
+          set intellilist($y,valeur)    $list_req($x,valeur)
+       }
+     }
+
+   if { $intellilist(type_requ)==$caption(bddimages_liste,toutes)} {
+     set cond "AND"
+     }
+   if { $intellilist(type_requ)==$caption(bddimages_liste,nimporte)} {
+     set cond "OR"
+     }
+
+   set intellilistlen $y
+   set cpt 0
+   set sqlcritere ""
+   for {set x 1} {$x<=$intellilistlen} {incr x} {
+     if {$cpt==0} {
+       set sqlcritere "AND `$list_key_to_var($intellilist($x,champ))` $intellilist($x,condition) '$intellilist($x,valeur)' "
+       } else {
+       set sqlcritere "$sqlcritere $cond `$list_key_to_var($intellilist($x,champ))` $intellilist($x,condition) '$intellilist($x,valeur)' "
+       }
+       incr cpt
+     }
+
+
+   if { $cpt!=0} {
+     set cond "AND"
+     } else {
+     set cond "WHERE"
+     }
+   set cond "AND"
+
+   set jjdatemin [ mc_date2jd "$intellilist(datemin)T00:00:00" ]
+   set jjdatemax [ mc_date2jd "$intellilist(datemax)T00:00:00" ]
+
+   if { $intellilist(datemin)!=""} {
+      if { $intellilist(datemax)!=""} {
+      set sqlcritere "$sqlcritere $cond (commun.datejj>$jjdatemin AND commun.datejj<$jjdatemax) "
+      set sqlcritere "$sqlcritere"
+      } else {
+      set sqlcritere "$sqlcritere $cond (commun.datejj>$jjdatemin) "
+      set sqlcritere "$sqlcritere"
+      }
+   } else {
+      if { $intellilist(datemax)!=""} {
+      set sqlcritere "$sqlcritere $cond (commun.datejj<$jjdatemax) "
+      set sqlcritere "$sqlcritere"
+      }
+   }
+
+   return $sqlcritere
+}
+
+
+
+
+
+
+proc ::bddimages_liste::get_imglist {  } {
+
+  set sqlcmd "SELECT DISTINCT idheader FROM header;"
+  set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
+  if {$err} {
+     bddimages_sauve_fich "Erreur de lecture de la table header par SQL"
+     bddimages_sauve_fich "	sqlcmd = $sqlcmd"
+     bddimages_sauve_fich "	err = $err"
+     bddimages_sauve_fich "	msg = $msg"
+     return
+     }
+
+  set table ""
+
+  foreach line $resultsql {
+
+    set idhd [lindex $line 0]
+    set sqlcritere [::bddimages_liste::get_sqlcritere "images_$idhd"]
+    set sqlcmd "SELECT images.idheader,images.tabname,images.filename,
+                images.dirfilename,images.sizefich,images.datemodif,
+                images_$idhd.* FROM images,images_$idhd,commun
+		WHERE images.idbddimg = images_$idhd.idbddimg 
+                AND   commun.idbddimg = images_$idhd.idbddimg
+                $sqlcritere  ;"
+    set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
+    if {[string first "Unknown column" $msg]==-1} {
+       if {$err} {
+          bddimages_sauve_fich "Erreur de lecture de la liste des header par SQL"
+          bddimages_sauve_fich "        sqlcmd = $sqlcmd"
+          bddimages_sauve_fich "        err = $err"
+          bddimages_sauve_fich "        msg = $msg"
+          ::console::affiche_erreur "Erreur de lecture de la liste des header par SQL\n"
+          ::console::affiche_erreur "        sqlcmd = $sqlcmd\n"
+          ::console::affiche_erreur "        err = $err\n"
+          ::console::affiche_erreur "        msg = $msg\n"
+          return
+       }
+
+       set nbresult [llength $resultcount]
+       set nbcol    [llength $resultcount]
+
+       if {$nbresult>0} {
+
+         set colvar [lindex $resultcount 0]
+         set rowvar [lindex $resultcount 1]
+         set nbcol  [llength $colvar]
+
+         foreach line $rowvar {
+           set resultline ""
+           set cpt 0
+           foreach col $colvar {
+             lappend resultline [list $col [lindex $line $cpt]]
+             incr cpt
+             }
+
+             lappend table $resultline
+         }
+
+       }
+
+    } 
+ }
+
+return $table
+}
+
 #--------------------------------------------------
 #  calcul_nbimg { }
 #--------------------------------------------------
@@ -522,131 +715,11 @@ proc accept { } {
 #--------------------------------------------------
 proc calcul_nbimg { } {
 
-   global indicereq
-   global list_req
    global form_req
-   global caption
-   global list_key_to_var
 
-
-  ::console::affiche_resultat "-- affich_form_req \n"
-  ::console::affiche_resultat "type_req_check 	= $form_req(type_req_check) \n"
-  ::console::affiche_resultat "type_requ 		= $form_req(type_requ) \n"
-  ::console::affiche_resultat "choix_limit_result	= $form_req(choix_limit_result) \n"
-  ::console::affiche_resultat "limit_result		= $form_req(limit_result) \n"
-  ::console::affiche_resultat "type_result		= $form_req(type_result) \n"
-  ::console::affiche_resultat "type_select		= $form_req(type_select) \n"
-  ::console::affiche_resultat "nbimg			= $form_req(nbimg) \n"
-  ::console::affiche_resultat "nbreq			= $indicereq \n"
-
-
-  set intellilist(type_req_check)     form_req(type_req_check)
-  set intellilist(type_requ)	      form_req(type_requ)
-  set intellilist(choix_limit_result) form_req(choix_limit_result)
-  set intellilist(limit_result)	      form_req(limit_result)
-  set intellilist(type_result) 	      form_req(type_result)
-  set intellilist(type_select) 	      form_req(type_select)
-  set intellilist(nbimg) 	      form_req(nbimg)
-
-  for {set x 1} {$x<=$indicereq} {incr x} {
-   ::console::affiche_resultat "$list_req($x,champ) $list_req($x,condition) $list_req($x,valeur) $list_req($x,valide)\n"
-    }
-
-  ::console::affiche_resultat "-- \n"
-  set y 0
-  for {set x 1} {$x<=$indicereq} {incr x} {
-      ::console::affiche_resultat "**	$x	$list_req($x,champ)	$list_req($x,condition)	$list_req($x,valeur)\n"
-    if {$list_req($x,valide)=="ok"&&$list_req($x,valeur)!=""} {
-      incr y
-      ::console::affiche_resultat "**	$x	$list_req($x,champ)	$list_req($x,condition)	$list_req($x,valeur)\n"
-
-      if {$list_req($x,condition)==$caption(bddimages_liste,contient)} {
-         ::console::affiche_resultat "** yes $caption(bddimages_liste,contient)\n"
-         set intellilist($y,champ)     $list_req($x,champ)
-         set intellilist($y,condition) "LIKE"
-         set intellilist($y,valeur)    "%$list_req($x,valeur)%"
-         continue
-         }
-      if {$list_req($x,condition)== $caption(bddimages_liste,notcontient)} {
-         ::console::affiche_resultat "** yes $caption(bddimages_liste,notcontient)\n"
-         set intellilist($y,champ)     $list_req($x,champ)
-         set intellilist($y,condition) "NOT LIKE"
-         set intellilist($y,valeur) "%$list_req($x,valeur)%"
-         continue
-         }
-      set intellilist($y,champ)     $list_req($x,champ)
-      set intellilist($y,condition) $list_req($x,condition)
-      set intellilist($y,valeur)    $list_req($x,valeur)
-      }
-    }
-
-  set intellilistlen $y
-  for {set x 1} {$x<=$intellilistlen} {incr x} {
-   ::console::affiche_resultat "$intellilist($x,champ) $intellilist($x,condition) $intellilist($x,valeur)\n"
-    }
-
-
-
-
-  if { $intellilist(type_req_check)==0} {
-    set intellilist(nbimg) "?"
-    return
-    }
-
-  if { $intellilist(type_requ)==$caption(bddimages_liste,toutes)} {
-    set cond "AND"
-    }
-  if { $intellilist(type_requ)==$caption(bddimages_liste,nimporte)} {
-    set cond "OR"
-    }
-
-  set cpt 0
-  set sqlcritere ""
-  for {set x 1} {$x<=$intellilistlen} {incr x} {
-    if {$cpt==0} {
-      set sqlcritere "WHERE `$list_key_to_var($intellilist($x,champ))` $intellilist($x,condition) '$intellilist($x,valeur)' "
-      } else {
-      set sqlcritere "$sqlcritere $cond `$list_key_to_var($intellilist($x,champ))` $intellilist($x,condition) '$intellilist($x,valeur)' "
-      }
-    }
-
-  set sqlcmd "SELECT DISTINCT idheader FROM header;"
-  set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
-  if {$err} {
-     bddimages_sauve_fich "Erreur de lecture de la table header par SQL"
-     bddimages_sauve_fich "	sqlcmd = $sqlcmd"
-     bddimages_sauve_fich "	err = $err"
-     bddimages_sauve_fich "	msg = $msg"
-     set intellilist(nbimg) "Error"
-     return
-     }
-
-  set intellilist(nbimg) 0
-
-  foreach line $resultsql {
-    set idhd [lindex $line 0]
-    ::console::affiche_resultat "**+++ $idhd \n"
-    set sqlcmd "SELECT count(*) FROM images_$idhd $sqlcritere;"
-    ::console::affiche_resultat "** $sqlcmd \n"
-    set err [catch {set resultcount [::bddimages_sql::sql query $sqlcmd]} msg]
-    ::console::affiche_resultat "** $err \n"
-    ::console::affiche_resultat "** $msg \n"
-    if {[string first "Unknown column" $msg]==-1} {
-       if {$err} {
-         bddimages_sauve_fich "Erreur de lecture de la liste des header par SQL"
-         bddimages_sauve_fich "	sqlcmd = $sqlcmd"
-         bddimages_sauve_fich "	err = $err"
-         bddimages_sauve_fich "	msg = $msg"
-         set intellilist(nbimg) "Error"
-         return
-         }
-       set intellilist(nbimg) [expr $intellilist(nbimg) + [lindex $resultcount 0]]
-       ::console::affiche_resultat "** idhd= $idhd nb=[lindex $resultcount 0] total=$intellilist(nbimg) \n"
-       } else {
-       ::console::affiche_resultat "** Unknown column in images_$idhd \n"
-       }
-    }
-set form_req(nbimg) $intellilist(nbimg)
+   set form_req(nbimg) [llength [::bddimages_liste::get_imglist]]
+   ::console::affiche_resultat "Nb img = $form_req(nbimg) \n"
+   return
 }
 #--------------------------------------------------
 #  add_requete { }
@@ -815,6 +888,9 @@ return
 
       set form_req(name) "Newlist[ expr $::nbintellilist + 1 ]"
       set form_req(type_req_check) ""
+      set form_req(datemin) ""
+      set form_req(datemax) ""
+      set form_req(type_req_check) ""
       set form_req(type_requ) [lindex $list_comb1 0]
       set form_req(choix_limit_result) ""
       set form_req(limit_result) "25"
@@ -846,6 +922,8 @@ return
          }
         }
         set form_req(name) $a(name)
+        set form_req(datemin) $a(datemin)
+        set form_req(datemax) $a(datemax)
         set form_req(type_req_check) $a(type_req_check)
         set form_req(type_requ) $a(type_requ)
         set form_req(choix_limit_result) $a(choix_limit_result)
