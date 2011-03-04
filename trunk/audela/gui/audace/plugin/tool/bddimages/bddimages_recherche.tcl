@@ -1046,7 +1046,7 @@ proc ::bddimages_recherche::get_list { i } {
 
 
    set laliste  $intellilisttotal($i)
-   #::console::affiche_resultat "laliste = $laliste\n"
+   ::console::affiche_resultat "laliste = $laliste\n"
    set val [lindex $laliste 0]
    set intellilist(name) [lindex $val 1]
    set laliste [::ldelete $laliste 0]
@@ -1150,13 +1150,13 @@ proc ::bddimages_recherche::get_list { i } {
     set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
     if {[string first "Unknown column" $msg]==-1} {
        if {$err} {
-	  bddimages_sauve_fich "Erreur de lecture de la liste des header par SQL"
-	  bddimages_sauve_fich "	sqlcmd = $sqlcmd"
-	  bddimages_sauve_fich "	err = $err"
-	  bddimages_sauve_fich "	msg = $msg"
-	  set intellilist(nbimg) "Error"
-	  return
-	  }
+          bddimages_sauve_fich "Erreur de lecture de la liste des header par SQL"
+          bddimages_sauve_fich "        sqlcmd = $sqlcmd"
+          bddimages_sauve_fich "        err = $err"
+          bddimages_sauve_fich "        msg = $msg"
+          set intellilist(nbimg) "Error"
+          return
+       }
        #::console::affiche_resultat "nb images [llength $resultcount ]\n"
 
        set nbresult [llength $resultcount]
@@ -1168,22 +1168,21 @@ proc ::bddimages_recherche::get_list { i } {
          set rowvar [lindex $resultcount 1]
          set nbcol  [llength $colvar]
 
-	 foreach line $rowvar {
-	   set resultline ""
+         foreach line $rowvar {
+           set resultline ""
            set cpt 0
-	   foreach col $colvar {
+           foreach col $colvar {
              lappend resultline [list $col [lindex $line $cpt]]
-	     incr cpt
+             incr cpt
              }
 
-	     lappend table $resultline
-	   }
+             lappend table $resultline
+         }
 
-	 }
-
-       } else {
        }
-    }
+
+    } 
+ }
 
   #::console::affiche_resultat "** nb data in table [llength $table] \n"
   set table_result($i) $table
