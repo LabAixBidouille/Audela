@@ -171,7 +171,6 @@ namespace eval bddimages_recherche {
       set idbddimg  [lindex [$::bddimages_recherche::This.frame6.result.tbl get $i] 0]
 
       affiche_image_by_idbddimg $idbddimg
-      return
       ###for { set i 0 } { $i <= [ expr [llength $bddconf(listetotale)] - 1 ] } { incr i } {
       ### set selectfich [$::bddimages_recherche::This.frame6.result.tbl selection includes $i]
       ###  if {$selectfich==1} {
@@ -356,12 +355,6 @@ namespace eval bddimages_recherche {
 
          #--- Cree un menu pour le panneau
          
-         
-         
-         
-         
-         
-         
          frame $This.frame0 -borderwidth 1 -relief raised
          pack $This.frame0 -side top -fill x
          
@@ -397,8 +390,9 @@ namespace eval bddimages_recherche {
              # $This.frame0.aide.menu add separator
              # $This.frame0.aide.menu add command -label "$caption(search,apropos)" -command { ::skybot_Search::apropos }
            pack $This.frame0.aide -side right
+         
          #--- barre de menu
-	 tk_menuBar $This.frame0 $This.frame0.file $This.frame0.image $This.frame0.aide
+	      tk_menuBar $This.frame0 $This.frame0.file $This.frame0.image $This.frame0.aide
 
 
          #--- Cree un frame pour afficher le status de la base
@@ -459,8 +453,7 @@ namespace eval bddimages_recherche {
             pack $This.frame6.liste.tbl -in $This.frame6.liste -expand yes -fill both
             bind $This.frame6.liste.tbl <<ListboxSelect>> " ::bddimages_recherche::cmd_list_select $This.frame6.liste.tbl "
 
-
-
+      
          #--- Cree un frame pour y mettre les boutons
          frame $This.frame11 \
             -borderwidth 0 -cursor arrow
@@ -514,7 +507,8 @@ namespace eval bddimages_recherche {
                -textvariable bddconf(inserinfo)
            pack $This.frame11.nbimg -in $This.frame11 -side left -padx 3 -pady 1 -anchor w
 
-       Affiche_listes
+      
+      Affiche_listes
 
       #--- Lecture des info des images
 
@@ -821,8 +815,31 @@ proc bddimages_images_delete {  } {
 
       #::console::affiche_resultat "clock seconds [clock seconds] \n"
 
-      set list_of_columns [list "idbddimg" "filename" "telescop" "date-obs" "exposure" "object" "filter" "bin1" "bin2" "bddimages_version" "bddimages_states" "bddimages_type" "bddimages_wcs"]
-      set empty [list "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-"]
+#      set list_of_columns [list "idbddimg" "filename" "telescop" "date-obs" "exposure" "object" "filter" "bin1" "bin2" "bddimages_version" "bddimages_states" "bddimages_type" "bddimages_wcs"]
+
+      set empty [list "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-"]
+      set list_of_columns [list [list "idbddimg"             "ID"] \
+                                 [list "filename"             "Filename"] \
+                                 [list "telescop"             "Telescope"] \
+                                 [list "date-obs"             "Date-Obs"] \
+                                 [list "exposure"             "Exposure"] \
+                                 [list "object"               "Object"] \
+                                 [list "filter"               "Filter"] \
+                                 [list "bin1"                 "BIN 1"] \
+                                 [list "bin2"                 "BIN 2"] \
+                                 [list "bddimages_version"    "V"] \
+                                 [list "bddimages_states"     "S"] \
+                                 [list "bddimages_type"       "T"] \
+                                 [list "bddimages_wcs"        "W"] \
+                                 [list "bddimages_namecata"   "NC"] \
+                                 [list "bddimages_datecata"   "DC"] \
+                                 [list "bddimages_astroid"    "A"] \
+                                 [list "bddimages_astrometry" "AS"] \
+                                 [list "bddimages_cataastrom" "CA"] \
+                                 [list "bddimages_photometry" "P"] \
+                                 [list "bddimages_cataphotom" "CP"]
+                                                                
+      ]
 
       set table $table_result($i)
       #::console::affiche_resultat "table: $i \n"
@@ -830,32 +847,34 @@ proc bddimages_images_delete {  } {
       set nbobj [llength $table]
       set bddconf(inserinfo) "Total($nbobj)"
       set nbcol [llength $list_of_columns]
-      # ::console::affiche_resultat "nbcol = $nbcol \n"
-      # ::console::affiche_resultat "nbobj = $nbobj \n"
+
+::console::affiche_resultat "nbcol = $nbcol \n"
+::console::affiche_resultat "nbobj = $nbobj \n"
 
       set affich_table ""
-
 
       foreach line $table {
        set lign_affich $empty
        for { set i 0 } { $i < $nbcol} { incr i } {
-           foreach var $line {
-	      if {[lindex $var 0] eq [lindex $list_of_columns $i]} {
-                set lign_affich [lreplace $lign_affich $i $i [lindex $var 1]]
-                break
-		}
-              }
-	  }
-	  lappend affich_table $lign_affich
-	}
+         set current_columns [lindex $list_of_columns $i]
+         foreach var $line {
+           if {[lindex $var 0] eq [lindex $current_columns 0]} {
+              set lign_affich [lreplace $lign_affich $i $i [lindex $var 1]]
+              break
+		     }
+         }
+	    }
+	    lappend affich_table $lign_affich
 
-      catch {  $::bddimages_recherche::This.frame6.result.tbl delete 0 end
-	  $::bddimages_recherche::This.frame6.result.tbl deletecolumns 0 end
-	  }
+     }
+      
+     catch { $::bddimages_recherche::This.frame6.result.tbl delete 0 end
+              $::bddimages_recherche::This.frame6.result.tbl deletecolumns 0 end  }
 
-      for { set i 0 } { $i < $nbcol} { incr i } {
-         $::bddimages_recherche::This.frame6.result.tbl insertcolumns end "30" [lindex $list_of_columns $i] left
-	 }
+     for { set i 0 } { $i < $nbcol} { incr i } {
+       set current_columns [lindex $list_of_columns $i]
+       $::bddimages_recherche::This.frame6.result.tbl insertcolumns end "30" [lindex $current_columns 1] left
+	  }
 
       #--- Classement des objets par ordre alphabetique sans tenir compte des majuscules/minuscules
       if { [ $::bddimages_recherche::This.frame6.result.tbl columncount ] != "0" } {
@@ -865,6 +884,7 @@ proc bddimages_images_delete {  } {
       #--- Extraction du resultat
       foreach line $affich_table {
          $::bddimages_recherche::This.frame6.result.tbl insert end $line
+#         $::bddimages_recherche::This.frame6.result.tbl 
         }
 
       #---
@@ -921,10 +941,10 @@ proc bddimages_images_delete {  } {
         set intellilist  $intellilisttotal($i)
 
         foreach val $intellilist {
-	  if {[lindex $val 0]=="name"} {set name [lindex $val 1]}
-	  }
+          if {[lindex $val 0]=="name"} {set name [lindex $val 1]}
+	     }
         $::bddimages_recherche::This.frame6.liste.tbl insert end $name
-        }
+      }
       #---
       if { [ $::bddimages_recherche::This.frame6.liste.tbl columncount ] != "0" } {
          #--- Les noms des objets sont en bleu
