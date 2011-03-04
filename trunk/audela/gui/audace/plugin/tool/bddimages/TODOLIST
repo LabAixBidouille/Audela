@@ -2,12 +2,21 @@ TODOLIST
 partie 0 : Faire aparaitre la roadmap et todolist das doxygen
 
 
+partie : Configuration 
+    boutoun clicable : "Mode Expert" 
+    si la variable est active alors apparait les id, les boutons ressources/tests etc...
+
+
 partie 1 : Insertion Bddimages
 
 - Empecher la compression des fichiers lors de la lecture des entetes
 
-partie 2 : Gestion fenetre Recherche
+- Ajouter l action dans le menu clic droit : generer une image vide
 
+- lier les images brutes aux images corrigees
+
+
+partie 2 : Gestion fenetre Recherche
 
 - Dans la fenetre recherche : nouvelle liste : 
    Ajouter champs date :
@@ -20,13 +29,32 @@ partie 2 : Gestion fenetre Recherche
      deplacement avec les fleches
 
 - Dans la fenetre recherche : 
-     permettre l effacement de l image bdd+disque par la touche "suppr"
-     ajouter dialogue oui/non avant la suppression
+     ajouter dialogue oui/non avant la suppression d une image
 
 - Dans la fenetre recherche :
      faire aparaitre les champs BDI
 
+- Dans la fenetre recherche :
+     faire des boutons de filtres suivant BDI,FLAT,DARK,OFFSET,WCS,ASTROMETRY,PHOTOM,ASTROID
+     filtre actif : l image apparait dans la liste.
 
+- Dans la fenetre recherche
+     gestion des listes associées a l id de configuration.
+
+- Dans la fenetre recherche
+     colonnes se retaillent automatiqement
+     les colonnes bdi sont figées
+     bouton d affichage des colonnes bdi
+
+- Nouvelle fenetre liste pour exprimer le cata
+     chaque clic sur une entree de la liste met un rond vert dans l image.
+          
+- Dans la fenetre liste
+     faire les onglets suivant asteroide, usnoa2, ucac2, nomad1
+     qui affichent la liste pour chaque source identifiee.
+
+     
+ 
 partie 3 : Gestions des images
 
  - Effacement propre d un fichier de la base
