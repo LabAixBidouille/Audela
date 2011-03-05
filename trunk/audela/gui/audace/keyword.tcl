@@ -1433,7 +1433,7 @@ proc ::keyword::recupPosDim { visuNo } {
 #    visuNo
 #------------------------------------------------------------------------------
 proc ::keyword::getTypeImage { } {
-   return $::keyword::private(typeImageSelected)
+   return $::keyword::private(typeImage)
 }
 
 #------------------------------------------------------------
