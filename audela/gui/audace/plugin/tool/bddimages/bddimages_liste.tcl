@@ -499,20 +499,6 @@ proc exec_intellilist { num } {
 
 
 
-proc form_req_to_intellilist { name } {
-  global form_req
-
-  set intellilist     [list "name"               $name]  
-  lappend intellilist [list "datemin"            $form_req(datemin)]              
-  lappend intellilist [list "datemax"            $form_req(datemax)]              
-  lappend intellilist [list "type_req_check"     $form_req(type_req_check)]       
-  lappend intellilist [list "type_requ"          $form_req(type_requ)]            
-  lappend intellilist [list "choix_limit_result" $form_req(choix_limit_result)]
-  lappend intellilist [list "limit_result"       $form_req(limit_result)]         
-  lappend intellilist [list "type_result"        $form_req(type_result)]          
-  lappend intellilist [list "type_select"        $form_req(type_select)]          
-  return $intellilist
-}
 
 
 
@@ -567,6 +553,38 @@ proc ::bddimages_liste::build_intellilist { name } {
    return $intellilist
 }
 
+
+
+# Construit une intelliliste a partir du formulaire
+proc ::bddimages_liste::load_intellilist { intellilist } {
+
+   global indicereq
+   global list_req
+   global form_req
+
+
+   set form_req(name)               [get_val_intellilist $intellilist "name"]
+   set form_req(datemin)            [get_val_intellilist $intellilist "datemin"]
+   set form_req(datemax)            [get_val_intellilist $intellilist "datemax"]
+   set form_req(type_req_check)     [get_val_intellilist $intellilist "type_req_check"]
+   set form_req(type_requ)          [get_val_intellilist $intellilist "type_requ"]
+   set form_req(choix_limit_result) [get_val_intellilist $intellilist "choix_limit_result"]
+   set form_req(limit_result)       [get_val_intellilist $intellilist "limit_result"]
+   set form_req(type_result)        [get_val_intellilist $intellilist "type_result"]
+   set form_req(type_select)        [get_val_intellilist $intellilist "type_select"]
+
+   set reqlist                      [get_val_intellilist $intellilist "reqlist"]
+
+   set indicereq 0
+   foreach req $reqlist {
+      incr indicereq
+      set list_req($indicereq,valide)    "ok"
+      set list_req($indicereq,condition) [lindex $req 2]
+      set list_req($indicereq,champ)     [lindex $req 1]
+      set list_req($indicereq,valeur)    [lindex $req 3]
+   }
+
+}
 
 
 
@@ -991,6 +1009,7 @@ return
 
 
    proc createDialog { listname } {
+
       variable This
       global audace
       global caption
@@ -998,13 +1017,12 @@ return
       global conf
       global bddconf
       global intellilisttotal
-
       global indicereq
       global form_req
+      global list_req
 
       set indicereq 0
 
-      global list_req
 
       set list_comb1 [list $caption(bddimages_liste,toutes) $caption(bddimages_liste,nimporte)]
       set list_comb2 [list $caption(bddimages_liste,elem)]
@@ -1033,35 +1051,18 @@ return
         set edit 1
         set editname $listname
         set editid [get_intellilist_by_name $listname]
-        puts "createDialog : $listname id=$editid"
+        #::console::affiche_resultat "createDialog : $listname id=$editid\n"
       }
 
       set indicereqinit 0
 
       if { $edit } {
         set  l $intellilisttotal($editid)
-        foreach e $l {
-         set key [lindex $e 0]
-         if { [string is integer $key] } {
-           set list_req($key,champ) [lindex $e 1]
-           set list_req($key,condition) [lindex $e 2]
-           set list_req($key,valeur) [lindex $e 3]
-           if { $indicereqinit < $key } { set indicereqinit $key }
-         } else {
-           set a($key) [lindex $e 1]
-         }
-        }
-        set form_req(name) $a(name)
-        set form_req(datemin) $a(datemin)
-        set form_req(datemax) $a(datemax)
-        set form_req(type_req_check) $a(type_req_check)
-        set form_req(type_requ) $a(type_requ)
-        set form_req(choix_limit_result) $a(choix_limit_result)
-        set form_req(limit_result) $a(limit_result)
-        set form_req(type_select) $a(type_select)
+        #::console::affiche_resultat "edit : $edit\n"
+        #::console::affiche_resultat "l : $l\n"
+        ::bddimages_liste::load_intellilist $l
         parray form_req
-        parray list_req
-        array unset a
+        if { [info exists list_req ] } then { parray list_req }
       } else {
        array unset list_req
       }
