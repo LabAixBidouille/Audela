@@ -389,8 +389,59 @@ proc affich_form_req { } {
 
 }
 
+
+
+
+
+
+proc ::bddimages_liste::get_val_intellilist { intellilist val } {
+
+   foreach  l $intellilist  {
+       set x [lsearch $l $val]
+       if {$x!=-1} {
+          set y [lindex $l 1]
+          return $y
+       }
+   }
+}
+
+
+
+
+
+
+
+
+
+
+
+proc ::bddimages_liste::affiche_intellilist { intellilist } {
+
+  ::console::affiche_resultat "-- affiche_intellilist\n"
+  ::console::affiche_resultat "intellilist = $intellilist \n"
+  ::console::affiche_resultat "name = [get_val_intellilist $intellilist "name"] \n"
+  ::console::affiche_resultat "datemin = [get_val_intellilist $intellilist "datemin"]\n"
+  ::console::affiche_resultat "datemax = [get_val_intellilist $intellilist "datemax"]\n"
+  ::console::affiche_resultat "type_req_check = [get_val_intellilist $intellilist "type_req_check"]\n"
+  ::console::affiche_resultat "type_requ = [get_val_intellilist $intellilist "type_requ"]\n"
+  ::console::affiche_resultat "choix_limit_result = [get_val_intellilist $intellilist "choix_limit_result"]\n"
+  ::console::affiche_resultat "limit_result = [get_val_intellilist $intellilist "limit_result"]\n"
+  ::console::affiche_resultat "type_result = [get_val_intellilist $intellilist "type_result"]\n"
+  ::console::affiche_resultat "type_select = [get_val_intellilist $intellilist "type_select"]\n"
+  ::console::affiche_resultat "reqlist = [get_val_intellilist $intellilist "reqlist"]\n"
+  ::console::affiche_resultat "--\n"
+
+}
+
+
+
+
+
+
+
+
 #--------------------------------------------------
-#  calcul_nbimg { }
+#  get_intellilist_by_name { }
 #--------------------------------------------------
 #
 #    fonction  :
@@ -398,39 +449,60 @@ proc affich_form_req { } {
 #
 #    procedure externe :
 #
-#    variables en entree : none
+#    variables en entree : name
 #
-#    variables en sortie : liste
+#    variables en sortie : none
 #
 #--------------------------------------------------
 proc get_intellilist_by_name { name } {
+
   global nbintellilist
   global intellilisttotal
+
   set found 0
   for {set i 1} {$i<=$nbintellilist} {incr i} {
-   set l $intellilisttotal($i)
-   if { [lindex [lindex $l 0] 1] eq "$name" } then { set found 1 ; break }
+     set l $intellilisttotal($i)
+     if { [lindex [lindex $l 0] 1] eq "$name" } then { set found 1 ; break }
   }
   if { $found } { return $i } else { return -1 }
 }
 
+
+
+
+
+
+
+
+
+
+
 proc exec_intellilist { num } {
+
  ::bddimages_recherche::Affiche_listes
  ::bddimages_recherche::get_list $num
  ::bddimages_recherche::Affiche_Results $num
 }
 
-# Construit une intelliliste a partir du formulaire
-proc build_intellilist { name } {
-  global indicereq
-  global list_req
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+proc form_req_to_intellilist { name } {
   global form_req
-  global caption
-  global nbintellilist
 
-  set intellilist ""
-  lappend intellilist [list "name" "$name"]
-
+  set intellilist     [list "name"               $name]  
   lappend intellilist [list "datemin"            $form_req(datemin)]              
   lappend intellilist [list "datemax"            $form_req(datemax)]              
   lappend intellilist [list "type_req_check"     $form_req(type_req_check)]       
@@ -439,66 +511,120 @@ proc build_intellilist { name } {
   lappend intellilist [list "limit_result"       $form_req(limit_result)]         
   lappend intellilist [list "type_result"        $form_req(type_result)]          
   lappend intellilist [list "type_select"        $form_req(type_select)]          
-
-  set y 0
-  for {set x 1} {$x<=$indicereq} {incr x} {
-    if {$list_req($x,valide)=="ok"&&$list_req($x,valeur)!=""} {
-      incr y
-      if {$list_req($x,condition)== $caption(bddimages_liste,contient)} {
-         lappend intellilist [list $y $list_req($x,champ) "LIKE" "%$list_req($x,valeur)%"]
-         continue
-         }
-      if {$list_req($x,condition)== $caption(bddimages_liste,notcontient)} {
-         lappend intellilist [list $y $list_req($x,champ) "NOT LIKE" "%$list_req($x,valeur)%"]
-         continue
-         }
-      lappend intellilist [list $y $list_req($x,champ) $list_req($x,condition) $list_req($x,valeur)]
-      }
-    }
-
- return $intellilist
+  return $intellilist
 }
 
 
 
 
-proc store_intellilist { l } {
-  global nbintellilist
-  global intellilisttotal
 
-  incr nbintellilist
-  set intellilisttotal($nbintellilist) l
+
+
+
+
+
+
+
+
+# Construit une intelliliste a partir du formulaire
+proc ::bddimages_liste::build_intellilist { name } {
+
+   global indicereq
+   global list_req
+   global form_req
+   global caption
+   global nbintellilist
+
+   set intellilist     ""
+   lappend intellilist [list "name"               $name]              
+   lappend intellilist [list "datemin"            $form_req(datemin)]              
+   lappend intellilist [list "datemax"            $form_req(datemax)]              
+   lappend intellilist [list "type_req_check"     $form_req(type_req_check)]       
+   lappend intellilist [list "type_requ"          $form_req(type_requ)]            
+   lappend intellilist [list "choix_limit_result" $form_req(choix_limit_result)]
+   lappend intellilist [list "limit_result"       $form_req(limit_result)]         
+   lappend intellilist [list "type_result"        $form_req(type_result)]          
+   lappend intellilist [list "type_select"        $form_req(type_select)]          
+
+   set reqlist ""
+   set y 0
+   for {set x 1} {$x<=$indicereq} {incr x} {
+     if {$list_req($x,valide)=="ok"&&$list_req($x,valeur)!=""} {
+       incr y
+       if {$list_req($x,condition)== $caption(bddimages_liste,contient)} {
+          lappend reqlist [list $y $list_req($x,champ) "LIKE" "%$list_req($x,valeur)%"]
+          continue
+          }
+       if {$list_req($x,condition)== $caption(bddimages_liste,notcontient)} {
+          lappend reqlist [list $y $list_req($x,champ) "NOT LIKE" "%$list_req($x,valeur)%"]
+          continue
+          }
+       lappend reqlist [list $y $list_req($x,champ) $list_req($x,condition) $list_req($x,valeur)]
+       }
+     }
+   lappend intellilist [list "reqlist" $reqlist]
+
+   return $intellilist
 }
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 proc conf_save_intellilists { } {
+
+   global bddconf
+
    set l ""
    for {set x 1} {$x<=$::nbintellilist} {incr x} {
       lappend l [list $::intellilisttotal($x)]
    }
-   set ::conf(bddimages,intellilists) $l
+   set ::conf(bddimages,$bddconf(current_config),intellilists) $l
 }
 
 
 
 
+
+
+
+
+
+
+
+
 proc conf_load_intellilists { } {
+
    global nbintellilist
    global intellilisttotal
+   global bddconf
+
    set nbintellilist 0
    
    # hack pour initialisation
    if { [catch {get_list_box_champs} msg] } {
       return -code error $msg
    }
-   if { ! [info exists ::conf(bddimages,intellilists) ] } then { return }
-      foreach l $::conf(bddimages,intellilists) {
-         incr nbintellilist
-         set intellilisttotal($nbintellilist) [lindex $l 0]
+   if { ! [info exists ::conf(bddimages,$bddconf(current_config),intellilists) ] } then { return }
+   foreach l $::conf(bddimages,$bddconf(current_config),intellilists) {
+      incr nbintellilist
+      set intellilisttotal($nbintellilist) [lindex $l 0]
    }
 }
+
+
+
+
+
 
 
 
@@ -515,14 +641,14 @@ proc accept { } {
 
    set idx [get_intellilist_by_name $form_req(name)]
    if { $idx == -1 } {
-    incr nbintellilist
-    set idx $nbintellilist
+      incr nbintellilist
+      set idx $nbintellilist
    }
    set intellilist [build_intellilist "$form_req(name)"]
    set intellilisttotal($idx) $intellilist
-# ::bddimages_recherche::Affiche_listes
-# ::bddimages_recherche::get_list $nbintellilist
-# ::bddimages_recherche::Affiche_Results $nbintellilist
+   # ::bddimages_recherche::Affiche_listes
+   # ::bddimages_recherche::get_list $nbintellilist
+   # ::bddimages_recherche::Affiche_Results $nbintellilist
    exec_intellilist $idx
    conf_save_intellilists
    ::bddimages_liste::fermer
@@ -531,7 +657,19 @@ proc accept { } {
 
 
 
-proc ::bddimages_liste::get_sqlcritere { table } {
+#--------------------------------------------------
+#  get_sqlcritere { }
+#--------------------------------------------------
+#
+#    fonction  :
+#       construit la requete sql pour une table images_xxx
+#
+#    variables en entree : id header de la table
+#
+#    variables en sortie : requete sql
+#
+#--------------------------------------------------
+proc ::bddimages_liste::get_sqlcritere { intellilist table } {
 
    global indicereq
    global list_req
@@ -540,88 +678,57 @@ proc ::bddimages_liste::get_sqlcritere { table } {
    global list_key_to_var
 
 
-   set intellilist(datemin)            $form_req(datemin)     
-   set intellilist(datemax)            $form_req(datemax)     
-   set intellilist(type_req_check)     $form_req(type_req_check)     
-   set intellilist(type_requ)          $form_req(type_requ)          
-   set intellilist(choix_limit_result) $form_req(choix_limit_result) 
-   set intellilist(limit_result)       $form_req(limit_result)       
-   set intellilist(type_result)        $form_req(type_result)        
-   set intellilist(type_select)        $form_req(type_select)        
-   set intellilist(nbimg)              $form_req(nbimg)              
+   set ilist(name)               [get_val_intellilist $intellilist "name"]
+   set ilist(datemin)            [get_val_intellilist $intellilist "datemin"]
+   set ilist(datemax)            [get_val_intellilist $intellilist "datemax"]
+   set ilist(type_req_check)     [get_val_intellilist $intellilist "type_req_check"]
+   set ilist(type_requ)          [get_val_intellilist $intellilist "type_requ"]
+   set ilist(choix_limit_result) [get_val_intellilist $intellilist "choix_limit_result"]
+   set ilist(limit_result)       [get_val_intellilist $intellilist "limit_result"]
+   set ilist(type_result)        [get_val_intellilist $intellilist "type_result"]
+   set ilist(type_select)        [get_val_intellilist $intellilist "type_select"]
+   set reqlist                   [get_val_intellilist $intellilist "reqlist"]
 
-
-   for {set x 1} {$x<=$indicereq} {incr x} {
-    ::console::affiche_resultat "$list_req($x,champ) $list_req($x,condition) $list_req($x,valeur) $list_req($x,valide)\n"
+   
+   if { $ilist(type_requ)==$caption(bddimages_liste,toutes)} {
+     set reqcond "AND"
+     }
+   if { $ilist(type_requ)==$caption(bddimages_liste,nimporte)} {
+     set reqcond "OR"
      }
 
-   set y 0
-   for {set x 1} {$x<=$indicereq} {incr x} {
 
-
-       if {$list_req($x,valide)=="ok"&&$list_req($x,valeur)!=""} {
-          incr y
-
-          if {$list_req($x,condition)==$caption(bddimages_liste,contient)} {
-             set intellilist($y,champ)     $list_req($x,champ)
-             set intellilist($y,condition) "LIKE"
-             set intellilist($y,valeur)    "%$list_req($x,valeur)%"
-             continue
-          }
-          if {$list_req($x,condition)== $caption(bddimages_liste,notcontient)} {
-             set intellilist($y,champ)     $list_req($x,champ)
-             set intellilist($y,condition) "NOT LIKE"
-             set intellilist($y,valeur) "%$list_req($x,valeur)%"
-             continue
-          }
-          set intellilist($y,champ)     $list_req($x,champ)
-          set intellilist($y,condition) $list_req($x,condition)
-          set intellilist($y,valeur)    $list_req($x,valeur)
-       }
-     }
-
-   if { $intellilist(type_requ)==$caption(bddimages_liste,toutes)} {
-     set cond "AND"
-     }
-   if { $intellilist(type_requ)==$caption(bddimages_liste,nimporte)} {
-     set cond "OR"
-     }
-
-   set intellilistlen $y
-   set cpt 0
    set sqlcritere ""
-   for {set x 1} {$x<=$intellilistlen} {incr x} {
-     if {$cpt==0} {
-       set sqlcritere "AND `$list_key_to_var($intellilist($x,champ))` $intellilist($x,condition) '$intellilist($x,valeur)' "
-       } else {
-       set sqlcritere "$sqlcritere $cond `$list_key_to_var($intellilist($x,champ))` $intellilist($x,condition) '$intellilist($x,valeur)' "
-       }
-       incr cpt
-     }
+   set cpt 0
+   foreach req $reqlist {
+      set key  [lindex $req 1]
+      set cond [lindex $req 2]
+      set val  [lindex $req 3]
+      if {$cpt==0} {
+         set sqlcritere "AND ( $sqlcritere (`$list_key_to_var($key)` $cond '$val') "
+      } else {
+         set sqlcritere "$sqlcritere $reqcond (`$list_key_to_var($key)` $cond '$val') "
+      }
+      incr cpt
+   }
+   if {$cpt!=0} {
+      set sqlcritere "$sqlcritere ) "
+   }
 
-
-   if { $cpt!=0} {
-     set cond "AND"
-     } else {
-     set cond "WHERE"
-     }
    set cond "AND"
 
-   set jjdatemin [ mc_date2jd "$intellilist(datemin)T00:00:00" ]
-   set jjdatemax [ mc_date2jd "$intellilist(datemax)T00:00:00" ]
+   set jjdatemin [ mc_date2jd "$ilist(datemin)T00:00:00" ]
+   set jjdatemax [ mc_date2jd "$ilist(datemax)T00:00:00" ]
 
-   if { $intellilist(datemin)!=""} {
-      if { $intellilist(datemax)!=""} {
-      set sqlcritere "$sqlcritere $cond (commun.datejj>$jjdatemin AND commun.datejj<$jjdatemax) "
-      set sqlcritere "$sqlcritere"
+   if { $ilist(datemin)!=""} {
+      if { $ilist(datemax)!=""} {
+      set sqlcritere "$sqlcritere AND (commun.datejj>$jjdatemin AND commun.datejj<$jjdatemax) "
       } else {
-      set sqlcritere "$sqlcritere $cond (commun.datejj>$jjdatemin) "
-      set sqlcritere "$sqlcritere"
+      set sqlcritere "$sqlcritere AND (commun.datejj>$jjdatemin) "
       }
    } else {
-      if { $intellilist(datemax)!=""} {
-      set sqlcritere "$sqlcritere $cond (commun.datejj<$jjdatemax) "
-      set sqlcritere "$sqlcritere"
+      if { $ilist(datemax)!=""} {
+      set sqlcritere "$sqlcritere AND (commun.datejj<$jjdatemax) "
       }
    }
 
@@ -633,71 +740,93 @@ proc ::bddimages_liste::get_sqlcritere { table } {
 
 
 
-proc ::bddimages_liste::get_imglist {  } {
+#--------------------------------------------------
+#  get_imglist { }
+#--------------------------------------------------
+#
+#    fonction  :
+#       construit la requete sql generale
+#
+#    procedure externe :
+#
+#    variables en entree : none
+#
+#    variables en sortie : liste des images
+#
+#--------------------------------------------------
+proc ::bddimages_liste::get_imglist { intellilist } {
 
-  set sqlcmd "SELECT DISTINCT idheader FROM header;"
-  set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
-  if {$err} {
-     bddimages_sauve_fich "Erreur de lecture de la table header par SQL"
-     bddimages_sauve_fich "	sqlcmd = $sqlcmd"
-     bddimages_sauve_fich "	err = $err"
-     bddimages_sauve_fich "	msg = $msg"
-     return
-     }
 
-  set table ""
+   ::bddimages_liste::affiche_intellilist $intellilist
 
-  foreach line $resultsql {
 
-    set idhd [lindex $line 0]
-    set sqlcritere [::bddimages_liste::get_sqlcritere "images_$idhd"]
-    set sqlcmd "SELECT images.idheader,images.tabname,images.filename,
-                images.dirfilename,images.sizefich,images.datemodif,
-                images_$idhd.* FROM images,images_$idhd,commun
-		WHERE images.idbddimg = images_$idhd.idbddimg 
-                AND   commun.idbddimg = images_$idhd.idbddimg
-                $sqlcritere  ;"
-    set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
-    if {[string first "Unknown column" $msg]==-1} {
-       if {$err} {
-          bddimages_sauve_fich "Erreur de lecture de la liste des header par SQL"
-          bddimages_sauve_fich "        sqlcmd = $sqlcmd"
-          bddimages_sauve_fich "        err = $err"
-          bddimages_sauve_fich "        msg = $msg"
-          ::console::affiche_erreur "Erreur de lecture de la liste des header par SQL\n"
-          ::console::affiche_erreur "        sqlcmd = $sqlcmd\n"
-          ::console::affiche_erreur "        err = $err\n"
-          ::console::affiche_erreur "        msg = $msg\n"
-          return
-       }
+   set sqlcmd "SELECT DISTINCT idheader FROM header;"
+   set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
+   if {$err} {
+      bddimages_sauve_fich "Erreur de lecture de la table header par SQL"
+      bddimages_sauve_fich "	sqlcmd = $sqlcmd"
+      bddimages_sauve_fich "	err = $err"
+      bddimages_sauve_fich "	msg = $msg"
+      return
+   }
 
-       set nbresult [llength $resultcount]
-       set nbcol    [llength $resultcount]
+   set table ""
 
-       if {$nbresult>0} {
+   foreach line $resultsql {
 
-         set colvar [lindex $resultcount 0]
-         set rowvar [lindex $resultcount 1]
-         set nbcol  [llength $colvar]
-
-         foreach line $rowvar {
-           set resultline ""
-           set cpt 0
-           foreach col $colvar {
-             lappend resultline [list $col [lindex $line $cpt]]
-             incr cpt
-             }
-
-             lappend table $resultline
+      set idhd [lindex $line 0]
+      set sqlcritere [::bddimages_liste::get_sqlcritere $intellilist "images_$idhd"]
+      set sqlcmd "SELECT images.idheader,images.tabname,images.filename,
+                  images.dirfilename,images.sizefich,images.datemodif,
+                  images_$idhd.* FROM images,images_$idhd,commun
+		  WHERE images.idbddimg = images_$idhd.idbddimg 
+                  AND   commun.idbddimg = images_$idhd.idbddimg
+                  $sqlcritere  ;"
+      set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
+      if {[string first "Unknown column" $msg]==-1} {
+         if {$err} {
+            bddimages_sauve_fich "Erreur de lecture de la liste des header par SQL"
+            bddimages_sauve_fich "        sqlcmd = $sqlcmd"
+            bddimages_sauve_fich "        err = $err"
+            bddimages_sauve_fich "        msg = $msg"
+            ::console::affiche_erreur "Erreur de lecture de la liste des header par SQL\n"
+            ::console::affiche_erreur "        sqlcmd = $sqlcmd\n"
+            ::console::affiche_erreur "        err = $err\n"
+            ::console::affiche_erreur "        msg = $msg\n"
+            return
          }
 
-       }
+         set nbresult [llength $resultcount]
+         set nbcol    [llength $resultcount]
 
-    } 
- }
+         if {$nbresult>0} {
 
-return $table
+            set colvar [lindex $resultcount 0]
+            set rowvar [lindex $resultcount 1]
+            set nbcol  [llength $colvar]
+
+            foreach line $rowvar {
+               set resultline ""
+               set cpt 0
+               foreach col $colvar {
+                  lappend resultline [list $col [lindex $line $cpt]]
+                  incr cpt
+               }
+
+               lappend table $resultline
+            }
+         }
+      }
+   }
+
+   #::console::affiche_erreur " table = $table\n"
+   return $table
 }
+
+
+
+
+
 
 #--------------------------------------------------
 #  calcul_nbimg { }
@@ -713,11 +842,12 @@ return $table
 #    variables en sortie : liste
 #
 #--------------------------------------------------
-proc calcul_nbimg { } {
+proc ::bddimages_liste::calcul_nbimg { } {
 
    global form_req
 
-   set form_req(nbimg) [llength [::bddimages_liste::get_imglist]]
+   set intellilist [::bddimages_liste::build_intellilist "calcul_nbimg"]
+   set form_req(nbimg) [llength [::bddimages_liste::get_imglist $intellilist]]
    ::console::affiche_resultat "Nb img = $form_req(nbimg) \n"
    return
 }
@@ -890,9 +1020,9 @@ return
       set form_req(type_req_check) ""
       set form_req(datemin) ""
       set form_req(datemax) ""
-      set form_req(type_req_check) ""
+      set form_req(type_req_check) 1
       set form_req(type_requ) [lindex $list_comb1 0]
-      set form_req(choix_limit_result) ""
+      set form_req(choix_limit_result) 0
       set form_req(limit_result) "25"
       set form_req(type_result) [lindex $list_comb2 0]
       set form_req(type_select) [lindex $list_comb3 0]
