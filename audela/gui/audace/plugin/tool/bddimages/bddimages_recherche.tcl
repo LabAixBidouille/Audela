@@ -217,8 +217,21 @@ namespace eval bddimages_recherche {
       set row [$tbl get $i $i]
       set ::bddimages_recherche::current_list_name [lindex $row 0]
       set ::bddimages_recherche::current_list_id [::bddimages_liste::get_intellilist_by_name $::bddimages_recherche::current_list_name]
+
+      ::console::affiche_resultat "Chargement ... "
+
+      set t0 [clock clicks -milliseconds]
       ::bddimages_recherche::get_list $::bddimages_recherche::current_list_id
-      ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id
+
+      set t1 [clock clicks -milliseconds]
+      ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id      
+
+      set t2 [clock clicks -milliseconds]
+      set sec [expr ($t1-$t0)/1000.]
+      ::console::affiche_resultat "SQL: $sec sec ..."
+      set sec [expr ($t2-$t1)/1000.]
+      ::console::affiche_resultat "AFF: $sec sec .\n"
+
       return
    }
 
@@ -378,8 +391,9 @@ namespace eval bddimages_recherche {
   
              menu $This.frame0.file.menu
 
-             $This.frame0.file.menu add command -label "$caption(bddimages_recherche,new_list)" -command { ::bddimages_liste::run $audace(base).bddimages_liste }
-             $This.frame0.file.menu add command -label "$caption(bddimages_recherche,delete_list)" -command " ::bddimages_recherche::cmd_list_delete $This.frame6.liste.tbl "
+             $This.frame0.file.menu add command -label "$caption(bddimages_recherche,new_list_i)" -command { ::bddimages_liste::run $audace(base).bddimages_liste }
+             $This.frame0.file.menu add command -label "$caption(bddimages_recherche,new_list_n)" -command { ::bddimages_liste::runnormal $audace(base).bddimages_liste }
+             #$This.frame0.file.menu add command -label "$caption(bddimages_recherche,delete_list)" -command " ::bddimages_recherche::cmd_list_delete $This.frame6.liste.tbl "
              # $This.frame0.file.menu add separator
              # $This.frame0.file.menu add command -label "$caption(search,ouvre)" -command {  }
              # $This.frame0.file.menu add command -label "$caption(search,sauve)" -command {  }
@@ -393,7 +407,7 @@ namespace eval bddimages_recherche {
            menu $This.frame0.image.menu
              $This.frame0.image.menu add command -label "$caption(search,charge)" -command { ::bddimages_recherche::affiche_image }
              $This.frame0.image.menu add command -label [concat "$caption(search,entete_FITS) (Ctrl+f)"] \
-                                        	 -command { }
+                                               -command { }
            pack $This.frame0.image -side left
            #--- menu aide
            menubutton $This.frame0.aide -text "$caption(search,aide)" -underline 0 -menu $This.frame0.aide.menu
@@ -407,7 +421,7 @@ namespace eval bddimages_recherche {
            pack $This.frame0.aide -side right
          
          #--- barre de menu
-	      tk_menuBar $This.frame0 $This.frame0.file $This.frame0.image $This.frame0.aide
+             tk_menuBar $This.frame0 $This.frame0.file $This.frame0.image $This.frame0.aide
 
 
          #--- Cree un frame pour afficher le status de la base
@@ -440,14 +454,14 @@ namespace eval bddimages_recherche {
                   -command { }
                pack $This.frame1.action.img -in $This.frame1.action -side right -anchor w -padx 0
       
-	 #--- Cree un frame pour l'affichage des deux listes
-	 frame $This.frame6 -borderwidth 0
-	 pack $This.frame6 -expand yes -fill both -padx 3 -pady 6
+        #--- Cree un frame pour l'affichage des deux listes
+        frame $This.frame6 -borderwidth 0
+        pack $This.frame6 -expand yes -fill both -padx 3 -pady 6
 
 
-	 #--- Cree un frame pour l'affichage de la liste des results
-	 frame $This.frame6.result -borderwidth 0
-	 pack $This.frame6.result -expand yes -fill both -padx 3 -pady 6 -in $This.frame6 -side right -anchor e
+         #--- Cree un frame pour l'affichage de la liste des results
+         frame $This.frame6.result -borderwidth 0
+         pack $This.frame6.result -expand yes -fill both -padx 3 -pady 6 -in $This.frame6 -side right -anchor e
 
             #--- Cree un acsenseur vertical
             scrollbar $This.frame6.result.vsb -orient vertical \
@@ -466,9 +480,9 @@ namespace eval bddimages_recherche {
             pack $This.frame6.result.tbl -in $This.frame6.result -expand yes -fill both
 
 
-	 #--- Cree un frame pour l'affichage de la liste des images
-	 frame $This.frame6.liste -borderwidth 0
-	 pack $This.frame6.liste -expand yes -fill both -padx 3 -pady 6 -in $This.frame6
+        #--- Cree un frame pour l'affichage de la liste des images
+        frame $This.frame6.liste -borderwidth 0
+        pack $This.frame6.liste -expand yes -fill both -padx 3 -pady 6 -in $This.frame6
 
 
             #--- Cree un acsenseur vertical
@@ -587,7 +601,76 @@ namespace eval bddimages_recherche {
    }
    
    
+#--------------------------------------------------
+#  Tbl2Delete { tbl }
+#--------------------------------------------------
+#
+#    fonction  :
+#       
+#	
+#
+#    procedure externe :
+#
+#    variables en entree :
+#        tbl = frame tk
+#
+#    variables en sortie :
+#
+#--------------------------------------------------
+
+   proc Tbl2Delete { tbl } {
+
+     global audace
+     global intellilisttotal
+
+     set i [$tbl curselection]
+     set row [$tbl get $i $i]
+     set name [lindex $row 0]
+     #::console::affiche_resultat "i    = $i    \n"
+     #::console::affiche_resultat "row  = $row  \n"
+     #::console::affiche_resultat "name = $name \n"
+     #::console::affiche_resultat "tbl  = $tbl \n"
+
+      set num [::bddimages_liste::get_intellilist_by_name $name]
+     #::console::affiche_resultat "num  = $num \n"
+     #::console::affiche_resultat "count  =  [array get intellilisttotal] \n"
+     set total [array get intellilisttotal]
+     foreach intellilist $total {
+        #::console::affiche_resultat "intelliliste  = $intellilist \n"
+     }
+
+     set cpt 0
+     #::console::affiche_resultat "prevision effacement :\n"
+     for {set x 1} {$x<=$::nbintellilist} {incr x} {
+
+        if { [::bddimages_liste::get_val_intellilist $::intellilisttotal($x) "name"] == $name} {
+           #::console::affiche_resultat "on efface $name \n"
+        } else {
+           incr cpt
+           set ::intellilisttotal($cpt) $::intellilisttotal($x)
+           #::console::affiche_resultat "[::bddimages_liste::get_val_intellilist $::intellilisttotal($x) "name"] $cpt\n"
+        }
+        #lappend l [list $::intellilisttotal($x)]
+     }
+     #::console::affiche_resultat "--\n"
+     # for { set i 0 } { $i < $::nbintellilist } { incr i } {
+         #set ::intellilisttotal($i) $::intellilisttotal([expr $i+1])
+     #    }
+
+      set ::nbintellilist $cpt
+      ::bddimages_recherche::Affiche_listes
+      ::bddimages_liste::conf_save_intellilists
+      return
+
+   }
    
+
+
+
+
+
+
+
 
    proc createTbl2 { frame } {
       variable This
@@ -597,11 +680,15 @@ namespace eval bddimages_recherche {
       global popupTbl
       global paramwindow
 
+
+      set name "-?-"
+
       #--- Quelques raccourcis utiles
       set tbl $frame.tbl
       set popupTbl $frame.popupTbl
       set filtres $frame.popupTbl.filtres
       set paramwindow $This.param
+
 
       #--- Table des objets
       tablelist::tablelist $tbl \
@@ -617,7 +704,9 @@ namespace eval bddimages_recherche {
       #--- Menu pop-up associe a la table
       menu $popupTbl -title $caption(bddimages_recherche,titre)
         # Label
-        $popupTbl add command -label "$caption(bddimages_recherche,new_list)" \
+
+
+        $popupTbl add command -label "$caption(bddimages_recherche,new_list_i)" \
            -command { ::bddimages_liste::run $audace(base).bddimages_liste }
         # Separateur
 #        proc getcurname { tbl } {
@@ -626,10 +715,18 @@ namespace eval bddimages_recherche {
 #         set name [lindex $row 0]
 #         return $name
 #        }
+
+        # Edite la liste selectionnee
         $popupTbl add command -label "$caption(bddimages_recherche,edit)" \
            -command [list ::bddimages_recherche::Tbl2Edit $tbl ]
+
+        # Supprime la liste selectionnee
+        $popupTbl add command -label "$caption(bddimages_recherche,delete_list) : $name" \
+           -command [list ::bddimages_recherche::Tbl2Delete $tbl ]
+
         # Separateur
         $popupTbl add separator
+        
         # Acces a l'aide
         $popupTbl add command -label $caption(bddimages_recherche,aide) \
            -command { ::audace::showHelpPlugin tool bddimages bddimages.htm field_2 }
@@ -640,6 +737,20 @@ namespace eval bddimages_recherche {
       bind [$tbl bodypath] <Double-ButtonPress-1> { ::bddimages_recherche::affiche_image }
 
    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
    proc createTbl1 { frame } {
       variable This
@@ -676,11 +787,11 @@ namespace eval bddimages_recherche {
         # Labels charger image
         $popupTbl add command -label $caption(bddimages_recherche,voirimg) \
            -command { ::bddimages_recherche::affiche_image
-	              #set numbuf [::buf::create]
-                      #buf$numbuf load "$conf(bddimages,dirinco)/p41957f1.fits.gz"
-		      #::visu::create $numbuf 0
-		      #::audace::header
-		      }
+                     #set numbuf [::buf::create]
+                     #buf$numbuf load "$conf(bddimages,dirinco)/p41957f1.fits.gz"
+                     #::visu::create $numbuf 0
+                     #::audace::header
+                     }
         # Labels Lire le Header
         $popupTbl add command -label $caption(bddimages_recherche,voirheader) \
            -command { ::bddimages_recherche::affiche_entete}
@@ -701,6 +812,14 @@ namespace eval bddimages_recherche {
 
         # Separateur
         $popupTbl add separator
+ 
+        # Labels Associate
+        $popupTbl add command -label $caption(bddimages_recherche,associate) \
+           -command { ::bddimages_recherche::bddimages_associate "tmp" }
+
+        # Separateur
+        $popupTbl add separator
+
         # Acces a l'aide
         $popupTbl add command -label $caption(bddimages_recherche,aide) \
            -command { ::audace::showHelpPlugin tool bddimages bddimages.htm field_2 }
@@ -711,6 +830,75 @@ namespace eval bddimages_recherche {
       bind [$tbl bodypath] <Double-ButtonPress-1> { ::bddimages_recherche::affiche_image }
 
    }
+
+
+
+
+
+proc ::bddimages_recherche::bddimages_associate { namelist } {
+
+   global audace
+   global bddconf
+
+   set l [$::bddimages_recherche::This.frame6.result.tbl curselection ]
+   set l [lsort -decreasing -integer $l]
+   set associate ""
+   set cpt 0
+   foreach i $l {
+      incr cpt
+      set id [lindex [$::bddimages_recherche::This.frame6.result.tbl get $i] 0]
+      lappend associate $id
+      if {$cpt == 1} {
+         set l "$id"
+      } else {
+         set l "$l,$id"
+      }
+   }
+   if {$cpt == 0}  { return }
+   
+   ::console::affiche_resultat "associate = $associate\n"
+
+   set sqlcmd "SELECT images.tabname,images.idbddimg FROM images
+               WHERE images.idbddimg IN ($l)
+               ORDER BY images.tabname ASC;"
+   set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
+   if {$err} {
+      ::console::affiche_erreur "Erreur de lecture de la liste des header par SQL\n"
+      ::console::affiche_erreur "        sqlcmd = $sqlcmd\n"
+      ::console::affiche_erreur "        err = $err\n"
+      ::console::affiche_erreur "        msg = $msg\n"
+      return
+   }
+   set nbresult [llength $resultcount]
+   set result [lindex $resultcount 1]
+   ::console::affiche_resultat "nbresult = $nbresult\n"
+   ::console::affiche_resultat "result = $result\n"
+
+   set ltable ""
+   foreach l $result {
+       set table [lindex $l 0]
+       set id [lindex $l 1]
+       lappend ltable $table
+       lappend comp($table) $id
+   }
+   set ltable [lsort -unique $ltable]
+  
+   set idlist ""
+   foreach t $ltable {
+      ::console::affiche_resultat "table = $t\n"
+      set il ""
+      foreach i $comp($t) {
+         lappend il $i
+         ::console::affiche_resultat "$i "
+      }
+      lappend idlist [list $t $il]
+      ::console::affiche_resultat "\n"
+   }
+      ::console::affiche_resultat "idlist=$idlist\n"
+
+
+
+}
 
 
 
@@ -894,10 +1082,10 @@ proc bddimages_images_delete {  } {
            if {[lindex $var 0] eq [lindex $current_columns 0]} {
               set lign_affich [lreplace $lign_affich $i $i [lindex $var 1]]
               break
-		     }
+           }
          }
-	    }
-	    lappend affich_table $lign_affich
+       }
+       lappend affich_table $lign_affich
 
      }
       
@@ -1014,18 +1202,28 @@ proc bddimages_images_delete {  } {
 
       #--- Extraction du resultat
       for { set i 1 } { $i <= $nbintellilist } { incr i } {
+        
         set intellilist  $intellilisttotal($i)
-
-        foreach val $intellilist {
-          if {[lindex $val 0]=="name"} {set name [lindex $val 1]}
-        }
+        set name [::bddimages_liste::get_val_intellilist $intellilist "name"]
+        #::console::affiche_resultat " $name\n"
         $::bddimages_recherche::This.frame6.liste.tbl insert end $name
+
       }
+      
+      
       #---
       if { [ $::bddimages_recherche::This.frame6.liste.tbl columncount ] != "0" } {
          #--- Les noms des objets sont en bleu
-         for { set i 0 } { $i <= [ expr $nbintellilist - 1 ] } { incr i } {
-            $::bddimages_recherche::This.frame6.liste.tbl cellconfigure $i,0 -fg $color(blue)
+         for { set j 1 } { $j <= $nbintellilist } { incr j } {
+            set intellilist  $intellilisttotal($j)
+            set type [::bddimages_liste::get_val_intellilist $intellilist "type"]
+            
+            #::console::affiche_resultat "[::bddimages_liste::get_val_intellilist $intellilist "name"] = [::bddimages_liste::get_val_intellilist $intellilist "type"] \n"
+            set ccolor $color(red)
+            if { $type == "intellilist" } { set ccolor $color(blue) } 
+            if { $type == "normal" } { set ccolor $color(black) }
+            set i [expr $j-1]
+            $::bddimages_recherche::This.frame6.liste.tbl cellconfigure $i,0 -fg $ccolor
          }
          #--- Trie par ordre alphabetique de la premiere colonne
          ::bddimages_recherche::cmdSortColumn $::bddimages_recherche::This.frame6.liste.tbl 0
@@ -1057,15 +1255,12 @@ proc ::bddimages_recherche::get_list { i } {
    global list_key_to_var
    global table_result
 
+   #::console::affiche_resultat "get_list  $i\n"
    set intellilist  $intellilisttotal($i)
-   ::console::affiche_resultat "intellilist = [::bddimages_liste::get_val_intellilist $intellilist "name"]\n"
+   ::console::affiche_resultat "[::bddimages_liste::get_val_intellilist $intellilist "name"] ... "
+   #::console::affiche_resultat "intellilist = $intellilist\n"
 
-      ::console::affiche_resultat "Chargement : "
-      set t0 [clock clicks -milliseconds]
-      set table_result($i) [::bddimages_liste::get_imglist $intellilist]
-      set t1 [clock clicks -milliseconds]
-      set sec [expr ($t1-$t0)/1000.]
-      ::console::affiche_resultat "$sec sec\n"
+   set table_result($i) [::bddimages_liste::get_imglist $intellilist]
 }
 
 

@@ -30,6 +30,7 @@ set caption(bddimages_recherche,voirimg)        "Voir l'image"
 set caption(bddimages_recherche,voirheader)     "Voir le header"
 set caption(bddimages_recherche,delete)         "Suppression"
 set caption(bddimages_recherche,define)         "Modification"
+set caption(bddimages_recherche,associate)      "Associer"
 set caption(bddimages_recherche,msg_erreur)     "Erreur"
 set caption(bddimages_recherche,msg_internet)   "Erreur connexion"
 
@@ -64,7 +65,8 @@ set caption(search,aide)                        "Aide"
 set caption(search,aide_skybot)                 "Aide - SkyBoT"
 set caption(search,code_uai)                    "Codes UAI"
 
-set caption(bddimages_recherche,new_list)       "Nouvelle Liste"
+set caption(bddimages_recherche,new_list_i)     "Nouvelle Liste intelligente"
+set caption(bddimages_recherche,new_list_n)     "Nouvelle Liste"
 set caption(bddimages_recherche,delete_list)    "Effacer la liste"
 
 set caption(bddimages_recherche,edit)           "Editer"
@@ -92,6 +94,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bddimages_recherche,voirheader)     "Voir le header"
    set caption(bddimages_recherche,delete)         "Suppression"
    set caption(bddimages_recherche,define)         "Modification"
+   set caption(bddimages_recherche,associate)      "Associer"
    set caption(bddimages_recherche,msg_erreur)     "Erreur"
    set caption(bddimages_recherche,msg_internet)   "Erreur connexion"
    
@@ -126,7 +129,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(search,aide_skybot)                 "Aide - SkyBoT"
    set caption(search,code_uai)                    "Codes UAI"
    
-   set caption(bddimages_recherche,new_list)       "Nouvelle Liste"
+   set caption(bddimages_recherche,new_list_i)     "Nouvelle Liste intelligente"
+   set caption(bddimages_recherche,new_list_n)     "Nouvelle Liste"
    set caption(bddimages_recherche,delete_list)    "Effacer la liste"
    
    set caption(bddimages_recherche,edit)           "Editer"

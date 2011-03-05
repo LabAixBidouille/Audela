@@ -219,6 +219,76 @@ namespace eval bddimages_liste {
       return
    }
 
+
+
+proc ::bddimages_liste::runnormal { this } {
+
+      global This
+      global entetelog
+
+      set entetelog "liste"
+      set This $this
+
+      if { [ winfo exists $This ] } {
+         wm withdraw $This
+         wm deiconify $This
+         return
+      }
+
+
+
+
+
+
+   global getnamenewlist
+
+   set getnamenewlist(result) 0
+   set getnamenewlist(name) ""
+
+   toplevel $This -class Toplevel
+   wm title $This "Nouvelle liste"
+   wm positionfrom $This user
+   wm sizefrom $This user
+
+   set framecurrent $This.framename
+
+
+   frame $framecurrent -relief groove
+   pack configure $framecurrent -side top -fill both -expand 1 -padx 10 -pady 10
+
+   # Frame qui va contenir le label "Type your password:" et une entrée pour le rentrer
+   frame $framecurrent.title
+   pack configure $framecurrent.title -side top -fill x
+     label $framecurrent.title.e -text "Nom de la liste"
+     pack configure $framecurrent.title.e -side left -anchor c
+
+   # L'option -show permet de masquer la véritable entrée, 
+   # et de mettre une étoile à la place des caractères saisis
+   frame $framecurrent.gpass
+   pack configure $framecurrent.gpass -side top -fill x
+     entry $framecurrent.gpass.v -textvariable getnamenewlist(name)
+     pack configure $framecurrent.gpass.v -side bottom -anchor c
+
+   # Frame qui va contenir les boutons Cancel et Ok
+   frame $framecurrent.buttons
+   pack configure $framecurrent.buttons -side top -fill x
+     button $framecurrent.buttons.cancel -text Cancel -command "destroy $This"
+     pack configure $framecurrent.buttons.cancel -side left
+     button $framecurrent.buttons.ok -text Ok -command { set getnamenewlist(result) 1; ::bddimages_liste::build_normallist; destroy $This }
+     pack configure $framecurrent.buttons.ok -side right
+
+   grab set $This
+   tkwait window $This
+   if {$getnamenewlist(result)} {
+      return -code 0 $getnamenewlist(name)
+   } else {
+      return -code error ""
+   }
+}
+
+
+
+
 #--------------------------------------------------
 # fermer { }
 #--------------------------------------------------
@@ -396,6 +466,8 @@ proc affich_form_req { } {
 
 proc ::bddimages_liste::get_val_intellilist { intellilist val } {
 
+
+   set y ""
    foreach  l $intellilist  {
        set x [lsearch $l $val]
        if {$x!=-1} {
@@ -403,6 +475,7 @@ proc ::bddimages_liste::get_val_intellilist { intellilist val } {
           return $y
        }
    }
+   return $y
 }
 
 
@@ -462,11 +535,11 @@ proc get_intellilist_by_name { name } {
   set found 0
   for {set i 1} {$i<=$nbintellilist} {incr i} {
      set l $intellilisttotal($i)
-     if { [lindex [lindex $l 0] 1] eq "$name" } then { set found 1 ; break }
+          
+     if { [get_val_intellilist $l "name"] eq "$name" } then { set found 1 ; break }
   }
   if { $found } { return $i } else { return -1 }
 }
-
 
 
 
@@ -506,6 +579,24 @@ proc exec_intellilist { num } {
 
 
 
+proc ::bddimages_liste::build_normallist { } {
+
+   global getnamenewlist
+   global nbintellilist intellilisttotal
+
+   if {$getnamenewlist(name) != ""} {
+      ::console::affiche_resultat "new list = $getnamenewlist(name)"
+      set intellilist     ""
+      lappend intellilist [list "type"               "normal"]              
+      lappend intellilist [list "name"               $getnamenewlist(name)]              
+      lappend intellilist [list "idlist"             ""]              
+      incr nbintellilist
+      set intellilisttotal($nbintellilist) $intellilist
+      exec_intellilist $nbintellilist
+      conf_save_intellilists
+      }
+
+}
 
 
 
@@ -522,6 +613,7 @@ proc ::bddimages_liste::build_intellilist { name } {
    global nbintellilist
 
    set intellilist     ""
+   lappend intellilist [list "type"               "intellilist"]              
    lappend intellilist [list "name"               $name]              
    lappend intellilist [list "datemin"            $form_req(datemin)]              
    lappend intellilist [list "datemax"            $form_req(datemax)]              
@@ -756,10 +848,62 @@ proc ::bddimages_liste::get_sqlcritere { intellilist table } {
 
 
 
-
-
 #--------------------------------------------------
 #  get_imglist { }
+#--------------------------------------------------
+#
+#    fonction  :
+#       renvoit la liste des images et de leur contenu
+#
+#    procedure externe :
+#
+#    variables en entree : none
+#
+#    variables en sortie : liste des images
+#
+#--------------------------------------------------
+proc ::bddimages_liste::get_imglist { intellilist } {
+
+   set type [::bddimages_liste::get_val_intellilist $intellilist "type"]
+   
+   if {$type == "intellilist"} {
+      return [::bddimages_liste::get_imglist_i $intellilist]
+   }
+   if {$type == "normal"} {
+      return [::bddimages_liste::get_imglist_n $intellilist]
+   }
+   return ""
+}
+
+#--------------------------------------------------
+#  get_imglist_n { }
+#--------------------------------------------------
+#
+#    fonction  :
+#       construit la requete sql generale pour une liste normale
+#
+#    procedure externe :
+#
+#    variables en entree : none
+#
+#    variables en sortie : liste des images
+#
+#--------------------------------------------------
+proc ::bddimages_liste::get_imglist_n { intellilist } {
+
+   #::console::affiche_resultat "intellilist = $intellilist\n"
+
+   set idlist [::bddimages_liste::get_val_intellilist $intellilist "idlist"]
+   ::console::affiche_resultat "idlist = $idlist\n"
+
+   foreach val $idlist {
+   }
+
+   return ""
+}
+
+#--------------------------------------------------
+#  get_imglist_i { }
 #--------------------------------------------------
 #
 #    fonction  :
@@ -772,7 +916,7 @@ proc ::bddimages_liste::get_sqlcritere { intellilist table } {
 #    variables en sortie : liste des images
 #
 #--------------------------------------------------
-proc ::bddimages_liste::get_imglist { intellilist } {
+proc ::bddimages_liste::get_imglist_i { intellilist } {
 
 
    #::bddimages_liste::affiche_intellilist $intellilist
