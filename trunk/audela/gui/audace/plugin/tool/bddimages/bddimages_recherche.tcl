@@ -317,7 +317,7 @@ namespace eval bddimages_recherche {
       global intellilisttotal
 
       #--- initConf
-      if { ! [ info exists conf(bddimages,position_status) ] } { set conf(bddimages,position_status) "+80+40" }
+      if { ! [ info exists conf(bddimages,position_status) ] } { set conf(bddimages,position_status) "+80+1200" }
 
       #--- confToWidget
       set bddconf(position_status) $conf(bddimages,position_status)
@@ -336,8 +336,25 @@ namespace eval bddimages_recherche {
          set bddconf(position_status) "+[ string range $bddconf(geometry_status) $deb $fin ]"
       }
 
+
+      if {! [ info exists bddconf(current_config)]} {
+         # Charge les config bddimages depuis le fichier XML
+         set err [::bddimagesXML::load_xml_config]
+         # Recupere la liste des bddimages disponibles
+         set bddconf(list_config) $::bddimagesXML::list_bddimages
+         # Recupere la config par defaut [liste id name]
+         set bddconf(default_config) $::bddimagesXML::default_config
+         # Recupere la config par courante [liste id name]
+         set bddconf(current_config) $::bddimagesXML::current_config
+         ::console::affiche_resultat "list_config = $bddconf(list_config) \n"
+         ::console::affiche_resultat "default_config = $bddconf(default_config) \n"
+         ::console::affiche_resultat "current_config = $bddconf(current_config) \n"
+      }
+
+
+
       set nbintellilist 0
-      if { [catch {::bddimages_liste::conf_load_intellilists} msg] } {
+      if { [catch {::bddimages_liste::conf_load_intellilists } msg] } {
          tk_messageBox -message "$msg" -type ok
          return
       }
@@ -1036,156 +1053,19 @@ proc bddimages_images_delete {  } {
 #--------------------------------------------------
 proc ::bddimages_recherche::get_list { i } {
 
-   global indicereq
-   global list_req
    global form_req
    global caption
    global intellilisttotal
    global list_key_to_var
    global table_result
 
+   set intellilist  $intellilisttotal($i)
+   ::console::affiche_resultat "intellilist = $intellilist\n"
 
-   set laliste  $intellilisttotal($i)
-   ::console::affiche_resultat "laliste = $laliste\n"
-   set val [lindex $laliste 0]
-   set intellilist(name) [lindex $val 1]
-   set laliste [::ldelete $laliste 0]
+   set table_result($i) [::bddimages_liste::get_imglist $intellilist]
+   set form_req(nbimg) [llength table_result($i)]
+   ::console::affiche_resultat "Nb img = $form_req(nbimg) \n"
 
-   set val [lindex $laliste 0]
-   set intellilist(type_req_check) [lindex $val 1]
-   set laliste [::ldelete $laliste 0]
-
-   set val [lindex $laliste 0]
-   set intellilist(type_requ) [lindex $val 1]
-   set laliste [::ldelete $laliste 0]
-
-   set val [lindex $laliste 0]
-   set intellilist(choix_limit_result) [lindex $val 1]
-   set laliste [::ldelete $laliste 0]
-
-   set val [lindex $laliste 0]
-   set intellilist(limit_result) [lindex $val 1]
-   set laliste [::ldelete $laliste 0]
-
-   set val [lindex $laliste 0]
-   set intellilist(type_result) [lindex $val 1]
-   set laliste [::ldelete $laliste 0]
-
-   set val [lindex $laliste 0]
-   set intellilist(type_select) [lindex $val 1]
-   set laliste [::ldelete $laliste 0]
-
-   set nbcond [llength $laliste]
-   foreach val $laliste {
-     set x [lindex $val 0]
-     set intellilist($x,champ)     [lindex $val 1]
-     set intellilist($x,condition) [lindex $val 2]
-     set intellilist($x,valeur)    [lindex $val 3]
-     }
-
-
-  #::console::affiche_resultat "-- affich_form_req\n "
-  #::console::affiche_resultat "name           		= $intellilist(name)\n"
-  #::console::affiche_resultat "type_req_check 		= $intellilist(type_req_check)\n"
-  #::console::affiche_resultat "type_requ 		= $intellilist(type_requ)\n"
-  #::console::affiche_resultat "choix_limit_result	= $intellilist(choix_limit_result)\n"
-  #::console::affiche_resultat "limit_result		= $intellilist(limit_result)\n"
-  #::console::affiche_resultat "type_result		= $intellilist(type_result)\n"
-  #::console::affiche_resultat "type_select		= $intellilist(type_select)\n"
-  #::console::affiche_resultat "laliste			= $laliste\n"
-  #::console::affiche_resultat "nbcond			= $nbcond\n"
-
-
-  if { $intellilist(type_req_check)==0} {
-    set intellilist(nbimg) "?"
-    return
-    }
-
-  set cond "UNKNOWNOP"
-  if { $intellilist(type_requ)==$caption(bddimages_liste,toutes)} {
-    set cond "AND"
-    }
-  if { $intellilist(type_requ)==$caption(bddimages_liste,nimporte)} {
-    set cond "OR"
-    }
-
-  set cpt 0
-  set sqlcriteres {}
-  
-  for {set x 1} {$x<=$nbcond} {incr x} {
-    if {$cpt==0} {
-      set sqlcritere "`$list_key_to_var($intellilist($x,champ))` $intellilist($x,condition) '$intellilist($x,valeur)' "
-      } else {
-      set sqlcritere "$sqlcritere $cond `$list_key_to_var($intellilist($x,champ))` $intellilist($x,condition) '$intellilist($x,valeur)' "
-      }
-      lappend sqlcriteres $sqlcritere
-    }
-
-  set sqlcritere [join $sqlcriteres " $cond " ]
-
-  #::console::affiche_resultat "lecture des idheader : "
-  set sqlcmd "SELECT DISTINCT idheader FROM header;"
-  set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
-  if {$err} {
-     bddimages_sauve_fich "Erreur de lecture de la table header par SQL"
-     bddimages_sauve_fich "	sqlcmd = $sqlcmd"
-     bddimages_sauve_fich "	err = $err"
-     bddimages_sauve_fich "	msg = $msg"
-     set intellilist(nbimg) "Error"
-     return
-     }
-  #::console::affiche_resultat "[llength $resultsql ]\n"
-
-  set intellilist(nbimg) 0
-  set table ""
-
-
-  foreach line $resultsql {
-    set idhd [lindex $line 0]
-    #::console::affiche_resultat "**+++ $idhd \n"
-    set sqlcmd "SELECT images.idheader,images.tabname,images.filename,
-                images.dirfilename,images.sizefich,images.datemodif,
-                images_$idhd.* FROM images,images_$idhd
-		WHERE images.idbddimg=images_$idhd.idbddimg AND ($sqlcritere);"
-    set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
-    if {[string first "Unknown column" $msg]==-1} {
-       if {$err} {
-          bddimages_sauve_fich "Erreur de lecture de la liste des header par SQL"
-          bddimages_sauve_fich "        sqlcmd = $sqlcmd"
-          bddimages_sauve_fich "        err = $err"
-          bddimages_sauve_fich "        msg = $msg"
-          set intellilist(nbimg) "Error"
-          return
-       }
-       #::console::affiche_resultat "nb images [llength $resultcount ]\n"
-
-       set nbresult [llength $resultcount]
-       set nbcol    [llength $resultcount]
-
-       if {$nbresult>0} {
-
-         set colvar [lindex $resultcount 0]
-         set rowvar [lindex $resultcount 1]
-         set nbcol  [llength $colvar]
-
-         foreach line $rowvar {
-           set resultline ""
-           set cpt 0
-           foreach col $colvar {
-             lappend resultline [list $col [lindex $line $cpt]]
-             incr cpt
-             }
-
-             lappend table $resultline
-         }
-
-       }
-
-    } 
- }
-
-  #::console::affiche_resultat "** nb data in table [llength $table] \n"
-  set table_result($i) $table
 }
 
 
