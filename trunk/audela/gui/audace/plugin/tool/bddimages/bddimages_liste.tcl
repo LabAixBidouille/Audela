@@ -757,7 +757,7 @@ proc ::bddimages_liste::get_sqlcritere { intellilist table } {
 proc ::bddimages_liste::get_imglist { intellilist } {
 
 
-   ::bddimages_liste::affiche_intellilist $intellilist
+   #::bddimages_liste::affiche_intellilist $intellilist
 
 
    set sqlcmd "SELECT DISTINCT idheader FROM header;"
