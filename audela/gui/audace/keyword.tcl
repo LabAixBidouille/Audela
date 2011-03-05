@@ -196,7 +196,11 @@ proc ::keyword::init { } {
    if { ! [ info exists ::conf(keyword,GotoManuelAuto) ] }    { set ::conf(keyword,GotoManuelAuto)    "$::caption(keyword,manuel)" }
    if { ! [ info exists ::conf(keyword,GotoManuelAutoBis) ] } { set ::conf(keyword,GotoManuelAutoBis) "$::caption(keyword,manuel)" }
    if { ! [ info exists ::conf(keyword,GotoManuelAutoTer) ] } { set ::conf(keyword,GotoManuelAutoTer) "$::caption(keyword,manuel)" }
-   if { ! [ info exists ::conf(keyword,typeImageSelected) ] } { set ::conf(keyword,typeImageSelected) "Object" }
+
+   #--- Nettoyage d'une ancienne variable devenue obsolete
+   if {[info exists ::conf(keyword,typeImageSelected)]} {
+      unset ::conf(keyword,typeImageSelected)
+   }
 
    #--- Configuration par defaut
    if { ! [ info exists ::conf(keyword,default,configName) ] } {
@@ -236,6 +240,7 @@ proc ::keyword::init { } {
    set private(equinoxe)            ""
    set private(radecsys)            ""
    set private(typeImage)           "Object"
+   set private(typeImageSelected)   "Object"
    set private(seriesId)            ""
    set private(raMean)              ""
    set private(raRms)               ""
@@ -273,7 +278,7 @@ proc ::keyword::init { } {
    lappend private(infosMotsClefs) [ list "SET_TEMP" $::caption(keyword,instrument)  ::keyword::private(set_temperature_ccd) readonly $::caption(keyword,parcourir)  "::keyword::openSetTemperature"                ""                                  ""                                       "" "" "float"  "Set CCD temperature"                             "degres Celsius" ]
    lappend private(infosMotsClefs) [ list "CCD_TEMP" $::caption(keyword,instrument)  ::keyword::private(temperature_ccd)     readonly $::caption(keyword,rafraichir) "::keyword::onChangeTemperature"               ""                                  ""                                       "" "" "float"  "Actual CCD temperature"                          "degres Celsius" ]
    lappend private(infosMotsClefs) [ list "INSTRUME" $::caption(keyword,instrument)  ::keyword::private(equipement)          normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Instrument"                                      "" ]
-   lappend private(infosMotsClefs) [ list "DETNAM"   $::caption(keyword,instrument)  ::keyword::private(detectorName)        normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Detector"                                        "" ]
+   lappend private(infosMotsClefs) [ list "DETNAM"   $::caption(keyword,instrument)  ::keyword::private(detectorName)        normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Detector"                           "" ]
    lappend private(infosMotsClefs) [ list "CRVAL1"   $::caption(keyword,instrument)  ::keyword::private(CRVAL1)              readonly ""                             ""                                             ""                                  ""                                       "" "" "float"  "Reference coordinate for naxis1"                 "degres" ]
    lappend private(infosMotsClefs) [ list "CRVAL2"   $::caption(keyword,instrument)  ::keyword::private(CRVAL2)              readonly ""                             ""                                             ""                                  ""                                       "" "" "float"  "Reference coordinate for naxis2"                 "degres" ]
    lappend private(infosMotsClefs) [ list "CRPIX1"   $::caption(keyword,instrument)  ::keyword::private(CRPIX1)              readonly ""                             ""                                             ""                                  ""                                       "" "" "float"  "Reference pixel for naxis1"                      "pixel" ]
@@ -283,7 +288,7 @@ proc ::keyword::init { } {
    lappend private(infosMotsClefs) [ list "DEC"      $::caption(keyword,cible)       ::keyword::private(dec)                 normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::conf(keyword,GotoManuelAutoBis)        0  "" "float"  "Object Declination"                              "degres" ]
    lappend private(infosMotsClefs) [ list "EQUINOX"  $::caption(keyword,cible)       ::keyword::private(equinoxe)            normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::conf(keyword,GotoManuelAutoTer)        0  "" "float"  "Coordinates equinox"                             "" ]
    lappend private(infosMotsClefs) [ list "RADECSYS" $::caption(keyword,cible)       ::keyword::private(radecsys)            normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Coordinates system"                              "" ]
-   lappend private(infosMotsClefs) [ list "IMAGETYP" $::caption(keyword,acquisition) ::keyword::private(typeImage)           readonly ""                             ""                                             $::keyword::private(listTypeImage)  ::conf(keyword,typeImageSelected)        0  "" "string" "Image type"                                      "" ]
+   lappend private(infosMotsClefs) [ list "IMAGETYP" $::caption(keyword,acquisition) ::keyword::private(typeImage)           readonly ""                             ""                                             $::keyword::private(listTypeImage)  ::keyword::private(typeImageSelected)    0  "" "string" "Image type"                                      "" ]
    lappend private(infosMotsClefs) [ list "SERIESID" $::caption(keyword,acquisition) ::keyword::private(seriesId)            normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Series identifiant"                              "" ]
    lappend private(infosMotsClefs) [ list "RA_MEAN"  $::caption(keyword,acquisition) ::keyword::private(raMean)              normal   ""                             ""                                             ""                                  ""                                       "" "" "float"  "RA mean correction"                              "arsec" ]
    lappend private(infosMotsClefs) [ list "RA_RMS"   $::caption(keyword,acquisition) ::keyword::private(raRms)               normal   ""                             ""                                             ""                                  ""                                       "" "" "float"  "RA rms correction"                               "arsec" ]
@@ -657,7 +662,7 @@ proc ::keyword::onChangeValueComboBox { visuNo } {
    }
 
    #--- Mot cle IMAGETYP
-   if { $::conf(keyword,typeImageSelected) == "$::caption(keyword,newValue)" } {
+   if { $private(typeImageSelected) == "$::caption(keyword,newValue)" } {
       #--- Je choisis une valeur non disponible dans la liste
       set private(tempTypeImage) $private(typeImage)
       set private(typeImage)     ""
@@ -668,7 +673,7 @@ proc ::keyword::onChangeValueComboBox { visuNo } {
             destroy $private(base)
          }
       }
-      set private(typeImage) $::conf(keyword,typeImageSelected)
+      set private(typeImage) $private(typeImageSelected)
    }
 }
 
@@ -745,8 +750,8 @@ proc ::keyword::cmdOKNewValueTypeImage { visuNo } {
 
    if { $private(newValueTypeImage) != "" } {
       destroy $private(base)
-      set private(typeImage)                $private(newValueTypeImage)
-      set ::conf(keyword,typeImageSelected) $private(newValueTypeImage)
+      set private(typeImage)         $private(newValueTypeImage)
+      set private(typeImageSelected) $private(newValueTypeImage)
       #--- Je reconstitue la liste de la combobox
       lappend ::conf(keyword,listTypeImage) $private(newValueTypeImage)
       set private(listTypeImage)            $::conf(keyword,listTypeImage)
@@ -769,8 +774,8 @@ proc ::keyword::cmdCancelNewValueTypeImage { } {
    variable private
 
    destroy $private(base)
-   set private(typeImage)                $private(tempTypeImage)
-   set ::conf(keyword,typeImageSelected) $private(tempTypeImage)
+   set private(typeImage)         $private(tempTypeImage)
+   set private(typeImageSelected) $private(tempTypeImage)
 }
 
 #------------------------------------------------------------------------------
@@ -1190,17 +1195,17 @@ proc ::keyword::createDialog { visuNo } {
 #    ajoute une ligne dans la table
 #
 # Parametres :
-#    visuNo        : numero de la visu
-#    motclef       : nom du mot cle
-#    categorie     : categorie du mot cle
-#    textvariable  : variable contenant la valeur du mot cle
-#    stateVariable : etat de l'entry
-#    caption       : etiquette du bouton
-#    command       : procedure a appeler quand on clique sur le bouton
-#    listCombobox  : liste des valeurs de la combobox
-#    textvariable  : nom de la variable contenant la valeur affichee
-#    editable      : combobox editable ou non
-#    cmdComboBox   : fonction appellee quand on change la valeur
+#    visuNo          : numero de la visu
+#    motclef         : nom du mot cle
+#    categorie       : categorie du mot cle
+#    textvariable    : variable contenant la valeur du mot cle
+#    stateVariable   : etat de l'entry
+#    caption         : etiquette du bouton
+#    command         : procedure a appeler quand on clique sur le bouton
+#    listCombobox    : liste des valeurs de la combobox
+#    textvarComboBox : nom de la variable contenant la valeur affichee
+#    editable        : combobox editable ou non
+#    cmdComboBox     : fonction appellee quand on change la valeur
 #------------------------------------------------------------------------------
 proc ::keyword::ajouteLigne { visuNo motclef categorie textvariable stateVariable caption command listCombobox textvarComboBox editable cmdComboBox } {
    variable private
@@ -1288,15 +1293,15 @@ proc ::keyword::createButton { caption command tbl row col w } {
 #    cree une combobox dans la table
 #
 # Parametres :
-#    visuNo       : numero de la visu
-#    listCombobox : liste des valeurs de la combobox
-#    textvariable : nom de la variable contenant la valeur affichee
-#    editable     : combobox editable (1) ou non (0)
-#    cmdComboBox  : fonction appellee quand on change la valeur
-#    tbl          : nom Tk de la table
-#    row          : numero de ligne
-#    col          : numero de colonne
-#    w            : nom Tk du bouton
+#    visuNo          : numero de la visu
+#    listCombobox    : liste des valeurs de la combobox
+#    textvarComboBox : nom de la variable contenant la valeur affichee
+#    editable        : combobox editable (1) ou non (0)
+#    cmdComboBox     : fonction appellee quand on change la valeur
+#    tbl             : nom Tk de la table
+#    row             : numero de ligne
+#    col             : numero de colonne
+#    w               : nom Tk du bouton
 #------------------------------------------------------------------------------
 proc ::keyword::createComboBox { visuNo listCombobox textvarComboBox editable cmdComboBox tbl row col w } {
    ComboBox $w \
@@ -1418,6 +1423,17 @@ proc ::keyword::recupPosDim { visuNo } {
 
    set private($visuNo,geometry) [ wm geometry $private($visuNo,frm) ]
    set ::conf(keyword,geometry) $private($visuNo,geometry)
+}
+
+#------------------------------------------------------------------------------
+# getTypeImage
+#    Permet de recuperer le type courant de l'image
+#
+# Parametres :
+#    visuNo
+#------------------------------------------------------------------------------
+proc ::keyword::getTypeImage { } {
+   return $::keyword::private(typeImageSelected)
 }
 
 #------------------------------------------------------------
