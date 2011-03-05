@@ -71,6 +71,16 @@ set caption(bddimages_recherche,delete_list)    "Effacer la liste"
 
 set caption(bddimages_recherche,edit)           "Editer"
 
+set caption(bddimages_recherche,nointelist)     "Please create at least one list"
+
+set caption(bddimages_recherche,button_unktype) "Toggle type unknown"
+set caption(bddimages_recherche,button_offset)  "Toggle type OFFSET"
+set caption(bddimages_recherche,button_dark)    "Toggle type DARK"
+set caption(bddimages_recherche,button_flat)    "Toggle type FLAT"
+set caption(bddimages_recherche,button_img)     "Toggle type IMG"
+set caption(bddimages_recherche,button_unkstate) "Toggle state UNKNOWN"
+set caption(bddimages_recherche,button_corr)    "Toggle state CORR"
+set caption(bddimages_recherche,button_raw)     "Toggle state RAW"
 
 # *************** Version française **** **********************
 if { [ string compare $langage "french" ] == "0" } {
@@ -135,6 +145,16 @@ if { [ string compare $langage "french" ] == "0" } {
    
    set caption(bddimages_recherche,edit)           "Editer"
 
+   set caption(bddimages_recherche,nointelist)     "Veuillez créer au moins une liste"
+
+   set caption(bddimages_recherche,button_unktype) "(De)selectionne type UNKNOWN"
+   set caption(bddimages_recherche,button_offset)  "(De)selectionne type OFFSET"
+   set caption(bddimages_recherche,button_dark)    "(De)selectionne type DARK"
+   set caption(bddimages_recherche,button_flat)    "(De)selectionne type FLAT"
+   set caption(bddimages_recherche,button_img)     "(De)selectionne type IMG"
+   set caption(bddimages_recherche,button_unkstate) "(De)selectionne état UNKNOWN"
+   set caption(bddimages_recherche,button_corr)    "(De)selectionne état CORR"
+   set caption(bddimages_recherche,button_raw)     "(De)selectionne état RAW"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
