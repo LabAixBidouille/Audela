@@ -212,8 +212,6 @@ namespace eval bddimages_recherche {
     variable ::bddimages_recherche::current_list_id
     variable ::bddimages_recherche::tbl_cmd_list_select
 
-      ::console::affiche_resultat "cmd_list_select $tbl \n"
-      
       set ::bddimages_recherche::tbl_cmd_list_select $tbl
       set i [$tbl curselection]
       set row [$tbl get $i $i]
@@ -883,8 +881,8 @@ proc bddimages_images_delete {  } {
       set bddconf(inserinfo) "Total($nbobj)"
       set nbcol [llength $list_of_columns]
 
-::console::affiche_resultat "nbcol = $nbcol \n"
-::console::affiche_resultat "nbobj = $nbobj \n"
+#::console::affiche_resultat "nbcol = $nbcol \n"
+#::console::affiche_resultat "nbobj = $nbobj \n"
 
       set affich_table ""
 
@@ -910,7 +908,7 @@ proc bddimages_images_delete {  } {
      for { set i 0 } { $i < $nbcol} { incr i } {
        set current_columns [lindex $list_of_columns $i]
        $::bddimages_recherche::This.frame6.result.tbl insertcolumns end 0 [lindex $current_columns 1] left
-	  }
+     }
 
       #--- Classement des objets par ordre alphabetique sans tenir compte des majuscules/minuscules
       if { [ $::bddimages_recherche::This.frame6.result.tbl columncount ] != "0" } {
@@ -1020,7 +1018,7 @@ proc bddimages_images_delete {  } {
 
         foreach val $intellilist {
           if {[lindex $val 0]=="name"} {set name [lindex $val 1]}
-	     }
+        }
         $::bddimages_recherche::This.frame6.liste.tbl insert end $name
       }
       #---
@@ -1060,12 +1058,14 @@ proc ::bddimages_recherche::get_list { i } {
    global table_result
 
    set intellilist  $intellilisttotal($i)
-   ::console::affiche_resultat "intellilist = $intellilist\n"
+   ::console::affiche_resultat "intellilist = [::bddimages_liste::get_val_intellilist $intellilist "name"]\n"
 
-   set table_result($i) [::bddimages_liste::get_imglist $intellilist]
-   set form_req(nbimg) [llength table_result($i)]
-   ::console::affiche_resultat "Nb img = $form_req(nbimg) \n"
-
+      ::console::affiche_resultat "Chargement : "
+      set t0 [clock clicks -milliseconds]
+      set table_result($i) [::bddimages_liste::get_imglist $intellilist]
+      set t1 [clock clicks -milliseconds]
+      set sec [expr ($t1-$t0)/1000.]
+      ::console::affiche_resultat "$sec sec\n"
 }
 
 
