@@ -864,7 +864,7 @@ proc ::bddimages_liste::get_sqlcritere { intellilist table } {
 #--------------------------------------------------
 proc ::bddimages_liste::get_imglist { intellilist } {
 
-   ::console::affiche_resultat "intellilist = $intellilist\n"
+   #::console::affiche_resultat "intellilist = $intellilist\n"
 
    set type [::bddimages_liste::get_val_intellilist $intellilist "type"]
    
@@ -896,7 +896,7 @@ proc ::bddimages_liste::get_imglist_n { intellilist } {
    #::console::affiche_resultat "intellilist = $intellilist\n"
 
    set idlist [::bddimages_liste::get_val_intellilist $intellilist "idlist"]
-   ::console::affiche_resultat "idlist = $idlist\n"
+   #::console::affiche_resultat "idlist = $idlist\n"
    if {[llength $idlist] == 0} {return}
 
    foreach val $idlist {
@@ -911,7 +911,7 @@ proc ::bddimages_liste::get_imglist_n { intellilist } {
          }
          incr cpt
       }
-      ::console::affiche_resultat "imageidhd = $imageidhd : $lsqlid\n"
+      #::console::affiche_resultat "imageidhd = $imageidhd : $lsqlid\n"
 
       set sqlcmd "SELECT images.idheader,images.tabname,images.filename,
                   images.dirfilename,images.sizefich,images.datemodif,
@@ -920,7 +920,7 @@ proc ::bddimages_liste::get_imglist_n { intellilist } {
                   AND   commun.idbddimg = $imageidhd.idbddimg
                   AND   images.idbddimg IN ($lsqlid);"
 
-      ::console::affiche_resultat "sqlcmd = $sqlcmd\n"
+      #::console::affiche_resultat "sqlcmd = $sqlcmd\n"
       set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
       if {[string first "Unknown column" $msg]==-1} {
          if {$err} {

@@ -990,12 +990,15 @@ namespace eval bddimages_recherche {
    
       set l [$::bddimages_recherche::This.frame6.result.tbl curselection ]
       set l [lsort -decreasing -integer $l]
-      set associate ""
+      
+      
+      
+      
+      #recupere la liste des idbddimg
       set cpt 0
       foreach i $l {
          incr cpt
          set id [lindex [$::bddimages_recherche::This.frame6.result.tbl get $i] 0]
-         lappend associate $id
          if {$cpt == 1} {
             set l "$id"
          } else {
@@ -1004,11 +1007,11 @@ namespace eval bddimages_recherche {
       }
       if {$cpt == 0}  { return }
       
-      ::console::affiche_resultat "associate = $associate\n"
-   
+      #recupere les tables images_xxx des idbddimg
       set sqlcmd "SELECT images.tabname,images.idbddimg FROM images
                   WHERE images.idbddimg IN ($l)
                   ORDER BY images.tabname ASC;"
+
       set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
       if {$err} {
          ::console::affiche_erreur "Erreur de lecture de la liste des header par SQL\n"
@@ -1019,41 +1022,59 @@ namespace eval bddimages_recherche {
       }
       set nbresult [llength $resultcount]
       set result [lindex $resultcount 1]
-      ::console::affiche_resultat "nbresult = $nbresult\n"
-      ::console::affiche_resultat "result = $result\n"
+      #::console::affiche_resultat "nbresult = $nbresult\n"
+      #::console::affiche_resultat "result = $result\n"
    
+      #met en forme la nouvelle liste d id
       set ltable ""
       foreach l $result {
-          set table [lindex $l 0]
-          set id [lindex $l 1]
-          lappend ltable $table
-          lappend comp($table) $id
+         set table [lindex $l 0]
+         set id [lindex $l 1]
+         lappend ltable $table
+         lappend comp($table) $id
       }
-      set ltable [lsort -unique $ltable]
      
+      #ajoute l ancienne idlist
+      set num [::bddimages_liste::get_intellilist_by_name $namelist]   
+      set normallist $::intellilisttotal($num)
+      set oldidlist [::bddimages_liste::get_val_intellilist $normallist "idlist"]
+
+      foreach l $oldidlist {
+         set table [lindex $l 0]
+         set li    [lindex $l 1]
+         lappend ltable $table
+         foreach id $li {
+            lappend comp($table) $id
+         }
+      }
+
+      #construit la nouvelle idlist
+      set ltable [lsort -unique $ltable]
+      foreach t $ltable {
+         set comp($t) [lsort -unique $comp($t)]
+      }
+
+
       set idlist ""
       foreach t $ltable {
-         ::console::affiche_resultat "table = $t\n"
+         #::console::affiche_resultat "table = $t\n"
          set il ""
          foreach i $comp($t) {
             lappend il $i
-            ::console::affiche_resultat "$i "
+            #::console::affiche_resultat "$i "
          }
          lappend idlist [list $t $il]
-         ::console::affiche_resultat "\n"
+         #::console::affiche_resultat "\n"
       }
-      ::console::affiche_resultat "idlist=$idlist\n"
+      #::console::affiche_resultat "idlist=$idlist\n"
    
-      set num [::bddimages_liste::get_intellilist_by_name $namelist]   
-   
-      set normallist $::intellilisttotal($num)
 
       if { [::bddimages_liste::get_val_intellilist $normallist "type"] != "normal"} {
          ::console::affiche_erreur "Ne peut etre associe a la liste $namelist\n"
          return
       }
 
-      ::console::affiche_resultat "normallist=$normallist\n"
+      #::console::affiche_resultat "normallist=$normallist\n"
    
       set newl ""
       foreach val $normallist {
@@ -1063,7 +1084,7 @@ namespace eval bddimages_recherche {
             lappend newl $val
          }
       }
-      ::console::affiche_resultat "newl=$newl\n"
+      #::console::affiche_resultat "newl=$newl\n"
       set ::intellilisttotal($num) $newl
 
       return
