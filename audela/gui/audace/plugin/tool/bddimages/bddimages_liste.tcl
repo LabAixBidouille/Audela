@@ -895,6 +895,7 @@ proc ::bddimages_liste::get_imglist_n { intellilist } {
 
    set idlist [::bddimages_liste::get_val_intellilist $intellilist "idlist"]
    ::console::affiche_resultat "idlist = $idlist\n"
+   if {[llength $idlist] == 0} {return}
 
    foreach val $idlist {
       set imageidhd [lindex $val 0]
