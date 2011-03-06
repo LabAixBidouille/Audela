@@ -68,8 +68,7 @@ if {$name=="audela"} {
       puts "on se met dans le repertoire $ros(root,ros) !"
       cd [file join $ros(root,ros) src $name]
       puts "log= Demarrage du programme"
-      source $name.tcl
-#      set errno [catch {source $name.tcl} msg]
+      set errno [catch {source $name.tcl} msg]
       if {$ros(withtk)==1&&$errno==0} {
          puts "log= Fin sauvage du programme"
          destroy .
@@ -84,8 +83,8 @@ puts "msg=$msg"
 
 if {$errno==1} {
    puts "log= Erreur grave"
-   # se met dans ros
-   cd $::audela_start_dir/..
+   # se met dans bin
+   cd $::audela_start_dir
    set f [open ros_check_error.txt a]
    puts $f "==============================\n[mc_date2iso8601 now] :"
    puts $f $msg
