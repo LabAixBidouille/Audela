@@ -858,6 +858,10 @@ namespace eval bddimages_recherche {
 
         $popupTbl add command -label "$caption(bddimages_recherche,new_list_i)" \
            -command { ::bddimages_liste::run $audace(base).bddimages_liste }
+
+        $popupTbl add command -label "$caption(bddimages_recherche,new_list_n)" \
+           -command { ::bddimages_liste::runnormal $audace(base).bddimages_liste }
+
         # Separateur
 #        proc getcurname { tbl } {
 #         set i [$tbl curselection]
@@ -955,6 +959,52 @@ namespace eval bddimages_recherche {
         $popupTbl add command -label $caption(bddimages_recherche,associate) \
            -command { ::bddimages_recherche::bddimages_associate "tmp" }
 
+        # Labels Associate
+        $popupTbl add command -label $caption(bddimages_recherche,disassociate) \
+           -command { ::bddimages_recherche::bddimages_disassociate "tmp" }
+
+        # Separateur
+        $popupTbl add separator
+
+        # Labels Associate
+        $popupTbl add command -label $caption(bddimages_recherche,sbias) \
+           -command { ::bddimages_imgcorrection::run_create_sbias}
+
+        # Labels Associate
+        $popupTbl add command -label $caption(bddimages_recherche,sdark) \
+           -command { ::bddimages_imgcorrection::run_create_sdark $audace(base).bddimages_imgcorrection}
+
+        # Labels Associate
+        $popupTbl add command -label $caption(bddimages_recherche,sflat) \
+           -command { ::bddimages_imgcorrection::run_create_sflat}
+
+        # Labels Associate
+        $popupTbl add command -label $caption(bddimages_recherche,deflat) \
+           -command { ::bddimages_imgcorrection::run_create_deflat}
+
+        # Separateur
+        $popupTbl add separator
+
+        # Labels Associate
+        $popupTbl add command -label $caption(bddimages_recherche,setwcs) \
+           -command { ::bddimages_imganalyse::run_setwcs}
+
+        # Labels Associate
+        $popupTbl add command -label $caption(bddimages_recherche,astroid) \
+           -command { ::bddimages_imganalyse::run_astroid}
+
+        # Labels Associate
+        $popupTbl add command -label $caption(bddimages_recherche,photom) \
+           -command { ::bddimages_imganalyse::run_photom}
+
+        # Labels Associate
+        $popupTbl add command -label $caption(bddimages_recherche,astrom) \
+           -command { ::bddimages_imganalyse::run_astrom}
+
+        # Labels Associate
+        $popupTbl add command -label $caption(bddimages_recherche,cata) \
+           -command { ::bddimages_imganalyse::run_cata}
+
         # Separateur
         $popupTbl add separator
 
@@ -980,9 +1030,6 @@ namespace eval bddimages_recherche {
 
 
 
-
-
-
    proc ::bddimages_recherche::bddimages_associate { namelist } {
    
       global audace
@@ -990,9 +1037,6 @@ namespace eval bddimages_recherche {
    
       set l [$::bddimages_recherche::This.frame6.result.tbl curselection ]
       set l [lsort -decreasing -integer $l]
-      
-      
-      
       
       #recupere la liste des idbddimg
       set cpt 0
