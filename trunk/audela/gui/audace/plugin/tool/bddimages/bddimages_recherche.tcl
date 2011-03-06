@@ -818,13 +818,6 @@ namespace eval bddimages_recherche {
       return
 
    }
-   
-
-
-
-
-
-
 
 
    proc createTbl2 { frame } {
@@ -892,18 +885,6 @@ namespace eval bddimages_recherche {
       bind [$tbl bodypath] <Double-ButtonPress-1> { ::bddimages_recherche::affiche_image }
 
    }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -988,108 +969,98 @@ namespace eval bddimages_recherche {
 
 
 
-
-
-proc ::bddimages_recherche::bddimages_associate { namelist } {
-
-   global audace
-   global bddconf
-
-   set l [$::bddimages_recherche::This.frame6.result.tbl curselection ]
-   set l [lsort -decreasing -integer $l]
-   set associate ""
-   set cpt 0
-   foreach i $l {
-      incr cpt
-      set id [lindex [$::bddimages_recherche::This.frame6.result.tbl get $i] 0]
-      lappend associate $id
-      if {$cpt == 1} {
-         set l "$id"
-      } else {
-         set l "$l,$id"
-      }
-   }
-   if {$cpt == 0}  { return }
+   proc ::bddimages_recherche::bddimages_associate { namelist } {
    
-   ::console::affiche_resultat "associate = $associate\n"
-
-   set sqlcmd "SELECT images.tabname,images.idbddimg FROM images
-               WHERE images.idbddimg IN ($l)
-               ORDER BY images.tabname ASC;"
-   set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
-   if {$err} {
-      ::console::affiche_erreur "Erreur de lecture de la liste des header par SQL\n"
-      ::console::affiche_erreur "        sqlcmd = $sqlcmd\n"
-      ::console::affiche_erreur "        err = $err\n"
-      ::console::affiche_erreur "        msg = $msg\n"
-      return
-   }
-   set nbresult [llength $resultcount]
-   set result [lindex $resultcount 1]
-   ::console::affiche_resultat "nbresult = $nbresult\n"
-   ::console::affiche_resultat "result = $result\n"
-
-   set ltable ""
-   foreach l $result {
-       set table [lindex $l 0]
-       set id [lindex $l 1]
-       lappend ltable $table
-       lappend comp($table) $id
-   }
-   set ltable [lsort -unique $ltable]
-  
-   set idlist ""
-   foreach t $ltable {
-      ::console::affiche_resultat "table = $t\n"
-      set il ""
-      foreach i $comp($t) {
-         lappend il $i
-         ::console::affiche_resultat "$i "
+      global audace
+      global bddconf
+   
+      set l [$::bddimages_recherche::This.frame6.result.tbl curselection ]
+      set l [lsort -decreasing -integer $l]
+      set associate ""
+      set cpt 0
+      foreach i $l {
+         incr cpt
+         set id [lindex [$::bddimages_recherche::This.frame6.result.tbl get $i] 0]
+         lappend associate $id
+         if {$cpt == 1} {
+            set l "$id"
+         } else {
+            set l "$l,$id"
+         }
       }
-      lappend idlist [list $t $il]
-      ::console::affiche_resultat "\n"
-   }
+      if {$cpt == 0}  { return }
+      
+      ::console::affiche_resultat "associate = $associate\n"
+   
+      set sqlcmd "SELECT images.tabname,images.idbddimg FROM images
+                  WHERE images.idbddimg IN ($l)
+                  ORDER BY images.tabname ASC;"
+      set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
+      if {$err} {
+         ::console::affiche_erreur "Erreur de lecture de la liste des header par SQL\n"
+         ::console::affiche_erreur "        sqlcmd = $sqlcmd\n"
+         ::console::affiche_erreur "        err = $err\n"
+         ::console::affiche_erreur "        msg = $msg\n"
+         return
+      }
+      set nbresult [llength $resultcount]
+      set result [lindex $resultcount 1]
+      ::console::affiche_resultat "nbresult = $nbresult\n"
+      ::console::affiche_resultat "result = $result\n"
+   
+      set ltable ""
+      foreach l $result {
+          set table [lindex $l 0]
+          set id [lindex $l 1]
+          lappend ltable $table
+          lappend comp($table) $id
+      }
+      set ltable [lsort -unique $ltable]
+     
+      set idlist ""
+      foreach t $ltable {
+         ::console::affiche_resultat "table = $t\n"
+         set il ""
+         foreach i $comp($t) {
+            lappend il $i
+            ::console::affiche_resultat "$i "
+         }
+         lappend idlist [list $t $il]
+         ::console::affiche_resultat "\n"
+      }
       ::console::affiche_resultat "idlist=$idlist\n"
-
-
-
-}
-
-
-
-proc bddimages_define {  } {
-
-   global audace
-   global bddconf
-
-   set l [$::bddimages_recherche::This.frame6.result.tbl curselection ]
-   set l [lsort -decreasing -integer $l]
-   set bddconf(define) ""
-   foreach i $l {
-      lappend bddconf(define) [lindex [$::bddimages_recherche::This.frame6.result.tbl get $i] 0]
-      }
-
-   ::console::affiche_resultat "\n**\n run define sur $audace(base).bddimages_define \n**\n"
-   ::bddimages_define::run $audace(base).bddimages_define
-
    
    }
 
 
-
-
-proc bddimages_images_delete {  } {
-
-   set l [$::bddimages_recherche::This.frame6.result.tbl curselection ]
-   set l [lsort -decreasing -integer $l]
-   foreach i $l {
-      set idbddimg  [lindex [$::bddimages_recherche::This.frame6.result.tbl get $i] 0]
-      bddimages_image_delete $idbddimg
-      $::bddimages_recherche::This.frame6.result.tbl delete $i
+   proc bddimages_define {  } {
+   
+      global audace
+      global bddconf
+   
+      set l [$::bddimages_recherche::This.frame6.result.tbl curselection ]
+      set l [lsort -decreasing -integer $l]
+      set bddconf(define) ""
+      foreach i $l {
+         lappend bddconf(define) [lindex [$::bddimages_recherche::This.frame6.result.tbl get $i] 0]
       }
+   
+      ::console::affiche_resultat "\n**\n run define sur $audace(base).bddimages_define \n**\n"
+      ::bddimages_define::run $audace(base).bddimages_define
+      
    }
 
 
+   proc bddimages_images_delete {  } {
+   
+      set l [$::bddimages_recherche::This.frame6.result.tbl curselection ]
+      set l [lsort -decreasing -integer $l]
+      foreach i $l {
+         set idbddimg  [lindex [$::bddimages_recherche::This.frame6.result.tbl get $i] 0]
+         bddimages_image_delete $idbddimg
+         $::bddimages_recherche::This.frame6.result.tbl delete $i
+      }
+   }
 
 
 #--------------------------------------------------
@@ -1215,9 +1186,7 @@ proc bddimages_images_delete {  } {
                                  [list "bddimages_astrometry" "AS"] \
                                  [list "bddimages_cataastrom" "CA"] \
                                  [list "bddimages_photometry" "P"] \
-                                 [list "bddimages_cataphotom" "CP"]
-                                                                
-      ]
+                                 [list "bddimages_cataphotom" "CP"]  ]
 
       # Initialisations
       set table $table_result($i)

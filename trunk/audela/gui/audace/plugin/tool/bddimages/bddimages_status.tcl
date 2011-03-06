@@ -85,8 +85,6 @@ namespace eval bddimages_status {
          wm withdraw $This
          wm deiconify $This
          focus $This.frame11.but_fermer
-         #--- Gestion du bouton
-         #$audace(base).bddimages.fra5.but1 configure -relief raised -state normal
          return
       }
 
@@ -274,7 +272,7 @@ namespace eval bddimages_status {
               -in $This.frame11 -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-           #--- Creation du bouton Connect
+           #--- Creation du bouton Verifier
            button $This.frame11.but_connect \
               -text "$caption(bddimages_status,verif)" -borderwidth 2 \
               -command { ::bddimages_status::verif }
@@ -324,17 +322,39 @@ namespace eval bddimages_status {
 
    # bddimages_status::verif
    # Verification des donnees
-   proc verif { } {
-   
+   proc ::bddimages_status::verif { } {
+
+      global audace
+      global color
       global maliste
       global conf
-      global entetelog
-   
-      set entetelog "verif"
-      bddimages_sauve_fich ""
-      bddimages_sauve_fich "*** Verification des donnees *** "
-      bddimages_sauve_fich ""
-   
+
+      if { [ winfo exists .verifreport ] } {
+         destroy .verifreport
+      }
+      toplevel .verifreport -class Toplevel
+      wm resizable .verifreport 1 1
+      wm title .verifreport "BddImages - Console"
+      wm protocol .verifreport WM_DELETE_WINDOW { destroy .verifreport }
+      
+      text .verifreport.text -height 30 -width 80 -yscrollcommand ".verifreport.scroll set"
+      scrollbar .verifreport.scroll -command ".text yview"
+      pack .verifreport.scroll -side right -fill y
+      pack .verifreport.text -expand yes -fill both
+
+      set text .verifreport.text
+      set title {Le widget text}
+      $text tag configure BODY -foreground black -background white
+      $text tag configure TITLE -foreground "#808080" -justify center -font [ list {Arial} 12 bold ]
+      $text tag configure H1 -justify left -font [ list {Arial} 10 normal ]
+      $text tag configure H2 -justify left -font [ list {Arial} 10 normal ] -foreground $color(blue) 
+      $text tag configure LISTE0 -foreground $color(black) -lmargin1 20
+      $text tag configure LISTE1 -foreground $color(red) -lmargin1 30 
+      $text tag configure GREEN -foreground $color(green)
+      $text tag configure RED -foreground $color(red)
+        
+      $text insert end "*** Verification des donnees ***\n\n" TITLE
+      
       set list_file_dir ""
       set list_file_sql ""
    
@@ -342,31 +362,27 @@ namespace eval bddimages_status {
       set maliste {}
    
       # Recupere la liste des fichiers sur le disque par la globale maliste
-      bddimages_sauve_fich "Obtention de la liste des fichiers sur le disque"
+      $text insert end "* Obtention de la liste des fichiers sur le disque...\n" H1
       globrdk $conf(bddimages,dirfits) $limit
 
-      set err [catch {set maliste [lsort -increasing $maliste]} result]
+      set err [catch {set maliste [lsort -increasing $maliste]} msg]
       set list_file_dir $maliste
       if {$err} {
-         set error_msg "Erreur de tri de la liste: $msg"
-         bddimages_sauve_fich $error_msg
-         tk_messageBox -message "$error_msg\n" -type ok
+         tk_messageBox -message "Verif BDI: erreur de tri de la liste: $msg" -type ok
          return
       }
 
       # Recupere la liste des fichiers sur le serveur sql
-      bddimages_sauve_fich "Obtention de la liste des fichiers sur le serveur sql"
+      $text insert end "* Obtention de la liste des fichiers sur le serveur sql...\n" H1
       set sqlcmd "SELECT dirfilename,filename FROM images;"
       set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
       if {$err} {
-         set error_msg "Erreur de lecture de la liste par SQL: $msg"
-         bddimages_sauve_fich $error_msg
-         tk_messageBox -message "$error_msg\n" -type ok
+         tk_messageBox -message "Verif BDI: erreur de lecture de la liste par SQL: $msg" -type ok
          return
       }
 
       # Comparaison des liste
-      bddimages_sauve_fich "Comparaison des listes"
+      $text insert end "\nComparaison des listes:\n\n" H2
       foreach line $resultsql {
          set dir [lindex $line 0]
          set fic [lindex $line 1]
@@ -376,80 +392,72 @@ namespace eval bddimages_status {
       set new_list_sql [list_diff_shift $list_file_dir $list_file_sql]
       set new_list_dir [list_diff_shift $list_file_sql $list_file_dir]
    
-      bddimages_sauve_fich ""
-      bddimages_sauve_fich "-- Nombre d'images absentes sur le serveur SQL : [llength $new_list_sql]"
-      bddimages_sauve_fich ""
+      $text insert end "- Nombre d'images absentes sur le serveur SQL : " LISTE0
+      set tag "GREEN"
+      if {[llength $new_list_sql] > 0} { set tag "RED" }
+      $text insert end "[llength $new_list_sql] \n" $tag
       foreach elemsql $new_list_sql { bddimages_sauve_fich $elemsql }
-      bddimages_sauve_fich ""
-      bddimages_sauve_fich "-- Nombre d'images absentes sur le disque : [llength $new_list_dir]"
-      bddimages_sauve_fich ""
+      $text insert end "- Nombre d'images absentes sur le disque : " LISTE0 
+      set tag "GREEN"
+      if {[llength $new_list_dir] > 0} { set tag "RED" }
+      $text insert end "[llength $new_list_dir] \n" $tag
       foreach elemdir $new_list_sql { bddimages_sauve_fich $elemdir }
-      bddimages_sauve_fich ""
-   
+      $text insert end " \n" LISTE0
+      
       # verification des donnees sur le serveur SQL
-   
       set sqlcmd "SELECT DISTINCT idheader FROM header;"
       set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
       if {$err} {
-         set error_msg "Erreur de lecture de la liste par SQL: $msg"
-         bddimages_sauve_fich $error_msg
-         tk_messageBox -message "$error_msg\n" -type ok
+         tk_messageBox -message "Verif BDI: erreur de lecture de la liste par SQL: $msg" -type ok
          return
       }
-   
+
       foreach line $resultsql {
          set idhd [lindex $line 0]
          set sqlcmd "SELECT count(*) FROM images WHERE idheader='$idhd';"
          set err [catch {set res_images [::bddimages_sql::sql query $sqlcmd]} msg]
          if {$err} {
-            set error_msg "Erreur SQL: $msg"
-            bddimages_sauve_fich $error_msg
-            tk_messageBox -message "$error_msg\n" -type ok
+            tk_messageBox -message "Verif BDI: Erreur SQL: $msg" -type ok
             return
          }
          set sqlcmd "SELECT count(*) FROM images_$idhd;"
          set err [catch {set res_images_hd [::bddimages_sql::sql query $sqlcmd]} msg]
          if {$err} {
-            set error_msg "Erreur SQL: $msg"
-            bddimages_sauve_fich $error_msg
-            tk_messageBox -message "$error_msg\n" -type ok
+            tk_messageBox -message "Verif BDI: Erreur SQL: $msg" -type ok
             return
          }
-         if {$res_images_hd!=$res_images} {
-            bddimages_sauve_fich "-- Header num : $idhd"
+         $text insert end "- Header #$idhd " LISTE0
+         if {$res_images_hd != $res_images} {
             # recupere la liste des idbddimg de images
             set sqlcmd "SELECT idbddimg FROM images WHERE idheader='$idhd';"
             set err [catch {set res_images [::bddimages_sql::sql query $sqlcmd]} msg]
             if {$err} {
-               set error_msg "Erreur SQL: $msg"
-               bddimages_sauve_fich $error_msg
-               tk_messageBox -message "$error_msg\n" -type ok
+               tk_messageBox -message "Verif BDI: Erreur SQL: $msg" -type ok
                return
             }
             # recupere la liste des idbddimg de images_idhd
             set sqlcmd "SELECT idbddimg FROM images_$idhd;"
             set err [catch {set res_images_hd [::bddimages_sql::sql query $sqlcmd]} msg]
             if {$err} {
-               set error_msg "Erreur SQL: $msg"
-               bddimages_sauve_fich $error_msg
-               tk_messageBox -message "$error_msg\n" -type ok
+               tk_messageBox -message "Verif BDI: Erreur SQL: $msg" -type ok
                return
             }
             # effectue les compraisons
             set list_img [list_diff_shift $res_images_hd $res_images]
             set list_img_hd [list_diff_shift $res_images $res_images_hd]
             # affiche les resultats
-            bddimages_sauve_fich "  Nombre d'images absentes dans la table images_$idhd : [llength $list_img]"
+            $text insert end "\n - Nombre d'images absentes dans la table images_$idhd : [llength $list_img]" LISTE1
             bddimages_sauve_fich ""
             foreach elem $list_img { bddimages_sauve_fich $elem }
-            bddimages_sauve_fich ""
-            bddimages_sauve_fich "  Nombre d'images absentes dans la table images : [llength $list_img_hd]"
-            bddimages_sauve_fich ""
+            $text insert end "\n - Nombre d'images absentes dans la table images : [llength $list_img_hd]" LISTE1
             foreach elem $list_img_hd { bddimages_sauve_fich $elem }
-            bddimages_sauve_fich ""
+            $text insert end "\n" TEXT
+         } else {
+            $text insert end " -> ok \n" TEXT
          }
       }
-   
+      $text insert end "\n FIN \n" TEXT
+      
    }
 
 }
