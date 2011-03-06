@@ -21,7 +21,7 @@ set caption(bddimages_go,status)                "DB Status"
 set caption(bddimages_go,insertion)             "Inserting Images"
 set caption(bddimages_go,recherche)             "Search"
 set caption(bddimages_go,test)                  "Test"
-set caption(bddimages_go,ressource)             "Re-Source"
+set caption(bddimages_go,ressource)             "Re-source"
 
 # *************** Version française **** **********************
 if { [ string compare $langage "french" ] == "0" } {
@@ -35,7 +35,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bddimages_go,insertion)          "Insertion d'images"
    set caption(bddimages_go,recherche)          "Recherche"
    set caption(bddimages_go,test)               "Test"
-   set caption(bddimages_go,ressource)          "Re-Source"
+   set caption(bddimages_go,ressource)          "Re-source"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
