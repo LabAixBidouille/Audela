@@ -864,6 +864,8 @@ proc ::bddimages_liste::get_sqlcritere { intellilist table } {
 #--------------------------------------------------
 proc ::bddimages_liste::get_imglist { intellilist } {
 
+   ::console::affiche_resultat "intellilist = $intellilist\n"
+
    set type [::bddimages_liste::get_val_intellilist $intellilist "type"]
    
    if {$type == "intellilist"} {
