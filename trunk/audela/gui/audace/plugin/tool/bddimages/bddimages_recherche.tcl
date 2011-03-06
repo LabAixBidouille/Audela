@@ -358,10 +358,12 @@ namespace eval bddimages_recherche {
          set bddconf(default_config) $::bddimagesXML::default_config
          # Recupere la config par courante [liste id name]
          set bddconf(current_config) $::bddimagesXML::current_config
-         ::console::affiche_resultat "list_config = $bddconf(list_config) \n"
+         #::console::affiche_resultat "list_config = $bddconf(list_config) \n"
          ::console::affiche_resultat "default_config = $bddconf(default_config) \n"
          ::console::affiche_resultat "current_config = $bddconf(current_config) \n"
       }
+
+
 
       set nbintellilist 0
       if { [catch {::bddimages_liste::conf_load_intellilists } msg] } {
@@ -612,9 +614,9 @@ namespace eval bddimages_recherche {
         pack $This.frame6 -expand yes -fill both -padx 3 -pady 6
 
 
-	 #--- Cree un frame pour l'affichage de la liste des results
-	 frame $This.frame6.result -borderwidth 0 -background white
-	 pack $This.frame6.result -expand yes -fill both -padx 3 -pady 6 -in $This.frame6 -side right -anchor e
+        #--- Cree un frame pour l'affichage de la liste des results
+        frame $This.frame6.result -borderwidth 0 -background white
+        pack $This.frame6.result -expand yes -fill both -padx 3 -pady 6 -in $This.frame6 -side right -anchor e
 
             #--- Cree un acsenseur vertical
             scrollbar $This.frame6.result.vsb -orient vertical \

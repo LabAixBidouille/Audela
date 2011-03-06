@@ -115,6 +115,25 @@ namespace eval bddimages_config {
          ::bddimagesXML::save_xml_config 
       }
 
+
+
+      # Config courante
+      if { ![info exists bddconf(default_config)] } {
+         #--- Charge les config bddimages depuis le fichier XML
+         set err [::bddimagesXML::load_xml_config]
+         #--- et recupere la config par defaut
+         set bddconf(current_config) $::bddimagesXML::current_config
+      } else {
+         # Charge la config par defaut
+         set bddconf(current_config) [::bddimagesXML::get_config $bddconf(default_config)]
+      }
+
+      #--- Mise en forme du resultat
+      set errconn [catch {::bddimages_sql::connect} connectstatus]
+
+
+
+
       # Fin
       ::bddimages_config::recup_position
       destroy $This
