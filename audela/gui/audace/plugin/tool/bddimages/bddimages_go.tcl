@@ -126,6 +126,7 @@ proc ::bddimages::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_admin.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_define.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_calendrier.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_imgcorrection.tcl ]\""
 
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_config.cap ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_status.cap ]\""
@@ -133,6 +134,7 @@ proc ::bddimages::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_recherche.cap ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_liste.cap ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_define.cap ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_imgcorrection.cap ]\""
 }
 
 #------------------------------------------------------------
