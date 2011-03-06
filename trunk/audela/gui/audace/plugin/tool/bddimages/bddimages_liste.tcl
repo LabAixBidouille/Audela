@@ -897,9 +897,66 @@ proc ::bddimages_liste::get_imglist_n { intellilist } {
    ::console::affiche_resultat "idlist = $idlist\n"
 
    foreach val $idlist {
+      set imageidhd [lindex $val 0]
+      set lid [lindex $val 1]
+      set cpt 0
+      foreach id $lid {
+         if {$cpt==0} {
+            set lsqlid "$id"
+         } else {
+            set lsqlid "$lsqlid,$id"
+         }
+         incr cpt
+      }
+      ::console::affiche_resultat "imageidhd = $imageidhd : $lsqlid\n"
+
+      set sqlcmd "SELECT images.idheader,images.tabname,images.filename,
+                  images.dirfilename,images.sizefich,images.datemodif,
+                  $imageidhd.* FROM images,$imageidhd,commun
+		  WHERE images.idbddimg = $imageidhd.idbddimg 
+                  AND   commun.idbddimg = $imageidhd.idbddimg
+                  AND   images.idbddimg IN ($lsqlid);"
+
+      ::console::affiche_resultat "sqlcmd = $sqlcmd\n"
+      set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
+      if {[string first "Unknown column" $msg]==-1} {
+         if {$err} {
+            bddimages_sauve_fich "Erreur de lecture de la liste des header par SQL"
+            bddimages_sauve_fich "        sqlcmd = $sqlcmd"
+            bddimages_sauve_fich "        err = $err"
+            bddimages_sauve_fich "        msg = $msg"
+            ::console::affiche_erreur "Erreur de lecture de la liste des header par SQL\n"
+            ::console::affiche_erreur "        sqlcmd = $sqlcmd\n"
+            ::console::affiche_erreur "        err = $err\n"
+            ::console::affiche_erreur "        msg = $msg\n"
+            return
+         }
+
+         set nbresult [llength $resultcount]
+         set nbcol    [llength $resultcount]
+
+         if {$nbresult>0} {
+
+            set colvar [lindex $resultcount 0]
+            set rowvar [lindex $resultcount 1]
+            set nbcol  [llength $colvar]
+
+            foreach line $rowvar {
+               set resultline ""
+               set cpt 0
+               foreach col $colvar {
+                  lappend resultline [list $col [lindex $line $cpt]]
+                  incr cpt
+               }
+
+               lappend table $resultline
+            }
+         }
+      }
+
    }
 
-   return ""
+   return $table
 }
 
 #--------------------------------------------------
