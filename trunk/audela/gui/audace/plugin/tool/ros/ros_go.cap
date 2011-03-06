@@ -1,6 +1,6 @@
 #
 # Fichier : ros_go.cap
-# Mise a jour $Id: ros_go.cap,v 1.1 2011-02-19 20:43:49 fredvachier Exp $
+# Mise a jour $Id$
 #
 
 #=========================================================================
@@ -22,7 +22,7 @@ set caption(ros_go,maintenance)           "Maintenance"
 set caption(ros_go,gestion)               "Queries"
 set caption(ros_go,synchronisation)       "Synchronization"
 set caption(ros_go,test)                  "Test"
-set caption(ros_go,ressource)             "Re-Source"
+set caption(ros_go,ressource)             "Re-source"
 
 # *************** Version française **** **********************
 if { [ string compare $langage "french" ] == "0" } {
@@ -38,7 +38,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ros_go,gestion)            "Requêtes"
    set caption(ros_go,synchronisation)    "Synchronisation"
    set caption(ros_go,test)               "Test"
-   set caption(ros_go,ressource)          "Re-Source"
+   set caption(ros_go,ressource)          "Re-source"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
