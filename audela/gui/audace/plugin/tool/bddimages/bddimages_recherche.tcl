@@ -971,6 +971,18 @@ namespace eval bddimages_recherche {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
    proc ::bddimages_recherche::bddimages_associate { namelist } {
    
       global audace
@@ -1032,7 +1044,41 @@ namespace eval bddimages_recherche {
       }
       ::console::affiche_resultat "idlist=$idlist\n"
    
+      set num [::bddimages_liste::get_intellilist_by_name $namelist]   
+   
+      set normallist $::intellilisttotal($num)
+
+      if { [::bddimages_liste::get_val_intellilist $normallist "type"] != "normal"} {
+         ::console::affiche_erreur "Ne peut etre associe a la liste $namelist\n"
+         return
+      }
+
+      ::console::affiche_resultat "normallist=$normallist\n"
+   
+      set newl ""
+      foreach val $normallist {
+         if {[lindex $val 0]=="idlist"} {
+            lappend newl [list "idlist" $idlist]
+         } else {
+            lappend newl $val
+         }
+      }
+      ::console::affiche_resultat "newl=$newl\n"
+      set ::intellilisttotal($num) $newl
+      ::console::affiche_resultat "intellilisttotal=$::intellilisttotal($num)\n"
+      return
    }
+
+
+
+
+
+
+
+
+
+
+
 
 
    proc bddimages_define {  } {
@@ -1051,6 +1097,14 @@ namespace eval bddimages_recherche {
       ::bddimages_define::run $audace(base).bddimages_define
       
    }
+
+
+
+
+
+
+
+
 
 
    proc bddimages_images_delete {  } {
