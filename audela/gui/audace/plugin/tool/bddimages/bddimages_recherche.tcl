@@ -1065,7 +1065,7 @@ namespace eval bddimages_recherche {
       }
       ::console::affiche_resultat "newl=$newl\n"
       set ::intellilisttotal($num) $newl
-      ::console::affiche_resultat "intellilisttotal=$::intellilisttotal($num)\n"
+
       return
    }
 
