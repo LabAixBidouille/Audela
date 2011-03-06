@@ -64,6 +64,7 @@ proc ::bddimages::initPlugin { tkbase } {
    global bddconf
 
    set bddconf(font,courier_10) "Courier 10 normal"
+   set bddconf(font,arial_10)   "{Arial} 10 normal"
    set bddconf(font,arial_10_b) "{Arial} 10 bold"
    set bddconf(font,arial_12)   "{Arial} 12 normal"
    set bddconf(font,arial_12_b) "{Arial} 12 bold"
