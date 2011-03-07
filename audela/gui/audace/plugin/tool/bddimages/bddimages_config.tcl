@@ -115,8 +115,6 @@ namespace eval bddimages_config {
          ::bddimagesXML::save_xml_config 
       }
 
-
-
       # Config courante
       if { ![info exists bddconf(default_config)] } {
          #--- Charge les config bddimages depuis le fichier XML
@@ -130,9 +128,6 @@ namespace eval bddimages_config {
 
       #--- Mise en forme du resultat
       set errconn [catch {::bddimages_sql::connect} connectstatus]
-
-
-
 
       # Fin
       ::bddimages_config::recup_position
@@ -287,6 +282,7 @@ namespace eval bddimages_config {
       #--- confToWidget
       set bddconf(position_status) $conf(bddimages,position_status)
 
+      #--- Affecte les variables depuis les valeurs de la conf
       foreach param $allparams {
          if {[info exists conf(bddimages,$param)]} {
             set bddconf($param) $conf(bddimages,$param)
@@ -294,6 +290,8 @@ namespace eval bddimages_config {
             set bddconf($param) "" 
          }
       }
+      #--- Force a 1 le choix bddconf(sauve_xml) si non defini
+      if { [string equal $bddconf(sauve_xml) ""] } { set bddconf(sauve_xml) 1 }
 
       #---
       if { [ winfo exists $This ] } {
@@ -318,7 +316,7 @@ namespace eval bddimages_config {
       set bddconf(default_config) $::bddimagesXML::default_config
       # Recupere la config par courante [liste id name]
       set bddconf(current_config) $::bddimagesXML::current_config
-      
+
       #---
       toplevel $This -class Toplevel
       wm geometry $This $bddconf(position_status)

@@ -110,6 +110,8 @@ proc ::bddimages::ressource {  } {
    #--- Chargement des captions
    source [ file join $audace(rep_plugin) tool bddimages bddimages_go.cap ]
    #--- Chargement des fichiers auxiliaires
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdicalendar.tcl ]\""
+
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_go.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_sql.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_config.tcl ]\""
@@ -125,7 +127,6 @@ proc ::bddimages::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_xml.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_admin.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_define.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_calendrier.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_imgcorrection.tcl ]\""
 
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_config.cap ]\""

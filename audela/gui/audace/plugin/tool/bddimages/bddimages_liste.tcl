@@ -9,206 +9,40 @@
 # Mise à jour $Id$
 #
 #--------------------------------------------------
-#
-# - namespace bddimages_liste
-#
-#--------------------------------------------------
-#
-#   -- Fichiers source externe :
-#
-#  bddimages_liste.cap
-#
-#--------------------------------------------------
-#
-#   -- Procedures du namespace
-#
-#--------------------------------------------------
-# run { this }
-#--------------------------------------------------
-#
-#    fonction  :
-#        Creation de la fenetre
-#
-#    procedure externe :
-#
-#    variables en entree :
-#        this = chemin de la fenetre
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-# fermer { }
-#--------------------------------------------------
-#
-#    fonction  :
-#        Fonction appellee lors de l'appui
-#        sur le bouton 'Fermer'
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-#  init_info { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Initialisation de la liste des fichiers
-#       du repertoire "incoming" dans conf(dirinco)
-#       pour l affichage dans la table.
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-#  recup_position { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Permet de recuperer et de sauvegarder
-#       la position de la fenetre
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-#  affiche_entete { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Permet d afficher l entete d un fichier
-#       selectionné
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-#  affiche_image { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Permet d afficher l image d un fichier
-#       selectionné
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-#  createDialog { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Creation de l'interface graphique
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-#  cmdFormatColumn { column_name }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Definit la largeur, la traduction du titre
-#       et la justification des colonnes
-#
-#    procedure externe :
-#
-#    variables en entree :
-#        column_name =
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-#  cmdButton1Click { frame }
-#--------------------------------------------------
-#
-#    fonction  :
-#
-#    procedure externe :
-#
-#    variables en entree :
-#        frame = Fenetre ou s affiche la table
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-#  cmdSortColumn { tbl col }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Trie les lignes par ordre alphabetique de
-#       la colonne (est appele quand on clique sur
-#       le titre de la colonne)
-#
-#    procedure externe :
-#
-#    variables en entree :
-#        tbl =
-#        col =
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-#  Affiche_Results
-#--------------------------------------------------
-#
-#    fonction  :
-#       Affiche la liste des objets de l'image
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
+# - Namespace bddimages_liste
+# - Fichiers source externe :
+#       bddimages_liste.cap
 #--------------------------------------------------
 
 namespace eval bddimages_liste {
+
+   package require bdicalendar 1.0
 
    global audace
    global bddconf
 
    #--- Chargement des captions
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_liste.cap ]\""
+
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_insertion_applet.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_sub_fichier.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_liste_creation.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_calendrier.tcl ]\""
 
-
-#--------------------------------------------------
-# run { this }
-#--------------------------------------------------
-#
-#    fonction  :
-#        Creation de la fenetre
-#
-#    procedure externe :
-#
-#    variables en entree :
-#        this = chemin de la fenetre
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-
+   #--------------------------------------------------
+   # run { this }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #        Creation de la fenetre
+   #
+   #    procedure externe :
+   #
+   #    variables en entree :
+   #        this = chemin de la fenetre
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
    proc run { this {listname ?} } {
       variable This
       global entetelog
@@ -221,7 +55,7 @@ namespace eval bddimages_liste {
 
 
 
-proc ::bddimages_liste::runnormal { this } {
+   proc ::bddimages_liste::runnormal { this } {
 
       global This
       global entetelog
@@ -235,75 +69,66 @@ proc ::bddimages_liste::runnormal { this } {
          return
       }
 
+      global getnamenewlist
+   
+      set getnamenewlist(result) 0
+      set getnamenewlist(name) ""
+   
+      toplevel $This -class Toplevel
+      wm title $This "Nouvelle liste"
+      wm positionfrom $This user
+      wm sizefrom $This user
+   
+      set framecurrent $This.framename
 
-
-
-
-
-   global getnamenewlist
-
-   set getnamenewlist(result) 0
-   set getnamenewlist(name) ""
-
-   toplevel $This -class Toplevel
-   wm title $This "Nouvelle liste"
-   wm positionfrom $This user
-   wm sizefrom $This user
-
-   set framecurrent $This.framename
-
-
-   frame $framecurrent -relief groove
-   pack configure $framecurrent -side top -fill both -expand 1 -padx 10 -pady 10
-
-   # Frame qui va contenir le label "Type your password:" et une entrée pour le rentrer
-   frame $framecurrent.title
-   pack configure $framecurrent.title -side top -fill x
-     label $framecurrent.title.e -text "Nom de la liste"
-     pack configure $framecurrent.title.e -side left -anchor c
-
-   # L'option -show permet de masquer la véritable entrée, 
-   # et de mettre une étoile à la place des caractères saisis
-   frame $framecurrent.gpass
-   pack configure $framecurrent.gpass -side top -fill x
-     entry $framecurrent.gpass.v -textvariable getnamenewlist(name)
-     pack configure $framecurrent.gpass.v -side bottom -anchor c
-
-   # Frame qui va contenir les boutons Cancel et Ok
-   frame $framecurrent.buttons
-   pack configure $framecurrent.buttons -side top -fill x
-     button $framecurrent.buttons.cancel -text Cancel -command "destroy $This"
-     pack configure $framecurrent.buttons.cancel -side left
-     button $framecurrent.buttons.ok -text Ok -command { set getnamenewlist(result) 1; ::bddimages_liste::build_normallist; destroy $This }
-     pack configure $framecurrent.buttons.ok -side right
-
-   grab set $This
-   tkwait window $This
-   if {$getnamenewlist(result)} {
-      return -code 0 $getnamenewlist(name)
-   } else {
-      return -code error ""
+      frame $framecurrent -relief groove
+      pack configure $framecurrent -side top -fill both -expand 1 -padx 10 -pady 10
+   
+      # Frame qui va contenir le label "Type your password:" et une entrée pour le rentrer
+      frame $framecurrent.title
+      pack configure $framecurrent.title -side top -fill x
+        label $framecurrent.title.e -text "Nom de la liste"
+        pack configure $framecurrent.title.e -side left -anchor c
+   
+      # L'option -show permet de masquer la véritable entrée, 
+      # et de mettre une étoile à la place des caractères saisis
+      frame $framecurrent.gpass
+      pack configure $framecurrent.gpass -side top -fill x
+        entry $framecurrent.gpass.v -textvariable getnamenewlist(name)
+        pack configure $framecurrent.gpass.v -side bottom -anchor c
+   
+      # Frame qui va contenir les boutons Cancel et Ok
+      frame $framecurrent.buttons
+      pack configure $framecurrent.buttons -side top -fill x
+        button $framecurrent.buttons.cancel -text Cancel -command "destroy $This"
+        pack configure $framecurrent.buttons.cancel -side left
+        button $framecurrent.buttons.ok -text Ok -command { set getnamenewlist(result) 1; ::bddimages_liste::build_normallist; destroy $This }
+        pack configure $framecurrent.buttons.ok -side right
+   
+      grab set $This
+      tkwait window $This
+      if {$getnamenewlist(result)} {
+         return -code 0 $getnamenewlist(name)
+      } else {
+         return -code error ""
+      }
    }
-}
 
-
-
-
-#--------------------------------------------------
-# fermer { }
-#--------------------------------------------------
-#
-#    fonction  :
-#        Fonction appellee lors de l'appui
-#        sur le bouton 'Fermer'
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
+   #--------------------------------------------------
+   # fermer { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #        Fonction appellee lors de l'appui
+   #        sur le bouton 'Fermer'
+   #
+   #    procedure externe :
+   #
+   #    variables en entree :
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
    proc fermer { } {
       variable This
 
@@ -312,23 +137,21 @@ proc ::bddimages_liste::runnormal { this } {
       return
    }
 
-
-
-#--------------------------------------------------
-#  recup_position { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Permet de recuperer et de sauvegarder
-#       la position de la fenetre
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
+   #--------------------------------------------------
+   #  recup_position { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       Permet de recuperer et de sauvegarder
+   #       la position de la fenetre
+   #
+   #    procedure externe :
+   #
+   #    variables en entree :
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
    proc recup_position { } {
       variable This
       global audace
@@ -345,873 +168,811 @@ proc ::bddimages_liste::runnormal { this } {
    }
 
 
-proc remove_requete { } {
-
-  variable This
-   global indicereq
-   global list_req
-
-
-  for {set x 1} {$x<=$indicereq} {incr x} {
-    set err [catch {set a [$This.framereq.$x.sup cget -state]} msg ]
-    if {!$err} {
-      if {$a == "active" } {set i $x}
+   #--------------------------------------------------
+   #  get_list_box_champs { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       fournit la liste des champs
+   #
+   #    procedure externe :
+   #
+   #    variables en entree : none
+   #
+   #    variables en sortie : liste
+   #
+   #--------------------------------------------------
+   proc get_list_box_champs { } {
+   
+      global list_key_to_var
+   
+      set list_box_champs [list ]
+      set nbl1 0
+      set sqlcmd "select distinct keyname,variable from header order by keyname;"
+      set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
+      if {$err} {
+         bddimages_sauve_fich "Erreur de lecture de la liste des header par SQL"
+         return -code error "Erreur de lecture de la liste des header par SQL"
       }
-    }
-
-
-  set list_req($i,valide) "no"
-  destroy $This.framereq.$i
-
-}
-
-#--------------------------------------------------
-#  get_list_box_champs { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       fournit la liste des champs
-#
-#    procedure externe :
-#
-#    variables en entree : none
-#
-#    variables en sortie : liste
-#
-#--------------------------------------------------
-proc get_list_box_champs { } {
-
-   global list_key_to_var
-
-   set list_box_champs [list ]
-   set nbl1 0
-   set sqlcmd "select distinct keyname,variable from header order by keyname;"
-   set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
-   if {$err} {
-      bddimages_sauve_fich "Erreur de lecture de la liste des header par SQL"
-      return -code error "Erreur de lecture de la liste des header par SQL"
-   }
-   foreach line $resultsql {
-      set key [lindex $line 0]
-      set var [lindex $line 1]
-      set list_key_to_var($key) $var
-      if {$nbl1<[string length $key]} {
-         set nbl1 [string length $key]
+      foreach line $resultsql {
+         set key [lindex $line 0]
+         set var [lindex $line 1]
+         set list_key_to_var($key) $var
+         if {$nbl1<[string length $key]} {
+            set nbl1 [string length $key]
+         }
+         lappend list_box_champs $key
       }
-      lappend list_box_champs $key
+      set nbl1 [expr $nbl1 + 3]
+      return [list $nbl1 $list_box_champs]
    }
-   set nbl1 [expr $nbl1 + 3]
-   return [list $nbl1 $list_box_champs]
-}
 
-#--------------------------------------------------
-#  get_list_combobox { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       fournit la liste des conditions de la requete
-#
-#    procedure externe :
-#
-#    variables en entree : none
-#
-#    variables en sortie : liste
-#
-#--------------------------------------------------
-proc get_list_combobox { } {
-
-   global caption
-
-return [list "=" ">" "<" ">=" "<=" "!=" $caption(bddimages_liste,contient) $caption(bddimages_liste,notcontient)]
-}
-
-#--------------------------------------------------
-#  affich_form_req { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       fournit la liste des conditions de la requete
-#
-#    procedure externe :
-#
-#    variables en entree : none
-#
-#    variables en sortie : liste
-#
-#--------------------------------------------------
-proc affich_form_req { } {
-
-  set jjdatemin [ mc_date2jd $form_req(datemin) ]
-  set jjdatemax [ mc_date2jd $form_req(datemax) ]
-
-  ::console::affiche_resultat "-- affich_form_req"
-  ::console::affiche_resultat "datemin                  = $form_req(datemin)"
-  ::console::affiche_resultat "datemax                  = $form_req(datemax)"
-  ::console::affiche_resultat "jjdatemin                = $jjdatemin"
-  ::console::affiche_resultat "jjdatemax                = $jjdatemax"
-  ::console::affiche_resultat "type_req_check 		= $form_req(type_req_check)"
-  ::console::affiche_resultat "type_requ 		= $form_req(type_requ)"
-  ::console::affiche_resultat "choix_limit_result	= $form_req(choix_limit_result)"
-  ::console::affiche_resultat "limit_result		= $form_req(limit_result)"
-  ::console::affiche_resultat "type_result		= $form_req(type_result)"
-  ::console::affiche_resultat "type_select		= $form_req(type_select)"
-  ::console::affiche_resultat "nbimg			= $form_req(nbimg)"
-
-}
-
-
-
-
-
-
-proc ::bddimages_liste::get_val_intellilist { intellilist val } {
-
-
-   set y ""
-   foreach  l $intellilist  {
-       set x [lsearch $l $val]
-       if {$x!=-1} {
-          set y [lindex $l 1]
-          return $y
-       }
+   #--------------------------------------------------
+   #  get_list_combobox { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       fournit la liste des conditions de la requete
+   #
+   #    procedure externe :
+   #
+   #    variables en entree : none
+   #
+   #    variables en sortie : liste
+   #
+   #--------------------------------------------------
+   proc get_list_combobox { } {
+      global caption
+      return [list "=" ">" "<" ">=" "<=" "!=" $caption(bddimages_liste,contient) $caption(bddimages_liste,notcontient)]
    }
-   return $y
-}
+
+   #--------------------------------------------------
+   #  affich_form_req { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       fournit la liste des conditions de la requete
+   #
+   #    procedure externe :
+   #
+   #    variables en entree : none
+   #
+   #    variables en sortie : liste
+   #
+   #--------------------------------------------------
+   proc affich_form_req { } {
+   
+     set jjdatemin [ mc_date2jd $form_req(datemin) ]
+     set jjdatemax [ mc_date2jd $form_req(datemax) ]
+   
+     ::console::affiche_resultat "-- affich_form_req"
+     ::console::affiche_resultat "datemin                  = $form_req(datemin)"
+     ::console::affiche_resultat "datemax                  = $form_req(datemax)"
+     ::console::affiche_resultat "jjdatemin                = $jjdatemin"
+     ::console::affiche_resultat "jjdatemax                = $jjdatemax"
+     ::console::affiche_resultat "type_req_check 		= $form_req(type_req_check)"
+     ::console::affiche_resultat "type_requ 		= $form_req(type_requ)"
+     ::console::affiche_resultat "choix_limit_result	= $form_req(choix_limit_result)"
+     ::console::affiche_resultat "limit_result		= $form_req(limit_result)"
+     ::console::affiche_resultat "type_result		= $form_req(type_result)"
+     ::console::affiche_resultat "type_select		= $form_req(type_select)"
+     ::console::affiche_resultat "nbimg			= $form_req(nbimg)"
+   
+   }
+
+
+   proc ::bddimages_liste::get_val_intellilist { intellilist val } {
+   
+      set y ""
+      foreach  l $intellilist  {
+          set x [lsearch $l $val]
+          if {$x!=-1} {
+             set y [lindex $l 1]
+             return $y
+          }
+      }
+      return $y
+   }
+
+
+   proc ::bddimages_liste::affiche_intellilist { intellilist } {
+   
+     ::console::affiche_resultat "-- affiche_intellilist\n"
+     ::console::affiche_resultat "intellilist = $intellilist \n"
+     ::console::affiche_resultat "name = [get_val_intellilist $intellilist "name"] \n"
+     ::console::affiche_resultat "datemin = [get_val_intellilist $intellilist "datemin"]\n"
+     ::console::affiche_resultat "datemax = [get_val_intellilist $intellilist "datemax"]\n"
+     ::console::affiche_resultat "type_req_check = [get_val_intellilist $intellilist "type_req_check"]\n"
+     ::console::affiche_resultat "type_requ = [get_val_intellilist $intellilist "type_requ"]\n"
+     ::console::affiche_resultat "choix_limit_result = [get_val_intellilist $intellilist "choix_limit_result"]\n"
+     ::console::affiche_resultat "limit_result = [get_val_intellilist $intellilist "limit_result"]\n"
+     ::console::affiche_resultat "type_result = [get_val_intellilist $intellilist "type_result"]\n"
+     ::console::affiche_resultat "type_select = [get_val_intellilist $intellilist "type_select"]\n"
+     ::console::affiche_resultat "reqlist = [get_val_intellilist $intellilist "reqlist"]\n"
+     ::console::affiche_resultat "--\n"
+   
+   }
+
+
+   #--------------------------------------------------
+   #  get_intellilist_by_name { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       fournit la liste des conditions de la requete
+   #
+   #    procedure externe :
+   #
+   #    variables en entree : name
+   #
+   #    variables en sortie : none
+   #
+   #--------------------------------------------------
+   proc get_intellilist_by_name { name } {
+   
+     global nbintellilist
+     global intellilisttotal
+   
+     set found 0
+     for {set i 1} {$i<=$nbintellilist} {incr i} {
+        set l $intellilisttotal($i)
+             
+        if { [get_val_intellilist $l "name"] eq "$name" } then { set found 1 ; break }
+     }
+     if { $found } { return $i } else { return -1 }
+   }
 
 
 
+   proc exec_intellilist { num } {
+   
+    ::bddimages_recherche::Affiche_listes
+    ::bddimages_recherche::get_list $num
+    ::bddimages_recherche::Affiche_Results $num
+   }
 
 
+   proc ::bddimages_liste::build_normallist { } {
+   
+      global getnamenewlist
+      global nbintellilist intellilisttotal
+   
+      if {$getnamenewlist(name) != ""} {
+         ::console::affiche_resultat "new list = $getnamenewlist(name)"
+         set intellilist     ""
+         lappend intellilist [list "type"               "normal"]              
+         lappend intellilist [list "name"               $getnamenewlist(name)]              
+         lappend intellilist [list "idlist"             ""]              
+         incr nbintellilist
+         set intellilisttotal($nbintellilist) $intellilist
+         exec_intellilist $nbintellilist
+         conf_save_intellilists
+         }
+   
+   }
 
 
-
-
-
-
-proc ::bddimages_liste::affiche_intellilist { intellilist } {
-
-  ::console::affiche_resultat "-- affiche_intellilist\n"
-  ::console::affiche_resultat "intellilist = $intellilist \n"
-  ::console::affiche_resultat "name = [get_val_intellilist $intellilist "name"] \n"
-  ::console::affiche_resultat "datemin = [get_val_intellilist $intellilist "datemin"]\n"
-  ::console::affiche_resultat "datemax = [get_val_intellilist $intellilist "datemax"]\n"
-  ::console::affiche_resultat "type_req_check = [get_val_intellilist $intellilist "type_req_check"]\n"
-  ::console::affiche_resultat "type_requ = [get_val_intellilist $intellilist "type_requ"]\n"
-  ::console::affiche_resultat "choix_limit_result = [get_val_intellilist $intellilist "choix_limit_result"]\n"
-  ::console::affiche_resultat "limit_result = [get_val_intellilist $intellilist "limit_result"]\n"
-  ::console::affiche_resultat "type_result = [get_val_intellilist $intellilist "type_result"]\n"
-  ::console::affiche_resultat "type_select = [get_val_intellilist $intellilist "type_select"]\n"
-  ::console::affiche_resultat "reqlist = [get_val_intellilist $intellilist "reqlist"]\n"
-  ::console::affiche_resultat "--\n"
-
-}
-
-
-
-
-
-
-
-
-#--------------------------------------------------
-#  get_intellilist_by_name { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       fournit la liste des conditions de la requete
-#
-#    procedure externe :
-#
-#    variables en entree : name
-#
-#    variables en sortie : none
-#
-#--------------------------------------------------
-proc get_intellilist_by_name { name } {
-
-  global nbintellilist
-  global intellilisttotal
-
-  set found 0
-  for {set i 1} {$i<=$nbintellilist} {incr i} {
-     set l $intellilisttotal($i)
-          
-     if { [get_val_intellilist $l "name"] eq "$name" } then { set found 1 ; break }
-  }
-  if { $found } { return $i } else { return -1 }
-}
-
-
-
-
-
-
-
-
-
-
-proc exec_intellilist { num } {
-
- ::bddimages_recherche::Affiche_listes
- ::bddimages_recherche::get_list $num
- ::bddimages_recherche::Affiche_Results $num
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-proc ::bddimages_liste::build_normallist { } {
-
-   global getnamenewlist
-   global nbintellilist intellilisttotal
-
-   if {$getnamenewlist(name) != ""} {
-      ::console::affiche_resultat "new list = $getnamenewlist(name)"
+   # Construit une intelliliste a partir du formulaire
+   proc ::bddimages_liste::build_intellilist { name } {
+   
+      global indicereq
+      global list_req
+      global form_req
+      global caption
+      global nbintellilist
+   
       set intellilist     ""
-      lappend intellilist [list "type"               "normal"]              
-      lappend intellilist [list "name"               $getnamenewlist(name)]              
-      lappend intellilist [list "idlist"             ""]              
-      incr nbintellilist
-      set intellilisttotal($nbintellilist) $intellilist
-      exec_intellilist $nbintellilist
+      lappend intellilist [list "type"               "intellilist"]              
+      lappend intellilist [list "name"               $name]              
+      lappend intellilist [list "datemin"            $form_req(datemin)]              
+      lappend intellilist [list "datemax"            $form_req(datemax)]              
+      lappend intellilist [list "type_req_check"     $form_req(type_req_check)]       
+      lappend intellilist [list "type_requ"          $form_req(type_requ)]            
+      lappend intellilist [list "choix_limit_result" $form_req(choix_limit_result)]
+      lappend intellilist [list "limit_result"       $form_req(limit_result)]         
+      lappend intellilist [list "type_result"        $form_req(type_result)]          
+      lappend intellilist [list "type_select"        $form_req(type_select)]          
+   
+      set reqlist ""
+      set y 0
+      for {set x 1} {$x<=$indicereq} {incr x} {
+        if {$list_req($x,valide)=="ok"&&$list_req($x,valeur)!=""} {
+          incr y
+          if {$list_req($x,condition)== $caption(bddimages_liste,contient)} {
+             lappend reqlist [list $y $list_req($x,champ) "LIKE" "%$list_req($x,valeur)%"]
+             continue
+             }
+          if {$list_req($x,condition)== $caption(bddimages_liste,notcontient)} {
+             lappend reqlist [list $y $list_req($x,champ) "NOT LIKE" "%$list_req($x,valeur)%"]
+             continue
+             }
+          lappend reqlist [list $y $list_req($x,champ) $list_req($x,condition) $list_req($x,valeur)]
+          }
+        }
+      lappend intellilist [list "reqlist" $reqlist]
+   
+      return $intellilist
+   }
+
+   
+   # Construit une intelliliste a partir du formulaire
+   proc ::bddimages_liste::load_intellilist { intellilist } {
+   
+      global indicereq
+      global list_req
+      global form_req
+   
+   
+      set form_req(name)               [get_val_intellilist $intellilist "name"]
+      set form_req(datemin)            [get_val_intellilist $intellilist "datemin"]
+      set form_req(datemax)            [get_val_intellilist $intellilist "datemax"]
+      set form_req(type_req_check)     [get_val_intellilist $intellilist "type_req_check"]
+      set form_req(type_requ)          [get_val_intellilist $intellilist "type_requ"]
+      set form_req(choix_limit_result) [get_val_intellilist $intellilist "choix_limit_result"]
+      set form_req(limit_result)       [get_val_intellilist $intellilist "limit_result"]
+      set form_req(type_result)        [get_val_intellilist $intellilist "type_result"]
+      set form_req(type_select)        [get_val_intellilist $intellilist "type_select"]
+   
+      set reqlist                      [get_val_intellilist $intellilist "reqlist"]
+   
+      set indicereq 0
+      foreach req $reqlist {
+         incr indicereq
+         set list_req($indicereq,valide)    "ok"
+         set list_req($indicereq,condition) [lindex $req 2]
+         set list_req($indicereq,champ)     [lindex $req 1]
+         set list_req($indicereq,valeur)    [lindex $req 3]
+      }
+   
+   }
+
+
+   proc conf_save_intellilists { } {
+   
+      global bddconf
+   
+      set l ""
+      for {set x 1} {$x<=$::nbintellilist} {incr x} {
+         lappend l [list $::intellilisttotal($x)]
+      }
+      set ::conf(bddimages,$bddconf(current_config),intellilists) $l
+   }
+
+
+
+   proc conf_load_intellilists { } {
+   
+      global nbintellilist
+      global intellilisttotal
+      global bddconf
+   
+      set nbintellilist 0
+      
+      # hack pour initialisation
+      if { [catch {get_list_box_champs} msg] } {
+         return -code error $msg
+      }
+      if { ! [info exists ::conf(bddimages,$bddconf(current_config),intellilists) ] } then { return }
+      foreach l $::conf(bddimages,$bddconf(current_config),intellilists) {
+         incr nbintellilist
+         set intellilisttotal($nbintellilist) [lindex $l 0]
+      }
+   }
+
+
+   proc accept { } {
+   
+      global indicereq
+      global list_req
+      global form_req
+      global caption
+      global nbintellilist
+      global intellilisttotal
+   
+      set idx [get_intellilist_by_name $form_req(name)]
+      if { $idx == -1 } {
+         incr nbintellilist
+         set idx $nbintellilist
+      }
+      set intellilist [build_intellilist "$form_req(name)"]
+      set intellilisttotal($idx) $intellilist
+      # ::bddimages_recherche::Affiche_listes
+      # ::bddimages_recherche::get_list $nbintellilist
+      # ::bddimages_recherche::Affiche_Results $nbintellilist
+      exec_intellilist $idx
       conf_save_intellilists
-      }
-
-}
-
-
-
-
-
-
-# Construit une intelliliste a partir du formulaire
-proc ::bddimages_liste::build_intellilist { name } {
-
-   global indicereq
-   global list_req
-   global form_req
-   global caption
-   global nbintellilist
-
-   set intellilist     ""
-   lappend intellilist [list "type"               "intellilist"]              
-   lappend intellilist [list "name"               $name]              
-   lappend intellilist [list "datemin"            $form_req(datemin)]              
-   lappend intellilist [list "datemax"            $form_req(datemax)]              
-   lappend intellilist [list "type_req_check"     $form_req(type_req_check)]       
-   lappend intellilist [list "type_requ"          $form_req(type_requ)]            
-   lappend intellilist [list "choix_limit_result" $form_req(choix_limit_result)]
-   lappend intellilist [list "limit_result"       $form_req(limit_result)]         
-   lappend intellilist [list "type_result"        $form_req(type_result)]          
-   lappend intellilist [list "type_select"        $form_req(type_select)]          
-
-   set reqlist ""
-   set y 0
-   for {set x 1} {$x<=$indicereq} {incr x} {
-     if {$list_req($x,valide)=="ok"&&$list_req($x,valeur)!=""} {
-       incr y
-       if {$list_req($x,condition)== $caption(bddimages_liste,contient)} {
-          lappend reqlist [list $y $list_req($x,champ) "LIKE" "%$list_req($x,valeur)%"]
-          continue
-          }
-       if {$list_req($x,condition)== $caption(bddimages_liste,notcontient)} {
-          lappend reqlist [list $y $list_req($x,champ) "NOT LIKE" "%$list_req($x,valeur)%"]
-          continue
-          }
-       lappend reqlist [list $y $list_req($x,champ) $list_req($x,condition) $list_req($x,valeur)]
-       }
-     }
-   lappend intellilist [list "reqlist" $reqlist]
-
-   return $intellilist
-}
-
-
-
-# Construit une intelliliste a partir du formulaire
-proc ::bddimages_liste::load_intellilist { intellilist } {
-
-   global indicereq
-   global list_req
-   global form_req
-
-
-   set form_req(name)               [get_val_intellilist $intellilist "name"]
-   set form_req(datemin)            [get_val_intellilist $intellilist "datemin"]
-   set form_req(datemax)            [get_val_intellilist $intellilist "datemax"]
-   set form_req(type_req_check)     [get_val_intellilist $intellilist "type_req_check"]
-   set form_req(type_requ)          [get_val_intellilist $intellilist "type_requ"]
-   set form_req(choix_limit_result) [get_val_intellilist $intellilist "choix_limit_result"]
-   set form_req(limit_result)       [get_val_intellilist $intellilist "limit_result"]
-   set form_req(type_result)        [get_val_intellilist $intellilist "type_result"]
-   set form_req(type_select)        [get_val_intellilist $intellilist "type_select"]
-
-   set reqlist                      [get_val_intellilist $intellilist "reqlist"]
-
-   set indicereq 0
-   foreach req $reqlist {
-      incr indicereq
-      set list_req($indicereq,valide)    "ok"
-      set list_req($indicereq,condition) [lindex $req 2]
-      set list_req($indicereq,champ)     [lindex $req 1]
-      set list_req($indicereq,valeur)    [lindex $req 3]
+      ::bddimages_liste::fermer
    }
 
-}
 
-
-
-
-
-
-
-
-
-
-
-
-
-proc conf_save_intellilists { } {
-
-   global bddconf
-
-   set l ""
-   for {set x 1} {$x<=$::nbintellilist} {incr x} {
-      lappend l [list $::intellilisttotal($x)]
-   }
-   set ::conf(bddimages,$bddconf(current_config),intellilists) $l
-}
-
-
-
-
-
-
-
-
-
-
-
-
-proc conf_load_intellilists { } {
-
-   global nbintellilist
-   global intellilisttotal
-   global bddconf
-
-   set nbintellilist 0
+   #--------------------------------------------------
+   #  get_sqlcritere { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       construit la requete sql pour une table images_xxx
+   #
+   #    variables en entree : id header de la table
+   #
+   #    variables en sortie : requete sql
+   #
+   #--------------------------------------------------
+   proc ::bddimages_liste::get_sqlcritere { intellilist table } {
    
-   # hack pour initialisation
-   if { [catch {get_list_box_champs} msg] } {
-      return -code error $msg
-   }
-   if { ! [info exists ::conf(bddimages,$bddconf(current_config),intellilists) ] } then { return }
-   foreach l $::conf(bddimages,$bddconf(current_config),intellilists) {
-      incr nbintellilist
-      set intellilisttotal($nbintellilist) [lindex $l 0]
-   }
-}
+      global indicereq
+      global list_req
+      global form_req
+      global caption
+      global list_key_to_var
 
+      set ilist(name)               [get_val_intellilist $intellilist "name"]
+      set ilist(datemin)            [get_val_intellilist $intellilist "datemin"]
+      set ilist(datemax)            [get_val_intellilist $intellilist "datemax"]
+      set ilist(type_req_check)     [get_val_intellilist $intellilist "type_req_check"]
+      set ilist(type_requ)          [get_val_intellilist $intellilist "type_requ"]
+      set ilist(choix_limit_result) [get_val_intellilist $intellilist "choix_limit_result"]
+      set ilist(limit_result)       [get_val_intellilist $intellilist "limit_result"]
+      set ilist(type_result)        [get_val_intellilist $intellilist "type_result"]
+      set ilist(type_select)        [get_val_intellilist $intellilist "type_select"]
+      set reqlist                   [get_val_intellilist $intellilist "reqlist"]
 
+      if { $ilist(type_requ)==$caption(bddimages_liste,toutes)} {
+        set reqcond "AND"
+        }
+      if { $ilist(type_requ)==$caption(bddimages_liste,nimporte)} {
+        set reqcond "OR"
+        }
 
-
-
-
-
-
-
-
-proc accept { } {
-
-   global indicereq
-   global list_req
-   global form_req
-   global caption
-   global nbintellilist
-   global intellilisttotal
-
-   set idx [get_intellilist_by_name $form_req(name)]
-   if { $idx == -1 } {
-      incr nbintellilist
-      set idx $nbintellilist
-   }
-   set intellilist [build_intellilist "$form_req(name)"]
-   set intellilisttotal($idx) $intellilist
-   # ::bddimages_recherche::Affiche_listes
-   # ::bddimages_recherche::get_list $nbintellilist
-   # ::bddimages_recherche::Affiche_Results $nbintellilist
-   exec_intellilist $idx
-   conf_save_intellilists
-   ::bddimages_liste::fermer
-}
-
-
-
-
-#--------------------------------------------------
-#  get_sqlcritere { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       construit la requete sql pour une table images_xxx
-#
-#    variables en entree : id header de la table
-#
-#    variables en sortie : requete sql
-#
-#--------------------------------------------------
-proc ::bddimages_liste::get_sqlcritere { intellilist table } {
-
-   global indicereq
-   global list_req
-   global form_req
-   global caption
-   global list_key_to_var
-
-
-   set ilist(name)               [get_val_intellilist $intellilist "name"]
-   set ilist(datemin)            [get_val_intellilist $intellilist "datemin"]
-   set ilist(datemax)            [get_val_intellilist $intellilist "datemax"]
-   set ilist(type_req_check)     [get_val_intellilist $intellilist "type_req_check"]
-   set ilist(type_requ)          [get_val_intellilist $intellilist "type_requ"]
-   set ilist(choix_limit_result) [get_val_intellilist $intellilist "choix_limit_result"]
-   set ilist(limit_result)       [get_val_intellilist $intellilist "limit_result"]
-   set ilist(type_result)        [get_val_intellilist $intellilist "type_result"]
-   set ilist(type_select)        [get_val_intellilist $intellilist "type_select"]
-   set reqlist                   [get_val_intellilist $intellilist "reqlist"]
-
-   
-   if { $ilist(type_requ)==$caption(bddimages_liste,toutes)} {
-     set reqcond "AND"
-     }
-   if { $ilist(type_requ)==$caption(bddimages_liste,nimporte)} {
-     set reqcond "OR"
-     }
-
-
-   set sqlcritere ""
-   set cpt 0
-   foreach req $reqlist {
-      set key  [lindex $req 1]
-      set cond [lindex $req 2]
-      set val  [lindex $req 3]
-      if {$cpt==0} {
-         set sqlcritere "AND ( $sqlcritere (`$list_key_to_var($key)` $cond '$val') "
-      } else {
-         set sqlcritere "$sqlcritere $reqcond (`$list_key_to_var($key)` $cond '$val') "
-      }
-      incr cpt
-   }
-   if {$cpt!=0} {
-      set sqlcritere "$sqlcritere ) "
-   }
-
-   set cond "AND"
-
-   set jjdatemin [ mc_date2jd "$ilist(datemin)T00:00:00" ]
-   set jjdatemax [ mc_date2jd "$ilist(datemax)T00:00:00" ]
-
-   if { $ilist(datemin)!=""} {
-      if { $ilist(datemax)!=""} {
-      set sqlcritere "$sqlcritere AND (commun.datejj>$jjdatemin AND commun.datejj<$jjdatemax) "
-      } else {
-      set sqlcritere "$sqlcritere AND (commun.datejj>$jjdatemin) "
-      }
-   } else {
-      if { $ilist(datemax)!=""} {
-      set sqlcritere "$sqlcritere AND (commun.datejj<$jjdatemax) "
-      }
-   }
-
-   return $sqlcritere
-}
-
-
-
-
-#--------------------------------------------------
-#  get_imglist { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       renvoit la liste des images et de leur contenu
-#
-#    procedure externe :
-#
-#    variables en entree : none
-#
-#    variables en sortie : liste des images
-#
-#--------------------------------------------------
-proc ::bddimages_liste::get_imglist { intellilist } {
-
-   #::console::affiche_resultat "intellilist = $intellilist\n"
-
-   set type [::bddimages_liste::get_val_intellilist $intellilist "type"]
-   
-   if {$type == "intellilist"} {
-      return [::bddimages_liste::get_imglist_i $intellilist]
-   }
-   if {$type == "normal"} {
-      return [::bddimages_liste::get_imglist_n $intellilist]
-   }
-   return ""
-}
-
-#--------------------------------------------------
-#  get_imglist_n { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       construit la requete sql generale pour une liste normale
-#
-#    procedure externe :
-#
-#    variables en entree : none
-#
-#    variables en sortie : liste des images
-#
-#--------------------------------------------------
-proc ::bddimages_liste::get_imglist_n { intellilist } {
-
-   #::console::affiche_resultat "intellilist = $intellilist\n"
-
-   set idlist [::bddimages_liste::get_val_intellilist $intellilist "idlist"]
-   #::console::affiche_resultat "idlist = $idlist\n"
-   if {[llength $idlist] == 0} {return}
-
-   foreach val $idlist {
-      set imageidhd [lindex $val 0]
-      set lid [lindex $val 1]
+      set sqlcritere ""
       set cpt 0
-      foreach id $lid {
+      foreach req $reqlist {
+         set key  [lindex $req 1]
+         set cond [lindex $req 2]
+         set val  [lindex $req 3]
          if {$cpt==0} {
-            set lsqlid "$id"
+            set sqlcritere "AND ( $sqlcritere (`$list_key_to_var($key)` $cond '$val') "
          } else {
-            set lsqlid "$lsqlid,$id"
+            set sqlcritere "$sqlcritere $reqcond (`$list_key_to_var($key)` $cond '$val') "
          }
          incr cpt
       }
-      #::console::affiche_resultat "imageidhd = $imageidhd : $lsqlid\n"
-
-      set sqlcmd "SELECT images.idheader,images.tabname,images.filename,
-                  images.dirfilename,images.sizefich,images.datemodif,
-                  $imageidhd.* FROM images,$imageidhd,commun
-		  WHERE images.idbddimg = $imageidhd.idbddimg 
-                  AND   commun.idbddimg = $imageidhd.idbddimg
-                  AND   images.idbddimg IN ($lsqlid);"
-
-      #::console::affiche_resultat "sqlcmd = $sqlcmd\n"
-      set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
-      if {[string first "Unknown column" $msg]==-1} {
-         if {$err} {
-            bddimages_sauve_fich "Erreur de lecture de la liste des header par SQL"
-            bddimages_sauve_fich "        sqlcmd = $sqlcmd"
-            bddimages_sauve_fich "        err = $err"
-            bddimages_sauve_fich "        msg = $msg"
-            ::console::affiche_erreur "Erreur de lecture de la liste des header par SQL\n"
-            ::console::affiche_erreur "        sqlcmd = $sqlcmd\n"
-            ::console::affiche_erreur "        err = $err\n"
-            ::console::affiche_erreur "        msg = $msg\n"
-            return
+      if {$cpt!=0} {
+         set sqlcritere "$sqlcritere ) "
+      }
+   
+      set cond "AND"
+   
+      set jjdatemin [ mc_date2jd "$ilist(datemin)T00:00:00" ]
+      set jjdatemax [ mc_date2jd "$ilist(datemax)T00:00:00" ]
+   
+      if { $ilist(datemin)!=""} {
+         if { $ilist(datemax)!=""} {
+         set sqlcritere "$sqlcritere AND (commun.datejj>$jjdatemin AND commun.datejj<$jjdatemax) "
+         } else {
+         set sqlcritere "$sqlcritere AND (commun.datejj>$jjdatemin) "
          }
+      } else {
+         if { $ilist(datemax)!=""} {
+         set sqlcritere "$sqlcritere AND (commun.datejj<$jjdatemax) "
+         }
+      }
+   
+      return $sqlcritere
+   }
 
-         set nbresult [llength $resultcount]
-         set nbcol    [llength $resultcount]
 
-         if {$nbresult>0} {
+   #--------------------------------------------------
+   #  get_imglist { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       renvoit la liste des images et de leur contenu
+   #
+   #    procedure externe :
+   #
+   #    variables en entree : none
+   #
+   #    variables en sortie : liste des images
+   #
+   #--------------------------------------------------
+   proc ::bddimages_liste::get_imglist { intellilist } {
+   
+      set type [::bddimages_liste::get_val_intellilist $intellilist "type"]
+      
+      if {$type == "intellilist"} {
+         return [::bddimages_liste::get_imglist_i $intellilist]
+      }
+      if {$type == "normal"} {
+         return [::bddimages_liste::get_imglist_n $intellilist]
+      }
+      return ""
+   }
 
-            set colvar [lindex $resultcount 0]
-            set rowvar [lindex $resultcount 1]
-            set nbcol  [llength $colvar]
-
-            foreach line $rowvar {
-               set resultline ""
-               set cpt 0
-               foreach col $colvar {
-                  lappend resultline [list $col [lindex $line $cpt]]
-                  incr cpt
+   #--------------------------------------------------
+   #  get_imglist_n { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       construit la requete sql generale pour une liste normale
+   #
+   #    procedure externe :
+   #
+   #    variables en entree : none
+   #
+   #    variables en sortie : liste des images
+   #
+   #--------------------------------------------------
+   proc ::bddimages_liste::get_imglist_n { intellilist } {
+   
+      #::console::affiche_resultat "intellilist = $intellilist\n"
+   
+      set idlist [::bddimages_liste::get_val_intellilist $intellilist "idlist"]
+      #::console::affiche_resultat "idlist = $idlist\n"
+      if {[llength $idlist] == 0} {return}
+   
+      foreach val $idlist {
+         set imageidhd [lindex $val 0]
+         set lid [lindex $val 1]
+         set cpt 0
+         foreach id $lid {
+            if {$cpt==0} {
+               set lsqlid "$id"
+            } else {
+               set lsqlid "$lsqlid,$id"
+            }
+            incr cpt
+         }
+         #::console::affiche_resultat "imageidhd = $imageidhd : $lsqlid\n"
+   
+         set sqlcmd "SELECT images.idheader,images.tabname,images.filename,
+                     images.dirfilename,images.sizefich,images.datemodif,
+                     $imageidhd.* FROM images,$imageidhd,commun
+   		  WHERE images.idbddimg = $imageidhd.idbddimg 
+                     AND   commun.idbddimg = $imageidhd.idbddimg
+                     AND   images.idbddimg IN ($lsqlid);"
+   
+         #::console::affiche_resultat "sqlcmd = $sqlcmd\n"
+         set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
+         if {[string first "Unknown column" $msg]==-1} {
+            if {$err} {
+               bddimages_sauve_fich "Erreur de lecture de la liste des header par SQL"
+               bddimages_sauve_fich "        sqlcmd = $sqlcmd"
+               bddimages_sauve_fich "        err = $err"
+               bddimages_sauve_fich "        msg = $msg"
+               ::console::affiche_erreur "Erreur de lecture de la liste des header par SQL\n"
+               ::console::affiche_erreur "        sqlcmd = $sqlcmd\n"
+               ::console::affiche_erreur "        err = $err\n"
+               ::console::affiche_erreur "        msg = $msg\n"
+               return
+            }
+   
+            set nbresult [llength $resultcount]
+            set nbcol    [llength $resultcount]
+   
+            if {$nbresult>0} {
+   
+               set colvar [lindex $resultcount 0]
+               set rowvar [lindex $resultcount 1]
+               set nbcol  [llength $colvar]
+   
+               foreach line $rowvar {
+                  set resultline ""
+                  set cpt 0
+                  foreach col $colvar {
+                     lappend resultline [list $col [lindex $line $cpt]]
+                     incr cpt
+                  }
+   
+                  lappend table $resultline
                }
+            }
+         }
+   
+      }
+   
+      return $table
+   }
 
-               lappend table $resultline
+   #--------------------------------------------------
+   #  get_imglist_i { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       construit la requete sql generale
+   #
+   #    procedure externe :
+   #
+   #    variables en entree : none
+   #
+   #    variables en sortie : liste des images
+   #
+   #--------------------------------------------------
+   proc ::bddimages_liste::get_imglist_i { intellilist } {
+
+      #::bddimages_liste::affiche_intellilist $intellilist
+
+      set sqlcmd "SELECT DISTINCT idheader FROM header;"
+      set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
+      if {$err} {
+         bddimages_sauve_fich "Erreur de lecture de la table header par SQL"
+         bddimages_sauve_fich "	sqlcmd = $sqlcmd"
+         bddimages_sauve_fich "	err = $err"
+         bddimages_sauve_fich "	msg = $msg"
+         return
+      }
+   
+      set table ""
+   
+      foreach line $resultsql {
+   
+         set idhd [lindex $line 0]
+         set sqlcritere [::bddimages_liste::get_sqlcritere $intellilist "images_$idhd"]
+         set sqlcmd "SELECT images.idheader,images.tabname,images.filename,
+                     images.dirfilename,images.sizefich,images.datemodif,
+                     images_$idhd.* FROM images,images_$idhd,commun
+   		  WHERE images.idbddimg = images_$idhd.idbddimg 
+                     AND   commun.idbddimg = images_$idhd.idbddimg
+                     $sqlcritere  ;"
+         set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
+         if {[string first "Unknown column" $msg]==-1} {
+            if {$err} {
+               bddimages_sauve_fich "Erreur de lecture de la liste des header par SQL"
+               bddimages_sauve_fich "        sqlcmd = $sqlcmd"
+               bddimages_sauve_fich "        err = $err"
+               bddimages_sauve_fich "        msg = $msg"
+               ::console::affiche_erreur "Erreur de lecture de la liste des header par SQL\n"
+               ::console::affiche_erreur "        sqlcmd = $sqlcmd\n"
+               ::console::affiche_erreur "        err = $err\n"
+               ::console::affiche_erreur "        msg = $msg\n"
+               return
+            }
+   
+            set nbresult [llength $resultcount]
+            set nbcol    [llength $resultcount]
+   
+            if {$nbresult>0} {
+   
+               set colvar [lindex $resultcount 0]
+               set rowvar [lindex $resultcount 1]
+               set nbcol  [llength $colvar]
+   
+               foreach line $rowvar {
+                  set resultline ""
+                  set cpt 0
+                  foreach col $colvar {
+                     lappend resultline [list $col [lindex $line $cpt]]
+                     incr cpt
+                  }
+   
+                  lappend table $resultline
+               }
             }
          }
       }
-
+   
+      #::console::affiche_erreur " table = $table\n"
+      return $table
    }
 
-   return $table
-}
-
-#--------------------------------------------------
-#  get_imglist_i { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       construit la requete sql generale
-#
-#    procedure externe :
-#
-#    variables en entree : none
-#
-#    variables en sortie : liste des images
-#
-#--------------------------------------------------
-proc ::bddimages_liste::get_imglist_i { intellilist } {
-
-
-   #::bddimages_liste::affiche_intellilist $intellilist
-
-
-   set sqlcmd "SELECT DISTINCT idheader FROM header;"
-   set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
-   if {$err} {
-      bddimages_sauve_fich "Erreur de lecture de la table header par SQL"
-      bddimages_sauve_fich "	sqlcmd = $sqlcmd"
-      bddimages_sauve_fich "	err = $err"
-      bddimages_sauve_fich "	msg = $msg"
+   #--------------------------------------------------
+   #  calcul_nbimg { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       fournit la liste des conditions de la requete
+   #
+   #    procedure externe :
+   #
+   #    variables en entree : none
+   #
+   #    variables en sortie : liste
+   #
+   #--------------------------------------------------
+   proc ::bddimages_liste::calcul_nbimg { } {
+   
+      global form_req
+   
+      set intellilist [::bddimages_liste::build_intellilist "calcul_nbimg"]
+      set form_req(nbimg) [llength [::bddimages_liste::get_imglist $intellilist]]
+      #::console::affiche_resultat "Nb img = $form_req(nbimg) \n"
       return
    }
 
-   set table ""
+   #--------------------------------------------------
+   #  remove_requete { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       efface une requete
+   #
+   #    procedure externe :
+   #
+   #    variables en entree : none
+   #
+   #    variables en sortie : none
+   #
+   #--------------------------------------------------
+   proc remove_requete { } {
+   
+      variable This
+      global indicereq
+      global list_req
+      global framereqcurrent
 
-   foreach line $resultsql {
-
-      set idhd [lindex $line 0]
-      set sqlcritere [::bddimages_liste::get_sqlcritere $intellilist "images_$idhd"]
-      set sqlcmd "SELECT images.idheader,images.tabname,images.filename,
-                  images.dirfilename,images.sizefich,images.datemodif,
-                  images_$idhd.* FROM images,images_$idhd,commun
-		  WHERE images.idbddimg = images_$idhd.idbddimg 
-                  AND   commun.idbddimg = images_$idhd.idbddimg
-                  $sqlcritere  ;"
-      set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
-      if {[string first "Unknown column" $msg]==-1} {
-         if {$err} {
-            bddimages_sauve_fich "Erreur de lecture de la liste des header par SQL"
-            bddimages_sauve_fich "        sqlcmd = $sqlcmd"
-            bddimages_sauve_fich "        err = $err"
-            bddimages_sauve_fich "        msg = $msg"
-            ::console::affiche_erreur "Erreur de lecture de la liste des header par SQL\n"
-            ::console::affiche_erreur "        sqlcmd = $sqlcmd\n"
-            ::console::affiche_erreur "        err = $err\n"
-            ::console::affiche_erreur "        msg = $msg\n"
-            return
-         }
-
-         set nbresult [llength $resultcount]
-         set nbcol    [llength $resultcount]
-
-         if {$nbresult>0} {
-
-            set colvar [lindex $resultcount 0]
-            set rowvar [lindex $resultcount 1]
-            set nbcol  [llength $colvar]
-
-            foreach line $rowvar {
-               set resultline ""
-               set cpt 0
-               foreach col $colvar {
-                  lappend resultline [list $col [lindex $line $cpt]]
-                  incr cpt
-               }
-
-               lappend table $resultline
-            }
+      set i $indicereq
+      for {set x 1} {$x<=$indicereq} {incr x} {
+         set err [catch {set a [$This.framereq.$x.sup cget -state]} msg ]
+         if {!$err} {
+            if {$a == "active" } {set i $x}
          }
       }
+
+      set list_req($i,valide) "no"
+      destroy $framereqcurrent.framereq.$i
+
    }
 
-   #::console::affiche_erreur " table = $table\n"
-   return $table
-}
+   #--------------------------------------------------
+   #  add_requete { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       ajout d'une requete
+   #
+   #    procedure externe :
+   #
+   #    variables en entree : none
+   #
+   #    variables en sortie : none
+   #
+   #--------------------------------------------------
+   proc add_requete { } {
 
+      variable This
+      global audace
+      global caption
+      global indicereq
+      global list_req
+      global framereqcurrent
+      
+      #--- Initialisation des combox
+      set result [get_list_box_champs]
+      set list_box_champs [lindex $result 1]
+      set nbrows1 [ llength $list_box_champs ]
+      set nbcols1 [lindex $result 0]
+      set list_combobox [get_list_combobox]
+      set nbrows2 [ llength $list_combobox ]
+      set nbcols2 13
 
+      #--- frame pour afficher les requetes
+      set frch $framereqcurrent.framereq
 
+      #--- Initialisation de la liste des requetes
+      set indicereq [expr $indicereq + 1]
 
+      if { [ info exists list_req($indicereq,champ) ] } {
+         set list_req($indicereq,valide) "ok"
+         if { $list_req($indicereq,condition) eq "LIKE" } {
+            set list_req($indicereq,condition) $caption(bddimages_liste,contient)
+            set list_req($indicereq,valeur) [string trim $list_req($indicereq,valeur) %]
+         } elseif { $list_req($indicereq,condition) eq "NOT LIKE" } {
+            set list_req($indicereq,condition) $caption(bddimages_liste,notcontient)
+            set list_req($indicereq,valeur) [string trim $list_req($indicereq,valeur) %]
+         }
+      } else {
+         set list_req($indicereq,champ)     [lindex $list_box_champs 0]
+         set list_req($indicereq,condition) [lindex $list_combobox 0]
+         set list_req($indicereq,valeur) ""
+         set list_req($indicereq,valide) "ok"
+      }
 
-
-#--------------------------------------------------
-#  calcul_nbimg { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       fournit la liste des conditions de la requete
-#
-#    procedure externe :
-#
-#    variables en entree : none
-#
-#    variables en sortie : liste
-#
-#--------------------------------------------------
-proc ::bddimages_liste::calcul_nbimg { } {
-
-   global form_req
-
-   set intellilist [::bddimages_liste::build_intellilist "calcul_nbimg"]
-   set form_req(nbimg) [llength [::bddimages_liste::get_imglist $intellilist]]
-   ::console::affiche_resultat "Nb img = $form_req(nbimg) \n"
-   return
-}
-#--------------------------------------------------
-#  add_requete { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       ajout d'une requete
-#
-#    procedure externe :
-#
-#    variables en entree : none
-#
-#    variables en sortie : none
-#
-#--------------------------------------------------
-
-proc add_requete { } {
-
-   variable This
-   global audace
-   global caption
-   global indicereq
-   global list_req
-
-
-  #--- Initialisation des combox
-  set result [get_list_box_champs]
-  set list_box_champs [lindex $result 1]
-  set nbrows1 [ llength $list_box_champs ]
-  set nbcols1 [lindex $result 0]
-  set list_combobox [get_list_combobox]
-  set nbrows2 [ llength $list_combobox ]
-  set nbcols2 13
-
-
-  #--- Initialisation de la liste des requetes
-  set indicereq [expr $indicereq + 1]
-
-  if { [ info exists list_req($indicereq,champ) ] } {
-#  set list_req($indicereq,champ)
-#  set list_req($indicereq,condition)
-#  set list_req($indicereq,valeur) ""
-  set list_req($indicereq,valide) "ok"
-   if { $list_req($indicereq,condition) eq "LIKE" } {
-    set list_req($indicereq,condition) $caption(bddimages_liste,contient)
-    set list_req($indicereq,valeur) [string trim $list_req($indicereq,valeur) %]
-   } elseif { $list_req($indicereq,condition) eq "NOT LIKE" } {
-    set list_req($indicereq,condition) $caption(bddimages_liste,notcontient)
-    set list_req($indicereq,valeur) [string trim $list_req($indicereq,valeur) %]
+      #--- Cree un frame pour la requete
+      set frchch $frch.$indicereq
+      frame $frchch -borderwidth 1 -relief solid
+      pack $frchch -in $frch -anchor w -side top -expand 0 -padx 5 -pady 0
+   
+         #--- Cree la liste des champs
+         ComboBox $frchch.combo1 \
+            -width $nbcols1 -height 20 \
+            -relief sunken -borderwidth 0 -editable 0 \
+            -textvariable list_req($indicereq,champ) \
+            -values $list_box_champs
+         pack $frchch.combo1 -anchor center -side left -fill x -expand 1
+         grid $frchch -sticky new
+         #--- Cree la liste des conditions
+         ComboBox $frchch.combo \
+            -width $nbcols2 -height $nbrows2 \
+            -relief sunken -borderwidth 0 -editable 0 \
+            -textvariable list_req($indicereq,condition) \
+            -values $list_combobox
+         pack $frchch.combo -anchor center -side left -fill x -expand 1
+         grid $frchch -sticky new
+         #--- Cree une ligne d'entree pour la variable
+         entry $frchch.dat -textvariable list_req($indicereq,valeur) -borderwidth 1 -relief groove -width 20 -justify left
+         pack $frchch.dat -in $frchch -side left -anchor w -padx 1
+         #--- Cree un bouton supprime requete
+         button $frchch.sup -state normal -borderwidth 1 -relief groove -anchor c -text "-" \
+            -command { ::bddimages_liste::remove_requete }
+         pack $frchch.sup -in $frchch -side left -anchor w -padx 1
+         #--- Cree un bouton ajout requete
+         button $frchch.add -state active -borderwidth 1 -relief groove -anchor c -text "+" \
+            -command { ::bddimages_liste::add_requete }
+         pack $frchch.add -in $frchch -side left -anchor w -padx 1
+   
+      return
    }
-  } else {
-  set list_req($indicereq,champ)     [lindex $list_box_champs 0]
-  set list_req($indicereq,condition) [lindex $list_combobox 0]
-  set list_req($indicereq,valeur) ""
-  set list_req($indicereq,valide) "ok"
-  }
 
+   #--------------------------------------------------
+   #  ouvreCalendrier { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       Ouverture d'un popup de selection d'une date
+   #
+   #    variables en entree :
+   #        x y         position de la fenetre du calendrier
+   #        clockformat format d'affichage de la date (e.g. "%Y.%m.%d")
+   #        wdate       nom de la variable contenant la date choisie dans le calendrier  
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
+   proc ouvreCalendrier { x y clockformat wdate } {
+   
+      variable This
+      global langage
 
-  #--- frame pour afficher les requetes
-  set frch $This.framereq
+      # Langage de l'utilisateur (defaut: en)
+      set userLang "en"
+      set calendarLang [list de en fr it nl ru sv pt]
+      set ulang [string range $langage 0 1]
+      foreach lang $calendarLang {
+         if {[string compare $lang $ulang] == "0"} {
+            set userLang $ulang
+         }
+      }
 
-  #--- Cree un frame pour la requete
-  set frchch $frch.$indicereq
-  frame $frchch -borderwidth 1 -relief solid
-  pack $frchch -in $frch -anchor w -side top -expand 0 -fill both -padx 3 -pady 0
+      # Fenetre du calendrier
+      set w [toplevel $This.calendar]
+      wm overrideredirect $w 1
+      frame $w.f -borderwidth 2 -relief solid -takefocus 0
+      ::bdicalendar::chooser $w.f.d -language $userLang -mon 0 \
+             -command [list set ::SEMA close] \
+             -textvariable $wdate -clockformat $clockformat
+      pack $w.f.d $w.f
+      lassign [winfo pointerxy .] x y
+      wm geometry $w "+${x}+${y}"
+   
+      set _w [grab current]
+      if {$_w ne {} } {
+         grab release $_w
+         grab set $w
+      }
 
-    #--- Cree la liste des champs
-    ComboBox $frchch.combo1 \
-       -width $nbcols1 -height 15 \
-       -relief sunken -borderwidth 1 -editable 0 \
-       -textvariable list_req($indicereq,champ) \
-       -values $list_box_champs
-    pack $frchch.combo1 -anchor center -side left -fill x -expand 1
-    grid $frchch -sticky new
-    #--- Cree la liste des conditions
-    ComboBox $frchch.combo \
-       -width $nbcols2 -height $nbrows2 \
-       -relief sunken -borderwidth 1 -editable 0 \
-       -textvariable list_req($indicereq,condition) \
-       -values $list_combobox
-    pack $frchch.combo -anchor center -side left -fill x -expand 1
-    grid $frchch -sticky new
-    #--- Cree une ligne d'entree pour la variable
-    entry $frchch.dat -textvariable list_req($indicereq,valeur) -borderwidth 1 -relief groove -width 25 -justify left
-    pack $frchch.dat -in $frchch -side left -anchor w -padx 1
-    #--- Cree un bouton supprime requete
-    button $frchch.sup -state normal -borderwidth 1 -relief groove -anchor c -height 1 \
-       -text "-" -command { ::bddimages_liste::remove_requete }
+      set ::SEMA ""
+      tkwait variable ::SEMA
 
-    pack $frchch.sup -in $frchch -side left -anchor w -padx 1
-    #--- Cree un bouton ajout requete
-    button $frchch.add -state active -borderwidth 1 -relief groove -anchor c -height 1 \
-       -text "+" -command { ::bddimages_liste::add_requete }
-    pack $frchch.add -in $frchch -side left -anchor w -padx 1
+      if {$_w ne {} } {
+         grab release $w
+         grab set $_w
+      }
+      destroy $w
+   }
 
-return
-}
-#--------------------------------------------------
-#  createDialog { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Creation de l'interface graphique
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-
-
-# |-------------------------------------------|
-# |                                           |
-# | |-frame0-------------------------------|  |
-# | |                                      |  |
-# | |--------------------------------------|  |
-# |                                           |
-# | |-framereq-----------------------------|  |
-# | |                                      |  |
-# | | |---------| |----------------------| |  |
-# | | |	        | |			 | |  |
-# | | |	        | |			 | |  |
-# | | |	        | |			 | |  |
-# | | |	        | |			 | |  |
-# | | |	        | |			 | |  |
-# | | |         | |			 | |  |
-# | | |	        | |			 | |  |
-# | | |---------| |----------------------| |  |
-# | |                                      |  |
-# | |--------------------------------------|  |
-# |					      |
-# | |--------------------------------------|  |
-# | |					   |  |
-# | |--------------------------------------|  |
-# |					      |
-# |-------------------------------------------|
-
-
+   #--------------------------------------------------
+   #  createDialog { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       Creation de l'interface graphique
+   #
+   #    procedure externe :
+   #
+   #    variables en entree :
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
    proc createDialog { listname } {
 
       variable This
@@ -1224,19 +985,19 @@ return
       global indicereq
       global form_req
       global list_req
+      global framereqcurrent
 
       set indicereq 0
-
 
       set list_comb1 [list $caption(bddimages_liste,toutes) $caption(bddimages_liste,nimporte)]
       set list_comb2 [list $caption(bddimages_liste,elem)]
       set list_comb3 [list $caption(bddimages_liste,alea) \
-                           $caption(bddimages_liste,dateobs) \
-                           $caption(bddimages_liste,telescope) \
-                           $caption(bddimages_liste,plrecmod) \
-                           $caption(bddimages_liste,morecmod) \
-                           $caption(bddimages_liste,plrecajo) \
-                           $caption(bddimages_liste,morecajo) ]
+                            $caption(bddimages_liste,dateobs) \
+                            $caption(bddimages_liste,telescope) \
+                            $caption(bddimages_liste,plrecmod) \
+                            $caption(bddimages_liste,morecmod) \
+                            $caption(bddimages_liste,plrecajo) \
+                            $caption(bddimages_liste,morecajo) ]
 
       set form_req(name) "Newlist[ expr $::nbintellilist + 1 ]"
       set form_req(type_req_check) ""
@@ -1255,22 +1016,20 @@ return
         set edit 1
         set editname $listname
         set editid [get_intellilist_by_name $listname]
-        #::console::affiche_resultat "createDialog : $listname id=$editid\n"
       }
 
       set indicereqinit 0
 
       if { $edit } {
-        set  l $intellilisttotal($editid)
-        #::console::affiche_resultat "edit : $edit\n"
-        #::console::affiche_resultat "l : $l\n"
-        ::bddimages_liste::load_intellilist $l
-        parray form_req
-        if { [info exists list_req ] } then { parray list_req }
+         set l $intellilisttotal($editid)
+         #::console::affiche_resultat "edit : $edit\n"
+         #::console::affiche_resultat "l : $l\n"
+         ::bddimages_liste::load_intellilist $l
+         parray form_req
+         if { [info exists list_req ] } then { parray list_req }
       } else {
-       array unset list_req
+         array unset list_req
       }
-
 
       #--- initConf
       if { ! [ info exists conf(bddimages,list_pos_stat) ] } { set conf(bddimages,list_pos_stat) "+80+40" }
@@ -1292,304 +1051,203 @@ return
          set bddconf(list_geom_stat) "+[ string range $bddconf(list_geom_stat) $deb $fin ]"
       }
 
-         #---
-         toplevel $This -class Toplevel
-         wm geometry $This $bddconf(list_pos_stat)
-         wm resizable $This 1 1
-         wm title $This $caption(bddimages_liste,main_title)
-         wm protocol $This WM_DELETE_WINDOW { ::bddimages_liste::fermer }
+      #---
+      toplevel $This -class Toplevel
+      wm geometry $This $bddconf(list_pos_stat)
+      wm resizable $This 1 1
+      wm title $This $caption(bddimages_liste,main_title)
+      wm protocol $This WM_DELETE_WINDOW { ::bddimages_liste::fermer }
 
+      #--- Cree un frame pour le titre
+      set framecurrent $This.title
+      frame $framecurrent -borderwidth 1 -cursor arrow -relief groove
+      pack $framecurrent -in $This -anchor s -side top -expand 1 -fill x -padx 5 -pady 5
+        #--- Cree un label
+        label $framecurrent.titre -font $bddconf(font,arial_12_b) -text "$caption(bddimages_liste,title)"
+        pack $framecurrent.titre -in $framecurrent -side top -padx 5 -pady 5
 
-         #--- Cree un frame pour le nom de la liste
-         set framecurrent $This.framename
-          frame $framecurrent -borderwidth 0 -cursor arrow
-          pack $framecurrent -in $This -anchor s -side top -expand 0 -fill both -padx 3 -pady 3
+      #--- Cree un frame pour le nom de la liste
+      set framecurrent $This.framename
+      frame $framecurrent -borderwidth 1 -cursor arrow -relief flat
+      pack $framecurrent -in $This -anchor c -side top -expand 0 -padx 5 -pady 5
+        #--- Cree un label
+        label $framecurrent.lab -text "$caption(bddimages_liste,nom)" -width 20
+        pack $framecurrent.lab -in $framecurrent -side left -anchor w -padx 1
+        #--- Cree une ligne d'entree pour la variable
+        entry $framecurrent.dat -textvariable form_req(name) -borderwidth 1 -relief groove -width 25 -justify left
+        pack $framecurrent.dat -in $framecurrent -side left -anchor w -padx 1
 
+      #--- Cree un frame pour le choix de date min et max
+      image create photo icon_calendar
+      icon_calendar configure -file [file join $audace(rep_plugin) tool bddimages icons calendar.gif]
+      image create photo icon_clean
+      icon_clean configure -file [file join $audace(rep_plugin) tool bddimages icons no.gif]
+      set clockformat "%Y.%m.%d"
+      set framecurrent $This.datemindatemax
+      frame $framecurrent -borderwidth 1 -cursor arrow -relief groove
+      pack $framecurrent -in $This -anchor s -side top -expand 0 -padx 5 -pady 5
+
+         # Date START
+         frame $framecurrent.datemin -borderwidth 0 -cursor arrow
+         pack $framecurrent.datemin -in $framecurrent -anchor w -side top -expand 0 -fill both -padx 3 -pady 3
             #--- Cree un label
-            label $framecurrent.lab -text "$caption(bddimages_liste,nom)" -width 30 -anchor w -borderwidth 0 -relief flat
-            pack $framecurrent.lab -in $framecurrent -side left -anchor w -padx 1
-            #--- Cree une ligne d'entree pour la variable
-            entry $framecurrent.dat -textvariable form_req(name) -borderwidth 1 -relief groove -width 25 -justify left
-            pack $framecurrent.dat -in $framecurrent -side left -anchor w -padx 1
-            #--- Cree un bouton info
-           # button $This.bdd.login.help -state active -borderwidth 0 -relief flat -anchor c -height 1 \
-           #         -text "$caption(bddimages_config,test)" -command { ::skybot_Search::GetInfo "ad" }
-           # pack $This.bdd.login.help -in $This.bdd.login -side left -anchor w -padx 1
-
-
-
-         #--- Cree un frame pour faire un saut
-         set framecurrent $This.frameblank00
-         frame $framecurrent -borderwidth 0 -cursor arrow
-         pack $framecurrent -in $This -anchor s -side top -expand 0 -fill x -padx 3 -pady 3
-
-           #--- Cree un label pour faire un saut
-           label $framecurrent.titre -font $bddconf(font,arial_10_b) \
-                 -text " "
-           pack $framecurrent.titre \
-                -in $framecurrent -side top -padx 3 -pady 3
-
-
-         #--- Cree un frame pour le nom de la liste
-         set framecurrent $This.datemindatemax
-         frame $framecurrent -borderwidth 0 -cursor arrow
-         pack $framecurrent -in $This -anchor s -side top -expand 0 -fill both -padx 3 -pady 3
-
-            #--- Cree un label
-            label $framecurrent.labmin -text "DATE-OBS min"  -anchor w -borderwidth 0 -relief flat
-            pack $framecurrent.labmin -in $framecurrent -side left -anchor w -padx 1
+            label $framecurrent.datemin.lab -text "DATE-OBS start" -width 20
+            pack $framecurrent.datemin.lab -in $framecurrent.datemin -side left -anchor w -padx 1
             #--- Cree une ligne d'entree pour la variable form_req(datemin)
-            entry $framecurrent.datmin -textvariable form_req(datemin) -borderwidth 1 -relief groove  -justify left
-            pack $framecurrent.datmin -in $framecurrent -side left -anchor w -padx 1
+            entry $framecurrent.datemin.date -textvariable ::bddimages_liste::form_req(datemin) -borderwidth 1 -relief groove  -justify left
+            pack $framecurrent.datemin.date -in $framecurrent.datemin -side left -anchor w -padx 1
+            #--- Creation du bouton d'acces au calendrier graphique
+            button $framecurrent.datemin.calstart -image icon_calendar -borderwidth 1 \
+               -command [list ::bddimages_liste::ouvreCalendrier %X %Y $clockformat ::bddimages_liste::form_req(datemin)]
+            pack $framecurrent.datemin.calstart -in $framecurrent.datemin -side left -anchor e -padx 2 -pady 2 -expand 0
+            #--- Creation du bouton de remise a zero de form_req(datemin)
+            button $framecurrent.datemin.cleanstart -image icon_clean -borderwidth 1 \
+               -command { set ::bddimages_liste::form_req(datemin) "" }
+            pack $framecurrent.datemin.cleanstart -in $framecurrent.datemin -side left -anchor e -padx 2 -pady 2 -expand 0
 
-            #--- Creation du bouton ok
-            button $framecurrent.but_datmin \
-               -text "Cal" -borderwidth 2 \
-               -command { ::bddimages_calendar::run $audace(base).bddimages_liste }
-            pack $framecurrent.but_datmin \
-               -in $framecurrent -side right -anchor e \
-               -padx 2 -pady 2 -ipadx 2 -ipady 2 -expand 0
+         # Date START
+         frame $framecurrent.datemax -borderwidth 0 -cursor arrow
+         pack $framecurrent.datemax -in $framecurrent -anchor w -side top -expand 0 -fill both -padx 3 -pady 3
+            #--- Cree un label
+            label $framecurrent.datemax.lab -text "DATE-OBS stop" -width 20
+            pack $framecurrent.datemax.lab -in $framecurrent.datemax -side left -anchor w -padx 1
+            #--- Cree une ligne d'entree pour la variable form_req(datemax)
+            entry $framecurrent.datemax.date -textvariable ::bddimages_liste::form_req(datemax) -borderwidth 1 -relief groove -justify left
+            pack $framecurrent.datemax.date -in $framecurrent.datemax -side left -anchor w -padx 1
+            #--- Creation du bouton d'acces au calendrier graphique
+            button $framecurrent.datemax.calstop -image icon_calendar -borderwidth 1 \
+               -command [list ::bddimages_liste::ouvreCalendrier %X %Y $clockformat ::bddimages_liste::form_req(datemax)]
+            pack $framecurrent.datemax.calstop -in $framecurrent.datemax -side left -anchor e -padx 2 -pady 2 -expand 0
+            #--- Creation du bouton de remise a zero de form_req(datemax)
+            button $framecurrent.datemax.cleanstart -image icon_clean -borderwidth 1 \
+               -command { set ::bddimages_liste::form_req(datemax) "" }
+            pack $framecurrent.datemax.cleanstart -in $framecurrent.datemax -side left -anchor e -padx 2 -pady 2 -expand 0
 
-           #--- Cree un label
-           label $framecurrent.labmax -text "DATE-OBS max"  -anchor w -borderwidth 0 -relief flat
-           pack $framecurrent.labmax -in $framecurrent -side left -anchor w -padx 1
-           #--- Cree une ligne d'entree pour la variable
-           entry $framecurrent.datmax -textvariable form_req(datemax) -borderwidth 1 -relief groove -justify left
-           pack $framecurrent.datmax -in $framecurrent -side left -anchor w -padx 1
+      #--- Cree un frame pour afficher le type de logique AND / OR
+      set framecurrent $This.frame1
+      frame $framecurrent -borderwidth 0 -cursor arrow
+      pack $framecurrent -in $This -anchor s -side top -expand 0 -padx 5 -pady 5
 
+         #--- Bouton a cocher
+         checkbutton $framecurrent.check -highlightthickness 0 -state normal -variable form_req(type_req_check) -command { }
+         pack $framecurrent.check -in $framecurrent -side left -anchor center -padx 5
+         #--- Cree un label
+         label $framecurrent.txt1 -font $bddconf(font,arial_10_b) -text "$caption(bddimages_liste,repondrea)"
+         pack $framecurrent.txt1 -in $framecurrent -side left -anchor w -padx 1
+         #--- Cree un combox pour le choix
+         ComboBox $framecurrent.combo1 \
+             -width 20 -height 2 -font $bddconf(font,arial_10_b)\
+             -relief raised -borderwidth 1 -editable 0 \
+             -textvariable form_req(type_requ) \
+             -values $list_comb1
+         pack $framecurrent.combo1 -anchor center -side left -fill x -expand 0
+         #--- Cree un label
+         label $framecurrent.txt2 -font $bddconf(font,arial_10_b) -text "$caption(bddimages_liste,regles)"
+         pack $framecurrent.txt2 -in $framecurrent -side left -anchor w -padx 1
 
+      #--- Cree un frame pour ajouter des requetes
+      set framereqcurrent $This.addreq
+      frame $framereqcurrent -borderwidth 0 -cursor arrow
+      pack $framereqcurrent -in $This -anchor s -side top -fill x -padx 5 -pady 5
 
-         #--- Cree un frame pour faire un saut
-         set framecurrent $This.frameblank0
-         frame $framecurrent -borderwidth 0 -cursor arrow
-         pack $framecurrent -in $This -anchor s -side top -expand 0 -fill x -padx 3 -pady 3
-
-           #--- Cree un label pour faire un saut
-           label $framecurrent.titre -font $bddconf(font,arial_10_b) \
-                 -text " "
-           pack $framecurrent.titre \
-                -in $framecurrent -side top -padx 3 -pady 3
-
-
-
-
-         #--- Cree un frame pour afficher le type de logique AND / OR
-         set framecurrent $This.frame1
-         frame $framecurrent -borderwidth 0 -cursor arrow
-         pack $framecurrent -in $This -anchor s -side top -expand 0 -fill x
-
-             #--- Bouton check
-#             radiobutton $framecurrent.check -highlightthickness 0 -state normal -value 0 -variable form_req(type_req_check) -command {  }
-             checkbutton $framecurrent.check -highlightthickness 0 -state normal -variable form_req(type_req_check) -command {  }
-             pack $framecurrent.check \
-                -in $framecurrent -side left -anchor center -padx 3
-             #--- Cree un label
-             label $framecurrent.txt1 -font $bddconf(font,arial_10_b) \
-                -text "Répondre à"
-             pack $framecurrent.txt1 \
-                -in $framecurrent -side left -anchor w -padx 1
-             #--- Cree un combox pour le choix
-             ComboBox $framecurrent.combo1 \
-                -width 20 -height 2 -font $bddconf(font,arial_10_b)\
-                -relief raised -borderwidth 1 -editable 0 \
-                -textvariable form_req(type_requ) \
-                -values $list_comb1
-             pack $framecurrent.combo1 -anchor center -side left -fill x -expand 0
-             #--- Cree un label
-             label $framecurrent.txt2 -font $bddconf(font,arial_10_b) \
-                -text "règles suivantes :"
-             pack $framecurrent.txt2 \
-                -in $framecurrent -side left -anchor w -padx 1
-
-
-
-
-         #--- Cree un frame pour faire un saut
-         set framecurrent $This.frameblank1
-         frame $framecurrent -borderwidth 0 -cursor arrow
-         pack $framecurrent -in $This -anchor s -side top -expand 0 -fill x -padx 3 -pady 3
-
-           #--- Cree un label pour faire un saut
-           label $framecurrent.titre -font $bddconf(font,arial_10_b) \
-                 -text " "
-           pack $framecurrent.titre \
-                -in $framecurrent -side top -padx 3 -pady 3
-
-
-         button $framecurrent.add -state active -borderwidth 1 -height 1 -text "+" -command { ::bddimages_liste::add_requete }
-         pack $framecurrent.add -in $framecurrent -side top -fill x
-
+         #--- Cree un bouton d'ajout de requete
+         button $framereqcurrent.add -state active -borderwidth 1 -width 45 -text "$caption(bddimages_liste,addrule)" \
+            -command { ::bddimages_liste::add_requete }
+         pack $framereqcurrent.add -in $framereqcurrent -side top -padx 5 -pady 5 
 
          #--- Cree un frame pour afficher les requetes
-         set frch $This.framereq
-         frame $frch -borderwidth 0 -cursor arrow
-         pack $frch -in $This -anchor s -side top -expand 0 -fill x
-
-         #--- Cree un bouton ajout requete
-#         button $frch.add -state active -borderwidth 1 -relief groove -anchor c -height 1 \
-#            -text "+" -command { ::bddimages_liste::add_requete }
-#         pack $frch.add -in $frch -side top -anchor s -padx 1 -expand 0 -fill x
-
-#--
+         frame $framereqcurrent.framereq -borderwidth 0 -cursor arrow
+         pack $framereqcurrent.framereq -in $framereqcurrent -anchor s -side top -expand 1 -fill both
+         #--- Ajout des requetes
          for { set x 0 } { $x < $indicereqinit } { incr x } {
-          ::bddimages_liste::add_requete
+            ::bddimages_liste::add_requete
          }
 
-#         if { $indicereqinit == 0 } {
-#          ::bddimages_liste::add_requete
-#         }
+      #--- Cree un frame pour les options
+      set framecurrent $This.frame2
+      frame $framecurrent -borderwidth 1 -cursor arrow -relief groove
+      pack $framecurrent -in $This -anchor s -side top -expand 0 -padx 5 -pady 5
 
-#--
+         #--- Check button
+         frame $framecurrent.1 -borderwidth 0 -cursor arrow
+         pack $framecurrent.1 -in $framecurrent -anchor n -side left -expand 1 -fill x -padx 1 -pady 5
+            #--- Bouton check
+            checkbutton $framecurrent.1.check -highlightthickness 0 -state normal -variable form_req(choix_limit_result) -command { }
+            pack $framecurrent.1.check -in $framecurrent.1 -side left -anchor c -padx 5
 
+         #--- Options:
+         frame $framecurrent.2 -borderwidth 0 -cursor arrow
+         pack $framecurrent.2 -in $framecurrent -anchor s -side left -expand 1 -fill x -padx 1 -pady 3
 
+            #--- limite a
+            frame $framecurrent.2.l -borderwidth 0 -cursor arrow
+            pack $framecurrent.2.l -in $framecurrent.2 -anchor c -side top -expand 1 -fill x -padx 1 -pady 3
+               #--- Cree un label
+               label $framecurrent.2.l.txt1 -font $bddconf(font,arial_10_b) -text "$caption(bddimages_liste,limitera)"
+               pack $framecurrent.2.l.txt1 -in $framecurrent.2.l -side left -anchor w -padx 2
+               #--- Cree une ligne d'entree pour la variable
+               entry $framecurrent.2.l.dat -textvariable form_req(limit_result) -borderwidth 1 -relief groove -width 8 -justify center
+               pack $framecurrent.2.l.dat -in $framecurrent.2.l -side left -anchor w -padx 2
+               #--- Cree un combox pour le choix
+               ComboBox $framecurrent.2.l.combo \
+                   -width 10 -height 1 \
+                   -relief sunken -borderwidth 1 -editable 0 \
+                   -textvariable form_req(type_result) \
+                   -values $list_comb2
+               pack $framecurrent.2.l.combo -in $framecurrent.2.l -anchor center -side left -fill x -expand 0
+            #--- selection
+            frame $framecurrent.2.s -borderwidth 0 -cursor arrow
+            pack $framecurrent.2.s -in $framecurrent.2 -anchor c -side top -expand 1 -fill x -padx 1 -pady 3
+               #--- Cree un label
+               label $framecurrent.2.s.txt2 -font $bddconf(font,arial_10_b) -text "$caption(bddimages_liste,selectpar)"
+               pack $framecurrent.2.s.txt2 -in $framecurrent.2.s -side left -anchor w -padx 2
+               #--- Cree un combox pour le choix
+               ComboBox $framecurrent.2.s.combo2 \
+                   -width 27 -height 7 \
+                   -relief sunken -borderwidth 1 -editable 0 \
+                   -textvariable form_req(type_select) \
+                   -values $list_comb3
+               pack $framecurrent.2.s.combo2 -in $framecurrent.2.s -anchor center -side left -fill x -expand 0
 
-
-         #--- Cree un frame pour faire un saut
-         set framecurrent $This.frameblank2
-         frame $framecurrent -borderwidth 0 -cursor arrow
-         pack $framecurrent -in $This -anchor s -side top -expand 0 -fill x -padx 3 -pady 3
-
-           #--- Cree un label pour faire un saut
-           label $framecurrent.titre -font $bddconf(font,arial_10_b) \
-                 -text " "
-           pack $framecurrent.titre \
-                -in $framecurrent -side top -padx 3 -pady 3
-
-
-
-
-
-         #--- Cree un frame pour l'affichage des resultats
-         set framecurrent $This.frame2
-         frame $framecurrent -borderwidth 0 -cursor arrow
-         pack $framecurrent -in $This -anchor s -side top -expand 0 -fill x
-
-
-             #--- Bouton check
-             checkbutton $framecurrent.check -highlightthickness 0 -state normal \
-               -variable form_req(choix_limit_result) \
-               -command {  }
-             pack $framecurrent.check \
-               -in $framecurrent -side left -anchor center -padx 3
-             #--- Cree un label
-             label $framecurrent.txt1 -font $bddconf(font,arial_10_b) \
-                -text "Limiter à"
-             pack $framecurrent.txt1 \
-                -in $framecurrent -side left -anchor w -padx 1
-             #--- Cree une ligne d'entree pour la variable
-             entry $framecurrent.dat -textvariable form_req(limit_result) -borderwidth 1 -relief groove -width 8 -justify center
-             pack $framecurrent.dat -in $framecurrent -side left -anchor w -padx 1
-             #--- Cree un combox pour le choix
-             ComboBox $framecurrent.combo \
-                -width 10 -height 1 \
-                -relief sunken -borderwidth 1 -editable 0 \
-                -textvariable form_req(type_result) \
-                -values $list_comb2
-             pack $framecurrent.combo -anchor center -side left -fill x -expand 0
-             #--- Cree un label
-             label $framecurrent.txt2 -font $bddconf(font,arial_10_b) \
-                -text "sélectionnés par"
-             pack $framecurrent.txt2 \
-                -in $framecurrent -side left -anchor w -padx 1
-             #--- Cree un combox pour le choix
-             ComboBox $framecurrent.combo2 \
-                -width 27 -height 7 \
-                -relief sunken -borderwidth 1 -editable 0 \
-                -textvariable form_req(type_select) \
-                -values $list_comb3
-             pack $framecurrent.combo2 -anchor center -side left -fill x -expand 0
-
-
-
-
-
-         #--- Cree un frame pour le calcul du nombre d images
-         set framecurrent $This.frame3
-         frame $framecurrent -borderwidth 0 -cursor arrow
-         pack $framecurrent -in $This -anchor s -side top -expand 0 -fill x -padx 3 -pady 3
-
+      #--- Cree un frame pour le calcul du nombre d images
+      set framecurrent $This.frame3
+      frame $framecurrent -borderwidth 0 -cursor arrow
+      pack $framecurrent -in $This -anchor s -side top -expand 0 -padx 5 -pady 5
 
          #--- Cree un label
-         label $framecurrent.txt1 -font $bddconf(font,arial_10_b) \
-            -text "Nombre d'images résultant de cette requête : "
-         pack $framecurrent.txt1 \
-            -in $framecurrent -side left -anchor w -padx 1
+         label $framecurrent.txt1 -font $bddconf(font,arial_10_b) -text "$caption(bddimages_liste,nbresreq)"
+         pack $framecurrent.txt1 -in $framecurrent -side left -anchor w -padx 1
          #--- Cree une ligne d'entree pour la variable
          entry $framecurrent.dat -textvariable form_req(nbimg) -state readonly -borderwidth 1 -relief groove -width 8 -justify center
          pack $framecurrent.dat -in $framecurrent -side left -anchor w -padx 1
          #--- Cree un bouton ajout requete
-         button $framecurrent.calc -state active -borderwidth 1 -relief groove -anchor c -height 1 \
-            -text "Calcul" -command { ::bddimages_liste::calcul_nbimg }
+         button $framecurrent.calc -state active -borderwidth 1 -relief groove -anchor c -text "$caption(bddimages_liste,calcul)" \
+            -command { ::bddimages_liste::calcul_nbimg }
          pack $framecurrent.calc -in $framecurrent -side left -anchor w -padx 1
 
+      #--- Cree un frame pour y mettre les boutons
+      frame $This.frame11 -borderwidth 0 -cursor arrow
+      pack $This.frame11 -in $This -anchor s -side bottom -expand 0 -fill x -pady 5
 
-
-
-
-         #--- Cree un frame pour faire un saut
-         set framecurrent $This.frameblank3
-         frame $framecurrent -borderwidth 0 -cursor arrow
-         pack $framecurrent -in $This -anchor s -side top -expand 0 -fill x -padx 3 -pady 3
-
-           #--- Cree un label pour faire un saut
-           label $framecurrent.titre -font $bddconf(font,arial_10_b) \
-                 -text " "
-           pack $framecurrent.titre \
-                -in $framecurrent -side top -padx 3 -pady 3
-
-
-
-
-
-         #--- Cree un frame pour y mettre les boutons
-         frame $This.frame11 \
-            -borderwidth 0 -cursor arrow
-         pack $This.frame11 \
-            -in $This -anchor s -side bottom -expand 0 -fill x
-
-           #--- Creation du bouton annuler
-           button $This.frame11.but_annuler \
-              -text "$caption(bddimages_liste,annuler)" -borderwidth 2 \
+         #--- Creation du bouton annuler
+         button $This.frame11.but_annuler -text "$caption(bddimages_liste,annuler)" -borderwidth 2 \
               -command { ::bddimages_liste::fermer }
-           pack $This.frame11.but_annuler \
-              -in $This.frame11 -side right -anchor e \
-              -padx 2 -pady 2 -ipadx 2 -ipady 2 -expand 0
-
-           #--- Creation du bouton ok
-           button $This.frame11.but_ok \
-              -text "$caption(bddimages_liste,ok)" -borderwidth 2 \
+         pack $This.frame11.but_annuler -in $This.frame11 -side right -anchor e -padx 2 -pady 2 -ipadx 2 -ipady 2 -expand 0
+         #--- Creation du bouton ok
+         button $This.frame11.but_ok -text "$caption(bddimages_liste,ok)" -borderwidth 2 \
               -command { ::bddimages_liste::accept }
-           pack $This.frame11.but_ok \
-              -in $This.frame11 -side right -anchor e \
-              -padx 2 -pady 2 -ipadx 2 -ipady 2 -expand 0
-
-           #--- Creation du bouton aide
-           button $This.frame11.but_aide \
-              -text "$caption(bddimages_liste,aide)" -borderwidth 2 \
-              -command {lecture_info This}
-           pack $This.frame11.but_aide \
-              -in $This.frame11 -side right -anchor e \
-              -padx 2 -pady 2 -ipadx 2 -ipady 2 -expand 0
-
-
-
-
-      #--- Lecture des info des images
-
-      #--- Gestion du bouton
-#      $audace(base).bddimages.fra5.but1 configure -relief raised -state normal
+         pack $This.frame11.but_ok -in $This.frame11 -side right -anchor e -padx 2 -pady 2 -ipadx 2 -ipady 2 -expand 0
+         #--- Creation du bouton aide
+         button $This.frame11.but_aide -text "$caption(bddimages_liste,aide)" -borderwidth 2 \
+              -command { ::audace::showHelpPlugin tool bddimages bddimages.htm }
+         pack $This.frame11.but_aide -in $This.frame11 -side right -anchor e -padx 2 -pady 2 -ipadx 2 -ipady 2 -expand 0
 
       #--- La fenetre est active
       focus $This
-
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
       bind $This <Key-F1> { $audace(console)::GiveFocus }
-
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
    }
 
-
-
 }
-
