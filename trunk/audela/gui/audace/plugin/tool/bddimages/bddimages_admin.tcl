@@ -1,5 +1,5 @@
 #
-# Fichier : bddimages_xml.tcl
+# Fichier : bddimages_admin.tcl
 # Description : Manipulation des fichiers de config XML de bddimages
 #
 # Auteur : J. Berthier & F. Vachier

@@ -493,7 +493,7 @@ namespace eval bddimages_recherche {
                set action_frame_type [frame $This.frame1.action.type -borderwidth 1 -cursor arrow]
                pack $This.frame1.action.type -in $This.frame1.action -side right -expand 0 -fill x
                #----- UNKNOWN
-               button $This.frame1.action.type.unknown -state active -relief sunken -image icon_yes_unk \
+               button $This.frame1.action.type.unknown -state active -relief "sunken" -image icon_yes_unk \
                   -command { if {$action_label(unktype) == 1} {
                                 set action_label(unktype) 0
                                 $action_frame_type.unknown configure -relief "raised" -image icon_no_unk
@@ -506,7 +506,7 @@ namespace eval bddimages_recherche {
                pack $This.frame1.action.type.unknown -in $This.frame1.action.type -side right -anchor w -padx 0
                DynamicHelp::add $This.frame1.action.type.unknown -text $caption(bddimages_recherche,button_unktype)
                #----- OFFSET
-               button $This.frame1.action.type.offset -state active -relief sunken -image icon_yes_offset \
+               button $This.frame1.action.type.offset -state active -relief "sunken" -image icon_yes_offset \
                   -command { if {$action_label(offset) == 1} {
                                 set action_label(offset) 0
                                 $action_frame_type.offset configure -relief "raised" -image icon_no_offset
@@ -519,7 +519,7 @@ namespace eval bddimages_recherche {
                pack $This.frame1.action.type.offset -in $This.frame1.action.type -side right -anchor w -padx 0
                DynamicHelp::add $This.frame1.action.type.offset -text $caption(bddimages_recherche,button_offset)
                #----- DARK
-               button $This.frame1.action.type.dark -state active -relief sunken -image icon_yes_dark \
+               button $This.frame1.action.type.dark -state active -relief "sunken" -image icon_yes_dark \
                   -command { if {$action_label(dark) == 1} {
                                 set action_label(dark) 0
                                 $action_frame_type.dark configure -relief "raised" -image icon_no_dark
@@ -532,7 +532,7 @@ namespace eval bddimages_recherche {
                pack $This.frame1.action.type.dark -in $This.frame1.action.type -side right -anchor w -padx 0
                DynamicHelp::add $This.frame1.action.type.dark -text $caption(bddimages_recherche,button_dark)
                #----- FLAT
-               button $This.frame1.action.type.flat -state active -relief sunken -image icon_yes_flat \
+               button $This.frame1.action.type.flat -state active -relief "sunken" -image icon_yes_flat \
                   -command { if {$action_label(flat) == 1} {
                                 set action_label(flat) 0
                                 $action_frame_type.flat configure -relief "raised" -image icon_no_flat
@@ -545,7 +545,7 @@ namespace eval bddimages_recherche {
                pack $This.frame1.action.type.flat -in $This.frame1.action.type -side right -anchor w -padx 0
                DynamicHelp::add $This.frame1.action.type.flat -text $caption(bddimages_recherche,button_flat)
                #----- IMG
-               button $This.frame1.action.type.img -state active -relief sunken -image icon_yes_img \
+               button $This.frame1.action.type.img -state active -relief "sunken" -image icon_yes_img \
                   -command { if {$action_label(img) == 1} {
                                 set action_label(img) 0
                                 $action_frame_type.img configure -relief "raised" -image icon_no_img
@@ -566,7 +566,7 @@ namespace eval bddimages_recherche {
                set action_frame_state [frame $This.frame1.action.state -borderwidth 1 -cursor arrow]
                pack $This.frame1.action.state -in $This.frame1.action -side right -expand 0 -fill x
                #----- UNKNOWN
-               button $This.frame1.action.state.unknown -state active -relief sunken -image icon_yes_unk \
+               button $This.frame1.action.state.unknown -state active -relief "sunken" -image icon_yes_unk \
                   -command { if {$action_label(unkstate) == 1} {
                                 set action_label(unkstate) 0
                                 $action_frame_state.unknown configure -relief "raised" -image icon_no_unk
@@ -579,7 +579,7 @@ namespace eval bddimages_recherche {
                pack $This.frame1.action.state.unknown -in $This.frame1.action.state -side right -anchor w -padx 0
                DynamicHelp::add $This.frame1.action.state.unknown -text $caption(bddimages_recherche,button_unkstate)
                #----- CORR
-               button $This.frame1.action.state.corr -state active -relief sunken -image icon_yes_corr \
+               button $This.frame1.action.state.corr -state active -relief "sunken" -image icon_yes_corr \
                   -command { if {$action_label(corr) == 1} {
                                 set action_label(corr) 0
                                 $action_frame_state.corr configure -relief "raised" -image icon_no_corr
@@ -592,7 +592,7 @@ namespace eval bddimages_recherche {
                pack $This.frame1.action.state.corr -in $This.frame1.action.state -side right -anchor w -padx 0
                DynamicHelp::add $This.frame1.action.state.corr -text $caption(bddimages_recherche,button_corr)
                #----- RAW
-               button $This.frame1.action.state.raw -state active -relief sunken -image icon_yes_raw \
+               button $This.frame1.action.state.raw -state active -relief "sunken" -image icon_yes_raw \
                   -command { if {$action_label(raw) == 1} {
                                 set action_label(raw) 0
                                 $action_frame_state.raw configure -relief "raised" -image icon_no_raw
@@ -680,51 +680,18 @@ namespace eval bddimages_recherche {
               -in $This.frame11 -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-           #--- Creation du bouton lecture entete
-#           button $This.frame11.but_lectentete \
-#              -text "$caption(bddimages_recherche,lectentete)" -borderwidth 2 \
-#              -command {lecture_info This}
-#           pack $This.frame11.but_lectentete \
-#              -in $This.frame11 -side right -anchor e \
-#              -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-           #--- Creation du bouton insertion
-#           button $This.frame11.but_insertion \
-#              -text "$caption(bddimages_recherche,inser)" -borderwidth 2 \
-#              -command { insertion This }
-#           pack $This.frame11.but_insertion \
-#              -in $This.frame11 -side right -anchor e \
-#              -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-#           #--- Creation du bouton insertion
-#           button $This.frame11.but_refresh \
-#              -text "$caption(bddimages_recherche,refresh)" -borderwidth 2 \
-#              -command {
-#	                 ::bddimages_recherche::init_info
-#		       }
-#           pack $This.frame11.but_refresh \
-#              -in $This.frame11 -side right -anchor e \
-#              -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
            #--- Cree un label pour le nb image
            label $This.frame11.nbimg -font $bddconf(font,arial_12_b) \
                -textvariable bddconf(inserinfo)
            pack $This.frame11.nbimg -in $This.frame11 -side left -padx 3 -pady 1 -anchor w
 
       
-      Affiche_listes
-
-      #--- Lecture des info des images
-
-      #--- Gestion du bouton
-#      $audace(base).bddimages.fra5.but1 configure -relief raised -state normal
+      ::bddimages_recherche::Affiche_listes
 
       #--- La fenetre est active
       focus $This
-
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
       bind $This <Key-F1> { $audace(console)::GiveFocus }
-
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
       #--- Surcharge la couleur de fond des resultats
@@ -747,7 +714,6 @@ namespace eval bddimages_recherche {
 #    variables en sortie :
 #
 #--------------------------------------------------
-
    proc Tbl2Edit { tbl } {
      global audace
      set i [$tbl curselection]
