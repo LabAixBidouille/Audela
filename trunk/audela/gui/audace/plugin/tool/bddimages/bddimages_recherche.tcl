@@ -723,24 +723,23 @@ namespace eval bddimages_recherche {
      ::bddimages_liste::run $audace(base).bddimages_liste $name
    }
    
-   
-#--------------------------------------------------
-#  Tbl2Delete { tbl }
-#--------------------------------------------------
-#
-#    fonction  :
-#       
-#	
-#
-#    procedure externe :
-#
-#    variables en entree :
-#        tbl = frame tk
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
 
+   #--------------------------------------------------
+   #  Tbl2Delete { tbl }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       
+   #	
+   #
+   #    procedure externe :
+   #
+   #    variables en entree :
+   #        tbl = frame tk
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
    proc Tbl2Delete { tbl } {
 
      global audace
@@ -787,7 +786,20 @@ namespace eval bddimages_recherche {
 
    }
 
-
+   #--------------------------------------------------
+   #  createTbl2 { frame }
+   #--------------------------------------------------
+   #
+   #    fonction  : Affiche de la tablelist contenant les listes
+   #      definies par l'utilisateur. La selection d'une liste
+   #      charge directement les images de la liste
+   #
+   #    variables en entree :
+   #        frame = reference de l'objet graphique d'affichage
+   #
+   #    variables en sortie : void
+   #
+   #--------------------------------------------------
    proc createTbl2 { frame } {
       variable This
       global audace
@@ -805,7 +817,6 @@ namespace eval bddimages_recherche {
       set filtres $frame.popupTbl.filtres
       set paramwindow $This.param
 
-
       #--- Table des objets
       tablelist::tablelist $tbl \
          -labelcommand ::bddimages_recherche::cmdSortColumn \
@@ -819,22 +830,11 @@ namespace eval bddimages_recherche {
 
       #--- Menu pop-up associe a la table
       menu $popupTbl -title $caption(bddimages_recherche,titre)
-        # Label
-
-
         $popupTbl add command -label "$caption(bddimages_recherche,new_list_i)" \
            -command { ::bddimages_liste::run $audace(base).bddimages_liste }
 
         $popupTbl add command -label "$caption(bddimages_recherche,new_list_n)" \
            -command { ::bddimages_liste::runnormal $audace(base).bddimages_liste }
-
-        # Separateur
-#        proc getcurname { tbl } {
-#         set i [$tbl curselection]
-#         set row [$tbl get $i $i]
-#         set name [lindex $row 0]
-#         return $name
-#        }
 
         # Edite la liste selectionnee
         $popupTbl add command -label "$caption(bddimages_recherche,edit)" \
@@ -853,13 +853,23 @@ namespace eval bddimages_recherche {
 
       #--- Gestion des evenements
       bind [$tbl bodypath] <ButtonPress-3> [ list tk_popup $popupTbl %X %Y ]
-      bind $tbl <<ListboxSelect>>          [ list ::bddimages_recherche::cmdButton1Click $This.frame6.result ]
-      bind [$tbl bodypath] <Double-ButtonPress-1> { ::bddimages_recherche::affiche_image }
 
    }
 
-
-
+   #--------------------------------------------------
+   #  createTbl1 { frame }
+   #--------------------------------------------------
+   #
+   #    fonction  : Affiche les images correspondant a une liste
+   #      definie par l'utilisateur. La selection d'une image
+   #      l'affiche dans la visu d'Audela
+   #
+   #    variables en entree :
+   #        frame = reference de l'objet graphique d'affichage
+   #
+   #    variables en sortie : void
+   #
+   #--------------------------------------------------
    proc createTbl1 { frame } {
       variable This
       global audace
@@ -980,20 +990,9 @@ namespace eval bddimages_recherche {
 
       #--- Gestion des evenements
       bind [$tbl bodypath] <ButtonPress-3> [ list tk_popup $popupTbl %X %Y ]
-      bind $tbl <<ListboxSelect>>          [ list ::bddimages_recherche::cmdButton1Click $This.frame6.result ]
-      bind [$tbl bodypath] <Double-ButtonPress-1> { ::bddimages_recherche::affiche_image }
+      bind $tbl <<ListboxSelect>> [ list ::bddimages_recherche::cmdButton1Click %W ]
 
    }
-
-
-
-
-
-
-
-
-
-
 
 
    proc ::bddimages_recherche::bddimages_associate { namelist } {
@@ -1104,14 +1103,6 @@ namespace eval bddimages_recherche {
 
 
 
-
-
-
-
-
-
-
-
    proc bddimages_define {  } {
    
       global audace
@@ -1150,23 +1141,22 @@ namespace eval bddimages_recherche {
    }
 
 
-#--------------------------------------------------
-#  cmdFormatColumn { column_name }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Definit la largeur, la traduction du titre
-#	et la justification des colonnes
-#
-#    procedure externe :
-#
-#    variables en entree :
-#        column_name =
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-
+   #--------------------------------------------------
+   #  cmdFormatColumn { column_name }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       Definit la largeur, la traduction du titre
+   #	et la justification des colonnes
+   #
+   #    procedure externe :
+   #
+   #    variables en entree :
+   #        column_name =
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
    proc cmdFormatColumn { column_name } {
       variable column_format
 
@@ -1183,22 +1173,28 @@ namespace eval bddimages_recherche {
       return $format
    }
 
-#--------------------------------------------------
-#  cmdButton1Click { frame }
-#--------------------------------------------------
-#
-#    fonction  :
-#
-#    procedure externe :
-#
-#    variables en entree :
-#        frame = Fenetre ou s affiche la table
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
+   #--------------------------------------------------
+   #  ::bddimages_recherche::cmdButton1Click { frame }
+   #--------------------------------------------------
+   #
+   #    fonction  : Affiche l'image selectionnee lorsqu'on clique 
+   #      sur une ligne ou se deplace avec les fleches H/B
+   #
+   #    variables en entree :
+   #        frame = reference de l'objet graphique de la selection
+   #
+   #    variables en sortie : void
+   #
+   #--------------------------------------------------
+   proc ::bddimages_recherche::cmdButton1Click { w args } {
 
-   proc cmdButton1Click { frame } {
+      if { [$w curselection] != "" } {
+         set i [lindex [$w curselection ]  0]
+         set idbddimg  [lindex [$w get $i] 0]
+         affiche_image_by_idbddimg $idbddimg
+      }
+      return
+
    }
 
 #--------------------------------------------------
