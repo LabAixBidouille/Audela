@@ -1100,9 +1100,17 @@ namespace eval bddimages_recherche {
    }
 
 
-
-
-
+   #--------------------------------------------------
+   #  bddimages_define {  }
+   #--------------------------------------------------
+   #
+   #    fonction  : Ouvre l'interface de modification de l'entete des images selectionnees
+   #
+   #    variables en entree :
+   #
+   #    variables en sortie : void
+   #
+   #--------------------------------------------------
    proc bddimages_define {  } {
    
       global audace
@@ -1115,29 +1123,37 @@ namespace eval bddimages_recherche {
          lappend bddconf(define) [lindex [$::bddimages_recherche::This.frame6.result.tbl get $i] 0]
       }
    
-      ::console::affiche_resultat "\n**\n run define sur $audace(base).bddimages_define \n**\n"
       ::bddimages_define::run $audace(base).bddimages_define
       
    }
 
-
-
-
-
-
-
-
-
-
+   #--------------------------------------------------
+   #  bddimages_images_delete {  }
+   #--------------------------------------------------
+   #
+   #    fonction  : Efface definitivement le lot d'images selectionnees
+   #
+   #    variables en entree :
+   #
+   #    variables en sortie : void
+   #
+   #--------------------------------------------------
    proc bddimages_images_delete {  } {
    
-      set l [$::bddimages_recherche::This.frame6.result.tbl curselection ]
-      set l [lsort -decreasing -integer $l]
-      foreach i $l {
-         set idbddimg  [lindex [$::bddimages_recherche::This.frame6.result.tbl get $i] 0]
-         bddimages_image_delete $idbddimg
-         $::bddimages_recherche::This.frame6.result.tbl delete $i
+      variable This
+      global caption
+      set reply [tk_dialog $This.confirmDialog "BddImages" "$caption(bddimages_recherche,confirmQuest)" \
+                    questhead 1 "$caption(bddimages_recherche,confirmNo)" "$caption(bddimages_recherche,confirmYes)"]
+      if {$reply} {
+         set l [$::bddimages_recherche::This.frame6.result.tbl curselection ]
+         set l [lsort -decreasing -integer $l]
+         foreach i $l {
+            set idbddimg  [lindex [$::bddimages_recherche::This.frame6.result.tbl get $i] 0]
+            bddimages_image_delete $idbddimg
+            $::bddimages_recherche::This.frame6.result.tbl delete $i
+         }
       }
+      
    }
 
 
