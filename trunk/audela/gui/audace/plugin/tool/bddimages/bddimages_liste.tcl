@@ -53,8 +53,6 @@ namespace eval bddimages_liste {
       return
    }
 
-
-
    proc ::bddimages_liste::runnormal { this } {
 
       global This
@@ -360,12 +358,12 @@ namespace eval bddimages_liste {
       global form_req
       global caption
       global nbintellilist
-   
-      set intellilist     ""
+
+      set intellilist ""
       lappend intellilist [list "type"               "intellilist"]              
       lappend intellilist [list "name"               $name]              
-      lappend intellilist [list "datemin"            $form_req(datemin)]              
-      lappend intellilist [list "datemax"            $form_req(datemax)]              
+      lappend intellilist [list "datemin"            $::bddimages_liste::form_req(datemin)]              
+      lappend intellilist [list "datemax"            $::bddimages_liste::form_req(datemax)]              
       lappend intellilist [list "type_req_check"     $form_req(type_req_check)]       
       lappend intellilist [list "type_requ"          $form_req(type_requ)]            
       lappend intellilist [list "choix_limit_result" $form_req(choix_limit_result)]
@@ -376,21 +374,20 @@ namespace eval bddimages_liste {
       set reqlist ""
       set y 0
       for {set x 1} {$x<=$indicereq} {incr x} {
-        if {$list_req($x,valide)=="ok"&&$list_req($x,valeur)!=""} {
-          incr y
-          if {$list_req($x,condition)== $caption(bddimages_liste,contient)} {
-             lappend reqlist [list $y $list_req($x,champ) "LIKE" "%$list_req($x,valeur)%"]
-             continue
-             }
-          if {$list_req($x,condition)== $caption(bddimages_liste,notcontient)} {
-             lappend reqlist [list $y $list_req($x,champ) "NOT LIKE" "%$list_req($x,valeur)%"]
-             continue
-             }
-          lappend reqlist [list $y $list_req($x,champ) $list_req($x,condition) $list_req($x,valeur)]
-          }
-        }
+         if {$list_req($x,valide)=="ok"&&$list_req($x,valeur)!=""} {
+            incr y
+            if {$list_req($x,condition)== $caption(bddimages_liste,contient)} {
+               lappend reqlist [list $y $list_req($x,champ) "LIKE" "%$list_req($x,valeur)%"]
+               continue
+            }
+            if {$list_req($x,condition)== $caption(bddimages_liste,notcontient)} {
+               lappend reqlist [list $y $list_req($x,champ) "NOT LIKE" "%$list_req($x,valeur)%"]
+               continue
+            }
+            lappend reqlist [list $y $list_req($x,champ) $list_req($x,condition) $list_req($x,valeur)]
+         }
+      }
       lappend intellilist [list "reqlist" $reqlist]
-   
       return $intellilist
    }
 
@@ -402,18 +399,17 @@ namespace eval bddimages_liste {
       global list_req
       global form_req
    
-   
       set form_req(name)               [get_val_intellilist $intellilist "name"]
-      set form_req(datemin)            [get_val_intellilist $intellilist "datemin"]
-      set form_req(datemax)            [get_val_intellilist $intellilist "datemax"]
+      set ::bddimages_liste::form_req(datemin)            [get_val_intellilist $intellilist "datemin"]
+      set ::bddimages_liste::form_req(datemax)            [get_val_intellilist $intellilist "datemax"]
       set form_req(type_req_check)     [get_val_intellilist $intellilist "type_req_check"]
       set form_req(type_requ)          [get_val_intellilist $intellilist "type_requ"]
       set form_req(choix_limit_result) [get_val_intellilist $intellilist "choix_limit_result"]
       set form_req(limit_result)       [get_val_intellilist $intellilist "limit_result"]
       set form_req(type_result)        [get_val_intellilist $intellilist "type_result"]
       set form_req(type_select)        [get_val_intellilist $intellilist "type_select"]
-   
-      set reqlist                      [get_val_intellilist $intellilist "reqlist"]
+
+      set reqlist                                         [get_val_intellilist $intellilist "reqlist"]
    
       set indicereq 0
       foreach req $reqlist {
@@ -474,11 +470,14 @@ namespace eval bddimages_liste {
          incr nbintellilist
          set idx $nbintellilist
       }
-      set intellilist [build_intellilist "$form_req(name)"]
+
+      set intellilist [::bddimages_liste::build_intellilist "$form_req(name)"]
       set intellilisttotal($idx) $intellilist
+      
       # ::bddimages_recherche::Affiche_listes
       # ::bddimages_recherche::get_list $nbintellilist
       # ::bddimages_recherche::Affiche_Results $nbintellilist
+            
       exec_intellilist $idx
       conf_save_intellilists
       ::bddimages_liste::fermer
