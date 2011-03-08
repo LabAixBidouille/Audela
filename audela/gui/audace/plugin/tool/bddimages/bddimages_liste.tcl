@@ -1231,4 +1231,70 @@ namespace eval bddimages_liste {
             pack $framecurrent.2.l -in $framecurrent.2 -anchor c -side top -expand 1 -fill x -padx 1 -pady 3
                #--- Cree un label
                label $framecurrent.2.l.txt1 -font $bddconf(font,arial_10_b) -text "$caption(bddimages_liste,limitera)"
-               pack $framecurrent.2.l.txt1 -in $framecurre
+               pack $framecurrent.2.l.txt1 -in $framecurrent.2.l -side left -anchor w -padx 2
+               #--- Cree une ligne d'entree pour la variable
+               entry $framecurrent.2.l.dat -textvariable form_req(limit_result) -borderwidth 1 -relief groove -width 8 -justify center
+               pack $framecurrent.2.l.dat -in $framecurrent.2.l -side left -anchor w -padx 2
+               #--- Cree un combox pour le choix
+               ComboBox $framecurrent.2.l.combo \
+                   -width 10 -height 1 \
+                   -relief sunken -borderwidth 1 -editable 0 \
+                   -textvariable form_req(type_result) \
+                   -values $list_comb2
+               pack $framecurrent.2.l.combo -in $framecurrent.2.l -anchor center -side left -fill x -expand 0
+            #--- selection
+            frame $framecurrent.2.s -borderwidth 0 -cursor arrow
+            pack $framecurrent.2.s -in $framecurrent.2 -anchor c -side top -expand 1 -fill x -padx 1 -pady 3
+               #--- Cree un label
+               label $framecurrent.2.s.txt2 -font $bddconf(font,arial_10_b) -text "$caption(bddimages_liste,selectpar)"
+               pack $framecurrent.2.s.txt2 -in $framecurrent.2.s -side left -anchor w -padx 2
+               #--- Cree un combox pour le choix
+               ComboBox $framecurrent.2.s.combo2 \
+                   -width 27 -height 7 \
+                   -relief sunken -borderwidth 1 -editable 0 \
+                   -textvariable form_req(type_select) \
+                   -values $list_comb3
+               pack $framecurrent.2.s.combo2 -in $framecurrent.2.s -anchor center -side left -fill x -expand 0
+
+      #--- Cree un frame pour le calcul du nombre d images
+      set framecurrent $This.frame3
+      frame $framecurrent -borderwidth 0 -cursor arrow
+      pack $framecurrent -in $This -anchor s -side top -expand 0 -padx 5 -pady 5
+
+         #--- Cree un label
+         label $framecurrent.txt1 -font $bddconf(font,arial_10_b) -text "$caption(bddimages_liste,nbresreq)"
+         pack $framecurrent.txt1 -in $framecurrent -side left -anchor w -padx 1
+         #--- Cree une ligne d'entree pour la variable
+         entry $framecurrent.dat -textvariable form_req(nbimg) -state readonly -borderwidth 1 -relief groove -width 8 -justify center
+         pack $framecurrent.dat -in $framecurrent -side left -anchor w -padx 1
+         #--- Cree un bouton ajout requete
+         button $framecurrent.calc -state active -borderwidth 1 -relief groove -anchor c -text "$caption(bddimages_liste,calcul)" \
+            -command { ::bddimages_liste::calcul_nbimg }
+         pack $framecurrent.calc -in $framecurrent -side left -anchor w -padx 1
+
+      #--- Cree un frame pour y mettre les boutons
+      frame $This.frame11 -borderwidth 0 -cursor arrow
+      pack $This.frame11 -in $This -anchor s -side bottom -expand 0 -fill x -pady 5
+
+         #--- Creation du bouton annuler
+         button $This.frame11.but_annuler -text "$caption(bddimages_liste,annuler)" -borderwidth 2 \
+              -command { ::bddimages_liste::fermer }
+         pack $This.frame11.but_annuler -in $This.frame11 -side right -anchor e -padx 2 -pady 2 -ipadx 2 -ipady 2 -expand 0
+         #--- Creation du bouton ok
+         button $This.frame11.but_ok -text "$caption(bddimages_liste,ok)" -borderwidth 2 \
+              -command { ::bddimages_liste::accept }
+         pack $This.frame11.but_ok -in $This.frame11 -side right -anchor e -padx 2 -pady 2 -ipadx 2 -ipady 2 -expand 0
+         #--- Creation du bouton aide
+         button $This.frame11.but_aide -text "$caption(bddimages_liste,aide)" -borderwidth 2 \
+              -command { ::audace::showHelpPlugin tool bddimages bddimages.htm }
+         pack $This.frame11.but_aide -in $This.frame11 -side right -anchor e -padx 2 -pady 2 -ipadx 2 -ipady 2 -expand 0
+
+      #--- La fenetre est active
+      focus $This
+      #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
+      bind $This <Key-F1> { $audace(console)::GiveFocus }
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $This
+   }
+
+}
