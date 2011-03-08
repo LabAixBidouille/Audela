@@ -35,27 +35,84 @@ namespace eval bddimages_imgcorrection {
    proc ::bddimages_imgcorrection::get_info_img {  } {
 
       #recupere la liste des idbddimg
-      set l [$::bddimages_recherche::This.frame6.result.tbl curselection ]
-      set l [lsort -decreasing -integer $l]
+      set lid [$::bddimages_recherche::This.frame6.result.tbl curselection ]
+      set lid [lsort -decreasing -integer $lid]
       
-      set cpt 0
-      foreach i $listid {
-         incr cpt
-         set inf [$::bddimages_recherche::This.frame6.result.tbl get $i] 
-         set id [lindex $inf 0]
-         if {$cpt == 1} {
-            set l "$id"
-         } else {
-            set l "$l,$id"
-         }
-      }
-      if {$cpt == 0}  { return }
 
+      set imgtmplist     ""
+      lappend imgtmplist [list "type"               "normal"]              
+      lappend imgtmplist [list "name"               "imgtmplist"]              
+      lappend imgtmplist [list "idlist"             ""]              
+      set imgtmplist [::bddimages_liste::add_to_normallist $lid $imgtmplist]
+
+
+      #::console::affiche_resultat "imgtmplist=$imgtmplist\n"
+
+      set imgtmplist [::bddimages_liste::get_imglist $imgtmplist]
+
+      #::console::affiche_resultat "imgtmplist=$imgtmplist\n"
+
+      return $imgtmplist
    }
 
 
 
 
+
+
+
+   proc ::bddimages_imgcorrection::verif_info_img { imgtmplist } {
+
+      set telsav ""
+      set bin1sav ""
+      set bin2sav ""
+      set cpt 0
+
+      foreach img $imgtmplist {
+         foreach l $img {
+            set key [lindex $l 0]
+            set val [lindex $l 1]
+            if {$key=="telescop"} {
+               if {$cpt==0} {set telsav $val}
+               if {$val!=$telsav} {return "Erreur telescope different"} 
+            }
+            if {$key=="bin1"} {
+               if {$cpt==0} {set bin1sav $val}
+               if {$val!=$bin1sav} {return "Erreur binning 1 different"} 
+            }
+            if {$key=="bin2"} {
+               if {$cpt==0} {set bin2sav $val}
+               if {$val!=$bin2sav} {return "Erreur binning 2 different"} 
+            }
+         }
+      incr cpt
+      }
+   
+      return ""
+   }
+
+
+   proc ::bddimages_imgcorrection::create_filename { incname imgtmplist } {
+
+      set tel ""
+      set bin1 ""
+      set bin2 ""
+      set commundatejjmoy 0
+      set cpt 0
+      foreach img $imgtmplist {
+         foreach l $img {
+            set key [lindex $l 0]
+            set val [lindex $l 1]
+            if {$key=="telescop"} {set tel $val}
+            if {$key=="bin1"} {set bin1 $val}
+            if {$key=="bin2"} {set bin2 $val}
+            if {$key=="commundatejj"} {set commundatejjmoy [expr $commundatejjmoy + $val}
+         }
+      incr cpt
+      }
+   
+      return "$tel.$incname"
+   }
 #--------------------------------------------------
 # run_create_sdark { this }
 #--------------------------------------------------
@@ -75,12 +132,15 @@ namespace eval bddimages_imgcorrection {
    proc ::bddimages_imgcorrection::run_create_sdark { this } {
 
       # Recuperation des informations des images selectionnees
-      set info   [::bddimages_imgcorrection::get_info_img "dark"]
-      set errmsg [::bddimages_imgcorrection::verif_info_img $info "dark"]
+      set imgtmplist [::bddimages_imgcorrection::get_info_img]
+      set errmsg [::bddimages_imgcorrection::verif_info_img $imgtmplist]
       if {$errmsg != ""}  { 
          ::console::affiche_erreur "ERROR: $errmsg\n"
          return
          }
+      set filename [::bddimages_imgcorrection::create_filename "SDark" $imgtmplist]
+         ::console::affiche_resultat "filename: $filename\n"
+      return
 
       set texte "Images d entree \n"
       set texte "${texte}[lindex $info 0] \n"
