@@ -30,7 +30,7 @@ proc dateobs {tabkey} {
    set annee   [expr [string range $dateobs 6 9] + 1900]
    set mois    [string range $dateobs 3 4]
    set jour    [string range $dateobs 0 1]
-   set dateiso "$annee-$mois-$jour\T$heurobs"
+   set dateiso "$annee-$mois-${jour}T$heurobs"
 
    return [list 0 $dateiso]
 }
