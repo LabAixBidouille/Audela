@@ -139,7 +139,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(divers,copyjpeg)                       "In JPEG speichern"
    set caption(divers,libgsl)                         "\nDie libgsl und libslcbas Bibliotheken fehlen."
    set caption(divers,attention)                      "Achtung"
-   set caption(divers,err_list_of_number)             "# {%s} n'est pas une liste de nombres."
+   set caption(divers,err_list_of_number)             "{%s} ist nicht eine Nummerliste."
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
