@@ -137,8 +137,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(dslr,liaison)                "Link"
    set caption(dslr,configurer)             "Konfigurieren"
-   set caption(dslr,miroir_x)               "# Horizontale Spiegel"
-   set caption(dslr,miroir_y)               "# Verticale Spiegel"
+   set caption(dslr,miroir_x)               "Oben/Unten umkehren"
+   set caption(dslr,miroir_y)               "Links/Rechts umkehren"
    set caption(dslr,longuepose)             "Lange Belichtung"
    set caption(dslr,quickremote)            "QuickRemote"
    set caption(dslr,externe)                "Manuell"
