@@ -77,8 +77,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(th7852a,camera)                    "TH7852A"
 
-   set caption(th7852a,miroir_x)                  "# Horizontale Spiegel"
-   set caption(th7852a,miroir_y)                  "# Verticale Spiegel"
+   set caption(th7852a,miroir_x)                  "Oben/Unten umkehren"
+   set caption(th7852a,miroir_y)                  "Links/Rechts umkehren"
    set caption(th7852a,coef)                      "Faktor"
 
    set caption(th7852a,port_camera)               "TH7852A Port"
