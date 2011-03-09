@@ -106,7 +106,7 @@ namespace eval bddimages_imgcorrection {
             if {$key=="telescop"} {set tel $val}
             if {$key=="bin1"} {set bin1 $val}
             if {$key=="bin2"} {set bin2 $val}
-            if {$key=="commundatejj"} {set commundatejjmoy [expr $commundatejjmoy + $val}
+            if {$key=="commundatejj"} {set commundatejjmoy [expr $commundatejjmoy + $val]}
          }
       incr cpt
       }
