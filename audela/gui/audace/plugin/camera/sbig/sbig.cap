@@ -153,8 +153,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sbig,puissance_peltier)         "Peltier Stärke: "
    set caption(sbig,temp_ext)                  "Temp. CCD / äuß.:"
    set caption(sbig,deg_c)                     "°C"
-   set caption(sbig,miroir_x)                  "# Horizontale Spiegel"
-   set caption(sbig,miroir_y)                  "# Verticale Spiegel"
+   set caption(sbig,miroir_x)                  "Oben/Unten umkehren"
+   set caption(sbig,miroir_y)                  "Links/Rechts umkehren"
    set caption(sbig,fonc_obtu)                 "Verschluss Arbeiten"
 
    set caption(sbig,port_camera)               "SBIG Port"
