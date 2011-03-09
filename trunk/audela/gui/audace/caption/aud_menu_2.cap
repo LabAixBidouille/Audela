@@ -296,8 +296,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,balance_rvb)               "RGB Balance"
    set caption(audace,menu,zoom)                      "Zoom"
    set caption(audace,menu,plein_ecran)               "Vollschirm"
-   set caption(audace,menu,display_miroir_x)          "# Verticale Spiegel"
-   set caption(audace,menu,display_miroir_y)          "# Horizontale Spiegel"
+   set caption(audace,menu,display_miroir_x)          "Links/Rechts umkehren"
+   set caption(audace,menu,display_miroir_y)          "Oben/Unten umkehren"
    set caption(audace,menu,window)                    "Zone abschneiden"
    set caption(audace,menu,vision_nocturne)           "Nächtsicht"
 
@@ -340,7 +340,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilCouleur,pas_couleur)              "Das ist kein Farbbild."
    set caption(seuilCouleur,attention)                "Achtung"
    set caption(seuilCouleur,header_noimage)           "Es ist jetzt kein Bild im Speicher."
-   set caption(seuilCouleur,en_cours)                 "# En cours... Patientez..."
+   set caption(seuilCouleur,en_cours)                 "Laufend… Bitte warten… "
    set caption(seuilCouleur,fin_traitement)           "Ende der Verarbeitung."
 
 # *************** Version portugaise **************************
