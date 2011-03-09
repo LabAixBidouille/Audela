@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_5.cap
-# Mise a jour $Id$
+# Mise a jour $Id: aud_menu_5.cap 6795 2011-02-26 16:05:27Z michelpujol$
 #
 
 #=========================================================================
@@ -240,16 +240,16 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,centro)                    "Photozentrum"
    set caption(audace,menu,phot)                      "Integrale Photomessung"
 
-   set caption(audace,menu,extract)                   "# Extraire"
-   set caption(audace,menu,ligne)                     "# Une ligne"
-   set caption(audace,menu,bin_y)                     "# Somme de lignes"
-   set caption(audace,menu,med_y)                     "# Médiane de lignes"
-   set caption(audace,menu,sort_y)                    "# Tri centile de lignes"
-   set caption(audace,menu,colonne)                   "# Une colonne"
-   set caption(audace,menu,bin_x)                     "# Somme de colonnes"
-   set caption(audace,menu,med_x)                     "# Médiane de colonnes"
-   set caption(audace,menu,sort_x)                    "# Tri centile de colonnes"
-   set caption(audace,menu,matrice)                   "# Une zone"
+   set caption(audace,menu,extract)                   "Herausnehmen "
+   set caption(audace,menu,ligne)                     "Eine Reihe"
+   set caption(audace,menu,bin_y)                     "Reihen Summe"
+   set caption(audace,menu,med_y)                     "Mittelwert der Reihen"
+   set caption(audace,menu,sort_y)                    "Perzentil Sortierung der Reihen"
+   set caption(audace,menu,colonne)                   "Eine Kolumne"
+   set caption(audace,menu,bin_x)                     "Kolumnen Summe "
+   set caption(audace,menu,med_x)                     "Mittelwert der Kolumnen"
+   set caption(audace,menu,sort_x)                    "Prozentrang Sortierung der Kolumnen "
+   set caption(audace,menu,matrice)                   "Eine Zone"
 
    set caption(audace,histo_titre)                    "Historische Kurve des Bild"
    set caption(audace,histo_adu)                      "ADU"
