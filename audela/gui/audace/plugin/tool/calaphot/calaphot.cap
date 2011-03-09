@@ -499,7 +499,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set calaphot(texte,titre_menu)          "# Differential Licht Messung (Calaphot)"
+   set calaphot(texte,titre_menu)          "Lichtkurven (Calaphot)"
    set calaphot(texte,titre_saisie)        "Skript Photomessung Parametern"
    set calaphot(texte,operateur)           "Bedienungsperson Namen"
    set calaphot(texte,objet)               "Objekt Namen"
@@ -608,14 +608,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,pas_image_valide)    "Kein Bild ist gültig. Überprüfen Sie die S/N Grenze."
    set calaphot(texte,image)               "Bild"
    set calaphot(texte,temps_pose_nul)      "Null Erleuchtung Zeit"
-   set calaphot(texte,mag_relative)        "# Relative Magnitude"
-   set calaphot(texte,err_modelisation)    "# Error in fitting"
-   set calaphot(texte,plus_jeune)          "#  is older than the previous one"
-   set calaphot(texte,implication_defoc)   "# The processing of very defocused images implies Aperture Photometry."
-   set calaphot(texte,defocalisation)      "# Very defocused images"
+   set calaphot(texte,mag_relative)        "Relative Größe"
+   set calaphot(texte,err_modelisation)    "Ausführung Fehler"
+   set calaphot(texte,plus_jeune)          " ist älter als die vorherige "
+   set calaphot(texte,implication_defoc)   "Die Verarbeitung von sehr unscharf Bilder ist nur mit Blendenöffnung Photometrie möglich."
+   set calaphot(texte,defocalisation)      "Sehr unscharf Bilder"
    set calaphot(texte,defocalisation_0)    $calaphot(texte,non)
    set calaphot(texte,defocalisation_1)    $calaphot(texte,oui)
-   set calaphot(texte,aucune_valide)       "# Not any valid image"
+   set calaphot(texte,aucune_valide)       "Kein Bild ist gültig"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
