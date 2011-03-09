@@ -386,7 +386,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,position_mpc)                       "MPC Format:"
    set caption(confgene,position_mpcstation)                "MPCSTATION Format:"
    set caption(confgene,position_non_station_uai)           "UAI Stelle nicht einbeschreibt"
-   set caption(confgene,fichier_uai_msg)                    "# Une connexion à Internet est nécessaire pour cette mise à jour."
+   set caption(confgene,fichier_uai_msg)                    "Eine Internetverbindung ist erforderlich um zu aktualisieren."
    set caption(confgene,fichier_uai_erreur1)                "Der UAI Nummer der Stelle muss"
    set caption(confgene,fichier_uai_erreur2)                "mindesten 3 Zahlzeichen haben"
    set caption(confgene,fichier_uai_erreur3)                "(Beispiel: 000, 008, 013, 104, A05)."
