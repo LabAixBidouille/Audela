@@ -126,12 +126,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193pad,moteur_foc)        "Fokussierung Motor"
    set caption(t193pad,gotoFoc)           "GOTO Fokus."
    set caption(t193pad,stopFoc)           "STOP"
-   set caption(t193pad,msg)               "# Il n'est pas possible de récupérer la position du focuser car le télescope n'est pas encore connecté."
+   set caption(t193pad,msg)               "Die Focuser Position kann nicht abgerufen werden, da das Teleskop noch nicht angeschlossen ist."
 
    set caption(t193pad,dome)              "Kuppel"
    set caption(t193pad,synchroMonture)    "Synchron mit dem Teleskop"
 
-   set caption(t193pad,radecPulse)        "# Pulse mode"
+   set caption(t193pad,radecPulse)        "Pulsbetrieb"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
