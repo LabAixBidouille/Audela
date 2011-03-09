@@ -2,7 +2,7 @@
 # Fichier : prtr.tcl
 # Description : Script dedie au menu deroulant pretraitement
 # Auteur : Raymond ZACHANTKE
-# Mise à jour $Id$#
+# Mise à jour $Id$
 
 namespace eval ::prtr {
 
@@ -2067,13 +2067,12 @@ namespace eval ::prtr {
          if {$row >=0} {
             if {[lrange [$private(tbl) get $row] 2 end] eq $private(profil)} {
                #--   l'image est du meme type que celles selectionnee
-               if {$nom_court ni $private(todo)} {
-                  #--   cas ou l'image n'a pas deja ete selectionnee
-                  return "\"$parametre=$value\""
-               } else {
+               if {$nom_court in $private(todo)} {
                   #--   cas ou l'image deja ete selectionnee
-                  return [::prtr::avertiUser err_file_select $value]
+                  #--   juste un message d'avertissement
+                  ::prtr::avertiUser err_file_select $value
                }
+               return "$parametre=$nom_court$extension"
             } else {
                #--   cas du fichier de type different
                return [::prtr::avertiUser err_file_type $parametre]
@@ -2208,7 +2207,7 @@ namespace eval ::prtr {
       #--   constitue la liste des nom en entree et en sortie
       if {$type eq "C"} {
          foreach file $imgList {
-            ::prtr::decompRGB $file
+           ::prtr::decompRGB $file
             #--   liste les fichiers a traiter
             foreach k {r g b} {
                lappend list_$k ${file}$k
@@ -2243,6 +2242,9 @@ namespace eval ::prtr {
 
       #--   fixe le generique de sortie sans indice ni plan couleur ni extension
       set racine [file join $rep $nameOut]
+      if {[string index $options 0] eq " "} {
+         set options [string range $options 1 end]
+      }
 
       set catchError [catch {
 
@@ -2299,8 +2301,8 @@ namespace eval ::prtr {
 
    #--------------------------------------------------------------------------
    #  ::prtr::traiteImg
-   #  Copie l'image operande et la decompose en plans couleurs
-   #  et modifie le parametre file en consequence
+   #  Copie l'image operande et modifie le parametre file en consequence
+   #  Retourne una liste raccourcie des options et le nom generique du fichier
    #  Lancee par cmdExec
    #--------------------------------------------------------------------------
    proc traiteImg {options p} {
@@ -2312,15 +2314,15 @@ namespace eval ::prtr {
       set param [lindex $options $k]
       #--   extrait le nom complet du fichier
       regsub ($pattern) $param "" file
-      if {[file dirname $file] ni [list "$::audace(rep_images)" .]} {
-         set ext [file extension $file]
-         #--   recopie le fichier dans rep_images
+      set ext [file extension $file]
+      set generique [file rootname [file tail $file]]
+      #--   recopie le fichier dans rep_images
+      if {[file dirname $file] ni [list "$::audace(rep_images)" "."]} {
          file copy -force $file $::audace(rep_images)
-         set file [file tail [file rootname $file]]
-         #--   remplace le parametre dans options
-         set options [lreplace $options $k $k "$pattern$file$ext"]
       }
-      return [list $options $file]
+      #--   remplace le parametre dans options
+      set options [lreplace $options $k $k "$pattern$generique$ext"]
+      return [list $options $generique]
    }
 
    #--------------------------------------------------------------------------
