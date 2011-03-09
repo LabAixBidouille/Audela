@@ -113,8 +113,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ascomcam,configurer)                "Konfigurieren"
    set caption(ascomcam,install)                   "%s V%s Update beendet."
 
-   set caption(ascomcam,miroir_x)                  "# Horizontale Spiegel"
-   set caption(ascomcam,miroir_y)                  "# Verticale Spiegel"
+   set caption(ascomcam,miroir_x)                  "Oben/Unten umkehren"
+   set caption(ascomcam,miroir_y)                  "Links/Rechts umkehren"
 
    set caption(ascomcam,port_camera)               "ASCOM Driver"
    set caption(ascomcam,2points)                   ":"
