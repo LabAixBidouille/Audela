@@ -944,19 +944,19 @@ namespace eval bddimages_recherche {
 
         # Labels Associate
         $popupTbl add command -label $caption(bddimages_recherche,sbias) \
-           -command { ::bddimages_imgcorrection::run_create_sbias}
+           -command { ::bddimages_imgcorrection::run_create $audace(base).bddimages_imgcorrection "offset"}
 
         # Labels Associate
         $popupTbl add command -label $caption(bddimages_recherche,sdark) \
-           -command { ::bddimages_imgcorrection::run_create_sdark $audace(base).bddimages_imgcorrection}
+           -command { ::bddimages_imgcorrection::run_create $audace(base).bddimages_imgcorrection "dark" }
 
         # Labels Associate
         $popupTbl add command -label $caption(bddimages_recherche,sflat) \
-           -command { ::bddimages_imgcorrection::run_create_sflat}
+           -command { ::bddimages_imgcorrection::run_create $audace(base).bddimages_imgcorrection "flat"}
 
         # Labels Associate
         $popupTbl add command -label $caption(bddimages_recherche,deflat) \
-           -command { ::bddimages_imgcorrection::run_create_deflat}
+           -command { ::bddimages_imgcorrection::run_create $audace(base).bddimages_imgcorrection "deflat"}
 
         # Separateur
         $popupTbl add separator

@@ -308,85 +308,81 @@ proc ::bddimagesAdmin::TestConnectBdd { } {
 #--------------------------------------------------
    proc ::bddimagesAdmin::bdi_setcompat { bufno } {
    
-      set key [buf$bufno getkwd "BDDIMAGES VERSION"]
+      set key [buf$bufno getkwd "HIERARCH BDDIMAGES VERSION"]
       if {[lindex $key 1] != 1 } {
          buf$bufno setkwd [list "HIERARCH BDDIMAGES VERSION" "1" "int" "Compatibility version for bddimages" ""]
          }
-      set key [buf$bufno getkwd "BDDIMAGES STATES"]
+      set key [buf$bufno getkwd "HIERARCH BDDIMAGES STATES"]
       if {[lindex $key 0] == "" } {
          buf$bufno setkwd [list "HIERARCH BDDIMAGES STATES" "unknown" "string" "RAW | CORR | CATA | Unknown" ""]
          }
-      set key [buf$bufno getkwd "BDDIMAGES TYPE"]
+      set key [buf$bufno getkwd "HIERARCH BDDIMAGES TYPE"]
       if {[lindex $key 0] == "" } {
          buf$bufno setkwd [list "HIERARCH BDDIMAGES TYPE" "unknown" "string" "IMG | FLAT | DARK | OFFSET | Unknown" ""]
          }
-      set key [buf$bufno getkwd "BDDIMAGES WCS"]
+      set key [buf$bufno getkwd "HIERARCH BDDIMAGES WCS"]
       if {[lindex $key 0] == "" } {
          buf$bufno setkwd [list "HIERARCH BDDIMAGES WCS" "unknown" "string" "WCS performed" ""]
          }
-      set key [buf$bufno getkwd "BDDIMAGES NAMECATA"]
+      set key [buf$bufno getkwd "HIERARCH BDDIMAGES NAMECATA"]
       if {[lindex $key 0] == "" } {
          buf$bufno setkwd [list "HIERARCH BDDIMAGES NAMECATA" "unknown" "string" "Name file of the cata file" ""]
          }
-      set key [buf$bufno getkwd "BDDIMAGES DATECATA"]
+      set key [buf$bufno getkwd "HIERARCH BDDIMAGES DATECATA"]
       if {[lindex $key 0] == "" } {
          buf$bufno setkwd [list "HIERARCH BDDIMAGES DATECATA" "unknown" "string" "Date iso when the cata file was modified" ""]
          }
-      set key [buf$bufno getkwd "BDDIMAGES ASTROID"]
+      set key [buf$bufno getkwd "HIERARCH BDDIMAGES ASTROID"]
       if {[lindex $key 0] == "" } {
          buf$bufno setkwd [list "HIERARCH BDDIMAGES ASTROID" "unknown" "string" "ASTROID performed" ""]
          }
-      set key [buf$bufno getkwd "BDDIMAGES ASTROMETRY"]
+      set key [buf$bufno getkwd "HIERARCH BDDIMAGES ASTROMETRY"]
       if {[lindex $key 0] == "" } {
          buf$bufno setkwd [list "HIERARCH BDDIMAGES ASTROMETRY" "unknown" "string" "Astrometry performed" ""]
          }
-      set key [buf$bufno getkwd "BDDIMAGES CATAASTROM"]
+      set key [buf$bufno getkwd "HIERARCH BDDIMAGES CATAASTROM"]
       if {[lindex $key 0] == "" } {
          buf$bufno setkwd [list "HIERARCH BDDIMAGES CATAASTROM" "unknown" "string" "Catalog used for astrometry" ""]
          }
-      set key [buf$bufno getkwd "BDDIMAGES PHOTOMETRY"]
+      set key [buf$bufno getkwd "HIERARCH BDDIMAGES PHOTOMETRY"]
       if {[lindex $key 0] == "" } {
          buf$bufno setkwd [list "HIERARCH BDDIMAGES PHOTOMETRY" "unknown" "string" "Photometry performed" ""]
          }
-      set key [buf$bufno getkwd "BDDIMAGES CATAPHOTOM"]
+      set key [buf$bufno getkwd "HIERARCH BDDIMAGES CATAPHOTOM"]
       if {[lindex $key 0] == "" } {
          buf$bufno setkwd [list "HIERARCH BDDIMAGES CATAPHOTOM" "unknown" "string" "Catalog used for photometry" ""]
          }
          
          
+      
+
       # retire les mots cles         
-         
-      set key [buf$bufno getkwd "BDDIMAGES RAW"]
-      if {[lindex $key 0] != "" } {
-         buf$bufno delkwd "BDDIMAGES RAW"
-         }
-      set key [buf$bufno getkwd "BDDIMAGES FLAT"]
-      if {[lindex $key 0] != "" } {
-         buf$bufno delkwd "BDDIMAGES FLAT"
-         }
-      set key [buf$bufno getkwd "BDDIMAGES DARK"]
-      if {[lindex $key 0] != "" } {
-         buf$bufno delkwd "BDDIMAGES DARK"
-         }
-      set key [buf$bufno getkwd "BDDIMAGES OFFSET"]
-      if {[lindex $key 0] != "" } {
-         buf$bufno delkwd "BDDIMAGES OFFSET"
-         }
-      set key [buf$bufno getkwd "BDDIMAGES SFLAT"]
-      if {[lindex $key 0] != "" } {
-         buf$bufno delkwd "BDDIMAGES SFLAT"
-         }
-      set key [buf$bufno getkwd "BDDIMAGES SDARK"]
-      if {[lindex $key 0] != "" } {
-         buf$bufno delkwd "BDDIMAGES SDARK"
-         }
-      set key [buf$bufno getkwd "BDDIMAGES SOFFSET"]
-      if {[lindex $key 0] != "" } {
-         buf$bufno delkwd "BDDIMAGES SOFFSET"
-         }
-
-
-
+      set dellist ""
+      lappend dellist "HIERARCH BDDIMAGES RAW"
+      lappend dellist "HIERARCH BDDIMAGES FLAT"
+      lappend dellist "HIERARCH BDDIMAGES DARK"
+      lappend dellist "HIERARCH BDDIMAGES OFFSET"
+      lappend dellist "HIERARCH BDDIMAGES SFLAT"
+      lappend dellist "HIERARCH BDDIMAGES SDARK"
+      lappend dellist "HIERARCH BDDIMAGES SOFFSET"
+      lappend dellist "BDDIMAGES VERSION"
+      lappend dellist "BDDIMAGES STATES"
+      lappend dellist "BDDIMAGES TYPE"
+      lappend dellist "BDDIMAGES WCS"
+      lappend dellist "BDDIMAGES NAMECATA"
+      lappend dellist "BDDIMAGES DATECATA"
+      lappend dellist "BDDIMAGES ASTROID"
+      lappend dellist "BDDIMAGES ASTROMETRY"
+      lappend dellist "BDDIMAGES CATAASTROM"
+      lappend dellist "BDDIMAGES PHOTOMETRY"
+      lappend dellist "BDDIMAGES CATAPHOTOM"
+      
+      foreach del $dellist {
+         set key [buf$bufno getkwd $del]
+         if {[lindex $key 0] != "" } {
+            buf$bufno delkwd $del
+            }
+      }       
 
       return
       }
