@@ -2312,7 +2312,7 @@ namespace eval ::prtr {
       set param [lindex $options $k]
       #--   extrait le nom complet du fichier
       regsub ($pattern) $param "" file
-      if {[file dirname $file] ne "$::audace(rep_images)"} {
+      if {[file dirname $file] ni [list "$::audace(rep_images)" .]} {
          set ext [file extension $file]
          #--   recopie le fichier dans rep_images
          file copy -force $file $::audace(rep_images)
@@ -3154,7 +3154,7 @@ namespace eval ::prtr {
       foreach img $imgList {
 
          set plan $img
-        if {$type eq "C"} {set plan ${img}g}
+         if {$type eq "C"} {set plan ${img}g}
 
          set catchError [catch {icorr2d $ref ${plan}$extIn $dest} ErrInfo]
 
@@ -3341,10 +3341,13 @@ namespace eval ::prtr {
       }
 
       #--   cherche la fraction de pixel
+      set x [lindex $x end]
+      set y [lindex $y end]
       set x1 [expr {int($x-5)}]
       set y1 [expr {int($y-5)}]
       set x2 [expr {int($x+5)}]
       set y2 [expr {int($y+5)}]
+
       set box [list $x1 $y1 $x2 $y2]
       lassign  [buf$buf centro $box] x y
       return [list $x $y]
