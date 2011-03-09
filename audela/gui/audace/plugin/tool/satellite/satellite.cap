@@ -81,12 +81,12 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(satellite,tle_titre)                          "Artificial Satellites"
    set caption(satellite,tle_update)                         "Update Dateien TLE"
-   set caption(satellite,tle_satelcoord)                     "# Recherche les coordonnées"
-   set caption(satellite,tle_satelname)                      "# Nom de tous les satellites dans les TLE --> Console"
-   set caption(satellite,tle_satelnamesearch)                "# Liste des satellites ayant dans le nom : ..."
+   set caption(satellite,tle_satelcoord)                     "Koordinaten Suchung"
+   set caption(satellite,tle_satelname)                      "Namen aller Satelliten in TLE-Dateien --> Konsole"
+   set caption(satellite,tle_satelnamesearch)                "Liste der Satelliten in TLE-Dateien mit Namen: ..."
    set caption(satellite,gps_lieu)                           "GPS Koordinaten:"
-   set caption(satellite,dateob)                             "# Date de l'observation (TU)"
-   set caption(satellite,tle_satelcoordnearest)              "# Satellite le plus proche de :"
+   set caption(satellite,dateob)                             "Beobachtungstag (WZ)"
+   set caption(satellite,tle_satelcoordnearest)              "Nächster Satellit:"
    set caption(satellite,tle_satelra)                        "RA:"
    set caption(satellite,tle_sateldec)                       "Dek.:"
 
