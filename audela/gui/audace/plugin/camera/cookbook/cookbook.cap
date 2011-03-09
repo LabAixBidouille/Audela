@@ -88,8 +88,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cookbook,port)                      "Port"
    set caption(cookbook,configurer)                "Konfigurieren"
    set caption(cookbook,acquisition)               "Belichtung"
-   set caption(cookbook,miroir_x)                  "# Horizontale Spiegel"
-   set caption(cookbook,miroir_y)                  "# Verticale Spiegel"
+   set caption(cookbook,miroir_x)                  "Oben/Unten umkehren"
+   set caption(cookbook,miroir_y)                  "Links/Rechts umkehren"
    set caption(cookbook,delai)                     "Zeitraum"
 
    set caption(cookbook,port_camera)               "CB245 Port"
