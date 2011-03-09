@@ -84,8 +84,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scr1300xtc,port)                      "Port"
    set caption(scr1300xtc,configurer)                "Konfigurieren"
    set caption(scr1300xtc,acquisition)               "Belichtung"
-   set caption(scr1300xtc,miroir_x)                  "# Horizontale Spiegel"
-   set caption(scr1300xtc,miroir_y)                  "# Verticale Spiegel"
+   set caption(scr1300xtc,miroir_x)                  "Oben/Unten umkehren"
+   set caption(scr1300xtc,miroir_y)                  "Links/Rechts umkehren"
 
    set caption(scr1300xtc,port_camera)               "SCR1300XTC Port"
    set caption(scr1300xtc,2points)                   ":"
