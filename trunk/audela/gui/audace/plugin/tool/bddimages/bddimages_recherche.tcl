@@ -186,31 +186,33 @@ namespace eval bddimages_recherche {
    }
 
 
-#--------------------------------------------------
-#  cmd_list_select { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Affiche les elements d une liste, selectionnee dans le frame list
-#       par clic dans la liste du tk 
-#
-#    procedure externe :
-#        get_intellilist_by_name
-#        get_list
-#        Affiche_Results
-#
-#    variables en entree :
-#        @param tbl = entree tk
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-
+   #--------------------------------------------------
+   #  cmd_list_select { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       Affiche les elements d une liste, selectionnee dans le frame list
+   #       par clic dans la liste du tk 
+   #
+   #    procedure externe :
+   #        get_intellilist_by_name
+   #        get_list
+   #        Affiche_Results
+   #
+   #    variables en entree :
+   #        @param tbl = entree tk
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
    proc ::bddimages_recherche::cmd_list_select { tbl } {
 
       variable ::bddimages_recherche::current_list_name
       variable ::bddimages_recherche::current_list_id
       variable ::bddimages_recherche::tbl_cmd_list_select
+
+      global action_frame_type
+      global action_frame_state
 
       set ::bddimages_recherche::tbl_cmd_list_select $tbl
       set i [$tbl curselection]
@@ -224,6 +226,8 @@ namespace eval bddimages_recherche {
       ::bddimages_recherche::get_list $::bddimages_recherche::current_list_id
 
       set t1 [clock clicks -milliseconds]
+      ::bddimages_recherche::reset_icon_yes_recherche $action_frame_state [list "unkstate" "corr" "raw"]
+      ::bddimages_recherche::reset_icon_yes_recherche $action_frame_type [list "unktype" "offset" "dark" "flat" "img"]
       ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id      
 
       set t2 [clock clicks -milliseconds]
@@ -235,25 +239,25 @@ namespace eval bddimages_recherche {
       return
    }
 
-#--------------------------------------------------
-#  cmd_list_delete { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Supprime un element d une liste, selectionnee dans le frame list
-#       par clic dans la liste du tk 
-#
-#    procedure externe :
-#        get_intellilist_by_name
-#        Affiche_listes
-#        conf_save_intellilists
-#
-#    variables en entree :
-#        @param tbl = entree tk
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
+   #--------------------------------------------------
+   #  cmd_list_delete { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       Supprime un element d une liste, selectionnee dans le frame list
+   #       par clic dans la liste du tk 
+   #
+   #    procedure externe :
+   #        get_intellilist_by_name
+   #        Affiche_listes
+   #        conf_save_intellilists
+   #
+   #    variables en entree :
+   #        @param tbl = entree tk
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
    proc cmd_list_delete { tbl } {
       set i [$tbl curselection]
       set row [$tbl get $i $i]
@@ -266,6 +270,98 @@ namespace eval bddimages_recherche {
       ::bddimages_recherche::Affiche_listes
       ::bddimages_liste::conf_save_intellilists
       return
+   }
+
+   #--------------------------------------------------
+   #  ::bddimages_recherche::command_icon_recherche { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       Configure le bouton de tri sur les images, et 
+   #       affiche les images en fonction de l'etat du bouton 
+   #
+   #    procedure externe :
+   #        ::bddimages_recherche::Affiche_Results
+   #
+   #    variables en entree :
+   #        @param frame frame dans lequel se trouve le bouton
+   #        @param button le nom du bouton
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
+   proc ::bddimages_recherche::command_icon_recherche { frame button } {
+   
+      global action_frame_type
+      global action_frame_state
+      global action_label
+
+      if {$action_label($button) == 1} {
+         set action_label($button) 0
+         $frame.$button configure -relief "raised" -image [join [list "icon_no_" $button] ""]
+      } else {
+         set action_label($button) 1 
+         $frame.$button configure -relief "sunken" -image [join [list "icon_yes_" $button] ""]
+      }
+      ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id [array get action_label]
+   }
+
+   #--------------------------------------------------
+   #  ::bddimages_recherche::reset_icon_yes_recherche { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       Remet a 'yes' tous les boutons selectionnes dans un frame donne 
+   #
+   #    procedure externe :
+   #        ::bddimages_recherche::Affiche_Results
+   #
+   #    variables en entree :
+   #        @param frame frame dans lequel se trouve le bouton
+   #        @param buttons liste des boutons
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
+   proc ::bddimages_recherche::reset_icon_yes_recherche { frame buttons } {
+   
+      global action_frame_type
+      global action_frame_state
+      global action_label
+
+      foreach b $buttons {
+         set action_label($b) 1
+         $frame.$b configure -relief "sunken" -image [join [list "icon_yes_" $b] ""]
+      }
+   }
+
+   #--------------------------------------------------
+   #  ::bddimages_recherche::reset_icon_no_recherche { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       Remet a 'no' tous les boutons selectionnes dans un frame donne 
+   #
+   #    procedure externe :
+   #        ::bddimages_recherche::Affiche_Results
+   #
+   #    variables en entree :
+   #        @param frame frame dans lequel se trouve le bouton
+   #        @param buttons liste des boutons
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
+   proc ::bddimages_recherche::reset_icon_no_recherche { frame buttons } {
+   
+      global action_frame_type
+      global action_frame_state
+      global action_label
+
+      foreach b $buttons {
+         set action_label($b) 0
+         $frame.$b configure -relief "raised" -image [join [list "icon_no_" $b] ""]
+      }
    }
 
 #--------------------------------------------------
@@ -282,8 +378,6 @@ namespace eval bddimages_recherche {
 #    variables en sortie :
 #
 #--------------------------------------------------
-
-
 # |-fenetre-----------------------------------|
 # |                                           |
 # | |-menu---------------------------------|  |
@@ -411,10 +505,14 @@ namespace eval bddimages_recherche {
       image create photo icon_no_offset
       icon_no_offset configure -file [file join $audace(rep_plugin) tool bddimages icons no_offset.gif]
       #--- UNKNOWN
-      image create photo icon_yes_unk
-      icon_yes_unk configure -file [file join $audace(rep_plugin) tool bddimages icons yes_unk.gif]
-      image create photo icon_no_unk
-      icon_no_unk configure -file [file join $audace(rep_plugin) tool bddimages icons no_unk.gif]
+      image create photo icon_yes_unktype
+      icon_yes_unktype configure -file [file join $audace(rep_plugin) tool bddimages icons yes_unk.gif]
+      image create photo icon_yes_unkstate
+      icon_yes_unkstate configure -file [file join $audace(rep_plugin) tool bddimages icons yes_unk.gif]
+      image create photo icon_no_unktype
+      icon_no_unktype configure -file [file join $audace(rep_plugin) tool bddimages icons no_unk.gif]
+      image create photo icon_no_unkstate
+      icon_no_unkstate configure -file [file join $audace(rep_plugin) tool bddimages icons no_unk.gif]
       #--- CORR
       image create photo icon_yes_corr
       icon_yes_corr configure -file [file join $audace(rep_plugin) tool bddimages icons yes_corr.gif]
@@ -473,8 +571,7 @@ namespace eval bddimages_recherche {
            pack $This.frame0.aide -side right
          
          #--- barre de menu
-             tk_menuBar $This.frame0 $This.frame0.file $This.frame0.image $This.frame0.aide
-
+         tk_menuBar $This.frame0 $This.frame0.file $This.frame0.image $This.frame0.aide
 
          #--- Cree un frame pour afficher le status de la base
          frame $This.frame1 -borderwidth 0 -cursor arrow
@@ -493,68 +590,28 @@ namespace eval bddimages_recherche {
                set action_frame_type [frame $This.frame1.action.type -borderwidth 1 -cursor arrow]
                pack $This.frame1.action.type -in $This.frame1.action -side right -expand 0 -fill x
                #----- UNKNOWN
-               button $This.frame1.action.type.unknown -state active -relief "sunken" -image icon_yes_unk \
-                  -command { if {$action_label(unktype) == 1} {
-                                set action_label(unktype) 0
-                                $action_frame_type.unknown configure -relief "raised" -image icon_no_unk
-                             } else {
-                                set action_label(unktype) 1 
-                                $action_frame_type.unknown configure -relief "sunken" -image icon_yes_unk
-                             }
-                             ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id [array get action_label]
-                           }
-               pack $This.frame1.action.type.unknown -in $This.frame1.action.type -side right -anchor w -padx 0
-               DynamicHelp::add $This.frame1.action.type.unknown -text $caption(bddimages_recherche,button_unktype)
+               button $This.frame1.action.type.unktype -state active -relief "sunken" -image icon_yes_unktype \
+                  -command { ::bddimages_recherche::command_icon_recherche $action_frame_type "unktype" }
+               pack $This.frame1.action.type.unktype -in $This.frame1.action.type -side right -anchor w -padx 0
+               DynamicHelp::add $This.frame1.action.type.unktype -text $caption(bddimages_recherche,button_unktype)
                #----- OFFSET
                button $This.frame1.action.type.offset -state active -relief "sunken" -image icon_yes_offset \
-                  -command { if {$action_label(offset) == 1} {
-                                set action_label(offset) 0
-                                $action_frame_type.offset configure -relief "raised" -image icon_no_offset
-                             } else {
-                                set action_label(offset) 1 
-                                $action_frame_type.offset configure -relief "sunken" -image icon_yes_offset
-                             }
-                             ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id [array get action_label]
-                           }
+                  -command { ::bddimages_recherche::command_icon_recherche $action_frame_type "offset" }
                pack $This.frame1.action.type.offset -in $This.frame1.action.type -side right -anchor w -padx 0
                DynamicHelp::add $This.frame1.action.type.offset -text $caption(bddimages_recherche,button_offset)
                #----- DARK
                button $This.frame1.action.type.dark -state active -relief "sunken" -image icon_yes_dark \
-                  -command { if {$action_label(dark) == 1} {
-                                set action_label(dark) 0
-                                $action_frame_type.dark configure -relief "raised" -image icon_no_dark
-                             } else {
-                                set action_label(dark) 1 
-                                $action_frame_type.dark configure -relief "sunken" -image icon_yes_dark
-                             }
-                             ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id [array get action_label]
-                           }
+                  -command { ::bddimages_recherche::command_icon_recherche $action_frame_type "dark" }
                pack $This.frame1.action.type.dark -in $This.frame1.action.type -side right -anchor w -padx 0
                DynamicHelp::add $This.frame1.action.type.dark -text $caption(bddimages_recherche,button_dark)
                #----- FLAT
                button $This.frame1.action.type.flat -state active -relief "sunken" -image icon_yes_flat \
-                  -command { if {$action_label(flat) == 1} {
-                                set action_label(flat) 0
-                                $action_frame_type.flat configure -relief "raised" -image icon_no_flat
-                             } else {
-                                set action_label(flat) 1 
-                                $action_frame_type.flat configure -relief "sunken" -image icon_yes_flat
-                             }
-                             ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id [array get action_label]
-                           }
+                  -command { ::bddimages_recherche::command_icon_recherche $action_frame_type "flat" }
                pack $This.frame1.action.type.flat -in $This.frame1.action.type -side right -anchor w -padx 0
                DynamicHelp::add $This.frame1.action.type.flat -text $caption(bddimages_recherche,button_flat)
                #----- IMG
                button $This.frame1.action.type.img -state active -relief "sunken" -image icon_yes_img \
-                  -command { if {$action_label(img) == 1} {
-                                set action_label(img) 0
-                                $action_frame_type.img configure -relief "raised" -image icon_no_img
-                             } else {
-                                set action_label(img) 1 
-                                $action_frame_type.img configure -relief "sunken" -image icon_yes_img
-                             }
-                             ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id [array get action_label]
-                           }
+                  -command { ::bddimages_recherche::command_icon_recherche $action_frame_type "img" }
                pack $This.frame1.action.type.img -in $This.frame1.action.type -side right -anchor w -padx 0
                DynamicHelp::add $This.frame1.action.type.img -text $caption(bddimages_recherche,button_img)
                
@@ -566,42 +623,18 @@ namespace eval bddimages_recherche {
                set action_frame_state [frame $This.frame1.action.state -borderwidth 1 -cursor arrow]
                pack $This.frame1.action.state -in $This.frame1.action -side right -expand 0 -fill x
                #----- UNKNOWN
-               button $This.frame1.action.state.unknown -state active -relief "sunken" -image icon_yes_unk \
-                  -command { if {$action_label(unkstate) == 1} {
-                                set action_label(unkstate) 0
-                                $action_frame_state.unknown configure -relief "raised" -image icon_no_unk
-                             } else {
-                                set action_label(unkstate) 1 
-                                $action_frame_state.unknown configure -relief "sunken" -image icon_yes_unk
-                             }
-                             ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id [array get action_label]
-                           }
-               pack $This.frame1.action.state.unknown -in $This.frame1.action.state -side right -anchor w -padx 0
-               DynamicHelp::add $This.frame1.action.state.unknown -text $caption(bddimages_recherche,button_unkstate)
+               button $This.frame1.action.state.unkstate -state active -relief "sunken" -image icon_yes_unkstate \
+                  -command { ::bddimages_recherche::command_icon_recherche $action_frame_state "unkstate" }
+               pack $This.frame1.action.state.unkstate -in $This.frame1.action.state -side right -anchor w -padx 0
+               DynamicHelp::add $This.frame1.action.state.unkstate -text $caption(bddimages_recherche,button_unkstate)
                #----- CORR
                button $This.frame1.action.state.corr -state active -relief "sunken" -image icon_yes_corr \
-                  -command { if {$action_label(corr) == 1} {
-                                set action_label(corr) 0
-                                $action_frame_state.corr configure -relief "raised" -image icon_no_corr
-                             } else {
-                                set action_label(corr) 1 
-                                $action_frame_state.corr configure -relief "sunken" -image icon_yes_corr
-                             }
-                             ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id [array get action_label]
-                           }
+                  -command { ::bddimages_recherche::command_icon_recherche $action_frame_state "corr" }
                pack $This.frame1.action.state.corr -in $This.frame1.action.state -side right -anchor w -padx 0
                DynamicHelp::add $This.frame1.action.state.corr -text $caption(bddimages_recherche,button_corr)
                #----- RAW
                button $This.frame1.action.state.raw -state active -relief "sunken" -image icon_yes_raw \
-                  -command { if {$action_label(raw) == 1} {
-                                set action_label(raw) 0
-                                $action_frame_state.raw configure -relief "raised" -image icon_no_raw
-                             } else {
-                                set action_label(raw) 1 
-                                $action_frame_state.raw configure -relief "sunken" -image icon_yes_raw
-                             }
-                             ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id [array get action_label]
-                           }
+                  -command { ::bddimages_recherche::command_icon_recherche $action_frame_state "raw" }
                pack $This.frame1.action.state.raw -in $This.frame1.action.state -side right -anchor w -padx 0
                DynamicHelp::add $This.frame1.action.state.raw -text $caption(bddimages_recherche,button_raw)
                
@@ -638,7 +671,6 @@ namespace eval bddimages_recherche {
         #--- Cree un frame pour l'affichage de la liste des images
         frame $This.frame6.liste -borderwidth 0
         pack $This.frame6.liste -expand yes -fill both -padx 3 -pady 6 -in $This.frame6
-
 
             #--- Cree un acsenseur vertical
             scrollbar $This.frame6.liste.vsb -orient vertical \
@@ -1134,44 +1166,42 @@ namespace eval bddimages_recherche {
 
    }
 
-#--------------------------------------------------
-#  cmdSortColumn { tbl col }
-#--------------------------------------------------
-#
-#    fonction  :
-#	Trie les lignes par ordre alphabetique de
-#	la colonne (est appele quand on clique sur
-#	le titre de la colonne)
-#
-#    procedure externe :
-#
-#    variables en entree :
-#        tbl =
-#        col =
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-
+   #--------------------------------------------------
+   #  cmdSortColumn { tbl col }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #	Trie les lignes par ordre alphabetique de
+   #	la colonne (est appele quand on clique sur
+   #	le titre de la colonne)
+   #
+   #    procedure externe :
+   #
+   #    variables en entree :
+   #        tbl =
+   #        col =
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
    proc cmdSortColumn { tbl col } {
       tablelist::sortByColumn $tbl $col
    }
 
-#--------------------------------------------------
-#  Affiche_Results
-#--------------------------------------------------
-#
-#    fonction  :
-#	Affiche la liste des objets de l'image
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-
+   #--------------------------------------------------
+   #  Affiche_Results
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #	Affiche la liste des objets de l'image
+   #
+   #    procedure externe :
+   #
+   #    variables en entree :
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
    proc ::bddimages_recherche::Affiche_Results { i {action {"" ""}} } {
       variable This
       global audace caption color
@@ -1233,14 +1263,14 @@ namespace eval bddimages_recherche {
 
      }
       
-     catch { $::bddimages_recherche::This.frame6.result.tbl delete 0 end
-              $::bddimages_recherche::This.frame6.result.tbl deletecolumns 0 end  }
+      catch { $::bddimages_recherche::This.frame6.result.tbl delete 0 end
+               $::bddimages_recherche::This.frame6.result.tbl deletecolumns 0 end  }
 
-     # Entete des colonnes
-     for { set i 0 } { $i < $nbcol} { incr i } {
-       set current_columns [lindex $list_of_columns $i]
-       $::bddimages_recherche::This.frame6.result.tbl insertcolumns end 0 [lindex $current_columns 1] left
-     }
+      # Entete des colonnes
+      for { set i 0 } { $i < $nbcol} { incr i } {
+         set current_columns [lindex $list_of_columns $i]
+         $::bddimages_recherche::This.frame6.result.tbl insertcolumns end 0 [lindex $current_columns 1] left
+      }
 
       #--- Classement des objets par ordre alphabetique sans tenir compte des majuscules/minuscules
       if { [ $::bddimages_recherche::This.frame6.result.tbl columncount ] != "0" } {
@@ -1311,6 +1341,10 @@ namespace eval bddimages_recherche {
                $::bddimages_recherche::This.frame6.result.tbl columnconfigure $j -align center
                # Recupere la valeur de la cellule i,j
                set val [$::bddimages_recherche::This.frame6.result.tbl getcells $i,$j]
+               # Si valeur cellule = pattern alors premiere lettre seulement
+               if {[regexp -nocase -- {(RAW|CORR|IMG|DARK|FLAT|OFFSET)} [ string trim $val ]]} {
+                  $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -text [ string range $val 0 0 ]
+               }
                # Si valeur cellule = '-' alors icone NO
                if {[string equal -nocase [ string trim $val ] "-"]} {
                   $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -text ""
@@ -1333,21 +1367,20 @@ namespace eval bddimages_recherche {
       }
    }
 
-#--------------------------------------------------
-#  Affiche_listes
-#--------------------------------------------------
-#
-#    fonction  :
-#	Affiche la liste des objets de l'image
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
-
+   #--------------------------------------------------
+   #  Affiche_listes
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #	Affiche la liste des objets de l'image
+   #
+   #    procedure externe :
+   #
+   #    variables en entree :
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
    proc ::bddimages_recherche::Affiche_listes { } {
 
       variable This
@@ -1380,8 +1413,7 @@ namespace eval bddimages_recherche {
         $::bddimages_recherche::This.frame6.liste.tbl insert end $name
 
       }
-      
-      
+
       #---
       if { [ $::bddimages_recherche::This.frame6.liste.tbl columncount ] != "0" } {
          #--- Les noms des objets sont en bleu
@@ -1400,7 +1432,6 @@ namespace eval bddimages_recherche {
          ::bddimages_recherche::cmdSortColumn $::bddimages_recherche::This.frame6.liste.tbl 0
       }
    }
-
 
 }
 
