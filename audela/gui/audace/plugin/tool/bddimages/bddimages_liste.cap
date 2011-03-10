@@ -10,8 +10,8 @@
 global caption langage
 
 # *************** Version anglaise ****************************
-set caption(bddimages_liste,main_title)     "BddImages - Navigation dans la base"
-set caption(bddimages_liste,title)          "Insertion dans la base de données"
+set caption(bddimages_liste,main_title)     "BddImages - Listes intelligentes"
+set caption(bddimages_liste,title)          "Gestion des listes intelligentes"
 
 set caption(bddimages_liste,label_nbimg)    "Nb d'images au total :"
 set caption(bddimages_liste,label_nbimgins) "Nb d'images insérées :"
