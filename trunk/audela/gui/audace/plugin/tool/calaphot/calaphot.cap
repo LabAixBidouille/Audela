@@ -620,7 +620,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set calaphot(texte,titre_menu)          "# Fotometria diferencial (Calaphot)"
+   set calaphot(texte,titre_menu)          "Curvas de luz (Calaphot)"
    set calaphot(texte,titre_saisie)        "Parâmetros do script de fotometria"
    set calaphot(texte,operateur)           "Nome do operador"
    set calaphot(texte,objet)               "Nome do objecto"
@@ -729,14 +729,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,pas_image_valide)    "Nenhuma imagem válida. Verifique o limite de SNR."
    set calaphot(texte,image)               "Imagem"
    set calaphot(texte,temps_pose_nul)      "Tempo de exposição nulo"
-   set calaphot(texte,mag_relative)        "# Relative Magnitude"
-   set calaphot(texte,err_modelisation)    "# Error in fitting"
-   set calaphot(texte,plus_jeune)          "#  is older than the previous one"
-   set calaphot(texte,implication_defoc)   "# The processing of very defocused images implies Aperture Photometry."
-   set calaphot(texte,defocalisation)      "# Very defocused images"
+   set calaphot(texte,mag_relative)        "Magnitude relativa"
+   set calaphot(texte,err_modelisation)    "Erro de modelização"
+   set calaphot(texte,plus_jeune)          " é mais antiga do que a anterior"
+   set calaphot(texte,implication_defoc)   "O tratamento de imagens muito desfucadas apenas é possível em fotometria de abertura."
+   set calaphot(texte,defocalisation)      "Imagens muito desfocadas"
    set calaphot(texte,defocalisation_0)    $calaphot(texte,non)
    set calaphot(texte,defocalisation_1)    $calaphot(texte,oui)
-   set calaphot(texte,aucune_valide)       "# Not any valid image"
+   set calaphot(texte,aucune_valide)       "Nenhuma imagem é válida"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
