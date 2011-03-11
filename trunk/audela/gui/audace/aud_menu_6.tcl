@@ -30,7 +30,8 @@ namespace eval ::audace {
    proc ::audace::afficheOutilF2 { } {
       global audace conf
 
-      foreach { namespace raccourci } $conf(afficheOutils) {
+      foreach { namespace affiche_raccourci } $conf(afficheOutils) {
+         set raccourci [ lindex $affiche_raccourci 1 ]
          if { $raccourci == "F2" } {
             #--- Lancement automatique de l'outil ayant le raccourci F2
             ::confVisu::selectTool $audace(visuNo) ::$namespace
