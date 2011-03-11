@@ -345,6 +345,8 @@ proc create_image_deflat {  } {
       set nbsflat   [llength $::bddimages_imgcorrection::sflat_img_list]
       set nbdeflat  [llength $::bddimages_imgcorrection::deflat_img_list]
 
+      buf$bufno load "$bddconf(dirtmp)/${type}0.fit"
+      ttscript2 "IMA/SERIES $bddconf(dirtmp) $fileout .  .  .fit $bddconf(dirtmp) $fileout . .fit STAT"
 
   }
 
