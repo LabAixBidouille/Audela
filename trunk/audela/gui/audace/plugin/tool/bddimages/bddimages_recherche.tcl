@@ -1070,7 +1070,8 @@ namespace eval bddimages_recherche {
    
       global audace
       global bddconf
-   
+      global action_label
+
       set l [$::bddimages_recherche::This.frame6.result.tbl curselection ]
       set l [lsort -decreasing -integer $l]
       set bddconf(define) ""
@@ -1079,6 +1080,9 @@ namespace eval bddimages_recherche {
       }
    
       ::bddimages_define::run $audace(base).bddimages_define
+
+      ::bddimages_recherche::get_list $::bddimages_recherche::current_list_id
+      ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id [array get action_label]
       
    }
 
@@ -1295,7 +1299,7 @@ namespace eval bddimages_recherche {
             set voir 1
             if {[string equal -nocase $bdi_state "RAW"]       && $zaction(raw) == 0}      { set voir 0 }
             if {[string equal -nocase $bdi_state "CORR"]      && $zaction(corr) == 0}     { set voir 0 }
-            if {[string equal -nocase $bdi_state "?"]   && $zaction(unkstate) == 0} { set voir 0 }
+            if {[string equal -nocase $bdi_state "?"]         && $zaction(unkstate) == 0} { set voir 0 }
             
             # Si oui, doit on afficher la ligne d'apres bdi_type ? 
             if {$voir} {
@@ -1303,7 +1307,7 @@ namespace eval bddimages_recherche {
                if {[string equal -nocase $bdi_type "FLAT"]    && $zaction(flat) == 0}     { set voir 0 }
                if {[string equal -nocase $bdi_type "DARK"]    && $zaction(dark) == 0}     { set voir 0 }
                if {[string equal -nocase $bdi_type "OFFSET"]  && $zaction(offset) == 0}   { set voir 0 }
-               if {[string equal -nocase $bdi_type "?"] && $zaction(unktype) == 0}  { set voir 0 }
+               if {[string equal -nocase $bdi_type "?"]       && $zaction(unktype) == 0}  { set voir 0 }
             }
 
             # Si oui
