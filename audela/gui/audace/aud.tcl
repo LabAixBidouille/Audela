@@ -124,7 +124,6 @@ namespace eval ::audace {
       #--- Chargement de la configuration
       loadSetup
 
-
       #--- Creation du repertoire de travail
       set catchError [ catch {
          if { ! [ info exists conf(rep_travail) ] } {
@@ -651,7 +650,7 @@ namespace eval ::audace {
 
    proc createDialog { } {
       variable This
-      global audace caption
+      global audace caption conf
 
       #---
       toplevel $This
@@ -681,6 +680,7 @@ namespace eval ::audace {
       #--- je recherche les fichiers tool/*/pkgIndex.tcl
       set filelist [glob -nocomplain -type f -join "$audace(rep_plugin)" tool * pkgIndex.tcl ]
       #--- Chargement des differents outils
+      set afficheOutils ""
       foreach pkgIndexFileName $filelist {
          if { [::audace::getPluginInfo $pkgIndexFileName pluginInfo] == 0 } {
             #--- je charge le plugin
@@ -694,6 +694,8 @@ namespace eval ::audace {
                      #--- j'execute la procedure initPlugin si elle existe
                      if { [info procs $pluginInfo(namespace)::initPlugin] != "" } {
                         $pluginInfo(namespace)::initPlugin $audace(base)
+                        #--- je cree la liste des namespaces de tous les outils
+                        lappend afficheOutils [ string trimleft $pluginInfo(namespace) "::" ] [ list 1 "" ]
                      }
                      set ::panneau(menu_name,[ string trimleft $pluginInfo(namespace) "::" ]) $pluginInfo(title)
                      ::console::affiche_prompt "#$caption(audace,tool) $pluginInfo(title) v$pluginInfo(version)\n"
@@ -703,6 +705,10 @@ namespace eval ::audace {
          } else {
             ::console::affiche_erreur "Error loading tool $pkgIndexFileName \n$::errorInfo\n\n"
          }
+      }
+      #--- Si la variable conf n'existe pas je la cree
+      if { ! [ info exists conf(afficheOutils) ] } {
+         set conf(afficheOutils) $afficheOutils
       }
       ::console::disp "\n"
       return $visuNo
