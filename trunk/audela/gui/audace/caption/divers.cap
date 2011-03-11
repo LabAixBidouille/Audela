@@ -157,7 +157,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(divers,copyjpeg)                       "Guardar como JPEG"
    set caption(divers,libgsl)                         "\nAs livrarias libgsl e libgslcblas não foram encontradas."
    set caption(divers,attention)                      "Aviso"
-   set caption(divers,err_list_of_number)             "# {%s} n'est pas une liste de nombres."
+   set caption(divers,err_list_of_number)             "{%s} não é uma lista de números."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
