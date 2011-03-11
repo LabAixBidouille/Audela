@@ -163,8 +163,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(qsi,camera)                    "QSI"
 
-   set caption(qsi,miroir_x)                  "# Espelho Horizontal"
-   set caption(qsi,miroir_y)                  "# Espelho Vertical"
+   set caption(qsi,miroir_x)                  "Inverter Cima/Baixo"
+   set caption(qsi,miroir_y)                  "Inverter Esquerda/Direita"
    set caption(qsi,refroidissement)           "Arrefecendo até Temperatura"
    set caption(qsi,refroidissement_1)         "°C"
    set caption(qsi,puissance_peltier_--)      "Nível de Potência do Peltier: --"
