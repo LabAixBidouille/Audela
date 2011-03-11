@@ -184,8 +184,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sbig,puissance_peltier)         "Nível de Potência do Peltier: "
    set caption(sbig,temp_ext)                  "CCD Temp. / Ext.:"
    set caption(sbig,deg_c)                     "°C"
-   set caption(sbig,miroir_x)                  "# Espelho Horizontal"
-   set caption(sbig,miroir_y)                  "# Espelho Vertical"
+   set caption(sbig,miroir_x)                  "Inverter Cima/Baixo"
+   set caption(sbig,miroir_y)                  "Inverter Esquerda/Direita"
    set caption(sbig,fonc_obtu)                 "Operação do obturador"
 
    set caption(sbig,port_camera)               "Porta SBIG"
