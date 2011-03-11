@@ -375,6 +375,7 @@ proc ::bddimagesAdmin::TestConnectBdd { } {
       lappend dellist "HIERARCH BDDIMAGES SOFFSET"
       lappend dellist "HIERARCH BDDIMAGES VERSION"
       lappend dellist "HIERARCH BDDIMAGES STATES"
+      lappend dellist "HIERARCH BDDIMAGES STATE"
       lappend dellist "HIERARCH BDDIMAGES TYPE"
       lappend dellist "HIERARCH BDDIMAGES WCS"
       lappend dellist "HIERARCH BDDIMAGES NAMECATA"
@@ -384,11 +385,32 @@ proc ::bddimagesAdmin::TestConnectBdd { } {
       lappend dellist "HIERARCH BDDIMAGES CATAASTROM"
       lappend dellist "HIERARCH BDDIMAGES PHOTOMETRY"
       lappend dellist "HIERARCH BDDIMAGES CATAPHOTOM"
+
+#      lappend dellist "BDDIMAGES RAW"
+#      lappend dellist "BDDIMAGES FLAT"
+#      lappend dellist "BDDIMAGES DARK"
+#      lappend dellist "BDDIMAGES OFFSET"
+#      lappend dellist "BDDIMAGES SFLAT"
+#      lappend dellist "BDDIMAGES SDARK"
+#      lappend dellist "BDDIMAGES SOFFSET"
+#      lappend dellist "BDDIMAGES VERSION"
+#      lappend dellist "BDDIMAGES STATES"
+#      lappend dellist "BDDIMAGES STATE"
+#      lappend dellist "BDDIMAGES TYPE"
+#      lappend dellist "BDDIMAGES WCS"
+#      lappend dellist "BDDIMAGES NAMECATA"
+#      lappend dellist "BDDIMAGES DATECATA"
+#      lappend dellist "BDDIMAGES ASTROID"
+#      lappend dellist "BDDIMAGES ASTROMETRY"
+#      lappend dellist "BDDIMAGES CATAASTROM"
+#      lappend dellist "BDDIMAGES PHOTOMETRY"
+#      lappend dellist "BDDIMAGES CATAPHOTOM"
       
       foreach del $dellist {
          set key [buf$bufno getkwd $del]
          if {[lindex $key 0] != "" } {
             buf$bufno delkwd $del
+            ::console::affiche_resultat "DEL HEADKEY : $del \n"
             }
       }       
 
