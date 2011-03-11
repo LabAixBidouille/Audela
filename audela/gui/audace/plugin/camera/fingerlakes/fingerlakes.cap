@@ -147,8 +147,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,temperature_CCD)           "Temperatura do CCD:"
    set caption(fingerlakes,deg_c)                     "°C"
    set caption(fingerlakes,power)                     "Nível de Potência do Peltier:"
-   set caption(fingerlakes,miroir_x)                  "# Espelho Horizontal"
-   set caption(fingerlakes,miroir_y)                  "# Espelho Vertical"
+   set caption(fingerlakes,miroir_x)                  "Inverter Cima/Baixo"
+   set caption(fingerlakes,miroir_y)                  "Inverter Esquerda/Direita"
    set caption(fingerlakes,fonc_obtu)                 "Operação do obturador"
    set caption(fingerlakes,readSpeed)                 "Velocidade de leitura"
 
