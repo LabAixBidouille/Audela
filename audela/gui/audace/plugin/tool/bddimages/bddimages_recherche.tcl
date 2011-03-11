@@ -621,7 +621,7 @@ namespace eval bddimages_recherche {
                label $This.frame1.action.type.label -text "TYPE: "
                pack $This.frame1.action.type.label -in $This.frame1.action.type -side right -anchor w -padx 5
 
-               #--- Boutons ACTIONS STATES
+               #--- Boutons ACTIONS STATE
                set action_frame_state [frame $This.frame1.action.state -borderwidth 1 -cursor arrow]
                pack $This.frame1.action.state -in $This.frame1.action -side right -expand 0 -fill x
                #----- UNKNOWN
@@ -1229,7 +1229,7 @@ namespace eval bddimages_recherche {
                                  [list "bin1"                 "BIN 1"] \
                                  [list "bin2"                 "BIN 2"] \
                                  [list "bddimages_version"    "V"] \
-                                 [list "bddimages_states"     "S"] \
+                                 [list "bddimages_state"      "S"] \
                                  [list "bddimages_type"       "T"] \
                                  [list "bddimages_wcs"        "W"] \
                                  [list "bddimages_namecata"   "NC"] \
@@ -1295,7 +1295,7 @@ namespace eval bddimages_recherche {
             set voir 1
             if {[string equal -nocase $bdi_state "RAW"]       && $zaction(raw) == 0}      { set voir 0 }
             if {[string equal -nocase $bdi_state "CORR"]      && $zaction(corr) == 0}     { set voir 0 }
-            if {[string equal -nocase $bdi_state "unknown"]   && $zaction(unkstate) == 0} { set voir 0 }
+            if {[string equal -nocase $bdi_state "?"]   && $zaction(unkstate) == 0} { set voir 0 }
             
             # Si oui, doit on afficher la ligne d'apres bdi_type ? 
             if {$voir} {
@@ -1303,7 +1303,7 @@ namespace eval bddimages_recherche {
                if {[string equal -nocase $bdi_type "FLAT"]    && $zaction(flat) == 0}     { set voir 0 }
                if {[string equal -nocase $bdi_type "DARK"]    && $zaction(dark) == 0}     { set voir 0 }
                if {[string equal -nocase $bdi_type "OFFSET"]  && $zaction(offset) == 0}   { set voir 0 }
-               if {[string equal -nocase $bdi_type "unknown"] && $zaction(unktype) == 0}  { set voir 0 }
+               if {[string equal -nocase $bdi_type "?"] && $zaction(unktype) == 0}  { set voir 0 }
             }
 
             # Si oui
@@ -1358,7 +1358,7 @@ namespace eval bddimages_recherche {
                   $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -image icon_yes
                }
                # Si valeur cellule = unknown alors icone NO
-               if {[string equal -nocase [ string trim $val ] "unknown"]} {
+               if {[string equal -nocase [ string trim $val ] "?"]} {
                   $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -text ""
                   $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -image icon_no
                }
