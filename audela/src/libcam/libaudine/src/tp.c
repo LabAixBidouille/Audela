@@ -93,9 +93,8 @@ int cmdAudineAcqNormal(ClientData clientData, Tcl_Interp * interp, int argc, cha
    char s[256];
    int i;
    int nb_vidages = 1;
-   int naxis1, naxis2, t;
+   int naxis1, naxis2;
    unsigned short *p;
-   float *pp;
 
    cam = (struct camprop *) clientData;
 
@@ -148,32 +147,35 @@ int cmdAudineAcqNormal(ClientData clientData, Tcl_Interp * interp, int argc, cha
    /* === Copie des valeurs des pixels a partir   === */
    /* === du pointeur local vers le pointeur Tcl  === */
    /* =============================================== */
-   /* Allocation memoire du buffer image (pour l'interface) */
-   sprintf(s, "buf%d format %d %d", cam->bufno, naxis1, naxis2);
+   strcpy(cam->pixels_classe, "CLASS_GRAY");
+   strcpy(cam->pixels_format, "FORMAT_USHORT");
+   strcpy(cam->pixels_compression, "COMPRESS_NONE");
+   strcpy(cam->msg,"");
+	/* Efface le buffer image Tcl */
+   sprintf(s, "buf%d clear", cam->bufno);
+	if (Tcl_Eval(interp, s) == TCL_ERROR) {
+		/* Cree le buffer image Tcl s'il nexiste pas */
+		sprintf(s, "buf::create %d", cam->bufno);
+		Tcl_Eval(interp, s);
+	}
+	/* Remplit le buffer image Tcl */
+	sprintf(s, "buf%d setpixels %s %d %d %s %s %ld -keep_keywords",
+      cam->bufno, cam->pixels_classe, cam->w, cam->h, cam->pixels_format, 
+		cam->pixels_compression , (long)(void *) p);
    Tcl_Eval(interp, s);
-   /* Recupere l'adresse du pointeur buffer */
-   sprintf(s, "buf%d pointer", cam->bufno);
-   Tcl_Eval(interp, s);
-   pp = (float *) atoi(interp->result);
-   /* Transfere les données du pointeur *p vers le pointeur *pp */
-   t = naxis1 * naxis2;
-   while (--t >= 0) {
-      *(pp + t) = (float) *((unsigned short *) (p + t));
-   }
    /* Liberation du pointeur local *p */
    free(p);
 
    /* =============================================== */
    /* === Complete le buffer Tcl                  === */
    /* =============================================== */
-   /* Assigne le type de données qui seront enregistrées sur le disque */
-   sprintf(s, "buf%d bitpix ushort", cam->bufno);
-   Tcl_Eval(interp, s);
-   /* Mots clés pour l'entete du fichier image */
-   sprintf(s, "buf%d setkwd {NAXIS1 %d int \"nombre de pixels sur X\" \"\"}", cam->bufno, naxis1);
-   Tcl_Eval(interp, s);
-   sprintf(s, "buf%d setkwd {NAXIS2 %d int \"nombre de pixels sur Y\" \"\"}", cam->bufno, naxis2);
-   Tcl_Eval(interp, s);
+	/* Mots clés pour l'entete du fichier image */
+	sprintf(s, "buf%d setkwd {NAXIS  %d int \"nombre d'axes\" \"\"}", cam->bufno, 2);
+	Tcl_Eval(interp, s);
+	sprintf(s, "buf%d setkwd {NAXIS1 %d int \"nombre de pixels sur X\" \"\"}", cam->bufno, naxis1);
+	Tcl_Eval(interp, s);
+	sprintf(s, "buf%d setkwd {NAXIS2 %d int \"nombre de pixels sur Y\" \"\"}", cam->bufno, naxis2);
+	Tcl_Eval(interp, s);
 
    return TCL_OK;
 }
