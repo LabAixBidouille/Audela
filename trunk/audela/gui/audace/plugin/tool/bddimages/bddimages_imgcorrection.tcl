@@ -246,7 +246,7 @@ proc create_image_offset { k type inforesult } {
       ttscript2 "IMA/SERIES $bddconf(dirtmp) $fileout .  .  .fit $bddconf(dirtmp) $fileout . .fit STAT"
 
       buf$bufno load "$bddconf(dirtmp)/$fileout.fit"
-      buf$bufno setkwd [list "HIERARCH BDDIMAGES STATES" "CORR" "string" "RAW | CORR | CATA | Unknown" ""]
+      buf$bufno setkwd [list "BDDIMAGES STATE" "CORR" "string" "RAW | CORR | CATA | ?" ""]
       buf$bufno setkwd [list "DATE-OBS" "$dateobs" "string" "DATEISO" ""]
       buf$bufno save "$bddconf(dirtmp)/$fileout.fit"
       buf$bufno clear
@@ -254,6 +254,10 @@ proc create_image_offset { k type inforesult } {
       insertion_solo $bddconf(dirtmp)/$fileout.fit
 
   }
+
+
+
+
 
 proc create_image_dark { k type inforesult } {
 
@@ -270,7 +274,7 @@ proc create_image_dark { k type inforesult } {
       ttscript2 "IMA/SERIES $bddconf(dirtmp) $fileout .  .  .fit $bddconf(dirtmp) $fileout . .fit STAT"
 
       buf$bufno load "$bddconf(dirtmp)/$fileout.fit"
-      buf$bufno setkwd [list "HIERARCH BDDIMAGES STATES" "CORR" "string" "RAW | CORR | CATA | Unknown" ""]
+      buf$bufno setkwd [list "BDDIMAGES STATE" "CORR" "string" "RAW | CORR | CATA | ?" ""]
       buf$bufno setkwd [list "DATE-OBS" "$dateobs" "string" "DATEISO" ""]
       buf$bufno save "$bddconf(dirtmp)/$fileout.fit"
       buf$bufno clear
@@ -320,7 +324,7 @@ proc create_image_flat { k type inforesult } {
    ttscript2 "IMA/SERIES $bddconf(dirtmp) $fileout . . .fit $bddconf(dirtmp) $fileout . .fit STAT"
 
       buf$bufno load "$bddconf(dirtmp)/$fileout.fit"
-      buf$bufno setkwd [list "HIERARCH BDDIMAGES STATES" "CORR" "string" "RAW | CORR | CATA | Unknown" ""]
+      buf$bufno setkwd [list "BDDIMAGES STATE" "CORR" "string" "RAW | CORR | CATA | ?" ""]
       buf$bufno setkwd [list "DATE-OBS" "$dateobs" "string" "DATEISO" ""]
       buf$bufno save "$bddconf(dirtmp)/$fileout.fit"
       buf$bufno clear
@@ -331,11 +335,16 @@ proc create_image_flat { k type inforesult } {
 
 
 
-proc create_image_deflat { k type } {
+proc create_image_deflat {  } {
 
    global bddconf
+      
+      set type "deflat"
+      set nbsoffset [llength $::bddimages_imgcorrection::soffset_img_list]
+      set nbsdark   [llength $::bddimages_imgcorrection::sdark_img_list]
+      set nbsflat   [llength $::bddimages_imgcorrection::sflat_img_list]
+      set nbdeflat  [llength $::bddimages_imgcorrection::deflat_img_list]
 
-      incr k -1
 
   }
 
@@ -355,7 +364,7 @@ proc create_image { type inforesult} {
          ::bddimages_imgcorrection::create_image_flat [llength $::bddimages_imgcorrection::flat_img_list] $type $inforesult
       }
       if {$type=="deflat"} {
-         ::bddimages_imgcorrection::create_image_deflat [llength $::bddimages_imgcorrection::deflat_img_list] $type
+         ::bddimages_imgcorrection::create_image_deflat
       }
       
 
@@ -396,7 +405,7 @@ proc copy_to_tmp { type img_list } {
       foreach fichier $fichiers {
          set errnum [catch {file copy -force -- $fichier $bddconf(dirtmp)/${type}${k}.fit} msg]
          if {$errnum==0} {
-            ::console::affiche_resultat "cp image : $fichier\n"
+            #::console::affiche_resultat "cp image : $fichier\n"
             incr k
          } else {
             ::console::affiche_erreur "Erreur copy_to_tmp : $fichier\n"
@@ -404,6 +413,7 @@ proc copy_to_tmp { type img_list } {
             ::console::affiche_erreur "msg    : $msg\n"
          }
       }
+      ::console::affiche_resultat "Copie de $k $type\n"
       incr k -1
 
 
@@ -539,30 +549,30 @@ proc correction { type inforesult} {
 
       if {$type=="OFFSET"} {
          set type "OFFSET"
-         set states "RAW"
+         set state "RAW"
          }
       if {$type=="SOFFSET"} {
          set type "OFFSET"
-         set states "CORR"
+         set state "CORR"
          }
       if {$type=="DARK"} {
          set type "DARK"
-         set states "RAW"
+         set state "RAW"
          }
       if {$type=="SDARK"} {
          set type "DARK"
-         set states "CORR"
+         set state "CORR"
          }
       if {$type=="FLAT"} {
          set type "FLAT"
-         set states "RAW"
+         set state "RAW"
          }
       if {$type=="SFLAT"} {
          set type "FLAT"
-         set states "CORR"
+         set state "CORR"
          }
       if {$type=="IMG"} {
-         set states "RAW"
+         set state "RAW"
          }
 
       set result_list ""
@@ -578,8 +588,8 @@ proc correction { type inforesult} {
                   set keep "no"
                }
             }
-            if {$key=="bddimages_states"} {
-               if {[string trim $val]!=$states} {
+            if {$key=="bddimages_state"} {
+               if {[string trim $val]!=$state} {
                   #::console::affiche_resultat "hno $key -> -${val}-\n"
                   set keep "no"
                }
@@ -590,10 +600,10 @@ proc correction { type inforesult} {
             }
          }
          if {$keep=="ok"} {
-            #::console::affiche_resultat "ACCEPTED -${filename}- $states $type\n"
+            #::console::affiche_resultat "ACCEPTED -${filename}- $state $type\n"
             lappend result_list $img
          } else {
-            #::console::affiche_resultat "REJECTED -${filename}- $states $type\n"
+            #::console::affiche_resultat "REJECTED -${filename}- $state $type\n"
          }
       }
       return $result_list
