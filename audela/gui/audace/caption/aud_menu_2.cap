@@ -340,7 +340,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilCouleur,pas_couleur)              "Das ist kein Farbbild."
    set caption(seuilCouleur,attention)                "Achtung"
    set caption(seuilCouleur,header_noimage)           "Es ist jetzt kein Bild im Speicher."
-   set caption(seuilCouleur,en_cours)                 "Laufend… Bitte warten… "
+   set caption(seuilCouleur,en_cours)                 "Laufend... Bitte warten..."
    set caption(seuilCouleur,fin_traitement)           "Ende der Verarbeitung."
 
 # *************** Version portugaise **************************
@@ -363,8 +363,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,balance_rvb)               "Equilíbrio RGB"
    set caption(audace,menu,zoom)                      "Zoom"
    set caption(audace,menu,plein_ecran)               "Ecrã inteiro"
-   set caption(audace,menu,display_miroir_x)          "# Espelho vertical"
-   set caption(audace,menu,display_miroir_y)          "# Espelho horizontal"
+   set caption(audace,menu,display_miroir_x)          "Inverter Esquerda/Direita"
+   set caption(audace,menu,display_miroir_y)          "Inverter Cima/Baixo"
    set caption(audace,menu,window)                    "Janela"
    set caption(audace,menu,vision_nocturne)           "Visão nocturna"
 
@@ -407,7 +407,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilCouleur,pas_couleur)              "Esta imagem não é a cores."
    set caption(seuilCouleur,attention)                "Aviso"
    set caption(seuilCouleur,header_noimage)           "Não existe imagem carregada em memória."
-   set caption(seuilCouleur,en_cours)                 "# En cours... Patientez..."
+   set caption(seuilCouleur,en_cours)                 "Em curso... Por favor aguarde..."
    set caption(seuilCouleur,fin_traitement)           "Fim do tratamento."
 
 # *************** Version danoise *****************************
