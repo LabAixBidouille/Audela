@@ -466,7 +466,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,position_mpc)                       "Formato MPC:"
    set caption(confgene,position_mpcstation)                "Formato MPCSTATION:"
    set caption(confgene,position_non_station_uai)           "Sítio não registado na IAU"
-   set caption(confgene,fichier_uai_msg)                    "# Une connexion à Internet est nécessaire pour cette mise à jour."
+   set caption(confgene,fichier_uai_msg)                    "É necessária uma ligação à Internet para esta actualização."
    set caption(confgene,fichier_uai_erreur1)                "O número do sítio IAU deve"
    set caption(confgene,fichier_uai_erreur2)                "ter, pelo menos, 3 dígitos"
    set caption(confgene,fichier_uai_erreur3)                "(ex.:  000, 008, 013, 104, A05)."
