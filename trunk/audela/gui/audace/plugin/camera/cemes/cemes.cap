@@ -136,8 +136,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cemes,refroidissement_1)         "°C"
    set caption(cemes,temperature_CCD)           "Temperatura do CCD:"
    set caption(cemes,deg_c)                     "°C"
-   set caption(cemes,miroir_x)                  "# Espelho Horizontal"
-   set caption(cemes,miroir_y)                  "# Espelho Vertical"
+   set caption(cemes,miroir_x)                  "Inverter Cima/Baixo"
+   set caption(cemes,miroir_y)                  "Inverter Esquerda/Direita"
    set caption(cemes,fonc_obtu)                 "Operação do obturador"
 
    set caption(cemes,port_camera)               "Porta CEMES"
