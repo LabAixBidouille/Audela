@@ -134,11 +134,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,ligne)                     "Una linea"
    set caption(audace,menu,bin_y)                     "Somma delle linee"
    set caption(audace,menu,med_y)                     "Mediana delle linee"
-   set caption(audace,menu,sort_y)                    "Percentile sorta delle linee"
+   set caption(audace,menu,sort_y)                    "Ordinamento percentile delle linee"
    set caption(audace,menu,colonne)                   "Una colonna"
    set caption(audace,menu,bin_x)                     "Somma delle colonne"
    set caption(audace,menu,med_x)                     "Mediana delle colonne"
-   set caption(audace,menu,sort_x)                    "Percentile sorta delle colonne"
+   set caption(audace,menu,sort_x)                    "Ordinamento percentile delle colonne"
    set caption(audace,menu,matrice)                   "Una zona"
 
    set caption(audace,histo_titre)                    "Istogramma dell'immagine"
