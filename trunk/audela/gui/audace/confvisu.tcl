@@ -75,13 +75,6 @@ namespace eval ::confVisu {
       if { ! [ info exists conf(fonction_transfert,visu$visuNo,mode) ] } {
          set conf(fonction_transfert,visu$visuNo,mode) "1"
       }
-      if { ! [ info exists conf(afficheOutils) ] } {
-         set conf(afficheOutils) ""
-         foreach m [array names panneau menu_name,*] {
-            set namespace [ lindex [ split $m "," ] 1 ]
-            lappend conf(afficheOutils) $namespace ""
-         }
-      }
 
       if { $base != "" } {
          set private($visuNo,This) $base
@@ -3135,19 +3128,24 @@ namespace eval ::confVisu {
                set namespace [lindex $m 2]
                #---
                if { [ info exist affiche($namespace) ] } {
-                  Menu_Command $visuNo $caption(audace,menu,$menuName) $panneau(menu_name,$namespace) "::confVisu::selectTool $visuNo ::$namespace"
-                  if { $affiche($namespace) != "" } {
-                     if { [string range $affiche($namespace) 0 3] == "Alt+" } {
-                        set event "Alt-[string tolower [string range $affiche($namespace) 4 4]]"
-                     } elseif { [string range $affiche($namespace) 0 4] == "Ctrl+" } {
-                        set event "Control-[string tolower [string range $affiche($namespace) 5 5]]"
-                     } else {
-                        set event $affiche($namespace)
+                  if { [ lindex $affiche($namespace) 0 ] == 1 } {
+                     Menu_Command $visuNo $caption(audace,menu,$menuName) $panneau(menu_name,$namespace) "::confVisu::selectTool $visuNo ::$namespace"
+                     if { [ lindex $affiche($namespace) 1 ] != "" } {
+                        if { [string range [ lindex $affiche($namespace) 1 ] 0 3] == "Alt+" } {
+                           set event "Alt-[string tolower [string range [ lindex $affiche($namespace) 1 ] 4 4]]"
+                        } elseif { [string range [ lindex $affiche($namespace) 1 ] 0 4] == "Ctrl+" } {
+                           set event "Control-[string tolower [string range [ lindex $affiche($namespace) 1 ] 5 5]]"
+                        } else {
+                           set event [ lindex $affiche($namespace) 1 ]
+                        }
+                        #---
+                        Menu_Bind $visuNo $audace(base) <$event> $caption(audace,menu,$menuName) $panneau(menu_name,$namespace) [ lindex $affiche($namespace) 1 ]
+                           bind $audace(Console) <$event> "focus $audace(base) ; ::confVisu::selectTool $visuNo ::$namespace"
                      }
-                     #---
-                     Menu_Bind $visuNo $audace(base) <$event> $caption(audace,menu,$menuName) $panneau(menu_name,$namespace) $affiche($namespace)
-                        bind $audace(Console) <$event> "focus $audace(base) ; ::confVisu::selectTool $visuNo ::$namespace"
                   }
+               } else {
+                  Menu_Command $visuNo $caption(audace,menu,$menuName) $panneau(menu_name,$namespace) "::confVisu::selectTool $visuNo ::$namespace"
+                  lappend conf(afficheOutils) $namespace [ list 1 "" ]
                }
             }
 
@@ -3178,6 +3176,12 @@ namespace eval ::confVisu {
                set namespace [lindex $m 2]
                #---
                if { [ info exist affiche($namespace) ] } {
+                  if { [ lindex $affiche($namespace) 0 ] == 1 } {
+                     if { [ ::$namespace\::getPluginProperty multivisu ] == "1" } {
+                        Menu_Command $visuNo $caption(audace,menu,$menuName) $panneau(menu_name,$namespace) "::confVisu::selectTool $visuNo ::$namespace"
+                     }
+                  }
+               } else {
                   if { [ ::$namespace\::getPluginProperty multivisu ] == "1" } {
                      Menu_Command $visuNo $caption(audace,menu,$menuName) $panneau(menu_name,$namespace) "::confVisu::selectTool $visuNo ::$namespace"
                   }
@@ -3459,7 +3463,7 @@ namespace eval ::confVisu {
          #--- Je selectionne les plugins multivisu
          if { [ ::$pluginName\::getPluginProperty multivisu ] == "1" } {
             #--- Je liste les plugins a afficher
-            foreach { namespace raccourci } $conf(afficheOutils) {
+            foreach { namespace affiche_raccourci } $conf(afficheOutils) {
                #--- Je verifie que le plugin multivisu est dans la liste des plugins a afficher
                if { $namespace == $pluginName } {
                   #--- Affichage des plugins multivisu de type tool du menu deroulant Affichage
