@@ -1338,7 +1338,7 @@ namespace eval bddimages_recherche {
             #--- Coloration bleu du nom des images
             $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,1 -fg $color(blue)
             #--- Affichage d'une icone pour les colonnes bddimages_*
-            for { set j 9 } { $j < 11 } { incr j } {
+            for { set j 9 } { $j < 10 } { incr j } {
                # Centrage colonne
                $::bddimages_recherche::This.frame6.result.tbl columnconfigure $j -align center
                # Recupere la valeur de la cellule i,j
