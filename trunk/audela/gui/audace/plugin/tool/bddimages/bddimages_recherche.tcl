@@ -1280,7 +1280,7 @@ namespace eval bddimages_recherche {
       }
 
       #--- Extraction du resultat: on affiche les lignes qui repondent aux criteres
-      #--- de choix de l'utilisateur
+      #--- de choix de l'utilisateur via les boutons STATE et TYPE
       foreach line $affich_table {
 
          # Dans le cas d'une action non nulle (i.e. on a clique sur un des boutons TYPE ou STATE
@@ -1328,42 +1328,42 @@ namespace eval bddimages_recherche {
 
       #--- Configuration de la liste: affichage des icones en fonction du cas de figure
       if { [ $::bddimages_recherche::This.frame6.result.tbl columncount ] != "0" } {
-         #--- Creation des icones 
-         image create photo icon_yes
-         icon_yes configure -file [file join $audace(rep_plugin) tool bddimages icons ok.gif]
-         image create photo icon_no
-         icon_no configure -file [file join $audace(rep_plugin) tool bddimages icons no.gif]
-         #--- Analyse des objets...
-         for { set i 0 } { $i < $nbobj } { incr i } {
-            #--- Coloration bleu du nom des images
-            $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,1 -fg $color(blue)
-            #--- Affichage d'une icone pour les colonnes bddimages_*
-            for { set j 9 } { $j < 20 } { incr j } {
-               # Centrage colonne
-               $::bddimages_recherche::This.frame6.result.tbl columnconfigure $j -align center
-               # Recupere la valeur de la cellule i,j
-               set val [$::bddimages_recherche::This.frame6.result.tbl getcells $i,$j]
-               # Si valeur cellule = pattern alors premiere lettre seulement
-               if {[regexp -nocase -- {(RAW|CORR|IMG|DARK|FLAT|OFFSET)} [ string trim $val ]]} {
-                  $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -text [ string range $val 0 0 ]
-               }
-               # Si valeur cellule = '-' alors icone NO
-               if {[string equal -nocase [ string trim $val ] "-"]} {
-                  $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -text ""
-                  $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -image icon_no
-               }
-               # Si valeur cellule = 1 alors icone YES
-               if {[string equal -nocase [ string trim $val ] "1"]} {
-                  $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -text ""
-                  $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -image icon_yes
-               }
-               # Si valeur cellule = unknown alors icone NO
-               if {[string equal -nocase [ string trim $val ] "unknown"]} {
-                  $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -text ""
-                  $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -image icon_no
-               }
-            }
-         }
+#         #--- Creation des icones 
+#         image create photo icon_yes
+#         icon_yes configure -file [file join $audace(rep_plugin) tool bddimages icons ok.gif]
+#         image create photo icon_no
+#         icon_no configure -file [file join $audace(rep_plugin) tool bddimages icons no.gif]
+#         #--- Analyse des objets...
+#         for { set i 0 } { $i < $nbobj } { incr i } {
+#            #--- Coloration bleu du nom des images
+#            $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,1 -fg $color(blue)
+#            #--- Affichage d'une icone pour les colonnes bddimages_*
+#            for { set j 9 } { $j < 20 } { incr j } {
+#               # Centrage colonne
+#               $::bddimages_recherche::This.frame6.result.tbl columnconfigure $j -align center
+#               # Recupere la valeur de la cellule i,j
+#               set val [$::bddimages_recherche::This.frame6.result.tbl getcells $i,$j]
+#               # Si valeur cellule = pattern alors premiere lettre seulement
+#               if {[regexp -nocase -- {(RAW|CORR|IMG|DARK|FLAT|OFFSET)} [ string trim $val ]]} {
+#                  $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -text [ string range $val 0 0 ]
+#               }
+#               # Si valeur cellule = '-' alors icone NO
+#               if {[string equal -nocase [ string trim $val ] "-"]} {
+#                  $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -text ""
+#                  $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -image icon_no
+#               }
+#               # Si valeur cellule = 1 alors icone YES
+#               if {[string equal -nocase [ string trim $val ] "1"]} {
+#                  $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -text ""
+#                  $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -image icon_yes
+#               }
+#               # Si valeur cellule = unknown alors icone NO
+#               if {[string equal -nocase [ string trim $val ] "unknown"]} {
+#                  $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -text ""
+#                  $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -image icon_no
+#               }
+#            }
+#         }
          #--- Trie par ordre alphabetique de la premiere colonne
          ::bddimages_recherche::cmdSortColumn $::bddimages_recherche::This.frame6.result.tbl 0
       }
