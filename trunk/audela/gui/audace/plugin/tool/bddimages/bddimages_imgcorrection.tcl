@@ -193,6 +193,7 @@ namespace eval bddimages_imgcorrection {
       set tel ""
       set bin1 ""
       set bin2 ""
+      set filtre ""
       set commundatejjmoy 0
       set cpt 0
       foreach img $img_list {
@@ -202,6 +203,7 @@ namespace eval bddimages_imgcorrection {
             if {$key=="telescop"} {set tel $val}
             if {$key=="bin1"} {set bin1 $val}
             if {$key=="bin2"} {set bin2 $val}
+            if {$key=="filter"} {set filtre [string trim $val]}
             if {$key=="commundatejj"} {set commundatejjmoy [expr $commundatejjmoy + $val]}
          }
       incr cpt
@@ -216,7 +218,11 @@ namespace eval bddimages_imgcorrection {
 
       set commundatejjmoy [clock format [clock scan $commundatejjmoy] -format %Y%m%d.%H%M%S]
  
-      set filename "$tel.$commundatejjmoy.$ms.bin${bin1}x${bin2}.$type"
+      if {$type=="flat"} {
+         set filename "$tel.$commundatejjmoy.$ms.bin${bin1}x${bin2}.$type.$filtre"
+      } else {
+         set filename "$tel.$commundatejjmoy.$ms.bin${bin1}x${bin2}.$type"
+      }
 
       return [list $filename $dateobs $bin1 $bin2]
    }
@@ -271,6 +277,9 @@ proc create_image_dark { k type inforesult } {
 
       insertion_solo $bddconf(dirtmp)/$fileout.fit
   }
+
+
+
 
 proc create_image_flat { k type inforesult } {
 
@@ -365,7 +374,7 @@ proc delete_to_tmp { type img_list } {
 
       set nb  [llength $img_list]
       for {set i 0} {$i<$nb} {incr i} {
-         file delete -force -- [file join $bddconf(dirtmp) ${type}${i}.fit]
+         #file delete -force -- [file join $bddconf(dirtmp) ${type}${i}.fit]
       }
 
       }
@@ -413,6 +422,11 @@ proc copy_to_tmp { type img_list } {
 
 proc correction { type inforesult} {
 
+      global action_label audace bddconf
+
+      set audace(rep_images) $bddconf(dirtmp)
+      cd $bddconf(dirtmp)
+
       ::bddimages_imgcorrection::copy_to_tmp "offset"  $::bddimages_imgcorrection::offset_img_list
       ::bddimages_imgcorrection::copy_to_tmp "soffset" $::bddimages_imgcorrection::soffset_img_list 
       ::bddimages_imgcorrection::copy_to_tmp "dark"    $::bddimages_imgcorrection::dark_img_list    
@@ -426,8 +440,8 @@ proc correction { type inforesult} {
          ::console::affiche_erreur "Erreur sur la creation de $type\n"
          ::console::affiche_erreur "errnum : $errnum\n"
          ::console::affiche_erreur "msg    : $msg\n"
-      }
-
+      } else {
+      
       ::bddimages_imgcorrection::delete_to_tmp "offset"  $::bddimages_imgcorrection::offset_img_list
       ::bddimages_imgcorrection::delete_to_tmp "soffset" $::bddimages_imgcorrection::soffset_img_list 
       ::bddimages_imgcorrection::delete_to_tmp "dark"    $::bddimages_imgcorrection::dark_img_list    
@@ -435,9 +449,13 @@ proc correction { type inforesult} {
       ::bddimages_imgcorrection::delete_to_tmp "flat"    $::bddimages_imgcorrection::flat_img_list    
       ::bddimages_imgcorrection::delete_to_tmp "sflat"   $::bddimages_imgcorrection::sflat_img_list   
       ::bddimages_imgcorrection::delete_to_tmp "img"     $::bddimages_imgcorrection::deflat_img_list   
+      file delete -force -- [file join $bddconf(dirtmp) tt.log]
 
+}
+      
 
-
+      ::bddimages_recherche::get_list $::bddimages_recherche::current_list_id
+      ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id [array get action_label]
 
 
       return 0

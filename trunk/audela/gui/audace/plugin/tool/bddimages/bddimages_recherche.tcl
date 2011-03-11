@@ -25,6 +25,8 @@ namespace eval bddimages_recherche {
    global audace
    global bddconf
 
+   variable ::bddimages_recherche::current_list_id
+
 #--------------------------------------------------
 # run { this }
 #--------------------------------------------------
