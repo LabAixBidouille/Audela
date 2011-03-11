@@ -1816,7 +1816,9 @@ namespace eval ::confChoixOutil {
       foreach m [array names panneau menu_name,*] {
          set namespace [ lindex [ split $m "," ] 1 ]
          if { $private(affiche,$namespace) == "1" } {
-            lappend conf(afficheOutils) $namespace $private(raccourci,$namespace)
+            lappend conf(afficheOutils) $namespace [ list 1 $private(raccourci,$namespace) ]
+         } else {
+            lappend conf(afficheOutils) $namespace [ list 0 $private(raccourci,$namespace) ]
          }
       }
       #--- Rafraichissement des menus contenant des outils
@@ -1907,10 +1909,10 @@ namespace eval ::confChoixOutil {
          set namespace [lindex [ split $m "," ] 1]
          set num [expr $num + 1]
          if { [ info exist affiche($namespace) ] } {
-            set private(affiche,$namespace)   "1"
-            set private(raccourci,$namespace) $affiche($namespace)
+            set private(affiche,$namespace)   [ lindex $affiche($namespace) 0 ]
+            set private(raccourci,$namespace) [ lindex $affiche($namespace) 1 ]
          } else {
-            set private(affiche,$namespace)   "0"
+            set private(affiche,$namespace)   1
             set private(raccourci,$namespace) ""
          }
          #--- Affichage des noms des plugins a gauche, puis a droite, ...
