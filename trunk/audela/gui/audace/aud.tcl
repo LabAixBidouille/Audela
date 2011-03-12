@@ -680,7 +680,7 @@ namespace eval ::audace {
       #--- je recherche les fichiers tool/*/pkgIndex.tcl
       set filelist [glob -nocomplain -type f -join "$audace(rep_plugin)" tool * pkgIndex.tcl ]
       #--- Chargement des differents outils
-      set afficheOutils ""
+      set outilsActifsInactifs ""
       foreach pkgIndexFileName $filelist {
          if { [::audace::getPluginInfo $pkgIndexFileName pluginInfo] == 0 } {
             #--- je charge le plugin
@@ -694,8 +694,8 @@ namespace eval ::audace {
                      #--- j'execute la procedure initPlugin si elle existe
                      if { [info procs $pluginInfo(namespace)::initPlugin] != "" } {
                         $pluginInfo(namespace)::initPlugin $audace(base)
-                        #--- je cree la liste des namespaces de tous les outils
-                        lappend afficheOutils [ string trimleft $pluginInfo(namespace) "::" ] [ list 1 "" ]
+                        #--- je cree la liste des namespaces de tous les outils actifs et inactifs
+                        lappend outilsActifsInactifs [ string trimleft $pluginInfo(namespace) "::" ] [ list 1 "" ]
                      }
                      set ::panneau(menu_name,[ string trimleft $pluginInfo(namespace) "::" ]) $pluginInfo(title)
                      ::console::affiche_prompt "#$caption(audace,tool) $pluginInfo(title) v$pluginInfo(version)\n"
@@ -706,9 +706,13 @@ namespace eval ::audace {
             ::console::affiche_erreur "Error loading tool $pkgIndexFileName \n$::errorInfo\n\n"
          }
       }
-      #--- Si la variable conf n'existe pas je la cree
-      if { ! [ info exists conf(afficheOutils) ] } {
-         set conf(afficheOutils) $afficheOutils
+      #--- Nettoyage de l'ancienne variable caracterisant les outils actifs et inactifs
+      if { [ info exists conf(afficheOutils) ] } {
+         unset conf(afficheOutils)
+      }
+      #--- Si la variable conf caracterisant les outils actifs et inactifs n'existe pas je la cree
+      if { ! [ info exists conf(outilsActifsInactifs) ] } {
+         set conf(outilsActifsInactifs) $outilsActifsInactifs
       }
       ::console::disp "\n"
       return $visuNo
