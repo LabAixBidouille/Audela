@@ -708,7 +708,6 @@ namespace eval bddimages_liste {
          lappend tableresult $imgresult
       }
 
-
       return $tableresult
    
    }

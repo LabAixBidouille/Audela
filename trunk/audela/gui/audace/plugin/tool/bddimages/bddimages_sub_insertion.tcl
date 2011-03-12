@@ -977,7 +977,7 @@ proc bddimages_image_identification { idbddimg } {
       bddimages_sauve_fich "bddimages_image_delete: NUM : <$err>"
       bddimages_sauve_fich "bddimages_image_delete: MSG : <$msg>"
       return 401
-      }
+   }
 
    set idheader -1
    set fileimg -1
@@ -986,7 +986,7 @@ proc bddimages_image_identification { idbddimg } {
       set filename [lindex $line 1]
       set idheader [lindex $line 2]
       set fileimg [ file join $bddconf(dirbase) $dirfilename $filename]
-      }
+   }
 
 
    set idbddcata -1
@@ -1014,11 +1014,11 @@ proc bddimages_image_identification { idbddimg } {
          set filename [lindex $line 1]
          set idbddcata [lindex $line 2]
          set filecata [ file join $bddconf(dirbase) $dirfilename $filename]
-         }
       }
+   }
 
    return [list $idbddimg $fileimg $idbddcata $filecata $idheader]
-   }
+}
 
 
 

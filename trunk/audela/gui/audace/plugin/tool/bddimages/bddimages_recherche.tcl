@@ -1078,9 +1078,12 @@ namespace eval bddimages_recherche {
       foreach i $l {
          lappend bddconf(define) [lindex [$::bddimages_recherche::This.frame6.result.tbl get $i] 0]
       }
-   
-      ::bddimages_define::run $audace(base).bddimages_define
 
+      # GUI de modif des entetes des images
+      ::bddimages_define::run $audace(base).bddimages_define
+      # Attend une action de la part de la GUI 
+      tkwait variable ::bddimages_define::bdi_define_close
+      # ... pour Re-afficher la liste courante
       ::bddimages_recherche::get_list $::bddimages_recherche::current_list_id
       ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id [array get action_label]
       
