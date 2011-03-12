@@ -191,6 +191,12 @@ namespace eval bddimages_define {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_sub_fichier.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_liste_creation.tcl ]\""
 
+   # Definitions des cles BDI
+   set bdi_key_state [list "RAW" "CORR" "CATA" "?"]
+   set bdi_key_type [list "IMG" "FLAT" "DARK" "OFFSET" "?"]
+
+   # Variable d'action en sortie de la GUI
+   set bdi_define_close ""
 
    #--------------------------------------------------
    # run { this }
@@ -211,7 +217,7 @@ namespace eval bddimages_define {
       variable This
       global entetelog
 
-      ::console::affiche_resultat "Liste courante :   ($::bddimages_recherche::current_list_id) $::bddimages_recherche::current_list_name \n"
+      ::console::affiche_resultat "Liste courante : ($::bddimages_recherche::current_list_id) $::bddimages_recherche::current_list_name \n"
 
       set entetelog "liste"
       set This $this
@@ -344,142 +350,222 @@ namespace eval bddimages_define {
       return [list $nbl1 $list_box_champs]
    }
 
-
-
-proc get_var_type { var } {
-
-  set i [regexp -all {^[-+]?[0-9]+$} $var]
-  if {$i == 1 } {return "int"}
-
-  set i [regexp -all {^[-+]?([0-9]+\.?[0-9]*|\.[0-9]+)([eE][-+]?[0-9]+)?$} $var]
-  if {$i == 1 } {return "double"}
-
-  set i [regexp -nocase {^.*[a-z].*$} $var]
-  if {$i == 1 } {return "string"}
-
- return
-
-}
-
-
-
-
-
-
-proc accept { } {
-
-   global form_req
-   global caption
-
-   global indicereq
-   global list_req
-   global bddconf
-
-   #::console::affiche_resultat "Modification de l image \n"
-
-   #::console::affiche_resultat "id list = $bddconf(define) \n"
-   #::console::affiche_resultat "set compatible = $form_req(type_req_check) \n"
-
-   foreach idbddimg $bddconf(define) {
-
-      set change "no"
-
-      ::console::affiche_resultat "idbddimg = $idbddimg  \n"
-      # charge l image
-      set ident [bddimages_image_identification $idbddimg]
-      ::console::affiche_resultat "Chargement de $ident \n"
-      set fileimg  [lindex $ident 1]
-      
-      if {$fileimg==-1} {
-         ::console::affiche_resultat "Fichier image inexistant ($idbddimg) \n"
-         ::bddimages_define::fermer
-         return
-         }
-      
-      set filecata [lindex $ident 3]
-      ::console::affiche_resultat "Chargement de $fileimg \n"
-      set bufno [::buf::create]
-      buf$bufno load $fileimg
-      
-      if {$form_req(type_req_check)==1} {
-         # verifie la compatibilite
-         #::console::affiche_resultat "verifie la compatibilite \n"
-         if {[::bddimagesAdmin::bdi_compatible $bufno] == 0 } {
-            #::console::affiche_resultat "rend l image compatible \n"
-            ::bddimagesAdmin::bdi_setcompat $bufno
-            set change "yes"
-            }
-         }
-
-      for { set x 1 } { $x <= $indicereq } { incr x } {
-         #::console::affiche_resultat "Modification utilisateur \n"
-         # modifie le header fits de l image
-         if {$list_req($x,valide)=="ok"} {
-            set key [buf$bufno getkwd $list_req($x,champ)]
-            #::console::affiche_resultat "AV Modif: $key \n"
-            set key [lreplace $key 0 0 $list_req($x,champ)]
-            set key [lreplace $key 1 1 $list_req($x,valeur)]
-
-            set vartype [lindex $key 2]
-            set evalvartype [get_var_type [lindex $key 1]]
-            #::console::affiche_erreur "[lindex $key 1] est de type $evalvartype \n"
-            if {$vartype == "none"} {
-               set key [lreplace $key 2 2 $evalvartype]
-               } elseif {$vartype != $evalvartype} {
-                 ::console::affiche_erreur "WARNING ! le type de variable a change $vartype -> $evalvartype \n"
-                 set key [lreplace $key 2 2 $evalvartype]
-                 }
-            #::console::affiche_resultat "Modif: $key \n"
-            buf$bufno setkwd $key
-            set key [buf$bufno getkwd $list_req($x,champ)]
-            #::console::affiche_resultat "AP Modif: $key \n"
-            set change "yes"
-            }
-         }
-
-      if {$change=="yes"} {
-         # enregistre les modif dans l image
-         set fichtmpunzip [unzipedfilename $fileimg]
-
-         set filetmp   [file join $::bddconf(dirtmp)  [file tail $fichtmpunzip]]
-         set filefinal [file join $::bddconf(dirinco) [file tail $fileimg]]
-         #::console::affiche_resultat "Sauvegarde fichier temporaire : $filetmp \n"
-         createdir_ifnot_exist $bddconf(dirtmp)
-         buf$bufno save $filetmp
-         #::console::affiche_resultat "Compression vers $filefinal \n"
-         set errnum [catch {exec gzip -c $filetmp > $filefinal} msg ]
-      
-         # copie l image dans incoming, ainsi que le fichier cata si il existe
-         if {$filecata!=-1} {
-            set errnum [catch {file rename -force -- $filecata $bddconf(dirinco)/.} msg ]
-            }
-            
-         # efface l image dans la base et le disque
-         bddimages_image_delete_fromsql $ident
-         bddimages_image_delete_fromdisk $ident
-         
-         # insere l image et le cata dans la base
-         insertion_solo $filefinal
-         if {$filecata!=-1} {
-            set filecata [file join $bddconf(dirinco) [file tail $filecata]]
-            insertion_solo $filecata
-            }
-
-         set errnum [catch {file delete -force $filetmp} msg ]
-
-         }
-
-
-      buf$bufno clear
+   #--------------------------------------------------
+   #  get_var_type { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       ...
+   #
+   #    procedure externe :
+   #
+   #    variables en entree : 
+   #       var ...
+   #
+   #    variables en sortie : liste
+   #
+   #--------------------------------------------------
+   proc get_var_type { var } {
    
+      set i [regexp -all {^[-+]?[0-9]+$} $var]
+      if {$i == 1 } {return "int"}
+   
+      set i [regexp -all {^[-+]?([0-9]+\.?[0-9]*|\.[0-9]+)([eE][-+]?[0-9]+)?$} $var]
+      if {$i == 1 } {return "double"}
+   
+      set i [regexp -nocase {^.*[a-z].*$} $var]
+      if {$i == 1 } {return "string"}
+   
+      return
+   
+   }
+
+#   #--------------------------------------------------
+#   #  init_main_bdi_key { }
+#   #--------------------------------------------------
+#   #
+#   #    fonction  :
+#   #       Initialisations des valeurs des cles BDI STATE et TYPE
+#   #       a partir des headers des images
+#   #
+#   #    variables en entree : none
+#   #
+#   #    variables en sortie : liste
+#   #
+#   #--------------------------------------------------
+#   proc init_main_bdi_key {  } {
+#
+#      global bddconf
+#
+#      set val_key_state ""
+#      set val_key_type ""
+#      set ok_key_state 0
+#      set ok_Key_type 0
+#      
+#      ::console::affiche_resultat "Length = [llength $bddconf(define)] \n"
+#      foreach idbddimg $bddconf(define) {      
+#         # charge l'image
+#         set ident [bddimages_image_identification $idbddimg]
+#         set fileimg  [lindex $ident 1]
+#         if {$fileimg != -1} {
+#            # Chargement de l'image
+#            set bufno [::buf::create]
+#            buf$bufno load $fileimg
+#            # Extraction de la valeur du mot cle STATE
+#            set key [buf$bufno getkwd "BDDIMAGES STATE"]
+#            if { ! [string equal -nocase $val_key_state [lindex $key 1]]} {
+#               set val_key_state [lindex $key 1]
+#               incr ok_key_state 1
+#            }
+#            # Extraction de la valeur du mot cle TYPE
+#            set key [buf$bufno getkwd "BDDIMAGES TYPE"]
+#            if { ! [string equal -nocase $val_key_type [lindex $key 1]]} {
+#               set val_key_type [lindex $key 1]
+#               incr ok_key_type 1
+#            }
+#         }
+#      }
+#
+#      # Si toutes les valeurs de la cle STATE sont identiques
+#      if {$ok_key_state == 1} {
+#         set bdi_key(state) $val_key_state
+#      } else {
+#         set bdi_key(state) ""
+#      }
+#      # Si toutes les valeurs de la cle TYPE sont identiques
+#      if {$ok_key_type == 1} {
+#         set bdi_key(type) $val_key_type
+#      } else {
+#         set bdi_key(type) ""
+#      }
+#
+#      return [array get bdi_key]
+#   }
+
+   #--------------------------------------------------
+   #  accept { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       Execute les modifications dans l'entete de l'image d'apres 
+   #       les choix de l'utilisateur
+   #
+   #    procedure externe :
+   #
+   #    variables en entree : none
+   #
+   #    variables en sortie : liste
+   #
+   #--------------------------------------------------
+   proc accept { } {
+   
+      global bddconf
+      global caption
+      global form_req
+      global indicereq
+      global list_req
+      global def_cles_bdi
       
+      # Pour chaque image selectionnee ...
+      foreach idbddimg $bddconf(define) {
+   
+         ::console::affiche_resultat "idbddimg = $idbddimg  \n"
+         set change "no"
+
+         # charge l'image
+         set ident [bddimages_image_identification $idbddimg]
+         set fileimg  [lindex $ident 1]
+         set filecata [lindex $ident 3]
+         ::console::affiche_resultat "Chargement de $ident -> $fileimg \n"
+         if {$fileimg == -1} {
+            ::console::affiche_resultat "Fichier image inexistant ($idbddimg) \n"
+            ::bddimages_define::fermer
+            return
+         }
+         set bufno [::buf::create]
+         buf$bufno load $fileimg
+         
+         # Verifie la compatibilite si le check button est clique
+         if {$form_req(type_req_check) == 1} {
+            if {[::bddimagesAdmin::bdi_compatible $bufno] == 0 } {
+               ::bddimagesAdmin::bdi_setcompat $bufno
+               set change "yes"
+            }
+         }
+
+         # Modifie le header fits de l'image si la cle BDI STATE est non nulle
+         if {! [string equal $def_cles_bdi(state) ""]} {
+            set key [buf$bufno getkwd "BDDIMAGES STATE"]
+            set key [lreplace $key 1 1 $def_cles_bdi(state)]
+            buf$bufno setkwd $key
+            set change "yes"
+         }
+         # Modifie le header fits de l'image si la cle BDI TYPE est non nulle
+         if {! [string equal $def_cles_bdi(type) ""]} {
+            set key [buf$bufno getkwd "BDDIMAGES TYPE"]
+            set key [lreplace $key 1 1 $def_cles_bdi(type)]
+            buf$bufno setkwd $key
+            set change "yes"
+         }
+         
+         # Modifie le header fits de l'image en fct des regles
+         for { set x 1 } { $x <= $indicereq } { incr x } {
+            if {$list_req($x,valide) == "ok"} {
+               set key [buf$bufno getkwd $list_req($x,champ)]
+               set key [lreplace $key 0 0 $list_req($x,champ)]
+               set key [lreplace $key 1 1 $list_req($x,valeur)]
+               set vartype [lindex $key 2]
+               set evalvartype [get_var_type [lindex $key 1]]
+               if {$vartype == "none"} {
+                  set key [lreplace $key 2 2 $evalvartype]
+               } elseif {$vartype != $evalvartype} {
+                  ::console::affiche_erreur "WARNING ! le type de variable a change $vartype -> $evalvartype \n"
+                  set key [lreplace $key 2 2 $evalvartype]
+               }
+               buf$bufno setkwd $key
+               #set key [buf$bufno getkwd $list_req($x,champ)]
+               set change "yes"
+            }
+         }
+   
+         if {$change == "yes"} {
+            # enregistre les modif dans l image
+            set fichtmpunzip [unzipedfilename $fileimg]
+            set filetmp   [file join $::bddconf(dirtmp)  [file tail $fichtmpunzip]]
+            set filefinal [file join $::bddconf(dirinco) [file tail $fileimg]]
+
+            createdir_ifnot_exist $bddconf(dirtmp)
+            buf$bufno save $filetmp
+            set errnum [catch {exec gzip -c $filetmp > $filefinal} msg ]
+         
+            # copie l image dans incoming, ainsi que le fichier cata si il existe
+            if {$filecata != -1} {
+               set errnum [catch {file rename -force -- $filecata $bddconf(dirinco)/.} msg ]
+            }
+               
+            # efface l image dans la base et le disque
+            bddimages_image_delete_fromsql $ident
+            bddimages_image_delete_fromdisk $ident
+            
+            # insere l image et le cata dans la base
+            insertion_solo $filefinal
+            if {$filecata!=-1} {
+               set filecata [file join $bddconf(dirinco) [file tail $filecata]]
+               insertion_solo $filecata
+            }
+   
+            set errnum [catch {file delete -force $filetmp} msg ]
+   
+         }
+   
+         buf$bufno clear
       }
 
-   # Rechargement de la liste courante
-   ::bddimages_recherche::cmd_list_select $::bddimages_recherche::tbl_cmd_list_select
-
-   ::bddimages_define::fermer
-}
+      # Variable d'action en sortie de GUI
+      set ::bddimages_define::bdi_define_close "close"
+      # Fermeture du dialogue
+      ::bddimages_define::fermer
+   }
 
    #--------------------------------------------------
    #  add_requete { }
@@ -504,7 +590,7 @@ proc accept { } {
       global bddconf
       global indicereq
       global list_req
-   
+
       #--- Initialisation des combox
       set result [get_list_box_champs]
       set list_box_champs [lindex $result 1]
@@ -520,7 +606,7 @@ proc accept { } {
       if { [ info exists list_req($indicereq,champ) ] } {
          set list_req($indicereq,valide) "ok"
       } else {
-         set list_req($indicereq,champ)     [lindex $list_box_champs 0]
+         set list_req($indicereq,champ) [lindex $list_box_champs 0]
          set list_req($indicereq,condition) "="
          set list_req($indicereq,valeur) ""
          set list_req($indicereq,valide) "ok"
@@ -584,11 +670,10 @@ proc accept { } {
       global indicereq
       global form_req
       global list_req
+      global def_cles_bdi
 
+      # Initialisations
       set indicereq 0
-
-      ::console::affiche_resultat "createDialog : $listname \n"
-
       set list_comb1 [list $caption(bddimages_define,toutes) $caption(bddimages_define,nimporte)]
       set list_comb2 [list $caption(bddimages_define,elem)]
       set list_comb3 [list $caption(bddimages_define,alea) \
@@ -613,7 +698,6 @@ proc accept { } {
         set edit 1
         set editname $listname
         set editid [get_intellilist_by_name $listname]
-        ::console::affiche_resultat "createDialog : $listname id=$editid \n"
       }
 
       set indicereqinit 0
@@ -643,6 +727,10 @@ proc accept { } {
       } else {
          array unset list_req
       }
+
+      # Initialisations des valeurs des cles BDI STATE et TYPE a partir des images
+#      array set def_cles_bdi [::bddimages_define::init_main_bdi_key] 
+      array set def_cles_bdi {state "" type ""}
 
       #--- initConf
       if { ! [ info exists conf(bddimages,list_pos_stat) ] } { set conf(bddimages,list_pos_stat) "+80+40" }
@@ -684,7 +772,8 @@ proc accept { } {
          frame $framecurrent -borderwidth 0 -cursor arrow
          pack $framecurrent -in $This -anchor c -side top -expand 0 -padx 5 -pady 5
             #--- Bouton check
-            checkbutton $framecurrent.check -highlightthickness 0 -state normal -variable form_req(type_req_check) -command {  }
+            checkbutton $framecurrent.check -highlightthickness 0 -state normal -variable form_req(type_req_check) \
+               -command {  }
             pack $framecurrent.check -in $framecurrent -side left -padx 2
             #--- Cree un label
             label $framecurrent.txt1 -font $bddconf(font,arial_10_b) -text "$caption(bddimages_define,majCompat)"
@@ -693,6 +782,33 @@ proc accept { } {
             button $framecurrent.info -text "?" -borderwidth 1 \
                -command { tk_messageBox -message "$caption(bddimages_define,infoCompat)" -type ok }
             pack $framecurrent.info -in $framecurrent -side left -padx 2
+
+         #--- Frame pour saisir les cles BDI STATE et TYPE
+         set framecurrent $This.compatbdicle
+         frame $framecurrent -borderwidth 1 -cursor arrow -relief groove
+         pack $framecurrent -in $This -anchor c -side top -expand 0 -padx 5 -pady 5
+            #--- Frame de la premiere cle
+            frame $framecurrent.state -borderwidth 0 -cursor arrow
+            pack $framecurrent.state -in $framecurrent -anchor c -side top -expand 0 -padx 5 -pady 2
+               #--- Cle bdi state
+               label $framecurrent.state.labcle -text "BDI STATE =" -width 12 -anchor e
+               pack $framecurrent.state.labcle -in $framecurrent.state -side left -anchor e -padx 1
+               #--- valeurs possibles
+               ComboBox $framecurrent.state.combo1 \
+                  -relief sunken -borderwidth 1 -editable 0 -width 10 \
+                  -textvariable def_cles_bdi(state) -values $::bddimages_define::bdi_key_state
+               pack $framecurrent.state.combo1 -in $framecurrent.state -side left -padx 2
+            #--- Frame de la deuxieme cle
+            frame $framecurrent.type -borderwidth 0 -cursor arrow
+            pack $framecurrent.type -in $framecurrent -anchor c -side top -expand 0 -padx 5 -pady 2
+               #--- Cle bdi state
+               label $framecurrent.type.labcle -text "BDI TYPE =" -width 12 -anchor e
+               pack $framecurrent.type.labcle -in $framecurrent.type -side left -anchor e  -padx 1
+               #--- valeurs possibles
+               ComboBox $framecurrent.type.combo1 \
+                  -relief sunken -borderwidth 1 -editable 0 -width 10 \
+                  -textvariable def_cles_bdi(type) -values $::bddimages_define::bdi_key_type
+               pack $framecurrent.type.combo1 -in $framecurrent.type -side left -padx 2
 
          #--- Cree un frame pour ajouter des requetes
          set framereqcurrent $This.addreq
@@ -711,37 +827,37 @@ proc accept { } {
             }
 
          #--- Cree un frame pour y mettre les boutons
-         frame $This.frame11 \
-            -borderwidth 0 -cursor arrow
-         pack $This.frame11 \
-            -in $This -anchor s -side bottom -expand 0 -fill x
+         frame $This.frame11 -borderwidth 0 -cursor arrow
+         pack $This.frame11 -in $This -anchor s -side bottom -expand 0 -fill x
 
-           #--- Creation du bouton annuler
-           button $This.frame11.but_annuler \
-              -text "$caption(bddimages_define,annuler)" -borderwidth 2 \
-              -command { ::bddimages_define::fermer }
-           pack $This.frame11.but_annuler \
-              -in $This.frame11 -side right -anchor e \
-              -padx 2 -pady 2 -ipadx 2 -ipady 2 -expand 0
+            #--- Creation du bouton annuler
+            button $This.frame11.but_annuler \
+               -text "$caption(bddimages_define,annuler)" -borderwidth 2 \
+               -command { ::bddimages_define::fermer }
+            pack $This.frame11.but_annuler \
+               -in $This.frame11 -side right -anchor e \
+               -padx 2 -pady 2 -ipadx 2 -ipady 2 -expand 0
 
-           #--- Creation du bouton ok
-           button $This.frame11.but_ok \
-              -text "$caption(bddimages_define,ok)" -borderwidth 2 \
-              -command { ::bddimages_define::accept }
-           pack $This.frame11.but_ok \
-              -in $This.frame11 -side right -anchor e \
-              -padx 2 -pady 2 -ipadx 2 -ipady 2 -expand 0
+            #--- Creation du bouton ok
+            button $This.frame11.but_ok \
+               -text "$caption(bddimages_define,ok)" -borderwidth 2 \
+               -command { ::bddimages_define::accept }
+            pack $This.frame11.but_ok \
+               -in $This.frame11 -side right -anchor e \
+               -padx 2 -pady 2 -ipadx 2 -ipady 2 -expand 0
 
-           #--- Creation du bouton aide
-           button $This.frame11.but_aide \
-              -text "$caption(bddimages_define,aide)" -borderwidth 2 \
-              -command {lecture_info This}
-           pack $This.frame11.but_aide \
-              -in $This.frame11 -side right -anchor e \
-              -padx 2 -pady 2 -ipadx 2 -ipady 2 -expand 0
+            #--- Creation du bouton aide
+            button $This.frame11.but_aide \
+               -text "$caption(bddimages_define,aide)" -borderwidth 2 \
+               -command {lecture_info This}
+            pack $This.frame11.but_aide \
+               -in $This.frame11 -side right -anchor e \
+               -padx 2 -pady 2 -ipadx 2 -ipady 2 -expand 0
 
       #--- La fenetre est active
       focus $This
+      #--- Et prend la main...
+      grab set $This
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
       bind $This <Key-F1> { $audace(console)::GiveFocus }
       #--- Mise a jour dynamique des couleurs

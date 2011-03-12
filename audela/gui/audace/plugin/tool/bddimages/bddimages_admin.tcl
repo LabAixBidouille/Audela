@@ -247,58 +247,57 @@ proc ::bddimagesAdmin::TestConnectBdd { } {
 # verifie la compatibilite de l image
 # @return 1 si compatible 0 sinon
 #--------------------------------------------------
-   proc ::bddimagesAdmin::bdi_compatible { bufno } {
+proc ::bddimagesAdmin::bdi_compatible { bufno } {
+
+   set compat 0
+
+   set key [buf$bufno getkwd "BDDIMAGES VERSION"]
+   if {[lindex $key 1] != 1 } {
+      return $compat
+   }
+   set key [buf$bufno getkwd "BDDIMAGES STATE"]
+   if {[lindex $key 0] == "" } {
+      return $compat
+   }
+   set key [buf$bufno getkwd "BDDIMAGES TYPE"]
+   if {[lindex $key 0] == "" } {
+      return $compat
+   }
+   set key [buf$bufno getkwd "BDDIMAGES WCS"]
+   if {[lindex $key 0] == "" } {
+      return $compat
+   }
+   set key [buf$bufno getkwd "BDDIMAGES NAMECATA"]
+   if {[lindex $key 0] == "" } {
+      return $compat
+   }
+   set key [buf$bufno getkwd "BDDIMAGES DATECATA"]
+   if {[lindex $key 0] == "" } {
+      return $compat
+   }
+   set key [buf$bufno getkwd "BDDIMAGES ASTROID"]
+   if {[lindex $key 0] == "" } {
+      return $compat
+   }
+   set key [buf$bufno getkwd "BDDIMAGES ASTROMETRY"]
+   if {[lindex $key 0] == "" } {
+      return $compat
+   }
+   set key [buf$bufno getkwd "BDDIMAGES CATAASTROM"]
+   if {[lindex $key 0] == "" } {
+      return $compat
+   }
+   set key [buf$bufno getkwd "BDDIMAGES PHOTOMETRY"]
+   if {[lindex $key 0] == "" } {
+      return $compat
+   }
+   set key [buf$bufno getkwd "BDDIMAGES CATAPHOTOM"]
+   if {[lindex $key 0] == "" } {
+      return $compat
+   }
    
-      set compat 0
-
-      set key [buf$bufno getkwd "BDDIMAGES VERSION"]
-      if {[lindex $key 1] != 1 } {
-         return $compat
-         }
-      set key [buf$bufno getkwd "BDDIMAGES STATE"]
-      if {[lindex $key 0] == "" } {
-         return $compat
-         }
-      set key [buf$bufno getkwd "BDDIMAGES TYPE"]
-      if {[lindex $key 0] == "" } {
-         return $compat
-         }
-      set key [buf$bufno getkwd "BDDIMAGES WCS"]
-      if {[lindex $key 0] == "" } {
-         return $compat
-         }
-      set key [buf$bufno getkwd "BDDIMAGES NAMECATA"]
-      if {[lindex $key 0] == "" } {
-         return $compat
-         }
-      set key [buf$bufno getkwd "BDDIMAGES DATECATA"]
-      if {[lindex $key 0] == "" } {
-         return $compat
-         }
-      set key [buf$bufno getkwd "BDDIMAGES ASTROID"]
-      if {[lindex $key 0] == "" } {
-         return $compat
-         }
-      set key [buf$bufno getkwd "BDDIMAGES ASTROMETRY"]
-      if {[lindex $key 0] == "" } {
-         return $compat
-         }
-      set key [buf$bufno getkwd "BDDIMAGES CATAASTROM"]
-      if {[lindex $key 0] == "" } {
-         return $compat
-         }
-      set key [buf$bufno getkwd "BDDIMAGES PHOTOMETRY"]
-      if {[lindex $key 0] == "" } {
-         return $compat
-         }
-      set key [buf$bufno getkwd "BDDIMAGES CATAPHOTOM"]
-      if {[lindex $key 0] == "" } {
-         return $compat
-         }
-      
-      return 1
-      }
-
+   return 1
+}
 
 #--------------------------------------------------
 #  ::bddimagesAdmin::bdi_setcompat { }
@@ -306,85 +305,82 @@ proc ::bddimagesAdmin::TestConnectBdd { } {
 # verifie la compatibilite de l image
 # @return 1 si compatible 0 sinon
 #--------------------------------------------------
-   proc ::bddimagesAdmin::bdi_setcompat { bufno } {
-   
-      set key [buf$bufno getkwd "BDDIMAGES VERSION"]
-      if {[lindex $key 1] != 1 } {
-         buf$bufno setkwd [list "BDDIMAGES VERSION" "1" "int" "Compatibility version for bddimages" ""]
-         }
-      set key [buf$bufno getkwd "BDDIMAGES STATE"]
-      if {[lindex $key 0] == "" } {
-         buf$bufno setkwd [list "BDDIMAGES STATE" "?" "string" "RAW | CORR | CATA | ?" ""]
-         }
-      set key [buf$bufno getkwd "BDDIMAGES TYPE"]
-      if {[lindex $key 0] == "" } {
-         buf$bufno setkwd [list "BDDIMAGES TYPE" "?" "string" "IMG | FLAT | DARK | OFFSET | ?" ""]
-         }
-      set key [buf$bufno getkwd "BDDIMAGES WCS"]
-      if {[lindex $key 0] == "" } {
-         buf$bufno setkwd [list "BDDIMAGES WCS" "?" "string" "WCS performed" ""]
-         }
-      set key [buf$bufno getkwd "BDDIMAGES NAMECATA"]
-      if {[lindex $key 0] == "" } {
-         buf$bufno setkwd [list "BDDIMAGES NAMECATA" "?" "string" "Name file of the cata file" ""]
-         }
-      set key [buf$bufno getkwd "BDDIMAGES DATECATA"]
-      if {[lindex $key 0] == "" } {
-         buf$bufno setkwd [list "BDDIMAGES DATECATA" "?" "string" "Date iso when the cata file was modified" ""]
-         }
-      set key [buf$bufno getkwd "BDDIMAGES ASTROID"]
-      if {[lindex $key 0] == "" } {
-         buf$bufno setkwd [list "BDDIMAGES ASTROID" "?" "string" "ASTROID performed" ""]
-         }
-      set key [buf$bufno getkwd "BDDIMAGES ASTROMETRY"]
-      if {[lindex $key 0] == "" } {
-         buf$bufno setkwd [list "BDDIMAGES ASTROMETRY" "?" "string" "Astrometry performed" ""]
-         }
-      set key [buf$bufno getkwd "BDDIMAGES CATAASTROM"]
-      if {[lindex $key 0] == "" } {
-         buf$bufno setkwd [list "BDDIMAGES CATAASTROM" "?" "string" "Catalog used for astrometry" ""]
-         }
-      set key [buf$bufno getkwd "BDDIMAGES PHOTOMETRY"]
-      if {[lindex $key 0] == "" } {
-         buf$bufno setkwd [list "BDDIMAGES PHOTOMETRY" "?" "string" "Photometry performed" ""]
-         }
-      set key [buf$bufno getkwd "BDDIMAGES CATAPHOTOM"]
-      if {[lindex $key 0] == "" } {
-         buf$bufno setkwd [list "BDDIMAGES CATAPHOTOM" "?" "string" "Catalog used for photometry" ""]
-         }
-         
-         
-      
+proc ::bddimagesAdmin::bdi_setcompat { bufno } {
 
-      # retire les mots cles         
-      set dellist ""
-      lappend dellist "BDDIMAGES RAW"
-      lappend dellist "BDDIMAGES FLAT"
-      lappend dellist "BDDIMAGES DARK"
-      lappend dellist "BDDIMAGES OFFSET"
-      lappend dellist "BDDIMAGES SFLAT"
-      lappend dellist "BDDIMAGES SDARK"
-      lappend dellist "BDDIMAGES SOFFSET"
-      lappend dellist "BDDIMAGES STATES"
-      lappend dellist "HIERARCH BDDIMAGES RAW"
-      lappend dellist "HIERARCH BDDIMAGES FLAT"
-      lappend dellist "HIERARCH BDDIMAGES DARK"
-      lappend dellist "HIERARCH BDDIMAGES OFFSET"
-      lappend dellist "HIERARCH BDDIMAGES SFLAT"
-      lappend dellist "HIERARCH BDDIMAGES SDARK"
-      lappend dellist "HIERARCH BDDIMAGES SOFFSET"
-      lappend dellist "HIERARCH BDDIMAGES VERSION"
-      lappend dellist "HIERARCH BDDIMAGES STATES"
-      lappend dellist "HIERARCH BDDIMAGES STATE"
-      lappend dellist "HIERARCH BDDIMAGES TYPE"
-      lappend dellist "HIERARCH BDDIMAGES WCS"
-      lappend dellist "HIERARCH BDDIMAGES NAMECATA"
-      lappend dellist "HIERARCH BDDIMAGES DATECATA"
-      lappend dellist "HIERARCH BDDIMAGES ASTROID"
-      lappend dellist "HIERARCH BDDIMAGES ASTROMETRY"
-      lappend dellist "HIERARCH BDDIMAGES CATAASTROM"
-      lappend dellist "HIERARCH BDDIMAGES PHOTOMETRY"
-      lappend dellist "HIERARCH BDDIMAGES CATAPHOTOM"
+   set key [buf$bufno getkwd "BDDIMAGES VERSION"]
+   if {[lindex $key 1] != 1 } {
+      buf$bufno setkwd [list "BDDIMAGES VERSION" "1" "int" "Compatibility version for bddimages" ""]
+   }
+   set key [buf$bufno getkwd "BDDIMAGES STATE"]
+   if {[lindex $key 0] == "" } {
+      buf$bufno setkwd [list "BDDIMAGES STATE" "?" "string" "RAW | CORR | CATA | ?" ""]
+   }
+   set key [buf$bufno getkwd "BDDIMAGES TYPE"]
+   if {[lindex $key 0] == "" } {
+      buf$bufno setkwd [list "BDDIMAGES TYPE" "?" "string" "IMG | FLAT | DARK | OFFSET | ?" ""]
+   }
+   set key [buf$bufno getkwd "BDDIMAGES WCS"]
+   if {[lindex $key 0] == "" } {
+      buf$bufno setkwd [list "BDDIMAGES WCS" "?" "string" "WCS performed" ""]
+   }
+   set key [buf$bufno getkwd "BDDIMAGES NAMECATA"]
+   if {[lindex $key 0] == "" } {
+      buf$bufno setkwd [list "BDDIMAGES NAMECATA" "?" "string" "Name file of the cata file" ""]
+   }
+   set key [buf$bufno getkwd "BDDIMAGES DATECATA"]
+   if {[lindex $key 0] == "" } {
+      buf$bufno setkwd [list "BDDIMAGES DATECATA" "?" "string" "Date iso when the cata file was modified" ""]
+   }
+   set key [buf$bufno getkwd "BDDIMAGES ASTROID"]
+   if {[lindex $key 0] == "" } {
+      buf$bufno setkwd [list "BDDIMAGES ASTROID" "?" "string" "ASTROID performed" ""]
+   }
+   set key [buf$bufno getkwd "BDDIMAGES ASTROMETRY"]
+   if {[lindex $key 0] == "" } {
+      buf$bufno setkwd [list "BDDIMAGES ASTROMETRY" "?" "string" "Astrometry performed" ""]
+   }
+   set key [buf$bufno getkwd "BDDIMAGES CATAASTROM"]
+   if {[lindex $key 0] == "" } {
+      buf$bufno setkwd [list "BDDIMAGES CATAASTROM" "?" "string" "Catalog used for astrometry" ""]
+   }
+   set key [buf$bufno getkwd "BDDIMAGES PHOTOMETRY"]
+   if {[lindex $key 0] == "" } {
+      buf$bufno setkwd [list "BDDIMAGES PHOTOMETRY" "?" "string" "Photometry performed" ""]
+   }
+   set key [buf$bufno getkwd "BDDIMAGES CATAPHOTOM"]
+   if {[lindex $key 0] == "" } {
+      buf$bufno setkwd [list "BDDIMAGES CATAPHOTOM" "?" "string" "Catalog used for photometry" ""]
+   }
+
+   # retire les mots cles         
+   set dellist ""
+   lappend dellist "BDDIMAGES RAW"
+   lappend dellist "BDDIMAGES FLAT"
+   lappend dellist "BDDIMAGES DARK"
+   lappend dellist "BDDIMAGES OFFSET"
+   lappend dellist "BDDIMAGES SFLAT"
+   lappend dellist "BDDIMAGES SDARK"
+   lappend dellist "BDDIMAGES SOFFSET"
+   lappend dellist "BDDIMAGES STATES"
+   lappend dellist "HIERARCH BDDIMAGES RAW"
+   lappend dellist "HIERARCH BDDIMAGES FLAT"
+   lappend dellist "HIERARCH BDDIMAGES DARK"
+   lappend dellist "HIERARCH BDDIMAGES OFFSET"
+   lappend dellist "HIERARCH BDDIMAGES SFLAT"
+   lappend dellist "HIERARCH BDDIMAGES SDARK"
+   lappend dellist "HIERARCH BDDIMAGES SOFFSET"
+   lappend dellist "HIERARCH BDDIMAGES VERSION"
+   lappend dellist "HIERARCH BDDIMAGES STATES"
+   lappend dellist "HIERARCH BDDIMAGES STATE"
+   lappend dellist "HIERARCH BDDIMAGES TYPE"
+   lappend dellist "HIERARCH BDDIMAGES WCS"
+   lappend dellist "HIERARCH BDDIMAGES NAMECATA"
+   lappend dellist "HIERARCH BDDIMAGES DATECATA"
+   lappend dellist "HIERARCH BDDIMAGES ASTROID"
+   lappend dellist "HIERARCH BDDIMAGES ASTROMETRY"
+   lappend dellist "HIERARCH BDDIMAGES CATAASTROM"
+   lappend dellist "HIERARCH BDDIMAGES PHOTOMETRY"
+   lappend dellist "HIERARCH BDDIMAGES CATAPHOTOM"
 
 #      lappend dellist "BDDIMAGES RAW"
 #      lappend dellist "BDDIMAGES FLAT"
@@ -405,16 +401,14 @@ proc ::bddimagesAdmin::TestConnectBdd { } {
 #      lappend dellist "BDDIMAGES CATAASTROM"
 #      lappend dellist "BDDIMAGES PHOTOMETRY"
 #      lappend dellist "BDDIMAGES CATAPHOTOM"
-      
-      foreach del $dellist {
-         set key [buf$bufno getkwd $del]
-         if {[lindex $key 0] != "" } {
-            buf$bufno delkwd $del
-            ::console::affiche_resultat "DEL HEADKEY : $del \n"
-            }
-      }       
-
-      return
+   
+   foreach del $dellist {
+      set key [buf$bufno getkwd $del]
+      if {[lindex $key 0] != "" } {
+         buf$bufno delkwd $del
+         ::console::affiche_resultat "DEL HEADKEY : $del \n"
       }
+   }       
 
-
+   return
+}

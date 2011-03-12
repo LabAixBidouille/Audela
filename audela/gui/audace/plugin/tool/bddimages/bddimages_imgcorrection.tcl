@@ -490,16 +490,16 @@ proc correction { type inforesult} {
 #
 #    fonction  :
 #        Fournit un extrait de la liste imgtmplist
-#        correspodant au mot clé : bddimages type
+#        correspodant au mot clï¿½ : bddimages type
 #
 #    procedure externe :
 #
 #    variables en entree :
-#        type = mot clé bddimages type
+#        type = mot clï¿½ bddimages type
 #        imgtmplist = liste complete d image
 #
 #    variables en sortie :
-#        imgtmplist = liste complete d image de meme mot clé bddimages type
+#        imgtmplist = liste complete d image de meme mot clï¿½ bddimages type
 #
 #--------------------------------------------------
    proc ::bddimages_imgcorrection::img_to_filename_list { img_list } {
@@ -511,10 +511,10 @@ proc correction { type inforesult} {
          foreach l $img {
             set key [lindex $l 0]
             set val [lindex $l 1]
-            if {$key=="filename"} {
+            if {[string equal -nocase [string trim $key] "filename"]} {
                set filename $val
             }
-            if {$key=="dirfilename"} {
+            if {[string equal -nocase [string trim $key] "dirfilename"]} {
                set dirfilename $val
             }
          }
@@ -534,23 +534,22 @@ proc correction { type inforesult} {
 #
 #    fonction  :
 #        Fournit un extrait de la liste imgtmplist
-#        correspodant au mot clé : bddimages_type
+#        correspodant au mot clï¿½ : bddimages_type
 #
 #    procedure externe :
 #
 #    variables en entree :
-#        type = mot clé bddimages_type
+#        type = mot clï¿½ bddimages_type
 #        img_list = liste complete d image
 #
 #    variables en sortie :
-#        result_list = liste complete d image de meme mot clé bddimages_type
+#        result_list = liste complete d image de meme mot clï¿½ bddimages_type
 #
 #--------------------------------------------------
    proc ::bddimages_imgcorrection::type_to_img_list { type img_list } {
 
 
       if {$type=="OFFSET"} {
-         set type "OFFSET"
          set state "RAW"
          }
       if {$type=="SOFFSET"} {
@@ -558,7 +557,6 @@ proc correction { type inforesult} {
          set state "CORR"
          }
       if {$type=="DARK"} {
-         set type "DARK"
          set state "RAW"
          }
       if {$type=="SDARK"} {
@@ -566,7 +564,6 @@ proc correction { type inforesult} {
          set state "CORR"
          }
       if {$type=="FLAT"} {
-         set type "FLAT"
          set state "RAW"
          }
       if {$type=="SFLAT"} {
