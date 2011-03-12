@@ -1812,13 +1812,15 @@ namespace eval ::confChoixOutil {
       variable private
       global conf panneau
 
-      set conf(afficheOutils) ""
+      set conf(outilsActifsInactifs) ""
       foreach m [array names panneau menu_name,*] {
          set namespace [ lindex [ split $m "," ] 1 ]
          if { $private(affiche,$namespace) == "1" } {
-            lappend conf(afficheOutils) $namespace [ list 1 $private(raccourci,$namespace) ]
+            #--- Outils actifs
+            lappend conf(outilsActifsInactifs) $namespace [ list 1 $private(raccourci,$namespace) ]
          } else {
-            lappend conf(afficheOutils) $namespace [ list 0 $private(raccourci,$namespace) ]
+            #--- Outils inactifs
+            lappend conf(outilsActifsInactifs) $namespace [ list 0 $private(raccourci,$namespace) ]
          }
       }
       #--- Rafraichissement des menus contenant des outils
@@ -1903,7 +1905,7 @@ namespace eval ::confChoixOutil {
          lappend liste [list "$panneau($m) " $m]
       }
       #--- Je copie la liste dans un tableau affiche(namespace)
-      array set affiche $conf(afficheOutils)
+      array set affiche $conf(outilsActifsInactifs)
       #---
       foreach m [lsort -dictionary $liste] {
          set namespace [lindex [ split $m "," ] 1]
