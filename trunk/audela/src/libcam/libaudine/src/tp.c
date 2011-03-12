@@ -22,7 +22,7 @@
 
 /*
  * Fichier pour travaux pratiques de masters
- * Universite Paul Sabatier
+ * Universite de Toulouse
  *
  * --- rappel des bits de donnes du port parallele pour Audine
  *     ordre : 87654321
@@ -93,7 +93,6 @@ int cmdAudineAcqNormal(ClientData clientData, Tcl_Interp * interp, int argc, cha
    char s[256];
    int i;
    int nb_vidages = 1;
-   int naxis1, naxis2;
    unsigned short *p;
 
    cam = (struct camprop *) clientData;
@@ -130,10 +129,10 @@ int cmdAudineAcqNormal(ClientData clientData, Tcl_Interp * interp, int argc, cha
       libcam_bloquer();
    }
    /* Parametres de dimensions pour allouer le pointeur image */
-   naxis1 = cam->nb_photox / cam->binx;
-   naxis2 = cam->nb_photoy / cam->biny;
+   cam->w = cam->nb_photox / cam->binx;
+   cam->h = cam->nb_photoy / cam->biny;
    /* Allocation memoire du pointeur image */
-   p = (unsigned short *) calloc(naxis1 * naxis2, sizeof(unsigned short));
+   p = (unsigned short *) calloc(cam->w*cam->h, sizeof(unsigned short));
    /* Lecture et numérisation de l'image vers le pointeur p */
    tp_read_win(cam, p);
    /* Debloquage des interruptions */
@@ -145,12 +144,8 @@ int cmdAudineAcqNormal(ClientData clientData, Tcl_Interp * interp, int argc, cha
 
    /* =============================================== */
    /* === Copie des valeurs des pixels a partir   === */
-   /* === du pointeur local vers le pointeur Tcl  === */
+   /* === du pointeur image vers le pointeur Tcl  === */
    /* =============================================== */
-   strcpy(cam->pixels_classe, "CLASS_GRAY");
-   strcpy(cam->pixels_format, "FORMAT_USHORT");
-   strcpy(cam->pixels_compression, "COMPRESS_NONE");
-   strcpy(cam->msg,"");
 	/* Efface le buffer image Tcl */
    sprintf(s, "buf%d clear", cam->bufno);
 	if (Tcl_Eval(interp, s) == TCL_ERROR) {
@@ -158,12 +153,11 @@ int cmdAudineAcqNormal(ClientData clientData, Tcl_Interp * interp, int argc, cha
 		sprintf(s, "buf::create %d", cam->bufno);
 		Tcl_Eval(interp, s);
 	}
-	/* Remplit le buffer image Tcl */
-	sprintf(s, "buf%d setpixels %s %d %d %s %s %ld -keep_keywords",
-      cam->bufno, cam->pixels_classe, cam->w, cam->h, cam->pixels_format, 
-		cam->pixels_compression , (long)(void *) p);
+	/* Remplit le buffer image Tcl avec le contenu du pointeur image */
+	sprintf(s, "buf%d setpixels CLASS_GRAY %d %d FORMAT_USHORT COMPRESS_NONE %ld",
+      cam->bufno, cam->w, cam->h, (long)(void *)p);
    Tcl_Eval(interp, s);
-   /* Liberation du pointeur local *p */
+   /* Liberation du pointeur image */
    free(p);
 
    /* =============================================== */
@@ -172,19 +166,21 @@ int cmdAudineAcqNormal(ClientData clientData, Tcl_Interp * interp, int argc, cha
 	/* Mots clés pour l'entete du fichier image */
 	sprintf(s, "buf%d setkwd {NAXIS  %d int \"nombre d'axes\" \"\"}", cam->bufno, 2);
 	Tcl_Eval(interp, s);
-	sprintf(s, "buf%d setkwd {NAXIS1 %d int \"nombre de pixels sur X\" \"\"}", cam->bufno, naxis1);
+	sprintf(s, "buf%d setkwd {NAXIS1 %d int \"pixels sur X\" \"\"}", cam->bufno, cam->w);
 	Tcl_Eval(interp, s);
-	sprintf(s, "buf%d setkwd {NAXIS2 %d int \"nombre de pixels sur Y\" \"\"}", cam->bufno, naxis2);
+	sprintf(s, "buf%d setkwd {NAXIS2 %d int \"pixels sur Y\" \"\"}", cam->bufno, cam->h);
 	Tcl_Eval(interp, s);
 
    return TCL_OK;
 }
 
-
 /*
  * cmdCamAcqSpecial()
  *
  * A modifier par les étudiants ...
+ * Commencer par copier/coller le contenu de cmdAudineAcqNormal
+ * Remplacer l'appel a tp_read_win par tp_read_win2
+ * Modifier aussi tp_read_win2 (voir a la fin de ce fichier)
  *
  */
 int cmdAudineAcqSpecial(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
@@ -332,17 +328,17 @@ void tp_read_win(struct camprop *cam, unsigned short *buf)
    int cx1, cx2, cy1;
    unsigned short int port0, port1;
    unsigned short buffer[2048];
-   unsigned short *p0;
    int x;
    int a1, a2, a3, a4;
 
-   p0 = buf;
+	/* adresse du port parallele en sortie */
    port0 = cam->port;
+	/* adresse du port parallele en entree */
    port1 = port0 + 1;
 
-   /* calcul des dimensions de l'image */
-   imax = cam->nb_photox / cam->binx;
-   jmax = cam->nb_photoy / cam->biny;
+   /* dimensions de l'image a digitaliser */
+   imax = cam->w;
+   jmax = cam->h;
    /* nombre de colonnes de début à ne pas digitaliser */
    cx1 = cam->nb_deadbeginphotox;
    /* nombre de colonnes de fin à ne pas digitaliser */
@@ -421,10 +417,10 @@ void tp_read_win(struct camprop *cam, unsigned short *buf)
 
       /* On transfere le tableau vers la matrice image */
       if (i != 0) {
-         p0[(i - 1) * imax] = buffer[0];
+         buf[(i - 1) * imax] = buffer[0];
       }
       for (j = 1; j < imax; j++) {
-         p0[(i + 1) * imax - j] = buffer[j];
+         buf[(i + 1) * imax - j] = buffer[j];
       }
    }
 }
