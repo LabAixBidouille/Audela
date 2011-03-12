@@ -9,14 +9,22 @@
 #
 # --- Pour telecharger les TLEs
 # satel_update
-# --- Pour calculer une position d'un satellite
-# satel_coords "jason 2" 2010-05-23T20:12:31
-# --- Pour rechercher un satellite au voisinage d'une position
-# satel_nearest_radec 22h07m34s25 +60d17m33s0 2010-05-23T20:12:31
 #
-# source satel.tcl ; satel_coords "iridium 82" 2010-05-23T20:01:07
-# "JASON 2 (OSTM)" 22h07m34s25 +60d17m33s0 J2000.0 1.0000 20.47 +20.45
-# source satel.tcl ; satel_nearest_radec 22h07m34s25 +60d17m33s0 2010-05-23T20:12:31
+# --- Pour calculer une position d'un satellite
+# satel_coords "jason 2"
+# satel_coords "jason 2" 2010-05-23T20:12:31 
+# satel_coords "jason 2" 2010-05-23T20:12:31 {GPS 4 E 56 345}
+#  En sortie : nom ra dec equinox eclairement gisement elevation
+#
+# --- Pour rechercher un satellite au voisinage d'une position
+# satel_nearest_radec 22h07m34s25 +60d17m33s0 2010-05-23T20:12:31 $home
+#  En sortie : nom distmin
+#
+# --- Pour calculer la scene d'un satellite
+# satel_scene ROS1 "jason 2"
+# satel_scene ROS1 "jason 2" 2010-05-23T20:12:31 
+# satel_scene ROS1 "jason 2" 2010-05-23T20:12:31 {GPS 4 E 56 345}
+#  En sortie : Texte en clair dans la console
 
 proc satel_nearest_radec { ra dec {date now} {home ""} } {
    set sepanglemin 360
@@ -208,6 +216,53 @@ proc satel_transit { satelname objename date1 dayrange {home ""} } {
       }
    }
    return [list $sun_transits $sun_conjonctions]
+}
+
+proc satel_scene { {formatscene ROS1} {satelname "ISS"} {date now} {home ""} } {
+   set formatscene ROS1
+   set res [satel_ephem $satelname $date $home]
+   if {$res==""} {
+      error "$res"
+   }
+   set dateiso [mc_date2iso8601 $date]
+   set r [string range $dateiso 0 18]
+   regsub -all T $r " " dateiso
+   set res [lindex $res 0]
+   set name [string trim [lindex [lindex $res 0] 0]]
+   regsub -all " " $name _ r
+   regsub -all {[][]} $r "" name
+   set ra1 [lindex $res 1]
+   set ra [mc_angle2hms $ra1 360 zero 2 auto string]
+   regsub -all \[h,m\] $ra : r
+   regsub -all \[s\] $r . ra
+   set dec1 [lindex $res 2]
+   set dec [mc_angle2dms $dec1 90 zero 1 + string]
+   regsub -all \[d,m\] $dec : r
+   regsub -all \[s\] $r . dec
+   set ill [lindex $res 6]
+   set distkm [expr [lindex $res 3]*1e-3]
+   set azim [lindex $res 8]
+   set elev [lindex $res 9]
+   set drasid [expr 360./(23.9344696*3600)]
+   set dt 5.
+   set date [mc_datescomp $date + [expr $dt/86400.]]
+   set res [satel_ephem $satelname $date $home]
+   set res [lindex $res 0]
+   set ra2 [lindex $res 1]
+   set dec2 [lindex $res 2]
+   set dra [expr ($ra2-$ra1)/$dt-$drasid]
+   if {$dra> 180} { set dra [expr $dra-180] }
+   if {$dra<-180} { set dra [expr $dra+180] }
+   set ddec [expr ($dec2-$dec1)/$dt]
+   set sepangle [lindex [mc_sepangle $ra1 $dec1 $ra2 $dec2] 0]
+   set speed [expr $sepangle/$dt]   
+   set res "=== Format $formatscene ===\n"
+   append res "Name $name\nRA $ra\nDEC $dec\ndra (deg/sec): [format %.7f $dra]\nddec (deg/sec): [format %.7f $ddec]\nDate $dateiso\n"
+   append res "=== Other details ===\n"
+   append res "Illumination $ill\nDistance [format %.1f $distkm] km\n"
+   append res "Azimuth [format %.5f $azim] deg\nElevation [format %+.5f $elev] deg\n"
+   append res "Speed [format %.5f $speed] deg/sec\n"
+   return $res
 }
 
 proc satel_coords { {satelname "ISS"} {date now} {home ""} } {
