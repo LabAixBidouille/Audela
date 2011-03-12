@@ -483,6 +483,7 @@ namespace eval bddimages_recherche {
          unktype  1
          raw      1
          corr     1
+         cata     1
          unkstate 1
       }
       # Definition des icones des boutons d'action
@@ -506,15 +507,21 @@ namespace eval bddimages_recherche {
       icon_yes_offset configure -file [file join $audace(rep_plugin) tool bddimages icons yes_offset.gif]
       image create photo icon_no_offset
       icon_no_offset configure -file [file join $audace(rep_plugin) tool bddimages icons no_offset.gif]
-      #--- UNKNOWN
+      #--- UNKNOWN TYPE
       image create photo icon_yes_unktype
       icon_yes_unktype configure -file [file join $audace(rep_plugin) tool bddimages icons yes_unk.gif]
-      image create photo icon_yes_unkstate
-      icon_yes_unkstate configure -file [file join $audace(rep_plugin) tool bddimages icons yes_unk.gif]
       image create photo icon_no_unktype
       icon_no_unktype configure -file [file join $audace(rep_plugin) tool bddimages icons no_unk.gif]
+      #--- UNKNOWN STATE
+      image create photo icon_yes_unkstate
+      icon_yes_unkstate configure -file [file join $audace(rep_plugin) tool bddimages icons yes_unk.gif]
       image create photo icon_no_unkstate
       icon_no_unkstate configure -file [file join $audace(rep_plugin) tool bddimages icons no_unk.gif]
+      #--- CATA
+      image create photo icon_yes_cata
+      icon_yes_cata configure -file [file join $audace(rep_plugin) tool bddimages icons yes_corr.gif]
+      image create photo icon_no_cata
+      icon_no_cata configure -file [file join $audace(rep_plugin) tool bddimages icons no_corr.gif]
       #--- CORR
       image create photo icon_yes_corr
       icon_yes_corr configure -file [file join $audace(rep_plugin) tool bddimages icons yes_corr.gif]
@@ -629,6 +636,11 @@ namespace eval bddimages_recherche {
                   -command { ::bddimages_recherche::command_icon_recherche $action_frame_state "unkstate" }
                pack $This.frame1.action.state.unkstate -in $This.frame1.action.state -side right -anchor w -padx 0
                DynamicHelp::add $This.frame1.action.state.unkstate -text $caption(bddimages_recherche,button_unkstate)
+               #----- CATA
+#               button $This.frame1.action.state.cata -state active -relief "sunken" -image icon_yes_cata \
+#                  -command { ::bddimages_recherche::command_icon_recherche $action_frame_state "cata" }
+#               pack $This.frame1.action.state.cata -in $This.frame1.action.state -side right -anchor w -padx 0
+#               DynamicHelp::add $This.frame1.action.state.cata -text $caption(bddimages_recherche,button_cata)
                #----- CORR
                button $This.frame1.action.state.corr -state active -relief "sunken" -image icon_yes_corr \
                   -command { ::bddimages_recherche::command_icon_recherche $action_frame_state "corr" }
@@ -691,7 +703,6 @@ namespace eval bddimages_recherche {
             pack $This.frame6.liste.tbl -in $This.frame6.liste -expand yes -fill both
             bind $This.frame6.liste.tbl <<ListboxSelect>> " ::bddimages_recherche::cmd_list_select $This.frame6.liste.tbl "
 
-      
          #--- Cree un frame pour y mettre les boutons
          frame $This.frame11 \
             -borderwidth 0 -cursor arrow
@@ -842,9 +853,6 @@ namespace eval bddimages_recherche {
       global popupTbl
       global paramwindow
 
-
-      set name "-?-"
-
       #--- Quelques raccourcis utiles
       set tbl $frame.tbl
       set popupTbl $frame.popupTbl
@@ -864,19 +872,24 @@ namespace eval bddimages_recherche {
 
       #--- Menu pop-up associe a la table
       menu $popupTbl -title $caption(bddimages_recherche,titre)
-        $popupTbl add command -label "$caption(bddimages_recherche,new_list_i)" \
-           -command { ::bddimages_liste::run $audace(base).bddimages_liste }
-
-        $popupTbl add command -label "$caption(bddimages_recherche,new_list_n)" \
-           -command { ::bddimages_liste::runnormal $audace(base).bddimages_liste }
-
         # Edite la liste selectionnee
         $popupTbl add command -label "$caption(bddimages_recherche,edit)" \
            -command [list ::bddimages_recherche::Tbl2Edit $tbl ]
 
         # Supprime la liste selectionnee
-        $popupTbl add command -label "$caption(bddimages_recherche,delete_list) : $name" \
+        $popupTbl add command -label "$caption(bddimages_recherche,delete_list)" \
            -command [list ::bddimages_recherche::Tbl2Delete $tbl ]
+
+        # Separateur
+        $popupTbl add separator
+        
+        # Nouvelle liste intelligente
+        $popupTbl add command -label "$caption(bddimages_recherche,new_list_i)" \
+           -command { ::bddimages_liste::run $audace(base).bddimages_liste }
+
+        # Nouvelle liste normale
+        $popupTbl add command -label "$caption(bddimages_recherche,new_list_n)" \
+           -command { ::bddimages_liste::runnormal $audace(base).bddimages_liste }
 
         # Separateur
         $popupTbl add separator
@@ -1302,6 +1315,7 @@ namespace eval bddimages_recherche {
             set voir 1
             if {[string equal -nocase $bdi_state "RAW"]       && $zaction(raw) == 0}      { set voir 0 }
             if {[string equal -nocase $bdi_state "CORR"]      && $zaction(corr) == 0}     { set voir 0 }
+            if {[string equal -nocase $bdi_state "CATA"]      && $zaction(cata) == 0}     { set voir 0 }
             if {[string equal -nocase $bdi_state "?"]         && $zaction(unkstate) == 0} { set voir 0 }
             
             # Si oui, doit on afficher la ligne d'apres bdi_type ? 
@@ -1347,11 +1361,11 @@ namespace eval bddimages_recherche {
             #--- Affichage d'une icone pour les colonnes bddimages_*
             for { set j 9 } { $j < 10 } { incr j } {
                # Centrage colonne
-               $::bddimages_recherche::This.frame6.result.tbl columnconfigure $j -align center
+               #$::bddimages_recherche::This.frame6.result.tbl columnconfigure $j -align center
                # Recupere la valeur de la cellule i,j
                set val [$::bddimages_recherche::This.frame6.result.tbl getcells $i,$j]
                # Si valeur cellule = pattern alors premiere lettre seulement
-               if {[regexp -nocase -- {(RAW|CORR|IMG|DARK|FLAT|OFFSET)} [ string trim $val ]]} {
+               if {[regexp -nocase -- {(RAW|CORR|CATA|IMG|DARK|FLAT|OFFSET)} [ string trim $val ]]} {
                   $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -text [ string range $val 0 0 ]
                }
                # Si valeur cellule = '-' alors icone NO
