@@ -3085,7 +3085,7 @@ namespace eval ::confVisu {
       #--- Initialisation de variable
       set liste ""
       #--- Je copie la liste dans un tableau affiche(namespace)
-      array set affiche $conf(afficheOutils)
+      array set affiche $conf(outilsActifsInactifs)
 
       #--- je cree la liste des outils
       #     fct2  9-libelleoutilR  namespaceR
@@ -3145,7 +3145,7 @@ namespace eval ::confVisu {
                   }
                } else {
                   Menu_Command $visuNo $caption(audace,menu,$menuName) $panneau(menu_name,$namespace) "::confVisu::selectTool $visuNo ::$namespace"
-                  lappend conf(afficheOutils) $namespace [ list 1 "" ]
+                  lappend conf(outilsActifsInactifs) $namespace [ list 1 "" ]
                }
             }
 
@@ -3209,18 +3209,18 @@ namespace eval ::confVisu {
    #
    proc setDisplayState { nameSpace displayState } {
       #--- je cherche le plugin dans la liste des plugins a afficher dans les menus
-      set index [lsearch $::conf(afficheOutils) $nameSpace ]
+      set index [lsearch $::conf(outilsActifsInactifs) $nameSpace ]
       if { $displayState == 1 } {
          if { $index == -1 } {
             #--- j'ajoute le plugin dans la liste
-            lappend ::conf(afficheOutils) $nameSpace ""
+            lappend ::conf(outilsActifsInactifs) $nameSpace [ list 1 "" ]
          } else {
             #--- rien a faire car le plugin est deja dans la liste
          }
       } else {
          if { $index != -1 } {
             #--- je supprime le plugin de la liste des plugins a afficher
-            set ::conf(afficheOutils) [lreplace $::conf(afficheOutils) $index [expr $index +1] ]
+            set ::conf(outilsActifsInactifs) [lreplace $::conf(outilsActifsInactifs) $index [expr $index +1] ]
          } else {
             #--- rien a faire car le plugin n'est pas dans la liste
          }
@@ -3463,7 +3463,7 @@ namespace eval ::confVisu {
          #--- Je selectionne les plugins multivisu
          if { [ ::$pluginName\::getPluginProperty multivisu ] == "1" } {
             #--- Je liste les plugins a afficher
-            foreach { namespace affiche_raccourci } $conf(afficheOutils) {
+            foreach { namespace affiche_raccourci } $conf(outilsActifsInactifs) {
                #--- Je verifie que le plugin multivisu est dans la liste des plugins a afficher
                if { $namespace == $pluginName } {
                   #--- Affichage des plugins multivisu de type tool du menu deroulant Affichage
