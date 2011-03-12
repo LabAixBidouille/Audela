@@ -2303,7 +2303,7 @@ namespace eval ::traiteFilters {
       set image_in2          $traiteFilters(image_in2)
       set tfd_ordre          $traiteFilters(tfd_ordre)
       set tfd_format         $traiteFilters(tfd_format)
-      #--- Sauvegarde des reglages
+      #--- Sauvegarde des réglages
       set conf(tfd_ordre)    $traiteFilters(tfd_ordre)
       set conf(tfd_format)   $traiteFilters(tfd_format)
       if { ( $traiteFilters(operation) == $caption(audace,menu,tfdi) )
@@ -2338,6 +2338,7 @@ namespace eval ::traiteFilters {
       #--- que la commande switch continue sur la ligne suivante
       switch $traiteFilters(operation) \
       "$caption(audace,menu,tfd)" {
+         set extension_fit $conf(extension,defaut)
          set dft_format "polar"
          if { $tfd_format == "tfd_cartesien" } { set dft_format "cartesian" }
          set dft_order "centered"
@@ -2349,22 +2350,22 @@ namespace eval ::traiteFilters {
             return 0
          }
          if { $traiteFilters(choix_mode) == "1" } {
-            if { [ catch { dft2d $image_in.fit $image_out1.fit $image_out2.fit $dft_format $dft_order } message_erreur ] } {
+            if { [ catch { dft2d $image_in$extension_fit $image_out1$extension_fit $image_out2$extension_fit $dft_format $dft_order } message_erreur ] } {
                tk_messageBox -title $caption(pretraitement,attention) -icon error -message $message_erreur
             } else {
-               buf$audace(bufNo) load $image_out1.fit
-               ::confVisu::autovisu $::audace(visuNo) "-dovisu" $image_out1.fit
+               buf$audace(bufNo) load $image_out1$extension_fit
+               ::confVisu::autovisu $::audace(visuNo) "-dovisu" $image_out1$extension_fit
             }
          } else {
             if { $dft_format == "polar" } {
-               set nom_1 [ file join $::audace(rep_images) modulus.fit ]
-               set nom_2 [ file join $::audace(rep_images) argument.fit ]
+               set nom_1 [ file join $::audace(rep_images) modulus$extension_fit ]
+               set nom_2 [ file join $::audace(rep_images) argument$extension_fit ]
             } else {
-               set nom_1 [ file join $::audace(rep_images) real.fit ]
-               set nom_2 [ file join $::audace(rep_images) imaginary.fit ]
+               set nom_1 [ file join $::audace(rep_images) real$extension_fit ]
+               set nom_2 [ file join $::audace(rep_images) imaginary$extension_fit ]
             }
             set nom [ file join $audace(rep_images) [ clock milliseconds ] ]
-            append nom ".fit"
+            append nom $extension_fit
             buf$audace(bufNo) save $nom
             if { [ catch { dft2d $nom $nom_1 $nom_2 $dft_format $dft_order } message_erreur ] } {
                tk_messageBox -title $caption(pretraitement,attention) -icon error -message $message_erreur
@@ -2376,9 +2377,10 @@ namespace eval ::traiteFilters {
          }
       } \
       "$caption(audace,menu,tfdi)" {
+         set extension_fit $conf(extension,defaut)
          # Génération d'un nom aléatoire
-         set dest [ file join $audace(rep_images) image.fit ]
-         if { [ catch { idft2d $image_in1.fit $image_in2.fit $dest } message_erreur ] } {
+         set dest [ file join $audace(rep_images) image$extension_fit ]
+         if { [ catch { idft2d $image_in1$extension_fit $image_in2$extension_fit $dest } message_erreur ] } {
             tk_messageBox -title $caption(pretraitement,attention) -icon error -message $message_erreur
          } else {
             buf$audace(bufNo) load $dest
@@ -2386,9 +2388,10 @@ namespace eval ::traiteFilters {
          }
       } \
       "$caption(audace,menu,acorr)" {
+         set extension_fit $conf(extension,defaut)
          if { $traiteFilters(choix_mode) == "1" } {
-            set dest [ file join $audace(rep_images) autocorrelation.fit ]
-            if { [ catch { acorr2d ${image_in}.fit $dest } message_erreur ] } {
+            set dest [ file join $audace(rep_images) autocorrelation$extension_fit ]
+            if { [ catch { acorr2d ${image_in}$extension_fit $dest } message_erreur ] } {
                tk_messageBox -title $caption(pretraitement,attention) -icon error -message $message_erreur
             } else {
                buf$audace(bufNo) load $dest
@@ -2397,8 +2400,8 @@ namespace eval ::traiteFilters {
          } else {
             # Génération d'un nom aléatoire
             set nom_s [ file join $audace(rep_images) [ clock milliseconds ] ]
-            append nom_s ".fit"
-            set nom_d [ file join $audace(rep_images) autocorrelation.fit ]
+            append nom_s $extension_fit
+            set nom_d [ file join $audace(rep_images) autocorrelation$extension_fit ]
             buf$audace(bufNo) save $nom_s
             if { [ catch { acorr2d $nom_s $nom_d } message_erreur ] } {
                tk_messageBox -title $caption(pretraitement,attention) -icon error -message $message_erreur
@@ -2410,8 +2413,9 @@ namespace eval ::traiteFilters {
          }
       } \
       "$caption(audace,menu,icorr)" {
-         set dest [ file join $audace(rep_images) crosscorrelation.fit ]
-         if { [ catch { icorr2d ${image_in1}.fit ${image_in2}.fit $dest } message_erreur ] } {
+         set extension_fit $conf(extension,defaut)
+         set dest [ file join $audace(rep_images) crosscorrelation$extension_fit ]
+         if { [ catch { icorr2d ${image_in1}$extension_fit ${image_in2}$extension_fit $dest } message_erreur ] } {
             tk_messageBox -title $caption(pretraitement,attention) -icon error -message $message_erreur
          } else {
             buf$audace(bufNo) load $dest
@@ -2419,8 +2423,9 @@ namespace eval ::traiteFilters {
          }
       } \
       "$caption(audace,menu,convolution)" {
-         set dest [ file join $audace(rep_images) convolution.fit ]
-         if { [ catch { conv2d ${image_in1}.fit ${image_in2}.fit $dest denorm } message_erreur ] } {
+         set extension_fit $conf(extension,defaut)
+         set dest [ file join $audace(rep_images) convolution$extension_fit ]
+         if { [ catch { conv2d ${image_in1}$extension_fit ${image_in2}$extension_fit $dest denorm } message_erreur ] } {
             tk_messageBox -title $caption(pretraitement,attention) -icon error -message $message_erreur
          } else {
             buf$audace(bufNo) load $dest
