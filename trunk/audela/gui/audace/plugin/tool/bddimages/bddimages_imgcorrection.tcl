@@ -47,7 +47,7 @@ namespace eval bddimages_imgcorrection {
 
       set imgtmplist     ""
       lappend imgtmplist [list "type"               "normal"]              
-      lappend imgtmplist [list "name"               "imgtmplist"]              
+      lappend imgtmplist [list "name"               "tmp"]              
       lappend imgtmplist [list "idlist"             ""]              
       set imgtmplist [::bddimages_liste::add_to_normallist $lid $imgtmplist]
 
@@ -276,10 +276,10 @@ proc create_image_dark { k type inforesult } {
       buf$bufno load "$bddconf(dirtmp)/$fileout.fit"
       buf$bufno setkwd [list "BDDIMAGES STATE" "CORR" "string" "RAW | CORR | CATA | ?" ""]
       buf$bufno setkwd [list "DATE-OBS" "$dateobs" "string" "DATEISO" ""]
-      buf$bufno save "$bddconf(dirtmp)/$fileout.fit"
+      buf$bufno save "$bddconf(dirtmp)/$fileout"
       buf$bufno clear
 
-      insertion_solo $bddconf(dirtmp)/$fileout.fit
+      #insertion_solo $bddconf(dirtmp)/$fileout.fit
   }
 
 
@@ -339,16 +339,46 @@ proc create_image_deflat {  } {
 
    global bddconf
       
+      set bufno 1
       set type "deflat"
       set nbsoffset [llength $::bddimages_imgcorrection::soffset_img_list]
       set nbsdark   [llength $::bddimages_imgcorrection::sdark_img_list]
       set nbsflat   [llength $::bddimages_imgcorrection::sflat_img_list]
       set nbdeflat  [llength $::bddimages_imgcorrection::deflat_img_list]
 
-      buf$bufno load "$bddconf(dirtmp)/${type}0.fit"
-      ttscript2 "IMA/SERIES $bddconf(dirtmp) $fileout .  .  .fit $bddconf(dirtmp) $fileout . .fit STAT"
+
+      set fichiers [::bddimages_imgcorrection::img_to_filename_list $::bddimages_imgcorrection::deflat_img_list]
+
+      foreach fichier $fichiers {
+
+         set errnum [catch {file copy -force -- $fichier $bddconf(dirtmp)/deflat0.fit} msg]
+         if {$errnum==0} {
+
+            if {$nbsoffset == 0 && $nbsdark == 1 } {
+               ttscript2 "IMA/SERIES $bddconf(dirtmp) deflat0 .  .  .fit $bddconf(dirtmp) deflat0 . .fit SUB file=$bddconf(dirtmp)/sdark0.fit offset=0"
+            }
+
+            set fileout "toto"
+            buf$bufno load "$bddconf(dirtmp)/deflat0.fit"
+            ttscript2 "IMA/SERIES $bddconf(dirtmp) deflat0 .  .  .fit $bddconf(dirtmp) $fileout . .fit DIV file=sflat0.fit constant=10000 nullpixel=-10000 bitpix=16"
+
+
+
+
+         } else {
+            ::console::affiche_erreur "Erreur copy_to_tmp : $fichier\n"
+            ::console::affiche_erreur "errnum : $errnum\n"
+            ::console::affiche_erreur "msg    : $msg\n"
+         }
+
+      }
 
   }
+
+
+
+
+
 
 
 
@@ -400,7 +430,6 @@ proc copy_to_tmp { type img_list } {
    global bddconf
 
       set k 0
-      set result_list ""
 
       set fichiers [::bddimages_imgcorrection::img_to_filename_list $img_list]
 
@@ -445,7 +474,7 @@ proc correction { type inforesult} {
       ::bddimages_imgcorrection::copy_to_tmp "sdark"   $::bddimages_imgcorrection::sdark_img_list   
       ::bddimages_imgcorrection::copy_to_tmp "flat"    $::bddimages_imgcorrection::flat_img_list    
       ::bddimages_imgcorrection::copy_to_tmp "sflat"   $::bddimages_imgcorrection::sflat_img_list   
-      ::bddimages_imgcorrection::copy_to_tmp "img"     $::bddimages_imgcorrection::deflat_img_list   
+      #::bddimages_imgcorrection::copy_to_tmp "img"     $::bddimages_imgcorrection::deflat_img_list   
 
       set errnum [catch {create_image $type $inforesult} msg]
       if {$errnum!=0} {
@@ -460,7 +489,7 @@ proc correction { type inforesult} {
       ::bddimages_imgcorrection::delete_to_tmp "sdark"   $::bddimages_imgcorrection::sdark_img_list   
       ::bddimages_imgcorrection::delete_to_tmp "flat"    $::bddimages_imgcorrection::flat_img_list    
       ::bddimages_imgcorrection::delete_to_tmp "sflat"   $::bddimages_imgcorrection::sflat_img_list   
-      ::bddimages_imgcorrection::delete_to_tmp "img"     $::bddimages_imgcorrection::deflat_img_list   
+      #::bddimages_imgcorrection::delete_to_tmp "img"     $::bddimages_imgcorrection::deflat_img_list   
       file delete -force -- [file join $bddconf(dirtmp) tt.log]
 
 }
