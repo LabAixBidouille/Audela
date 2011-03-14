@@ -813,6 +813,7 @@ namespace eval bddimages_liste {
                foreach line $rowvar {
                   set resultline ""
                   set cpt 0
+                  
                   foreach col $colvar {
                      lappend resultline [list $col [lindex $line $cpt]]
                      incr cpt
@@ -842,6 +843,7 @@ namespace eval bddimages_liste {
    #    variables en sortie : liste des images
    #
    #--------------------------------------------------
+
    proc ::bddimages_liste::get_imglist_i { intellilist } {
 
       #::bddimages_liste::affiche_intellilist $intellilist
