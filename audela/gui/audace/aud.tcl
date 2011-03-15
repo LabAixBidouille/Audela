@@ -146,6 +146,11 @@ namespace eval ::audace {
       #--- On se place dans le repertoire de travail
       if { ! [ info exists audace(rep_travail) ] } {
          puts "The directory $conf(rep_travail) doesn't exist..."
+         set audace(rep_travail) "~"
+         set audace(rep_images) $audace(rep_travail) 
+         set conf(rep_travail) $audace(rep_travail) 
+         set conf(rep_images) $audace(rep_travail) 
+         puts "redirection to $audace(rep_travail)..."
       }
       cd $audace(rep_travail)
 
