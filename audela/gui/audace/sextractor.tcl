@@ -289,6 +289,7 @@ proc sextractor { args } {
       set arg_config_sex "-c [ file join . config.sex ]"
    }
    set ligne "exec \"$exefile\" $args $arg_config_sex"
+   createFileConfigSextractor
    set err [ catch {
       eval $ligne
    } msg ]
