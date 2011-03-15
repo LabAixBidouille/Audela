@@ -55,7 +55,8 @@
 # uncosmic2  in out number coef ?first_index? ?tt_options?
 # window1 in out {x1 y1 x2 y2} ?tt_options?
 # window2 in out number {x1 y1 x2 y2} ?first_index? ?tt_options?
-#
+# calibwcs Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder
+# calibwcs2 Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder number ?first_index?
 
 proc add {args} {
    #--- operand value
@@ -1424,3 +1425,134 @@ proc window2 {args} {
    ttscript2 $script
 }
 
+proc calibwcs {args} {
+   global audace conf
+   if {[llength $args] >= 5} {
+      set Angle_ra [lindex $args 0]
+      set Angle_dec [lindex $args 1]
+      set valpixsize1 [lindex $args 2]
+      set valpixsize2 [lindex $args 3]
+      set valfoclen [lindex $args 4]
+      set cat_format ""
+      set cat_folder ""
+      if {[llength $args] >= 7} {
+         set cat_format [lindex $args 5]
+         set cat_folder [lindex $args 6]
+      }
+      #
+      set pi [expr 4*atan(1.)]
+      set naxis1 [lindex [buf$::audace(bufNo) getkwd NAXIS1] 1]
+      set naxis2 [lindex [buf$::audace(bufNo) getkwd NAXIS2] 1]
+      set val(CRPIX1) [expr $naxis1/2]
+      set val(CRPIX2) [expr $naxis2/2]
+      set val(RA) [mc_angle2deg $Angle_ra 360]
+      set val(DEC) [mc_angle2deg $Angle_dec 90]
+      set val(CRVAL1) $val(RA)
+      set val(CRVAL2) $val(DEC)
+      set mult 1e-6
+      set val(CDELT1) [expr -2*atan($valpixsize1/$valfoclen*$mult/2.)*180/$pi]
+      set val(CDELT2) [expr  2*atan($valpixsize2/$valfoclen*$mult/2.)*180/$pi]
+      set val(CROTA2) 0
+      set val(FOCLEN) valfoclen
+      set val(PIXSIZE1) valpixsize1
+      set val(PIXSIZE2) valpixsize2
+      set cosr [expr cos($val(CROTA2)*$pi/180.)]
+      set sinr [expr sin($val(CROTA2)*$pi/180.)]
+      set val(CD1_1) [expr $val(CDELT1)*$cosr ]
+      set val(CD1_2) [expr  abs($val(CDELT2))*$val(CDELT1)/abs($val(CDELT1))*$sinr ]
+      set val(CD2_1) [expr -abs($val(CDELT1))*$val(CDELT2)/abs($val(CDELT2))*$sinr ]
+      set val(CD2_2) [expr $val(CDELT2)*$cosr ]
+      #
+      set astrom(kwds)     {RA                       DEC                       CRPIX1        CRPIX2        CRVAL1          CRVAL2           CDELT1    CDELT2    CROTA2                    CD1_1         CD1_2         CD2_1         CD2_2         FOCLEN         PIXSIZE1                        PIXSIZE2}
+      set astrom(units)    {deg                      deg                       pixel         pixel         deg             deg              deg/pixel deg/pixel deg                       deg/pixel     deg/pixel     deg/pixel     deg/pixel     m              um                              um}
+      set astrom(types)    {double                   double                    double        double        double          double           double    double    double                    double        double        double        double        double         double                          double}
+      set astrom(comments) {"RA expected for CRPIX1" "DEC expected for CRPIX2" "X ref pixel" "Y ref pixel" "RA for CRPIX1" "DEC for CRPIX2" "X scale" "Y scale" "Position angle of North" "Matrix CD11" "Matrix CD12" "Matrix CD21" "Matrix CD22" "Focal length" "X pixel size binning included" "Y pixel size binning included"}
+      #
+      set n [llength $astrom(kwds)]
+      for {set k 0 } { $k<$n } {incr k} {
+         set kwd [lindex $astrom(kwds) $k]
+         set value [eval set val($kwd)]
+         set type [lindex $astrom(types) $k]
+         set unit [lindex $astrom(units) $k]
+         set comment [lindex $astrom(comments) $k]
+         buf$::audace(bufNo) setkwd [list $kwd $value $type $unit $comment]
+      }
+      buf$::audace(bufNo) setkwd [list EQUINOX 2000 int "" "System of equatorial coordinates"]
+      buf$::audace(bufNo) setkwd [list RADESYS FK5 string ""  "Mean Place IAU 1984 system"]
+      buf$::audace(bufNo) setkwd [list LONPOLE 180 float "" "Long. of the celest.NP in native coor.sys" ]
+      buf$::audace(bufNo) setkwd [list CTYPE1 RA---TAN string "" "Gnomonic projection" ]   
+      buf$::audace(bufNo) setkwd [list CTYPE2 DEC--TAN string "" "Gnomonic projection" ]  
+      buf$::audace(bufNo) setkwd [list CUNIT1 deg string  ""    "Angles are degrees always"   ]
+      buf$::audace(bufNo) setkwd [list CUNIT2 deg string  ""    "Angles are degrees always"   ]
+      buf$::audace(bufNo) setkwd [list CATASTAR 0 int ""    "Nb stars matched"   ]
+      #
+      if {($cat_format!="")} {
+         set ext $conf(extension,defaut)
+         #--- Remplacement de "$audace(rep_images)" par "." dans "mypath" - Cela permet a
+         #--- Sextractor de ne pas etre sensible aux noms de repertoire contenant des
+         #--- espaces et ayant une longueur superieure a 70 caracteres
+         set mypath "."
+         set sky0 dummy0
+         set cattype $cat_format
+         set cdpath "$cat_folder"
+         if { ( [ string length $cdpath ] > 0 ) && ( [ string index "$cdpath" end ] != "/" ) } {
+            append cdpath "/"
+         }
+         set sky dummy
+         catch {buf$audace(bufNo) delkwd CATASTAR}
+         buf$audace(bufNo) save "${mypath}/${sky0}$ext"
+         createFileConfigSextractor
+         buf$audace(bufNo) save "${mypath}/${sky}$ext"
+         sextractor "$mypath/$sky0$ext" -c "[ file join $mypath config.sex ]"
+         set erreur [ catch { ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/c$sky$ext\" \"jpegfile_chart2=$mypath/${sky}a.jpg\" " } msg ]
+         if {$erreur==0} {
+            ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" ASTROMETRY objefile=catalog.cat nullpixel=-10000 delta=5 epsilon=0.0002 file_ascii=ascii.txt"
+            ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"z$sky\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/c$sky$ext\" \"jpegfile_chart2=$mypath/${sky}b.jpg\" "
+            ttscript2 "IMA/SERIES \"$mypath\" \"x$sky\" . . \"$ext\" . . . \"$ext\" DELETE"
+            ttscript2 "IMA/SERIES \"$mypath\" \"c$sky\" . . \"$ext\" . . . \"$ext\" DELETE"
+            buf$audace(bufNo) load "${mypath}/${sky}$ext"
+         }
+         ::astrometry::delete_lst
+         ::astrometry::delete_dummy
+         #---
+      }
+      #
+      ::audace::autovisu $::audace(visuNo)
+      set catastar [lindex [buf$audace(bufNo) getkwd CATASTAR] 1]
+      return $catastar
+   } else {
+      error "Usage: calibwcs Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder"
+   }
+}
+
+proc calibwcs2 {args} {
+   global audace conf
+   if {[llength $args] >= 5} {
+      set in [lindex $args 0]
+      set out [lindex $args 1]
+      set number [lindex $args 2]
+      set Angle_ra [lindex $args 3]
+      set Angle_dec [lindex $args 4]
+      set valpixsize1 [lindex $args 5]
+      set valpixsize2 [lindex $args 6]
+      set valfoclen [lindex $args 7]
+      set cat_format [lindex $args 8]
+      set cat_folder [lindex $args 9]
+      set first_index 1
+      if {[llength $args] >= 9} {
+         set first_index [lindex $args 10]
+      }
+      #
+      set kdeb $first_index
+      set kfin [expr $kdeb+$number-1]
+      for {set k $kdeb } { $k<=$kfin } {incr k} {
+         #::console::affiche_resultat "Calibration WCS for ${out}${k}...\n"
+         loadima ${in}${k}
+         set catastar [calibwcs $Angle_ra $Angle_dec $valpixsize1 $valpixsize2 $valfoclen $cat_format $cat_folder]
+         saveima ${out}${k}
+         ::console::affiche_resultat "Image ${out}${k} WCS calibrated with $catastar matched stars.\n"
+      }
+   } else {
+      error "Usage: calibwcs2 Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder number ?first_index?"
+   }
+}
