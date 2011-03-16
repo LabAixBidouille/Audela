@@ -25,7 +25,7 @@ namespace eval bddimages_analyse {
    global audace
    global bddconf
 
-   variable ssp_image
+   variable current_image
    variable current_cata
 
 
@@ -55,19 +55,19 @@ namespace eval bddimages_analyse {
 
          ::bddimages_analyse::get_one_image $idbddimg 
          
-         ::console::affiche_resultat "idbddcata  = $::bddimages_analyse::ssp_image(idbddcata)\n"
-         ::console::affiche_resultat "idbddimage = $::bddimages_analyse::ssp_image(idbddimg)\n"
-         ::console::affiche_resultat "cata       = $::bddimages_analyse::ssp_image(dir_cata_file)/$::bddimages_analyse::ssp_image(cata_filename)\n"
-         ::console::affiche_resultat "image      = $::bddimages_analyse::ssp_image(fits_filename)\n"
-         ::console::affiche_resultat "idheader   = $::bddimages_analyse::ssp_image(idheader)\n"
-         ::console::affiche_resultat "dateobs    = $::bddimages_analyse::ssp_image(dateobs)\n"
-         ::console::affiche_resultat "ra         = $::bddimages_analyse::ssp_image(ra)\n"
-         ::console::affiche_resultat "dec        = $::bddimages_analyse::ssp_image(dec)\n"
-         ::console::affiche_resultat "telescop   = $::bddimages_analyse::ssp_image(telescop)\n"
-         ::console::affiche_resultat "exposure   = $::bddimages_analyse::ssp_image(exposure)\n"
-         ::console::affiche_resultat "filter     = $::bddimages_analyse::ssp_image(filter)\n"
+         ::console::affiche_resultat "idbddcata  = $::bddimages_analyse::current_image(idbddcata)\n"
+         ::console::affiche_resultat "idbddimage = $::bddimages_analyse::current_image(idbddimg)\n"
+         ::console::affiche_resultat "cata       = $::bddimages_analyse::current_image(dir_cata_file)/$::bddimages_analyse::current_image(cata_filename)\n"
+         ::console::affiche_resultat "image      = $::bddimages_analyse::current_image(fits_filename)\n"
+         ::console::affiche_resultat "idheader   = $::bddimages_analyse::current_image(idheader)\n"
+         ::console::affiche_resultat "dateobs    = $::bddimages_analyse::current_image(dateobs)\n"
+         ::console::affiche_resultat "ra         = $::bddimages_analyse::current_image(ra)\n"
+         ::console::affiche_resultat "dec        = $::bddimages_analyse::current_image(dec)\n"
+         ::console::affiche_resultat "telescop   = $::bddimages_analyse::current_image(telescop)\n"
+         ::console::affiche_resultat "exposure   = $::bddimages_analyse::current_image(exposure)\n"
+         ::console::affiche_resultat "filter     = $::bddimages_analyse::current_image(filter)\n"
 
-         set catafile [file join $bddconf(dirbase) $::bddimages_analyse::ssp_image(dir_cata_file) $::bddimages_analyse::ssp_image(cata_filename)]
+         set catafile [file join $bddconf(dirbase) $::bddimages_analyse::current_image(dir_cata_file) $::bddimages_analyse::current_image(cata_filename)]
          set ::bddimages_analyse::current_cata [get_cata $catafile] 
          ::console::affiche_resultat "head     = [lindex $::bddimages_analyse::current_cata 0] \n"
 
@@ -329,10 +329,11 @@ proc get_one_image { idbddimg } {
    set telescop [lindex $line 3]
    set exposure [lindex $line 4]
    set filter   [lindex $line 5]
+   set radius   10
 
    foreach n { idbddcata cata_filename dir_cata_file idbddimg idheader 
                 fits_filename fits_dir header_tabname dateobs ra dec telescop 
-                exposure filter } { set ::bddimages_analyse::ssp_image($n) [set $n] }
+                exposure filter radius } { set ::bddimages_analyse::current_image($n) [set $n] }
 
  }
 
