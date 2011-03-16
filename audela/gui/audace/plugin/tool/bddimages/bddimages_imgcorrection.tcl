@@ -746,6 +746,18 @@ proc correction { type inforesult} {
 
 
 
+   proc ::bddimages_imgcorrection::get_val_imglist { val img_list } {
+   
+      set y ""
+      foreach  l $img_list  {
+          set x [lsearch $l $val]
+          if {$x!=-1} {
+             set y [lindex $l 1]
+             return $y
+          }
+      }
+      return $y
+   }
 
 
 #--------------------------------------------------
