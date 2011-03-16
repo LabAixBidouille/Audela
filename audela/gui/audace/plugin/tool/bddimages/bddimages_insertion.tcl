@@ -301,20 +301,16 @@ namespace eval bddimages_insertion {
    #--------------------------------------------------
    proc affiche_entete { } {
    
-     variable This
-     global audace
-     global conf
-     global bddconf
-   
-     for { set i 0 } { $i <= [ expr [llength $bddconf(listetotale)] - 1 ] } { incr i } {
-       set selectfich [$::bddimages_insertion::This.frame7.tbl selection includes $i]
-       if {$selectfich==1} {
-         set nomfich [lindex [$::bddimages_insertion::This.frame7.tbl get $i] 1]
-         ::audace::header $nomfich
-         return # affiche seulement le premier fichier selectionné et sort de la procedure
-         }
-       }
-     return
+      variable This
+      global audace
+
+      set i [lindex [$::bddimages_insertion::This.frame7.tbl curselection ]  0]
+      set nomfich  [lindex [$::bddimages_insertion::This.frame7.tbl get $i] 1]
+      if { ! [string equal $nomfich ""] } {
+         charge $nomfich
+         ::keyword::header $audace(visuNo)
+      }
+      return
    }
 
    #--------------------------------------------------
@@ -334,24 +330,15 @@ namespace eval bddimages_insertion {
    #--------------------------------------------------
    proc affiche_image { } {
    
-     variable This
-     global audace
-     global conf
-     global bddconf
-   
-     for { set i 0 } { $i <= [ expr [llength $bddconf(listetotale)] - 1 ] } { incr i } {
-       set selectfich [$::bddimages_insertion::This.frame7.tbl selection includes $i]
-       if {$selectfich==1} {
-         set nomfich [lindex [$::bddimages_insertion::This.frame7.tbl get $i] 1]
-         set errnum [ catch { loadima $nomfich } msg ]
-         if { $errnum == "1" } {
-           tk_messageBox -message "$msg" -icon error
-           }
-           return
-           # affiche seulement le premier fichier selectionné et sort de la procedure
-         }
-       }
-     return
+      variable This
+      global audace
+
+      set i [lindex [$::bddimages_insertion::This.frame7.tbl curselection ]  0]
+      set nomfich  [lindex [$::bddimages_insertion::This.frame7.tbl get $i] 1]
+      if { ! [string equal $nomfich ""] } {
+         charge $nomfich
+      }
+      return
    }
 
    #--------------------------------------------------
@@ -504,22 +491,16 @@ namespace eval bddimages_insertion {
       } else {
 
          tk_messageBox -title $caption(bddimages_insertion,msg_erreur) -type ok -message $caption(bddimages_insertion,msg_internet)
-         #$audace(base).bddimages.fra5.but1 configure -relief raised -state normal
          return
 
       }
 
       ::bddimages_insertion::Affiche_Results
 
-      #--- Gestion du bouton
-      #-$audace(base).bddimages.fra5.but1 configure -relief raised -state normal
-
       #--- La fenetre est active
       focus $This
-
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
       bind $This <Key-F1> { $audace(console)::GiveFocus }
-
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
       $This.frame1.titre configure -font $bddconf(font,arial_12_b)
@@ -580,14 +561,14 @@ namespace eval bddimages_insertion {
            -variable bddconf(inserauto) \
            -command { }
         # Pour marquer les reperes sur les objets
-        $popupTbl add checkbutton -label $caption(bddimages_insertion,inserall)  \
-           -variable bddconf(inserall) \
-           -command { }
+#        $popupTbl add checkbutton -label $caption(bddimages_insertion,inserall)  \
+#           -variable bddconf(inserall) \
+#           -command { }
         # Separateur
         $popupTbl add separator
         # Labels des objets dans l'image
         $popupTbl add command -label $caption(bddimages_insertion,selectall) \
-           -command { $::bddimages_insertion::This.frame7.tbl selection set 0 end }
+           -command [list $tbl selection set 0 end ]
         # Separateur
         $popupTbl add separator
         # Labels charger image
@@ -603,8 +584,8 @@ namespace eval bddimages_insertion {
            -command { ::audace::showHelpPlugin tool bddimages bddimages.htm field_2 }
 
       #--- Gestion des evenements
+      bind [$tbl bodypath] <Control-Key-a> [list $tbl selection set 0 end ]
       bind [$tbl bodypath] <ButtonPress-3> [ list tk_popup $popupTbl %X %Y ]
-      bind $tbl <<ListboxSelect>>          [ list ::bddimages_insertion::cmdButton1Click $This.frame7 ]
 
    }
 
@@ -632,8 +613,8 @@ namespace eval bddimages_insertion {
       set column_format($caption(bddimages_insertion,nom))       [ list [ $::bddimages_insertion::This.frame7.tbl columncget 1 -width] "$caption(bddimages_insertion,nom)"       left ]
       set column_format($caption(bddimages_insertion,dateobs))   [ list [ $::bddimages_insertion::This.frame7.tbl columncget 2 -width] "$caption(bddimages_insertion,dateobs)"   left ]
       set column_format($caption(bddimages_insertion,telescope)) [ list [ $::bddimages_insertion::This.frame7.tbl columncget 3 -width] "$caption(bddimages_insertion,telescope)" left ]
-      set column_format($caption(bddimages_insertion,taille))    [ list [ $::bddimages_insertion::This.frame7.tbl columncget 4 -width] "$caption(bddimages_insertion,taille)"	 left ]
-      set column_format($caption(bddimages_insertion,erreur))    [ list [ $::bddimages_insertion::This.frame7.tbl columncget 5 -width] "$caption(bddimages_insertion,erreur)"	 left ]
+      set column_format($caption(bddimages_insertion,taille))    [ list [ $::bddimages_insertion::This.frame7.tbl columncget 4 -width] "$caption(bddimages_insertion,taille)"	   left ]
+      set column_format($caption(bddimages_insertion,erreur))    [ list [ $::bddimages_insertion::This.frame7.tbl columncget 5 -width] "$caption(bddimages_insertion,erreur)"	   left ]
    }
 
    #--------------------------------------------------
@@ -661,7 +642,7 @@ namespace eval bddimages_insertion {
       #---
       set a [ array get column_format $column_name ]
       if { [ llength $a ] == "0" } {
-         set format [ list 10 $column_name left ]
+         set format [ list 0 $column_name left ]
       } else {
          set format [ lindex $a 1 ]
       }
@@ -731,7 +712,7 @@ namespace eval bddimages_insertion {
       for { set i 0 } { $i <= [ expr [ llength $liste_titres ] - 1 ] } { incr i } {
          set format [ ::bddimages_insertion::cmdFormatColumn [ lindex $liste_titres $i ] ]
          $::bddimages_insertion::This.frame7.tbl insertcolumns end [ lindex $format 0 ] [ lindex $format 1 ] [ lindex $format 2 ]
-	 }
+    	 }
 
       #--- Classement des objets par ordre alphabetique sans tenir compte des majuscules/minuscules
       if { [ $::bddimages_insertion::This.frame7.tbl columncount ] != "0" } {

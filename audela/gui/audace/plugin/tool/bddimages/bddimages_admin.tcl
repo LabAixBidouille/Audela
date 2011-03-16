@@ -101,6 +101,8 @@ proc ::bddimagesAdmin::GetPassword { msg } {
      button .passwd.f.buttons.ok -text Ok -command { set getPassword(result) 1; destroy .passwd }
      pack configure .passwd.f.buttons.ok -side right
 
+   bind .passwd.f.gpass.v <Key-Return> { set getPassword(result) 1; destroy .passwd }
+   
    grab set .passwd
    tkwait window .passwd
    if {$getPassword(result)} {

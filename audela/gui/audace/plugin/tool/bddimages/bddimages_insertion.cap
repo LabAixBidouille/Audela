@@ -21,7 +21,7 @@ set caption(bddimages_insertion,connect)        "Connexion à MySql"
 set caption(bddimages_insertion,refresh)        "Rafraîchir"
 set caption(bddimages_insertion,lectentete)     "Lecture des en-têtes"
 set caption(bddimages_insertion,inser)          "Insertion"
-set caption(bddimages_insertion,inserauto)      "Insertion continue"
+set caption(bddimages_insertion,inserauto)      "Continuous insertion"
 set caption(bddimages_insertion,inserall)       "Insérer tout"
 set caption(bddimages_insertion,aide)           "Aide"
 set caption(bddimages_insertion,fermer)         "Fermer"
@@ -30,6 +30,7 @@ set caption(bddimages_insertion,voirimg)        "Voir l'image"
 set caption(bddimages_insertion,voirheader)     "Voir le header"
 set caption(bddimages_insertion,msg_erreur)     "Erreur"
 set caption(bddimages_insertion,msg_internet)   "Erreur connexion"
+set caption(bddimages_insertion,nofileselected) "Please, read header files before insert, or select 'Continuous insertion'"
 
 # -- Colonnes de la table --
 set caption(bddimages_insertion,etat)           "Etat"
@@ -111,6 +112,7 @@ if {[info exists langage]!=0} {
       set caption(bddimages_insertion,voirheader)     "Voir le header"
       set caption(bddimages_insertion,msg_erreur)     "Erreur"
       set caption(bddimages_insertion,msg_internet)   "Erreur connexion"
+      set caption(bddimages_insertion,nofileselected) "Veuillez lire les en-têtes avant d'insérer, ou sélectionner 'Insertion continue'"
 
       # -- Colonnes de la table --
       set caption(bddimages_insertion,etat)           "Etat"

@@ -44,6 +44,19 @@ namespace eval bddimages_status {
    }
 
    #
+   # bddimages_status::fermer
+   # Fonction appellee lors de l'appui sur le bouton 'Fermer'
+   #
+   proc restart { } {
+      variable This
+
+      ::bddimages_status::recup_position
+      destroy $This
+      ::bddimages_status::run $This
+      return
+   }
+
+   #
    # bddimages_status::recup_position
    # Permet de recuperer et de sauvegarder la position de la fenetre
    #
@@ -283,7 +296,10 @@ namespace eval bddimages_status {
            #--- Creation du bouton RAZ
            button $This.frame11.but_raz \
               -text "$caption(bddimages_status,raz)" -borderwidth 2 \
-              -command { ::bddimagesAdmin::RAZBdd }
+              -command { 
+                 ::bddimagesAdmin::RAZBdd 
+                 ::bddimages_status::restart
+              }
            pack $This.frame11.but_raz \
               -in $This.frame11 -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
@@ -291,17 +307,12 @@ namespace eval bddimages_status {
       } else {
 
          tk_messageBox -title $caption(bddimages_status,msg_erreur) -type ok -message $caption(bddimages_status,msg_prevent2)
-         #$audace(base).bddimages.fra5.but1 configure -relief raised -state normal
          return
 
       }
 
-      #--- Gestion du bouton
-      #$audace(base).bddimages.fra5.but1 configure -relief raised -state normal
-
       #--- La fenetre est active
       focus $This
-
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
       bind $This <Key-F1> { $audace(console)::GiveFocus }
 

@@ -116,15 +116,22 @@ proc insertion { This } {
 
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_sub_insertion.tcl ]\""
 
-# Mode d insertion automatique
-   if {$bddconf(inserauto)==1} {
+   # Mode d insertion automatique
+   if {$bddconf(inserauto) == 1} {
       insertion_auto
       return
    }
 
-# Autre Mode d insertion
+   # Autre Mode d insertion
    ::console::affiche_resultat "Insertion ... \n"
 
+   # Verifie que des fichiers a inserer ont ete selectionnes
+   if { ! [ info exists bddconf(listetotale) ] } {
+      tk_messageBox -message "$caption(bddimages_insertion,nofileselected)" -type ok
+      return
+   }
+
+   # Insertion des fichiers selectionnes
    for { set i 0 } { $i <= [ expr [llength $bddconf(listetotale)] - 1 ] } { incr i } {
 
       set selectfich [$::bddimages_insertion::This.frame7.tbl selection includes $i]
@@ -210,15 +217,16 @@ proc insertion_auto { } {
    set fichlock "$conf(bddimages,dirinco)/lock"
 
    while { 0 < 1 } {
-      # RAZ de la Table
-      if {[file exists $fichlock]==1} {
+      
+      if {[file exists $fichlock] == 1} {
+
          update
          after 60000
+
       } else {
 
          set bddconf(liste) {}
 
-#        ::bddimages_insertion::init_info
          init_info
          set listetitre [lindex $bddconf(liste) 0]
          set listeval [lindex $bddconf(liste) 1]
@@ -235,8 +243,8 @@ proc insertion_auto { } {
 
          set nbcol        [ $::bddimages_insertion::This.frame7.tbl columncount ]
          set listeentiere [ $::bddimages_insertion::This.frame7.tbl get 0 end ]
-
          set nbimg        [ llength $listeentiere ]
+
          if {$nbimg == 0} {
             update
             after 10000
@@ -272,59 +280,59 @@ proc insertion_auto { } {
               $::bddimages_insertion::This.frame7.tbl delete $i
               $::bddimages_insertion::This.frame7.tbl insert $i $ligne
 
-              if {$erreur!=0} {
-                incr bddconf(nbimgerr)
-                set dirpb "$conf(bddimages,direrr)"
-                createdir_ifnot_exist $dirpb
-                set dirpb "$conf(bddimages,direrr)/err$erreur"
-                createdir_ifnot_exist $dirpb
-                bddimages_sauve_fich "insertion_auto: Deplacement du fichier $nomfich dans $dirpb"
-                set errnum [catch {file rename $nomfich $dirpb/} msg]
-                set errcp [string first "file already exists" $msg]
-                if {$errcp>0||$errnum==0} {
-                  set errnum [catch {file delete $nomfich} msg]
-                  if {$errnum!=0} {
-                    bddimages_sauve_fich "insertion_auto: ERREUR 111 : effacement de $nomfich impossible <err=$errnum> <msg=$msg>"
-                    return 111
+              if {$erreur != 0} {
+                 incr bddconf(nbimgerr)
+                 set dirpb "$conf(bddimages,direrr)"
+                 createdir_ifnot_exist $dirpb
+                 set dirpb "$conf(bddimages,direrr)/err$erreur"
+                 createdir_ifnot_exist $dirpb
+                 bddimages_sauve_fich "insertion_auto: Deplacement du fichier $nomfich dans $dirpb"
+                 set errnum [catch {file rename $nomfich $dirpb/} msg]
+                 set errcp [string first "file already exists" $msg]
+                 if {$errcp>0||$errnum==0} {
+                    set errnum [catch {file delete $nomfich} msg]
+                    if {$errnum!=0} {
+                       bddimages_sauve_fich "insertion_auto: ERREUR 111 : effacement de $nomfich impossible <err=$errnum> <msg=$msg>"
+                       return 111
                     } else {
-                    bddimages_sauve_fich "insertion_auto: Fichier $nomfich supprime"
+                       bddimages_sauve_fich "insertion_auto: Fichier $nomfich supprime"
                     }
-                  }
-                set erreur "Erreur <$erreur> : $caption(bddimages_insertion,err$erreur)"
-                }
+                 }
+                 set erreur "Erreur <$erreur> : $caption(bddimages_insertion,err$erreur)"
+              }
               set ligne [list $etat $nomfich $dateiso $site $sizefich $erreur $tabkey]
               $::bddimages_insertion::This.frame7.tbl delete $i
               $::bddimages_insertion::This.frame7.tbl insert $i $ligne
               # Modifie l affichage de nbimg nbimgins nbimgerr
               set bddconf(inserinfo) "Total($bddconf(nbimg)) Inser($bddconf(nbimgins)) Err($bddconf(nbimgerr))"
-   #           lappend bddconf(listetotale) [list "!" $nomfich $dateiso $site $sizefich $erreur $tabkey]
+#              lappend bddconf(listetotale) [list "!" $nomfich $dateiso $site $sizefich $erreur $tabkey]
 
-              if {$erreur==0} {
+              if {$erreur == 0} {
 
                  # Ici se fait l'Insertion de l image
-
                  set liste     [bddimages_insertion_unfich $ligne]
-
                  set err       [lindex $liste 0]
                  set nomfich   [lindex $liste 1]
-                 if {$err==-1} {break}
-                 if {$err==0} {
-                   incr bddconf(nbimgins)
-                   set etat "O"
-                   set err "$caption(bddimages_insertion,err$err)"
-                   } else {
-                   incr bddconf(nbimgerr)
-                   set etat "X"
-                   set err "Erreur <$err> : $caption(bddimages_insertion,err$err)"
-                   }
-                   set ligne [list $etat $nomfich $dateiso $site $sizefich $err]
-                   $::bddimages_insertion::This.frame7.tbl delete $i
-                   $::bddimages_insertion::This.frame7.tbl insert $i $ligne
-                   # Modifie l affichage de nbimg nbimgins nbimgerr
-                   set bddconf(inserinfo) "Total($bddconf(nbimg)) Inser($bddconf(nbimgins)) Err($bddconf(nbimgerr))"
-                }
-                # Fin: if {$erreur==0}
-           update
+                 if {$err == -1} {
+                    break
+                 }
+                 if {$err == 0} {
+                    incr bddconf(nbimgins)
+                    set etat "O"
+                    set err "$caption(bddimages_insertion,err$err)"
+                 } else {
+                    incr bddconf(nbimgerr)
+                    set etat "X"
+                    set err "Erreur <$err> : $caption(bddimages_insertion,err$err)"
+                 }
+                 set ligne [list $etat $nomfich $dateiso $site $sizefich $err]
+                 $::bddimages_insertion::This.frame7.tbl delete $i
+                 $::bddimages_insertion::This.frame7.tbl insert $i $ligne
+                 # Modifie l affichage de nbimg nbimgins nbimgerr
+                 set bddconf(inserinfo) "Total($bddconf(nbimg)) Inser($bddconf(nbimgins)) Err($bddconf(nbimgerr))"
+              }
+              # Fin: if {$erreur==0}
+              update
            }
            # Fin: boucle for
         }
@@ -382,25 +390,21 @@ proc insertion_solo { nomfich } {
          if {$errnum!=0} {
             bddimages_sauve_fich "insertion_solo: ERREUR 111 : effacement de $nomfich impossible <err=$errnum> <msg=$msg>"
             return 111
-            } else {
+         } else {
             bddimages_sauve_fich "insertion_solo: Fichier $nomfich supprime"
-            }
          }
-      set erreur "Erreur <$erreur> : $caption(bddimages_insertion,err$erreur)"
       }
+      set erreur "Erreur <$erreur> : $caption(bddimages_insertion,err$erreur)"
+   }
 
    set ligne [list $etat $nomfich $dateiso $site $sizefich $erreur $tabkey]
 
-   if {$erreur==0} {
-
+   if {$erreur == 0} {
       # Ici se fait l'Insertion de l image
-
       set liste     [bddimages_insertion_unfich $ligne]
-
       set err       [lindex $liste 0]
       set nomfich   [lindex $liste 1]
       if {$err==-1} {return}
-      }
-
+   }
 
 }
