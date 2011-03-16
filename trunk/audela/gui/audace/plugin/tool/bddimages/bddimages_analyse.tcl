@@ -48,7 +48,9 @@ namespace eval bddimages_analyse {
       if {[buf$bufno compress] == "gzip"} {set gz ".gz"} else {set gz ""}
 
       foreach img $img_list {
-         set ra          [::bddimages_imgcorrection::get_val_imglist ra $img]
+
+         set tabkey $img
+         set ra [::bddimages_imgcorrection::get_val_imglist ra $tabkey]
          ::console::affiche_resultat "ra $ra\n"
 
          get_one_image $id 
@@ -78,18 +80,19 @@ namespace eval bddimages_analyse {
       set filename_list [::bddimages_imgcorrection::img_to_filename_list $img_list]
       set bufno 1
       set ext [buf$bufno extension]
-      set gz [buf$bufno compress]
+      set gz   [buf$bufno compress]
       if {[buf$bufno compress] == "gzip"} {set gz ".gz"} else {set gz ""}
 
       foreach img $img_list {
 
-         set ra          [::bddimages_imgcorrection::get_val_imglist ra $img]
-         set dec         [::bddimages_imgcorrection::get_val_imglist dec $img]
-         set pixsize1    [::bddimages_imgcorrection::get_val_imglist pixsize1 $img]
-         set pixsize2    [::bddimages_imgcorrection::get_val_imglist pixsize2 $img]
-         set foclen      [::bddimages_imgcorrection::get_val_imglist foclen $img]
-         set filename    [::bddimages_imgcorrection::get_val_imglist filename $img]
-         set dirfilename [::bddimages_imgcorrection::get_val_imglist dirfilename $img]
+         set tabkey $img
+         set ra          [::bddimages_imgcorrection::get_val_tabkey ra $tabkey]
+         set dec         [::bddimages_imgcorrection::get_val_tabkey dec $tabkey]
+         set pixsize1    [::bddimages_imgcorrection::get_val_tabkey pixsize1 $tabkey]
+         set pixsize2    [::bddimages_imgcorrection::get_val_tabkey pixsize2 $tabkey]
+         set foclen      [::bddimages_imgcorrection::get_val_tabkey foclen $tabkey]
+         set filename    [::bddimages_imgcorrection::get_val_tabkey filename $tabkey]
+         set dirfilename [::bddimages_imgcorrection::get_val_tabkey dirfilename $tabkey]
 
          ::console::affiche_resultat "ra $ra\n"
          ::console::affiche_resultat "dec $dec\n"
