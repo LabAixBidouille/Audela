@@ -439,9 +439,11 @@ namespace eval bddimages_recherche {
       global action_label
 
       #--- initConf
+      if { ! [ info exists conf(bddimages,geometry_status) ] } { set conf(bddimages,geometry_status) "300x200" }
       if { ! [ info exists conf(bddimages,position_status) ] } { set conf(bddimages,position_status) "+100+100" }
 
       #--- confToWidget
+      set bddconf(geometry_status) $conf(bddimages,geometry_status)
       set bddconf(position_status) $conf(bddimages,position_status)
 
       #---
