@@ -329,7 +329,7 @@ proc get_one_image { idbddimg } {
    set telescop [lindex $line 3]
    set exposure [lindex $line 4]
    set filter   [lindex $line 5]
-   set radius   10
+   set radius   3
 
    foreach n { idbddcata cata_filename dir_cata_file idbddimg idheader 
                 fits_filename fits_dir header_tabname dateobs ra dec telescop 
