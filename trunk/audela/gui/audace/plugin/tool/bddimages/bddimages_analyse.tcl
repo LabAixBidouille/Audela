@@ -53,8 +53,8 @@ namespace eval bddimages_analyse {
          set ra [::bddimages_imgcorrection::get_val_imglist ra $tabkey]
          ::console::affiche_resultat "ra $ra\n"
 
-         get_one_image $id 
-         set struct [get_cata $catafile] 
+         #get_one_image $id 
+         #set struct [get_cata $catafile] 
 
       }
 

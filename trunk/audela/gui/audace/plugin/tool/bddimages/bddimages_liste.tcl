@@ -112,6 +112,25 @@ namespace eval bddimages_liste {
       }
    }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    #--------------------------------------------------
    # fermer { }
    #--------------------------------------------------
@@ -134,6 +153,24 @@ namespace eval bddimages_liste {
       destroy $This
       return
    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
    #--------------------------------------------------
    #  recup_position { }
@@ -164,6 +201,24 @@ namespace eval bddimages_liste {
       set conf(bddimages,list_pos_stat) $bddconf(list_pos_stat)
       return
    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
    #--------------------------------------------------
@@ -205,6 +260,24 @@ namespace eval bddimages_liste {
       return [list $nbl1 $list_box_champs]
    }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    #--------------------------------------------------
    #  get_list_combobox { }
    #--------------------------------------------------
@@ -223,6 +296,24 @@ namespace eval bddimages_liste {
       global caption
       return [list "=" ">" "<" ">=" "<=" "!=" $caption(bddimages_liste,contient) $caption(bddimages_liste,notcontient)]
    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
    #--------------------------------------------------
    #  affich_form_req { }
@@ -259,6 +350,25 @@ namespace eval bddimages_liste {
    }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    proc ::bddimages_liste::get_val_intellilist { intellilist val } {
    
       set y ""
@@ -271,6 +381,22 @@ namespace eval bddimages_liste {
       }
       return $y
    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
    proc ::bddimages_liste::affiche_intellilist { intellilist } {
@@ -290,6 +416,19 @@ namespace eval bddimages_liste {
      ::console::affiche_resultat "--\n"
    
    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
    #--------------------------------------------------
@@ -332,6 +471,18 @@ namespace eval bddimages_liste {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
    proc ::bddimages_liste::new_normallist { lid } {
 
       set imgtmplist     ""
@@ -344,6 +495,25 @@ namespace eval bddimages_liste {
       #::console::affiche_resultat "imgtmplist=$imgtmplist\n"
       return $imgtmplist
    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -452,6 +622,25 @@ namespace eval bddimages_liste {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    proc ::bddimages_liste::build_normallist { } {
    
       global getnamenewlist
@@ -470,6 +659,25 @@ namespace eval bddimages_liste {
          }
    
    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
    # Construit une intelliliste a partir du formulaire
@@ -514,6 +722,25 @@ namespace eval bddimages_liste {
    }
 
    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    # Construit une intelliliste a partir du formulaire
    proc ::bddimages_liste::load_intellilist { intellilist } {
    
@@ -545,6 +772,25 @@ namespace eval bddimages_liste {
    }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    proc conf_save_intellilists { } {
    
       global bddconf
@@ -555,6 +801,25 @@ namespace eval bddimages_liste {
       }
       set ::conf(bddimages,$bddconf(current_config),intellilists) $l
    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -576,6 +841,25 @@ namespace eval bddimages_liste {
          set intellilisttotal($nbintellilist) [lindex $l 0]
       }
    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
    proc accept { } {
@@ -604,6 +888,25 @@ namespace eval bddimages_liste {
       conf_save_intellilists
       ::bddimages_liste::fermer
    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
    #--------------------------------------------------
@@ -692,6 +995,10 @@ namespace eval bddimages_liste {
 
 
 
+
+
+
+
    proc ::bddimages_liste::transform_tabkey { table } {
    
 
@@ -723,6 +1030,25 @@ namespace eval bddimages_liste {
       return $tableresult
    
    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    #--------------------------------------------------
    #  get_imglist { }
    #--------------------------------------------------
@@ -753,6 +1079,25 @@ namespace eval bddimages_liste {
       }
       return $table
    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
    #--------------------------------------------------
    #  get_imglist_n { }
@@ -841,6 +1186,25 @@ namespace eval bddimages_liste {
       return $table
    }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    #--------------------------------------------------
    #  get_imglist_i { }
    #--------------------------------------------------
@@ -924,6 +1288,25 @@ namespace eval bddimages_liste {
       return $table
    }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    #--------------------------------------------------
    #  calcul_nbimg { }
    #--------------------------------------------------
@@ -949,6 +1332,25 @@ namespace eval bddimages_liste {
       #::console::affiche_resultat "Nb img = $form_req(nbimg) \n"
       return
    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
    #--------------------------------------------------
    #  remove_requete { }
@@ -983,6 +1385,25 @@ namespace eval bddimages_liste {
       destroy $framereqcurrent.framereq.$i
 
    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
    #--------------------------------------------------
    #  add_requete { }
@@ -1074,6 +1495,25 @@ namespace eval bddimages_liste {
       return
    }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    #--------------------------------------------------
    #  ouvreCalendrier { }
    #--------------------------------------------------
@@ -1130,6 +1570,25 @@ namespace eval bddimages_liste {
       }
       destroy $w
    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
    #--------------------------------------------------
    #  createDialog { }
@@ -1421,5 +1880,25 @@ namespace eval bddimages_liste {
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#--- Fin Classe
 
 }
