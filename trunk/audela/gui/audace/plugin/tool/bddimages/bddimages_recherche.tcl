@@ -1038,6 +1038,10 @@ namespace eval bddimages_recherche {
            -command { ::bddimages_recherche::bddimages_charge_cata }
 
         # Labels Associate
+        $popupTbl add command -label "creation_wcs" \
+           -command { ::bddimages_recherche::bddimages_creation_wcs }
+
+        # Labels Associate
         $popupTbl add command -label $caption(bddimages_recherche,setwcs) \
            -command { ::bddimages_imganalyse::run_setwcs}
 
@@ -1205,6 +1209,26 @@ namespace eval bddimages_recherche {
          set imglist [::bddimages_liste::new_normallist $lid]
 
          ::bddimages_analyse::charge_cata $imglist
+
+      }
+
+   }
+
+
+
+   proc ::bddimages_recherche::bddimages_creation_wcs { } {
+
+      variable This
+      global caption
+      set reply [tk_dialog $This.confirmDialog "BddImages" "$caption(bddimages_recherche,confirmQuest)" \
+                    questhead 1 "$caption(bddimages_recherche,confirmNo)" "$caption(bddimages_recherche,confirmYes)"]
+      if {$reply} {
+
+         set lid [$::bddimages_recherche::This.frame6.result.tbl curselection ]
+         set lid [lsort -decreasing -integer $lid]
+         set imglist [::bddimages_liste::new_normallist $lid]
+
+         ::bddimages_analyse::creation_wcs $imglist
 
       }
 

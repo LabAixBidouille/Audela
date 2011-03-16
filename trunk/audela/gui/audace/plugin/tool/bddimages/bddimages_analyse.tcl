@@ -25,7 +25,7 @@ namespace eval bddimages_analyse {
    global audace
    global bddconf
 
-
+   variable ssp_image
 
 
 
@@ -83,7 +83,9 @@ namespace eval bddimages_analyse {
 proc get_cata { catafile } {
 
 
-set test "ok"
+   global bddconf
+
+   set test "ok"
 
    set filenametmpzip $bddconf(dirlog)/ssp_tmp_cata.txt.gz
    set filenametmp $bddconf(dirlog)/ssp_tmp_cata.txt
@@ -207,7 +209,6 @@ gren_info "fichier dezippé\n"
 
 proc get_one_image { id } {
 
-
    # pour ne traiter qu'une seule image
    # par exemple : SSP_ID=176 ./solarsystemprocess --console --file ros.tcl
    gren_info "::::::::::DEBUG::::::: Looping with SSP_ID=$id"
@@ -260,7 +261,7 @@ proc get_one_image { id } {
 
    foreach n { idbddcata cata_filename dir_cata_file idbddimg idheader 
                 fits_filename fits_dir header_tabname dateobs ra dec telescop 
-                exposure filter } { set ssp_image($n) [set $n] }
+                exposure filter } { set ::bddimages_analyse::ssp_image($n) [set $n] }
 
  }
 
