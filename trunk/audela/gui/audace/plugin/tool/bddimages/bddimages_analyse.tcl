@@ -41,10 +41,27 @@ namespace eval bddimages_analyse {
       set id 1
       set catafile ""
 
-         get_one_image $id 
+      set filename_list [::bddimages_imgcorrection::img_to_filename_list $img_list]
+      set bufno 1
+      set ext [buf$bufno extension]
+      set gz [buf$bufno compress]
+      if {[buf$bufno compress] == "gzip"} {set gz ".gz"} else {set gz ""}
 
+      foreach img $img_list {
+         set ra          [::bddimages_imgcorrection::get_val_imglist ra $img]
+         ::console::affiche_resultat "ra $ra\n"
+
+         get_one_image $id 
          set struct [get_cata $catafile] 
+
+      }
+
    }
+
+
+
+
+
 
 
 
@@ -65,33 +82,34 @@ namespace eval bddimages_analyse {
       if {[buf$bufno compress] == "gzip"} {set gz ".gz"} else {set gz ""}
 
       foreach img $img_list {
-        set ra          [::bddimages_imgcorrection::get_val_imglist ra $img]
-        set dec         [::bddimages_imgcorrection::get_val_imglist dec $img]
-        set pixsize1    [::bddimages_imgcorrection::get_val_imglist pixsize1 $img]
-        set pixsize2    [::bddimages_imgcorrection::get_val_imglist pixsize2 $img]
-        set foclen      [::bddimages_imgcorrection::get_val_imglist foclen $img]
-        set filename    [::bddimages_imgcorrection::get_val_imglist filename $img]
-        set dirfilename [::bddimages_imgcorrection::get_val_imglist dirfilename $img]
 
-        ::console::affiche_resultat "ra $ra\n"
-        ::console::affiche_resultat "dec $dec\n"
-        ::console::affiche_resultat "pixsize1 $pixsize1\n"
-        ::console::affiche_resultat "pixsize2 $pixsize2\n"
-        ::console::affiche_resultat "foclen $foclen\n"
-        ::console::affiche_resultat "filename $filename\n"
-        ::console::affiche_resultat "dirfilename $dirfilename\n"
+         set ra          [::bddimages_imgcorrection::get_val_imglist ra $img]
+         set dec         [::bddimages_imgcorrection::get_val_imglist dec $img]
+         set pixsize1    [::bddimages_imgcorrection::get_val_imglist pixsize1 $img]
+         set pixsize2    [::bddimages_imgcorrection::get_val_imglist pixsize2 $img]
+         set foclen      [::bddimages_imgcorrection::get_val_imglist foclen $img]
+         set filename    [::bddimages_imgcorrection::get_val_imglist filename $img]
+         set dirfilename [::bddimages_imgcorrection::get_val_imglist dirfilename $img]
 
-        set fc [file join $dirfilename $filename]
-        ::console::affiche_resultat "filename $fc\n"
-        ::console::affiche_resultat "calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO /data/astrodata/Catalog/USNOA2\n"
-        # buf1 load $fc
-        # buf1
-        # set fileout [file tail $fc ]
-        # buf1 save "$bddconf(dirtmp)/${fileout}${ext}"
+         ::console::affiche_resultat "ra $ra\n"
+         ::console::affiche_resultat "dec $dec\n"
+         ::console::affiche_resultat "pixsize1 $pixsize1\n"
+         ::console::affiche_resultat "pixsize2 $pixsize2\n"
+         ::console::affiche_resultat "foclen $foclen\n"
+         ::console::affiche_resultat "filename $filename\n"
+         ::console::affiche_resultat "dirfilename $dirfilename\n"
 
-        # calibwcs
-        # RA DEC CRPIX1 CRPIX2 
-        # calibwcs Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder
+         set fc [file join $dirfilename $filename]
+         ::console::affiche_resultat "filename $fc\n"
+         ::console::affiche_resultat "calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO /data/astrodata/Catalog/USNOA2\n"
+         # buf1 load $fc
+         # buf1
+         # set fileout [file tail $fc ]
+         # buf1 save "$bddconf(dirtmp)/${fileout}${ext}"
+
+         # calibwcs
+         # RA DEC CRPIX1 CRPIX2 
+         # calibwcs Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder
 
       }
 
