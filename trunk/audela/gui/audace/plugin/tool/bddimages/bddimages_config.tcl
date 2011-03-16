@@ -155,12 +155,9 @@ namespace eval bddimages_config {
       global conf
       global bddconf
 
-      set bddconf(geometry_status) [ wm geometry $This ]
-      set deb [ expr 1 + [ string first + $bddconf(geometry_status) ] ]
-      set fin [ string length $bddconf(geometry_status) ]
-      set bddconf(position_status) "+[ string range $bddconf(geometry_status) $deb $fin ]"
-      #---
-      set conf(bddimages,position_status) $bddconf(position_status)
+      set bddconf(geometry_config) [ wm geometry $This ]
+      set conf(bddimages,geometry_config) $bddconf(geometry_config)
+      return
    }
 
    #--------------------------------------------------
@@ -277,10 +274,8 @@ namespace eval bddimages_config {
       global rbconfig
       
       #--- initConf
-      if { ! [ info exists conf(bddimages,position_status) ] } { set conf(bddimages,position_status) "+80+40" } 
-
-      #--- confToWidget
-      set bddconf(position_status) $conf(bddimages,position_status)
+      if { ! [ info exists conf(bddimages,geometry_config) ] } { set conf(bddimages,geometry_config) "+100+100" }
+      set bddconf(geometry_config) $conf(bddimages,geometry_config)
 
       #--- Affecte les variables depuis les valeurs de la conf
       foreach param $allparams {
@@ -319,7 +314,7 @@ namespace eval bddimages_config {
 
       #---
       toplevel $This -class Toplevel
-      wm geometry $This $bddconf(position_status)
+      wm geometry $This $bddconf(geometry_config)
       wm resizable $This 1 1
       wm title $This $caption(bddimages_config,main_title)
       wm protocol $This WM_DELETE_WINDOW { ::bddimages_config::fermer }

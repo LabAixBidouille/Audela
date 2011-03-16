@@ -43,7 +43,7 @@ namespace eval bddimages_analyse {
 
          get_one_image $id 
 
-         get_cata $catafile 
+         set struct [get_cata $catafile] 
    }
 
 
@@ -161,7 +161,7 @@ proc get_cata { catafile } {
           }   
       }   
 
-gren_info "fichier dezippé\n"
+gren_info "fichier dezippï¿½\n"
 
    set linerech "123456789 123456789 123456789 123456789" 
 

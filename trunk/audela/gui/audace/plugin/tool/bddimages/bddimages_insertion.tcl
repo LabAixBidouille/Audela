@@ -275,12 +275,8 @@ namespace eval bddimages_insertion {
       global conf
       global bddconf
 
-      set bddconf(geometry_status) [ wm geometry $This ]
-      set deb [ expr 1 + [ string first + $bddconf(geometry_status) ] ]
-      set fin [ string length $bddconf(geometry_status) ]
-      set bddconf(position_status) "+[ string range $bddconf(geometry_status) $deb $fin ]"
-      #---
-      set conf(bddimages,position_status) $bddconf(position_status)
+      set bddconf(geometry_insertion) [ wm geometry $This ]
+      set conf(bddimages,geometry_insertion) $bddconf(geometry_insertion)
       return
    }
 
@@ -365,10 +361,8 @@ namespace eval bddimages_insertion {
       global bddconf
 
       #--- initConf
-      if { ! [ info exists conf(bddimages,position_status) ] } { set conf(bddimages,position_status) "+80+40" }
-
-      #--- confToWidget
-      set bddconf(position_status) $conf(bddimages,position_status)
+      if { ! [ info exists conf(bddimages,geometry_insertion) ] } { set conf(bddimages,geometry_insertion) "+100+100" }
+      set bddconf(geometry_insertion) $conf(bddimages,geometry_insertion)
 
       #---
       if { [ winfo exists $This ] } {
@@ -395,7 +389,7 @@ namespace eval bddimages_insertion {
 
          #---
          toplevel $This -class Toplevel
-         wm geometry $This $bddconf(position_status)
+         wm geometry $This $bddconf(geometry_insertion)
          wm resizable $This 1 1
          wm title $This $caption(bddimages_insertion,main_title)
          wm protocol $This WM_DELETE_WINDOW { ::bddimages_insertion::fermer }
