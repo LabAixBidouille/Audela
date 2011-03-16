@@ -81,7 +81,9 @@ namespace eval bddimages_analyse {
         ::console::affiche_resultat "filename $filename\n"
         ::console::affiche_resultat "dirfilename $dirfilename\n"
 
-        # buf1 load 
+        set fc [file join $dirfilename $filename]
+        ::console::affiche_resultat "filename $fc\n"
+        # buf1 load $fc
         # buf1
         # set fileout [file tail $fc ]
         # buf1 save "$bddconf(dirtmp)/${fileout}${ext}"
