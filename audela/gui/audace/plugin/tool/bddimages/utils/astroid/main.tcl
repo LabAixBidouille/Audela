@@ -14,7 +14,6 @@
 #
 global ssp_image
 
-source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/astroid/config.tcl
 source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/astroid/get_one_image.tcl
 source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/astroid/get_cata.tcl
 source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/astroid/imprimlist.tcl
