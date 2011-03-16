@@ -40,6 +40,18 @@ namespace eval bddimages_analyse {
 
    }
 
+   proc ::bddimages_analyse::creation_wcs { img_list } {
+
+      global bddconf
+
+      ::console::affiche_resultat "creation_wcs\n"
+      ::console::affiche_resultat "img_list $img_list\n"
+
+      # calibwcs
+      #calibwcs Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder
+
+   }
+
 
 
 }
