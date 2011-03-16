@@ -33,6 +33,40 @@
 
 
 /**
+ *  cmdCamConvertbw
+ *  converti l'image couleur en image 2 axes noir et blanc.
+ *  Utile pour les TP de master 
+ *
+ *  Parametres :
+ *
+ */
+int cmdCamConvertbw(ClientData clientData, Tcl_Interp * interp,
+                int argc, char *argv[])
+{
+   char ligne[256];
+   int result = TCL_ERROR;
+   struct camprop *cam;
+   const char *usage = "Usage: %s %s none|cols|cfa";
+
+   cam = (struct camprop *) clientData;
+	if (argc<=2) {
+		Tcl_SetResult(interp, cam->convertbw, TCL_VOLATILE);
+		result = TCL_OK;
+	} else {
+		if ((strcmp(argv[2],"none")==0)||(strcmp(argv[2],"cols")==0)||(strcmp(argv[2],"cfa")==0)) {
+			strcpy(cam->convertbw,argv[2]);
+			Tcl_SetResult(interp, cam->convertbw, TCL_VOLATILE);
+			result = TCL_OK;
+		} else {
+	      sprintf(ligne, usage, argv[0], argv[1]);
+			Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+			result = TCL_ERROR;
+		}
+	}
+   return result;
+}
+
+/**
  * cmdCamLonguePose - Reglage du mode longue pose.
  *
  * Declare if use long or normal exposure,

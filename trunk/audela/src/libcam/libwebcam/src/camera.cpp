@@ -435,7 +435,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    }
 
    // je connecte le stream video
-   if (cam->params->capture->connect(cam->longuepose, cam->msg) == FALSE) {
+   if (cam->params->capture->connect(cam->longuepose, cam->driver,cam->msg) == FALSE) {
       //webcam_log(LOG_DEBUG,"cam_init connect error:  %s",cam->msg);
       cam_close(cam);
       return 4;
@@ -453,6 +453,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    cam->biny = 1;
    cam->imax = cam->nb_photox / cam->binx;
    cam->jmax = cam->nb_photoy / cam->biny;
+	strcpy(cam->convertbw,"none");
 
    // je descative la capture audio
    cam->params->capture->setCaptureAudio(FALSE);
@@ -536,7 +537,7 @@ int webcam_setConnectionState(struct camprop *cam, BOOL state) {
 
    if (cam->params->capture != NULL) {
       if ( state == TRUE ) {
-         result = cam->params->capture->connect(cam->longuepose, cam->msg);
+         result = cam->params->capture->connect(cam->longuepose, cam->driver,cam->msg);
       } else {
          result = cam->params->capture->disconnect(cam->msg);
       }
@@ -668,35 +669,57 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
 
    if ( cam->sensorColor == 1 ) {
       // Charge l'image 24 bits
-      strcpy(cam->pixels_classe, "CLASS_RGB");
-      strcpy(cam->pixels_format, "FORMAT_BYTE");
-      strcpy(cam->pixels_compression, "COMPRESS_NONE");
+		if ((strcmp(cam->convertbw,"cols")==0)||(strcmp(cam->convertbw,"cfa")==0)) {
+			strcpy(cam->pixels_classe, "CLASS_GRAY");
+		} else {
+			strcpy(cam->pixels_classe, "CLASS_RGB");
+		}
+		strcpy(cam->pixels_format, "FORMAT_BYTE");
+		strcpy(cam->pixels_compression, "COMPRESS_NONE");
       cam->pixels_reverse_y = 1;
-      //cam->pixel_data = (char*)malloc(cam->imax*cam->jmax*3);
-      cam->pixel_data = (char*)malloc(cam->w * cam->h * 3);
+		if (strcmp(cam->convertbw,"cfa")==0) {
+	      cam->pixel_data = (char*)malloc(cam->w * cam->h);
+		} else if (strcmp(cam->convertbw,"cols")==0) {
+	      cam->pixel_data = (char*)malloc(cam->w * cam->h);
+		} else {
+	      cam->pixel_data = (char*)malloc(cam->w * cam->h * 3);
+		}
       
       if( cam->pixel_data != NULL) {
          // copy rgbBuffer into cam->pixel_data and convert color order  BGR -> RGB
          frameBuffer = cam->params->capture->getGrabbedFrame(cam->msg);
          if( frameBuffer != NULL ) {
             unsigned char *pOut = (unsigned char *) cam->pixel_data  ;
-            //for(int y = cam->jmax -1; y >= 0; y-- ) {
-            //   unsigned char *pIn = frameBuffer + y * cam->imax *3 ;
-            //   for(int x=0; x <cam->imax; x++) {
-            //      *(pOut++)= *(pIn + x*3 +2);
-            //      *(pOut++)= *(pIn + x*3 +1);
-            //      *(pOut++)= *(pIn + x*3 +0);
-            //   }
-            //}
             // j'applique le fenetrage 
-            for(int y = cam->y2; y >= cam->y1; y-- ) {
-               unsigned char *pIn = frameBuffer + y * cam->imax *3 ;
-               for(int x= cam->x1; x <= cam->x2; x++) {
-                  *(pOut++)= *(pIn + x*3 +2);
-                  *(pOut++)= *(pIn + x*3 +1);
-                  *(pOut++)= *(pIn + x*3 +0);
-               }
-            }
+				if (strcmp(cam->convertbw,"cols")==0) {
+					for(int y = cam->y2; y >= cam->y1; y-- ) {
+						unsigned char *pIn = frameBuffer + y * cam->imax *3 ;
+						for(int x= cam->x1; x <= cam->x2; x++) {
+							*(pOut++)= *(pIn + x*3 +2);
+							*(pOut++)= *(pIn + x*3 +1);
+							*(pOut++)= *(pIn + x*3 +0);
+						}
+					}
+				} else if (strcmp(cam->convertbw,"cfa")==0) {
+					for(int y = cam->y2; y >= cam->y1; y-- ) {
+						unsigned char *pIn = frameBuffer + y * cam->imax *3 ;
+						for(int x= cam->x1; x <= cam->x2; x++) {
+							*(pOut+ (2*(cam->y2-y)  ) * cam->w + 2 * (x-cam->x1) + 0)= *(pIn + x*3 +2);
+							*(pOut+ (2*(cam->y2-y)  ) * cam->w + 2 * (x-cam->x1) + 1)= *(pIn + x*3 +1);
+							*(pOut+ (2*(cam->y2-y)+1) * cam->w + 2 * (x-cam->x1) + 0)= *(pIn + x*3 +1);
+							*(pOut+ (2*(cam->y2-y)+1) * cam->w + 2 * (x-cam->x1) + 1)= *(pIn + x*3 +0);
+						}
+					}
+				} else {
+					for(int y = cam->y2; y >= cam->y1; y-- ) {
+						unsigned char *pIn = frameBuffer + y * cam->imax *3 ;
+						for(int x= cam->x1; x <= cam->x2; x++) {
+							*(pOut++)= *(pIn + x*3 +2);
+							*(pOut++)= *(pIn + x*3 +1);
+							*(pOut++)= *(pIn + x*3 +0);
+						}
+					}
+				}
          } else {
             // je retourne un message d'erreur
             sprintf(cam->msg, "cam_read_ccd: frameBuffer is empty");
@@ -816,6 +839,13 @@ void cam_update_window(struct camprop *cam)
    cam->x2 = cam->x1 + cam->w * cam->binx - 1;
    cam->h = (cam->y2 - cam->y1) / cam->biny + 1;
    cam->y2 = cam->y1 + cam->h * cam->biny - 1;
+	if (strcmp(cam->convertbw,"cols")==0) {
+		cam->w*=3;
+	}
+	if (strcmp(cam->convertbw,"cfa")==0) {
+		cam->w*=2;
+		cam->h*=2;
+	}
 }
 
 /**

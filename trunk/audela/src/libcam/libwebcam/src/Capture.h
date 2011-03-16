@@ -47,7 +47,7 @@ class CCapture {
   public:
     virtual ~CCapture();
     virtual BOOL initHardware(UINT uIndex, CCaptureListener * captureListener, char *errorMsg)=0;
-    virtual BOOL connect(BOOL longexposure, char *errorMsg)=0;
+    virtual BOOL connect(BOOL longexposure, UINT uIndex,char *errorMsg)=0;
     virtual BOOL disconnect(char *errorMsg)=0;
     virtual BOOL isConnected()=0;
 
@@ -95,4 +95,4 @@ class CCapture {
 
 };
 
-#endif
+#endif

@@ -47,7 +47,7 @@ class CCaptureWinVfw : public CCapture {
      virtual ~ CCaptureWinVfw();
 
     BOOL initHardware(UINT uIndex, CCaptureListener * captureListener, char *errorMsg);
-    BOOL connect(int longexposure, char *errorMsg);
+    BOOL connect(int longexposure, UINT iIndex, char *errorMsg);
     BOOL disconnect(char *errorMsg);
     BOOL isConnected();
 

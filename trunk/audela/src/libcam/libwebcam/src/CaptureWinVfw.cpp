@@ -96,13 +96,13 @@ BOOL CCaptureWinVfw::initHardware(UINT uIndex, CCaptureListener *captureListener
 *
 *----------------------------------------------------------------------
 */
-BOOL CCaptureWinVfw::connect(BOOL longExposure, char *errorMsg) {
+BOOL CCaptureWinVfw::connect(BOOL longExposure, UINT iIndex, char *errorMsg) {
    BOOL result;
 
    this->longExposure = longExposure;
 
    // Try connecting to the capture driver
-   if (capDriverConnect(hwndCap, 0) == TRUE) {
+   if (capDriverConnect(hwndCap, iIndex) == TRUE) {
       // Get the capabilities of the capture driver
       capDriverGetCaps(hwndCap, &capDriverCaps, sizeof(CAPDRIVERCAPS)) ;
       // Get the settings for the capture window
