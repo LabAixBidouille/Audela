@@ -1043,23 +1043,23 @@ namespace eval bddimages_recherche {
 
         # Labels Associate
         $popupTbl add command -label $caption(bddimages_recherche,setwcs) \
-           -command { ::bddimages_imganalyse::run_setwcs}
+           -command { ::bddimages_analyse::run_setwcs}
 
         # Labels Associate
         $popupTbl add command -label $caption(bddimages_recherche,astroid) \
-           -command { ::bddimages_imganalyse::run_astroid}
+           -command { ::bddimages_analyse::run_astroid}
 
         # Labels Associate
         $popupTbl add command -label $caption(bddimages_recherche,photom) \
-           -command { ::bddimages_imganalyse::run_photom}
+           -command { ::bddimages_analyse::run_photom}
 
         # Labels Associate
         $popupTbl add command -label $caption(bddimages_recherche,astrom) \
-           -command { ::bddimages_imganalyse::run_astrom}
+           -command { ::bddimages_analyse::run_astrom}
 
         # Labels Associate
         $popupTbl add command -label $caption(bddimages_recherche,cata) \
-           -command { ::bddimages_imganalyse::run_cata}
+           -command { ::bddimages_analyse::run_cata}
 
         # Separateur
         $popupTbl add separator
