@@ -15,6 +15,7 @@
    {"videoformat",          (Tcl_CmdProc *)cmdCamVideoFormat}, \
    {"longuepose",           (Tcl_CmdProc *)cmdCamLonguePose}, \
    {"longueposelinkno",     (Tcl_CmdProc *)cmdCamLonguePoseLinkno}, \
+   {"convertbw",            (Tcl_CmdProc *)cmdCamConvertbw}, \
 
 #if defined(OS_WIN)
 #define OS_SPECIFIC_FUNCS \
@@ -49,6 +50,7 @@ extern "C" {			/* Assume C declarations for C++ */
 #endif				/* __cplusplus */
 
     /* === Specific commands for that camera === */
+	 int cmdCamConvertbw(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
     int cmdCamConnect(ClientData clientData, Tcl_Interp * interp, int argc,char *argv[]);
     int cmdCamWidget(ClientData clientData, Tcl_Interp * interp, int argc, Tcl_Obj *CONST objv[]);
     int cmdCamVideoFormat(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);

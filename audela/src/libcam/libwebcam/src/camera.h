@@ -105,6 +105,7 @@ typedef struct _PrivateParams PrivateParams;
  * sensorColor : color=1 , black and white= 0
  */
    int sensorColor;
+	char convertbw[10];
 
 /**
  * Buffer for rgb frame.
