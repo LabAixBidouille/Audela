@@ -27,23 +27,22 @@ namespace eval bddimages_recherche {
 
    variable ::bddimages_recherche::current_list_id
 
-#--------------------------------------------------
-# run { this }
-#--------------------------------------------------
-#
-#    fonction  :
-#        Creation de la fenetre
-#
-#    procedure externe :
-#
-#    variables en entree :
-#        @param this = chemin de la fenetre
-#
-#    variables en sortie :
-#        @return
-#
-#--------------------------------------------------
-
+   #--------------------------------------------------
+   # run { this }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #        Creation de la fenetre
+   #
+   #    procedure externe :
+   #
+   #    variables en entree :
+   #        @param this = chemin de la fenetre
+   #
+   #    variables en sortie :
+   #        @return
+   #
+   #--------------------------------------------------
    proc run { this } {
       variable This
 
@@ -53,21 +52,21 @@ namespace eval bddimages_recherche {
       return
    }
 
-#--------------------------------------------------
-# fermer { }
-#--------------------------------------------------
-#
-#    fonction  :
-#        Fonction appellee lors de l'appui
-#        sur le bouton 'Fermer'
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
+   #--------------------------------------------------
+   # fermer { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #        Fonction appellee lors de l'appui
+   #        sur le bouton 'Fermer'
+   #
+   #    procedure externe :
+   #
+   #    variables en entree :
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
    proc fermer { } {
       variable This
 
@@ -76,23 +75,21 @@ namespace eval bddimages_recherche {
       return
    }
 
-
-
-#--------------------------------------------------
-#  recup_position { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Permet de recuperer et de sauvegarder
-#       la position de la fenetre
-#
-#    procedure externe :
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
+   #--------------------------------------------------
+   #  recup_position { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       Permet de recuperer et de sauvegarder
+   #       la position de la fenetre
+   #
+   #    procedure externe :
+   #
+   #    variables en entree :
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
    proc recup_position { } {
       variable This
       global audace
@@ -108,24 +105,23 @@ namespace eval bddimages_recherche {
       return
    }
 
-
-#--------------------------------------------------
-#  affiche_image_by_idbddimg { id }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Permet d afficher l image d un fichier
-#       selectionné
-#
-#    procedure externe :
-#        charge $fp : $fp est le chemin de l image sur le disque
-#
-#    variables en entree :
-#        @param id = identification de l image dans la base de donnees
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
+   #--------------------------------------------------
+   #  affiche_image_by_idbddimg { id }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       Permet d afficher l image d un fichier
+   #       selectionné
+   #
+   #    procedure externe :
+   #        charge $fp : $fp est le chemin de l image sur le disque
+   #
+   #    variables en entree :
+   #        @param id = identification de l image dans la base de donnees
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
    proc affiche_image_by_idbddimg { id } {
      
       set sqlcmd "SELECT dirfilename,filename FROM images WHERE idbddimg = $id"
@@ -146,23 +142,51 @@ namespace eval bddimages_recherche {
       return
    }
 
+   #--------------------------------------------------
+   #  affiche_entete { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       Permet d afficher l entete d un fichier
+   #       selectionné
+   #
+   #    procedure externe :
+   #
+   #    variables en entree :
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
+   proc affiche_entete { } {
+   
+      variable This
+      global audace
+   
+      set i [lindex [$::bddimages_recherche::This.frame6.result.tbl curselection ]  0]
+      set nomfich  [lindex [$::bddimages_recherche::This.frame6.result.tbl get $i] 1]
+      charge $nomfich
+   # TODO remplacer 1 var visuNo
+      ::keyword::header $audace(visuNo)
+   
+      return
+   }
 
-#--------------------------------------------------
-#  affiche_image { }
-#--------------------------------------------------
-#
-#    fonction  :
-#       Permet d afficher l image d un fichier
-#       selectionne par clic dans la liste du tk 
-#
-#    procedure externe :
-#        affiche_image_by_idbddimg $id : $id = identification de l image dans la base de donnees
-#
-#    variables en entree :
-#
-#    variables en sortie :
-#
-#--------------------------------------------------
+   #--------------------------------------------------
+   #  affiche_image { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       Permet d afficher l image d un fichier
+   #       selectionne par clic dans la liste du tk 
+   #
+   #    procedure externe :
+   #        affiche_image_by_idbddimg $id : $id = identification de l image dans la base de donnees
+   #
+   #    variables en entree :
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
    proc affiche_image { } {
       variable This
       global audace
@@ -171,19 +195,8 @@ namespace eval bddimages_recherche {
 
       set i [lindex [$::bddimages_recherche::This.frame6.result.tbl curselection ]  0]
       set idbddimg  [lindex [$::bddimages_recherche::This.frame6.result.tbl get $i] 0]
-
       affiche_image_by_idbddimg $idbddimg
-      ###for { set i 0 } { $i <= [ expr [llength $bddconf(listetotale)] - 1 ] } { incr i } {
-      ### set selectfich [$::bddimages_recherche::This.frame6.result.tbl selection includes $i]
-      ###  if {$selectfich==1} {
-      ###     set nomfich [lindex [$::bddimages_recherche::This.frame6.result.tbl get $i] 1]
-      ###     set errnum [ catch { loadima $nomfich } msg ]
-      ###     if { $errnum == "1" } {
-      ###        tk_messageBox -message "$msg" -icon error
-      ###     }
-      ###     return # affiche seulement le premier fichier selectionné et sort de la procedure
-      ###  }
-      ###}
+
       return
    }
 
@@ -439,11 +452,11 @@ namespace eval bddimages_recherche {
       }
 
       #---
-      if { [ info exists bddconf(geometry_status) ] } {
-         set deb [ expr 1 + [ string first + $bddconf(geometry_status) ] ]
-         set fin [ string length $bddconf(geometry_status) ]
-         set bddconf(position_status) "+[ string range $bddconf(geometry_status) $deb $fin ]"
-      }
+#      if { [ info exists bddconf(geometry_status) ] } {
+#         set deb [ expr 1 + [ string first + $bddconf(geometry_status) ] ]
+#         set fin [ string length $bddconf(geometry_status) ]
+#         set bddconf(position_status) "+[ string range $bddconf(geometry_status) $deb $fin ]"
+#      }
 
       if {! [ info exists bddconf(current_config)]} {
          # Charge les config bddimages depuis le fichier XML
@@ -458,8 +471,6 @@ namespace eval bddimages_recherche {
          ::console::affiche_resultat "default_config = $bddconf(default_config) \n"
          ::console::affiche_resultat "current_config = $bddconf(current_config) \n"
       }
-
-
 
       set nbintellilist 0
       if { [catch {::bddimages_liste::conf_load_intellilists } msg] } {
@@ -537,7 +548,7 @@ namespace eval bddimages_recherche {
 
          #---
          toplevel $This -class Toplevel
-         wm geometry $This $bddconf(position_status)
+         wm geometry $This $bddconf(geometry_status)
          wm resizable $This 1 1
          wm title $This $caption(bddimages_recherche,main_title)
          wm protocol $This WM_DELETE_WINDOW { ::bddimages_recherche::fermer }
@@ -567,7 +578,7 @@ namespace eval bddimages_recherche {
            menu $This.frame0.image.menu
              $This.frame0.image.menu add command -label "$caption(search,charge)" -command { ::bddimages_recherche::affiche_image }
              $This.frame0.image.menu add command -label [concat "$caption(search,entete_FITS) (Ctrl+f)"] \
-                                               -command { }
+                                               -command { ::bddimages_recherche::affiche_entete }
            pack $This.frame0.image -side left
            #--- menu aide
            menubutton $This.frame0.aide -text "$caption(search,aide)" -underline 0 -menu $This.frame0.aide.menu
@@ -1239,7 +1250,7 @@ namespace eval bddimages_recherche {
 
       # Definition
       set empty [list "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-"]
-      set list_of_columns [list [list "idbddimg"             "ID"] \
+      set list_of_columns [list  [list "idbddimg"             "ID"] \
                                  [list "filename"             "Filename"] \
                                  [list "telescop"             "Telescope"] \
                                  [list "date-obs"             "Date-Obs"] \
