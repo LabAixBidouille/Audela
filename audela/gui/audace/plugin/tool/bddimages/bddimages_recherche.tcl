@@ -1189,8 +1189,11 @@ namespace eval bddimages_recherche {
       
    }
 
+
+
+
    proc ::bddimages_recherche::bddimages_charge_cata { } {
-   
+
       variable This
       global caption
       set reply [tk_dialog $This.confirmDialog "BddImages" "$caption(bddimages_recherche,confirmQuest)" \
@@ -1204,7 +1207,7 @@ namespace eval bddimages_recherche {
          ::bddimages_analyse::charge_cata $imglist
 
       }
-      
+
    }
 
 
