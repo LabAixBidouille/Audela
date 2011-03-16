@@ -1031,7 +1031,7 @@ namespace eval bddimages_recherche {
 
 
         # Separateur
-        $popupTbl add separator
+        $popupTbl add separator 
 
         # Labels Associate
         $popupTbl add command -label "charge_cata" \
