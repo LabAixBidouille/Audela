@@ -25,6 +25,10 @@ namespace eval bddimages_astroid {
    global audace
    global bddconf
 
+   package require math::constants
+
+
+
 
    proc ::bddimages_astroid::run_astroid {  } {
 
@@ -34,27 +38,124 @@ namespace eval bddimages_astroid {
       ::confVisu::addMirrorListener $::audace(visuNo) "efface_rond"
       ::confVisu::addFileNameListener $::audace(visuNo) "efface_rond"
 
-      ::console::affiche_resultat "astroid head     = [lindex $::bddimages_analyse::current_cata 0] \n"
+      ::console::affiche_resultat "cata head = [lindex $::bddimages_analyse::current_cata 0] \n"
+      ::console::affiche_resultat "cata s1   = [lindex [lindex $::bddimages_analyse::current_cata 1] 0]\n"
+      set med  [expr [llength [lindex $::bddimages_analyse::current_cata 1] ] / 2]
+      ::console::affiche_resultat "cata s2  $med = [lindex [lindex $::bddimages_analyse::current_cata 1] $med]\n"
 
       # Affichage centre champ de l image
-      set centre [list {"CENTRE" {} {} } [list [list [list "CENTRE" [list $::bddimages_analyse::current_image(ra) $::bddimages_analyse::current_image(dec)] {}]]]]
+      set centre [list [list "CENTRE" {ra dec} {}] [list [list [list "CENTRE" [list $::bddimages_analyse::current_image(ra) $::bddimages_analyse::current_image(dec)] {}]]]]
+      ::console::affiche_resultat "centre = $centre\n"
       ::bddimages_astroid::affich_rond $centre "CENTRE" "red" 7
       ::console::affiche_resultat "ROND ROUGE: centre du champ provenant du header fits\n"
 
       # Recupere le catalog astrometrique
-      #set astrometric_list [::bddimages_astroid::vo_cds_query "UCAC2" $::bddimages_analyse::current_image(ra) $::bddimages_analyse::current_image(dec) $::bddimages_analyse::current_image(radius)]
-      set astrometric_list [get_astrometric_catalog $::bddimages_analyse::current_image(ra) $::bddimages_analyse::current_image(dec) $::bddimages_analyse::current_image(radius)]
-       ::console::affiche_resultat "astroid astrometric_list =  $astrometric_list\n"
-       ::console::affiche_resultat "astroid num_star_sources astrometric_list =  [llength $astrometric_list]\n"
+       set astrometric_list [get_astrometric_catalog $::bddimages_analyse::current_image(ra) $::bddimages_analyse::current_image(dec) $::bddimages_analyse::current_image(radius)]
+       ::console::affiche_resultat "astroid astrometric nbsource =  [llength [lindex $astrometric_list 1]]\n"
+      ::console::affiche_resultat "astrometric head = [lindex $astrometric_list 0] \n"
+      ::console::affiche_resultat "astrometric s1   = [lindex [lindex $astrometric_list 1] 0]\n"
+      ::console::affiche_resultat "astrometric s2   = [lindex [lindex $astrometric_list 1] 1]\n"
 
       # Affichage le catalogue astrometrique
-      affich_rond $astrometric_list "UCAC2" "blue" 2
-      ::console::affiche_resultat "ROND BLEU: Etoiles astrometric 2\n"
+      ::bddimages_astroid::affich_rond $astrometric_list "UCAC2" "blue" 2
+      ::console::affiche_resultat "ROND BLEU: Etoiles astrometric\n"
+
+      set star_ident [ identification $::bddimages_analyse::current_cata "USNOA2" $astrometric_list "UCAC2" 30.0 10.0 10.0 ]
+      # Affichage des sources identifiees
+      ::bddimages_astroid::affich_rond $star_ident "UCAC2" "green" 2
+
+      ###################################################
+      ###################################################
+
+      # Ecrire au format cata.xml la liste star_ident
+
+      ###################################################
+      ###################################################
+
 
 
    }
 
 
+
+
+
+
+proc ::bddimages_astroid::get_identified { sra sdec serrpos srmag srmagerr ira idec ierrpos irmag irmagerr scoreposlimit scoremvlimit scorelimit } {
+
+    set dtr $::math::constants::degtorad
+    set score NULL
+    set deltapos [expr sqrt(pow(($sra-$ira)*cos($sdec*$dtr),2) + pow($sdec-$idec,2))]
+    set deltaposdiv [expr ($serrpos + $ierrpos) / 3600.0]
+    set scorepos [expr (1.0 - $deltapos / $deltaposdiv) * 100.0]
+    if {$deltapos > $deltaposdiv } { set scorepos 0.0 }
+    set deltamag [expr abs($irmag - $srmag)]
+    set deltamagdiv [expr $srmagerr+$irmagerr]
+    set scoremv [expr (1.0 - $deltamag / $deltamagdiv) * 100.0]
+    if { $deltamag > $deltamagdiv } { set scoremv 0.0 }
+    set score $scorepos
+    if { $scoremv < $score } { set score $scoremv }
+    if { $scorepos >= $scoreposlimit && $scoremv >= $scoremvlimit && $score >= $scorelimit } {
+       return true
+       }
+    return false
+    }
+
+
+
+
+# -- Procedure 
+proc ::bddimages_astroid::identification { catalist1 catalog1 catalist2 catalog2 scoreposlimit scoremvlimit scorelimit } {
+
+   set resultlist {}
+
+   set fields1  [lindex $catalist1 0]
+   set sources1 [lindex $catalist1 1]
+   set fields2  [lindex $catalist2 0]
+   set sources2 [lindex $catalist2 1]
+
+   set nb 0
+ 
+   foreach s1 $sources1 {
+      set cm "?"
+      set completesource {}
+      foreach cata $s1 {
+         lappend completesource $cata
+         if { [lindex $cata 0]==$catalog1 } {
+            set cm1 [lindex $cata 1]
+            set cm "ok"
+            }
+         }
+      if { $cm == "ok"} {
+
+         set key 0
+         foreach s2 $sources2 {
+            set tmpsource {}
+            foreach cata $s2 {
+               lappend tmpsource $cata
+               if { [lindex $cata 0]==$catalog2 } {
+                  set cm2 [lindex $cata 1]
+                  }
+               }
+            set accepted [::bddimages_astroid::get_identified [lindex $cm1 0] [lindex $cm1 1] [lindex $cm1 2] [lindex $cm1 3] [lindex $cm1 4] [lindex $cm2 0] [lindex $cm2 1] [lindex $cm2 2] [lindex $cm2 3] [lindex $cm2 4] $scoreposlimit $scoremvlimit $scorelimit ]
+            if { $accepted } {
+               set sources2 [lreplace $sources2 $key $key ]
+               incr nb
+               gren_info "[lindex $cm1 0] [lindex $cm1 1] [lindex $cm2 0] [lindex $cm2 1] accepted $nb [llength $sources2]\n"
+               set completesource [concat $completesource $tmpsource]
+               break
+               }
+            incr key
+            }
+
+
+         }
+      
+      lappend resultlist $completesource
+      }
+
+return [list [concat $fields1 $fields2] $resultlist]
+}
 
 
 
@@ -62,52 +163,53 @@ proc ::bddimages_astroid::get_astrometric_catalog { ra dec radius} {
 
    set astrometric_catalog UCAC2
 
-   ::console::affiche_resultat "CDSQUERY=($ra, $dec, $radius, $astrometric_catalog)\n"
-   # Appel du catalogue TYCHO
-   # {
-   #  {I/239/tyc_main {The Hipparcos and Tycho Catalogues (ESA 1997)}} 
-   #  {TYC RAhms DEdms Vmag RA(ICRS) DE(ICRS) BTmag VTmag B-V} 
-   #  {{{ 170  2854 1} {07 00 48.04} {+03 54 53.5} 9.58 105.20017797 3.91485967 11.429 9.740 1.410}
-   #   {{ 170  2509 1} {07 01 05.79} {+03 54 17.6} 9.60 105.27411183 3.90488073 11.004 9.718 1.092}
-   #   {{ 170  2476 1} {07 01 07.94} {+03 52 20.2} 10.29 105.28309416 3.87228981 11.588 10.402 1.013}
-   #  }I/259/tyc2 I/297/out
-   # }
-   # 2eme forme
-   # {
-   # {TYC1 TYC2 TYC3 pmRA pmDE BTmag VTmag HIP RA(ICRS) DE(ICRS)} 
-   # {
-   #  {170 2854 1 1.8 -0.7 11.432 9.716 {} 105.20018639 3.91485778} 
-   #  {170 2607 1 -4.0 1.1 11.358 10.992 {} 105.25741056 3.99244917}}}
-
-
+   ::console::affiche_resultat "::bddimages_astroid::vo_cds_query $astrometric_catalog $ra $dec $radius\n"
    set star_list [::bddimages_astroid::vo_cds_query $astrometric_catalog $ra $dec $radius]
    #set star_list [vo_vizier_query $ra $dec $radius arcmin I/289/out]
 
-   ::console::affiche_resultat "set starlist {$star_list}\n"
+   #::console::affiche_resultat "set star_list {$star_list}\n"
 
-   set tmp [lindex $star_list 0]
-   set allfields [lindex $tmp 0]
+   set fsav ""
+   set cpt 0
+   set list_sources ""
+   foreach t $star_list {
+      set tt [lindex $t 0]
+      set c  [lindex $tt 0]
+      set f  [lindex $tt 1]
+      set v  [lindex $tt 2]
+      if {$cpt!=0} {
+         if {$f!=$fsav} {
+            ::console::affiche_erreur "ENTETE NON IDENTIQUE\n"
+         }
+      } else {
+         ::console::affiche_resultat "premier passage\n"
+         
+         set i 0
+         foreach x $f {
+           ::console::affiche_resultat "($i) $x = [lindex $v $i]\n"
+           incr i
+         }
+
+      }
+      #::console::affiche_resultat "ucac2 = [lindex $v 1]\n"
+
+      set cmval [list [lindex $v 2] [lindex $v 3] .2 [lindex $v 7] 0.2 ]
+      lappend list_sources [list [list $c $cmval $v]]
+      #::console::affiche_resultat "cmval $cmval\n"
+      set fsav $f
+      incr cpt
+   }
 
    set cmfields  [list ra dec poserr mag magerr]
-   set list_fields [list [list "UCAC2" $cmfields $allfields] ]
-
-   ::console::affiche_resultat "$list_fields\n"
+   set list_fields [list [list $astrometric_catalog $cmfields $fsav] ]
    
-   set list_sources {}
-   set tmp [lindex $tmp 1]
-   foreach star $tmp {
-       ::console::affiche_resultat "star=$star\n"
-       #set cmval [list [expr [ mc_angle2deg [lindex $star 1]]*15] [expr [ mc_angle2deg [lindex $star 2]]*1.] .2 [lindex $star 3] 0.2 ]
-       set cmval [list [lindex $star 8] [lindex $star 9] .2 [lindex $star 6] 0.2 ]
-       #::console::affiche_resultat "cmval=$cmval\n"
-       lappend list_sources [list [list "UCAC2" $cmval $star ] ] 
-       continue
-       }
-
-   #::console::affiche_resultat "TYCHO2: [list $list_fields $list_sources]\n"
-
    return [list $list_fields $list_sources]
    }
+
+
+
+
+
 
 
 #
@@ -140,7 +242,6 @@ set dec [::http::formatQuery $dec]
 set r [::http::formatQuery $r]
 set query "-out.max=10000&-c=$ra+$dec&-c.eq=J2000&-oc.form=dec&-c.r=+$r&-c.u=arcmin&-c.geom=r&-source=$catalog%2Fout&-out.all=1"
 
-#gren_info " query = $url?$query"
 
 set token [ ::http::geturl $url -query $query ]
 set votable [::dom::parse [::http::data $token]]
@@ -149,20 +250,13 @@ foreach n [::dom::selectNode $votable {descendant::FIELD/attribute::name}] {
    lappend fields "[::dom::node stringValue $n]"
    }
 
-#set idmagbmv [lsearch $fields "B-V"]
-
 set rows {}
 foreach tr [::dom::selectNode $votable {descendant::TR}] {
    set row {}
    foreach td [::dom::selectNode $tr {descendant::TD/text()}] {
       lappend row [::dom::node stringValue $td]
       }
-#      set magbnv [lindex $row $idmagbmv]
-#   if {$magbnv > 0.5 && $magbnv < 0.9}  then {
-#      gren_info " B-V = [lindex $row $idmagbmv]"
       lappend rows [list [list $catalogname $fields $row] ]
-#      }
-#   lappend rows [list $catalogname $fields $row]
    }
 
 return $rows
