@@ -1032,7 +1032,7 @@ namespace eval bddimages_recherche {
 
         # Labels Associate
         $popupTbl add command -label $caption(bddimages_recherche,astroid) \
-           -command { ::bddimages_analyse::run_astroid}
+           -command { ::bddimages_astroid::run_astroid}
 
         # Labels Associate
         $popupTbl add command -label $caption(bddimages_recherche,photom) \
