@@ -49,11 +49,22 @@ namespace eval bddimages_analyse {
 
       foreach img $img_list {
 
-         set tabkey $img
-         set ra [::bddimages_imgcorrection::get_val_imglist ra $tabkey]
-         ::console::affiche_resultat "ra $ra\n"
+         set idbddimg [::bddimages_imgcorrection::get_val_imglist idbddimg $img]
+         ::console::affiche_resultat "idbddimg $idbddimg\n"
 
-         #get_one_image $id 
+         ::bddimages_analyse::get_one_image $idbddimg 
+         
+         ::console::affiche_resultat "idbddcata  = $ssp_image(idbddcata)\n"
+         ::console::affiche_resultat "idbddimage = $ssp_image(idbddimg)"
+         ::console::affiche_resultat "cata       = $ssp_image(dir_cata_file)/$ssp_image(cata_filename)\n"
+         ::console::affiche_resultat "image      = $ssp_image(fits_filename)\n"
+         ::console::affiche_resultat "idheader   = $ssp_image(idheader)\n"
+         ::console::affiche_resultat "dateobs    = $ssp_image(dateobs)\n"
+         ::console::affiche_resultat "ra         = $ssp_image(ra)\n"
+         ::console::affiche_resultat "dec        = $ssp_image(dec)\n"
+         ::console::affiche_resultat "telescop   = $ssp_image(telescop)\n"
+         ::console::affiche_resultat "exposure   = $ssp_image(exposure)\n"
+         ::console::affiche_resultat "filter     = $ssp_image(filter)\n"
          #set struct [get_cata $catafile] 
 
       }
@@ -86,13 +97,13 @@ namespace eval bddimages_analyse {
       foreach img $img_list {
 
          set tabkey $img
-         set ra          [::bddimages_imgcorrection::get_val_tabkey ra $tabkey]
-         set dec         [::bddimages_imgcorrection::get_val_tabkey dec $tabkey]
-         set pixsize1    [::bddimages_imgcorrection::get_val_tabkey pixsize1 $tabkey]
-         set pixsize2    [::bddimages_imgcorrection::get_val_tabkey pixsize2 $tabkey]
-         set foclen      [::bddimages_imgcorrection::get_val_tabkey foclen $tabkey]
-         set filename    [::bddimages_imgcorrection::get_val_tabkey filename $tabkey]
-         set dirfilename [::bddimages_imgcorrection::get_val_tabkey dirfilename $tabkey]
+         set ra          [::bddimages_imgcorrection::get_val_imglist ra $tabkey]
+         set dec         [::bddimages_imgcorrection::get_val_imglist dec $tabkey]
+         set pixsize1    [::bddimages_imgcorrection::get_val_imglist pixsize1 $tabkey]
+         set pixsize2    [::bddimages_imgcorrection::get_val_imglist pixsize2 $tabkey]
+         set foclen      [::bddimages_imgcorrection::get_val_imglist foclen $tabkey]
+         set filename    [::bddimages_imgcorrection::get_val_imglist filename $tabkey]
+         set dirfilename [::bddimages_imgcorrection::get_val_imglist dirfilename $tabkey]
 
          ::console::affiche_resultat "ra $ra\n"
          ::console::affiche_resultat "dec $dec\n"
@@ -266,25 +277,26 @@ gren_info "fichier dezipp�\n"
 
 
 
-proc get_one_image { id } {
+proc get_one_image { idbddimg } {
 
    # pour ne traiter qu'une seule image
    # par exemple : SSP_ID=176 ./solarsystemprocess --console --file ros.tcl
-   gren_info "::::::::::DEBUG::::::: Looping with SSP_ID=$id"
+   gren_info "::::::::::DEBUG::::::: Looping with SSP_ID=$idbddimg"
    set sqlcmd    "SELECT catas.idbddcata,catas.filename,catas.dirfilename,"
    append sqlcmd " cataimage.idbddimg,images.idheader, "
    append sqlcmd " images.filename,images.dirfilename "
    append sqlcmd " FROM catas,cataimage,images "
    append sqlcmd " WHERE cataimage.idbddcata=catas.idbddcata "
    append sqlcmd " AND cataimage.idbddimg=images.idbddimg "
-   append sqlcmd " AND cataimage.idbddimg='$id' "
+   append sqlcmd " AND cataimage.idbddimg='$idbddimg' "
    append sqlcmd " LIMIT 1 "
 
+   ::console::affiche_resultat "\n$sqlcmd = $sqlcmd\n"
    set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
    if {$err} {
-      gren_info "ASTROID: ERREUR 2"
-      gren_info "ASTROID: NUM : <$err>" 
-      gren_info "ASTROID: MSG : <$msg>"
+      ::console::affiche_erreur "ASTROID: ERREUR 2\n"
+      ::console::affiche_erreur "ASTROID: NUM : <$err>\n" 
+      ::console::affiche_erreur "ASTROID: MSG : <$msg>\n"
       }
 
    if {[llength $resultsql] <= 0} then { break }
@@ -292,6 +304,7 @@ proc get_one_image { id } {
    set idbddcata -1
 
    foreach line $resultsql {
+      ::console::affiche_resultat "\n\nline = $line\n"
       set idbddcata      [lindex $line 0]
       set cata_filename  [lindex $line 1]
       set dir_cata_file  [lindex $line 2]
