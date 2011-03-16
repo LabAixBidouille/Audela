@@ -26,6 +26,7 @@ namespace eval bddimages_analyse {
    global bddconf
 
    variable ssp_image
+   variable current_cata
 
 
 
@@ -54,18 +55,21 @@ namespace eval bddimages_analyse {
 
          ::bddimages_analyse::get_one_image $idbddimg 
          
-         ::console::affiche_resultat "idbddcata  = $ssp_image(idbddcata)\n"
-         ::console::affiche_resultat "idbddimage = $ssp_image(idbddimg)"
-         ::console::affiche_resultat "cata       = $ssp_image(dir_cata_file)/$ssp_image(cata_filename)\n"
-         ::console::affiche_resultat "image      = $ssp_image(fits_filename)\n"
-         ::console::affiche_resultat "idheader   = $ssp_image(idheader)\n"
-         ::console::affiche_resultat "dateobs    = $ssp_image(dateobs)\n"
-         ::console::affiche_resultat "ra         = $ssp_image(ra)\n"
-         ::console::affiche_resultat "dec        = $ssp_image(dec)\n"
-         ::console::affiche_resultat "telescop   = $ssp_image(telescop)\n"
-         ::console::affiche_resultat "exposure   = $ssp_image(exposure)\n"
-         ::console::affiche_resultat "filter     = $ssp_image(filter)\n"
-         #set struct [get_cata $catafile] 
+         ::console::affiche_resultat "idbddcata  = $::bddimages_analyse::ssp_image(idbddcata)\n"
+         ::console::affiche_resultat "idbddimage = $::bddimages_analyse::ssp_image(idbddimg)\n"
+         ::console::affiche_resultat "cata       = $::bddimages_analyse::ssp_image(dir_cata_file)/$::bddimages_analyse::ssp_image(cata_filename)\n"
+         ::console::affiche_resultat "image      = $::bddimages_analyse::ssp_image(fits_filename)\n"
+         ::console::affiche_resultat "idheader   = $::bddimages_analyse::ssp_image(idheader)\n"
+         ::console::affiche_resultat "dateobs    = $::bddimages_analyse::ssp_image(dateobs)\n"
+         ::console::affiche_resultat "ra         = $::bddimages_analyse::ssp_image(ra)\n"
+         ::console::affiche_resultat "dec        = $::bddimages_analyse::ssp_image(dec)\n"
+         ::console::affiche_resultat "telescop   = $::bddimages_analyse::ssp_image(telescop)\n"
+         ::console::affiche_resultat "exposure   = $::bddimages_analyse::ssp_image(exposure)\n"
+         ::console::affiche_resultat "filter     = $::bddimages_analyse::ssp_image(filter)\n"
+
+         set catafile [file join $bddconf(dirbase) $::bddimages_analyse::ssp_image(dir_cata_file) $::bddimages_analyse::ssp_image(cata_filename)]
+         set ::bddimages_analyse::current_cata [get_cata $catafile] 
+         ::console::affiche_resultat "head     = [lindex $::bddimages_analyse::current_cata 0] \n"
 
       }
 
@@ -152,49 +156,46 @@ namespace eval bddimages_analyse {
 
 proc get_cata { catafile } {
 
-
    global bddconf
 
-   set test "ok"
 
-   set filenametmpzip $bddconf(dirlog)/ssp_tmp_cata.txt.gz
-   set filenametmp $bddconf(dirlog)/ssp_tmp_cata.txt
+   set filenametmpzip $bddconf(dirtmp)/ssp_tmp_cata.txt.gz
+   set filenametmp $bddconf(dirtmp)/ssp_tmp_cata.txt
 
-   if  {$test == "no"} { 
        # -- liste des sources tag = 1
        set err [catch {file delete -force $filenametmpzip} msg]
        if {$err} {
-          gren_info "solarsystemprocess: ERREUR 4a\n"
-          gren_info "solarsystemprocess:        NUM : <$err>\n" 
-          gren_info "solarsystemprocess:        MSG : <$msg>\n"
+          ::console::affiche_erreur "astroid: ERREUR 4a\n"
+          ::console::affiche_erreur "astroid:        NUM : <$err>\n" 
+          ::console::affiche_erreur "astroid:        MSG : <$msg>\n"
           }
        set err [catch {file delete -force $filenametmp} msg]
        if {$err} {
-          gren_info "solarsystemprocess: ERREUR 4b\n"
-          gren_info "solarsystemprocess:        NUM : <$err>\n" 
-          gren_info "solarsystemprocess:        MSG : <$msg>\n"
+          ::console::affiche_erreur "astroid: ERREUR 4b\n"
+          ::console::affiche_erreur "astroid:        NUM : <$err>\n" 
+          ::console::affiche_erreur "astroid:        MSG : <$msg>\n"
           }
+   ::console::affiche_resultat  "file copy -force $catafile $filenametmpzip\n"
        set err [catch {file copy -force $catafile $filenametmpzip} msg]
        if {$err} {
-          gren_info "solarsystemprocess: ERREUR 4c\n"
-          gren_info "solarsystemprocess:        NUM : <$err>\n" 
-          gren_info "solarsystemprocess:        MSG : <$msg>\n"
+          ::console::affiche_erreur "astroid: ERREUR 4c\n"
+          ::console::affiche_erreur "astroid:        NUM : <$err>\n" 
+          ::console::affiche_erreur "astroid:        MSG : <$msg>\n"
           }
        set err [catch {exec chmod g-s $filenametmpzip} msg ]
        if {$err} {
-          gren_info "solarsystemprocess: ERREUR 4d\n"
-          gren_info "solarsystemprocess:        NUM : <$err>\n" 
-          gren_info "solarsystemprocess:        MSG : <$msg>\n"
+          ::console::affiche_erreur "astroid: ERREUR 4d\n"
+          ::console::affiche_erreur "astroid:        NUM : <$err>\n" 
+          ::console::affiche_erreur "astroid:        MSG : <$msg>\n"
           }   
        set err [catch {exec gunzip $filenametmpzip} msg ]
        if {$err} {
-          gren_info "solarsystemprocess: ERREUR 4e\n"
-          gren_info "solarsystemprocess:        NUM : <$err>\n" 
-          gren_info "solarsystemprocess:        MSG : <$msg>\n"
+          ::console::affiche_erreur "astroid: ERREUR 4e\n"
+          ::console::affiche_erreur "astroid:        NUM : <$err>\n" 
+          ::console::affiche_erreur "astroid:        MSG : <$msg>\n"
           }   
-      }   
 
-gren_info "fichier dezipp�\n"
+   ::console::affiche_resultat  "fichier dezippe\n"
 
    set linerech "123456789 123456789 123456789 123456789" 
 
@@ -256,12 +257,10 @@ gren_info "fichier dezipp�\n"
       }
 
    if {[catch {close $chan} err]} {
-       gren_info "solarsystemprocess: ERREUR 6  <$err>"
+       ::console::affiche_resultat "astroid: ERREUR 6  <$err>"
    }
 
 
-# gren_info " ovni_list2 = $ovni_list2"
-# return usno_list2 ?
  return [list $list_fields $list_sources]
  }
 
