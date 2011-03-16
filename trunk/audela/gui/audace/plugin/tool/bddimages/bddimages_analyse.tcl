@@ -74,7 +74,7 @@ namespace eval bddimages_analyse {
         set dirfilename [::bddimages_imgcorrection::get_val_imglist dirfilename $img]
 
         ::console::affiche_resultat "ra $ra\n"
-        ::console::affiche_resultat "dec $ra\n"
+        ::console::affiche_resultat "dec $dec\n"
         ::console::affiche_resultat "pixsize1 $pixsize1\n"
         ::console::affiche_resultat "pixsize2 $pixsize2\n"
         ::console::affiche_resultat "foclen $foclen\n"
@@ -83,6 +83,7 @@ namespace eval bddimages_analyse {
 
         set fc [file join $dirfilename $filename]
         ::console::affiche_resultat "filename $fc\n"
+        ::console::affiche_resultat "calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO /data/astrodata/Catalog/USNOA2\n"
         # buf1 load $fc
         # buf1
         # set fileout [file tail $fc ]
