@@ -1020,6 +1020,22 @@ namespace eval bddimages_recherche {
         $popupTbl add separator
 
         # Labels Associate
+        $popupTbl add command -label $caption(audace,menu,geometry) \
+           -command { ::bddimages_recherche::bddimages_geometrie "mirroirx" }
+
+        # Labels Associate
+        $popupTbl add command -label "Somme" \
+           -command { ::bddimages_imgcorrection::somme }
+
+
+        # Separateur
+        $popupTbl add separator
+
+        # Labels Associate
+        $popupTbl add command -label "charge_cata" \
+           -command { ::bddimages_recherche::bddimages_charge_cata }
+
+        # Labels Associate
         $popupTbl add command -label $caption(bddimages_recherche,setwcs) \
            -command { ::bddimages_imganalyse::run_setwcs}
 
@@ -1141,6 +1157,55 @@ namespace eval bddimages_recherche {
       }
       
    }
+
+   proc ::bddimages_recherche::bddimages_geometrie { type } {
+   
+      variable This
+      global caption
+      set reply [tk_dialog $This.confirmDialog "BddImages" "$caption(bddimages_recherche,confirmQuest)" \
+                    questhead 1 "$caption(bddimages_recherche,confirmNo)" "$caption(bddimages_recherche,confirmYes)"]
+      if {$reply} {
+
+         set lid [$::bddimages_recherche::This.frame6.result.tbl curselection ]
+         set lid [lsort -decreasing -integer $lid]
+         set imglist [::bddimages_liste::new_normallist $lid]
+
+            if {$type=="mirroirx"} {
+               ::bddimages_imgcorrection::bddimages_mirroirx $imglist
+            }
+            if {$type=="mirroiry"} {
+               #::bddimages_imgcorrection::mirroiry $idbddimg
+            }
+            if {$type=="rot_plus90"} {
+               #::bddimages_imgcorrection::rot_plus90 $idbddimg
+            }
+            if {$type=="rot_moins90"} {
+               #::bddimages_imgcorrection::rot_moins90 $idbddimg
+            }
+
+      }
+      
+   }
+
+   proc ::bddimages_recherche::bddimages_charge_cata { } {
+   
+      variable This
+      global caption
+      set reply [tk_dialog $This.confirmDialog "BddImages" "$caption(bddimages_recherche,confirmQuest)" \
+                    questhead 1 "$caption(bddimages_recherche,confirmNo)" "$caption(bddimages_recherche,confirmYes)"]
+      if {$reply} {
+
+         set lid [$::bddimages_recherche::This.frame6.result.tbl curselection ]
+         set lid [lsort -decreasing -integer $lid]
+         set imglist [::bddimages_liste::new_normallist $lid]
+
+         ::bddimages_analyse::charge_cata $imglist
+
+      }
+      
+   }
+
+
 
 
    #--------------------------------------------------

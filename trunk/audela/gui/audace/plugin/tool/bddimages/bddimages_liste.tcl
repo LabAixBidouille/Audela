@@ -332,6 +332,18 @@ namespace eval bddimages_liste {
 
 
 
+   proc ::bddimages_liste::new_normallist { lid } {
+
+      set imgtmplist     ""
+      lappend imgtmplist [list "type"               "normal"]              
+      lappend imgtmplist [list "name"               "tmp"]              
+      lappend imgtmplist [list "idlist"             ""]              
+      set imgtmplist [::bddimages_liste::add_to_normallist $lid $imgtmplist]
+      #::console::affiche_resultat "imgtmplist=$imgtmplist\n"
+      set imgtmplist [::bddimages_liste::get_imglist $imgtmplist]
+      #::console::affiche_resultat "imgtmplist=$imgtmplist\n"
+      return $imgtmplist
+   }
 
 
 
