@@ -189,10 +189,6 @@ fits/tarot_calern/2009/12/14
 
                        get_cata
 
-    if { $log == 1 } {
-      gren_info "num_ovni_sources   =  [llength $ovni_list]"
-      gren_info "num_usno_sources   =  [llength $usno_list]"
-      }
 
 
    # calcul_gauss $usno_list2
