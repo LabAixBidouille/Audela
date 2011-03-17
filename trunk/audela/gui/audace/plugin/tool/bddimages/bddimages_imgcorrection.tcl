@@ -599,32 +599,45 @@ proc delete_to_tmp { type img_list } {
 proc copy_to_tmp { type img_list } {
 
    global bddconf
+   global audace
 
       set k 0
+      set new_list ""
 
-      set bufno 1
-      set ext [buf$bufno extension]
-      set fichiers [::bddimages_imgcorrection::img_to_filename_list $img_list]
-
-      foreach fichier $fichiers {
-
-         set f "$bddconf(dirtmp)/${type}${k}${ext}"
-         set fc "$f.gz"
+      foreach img $img_list {
+         foreach l $img {
+            set key [lindex $l 0]
+            set val [lindex $l 1]
+            if {[string equal -nocase [string trim $key] "filename"]} {
+               set filename $val
+            }
+            if {[string equal -nocase [string trim $key] "dirfilename"]} {
+               set dirfilename $val
+            }
+         }
+         
+         # test filename et dirfilename non null
+         set fichier [file join $bddconf(dirbase) $dirfilename $filename]
+         
+         set f "${type}${k}${bddconf(extension_tmp)}"
+         set fc "$bddconf(dirtmp)/$f.gz"
+         set fm "$bddconf(dirtmp)/$f"
          set errnum [catch {file copy -force -- $fichier $fc} msg]
-         if {$errnum==0} {
+         if {$errnum == 0} {
             #::console::affiche_resultat "cp image : $fichier\n"
             #::console::affiche_resultat "gunzip $fc \n"
-#gunzip /data/astrodata/Observations/Images/bddimages/bddimages_local/tmp/sdark0.fits.gz
-            if { [file exists $f] == 1 } {
-               set errnum [catch {file delete -force -- $f} msg]
+            if { [file exists $fm] == 1 } {
+               set errnum [catch {file delete -force -- $fm} msg]
             }
 
-            set errnum [catch {exec gunzip $f } msg ]
-            if {$errnum==0} {
+            set errnum [catch {exec gunzip $fc } msg ]
+            if {$errnum == 0} {
                #::console::affiche_resultat "dezip image : $f\n"
+               lappend img [list tmpfile $f ]
+               lappend new_list $img
                incr k
             } else {
-               ::console::affiche_erreur "Erreur gunzip : $f\n"
+               ::console::affiche_erreur "Erreur gunzip : $fm \n"
                ::console::affiche_erreur "errnum : $errnum\n"
                ::console::affiche_erreur "msg    : $msg\n"
             }
@@ -634,10 +647,14 @@ proc copy_to_tmp { type img_list } {
             ::console::affiche_erreur "errnum : $errnum\n"
             ::console::affiche_erreur "msg    : $msg\n"
          }
+         
+         
+         
       }
-      ::console::affiche_resultat "Copie de $k $type\n"
-      incr k -1
 
+      ::console::affiche_resultat "Copie de $k $type\n"
+
+      return $new_list    
 
 
   }
