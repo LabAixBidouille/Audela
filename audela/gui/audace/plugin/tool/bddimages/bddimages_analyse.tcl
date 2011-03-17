@@ -87,19 +87,25 @@ namespace eval bddimages_analyse {
 
    proc ::bddimages_analyse::creation_wcs { img_list } {
 
+      global audace
       global bddconf
 
       ::console::affiche_resultat "creation_wcs\n"
       ::console::affiche_resultat "img_list $img_list\n"
 
-      set filename_list [::bddimages_imgcorrection::img_to_filename_list $img_list]
-      set bufno 1
-      set ext [buf$bufno extension]
-      set gz   [buf$bufno compress]
-      if {[buf$bufno compress] == "gzip"} {set gz ".gz"} else {set gz ""}
+      # copie image courante dans rep temp en .fit -> bddimages_imgcorrection.tcl 
+      set erreur [catch {::bddimages_imgcorrection::copy_to_tmp "IMG" $img_list} tmp_file_list]
+::console::affiche_erreur "tmp_file_list = $erreur :: $tmp_file_list \n"
+      if {$erreur} {
+         # popup
+         return
+      }
+::console::affiche_erreur "tmp_file_list = $tmp_file_list \n"
+      return
 
       foreach img $img_list {
 
+         # Infos sur l'image a traiter
          set tabkey $img
          set ra          [::bddimages_imgcorrection::get_val_imglist ra $tabkey]
          set dec         [::bddimages_imgcorrection::get_val_imglist dec $tabkey]
@@ -117,10 +123,14 @@ namespace eval bddimages_analyse {
          ::console::affiche_resultat "filename $filename\n"
          ::console::affiche_resultat "dirfilename $dirfilename\n"
 
-         set fc [file join $dirfilename $filename]
+         # Charge l'image
+         buf$::audace(bufNo) load $img
+         
          ::console::affiche_resultat "filename $fc\n"
-         ::console::affiche_resultat "calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO /data/astrodata/Catalog/USNOA2\n"
-         # buf1 load $fc
+         ::console::affiche_resultat "calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO /astrodata/USNOA2 \n"
+
+         calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO "/astrodata/USNOA2"
+         
          # buf1
          # set fileout [file tail $fc ]
          # buf1 save "$bddconf(dirtmp)/${fileout}${ext}"
@@ -133,11 +143,6 @@ namespace eval bddimages_analyse {
 
    }
    
-
-
-
-
-  
 
 
 

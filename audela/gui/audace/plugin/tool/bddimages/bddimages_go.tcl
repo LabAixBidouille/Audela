@@ -79,7 +79,13 @@ proc ::bddimages::initPlugin { tkbase } {
    }
 
    set bddconf(bufno)    $audace(bufNo)
+   set bddconf(visuno)    $audace(visuNo)
    set bddconf(rep_plug) [file join $audace(rep_plugin) tool bddimages ]
+
+   set bddconf(extension_bdd) ".fits.gz"
+   set bddconf(extension_tmp) ".fit"
+   
+#   set bddconf(compress_audace) $conf(fichier,compres)
 
 }
 

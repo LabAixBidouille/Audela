@@ -68,6 +68,7 @@ namespace eval bddimages_astroid {
       ###################################################
 
       # Ecrire au format cata.xml la liste star_ident
+::console::affiche_resultat "set star_ident $star_ident \n"
 
       ###################################################
       ###################################################
