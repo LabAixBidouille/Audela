@@ -1174,7 +1174,7 @@ namespace eval bddimages_liste {
       
       set table ""
       if {$type == "intellilist"} {
-         set table [::bddimages_admin_image::intellilist_to_imglist_i $intellilist]
+         set table [::bddimages_liste::intellilist_to_imglist_i $intellilist]
          set table [::bddimages_liste::transform_tabkey $table]
       }
       if {$type == "normal"} {
@@ -1208,7 +1208,7 @@ namespace eval bddimages_liste {
    #
    #--------------------------------------------------
 
-   proc ::bddimages_admin_image::get_key_img_list { key img_list } {
+   proc ::bddimages_liste::get_key_img_list { key img_list } {
    
       set y ""
       foreach  img $img_list  {
@@ -1217,7 +1217,7 @@ namespace eval bddimages_liste {
       return $y
    }
 
-   proc ::bddimages_admin_image::update_val_img_list { key val img_list } {
+   proc ::bddimages_liste::update_val_img_list { key val img_list } {
    
       set y ""
       set result_list ""
@@ -1336,10 +1336,10 @@ namespace eval bddimages_liste {
          }
       }
 
-      set img_list [::bddimages_admin_image::add_info_cata $img_list]
+      set img_list [::bddimages_liste::add_info_cata $img_list]
 
-      #::console::affiche_erreur " idbddimg_list = [::bddimages_admin_image::get_key_img_list idbddimg $img_list]\n"
-      #::console::affiche_erreur " cataexist_list = [::bddimages_admin_image::get_key_img_list cataexist $img_list]\n"
+      #::console::affiche_erreur " idbddimg_list = [::bddimages_liste::get_key_img_list idbddimg $img_list]\n"
+      #::console::affiche_erreur " cataexist_list = [::bddimages_liste::get_key_img_list cataexist $img_list]\n"
       #::console::affiche_erreur " img_list = $img_list\n"
       return $img_list
    }
@@ -1450,10 +1450,10 @@ namespace eval bddimages_liste {
          }
       }
 
-      set img_list [::bddimages_admin_image::add_info_cata $img_list]
+      set img_list [::bddimages_liste::add_info_cata $img_list]
 
-      #::console::affiche_erreur " idbddimg_list = [::bddimages_admin_image::get_key_img_list idbddimg $img_list]\n"
-      #::console::affiche_erreur " cataexist_list = [::bddimages_admin_image::get_key_img_list cataexist $img_list]\n"
+      #::console::affiche_erreur " idbddimg_list = [::bddimages_liste::get_key_img_list idbddimg $img_list]\n"
+      #::console::affiche_erreur " cataexist_list = [::bddimages_liste::get_key_img_list cataexist $img_list]\n"
       #::console::affiche_erreur " img_list = $img_list\n"
       return $img_list
    }
@@ -1464,6 +1464,93 @@ namespace eval bddimages_liste {
 
 
 
+
+   #--------------------------------------------------
+   #  add_info_cata { img_list }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       Ajoute les info de la base concernant les catas
+   #
+   #    procedure externe :
+   #
+   #    variables en entree : 
+   #        img_list : liste image
+   #
+   #    variables en sortie :
+   #        img_list : liste image avec les champs cata en plus
+   #
+   #--------------------------------------------------
+
+   proc ::bddimages_liste::add_info_cata { img_list } {
+
+      set sqlcmd "SELECT cataimage.idbddimg,
+                         catas.idbddcata,
+                         catas.filename as catafilename,
+                         catas.dirfilename as catadirfilename,
+                         catas.sizefich as catasizefich,
+                         catas.datemodif as catadatemodif
+                  FROM cataimage, catas 
+                  WHERE cataimage.idbddcata = catas.idbddcata 
+                  AND cataimage.idbddimg IN ("
+      set cpt 0
+      foreach img $img_list {
+         set idbddimg [lindex $img [lsearch $img idbddimg]]
+         if {$cpt == 0} {
+            set sqlcmd "$sqlcmd $idbddimg"
+         } else {
+            set sqlcmd "$sqlcmd, $idbddimg"
+         }
+         incr cpt
+      }
+      set sqlcmd "$sqlcmd )"
+
+      set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
+      if {$err} {
+         ::console::affiche_erreur "Erreur de lecture de la liste des header par SQL\n"
+         ::console::affiche_erreur "        sqlcmd = $sqlcmd\n"
+         ::console::affiche_erreur "        err = $err\n"
+         ::console::affiche_erreur "        msg = $msg\n"
+         return
+      }
+      set nbresult [llength $resultcount]
+      if {$nbresult>0} {
+         set colvar [lindex $resultcount 0]
+         set rowvar [lindex $resultcount 1]
+         set nbcol  [llength $colvar]
+         set keys [list idbddcata catafilename catadirfilename catasizefich catadatemodif]
+         foreach line $rowvar {
+            set idbddimg [lindex $line 0]
+            foreach key $keys  {
+               set cata($idbddimg,$key) [lindex $line [lsearch $colvar $key]]
+            }
+         }
+      }
+
+      set result_img_list ""
+      foreach img $img_list {
+         set idbddimg [lindex $img [lsearch $img idbddimg]]
+         if {[info exists cata($idbddimg,idbddcata)]} {
+
+            foreach key $keys  {
+               lappend img [list $key $cata($idbddimg,$key)]
+            }
+            lappend img [list cataexist 1] 
+            lappend img [list cataloaded 0] 
+
+         } else {
+
+            lappend img [list cataexist 0] 
+            lappend img [list cataloaded 0] 
+            
+         }
+         lappend result_img_list $img
+         incr cpt
+      }
+
+
+      return $result_img_list
+   }
 
 
 
