@@ -1299,7 +1299,7 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 	int astrometric=1,ttmoinsutc=0;
 
    if(argc<=1) {
-      sprintf(s,"Usage: %s ListObjects ?ListDates_UTC ListFormat? ?-topo Home? ?-equinox Date|apparent? ?-tt-tu seconds? ?-dec> value? ?-dec< value? ?-mag> value? ?-mag< value? ?-delta< value? ?-delta> value? ?-r< value? ?-r> value? ?-elong< value? ?-elong> value? ?-moonelong< value? ?-moonelong> value? ?-altitude< value? ?-altitude> value? ?-azimuth< value? ?-azimuth> value? ?-ha< value? ?-ha>value? ? ?-prov 0|1? ?-numb 0|1?", argv[0]);
+      sprintf(s,"Usage: %s ListObjects ?ListDates_UTC ListFormat? ?-topo Home? ?-equinox Date|apparent? ?-tt-utc seconds? ?-dec> value? ?-dec< value? ?-mag> value? ?-mag< value? ?-delta< value? ?-delta> value? ?-r< value? ?-r> value? ?-elong< value? ?-elong> value? ?-moonelong< value? ?-moonelong> value? ?-altitude< value? ?-altitude> value? ?-azimuth< value? ?-azimuth> value? ?-ha< value? ?-ha>value? ? ?-prov 0|1? ?-numb 0|1?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       result = TCL_ERROR;
 	   return(result);;
@@ -1434,7 +1434,7 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
          }
  		   /* --- Temps sideral et latitude si on veut l'azimuth et la hauteur ---*/
 		   if (ok4azimcoord==YES) {
-            mc_tsl(jj,-longmpc,&tsl);
+            mc_tsl(jjutc,-longmpc,&tsl);
             mc_rhophi2latalt(rhosinphip,rhocosphip,&latitude,&altitude);
 			   latitude*=((PI)/180);
          }

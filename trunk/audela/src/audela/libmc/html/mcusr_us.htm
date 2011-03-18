@@ -11,7 +11,7 @@
 <body>
 <center><b><font size="+3">LIB MC</font></b> <br>
 a library designed for celestial mechanics <br>
-version 20100527<br>
+version 20110318<br>
 Alain KLOTZ
 <p><b><font size="+3">User manual</font></b></p>
 </center>
@@ -357,7 +357,7 @@ Le function which generates ephemeris is called mc_ephem.
 <p><a name="mc_ephem"></a><b>mc_ephem <a href="#object">ListObjects</a>
 ?<a href="#date">ListDates_UTC</a>? ?<a href="#format">ListFormat</a>? -<a
  href="#constraint">constraint Value</a> -<a href="#home">topo Home</a></b><b>
-?-equinox Date|apparent? ?-tt-tu seconds?</b> </p>
+?-equinox Date|apparent? ?-tt-utc seconds?</b> </p>
 <p>By default, ListDate=NOW and ListFormat={ OBJENAME RA DEC}. The
 output equinox is J2000 by default but can be changed using -equinox.
 Output coordinates are in the apparent frame if using option -equinox
@@ -390,19 +390,19 @@ RAH RAM.M DECD DECM.M}</font></tt></b></li>
 Compute the geocentric position of the nine planets of the solar
 system, plus the Sun and the Moon, for the 13th April 2000 at 0h UT.
 It returns the following list :
-  <p>{Sun 1 26.510988 +9 4.702767 } {Moon 8 59.144500 +18 12.397345 }
-{Mercury 0 4.035452 -2 21.753558 } {Venus 0 30.593754 +1 39.865080 }
-{Mars 2 50.794666 +16 35.807880 } {Jupiter 2 39.098062 +14 33.530997 }
-{Saturn 3 0.218304 +14 56.224723 } {Uranus 21 30.923142 -15 25.412914 }
-{Neptune 20 34.876356 -18 27.543939 } {Pluto 16 50.716617 -11 8.901348
-} {Ok {J2000.0 coordinates} 10}&nbsp;<br>
-&nbsp; </p>
-  <li> <b><tt><font size="+1">mc_ephem {Sun Moon} [list [mc_date2tt
-{1999 8 11 10 26}] ] -topo {GPS 2 E 48.5 125</font></tt></b><b><tt><font
- size="+1">}</font></tt></b></li>
+  <p>{Sun 1 26.51470203 +9 4.75296865 } {Moon 8 59.20600127 +18
+12.25042233
+} {Mercury 0 4.04371737 -2 21.69687295 } {Venus 0 30.60449346 +1
+39.94498600 } {Mars 2 50.80720143 +16 35.91445832 } {Jupiter 2
+39.11224733 +14 33.64514056 } {Saturn 3 0.23361403 +14 56.34185673 }
+{Uranus 21 30.94094013 -15 25.37372123 } {Neptune 20 34.89529996 -18
+27.53202026 } {Pluto 16 50.73396726 -11 8.99983823 } {Ok {J2000.0
+coordinates} 10}&nbsp; </p>
+  <li> <b><tt><font size="+1">mc_ephem {Sun Moon} [list {1999 8 11 10
+26} ] -topo {GPS 2 E 48.5 125</font></tt></b><b><tt><font size="+1">}</font></tt></b></li>
   <br>
 Compute the topocentric position of the Sun and the Moon, for the 11th
-August 1999 at 10h26 UT. The location is defined by its geographic
+August 1999 at 10h26 UTC. The location is defined by its geographic
 coordinates (longitude 2 degrees eastern from Greenwich, latitude 48.5
 degrees in the northern hemisphere and an altitude of 125 meters). It
 returns the following list :.
@@ -418,7 +418,19 @@ Compute the topocentric position, for the IAU station&nbsp; number 148,
 of every astero&iuml;d from the Bowell database, brighter than
 magnitude 17, located at hour angles lower than 45 degrees from the
 meridan, between declinations -14 and +40 degrees, and with an
-elongation upper than 30 degrees from the Moon.
+elongation upper than 30 degrees from the Moon.<br>
+  <br>
+  <li> <b><tt><font size="+1">set date 2011-03-18T00:00:00<br>
+set tt_minus_utc_sec [expr ([mc_date2tt $date]-[mc_date2jd
+$date])*86400]<br>
+set res [lindex [mc_ephem sun $date {ra dec} -tt-utc $tt_minus_utc_sec]
+0 ]<br>
+set ra [mc_angle2hms [lindex $res 0]]<br>
+set dec [mc_angle2dms [lindex $res 1] 90]<br>
+::console::affiche_resultat "$date $ra $dec\n"<br>
+    </font></tt></b><br>
+Compute Sun coordinates at a date defined in TT.<br>
+    <b><tt><font size="+1"></font></tt></b></li>
 </ul>
 In order to compute the ephemeris of an object for many dates, it is
 usefull to generate the ListDates from the function <a
