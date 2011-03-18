@@ -1682,7 +1682,7 @@ proc ::bddimages_recherche::get_intellist { i } {
    ::console::affiche_resultat "[::bddimages_liste::get_val_intellilist $intellilist "name"] ... "
    #::console::affiche_resultat "intellilist = $intellilist\n"
 
-   set table_result($i) [::bddimages_liste::intellilist_to_imglist $intellilist]
+   set table_result($i) [::bddimages_liste::intellilist_to_imglist $intellilist]
 }
 
 
