@@ -13,6 +13,113 @@
 # - Fichiers source externe :
 #       bddimages_liste.cap
 #--------------------------------------------------
+#
+#  Structure de la liste image
+#
+# {               -- debut de liste
+#
+#   {             -- debut d une image
+#
+#     {ibddimg 1}
+#     {ibddcata 2}
+#     {filename toto.fits.gz}
+#     {dirfilename /.../}
+#     {filenametmp toto.fit}
+#     {cataexist 1}
+#     {cataloaded 1}
+#     ...
+#     {tabkey {{NAXIS1 1024} {NAXIS2 1024}} }
+#     {cata {{{IMG {ra dec ...}{USNO {...]}}}} { { {IMG {4.3 -21.5 ...}} {USNOA2 {...}} } {source2} ... } } }
+#
+#   }             -- fin d une image
+#
+# }               -- fin de liste
+#
+#--------------------------------------------------
+#
+#  Structure du tabkey
+#
+# { {NAXIS1 1024} {NAXIS2 1024} etc ... }
+#
+#--------------------------------------------------
+#
+#  Structure du cata
+#
+# {               -- debut structure generale
+#
+#  {              -- debut des noms de colonne des catalogues
+#
+#   { IMG   {list field crossmatch} {list fields}} 
+#   { TYC2  {list field crossmatch} {list fields}}
+#   { USNO2 {list field crossmatch} {list fields}}
+#
+#  }              -- fin des noms de colonne des catalogues
+#
+#  {              -- debut des sources
+#
+#   {             -- debut premiere source
+#
+#    { IMG   {crossmatch} {fields}}  -> vue dans l image
+#    { TYC2  {crossmatch} {fields}}  -> vue dans le catalogue
+#    { USNO2 {crossmatch} {fields}}  -> vue dans le catalogue
+#
+#   }             -- fin premiere source
+#
+#  }              -- fin des sources
+#
+# }               -- fin structure generale
+#
+#--------------------------------------------------
+#
+#  Structure intellilist_i (dite inteligente)
+#
+#
+# {
+#   {name               ...  }
+#   {datemin            ...  }
+#   {datemax            ...  }
+#   {type_req_check     ...  }
+#   {type_requ          ...  }
+#   {choix_limit_result ...  }
+#   {limit_result       ...  }
+#   {type_result        ...  }
+#   {type_select        ...  }
+#   {reqlist           { 
+#                        { valide     ... }
+#                        { condition  ... }
+#                        { champ      ... }
+#                        { valeur     ... }
+#                      }
+#
+#   }
+#
+# }
+#
+#--------------------------------------------------
+#
+#  Structure intellilist_n (dite normale)
+#
+#
+# {
+#   {name               ...  }
+#   {datemin            ...  }
+#   {datemax            ...  }
+#   {type_req_check     ...  }
+#   {type_requ          ...  }
+#   {choix_limit_result ...  }
+#   {limit_result       ...  }
+#   {type_result        ...  }
+#   {type_select        ...  }
+#   {reqlist            { 
+#                         {image_34 {134 345 677}}
+#                         {image_38 {135 344 679}}
+#                       }
+#
+#   }
+#
+# }
+#
+#--------------------------------------------------
 
 namespace eval bddimages_liste {
 
@@ -464,7 +571,7 @@ namespace eval bddimages_liste {
    proc exec_intellilist { num } {
    
     ::bddimages_recherche::Affiche_listes
-    ::bddimages_recherche::get_list $num
+    ::bddimages_recherche::get_intellist $num
     ::bddimages_recherche::Affiche_Results $num
    }
 
@@ -491,7 +598,7 @@ namespace eval bddimages_liste {
       lappend imgtmplist [list "idlist"             ""]              
       set imgtmplist [::bddimages_liste::add_to_normallist $lid $imgtmplist]
       #::console::affiche_resultat "imgtmplist=$imgtmplist\n"
-      set imgtmplist [::bddimages_liste::get_imglist $imgtmplist]
+      set imgtmplist [::bddimages_liste::intellilist_to_imglist $imgtmplist]
       #::console::affiche_resultat "imgtmplist=$imgtmplist\n"
       return $imgtmplist
    }
@@ -748,17 +855,16 @@ namespace eval bddimages_liste {
       global list_req
       global form_req
    
-      set form_req(name)               [get_val_intellilist $intellilist "name"]
-      set ::bddimages_liste::form_req(datemin)            [get_val_intellilist $intellilist "datemin"]
-      set ::bddimages_liste::form_req(datemax)            [get_val_intellilist $intellilist "datemax"]
-      set form_req(type_req_check)     [get_val_intellilist $intellilist "type_req_check"]
-      set form_req(type_requ)          [get_val_intellilist $intellilist "type_requ"]
-      set form_req(choix_limit_result) [get_val_intellilist $intellilist "choix_limit_result"]
-      set form_req(limit_result)       [get_val_intellilist $intellilist "limit_result"]
-      set form_req(type_result)        [get_val_intellilist $intellilist "type_result"]
-      set form_req(type_select)        [get_val_intellilist $intellilist "type_select"]
-
-      set reqlist                                         [get_val_intellilist $intellilist "reqlist"]
+      set ::bddimages_liste::form_req(name)                       [get_val_intellilist $intellilist "name"]
+      set ::bddimages_liste::form_req(datemin)                    [get_val_intellilist $intellilist "datemin"]
+      set ::bddimages_liste::form_req(datemax)                    [get_val_intellilist $intellilist "datemax"]
+      set ::bddimages_liste::form_req(type_req_check)             [get_val_intellilist $intellilist "type_req_check"]
+      set ::bddimages_liste::form_req(type_requ)                  [get_val_intellilist $intellilist "type_requ"]
+      set ::bddimages_liste::form_req(choix_limit_result)         [get_val_intellilist $intellilist "choix_limit_result"]
+      set ::bddimages_liste::form_req(limit_result)               [get_val_intellilist $intellilist "limit_result"]
+      set ::bddimages_liste::form_req(type_result)                [get_val_intellilist $intellilist "type_result"]
+      set ::bddimages_liste::form_req(type_select)                [get_val_intellilist $intellilist "type_select"]
+      set ::bddimages_liste::reqlist                              [get_val_intellilist $intellilist "reqlist"]
    
       set indicereq 0
       foreach req $reqlist {
@@ -881,7 +987,7 @@ namespace eval bddimages_liste {
       set intellilisttotal($idx) $intellilist
       
       # ::bddimages_recherche::Affiche_listes
-      # ::bddimages_recherche::get_list $nbintellilist
+      # ::bddimages_recherche::get_intellist $nbintellilist
       # ::bddimages_recherche::Affiche_Results $nbintellilist
             
       exec_intellilist $idx
@@ -1000,7 +1106,7 @@ namespace eval bddimages_liste {
 
 
    proc ::bddimages_liste::transform_tabkey { table } {
-   
+
 
       set tableresult ""
 
@@ -1012,7 +1118,6 @@ namespace eval bddimages_liste {
             set val  [lindex $lkey 1]
             lappend tabkey [list [string toupper $key] [list [string toupper $key] $val] ]
          }
-
 
          set r [bddimages_entete_preminforecon $tabkey]
 
@@ -1028,7 +1133,7 @@ namespace eval bddimages_liste {
       }
 
       return $tableresult
-   
+
    }
 
 
@@ -1050,7 +1155,7 @@ namespace eval bddimages_liste {
 
 
    #--------------------------------------------------
-   #  get_imglist { }
+   #  intellilist_to_imglist { }
    #--------------------------------------------------
    #
    #    fonction  :
@@ -1063,18 +1168,18 @@ namespace eval bddimages_liste {
    #    variables en sortie : liste des images
    #
    #--------------------------------------------------
-   proc ::bddimages_liste::get_imglist { intellilist } {
+   proc ::bddimages_liste::intellilist_to_imglist { intellilist } {
    
       set type [::bddimages_liste::get_val_intellilist $intellilist "type"]
       
       set table ""
       if {$type == "intellilist"} {
-         set table [::bddimages_liste::get_imglist_i $intellilist]
+         set table [::bddimages_admin_image::intellilist_to_imglist_i $intellilist]
          set table [::bddimages_liste::transform_tabkey $table]
       }
       if {$type == "normal"} {
          #::console::affiche_resultat "intellilist = $intellilist\n"
-         set table [::bddimages_liste::get_imglist_n $intellilist]
+         set table [::bddimages_liste::intellilist_to_imglist_n $intellilist]
          set table [::bddimages_liste::transform_tabkey $table]
       }
       return $table
@@ -1088,6 +1193,48 @@ namespace eval bddimages_liste {
 
 
 
+   #--------------------------------------------------
+   #  get_key_img_list { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       construit la requete sql generale
+   #
+   #    procedure externe :
+   #
+   #    variables en entree : none
+   #
+   #    variables en sortie : liste des images
+   #
+   #--------------------------------------------------
+
+   proc ::bddimages_admin_image::get_key_img_list { key img_list } {
+   
+      set y ""
+      foreach  img $img_list  {
+         lappend y [lindex $img [lsearch $img $key]]
+      }
+      return $y
+   }
+
+   proc ::bddimages_admin_image::update_val_img_list { key val img_list } {
+   
+      set y ""
+      set result_list ""
+      foreach  l $img_list  {
+          set br ""
+          foreach  b $l  {
+             if {[lindex $l 0]==$key} {
+                lappend br [list $key $val]
+             } else {
+                lappend br $b
+             }
+          }
+         lappend result_list $br
+      }
+      return $result_list
+   }
+
 
 
 
@@ -1100,7 +1247,7 @@ namespace eval bddimages_liste {
 
 
    #--------------------------------------------------
-   #  get_imglist_n { }
+   #  intellilist_to_imglist_n { }
    #--------------------------------------------------
    #
    #    fonction  :
@@ -1113,13 +1260,14 @@ namespace eval bddimages_liste {
    #    variables en sortie : liste des images
    #
    #--------------------------------------------------
-   proc ::bddimages_liste::get_imglist_n { intellilist } {
+   proc ::bddimages_liste::intellilist_to_imglist_n { intellilist } {
    
       #::console::affiche_resultat "intellilist = $intellilist\n"
    
       set idlist [::bddimages_liste::get_val_intellilist $intellilist "idlist"]
-      #::console::affiche_resultat "idlist = $idlist\n"
+      ::console::affiche_resultat "idlist = $idlist\n"
       if {[llength $idlist] == 0} {return}
+      set img_list ""
    
       foreach val $idlist {
          set imageidhd [lindex $val 0]
@@ -1135,10 +1283,16 @@ namespace eval bddimages_liste {
          }
          #::console::affiche_resultat "imageidhd = $imageidhd : $lsqlid\n"
    
-         set sqlcmd "SELECT images.idheader,images.tabname,images.filename,
-                     images.dirfilename,images.sizefich,images.datemodif,
-                     commun.datejj as commundatejj,
-                     $imageidhd.* FROM images,$imageidhd,commun
+         set sqlcmd "SELECT images.idbddimg,
+                            images.idheader,
+                            images.tabname,
+                            images.filename,
+                            images.dirfilename,
+                            images.sizefich,
+                            images.datemodif,
+                            commun.datejj as commundatejj,
+                            $imageidhd.* 
+                     FROM images,$imageidhd,commun
    		     WHERE images.idbddimg = $imageidhd.idbddimg 
                      AND   commun.idbddimg = $imageidhd.idbddimg
                      AND   images.idbddimg IN ($lsqlid);"
@@ -1159,7 +1313,6 @@ namespace eval bddimages_liste {
             }
    
             set nbresult [llength $resultcount]
-            set nbcol    [llength $resultcount]
    
             if {$nbresult>0} {
    
@@ -1168,22 +1321,27 @@ namespace eval bddimages_liste {
                set nbcol  [llength $colvar]
    
                foreach line $rowvar {
-                  set resultline ""
+                  set result_img ""
+                  set result_tabkey ""
                   set cpt 0
-                  
                   foreach col $colvar {
-                     lappend resultline [list $col [lindex $line $cpt]]
+                     if {$cpt>=0&&$cpt<=7} {lappend result_img    [list $col [lindex $line $cpt]]}
+                     if {$cpt>7}           {lappend result_tabkey [list $col [lindex $line $cpt]]}
                      incr cpt
                   }
-   
-                  lappend table $resultline
+                  lappend result_img [list "tabkey" $result_tabkey]
+                  lappend img_list $result_img
                }
             }
          }
-   
       }
-   
-      return $table
+
+      set img_list [::bddimages_admin_image::add_info_cata $img_list]
+
+      #::console::affiche_erreur " idbddimg_list = [::bddimages_admin_image::get_key_img_list idbddimg $img_list]\n"
+      #::console::affiche_erreur " cataexist_list = [::bddimages_admin_image::get_key_img_list cataexist $img_list]\n"
+      #::console::affiche_erreur " img_list = $img_list\n"
+      return $img_list
    }
 
 
@@ -1206,7 +1364,7 @@ namespace eval bddimages_liste {
 
 
    #--------------------------------------------------
-   #  get_imglist_i { }
+   #  intellilist_to_imglist_i { }
    #--------------------------------------------------
    #
    #    fonction  :
@@ -1220,7 +1378,7 @@ namespace eval bddimages_liste {
    #
    #--------------------------------------------------
 
-   proc ::bddimages_liste::get_imglist_i { intellilist } {
+   proc ::bddimages_liste::intellilist_to_imglist_i { intellilist } {
 
       #::bddimages_liste::affiche_intellilist $intellilist
 
@@ -1233,20 +1391,27 @@ namespace eval bddimages_liste {
          bddimages_sauve_fich "	msg = $msg"
          return
       }
-   
-      set table ""
-   
+
+      set img_list ""
+
       foreach line $resultsql {
-   
+
          set idhd [lindex $line 0]
          set sqlcritere [::bddimages_liste::get_sqlcritere $intellilist "images_$idhd"]
-         set sqlcmd "SELECT images.idheader,images.tabname,images.filename,
-                     images.dirfilename,images.sizefich,images.datemodif,
-                     commun.datejj as commundatejj,
-                     images_$idhd.* FROM images,images_$idhd,commun
-   		  WHERE images.idbddimg = images_$idhd.idbddimg 
+         set sqlcmd "SELECT images.idbddimg,
+                            images.idheader,
+                            images.tabname,
+                            images.filename,
+                            images.dirfilename,
+                            images.sizefich,
+                            images.datemodif,
+                            commun.datejj as commundatejj,
+                            images_$idhd.* 
+                     FROM images,images_$idhd,commun
+   		     WHERE images.idbddimg = images_$idhd.idbddimg 
                      AND   commun.idbddimg = images_$idhd.idbddimg
                      $sqlcritere  ;"
+
          set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
          if {[string first "Unknown column" $msg]==-1} {
             if {$err} {
@@ -1260,33 +1425,39 @@ namespace eval bddimages_liste {
                ::console::affiche_erreur "        msg = $msg\n"
                return
             }
-   
+
             set nbresult [llength $resultcount]
-            set nbcol    [llength $resultcount]
-   
+
             if {$nbresult>0} {
-   
+
                set colvar [lindex $resultcount 0]
                set rowvar [lindex $resultcount 1]
                set nbcol  [llength $colvar]
-   
+
                foreach line $rowvar {
-                  set resultline ""
+                  set result_img ""
+                  set result_tabkey ""
                   set cpt 0
                   foreach col $colvar {
-                     lappend resultline [list $col [lindex $line $cpt]]
+                     if {$cpt>=0&&$cpt<=7} {lappend result_img    [list $col [lindex $line $cpt]]}
+                     if {$cpt>7}           {lappend result_tabkey [list $col [lindex $line $cpt]]}
                      incr cpt
                   }
-   
-                  lappend table $resultline
+                  lappend result_img [list "tabkey" $result_tabkey]
+                  lappend img_list $result_img
                }
             }
          }
       }
-   
-      #::console::affiche_erreur " table = $table\n"
-      return $table
+
+      set img_list [::bddimages_admin_image::add_info_cata $img_list]
+
+      #::console::affiche_erreur " idbddimg_list = [::bddimages_admin_image::get_key_img_list idbddimg $img_list]\n"
+      #::console::affiche_erreur " cataexist_list = [::bddimages_admin_image::get_key_img_list cataexist $img_list]\n"
+      #::console::affiche_erreur " img_list = $img_list\n"
+      return $img_list
    }
+
 
 
 
@@ -1328,7 +1499,7 @@ namespace eval bddimages_liste {
       set intellilist [::bddimages_liste::build_intellilist "calcul_nbimg"]
         ::console::affiche_resultat "intelliliste  = $intellilist \n"
 
-      set form_req(nbimg) [llength [::bddimages_liste::get_imglist $intellilist]]
+      set form_req(nbimg) [llength [::bddimages_liste::intellilist_to_imglist $intellilist]]
       #::console::affiche_resultat "Nb img = $form_req(nbimg) \n"
       return
    }
@@ -1623,12 +1794,12 @@ namespace eval bddimages_liste {
       set list_comb1 [list $caption(bddimages_liste,toutes) $caption(bddimages_liste,nimporte)]
       set list_comb2 [list $caption(bddimages_liste,elem)]
       set list_comb3 [list $caption(bddimages_liste,alea) \
-                            $caption(bddimages_liste,dateobs) \
-                            $caption(bddimages_liste,telescope) \
-                            $caption(bddimages_liste,plrecmod) \
-                            $caption(bddimages_liste,morecmod) \
-                            $caption(bddimages_liste,plrecajo) \
-                            $caption(bddimages_liste,morecajo) ]
+                           $caption(bddimages_liste,dateobs) \
+                           $caption(bddimages_liste,telescope) \
+                           $caption(bddimages_liste,plrecmod) \
+                           $caption(bddimages_liste,morecmod) \
+                           $caption(bddimages_liste,plrecajo) \
+                           $caption(bddimages_liste,morecajo) ]
 
       set form_req(name) "Newlist[ expr $::nbintellilist + 1 ]"
       set form_req(type_req_check) ""
