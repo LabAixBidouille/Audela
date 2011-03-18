@@ -19,6 +19,113 @@
 #  bddimages_analyse.cap
 #
 #--------------------------------------------------
+#
+#  Structure de la liste image
+#
+# {               -- debut de liste
+#
+#   {             -- debut d une image
+#
+#     {ibddimg 1}
+#     {ibddcata 2}
+#     {filename toto.fits.gz}
+#     {dirfilename /.../}
+#     {filenametmp toto.fit}
+#     {cataexist 1}
+#     {cataloaded 1}
+#     ...
+#     {tabkey {{NAXIS1 1024} {NAXIS2 1024}} }
+#     {cata {{{IMG {ra dec ...}{USNO {...]}}}} { { {IMG {4.3 -21.5 ...}} {USNOA2 {...}} } {source2} ... } } }
+#
+#   }             -- fin d une image
+#
+# }               -- fin de liste
+#
+#--------------------------------------------------
+#
+#  Structure du tabkey
+#
+# { {NAXIS1 1024} {NAXIS2 1024} etc ... }
+#
+#--------------------------------------------------
+#
+#  Structure du cata
+#
+# {               -- debut structure generale
+#
+#  {              -- debut des noms de colonne des catalogues
+#
+#   { IMG   {list field crossmatch} {list fields}} 
+#   { TYC2  {list field crossmatch} {list fields}}
+#   { USNO2 {list field crossmatch} {list fields}}
+#
+#  }              -- fin des noms de colonne des catalogues
+#
+#  {              -- debut des sources
+#
+#   {             -- debut premiere source
+#
+#    { IMG   {crossmatch} {fields}}  -> vue dans l image
+#    { TYC2  {crossmatch} {fields}}  -> vue dans le catalogue
+#    { USNO2 {crossmatch} {fields}}  -> vue dans le catalogue
+#
+#   }             -- fin premiere source
+#
+#  }              -- fin des sources
+#
+# }               -- fin structure generale
+#
+#--------------------------------------------------
+#
+#  Structure intellilist_i (dite inteligente)
+#
+#
+# {
+#   {name               ...  }
+#   {datemin            ...  }
+#   {datemax            ...  }
+#   {type_req_check     ...  }
+#   {type_requ          ...  }
+#   {choix_limit_result ...  }
+#   {limit_result       ...  }
+#   {type_result        ...  }
+#   {type_select        ...  }
+#   {reqlist           { 
+#                        { valide     ... }
+#                        { condition  ... }
+#                        { champ      ... }
+#                        { valeur     ... }
+#                      }
+#
+#   }
+#
+# }
+#
+#--------------------------------------------------
+#
+#  Structure intellilist_n (dite normale)
+#
+#
+# {
+#   {name               ...  }
+#   {datemin            ...  }
+#   {datemax            ...  }
+#   {type_req_check     ...  }
+#   {type_requ          ...  }
+#   {choix_limit_result ...  }
+#   {limit_result       ...  }
+#   {type_result        ...  }
+#   {type_select        ...  }
+#   {reqlist            { 
+#                         {image_34 {134 345 677}}
+#                         {image_38 {135 344 679}}
+#                       }
+#
+#   }
+#
+# }
+#
+#--------------------------------------------------
 
 namespace eval bddimages_analyse {
 
@@ -50,7 +157,7 @@ namespace eval bddimages_analyse {
 
       foreach img $img_list {
 
-         set idbddimg [::bddimages_imgcorrection::get_val_imglist idbddimg $img]
+         set idbddimg [::bddimages_imgcorrection::get_key_imglist idbddimg $img]
          ::console::affiche_resultat "idbddimg $idbddimg\n"
 
          ::bddimages_analyse::get_one_image $idbddimg 
@@ -107,13 +214,13 @@ namespace eval bddimages_analyse {
 
          # Infos sur l'image a traiter
          set tabkey $img
-         set ra          [::bddimages_imgcorrection::get_val_imglist ra $tabkey]
-         set dec         [::bddimages_imgcorrection::get_val_imglist dec $tabkey]
-         set pixsize1    [::bddimages_imgcorrection::get_val_imglist pixsize1 $tabkey]
-         set pixsize2    [::bddimages_imgcorrection::get_val_imglist pixsize2 $tabkey]
-         set foclen      [::bddimages_imgcorrection::get_val_imglist foclen $tabkey]
-         set filename    [::bddimages_imgcorrection::get_val_imglist filename $tabkey]
-         set dirfilename [::bddimages_imgcorrection::get_val_imglist dirfilename $tabkey]
+         set ra          [::bddimages_imgcorrection::get_key_imglist ra $tabkey]
+         set dec         [::bddimages_imgcorrection::get_key_imglist dec $tabkey]
+         set pixsize1    [::bddimages_imgcorrection::get_key_imglist pixsize1 $tabkey]
+         set pixsize2    [::bddimages_imgcorrection::get_key_imglist pixsize2 $tabkey]
+         set foclen      [::bddimages_imgcorrection::get_key_imglist foclen $tabkey]
+         set filename    [::bddimages_imgcorrection::get_key_imglist filename $tabkey]
+         set dirfilename [::bddimages_imgcorrection::get_key_imglist dirfilename $tabkey]
 
          ::console::affiche_resultat "ra $ra\n"
          ::console::affiche_resultat "dec $dec\n"

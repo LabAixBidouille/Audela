@@ -19,6 +19,113 @@
 #  bddimages_imgcorrection.cap
 #
 #--------------------------------------------------
+#
+#  Structure de la liste image
+#
+# {               -- debut de liste
+#
+#   {             -- debut d une image
+#
+#     {ibddimg 1}
+#     {ibddcata 2}
+#     {filename toto.fits.gz}
+#     {dirfilename /.../}
+#     {filenametmp toto.fit}
+#     {cataexist 1}
+#     {cataloaded 1}
+#     ...
+#     {tabkey {{NAXIS1 1024} {NAXIS2 1024}} }
+#     {cata {{{IMG {ra dec ...}{USNO {...]}}}} { { {IMG {4.3 -21.5 ...}} {USNOA2 {...}} } {source2} ... } } }
+#
+#   }             -- fin d une image
+#
+# }               -- fin de liste
+#
+#--------------------------------------------------
+#
+#  Structure du tabkey
+#
+# { {NAXIS1 1024} {NAXIS2 1024} etc ... }
+#
+#--------------------------------------------------
+#
+#  Structure du cata
+#
+# {               -- debut structure generale
+#
+#  {              -- debut des noms de colonne des catalogues
+#
+#   { IMG   {list field crossmatch} {list fields}} 
+#   { TYC2  {list field crossmatch} {list fields}}
+#   { USNO2 {list field crossmatch} {list fields}}
+#
+#  }              -- fin des noms de colonne des catalogues
+#
+#  {              -- debut des sources
+#
+#   {             -- debut premiere source
+#
+#    { IMG   {crossmatch} {fields}}  -> vue dans l image
+#    { TYC2  {crossmatch} {fields}}  -> vue dans le catalogue
+#    { USNO2 {crossmatch} {fields}}  -> vue dans le catalogue
+#
+#   }             -- fin premiere source
+#
+#  }              -- fin des sources
+#
+# }               -- fin structure generale
+#
+#--------------------------------------------------
+#
+#  Structure intellilist_i (dite inteligente)
+#
+#
+# {
+#   {name               ...  }
+#   {datemin            ...  }
+#   {datemax            ...  }
+#   {type_req_check     ...  }
+#   {type_requ          ...  }
+#   {choix_limit_result ...  }
+#   {limit_result       ...  }
+#   {type_result        ...  }
+#   {type_select        ...  }
+#   {reqlist           { 
+#                        { valide     ... }
+#                        { condition  ... }
+#                        { champ      ... }
+#                        { valeur     ... }
+#                      }
+#
+#   }
+#
+# }
+#
+#--------------------------------------------------
+#
+#  Structure intellilist_n (dite normale)
+#
+#
+# {
+#   {name               ...  }
+#   {datemin            ...  }
+#   {datemax            ...  }
+#   {type_req_check     ...  }
+#   {type_requ          ...  }
+#   {choix_limit_result ...  }
+#   {limit_result       ...  }
+#   {type_result        ...  }
+#   {type_select        ...  }
+#   {reqlist            { 
+#                         {image_34 {134 345 677}}
+#                         {image_38 {135 344 679}}
+#                       }
+#
+#   }
+#
+# }
+#
+#--------------------------------------------------
 
 namespace eval bddimages_imgcorrection {
 
@@ -499,7 +606,7 @@ proc create_image_deflat {  } {
       set k [expr $nbdeflat - 1]
 
 
-      set fichiers [::bddimages_imgcorrection::img_to_filename_list $::bddimages_imgcorrection::deflat_img_list]
+      set fichiers [::bddimages_imgcorrection::img_list_to_filename_list $::bddimages_imgcorrection::deflat_img_list long]
 
       # Soustraction des Dark et Offset
       ::console::affiche_resultat "Soustraction des Dark et Offset\n"
@@ -676,13 +783,13 @@ proc correction { type inforesult} {
       set audace(rep_images) $bddconf(dirtmp)
       cd $bddconf(dirtmp)
 
-      ::bddimages_imgcorrection::copy_to_tmp "offset"  $::bddimages_imgcorrection::offset_img_list
-      ::bddimages_imgcorrection::copy_to_tmp "soffset" $::bddimages_imgcorrection::soffset_img_list 
-      ::bddimages_imgcorrection::copy_to_tmp "dark"    $::bddimages_imgcorrection::dark_img_list    
-      ::bddimages_imgcorrection::copy_to_tmp "sdark"   $::bddimages_imgcorrection::sdark_img_list   
-      ::bddimages_imgcorrection::copy_to_tmp "flat"    $::bddimages_imgcorrection::flat_img_list    
-      ::bddimages_imgcorrection::copy_to_tmp "sflat"   $::bddimages_imgcorrection::sflat_img_list   
-      ::bddimages_imgcorrection::copy_to_tmp "deflat"  $::bddimages_imgcorrection::deflat_img_list   
+      set ::bddimages_imgcorrection::offset_img_list  [::bddimages_imgcorrection::copy_to_tmp "offset" $::bddimages_imgcorrection::offset_img_list  ]
+      set ::bddimages_imgcorrection::soffset_img_list [::bddimages_imgcorrection::copy_to_tmp "soffset" $::bddimages_imgcorrection::soffset_img_list] 
+      set ::bddimages_imgcorrection::dark_img_list    [::bddimages_imgcorrection::copy_to_tmp "dark"    $::bddimages_imgcorrection::dark_img_list   ]  
+      set ::bddimages_imgcorrection::sdark_img_list   [::bddimages_imgcorrection::copy_to_tmp "sdark"   $::bddimages_imgcorrection::sdark_img_list  ]  
+      set ::bddimages_imgcorrection::flat_img_list    [::bddimages_imgcorrection::copy_to_tmp "flat"    $::bddimages_imgcorrection::flat_img_list   ]  
+      set ::bddimages_imgcorrection::sflat_img_list   [::bddimages_imgcorrection::copy_to_tmp "sflat"   $::bddimages_imgcorrection::sflat_img_list  ]  
+      set ::bddimages_imgcorrection::deflat_img_list  [::bddimages_imgcorrection::copy_to_tmp "deflat"  $::bddimages_imgcorrection::deflat_img_list ]  
 
       set errnum [catch {create_image $type $inforesult} msg]
       if {$errnum!=0} {
@@ -701,9 +808,9 @@ proc correction { type inforesult} {
       file delete -force -- [file join $bddconf(dirtmp) tt.log]
 
 }
-      
 
-      ::bddimages_recherche::get_list $::bddimages_recherche::current_list_id
+
+      ::bddimages_recherche::get_intellist $::bddimages_recherche::current_list_id
       ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id [array get action_label]
 
 
@@ -722,7 +829,7 @@ proc correction { type inforesult} {
 
 
 #--------------------------------------------------
-# img_to_filename_list { img_list }
+# img_list_to_filename_list { img_list }
 #--------------------------------------------------
 #
 #    fonction  :
@@ -739,46 +846,58 @@ proc correction { type inforesult} {
 #        imgtmplist = liste complete d image de meme mot cl� bddimages type
 #
 #--------------------------------------------------
-   proc ::bddimages_imgcorrection::img_to_filename_list { img_list } {
+   proc ::bddimages_imgcorrection::img_list_to_filename_list { img_list typ } {
 
    global bddconf
 
       set result_list ""
       foreach img $img_list {
-         foreach l $img {
-            set key [lindex $l 0]
-            set val [lindex $l 1]
-            if {[string equal -nocase [string trim $key] "filename"]} {
-               set filename $val
-            }
-            if {[string equal -nocase [string trim $key] "dirfilename"]} {
-               set dirfilename $val
-            }
-         }
-         lappend result_list [file join $bddconf(dirbase) $dirfilename $filename]
+         lappend result_list [::bddimages_imgcorrection::img_to_filename $img $typ]
       }
-
       return $result_list
    }
 
 
 
-   proc ::bddimages_imgcorrection::get_val_imglist { val img_list } {
-   
-      set y ""
-      foreach  l $img_list  {
-          set x [lsearch $l $val]
-          if {$x!=-1} {
-             set y [lindex $l 1]
-             return $y
-          }
+   proc ::bddimages_imgcorrection::img_to_filename { img typ } {
+
+      global bddconf
+
+      set result ""
+      foreach l $img {
+         set key [lindex $l 0]
+         set val [lindex $l 1]
+         if {[string equal -nocase [string trim $key] "filename"]} {
+            set filename $val
+         }
+         if {[string equal -nocase [string trim $key] "dirfilename"]} {
+            set dirfilename $val
+         }
+         if {[string equal -nocase [string trim $key] "filenametmp"]} {
+            set filenametmp $filenametmp
+         }
       }
-      return $y
+      
+      if { $typ == "long" } {
+         return [file join $bddconf(dirbase) $dirfilename $filename]
+      }
+      if { $typ == "short" } {
+         return $filename
+      }
+      if { $typ == "tmp" } {
+         return $filenametmp
+      }
+      if { $typ == "longtmp" } {
+         return [file join $bddconf(dirtmp) $filenametmp] 
+      }
+     
+      return "-1"
    }
 
 
+
 #--------------------------------------------------
-# type_to_img_list { type img_list }
+# select_img_list_by_type { type img_list }
 #--------------------------------------------------
 #
 #    fonction  :
@@ -788,74 +907,39 @@ proc correction { type inforesult} {
 #    procedure externe :
 #
 #    variables en entree :
-#        type = mot cl� bddimages_type
+#        bddimages_type = mot cl� bddimages_type
+#        bddimages_state = mot cl� bddimages_state
 #        img_list = liste complete d image
 #
 #    variables en sortie :
 #        result_list = liste complete d image de meme mot cl� bddimages_type
 #
 #--------------------------------------------------
-   proc ::bddimages_imgcorrection::type_to_img_list { type img_list } {
+   proc ::bddimages_imgcorrection::select_img_list_by_type { bddimages_type bddimages_state img_list } {
 
-
-      if {$type=="OFFSET"} {
-         set state "RAW"
-         }
-      if {$type=="SOFFSET"} {
-         set type "OFFSET"
-         set state "CORR"
-         }
-      if {$type=="DARK"} {
-         set state "RAW"
-         }
-      if {$type=="SDARK"} {
-         set type "DARK"
-         set state "CORR"
-         }
-      if {$type=="FLAT"} {
-         set state "RAW"
-         }
-      if {$type=="SFLAT"} {
-         set type "FLAT"
-         set state "CORR"
-         }
-      if {$type=="IMG"} {
-         set state "RAW"
-         }
 
       set result_list ""
       foreach img $img_list {
          set keep "ok"
          foreach l $img {
-            #::console::affiche_resultat "l= -${l}- \n"
             set key [lindex $l 0]
             set val [lindex $l 1]
-            if {$key=="bddimages_type"} {
-               if {[string trim $val]!=$type} {
-                  #::console::affiche_resultat "hno $key -> -${val}-\n"
-                  set keep "no"
-               }
-            }
-            if {$key=="bddimages_state"} {
-               if {[string trim $val]!=$state} {
-                  #::console::affiche_resultat "hno $key -> -${val}-\n"
-                  set keep "no"
-               }
-            }
-            if {$key=="filename"} {
-               set filename $val
-               #::console::affiche_resultat "hno -${filename}-\n"
-            }
+            if {$key=="bddimages_type"}  { if {[string trim $val]!=$bddimages_type } { set keep "no" } }
+            if {$key=="bddimages_state"} { if {[string trim $val]!=$bddimages_state} { set keep "no" } }
          }
          if {$keep=="ok"} {
-            #::console::affiche_resultat "ACCEPTED -${filename}- $state $type\n"
             lappend result_list $img
-         } else {
-            #::console::affiche_resultat "REJECTED -${filename}- $state $type\n"
          }
       }
       return $result_list
    }
+
+
+
+
+
+
+
 
 
 #--------------------------------------------------
@@ -897,19 +981,15 @@ proc correction { type inforesult} {
       if {$type == "offset"}  {
 
          # Chargement de la liste OFFSET
-         set typekey "OFFSET"
-         set typename $typekey
-         
-         set img_list [::bddimages_imgcorrection::type_to_img_list $typekey $selection_list]
+         set img_list [::bddimages_imgcorrection::select_img_list_by_type OFFSET RAW $selection_list]
          set nbi [llength $img_list]
-         set texte "${texte}- Images $typename d entree : nb = $nbi\n"
+         set texte "${texte}- Images OFFSET d entree : nb = $nbi\n"
          if {$nbi==0} {
             set ::bddimages_imgcorrection::erreur_selection 1
-            set texte "${texte}\n\nVeuillez selectionner des $typename\n"
+            set texte "${texte}\n\nVeuillez selectionner des OFFSET\n"
          }  else {
-            set filename_list [::bddimages_imgcorrection::img_to_filename_list $img_list]
-            foreach img $filename_list {
-               set texte "${texte}$img\n"
+            foreach img $img_list {
+               set texte "${texte}[::bddimages_imgcorrection::img_to_filename $img short]\n"
             }
             set ::bddimages_imgcorrection::offset_img_list $img_list
          }
@@ -919,37 +999,29 @@ proc correction { type inforesult} {
       if {$type == "dark"}  {
 
          # Chargement de la liste SOFFSET
-         set typekey "SOFFSET"
-         set typename "SUPER OFFSET"
-
-         set img_list [::bddimages_imgcorrection::type_to_img_list $typekey $selection_list]
+         set img_list [::bddimages_imgcorrection::select_img_list_by_type OFFSET CORR $selection_list]
          set nbi [llength $img_list]
-         set texte "${texte}- Images $typename d entree : nb = $nbi\n"
+         set texte "${texte}- Images OFFSET d entree : nb = $nbi\n"
          if {$nbi>1} {
             set ::bddimages_imgcorrection::erreur_selection 1
-            set texte "${texte}\n\nVeuillez selectionner un seul $typename\n"
+            set texte "${texte}\n\nVeuillez selectionner un seul OFFSET\n"
          }  else {
-            set filename_list [::bddimages_imgcorrection::img_to_filename_list $img_list]
-            foreach img $filename_list {
-               set texte "${texte}$img\n"
+            foreach img $img_list {
+               set texte "${texte}[::bddimages_imgcorrection::img_to_filename $img short]\n"
             }
             set ::bddimages_imgcorrection::soffset_img_list $img_list
          }
          
          # Chargement de la liste DARK
-         set typekey "DARK"
-         set typename $typekey
-         
-         set img_list [::bddimages_imgcorrection::type_to_img_list $typekey $selection_list]
+         set img_list [::bddimages_imgcorrection::select_img_list_by_type DARK RAW $selection_list]
          set nbi [llength $img_list]
-         set texte "${texte}- Images $typename d entree : nb = $nbi\n"
+         set texte "${texte}- Images DARK d entree : nb = $nbi\n"
          if {$nbi==0} {
             set ::bddimages_imgcorrection::erreur_selection 1
-            set texte "${texte}\n\nVeuillez selectionner des $typename\n"
+            set texte "${texte}\n\nVeuillez selectionner des DARK\n"
          }  else {
-            set filename_list [::bddimages_imgcorrection::img_to_filename_list $img_list]
-            foreach img $filename_list {
-               set texte "${texte}$img\n"
+            foreach img $img_list {
+               set texte "${texte}[::bddimages_imgcorrection::img_to_filename $img short]\n"
             }
             set ::bddimages_imgcorrection::dark_img_list $img_list
          }
@@ -959,55 +1031,43 @@ proc correction { type inforesult} {
       if {$type == "flat"}  {
 
          # Chargement de la liste SOFFSET
-         set typekey "SOFFSET"
-         set typename "SUPER OFFSET"
-
-         set img_list [::bddimages_imgcorrection::type_to_img_list $typekey $selection_list]
+         set img_list [::bddimages_imgcorrection::select_img_list_by_type OFFSET CORR $selection_list]
          set nbi [llength $img_list]
-         set texte "${texte}- Images $typename d entree : nb = $nbi\n"
+         set texte "${texte}- Images OFFSET d entree : nb = $nbi\n"
          if {$nbi>1} {
             set ::bddimages_imgcorrection::erreur_selection 1
-            set texte "${texte}\n\nVeuillez selectionner un seul $typename\n"
+            set texte "${texte}\n\nVeuillez selectionner un seul OFFSET\n"
          }  else {
-            set filename_list [::bddimages_imgcorrection::img_to_filename_list $img_list]
-            foreach img $filename_list {
-               set texte "${texte}$img\n"
+            foreach img $img_list {
+               set texte "${texte}[::bddimages_imgcorrection::img_to_filename $img short]\n"
             }
             set ::bddimages_imgcorrection::soffset_img_list $img_list
          }
          
          # Chargement de la liste SDARK
-         set typekey "SDARK"
-         set typename "SUPER DARK"
-         
-         set img_list [::bddimages_imgcorrection::type_to_img_list $typekey $selection_list]
+         set img_list [::bddimages_imgcorrection::select_img_list_by_type DARK CORR $selection_list]
          set nbi [llength $img_list]
-         set texte "${texte}- Images $typename d entree : nb = $nbi\n"
+         set texte "${texte}- Images DARK d entree : nb = $nbi\n"
          if {$nbi>1} {
             set ::bddimages_imgcorrection::erreur_selection 1
-            set texte "${texte}\n\nVeuillez selectionner un seul $typename\n"
+            set texte "${texte}\n\nVeuillez selectionner un seul DARK\n"
          }  else {
-            set filename_list [::bddimages_imgcorrection::img_to_filename_list $img_list]
-            foreach img $filename_list {
-               set texte "${texte}$img\n"
+            foreach img $img_list {
+               set texte "${texte}[::bddimages_imgcorrection::img_to_filename $img short]\n"
             }
             set ::bddimages_imgcorrection::sdark_img_list $img_list
          }
          
          # Chargement de la liste FLAT
-         set typekey "FLAT"
-         set typename $typekey
-         
-         set img_list [::bddimages_imgcorrection::type_to_img_list $typekey $selection_list]
+         set img_list [::bddimages_imgcorrection::select_img_list_by_type FLAT RAW $selection_list]
          set nbi [llength $img_list]
-         set texte "${texte}- Images $typename d entree : nb = $nbi\n"
+         set texte "${texte}- Images FLAT d entree : nb = $nbi\n"
          if {$nbi==0} {
             set ::bddimages_imgcorrection::erreur_selection 1
-            set texte "${texte}\n\nVeuillez selectionner des $typename\n"
+            set texte "${texte}\n\nVeuillez selectionner des FLAT\n"
          }  else {
-            set filename_list [::bddimages_imgcorrection::img_to_filename_list $img_list]
-            foreach img $filename_list {
-               set texte "${texte}$img\n"
+            foreach img $img_list {
+               set texte "${texte}[::bddimages_imgcorrection::img_to_filename $img short]\n"
             }
             set ::bddimages_imgcorrection::flat_img_list $img_list
          }
@@ -1017,73 +1077,57 @@ proc correction { type inforesult} {
       if {$type == "deflat"}  {
 
          # Chargement de la liste SOFFSET
-         set typekey "SOFFSET"
-         set typename "SUPER OFFSET"
-
-         set img_list [::bddimages_imgcorrection::type_to_img_list $typekey $selection_list]
+         set img_list [::bddimages_imgcorrection::select_img_list_by_type OFFSET CORR $selection_list]
          set nbi [llength $img_list]
-         set texte "${texte}- Images $typename d entree : nb = $nbi\n"
+         set texte "${texte}- Images OFFSET d entree : nb = $nbi\n"
          if {$nbi>1} {
             set ::bddimages_imgcorrection::erreur_selection 1
-            set texte "${texte}\n\nVeuillez selectionner un seul $typename\n"
+            set texte "${texte}\n\nVeuillez selectionner un seul OFFSET\n"
          }  else {
-            set filename_list [::bddimages_imgcorrection::img_to_filename_list $img_list]
-            foreach img $filename_list {
-               set texte "${texte}$img\n"
+            foreach img $img_list {
+               set texte "${texte}[::bddimages_imgcorrection::img_to_filename $img short]\n"
             }
             set ::bddimages_imgcorrection::soffset_img_list $img_list
          }
          
          # Chargement de la liste SDARK
-         set typekey "SDARK"
-         set typename "SUPER DARK"
-         
-         set img_list [::bddimages_imgcorrection::type_to_img_list $typekey $selection_list]
+         set img_list [::bddimages_imgcorrection::select_img_list_by_type DARK CORR $selection_list]
          set nbi [llength $img_list]
-         set texte "${texte}- Images $typename d entree : nb = $nbi\n"
+         set texte "${texte}- Images DARK d entree : nb = $nbi\n"
          if {$nbi>1} {
             set ::bddimages_imgcorrection::erreur_selection 1
-            set texte "${texte}\n\nVeuillez selectionner un seul $typename\n"
+            set texte "${texte}\n\nVeuillez selectionner un seul DARK\n"
          }  else {
-            set filename_list [::bddimages_imgcorrection::img_to_filename_list $img_list]
-            foreach img $filename_list {
-               set texte "${texte}$img\n"
+            foreach img $img_list {
+               set texte "${texte}[::bddimages_imgcorrection::img_to_filename $img short]\n"
             }
             set ::bddimages_imgcorrection::sdark_img_list $img_list
          }
          
          # Chargement de la liste SDARK
-         set typekey "SFLAT"
-         set typename "SUPER FLAT"
-         
-         set img_list [::bddimages_imgcorrection::type_to_img_list $typekey $selection_list]
+         set img_list [::bddimages_imgcorrection::select_img_list_by_type FLAT CORR $selection_list]
          set nbi [llength $img_list]
-         set texte "${texte}- Images $typename d entree : nb = $nbi\n"
+         set texte "${texte}- Images FLAT d entree : nb = $nbi\n"
          if {$nbi>1} {
             set ::bddimages_imgcorrection::erreur_selection 1
-            set texte "${texte}\n\nVeuillez selectionner un seul $typename\n"
+            set texte "${texte}\n\nVeuillez selectionner un seul FLAT\n"
          }  else {
-            set filename_list [::bddimages_imgcorrection::img_to_filename_list $img_list]
-            foreach img $filename_list {
-               set texte "${texte}$img\n"
+            foreach img $img_list {
+               set texte "${texte}[::bddimages_imgcorrection::img_to_filename $img short]\n"
             }
             set ::bddimages_imgcorrection::sflat_img_list $img_list
          }
          
          # Chargement de la liste IMG
-         set typekey "IMG"
-         set typename $typekey
-         
-         set img_list [::bddimages_imgcorrection::type_to_img_list $typekey $selection_list]
+         set img_list [::bddimages_imgcorrection::select_img_list_by_type IMG RAW $selection_list]
          set nbi [llength $img_list]
-         set texte "${texte}- Images $typename d entree : nb = $nbi\n"
+         set texte "${texte}- Images d entree : nb = $nbi\n"
          if {$nbi==0} {
             set ::bddimages_imgcorrection::erreur_selection 1
-            set texte "${texte}\n\nVeuillez selectionner des $typename\n"
+            set texte "${texte}\n\nVeuillez selectionner des Images\n"
          }  else {
-            set filename_list [::bddimages_imgcorrection::img_to_filename_list $img_list]
-            foreach img $filename_list {
-               set texte "${texte}$img\n"
+            foreach img $img_list {
+               set texte "${texte}[::bddimages_imgcorrection::img_to_filename $img short]\n"
             }
             set ::bddimages_imgcorrection::deflat_img_list $img_list
          }
@@ -1170,7 +1214,7 @@ proc correction { type inforesult} {
       global bddconf
 
       #? set ::bddimages_imgcorrection::imgtmplist $imglist
-      set filename_list [::bddimages_imgcorrection::img_to_filename_list $img_list]
+      set filename_list [::bddimages_imgcorrection::img_list_to_filename_list $img_list long]
       set bufno 1
       set ext [buf$bufno extension]
       set gz [buf$bufno compress]
