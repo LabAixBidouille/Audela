@@ -1212,7 +1212,7 @@ namespace eval bddimages_liste {
    
       set y ""
       foreach  img $img_list  {
-         lappend y [lindex $img [lsearch $img $key]]
+         lappend y [::bddimages_liste::get_key_img $img $key]
       }
       return $y
    }
@@ -1462,6 +1462,29 @@ namespace eval bddimages_liste {
 
 
 
+#  proc ::bddimages_admin_image::get_key_img_list { key img_list } {
+#  
+#     set y ""
+#     foreach  img $img_list  {
+#        lappend y [::bddimages_admin_image::get_key_img $key $img]
+#     }
+#     return $y
+#  }
+#
+#
+
+   proc ::bddimages_liste::get_key_img { img key } {
+   
+      set y ""
+      foreach  l $img  {
+          set x [lsearch $l $key]
+          if {$x!=-1} {
+             set y [lindex $l 1]
+             return $y
+          }
+      }
+      return $y
+   }
 
 
 
@@ -1495,7 +1518,8 @@ namespace eval bddimages_liste {
                   AND cataimage.idbddimg IN ("
       set cpt 0
       foreach img $img_list {
-         set idbddimg [lindex $img [lsearch $img idbddimg]]
+         #set idbddimg [lindex $img [lsearch $img idbddimg]]
+         set idbddimg [::bddimages_liste::get_key_img $img idbddimg]
          if {$cpt == 0} {
             set sqlcmd "$sqlcmd $idbddimg"
          } else {
@@ -1529,7 +1553,8 @@ namespace eval bddimages_liste {
 
       set result_img_list ""
       foreach img $img_list {
-         set idbddimg [lindex $img [lsearch $img idbddimg]]
+         #set idbddimg [lindex $img [lsearch $img idbddimg]]
+         set idbddimg [::bddimages_liste::get_key_img $img idbddimg]
          if {[info exists cata($idbddimg,idbddcata)]} {
 
             foreach key $keys  {
