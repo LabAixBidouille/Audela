@@ -12,7 +12,7 @@
 <center><b><font size="+3">LIB MC</font></b> <br>
 Planification des observations avec
 la&nbsp; librairie de calculs de m&eacute;canique c&eacute;leste <br>
-version 20100120<br>
+version 20110318<br>
 Alain KLOTZ
 <p><b><font size="+3">Manuel de l'utilisateur</font></b></p>
 </center>
@@ -229,6 +229,55 @@ suivant : prev_mer, sun_set, dusk, dawn, sun_rise, next_mer.</p>
 suivant : prev_sun_rise, mer, sun_set, dusk, dawn, next_sun_rise.</p>
 <p>Exemple1 : mc_nextnight 2009-12-31T00:01 {GPS 5 E 43 1230} 0 -9</p>
 <p>Exemple2 : mc_nextnight 2009-12-31T09:01 {GPS 5 E 43 1230} 0 -9</p>
+<p>Exemple3 : Calcul et affichage des param&egrave;tres pour la
+prochaine nuit</p>
+<p>set home $audace(posobs,observateur,gps)<br>
+set date [mc_date2jd [::audace::date_sys2ut]]<br>
+set res [mc_nextnight $date $home -9 -12]<br>
+set mer2mer [lindex $res 0]<br>
+set rise2rise [lindex $res 1]<br>
+proc afelev { date home } {<br>
+&nbsp;&nbsp; set res [lindex [mc_ephem sun $date {ALTITUDE AZIMUTH}
+-topo $home] 0 ]<br>
+&nbsp;&nbsp; return "[format %6.2f [lindex $res 1 ]] [format %+6.2f
+[lindex $res 0 ]]"<br>
+}<br>
+::console::affiche_resultat "========= RISE2RISE home=$home\n"<br>
+::console::affiche_resultat "prev_mer, [mc_date2iso8601 [lindex
+$mer2mer 0]] : [afelev [lindex $mer2mer 0] $home]\n"<br>
+::console::affiche_resultat "sun_set,&nbsp; [mc_date2iso8601 [lindex
+$mer2mer 1]] : [afelev [lindex $mer2mer 1] $home]\n" <br>
+::console::affiche_resultat "dusk,&nbsp;&nbsp;&nbsp;&nbsp;
+[mc_date2iso8601 [lindex $mer2mer 2]] : [afelev [lindex $mer2mer 2]
+$home]\n" <br>
+::console::affiche_resultat "dawn,&nbsp;&nbsp;&nbsp;&nbsp;
+[mc_date2iso8601 [lindex $mer2mer 3]] : [afelev [lindex $mer2mer 3]
+$home]\n" <br>
+::console::affiche_resultat "sun_rise, [mc_date2iso8601 [lindex
+$mer2mer 4]] : [afelev [lindex $mer2mer 4] $home]\n" <br>
+::console::affiche_resultat "next_mer, [mc_date2iso8601 [lindex
+$mer2mer 5]] : [afelev [lindex $mer2mer 5] $home]\n"<br>
+::console::affiche_resultat "========= RISE2RISE home=$home\n"<br>
+::console::affiche_resultat "prev_sun_rise, [mc_date2iso8601 [lindex
+$rise2rise 0]] : [afelev [lindex $rise2rise 0] $home]\n"<br>
+::console::affiche_resultat
+"mer,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[mc_date2iso8601 [lindex $rise2rise 1]] : [afelev [lindex $rise2rise 1]
+$home]\n"<br>
+::console::affiche_resultat
+"sun_set,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [mc_date2iso8601 [lindex
+$rise2rise 2]] : [afelev [lindex $rise2rise 2] $home]\n" <br>
+::console::affiche_resultat
+"dusk,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[mc_date2iso8601 [lindex $rise2rise 3]] : [afelev [lindex $rise2rise 3]
+$home]\n" <br>
+::console::affiche_resultat
+"dawn,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[mc_date2iso8601 [lindex $rise2rise 4]] : [afelev [lindex $rise2rise 4]
+$home]\n" <br>
+::console::affiche_resultat "next_sun_rise, [mc_date2iso8601 [lindex
+$rise2rise 5]] : [afelev [lindex $rise2rise 5] $home]\n"<br>
+</p>
 <ul>
   <li><span style="font-weight: bold;">mc_obsconditions</span> :
 G&eacute;n&egrave;re un fichier qui permet de suivre les conditions

@@ -2,13 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta http-equiv="Content-Type"
- content="text/html; charset=ISO-8859-1">
+ content="text/html; charset=ISO-8859-1" />
   <title>Librairie MC : Manuel Utilisateur</title>
 </head>
 <body>
-<center><b><font size="+3">LIB MC</font></b> <br>
-une librairie de calculs de m&eacute;canique c&eacute;leste <br>
-version 20100911<br>
+<center><b><font size="+3">LIB MC</font></b> <br />
+une librairie de calculs de m&eacute;canique c&eacute;leste <br />
+version 20110318<br />
 Alain KLOTZ
 <p><b><font size="+3">Manuel de l'utilisateur</font></b></p>
 </center>
@@ -18,9 +18,9 @@ l'utilisateur s'adresse aux programmeurs de scripts Tcl qui
 d&eacute;sirent utiliser les fonctions de libmc. Les fonctions faisant
 appel aux "buffer" de AudeLA ne peuvent &ecirc;tre employ&eacute;es
 qu'avec la plate forme AudeLA.
-<h1> <a name="general" id="general"></a>1.
+<h1> <a name="general" id="general" />1.
 G&eacute;n&eacute;ralit&eacute;s</h1>
-<h2> <a name="load" id="load"></a>1.1. Chargement de la librairie dans
+<h2> <a name="load" id="load" />1.1. Chargement de la librairie dans
 l'interpr&eacute;teur Tcl</h2>
 <p>Le chargement de la librairie libmc dans l'interpr&eacute;teur Tcl
 se fait simplement par la commande :</p>
@@ -47,7 +47,7 @@ s'&eacute;crira donc : </p>
 <p>Si l'interpr&eacute;teur retourne le message d'erreur : invalid
 command name "mc_date2jd", c'est que <a href="#load">la librairie
 libmc n'a pas &eacute;t&eacute; charg&eacute;e </a>correctement. </p>
-<h1> <a name="reference" id="reference"></a>2. Guide de
+<h1> <a name="reference" id="reference" />2. Guide de
 r&eacute;f&eacute;rence des fonctions de MC</h1>
 <p>Les fonctions Tcl, ajout&eacute;es par MC proposent une vaste
 &eacute;tendue de possibilit&eacute;s. En respect avec la syntaxe Tcl,
@@ -77,7 +77,7 @@ option de contrainte.</li>
 </ul>
 <p>Par exemple, la syntaxe de la fonction mc_date2jd est : date2jd Date</p>
 <h2> 2.1. D&eacute;finition des types de param&egrave;tres pour MC :</h2>
-<h3> <a name="date" id="date"></a>2.1.1. Les types Date et ListDates</h3>
+<h3> <a name="date" id="date" />2.1.1. Les types Date et ListDates</h3>
 <p>La d&eacute;finition d'une date peut &ecirc;tre faite de plusieurs
 fa&ccedil;ons diff&eacute;rentes :</p>
 <ul>
@@ -104,7 +104,7 @@ indiff&eacute;remment en majuscule ou en minuscule. </p>
 <p>Le type ListDates de MC signifie une liste Tcl
 d'&eacute;l&eacute;ments de type Date. Par exemple : </p>
 <p>{2000 1 1} {2000 1 2} 2451056.4563 {2000-01-03T00:00:00} now </p>
-<h3> <a name="angle" id="angle"></a>2.1.2. Les types Angle et
+<h3> <a name="angle" id="angle" />2.1.2. Les types Angle et
 ListAngles</h3>
 <p>La d&eacute;finition d'un angle peut &ecirc;tre faite de plusieurs
 fa&ccedil;ons diff&eacute;rentes. Ci-dessous, quelques exemples : </p>
@@ -127,7 +127,7 @@ d&eacute;cimaux (1 heure &eacute;quivaut &agrave; 15 degr&eacute;s).</li>
 <p> Le type ListAngles de MC signifie une liste Tcl
 d'&eacute;l&eacute;ments de type Angle. Par exemple : </p>
 <p>{45d34} {-45 38 6.4} {1h30m} {2 r} </p>
-<h3> <a name="object" id="object"></a>2.1.3. Les types Object et
+<h3> <a name="object" id="object" />2.1.3. Les types Object et
 ListObjects</h3>
 <p> La d&eacute;finition d'une plan&egrave;te ou d'une &eacute;toile
 est r&eacute;alis&eacute;e sous la forme d'une liste dont les
@@ -190,7 +190,7 @@ Syst&egrave;me Solaire, ainsi que le Soleil et la Lune : </p>
 <p>{ * Internal} </p>
 <p>que l'on peut simplement &eacute;crire * car Internal est la valeur
 par d&eacute;faut. </p>
-<h3> <a name="home" id="home"></a>2.1.4. Le type Home</h3>
+<h3> <a name="home" id="home" />2.1.4. Le type Home</h3>
 <p> Le type Home permet de localiser un point sur la Terre de
 fa&ccedil;on &agrave; calculer une &eacute;ph&eacute;m&eacute;ride
 topocentrique par rapport &agrave; ce site, c'est &agrave; dire tenant
@@ -245,7 +245,7 @@ l'est. Valeur comprise entre 0 et 360.</li>
 longitude 3 degr&eacute;s ouest, &agrave; la latitude de 46
 degr&eacute;s nord et &agrave; une altitude de 456 m&egrave;tres : </p>
 <p>{ GPS 3 W 46 456 } </p>
-<h3> <a name="field" id="field"></a>2.1.5. Le type Field</h3>
+<h3> <a name="field" id="field" />2.1.5. Le type Field</h3>
 <p> Le type Field permet de d&eacute;finir le champ de vue d'un
 syst&egrave;me optique r&eacute;alisant une projection gnomonique
 (image CCD par exemple). La d&eacute;finition d'un champ est
@@ -298,7 +298,7 @@ cam&eacute;ra de 768x512 pixels de 9 microns de c&ocirc;t&eacute;, on
 &eacute;crira : </p>
 <p>{ OPTIC NAXIS1 768 NAXIS2 512 FOCLEN 2.5 PIXSIZE1 9e-6 PIXSIZE2 9e-6
 CROTA2 0 RA 180 DEC 15 } </p>
-<h3> <a name="format" id="format"></a>2.1.6. Les types Format et
+<h3> <a name="format" id="format" />2.1.6. Les types Format et
 ListFormat</h3>
 <p> La d&eacute;finition d'un format de sortie est
 r&eacute;alis&eacute;e en indiquant le nom de la donn&eacute;e &agrave;
@@ -365,7 +365,7 @@ param&egrave;tres que l'on veut en sortie. Par exemple, pour avoir le
 nom, la date et la magnitude d'un objet, on &eacute;crira la liste
 suivante : </p>
 <p>{ OBJENAME YEAR MONTH DAY MAG } </p>
-<h3> <a name="constraint" id="constraint"></a>2.1.7. Le type d'option
+<h3> <a name="constraint" id="constraint" />2.1.7. Le type d'option
 -constraint</h3>
 <p> Le type -constraint s'applique aux options. Il permet d'exclure des
 astres situ&eacute;s hors de valeurs acceptables. Il existe deux
@@ -412,17 +412,17 @@ depuis l'interpr&eacute;teur Tcl. </p>
 <h3> 2.2.1. Eph&eacute;m&eacute;rides</h3>
 <p> La fonction de g&eacute;n&eacute;ration
 d'&eacute;ph&eacute;m&eacute;rides s'appelle mc_ephem. </p>
-<p><a name="mc_ephem" id="mc_ephem"></a><span style="font-weight: bold;">mc_ephem</span>
+<p><a name="mc_ephem" id="mc_ephem" /><span style="font-weight: bold;">mc_ephem</span>
 <a href="#object">ListObjects</a> ?<a href="#date">ListDates UTC</a>? ?<a
  href="#format">ListFormat</a>? -<a href="#constraint">constraint Value</a>
--<a href="#home">topo Home</a>&nbsp; ?-equinox Date|apparent? ?-tt-tu
+-<a href="#home">topo Home</a>&nbsp; ?-equinox Date|apparent? ?-tt-utc
 seconds? </p>
 Par d&eacute;faut, ListDate=NOW et ListFormat={ OBJENAME RA DEC}.
 Les coordonn&eacute;es de sortie sont en J2000 par d&eacute;faut mais
 peuvent &ecirc;tre chang&eacute;es en utilisant l'option -equinox. Les
 coordonn&eacute;es de sortie seront dans le r&eacute;f&eacute;rentiel
-apparent si l'on emploie l'option -equinox apparent.<br>
-<br>
+apparent si l'on emploie l'option -equinox apparent.<br />
+<br />
 Attention, les dates doivent &ecirc;tre entr&eacute;es UTC et seront
 converties en en temps terrestre (TT) automatiquement si l'option
 -tt-tu n'est pas utilis&eacute;e.
@@ -452,21 +452,23 @@ pr&eacute;sent. </p>
 {OBJENAME RAH RAM.M DECD DECM.M}</code></li>
   <p> Calcule la position g&eacute;ocentrique des neuf plan&egrave;tes
 du Syst&egrave;me Solaire ainsi que le Soleil et la Lune pour le 13
-Avril 2000 &agrave; 0 heures TT. En retour, on obtient la liste
+Avril 2000 &agrave; 0 heures UTC. En retour, on obtient la liste
 suivante :</p>
-  <p>{Sun 1 26.510988 +9 4.702767 } {Moon 8 59.144500 +18 12.397345 }
-{Mercury 0 4.035452 -2 21.753558 } {Venus 0 30.593754 +1 39.865080 }
-{Mars 2 50.794666 +16 35.807880 } {Jupiter 2 39.098062 +14 33.530997 }
-{Saturn 3 0.218304 +14 56.224723 } {Uranus 21 30.923142 -15 25.412914 }
-{Neptune 20 34.876356 -18 27.543939 } {Pluto 16 50.716617 -11 8.901348
-} {Ok {J2000.0 coordinates} 10} </p>
+  <p>{Sun 1 26.51470203 +9 4.75296865 } {Moon 8 59.20600127 +18
+12.25042233 } {Mercury 0 4.04371737 -2 21.69687295 } {Venus 0
+30.60449346 +1 39.94498600 } {Mars 2 50.80720143 +16 35.91445832 }
+{Jupiter 2 39.11224733 +14 33.64514056 } {Saturn 3 0.23361403 +14
+56.34185673 } {Uranus 21 30.94094013 -15 25.37372123 } {Neptune 20
+34.89529996 -18 27.53202026 } {Pluto 16 50.73396726 -11 8.99983823 }
+{Ok {J2000.0 coordinates} 10} </p>
   <li style="font-weight: bold;"> <code>mc_ephem {Sun Moon} [list
-[mc_date2tt {1999 8 11 10 26}] ] -topo {GPS 2 E 48.5 125}</code></li>
+{1999 8 11 10 26}] -topo {GPS 2 E 48.5 125}</code></li>
   <p> Calcule la position topocentrique de la Lune et du Soleil pour le
-11 Ao&ucirc;t 1999 &agrave; 10 heures 26 TU. En retour, on obtient la
+11 Ao&ucirc;t 1999 &agrave; 10 heures 26&nbsp;UTC. En retour, on
+obtient la
 liste suivante : </p>
-  <p>{Sun 140.760916 15.333936 } {Moon 140.792685 15.342969 } {Ok
-{J2000.0 coordinates} 2} </p>
+  <p>{Sun 140.769774254463 15.332396394633 } {Moon 140.798951052538
+15.342836375304 } {Ok {J2000.0 coordinates} 2} </p>
   <li style="font-weight: bold;"> <code>mc_ephem {* Bowellfile
 astorb.dat} now {OBJENAME RA DEC MAG} -ha&lt; 45 -dec&gt; -15 -dec&lt;
 40 -mag&lt; 17 -moonelong&gt; 30 -topo {MPCSTATION 148 stations.txt}</code></li>
@@ -475,8 +477,19 @@ num&eacute;ro 148, de tous les ast&eacute;ro&iuml;des de la base de
 donn&eacute;es de Bowell qui sont plus brillants que la magnitude 17,
 situ&eacute;s &agrave; moins de 45 degr&eacute;s du m&eacute;ridien,
 entre les d&eacute;clinaisons -15 et +40 degr&eacute;s, &agrave; plus
-de 30 degr&eacute;s de la Lune. </p>
+de 30 degr&eacute;s de la Lune.</p>
+  <li style="font-weight: bold;"> <b><tt><font size="+1">set date
+2011-03-18T00:00:00<br />
+set tt_minus_utc_sec [expr ([mc_date2tt $date]-[mc_date2jd
+$date])*86400]<br />
+set res [lindex [mc_ephem sun $date {ra dec} -tt-utc $tt_minus_utc_sec]
+0 ]<br />
+set ra [mc_angle2hms [lindex $res 0]]<br />
+set dec [mc_angle2dms [lindex $res 1] 90]<br />
+::console::affiche_resultat "$date $ra $dec\n"</font></tt></b></li>
 </ul>
+<p style="margin-left: 40px;"> Calcule les coordonn&eacute;es du Soleil
+&agrave; partir d'une date TT.</p>
 <p> Pour calculer l'&eacute;ph&eacute;m&eacute;ride d'un astre pour
 plusieurs dates, il est utile de g&eacute;n&eacute;rer la ListDates
 &agrave; partir de la fonction <a href="#mc_date2listdates">mc_date2listdates</a>.
@@ -487,7 +500,7 @@ param&egrave;tres d'observation physique de libration.</p>
 Neptune, les &eacute;ph&eacute;m&eacute;rides sont calcul&eacute;es
 d'apr&egrave;s la th&eacute;orie VSOP87 tronqu&eacute;e aux termes
 donnant une pr&eacute;cision meilleur que 2 arcsec. </p>
-<p><a name="mc_libration" id="mc_libration"></a><span
+<p><a name="mc_libration" id="mc_libration" /><span
  style="font-weight: bold;">mc_libration</span> <a href="#date">Dates</a>
 ?<a href="#home">Home</a>? </p>
 <p>Calcule les param&egrave;tres de libration g&eacute;ocentrique ou
@@ -510,7 +523,7 @@ positives vers la direction ouest (vers la mer des Crises). </p>
 <h3> 2.2.2. Astres dans un champ</h3>
 <p> La fonction permettant de lister les astres dans un champ d'image
 CCD est mc_readcat. </p>
-<p><a name="mc_readcat" id="mc_readcat"></a><span
+<p><a name="mc_readcat" id="mc_readcat" /><span
  style="font-weight: bold;">mc_readcat</span> <a href="#field">Field</a>
 <a href="#object">ListObjects</a> Output -<a href="#constraint">constraint
 Value</a> -objmax Value -<a href="#date">date Date</a> -<a href="#home">topo
@@ -556,13 +569,13 @@ cl&eacute;s FITS de l'image en buffer 1. On ne d&eacute;sire que les
 ast&eacute;ro&iuml;des de magnitude inf&eacute;rieure &agrave; 18. </p>
 </ul>
 <h3> 2.2.3. Utilitaires de conversion d'angles</h3>
-<p> <a name="mc_angle2deg" id="mc_angle2deg"></a><span
+<p> <a name="mc_angle2deg" id="mc_angle2deg" /><span
  style="font-weight: bold;">mc_angle2deg</span> <a href="#angle">Angle</a>
 : Retourne l'angle en degr&eacute;s d&eacute;cimaux. </p>
-<p> <a name="mc_angle2rad" id="mc_angle2rad"></a><span
+<p> <a name="mc_angle2rad" id="mc_angle2rad" /><span
  style="font-weight: bold;">mc_angle2rad</span> <a href="#angle">Angle</a>
 : Retourne l'angle en radians. </p>
-<p> <a name="mc_angle2dms" id="mc_angle2dms"></a><span
+<p> <a name="mc_angle2dms" id="mc_angle2dms" /><span
  style="font-weight: bold;">mc_angle2dms</span> <a href="#angle">Angle</a>
 ?limit? ?nozero|zero? ?subsecdigits? ?auto|+? ?list|string? : Retourne
 l'angle sous forme degr&eacute;s, minutes et secondes d'angle. Le
@@ -579,7 +592,7 @@ sert &agrave; imposer le retour du signe devant le r&eacute;sultat
 list|string sert &agrave; fixer le format de sortie sous la forme d'une
 liste (trois &eacute;l&eacute;ments {12 56 34.234} par exemple) ou bien
 sous la forme d'une seule cha&icirc;ne (12d56m34s234 par exemple). </p>
-<p><a name="mc_angle2hms" id="mc_angle2hms"></a><span
+<p><a name="mc_angle2hms" id="mc_angle2hms" /><span
  style="font-weight: bold;">mc_angle2hms</span> <a href="#angle">Angle</a>
 ?limit? ?nozero|zero? ?subsecdigits? ?auto|+? ?list|string? : Retourne
 l'angle sous forme heures, minutes et secondes de temps. Le
@@ -596,59 +609,59 @@ sert &agrave; imposer le retour du signe devant le r&eacute;sultat
 list|string sert &agrave; fixer le format de sortie sous la forme d'une
 liste (trois &eacute;l&eacute;ments {12 56 34.234} par exemple) ou bien
 sous la forme d'une seule cha&icirc;ne (12h56m34s234 par exemple). </p>
-<p><a name="mc_angle2lx200dec" id="mc_angle2lx200dec"></a><span
+<p><a name="mc_angle2lx200dec" id="mc_angle2lx200dec" /><span
  style="font-weight: bold;">mc_angle2lx200dec</span> <a href="#angle">Angle</a>
 ?-format long|short? : Retourne l'angle au format d&eacute;clinaison
 (Sd) du protocole LX200. L'option format permet de choisir
 l'&eacute;criture longue ou courte d&eacute;fini dans le protocole.</p>
-<p><a name="mc_angle2lx200ra" id="mc_angle2lx200ra"></a><span
+<p><a name="mc_angle2lx200ra" id="mc_angle2lx200ra" /><span
  style="font-weight: bold;">mc_angle2lx200ra</span> <a href="#angle">Angle</a>
 : ?-format long|short? : Retourne l'angle au format ascension droite
 (Sr) du protocole LX200. L'option format permet de choisir
 l'&eacute;criture longue ou courte d&eacute;fini dans le protocole.</p>
-<p><a name="mc_anglesep" id="mc_anglesep"></a><span
+<p><a name="mc_anglesep" id="mc_anglesep" /><span
  style="font-weight: bold;">mc_anglesep</span> <a href="#angle">ListAngles</a>
 ?Units? : Retourne l'angle de s&eacute;paration et l'angle de position.
 La liste doit compter 4 angles d&eacute;finis dans l'ordre suivant :
 Ra1 Dec1 Ra2 Dec2. Le r&eacute;sultat est retourn&eacute; en
 degr&eacute;s par d&eacute;faut. Pour avoir un r&eacute;sultat en
 radians ajouter Unit=Radian.</p>
-<p><b><a name="mc_angles2nexstar"></a>mc_angles2nexstar</b> <a
+<p><b><a name="mc_angles2nexstar" />mc_angles2nexstar</b> <a
  href="mcusr_fr_new.htm#angle">Angle</a> <a
  href="mcusr_fr_new.htm#angle">Angle</a> ?bits?: Retourne
 les
 deux angles RA DEC en une seule cha&icirc;ne au format du protocole
 Nexstar. Bits=16 (par d&eacute;faut) ou 24.</p>
-<p> <b><a name="mc_nexstar2angles"></a>mc_nexstar2angles </b>Nexstar_string
+<p> <b><a name="mc_nexstar2angles" />mc_nexstar2angles </b>Nexstar_string
 :
 Retourne
 une liste RA DEC (en degr&eacute;s) &agrave; partir d'une
 seule cha&icirc;ne au format du protocole Nexstar.
 </p>
-<p><a name="mc_radec2altaz" id="mc_radec2altaz"></a><span
+<p><a name="mc_radec2altaz" id="mc_radec2altaz" /><span
  style="font-weight: bold;">mc_radec2altaz</span> <a href="#angle">Angle_ra</a>
 <a href="#angle">Angle_dec</a> <a href="#home">Home</a> <a
  href="#date">Date</a> : Retourne une liste des quatre
 param&egrave;tres utiles pour le syst&egrave;me altazimutal : Azimut,
 Hauteur, Angle horaire et Angle parallactique. La date donn&eacute;e en
 param&egrave;tre doit contenir l'heure TU. </p>
-<p><a name="mc_hadec2altaz" id="mc_hadec2altaz"></a><span
+<p><a name="mc_hadec2altaz" id="mc_hadec2altaz" /><span
  style="font-weight: bold;">mc_hadec2altaz</span> <a href="#angle">Angle_ha</a>
 <a href="#angle">Angle_dec</a> <a href="#home">Home</a> <a
  href="#date">Date</a> : Retourne une liste des quatre
 param&egrave;tres utiles pour le syst&egrave;me altazimutal : Azimut,
 Hauteur, Angle horaire et Angle parallactique.</p>
-<p><a name="mc_altaz2radec" id="mc_altaz2radec"></a><span
+<p><a name="mc_altaz2radec" id="mc_altaz2radec" /><span
  style="font-weight: bold;">mc_altaz2radec</span> <a href="#angle">Angle_Azimuth</a>
 <a href="#angle">Angle_Altitude</a> <a href="#date">Home</a> <a
  href="#date">Date</a> : Retourne une liste Ra,Dec &agrave; partir de
 l'azimut et de la hauteur. </p>
-<p><a name="mc_altaz2hadec" id="mc_altaz2hadec"></a><span
+<p><a name="mc_altaz2hadec" id="mc_altaz2hadec" /><span
  style="font-weight: bold;">mc_altaz2hadec</span> <a href="#angle">Angle_Azimuth</a>
 <a href="#angle">Angle_Altitude</a> <a href="#date">Home</a> <a
  href="#date">Date</a> : Retourne une liste Angle Horaire,Dec &agrave;
 partir de l'azimut et de la hauteur. </p>
-<p><a name="mc_refraction" id="mc_refraction"></a><span
+<p><a name="mc_refraction" id="mc_refraction" /><span
  style="font-weight: bold;">mc_refraction</span> altitude out2in|in2out
 ?temperature? ?pressure? : Calcule la correction (en degr&eacute;s) due
 &agrave; la r&eacute;fraction atmosph&eacute;rique qu'il faut apporter
@@ -658,11 +671,11 @@ r&eacute;fraction) et in2out pour le contraire (soustraire la
 r&eacute;fraction). La temp&eacute;rature est exprim&eacute;e en Kelvin
 (283K par d&eacute;faut) et la pression en Pascal (101000 Pa par
 d&eacute;faut). </p>
-<p><a name="mc_anglescomp" id="mc_anglescomp"></a><span
+<p><a name="mc_anglescomp" id="mc_anglescomp" /><span
  style="font-weight: bold;">mc_anglescomp</span> <a href="#angle">Angle1</a>
 operand <a href="#angle">Angle2</a> : Effectue une op&eacute;ration
 arithm&eacute;tique (+,-,*,/,modulo) sur deux angles. </p>
-<p><a name="mc_home2geosys" id="mc_home2geosys"></a><span
+<p><a name="mc_home2geosys" id="mc_home2geosys" /><span
  style="font-weight: bold;">mc_home2geosys</span> <a href="#home">Home</a>
 geosys1 geosys2 ?-height? : Effectue la conversion de
 coordonn&eacute;es g&eacute;od&eacute;siques d'un syst&egrave;me
@@ -670,40 +683,40 @@ coordonn&eacute;es g&eacute;od&eacute;siques d'un syst&egrave;me
 ED50 et WGS84. L'option -height permet de retourner un quatri&egrave;me
 param&egrave;tre : La hauteur du site sur l'ellipso&iuml;de de
 r&eacute;f&eacute;rence. </p>
-<p><a name="mc_radec2galactic" id="mc_radec2galactic"></a><span
+<p><a name="mc_radec2galactic" id="mc_radec2galactic" /><span
  style="font-weight: bold;">mc_radec2galactic</span> <a href="#angle">Angles_RaDec</a>
 <a href="#date">Date_Equinox</a> : Transforme la liste Angles_RaDec
 &agrave; l'&eacute;quinoxe Date_Equinox vers les coordonn&eacute;es
 galactiques de type II. </p>
-<p><a name="mc_galactic2radec" id="mc_galactic2radec"></a><span
+<p><a name="mc_galactic2radec" id="mc_galactic2radec" /><span
  style="font-weight: bold;">mc_galactic2radec</span> <a href="#angle">Angles_LonLat</a>
 <a href="#date">Date_Equinox</a> : Transforme la liste Angles_LonLat de
 coordonn&eacute;es galactiques de type II vers les coordonn&eacute;es
 RaDec &agrave; l'&eacute;quinoxe Date_Equinox.</p>
-<p> <a name="mc_radec2ecliptic" id="mc_radec2ecliptic"></a><span
+<p> <a name="mc_radec2ecliptic" id="mc_radec2ecliptic" /><span
  style="font-weight: bold;">mc_radec2ecliptic</span> <a href="#angle">Angles_RaDec</a>
 <a href="#date">Date_Equinox</a> : Transforme la liste Angles_RaDec
 &agrave; l'&eacute;quinoxe Date_Equinox vers les coordonn&eacute;es
 &eacute;cliptiques.</p>
-<p><a name="mc_ecliptic2radec" id="mc_ecliptic2radec"></a><span
+<p><a name="mc_ecliptic2radec" id="mc_ecliptic2radec" /><span
  style="font-weight: bold;">mc_ecliptic2radec</span> <a href="#angle">Angles_LonLat</a>
 <a href="#date">Date_Equinox</a> : Transforme la liste Angles_LonLat de
 coordonn&eacute;es &eacute;cliptiques vers les coordonn&eacute;es RaDec
 &agrave; l'&eacute;quinoxe Date_Equinox. </p>
 <h3> 2.2.4. Utilitaires de conversion de dates</h3>
-<p><a name="mc_date2jd" id="mc_date2jd"></a><span
+<p><a name="mc_date2jd" id="mc_date2jd" /><span
  style="font-weight: bold;">mc_date2jd</span> <a href="#date">Date</a>
 : Retourne le jour julien du param&egrave;tre du type Date.</p>
-<p><a name="mc_date2tt" id="mc_date2tt"></a><span
+<p><a name="mc_date2tt" id="mc_date2tt" /><span
  style="font-weight: bold;">mc_date2tt</span> <a
  href="file:///D:/audela/dev/libmc/html/mcusr_fr.htm#date">Date</a> :
 Convertit la date en le temps terrestre exprim&eacute; en jour julien .
 </p>
-<p><a name="mc_date2ymdhms" id="mc_date2ymdhms"></a><span
+<p><a name="mc_date2ymdhms" id="mc_date2ymdhms" /><span
  style="font-weight: bold;">mc_date2ymdhms</span> <a href="#date">Date</a>
 : Retourne la date en clair Yyyy Mm Dd Hh Mm Ss.sss &agrave; partir du
 type Date. </p>
-<p><a name="mc_date2lst" id="mc_date2lst"></a><span
+<p><a name="mc_date2lst" id="mc_date2lst" /><span
  style="font-weight: bold;">mc_date2lst</span>&nbsp;<a
  href="mcusr_fr_new.htm#date">Dae_UTC</a>
 <a href="mcusr_fr_new.htm#home">Home_cep</a> ?-ut1-utc UT1-UTC(sec)?
@@ -715,22 +728,22 @@ param&egrave;tres de type Date (en UTC) et du
 type Home (corrig&eacute; du p&ocirc;le vrai avec la fonction
 mc_homecep). On peut annuler l'effet de l'&eacute;quation des
 &eacute;quinoxes si l'on utilise -nutation 0. </p>
-<p> <a name="mc_date2listdates" id="mc_date2listdates"></a><span
+<p> <a name="mc_date2listdates" id="mc_date2listdates" /><span
  style="font-weight: bold;">mc_date2listdates</span> <a href="#date">Date</a>
 DateStep NbSteps : Retourne une ListDates &agrave; partir d'une date
 incr&eacute;ment&eacute;e NbSteps fois du pas DateStep (en jours).</p>
-<p> <a name="mc_date2iso8601" id="mc_date2iso8601"></a><span
+<p> <a name="mc_date2iso8601" id="mc_date2iso8601" /><span
  style="font-weight: bold;">mc_date2iso8601</span> <a href="#date">Date</a>:
 Transforme
 une date en format d'en-t&ecirc;te FITS. Utile pour ajouter
 l'info DATE-OBS &agrave; une en-t&ecirc;te FITS.</p>
-<p> <a name="mc_datescomp" id="mc_datescomp"></a><span
+<p> <a name="mc_datescomp" id="mc_datescomp" /><span
  style="font-weight: bold;">mc_datescomp</span> <a href="#date">Date</a>
 Operand days : Effectue une op&eacute;ration arithm&eacute;tique
 &agrave; partir d'une date. Utile pour calculer le temps de pose du
-milieu de l'image.<br>
+milieu de l'image.<br />
 </p>
-<p><b><a name="mc_tt2bary"></a>mc_tt2bary</b> <a
+<p><b><a name="mc_tt2bary" />mc_tt2bary</b> <a
  href="../../../../../../../../d/audela/dev/libmc/html/mcusr_fr.htm#date">Date</a>
 <a
  href="../../../../../../../../d/audela/dev/libmc/html/mcusr_fr.htm#angle">Angle_Ra</a>
@@ -746,7 +759,7 @@ le jour julien correspondant &agrave; l'arriv&eacute;e au
 barycentre du syst&egrave;me solaire, d'un &eacute;v&eacute;nement
 observ&eacute;
 sur la Terre &agrave; une date exprim&eacute;e en temps terrestre.&nbsp;</p>
-<p><b><a name="mc_dates_ut2bary"></a>mc_dates_ut2bary</b> <a
+<p><b><a name="mc_dates_ut2bary" />mc_dates_ut2bary</b> <a
  href="../../../../../../../../d/audela/dev/libmc/html/mcusr_fr.htm#date">ListDates_UT</a>
 <a
  href="../../../../../../../../d/audela/dev/libmc/html/mcusr_fr.htm#angle">Angle_Ra</a>
@@ -792,19 +805,19 @@ l'&eacute;ph&eacute;m&eacute;ride d'un astre au cours du temps (cf.
 fonction <a href="#mc_ephem">mc_ephem</a>).</p>
 </ul>
 <h3> 2.2.5. Utilitaires d'astrom&eacute;trie</h3>
-<p><a name="mc_buf2field" id="mc_buf2field"></a><span
+<p><a name="mc_buf2field" id="mc_buf2field" /><span
  style="font-weight: bold;">mc_buf2field</span> Numbuffer : Retourne
 une liste Field de param&egrave;tres optiques &agrave; partir de
 l'en-t&ecirc;te FITS de l'image du buffer num&eacute;ro Numbuffer.</p>
-<p> <a name="mc_xy2radec" id="mc_xy2radec"></a><span
+<p> <a name="mc_xy2radec" id="mc_xy2radec" /><span
  style="font-weight: bold;">mc_xy2radec</span> x y <a href="#field">Field</a>
 : Retourne une liste au format {RA DEC} &agrave; partir des
 coordonn&eacute;es x et y.</p>
-<p> <a name="mc_radec2xy" id="mc_radec2xy"></a><span
+<p> <a name="mc_radec2xy" id="mc_radec2xy" /><span
  style="font-weight: bold;">mc_radec2xy</span> ra dec <a href="#field">Field</a>
 : Retourne une liste au format {X Y} &agrave; partir des
 coordonn&eacute;es ra et dec.</p>
-<p><a name="mc_precessradec" id="mc_precessradec"></a><span
+<p><a name="mc_precessradec" id="mc_precessradec" /><span
  style="font-weight: bold;">mc_precessradec</span>&nbsp;<a
  href="mcusr_fr_new.htm#angle">ListAngles</a>
 <a href="mcusr_fr_new.htm#date">Date_eq1</a> <a
@@ -817,13 +830,13 @@ de l'&eacute;quinoxe Date_eq1 vers l'&eacute;quinoxe Date_eq2. Il est
 possible d'ajouter les mouvements propres annuels par
 l'interm&eacute;diaire de
 ListAngles_proper (liste de types Dates). </p>
-<p><a name="mc_nutationradec" id="mc_nutationradec"></a><span
+<p><a name="mc_nutationradec" id="mc_nutationradec" /><span
  style="font-weight: bold;">mc_nutationradec</span> <a href="#angle">ListAngles</a>
 <a href="#date">Date</a> ?-reverse? : Retourne une liste d'angles en
 degr&eacute;s (Ra et Dec) corrig&eacute;s de la nutation &agrave;
 partir des coordonn&eacute;es de ListAngles au format {ra dec}.
 L'option -reverse sert &agrave; effectuer le calcul inverse.</p>
-<p> <a name="mc_aberrationradec" id="mc_aberrationradec"></a><span
+<p> <a name="mc_aberrationradec" id="mc_aberrationradec" /><span
  style="font-weight: bold;">mc_aberrationradec</span>
 annual|diurnal|eterms <a href="#angle">ListAngles</a> <a href="#date">Date</a>
 ?<a href="#home">Home</a>? ?-reverse? : Retourne une liste d'angles en
@@ -832,9 +845,9 @@ partir des coordonn&eacute;es de ListAngles au format {ra dec}. On
 choisit, soit l'aberration annuelle (annual), soit l'aberration des
 termes elliptiques (eterms) ou bien l'aberration diurne (diurnal). Dans
 ce dernier cas, il faut pr&eacute;ciser le site (Home). L'option
--reverse sert &agrave; effectuer le calcul inverse.<br>
+-reverse sert &agrave; effectuer le calcul inverse.<br />
 </p>
-<p><b><a name="mc_parallaxradec"></a>mc_parallaxradec</b> <a
+<p><b><a name="mc_parallaxradec" />mc_parallaxradec</b> <a
  href="../../../../../../../../d/audela-1.4.0/audela/src/audela/libmc/html/mcusr_fr.htm#angle">ListAngles</a>
 <a
  href="../../../../../../../../d/audela-1.4.0/audela/src/audela/libmc/html/mcusr_fr.htm#date">Date</a>
@@ -842,7 +855,7 @@ PLX_mas: Retourne une liste d'angles en degr&eacute;s (Ra et Dec)
 corrig&eacute;s de la parallaxe annuelle &agrave; partir des
 coordonn&eacute;es de ListAngles au format {ra dec}. La parallaxe est
 donn&eacute;e en entr&eacute;e en milli secondes d'arc. </p>
-<p><a name="mc_listradec" id="mc_listradec"></a><span
+<p><a name="mc_listradec" id="mc_listradec" /><span
  style="font-weight: bold;">mc_listradec</span> <a href="#field">Field</a>
 Mosaic ComPix : G&eacute;n&egrave;re une liste de listes {X Y RA DEC}
 &agrave; partir d'un champ de type Field, en faisant une mosa&iuml;que
@@ -891,9 +904,9 @@ est le suivant :</li>
   </tbody>
 </table>
 <p style="margin-left: 80px;">Si Parity=0 alors tous les champs seront
-point&eacute;s (valeur par d&eacute;faut).<br>
+point&eacute;s (valeur par d&eacute;faut).<br />
 Si Parity=1 alors seuls les champs d'indice impairs seront
-point&eacute;s.<br>
+point&eacute;s.<br />
 Si Parity=2 alors seuls les champs d'indice pairs seront point&eacute;s.</p>
 <ul>
   <li> Mosaic = {RANDOM Nbfields} : Le premier champ est centr&eacute;
@@ -944,16 +957,16 @@ J2000.0 et qui a un mouvement propre de 0.19877s et -0.0152" par an.</p>
   <p>57.068444 89.454271</p>
 </ul>
 <h3> 2.2.6. Utilitaires de conversion de lieu</h3>
-<p><a name="mc_home2gps" id="mc_home2gps"></a><span
+<p><a name="mc_home2gps" id="mc_home2gps" /><span
  style="font-weight: bold;">mc_home2gps</span> <a href="#home">Home</a>
 : Retourne une liste de format GPS &agrave; partir d'une liste de type
 Home.</p>
-<p> <a name="mc_home2mpc" id="mc_home2mpc"></a><span
+<p> <a name="mc_home2mpc" id="mc_home2mpc" /><span
  style="font-weight: bold;">mc_home2mpc</span> <a href="#home">Home</a>
 : Retourne une liste de format MPC &agrave; partir d'une liste de type
-Home.<br>
+Home.<br />
 </p>
-<p><b><a name="mc_homecep"></a>mc_homecep</b> <a
+<p><b><a name="mc_homecep" />mc_homecep</b> <a
  href="mcusr_fr_new.htm#home">Home</a>
 xp_arcsec yp_arcsec : Retourne une liste de format GPS &agrave; partir
 d'une liste de type
@@ -968,7 +981,7 @@ IERS</a>).
   <p>GPS 2.037500 E 43.727580 0.000000</p>
 </ul>
 <h3> 2.2.7. Utilitaires de correction de vitesse radiale</h3>
-<p> <a name="mc_baryvel" id="mc_baryvel"></a><span
+<p> <a name="mc_baryvel" id="mc_baryvel" /><span
  style="font-weight: bold;">mc_baryvel</span> <a href="#date">Date</a>
 <a href="#angle">Angle_Ra</a> <a href="#angle">Angle_Dec</a> <a
  href="#date">Equinox</a> ?<a href="#home">Home</a>? : Retourne la
@@ -978,8 +991,8 @@ vitesse radiale d'un astre aux coordonn&eacute;es Angle_Ra Angle_Dec
 rapporte la vitesse radiale au barycentre du Syst&egrave;me Solaire. La
 correction de vitesse diurne est prise en compte si Home est
 pr&eacute;cis&eacute;.</p>
-<p> <a name="mc_rvcor" id="mc_rvcor"></a><span
- style="font-weight: bold;">mc_rvcor</span> <a href="#angle">Angles_RaDec</a>
+<p> <a name="mc_rvcor" id="mc_rvcor" /><span style="font-weight: bold;">mc_rvcor</span>
+<a href="#angle">Angles_RaDec</a>
 <a href="#date">Equinox</a> reference : Retourne la correction &agrave;
 apporter &agrave; la mesure de la vitesse radiale d'un astre aux
 coordonn&eacute;es Angles_RaDec &agrave; l'&eacute;quinoxe Equinox,
@@ -1005,14 +1018,14 @@ Yahil et al. 1977 Astrophys.J. vol.217, p.903, November 1, 1977.</li>
 mesures de COBE. Kogut et al. 1993 Astrophys.J. vol.419, p.1, December
 10, 1993.</li>
 </ul>
-<b><a name="mc_cosmology_calculator"></a>mc_cosmology_calculator</b>
+<b><a name="mc_cosmology_calculator" />mc_cosmology_calculator</b>
 redshift ?Hubble_constant_km/s/Mpc? ?Omega_matter? ?Omega_vecuum? :
 Retourne une liste d'informations sur les grandeurs de th&eacute;orie
 cosmologique relatif &agrave; la valeur du redshift d'entr&eacute;e.
 Les termes Hubble_constant, Omega_matter et Omega_vecuum sont pris 71,
 0.27 et 0.73 par d&eacute;faut.
 <h3>2.2.8. Utilitaires de cartographie de surfaces plan&eacute;taires</h3>
-<p><a name="mc_xy2lonlat" id="mc_xy2lonlat"></a><span
+<p><a name="mc_xy2lonlat" id="mc_xy2lonlat" /><span
  style="font-weight: bold;">mc_xy2lonlat</span> lc bc P f xc yc req x y
 ?ls bs power? : retourne la longitude et la latitude
 plan&eacute;tographique d'un point de coordonn&eacute;es (x,y)
@@ -1051,7 +1064,7 @@ r&eacute;gion est derri&egrave;re la plan&egrave;te). La valeur de
 visibilit&eacute; est d&eacute;termin&eacute;e avec les
 param&egrave;tres optionnels </li>
 </ul>
-<p><a name="mc_lonlat2xy" id="mc_lonlat2xy"></a><span
+<p><a name="mc_lonlat2xy" id="mc_lonlat2xy" /><span
  style="font-weight: bold;">mc_lonlat2xy</span> lc bc P f xc yc req lon
 lat ?ls bs power? : retourne coordonn&eacute;es (x,y) mesur&eacute; sur
 une image &agrave; partir de la longitude et la latitude
@@ -1094,24 +1107,24 @@ l'image, la plan&egrave;te est centr&eacute;e au point (120,135) et a
 un diam&egrave;tre &eacute;quatorial de 50 pixels. L'image a
 &eacute;t&eacute; prise le 1 mars 2003 &agrave; 6h34min12s TT. La suite
 de fonctions Tcl suivantes permettent de calculer (lon,lat) :</p>
-<code> set res [lindex [mc_ephem saturn 2003-03-01T06:34:12 \<br>
-{LONGI LATI LONGI_SUN LATI_SUN POSNORTH APPDIAMPOL APPDIAMEQU}] 0]<br>
-set longi [lindex $res 0]<br>
-set lati [lindex $res 1]<br>
-set longi_sun [lindex $res 2]<br>
-set lati_sun [lindex $res 3]<br>
-set posnorth [lindex $res 4]<br>
-set appdiampol [lindex $res 5]<br>
-set appdiamequ [lindex $res 6]<br>
-set f [expr 1.-$appdiampol/$appdiamequ]<br>
-set power 0.1<br>
-<br>
-set x 117<br>
-set y 146<br>
+<code> set res [lindex [mc_ephem saturn 2003-03-01T06:34:12 \<br />
+{LONGI LATI LONGI_SUN LATI_SUN POSNORTH APPDIAMPOL APPDIAMEQU}] 0]<br />
+set longi [lindex $res 0]<br />
+set lati [lindex $res 1]<br />
+set longi_sun [lindex $res 2]<br />
+set lati_sun [lindex $res 3]<br />
+set posnorth [lindex $res 4]<br />
+set appdiampol [lindex $res 5]<br />
+set appdiamequ [lindex $res 6]<br />
+set f [expr 1.-$appdiampol/$appdiamequ]<br />
+set power 0.1<br />
+<br />
+set x 117<br />
+set y 146<br />
 set res [mc_xy2lonlat $longi $lati $posnorth $f 120 135 50 $x $y
-$longi_sun $lati_sun $power]<br>
-set lon [lindex $res 0]<br>
-set lat [lindex $res 1]<br>
+$longi_sun $lati_sun $power]<br />
+set lon [lindex $res 0]<br />
+set lat [lindex $res 1]<br />
 </code>
 </body>
 </html>

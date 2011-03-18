@@ -162,13 +162,13 @@ int mc_scheduler_sunmoon1(double longmpc, double rhocosphip, double rhosinphip,d
 		dummy2s[kjd]=tsl/(DR);
 		if (kjd>0) {
 			da=dummy2s[kjd]-dummy2s[kjd-1];
-			if (da<-180) { dummy2s[kjd]+=360.; }
-			if (da>180) { dummy2s[kjd]-=360.; }
+			if (da<-180) { dummy2s[kjd]+=360*ceil(-da/360.); }
+			if (da> 180) { dummy2s[kjd]-=360*ceil(da/360.); }
 		}
 	}
 	mc_interplin1(0,njdm+1,dummy1s,dummy2s,dummy1s,0.5,njd+1,dummy5s,dummy6s); // lst
 	for (kjd=0;kjd<=njd;kjd++) {
-		if (dummy6s[kjd+1]>360) { dummy6s[kjd+1]-=360.; }
+		dummy6s[kjd+1]=fmod(dummy6s[kjd+1]+1440,360);
 		sunmoon[kjd].lst=dummy6s[kjd+1]; // lst
 	}
 
@@ -181,13 +181,13 @@ int mc_scheduler_sunmoon1(double longmpc, double rhocosphip, double rhosinphip,d
 		dummy3s[kjd]=dec/(DR);
 		if (kjd>0) {
 			da=dummy2s[kjd]-dummy2s[kjd-1];
-			if (da<-180) { dummy2s[kjd]+=360.; }
-			if (da>180) { dummy2s[kjd]-=360.; }
+			if (da<-180) { dummy2s[kjd]+=360*ceil(-da/360.); }
+			if (da> 180) { dummy2s[kjd]-=360*ceil(da/360.); }
 		}
 	}
 	mc_interplin1(0,njdm+1,dummy1s,dummy2s,dummy1s,0.5,njd+1,dummy5s,dummy6s); // ra
 	for (kjd=0;kjd<=njd;kjd++) {
-		if (dummy6s[kjd+1]>360) { dummy6s[kjd+1]-=360.; }
+		dummy6s[kjd+1]=fmod(dummy6s[kjd+1]+1440,360);
 		sunmoon[kjd].sun_az=dummy6s[kjd+1]; // ra
 	}
 	mc_interplin1(0,njdm+1,dummy1s,dummy3s,dummy1s,0.5,njd+1,dummy5s,dummy6s); // dec
@@ -200,9 +200,11 @@ int mc_scheduler_sunmoon1(double longmpc, double rhocosphip, double rhosinphip,d
 		ha=(sunmoon[kjd].lst-ra)*(DR);
 		mc_hd2ah(ha,dec,latrad,&az,&h);
 		sunmoon[kjd].sun_az=az/(DR); // az
+		if (kjd>=8450) {
+			kjd+=0;
+		}
 		mc_refraction(h,1,283,101325,&dh);
 		sunmoon[kjd].sun_elev=(h+dh)/(DR); // elev
-
 	}
 
 	// --- moon parameters during the night
@@ -215,13 +217,13 @@ int mc_scheduler_sunmoon1(double longmpc, double rhocosphip, double rhosinphip,d
 		dummy4s[kjd]=phase/(DR);
 		if (kjd>0) {
 			da=dummy2s[kjd]-dummy2s[kjd-1];
-			if (da<-180) { dummy2s[kjd]+=360.; }
-			if (da>180) { dummy2s[kjd]-=360.; }
+			if (da<-180) { dummy2s[kjd]+=360*ceil(-da/360.); }
+			if (da> 180) { dummy2s[kjd]-=360*ceil(da/360.); }
 		}
 	}
 	mc_interplin1(0,njdm+1,dummy1s,dummy2s,dummy1s,0.5,njd+1,dummy5s,dummy6s); // ra
 	for (kjd=0;kjd<=njd;kjd++) {
-		if (dummy6s[kjd+1]>360) { dummy6s[kjd+1]-=360.; }
+		dummy6s[kjd+1]=fmod(dummy6s[kjd+1]+1440,360);
 		sunmoon[kjd].moon_az=dummy6s[kjd+1]; // ra
 	}
 	mc_interplin1(0,njdm+1,dummy1s,dummy3s,dummy1s,0.5,njd+1,dummy5s,dummy6s); // dec
