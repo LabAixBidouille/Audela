@@ -133,25 +133,34 @@ namespace eval ::audace {
                set mesDocuments [ ::registry get "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders" Personal ]
                set conf(rep_travail) [ file normalize [ file join $mesDocuments audela ] ]
             }
+            if { ! [ file exists $conf(rep_travail) ] } {
+               file mkdir $conf(rep_travail)
+            }
+            set audace(rep_travail) $conf(rep_travail)
+         } else {
+            if { ! [ file exists $conf(rep_travail) ] } {
+               set errorFolder [ catch { file mkdir $conf(rep_travail) } ]
+               if { $errorFolder != "0 " } {
+                  if { $::tcl_platform(os) == "Linux" } {
+                     set conf(rep_travail) [ file join $::env(HOME) audela ]
+                  } else {
+                     set mesDocuments [ ::registry get "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders" Personal ]
+                     set conf(rep_travail) [ file normalize [ file join $mesDocuments audela ] ]
+                  }
+                  ::console::affiche_erreur "Redirection to $conf(rep_travail)\n\n"
+               }
+               if { ! [ file exists $conf(rep_travail) ] } {
+                  file mkdir $conf(rep_travail)
+               }
+            }
+            set audace(rep_travail) $conf(rep_travail)
          }
-         if { ! [ file exists $conf(rep_travail) ] } {
-            file mkdir $conf(rep_travail)
-         }
-         set audace(rep_travail) $conf(rep_travail)
       } ]
       if { $catchError != "0" } {
          ::console::affiche_erreur "$::errorInfo\n"
       }
 
       #--- On se place dans le repertoire de travail
-      if { ! [ info exists audace(rep_travail) ] } {
-         puts "The directory $conf(rep_travail) doesn't exist..."
-         set audace(rep_travail) "~"
-         set audace(rep_images) $audace(rep_travail) 
-         set conf(rep_travail) $audace(rep_travail) 
-         set conf(rep_images) $audace(rep_travail) 
-         puts "redirection to $audace(rep_travail)..."
-      }
       cd $audace(rep_travail)
 
       #--- Repertoire d'installation
@@ -161,15 +170,30 @@ namespace eval ::audace {
       set catchError [ catch {
          if { ! [ info exists conf(rep_images) ] } {
             set conf(rep_images) [ file join $audace(rep_travail) images ]
-         }
-         if { ! [ file exists $conf(rep_images) ] } {
-            file mkdir $conf(rep_images)
-            set filelist [ glob -nocomplain -type f -join $audace(rep_install) images *.* ]
-            foreach fileName $filelist {
-               file copy $fileName [ file join $conf(rep_images) [ file tail $fileName ] ]
+            if { ! [ file exists $conf(rep_images) ] } {
+               file mkdir $conf(rep_images)
+               set filelist [ glob -nocomplain -type f -join $audace(rep_install) images *.* ]
+               foreach fileName $filelist {
+                  file copy $fileName [ file join $conf(rep_images) [ file tail $fileName ] ]
+               }
             }
+            set audace(rep_images) $conf(rep_images)
+         } else {
+            if { ! [ file exists $conf(rep_images) ] } {
+               set errorFolder [ catch { file mkdir $conf(rep_images) } ]
+               if { $errorFolder != "0 " } {
+                  set conf(rep_images) [ file join $audace(rep_travail) images ]
+               }
+               if { ! [ file exists $conf(rep_images) ] } {
+                  file mkdir $conf(rep_images)
+                  set filelist [ glob -nocomplain -type f -join $audace(rep_install) images *.* ]
+                  foreach fileName $filelist {
+                     file copy $fileName [ file join $conf(rep_images) [ file tail $fileName ] ]
+                  }
+               }
+            }
+            set audace(rep_images) $conf(rep_images)
          }
-         set audace(rep_images) $conf(rep_images)
       } ]
       if { $catchError != "0" } {
          ::console::affiche_erreur "$::errorInfo\n"
