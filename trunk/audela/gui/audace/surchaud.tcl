@@ -53,10 +53,10 @@
 # trans2  in out dx dy number ?first_index? ?tt_options?
 # uncosmic  coef
 # uncosmic2  in out number coef ?first_index? ?tt_options?
-# window1 in out {x1 y1 x2 y2} ?tt_options?
-# window2 in out number {x1 y1 x2 y2} ?first_index? ?tt_options?
-# calibwcs Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder
-# calibwcs2 Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder number ?first_index?
+# window1  in out {x1 y1 x2 y2} ?tt_options?
+# window2  in out number {x1 y1 x2 y2} ?first_index? ?tt_options?
+# calibwcs  Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder
+# calibwcs2  Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder number ?first_index?
 
 proc add {args} {
    #--- operand value
@@ -1426,7 +1426,6 @@ proc window2 {args} {
 }
 
 proc calibwcs {args} {
-   global audace conf
    if {[llength $args] >= 5} {
       set Angle_ra [lindex $args 0]
       set Angle_dec [lindex $args 1]
@@ -1480,15 +1479,15 @@ proc calibwcs {args} {
       buf$::audace(bufNo) setkwd [list EQUINOX 2000 int "" "System of equatorial coordinates"]
       buf$::audace(bufNo) setkwd [list RADESYS FK5 string ""  "Mean Place IAU 1984 system"]
       buf$::audace(bufNo) setkwd [list LONPOLE 180 float "" "Long. of the celest.NP in native coor.sys" ]
-      buf$::audace(bufNo) setkwd [list CTYPE1 RA---TAN string "" "Gnomonic projection" ]   
-      buf$::audace(bufNo) setkwd [list CTYPE2 DEC--TAN string "" "Gnomonic projection" ]  
+      buf$::audace(bufNo) setkwd [list CTYPE1 RA---TAN string "" "Gnomonic projection" ]
+      buf$::audace(bufNo) setkwd [list CTYPE2 DEC--TAN string "" "Gnomonic projection" ]
       buf$::audace(bufNo) setkwd [list CUNIT1 deg string  ""    "Angles are degrees always"   ]
       buf$::audace(bufNo) setkwd [list CUNIT2 deg string  ""    "Angles are degrees always"   ]
       buf$::audace(bufNo) setkwd [list CATASTAR 0 int ""    "Nb stars matched"   ]
       #
       if {($cat_format!="")} {
-         set ext $conf(extension,defaut)
-         #--- Remplacement de "$audace(rep_images)" par "." dans "mypath" - Cela permet a
+         set ext $::conf(extension,defaut)
+         #--- Remplacement de "$::audace(rep_images)" par "." dans "mypath" - Cela permet a
          #--- Sextractor de ne pas etre sensible aux noms de repertoire contenant des
          #--- espaces et ayant une longueur superieure a 70 caracteres
          set mypath "."
@@ -1499,10 +1498,10 @@ proc calibwcs {args} {
             append cdpath "/"
          }
          set sky dummy
-         catch {buf$audace(bufNo) delkwd CATASTAR}
-         buf$audace(bufNo) save "${mypath}/${sky0}$ext"
+         catch {buf$::audace(bufNo) delkwd CATASTAR}
+         buf$::audace(bufNo) save "${mypath}/${sky0}$ext"
          createFileConfigSextractor
-         buf$audace(bufNo) save "${mypath}/${sky}$ext"
+         buf$::audace(bufNo) save "${mypath}/${sky}$ext"
          sextractor "$mypath/$sky0$ext" -c "[ file join $mypath config.sex ]"
          set erreur [ catch { ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/c$sky$ext\" \"jpegfile_chart2=$mypath/${sky}a.jpg\" " } msg ]
          if {$erreur==0} {
@@ -1510,7 +1509,7 @@ proc calibwcs {args} {
             ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"z$sky\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/c$sky$ext\" \"jpegfile_chart2=$mypath/${sky}b.jpg\" "
             ttscript2 "IMA/SERIES \"$mypath\" \"x$sky\" . . \"$ext\" . . . \"$ext\" DELETE"
             ttscript2 "IMA/SERIES \"$mypath\" \"c$sky\" . . \"$ext\" . . . \"$ext\" DELETE"
-            buf$audace(bufNo) load "${mypath}/${sky}$ext"
+            buf$::audace(bufNo) load "${mypath}/${sky}$ext"
          }
          ::astrometry::delete_lst
          ::astrometry::delete_dummy
@@ -1518,7 +1517,7 @@ proc calibwcs {args} {
       }
       #
       ::audace::autovisu $::audace(visuNo)
-      set catastar [lindex [buf$audace(bufNo) getkwd CATASTAR] 1]
+      set catastar [lindex [buf$::audace(bufNo) getkwd CATASTAR] 1]
       return $catastar
    } else {
       error "Usage: calibwcs Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder"
@@ -1526,7 +1525,6 @@ proc calibwcs {args} {
 }
 
 proc calibwcs2 {args} {
-   global audace conf
    if {[llength $args] >= 5} {
       set in [lindex $args 0]
       set out [lindex $args 1]
@@ -1556,3 +1554,4 @@ proc calibwcs2 {args} {
       error "Usage: calibwcs2 Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder number ?first_index?"
    }
 }
+
