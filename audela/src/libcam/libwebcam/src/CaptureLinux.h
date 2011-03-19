@@ -18,7 +18,7 @@ class CCaptureLinux : public CCapture {
     CCaptureLinux(char * portName);
     ~CCaptureLinux();
     BOOL initHardware(UINT uIndex, CCaptureListener * captureListener, char *errorMsg);
-    BOOL connect(BOOL longexposure, char *errorMsg);
+    BOOL connect(BOOL longexposure, UINT uIndex, char *errorMsg);
     BOOL disconnect(char *errorMsg);
     BOOL isConnected();
 
