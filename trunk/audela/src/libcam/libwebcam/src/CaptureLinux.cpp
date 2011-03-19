@@ -231,7 +231,7 @@ BOOL CCaptureLinux::initHardware(UINT uIndex, CCaptureListener * captureListener
 *
 *----------------------------------------------------------------------
 */
-BOOL CCaptureLinux::connect(BOOL longExposure, char *errorMsg) {
+BOOL CCaptureLinux::connect(BOOL longExposure, UINT uIndex, char *errorMsg) {
    BOOL result;
 
    this->longExposure = longExposure;
