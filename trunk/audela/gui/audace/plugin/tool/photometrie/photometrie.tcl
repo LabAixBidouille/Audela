@@ -47,19 +47,11 @@ namespace eval ::Photometrie {
         set photometrie(defaut,diametre,exterieur2) 8.0
         set photometrie(defaut,carre,modelisation) 3.0
 
-        # Position des champs dans le catalogue Nomad1
-        set photometrie(position,nomad1,mag_b) 12
-        set photometrie(position,nomad1,mag_r) 16
-        set photometrie(position,nomad1,ad) 0
-        set photometrie(position,nomad1,dec) 1
-        set photometrie(position,nomad1,nom) 3
+        set photometrie(champ,nomad1) [ list RAJ2000 DEJ2000 NOMAD1 Bmag Rmag ]
+        set photometrie(champ,usnob1) [ list RAJ2000 DEJ2000 USNO-B1.0 B1mag R1mag ]
 
-        # Position des champs dans le catalogue USNO-B1
-        set photometrie(position,usnob1,mag_b) 12
-        set photometrie(position,usnob1,mag_r) 16
-        set photometrie(position,usnob1,ad) 0
-        set photometrie(position,usnob1,dec) 1
-        set photometrie(position,usnob1,nom) 3
+        set photometrie(mode_debug) 0
+        calaphot_niveau_traces 0
     }
 
     ##
@@ -168,6 +160,10 @@ namespace eval ::Photometrie {
 
         set fwhm [ buf$::audace(bufNo) fwhm [ list 1 1 $photometrie(naxis1) $photometrie(naxis1) ] ]
         set photometrie(fwhm) [ expr ( [ lindex $fwhm 0 ] + [ lindex $fwhm 1 ] ) / 2 ]
+
+        # A SUPPRIMER
+        # set photometrie(fwhm) 1.0
+
 
         if { $photometrie(astrometrie) == 1 } {
             set champ [ CalculChampImage ]
@@ -607,8 +603,37 @@ namespace eval ::Photometrie {
         return [ list $xe $ye ]
     }
 
+    ##
+    # @brief Lecture de la première ligne du fichier pour trouver la position des champs
+    # @param canal du fichier catalogue
+    # @return 0 si on trouve tous les champs, -1 sinon
+    proc RecherchePositionDonnees { fichier } {
+        variable photometrie
+
+        set catalogue $photometrie(cata_internet)
+
+        if { [ gets $fichier ligne ] <= 0 } {
+            return -1
+        }
+        set liste_ligne [ split $ligne \t ]
+        set probleme 0
+        foreach champ_catalogue $photometrie(champ,$catalogue) champ_script [ list ad dec nom mag_b mag_r ] {
+            set t [ lsearch -exact $liste_ligne $champ_catalogue ]
+            if { $t < 0 } {
+                set probleme -1
+            } else {
+                set photometrie(position,$catalogue,$champ_script) $t
+            }
+        }
+        return $probleme
+    }
+
+    ##
+    # @brief Lecture du catalogue, et création d'une base de donnée indexée par les magnitudes
+    # @return -1 en cas de probleme, 0 sinon
     proc CreationBaseDonnées {} {
         variable photometrie
+        variable photometrie_texte
 
         set catalogue $photometrie(cata_internet)
 
@@ -625,11 +650,18 @@ namespace eval ::Photometrie {
             tk_messageBox -message "$f" -title "$photometrie_texte(titre_menu)" -icon error
             return -1
         }
+        if { [ RecherchePositionDonnees $f ] < 0 } {
+            tk_messageBox -message "$photometrie_texte(err_champ_catalogue)" -title "$photometrie_texte(titre_menu)" -icon error
+            close $f
+            return -1
+        }
         set indice 0
         while { [ gets $f ligne ] > 0 } {
             set liste_ligne [ split $ligne \t ]
+            # Message console "%s\n" $liste_ligne
             set cle_rouge [ lindex $liste_ligne $photometrie(position,$catalogue,mag_r) ]
             set cle_bleue [ lindex $liste_ligne $photometrie(position,$catalogue,mag_b) ]
+            # Message console "cr %s\n" $cle_rouge
             # Base à double clé
             # index_rouge a pour clé la magnitude rouge, et pour valeur un id unique (idem pour index_bleu)
             # data a pour clé l'id unique, et contient toutes les données du catalogue.
@@ -642,10 +674,12 @@ namespace eval ::Photometrie {
             }
         }
         close $f
-        # Toutes les données sont dans data(), plus besoin du fichier catalogue
-        file delete $photometrie(catalogue)
-        # Là, on est sur que Aladin s'est bien terminé, puisqu'on a pu lire le catalogue
-        file delete $photometrie(script_aladin)
+        if { $photometrie(mode_debug) == 0 } {
+            # Toutes les données sont dans data(), plus besoin du fichier catalogue
+            file delete $photometrie(catalogue)
+            # Là, on est sur que Aladin s'est bien terminé, puisqu'on a pu lire le catalogue
+            file delete $photometrie(script_aladin)
+        }
 
         return 0
     }
@@ -860,14 +894,22 @@ namespace eval ::Photometrie {
 
         set fwhm $photometrie(fwhm)
         set f $photometrie(defaut,carre,modelisation)
+        if { $photometrie(mode_debug) != 0 } {
+            Message console "fwhm=%f\n" $fwhm
+            Message console "f=%f\n" $f
+        }
         set x [ lindex $xy 0 ]
         set y [ lindex $xy 1 ]
-        set x1 [ expr round( $x - $f * $fwhm ) ]
-        set y1 [ expr round( $y - $f * $fwhm ) ]
-        set x2 [ expr round( $x + $f * $fwhm ) ]
-        set y2 [ expr round( $y + $f * $fwhm ) ]
+        set x1 [ expr round( $x - $f * $fwhm / 2 ) ]
+        set y1 [ expr round( $y - $f * $fwhm / 2 ) ]
+        set x2 [ expr round( $x + $f * $fwhm / 2 ) ]
+        set y2 [ expr round( $y + $f * $fwhm / 2 ) ]
 
         catch { calaphot_fitgauss2d $::audace(bufNo) [ list $x1 $y1 $x2 $y2 ] } mesure_mod
+        if { $photometrie(mode_debug) != 0 } {
+            Message console "Mod %s\n" [ list $x1 $y1 $x2 $y2 ]
+            Message console "Mod %s\n" $mesure_mod
+        }
         if { [ string is double [ lindex $mesure_mod 0 ] ] } {
             if { ( [ lindex $mesure_mod 1 ] > 0 ) && ( [ lindex $mesure_mod 12 ] > 0 ) } {
                 # La modélisation est correcte
@@ -888,10 +930,14 @@ namespace eval ::Photometrie {
         catch { calaphot_fluxellipse \
             $::audace(bufNo) \
             $xr $yr \
-            [ expr $photometrie(diametre,interieur) * $fwhm ] [ expr $photometrie(diametre,interieur) * $fwhm ] \
+            [ expr $photometrie(diametre,interieur) * $fwhm / 2 ] [ expr $photometrie(diametre,interieur) * $fwhm / 2 ] \
             0 \
-            [ expr $photometrie(diametre,exterieur1) * $fwhm ] [ expr $photometrie(diametre,exterieur2) * $fwhm ] \
+            [ expr $photometrie(diametre,exterieur1) * $fwhm / 2 ] [ expr $photometrie(diametre,exterieur2) * $fwhm / 2 ] \
             10 } mesure_ouv
+        if { $photometrie(mode_debug) != 0 } {
+            Message console "Ouv %s\n" [ list $xr $yr  [ expr $photometrie(diametre,interieur) * $fwhm / 2 ] [ expr $photometrie(diametre,interieur) * $fwhm / 2 ] [ expr $photometrie(diametre,exterieur1) * $fwhm / 2 ] [ expr $photometrie(diametre,exterieur2) * $fwhm / 2 ] ]
+            Message console "Ouv %s\n" $mesure_ouv
+        }
         if { [ string is double [ lindex $mesure_ouv 0 ] ] } {
             set photometrie(flux_ouv_$tag) [ lindex $mesure_ouv 0 ]
             if { $photometrie(flux_ouv_$tag) > 0 } {
