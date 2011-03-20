@@ -9,7 +9,7 @@
 #
 
 namespace eval ::Photometrie {
-    package provide photometrie 1.0
+    package provide photometrie 1.1
 
     source [ file join [ file dirname [ info script ] ] photometrie.cap ]
     source [ file join [ file dirname [ info script ] ] photometrie.tcl ]

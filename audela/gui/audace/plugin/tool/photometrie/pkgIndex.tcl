@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded photometrie 1.0 [ list source [ file join $dir photometrie_if.tcl ] ]
+package ifneeded photometrie 1.1 [ list source [ file join $dir photometrie_if.tcl ] ]
 
