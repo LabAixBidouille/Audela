@@ -246,65 +246,6 @@ namespace eval bddimages_recherche {
    }
 
    #--------------------------------------------------
-   #  affiche_entete { }
-   #--------------------------------------------------
-   #
-   #    fonction  :
-   #       Permet d afficher l entete d un fichier
-   #       selectionné
-   #
-   #    procedure externe :
-   #
-   #    variables en entree :
-   #
-   #    variables en sortie :
-   #
-   #--------------------------------------------------
-   proc affiche_entete { } {
-   
-      variable This
-      global audace
-   
-      set i [lindex [$::bddimages_recherche::This.frame6.result.tbl curselection ]  0]
-      set nomfich  [lindex [$::bddimages_recherche::This.frame6.result.tbl get $i] 1]
-      charge $nomfich
-   # TODO remplacer 1 var visuNo
-      ::keyword::header $audace(visuNo)
-   
-      return
-   }
-
-   #--------------------------------------------------
-   #  affiche_image { }
-   #--------------------------------------------------
-   #
-   #    fonction  :
-   #       Permet d afficher l image d un fichier
-   #       selectionne par clic dans la liste du tk 
-   #
-   #    procedure externe :
-   #        affiche_image_by_idbddimg $id : $id = identification de l image dans la base de donnees
-   #
-   #    variables en entree :
-   #
-   #    variables en sortie :
-   #
-   #--------------------------------------------------
-   proc affiche_image { } {
-      variable This
-      global audace
-      global conf
-      global bddconf
-
-      set i [lindex [$::bddimages_recherche::This.frame6.result.tbl curselection ]  0]
-      set idbddimg  [lindex [$::bddimages_recherche::This.frame6.result.tbl get $i] 0]
-      affiche_image_by_idbddimg $idbddimg
-
-      return
-   }
-
-
-   #--------------------------------------------------
    #  cmd_list_select { }
    #--------------------------------------------------
    #
@@ -653,35 +594,17 @@ namespace eval bddimages_recherche {
          
            #--- menu Fichier
            menubutton $This.frame0.file -text "$caption(search,fichier)" -underline 0 -menu $This.frame0.file.menu
-  
-             menu $This.frame0.file.menu
-
+           menu $This.frame0.file.menu
              $This.frame0.file.menu add command -label "$caption(bddimages_recherche,new_list_i)" -command { ::bddimages_liste::run $audace(base).bddimages_liste }
              $This.frame0.file.menu add command -label "$caption(bddimages_recherche,new_list_n)" -command { ::bddimages_liste::runnormal $audace(base).bddimages_liste }
              #$This.frame0.file.menu add command -label "$caption(bddimages_recherche,delete_list)" -command " ::bddimages_recherche::cmd_list_delete $This.frame6.liste.tbl "
-             # $This.frame0.file.menu add separator
-             # $This.frame0.file.menu add command -label "$caption(search,ouvre)" -command {  }
-             # $This.frame0.file.menu add command -label "$caption(search,sauve)" -command {  }
-             # $This.frame0.file.menu add command -label "$caption(search,sauvess)" -command {  }
-             # $This.frame0.file.menu add command -label "$caption(search,fermer_B)" -command {  }
-
            pack $This.frame0.file -side left
-
-           #--- menu Image
-           menubutton $This.frame0.image -text "$caption(search,image)" -underline 0 -menu $This.frame0.image.menu
-           menu $This.frame0.image.menu
-             $This.frame0.image.menu add command -label "$caption(search,charge)" -command { ::bddimages_recherche::affiche_image }
-             $This.frame0.image.menu add command -label [concat "$caption(search,entete_FITS) (Ctrl+f)"] \
-                                               -command { ::bddimages_recherche::affiche_entete }
-           pack $This.frame0.image -side left
            #--- menu aide
            menubutton $This.frame0.aide -text "$caption(search,aide)" -underline 0 -menu $This.frame0.aide.menu
            menu $This.frame0.aide.menu
              $This.frame0.aide.menu add command -label "$caption(search,aide)" -command { }
              $This.frame0.aide.menu add separator
              $This.frame0.aide.menu add command -label "$caption(search,code_uai)" -command {  }
-             # $This.frame0.aide.menu add separator
-             # $This.frame0.aide.menu add command -label "$caption(search,apropos)" -command { ::skybot_Search::apropos }
            pack $This.frame0.aide -side right
          
          #--- barre de menu
@@ -1056,20 +979,6 @@ namespace eval bddimages_recherche {
            -command { $::bddimages_recherche::This.frame6.result.tbl selection set 0 end }
         # Separateur
         $popupTbl add separator
-        # Labels charger image
-        $popupTbl add command -label $caption(bddimages_recherche,voirimg) \
-           -command { ::bddimages_recherche::affiche_image
-                     #set numbuf [::buf::create]
-                     #buf$numbuf load "$conf(bddimages,dirinco)/p41957f1.fits.gz"
-                     #::visu::create $numbuf 0
-                     #::audace::header
-                     }
-        # Labels Lire le Header
-        $popupTbl add command -label $caption(bddimages_recherche,voirheader) \
-           -command { ::bddimages_recherche::affiche_entete}
-
-        # Separateur
-        $popupTbl add separator
 
         # Labels Define
         $popupTbl add command -label $caption(bddimages_recherche,define) \
@@ -1102,7 +1011,7 @@ namespace eval bddimages_recherche {
 
         # Labels Associate
         $popupTbl add command -label $caption(bddimages_recherche,sdark) \
-           -command { ::bddimages_imgcorrection::run_create $audace(base).bddimages_imgcorrection "dark" }
+           -command [list ::bddimages_imgcorrection::run_create $audace(base).bddimages_imgcorrection "dark"]
 
         # Labels Associate
         $popupTbl add command -label $caption(bddimages_recherche,sflat) \
