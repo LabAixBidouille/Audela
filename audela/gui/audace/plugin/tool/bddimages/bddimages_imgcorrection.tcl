@@ -199,9 +199,8 @@ namespace eval bddimages_imgcorrection {
             if {$bin1sav    !=$bin1}     {return -code error "Erreur BIN1 different"} 
             if {$bin2sav    !=$bin2}     {return -code error "Erreur BIN2 different"} 
             }
+         incr cpt
          }
-      incr cpt
-      }
    
       return -code ok ""
    }
