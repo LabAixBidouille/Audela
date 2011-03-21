@@ -1472,9 +1472,13 @@ namespace eval bddimages_recherche {
 
          set lign_affich $empty
          
-         
-         set lign_affich [lreplace $lign_affich 0 0 [list "idbddimg" [::bddimages_liste::get_key_img $line "idbddimg"]]]
-         set lign_affich [lreplace $lign_affich 1 1 [list "filename" [::bddimages_liste::get_key_img $line "filename"]]]
+         set current_columns [lindex [lindex $list_of_columns 0] 0]
+         set val [::bddimages_liste::get_key_img $line $current_columns]
+         set lign_affich [lreplace $lign_affich 0 0 $val]
+
+         set current_columns [lindex [lindex $list_of_columns 1] 0]
+         set val [::bddimages_liste::get_key_img $line $current_columns]
+         set lign_affich [lreplace $lign_affich 1 1 $val]
 
          set tabkey [::bddimages_liste::get_key_img $line "tabkey"]
                                       
