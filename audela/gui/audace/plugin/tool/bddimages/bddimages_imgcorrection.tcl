@@ -945,7 +945,6 @@ proc correction { type inforesult} {
 
    proc ::bddimages_imgcorrection::run_create { this type } {
 
-          ::console::affiche_erreur "run_create\n"
 
       set ::bddimages_imgcorrection::type $type
 
@@ -984,7 +983,6 @@ proc correction { type inforesult} {
 
       if {$type == "dark"}  {
 
-          ::console::affiche_erreur "Chargement de la liste SOFFSET\n"
         # Chargement de la liste SOFFSET
          set img_list [::bddimages_imgcorrection::select_img_list_by_type OFFSET CORR $selection_list]
 
@@ -1000,11 +998,9 @@ proc correction { type inforesult} {
             set ::bddimages_imgcorrection::soffset_img_list $img_list
          }
          
-         ::console::affiche_erreur "Chargement de la liste DARK\n"
          # Chargement de la liste DARK
          set img_list [::bddimages_imgcorrection::select_img_list_by_type DARK RAW $selection_list]
          set nbi [llength $img_list]
-         ::console::affiche_erreur " Images DARK d entree : nb = $nbi\n"
          set texte "${texte}- Images DARK d entree : nb = $nbi\n"
          if {$nbi==0} {
             set ::bddimages_imgcorrection::erreur_selection 1
@@ -1015,7 +1011,6 @@ proc correction { type inforesult} {
             }
             set ::bddimages_imgcorrection::dark_img_list $img_list
          }
-         ::console::affiche_erreur "Fin\n"
 
       }
 
@@ -1134,11 +1129,11 @@ proc correction { type inforesult} {
          
          
          if {[catch {::bddimages_imgcorrection::verif_all_img} msg]}  {
-            ::console::affiche_erreur "ERRORa $errmsg: $msg\n"
+            ::console::affiche_erreur "ERROR $errmsg: $msg\n"
             return
             }
          if {[catch {::bddimages_imgcorrection::verif_filter_img} msg]}  {
-            ::console::affiche_erreur "ERRORf: $errmsg\n"
+            ::console::affiche_erreur "ERROR: $errmsg\n"
             return
             }
             

@@ -953,7 +953,6 @@ namespace eval bddimages_recherche {
       global popupTbl
       global paramwindow
 
-      ::console::affiche_erreur "createTbl1\n"
 
       #--- Quelques raccourcis utiles
       set tbl $frame.tbl
