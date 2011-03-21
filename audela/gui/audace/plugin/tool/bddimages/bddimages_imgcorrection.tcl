@@ -175,7 +175,7 @@ namespace eval bddimages_imgcorrection {
       foreach img $::bddimages_imgcorrection::sflat_img_list   {lappend img_list $img}
       foreach img $::bddimages_imgcorrection::deflat_img_list  {lappend img_list $img}
       
-      set telsav ""
+      set telescopsav ""
       set bin1sav ""
       set bin2sav ""
       set cpt 0
@@ -186,30 +186,24 @@ namespace eval bddimages_imgcorrection {
          #set bufno 1
          #buf$bufno load $fileimg
          #::bddimagesAdmin::bdi_compatible buf$bufno
-         foreach l $img {
-            set key [lindex $l 0]
-            set val [lindex $l 1]
-            if {$key=="telescop"} {
-               if {$cpt==0} {set telsav $val}
-               if {$val!=$telsav} {return "Erreur telescope different"} 
-            }
-            if {$key=="bin1"} {
-               if {$cpt==0} {set bin1sav $val}
-               if {$val!=$bin1sav} {return "Erreur binning 1 different"} 
-            }
-            if {$key=="bin2"} {
-               if {$cpt==0} {set bin2sav $val}
-               if {$val!=$bin2sav} {return "Erreur binning 2 different"} 
-            }
-            if {$key=="bin2"} {
-               if {$cpt==0} {set bin2sav $val}
-               if {$val!=$bin2sav} {return "Erreur binning 2 different"} 
+         set tabkey   [::bddimages_liste::get_key_img $img "tabkey"]
+         set telescop [::bddimages_liste::get_key_img $tabkey telescop]
+         set bin1     [::bddimages_liste::get_key_img $tabkey bin1]
+         set bin2     [::bddimages_liste::get_key_img $tabkey bin2]
+         if {$cpt==0} {
+            set telescopsav $telescop
+            set bin1sav     $bin1
+            set bin2sav     $bin2
+            } else {
+            if {$telescopsav!=$telescop} {return -code error "Erreur TELESCOP different"} 
+            if {$bin1sav    !=$bin1}     {return -code error "Erreur BIN1 different"} 
+            if {$bin2sav    !=$bin2}     {return -code error "Erreur BIN2 different"} 
             }
          }
       incr cpt
       }
    
-      return ""
+      return -code ok ""
    }
 
 
@@ -230,11 +224,9 @@ namespace eval bddimages_imgcorrection {
       set img_list ""
       foreach img $::bddimages_imgcorrection::flat_img_list    {lappend img_list $img}
       foreach img $::bddimages_imgcorrection::sflat_img_list   {lappend img_list $img}
-      foreach img $::bddimages_imgcorrection::deflat_img_list   {lappend img_list $img}
+      foreach img $::bddimages_imgcorrection::deflat_img_list  {lappend img_list $img}
       
-      set telsav ""
-      set bin1sav ""
-      set bin2sav ""
+      set filtresav ""
       set cpt 0
 
       foreach img $img_list {
@@ -243,18 +235,17 @@ namespace eval bddimages_imgcorrection {
          #set bufno 1
          #buf$bufno load $fileimg
          #::bddimagesAdmin::bdi_compatible buf$bufno
-         foreach l $img {
-            set key [lindex $l 0]
-            set val [lindex $l 1]
-            if {$key=="filter"} {
-               if {$cpt==0} {set telsav $val}
-               if {$val!=$telsav} {return "Erreur filtre different"} 
+         set tabkey   [::bddimages_liste::get_key_img $img "tabkey"]
+         set filtre [::bddimages_liste::get_key_img $tabkey filtre]
+         if {$cpt==0} {
+            set filtresav $filtre
+            } else {
+            if {$filtresav!=$filtre} {return -code error "Erreur Filtre different"} 
             }
-         }
       incr cpt
       }
    
-      return ""
+      return -code ok ""
    }
 
 
@@ -283,37 +274,37 @@ namespace eval bddimages_imgcorrection {
       if {$type=="deflat"} {
          return ""
       }
+
       
-      set tel ""
-      set bin1 ""
-      set bin2 ""
-      set filtre ""
       set commundatejjmoy 0
       set cpt 0
       foreach img $img_list {
-         foreach l $img {
-            set key [lindex $l 0]
-            set val [lindex $l 1]
-            if {$key=="telescop"} {set tel $val}
-            if {$key=="bin1"} {set bin1 $val}
-            if {$key=="bin2"} {set bin2 $val}
-            if {$key=="filter"} {set filtre [string trim $val]}
-            if {$key=="commundatejj"} {set commundatejjmoy [expr $commundatejjmoy + $val]}
-         }
-      incr cpt
+         set tabkey   [::bddimages_liste::get_key_img $img "tabkey"]
+         set telescop [::bddimages_liste::get_key_img $tabkey telescop]
+         set bin1     [::bddimages_liste::get_key_img $tabkey bin1]
+         set bin2     [::bddimages_liste::get_key_img $tabkey bin2]
+         set filtre   [::bddimages_liste::get_key_img $tabkey filtre]
+         set commundatejj   [::bddimages_liste::get_key_img $img commundatejj]
+         set commundatejjmoy [expr $commundatejjmoy + $commundatejj]
+         incr cpt
       }
       if { $cpt == 0 } {
          return ""
       }
+
       set commundatejjmoy  [ expr $commundatejjmoy / $cpt ]
       set dateobs          [ mc_date2iso8601 $commundatejjmoy ]
       set ms               [ string range $dateobs end-2 end ]
       set commundatejjmoy  [ string range $dateobs 0 end-4 ]
-
-      set commundatejjmoy [clock format [clock scan $commundatejjmoy] -format %Y%m%d_%H%M%S]
+      set commundatejjmoy  [clock format [clock scan $commundatejjmoy] -format %Y%m%d_%H%M%S]
  
-      set filename "${tel}_${commundatejjmoy}_${ms}_bin${bin1}x${bin2}_${type}"
-      if {$type=="flat"} { set filename "${filename}_${filtre}" }
+
+      if {$type=="offset"||$type=="dark"} { 
+         set filename "${telescop}_${commundatejjmoy}_${ms}_bin${bin1}x${bin2}_${type}"
+      }
+      if {$type=="flat"} { 
+         set filename "${telescop}_${commundatejjmoy}_${ms}_bin${bin1}x${bin2}_F${filtre}_${type}"
+      }
 
       return [list $filename $dateobs $bin1 $bin2]
    }
@@ -858,25 +849,15 @@ proc correction { type inforesult} {
    }
 
 
-
    proc ::bddimages_imgcorrection::img_to_filename { img typ } {
 
       global bddconf
 
       set result ""
-      foreach l $img {
-         set key [lindex $l 0]
-         set val [lindex $l 1]
-         if {[string equal -nocase [string trim $key] "filename"]} {
-            set filename $val
-         }
-         if {[string equal -nocase [string trim $key] "dirfilename"]} {
-            set dirfilename $val
-         }
-         if {[string equal -nocase [string trim $key] "filenametmp"]} {
-            set filenametmp $filenametmp
-         }
-      }
+
+      set filename    [::bddimages_liste::get_key_img $img filename]
+      set dirfilename [::bddimages_liste::get_key_img $img dirfilename]
+      set filenametmp [::bddimages_liste::get_key_img $img filenametmp]
       
       if { $typ == "long" } {
          return [file join $bddconf(dirbase) $dirfilename $filename]
@@ -918,7 +899,7 @@ proc correction { type inforesult} {
    proc ::bddimages_imgcorrection::select_img_list_by_type { bddimages_type bddimages_state img_list } {
 
 
-      ::console::affiche_resultat "img_list $img_list \n"
+      #::console::affiche_resultat "img_list $img_list \n"
       set result_list ""
 
 
@@ -935,7 +916,7 @@ proc correction { type inforesult} {
             lappend result_list $img
          }
       }
-      ::console::affiche_resultat "result_list $result_list \n"
+      #::console::affiche_resultat "result_list $result_list \n"
       return $result_list
    }
 
@@ -965,6 +946,7 @@ proc correction { type inforesult} {
 
    proc ::bddimages_imgcorrection::run_create { this type } {
 
+          ::console::affiche_erreur "run_create\n"
 
       set ::bddimages_imgcorrection::type $type
 
@@ -1003,7 +985,8 @@ proc correction { type inforesult} {
 
       if {$type == "dark"}  {
 
-         # Chargement de la liste SOFFSET
+          ::console::affiche_erreur "Chargement de la liste SOFFSET\n"
+        # Chargement de la liste SOFFSET
          set img_list [::bddimages_imgcorrection::select_img_list_by_type OFFSET CORR $selection_list]
 
          set nbi [llength $img_list]
@@ -1018,9 +1001,11 @@ proc correction { type inforesult} {
             set ::bddimages_imgcorrection::soffset_img_list $img_list
          }
          
+         ::console::affiche_erreur "Chargement de la liste DARK\n"
          # Chargement de la liste DARK
          set img_list [::bddimages_imgcorrection::select_img_list_by_type DARK RAW $selection_list]
          set nbi [llength $img_list]
+         ::console::affiche_erreur " Images DARK d entree : nb = $nbi\n"
          set texte "${texte}- Images DARK d entree : nb = $nbi\n"
          if {$nbi==0} {
             set ::bddimages_imgcorrection::erreur_selection 1
@@ -1031,6 +1016,7 @@ proc correction { type inforesult} {
             }
             set ::bddimages_imgcorrection::dark_img_list $img_list
          }
+         ::console::affiche_erreur "Fin\n"
 
       }
 
@@ -1148,14 +1134,12 @@ proc correction { type inforesult} {
          # concatenation des listes
          
          
-         set errmsg [::bddimages_imgcorrection::verif_all_img]
-         if {$errmsg != ""}  {
-            ::console::affiche_erreur "ERROR: $errmsg\n"
+         if {[catch {::bddimages_imgcorrection::verif_all_img} msg]}  {
+            ::console::affiche_erreur "ERRORa $errmsg: $msg\n"
             return
             }
-         set errmsg [::bddimages_imgcorrection::verif_filter_img]
-         if {$errmsg != ""}  {
-            ::console::affiche_erreur "ERROR: $errmsg\n"
+         if {[catch {::bddimages_imgcorrection::verif_filter_img} msg]}  {
+            ::console::affiche_erreur "ERRORf: $errmsg\n"
             return
             }
             
