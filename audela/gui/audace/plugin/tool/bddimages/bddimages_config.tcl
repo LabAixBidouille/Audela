@@ -181,12 +181,12 @@ namespace eval bddimages_config {
       # Ouvre la fenetre de choix des repertoires
       set title [concat $caption(bddimages_config,getdir) $title]
       set workDir [tk_chooseDirectory -title $title -initialdir $initDir -parent $This]
-      
+
       # Extraction et chargement du fichier
       if { $workDir != "" } {
         return $workDir
       } else {
-        return -code 1
+        return -code error 
       }
    }
 
@@ -202,7 +202,7 @@ namespace eval bddimages_config {
       global bddconf
       
       # Liste des repertoires a chercher
-      set listD [list "cata" "fits" "incoming" "error" "log"]
+      set listD [list "cata" "fits" "incoming" "error" "log" "tmp"]
       # Defini un repertoire de base -> rep_images
       foreach d $listD {
          if {[file isdirectory [file join $base $d]]} { 
@@ -469,9 +469,11 @@ namespace eval bddimages_config {
             pack $This.dir.dirbase.dat -in $This.dir.dirbase -side left -anchor w -padx 1
             #--- Cree un bouton charger
             button $This.dir.dirbase.explore -text "..." -width 3 \
-               -command { 
-                  set bddconf(dirbase) [::bddimages_config::getDir $bddconf(dirbase) "de base"] 
-                  ::bddimages_config::checkOtherDir $bddconf(dirbase)
+               -command {
+                  if {! [catch {::bddimages_config::getDir $bddconf(dirbase) "de base"} wdir]} {
+                     set bddconf(dirbase) $wdir 
+                     ::bddimages_config::checkOtherDir $bddconf(dirbase)
+                  }
                }
             pack $This.dir.dirbase.explore -in $This.dir.dirbase -side left -anchor c -fill x -padx 6
             #--- Cree un bouton info
@@ -490,7 +492,12 @@ namespace eval bddimages_config {
             entry $This.dir.dirinco.dat -textvariable bddconf(dirinco) -borderwidth 1 -relief groove -width 50 -justify left
             pack $This.dir.dirinco.dat -in $This.dir.dirinco -side left -anchor w -padx 1
             #--- Cree un bouton charger
-            button $This.dir.dirinco.explore -text "..." -width 3 -command { set bddconf(dirinco) [::bddimages_config::getDir $bddconf(dirbase) "d'incoming"] }
+            button $This.dir.dirinco.explore -text "..." -width 3 \
+               -command { 
+                  if {! [catch {::bddimages_config::getDir $bddconf(dirbase) "d'incoming"} wdir]} {
+                     set bddconf(dirinco) $wdir
+                  }
+               }
             pack $This.dir.dirinco.explore -in $This.dir.dirinco -side left -anchor c -fill x -padx 6
             #--- Cree un bouton info
             button $This.dir.dirinco.help -state active -relief groove -anchor c \
@@ -508,7 +515,12 @@ namespace eval bddimages_config {
             entry $This.dir.dirfits.dat -textvariable bddconf(dirfits) -borderwidth 1 -relief groove -width 50 -justify left
             pack $This.dir.dirfits.dat -in $This.dir.dirfits -side left -anchor w -padx 1
             #--- Cree un bouton charger
-            button $This.dir.dirfits.explore -text "..." -width 3 -command { set bddconf(dirfits) [::bddimages_config::getDir $bddconf(dirbase) "des images FITS"] }
+            button $This.dir.dirfits.explore -text "..." -width 3 \
+               -command { 
+                  if {! [catch {::bddimages_config::getDir $bddconf(dirbase) "des images FITS"} wdir]} {
+                     set bddconf(dirfits) $wdir
+                  }
+               }
             pack $This.dir.dirfits.explore -in $This.dir.dirfits -side left -anchor c -fill x -padx 6
             #--- Cree un bouton info
             button $This.dir.dirfits.help -state active -relief groove -anchor c \
@@ -526,7 +538,12 @@ namespace eval bddimages_config {
             entry $This.dir.dircata.dat -textvariable bddconf(dircata) -borderwidth 1 -relief groove -width 50 -justify left
             pack $This.dir.dircata.dat -in $This.dir.dircata -side left -anchor w -padx 1
             #--- Cree un bouton charger
-            button $This.dir.dircata.explore -text "..." -width 3 -command { set bddconf(dircata) [::bddimages_config::getDir $bddconf(dirbase) "des CATA"] }
+            button $This.dir.dircata.explore -text "..." -width 3 \
+               -command { 
+                  if {! [catch {::bddimages_config::getDir $bddconf(dirbase) "des CATA"} wdir]} {
+                     set bddconf(dircata) $wdir
+                  }
+               }
             pack $This.dir.dircata.explore -in $This.dir.dircata -side left -anchor c -fill x -padx 6
             #--- Cree un bouton info
             button $This.dir.dircata.help -state active -relief groove -anchor c \
@@ -544,7 +561,12 @@ namespace eval bddimages_config {
             entry $This.dir.direrr.dat -textvariable bddconf(direrr) -borderwidth 1 -relief groove -width 50 -justify left
             pack $This.dir.direrr.dat -in $This.dir.direrr -side left -anchor w -padx 1
             #--- Cree un bouton charger
-            button $This.dir.direrr.explore -text "..." -width 3 -command { set bddconf(direrr) [::bddimages_config::getDir $bddconf(dirbase) "des erreurs"] }
+            button $This.dir.direrr.explore -text "..." -width 3 \
+               -command { 
+                  if {! [catch {::bddimages_config::getDir $bddconf(dirbase) "des erreurs"} wdir]} {
+                     set bddconf(direrr) $wdir
+                  }
+               }
             pack $This.dir.direrr.explore -in $This.dir.direrr -side left -anchor c -fill x -padx 6
             #--- Cree un bouton info
             button $This.dir.direrr.help -state active -relief groove -anchor c \
@@ -562,7 +584,12 @@ namespace eval bddimages_config {
             entry $This.dir.dirlog.dat -textvariable bddconf(dirlog) -borderwidth 1 -relief groove -width 50 -justify left
             pack $This.dir.dirlog.dat -in $This.dir.dirlog -side left -anchor w -padx 1
             #--- Cree un bouton charger
-            button $This.dir.dirlog.explore -text "..." -width 3 -command { set bddconf(dirlog) [::bddimages_config::getDir $bddconf(dirbase) "de log"] }
+            button $This.dir.dirlog.explore -text "..." -width 3 \
+               -command { 
+                  if {! [catch {::bddimages_config::getDir $bddconf(dirbase) "de log"} wdir]} {
+                     set bddconf(dirlog) $wdir
+                  }
+               }
             pack $This.dir.dirlog.explore -in $This.dir.dirlog -side left -anchor c -fill x -padx 6
             #--- Cree un bouton info
             button $This.dir.dirlog.help -state active -relief groove -anchor c \
@@ -580,7 +607,12 @@ namespace eval bddimages_config {
             entry $This.dir.dirtmp.dat -textvariable bddconf(dirtmp) -borderwidth 1 -relief groove -width 50 -justify left
             pack $This.dir.dirtmp.dat -in $This.dir.dirtmp -side left -anchor w -padx 1
             #--- Cree un bouton charger
-            button $This.dir.dirtmp.explore -text "..." -width 3 -command { set bddconf(dirtmp) [::bddimages_config::getDir $bddconf(dirbase) "de tmp"] }
+            button $This.dir.dirtmp.explore -text "..." -width 3 \
+               -command { 
+                  if {! [catch {::bddimages_config::getDir $bddconf(dirbase) "temporaire"} wdir]} {
+                     set bddconf(dirtmp) $wdir
+                  }
+               }
             pack $This.dir.dirtmp.explore -in $This.dir.dirtmp -side left -anchor c -fill x -padx 6
             #--- Cree un bouton info
             button $This.dir.dirtmp.help -state active -relief groove -anchor c \
