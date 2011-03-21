@@ -1125,7 +1125,11 @@ namespace eval bddimages_liste {
          foreach lkey $img {
             set key  [lindex $lkey 0]
             set val  [lindex $lkey 1]
-            if {$key=="telescop"} {set val [lindex $r 2]}
+            if {$key=="telescop"} {
+               set site [string trim [lindex $r 2]]
+               set site [string tolower $site]
+               set val [string map {" " "_"} $site]
+               }
             if {$key=="date-obs"} {set val [lindex $r 1]}
             lappend imgresult [list $key $val ]
          }
@@ -1567,6 +1571,14 @@ namespace eval bddimages_liste {
       set sqlcmd "$sqlcmd )"
 
       set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
+
+
+      if {$err} {
+          # si l erreur est qu il n y a pas de table cata alors traiter ce cas special
+          set resultcount 0
+          set err 0
+      }
+
       if {$err} {
          ::console::affiche_erreur "Erreur de lecture de la liste des header par SQL\n"
          ::console::affiche_erreur "        sqlcmd = $sqlcmd\n"
