@@ -1265,7 +1265,7 @@ namespace eval bddimages_liste {
       #::console::affiche_resultat "intellilist = $intellilist\n"
    
       set idlist [::bddimages_liste::get_val_intellilist $intellilist "idlist"]
-      ::console::affiche_resultat "idlist = $idlist\n"
+      #::console::affiche_resultat "idlist = $idlist\n"
       if {[llength $idlist] == 0} {return}
       set img_list ""
    
@@ -1455,6 +1455,12 @@ namespace eval bddimages_liste {
       #::console::affiche_erreur " idbddimg_list = [::bddimages_liste::get_key_img_list idbddimg $img_list]\n"
       #::console::affiche_erreur " cataexist_list = [::bddimages_liste::get_key_img_list cataexist $img_list]\n"
       #::console::affiche_erreur " img_list = $img_list\n"
+      #foreach img $img_list {
+      #   set commundatejj   [::bddimages_liste::get_key_img $img commundatejj]
+      #   ::console::affiche_erreur "commundatejj = $commundatejj\n"
+      #}
+
+
       return $img_list
    }
 
