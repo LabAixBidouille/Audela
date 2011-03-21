@@ -918,10 +918,14 @@ proc correction { type inforesult} {
    proc ::bddimages_imgcorrection::select_img_list_by_type { bddimages_type bddimages_state img_list } {
 
 
+      ::console::affiche_resultat "img_list $img_list \n"
       set result_list ""
+
+
       foreach img $img_list {
          set keep "ok"
-         foreach l $img {
+         set tabkey [::bddimages_liste::get_key_img $img "tabkey"]
+         foreach l $tabkey {
             set key [lindex $l 0]
             set val [lindex $l 1]
             if {$key=="bddimages_type"}  { if {[string trim $val]!=$bddimages_type } { set keep "no" } }
@@ -931,6 +935,7 @@ proc correction { type inforesult} {
             lappend result_list $img
          }
       }
+      ::console::affiche_resultat "result_list $result_list \n"
       return $result_list
    }
 
@@ -1000,6 +1005,7 @@ proc correction { type inforesult} {
 
          # Chargement de la liste SOFFSET
          set img_list [::bddimages_imgcorrection::select_img_list_by_type OFFSET CORR $selection_list]
+
          set nbi [llength $img_list]
          set texte "${texte}- Images OFFSET d entree : nb = $nbi\n"
          if {$nbi>1} {
