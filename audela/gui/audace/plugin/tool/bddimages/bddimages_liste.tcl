@@ -1473,17 +1473,41 @@ namespace eval bddimages_liste {
 #
 #
 
+# img = { {key val} {..} }
+ 
    proc ::bddimages_liste::get_key_img { img key } {
    
-      set y ""
-      foreach  l $img  {
-          set x [lsearch $l $key]
+      set val ""
+      foreach row $img {
+          set x [lsearch $row $key]
           if {$x!=-1} {
-             set y [lindex $l 1]
-             return $y
+             set val [lindex $row 1]
+             return $val
           }
       }
-      return $y
+      return $val
+   }
+
+   proc ::bddimages_liste::get_key_img_tabkey { img key } {
+   
+      set val ""
+      set tabkey ""
+      foreach row $img {
+          if {[lindex $row 0]=="tabkey"} {
+             set tabkey [lindex $row 1]
+             break
+          }
+      }
+      if { $tabkey != "" } {
+         foreach row $tabkey {
+             if {[lindex $row 0]==$key} {
+                set val [lindex $row 1]
+                break
+             }
+         }
+      }
+
+      return $val
    }
 
 
