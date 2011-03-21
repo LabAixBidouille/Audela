@@ -1176,6 +1176,13 @@ namespace eval bddimages_liste {
       if {$type == "intellilist"} {
          set table [::bddimages_liste::intellilist_to_imglist_i $intellilist]
          set table [::bddimages_liste::transform_tabkey $table]
+
+         foreach img $table {
+            set tabkey   [::bddimages_liste::get_key_img $img "tabkey"]
+            set telescop [::bddimages_liste::get_key_img $tabkey telescop]
+            ::console::affiche_resultat "telescop = $telescop\n"
+         }
+
       }
       if {$type == "normal"} {
          #::console::affiche_resultat "intellilist = $intellilist\n"
