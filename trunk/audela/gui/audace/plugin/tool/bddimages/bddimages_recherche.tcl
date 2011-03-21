@@ -1468,20 +1468,26 @@ namespace eval bddimages_recherche {
       set affich_table ""
 
       foreach line $table {
-       set lign_affich $empty
-       for { set i 0 } { $i < $nbcol} { incr i } {
-         set current_columns [lindex $list_of_columns $i]
-         foreach var $line {
-           if {[lindex $var 0] eq [lindex $current_columns 0]} {
-              set lign_affich [lreplace $lign_affich $i $i [lindex $var 1]]
-              break
-           }
+
+
+         set lign_affich $empty
+         
+         
+         set lign_affich [lreplace $lign_affich 0 0 [list "idbddimg" [::bddimages_liste::get_key_img $line "idbddimg"]]]
+         set lign_affich [lreplace $lign_affich 1 1 [list "filename" [::bddimages_liste::get_key_img $line "filename"]]]
+
+         set tabkey [::bddimages_liste::get_key_img $line "tabkey"]
+                                      
+         for { set i 2 } { $i < $nbcol} { incr i } {
+            set current_columns [lindex [lindex $list_of_columns $i] 0]
+            set val [::bddimages_liste::get_key_img $tabkey $current_columns]
+            set lign_affich [lreplace $lign_affich $i $i $val]
          }
-       }
-       lappend affich_table $lign_affich
+            
+         lappend affich_table $lign_affich
 
      }
-      
+
       catch { $::bddimages_recherche::This.frame6.result.tbl delete 0 end
                $::bddimages_recherche::This.frame6.result.tbl deletecolumns 0 end  }
 
