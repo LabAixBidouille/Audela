@@ -10,9 +10,12 @@ proc chg_tabkey { tabkey } {
 
    set dateobs [get_tabkey $tabkey "DATE-OBS"]
    if { [regexp {(\d+)-(\d+)-(\d+)( |T)(\d+):(\d+):(\d+)(\.*\d*)} $dateobs dateiso aa mm jj sep h m s sd] } {
+
       # Si date ISO
-      set dateiso $dateobs
+      set dateiso "${aa}-${mm}-${jj}T${h}:${m}:${s}${sd}"
+
    } else {
+
       # Sinon
       set duree   [get_tabkey $tabkey "TM-START"]
       set annee   [string range $dateobs 6 9]
@@ -22,11 +25,14 @@ proc chg_tabkey { tabkey } {
       set minute  [expr int($duree / 60 - $heure * 60)]
       set seconde [expr $duree - $heure * 3600 - $minute * 60]
       set dateiso "$annee-$mois-$jour\T$heure:$minute:$seconde"
-   }
-   set tabkey   [update_tabkey $tabkey "DATE-OBS" $dateiso]
 
-   set exposure [get_tabkey $tabkey "TM-EXPOS"]
-   set tabkey   [add_tabkey $tabkey "EXPOSURE" $exposure]
+   }
+   set tabkey [update_tabkey $tabkey "DATE-OBS" $dateiso]
+
+   if {! [exist_tabkey $tabkey "EXPOSURE"]} {
+      set exposure [get_tabkey $tabkey "TM-EXPOS"]      
+      set tabkey [add_tabkey $tabkey "EXPOSURE" $exposure]
+   }
 
    return [list 0 $tabkey]
 }
