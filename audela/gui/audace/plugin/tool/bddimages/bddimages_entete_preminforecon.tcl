@@ -14,39 +14,41 @@ proc bddimages_entete_preminforecon {tabkey} {
 
  global bddconf
 
-  set site ""
+  set result_tabkey $tabkey
+
+  set telescop ""
   foreach keyval $tabkey {
 
     set key [lindex $keyval 0]
     set val [lindex [lindex $keyval 1] 1]
 
-      switch $key {
-          "TELESCOP" {
-            set site [string trim $val]
-            set site [string tolower $site]
-            set site [string map {" " "_"} $site]
-            break
-            }
-          default {
-            }
+    switch $key {
+        "TELESCOP" {
+          set telescop [string trim $val]
+          set telescop [string tolower $telescop]
+          set telescop [string map {" " "_"} $telescop]
+          break
           }
-          # fin switch
-      }
+        default {
+          }
+        }
+        # fin switch
+    }
       # fin foreach
 
   set dir [ file join $bddconf(rep_plug) site ]
 
   set garde "no"
-  if {$site==""} {
-    set site "Unknown"
+  if {$telescop==""} {
+    set telescop "Unknown"
     } else {
     set errnum [catch {set sitemethod [glob $dir/*]} msg]
     if {!$errnum} {
       foreach i $sitemethod {
         set fic [file tail $i]
-        if {$fic=="$site.tcl"} {
-          source [ file join $dir $site.tcl ]
-#          bddimages_sauve_fich "bddimages_entete_preminforecon: lecture de $site.tcl"
+        if {$fic=="$telescop.tcl"} {
+          source [ file join $dir $telescop.tcl ]
+#          bddimages_sauve_fich "bddimages_entete_preminforecon: lecture de $telescop.tcl"
           set garde "ok"
           break
           }
@@ -62,7 +64,7 @@ proc bddimages_entete_preminforecon {tabkey} {
   set result [dateobs $tabkey]
   set err [lindex $result 0]
   if {$err!=0} {
-    return [list 1 "-" $site]
+    return [list 1 "-" $telescop]
     } else {
     set dateiso [lindex $result 1]
     }
@@ -75,6 +77,6 @@ proc bddimages_entete_preminforecon {tabkey} {
     }
   set dateiso [ mc_date2iso8601 $datejd ]
 
-return [list $err $dateiso $site]
+return [list $err $dateiso $telescop]
 }
 
