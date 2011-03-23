@@ -259,10 +259,13 @@ proc info_fichier { nomfich } {
          }
       }
 
-      set champs  [bddimages_entete_preminforecon $tabkey]
-      set err     [lindex $champs 0]
-      set dateiso [lindex $champs 1]
-      set site    [lindex $champs 2]
+      set result     [bddimages_entete_preminforecon $tabkey]
+      set err        [lindex $result 0]
+      set tmp_tabkey [lindex $result 1]
+      
+      set site       [get_tabkey $tmp_tabkey "TELESCOP"]
+      set dateiso    [get_tabkey $tmp_tabkey "DATE-OBS"]
+      
    }
 
    if {$form3 == "cata"} {
