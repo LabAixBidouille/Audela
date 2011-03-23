@@ -17,7 +17,7 @@ proc bddimages_entete_preminforecon { tabkey } {
   set result_tabkey $tabkey
 
   ::console::affiche_resultat "bddimages_entete_preminforecon\n"
-  ::console::affiche_resultat "\n\n\n\ntabkey $tabkey\n\n\n\n"
+  ::console::affiche_resultat "\n\n\n\ntabkey [lindex $tabkey 0]\n\n\n\n"
   set telescop [get_tabkey $tabkey "TELESCOP"]
   ::console::affiche_resultat "avTELESCOP $telescop\n"
   set telescop [string trim $telescop]
@@ -83,7 +83,6 @@ proc get_tabkey { tabkey inkey } {
   foreach keyval $tabkey {
     set key [lindex $keyval 0]
     set val [lindex [lindex $keyval 1] 1]
-    ::console::affiche_resultat "$key $val\n"
 
     if { $key == $inkey } {
        return $val
