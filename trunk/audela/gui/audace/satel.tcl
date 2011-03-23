@@ -250,7 +250,7 @@ proc satel_scene { {formatscene ROS1} {satelname "ISS"} {date now} {home ""} } {
    set res [lindex $res 0]
    set ra2 [lindex $res 1]
    set dec2 [lindex $res 2]
-   set dra [expr ($ra2-$ra1)/$dt-$drasid]
+   set dra [expr $drasid-($ra2-$ra1)/$dt]
    if {$dra> 180} { set dra [expr $dra-180] }
    if {$dra<-180} { set dra [expr $dra+180] }
    set ddec [expr ($dec2-$dec1)/$dt]
