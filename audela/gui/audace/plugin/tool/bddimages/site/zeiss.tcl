@@ -2,7 +2,7 @@
 # Mise à jour $Id$
 #
 
-proc dateobs {tabkey} {
+proc chg_tabkey {tabkey} {
 
    #     0         1         2
    #       0123456789012345678901
