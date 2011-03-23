@@ -39,7 +39,10 @@
 #
 #  Structure du tabkey
 #
-# { {NAXIS1 1024} {NAXIS2 1024} etc ... }
+# { {TELESCOP { {TELESCOP} {TAROT CHILI} string {Observatory name} } }
+#   {NAXIS2   { {NAXIS2}   {1024}        int    {}                 } }
+#    etc ...
+# }
 #
 #--------------------------------------------------
 #
@@ -1112,12 +1115,15 @@ namespace eval bddimages_liste {
 
       foreach img $table {
 
+
          set tabkey ""
          foreach lkey $img {
             set key  [lindex $lkey 0]
             set val  [lindex $lkey 1]
             lappend tabkey [list [string toupper $key] [list [string toupper $key] $val] ]
          }
+         
+         
 
          set r [bddimages_entete_preminforecon $tabkey]
 

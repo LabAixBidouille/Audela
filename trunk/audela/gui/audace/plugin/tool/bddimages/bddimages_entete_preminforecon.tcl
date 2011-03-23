@@ -16,11 +16,15 @@ proc bddimages_entete_preminforecon { tabkey } {
 
   set result_tabkey $tabkey
 
+  ::console::affiche_resultat "bddimages_entete_preminforecon\n"
+  ::console::affiche_resultat "\n\n\n\ntabkey $tabkey\n\n\n\n"
   set telescop [get_tabkey $tabkey "TELESCOP"]
+  ::console::affiche_resultat "avTELESCOP $telescop\n"
   set telescop [string trim $telescop]
   set telescop [string tolower $telescop]
   set telescop [string map {" " "_"} $telescop]
   set tabkey   [update_tabkey $tabkey "TELESCOP" $telescop]
+  ::console::affiche_resultat "apTELESCOP $telescop\n"
 
 
   set dir [ file join $bddconf(rep_plug) site ]
@@ -71,21 +75,26 @@ return [list $err $result_tabkey]
 
 
 
+
+
+
 proc get_tabkey { tabkey inkey } {
 
   foreach keyval $tabkey {
     set key [lindex $keyval 0]
     set val [lindex [lindex $keyval 1] 1]
+    ::console::affiche_resultat "$key $val\n"
 
     if { $key == $inkey } {
-       return -code ok $val
+       return $val
        }
     }
 
-::console::affiche_resultat "Erreur : $key = $val\n"
-
 return ""
 }
+
+
+
 
 
 proc update_tabkey { tabkey inkey inval } {
@@ -97,6 +106,7 @@ proc update_tabkey { tabkey inkey inval } {
      set val [lindex [lindex $keyval 1] 1]
 
      if { $key == $inkey } {
+        ::console::affiche_resultat "maj $inkey\n"
         lappend result_list [list $inkey $inval]
      } else {
         lappend result_list [list $key $val]
@@ -107,11 +117,33 @@ return $result_list
 }
 
 
-proc add_tabkey { tabkey key  } {
 
-return 0
+
+
+proc add_tabkey { tabkey inkey inval } {
+
+   if {[exist_tabkey $tabkey $inkey]} {
+      ::console::affiche_resultat "$inkey existe\n"
+      set tabkey [update_tabkey $tabkey $inkey $inval]
+   } else {
+      ::console::affiche_resultat "$inkey n existe pas\n"
+      lappend tabkey [list $inkey $inval]
+   }
+   
+return $tabkey
 }
-proc exist_tabkey { tabkey key  } {
+
+
+
+
+proc exist_tabkey { tabkey inkey } {
+
+  foreach keyval $tabkey {
+     set key [lindex $keyval 0]
+     if { $key == $inkey } {
+        return 1
+     }
+  }
 
 return 0
 }
