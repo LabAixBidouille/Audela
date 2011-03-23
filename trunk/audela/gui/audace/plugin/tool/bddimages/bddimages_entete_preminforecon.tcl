@@ -10,7 +10,7 @@
 # TELESCOP
 
 # ---------------------------------------
-proc bddimages_entete_preminforecon {tabkey} {
+proc bddimages_entete_preminforecon { tabkey } {
 
  global bddconf
 
@@ -48,7 +48,7 @@ proc bddimages_entete_preminforecon {tabkey} {
     #bddimages_sauve_fich "bddimages_entete_preminforecon: lecture de default.tcl"
     }
 
-  set $result [chg_tabkey $tabkey]
+  set result [chg_tabkey $tabkey]
 
   set err [lindex $tabkey 0]
   if {$err!=0} {
@@ -82,14 +82,31 @@ proc get_tabkey { tabkey inkey } {
        }
     }
 
-return -code error
+::console::affiche_resultat "Erreur : $key = $val\n"
+
+return ""
 }
 
 
-proc update_tabkey { tabkey key val } {
+proc update_tabkey { tabkey inkey inval } {
 
-return val
+  set result_list ""
+  foreach keyval $tabkey {
+
+     set key [lindex $keyval 0]
+     set val [lindex [lindex $keyval 1] 1]
+
+     if { $key == $inkey } {
+        lappend result_list [list $inkey $inval]
+     } else {
+        lappend result_list [list $key $val]
+     }
+  }
+
+return $result_list
 }
+
+
 proc add_tabkey { tabkey key  } {
 
 return 0
