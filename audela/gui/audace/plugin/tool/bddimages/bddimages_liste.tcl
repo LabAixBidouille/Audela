@@ -1112,7 +1112,7 @@ namespace eval bddimages_liste {
 
 
       set tableresult ""
-
+      
       foreach img $table {
 
 
@@ -1397,7 +1397,7 @@ namespace eval bddimages_liste {
 
    proc ::bddimages_liste::intellilist_to_imglist_i { intellilist } {
 
-      #::bddimages_liste::affiche_intellilist $intellilist
+      # Itere sur les idhd
 
       set sqlcmd "SELECT DISTINCT idheader FROM header;"
       set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
@@ -1414,6 +1414,57 @@ namespace eval bddimages_liste {
       foreach line $resultsql {
 
          set idhd [lindex $line 0]
+
+         # lecture des infos de chaque champ
+         set sqlcmd "SELECT keyname,
+                            0 as value,
+                            type,
+                            comment,
+                            unit
+                     FROM header
+   		     WHERE idhd = $idhd
+                     ;"
+         set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
+         if {[string first "Unknown column" $msg]==-1} {
+            if {$err} {
+               bddimages_sauve_fich "Erreur de lecture de la table des header par SQL"
+               bddimages_sauve_fich "     sqlcmd = $sqlcmd"
+               bddimages_sauve_fich "        err = $err"
+               bddimages_sauve_fich "        msg = $msg"
+               ::console::affiche_erreur "Erreur de lecture de la table des header par SQL\n"
+               ::console::affiche_erreur "     sqlcmd = $sqlcmd\n"
+               ::console::affiche_erreur "        err = $err\n"
+               ::console::affiche_erreur "        msg = $msg\n"
+               return
+            }
+
+            set nbresult [llength $resultcount]
+
+            if {$nbresult>0} {
+
+               set colvar [lindex $resultcount 0]
+               set rowvar [lindex $resultcount 1]
+               set nbcol  [llength $colvar]
+
+               set tabkey ""
+               foreach line $rowvar {
+                  
+                  set keyname [lindex $line 0]
+                  set value   [lindex $line 1]
+                  set type    [lindex $line 2]
+                  set comment [lindex $line 3]
+                  set unit    [lindex $line 4]
+                  
+                  lappend tabkey [list $keyname [list $keyname $value $type $comment $unit]]
+                  
+               }
+            }
+
+
+
+
+
+         # lecture des valeurs de chaque champ
          set sqlcritere [::bddimages_liste::get_sqlcritere $intellilist "images_$idhd"]
          set sqlcmd "SELECT images.idbddimg,
                             images.idheader,
