@@ -272,6 +272,7 @@ namespace eval bddimages_recherche {
 
       global action_frame_type
       global action_frame_state
+      global bddconf
 
       set ::bddimages_recherche::tbl_cmd_list_select $tbl
       set i [$tbl curselection]
@@ -291,9 +292,10 @@ namespace eval bddimages_recherche {
 
       set t2 [clock clicks -milliseconds]
       set sec [expr ($t1-$t0)/1000.]
-      ::console::affiche_resultat "SQL: $sec sec ..."
+      set bddconf(chrgtlist) "Charge $sec sec"
       set sec [expr ($t2-$t1)/1000.]
-      ::console::affiche_resultat "AFF: $sec sec .\n"
+      set bddconf(affichlist) "Affiche $sec sec"
+      ::console::affiche_resultat "\n"
 
       return
    }
@@ -519,6 +521,9 @@ namespace eval bddimages_recherche {
       }
       
       set bddconf(inserinfo) "Total($nbintellilist)"
+      set bddconf(chrgtlist) "Charge -"
+      set bddconf(affichlist) "Affiche -"
+
 
       # Definitions des boutons d'action: par defaut tout a 1
       array set action_label {
@@ -757,6 +762,14 @@ namespace eval bddimages_recherche {
            label $This.frame11.nbimg -font $bddconf(font,arial_12_b) \
                -textvariable bddconf(inserinfo)
            pack $This.frame11.nbimg -in $This.frame11 -side left -padx 3 -pady 1 -anchor w
+           #--- Cree un label pour le nb image
+           label $This.frame11.chrgtlist -font $bddconf(font,arial_12_b) \
+               -textvariable bddconf(chrgtlist)
+           pack $This.frame11.chrgtlist -in $This.frame11 -side left -padx 3 -pady 1 -anchor w
+           #--- Cree un label pour le nb image
+           label $This.frame11.affichlist -font $bddconf(font,arial_12_b) \
+               -textvariable bddconf(affichlist)
+           pack $This.frame11.affichlist -in $This.frame11 -side left -padx 3 -pady 1 -anchor w
 
       
       ::bddimages_recherche::Affiche_listes
@@ -1379,24 +1392,11 @@ namespace eval bddimages_recherche {
 
       foreach line $table {
 
-
          set lign_affich $empty
          
-         #-- idbddimg
-         set current_columns [lindex [lindex $list_of_columns 0] 0]
-         set val [::bddimages_liste::get_key_img $line $current_columns]
-         set lign_affich [lreplace $lign_affich 0 0 $val]
-
-         #-- filename
-         set current_columns [lindex [lindex $list_of_columns 1] 0]
-         set val [::bddimages_liste::get_key_img $line $current_columns]
-         set lign_affich [lreplace $lign_affich 1 1 $val]
-
-         set tabkey [::bddimages_liste::get_key_img $line "tabkey"]
-                                      
-         for { set i 2 } { $i < $nbcol} { incr i } {
+         for { set i 0 } { $i < $nbcol} { incr i } {
             set current_columns [lindex [lindex $list_of_columns $i] 0]
-            set val [::bddimages_liste::get_key_img $tabkey $current_columns]
+            set val [::bddimages_liste::lget $line $current_columns]
             set lign_affich [lreplace $lign_affich $i $i $val]
          }
             
@@ -1604,8 +1604,100 @@ proc ::bddimages_recherche::get_intellist { i } {
    ::console::affiche_resultat "[::bddimages_liste::get_val_intellilist $intellilist "name"] ... "
    #::console::affiche_resultat "intellilist = $intellilist\n"
 
-   set table_result($i) [::bddimages_liste::intellilist_to_imglist $intellilist]
+#  Table_tmp
+#   {idheader 22} 
+#   {tabname images_22} 
+#   {filename IM_20091017_063807246_200279_49065202.fits.gz} 
+#   {dirfilename fits/tarot_chili/2009/10/17} 
+#   {sizefich 4556161} 
+#   {datemodif {2011-03-15 15:10:52}} 
+#   {commundatejj 2455121.77616018}
+#   {tabkey {..}}
+
+   set table_tmp [::bddimages_liste::intellilist_to_imglist $intellilist]
+
+   #::console::affiche_resultat "table_tmp = $table_tmp\n"
+   set table_result($i) ""
+
+   foreach img $table_tmp {
+
+      set tabkey               [::bddimages_liste::lget $img "tabkey"]
+
+      set idbddimg             [list "idbddimg" [::bddimages_liste::lget $img "idbddimg"] ]
+      set filename             [list "filename" [::bddimages_liste::lget $img "filename"] ]
+      set telescop             [list "telescop"             [lindex [::bddimages_liste::lget $tabkey "telescop"            ] 1] ]
+      set dateobs              [list "date-obs"             [lindex [::bddimages_liste::lget $tabkey "date-obs"            ] 1] ]
+      set exposure             [list "exposure"             [lindex [::bddimages_liste::lget $tabkey "exposure"            ] 1] ]
+      set object               [list "object"               [lindex [::bddimages_liste::lget $tabkey "object"              ] 1] ]
+      set filter               [list "filter"               [lindex [::bddimages_liste::lget $tabkey "filter"              ] 1] ]
+      set bin1                 [list "bin1"                 [lindex [::bddimages_liste::lget $tabkey "bin1"                ] 1] ]
+      set bin2                 [list "bin2"                 [lindex [::bddimages_liste::lget $tabkey "bin2"                ] 1] ]
+      set bddimages_version    [list "bddimages_version"    [lindex [::bddimages_liste::lget $tabkey "bddimages_version"   ] 1] ]
+      set bddimages_state      [list "bddimages_state"      [lindex [::bddimages_liste::lget $tabkey "bddimages_state"     ] 1] ]
+      set bddimages_type       [list "bddimages_type"       [lindex [::bddimages_liste::lget $tabkey "bddimages_type"      ] 1] ]
+      set bddimages_wcs        [list "bddimages_wcs"        [lindex [::bddimages_liste::lget $tabkey "bddimages_wcs"       ] 1] ]
+      set bddimages_namecata   [list "bddimages_namecata"   [lindex [::bddimages_liste::lget $tabkey "bddimages_namecata"  ] 1] ]
+      set bddimages_datecata   [list "bddimages_datecata"   [lindex [::bddimages_liste::lget $tabkey "bddimages_datecata"  ] 1] ]
+      set bddimages_astroid    [list "bddimages_astroid"    [lindex [::bddimages_liste::lget $tabkey "bddimages_astroid"   ] 1] ]
+      set bddimages_astrometry [list "bddimages_astrometry" [lindex [::bddimages_liste::lget $tabkey "bddimages_astrometry"] 1] ]
+      set bddimages_cataastrom [list "bddimages_cataastrom" [lindex [::bddimages_liste::lget $tabkey "bddimages_cataastrom"] 1] ]
+      set bddimages_photometry [list "bddimages_photometry" [lindex [::bddimages_liste::lget $tabkey "bddimages_photometry"] 1] ]
+      set bddimages_cataphotom [list "bddimages_cataphotom" [lindex [::bddimages_liste::lget $tabkey "bddimages_cataphotom"] 1] ]
+
+      lappend table_result($i) [list \
+                                     $idbddimg            \
+                                     $filename            \
+                                     $telescop            \
+                                     $dateobs             \
+                                     $exposure            \
+                                     $object              \
+                                     $filter              \
+                                     $bin1                \
+                                     $bin2                \
+                                     $bddimages_version   \
+                                     $bddimages_state     \
+                                     $bddimages_type      \
+                                     $bddimages_wcs       \
+                                     $bddimages_namecata  \
+                                     $bddimages_datecata  \
+                                     $bddimages_astroid   \
+                                     $bddimages_astrometry\
+                                     $bddimages_cataastrom\
+                                     $bddimages_photometry\
+                                     $bddimages_cataphotom\
+                                ]
+   }
+
+#  table_result($i)
+#  "idbddimg"            
+#  "filename"            
+#  "telescop"            
+#  "date-obs"            
+#  "exposure"            
+#  "object"              
+#  "filter"              
+#  "bin1"                
+#  "bin2"                
+#  "bddimages_version"   
+#  "bddimages_state"     
+#  "bddimages_type"      
+#  "bddimages_wcs"       
+#  "bddimages_namecata"  
+#  "bddimages_datecata"  
+#  "bddimages_astroid"   
+#  "bddimages_astrometry"
+#  "bddimages_cataastrom"
+#  "bddimages_photometry"
+#  "bddimages_cataphotom"
+#
+
+   return 0
 }
+
+
+
+
+
 
 
 

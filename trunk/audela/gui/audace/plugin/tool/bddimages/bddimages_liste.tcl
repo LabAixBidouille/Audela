@@ -39,9 +39,10 @@
 #
 #  Structure du tabkey
 #
-# { {TELESCOP { {TELESCOP} {TAROT CHILI} string {Observatory name} } }
-#   {NAXIS2   { {NAXIS2}   {1024}        int    {}                 } }
-#    etc ...
+# { {telescop          { {TELESCOP}          {TAROT CHILI} string {Observatory name}                    {} } }  
+#   {naxis2            { {NAXIS2}            {1024}        int    {comment}                             {} } }  
+#   {bddimages_version { {BDDIMAGES VERSION} 0             INT    {Compatibility version for bddimages} {} } }
+#   etc ...
 # }
 #
 #--------------------------------------------------
@@ -114,8 +115,8 @@
 #   {type_result        ...  }
 #   {type_select        ...  }
 #   {reqlist            { 
-#                         {image_34 {134 345 677}}
-#                         {image_38 {135 344 679}}
+#                         {34 {134 345 677}}
+#                         {38 {135 344 679}}
 #                       }
 #
 #   }
@@ -643,10 +644,10 @@ namespace eval bddimages_liste {
       }
       if {$cpt == 0}  { return }
       
-      #recupere les tables images_xxx des idbddimg
-      set sqlcmd "SELECT images.tabname,images.idbddimg FROM images
+      #recupere les tables images_idhd des idbddimg
+      set sqlcmd "SELECT images.idheader,images.idbddimg FROM images
                   WHERE images.idbddimg IN ($l)
-                  ORDER BY images.tabname ASC;"
+                  ORDER BY images.idheader ASC;"
 
       set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
       if {$err} {
@@ -1110,36 +1111,18 @@ namespace eval bddimages_liste {
 
    proc ::bddimages_liste::transform_tabkey { table } {
 
-
       set tableresult ""
       
       foreach img $table {
+         set tabkey [::bddimages_liste::lget $img "tabkey"]
+         set result [bddimages_entete_preminforecon $tabkey]
+         set err [lindex $result 0]
+         if {$err!=0} {
+           continue
+           }
+         set tabkey [lindex $result 1]
 
-
-         set tabkey ""
-         foreach lkey $img {
-            set key  [lindex $lkey 0]
-            set val  [lindex $lkey 1]
-            lappend tabkey [list [string toupper $key] [list [string toupper $key] $val] ]
-         }
-         
-         
-
-         set r [bddimages_entete_preminforecon $tabkey]
-
-         set imgresult ""
-         foreach lkey $img {
-            set key  [lindex $lkey 0]
-            set val  [lindex $lkey 1]
-            if {$key=="telescop"} {
-               set site [string trim [lindex $r 2]]
-               set site [string tolower $site]
-               set val [string map {" " "_"} $site]
-               }
-            if {$key=="date-obs"} {set val [lindex $r 1]}
-            lappend imgresult [list $key $val ]
-         }
-         lappend tableresult $imgresult
+         lappend tableresult [::bddimages_liste::lupdate $img "tabkey" $tabkey]
       }
 
       return $tableresult
@@ -1182,24 +1165,18 @@ namespace eval bddimages_liste {
    
       set type [::bddimages_liste::get_val_intellilist $intellilist "type"]
       
-      set table ""
       if {$type == "intellilist"} {
-         set table [::bddimages_liste::intellilist_to_imglist_i $intellilist]
-         set table [::bddimages_liste::transform_tabkey $table]
-
-         foreach img $table {
-            set tabkey   [::bddimages_liste::get_key_img $img "tabkey"]
-            set telescop [::bddimages_liste::get_key_img $tabkey telescop]
-            ::console::affiche_resultat "telescop = $telescop\n"
-         }
-
+         set img_list [::bddimages_liste::intellilist_to_imglist_i $intellilist]
+         set img_list [::bddimages_liste::transform_tabkey $img_list]
       }
       if {$type == "normal"} {
          #::console::affiche_resultat "intellilist = $intellilist\n"
-         set table [::bddimages_liste::intellilist_to_imglist_n $intellilist]
-         set table [::bddimages_liste::transform_tabkey $table]
+         set img_list [::bddimages_liste::intellilist_to_imglist_n $intellilist]
+         set img_list [::bddimages_liste::transform_tabkey $img_list]
       }
-      return $table
+
+      #::console::affiche_erreur "img_list = $img_list\n"
+      return $img_list
    }
 
 
@@ -1281,13 +1258,15 @@ namespace eval bddimages_liste {
    
       #::console::affiche_resultat "intellilist = $intellilist\n"
    
+      # Recupere la liste des id image et table header correspondante
       set idlist [::bddimages_liste::get_val_intellilist $intellilist "idlist"]
       #::console::affiche_resultat "idlist = $idlist\n"
       if {[llength $idlist] == 0} {return}
       set img_list ""
    
       foreach val $idlist {
-         set imageidhd [lindex $val 0]
+
+         set idhd [lindex $val 0]
          set lid [lindex $val 1]
          set cpt 0
          foreach id $lid {
@@ -1298,7 +1277,7 @@ namespace eval bddimages_liste {
             }
             incr cpt
          }
-         #::console::affiche_resultat "imageidhd = $imageidhd : $lsqlid\n"
+         # ::console::affiche_resultat "images_idhd = images_$idhd : $lsqlid\n"
    
          set sqlcmd "SELECT images.idbddimg,
                             images.idheader,
@@ -1308,10 +1287,10 @@ namespace eval bddimages_liste {
                             images.sizefich,
                             images.datemodif,
                             commun.datejj as commundatejj,
-                            $imageidhd.* 
-                     FROM images,$imageidhd,commun
-   		     WHERE images.idbddimg = $imageidhd.idbddimg 
-                     AND   commun.idbddimg = $imageidhd.idbddimg
+                            images_$idhd.* 
+                     FROM images,images_$idhd,commun
+   		     WHERE images.idbddimg = images_$idhd.idbddimg 
+                     AND   commun.idbddimg = images_$idhd.idbddimg
                      AND   images.idbddimg IN ($lsqlid);"
    
          #::console::affiche_resultat "sqlcmd = $sqlcmd\n"
@@ -1333,21 +1312,42 @@ namespace eval bddimages_liste {
    
             if {$nbresult>0} {
    
+               set tabkey [::bddimages_liste::idhd_to_tabkey $idhd]
                set colvar [lindex $resultcount 0]
                set rowvar [lindex $resultcount 1]
                set nbcol  [llength $colvar]
    
-               foreach line $rowvar {
+               foreach keyline $rowvar {
+
                   set result_img ""
-                  set result_tabkey ""
-                  set cpt 0
-                  foreach col $colvar {
-                     if {$cpt>=0&&$cpt<=7} {lappend result_img    [list $col [lindex $line $cpt]]}
-                     if {$cpt>7}           {lappend result_tabkey [list $col [lindex $line $cpt]]}
-                     incr cpt
-                  }
-                  lappend result_img [list "tabkey" $result_tabkey]
+
+                  # Common fields to manage BDI
+
+                      # idbddimg
+                      set key [lindex $colvar 8]
+                      set val [lindex $keyline 8]
+                      lappend result_img [list $key $val]
+
+                      # others...
+                      for {set id 1} {$id<=7} {incr id} {
+                         set key [lindex $colvar $id]
+                         set val [lindex $keyline $id]
+                         lappend result_img [list $key $val]
+                      }
+
+                  #  TABKEY 
+
+                      for {set id 9} {$id<$nbcol} {incr id} {
+                         set key [lindex $colvar $id]
+                         set val [lindex $keyline $id]
+                         set inline [lreplace [::bddimages_liste::lget $tabkey $key] 1 1 $val]
+                         set tabkey [::bddimages_liste::lupdate $tabkey $key $inline]
+                      }
+
+
+                  lappend result_img [list "tabkey" $tabkey]
                   lappend img_list $result_img
+
                }
             }
          }
@@ -1373,11 +1373,59 @@ namespace eval bddimages_liste {
 
 
 
+   proc ::bddimages_liste::idhd_to_tabkey { idhd } {
 
 
+         # lecture des infos de chaque champ
+         set sqlcmd "SELECT variable,
+                            keyname,
+                            0 as value,
+                            type,
+                            comment,
+                            unit
+                     FROM header
+   		     WHERE idheader = $idhd
+                     ;"
+         set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
+         if {![string first "Unknown column" $msg]==-1||$err} {
+               bddimages_sauve_fich "Erreur de lecture de la table des header par SQL"
+               bddimages_sauve_fich "     sqlcmd = $sqlcmd"
+               bddimages_sauve_fich "        err = $err"
+               bddimages_sauve_fich "        msg = $msg"
+               ::console::affiche_erreur "Erreur1 de lecture de la table des header par SQL\n"
+               ::console::affiche_erreur "     sqlcmd = $sqlcmd\n"
+               ::console::affiche_erreur "        err = $err\n"
+               ::console::affiche_erreur "        msg = $msg\n"
+               return
+            }
+            
+
+         set nbresult [llength $resultcount]
+
+         if {$nbresult>0} {
+
+            set colvar [lindex $resultcount 0]
+            set rowvar [lindex $resultcount 1]
+            set nbcol  [llength $colvar]
+
+            set tabkey ""
+            foreach keyline $rowvar {
+
+               set var     [lindex $keyline 0]
+               set keyname [lindex $keyline 1]
+               set value   [lindex $keyline 2]
+               set type    [lindex $keyline 3]
+               set comment [lindex $keyline 4]
+               set unit    [lindex $keyline 5]
+               
+               lappend tabkey [list $var [list $keyname $value $type $comment $unit]]
+               
+            }
+         }
 
 
-
+   return $tabkey
+   }
 
 
    #--------------------------------------------------
@@ -1415,53 +1463,6 @@ namespace eval bddimages_liste {
 
          set idhd [lindex $line 0]
 
-         # lecture des infos de chaque champ
-         set sqlcmd "SELECT keyname,
-                            0 as value,
-                            type,
-                            comment,
-                            unit
-                     FROM header
-   		     WHERE idhd = $idhd
-                     ;"
-         set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
-         if {[string first "Unknown column" $msg]==-1} {
-            if {$err} {
-               bddimages_sauve_fich "Erreur de lecture de la table des header par SQL"
-               bddimages_sauve_fich "     sqlcmd = $sqlcmd"
-               bddimages_sauve_fich "        err = $err"
-               bddimages_sauve_fich "        msg = $msg"
-               ::console::affiche_erreur "Erreur de lecture de la table des header par SQL\n"
-               ::console::affiche_erreur "     sqlcmd = $sqlcmd\n"
-               ::console::affiche_erreur "        err = $err\n"
-               ::console::affiche_erreur "        msg = $msg\n"
-               return
-            }
-
-            set nbresult [llength $resultcount]
-
-            if {$nbresult>0} {
-
-               set colvar [lindex $resultcount 0]
-               set rowvar [lindex $resultcount 1]
-               set nbcol  [llength $colvar]
-
-               set tabkey ""
-               foreach line $rowvar {
-                  
-                  set keyname [lindex $line 0]
-                  set value   [lindex $line 1]
-                  set type    [lindex $line 2]
-                  set comment [lindex $line 3]
-                  set unit    [lindex $line 4]
-                  
-                  lappend tabkey [list $keyname [list $keyname $value $type $comment $unit]]
-                  
-               }
-            }
-
-
-
 
 
          # lecture des valeurs de chaque champ
@@ -1475,45 +1476,64 @@ namespace eval bddimages_liste {
                             images.datemodif,
                             commun.datejj as commundatejj,
                             images_$idhd.* 
-                     FROM images,images_$idhd,commun
+                     FROM images, images_$idhd, commun
    		     WHERE images.idbddimg = images_$idhd.idbddimg 
                      AND   commun.idbddimg = images_$idhd.idbddimg
-                     $sqlcritere  ;"
+                     $sqlcritere;"
 
          set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
-         if {[string first "Unknown column" $msg]==-1} {
-            if {$err} {
-               bddimages_sauve_fich "Erreur de lecture de la liste des header par SQL"
-               bddimages_sauve_fich "        sqlcmd = $sqlcmd"
-               bddimages_sauve_fich "        err = $err"
-               bddimages_sauve_fich "        msg = $msg"
-               ::console::affiche_erreur "Erreur de lecture de la liste des header par SQL\n"
-               ::console::affiche_erreur "        sqlcmd = $sqlcmd\n"
-               ::console::affiche_erreur "        err = $err\n"
-               ::console::affiche_erreur "        msg = $msg\n"
-               return
-            }
+         if {![string first "Unknown column" $msg]==-1||$err} {
+            bddimages_sauve_fich "Erreur de lecture de la liste des header par SQL"
+            bddimages_sauve_fich "        sqlcmd = $sqlcmd"
+            bddimages_sauve_fich "        err = $err"
+            bddimages_sauve_fich "        msg = $msg"
+            ::console::affiche_erreur "Erreur de lecture de la liste des header par SQL\n"
+            ::console::affiche_erreur "        sqlcmd = $sqlcmd\n"
+            ::console::affiche_erreur "        err = $err\n"
+            ::console::affiche_erreur "        msg = $msg\n"
+            return
+         }
 
-            set nbresult [llength $resultcount]
+         set nbresult [llength $resultcount]
 
-            if {$nbresult>0} {
+         if {$nbresult>0} {
 
-               set colvar [lindex $resultcount 0]
-               set rowvar [lindex $resultcount 1]
-               set nbcol  [llength $colvar]
+            set tabkey [::bddimages_liste::idhd_to_tabkey $idhd]
+            set colvar [lindex $resultcount 0]
+            set rowvar [lindex $resultcount 1]
+            set nbcol  [llength $colvar]
 
-               foreach line $rowvar {
-                  set result_img ""
-                  set result_tabkey ""
-                  set cpt 0
-                  foreach col $colvar {
-                     if {$cpt>=0&&$cpt<=7} {lappend result_img    [list $col [lindex $line $cpt]]}
-                     if {$cpt>7}           {lappend result_tabkey [list $col [lindex $line $cpt]]}
-                     incr cpt
-                  }
-                  lappend result_img [list "tabkey" $result_tabkey]
-                  lappend img_list $result_img
-               }
+            foreach keyline $rowvar {
+
+               set result_img ""
+
+               # Common fields to manage BDI
+
+                   # idbddimg
+                   set key [lindex $colvar 8]
+                   set val [lindex $keyline 8]
+                   lappend result_img [list $key $val]
+
+                   # others...
+                   for {set id 1} {$id<=7} {incr id} {
+                      set key [lindex $colvar $id]
+                      set val [lindex $keyline $id]
+                      lappend result_img [list $key $val]
+                   }
+
+               #  TABKEY 
+
+                   for {set id 9} {$id<$nbcol} {incr id} {
+                      set key [lindex $colvar $id]
+                      set val [lindex $keyline $id]
+                      set inline [lreplace [::bddimages_liste::lget $tabkey $key] 1 1 $val]
+                      set tabkey [::bddimages_liste::lupdate $tabkey $key $inline]
+                   }
+
+
+               lappend result_img [list "tabkey" $tabkey]
+               lappend img_list $result_img
+
             }
          }
       }
@@ -1528,9 +1548,9 @@ namespace eval bddimages_liste {
       #   ::console::affiche_erreur "commundatejj = $commundatejj\n"
       #}
 
-
       return $img_list
    }
+
 
 
 
@@ -1559,28 +1579,6 @@ namespace eval bddimages_liste {
              return $val
           }
       }
-      return $val
-   }
-
-   proc ::bddimages_liste::get_key_img_tabkey { img key } {
-   
-      set val ""
-      set tabkey ""
-      foreach row $img {
-          if {[lindex $row 0]=="tabkey"} {
-             set tabkey [lindex $row 1]
-             break
-          }
-      }
-      if { $tabkey != "" } {
-         foreach row $tabkey {
-             if {[lindex $row 0]==$key} {
-                set val [lindex $row 1]
-                break
-             }
-         }
-      }
-
       return $val
    }
 
@@ -1715,7 +1713,6 @@ namespace eval bddimages_liste {
       global form_req
    
       set intellilist [::bddimages_liste::build_intellilist "calcul_nbimg"]
-        ::console::affiche_resultat "intelliliste  = $intellilist \n"
 
       set form_req(nbimg) [llength [::bddimages_liste::intellilist_to_imglist $intellilist]]
       #::console::affiche_resultat "Nb img = $form_req(nbimg) \n"
@@ -2275,6 +2272,87 @@ namespace eval bddimages_liste {
 
 
 
+
+
+
+
+
+proc ::bddimages_liste::lget { tabkey inkey } {
+
+  foreach keyval $tabkey {
+    set key [lindex $keyval 0]
+    set val [lindex $keyval 1]
+    if { [string equal -nocase [ string trim $key ] [ string trim $inkey ]]} {
+       return $val
+       }
+    }
+return ""
+}
+
+proc ::bddimages_liste::lget2 { tabkey inkey } {
+
+  foreach keyval $tabkey {
+    set key [lindex $keyval 0]
+    set val [lindex $keyval 1]
+    if { [string equal -nocase [ string trim $key ] [ string trim $inkey ]]} {
+       ::console::affiche_resultat "* ($key) : ($inkey)  = ($val) \n"
+       return $val
+       }
+       ::console::affiche_resultat "($key) : ($inkey)  = ($val) \n"
+    }
+return ""
+}
+
+
+
+
+
+proc ::bddimages_liste::lupdate { tabkey inkey inval } {
+
+  set result_list ""
+  foreach keyval $tabkey {
+
+     set key [lindex $keyval 0]
+     set val [lindex $keyval 1]
+
+    if { [string equal -nocase [ string trim $key ] [ string trim $inkey ]]} {
+        lappend result_list [list $inkey $inval]
+     } else {
+        lappend result_list [list $key $val]
+     }
+  }
+
+return $result_list
+}
+
+
+
+
+
+proc ::bddimages_liste::ladd { tabkey inkey inval } {
+
+   if {[::bddimages_liste::lexist $tabkey $inkey]} {
+      set tabkey [::bddimages_liste::lupdate $tabkey $inkey $inval]
+   } else {
+      lappend tabkey [list $inkey $inval]
+   }
+   
+return $tabkey
+}
+
+
+
+proc ::bddimages_liste::lexist { tabkey inkey } {
+
+  foreach keyval $tabkey {
+     set key [lindex $keyval 0]
+     if { [string equal -nocase [ string trim $key ] [ string trim $inkey ]]} {
+        return 1
+     }
+  }
+
+return 0
+}
 
 
 
