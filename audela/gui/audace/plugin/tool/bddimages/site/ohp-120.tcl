@@ -2,16 +2,29 @@
 # Mise à jour $Id$
 #
 
+#--------------------------------------------------
+#
+#  Structure du tabkey
+#
+# { {TELESCOP { {TELESCOP} {TAROT CHILI} string {Observatory name} } }
+#   {NAXIS2   { {NAXIS2}   {1024}        int    {}                 } }
+#    etc ...
+# }
+#
+#--------------------------------------------------
+#     0         1         2
+#       0123456789012345678901
+# date <2006-06-23T20:22:36.08>
+#--------------------------------------------------
+
 proc chg_tabkey { tabkey } {
 
-   #     0         1         2
-   #       0123456789012345678901
-   # date <2006-06-23T20:22:36.08>
-
-   if {! [catch { get_tabkey $tabkey "DATE-OBS" } dateobs ] } { 
+   if {! [::bddimages_liste::lexist $tabkey "date-obs"]} {
       return [list 1 "????-??-??T??:??:??"] 
       }
-      
+   set line    [::bddimages_liste::lget $tabkey "date-obs"]
+   set dateobs [lindex $line 1]
+
    if { [regexp {(\d+)-(\d+)-(\d+)( |T)(\d+):(\d+):(\d+)(\.*\d*)} $dateobs dateiso aa mm jj sep h m s sd] } {
 
       # Si date ISO
@@ -25,7 +38,7 @@ proc chg_tabkey { tabkey } {
       set jour    [string range $dateobs 0 1]
       
       
-      if {! [catch { get_tabkey $tabkey "TM-START" } duree ] } { 
+      if {! [catch { ::bddimages_liste::lget $tabkey "tm-start" } duree ] } { 
          return [list 1 "${annee}-${mois}-${jour}T??:??:??"]
          }
 
@@ -36,11 +49,12 @@ proc chg_tabkey { tabkey } {
 
    }
 
-   set tabkey [ update_tabkey $tabkey "DATE-OBS" $dateiso ]
+   set tabkey [ ::bddimages_liste::lupdate $tabkey "date-obs" $dateiso ]
 
-   if {! [exist_tabkey $tabkey "EXPOSURE"]} {
-      set exposure [get_tabkey $tabkey "TM-EXPOS"]      
-      set tabkey [add_tabkey $tabkey "EXPOSURE" $exposure]
+   if {! [::bddimages_liste::lexist $tabkey "exposure"]} {
+      set line     [::bddimages_liste::lget $tabkey "tm-expos"]
+      set exposure [lreplace $line 0 0 "EXPOSURE"]
+      set tabkey [::bddimages_liste::ladd $tabkey "exposure" $exposure]
    }
 
    return [list 0 $tabkey]

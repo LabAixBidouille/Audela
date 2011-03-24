@@ -2,19 +2,32 @@
 # Mise à jour $Id$
 #
 
+#--------------------------------------------------
+#
+#  Structure du tabkey
+#
+# { {TELESCOP { {TELESCOP} {TAROT CHILI} string {Observatory name} } }
+#   {NAXIS2   { {NAXIS2}   {1024}        int    {}                 } }
+#    etc ...
+# }
+#
+#--------------------------------------------------
+#     0         1         2
+#       0123456789012345678901
+# date <2006-06-23T20:22:36.08>
+#--------------------------------------------------
+
 proc chg_tabkey {tabkey} {
 
-   #     0         1         2
-   #       0123456789012345678901
-   # date <2006-06-23T20:22:36.08>
-
-   set dateobs [get_tabkey $tabkey "DATE-OBS"]
+   set dateobs [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1]
 
    if { [regexp {(\d+)-(\d+)-(\d+)( |T)(\d+):(\d+):(\d+)(\.*\d*)} $dateobs dateiso aa mm jj sep h m s sd] } {
 
       # Si date ISO
       set dateiso "${aa}-${mm}-${jj}T${h}:${m}:${s}${sd}"
-      set tabkey [update_tabkey $tabkey "DATE-OBS" $dateiso]
+
+      set line [lreplace [::bddimages_liste::lget $tabkey "date-obs"] 1 1 $dateiso]
+      set tabkey [::bddimages_liste::lupdate $tabkey "date-obs" $line]
       return [list 0 $tabkey]
 
    } else {

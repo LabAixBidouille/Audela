@@ -16,15 +16,17 @@ proc bddimages_entete_preminforecon { tabkey } {
 
   set result_tabkey $tabkey
 
-  ::console::affiche_resultat "bddimages_entete_preminforecon\n"
-  ::console::affiche_resultat "\n\n\n\ntabkey [lindex $tabkey 0]\n\n\n\n"
-  set telescop [get_tabkey $tabkey "TELESCOP"]
-  ::console::affiche_resultat "avTELESCOP $telescop\n"
+  #::console::affiche_erreur "- result_tabkey\n"
+  #::console::affiche_resultat "result_tabkey $result_tabkey\n"
+
+  set line [::bddimages_liste::lget $tabkey "telescop"]
+  set telescop [lindex $line 1]
+
   set telescop [string trim $telescop]
   set telescop [string tolower $telescop]
   set telescop [string map {" " "_"} $telescop]
-  set tabkey   [update_tabkey $tabkey "TELESCOP" $telescop]
-  ::console::affiche_resultat "apTELESCOP $telescop\n"
+
+  set tabkey [::bddimages_liste::lupdate $tabkey "telescop" [lreplace $line 1 1 $telescop]]
 
 
   set dir [ file join $bddconf(rep_plug) site ]
@@ -54,14 +56,16 @@ proc bddimages_entete_preminforecon { tabkey } {
 
   set result [chg_tabkey $tabkey]
 
-  set err [lindex $tabkey 0]
+  set err [lindex $result 0]
   if {$err!=0} {
     return [list 1 "-" $telescop]
     }
 
-  set result_tabkey [lindex $tabkey 1]
+  set result_tabkey [lindex $result 1]
     
-  set dateiso [get_tabkey $result_tabkey "DATE-OBS"]
+  set line [::bddimages_liste::lget $tabkey "date-obs"]
+  set dateiso [lindex $line 1]
+  
   set datejd  [ mc_date2jd $dateiso ]
   if {$datejd > 2268932. && $datejd < 2634166.} {
     set err 0
@@ -78,71 +82,3 @@ return [list $err $result_tabkey]
 
 
 
-proc get_tabkey { tabkey inkey } {
-
-  foreach keyval $tabkey {
-    set key [lindex $keyval 0]
-    set val [lindex [lindex $keyval 1] 1]
-
-    if { $key == $inkey } {
-       return $val
-       }
-    }
-
-return ""
-}
-
-
-
-
-
-proc update_tabkey { tabkey inkey inval } {
-
-  set result_list ""
-  foreach keyval $tabkey {
-
-     set key [lindex $keyval 0]
-     set val [lindex [lindex $keyval 1] 1]
-
-     if { $key == $inkey } {
-        ::console::affiche_resultat "maj $inkey\n"
-        lappend result_list [list $inkey $inval]
-     } else {
-        lappend result_list [list $key $val]
-     }
-  }
-
-return $result_list
-}
-
-
-
-
-
-proc add_tabkey { tabkey inkey inval } {
-
-   if {[exist_tabkey $tabkey $inkey]} {
-      ::console::affiche_resultat "$inkey existe\n"
-      set tabkey [update_tabkey $tabkey $inkey $inval]
-   } else {
-      ::console::affiche_resultat "$inkey n existe pas\n"
-      lappend tabkey [list $inkey $inval]
-   }
-   
-return $tabkey
-}
-
-
-
-
-proc exist_tabkey { tabkey inkey } {
-
-  foreach keyval $tabkey {
-     set key [lindex $keyval 0]
-     if { $key == $inkey } {
-        return 1
-     }
-  }
-
-return 0
-}
