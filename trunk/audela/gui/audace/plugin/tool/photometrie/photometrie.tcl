@@ -114,27 +114,24 @@ namespace eval ::Photometrie {
 
     ##
     # @brief Calcul du champ couvert par l'image
-    # return : le champ en arcmin sur la plus grande dimension
+    # return : le champ en arcmin sur la diagonale
     proc CalculChampImage {} {
         variable photometrie
 
-        # Récupération des coordonnées et du champ
-        set res [ buf$::audace(bufNo) xy2radec [ list [ expr $photometrie(naxis1) / 2 ] [ expr $photometrie(naxis2) / 2 ] ] ]
-        set ra [ mc_angle2hms [ lindex $res 0 ] ]
-        set dec [ mc_angle2dms [ lindex $res 1 ] 90 ]
-        set coords "$ra $dec"
+        # Récupération des ad et dec des points extrêmes de l'image
+        set addec1 [ buf$::audace(bufNo) xy2radec [ list 1 1 ] ]
+        set addec2 [ buf$::audace(bufNo) xy2radec [ list $photometrie(naxis1) $photometrie(naxis2) ] ]
 
-        set tgte1 [ expr $photometrie(naxis1) * $photometrie(pixsize1) * 1e-6 / $photometrie(foclen) ]
-        set tgte2 [ expr $photometrie(naxis2) * $photometrie(pixsize2) * 1e-6 / $photometrie(foclen) ]
-        set champ1 [ expr atan($tgte1) ]
-        set champ2 [ expr atan($tgte2) ]
-        # Conversion de radian en minutes d'arc
-        if { $champ1 > $champ2 } {
-            set champarcmin [ expr round( $champ1 * 3437.75 ) ]
-        } else {
-            set champarcmin [ expr round( $champ2 * 3437.75 ) ]
-        }
-        return $champarcmin
+        # Conversion en radian
+        set a1 [ expr [ lindex $addec1 0 ] * 0.01745 ]
+        set d1 [ expr [ lindex $addec1 1 ] * 0.01745 ]
+        set a2 [ expr [ lindex $addec2 0 ] * 0.01745 ]
+        set d2 [ expr [ lindex $addec2 1 ] * 0.01745 ]
+
+        # Calcul du champ de la diagonale en arcmin
+        set coschamp [ expr sin($d1) * sin($d2) + cos($d1) * cos($d2) * cos($a1 - $a2) ]
+        set champ [ expr acos($coschamp) * 3437.75 ]
+        return [ expr int(ceil($champ)) ]
     }
 
     ##
@@ -147,7 +144,7 @@ namespace eval ::Photometrie {
 
         set photometrie(astrometrie) 1
         set liste_cle [ buf$::audace(bufNo) getkwds ]
-        foreach cle_majuscule [ list NAXIS1 NAXIS2 CRVAL1 CRVAL2 CRPIX1 CRPIX2 CROTA2 PIXSIZE1 PIXSIZE2 FOCLEN ] {
+        foreach cle_majuscule [ list NAXIS1 NAXIS2 ] {
             set cle [ string tolower $cle_majuscule ]
             if { [ lsearch -exact $liste_cle $cle_majuscule ] > 0 } {
                 set photometrie($cle) [ lindex [ buf$::audace(bufNo) getkwd $cle_majuscule ] 1 ]
@@ -158,18 +155,23 @@ namespace eval ::Photometrie {
             }
         }
 
+        if { [ catch { buf$::audace(bufNo) xy2radec [ list 1 1 ] } ] } {
+            ::console::affiche_erreur "$photometrie_texte(err_pas_astrometrie)\n"
+            set photometrie(astrometrie) 0
+            return
+        }
+
         set fwhm [ buf$::audace(bufNo) fwhm [ list 1 1 $photometrie(naxis1) $photometrie(naxis1) ] ]
         set photometrie(fwhm) [ expr ( [ lindex $fwhm 0 ] + [ lindex $fwhm 1 ] ) / 2 ]
 
         # A SUPPRIMER
         # set photometrie(fwhm) 1.0
 
-
         if { $photometrie(astrometrie) == 1 } {
-            set champ [ CalculChampImage ]
+            set photometrie(champ) [ CalculChampImage ]
             # Limite à 30 minutes d'arc
-            if { $champ > 30 } {
-                ::console::affiche_erreur "$photometrie_texte(err_champ_trop_large) : $champ ' \n"
+            if { $photometrie(champ) > 45 } {
+                ::console::affiche_erreur "$photometrie_texte(err_champ_trop_large) : $photometrie(champ) ' \n"
                 set photometrie(internet) 0
             }
         }
@@ -809,22 +811,11 @@ namespace eval ::Photometrie {
         set photometrie(catalogue) [ file join $::audace(rep_travail) photometrie.txt ]
         file delete $photometrie(catalogue)
 
-        # Récupération des coordonnées et du champ
+        # Récupération des coordonnées (le champ est déjà connu)
         set res [ buf$::audace(bufNo) xy2radec [ list [ expr $photometrie(naxis1) / 2 ] [ expr $photometrie(naxis2) / 2 ] ] ]
         set ra [ mc_angle2hms [ lindex $res 0 ] ]
         set dec [ mc_angle2dms [ lindex $res 1 ] 90 ]
         set coords "$ra $dec"
-
-        set tgte1 [ expr $photometrie(naxis1) * $photometrie(pixsize1) * 1e-6 / $photometrie(foclen) ]
-        set tgte2 [ expr $photometrie(naxis2) * $photometrie(pixsize2) * 1e-6 / $photometrie(foclen) ]
-        set champ1 [ expr atan($tgte1) ]
-        set champ2 [ expr atan($tgte2) ]
-        # Conversion de radian en minutes d'arc
-        if { $champ1 > $champ2 } {
-            set champarcmin [ expr round( $champ1 * 3437.75 ) ]
-        } else {
-            set champarcmin [ expr round( $champ2 * 3437.75 ) ]
-        }
 
         switch -exact -- $photometrie(cata_internet) {
             usnob1 { set catalog Vizier(I/284) }
@@ -834,7 +825,7 @@ namespace eval ::Photometrie {
 
         # Création du script Aladin
         catch { unset texte }
-        append texte "analyse_photo=get $catalog $coords ${champarcmin}'\n"
+        append texte "analyse_photo=get $catalog $coords $photometrie(champ)'\n"
         append texte "sync\n"
         append texte "export analyse_photo $photometrie(catalogue)\n"
         append texte "quit\n"
@@ -847,7 +838,7 @@ namespace eval ::Photometrie {
 
         # Calcul du temps d'attente max
         # Empirisme : 2s pour minute d'arc
-        set temps_attente_max [ expr $champarcmin * 2000 ]
+        set temps_attente_max [ expr $photometrie(champ) * 2000 ]
 
         # Fenêtre informative pour faire patienter
         set tl [ toplevel $::audace(base).photometrie_exec_aladin \
