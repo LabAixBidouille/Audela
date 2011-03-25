@@ -1187,48 +1187,6 @@ namespace eval bddimages_liste {
 
 
 
-   #--------------------------------------------------
-   #  get_key_img_list { }
-   #--------------------------------------------------
-   #
-   #    fonction  :
-   #       construit la requete sql generale
-   #
-   #    procedure externe :
-   #
-   #    variables en entree : none
-   #
-   #    variables en sortie : liste des images
-   #
-   #--------------------------------------------------
-
-   proc ::bddimages_liste::get_key_img_list { key img_list } {
-   
-      set y ""
-      foreach  img $img_list  {
-         lappend y [::bddimages_liste::get_key_img $img $key]
-      }
-      return $y
-   }
-
-   proc ::bddimages_liste::update_val_img_list { key val img_list } {
-   
-      set y ""
-      set result_list ""
-      foreach  l $img_list  {
-          set br ""
-          foreach  b $l  {
-             if {[lindex $l 0]==$key} {
-                lappend br [list $key $val]
-             } else {
-                lappend br $b
-             }
-          }
-         lappend result_list $br
-      }
-      return $result_list
-   }
-
 
 
 
@@ -1355,8 +1313,6 @@ namespace eval bddimages_liste {
 
       set img_list [::bddimages_liste::add_info_cata $img_list]
 
-      #::console::affiche_erreur " idbddimg_list = [::bddimages_liste::get_key_img_list idbddimg $img_list]\n"
-      #::console::affiche_erreur " cataexist_list = [::bddimages_liste::get_key_img_list cataexist $img_list]\n"
       #::console::affiche_erreur " img_list = $img_list\n"
       return $img_list
    }
@@ -1540,14 +1496,7 @@ namespace eval bddimages_liste {
 
       set img_list [::bddimages_liste::add_info_cata $img_list]
 
-      #::console::affiche_erreur " idbddimg_list = [::bddimages_liste::get_key_img_list idbddimg $img_list]\n"
-      #::console::affiche_erreur " cataexist_list = [::bddimages_liste::get_key_img_list cataexist $img_list]\n"
       #::console::affiche_erreur " img_list = $img_list\n"
-      #foreach img $img_list {
-      #   set commundatejj   [::bddimages_liste::get_key_img $img commundatejj]
-      #   ::console::affiche_erreur "commundatejj = $commundatejj\n"
-      #}
-
       return $img_list
    }
 
@@ -1556,33 +1505,7 @@ namespace eval bddimages_liste {
 
 
 
-#  proc ::bddimages_admin_image::get_key_img_list { key img_list } {
-#  
-#     set y ""
-#     foreach  img $img_list  {
-#        lappend y [::bddimages_admin_image::get_key_img $key $img]
-#     }
-#     return $y
-#  }
-#
-#
-
-# img = { {key val} {..} }
  
-   proc ::bddimages_liste::get_key_img { img key } {
-   
-      set val ""
-      foreach row $img {
-          set x [lsearch $row $key]
-          if {$x!=-1} {
-             set val [lindex $row 1]
-             return $val
-          }
-      }
-      return $val
-   }
-
-
 
    #--------------------------------------------------
    #  add_info_cata { img_list }
@@ -1614,8 +1537,7 @@ namespace eval bddimages_liste {
                   AND cataimage.idbddimg IN ("
       set cpt 0
       foreach img $img_list {
-         #set idbddimg [lindex $img [lsearch $img idbddimg]]
-         set idbddimg [::bddimages_liste::get_key_img $img idbddimg]
+         set idbddimg [::bddimages_liste::lget $img "idbddimg"]
          if {$cpt == 0} {
             set sqlcmd "$sqlcmd $idbddimg"
          } else {
@@ -1657,8 +1579,7 @@ namespace eval bddimages_liste {
 
       set result_img_list ""
       foreach img $img_list {
-         #set idbddimg [lindex $img [lsearch $img idbddimg]]
-         set idbddimg [::bddimages_liste::get_key_img $img idbddimg]
+         set idbddimg [::bddimages_liste::lget $img "idbddimg"]
          if {[info exists cata($idbddimg,idbddcata)]} {
 
             foreach key $keys  {
@@ -2289,19 +2210,6 @@ proc ::bddimages_liste::lget { tabkey inkey } {
 return ""
 }
 
-proc ::bddimages_liste::lget2 { tabkey inkey } {
-
-  foreach keyval $tabkey {
-    set key [lindex $keyval 0]
-    set val [lindex $keyval 1]
-    if { [string equal -nocase [ string trim $key ] [ string trim $inkey ]]} {
-       ::console::affiche_resultat "* ($key) : ($inkey)  = ($val) \n"
-       return $val
-       }
-       ::console::affiche_resultat "($key) : ($inkey)  = ($val) \n"
-    }
-return ""
-}
 
 
 
