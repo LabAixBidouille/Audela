@@ -157,7 +157,7 @@ namespace eval bddimages_analyse {
 
       foreach img $img_list {
 
-         set idbddimg [::bddimages_imgcorrection::get_key_imglist idbddimg $img]
+         set idbddimg [::bddimages_liste::lget $img "idbddimg"]
          ::console::affiche_resultat "idbddimg $idbddimg\n"
 
          ::bddimages_analyse::get_one_image $idbddimg 
@@ -213,14 +213,15 @@ namespace eval bddimages_analyse {
       foreach img $img_list {
 
          # Infos sur l'image a traiter
-         set tabkey $img
-         set ra          [::bddimages_imgcorrection::get_key_imglist ra $tabkey]
-         set dec         [::bddimages_imgcorrection::get_key_imglist dec $tabkey]
-         set pixsize1    [::bddimages_imgcorrection::get_key_imglist pixsize1 $tabkey]
-         set pixsize2    [::bddimages_imgcorrection::get_key_imglist pixsize2 $tabkey]
-         set foclen      [::bddimages_imgcorrection::get_key_imglist foclen $tabkey]
-         set filename    [::bddimages_imgcorrection::get_key_imglist filename $tabkey]
-         set dirfilename [::bddimages_imgcorrection::get_key_imglist dirfilename $tabkey]
+         set tabkey [::bddimages_liste::lget $img "tabkey"]
+
+         set ra          [lindex [::bddimages_liste::lget $tabkey ra         ] 1]
+         set dec         [lindex [::bddimages_liste::lget $tabkey dec        ] 1]
+         set pixsize1    [lindex [::bddimages_liste::lget $tabkey pixsize1   ] 1]
+         set pixsize2    [lindex [::bddimages_liste::lget $tabkey pixsize2   ] 1]
+         set foclen      [lindex [::bddimages_liste::lget $tabkey foclen     ] 1]
+         set filename    [lindex [::bddimages_liste::lget $tabkey filename   ] 1]
+         set dirfilename [lindex [::bddimages_liste::lget $tabkey dirfilename] 1]
 
          ::console::affiche_resultat "ra $ra\n"
          ::console::affiche_resultat "dec $dec\n"

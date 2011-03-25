@@ -263,8 +263,8 @@ proc info_fichier { nomfich } {
       set err        [lindex $result 0]
       set tmp_tabkey [lindex $result 1]
       
-      set site       [::bddimages_liste::lget $tmp_tabkey "TELESCOP"]
-      set dateiso    [::bddimages_liste::lget $tmp_tabkey "DATE-OBS"]
+      set site      [lindex [::bddimages_liste::lget $tmp_tabkey "telescop"] 1]
+      set dateiso   [lindex [::bddimages_liste::lget $tmp_tabkey "date-obs"] 1]
       
    }
 

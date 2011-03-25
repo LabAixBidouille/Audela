@@ -186,10 +186,10 @@ namespace eval bddimages_imgcorrection {
          #set bufno 1
          #buf$bufno load $fileimg
          #::bddimagesAdmin::bdi_compatible buf$bufno
-         set tabkey   [::bddimages_liste::get_key_img $img "tabkey"]
-         set telescop [::bddimages_liste::get_key_img $tabkey telescop]
-         set bin1     [::bddimages_liste::get_key_img $tabkey bin1]
-         set bin2     [::bddimages_liste::get_key_img $tabkey bin2]
+         set tabkey   [::bddimages_liste::lget $img "tabkey"]
+         set telescop [lindex [::bddimages_liste::lget $tabkey telescop] 1]
+         set bin1     [lindex [::bddimages_liste::lget $tabkey bin1    ] 1]
+         set bin2     [lindex [::bddimages_liste::lget $tabkey bin2    ] 1]
          if {$cpt==0} {
             set telescopsav $telescop
             set bin1sav     $bin1
@@ -225,7 +225,7 @@ namespace eval bddimages_imgcorrection {
       foreach img $::bddimages_imgcorrection::sflat_img_list   {lappend img_list $img}
       foreach img $::bddimages_imgcorrection::deflat_img_list  {lappend img_list $img}
       
-      set filtresav ""
+      set filtersav ""
       set cpt 0
 
       foreach img $img_list {
@@ -234,12 +234,12 @@ namespace eval bddimages_imgcorrection {
          #set bufno 1
          #buf$bufno load $fileimg
          #::bddimagesAdmin::bdi_compatible buf$bufno
-         set tabkey   [::bddimages_liste::get_key_img $img "tabkey"]
-         set filtre [::bddimages_liste::get_key_img $tabkey filtre]
+         set tabkey [::bddimages_liste::lget $img "tabkey"]
+         set filter [lindex [::bddimages_liste::lget $tabkey filter] 1]
          if {$cpt==0} {
-            set filtresav $filtre
+            set filtersav $filter
             } else {
-            if {$filtresav!=$filtre} {return -code error "Erreur Filtre different"} 
+            if {$filtersav!=$filter} {return -code error "Erreur Filtre different"} 
             }
       incr cpt
       }
@@ -254,6 +254,41 @@ namespace eval bddimages_imgcorrection {
 
 
 
+   proc ::bddimages_imgcorrection::name_to_stdname { name } {
+
+      set result [string trim $name]
+      #set result [string tolower $result]
+      set result [string map {" " "_"} $result]
+      return $result
+
+   }
+
+
+   proc ::bddimages_imgcorrection::create_filename_deflat { file } {
+   
+      set img_list $::bddimages_imgcorrection::deflat_img_list
+   
+      set filename ""
+      foreach img $img_list {
+         set filenametmp [::bddimages_liste::lget $img "filenametmp"]
+         if {$file == $filenametmp} {
+            set tabkey       [::bddimages_liste::lget $img "tabkey"]
+            set telescop     [::bddimages_imgcorrection::name_to_stdname [lindex [::bddimages_liste::lget $tabkey telescop] 1] ]
+            set bin1         [::bddimages_imgcorrection::name_to_stdname [lindex [::bddimages_liste::lget $tabkey bin1]     1] ]
+            set bin2         [::bddimages_imgcorrection::name_to_stdname [lindex [::bddimages_liste::lget $tabkey bin2]     1] ]
+            set filter       [::bddimages_imgcorrection::name_to_stdname [lindex [::bddimages_liste::lget $tabkey filter]   1] ]
+            set dateobs      [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
+            set object       [::bddimages_imgcorrection::name_to_stdname [lindex [::bddimages_liste::lget $tabkey "object"] 1] ]
+            set ms    [ string range $dateobs end-2 end ]
+            set date  [ string range $dateobs 0 end-4 ]
+            set date  [ clock format [clock scan $date] -format %Y%m%d_%H%M%S ]
+            set filename "${telescop}_${date}_${ms}_bin${bin1}x${bin2}_F${filter}_${object}"
+            break
+         }
+      }
+
+      return $filename
+   }
 
 
 
@@ -278,12 +313,12 @@ namespace eval bddimages_imgcorrection {
       set commundatejjmoy 0
       set cpt 0
       foreach img $img_list {
-         set tabkey   [::bddimages_liste::get_key_img $img "tabkey"]
-         set telescop [::bddimages_liste::get_key_img $tabkey telescop]
-         set bin1     [::bddimages_liste::get_key_img $tabkey bin1]
-         set bin2     [::bddimages_liste::get_key_img $tabkey bin2]
-         set filtre   [::bddimages_liste::get_key_img $tabkey filtre]
-         set commundatejj   [::bddimages_liste::get_key_img $img commundatejj]
+         set tabkey       [::bddimages_liste::lget $img "tabkey"]
+         set telescop     [lindex [::bddimages_liste::lget $tabkey telescop] 1]
+         set bin1         [lindex [::bddimages_liste::lget $tabkey bin1]     1]
+         set bin2         [lindex [::bddimages_liste::lget $tabkey bin2]     1]
+         set filter       [string trim [lindex [::bddimages_liste::lget $tabkey filter]   1] ]
+         set commundatejj [::bddimages_liste::lget $img commundatejj]
          set commundatejjmoy [expr $commundatejjmoy + $commundatejj]
          incr cpt
       }
@@ -295,14 +330,14 @@ namespace eval bddimages_imgcorrection {
       set dateobs          [ mc_date2iso8601 $commundatejjmoy ]
       set ms               [ string range $dateobs end-2 end ]
       set commundatejjmoy  [ string range $dateobs 0 end-4 ]
-      set commundatejjmoy  [clock format [clock scan $commundatejjmoy] -format %Y%m%d_%H%M%S]
+      set commundatejjmoy  [ clock format [clock scan $commundatejjmoy] -format %Y%m%d_%H%M%S ]
  
 
       if {$type=="offset"||$type=="dark"} { 
          set filename "${telescop}_${commundatejjmoy}_${ms}_bin${bin1}x${bin2}_${type}"
       }
       if {$type=="flat"} { 
-         set filename "${telescop}_${commundatejjmoy}_${ms}_bin${bin1}x${bin2}_F${filtre}_${type}"
+         set filename "${telescop}_${commundatejjmoy}_${ms}_bin${bin1}x${bin2}_F${filter}_${type}"
       }
 
       return [list $filename $dateobs $bin1 $bin2]
@@ -312,7 +347,7 @@ namespace eval bddimages_imgcorrection {
 
 
 
-proc create_image_offset { type inforesult } {
+proc ::bddimages_imgcorrection::create_image_offset { type inforesult } {
 
   global bddconf
 
@@ -354,7 +389,7 @@ proc create_image_offset { type inforesult } {
 
 
 
-proc create_image_dark { type inforesult } {
+proc ::bddimages_imgcorrection::create_image_dark { type inforesult } {
 
   global bddconf
 
@@ -402,7 +437,7 @@ proc create_image_dark { type inforesult } {
 
   }
 
-proc get_stat { bufno } {
+proc ::bddimages_imgcorrection::get_stat { bufno } {
 
 set stat [buf$bufno stat]
 return "moy=[lindex $stat 4] sig=[lindex $stat 5]"
@@ -423,7 +458,7 @@ return "moy=[lindex $stat 4] sig=[lindex $stat 5]"
 
 
 
-proc create_image_flat { type inforesult } {
+proc ::bddimages_imgcorrection::create_image_flat { type inforesult } {
 
   global bddconf
 
@@ -452,10 +487,22 @@ proc create_image_flat { type inforesult } {
       
       if {$methode == 1} {
 
+         # Ni Dark Ni Offset -> on normalise les flat
+         if {$nbsoffset == 0 && $nbsdark == 0 } {
+            for {set x 0} {$x<$nbflat} {incr x} {
+               ttscript2 "IMA/SERIES $bddconf(dirtmp) flat   $x $x $ext $bddconf(dirtmp) flatn     $x $ext NORMGAIN normgain_value=44000"
+            }
+         }
+
          # Soustraction des Dark et Offset
          if {$nbsoffset == 1 && $nbsdark == 1 } {
-            ttscript2 "IMA/SERIES $bddconf(dirtmp) flat     0 $k $ext $bddconf(dirtmp) flat     0 $ext SUBDARK dark=sdark0$ext bias=soffset0$ext exptime=EXPOSURE dexptime=EXPOSURE nullpixel=-10000"
+            for {set x 0} {$x<$nbflat} {incr x} {
+               ttscript2 "IMA/SERIES $bddconf(dirtmp) flat     0 $k $ext $bddconf(dirtmp) flats     0 $ext SUBDARK dark=sdark0$ext bias=soffset0$ext exptime=EXPOSURE dexptime=EXPOSURE nullpixel=-10000"
+               ttscript2 "IMA/SERIES $bddconf(dirtmp) flat   $x $x $ext $bddconf(dirtmp) flatn     $x $ext NORMGAIN normgain_value=44000"
+            }
          }
+         
+         # Soustraction des Offset
          if {$nbsoffset == 1 && $nbsdark == 0 } {
             ttscript2 "IMA/SERIES $bddconf(dirtmp) flat     0 $k $ext $bddconf(dirtmp) flat     0 $ext SUB file=$bddconf(dirtmp)/soffset0$ext offset=0"
          }
@@ -516,6 +563,9 @@ proc create_image_flat { type inforesult } {
             }
 
          }
+
+
+
 
          # Pile KAPPA SIGMA
          #buf$bufno load "$bddconf(dirtmp)/flatn0${ext}"
@@ -579,7 +629,7 @@ proc create_image_flat { type inforesult } {
 
 
 
-proc create_image_deflat {  } {
+proc ::bddimages_imgcorrection::create_image_deflat {  } {
 
    global bddconf
       
@@ -630,10 +680,11 @@ proc create_image_deflat {  } {
 
             buf$bufno load "$bddconf(dirtmp)/deflat${x}${ext}"
             buf$bufno setkwd [list "BDDIMAGES STATE" "CORR" "string" "RAW | CORR | CATA | ?" ""]
-            buf$bufno save "$bddconf(dirtmp)/fini${x}${ext}"
+            set fileout [::bddimages_imgcorrection::create_filename_deflat "deflat${x}${ext}"]
+            buf$bufno save "$bddconf(dirtmp)/${fileout}${ext}"
             buf$bufno clear
-
-            #insertion_solo $bddconf(dirtmp)/${fileout}${ext}${gz}
+            ::console::affiche_resultat " $x / $k : "
+            insertion_solo $bddconf(dirtmp)/${fileout}${ext}${gz}
          }
 
       }
@@ -648,7 +699,7 @@ proc create_image_deflat {  } {
 
 
 
-proc create_image { type inforesult} {
+proc ::bddimages_imgcorrection::create_image { type inforesult} {
 
   global bddconf
 
@@ -675,7 +726,7 @@ proc create_image { type inforesult} {
 
 
 
-proc delete_to_tmp { type img_list } {
+proc ::bddimages_imgcorrection::delete_to_tmp { type img_list } {
 
    global bddconf
 
@@ -683,7 +734,7 @@ proc delete_to_tmp { type img_list } {
       set ext [buf$bufno extension]
       set nb  [llength $img_list]
       for {set i 0} {$i<$nb} {incr i} {
-      #   file delete -force -- [file join $bddconf(dirtmp) ${type}${i}${ext}]
+         file delete -force -- [file join $bddconf(dirtmp) ${type}${i}${ext}]
       }
 
       }
@@ -693,7 +744,7 @@ proc delete_to_tmp { type img_list } {
 
 
 
-proc copy_to_tmp { type img_list } {
+proc ::bddimages_imgcorrection::copy_to_tmp { type img_list } {
 
    global bddconf
    global audace
@@ -702,17 +753,11 @@ proc copy_to_tmp { type img_list } {
       set new_list ""
 
       foreach img $img_list {
-         foreach l $img {
-            set key [lindex $l 0]
-            set val [lindex $l 1]
-            if {[string equal -nocase [string trim $key] "filename"]} {
-               set filename $val
-            }
-            if {[string equal -nocase [string trim $key] "dirfilename"]} {
-               set dirfilename $val
-            }
-         }
-         
+      
+      
+         set filename    [string trim [::bddimages_liste::lget $img "filename"] ]
+         set dirfilename [string trim [::bddimages_liste::lget $img "dirfilename"] ]
+      
          # test filename et dirfilename non null
          set fichier [file join $bddconf(dirbase) $dirfilename $filename]
          
@@ -730,7 +775,7 @@ proc copy_to_tmp { type img_list } {
             set errnum [catch {exec gunzip $fc } msg ]
             if {$errnum == 0} {
                #::console::affiche_resultat "dezip image : $f\n"
-               lappend img [list tmpfile $f ]
+               lappend img [list filenametmp $f ]
                lappend new_list $img
                incr k
             } else {
@@ -766,7 +811,7 @@ proc copy_to_tmp { type img_list } {
 
 
 
-proc correction { type inforesult} {
+proc ::bddimages_imgcorrection::correction { type inforesult} {
 
       global action_label audace bddconf
 
@@ -794,7 +839,7 @@ proc correction { type inforesult} {
       ::bddimages_imgcorrection::delete_to_tmp "sdark"   $::bddimages_imgcorrection::sdark_img_list   
       ::bddimages_imgcorrection::delete_to_tmp "flat"    $::bddimages_imgcorrection::flat_img_list    
       ::bddimages_imgcorrection::delete_to_tmp "sflat"   $::bddimages_imgcorrection::sflat_img_list   
-      #::bddimages_imgcorrection::delete_to_tmp "img"     $::bddimages_imgcorrection::deflat_img_list   
+      ::bddimages_imgcorrection::delete_to_tmp "deflat"  $::bddimages_imgcorrection::deflat_img_list   
       file delete -force -- [file join $bddconf(dirtmp) tt.log]
 
 }
@@ -854,9 +899,9 @@ proc correction { type inforesult} {
 
       set result ""
 
-      set filename    [::bddimages_liste::get_key_img $img filename]
-      set dirfilename [::bddimages_liste::get_key_img $img dirfilename]
-      set filenametmp [::bddimages_liste::get_key_img $img filenametmp]
+      set filename    [::bddimages_liste::lget $img filename]
+      set dirfilename [::bddimages_liste::lget $img dirfilename]
+      set filenametmp [::bddimages_liste::lget $img filenametmp]
       
       if { $typ == "long" } {
          return [file join $bddconf(dirbase) $dirfilename $filename]
@@ -904,18 +949,17 @@ proc correction { type inforesult} {
 
       foreach img $img_list {
          set keep "ok"
-         set tabkey [::bddimages_liste::get_key_img $img "tabkey"]
-         foreach l $tabkey {
-            set key [lindex $l 0]
-            set val [lindex $l 1]
-            if {$key=="bddimages_type"}  { if {[string trim $val]!=$bddimages_type } { set keep "no" } }
-            if {$key=="bddimages_state"} { if {[string trim $val]!=$bddimages_state} { set keep "no" } }
-         }
-         if {$keep=="ok"} {
+         set tabkey    [::bddimages_liste::lget $img "tabkey"]
+         set bdditype  [string trim [lindex [::bddimages_liste::lget $tabkey "bddimages_type"] 1]]
+         set bddistate [string trim [lindex [::bddimages_liste::lget $tabkey "bddimages_state"] 1]]
+         ::console::affiche_resultat "result $bdditype $bddistate\n"
+
+         if {($bddimages_type  == $bdditype)&&($bddimages_state == $bddistate)}  {
             lappend result_list $img
          }
       }
-      #::console::affiche_resultat "result_list $result_list \n"
+
+      #::console::affiche_resultat "result_list $bddimages_type $bddimages_state $result_list \n"
       return $result_list
    }
 
@@ -1112,9 +1156,9 @@ proc correction { type inforesult} {
             set ::bddimages_imgcorrection::erreur_selection 1
             set texte "${texte}\n\nVeuillez selectionner des Images\n"
          }  else {
-            foreach img $img_list {
-               set texte "${texte}[::bddimages_imgcorrection::img_to_filename $img short]\n"
-            }
+            #foreach img $img_list {
+            #   set texte "${texte}[::bddimages_imgcorrection::img_to_filename $img short]\n"
+            #}
             set ::bddimages_imgcorrection::deflat_img_list $img_list
          }
 
