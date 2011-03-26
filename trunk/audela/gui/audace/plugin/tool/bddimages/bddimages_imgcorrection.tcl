@@ -412,7 +412,7 @@ proc ::bddimages_imgcorrection::create_image_dark { type inforesult } {
          ttscript2 "IMA/STACK  $bddconf(dirtmp) dark       0  $k $ext $bddconf(dirtmp) $fileout . $ext KS kappa=3"
          ttscript2 "IMA/SERIES $bddconf(dirtmp) $fileout .  .  $ext $bddconf(dirtmp) $fileout . $ext STAT"
          buf$bufno load "$bddconf(dirtmp)/${fileout}${ext}"
-         ::console::affiche_resultat "MEAN : [buf$bufno getkwd "MEAN"]\n"
+         ::console::affiche_resultat "MEAN : [buf$bufno getkwd MEAN]\n"
       }
       
       if {$methode == 2} {
@@ -420,7 +420,7 @@ proc ::bddimages_imgcorrection::create_image_dark { type inforesult } {
          ttscript2 "IMA/STACK  $bddconf(dirtmp) dark       0  $k $ext $bddconf(dirtmp) $fileout . $ext KS kappa=3"
          ttscript2 "IMA/SERIES $bddconf(dirtmp) $fileout .  .  $ext $bddconf(dirtmp) $fileout . $ext STAT"
          buf$bufno load "$bddconf(dirtmp)/${fileout}${ext}"
-         ::console::affiche_resultat "MEAN : [buf$bufno getkwd \"MEAN\"]\n"
+         ::console::affiche_resultat "MEAN : [buf$bufno getkwd MEAN]\n"
       }
       
 
@@ -436,6 +436,13 @@ proc ::bddimages_imgcorrection::create_image_dark { type inforesult } {
       insertion_solo $bddconf(dirtmp)/${fileout}${ext}${gz}
 
   }
+
+
+
+
+
+
+
 
 proc ::bddimages_imgcorrection::get_stat { bufno } {
 
@@ -496,9 +503,9 @@ proc ::bddimages_imgcorrection::create_image_flat { type inforesult } {
 
          # Soustraction des Dark et Offset
          if {$nbsoffset == 1 && $nbsdark == 1 } {
+            ttscript2 "IMA/SERIES $bddconf(dirtmp) flat     0 $k $ext $bddconf(dirtmp) flats     0 $ext SUBDARK dark=sdark0$ext bias=soffset0$ext exptime=EXPOSURE dexptime=EXPOSURE nullpixel=-10000"
             for {set x 0} {$x<$nbflat} {incr x} {
-               ttscript2 "IMA/SERIES $bddconf(dirtmp) flat     0 $k $ext $bddconf(dirtmp) flats     0 $ext SUBDARK dark=sdark0$ext bias=soffset0$ext exptime=EXPOSURE dexptime=EXPOSURE nullpixel=-10000"
-               ttscript2 "IMA/SERIES $bddconf(dirtmp) flat   $x $x $ext $bddconf(dirtmp) flatn     $x $ext NORMGAIN normgain_value=44000"
+               ttscript2 "IMA/SERIES $bddconf(dirtmp) flats   $x $x $ext $bddconf(dirtmp) flatn     $x $ext NORMGAIN normgain_value=44000"
             }
          }
          
@@ -1173,11 +1180,11 @@ proc ::bddimages_imgcorrection::correction { type inforesult} {
          
          
          if {[catch {::bddimages_imgcorrection::verif_all_img} msg]}  {
-            ::console::affiche_erreur "ERROR $errmsg: $msg\n"
+            ::console::affiche_erreur "ERROR: $msg\n"
             return
             }
          if {[catch {::bddimages_imgcorrection::verif_filter_img} msg]}  {
-            ::console::affiche_erreur "ERROR: $errmsg\n"
+            ::console::affiche_erreur "ERROR: $msg\n"
             return
             }
             
