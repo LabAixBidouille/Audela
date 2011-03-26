@@ -1244,7 +1244,7 @@ proc ::visio2::localTable::renameFile { visuNo } {
       #--- je copie l'index dans la varable a incrementer
       set fileIndex $private($visuNo,firstIndex)
       set confirm "1"
-     foreach name $fileList {
+      foreach name $fileList {
          set filename [file join "$private($visuNo,directory)" "$name"]
          if { [llength $fileList] > 1 } {
             set newFileName "$private($visuNo,genericName)$fileIndex[file extension $filename]"
@@ -1289,7 +1289,7 @@ proc ::visio2::localTable::renameFile { visuNo } {
       }
 
       #--- je refraichis la table
-      refresh $visuNo
+      ::visio2::localTable::refresh $visuNo
    }
 }
 
@@ -1323,7 +1323,7 @@ proc ::visio2::localTable::deleteFile { visuNo } {
 
    foreach index $selection {
       set name [string trimleft [$tbl cellcget $index,0 -text]]
-     set type [$tbl cellcget $index,1 -text]
+      set type [$tbl cellcget $index,1 -text]
 
       if { $type == "$private(folder)" } {
          set dir [ file join "$private($visuNo,directory)" "$name" ]
@@ -1368,7 +1368,7 @@ proc ::visio2::localTable::deleteFile { visuNo } {
    }
 
    #--- je refraichis la table
-   refresh $visuNo
+   ::visio2::localTable::refresh $visuNo
 }
 
 #------------------------------------------------------------------------------
