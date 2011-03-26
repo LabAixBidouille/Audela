@@ -19,6 +19,7 @@ set caption(visio2,folder)                   "Folder"
 set caption(visio2,image)                    "Image"
 set caption(visio2,movie)                    "Movie"
 set caption(visio2,file)                     "File"
+set caption(visio2,disque)                   "Disk"
 
 #--- menus
 set caption(visio2,refresh)                  "Update"
@@ -83,6 +84,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,image)                 "Image"
    set caption(visio2,movie)                 "Film"
    set caption(visio2,file)                  "Fichier"
+   set caption(visio2,disque)                "Disque"
 
    #--- menus
    set caption(visio2,refresh)               "Actualiser"
@@ -147,6 +149,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,image)                 "Immagine"
    set caption(visio2,movie)                 "Filmato"
    set caption(visio2,file)                  "File"
+   set caption(visio2,disque)                "Disco"
 
    #--- menus
    set caption(visio2,refresh)               "Aggiorna"
@@ -211,6 +214,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,image)                 "Imagen"
    set caption(visio2,movie)                 "Película"
    set caption(visio2,file)                  "Fichero"
+   set caption(visio2,disque)                "Disco"
 
    #--- menus
    set caption(visio2,refresh)               "Actualizar"
@@ -275,6 +279,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,image)                 "Bild"
    set caption(visio2,movie)                 "Film"
    set caption(visio2,file)                  "Datei"
+   set caption(visio2,disque)                "Disc"
 
    #--- menus
    set caption(visio2,refresh)               "Aktualisieren"
@@ -339,6 +344,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,image)                 "Imagem"
    set caption(visio2,movie)                 "Filme"
    set caption(visio2,file)                  "Ficheiro"
+   set caption(visio2,disque)                "Disco"
 
    #--- menus
    set caption(visio2,refresh)               "Actualizar"
@@ -402,7 +408,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,folder)                "Mappe"
    set caption(visio2,image)                 "Billede"
    set caption(visio2,movie)                 "Movie"
-   set caption(visio2,file)                  "Fil"
+   set caption(visio2,file)                  "File"
+   set caption(visio2,disque)                "Disk"
 
    #--- menus
    set caption(visio2,refresh)               "Update"
@@ -467,6 +474,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,image)                 "Image"
    set caption(visio2,movie)                 "Movie"
    set caption(visio2,file)                  "File"
+   set caption(visio2,disque)                "Disk"
 
    #--- menus
    set caption(visio2,refresh)               "Update"
@@ -531,6 +539,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,image)                 "Image"
    set caption(visio2,movie)                 "Movie"
    set caption(visio2,file)                  "File"
+   set caption(visio2,disque)                "Disk"
 
    #--- menus
    set caption(visio2,refresh)               "Update"
