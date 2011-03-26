@@ -219,7 +219,12 @@ proc satel_transit { satelname objename date1 dayrange {home ""} } {
 }
 
 proc satel_scene { {formatscene ROS1} {satelname "ISS"} {date now} {home ""} } {
+   global audace
    set formatscene ROS1
+   set texte ""
+   if {$home==""} {
+      set home $audace(posobs,observateur,gps)
+   }
    set res [satel_ephem $satelname $date $home]
    if {$res==""} {
       error "$res"
@@ -243,6 +248,8 @@ proc satel_scene { {formatscene ROS1} {satelname "ISS"} {date now} {home ""} } {
    set distkm [expr [lindex $res 3]*1e-3]
    set azim [lindex $res 8]
    set elev [lindex $res 9]
+   set res [mc_radec2altaz $ra1 $dec1 $home $date]
+   set ha1 [lindex $res 2]   
    set drasid [expr 360./(23.9344696*3600)]
    set dt 5.
    set date [mc_datescomp $date + [expr $dt/86400.]]
@@ -250,19 +257,25 @@ proc satel_scene { {formatscene ROS1} {satelname "ISS"} {date now} {home ""} } {
    set res [lindex $res 0]
    set ra2 [lindex $res 1]
    set dec2 [lindex $res 2]
+   set res [mc_radec2altaz $ra2 $dec2 $home $date]
+   set ha2 [lindex $res 2]   
+   set dha [expr ($ha2-$ha1)/$dt]
+   if {$dha> 180} { set dha [expr $dha-180] }
+   if {$dha<-180} { set dha [expr $dha+180] }
    set dra [expr $drasid-($ra2-$ra1)/$dt]
    if {$dra> 180} { set dra [expr $dra-180] }
    if {$dra<-180} { set dra [expr $dra+180] }
    set ddec [expr ($dec2-$dec1)/$dt]
    set sepangle [lindex [mc_sepangle $ra1 $dec1 $ra2 $dec2] 0]
    set speed [expr $sepangle/$dt]   
-   set res "=== Format $formatscene ===\n"
-   append res "Name $name\nRA $ra\nDEC $dec\ndra (deg/sec): [format %.7f $dra]\nddec (deg/sec): [format %.7f $ddec]\nDate $dateiso\n"
-   append res "=== Other details ===\n"
-   append res "Illumination $ill\nDistance [format %.1f $distkm] km\n"
-   append res "Azimuth [format %.5f $azim] deg\nElevation [format %+.5f $elev] deg\n"
-   append res "Speed [format %.5f $speed] deg/sec\n"
-   return $res
+   append texte "=== Format $formatscene ===\n"
+   append texte "Name $name\nRA $ra\nDEC $dec\ndra (deg/sec): [format %.7f $dra]\nddec (deg/sec): [format %.7f $ddec]\nDate $dateiso\n"
+   append texte "=== Other details ===\n"
+   append texte "Illumination $ill\nDistance [format %.1f $distkm] km\n"
+   append texte "Azimuth [format %.5f $azim] deg\nElevation [format %+.5f $elev] deg\n"
+   append texte "HA speed [format %.5f $dha] deg/sec $ha1 $ha2\n"
+   append texte "Speed [format %.5f $speed] deg/sec\n"
+   return $texte
 }
 
 proc satel_coords { {satelname "ISS"} {date now} {home ""} } {
