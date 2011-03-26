@@ -1049,6 +1049,13 @@ namespace eval bddimages_recherche {
         $popupTbl add separator 
 
         # Labels Associate
+        $popupTbl add command -label "CdL" \
+           -command { ::bddimages_cdl::run $audace(base)}
+
+        # Separateur
+        $popupTbl add separator 
+
+        # Labels Associate
         $popupTbl add command -label "charge_cata" \
            -command { ::bddimages_recherche::bddimages_charge_cata }
 
