@@ -97,11 +97,11 @@ proc ::visio2::createPluginInstance { { in "" } { visuNo 1 } } {
    set private(fileImage)    "$caption(visio2,image)"
    set private(fileMovie)    "$caption(visio2,movie)"
    set private(file)         "$caption(visio2,file)"
-   set private(volume)       "disque"
+   set private(volume)       "$caption(visio2,disque)"
 
    #--- j'affiche l'outil
    #--- j'initialise la variable private
-   set private($visuNo,This) $in.visio2
+   set private($visuNo,This)          $in.visio2
    set private($visuNo,ftptbl)        ""
    set private($visuNo,ftpconnection) "0"
    set private($visuNo,animation)     "0"
@@ -200,6 +200,9 @@ proc ::visio2::startTool { visuNo } {
    #--- je refraichis la liste des fichiers
    ::visio2::localTable::init $visuNo $private($visuNo,This) $audace(rep_images)
    ::visio2::localTable::refresh $visuNo
+
+   #--- j'active la mise a jour automatique de l'affichage quand on change de nom de fichier image
+   ::confVisu::addFileNameListener $visuNo "::visio2::localTable::refresh $visuNo"
 }
 
 #------------------------------------------------------------
@@ -221,6 +224,9 @@ proc ::visio2::stopTool { visuNo } {
    ::visio2::localTable::saveColumnWidth $visuNo
    #--- je ferme la connexion ftp
    ftpclient::closeCnx
+
+   #--- je desactive la mise a jour automatique de l'affichage quand on change de nom de fichier image
+   ::confVisu::removeFileNameListener $visuNo "::visio2::localTable::refresh $visuNo"
 
    pack forget $private($visuNo,This)
 }
