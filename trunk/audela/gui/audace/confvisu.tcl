@@ -1541,7 +1541,7 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    # addMirrorListener
-   #    ajoute une procedure a appeler si on change de mirroir
+   #    ajoute une procedure a appeler si on change de miroir
    # parametres :
    #    visuNo: numero de la visu
    #    cmd : commande TCL a lancer quand le zoom change
@@ -1553,7 +1553,7 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    # removeMirrorListener
-   #   supprime une procedure a appeler si on change de mirroir
+   #    supprime une procedure a appeler si on change de miroir
    # parametres :
    #    visuNo: numero de la visu
    #    cmd : commande TCL a lancer quand le fichier change
@@ -2273,9 +2273,9 @@ namespace eval ::confVisu {
          Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,center)"
          Menu_Command   $visuNo "$caption(audace,menu,center)" "$caption(audace,menu,recentrer_manu)..." \
             { ::traiteWindow::run "aligner" "$audace(base).traiteWindow" }
-         set function [lindex [::prtr::CENTERFunctions 0] end]
-         Menu_Command   $visuNo "$caption(audace,menu,center)" "$caption(audace,menu,recentrer_auto)..." \
-            "::prtr::run \"$function\" "
+         foreach function [::prtr::CENTERFunctions 0] {
+            Menu_Command   $visuNo "$caption(audace,menu,center)" "$function..." "::prtr::run \"$function\" "
+         }
          Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,pile)"
          foreach function  [::prtr::PILEFunctions 0] {
             Menu_Command $visuNo "$caption(audace,menu,pile)" "$function..." "::prtr::run \"$function\" "
@@ -2380,7 +2380,8 @@ namespace eval ::confVisu {
          Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,logiciels_externes)..." \
             { ::confEditScript::run "$audace(base).confEditScript" }
          Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,temps)..." \
-            { ::confTemps::run "$audace(base).confTemps" }
+            { ::confTemps::run "$audace(base).confTemps" } \
+            -compound left -image $::icones::private(timeIcon)
          Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,position)..." \
             { ::confPosObs::run "$audace(base).confPosObs" }
          Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,fichier_image)..." \
@@ -2758,9 +2759,9 @@ namespace eval ::confVisu {
       Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,center)"
       Menu_Command   $visuNo "$caption(audace,menu,center)" "$caption(audace,menu,recentrer_manu)..." \
          { ::traiteWindow::run "aligner" "$audace(base).traiteWindow" }
-      set function [lindex [::prtr::CENTERFunctions 0] end]
-      Menu_Command   $visuNo "$caption(audace,menu,center)" "$caption(audace,menu,recentrer_auto)..." \
-         "::prtr::run \"$function\" "
+      foreach function [::prtr::CENTERFunctions 0] {
+         Menu_Command   $visuNo "$caption(audace,menu,center)" "$function..." "::prtr::run \"$function\" "
+      }
       Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,pile)"
       foreach function  [::prtr::PILEFunctions 0] {
          Menu_Command $visuNo "$caption(audace,menu,pile)" "$function..." "::prtr::run \"$function\" "
@@ -2877,7 +2878,8 @@ namespace eval ::confVisu {
       Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,logiciels_externes)..." \
          { ::confEditScript::run "$audace(base).confEditScript" }
       Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,temps)..." \
-         { ::confTemps::run "$audace(base).confTemps" }
+         { ::confTemps::run "$audace(base).confTemps" } \
+         -compound left -image $::icones::private(timeIcon)
       Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,position)..." \
          { ::confPosObs::run "$audace(base).confPosObs" }
       Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,fichier_image)..." \
