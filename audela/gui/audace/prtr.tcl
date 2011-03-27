@@ -4,6 +4,66 @@
 # Auteur : Raymond ZACHANTKE
 # Mise à jour $Id$
 
+#--   pour un acces plus rapide, liste des proc, hors dictionanires
+   #  ::prtr::run nom_de_fonction
+   #  ::prtr::createDialog
+   #  ::prtr::configWindow
+   #  ::prtr::changeOp visuNo
+   #  ::prtr::buildParam_obligatoire
+   #  ::prtr::buildParam_optionnel
+   #  ::prtr::configZone w liste
+   #  ::prtr::selectAll
+   #  ::prtr::dispOptions w
+   #  ::prtr::selectFiles row
+   #  ::prtr::confBitPix
+   #  ::prtr::updateTbl visuNo args
+   #  ::prtr::analyseFitsHeader file
+   #  ::prtr::configOutName
+   #  ::prtr::configTableState w  etat
+   #  ::prtr::getCenterCoord
+   #  ::prtr::updateBox visuNo args
+   #  ::prtr::getFileName w nom_de_variable
+   #  ::prtr::getDirName
+   #  ::prtr::changeExtension visuNo args
+   #  ::prtr::cmdApply tbl visuNo
+   #  ::prtr::windowActive tbl {normal|disabled}
+   #  ::prtr::compressFiles dirOut nameOut nb
+   #  ::prtr::loadImg
+   #  ::prtr::cmdOk tbl visuNo
+   #  ::prtr::cmdClose visuNo
+   #  ::prtr::widgetToConf
+   #  ::prtr::confToWidget
+   #  ::prtr::displayAvancement c
+   #  ::prtr::avertiUser err args
+   #  ::prtr::Error info
+   #  ::prtr::afficheAide
+   #  ::prtr::createCheckButton tbl row col w
+   #  ::prtr::cmdVerif
+   #  ::prtr::cmdTestVariable nom_du_parametre {1=obligatoire | 0=optionnel}
+   #  ::prtr::getInfoFile file
+   #  ::prtr::cmdExec data options
+   #  ::prtr::traiteImg options p
+   #  ::prtr::decompRGB file
+   #  ::prtr::convertitRGB nameOut
+   #  ::prtr::getImgType files
+   #  ::prtr::convertBitPix2BitPix {8|16|+16|32|+32|-32|-64}
+   #  ::prtr::clipMinMax data options
+   #  ::prtr::cmdRot data options
+   #  ::prtr::cmdMasqueFlou data options
+   #  ::prtr::faireOffset data options
+   #  ::prtr::faireDark data options
+   #  ::prtr::faireFlat data options
+   #  ::prtr::faireOptNoir data options
+   #  ::prtr::fairePretraitement data options
+   #  ::prtr::createOffset+Dark file1 file2
+   #  ::prtr::subsOffset+Dark data file
+   #  ::prtr::editScript script
+   #  ::prtr::extractData options what
+   #  ::prtr::buildNewList newName l
+   #  ::prtr::informeUser v1 v2
+   #  ::prtr::cmdAligner data options
+   #  ::prtr::searchMax box buf
+
 namespace eval ::prtr {
 
    #--------------------------------------------------------------------------
@@ -227,7 +287,7 @@ namespace eval ::prtr {
       if {[winfo exists $this]} {destroy $this.lbl $this.but}
 
       #--   selectionne le libelle apparaissant a cote du bouton de menu
-      if {$private(ima) eq "PILE" || $private(ima) eq "MAITRE"} {
+      if {$private(ima) eq "PILE" || $private(ima) eq "MAITRE" || $private(ima) eq "CENTER" } {
          set texte "$::caption(prtr,operation_lot)"
       } else {
          set texte "$::caption(prtr,operation_disk)"
@@ -360,7 +420,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::configZone
+   #  ::prtr::configZone w liste
    #  Selectionne le widget a appliquer a une variable
    #  Parametres : nom du parent, nom de la liste (obligatoire ou optionnel)
    #--------------------------------------------------------------------------
@@ -418,11 +478,13 @@ namespace eval ::prtr {
                set kernel_widthValues  [list 3 5 7 9 11 13 15 17 19 21]
                set kernel_coefValues  [list 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1]
                set type_thresholdValues  [list -1 0 +1]
+               set translateValues [list after before never only]
                set height [llength [set ${child}Values]]
+
                frame $w.combo$child
                label $w.combo$child.lbl_$child -text "$child" -width $labelwidth
                ComboBox $w.combo$child.$child -textvariable ::prtr::$child -relief sunken \
-                  -width 4 -height $height -values [set ${child}Values]
+                  -width 6 -height $height -values [set ${child}Values]
                pack $w.combo$child.lbl_$child $w.combo$child.$child -side left
                grid $w.combo$child -row $row -column $col -padx $d -pady 5 -sticky e
                #--   retablit la valeur par defaut de bitpix
@@ -482,7 +544,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::dispOptions
+   #  ::prtr::dispOptions w
    #  Commande du checkbutton pour afficher les options
    #--------------------------------------------------------------------------
    proc dispOptions { w } {
@@ -589,7 +651,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::updateTbl
+   #  ::prtr::updateTbl visuNo args
    #  Rafraichit la tablelist
    #  Lancee lors de la construction de la fenetre, apres execution d'une commande
    #  et au changement de repertoire images
@@ -683,7 +745,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::analyseFitsHeader $file (nom complet)
+   #  ::prtr::analyseFitsHeader file (nom complet)
    #  Retourne les caracteristiques d'une image ou rien (si erreur)
    #--------------------------------------------------------------------------
    proc analyseFitsHeader { file } {
@@ -748,7 +810,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::configTableState
+   #  ::prtr::configTableState w  etat
    #  Configure la fenetre
    #--------------------------------------------------------------------------
    proc configTableState { w  etat } {
@@ -795,7 +857,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::updateBox
+   #  ::prtr::updateBox visuNo args
    #  Affiche les coordonnees de la box dans x1 y1 x2 y2
    #  Lancee lors de la construction, de l'activation de la fonction de recadrage
    #  ou lors du dessin/effacement d'une boite de selection
@@ -816,7 +878,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::getFileName nom_de_variable
+   #  ::prtr::getFileName w nom_de_variable
    #  Ouvre un explorateur pour choisir une image operande
    #  Produit ::prtr::nom_de_variable
    #--------------------------------------------------------------------------
@@ -886,7 +948,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::changeExtension
+   #  ::prtr::changeExtension visuNo args
    #  Trace les options d'extension
    #--------------------------------------------------------------------------
    proc changeExtension {visuNo args} {
@@ -902,7 +964,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::cmdApply
+   #  ::prtr::cmdApply tbl visuNo
    #  Procedure du bouton Appliquer
    #  Retourne 0 si la verification a echoue, 1 si la procedure a ete a son terme
    #--------------------------------------------------------------------------
@@ -993,7 +1055,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::windowActive {normal|disabled}
+   #  ::prtr::windowActive tbl {normal|disabled}
    #  Active/desactive les zones sensibles de la fenetre
    #  Lancee par ::prtr::cmdApply
    #--------------------------------------------------------------------------
@@ -1086,7 +1148,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::compressFiles
+   #  ::prtr::compressFiles dirOut nameOut nb
    #  Compresse le ou les fichiers de sortie
    #--------------------------------------------------------------------------
    proc compressFiles { dirOut nameOut nb } {
@@ -1230,7 +1292,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::displayAvancement
+   #  ::prtr::displayAvancement c
    #  Rafraichit l'affichage de la ligne d'info
    #--------------------------------------------------------------------------
    proc displayAvancement {c} {
@@ -1247,7 +1309,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::avertiUser
+   #  ::prtr::avertiUser err args
    #  Affiche une fenetre d'avertissement
    #--------------------------------------------------------------------------
    proc avertiUser {err args} {
@@ -1262,7 +1324,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::Error
+   #  ::prtr::Error info
    #  Message d'erreur lie aux scripts TT
    #--------------------------------------------------------------------------
    proc Error {info} {
@@ -1353,10 +1415,26 @@ namespace eval ::prtr {
       variable CENTER
       global caption help
 
-      dict set CENTER "$caption(audace,menu,recentrer_auto)"      fun "CENTER"
-      dict set CENTER "$caption(audace,menu,recentrer_auto)"      hlp "$help(dir,images) 1040aligner.htm AUTO"
-      dict set CENTER "$caption(audace,menu,recentrer_auto)"      par "image_ref \"\" "
-      dict set CENTER "$caption(audace,menu,recentrer_auto)"      opt "bitpix +16 skylevel 0 nullpixel 0."
+      dict set CENTER "$caption(audace,menu,reg_inter)"           fun "CENTER"
+      dict set CENTER "$caption(audace,menu,reg_inter)"           hlp "$help(dir,images) 1040aligner.htm"
+      dict set CENTER "$caption(audace,menu,reg_inter)"           par "image_ref \"\" "
+      dict set CENTER "$caption(audace,menu,reg_inter)"           opt "bitpix +16 skylevel 0 nullpixel 0."
+      dict set CENTER "$caption(audace,menu,reg_trans)"           fun "REGISTER translate=before"
+      dict set CENTER "$caption(audace,menu,reg_trans)"           hlp "$help(dir,prog) ttus1-fr.htm REGISTER"
+      dict set CENTER "$caption(audace,menu,reg_trans)"           par "normaflux 1."
+      dict set CENTER "$caption(audace,menu,reg_trans)"           opt "bitpix +16 skylevel 0 nullpixel 0."
+      dict set CENTER "$caption(audace,menu,reg_tri)"             fun "REGISTER translate=never"
+      dict set CENTER "$caption(audace,menu,reg_tri)"             hlp "$help(dir,prog) ttus1-fr.htm REGISTER"
+      dict set CENTER "$caption(audace,menu,reg_tri)"             par "normaflux 1."
+      dict set CENTER "$caption(audace,menu,reg_tri)"             opt "bitpix +16 skylevel 0 nullpixel 0."
+      dict set CENTER "$caption(audace,menu,reg_fine)"            fun "REGISTERFINE"
+      dict set CENTER "$caption(audace,menu,reg_fine)"            hlp "$help(dir,prog) ttus1-fr.htm REGISTERFINE"
+      dict set CENTER "$caption(audace,menu,reg_fine)"            par "file img delta 2 oversampling 10"
+      dict set CENTER "$caption(audace,menu,reg_fine)"            opt "bitpix +16 skylevel 0 nullpixel 0."
+      dict set CENTER "$caption(audace,menu,reg_wcs)"             fun "REGISTER matchwcs"
+      dict set CENTER "$caption(audace,menu,reg_wcs)"             hlp "$help(dir,prog) ttus1-fr.htm REGISTER"
+      dict set CENTER "$caption(audace,menu,reg_wcs)"             par "normaflux 1."
+      dict set CENTER "$caption(audace,menu,reg_wcs)"             opt "bitpix +16 skylevel 0 nullpixel 0."
 
       return [consultDic CENTER $function]
    }
@@ -1476,7 +1554,7 @@ namespace eval ::prtr {
       dict set SERIES "$caption(audace,menu,window1)"             opt $options
       dict set SERIES "$caption(audace,menu,scale)"               fun RESAMPLE
       dict set SERIES "$caption(audace,menu,scale)"               hlp "$help(dir,prog) ttus1-fr.htm RESAMPLE"
-      dict set SERIES "$caption(audace,menu,scale)"               par "paramresample \"$conf(prtr,resample,paramresample)\" normaflux 1"
+      dict set SERIES "$caption(audace,menu,scale)"               par "paramresample \"$conf(prtr,resample,paramresample)\" normaflux 1."
       dict set SERIES "$caption(audace,menu,scale)"               opt $options
       dict set SERIES "$caption(audace,menu,translate)"           fun TRANS
       dict set SERIES "$caption(audace,menu,translate)"           hlp "$help(dir,prog) ttus1-fr.htm TRANS"
@@ -1877,11 +1955,11 @@ namespace eval ::prtr {
       dict set Var   y2                "integer naxis2 labelentry"   ;#WINDOW BINY MATRIX MEDIANY SORTY
       dict set Var   width             "integer naxis1 labelentry"   ;#BINX POL2REC MEDIANX SORTX
       dict set Var   height            "integer naxis2 labelentry"   ;#BINY POL2REC MEDIANY SORTY
-      dict set Var   normaflux         "boolean checkbutton"         ;#RESAMPLE
+      dict set Var   normaflux         "double labelentry"           ;#RESAMPLE REGISTER
       dict set Var   paramresample     "liste labelentry"            ;#RESAMPLE
       dict set Var   filename          "filename labelentry"         ;#PROFILE
       dict set Var   filematrix        "filename labelentry"         ;#MATRIX
-      dict set Var   file              "img labelentry"              ;#ADD SUB DIV PROD
+      dict set Var   file              "img labelentry"              ;#ADD SUB DIV PROD REGISTERFINE
       dict set Var   bias              "img labelentry"              ;#OPT FLAT PRETRAITEMENT
       dict set Var   dark              "img labelentry"              ;#OPT FLAT PRETRAITEMENT
       dict set Var   flat              "img labelentry"              ;#PRETRAITEMENT
@@ -1893,6 +1971,10 @@ namespace eval ::prtr {
       dict set Var   kernel_coef       "integer combobox"            ;#FILTER
       dict set Var   type_threshold    "integer combobox"            ;#FILTER
       dict set Var   image_ref         "img labelentry"              ;#CENTER
+      dict set Var   matchwcs          "boolean checkbutton"         ;#REGISTER
+      dict set Var   translate         "alpha combobox"              ;#REGISTER
+      dict set Var   delta             "integer labelentry"          ;#REGISTERFINE
+      dict set Var   oversampling      "integer labelentry"          ;#REGISTERFINE
    }
 
    #--------------------------------------------------------------------------
@@ -2017,6 +2099,12 @@ namespace eval ::prtr {
                   return "$parametre"
                }
          }
+      } elseif {$test eq "alpha"} {
+         #--   teste un parametre alphanumerique
+         if {![string is $test -strict $value]} {
+            return [::prtr::avertiUser err_par_type $parametre $test]
+         }
+         return "$parametre=$value"
       } elseif {$test in {double integer}} {
          #--   teste la nature de la variable
          if {![string is $test -strict $value]} {
@@ -2036,7 +2124,7 @@ namespace eval ::prtr {
                switch $seuil "naxis1" "set seuil $naxis1" "naxis2" "set seuil $naxis2" "default" ""
                set mini "1"
             }
-            if {$value < $mini || $value > $seuil}  {
+            if {$value < $mini || $value > $seuil && $private(function) ne "POL2REC"}  {
                return [::prtr::avertiUser err_par_bornes $parametre]
             } else {
                return "$parametre=$value"
@@ -2086,7 +2174,8 @@ namespace eval ::prtr {
 
             #--   verifie les dimensions des images
             lassign [::prtr::analyseFitsHeader $value] naxis naxis3 naxis1 naxis2
-            if {[lindex $private(profil) 1] ne "${naxis1} X ${naxis2}"} {
+            #--   test non valable pour POL2REC
+            if {[lindex $private(profil) 1] ne "${naxis1} X ${naxis2}" && $private(function) ne "POL2REC"} {
               return [::prtr::avertiUser err_file_dim $value]
             }
 
@@ -2138,7 +2227,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::getInfoFile
+   #  ::prtr::getInfoFile file
    #  Retourne le directory, le nom court et l'extension suivie ou non de .gz
    #--------------------------------------------------------------------------
    proc getInfoFile {file} {
@@ -2155,7 +2244,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::cmdExec { {IMA/STACK|IMA/SERIES} in nameOut fonctionTT parametres }
+   #  ::prtr::cmdExec data options
    #  Exemple ::prtr::cmdExec [ list "IMA/SERIES" "$liste_generique_avec_index" "$nom_sortie" "ADD" "bitpix=16" ]
    #  Procedure lancee par le bouton Appliquer
    #--------------------------------------------------------------------------
@@ -2232,12 +2321,17 @@ namespace eval ::prtr {
       if {$select eq "IMA/SERIES" && $nb_img ne "1"} {set indiceOut "1"}
 
       #--   RGB2R+G+B des images RGB passees en parametres
-      if {$select eq "IMA/SERIES" && $function in {ADD SUB DIV PROD} && $type == "C"} {
+      if {$select eq "IMA/SERIES" && $function in {ADD SUB DIV PROD REGISTERFINE} && $type == "C"} {
          set data [::prtr::traiteImg $options file]
          set options [lindex $data 0]
          set img [lindex $data 1]
          ::prtr::decompRGB $img
-         lappend to_destroy $img ${img}r ${img}g ${img}b
+          #--   ajoute l'image si elle a ete copiee
+         if {[file dirname [lindex $data 2]] ne "$::audace(rep_images)" && [file dirname [lindex $data 2]] ne "."} {
+            lappend to_destroy $img
+         }
+         #--   ajoute les plans couleurs issus de la conversion
+         lappend to_destroy ${img}r ${img}g ${img}b
       }
 
       #--   fixe le generique de sortie sans indice ni plan couleur ni extension
@@ -2257,9 +2351,29 @@ namespace eval ::prtr {
                regsub -all ".txt" $options "${color}.txt" options
             }
 
-            set script "$select . \"$file_type\" * * $ext \"$rep\" $file_out $indiceOut $ext $function $options"
-            ::prtr::editScript $script
-            ttscript2 $script
+            if {$function ni [list "REGISTER translate=never" "REGISTER translate=before"]} {
+
+               set script "$select . \"$file_type\" * * $ext \"$rep\" $file_out $indiceOut $ext $function $options"
+               ::prtr::editScript $script
+               ttscript2 $script
+
+            } else {
+
+               set n [llength "$file_type"]
+               set index [lsearch -regexp $options "normaflux"]
+               incr index
+               set options1 "[lrange $options $index end]"
+
+               set objefile "dummy"
+               set script1 "IMA/SERIES . \"$file_type\" * * $ext . \"$objefile\" 1 $ext STAT objefile $options1"
+               set script2 "IMA/SERIES . \"$objefile\" 1 $n $ext . $file_out 1 $ext $function $options"
+               set script3 "IMA/SERIES . \"$objefile\" 1 $n $ext . . . . DELETE"
+               foreach script {script1 script2 script3} {
+                  ::prtr::editScript [set $script]
+                  ttscript2 [set $script]
+               }
+               file delete com.lst dif.lst eq.lst in.lst ref.lst xy.lst
+            }
 
             if {($type eq "C") && ($select eq "IMA/SERIES") && ($function in $filtres)} {
                regsub -all "(r|g|b)$ext" $options "$ext" options
@@ -2300,7 +2414,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::traiteImg
+   #  ::prtr::traiteImg options p
    #  Copie l'image operande et modifie le parametre file en consequence
    #  Retourne una liste raccourcie des options et le nom generique du fichier
    #  Lancee par cmdExec
@@ -2322,11 +2436,11 @@ namespace eval ::prtr {
       }
       #--   remplace le parametre dans options
       set options [lreplace $options $k $k "$pattern$generique$ext"]
-      return [list $options $generique]
+      return [list $options $generique $file]
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::decompRGB
+   #  ::prtr::decompRGB file
    #  Decompose l'image couleur en plans couleurs
    #--------------------------------------------------------------------------
    proc decompRGB {file} {
@@ -2337,7 +2451,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::convertitRGB
+   #  ::prtr::convertitRGB nameOut
    #  Reconstitue l'image couleur et efface les plans couleurs
    #  Parametre : nom de sortie (avec ou sans indice) de l'image
    #--------------------------------------------------------------------------
@@ -2357,7 +2471,7 @@ namespace eval ::prtr {
    #  Retourne : {C|M|error} ;C pour couleur, M pour monochrome
    #  Lancee par ::prtr::cmdApply
    #--------------------------------------------------------------------------
-   proc getImgType {files } {
+   proc getImgType { files } {
       variable private
       variable bd
 
@@ -2392,7 +2506,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::clipMinMax $data $options
+   #  ::prtr::clipMinMax data options
    #  Ex-tournement de multi-ecreter
    #--------------------------------------------------------------------------
    proc clipMinMax { data options } {
@@ -2468,7 +2582,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::cmdRot
+   #  ::prtr::cmdRot data options
    #  Procedure lancee par le bouton Appliquer
    #--------------------------------------------------------------------------
    proc cmdRot { data options } {
@@ -2602,7 +2716,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::cmdMasqueFlou
+   #  ::prtr::cmdMasqueFlou data options
    #  Procedure lancee par le bouton Appliquer
    #--------------------------------------------------------------------------
    proc cmdMasqueFlou { data options } {
@@ -2741,7 +2855,7 @@ namespace eval ::prtr {
    #----------------------fonctions du pretraitement--------------------------
 
    #--------------------------------------------------------------------------
-   #  ::prtr::faireOffset
+   #  ::prtr::faireOffset data options
    #  Fait la mediane des images d'offset
    #  Parmetres : donnees du script, options TT sous forme de listes
    #--------------------------------------------------------------------------
@@ -2760,7 +2874,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::faireDark
+   #  ::prtr::faireDark data options
    #  Applique la methode choisie apres soustraction de l'offset s'il existe
    #  Parmetres : donnees du script, options T sous forme de listes
    #--------------------------------------------------------------------------
@@ -2807,7 +2921,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::faireFlat
+   #  ::prtr::faireFlat data options
    #--------------------------------------------------------------------------
    proc faireFlat { data options } {
 
@@ -2864,7 +2978,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::faireOptNoir
+   #  ::prtr::faireOptNoir data options
    #  Pretraitement avec optimisation du noir,
    #  suivi d'un division par le flat et d'une multiplication par la constante
    #--------------------------------------------------------------------------
@@ -2914,7 +3028,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::fairePretraitement
+   #  ::prtr::fairePretraitement data options
    #  Prétraitement sans optimisation du noir
    #--------------------------------------------------------------------------
    proc fairePretraitement  { data options } {
@@ -2979,7 +3093,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::createOffset+Dark
+   #  ::prtr::createOffset+Dark file1 file2
    #  Cree l'image Offset+Dark (non zippee) dans le repertoire audace(rep-images)
    #  a partir d'une image d'offset et/ou de dark (zippes ou non)
    #  Le dark et l'offset peuvent etre dans un repertoire different de audace(rep_images)
@@ -3008,7 +3122,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::subsOffset+Dark
+   #  ::prtr::subsOffset+Dark data file
    #  Soustrait l'image 'file' de chaque image (zippee ou non)
    #  et stocke l'image produite dans audace(rep_images)
    #--------------------------------------------------------------------------
@@ -3043,7 +3157,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::extractData
+   #  ::prtr::extractData options what
    #  Extrait une variable des options et met a jour les options
    #  Parametres : options globales, a extraire
    #--------------------------------------------------------------------------
@@ -3057,7 +3171,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::buildNewList
+   #  ::prtr::buildNewList newName l
    #  Renvoie une nouvelle liste d'images a traiter
    #  Parametres : nouveau nom, nb d'images
    #--------------------------------------------------------------------------
@@ -3075,7 +3189,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::informeUser
+   #  ::prtr::informeUser v1 v2
    #  Affiche une info sur la console sur l'absence d'une image maître
    #--------------------------------------------------------------------------
    proc informeUser { v1 v2 } {
@@ -3086,7 +3200,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::cmdAligner
+   #  ::prtr::cmdAligner data options
    #  Aligne une ou plusieurs images sur une image de reference et les fenetre
    #--------------------------------------------------------------------------
    proc cmdAligner { data options } {
@@ -3139,6 +3253,7 @@ namespace eval ::prtr {
       if {$type ne "C"} {
          set ref "reference$extOut"
       } else {
+
          #--   decompose toutes les images en plans couleurs
          foreach file "$imgList reference" {
             ::prtr::decompRGB $file
@@ -3235,7 +3350,7 @@ namespace eval ::prtr {
 
          $vector sort
          set min [$vector range 0 0]
-         set max [$vector range end end]
+        set max [$vector range end end]
 
          if {$min > "0"} {
             set ${var}1 [expr {int($max+1)}]
@@ -3296,7 +3411,7 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::searchMax
+   #  ::prtr::searchMax box buf
    #  Retourne les coordonnees x y du maximum dans l'image affichee dans la fenetre
    #--------------------------------------------------------------------------
    proc searchMax { box buf } {
