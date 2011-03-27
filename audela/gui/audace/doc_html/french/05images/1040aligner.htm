@@ -1,70 +1,200 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
-  <title>Aligner une s&#233;rie d'images</title>
-</head>
-<body>
-<p class="date">Date de mise &#224; jour : 23 janvier 2011</p>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=us-ascii" /><title>Aligner une s&#233;rie d'images</title></head><body>
+<p class="date">Date de mise &#224; jour : 27 mars 2011</p>
 <h1><a name="MANUEL" id="MANUEL">Aligner une s&#233;rie
 d'images</a></h1>
-<h2>1. Aligner manuellement</h2>
-<pre></pre>
-<h2><a name="AUTO" id="AUTO">2. Aligner automatiquement</a></h2>
-<h3>2.1 Principe</h3>
-<p>Cette fonction ex&#233;cute automatiquement les &#233;tapes
-suivantes :</p>
-<ul>
-  <li>Calcul des translations &#224; effectuer pour que le contenu
-des images se recouvrent au mieux avec une pr&#233;cision
-inf&#233;rieure au pixel.</li>
-  <li>Translation effective de chaque image.</li>
-  <li>Recadrage des images pour &#233;liminer les zones sans
-recouvrement.</li>
-</ul>
-<h3>2.2 Quelles images faut-il aligner ?</h3>
+<h2>1. Quelles images faut-il aligner ?</h2>
 <p>La r&#233;ponse d&#233;pend de l'origine des images :</p>
 <ul>
-  <li>Les images issues de cam&#233;ras CCD peuvent &#234;tre
+<li>Les images issues de cam&#233;ras CCD peuvent &#234;tre
 align&#233;es &#224; l'issue du pr&#233;traitement, apr&#232;s
 correction avec les images de Pr&#233;charge, de Noir et de
 P.L.U.</li>
-  <li>Les images issues des APN doivent &#234;tre converties en
-images couleurs RVB avant d'&#234;tre align&#233;es pour
+<li>Les images issues des APN doivent &#234;tre converties en
+images couleurs RGB avant d'&#234;tre align&#233;es pour
 &#233;viter les inconv&#233;nients induits par le codage sous
 forme de matrice de Bayer.</li>
 </ul>
-<h3>2.3 Param&#233;trage</h3>
-<p>Il suffit de cocher les images &#224; aligner sur l'image de
+<h2>2. Comparaison des m&#233;thodes propos&#233;es</h2>
+<p>Plusieurs m&#233;thodes d'alignement ou de 'registration' sont
+disponibles. Le tableau ci-dessous r&#233;sume leurs
+caract&#233;ristiques :<br />
+</p>
+<table border="1">
+<tbody>
+<tr>
+<th>Nom</th>
+<th>Images RGB</th>
+<th>Image de r&#233;f&#233;rence</th>
+<th>M&#233;thode</th>
+<th>Fen&#234;trage final</th>
+<th>Applications/Restrictions</th>
+</tr>
+<tr>
+<td>Translation par s&#233;lection d'un objet</td>
+<td align="center">non</td>
+<td align="center">&#224; afficher</td>
+<td align="center">Recherche du photocentre dans une zone
+pr&#233;d&#233;finie puis translation par rapport &#224; la
+premi&#232;re image.</td>
+<td align="center">non</td>
+<td align="center">Images avec peu d'&#233;toiles pour pouvoir
+d&#233;finir une zone dans laquelle il n'y a qu'une seule et
+m&#234;me &#233;toile sur toutes les images. Les champs ne
+doivent donc pas &#234;tre trop d&#233;cal&#233;s.</td>
+</tr>
+<tr>
+<td>Translation automatique</td>
+<td align="center">oui</td>
+<td align="center">non</td>
+<td align="center">Recherche automatique des &#233;toiles puis
+teste des translations en attribuant une confiance
+proportionnelle au nombre d'&#233;toiles qui se retrouvent
+superpos&#233;es.</td>
+<td align="center">non</td>
+<td align="center">M&#233;thode assez lente s'il y a beaucoup
+d'&#233;toiles. N&#233;anmoins, plus il y a d'&#233;toiles, plus
+la m&#233;thode est efficace.</td>
+</tr>
+<tr>
+<td>Translation par moindres carr&#233;s</td>
+<td align="center">oui</td>
+<td align="center">&#224; d&#233;signer</td>
+<td align="center">Recherche d'une translation de +/- delta
+pixels qui minimise le r&#233;sidu avec l'image de
+r&#233;f&#233;rence.</td>
+<td align="center">non</td>
+<td align="center">Recadrage tr&#232;s fin d'images
+d&#233;j&#224; recentr&#233;es. Il faut que les images soient
+faites avec le m&#234;me instrument et le m&#234;me temps de
+pose.</td>
+</tr>
+<tr>
+<td>Transformation affine</td>
+<td align="center">oui</td>
+<td align="center">non</td>
+<td align="center">Recherche automatique des &#233;toiles puis
+algorithme des triangles de type Faint-Object Classification and
+Analysis System (F.G. Valdes et el. 1995, PASP 107,
+1119-1128).</td>
+<td align="center">non</td>
+<td align="center">Il faut au moins trois &#233;toiles en commun
+dans toutes les images. Peut &#234;tre lent s'il y a beaucoup
+d'&#233;toiles.</td>
+</tr>
+<tr>
+<td>Intercorr&#233;lation</td>
+<td align="center">oui</td>
+<td align="center">&#224; d&#233;signer</td>
+<td align="center">Alignement sur l'image de r&#233;f&#233;rence
+par intercorr&#233;lation apr&#232;s transform&#233;e de
+Fourier.</td>
+<td align="center">inclus</td>
+<td align="center">Plan&#233;taire, solaire, &#233;clipse.</td>
+</tr>
+<tr>
+<td>Astrom&#233;trie WCS</td>
+<td align="center">oui</td>
+<td align="center">non</td>
+<td align="center">R&#233;alignement par une transformation
+affine sur la base des mots cl&#233;s WCS.</td>
+<td align="center">non</td>
+<td align="center">Images d'orientation, d'&#233;chelle et
+de dimensions quelconques. Il faut avoir pr&#233;alablement
+calibr&#233; astrom&#233;triquement les images.</td>
+</tr>
+</tbody>
+</table>
+<h2>3. Translation par s&#233;lection d'un objet</h2>
+<p>Cette m&#233;thode n'accepte pas les images RGB qu'il faut, au
+pr&#233;alable, d&#233;composer en plans couleurs. Les images
+doivent &#234;tre des s&#233;ries num&#233;rot&#233;es.</p>
+<p>Une fois l'image affich&#233;e, il faut d&#233;signer l'objet
+en l'entourant d'une bo&#238;te de s&#233;lection. La translation
+de chacune des images est r&#233;alis&#233;e
+automatiquement..</p>
+<p>Toutes les autres m&#233;thodes mettent en &#339;uvre l'interface
+qui suit.</p>
+<h2>4. Autres m&#233;thodes</h2>
+
+<p>Chaque fonction ex&#233;cut&#233;e utilise l'interface suivante
+:</p>
+<p>
+<img src="images/aligner_auto.png" /></p>
+
+<p>Les param&#232;tres sont tr&#232;s peu nombreux. Il suffit de
+cocher les images &#224; aligner et d'indiquer le nom
+g&#233;n&#233;rique des images de sortie, puis, suivant le cas,
+de compl&#233;ter et/ou modifier les param&#232;tres
+sp&#233;cifiques &#224; chaque fonction :</p>
+<ul>
+<li><b>Moindres carr&#233;s</b> : Indiquer l'image de
+r&#233;f&#233;rence (&#224; saisir dans la ligne <b>img</b>) et
+adapter les param&#232;tres obligatoires (delta et
+oversampling).</li>
+<li><b>Intercorr&#233;lation</b> : Indiquer l'image de
 r&#233;f&#233;rence (&#224; saisir dans la ligne
-<b>image_ref</b>) et d'indiquer le nom g&#233;n&#233;rique des
-images de sortie.</p>
-<p><img src="images/aligner_auto.png"></p>
+<b>image_ref</b>).</li>
+<li>Autres : Indiquer la valeur de normaflux. En cas de doute
+laisser la valeur initiale 1 (conservation de la dynamique
+initiale).</li>
+</ul>
+<p>Les options TT sont &#233;galement accessibles.</p>
+<p>La fonction <b>Intercorr&#233;lation</b> inclut, outre les
+translations, le fen&#234;trage automatique des images
+produites.</p>
 <p>Les images recadr&#233;es portent le nom g&#233;n&#233;rique
-suivi d'un index d&#233;butant &#224; 1.</p>
-<p>Apr&#232;s v&#233;rification de la qualit&#233; de
-l'alignement, il suffit de les additionner, de faire la moyenne,
-etc. avec l'une des commandes Images/Combiner.</p>
-<br>
-<h3>2.4 Ex&#233;cution en ligne de commande</h3>
-<p>Cette fonction est ex&#233;cutable en ligne de commande dans
-la Console. Le r&#233;pertoire images doit &#234;tre celui
-contenant la ou les images &#224; traiter. Le nom de la fonction
-<b>::prtr::cmdAligner</b> doit &#234;tre suivi de deux listes de
-param&#232;tres.</p>
+suivi d'un index d&#233;butant &#224; 1. Apr&#232;s
+v&#233;rification de la qualit&#233; de l'alignement, il suffit
+de les additionner, de faire la moyenne, etc. avec l'une des
+commandes de <b>Images/Combiner</b>.</p>
+<h2>4 Ex&#233;cution en ligne de commande</h2>
+<p>Les fonctions d'alignement sont ex&#233;cutables en ligne de
+commande pour des s&#233;ries d'images index&#233;es :</p>
+<ol>
+<li>
+<h3>S&#233;lection d'un objet</h3>
+<pre>registerbox in out number ?first_index? ?tt_options?<br /></pre></li>
+<li>
+<h3>Alignement automatique</h3>
+<pre>register in out number ?tt_options?<br /></pre></li>
+<li>
+<h3>Moindres carr&#233;s</h3>
+<pre>registerfine in out number ?delta? ?oversampling? ?first_index? ?tt_options?<br /></pre></li>
+<li>
+<h3>Transformation affine</h3>
+<pre>register2 in out number ?first_index? ?tt_options?<br /></pre></li>
+<li>
+<h3>Astrom&#233;trie WCS</h3>
+<pre>registerwcs in out number ?first_index? ?tt_options?<br /></pre></li>
+<li>
+<p>La fonction <b>Intercorr&#233;lation</b> admet une s&#233;rie
+ou une liste d&#233;pareill&#233;e. Les images produites peuvent
+&#234;tre dans un r&#233;pertoire diff&#233;rent de celui
+contenant les images trait&#233;es. Le r&#233;pertoire images
+doit &#234;tre celui contenant la ou les images &#224; traiter.
+Le nom de la fonction <b>::prtr::cmdAligner</b> doit &#234;tre
+suivi de deux listes de param&#232;tres.</p>
 <p>La premi&#232;re liste contient :</p>
 <ul>
-  <li>Le nom g&#233;n&#233;rique (ou la liste des noms) des images
+<li>Le nom g&#233;n&#233;rique (ou la liste des noms) des images
 d'entr&#233;e.</li>
-  <li>Le chemin d'acc&#232;s aux fichiers des images de sortie (mettre
-un point si c'est le r&#233;pertoire images).</li>
-  <li>Le nom g&#233;n&#233;rique des images de sortie.</li>
-  <li>L'extension du ou des fichiers.</li>
+<li>Le chemin d'acc&#232;s aux fichiers des images de sortie
+(mettre un point si c'est le r&#233;pertoire images).</li>
+<li>Le nom g&#233;n&#233;rique des images de sortie.</li>
+<li>L'extension du ou des fichiers.</li>
 </ul>
-La seconde liste contient le nom de l'image de r&#233;f&#233;rence
-(chemin complet si l'image est situ&#233;e dans un autre
-r&#233;pertoire que les images &#224; traiter).
-<pre>::prtr::cmdAligner {"trans1 trans2 trans3 trans4" . recadre .fit} {"image_ref=C:/Documents and Settings/1/Mes documents/audela/images/m45_champ.fit"}<br></pre>
-Elle renvoie 0 s'il n'y a pas d'erreur, sinon 1 en cas d'erreur.<br>
-</body>
-</html>
+<p>La seconde liste contient le nom de l'image de
+r&#233;f&#233;rence (chemin complet si l'image est situ&#233;e
+dans un autre r&#233;pertoire que les images &#224; traiter).</p>
+<pre>::prtr::cmdAligner {"trans1 trans2 trans3 trans4" . recadre .fit} {"image_ref=C:/Documents and Settings/1/Mes documents/audela/images/m45_champ.fit"}<br />
+</pre>
+<p>Elle renvoie 0 s'il n'y a pas d'erreur, sinon 1.</p>
+<ul class="noindent">
+
+</ul></li></ol>
+</body></html>
