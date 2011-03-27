@@ -5,21 +5,120 @@ set w ".audace.prtr.usr.choix.tablelist"
 #--   le nom de la zone de cmd
 set z ".audace.prtr.usr.table"
 
-test aligner_automatique_NB {aligner des translatees de m45_champ.fit} -constraints {AUDACE} -setup {
+variable SETUP {
    #--   configure l'extension et la compression
    set ::conf(extension,defaut) ".fit"
    set ::conf(fichier,compres) 0
    file copy -force [file join $::conf(testaudela,rep_images) m45_champ.fit] $::audace(rep_images)
    buf$bufNo load [file join $::audace(rep_images) m45_champ.fit]
-   set coords [list 491 320]
+   set coords [list 381 391]
    set attendu [lindex [buf$bufNo getpix $coords] 1]
    ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans1 . .fit TRANS trans_x=20 trans_y=20"
    ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans2 . .fit TRANS trans_x=20 trans_y=-20"
    ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans3 . .fit TRANS trans_x=-20 trans_y=20"
    ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans4 . .fit TRANS trans_x=-20 trans_y=-20"
-} -body {
-   #--   clic sur le menu "Images/Aligner/Aligner automatiquement..."
-   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,center)" "$::caption(audace,menu,recentrer_auto)..."
+}
+
+variable CLEANUP {
+   #---  efface l'image
+   ::confVisu::deleteImage $visuNo
+   #--   clic sur le bouton Fermer
+   ::testaudela::clicButton $z.cmd.fermer
+   file delete m45_champ.fit trans1.fit trans2.fit trans3.fit trans4.fit trans5.fit
+}
+
+test aligner_translation_automatique {aligner des translatees de m45_champ.fit} -constraints {AUDACE} -setup $SETUP -body {
+   #--   clic sur le menu "Images/Aligner/Translation automatique..."
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,center)" "$::caption(audace,menu,reg_trans)..."
+   #--   selection des images
+   foreach img [list m45_champ trans1 trans2 trans3 trans4 ] {
+      ::testaudela::clicCheckButton [$w windowpath $img,0] 1
+   }
+   #-- saisit le nom de sortie
+   set name_out "trans_auto"
+   ::testaudela::putLabelEntry $z.sortie.out "$name_out"
+   #--   clic sur le bouton Appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
+
+   #-- procédure de controle
+   set result 0
+   #--   verifie l'existence de 5 images recadrees
+   for {set i 1} {$i <= 5} {incr i} {
+      set file [file join $::audace(rep_images) ${name_out}$i.fit]
+      if {[file exists $file]} {
+         incr result
+         buf$bufNo load $file
+         if {[lindex [buf$bufNo getpix $coords] 1] eq $attendu} {incr result}
+         file delete $file
+      }
+   }
+   return $result
+} -cleanup $CLEANUP -result "10"
+
+test aligner_translation_affine {aligner des translatees de m45_champ.fit} -constraints {AUDACE} -setup $SETUP -body {
+   #--   clic sur le menu "Images/Aligner/Translation affine..."
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,center)" "$::caption(audace,menu,reg_tri)..."
+   #--   selection des images
+   foreach img [list m45_champ trans1 trans2 trans3 trans4 ] {
+      ::testaudela::clicCheckButton [$w windowpath $img,0] 1
+   }
+   #-- saisit le nom de sortie
+   set name_out "trans_affine"
+   ::testaudela::putLabelEntry $z.sortie.out "$name_out"
+   #--   clic sur le bouton Appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
+
+   #-- procédure de controle
+   set result 0
+   #--   verifie l'existence de 5 images recadrees
+   for {set i 1} {$i <= 5} {incr i} {
+      set file [file join $::audace(rep_images) ${name_out}$i.fit]
+      if {[file exists $file]} {
+         incr result
+         buf$bufNo load $file
+         if {[lindex [buf$bufNo getpix $coords] 1] eq $attendu} {incr result}
+      }
+   }
+   return $result
+} -cleanup $CLEANUP -result "10"
+
+test aligner_translation_moindres_carrés {aligner des translatees de m45_champ.fit} -constraints {AUDACE} -setup {} -body {
+   #--   clic sur le menu "Images/Aligner/Moindres carrés..."
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,center)" "$::caption(audace,menu,reg_fine)..."
+   #--   selection des images
+   foreach img [list trans_affine2 trans_affine3 trans_affine4 trans_affine5] {
+      ::testaudela::clicCheckButton [$w windowpath $img,0] 1
+   }
+   #--   l'image de reference
+   ::testaudela::putLabelEntry $z.funoptions.file "./trans_affine1.fit"
+   #-- saisit le nom de sortie
+   set name_out "trans_mc"
+   ::testaudela::putLabelEntry $z.sortie.out "$name_out"
+   #--   clic sur le bouton Appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
+
+   #-- procédure de controle
+   set result 0
+   #--   verifie l'existence de 4 images recadrees
+   for {set i 1} {$i <= 4} {incr i} {
+      set file [file join $::audace(rep_images) ${name_out}$i.fit]
+      if {[file exists $file]} {
+         incr result
+         buf$bufNo load $file
+         if {[lindex [buf$bufNo getpix $coords] 1] eq $attendu} {incr result}
+         file delete $file
+         file delete trans_affine${i}.fit
+      }
+   }
+   file delete trans_affine5.fit
+   return $result
+} -cleanup $CLEANUP -result "8"
+
+test aligner_intercorrelation {aligner des translatees de m45_champ.fit} -constraints {AUDACE} -setup $SETUP -body {
+   #--   coords [list 381 391] change du fait du recadrage
+   set coords [list 361 371]
+   #--   clic sur le menu "Images/Aligner/Intercorrélation..."
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,center)" "$::caption(audace,menu,reg_inter)..."
    foreach img [list trans1 trans2 trans3 trans4] {
       ::testaudela::clicCheckButton [$w windowpath $img,0] 1
    }
@@ -33,36 +132,22 @@ test aligner_automatique_NB {aligner des translatees de m45_champ.fit} -constrai
 
    #-- procédure de controle
    set result 0
-   set coord2 [list 471 300]
    #--   verifie l'existence de 5 images recadrees
    for {set i 1} {$i <= 5} {incr i} {
       set file [file join $::audace(rep_images) ${name_out}$i.fit]
       if {[file exists $file]} {
          incr result
          buf$bufNo load $file
-         if {[lindex [buf$bufNo getpix $coord2] 1] eq $attendu} {incr result}
+         if {[lindex [buf$bufNo getpix $coords] 1] eq $attendu} {incr result}
          file delete $file
       }
    }
    return $result
-} -cleanup {
-   #---  efface l'image
-   ::confVisu::deleteImage $visuNo
-   #--   clic sur le bouton Fermer
-   ::testaudela::clicButton $z.cmd.fermer
-   file delete m45_champ.fit trans1.fit trans2.fit trans3.fit trans4.fit trans5.fit
-} -result "10"
+} -cleanup $CLEANUP -result "10"
 
-test aligner_automatique_ligne_de_commandes {aligner des translatees de m45_champ.fit} -constraints {AUDACE} -setup {
-   file copy -force [file join $::conf(testaudela,rep_images) m45_champ.fit] $::audace(rep_images)
-   buf$bufNo load [file join $::audace(rep_images) m45_champ.fit]
-   set coords [list 491 320]
-   set attendu [lindex [buf$bufNo getpix $coords] 1]
-   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans1 . .fit TRANS trans_x=20 trans_y=20"
-   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans2 . .fit TRANS trans_x=20 trans_y=-20"
-   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans3 . .fit TRANS trans_x=-20 trans_y=20"
-   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans4 . .fit TRANS trans_x=-20 trans_y=-20"
- } -body {
+test aligner_intercorrelation_ligne_de_commandes {aligner des translatees de m45_champ.fit} -constraints {AUDACE} -setup $SETUP -body {
+   #--   coords [list 381 391] change du fait du recadrage
+   set coords [list 361 371]
    set data "\"[list trans1 trans2 trans3 trans4]\" . recadre .fit"
    set options "\"image_ref=[file join $::audace(rep_images) m45_champ.fit]\""
    ::console::GiveFocus
@@ -72,14 +157,13 @@ test aligner_automatique_ligne_de_commandes {aligner des translatees de m45_cham
 
    #-- procédure de controle
    set result 0
-   set coord2 [list 471 300]
    #--   verifie l'existence de 5 images recadrees
    for {set i 1} {$i <= 5} {incr i} {
       set file [file join $::audace(rep_images) recadre$i.fit]
       if {[file exists $file]} {
          incr result
          buf$bufNo load $file
-         if {[lindex [buf$bufNo getpix $coord2] 1] eq $attendu} {incr result}
+         if {[lindex [buf$bufNo getpix $coords] 1] eq $attendu} {incr result}
          file delete $file
       }
    }
@@ -88,7 +172,7 @@ test aligner_automatique_ligne_de_commandes {aligner des translatees de m45_cham
    file delete m45_champ.fit trans1.fit trans2.fit trans3.fit trans4.fit trans5.fit
 } -result "10"
 
-test aligner_automatique_RGB {aligner deux images RGB} -constraints {AUDACE} -setup {
+test aligner_intercorrelation_RGB {aligner deux images RGB} -constraints {AUDACE} -setup {
    #--   configure l'extension et la compression
    set ::conf(extension,defaut) ".fit"
    set ::conf(fichier,compres) 0
@@ -96,7 +180,7 @@ test aligner_automatique_RGB {aligner deux images RGB} -constraints {AUDACE} -se
    file copy -force [file join $::conf(testaudela,rep_images) rz_rgbr_15.fit] $::audace(rep_images)
 } -body {
    #--   clic sur le menu "Images/Aligner/Aligner automatiquement..."
-   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,center)" "$::caption(audace,menu,recentrer_auto)..."
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,center)" "$::caption(audace,menu,reg_inter)..."
    ::testaudela::clicCheckButton [$w windowpath rz_rgbr_15,0] 1
    #--   l'image de reference
    ::testaudela::putLabelEntry $z.funoptions.image_ref "./rz_rgbr_8.fit"
