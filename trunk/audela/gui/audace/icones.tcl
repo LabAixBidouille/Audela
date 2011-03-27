@@ -159,6 +159,14 @@ namespace eval ::icones {
          WdsSTMg72g3gk7WGRVZLldwIntBhygl9yiiAqvWDPd40YEcCADs=
       }]
 
+      #--- icone pour la configuration du temps
+      set private(timeIcon) [image create photo timeIcon -data {
+         R0lGODlhEAAQAKIHAMe6kriofJR7PnBgN9Dq/ujaw/7+/v///yH5BAEAAAcA
+         LAAAAAAQABAAAANeeLrWtpAZQUWLaorCC33QxAEkwFnMVgDG0ASkm22sUxgw
+         KtZNMQS4gGtnGwgIweFgNRQ6As5WAegQDAgEqExKNRCOMNmhBQtgsYGpePwD
+         QN/OSOv3HqxDc/sFI9lDEgA7
+      }]
+
       #--- icone pour choisir les couleurs
       set private(colorsIcon) [image create photo colorsIcon -data {
          R0lGODlhDAALAMZbAAAAMwQEBAAAZjMAAAAAmTMAMwAAzDMAZgAA/2YAABYW
