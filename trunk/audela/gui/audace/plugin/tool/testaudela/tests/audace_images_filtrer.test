@@ -16,10 +16,18 @@ set z ".audace.prtr.usr.table"
 variable SETUP {
    set ::conf(extension,defaut) .fit
    set ::conf(fichier,compres) 0
-   ::blt::vector create attendu mesure -watchunset 1
+   ::blt::vector create attendu mesure v_red v_green v_blue -watchunset 1
    file copy -force [file join $::conf(testaudela,rep_images) rz_rgbr_8.fit] $::audace(rep_images)
    set coords {111 108}
    loadima [file join $::audace(rep_images) rz_rgbr_8.fit]
+   for {set x 110} {$x <= 112} {incr x} {
+      for {set y 107} {$y <= 109} {incr y} {
+         set values [buf$bufNo getpix [list $x $y]]
+         v_red append [lindex $values 1]
+         v_green append [lindex $values 2]
+         v_blue append [lindex $values 3]
+      }
+   }
 }
 
 variable CLEANUP {
@@ -29,7 +37,7 @@ variable CLEANUP {
    ::confVisu::deleteImage $visuNo
    set liste [list rz_rgbr_8 $name_out]
    ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
-   ::blt::vector destroy attendu mesure
+   ::blt::vector destroy attendu mesure v_red v_green v_blue
 }
 
 #--   tests a batir pour RGRADIENT
@@ -55,15 +63,7 @@ test masque-flou {application d'un masque_flou à rz_rgbr_8.fit} -constraints {AU
    attendu expr {round(attendu-mesure)}
    set result [llength [attendu search 0]]
    return $result
-} -cleanup {
-   #--   clic sur le bouton Fermer
-   ::testaudela::clicButton $z.cmd.fermer
-   #---  efface l'image
-   ::confVisu::deleteImage $visuNo
-   set liste [list rz_rgbr_8 $name_out]
-   ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
-   ::blt::vector destroy attendu mesure
-} -result "3"
+}  -cleanup $CLEANUP -result "3"
 
 #--   test masque flou
 test masque_flou_ligne_de_commande {application d'un masque_flou à rz_rgbr_8.fit} -constraints {AUDACE} -setup $SETUP -body {
@@ -104,9 +104,8 @@ test imaseries_filter_fb {application d'un filtre passe-bas à rz_rgbr_8.fit} -co
    ::testaudela::clicButton $z.cmd.appliquer
 
    #--   procedure de controle
-   set result 0
    mesure set [lrange [buf$bufNo getpix {111 108}] 1 end]
-   #--   valeurs mesurees sur une image obtenue par la voie classique
+   #--   valeurs mesurees sur une image obtenue par la voie classique"
    attendu set [list 0 0 26189]
    attendu expr {round(attendu-mesure)}
    set result [llength [attendu search 0]]
@@ -124,7 +123,6 @@ test imaseries_filter_fh {application d'un filtre passe-haut à rz_rgbr_8.fit} -c
    ::testaudela::clicButton $z.cmd.appliquer
 
    #--   procedure de controle
-   set result 0
    mesure set [lrange [buf$bufNo getpix {111 108}] 1 end]
    #--   valeurs mesurees sur une image obtenue par la voie classique
    #--   je triche
@@ -139,6 +137,7 @@ test imaseries_filter_fh {application d'un filtre passe-haut à rz_rgbr_8.fit} -c
 test imaseries_filter_med {application d'un filtre median à rz_rgbr_8.fit} -constraints {AUDACE} -setup $SETUP -body {
    #--   clic sur le menu "mages/Filtrer/Filtre médian..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,filter)" "$::caption(audace,menu,filtre_median)..."
+   #--   laisse kernel_width=3
    #-- saisit le nom de sortie
    set name_out "median"
    ::testaudela::putLabelEntry $z.sortie.out "$name_out"
@@ -146,10 +145,32 @@ test imaseries_filter_med {application d'un filtre median à rz_rgbr_8.fit} -cons
    ::testaudela::clicButton $z.cmd.appliquer
 
    #--   procedure de controle
-   set result 0
+   #--   valeurs calculees
+   foreach vector {v_red v_green v_blue} {
+      mesure expr {median($vector)}
+      attendu append $mesure(:)
+   }
    mesure set [lrange [buf$bufNo getpix {111 108}] 1 end]
-   #--   valeurs mesurees sur une image obtenue par la voie classique
-   attendu set [list 0 0 26100]
+   attendu expr {round(attendu-mesure)}
+   set result [llength [attendu search 0]]
+   return $result
+} -cleanup $CLEANUP -result "3"
+
+#--   test IMA/SERIES FILTER kernel_type=mean
+test imaseries_filter_mean {application d'un filtre minimum à rz_rgbr_8.fit} -constraints {AUDACE} -setup $SETUP -body {
+   #--   clic sur le menu "mages/Filtrer/Filtre moyen..."
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,filter)" "$::caption(audace,menu,filtre_mean)..."
+   #--   laisse kernel_width=3
+   #-- saisit le nom de sortie
+   set name_out "moyen"
+   ::testaudela::putLabelEntry $z.sortie.out "$name_out"
+   #--   clic sur le bouton Appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
+
+   #--   procedure de controle
+   mesure set [lrange [buf$bufNo getpix {111 108}] 1 end]
+   #--   valeurs calculees
+   attendu append $v_red(mean) $v_green(mean) $v_blue(mean)
    attendu expr {round(attendu-mesure)}
    set result [llength [attendu search 0]]
    return $result
@@ -159,6 +180,7 @@ test imaseries_filter_med {application d'un filtre median à rz_rgbr_8.fit} -cons
 test imaseries_filter_min {application d'un filtre minimum à rz_rgbr_8.fit} -constraints {AUDACE} -setup $SETUP -body {
    #--   clic sur le menu "mages/Filtrer/Filtre minimum..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,filter)" "$::caption(audace,menu,filtre_minimum)..."
+   #--   laisse kernel_width=3
    #-- saisit le nom de sortie
    set name_out "minimum"
    ::testaudela::putLabelEntry $z.sortie.out "$name_out"
@@ -166,10 +188,9 @@ test imaseries_filter_min {application d'un filtre minimum à rz_rgbr_8.fit} -con
    ::testaudela::clicButton $z.cmd.appliquer
 
    #--   procedure de controle
-   set result 0
    mesure set [lrange [buf$bufNo getpix {111 108}] 1 end]
-   #--   valeurs mesurees sur une image obtenue par la voie classique
-   attendu set [list 0 0 21900]
+   #--   valeurs calculees
+   attendu append $v_red(min) $v_green(min) $v_blue(min)
    attendu expr {round(attendu-mesure)}
    set result [llength [attendu search 0]]
    return $result
@@ -179,6 +200,7 @@ test imaseries_filter_min {application d'un filtre minimum à rz_rgbr_8.fit} -con
 test imaseries_filter_max {application d'un filtre maximum à rz_rgbr_8.fit} -constraints {AUDACE} -setup $SETUP -body {
    #--   clic sur le menu "mages/Filtrer/Filtre maximum..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,filter)" "$::caption(audace,menu,filtre_maximum)..."
+   #--   laisse kernel_width=3
    #-- saisit le nom de sortie
    set name_out "maximum"
    ::testaudela::putLabelEntry $z.sortie.out "$name_out"
@@ -186,10 +208,9 @@ test imaseries_filter_max {application d'un filtre maximum à rz_rgbr_8.fit} -con
    ::testaudela::clicButton $z.cmd.appliquer
 
    #--   procedure de controle
-   set result 0
    mesure set [lrange [buf$bufNo getpix {111 108}] 1 end]
-   #--   valeurs mesurees sur une image obtenue par la voie classique
-   attendu set [list 0 0 30800]
+   #--   valeurs calculees
+   attendu append $v_red(max) $v_green(max) $v_blue(max)
    attendu expr {round(attendu-mesure)}
    set result [llength [attendu search 0]]
    return $result
@@ -197,7 +218,7 @@ test imaseries_filter_max {application d'un filtre maximum à rz_rgbr_8.fit} -con
 
 #--   test IMA/SERIES CONV kernel_type=gauss
 test imaseries_gauss {application d'un filtre gaussien à rz_rgbr_8.fit} -constraints {AUDACE} -setup $SETUP -body {
-   #--   clic sur le menu "Images/Améliorer/Filtre gaussien..."
+   #--   clic sur le menu "Images/Filtrer/Filtre gaussien..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,filter)" "$::caption(audace,menu,filtre_gaussien)..."
    #-- saisit le nom de sortie
    set name_out "gaussien"
@@ -256,7 +277,7 @@ test imaseries_mexican {application d'un filtre de chapeau mexicain à rz_rgbr_8.
 
    #--   procedure de controle
    update
-   mesure set [lrange [buf$bufNo getpix {111 108}] 1 end]
+  mesure set [lrange [buf$bufNo getpix {111 108}] 1 end]
    #--   valeurs mesurees sur une image obtenue par la voie classique
    attendu set [list 6759 0 0]
    if {$mesure(:) ne $attendu(:)} {
