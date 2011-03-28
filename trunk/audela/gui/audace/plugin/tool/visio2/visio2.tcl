@@ -200,9 +200,6 @@ proc ::visio2::startTool { visuNo } {
    #--- je refraichis la liste des fichiers
    ::visio2::localTable::init $visuNo $private($visuNo,This) $audace(rep_images)
    ::visio2::localTable::refresh $visuNo
-
-   #--- j'active la mise a jour automatique de l'affichage quand on change de nom de fichier image
-   ::confVisu::addFileNameListener $visuNo "::visio2::localTable::refresh $visuNo"
 }
 
 #------------------------------------------------------------
@@ -224,9 +221,6 @@ proc ::visio2::stopTool { visuNo } {
    ::visio2::localTable::saveColumnWidth $visuNo
    #--- je ferme la connexion ftp
    ftpclient::closeCnx
-
-   #--- je desactive la mise a jour automatique de l'affichage quand on change de nom de fichier image
-   ::confVisu::removeFileNameListener $visuNo "::visio2::localTable::refresh $visuNo"
 
    pack forget $private($visuNo,This)
 }
