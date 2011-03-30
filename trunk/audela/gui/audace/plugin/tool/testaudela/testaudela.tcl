@@ -1,11 +1,9 @@
-#
+##
 # Fichier : testaudela.tcl
 # Description : Outil de test automatique pour AudeLA
 # Auteurs : Michel Pujol
 # Mise à jour $Id$
 #
-
-#####################
 #
 #  Pour ajouter un fichier de test
 #  ===============================
@@ -33,8 +31,6 @@
 #      le namespace ::testaudela avec la commande
 #      source audace/scripts/testaudela.tcl
 #
-#######################
-
 namespace eval ::testaudela {
    package provide testaudela 1.11
 
@@ -42,7 +38,7 @@ namespace eval ::testaudela {
    source [ file join [file dirname [info script]] testaudela.cap ]
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # ::testaudela::getPluginTitle
 #    retourne le titre du plugin dans la langue de l'utilisateur
 #------------------------------------------------------------
@@ -50,7 +46,7 @@ proc ::testaudela::getPluginTitle { } {
    return $::caption(testaudela,title)
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # ::testaudela::getPluginHelp
 #    retourne le nom du fichier d'aide principal
 #------------------------------------------------------------
@@ -58,7 +54,7 @@ proc ::testaudela::getPluginHelp { } {
    return "testaudela.htm"
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # ::testaudela::getPluginType
 #    retourne le type de plugin
 #------------------------------------------------------------
@@ -66,7 +62,7 @@ proc ::testaudela::getPluginType { } {
    return "tool"
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # ::testaudela::getPluginDirectory
 #    retourne le type de plugin
 #------------------------------------------------------------
@@ -74,7 +70,7 @@ proc ::testaudela::getPluginDirectory { } {
    return "testaudela"
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # ::testaudela::getPluginOS
 #    retourne le ou les OS de fonctionnement du plugin
 #------------------------------------------------------------
@@ -82,7 +78,7 @@ proc ::testaudela::getPluginOS { } {
    return [ list Windows Linux Darwin ]
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # ::testaudela::getPluginProperty
 #    retourne la valeur de la propriete
 #
@@ -98,7 +94,7 @@ proc ::testaudela::getPluginProperty { propertyName } {
    }
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # ::testaudela::initPlugin
 #    initialise le plugin au demarrage de audace
 #    eviter de charger trop de choses (penser a ceux qui n'utilisent pas spcaudace)
@@ -108,7 +104,7 @@ proc ::testaudela::initPlugin { tkbase } {
    #--- quand on lance l'outil la première fois
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # ::testaudela::createPluginInstance
 #    cree une nouvelle instance de l'outil
 #------------------------------------------------------------
@@ -152,7 +148,7 @@ proc ::testaudela::createPluginInstance { { in ".audace" } { visuNo 1 } } {
    return ""
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # ::testaudela::deletePluginInstance
 #    suppprime l'instance du plugin
 #------------------------------------------------------------
@@ -161,7 +157,7 @@ proc ::testaudela::deletePluginInstance { visuNo } {
    #--- Car spcaudace ne peut pas etre supprime de la memoire
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # ::testaudela::startTool
 #    affiche la fenetre de l'outil
 #------------------------------------------------------------
@@ -182,7 +178,7 @@ proc ::testaudela::startTool { visuNo } {
    verifyImageDirectory $::conf(testaudela,rep_images)
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # ::testaudela::stopTool
 #    masque la fenetre de l'outil
 #------------------------------------------------------------
@@ -190,7 +186,7 @@ proc ::testaudela::stopTool { visuNo } {
    #--- Rien a faire, car la fenetre est fermee par l'utilisateur
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 #  ::testaudela::getLabel
 #  retourne le nom de la fenetre de configuration
 #------------------------------------------------------------
@@ -198,7 +194,7 @@ proc ::testaudela::getLabel { } {
    return $::caption(testaudela,title)
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 #  ::testaudela::showHelp
 #  affiche l'aide de la fenêtre de configuration
 #------------------------------------------------------------
@@ -207,20 +203,11 @@ proc ::testaudela::showHelp { } {
       [::testaudela::getPluginDirectory] [::testaudela::getPluginHelp]
 }
 
-#------------------------------------------------------------
-#  ::testaudela::confToWidget { }
-#     copie les parametres du tableau conf() dans les variables des widgets
-#------------------------------------------------------------
-proc ::testaudela::confToWidget { visuNo } {
-   variable private
-   global conf
-
-}
-
-#------------------------------------------------------------
-#  ::testaudela::fillConfigPage { }
-#  fenetre de configuration
-#
+##------------------------------------------------------------
+#  ::testaudela::fillConfigPage
+#  cree la fenetre de l'outil
+# @param frm  nom TK de la fenetre de l'outil
+# @param visuNo numero de visu
 #------------------------------------------------------------
 proc ::testaudela::fillConfigPage { frm visuNo } {
    variable private
@@ -234,9 +221,6 @@ proc ::testaudela::fillConfigPage { frm visuNo } {
    #--- Je position la fenetre
    wm resizable [ winfo toplevel $private(frm) ] 1 1
    wm geometry [ winfo toplevel $private(frm) ] $::conf(testaudela,position)
-
-   #--- J'initialise les variables des widgets
-   confToWidget $visuNo
 
    #--- je cree le menu
    set private($visuNo,menu) "[winfo toplevel $private(frm)].menubar"
@@ -353,9 +337,9 @@ proc ::testaudela::fillConfigPage { frm visuNo } {
 
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 #  ::testaudela::editTestFile
-#
+#  affiche un test dans un editeur de texte externe (utilise ::conf(editscript))
 #  @param  fileName  nom du fichier de test a editer
 #  @return none
 #------------------------------------------------------------
@@ -372,9 +356,9 @@ proc ::testaudela::editTestFile { fileName } {
    }
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 #  ::testaudela::fillTree
-#
+#  affiche la liste des tests dans la fenetre de l'outil
 #  @return none
 #------------------------------------------------------------
 proc ::testaudela::fillTree { } {
@@ -405,11 +389,11 @@ proc ::testaudela::fillTree { } {
    }
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 #  ::testaudela::toggleTestSelection
 #  bascule la selection du test
-#  @param w   nom de l'arbre appleant cette procedure (path TK)
-#  @param node  identifiant du test dasn l'arbre (node)
+#  @param w   nom TK de l'arbre appelant cette procedure
+#  @param node  nom TK du node du test dans l'arbre
 #------------------------------------------------------------
 proc ::testaudela::toggleTestSelection { w node } {
    set testState [$w itemcget $node -data ]
@@ -426,10 +410,10 @@ proc ::testaudela::toggleTestSelection { w node } {
    $w itemconfigure $node -image "im_test$testState" -data "$testState"
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 #  verifyImageDirectory
 #  Verifie que le repertoire des images existe et n'est pas vide
-# @param imageDirectory  repertoire a veirifer
+# @param imageDirectory  repertoire a verifier
 # @return 1=OK 0=erreur
 #------------------------------------------------------------
 proc ::testaudela::verifyImageDirectory { imageDirectory } {
@@ -461,11 +445,10 @@ proc ::testaudela::verifyImageDirectory { imageDirectory } {
    }
 }
 
-#------------------------------------------------------------
-#  setImageDirectory
-#  Verifie que le repertoire des images existe et n'est pas vide
-# @param imageDirectory  repertoire a veirifer
-# @return 1=OK 0=erreur
+##------------------------------------------------------------
+# setImageDirectory
+# affiche la fenetre de configuration de l'outil
+# @return void
 #------------------------------------------------------------
 proc ::testaudela::setImageDirectory { } {
    variable private
@@ -525,14 +508,15 @@ proc ::testaudela::setImageDirectory { } {
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $tkName
+   return ""
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 #  wrap
 #  wrappe le texte affiche dans un widget (decoupe en plusieurs lignes )
 # @param W  nom tk du widget
 # @param w  largeur du widget (nombre de caracteres)
-# @return none
+# @return void
 #------------------------------------------------------------
 proc ::testaudela::wrap {W w} {
    set px [$W cget -padx]
@@ -557,9 +541,10 @@ proc ::testaudela::wrap {W w} {
       }
    }
    $W configure -wraplength $wl
+   return ""
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 #  selectImageDirectory
 #  affiche la fenetre pour selectionner le repertoire des images de test
 # @param tkEntry  nom tk du widget contenant le nom du repertoire
@@ -586,10 +571,10 @@ proc ::testaudela::selectImageDirectory { tkEntry } {
    }
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # selectAllTests
 #  selectionne tous les fichiers de test
-# @return none
+# @return void
 #------------------------------------------------------------
 proc ::testaudela::selectAllFiles { } {
    variable private
@@ -597,12 +582,13 @@ proc ::testaudela::selectAllFiles { } {
    foreach node [$private(tree) nodes root] {
       $private(tree) itemconfigure $node -image "im_test1" -data "1"
    }
+   return ""
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 #  unselectAllFiles
 #  supprime la selection de tous les fichiers de test
-# @return none
+# @return void
 #------------------------------------------------------------
 proc ::testaudela::unselectAllFiles { } {
    variable private
@@ -610,12 +596,13 @@ proc ::testaudela::unselectAllFiles { } {
    foreach node [$private(tree) nodes root] {
       $private(tree) itemconfigure $node -image "im_test0" -data "0"
    }
+   return ""
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 #  showDescription
 #  affiche la description des tests contenus dans un fichier
-# @param w  nom tk de l'arbre appleant cette procedure (path TK)
+# @param w  nom tk de l'arbre appelant cette procedure
 # @param fileName  nom du fichier (sans le repertoire)
 # @return none
 #------------------------------------------------------------
@@ -632,9 +619,10 @@ proc ::testaudela::showDescription { w fileName } {
    }
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 #  ::testaudela::close
-#  est appele quand on ferme la fenetre sans sauvegarder les modifications
+#  est appele quand on clique sur le bouton "Fermer" pour fermer la fenetre
+#  sans sauvegarder les modifications
 #
 # @return none
 #------------------------------------------------------------
@@ -652,12 +640,12 @@ proc ::testaudela::closeWindow { visuNo } {
    #--- je supprime le menubar et toutes ses entrees
    Menubar_Delete "testaudela${visuNo}"
    set private(frm) ""
-
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 #  ::testaudela::onRunTests
-# lance les tests
+# execute les tests
+# est appele quand on clique sur le bouton "executer" pour lancer les tests.
 # @return none
 #------------------------------------------------------------
 proc ::testaudela::onRunTests { } {
@@ -703,8 +691,10 @@ proc ::testaudela::onRunTests { } {
    namespace import -force ::testaudela::simul::*
 }
 
-#------------------------------------------------------------
-#  ::testaudela::onRunTests
+##------------------------------------------------------------
+#  ::testaudela::onStopTests
+# interromp l'execution des tests.
+#
 #------------------------------------------------------------
 proc ::testaudela::onStopTests { } {
    set ::testaudela::private(interrupt) 1
@@ -715,8 +705,7 @@ proc ::testaudela::onStopTests { } {
 #------------------------------------------------------------
 #  ::testaudela::runTests
 #
-#  @param fileList  liste des fichiers de test a prendre en compte
-#  @param exitFlag  si "-exit"  , arrete audela et retourne le nombre de test ayant echoué
+#  @param fileList  liste des fichiers de test a prendre en compte ( ou "all" pour executer tous les tests presents dans le repertoire des tests)
 #  @return nombre de tests "failed" ou "-1" en cas d'erreur
 #------------------------------------------------------------
 proc ::testaudela::runTests { { fileList "all" } } {
@@ -864,10 +853,9 @@ proc ::testaudela::putsCommand { args } {
       error $message
       ::tcltest::configure -skip *.test
    }
-
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 #  ::testaudela::saveConstraintList
 #------------------------------------------------------------
 proc ::testaudela::saveConstraintList { } {
@@ -883,7 +871,7 @@ proc ::testaudela::saveConstraintList { } {
    return
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 #  ::testaudela::saveTestList
 #------------------------------------------------------------
 proc ::testaudela::saveTestList { } {
@@ -900,7 +888,7 @@ proc ::testaudela::saveTestList { } {
    return
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 #  ::testaudela::showResult { }
 #  affiche la fenetre de resultat des tests
 #  Si la fenetre du resultat est deja affiche, le resultat est raffraichi a partir
@@ -1004,7 +992,7 @@ proc ::testaudela::simul::testConstraint { name expression } {
 ######################################################################
 #  utilitaires pour les interations avec les widgets TK
 ########################################################################
-#----------------------------------------------------
+##----------------------------------------------------
 #  ::testaudela::clicButton
 #    simule un clic sur un bouton
 # parametres :
@@ -1016,7 +1004,7 @@ proc ::testaudela::clicButton { buttonPath } {
    $buttonPath invoke
 }
 
-#----------------------------------------------------
+##----------------------------------------------------
 #  ::testaudela::clicCheckButton
 #    simule un clic sur un checkbutton ou force le check a une valeur
 # parametres :
@@ -1041,7 +1029,7 @@ proc ::testaudela::clicCheckButton { buttonPath { state "" } } {
 
 }
 
-#----------------------------------------------------
+##----------------------------------------------------
 #  ::testaudela::clicCombobox
 #    simule un clic sur une combobox pour selectionner un valeur
 #    la valeur peut 鳲e
@@ -1082,7 +1070,7 @@ proc ::testaudela::clicCombobox { comboPath value} {
    return ""
 }
 
-#----------------------------------------------------
+##----------------------------------------------------
 #  ::testaudela::clicMenu
 #    simule un clic sur un menu
 #  parametres :
@@ -1102,7 +1090,7 @@ proc ::testaudela::clicMenu { visuNo menuName menuLabel } {
    $menuPath invoke $menuIndex
 }
 
-#----------------------------------------------------
+##----------------------------------------------------
 #  ::testaudela::clicMenuButton
 #    simule un clic sur un clicMenuButton
 #  parametres :
@@ -1120,7 +1108,7 @@ proc ::testaudela::clicMenuButton { buttonPath value} {
    }
 }
 
-#----------------------------------------------------
+##----------------------------------------------------
 #  ::testaudela::clicRadioButton
 #    simule un clic sur un radiobutton
 #  parametres :
@@ -1131,7 +1119,7 @@ proc ::testaudela::clicRadioButton { buttonPath } {
    $buttonPath select
 }
 
-#----------------------------------------------------
+##----------------------------------------------------
 #  ::testaudela::mouveMouse
 #    simule le deplacement du curseur de la souris
 #    vers un point x,y du canvas (x,y sont en coordonnees canvas)
@@ -1146,7 +1134,7 @@ proc ::testaudela::mouveMouse { visuNo x_canvas y_canvas } {
    event generate $canvasPath <Motion> -x $x_canvas -y $y_canvas
 }
 
-#----------------------------------------------------
+##----------------------------------------------------
 #  ::testaudela::selectNoteBook
 #    simule la selection d'un onglet en fontion du titre de l'onglet
 #  parametres :
@@ -1159,31 +1147,42 @@ proc ::testaudela::selectNoteBook { notebookPath name } {
    $notebookPath raise "$name"
 }
 
-#----------------------------------------------------
+##----------------------------------------------------
 #  ::testaudela::putEntry
 #    simule la saisie dans un ENTRY
-#  parametres :
-#    entryPath : chemin complet du widget entry
-#    value : valeur saisie
-#  Exemple :
-#    ::testaudela::putEntry .audace.acqfc.mode.une.nom.entr "m57"
+#  Exemple ::testaudela::putEntry .audace.acqfc.mode.une.nom.entr "m57"
+# @param entryPath : chemin complet du widget entry
+# @param value : valeur saisie
 #----------------------------------------------------
 proc ::testaudela::putEntry { entryPath  value } {
    $entryPath delete 0 end
    $entryPath insert 0 $value
 }
 
-#----------------------------------------------------
+##----------------------------------------------------
 #  ::testaudela::putLabelEntry
-#    simule la saisie dans un LabelEntry
-#  parametres :
-#    entryPath : chemin complet du widget labelentry
-#    value : valeur saisie
+#  simule la saisie dans un LabelEntry
 #  Exemple :
 #    ::testaudela::putLabelEntry .audace.acqfc.mode.une.nom.entr "m57"
+#  @param entryPath : chemin complet du widget labelentry
+#  @param value : valeur saisie
 #----------------------------------------------------
 proc ::testaudela::putLabelEntry { entryPath  value } {
    $entryPath.e delete 0 end
    $entryPath.e insert 0 $value
+}
+
+##----------------------------------------------------
+#  ::testaudela::setBox
+#  simule le tracé d'une boite avec la souris dans la visu
+#  Exemple: ::testaudela::setBox  1 { 10 10 40 40 }
+#  @param visuNo numero de la visu
+#  @param coords liste des coordonnees de la boite { x1 y1 x2 y2 }  avec
+#     - x1,y1 coordonnees du coin en bas à gauche
+#     - x2,y2 coordonnees du coin en haut à droite
+#  @return 0 si OK , -1 si les coordonnees ne contiennent pas dans l'image
+#----------------------------------------------------
+proc ::testaudela::setBox { visuNo coords } {
+   return [::confVisu::setBox $visuNo $coords]
 }
 
