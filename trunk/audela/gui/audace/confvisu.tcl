@@ -268,9 +268,23 @@ namespace eval ::confVisu {
 
    }
 
-   #------------------------------------------------------------
+   ##------------------------------------------------------------
    # autovisu
-   #     rafraichit l'affichage
+   # rafraichit l'affichage
+   #
+   # autovisu détermine automatiquement si l'image doit être affichée
+   #   - normalement (affichage 2D)
+   #   - ou sous forme de graphe (image 1D)
+   #   - ou sous forme de table
+   #
+   # si XTENSION est absent ou si XTENSION=IMAGE
+   #   si NAXIS=1 ou si (NAXIS=2 et NAXIS2=1)
+   #      l'image est affichée sous forme de graphe
+   #   sinon
+   #      l'image est affichée normalement (affichage 2D)
+   # sinon
+   #   les donnée sont affichées sous forme de table
+   #
    # parametres
    #  visuNo: numero de la visu
    #  force:  -dovisu : rafraichissement complet
@@ -486,12 +500,18 @@ namespace eval ::confVisu {
                set private($visuNo,picture_w) [buf$bufNo getpixelswidth]
                set private($visuNo,picture_h) [buf$bufNo getpixelsheight]
             } else {
-               #--- je mets à jour le nom du fichier meme quand l'image ne
-               #--- provient pas d'un fichier, mais d'une camera
-               #--- afin de permettre le rafraichissement des plugins
-               #--- qui sont abonnes au listener addFilenameListener
-               set hduNo $private($visuNo,currentHduNo)
-               set private($visuNo,fitsHduList) ""
+               if { [::confVisu::getFileName $visuNo] != "" } {
+                  #--- fileName est vide mais ::confVisu::getFileName retourne un nom de fichier
+                  #--- donc c'est un rafraichissement sans changement de fichier
+                  set hduNo $private($visuNo,currentHduNo)
+                  #--- j'ecris dans les variables surveilles par un listener pour
+                  #--- provoquer le rafraichissement des listeners
+                  set private($visuNo,fitsHduList) $private($visuNo,fitsHduList)
+               } else {
+                  #--- c'est une image qui vient d'etre acquise avec une camera
+                  set hduNo $private($visuNo,currentHduNo)
+                  set private($visuNo,fitsHduList) ""
+               }
             }
          } else {
             #--- si force=-clear , j'efface l'image affichee
@@ -3640,7 +3660,7 @@ namespace eval ::confVisu {
    #  boxEnd
    #     redessine la boite en suivant le deplacement de la souris
    #     et enregistre les coordonnees (referentiel picture) de la boite
-   #     dans privaste($visuNo,boxSize)
+   #     dans private($visuNo,boxSize)
    #  parametres :
    #    visuNo: numero de la visu
    #    coord : coordonnees de la souris (referentiel ecran)
@@ -3741,6 +3761,54 @@ namespace eval ::confVisu {
          set private($visuNo,boxSize) ""
          $private($visuNo,hCanvas) delete $private($visuNo,hBox)
       }
+   }
+
+   #------------------------------------------------------------
+   #  setBox
+   #    affiche la boite de selection
+   #  exemple : ::confVisu::setBox  1 { 10 10 40 40 }
+   #  @param visuNo numero de la visu
+   #  @param coords liste des coordonnees de la boite { x1 y1 x2 y2 }  avec
+   #     - x1,y1 coordonnees du coin en bas à gauche
+   #     - x2,y2 coordonnees du coin en haut à droite
+   #  @return 0 si OK , -1 si les coordonnees ne contiennent pas dans l'image
+   #
+   #------------------------------------------------------------
+   proc setBox { visuNo coords } {
+      variable private
+
+      #--- j'efface la boite si elle existe deja
+      deleteBox $visuNo
+
+      set x1 [lindex $coords 0]
+      set y1 [lindex $coords 1]
+      set x2 [lindex $coords 2]
+      set y2 [lindex $coords 3]
+
+      set width  $private($visuNo,picture_w)
+      set height $private($visuNo,picture_h)
+
+      if { $x1 < 1 || $x1 > $x2 || $x1 > $width }  {
+         return -1
+      }
+      if { $y1 < 1 || $y1 > $y2 || $y1 > $height }  {
+         return -1
+      }
+      if { $x2 < 1 || $x2 < $x1 || $x2 > $width }  {
+         return -1
+      }
+      if { $y2 < 1 || $y2 < $y1 || $y2 > $height }  {
+         return -1
+      }
+
+      #--- je convertis en coordonnees canvas
+      set private($visuNo,box_1) [ picture2Canvas $visuNo [lrange $coords 0 1 ] ]
+      set private($visuNo,box_2) [ picture2Canvas $visuNo [lrange $coords 2 3 ] ]
+      #--- j'affiche la boite
+      set private($visuNo,hBox) [eval {$private($visuNo,hCanvas) create rect} $private($visuNo,box_1) \
+         $private($visuNo,box_2) -outline $::audace(color,drag_rectangle) -tag selBox]
+
+      return 0
    }
 
    #------------------------------------------------------------
