@@ -19,12 +19,10 @@
 
 proc chg_tabkey {tabkey} {
 
-
    if {! [::bddimages_liste::lexist $tabkey "date-obs"]} {
       return [list 1 "????-??-??T??:??:??"] 
-      }
-   set line    [::bddimages_liste::lget $tabkey "date-obs"]
-   set dateobs [lindex $line 1]
+   }
+   set dateobs [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1]
 
    if { [regexp {(\d+)-(\d+)-(\d+)( |T)(\d+):(\d+):(\d+)(\.*\d*)} $dateobs dateiso aa mm jj sep h m s sd] } {
 
@@ -40,15 +38,14 @@ proc chg_tabkey {tabkey} {
       
       if {! [::bddimages_liste::lexist $tabkey "tu-start"]} {
          return [list 1 "${annee}-${mois}-${jour}T??:??:??"]
-         }
-      set line    [::bddimages_liste::lget $tabkey "tu-start"]
-      set heurobs [lindex $line 1]
-
+      }
+      set heurobs [lindex [::bddimages_liste::lget $tabkey "tu-start"] 1]
       set dateiso "$annee-$mois-${jour}T$heurobs"
 
    }
 
-   set tabkey [ ::bddimages_liste::lupdate $tabkey "date-obs" $dateiso ]
+   set l_dateiso [list "date-obs" $dateiso "string" "" ""]
+   set tabkey [ ::bddimages_liste::lupdate $tabkey "date-obs" $l_dateiso ]
 
    return [list 0 $tabkey]
 }

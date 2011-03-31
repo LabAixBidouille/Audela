@@ -161,19 +161,20 @@ proc info_fichier { nomfich } {
       set errnum [catch {file rename $nomfich "$racinefich.$form2"} msg]
    }
    if {$form3 == "cata"} {
-      # permet 
       set errnum [catch {file rename $nomfich "$racinefich\_$form2"} msg]
-     
-      #set errnum [catch {file rename $nomfich "$racinefich.$form2"} msg]
    }
-   
+
+   # --- verifie si erreur lors du renommage
    if {$errnum != 0} {
       if {[string last "file already exists" $msg] <= 1} {
          bddimages_sauve_fich "info_fichier: ERREUR 9 : Renommage du fichier $nomfich impossible <err:$errnum> <msg:$msg>"
          return [list "9" $etat $nomfich $dateiso $site $sizefich $tabkey]
       }
    } else {
-      set nomfich "$racinefich.$form2"
+      switch $form3 {
+         "img" { set nomfich "$racinefich.$form2" }
+         "cata" { set nomfich "$racinefich\_$form2" }
+      }
    }
 
    # --- dezippe le fichier s il est zippé
@@ -217,16 +218,14 @@ proc info_fichier { nomfich } {
       set key [buf$bufno getkwd "TELESCOP"]
       if {[lindex $key 0] == "" } {
          buf$bufno setkwd [list "TELESCOP" "Unknown" string "Telescop name" ""]
-         }
-
-      
+      }
    }
 
    # --- zip/rezip le fichier
    if {$fileformat == "unzipped"} {
       set nomfich "$nomfichfits.gz"
       set errnum [catch {exec gzip -c $nomfichdata > $nomfich} msg ]
-      if {$errnum!=0} {
+      if {$errnum != 0} {
          file delete -force -- $nomfich
          bddimages_sauve_fich "info_fichier: ERREUR 2 : Erreur lors de la recompression de l'image $nomfichfits  <err:$errnum> <msg:$msg>"
          return [list "2" $etat $nomfichfits $dateiso $site $sizefich $tabkey]
@@ -262,10 +261,9 @@ proc info_fichier { nomfich } {
       set result     [bddimages_entete_preminforecon $tabkey]
       set err        [lindex $result 0]
       set tmp_tabkey [lindex $result 1]
-      
+
       set site      [lindex [::bddimages_liste::lget $tmp_tabkey "telescop"] 1]
       set dateiso   [lindex [::bddimages_liste::lget $tmp_tabkey "date-obs"] 1]
-      
    }
 
    if {$form3 == "cata"} {
