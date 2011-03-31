@@ -9,6 +9,8 @@
 #
 
 namespace eval bddimages_status {
+   
+   package require bddimagesXML 1.0
    package require bddimagesAdmin 1.0
 
    global audace

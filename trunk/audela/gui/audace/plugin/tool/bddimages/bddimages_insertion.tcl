@@ -378,7 +378,6 @@ namespace eval bddimages_insertion {
          set bddconf(position_status) "+[ string range $bddconf(geometry_status) $deb $fin ]"
       }
 
-
       set bddconf(inserinfo) "Total(-) Inser(-) Err(-)"
 
       #--- Lecture des champs de la table
@@ -393,7 +392,6 @@ namespace eval bddimages_insertion {
          wm resizable $This 1 1
          wm title $This $caption(bddimages_insertion,main_title)
          wm protocol $This WM_DELETE_WINDOW { ::bddimages_insertion::fermer }
-
 
          #--- Cree un frame pour afficher le status de la base
          frame $This.frame1 -borderwidth 0 -cursor arrow -relief groove
@@ -458,7 +456,7 @@ namespace eval bddimages_insertion {
            #--- Creation du bouton lecture entete
            button $This.frame11.but_lectentete \
               -text "1. $caption(bddimages_insertion,lectentete)" -borderwidth 2 \
-              -command {lecture_info This}
+              -command { lecture_info This }
            pack $This.frame11.but_lectentete \
               -in $This.frame11 -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
