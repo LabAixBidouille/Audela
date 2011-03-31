@@ -47,6 +47,12 @@ proc chg_tabkey {tabkey} {
    set l_dateiso [list "date-obs" $dateiso "string" "" ""]
    set tabkey [ ::bddimages_liste::lupdate $tabkey "date-obs" $l_dateiso ]
 
+   if {! [::bddimages_liste::lexist $tabkey "exposure"]} {
+      set line [::bddimages_liste::lget $tabkey "tm-expos"]
+      set exposure [lreplace $line 0 0 "EXPOSURE"]
+      set tabkey [::bddimages_liste::ladd $tabkey "exposure" $exposure]
+   }
+
    return [list 0 $tabkey]
 }
 
