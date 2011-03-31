@@ -70,6 +70,8 @@ proc ::bddimages::initPlugin { tkbase } {
    set bddconf(font,arial_12_b) "{Arial} 12 bold"
    set bddconf(font,arial_14_b) "{Arial} 14 bold"
 
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools votable.tcl ]\""
+
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_xml.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_admin.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_config.tcl ]\""

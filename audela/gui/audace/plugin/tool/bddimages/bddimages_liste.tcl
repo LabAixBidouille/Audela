@@ -446,17 +446,17 @@ namespace eval bddimages_liste {
      set jjdatemax [ mc_date2jd $form_req(datemax) ]
    
      ::console::affiche_resultat "-- affich_form_req"
-     ::console::affiche_resultat "datemin                  = $form_req(datemin)"
-     ::console::affiche_resultat "datemax                  = $form_req(datemax)"
-     ::console::affiche_resultat "jjdatemin                = $jjdatemin"
-     ::console::affiche_resultat "jjdatemax                = $jjdatemax"
+     ::console::affiche_resultat "datemin             = $form_req(datemin)"
+     ::console::affiche_resultat "datemax             = $form_req(datemax)"
+     ::console::affiche_resultat "jjdatemin           = $jjdatemin"
+     ::console::affiche_resultat "jjdatemax           = $jjdatemax"
      ::console::affiche_resultat "type_req_check 		= $form_req(type_req_check)"
-     ::console::affiche_resultat "type_requ 		= $form_req(type_requ)"
+     ::console::affiche_resultat "type_requ 		      = $form_req(type_requ)"
      ::console::affiche_resultat "choix_limit_result	= $form_req(choix_limit_result)"
-     ::console::affiche_resultat "limit_result		= $form_req(limit_result)"
-     ::console::affiche_resultat "type_result		= $form_req(type_result)"
-     ::console::affiche_resultat "type_select		= $form_req(type_select)"
-     ::console::affiche_resultat "nbimg			= $form_req(nbimg)"
+     ::console::affiche_resultat "limit_result		   = $form_req(limit_result)"
+     ::console::affiche_resultat "type_result		   = $form_req(type_result)"
+     ::console::affiche_resultat "type_select		   = $form_req(type_select)"
+     ::console::affiche_resultat "nbimg			      = $form_req(nbimg)"
    
    }
 
@@ -2200,41 +2200,33 @@ namespace eval bddimages_liste {
 
 proc ::bddimages_liste::lget { tabkey inkey } {
 
-  foreach keyval $tabkey {
-    set key [lindex $keyval 0]
-    set val [lindex $keyval 1]
-    if { [string equal -nocase [ string trim $key ] [ string trim $inkey ]]} {
-       return $val
-       }
-    }
-return ""
+   foreach keyval $tabkey {
+      set key [lindex $keyval 0]
+      set val [lindex $keyval 1]
+      if { [string equal -nocase [ string trim $key ] [ string trim $inkey ]]} {
+         return $val
+      }
+   }
+   return ""
+
 }
-
-
-
-
 
 
 proc ::bddimages_liste::lupdate { tabkey inkey inval } {
 
-  set result_list ""
-  foreach keyval $tabkey {
+   set result_list ""
+   foreach keyval $tabkey {
+      set key [lindex $keyval 0]
+      set val [lindex $keyval 1]
+      if { [string equal -nocase [ string trim $key ] [ string trim $inkey ]]} {
+         lappend result_list [list $inkey $inval]
+      } else {
+         lappend result_list [list $key $val]
+      }
+   }
+   return $result_list
 
-     set key [lindex $keyval 0]
-     set val [lindex $keyval 1]
-
-    if { [string equal -nocase [ string trim $key ] [ string trim $inkey ]]} {
-        lappend result_list [list $inkey $inval]
-     } else {
-        lappend result_list [list $key $val]
-     }
-  }
-
-return $result_list
 }
-
-
-
 
 
 proc ::bddimages_liste::ladd { tabkey inkey inval } {
@@ -2244,34 +2236,23 @@ proc ::bddimages_liste::ladd { tabkey inkey inval } {
    } else {
       lappend tabkey [list $inkey $inval]
    }
-   
-return $tabkey
+   return $tabkey
+
 }
 
 
 
 proc ::bddimages_liste::lexist { tabkey inkey } {
 
-  foreach keyval $tabkey {
-     set key [lindex $keyval 0]
-     if { [string equal -nocase [ string trim $key ] [ string trim $inkey ]]} {
-        return 1
-     }
-  }
+   foreach keyval $tabkey {
+      set key [lindex $keyval 0]
+      if { [string equal -nocase [ string trim $key ] [ string trim $inkey ]]} {
+         return 1
+      }
+   }
+   return 0
 
-return 0
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 #--- Fin Classe

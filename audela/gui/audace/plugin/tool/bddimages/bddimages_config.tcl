@@ -21,6 +21,7 @@
 #--------------------------------------------------
 
 namespace eval bddimages_config {
+   
    package require bddimagesXML 1.0
    package require bddimagesAdmin 1.0
 
