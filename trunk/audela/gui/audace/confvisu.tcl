@@ -3807,7 +3807,7 @@ namespace eval ::confVisu {
       #--- j'affiche la boite
       set private($visuNo,hBox) [eval {$private($visuNo,hCanvas) create rect} $private($visuNo,box_1) \
          $private($visuNo,box_2) -outline $::audace(color,drag_rectangle) -tag selBox]
-
+      set private($visuNo,boxSize) [list $x1 $y1 $x2 $y2]
       return 0
    }
 
