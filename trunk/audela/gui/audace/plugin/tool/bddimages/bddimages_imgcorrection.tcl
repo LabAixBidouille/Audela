@@ -367,7 +367,7 @@ proc ::bddimages_imgcorrection::create_image_offset { type inforesult } {
 
       if {$methode == 1} {
          buf$bufno load "$bddconf(dirtmp)/${type}0$ext"
-         ttscript2 "IMA/STACK  $bddconf(dirtmp) offset       0  $k $ext $bddconf(dirtmp) $fileout . $ext KS kappa=3"
+         ttscript2 "IMA/STACK  $bddconf(dirtmp) offset       0  $k $ext $bddconf(dirtmp) $fileout . $ext MED"
          ttscript2 "IMA/SERIES $bddconf(dirtmp) $fileout .  .  $ext $bddconf(dirtmp) $fileout . $ext STAT"
          buf$bufno load "$bddconf(dirtmp)/${fileout}${ext}"
          ::console::affiche_resultat "MEAN : [buf$bufno getkwd \"MEAN\"]\n"
@@ -384,6 +384,21 @@ proc ::bddimages_imgcorrection::create_image_offset { type inforesult } {
       insertion_solo $bddconf(dirtmp)/${fileout}${ext}${gz}
 
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -409,7 +424,7 @@ proc ::bddimages_imgcorrection::create_image_dark { type inforesult } {
       
       if {$methode == 1} {
          buf$bufno load "$bddconf(dirtmp)/${type}0${ext}"
-         ttscript2 "IMA/STACK  $bddconf(dirtmp) dark       0  $k $ext $bddconf(dirtmp) $fileout . $ext KS kappa=3"
+         ttscript2 "IMA/STACK  $bddconf(dirtmp) dark       0  $k $ext $bddconf(dirtmp) $fileout . $ext MED"
          ttscript2 "IMA/SERIES $bddconf(dirtmp) $fileout .  .  $ext $bddconf(dirtmp) $fileout . $ext STAT"
          buf$bufno load "$bddconf(dirtmp)/${fileout}${ext}"
          ::console::affiche_resultat "MEAN : [buf$bufno getkwd MEAN]\n"
@@ -417,16 +432,29 @@ proc ::bddimages_imgcorrection::create_image_dark { type inforesult } {
       
       if {$methode == 2} {
          buf$bufno load "$bddconf(dirtmp)/${type}0${ext}"
-         ttscript2 "IMA/STACK  $bddconf(dirtmp) dark       0  $k $ext $bddconf(dirtmp) $fileout . $ext KS kappa=3"
+         ttscript2 "IMA/STACK  $bddconf(dirtmp) dark       0  $k $ext $bddconf(dirtmp) $fileout . $ext MED"
          ttscript2 "IMA/SERIES $bddconf(dirtmp) $fileout .  .  $ext $bddconf(dirtmp) $fileout . $ext STAT"
          buf$bufno load "$bddconf(dirtmp)/${fileout}${ext}"
          ::console::affiche_resultat "MEAN : [buf$bufno getkwd MEAN]\n"
+      }
+      
+      if {$methode == 3} {
+
+         set f [file join $bddconf(dirtmp) ${fileout}]
+
+         smedian dark ${fileout} $k
+      }
+      
+      if {$methode == 4} {
+
+         ttscript2 "IMA/STACK  $bddconf(dirtmp) dark 0 $k $ext $bddconf(dirtmp) $fileout . $ext MED"
       }
       
 
 
 
       buf$bufno load "$bddconf(dirtmp)/${fileout}${ext}"
+      ::console::affiche_resultat "MEAN DARK: [buf$bufno getkwd MEAN]\n"
       buf$bufno setkwd [list "BDDIMAGES STATE" "CORR" "string" "RAW | CORR | CATA | ?" ""]
       buf$bufno setkwd [list "DATE-OBS" "$dateobs" "string" "DATEISO" ""]
       buf$bufno save "$bddconf(dirtmp)/${fileout}${ext}"
@@ -523,8 +551,6 @@ proc ::bddimages_imgcorrection::create_image_flat { type inforesult } {
 
             #loadima $f
             buf$bufno load $f
-            ::console::affiche_resultat "buf1 load $f\n"
-
 
             #::console::affiche_resultat "SDARK sdark0$ext\n"
             #::console::affiche_resultat "STAT sdark0$ext [get_stat $bufno]\n"
@@ -548,7 +574,7 @@ proc ::bddimages_imgcorrection::create_image_flat { type inforesult } {
                set expoflat [expr [lindex [buf$bufno getkwd EXPOSURE] 1]  * 1.0]        
 
                set fact [expr $expoflat / $expodark]
-               #::console::affiche_resultat "FLAT - MEAN : $meanflat - EXPOSURE : $expoflat - FACT : $fact\n"
+               ::console::affiche_resultat "FLAT - MEAN : $meanflat - EXPOSURE : $expoflat - FACT : $fact\n"
                
                buf$bufno load "$bddconf(dirtmp)/sdark0${ext}"
                #::console::affiche_resultat "STAT sdark1 av [get_stat $bufno]\n"
@@ -571,13 +597,13 @@ proc ::bddimages_imgcorrection::create_image_flat { type inforesult } {
 
          }
 
-
-
-
          # Pile KAPPA SIGMA
-         #buf$bufno load "$bddconf(dirtmp)/flatn0${ext}"
-         #::console::affiche_resultat "flatn$k$ext\n"
-         ttscript2 "IMA/STACK  $bddconf(dirtmp) flatn    0  $k $ext $bddconf(dirtmp) $fileout . $ext KS kappa=3"
+         #ttscript2 "IMA/STACK  $bddconf(dirtmp) flatn    0  $k $ext $bddconf(dirtmp) $fileout . $ext KS kappa=3"
+
+         # Pile MEDIANE
+         ttscript2 "IMA/STACK  $bddconf(dirtmp) flatn    0  $k $ext $bddconf(dirtmp) $fileout . $ext MED"
+
+         # Inscrit les stat dans le header de l image
          ttscript2 "IMA/SERIES $bddconf(dirtmp) $fileout .  .  $ext $bddconf(dirtmp) $fileout . $ext STAT"
          buf$bufno load "$bddconf(dirtmp)/${fileout}${ext}"
          set mean [buf$bufno getkwd "MEAN"]
@@ -606,6 +632,37 @@ proc ::bddimages_imgcorrection::create_image_flat { type inforesult } {
          buf$bufno load "$bddconf(dirtmp)/${fileout}${ext}"
          ::console::affiche_resultat "MEAN : [buf$bufno getkwd \"MEAN\"]\n"
       }
+
+
+      if { $methode == 3 } {
+
+         if {$nbsoffset == 0 && $nbsdark == 1 } {
+            sub2 flat sdark0 flats 0 $k
+            ngain2 flats flatn 20000 $k
+            smedian flatn ${fileout} $k
+         }
+
+
+      }
+      if { $methode == 4 } {
+
+         if {$nbsoffset == 0 && $nbsdark == 1 } {
+         
+            ttscript2 "IMA/SERIES $bddconf(dirtmp) flat  0  $k $ext $bddconf(dirtmp) flats    0  $ext SUB file=$bddconf(dirtmp)/sdark0$ext offset=0" 
+            ttscript2 "IMA/SERIES $bddconf(dirtmp) flats 0  $k $ext $bddconf(dirtmp) flatn    0  $ext NORMGAIN normgain_value=20000"
+            ttscript2 "IMA/STACK  $bddconf(dirtmp) flatn 0  $k $ext $bddconf(dirtmp) $fileout .  $ext MED"
+         }
+
+
+      }
+
+
+
+
+
+
+
+
 
       buf$bufno load "$bddconf(dirtmp)/${fileout}${ext}"
       buf$bufno setkwd [list "BDDIMAGES STATE" "CORR" "string" "RAW | CORR | CATA | ?" ""]
@@ -652,39 +709,77 @@ proc ::bddimages_imgcorrection::create_image_deflat {  } {
       set nbdeflat  [llength $::bddimages_imgcorrection::deflat_img_list]
       set k [expr $nbdeflat - 1]
 
+      set methode 1
+      
+      if {$methode == 1} {
 
-      set fichiers [::bddimages_imgcorrection::img_list_to_filename_list $::bddimages_imgcorrection::deflat_img_list long]
+         # Soustraction des Dark et Offset
+         if {$nbsoffset == 1 && $nbsdark == 1 } {
+            ::console::affiche_resultat "Soustraction des Dark et Offset\n"
+            ttscript2 "IMA/SERIES $bddconf(dirtmp) deflat 0 $k $ext $bddconf(dirtmp) deflat 0 $ext SUBDARK dark=sdark0$ext bias=soffset0$ext exptime=EXPOSURE dexptime=EXPOSURE nullpixel=-10000"
+         }
+         if {$nbsoffset == 1 && $nbsdark == 0 } {
+            ::console::affiche_resultat "Soustraction de l OFFSET\n"
+            ttscript2 "IMA/SERIES $bddconf(dirtmp) deflat 0 $k $ext $bddconf(dirtmp) deflat 0 $ext SUB file=$bddconf(dirtmp)/soffset0$ext offset=0"
+         }
+         if {$nbsoffset == 0 && $nbsdark == 1 } {
 
-      # Soustraction des Dark et Offset
-      ::console::affiche_resultat "Soustraction des Dark et Offset\n"
-      if {$nbsoffset == 1 && $nbsdark == 1 } {
-         ttscript2 "IMA/SERIES $bddconf(dirtmp) deflat 0 $k $ext $bddconf(dirtmp) deflat 0 $ext SUBDARK dark=sdark0$ext bias=soffset0$ext exptime=EXPOSURE dexptime=EXPOSURE nullpixel=-10000"
+            ::console::affiche_resultat "Soustraction du DARK\n"
+            if {1==1} {
+               set f [file join $bddconf(dirtmp) "sdark0$ext"]
+               buf$bufno load $f
+               set meandark [lindex [buf$bufno getkwd MEAN] 1]
+               set expodark [expr [lindex [buf$bufno getkwd EXPOSURE] 1] * 1.0]
+
+               for {set x 0} {$x<$nbdeflat} {incr x} {
+                  buf$bufno load "$bddconf(dirtmp)/deflat${x}${ext}"
+                  set meandeflat [lindex [buf$bufno getkwd MEAN] 1]
+                  set expodeflat [expr [lindex [buf$bufno getkwd EXPOSURE] 1]  * 1.0]        
+                  set fact [expr $expodeflat / $expodark]
+                  ::console::affiche_resultat "FLAT - MEAN : $meandeflat - EXPOSURE : $expodeflat - FACT : $fact\n"
+                  ttscript2 "IMA/SERIES $bddconf(dirtmp) sdark0 .  .  $ext $bddconf(dirtmp) sdark1 .  $ext MULT constant=$fact"
+                  ttscript2 "IMA/SERIES $bddconf(dirtmp) deflat $x $x $ext $bddconf(dirtmp) deflat $x $ext SUB file=$bddconf(dirtmp)/sdark1$ext offset=0"
+               }
+            } else {
+            ttscript2 "IMA/SERIES $bddconf(dirtmp) deflat 0 $k $ext $bddconf(dirtmp) deflat 0 $ext SUB file=$bddconf(dirtmp)/sdark0$ext offset=0"
+            }
+
+         }
+
+
+
+         if { $nbsflat == 1 } {
+
+            set f [file join $bddconf(dirtmp) "sflat0$ext"]
+            buf$bufno load $f
+            set meanflat [lindex [buf$bufno getkwd MEAN] 1]
+            ::console::affiche_resultat "K . E / F -- K = $meanflat\n"
+
+            # Division par le flat
+            ::console::affiche_resultat "Division par le flat\n"
+            ttscript2 "IMA/SERIES $bddconf(dirtmp) deflat 0 $k $ext $bddconf(dirtmp) deflat 0 $ext DIV file=$bddconf(dirtmp)/sflat0$ext constant=$meanflat nullpixel=-10000"
+
+            # Change les mots cles
+            ::console::affiche_resultat "Modif Header\n"
+            for {set x 0} {$x<$nbdeflat} {incr x} {
+
+               buf$bufno load "$bddconf(dirtmp)/deflat${x}${ext}"
+               buf$bufno setkwd [list "BDDIMAGES STATE" "CORR" "string" "RAW | CORR | CATA | ?" ""]
+               set fileout [::bddimages_imgcorrection::create_filename_deflat "deflat${x}${ext}"]
+               buf$bufno save "$bddconf(dirtmp)/${fileout}${ext}"
+               buf$bufno clear
+               ::console::affiche_resultat " $x / $k : "
+               insertion_solo $bddconf(dirtmp)/${fileout}${ext}${gz}
+            }
+
+         }
+
       }
-      if {$nbsoffset == 1 && $nbsdark == 0 } {
-         ttscript2 "IMA/SERIES $bddconf(dirtmp) deflat 0 $k $ext $bddconf(dirtmp) deflat 0 $ext SUB file=$bddconf(dirtmp)/soffset0$ext offset=0"
-      }
-      if {$nbsoffset == 0 && $nbsdark == 1 } {
-         # Soustraction du DARK
-         ttscript2 "IMA/SERIES $bddconf(dirtmp) deflat 0 $k $ext $bddconf(dirtmp) deflat 0 $ext SUB file=$bddconf(dirtmp)/sdark0$ext offset=0"
-      }
 
-
-
-      if { $nbsflat == 1 } {
-
-         set f [file join $bddconf(dirtmp) "sflat0$ext"]
-         buf$bufno load $f
-         set meanflat [lindex [buf$bufno getkwd MEAN] 1]
-         ::console::affiche_resultat "K . E / F -- K = $meanflat\n"
-
-         # Division par le flat
-         ::console::affiche_resultat "Division par le flat\n"
-         ttscript2 "IMA/SERIES $bddconf(dirtmp) deflat 0 $k $ext $bddconf(dirtmp) deflat 0 $ext DIV file=$bddconf(dirtmp)/sflat0$ext constant=$meanflat nullpixel=-10000 bitpix=16"
-
-         # Change les mots cles
-         ::console::affiche_resultat "Modif Header\n"
-         for {set x 0} {$x<$nbdeflat} {incr x} {
-
+      if { $methode == 3 } {
+         sub2 deflat sdark0 deflat 0 $k
+         div2 deflat sflat0 deflat 20000 $k
+         for {set x 1} {$x<$nbdeflat} {incr x} {
             buf$bufno load "$bddconf(dirtmp)/deflat${x}${ext}"
             buf$bufno setkwd [list "BDDIMAGES STATE" "CORR" "string" "RAW | CORR | CATA | ?" ""]
             set fileout [::bddimages_imgcorrection::create_filename_deflat "deflat${x}${ext}"]
@@ -696,6 +791,23 @@ proc ::bddimages_imgcorrection::create_image_deflat {  } {
 
       }
 
+      if { $methode == 4 } {
+
+         ttscript2 "IMA/SERIES $bddconf(dirtmp) deflat 0 $k $ext $bddconf(dirtmp) deflat 0 $ext SUB file=$bddconf(dirtmp)/sdark0$ext offset=0" 
+         ttscript2 "IMA/SERIES $bddconf(dirtmp) deflat 0 $k $ext $bddconf(dirtmp) deflat 0 $ext DIV file=$bddconf(dirtmp)/sflat0$ext constant=20000 nullpixel=-10000"
+
+
+         for {set x 1} {$x<$nbdeflat} {incr x} {
+            buf$bufno load "$bddconf(dirtmp)/deflat${x}${ext}"
+            buf$bufno setkwd [list "BDDIMAGES STATE" "CORR" "string" "RAW | CORR | CATA | ?" ""]
+            set fileout [::bddimages_imgcorrection::create_filename_deflat "deflat${x}${ext}"]
+            buf$bufno save "$bddconf(dirtmp)/${fileout}${ext}"
+            buf$bufno clear
+            ::console::affiche_resultat " $x / $k : "
+            insertion_solo $bddconf(dirtmp)/${fileout}${ext}${gz}
+         }
+
+      }
 
   }
 
@@ -845,6 +957,8 @@ proc ::bddimages_imgcorrection::correction { type inforesult} {
       ::bddimages_imgcorrection::delete_to_tmp "dark"    $::bddimages_imgcorrection::dark_img_list    
       ::bddimages_imgcorrection::delete_to_tmp "sdark"   $::bddimages_imgcorrection::sdark_img_list   
       ::bddimages_imgcorrection::delete_to_tmp "flat"    $::bddimages_imgcorrection::flat_img_list    
+      ::bddimages_imgcorrection::delete_to_tmp "flatn"   $::bddimages_imgcorrection::flat_img_list    
+      ::bddimages_imgcorrection::delete_to_tmp "flats"   $::bddimages_imgcorrection::flat_img_list    
       ::bddimages_imgcorrection::delete_to_tmp "sflat"   $::bddimages_imgcorrection::sflat_img_list   
       ::bddimages_imgcorrection::delete_to_tmp "deflat"  $::bddimages_imgcorrection::deflat_img_list   
       file delete -force -- [file join $bddconf(dirtmp) tt.log]
@@ -959,7 +1073,7 @@ proc ::bddimages_imgcorrection::correction { type inforesult} {
          set tabkey    [::bddimages_liste::lget $img "tabkey"]
          set bdditype  [string trim [lindex [::bddimages_liste::lget $tabkey "bddimages_type"] 1]]
          set bddistate [string trim [lindex [::bddimages_liste::lget $tabkey "bddimages_state"] 1]]
-         ::console::affiche_resultat "result $bdditype $bddistate\n"
+         #::console::affiche_resultat "result $bdditype $bddistate\n"
 
          if {($bddimages_type  == $bdditype)&&($bddimages_state == $bddistate)}  {
             lappend result_list $img
@@ -972,8 +1086,61 @@ proc ::bddimages_imgcorrection::correction { type inforesult} {
 
 
 
+   proc ::bddimages_imgcorrection::chrono_first_img { img_list } {
 
+      set cpt 0
+      foreach img $img_list {
+         incr cpt
+         set commundatejj [::bddimages_liste::lget $img "commundatejj"]
+         if {$cpt == 1} {
+            set datemin $commundatejj
+            set result_img $img
+            continue
+         }
+         if { $commundatejj < $datemin} {
+            set datemin $commundatejj
+            set result_img $img
+         }
+      }
+      return $result_img
+   }
 
+   proc ::bddimages_imgcorrection::chrono_last_img { img_list } {
+
+      set cpt 0
+      foreach img $img_list {
+         incr cpt
+         set commundatejj [::bddimages_liste::lget $img "commundatejj"]
+         if {$cpt == 1} {
+            set datemin $commundatejj
+            set result_img $img
+            continue
+         }
+         if { $commundatejj > $datemin} {
+            set datemin $commundatejj
+            set result_img $img
+         }
+      }
+      return $result_img
+   }
+
+   proc ::bddimages_imgcorrection::chrono_sort_img { img_list } {
+
+      set sort_img_list ""
+      foreach img $::bddimages_cdl::img_list {
+         set commundatejj [::bddimages_liste::lget $img "commundatejj"]
+         lappend sort_img_list [list $commundatejj $img]
+      }
+
+      set sort_img_list [lsort -real -index 0 $sort_img_list]
+
+      set result_img_list ""
+      foreach line $sort_img_list {
+         lappend result_img_list [lindex $line 1]
+      }
+
+      return $result_img_list
+   }
 
 
 
