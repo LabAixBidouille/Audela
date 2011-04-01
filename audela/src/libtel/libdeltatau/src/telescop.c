@@ -1201,7 +1201,7 @@ int deltatau_goto(struct telprop *tel)
       }
    }
    axe='1';
-   v=tel->speed_slew_ra*tel->radec_speed_ra_conversion;
+   v=fabs(tel->speed_slew_ra*tel->radec_speed_ra_conversion);
 	sprintf(s10,"#%cI%c22=%.12f",axe,axe,v);
 	sprintf(s1,"#%cj=%d",axe,p);
    /* --- Effectue le pointage DEC --- */
@@ -1212,7 +1212,7 @@ int deltatau_goto(struct telprop *tel)
    }
    p=(int)(tel->rotd00-(v-tel->dec00)*tel->radec_position_conversion);
    axe='2';
-   v=tel->speed_slew_ra*tel->radec_speed_dec_conversion; 
+   v=fabs(tel->speed_slew_ra*tel->radec_speed_dec_conversion); 
 	sprintf(s20,"#%cI%c22=%.12f",axe,axe,v);
 	sprintf(s2,"#%cj=%d",axe,p);
    /* --- Slew simultaneously or not --- */
@@ -1269,7 +1269,7 @@ int deltatau_hadec_goto(struct telprop *tel)
       }
    }
    axe='1';
-   v=tel->speed_slew_ra*tel->radec_speed_ra_conversion;
+   v=fabs(tel->speed_slew_ra*tel->radec_speed_ra_conversion);
    sprintf(s10,"#%cI%c22=%.12f",axe,axe,v);
 	sprintf(s1,"#%cj=%d",axe,p);
    /* --- Effectue le pointage DEC --- */
@@ -1280,7 +1280,7 @@ int deltatau_hadec_goto(struct telprop *tel)
    }
    p=(int)(tel->rotd00-(v-tel->dec00)*tel->radec_position_conversion);
    axe='2';
-   v=tel->speed_slew_ra*tel->radec_speed_dec_conversion; 
+   v=fabs(tel->speed_slew_ra*tel->radec_speed_dec_conversion);
    sprintf(s20,"#%cI%c22=%.12f",axe,axe,v);
 	sprintf(s2,"#%cj=%d",axe,p);
    /* --- Slew simultaneously or not --- */
@@ -1423,7 +1423,7 @@ int deltatau_suivi_marche (struct telprop *tel)
    int res;
    double v;
    /*--- Track alpha */
-   v=tel->speed_track_ra*tel->radec_speed_ra_conversion;
+   v=fabs(tel->speed_track_ra*tel->radec_speed_ra_conversion);
    axe='1';
    sprintf(s10,"#%cI%c22=%.12f",axe,axe,v);
 	printf("tel->latitude=%f\n",tel->latitude);
@@ -1438,7 +1438,7 @@ int deltatau_suivi_marche (struct telprop *tel)
 	}
 	printf("s1=%s\n",s1);
    /*--- Track delta */
-   v=tel->speed_track_dec*tel->radec_speed_dec_conversion;
+   v=fabs(tel->speed_track_dec*tel->radec_speed_dec_conversion);
    axe='2';
    sprintf(s20,"#%cI%c22=%.12f",axe,axe,v);
 	printf("s20=%s\n",s20);
