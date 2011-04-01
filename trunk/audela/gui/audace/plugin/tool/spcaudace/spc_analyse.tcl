@@ -187,6 +187,93 @@ proc spc_degauss { args } {
 
 
 ##########################################################
+#  Procedure de détermination des limites d'une raie a une profondeur donnee
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 2011-03-11
+# Date de mise à jour : 2011-03-11
+# Arguments : fichier .fit du profil de raie lambda_raie_papprochee ylevel
+##########################################################
+
+proc spc_findlinelimits { args } {
+
+   global audace
+   global conf
+
+   if {[llength $args] == 3} {
+      set fichier [ lindex $args 0 ]
+      set lambda_raie [ expr 1.*[ lindex $args 1 ] ]
+      set ylevel [ lindex $args 2 ]
+
+      #--- Choisis la precision et le pas :
+      set precision [ expr $ylevel/50. ]
+      set infos [ spc_info $fichier ]
+      set pas [ expr [ lindex $infos 5 ]/1. ]
+      set precisionl [ expr $pas/2. ]
+      set ldeb [ lindex $infos 3 ]
+      set lfin [ lindex $infos 4 ]
+
+      #--- Recupere les listes de coordonnees :
+      set data [ spc_fits2data $fichier ]
+      set xvals [ lindex $data 0 ]
+      set yvals [ lindex $data 1 ]
+      set lldata [ llength $data ]
+
+      #--- Recherche la longueur d'onde centrale :
+      set lcentre $lambda_raie
+      foreach xval $xvals {
+         if { [expr abs($xval-$lambda_raie)]<=$precisionl } {
+            set lcentre $xval
+            break
+         }
+      }
+      if { $lcentre!=$lambda_raie } {
+         set idcentre [ lsearch $xvals $lcentre ]
+         if { $idcentre==-1 } { set idcentre [ expr int($lldata/2) ] }
+      } else {
+         set idcentre [ expr int($lldata/2) ]
+         ::console::affiche_erreur "Aucun centre de raie trouvé.\n"
+      }
+
+      #--- Recherche le la limite gauche :
+      set valindex $idcentre
+      for { set xval $lcentre } { $xval>=$ldeb } { set xval [ expr $xval-$pas ] } {
+         set yval [ lindex $yvals $valindex ]
+         if { [expr abs($yval-$ylevel)]<=$precision } {
+            #set xdeb $xval
+            set xdeb [ expr $xval-$pas ]
+            break
+         }
+         set valindex [ expr $valindex-1 ]
+      }
+      if { $valindex==0 } { set $xdeb [ expr $lcentre-0.5 ] }
+
+      #--- Recherche le la limite droite :
+      set valindex $idcentre
+      for { set xval $lcentre } { $xval<=$lfin } { set xval [ expr $xval+$pas ] } {
+         set yval [ lindex $yvals $valindex ]
+         if { [expr abs($yval-$ylevel)]<=$precision } {
+            #set xfin $xval
+            set xfin [ expr $xval+$pas ]
+            break
+         }
+         set valindex [ expr $valindex+1 ]
+      }
+      if { $valindex==[ expr $lldata-1 ] } { set $xfin [ expr $lcentre+0.5 ] }
+
+      #--- Fin du script :
+      set ylimits [ list $xdeb $xfin ]
+      ::console::affiche_resultat "Limites de la raie pour I=$ylevel : $xdeb-$xfin\n"
+      return $ylimits
+   } else {
+     ::console::affiche_erreur "Usage: spc_findlinelimits profil_de_raies_calibré lambda_raie ylevel\n"
+   }
+}
+#****************************************************************#
+
+
+
+##########################################################
 #  Procedure de détermination du centre d'une raie spectrale modelisee par une gaussienne.
 #
 # Auteur : Benjamin MAUCLAIRE

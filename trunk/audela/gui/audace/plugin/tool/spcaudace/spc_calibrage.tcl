@@ -3842,7 +3842,7 @@ proc spc_rinstrum { args } {
        #--- Lissage du résultat de la division :
        if { $flag_br==0 } {
            #-- Meth 3 : interpolation polynomiale de degré 1 -> RI 1
-           set rinstrum [ spc_ajustrid1 $result_division n ]
+           set rinstrum [ spc_ajustrid1 $result_division "o" ]
            file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale-1$conf(extension,defaut)"
            #-- Meth 5 : filtrage passe bas (largeur de 25 pixls par defaut) -> RI 3
            #set rinstrum [ spc_ajustripbas $result_division ]
@@ -3852,7 +3852,7 @@ proc spc_rinstrum { args } {
            file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale-2$conf(extension,defaut)"
            #-- Meth 4 : interpolation polynomiale de 4 -> RI 3
            #- set rinstrum [ spc_polynomefilter $result_division 3 150 o ]
-           set rinstrum [ spc_polynomefilter $result_division 3 150 n ]
+           set rinstrum [ spc_polynomefilter $result_division 3 150 "o" ]
            file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale-3$conf(extension,defaut)"
        } elseif { $flag_br==1 } {
            if { $dispersion<=1. } {
