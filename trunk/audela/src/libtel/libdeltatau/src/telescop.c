@@ -1437,13 +1437,23 @@ int deltatau_suivi_marche (struct telprop *tel)
    v=tel->speed_track_dec*tel->radec_speed_dec_conversion;
    axe='2';
    sprintf(s20,"#%cI%c22=%.12f",axe,axe,v);
-   if (tel->speed_track_dec>0) {
-      sprintf(s2,"#%cj-",axe);
-   } else if (tel->speed_track_dec<0) {
-      sprintf(s2,"#%cj+",axe);
-   } else {
-      sprintf(s2,"#%cj+",axe);
-   }
+	if (tel->latitude>=0) {
+		if (tel->speed_track_dec>0) {
+			sprintf(s2,"#%cj-",axe);
+		} else if (tel->speed_track_dec<0) {
+			sprintf(s2,"#%cj+",axe);
+		} else {
+			sprintf(s2,"#%cj+",axe);
+		}
+	} else {
+		if (tel->speed_track_dec>0) {
+			sprintf(s2,"#%cj+",axe);
+		} else if (tel->speed_track_dec<0) {
+			sprintf(s2,"#%cj-",axe);
+		} else {
+			sprintf(s2,"#%cj+",axe);
+		}
+	}
    /*--- Track start */
    /* --- Slew simultaneously or not --- */
 	if (tel->simultaneus==1) {
