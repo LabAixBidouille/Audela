@@ -218,9 +218,11 @@ proc satel_transit { satelname objename date1 dayrange {home ""} } {
    return [list $sun_transits $sun_conjonctions]
 }
 
+# ROS1 : Format pour le formulaire CADOR
+# ROS2 : Format pour le formulaire de la page web de maintenance
+# TEL1 : Format pour envoyer les commandes au telescope tel1
 proc satel_scene { {formatscene ROS1} {satelname "ISS"} {date now} {home ""} } {
    global audace
-   set formatscene ROS1
    set texte ""
    if {$home==""} {
       set home $audace(posobs,observateur,gps)
@@ -269,7 +271,16 @@ proc satel_scene { {formatscene ROS1} {satelname "ISS"} {date now} {home ""} } {
    set sepangle [lindex [mc_sepangle $ra1 $dec1 $ra2 $dec2] 0]
    set speed [expr $sepangle/$dt]   
    append texte "=== Format $formatscene ===\n"
-   append texte "Name $name\nRA $ra\nDEC $dec\ndra (deg/sec): [format %.7f $dra]\nddec (deg/sec): [format %.7f $ddec]\nDate $dateiso\n"
+   if {$formatscene=="TEL1"} {
+      append texte "Name $name\n"
+      append texte "tel1 speedtrack [format %.7f $dra] [format %.7f $ddec]\n"
+      append texte "tel1 radec goto \{[format %.5f $ra1] [format %.5f $dec1]\} -blocking 1\n"
+   } elseif {$formatscene=="ROS2"} {
+      append texte "Name $name\n"
+      append texte "[format %.5f $ra1] [format %.5f $dec1] J2000.0 20 20 [format %.7f $dra] [format %.7f $ddec]\n"
+   } else {
+      append texte "Name $name\nRA $ra\nDEC $dec\ndra (deg/sec): [format %.7f $dra]\nddec (deg/sec): [format %.7f $ddec]\nDate $dateiso\n"
+   }
    append texte "=== Other details ===\n"
    append texte "Illumination $ill\nDistance [format %.1f $distkm] km\n"
    append texte "Azimuth [format %.5f $azim] deg\nElevation [format %+.5f $elev] deg\n"
