@@ -1426,9 +1426,6 @@ int deltatau_suivi_marche (struct telprop *tel)
    v=fabs(tel->speed_track_ra*tel->radec_speed_ra_conversion);
    axe='1';
    sprintf(s10,"#%cI%c22=%.12f",axe,axe,v);
-	printf("tel->latitude=%f\n",tel->latitude);
-	printf("s10=%s\n",s10);
-	printf("tel->speed_track_ra=%f\n",tel->speed_track_ra);
    if (tel->speed_track_ra>0) {
       sprintf(s1,"#%cj+",axe);
    } else if (tel->speed_track_ra<0) {
@@ -1436,31 +1433,17 @@ int deltatau_suivi_marche (struct telprop *tel)
    } else {
       sprintf(s1,"#%cj+",axe);
 	}
-	printf("s1=%s\n",s1);
    /*--- Track delta */
    v=fabs(tel->speed_track_dec*tel->radec_speed_dec_conversion);
    axe='2';
    sprintf(s20,"#%cI%c22=%.12f",axe,axe,v);
-	printf("s20=%s\n",s20);
-	printf("tel->speed_track_dec=%f\n",tel->speed_track_dec);
-	if (tel->latitude>=0) {
-		if (tel->speed_track_dec>0) {
-			sprintf(s2,"#%cj-",axe);
-		} else if (tel->speed_track_dec<0) {
-			sprintf(s2,"#%cj+",axe);
-		} else {
-			sprintf(s2,"#%cj+",axe);
-		}
+	if (tel->speed_track_dec>0) {
+		sprintf(s2,"#%cj-",axe);
+	} else if (tel->speed_track_dec<0) {
+		sprintf(s2,"#%cj+",axe);
 	} else {
-		if (tel->speed_track_dec>0) {
-			sprintf(s2,"#%cj+",axe);
-		} else if (tel->speed_track_dec<0) {
-			sprintf(s2,"#%cj-",axe);
-		} else {
-			sprintf(s2,"#%cj+",axe);
-		}
+		sprintf(s2,"#%cj+",axe);
 	}
-	printf("s2=%s\n",s2);
    /*--- Track start */
    /* --- Slew simultaneously or not --- */
 	if (tel->simultaneus==1) {
