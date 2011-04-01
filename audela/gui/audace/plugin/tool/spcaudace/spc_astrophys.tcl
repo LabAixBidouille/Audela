@@ -267,12 +267,14 @@ proc spc_phaseplot { args } {
       set ordonnees_orig [ list ]
       for {set k 0} { $k < $nb_echant } {incr k} {
 	 set ligne [lindex $contents $k]
-	 set x [lindex $ligne 0]
-	 set y [lindex $ligne 1]
+	 #set x [lindex $ligne 0]
+	 #set y [lindex $ligne 1]
 	 #::console::affiche_resultat " x= $x   y= $y \n"
 	 lappend abscisses [lindex $ligne 0] 
-	 lappend ordonnees [lindex $ligne 1] 
+	 lappend ordonnees [lindex $ligne 1]
+         #lappend coords [ list [lindex $ligne 0] [lindex $ligne 1] ]
       }
+      #set coords [ lsort -increasing $coords ]
       set temps_max [ expr [ lindex $abscisses $nb_echant_1 ] - [ lindex $abscisses 0 ] ]
       set omega [ expr 2. *$pi / $period ]
       # classement des donnees en fonction de la phase
@@ -579,7 +581,7 @@ proc spc_vradialecorr { args } {
        buf$audace(bufNo) load "$audace(rep_images)/$spectre"
        set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
        if { [llength $args] == 4 } {
-          if { [ lindex [ buf$audace(bufNo) getkwd "OBJCTRA" ] 1 ] == "" } {
+          if { [ lindex [ buf$audace(bufNo) getkwd "OBJCTRA" ] 1 ] == "" && [ lindex [ buf$audace(bufNo) getkwd "RA" ] 1 ] == ""  } {
              ::console::affiche_erreur "Il manque les coordonnées RA-DEC e l'objet.\nUsage: spc_vradialecorr profil_raies_étalonné type_raie (e/a) lambda_raie_approché lambda_réf ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
              return 0
           } else {
@@ -611,6 +613,110 @@ proc spc_vradialecorr { args } {
        return $results
    } else {
        ::console::affiche_erreur "Usage: spc_vradialecorr profil_raies_étalonné type_raie (e/a) lambda_raie_approché lambda_réf ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
+   }
+}
+#*******************************************************************************#
+
+
+
+##########################################################
+# Procedure de determination de la vitesse radiale en km/s à l'aide du décalage d'une raie
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 08-02-2007
+# Date de mise à jour : 08-02-2007
+# Arguments : profil_raies_étalonné, lambda_raie_approché, ?
+##########################################################
+
+proc spc_vradialecorraccur { args } {
+
+   global audace
+   global conf
+   #-- Precision de la mesure d'une longueur d'onde a +- 1/4 de pixel :
+   set precision 0.25
+
+   if { [llength $args] == 5 || [llength $args] == 11 || [llength $args] == 14 } {
+       if { [llength $args] == 5 } {
+	   set spectre [ lindex $args 0 ]
+	   set typeraie [ lindex $args 1 ]
+	   set lambda_approchee [ lindex $args 2 ]
+	   set lambda_ref [lindex $args 3 ]
+	   set ylevel [lindex $args 4 ]
+       } elseif { [llength $args] == 11 } {
+	   set spectre [ lindex $args 0 ]
+	   set typeraie [ lindex $args 1 ]
+	   set lambda_approchee [ lindex $args 2 ]
+	   set lambda_ref [lindex $args 3 ]
+	   set ylevel [lindex $args 4 ]
+	   set ra_h [ lindex $args 5 ]
+	   set ra_m [ lindex $args 6 ]
+	   set ra_s [ lindex $args 7 ]
+	   set dec_d [ lindex $args 8 ]
+	   set dec_m [ lindex $args 9 ]
+	   set dec_s [ lindex $args 10 ]
+       } elseif { [llength $args] == 14 } {
+	   set spectre [ lindex $args 0 ]
+	   set typeraie [ lindex $args 1 ]
+	   set lambda_approchee [ lindex $args 2 ]
+	   set lambda_ref [lindex $args 3 ]
+	   set ylevel [lindex $args 4 ]
+	   set ra_h [ lindex $args 5 ]
+	   set ra_m [ lindex $args 6 ]
+	   set ra_s [ lindex $args 7 ]
+	   set dec_d [ lindex $args 8 ]
+	   set dec_m [ lindex $args 9 ]
+	   set dec_s [ lindex $args 10 ]
+	   set jj [ lindex $args 11 ]
+	   set mm [ lindex $args 12 ]
+	   set aaaa [ lindex $args 13 ]
+       } else {
+	   ::console::affiche_erreur "Usage: spc_vradialecorraccur profil_raies_étalonné type_raie (e/a) lambda_approchée lambda_réf intensity_around_line_center ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
+	   return 0
+       }
+
+
+       #--- Calcul la correction héliocentrique :
+       # mc_baryvel {2006 7 22} {19h24m58.00s} {11d57m00.0s} J2000.0
+       buf$audace(bufNo) load "$audace(rep_images)/$spectre"
+       set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+       set ladate [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ]
+       set jd [ mc_date2jd $ladate ]
+       if { [llength $args] == 5 } {
+          if { [ lindex [ buf$audace(bufNo) getkwd "OBJCTRA" ] 1 ] == "" && [ lindex [ buf$audace(bufNo) getkwd "RA" ] 1 ] == ""  } {
+             ::console::affiche_erreur "Il manque les coordonnées RA-DEC e l'objet.\nUsage: spc_vradialecorr profil_raies_étalonné type_raie (e/a) lambda_raie_approché lambda_réf intensity_around_line_center ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
+             return 0
+          } else {
+             set vhelio [ spc_vhelio $spectre ]
+          }
+       } elseif { [llength $args] == 11 } {
+	   set vhelio [ spc_vhelio $spectre $ra_h $ra_m $ra_s $dec_d $dec_m $dec_s ]
+       } elseif { [llength $args] == 14 } {
+	   set vhelio [ spc_vhelio $spectre $ra_h $ra_m $ra_s $dec_d $dec_m $dec_s $dd $mm $aaaa ]
+       } else {
+	   ::console::affiche_erreur "Impossible de calculer vhélio ; Usage: spc_vradialecorr profil_raies_étalonné type_raie (e/a) lambda_raie_approchée lambda_réf intensity_around_line_center ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
+	   return 0
+       }
+       ::console::affiche_resultat "\n"
+
+       #--- Centre gaussien de la raie étudié :
+       set linfos [ spc_findlinelimits $spectre $lambda_approchee $ylevel ]
+       set lambda_begin [ lindex $linfos 0 ]
+       set lambda_end [ lindex $linfos 1 ]
+       set lambda_centre [ spc_centergaussl $spectre $lambda_begin $lambda_end $typeraie ]
+
+       #--- Calcul la vitesse radiale : Acker p.101 Dunod 2005.
+       set delta_lambda [ expr $lambda_centre-$lambda_ref ]
+       set vrad [ expr 0.0001*round(10000*299792.458*$delta_lambda/$lambda_ref) ]
+       set delta_vrad [ expr 0.0001*round(10000*299792.458*$precision*$cdelt1/$lambda_ref) ]
+       #-- The correction hc has to apply to the measured radial velocity: Vrad, real = Vrad,measured + hc.
+       set vradcorrigee [ expr 0.0001*round(10000*($vrad+$vhelio)) ]
+
+       #--- Formatage du résultat :
+       ::console::affiche_resultat "(Vdoppler=$vrad km/s, Vhelio=$vhelio km/s)\n\# La vitesse radiale de l'objet au $jd est :\n\# Vrad=$vradcorrigee +/- $delta_vrad km/s\n"
+       set results [ list $vradcorrigee $delta_vrad $vhelio $vrad ]
+       return $results
+   } else {
+       ::console::affiche_erreur "Usage: spc_vradialecorraccur profil_raies_étalonné type_raie (e/a) lambda_approchée lambda_réf intensity_around_line_center ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
    }
 }
 #*******************************************************************************#
