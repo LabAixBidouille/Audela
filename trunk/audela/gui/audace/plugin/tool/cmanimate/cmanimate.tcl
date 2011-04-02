@@ -1,6 +1,6 @@
 #
 # Fichier : cmanimate.tcl
-# Description : Animation/slides control panel for Cloud Monitor
+# Description : Animation/Slides Control Panel for Cloud Monitor
 # Auteur : Sylvain RONDI
 # Mise à jour $Id$
 #
@@ -897,7 +897,7 @@ namespace eval ::cmanimate {
       #--- Initialisation
       set error "0"
       #--- Verifie que le nombre d'images est un entier non nul
-      if { ( [ TestEntier $panneau(cmanimate,nbi) ] == "0" ) || ( $panneau(cmanimate,nbi) == "0" ) } {
+      if { $panneau(cmanimate,nbi) == "0" } {
          tk_messageBox -title "$caption(cmanimate,attention)" -icon error \
             -message "$caption(cmanimate,nb_images1) $caption(cmanimate,nbre_entier)"
          set panneau(cmanimate,nbi) ""
@@ -905,7 +905,7 @@ namespace eval ::cmanimate {
          return $error
       }
       #--- Verifie que le nombre de ms est un entier non nul
-      if { ( [ TestEntier $panneau(cmanimate,ms) ] == "0" ) || ( $panneau(cmanimate,ms) == "0" ) } {
+      if { $panneau(cmanimate,ms) == "0" } {
          tk_messageBox -title "$caption(cmanimate,attention)" -icon error \
             -message "$caption(cmanimate,delai) $caption(cmanimate,nbre_entier)"
          set panneau(cmanimate,ms) "100"
@@ -913,7 +913,7 @@ namespace eval ::cmanimate {
          return $error
       }
       #--- Verifie que le nombre de boucles est un entier non nul
-      if { ( [ TestEntier $panneau(cmanimate,nbl) ] == "0" ) || ( $panneau(cmanimate,nbl) == "0" ) } {
+      if { $panneau(cmanimate,nbl) == "0" } {
          tk_messageBox -title "$caption(cmanimate,attention)" -icon error \
             -message "$caption(cmanimate,nb_boucles1) $caption(cmanimate,nbre_entier)"
          set panneau(cmanimate,nbl) "2"
@@ -1084,7 +1084,8 @@ proc cmanimateBuildIF { This } {
 
          #--- Entry for the number of images
          entry  $This.fra3.ent1 -textvariable panneau(cmanimate,nbi) -relief groove \
-            -width 4 -justify center
+            -width 4 -justify center \
+            -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 9999 }
          pack   $This.fra3.ent1 -in $This.fra3 -anchor center -expand true -fill none -side left -pady 4
 
       pack $This.fra3 -side top -fill x
@@ -1098,7 +1099,8 @@ proc cmanimateBuildIF { This } {
 
          #--- Entry for the delay
          entry  $This.fra4.ent1 -textvariable panneau(cmanimate,ms) -relief groove \
-            -width 5 -justify center
+            -width 5 -justify center \
+            -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 9999 }
          pack   $This.fra4.ent1 -in $This.fra4 -anchor center -expand true -fill none -side left -pady 4
 
       pack $This.fra4 -side top -fill x
@@ -1112,7 +1114,8 @@ proc cmanimateBuildIF { This } {
 
          #--- Entry pour le nb de boucles
          entry  $This.fra5.ent1 -textvariable panneau(cmanimate,nbl) -relief groove \
-            -width 3 -justify center
+            -width 3 -justify center \
+            -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 9999 }
          pack   $This.fra5.ent1 -in $This.fra5 -anchor center -expand true -fill none -side left -pady 4
 
       pack $This.fra5 -side top -fill x
