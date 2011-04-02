@@ -164,21 +164,21 @@ proc ::animate::cmdGo { } {
    #--- Lancement de l'animation
    if { $panneau(animate,filename) != "" } {
       #--- Verifie que le nombre d'images est un entier non nul
-      if { ( [ TestEntier $panneau(animate,nbi) ] == "0" ) || ( $panneau(animate,nbi) == "0" ) } {
+      if { $panneau(animate,nbi) == "0" } {
          tk_messageBox -title "$caption(animate,attention)" -icon error \
             -message "$caption(animate,nb_images1) $caption(animate,nbre_entier)"
          set panneau(animate,nbi) ""
          return
       }
       #--- Verifie que le nombre de ms est un entier non nul
-      if { ( [ TestEntier $panneau(animate,ms) ] == "0" ) || ( $panneau(animate,ms) == "0" ) } {
+      if { $panneau(animate,ms) == "0" } {
          tk_messageBox -title "$caption(animate,attention)" -icon error \
             -message "$caption(animate,delai) $caption(animate,nbre_entier)"
          set panneau(animate,ms) "300"
          return
       }
       #--- Verifie que le nombre de boucles est un entier non nul
-      if { ( [ TestEntier $panneau(animate,nbl) ] == "0" ) || ( $panneau(animate,nbl) == "0" ) } {
+      if { $panneau(animate,nbl) == "0" } {
          tk_messageBox -title "$caption(animate,attention)" -icon error \
             -message "$caption(animate,nb_boucles1) $caption(animate,nbre_entier)"
          set panneau(animate,nbl) "5"
@@ -299,7 +299,8 @@ proc ::animate::animBuildIF { This } {
          pack $This.fra3.lab1 -in $This.fra3 -anchor center -expand true -fill none -padx 2 -pady 5 -side left
 
          #--- Entry pour le nombre d'images
-         entry $This.fra3.ent1 -textvariable panneau(animate,nbi) -relief groove -width 4 -justify center
+         entry $This.fra3.ent1 -textvariable panneau(animate,nbi) -relief groove -width 4 -justify center \
+            -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 9999 }
          pack $This.fra3.ent1 -in $This.fra3 -anchor center -expand true -fill none -padx 2 -pady 5 -side left
 
       pack $This.fra3 -side top -fill x
@@ -312,7 +313,8 @@ proc ::animate::animBuildIF { This } {
          pack $This.fra4.lab1 -in $This.fra4 -anchor center -expand true -fill none -padx 2 -pady 5 -side left
 
          #--- Entry pour le delai
-         entry $This.fra4.ent1 -textvariable panneau(animate,ms) -relief groove -width 5 -justify center
+         entry $This.fra4.ent1 -textvariable panneau(animate,ms) -relief groove -width 5 -justify center \
+            -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 9999 }
          pack $This.fra4.ent1 -in $This.fra4 -anchor center -expand true -fill none -padx 2 -pady 5 -side left
 
       pack $This.fra4 -side top -fill x
@@ -325,7 +327,8 @@ proc ::animate::animBuildIF { This } {
          pack $This.fra5.lab1 -in $This.fra5 -anchor center -expand true -fill none -padx 2 -pady 5 -side left
 
          #--- Entry pour le nb de boucles
-         entry $This.fra5.ent1 -textvariable panneau(animate,nbl) -relief groove -width 4 -justify center
+         entry $This.fra5.ent1 -textvariable panneau(animate,nbl) -relief groove -width 4 -justify center \
+            -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 9999 }
          pack $This.fra5.ent1 -in $This.fra5 -anchor center -expand true -fill none -padx 2 -pady 5 -side left
 
       pack $This.fra5 -side top -fill x
