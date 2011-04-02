@@ -45,7 +45,10 @@
 #
 #  Structure du tabkey
 #
-# { {NAXIS1 1024} {NAXIS2 1024} etc ... }
+# { {TELESCOP { {TELESCOP} {TAROT CHILI} string {Observatory name} } }
+#   {NAXIS2   { {NAXIS2}   {1024}        int    {}                 } }
+#    etc ...
+# }
 #
 #--------------------------------------------------
 #
