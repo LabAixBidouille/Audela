@@ -924,11 +924,15 @@ namespace eval ::audace {
    }
 
    proc cursor { curs } {
-      ::confVisu::cursor $curs
+      global audace
+
+      ::confVisu::cursor $audace(visuNo) $curs
    }
 
    proc bg { coul } {
-      ::confVisu::bg $coul
+      global audace
+
+      ::confVisu::bg $audace(visuNo) $coul
    }
 
    # ::audace::screen2Canvas coord
