@@ -350,14 +350,13 @@ namespace eval bddimages_status {
       wm protocol $reportConsole WM_DELETE_WINDOW { 
          destroy $reportConsole 
       }
-      
+
       text $reportConsole.text -height 30 -width 80 -yscrollcommand "$reportConsole.scroll set"
       scrollbar $reportConsole.scroll -command "$reportConsole.text yview"
       pack $reportConsole.scroll -side right -fill y
       pack $reportConsole.text -expand yes -fill both
 
       set text $reportConsole.text
-      set title {Le widget text}
       $text tag configure BODY -foreground black -background white
       $text tag configure TITLE -foreground "#808080" -justify center -font [ list {Arial} 12 bold ]
       $text tag configure H1 -justify left -font [ list {Arial} 10 normal ]

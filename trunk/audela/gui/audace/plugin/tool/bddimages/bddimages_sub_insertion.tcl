@@ -691,7 +691,7 @@ proc bddimages_catas_datainsert { filename sizefich form } {
      }
 
   # -- Cas ou l image n est pas encore inseree dans la base
-  if {$idbddimg==-1} {
+  if {$idbddimg == -1} {
     set dirfilename "$bddconf(dirbase)/unlinked"
     createdir_ifnot_exist $dirfilename
     set errnum [catch {file rename $filename $dirfilename/} msg]
@@ -702,14 +702,13 @@ proc bddimages_catas_datainsert { filename sizefich form } {
       if {$errnum!=0} {
         bddimages_sauve_fich "bddimages_catas_datainsert: ERREUR 302 : effacement de $filename impossible <err=$errnum> <msg=$msg>"
         return 302
-        } else {
+      } else {
         bddimages_sauve_fich "bddimages_catas_datainsert: Fichier $filename supprime"
-        }
-        # Fin if {$errnum!=0} ... file delete $filename
       }
-    return 300
+      # Fin if {$errnum!=0} ... file delete $filename
     }
-
+    return 300
+  }
 
   set racinecata  [file tail $bddconf(dircata)]
   set racinecatafilename $racinecata/[string range $dirfilename 5 999]

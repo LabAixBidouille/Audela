@@ -129,6 +129,8 @@
 
 namespace eval bddimages_recherche {
 
+   package require bddimagesXML 1.0
+   
    global audace
    global bddconf
 
@@ -966,7 +968,6 @@ namespace eval bddimages_recherche {
       global popupTbl
       global paramwindow
 
-
       #--- Quelques raccourcis utiles
       set tbl $frame.tbl
       set popupTbl $frame.popupTbl
@@ -1092,6 +1093,7 @@ namespace eval bddimages_recherche {
 
       #--- Gestion des evenements
       bind [$tbl bodypath] <ButtonPress-3> [ list tk_popup $popupTbl %X %Y ]
+      bind [$tbl bodypath] <Control-Key-a> [ list $tbl selection set 0 end ]
       bind $tbl <<ListboxSelect>> [ list ::bddimages_recherche::cmdButton1Click %W ]
 
    }
