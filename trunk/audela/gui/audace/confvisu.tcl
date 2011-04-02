@@ -3256,7 +3256,7 @@ namespace eval ::confVisu {
       $private($visuNo,hCanvas) configure -cursor $curs
    }
 
-   proc bg { coul } {
+   proc bg { visuNo coul } {
       variable private
 
       $private($visuNo,hCanvas) configure -background $coul
