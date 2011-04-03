@@ -163,6 +163,8 @@ proc ::bddimages_imgcorrection::get_info_img {  } {
 
 proc ::bddimages_imgcorrection::verif_all_img {  } {
 
+   global caption
+
    set img_list ""
    foreach img $::bddimages_imgcorrection::offset_img_list  {lappend img_list $img}
    foreach img $::bddimages_imgcorrection::soffset_img_list {lappend img_list $img}
@@ -192,9 +194,9 @@ proc ::bddimages_imgcorrection::verif_all_img {  } {
          set bin1sav     $bin1
          set bin2sav     $bin2
       } else {
-         if {$telescopsav!=$telescop} {return -code error "Erreur TELESCOP different"} 
-         if {$bin1sav    !=$bin1}     {return -code error "Erreur BIN1 different"} 
-         if {$bin2sav    !=$bin2}     {return -code error "Erreur BIN2 different"} 
+         if {$telescopsav != $telescop} {return -code error $caption(bddimages_imgcorrection,pbtelescope)} 
+         if {$bin1sav     != $bin1}     {return -code error $caption(bddimages_imgcorrection,pbbinning)} 
+         if {$bin2sav     != $bin2}     {return -code error $caption(bddimages_imgcorrection,pbbinning)} 
       }
       incr cpt
    }
@@ -205,6 +207,8 @@ proc ::bddimages_imgcorrection::verif_all_img {  } {
 
 
 proc ::bddimages_imgcorrection::verif_filter_img {  } {
+
+   global caption
 
    set img_list ""
    foreach img $::bddimages_imgcorrection::flat_img_list    {lappend img_list $img}
@@ -225,7 +229,9 @@ proc ::bddimages_imgcorrection::verif_filter_img {  } {
       if {$cpt==0} {
          set filtersav $filter
       } else {
-         if {$filtersav!=$filter} {return -code error "Erreur Filtre different"} 
+         if {$filtersav!=$filter} {
+            return -code error $caption(bddimages_imgcorrection,pbfiltre)
+         } 
       }
       incr cpt
    }
@@ -1580,18 +1586,21 @@ proc ::bddimages_imgcorrection::run_create { this type } {
       frame $outputFrame
       pack configure $outputFrame -side top -expand 0 -padx 2 -pady 1
 
-   # Si les elements selectionnes permettent l'action...
+   # Concatenation des listes et verifications
    if {$::bddimages_imgcorrection::erreur_selection == 0} {
-      # concatenation des listes
+      # 
       if {[catch {::bddimages_imgcorrection::verif_all_img} msg]}  {
-         ::console::affiche_erreur "ERROR: $msg\n"
-         return
+         set ::bddimages_imgcorrection::erreur_selection 1
+         lappend reportMessage [list $::bddimages_imgcorrection::type $msg]
       }
       if {[catch {::bddimages_imgcorrection::verif_filter_img} msg]}  {
-         ::console::affiche_erreur "ERROR: $msg\n"
-         return
+         set ::bddimages_imgcorrection::erreur_selection 1
+         lappend reportMessage [list $::bddimages_imgcorrection::type $msg]
       }
+   }
 
+   # Si les elements selectionnes permettent l'action...
+   if {$::bddimages_imgcorrection::erreur_selection == 0} {
       set filename "<generic>"
       set ::bddimages_imgcorrection::inforesult ""
       # Defini un nom d'image dans les cas de creation d'une image MAITRE

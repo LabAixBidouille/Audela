@@ -435,7 +435,7 @@ namespace eval bddimages_insertion {
               -command { ::bddimages_insertion::fermer }
            pack $This.frame11.but_fermer \
               -in $This.frame11 -side right -anchor e \
-              -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+              -padx 5 -pady 3 -ipadx 2 -ipady 2 -expand 0
 
            #--- Creation du bouton aide
            button $This.frame11.but_aide \
@@ -443,15 +443,23 @@ namespace eval bddimages_insertion {
               -command { ::audace::showHelpPlugin tool bddimages bddimages.htm }
            pack $This.frame11.but_aide \
               -in $This.frame11 -side right -anchor e \
-              -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+              -padx 5 -pady 3 -ipadx 2 -ipady 2 -expand 0
 
            #--- Creation du bouton insertion
            button $This.frame11.but_insertion \
-              -text "2. $caption(bddimages_insertion,inser)" -borderwidth 2 \
+              -text "3. $caption(bddimages_insertion,inser)" -borderwidth 2 \
               -command { insertion This }
            pack $This.frame11.but_insertion \
               -in $This.frame11 -side right -anchor e \
-              -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+              -padx 5 -pady 3 -ipadx 2 -ipady 2 -expand 0
+
+           #--- Creation du bouton insertion
+           button $This.frame11.but_select \
+              -text "2. $caption(bddimages_insertion,select)" -borderwidth 2 \
+              -command [list $This.frame7.tbl selection set 0 end]
+           pack $This.frame11.but_select \
+              -in $This.frame11 -side right -anchor e \
+              -padx 5 -pady 3 -ipadx 2 -ipady 2 -expand 0
 
            #--- Creation du bouton lecture entete
            button $This.frame11.but_lectentete \
@@ -459,7 +467,7 @@ namespace eval bddimages_insertion {
               -command { lecture_info This }
            pack $This.frame11.but_lectentete \
               -in $This.frame11 -side right -anchor e \
-              -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+              -padx 5 -pady 3 -ipadx 2 -ipady 2 -expand 0
 
            #--- Creation du bouton insertion
            button $This.frame11.but_refresh \
@@ -473,7 +481,7 @@ namespace eval bddimages_insertion {
                        }
            pack $This.frame11.but_refresh \
               -in $This.frame11 -side right -anchor e \
-              -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+              -padx 5 -pady 3 -ipadx 2 -ipady 2 -expand 0
 
            #--- Cree un label pour le nb image
            label $This.frame11.nbimg -font $bddconf(font,arial_12_b) \
@@ -576,7 +584,7 @@ namespace eval bddimages_insertion {
            -command { ::audace::showHelpPlugin tool bddimages bddimages.htm field_2 }
 
       #--- Gestion des evenements
-      bind [$tbl bodypath] <Control-Key-a> [list $tbl selection set 0 end ]
+      bind [$tbl bodypath] <Control-Key-a> [ list $tbl selection set 0 end ]
       bind [$tbl bodypath] <ButtonPress-3> [ list tk_popup $popupTbl %X %Y ]
 
    }
