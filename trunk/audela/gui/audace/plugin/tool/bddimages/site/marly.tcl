@@ -17,8 +17,9 @@
 # date <2006-06-23T20:22:36.08>
 #--------------------------------------------------
 
-proc chg_tabkey {tabkey} {
+proc chg_tabkey { tabkey } {
 
+   # DATE-OBS
    if {! [::bddimages_liste::lexist $tabkey "date-obs"]} {
       return [list 1 "????-??-??T??:??:??"] 
    }
@@ -40,17 +41,33 @@ proc chg_tabkey {tabkey} {
          return [list 1 "${annee}-${mois}-${jour}T??:??:??"]
       }
       set heurobs [lindex [::bddimages_liste::lget $tabkey "tu-start"] 1]
-      set dateiso "$annee-$mois-${jour}T$heurobs"
+      set dateiso [format "%04d-%02d-%02dT%s.00" $annee $mois $jour [string trim $heurobs]]
 
    }
-
    set l_dateiso [list "date-obs" $dateiso "string" "" ""]
    set tabkey [ ::bddimages_liste::lupdate $tabkey "date-obs" $l_dateiso ]
 
+   # EXPOSURE
    if {! [::bddimages_liste::lexist $tabkey "exposure"]} {
       set line [::bddimages_liste::lget $tabkey "tm-expos"]
       set exposure [lreplace $line 0 0 "EXPOSURE"]
       set tabkey [::bddimages_liste::ladd $tabkey "exposure" $exposure]
+   }
+
+   # BIN1
+   if {! [::bddimages_liste::lexist $tabkey "bin1"]} {
+      set tabkey [::bddimages_liste::ladd $tabkey "bin1" [list "BIN1" "1" "INT" "" ""]]
+   }
+
+   # BIN2
+   if {! [::bddimages_liste::lexist $tabkey "bin2"]} {
+      set tabkey [::bddimages_liste::ladd $tabkey "bin2" [list "BIN2" "1" "INT" "" ""]]
+   }
+
+   # FILTER
+   if {! [::bddimages_liste::lexist $tabkey "filter"]} {
+      set f [::bddimages_liste::lget $tabkey "FILTREF"]
+      set tabkey [::bddimages_liste::ladd $tabkey "filter" $f]
    }
 
    return [list 0 $tabkey]

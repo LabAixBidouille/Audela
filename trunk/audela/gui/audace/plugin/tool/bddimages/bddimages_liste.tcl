@@ -2202,7 +2202,7 @@ proc ::bddimages_liste::lget { tabkey inkey } {
 
    foreach keyval $tabkey {
       set key [lindex $keyval 0]
-      set val [lindex $keyval 1]
+      set val [string trim [lindex $keyval 1]]
       if { [string equal -nocase [ string trim $key ] [ string trim $inkey ]]} {
          return $val
       }
@@ -2241,7 +2241,6 @@ proc ::bddimages_liste::ladd { tabkey inkey inval } {
 }
 
 
-
 proc ::bddimages_liste::lexist { tabkey inkey } {
 
    foreach keyval $tabkey {
@@ -2253,7 +2252,6 @@ proc ::bddimages_liste::lexist { tabkey inkey } {
    return 0
 
 }
-
 
 #--- Fin Classe
 

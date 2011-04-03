@@ -32,6 +32,9 @@ set caption(bddimages_imgcorrection,noresult)   "No"
 set caption(bddimages_imgcorrection,consoleE)   "Error report"
 set caption(bddimages_imgcorrection,consoleF)   "List of selected files"
 set caption(bddimages_imgcorrection,nofile)     "No selected file"
+set caption(bddimages_imgcorrection,pbfiltre)   "The filter of the selected images is different"
+set caption(bddimages_imgcorrection,pbtelescope) "The telescop of the selected images is different"
+set caption(bddimages_imgcorrection,pbbinning)  "The binning of the selected images is different"
 
 # *************** Version française **** **********************
 if { [ string compare $langage "french" ] == "0" } {
@@ -58,6 +61,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bddimages_imgcorrection,consoleE)   "Rapport d'erreurs"
    set caption(bddimages_imgcorrection,consoleF)   "Liste des fichiers sélectionnés"
    set caption(bddimages_imgcorrection,nofile)     "Aucun fichier sélectionné"
+   set caption(bddimages_imgcorrection,pbfiltre)   "Le filtre des images sélectionnées est différent"
+   set caption(bddimages_imgcorrection,pbtelescope) "Le télescope des images sélectionnées est différent"
+   set caption(bddimages_imgcorrection,pbbinning)  "Le binning des images sélectionnées est différent"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {

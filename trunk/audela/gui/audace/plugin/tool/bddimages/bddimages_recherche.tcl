@@ -1652,28 +1652,26 @@ proc ::bddimages_recherche::get_intellist { i } {
       set bddimages_cataastrom [list "bddimages_cataastrom" [lindex [::bddimages_liste::lget $tabkey "bddimages_cataastrom"] 1] ]
       set bddimages_photometry [list "bddimages_photometry" [lindex [::bddimages_liste::lget $tabkey "bddimages_photometry"] 1] ]
       set bddimages_cataphotom [list "bddimages_cataphotom" [lindex [::bddimages_liste::lget $tabkey "bddimages_cataphotom"] 1] ]
-
-      lappend table_result($i) [list \
-                                     $idbddimg            \
-                                     $filename            \
-                                     $telescop            \
-                                     $dateobs             \
-                                     $exposure            \
-                                     $object              \
-                                     $filter              \
-                                     $bin1                \
-                                     $bin2                \
-                                     $bddimages_version   \
-                                     $bddimages_state     \
-                                     $bddimages_type      \
-                                     $bddimages_wcs       \
-                                     $bddimages_namecata  \
-                                     $bddimages_datecata  \
-                                     $bddimages_astroid   \
-                                     $bddimages_astrometry\
-                                     $bddimages_cataastrom\
-                                     $bddimages_photometry\
-                                     $bddimages_cataphotom\
+      lappend table_result($i) [list $idbddimg             \
+                                     $filename             \
+                                     $telescop             \
+                                     $dateobs              \
+                                     $exposure             \
+                                     $object               \
+                                     $filter               \
+                                     $bin1                 \
+                                     $bin2                 \
+                                     $bddimages_version    \
+                                     $bddimages_state      \
+                                     $bddimages_type       \
+                                     $bddimages_wcs        \
+                                     $bddimages_namecata   \
+                                     $bddimages_datecata   \
+                                     $bddimages_astroid    \
+                                     $bddimages_astrometry \
+                                     $bddimages_cataastrom \
+                                     $bddimages_photometry \
+                                     $bddimages_cataphotom
                                 ]
    }
 
