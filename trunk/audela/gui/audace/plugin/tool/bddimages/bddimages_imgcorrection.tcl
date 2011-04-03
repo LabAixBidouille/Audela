@@ -276,7 +276,7 @@ proc ::bddimages_imgcorrection::cleanEntities { chunk } {
    regsub -all {~}  $chunk {} chunk
    regsub -all {:}  $chunk {} chunk
    regsub -all {/}  $chunk {} chunk
-   regsub -all {\.}  $chunk {} chunk
+   regsub -all {\.} $chunk {} chunk
    return $chunk
 }
 
@@ -1124,7 +1124,7 @@ proc ::bddimages_imgcorrection::showReport { {title "Console"} {ltexte "Empty"} 
    set zonetext $imgConsole.text
    text $zonetext -height 30 -width 80 -yscrollcommand "$zonetext.scroll set"
    pack $zonetext -expand yes -fill both -padx 5 -pady 5
-   scrollbar $zonetext.scroll -command "$zonetext.text yview"
+   scrollbar $zonetext.scroll -command "$zonetext yview"
    pack $zonetext.scroll -side right -fill y
 
    $zonetext tag configure BODY -foreground black -background white
