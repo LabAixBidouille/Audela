@@ -1,11 +1,8 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><head>
-  
-  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-  <title>Fonctions utilitaires</title>
 
   
-</head><body>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><title>Fonctions utilitaires</title></head><body>
 <p class="date">Date de mise à jour : 02 avril 2011</p>
 
 <h1>Fonctions utilitaires </h1>
@@ -160,20 +157,14 @@ directions).</p>
 
 <h2><a name="fwhm" id="fwhm"> fwhm visuNo</a></h2>
 
-<p>Fonction de traitement d'images. Pour une visu donnée (visuNo), elle calcule la fwhm d'une
-étoile qui est dans une boîte préalablement
-dessinée sur l'image dont les quatre coordonnées des
-coins opposés sont connues sous la forme d'une
-liste x1 y1 x2 y2, par exemple {10 100 25 98}. Pourquoi une
-écriture aussi peu naturelle ? Parce que l'interface Aud'ACE met
-à disposition une fonction [ ::confVisu::getBox $visu ] qui
-contient les quatre coordonnées de la boîte tracée
-sur l'image.<br />
+<p>Pour une visu donnée (visuNo), cette commande calcule la fwhm suivant l'axe horizontal et l'axe
+vertical d'une ou des étoiles qui est ou sont dans une boîte préalablement
+dessinée sur l'image.<br />
 </p>
 
-<p>Le résultat de cette commande est une liste de deux
-éléments, la fwhm suivant l'axe horizontal et suivant l'axe
-vertical.</p>
+<p>Le résultat de cette commande est l'ouverture de le fenêtre
+accessible par le menu Analyse --&gt; Fwhm avec les 2 valeurs fwhmx et
+fwhmy.</p>
 
 <h2><a name="offset" id="offset"> offset val</a></h2>
 
