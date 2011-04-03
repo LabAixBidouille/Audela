@@ -3499,6 +3499,12 @@ namespace eval ::confVisu {
          }
       }
 
+      $menu add separator
+      $menu add command -label $caption(confVisu,zoom+) \
+         -command "::confVisu::incrementZoom $visuNo"
+      $menu add command -label $caption(confVisu,zoom-) \
+         -command "::confVisu::decrementZoom $visuNo"
+
       bind $private($visuNo,hCanvas) <ButtonPress-1> ""
       bind $private($visuNo,hCanvas) <ButtonPress-3> [list tk_popup $menu %X %Y]
    }
