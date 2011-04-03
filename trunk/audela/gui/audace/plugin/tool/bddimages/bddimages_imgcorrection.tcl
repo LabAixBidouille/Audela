@@ -235,15 +235,77 @@ proc ::bddimages_imgcorrection::verif_filter_img {  } {
 
 
 
-proc ::bddimages_imgcorrection::name_to_stdname { name } {
+#proc ::bddimages_imgcorrection::name_to_stdname { name } {
+#
+#   set result [string trim $name]
+#   #set result [string tolower $result]
+#   set result [string map {" " "_"} $result]
+#   return $result
+#
+#}
 
-   set result [string trim $name]
-   #set result [string tolower $result]
-   set result [string map {" " "_"} $result]
-   return $result
 
+#
+# Clean special characters in a string
+# @param string chaine a convertir
+# @return chunk chaine convertie
+proc ::bddimages_imgcorrection::cleanEntities { chunk } {
+   regsub -all { }  $chunk {} chunk
+   regsub -all {!}  $chunk {} chunk
+   regsub -all {"}  $chunk {} chunk
+   regsub -all {#}  $chunk {} chunk
+   regsub -all {\$} $chunk {} chunk
+   regsub -all {\&} $chunk {} chunk
+   regsub -all {'}  $chunk {} chunk
+   regsub -all {\(} $chunk {} chunk
+   regsub -all {\)} $chunk {} chunk
+   regsub -all {\*} $chunk {} chunk
+   regsub -all {\+} $chunk {} chunk
+   regsub -all {\-} $chunk {} chunk
+   regsub -all {,}  $chunk {} chunk
+   regsub -all {=}  $chunk {} chunk
+   regsub -all {\?} $chunk {} chunk
+   regsub -all {@}  $chunk {} chunk
+   regsub -all {\[} $chunk {} chunk
+   regsub -all {\]} $chunk {} chunk
+   regsub -all {\^} $chunk {} chunk
+   regsub -all {`}  $chunk {} chunk
+   regsub -all {\{} $chunk {} chunk
+   regsub -all {\|} $chunk {} chunk
+   regsub -all {\}} $chunk {} chunk
+   regsub -all {~}  $chunk {} chunk
+   regsub -all {:}  $chunk {} chunk
+   regsub -all {/}  $chunk {} chunk
+   regsub -all {\.}  $chunk {} chunk
+   return $chunk
 }
 
+
+#proc ::bddimages_imgcorrection::create_filename_deflat { file } {
+#
+#   set img_list $::bddimages_imgcorrection::deflat_img_list
+#
+#   set filename ""
+#   foreach img $img_list {
+#      set filenametmp [::bddimages_liste::lget $img "filenametmp"]
+#      if {$file == $filenametmp} {
+#         set tabkey   [::bddimages_liste::lget $img "tabkey"]
+#         set telescop [::bddimages_imgcorrection::name_to_stdname [lindex [::bddimages_liste::lget $tabkey telescop] 1] ]
+#         set bin1     [::bddimages_imgcorrection::name_to_stdname [lindex [::bddimages_liste::lget $tabkey bin1]     1] ]
+#         set bin2     [::bddimages_imgcorrection::name_to_stdname [lindex [::bddimages_liste::lget $tabkey bin2]     1] ]
+#         set filter   [::bddimages_imgcorrection::name_to_stdname [lindex [::bddimages_liste::lget $tabkey filter]   1] ]
+#         set dateobs  [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
+#         set object   [::bddimages_imgcorrection::name_to_stdname [lindex [::bddimages_liste::lget $tabkey "object"] 1] ]
+#         set ms       [ string range $dateobs end-2 end ]
+#         set date     [ string range $dateobs 0 end-4 ]
+#         set date     [ clock format [clock scan $date] -format %Y%m%d_%H%M%S ]
+#         set filename "${telescop}_${date}_${ms}_bin${bin1}x${bin2}_F${filter}_${object}"
+#         break
+#      }
+#   }
+#
+#   return $filename
+#}
 
 
 proc ::bddimages_imgcorrection::create_filename_deflat { file } {
@@ -254,17 +316,16 @@ proc ::bddimages_imgcorrection::create_filename_deflat { file } {
    foreach img $img_list {
       set filenametmp [::bddimages_liste::lget $img "filenametmp"]
       if {$file == $filenametmp} {
-         set tabkey       [::bddimages_liste::lget $img "tabkey"]
-         set telescop     [::bddimages_imgcorrection::name_to_stdname [lindex [::bddimages_liste::lget $tabkey telescop] 1] ]
-         set bin1         [::bddimages_imgcorrection::name_to_stdname [lindex [::bddimages_liste::lget $tabkey bin1]     1] ]
-         set bin2         [::bddimages_imgcorrection::name_to_stdname [lindex [::bddimages_liste::lget $tabkey bin2]     1] ]
-         set filter       [::bddimages_imgcorrection::name_to_stdname [lindex [::bddimages_liste::lget $tabkey filter]   1] ]
-         set dateobs      [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
-         set object       [::bddimages_imgcorrection::name_to_stdname [lindex [::bddimages_liste::lget $tabkey "object"] 1] ]
-         set ms    [ string range $dateobs end-2 end ]
-         set date  [ string range $dateobs 0 end-4 ]
-         set date  [ clock format [clock scan $date] -format %Y%m%d_%H%M%S ]
-         set filename "${telescop}_${date}_${ms}_bin${bin1}x${bin2}_F${filter}_${object}"
+         set tabkey   [::bddimages_liste::lget $img "tabkey"]
+
+         set telescop [lindex [::bddimages_liste::lget $tabkey "telescop"] 1]
+         set dateobs  [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1]]
+         set bin1     [lindex [::bddimages_liste::lget $tabkey "bin1"] 1]
+         set bin2     [lindex [::bddimages_liste::lget $tabkey "bin2"] 1]
+         set filter   [lindex [::bddimages_liste::lget $tabkey "filter"] 1]
+         set object   [lindex [::bddimages_liste::lget $tabkey "object"] 1]
+
+         set filename [::bddimages_imgcorrection::cleanEntities "${telescop}_${dateobs}_bin${bin1}x${bin2}_F${filter}_${object}"]
          break
       }
    }
@@ -273,21 +334,20 @@ proc ::bddimages_imgcorrection::create_filename_deflat { file } {
 }
 
 
-
 proc ::bddimages_imgcorrection::create_filename { type } {
 
-
-   if {$type=="offset"} {
-      set img_list $::bddimages_imgcorrection::offset_img_list
-   }
-   if {$type=="dark"} {
-      set img_list $::bddimages_imgcorrection::dark_img_list
-   }
-   if {$type=="flat"} {
-      set img_list $::bddimages_imgcorrection::flat_img_list
-   }
-   if {$type=="deflat"} {
+   # Si action = DEFLAT alors retour 
+   # car le nommage des fichiers est fait autrement
+   if {$type == "deflat"} {
       return ""
+   }
+
+   # En fonction de l'action...
+   switch $type {
+      "offset" { set img_list $::bddimages_imgcorrection::offset_img_list }
+      "dark"   { set img_list $::bddimages_imgcorrection::dark_img_list }
+      "flat"   { set img_list $::bddimages_imgcorrection::flat_img_list }
+      default  { set img_list "" }
    }
 
    set commundatejjmoy 0
@@ -312,13 +372,12 @@ proc ::bddimages_imgcorrection::create_filename { type } {
    set ms               [ string range $dateobs end-2 end ]
    set commundatejjmoy  [ string range $dateobs 0 end-4 ]
    set commundatejjmoy  [ clock format [clock scan $commundatejjmoy] -format %Y%m%d_%H%M%S ]
- 
 
-   if {$type=="offset"||$type=="dark"} { 
-      set filename "${telescop}_${commundatejjmoy}_${ms}_bin${bin1}x${bin2}_${type}"
-   }
-   if {$type=="flat"} { 
-      set filename "${telescop}_${commundatejjmoy}_${ms}_bin${bin1}x${bin2}_F${filter}_${type}"
+   switch $type {
+      "offset" -
+      "dark"   { set filename "${telescop}_${commundatejjmoy}_${ms}_bin${bin1}x${bin2}_${type}" }
+      "flat"   { set filename "${telescop}_${commundatejjmoy}_${ms}_bin${bin1}x${bin2}_F${filter}_${type}" }
+      default  { set filename "?" }
    }
 
    return [list $filename $dateobs $bin1 $bin2]
@@ -1103,7 +1162,7 @@ proc ::bddimages_imgcorrection::showReport { {title "Console"} {ltexte "Empty"} 
 #--------------------------------------------------
 proc ::bddimages_imgcorrection::run_create { this type } {
    
-   global This
+   variable This
    global audace bddconf caption
    global entetelog
 
@@ -1534,6 +1593,8 @@ proc ::bddimages_imgcorrection::run_create { this type } {
       }
 
       set filename "<generic>"
+      set ::bddimages_imgcorrection::inforesult ""
+      # Defini un nom d'image dans les cas de creation d'une image MAITRE
       if { [llength $::bddimages_imgcorrection::deflat_img_list] == 0 } {
          set ::bddimages_imgcorrection::inforesult [::bddimages_imgcorrection::create_filename $type]
          set filename [lindex $::bddimages_imgcorrection::inforesult 0]
@@ -1557,12 +1618,13 @@ proc ::bddimages_imgcorrection::run_create { this type } {
         button $framecurrent.buttons.ok -text Ok \
            -command {
               ::bddimages_imgcorrection::correction $::bddimages_imgcorrection::type $::bddimages_imgcorrection::inforesult
-              destroy $This
+              destroy $::bddimages_imgcorrection::This
            }
         pack configure $framecurrent.buttons.ok -side right
       }
       # --- cancel
-      button $framecurrent.buttons.cancel -text Cancel -command {destroy $This}
+      button $framecurrent.buttons.cancel -text Cancel \
+         -command {destroy $::bddimages_imgcorrection::This}
       pack configure $framecurrent.buttons.cancel -side right
 
    #--- Mise a jour dynamique des couleurs
