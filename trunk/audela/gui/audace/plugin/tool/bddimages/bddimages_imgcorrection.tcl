@@ -239,20 +239,28 @@ proc ::bddimages_imgcorrection::verif_filter_img {  } {
    return -code ok ""
 }
 
-
-
-#proc ::bddimages_imgcorrection::name_to_stdname { name } {
 #
-#   set result [string trim $name]
-#   #set result [string tolower $result]
-#   set result [string map {" " "_"} $result]
-#   return $result
-#
-#}
+# Clean space character into string
+# @param string chaine a convertir
+# @return chunk chaine convertie
+proc ::bddimages_imgcorrection::isoDateToString { dateobs } {
+   regsub -all {\-} $dateobs {}  dateobs
+   regsub -all {:}  $dateobs {}  dateobs
+   regsub -all {\.} $dateobs {} dateobs
+   return $dateobs
+}
 
+#
+# Clean space character into string
+# @param string chaine a convertir
+# @return chunk chaine convertie
+proc ::bddimages_imgcorrection::cleanSpace { chunk } {
+   regsub -all { } $chunk {-} chunk
+   return $chunk
+}
 
 #
-# Clean special characters in a string
+# Clean special characters into string
 # @param string chaine a convertir
 # @return chunk chaine convertie
 proc ::bddimages_imgcorrection::cleanEntities { chunk } {
@@ -324,13 +332,14 @@ proc ::bddimages_imgcorrection::create_filename_deflat { file } {
       if {$file == $filenametmp} {
          set tabkey   [::bddimages_liste::lget $img "tabkey"]
 
-         set telescop [lindex [::bddimages_liste::lget $tabkey "telescop"] 1]
+         set telescop [string trim [lindex [::bddimages_liste::lget $tabkey "telescop"] 1]]
          set dateobs  [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1]]
-         set bin1     [lindex [::bddimages_liste::lget $tabkey "bin1"] 1]
-         set bin2     [lindex [::bddimages_liste::lget $tabkey "bin2"] 1]
-         set filter   [lindex [::bddimages_liste::lget $tabkey "filter"] 1]
-         set object   [lindex [::bddimages_liste::lget $tabkey "object"] 1]
+         set bin1     [string trim [lindex [::bddimages_liste::lget $tabkey "bin1"] 1]]
+         set bin2     [string trim [lindex [::bddimages_liste::lget $tabkey "bin2"] 1]]
+         set filter   [string trim [lindex [::bddimages_liste::lget $tabkey "filter"] 1]]
+         set object   [string trim [lindex [::bddimages_liste::lget $tabkey "object"] 1]]
 
+         set dateobs [::bddimages_imgcorrection::isoDateToString $dateobs]
          set filename [::bddimages_imgcorrection::cleanEntities "${telescop}_${dateobs}_bin${bin1}x${bin2}_F${filter}_${object}"]
          break
       }
@@ -360,10 +369,10 @@ proc ::bddimages_imgcorrection::create_filename { type } {
    set cpt 0
    foreach img $img_list {
       set tabkey       [::bddimages_liste::lget $img "tabkey"]
-      set telescop     [lindex [::bddimages_liste::lget $tabkey telescop] 1]
-      set bin1         [lindex [::bddimages_liste::lget $tabkey bin1]     1]
-      set bin2         [lindex [::bddimages_liste::lget $tabkey bin2]     1]
-      set filter       [string trim [lindex [::bddimages_liste::lget $tabkey filter]   1] ]
+      set telescop     [string trim [lindex [::bddimages_liste::lget $tabkey telescop] 1]]
+      set bin1         [string trim [lindex [::bddimages_liste::lget $tabkey bin1] 1]]
+      set bin2         [string trim [lindex [::bddimages_liste::lget $tabkey bin2] 1]]
+      set filter       [string trim [string trim [lindex [::bddimages_liste::lget $tabkey filter] 1] ]]
       set commundatejj [::bddimages_liste::lget $img commundatejj]
       set commundatejjmoy [expr $commundatejjmoy + $commundatejj]
       incr cpt
@@ -373,19 +382,23 @@ proc ::bddimages_imgcorrection::create_filename { type } {
       return ""
    }
 
-   set commundatejjmoy  [ expr $commundatejjmoy / $cpt ]
-   set dateobs          [ mc_date2iso8601 $commundatejjmoy ]
-   set ms               [ string range $dateobs end-2 end ]
-   set commundatejjmoy  [ string range $dateobs 0 end-4 ]
-   set commundatejjmoy  [ clock format [clock scan $commundatejjmoy] -format %Y%m%d_%H%M%S ]
+#   set commundatejjmoy  [ expr $commundatejjmoy / $cpt ]
+#   set dateobs          [ mc_date2iso8601 $commundatejjmoy ]
+#   set ms               [ string range $dateobs end-2 end ]
+#   set commundatejjmoy  [ string range $dateobs 0 end-4 ]
+#   set commundatejjmoy  [ clock format [clock scan $commundatejjmoy] -format %Y%m%d_%H%M%S ]
+
+   set dateobs [ mc_date2iso8601 [expr $commundatejjmoy/$cpt] ]
+   set commundatejjmoy [::bddimages_imgcorrection::isoDateToString $dateobs]
 
    switch $type {
       "offset" -
-      "dark"   { set filename "${telescop}_${commundatejjmoy}_${ms}_bin${bin1}x${bin2}_${type}" }
-      "flat"   { set filename "${telescop}_${commundatejjmoy}_${ms}_bin${bin1}x${bin2}_F${filter}_${type}" }
+      "dark"   { set filename "${telescop}_${commundatejjmoy}_bin${bin1}x${bin2}_${type}" }
+      "flat"   { set filename "${telescop}_${commundatejjmoy}_bin${bin1}x${bin2}_F${filter}_${type}" }
       default  { set filename "?" }
    }
 
+   set filename [::bddimages_imgcorrection::cleanSpace $filename]
    return [list $filename $dateobs $bin1 $bin2]
 }
 
