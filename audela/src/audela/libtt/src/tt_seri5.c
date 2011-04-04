@@ -378,7 +378,7 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
    TT_IMA *p_in,*p_out;
    long nelem;
    double dvalue;
-   int kkk,index,msg;
+   int kk,kkk,index,msg,nn;
    char *path_astromcatalog,*astromcatalog,message[TT_MAXLIGNE];
    int naxis1,naxis2;
    double dec;
@@ -393,6 +393,18 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
    time_t ltime;
    int taille,nombre;
    double XXXmin,XXXmax,YYYmin,YYYmax;
+	int simulimage,nrep=10000;
+	double *repartitions,gain,pi,f_sky;
+   double fo,lambda,dlambda,f_Jy,f,teldiam,exposure,quantum_efficiency;
+	double fwhmx,fwhmy,sigx,sigy,f_pic,sigx2,sigy2;
+	int rayonx,rayony;
+	double sigmax=5,grand,sky_brightness,omega,readout_noise;
+	double signal_star,noise_star;
+	double signal_sky,noise_sky,noise_readout;
+	char colfilters[]="UBVRIJHKgriz";
+	double lambdas[]={0.36, 0.44, 0.55, 0.64, 0.79, 1.26, 1.60, 2.22, 0.52, 0.67, 0.79, 0.91};
+	double dlambdas[]={0.15, 0.22, 0.16, 0.23, 0.19, 0.16, 0.23, 0.23, 0.14, 0.14, 0.16, 0.13};
+	double fos[]={1810, 4260, 3640, 3080, 2550, 1600, 1080, 670, 3730, 4490, 4760, 4810};
    /* --- ajout Buil */
    char name[FLEN_FILENAME];
    double alpha1;
@@ -451,6 +463,7 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
    magblim=pseries->magblim;
    astromcatalog=pseries->astromcatalog;
    path_astromcatalog=pseries->path_astromcatalog;
+	simulimage=pseries->simulimage; /* 0=normal 1=clear the image and replace it by a simulated image */
 
    /* ajout d'un separateur a la fin du chemin s'il le separateur est absent */
    if ( strlen(path_astromcatalog) > 0 ) {
@@ -1108,10 +1121,163 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
    }
 
    /* --- calcul de l'image de sortie ---*/
-   for (kkk=0;kkk<(int)(nelem);kkk++) {
-      dvalue=p_in->p[kkk];
-      p_out->p[kkk]=(TT_PTYPE)(dvalue);
-   }
+   if (simulimage==0) {
+		for (kkk=0;kkk<(int)(nelem);kkk++) {
+			dvalue=p_in->p[kkk];
+			p_out->p[kkk]=(TT_PTYPE)(dvalue);
+		}
+	} else {
+		for (kkk=0;kkk<(int)(nelem);kkk++) {
+			p_out->p[kkk]=(TT_PTYPE)(0);
+		}
+      naxis1=p_out->naxis1;
+      naxis2=p_out->naxis2;
+		/* === parametres photometriques ===*/
+		kkk=3;
+		nn=(int)strlen(colfilters);
+		for (kk=0;kk<nn;kk++) {
+			if (pseries->colfilter[0]==colfilters[k]) {
+				kkk=k;
+				break;
+			}
+		}
+		fo=fos[kkk]; /* flux a m=0 en Jansky */
+		lambda=lambdas[kkk]; /* centre de la bande spectrale en microns */
+		dlambda=dlambdas[kkk]; /* largeur de la bande spectrale en microns */
+		quantum_efficiency=pseries->quantum_efficiency; /* efficacite quantique d'un pixel en electron/photon */
+		if (quantum_efficiency<1e-9) {
+			quantum_efficiency=1;
+		}
+		sky_brightness=pseries->sky_brightness;  /* brillance du ciel en mag/arcsec2 */
+		gain=pseries->gain; /* gain de la chaine en electron/ADU */
+		if (gain<1e-9) {
+			gain=2.5;
+		}
+		teldiam=pseries->teldiam; /* diametre du telescope en metres */
+		if (teldiam<=1e-9) {
+			teldiam=1;
+		}
+		exposure=pseries->exposure; /* temps de pose en secondes */
+		if (exposure<=0) {
+			exposure=1;
+		}
+		readout_noise=pseries->readout_noise; /* fwhm sur y en pixel */
+		if (readout_noise<0) {
+			readout_noise=0;
+		}
+		fwhmx=pseries->fwhmx; /* fwhm sur x en pixel */
+		if (fwhmx<=1e-3) {
+			fwhmx=2.5;
+		}
+		fwhmy=pseries->fwhmy; /* fwhm sur y en pixel */
+		if (fwhmy<=1e-3) {
+			fwhmy=2.5;
+		}
+		sigx=fwhmx*.601*.601;
+		sigy=fwhmy*.601*.601;
+		sigx2=sigx*sigx;
+		sigy2=sigy*sigy;
+		pi=4*atan(1);
+		/* === boucle sur les etoiles ===*/
+      for (k=0;k<(nbe+0);k++) {
+         if (k<nbe) {
+				x=p_out->catalist->x[k];
+      		/*y=naxis2-1-p_out->catalist->y[k];*/
+      		y=p_out->catalist->y[k];
+				magb=p_out->catalist->magb[k];
+				magv=p_out->catalist->magv[k];
+				magr=p_out->catalist->magr[k];
+				magi=p_out->catalist->magi[k];
+         }
+         if (k==nbe) {
+            if ((p.ra0!=-100)&&(p.dec0!=-100)) {
+      	       ra=p.ra0;
+      	       dec=p.dec0;
+            } else {
+      	       ra=p.crval1;
+      	       dec=p.crval2;
+            }
+				tt_util_astrom_radec2xy(&p,ra,dec,&x,&y);
+				/*y=naxis2-1-y;*/
+				/*y=naxis2-y;*/
+				magr=99;
+				magv=0;
+				magb=99;
+         }
+         k0=(int)(x);
+         k1=(int)(y);
+         if (k0<0) {k0=0;} if (k0>=naxis1) {k0=naxis1-1;}
+         if (k1<0) {k1=0;} if (k1>=naxis2) {k1=naxis2-1;}
+			/* === etoile === */
+			/* 1) calculer le flux (en Jansky) : f_Jy= fo * 10^ (-0.4*V) */
+			f_Jy= fo * pow(10,-0.4*magv);
+			/*2) calculer le flux en photons/s/m2 : f = f_Jy * 1.51 e7 * (dlambda/lambda) */
+			f = f_Jy * 1.51e7 * (dlambda/lambda);
+			/*3) calculer le flux en photons : f*pi*teldiam*teldiam/4*exposure */
+			f = f*pi*teldiam*teldiam/4*exposure;
+			/*4) calculer le flux integre en electrons : f*quantum_efficiency */
+			f = f*quantum_efficiency;
+			/*5) calculer le flux pic en electrons :  */
+			f_pic = f/sigx/sigy/3.14159265;
+         rayonx=(int)(5*fwhmx);
+         rayony=(int)(5*fwhmy);
+         for (kk0=k0-rayonx;kk0<=k0+rayonx;kk0++) {
+				if (kk0<0) { continue; }
+				if (kk0>=naxis1) { continue; }
+				for (kk1=k1-rayony;kk1<=k1+rayony;kk1++) {
+					if (kk1<0) { continue; }
+					if (kk1>=naxis2) { continue; }
+					dvalue=(kk0-x)*(kk0-x)/2/sigx2+(kk1-y)*(kk1-y)/2/sigy2;
+					dvalue=f_pic*exp(-dvalue);
+		         /*--- indice de x,y dans le pointeur image FITS ---*/
+					p_out->p[naxis2*kk1+kk0]+=(TT_PTYPE)dvalue;
+				}
+         }
+      }
+		/* === fond de ciel === */
+		/* 0) Corrige de l'angle solide du pixel */
+		omega=fabs(p.cdelta1*180/TT_PI*3600*p.cdelta2*180/TT_PI*3600);
+		magv=sky_brightness-2.5*log10(omega);
+		/* 1) calculer le flux (en Jansky) : f_Jy= fo * 10^ (-0.4*V) */
+		f_Jy= fo * pow(10,-0.4*magv);
+		/*2) calculer le flux en photons/s/m2 : f = f_Jy * 1.51 e7 * (dlambda/lambda) */
+		f = f_Jy * 1.51e7 * (dlambda/lambda);
+		/*3) calculer le flux en photons : f*pi*teldiam*teldiam/4*exposure */
+		f = f*pi*teldiam*teldiam/4*exposure;
+		/*4) calculer le flux integre en electrons : f*quantum_efficiency */
+		f_sky = f*quantum_efficiency;
+		/* === prepare le generateur de bruit gaussien === */
+		repartitions=NULL;
+		nombre=nrep;
+		taille=sizeof(double);
+      if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&repartitions,&nombre,&taille,"repartitions"))!=0) {
+         tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_ima_series_catchart_2 (pointer repartitions)");
+         return(TT_ERR_PB_MALLOC);
+      }
+	   srand( (unsigned)time( NULL ) );
+		tt_gaussian_cdf(repartitions,nrep,sigmax);
+		/* === boucle sur les pixels ===*/
+		for (kkk=0;kkk<(int)(nelem);kkk++) {
+			/* --- signal de photons de l'etoile (electrons) ---*/
+			dvalue=p_out->p[kkk];
+			signal_star=dvalue;
+			/* --- bruit de photons de l'etoile (electrons) ---*/
+			grand=tt_gaussian_rand(repartitions,nrep,sigmax);
+			noise_star=grand*sqrt(dvalue);
+			/* --- signal de photons du ciel (electrons) ---*/
+			dvalue=f_sky;
+			signal_sky=dvalue;
+			/* --- bruit de photons du ciel (electrons) ---*/
+			grand=tt_gaussian_rand(repartitions,nrep,sigmax);
+			noise_sky=grand*sqrt(dvalue);
+			/* --- bruit de photons du ciel (electrons) ---*/
+			grand=tt_gaussian_rand(repartitions,nrep,sigmax);
+			noise_readout=grand*readout_noise;
+			/* --- additionne tous les electrons ---*/
+			p_out->p[kkk]=(TT_PTYPE)((signal_star+signal_sky+noise_star+noise_sky+noise_readout)/gain);
+		}
+      tt_free2((void**)&repartitions,"repartitions");
+	}
 
    /* --- Calcul des parametres de fond de ciel ---*/
    tt_util_statima(p_out,TT_MAX_DOUBLE,&(pseries->mean),&(pseries->sigma),&(pseries->mini),&(pseries->maxi),&(pseries->nbpixsat));
@@ -1134,7 +1300,7 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
    pseries->exptime_stack=pseries->exptime[index-1];
 
    /* --- calcul de l'image jpeg de la carte seule en couleur ---*/
-   if ((pseries->jpegfile_chart_make==TT_YES)&&(strcmp(pseries->jpegfile_chart,"")!=0)) {
+   if ((simulimage==0)&&(pseries->jpegfile_chart_make==TT_YES)&&(strcmp(pseries->jpegfile_chart,"")!=0)) {
       naxis1=p_out->naxis1;
       naxis2=p_out->naxis2;
       color_space=JCS_RGB;
@@ -1145,7 +1311,7 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
       nombre=3*naxis1*naxis2;
       taille=sizeof(unsigned char);
       if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&pjpeg,&nombre,&taille,"pjpeg"))!=0) {
-         tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_ima_series_catchart_1 (pointer jpeg)");
+         tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_ima_series_catchart_2 (pointer jpeg)");
          return(TT_ERR_PB_MALLOC);
       }
       for (k=0;k<(nbe+0);k++) {
@@ -1210,7 +1376,7 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
    }
 
    /* --- calcul de l'image jpeg de la carte overlay catalogue en couleur ---*/
-   if ((pseries->jpegfile_chart2_make==TT_YES)&&(strcmp(pseries->jpegfile_chart2,"")!=0)) {
+   if ((simulimage==0)&&(pseries->jpegfile_chart2_make==TT_YES)&&(strcmp(pseries->jpegfile_chart2,"")!=0)) {
       naxis1=p_out->naxis1;
       naxis2=p_out->naxis2;
       color_space=JCS_RGB;
@@ -1221,7 +1387,7 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
       nombre=3*naxis1*naxis2;
       taille=sizeof(unsigned char);
       if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&pjpeg,&nombre,&taille,"pjpeg"))!=0) {
-         tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_ima_series_catchart_1 (pointer jpeg)");
+         tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_ima_series_catchart_2 (pointer jpeg)");
          return(TT_ERR_PB_MALLOC);
       }
 		if (pseries->hicut!=pseries->locut) {
@@ -1312,6 +1478,7 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 
    return(OK_DLL);
 }
+
 
 /*************** COMPUTEUSNOINDEXS ********************/
 /* Calcul de la zone d'ascension droite et de la zone */

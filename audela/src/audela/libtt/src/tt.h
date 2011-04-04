@@ -860,6 +860,15 @@ typedef struct {
    int oversampling;
    double background;
    int fitorder6543;
+	int simulimage;
+	char colfilter[20];
+	double fwhmx;
+	double fwhmy;
+	double quantum_efficiency;
+	double sky_brightness;
+	double gain;
+	double teldiam;
+	double readout_noise;
    /* --- parametres internes (private) ---*/
    double binary_yesno;
    double val_exptime;
@@ -1128,6 +1137,9 @@ int tt_tblcatsaver(TT_IMA *p_ima,char *fullname);
 int tt_util_focas0(TT_IMA *p_in,double epsilon, double delta, double threshold, double *a,double *b,int *nb,double *cmag0,double *d_cmag0,double *a2,double *b2,int *nb2);
 int tt_util_focas1(TT_IMA *p_ref,TT_IMA *p_in,double *a,double *b,int *nb,int flagtrans);
 int tt_util_fichs_comdif(TT_ASTROM *p_ast,double cmag, char *nomfic_all,char *nomfic_com,char *nomfic_dif,char *nomfic_ascii,char *typefic_com);
+
+int tt_gaussian_cdf(double *repartitions,int n,double sigmax);
+double tt_gaussian_rand(double *repartitions,int n,double sigmax);
 
 int tt_valid_dirname(char *dirname);
 

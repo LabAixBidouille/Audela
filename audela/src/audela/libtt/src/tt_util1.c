@@ -1395,3 +1395,57 @@ int tt_repairCosmic(TT_PTYPE cosmicThreshold, TT_IMA *pIma)
 
    return(OK_DLL);
 }
+
+/************************************************************************/
+/* Compute a cumulative distribution function (fonction de repartition) */
+/* in case of a gaussian distribution function.                         */
+/* double sigmax=5;                                                     */
+/* int repartitions[10000],n=10000;                                     */
+/* tt_gaussian_cdf(repartitions,n,sigmax);                              */
+/************************************************************************/
+int tt_gaussian_cdf(double *repartitions,int n,double sigmax)
+{
+	int k;
+	double xsig,norm;
+	repartitions[0]=0;
+	for (k=1;k<n;k++) {
+		xsig=sigmax*2*k/n-sigmax;
+		if (k%100==0) {
+			k+=0;
+		}
+		repartitions[k]=repartitions[k-1]+exp(-xsig*xsig/2);
+	}
+	norm=repartitions[n-1];
+	for (k=0;k<n;k++) {
+		repartitions[k]=repartitions[k]/norm*32767.;
+	}
+   return(OK_DLL);
+}
+
+/*************************************************************************/
+/* Compute a random number that follows a gaussian distribution function.*/
+/* double sigmax=5;                                                     */
+/* int repartitions[10000],n=10000;                                     */
+/* tt_gaussian_cdf(repartitions,n,sigmax);                              */
+/* rand=tt_gaussian_rand(repartitions,n,sigmax);                        */
+/*************************************************************************/
+double tt_gaussian_rand(double *repartitions,int n,double sigmax)
+{
+	int k1,k2,k3,a,m;
+	double b;
+   a=rand();
+   k1=1;
+   k3=n;
+   m=0;
+   while ((k3-k1)>1) {
+      k2=(int)floor((k1+k3)/2.);
+		if (a<repartitions[k2]) {
+         k3=k2;
+      } else {
+         k1=k2;
+      }
+      m=m+1;
+	}
+   b=sigmax*(k2-n/2)/(n/2);
+   return(b);
+}
