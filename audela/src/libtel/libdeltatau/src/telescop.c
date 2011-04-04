@@ -1418,31 +1418,38 @@ int deltatau_suivi_arret (struct telprop *tel)
 
 int deltatau_suivi_marche (struct telprop *tel)
 {
-   /* ==== suivi sidéral ===*/
-   char s[1024],axe,s1[1024],s2[1024],s10[1024],s20[1024];
+   /* ==== suivi sidral ===*/
+   char s[1024],axe,s1[1024],s2[1024],s10[1024],s20[1024],sens1,sens2;
    int res;
    double v;
+	if (tel->latitude<0) {
+		sens1='-';
+		sens2='+';
+	} else {
+		sens1='+';
+		sens2='-';
+	}
    /*--- Track alpha */
    v=fabs(tel->speed_track_ra*tel->radec_speed_ra_conversion);
    axe='1';
    sprintf(s10,"#%cI%c22=%.12f",axe,axe,v);
    if (tel->speed_track_ra>0) {
-      sprintf(s1,"#%cj+",axe);
+      sprintf(s1,"#%cj%c",axe,sens2);
    } else if (tel->speed_track_ra<0) {
-      sprintf(s1,"#%cj-",axe);
+      sprintf(s1,"#%cj%c",axe,sens1);
    } else {
-      sprintf(s1,"#%cj+",axe);
+      sprintf(s1,"#%cj%c",axe,sens2);
 	}
    /*--- Track delta */
    v=fabs(tel->speed_track_dec*tel->radec_speed_dec_conversion);
    axe='2';
    sprintf(s20,"#%cI%c22=%.12f",axe,axe,v);
 	if (tel->speed_track_dec>0) {
-		sprintf(s2,"#%cj-",axe);
+		sprintf(s2,"#%cj%c",axe,sens1);
 	} else if (tel->speed_track_dec<0) {
-		sprintf(s2,"#%cj+",axe);
+		sprintf(s2,"#%cj%c",axe,sens2);
 	} else {
-		sprintf(s2,"#%cj+",axe);
+		sprintf(s2,"#%cj%c",axe,sens1);
 	}
    /*--- Track start */
    /* --- Slew simultaneously or not --- */
