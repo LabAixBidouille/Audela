@@ -20,14 +20,14 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#ifdef WIN32
+   #pragma warning(disable: 4786 ) // disable ::std warning
+#endif
 #include <sstream>
 #include <iomanip>
 
 #include <math.h>
 #include <stdio.h>
-#ifdef WIN32
-   #pragma warning(disable: 4786 ) // disable ::std warning
-#endif
 #include <set>        // ::std::set
 #include <string>     // ::std::string
 #include "libstd.h"
@@ -48,6 +48,7 @@ CPool *buf_pool;
 int cmdType(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdCfa2rgb(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdClear(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdNew(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdSetKwd(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdGetKwd(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdGetKwds(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
@@ -167,6 +168,7 @@ static struct cmditem cmdlist[] = {
    {(char*)"mirrorx", (Tcl_CmdProc *)cmdTtMirrorX},
    {(char*)"mirrory", (Tcl_CmdProc *)cmdTtMirrorY},
    {(char*)"mult", (Tcl_CmdProc *)cmdMult},
+   {(char*)"new", (Tcl_CmdProc *)cmdNew},
    {(char*)"ngain", (Tcl_CmdProc *)cmdTtNGain},
    {(char*)"noffset", (Tcl_CmdProc *)cmdTtNOffset},
    {(char*)"offset", (Tcl_CmdProc *)cmdTtOffset},
@@ -1457,6 +1459,152 @@ int cmdCopyTo(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
    }
 
    delete[] ligne;
+   return retour;
+}
+
+//==============================================================================
+// buf$i new --
+//   Fonction permettant de supprimer le contenu du buffer et de dimensionner
+//   de nouveaux nombres de pixels sur les deux axes. En sortie, l'image =0.
+//
+//  required parameters :
+//      class       CLASS_GRAY|CLASS_RGB
+//      width       columns number
+//      height      lines number
+//      format      FORMAT_BYTE|FORMAT_SHORT|FORMAT_USHORT|FORMAT_FLOAT
+//      compression COMPRESS_NONE|COMPRESS_I420|COMPRESS_JPEG|COMPRESS_RAW
+//      pixelData   pointer to pixels data  (if pixelData is null, set a black image )
+//  optional parameters
+//      -keep_keywords  keep previous keywords of the buffer
+//      -pixelSize   size of pixelData (if COMPRESS_JPEG,COMPRESS_RAW, because with and height are unknown)
+int cmdNew(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+   CBuffer *buffer;          // Buffer de travail pour cette fonction.
+   char *ligne;              // Ligne affectee dans le resultat de la commande TCL.
+   int retour=TCL_OK;               // Code d'erreur de retour.
+   int width, height;
+   TPixelClass pixelClass;
+   TPixelFormat pixelFormat;
+   TPixelCompression compression;
+   long pixelData;           // pointeur vers le le tableau de pixels
+   long pixelSize = 0;           // taille du tableau de pixels
+   int keep_keywords;
+   int i;
+   char comment[]="class width height format compression ?-keep_keywords? ?-pixels_size?";
+	int planes;
+	char *p1;
+	short *p2;
+	unsigned short *p3;
+	float *p4;
+
+   ligne = (char*)calloc(1000,sizeof(char));
+   if( argc < 7 ) {
+      sprintf(ligne,"Usage: %s %s %s",argv[0],argv[1],comment);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      free(ligne);
+      return TCL_ERROR;
+   } else {
+
+      // parametres obligatoires
+      if( (pixelClass = CPixels::getPixelClass( argv[2] )) == CLASS_UNKNOWN ){
+         sprintf(ligne,"Usage: %s %s %s\n class must be CLASS_GRAY|CLASS_RGB|CLASS_3D|CLASS_VIDEO ",argv[0],argv[1],comment);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         retour =  TCL_ERROR;
+      }
+
+      if((Tcl_GetInt(interp,argv[3],&width)!=TCL_OK)&&(retour==TCL_OK)) {
+         sprintf(ligne,"Usage: %s %s %s\nwidth must be an integer > 0",argv[0],argv[1],comment);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         retour =  TCL_ERROR;
+      }
+
+      if((Tcl_GetInt(interp,argv[4],&height)!=TCL_OK)&&(retour==TCL_OK)) {
+         sprintf(ligne,"Usage: %s %s %s\nheight must be an integer > 0",argv[0],argv[1],comment);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         retour =  TCL_ERROR;
+      }
+
+      if( ((pixelFormat = CPixels::getPixelFormat( argv[5] )) == FORMAT_UNKNOWN )&&(retour==TCL_OK)){
+         sprintf(ligne,"Usage: %s %s %s\n bitpix must be FORMAT_BYTE|FORMAT_SHORT|FORMAT_FLOAT",argv[0],argv[1],comment);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         retour =  TCL_ERROR;
+      }
+
+      if( ((compression = CPixels::getPixelCompression( argv[6] )) == COMPRESS_UNKNOWN)&&(retour==TCL_OK) ){
+         sprintf(ligne,"Usage: %s %s %s\n compression must be COMPRESS_NONE|COMPRESS_I420",argv[0],argv[1],comment);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         retour =  TCL_ERROR;
+      }
+
+      pixelData=0;
+
+      keep_keywords = DONT_KEEP_KEYWORDS;
+
+      //  lecture des parametres optionels
+      for (i = 7; i < argc; i++) {
+       if (strcmp(argv[i], "-keep_keywords") == 0) {
+            keep_keywords = KEEP_KEYWORDS;
+         }
+
+          if (strcmp(argv[i], "-pixels_size") == 0) {
+             pixelSize = atol(argv[i + 1]);
+          }
+
+       }
+   }
+
+   if( retour != TCL_ERROR ) {
+
+		if ( pixelClass == CLASS_GRAY ) {
+			planes=1;
+		} else {
+			planes=3;
+		}
+		if (pixelFormat==FORMAT_BYTE) {
+	      p1=(char*)calloc(width*height*planes,sizeof(char));
+			sprintf(ligne,"%d",&p1[0]);
+		} else if (pixelFormat==FORMAT_SHORT) {
+	      p2=(short*)calloc(width*height*planes,sizeof(short));
+			sprintf(ligne,"%d",&p2[0]);
+		} else if (pixelFormat==FORMAT_USHORT) {
+	      p3=(unsigned short*)calloc(width*height*planes,sizeof(unsigned short));
+			sprintf(ligne,"%d",&p3[0]);
+		} else { //pixelFormat==FORMAT_FLOAT
+	      p4=(float*)calloc(width*height*planes,sizeof(float));
+			sprintf(ligne,"%d",&p4[0]);
+		}
+	   pixelData = atol(ligne);
+      buffer = (CBuffer*)clientData;
+      if(buffer==NULL) {
+         sprintf(ligne,"Buffer is NULL : abnormal error.");
+         retour = TCL_ERROR;
+      } else {
+         buffer->FreeBuffer(keep_keywords);
+         try {
+            if( pixelClass == CLASS_GRAY ) {
+               buffer->SetPixels(PLANE_GREY, width, height, pixelFormat, compression, (void *) pixelData, pixelSize, 0,0);
+            } else {
+               buffer->SetPixels(PLANE_RGB, width, height, pixelFormat, compression, (void *) pixelData, pixelSize, 0,0);
+            }
+            retour = TCL_OK;
+         } catch(const CError& e) {
+            sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            retour = TCL_ERROR;
+         }
+      }
+		if (pixelFormat==FORMAT_BYTE) {
+			free(p1);
+		} else if (pixelFormat==FORMAT_SHORT) {
+			free(p2);
+		} else if (pixelFormat==FORMAT_USHORT) {
+			free(p3);
+		} else { //pixelFormat==FORMAT_FLOAT
+			free(p4);
+		}
+   }
+   free(ligne);
+
    return retour;
 }
 

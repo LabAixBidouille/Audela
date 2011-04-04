@@ -642,6 +642,15 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
    pseries->oversampling=4;
    pseries->background=0.;
    pseries->fitorder6543=0;
+	pseries->simulimage=0;
+	pseries->fwhmx=2.5;
+	pseries->fwhmy=2.5;
+	pseries->quantum_efficiency=1.; /* efficacite quantique d'un pixel en electron/photon */
+	pseries->sky_brightness=20.9; /* brillance du ciel en mag/arcsec2 */
+	pseries->gain=2.5; /* gain de la chaine en electron/ADU */
+	pseries->teldiam=1; /* diametre du telescope en metres */
+	pseries->readout_noise=0; /* electrons */
+	strcmp(pseries->colfilter,"R");
    for (k1=1;k1<=2;k1++) {
       for (k2=0;k2<=6;k2++) {
          pseries->p_ast.pv[k1][k2]=0.;
@@ -1031,6 +1040,33 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
       else if (strcmp(mot,"FWHMSAT")==0) {
          pseries->fwhmsat=(double)(fabs(atof(argu)));
       }      
+      else if (strcmp(mot,"SIMULIMAGE")==0) {
+         pseries->simulimage=(int)1;
+      }
+      else if (strcmp(mot,"COLFILTER")==0) {
+         strcpy(pseries->colfilter,argu);
+      }
+      else if (strcmp(mot,"FWHMX")==0) {
+         pseries->fwhmx=(double)(fabs(atof(argu)));
+      }      
+      else if (strcmp(mot,"FWHMY")==0) {
+         pseries->fwhmy=(double)(fabs(atof(argu)));
+      }      
+      else if (strcmp(mot,"QE")==0) {
+         pseries->quantum_efficiency=(double)(fabs(atof(argu)));
+      }
+      else if (strcmp(mot,"SKY_BRIGHTNESS")==0) {
+         pseries->sky_brightness=(double)(atof(argu));
+      }      
+      else if (strcmp(mot,"GAIN")==0) {
+         pseries->gain=(double)(fabs(atof(argu)));
+      }
+      else if (strcmp(mot,"TELDIAM")==0) {
+         pseries->teldiam=(double)(fabs(atof(argu)));
+      }
+      else if (strcmp(mot,"READOUT_NOISE")==0) {
+         pseries->readout_noise=(double)(fabs(atof(argu)));
+      }
       else if (strcmp(mot,"KERNEL_COEF")==0) {
          pseries->kernel_coef=(double)(fabs(atof(argu)));
       }
