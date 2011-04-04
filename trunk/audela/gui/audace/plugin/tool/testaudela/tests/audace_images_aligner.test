@@ -209,3 +209,82 @@ test aligner_intercorrelation_RGB {aligner deux images RGB} -constraints {AUDACE
    file delete rz_rgbr_8.fit rz_rgbr_15.fit
 } -result "2"
 
+test aligner_selection {aligner des translatees} -constraints {AUDACE} -setup {
+    ::confVisu::clear $visuNo
+   #--- j'impose le mode seuil iris , car le mode "loadima" ne focntionne pas bien
+   set conf(seuils,visu$visuNo,mode) "iris"
+
+   #---- je fabrique une image avec 4 etoiles
+   buf$bufNo setpixels CLASS_GRAY 320 240 FORMAT_FLOAT COMPRESS_NONE 0
+   buf$bufNo setkwd { NAXIS  2 short "" "" }
+   buf$bufNo setkwd { NAXIS1 768 short "" "" }
+   buf$bufNo setkwd { NAXIS2 512 short "" "" }
+   buf$bufNo setkwd { BIN1 1 short "" "" }
+   buf$bufNo setkwd { BIN2 1 short "" "" }
+
+   #---- j'ajoute le fond de ciel
+   buf$bufNo offset 1100
+
+   #--- j'ajoute les étoiles
+   buf$bufNo synthegauss { 160 120 6000  4 4  }
+   buf$bufNo synthegauss { 100 100 4000  3 3  }
+   buf$bufNo synthegauss { 100 200 6000  3 3  }
+   buf$bufNo synthegauss { 300 120 4000  3 3  }
+
+   #--- j'enregistre dans un fichier
+   saveima [file join $::audace(rep_images) trans1.fit ] $visuNo
+
+   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" trans1 . . .fit  \"$::audace(rep_images)\" trans2 . .fit TRANS trans_x=2 trans_y=5"
+   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" trans1 . . .fit  \"$::audace(rep_images)\" trans3 . .fit TRANS trans_x=13 trans_y=-18"
+   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" trans1 . . .fit  \"$::audace(rep_images)\" trans4 . .fit TRANS trans_x=-5 trans_y=17"
+   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" trans1 . . .fit  \"$::audace(rep_images)\" trans5 . .fit TRANS trans_x=-17 trans_y=-4"
+   set x0 100
+   set y0 200
+   set attendu [lindex [buf$bufNo getpix [list 100 200 ]] 1]
+
+} -body {
+   set w  "$::audace(base).traiteWindow"
+   loadima [file join $::audace(rep_images) trans1.fit]
+   #--dessine la boite de selection
+   set x1 [expr {$x0-20} ]
+   set x2 [expr {$x0+20} ]
+   set y1 [expr {$y0-20} ]
+   set y2 [expr {$y0+20} ]
+   ::testaudela::setBox $visuNo [list $x1 $y1 $x2 $y2]
+
+   #--   clic sur le menu "Images/Aligner/Sélection..."
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,center)" "$::caption(audace,menu,recentrer_manu)..."
+   #--   saisit le nom des images a traiter
+   ::testaudela::putEntry $w.usr.2.1.ent1 "trans"
+   #--   saisit le premier indice
+   ::testaudela::putEntry $w.usr.2.2.ent2 "4"
+   #--   saisit le nb d'images
+   ::testaudela::putEntry $w.usr.2.3.ent3 "1"
+   #-- saisit le nom de sortie
+   set name_out "trans_select"
+   ::testaudela::putEntry $w.usr.2.4.ent4 $name_out
+   #--   coche l'option de suppression de la boite
+   ::testaudela::clicCheckButton $w.usr.2a.che1 1
+   #--   clic sur le bouton Appliquer
+   ::testaudela::clicButton $w.cmd.appliquer
+
+   #-- procedure de controle
+   set result 0
+   #--   verifie l'existence de 4 images
+   for {set i 1} {$i <= 5} {incr i} {
+      set file [file join $::audace(rep_images) ${name_out}$i.fit]
+      if {[file exists $file]} {
+         buf$bufNo load $file
+         if {[lindex [buf$bufNo getpix [list $x0 $y0]] 1] eq "$attendu"} {incr result}
+         file delete $file
+      }
+   }
+   return $result
+} -cleanup {
+   #---  efface l'image
+   ::confVisu::deleteImage $visuNo
+   #--   clic sur le bouton Fermer
+   ::testaudela::clicButton $w.cmd.fermer
+   file delete trans1.fit trans2.fit trans3.fit trans4.fit trans5.fit
+} -result "4"
+
