@@ -1230,7 +1230,7 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 					dvalue=(kk0-x)*(kk0-x)/2/sigx2+(kk1-y)*(kk1-y)/2/sigy2;
 					dvalue=f_pic*exp(-dvalue);
 		         /*--- indice de x,y dans le pointeur image FITS ---*/
-					p_out->p[naxis2*kk1+kk0]+=(TT_PTYPE)dvalue;
+					p_out->p[naxis1*kk1+kk0]+=(TT_PTYPE)dvalue;
 				}
          }
       }
