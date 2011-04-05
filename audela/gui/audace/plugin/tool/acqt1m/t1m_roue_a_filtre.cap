@@ -12,9 +12,9 @@ global caption langage
 # *************** Version anglaise ****************************
 
 set caption(t1m_roue_a_filtre,filtre)               "Filter:"
-set caption(t1m_roue_a_filtre,changeFiltre)         "# Change le filtre :"
-set caption(t1m_roue_a_filtre,roueNonInitialise)    "# La roue à filtres n'a pas été initialisée"
-set caption(t1m_roue_a_filtre,probleme)             "# Attention : Problème avec la roue à filtres, à réinitialiser"
+set caption(t1m_roue_a_filtre,changeFiltre)         "Change the filter:"
+set caption(t1m_roue_a_filtre,roueNonInitialise)    "Filter wheel not initialized"
+set caption(t1m_roue_a_filtre,probleme)             "Warning: Problem with the filter wheel which should be reset"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -22,7 +22,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t1m_roue_a_filtre,filtre)            "Filtre :"
    set caption(t1m_roue_a_filtre,changeFiltre)      "Change le filtre :"
    set caption(t1m_roue_a_filtre,roueNonInitialise) "La roue à filtres n'a pas été initialisée"
-   set caption(t1m_roue_a_filtre,probleme)          "Attention : Problème avec la roue à filtres, à réinitialiser"
+   set caption(t1m_roue_a_filtre,probleme)          "Attention : Problème avec la roue à filtres qui doit être réinitialisée"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -30,7 +30,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t1m_roue_a_filtre,filtre)            "Filtro:"
    set caption(t1m_roue_a_filtre,changeFiltre)      "# Change le filtre :"
    set caption(t1m_roue_a_filtre,roueNonInitialise) "# La roue à filtres n'a pas été initialisée"
-   set caption(t1m_roue_a_filtre,probleme)          "# Attention : Problème avec la roue à filtres, à réinitialiser"
+   set caption(t1m_roue_a_filtre,probleme)          "# Attention : Problème avec la roue à filtres qui doit être réinitialisée"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -38,47 +38,47 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t1m_roue_a_filtre,filtre)            "Filtros:"
    set caption(t1m_roue_a_filtre,changeFiltre)      "# Change le filtre :"
    set caption(t1m_roue_a_filtre,roueNonInitialise) "# La roue à filtres n'a pas été initialisée"
-   set caption(t1m_roue_a_filtre,probleme)          "# Attention : Problème avec la roue à filtres, à réinitialiser"
+   set caption(t1m_roue_a_filtre,probleme)          "# Attention : Problème avec la roue à filtres qui doit être réinitialisée"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(t1m_roue_a_filtre,filtre)            "Filter:"
-   set caption(t1m_roue_a_filtre,changeFiltre)      "# Change le filtre :"
-   set caption(t1m_roue_a_filtre,roueNonInitialise) "# La roue à filtres n'a pas été initialisée"
-   set caption(t1m_roue_a_filtre,probleme)          "# Attention : Problème avec la roue à filtres, à réinitialiser"
+   set caption(t1m_roue_a_filtre,changeFiltre)      "Filter Änderungen:"
+   set caption(t1m_roue_a_filtre,roueNonInitialise) "Filterrad nicht initialisiert"
+   set caption(t1m_roue_a_filtre,probleme)          "Achtung: Problem mit das Filterrad das reinitialisiert werden soll"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(t1m_roue_a_filtre,filtre)            "Filtro:"
-   set caption(t1m_roue_a_filtre,changeFiltre)      "# Change le filtre :"
-   set caption(t1m_roue_a_filtre,roueNonInitialise) "# La roue à filtres n'a pas été initialisée"
-   set caption(t1m_roue_a_filtre,probleme)          "# Attention : Problème avec la roue à filtres, à réinitialiser"
+   set caption(t1m_roue_a_filtre,changeFiltre)      "Mudar o filtro:"
+   set caption(t1m_roue_a_filtre,roueNonInitialise) "A roda de filtros não foi iniciada"
+   set caption(t1m_roue_a_filtre,probleme)          "Aviso: Problema com a roda de filtros, a qual deve ser reiniciada"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(t1m_roue_a_filtre,filtre)            "Filter:"
-   set caption(t1m_roue_a_filtre,changeFiltre)      "# Change le filtre :"
-   set caption(t1m_roue_a_filtre,roueNonInitialise) "# La roue à filtres n'a pas été initialisée"
-   set caption(t1m_roue_a_filtre,probleme)          "# Attention : Problème avec la roue à filtres, à réinitialiser"
+   set caption(t1m_roue_a_filtre,changeFiltre)      "Change the filter:"
+   set caption(t1m_roue_a_filtre,roueNonInitialise) "Filter wheel not initialized"
+   set caption(t1m_roue_a_filtre,probleme)          "Warning: Problem with the filter wheel which should be reset"
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
    set caption(t1m_roue_a_filtre,filtre)            "Filter:"
-   set caption(t1m_roue_a_filtre,changeFiltre)      "# Change le filtre :"
-   set caption(t1m_roue_a_filtre,roueNonInitialise) "# La roue à filtres n'a pas été initialisée"
-   set caption(t1m_roue_a_filtre,probleme)          "# Attention : Problème avec la roue à filtres, à réinitialiser"
+   set caption(t1m_roue_a_filtre,changeFiltre)      "Change the filter:"
+   set caption(t1m_roue_a_filtre,roueNonInitialise) "Filter wheel not initialized"
+   set caption(t1m_roue_a_filtre,probleme)          "Warning: Problem with the filter wheel which should be reset"
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
    set caption(t1m_roue_a_filtre,filtre)            "Filter:"
-   set caption(t1m_roue_a_filtre,changeFiltre)      "# Change le filtre :"
-   set caption(t1m_roue_a_filtre,roueNonInitialise) "# La roue à filtres n'a pas été initialisée"
-   set caption(t1m_roue_a_filtre,probleme)          "# Attention : Problème avec la roue à filtres, à réinitialiser"
+   set caption(t1m_roue_a_filtre,changeFiltre)      "Change the filter:"
+   set caption(t1m_roue_a_filtre,roueNonInitialise) "Filter wheel not initialized"
+   set caption(t1m_roue_a_filtre,probleme)          "Warning: Problem with the filter wheel which should be reset"
 
 }
 
