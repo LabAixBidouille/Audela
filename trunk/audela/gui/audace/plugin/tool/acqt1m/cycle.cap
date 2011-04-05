@@ -1,0 +1,178 @@
+#
+# Fichier : cycle.cap
+# Mise a jour $Id:  $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(cycle,lancement)                "# Lancement de 'Cycle'"
+set caption(cycle,initFiltres)              "# Initialisation des filtres"
+set caption(cycle,initCamera)               "# Initialisation de la caméra"
+set caption(cycle,pasCamera)                "# Aucune caméra n'est définie"
+set caption(cycle,initBuffer)               "# Initialisation du buffer"
+set caption(cycle,initCom)                  "# Initialisation de la connexion avec la roue à filtres"
+set caption(cycle,roueNonInitialise)        "# La roue à filtres n'a pas été initialisée"
+set caption(cycle,initialiseRoue)           "# Initialise la roue à filtres"
+set caption(cycle,changeFiltre)             "# Changement de filtre"
+set caption(cycle,probleme)                 "# Attention : Problème avec la roue à filtres, à réinitialiser !"
+set caption(cycle,fermeCom)                 "# Fermeture de la connexion avec la roue à filtres"
+set caption(cycle,filtre)                   "Filter:"
+set caption(cycle,acquisition)              "Acquisition:"
+set caption(cycle,energistre)               "# Enregistrement de :"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(cycle,lancement)             "Lancement de 'Cylce'"
+   set caption(cycle,initFiltres)           "Initialisation des filtres"
+   set caption(cycle,initCamera)            "Initialisation de la caméra"
+   set caption(cycle,pasCamera)             "Aucune caméra n'est définie"
+   set caption(cycle,initBuffer)            "Initialisation du buffer"
+   set caption(cycle,initCom)               "Initialisation de la connexion avec la roue à filtres"
+   set caption(cycle,roueNonInitialise)     "La roue à filtres n'a pas été initialisée"
+   set caption(cycle,initialiseRoue)        "Initialise la roue à filtres"
+   set caption(cycle,changeFiltre)          "Changement de filtre"
+   set caption(cycle,probleme)              "Attention : Problème avec la roue à filtres, à réinitialiser !"
+   set caption(cycle,fermeCom)              "Fermeture de la connexion avec la roue à filtres"
+   set caption(cycle,filtre)                "Filtre :"
+   set caption(cycle,acquisition)           "Acquisition :"
+   set caption(cycle,energistre)            "Enregistrement de :"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(cycle,lancement)             "# Lancement de 'Cycle'"
+   set caption(cycle,initFiltres)           "# Initialisation des filtres"
+   set caption(cycle,initCamera)            "# Initialisation de la caméra"
+   set caption(cycle,pasCamera)             "# Aucune caméra n'est définie"
+   set caption(cycle,initBuffer)            "# Initialisation du buffer"
+   set caption(cycle,initCom)               "# Initialisation de la connexion avec la roue à filtres"
+   set caption(cycle,roueNonInitialise)     "# La roue à filtres n'a pas été initialisée"
+   set caption(cycle,initialiseRoue)        "# Initialise la roue à filtres"
+   set caption(cycle,changeFiltre)          "# Changement de filtre"
+   set caption(cycle,probleme)              "# Attention : Problème avec la roue à filtres, à réinitialiser !"
+   set caption(cycle,fermeCom)              "# Fermeture de la connexion avec la roue à filtres"
+   set caption(cycle,filtre)                "Filtro:"
+   set caption(cycle,acquisition)           "Acquisizione:"
+   set caption(cycle,energistre)            "# Enregistrement de :"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(cycle,lancement)             "# Lancement de 'Cycle'"
+   set caption(cycle,initFiltres)           "# Initialisation des filtres"
+   set caption(cycle,initCamera)            "# Initialisation de la caméra"
+   set caption(cycle,pasCamera)             "# Aucune caméra n'est définie"
+   set caption(cycle,initBuffer)            "# Initialisation du buffer"
+   set caption(cycle,initCom)               "# Initialisation de la connexion avec la roue à filtres"
+   set caption(cycle,roueNonInitialise)     "# La roue à filtres n'a pas été initialisée"
+   set caption(cycle,initialiseRoue)        "# Initialise la roue à filtres"
+   set caption(cycle,changeFiltre)          "# Changement de filtre"
+   set caption(cycle,probleme)              "# Attention : Problème avec la roue à filtres, à réinitialiser !"
+   set caption(cycle,fermeCom)              "# Fermeture de la connexion avec la roue à filtres"
+   set caption(cycle,filtre)                "Filtros:"
+   set caption(cycle,acquisition)           "Adquisición:"
+   set caption(cycle,energistre)            "# Enregistrement de :"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(cycle,lancement)             "# Lancement de 'Cycle'"
+   set caption(cycle,initFiltres)           "# Initialisation des filtres"
+   set caption(cycle,initCamera)            "# Initialisation de la caméra"
+   set caption(cycle,pasCamera)             "# Aucune caméra n'est définie"
+   set caption(cycle,initBuffer)            "# Initialisation du buffer"
+   set caption(cycle,initCom)               "# Initialisation de la connexion avec la roue à filtres"
+   set caption(cycle,roueNonInitialise)     "# La roue à filtres n'a pas été initialisée"
+   set caption(cycle,initialiseRoue)        "# Initialise la roue à filtres"
+   set caption(cycle,changeFiltre)          "# Changement de filtre"
+   set caption(cycle,probleme)              "# Attention : Problème avec la roue à filtres, à réinitialiser !"
+   set caption(cycle,fermeCom)              "# Fermeture de la connexion avec la roue à filtres"
+   set caption(cycle,filtre)                "Filter:"
+   set caption(cycle,acquisition)           "Belichtung:"
+   set caption(cycle,energistre)            "# Enregistrement de :"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(cycle,lancement)             "# Lancement de 'Cycle'"
+   set caption(cycle,initFiltres)           "# Initialisation des filtres"
+   set caption(cycle,initCamera)            "# Initialisation de la caméra"
+   set caption(cycle,pasCamera)             "# Aucune caméra n'est définie"
+   set caption(cycle,initBuffer)            "# Initialisation du buffer"
+   set caption(cycle,initCom)               "# Initialisation de la connexion avec la roue à filtres"
+   set caption(cycle,roueNonInitialise)     "# La roue à filtres n'a pas été initialisée"
+   set caption(cycle,initialiseRoue)        "# Initialise la roue à filtres"
+   set caption(cycle,changeFiltre)          "# Changement de filtre"
+   set caption(cycle,probleme)              "# Attention : Problème avec la roue à filtres, à réinitialiser !"
+   set caption(cycle,fermeCom)              "# Fermeture de la connexion avec la roue à filtres"
+   set caption(cycle,filtre)                "Filtro:"
+   set caption(cycle,acquisition)           "Aquisição:"
+   set caption(cycle,energistre)            "# Enregistrement de :"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(cycle,lancement)             "# Lancement de 'Cycle'"
+   set caption(cycle,initFiltres)           "# Initialisation des filtres"
+   set caption(cycle,initCamera)            "# Initialisation de la caméra"
+   set caption(cycle,pasCamera)             "# Aucune caméra n'est définie"
+   set caption(cycle,initBuffer)            "# Initialisation du buffer"
+   set caption(cycle,initCom)               "# Initialisation de la connexion avec la roue à filtres"
+   set caption(cycle,roueNonInitialise)     "# La roue à filtres n'a pas été initialisée"
+   set caption(cycle,initialiseRoue)        "# Initialise la roue à filtres"
+   set caption(cycle,changeFiltre)          "# Changement de filtre"
+   set caption(cycle,probleme)              "# Attention : Problème avec la roue à filtres, à réinitialiser !"
+   set caption(cycle,fermeCom)              "# Fermeture de la connexion avec la roue à filtres"
+   set caption(cycle,filtre)                "Filter:"
+   set caption(cycle,acquisition)           "Acquisition:"
+   set caption(cycle,energistre)            "# Enregistrement de :"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(cycle,lancement)             "# Lancement de 'Cycle'"
+   set caption(cycle,initFiltres)           "# Initialisation des filtres"
+   set caption(cycle,initCamera)            "# Initialisation de la caméra"
+   set caption(cycle,pasCamera)             "# Aucune caméra n'est définie"
+   set caption(cycle,initBuffer)            "# Initialisation du buffer"
+   set caption(cycle,initCom)               "# Initialisation de la connexion avec la roue à filtres"
+   set caption(cycle,roueNonInitialise)     "# La roue à filtres n'a pas été initialisée"
+   set caption(cycle,initialiseRoue)        "# Initialise la roue à filtres"
+   set caption(cycle,changeFiltre)          "# Changement de filtre"
+   set caption(cycle,probleme)              "# Attention : Problème avec la roue à filtres, à réinitialiser !"
+   set caption(cycle,fermeCom)              "# Fermeture de la connexion avec la roue à filtres"
+   set caption(cycle,filtre)                "Filter:"
+   set caption(cycle,acquisition)           "Acquisition:"
+   set caption(cycle,energistre)            "# Enregistrement de :"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(cycle,lancement)             "# Lancement de 'Cycle'"
+   set caption(cycle,initFiltres)           "# Initialisation des filtres"
+   set caption(cycle,initCamera)            "# Initialisation de la caméra"
+   set caption(cycle,pasCamera)             "# Aucune caméra n'est définie"
+   set caption(cycle,initBuffer)            "# Initialisation du buffer"
+   set caption(cycle,initCom)               "# Initialisation de la connexion avec la roue à filtres"
+   set caption(cycle,roueNonInitialise)     "# La roue à filtres n'a pas été initialisée"
+   set caption(cycle,initialiseRoue)        "# Initialise la roue à filtres"
+   set caption(cycle,changeFiltre)          "# Changement de filtre"
+   set caption(cycle,probleme)              "# Attention : Problème avec la roue à filtres, à réinitialiser !"
+   set caption(cycle,fermeCom)              "# Fermeture de la connexion avec la roue à filtres"
+   set caption(cycle,filtre)                "Filter:"
+   set caption(cycle,acquisition)           "Acquisition:"
+   set caption(cycle,energistre)            "# Enregistrement de :"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
