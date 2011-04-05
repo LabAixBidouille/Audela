@@ -88,9 +88,9 @@ set caption(acqt1m,lance_simu)                "Run the Simulation:\n"
 set caption(acqt1m,fin_simu)                  "Stop the Simulation.\n"
 set caption(acqt1m,avancement_acq)            "Acquisition\nProgress"
 set caption(acqt1m,buttonShiftConfig)         "Shift"
-set caption(acqt1m,flatAuto)                  "# Flats Auto"
+set caption(acqt1m,flatAuto)                  "Automatic Flat\nField Frames"
 set caption(acqt1m,cycle)                     "Cycle"
-set caption(acqt1m,ressource)                 "# Re-charge les scripts"
+set caption(acqt1m,ressource)                 "Reload Scripts"
 set caption(acqt1m,acquisitionError)          "Acquisition Error. See details in the Terminal screen."
 
 set caption(acqt1m,bin,1x1)                   "Binning 1x1"
@@ -99,7 +99,7 @@ set caption(acqt1m,bin,3x3)                   "Binning 3x3"
 set caption(acqt1m,bin,4x4)                   "Binning 4x4"
 set caption(acqt1m,filtre)                    "Filter: "
 set caption(acqt1m,extensionFITS)             "Files Extension FITS:"
-set caption(acqt1m,rechargeScripts)           "# Re-charge les scripts\n\n"
+set caption(acqt1m,rechargeScripts)           "Reload Scripts\n\n"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -652,9 +652,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,fin_simu)               "Stop the Simulation.\n"
    set caption(acqt1m,avancement_acq)         "Acquisition\nProgress"
    set caption(acqt1m,buttonShiftConfig)      "Shift"
-   set caption(acqt1m,flatAuto)               "# Flats Auto"
+   set caption(acqt1m,flatAuto)               "Automatic Flat\nField Frames"
    set caption(acqt1m,cycle)                  "Cycle"
-   set caption(acqt1m,ressource)              "# Re-charge les scripts"
+   set caption(acqt1m,ressource)              "Reload Scripts"
    set caption(acqt1m,acquisitionError)       "Acquisition Error. See details in the Terminal screen."
 
    set caption(acqt1m,bin,1x1)                "Binning 1x1"
@@ -663,7 +663,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,bin,4x4)                "Binning 4x4"
    set caption(acqt1m,filtre)                 "Filter: "
    set caption(acqt1m,extensionFITS)          "Files Extension FITS:"
-   set caption(acqt1m,rechargeScripts)        "# Re-charge les scripts\n\n"
+   set caption(acqt1m,rechargeScripts)        "Reload Scripts\n\n"
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -745,9 +745,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,fin_simu)               "Stop the Simulation.\n"
    set caption(acqt1m,avancement_acq)         "Acquisition\nProgress"
    set caption(acqt1m,buttonShiftConfig)      "Shift"
-   set caption(acqt1m,flatAuto)               "# Flats Auto"
+   set caption(acqt1m,flatAuto)               "Automatic Flat\nField Frames"
    set caption(acqt1m,cycle)                  "Cycle"
-   set caption(acqt1m,ressource)              "# Re-charge les scripts"
+   set caption(acqt1m,ressource)              "Reload Scripts"
    set caption(acqt1m,acquisitionError)       "Acquisition Error. See details in the Terminal screen."
 
    set caption(acqt1m,bin,1x1)                "Binning 1x1"
@@ -756,7 +756,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,bin,4x4)                "Binning 4x4"
    set caption(acqt1m,filtre)                 "Filter: "
    set caption(acqt1m,extensionFITS)          "Files Extension FITS:"
-   set caption(acqt1m,rechargeScripts)        "# Re-charge les scripts\n\n"
+   set caption(acqt1m,rechargeScripts)        "Reload Scripts\n\n"
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -838,9 +838,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,fin_simu)               "Stop the Simulation.\n"
    set caption(acqt1m,avancement_acq)         "Acquisition\nProgress"
    set caption(acqt1m,buttonShiftConfig)      "Shift"
-   set caption(acqt1m,flatAuto)               "# Flats Auto"
+   set caption(acqt1m,flatAuto)               "Automatic Flat\nField Frames"
    set caption(acqt1m,cycle)                  "Cycle"
-   set caption(acqt1m,ressource)              "# Re-charge les scripts"
+   set caption(acqt1m,ressource)              "Reload Scripts"
    set caption(acqt1m,acquisitionError)       "Acquisition Error. See details in the Terminal screen."
 
    set caption(acqt1m,bin,1x1)                "Binning 1x1"
@@ -849,7 +849,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,bin,4x4)                "Binning 4x4"
    set caption(acqt1m,filtre)                 "Filter: "
    set caption(acqt1m,extensionFITS)          "Files Extension FITS:"
-   set caption(acqt1m,rechargeScripts)        "# Re-charge les scripts\n\n"
+   set caption(acqt1m,rechargeScripts)        "Reload Scripts\n\n"
 
 }
 
