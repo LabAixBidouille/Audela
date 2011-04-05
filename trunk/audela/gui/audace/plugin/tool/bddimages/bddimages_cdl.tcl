@@ -136,6 +136,12 @@ namespace eval bddimages_cdl {
    variable delta_star
    variable delta_aster
    variable magstar
+   variable filter
+   variable telescop
+   variable period
+   variable object
+   variable begin
+   variable end  
 
 
 
@@ -203,6 +209,7 @@ namespace eval bddimages_cdl {
     set dirfilename [::bddimages_liste::lget $img "dirfilename"]
     set tabkey  [::bddimages_liste::lget $img "tabkey"]
     set dateobs [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1]]
+    set begin   $dateobs
     set commundatejj [::bddimages_liste::lget $img "commundatejj"]
     ::console::affiche_resultat "file : $dirfilename/$filename\n"
     ::console::affiche_resultat "first dateobs $dateobs \n"
@@ -212,14 +219,14 @@ namespace eval bddimages_cdl {
 
     # Selection de l etoile
     set star_deb [::bddimages_cdl::select_source "Selection de l etoile" 1]
-    ::bddimages_cdl::affich_un_rond  [lindex $star_deb 0] [lindex $star_deb 1] "yellow"
+    ::bddimages_cdl::affich_un_rond  [lindex $star_deb 0] [lindex $star_deb 1] "yellow" [lindex $star_deb 2]
     if {$::bddimages_cdl::stop} {return}
     lappend star_deb $commundatejj
     ::console::affiche_resultat "star : $star_deb\n"
 
     # Selection de l asteroide
     set aster_deb [::bddimages_cdl::select_source "Selection de l asteroide" 0]
-    ::bddimages_cdl::affich_un_rond  [lindex $aster_deb 0] [lindex $aster_deb 1] "green"
+    ::bddimages_cdl::affich_un_rond  [lindex $aster_deb 0] [lindex $aster_deb 1] "green"  [lindex $aster_deb 2]
     if {$::bddimages_cdl::stop} {return}
     lappend aster_deb $commundatejj
     ::console::affiche_resultat "aster : $aster_deb\n"
@@ -229,7 +236,9 @@ namespace eval bddimages_cdl {
     set filename [::bddimages_liste::lget $img "filename"]
     set dirfilename [::bddimages_liste::lget $img "dirfilename"]
     set tabkey  [::bddimages_liste::lget $img "tabkey"]
+    set filter  [::bddimages_imgcorrection::cleanEntities [lindex [::bddimages_liste::lget $tabkey "filter"] 1] ]
     set dateobs [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1]]
+    set end   $dateobs
     set commundatejj [::bddimages_liste::lget $img "commundatejj"]
     ::console::affiche_resultat "file : $dirfilename/$filename\n"
     ::console::affiche_resultat "last dateobs $dateobs \n"
@@ -239,14 +248,14 @@ namespace eval bddimages_cdl {
 
     #Selection de l etoile
     set star_fin [::bddimages_cdl::select_source "Selection de l etoile" 0]
-    ::bddimages_cdl::affich_un_rond  [lindex $star_fin 0] [lindex $star_fin 1] "yellow"
+    ::bddimages_cdl::affich_un_rond  [lindex $star_fin 0] [lindex $star_fin 1] "yellow" [lindex $star_fin 2] 
     if {$::bddimages_cdl::stop} {return}
     lappend star_fin $commundatejj
 
     ::console::affiche_resultat "star : $star_fin\n"
     #Selection de l asteroide
     set aster_fin [::bddimages_cdl::select_source "Selection de l asteroide" 0]
-    ::bddimages_cdl::affich_un_rond  [lindex $aster_fin 0] [lindex $aster_fin 1] "green"
+    ::bddimages_cdl::affich_un_rond  [lindex $aster_fin 0] [lindex $aster_fin 1] "green" [lindex $aster_fin 2]
     if {$::bddimages_cdl::stop} {return}
     lappend aster_fin $commundatejj
     ::console::affiche_resultat "aster : $aster_fin\n"
@@ -273,17 +282,26 @@ namespace eval bddimages_cdl {
 
       ::bddimages_cdl::box_fenetre
 
-      set tabkey       [::bddimages_liste::lget $img "tabkey"]
+      set tabkey   [::bddimages_liste::lget $img "tabkey"]
 
-      set telescop     [lindex [::bddimages_liste::lget $tabkey telescop] 1]
-      set object       [::bddimages_imgcorrection::name_to_stdname [lindex [::bddimages_liste::lget $tabkey "object"] 1] ]
-      set dateobs      [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
-      set ::bddimages_cdl::file_result_m1  [file join $bddconf(dirtmp) "${telescop}_${object}_m1.csv"]
+      set telescop [lindex [::bddimages_liste::lget $tabkey telescop] 1]
+      set object   [::bddimages_imgcorrection::cleanEntities [lindex [::bddimages_liste::lget $tabkey "object"] 1] ]
+      set dateobs  [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
+      set dateobs  [::bddimages_imgcorrection::isoDateToString $dateobs]
+
+      set ::bddimages_cdl::file_result_m1  [file join $bddconf(dirtmp) "${object}_${telescop}_${filter}_${dateobs}.csv"]
       ::console::affiche_resultat "RESULTAT DANS FICHIER : $::bddimages_cdl::file_result_m1\n"
-      set ::bddimages_cdl::file_result_m2  [file join $bddconf(dirtmp) "${telescop}_${object}_m2.csv"]
-      ::console::affiche_resultat "RESULTAT DANS FICHIER : $::bddimages_cdl::file_result_m2\n"
-      set ::bddimages_cdl::file_result_m3  [file join $bddconf(dirtmp) "${telescop}_${object}_m3.csv"]
-      ::console::affiche_resultat "RESULTAT DANS FICHIER : $::bddimages_cdl::file_result_m3\n"
+      #set ::bddimages_cdl::file_result_m2  [file join $bddconf(dirtmp) "${telescop}_${dateobs}_${object}_m2.csv"]
+      #::console::affiche_resultat "RESULTAT DANS FICHIER : $::bddimages_cdl::file_result_m2\n"
+      #set ::bddimages_cdl::file_result_m3  [file join $bddconf(dirtmp) "${telescop}_${dateobs}_${object}_m3.csv"]
+      #::console::affiche_resultat "RESULTAT DANS FICHIER : $::bddimages_cdl::file_result_m3\n"
+
+      set ::bddimages_cdl::period [expr ($tf - $td)*24.]
+      set ::bddimages_cdl::telescop $telescop
+      set ::bddimages_cdl::filter   $filter
+      set ::bddimages_cdl::object   $object
+      set ::bddimages_cdl::begin    $begin
+      set ::bddimages_cdl::end      $end
 
 
     }
@@ -308,11 +326,17 @@ namespace eval bddimages_cdl {
 
 
       set f1 [open $::bddimages_cdl::file_result_m1 "w"]
-      set f2 [open $::bddimages_cdl::file_result_m2 "w"]
-      set f3 [open $::bddimages_cdl::file_result_m3 "w"]
+      #set f2 [open $::bddimages_cdl::file_result_m2 "w"]
+      #set f3 [open $::bddimages_cdl::file_result_m3 "w"]
+      puts $f1 "#OBJECT   = $::bddimages_cdl::object"
+      puts $f1 "#TELESCOP = $::bddimages_cdl::telescop"
+      puts $f1 "#FILTER   = $::bddimages_cdl::filter"
+      puts $f1 "#BEGIN    = $::bddimages_cdl::begin"
+      puts $f1 "#END      = $::bddimages_cdl::end"
+      puts $f1 "#PERIOD   = $::bddimages_cdl::period"
       puts $f1 "dateiso,datejj,mag"
-      puts $f2 "dateiso,datejj,mag"
-      puts $f3 "dateiso,datejj,mag"
+      #puts $f2 "dateiso,datejj,mag"
+      #puts $f3 "dateiso,datejj,mag"
 
       foreach img $::bddimages_cdl::img_list {
 
@@ -333,7 +357,7 @@ namespace eval bddimages_cdl {
          
          ::bddimages_cdl::mesure_methode1 $f1 $commundatejj $dateiso $datejd
          #::bddimages_cdl::mesure_methode2 $f2 $commundatejj $dateiso $datejd
-         ::bddimages_cdl::mesure_methode3 $f3 $commundatejj $dateiso $datejd
+         #::bddimages_cdl::mesure_methode3 $f3 $commundatejj $dateiso $datejd
 
 
          #after 100
@@ -342,8 +366,8 @@ namespace eval bddimages_cdl {
 
       $audace(hCanvas) delete cadres
       close $f1
-      close $f2
-      close $f3
+      #close $f2
+      #close $f3
 
     }
 
@@ -356,15 +380,15 @@ proc ::bddimages_cdl::mesure_methode1 { f commundatejj dateiso datejd } {
          set ysm      [lindex $valeurs 1]
          set fluxs    [lindex $valeurs 2]
          set errfluxs [lindex $valeurs 3]
-         ::bddimages_cdl::affich_un_rond  $xsm $ysm "yellow"
+         ::bddimages_cdl::affich_un_rond  $xsm $ysm "yellow" $::bddimages_cdl::delta_star
 
          set la       [::bddimages_cdl::interpol $::bddimages_cdl::interpol_aster $commundatejj]
-         set valeurs  [photom_methode1 [lindex $la 0] [lindex $la 1] $::bddimages_cdl::delta_star]
+         set valeurs  [photom_methode1 [lindex $la 0] [lindex $la 1] $::bddimages_cdl::delta_aster]
          set xam      [lindex $valeurs 0]
          set yam      [lindex $valeurs 1]
          set fluxa    [lindex $valeurs 2]
          set errfluxa [lindex $valeurs 3]
-         ::bddimages_cdl::affich_un_rond  $xam $yam "green"
+         ::bddimages_cdl::affich_un_rond  $xam $yam "green" $::bddimages_cdl::delta_aster
 
          set err [catch {
             set mag [expr $::bddimages_cdl::magstar - log10($fluxa/$fluxs)*2.5]
@@ -395,15 +419,15 @@ proc ::bddimages_cdl::mesure_methode2 { f commundatejj dateiso datejd } {
          set ysm      [lindex $valeurs 1]
          set fluxs    [lindex $valeurs 2]
          set errfluxs [lindex $valeurs 3]
-         ::bddimages_cdl::affich_un_rond  $xsm $ysm "yellow"
+         ::bddimages_cdl::affich_un_rond  $xsm $ysm "yellow" $::bddimages_cdl::delta_star
 
          set la       [::bddimages_cdl::interpol $::bddimages_cdl::interpol_aster $commundatejj]
-         set valeurs  [photom_methode2 [lindex $la 0] [lindex $la 1] $::bddimages_cdl::delta_star]
+         set valeurs  [photom_methode2 [lindex $la 0] [lindex $la 1] $::bddimages_cdl::delta_aster]
          set xam      [lindex $valeurs 0]
          set yam      [lindex $valeurs 1]
          set fluxa    [lindex $valeurs 2]
          set errfluxa [lindex $valeurs 3]
-         ::bddimages_cdl::affich_un_rond  $xam $yam "green"
+         ::bddimages_cdl::affich_un_rond  $xam $yam "green" $::bddimages_cdl::delta_aster
 
          set err [catch {
             set mag [expr $::bddimages_cdl::magstar - log10($fluxa/$fluxs)*2.5]
@@ -435,15 +459,15 @@ proc ::bddimages_cdl::mesure_methode3 { f commundatejj dateiso datejd } {
          set ysm      [lindex $valeurs 1]
          set fluxs    [lindex $valeurs 2]
          set errfluxs [lindex $valeurs 3]
-         ::bddimages_cdl::affich_un_rond  $xsm $ysm "yellow"
+         ::bddimages_cdl::affich_un_rond  $xsm $ysm "yellow" $::bddimages_cdl::delta_star
 
          set la       [::bddimages_cdl::interpol $::bddimages_cdl::interpol_aster $commundatejj]
-         set valeurs  [photom_methode3 [lindex $la 0] [lindex $la 1] $::bddimages_cdl::delta_star]
+         set valeurs  [photom_methode3 [lindex $la 0] [lindex $la 1] $::bddimages_cdl::delta_aster]
          set xam      [lindex $valeurs 0]
          set yam      [lindex $valeurs 1]
          set fluxa    [lindex $valeurs 2]
          set errfluxa [lindex $valeurs 3]
-         ::bddimages_cdl::affich_un_rond  $xam $yam "green"
+         ::bddimages_cdl::affich_un_rond  $xam $yam "green" $::bddimages_cdl::delta_aster
 
          set err [catch {
             set mag [expr $::bddimages_cdl::magstar - log10($fluxa/$fluxs)*2.5]
@@ -470,7 +494,7 @@ proc ::bddimages_cdl::mesure_methode3 { f commundatejj dateiso datejd } {
 
 
 
-proc ::bddimages_cdl::affich_un_rond { x y color } {
+proc ::bddimages_cdl::affich_un_rond { x y color radius } {
 
    global audace
 
@@ -479,7 +503,7 @@ proc ::bddimages_cdl::affich_un_rond { x y color } {
        set x [lindex $can_xy 0]
        set y [lindex $can_xy 1]
        # gren_info "XY =  $x $y \n"
-       set radius 5           
+            
        set width 1           
        #--- Dessine l'objet selectionne en vert dans l'image
        $audace(hCanvas) create oval [ expr $x - $radius ] [ expr $y - $radius ] [ expr $x + $radius ] [ expr $y + $radius ] \
@@ -531,8 +555,8 @@ proc ::bddimages_cdl::affich_un_rond { x y color } {
       set rect [ ::confVisu::getBox $::audace(visuNo) ]
       set xsm [expr ([lindex $rect 0] + [lindex $rect 2]) / 2. ]
       set ysm [expr ([lindex $rect 1] + [lindex $rect 3]) / 2. ]
-      set deltax [expr abs([lindex $rect 0] - [lindex $rect 2]) ]
-      set deltay [expr abs([lindex $rect 1] - [lindex $rect 3]) ]
+      set deltax [expr abs([lindex $rect 0] - [lindex $rect 2]) / 2.  ]
+      set deltay [expr abs([lindex $rect 1] - [lindex $rect 3]) / 2.  ]
       if {$deltax < $deltay} {
          set delta $deltay
       } else {
