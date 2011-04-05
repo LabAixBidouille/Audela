@@ -57,6 +57,9 @@
 # window2  in out number {x1 y1 x2 y2} ?first_index? ?tt_options?
 # calibwcs  Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder
 # calibwcs2  Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder number ?first_index?
+# simulimage  Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder ?exposure_s? ?fwhm_pix? \
+#             ?teldiam_m? ?colfilter? ?sky_brightness_mag/arcsec2? ?quantum_efficiency? ?gain_e/ADU? ?readout_noise_e?"
+#
 
 proc add {args} {
    #--- operand value
@@ -1621,13 +1624,13 @@ proc simulimage {args} {
          }
       }
       buf$::audace(bufNo) setkwd [list EQUINOX 2000 int "" "System of equatorial coordinates"]
-      buf$::audace(bufNo) setkwd [list RADESYS FK5 string ""  "Mean Place IAU 1984 system"]
-      buf$::audace(bufNo) setkwd [list LONPOLE 180 float "" "Long. of the celest.NP in native coor.sys" ]
-      buf$::audace(bufNo) setkwd [list CTYPE1 RA---TAN string "" "Gnomonic projection" ]
-      buf$::audace(bufNo) setkwd [list CTYPE2 DEC--TAN string "" "Gnomonic projection" ]
-      buf$::audace(bufNo) setkwd [list CUNIT1 deg string  ""    "Angles are degrees always"   ]
-      buf$::audace(bufNo) setkwd [list CUNIT2 deg string  ""    "Angles are degrees always"   ]
-      buf$::audace(bufNo) setkwd [list CATASTAR 0 int ""    "Nb stars matched"   ]
+      buf$::audace(bufNo) setkwd [list RADESYS FK5 string "" "Mean Place IAU 1984 system"]
+      buf$::audace(bufNo) setkwd [list LONPOLE 180 float "" "Long. of the celest.NP in native coor.sys"]
+      buf$::audace(bufNo) setkwd [list CTYPE1 RA---TAN string "" "Gnomonic projection"]
+      buf$::audace(bufNo) setkwd [list CTYPE2 DEC--TAN string "" "Gnomonic projection"]
+      buf$::audace(bufNo) setkwd [list CUNIT1 deg string "" "Angles are degrees always"]
+      buf$::audace(bufNo) setkwd [list CUNIT2 deg string "" "Angles are degrees always"]
+      buf$::audace(bufNo) setkwd [list CATASTAR 0 int "" "Nb stars matched"]
       #
       if {($cat_format!="")} {
          set mypath "."
@@ -1643,3 +1646,4 @@ proc simulimage {args} {
       error "Usage: simulimage Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder ?exposure_s? ?fwhm_pix? ?teldiam_m? ?colfilter? ?sky_brightness_mag/arcsec2? ?quantum_efficiency? ?gain_e/ADU? ?readout_noise_e?"
    }
 }
+
