@@ -75,10 +75,11 @@ proc bddimages_header_id { tabkey } {
           append sqlcmd "variable VARCHAR(20) NOT NULL,"
           append sqlcmd "unit VARCHAR(20) NULL,"
           append sqlcmd "comment VARCHAR(256) NULL"
-          append sqlcmd ") TYPE = MYISAM ;"
+          append sqlcmd ") ENGINE = MyISAM ;"
           set err [catch {::bddimages_sql::sql query $sqlcmd} msg]
           if {$err} {
              bddimages_sauve_fich "bddimages_header_id: ERREUR 201 : Creation table header <$err> <$msg>"
+             bddimages_sauve_fich "bddimages_header_id: SQL : $sqlcmd"
              return [list 201 0]
              } else {
              bddimages_sauve_fich "bddimages_header_id: Creation table header..."
@@ -211,7 +212,7 @@ proc bddimages_header_id { tabkey } {
        set sqlcmd [string trimright $sqlcmd ",\n"]
 
        set sqlcmd2 [string trimright $sqlcmd2 ",\n"]
-       append sqlcmd2 ") TYPE = MYISAM ;"
+       append sqlcmd2 ") ENGINE = MyISAM ;"
 
       #  bddimages_sauve_fich "bddimages_header_id: sqlcmd <$sqlcmd>"
       #  bddimages_sauve_fich "bddimages_header_id: sqlcmd2 <$sqlcmd2>"
