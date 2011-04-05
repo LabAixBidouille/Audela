@@ -106,7 +106,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audinet,autoflush)               "Borrado del puerto serie"
    set caption(audinet,focuser_type)            "Tipo de enfocador"
-   set caption(audinet,focuser_i2c_address)     "Puerto I2C "
+   set caption(audinet,focuser_i2c_address)     "Puerto I2C"
 
    set caption(audinet,appareil_connecte)       "Ya existe un dispositivo en la dirección IP:"
    set caption(audinet,pas_appareil_connecte)   "No existe dispositivo en la dirección IP:"
