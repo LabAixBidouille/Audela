@@ -691,7 +691,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,assigner_g)                  "Grünen Kanal zuweisen"
    set caption(audace,menu,assigner_b)                  "Blauen Kanal zuweisen"
 
-   set caption(audace,menu,pretraitee)                  "Rohbild(er) Bearbeitung "
+   set caption(audace,menu,pretraitee)                  "Rohbild(er) Bearbeitung"
 
    set caption(audace,menu,center)                      "Angleichen"
    set caption(audace,menu,recentrer_manu)              "Wählen"
@@ -710,7 +710,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,ecart_type)                  "Typische Abweichung"
    set caption(audace,menu,moyenne_k)                   "Kappa-Sigma Durchschnitt"
    set caption(audace,menu,moyenne_tri)                 "Prozentrang Sortierung"
-   set caption(audace,menu,obturateur)                  "Auslösungszeit des Verschluß Kartieren "
+   set caption(audace,menu,obturateur)                  "Auslösungszeit des Verschluß Kartieren"
 
    set caption(audace,menu,geometry)                    "Die Geometrie anpassen"
    set caption(audace,menu,rot+90)                      "90° im Uhrzeigersinn drehen"
