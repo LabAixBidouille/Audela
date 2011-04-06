@@ -528,12 +528,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,pretraitee)                  "Procesar imágen(es) cruda(s)"
 
    set caption(audace,menu,center)                      "Alinear"
-   set caption(audace,menu,recentrer_manu)              "# Sélection"
-   set caption(audace,menu,reg_trans)                   "# Translation automatique"
-   set caption(audace,menu,reg_inter)                   "# Intercorrélation"
-   set caption(audace,menu,reg_tri)                     "# Transformation affine"
-   set caption(audace,menu,reg_wcs)                     "# Astrométrie WCS"
-   set caption(audace,menu,reg_fine)                    "# Moindres carrés"
+   set caption(audace,menu,recentrer_manu)              "Selección"
+   set caption(audace,menu,reg_trans)                   "Traslación automática"
+   set caption(audace,menu,reg_inter)                   "Intercorrelación"
+   set caption(audace,menu,reg_tri)                     "Transformación afín"
+   set caption(audace,menu,reg_wcs)                     "Astrometria WCS"
+   set caption(audace,menu,reg_fine)                    "Mínimos cuadrados"
 
    set caption(audace,menu,pile)                        "Combinar"
    set caption(audace,menu,somme)                       "Suma"
@@ -579,7 +579,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,ngain)                       "Normalizar iluminación"
    set caption(audace,menu,clip)                        "Recortar extremos"
 
-   set caption(audace,menu,filter)                      "Filtro"
+   set caption(audace,menu,filter)                      "Filtrar"
    set caption(audace,menu,masque_flou)                 "Máscara desenfocada"
    set caption(audace,menu,filtre_passe-bas)            "Filtro paso bajo"
    set caption(audace,menu,filtre_passe-haut)           "Filtro paso alto"
@@ -606,7 +606,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,pol2cart)                    "Polar -> Rectangular"
    set caption(audace,menu,hough)                       "Funcion de Hough"
 
-   set caption(audace,menu,convoluer)                   "Convolución"
+   set caption(audace,menu,convoluer)                   "Convolucionar"
    set caption(audace,menu,convolution)                 "Convolución"
 
    set caption(pretraitement,all)                       "Convertir todos los ficheros"
@@ -1026,12 +1026,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,pretraitee)                  "Behandling af RAW billeder"
 
    set caption(audace,menu,center)                      "Justér"
-   set caption(audace,menu,recentrer_manu)              "# Sélection"
-   set caption(audace,menu,reg_trans)                   "# Translation automatique"
-   set caption(audace,menu,reg_inter)                   "# Intercorrélation"
-   set caption(audace,menu,reg_tri)                     "# Transformation affine"
-   set caption(audace,menu,reg_wcs)                     "# Astrométrie WCS"
-   set caption(audace,menu,reg_fine)                    "# Moindres carrés"
+   set caption(audace,menu,recentrer_manu)              "Valg"
+   set caption(audace,menu,reg_trans)                   "Automatisk oversættelse"
+   set caption(audace,menu,reg_inter)                   "Interkorrelation"
+   set caption(audace,menu,reg_tri)                     "Affin Transformation"
+   set caption(audace,menu,reg_wcs)                     "WCS Astrometri"
+   set caption(audace,menu,reg_fine)                    "Mindste kvadraters metode"
 
    set caption(audace,menu,pile)                        "Forene"
    set caption(audace,menu,somme)                       "Sum"
@@ -1077,7 +1077,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,ngain)                       "Normaliser belysning"
    set caption(audace,menu,clip)                        "Klip"
 
-   set caption(audace,menu,filter)                      "Filter"
+   set caption(audace,menu,filter)                      "Brug filter"
    set caption(audace,menu,masque_flou)                 "Uskarp maske"
    set caption(audace,menu,filtre_passe-bas)            "Lav pas filter"
    set caption(audace,menu,filtre_passe-haut)           "Høj pas filter"
@@ -1099,12 +1099,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,tfd)                         "Diskret Fourier tranformation"
    set caption(audace,menu,tfdi)                        "Invers diskret Fourier tranformation"
    set caption(audace,menu,acorr)                       "Autokorrelation"
-   set caption(audace,menu,icorr)                       "Kryds-korrelation"
+   set caption(audace,menu,icorr)                       "Interkorrelation"
    set caption(audace,menu,cart2pol)                    "Rektangulær -> Polær"
    set caption(audace,menu,pol2cart)                    "Polær -> Rektangulær"
    set caption(audace,menu,hough)                       "Hough Funktion"
 
-   set caption(audace,menu,convoluer)                   "# Convoluer"
+   set caption(audace,menu,convoluer)                   "Brug Convolution"
    set caption(audace,menu,convolution)                 "Convolution"
 
    set caption(pretraitement,all)                       "Konverter alle filer"
