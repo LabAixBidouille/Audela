@@ -62,7 +62,7 @@ set caption(bddimages_recherche,err206)         "Création nouvelle table images
 set caption(search,fichier)                     "Liste"
 set caption(search,ouvre)                       "Ouvrir (Ctrl+O)"
 set caption(search,sauve)                       "Sauver (Ctrl+S)"
-set caption(search,sauvess)                     "Sauver sous... "
+set caption(search,sauvess)                     "Sauver sous..."
 set caption(search,fermer_B)                    "Fermer (Crtl+Q)"
 set caption(search,image)                       "Image"
 set caption(search,charge)                      "Charger (Ctrl+L)"
@@ -101,7 +101,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bddimages_recherche,label_nbimgins) "Nb d'images insérées :"
    set caption(bddimages_recherche,label_nbimgerr) "Nb d'images en erreur :"
    set caption(bddimages_recherche,label_nbheader) "Nb de header :"
-   
+
    set caption(bddimages_recherche,connect)        "Connexion à MySql"
    set caption(bddimages_recherche,inser)          "Insertion"
    set caption(bddimages_recherche,refresh)        "Rafraîchir"
@@ -128,7 +128,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bddimages_recherche,cata)           "Gestion des sources"
    set caption(bddimages_recherche,msg_erreur)     "Erreur"
    set caption(bddimages_recherche,msg_internet)   "Erreur connexion"
-   
+
    # -- Colonnes de la table --
    set caption(bddimages_recherche,etat)           "Etat"
    set caption(bddimages_recherche,nom)            "Nom"
@@ -136,7 +136,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bddimages_recherche,telescope)      "Site"
    set caption(bddimages_recherche,taille)         "Taille"
    set caption(bddimages_recherche,erreur)         "Erreur"
-   
+
    # -- Erreurs --
    set caption(bddimages_recherche,err0)           "Image insérée"
    set caption(bddimages_recherche,err1)           "Image existante dans la base"
@@ -147,11 +147,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bddimages_recherche,err105)         "Impossible de supprimer l'image dans incoming"
    set caption(bddimages_recherche,err205)         ""
    set caption(bddimages_recherche,err206)         "Création nouvelle table images_ impossible"
-   
+
    set caption(search,fichier)                     "Liste"
    set caption(search,ouvre)                       "Ouvrir (Ctrl+O)"
    set caption(search,sauve)                       "Sauver (Ctrl+S)"
-   set caption(search,sauvess)                     "Sauver sous... "
+   set caption(search,sauvess)                     "Sauver sous..."
    set caption(search,fermer_B)                    "Fermer (Crtl+Q)"
    set caption(search,image)                       "Image"
    set caption(search,charge)                      "Charger (Ctrl+L)"
@@ -159,12 +159,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(search,aide)                        "Aide"
    set caption(search,aide_skybot)                 "Aide - SkyBoT"
    set caption(search,code_uai)                    "Codes UAI"
-   
+
    set caption(bddimages_recherche,new_list_i)     "Nouvelle Liste intelligente"
    set caption(bddimages_recherche,new_list_n)     "Nouvelle Liste normale"
    set caption(bddimages_recherche,edit)           "Editer la liste"
    set caption(bddimages_recherche,delete_list)    "Effacer la liste"
-   
+
 
    set caption(bddimages_recherche,nointelist)     "Veuillez créer au moins une liste"
 
@@ -177,7 +177,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bddimages_recherche,button_cata)    "Toggle state CATA"
    set caption(bddimages_recherche,button_corr)    "(De)selectionne état CORR"
    set caption(bddimages_recherche,button_raw)     "(De)selectionne état RAW"
-   
+
    set caption(bddimages_recherche,confirmQuest)   "Etes vous sur de vouloir effacer définitivement les images sélectionnées ?"
    set caption(bddimages_recherche,confirmWCS)     "Etes vous sur de vouloir creer le WCS ?"
    set caption(bddimages_recherche,confirmNo)      "Annuler"
