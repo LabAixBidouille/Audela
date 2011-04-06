@@ -1512,6 +1512,27 @@ proc calibwcs {args} {
       buf$::audace(bufNo) setkwd [list CUNIT2 deg string  ""    "Angles are degrees always"   ]
       buf$::audace(bufNo) setkwd [list CATASTAR 0 int ""    "Nb stars matched"   ]
 
+      # --- check les catalogues
+      if {([string toupper $cat_format]=="USNO")||([string toupper $cat_format]=="MICROCAT")} {
+      } else {
+         set comment "cat_format $cat_format not valid. It must be only USNO or MICROCAT !"
+         error $comment
+      }
+      if {[file exists $cat_folder]==1} {
+         set comment "cat_folder $cat_folder does not contains the $cat_format catalog!"
+         set fics [glob -nocomplain "$cat_folder/*.ACC"]
+         if {[llength $fics]<24} {
+            error $comment
+         }
+         set fics [glob -nocomplain "$cat_folder/*.CAT"]
+         if {[llength $fics]<24} {
+            error $comment
+         }
+      } else {
+         set comment "cat_folder $cat_folder does not exists !"
+         error $comment
+      }
+      
       # Identification des sources
       if {($cat_format!="")} {
          set ext $::conf(extension,defaut)
@@ -1606,6 +1627,26 @@ proc simulimage {args} {
       incr k ; set quantum_efficiency 0.8 ; if {[llength $args] >= [expr 1+$k]} { set quantum_efficiency [lindex $args $k] }
       incr k ; set gain 2.5               ; if {[llength $args] >= [expr 1+$k]} { set gain [lindex $args $k] }
       incr k ; set readout_noise 10       ; if {[llength $args] >= [expr 1+$k]} { set readout_noise [lindex $args $k] }
+      # --- check les catalogues
+      if {([string toupper $cat_format]=="USNO")||([string toupper $cat_format]=="MICROCAT")} {
+      } else {
+         set comment "cat_format $cat_format not valid. It must be only USNO or MICROCAT !"
+         error $comment
+      }
+      if {[file exists $cat_folder]==1} {
+         set comment "cat_folder $cat_folder does not contains the $cat_format catalog!"
+         set fics [glob -nocomplain "$cat_folder/*.ACC"]
+         if {[llength $fics]<24} {
+            error $comment
+         }
+         set fics [glob -nocomplain "$cat_folder/*.CAT"]
+         if {[llength $fics]<24} {
+            error $comment
+         }
+      } else {
+         set comment "cat_folder $cat_folder does not exists !"
+         error $comment
+      }
       #
       set pi [expr 4*atan(1.)]
       set naxis1 [lindex [buf$::audace(bufNo) getkwd NAXIS1] 1]
