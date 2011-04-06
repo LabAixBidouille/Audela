@@ -240,15 +240,15 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,centro)                    "Photozentrum"
    set caption(audace,menu,phot)                      "Integrale Photomessung"
 
-   set caption(audace,menu,extract)                   "Herausnehmen "
+   set caption(audace,menu,extract)                   "Herausnehmen"
    set caption(audace,menu,ligne)                     "Eine Reihe"
    set caption(audace,menu,bin_y)                     "Reihen Summe"
    set caption(audace,menu,med_y)                     "Mittelwert der Reihen"
    set caption(audace,menu,sort_y)                    "Perzentil Sortierung der Reihen"
    set caption(audace,menu,colonne)                   "Eine Kolumne"
-   set caption(audace,menu,bin_x)                     "Kolumnen Summe "
+   set caption(audace,menu,bin_x)                     "Kolumnen Summe"
    set caption(audace,menu,med_x)                     "Mittelwert der Kolumnen"
-   set caption(audace,menu,sort_x)                    "Prozentrang Sortierung der Kolumnen "
+   set caption(audace,menu,sort_x)                    "Prozentrang Sortierung der Kolumnen"
    set caption(audace,menu,matrice)                   "Eine Zone"
 
    set caption(audace,histo_titre)                    "Historische Kurve des Bild"
