@@ -5,7 +5,7 @@
   <title>Librairie TT : Manuel Utilisateur</title>
 </head>
 <body>
-<p class="date">Date de mise &#224; jour : 03 f&#233;vrier 2011</p>
+<p class="date">Date de mise &#224; jour : 06 avril 2011</p>
 <h1>LIB TT - Librairie de pr&#233;traitement d'images
 astronomiques</h1>
 <h1>Manuel Utilisateur</h1>
@@ -137,7 +137,8 @@ jpeg_quality]</td>
 [div]<br>
       <a href="#CATCHART">CATCHART</a> [path_astromcatalog]
 [astromcatalog] [catafile] [jpegfile_chart] [jpegfile_chart2]
-[magrlim] [magblim]<br>
+[magrlim] [magblim] [simulimage] [exposure] [fwhmx] [fwhmy] [teldiam]
+[colfilter] [sky_brightness] [qe] [gain] [readout_noise]<br>
       <a href="#CONV">CONV</a> [kernel_type] [sigma]<br>
       <a href="#COPY">COPY</a> [nbsubseries]<br>
       <a href="#CUTS">CUTS</a> [hicut] [locut] [keytype]
@@ -554,7 +555,7 @@ set ni 3<br>
 set ext ".fit"<br>
 set out "ugc192unsmear-"<br>
 set coefficientUnsmear 0.0005<br>
-ttscript2 "IMA/SERIES \"$::audace(rep_images)\" \"$in\" $first $ni \"$ext\" \"$::audace(rep_images)\" \"$out\" 1 \"$ext\" UNSMEARING UNSMEARING=$coefficientUnsmear"  
+ttscript2 "IMA/SERIES \"$::audace(rep_images)\" \"$in\" $first $ni \"$ext\" \"$::audace(rep_images)\" \"$out\" 1 \"$ext\" UNSMEARING UNSMEARING=$coefficientUnsmear"
     </pre>
     <p>La commande cr&#233;e les 3 images trait&#233;es :
 ugc192unsmear-1.fits , ugc192unsmear-2.fits ,
@@ -1215,6 +1216,17 @@ on ne lit pas les donn&#233;es dans le catalogue. Les arguments
 de [magrlim] [magblim] fixent ces limites (99 par d&#233;faut).
 Dans le cas d'un catalogue personnel, seul [magrlim] est
 actif.</p>
+
+    <p>Si le mot [simulimage] est sp&eacute;cifi&eacute; alors l'image de
+sortie sera une image synth&eacute;tique compos&eacute;e &agrave;
+partir des &eacute;toiles trouv&eacute;es dans le catalogue. Les
+param&egrave;tres physiques optionnels sont : [exposure] (= 1 seconde
+par d&eacute;faut), [fwhmx] (= 2.5 pixels par d&eacute;faut), [ fwhmy]
+(= 2.5 pixels par d&eacute;faut), [teldiam] (= 1 m&egrave;tre par
+d&eacute;faut), [colfilter] (= R par d&eacute;faut), [sky_brightness]
+(= 20.9 mag/arcsec2 par d&eacute;faut), [qe] (= 1 par d&eacute;faut),
+[gain] (= 2.5 e/ADU par d&eacute;faut), [readout_noise] (= 0
+&eacute;lectron par d&eacute;faut).</p>
   </li>
   <li>
     <h3><a name="ASTROMETRY" id="ASTROMETRY"></a>Fonction
