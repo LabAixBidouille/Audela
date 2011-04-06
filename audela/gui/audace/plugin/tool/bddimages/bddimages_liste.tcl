@@ -1076,8 +1076,8 @@ namespace eval bddimages_liste {
    
       set cond "AND"
    
-      set jjdatemin [ mc_date2jd "$ilist(datemin)T00:00:00" ]
-      set jjdatemax [ mc_date2jd "$ilist(datemax)T00:00:00" ]
+      set jjdatemin [ mc_date2jd "$ilist(datemin)T12:00:00" ]
+      set jjdatemax [ mc_date2jd "$ilist(datemax)T12:00:00" ]
    
       if { $ilist(datemin)!=""} {
          if { $ilist(datemax)!=""} {

@@ -89,6 +89,7 @@ set caption(bddimages_recherche,button_corr)    "Toggle state CORR"
 set caption(bddimages_recherche,button_raw)     "Toggle state RAW"
 
 set caption(bddimages_recherche,confirmQuest)   "Are you sure you want to definitively delete the selected images?"
+set caption(bddimages_recherche,confirmWCS)     "Are you sure you want to create WCS?"
 set caption(bddimages_recherche,confirmNo)      "Cancel"
 set caption(bddimages_recherche,confirmYes)     "Yes"
 
@@ -178,6 +179,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bddimages_recherche,button_raw)     "(De)selectionne état RAW"
    
    set caption(bddimages_recherche,confirmQuest)   "Etes vous sur de vouloir effacer définitivement les images sélectionnées ?"
+   set caption(bddimages_recherche,confirmWCS)     "Etes vous sur de vouloir creer le WCS ?"
    set caption(bddimages_recherche,confirmNo)      "Annuler"
    set caption(bddimages_recherche,confirmYes)     "Oui"
 

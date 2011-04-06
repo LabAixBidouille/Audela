@@ -444,7 +444,7 @@ proc ::bddimagesAdmin::bdi_setcompat { bufno } {
    }
    set key [buf$bufno getkwd "BDDIMAGES WCS"]
    if {[lindex $key 0] == "" } {
-      buf$bufno setkwd [list "BDDIMAGES WCS" "?" "string" "WCS performed" ""]
+      buf$bufno setkwd [list "BDDIMAGES WCS" "?" "string" "Y | N | ? (WCS performed)" ""]
    }
    set key [buf$bufno getkwd "BDDIMAGES NAMECATA"]
    if {[lindex $key 0] == "" } {
