@@ -202,7 +202,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astrometry,start,7)        "La calibración ha fallado."
    set caption(astrometry,start,8)        "Calibrada con imagen:"
    set caption(astrometry,start,9)        "Calibrada con las palabras clave de la lista."
-   set caption(astrometry,start,10)       "Test de Calibración "
+   set caption(astrometry,start,10)       "Test de Calibración"
    set caption(astrometry,start,11)       "Claves WCS borradas"
    set caption(astrometry,help)           "Ayuda"
    set caption(astrometry,close)          "Cerrar"
