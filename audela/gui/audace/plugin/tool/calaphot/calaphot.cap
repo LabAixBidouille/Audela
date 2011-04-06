@@ -610,7 +610,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set calaphot(texte,temps_pose_nul)      "Null Erleuchtung Zeit"
    set calaphot(texte,mag_relative)        "Relative Größe"
    set calaphot(texte,err_modelisation)    "Ausführung Fehler"
-   set calaphot(texte,plus_jeune)          " ist älter als die vorherige "
+   set calaphot(texte,plus_jeune)          " ist älter als die vorherige"
    set calaphot(texte,implication_defoc)   "Die Verarbeitung von sehr unscharf Bilder ist nur mit Blendenöffnung Photometrie möglich."
    set calaphot(texte,defocalisation)      "Sehr unscharf Bilder"
    set calaphot(texte,defocalisation_0)    $calaphot(texte,non)
