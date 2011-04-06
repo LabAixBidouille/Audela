@@ -56,7 +56,7 @@ set caption(autoguider,declinaison)              "Declination"
 set caption(autoguider,aller_vers)               "Go to"
 set caption(autoguider,clic_etoile)              "Click on the star"
 
-set caption(autoguider,cumulTitle)               "Add Exposures "
+set caption(autoguider,cumulTitle)               "Add Exposures"
 set caption(autoguider,cumulEnabled)             "Enable Addition"
 set caption(autoguider,cumulNb)                  "Number of Exposures"
 set caption(autoguider,darkTitle)                "Dark Frame Subtraction"
@@ -472,7 +472,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,aller_vers)            "Go to"
    set caption(autoguider,clic_etoile)           "Click on the star"
 
-   set caption(autoguider,cumulTitle)            "Add Exposures "
+   set caption(autoguider,cumulTitle)            "Add Exposures"
    set caption(autoguider,cumulEnabled)          "Enable Addition"
    set caption(autoguider,cumulNb)               "Number of Exposures"
    set caption(autoguider,darkTitle)             "Dark Frame Subtraction"
@@ -541,7 +541,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,aller_vers)            "Go to"
    set caption(autoguider,clic_etoile)           "Click on the star"
 
-   set caption(autoguider,cumulTitle)            "Add Exposures "
+   set caption(autoguider,cumulTitle)            "Add Exposures"
    set caption(autoguider,cumulEnabled)          "Enable Addition"
    set caption(autoguider,cumulNb)               "Number of Exposures"
    set caption(autoguider,darkTitle)             "Dark Frame Subtraction"
@@ -610,7 +610,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,aller_vers)            "Go to"
    set caption(autoguider,clic_etoile)           "Click on the star"
 
-   set caption(autoguider,cumulTitle)            "Add Exposures "
+   set caption(autoguider,cumulTitle)            "Add Exposures"
    set caption(autoguider,cumulEnabled)          "Enable Addition"
    set caption(autoguider,cumulNb)               "Number of Exposures"
    set caption(autoguider,darkTitle)             "Dark Frame Subtraction"
