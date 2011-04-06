@@ -176,7 +176,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telshift,binning)       "Binning Faktor:"
    set caption(telshift,binning1)      "1x1 Binning"
    set caption(telshift,binning2)      "2x2 Binning"
-   set caption(telshift,binning4)      "4x4 Binning "
+   set caption(telshift,binning4)      "4x4 Binning"
    set caption(telshift,focale)        "Brennweite von Teleskop:"
    set caption(telshift,mm)            "mm"
    set caption(telshift,imagerie)      "Bildsachen:"
