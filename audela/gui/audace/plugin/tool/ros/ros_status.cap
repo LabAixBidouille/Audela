@@ -20,7 +20,7 @@ set caption(ros_status,label_nbimg)         "Nb requêtes......................"
 set caption(ros_status,label_nbheader)      "Nb scènes........................"
 
 set caption(ros_status,label_rep)           "Information du Télescope"
-set caption(ros_status,label_tconnect)      "Webservice...................... "
+set caption(ros_status,label_tconnect)      "Webservice......................"
 
 set caption(ros_status,raz)                 "RAZ de la base de données"
 set caption(ros_status,verif)               "Vérification"
