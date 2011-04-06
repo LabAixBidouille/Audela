@@ -126,7 +126,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(scanfast,attention)        "Attention"
    set caption(scanfast,message)          "Cet outil ne fonctionne qu'avec une caméra Audine pilotée par\nun port parallèle ou par une EthernAude."
-   set caption(scanfast,calcul_confirm)   "Voulez-vous lancer un calcul des paramètres "
+   set caption(scanfast,calcul_confirm)   "Voulez-vous lancer un calcul des paramètres"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
