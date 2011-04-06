@@ -751,7 +751,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,mode)                          "Modus"
    set caption(sophie,CENTER)                        "Zentrierung"
    set caption(sophie,FOCUS)                         "Fokussierung"
-   set caption(sophie,GUIDE)                         "Lenkung "
+   set caption(sophie,GUIDE)                         "Lenkung"
    set caption(sophie,zoom)                          "Zoom"
    set caption(sophie,attenuateur)                   "Abblender"
    set caption(sophie,image)                         "Bild"
