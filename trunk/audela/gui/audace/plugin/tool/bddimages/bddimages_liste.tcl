@@ -859,19 +859,19 @@ namespace eval bddimages_liste {
       global list_req
       global form_req
    
-      set ::bddimages_liste::form_req(name)                       [get_val_intellilist $intellilist "name"]
-      set ::bddimages_liste::form_req(datemin)                    [get_val_intellilist $intellilist "datemin"]
-      set ::bddimages_liste::form_req(datemax)                    [get_val_intellilist $intellilist "datemax"]
-      set ::bddimages_liste::form_req(type_req_check)             [get_val_intellilist $intellilist "type_req_check"]
-      set ::bddimages_liste::form_req(type_requ)                  [get_val_intellilist $intellilist "type_requ"]
-      set ::bddimages_liste::form_req(choix_limit_result)         [get_val_intellilist $intellilist "choix_limit_result"]
-      set ::bddimages_liste::form_req(limit_result)               [get_val_intellilist $intellilist "limit_result"]
-      set ::bddimages_liste::form_req(type_result)                [get_val_intellilist $intellilist "type_result"]
-      set ::bddimages_liste::form_req(type_select)                [get_val_intellilist $intellilist "type_select"]
-      set ::bddimages_liste::reqlist                              [get_val_intellilist $intellilist "reqlist"]
+      set ::bddimages_liste::form_req(name)               [get_val_intellilist $intellilist "name"]
+      set ::bddimages_liste::form_req(datemin)            [get_val_intellilist $intellilist "datemin"]
+      set ::bddimages_liste::form_req(datemax)            [get_val_intellilist $intellilist "datemax"]
+      set ::bddimages_liste::form_req(type_req_check)     [get_val_intellilist $intellilist "type_req_check"]
+      set ::bddimages_liste::form_req(type_requ)          [get_val_intellilist $intellilist "type_requ"]
+      set ::bddimages_liste::form_req(choix_limit_result) [get_val_intellilist $intellilist "choix_limit_result"]
+      set ::bddimages_liste::form_req(limit_result)       [get_val_intellilist $intellilist "limit_result"]
+      set ::bddimages_liste::form_req(type_result)        [get_val_intellilist $intellilist "type_result"]
+      set ::bddimages_liste::form_req(type_select)        [get_val_intellilist $intellilist "type_select"]
+      set ::bddimages_liste::reqlist                      [get_val_intellilist $intellilist "reqlist"]
    
       set indicereq 0
-      foreach req $reqlist {
+      foreach req $::bddimages_liste::reqlist {
          incr indicereq
          set list_req($indicereq,valide)    "ok"
          set list_req($indicereq,condition) [lindex $req 2]
