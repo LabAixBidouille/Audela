@@ -466,17 +466,19 @@ namespace eval bddimages_define {
       global list_req
       global def_cles_bdi
       
+      set cpt 0
+      set nbtotal [llength $bddconf(define)]
       # Pour chaque image selectionnee ...
       foreach idbddimg $bddconf(define) {
    
-         ::console::affiche_resultat "idbddimg = $idbddimg  \n"
+         #::console::affiche_resultat "idbddimg = $idbddimg  \n"
          set change "no"
 
          # charge l'image
          set ident [bddimages_image_identification $idbddimg]
          set fileimg  [lindex $ident 1]
          set filecata [lindex $ident 3]
-         ::console::affiche_resultat "Chargement de $ident -> $fileimg \n"
+         #::console::affiche_resultat "Chargement de $ident -> $fileimg \n"
          if {$fileimg == -1} {
             ::console::affiche_resultat "Fichier image inexistant ($idbddimg) \n"
             ::bddimages_define::fermer
@@ -555,6 +557,8 @@ namespace eval bddimages_define {
             }
 
             set errnum [catch {file delete -force $filetmp} msg ]
+            incr cpt
+            ::console::affiche_resultat "$cpt/$nbtotal \n"
 
          }
 
