@@ -69,7 +69,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snmacros,acqdark)          "Adquisición de dark"
    set caption(snmacros,synthesedark)     "Síntesis de dark final..."
    set caption(snmacros,synthesedarkfini) "Síntesis de dark completada"
-   set caption(snmacros,acqdark_stop)     "Adquisición de dark interrumpida "
+   set caption(snmacros,acqdark_stop)     "Adquisición de dark interrumpida"
    set caption(snmacros,est)              "E"
 
 # *************** Version allemande ***************************
