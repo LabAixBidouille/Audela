@@ -537,27 +537,27 @@ namespace eval bddimages_define {
             createdir_ifnot_exist $bddconf(dirtmp)
             buf$bufno save $filetmp
             set errnum [catch {exec gzip -c $filetmp > $filefinal} msg ]
-         
+
             # copie l image dans incoming, ainsi que le fichier cata si il existe
             if {$filecata != -1} {
                set errnum [catch {file rename -force -- $filecata $bddconf(dirinco)/.} msg ]
             }
-               
+  
             # efface l image dans la base et le disque
             bddimages_image_delete_fromsql $ident
             bddimages_image_delete_fromdisk $ident
-            
+
             # insere l image et le cata dans la base
             insertion_solo $filefinal
             if {$filecata!=-1} {
                set filecata [file join $bddconf(dirinco) [file tail $filecata]]
                insertion_solo $filecata
             }
-   
+
             set errnum [catch {file delete -force $filetmp} msg ]
-   
+
          }
-   
+
          buf$bufno clear
       }
 
@@ -677,12 +677,12 @@ namespace eval bddimages_define {
       set list_comb1 [list $caption(bddimages_define,toutes) $caption(bddimages_define,nimporte)]
       set list_comb2 [list $caption(bddimages_define,elem)]
       set list_comb3 [list $caption(bddimages_define,alea) \
-                            $caption(bddimages_define,dateobs) \
-                            $caption(bddimages_define,telescope) \
-                            $caption(bddimages_define,plrecmod) \
-                            $caption(bddimages_define,morecmod) \
-                            $caption(bddimages_define,plrecajo) \
-                            $caption(bddimages_define,morecajo) ]
+                           $caption(bddimages_define,dateobs) \
+                           $caption(bddimages_define,telescope) \
+                           $caption(bddimages_define,plrecmod) \
+                           $caption(bddimages_define,morecmod) \
+                           $caption(bddimages_define,plrecajo) \
+                           $caption(bddimages_define,morecajo) ]
 
       set form_req(name) "Newlist[ expr $::nbintellilist + 1 ]"
       set form_req(type_req_check) 1

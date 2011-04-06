@@ -1061,12 +1061,8 @@ namespace eval bddimages_recherche {
            -command { ::bddimages_recherche::bddimages_charge_cata }
 
         # Labels Associate
-        $popupTbl add command -label "creation_wcs" \
-           -command { ::bddimages_recherche::bddimages_creation_wcs }
-
-        # Labels Associate
         $popupTbl add command -label $caption(bddimages_recherche,setwcs) \
-           -command { ::bddimages_analyse::run_setwcs}
+           -command { ::bddimages_recherche::bddimages_creation_wcs }
 
         # Labels Associate
         $popupTbl add command -label $caption(bddimages_recherche,astroid) \
@@ -1244,7 +1240,7 @@ namespace eval bddimages_recherche {
 
       variable This
       global caption
-      set reply [tk_dialog $This.confirmDialog "BddImages" "$caption(bddimages_recherche,confirmQuest)" \
+      set reply [tk_dialog $This.confirmDialog "BddImages" "$caption(bddimages_recherche,confirmWCS)" \
                     questhead 1 "$caption(bddimages_recherche,confirmNo)" "$caption(bddimages_recherche,confirmYes)"]
       if {$reply} {
 
@@ -1254,6 +1250,8 @@ namespace eval bddimages_recherche {
 
          ::bddimages_analyse::creation_wcs $imglist
 
+         ::bddimages_recherche::get_intellist $::bddimages_recherche::current_list_id
+         ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id [array get action_label]
       }
 
    }

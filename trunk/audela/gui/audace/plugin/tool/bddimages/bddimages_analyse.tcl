@@ -200,18 +200,15 @@ namespace eval bddimages_analyse {
       global audace
       global bddconf
 
-      ::console::affiche_resultat "creation_wcs\n"
-      ::console::affiche_resultat "img_list $img_list\n"
+      #  source /data/install/develop/audela/gui/audace/surchaud.tcl
+
 
       # copie image courante dans rep temp en .fit -> bddimages_imgcorrection.tcl 
       set erreur [catch {::bddimages_imgcorrection::copy_to_tmp "IMG" $img_list} tmp_file_list]
-::console::affiche_erreur "tmp_file_list = $erreur :: $tmp_file_list \n"
       if {$erreur} {
          # popup
          return
       }
-::console::affiche_erreur "tmp_file_list = $tmp_file_list \n"
-      return
 
       foreach img $img_list {
 
@@ -223,32 +220,71 @@ namespace eval bddimages_analyse {
          set pixsize1    [lindex [::bddimages_liste::lget $tabkey pixsize1   ] 1]
          set pixsize2    [lindex [::bddimages_liste::lget $tabkey pixsize2   ] 1]
          set foclen      [lindex [::bddimages_liste::lget $tabkey foclen     ] 1]
-         set filename    [lindex [::bddimages_liste::lget $tabkey filename   ] 1]
-         set dirfilename [lindex [::bddimages_liste::lget $tabkey dirfilename] 1]
+         set filename    [::bddimages_liste::lget $img filename   ]
+         set dirfilename [::bddimages_liste::lget $img dirfilename]
+         set idbddimg    [::bddimages_liste::lget $img idbddimg]
+         set file        [file join $bddconf(dirbase) $dirfilename $filename]
 
-         ::console::affiche_resultat "ra $ra\n"
-         ::console::affiche_resultat "dec $dec\n"
-         ::console::affiche_resultat "pixsize1 $pixsize1\n"
-         ::console::affiche_resultat "pixsize2 $pixsize2\n"
-         ::console::affiche_resultat "foclen $foclen\n"
-         ::console::affiche_resultat "filename $filename\n"
-         ::console::affiche_resultat "dirfilename $dirfilename\n"
+         #::console::affiche_resultat "ra $ra\n"
+         #::console::affiche_resultat "dec $dec\n"
+         #::console::affiche_resultat "pixsize1 $pixsize1\n"
+         #::console::affiche_resultat "pixsize2 $pixsize2\n"
+         #::console::affiche_resultat "foclen $foclen\n"
+         #::console::affiche_resultat "filename $filename\n"
+         #::console::affiche_resultat "dirfilename $dirfilename\n"
+         #::console::affiche_resultat "file $file\n"
 
          # Charge l'image
-         buf$::audace(bufNo) load $img
-         
-         ::console::affiche_resultat "filename $fc\n"
-         ::console::affiche_resultat "calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO /astrodata/USNOA2 \n"
+         buf$::audace(bufNo) load $file
+         set result [calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO /data/astrodata/Catalog/USNOA2/]
+         if {$result < 3} {
+            ::console::affiche_erreur "Echec d identification\n"
+            break
+         }
+         if {$result == ""} {
+            ::console::affiche_resultat "Echec d identification (verifier chemin catalogue)\n"
+            break
+         }
+         ::console::affiche_resultat "Nb sources USNOA2 identifiees : $result\n"
 
-         calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO "/astrodata/USNOA2"
-         
-         # buf1
-         # set fileout [file tail $fc ]
-         # buf1 save "$bddconf(dirtmp)/${fileout}${ext}"
+         set ident [bddimages_image_identification $idbddimg]
+         set fileimg  [lindex $ident 1]
+         set filecata [lindex $ident 3]
+         if {$fileimg == -1} {
+            ::console::affiche_erreur "Fichier image inexistant ($idbddimg) \n"
+            break
+         }
 
-         # calibwcs
-         # RA DEC CRPIX1 CRPIX2 
-         # calibwcs Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder
+         # Modifie le champs BDI
+         set key [buf$::audace(bufNo) getkwd "BDDIMAGES WCS"]
+         set key [lreplace $key 1 1 "Y"]
+         buf$::audace(bufNo) setkwd $key
+
+         set fichtmpunzip [unzipedfilename $fileimg]
+         set filetmp      [file join $::bddconf(dirtmp)  [file tail $fichtmpunzip]]
+         set filefinal    [file join $::bddconf(dirinco) [file tail $fileimg]]
+
+         createdir_ifnot_exist $bddconf(dirtmp)
+         buf$::audace(bufNo) save $filetmp
+         set errnum [catch {exec gzip -c $filetmp > $filefinal} msg ]
+
+         # copie l image dans incoming, ainsi que le fichier cata si il existe
+         if {$filecata != -1} {
+            set errnum [catch {file rename -force -- $filecata $bddconf(dirinco)/.} msg ]
+         }
+  
+         # efface l image dans la base et le disque
+         bddimages_image_delete_fromsql $ident
+         bddimages_image_delete_fromdisk $ident
+
+         # insere l image et le cata dans la base
+         insertion_solo $filefinal
+         if {$filecata!=-1} {
+            set filecata [file join $bddconf(dirinco) [file tail $filecata]]
+            insertion_solo $filecata
+         }
+
+         set errnum [catch {file delete -force $filetmp} msg ]
 
       }
 
