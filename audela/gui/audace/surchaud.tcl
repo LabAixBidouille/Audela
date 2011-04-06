@@ -1429,58 +1429,80 @@ proc window2 {args} {
 }
 
 proc calibwcs {args} {
+
    if {[llength $args] >= 5} {
-      set Angle_ra [lindex $args 0]
-      set Angle_dec [lindex $args 1]
+
+      # Chargement des arguments
+      set Angle_ra    [lindex $args 0]
+      set Angle_dec   [lindex $args 1]
       set valpixsize1 [lindex $args 2]
       set valpixsize2 [lindex $args 3]
-      set valfoclen [lindex $args 4]
+      set valfoclen   [lindex $args 4]
       set cat_format ""
       set cat_folder ""
       if {[llength $args] >= 7} {
          set cat_format [lindex $args 5]
          set cat_folder [lindex $args 6]
       }
-      #
+
       set pi [expr 4*atan(1.)]
       set naxis1 [lindex [buf$::audace(bufNo) getkwd NAXIS1] 1]
       set naxis2 [lindex [buf$::audace(bufNo) getkwd NAXIS2] 1]
-      if {$Angle_ra!="*"} {
-         set val(CRPIX1) [expr $naxis1/2]
-         set val(CRPIX2) [expr $naxis2/2]
-         set val(RA) [mc_angle2deg $Angle_ra 360]
-         set val(DEC) [mc_angle2deg $Angle_dec 90]
-         set val(CRVAL1) $val(RA)
-         set val(CRVAL2) $val(DEC)
-         set mult 1e-6
-         set val(CDELT1) [expr -2*atan($valpixsize1/$valfoclen*$mult/2.)*180/$pi]
-         set val(CDELT2) [expr  2*atan($valpixsize2/$valfoclen*$mult/2.)*180/$pi]
-         set val(CROTA2) 0
-         set val(FOCLEN) valfoclen
-         set val(PIXSIZE1) valpixsize1
-         set val(PIXSIZE2) valpixsize2
-         set cosr [expr cos($val(CROTA2)*$pi/180.)]
-         set sinr [expr sin($val(CROTA2)*$pi/180.)]
-         set val(CD1_1) [expr $val(CDELT1)*$cosr ]
-         set val(CD1_2) [expr  abs($val(CDELT2))*$val(CDELT1)/abs($val(CDELT1))*$sinr ]
-         set val(CD2_1) [expr -abs($val(CDELT1))*$val(CDELT2)/abs($val(CDELT2))*$sinr ]
-         set val(CD2_2) [expr $val(CDELT2)*$cosr ]
-         #
-         set astrom(kwds)     {RA                       DEC                       CRPIX1        CRPIX2        CRVAL1          CRVAL2           CDELT1    CDELT2    CROTA2                    CD1_1         CD1_2         CD2_1         CD2_2         FOCLEN         PIXSIZE1                        PIXSIZE2}
-         set astrom(units)    {deg                      deg                       pixel         pixel         deg             deg              deg/pixel deg/pixel deg                       deg/pixel     deg/pixel     deg/pixel     deg/pixel     m              um                              um}
-         set astrom(types)    {double                   double                    double        double        double          double           double    double    double                    double        double        double        double        double         double                          double}
-         set astrom(comments) {"RA expected for CRPIX1" "DEC expected for CRPIX2" "X ref pixel" "Y ref pixel" "RA for CRPIX1" "DEC for CRPIX2" "X scale" "Y scale" "Position angle of North" "Matrix CD11" "Matrix CD12" "Matrix CD21" "Matrix CD22" "Focal length" "X pixel size binning included" "Y pixel size binning included"}
-         #
-         set n [llength $astrom(kwds)]
-         for {set k 0 } { $k<$n } {incr k} {
-            set kwd [lindex $astrom(kwds) $k]
-            set value [eval set val($kwd)]
-            set type [lindex $astrom(types) $k]
-            set unit [lindex $astrom(units) $k]
-            set comment [lindex $astrom(comments) $k]
-            buf$::audace(bufNo) setkwd [list $kwd $value $type $unit $comment]
-         }
+
+      if {$Angle_ra=="*"} {
+         set Angle_ra [lindex [buf$::audace(bufNo) getkwd RA] 1]
       }
+      if {$Angle_dec=="*"} {
+         set Angle_dec [lindex [buf$::audace(bufNo) getkwd DEC] 1]
+      }
+      if {$valpixsize1=="*"} {
+         set valpixsize1 [lindex [buf$::audace(bufNo) getkwd PIXSIZE1] 1]
+      }
+      if {$valpixsize2=="*"} {
+         set valpixsize2 [lindex [buf$::audace(bufNo) getkwd PIXSIZE2] 1]
+      }
+      if {$valfoclen=="*"} {
+         set valfoclen [lindex [buf$::audace(bufNo) getkwd FOCLEN] 1]
+      }
+
+
+      # Construction des parametres WCS
+      set val(CRPIX1) [expr $naxis1/2]
+      set val(CRPIX2) [expr $naxis2/2]
+      set val(RA) [mc_angle2deg $Angle_ra 360]
+      set val(DEC) [mc_angle2deg $Angle_dec 90]
+      set val(CRVAL1) $val(RA)
+      set val(CRVAL2) $val(DEC)
+      set mult 1e-6
+      set val(CDELT1) [expr -2*atan($valpixsize1/$valfoclen*$mult/2.)*180/$pi]
+      set val(CDELT2) [expr  2*atan($valpixsize2/$valfoclen*$mult/2.)*180/$pi]
+      set val(CROTA2) 0
+      set val(FOCLEN) $valfoclen
+      set val(PIXSIZE1) $valpixsize1
+      set val(PIXSIZE2) $valpixsize2
+      set cosr [expr cos($val(CROTA2)*$pi/180.)]
+      set sinr [expr sin($val(CROTA2)*$pi/180.)]
+      set val(CD1_1) [expr $val(CDELT1)*$cosr ]
+      set val(CD1_2) [expr  abs($val(CDELT2))*$val(CDELT1)/abs($val(CDELT1))*$sinr ]
+      set val(CD2_1) [expr -abs($val(CDELT1))*$val(CDELT2)/abs($val(CDELT2))*$sinr ]
+      set val(CD2_2) [expr $val(CDELT2)*$cosr ]
+
+      # Mise a jour du Header Fits
+      set astrom(kwds)     {RA                       DEC                       CRPIX1        CRPIX2        CRVAL1          CRVAL2           CDELT1    CDELT2    CROTA2                    CD1_1         CD1_2         CD2_1         CD2_2         FOCLEN         PIXSIZE1                        PIXSIZE2}
+      set astrom(units)    {deg                      deg                       pixel         pixel         deg             deg              deg/pixel deg/pixel deg                       deg/pixel     deg/pixel     deg/pixel     deg/pixel     m              um                              um}
+      set astrom(types)    {double                   double                    double        double        double          double           double    double    double                    double        double        double        double        double         double                          double}
+      set astrom(comments) {"RA expected for CRPIX1" "DEC expected for CRPIX2" "X ref pixel" "Y ref pixel" "RA for CRPIX1" "DEC for CRPIX2" "X scale" "Y scale" "Position angle of North" "Matrix CD11" "Matrix CD12" "Matrix CD21" "Matrix CD22" "Focal length" "X pixel size binning included" "Y pixel size binning included"}
+
+      set n [llength $astrom(kwds)]
+      for {set k 0 } { $k<$n } {incr k} {
+         set kwd [lindex $astrom(kwds) $k]
+         set value [eval set val($kwd)]
+         set type [lindex $astrom(types) $k]
+         set unit [lindex $astrom(units) $k]
+         set comment [lindex $astrom(comments) $k]
+         buf$::audace(bufNo) setkwd [list $kwd $value $type $unit $comment]
+      }
+
       buf$::audace(bufNo) setkwd [list EQUINOX 2000 int "" "System of equatorial coordinates"]
       buf$::audace(bufNo) setkwd [list RADESYS FK5 string ""  "Mean Place IAU 1984 system"]
       buf$::audace(bufNo) setkwd [list LONPOLE 180 float "" "Long. of the celest.NP in native coor.sys" ]
@@ -1489,7 +1511,8 @@ proc calibwcs {args} {
       buf$::audace(bufNo) setkwd [list CUNIT1 deg string  ""    "Angles are degrees always"   ]
       buf$::audace(bufNo) setkwd [list CUNIT2 deg string  ""    "Angles are degrees always"   ]
       buf$::audace(bufNo) setkwd [list CATASTAR 0 int ""    "Nb stars matched"   ]
-      #
+
+      # Identification des sources
       if {($cat_format!="")} {
          set ext $::conf(extension,defaut)
          #--- Remplacement de "$::audace(rep_images)" par "." dans "mypath" - Cela permet a
@@ -1520,7 +1543,7 @@ proc calibwcs {args} {
          ::astrometry::delete_dummy
          #---
       }
-      #
+      #---
       ::audace::autovisu $::audace(visuNo)
       set catastar [lindex [buf$::audace(bufNo) getkwd CATASTAR] 1]
       return $catastar
