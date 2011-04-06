@@ -1002,12 +1002,8 @@ proc bddimages_image_identification { idbddimg } {
    # -- Execute la ligne SQL
    set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
    if {$err} {
-      bddimages_sauve_fich "bddimages_image_identification: ERREUR 401"
-      bddimages_sauve_fich "bddimages_image_identification: NUM : <$err>"
-      bddimages_sauve_fich "bddimages_image_identification: MSG : <$msg>"
-      ::console::affiche_erreur "bddimages_image_identification: ERREUR 401\n"
-      ::console::affiche_erreur "bddimages_image_identification: NUM : <$err>\n"
-      ::console::affiche_erreur "bddimages_image_identification: MSG : <$msg>\n"
+      bddimages_sauve_fich "WARNING: table cata inexistante"
+      ::console::affiche_resultat "WARNING: table cata inexistante\n"
       } else {
       foreach line $resultsql {
          set dirfilename [lindex $line 0]

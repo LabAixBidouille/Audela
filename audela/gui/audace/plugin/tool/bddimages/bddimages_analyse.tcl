@@ -201,7 +201,8 @@ namespace eval bddimages_analyse {
       global bddconf
 
       #  source /data/install/develop/audela/gui/audace/surchaud.tcl
-
+      set catalog "/data/astrodata/Catalog/USNOA2/"
+      set catalog "/home/t1m/astrodata/Catalog/USNOA2/"
 
       # copie image courante dans rep temp en .fit -> bddimages_imgcorrection.tcl 
       set erreur [catch {::bddimages_imgcorrection::copy_to_tmp "IMG" $img_list} tmp_file_list]
@@ -236,14 +237,15 @@ namespace eval bddimages_analyse {
 
          # Charge l'image
          buf$::audace(bufNo) load $file
-         set result [calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO /data/astrodata/Catalog/USNOA2/]
+         set result [calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO $catalog]
          if {$result < 3} {
             ::console::affiche_erreur "Echec d identification\n"
-            break
+            ::console::affiche_erreur "CMD: calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO $catalog\n"
+            continue
          }
          if {$result == ""} {
             ::console::affiche_resultat "Echec d identification (verifier chemin catalogue)\n"
-            break
+            continue
          }
          ::console::affiche_resultat "Nb sources USNOA2 identifiees : $result\n"
 
@@ -252,7 +254,7 @@ namespace eval bddimages_analyse {
          set filecata [lindex $ident 3]
          if {$fileimg == -1} {
             ::console::affiche_erreur "Fichier image inexistant ($idbddimg) \n"
-            break
+            continue
          }
 
          # Modifie le champs BDI
