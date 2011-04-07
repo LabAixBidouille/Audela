@@ -36,9 +36,9 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(t1m_roue_a_filtre,filtre)            "Filtros:"
-   set caption(t1m_roue_a_filtre,changeFiltre)      "# Change le filtre :"
-   set caption(t1m_roue_a_filtre,roueNonInitialise) "# La roue à filtres n'a pas été initialisée"
-   set caption(t1m_roue_a_filtre,probleme)          "# Attention : Problème avec la roue à filtres qui doit être réinitialisée"
+   set caption(t1m_roue_a_filtre,changeFiltre)      "Cambiar filtro:"
+   set caption(t1m_roue_a_filtre,roueNonInitialise) "Rueda de filtros no inicializada"
+   set caption(t1m_roue_a_filtre,probleme)          "Atención: Problema con la rueda de filtros, debe ser reinicializada"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
