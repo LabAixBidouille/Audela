@@ -90,10 +90,10 @@ namespace eval ::acqt1m_flatciel {
       ::t1m_roue_a_filtre::init
 
       # Initialisation du binning
-      set private(mybin) "1x1"
+      set private(mybin) "2x2"
 
       # Initialisation du nombre de flats
-      set private(mynbflat) 3
+      set private(mynbflat) 10
 
       # Initialisation du carre d'analyse pour la dynamique du flat
       set private(mysquare) 50
@@ -275,9 +275,18 @@ namespace eval ::acqt1m_flatciel {
    proc Changebin { visuNo mybin } {
       variable private
 
+      ::console::affiche_resultat "pmybin $::acqt1m_flatciel::private(mybin)\n"
+      set mybin $::acqt1m_flatciel::private(mybin)
+      ::console::affiche_resultat "mybin $mybin\n"
       $private($visuNo,camera) bin [list [lindex [split $mybin "x"] 0] [lindex [split $mybin "x"] 1]]
       set nbpix [$private($visuNo,camera) nbpix]
       $::audace(base).selection_filtre.a2.lb4 config -text $nbpix
+
+      set nbpix   [$private($visuNo,camera) nbpix]
+      set binning [$private($visuNo,camera) bin]
+      ::console::affiche_resultat "$::caption(flat_t1m_auto,tailleImage) $nbpix\n"
+      ::console::affiche_resultat "$::caption(flat_t1m_auto,binning) $binning\n"
+
    }
 
    proc majbouton { i fin} {
@@ -364,7 +373,7 @@ namespace eval ::acqt1m_flatciel {
             -indicatoron "1" \
             -value "$n" \
             -variable ::acqt1m_flatciel::private(mybin) \
-            -command "::acqt1m_flatciel::Changebin $visuNo $private(mybin)"
+            -command "::acqt1m_flatciel::Changebin $visuNo $::acqt1m_flatciel::private(mybin)"
       }
       #--- Ligne de saisie
       entry $::audace(base).selection_filtre.b.val -width 4 -textvariable ::acqt1m_flatciel::private(mybin) \
@@ -400,7 +409,7 @@ namespace eval ::acqt1m_flatciel {
             -indicatoron "1" \
             -value "$n" \
             -variable ::acqt1m_flatciel::private(mysquare) \
-            -command { }
+            -command { ::console::affiche_resultat "$::caption(flat_t1m_auto,mysquare) $::acqt1m_flatciel::private(mysquare)\n" }
       }
       #--- Ligne de saisie
       entry $::audace(base).selection_filtre.b.sqrval -width 4 -textvariable ::acqt1m_flatciel::private(mysquare) \
@@ -472,7 +481,12 @@ namespace eval ::acqt1m_flatciel {
 
       set attentems [expr $private(attente) * 1000]
 
-      set nbpix [$private($visuNo,camera) nbpix]
+#      $private($visuNo,camera) bin [list [lindex [split $private(mybin) "x"] 0] [lindex [split $private(mybin) "x"] 1]]
+#      $private($visuNo,camera) nbpix [list [lindex [split $private(mybin) "x"] 0] [lindex [split $private(mybin) "x"] 1]]
+
+
+      set nbpix   [$private($visuNo,camera) nbpix]
+      set binning [$private($visuNo,camera) bin]
       set xcent [expr [lindex $nbpix 0]/2]
       set ycent [expr [lindex $nbpix 1]/2]
       set xmin  [expr $xcent - $private(mysquare) / 2]
@@ -486,12 +500,13 @@ namespace eval ::acqt1m_flatciel {
       ::console::affiche_resultat "$::caption(flat_t1m_auto,debutAcq) [lindex $::t1m_roue_a_filtre::private(filtre,$idfiltre) 2]\n"
 
       ::console::affiche_resultat "$::caption(flat_t1m_auto,tailleImage) $nbpix\n"
+      ::console::affiche_resultat "$::caption(flat_t1m_auto,binning) $binning\n"
       ::console::affiche_resultat "$::caption(flat_t1m_auto,nbFlatDemande) $private(mynbflat)\n"
       ::console::affiche_resultat "$::caption(flat_t1m_auto,tailleFenetre) $private(mysquare)\n"
       ::console::affiche_resultat "$::caption(flat_t1m_auto,limitexptime) $private(limitexptime)\n"
       ::console::affiche_resultat "$::caption(flat_t1m_auto,exptimemini) $private(exptimemini)\n"
       ::console::affiche_resultat "$::caption(flat_t1m_auto,fondflat1) $fondflat\n"
-
+return
       set buffer buf$::audace(bufNo)
 
       # Dark
