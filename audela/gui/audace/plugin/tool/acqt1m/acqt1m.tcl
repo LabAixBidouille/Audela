@@ -1825,7 +1825,7 @@ proc ::acqt1m::get_filename { visuNo } {
    set iso [lindex $key 1]
    set ctrl [ scan $iso "%4s-%2s-%2sT%2s:%2s:%2s.%3s" a m j h min sec ms ]
 
-   buf$bufNo setkwd [list "TELESCOP" "t1m" string "Telescope name" ""]
+   buf$bufNo setkwd [list "TELESCOP" "t1m" string "Telescop name" ""]
    buf$bufNo setkwd [list "FILTER" $panneau(acqt1m,$visuNo,filtrecourant) string "Filter used" ""]
    buf$bufNo setkwd [list "OBJECT" $panneau(acqt1m,$visuNo,object) string "Name or catalog number of object being imaged" ""]
    buf$bufNo setkwd [list "CCDGAIN" "4.8" float "CCD gain" "electrons/adu"]
@@ -1834,11 +1834,11 @@ proc ::acqt1m::get_filename { visuNo } {
    #buf$bufNo setkwd [list "CROTA2" 0 float "Position angle" "deg"]
    if {$panneau(acqt1m,$visuNo,ra)!=""} {
       set ra [mc_angle2deg "$panneau(acqt1m,$visuNo,ra) h"]
-      buf$bufNo setkwd [list "RA" $ra float "right ascension" "degrees"]
+      buf$bufNo setkwd [list "RA" $ra float "Right Ascension" "degrees"]
    }
    if {$panneau(acqt1m,$visuNo,dec)!=""} {
       set dec [mc_angle2deg $panneau(acqt1m,$visuNo,dec)]
-      buf$bufNo setkwd [list "DEC" $dec float "declination" "degrees"]
+      buf$bufNo setkwd [list "DEC" $dec float "Declination" "degrees"]
    }
 
    #set key [ buf$bufNo getkwd "BIN1" ]
@@ -2278,7 +2278,7 @@ proc ::acqt1m::acqt1mBuildIF { visuNo } {
       set base ".visu$visuNo"
    }
 
-   #--- Trame du panneau
+   #--- Trame des informations
    #frame $panneau(acqt1m,$visuNo,This) -borderwidth 2 -relief groove
    #   label $panneau(acqt1m,$visuNo,This).lab -text "infoinfoinfoinfoinfoinfoinfoinfoinfoinfoinfoinfoinfo" -pady 0
    #   pack $panneau(acqt1m,$visuNo,This).lab -fill x -side left
@@ -2358,7 +2358,7 @@ proc ::acqt1m::acqt1mBuildIF { visuNo } {
       pack $panneau(acqt1m,$visuNo,This).object.entr -fill x
 
       frame $panneau(acqt1m,$visuNo,This).object.ra
-         label $panneau(acqt1m,$visuNo,This).object.ra.lab -text "RA" -pady 0
+         label $panneau(acqt1m,$visuNo,This).object.ra.lab -text $caption(acqt1m,ra) -pady 0
          pack $panneau(acqt1m,$visuNo,This).object.ra.lab -fill x -side left
          entry $panneau(acqt1m,$visuNo,This).object.ra.entr -width 10 \
             -textvariable panneau(acqt1m,$visuNo,ra) -relief groove
@@ -2366,7 +2366,7 @@ proc ::acqt1m::acqt1mBuildIF { visuNo } {
       pack $panneau(acqt1m,$visuNo,This).object.ra -fill x
 
       frame $panneau(acqt1m,$visuNo,This).object.dec
-         label $panneau(acqt1m,$visuNo,This).object.dec.lab -text "DEC" -pady 0
+         label $panneau(acqt1m,$visuNo,This).object.dec.lab -text $caption(acqt1m,dec) -pady 0
          pack $panneau(acqt1m,$visuNo,This).object.dec.lab -fill x -side left
          entry $panneau(acqt1m,$visuNo,This).object.dec.entr -width 10 \
             -textvariable panneau(acqt1m,$visuNo,dec) -relief groove
