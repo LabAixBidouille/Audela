@@ -154,7 +154,7 @@ namespace eval bddimages_liste {
    #    variables en sortie :
    #
    #--------------------------------------------------
-   proc run { this {listname ?} } {
+   proc ::bddimages_liste::run { this {listname ?} } {
       variable This
       global entetelog
 
@@ -1439,15 +1439,7 @@ namespace eval bddimages_liste {
 
          set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
          if {![string first "Unknown column" $msg]==-1||$err} {
-            bddimages_sauve_fich "Erreur de lecture de la liste des header par SQL"
-            bddimages_sauve_fich "        sqlcmd = $sqlcmd"
-            bddimages_sauve_fich "        err = $err"
-            bddimages_sauve_fich "        msg = $msg"
-            ::console::affiche_erreur "Erreur de lecture de la liste des header par SQL\n"
-            ::console::affiche_erreur "        sqlcmd = $sqlcmd\n"
-            ::console::affiche_erreur "        err = $err\n"
-            ::console::affiche_erreur "        msg = $msg\n"
-            return
+            continue
          }
 
          set nbresult [llength $resultcount]
@@ -1673,7 +1665,7 @@ namespace eval bddimages_liste {
    #    variables en sortie : none
    #
    #--------------------------------------------------
-   proc remove_requete { } {
+   proc ::bddimages_liste::remove_requete { } {
    
       variable This
       global indicereq
@@ -1726,7 +1718,7 @@ namespace eval bddimages_liste {
    #    variables en sortie : none
    #
    #--------------------------------------------------
-   proc add_requete { } {
+   proc ::bddimages_liste::add_requete { } {
 
       variable This
       global audace
