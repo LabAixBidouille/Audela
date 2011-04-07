@@ -99,7 +99,9 @@ namespace eval ::acqt1m_flatciel {
       set private(mysquare) 50
 
       # Initialisation du binning de la camera
+      set private(savebinning) [$private($visuNo,camera) bin]
       $private($visuNo,camera) bin [list [lindex [split $private(mybin) "x"] 0] [lindex [split $private(mybin) "x"] 1]]
+      ::console::affiche_resultat "savebinning: $private(savebinning)\n"
 
       set private(nbpixmax) [$private($visuNo,camera) nbpix]
 
@@ -146,8 +148,10 @@ namespace eval ::acqt1m_flatciel {
    proc ArretScript { visuNo } {
       variable private
 
+
+
       $private($visuNo,camera) stop
-      $private($visuNo,camera) bin [list 1 1]
+      $private($visuNo,camera) bin $private(savebinning)
       $private($visuNo,camera) window [list 1 1 [lindex $private(nbpixmax) 0] [lindex $private(nbpixmax) 1] ]
       $private($visuNo,camera) shutter synchro
       set private(stop) 1
@@ -506,7 +510,7 @@ namespace eval ::acqt1m_flatciel {
       ::console::affiche_resultat "$::caption(flat_t1m_auto,limitexptime) $private(limitexptime)\n"
       ::console::affiche_resultat "$::caption(flat_t1m_auto,exptimemini) $private(exptimemini)\n"
       ::console::affiche_resultat "$::caption(flat_t1m_auto,fondflat1) $fondflat\n"
-return
+
       set buffer buf$::audace(bufNo)
 
       # Dark
