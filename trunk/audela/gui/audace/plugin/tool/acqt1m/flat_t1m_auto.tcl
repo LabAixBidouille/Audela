@@ -81,7 +81,7 @@ namespace eval ::acqt1m_flatciel {
       set private(dynamique) 0.7
 
       # Temps d exposition maximum
-      set private(limitexptime) 25
+      set private(limitexptime) 35
 
       # Temps d exposition minimum
       set private(exptimemini) 5
@@ -110,7 +110,7 @@ namespace eval ::acqt1m_flatciel {
       set private(nbflat)  {1 2 3 4 5 6 7 8 9 10 50 100}
       set private(square)  {10 20 30 40 50 60 70 80 90 100 200 300}
 
-      set private(rep_images)  [ file join $::audace(rep_images) "FLAT"]
+      set private(rep_images)  [ file join $::audace(rep_images) "CALIB"]
       if { [file exists $private(rep_images)]==0} {
          if { [ catch {file mkdir $private(rep_images)} msg] } {
              ::console::affiche_erreur "impossible de creer le repertoire $private(rep_images)"
@@ -648,7 +648,7 @@ namespace eval ::acqt1m_flatciel {
             set pos  [string first "." [lindex $entete 5]]
             set sec  [string range [lindex $entete 5] 0 [expr $pos-1]]
             set date [ format "%04d%02d%02dT%02d%02d%02d" [lindex $entete 0] [lindex $entete 1] [lindex $entete 2] [lindex $entete 3] [lindex $entete 4] $sec]
-            set file [ file join $private(rep_images) "T1M.$date.FLAT_[lindex $::t1m_roue_a_filtre::private(filtre,$idfiltre) 1]_$num" ]
+            set file [ file join $private(rep_images) "T1M_${date}_FLAT_[lindex $::t1m_roue_a_filtre::private(filtre,$idfiltre) 1]_$private(mybin)_$num" ]
             if {$private(testprog) == 1} {set file [ file join $private(rep_images) "$entete.TEST_[lindex $::t1m_roue_a_filtre::private(filtre,$idfiltre) 1]_$num" ]}
             set filelong "$file$::conf(extension,defaut)"
             if {[file exists $filelong]==0} {

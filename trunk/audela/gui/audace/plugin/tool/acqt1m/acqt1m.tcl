@@ -1831,9 +1831,9 @@ proc ::acqt1m::get_filename { visuNo } {
    buf$bufNo setkwd [list "FILTER" $panneau(acqt1m,$visuNo,filtrecourant) string "Filter used" ""]
    buf$bufNo setkwd [list "OBJECT" $panneau(acqt1m,$visuNo,object) string "Name or catalog number of object being imaged" ""]
    buf$bufNo setkwd [list "CCDGAIN" "4.8" float "CCD gain" "electrons/adu"]
-   buf$bufNo setkwd [list "CCDTEMP" [cam1 temperature] float "CCD temperature" "degrees celsius"]
-   buf$bufNo setkwd [list "FOCLEN" 12.662879 float "Focal length" "meter"]
-   buf$bufNo setkwd [list "CROTA2" 0 float "Position angle" "deg"]
+   #buf$bufNo setkwd [list "CCDTEMP" [cam1 temperature] float "CCD temperature" "degrees celsius"]
+   #buf$bufNo setkwd [list "FOCLEN" 12.662879 float "Focal length" "meter"]
+   #buf$bufNo setkwd [list "CROTA2" 0 float "Position angle" "deg"]
    if {$panneau(acqt1m,$visuNo,ra)!=""} {
       set ra [mc_angle2deg "$panneau(acqt1m,$visuNo,ra) h"]
       buf$bufNo setkwd [list "RA" $ra float "right ascension" "degrees"]
@@ -1843,18 +1843,18 @@ proc ::acqt1m::get_filename { visuNo } {
       buf$bufNo setkwd [list "DEC" $dec float "declination" "degrees"]
    }
 
-   set key [ buf$bufNo getkwd "BIN1" ]
-   set bin1 [lindex $key 1]
-   if {$bin1!=""} {
-      set size [expr 13.5 * $bin1]
-      buf$bufNo setkwd [list "PIXSIZE1" $size float "Pixel size x" "micrometer"]
-   }
-   set key [ buf$bufNo getkwd "BIN2" ]
-   set bin2 [lindex $key 1]
-   if {$bin2!=""} {
-      set size [expr 13.5 * $bin2]
-      buf$bufNo setkwd [list "PIXSIZE2" $size float "Pixel size y" "micrometer"]
-   }
+   #set key [ buf$bufNo getkwd "BIN1" ]
+   #set bin1 [lindex $key 1]
+   #if {$bin1!=""} {
+   #   set size [expr 13.5 * $bin1]
+   #   buf$bufNo setkwd [list "PIXSIZE1" $size float "Pixel size x" "micrometer"]
+   #}
+   #set key [ buf$bufNo getkwd "BIN2" ]
+   #set bin2 [lindex $key 1]
+   #if {$bin2!=""} {
+   #   set size [expr 13.5 * $bin2]
+   #   buf$bufNo setkwd [list "PIXSIZE2" $size float "Pixel size y" "micrometer"]
+   #}
 
 
 
