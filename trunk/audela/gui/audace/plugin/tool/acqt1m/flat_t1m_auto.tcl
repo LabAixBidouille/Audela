@@ -26,7 +26,6 @@ namespace eval ::acqt1m_flatciel {
    }
 
    proc createDialog { visuNo } {
-
       ::console::affiche_resultat "$::caption(flat_t1m_auto,titre1)\n"
       ::console::affiche_resultat "$::caption(flat_t1m_auto,titre2)\n"
       ::console::affiche_resultat "$::caption(flat_t1m_auto,titre3)\n"
@@ -89,9 +88,6 @@ namespace eval ::acqt1m_flatciel {
       # Initialisation de la liste des filtres
       ::t1m_roue_a_filtre::init
 
-      # Initialisation du binning
-      set private(mybin) "2x2"
-
       # Initialisation du nombre de flats
       set private(mynbflat) 10
 
@@ -100,7 +96,7 @@ namespace eval ::acqt1m_flatciel {
 
       # Initialisation du binning de la camera
       set private(savebinning) [$private($visuNo,camera) bin]
-      $private($visuNo,camera) bin [list [lindex [split $private(mybin) "x"] 0] [lindex [split $private(mybin) "x"] 1]]
+      $private($visuNo,camera) bin [list [lindex [split $::panneau(acqt1m,$visuNo,binning) "x"] 0] [lindex [split $::panneau(acqt1m,$visuNo,binning) "x"] 1]]
       ::console::affiche_resultat "savebinning: $private(savebinning)\n"
 
       set private(nbpixmax) [$private($visuNo,camera) nbpix]
@@ -108,9 +104,8 @@ namespace eval ::acqt1m_flatciel {
       set private(maxdyn) [format "%6.f" [$private($visuNo,camera) maxdyn]]
 
       # Initialisation des listes
-      set private(binning) {"1x1" "2x2" "3x3" "4x4"}
-      set private(nbflat)  {1 2 3 4 5 6 7 8 9 10 50 100}
-      set private(square)  {10 20 30 40 50 60 70 80 90 100 200 300}
+      set private(nbflat) {1 2 3 4 5 6 7 8 9 10 50 100}
+      set private(square) {10 20 30 40 50 60 70 80 90 100 200 300}
 
       set private(rep_images)  [ file join $::audace(rep_images) "CALIB"]
       if { [file exists $private(rep_images)]==0} {
@@ -148,12 +143,10 @@ namespace eval ::acqt1m_flatciel {
    proc ArretScript { visuNo } {
       variable private
 
-
-
       $private($visuNo,camera) stop
       $private($visuNo,camera) bin $private(savebinning)
       $private($visuNo,camera) window [list 1 1 [lindex $private(nbpixmax) 0] [lindex $private(nbpixmax) 1] ]
-      $private($visuNo,camera) shutter synchro
+      $private($visuNo,camera) shutter $::panneau(acqt1m,$visuNo,obt)
       set private(stop) 1
    }
 
@@ -276,23 +269,6 @@ namespace eval ::acqt1m_flatciel {
       }
    }
 
-   proc Changebin { visuNo mybin } {
-      variable private
-
-      ::console::affiche_resultat "pmybin $::acqt1m_flatciel::private(mybin)\n"
-      set mybin $::acqt1m_flatciel::private(mybin)
-      ::console::affiche_resultat "mybin $mybin\n"
-      $private($visuNo,camera) bin [list [lindex [split $mybin "x"] 0] [lindex [split $mybin "x"] 1]]
-      set nbpix [$private($visuNo,camera) nbpix]
-      $::audace(base).selection_filtre.a2.lb4 config -text $nbpix
-
-      set nbpix   [$private($visuNo,camera) nbpix]
-      set binning [$private($visuNo,camera) bin]
-      ::console::affiche_resultat "$::caption(flat_t1m_auto,tailleImage) $nbpix\n"
-      ::console::affiche_resultat "$::caption(flat_t1m_auto,binning) $binning\n"
-
-   }
-
    proc majbouton { i fin} {
       variable private
 
@@ -366,24 +342,6 @@ namespace eval ::acqt1m_flatciel {
 
       frame $::audace(base).selection_filtre.b -borderwidth 0 -relief solid
       pack $::audace(base).selection_filtre.b -in $::audace(base).selection_filtre -anchor center -side top -expand 0 -fill both -padx 3 -pady 0
-
-      #--- Binning
-      menubutton $::audace(base).selection_filtre.b.bin -text "Binning" -relief raised \
-         -menu $::audace(base).selection_filtre.b.bin.menu
-      pack $::audace(base).selection_filtre.b.bin -side left
-      set m [menu $::audace(base).selection_filtre.b.bin.menu -tearoff 0]
-      foreach n $private(binning) {
-         $m add radiobutton -label "$n" \
-            -indicatoron "1" \
-            -value "$n" \
-            -variable ::acqt1m_flatciel::private(mybin) \
-            -command "::acqt1m_flatciel::Changebin $visuNo $::acqt1m_flatciel::private(mybin)"
-      }
-      #--- Ligne de saisie
-      entry $::audace(base).selection_filtre.b.val -width 4 -textvariable ::acqt1m_flatciel::private(mybin) \
-         -relief groove -justify center \
-         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 9999 }
-      pack $::audace(base).selection_filtre.b.val -side left -fill y
 
       #--- Nombre de Flat
       menubutton $::audace(base).selection_filtre.b.nbi -text "Nombre de flat" -relief raised \
@@ -485,9 +443,7 @@ namespace eval ::acqt1m_flatciel {
 
       set attentems [expr $private(attente) * 1000]
 
-#      $private($visuNo,camera) bin [list [lindex [split $private(mybin) "x"] 0] [lindex [split $private(mybin) "x"] 1]]
-#      $private($visuNo,camera) nbpix [list [lindex [split $private(mybin) "x"] 0] [lindex [split $private(mybin) "x"] 1]]
-
+      $private($visuNo,camera) bin [list [lindex [split $::panneau(acqt1m,$visuNo,binning) "x"] 0] [lindex [split $::panneau(acqt1m,$visuNo,binning) "x"] 1]]
 
       set nbpix   [$private($visuNo,camera) nbpix]
       set binning [$private($visuNo,camera) bin]
@@ -528,9 +484,6 @@ namespace eval ::acqt1m_flatciel {
       set stdev [lindex $stat 5]
       ::console::affiche_resultat "$::caption(flat_t1m_auto,fluxMoyen) $dark\n"
       ::console::affiche_resultat "$::caption(flat_t1m_auto,ecartType) $stdev\n"
-
-      $private($visuNo,camera) shutter synchro
-      $::audace(base).selection_filtre.a2.lb2 config -text [$private($visuNo,camera) shutter]
 
       # Boucle sur les images
       set num 1
@@ -636,7 +589,8 @@ namespace eval ::acqt1m_flatciel {
          ::console::affiche_resultat "$::caption(flat_t1m_auto,parti) ([expr $id+1]/$private(mynbflat)) : $::caption(flat_t1m_auto,prochainExptime) $exptime\n"
          $private($visuNo,camera) exptime $exptime
          $private($visuNo,camera) window [list 1 1 [lindex $private(nbpixmax) 0] [lindex $private(nbpixmax) 1] ]
-         $private($visuNo,camera) shutter synchro
+         $private($visuNo,camera) shutter $::panneau(acqt1m,$visuNo,obt)
+         $::audace(base).selection_filtre.a2.lb2 config -text [$private($visuNo,camera) shutter]
          $private($visuNo,camera) acq -blocking
 
          #--- Visualisation de l'image
@@ -667,7 +621,7 @@ namespace eval ::acqt1m_flatciel {
             set pos  [string first "." [lindex $entete 5]]
             set sec  [string range [lindex $entete 5] 0 [expr $pos-1]]
             set date [ format "%04d%02d%02dT%02d%02d%02d" [lindex $entete 0] [lindex $entete 1] [lindex $entete 2] [lindex $entete 3] [lindex $entete 4] $sec]
-            set file [ file join $private(rep_images) "T1M_${date}_FLAT_[lindex $::t1m_roue_a_filtre::private(filtre,$idfiltre) 1]_$private(mybin)_$num" ]
+            set file [ file join $private(rep_images) "T1M_${date}_FLAT_[lindex $::t1m_roue_a_filtre::private(filtre,$idfiltre) 1]_$::panneau(acqt1m,$visuNo,binning)_$num" ]
             if {$private(testprog) == 1} {set file [ file join $private(rep_images) "$entete.TEST_[lindex $::t1m_roue_a_filtre::private(filtre,$idfiltre) 1]_$num" ]}
             set filelong "$file$::conf(extension,defaut)"
             if {[file exists $filelong]==0} {
@@ -697,7 +651,6 @@ namespace eval ::acqt1m_flatciel {
       ::acqt1m_flatciel::majbouton $idfiltre 1
       ::console::affiche_resultat "$::caption(flat_t1m_auto,finAcq) [lindex $::t1m_roue_a_filtre::private(filtre,$idfiltre) 2]\n\n"
    }
-
 
 }
 
