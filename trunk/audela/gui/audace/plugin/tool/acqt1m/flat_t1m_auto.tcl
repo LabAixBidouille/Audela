@@ -95,19 +95,19 @@ namespace eval ::acqt1m_flatciel {
       set private(mysquare) 50
 
       # Initialisation du binning de la camera
-      set private(savebinning) [$private($visuNo,camera) bin]
       $private($visuNo,camera) bin [list [lindex [split $::panneau(acqt1m,$visuNo,binning) "x"] 0] [lindex [split $::panneau(acqt1m,$visuNo,binning) "x"] 1]]
-      ::console::affiche_resultat "savebinning: $private(savebinning)\n"
 
+      # Initialisation du nombre de pixels de la camera
       set private(nbpixmax) [$private($visuNo,camera) nbpix]
 
+      # Initialisation de la dynamique maxi de la camera
       set private(maxdyn) [format "%6.f" [$private($visuNo,camera) maxdyn]]
 
       # Initialisation des listes
       set private(nbflat) {1 2 3 4 5 6 7 8 9 10 50 100}
       set private(square) {10 20 30 40 50 60 70 80 90 100 200 300}
 
-      set private(rep_images)  [ file join $::audace(rep_images) "CALIB"]
+      set private(rep_images) [ file join $::audace(rep_images) "CALIB"]
       if { [file exists $private(rep_images)]==0} {
          if { [ catch {file mkdir $private(rep_images)} msg] } {
              ::console::affiche_erreur "impossible de creer le repertoire $private(rep_images)"
@@ -144,7 +144,7 @@ namespace eval ::acqt1m_flatciel {
       variable private
 
       $private($visuNo,camera) stop
-      $private($visuNo,camera) bin $private(savebinning)
+      $private($visuNo,camera) bin [list [lindex [split $::panneau(acqt1m,$visuNo,binning) "x"] 0] [lindex [split $::panneau(acqt1m,$visuNo,binning) "x"] 1]]
       $private($visuNo,camera) window [list 1 1 [lindex $private(nbpixmax) 0] [lindex $private(nbpixmax) 1] ]
       $private($visuNo,camera) shutter $::panneau(acqt1m,$visuNo,obt)
       set private(stop) 1
