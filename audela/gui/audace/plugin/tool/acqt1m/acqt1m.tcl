@@ -27,8 +27,6 @@ proc ::acqt1m::ressource { } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m cycle.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m t1m_roue_a_filtre.cap ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m t1m_roue_a_filtre.tcl ]\""
-
-   
 }
 
 #***** Procedure createPluginInstance***************************
@@ -1856,8 +1854,6 @@ proc ::acqt1m::get_filename { visuNo } {
    #   buf$bufNo setkwd [list "PIXSIZE2" $size float "Pixel size y" "micrometer"]
    #}
 
-
-
    #--- Generer le nom du fichier
    return [list $bufNo "T1M_${a}${m}${j}${h}T${min}${sec}s${ms}_$panneau(acqt1m,$visuNo,object)_Filtre$panneau(acqt1m,$visuNo,filtrecourant)_bin$panneau(acqt1m,$visuNo,binning)"]
 }
@@ -1865,7 +1861,6 @@ proc ::acqt1m::get_filename { visuNo } {
 #***** Procedure de sauvegarde de l'image **********************
 #--- Procedure lancee par appui sur le bouton "enregistrer", uniquement dans le mode "Une image"
 proc ::acqt1m::SauveUneImage { visuNo } {
-
    global audace caption panneau
 
    #--- Tests d'integrite de la requete
@@ -2291,7 +2286,6 @@ proc ::acqt1m::acqt1mBuildIF { visuNo } {
 
    frame $panneau(acqt1m,$visuNo,This) -borderwidth 2 -relief groove
 
-
    #--- Trame du titre du panneau
    frame $panneau(acqt1m,$visuNo,This).titre -borderwidth 2 -relief groove
       Button $panneau(acqt1m,$visuNo,This).titre.but -borderwidth 1 \
@@ -2354,7 +2348,7 @@ proc ::acqt1m::acqt1mBuildIF { visuNo } {
       pack $panneau(acqt1m,$visuNo,This).pose.entr -side left -fill both -expand true
    pack $panneau(acqt1m,$visuNo,This).pose -side top -fill x
 
-   #--- Trame du nom de l'objet
+   #--- Trame du nom de l'objet, AD et Dec.
    frame $panneau(acqt1m,$visuNo,This).object -borderwidth 2 -relief ridge
       label $panneau(acqt1m,$visuNo,This).object.lab -text $caption(acqt1m,objet) -pady 0
       pack $panneau(acqt1m,$visuNo,This).object.lab -fill x
@@ -2367,7 +2361,7 @@ proc ::acqt1m::acqt1mBuildIF { visuNo } {
          label $panneau(acqt1m,$visuNo,This).object.ra.lab -text "RA" -pady 0
          pack $panneau(acqt1m,$visuNo,This).object.ra.lab -fill x -side left
          entry $panneau(acqt1m,$visuNo,This).object.ra.entr -width 10 \
-            -textvariable panneau(acqt1m,$visuNo,ra) -relief groove 
+            -textvariable panneau(acqt1m,$visuNo,ra) -relief groove
          pack $panneau(acqt1m,$visuNo,This).object.ra.entr -fill x
       pack $panneau(acqt1m,$visuNo,This).object.ra -fill x
 
@@ -2375,7 +2369,7 @@ proc ::acqt1m::acqt1mBuildIF { visuNo } {
          label $panneau(acqt1m,$visuNo,This).object.dec.lab -text "DEC" -pady 0
          pack $panneau(acqt1m,$visuNo,This).object.dec.lab -fill x -side left
          entry $panneau(acqt1m,$visuNo,This).object.dec.entr -width 10 \
-            -textvariable panneau(acqt1m,$visuNo,dec) -relief groove 
+            -textvariable panneau(acqt1m,$visuNo,dec) -relief groove
          pack $panneau(acqt1m,$visuNo,This).object.dec.entr -fill x
       pack $panneau(acqt1m,$visuNo,This).object.dec -fill x
 
