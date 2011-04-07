@@ -598,7 +598,7 @@ namespace eval ::CalaPhot {
         # Comptage des images restantes
         set images_valides 0
         for { set i 0 } { $i < $l } { incr i } {
-            if { $data_image($image,valide) == "Y" } {
+            if { $data_image($i,valide) == "Y" } {
                 incr images_valides
             }
         }
