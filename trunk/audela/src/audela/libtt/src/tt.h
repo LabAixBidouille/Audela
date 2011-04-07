@@ -1140,6 +1140,7 @@ int tt_util_fichs_comdif(TT_ASTROM *p_ast,double cmag, char *nomfic_all,char *no
 
 int tt_gaussian_cdf(double *repartitions,int n,double sigmax);
 double tt_gaussian_rand(double *repartitions,int n,double sigmax);
+int tt_thermic_signal(TT_PTYPE *p,long nelem,double response);
 
 int tt_valid_dirname(char *dirname);
 

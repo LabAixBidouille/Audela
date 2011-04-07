@@ -1449,3 +1449,33 @@ double tt_gaussian_rand(double *repartitions,int n,double sigmax)
    b=sigmax*(k2-n/2)/(n/2);
    return(b);
 }
+
+/*************************************************************************/
+/* Simulate a thermic signal without noise */
+/* Response = e/pixel                      */
+/*************************************************************************/
+int tt_thermic_signal(TT_PTYPE *p,long nelem,double response)
+{
+	double *repartitions,sigmax=5,dvalue,grand;
+	int nombre,taille,kkk,nrep,msg;
+	nrep=10000;
+	repartitions=NULL;
+	nombre=nrep;
+	taille=sizeof(double);
+   if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&repartitions,&nombre,&taille,"repartitions"))!=0) {
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_ima_series_catchart_2 (pointer repartitions)");
+      return(TT_ERR_PB_MALLOC);
+   }
+	srand(1); /* =1 pour avoir toujours le meme tirage */
+	tt_gaussian_cdf(repartitions,nrep,sigmax);
+	/* === boucle sur les pixels ===*/
+	for (kkk=0;kkk<(int)(nelem);kkk++) {
+		/* --- signal de thermique (electrons) ---*/
+		dvalue=response;
+		grand=tt_gaussian_rand(repartitions,nrep,sigmax);
+		dvalue+=grand*sqrt(dvalue);
+		p[kkk]=(TT_PTYPE)(dvalue);
+	}
+	tt_free2((void**)&repartitions,"repartitions");
+	return(OK_DLL);
+}
