@@ -648,7 +648,9 @@ void libcam_GetCurrentFITSDate(Tcl_Interp * interp, char *s)
     struct timeval t;
     gettimeofday (&t, NULL);  // retourne la date GMT
     strftime (message, 45, "%Y-%m-%dT%H:%M:%S",gmtime ((const time_t*)(&t.tv_sec)));
-    sprintf (s, "%s.%03d : ", message, (int)(t.tv_usec/1000));
+    //sprintf (s, "%s.%03d : ", message, (int)(t.tv_usec/1000));
+    sprintf (s, "%s.%03d", message, (int)(t.tv_usec/1000));
+    clock = 1;
 #endif
    if (clock == 0) {
       strcpy(ligne, "clock format [clock seconds] -format \"%Y-%m-%dT%H:%M:%S.000\"");
