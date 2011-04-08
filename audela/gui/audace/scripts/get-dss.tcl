@@ -4,15 +4,15 @@
 #
 #     par Guillaume Spitzer
 #
-# Créer    en  Aout 2005
+# Créer en août 2005
 #
-# Modifier en Décembre 2005
-#   - Ajout d'une fenetre de dialogue
+# Modifier en décembre 2005
+#   - Ajout d'une fenêtre de dialogue
 #   - Ajout d'un fichier log des objets non téléchargés
-#   - Possibilité de charger/enregistrer des fichiers de paramètres
+#   - Possibilité de charger/enregistrer des fichiers de configuration
 #
-# Modifier en Juillet 2007
-#   - Ajout d'une listebox pour selectionné le catalogue de survey.
+# Modifier en juillet 2007
+#   - Ajout d'une listebox pour selectionner le catalogue de survey
 #
 #########################################################################
 
@@ -27,16 +27,16 @@ package require base64
 
 set param(hauteur) 20.0
 set param(largeur) 30.0
-set param(rep) D:/@@IMAGES-DSS
+set param(rep)     [ file join $::audace(rep_images) @@IMAGES-DSS ]
 
-# Si la connexion internet passe par un proxy, mettre à yes sinon à no.
+# Si la connexion internet passe par un proxy, mettre à yes sinon à no
 set param(proxy) no
 
 # Parametres du Proxy (uniquement s'il y a un proxy, sinon mettre 'no' à la ligne ci-dessus
 # -------------------
-set proxy NomServeurProxy_ou_IP
-set port 8080
-set user user_du_proxy
+set proxy    NomServeurProxy_ou_IP
+set port     8080
+set user     user_du_proxy
 set password password_du_proxy
 
 #
@@ -44,7 +44,7 @@ set password password_du_proxy
 #
 
 #
-# --- Génére la ligne d'authentification qui sera renvoyée au proxy.
+# --- Génére la ligne d'authentification qui sera renvoyée au proxy
 #
 proc buildProxyHeaders {u p} {
   global param
@@ -78,34 +78,34 @@ proc Charge_Objet_SIMBAD {objet} {
     ::http::ProxyRequired ""
   }
 
-  # URL de la requète CGI 1 permettant de transformer le nom en coordonnées.
+  # URL de la requête CGI 1 permettant de transformer le nom en coordonnées
   set BASE_URL http://stdatu.stsci.edu/cgi-bin/dss_form/
 
-  # Création de la requète CGI 1
+  # Création de la requête CGI 1
   # format : nom_du_champs   valeur_du_champ, etc ... (répété n fois)
-  # On a besoin que du champs 'target' dont on précise la valeur $objet.
+  # On a besoin que du champs 'target' dont on précise la valeur $objet
   set query [::http::formatQuery target $objet]
 
-  # Lance la requete 1
+  # Lance la requête 1
   if { $param(proxy) == "yes" } {
     set token1 [::http::geturl $BASE_URL -query $query -headers [buildProxyHeaders $param(proxyuser) $param(proxypassword)] ]
     } else {
     set token1 [::http::geturl $BASE_URL -query $query]
   }
 
-  set data1  [::http::data $token1]
+  set data1 [::http::data $token1]
 
   ::http::cleanup $token1
 
   update
 
-  # Recherche les chaines qui contiennent les coordonnées retournées par la requete
+  # Recherche les chaines qui contiennent les coordonnées retournées par la requête
   # set res [regexp -inline {(<a href="/dss/dss_help.html#coordinates">RA</a>  <input name=r value=")([0-9]+ [0-9]+ [0-9]+[[:punct:]][0-9]+)(" >)} $data1 ]
   # syntaxe de regexp :
   #  - entre {} l'ensemble de la chaine non ambigue à repérer
-  #  - entre () les différentes parties à isoler pour être mis dans des variables distinct.
+  #  - entre () les différentes parties à isoler pour être mis dans des variables distinct
   #    Le plus dur est de trouver une manière sans ambiguité pour identifier le champs
-  #    que l'on désire isoler.
+  #    que l'on désire isoler
   set ra ""
   set dec ""
   regexp -all {([0-9]+ [0-9]+ [0-9]+[[:punct:]][0-9]+)(" >)} $data1 match ra filler2
@@ -113,13 +113,13 @@ proc Charge_Objet_SIMBAD {objet} {
 
   # Ici, $ra et $dec contienne les coordonnées de l'objet
 
-  # Format de la ligne de la 2eme requete html :
+  # Format de la ligne de la 2eme requête html :
   # http://stdatu.stsci.edu/cgi-bin/dss_search?v=poss2ukstu&r=16+41+41.44&d=%2B36+27+36.9&e=J2000&h=15.0&w=15.0&f=gif&c=none&fov=NONE&v3=
   # Incident du 13/07/2007 :
   # Origine :
   #   Plantage à cause d'un changement du nom de catalogue codé en dur dans le programme
   # Résolution :
-  # Ajout d'une boite de dialogue permettant le choix du catalogue parmis :
+  # Ajout d'une boite de dialogue permettant le choix du catalogue parmi :
   #  <option value="poss2ukstu_red" selected>   POSS2/UKSTU Red</option>
   #  <option value="poss2ukstu_blue" >          POSS2/UKSTU Blue</option>
   #  <option value="poss2ukstu_ir" >            POSS2/UKSTU IR</option>
@@ -129,11 +129,11 @@ proc Charge_Objet_SIMBAD {objet} {
   #  <option value="phase2_gsc2" >              HST Phase 2 (GSC2)</option>
   #  <option value="phase2_gsc1" >              HST Phase 2 (GSC1)</option>
 
-  # URL de la requète CGI 2
+  # URL de la requête CGI 2
   set BASE_URL http://stdatu.stsci.edu/cgi-bin/dss_search/
 
-  # Création de la requète 2 (Obtention de l'image)
-  # Ici, plusieurs paramètres composent la requète CGI donc le paramètre de ::http::formatQuery
+  # Création de la requête 2 (Obtention de l'image)
+  # Ici, plusieurs paramètres composent la requête CGI donc le paramètre de ::http::formatQuery
   # comporte plusieurs couple champs - valeur_du_champs
   # Ici, les champs sont : v, r, d, e, h, w, f, c, fov, v3
   # v=poss2ukstu_red&r=00+31+45.00&d=-05+09+11.0&e=J2000&h=15.0&w=15.0&f=gif&c=none&fov=NONE&v3=
@@ -159,14 +159,14 @@ proc Charge_Objet_SIMBAD {objet} {
 
     set query [::http::formatQuery v $catal r $ra d $dec e J2000 h $param(hauteur) w $param(largeur) f fits c none fov NONE v3 ""]
 
-    # Lance la requete 2
+    # Lance la requête 2
     if { $param(proxy) == "yes" } {
       set token2 [::http::geturl ${BASE_URL} -query $query -headers [buildProxyHeaders $param(proxyuser) $param(proxypassword)] ]
     } else {
       set token2 [::http::geturl ${BASE_URL} -query $query]
     }
 
-    # Récupération dans $html de l'image proprement dite.
+    # Récupération dans $html de l'image proprement dite
     set html  [::http::data $token2]
     ::http::cleanup $token2
 
@@ -181,7 +181,7 @@ proc Charge_Objet_SIMBAD {objet} {
 
     # Si on demande un format .gz, alors on charge l'image en mémoire et on sauve avec l'option .gz
     # Les catch permettent de trapper certaines erreurs dûes au serveur d'images
-    # (pas bien compris pourquoi) afin de ne pas planter le script et permettre de charger les images suivantes.
+    # (pas bien compris pourquoi) afin de ne pas planter le script et permettre de charger les images suivantes
     if { $param(compresse) == "yes" } {
       catch {buf1 load $fichier_objet}
       catch {buf1 compress gzip}
@@ -199,7 +199,7 @@ proc Affiche_Objet {objet} {
 }
 
 # Procédure principale à compléter pour pouvoir récupérer n'importe quoi !!!
-# Quelques exemples ...
+# Quelques exemples :
 # En fait, on passe en paramètre à la fonction Charge_Objet_SIMBAD le nom que l'on met normalement
 # sur la page WEB
 
@@ -235,13 +235,16 @@ proc recuperation {} {
     # Recuperation des objets choisis
     #
     for {set x $param(debut)} {$x <= $param(fin)} {incr x} {
-      .dialog.l1 configure -text "chargement de $param(NomObjet)$x"
+      .dialog.l1 configure -text "Chargement de $param(NomObjet)$x"
       update
       wm deiconify .dialog
 
-      Charge_Objet_SIMBAD $param(NomObjet)$x
-
-      # Affiche_Objet $param(NomObjet)$x
+      set catchError [ catch { Charge_Objet_SIMBAD $param(NomObjet)$x } ]
+      if { $catchError != "0" } {
+        wm iconify .dialog
+        tk_messageBox -message "Vous devez choisir un catalogue" -title "Attention"
+        return
+      }
 
       wm iconify .dialog
       focus -force .pre.f10.b2
@@ -257,7 +260,7 @@ proc recuperation {} {
     # restaure le répertoire de base
     cd $old_rep
 
-    tk_messageBox -message "FIN DU TRAITEMENT"
+    tk_messageBox -message "Fin du traitement" -title "Attention"
   }
 
   focus -force .pre.f10.b2
@@ -307,9 +310,9 @@ proc ajout_ini {fic} {
 proc ouvrir {} {
   global param
 
-  set fichier [tk_getOpenFile -title "Ouvrir un fichier de paramètres" \
+  set fichier [tk_getOpenFile -title "Ouvrir un fichier de configuration" \
     -filetypes {{{Fichier paramètres} {.ini}} } \
-    -initialdir "c:/" ]
+    -initialdir "$::audace(rep_home)" ]
 
   # crée un interpréteur
   set tmpinterp [interp create]
@@ -332,9 +335,9 @@ proc ouvrir {} {
 proc enregistrer {} {
   global param
 
-  set fichier [tk_getSaveFile -title "Sauvegarder un fichier de paramètres" \
+  set fichier [tk_getSaveFile -title "Sauvegarder un fichier de configuration" \
     -filetypes {{{Fichier paramètres} {.ini}} } \
-    -initialdir "c:/" ]
+    -initialdir "$::audace(rep_home)" ]
 
   set fp [open [ajout_ini ${fichier}] w]
   foreach a [array names param] {
@@ -343,10 +346,10 @@ proc enregistrer {} {
   close $fp
 }
 
-proc getdirname { {titre  "Selectionnez un repertoire"} { repinit "C:/" } { creat y } } {
+proc getdirname { {titre  "Sélectionnez un répertoire"} { creat y } } {
 
   set dirname [tk_chooseDirectory -title $titre \
-    -initialdir $repinit]
+    -initialdir $::audace(rep_images)]
   set len [ string length $dirname ]
   set folder "$dirname"
   # Ajoute un / à la fin s'il n'y en a pas
@@ -407,10 +410,10 @@ wm protocol .pre WM_DELETE_WINDOW quitter
 
 frame .pre.f00 -borderwidth 5
 pack configure .pre.f00 -side top -fill x
-button .pre.f00.ouvrir -text "Ouvrir Param." -command ouvrir
-pack .pre.f00.ouvrir -side left
-button .pre.f00.enregistrer -text "Enregistrer Param." -command enregistrer
-pack .pre.f00.enregistrer -side left
+button .pre.f00.ouvrir -text "Ouvrir une configuration" -command ouvrir
+pack .pre.f00.ouvrir -side left -ipadx 5
+button .pre.f00.enregistrer -text "Enregistrer la configuration" -command enregistrer
+pack .pre.f00.enregistrer -side left -ipadx 5
 
 # Radio bouton
 frame .pre.f0 -borderwidth 5
@@ -431,14 +434,14 @@ pack .pre.f0.but3 -side left
 frame .pre.f01 -borderwidth 5
 pack configure .pre.f01 -side top -fill x
 
-label .pre.f01.l1 -text {Indice début :}
+label .pre.f01.l1 -text {Indice de début :}
 pack configure .pre.f01.l1 -side left
 entry .pre.f01.e1 -textvariable param(debut)
 pack configure .pre.f01.e1 -side left -fill x
 .pre.f01.e1 configure -validate focusout
 .pre.f01.e1 configure -validatecommand {active_objet}
 
-label .pre.f01.l2 -text {Indice fin :}
+label .pre.f01.l2 -text {Indice de fin :}
 pack configure .pre.f01.l2 -side left
 entry .pre.f01.e2 -textvariable param(fin)
 pack configure .pre.f01.e2 -side left -fill x
@@ -471,6 +474,8 @@ pack configure .pre.f02.l1 -side left
 frame       .pre.lb -borderwidth 2
 # -relief groove
 pack configure .pre.lb -side top -fill x
+label .pre.lb.l1 -text {Choisir un catalogue :}
+pack configure .pre.lb.l1 -side left -padx 5
 listbox     .pre.lb.lb1 -width 25 -height 5 -borderwidth 2 -relief sunken -yscrollcommand [list .pre.lb.scrollbar set]
 pack        .pre.lb.lb1 -side left -anchor nw
 scrollbar   .pre.lb.scrollbar -orient vertical -command [list .pre.lb.lb1 yview]
@@ -489,7 +494,7 @@ pack        .pre.lb.scrollbar -side left -fill y
 frame .pre.f1 -borderwidth 5
 pack configure .pre.f1 -side top -fill x
 
-label .pre.f1.l1 -text {Largeur image en arcmin :}
+label .pre.f1.l1 -text {Largeur de l'image en arcmin :}
 pack configure .pre.f1.l1 -side left
 entry .pre.f1.e1 -textvariable param(largeur)
 pack configure .pre.f1.e1 -side left
@@ -498,7 +503,7 @@ pack configure .pre.f1.e1 -side left
 frame .pre.f2 -borderwidth 5
 pack configure .pre.f2 -side top -fill x
 
-label .pre.f2.l2 -text {Hauteur image en arcmin :}
+label .pre.f2.l2 -text {Hauteur de l'image en arcmin :}
 pack configure .pre.f2.l2 -side left
 entry .pre.f2.e2 -textvariable param(hauteur)
 pack configure .pre.f2.e2 -side left
@@ -511,14 +516,14 @@ label .pre.f3.l3 -text {Répertoire de destination :}
 pack configure .pre.f3.l3 -side left
 entry .pre.f3.e3 -textvariable param(rep) -width 40
 pack configure .pre.f3.e3 -side left
-button .pre.f3.b3 -text "..." -command  {getdir}
+button .pre.f3.b3 -text "..." -command {getdir}
 pack .pre.f3.b3 -side left
 
 # compresser le fichier
 frame .pre.f4 -borderwidth 5
 pack configure .pre.f4 -side top -fill x
 
-label .pre.f4.l4 -text {Compressé image :}
+label .pre.f4.l4 -text {Compresser l'image :}
 pack configure .pre.f4.l4 -side left
 checkbutton .pre.f4.cbcompresse -variable param(compresse) -onvalue yes -offvalue no
 pack configure .pre.f4.cbcompresse -side left
@@ -574,14 +579,14 @@ pack configure .pre.f9.e9 -side left
 frame .pre.f10 -borderwidth 20
 pack configure .pre.f10 -side top -fill x
 
-button .pre.f10.b1 -text "Annuler"  -command  {quitter}
-button .pre.f10.b2 -text "Lancer" -command  {recuperation}
-pack .pre.f10.b1 -side left
-pack .pre.f10.b2 -side left -padx 10
+button .pre.f10.b1 -text "Fermer" -command {quitter}
+pack .pre.f10.b1 -side left -ipadx 5
+button .pre.f10.b2 -text "Lancer" -command {recuperation}
+pack .pre.f10.b2 -side left -padx 10 -ipadx 5
 
 bind .pre <Key-Escape> {quitter}
 
-# Définie la fenetre qui servira à l'affichage des messages d'attente.
+# Définie la fenetre qui servira à l'affichage des messages d'attente
 toplevel .dialog
 label .dialog.l1 -text "" -width 50
 pack .dialog.l1 -side top
@@ -595,7 +600,7 @@ set y [expr {([winfo screenheight .]-[winfo height .dialog])/2}]
 wm geometry  .dialog +$x+$y
 # wm transient .dialog .
 wm resizable .dialog 1 1
-wm title     .dialog "Image en cours de traitement ..."
+wm title     .dialog "Image en cours de récupération..."
 wm protocol  .dialog WM_DELETE_WINDOW quitter
 
 active_proxy
