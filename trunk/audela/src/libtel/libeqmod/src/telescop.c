@@ -1356,6 +1356,9 @@ int eqmod2_action_goto(struct telprop *tel)
          tel->old_state = tel->state;
          tel->state = EQMOD_STATE_GOTO;
          eqmod2_goto(tel);
+			if (tel->radec_goto_blocking == 1) {
+				eqmod2_waitgoto(tel);
+			}
          tel->old_state = tel->state;
          tel->state = EQMOD_STATE_STOPPED;
          break;
@@ -1366,6 +1369,9 @@ int eqmod2_action_goto(struct telprop *tel)
          tel->state = EQMOD_STATE_GOTO;
          eqmod2_stopmotor(tel, AXE_RA | AXE_DEC);
          eqmod2_goto(tel);
+			if (tel->radec_goto_blocking == 1) {
+				eqmod2_waitgoto(tel);
+			}
          if ( tel->ha_pointing == 1 ) {
             // En cas de pointage hadec, on ne re-enclenche pas le moteur de suivi.
             tel->old_state = tel->state;
