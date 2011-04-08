@@ -167,8 +167,8 @@ proc ::sectiongraph::refresh { visuNo itemNo args } {
    sectiongraphX$visuNo set $lx
    sectiongraphYR$visuNo set $lyR
    if { $nbcolor($visuNo) == 1 } {
-      #--- j'affiche une courbe blanche
-      $private($visuNo,graph,horz) element configure lineR -color white
+      #--- j'affiche une courbe noire
+      $private($visuNo,graph,horz) element configure lineR -color black
       $private($visuNo,graph,horz) element configure lineR -hide no
       #--- je masque les deux autres courbes
       $private($visuNo,graph,horz) element configure lineG -hide yes
@@ -201,6 +201,7 @@ proc ::sectiongraph::createToplevel { visuNo } {
    set private($visuNo,This) $This
    set width 400
    set height 200
+   set fgColor black
 
    #--- je verifie si la fenetre existe deja
    if { [winfo exists $This] } {
@@ -230,13 +231,11 @@ proc ::sectiongraph::createToplevel { visuNo } {
             -bd 0 -relief flat \
             -rightmargin 1 -leftmargin 60 \
             -topmargin 1 -bottommargin 25 \
-            -background black \
+            -background $fgColor \
             -plotborderwidth 2 -plotrelief groove \
             -plotpadx 0 -plotpady 0 \
-            -plotbackground black \
+            -plotbackground $fgColor \
          ]
-
-   set fgColor white
 
    $private($visuNo,graph,horz) element create lineR \
       -xdata sectiongraphX$visuNo -ydata sectiongraphYR$visuNo -color $fgColor -symbol ""
