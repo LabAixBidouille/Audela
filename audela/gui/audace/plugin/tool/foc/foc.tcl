@@ -75,7 +75,7 @@ namespace eval ::foc {
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
       switch $propertyName {
-         function     { return "aiming" }
+         function     { return "acquisition" }
          subfunction1 { return "focusing" }
          display      { return "panel" }
       }
