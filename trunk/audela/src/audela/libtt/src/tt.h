@@ -1138,6 +1138,8 @@ int tt_util_focas0(TT_IMA *p_in,double epsilon, double delta, double threshold, 
 int tt_util_focas1(TT_IMA *p_ref,TT_IMA *p_in,double *a,double *b,int *nb,int flagtrans);
 int tt_util_fichs_comdif(TT_ASTROM *p_ast,double cmag, char *nomfic_all,char *nomfic_com,char *nomfic_dif,char *nomfic_ascii,char *typefic_com);
 
+int tt_poissonian_cdf(double *repartitionps,int nk,int kmax,int nl,double lambdamax);
+double tt_poissonian_rand(double lambda,double *repartitionps,int nk,int kmax,int nl,double lambdamax,double *repartitiongs,int n,double sigmax);
 int tt_gaussian_cdf(double *repartitions,int n,double sigmax);
 double tt_gaussian_rand(double *repartitions,int n,double sigmax);
 int tt_thermic_signal(TT_PTYPE *p,long nelem,double response);

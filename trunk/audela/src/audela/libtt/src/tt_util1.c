@@ -1396,60 +1396,6 @@ int tt_repairCosmic(TT_PTYPE cosmicThreshold, TT_IMA *pIma)
    return(OK_DLL);
 }
 
-/************************************************************************/
-/* Compute a cumulative distribution function (fonction de repartition) */
-/* in case of a gaussian distribution function.                         */
-/* double sigmax=5;                                                     */
-/* int repartitions[10000],n=10000;                                     */
-/* tt_gaussian_cdf(repartitions,n,sigmax);                              */
-/************************************************************************/
-int tt_gaussian_cdf(double *repartitions,int n,double sigmax)
-{
-	int k;
-	double xsig,norm;
-	repartitions[0]=0;
-	for (k=1;k<n;k++) {
-		xsig=sigmax*2*k/n-sigmax;
-		if (k%100==0) {
-			k+=0;
-		}
-		repartitions[k]=repartitions[k-1]+exp(-xsig*xsig/2);
-	}
-	norm=repartitions[n-1];
-	for (k=0;k<n;k++) {
-		repartitions[k]=repartitions[k]/norm*32767.;
-	}
-   return(OK_DLL);
-}
-
-/*************************************************************************/
-/* Compute a random number that follows a gaussian distribution function.*/
-/* double sigmax=5;                                                     */
-/* int repartitions[10000],n=10000;                                     */
-/* tt_gaussian_cdf(repartitions,n,sigmax);                              */
-/* rand=tt_gaussian_rand(repartitions,n,sigmax);                        */
-/*************************************************************************/
-double tt_gaussian_rand(double *repartitions,int n,double sigmax)
-{
-	int k1,k2,k3,a,m;
-	double b;
-   a=rand();
-   k1=1;
-   k3=n;
-   m=0;
-   while ((k3-k1)>1) {
-      k2=(int)floor((k1+k3)/2.);
-		if (a<repartitions[k2]) {
-         k3=k2;
-      } else {
-         k1=k2;
-      }
-      m=m+1;
-	}
-   b=sigmax*(k2-n/2)/(n/2);
-   return(b);
-}
-
 /*************************************************************************/
 /* Simulate a thermic signal without noise */
 /* Response = e/pixel                      */
@@ -1479,3 +1425,205 @@ int tt_thermic_signal(TT_PTYPE *p,long nelem,double response)
 	tt_free2((void**)&repartitions,"repartitions");
 	return(OK_DLL);
 }
+
+/************************************************************************/
+/* Compute a cumulative distribution function (fonction de repartition) */
+/* in case of a poissonian distribution function.                       */
+/************************************************************************/
+int tt_poissonian_cdf(double *repartitionps,int nk,int kmax, int nl,double lambdamax)
+{
+	int k,kl,kk,kkk;
+	double p,norm,lambda,dlambda,kfac,dk,facto[100];
+	dlambda=lambdamax/nl;
+	dk=(1.0*kmax)/nk;
+	for (kk=0;kk<=nk;kk++) {
+		k=(int)floor(kk*dk);
+		kfac=1;
+		for (kkk=1;kkk<=k;kkk++) {
+			kfac*=kkk;
+		}
+		facto[k]=kfac;
+	}
+	for (kl=1;kl<=nl;kl++) {	
+		lambda=kl*dlambda;
+		for (kfac=1,kk=0;kk<=nk;kk++) {
+			k=(int)floor(kk*dk);
+			p=exp(-lambda)*pow(lambda,k)/facto[k];
+			if (kk==0) {
+				repartitionps[kl*(nk+1)+kk]=p;
+			} else {
+				repartitionps[kl*(nk+1)+kk]=repartitionps[kl*(nk+1)+kk-1]+p;
+			}
+			//printf("l=%f k=%d (%d kl=%d k=%d) %f\n",lambda,k, kl*(nk+1)+kk,kl,kk,repartitionps[kl*(nk+1)+kk]);
+			kfac*=(kk+1);
+		}
+		norm=repartitionps[kl*(nk+1)+nk];
+		//printf("Enter");
+		//scanf("%d",&k);
+		for (k=0;k<=nk;k++) {
+			repartitionps[kl*(nk+1)+k]=repartitionps[kl*(nk+1)+k]/norm*RAND_MAX;
+			//printf("l=%f k=%d (%d kl=%d k=%d) %f\n",lambda,k, kl*(nk+1)+k,kl,k,repartitionps[kl*(nk+1)+k]);
+		}
+	}
+	//printf("===============\n");
+   return(OK_DLL);
+}
+
+/***************************************************************************/
+/* Compute a random number that follows a poissonian distribution function.*/
+/*                                                                         */
+/* int nl=20,nk=200;                                                       */
+/* double repartitionps[(nl+1)*(nk+1)];                                    */
+/* double lambdamax=10;                                                    */
+/* int kmax=50;                                                            */
+/* double sigmax=5;                                                        */
+/* int ng=10000;                                                           */
+/* double repartitiongs[ng];                                               */
+/*                                                                         */
+/* srand( (unsigned)time( NULL ) );                                        */
+/* tt_gaussian_cdf(repartitiongs,ng,sigmax);                               */
+/* tt_poissonian_cdf(repartitionps,nk,nl,lambdamax);                       */
+/*                                                                         */
+/* rand=tt_poissonian_rand(lambda,repartitionps,nk,nl,lambdamax,repartitiongs,ng,sigmax); */
+/***************************************************************************/
+double tt_poissonian_rand(double lambda,double *repartitionps,int nk,int kmax,int nl,double lambdamax,double *repartitiongs,int n,double sigmax)
+{
+	double dlambda,frac,dk;
+	int kl;
+	int k1,k2,k3,a,m;
+	double b;
+	dlambda=lambdamax/nl;
+	//printf("lambda=%f dlambda=%f\n",lambda,dlambda);
+	if (lambda>=lambdamax) {
+		b=lambda+tt_gaussian_rand(repartitiongs,n,sigmax)*sqrt(lambda);
+		return(b);
+	} else if (lambda==0) {
+		b=0;
+		return(b);
+	} else {
+		dk=(1.0*kmax)/nk;
+		kl=(int)floor(lambda/dlambda);
+		frac=lambda/dlambda-kl;
+		//printf("frac=%f kl=%d\n",frac,kl);
+		if (kl>0) {
+			for (k2=0;k2<=nk;k2++) {
+				repartitionps[k2]=repartitionps[kl*(nk+1)+k2]+frac*(repartitionps[(kl+1)*(nk+1)+k2]-repartitionps[kl*(nk+1)+k2]);
+				//printf("k2=%d repartitionps[k2]=%f\n",k2,repartitionps[k2]);
+			}
+		} else {
+			kl++;
+			for (k2=0;k2<=nk;k2++) {
+				repartitionps[k2]=RAND_MAX+frac*(repartitionps[kl*(nk+1)+k2]-RAND_MAX);
+				//printf("k2=%d repartitionps[k2]=%f %d -> %f (%f)\n",k2,repartitionps[k2],RAND_MAX,repartitionps[kl*(nk+1)+k2],frac);
+			}
+		}
+	}
+   a=rand();
+   k1=1;
+   k3=nk-1;
+   m=0;
+   while ((k3-k1)>1) {
+      k2=(int)floor((k1+k3)/2.);
+		//printf("%d : %d %d %d (kl=%d a=%d) %f %f %f \n",m,k1,k2,k3,kl,a,repartitionps[kl*nk+k1],repartitionps[kl*nk+k2],repartitionps[kl*nk+k3]);
+		if (a<repartitionps[k2]) {
+         k3=k2;
+      } else {
+         k1=k2;
+      }
+      m=m+1;
+	}
+   b=k2*dk;
+	//printf("k2=%d df=%f (a=%f)\n",k2,dk,a);
+   return(b);
+}
+
+/************************************************************************/
+/* Compute a cumulative distribution function (fonction de repartition) */
+/* in case of a gaussian distribution function.                         */
+/* double sigmax=5;                                                     */
+/* int repartitions[10000],n=10000;                                     */
+/* tt_gaussian_cdf(repartitions,n,sigmax);                              */
+/************************************************************************/
+int tt_gaussian_cdf(double *repartitions,int n,double sigmax)
+{
+	int k;
+	double xsig,norm;
+	repartitions[0]=0;
+	for (k=1;k<n;k++) {
+		xsig=sigmax*2*k/n-sigmax;
+		if (k%100==0) {
+			k+=0;
+		}
+		repartitions[k]=repartitions[k-1]+exp(-xsig*xsig/2);
+	}
+	norm=repartitions[n-1];
+	for (k=0;k<n;k++) {
+		repartitions[k]=repartitions[k]/norm*RAND_MAX;
+	}
+   return(OK_DLL);
+}
+
+
+/*************************************************************************/
+/* Compute a random number that follows a gaussian distribution function.*/
+/* double sigmax=5;                                                     */
+/* int repartitions[10000],n=10000;                                     */
+/* tt_gaussian_cdf(repartitions,n,sigmax);                              */
+/* rand=tt_gaussian_rand(repartitions,n,sigmax);                        */
+/*************************************************************************/
+double tt_gaussian_rand(double *repartitions,int n,double sigmax)
+{
+	int k1,k2,k3,a,m;
+	double b;
+   a=rand();
+   k1=1;
+   k3=n;
+   m=0;
+   while ((k3-k1)>1) {
+      k2=(int)floor((k1+k3)/2.);
+		if (a<repartitions[k2]) {
+         k3=k2;
+      } else {
+         k1=k2;
+      }
+      m=m+1;
+	}
+   b=sigmax*(k2-n/2)/(n/2);
+   return(b);
+}
+
+/* Fonction main pour test de la statistique de poisson */
+/*
+int main(void) {
+
+	int nl=20,nk=200;
+	double repartitionps[21*201];
+	double lambdamax=10;
+	int kmax=50;
+	double sigmax=5;
+	int ng=10000;
+	double repartitiongs[10000];
+	
+	double rando,lambda;
+	int k;
+	FILE *f;
+	
+	srand( (unsigned)time( NULL ) );
+	tt_gaussian_cdf(repartitiongs,ng,sigmax);
+	tt_poissonian_cdf(repartitionps,nk,kmax,nl,lambdamax);
+
+	f=fopen("c:/d/a/toto.txt","wt");
+	do {
+	
+		lambda=10.1;
+		rando=tt_poissonian_rand(lambda,repartitionps,nk,kmax,nl,lambdamax,repartitiongs,ng,sigmax);
+		//printf("nombre=%f \n", rando);
+		fprintf(f,"%f\n",rando);
+		k++;
+	
+	} while (k<20000);
+	fclose(f);
+	
+	return 0;
+}
+*/
