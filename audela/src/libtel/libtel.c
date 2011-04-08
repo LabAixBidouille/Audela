@@ -194,17 +194,30 @@ int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
             }
 
             // je duplique la commande "::console::disp" dans la thread du telescope
-				strcpy(cmd,"::console::disp");
-				sprintf(s,"info command %s",cmd);
-				Tcl_Eval(interp,s);
-				if (strcmp(interp->result,cmd)==0) {
-					sprintf(s,"thread::copycommand %s %s ",telThreadId,cmd);
-					if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
-						sprintf(s, "cmdTelCreate: %s",interp->result);
-						Tcl_SetResult(interp, s, TCL_VOLATILE);
-						return TCL_ERROR;
-					}  
-				}
+			strcpy(cmd,"::console::disp");
+			sprintf(s,"info command %s",cmd);
+			Tcl_Eval(interp,s);
+			if (strcmp(interp->result,cmd)==0) {
+				sprintf(s,"thread::copycommand %s %s ",telThreadId,cmd);
+				if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
+					sprintf(s, "cmdTelCreate: %s",interp->result);
+					Tcl_SetResult(interp, s, TCL_VOLATILE);
+					return TCL_ERROR;
+				}  
+			}
+
+            // je duplique la commande "::audace::date_sys2ut" dans la thread du telescope
+			strcpy(cmd,"::audace::date_sys2ut");
+			sprintf(s,"info command %s",cmd);
+			Tcl_Eval(interp,s);
+			if (strcmp(interp->result,cmd)==0) {
+				sprintf(s,"thread::copycommand %s %s ",telThreadId,cmd);
+				if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
+					sprintf(s, "cmdTelCreate: %s",interp->result);
+					Tcl_SetResult(interp, s, TCL_VOLATILE);
+					return TCL_ERROR;
+				}  
+			}
 
             // je duplique la commande "mc_angle2lx200ra" dans la thread du telescope
             sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_angle2lx200ra");
