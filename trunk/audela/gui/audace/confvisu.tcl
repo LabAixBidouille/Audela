@@ -2375,20 +2375,10 @@ namespace eval ::confVisu {
             "::carte::showMapFromBuffer buf$audace(bufNo)"
 
          Menu           $visuNo "$caption(audace,menu,acquisition)"
-         Menu_Command   $visuNo "$caption(audace,menu,acquisition)" "$caption(audace,menu,connexion)..." \
-            "::confCam::run" \
-            -compound left -image $::icones::private(cameraIcon)
-
-         Menu_Separator $visuNo "$caption(audace,menu,acquisition)"
          #--- Affichage des plugins de type tool et de fonction acquisition du menu deroulant Camera
          ::confVisu::displayPlugins $visuNo acquisition acquisition
 
          Menu           $visuNo "$caption(audace,menu,aiming)"
-         Menu_Command   $visuNo "$caption(audace,menu,aiming)" "$caption(audace,menu,connexion)..." \
-            "::confTel::run" \
-            -compound left -image $::icones::private(telescopIcon)
-
-         Menu_Separator $visuNo "$caption(audace,menu,aiming)"
          #--- Affichage des plugins de type tool et de fonction aiming du menu deroulant Telescope
          ::confVisu::displayPlugins $visuNo aiming aiming
 
@@ -2606,20 +2596,10 @@ namespace eval ::confVisu {
          Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,phot)" "photom $visuNo"
 
          Menu           $visuNo "$caption(audace,menu,acquisition)"
-         Menu_Command   $visuNo "$caption(audace,menu,acquisition)" "$caption(audace,menu,connexion)..." \
-            "::confCam::run" \
-            -compound left -image $::icones::private(cameraIcon)
-
-         Menu_Separator $visuNo "$caption(audace,menu,acquisition)"
          #--- Affichage des plugins multivisu de type tool et de fonction acquisition du menu deroulant Camera
          ::confVisu::displayPlugins $visuNo acquisition acquisition
 
          Menu           $visuNo "$caption(audace,menu,aiming)"
-         Menu_Command   $visuNo "$caption(audace,menu,aiming)" "$caption(audace,menu,connexion)..." \
-            "::confTel::run" \
-            -compound left -image $::icones::private(telescopIcon)
-
-         Menu_Separator $visuNo "$caption(audace,menu,aiming)"
          #--- Affichage des plugins multivisu de type tool et de fonction aiming du menu deroulant Telescope
          ::confVisu::displayPlugins $visuNo aiming aiming
 
@@ -2871,20 +2851,12 @@ namespace eval ::confVisu {
       #--- Je supprime toutes les entrees du menu Camera
       Menu_Delete $visuNo "$caption(audace,menu,acquisition)" entries
       #--- Rafraichissement du menu Camera
-      Menu_Command   $visuNo "$caption(audace,menu,acquisition)" "$caption(audace,menu,connexion)..." \
-         "::confCam::run" \
-         -compound left -image $::icones::private(cameraIcon)
-      Menu_Separator $visuNo "$caption(audace,menu,acquisition)"
       #--- Affichage des plugins de type tool et de fonction acquisition du menu deroulant Camera
       ::confVisu::displayPlugins $visuNo acquisition acquisition
 
       #--- Je supprime toutes les entrees du menu Telescope
       Menu_Delete $visuNo "$caption(audace,menu,aiming)" entries
       #--- Rafraichissement du menu Telescope
-      Menu_Command   $visuNo "$caption(audace,menu,aiming)" "$caption(audace,menu,connexion)..." \
-         "::confTel::run" \
-         -compound left -image $::icones::private(telescopIcon)
-      Menu_Separator $visuNo "$caption(audace,menu,aiming)"
       #--- Affichage des plugins de type tool et de fonction aiming du menu deroulant Telescope
       ::confVisu::displayPlugins $visuNo aiming aiming
 
@@ -3065,19 +3037,11 @@ namespace eval ::confVisu {
 
                   #--- Je supprime toutes les entrees du menu Camera
                   Menu_Delete $visuNo "$caption(audace,menu,acquisition)" entries
-                  Menu_Command   $visuNo "$caption(audace,menu,acquisition)" "$caption(audace,menu,connexion)..." \
-                     "::confCam::run" \
-                     -compound left -image $::icones::private(cameraIcon)
-                  Menu_Separator $visuNo "$caption(audace,menu,acquisition)"
                   #--- Affichage des plugins de type tool et de fonction acquisition du menu deroulant Camera
                   ::confVisu::displayPlugins $visuNo acquisition acquisition
 
                   #--- Je supprime toutes les entrees du menu Telescope
                   Menu_Delete $visuNo "$caption(audace,menu,aiming)" entries
-                  Menu_Command   $visuNo "$caption(audace,menu,aiming)" "$caption(audace,menu,connexion)..." \
-                     "::confTel::run" \
-                     -compound left -image $::icones::private(telescopIcon)
-                  Menu_Separator $visuNo "$caption(audace,menu,aiming)"
                   #--- Affichage des plugins de type tool et de fonction aiming du menu deroulant Telescope
                   ::confVisu::displayPlugins $visuNo aiming aiming
 
