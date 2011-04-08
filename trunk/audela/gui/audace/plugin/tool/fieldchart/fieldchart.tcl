@@ -257,7 +257,7 @@ namespace eval ::fieldchart {
             label $This.usr.1.lab2 -text "$caption(fieldchart,magnitude_limite)"
             grid $This.usr.1.lab2 -row 3 -column 0 -padx 5 -pady 2 -sticky w
 
-            set list_combobox [ list 10 10 14 16 18 20 22 24 ]
+            set list_combobox [ list 6 8 10 12 14 16 18 20 22 24 ]
             ComboBox $This.usr.1.magmax \
                -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
                -height [ llength $list_combobox ] \
