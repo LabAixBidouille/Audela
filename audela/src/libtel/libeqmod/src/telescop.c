@@ -369,9 +369,15 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    if ( start_motor )
       eqmod2_action_motor(tel);
 
-   eqmod_radec_coord(tel,NULL);
+	tel->dead_delay_slew=1.8; /* delai en secondes estime pour un slew sans bouger */
 	tel->gotodead_ms=900;
 	tel->gotoread_ms=350;
+
+	if (strcmp(tel->home,"")==0) {
+		strcpy(tel->home,"GPS 0 E 45 100");
+	}
+	strcpy(tel->homePosition,tel->home);
+   eqmod_radec_coord(tel,NULL);
 
    return 0;
 }
@@ -878,12 +884,17 @@ double eqmod_tsl(struct telprop *tel,int *h, int *m,double *sec)
    char s[1024];
    char ss[1024];
    double tsl;
+	/*
    int int_h, int_m;
    double int_sec;
+	*/
+	double dt;
 
    /* --- temps sideral local */
+	/*
+	dt=tel->dead_delay_slew/86400;
    eqmod_GetCurrentFITSDate_function(tel->interp,ss,"::audace::date_sys2ut");
-   sprintf(s,"mc_date2lst %s {%s}",ss,tel->home);
+   sprintf(s,"mc_date2lst [mc_date2jd %s+%f] {%s}",ss,dt,tel->home);
    mytel_tcleval(tel,s);
    strcpy(ss,tel->interp->result);
    sprintf(s,"lindex {%s} 0",ss);
@@ -905,6 +916,30 @@ double eqmod_tsl(struct telprop *tel,int *h, int *m,double *sec)
       *sec = int_sec;
    }
    tsl = 15. * (int_h+int_m/60.+int_sec/3600.);
+	*/
+	dt=tel->dead_delay_slew/86400;
+   eqmod_GetCurrentFITSDate_function(tel->interp,ss,"::audace::date_sys2ut");
+   sprintf(s,"mc_date2lst [expr [mc_date2jd %s] + %f] {%s}",ss,dt,tel->home);
+   mytel_tcleval(tel,s);
+   strcpy(ss,tel->interp->result);
+   sprintf(s,"lindex {%s} 0",ss);
+   mytel_tcleval(tel,s);
+   if (h) {
+	   *h=(int)atoi(tel->interp->result);
+   }
+   sprintf(s,"lindex {%s} 1",ss);
+   mytel_tcleval(tel,s);
+   if (m) {
+		*m=(int)atoi(tel->interp->result);
+   }
+   sprintf(s,"lindex {%s} 2",ss);
+   mytel_tcleval(tel,s);
+   if (sec) {
+		*sec=(double)atof(tel->interp->result);
+   }
+   sprintf(s,"expr ([lindex {%s} 0]+[lindex {%s} 1]/60.+[lindex {%s} 2]/3600.)*15",ss,ss,ss);
+   mytel_tcleval(tel,s);
+   tsl=atof(tel->interp->result); /* en degres */
    return tsl;
 }
 
@@ -925,9 +960,6 @@ void eqmod_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *functio
    }
 }
 
-
-
-
 int eqmod2_stopmotor(struct telprop *tel, int axe)
 {
    int res;
@@ -941,6 +973,64 @@ int eqmod2_stopmotor(struct telprop *tel, int axe)
    }
    printf("\n");
    eqmod_radec_coord(tel,NULL); // Permet de verifier le retournement
+
+   return 0;
+}
+
+int eqmod2_stopmotor_old(struct telprop *tel, int axes)
+{
+   char s[1024],ss[1024],axe;
+   int res;
+   double v;
+	double speed_track_ra=0,speed_track_dec=0;
+
+   PRINTF("Track motor to zero\n");
+
+   if ( axes & AXE_RA ) {
+		// Track Hour Axis
+		PRINTF("  ra: ");
+		axe='1';
+		if (speed_track_ra>0) {
+			PRINTF("dir>0 ");
+			sprintf(s,":G%c10",axe);
+			res=eqmod_putread(tel,s,NULL);
+		} else if (speed_track_ra<0) {
+			PRINTF("dir<0 ");
+			sprintf(s,":G%c11",axe);
+			res=eqmod_putread(tel,s,NULL);
+		}
+			v = fabs(((float)tel->param_b1) * 360.0 / ((float)speed_track_ra) / ((float)tel->param_a1));
+			PRINTF("speed=%d ",(int)v);
+			eqmod_encode(tel,(int)v,ss);
+			sprintf(s,":I%c%s",axe,ss);
+			res=eqmod_putread(tel,s,NULL);
+			sprintf(s,":J%c",axe);
+			res=eqmod_putread(tel,s,NULL);
+		PRINTF("\n");
+	}
+
+   // Track Declination Axis
+   if ( axes & AXE_DEC ) {
+		PRINTF("  dec: ");
+		axe='2';
+		if (speed_track_dec>0) {
+			PRINTF("dir>0 ");
+			sprintf(s,":G%c10",axe);
+			res=eqmod_putread(tel,s,NULL);
+		} else if (speed_track_dec<0) {
+			PRINTF("dir<0 ");
+			sprintf(s,":G%c11",axe);
+			res=eqmod_putread(tel,s,NULL);
+		}
+			v = fabs(((float)tel->param_b2) * 360.0 / ((float)speed_track_dec) / ((float)tel->param_a2));
+			PRINTF("speed=%d ",(int)v);
+			eqmod_encode(tel,(int)(v),ss);
+			sprintf(s,":I%c%s",axe,ss);
+			res=eqmod_putread(tel,s,NULL);
+			sprintf(s,":J%c",axe);
+			res=eqmod_putread(tel,s,NULL);
+		PRINTF("\n");
+	}
 
    return 0;
 }
@@ -1127,28 +1217,37 @@ int eqmod2_waitgoto(struct telprop *tel)
 {
    char s[1024];
    int time_in=0,time_out=70;
-   int nbgoto=1;
-   int p10,p1,p20,p2;
+   int nbgoto=2;
+   int p10,p1,p20,p2,dp1,dp2;
    double tol;
-
-   // Pour l'instant: goto bloquant
-   tel->radec_goto_blocking = 1;
+	long clk_tck = CLOCKS_PER_SEC;
+   clock_t clock0,clock00;
+	double dt1,dt2;
+	FILE *f;
 
    if (tel->radec_goto_blocking==1) {
       // A loop is actived until the telescope is stopped
       eqmod_positions12(tel,&p10,&p20);
       PRINTF("  wait: %d %d\n",p10,p20);
       tol=(tel->radec_position_conversion)/3600.*10; // tolerance +/- 10 arcsec
+		clock00 = clock();
       while (1==1) {
          time_in++;
          sprintf(s,"after %d",tel->gotodead_ms); mytel_tcleval(tel,s);
          eqmod_positions12(tel,&p1,&p2);
          PRINTF("  wait: %d %d\n",p10,p20);
-         if ((fabs(p1-p10)<tol)&&(fabs(p2-p20)<tol)) {break;}
+			dp1=p1-p10;
+			dp2=p2-p20;
+			f=fopen("mouchard_eqmod.txt","at");
+			fprintf(f,"DP A dp1=%d dp2=%d tol=%f\n",dp1,dp2,tol);
+			fclose(f);
+			if ((fabs(dp1)<tol)&&(fabs(dp2)<tol)) {break;}
          p10=p1;
          p20=p2;
          if (time_in>=time_out) {break;}
       }
+		dt1=(double)(clock()-clock00)/(double)clk_tck;
+		clock0 = clock();
       if (nbgoto>1) {
          eqmod2_goto(tel);
          // A loop is actived until the telescope is stopped
@@ -1159,14 +1258,23 @@ int eqmod2_waitgoto(struct telprop *tel)
             sprintf(s,"after %d",tel->gotoread_ms); mytel_tcleval(tel,s);
             eqmod_positions12(tel,&p1,&p2);
             PRINTF("  wait: %d %d\n",p10,p20);
-            if ((fabs(p1-p10)<tol)&&(fabs(p2-p20)<tol)) {
-                     break;
-            }
+				dp1=p1-p10;
+				dp2=p2-p20;
+				f=fopen("mouchard_eqmod.txt","at");
+				fprintf(f,"DP B dp1=%d dp2=%d tol=%f\n",dp1,dp2,tol);
+				fclose(f);
+				if ((fabs(dp1)<tol)&&(fabs(dp2)<tol)) {break;}
             p10=p1;
             p20=p2;
             if (time_in>=time_out) {break;}
          }
+         sprintf(s,"after %d",tel->gotoread_ms); mytel_tcleval(tel,s);
       }
+		dt2=(double)(clock()-clock0)/(double)clk_tck;
+		f=fopen("mouchard_eqmod.txt","at");
+		fprintf(f,"dt1=%f (%d) dt2=%f\n",dt1,nbgoto,dt2);
+		fprintf(f,"\n");
+		fclose(f);
    }
    return 0;
 }
@@ -1346,6 +1454,9 @@ int eqmod2_action_motor(struct telprop *tel)
 
 int eqmod2_action_goto(struct telprop *tel)
 {
+   // On impose toujours un goto bloquant sinon le moteur 
+	// ne fait pas le suivi apres pointage.
+   tel->radec_goto_blocking = 1;
    switch ( tel->state ) {
       case EQMOD_STATE_NOT_INITIALIZED:
          return -1;

@@ -37,5 +37,6 @@ int cmdTelLimits(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
 int cmdTelOrientation(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelTempo(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelTempoGoto(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelDeadDelaySlew(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 #endif

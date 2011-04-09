@@ -509,4 +509,18 @@ int cmdTelTempoGoto(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 	return TCL_OK;
 }
 
+/*
+ *   delai en secondes estime pour un slew sans bouger
+ */
+int cmdTelDeadDelaySlew(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   char s[1024];
+   struct telprop *tel;
+   tel = (struct telprop *)clientData;   
+   if (argc>=3) {   
+      tel->dead_delay_slew=atof(argv[2]);
+   }
+   sprintf(s,"%f",tel->dead_delay_slew);
+   Tcl_SetResult(interp,s,TCL_VOLATILE);
+   return TCL_OK;
+}
 
