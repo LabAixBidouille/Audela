@@ -96,7 +96,7 @@ proc ::astrocomputer::createPluginInstance { { in "" } { visuNo 1 } } {
    variable wbase
    global astrocomputer
 
-   set wbase .astcmpt
+   set wbase $::audace(base).astcmpt
 
    #--- Inititalisation de variables de configuration
    if { ! [ info exists ::conf(astrocomputer,geometry) ] } { set ::conf(astrocomputer,geometry) "380x590+400+5" }
@@ -141,8 +141,8 @@ proc ::astrocomputer::createPluginInstance { { in "" } { visuNo 1 } } {
 proc ::astrocomputer::deletePluginInstance { visuNo } {
    variable wbase
 
-   if { [winfo exists $wbase ] } {
-      #--- je ferme la fenetre si l'utilsateur ne l'a pas deja fait
+   if { [ winfo exists $wbase ] } {
+      #--- je ferme la fenetre si l'utilisateur ne l'a pas deja fait
       ::astrocomputer::fermer
    }
 }
