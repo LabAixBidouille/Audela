@@ -668,7 +668,6 @@ namespace eval ::plotxy {
    #--   Entree : nom de la fenetre, coordonnees du rectangle de selection #
    #########################################################################
    proc zoomIn { graph x0 y0 x1 y1 } {
-
       #--   pushZoom
       pushZoom $graph
 
@@ -684,10 +683,6 @@ namespace eval ::plotxy {
       } else {
          $graph axis configure y -min $y0 -max $y1
       }
-
-      ::blt::busy hold $graph
-      update
-      ::blt::busy release $graph
    }
 
    #########################################################################
@@ -728,10 +723,6 @@ namespace eval ::plotxy {
       #--   si le stack du zoomIn n'est pas vide
       if [ info exists plotxy(zoomstack,$graph) ] {
          eval [ popZoom $graph ]
-
-         ::blt::busy hold $graph
-         update
-         ::blt::busy release $graph
       }
    }
 
