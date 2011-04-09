@@ -67,6 +67,7 @@ struct telprop {
    int ha_pointing;
 	int gotodead_ms;
 	int gotoread_ms;
+	double dead_delay_slew; /* delai en secondes estime pour un slew sans bouger */
 };
 
 int tel_init(struct telprop *tel, int argc, char **argv);

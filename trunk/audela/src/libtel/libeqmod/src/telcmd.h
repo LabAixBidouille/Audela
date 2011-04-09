@@ -38,5 +38,6 @@ static struct cmditem cmdlist[] = {
    {"orientation",(Tcl_CmdProc *)cmdTelOrientation},\
    {"tempo",(Tcl_CmdProc *)cmdTelTempo},\
    {"tempogoto",(Tcl_CmdProc *)cmdTelTempoGoto},\
+   {"dead_delay_slew",(Tcl_CmdProc *)cmdTelDeadDelaySlew},\
    {NULL, NULL}
 };
