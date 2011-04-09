@@ -121,9 +121,9 @@ namespace eval ::CalaPhot {
         set calaphot(init,surechantillonage)    5
         set calaphot(init,type_capteur)         "Kaf1600"
         set calaphot(init,type_telescope)       "Schmidt-Cassegrain"
-        set calaphot(init,diametre_telescope)   "0.203"
-        set calaphot(init,focale_telescope)     "1.260"
-        set calaphot(init,catalogue_reference)  "USNO B1,R"
+        set calaphot(init,diametre_telescope)   "0.280"
+        set calaphot(init,focale_telescope)     "2.750"
+        set calaphot(init,catalogue_reference)  "NOMAD1, R"
         set calaphot(init,filtre_optique)       "-"
         set calaphot(init,niveau_message)       $calaphot(niveau_notice)
         set calaphot(init,tri_images)           "non"
@@ -952,27 +952,57 @@ namespace eval ::CalaPhot {
             return
         }
 
-        puts -nonewline $f [ format "year;month;day;hour;min;sec;" ]
-        puts -nonewline $f [ format "JJ;Mag var;Inc var;" ]
+        puts -nonewline $f [ format "year,month,day,hour,min,sec," ]
+        puts -nonewline $f [ format "No,JJ,Mag var,Inc var," ]
         for { set etoile 0 } { $etoile < $data_script(nombre_reference) } { incr etoile } {
-            puts -nonewline $f [ format "Mag ref%d;+/-;" $etoile ]
+            puts -nonewline $f [ format "Mag ref%d,+/-," $etoile ]
         }
-        puts -nonewline $f [ format "Const. mag;Valid\n" ]
+        puts -nonewline $f [ format "Const. mag,Valid\n" ]
         foreach i $liste_image {
             set temps [ mc_date2ymdhms $data_image($i,date) ]
-            puts -nonewline $f [ format "%02d;%02d;%04d;" [lindex $temps 0] [lindex $temps 1] [lindex $temps 2] ]
-            puts -nonewline $f [ format "%02d;%02d;%02d;" [lindex $temps 3] [lindex $temps 4] [expr round([lindex $temps 5])] ]
-            puts -nonewline $f [ format "%04d;%15.5f;" $i $data_image($i,date) ]
+            puts -nonewline $f [ format "%02d,%02d,%04d," [ lindex $temps 0 ] [ lindex $temps 1 ] [ lindex $temps 2 ] ]
+            puts -nonewline $f [ format "%02d,%02d,%02d," [ lindex $temps 3 ] [ lindex $temps 4 ] [ expr round([lindex $temps 5 ]) ] ]
+            puts -nonewline $f [ format "%04d,%.5f," $i $data_image($i,date) ]
             if { [ info exists data_image($i,var,mag_0) ] } {
-                puts -nonewline $f [ format "%07.4f;%07.4f;" $data_image($i,var,mag_0) $data_image($i,var,incertitude_0) ]
+                puts -nonewline $f [ format "%.4f,%.4f," $data_image($i,var,mag_0) $data_image($i,var,incertitude_0) ]
                 for { set etoile 0 } { $etoile < $data_script(nombre_reference) } { incr etoile } {
-                    puts -nonewline $f [ format "%07.4f;%07.4f;" $data_image($i,ref,mag_$etoile) $data_image($i,ref,incertitude_$etoile) ]
+                    puts -nonewline $f [ format "%.4f,%.4f," $data_image($i,ref,mag_$etoile) $data_image($i,ref,incertitude_$etoile) ]
                 }
-                puts -nonewline $f [ format "%7.4f;" $data_image($i,constante_mag) ]
+                puts -nonewline $f [ format "%.4f," $data_image($i,constante_mag) ]
             } else {
-                puts -nonewline $f [ format "99.9999;00.0000\n" ]
+                puts -nonewline $f [ format "99.9999,0.0000" ]
             }
             puts -nonewline $f [ format "%s\n" $data_image($i,valide) ]
+        }
+        close $f
+    }
+
+    ##
+    # @brief Stockage des résultats avec le format TSV (Tab Separated Values)
+    # @details Le resultat de cet affichage peut directement etre importé dans la base de données du projet ETD (Exoplanet Transit Database)
+    # @return toujours 0
+    proc GenerationFichierTSV { } {
+        global audace
+        variable data_image
+        variable parametres
+        variable calaphot
+        variable data_script
+        variable liste_image
+
+        Message debug "%s\n" [ info level [ info level ] ]
+
+        set nom_fichier [ file join $::audace(rep_images) ${parametres(sortie)}.tsv ]
+        # effacement de la version précédente
+        catch { file delete -force $nom_fichier }
+        if { [ catch { open $nom_fichier "w" } f ] } {
+            Message erreur $f
+            return
+        }
+
+        foreach i $liste_image {
+            if { [ info exists data_image($i,var,mag_0) ] } {
+                puts $f [ format "%.5f\t%.4f\t%.4f" $data_image($i,date) $data_image($i,var,mag_0) $data_image($i,var,incertitude_0) ]
+            }
         }
         close $f
     }
@@ -1078,6 +1108,7 @@ namespace eval ::CalaPhot {
         GenerationFichierCanopus
         GenerationFichierCDR
         GenerationFichierCSV
+        GenerationFichierTSV
         set origine_temps [ GenerationFichierDAT ]
         GenerationFichierGnuplot $origine_temps
     }
