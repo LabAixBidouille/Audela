@@ -552,6 +552,10 @@ namespace eval ::confVisu {
                      #--- c'est une table
                      set mode "table"
                   }
+                  ASCII {
+                     #--- c'est une table
+                     set mode "table"
+                  }
                }
             } else {
                #--- je recupere la largeur et la hauteur de l'image
