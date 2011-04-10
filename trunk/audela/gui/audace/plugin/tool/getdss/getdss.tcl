@@ -225,15 +225,15 @@ proc ::getdss::createPanel { } {
    pack $This.f01.l1 -side left
    entry $This.f01.e1 -textvariable param(debut) -width 6 -justify center
    pack $This.f01.e1 -side left -fill x -padx 5
-   $This.f01.e1 configure -validate focusout
-   $This.f01.e1 configure -validatecommand ::getdss::active_objet
+   bind $This.f01.e1 <Enter> ::getdss::active_objet
+   bind $This.f01.e1 <Leave> ::getdss::active_objet
 
    label $This.f01.l2 -text $caption(getdss,fin)
    pack $This.f01.l2 -side left
    entry $This.f01.e2 -textvariable param(fin) -width 6 -justify center
    pack $This.f01.e2 -side left -fill x -padx 5
-   $This.f01.e2 configure -validate focusout
-   $This.f01.e2 configure -validatecommand ::getdss::active_objet
+   bind $This.f01.e2 <Enter> ::getdss::active_objet
+   bind $This.f01.e2 <Leave> ::getdss::active_objet
 
    #--- Texte de rappel de la recherche
    frame $This.f02 -borderwidth 5
