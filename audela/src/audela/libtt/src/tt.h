@@ -281,6 +281,14 @@
 #define TT_PI 3.1415926535897932384626433832795
 #define TT_LN10 2.3025850929940456840179914546844
 
+#define TT_SHUTTER_MODE_CLOSED 0
+#define TT_SHUTTER_MODE_SYNCHRO 1
+#define TT_SHUTTER_MODE_OPENED 2
+#define TT_SHUTTER_MODE_SYNCHRO_WITHOUT_STARS 3
+
+#define TT_FLAT_TYPE_NONE 0
+#define TT_FLAT_TYPE_SIMPLE_VIGNETTING 1
+
 /* --- definitions specifiques a l'OS pour l'appel de la fonction d'entree  ---*/
 #ifdef OS_WIN_VCPP_DLL
 #define libtt_main0 _libtt_main
@@ -869,6 +877,13 @@ typedef struct {
 	double gain;
 	double teldiam;
 	double readout_noise;
+	int shuttermode;
+	double biaslevel;
+	int flattype;
+	int shutter_mode;
+	double bias_level;
+	int flat_type;
+	double thermic_response;
    /* --- parametres internes (private) ---*/
    double binary_yesno;
    double val_exptime;
@@ -1143,6 +1158,7 @@ double tt_poissonian_rand(double lambda,double *repartitionps,int nk,int kmax,in
 int tt_gaussian_cdf(double *repartitions,int n,double sigmax);
 double tt_gaussian_rand(double *repartitions,int n,double sigmax);
 int tt_thermic_signal(TT_PTYPE *p,long nelem,double response);
+double tt_flat_response(int naxis1, int naxis2, double x, double y, int flat_type);
 
 int tt_valid_dirname(char *dirname);
 

@@ -393,18 +393,21 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
    time_t ltime;
    int taille,nombre;
    double XXXmin,XXXmax,YYYmin,YYYmax;
+	int nl=20,nk=500,lambdamax=10,kmax=50;
+	double *repartitionps;
 	int simulimage,nrep=10000;
 	double *repartitions,gain,pi,f_sky;
    double fo,lambda,dlambda,f_Jy,f,teldiam,exposure,quantum_efficiency;
 	double fwhmx,fwhmy,sigx,sigy,f_pic,sigx2,sigy2;
 	int rayonx,rayony;
-	double sigmax=5,grand,sky_brightness,omega,readout_noise;
-	double signal_star,noise_star;
+	double sigmax=5,sky_brightness,omega,readout_noise;
+	double signal_star,noise_star,signal_readout;
 	double signal_sky,noise_sky,noise_readout;
 	char colfilters[]="UBVRIJHKgriz";
 	double lambdas[]={0.36, 0.44, 0.55, 0.64, 0.79, 1.26, 1.60, 2.22, 0.52, 0.67, 0.79, 0.91};
 	double dlambdas[]={0.15, 0.22, 0.16, 0.23, 0.19, 0.16, 0.23, 0.23, 0.14, 0.14, 0.16, 0.13};
 	double fos[]={1810, 4260, 3640, 3080, 2550, 1600, 1080, 670, 3730, 4490, 4760, 4810};
+	int shuttermode=1; // 0=CLOSED (filter=DARK) 1=SYNCHRO
    /* --- ajout Buil */
    char name[FLEN_FILENAME];
    double alpha1;
@@ -1133,6 +1136,7 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
       naxis1=p_out->naxis1;
       naxis2=p_out->naxis2;
 		/* === parametres photometriques ===*/
+		/* --- filter --- */
 		kkk=3;
 		nn=(int)strlen(colfilters);
 		for (kk=0;kk<nn;kk++) {
@@ -1178,37 +1182,74 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 		sigx2=sigx*sigx;
 		sigy2=sigy*sigy;
 		pi=4*atan(1);
+		/* === signal thermique ===*/
+		if (pseries->thermic_response>0) {
+			tt_thermic_signal(p_out->p,nelem,pseries->thermic_response*exposure);
+		}
 		/* === boucle sur les etoiles ===*/
-      for (k=0;k<(nbe+0);k++) {
-         if (k<nbe) {
-				x=p_out->catalist->x[k];
-      		/*y=naxis2-1-p_out->catalist->y[k];*/
-      		y=p_out->catalist->y[k];
-				magb=p_out->catalist->magb[k];
-				magv=p_out->catalist->magv[k];
-				magr=p_out->catalist->magr[k];
-				magi=p_out->catalist->magi[k];
-         }
-         if (k==nbe) {
-            if ((p.ra0!=-100)&&(p.dec0!=-100)) {
-      	       ra=p.ra0;
-      	       dec=p.dec0;
-            } else {
-      	       ra=p.crval1;
-      	       dec=p.crval2;
-            }
-				tt_util_astrom_radec2xy(&p,ra,dec,&x,&y);
-				/*y=naxis2-1-y;*/
-				/*y=naxis2-y;*/
-				magr=99;
-				magv=0;
-				magb=99;
-         }
-         k0=(int)(x);
-         k1=(int)(y);
-         if (k0<0) {k0=0;} if (k0>=naxis1) {k0=naxis1-1;}
-         if (k1<0) {k1=0;} if (k1>=naxis2) {k1=naxis2-1;}
-			/* === etoile === */
+		if ((pseries->shutter_mode!=TT_SHUTTER_MODE_CLOSED)&&(pseries->shutter_mode!=TT_SHUTTER_MODE_SYNCHRO_WITHOUT_STARS)) {
+			for (k=0;k<(nbe+0);k++) {
+				if (k<nbe) {
+					x=p_out->catalist->x[k];
+      			/*y=naxis2-1-p_out->catalist->y[k];*/
+      			y=p_out->catalist->y[k];
+					magb=p_out->catalist->magb[k];
+					magv=p_out->catalist->magv[k];
+					magr=p_out->catalist->magr[k];
+					magi=p_out->catalist->magi[k];
+				}
+				if (k==nbe) {
+					if ((p.ra0!=-100)&&(p.dec0!=-100)) {
+      				 ra=p.ra0;
+      				 dec=p.dec0;
+					} else {
+      				 ra=p.crval1;
+      				 dec=p.crval2;
+					}
+					tt_util_astrom_radec2xy(&p,ra,dec,&x,&y);
+					/*y=naxis2-1-y;*/
+					/*y=naxis2-y;*/
+					magr=99;
+					magv=0;
+					magb=99;
+				}
+				k0=(int)(x);
+				k1=(int)(y);
+				if (k0<0) {k0=0;} if (k0>=naxis1) {k0=naxis1-1;}
+				if (k1<0) {k1=0;} if (k1>=naxis2) {k1=naxis2-1;}
+				/* === etoile === */
+				/* 1) calculer le flux (en Jansky) : f_Jy= fo * 10^ (-0.4*V) */
+				f_Jy= fo * pow(10,-0.4*magv);
+				/*2) calculer le flux en photons/s/m2 : f = f_Jy * 1.51 e7 * (dlambda/lambda) */
+				f = f_Jy * 1.51e7 * (dlambda/lambda);
+				/*3) calculer le flux en photons : f*pi*teldiam*teldiam/4*exposure */
+				f = f*pi*teldiam*teldiam/4*exposure;
+				/*4) calculer le flux integre en electrons : f*quantum_efficiency */
+				f = f*quantum_efficiency;
+				/*5) calculer le flux pic en electrons :  */
+				f_pic = f/sigx/sigy/3.14159265;
+				rayonx=(int)(5*fwhmx);
+				rayony=(int)(5*fwhmy);
+				for (kk0=k0-rayonx;kk0<=k0+rayonx;kk0++) {
+					if (kk0<0) { continue; }
+					if (kk0>=naxis1) { continue; }
+					for (kk1=k1-rayony;kk1<=k1+rayony;kk1++) {
+						if (kk1<0) { continue; }
+						if (kk1>=naxis2) { continue; }
+						dvalue=(kk0-x)*(kk0-x)/2/sigx2+(kk1-y)*(kk1-y)/2/sigy2;
+						dvalue=f_pic*exp(-dvalue);
+						dvalue*=tt_flat_response(naxis1,naxis2,kk0,kk1,pseries->flat_type);
+						/*--- indice de x,y dans le pointeur image FITS ---*/
+						p_out->p[naxis1*kk1+kk0]+=(TT_PTYPE)dvalue;
+					}
+				}
+			}
+		}
+		if (pseries->shutter_mode!=TT_SHUTTER_MODE_CLOSED) {
+			/* === fond de ciel === */
+			/* 0) Corrige de l'angle solide du pixel */
+			omega=fabs(p.cdelta1*180/TT_PI*3600*p.cdelta2*180/TT_PI*3600);
+			magv=sky_brightness-2.5*log10(omega);
 			/* 1) calculer le flux (en Jansky) : f_Jy= fo * 10^ (-0.4*V) */
 			f_Jy= fo * pow(10,-0.4*magv);
 			/*2) calculer le flux en photons/s/m2 : f = f_Jy * 1.51 e7 * (dlambda/lambda) */
@@ -1216,37 +1257,16 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 			/*3) calculer le flux en photons : f*pi*teldiam*teldiam/4*exposure */
 			f = f*pi*teldiam*teldiam/4*exposure;
 			/*4) calculer le flux integre en electrons : f*quantum_efficiency */
-			f = f*quantum_efficiency;
-			/*5) calculer le flux pic en electrons :  */
-			f_pic = f/sigx/sigy/3.14159265;
-         rayonx=(int)(5*fwhmx);
-         rayony=(int)(5*fwhmy);
-         for (kk0=k0-rayonx;kk0<=k0+rayonx;kk0++) {
-				if (kk0<0) { continue; }
-				if (kk0>=naxis1) { continue; }
-				for (kk1=k1-rayony;kk1<=k1+rayony;kk1++) {
-					if (kk1<0) { continue; }
-					if (kk1>=naxis2) { continue; }
-					dvalue=(kk0-x)*(kk0-x)/2/sigx2+(kk1-y)*(kk1-y)/2/sigy2;
-					dvalue=f_pic*exp(-dvalue);
-		         /*--- indice de x,y dans le pointeur image FITS ---*/
-					p_out->p[naxis1*kk1+kk0]+=(TT_PTYPE)dvalue;
-				}
-         }
+			f_sky = f*quantum_efficiency;
+		}
+		/* === prepare le generateur de bruit poissonien === */
+		repartitionps=NULL;
+		nombre=(nl+1)*(nk+1);
+		taille=sizeof(double);
+      if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&repartitionps,&nombre,&taille,"repartitionps"))!=0) {
+         tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_ima_series_catchart_2 (pointer repartitionps)");
+         return(TT_ERR_PB_MALLOC);
       }
-		/* === fond de ciel === */
-		/* 0) Corrige de l'angle solide du pixel */
-		omega=fabs(p.cdelta1*180/TT_PI*3600*p.cdelta2*180/TT_PI*3600);
-		magv=sky_brightness-2.5*log10(omega);
-		/* 1) calculer le flux (en Jansky) : f_Jy= fo * 10^ (-0.4*V) */
-		f_Jy= fo * pow(10,-0.4*magv);
-		/*2) calculer le flux en photons/s/m2 : f = f_Jy * 1.51 e7 * (dlambda/lambda) */
-		f = f_Jy * 1.51e7 * (dlambda/lambda);
-		/*3) calculer le flux en photons : f*pi*teldiam*teldiam/4*exposure */
-		f = f*pi*teldiam*teldiam/4*exposure;
-		/*4) calculer le flux integre en electrons : f*quantum_efficiency */
-		f_sky = f*quantum_efficiency;
-		/* === prepare le generateur de bruit gaussien === */
 		repartitions=NULL;
 		nombre=nrep;
 		taille=sizeof(double);
@@ -1255,28 +1275,42 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
          return(TT_ERR_PB_MALLOC);
       }
 	   srand( (unsigned)time( NULL ) );
+		tt_poissonian_cdf(repartitionps,nk,kmax,nl,lambdamax);
 		tt_gaussian_cdf(repartitions,nrep,sigmax);
 		/* === boucle sur les pixels ===*/
 		for (kkk=0;kkk<(int)(nelem);kkk++) {
-			/* --- signal de photons de l'etoile (electrons) ---*/
+			/* --- signal de photons de l'etoile (electrons) + thermic enventuel ---*/
 			dvalue=p_out->p[kkk];
 			signal_star=dvalue;
-			/* --- bruit de photons de l'etoile (electrons) ---*/
+			/* --- bruit de photons + thermique poissonien de l'etoile (electrons) ---*/
+			noise_star=tt_poissonian_rand(signal_star,repartitionps,nk,kmax,nl,lambdamax,repartitions,nrep,sigmax);
+			/* --- bruit de photons gaussien de l'etoile (electrons) ---*/
+			/*
 			grand=tt_gaussian_rand(repartitions,nrep,sigmax);
 			noise_star=grand*sqrt(dvalue);
-			/* --- signal de photons du ciel (electrons) ---*/
-			dvalue=f_sky;
-			signal_sky=dvalue;
-			/* --- bruit de photons du ciel (electrons) ---*/
-			grand=tt_gaussian_rand(repartitions,nrep,sigmax);
-			noise_sky=grand*sqrt(dvalue);
-			/* --- bruit de photons du ciel (electrons) ---*/
-			grand=tt_gaussian_rand(repartitions,nrep,sigmax);
-			noise_readout=grand*readout_noise;
+			*/
+			if (pseries->shutter_mode!=TT_SHUTTER_MODE_CLOSED) {
+				/* --- signal de photons du ciel (electrons) ---*/
+				dvalue=f_sky;
+				kk1=kkk/naxis1;
+				kk0=kkk-naxis1*kk1;
+				dvalue*=tt_flat_response(naxis1,naxis2,kk0,kk1,pseries->flat_type);
+				signal_sky=dvalue;
+				/* --- bruit de photons du ciel (electrons) ---*/
+				noise_sky=tt_poissonian_rand(signal_sky,repartitionps,nk,kmax,nl,lambdamax,repartitions,nrep,sigmax);
+			} else {
+				signal_sky=0;
+				noise_sky=0;
+			}
+			/* --- signal de lecture = bias (electrons) ---*/
+			signal_readout=pseries->bias_level*gain;
+			/* --- bruit de lecture = bruit de bias (electrons) ---*/
+			noise_readout=tt_poissonian_rand(readout_noise,repartitionps,nk,kmax,nl,lambdamax,repartitions,nrep,sigmax);
 			/* --- additionne tous les electrons ---*/
-			p_out->p[kkk]=(TT_PTYPE)((signal_star+signal_sky+noise_star+noise_sky+noise_readout)/gain);
+			p_out->p[kkk]=(TT_PTYPE)((signal_star+signal_sky+signal_readout+noise_star+noise_sky+noise_readout)/gain);
 		}
       tt_free2((void**)&repartitions,"repartitions");
+      tt_free2((void**)&repartitionps,"repartitionps");
 	}
 
    /* --- Calcul des parametres de fond de ciel ---*/
