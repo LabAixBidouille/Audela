@@ -650,6 +650,10 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
 	pseries->gain=2.5; /* gain de la chaine en electron/ADU */
 	pseries->teldiam=1; /* diametre du telescope en metres */
 	pseries->readout_noise=0; /* electrons */
+	pseries->shutter_mode=TT_SHUTTER_MODE_SYNCHRO; /* 1=synchro 0=closed 2=opened */
+	pseries->bias_level=0; /* ADU */
+	pseries->flat_type=TT_FLAT_TYPE_NONE; /* 0=no flat */
+	pseries->thermic_response=0; /* reponse terminque moyenne en electron/sec/pixel */
 	strcmp(pseries->colfilter,"R");
    for (k1=1;k1<=2;k1++) {
       for (k2=0;k2<=6;k2++) {
@@ -1066,6 +1070,18 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
       }
       else if (strcmp(mot,"READOUT_NOISE")==0) {
          pseries->readout_noise=(double)(fabs(atof(argu)));
+      }
+      else if (strcmp(mot,"SHUTTER_MODE")==0) {
+         pseries->shutter_mode=(int)(fabs(atoi(argu)));
+      }
+      else if (strcmp(mot,"FLAT_TYPE")==0) {
+         pseries->flat_type=(int)(fabs(atoi(argu)));
+      }
+      else if (strcmp(mot,"BIAS_LEVEL")==0) {
+         pseries->bias_level=(double)(atof(argu));
+      }
+      else if (strcmp(mot,"THERMIC_RESPONSE")==0) {
+         pseries->thermic_response=(double)(fabs(atof(argu)));
       }
       else if (strcmp(mot,"KERNEL_COEF")==0) {
          pseries->kernel_coef=(double)(fabs(atof(argu)));

@@ -1396,6 +1396,31 @@ int tt_repairCosmic(TT_PTYPE cosmicThreshold, TT_IMA *pIma)
    return(OK_DLL);
 }
 
+/****************************/
+/* Simulate a flat response */
+/*                          */
+/****************************/
+double tt_flat_response(int naxis1, int naxis2, double x, double y, int flat_type)
+{
+	double n2,dx,dy,u2,response;
+	if (flat_type==0) {
+		response=1;
+	} else {
+		n2=naxis1*naxis1+naxis2*naxis2;
+		dx=(x-naxis1/2)*2;
+		dy=(y-naxis2/2)*2;
+		u2=(dx*dx+dy*dy)/n2;
+		if (u2>0.98) {
+			u2+=0;
+		}
+		response=-0.3*u2+1.;
+		if (response<0) {
+			response=0;
+		}
+	}
+	return(response);
+}
+
 /*************************************************************************/
 /* Simulate a thermic signal without noise */
 /* Response = e/pixel                      */
@@ -1490,12 +1515,15 @@ double tt_poissonian_rand(double lambda,double *repartitionps,int nk,int kmax,in
 {
 	double dlambda,frac,dk;
 	int kl;
-	int k1,k2,k3,a,m;
-	double b;
+	int k1,k2,k3,m;
+	double a,b,da;
 	dlambda=lambdamax/nl;
 	//printf("lambda=%f dlambda=%f\n",lambda,dlambda);
 	if (lambda>=lambdamax) {
 		b=lambda+tt_gaussian_rand(repartitiongs,n,sigmax)*sqrt(lambda);
+		if (b<0) {
+			b=0;
+		}
 		return(b);
 	} else if (lambda==0) {
 		b=0;
@@ -1518,14 +1546,18 @@ double tt_poissonian_rand(double lambda,double *repartitionps,int nk,int kmax,in
 			}
 		}
 	}
-   a=rand();
-   k1=1;
+   a=(double)rand();
+	if (a==RAND_MAX) {
+		a=RAND_MAX-1;
+	}
+	da=1./RAND_MAX;
+   k1=0;
    k3=nk-1;
    m=0;
    while ((k3-k1)>1) {
       k2=(int)floor((k1+k3)/2.);
-		//printf("%d : %d %d %d (kl=%d a=%d) %f %f %f \n",m,k1,k2,k3,kl,a,repartitionps[kl*nk+k1],repartitionps[kl*nk+k2],repartitionps[kl*nk+k3]);
-		if (a<repartitionps[k2]) {
+		//printf("%d : %d %d %d (kl=%d a=%f) %f %f %f \n",m,k1,k2,k3,kl,a,repartitionps[kl*nk+k1],repartitionps[kl*nk+k2],repartitionps[kl*nk+k3]);
+			if ((a-repartitionps[k2])<=da) {
          k3=k2;
       } else {
          k1=k2;
