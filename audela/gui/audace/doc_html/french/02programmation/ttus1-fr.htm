@@ -5,7 +5,7 @@
   <title>Librairie TT : Manuel Utilisateur</title>
 </head>
 <body>
-<p class="date">Date de mise &#224; jour : 06 avril 2011</p>
+<p class="date">Date de mise &#224; jour : 12 avril 2011</p>
 <h1>LIB TT - Librairie de pr&#233;traitement d'images
 astronomiques</h1>
 <h1>Manuel Utilisateur</h1>
@@ -138,7 +138,8 @@ jpeg_quality]</td>
       <a href="#CATCHART">CATCHART</a> [path_astromcatalog]
 [astromcatalog] [catafile] [jpegfile_chart] [jpegfile_chart2]
 [magrlim] [magblim] [simulimage] [exposure] [fwhmx] [fwhmy] [teldiam]
-[colfilter] [sky_brightness] [qe] [gain] [readout_noise]<br>
+[colfilter] [sky_brightness] [qe] [gain] [readout_noise] [shutter_mode]
+[bias_level] [thermic_response] [flat_type]<br>
       <a href="#CONV">CONV</a> [kernel_type] [sigma]<br>
       <a href="#COPY">COPY</a> [nbsubseries]<br>
       <a href="#CUTS">CUTS</a> [hicut] [locut] [keytype]
@@ -316,7 +317,7 @@ associ&#233;e aux param&#232;tres optionnels g&#233;n&#233;raux
 d&#233;crits au paragraphe 1.3</p>
 <ol>
   <li>
-    <h4><a name="stackADD" id="stackADD"></a>Fonction ADD</h4>
+    <h3><a name="stackADD" id="stackADD"></a>Fonction ADD</h3>
     <p>Addition pixel &#224; pixel des images de la pile.<br>
     </p>
     <p>La date (DATE-OBS) est chang&#233;e en fonction des poids de
@@ -325,7 +326,7 @@ chacune des images entrant dans la pile. Le temps de pose
 (EXPOSURE) des images de la pile.</p>
   </li>
   <li>
-    <h4><a name="MEAN" id="MEAN"></a>Fonction MEAN</h4>
+    <h3><a name="MEAN" id="MEAN"></a>Fonction MEAN</h3>
     <p>Moyenne pixel &#224; pixel des images de la pile.<br>
     </p>
     <p>La date (DATE-OBS) est chang&#233;e en fonction des poids de
@@ -334,7 +335,7 @@ chacune des images entrant dans la pile. Le temps de pose
 moyenne des (EXPOSURE) des images de la pile.</p>
   </li>
   <li>
-    <h4><a name="MED" id="MED"></a>Fonction MED</h4>
+    <h3><a name="MED" id="MED"></a>Fonction MED</h3>
     <p>M&#233;diane pixel &#224; pixel des images de la
 pile.<br>
     </p>
@@ -344,7 +345,7 @@ chacune des images entrant dans la pile. Le temps de pose
 m&#233;diane des (EXPOSURE) des images de la pile.</p>
   </li>
   <li>
-    <h4><a name="stackPROD" id="stackPROD"></a>Fonction PROD</h4>
+    <h3><a name="stackPROD" id="stackPROD"></a>Fonction PROD</h3>
     <p>Produit pixel &#224; pixel des images de la pile. L'option
 [powernorm], si elle est indiqu&#233;e (sans valeur) impose une
 normalisation en puissance 1/n pour n images constituant chaque
@@ -355,8 +356,8 @@ chacune des images entrant dans la pile. Le temps de pose
 (EXPOSURE) des images de la pile.</p>
   </li>
   <li>
-    <h4><a name="PYTHAGORE" id="PYTHAGORE"></a>Fonction
-PYTHAGORE</h4>
+    <h3><a name="PYTHAGORE" id="PYTHAGORE"></a>Fonction
+PYTHAGORE</h3>
     <p>Racine carr&#233;e de la somme des carr&#233;s de pixel &#224;
 pixel des images de la pile.<br>
     </p>
@@ -366,7 +367,7 @@ chacune des images entrant dans la pile. Le temps de pose
 (EXPOSURE) des images de la pile.</p>
   </li>
   <li>
-    <h4><a name="SIG" id="SIG"></a>Fonction SIG</h4>
+    <h3><a name="SIG" id="SIG"></a>Fonction SIG</h3>
     <p>Ecart type, pixel &#224; pixel, des images de la
 pile.<br>
     </p>
@@ -376,7 +377,7 @@ chacune des images entrant dans la pile. Le temps de pose
 moyenne des (EXPOSURE) des images de la pile.</p>
   </li>
   <li>
-    <h4><a name="SK" id="SK"></a>Fonction SK</h4>
+    <h3><a name="SK" id="SK"></a>Fonction SK</h3>
     <p>Moyenne kappa-sigma, pixel &#224; pixel, des images de la
 pile. Le param&#232;tre optionnel [kappa] permet de choisir le
 seuil de r&#233;jection des valeurs hors de la plage
@@ -389,7 +390,7 @@ chacune des images entrant dans la pile. Le temps de pose
 moyenne des (EXPOSURE) des images de la pile.</p>
   </li>
   <li>
-    <h4><a name="SORT" id="SORT"></a>Fonction SORT</h4>
+    <h3><a name="SORT" id="SORT"></a>Fonction SORT</h3>
     <p>Valeur tri&#233;e, pixel &#224; pixel, des images de la pile.
 Le calcul de la valeur tri&#233;e est le suivant. La valeur de
 chaque pixel (x,y) de toutes les images de la pile sont
@@ -409,7 +410,7 @@ chacune des images entrant dans la pile. Le temps de pose
 [percent].</p>
   </li>
   <li>
-    <h4><a name="SHUTTER" id="SHUTTER"></a>Fonction SHUTTER</h4>
+    <h3><a name="SHUTTER" id="SHUTTER"></a>Fonction SHUTTER</h3>
     <p>Synth&#233;tise l'image des d&#233;lais de ouverture/fermeture
 d'un obturateur m&#233;canique &#224; partir d'un lot d'images
 prises avec des dur&#233;es de pose diff&#233;rentes. La valeur
@@ -1128,7 +1129,7 @@ de la liste d'objet est effectu&#233; avec des coordonn&#233;es
 d&#233;faut).</p>
   </li>
   <li>
-    <h4><a name="CUTS" id="CUTS"></a>Fonction CUTS</h4>
+    <h3><a name="CUTS" id="CUTS"></a>Fonction CUTS</h3>
     <p>Calcule les seuils de visualisation de l'image par analyse de
 l'histogramme. La valeur des seuils est compl&#233;t&#233;e dans
 l'en-t&#234;te FITS. Le mot cl&#233; correspondant au seuil haut
@@ -1226,7 +1227,15 @@ par d&eacute;faut), [fwhmx] (= 2.5 pixels par d&eacute;faut), [ fwhmy]
 d&eacute;faut), [colfilter] (= R par d&eacute;faut), [sky_brightness]
 (= 20.9 mag/arcsec2 par d&eacute;faut), [qe] (= 1 par d&eacute;faut),
 [gain] (= 2.5 e/ADU par d&eacute;faut), [readout_noise] (= 0
-&eacute;lectron par d&eacute;faut).</p>
+&eacute;lectron par d&eacute;faut), [shutter_mode] (= 0 si obturateur
+ferm&eacute;, = 1 si obturateur synchro (valeur par d&eacute;faut), = 2
+si obturateur toujours ouvert ou inexistant, = 3 si obturateur synchro
+mais sans synth&egrave;se d'&eacute;toiles (simule un &eacute;cran de
+flat)), [bias_level] (= 0 ADU par d&eacute;faut, d&eacute;finit un
+niveau constant du bias), [thermic_response] (= 0 par d&eacute;faut,
+exprime la r&eacute;ponse thermique moyenne en e/pix/sec), [flat_type]
+(= 0 pour ne pas tenir compte d'une r&eacute;ponse de flat (par
+d&eacute;faut), = 1 pour tenir compte d'un vignettage parabolique).</p>
   </li>
   <li>
     <h3><a name="ASTROMETRY" id="ASTROMETRY"></a>Fonction
@@ -1274,8 +1283,8 @@ l'objet</p>
     <p>flag : flag sextractor</p>
   </li>
   <li>
-    <h4><a name="ASTROMETRY2" id="ASTROMETRY2"></a>Fonction
-ASTROMETRY2</h4>
+    <h3><a name="ASTROMETRY2" id="ASTROMETRY2"></a>Fonction
+ASTROMETRY2</h3>
     <p>Effectue l'astrom&#233;trie de la m&#234;me mani&#232;re que
 ASTROMETRY mais calcule les coefficients de d&#233;formation du
 second ordre. ces coefficients sont cod&#233;s par les mots
