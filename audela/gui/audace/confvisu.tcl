@@ -1623,7 +1623,7 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    # removeZoomListener
-   #   supprime une procedure a appeler si on change de camera
+   #   supprime une procedure a appeler si on change de zoom
    # parametres :
    #    visuNo: numero de la visu
    #    cmd : commande TCL a lancer quand le zoom change
