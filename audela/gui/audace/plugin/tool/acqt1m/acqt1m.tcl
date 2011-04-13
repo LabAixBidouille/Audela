@@ -1855,7 +1855,7 @@ proc ::acqt1m::get_filename { visuNo } {
    #}
 
    #--- Generer le nom du fichier
-   return [list $bufNo "T1M_${a}${m}${j}${h}T${min}${sec}s${ms}_$panneau(acqt1m,$visuNo,object)_Filtre$panneau(acqt1m,$visuNo,filtrecourant)_bin$panneau(acqt1m,$visuNo,binning)"]
+   return [list $bufNo "T1M_${a}${m}${j}_${h}${min}${sec}_${ms}_$panneau(acqt1m,$visuNo,object)_Filtre_$panneau(acqt1m,$visuNo,filtrecourant)_bin$panneau(acqt1m,$visuNo,binning)"]
 }
 
 #***** Procedure de sauvegarde de l'image **********************
