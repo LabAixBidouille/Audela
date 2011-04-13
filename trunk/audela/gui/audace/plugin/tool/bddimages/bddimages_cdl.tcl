@@ -121,6 +121,27 @@
 #
 #--------------------------------------------------
 
+proc putmark { } {
+
+      set rect [ ::confVisu::getBox $::audace(visuNo) ]
+      set xsm [expr ([lindex $rect 0] + [lindex $rect 2]) / 2. ]
+      set ysm [expr ([lindex $rect 1] + [lindex $rect 3]) / 2. ]
+      ::bddimages_cdl::affich_un_rond $xsm $ysm blue 7
+      return
+      
+    }
+
+
+proc cleanmark { } {
+
+         $::audace(hCanvas) delete cadres
+
+    }
+
+
+
+
+
 namespace eval bddimages_cdl {
 
    global audace
@@ -144,7 +165,7 @@ namespace eval bddimages_cdl {
    variable end  
 
 
-
+   variable fhandler_mpc  
 
 
 
@@ -289,19 +310,24 @@ namespace eval bddimages_cdl {
       set dateobs  [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
       set dateobs  [::bddimages_imgcorrection::isoDateToString $dateobs]
 
-      set ::bddimages_cdl::file_result_m1  [file join $bddconf(dirtmp) "${object}_${telescop}_${filter}_${dateobs}.csv"]
-      ::console::affiche_resultat "RESULTAT DANS FICHIER : $::bddimages_cdl::file_result_m1\n"
-      #set ::bddimages_cdl::file_result_m2  [file join $bddconf(dirtmp) "${telescop}_${dateobs}_${object}_m2.csv"]
-      #::console::affiche_resultat "RESULTAT DANS FICHIER : $::bddimages_cdl::file_result_m2\n"
-      #set ::bddimages_cdl::file_result_m3  [file join $bddconf(dirtmp) "${telescop}_${dateobs}_${object}_m3.csv"]
-      #::console::affiche_resultat "RESULTAT DANS FICHIER : $::bddimages_cdl::file_result_m3\n"
-
       set ::bddimages_cdl::period [expr ($tf - $td)*24.]
       set ::bddimages_cdl::telescop $telescop
       set ::bddimages_cdl::filter   $filter
       set ::bddimages_cdl::object   $object
       set ::bddimages_cdl::begin    $begin
       set ::bddimages_cdl::end      $end
+
+      set ::bddimages_cdl::file_result_m1  [file join $bddconf(dirtmp) "${object}_${telescop}_${filter}_${dateobs}.csv"]
+      set ::bddimages_cdl::file_result_mpc [file join $bddconf(dirtmp) "${object}_${telescop}_${filter}_${dateobs}.mpc"]
+
+      ::console::affiche_resultat "Results Files : \n"
+      ::console::affiche_resultat "$::bddimages_cdl::file_result_m1\n"
+      ::console::affiche_resultat "$::bddimages_cdl::file_result_mpc\n"
+
+      #set ::bddimages_cdl::file_result_m2  [file join $bddconf(dirtmp) "${telescop}_${dateobs}_${object}_m2.csv"]
+      #::console::affiche_resultat "RESULTAT DANS FICHIER : $::bddimages_cdl::file_result_m2\n"
+      #set ::bddimages_cdl::file_result_m3  [file join $bddconf(dirtmp) "${telescop}_${dateobs}_${object}_m3.csv"]
+      #::console::affiche_resultat "RESULTAT DANS FICHIER : $::bddimages_cdl::file_result_m3\n"
 
 
     }
@@ -326,6 +352,7 @@ namespace eval bddimages_cdl {
 
 
       set f1 [open $::bddimages_cdl::file_result_m1 "w"]
+      set ::bddimages_cdl::fhandler_mpc [open $::bddimages_cdl::file_result_mpc "w"]
       #set f2 [open $::bddimages_cdl::file_result_m2 "w"]
       #set f3 [open $::bddimages_cdl::file_result_m3 "w"]
       puts $f1 "#OBJECT   = $::bddimages_cdl::object"
@@ -333,8 +360,8 @@ namespace eval bddimages_cdl {
       puts $f1 "#FILTER   = $::bddimages_cdl::filter"
       puts $f1 "#BEGIN    = $::bddimages_cdl::begin"
       puts $f1 "#END      = $::bddimages_cdl::end"
-      puts $f1 "#PERIOD   = $::bddimages_cdl::period"
-      puts $f1 "dateiso,datejj,mag"
+      puts $f1 "#OBSTIME  = $::bddimages_cdl::period"
+      puts $f1 "dateiso,datejj,mag_aster,mag_instru_aster,mag_instru_star,fwhm"
       #puts $f2 "dateiso,datejj,mag"
       #puts $f3 "dateiso,datejj,mag"
 
@@ -358,6 +385,7 @@ namespace eval bddimages_cdl {
          ::bddimages_cdl::mesure_methode1 $f1 $commundatejj $dateiso $datejd
          #::bddimages_cdl::mesure_methode2 $f2 $commundatejj $dateiso $datejd
          #::bddimages_cdl::mesure_methode3 $f3 $commundatejj $dateiso $datejd
+         
 
 
          #after 100
@@ -366,6 +394,7 @@ namespace eval bddimages_cdl {
 
       $audace(hCanvas) delete cadres
       close $f1
+      close $::bddimages_cdl::fhandler_mpc
       #close $f2
       #close $f3
 
@@ -380,6 +409,7 @@ proc ::bddimages_cdl::mesure_methode1 { f commundatejj dateiso datejd } {
          set ysm      [lindex $valeurs 1]
          set fluxs    [lindex $valeurs 2]
          set errfluxs [lindex $valeurs 3]
+         set fwhms    [lindex $valeurs 4]
          ::bddimages_cdl::affich_un_rond  $xsm $ysm "yellow" $::bddimages_cdl::delta_star
 
          set la       [::bddimages_cdl::interpol $::bddimages_cdl::interpol_aster $commundatejj]
@@ -388,15 +418,13 @@ proc ::bddimages_cdl::mesure_methode1 { f commundatejj dateiso datejd } {
          set yam      [lindex $valeurs 1]
          set fluxa    [lindex $valeurs 2]
          set errfluxa [lindex $valeurs 3]
+         set fwhma    [lindex $valeurs 4]
          ::bddimages_cdl::affich_un_rond  $xam $yam "green" $::bddimages_cdl::delta_aster
 
          set err [catch {
             set mag [expr $::bddimages_cdl::magstar - log10($fluxa/$fluxs)*2.5]
-            set errmag [expr abs( log10($fluxa/$fluxs)*2.5 - log10(($fluxa+$errfluxa)/($fluxs-$errfluxs))*2.5)]
-            set errmag2 [expr abs( log10($fluxa/$fluxs)*2.5 - log10(($fluxa-$errfluxa)/($fluxs+$errfluxs))*2.5)]
-            if {$errmag<$errmag2} {
-               set errmag $errmag2
-            }
+            set mag_instru_aster [expr log10($fluxa/20000)*2.5]
+            set mag_instru_star  [expr log10($fluxs/20000)*2.5]
          } msg ]
          if {$err!=0} {
             ::console::affiche_erreur "METHODE 1\n"
@@ -405,10 +433,53 @@ proc ::bddimages_cdl::mesure_methode1 { f commundatejj dateiso datejd } {
             ::console::affiche_erreur "fluxa = $fluxa\n"
             ::console::affiche_erreur "fluxs = $fluxs\n"
          }
+         
+         catch { ::bddimages_cdl::mpc [list $xam $yam $mag $fwhma] }
 
-         puts $f "$dateiso,$datejd,$mag"
-         ::console::affiche_resultat "M1 $dateiso,$datejd,$mag\n"
+         set pass "ok"
+
+         if {! [info exists dateiso] } {
+            ::console::affiche_erreur "dateiso n existe pas\n"
+            set pass "no"
+         }
+         if {! [info exists datejd] } {
+            ::console::affiche_erreur "datejd n existe pas\n"
+            set pass "no"
+         }
+         if {! [info exists mag] } {
+            ::console::affiche_erreur "mag n existe pas\n"
+            set pass "no"
+         }
+         if {! [info exists mag_instru_aster] } {
+            ::console::affiche_erreur "mag_instru_aster n existe pas\n"
+            set pass "no"
+         }
+         if {! [info exists mag_instru_star] } {
+            ::console::affiche_erreur "mag_instru_star n existe pas\n"
+            set pass "no"
+         }
+         if {! [info exists fwhma] } {
+            ::console::affiche_erreur "fwhma n existe pas\n"
+            set pass "no"
+         }
+
+         if {$pass == "ok"} {
+            puts $f "$dateiso,$datejd,$mag,$mag_instru_aster,$mag_instru_star,$fwhma"
+         } else {
+            ::console::affiche_erreur "Valeur non inscrite\n"
+         }
+
+
     }
+
+
+
+
+
+
+
+
+
 
 
 proc ::bddimages_cdl::mesure_methode2 { f commundatejj dateiso datejd } {
@@ -489,9 +560,6 @@ proc ::bddimages_cdl::mesure_methode3 { f commundatejj dateiso datejd } {
          ::console::affiche_resultat "M1 $dateiso,$datejd,$mag\n"
 
     }
-
-
-
 
 
 proc ::bddimages_cdl::affich_un_rond { x y color radius } {
@@ -708,28 +776,24 @@ proc ::bddimages_cdl::affich_un_rond { x y color radius } {
       set ys0 [expr int($ysm - $delta)]
       set xs1 [expr int($xsm + $delta)]
       set ys1 [expr int($ysm + $delta)]
-      set valeurs [  buf1 fitgauss [ list $xs0 $ys0 $xs1 $ys1 ] ]
 
-      set flux [expr ([lindex $valeurs 0] + [lindex $valeurs 4])/2.]
-
-      set xsm [lindex $valeurs 1]
-      set ysm [lindex $valeurs 5]
-
-      #::console::affiche_resultat "fitgauss = $xsm $ysm $flux\n"
+      set valeurs [  buf[ ::confVisu::getBufNo $::audace(visuNo) ] fitgauss [ list $xs0 $ys0 $xs1 $ys1 ] ]
+      set fwhm [expr ([lindex $valeurs 2] + [lindex $valeurs 6])/2.]
+      set xsm  [lindex $valeurs 1]
+      set ysm  [lindex $valeurs 5]
 
       set xs0 [expr int($xsm - $delta)]
       set ys0 [expr int($ysm - $delta)]
       set xs1 [expr int($xsm + $delta)]
       set ys1 [expr int($ysm + $delta)]
 
-      set valeurs [  buf1 photom [list $xs0 $ys0 $xs1 $ys1] square 20 25 35 ]
-      #::console::affiche_resultat "photom = $valeurs\n"
+      set valeurs [  buf[ ::confVisu::getBufNo $::audace(visuNo) ] photom [list $xs0 $ys0 $xs1 $ys1] square 20 25 35 ]
       set flux [lindex $valeurs 0]
       set errflux 0
 
       #::console::affiche_resultat "flux int photom = $flux \n"
 
-      return [ list $xsm $ysm $flux $errflux]
+      return [ list $xsm $ysm $flux $errflux $fwhm]
    }
 
 
@@ -832,11 +896,62 @@ proc photom_methode3 { xm ym delta } {
 
 
 
+   proc ::bddimages_cdl::mpc { valeurs } {
 
+         set xam  [lindex $valeurs 0]
+         set yam  [lindex $valeurs 1]
+         set mag  [lindex $valeurs 2]
+         set fwhm [lindex $valeurs 3]
 
+         set radec [ buf[ ::confVisu::getBufNo $::audace(visuNo) ] xy2radec [ list $xam $yam ] ]
+         set ra [ lindex $radec 0 ]
+         set dec [ lindex $radec 1 ]
+         set rah  [ mc_angle2hms $ra 360 zero 2 auto string ]
+         set decd [ mc_angle2dms $dec 90 zero 2 + string ]
 
+         ::console::affiche_resultat "RA DEC : ($ra $dec) ($rah $decd)\n"
 
+         # 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789
+         #    Rab101    C2003 10 18.89848 01 33 53.74 +02 27 19.3          18.6        xxx
+         #--- C2003 10 18.89848 : Indique la date du milieu de la pose pour l'image
+         #--- (annee, mois, jour decimal --> qui permet d'avoir l'heure du milieu de la pose a la seconde pres)
+         set mpc "$ra,$dec#     .        C"
+         set demiexposure [ expr ( [ lindex [ buf[ ::confVisu::getBufNo $::audace(visuNo) ] getkwd EXPOSURE ] 1 ]+0. )/86400./2. ]
+         set datecomp  [ mc_datescomp [ lindex [ buf[ ::confVisu::getBufNo $::audace(visuNo) ] getkwd DATE-OBS ] 1 ] + $demiexposure ]
+         set mpc "[ format %15.7f $datecomp ],$ra,$dec,$fwhm,#     .        C"
+         set d [mc_date2iso8601 $datecomp ]
+         set annee [ string range $d 0 3 ]
+         set mois  [ string range $d 5 6 ]
+         set jour  [ string range $d 8 9 ]
+         set h     [ string range $d 11 12 ]
+         set m     [ string range $d 14 15 ]
+         set s     [ string range $d 17 22 ]
+         set hh    [ string trimleft $h 0 ] ; if { $hh == "" } { set hh "0" }
+         set mm    [ string trimleft $m 0 ] ; if { $mm == "" } { set mm "0" }
+         set ss    [ string trimleft $s 0 ] ; if { $ss == "" } { set ss "0" }
+         set res   [ expr ($hh+$mm/60.+$ss/3600.)/24. ]
+         set res   [ string range $res 1 6 ]
+         append mpc "$annee $mois ${jour}${res} "
+         set h     [ string range $rah 0 1 ]
+         set m     [ string range $rah 3 4 ]
+         set s     [ string range $rah 6 10 ]
+         set s     [ string replace $s 2 2 . ]
+         append mpc "$h $m $s "
+         set d     [ string range $decd 0 2 ]
+         set m     [ string range $decd 4 5 ]
+         set s     [ string range $decd 7 10 ]
+         set s     [ string replace $s 2 2 . ]
+         append mpc "$d $m $s "
+         append mpc "         "
+         append mpc "[ format %04.1f $mag ]"
+         set iau_code [ lindex [ buf[ ::confVisu::getBufNo $::audace(visuNo) ] getkwd IAU_CODE ] 1 ]
+         if { $iau_code == "" } { set iau_code "xxx" }
+         append mpc "        $iau_code"
+         
+         puts $::bddimages_cdl::fhandler_mpc $mpc
+         #::console::affiche_resultat "$mpc\n"
 
+   }
 
 
 

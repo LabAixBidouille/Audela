@@ -234,6 +234,61 @@ proc ::bddimagesAdmin::GetPassword { msg } {
 }
 
 #--------------------------------------------------
+#  ::bddimagesAdmin::GetDateIso { }
+#--------------------------------------------------
+# Demande une date iso
+# @param msg Message de demande du mot de passe
+# @return -code err
+#--------------------------------------------------
+proc ::bddimagesAdmin::GetDateIso {  } {
+   global getPassword
+   # getPassword est un tableau qui va contenir 3 entrées:
+   #   name   contient le nom de l'utilisateur
+   #   passwd contient son mot de passe
+   #   result contient 1 si et seulement si l'utilisateur a cliqué sur Ok
+   set getPassword(result) 0
+   set getPassword(passwd) ""
+
+   toplevel .passwd
+   wm title .passwd "Date ISO"
+   wm positionfrom .passwd user
+   wm sizefrom .passwd user
+   frame .passwd.f -relief groove
+   pack configure .passwd.f -side top -fill both -expand 1 -padx 10 -pady 10
+
+   # Frame qui va contenir le label "Type your password:" et une entrée pour le rentrer
+   frame .passwd.f.pass
+   pack configure .passwd.f.pass -side top -fill x
+     label .passwd.f.pass.e -text "Fournir une Date au format ISO, qui sera la date de l observation de la copie de Travail"
+     pack configure .passwd.f.pass.e -side left -anchor c
+
+   # L'option -show permet de masquer la véritable entrée, 
+   # et de mettre une étoile à la place des caractères saisis
+   frame .passwd.f.gpass
+   pack configure .passwd.f.gpass -side top -fill x
+     entry .passwd.f.gpass.v -textvariable getPassword(passwd)
+     pack configure .passwd.f.gpass.v -side bottom -anchor c
+
+   # Frame qui va contenir les boutons Cancel et Ok
+   frame .passwd.f.buttons
+   pack configure .passwd.f.buttons -side top -fill x
+     button .passwd.f.buttons.cancel -text Cancel -command {destroy .passwd}
+     pack configure .passwd.f.buttons.cancel -side left
+     button .passwd.f.buttons.ok -text Ok -command { set getPassword(result) 1; destroy .passwd }
+     pack configure .passwd.f.buttons.ok -side right
+
+   bind .passwd.f.gpass.v <Key-Return> { set getPassword(result) 1; destroy .passwd }
+   
+   grab set .passwd
+   tkwait window .passwd
+   if {$getPassword(result)} {
+      return -code 0 $getPassword(passwd)
+   } else {
+      return -code error ""
+   }
+}
+
+#--------------------------------------------------
 #  ::bddimagesAdmin::RAZBdd { }
 #--------------------------------------------------
 # Reinitialise la base de donnees bddimages

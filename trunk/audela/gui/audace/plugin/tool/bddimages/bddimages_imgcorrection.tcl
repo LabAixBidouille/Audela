@@ -245,8 +245,10 @@ proc ::bddimages_imgcorrection::verif_filter_img {  } {
 # @return chunk chaine convertie
 proc ::bddimages_imgcorrection::isoDateToString { dateobs } {
    regsub -all {\-} $dateobs {}  dateobs
+   regsub -all { }  $dateobs {_}  dateobs
+   regsub -all {T}  $dateobs {_}  dateobs
    regsub -all {:}  $dateobs {}  dateobs
-   regsub -all {\.} $dateobs {} dateobs
+   regsub -all {\.} $dateobs {_} dateobs
    return $dateobs
 }
 
@@ -266,7 +268,6 @@ proc ::bddimages_imgcorrection::cleanSpace { chunk } {
 proc ::bddimages_imgcorrection::cleanEntities { chunk } {
    regsub -all { }  $chunk {} chunk
    regsub -all {!}  $chunk {} chunk
-   regsub -all {"}  $chunk {} chunk
    regsub -all {#}  $chunk {} chunk
    regsub -all {\$} $chunk {} chunk
    regsub -all {\&} $chunk {} chunk
@@ -542,7 +543,7 @@ proc ::bddimages_imgcorrection::create_image_flat { type inforesult } {
       # Ni Dark Ni Offset -> on normalise les flat
       if {$nbsoffset == 0 && $nbsdark == 0 } {
          for {set x 0} {$x<$nbflat} {incr x} {
-            ttscript2 "IMA/SERIES $bddconf(dirtmp) flat $x $x $ext $bddconf(dirtmp) flatn $x $ext NORMGAIN normgain_value=44000"
+            ttscript2 "IMA/SERIES $bddconf(dirtmp) flat $x $x $ext $bddconf(dirtmp) flatn $x $ext NORMGAIN normgain_value=30000"
          }
       }
 
@@ -550,7 +551,7 @@ proc ::bddimages_imgcorrection::create_image_flat { type inforesult } {
       if {$nbsoffset == 1 && $nbsdark == 1 } {
          ttscript2 "IMA/SERIES $bddconf(dirtmp) flat 0 $k $ext $bddconf(dirtmp) flats 0 $ext SUBDARK dark=sdark0$ext bias=soffset0$ext exptime=EXPOSURE dexptime=EXPOSURE nullpixel=-10000"
          for {set x 0} {$x<$nbflat} {incr x} {
-            ttscript2 "IMA/SERIES $bddconf(dirtmp) flats $x $x $ext $bddconf(dirtmp) flatn $x $ext NORMGAIN normgain_value=44000"
+            ttscript2 "IMA/SERIES $bddconf(dirtmp) flats $x $x $ext $bddconf(dirtmp) flatn $x $ext NORMGAIN normgain_value=30000"
          }
       }
       
@@ -602,7 +603,7 @@ proc ::bddimages_imgcorrection::create_image_flat { type inforesult } {
             #::console::affiche_resultat "STAT flats [get_stat $bufno]\n"
 
             # Normalisation du FLAT
-            ttscript2 "IMA/SERIES $bddconf(dirtmp) flats $x $x $ext $bddconf(dirtmp) flatn $x $ext NORMGAIN normgain_value=44000"
+            ttscript2 "IMA/SERIES $bddconf(dirtmp) flats $x $x $ext $bddconf(dirtmp) flatn $x $ext NORMGAIN normgain_value=30000"
             buf$bufno load "$bddconf(dirtmp)/flatn${x}${ext}"
             ::console::affiche_resultat "STAT flatn [get_stat $bufno]\n"
          }
