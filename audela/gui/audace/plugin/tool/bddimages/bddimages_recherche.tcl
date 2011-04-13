@@ -297,7 +297,7 @@ namespace eval bddimages_recherche {
       set bddconf(chrgtlist) "Charge $sec sec"
       set sec [expr ($t2-$t1)/1000.]
       set bddconf(affichlist) "Affiche $sec sec"
-      ::console::affiche_resultat "\n"
+      ::console::affiche_resultat "Fin...\n"
 
       return
    }
@@ -525,6 +525,7 @@ namespace eval bddimages_recherche {
       set bddconf(inserinfo) "Total($nbintellilist)"
       set bddconf(chrgtlist) "Charge -"
       set bddconf(affichlist) "Affiche -"
+      set bddconf(namelist) "Liste -"
 
 
       # Definitions des boutons d'action: par defaut tout a 1
@@ -772,6 +773,10 @@ namespace eval bddimages_recherche {
            label $This.frame11.affichlist -font $bddconf(font,arial_12_b) \
                -textvariable bddconf(affichlist)
            pack $This.frame11.affichlist -in $This.frame11 -side left -padx 3 -pady 1 -anchor w
+           #--- Cree un label pour le nom de la liste
+           label $This.frame11.namelist -font $bddconf(font,arial_12_b) \
+               -textvariable bddconf(namelist)
+           pack $This.frame11.namelist -in $This.frame11 -side left -padx 3 -pady 1 -anchor w
 
       
       ::bddimages_recherche::Affiche_listes
@@ -841,7 +846,7 @@ namespace eval bddimages_recherche {
      #::console::affiche_resultat "name = $name \n"
      #::console::affiche_resultat "tbl  = $tbl \n"
 
-      set num [::bddimages_liste::get_intellilist_by_name $name]
+     set num [::bddimages_liste::get_intellilist_by_name $name]
      #::console::affiche_resultat "num  = $num \n"
      #::console::affiche_resultat "count  =  [array get intellilisttotal] \n"
      set total [array get intellilisttotal]
@@ -967,6 +972,18 @@ namespace eval bddimages_recherche {
       global bddconf
       global popupTbl
       global paramwindow
+      global intellilisttotal
+
+      set normal_liste ""
+      set total [array get intellilisttotal]
+      foreach intellilist $total {
+         set type [::bddimages_liste::lget $intellilist "type"]
+         if { $type == "normal"} {
+            set name [::bddimages_liste::lget $intellilist "name"]
+            lappend normal_liste $name
+         }
+      }
+      ::console::affiche_resultat "normal_liste  = $normal_liste \n"
 
       #--- Quelques raccourcis utiles
       set tbl $frame.tbl
@@ -990,102 +1007,110 @@ namespace eval bddimages_recherche {
         # Labels des objets dans l'image
         $popupTbl add command -label $caption(bddimages_recherche,selectall) \
            -command { $::bddimages_recherche::This.frame6.result.tbl selection set 0 end }
-        # Separateur
-        $popupTbl add separator
 
-        # Labels Define
-        $popupTbl add command -label $caption(bddimages_recherche,define) \
-           -command { ::bddimages_recherche::bddimages_define }
-
-        # Separateur
-        $popupTbl add separator
-
-        # Labels Effacement de l image
-        $popupTbl add command -label $caption(bddimages_recherche,delete) \
-           -command { ::bddimages_recherche::bddimages_images_delete }
-
-        # Separateur
-        $popupTbl add separator
+      # Separateur
+      $popupTbl add separator
  
-        # Labels Associate
-        $popupTbl add command -label $caption(bddimages_recherche,associate) \
-           -command { ::bddimages_recherche::bddimages_associate "tmp" }
+      menu $popupTbl.gestion -tearoff 0
+      $popupTbl add cascade -label "Gestion" -menu $popupTbl.gestion
 
-        # Labels Associate
-        $popupTbl add command -label $caption(bddimages_recherche,disassociate) \
-           -command { ::bddimages_recherche::bddimages_disassociate "tmp" }
+           # Labels Define
+           $popupTbl.gestion add command -label $caption(bddimages_recherche,define) \
+              -command { ::bddimages_recherche::bddimages_define }
 
-        # Separateur
-        $popupTbl add separator
+           # Labels Effacement de l image
+           $popupTbl.gestion add command -label $caption(bddimages_recherche,delete) \
+              -command { ::bddimages_recherche::bddimages_images_delete }
 
-        # Labels Associate
-        $popupTbl add command -label $caption(bddimages_recherche,sbias) \
-           -command { ::bddimages_imgcorrection::run_create $audace(base).bddimages_imgcorrection "offset"}
+           # Labels Exporter
+           $popupTbl.gestion add command -label "Exporter" \
+              -command { ::bddimages_recherche::export }
 
-        # Labels Associate
-        $popupTbl add command -label $caption(bddimages_recherche,sdark) \
-           -command [list ::bddimages_imgcorrection::run_create $audace(base).bddimages_imgcorrection "dark"]
+           # Labels Copier une image
+           $popupTbl.gestion add command -label "Copier une image de calibration"  \
+              -command { ::bddimages_recherche::bddimages_images_copy_calib }
 
-        # Labels Associate
-        $popupTbl add command -label $caption(bddimages_recherche,sflat) \
-           -command { ::bddimages_imgcorrection::run_create $audace(base).bddimages_imgcorrection "flat"}
+      menu $popupTbl.liste -tearoff 0
+      $popupTbl add cascade -label "Listes" -menu $popupTbl.liste
 
-        # Labels Associate
-        $popupTbl add command -label $caption(bddimages_recherche,deflat) \
-           -command { ::bddimages_imgcorrection::run_create $audace(base).bddimages_imgcorrection "deflat"}
+           menu $popupTbl.liste.associer -tearoff 0
+           $popupTbl.liste add cascade -label $caption(bddimages_recherche,associate) -menu $popupTbl.liste.associer
 
-        # Separateur
-        $popupTbl add separator
+               foreach name_liste $normal_liste {
 
-        # Labels Associate
-        $popupTbl add command -label $caption(audace,menu,geometry) \
-           -command { ::bddimages_recherche::bddimages_geometrie "mirroirx" }
+                  $popupTbl.liste.associer add command -label $name_liste \
+                     -command " ::bddimages_recherche::bddimages_associate $name_liste "
+               }
 
-        # Labels Associate
-        $popupTbl add command -label "Somme" \
-           -command { ::bddimages_imgcorrection::somme }
+           # Labels DisAssociate
+           $popupTbl.liste add command -label $caption(bddimages_recherche,disassociate) \
+              -command { ::bddimages_recherche::bddimages_disassociate "tmp" }
 
+      menu $popupTbl.correction -tearoff 0
+      $popupTbl add cascade -label "Correction" -menu $popupTbl.correction
 
-        # Separateur
-        $popupTbl add separator 
+           $popupTbl.correction add command -label $caption(bddimages_recherche,sbias) \
+              -command { ::bddimages_imgcorrection::run_create $audace(base).bddimages_imgcorrection "offset"}
 
-        # Labels Associate
-        $popupTbl add command -label "CdL" \
-           -command { ::bddimages_cdl::run}
+           $popupTbl.correction add command -label $caption(bddimages_recherche,sdark) \
+              -command [list ::bddimages_imgcorrection::run_create $audace(base).bddimages_imgcorrection "dark"]
 
-        # Separateur
-        $popupTbl add separator 
+           $popupTbl.correction add command -label $caption(bddimages_recherche,sflat) \
+              -command { ::bddimages_imgcorrection::run_create $audace(base).bddimages_imgcorrection "flat"}
 
-        # Labels Associate
-        $popupTbl add command -label "charge_cata" \
-           -command { ::bddimages_recherche::bddimages_charge_cata }
+           $popupTbl.correction add command -label $caption(bddimages_recherche,deflat) \
+              -command { ::bddimages_imgcorrection::run_create $audace(base).bddimages_imgcorrection "deflat"}
 
-        # Labels Associate
-        $popupTbl add command -label $caption(bddimages_recherche,setwcs) \
-           -command { ::bddimages_recherche::bddimages_creation_wcs }
+           $popupTbl.correction add separator
+ 
+           $popupTbl.correction add command -label "Automatique" -state disabled\
+              -command { }
 
-        # Labels Associate
-        $popupTbl add command -label $caption(bddimages_recherche,astroid) \
-           -command { ::bddimages_astroid::run_astroid}
+      menu $popupTbl.geometrie -tearoff 0
+      $popupTbl add cascade -label "Geometrie" -menu $popupTbl.geometrie
 
-        # Labels Associate
-        $popupTbl add command -label $caption(bddimages_recherche,photom) \
-           -command { ::bddimages_analyse::run_photom}
+           $popupTbl.geometrie add command -label "Mirroir X" \
+              -command { ::bddimages_recherche::bddimages_geometrie "mirroirx" }
 
-        # Labels Associate
-        $popupTbl add command -label $caption(bddimages_recherche,astrom) \
-           -command { ::bddimages_analyse::run_astrom}
+           $popupTbl.geometrie add command -label "Mirroir Y" -state disabled \
+              -command {  }
 
-        # Labels Associate
-        $popupTbl add command -label $caption(bddimages_recherche,cata) \
-           -command { ::bddimages_analyse::run_cata}
+           $popupTbl.geometrie add command -label "Somme" \
+              -command { ::bddimages_imgcorrection::somme }
 
-        # Separateur
-        $popupTbl add separator
+      menu $popupTbl.analyse -tearoff 0
+      $popupTbl add cascade -label "Analyse" -menu $popupTbl.analyse
 
-        # Acces a l'aide
-        $popupTbl add command -label $caption(bddimages_recherche,aide) \
-           -command { ::audace::showHelpPlugin tool bddimages bddimages.htm field_2 }
+           $popupTbl.analyse add command -label "Creer le Cata" \
+              -command { ::bddimages_recherche::bddimages_creation_wcs }
+
+           $popupTbl.analyse add command -label "CdL" \
+              -command { ::bddimages_cdl::run}
+
+           $popupTbl.analyse add command -label $caption(bddimages_recherche,astroid) -state disabled \
+              -command { ::bddimages_astroid::run_astroid}
+
+           $popupTbl.analyse add command -label $caption(bddimages_recherche,photom) -state disabled \
+              -command { ::bddimages_analyse::run_photom}
+
+           $popupTbl.analyse add command -label $caption(bddimages_recherche,astrom) -state disabled \
+              -command { ::bddimages_analyse::run_astrom}
+
+           $popupTbl.analyse add command -label $caption(bddimages_recherche,cata) -state disabled \
+              -command { ::bddimages_analyse::run_cata}
+
+      menu $popupTbl.developpement -tearoff 0
+      $popupTbl add cascade -label "Developpement" -menu $popupTbl.developpement
+
+           $popupTbl.developpement add command -label "charge_cata" \
+              -command { ::bddimages_recherche::bddimages_charge_cata }
+
+      # Separateur
+      $popupTbl add separator
+
+      # Acces a l'aide
+      $popupTbl add command -label $caption(bddimages_recherche,aide) \
+         -command { ::audace::showHelpPlugin tool bddimages bddimages.htm field_2 }
 
       #--- Gestion des evenements
       bind [$tbl bodypath] <ButtonPress-3> [ list tk_popup $popupTbl %X %Y ]
@@ -1104,10 +1129,18 @@ namespace eval bddimages_recherche {
 
 
 
+   #--------------------------------------------------
+   #  bddimages_associate {  }
+   #--------------------------------------------------
+   #
+   #    fonction  : Associe l image a une liste normale
+   #
+   #    variables en entree : namelist : le nom de la liste normale
+   #
+   #    variables en sortie : void
+   #
+   #--------------------------------------------------
    proc ::bddimages_recherche::bddimages_associate { namelist } {
-   
-      global audace
-      global bddconf
    
       set lid [$::bddimages_recherche::This.frame6.result.tbl curselection ]
       set lid [lsort -decreasing -integer $lid]
@@ -1119,6 +1152,129 @@ namespace eval bddimages_recherche {
       set ::intellilisttotal($num) [::bddimages_liste::add_to_normallist $lid $normallist]
       return
    }
+
+
+
+   #--------------------------------------------------
+   #  export {  }
+   #--------------------------------------------------
+   #
+   #    fonction  : exporte des images de la base
+   #
+   #    variables en entree :
+   #
+   #    variables en sortie : void
+   #
+   #--------------------------------------------------
+   proc ::bddimages_recherche::export {  } {
+
+      variable This
+      global bddconf
+
+      set lid [$::bddimages_recherche::This.frame6.result.tbl curselection ]
+      set lid [lsort -decreasing -integer $lid]
+      set img_list [::bddimages_liste::new_normallist $lid]
+      foreach img $img_list {
+
+         set filename    [string trim [::bddimages_liste::lget $img "filename"] ]
+         set dirfilename [string trim [::bddimages_liste::lget $img "dirfilename"] ]
+         set fichier [ file join $bddconf(dirbase) $dirfilename $filename]
+         set fc [file tail $fichier]
+         set fd [file join $bddconf(dirtmp) $fc]
+         if {[file exists $fichier] != 1} {
+            ::console::affiche_erreur "image inconue : $fichier\n"
+            continue
+         }
+         set errnum [catch {file copy -force -- $fichier $fd} msg]
+         if {$errnum != 0} {
+            ::console::affiche_erreur "cp image impossible : $fichier\n"
+            ::console::affiche_erreur "err : $errnum\n"
+            ::console::affiche_erreur "msg : $msg\n"
+            continue
+         }
+         ::console::affiche_resultat "cp image : $fc\n"
+         
+      
+      }
+
+
+      return
+   }
+
+
+
+   #--------------------------------------------------
+   #  bddimages_images_copy_calib {  }
+   #--------------------------------------------------
+   #
+   #    fonction  : Copie une image de calibration en changeant la date
+   #
+   #    variables en entree :
+   #
+   #    variables en sortie : void
+   #
+   #--------------------------------------------------
+   proc ::bddimages_recherche::bddimages_images_copy_calib {  } {
+
+      variable This
+      global bddconf
+
+      set lid [$::bddimages_recherche::This.frame6.result.tbl curselection ]
+
+      if {[llength $lid]!=1} {
+         tk_dialog $This.confirmDialog "BddImages - Copie Image de Calibration" "Veuillez selectionner UNE seule image de calibration" questhead 0 "Annuler"
+         return
+      }
+      
+      # recupere l info de l image
+      set img [lindex [::bddimages_liste::new_normallist $lid] 0]
+
+      # Verification des champs
+      set tabkey [::bddimages_liste::lget $img "tabkey"]
+      set bddimages_type [string trim [lindex [::bddimages_liste::lget $tabkey bddimages_type] 1]]
+      if {$bddimages_type == "IMG" } {
+          tk_dialog $This.confirmDialog "BddImages - Copie Image de Calibration" "Veuillez selectionner une image de CALIBRATION" questhead 0 "Annuler"
+          return
+      }
+      
+      if { $bddimages_type != "FLAT" && $bddimages_type != "DARK" && $bddimages_type != "OFFSET" } {
+         tk_dialog $This.confirmDialog "BddImages - Copie Image de Calibration" "Votre image n est pas compatible BDI" questhead 0 "Annuler"
+         return
+      }
+       
+      # Fenetre de changement de date
+      set dateobs [::bddimagesAdmin::GetDateIso]
+
+      # charge l image 
+      set filename    [string trim [::bddimages_liste::lget $img "filename"] ]
+      set dirfilename [string trim [::bddimages_liste::lget $img "dirfilename"] ]
+      set fichier [ file join $bddconf(dirbase) $dirfilename $filename]
+      buf[::confVisu::getBufNo $::audace(visuNo)] load $fichier
+      
+      # modification du header
+      buf[::confVisu::getBufNo $::audace(visuNo)] setkwd [list "DATE-OBS" "$dateobs" "string" "DATEISO" ""]
+      
+      # copie de l image dans tmp
+      set fichier [ file tail $fichier ]
+      set fichier [ file rootname $fichier ]
+      set fichier [ file rootname $fichier ]
+
+      set ext [buf[::confVisu::getBufNo $::audace(visuNo)] extension]
+      set gz [buf[::confVisu::getBufNo $::audace(visuNo)] compress]
+      if {[buf[::confVisu::getBufNo $::audace(visuNo)] compress] == "gzip"} {set gz ".gz"} else {set gz ""}
+
+      set fichier "${fichier}_COPY"
+      buf[::confVisu::getBufNo $::audace(visuNo)] save [ file join $bddconf(dirtmp) ${fichier}${ext} ]
+
+      # insertion dans la base
+      insertion_solo [ file join $bddconf(dirtmp) ${fichier}${ext}${gz} ]
+
+      ::bddimages_recherche::get_intellist $::bddimages_recherche::current_list_id
+      ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id [array get action_label]
+      return
+   }
+
+
 
 
    #--------------------------------------------------
@@ -1605,10 +1761,14 @@ proc ::bddimages_recherche::get_intellist { i } {
    global intellilisttotal
    global list_key_to_var
    global table_result
+   global bddconf
 
    #::console::affiche_resultat "get_intellist  $i\n"
    set intellilist  $intellilisttotal($i)
-   ::console::affiche_resultat "[::bddimages_liste::get_val_intellilist $intellilist "name"] ... "
+   set nl [::bddimages_liste::get_val_intellilist $intellilist "name"]
+   set bddconf(namelist) "Liste : $nl"
+
+   #::console::affiche_resultat "[::bddimages_liste::get_val_intellilist $intellilist "name"] ... "
    #::console::affiche_resultat "intellilist = $intellilist\n"
 
 #  Table_tmp
