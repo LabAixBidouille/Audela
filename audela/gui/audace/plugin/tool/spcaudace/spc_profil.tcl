@@ -23,6 +23,49 @@
 # Mise a jour $Id$
 
 
+####################################################################
+# Nettoie les mots clefs finissant en 2 :
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 11-10-2011
+# Date modification : 11-04-2011
+# Arguments : numero du buffer
+####################################################################
+
+proc spc_header1d { args } {
+   global conf
+   global audace
+
+   set nbargs [ llength $args ]
+   if { $nbargs==1 } {
+      set numbuf [ lindex $args 0 ]
+
+      #--- Recupere les infos du spectre :
+      set totkwd [ buf$numbuf getkwds ]
+      set listkwd_index [ lsearch -all $totkwd "*2" ]
+
+      #--- Initialise les intensites a yval :
+      foreach kwdind $listkwd_index {
+         set keywd [ lindex $totkwd $kwdind ]
+         if { $keywd!="TT2" && $keywd!="SPC_SLX2" && $keywd!="TT12" && $keywd!="TT22" } {
+            buf$numbuf delkwd "$keywd"
+         }
+      }
+
+      #--- Traitement des autres cas :
+      if { [ lsearch $totkwd "CD1_1" ] != -1 } {
+         buf$numbuf delkwd "CD1_1"
+      }
+      if { [ lsearch $totkwd "CD2_1" ] != -1 } {
+         buf$numbuf delkwd "CD2_1"
+      }
+   } else {
+      ::console::affiche_erreur "Usage: spc_header1d numoero_buffer\n"
+   }
+}
+#****************************************************************#
+
+
 
 ####################################################################
 # Cree un profil de raies fits d'une varleur y donee
@@ -304,6 +347,10 @@ proc spc_extract_zone { args } {
 	} else {
 	    ::console::affiche_erreur "Usage: Select zone with mouse\n\n"
 	}
+
+        #--- Nettoie les mots clefs finissant en 2 :
+        spc_header1d $audace(bufNo)
+
         buf$audace(bufNo) bitpix float
 	buf$audace(bufNo) save "$audace(rep_images)/${filespacialspc}_zone"
         buf$audace(bufNo) bitpix short
@@ -818,6 +865,9 @@ proc spc_binlopt { args } {
 	buf$audace(bufNo) load "$audace(rep_images)/$spectre2d"
 	buf$audace(bufNo) imaseries "LOPT y1=$yinf y2=$ysup height=1"
 
+        #--- Nettoie les mots clefs finissant en 2 :
+        spc_header1d $audace(bufNo)
+
 	#--- SAuvegarde du profil 1D
 	buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 float "" ""]
 	buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
@@ -1134,12 +1184,18 @@ proc spc_profil { args } {
 		    return ""
 		}
 	    }
+
+            #--- Binning :
 	    buf$audace(bufNo) bitpix float
 	    buf$audace(bufNo) imaseries "LOPT y1=3 y2=$ylargeur height=1"
 	    buf$audace(bufNo) setkwd [ list "CRVAL1" 1.0 double "" "" ]
 	    buf$audace(bufNo) setkwd [ list "CDELT1" 1.0 double "" "" ]
             buf$audace(bufNo) setkwd [ list "CRPIX1" 1 int "Reference pixel" "pixel" ]
             buf$audace(bufNo) setkwd [ list "CREATOR" "SpcAudACE $spcaudace(version)" string "Software that create this FITS file" "" ]
+            #--- Nettoie les mots clefs finissant en 2 :
+            spc_header1d $audace(bufNo)
+
+            #--- Sauve le profil :
 	    if { [regexp {1.3.0} $audela(version) match resu ] } {
 		buf$audace(bufNo) save "$audace(rep_images)/${spectre_zone_fc}_spc"
 	    } else {
@@ -1256,10 +1312,14 @@ proc spc_profilzone { args } {
 		}
 	    }
 
+            #--- Binning :
 	    buf$audace(bufNo) imaseries "LOPT y1=3 y2=$ylargeur height=1"
 	    buf$audace(bufNo) setkwd [ list "CRVAL1" 1.0 float "" "" ]
 	    buf$audace(bufNo) setkwd [ list "CDELT1" 1.0 float "" "" ]
 	    buf$audace(bufNo) setkwd [ list "CRPIX1" 1 int "Reference pixel" "pixel" ]
+            #--- Nettoie les mots clefs finissant en 2 :
+            spc_header1d $audace(bufNo)
+
 	    buf$audace(bufNo) bitpix float
 	    if { [regexp {1.3.0} $audela(version) match resu ] } {
 		buf$audace(bufNo) save "$audace(rep_images)/${spectre_zone_fc}_spc"
@@ -1407,6 +1467,9 @@ proc spc_bin { args } {
 
 	## On sauvegarde le spectre avec correction du fond du ciel
 	::console::affiche_resultat "Profil de raies sauvé sous ${filenamespc_spatial}_spc$conf(extension,defaut)\n"
+        #--- Nettoie les mots clefs finissant en 2 :
+        spc_header1d $audace(bufNo)
+
 	buf$audace(bufNo) bitpix float
 	if { [regexp {1.3.0} $audela(version) match resu ] } {
 	    buf$audace(bufNo) save "$audace(rep_images)/${filenamespc_spatial}_spc"
@@ -1472,6 +1535,10 @@ proc spc_bins { args } {
       buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
       buf$audace(bufNo) setkwd [ list "CRPIX1" 1 int "Reference pixel" "pixel" ]
       buf$audace(bufNo) bitpix float
+
+      #--- Nettoie les mots clefs finissant en 2 :
+      spc_header1d $audace(bufNo)
+
       if { [regexp {1.3.0} $audela(version) match resu ] } {
 	  buf$audace(bufNo) save "$audace(rep_images)/${filenamespc_zone}_spc"
       } else {
@@ -1594,6 +1661,9 @@ proc spc_binsup { {filenamespc_zone_rep ""} {filenamespc_spatial_rep ""} {listco
     buf$audace(bufNo) setkwd [ list "CRPIX1" 1 int "Reference pixel" "pixel" ]
     buf$audace(bufNo) bitpix float
 
+    #--- Nettoie les mots clefs finissant en 2 :
+    spc_header1d $audace(bufNo)
+
     ## On sauvegarde le spectre avec correction du fond du ciel
     ::console::affiche_resultat "Profil de raies sauvé sous ${filenamespc_spatial}_spc$conf(extension,defaut)\n"
     if { [regexp {1.3.0} $audela(version) match resu ] } {
@@ -1681,6 +1751,10 @@ proc spc_profily { args } {
 	buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
         buf$audace(bufNo) setkwd [ list "CRPIX1" 1 int "Reference pixel" "pixel" ]
 	buf$audace(bufNo) bitpix float
+
+        #--- Nettoie les mots clefs finissant en 2 :
+        spc_header1d $audace(bufNo)
+
 	if { [regexp {1.3.0} $audela(version) match resu ] } {
 	    buf$audace(bufNo) save "$audace(rep_images)/${fichier}_spcy"
 	} else {

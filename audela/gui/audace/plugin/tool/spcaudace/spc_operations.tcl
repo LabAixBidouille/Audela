@@ -992,10 +992,12 @@ proc spc_echantdelt { args } {
       buf$audace(bufNo) setkwd [ list "CRVAL1" $crval1 double "" "angstrom"]
       #-- Dispersion :
       buf$audace(bufNo) setkwd [ list "CDELT1" $newsamplingrate double "" "angstrom/pixel"]
+
       #--- Rempli la matrice 1D du fichier fits avec les valeurs du profil de raie :
       #- Une liste commence Ã  0 ; Un vecteur fits commence Ã  1
       #- set intensite [ list ]
       ::console::affiche_resultat "lambdamin=$lambdamin ; lambdamax=$lambdamax \n"
+      buf$audace(bufNo) bitpix float
       for {set k 0} { $k < $newnaxis1 } {incr k} {
          #- append intensite [lindex $profileref $k]
          #- ::console::affiche_resultat "$intensite\n"
@@ -1003,8 +1005,9 @@ proc spc_echantdelt { args } {
          buf$audace(bufNo) setpix [list [expr $k+1] 1] [lindex $profile $k ]
          #- set intensite 0
       }
+
       #--- Sauvegarde du fichier fits ainsi créé :
-      buf$audace(bufNo) bitpix float
+      #buf$audace(bufNo) bitpix float
       set suff _newsampl
       set nom_fich_output "$nom_fich_input$suff"
       buf$audace(bufNo) save "$audace(rep_images)/$nom_fich_output"
@@ -2335,8 +2338,8 @@ proc spc_select { args } {
        set crpix1 [ lindex [buf$audace(bufNo) getkwd "CRPIX1"] 1 ]
 
        #--- Extrait les longueurs d'onde et les intensites :
-       set abscisses ""
-       set intensites ""
+      set abscisses [ list ]
+      set intensites [ list ]
        #-- Audela 130 :
        if { [regexp {1.3.0} $audela(version) match resu ] } {
            for {set k 0} {$k<$naxis1} {incr k} {
@@ -2377,7 +2380,6 @@ proc spc_select { args } {
            } else {
                set xfinl $xfin
            }
-
            #if { $abscisse >= $xdebl && $abscisse <= $xfin } {
            #    lappend nabscisses $abscisse
            #    lappend nintensites $intensite
@@ -2396,9 +2398,7 @@ proc spc_select { args } {
        set len $k
        ::console::affiche_resultat "$k intensités sélectionnées entre $xdebl et $xfinl.\n"
 
-
        #--- Initialisation à blanc d'un fichier fits :
-       
        set bufn2 [ buf::create ]
        buf$bufn2 load "$audace(rep_images)/$spectre_lin"
        buf$audace(bufNo) setpixels CLASS_GRAY $len 1 FORMAT_FLOAT COMPRESS_NONE 0
@@ -2414,9 +2414,9 @@ proc spc_select { args } {
 
        #--- Initatialisation de l'entête
        set xdepart [ lindex $nabscisses 0 ]
-       buf$audace(bufNo) setkwd [list "CRVAL1" $xdepart double "" ""]
+       buf$audace(bufNo) setkwd [ list "CRVAL1" $xdepart double "" "angstroms" ]
        #- set xfin [ lindex $nabscisses $len ]
-       buf$audace(bufNo) setkwd [list "CDELT1" $disper double "" ""]
+       buf$audace(bufNo) setkwd [ list "CDELT1" $disper double "" "angstrom/pixel" ]
 
        #--- Enregistrement du fichier fits final
        buf$audace(bufNo) bitpix float

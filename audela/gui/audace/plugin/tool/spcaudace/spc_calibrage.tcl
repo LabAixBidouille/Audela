@@ -1147,19 +1147,6 @@ proc spc_linearcal { args } {
 
    if { [llength $args] == 1 } {
       set filename [ file rootname [ lindex $args 0 ] ]
-
-      #--- Initialise les vecteurs et mots clefs à sauvegarder :
-      set listevals [ spc_fits2data $filename ]
-      set xvals [ lindex $listevals 0 ]
-      set yvals [ lindex $listevals 1 ]
-      set len [ llength $xvals ]
-
-
-      #--- Initialise un vecteur des indices des pixels :
-      for {set i 1} {$i<=$len} {incr i} {
-         lappend indices $i
-      }
-      set valeurs [ list $indices $xvals ]
       
       #--- Recupere les coéfficients du polynôme de calibration :
       buf$audace(bufNo) load "$audace(rep_images)/$filename"
@@ -1179,13 +1166,26 @@ proc spc_linearcal { args } {
       } else {
          set flag_spccal 0
       }
+      set crval1 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
       if { [ lsearch $listemotsclef "CRPIX1" ] !=-1 } {
          set crpix1 [ lindex [buf$audace(bufNo) getkwd "CRPIX1"] 1 ]
       } else {
          set crpix1 1
       }
-      
-      
+      ::console::affiche_resultat "crval1=$crval1\n"
+
+      #--- Initialise les vecteurs et mots clefs à sauvegarder :
+      set listevals [ spc_fits2data $filename ]
+      set xvals [ lindex $listevals 0 ]
+      set yvals [ lindex $listevals 1 ]
+      set len [ llength $xvals ]
+
+      #--- Initialise un vecteur des indices des pixels :
+      for {set i 1} {$i<=$len} {incr i} {
+         lappend indices $i
+      }
+      set valeurs [ list $indices $xvals ]
+
       #--- Calcul les longueurs éspacées d'un pas constant :
       if { $flag_spccal } {
          #-- Calcul le pas del calibration linéaire :
@@ -1193,7 +1193,8 @@ proc spc_linearcal { args } {
          #set lambda_fin [ expr $spc_a+$spc_b*$len+$spc_c*$len*$len+$spc_d*$len*$len*$len ]
          #- le 21-11-2009 :
          #set lambda_deb $spc_a
-         set lambda_deb [ spc_calpoly 1. $crpix1 $spc_a $spc_b $spc_c $spc_d ]
+         #set lambda_deb [ spc_calpoly 1. $crpix1 $spc_a $spc_b $spc_c $spc_d ]
+         set lambda_deb $crval1
          set lambda_fin [ spc_calpoly $len $crpix1 $spc_a $spc_b $spc_c $spc_d ]
          
          #- modif michel
@@ -1215,7 +1216,8 @@ proc spc_linearcal { args } {
          #set new_intensities [ lindex [ spc_resample $xvals $yvals $pas $lambda_deb ] 1 ]
          #-- 21-11-2009 :
          #set crval1 [ spc_cal $lambda_deb $crpix1 $lambda_deb $pas 0 0 ]
-         set crval1 $lambda_deb
+         #-- 11-04-2011 : crval1 pris dans le spectre de depart : ca ne change pas.
+         #set crval1 $lambda_deb
          
          #-- Enregistrement au format fits :
          buf$audace(bufNo) load "$audace(rep_images)/$filename"
