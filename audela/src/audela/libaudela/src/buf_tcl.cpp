@@ -36,7 +36,6 @@
 #include "libtt.h"
 
 using namespace std;
-
 //------------------------------------------------------------------------------
 // La variable globale est definie de maniere unique ici.
 //
@@ -376,16 +375,16 @@ int cmdGetKwd(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
                      break;
                   case TFLOAT :
                      if( ( (fabs(kwd->GetDoubleValue()) < 0.1 ) || (fabs(kwd->GetDoubleValue()) > 1e5 ) ) && (fabs(kwd->GetDoubleValue())!=0.0) ) {
-                        oss << "{" << kwd->GetName() << "} " << scientific << kwd->GetDoubleValue() << " {float} { " << kwd->GetComment() << " } { " << kwd->GetUnit() << "}";
+                        oss << "{" << kwd->GetName() << "} " << scientific << setprecision(8) << kwd->GetDoubleValue() << " {float} { " << kwd->GetComment() << " } { " << kwd->GetUnit() << "}";
                      } else {
-                        oss << "{" << kwd->GetName() << "} " << kwd->GetDoubleValue() << " {float} { " << kwd->GetComment() << " } { " << kwd->GetUnit() << "}";
+                        oss << "{" << kwd->GetName() << "} " << setprecision(12) << kwd->GetDoubleValue() << " {float} { " << kwd->GetComment() << " } { " << kwd->GetUnit() << "}";
                      }
                      break;
                   case TDOUBLE :
                      if( ( (fabs(kwd->GetDoubleValue()) < 1e-5 ) || (fabs(kwd->GetDoubleValue()) > 1e5 ) ) && (fabs(kwd->GetDoubleValue())!=0.0) ) {
-                        oss << "{" << kwd->GetName() << "} " << scientific << setprecision(15) << kwd->GetDoubleValue() << " {float} { " << kwd->GetComment() << " } { " << kwd->GetUnit() << "}";
+                        oss << "{" << kwd->GetName() << "} " << scientific << setprecision(15) << kwd->GetDoubleValue() << " {double} { " << kwd->GetComment() << " } { " << kwd->GetUnit() << "}";
                      } else {
-                        oss << "{" << kwd->GetName() << "} " << kwd->GetDoubleValue() << " {float} { " << kwd->GetComment() << " } { " << kwd->GetUnit() << "}";
+                        oss << "{" << kwd->GetName() << "} " << setprecision(19) << kwd->GetDoubleValue() << " {double} { " << kwd->GetComment() << " } { " << kwd->GetUnit() << "}";
                      }
                      break;
                   case TSTRING :
@@ -417,16 +416,16 @@ int cmdGetKwd(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
                      break;
                   case TFLOAT :
                      if( ( (fabs(kwd->GetDoubleValue()) < 0.1 ) || (fabs(kwd->GetDoubleValue()) > 1e5 ) ) && (fabs(kwd->GetDoubleValue())!=0.0) ) {
-                        oss << "{" << kwd->GetName() << "} " << scientific << kwd->GetDoubleValue() << " {float} { " << kwd->GetComment() << " } { " << kwd->GetUnit() << "}";
+                        oss << "{" << kwd->GetName() << "} " << scientific << setprecision(8) << kwd->GetDoubleValue() << " {float} { " << kwd->GetComment() << " } { " << kwd->GetUnit() << "}";
                      } else {
-                        oss << "{" << kwd->GetName() << "} " << kwd->GetDoubleValue() << " {float} { " << kwd->GetComment() << " } { " << kwd->GetUnit() << "}";
+                        oss << "{" << kwd->GetName() << "} " << setprecision(12) << kwd->GetDoubleValue() << " {float} { " << kwd->GetComment() << " } { " << kwd->GetUnit() << "}";
                      }
                      break;
                   case TDOUBLE :
                      if( ( (fabs(kwd->GetDoubleValue()) < 1e-5 ) || (fabs(kwd->GetDoubleValue()) > 1e5 ) ) && (fabs(kwd->GetDoubleValue())!=0.0) ) {
-                        oss << "{" << kwd->GetName() << "} " << scientific << setprecision(15) << kwd->GetDoubleValue() << " {float} { " << kwd->GetComment() << " } { " << kwd->GetUnit() << "}";
+                        oss << "{" << kwd->GetName() << "} " << scientific << setprecision(15) << kwd->GetDoubleValue() << " {double} { " << kwd->GetComment() << " } { " << kwd->GetUnit() << "}";
                      } else {
-                        oss << "{" << kwd->GetName() << "} " << kwd->GetDoubleValue() << " {float} { " << kwd->GetComment() << " } { " << kwd->GetUnit() << "}";
+                        oss << "{" << kwd->GetName() << "} " << setprecision(19) << kwd->GetDoubleValue() << " {double} { " << kwd->GetComment() << " } { " << kwd->GetUnit() << "}";
                      }
                      break;
                   case TSTRING :
