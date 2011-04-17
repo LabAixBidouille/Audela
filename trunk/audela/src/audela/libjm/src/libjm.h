@@ -61,7 +61,7 @@ namespace LibJM
         static const int PB2 = 2;
 #endif
         static const std::string NUMERO_VERSION;
-        static const char * repertoire_log;
+        static std::string repertoire_log;
 
         static int CmdVersionLib( ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] );
         static int CmdRepertoireLog( ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] );
