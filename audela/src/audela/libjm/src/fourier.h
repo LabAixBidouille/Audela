@@ -103,6 +103,7 @@ public :
     static std::ofstream log_stream;
     static std::string fourier_log_file_name;
 
+    /** @brief Tableau de pixels (image) de taille largeur x hauteur */
     class TableauPixels {
         private :
             TYPE_PIXELS * _pointeur;
@@ -110,7 +111,11 @@ public :
         public :
             TYPE_PIXELS * pointeur() { return _pointeur; };
             unsigned int taille() { return _taille; };
-            TableauPixels( unsigned int, unsigned int );
+            /** @brief Constructeur
+             * @param[in] largeur largeur de l'image
+             * @param[in] hauteur hauteur de l'image
+             */
+            TableauPixels( unsigned int largeur, unsigned int hauteur );
             ~TableauPixels();
     };
 

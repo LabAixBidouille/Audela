@@ -53,7 +53,7 @@ std::string Fourier::fourier_log_file_name("libjm_fourier.log");
 Fourier::Fourier()
 {
     std::string nom_fichier_log;
-    if ( LibJM::Generique::repertoire_log )
+    if ( LibJM::Generique::repertoire_log.size() > 0 )
     {
         nom_fichier_log = LibJM::Generique::repertoire_log;
 #if defined(WIN32)
