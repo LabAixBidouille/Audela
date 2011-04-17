@@ -24,8 +24,8 @@
 
 #include <iostream>
 #include <fstream>
-#include <string.h>     /* strdup() */
-#include <stdlib.h>     /* free() */
+#include <sstream>
+
 #include <math.h>
 #include <gsl/gsl_vector.h>
 #include "gsl/gsl_matrix.h"
@@ -38,6 +38,8 @@
 #include "calaphot.h"
 #include "horloge.h"
 #include "fourier.h"
+
+using namespace std;
 
 
 /* *********** JM_Init **********
@@ -53,9 +55,9 @@ extern "C" int Jm_Init( Tcl_Interp *interp )
 {
     if( Tcl_InitStubs( interp, "8.3", 0 ) == NULL )
     {
-        char * s = strdup( "Tcl Stubs initialization failed in libjm." );
-        Tcl_SetResult( interp, s, TCL_STATIC );
-        free( s );
+        ostringstream oss;
+        oss << "Tcl Stubs initialization failed in libjm.";
+        Tcl_SetResult( interp, const_cast<char*>(oss.str().c_str()), TCL_VOLATILE );
         return TCL_ERROR;
     }
 
@@ -84,35 +86,36 @@ extern "C" int Jm_Init( Tcl_Interp *interp )
 
 namespace LibJM
 {
-    const std::string Generique::NUMERO_VERSION("4.0");
-    const char * Generique::repertoire_log = 0;
+    const std::string Generique::NUMERO_VERSION("4.1");
+    string Generique::repertoire_log = "";
 
     int Generique::CmdVersionLib( ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] )
     {
-        char * s = strdup( NUMERO_VERSION.c_str() );
-        Tcl_SetResult( interp, s, TCL_VOLATILE );
-        free( s );
+        ostringstream oss;
+
+        oss << NUMERO_VERSION.c_str();
+        Tcl_SetResult( interp, const_cast<char*>(oss.str().c_str()), TCL_VOLATILE );
         return TCL_OK;
     }
 
     int Generique::CmdRepertoireLog( ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] )
     {
-        char s[256];
+        ostringstream oss;
 
         if ( argc < 2 ) {
-            sprintf( s, "Usage: %s log directory name", argv[0] );
-            Tcl_SetResult( interp, s, TCL_VOLATILE );
+            oss << "Usage: " << argv[0] << " log directory name";
+            Tcl_SetResult( interp, const_cast<char*>(oss.str().c_str()), TCL_VOLATILE );
             return TCL_ERROR;
         }
         else {
-            if ( repertoire_log == 0 )
+            if ( repertoire_log == "" )
             {
-                repertoire_log =  strdup( argv[1] );
+                repertoire_log =  argv[1];
                 return TCL_OK;
             }
             else {
-                sprintf( s, "%s : log directory already set to %s", argv[0], repertoire_log );
-                Tcl_SetResult( interp, s, TCL_VOLATILE );
+                oss << "Log directory already set to " << argv[1];
+                Tcl_SetResult( interp, const_cast<char*>(oss.str().c_str()), TCL_VOLATILE );
                 return TCL_ERROR;
             }
         }
