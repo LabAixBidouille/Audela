@@ -6,6 +6,8 @@
 # Utilitaire pour faire de la photometrie calibree a partir de deux images filtrees
 # Les images doivent etre calibrees en WCS
 #
+# source $audace(rep_install)/gui/audace/photcal.tcl
+#
 # ----------------------------------------------------------------------------------------------
 # MODE CALIBRATION AUTOMATIQUE
 # On recherche les coefficients de transformation en analysant le flux des etoiles
@@ -21,8 +23,8 @@
 #
 # photcal_plotcom comVR : Pour visualiser les mesures extraites.
 #
-# source photcal.tcl ; photcal_selectfiles *.fits.gz
-# source photcal.tcl ; photcal_matchfiles V R Loneos-*.fit
+# source $audace(rep_install)/gui/audace/photcal.tcl ; photcal_selectfiles *.fits.gz
+# source $audace(rep_install)/gui/audace/photcal.tcl ; photcal_matchfiles V R Loneos-*.fit
 # ----------------------------------------------------------------------------------------------
 # MODE CALIBRATION SEMI AUTOMATIQUE
 # On recherche les coefficients de transformation en analysant le flux des etoiles
@@ -122,7 +124,7 @@
 # photcal_plotcom comBV X 0 1
 # photcal_plotcom comBV Z 1 3
 # -------------------------------------------------------------------------------------------------
-# source photcal.tcl ; photcal_plotcom comVR Z 1 4 12 14
+# source $audace(rep_install)/gui/audace/photcal.tcl ; photcal_plotcom comVR Z 1 4 12 14
 proc photcal_plotcom { file_calibration {axis_lim ""} {lim_inf ""} {lim_sup ""} {mag_inf ""} {mag_sup ""} } {
    global audace
    set pathim $audace(rep_images)
@@ -309,7 +311,7 @@ proc photcal_plotcom { file_calibration {axis_lim ""} {lim_inf ""} {lim_sup ""} 
 # photcal_matchfiles V R
 # photcal_matchfiles V R "" "" c:/d/grb110205a/dauban/loneos_nsv5000.phot
 # -------------------------------------------------------------------------------------------------
-# source photcal.tcl ; photcal_matchfiles V R Loneos-*.fit
+# source $audace(rep_install)/gui/audace/photcal.tcl ; photcal_matchfiles V R Loneos-*.fit
 proc photcal_matchfiles { color1 color2 {dirfilter ""} {vignetting 0.8} {catalog_format ""} {file_loneos ""} } {
    global audace
    set bufno $audace(bufNo)
@@ -392,7 +394,7 @@ proc photcal_matchfiles { color1 color2 {dirfilter ""} {vignetting 0.8} {catalog
 # photcal_selectfiles *.fits.gz
 # photcal_selectfiles
 # -------------------------------------------------------------------------------------------------
-# source photcal.tcl ; photcal_selectfiles *.fits.gz
+# source $audace(rep_install)/gui/audace/photcal.tcl ; photcal_selectfiles *.fits.gz
 proc photcal_selectfiles { {dirfilter ""} {vignetting 1} } {
    global audace
    set bufno $audace(bufNo)
@@ -1723,3 +1725,227 @@ proc photcal_generate { generic_file_common nb_file_common catalog_format file_l
 # NSV 5000           10 54 42.1  +63 02 40   h 4148-0380  12.83   0.70          0.36   0.78 
 #  123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789
 #           1         2         3         4         5         6         7         8         9
+
+# source $audace(rep_install)/gui/audace/photcal.tcl ; abell_insert
+proc abell_insert { {dirfilter ""} } {
+   global audace
+   set bufno $audace(bufNo)
+   set pathim $audace(rep_images)
+   if {$dirfilter==""} {
+      set dirfilter "*.fits.gz"
+   }
+   set fichiers [lsort [glob -nocomplain "${pathim}/${dirfilter}"]]
+   set n [llength $fichiers]
+   ::console::affiche_resultat "$n fichiers a deplacer\n"
+   set numeros ""
+   set date0 2005-03-21T00:00:00
+   if {$n>0} {
+      set fichier [lindex $fichiers 0]
+      loadima $fichier
+      set obslong [lindex [buf$bufno getkwd OBS-LONG] 1]
+      if {$obslong<0} {
+         set sens W
+         set obslong [expr -$obslong]
+      } else {
+         set sens E
+      }
+      set obslat [lindex [buf$bufno getkwd OBS-LAT] 1]
+      set obselev [lindex [buf$bufno getkwd OBS-ELEV] 1]
+      set home [list GPS $obslong $sens $obslat $obselev]
+      ::console::affiche_resultat "home=$home\n"
+      set res [mc_nextnight $date0 $home]
+      set jd0 [lindex [lindex $res 0] 0]      
+      foreach fichier $fichiers {
+         loadima $fichier
+         set fic [file rootname [file rootname [file tail $fichier]]]
+         set jd [mc_date2jd [lindex [buf$bufno getkwd DATE-OBS] 1]]
+         set djd [mc_date2iso8601 [expr floor($jd0)+0.5+int(floor($jd-$jd0))]]
+         set djd [string range $djd 0 3][string range $djd 5 6][string range $djd 8 9]
+         set catastar [lindex [buf$bufno getkwd CATASTAR] 1]
+         set name [lindex [buf$bufno getkwd NAME] 1]
+         set idname [string range $name 0 5]
+         if {$idname=="Abell_"} {
+            set k [string first _ $name]
+            set numero [string range $name [expr $k+1] end]
+            file mkdir "${pathim}/../../${numero}"
+            set ficout "${pathim}/../../${numero}/${fic}.fit"
+            if {[file exists $ficout]==1} {
+               file delete -force -- $fichier
+               ::console::affiche_resultat "=> $fic EVER MOVED IN ${numero}\n"
+               continue
+            }
+            if {[lsearch -exact $numeros $numero]==-1} {
+               lappend numeros $numero
+            }
+            saveima $ficout
+            file delete -force -- $fichier
+            ::console::affiche_resultat "=> $fic MOVED INTO ${numero}\n"
+            set f [open "${pathim}/../../${numero}/jds.txt" a]
+            puts $f "$jd $djd $catastar $fic"
+            close $f
+         }
+      }   
+   }
+   if {$numeros==""} {
+      set fichiers [lsort [glob -nocomplain "${pathim}/../../*"]]
+      #set fichiers [lsort [glob -nocomplain "${pathim}/../../1080"]]
+   } else {
+      set fichiers ""
+      foreach numero $numeros {
+         lappend fichiers "${pathim}/../../$numero"
+      }
+   }
+   foreach fichier $fichiers {
+      if {[file isdirectory $fichier]==0} {
+         continue
+      }
+      set numero [file tail $fichier]
+      set err [catch {expr $numero} msg]
+      if {$err==1} { continue }
+      ::console::affiche_resultat "Exploration de Abell $numero\n"
+      set f [open "${pathim}/../../${numero}/jds.txt" r]
+      set lignes [split [read $f] \n]
+      close $f
+      set lignes [lrange $lignes 0 end-1]
+      set lignes [lsort -index 2 -real $lignes]
+      set n [llength $lignes]
+      set n2 [expr $n/2]
+      set med [lindex [lindex $lignes $n2] 2]
+      #::console::affiche_resultat "med=$med\n"
+      set catastarlim [expr $med*0.7]
+      set ls ""
+      foreach ligne $lignes {
+         set catastar [lindex $ligne 2]
+         if {$catastar<$catastarlim} {
+            continue
+         }
+         lappend ls $ligne
+      }
+      set lignes $ls
+      set n [llength $lignes]
+      set lignes [lsort -index 1 -real $lignes]
+      set dates ""
+      foreach ligne $lignes {
+         set date [lindex $ligne 1]         
+         lappend dates $date
+      }
+      set n [llength $dates]
+      set d0 [lindex $dates 0]
+      set ds $d0
+      for {set k 1} {$k<$n} {incr k} {         
+         set d [lindex $dates $k]
+         if {$d!=$d0} {
+            lappend ds $d
+            set d0 $d
+         }
+      }      
+      set dates $ds
+      ::console::affiche_resultat "dates=$dates\n"
+      foreach date $dates {
+         set ficout "${pathim}/../../${numero}/abell${numero}-${date}.fit"
+         if {[file exists $ficout]==1} {
+            ::console::affiche_resultat "abell${numero}-${date}.fit ever exists.\n"
+            continue
+         }         
+         set ligs ""
+         foreach ligne $lignes {
+            set d [lindex $ligne 1]         
+            if {$d==$date} {
+               lappend ligs $ligne
+            }
+         }
+         set k 0
+         foreach lig $ligs {
+            incr k
+            set fic [lindex $lig 3]
+            set ficout "${pathim}/../../${numero}/${fic}.fit"
+            set ficin "${pathim}/i${k}.fit"
+            #::console::affiche_resultat "A ficout=$ficout\n"
+            file copy -force -- $ficout $ficin
+         }
+         set n $k
+         ::console::affiche_resultat "registerwcs i i $n 1\n"
+         registerwcs i i $n 1 nullpixel=1
+         smean i abell${numero}-${date} $n 1 "nullpixel=1 bitpix=-32"
+         set ficin "${pathim}/abell${numero}-${date}.fit"
+         set ficout "${pathim}/../../${numero}/abell${numero}-${date}.fit"
+         ::console::affiche_resultat "abell${numero}-${date}.fit is created.\n"
+         file rename -force -- $ficin $ficout        
+         for {set k 1} {$k<=$n} {incr k} {         
+            file delete "${pathim}/i${k}.fit"
+         }
+      }
+   }
+   
+}
+
+# source $audace(rep_install)/gui/audace/photcal.tcl ; abell_selectfiles
+proc abell_selectfiles { {numero ""} {dateref ""} {datenight ""} } {
+   global audace
+   set bufno $audace(bufNo)
+   set pathim $audace(rep_images)
+   set err [catch {expr $numero} msg]
+   if {$numero==""} {
+      set fichiers [lsort [glob -nocomplain "${pathim}/../../*"]]
+      set ls ""
+      foreach fichier $fichiers {
+         if {[file isdirectory $fichier]==0} {
+            continue
+         }
+         set numero [file tail $fichier]
+         set err [catch {expr $numero} msg]
+         if {$err==1} { continue }
+         append ls "$numero "
+      }
+      ::console::affiche_resultat "$ls\n"      
+   } else {
+      if {$err==0} {
+         set fichiers "${pathim}/../../${numero}"
+      } else {
+         set fichiers [lsort [glob -nocomplain "${pathim}/../../*"]]
+      }
+      foreach fichier $fichiers {
+         if {[file isdirectory $fichier]==0} {
+            continue
+         }
+         set numero [file tail $fichier]
+         set err [catch {expr $numero} msg]
+         if {$err==1} { continue }
+         ::console::affiche_resultat "Exploration de Abell $numero\n"
+         set fics [lsort [glob -nocomplain "${pathim}/../../${numero}/abell${numero}*.fit"]]
+         foreach fic $fics {
+            ::console::affiche_resultat "$fic\n"
+         }
+         if {$datenight==""} {
+            set ficnight [lindex $fics end]
+         } else {
+            set ficnight "${pathim}/../../${numero}/abell${numero}-${datenight}.fit"
+            if {[file exists $ficnight]==0} {
+               error "Error, file $ficnight does not exists"
+            }
+         }
+         file copy -force -- $ficnight ${pathim}/i2.fit
+         ::console::affiche_resultat "ficnight=$ficnight\n"
+         if {$dateref==""} {
+            set ficref "${pathim}/../../${numero}/ref.txt"
+            if {[file exists $ficref]==1} {
+               set f [open $ficref r]
+               set ficref "${pathim}/../../${numero}/[lindex [read $f] 0]"
+               close $f
+            } else {            
+               set ficref [lindex $fics 0]
+            }
+         } else {
+            set ficref "${pathim}/../../${numero}/abell${numero}-${dateref}.fit"
+            if {[file exists $ficref]==0} {
+               error "Error, file $ficref does not exists"
+            }
+         }
+         file copy -force -- $ficref ${pathim}/i1.fit
+         ::console::affiche_resultat "ficref=$ficref\n"   
+         ::console::affiche_resultat "registerwcs i i 2 1 nullpixel=1\n"   
+         registerwcs i i 2 1 nullpixel=1
+         ::console::affiche_resultat "Finished\n"
+      }
+   }   
+}
