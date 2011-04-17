@@ -31,6 +31,9 @@
 #include <gsl/gsl_multifit.h>
 #include <gsl/gsl_multifit_nlin.h>
 #include <gsl/gsl_histogram.h>
+#include <gsl/gsl_statistics_double.h>
+#include <gsl/gsl_sort_double.h>
+
 
 #include "cerror.h"
 #include "cbuffer.h"
@@ -51,7 +54,7 @@ namespace LibJM {
     Calaphot::Calaphot()
     {
         std::string nom_fichier_log;
-        if ( LibJM::Generique::repertoire_log )
+        if ( LibJM::Generique::repertoire_log.size() > 0 )
         {
             nom_fichier_log = LibJM::Generique::repertoire_log;
 #if defined(WIN32)
@@ -121,7 +124,7 @@ void Calaphot::niveau_traces( int niveau )
     CBuffer * Calaphot::set_buffer (int tampon)
     {
         _buffer = CBuffer::Chercher (tampon);
-        calaphot_debug ("tampon = "<< tampon << " buffer = "<< (void*) _buffer);
+        calaphot_info2 ("tampon = "<< tampon << " buffer = "<< (void*) _buffer);
         if (_buffer)
             return _buffer;
         else
@@ -141,6 +144,7 @@ void Calaphot::niveau_traces( int niveau )
         try
         {
             _buffer->GetPix (&plane, pixel, pixel, pixel, x, y);
+            // calaphot_debug( "x=" << x << "  y=" << y << " pixel=" << *pixel );
         }
         catch (const CError& e)
         {
@@ -166,13 +170,15 @@ void Calaphot::niveau_traces( int niveau )
 /*
      ***************** FluxEllipse ****************
      *
-     *Calcul le flux dans une ellipse
+     * Calcule le flux dans une ellipse
      **********************************************
 */
     void Calaphot::FluxEllipse(double x0, double y0, double r1x, double r1y, double ro, double r2, double r3, int c, double *flux, double *nb_pixel, double *fond, double *nb_pixel_fond, double *sigma_fond)
     {
         double flux_fond, flux_etoile, cinv, cinv2, flux_fond2;
-        TYPE_PIXELS pixel;
+        TYPE_PIXELS intensite;
+
+        calaphot_info2 ( " x0=" << x0 << " y0=" << y0 << " ro=" << ro << " r1x=" << r1x << " r1y=" << r1y << " r2="<< r2 << " r3="<< r3 << " c=" << c );
 
         /* Initialisations */
         flux_fond = 0.0;
@@ -185,140 +191,115 @@ void Calaphot::niveau_traces( int niveau )
 
         try
         {
-            /* Recuperation des pixels de la couronne entre r2 et r3 */
-            /* Bas de la couronne */
-           // Les versions VisualC++ anterieures a VC90 ne suportent pas la redefinition des variables dans des boucles for cons�cutives
-            for (double yy = (y0 - r3); yy <= (y0 - r2); yy++)
+
+            /**************************************************************
+             * Calcul du flux dans la couronne et dans la partie centrale *
+             * ************************************************************/
+
+            /* Calcul des valeurs des rayons de la couronne */
+            double sryx = sqrt( r1y / r1x );
+            double r2y = r2 * sryx;
+            double r2x = r2 / sryx;
+            double r3y = r3 * sryx;
+            double r3x = r3 / sryx;
+
+            /* Calcul des valeurs max sur les axes x et y en fonctions des paramètres de l'ellipse */
+            double delta_y3 = ceil( r3y / sqrt( 1 - ro * ro) );
+            double delta_x3 = ceil( r3x / sqrt( 1 - ro * ro) );
+
+            /* Allocation d'un tableau représentant les sous-pixels du fond de ciel */
+            size_t n3 = 4 * delta_y3 * delta_x3 * c * c ;
+            gsl_vector * ciel = gsl_vector_alloc (n3);
+            size_t index_fond = 0;
+
+            for ( double yy = ( y0 - delta_y3 ); yy <= ( y0 + delta_y3 ); yy += cinv )
             {
-                double x3 = (r3 * r3) - ((yy - y0) * (yy - y0));
-                if (x3 < 0.0)
-                    x3 = 0.0;
-                double xmin = x0 - sqrt(x3);
-                double xmax = x0 + sqrt(x3);
-
-                int yi = (int)floor(yy + 0.5);
-                for (double xx = xmin; xx <= xmax; xx++)
+                int yi = (int)floor( yy + 0.5 );
+                for ( double xx = ( x0 - delta_x3 ); xx <= ( x0 + delta_x3 ); xx += cinv )
                 {
-                    int xi = (int)floor(xx + 0.5);
-                    LecturePixel (xi, yi, &pixel);
-                    flux_fond += pixel;
-                    flux_fond2 += (pixel * pixel);
-                    (*nb_pixel_fond)++;
-                }
-            }
+                    double t3 = ( ( xx - x0 ) * ( xx - x0 ) ) / ( r3x * r3x )
+                        + ( ( yy - y0 ) * ( yy - y0 ) ) / ( r3y * r3y )
+                        - 2.0 * ro * ( xx - x0 ) * ( yy - y0 ) / ( r3x * r3y )
+                        - 1.0;
+                    double t2 = ( ( xx - x0 ) * ( xx - x0 ) ) / ( r2x * r2x )
+                        + ( ( yy - y0 ) * ( yy - y0 ) ) / ( r2y * r2y )
+                        - 2.0 * ro * ( xx - x0 ) * ( yy - y0 ) / ( r2x * r2y )
+                        - 1.0;
+                    double t1 = ( ( xx - x0 ) * ( xx - x0 ) ) / ( r1x * r1x )
+                        + ( ( yy - y0 ) * ( yy - y0 ) ) / ( r1y * r1y )
+                        - 2.0 * ro * ( xx - x0 ) * ( yy - y0 ) / ( r1x * r1y )
+                        - 1.0;
 
-            /* Milieu de la couronne (parties gauche et droite) */
-            for (double yyy = (y0 - r2); yyy <= (y0 + r2); yyy++)
-            {
-                double x3 = (r3 * r3) - ((yyy - y0) * (yyy - y0));
-                if (x3 < 0.0)
-                    x3 = 0.0;
-                double x2 = (r2 * r2) - ((yyy - y0) * (yyy - y0));
-                if (x2 < 0.0)
-                    x2 = 0.0;
-                int yi = (int)floor(yyy + 0.5);
-
-                double xmin = x0 - sqrt(x3);
-                double xmax = x0 - sqrt(x2);
-                for (double x = xmin; x <= xmax; x++)
-                {
-                    int xi = (int)floor(x + 0.5);
-                    LecturePixel (xi, yi, &pixel);
-                    flux_fond += pixel;
-                    flux_fond2 += (pixel * pixel);
-                    (*nb_pixel_fond)++;
-                }
-
-                xmin = x0 + sqrt(x2);
-                xmax = x0 + sqrt(x3);
-                for (double xx = xmin; xx <= xmax; xx++)
-                {
-                    int xi = (int)floor(xx + 0.5);
-                    LecturePixel (xi, yi, &pixel);
-                    flux_fond += pixel;
-                    flux_fond2 += (pixel * pixel);
-                    (*nb_pixel_fond)++;
-                }
-            }
-
-            /* Haut de la couronne */
-            for (double y = (y0 + r2); y <= (y0 + r3); y++)
-            {
-                double x3 = (r3 * r3) - ((y - y0) * (y - y0));
-                if (x3 < 0.0)
-                    x3 = 0.0;
-                double xmin = x0 - sqrt(x3);
-                double xmax = x0 + sqrt(x3);
-
-                int yi = (int)floor(y + 0.5);
-                for (double x = xmin; x <= xmax; x++)
-                {
-                    int xi = (int)floor(x + 0.5);
-                    LecturePixel (xi, yi, &pixel);
-                    flux_fond += pixel;
-                    flux_fond2 += (pixel * pixel);
-                    (*nb_pixel_fond)++;
-                }
-            }
-
-            /* La valeur du flux de fond est la moyenne de toutes les valeurs lues dans la couronne. */
-            *fond = flux_fond / (double) (*nb_pixel_fond);
-
-
-            /* Calcul de l'ecart-type (formule de Koenig) */
-            *sigma_fond = sqrt((flux_fond2 / *nb_pixel_fond) - (*fond) * (*fond));
-
-            /* Calcul du flux dans l'ellipse (r1x, r1y) */
-
-
-/*  for (y = (y0 - r1y); y <= (y0 + r1y); y += cinv)
-        {
-            x2 = 1.0 - ((y - y0) * (y - y0) / r1y / r1y);
-            if (x2 < 0.0)
-    x2 = 0.0;
-            x3 = r1x * sqrt(x2);
-            yi = (int)floor(y + 0.5);
-
-
-            for (x = (x0 - x3); x <= (x0 + x3); x += cinv)
-    {
-        xi = (int)floor(x + 0.5);
-        LecturePixel (xi, yi, &pixel);
-        flux_etoile += pixel * cinv2;
-        (*nb_pixel) += cinv2;
-    }
-        }
-*/
-
-            /* Calcul du flux dans l'ellipse (r1x, r1y, ro) */
-            double delta_y = r1y / sqrt(1 - ro*ro);
-            double delta_x = r1x / sqrt(1 - ro*ro);
-            for (double y4 = (y0 - delta_y); y4 <= (y0 + delta_y); y4 += cinv)
-            {
-                int yi = (int)floor(y4 + 0.5);
-                /* on pourrait optimiser en calculant la valeur de x sur l'ellipse */
-                /* A faire a la retraite, a 85 ans ...*/
-                for (double x = (x0 - delta_x); x <= (x0 + delta_x); x += cinv)
-                {
-                    double t = ((x-x0)*(x-x0))/(r1x*r1x) + ((y4-y0)*(y4-y0))/(r1y*r1y) - 2.0*ro*(x-x0)*(y4-y0)/(r1x*r1y) - 1.0;
-                    if (t <= 0.0)
+                    if ( ( t3 <= 0.0 ) && ( t2 >= 0.0 ) ) {
+                        /* Le point (xx,yy) est dans la couronne */
+                        int xi = (int)floor( xx + 0.5 );
+                        LecturePixel( xi, yi, &intensite );
+                        /* On range la valeur du pixel dans le tableau */
+                        gsl_vector_set( ciel, index_fond, intensite );
+                        index_fond ++;
+//                        if ( index_fond > n3 ) { abort(); }
+                        (*nb_pixel_fond) += cinv2;
+                    }
+                    if ( t1 <= 0.0 )
                     {
-                        /* Le point (x,y) est dans l'ellipse */
-                        int xi = (int)floor(x + 0.5);
-                        LecturePixel (xi, yi, &pixel);
-                        flux_etoile += pixel * cinv2;
+                        /* Le point (xx,yy) est dans l'ellipse centrale */
+                        int xi = (int)floor( xx + 0.5 );
+                        LecturePixel( xi, yi, &intensite );
+                        flux_etoile += intensite * cinv2;
                         (*nb_pixel) += cinv2;
                     }
                 }
             }
+
+            double * data_ciel = gsl_vector_ptr ( ciel, 0 );
+
+            /* La valeur du flux de fond est la moyenne de toutes les valeurs lues dans la couronne. */
+            // double moyenne = gsl_stats_mean( data_ciel, 1, index_fond );
+            // double ecart_type = gsl_stats_sd_with_fixed_mean( data_ciel, 1, index_fond, moyenne );
+
+            /* Tri des valeurs par ordre croissant */
+            gsl_sort( data_ciel, 1, index_fond);
+
+            /* Calcul de la médiane */
+            // double mediane = gsl_stats_median_from_sorted_data ( data_ciel, 1, index_fond);
+            // double ecart_type_mediane = gsl_stats_sd_with_fixed_mean( data_ciel, 1, index_fond, mediane );
+
+            /* Calcul type daophot */
+            // double daophot = 3.0 * mediane - 2.0 * *fond;
+            // double ecart_type_daophot = gsl_stats_sd_with_fixed_mean( data_ciel, 1, index_fond, daophot );
+
+            /* Calcul de la moyenne en rejetant les 20% des valeurs extrêmes */
+            size_t taille_reduite = ( index_fond * 8 + 5 ) / 10;
+            size_t indice_reduit = ( index_fond + 5 ) / 10;
+            double moyenne_reduite = gsl_stats_mean( &data_ciel[indice_reduit], 1, taille_reduite );
+            double ecart_type_reduit = gsl_stats_sd_with_fixed_mean( &data_ciel[indice_reduit], 1, taille_reduite, moyenne_reduite );
+
+            /* Calcul du flux de l'étoile */
+            // *flux = flux_etoile - (double)(*nb_pixel) * (*fond);
+            // double flux_mediane = flux_etoile - (double)(*nb_pixel) * mediane;
+            // double flux_daophot = flux_etoile - (double)(*nb_pixel) * daophot;
+            double flux_reduit = flux_etoile - (double)(*nb_pixel) * moyenne_reduite;
+
+            // calaphot_debug( "nb_fond=" << *nb_pixel_fond << " / moyenne=" << moyenne << " / sigma=" << ecart_type );
+            // calaphot_debug( "nb_fond=" << *nb_pixel_fond << " / mediane=" << mediane << " / sigma_mediane=" << ecart_type_mediane );
+            // calaphot_debug( "nb_fond=" << *nb_pixel_fond << " / daophot=" << daophot << " / sigma_daophot=" << ecart_type_daophot );
+            calaphot_debug( "nb_fond=" << *nb_pixel_fond << " / reduit=" << moyenne_reduite << " / sigma_reduit=" << ecart_type_reduit );
+            // calaphot_debug( "nb_pixel=" << *nb_pixel << " / flux_etoile=" << flux_etoile << " / flux=" << *flux );
+            // calaphot_debug( "nb_pixel=" << *nb_pixel << " / flux_etoile=" << flux_etoile << " / flux_mediane=" << flux_mediane );
+            // calaphot_debug( "nb_pixel=" << *nb_pixel << " / flux_etoile=" << flux_etoile << " / flux_daophot=" << flux_daophot );
+            calaphot_debug( "nb_pixel=" << *nb_pixel << " / flux_etoile=" << flux_etoile << " / flux_reduit=" << flux_reduit );
+
+            *flux = flux_reduit;
+            *fond = moyenne_reduite;
+            *sigma_fond = ecart_type_reduit;
+
+            gsl_vector_free( ciel );
         }
         catch ( const CError& e )
         {
             calaphot_error (e.gets() << " x0=" << x0 << " y0=" << y0 << " r1x=" << r1x << " r1y=" << r1y << " r2="<< r2 << " r3="<< r3);
             throw e;
         }
-
-        *flux = flux_etoile - (*nb_pixel) * (*fond);
     }
 
 int Calaphot::Magnitude(double flux_etoile, double flux_ref, double mag_ref, double *mag_etoile)
@@ -371,7 +352,7 @@ int Calaphot::LectureRectangle (rectangle * rect, gsl_vector *vect_s)
 }
 
 #ifdef GSL_NON_LINEAIRE
-/* voir commantaire en t�te de fichier */
+/* voir commentaire en tête de fichier */
 int fonction_minimale (const gsl_vector * param_gauss, void * data, gsl_vector * f) {
     int x1, y1, x2, y2, nxy;
     double * pixels;
@@ -421,7 +402,7 @@ int fonction_minimale (const gsl_vector * param_gauss, void * data, gsl_vector *
             gx = exp (-dx2);
             hxy = exp (2.0 * ro * dx * dy);
             fxy = gx * gy * hxy;
-            /* Vecteur � minimiser */
+            /* Vecteur à minimiser */
             gsl_vector_set (f, i, (pixels[i] - (signal * fxy + fond)));
 #ifdef TRACE_FONCTION
             fprintf (trace, "%f / %f / %f   ", pixels[i], signal * fxy + fond, (pixels[i] - (signal * fxy + fond)));
@@ -770,7 +751,7 @@ void Calaphot::Gauss (rectangle * rect, gsl_vector *vect_s, gsl_vector *vect_w, 
 
         /*
          * Le fait de n'additionner qu'une fraction de l'erreur de modelisation retarde la convergence
-         * mais assure une convergence plus lin�aire (moins d'oscillations sur la valeur de la norme)
+         * mais assure une convergence plus monotone (moins d'oscillations sur la valeur de la norme)
          */
         t.X0 = p->X0 + gsl_vector_get(vect_c,0) / 1.5;
         t.Y0 = p->Y0 + gsl_vector_get(vect_c,1) / 1.5;
@@ -803,13 +784,13 @@ void Calaphot::Gauss (rectangle * rect, gsl_vector *vect_s, gsl_vector *vect_w, 
         else {
             ancienne_norme = norme;
 
-            if ((t.X0 < rect->x1)                /* la modelisation sort du cadre entourant l'image */
+            if ((t.X0 < rect->x1)                /* la modélisation sort du cadre entourant l'image */
                     || (t.X0 > rect->x2)
                     || (t.Y0 < rect->y1)
                     || (t.Y0 > rect->y2)
-                    || (t.Sigma_X < 0.25)       /* l'ecart-type ne peut pas etre trop petit (et encore moins negatif) */
+                    || (t.Sigma_X < 0.25)       /* l'écart-type ne peut pas être trop petit (et encore moins negatif) */
                     || (t.Sigma_Y < 0.25)
-                    || (fabs(t.Ro) >= 0.985)    /* |ro| est forcement < 1 */
+                    || (fabs(t.Ro) >= 0.985)    /* |ro| est forcément < 1 */
                     || (*iter > NOMBRE_MAX_ITERATION)            /* Convergence qui prendrait un temps "infini" */
                     || ((t.Sigma_X / t.Sigma_Y) >= 50.0)
                     || ((t.Sigma_Y / t.Sigma_X) >= 50.0))
@@ -824,20 +805,20 @@ void Calaphot::Gauss (rectangle * rect, gsl_vector *vect_s, gsl_vector *vect_w, 
                 p->Sigma_Y = t.Sigma_Y;
                 p->Ro = t.Ro;
 
-                gsl_matrix_memcpy(mat_cov, temp_cov);
+                gsl_matrix_memcpy( mat_cov, temp_cov );
             }
         }
     }
 
-    *me1 = sqrt(*chi2 / (nxy - 7));
+    *me1 = sqrt( *chi2 / ( nxy - 7 ) );
 
-    incert->X0 = *me1 * sqrt(gsl_matrix_get(mat_cov, 0, 0));
-    incert->Y0 = *me1 * sqrt(gsl_matrix_get(mat_cov, 1, 1));
-    incert->Signal = *me1 * sqrt(gsl_matrix_get(mat_cov, 2, 2));
-    incert->Fond = *me1 * sqrt(gsl_matrix_get(mat_cov, 3, 3));
-    incert->Sigma_X = *me1 * sqrt(gsl_matrix_get(mat_cov, 4, 4));
-    incert->Sigma_Y = *me1 * sqrt(gsl_matrix_get(mat_cov, 5, 5));
-    incert->Ro = *me1 * sqrt(gsl_matrix_get(mat_cov, 6, 6));
+    incert->X0 = *me1 * sqrt( gsl_matrix_get( mat_cov, 0, 0 ) );
+    incert->Y0 = *me1 * sqrt( gsl_matrix_get( mat_cov, 1, 1 ) );
+    incert->Signal = *me1 * sqrt( gsl_matrix_get( mat_cov, 2, 2 ) );
+    incert->Fond = *me1 * sqrt( gsl_matrix_get( mat_cov, 3, 3 ) );
+    incert->Sigma_X = *me1 * sqrt( gsl_matrix_get( mat_cov, 4, 4 ) );
+    incert->Sigma_Y = *me1 * sqrt( gsl_matrix_get( mat_cov, 5, 5 ) );
+    incert->Ro = *me1 * sqrt( gsl_matrix_get( mat_cov, 6, 6 ) );
 
 sortie :
     gsl_multifit_linear_free(bac);
@@ -1029,7 +1010,7 @@ int Calaphot::AjustementGaussien(int *carre, double *fgauss, double *stat, ajust
         /* Calcul du flux */
         valeurs->Flux = M_PI * valeurs->Signal * valeurs->Sigma_X * valeurs->Sigma_Y / sqrt(1.0 - (valeurs->Ro * valeurs->Ro));
 
-    /* Manips pour simplifier les calculs et les ecritures */
+    /* Manips pour simplifier les calculs et les écritures */
     sx = valeurs->Sigma_X;
     sy = valeurs->Sigma_Y;
     ro = valeurs->Ro;
