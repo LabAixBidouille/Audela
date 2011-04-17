@@ -46,6 +46,7 @@ source miscellaneous.tcl
 source google_earth.tcl
 source photompsf.tcl
 source prtr.tcl
+source photcal.tcl
 
 namespace eval ::audace {
 
