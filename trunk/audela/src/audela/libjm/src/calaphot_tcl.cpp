@@ -24,6 +24,9 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
+#include <iomanip>
+
 #include <string.h>
 #include <math.h>
 #include <gsl/gsl_vector.h>
@@ -35,16 +38,17 @@
 #include "divers.h"
 #include "calaphot.h"
 
-namespace LibJM {
+using namespace std;
 
+namespace LibJM {
 
 int Calaphot::CmdNiveauTraces( ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] )
 {
-    char s[200];
     if ( argc < 2 )
     {
-        sprintf( s, "Usage: %s niveau (0=deaf, ..., 9=very verbose)", argv[0] );
-        Tcl_SetResult( interp, s, TCL_VOLATILE );
+        ostringstream oss;
+        oss << "Usage: " << argv[0] << "  (0=very verbose, ..., 9=dumb)";
+        Tcl_SetResult( interp, const_cast<char*>(oss.str().c_str()), TCL_VOLATILE );
         return TCL_ERROR;
     }
     Calaphot::instance()->niveau_traces( atoi( argv[1] ) );
@@ -56,18 +60,20 @@ int Calaphot::CmdNiveauTraces( ClientData clientData, Tcl_Interp *interp, int ar
 /******************************************/
 int Calaphot::CmdFluxEllipse(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
-    char s[256];
+    ostringstream oss;
     int retour, tampon;
     double nb_pixel, nb_pixel_fond;
     double flux_etoile, flux_fond, sigma_fond;
 
-    calaphot_debug ("argc = " << argc);
+    calaphot_info1 ( "argc = " << argc );
+    for ( int arg = 0; arg < argc; arg++ )
+        calaphot_info1 ( "argv[" << arg << "] = " << argv[arg] );
 
-    /* La facteur de rotation doit imperativement etre de module inferieur a 1 */
+    /* La facteur de rotation doit impérativement être de module inférieur à 1 */
     if (fabs(atof(argv[6])) >= 1.0)
     {
-        sprintf(s, "Le facteur de rotation doit avoir un module inferieur a 1.0");
-        Tcl_SetResult(interp,s,TCL_VOLATILE);
+        oss << "Le facteur de rotation doit avoir un module inférieur a 1.0";
+        Tcl_SetResult( interp, const_cast<char*>(oss.str().c_str()), TCL_VOLATILE );
         return TCL_ERROR;
     }
 
@@ -82,8 +88,8 @@ int Calaphot::CmdFluxEllipse(ClientData clientData, Tcl_Interp *interp, int argc
         /* Récuperation des infos sur l'image */
         if (Calaphot::instance()->set_buffer (tampon) == 0)
         {
-            sprintf (s, "Pas de buffer nr %d", tampon);
-            Tcl_SetResult (interp, s, TCL_VOLATILE);
+            oss << "Pas de buffer nr " << tampon;
+            Tcl_SetResult( interp, const_cast<char*>(oss.str().c_str()), TCL_VOLATILE );
             return TCL_ERROR;
         }
 
@@ -111,14 +117,23 @@ int Calaphot::CmdFluxEllipse(ClientData clientData, Tcl_Interp *interp, int argc
                 return TCL_ERROR;
             }
         }
-        sprintf (s, "%19.8f %10.4f %19.8f %8.2f %8.2f", flux_etoile, nb_pixel, flux_fond, nb_pixel_fond, sigma_fond);
-        Tcl_SetResult (interp, s, TCL_VOLATILE);
+        int p = oss.precision();
+        oss << setprecision( 10 ) << flux_etoile;
+        oss << " " << nb_pixel;
+        oss << " " << flux_fond;
+        oss << " " << nb_pixel_fond;
+        oss << " " << " " << sigma_fond;
+        oss.precision( p );
+        Tcl_SetResult( interp, const_cast<char*>(oss.str().c_str()), TCL_VOLATILE );
+
+        calaphot_info1 ( "retour = " << oss.str().c_str() );
+
         return TCL_OK;
     }
     else
     {
-        sprintf (s, "Usage: %s numero_buffer x_ellipse y_ellipse gd_axe pt axe allongement couronne1 couronne2 [sur_echantillonage]", argv[0]);
-        Tcl_SetResult (interp, s, TCL_VOLATILE);
+        oss << "Usage: " << argv[0] << " numero_buffer x_ellipse y_ellipse gd_axe pt axe allongement couronne1 couronne2 [sur_echantillonage]";
+        Tcl_SetResult( interp, const_cast<char*>(oss.str().c_str()), TCL_VOLATILE );
         return TCL_ERROR;
     }
 }
@@ -168,26 +183,26 @@ int Calaphot::CmdMagnitude(ClientData clientData, Tcl_Interp *interp, int argc, 
 /***************************************************************/
 int Calaphot::CmdAjustementGaussien (ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
-    char s[1024];
+    ostringstream oss;
     int carre[4], tampon;
     double fgauss[10], stat[10], chi2, erreur;
     int n_carre, iterations, n_fgauss, n_stat;
     Calaphot::ajustement valeurs, incertitudes;
     int retour;
 
-    calaphot_debug ("argc = " << argc);
-    for (int arg = 0; arg < argc; arg++)
-        calaphot_debug ("argv[" << arg << "] = " << argv[arg]);
+    calaphot_info1 ( "argc = " << argc );
+    for ( int arg = 0; arg < argc; arg++ )
+        calaphot_info1 ( "argv[" << arg << "] = " << argv[arg] );
 
     if((argc < 3) || (argc > 4))
     {
-        sprintf (s, "Usage: %s Numero_Buffer Coordonnees_Carre ?-sub?", argv[0]);
-        Tcl_SetResult (interp, s, TCL_VOLATILE);
+        oss << "Usage: " << argv[0] << " Numero_Buffer Coordonnees_Carre ?-sub?";
+        Tcl_SetResult( interp, const_cast<char*>(oss.str().c_str()), TCL_VOLATILE );
         return TCL_ERROR;
     }
     else
     {
-        /* Validite du parametre de buffer */
+        /* Validite du paramètre de buffer */
         retour = Tcl_GetInt (interp, argv[1], &tampon);
         if (retour != TCL_OK)
             return retour;
@@ -196,25 +211,25 @@ int Calaphot::CmdAjustementGaussien (ClientData clientData, Tcl_Interp *interp, 
         Divers::DecodeListeInt (interp, argv[2], &carre[0], &n_carre);
         if (n_carre != 4)
         {
-            sprintf (s,"Usage: %s Mauvaises coordonnees", argv[0]);
-            Tcl_SetResult (interp, s, TCL_VOLATILE);
+            oss << "Usage: " << argv[0] << " Mauvaises coordonnees";
+            Tcl_SetResult( interp, const_cast<char*>(oss.str().c_str()), TCL_VOLATILE );
             return TCL_ERROR;
         }
 
         if (argc == 4)
         {
             if (strncmp(argv[3], "-sub", 4) != 0) {
-                sprintf (s,"Usage: %s Numero_Buffer Coordonnees_Carre ?-sub?", argv[0]);
-                Tcl_SetResult (interp, s, TCL_VOLATILE);
+                oss << "Usage: " << argv[0] << " Numero_Buffer Coordonnees_Carre ?-sub?";
+                Tcl_SetResult( interp, const_cast<char*>(oss.str().c_str()), TCL_VOLATILE );
                 return TCL_ERROR;
             }
         }
 
-        /* Recuperation des infos sur l'image */
+        /* Récupération des infos sur l'image */
         if (Calaphot::instance()->set_buffer (tampon) == 0)
         {
-            sprintf (s, "Pas de buffer nr %d", tampon);
-            Tcl_SetResult (interp, s, TCL_VOLATILE);
+            oss << "Pas de buffer nr " << tampon;
+            Tcl_SetResult( interp, const_cast<char*>(oss.str().c_str()), TCL_VOLATILE );
             return TCL_ERROR;
         }
 
@@ -222,6 +237,7 @@ int Calaphot::CmdAjustementGaussien (ClientData clientData, Tcl_Interp *interp, 
         {
             /* Appel a bufn fitgauss pour recuperer les valeurs caracteristiques du rectangle*/
             /* Formation de la chaine et appel */
+            char s[256];
             sprintf (s, "buf%d fitgauss {%s}", tampon, argv[2]);
             Tcl_Eval (interp, s);
             /* Lecture des resultats */
@@ -256,32 +272,37 @@ int Calaphot::CmdAjustementGaussien (ClientData clientData, Tcl_Interp *interp, 
             return TCL_ERROR;
         }
 
-        sprintf(s, "%10.4f %d %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f",
-                erreur,
-                iterations,
-                valeurs.X0,
-                valeurs.Y0,
-                valeurs.Signal,
-                valeurs.Fond,
-                valeurs.Sigma_X * 1.66511,
-                valeurs.Sigma_Y * 1.66511,
-                valeurs.Ro,
-                valeurs.Alpha,
-                valeurs.Sigma_1 * 1.66511,
-                valeurs.Sigma_2 * 1.66511,
-                valeurs.Flux,
-                incertitudes.X0,
-                incertitudes.Y0,
-                incertitudes.Signal,
-                incertitudes.Fond,
-                incertitudes.Sigma_X * 1.66511,
-                incertitudes.Sigma_Y * 1.66511,
-                incertitudes.Ro,
-                incertitudes.Alpha,
-                incertitudes.Sigma_1 * 1.66511,
-                incertitudes.Sigma_2 * 1.66511,
-                incertitudes.Flux);
-        Tcl_SetResult (interp, s, TCL_VOLATILE);
+        int p = oss.precision();
+        oss << setprecision( 10 ) << erreur;
+        oss << " " << iterations;
+        oss << " " << valeurs.X0;
+        oss << " " << valeurs.Y0;
+        oss << " " << valeurs.Signal;
+        oss << " " << valeurs.Fond;
+        oss << " " << valeurs.Sigma_X * 1.66511;
+        oss << " " << valeurs.Sigma_Y * 1.66511;
+        oss << " " << valeurs.Ro;
+        oss << " " << valeurs.Alpha;
+        oss << " " << valeurs.Sigma_1 * 1.66511;
+        oss << " " << valeurs.Sigma_2 * 1.66511;
+        oss << " " << valeurs.Flux;
+        oss << " " << incertitudes.X0;
+        oss << " " << incertitudes.Y0;
+        oss << " " << incertitudes.Signal;
+        oss << " " << incertitudes.Fond;
+        oss << " " << incertitudes.Sigma_X * 1.66511;
+        oss << " " << incertitudes.Sigma_Y * 1.66511;
+        oss << " " << incertitudes.Ro;
+        oss << " " << incertitudes.Alpha;
+        oss << " " << incertitudes.Sigma_1 * 1.66511;
+        oss << " " << incertitudes.Sigma_2 * 1.66511;
+        oss << " " << incertitudes.Flux;
+        oss.precision( p );
+
+        Tcl_SetResult( interp, const_cast<char*>(oss.str().c_str()), TCL_VOLATILE );
+
+        calaphot_info1 ( "retour = " << oss.str().c_str() );
+
         return TCL_OK;
     }
 }
