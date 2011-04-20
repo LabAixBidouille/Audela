@@ -90,6 +90,129 @@
 # -----------------------------------------------------------------------
 
 # -------------------------------------------------------------------------------------------------
+#
+# Entrees :
+# File created by photcal_matchfiles.
+#
+# Sorties:
+# Graphical plot and coefficents
+#
+# Examples:
+# -------------------------------------------------------------------------------------------------
+# source $audace(rep_install)/gui/audace/photcal.tcl ; photcal_fit comVR 
+proc photcal_fit { file_calibration {mag_inf ""} {mag_sup ""} } {
+   global audace
+   set pathim $audace(rep_images)
+   set fic "$pathim/${file_calibration}.txt"
+   set f [open $fic r]
+   set lignes [split [read $f] \n]
+   close $f
+   if {$mag_inf==""} {
+      set mag_inf -99
+   }
+   if {$mag_sup==""} {
+      set mag_sup 99
+   }
+   set k 0
+   set y1min 1e15
+   set y1max -1e15
+   set y2min 1e15
+   set y2max -1e15
+   foreach ligne $lignes {
+      if {[llength $ligne]<5} {
+         continue
+      }
+      set magcat1 [lindex $ligne 4]
+      if {($magcat1<=$mag_inf)||($magcat1>=$mag_sup)} {
+         continue
+      }      
+      lappend airmass1s [lindex $ligne 1]
+      lappend col1s [lindex $ligne 2]
+      lappend flux1s [lindex $ligne 3]
+      lappend magcat1s [lindex $ligne 4]
+      lappend airmass2s [lindex $ligne 6]
+      lappend col2s [lindex $ligne 7]
+      lappend flux2s [lindex $ligne 8]
+      lappend magcat2s [lindex $ligne 9]
+      set color1 [format %c [expr int([lindex $ligne 2])]]
+      set color2 [format %c [expr int([lindex $ligne 7])]]
+      set colorindex "${color1}-${color2}"
+      #
+      lappend xs [expr [lindex $ligne 4]-[lindex $ligne 9]]
+      set y1 [expr [lindex $magcat1s $k]+2.5*log10([lindex $flux1s $k])]
+      lappend y1s $y1
+      set y2 [expr [lindex $magcat2s $k]+2.5*log10([lindex $flux2s $k])]
+      lappend y2s $y2
+      lappend z1s [lindex $airmass1s $k]
+      lappend z2s [lindex $airmass2s $k]
+      incr k
+   }
+   set y1 ""
+   set y2 ""
+   set n $k
+   for {set k 0} {$k<$n} {incr k} {
+      set airmass1 [lindex $airmass1s $k]
+      set airmass2 [lindex $airmass2s $k]
+      set magcat1 [lindex $magcat1s $k]
+      set dmagcat1 0.05
+      set magcat2 [lindex $magcat2s $k]
+      set dmagcat2 0.05
+      set flux1 [lindex $flux1s $k]
+      set flux2 [lindex $flux2s $k]
+      set y1k [expr $magcat1 + 2.5*log10( $flux1 )]
+      set x1k [list [expr $magcat1-$magcat2] [expr -1*$airmass1] 1]
+      set w1k [expr 1./$dmagcat1/$dmagcat1]
+      set y2k [expr $magcat2 + 2.5*log10( $flux2 )]
+      set x2k [list [expr $magcat1-$magcat2] [expr -1*$airmass2] 1]
+      set w2k [expr 1./$dmagcat2/$dmagcat2]
+      lappend y1 $y1k
+      lappend X1 $x1k
+      lappend w1 $w1k
+      lappend y2 $y2k
+      lappend X2 $x2k
+      lappend w2 $w2k
+   }
+   # - calcul de l'ajustement
+   set fcolors [list [list 1 $color1] [list 2 $color2]]
+   foreach fcolor $fcolors {
+      set findex [lindex $fcolor 0]
+      set color [lindex $fcolor 1]
+      if {$findex==1} {
+         set filter $color1
+         set X $X1
+         set y $y1
+         set w $w1
+      } else {
+         set filter $color2
+         set X $X2
+         set y $y2
+         set w $w2
+      }
+      set X [gsl_mtranspose [gsl_mtranspose $X]]
+      set nl [lindex [gsl_mlength $X] 0]
+      set nc [lindex [gsl_mlength $X] 1]
+      set result [gsl_mfitmultilin $y $X $w]
+      #::console::affiche_resultat "result=$result \n"
+      set c     [lindex $result 0]
+      set chi2  [lindex $result 1]
+      set covar [lindex $result 2]
+      # - extrait le resultat
+      set alpha   [lindex $c 0]
+      set d_alpha [expr sqrt([gsl_mindex $covar 1 1])]
+      set K       [lindex $c 1]
+      set d_K     [expr sqrt([gsl_mindex $covar 2 2])]
+      set C       [lindex $c 2]
+      set d_C     [expr sqrt([gsl_mindex $covar 3 3])]
+      ::console::affiche_resultat "\n"
+      ::console::affiche_resultat "===== mag$filter = C$filter + 2.5*log10(flux${filter}/t${filter}) + alpha$filter *(${color1}-${color2}) - K$filter * Airmass\n"
+      ::console::affiche_resultat "alpha$filter = [format %+.3f $alpha] +/- [format %.3f $d_alpha] \n"
+      ::console::affiche_resultat "K$filter     = [format %.3f $K     ] +/- [format %.3f $d_K] \n"
+      ::console::affiche_resultat "C$filter     = [format %.3f $C     ] +/- [format %.3f $d_C] \n"
+   }
+
+}
+
+# -------------------------------------------------------------------------------------------------
 # proc photcal_plotcom plots the photometric measurements calculated by
 # photcal_matchfiles. This allows to check the global tendency of
 # parameters:
@@ -312,7 +435,7 @@ proc photcal_plotcom { file_calibration {axis_lim ""} {lim_inf ""} {lim_sup ""} 
 # photcal_matchfiles V R "" "" c:/d/grb110205a/dauban/loneos_nsv5000.phot
 # -------------------------------------------------------------------------------------------------
 # source $audace(rep_install)/gui/audace/photcal.tcl ; photcal_matchfiles V R Loneos-*.fit
-proc photcal_matchfiles { color1 color2 {dirfilter ""} {vignetting 0.8} {catalog_format ""} {file_loneos ""} } {
+proc photcal_matchfiles { color1 color2 {dirfilter ""} {vignetting 0.5} {catalog_format ""} {file_loneos ""} } {
    global audace
    set bufno $audace(bufNo)
    set pathim $audace(rep_images)
@@ -527,14 +650,14 @@ proc photcal_calibration { generic_file_common nb_file_common home file_coefs} {
          set exposure1 [lindex $ligne 3]
          set res [mc_radec2altaz $ra $dec $home $jd1]
          set elev1 [lindex $res 1]
-         set airmass1 [expr 1/cos(3.1416/180*$elev1)]
+         set airmass1 [expr 1/sin(3.1416/180*$elev1)]
          set flux1 [lindex $ligne 7]
          set mag01 [expr $cmag1-2.5*log10($flux1)]
          set jd2 [lindex $ligne 11]
          set exposure2 [lindex $ligne 12]
          set res [mc_radec2altaz $ra $dec $home $jd2]
          set elev2 [lindex $res 1]
-         set airmass2 [expr 1/cos(3.1416/180*$elev2)]
+         set airmass2 [expr 1/sin(3.1416/180*$elev2)]
          set flux2 [lindex $ligne 16]
          set mag02 [expr $cmag2-2.5*log10(abs($flux2))]
          #
@@ -685,13 +808,13 @@ proc photcal_airmass { generic_file_common nb_file_common home file_calibration}
          set exposure1 [lindex $ligne 3]
          set res [mc_radec2altaz $ra $dec $home $jd1]
          set elev1 [lindex $res 1]
-         set airmass1 [expr 1/cos(3.1416/180*$elev1)]
+         set airmass1 [expr 1/sin(3.1416/180*$elev1)]
          set flux1 [lindex $ligne 7]
          set jd2 [lindex $ligne 11]
          set exposure2 [lindex $ligne 12]
          set res [mc_radec2altaz $ra $dec $home $jd2]
          set elev2 [lindex $res 1]
-         set airmass2 [expr 1/cos(3.1416/180*$elev2)]
+         set airmass2 [expr 1/sin(3.1416/180*$elev2)]
          set flux2 [lindex $ligne 16]
          set texte ""
          append texte "$jd1 $airmass1 $col1 $flux1 $magcat1 "
@@ -716,9 +839,11 @@ proc photcal_airmass { generic_file_common nb_file_common home file_calibration}
 # Entree :
 # * file_loneos : Fichier texte au format Loneos
 # -------------------------------------------------------------------------------------------------
-proc photcal_scenes { {catalog_format ""} {file_loneos ""} } {
+# source $audace(rep_install)/gui/audace/photcal.tcl ; photcal_scenes "" "" com
+proc photcal_scenes { {catalog_format ""} {file_loneos ""} {simulation ""} } {
    global audace
    global ros
+   set pathim $audace(rep_images)
    set pi [expr 4*atan(1)]
    if {$catalog_format==""} {
       set catalog_format loneos
@@ -769,7 +894,7 @@ proc photcal_scenes { {catalog_format ""} {file_loneos ""} } {
    set night_duration [expr ($dawn - $dusk)*24] ; # hours
    # -------------------------------------   
    set latitude [lindex $home 3]
-   set color1 B
+   set color1 V
    set color2 R
    if {$have_audace==1} {
       ::console::affiche_resultat "color1=$color1 color2=$color2\n"
@@ -856,7 +981,14 @@ proc photcal_scenes { {catalog_format ""} {file_loneos ""} } {
             continue
          }
          set meridian [expr $meridian/24 + $dusk] ; # meridian pass expressed in UTC
-         set elevation [expr 90.+$latitude-$dec]
+         if {$latitude<0} {
+            set elevation [expr 90.+$latitude-$dec] ; # northern meridian
+         } else {
+            set elevation [expr 90.-$latitude+$dec] ; # southern meridian
+         }
+         if {$elevation>90} {
+            continue
+         }
          set airmass [expr 1./sin($elevation*$pi/180)]
          append loneos "$meridian $airmass "
          #::console::affiche_resultat "loneos=$loneos\n"
@@ -883,6 +1015,7 @@ proc photcal_scenes { {catalog_format ""} {file_loneos ""} } {
    }
    set t 60
    # filter Zadko g=13 r=14 i=15 I=5 C=1
+   set ksimu 0
    set sceness ""   
    for {set h 0} {$h<$night_duration} {set h [expr $h+$dh]} {
       set h1 $h
@@ -909,10 +1042,14 @@ proc photcal_scenes { {catalog_format ""} {file_loneos ""} } {
             set hh [expr ($meridian-$dusk)*24]
             if {($airmass>=$a1)&&($airmass<$a2)} {
                if {($hh>=$h1)&&($hh<$h2)} {
-                  lappend subloneoss $lo
-                  #::console::affiche_resultat "lo=$lo\n"
+                  if {($mag1>12)&&($mag2>12)&&($mag1<16)&&($mag2<16)} {
+                     if {($mag12>-1)&&($mag12<2)} {
+                       lappend subloneoss $lo
+                       #::console::affiche_resultat "lo=$lo\n"
+                     }
+                  }
                }
-            }
+            }            
          }
          set res [lsort -real -index 4 $subloneoss]
          set subloneoss ""
@@ -934,36 +1071,81 @@ proc photcal_scenes { {catalog_format ""} {file_loneos ""} } {
                ::console::affiche_resultat "RED   : $subloneos_red\n"
             }
             #
-            set lo $subloneos_blue
-            set ra  [lindex $lo 0]
-            set dec [lindex $lo 1]      
-            set date0 [lindex $lo 5]
-            set name Loneos-${kh}-${ka}-b
-            set scene "\"$name\" $ra $dec $date0 $dra $ddec $t 13 $t 14 $t 15 0 0 0 0 0 0 0 $lieu"
-            lappend scenes $scene
-            lappend sceness $scene
-            set lo $subloneos_green
-            set ra  [lindex $lo 0]
-            set dec [lindex $lo 1]      
-            set date0 [lindex $lo 5]
-            set name Loneos-${kh}-${ka}-g
-            set scene "\"$name\" $ra $dec $date0 $dra $ddec $t 13 $t 14 $t 15 0 0 0 0 0 0 0 $lieu"
-            lappend scenes $scene
-            lappend sceness $scene
-            set lo $subloneos_red
-            set ra  [lindex $lo 0]
-            set dec [lindex $lo 1]      
-            set date0 [lindex $lo 5]
-            set name Loneos-${kh}-${ka}-r
-            set scene "\"$name\" $ra $dec $date0 $dra $ddec $t 13 $t 14 $t 15 0 0 0 0 0 0 0 $lieu"
-            lappend scenes $scene
-            lappend sceness $scene
+            set sublos [list [list $subloneos_blue b] [list $subloneos_green g] [list $subloneos_red r]]
+            foreach sublo $sublos {
+               set lo [lindex $sublo 0]
+               set ra  [lindex $lo 0]
+               set dec [lindex $lo 1]
+               set date0 [lindex $lo 5]
+               set airmass [lindex $lo 6]
+               set name Loneos-${kh}-${ka}-[lindex $sublo 1]
+               set scene "\"$name\" $ra $dec $date0 $dra $ddec $t 13 $t 14 $t 15 0 0 0 0 0 0 0 $lieu"
+               if {$simulation!=""} {
+                  set ra1  [mc_angle2deg $ra]
+                  set dec1 [mc_angle2deg $dec 90]
+                  set exposure1 $t
+                  set exposure2 $t
+                  set dateobsjd1 [mc_date2jd $date0]
+                  set dateobsjd2 [expr $dateobsjd1+$t/86400.]
+                  #set elev1 [lindex [mc_radec2altaz $ra1 $dec1 $home $dateobsjd1] 1]
+                  #set airmass1 [expr 1/sin(3.1416/180*$elev1)]
+                  set airmass1 $airmass
+                  set airmass2 $airmass1
+                  set x1 1024
+                  set y1 1024
+                  set col1 86
+                  set x2 1024
+                  set y2 1024
+                  set col2 82
+                  set mag1 [lindex $lo 2]
+                  set mag2 [lindex $lo 3]
+                  set magcat $mag1
+                  # === mag1 = cste1 - 2.5 * log10(flux1) + alpha1 * (mag1-mag2) - k1 * airmass1
+                  # --- 2.5 * log10(flux1) = cste1 - mag1 + alpha1 * (mag1-mag2) - k1 * airmass1
+                  # --- flux1 = pow( 10 , 0.4 * (cste1 - mag1 + alpha1 * (mag1-mag2) - k1 * airmass1) )
+                  set cste1 21
+                  set alpha1 0.2
+                  set k1 0.6
+                  set randn 0 ; for {set kp 0} {$kp<20} {incr kp} { set randn [expr $randn+rand()-0.5] }
+                  #set randn 0
+                  set flux1 [expr pow( 10 , 0.4 * ($cste1 - $mag1 + 0.03*$randn + $alpha1 * ($mag1-$mag2) - $k1 * $airmass1) )]
+                  set fluxerr1 [expr sqrt($flux1*2.5)/2.5]
+                  set cste2 22
+                  set alpha2 0.3
+                  set k2 0.2
+                  set randn 0 ; for {set kp 0} {$kp<20} {incr kp} { set randn [expr $randn+rand()-0.5] }
+                  #set randn 0
+                  set flux2 [expr pow( 10 , 0.4 * ($cste2 - $mag2 + 0.03*$randn + $alpha2 * ($mag1-$mag2) - $k2 * $airmass2) )]
+                  set fluxerr2 [expr sqrt($flux2*2.5)/2.5]
+                  set texte ""
+                  append texte "[format %9.5f $ra1] [format %+9.5f $dec1]"
+                  append texte "   "
+                  append texte "[format %15.6f $dateobsjd1] [format %e $exposure1] [format %7.2f $x1] [format %7.2f $y1] [format %2.0f $col1] [format %e $flux1] [format %e $fluxerr1] [format %5.2f $mag1] -99.00"
+                  append texte "   "
+                  append texte "[format %15.6f $dateobsjd2] [format %e $exposure2] [format %7.2f $x2] [format %7.2f $y2] [format %2.0f $col2] [format %e $flux2] [format %e $fluxerr2] [format %5.2f $mag2] -99.00"
+                  incr ksimu
+                  set f [open ${pathim}/${simulation}${color1}${color2}${ksimu}.txt w]
+                  puts $f $texte
+                  close $f
+               }
+               lappend scenes $scene
+               lappend sceness $scene
+            }
          }         
       }
       if {$have_audace==1} {
          ::console::affiche_resultat "$scenes\n"
       }
       incr kh
+   }
+   if {$simulation!=""} {   
+      ::console::affiche_resultat "============ SIMULATION ===============\n"      
+      set nsimu $ksimu
+      photcal_airmass com${color1}${color2} $nsimu $audace(posobs,observateur,gps) com${color1}${color2}
+      for {set ksimu 1} {$ksimu<=$nsimu} {incr ksimu} {
+         file delete ${pathim}/${simulation}${color1}${color2}${ksimu}.txt
+      }
+      photcal_plotcom com${color1}${color2}
    }
    if {$have_audace==1} {
       return ""
@@ -1252,6 +1434,7 @@ proc photcal_extract { file_image_1 file_image_2 color1 color2 file_common {vign
    set kfluxerr $k
    ::console::affiche_resultat "indexes x=$kx y=$ky flux=$kflux fluxerr=$kfluxerr\n"
    # ---
+   ::console::affiche_resultat "vignetting=$vignetting\n"
    ::console::affiche_resultat "analyze star list 1\n"
    loadima $fic1
    set err [catch {set radec [buf$bufno xy2radec [list 1 1]]} msg ]
@@ -1267,6 +1450,7 @@ proc photcal_extract { file_image_1 file_image_2 color1 color2 file_common {vign
    close $f
    set stars ""
    set exposure $exposure1
+   set vignetting2 [expr $vignetting*$vignetting]
    foreach ligne $lignes {
       if {[lindex $ligne 0]==""} {
          continue
@@ -1277,7 +1461,7 @@ proc photcal_extract { file_image_1 file_image_2 color1 color2 file_common {vign
          set dx [expr 1.*($x-$naxis1/2)/($naxis1/2)]
          set dy [expr 1.*($y-$naxis2/2)/($naxis2/2)]
          set r2 [expr $dx*$dx+$dy*$dy]
-         if {$r2>$vignetting} {
+         if {$r2>$vignetting2} {
             continue
          }
       }
@@ -1315,7 +1499,7 @@ proc photcal_extract { file_image_1 file_image_2 color1 color2 file_common {vign
          set dx [expr 1.*($x-$naxis1/2)/($naxis1/2)]
          set dy [expr 1.*($y-$naxis2/2)/($naxis2/2)]
          set r2 [expr $dx*$dx+$dy*$dy]
-         if {$r2>$vignetting} {
+         if {$r2>$vignetting2} {
             continue
          }
       }
