@@ -536,11 +536,11 @@ proc ::getdss::recuperation { } {
 
    #--- Test sur les indices de debut et de fin
    if { $param(debut) == "" } {
-      tk_messageBox -title $caption(getdss,attention) -message $caption(getdss,texte5)
+      tk_messageBox -title $caption(getdss,attention) -message $caption(getdss,texte3)
       return
    }
    if { $param(fin) == "" } {
-      tk_messageBox -title $caption(getdss,attention) -message $caption(getdss,texte6)
+      tk_messageBox -title $caption(getdss,attention) -message $caption(getdss,texte4)
       return
    }
 
@@ -564,21 +564,20 @@ proc ::getdss::recuperation { } {
       set ferreur [open notloaded.txt a]
 
       set ligne "[clock format [clock seconds] -format "20%y %m %d - %X"] - "
-      append ligne "$caption(getdss,texte1) $param(NomObjet)$param(debut) $caption(getdss,texte2) $param(NomObjet)$param(fin) "
-      append ligne "$caption(getdss,texte3)"
+      append ligne [ format $caption(getdss,texte1) $param(NomObjet)$param(debut) $param(NomObjet)$param(fin) ]
       puts $ferreur $ligne
       flush $ferreur
 
       #--- Recuperation des objets choisis
       for {set x $param(debut)} {$x <= $param(fin)} {incr x} {
-         .dialog.l1 configure -text "$caption(getdss,chargement) $param(NomObjet)$x"
+         .dialog.l1 configure -text [ format $caption(getdss,chargement) $param(NomObjet)$x ]
          update
          wm deiconify .dialog
 
          set catchError [ catch { ::getdss::Charge_Objet_SIMBAD $param(NomObjet)$x } ]
          if { $catchError != "0" } {
             wm iconify .dialog
-            tk_messageBox -title $caption(getdss,attention) -message $caption(getdss,texte4)
+            tk_messageBox -title $caption(getdss,attention) -message $caption(getdss,texte2)
             return
          }
 
@@ -633,13 +632,13 @@ proc ::getdss::active_objet { } {
    global caption
 
    if { $param(NomObjet) == "M" } {
-      $This.f02.l1 configure -text "$caption(getdss,debMessier) $param(debut) $caption(getdss,finMessier) $param(fin)"
+      $This.f02.l1 configure -text [ format $caption(getdss,Messier) $param(debut) $param(fin) ]
     }
    if { $param(NomObjet) == "NGC" } {
-      $This.f02.l1 configure -text "$caption(getdss,debNGC)$param(debut) $caption(getdss,finNGC)$param(fin)"
+      $This.f02.l1 configure -text [ format $caption(getdss,NGC) $param(debut) $param(fin) ]
     }
    if { $param(NomObjet) == "IC" } {
-      $This.f02.l1 configure -text "$caption(getdss,debIC)$param(debut) $caption(getdss,finIC)$param(fin)"
+      $This.f02.l1 configure -text [ format $caption(getdss,IC) $param(debut) $param(fin) ]
     }
 
    return 1
