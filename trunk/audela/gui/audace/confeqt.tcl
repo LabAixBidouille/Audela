@@ -30,6 +30,7 @@ proc ::confEqt::init { } {
    set private(notebookNameList)    ""
    set private(frm)                 "$audace(base).confeqt"
    set private(variablePluginName)  ""
+   set private(selectedFocuser)     $::caption(confeqt,pas_focuser)
 
    #--- j'ajoute le repertoire pouvant contenir des plugins
    lappend ::auto_path [file join "$::audace(rep_plugin)" equipment]
@@ -501,7 +502,7 @@ proc ::confEqt::createFrameFocuser { frm variablePluginName } {
    }
 
    #--- je cree la liste des plugins de type "focuser"
-   set pluginList [list "" ]
+   set pluginList [list $::caption(confeqt,pas_focuser) ]
    foreach pluginName $private(pluginNamespaceList) {
       if {  [::$pluginName\::getPluginType] == "focuser" } {
          lappend pluginList $pluginName
@@ -513,7 +514,7 @@ proc ::confEqt::createFrameFocuser { frm variablePluginName } {
       -height [llength $pluginList] \
       -relief sunken  \
       -borderwidth 1  \
-      -textvariable $variablePluginName \
+      -textvariable ::confEqt::private(selectedFocuser) \
       -editable 0     \
       -values $pluginList \
       -modifycmd "::confEqt::activeFocuser $frm.configure $variablePluginName"
@@ -554,11 +555,18 @@ proc ::confEqt::createFrameFocuserTool { frm variablePluginName } {
    }
 
    #--- je cree la liste des plugins de type "focuser"
-   set pluginList [list "" ]
+   set pluginList [list $::caption(confeqt,pas_focuser) ]
    foreach pluginName $private(pluginNamespaceList) {
       if {  [::$pluginName\::getPluginType] == "focuser" } {
          lappend pluginList $pluginName
       }
+   }
+
+   #--- j'intialise la variable qui contient la valeur selectionnee
+   if { [set $variablePluginName] == "" } {
+      set private(selectedFocuser) $::caption(confeqt,pas_focuser)
+   } else {
+      set private(selectedFocuser) [set $variablePluginName]
    }
 
    ComboBox $frm.list \
@@ -566,7 +574,7 @@ proc ::confEqt::createFrameFocuserTool { frm variablePluginName } {
       -height [llength $pluginList] \
       -relief sunken  \
       -borderwidth 1  \
-      -textvariable $variablePluginName \
+      -textvariable ::confEqt::private(selectedFocuser) \
       -editable 0     \
       -values $pluginList \
       -modifycmd "::confEqt::activeFocuser $frm.configure $variablePluginName"
@@ -590,6 +598,14 @@ proc ::confEqt::createFrameFocuserTool { frm variablePluginName } {
 #    nothing
 #------------------------------------------------------------
 proc ::confEqt::activeFocuser { configureButton variablePluginName } {
+   variable private
+
+   if { $private(selectedFocuser) == $::caption(confeqt,pas_focuser) } {
+       set $variablePluginName ""
+   } else  {
+      set $variablePluginName $private(selectedFocuser)
+   }
+
    if { [set $variablePluginName] == "" } {
       $configureButton configure -state disabled
    } else {
