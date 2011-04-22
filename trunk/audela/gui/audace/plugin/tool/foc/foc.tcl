@@ -311,10 +311,12 @@ namespace eval ::foc {
       ::camera::alarmeSonore $panneau(foc,exptime)
 
       #--- Appel de l'arret du moteur de foc a 100 millisecondes de la fin de pose
-      set delay 0.100
-      if { [ expr $panneau(foc,exptime)-$delay ] > "0" } {
-         set delay [ expr $panneau(foc,exptime)-$delay ]
-         set audace(after,focstop,id) [ after [ expr int($delay*1000) ] { ::foc::cmdFocus stop } ]
+      if { $::panneau(foc,focuser) !=  "" } {
+         set delay 0.100
+         if { [ expr $panneau(foc,exptime)-$delay ] > "0" } {
+            set delay [ expr $panneau(foc,exptime)-$delay ]
+            set audace(after,focstop,id) [ after [ expr int($delay*1000) ] { ::foc::cmdFocus stop } ]
+         }
       }
 
       #--- Declenchement de l'acquisition
@@ -584,12 +586,16 @@ namespace eval ::foc {
    proc cmdSpeed { } {
       #--- Commande et gestion de l'erreur
       set catchResult [ catch {
-         ::focus::incrementSpeed $::panneau(foc,focuser) "tool foc"
+         if { $::panneau(foc,focuser)  != "" } {
+            ::focus::incrementSpeed $::panneau(foc,focuser) "tool foc"
+         }
       } ]
       #--- Traitement de l'erreur
       if { $catchResult == "1" } {
          #--- J'ouvre la fenetre de configuration du focuser
          ::confEqt::run ::panneau(foc,focuser) focuser
+         #--- J'arrete les acquisitions continues
+         cmdStop
       }
    }
 
@@ -601,12 +607,16 @@ namespace eval ::foc {
       $This.fra4.we.canv2PoliceInvariant configure -relief ridge
       #--- Commande et gestion de l'erreur
       set catchResult [ catch {
-         ::focus::move $::panneau(foc,focuser) $command
+         if { $::panneau(foc,focuser)  != "" } {
+            ::focus::move $::panneau(foc,focuser) $command
+         }
       } ]
       #--- Traitement de l'erreur
       if { $catchResult == "1" } {
          #--- J'ouvre la fenetre de configuration du focuser
          ::confEqt::run ::panneau(foc,focuser) focuser
+         #--- J'arrete les acquisitions continues
+         cmdStop
       }
    }
 
@@ -619,7 +629,7 @@ namespace eval ::foc {
          $This.fra5.but3 configure -relief groove -text $panneau(foc,initialise)
          update
          #--- Met le compteur de foc a zero et rafraichit les affichages
-         ::::focus::initPosition  $::panneau(foc,focuser)
+         ::focus::initPosition  $::panneau(foc,focuser)
          set audace(focus,currentFocus) "0"
          $This.fra5.fra1.lab1 configure -textvariable audace(focus,currentFocus)
          set audace(focus,targetFocus) ""
