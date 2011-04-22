@@ -40,7 +40,9 @@ proc ::focus::init { } {
 proc ::focus::move { focuserLabel command } {
    if { "$focuserLabel" != "" } {
       ::$focuserLabel\::move $command
-      set ::audace(focus,currentFocus) [getPosition $focuserLabel]
+      if { [::focus::possedeControleEtendu $focuserLabel] == 1 } {
+         set ::audace(focus,currentFocus) [getPosition $focuserLabel]
+      }
    }
 }
 
