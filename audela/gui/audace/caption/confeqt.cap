@@ -20,6 +20,7 @@ set caption(confeqt,aide)                   "Help"
 set caption(confeqt,configurer)             "Set up"
 
 set caption(confeqt,pas_equipement)         "No Equipment."
+set caption(confeqt,pas_focuser)            "No focuser"
 
 set caption(confeqt,attention)              "Warning"
 set caption(confeqt,connexion_texte1)       "Equipment Connection in Progress..."
@@ -37,6 +38,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeqt,configurer)          "Configurer"
 
    set caption(confeqt,pas_equipement)      "Il n'y a pas d'équipement présent."
+   set caption(confeqt,pas_focuser)         "Pas de focuser"
 
    set caption(confeqt,attention)           "Attention"
    set caption(confeqt,connexion_texte1)    "Veuillez patienter quelques secondes"
@@ -54,6 +56,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeqt,configurer)          "Configurare"
 
    set caption(confeqt,pas_equipement)      "Nessun equipaggiamento."
+   set caption(confeqt,pas_focuser)         "Nessun focheggiatore"
+
 
    set caption(confeqt,attention)           "Attenzione"
    set caption(confeqt,connexion_texte1)    "Attendere qualche secondo per la"
@@ -71,6 +75,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeqt,configurer)          "Configurar"
 
    set caption(confeqt,pas_equipement)      "No hay equipamiento."
+   set caption(confeqt,pas_focuser)         "No hay enfocador"
+
 
    set caption(confeqt,attention)           "!Cuidado¡"
    set caption(confeqt,connexion_texte1)    "Conectando con al equipamiento..."
@@ -88,6 +94,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeqt,configurer)          "Konfigurieren"
 
    set caption(confeqt,pas_equipement)      "Keine Einrichtung."
+   set caption(confeqt,pas_focuser)         "Keine Scharfeinstellung"
 
    set caption(confeqt,attention)           "Achtung"
    set caption(confeqt,connexion_texte1)    "Bitte, einige Sekunden warten"
@@ -105,6 +112,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeqt,configurer)          "Configurar"
 
    set caption(confeqt,pas_equipement)      "Sem equipamento."
+   set caption(confeqt,pas_focuser)         "Sem focador"
 
    set caption(confeqt,attention)           "Atenção"
    set caption(confeqt,connexion_texte1)    "A conectar-se ao equipamento..."
@@ -122,6 +130,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeqt,configurer)          "Set up"
 
    set caption(confeqt,pas_equipement)      "No Equipment."
+   set caption(confeqt,pas_focuser)         "No focuser"
 
    set caption(confeqt,attention)           "Warning"
    set caption(confeqt,connexion_texte1)    "Equipment Connection in Progress..."
@@ -139,6 +148,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeqt,configurer)          "Set up"
 
    set caption(confeqt,pas_equipement)      "No Equipment."
+   set caption(confeqt,pas_focuser)         "No focuser"
 
    set caption(confeqt,attention)           "Warning"
    set caption(confeqt,connexion_texte1)    "Equipment Connection in Progress..."
@@ -156,6 +166,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeqt,configurer)          "Set up"
 
    set caption(confeqt,pas_equipement)      "No Equipment."
+   set caption(confeqt,pas_focuser)         "No focuser"
 
    set caption(confeqt,attention)           "Warning"
    set caption(confeqt,connexion_texte1)    "Equipment Connection in Progress..."
