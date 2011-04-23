@@ -2,7 +2,7 @@
 # Fichier : getdss.tcl
 # Description : Recuperation d'images du DSS (Digital Sky Survey)
 # Auteur : Guillaume SPITZER
-# Mise à jour $Id$
+# Mise Ã  jour $Id$
 #
 
 #============================================================
