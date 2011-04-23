@@ -4030,18 +4030,27 @@ namespace eval ::confVisu {
 
       set hCanvas $private($visuNo,hCanvas)
 
+      #--- je surveille si la couleur du reticule existe
+      set catchResult [ catch { set colorCrosshair $conf(crosshair,color) } ]
+
+      #--- j'initialise la couleur du reticule si elle n'existe pas
+      if { $catchResult !=0 } {
+         ::Crosshair::createPluginInstance
+         set colorCrosshair $conf(crosshair,color)
+      }
+
       #--- je cree le label representant la ligne horizontale
       if { ![winfo exists $private($visuNo,hCrosshairH)] } {
-         label $private($visuNo,hCrosshairH) -bg $conf(crosshair,color)
+         label $private($visuNo,hCrosshairH) -bg $colorCrosshair
       } else {
-         $private($visuNo,hCrosshairH) configure -bg $conf(crosshair,color)
+         $private($visuNo,hCrosshairH) configure -bg $colorCrosshair
       }
 
       #--- je cree le label representant la ligne verticale
       if { ![winfo exists $private($visuNo,hCrosshairV)] } {
-         label $private($visuNo,hCrosshairV) -bg $conf(crosshair,color)
+         label $private($visuNo,hCrosshairV) -bg $colorCrosshair
       } else {
-         $private($visuNo,hCrosshairV) configure -bg $conf(crosshair,color)
+         $private($visuNo,hCrosshairV) configure -bg $colorCrosshair
       }
 
       #--- coordonnees du centre du reticule dans le repere canvas
