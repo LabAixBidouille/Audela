@@ -1,7 +1,7 @@
 #
 # Fichier : photcal.tcl
 # Auteur : Alain KLOTZ
-# Mise Ã  jour $Id: photcal.tcl,v 1.5 2011/03/02 19:42:54 alainklotz Exp $
+# Mise Ã  jour $Id:  $
 #
 # Utilitaire pour faire de la photometrie calibree a partir de deux images filtrees
 # Les images doivent etre calibrees en WCS
@@ -14,12 +14,12 @@
 # qui sont dans le catalogue Loneos.
 # ----------------------------------------------------------------------------------------------
 #
-# Placer les images de la nuit dans un répertoire dédié (=répertoire par
-# défaut de la configuration de AudeLA).
+# Placer les images de la nuit dans un rÃ©pertoire dÃ©diÃ© (=rÃ©pertoire par
+# dÃ©faut de la configuration de AudeLA).
 #
 # photcal_selectfiles : pour selectionner les fichiers compatible avec l'analyse photometrique.
 #
-# photcal_matchfiles V R : Pour créer le fichier commun des etoiles présentes dans le catalogue Loneos.
+# photcal_matchfiles V R : Pour crÃ©er le fichier commun des etoiles prÃ©sentes dans le catalogue Loneos.
 #
 # photcal_plotcom comVR : Pour visualiser les mesures extraites.
 #
@@ -32,17 +32,17 @@
 # ----------------------------------------------------------------------------------------------
 #
 # On utilise d'abord la fonction photcal_extract pour extraire un fichier d'etoiles
-# communes aux deux images et puis on utilise photcal_match pour identifier 
+# communes aux deux images et puis on utilise photcal_match pour identifier
 # les etoiles du catalogue Loneos. La fonction photcal_airmass permet de
 # calculer les elevations de chaque etoile et photcal_coefs calcule les
-# coefficients de la photometrie. Le fichier des etoiles observé est
-# alors calibrée par photcal_calibration. On peut ensuite fabriquer
+# coefficients de la photometrie. Le fichier des etoiles observÃ© est
+# alors calibrÃ©e par photcal_calibration. On peut ensuite fabriquer
 # un catalogue personnel au format Loneos avec photcal_generate.
 #
 # exemple sur le champ Loneos NSV5000:
 # photcal_extract nsv5000-v1 nsv5000-r1 V R common1
 # photcal_extract nsv5000-v2 nsv5000-r2 V R common2
-# photcal_match loneos c:/d/grb110205a/dauban/loneos_nsv5000.phot common 1 
+# photcal_match loneos c:/d/grb110205a/dauban/loneos_nsv5000.phot common 1
 # photcal_airmass common 1 {gps 6 E 43 670} calibration
 # photcal_coefs calibration coefs
 # photcal_calibration common 1 {gps 6 E 43 670} coefs
@@ -60,7 +60,7 @@
 # .
 # ----------------------------------------------------------------------------------------------
 #
-# On part de deux images faites deux couleurs d'un amas d'étoiles.
+# On part de deux images faites deux couleurs d'un amas d'Ã©toiles.
 #
 # photcal_extract imageV imageR V R comVR : Pour extraire un fichier d'etoiles communes.
 #
@@ -69,21 +69,21 @@
 # ----------------------------------------------------------------------------------------------
 # BIBLIOGRAPHY
 # ----------------------------------------------------------------------------------------------
-# Sextractor (Bertin, E. & Arnouts, S. 1996, Astronomy & Astrophysics 
+# Sextractor (Bertin, E. & Arnouts, S. 1996, Astronomy & Astrophysics
 # Supplement 317, 393) is used to extract fluxes
 # of stars. Using a R filter, sextractor gives flux_R
-# (flux_V for a V filter). The conversion between 
-# fluxes and the magnitudes is given by the 
+# (flux_V for a V filter). The conversion between
+# fluxes and the magnitudes is given by the
 # following equations:
 #
 # R = ZMAGR + 2.5 log(flux_R) + COEFR*(V-R) + KR*Airmass_R
 # V = ZMAGV + 2.5 log(flux_V) + COEFV*(V-R) + KV*Airmass_V
 #
 # ZMAGR, ZMAGV, COEFR, COEFV, KR and KV are calculated
-# with stars of known V and R magnitudes. To 
+# with stars of known V and R magnitudes. To
 # determine these coefficients, we used the Loneos catalogue
 # published as "UBVRI photometry of faint field stars" (Skiff, 2007,
-# Skiff, B.A,	2007 yCat.2277....0S, VizieR On-line 
+# Skiff, B.A,	2007 yCat.2277....0S, VizieR On-line
 # Data Catalog: II/277). Loneos is based on
 # Johnson-Cousins UBVRI photometry. As a consequence,
 # The R I colors are calculated on the Cousins system.
@@ -99,7 +99,7 @@
 #
 # Examples:
 # -------------------------------------------------------------------------------------------------
-# source $audace(rep_install)/gui/audace/photcal.tcl ; photcal_fit comVR 
+# source $audace(rep_install)/gui/audace/photcal.tcl ; photcal_fit comVR
 proc photcal_fit { file_calibration {mag_inf ""} {mag_sup ""} } {
    global audace
    set pathim $audace(rep_images)
@@ -125,7 +125,7 @@ proc photcal_fit { file_calibration {mag_inf ""} {mag_sup ""} } {
       set magcat1 [lindex $ligne 4]
       if {($magcat1<=$mag_inf)||($magcat1>=$mag_sup)} {
          continue
-      }      
+      }
       lappend airmass1s [lindex $ligne 1]
       lappend col1s [lindex $ligne 2]
       lappend flux1s [lindex $ligne 3]
@@ -229,10 +229,10 @@ proc photcal_fit { file_calibration {mag_inf ""} {mag_sup ""} } {
 # 1b) photcal_plotcom comBV V
 # Plot x=X y=Z and dot size is proportional to Y(V).
 #
-# 2) photcal_plotcom comBV X 0 1 
+# 2) photcal_plotcom comBV X 0 1
 # Plot x=Z y=Y(B) and Y(V) only for data in the range 0<X<1
 #
-# 3) photcal_plotcom comBV Z 1 3 
+# 3) photcal_plotcom comBV Z 1 3
 # Plot x=X y=Y(B) and Y(V) only for data in the range 1<Z<3
 #
 # Entrees :
@@ -290,7 +290,7 @@ proc photcal_plotcom { file_calibration {axis_lim ""} {lim_inf ""} {lim_sup ""} 
       lappend y2s $y2
       lappend z1s [lindex $airmass1s $k]
       lappend z2s [lindex $airmass2s $k]
-      lappend zs [expr ([lindex $airmass1s $k]+[lindex $airmass2s $k])/2.]      
+      lappend zs [expr ([lindex $airmass1s $k]+[lindex $airmass2s $k])/2.]
       incr k
    }
    set n $k
@@ -306,7 +306,7 @@ proc photcal_plotcom { file_calibration {axis_lim ""} {lim_inf ""} {lim_sup ""} 
    } else {
       Error "problem"
    }
-   if {$lim_inf==""} {      
+   if {$lim_inf==""} {
       catch {::plotxy::clf}
       set y [lsort -real $y1s]
       set y1min [lindex $y 1]
@@ -329,14 +329,14 @@ proc photcal_plotcom { file_calibration {axis_lim ""} {lim_inf ""} {lim_sup ""} 
             set size [expr 2.+10.*($y1-$y1min)/($y1max-$y1min)]
             if {$size<1} { set size 2 }
             if {$size>12} { set size 12 }
-            #::console::affiche_resultat "y1=$y1 size=$size\n"      
+            #::console::affiche_resultat "y1=$y1 size=$size\n"
             ::plotxy::plot [lindex $xs $k] [lindex $z1s $k] '.o${c1}' $size
             ::plotxy::hold on
             ::plotxy::title "All Y ( m + 2.5 * log10(flux) for filter $color1)"
          }
       }
       ::plotxy::plotbackground #FFFFFF
-      ::plotxy::bgcolor #FFFFFF      
+      ::plotxy::bgcolor #FFFFFF
       ::plotxy::xlabel "X ( Color index $colorindex )"
       ::plotxy::ylabel "Z ( Airmass )"
       ::plotxy::position {40 40 400 500}
@@ -348,7 +348,7 @@ proc photcal_plotcom { file_calibration {axis_lim ""} {lim_inf ""} {lim_sup ""} 
       for {set k 0} {$k<$n} {incr k} {
          set z1 [lindex $z1s $k]
          set z2 [lindex $z2s $k]
-         #::console::affiche_resultat "z1=$z1 z2=$z2\n"      
+         #::console::affiche_resultat "z1=$z1 z2=$z2\n"
          if {($z1>=$lim_inf)&&($z1<=$lim_sup)} {
             set magcat1 [lindex $magcat1s $k]
             if {($magcat1<=$mag_inf)||($magcat1>=$mag_sup)} {
@@ -370,8 +370,8 @@ proc photcal_plotcom { file_calibration {axis_lim ""} {lim_inf ""} {lim_sup ""} 
          ::plotxy::bgcolor #FFFFFF
          ::plotxy::xlabel "X ( Color index $colorindex)"
          ::plotxy::ylabel "Y ( m + 2.5 * log10(flux) )"
-         ::plotxy::title "Airmass range: $lim_inf - $lim_sup"   
-         ::plotxy::position {40 40 400 500}         
+         ::plotxy::title "Airmass range: $lim_inf - $lim_sup"
+         ::plotxy::position {40 40 400 500}
       }
    } elseif {$axis_lim=="X"} {
       set kk 0
@@ -402,7 +402,7 @@ proc photcal_plotcom { file_calibration {axis_lim ""} {lim_inf ""} {lim_sup ""} 
          ::plotxy::bgcolor #FFFFFF
          ::plotxy::xlabel "Z ( Airmass )"
          ::plotxy::ylabel "Y ( m + 2.5 * log10(flux) )"
-         ::plotxy::title "Color index ($colorindex) range: $lim_inf to $lim_sup"   
+         ::plotxy::title "Color index ($colorindex) range: $lim_inf to $lim_sup"
          ::plotxy::position {40 40 400 500}
          set res [::plotxy::axis]
          set res [lreplace $res 0 0 1.0]
@@ -416,7 +416,7 @@ proc photcal_plotcom { file_calibration {axis_lim ""} {lim_inf ""} {lim_sup ""} 
 # proc photcal_matchfiles performs the matching between files previously
 # selected using photcal_selectfiles. Only two color filters will be
 # processed. The two color filters must specified as parameters of the proc.
-# First, stars are extracted using sextractor and a common file is created 
+# First, stars are extracted using sextractor and a common file is created
 # (a*.txt). When all common files are created, they are merged to form
 # only one file which has the name com followed by the letters of the
 # two filters (e.g. comBV.txt). This file can be visually analyzed using
@@ -462,10 +462,10 @@ proc photcal_matchfiles { color1 color2 {dirfilter ""} {vignetting 0.5} {catalog
       set field1 [string range $fic1 0 [expr $k-1]]
       set filter1 [string range $fic1 [expr $k+1] end]
       set f1 ""
-      if {$filter1==$color1} { 
+      if {$filter1==$color1} {
          set f1 1
-      } elseif {$filter1==$color2} { 
-         set f1 2 
+      } elseif {$filter1==$color2} {
+         set f1 2
       } else { continue }
       for {set kf2 [expr $kf1+1]} {$kf2<$nf} {incr kf2} {
          set fichier2 [lindex $fichiers $kf2]
@@ -475,10 +475,10 @@ proc photcal_matchfiles { color1 color2 {dirfilter ""} {vignetting 0.5} {catalog
          set field2 [string range $fic2 0 [expr $k-1]]
          set filter2 [string range $fic2 [expr $k+1] end]
          if {$field2!=$field1} { break }
-         if {$filter2==$color1} { 
-            set f2 1 
-         } elseif { $filter2==$color2} { 
-            set f2 2 
+         if {$filter2==$color1} {
+            set f2 1
+         } elseif { $filter2==$color2} {
+            set f2 2
          } else { continue }
          incr kk
          loadima $fichier1
@@ -497,7 +497,7 @@ proc photcal_matchfiles { color1 color2 {dirfilter ""} {vignetting 0.5} {catalog
    photcal_match $catalog_format $file_loneos com${color1}${color2} $nn
    photcal_airmass com${color1}${color2} $nn $audace(posobs,observateur,gps) com${color1}${color2}
    photcal_plotcom com${color1}${color2}
-   
+
 }
 
 # -------------------------------------------------------------------------------------------------
@@ -588,7 +588,7 @@ proc photcal_selectfiles { {dirfilter ""} {vignetting 1} } {
       set sname ${name}-${filter}
       saveima $sname
       ::console::affiche_resultat "=> $fic COPIED INTO $sname\n"
-   }   
+   }
 }
 
 
@@ -665,20 +665,20 @@ proc photcal_calibration { generic_file_common nb_file_common home file_coefs} {
          set mag2 $mag02
          set mag12 [expr $mag1-$mag2]
          set texte "mag1=$mag1 mag2=$mag2 mag12=$mag12"
-         #::console::affiche_resultat "$texte\n"         
+         #::console::affiche_resultat "$texte\n"
          #
          for {set kk 0} {$kk<5} {incr kk} {
             set mag12 [expr $mag1-$mag2]
             set mag1 [expr $mag01+$a1*$mag12]
-            set mag2 [expr $mag02+$a2*$mag12]         
+            set mag2 [expr $mag02+$a2*$mag12]
             set texte "mag1=$mag1 mag2=$mag2 mag12=$mag12"
-            #::console::affiche_resultat "$texte\n"         
+            #::console::affiche_resultat "$texte\n"
          }
          #::console::affiche_resultat "$texte ($ligne)\n"
          set texte ""
          append texte "[format %9.5f $ra] [format %+9.5f $dec]    "
          set star [lrange $ligne 2 9]
-         append texte "$star [format %5.2f $mag1]     "         
+         append texte "$star [format %5.2f $mag1]     "
          set star [lrange $ligne 11 18]
          append texte "$star [format %5.2f $mag2]"
          append textes "$texte\n"
@@ -723,8 +723,8 @@ proc photcal_coefs { file_calibration file_coefs} {
       lappend magcat2s [lindex $ligne 9]
       #
       lappend xs [expr [lindex $ligne 4]-[lindex $ligne 9]]
-      lappend y1s [expr [lindex $magcat1s $k]+2.5*log10([lindex $flux1s $k])]      
-      lappend y2s [expr [lindex $magcat2s $k]+2.5*log10([lindex $flux2s $k])]      
+      lappend y1s [expr [lindex $magcat1s $k]+2.5*log10([lindex $flux1s $k])]
+      lappend y2s [expr [lindex $magcat2s $k]+2.5*log10([lindex $flux2s $k])]
       incr k
    }
    set sx 0
@@ -820,7 +820,7 @@ proc photcal_airmass { generic_file_common nb_file_common home file_calibration}
          append texte "$jd1 $airmass1 $col1 $flux1 $magcat1 "
          append texte "$jd2 $airmass2 $col2 $flux2 $magcat2 "
          append textes "$texte\n"
-         ::console::affiche_resultat "$texte\n"         
+         ::console::affiche_resultat "$texte\n"
          lappend xs [expr $magcat1-$magcat2]
          lappend ys $airmass1
       }
@@ -834,7 +834,7 @@ proc photcal_airmass { generic_file_common nb_file_common home file_calibration}
 }
 
 # -------------------------------------------------------------------------------------------------
-# proc photcal_scenes pour generer des scenes a partir du fichier catalogue Loneos 
+# proc photcal_scenes pour generer des scenes a partir du fichier catalogue Loneos
 #
 # Entree :
 # * file_loneos : Fichier texte au format Loneos
@@ -892,7 +892,7 @@ proc photcal_scenes { {catalog_format ""} {file_loneos ""} {simulation ""} } {
    }
    set lst_dusk [mc_date2lst $dusk $home -format deg]
    set night_duration [expr ($dawn - $dusk)*24] ; # hours
-   # -------------------------------------   
+   # -------------------------------------
    set latitude [lindex $home 3]
    set color1 V
    set color2 R
@@ -923,7 +923,7 @@ proc photcal_scenes { {catalog_format ""} {file_loneos ""} {simulation ""} } {
          set magvr [string trim [string range $ligne 76 81]]
          set magvi [string trim [string range $ligne 83 88]]
          if {(($color1=="U")||($color2=="U"))} {
-            if {($magub=="")||($magbv=="")} { 
+            if {($magub=="")||($magbv=="")} {
                continue
             } else {
                set magu [expr $magv+$magbv+$magub]
@@ -994,7 +994,7 @@ proc photcal_scenes { {catalog_format ""} {file_loneos ""} {simulation ""} } {
          #::console::affiche_resultat "loneos=$loneos\n"
          lappend loneoss $loneos
       }
-   }   
+   }
    set res [lsort -real -index 5 $loneoss]
    set loneoss ""
    foreach re $res {
@@ -1016,14 +1016,14 @@ proc photcal_scenes { {catalog_format ""} {file_loneos ""} {simulation ""} } {
    set t 60
    # filter Zadko g=13 r=14 i=15 I=5 C=1
    set ksimu 0
-   set sceness ""   
+   set sceness ""
    for {set h 0} {$h<$night_duration} {set h [expr $h+$dh]} {
       set h1 $h
-      set h2 [expr $h+$dh]      
+      set h2 [expr $h+$dh]
       if {$have_audace==1} {
          ::console::affiche_resultat "==================== $h1<H<$h2 =============== \n"
       }
-      set scenes ""   
+      set scenes ""
       for {set ka 0} {$ka<$na} {incr ka} {
          set a1 [lindex $lim_airmasses $ka]
          set a2 [lindex $lim_airmasses [expr $ka+1]]
@@ -1033,8 +1033,8 @@ proc photcal_scenes { {catalog_format ""} {file_loneos ""} {simulation ""} } {
          set subloneoss ""
          foreach lo $loneoss {
             set ra  [lindex $lo 0]
-            set dec [lindex $lo 1]      
-            set mag1 [lindex $lo 2]      
+            set dec [lindex $lo 1]
+            set mag1 [lindex $lo 2]
             set mag2 [lindex $lo 3]
             set mag12 [lindex $lo 4]
             set meridian [lindex $lo 5]
@@ -1049,7 +1049,7 @@ proc photcal_scenes { {catalog_format ""} {file_loneos ""} {simulation ""} } {
                      }
                   }
                }
-            }            
+            }
          }
          set res [lsort -real -index 4 $subloneoss]
          set subloneoss ""
@@ -1131,15 +1131,15 @@ proc photcal_scenes { {catalog_format ""} {file_loneos ""} {simulation ""} } {
                lappend scenes $scene
                lappend sceness $scene
             }
-         }         
+         }
       }
       if {$have_audace==1} {
          ::console::affiche_resultat "$scenes\n"
       }
       incr kh
    }
-   if {$simulation!=""} {   
-      ::console::affiche_resultat "============ SIMULATION ===============\n"      
+   if {$simulation!=""} {
+      ::console::affiche_resultat "============ SIMULATION ===============\n"
       set nsimu $ksimu
       photcal_airmass com${color1}${color2} $nsimu $audace(posobs,observateur,gps) com${color1}${color2}
       for {set ksimu 1} {$ksimu<=$nsimu} {incr ksimu} {
@@ -1151,7 +1151,7 @@ proc photcal_scenes { {catalog_format ""} {file_loneos ""} {simulation ""} } {
       return ""
    } else {
       return $sceness
-   }   
+   }
 }
 
 # -------------------------------------------------------------------------------------------------
@@ -1161,7 +1161,7 @@ proc photcal_scenes { {catalog_format ""} {file_loneos ""} {simulation ""} } {
 # * file_common : Fichier texte des etoiles en commun (format COMMON)
 # * file_loneos : Fichier texte au format Loneos
 # Name                  RA  (J2000)  Dec     s    GSC       V     B-V    U-B    V-R    V-I    bibcode              remarks
-# NSV 5000           10 54 42.1  +63 02 40   h 4148-0380  12.83   0.70          0.36   0.78 
+# NSV 5000           10 54 42.1  +63 02 40   h 4148-0380  12.83   0.70          0.36   0.78
 #  123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789
 #           1         2         3         4         5         6         7         8         9
 # -------------------------------------------------------------------------------------------------
@@ -1214,7 +1214,7 @@ proc photcal_match { catalog_format file_loneos generic_file_common nb_file_comm
                set magvr [string trim [string range $ligne 76 81]]
                set magvi [string trim [string range $ligne 83 88]]
                if {(($color1=="U")||($color2=="U"))} {
-                  if {($magub=="")||($magbv=="")} { 
+                  if {($magub=="")||($magbv=="")} {
                      continue
                   } else {
                      set magu [expr $magv+$magbv+$magub]
@@ -1256,11 +1256,11 @@ proc photcal_match { catalog_format file_loneos generic_file_common nb_file_comm
                if {$color2=="B"} { append loneos "$magb " }
                if {$color2=="V"} { append loneos "$magv " }
                if {$color2=="R"} { append loneos "$magr " }
-               if {$color2=="I"} { append loneos "$magi " }      
+               if {$color2=="I"} { append loneos "$magi " }
                #::console::affiche_resultat "loneos=$loneos\n"
                lappend loneoss [list [format %+08.5f $dec] $loneos]
             }
-         }   
+         }
          set res [lsort -real -index 0 $loneoss]
          set loneoss ""
          foreach re $res {
@@ -1315,7 +1315,7 @@ proc photcal_match { catalog_format file_loneos generic_file_common nb_file_comm
             set texte ""
             append texte "[format %9.5f $ra1] [format %+9.5f $dec1]    "
             set star [lrange $star1 2 8]
-            append texte "$star $mag1 -99     "         
+            append texte "$star $mag1 -99     "
             set star [lrange $star1 11 17]
             append texte "$star $mag2 -99"
             append stars "$texte\n"
@@ -1387,7 +1387,7 @@ proc photcal_extract { file_image_1 file_image_2 color1 color2 file_common {vign
       if {$car==$filter} {
          set col1 $k
       }
-   }      
+   }
    set fic2 "$pathim/${file_image_2}.fit"
    loadima $fic2
    set exposure2 [lindex [buf$bufno getkwd EXPOSURE] 1]
@@ -1398,7 +1398,7 @@ proc photcal_extract { file_image_1 file_image_2 color1 color2 file_common {vign
       if {$car==$filter} {
          set col2 $k
       }
-   }      
+   }
    # --- Sextractor
    set pathsex [pwd]
    ::console::affiche_resultat "sextractor $fic1\n"
@@ -1783,13 +1783,13 @@ proc photcal_plot { {fic_hr ""} {offmag1 0} {offmag2 0} {xaxis 0.95} {color1 V} 
 }
 
 # -------------------------------------------------------------------------------------------------
-# proc photcal_generate pour generer un catalog au format Loneos a partir d'un fichier texte d'etoiles calibrées en commun entre deux images
+# proc photcal_generate pour generer un catalog au format Loneos a partir d'un fichier texte d'etoiles calibrÃ©es en commun entre deux images
 #
 # Entrees :
 # * file_common : Fichier texte des etoiles en commun (format COMMON)
 # * file_loneos : Fichier texte au format Loneos
 # Name                  RA  (J2000)  Dec     s    GSC       V     B-V    U-B    V-R    V-I    bibcode              remarks
-# NSV 5000           10 54 42.1  +63 02 40   h 4148-0380  12.83   0.70          0.36   0.78 
+# NSV 5000           10 54 42.1  +63 02 40   h 4148-0380  12.83   0.70          0.36   0.78
 #  123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789
 #           1         2         3         4         5         6         7         8         9
 # -------------------------------------------------------------------------------------------------
@@ -1902,11 +1902,11 @@ proc photcal_generate { generic_file_common nb_file_common catalog_format file_l
       set ficc "$file_loneos"
       set f [open $ficc w]
       puts -nonewline $f $textes
-      close $f      
+      close $f
    }
 }
 # Name                  RA  (J2000)  Dec     s    GSC       V     B-V    U-B    V-R    V-I    bibcode              remarks
-# NSV 5000           10 54 42.1  +63 02 40   h 4148-0380  12.83   0.70          0.36   0.78 
+# NSV 5000           10 54 42.1  +63 02 40   h 4148-0380  12.83   0.70          0.36   0.78
 #  123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789
 #           1         2         3         4         5         6         7         8         9
 
@@ -1938,7 +1938,7 @@ proc abell_insert { {dirfilter ""} } {
       set home [list GPS $obslong $sens $obslat $obselev]
       ::console::affiche_resultat "home=$home\n"
       set res [mc_nextnight $date0 $home]
-      set jd0 [lindex [lindex $res 0] 0]      
+      set jd0 [lindex [lindex $res 0] 0]
       foreach fichier $fichiers {
          loadima $fichier
          set fic [file rootname [file rootname [file tail $fichier]]]
@@ -1968,7 +1968,7 @@ proc abell_insert { {dirfilter ""} } {
             puts $f "$jd $djd $catastar $fic"
             close $f
          }
-      }   
+      }
    }
    if {$numeros==""} {
       set fichiers [lsort [glob -nocomplain "${pathim}/../../*"]]
@@ -2010,19 +2010,19 @@ proc abell_insert { {dirfilter ""} } {
       set lignes [lsort -index 1 -real $lignes]
       set dates ""
       foreach ligne $lignes {
-         set date [lindex $ligne 1]         
+         set date [lindex $ligne 1]
          lappend dates $date
       }
       set n [llength $dates]
       set d0 [lindex $dates 0]
       set ds $d0
-      for {set k 1} {$k<$n} {incr k} {         
+      for {set k 1} {$k<$n} {incr k} {
          set d [lindex $dates $k]
          if {$d!=$d0} {
             lappend ds $d
             set d0 $d
          }
-      }      
+      }
       set dates $ds
       ::console::affiche_resultat "dates=$dates\n"
       foreach date $dates {
@@ -2030,10 +2030,10 @@ proc abell_insert { {dirfilter ""} } {
          if {[file exists $ficout]==1} {
             ::console::affiche_resultat "abell${numero}-${date}.fit ever exists.\n"
             continue
-         }         
+         }
          set ligs ""
          foreach ligne $lignes {
-            set d [lindex $ligne 1]         
+            set d [lindex $ligne 1]
             if {$d==$date} {
                lappend ligs $ligne
             }
@@ -2054,13 +2054,13 @@ proc abell_insert { {dirfilter ""} } {
          set ficin "${pathim}/abell${numero}-${date}.fit"
          set ficout "${pathim}/../../${numero}/abell${numero}-${date}.fit"
          ::console::affiche_resultat "abell${numero}-${date}.fit is created.\n"
-         file rename -force -- $ficin $ficout        
-         for {set k 1} {$k<=$n} {incr k} {         
+         file rename -force -- $ficin $ficout
+         for {set k 1} {$k<=$n} {incr k} {
             file delete "${pathim}/i${k}.fit"
          }
       }
    }
-   
+
 }
 
 # source $audace(rep_install)/gui/audace/photcal.tcl ; abell_selectfiles
@@ -2081,7 +2081,7 @@ proc abell_selectfiles { {numero ""} {dateref ""} {datenight ""} } {
          if {$err==1} { continue }
          append ls "$numero "
       }
-      ::console::affiche_resultat "$ls\n"      
+      ::console::affiche_resultat "$ls\n"
    } else {
       if {$err==0} {
          set fichiers "${pathim}/../../${numero}"
@@ -2116,7 +2116,7 @@ proc abell_selectfiles { {numero ""} {dateref ""} {datenight ""} } {
                set f [open $ficref r]
                set ficref "${pathim}/../../${numero}/[lindex [read $f] 0]"
                close $f
-            } else {            
+            } else {
                set ficref [lindex $fics 0]
             }
          } else {
@@ -2126,10 +2126,10 @@ proc abell_selectfiles { {numero ""} {dateref ""} {datenight ""} } {
             }
          }
          file copy -force -- $ficref ${pathim}/i1.fit
-         ::console::affiche_resultat "ficref=$ficref\n"   
-         ::console::affiche_resultat "registerwcs i i 2 1 nullpixel=1\n"   
+         ::console::affiche_resultat "ficref=$ficref\n"
+         ::console::affiche_resultat "registerwcs i i 2 1 nullpixel=1\n"
          registerwcs i i 2 1 nullpixel=1
          ::console::affiche_resultat "Finished\n"
       }
-   }   
+   }
 }
