@@ -66,6 +66,7 @@ namespace eval ::confPosObs {
       variable This
       global conf confgene
 
+      set confgene(posobs,nom_organisation)        $conf(posobs,nom_organisation)
       set confgene(posobs,nom_observateur)         $conf(posobs,nom_observateur)
       set confgene(posobs,nom_observatoire)        $conf(posobs,nom_observatoire)
       set confgene(posobs,estouest)                $conf(posobs,estouest)
@@ -91,6 +92,7 @@ namespace eval ::confPosObs {
       global conf
 
       #--- Initialisation indispensable de variables
+      if { ! [ info exists conf(posobs,nom_organisation) ] } { set conf(posobs,nom_organisation) "" }
       if { ! [ info exists conf(posobs,nom_observateur) ] }  { set conf(posobs,nom_observateur)  "" }
       if { ! [ info exists conf(posobs,nom_observatoire) ] } { set conf(posobs,nom_observatoire) "Pic du Midi" }
       if { ! [ info exists conf(posobs,ref_geodesique) ] }   { set conf(posobs,ref_geodesique)   "WGS84" }
@@ -207,11 +209,14 @@ namespace eval ::confPosObs {
       frame $This.frame2a -borderwidth 1 -relief raised
       pack $This.frame2a -in $This.frame1 -side top -fill both -expand 1
 
-      frame $This.frame2b -borderwidth 0 -relief raised
+      frame $This.frame2b -borderwidth 1 -relief raised
       pack $This.frame2b -in $This.frame1 -side top -fill both -expand 1
 
       frame $This.frame2c -borderwidth 0 -relief raised
       pack $This.frame2c -in $This.frame1 -side top -fill both -expand 1
+
+      frame $This.frame2d -borderwidth 0 -relief raised
+      pack $This.frame2d -in $This.frame1 -side top -fill both -expand 1
 
       frame $This.frame3 -borderwidth 0 -relief raised
       pack $This.frame3 -in $This.frame1 -side top -fill both -expand 1
@@ -267,16 +272,23 @@ namespace eval ::confPosObs {
       frame $This.frame20 -borderwidth 0 -relief raised
       pack $This.frame20 -in $This.frame9 -side top -fill both -expand 1
 
+      #--- Nom de l'organisation
+      label $This.lab0 -text "$caption(confgene,nom_organisation)"
+      pack $This.lab0 -in $This.frame2a -anchor w -side top -padx 10 -pady 5
+
+      entry $This.nom_organisation -textvariable confgene(posobs,nom_organisation) -width 70
+      pack $This.nom_organisation -in $This.frame2a -anchor w -side top -padx 10 -pady 5
+
       #--- Nom de l'observateur
       label $This.lab0a -text "$caption(confgene,nom_observateur)"
-      pack $This.lab0a -in $This.frame2a -anchor w -side top -padx 10 -pady 5
+      pack $This.lab0a -in $This.frame2b -anchor w -side top -padx 10 -pady 5
 
       entry $This.nom_observateur -textvariable confgene(posobs,nom_observateur) -width 70
-      pack $This.nom_observateur -in $This.frame2a -anchor w -side top -padx 10 -pady 5
+      pack $This.nom_observateur -in $This.frame2b -anchor w -side top -padx 10 -pady 5
 
       #--- Nom de l'observatoire
       label $This.lab0b -text "$caption(confgene,nom_observatoire:)"
-      pack $This.lab0b -in $This.frame2b -anchor w -side left -padx 10 -pady 5
+      pack $This.lab0b -in $This.frame2c -anchor w -side left -padx 10 -pady 5
 
       ComboBox $This.nom_observatoire \
          -width 42         \
@@ -287,18 +299,18 @@ namespace eval ::confPosObs {
          -textvariable confgene(posobs,nom_observatoire) \
          -modifycmd "::confPosObs::cbCommand $This.nom_observatoire" \
          -values $confgene(posobs,nom_observatoire_liste)
-      pack $This.nom_observatoire -in $This.frame2b -anchor w -side right -padx 10 -pady 5
+      pack $This.nom_observatoire -in $This.frame2c -anchor w -side right -padx 10 -pady 5
 
       #--- Gestion des noms d'observatoire
       button $This.but_copy_obs -text "$caption(confgene,copier_observatoire)" -borderwidth 2 \
          -command { ::confPosObs::copyObs }
-      pack $This.but_copy_obs -in $This.frame2c -anchor center -side right -padx 5 -pady 5 -ipadx 5
+      pack $This.but_copy_obs -in $This.frame2d -anchor center -side right -padx 5 -pady 5 -ipadx 5
       button $This.but_del_obs -text "$caption(confgene,supprimer_observatoire)" -borderwidth 2 \
          -command { ::confPosObs::delObs }
-      pack $This.but_del_obs -in $This.frame2c -anchor center -side right -padx 5 -pady 5 -ipadx 5
+      pack $This.but_del_obs -in $This.frame2d -anchor center -side right -padx 5 -pady 5 -ipadx 5
       button $This.but_add_obs -text "$caption(confgene,ajouter_observatoire)" -borderwidth 2 \
          -command { ::confPosObs::addObs }
-      pack $This.but_add_obs -in $This.frame2c -anchor center -side right -padx 5 -pady 5 -ipadx 5
+      pack $This.but_add_obs -in $This.frame2d -anchor center -side right -padx 5 -pady 5 -ipadx 5
 
       #--- Longitude observateur
       label $This.lab1 -text "$caption(confgene,position_longitude)"
@@ -974,6 +986,7 @@ namespace eval ::confPosObs {
       global conf confgene
 
       #--- confToWidget
+      set confgene(posobs,nom_organisation)        $conf(posobs,nom_organisation)
       set confgene(posobs,nom_observateur)         $conf(posobs,nom_observateur)
       set confgene(posobs,nom_observatoire)        $conf(posobs,nom_observatoire)
       set confgene(posobs,estouest)                $conf(posobs,estouest)
@@ -1060,6 +1073,7 @@ namespace eval ::confPosObs {
       $This.nom_observatoire configure -values $confgene(posobs,nom_observatoire_liste)
 
       #---
+      set conf(posobs,nom_organisation)       $confgene(posobs,nom_organisation)
       set conf(posobs,nom_observateur)        $confgene(posobs,nom_observateur)
       set conf(posobs,nom_observatoire)       [ string trimright $confgene(posobs,nom_observatoire) " " ]
       set conf(posobs,estouest)               $confgene(posobs,estouest)
@@ -1136,6 +1150,7 @@ namespace eval ::confPosObs {
    # Ajoute une procedure a appeler si on change un parametre
    #
    proc addPosObsListener { cmd } {
+      trace add variable "::conf(posobs,nom_organisation)" write $cmd
       trace add variable "::conf(posobs,nom_observateur)" write $cmd
       trace add variable "::conf(posobs,nom_observatoire)" write $cmd
    }
@@ -1147,6 +1162,7 @@ namespace eval ::confPosObs {
    proc removePosObsListener { cmd } {
       trace remove variable "::conf(posobs,nom_observatoire)" write $cmd
       trace remove variable "::conf(posobs,nom_observateur)" write $cmd
+      trace remove variable "::conf(posobs,nom_organisation)" write $cmd
    }
 }
 
