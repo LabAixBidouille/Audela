@@ -1,7 +1,7 @@
 #
 # Fichier : photcal.tcl
 # Auteur : Alain KLOTZ
-# Mise à jour $Id:  $
+# Mise à jour $Id: photcal.tcl 7174 2011-04-23 10:11:51Z robertdelmas  $
 #
 # Utilitaire pour faire de la photometrie calibree a partir de deux images filtrees
 # Les images doivent etre calibrees en WCS
