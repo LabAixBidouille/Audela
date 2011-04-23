@@ -20,7 +20,7 @@ set caption(confeqt,aide)                   "Help"
 set caption(confeqt,configurer)             "Set up"
 
 set caption(confeqt,pas_equipement)         "No Equipment."
-set caption(confeqt,pas_focuser)            "No focuser"
+set caption(confeqt,pas_focuser)            "No Focuser"
 
 set caption(confeqt,attention)              "Warning"
 set caption(confeqt,connexion_texte1)       "Equipment Connection in Progress..."
@@ -130,7 +130,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeqt,configurer)          "Set up"
 
    set caption(confeqt,pas_equipement)      "No Equipment."
-   set caption(confeqt,pas_focuser)         "No focuser"
+   set caption(confeqt,pas_focuser)         "No Focuser"
 
    set caption(confeqt,attention)           "Warning"
    set caption(confeqt,connexion_texte1)    "Equipment Connection in Progress..."
@@ -148,7 +148,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeqt,configurer)          "Set up"
 
    set caption(confeqt,pas_equipement)      "No Equipment."
-   set caption(confeqt,pas_focuser)         "No focuser"
+   set caption(confeqt,pas_focuser)         "No Focuser"
 
    set caption(confeqt,attention)           "Warning"
    set caption(confeqt,connexion_texte1)    "Equipment Connection in Progress..."
@@ -166,7 +166,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeqt,configurer)          "Set up"
 
    set caption(confeqt,pas_equipement)      "No Equipment."
-   set caption(confeqt,pas_focuser)         "No focuser"
+   set caption(confeqt,pas_focuser)         "No Focuser"
 
    set caption(confeqt,attention)           "Warning"
    set caption(confeqt,connexion_texte1)    "Equipment Connection in Progress..."
