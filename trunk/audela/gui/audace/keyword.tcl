@@ -218,6 +218,7 @@ proc ::keyword::init { } {
    #--- Initialisation de variables
    set private(nom_observateur)     ""
    set private(nom_observatoire)    ""
+   set private(nom_organisation)    ""
    set private(instrument)          ""
    set private(diametre)            ""
    set private(focale_resultante)   ""
@@ -230,6 +231,7 @@ proc ::keyword::init { } {
    set private(temperature_ccd)     ""
    set private(equipement)          ""
    set private(detectorName)        ""
+   set private(confName)            ""
    set private(CRVAL1)              ""
    set private(CRVAL2)              ""
    set private(CRPIX1)              ""
@@ -250,7 +252,6 @@ proc ::keyword::init { } {
    set private(skylevel)            ""
    set private(name_software)       "[ ::audela::getPluginTitle ] $::audela(version)"
    set private(name_software)       "[ ::keyword::headerFitsCompliant $::keyword::private(name_software) ]"
-   set private(confName)            ""
    set private(commentaire)         ""
 
    #--- Liste pour les combobox
@@ -262,6 +263,7 @@ proc ::keyword::init { } {
    set private(infosMotsClefs) ""
    lappend private(infosMotsClefs) [ list "OBSERVER" $::caption(keyword,lieu)        ::keyword::private(nom_observateur)     readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                       "" "" "string" "Observer name"                                   "" ]
    lappend private(infosMotsClefs) [ list "SITENAME" $::caption(keyword,lieu)        ::keyword::private(nom_observatoire)    readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                       "" "" "string" "Observatory name"                                "" ]
+   lappend private(infosMotsClefs) [ list "ORIGIN"   $::caption(keyword,lieu)        ::keyword::private(nom_organisation)    readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                       "" "" "string" "Origin place of FITS image"                      "" ]
    lappend private(infosMotsClefs) [ list "IAU_CODE" $::caption(keyword,lieu)        ::conf(posobs,station_uai)              readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                       "" "" "string" "Observatory IAU Code"                            "" ]
    lappend private(infosMotsClefs) [ list "SITELONG" $::caption(keyword,lieu)        ::conf(posobs,estouest_long)            readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                       "" "" "string" "Observatory longitude"                           "degres, minutes, seconds" ]
    lappend private(infosMotsClefs) [ list "SITELAT"  $::caption(keyword,lieu)        ::conf(posobs,nordsud_lat)              readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                       "" "" "string" "Observatory latitude"                            "degres, minutes, seconds" ]
@@ -279,6 +281,7 @@ proc ::keyword::init { } {
    lappend private(infosMotsClefs) [ list "CCD_TEMP" $::caption(keyword,instrument)  ::keyword::private(temperature_ccd)     readonly $::caption(keyword,rafraichir) "::keyword::onChangeTemperature"               ""                                  ""                                       "" "" "float"  "Actual CCD temperature"                          "degres Celsius" ]
    lappend private(infosMotsClefs) [ list "INSTRUME" $::caption(keyword,instrument)  ::keyword::private(equipement)          normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Instrument"                                      "" ]
    lappend private(infosMotsClefs) [ list "DETNAM"   $::caption(keyword,instrument)  ::keyword::private(detectorName)        normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Detector"                           "" ]
+   lappend private(infosMotsClefs) [ list "CONFNAME" $::caption(keyword,instrument)  ::keyword::private(confName)            normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Configuration name"                              "" ]
    lappend private(infosMotsClefs) [ list "CRVAL1"   $::caption(keyword,instrument)  ::keyword::private(CRVAL1)              readonly ""                             ""                                             ""                                  ""                                       "" "" "float"  "Reference coordinate for naxis1"                 "degres" ]
    lappend private(infosMotsClefs) [ list "CRVAL2"   $::caption(keyword,instrument)  ::keyword::private(CRVAL2)              readonly ""                             ""                                             ""                                  ""                                       "" "" "float"  "Reference coordinate for naxis2"                 "degres" ]
    lappend private(infosMotsClefs) [ list "CRPIX1"   $::caption(keyword,instrument)  ::keyword::private(CRPIX1)              readonly ""                             ""                                             ""                                  ""                                       "" "" "float"  "Reference pixel for naxis1"                      "pixel" ]
@@ -298,7 +301,6 @@ proc ::keyword::init { } {
    lappend private(infosMotsClefs) [ list "SKYLEVEL" $::caption(keyword,acquisition) ::keyword::private(skylevel)            normal   ""                             ""                                             ""                                  ""                                       "" "" "float"  "Sky backgound level"                             "ADU" ]
    lappend private(infosMotsClefs) [ list "SWCREATE" $::caption(keyword,logiciel)    ::keyword::private(name_software)       readonly ""                             ""                                             ""                                  ""                                       "" "" "string" "Acquisition software: http://www.audela.org/"    "" ]
    lappend private(infosMotsClefs) [ list "SWMODIFY" $::caption(keyword,logiciel)    ::keyword::private(name_software)       readonly ""                             ""                                             ""                                  ""                                       "" "" "string" "Processing software: http://www.audela.org/"     "" ]
-   lappend private(infosMotsClefs) [ list "CONFNAME" $::caption(keyword,instrument)  ::keyword::private(confName)            normal   ""                             ""                                             ""                                  ""                                       "" "" "string" "Configuration name"                              "" ]
    lappend private(infosMotsClefs) [ list "COMMENT"  $::caption(keyword,divers)      ::keyword::private(commentaire)         normal   ""                             ""                                             ""                                  ""                                       "" "" "string" ""                                                "" ]
 }
 
@@ -395,7 +397,8 @@ proc ::keyword::run { visuNo configNameVariable } {
 
 #------------------------------------------------------------------------------
 # onChangeConfPosObs
-#    met a jour les mots cles des noms de l'observateur et de l'observatoire
+#    met a jour les mots cles des noms des observateurs, de l'observatoire
+#    et de l'organisation
 #
 # Parametres :
 #    visuNo
@@ -408,6 +411,7 @@ proc ::keyword::onChangeConfPosObs { visuNo args } {
 
    set private(nom_observateur)  [ ::keyword::headerFitsCompliant $::conf(posobs,nom_observateur) ]
    set private(nom_observatoire) [ ::keyword::headerFitsCompliant $::conf(posobs,nom_observatoire) ]
+   set private(nom_organisation) [ ::keyword::headerFitsCompliant $::conf(posobs,nom_organisation) ]
 }
 
 #------------------------------------------------------------------------------
