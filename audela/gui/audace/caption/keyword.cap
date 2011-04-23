@@ -52,8 +52,9 @@ set caption(keyword,logiciel)                          "Software"
 set caption(keyword,divers)                            "Miscellaneous"
 
 #--- Mots clefs
-set caption(keyword,description,OBSERVER)              "Observer Name"
+set caption(keyword,description,OBSERVER)              "Observers Names"
 set caption(keyword,description,SITENAME)              "Observatory Name"
+set caption(keyword,description,ORIGIN)                "Organization Name"
 set caption(keyword,description,IAU_CODE)              "IAU Code for the observatory"
 set caption(keyword,description,SITELONG)              "Longitude"
 set caption(keyword,description,SITELAT)               "Latitude"
@@ -144,8 +145,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,divers)                         "Divers"
 
    #--- Mots clefs
-   set caption(keyword,description,OBSERVER)           "Nom de l'observateur"
+   set caption(keyword,description,OBSERVER)           "Noms des observateurs"
    set caption(keyword,description,SITENAME)           "Nom de l'observatoire"
+   set caption(keyword,description,ORIGIN)             "Nom de l'organisation"
    set caption(keyword,description,IAU_CODE)           "Code UAI de l'observatoire"
    set caption(keyword,description,SITELONG)           "Longitude"
    set caption(keyword,description,SITELAT)            "Latitude"
@@ -236,8 +238,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,divers)                         "Varie"
 
    #--- Mots clefs
-   set caption(keyword,description,OBSERVER)           "Nome dell'osservatore"
+   set caption(keyword,description,OBSERVER)           "Nomi degli osservatori"
    set caption(keyword,description,SITENAME)           "Nome dell'osservatorio"
+   set caption(keyword,description,ORIGIN)             "Nome dell'organizzazione"
    set caption(keyword,description,IAU_CODE)           "Codice UAI dell'osservatorio"
    set caption(keyword,description,SITELONG)           "Longitudine"
    set caption(keyword,description,SITELAT)            "Latitudine"
@@ -328,8 +331,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,divers)                         "Miscelánea"
 
    #--- Mots clefs
-   set caption(keyword,description,OBSERVER)           "Nombre del observador"
+   set caption(keyword,description,OBSERVER)           "Nombres de los observadores"
    set caption(keyword,description,SITENAME)           "Nombre del observatorio"
+   set caption(keyword,description,ORIGIN)             "Nombre de la organización"
    set caption(keyword,description,IAU_CODE)           "Código UAI del observatorio"
    set caption(keyword,description,SITELONG)           "Longitud"
    set caption(keyword,description,SITELAT)            "Latitud"
@@ -421,7 +425,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    #--- Mots clefs
    set caption(keyword,description,OBSERVER)           "Namen der Beobachter"
-   set caption(keyword,description,SITENAME)           "Namen der Sternwarte"
+   set caption(keyword,description,SITENAME)           "Name der Sternwarte"
+   set caption(keyword,description,ORIGIN)             "Name der Organisation"
    set caption(keyword,description,IAU_CODE)           "Sternwarte UAI Code"
    set caption(keyword,description,SITELONG)           "Länge"
    set caption(keyword,description,SITELAT)            "Breite"
@@ -512,8 +517,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,divers)                         "Diversos"
 
    #--- Mots clefs
-   set caption(keyword,description,OBSERVER)           "Nome do observador"
-   set caption(keyword,description,SITENAME)           "Observators navn"
+   set caption(keyword,description,OBSERVER)           "Nomes dos observadores"
+   set caption(keyword,description,SITENAME)           "Nome do observatório"
+   set caption(keyword,description,ORIGIN)             "Nome da organização"
    set caption(keyword,description,IAU_CODE)           "Código UAI do observatório"
    set caption(keyword,description,SITELONG)           "Longitude"
    set caption(keyword,description,SITELAT)            "Latitude"
@@ -604,8 +610,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,divers)                         "Miscellaneous"
 
    #--- Mots clefs
-   set caption(keyword,description,OBSERVER)           "Observer Name"
+   set caption(keyword,description,OBSERVER)           "Observers Names"
    set caption(keyword,description,SITENAME)           "Observatory Name"
+   set caption(keyword,description,ORIGIN)             "Organization Name"
    set caption(keyword,description,IAU_CODE)           "IAU Code for the observatory"
    set caption(keyword,description,SITELONG)           "Longitude"
    set caption(keyword,description,SITELAT)            "Latitude"
@@ -696,8 +703,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,divers)                         "Miscellaneous"
 
    #--- Mots clefs
-   set caption(keyword,description,OBSERVER)           "Observer Name"
+   set caption(keyword,description,OBSERVER)           "Observers Names"
    set caption(keyword,description,SITENAME)           "Observatory Name"
+   set caption(keyword,description,ORIGIN)             "Organization Name"
    set caption(keyword,description,IAU_CODE)           "IAU Code for the observatory"
    set caption(keyword,description,SITELONG)           "Longitude"
    set caption(keyword,description,SITELAT)            "Latitude"
@@ -788,8 +796,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,divers)                         "Miscellaneous"
 
    #--- Mots clefs
-   set caption(keyword,description,OBSERVER)           "Observer Name"
+   set caption(keyword,description,OBSERVER)           "Observers Names"
    set caption(keyword,description,SITENAME)           "Observatory Name"
+   set caption(keyword,description,ORIGIN)             "Organization Name"
    set caption(keyword,description,IAU_CODE)           "IAU Code for the observatory"
    set caption(keyword,description,SITELONG)           "Longitude"
    set caption(keyword,description,SITELAT)            "Latitude"
