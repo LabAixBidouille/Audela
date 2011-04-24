@@ -233,7 +233,8 @@ proc ::getdss::createPanel { visuNo } {
    #--- Entry pour l'indice de debut
    label $private($visuNo,This).f01.l1 -text $caption(getdss,debut)
    pack $private($visuNo,This).f01.l1 -side left
-   entry $private($visuNo,This).f01.e1 -textvariable ::getdss::private($visuNo,debut) -width 6 -justify center
+   entry $private($visuNo,This).f01.e1 -textvariable ::getdss::private($visuNo,debut) -width 6 -justify center \
+      -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 9999 }
    pack $private($visuNo,This).f01.e1 -side left -fill x -padx 5
    bind $private($visuNo,This).f01.e1 <Enter> "::getdss::active_objet $visuNo"
    bind $private($visuNo,This).f01.e1 <Leave> "::getdss::active_objet $visuNo"
@@ -241,7 +242,8 @@ proc ::getdss::createPanel { visuNo } {
    #--- Entry pour l'indice de fin
    label $private($visuNo,This).f01.l2 -text $caption(getdss,fin)
    pack $private($visuNo,This).f01.l2 -side left
-   entry $private($visuNo,This).f01.e2 -textvariable ::getdss::private($visuNo,fin) -width 6 -justify center
+   entry $private($visuNo,This).f01.e2 -textvariable ::getdss::private($visuNo,fin) -width 6 -justify center \
+      -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 9999 }
    pack $private($visuNo,This).f01.e2 -side left -fill x -padx 5
    bind $private($visuNo,This).f01.e2 <Enter> "::getdss::active_objet $visuNo"
    bind $private($visuNo,This).f01.e2 <Leave> "::getdss::active_objet $visuNo"
@@ -298,7 +300,8 @@ proc ::getdss::createPanel { visuNo } {
 
    label $private($visuNo,This).f1.l1 -text $caption(getdss,largeur)
    pack $private($visuNo,This).f1.l1 -side left
-   entry $private($visuNo,This).f1.e1 -textvariable ::getdss::private($visuNo,largeur) -width 10
+   entry $private($visuNo,This).f1.e1 -textvariable ::getdss::private($visuNo,largeur) -width 10 \
+      -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 9999 }
    pack $private($visuNo,This).f1.e1 -side left -padx 5
 
    #--- Hauteur de l'image
@@ -307,7 +310,8 @@ proc ::getdss::createPanel { visuNo } {
 
    label $private($visuNo,This).f2.l2 -text $caption(getdss,hauteur)
    pack $private($visuNo,This).f2.l2 -side left
-   entry $private($visuNo,This).f2.e2 -textvariable ::getdss::private($visuNo,hauteur) -width 10
+   entry $private($visuNo,This).f2.e2 -textvariable ::getdss::private($visuNo,hauteur) -width 10 \
+      -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 9999 }
    pack $private($visuNo,This).f2.e2 -side left -padx 5
 
    #--- Repertoire de sauvegarde de l'image
@@ -357,7 +361,8 @@ proc ::getdss::createPanel { visuNo } {
    #--- Proxy : Port
    label $private($visuNo,This).f6.f7.l8 -text $caption(getdss,port)
    pack $private($visuNo,This).f6.f7.l8 -side top -anchor w
-   entry $private($visuNo,This).f6.f8.e8 -textvariable ::getdss::private($visuNo,proxyport) -width 30
+   entry $private($visuNo,This).f6.f8.e8 -textvariable ::getdss::private($visuNo,proxyport) -width 30 \
+      -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 99999 }
    pack $private($visuNo,This).f6.f8.e8 -side top -padx 5
 
    #--- Proxy : Utilisateur
