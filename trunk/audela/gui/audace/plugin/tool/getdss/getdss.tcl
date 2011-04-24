@@ -95,7 +95,7 @@ proc ::getdss::createPluginInstance { { in "" } { visuNo 1 } } {
    package require base64
 
    #--- Inititalisation de variables de configuration
-   if { ! [ info exists ::conf(getdss,$visuNo,geometry) ] } { set ::conf(getdss,$visuNo,geometry) "410x595+50+50" }
+   if { ! [ info exists ::conf(getdss,$visuNo,geometry) ] } { set ::conf(getdss,$visuNo,geometry) "410x640+50+50" }
 
    #--- Initialisation du nom de la fenetre
    set private($visuNo,This) $in.getdss
@@ -164,8 +164,16 @@ proc ::getdss::createPanel { visuNo } {
    set private($visuNo,NomObjet)  M
    set private($visuNo,debut)     ""
    set private($visuNo,fin)       ""
-   set private($visuNo,ad)        "02h02m53.5s"
-   set private($visuNo,dec)       "-12d29m14.3s"
+   set private($visuNo,adh)       "3"
+   set private($visuNo,adm)       "42"
+   set private($visuNo,ads)       "53"
+   set private($visuNo,adss)      "5"
+   set private($visuNo,decd)      "-12"
+   set private($visuNo,decm)      "9"
+   set private($visuNo,decs)      "14"
+   set private($visuNo,decss)     "3"
+   set private($visuNo,ad)        ""
+   set private($visuNo,dec)       ""
    set private($visuNo,hauteur)   20.0
    set private($visuNo,largeur)   30.0
    set private($visuNo,catalogue) ""
@@ -205,6 +213,7 @@ proc ::getdss::createPanel { visuNo } {
 
    button $private($visuNo,This).f00.ouvrir -text $caption(getdss,ouvrir) -command "::getdss::ouvrir $visuNo"
    pack $private($visuNo,This).f00.ouvrir -side left -padx 10 -ipadx 5 -fill x -expand 1
+
    button $private($visuNo,This).f00.enregistrer -text $caption(getdss,enregistrer) -command ::getdss::enregistrer
    pack $private($visuNo,This).f00.enregistrer -side left -padx 10 -ipadx 5 -fill x -expand 1
 
@@ -214,10 +223,13 @@ proc ::getdss::createPanel { visuNo } {
 
    radiobutton $private($visuNo,This).f0.but1 -variable ::getdss::private($visuNo,NomObjet) -text $caption(getdss,messier) -value M
    pack $private($visuNo,This).f0.but1 -side left
+
    radiobutton $private($visuNo,This).f0.but2 -variable ::getdss::private($visuNo,NomObjet) -text $caption(getdss,ngc) -value NGC
    pack $private($visuNo,This).f0.but2 -side left
+
    radiobutton $private($visuNo,This).f0.but3 -variable ::getdss::private($visuNo,NomObjet) -text $caption(getdss,ic) -value IC
    pack $private($visuNo,This).f0.but3 -side left
+
    radiobutton $private($visuNo,This).f0.but4 -variable ::getdss::private($visuNo,NomObjet) -text $caption(getdss,coord) -value Coord
    pack $private($visuNo,This).f0.but4 -side left
 
@@ -233,18 +245,22 @@ proc ::getdss::createPanel { visuNo } {
    #--- Entry pour l'indice de debut
    label $private($visuNo,This).f01.l1 -text $caption(getdss,debut)
    pack $private($visuNo,This).f01.l1 -side left
+
    entry $private($visuNo,This).f01.e1 -textvariable ::getdss::private($visuNo,debut) -width 6 -justify center \
       -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 9999 }
    pack $private($visuNo,This).f01.e1 -side left -fill x -padx 5
+
    bind $private($visuNo,This).f01.e1 <Enter> "::getdss::active_objet $visuNo"
    bind $private($visuNo,This).f01.e1 <Leave> "::getdss::active_objet $visuNo"
 
    #--- Entry pour l'indice de fin
    label $private($visuNo,This).f01.l2 -text $caption(getdss,fin)
    pack $private($visuNo,This).f01.l2 -side left
+
    entry $private($visuNo,This).f01.e2 -textvariable ::getdss::private($visuNo,fin) -width 6 -justify center \
       -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 9999 }
    pack $private($visuNo,This).f01.e2 -side left -fill x -padx 5
+
    bind $private($visuNo,This).f01.e2 <Enter> "::getdss::active_objet $visuNo"
    bind $private($visuNo,This).f01.e2 <Leave> "::getdss::active_objet $visuNo"
 
@@ -252,21 +268,93 @@ proc ::getdss::createPanel { visuNo } {
    frame $private($visuNo,This).f001 -borderwidth 5
    pack $private($visuNo,This).f001 -side top -fill x
 
+   frame $private($visuNo,This).f001.ad -borderwidth 5
+   pack $private($visuNo,This).f001.ad -side top -fill x
+
+   frame $private($visuNo,This).f001.dec -borderwidth 5
+   pack $private($visuNo,This).f001.dec -side top -fill x
+
    #--- Entry pour l'AD
-   label $private($visuNo,This).f001.lAD -text $caption(getdss,ad)
-   pack $private($visuNo,This).f001.lAD -side left -anchor w
-   entry $private($visuNo,This).f001.eAD -textvariable ::getdss::private($visuNo,ad) -width 12
-   pack $private($visuNo,This).f001.eAD -side left -padx 5
-   bind $private($visuNo,This).f001.eAD <Enter> "::getdss::active_objet $visuNo"
-   bind $private($visuNo,This).f001.eAD <Leave> "::getdss::active_objet $visuNo"
+   label $private($visuNo,This).f001.ad.lAD -text $caption(getdss,ad)
+   pack $private($visuNo,This).f001.ad.lAD -side left -anchor w
+
+   entry $private($visuNo,This).f001.ad.eADh -textvariable ::getdss::private($visuNo,adh) -width 3 \
+      -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 0 23 }
+   pack $private($visuNo,This).f001.ad.eADh -side left -padx 2
+
+   label $private($visuNo,This).f001.ad.lADh -text "h"
+   pack $private($visuNo,This).f001.ad.lADh -side left -anchor w
+
+   entry $private($visuNo,This).f001.ad.eADm -textvariable ::getdss::private($visuNo,adm) -width 3 \
+      -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 0 59 }
+   pack $private($visuNo,This).f001.ad.eADm -side left -padx 2
+
+   label $private($visuNo,This).f001.ad.lADm -text "m"
+   pack $private($visuNo,This).f001.ad.lADm -side left -anchor w
+
+   entry $private($visuNo,This).f001.ad.eADs -textvariable ::getdss::private($visuNo,ads) -width 3 \
+      -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 0 59 }
+   pack $private($visuNo,This).f001.ad.eADs -side left -padx 2
+
+   label $private($visuNo,This).f001.ad.lADpoint -text "."
+   pack $private($visuNo,This).f001.ad.lADpoint -side left -anchor w
+
+   entry $private($visuNo,This).f001.ad.eADss -textvariable ::getdss::private($visuNo,adss) -width 2 \
+      -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 0 9 }
+   pack $private($visuNo,This).f001.ad.eADss -side left -padx 2
+
+   label $private($visuNo,This).f001.ad.lADs -text "s"
+   pack $private($visuNo,This).f001.ad.lADs -side left -anchor w
+
+   bind $private($visuNo,This).f001.ad.eADh  <Enter> "::getdss::active_objet $visuNo"
+   bind $private($visuNo,This).f001.ad.eADh  <Leave> "::getdss::active_objet $visuNo"
+   bind $private($visuNo,This).f001.ad.eADm  <Enter> "::getdss::active_objet $visuNo"
+   bind $private($visuNo,This).f001.ad.eADm  <Leave> "::getdss::active_objet $visuNo"
+   bind $private($visuNo,This).f001.ad.eADs  <Enter> "::getdss::active_objet $visuNo"
+   bind $private($visuNo,This).f001.ad.eADs  <Leave> "::getdss::active_objet $visuNo"
+   bind $private($visuNo,This).f001.ad.eADss <Enter> "::getdss::active_objet $visuNo"
+   bind $private($visuNo,This).f001.ad.eADss <Leave> "::getdss::active_objet $visuNo"
 
    #--- Entry la Dec.
-   label $private($visuNo,This).f001.lDec -text $caption(getdss,dec)
-   pack $private($visuNo,This).f001.lDec -side left -anchor w
-   entry $private($visuNo,This).f001.eDec -textvariable ::getdss::private($visuNo,dec) -width 12
-   pack $private($visuNo,This).f001.eDec -side left -padx 5
-   bind $private($visuNo,This).f001.eDec <Enter> "::getdss::active_objet $visuNo"
-   bind $private($visuNo,This).f001.eDec <Leave> "::getdss::active_objet $visuNo"
+   label $private($visuNo,This).f001.dec.lDec -text $caption(getdss,dec)
+   pack $private($visuNo,This).f001.dec.lDec -side left -anchor w
+
+   entry $private($visuNo,This).f001.dec.eDecd -textvariable ::getdss::private($visuNo,decd) -width 3 \
+      -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer -90 90 }
+   pack $private($visuNo,This).f001.dec.eDecd -side left -padx 2
+
+   label $private($visuNo,This).f001.dec.lDecd -text "°"
+   pack $private($visuNo,This).f001.dec.lDecd -side left -anchor w
+
+   entry $private($visuNo,This).f001.dec.eDecm -textvariable ::getdss::private($visuNo,decm) -width 3 \
+      -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 0 59 }
+   pack $private($visuNo,This).f001.dec.eDecm -side left -padx 2
+
+   label $private($visuNo,This).f001.dec.lDecm -text "'"
+   pack $private($visuNo,This).f001.dec.lDecm -side left -anchor w
+
+   entry $private($visuNo,This).f001.dec.eDecs -textvariable ::getdss::private($visuNo,decs) -width 3 \
+      -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 0 59 }
+   pack $private($visuNo,This).f001.dec.eDecs -side left -padx 2
+
+   label $private($visuNo,This).f001.dec.lDecs -text "."
+   pack $private($visuNo,This).f001.dec.lDecs -side left -anchor w
+
+   entry $private($visuNo,This).f001.dec.eDecss -textvariable ::getdss::private($visuNo,decss) -width 2 \
+      -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 0 9 }
+   pack $private($visuNo,This).f001.dec.eDecss -side left -padx 2
+
+   label $private($visuNo,This).f001.dec.lDecss -text "''"
+   pack $private($visuNo,This).f001.dec.lDecss -side left -anchor w
+
+   bind $private($visuNo,This).f001.dec.eDecd  <Enter> "::getdss::active_objet $visuNo"
+   bind $private($visuNo,This).f001.dec.eDecd  <Leave> "::getdss::active_objet $visuNo"
+   bind $private($visuNo,This).f001.dec.eDecm  <Enter> "::getdss::active_objet $visuNo"
+   bind $private($visuNo,This).f001.dec.eDecm  <Leave> "::getdss::active_objet $visuNo"
+   bind $private($visuNo,This).f001.dec.eDecs  <Enter> "::getdss::active_objet $visuNo"
+   bind $private($visuNo,This).f001.dec.eDecs  <Leave> "::getdss::active_objet $visuNo"
+   bind $private($visuNo,This).f001.dec.eDecss <Enter> "::getdss::active_objet $visuNo"
+   bind $private($visuNo,This).f001.dec.eDecss <Leave> "::getdss::active_objet $visuNo"
 
    #--- Texte de rappel de la recherche
    frame $private($visuNo,This).f02 -borderwidth 5
@@ -278,10 +366,13 @@ proc ::getdss::createPanel { visuNo } {
    #--- Choix du catalogue dans lequel on recupere l'image
    frame $private($visuNo,This).lb -borderwidth 2
    pack $private($visuNo,This).lb -side top -fill x
+
    label $private($visuNo,This).lb.l1 -text $caption(getdss,catalogue)
    pack $private($visuNo,This).lb.l1 -side left -padx 5
+
    listbox   $private($visuNo,This).lb.lb1 -width 25 -height 8 -borderwidth 2 -relief sunken -yscrollcommand [list $private($visuNo,This).lb.scrollbar set]
    pack      $private($visuNo,This).lb.lb1 -side left -anchor nw
+
    scrollbar $private($visuNo,This).lb.scrollbar -orient vertical -command [list $private($visuNo,This).lb.lb1 yview]
    pack      $private($visuNo,This).lb.scrollbar -side left -fill y
 
@@ -300,6 +391,7 @@ proc ::getdss::createPanel { visuNo } {
 
    label $private($visuNo,This).f1.l1 -text $caption(getdss,largeur)
    pack $private($visuNo,This).f1.l1 -side left
+
    entry $private($visuNo,This).f1.e1 -textvariable ::getdss::private($visuNo,largeur) -width 10 \
       -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 9999 }
    pack $private($visuNo,This).f1.e1 -side left -padx 5
@@ -310,6 +402,7 @@ proc ::getdss::createPanel { visuNo } {
 
    label $private($visuNo,This).f2.l2 -text $caption(getdss,hauteur)
    pack $private($visuNo,This).f2.l2 -side left
+
    entry $private($visuNo,This).f2.e2 -textvariable ::getdss::private($visuNo,hauteur) -width 10 \
       -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 9999 }
    pack $private($visuNo,This).f2.e2 -side left -padx 5
@@ -320,9 +413,11 @@ proc ::getdss::createPanel { visuNo } {
 
    label $private($visuNo,This).f3.l3 -text $caption(getdss,repertoire)
    pack $private($visuNo,This).f3.l3 -side left
+
    entry $private($visuNo,This).f3.e3 -textvariable ::getdss::private($visuNo,rep) -width 40
    pack $private($visuNo,This).f3.e3 -side left -padx 5
    $private($visuNo,This).f3.e3 xview end
+
    button $private($visuNo,This).f3.b3 -text $caption(getdss,parcourir) -command "::getdss::getdir $visuNo"
    pack $private($visuNo,This).f3.b3 -side left
 
@@ -355,25 +450,29 @@ proc ::getdss::createPanel { visuNo } {
    #--- Proxy : Nom
    label $private($visuNo,This).f6.f7.l7 -text $caption(getdss,nom)
    pack $private($visuNo,This).f6.f7.l7 -side top -anchor w
+
    entry $private($visuNo,This).f6.f8.e7 -textvariable ::getdss::private($visuNo,proxyname) -width 30
    pack $private($visuNo,This).f6.f8.e7 -side top -padx 5
 
    #--- Proxy : Port
    label $private($visuNo,This).f6.f7.l8 -text $caption(getdss,port)
    pack $private($visuNo,This).f6.f7.l8 -side top -anchor w
+
    entry $private($visuNo,This).f6.f8.e8 -textvariable ::getdss::private($visuNo,proxyport) -width 30 \
-      -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 99999 }
+      -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 9999 }
    pack $private($visuNo,This).f6.f8.e8 -side top -padx 5
 
    #--- Proxy : Utilisateur
    label $private($visuNo,This).f6.f7.l9 -text $caption(getdss,user)
    pack $private($visuNo,This).f6.f7.l9 -side top -anchor w
+
    entry $private($visuNo,This).f6.f8.e9 -textvariable ::getdss::private($visuNo,proxyuser) -width 30
    pack $private($visuNo,This).f6.f8.e9 -side top -padx 5
 
    #--- Proxy : Mot de passe
    label $private($visuNo,This).f6.f7.l10 -text $caption(getdss,password)
    pack $private($visuNo,This).f6.f7.l10 -side top -anchor w
+
    entry $private($visuNo,This).f6.f8.e10 -textvariable ::getdss::private($visuNo,proxypassword) -width 30
    pack $private($visuNo,This).f6.f8.e10 -side top -padx 5
 
@@ -383,8 +482,10 @@ proc ::getdss::createPanel { visuNo } {
 
    button $private($visuNo,This).f9.b1 -text $caption(getdss,lancer) -command "::getdss::recuperation $visuNo"
    pack $private($visuNo,This).f9.b1 -side left -padx 3 -ipadx 5 -ipady 5
+
    button $private($visuNo,This).f9.b2 -text $caption(getdss,fermer) -command "::getdss::quitter $visuNo"
    pack $private($visuNo,This).f9.b2 -side right -padx 3 -ipadx 5 -ipady 5
+
    button $private($visuNo,This).f9.b3 -text $caption(getdss,aide) -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::getdss::getPluginType ] ] \
    [ ::getdss::getPluginDirectory ] [ ::getdss::getPluginHelp ]"
    pack $private($visuNo,This).f9.b3 -side right -padx 3 -ipadx 5 -ipady 5
@@ -496,16 +597,11 @@ proc ::getdss::Charge_Objet_SIMBAD { visuNo objet } {
 
    } else {
 
-      set had [ lindex [ split $private($visuNo,ad) h ] 0 ]
-      set mad [ lindex [ split [ lindex [ split $private($visuNo,ad) h ] 1 ] m ] 0 ]
-      set sad [ lindex [ split [ lindex [ split [ lindex [ split $private($visuNo,ad) h ] 1 ] m ] 1 ] s ] 0 ]
+      set ra  "$private($visuNo,adh) $private($visuNo,adm) $private($visuNo,ads).$private($visuNo,adss)"
+      set dec "$private($visuNo,decd) $private($visuNo,decm) $private($visuNo,decs).$private($visuNo,decss)"
 
-      set ddec [ lindex [ split $private($visuNo,dec) d ] 0 ]
-      set mdec [ lindex [ split [ lindex [ split $private($visuNo,dec) d ] 1 ] m ] 0 ]
-      set sdec [ lindex [ split [ lindex [ split [ lindex [ split $private($visuNo,dec) d ] 1 ] m ] 1 ] s ] 0 ]
-
-      set ra  "$had $mad $sad"
-      set dec "$ddec $mdec $sdec"
+      set private($visuNo,ad)  "$private($visuNo,adh)h$private($visuNo,adm)m$private($visuNo,ads).$private($visuNo,adss)s"
+      set private($visuNo,dec) "$private($visuNo,decd)h$private($visuNo,decm)m$private($visuNo,decs).$private($visuNo,decss)s"
 
    }
 
@@ -622,6 +718,7 @@ proc ::getdss::recuperation { visuNo } {
 
       #--- Ouverture du fichier des erreurs
       set ferreur [open notloaded.txt a]
+      puts $ferreur "-------------------------------------------------"
 
       set ligne "[clock format [clock seconds] -format "20%y %m %d - %X"] - "
       if { $private($visuNo,NomObjet) != "Coord" } {
@@ -670,7 +767,6 @@ proc ::getdss::recuperation { visuNo } {
       wm withdraw .dialog($visuNo)
 
       #--- Fermeture du fichier des erreurs
-      puts $ferreur "-------------------------------------------------"
       close $ferreur
 
       #--- Restaure le repertoire de base
@@ -715,14 +811,29 @@ proc ::getdss::active_objet { visuNo } {
    if { $private($visuNo,NomObjet) == "Coord" } {
       $private($visuNo,This).f01.e1 configure -state disable
       $private($visuNo,This).f01.e2 configure -state disable
-      $private($visuNo,This).f001.eAD configure -state normal
-      $private($visuNo,This).f001.eDec configure -state normal
+      $private($visuNo,This).f001.ad.eADh configure -state normal
+      $private($visuNo,This).f001.ad.eADm configure -state normal
+      $private($visuNo,This).f001.ad.eADs configure -state normal
+      $private($visuNo,This).f001.ad.eADss configure -state normal
+      $private($visuNo,This).f001.dec.eDecd configure -state normal
+      $private($visuNo,This).f001.dec.eDecm configure -state normal
+      $private($visuNo,This).f001.dec.eDecs configure -state normal
+      $private($visuNo,This).f001.dec.eDecss configure -state normal
    } else {
       $private($visuNo,This).f01.e1 configure -state normal
       $private($visuNo,This).f01.e2 configure -state normal
-      $private($visuNo,This).f001.eAD configure -state disable
-      $private($visuNo,This).f001.eDec configure -state disable
+      $private($visuNo,This).f001.ad.eADh configure -state disable
+      $private($visuNo,This).f001.ad.eADm configure -state disable
+      $private($visuNo,This).f001.ad.eADs configure -state disable
+      $private($visuNo,This).f001.ad.eADss configure -state disable
+      $private($visuNo,This).f001.dec.eDecd configure -state disable
+      $private($visuNo,This).f001.dec.eDecm configure -state disable
+      $private($visuNo,This).f001.dec.eDecs configure -state disable
+      $private($visuNo,This).f001.dec.eDecss configure -state disable
    }
+
+   set private($visuNo,ad)  "$private($visuNo,adh)h$private($visuNo,adm)m$private($visuNo,ads).$private($visuNo,adss)s"
+   set private($visuNo,dec) "$private($visuNo,decd)h$private($visuNo,decm)m$private($visuNo,decs).$private($visuNo,decss)s"
 
    if { $private($visuNo,NomObjet) == "M" } {
       $private($visuNo,This).f02.l1 configure -text [ format $caption(getdss,Messier) $private($visuNo,debut) $private($visuNo,fin) ]
