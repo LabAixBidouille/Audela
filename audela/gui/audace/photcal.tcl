@@ -876,7 +876,7 @@ proc photcal_selectfiles { {dirfilter ""} {vignetting 1} } {
       }
       set exposure [lindex [buf$bufno getkwd EXPOSURE] 1]
       set dateobs [lindex [buf$bufno getkwd DATE-OBS] 1]
-      set name [lindex [buf$bufno getkwd NAME] 1]
+      set name [string trim [lindex [buf$bufno getkwd NAME] 1]]
       if {$name==""} { set name photcal-$fic }
       set azimut [lindex [buf$bufno getkwd GREN_AZ] 1]
       if {$azimut==""} { set azimut 0 }
