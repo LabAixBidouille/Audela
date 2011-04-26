@@ -2,7 +2,7 @@
 # Fichier : getdss.tcl
 # Description : Recuperation d'images du DSS (Digital Sky Survey)
 # Auteur : Guillaume SPITZER
-# Mise à jour $Id$
+# Mise Ã  jour $Id$
 #
 
 #============================================================
@@ -326,7 +326,7 @@ proc ::getdss::createPanel { visuNo } {
       -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer -90 90 }
    pack $private($visuNo,This).f001.dec.eDecd -side left -padx 2
 
-   label $private($visuNo,This).f001.dec.lDecd -text "°"
+   label $private($visuNo,This).f001.dec.lDecd -text "Â°"
    pack $private($visuNo,This).f001.dec.lDecd -side left -anchor w
 
    entry $private($visuNo,This).f001.dec.eDecm -textvariable ::getdss::private($visuNo,decm) -width 3 \
