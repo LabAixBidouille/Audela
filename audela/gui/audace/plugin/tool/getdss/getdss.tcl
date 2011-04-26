@@ -2,7 +2,7 @@
 # Fichier : getdss.tcl
 # Description : Recuperation d'images du DSS (Digital Sky Survey)
 # Auteur : Guillaume SPITZER
-# Mise Ã  jour $Id$
+# Mise à jour $Id$
 #
 
 #============================================================
@@ -95,7 +95,7 @@ proc ::getdss::createPluginInstance { { in "" } { visuNo 1 } } {
    package require base64
 
    #--- Inititalisation de variables de configuration
-   if { ! [ info exists ::conf(getdss,$visuNo,geometry) ] } { set ::conf(getdss,$visuNo,geometry) "410x640+50+50" }
+   if { ! [ info exists ::conf(getdss,$visuNo,geometry) ] } { set ::conf(getdss,$visuNo,geometry) "470x665+50+50" }
 
    #--- Initialisation du nom de la fenetre
    set private($visuNo,This) $in.getdss
@@ -306,6 +306,9 @@ proc ::getdss::createPanel { visuNo } {
    label $private($visuNo,This).f001.ad.lADs -text "s"
    pack $private($visuNo,This).f001.ad.lADs -side left -anchor w
 
+   button $private($visuNo,This).f001.ad.butTlscp -text $caption(getdss,telescope) -command "::getdss::cmdTakeTlscpCoord $visuNo"
+   pack $private($visuNo,This).f001.ad.butTlscp -side right -padx 3 -ipadx 5 -ipady 5
+
    bind $private($visuNo,This).f001.ad.eADh  <Enter> "::getdss::active_objet $visuNo"
    bind $private($visuNo,This).f001.ad.eADh  <Leave> "::getdss::active_objet $visuNo"
    bind $private($visuNo,This).f001.ad.eADm  <Enter> "::getdss::active_objet $visuNo"
@@ -323,7 +326,7 @@ proc ::getdss::createPanel { visuNo } {
       -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer -90 90 }
    pack $private($visuNo,This).f001.dec.eDecd -side left -padx 2
 
-   label $private($visuNo,This).f001.dec.lDecd -text "Â°"
+   label $private($visuNo,This).f001.dec.lDecd -text "°"
    pack $private($visuNo,This).f001.dec.lDecd -side left -anchor w
 
    entry $private($visuNo,This).f001.dec.eDecm -textvariable ::getdss::private($visuNo,decm) -width 3 \
@@ -346,6 +349,9 @@ proc ::getdss::createPanel { visuNo } {
 
    label $private($visuNo,This).f001.dec.lDecss -text "''"
    pack $private($visuNo,This).f001.dec.lDecss -side left -anchor w
+
+   button $private($visuNo,This).f001.dec.butFits -text $caption(getdss,imageFits) -command "::getdss::cmdTakeFITSKeywords $visuNo"
+   pack $private($visuNo,This).f001.dec.butFits -side right -padx 3 -ipadx 5 -ipady 5
 
    bind $private($visuNo,This).f001.dec.eDecd  <Enter> "::getdss::active_objet $visuNo"
    bind $private($visuNo,This).f001.dec.eDecd  <Leave> "::getdss::active_objet $visuNo"
@@ -601,7 +607,7 @@ proc ::getdss::Charge_Objet_SIMBAD { visuNo objet } {
       set dec "$private($visuNo,decd) $private($visuNo,decm) $private($visuNo,decs).$private($visuNo,decss)"
 
       set private($visuNo,ad)  "$private($visuNo,adh)h$private($visuNo,adm)m$private($visuNo,ads).$private($visuNo,adss)s"
-      set private($visuNo,dec) "$private($visuNo,decd)h$private($visuNo,decm)m$private($visuNo,decs).$private($visuNo,decss)s"
+      set private($visuNo,dec) "$private($visuNo,decd)d$private($visuNo,decm)m$private($visuNo,decs).$private($visuNo,decss)s"
 
    }
 
@@ -667,9 +673,9 @@ proc ::getdss::Charge_Objet_SIMBAD { visuNo objet } {
       #--- Les catch permettent de trapper certaines erreurs dues au serveur d'images
       #--- (pas bien compris pourquoi) afin de ne pas planter le script et permettre de charger les images suivantes
       if { $private($visuNo,compresse) == "yes" } {
-         catch { buf[ ::confVisu::getBufNo $audace(visuNo) ] load $fichier_objet }
-         catch { buf[ ::confVisu::getBufNo $audace(visuNo) ] compress gzip }
-         catch { buf[ ::confVisu::getBufNo $audace(visuNo) ] save $fichier_objet }
+         catch { buf[ ::confVisu::getBufNo $visuNo ] load $fichier_objet }
+         catch { buf[ ::confVisu::getBufNo $visuNo ] compress gzip }
+         catch { buf[ ::confVisu::getBufNo $visuNo ] save $fichier_objet }
       }
    } else {
       puts $ferreur $objet
@@ -791,10 +797,10 @@ proc ::getdss::active_proxy { visuNo } {
       $private($visuNo,This).f6.f8.e9 configure -state normal
       $private($visuNo,This).f6.f8.e10 configure -state normal
    } else {
-      $private($visuNo,This).f6.f8.e7 configure -state disable
-      $private($visuNo,This).f6.f8.e8 configure -state disable
-      $private($visuNo,This).f6.f8.e9 configure -state disable
-      $private($visuNo,This).f6.f8.e10 configure -state disable
+      $private($visuNo,This).f6.f8.e7 configure -state disabled
+      $private($visuNo,This).f6.f8.e8 configure -state disabled
+      $private($visuNo,This).f6.f8.e9 configure -state disabled
+      $private($visuNo,This).f6.f8.e10 configure -state disabled
    }
 }
 
@@ -809,8 +815,8 @@ proc ::getdss::active_objet { visuNo } {
    global caption
 
    if { $private($visuNo,NomObjet) == "Coord" } {
-      $private($visuNo,This).f01.e1 configure -state disable
-      $private($visuNo,This).f01.e2 configure -state disable
+      $private($visuNo,This).f01.e1 configure -state disabled
+      $private($visuNo,This).f01.e2 configure -state disabled
       $private($visuNo,This).f001.ad.eADh configure -state normal
       $private($visuNo,This).f001.ad.eADm configure -state normal
       $private($visuNo,This).f001.ad.eADs configure -state normal
@@ -819,21 +825,25 @@ proc ::getdss::active_objet { visuNo } {
       $private($visuNo,This).f001.dec.eDecm configure -state normal
       $private($visuNo,This).f001.dec.eDecs configure -state normal
       $private($visuNo,This).f001.dec.eDecss configure -state normal
+      $private($visuNo,This).f001.ad.butTlscp configure -state normal
+      $private($visuNo,This).f001.dec.butFits configure -state normal
    } else {
       $private($visuNo,This).f01.e1 configure -state normal
       $private($visuNo,This).f01.e2 configure -state normal
-      $private($visuNo,This).f001.ad.eADh configure -state disable
-      $private($visuNo,This).f001.ad.eADm configure -state disable
-      $private($visuNo,This).f001.ad.eADs configure -state disable
-      $private($visuNo,This).f001.ad.eADss configure -state disable
-      $private($visuNo,This).f001.dec.eDecd configure -state disable
-      $private($visuNo,This).f001.dec.eDecm configure -state disable
-      $private($visuNo,This).f001.dec.eDecs configure -state disable
-      $private($visuNo,This).f001.dec.eDecss configure -state disable
+      $private($visuNo,This).f001.ad.eADh configure -state disabled
+      $private($visuNo,This).f001.ad.eADm configure -state disabled
+      $private($visuNo,This).f001.ad.eADs configure -state disabled
+      $private($visuNo,This).f001.ad.eADss configure -state disabled
+      $private($visuNo,This).f001.dec.eDecd configure -state disabled
+      $private($visuNo,This).f001.dec.eDecm configure -state disabled
+      $private($visuNo,This).f001.dec.eDecs configure -state disabled
+      $private($visuNo,This).f001.dec.eDecss configure -state disabled
+      $private($visuNo,This).f001.ad.butTlscp configure -state disabled
+      $private($visuNo,This).f001.dec.butFits configure -state disabled
    }
 
    set private($visuNo,ad)  "$private($visuNo,adh)h$private($visuNo,adm)m$private($visuNo,ads).$private($visuNo,adss)s"
-   set private($visuNo,dec) "$private($visuNo,decd)h$private($visuNo,decm)m$private($visuNo,decs).$private($visuNo,decss)s"
+   set private($visuNo,dec) "$private($visuNo,decd)d$private($visuNo,decm)m$private($visuNo,decs).$private($visuNo,decss)s"
 
    if { $private($visuNo,NomObjet) == "M" } {
       $private($visuNo,This).f02.l1 configure -text [ format $caption(getdss,Messier) $private($visuNo,debut) $private($visuNo,fin) ]
@@ -849,6 +859,65 @@ proc ::getdss::active_objet { visuNo } {
     }
 
    return 1
+}
+
+#------------------------------------------------------------
+# cmdTakeFITSKeywords
+#    Recupere les coordonnees AD et Dec. de l'image FITS
+#------------------------------------------------------------
+proc ::getdss::cmdTakeFITSKeywords { visuNo } {
+   variable private
+   global audace
+
+   if { [ buf[ ::confVisu::getBufNo $visuNo ] imageready ] == "1" } {
+      #--- Recuperation des coordonnees de l'image affichee
+      set ra  [ mc_angle2hms [ lindex [ buf[ ::confVisu::getBufNo $visuNo ] getkwd RA ] 1 ] ]
+      set dec [ mc_angle2dms [ lindex [ buf[ ::confVisu::getBufNo $visuNo ] getkwd DEC ] 1 ] 90 ]
+      #--- Traitement de l'affichage
+      set private($visuNo,adh)   [ lindex $ra 0 ]
+      set private($visuNo,adm)   [ lindex $ra 1 ]
+      set private($visuNo,ads)   [ expr int([ lindex $ra 2 ]) ]
+      set private($visuNo,adss)  [ expr int( 10 * ( [ lindex $ra 2 ] - int([ lindex $ra 2 ]) ) ) ]
+      set private($visuNo,decd)  [ string trimleft [ lindex $dec 0 ] "+" ]
+      set private($visuNo,decm)  [ lindex $dec 1 ]
+      set private($visuNo,decs)  [ expr int([ lindex $dec 2 ]) ]
+      set private($visuNo,decss) [ expr int( 10 * ( [ lindex $dec 2 ] - int([ lindex $dec 2 ]) ) ) ]
+      set private($visuNo,ad)    "$private($visuNo,adh)h$private($visuNo,adm)m$private($visuNo,ads).$private($visuNo,adss)s"
+      set private($visuNo,dec)   "$private($visuNo,decd)d$private($visuNo,decm)m$private($visuNo,decs).$private($visuNo,decss)s"
+      #--- Rafraichissement du rappel
+      ::getdss::active_objet $visuNo
+   } else {
+      ::audace::charger $visuNo
+   }
+}
+
+#------------------------------------------------------------
+# cmdTakeTlscpCoord
+#    Recupere les coordonnees AD et Dec. du telescope
+#------------------------------------------------------------
+proc ::getdss::cmdTakeTlscpCoord { visuNo } {
+   variable private
+
+   if { [ ::tel::list ] != "" } {
+      #--- Recuperation des coordonnees de la montre
+      set ra  [ mc_angle2hms $::audace(telescope,getra) ]
+      set dec [ mc_angle2dms $::audace(telescope,getdec) 90 ]
+      #--- Traitement de l'affichage
+      set private($visuNo,adh)   [ lindex $ra 0 ]
+      set private($visuNo,adm)   [ lindex $ra 1 ]
+      set private($visuNo,ads)   [ expr int([ lindex $ra 2 ]) ]
+      set private($visuNo,adss)  [ expr int( 10 * ( [ lindex $ra 2 ] - int([ lindex $ra 2 ]) ) ) ]
+      set private($visuNo,decd)  [ string trimleft [ lindex $dec 0 ] "+" ]
+      set private($visuNo,decm)  [ lindex $dec 1 ]
+      set private($visuNo,decs)  [ expr int([ lindex $dec 2 ]) ]
+      set private($visuNo,decss) [ expr int( 10 * ( [ lindex $dec 2 ] - int([ lindex $dec 2 ]) ) ) ]
+      set private($visuNo,ad)    "$private($visuNo,adh)h$private($visuNo,adm)m$private($visuNo,ads).$private($visuNo,adss)s"
+      set private($visuNo,dec)   "$private($visuNo,decd)d$private($visuNo,decm)m$private($visuNo,decs).$private($visuNo,decss)s"
+      #--- Rafraichissement du rappel
+      ::getdss::active_objet $visuNo
+   } else {
+      ::confTel::run
+   }
 }
 
 #------------------------------------------------------------
