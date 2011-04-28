@@ -280,8 +280,8 @@ proc spc_passebas_pat { args } {
 # Arguments facultatifs : liste_regul, visu ('o' ou 'n'), nechant
 # 
 # Exemples :
-# spc_lowresfilterfile resultat_division_150t "$audace(rep_images)/forgetlambda.dat" 1.1 1.
-# spc_lowresfilterfile resultat_division_150t "$audace(rep_images)/forgetlambda.dat" 1.1 1. {1. 2.} 'o' 18
+# spc_lowresfilterfile resultat_division_150t "$audace(rep_images)/forgetlambda.dat" 1.1 2.5
+# spc_lowresfilterfile resultat_division_150t "$audace(rep_images)/forgetlambda.dat" 1.1 2.5 {1. 2.} o 18
 # La version tunée Benji pour le lissage de la RI ne demande que le nom du fichier de cette RI
 ####################################################################
 proc spc_lowresfilterfile { args } {
@@ -289,37 +289,38 @@ proc spc_lowresfilterfile { args } {
    global audace spcaudace
    if { [ llength $args ] == 7 || [ llength $args ] == 4 || [ llength $args ] == 1 } {
       set profile [ lindex $args 0 ]
-      set forgetlambda forgetlambda.dat
-      set catalog_file "$spcaudace(reptelluric)/$forgetlambda"
-      ::console::affiche_resultat "$catalog_file\n"
+      #set forgetlambda forgetlambda.dat
+      set catalog_file "$spcaudace(reptelluric)/forgetlambda.dat"
+      #set catalog_file $forgetlambda"
+      #::console::affiche_resultat "$catalog_file\n"
       set ext_coef 1.1
       set regul_weight 10.
       set regul_list {1. 2.}
       lappend regul_list 1.
-      set visu 'o'
+      set visu o
       set nechant 18	
       if { [ llength $args ] > 1 } {
-      	set catalog_file [ lindex $args 1 ]
-      	set ext_coef [ lindex $args 2 ]
-      	set regul_weight [ lindex $args 3 ]
-      	if { [ llength $args ] == 4 } {
-           set regul_list [ list ]
-           lappend regul_list 1.
-           set visu 'o'
-           set nechant 18	
-        } else {
-           set regul_list [ lindex $args 4 ]
-           set visu [ lindex $args 5 ]
-           set nechant [ lindex $args 6 ]
-        }
+	 set catalog_file [ lindex $args 1 ]
+	 set ext_coef [ lindex $args 2 ]
+	 set regul_weight [ lindex $args 3 ]
+	 if { [ llength $args ] == 4 } {
+	    set regul_list [ list ]
+	    lappend regul_list 1.
+	    set visu o
+	    set nechant 18	
+	 } else {
+	    set regul_list [ lindex $args 4 ]
+	    set visu [ lindex $args 5 ]
+	    set nechant [ lindex $args 6 ]
+	 }
       }
-      set resultat1 [ spc_piecewiselinearfilter $profile $ext_coef $regul_weight "auto" $catalog_file $nechant $regul_list $visu ]
+      set resultat1 [ spc_piecewiselinearfilter $profile $ext_coef $regul_weight auto $catalog_file $nechant $regul_list $visu ]
       set filename [ spc_rmneg "$resultat1" ]
       file delete -force "$audace(rep_images)/$resultat1$conf(extension,defaut)"
       return $filename
    } else { 
       ::console::affiche_erreur "Usage: spc_lowresfilterfile profile ? fichier_catalogue ? ext_coef ? regul_weight ?  options : regul_list ? visu ? nechant ?\n\n"
-      return 0
+      return ""
    }
 }
 #***************************************************************************************#
@@ -364,9 +365,9 @@ proc spc_lowresfilterfile { args } {
 # non nulle.  
 # 
 # Arguments : fichier .fit du profil de raie, liste donnant les longueurs d'ondes à prendre en compte, regul_weight, 
-# liste_regul, visu ('o' ou 'n'), nechant
+# liste_regul, visu (o ou n), nechant
 # 
-# Exemple: spc_lowresfilterlist resultat_division_150t_linear.fit {3643. 3688. 3847. 3909. 3989. 4158. 4246. 4415. 4583. 4743. 4965. 5346. 5745. 5807. 6300. 6640. 7013. 7386. 7538. 7740. } 300. {1. 1. 10000. 1000000. 500000. 10000. 1000.} 'o' 18
+# Exemple: spc_lowresfilterlist resultat_division_150t_linear.fit {3660. 3688. 3847. 3909. 3989. 4158. 4246. 4415. 4583. 4743. 4965. 5346. 5745. 5807. 6300. 6640. 7013. 7386. 7538. 7740. } 2.5 {1. 1. 10000. 1000000. 500000. 10000. 1000.} o 18
 ####################################################################
 proc spc_lowresfilterlist {args } {
    global conf
@@ -377,18 +378,18 @@ proc spc_lowresfilterlist {args } {
       set regul_weight [ lindex $args 2 ]
       set regul_list [ lindex $args 3 ]
       if { [ llength $args ] == 4 } {
-	 set visu 'o'
+	 set visu o
 	 set nechant 18
       } else {
 	 set visu [ lindex $args 4 ]
 	 set nechant [ lindex $args 5 ]
       }
       set ext_coef 1.
-      set filename [ spc_piecewiselinearfilter $profile $ext_coef $regul_weight 'manu' $lambda_list $nechant $regul_list $visu ] 
+      set filename [ spc_piecewiselinearfilter $profile $ext_coef $regul_weight manu $lambda_list $nechant $regul_list $visu ] 
       return [ file rootname $filename ]
    } else { 
       ::console::affiche_erreur "Usage: spc_lowresfilterfile profile ? lambda_list ? regul_weight ? regul_list ? options : visu ? nechant ?\n\n"
-      return 0
+      return ""
    }
 }
 
@@ -402,34 +403,34 @@ proc spc_lowresfilterlist {args } {
 # cette derniere est supposee superieure ou egale a 18
 ####################################################################
 proc ajust_interv {args } {
-global conf
-global audace
-if { [ llength $args ]==2 } {
-   set len [ lindex $args 0 ]
-   set nechant [ lindex $args 1 ]
-   if { $nechant < 18 } {
-      ::console::affiche_erreur "Usage:  dans ajust_interv le 2e arg doit etre superieur ou egal a 18 par securite\n\n"
-      return 0
-   }
-   set reste [ list ]
-   for { set k [ expr $nechant - 6 ] } { $k <= [ expr $nechant + 6 ] } {incr k } {
-      set restek [ expr $len % $k ]
-      lappend reste $restek
-   }
-   set restetri [ lsort -integer -increasing $reste ]
-   if { [ lindex $restetri 0 ] == 0 } {
-      set npos [ lsearch -exact $reste 0 ]
-   } else {
-      set reste_max [ lindex $restetri 12 ]
-      set npos [ lsearch -exact $reste $reste_max ]
-   }
-   set nechant [ expr $npos + $nechant - 6 ]
-   ::console::affiche_resultat "nechant ajuste = $nechant reste [ lindex $reste $npos ]\n"
-   #::console::affiche_resultat "restes $restetri\n "
-   return $nechant
+   global conf
+   global audace
+   if { [ llength $args ]==2 } {
+      set len [ lindex $args 0 ]
+      set nechant [ lindex $args 1 ]
+      if { $nechant < 18 } {
+	 ::console::affiche_erreur "Usage:  dans ajust_interv le 2e arg doit etre superieur ou egal a 18 par securite\n\n"
+	 return ""
+      }
+      set reste [ list ]
+      for { set k [ expr $nechant - 6 ] } { $k <= [ expr $nechant + 6 ] } {incr k } {
+	 set restek [ expr $len % $k ]
+	 lappend reste $restek
+      }
+      set restetri [ lsort -integer -increasing $reste ]
+      if { [ lindex $restetri 0 ] == 0 } {
+	 set npos [ lsearch -exact $reste 0 ]
+      } else {
+	 set reste_max [ lindex $restetri 12 ]
+	 set npos [ lsearch -exact $reste $reste_max ]
+      }
+      set nechant [ expr $npos + $nechant - 6 ]
+      ::console::affiche_resultat "nechant ajuste = $nechant reste [ lindex $reste $npos ]\n"
+      #::console::affiche_resultat "restes $restetri\n "
+      return $nechant
    } else {
       ::console::affiche_erreur "Usage: ajust_interv nb echant profil ?largeur morceaux?\n\n"
-      return 0
+      return ""
    }
 }
 
@@ -525,7 +526,7 @@ proc spc_calcmatB {args} {
       return $B	 
    } else {
       ::console::affiche_erreur "Usage: spc_calcmatB 2 arguments requis\n\n"
-      return 0
+      return ""
    }
 }
 #*********************************************************************************#
@@ -538,7 +539,7 @@ proc spc_calcmatB {args} {
 # telluriques, dioxygene,...)
 # Auteur : Patrick LAILLY
 # Date creation : 07-02-2008
-# Date modification : 1-11-2008
+# Date modification : 8-10-2010 (changement de definition du poids de regularisation)
 # Algo : ajustement par moindres carrés des données (résultat division) par une fonction 
 # lineaire par morceaux. La procedure fonctionne 
 
@@ -596,16 +597,18 @@ proc spc_piecewiselinearfilter { args } {
 	
    # Exemples :
    
-   # spc_piecewiselinearfilter resultat_division_150t_linear.fit 1.1 10.
+   # spc_piecewiselinearfilter resultat_division_150t_linear.fit 1.1 1.
    
-   # spc_piecewiselinearfilter resultat_division_150t_linear.fit 1.1 300. 'auto' "$audace(rep_images)/forgetlambda.dat" 18 {1. 1. 10000. 1000000. 500000. 10000. 1000.} 'o'
+   # spc_piecewiselinearfilter resultat_division_150t_linear.fit 1.1 2.5 auto "$audace(rep_images)/forgetlambda.dat" 18 {1. 1. 10000. 1000000. 500000. 10000. 1000.} o
+   # spc_piecewiselinearfilter resultat_division_150t_linear.fit 1.1 2.5 auto "$spcaudace(reptelluric)/forgetlambda.dat" 18 {1. 1. 10000. 1000000. 500000. 10000. 1000.} o
    
-   # spc_piecewiselinearfilter resultat_division_150t_linear.fit 1.1 300. 'manu' {3643. 3688. 3847. 3909. 3989. 4158. 4246. 4415. 4583. 4743. 4965. 5346. 5745. 5807. 6300. 6640. 7013. 7386. 7538. 7740. } 18 {1. 1. 10000. 1000000. 500000. 10000. 1000.} 'o'
+   # spc_piecewiselinearfilter resultat_division_150t_linear.fit 1.1 2.5 manu {3660. 3688. 3847. 3909. 3989. 4158. 4246. 4415. 4583. 4743. 4965. 5346. 5745. 5807. 6300. 6640. 7013. 7386. 7538. 7740. } 18 {1. 1. 10000. 1000000. 500000. 10000. 1000.} o
     
 
    set nb_args [ llength $args ]
-   set mode1 "auto"
-   set mode2 "manu"
+   #set mode1 "auto"
+   set mode1 auto
+   set mode2 manu
    if { $nb_args==8 || $nb_args==3 } {
 		
       set filenamespc [ lindex $args 0 ]
@@ -615,26 +618,33 @@ proc spc_piecewiselinearfilter { args } {
 	 set mode [ lindex $args 3 ]
 	 if { $mode == $mode1} {
 	    set fileforgetlambda [ lindex $args 4 ]
+	    ::console::affiche_resultat "spc_piecewiselinearfilter : fichier forgetlambda : $fileforgetlambda\n"
 	    #set fileforgetlambda "$audace(rep_images)/$fileforgetlambda"
+	    #::console::affiche_resultat "spc_piecewiselinearfilter : fichier forgetlambda : $fileforgetlambda\n"
 	 } elseif { $mode == $mode2} {
 	    set listepoints [ lindex $args 4 ]
 	    set nbpoints [ llength $listepoints ]
 	 } else {
-	    ::console::affiche_erreur "Usage: dans spc_piecewiselinearfilter le 4eme parametre doit etre 'manu' ou 'auto'  \n\n"
+	    ::console::affiche_erreur "Usage: dans spc_piecewiselinearfilter le 4eme parametre doit etre manu ou auto  \n\n"
 	 }
 	 set nechant [ lindex $args 5 ]
 	 set listeregul [ lindex $args 6 ]
 	 set visu [ lindex $args 7 ]
       }
       if { $nb_args==3 } {
-	 set mode "auto"
+	 set mode auto
 	 #set fileforgetlambda "$audace(rep_images)/forgetlambda.dat"
 	 set nechant 20
 	 set listeregul [ list ]
 	 lappend listeregul 1.
-	 set visu "o"
+	 set visu o
       }
-	    
+      if { $regul_weight < 0. } {
+      	 ::console::affiche_erreur "Usage: dans spc_piecewiselinearfilter le poids de regularisation doit etre positif \n\n"
+      	 return ""
+      }
+      set regul_weight [ expr exp(log(10.) * $regul_weight) -1. ]
+      ::console::affiche_resultat "spc_piecewiselinearfilter : poids de regularisation : $regul_weight\n"	    
       #--- Extraction des donnees :
       #--- Gestion des profils selon la loi de calibration :
       buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
@@ -713,7 +723,7 @@ proc spc_piecewiselinearfilter { args } {
       set len_1 [ expr $len -1 ]
       if {$len != $nmilieu } {
 	 ::console::affiche_erreur "Longueur profil utile $len $nmilieu\n"
-	 return 0
+	 return ""
       }
       ::console::affiche_resultat "Augmentation de la partie utile du profil $len au lieu de $nmilieu0 echantillons\n"
       set lambdamax [ expr $lambdamin+$len_1*$cdelt1 ]
@@ -730,6 +740,7 @@ proc spc_piecewiselinearfilter { args } {
 	 for { set i 0} { $i<$len } { incr i } {
 	    lappend poids 1.
 	 }
+	 ::console::affiche_resultat "spc_piecewiselinearfilter : fichier forgetlambda : $fileforgetlambda\n"
 	 set inputfile [open "$fileforgetlambda" r]
 	 set contents [split [read $inputfile] \n]
 	 close $inputfile
@@ -775,7 +786,7 @@ proc spc_piecewiselinearfilter { args } {
 	    #::console::affiche_resultat "$lambda_i \n"
 	    if { $lambda_i > $lambdamax || $lambda_i < $lambdamin } {
 	       ::console::affiche_erreur "dans la liste de points la valeur $lambda_i n'appartient pas à la partie exploitable du spectre\n\n"
-	       return 0
+	       return ""
 	    }
 	    # ci-dessous le calcul n'est valide que pour un spectre calibre lineairement
 	    set j [ expr round (($lambda_i-$lambdamin)*$nmilieu / $ecartlambda) -1 ]
@@ -821,7 +832,7 @@ proc spc_piecewiselinearfilter { args } {
 	    lappend listeregulfin $inten
 	 }  				
       }
-     
+      
       set yy $ordonnees
       set listezeros [ list ]
       for {set i 0} {$i<=$ninter} {incr i} {
@@ -853,7 +864,7 @@ proc spc_piecewiselinearfilter { args } {
 	    lappend yy 0.
 	 }
       }
-	 
+      
       ::console::affiche_resultat "longueur B : [llength $B] [llength $yy] [llength $poids]\n"
 		
       #-- calcul de l'ajustement
@@ -898,8 +909,8 @@ proc spc_piecewiselinearfilter { args } {
 	 set poidsi [ expr [ lindex $poids $i ] * $intmoy ] 
 	 set poids [ lreplace $poids $i $i $poidsi ]
       }
-#set lriliss_1 [ expr [ llength $riliss ] -1 ]
-#set poids [ lreplace $poids $lriliss_1 $lriliss_1 0 ]
+      #set lriliss_1 [ expr [ llength $riliss ] -1 ]
+      #set poids [ lreplace $poids $lriliss_1 $lriliss_1 0 ]
       ::console::affiche_resultat "Nombre d'éléments traités : [ llength $riliss ]\n"
 
       #--- Affichage du resultat :
@@ -918,7 +929,7 @@ proc spc_piecewiselinearfilter { args } {
 	 ##::plotxy::ylabel "y"
          ::plotxy::title "bleu : original; rouge : lissage; vert : poids"
       }
-	#--- Crée le fichier fits de sortie
+      #--- Crée le fichier fits de sortie
       set abscisses $abscissesorig 
       set filename [ file rootname $filenamespc ]
         
@@ -940,9 +951,12 @@ proc spc_piecewiselinearfilter { args } {
       return $file_result
    } else {
       ::console::affiche_erreur "Usage: spc_piecewiselinearfilter fichier_profil.fit ? coef_extension ? poids regularisation ? forgetlambda.dat ? nechant ? liste_regul ? visualisation (o/n)? \n\n"
+      return ""
    }
 }
 #**********************************************************************************************#
+
+
 
 
 ####################################################################
