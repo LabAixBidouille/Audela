@@ -9,6 +9,169 @@
 
 # Mise a jour $Id$
 
+################################################################################################
+# Procedure pour rajouter des zeros en fin d'un profil spectral de facon a se conformer a un nombre d'echantillons
+# Auteur : Patrick LAILLY
+# Date de création : 8-12-2010
+# Date de modification : 8-12-2010
+# Cette procédure cree un profil de raies (fichier fits) complete par des zeros en fin d'un profil spectral de facon a
+# se conformer a un nombre d'echantillons fixe par l'utilisateur.
+# Le profil d'entree est censé être calibré linéairement 
+# Le fichier de sortie est créé avec le suffixe _zeropad.
+# La numerotation des echantillons est celle des fichiers fits ( depart a 1)
+# Exemple spc_zeropad profile_data.fit samplelast
+#################################################################################################
+
+proc spc_zeropad { args } {
+   global audace
+   set nbargs [ llength $args ]
+   if { $nbargs == 2 } {
+      set nom_fich_input [ lindex $args 0 ]
+      #set nom_fich_input [ file rootname $nom_fich_input ]
+      set lastsampl [ lindex $args 1 ]
+      if { [ spc_testlincalib $nom_fich_input ] == -1 } {
+	 ::console::affiche_erreur " spc_selectpixels : le profil entre n'est pas calibre lineairement : l'application de la procedure n'a pas de sens \n\n"
+	 return ""
+      }
+      buf$audace(bufNo) load "$audace(rep_images)/$nom_fich_input"
+      set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+      set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+      set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+      set contenu [ spc_fits2data $nom_fich_input ]
+      #set abscisses [ lindex $contenu 0 ]
+      set ordonnees [ lindex $contenu 1 ]
+      for { set i $naxis1 } { $i <= $lastsampl } { incr i } {
+	 lappend ordonnees 0.
+      }
+      set newnaxis1 $lastsampl		
+      ::console::affiche_resultat "spc_zeropad : longueur nouveau fichier : $newnaxis1 echantilllons \n"
+      #--- Creation du nouveau fichier :
+      set nbunit "float"
+      set nbunit1 "double"
+      buf$audace(bufNo) setpixels CLASS_GRAY $newnaxis1 1 FORMAT_FLOAT COMPRESS_NONE 0
+      buf$audace(bufNo) setkwd [ list "NAXIS" 1 int "" "" ]
+      buf$audace(bufNo) setkwd [ list "NAXIS1" $newnaxis1 int "" "" ]
+      buf$audace(bufNo) setkwd [ list "CRPIX1" 1 int "Reference pixel" "pixel" ]
+      #-- Valeur minimale de l'abscisse (xdepart) : =0 si profil non étalonné :
+      #- set xdepart [ expr 1.0*[lindex $lambda 0]]
+      buf$audace(bufNo) setkwd [ list "CRVAL1" $crval1 double "" "angstrom"]
+      #-- Dispersion :
+      buf$audace(bufNo) setkwd [ list "CDELT1" $cdelt1 double "" "angstrom/pixel"]
+      #--- Rempli la matrice 1D du fichier fits avec les valeurs du profil de raie :
+      #- Une liste commence à  0 ; Un vecteur fits commence à  1
+      #- set intensite [ list ]
+      #::console::affiche_resultat "lambdamin=$lambdamin ; lambdamax=$lambdamax \n"
+      for {set k 0} { $k < $newnaxis1 } {incr k} {
+         #- append intensite [lindex $profileref $k]
+         #- ::console::affiche_resultat "$intensite\n"
+         #- if { [regexp {([0-9]+\.*[0-9]*)} $intensite match mintensite] } {}
+         buf$audace(bufNo) setpix [list [expr $k+1] 1] [lindex $ordonnees $k ]
+         #- set intensite 0
+      }
+      #--- Sauvegarde du fichier fits ainsi créé :
+      buf$audace(bufNo) bitpix float
+      set suff _zeropad
+      set nom_fich_output "$nom_fich_input$suff"
+      buf$audace(bufNo) save "$audace(rep_images)/$nom_fich_output"
+      ::console::affiche_resultat "Profil sauvé sous $nom_fich_output\n"
+      buf$audace(bufNo) bitpix short
+      return $nom_fich_output     
+      #return $file_out 
+   } else {
+      ::console::affiche_erreur "Usage: spc_zeropad profile_data.fits lastsample\n\n"
+      return ""
+   }
+}
+#**************************************************************************
+
+
+################################################################################################
+# Procedure pour selectionner un intervalle d'echantillons sur un profil spectral
+# Auteur : Patrick LAILLY
+# Date de création : 26-10-2009
+# Date de modification : 8-12-2010
+# Cette procédure cree un profil de raies (fichier fits) en selectionnant un intervalle
+# d'echantillons dans le profil d'entree (que ce profil est cense contenir). 
+# Le profil d'entree est censé être calibré linéairement. 
+# Le fichier de sortie est créé avec le suffixe _sampsel.
+# La numerotation des echantillons est celle des fichiers fits ( depart a 1)
+# Exemple spc_selectpixels profile_data.fit sample1 samplelast
+#################################################################################################
+proc spc_selectpixels { args } {
+   global audace
+   set nbargs [ llength $args ]
+   if { $nbargs == 3 } {
+      set nom_fich_input [ lindex $args 0 ]
+      #set nom_fich_input [ file rootname $nom_fich_input ]
+      set sample1 [ lindex $args 1 ]
+      set lastsampl [ lindex $args 2 ]
+      if { [ spc_testlincalib $nom_fich_input ] == -1 } {
+	 ::console::affiche_erreur " spc_selectpixels : le profil entre n'est pas calibre lineairement=> on le linearise \n\n"
+	 set nom_fich_input [ spc_linearcal $nom_fich_input ]
+      }
+      buf$audace(bufNo) load "$audace(rep_images)/$nom_fich_input"
+      set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+      #set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+      set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+      if { $sample1 >= 1 && $lastsampl <= $naxis1 } {
+	 set contenu [ spc_fits2data $nom_fich_input ]
+	 set abscisses [ lindex $contenu 0 ]
+	 set ordonnees [ lindex $contenu 1 ]
+	 set first [ expr $sample1 - 1 ]
+	 set last [ expr $lastsampl - 1 ]
+	 set newordonn [ lrange $ordonnees $first $last ]
+	 set newabsc [ lrange $abscisses $first $last ]
+	 set newnaxis1 [ expr $last -$first +1 ]
+	 set crval1 [ lindex $newabsc 0 ]
+      	
+	 ::console::affiche_resultat "spc_selectpixels : longueur nouveau fichier : $newnaxis1 echantilllons \n"
+	 #set file_out [ spc_fileupdate $nom_fich_input $crval1 $cdelt1 $newordonn $suff non ]
+	 #return $file_out
+	 #--- Creation du nouveau fichier :
+	 set nbunit "float"
+	 set nbunit1 "double"
+	 buf$audace(bufNo) setpixels CLASS_GRAY $newnaxis1 1 FORMAT_FLOAT COMPRESS_NONE 0
+	 buf$audace(bufNo) setkwd [ list "NAXIS" 1 int "" "" ]
+	 buf$audace(bufNo) setkwd [ list "NAXIS1" $newnaxis1 int "" "" ]
+	 buf$audace(bufNo) setkwd [ list "CRPIX1" 1 int "Reference pixel" "pixel" ]
+	 #-- Valeur minimale de l'abscisse (xdepart) : =0 si profil non étalonné :
+	 #- set xdepart [ expr 1.0*[lindex $lambda 0]]
+	 buf$audace(bufNo) setkwd [ list "CRVAL1" $crval1 double "" "angstrom"]
+	 #-- Dispersion :
+	 buf$audace(bufNo) setkwd [ list "CDELT1" $cdelt1 double "" "angstrom/pixel"]
+      
+	 for {set k 0} { $k < $newnaxis1 } {incr k} {
+         #- append intensite [lindex $profileref $k]
+         #- ::console::affiche_resultat "$intensite\n"
+         #- if { [regexp {([0-9]+\.*[0-9]*)} $intensite match mintensite] } {}
+	    buf$audace(bufNo) setpix [list [expr $k+1] 1] [lindex $newordonn $k ]
+         #- set intensite 0
+	 }
+	 # creation du nouveau fichier
+	 set suff sel
+	 #set suff1 _sel
+	 #set nom_fich_output "$nom_fich_input$suff1"
+	 set crval1 [ lindex $abscisses 0 ]
+	 		
+	 #--- Sauvegarde du fichier fits ainsi créé :
+	 buf$audace(bufNo) bitpix float
+      	
+	 set nom_fich_output "$nom_fich_input$suff"
+	 buf$audace(bufNo) save "$audace(rep_images)/$nom_fich_output"
+	 ::console::affiche_resultat "Profil sauvé sous $nom_fich_output\n"
+	 buf$audace(bufNo) bitpix short
+	 return $nom_fich_output     
+	 #return $file_out 
+      } else {
+	 ::console::affiche_erreur "spc_selectpixels : les numeros d'echantillons donnes ( $sample1 et $lastsampl ) ne sont pas dans le profil entree : \n\n"
+	 return ""
+      } 
+   } else {
+      ::console::affiche_erreur "Usage: spc_selectpixels profile_data.fits? sample1 ? lastsample ?\n\n"
+      return ""
+   }
+}
+#**************************************************************************
 
 
 
