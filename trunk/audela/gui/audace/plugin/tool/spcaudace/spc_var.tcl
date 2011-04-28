@@ -114,7 +114,7 @@ set spcaudace(meth_somme) "addi"
 
 #--- Valeur de paramètres des euristhiques algorithmiques :
 #-- Taux adoucissement pour l'extraction de continuum ew via piecewiselinear :
-set spcaudace(taux_doucissage) 1000000.
+set spcaudace(taux_doucissage) 6.
 #-- Valeur de la fwhm des cosmics a detecter :
 set spcaudace(cosmics_fwhm) 5.0
 #-- Intensitee minimale des cosmics en % du continuum :
