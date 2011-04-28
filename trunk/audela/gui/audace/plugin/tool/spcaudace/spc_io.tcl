@@ -1707,14 +1707,25 @@ proc spc_multifit2png { args } {
         #--- Adapte la légende de l'abscisse :
         set fichier1 [ lindex $args 0 ]
         buf$audace(bufNo) load "$audace(rep_images)/$fichier1"
+        set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
         set listemotsclef [ buf$audace(bufNo) getkwds ]
         if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
-            set xdeb0 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+           set flag_cal 1
+           set xdeb [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+           set disp [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
+           if { [ lsearch $listemotsclef "CRPIX1" ] !=-1 } {
+              set crpix1 [ lindex [buf$audace(bufNo) getkwd "CRPIX1"] 1 ]
+           } else {
+              set crpix1 1
+           }
+           set xfin [ spc_calpoly $naxis1 $crpix1 $xdeb $disp 0 0 ]
         } else {
-            set xdeb 1.0
+           set falg_cal 0
+           set xdeb 1
+           set xfin $naxis1
         }
-        if { $xdeb0 == 1.0 } {
-            set legendex "Position (Pixel)"
+        if { $flag_cal==0 } {
+           set legendex "Position (Pixel)"
         } else {
             set legendex "Wavelength (A)"
         }
@@ -1742,12 +1753,26 @@ proc spc_multifit2png { args } {
         }
 
         #--- Construction du fichier btach de Gnuplot :
-        set xdeb "*"
-        set xfin "*"
-        set file_id [open "$audace(rep_images)/multiplot.gp" w+]
-        # puts $file_id "call \"$spcaudace(repgp)/gp_multi.cfg\" \"$plotcmd\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/multiplot.png\" \"$legendex\" \"$legendey\" "
-        puts $file_id "call \"$spcaudace(repgp)/gp_multi.cfg\" \"$plotcmd\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/multiplot.png\" \"$legendex\" "
-        close $file_id
+        #set file_id [open "$audace(rep_images)/multiplot.gp" w+]
+        # set xdeb "*"
+        # set xfin "*"
+        ## puts $file_id "call \"$spcaudace(repgp)/gp_multi.cfg\" \"$plotcmd\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/multiplot.png\" \"$legendex\" \"$legendey\" "
+        #puts $file_id "call \"$spcaudace(repgp)/gp_multi.cfg\" \"$plotcmd\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/multiplot.png\" \"$legendex\" "
+        #close $file_id
+       set file_id [open "$audace(rep_images)/multiplot.gp" w+]
+       set largeur [ expr $xfin-$xdeb ]
+       if { $naxis1<=3500 } {
+          if { $largeur<=2000 && $flag_cal==1 } {
+             puts $file_id "call \"$spcaudace(repgp)/gp_multi.cfg\" \"$plotcmd\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/multiplot.png\" \"$legendex\" "
+          } elseif { $largeur>2000 && $flag_cal==1 } {
+             puts $file_id "call \"$spcaudace(repgp)/gp_multilarge.cfg\" \"$plotcmd\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/multiplot.png\" \"$legendex\" "
+          } elseif { $flag_cal==0 } {
+             puts $file_id "call \"$spcaudace(repgp)/gp_multi.cfg\" \"$plotcmd\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/multiplot.png\" \"$legendex\" "
+          }
+       } else {
+          puts $file_id "call \"$spcaudace(repgp)/gp_multilarge.cfg\" \"$plotcmd\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/multiplot.png\" \"$legendex\" "
+       }
+       close $file_id
 
         #=================== Gestion d'echelles differentes selon l'abscisse :
         if { 0>1 } {
@@ -1780,7 +1805,7 @@ proc spc_multifit2png { args } {
             ::console::affiche_resultat "gnuplot résultat : $answer\n"
         } else {
             set answer [ catch { exec $spcaudace(repgp)/gpwin32/pgnuplot.exe $audace(rep_images)/multiplot.gp } ]
-            ::console::affiche_resultat "gnuplot résultat : $answer\n"
+            ::console::affiche_resultat "gnuplot résultat (0=OK) : $answer\n"
         }
         cd $repdflt
 
@@ -2801,6 +2826,7 @@ proc spc_autofit2png { args } {
         #--- Récupération de la dispersion :
         set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
         if { [ lsearch $listemotsclef "CDELT1" ] !=-1 && [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
+            set flag_cal 1
             if { [ llength $args ]==2 } {
                set xdeb [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
             }
@@ -2815,6 +2841,7 @@ proc spc_autofit2png { args } {
                 set labelx "Position (pixel)"
             }
         } else {
+           set flag_cal 0
            set dispersion 0
            set xfin $naxis1
            set labelx "Position (pixel)"
@@ -2849,11 +2876,19 @@ proc spc_autofit2png { args } {
         }
 
         #--- Tracé du graphique :
+       set largeur [ expr $xfin-$xdeb ]
        if { $naxis1<=3500 } {
-          set fileout [ spc_fit2pngopt "$spectre" "$titre_graphique" "$labelx" "$labely" $xdeb $xfin $ydeb $yfin ]
+          if { $largeur<=2000 && $flag_cal==1 } {
+             set fileout [ spc_fit2pngopt "$spectre" "$titre_graphique" "$labelx" "$labely" $xdeb $xfin $ydeb $yfin ]
+          } elseif { $largeur>2000 && $flag_cal==1 } {
+             set fileout [ spc_fit2pnglarge "$spectre" "$titre_graphique" "$labelx" "$labely" $xdeb $xfin $ydeb $yfin ]
+          } elseif { $flag_cal==0 } {
+             set fileout [ spc_fit2pngopt "$spectre" "$titre_graphique" "$labelx" "$labely" $xdeb $xfin $ydeb $yfin ]
+          }
        } else {
           set fileout [ spc_fit2pnglarge "$spectre" "$titre_graphique" "$labelx" "$labely" $xdeb $xfin $ydeb $yfin ]
        }
+
         #--- Fabrication de la date du fichier :
         set datefile [ bm_datefile $spectre ]
 
