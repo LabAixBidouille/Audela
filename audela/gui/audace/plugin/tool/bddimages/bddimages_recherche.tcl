@@ -1044,7 +1044,7 @@ namespace eval bddimages_recherche {
 
            # Labels DisAssociate
            $popupTbl.liste add command -label $caption(bddimages_recherche,disassociate) \
-              -command { ::bddimages_recherche::bddimages_disassociate "tmp" }
+              -command { ::bddimages_recherche::bddimages_disassociate }
 
       menu $popupTbl.correction -tearoff 0
       $popupTbl add cascade -label "Correction" -menu $popupTbl.correction
@@ -1153,6 +1153,73 @@ namespace eval bddimages_recherche {
       return
    }
 
+   #--------------------------------------------------
+   #  bddimages_disassociate {  }
+   #--------------------------------------------------
+   #
+   #    fonction  : Associe l image a une liste normale
+   #
+   #    variables en entree : namelist : le nom de la liste normale
+   #
+   #    variables en sortie : void
+   #
+   #--------------------------------------------------
+   proc ::bddimages_recherche::bddimages_disassociate { } {
+   
+      global intellilisttotal
+
+      set intellilist  $intellilisttotal($::bddimages_recherche::current_list_id)
+
+      set lid [$::bddimages_recherche::This.frame6.result.tbl curselection ]
+      set lid [lsort -decreasing -integer $lid]
+      set lidbddimg ""
+      foreach i $lid {
+         set id [lindex [$::bddimages_recherche::This.frame6.result.tbl get $i] 0]
+         lappend lidbddimg $id
+      }
+
+
+      set idlist  [::bddimages_liste::lget $intellilist "idlist"]
+
+      set idlist_result ""
+      foreach table $idlist {
+         set idhd [lindex $table 0]
+         set table_idhd [lindex $table 1]
+         set table_idhd_result ""
+         foreach idbddimg $table_idhd {
+            set pass "ok"
+            foreach id $lidbddimg {
+               if {$id==$idbddimg} {
+                  #set table [::bddimages_liste::ldelete $table $idbddimg]
+                  set pass "no"
+               }
+            }
+            if {$pass == "ok"} {
+               lappend table_idhd_result $idbddimg
+            }
+         }
+         
+         lappend idlist_result [list $idhd $table_idhd_result]
+      }
+      
+      set idlist $idlist_result
+      set idlist_result ""
+      foreach table $idlist {
+         set idhd [lindex $table 0]
+         set table_idhd [lindex $table 1]
+         set table_idhd_result ""
+         if {[llength $table_idhd]!=0} {
+            lappend idlist_result [list $idhd $table_idhd]
+         }
+      }
+      
+      set intellilistresult [::bddimages_liste::lupdate $intellilist "idlist" $idlist_result]
+      set intellilisttotal($::bddimages_recherche::current_list_id) $intellilistresult
+
+      ::bddimages_recherche::get_intellist $::bddimages_recherche::current_list_id
+      ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id [array get action_label]
+      return
+   }
 
 
    #--------------------------------------------------
