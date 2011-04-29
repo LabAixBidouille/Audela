@@ -153,6 +153,7 @@ namespace eval bddimages_cdl {
    variable file_result_m1
    variable file_result_m2
    variable file_result_m3
+   variable file_result_m3_tab
    variable stop
    variable delta_star
    variable delta_aster
@@ -163,7 +164,7 @@ namespace eval bddimages_cdl {
    variable object
    variable begin
    variable end  
-
+   variable courbe  
 
    variable fhandler_mpc  
 
@@ -214,8 +215,16 @@ namespace eval bddimages_cdl {
 
     global bddconf
 
-        set ::bddimages_cdl::magstar 13.69
+
+
+    set ::bddimages_cdl::magstar 13.69
     set ::bddimages_cdl::stop 0
+    set ::bddimages_cdl::delta_star  0
+    set ::bddimages_cdl::delta_aster 0
+
+
+
+
     # Recuperation des informations des images selectionnees
     set selection_list [::bddimages_imgcorrection::get_info_img]
     # Chargement de la liste IMG
@@ -257,6 +266,7 @@ namespace eval bddimages_cdl {
       set ::bddimages_cdl::delta_star  [::bddimages_cdl::estimation_fenetre [list $star_deb  ] ]
       ::console::affiche_resultat "\n** ESTIMATION ASTEROIDE ** \n\n"
       set ::bddimages_cdl::delta_aster [::bddimages_cdl::estimation_fenetre [list $aster_deb ] ]
+      ::console::affiche_resultat "\n** ESTIMATION : $::bddimages_cdl::delta_aster $::bddimages_cdl::delta_star \n\n"
 
 
 
@@ -308,6 +318,7 @@ namespace eval bddimages_cdl {
       set ::bddimages_cdl::delta_star  [::bddimages_cdl::estimation_fenetre [list $star_fin  ] ]
       ::console::affiche_resultat "\n** ESTIMATION ASTEROIDE ** \n\n"
       set ::bddimages_cdl::delta_aster [::bddimages_cdl::estimation_fenetre [list $aster_fin ] ]
+      ::console::affiche_resultat "\n** ESTIMATION : $::bddimages_cdl::delta_aster $::bddimages_cdl::delta_star \n\n"
 
       ::bddimages_cdl::box_fenetre
 
@@ -329,6 +340,11 @@ namespace eval bddimages_cdl {
       set ::bddimages_cdl::file_result_m2  [file join $bddconf(dirtmp) "${object}_${telescop}_${filter}_${dateobs}_m2.csv"]
       set ::bddimages_cdl::file_result_m3  [file join $bddconf(dirtmp) "${object}_${telescop}_${filter}_${dateobs}_m3.csv"]
       set ::bddimages_cdl::file_result_mpc [file join $bddconf(dirtmp) "${object}_${telescop}_${filter}_${dateobs}.mpc"]
+
+      set ::bddimages_cdl::file_result_m3_tab ""
+      for {set i 5} {$i<31} {incr i} {
+         lappend ::bddimages_cdl::file_result_m3_tab  [list $i [file join $bddconf(dirtmp) "${object}_${telescop}_${filter}_${dateobs}_m3_$i.csv"]]
+      }
 
       ::console::affiche_resultat "Results Files : \n"
       ::console::affiche_resultat "$::bddimages_cdl::file_result_m1\n"
@@ -372,7 +388,7 @@ namespace eval bddimages_cdl {
       puts $f1 "#BEGIN    = $::bddimages_cdl::begin"
       puts $f1 "#END      = $::bddimages_cdl::end"
       puts $f1 "#OBSTIME  = $::bddimages_cdl::period"
-      puts $f1 "dateiso,datejj,mag_aster,mag_instru_aster,mag_instru_star,fwhm"
+      puts $f1 "dateiso,datejj,mag_aster,mag_instru_aster,mag_instru_star,fwhma,sigmaa,sna,fwhms,sigmas,sns"
 
       set f2 [open $::bddimages_cdl::file_result_m2 "w"]
       puts $f2 "#OBJECT   = $::bddimages_cdl::object"
@@ -381,7 +397,7 @@ namespace eval bddimages_cdl {
       puts $f2 "#BEGIN    = $::bddimages_cdl::begin"
       puts $f2 "#END      = $::bddimages_cdl::end"
       puts $f2 "#OBSTIME  = $::bddimages_cdl::period"
-      puts $f2 "dateiso,datejj,mag_aster,mag_instru_aster,mag_instru_star,fwhm"
+      puts $f2 "dateiso,datejj,mag_aster,mag_instru_aster,mag_instru_star,fwhma,sigmaa,sna,fwhms,sigmas,sns"
 
       set f3 [open $::bddimages_cdl::file_result_m3 "w"]
       puts $f3 "#OBJECT   = $::bddimages_cdl::object"
@@ -390,8 +406,19 @@ namespace eval bddimages_cdl {
       puts $f3 "#BEGIN    = $::bddimages_cdl::begin"
       puts $f3 "#END      = $::bddimages_cdl::end"
       puts $f3 "#OBSTIME  = $::bddimages_cdl::period"
-      puts $f3 "dateiso,datejj,mag_aster,mag_instru_aster,mag_instru_star,fwhm"
+      puts $f3 "dateiso,datejj,mag_aster,mag_instru_aster,mag_instru_star,fwhma,sigmaa,sna,fwhms,sigmas,sns"
 
+      foreach l $::bddimages_cdl::file_result_m3_tab {
+         set i    [lindex $l 0]
+         set file [lindex $l 1]
+         set fu [open $file "w"]
+         puts $fu "dateiso,datejj,mag_aster,mag_instru_aster,mag_instru_star,fwhma,sigmaa,sna,fwhms,sigmas,sns"
+         close $fu
+      }
+
+
+      set cles ""
+      set id 0
 
       foreach img $::bddimages_cdl::img_list {
 
@@ -406,6 +433,7 @@ namespace eval bddimages_cdl {
          set datejd       [ mc_date2jd $dateobs ]
          set datejd       [expr ($datejd + $exposure / 2. / 24. / 3600.)]
          set dateiso      [ mc_date2iso8601 $datejd ]
+         lappend cles $id
        
          set file [file join $bddconf(dirbase) $dirfilename $filename]
          loadima $file
@@ -413,12 +441,66 @@ namespace eval bddimages_cdl {
          ::bddimages_cdl::mesure_methode1 $f1 $commundatejj $dateiso $datejd
          ::bddimages_cdl::mesure_methode2 $f2 $commundatejj $dateiso $datejd
          ::bddimages_cdl::mesure_methode3 $f3 $commundatejj $dateiso $datejd
-         
+
+         foreach l $::bddimages_cdl::file_result_m3_tab {
+            set delta [lindex $l 0]
+            set file [lindex $l 1]
+            set fu [open $file "a"]
+            ::bddimages_cdl::mesure_methode3b $fu $commundatejj $dateiso $datejd $delta $id
+            close $fu
+         }
+
+      incr id
+      }
+      
+      
+ 
+ 
+      foreach id $cles {
 
 
-         #after 100
+         set moy 0
+         set cpt 0
+         foreach l $::bddimages_cdl::file_result_m3_tab {
+            set delta [lindex $l 0]
+            set moy [expr $moy+ $::bddimages_cdl::courbe(m3b,$delta,$id)]
+            incr cpt
+         }
+         set moy [expr $moy/$cpt]
+
+         set mediane ""
+         foreach l $::bddimages_cdl::file_result_m3_tab {
+            set delta [lindex $l 0]
+            lappend mediane [expr $moy+ $::bddimages_cdl::courbe(m3b,$delta,$id)]
+         }
+         set mediane [lsort $mediane]
+         set mediane [lindex $mediane [expr int([llength $mediane]/2)]]
+
+         foreach l $::bddimages_cdl::file_result_m3_tab {
+            set delta [lindex $l 0]
+            set ecart($delta,$id) [expr pow($::bddimages_cdl::courbe(m3b,$delta,$id)-$mediane,2)]
+            incr cpt
+         }
 
       }
+      
+      
+      set min 999999999999
+      set gooddelta "unknown"
+      foreach l $::bddimages_cdl::file_result_m3_tab {
+         set delta [lindex $l 0]
+         set sommetmp 0
+         foreach id $cles {
+               set sommetmp [expr $sommetmp+$ecart($delta,$id)]
+         }
+         set std [expr sqrt($sommetmp)]
+         if {$std<$min} {
+            set min $std
+            set gooddelta $delta
+         }
+         ::console::affiche_resultat "DELTA VARIANCe = $delta $std\n"
+      }
+         ::console::affiche_resultat "GOODDELTA = $gooddelta\n"
 
       $audace(hCanvas) delete cadres
       close $::bddimages_cdl::fhandler_mpc
@@ -432,21 +514,39 @@ namespace eval bddimages_cdl {
 proc ::bddimages_cdl::mesure_methode1 { f commundatejj dateiso datejd } {
 
          set ls       [::bddimages_cdl::interpol $::bddimages_cdl::interpol_star1 $commundatejj]
-         set valeurs  [photom_methode1 [lindex $ls 0] [lindex $ls 1] $::bddimages_cdl::delta_star]
+
+         set err [catch {
+            set valeurs  [photom_methode1 [lindex $ls 0] [lindex $ls 1] $::bddimages_cdl::delta_star]
+         } msg ]
+         if {$err!=0} {
+            ::console::affiche_erreur "METHODE 1: mesure impossible\n"
+            return
+         }
          set xsm      [lindex $valeurs 0]
          set ysm      [lindex $valeurs 1]
          set fluxs    [lindex $valeurs 2]
          set errfluxs [lindex $valeurs 3]
          set fwhms    [lindex $valeurs 4]
+         set sigmas   [lindex $valeurs 5]
+         set sns      [lindex $valeurs 6]
          ::bddimages_cdl::affich_un_rond  $xsm $ysm "yellow" $::bddimages_cdl::delta_star
 
          set la       [::bddimages_cdl::interpol $::bddimages_cdl::interpol_aster $commundatejj]
-         set valeurs  [photom_methode1 [lindex $la 0] [lindex $la 1] $::bddimages_cdl::delta_aster]
+
+         set err [catch {
+            set valeurs  [photom_methode1 [lindex $la 0] [lindex $la 1] $::bddimages_cdl::delta_aster]
+         } msg ]
+         if {$err!=0} {
+            ::console::affiche_erreur "METHODE 1: mesure impossible\n"
+            return
+         }
          set xam      [lindex $valeurs 0]
          set yam      [lindex $valeurs 1]
          set fluxa    [lindex $valeurs 2]
          set errfluxa [lindex $valeurs 3]
          set fwhma    [lindex $valeurs 4]
+         set sigmaa   [lindex $valeurs 5]
+         set sna      [lindex $valeurs 6]
          ::bddimages_cdl::affich_un_rond  $xam $yam "green" $::bddimages_cdl::delta_aster
 
          set err [catch {
@@ -492,7 +592,8 @@ proc ::bddimages_cdl::mesure_methode1 { f commundatejj dateiso datejd } {
          }
 
          if {$pass == "ok"} {
-            puts $f "$dateiso,$datejd,$mag,$mag_instru_aster,$mag_instru_star,$fwhma"
+            set ::bddimages_cdl::courbe(m1,$datejd) $mag
+            puts $f "$dateiso,$datejd,$mag,$mag_instru_aster,$mag_instru_star,$fwhma,$sigmaa,$sna,$fwhms,$sigmas,$sns"
          } else {
             ::console::affiche_erreur "Valeur non inscrite\n"
          }
@@ -513,21 +614,39 @@ proc ::bddimages_cdl::mesure_methode1 { f commundatejj dateiso datejd } {
 proc ::bddimages_cdl::mesure_methode2 { f commundatejj dateiso datejd } {
 
          set ls       [::bddimages_cdl::interpol $::bddimages_cdl::interpol_star1 $commundatejj]
-         set valeurs  [photom_methode2 [lindex $ls 0] [lindex $ls 1] $::bddimages_cdl::delta_star]
+
+         set err [catch {
+            set valeurs  [photom_methode2 [lindex $ls 0] [lindex $ls 1] $::bddimages_cdl::delta_star]
+         } msg ]
+         if {$err!=0} {
+            ::console::affiche_erreur "METHODE 2: mesure impossible\n"
+            return
+         }
          set xsm      [lindex $valeurs 0]
          set ysm      [lindex $valeurs 1]
          set fluxs    [lindex $valeurs 2]
          set errfluxs [lindex $valeurs 3]
          set fwhms    [lindex $valeurs 4]
+         set sigmas   [lindex $valeurs 5]
+         set sns      [lindex $valeurs 6]
          ::bddimages_cdl::affich_un_rond  $xsm $ysm "yellow" $::bddimages_cdl::delta_star
 
          set la       [::bddimages_cdl::interpol $::bddimages_cdl::interpol_aster $commundatejj]
+
+         set err [catch {
          set valeurs  [photom_methode2 [lindex $la 0] [lindex $la 1] $::bddimages_cdl::delta_aster]
+         } msg ]
+         if {$err!=0} {
+            ::console::affiche_erreur "METHODE 2: mesure impossible\n"
+            return
+         }
          set xam      [lindex $valeurs 0]
          set yam      [lindex $valeurs 1]
          set fluxa    [lindex $valeurs 2]
          set errfluxa [lindex $valeurs 3]
          set fwhma    [lindex $valeurs 4]
+         set sigmaa   [lindex $valeurs 5]
+         set sna      [lindex $valeurs 6]
          ::bddimages_cdl::affich_un_rond  $xam $yam "green" $::bddimages_cdl::delta_aster
 
          set err [catch {
@@ -571,7 +690,8 @@ proc ::bddimages_cdl::mesure_methode2 { f commundatejj dateiso datejd } {
          }
 
          if {$pass == "ok"} {
-            puts $f "$dateiso,$datejd,$mag,$mag_instru_aster,$mag_instru_star,$fwhma"
+            set ::bddimages_cdl::courbe(m2,$datejd) $mag
+            puts $f "$dateiso,$datejd,$mag,$mag_instru_aster,$mag_instru_star,$fwhma,$sigmaa,$sna,$fwhms,$sigmas,$sns"
          } else {
             ::console::affiche_erreur "Valeur non inscrite\n"
          }
@@ -583,21 +703,39 @@ proc ::bddimages_cdl::mesure_methode2 { f commundatejj dateiso datejd } {
 proc ::bddimages_cdl::mesure_methode3 { f commundatejj dateiso datejd } {
 
          set ls       [::bddimages_cdl::interpol $::bddimages_cdl::interpol_star1 $commundatejj]
+
+         set err [catch {
+         } msg ]
+         if {$err!=0} {
+            ::console::affiche_erreur "METHODE 3: mesure impossible\n"
+            return
+         }
          set valeurs  [photom_methode3 [lindex $ls 0] [lindex $ls 1] $::bddimages_cdl::delta_star]
          set xsm      [lindex $valeurs 0]
          set ysm      [lindex $valeurs 1]
          set fluxs    [lindex $valeurs 2]
          set errfluxs [lindex $valeurs 3]
          set fwhms    [lindex $valeurs 4]
+         set sigmas   [lindex $valeurs 5]
+         set sns      [lindex $valeurs 6]
          ::bddimages_cdl::affich_un_rond  $xsm $ysm "yellow" $::bddimages_cdl::delta_star
 
          set la       [::bddimages_cdl::interpol $::bddimages_cdl::interpol_aster $commundatejj]
+
+         set err [catch {
          set valeurs  [photom_methode3 [lindex $la 0] [lindex $la 1] $::bddimages_cdl::delta_aster]
+         } msg ]
+         if {$err!=0} {
+            ::console::affiche_erreur "METHODE 3: mesure impossible\n"
+            return
+         }
          set xam      [lindex $valeurs 0]
          set yam      [lindex $valeurs 1]
          set fluxa    [lindex $valeurs 2]
          set errfluxa [lindex $valeurs 3]
          set fwhma    [lindex $valeurs 4]
+         set sigmaa   [lindex $valeurs 5]
+         set sna      [lindex $valeurs 6]
          ::bddimages_cdl::affich_un_rond  $xam $yam "green" $::bddimages_cdl::delta_aster
 
          set err [catch {
@@ -641,7 +779,98 @@ proc ::bddimages_cdl::mesure_methode3 { f commundatejj dateiso datejd } {
          }
 
          if {$pass == "ok"} {
-            puts $f "$dateiso,$datejd,$mag,$mag_instru_aster,$mag_instru_star,$fwhma"
+            set ::bddimages_cdl::courbe(m3,$datejd) $mag
+            puts $f "$dateiso,$datejd,$mag,$mag_instru_aster,$mag_instru_star,$fwhma,$sigmaa,$sna,$fwhms,$sigmas,$sns"
+         } else {
+            ::console::affiche_erreur "Valeur non inscrite\n"
+         }
+
+    }
+
+
+
+
+proc ::bddimages_cdl::mesure_methode3b { f commundatejj dateiso datejd delta id} {
+
+         set ls       [::bddimages_cdl::interpol $::bddimages_cdl::interpol_star1 $commundatejj]
+
+         set err [catch {
+         set valeurs  [photom_methode3 [lindex $ls 0] [lindex $ls 1] $delta]
+         } msg ]
+         if {$err!=0} {
+            ::console::affiche_erreur "METHODE 3b: mesure impossible\n"
+            return
+         }
+         set xsm      [lindex $valeurs 0]
+         set ysm      [lindex $valeurs 1]
+         set fluxs    [lindex $valeurs 2]
+         set errfluxs [lindex $valeurs 3]
+         set fwhms    [lindex $valeurs 4]
+         set sigmas   [lindex $valeurs 5]
+         set sns      [lindex $valeurs 6]
+         ::bddimages_cdl::affich_un_rond  $xsm $ysm "yellow" $delta
+
+         set la       [::bddimages_cdl::interpol $::bddimages_cdl::interpol_aster $commundatejj]
+
+         set err [catch {
+         set valeurs  [photom_methode3 [lindex $la 0] [lindex $la 1] $delta]
+         } msg ]
+         if {$err!=0} {
+            ::console::affiche_erreur "METHODE 3b: mesure impossible\n"
+            return
+         }
+         set xam      [lindex $valeurs 0]
+         set yam      [lindex $valeurs 1]
+         set fluxa    [lindex $valeurs 2]
+         set errfluxa [lindex $valeurs 3]
+         set fwhma    [lindex $valeurs 4]
+         set sigmaa   [lindex $valeurs 5]
+         set sna      [lindex $valeurs 6]
+         ::bddimages_cdl::affich_un_rond  $xam $yam "green" $delta
+
+         set err [catch {
+            set mag [expr $::bddimages_cdl::magstar - log10($fluxa/$fluxs)*2.5]
+            set mag_instru_aster [expr log10($fluxa/20000)*2.5]
+            set mag_instru_star  [expr log10($fluxs/20000)*2.5]
+         } msg ]
+         if {$err!=0} {
+            ::console::affiche_erreur "METHODE 4\n"
+            ::console::affiche_erreur "err = $err\n"
+            ::console::affiche_erreur "msg = $msg\n"
+            ::console::affiche_erreur "fluxa = $fluxa\n"
+            ::console::affiche_erreur "fluxs = $fluxs\n"
+         }
+
+         set pass "ok"
+
+         if {! [info exists dateiso] } {
+            ::console::affiche_erreur "dateiso n existe pas\n"
+            set pass "no"
+         }
+         if {! [info exists datejd] } {
+            ::console::affiche_erreur "datejd n existe pas\n"
+            set pass "no"
+         }
+         if {! [info exists mag] } {
+            ::console::affiche_erreur "mag n existe pas\n"
+            set pass "no"
+         }
+         if {! [info exists mag_instru_aster] } {
+            ::console::affiche_erreur "mag_instru_aster n existe pas\n"
+            set pass "no"
+         }
+         if {! [info exists mag_instru_star] } {
+            ::console::affiche_erreur "mag_instru_star n existe pas\n"
+            set pass "no"
+         }
+         if {! [info exists fwhma] } {
+            ::console::affiche_erreur "fwhma n existe pas\n"
+            set pass "no"
+         }
+
+         if {$pass == "ok"} {
+            set ::bddimages_cdl::courbe(m3b,$delta,$id) $mag
+            puts $f "$dateiso,$datejd,$mag,$mag_instru_aster,$mag_instru_star,$fwhma,$sigmaa,$sna,$fwhms,$sigmas,$sns"
          } else {
             ::console::affiche_erreur "Valeur non inscrite\n"
          }
@@ -874,15 +1103,35 @@ proc ::bddimages_cdl::affich_un_rond { x y color radius } {
       set xs1 [expr int($xsm + $delta)]
       set ys1 [expr int($ysm + $delta)]
 
-      set valeurs [  buf[ ::confVisu::getBufNo $::audace(visuNo) ] photom [list $xs0 $ys0 $xs1 $ys1] square 20 25 35 ]
+      set err [catch {
+         set valeurs [  buf[ ::confVisu::getBufNo $::audace(visuNo) ] photom [list $xs0 $ys0 $xs1 $ys1] square 20 25 35 ]
+      } msg ]
+      if {$err!=0} {
+         return code error 1 $msg
+      }
       set flux    [lindex $valeurs 0]
       set sigma   [lindex $valeurs 3]
       set errflux 0
-      ::console::affiche_erreur "M1 r1 r2 r3 sigma = 20 25 35 $sigma $fwhm\n"
+
+      set err [catch {
+         set sn [expr ($flux / $sigma)]
+      } msg ]
+      if {$err!=0} {
+         set sn 0
+         ::console::affiche_erreur "photom_methode1\n"
+         ::console::affiche_erreur "err   = $err\n"
+         ::console::affiche_erreur "msg   = $msg\n"
+         ::console::affiche_erreur "flux  = $flux\n"
+         ::console::affiche_erreur "sigma = $sigma\n"
+      }
+
+
+
+      #::console::affiche_erreur "M1 r1 r2 r3 flux sigma = 20 25 35 $flux $sigma\n"
 
       #::console::affiche_resultat "flux int photom = $flux \n"
 
-      return [ list $xsm $ysm $flux $errflux $fwhm]
+      return [ list $xsm $ysm $flux $errflux $fwhm $sigma $sn]
    }
 
 
@@ -918,10 +1167,11 @@ proc photom_methode2 { xm ym delta } {
       set valeurs [  buf[ ::confVisu::getBufNo $::audace(visuNo) ] photom [list $xs0 $ys0 $xs1 $ys1] square $r1 $r2 $r3 ]
       set flux    [lindex $valeurs 0]
       set sigma   [lindex $valeurs 3]
+      set sn   [expr $flux/$sigma]
       set errflux 0
-      ::console::affiche_erreur "M2 r1 r2 r3 sigma = $r1 $r2 $r3 $sigma $fwhm\n"
+      #::console::affiche_erreur "M2 r1 r2 r3 flux sigma = $r1 $r2 $r3 $flux $sigma\n"
 
-      return [ list $xsm $ysm $flux $errflux $fwhm]
+      return [ list $xsm $ysm $flux $errflux $fwhm $sigma $sn]
    }
 
 
@@ -954,12 +1204,13 @@ proc photom_methode3 { xsm ysm delta } {
       set valeurs [  buf[ ::confVisu::getBufNo $::audace(visuNo) ] photom [list $xs0 $ys0 $xs1 $ys1] square $r1 $r2 $r3 ]
       set flux    [lindex $valeurs 0]
       set sigma   [lindex $valeurs 3]
+      set sn      [expr $flux/$sigma]
       set errflux 0
-      ::console::affiche_erreur "M3 r1 r2 r3 sigma = $r1 $r2 $r3 $sigma $fwhm\n"
+      #::console::affiche_erreur "M3 r1 r2 r3 flux sigma = $r1 $r2 $r3 $flux $sigma\n"
 
       #::console::affiche_resultat "flux int photom = $flux \n"
 
-      return [ list $xsm $ysm $flux $errflux $fwhm]
+      return [ list $xsm $ysm $flux $errflux $fwhm $sigma $sn]
    }
 
   
@@ -980,7 +1231,16 @@ proc photom_methode3 { xsm ysm delta } {
   
    proc ::bddimages_cdl::estimation_fenetre { target_list } {
 
-      set result_delta 20
+      set result_delta 1
+
+      ::console::affiche_resultat "ESTIM delta_star = $::bddimages_cdl::delta_star\n"
+      ::console::affiche_resultat "ESTIM delta_aster= $::bddimages_cdl::delta_aster\n"
+
+
+      set result_delta $::bddimages_cdl::delta_star
+      if {$result_delta<$::bddimages_cdl::delta_aster} {
+         set result_delta $::bddimages_cdl::delta_aster
+      }
 
       foreach target $target_list {
 
@@ -995,39 +1255,45 @@ proc photom_methode3 { xsm ysm delta } {
 
          set valeurs [  buf[ ::confVisu::getBufNo $::audace(visuNo) ] fitgauss [ list $xs0 $ys0 $xs1 $ys1 ] ]
          set fwhm [expr ([lindex $valeurs 2] + [lindex $valeurs 6])/2.]
-         set estimf [expr $fwhm * 1.7]
+         set estimf [expr int($fwhm * 1.7)]
          set valeurs [photom_methode1 $x $y $estimf]
          set flux [lindex $valeurs 2]
-         ::console::affiche_resultat "DELTA 1.7 fwhm = $estimf | flux = $flux\n"
-         set estimf [expr $fwhm * 2.3]
+         ::console::affiche_resultat "DELTA 1.7 delta = $estimf | flux = $flux\n"
+         set estimf [expr int($fwhm * 2.3)]
          set valeurs [photom_methode1 $x $y $estimf]
          set flux [lindex $valeurs 2]
-         ::console::affiche_resultat "DELTA 2.3 fwhm = $estimf | flux = $flux\n"
-         set estimf [expr $fwhm * 3.0]
+         ::console::affiche_resultat "DELTA 2.3 delta = $estimf | flux = $flux\n"
+         set estimf [expr int($fwhm * 3.0)]
          set valeurs [photom_methode1 $x $y $estimf]
          set flux [lindex $valeurs 2]
-         ::console::affiche_resultat "DELTA 3.0 fwhm = $estimf | flux = $flux\n"
+         ::console::affiche_resultat "DELTA 3.0 delta = $estimf | flux = $flux\n"
+
+         if {$result_delta<$estimf} {
+            set result_delta $estimf
+         }
 
 
 
          # fenetre croissante
-         ::console::affiche_resultat "ASC...\n"
-         set fluxsave 1
-         set cpt 0
-         for {set deltato 1} {$deltato<$d} {incr deltato} {
-            set valeurs [photom_methode1 $x $y $deltato]
-            set fluxs [lindex $valeurs 2]
-            if { $fluxs > 0 } {
-               set pourcent [expr abs(($fluxs - $fluxsave )/$fluxs*100)]
-               ::console::affiche_resultat "TAILLE=$deltato # FLUX : $fluxs # $pourcent %\n"
-               set fluxsave $fluxs
-            } else {
-               ::console::affiche_resultat "TAILLE=$deltato # FLUX : $fluxs \n"
-            }
-
-         }
+#         ::console::affiche_resultat "ASC...\n"
+#         set fluxsave 1
+#         set cpt 0
+#         for {set deltato 1} {$deltato<$d} {incr deltato} {
+#            set valeurs [photom_methode1 $x $y $deltato]
+#            set fluxs [lindex $valeurs 2]
+#            if { $fluxs > 0 } {
+#               set pourcent [expr abs(($fluxs - $fluxsave )/$fluxs*100)]
+#               ::console::affiche_resultat "TAILLE=$deltato # FLUX : $fluxs # $pourcent %\n"
+#               set fluxsave $fluxs
+#            } else {
+#               ::console::affiche_resultat "TAILLE=$deltato # FLUX : $fluxs \n"
+#            }
+#
+#         }
 
       }
+
+   ::console::affiche_resultat "ESTIM = $result_delta\n"
 
    return $result_delta
    }

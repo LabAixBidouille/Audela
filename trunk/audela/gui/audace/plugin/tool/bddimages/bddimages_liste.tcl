@@ -727,6 +727,23 @@ namespace eval bddimages_liste {
 
 
 
+   proc ::bddimages_liste::delete_from_normallist { lid normallist } {
+
+
+
+      set newl ""
+      foreach val $normallist {
+         if {[lindex $val 0]=="idlist"} {
+            lappend newl [list "idlist" $idlist]
+         } else {
+            lappend newl $val
+         }
+      }
+
+   return $newl
+   }
+
+
 
 
 
@@ -2229,6 +2246,20 @@ proc ::bddimages_liste::ladd { tabkey inkey inval } {
       lappend tabkey [list $inkey $inval]
    }
    return $tabkey
+
+}
+
+proc ::bddimages_liste::ldelete { tabkey inkey } {
+
+   set result_list ""
+   foreach keyval $tabkey {
+      set key [lindex $keyval 0]
+      set val [lindex $keyval 1]
+      if { ! [string equal -nocase [ string trim $key ] [ string trim $inkey ]]} {
+         lappend result_list [list $key $val]
+      }
+   }
+   return $result_list
 
 }
 
