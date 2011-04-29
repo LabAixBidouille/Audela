@@ -37,7 +37,7 @@ test tool_eshelvisu_exportfit {export orders} -constraints {
    if { $naxis != 0 } {
       append result "naxis=$naxis "
    }
-   #--- je verifie les dimensions et le nom du deuxième HDU
+   #--- je verifie les dimensions et le nom du deuxiï¿½me HDU
    $hFile move 2
    set naxis [::eshelvisu::getKeyword $hFile NAXIS]
    if { $naxis != 2 } {
@@ -52,7 +52,7 @@ test tool_eshelvisu_exportfit {export orders} -constraints {
       append result "HDU#2 nbcols=$nbcols "
    }
 
-   #--- je verifie que la 2ieme ligne contient l'ordre N°34 avec une dispersion 0;177
+   #--- je verifie que la 2ieme ligne contient l'ordre Nï¿½34 avec une dispersion 0;177
    set orderNum [lindex [lindex [$hFile get table "order" 2 ] 0] 0]
    if { $orderNum != "34" } {
       append result "HDU#2 line=2 orderNum=$orderNum "
@@ -70,13 +70,13 @@ test tool_eshelvisu_exportfit {export orders} -constraints {
 } -cleanup {
    #--- je supprime l'instance
    ::confVisu::deletePluginInstance $visuNo ::eshelvisu
-   #--- je supprime le package de la mémoire
+   #--- je supprime le package de la mï¿½moire
    package forget eshelvisu
    #--- raz de l'affichage
    confVisu::clear $visuNo
    file delete -force [file join $::audace(rep_images) 20090109-22291400-Lune-1x120s_ORDERS.fit]
    #--- je cree une instance ayant pour raccourci F2
-   foreach { namespace raccourci } $::conf(afficheOutils) {
+   foreach { namespace raccourci } $::conf(outilsActifsInactifs) {
       if { $raccourci == "F2" } {
          ::confVisu::createPluginInstance $visuNo ::$namespace
          ::confVisu::selectTool $visuNo ::$namespace
