@@ -63,8 +63,11 @@ namespace eval ::confVisu {
       if { ! [ info exists conf(seuils,visu$visuNo,mode) ] } {
          set conf(seuils,visu$visuNo,mode) "loadima"
       }
-      if { ! [ info exists conf(visu,crosshairstate) ] } {
-         set conf(visu,crosshairstate) "0"
+      if { ! [ info exists conf(visu,crosshair,defaultstate) ] } {
+         set conf(visu,crosshair,defaultstate)  "0"
+      }
+      if { ! [ info exists conf(visu,crosshair,color) ] } {
+         set conf(visu,crosshair,color) "#FF0000"
       }
       if { ! [ info exists conf(visu_palette,visu$visuNo,mode) ] } {
          set conf(visu_palette,visu$visuNo,mode) "1"
@@ -102,7 +105,7 @@ namespace eval ::confVisu {
       set private($visuNo,hCanvas)         $private($visuNo,This).can1.canvas
       set private($visuNo,hCrosshairH)     $private($visuNo,hCanvas).crosshairH
       set private($visuNo,hCrosshairV)     $private($visuNo,hCanvas).crosshairV
-      set private($visuNo,crosshairstate)  $conf(visu,crosshairstate)
+      set private($visuNo,crosshairstate)  $conf(visu,crosshair,defaultstate)
       set private($visuNo,menu)            ""
       set private($visuNo,mode)            "image"
 
@@ -4030,27 +4033,18 @@ namespace eval ::confVisu {
 
       set hCanvas $private($visuNo,hCanvas)
 
-      #--- je surveille si la couleur du reticule existe
-      set catchResult [ catch { set colorCrosshair $conf(crosshair,color) } ]
-
-      #--- j'initialise la couleur du reticule si elle n'existe pas
-      if { $catchResult !=0 } {
-         ::Crosshair::createPluginInstance
-         set colorCrosshair $conf(crosshair,color)
-      }
-
       #--- je cree le label representant la ligne horizontale
       if { ![winfo exists $private($visuNo,hCrosshairH)] } {
-         label $private($visuNo,hCrosshairH) -bg $colorCrosshair
+         label $private($visuNo,hCrosshairH) -bg $conf(visu,crosshair,color)
       } else {
-         $private($visuNo,hCrosshairH) configure -bg $colorCrosshair
+         $private($visuNo,hCrosshairH) configure -bg $conf(visu,crosshair,color)
       }
 
       #--- je cree le label representant la ligne verticale
       if { ![winfo exists $private($visuNo,hCrosshairV)] } {
-         label $private($visuNo,hCrosshairV) -bg $colorCrosshair
+         label $private($visuNo,hCrosshairV) -bg $conf(visu,crosshair,color)
       } else {
-         $private($visuNo,hCrosshairV) configure -bg $colorCrosshair
+         $private($visuNo,hCrosshairV) configure -bg $conf(visu,crosshair,color)
       }
 
       #--- coordonnees du centre du reticule dans le repere canvas
