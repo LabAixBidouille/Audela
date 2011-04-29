@@ -95,12 +95,8 @@ namespace eval ::Crosshair {
    #------------------------------------------------------------
    proc createPluginInstance { { in "" } { visuNo 1 } } {
       variable private
-      global conf
 
       #--- j'initialise les parametres dans le tableau conf()
-      if { ! [ info exists conf(crosshair,color) ] }        { set conf(crosshair,color)        "#FF0000" }
-      if { ! [ info exists conf(crosshair,defaultstate) ] } { set conf(crosshair,defaultstate) "0" }
-
       set private(imageSize) " "
 
       return [namespace current]
@@ -152,8 +148,8 @@ namespace eval ::Crosshair {
       variable widget
       global conf
 
-      set conf(crosshair,color)        $widget(color)
-      set conf(crosshair,defaultstate) $widget(defaultstate)
+      set conf(visu,crosshair,color)        $widget(color)
+      set conf(visu,crosshair,defaultstate) $widget(defaultstate)
 
       ::confVisu::setCrosshair $visuNo $widget($visuNo,currentstate)
    }
@@ -184,8 +180,8 @@ namespace eval ::Crosshair {
       set widget(frm) $frm
 
       #--- j'initialise les valeurs
-      set widget(color)                $conf(crosshair,color)
-      set widget(defaultstate)         $conf(crosshair,defaultstate)
+      set widget(color)                $conf(visu,crosshair,color)
+      set widget(defaultstate)         $conf(visu,crosshair,defaultstate)
       set widget($visuNo,currentstate) [::confVisu::getCrosshair $visuNo]
 
       #--- creation des differents frames
