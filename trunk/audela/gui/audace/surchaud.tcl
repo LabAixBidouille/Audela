@@ -55,11 +55,12 @@
 # uncosmic2  in out number coef ?first_index? ?tt_options?
 # window1  in out {x1 y1 x2 y2} ?tt_options?
 # window2  in out number {x1 y1 x2 y2} ?first_index? ?tt_options?
+#
 # calibwcs  Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder
 # calibwcs2  Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder number ?first_index?
 # simulimage  Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder ?exposure_s? ?fwhm_pix? \
 #             ?teldiam_m? ?colfilter? ?sky_brightness_mag/arcsec2? ?quantum_efficiency? ?gain_e/ADU? ?readout_noise_e?"
-# photrelwcs in ra dec number ?first_index? ?htm_level?
+# photrelwcs  in ra dec number ?first_index? ?htm_level?
 #
 
 proc add {args} {
@@ -1211,7 +1212,7 @@ proc subsky {args} {
       error "Usage: subsky back_kernel back_threshold ?tt_options?"
       return $error;
    }
-   #--- decode la ligne de commande source audace/surchaud.tcl ; subsky 20 0.20 40
+   #--- decode la ligne de commande
    set back_kernel [lindex $args 0]
    set back_threshold [lindex $args 1]
    if {$back_threshold<0} {
@@ -1234,7 +1235,7 @@ proc subsky1 {args} {
       error "Usage: subsky1 in out back_kernel back_threshold ?tt_options?"
       return $error;
    }
-   #--- decode la ligne de commande source audace/surchaud.tcl ; subsky2 ic a 20 0.20 40
+   #--- decode la ligne de commande
    set in [lindex $args 0]
    set out [lindex $args 1]
    set back_kernel [lindex $args 2]
@@ -1262,7 +1263,7 @@ proc subsky2 {args} {
       error "Usage: subsky2 in out number back_kernel back_threshold ?first_index? ?tt_options?"
       return $error;
    }
-   #--- decode la ligne de commande source audace/surchaud.tcl ; subsky2 ic a 10 20 0.20 40
+   #--- decode la ligne de commande
    set in [lindex $args 0]
    set out [lindex $args 1]
    set number [lindex $args 2]
@@ -1360,7 +1361,7 @@ proc window1 {args} {
       error "Usage: window1 in out {x1 y1 x2 y2} ?tt_options?"
       return $error;
    }
-   #--- decode la ligne de commande source audace/surchaud.tcl ; window2 ic a {50 50 100 100}
+   #--- decode la ligne de commande
    set in [lindex $args 0]
    set out [lindex $args 1]
    set box [lindex $args 2]
@@ -1395,7 +1396,7 @@ proc window2 {args} {
       error "Usage: window2 in out number {x1 y1 x2 y2} ?first_index? ?tt_options?"
       return $error;
    }
-   #--- decode la ligne de commande source audace/surchaud.tcl ; window2 ic a 2 {50 50 100 100}
+   #--- decode la ligne de commande
    set in [lindex $args 0]
    set out [lindex $args 1]
    set number [lindex $args 2]
@@ -1430,10 +1431,8 @@ proc window2 {args} {
 }
 
 proc calibwcs {args} {
-
    if {[llength $args] >= 5} {
-
-      # Chargement des arguments
+      #--- Chargement des arguments
       set Angle_ra    [lindex $args 0]
       set Angle_dec   [lindex $args 1]
       set valpixsize1 [lindex $args 2]
@@ -1466,8 +1465,7 @@ proc calibwcs {args} {
          set valfoclen [lindex [buf$::audace(bufNo) getkwd FOCLEN] 1]
       }
 
-
-      # Construction des parametres WCS
+      #--- Construction des parametres WCS
       set val(CRPIX1) [expr $naxis1/2]
       set val(CRPIX2) [expr $naxis2/2]
       set val(RA) [mc_angle2deg $Angle_ra 360]
@@ -1488,7 +1486,7 @@ proc calibwcs {args} {
       set val(CD2_1) [expr -abs($val(CDELT1))*$val(CDELT2)/abs($val(CDELT2))*$sinr ]
       set val(CD2_2) [expr $val(CDELT2)*$cosr ]
 
-      # Mise a jour du Header Fits
+      #--- Mise a jour du Header Fits
       set astrom(kwds)     {RA                       DEC                       CRPIX1        CRPIX2        CRVAL1          CRVAL2           CDELT1    CDELT2    CROTA2                    CD1_1         CD1_2         CD2_1         CD2_2         FOCLEN         PIXSIZE1                        PIXSIZE2}
       set astrom(units)    {deg                      deg                       pixel         pixel         deg             deg              deg/pixel deg/pixel deg                       deg/pixel     deg/pixel     deg/pixel     deg/pixel     m              um                              um}
       set astrom(types)    {double                   double                    double        double        double          double           double    double    double                    double        double        double        double        double         double                          double}
@@ -1513,7 +1511,7 @@ proc calibwcs {args} {
       buf$::audace(bufNo) setkwd [list CUNIT2 deg string  ""    "Angles are degrees always"   ]
       buf$::audace(bufNo) setkwd [list CATASTAR 0 int ""    "Nb stars matched"   ]
 
-      # --- check les catalogues
+      #--- check les catalogues
       if {([string toupper $cat_format]=="USNO")||([string toupper $cat_format]=="MICROCAT")} {
       } else {
          set comment "cat_format $cat_format not valid. It must be only USNO or MICROCAT !"
@@ -1533,8 +1531,8 @@ proc calibwcs {args} {
          set comment "cat_folder $cat_folder does not exists !"
          error $comment
       }
-      
-      # Identification des sources
+
+      #--- Identification des sources
       if {($cat_format!="")} {
          set ext $::conf(extension,defaut)
          #--- Remplacement de "$::audace(rep_images)" par "." dans "mypath" - Cela permet a
@@ -1590,7 +1588,7 @@ proc calibwcs2 {args} {
       if {[llength $args] >= 9} {
          set first_index [lindex $args 10]
       }
-      #
+      #---
       set kdeb $first_index
       set kfin [expr $kdeb+$number-1]
       for {set k $kdeb } { $k<=$kfin } {incr k} {
@@ -1605,7 +1603,7 @@ proc calibwcs2 {args} {
    }
 }
 
-# example: simulimage * * * * * USNO c:/d/usno/ 90 2.5 0.25 R 20.0 0.07 1.8 8.5  1 1000 0.5 0
+#--- Example : simulimage * * * * * USNO c:/d/usno/ 90 2.5 0.25 R 20.0 0.07 1.8 8.5  1 1000 0.5 0
 proc simulimage {args} {
    if {[llength $args] >= 5} {
       set Angle_ra [lindex $args 0]
@@ -1632,7 +1630,7 @@ proc simulimage {args} {
       incr k ; set bias_level 0           ; if {[llength $args] >= [expr 1+$k]} { set bias_level [lindex $args $k] }
       incr k ; set thermic_response 0     ; if {[llength $args] >= [expr 1+$k]} { set thermic_response [lindex $args $k] }
       incr k ; set flat_type 0            ; if {[llength $args] >= [expr 1+$k]} { set flat_type [lindex $args $k] }
-      # --- check les catalogues
+      #--- check les catalogues
       if {([string toupper $cat_format]=="USNO")||([string toupper $cat_format]=="MICROCAT")} {
       } else {
          set comment "cat_format $cat_format not valid. It must be only USNO or MICROCAT !"
@@ -1652,7 +1650,7 @@ proc simulimage {args} {
          set comment "cat_folder $cat_folder does not exists !"
          error $comment
       }
-      #
+      #---
       set pi [expr 4*atan(1.)]
       set naxis1 [lindex [buf$::audace(bufNo) getkwd NAXIS1] 1]
       set naxis2 [lindex [buf$::audace(bufNo) getkwd NAXIS2] 1]
@@ -1676,12 +1674,12 @@ proc simulimage {args} {
          set val(CD1_2) [expr  abs($val(CDELT2))*$val(CDELT1)/abs($val(CDELT1))*$sinr ]
          set val(CD2_1) [expr -abs($val(CDELT1))*$val(CDELT2)/abs($val(CDELT2))*$sinr ]
          set val(CD2_2) [expr $val(CDELT2)*$cosr ]
-         #
+         #---
          set astrom(kwds)     {RA                       DEC                       CRPIX1        CRPIX2        CRVAL1          CRVAL2           CDELT1    CDELT2    CROTA2                    CD1_1         CD1_2         CD2_1         CD2_2         FOCLEN         PIXSIZE1                        PIXSIZE2}
          set astrom(units)    {deg                      deg                       pixel         pixel         deg             deg              deg/pixel deg/pixel deg                       deg/pixel     deg/pixel     deg/pixel     deg/pixel     m              um                              um}
          set astrom(types)    {double                   double                    double        double        double          double           double    double    double                    double        double        double        double        double         double                          double}
          set astrom(comments) {"RA expected for CRPIX1" "DEC expected for CRPIX2" "X ref pixel" "Y ref pixel" "RA for CRPIX1" "DEC for CRPIX2" "X scale" "Y scale" "Position angle of North" "Matrix CD11" "Matrix CD12" "Matrix CD21" "Matrix CD22" "Focal length" "X pixel size binning included" "Y pixel size binning included"}
-         #
+         #---
          set n [llength $astrom(kwds)]
          for {set k 0 } { $k<$n } {incr k} {
             set kwd [lindex $astrom(kwds) $k]
@@ -1700,7 +1698,7 @@ proc simulimage {args} {
       buf$::audace(bufNo) setkwd [list CUNIT1 deg string "" "Angles are degrees always"]
       buf$::audace(bufNo) setkwd [list CUNIT2 deg string "" "Angles are degrees always"]
       buf$::audace(bufNo) setkwd [list CATASTAR 0 int "" "Nb stars matched"]
-      #
+      #---
       if {($cat_format!="")} {
          set mypath "."
          set cattype $cat_format
@@ -1726,16 +1724,17 @@ proc photrelwcs {args} {
       set first 1
       if {$n>=5} {
          set first "[lindex $args 4]"
-      }      
+      }
       set htm_level 8
       if {$n>=6} {
          set first "[lindex $args 5]"
-      }      
+      }
       set ni [expr $number+$first-1]
       for {set ki $first} {$ki<=$ni} {incr ki} {
-         # TO Continue...
+         # To Continue...
       }
    } else {
       error "Usage: photrelwcs in ra dec number ?first_index? ?htm_level?"
    }
 }
+
