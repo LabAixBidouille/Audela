@@ -490,6 +490,9 @@ proc photcal_plotcom { file_calibration {axis_lim ""} {lim_inf ""} {lim_sup ""} 
    set pathim $audace(rep_images)
    set fic "$pathim/${file_calibration}.txt"
    #::console::affiche_resultat "Read the file $fic\n"
+   if {[file size $fic]==0} {
+      return ""
+   }
    set f [open $fic r]
    set lignes [split [read $f] \n]
    close $f
