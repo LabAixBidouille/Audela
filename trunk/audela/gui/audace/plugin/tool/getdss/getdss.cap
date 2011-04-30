@@ -39,8 +39,9 @@ set caption(getdss,ic)               "IC"
 set caption(getdss,coord)            "Coordinates"
 set caption(getdss,ad)               "Right Ascension:"
 set caption(getdss,dec)              "Declination:"
-set caption(getdss,telescope)        "Telescope Coordinates (RA, Dec.)"
-set caption(getdss,imageFits)        "Image Coordinates (RA, Dec.)"
+set caption(getdss,telescope)        "Telescope Coordinates (RA & Dec.)"
+set caption(getdss,imageFits1)       "Image Coordinates (RA & DEC)"
+set caption(getdss,imageFits2)       "Image Coordinates (CRVAL1 & CRVAL2)"
 set caption(getdss,nouveaurep)       "Create Folder?"
 set caption(getdss,selectrep)        "Select a folder"
 set caption(getdss,repinexistant)    "No such folder"
@@ -58,6 +59,8 @@ set caption(getdss,texte1b)          "When loading field (%s - %s) the field was
 set caption(getdss,texte2)           "You must choose a catalog."
 set caption(getdss,texte3)           "You must enter the start index."
 set caption(getdss,texte4)           "You must enter the end index."
+set caption(getdss,texte5)           "The image does not have the required keywords (RA & DEC)."
+set caption(getdss,texte6)           "The image does not have the required keywords (CRVAL1 & CRVAL2)."
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -91,7 +94,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(getdss,ad)            "Ascension Droite :"
    set caption(getdss,dec)           "Déclinaison :"
    set caption(getdss,telescope)     "Coordonnées (AD, Déc.) du télescope"
-   set caption(getdss,imageFits)     "Coordonnées (AD, Déc.) de l'image"
+   set caption(getdss,imageFits1)    "Coordonnées de l'image (RA & DEC)"
+   set caption(getdss,imageFits2)    "Coordonnées de l'image (CRVAL1 & CRVAL2)"
    set caption(getdss,nouveaurep)    "Voulez-vous créer ce répertoire ?"
    set caption(getdss,selectrep)     "Sélectionnez un répertoire"
    set caption(getdss,repinexistant) "Répertoire inexistant"
@@ -109,6 +113,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(getdss,texte2)        "Vous devez choisir un catalogue."
    set caption(getdss,texte3)        "Vous devez renseigner l'indice de début."
    set caption(getdss,texte4)        "Vous devez renseigner l'indice de fin."
+   set caption(getdss,texte5)        "Cette image n'a pas les mots clés requis (RA & DEC)."
+   set caption(getdss,texte6)        "Cette image n'a pas les mots clés requis (CRVAL1 & CRVAL2)."
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -142,7 +148,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(getdss,ad)            "Ascensione Retta:"
    set caption(getdss,dec)           "Declinazione:"
    set caption(getdss,telescope)     "# Coordonnées (AD, Déc.) du télescope"
-   set caption(getdss,imageFits)     "# Coordonnées (AD, Déc.) de l'image"
+   set caption(getdss,imageFits1)    "# Coordonnées de l'image (RA & DEC)"
+   set caption(getdss,imageFits2)    "# Coordonnées de l'image (CRVAL1 & CRVAL2)"
    set caption(getdss,nouveaurep)    "# Voulez-vous créer ce répertoire ?"
    set caption(getdss,selectrep)     "# Sélectionnez un répertoire"
    set caption(getdss,repinexistant) "# Répertoire inexistant"
@@ -160,6 +167,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(getdss,texte2)        "# Vous devez choisir un catalogue."
    set caption(getdss,texte3)        "# Vous devez renseigner l'indice de début."
    set caption(getdss,texte4)        "# Vous devez renseigner l'indice de fin."
+   set caption(getdss,texte5)        "# Cette image n'a pas les mots clés requis (RA & DEC)."
+   set caption(getdss,texte6)        "# Cette image n'a pas les mots clés requis (CRVAL1 & CRVAL2)."
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -193,7 +202,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(getdss,ad)            "Ascensión Recta:"
    set caption(getdss,dec)           "Declinación:"
    set caption(getdss,telescope)     "# Coordonnées (AD, Déc.) du télescope"
-   set caption(getdss,imageFits)     "# Coordonnées (AD, Déc.) de l'image"
+   set caption(getdss,imageFits1)    "# Coordonnées de l'image (RA & DEC)"
+   set caption(getdss,imageFits2)    "# Coordonnées de l'image (CRVAL1 & CRVAL2)"
    set caption(getdss,nouveaurep)    "# Voulez-vous créer ce répertoire ?"
    set caption(getdss,selectrep)     "# Sélectionnez un répertoire"
    set caption(getdss,repinexistant) "# Répertoire inexistant"
@@ -211,6 +221,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(getdss,texte2)        "# Vous devez choisir un catalogue."
    set caption(getdss,texte3)        "# Vous devez renseigner l'indice de début."
    set caption(getdss,texte4)        "# Vous devez renseigner l'indice de fin."
+   set caption(getdss,texte5)        "# Cette image n'a pas les mots clés requis (RA & DEC)."
+   set caption(getdss,texte6)        "# Cette image n'a pas les mots clés requis (CRVAL1 & CRVAL2)."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -244,7 +256,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(getdss,ad)            "Rektaszension:"
    set caption(getdss,dec)           "Deklination:"
    set caption(getdss,telescope)     "# Coordonnées (AD, Déc.) du télescope"
-   set caption(getdss,imageFits)     "# Coordonnées (AD, Déc.) de l'image"
+   set caption(getdss,imageFits1)    "# Coordonnées de l'image (RA & DEC)"
+   set caption(getdss,imageFits2)    "# Coordonnées de l'image (CRVAL1 & CRVAL2)"
    set caption(getdss,nouveaurep)    "# Voulez-vous créer ce répertoire ?"
    set caption(getdss,selectrep)     "# Sélectionnez un répertoire"
    set caption(getdss,repinexistant) "# Répertoire inexistant"
@@ -262,6 +275,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(getdss,texte2)        "# Vous devez choisir un catalogue."
    set caption(getdss,texte3)        "# Vous devez renseigner l'indice de début."
    set caption(getdss,texte4)        "# Vous devez renseigner l'indice de fin."
+   set caption(getdss,texte5)        "# Cette image n'a pas les mots clés requis (RA & DEC)."
+   set caption(getdss,texte6)        "# Cette image n'a pas les mots clés requis (CRVAL1 & CRVAL2)."
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -295,7 +310,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(getdss,ad)            "Ascenção Recta:"
    set caption(getdss,dec)           "Declinação:"
    set caption(getdss,telescope)     "# Coordonnées (AD, Déc.) du télescope"
-   set caption(getdss,imageFits)     "# Coordonnées (AD, Déc.) de l'image"
+   set caption(getdss,imageFits1)    "# Coordonnées de l'image (RA & DEC)"
+   set caption(getdss,imageFits2)    "# Coordonnées de l'image (CRVAL1 & CRVAL2)"
    set caption(getdss,nouveaurep)    "# Voulez-vous créer ce répertoire ?"
    set caption(getdss,selectrep)     "# Sélectionnez un répertoire"
    set caption(getdss,repinexistant) "# Répertoire inexistant"
@@ -313,6 +329,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(getdss,texte2)        "# Vous devez choisir un catalogue."
    set caption(getdss,texte3)        "# Vous devez renseigner l'indice de début."
    set caption(getdss,texte4)        "# Vous devez renseigner l'indice de fin."
+   set caption(getdss,texte5)        "# Cette image n'a pas les mots clés requis (RA & DEC)."
+   set caption(getdss,texte6)        "# Cette image n'a pas les mots clés requis (CRVAL1 & CRVAL2)."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -346,7 +364,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(getdss,ad)            "Right Ascension:"
    set caption(getdss,dec)           "Declination:"
    set caption(getdss,telescope)     "Telescope Coordinates (RA, Dec.)"
-   set caption(getdss,imageFits)     "Image Coordinates (RA, Dec.)"
+   set caption(getdss,imageFits1)    "Image Coordinates (RA & DEC)"
+   set caption(getdss,imageFits2)    "Image Coordinates (CRVAL1 & CRVAL2)"
    set caption(getdss,nouveaurep)    "Create Folder?"
    set caption(getdss,selectrep)     "Select a folder"
    set caption(getdss,repinexistant) "No such folder"
@@ -364,6 +383,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(getdss,texte2)        "You must choose a catalog."
    set caption(getdss,texte3)        "You must enter the start index."
    set caption(getdss,texte4)        "You must enter the end index."
+   set caption(getdss,texte5)        "The image does not have the required keywords (RA & DEC)."
+   set caption(getdss,texte6)        "The image does not have the required keywords (CRVAL1 & CRVAL2)."
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -397,7 +418,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(getdss,ad)            "Right Ascension:"
    set caption(getdss,dec)           "Declination:"
    set caption(getdss,telescope)     "Telescope Coordinates (RA, Dec.)"
-   set caption(getdss,imageFits)     "Image Coordinates (RA, Dec.)"
+   set caption(getdss,imageFits1)    "Image Coordinates (RA & DEC)"
+   set caption(getdss,imageFits2)    "Image Coordinates (CRVAL1 & CRVAL2)"
    set caption(getdss,nouveaurep)    "Create Folder?"
    set caption(getdss,selectrep)     "Select a folder"
    set caption(getdss,repinexistant) "No such folder"
@@ -415,6 +437,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(getdss,texte2)        "You must choose a catalog."
    set caption(getdss,texte3)        "You must enter the start index."
    set caption(getdss,texte4)        "You must enter the end index."
+   set caption(getdss,texte5)        "The image does not have the required keywords (RA & DEC)."
+   set caption(getdss,texte6)        "The image does not have the required keywords (CRVAL1 & CRVAL2)."
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -448,7 +472,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(getdss,ad)            "Right Ascension:"
    set caption(getdss,dec)           "Declination:"
    set caption(getdss,telescope)     "Telescope Coordinates (RA, Dec.)"
-   set caption(getdss,imageFits)     "Image Coordinates (RA, Dec.)"
+   set caption(getdss,imageFits1)    "Image Coordinates (RA & DEC)"
+   set caption(getdss,imageFits2)    "Image Coordinates (CRVAL1 & CRVAL2)"
    set caption(getdss,nouveaurep)    "Create Folder?"
    set caption(getdss,selectrep)     "Select a folder"
    set caption(getdss,repinexistant) "No such folder"
@@ -466,6 +491,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(getdss,texte2)        "You must choose a catalog."
    set caption(getdss,texte3)        "You must enter the start index."
    set caption(getdss,texte4)        "You must enter the end index."
+   set caption(getdss,texte5)        "The image does not have the required keywords (RA & DEC)."
+   set caption(getdss,texte6)        "The image does not have the required keywords (CRVAL1 & CRVAL2)."
 
 }
 
