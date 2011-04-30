@@ -1149,7 +1149,7 @@ proc photcal_airmass { generic_file_common nb_file_common home file_calibration}
          append texte "$jd1 $airmass1 $col1 $flux1 $dflux1 $magcat1 "
          append texte "$jd2 $airmass2 $col2 $flux2 $dflux2 $magcat2 "
          append textes "$texte\n"
-         ::console::affiche_resultat "$texte\n"         
+         #::console::affiche_resultat "$texte\n"         
          lappend xs [expr $magcat1-$magcat2]
          lappend ys $airmass1
       }
