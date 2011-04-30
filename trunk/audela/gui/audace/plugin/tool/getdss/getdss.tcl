@@ -393,7 +393,7 @@ proc ::getdss::createPanel { visuNo } {
    pack      $private($visuNo,This).lb.scrollbar -side left -fill y
 
    $private($visuNo,This).lb.lb1 insert end "POSS2/UKSTU Red"
-  $private($visuNo,This).lb.lb1 insert end "POSS2/UKSTU Blue"
+   $private($visuNo,This).lb.lb1 insert end "POSS2/UKSTU Blue"
    $private($visuNo,This).lb.lb1 insert end "POSS2/UKSTU IR"
    $private($visuNo,This).lb.lb1 insert end "POSS1 Red"
    $private($visuNo,This).lb.lb1 insert end "POSS1 Blue"
