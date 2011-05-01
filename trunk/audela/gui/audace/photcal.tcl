@@ -258,7 +258,13 @@ proc photcal_calibrate { file_calibration nb_file_common {mag_inf ""} {mag_sup "
          set airmass2 [expr 1/sin(3.1416/180*$elev2)]
          set flux2 [lindex $ligne 16]
          #
+         if {$flux1<=0} {
+            continue
+         }
          set A1 [expr $C1-2.5*log10($flux1)-$K1*$airmass1]
+         if {$flux2<=0} {
+            continue
+         }
          set A2 [expr $C2-2.5*log10($flux2)-$K2*$airmass2]
          set deno [expr (1.-$alpha1)*(1.+$alpha2)+$alpha1*$alpha2]
          set mag1 [expr ($A1*(1.+$alpha2)-$A2*$alpha1) / $deno ]
