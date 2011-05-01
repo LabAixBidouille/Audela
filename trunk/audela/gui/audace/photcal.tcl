@@ -444,8 +444,14 @@ proc photcal_fit { file_calibration {mag_inf ""} {mag_sup ""} {K1 ""} {K2 ""} } 
       if {$err==1} { set alpha 0 }
       set err [catch {format %+.3f $K} msg]
       if {$err==1} { set K 0 }
+      set msg [string first inf $C]
+      if {$msg!=-1} { set C -99 }
+      set msg [string first inf $alpha]
+      if {$msg!=-1} { set alpha 0 }
+      set msg [string first inf $K]
+      if {$msg!=-1} { set K 0 }
       ::console::affiche_resultat "\n"
-      ::console::affiche_resultat "<[lindex $cols $k]> $C $d_C $alpha $d_alpha $K $d_K\n"
+      #::console::affiche_resultat "<[lindex $cols $k]> $C $d_C $alpha $d_alpha $K $d_K\n"
       ::console::affiche_resultat "===== mag$filter = C$filter - 2.5*log10(flux${filter}/t${filter}) + alpha$filter *(${color1}-${color2}) - K$filter * Airmass\n"
       ::console::affiche_resultat "alpha$filter = [format %+.3f $alpha] +/- [format %.3f $d_alpha] \n"
       ::console::affiche_resultat "K$filter     = [format %.3f $K     ] +/- [format %.3f $d_K] \n"
