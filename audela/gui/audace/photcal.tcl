@@ -392,8 +392,8 @@ proc photcal_fit { file_calibration {mag_inf ""} {mag_sup ""} {K1 ""} {K2 ""} } 
    }
    # - calcul de l'ajustement
    set textes ""
-   append textes "# R = ZMAGR - 2.5 log(flux_R) + COEFR*(V-R) - KR*Airmass_R\n"
-   append textes "# V = ZMAGV - 2.5 log(flux_V) + COEFV*(V-R) - KV*Airmass_V\n"
+   append textes "# ${color1} = ZMAG${color1} - 2.5 log(flux_${color1}) + COEF${color1}*(${color1}-${color2}) - K${color1}*Airmass_${color1}\n"
+   append textes "# ${color2} = ZMAG${color2} - 2.5 log(flux_${color2}) + COEF${color2}*(${color1}-${color2}) - K${color2}*Airmass_${color2}\n"
    append textes "# Filter C d_C alpha d_alpha K d_K\n"
    append textes "# ----------------------------------------------\n"
    set k 0
@@ -438,7 +438,14 @@ proc photcal_fit { file_calibration {mag_inf ""} {mag_sup ""} {K1 ""} {K2 ""} } 
          set C       [lindex $c 2]
          set d_C     [expr sqrt([gsl_mindex $covar 3 3])]
       }
+      set err [catch {format %.3f $C} msg]
+      if {$err==1} { set C -99 }
+      set err [catch {format %+.3f $alpha} msg]
+      if {$err==1} { set alpha 0 }
+      set err [catch {format %+.3f $K} msg]
+      if {$err==1} { set K 0 }
       ::console::affiche_resultat "\n"
+      ::console::affiche_resultat "<[lindex $cols $k]> $C $d_C $alpha $d_alpha $K $d_K\n"
       ::console::affiche_resultat "===== mag$filter = C$filter - 2.5*log10(flux${filter}/t${filter}) + alpha$filter *(${color1}-${color2}) - K$filter * Airmass\n"
       ::console::affiche_resultat "alpha$filter = [format %+.3f $alpha] +/- [format %.3f $d_alpha] \n"
       ::console::affiche_resultat "K$filter     = [format %.3f $K     ] +/- [format %.3f $d_K] \n"
