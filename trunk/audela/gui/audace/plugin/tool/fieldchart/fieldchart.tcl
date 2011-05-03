@@ -243,7 +243,7 @@ namespace eval ::fieldchart {
                -values $list_combobox
             grid $This.usr.1.cata -row 1 -column 1 -padx 5 -pady 2 -sticky e
 
-            label $This.usr.1.lab3 -text "$caption(fieldchart,cat_microcat)"
+            label $This.usr.1.lab3 -text "$caption(fieldchart,recherche)"
             grid $This.usr.1.lab3 -row 2 -column 0 -padx 5 -pady 2 -sticky w
 
             entry $This.usr.1.ent1 -textvariable ::fieldchart::widget(fieldchart,pathCatalog)
