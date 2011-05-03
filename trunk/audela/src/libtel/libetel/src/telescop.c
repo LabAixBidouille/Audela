@@ -75,7 +75,23 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 /* --------------------------------------------------------- */
 {
    char s[1024];
-	int err,k;
+	int err,k,kk,axis[3];
+	axis[0]=0;
+	axis[1]=1; //4
+	axis[2]=2; //5
+   if (argc >= 1) {
+      for (kk = 0; kk < argc-1; kk++) {
+         if (strcmp(argv[kk], "-axis0") == 0) {
+            axis[0]=atoi(argv[kk + 1]);
+         }
+         if (strcmp(argv[kk], "-axis1") == 0) {
+            axis[1]=atoi(argv[kk + 1]);
+         }
+         if (strcmp(argv[kk], "-axis2") == 0) {
+            axis[2]=atoi(argv[kk + 1]);
+         }
+      }
+   }
    /* --- type de monture ---*/
    tel->type_mount=MOUNT_EQUATORIAL;
    /* --- type des axes ---*/
@@ -90,11 +106,11 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 			mytel_error(tel,k,err);
 			return 1;
 		}
-		sprintf(s,"etb:DSTEB3:%d",k);
+		sprintf(s,"etb:DSTEB3:%d",axis[k]);
 		if (err = dsa_open_u(tel->drv[k],s)) {
 			if (k==0) {
 				mytel_error(tel,k,err);
-				sprintf(s," {etb:DSTEB3:%d}",k);
+				sprintf(s," {etb:DSTEB3:%d}",axis[k]);
 				strcat(tel->msg,s);
 				tel_close(tel);
 				return 2;
