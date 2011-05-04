@@ -34,20 +34,19 @@ proc spc_testlincalib { args } {
 }
 #********************************************************************
 
-
 ####################################################################
 # Procedure de calcul d'une réponse instrumentale intrinseque c'est a dire en eliminant l'effet de la transmission
 # atmospherique
 #
 # Auteur : Patrick LAILLY
 # Date creation : 2009-10-10
-# Date modification : 2010-01-18
+# Date modification : 2011-04-24
 # Arguments : fichier .fit du profil 1b mesure (calibré linéairement), type spectral (doit etre dans bibliotheque 
 # spectrale)  correspondant ? liste donnant les parametres requis pour le calcul de la transmission atmospherique ?
 # Cette liste comprend : altitude observatoire (en km), hauteur (en °) de l'astre, le temps 
 # qu'il fait a choiisr entre sec ou normal ou lourd ou orageux ou valeur numerique qui sera 
 # la valeur de AOD specifiee par l'utilisateur, en option : desert ?
-# Sortie : la procedure cree le fichier ri_intris avec le meme echantillonage que le profil mesure
+# Sortie : la procedure cree le fichier ri_intris avec le meme echantillonage que le profil mesure.
 # Exemples d'utilisation : spc_calriintrins altair.fit a7v liste_atmosph
 # Exemple de liste_atmosph { 0.8 45.0 lourd }
 # Exemple de liste_atmosph { 3842. 45.0 normal desert }
@@ -84,11 +83,11 @@ proc spc_calriintrins { args } {
 	 set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
 	 set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
 	 set caract_lambda [ list ]
-	 ::console::affiche_resultat "caractéristiques profil mesure cdelt1= $cdelt1 naxis1= $naxis1 crval1= $crval1 \n"
+	 ::console::affiche_resultat "caractéristiques profil mesure $fich_profile cdelt1= $cdelt1 naxis1= $naxis1 crval1= $crval1 \n"
 	 lappend caract_lambda $naxis1
 	 lappend caract_lambda $crval1
 	 lappend caract_lambda $cdelt1
-	 ::console::affiche_resultat "caractéristiques prfil mesure cdelt1= $cdelt1 naxis1= $naxis1 crval1= $crval1 \n"
+	 #::console::affiche_resultat "caractéristiques profil mesure $fich_profile cdelt1= $cdelt1 naxis1= $naxis1 crval1= $crval1 \n"
 	 set ecart_lambda [ expr ($naxis1 -1) * $cdelt1 ]
 	 #--- test si plage longueurs d'ondes assez large
 	 if { $ecart_lambda < 500. } {
@@ -105,9 +104,29 @@ proc spc_calriintrins { args } {
 	 set fich_profile_corr_transm [ spc_divri $fich_profile $transm_atmosph ]
 	 #--- calcul de la reponse instrumentale intrinseque
 	 file copy -force $fich_profile_ref "$audace(rep_images)/$type_spectral$suff"
+	 # sauvegarde d'une eventuelle reponse instrumentale calculee anterieurement
+	 set repinstr reponse_instrumentale-br.fit
+	 set repinstrprev reponse_prev.fit
+	 #set prev -prev
+	 #set br -br
+	 if { [ file exists "$audace(rep_images)/$repinstr" ]==1 } {
+	    #::console::affiche_resultat "spc_calriintrins : $audace(rep_images)/$repinstr$br$suff \n"	
+	    file copy -force "$audace(rep_images)/$repinstr" "$audace(rep_images)/$repinstrprev"
+	    ::console::affiche_resultat "spc_calriintrins : sauvegarde provisoire du fichier $audace(rep_images)/$repinstrprev\n"
+	 }
 	 set output_rinstrum [ spc_rinstrum $fich_profile_corr_transm "$type_spectral$suff" ]
-	 #set ad_hoc br
-	 #set ri_intrins "ri_intrins$suff"
+	 #sauvegarde de la reponse instrumentale intrinseque sous son vrai nom
+	 set ri_intrins "ri_intrinseque$suff"
+	 file copy -force "$audace(rep_images)/$repinstr" "$audace(rep_images)/$ri_intrins"
+	 ::console::affiche_resultat "spc_calriintrins : en fait la reponse instrumentale s'appelle ri_intrinseque et est sauvegardee sous $audace(rep_images)/$ri_intrins\n"
+	 #restitution de l'eventuelle reponse instrumentale calculee anterieurement
+	 if { [ file exists "$audace(rep_images)/$repinstrprev" ]==1 } {
+	    file copy -force "$audace(rep_images)/$repinstrprev" "$audace(rep_images)/$repinstr"
+	    ::console::affiche_resultat "spc_calriintrins : restitution du fichier $audace(rep_images)/$repinstr\n"
+	    file delete -force "$audace(rep_images)/$repinstrprev"
+	    ::console::affiche_resultat "spc_calriintrins : effacement de la sauvegarde provisoire $audace(rep_images)/$repinstrprev\n"
+	 }
+	 
 	 #::console::affiche_resultat " sortie rinstrum : $output_rinstrum   $output_rinstrum$ad_hoc$suff \n"
 	 #file copy -force "$audace(rep_images)/$output_rinstrum$ad_hoc$suff" "$audace(rep_images)/$ri_intrins"
 	 # faut il coder en dur le nom riinstr ou bien le faire passer en argument ???????????????????????????????????
@@ -118,7 +137,7 @@ proc spc_calriintrins { args } {
 	 file delete -force "$audace(rep_images)/$transm_atmosph"
 	 file delete -force "$audace(rep_images)/$type_spectral$suff"
       }
-      return $output_rinstrum
+      return $ri_intrins
    }  else  {
       ::console::affiche_erreur "Usage : spc_calriintrins profil mesure ? type spectral ? caract_lambda ? liste atmosph \n\n" 
    }
@@ -133,13 +152,14 @@ proc spc_calriintrins { args } {
 #
 # Auteur : Patrick LAILLY
 # Date creation : 2009-10-10
-# Date modification : 2010-01-18
+# Date modification : 2011-04-24
 # Arguments : fichier .fit du profil 1b mesure (calibré linéairement), fichier .fit donnant la ri intrinseque, liste
 # donnant les parametres requis pour le calcul de la transmission atmospherique ?
 # Cette liste comprend : altitude observatoire (en km), hauteur (en °) de l'astre, le temps 
 # qu'il fait a choiisr entre sec ou normal ou lourd ou orageux ou valeur numerique qui sera 
 # la valeur de AOD specifiee par l'utilisateur, en option : desert ?
-# Sortie : la procedure cree le fichier 1c associe au profil mesure
+# Sortie : la procedure cree le fichier 1c associe au profil mesure : ce fichier contient le meme nombre d'echantillons
+# que le fichier 1b
 # Exemples d'utilisation : spc_corrriintrins zeta_tau.fit reponse_instrumentale-br.fit liste_atmosph
 # Exemple de liste_atmosph { 0.8 45.0 lourd }
 # Exemple de liste_atmosph { 3.842 45.0 normal desert }
@@ -171,16 +191,16 @@ proc spc_corrriintrins { args } {
 	 }
 	 #set profile [ spc_fits2data $fich_profile ]
 	 buf$audace(bufNo) load "$audace(rep_images)/$fich_profile"
-	 #--- Renseigne sur les parametres de l'image :
+	 #--- Renseigne sur les parametres de l'image fich_profile:
 	 set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
 	 set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
 	 set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-	 ::console::affiche_resultat "caractéristiques prfil mesure cdelt1= $cdelt1 naxis1= $naxis1 crval1= $crval1 \n"
+	 ::console::affiche_resultat "caractéristiques prfil mesure $fich_profile cdelt1= $cdelt1 naxis1= $naxis1 crval1= $crval1 \n"
 	 set caract_lambda [ list ]
 	 lappend caract_lambda $naxis1
 	 lappend caract_lambda $crval1
 	 lappend caract_lambda $cdelt1
-	 ::console::affiche_resultat "caractéristiques prfil mesure cdelt1= $cdelt1 naxis1= $naxis1 crval1= $crval1 \n"
+	 #::console::affiche_resultat "caractéristiques prfil mesure cdelt1= $cdelt1 naxis1= $naxis1 crval1= $crval1 \n"
 	 set ecart_lambda [ expr ($naxis1 -1) * $cdelt1 ]
 	 #--- test si plage longueurs d'ondes assez large
 	 if { $ecart_lambda < 500. } {
@@ -195,8 +215,27 @@ proc spc_corrriintrins { args } {
 	 }
 	 #--- division profil mesure par transmission atmospherique
 	 set fich_profile_corr_transm [ spc_divri $fich_profile $transm_atmosph ]
+	 # mise en conformite des profils ri_intrins et fich_profile_corr_transm	 
+	 buf$audace(bufNo) load "$audace(rep_images)/$ri_intrins"
+	 #--- Renseigne sur les parametres de l'image ri_intrins:
+	 #set naxis1b [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+	 set crval1b [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+	 #set cdelt1b [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+	 set crval1m [ expr max ( $crval1, $crval1b ) ]
+	 set ri_intrins_newsamp [ spc_echantdelt $ri_intrins $cdelt1 $crval1m ]
+	 #egalisation du nb d'echantillons des deux profils
+	 #--- Renseigne sur les parametres de l'image ri_intrins_newsamp:
+	 buf$audace(bufNo) load "$audace(rep_images)/$ri_intrins_newsamp"
+	 set naxis1b [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+	 #egalisation du nb d'echantillons des deux profils
+	 if { $naxis1 < $naxis1b } {
+	    set ri_intrins_newsamp [ spc_selectpixels $ri_intrins_newsamp 1 $naxis1 ]
+	 } elseif { $naxis1 > $naxis1b } {
+	    set ri_intrins_newsamp [ spc_zeropad $ri_intrins_newsamp $naxis1 ]
+	 }
+	 ::console::affiche_resultat " spc_corrriintrins : riintrins $ri_intrins_newsamp reechantillone avec $naxis1b echantillons \n"
 	 #--- division de ce resultat par la riintrins et sauvegarde du resultat (profil 1c)
-	 set nom_fich [ spc_divri $fich_profile_corr_transm $ri_intrins ]
+	 set nom_fich [ spc_divri $fich_profile_corr_transm $ri_intrins_newsamp ]
 	 set nom_fich [ file rootname $nom_fich ]
 	 set suff1 -1c
 	 set suff .fit
@@ -216,7 +255,6 @@ proc spc_corrriintrins { args } {
    }
 }
 #************************************************************************
-
 
 
  
@@ -3753,7 +3791,7 @@ proc spc_testcalibre { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 02-09-2005
-# Date de mise à jour : 20-03-06/26-08-06/23-07-2007
+# Date de mise à jour : 20-03-06/26-08-06/23-07-2007/24-04-2011
 # Arguments : fichier .fit du profil de raie, profil de raie de référence
 # Remarque : effectue le découpage, rééchantillonnage puis la division
 ##########################################################
@@ -3861,13 +3899,13 @@ proc spc_rinstrum { args } {
                #-- Lhires3+résos 600 t/mm et 1200 t/mm-kaf1600 :
                ## set rinstrum [ spc_pwlfilter $result_division 280 o 51 201 10 2 50 ]
                # set rinstrum [  spc_lowresfilterfile $result_division "$spcaudace(reptelluric)/forgetlambda.dat" 1.3 10000 { 1.0 2.0 } "o" 18 ]
-               set rinstrum [  spc_lowresfilterfile $result_division "$spcaudace(reptelluric)/forgetlambda.dat" 1.0 1000000. { 1.0 1.0 10000000. 1. } "o" 50 ]
+               set rinstrum [  spc_lowresfilterfile $result_division "$spcaudace(reptelluric)/forgetlambda.dat" 1.0 6. { 1.0 1.0 10000000. 1. } "o" 50 ]
            } else {
            #-- Lhires3+résos 300 et 150 t/mm :
               ## set rinstrum [ spc_pwlfilter $result_division 50 o 11 51 70 50 100 ]
               # set rinstrum [ spc_pwlfilter $result_division 24 o 3 3 50 50 50 ]
               # set rinstrum [ spc_lowresfilterfile $result_division "$spcaudace(reptelluric)/forgetlambda.dat" 1.1 10 { 1.0 2.0 } "o" 18 ]
-              set rinstrum [ spc_lowresfilterfile $result_division "$spcaudace(reptelluric)/forgetlambda.dat" 1.1 50. { 1. 5. 1500. } "o" 18 ]
+              set rinstrum [ spc_lowresfilterfile $result_division "$spcaudace(reptelluric)/forgetlambda.dat" 1.1 1.7 { 1. 5. 1500. } "o" 18 ]
            }
            file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale-br$conf(extension,defaut)"
        }

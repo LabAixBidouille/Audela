@@ -1145,7 +1145,7 @@ proc spc_autoew { args } {
       #--- Traitement des resultats :
       return $results_ew
    } else {
-      ::console::affiche_erreur "Usage: spc_autoew nom_profil_raies lambda_raie/lambda_deb lambda_fin ?taux_doucissage_continuum (1-100000000)?\n"
+      ::console::affiche_erreur "Usage: spc_autoew nom_profil_raies lambda_raie/lambda_deb lambda_fin ?taux_doucissage_continuum (0.-10.)?\n"
    }
 }
 #***************************************************************************#
@@ -1193,7 +1193,7 @@ proc spc_autoew4 { args } {
          set lambda_fin [ lindex $args 2 ]
          set taux_doucissage [ lindex $args 3 ]
       } else {
-         ::console::affiche_erreur "Usage: spc_autoew4 nom_profil_raies_normalisé lambda_raie/lambda_deb lambda_fin ?taux_doucissage_continuum (1-100000000)?\n"
+         ::console::affiche_erreur "Usage: spc_autoew4 nom_profil_raies_normalisé lambda_raie/lambda_deb lambda_fin ?taux_doucissage_continuum (0.10.)?\n"
          return ""
       }
 
@@ -1253,7 +1253,7 @@ proc spc_autoew4 { args } {
       set results [ list $ew $sigma $snr $jd "$ew_largeur" ]
       return $results
    } else {
-      ::console::affiche_erreur "Usage: spc_autoew4 nom_profil_raies lambda_raie/lambda_deb lambda_fin ?taux_doucissage_continuum (1-100000000)?\n"
+      ::console::affiche_erreur "Usage: spc_autoew4 nom_profil_raies lambda_raie/lambda_deb lambda_fin ?taux_doucissage_continuum (0.-10.)?\n"
    }
 }
 #***************************************************************************#
@@ -1779,7 +1779,7 @@ proc spc_ew { args } {
       set lambda_fin [ lindex $args 2 ]
       set taux_doucissage [ lindex $args 3 ]
    } else {
-      ::console::affiche_erreur "Usage: spc_ew nom_profil_raies_calibré lamba_debut lambda_fin ?taux_doucissage_continuum (1-100000000)?\n"
+      ::console::affiche_erreur "Usage: spc_ew nom_profil_raies_calibré lamba_debut lambda_fin ?taux_doucissage_continuum (0.-10.)?\n"
       return ""
    }
 

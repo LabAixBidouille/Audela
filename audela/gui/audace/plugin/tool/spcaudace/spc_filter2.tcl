@@ -982,7 +982,7 @@ proc spc_extractcontew { args } {
       set fichier [ file rootname [ lindex $args 0 ] ]
       set taux_doucissage [ lindex $args 1 ]
    } else {
-      ::console::affiche_erreur "Usage : spc_extractcontew nom_profil_de_raies ?taux_doucissage_continuum(1-100000000)?\n\n"      
+      ::console::affiche_erreur "Usage : spc_extractcontew nom_profil_de_raies ?taux_doucissage_continuum(0.-10.)?\n\n"      
       return ""
    }
 
