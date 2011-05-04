@@ -2282,9 +2282,10 @@ proc abell_insert { {dirfilter ""} } {
    if {$dirfilter==""} {
       set dirfilter "*.fits.gz"
    }
+   ::console::affiche_resultat "Exploration de ${pathim}/${dirfilter}\n"
    set fichiers [lsort [glob -nocomplain "${pathim}/${dirfilter}"]]
    set n [llength $fichiers]
-   ::console::affiche_resultat "$n fichiers a deplacer\n"
+   ::console::affiche_resultat "$n fichiers a explorer\n"
    set numeros ""
    set date0 2005-03-21T00:00:00
    if {$n>0} {
@@ -2304,7 +2305,7 @@ proc abell_insert { {dirfilter ""} } {
       set res [mc_nextnight $date0 $home]
       set jd0 [lindex [lindex $res 0] 0]      
       foreach fichier $fichiers {
-         loadima $fichier
+         buf$bufno load $fichier
          set fic [file rootname [file rootname [file tail $fichier]]]
          set jd [mc_date2jd [lindex [buf$bufno getkwd DATE-OBS] 1]]
          set djd [mc_date2iso8601 [expr floor($jd0)+0.5+int(floor($jd-$jd0))]]
@@ -2312,6 +2313,7 @@ proc abell_insert { {dirfilter ""} } {
          set catastar [lindex [buf$bufno getkwd CATASTAR] 1]
          set name [lindex [buf$bufno getkwd NAME] 1]
          set idname [string range $name 0 5]
+         ::console::affiche_resultat "$fic => $name\n"
          if {$idname=="Abell_"} {
             set k [string first _ $name]
             set numero [string range $name [expr $k+1] end]
@@ -2493,6 +2495,51 @@ proc abell_selectfiles { {numero ""} {dateref ""} {datenight ""} } {
          ::console::affiche_resultat "ficref=$ficref\n"   
          ::console::affiche_resultat "registerwcs i i 2 1 nullpixel=1\n"   
          registerwcs i i 2 1 nullpixel=1
+         # --- box
+         buf$bufno load ${pathim}/i2.fit
+         set naxis1 [buf$bufno getpixelswidth]
+         set naxis2 [buf$bufno getpixelsheight] 
+         set xc [expr $naxis1/2]
+         set yc [expr $naxis2/2]
+         set x1 1
+         set x2 $naxis1
+         set x 1
+         set val0 [lindex [buf$bufno getpix [list $x $yc]] 1]
+         for {set x 2} {$x<=$naxis1} {incr x} {
+            set val [lindex [buf$bufno getpix [list $x $yc]] 1]
+            #::console::affiche_resultat "x=$x   val0=$val0   val=$val  ($x1,$x2)\n"
+            if {($val!=1)&&($val0==1)} {
+               set x1 $x
+            }
+            if {($val==1)&&($val0!=1)} {
+               set x2 [expr $x-1]
+               break
+            }
+            set val0 $val
+         }
+         set y1 1
+         set y2 $naxis2
+         set y 1
+         set val0 [lindex [buf$bufno getpix [list $xc $y]] 1]
+         for {set y 2} {$y<=$naxis2} {incr y} {
+            set val [lindex [buf$bufno getpix [list $xc $y]] 1]
+            #::console::affiche_resultat "y=$y   val0=$val0   val=$val  ($y1,$y2)\n"
+            if {($val!=1)&&($val0==1)} {
+               set y1 $y
+            }
+            if {($val==1)&&($val0!=1)} {
+               set y2 [expr $y-1]
+               break
+            }
+            set val0 $val
+         }
+         set box [list $x1 $y1 $x2 $y2]
+         ::console::affiche_resultat "Box = $box\n"
+         buf$bufno window $box
+         buf$bufno save ${pathim}/i2.fit
+         buf$bufno load ${pathim}/i1.fit
+         buf$bufno window $box
+         buf$bufno save ${pathim}/i1.fit         
          ::console::affiche_resultat "Finished\n"
       }
    }   
