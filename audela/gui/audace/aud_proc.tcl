@@ -636,12 +636,6 @@ proc animate { filename nb {millisecondes 200} {nbtours 10} {liste_index ""} } {
    #--- Repertoire des images
    set len [ string length $audace(rep_images) ]
    set folder "$audace(rep_images)"
-   if { $len > "0" } {
-      set car [ string index "$audace(rep_images)" [ expr $len-1 ] ]
-      if { $car != "/" } {
-         append folder "/"
-      }
-   }
 
    #--- Je sauvegarde le canvas
    set basecanvas $audace(base).can1.canvas
@@ -659,7 +653,7 @@ proc animate { filename nb {millisecondes 200} {nbtours 10} {liste_index ""} } {
       #--- Creation de l'image et association a la visu
       visu$audace(visuNo) image $kk
       #--- Affichage de l'image avec gestion des erreurs
-      set error [ catch { buf$audace(bufNo) load "$folder$filename$index" } msg ]
+      set error [ catch { buf$audace(bufNo) load [ file join $folder $filename$index ] } msg ]
       ::audace::autovisu $audace(visuNo)
    }
 
@@ -693,7 +687,7 @@ proc animate { filename nb {millisecondes 200} {nbtours 10} {liste_index ""} } {
    #--- Affichage de la premiere image de l'animation si elle existe
    if { $error == "0" } {
       set index1 [ lindex $liste_index 0 ]
-      buf$audace(bufNo) load "$folder${filename}$index1"
+      buf$audace(bufNo) load [ file join $folder ${filename}$index1 ]
       ::audace::autovisu $audace(visuNo)
    }
 
