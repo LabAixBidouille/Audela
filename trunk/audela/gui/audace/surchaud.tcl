@@ -201,7 +201,7 @@ proc delete2 {args} {
       set kdeb 1
       set kfin [lindex $args 1]
       for {set k $kdeb} {$k<=$kfin} {incr k} {
-         set filename "$::audace(rep_images)/[lindex $args 0]${k}${ext}${cmp}"
+         set filename [ file join $::audace(rep_images) [lindex $args 0]${k}${ext}${cmp} ]
          catch {
             file delete "$filename"
          }
@@ -679,7 +679,7 @@ proc register {args} {
       set naxis2 [lindex [buf$::audace(bufNo) getkwd NAXIS2] 1]
       catch {unset x ; unset y }
       for {set k $first} {$k<=$number} {incr k} {
-         buf$::audace(bufNo) load ${path}/${in}${k}${ext}
+         buf$::audace(bufNo) load [ file join ${path} ${in}${k}${ext} ]
          set res [buf$::audace(bufNo) centro $box]
          set xx [expr round([lindex $res 0])]
          set yy [expr round([lindex $res 1])]
@@ -697,11 +697,11 @@ proc register {args} {
       set ty0 [lindex $y 0]
       for {set k $first} {$k<=$number} {incr k} {
          set kk [expr $k-$first]
-         buf$::audace(bufNo) load ${path}/${in}${k}${ext}
+         buf$::audace(bufNo) load [ file join ${path} ${in}${k}${ext} ]
          set tx [expr round($tx0-[lindex $x $kk])]
          set ty [expr round($ty0-[lindex $y $kk])]
          buf$::audace(bufNo) imaseries "TRANS trans_x=$tx trans_y=$ty nullpixel=0 "
-         buf$::audace(bufNo) save ${path}/${out}${k}${ext}
+         buf$::audace(bufNo) save [ file join ${path} ${out}${k}${ext} ]
       }
    }
 }
@@ -758,7 +758,7 @@ proc registerbox {args} {
       set naxis2 [lindex [buf$::audace(bufNo) getkwd NAXIS2] 1]
       catch {unset x ; unset y }
       for {set k $first} {$k<=$ni} {incr k} {
-         buf$::audace(bufNo) load ${path}/${in}${k}${ext}
+         buf$::audace(bufNo) load [ file join ${path} ${in}${k}${ext} ]
          set res [buf$::audace(bufNo) centro $box]
          set xx [expr round([lindex $res 0])]
          set yy [expr round([lindex $res 1])]
@@ -777,11 +777,11 @@ proc registerbox {args} {
       set ty0 [lindex $y 0]
       for {set k $first} {$k<=$ni} {incr k} {
          set kk [expr $k-$first]
-         buf$::audace(bufNo) load ${path}/${in}${k}${ext}
+         buf$::audace(bufNo) load [ file join ${path} ${in}${k}${ext} ]
          set tx [expr round($tx0-[lindex $x $kk])]
          set ty [expr round($ty0-[lindex $y $kk])]
          buf$::audace(bufNo) imaseries "TRANS trans_x=$tx trans_y=$ty nullpixel=0 "
-         buf$::audace(bufNo) save ${path}/${out}${k}${ext}
+         buf$::audace(bufNo) save [ file join ${path} ${out}${k}${ext} ]
       }
    } else {
       error "Usage: registerbox in out number ?visuNo? ?first_index? ?tt_options?"
@@ -1547,17 +1547,17 @@ proc calibwcs {args} {
          }
          set sky dummy
          catch {buf$::audace(bufNo) delkwd CATASTAR}
-         buf$::audace(bufNo) save "${mypath}/${sky0}$ext"
+         buf$::audace(bufNo) save [ file join ${mypath} ${sky0}$ext ]
          createFileConfigSextractor
-         buf$::audace(bufNo) save "${mypath}/${sky}$ext"
-         sextractor "$mypath/$sky0$ext" -c "[ file join $mypath config.sex ]"
+         buf$::audace(bufNo) save [ file join ${mypath} ${sky}$ext ]
+         sextractor [ file join $mypath $sky0$ext ] -c "[ file join $mypath config.sex ]"
          set erreur [ catch { ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/c$sky$ext\" \"jpegfile_chart2=$mypath/${sky}a.jpg\" " } msg ]
          if {$erreur==0} {
             ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" ASTROMETRY objefile=catalog.cat nullpixel=-10000 delta=5 epsilon=0.0002 file_ascii=ascii.txt"
             ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"z$sky\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/c$sky$ext\" \"jpegfile_chart2=$mypath/${sky}b.jpg\" "
             ttscript2 "IMA/SERIES \"$mypath\" \"x$sky\" . . \"$ext\" . . . \"$ext\" DELETE"
             ttscript2 "IMA/SERIES \"$mypath\" \"c$sky\" . . \"$ext\" . . . \"$ext\" DELETE"
-            buf$::audace(bufNo) load "${mypath}/${sky}$ext"
+            buf$::audace(bufNo) load [ file join ${mypath} ${sky}$ext ]
          }
          ::astrometry::delete_lst
          ::astrometry::delete_dummy
@@ -1704,7 +1704,7 @@ proc simulimage {args} {
          set cattype $cat_format
          set cdpath "$cat_folder"
          buf$::audace(bufNo) imaseries "CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/cata.fit\" simulimage exposure=$exposure fwhmx=$fwhm  fwhmy=$fwhm teldiam=$teldiam colfilter=$colfilter sky_brightness=$sky_brightness qe=$quantum_efficiency gain=$gain readout_noise=$readout_noise shutter_mode=$shutter_mode bias_level=$bias_level thermic_response=$thermic_response flat_type=$flat_type"
-         file delete "${mypath}/cata.fit"
+         file delete [ file join ${mypath} cata.fit ]
       }
       ::audace::autovisu $::audace(visuNo)
       #set catastar [lindex [buf$::audace(bufNo) getkwd CATASTAR] 1]
