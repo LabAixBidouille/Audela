@@ -670,14 +670,14 @@ namespace eval ::astrometry {
          }
          set sky dummy
          catch {buf$audace(bufNo) delkwd CATASTAR}
-         buf$audace(bufNo) save "${mypath}/${sky0}$ext"
+         buf$audace(bufNo) save [ file join ${mypath} ${sky0}$ext ]
          $astrom(This).status.labURL configure -text "$caption(astrometry,start,1)" -fg $color(blue) ; update
          if {$sextractor=="no"} {
             ttscript2 "IMA/SERIES \"$mypath\" \"$sky0\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" STAT \"objefile=${mypath}/x$sky$ext\" detect_kappa=20"
          } else {
             createFileConfigSextractor
-            buf$audace(bufNo) save "${mypath}/${sky}$ext"
-            sextractor "$mypath/$sky0$ext" -c "[ file join $mypath config.sex ]"
+            buf$audace(bufNo) save [ file join ${mypath} ${sky}$ext ]
+            sextractor [ file join $mypath $sky0$ext ] -c [ file join $mypath config.sex ]
          }
          $astrom(This).status.labURL configure -text "$caption(astrometry,start,2) $cattype : $::astrometry::astrom(catfolder) ..." -fg $color(blue) ; update
          set erreur [ catch { ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/c$sky$ext\" \"jpegfile_chart2=$mypath/${sky}a.jpg\" " } msg ]
@@ -712,7 +712,7 @@ namespace eval ::astrometry {
             ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"z$sky\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/c$sky$ext\" \"jpegfile_chart2=$mypath/${sky}b.jpg\" "
             ttscript2 "IMA/SERIES \"$mypath\" \"x$sky\" . . \"$ext\" . . . \"$ext\" DELETE"
             ttscript2 "IMA/SERIES \"$mypath\" \"c$sky\" . . \"$ext\" . . . \"$ext\" DELETE"
-            buf$audace(bufNo) load "${mypath}/${sky}$ext"
+            buf$audace(bufNo) load [file join ${mypath} ${sky}$ext ]
             #---
             set catastar [lindex [buf$audace(bufNo) getkwd CATASTAR] 1]
             if {$catastar>=3} {
@@ -732,21 +732,21 @@ namespace eval ::astrometry {
             update
             return
          } else {
-            buf$audace(bufNo) save "${mypath}/${sky0}$ext"
-            buf$audace(bufNo) load "${mypath}/${sky0}$ext"
+            buf$audace(bufNo) save [ file join ${mypath} ${sky0}$ext ]
+            buf$audace(bufNo) load [ file join ${mypath} ${sky0}$ext ]
             $astrom(This).status.labURL configure -text "$caption(astrometry,start,8) $::astrometry::astrom(reffile)" -fg $color(blue)
             set catastar 4
          }
       } elseif {$astrom(currenttypecal)=="manual"} {
          catch {buf$audace(bufNo) delkwd CATASTAR}
-         buf$audace(bufNo) save "${mypath}/${sky0}$ext"
-         buf$audace(bufNo) load "${mypath}/${sky0}$ext"
+         buf$audace(bufNo) save [ file join ${mypath} ${sky0}$ext ]
+         buf$audace(bufNo) load [ file join ${mypath} ${sky0}$ext ]
          $astrom(This).status.labURL configure -text "$caption(astrometry,start,9)" -fg $color(blue)
          set catastar 4
       } elseif {$astrom(currenttypecal)=="delwcs"} {
          catch {buf$audace(bufNo) delkwd CATASTAR}
-         buf$audace(bufNo) save "${mypath}/${sky0}$ext"
-         buf$audace(bufNo) load "${mypath}/${sky0}$ext"
+         buf$audace(bufNo) save [ file join ${mypath} ${sky0}$ext ]
+         buf$audace(bufNo) load [ file join ${mypath} ${sky0}$ext ]
          $astrom(This).status.labURL configure -text "$caption(astrometry,start,11)" -fg $color(blue)
          set catastar 0
          ::astrometry::updatewcs
@@ -1097,7 +1097,7 @@ namespace eval ::astrometry {
       set astrom(visuNo) [ ::visu::create $astrom(bufNo) 1000 ]
 
       #--- Je charge l'image dans le buffer
-      buf$astrom(bufNo) load [ file join $mypath/${sky}b.jpg ]
+      buf$astrom(bufNo) load [ file join $mypath ${sky}b.jpg ]
 
       #--- Je calcule ses dimensions
       set largeur [ buf$astrom(bufNo) getpixelswidth ]
@@ -1195,6 +1195,9 @@ namespace eval ::astrometry {
       }
       if { [ file exists [ file join [pwd] eq.lst ] ] } {
          file delete [ file join [pwd] eq.lst ]
+      }
+      if { [ file exists [ file join [pwd] matrix.txt ] ] } {
+         file delete [ file join [pwd] matrix.txt ]
       }
       if { [ file exists [ file join [pwd] obs.lst ] ] } {
          file delete [ file join [pwd] obs.lst ]
