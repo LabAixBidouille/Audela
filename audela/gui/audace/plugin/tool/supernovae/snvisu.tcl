@@ -67,15 +67,14 @@ set snvisu(ima_rep2_exist) "0"
 set snvisu(ima_rep3_exist) "0"
 set snconfvisu(num_rep2_3) "0"
 set extname $conf(extension,defaut)
-set aa "$rep(1)/*$extname"
+set aa [ file join $rep(1) *$extname ]
 set rep(x1) [searchGalaxySn $aa]
 set rep00 {}
-set aa "$rep(1)/*${extname}.gz"
+set aa [ file join $rep(1) *${extname}.gz ]
 catch {set rep00 [searchGalaxySn $aa]}
-# lappend rep(x1) $rep00
 set rep(x1) [concat $rep(x1) $rep00]
 set rep(xx1) -1
-set aa "$rep(2)/*$extname"
+set aa [ file join $rep(2) *$extname ]
 set rep(x2) [searchGalaxySn $aa]
 set rep(xx2) -1
 
@@ -784,7 +783,7 @@ proc noCosmic { } {
       set extname $conf(extension,defaut)
       set name [string range $name 0 [expr [string last "$extname" "$name"]-1]]
       ttscript2 "IMA/SERIES \"$rep(1)\" \"$name\" . . \"$extname\" \"$rep(1)\" \"filter\" . \"$extname\" FILTER kernel_type=med kernel_width=3 kernel_coef=1.2"
-      set filename "$rep(1)/filter$extname"
+      set filename [ file join $rep(1) filter$extname ]
       $audace(base).snvisu.lst1 insert end "$caption(snvisu,filter) $rep(1) $name -> $filename"
       $audace(base).snvisu.lst1 yview moveto 1.0
       #--- Disparition du sautillement des widgets inferieurs
@@ -821,7 +820,7 @@ proc snSubSky { } {
       set name [string range $name 0 [expr [string last "$extname" "$name"]-1]]
       ttscript2 "IMA/SERIES \"$rep(1)\" \"$name\"  . . \"$extname\" \"$rep(1)\" \"filter\" . \"$extname\" BACK sub "
       ttscript2 "IMA/SERIES \"$rep(1)\" \"filter\" . . \"$extname\" \"$rep(1)\" \"filter\" . \"$extname\" STAT"
-      set filename "$rep(1)/filter$extname"
+      set filename [ file join $rep(1) filter$extname ]
       $audace(base).snvisu.lst1 insert end "$caption(snvisu,filter) $rep(1) $name -> $filename"
       $audace(base).snvisu.lst1 yview moveto 1.0
       #--- Disparition du sautillement des widgets inferieurs
@@ -839,7 +838,7 @@ proc snSubSky { } {
          set extname $conf(extension,defaut)
          ttscript2 "IMA/SERIES \"$rep(2)\" \"$name\"   . . \"$extname\" \"$rep(1)\" \"filter2\" . \"$extname\" BACK sub "
          ttscript2 "IMA/SERIES \"$rep(1)\" \"filter2\" . . \"$extname\" \"$rep(1)\" \"filter2\" . \"$extname\" STAT"
-         set filename "$rep(1)/filter2$extname"
+         set filename [ file join $rep(1) filter2$extname ]
          $audace(base).snvisu.lst1 insert end "$caption(snvisu,filter) $rep(2) $name -> $filename"
          $audace(base).snvisu.lst1 yview moveto 1.0
          #--- Disparition du sautillement des widgets inferieurs
@@ -856,7 +855,7 @@ proc snSubSky { } {
          set extname $conf(extension,defaut)
          ttscript2 "IMA/SERIES \"$rep(3)\" \"$name\"   . . \"$extname\" \"$rep(1)\" \"filter2\" . \"$extname\" BACK sub "
          ttscript2 "IMA/SERIES \"$rep(1)\" \"filter2\" . . \"$extname\" \"$rep(1)\" \"filter2\" . \"$extname\" STAT"
-         set filename "$rep(1)/filter2$extname"
+         set filename [ file join $rep(1) filter2$extname ]
          $audace(base).snvisu.lst1 insert end "$caption(snvisu,filter) $rep(3) $name -> $filename"
          $audace(base).snvisu.lst1 yview moveto 1.0
          #--- Disparition du sautillement des widgets inferieurs
@@ -909,11 +908,11 @@ proc changeDir { numbuf } {
       catch {
          set rep($numbuf) "$filename"
          set extname $conf(extension,defaut)
-         set aa "$rep($numbuf)/*$extname"
+         set aa [ file join $rep($numbuf) *$extname ]
          set rep(x$numbuf) [searchGalaxySn $aa]
 
          set rep00 {}
-         set aa "$rep($numbuf)/*${extname}.gz"
+         set aa [ file join $rep($numbuf) *${extname}.gz ]
          catch {set rep00 [searchGalaxySn $aa]}
          set rep(x$numbuf) [concat $rep(x$numbuf) $rep00]
 
@@ -1818,7 +1817,7 @@ proc saveImagesJpeg { { invew 0 } { invns 0 } } {
    append filenameDSS /${shortname}$extname
    set rep(jpg_dss) ""
    if { [file exists $filenameDSS] } {
-      set rep(jpg_dss) "$shortname-DSS\.jpg"
+      set rep(jpg_dss) "$shortname-DSS.jpg"
       ttscript2 "IMA/SERIES \"$repDSS\" \"$shortname\" . . \"$extname\" \"$rep1\" \"$shortname-DSS\" . \"$extname\" COPY \"jpegfile\""
       ttscript2 "IMA/SERIES \"$rep1\" \"$shortname-DSS\" . . \"$extname\" \"$rep1\" \"$shortname-DSS\" . \"$extname\" DELETE"
    }
@@ -1856,7 +1855,7 @@ proc htmImage { } {
    set m [format "%02d" $m]
    set d [format "%02d" $d]
 
-   set htmlp(filenamehtml) "${dossier}/${name}-${a}${m}${d}.html"
+   set htmlp(filenamehtml) [ file join ${dossier} ${name}-${a}${m}${d}.html ]
    set htmlp(name) ${name}
 
    set htmlp(posns) 40
@@ -2069,9 +2068,9 @@ proc snMakeHtml { } {
    append texte "<br>The possible supernova is located at about $htmlp(posns)\" $htmlp(dirns), $htmlp(posew)\" $htmlp(direw) from the nucleus of "
    append texte "the galaxy. The magnitude is estimated to $htmlp(magest). Bellow, the DSS image :\n"
    if { "$rep(jpg_dss)" != "" } {
-    append texte "<BR><center><img SRC=\"$rep(jpg_dss)\" height=300 width=300></center>"
+      append texte "<BR><center><img SRC=\"$rep(jpg_dss)\" height=300 width=300></center>"
    } else {
-    append texte "<BR><center><img SRC=\"$rep(gif_dss)\" height=300 width=300></center>"
+      append texte "<BR><center><img SRC=\"$rep(gif_dss)\" height=300 width=300></center>"
    }
    append texte "</body>\n"
    append texte "</html>\n"
@@ -2198,8 +2197,8 @@ proc snBlinkImage { } {
       set dimx [lindex [buf$num(buffer1) getkwd NAXIS1 ] 1]
       set dimy [lindex [buf$num(buffer1) getkwd NAXIS2 ] 1]
       buf$b window [list 1 1 $dimx $dimy]
-      buf$b            save "$audace(rep_images)/dummy2"
-      buf$num(buffer1) save "$audace(rep_images)/dummy1"
+      buf$b            save [ file join $audace(rep_images) dummy2 ]
+      buf$num(buffer1) save [ file join $audace(rep_images) dummy1 ]
       set objefile "__dummy__"
       set error [ catch {
          set wcs1 [snVerifWCS $num(buffer1)]
@@ -2229,7 +2228,7 @@ proc snBlinkImage { } {
          #---
          return
       }
-      buf$b load "$audace(rep_images)/dummyb2"
+      buf$b load [ file join $audace(rep_images) dummyb2 ]
       #--- Affichage en mode logarithme
       if {$afflog==1} {
          set shsb [snBufLog $b $b]
@@ -2243,10 +2242,10 @@ proc snBlinkImage { } {
       set text0 "[buf$b getkwd MIPS-HI]"
       set text0 [lreplace $text0 1 1 [lindex $shsb 0]]
       buf$b setkwd $text0
-      buf$b save "$audace(rep_images)/dummyb2"
+      buf$b save [ file join $audace(rep_images) dummyb2 ]
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"dummyb\" 1 1 \"$ext\" \"$audace(rep_images)\" \"$objefile\" 1 \"$ext\" DELETE"
    } else {
-      catch { buf$b load "$audace(rep_images)/dummyb2" }
+      catch { buf$b load [ file join$audace(rep_images) dummyb2 ] }
    }
 
    #--- Gestion du bouton 'blink'
@@ -2368,7 +2367,7 @@ proc displayMap { } {
             #--- j'ouvre le fichier sn.log
             set vector ""
             catch {
-               set fileId [open $rep(1)/${snlog} r]
+               set fileId [open [ file join $rep(1) ${snlog} ] r]
                set vector [read $fileId];
                close  $fileId
             } result
