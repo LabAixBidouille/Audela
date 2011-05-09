@@ -47,8 +47,7 @@ namespace eval ::pretrfc {
                #--- Sinon, je prends la date du jour
                set formatdate [clock format [clock seconds] -format "%Y-%m-%d"]
             }
-            set ::pretrfc::fichier_log $audace(rep_images)
-            append ::pretrfc::fichier_log "/" $nom_generique $formatdate ".log"
+            set ::pretrfc::fichier_log [ file join $audace(rep_images) "$nom_generique$formatdate.log" ]
 
             #--- Ouverture
             if {[catch {open $::pretrfc::fichier_log a} ::pretrfc::log_id]} {
@@ -297,8 +296,7 @@ proc getPluginHelp { } {
             -message $caption(pretrfc,pbNomFichScr)
       } else {
          #--- Teste si le fichier de script existe
-         set nomFich $audace(rep_scripts)
-         append nomFich "/" $conf_pt_fc(FichScript) ".tcl"
+         set nomFich [ file join $audace(rep_scripts) "$conf_pt_fc(FichScript).tcl" ]
          if {[file exists $nomFich] == 0} {
             set integre(cosm) non
             tk_messageBox -title $caption(pretrfc,pb) -type ok \
@@ -346,8 +344,7 @@ proc getPluginHelp { } {
                -message $caption(pretrfc,pbNomFichScr)
          } else {
             #--- Teste si le fichier de script existe
-            set nomFich $audace(rep_scripts)
-            append nomFich "/" $conf_pt_fc(FichScript) ".tcl"
+            set nomFich [ file join $audace(rep_scripts) "$conf_pt_fc(FichScript).tcl" ]
             if {[file exists $nomFich] == 0} {
                set integre(cosm) non
                tk_messageBox -title $caption(pretrfc,pb) -type ok \
@@ -432,8 +429,7 @@ proc getPluginHelp { } {
       } else {
          #--- Teste si les fichiers sources existent
          for {set i 1} {$i <= $conf_pt_fc(nbPrech)} {incr i} {
-            set nomFich $audace(rep_images)
-            append nomFich "/" $conf_pt_fc(nmPrechSce) $i $ext
+            set nomFich [ file join $audace(rep_images) "$conf_pt_fc(nmPrechSce)$i$ext" ]
             if {[file exists $nomFich] == 0} {
                set integre(precharge) non
             }
@@ -443,8 +439,7 @@ proc getPluginHelp { } {
                -message $caption(pretrfc,fichPrechAbs)
          } else {
             #--- Teste si le fichier resultant existe deja
-            set nomFich $audace(rep_images)
-            append nomFich "/" $conf_pt_fc(nmPrechRes) $ext
+            set nomFich [ file join $audace(rep_images) "$conf_pt_fc(nmPrechRes)$ext" ]
             if {[file exists $nomFich] == 1} {
                set confirmation [tk_messageBox -title $caption(pretrfc,conf) -type yesno \
                   -message $caption(pretrfc,fichPrechResDeja)]
@@ -598,8 +593,7 @@ proc getPluginHelp { } {
       } else {
          #--- Teste si les fichiers sources existent
          for {set i 1} {$i <= $conf_pt_fc(nbNoirs)} {incr i} {
-            set nomFich $audace(rep_images)
-            append nomFich "/" $conf_pt_fc(nmNrSce) $i $ext
+            set nomFich [ file join $audace(rep_images) "$conf_pt_fc(nmNrSce)$i$ext" ]
             if {[file exists $nomFich] == 0} {
                set integre(noir) non
             }
@@ -609,8 +603,7 @@ proc getPluginHelp { } {
                -message $caption(pretrfc,fichNoirAbs)
          } else {
             #--- Teste si le fichier resultant existe deja
-            set nomFich $audace(rep_images)
-            append nomFich "/" $conf_pt_fc(nmNoirRes) $ext
+            set nomFich [ file join $audace(rep_images) "$conf_pt_fc(nmNoirRes)$ext" ]
             if {[file exists $nomFich] == 1} {
                set confirmation [tk_messageBox -title $caption(pretrfc,conf) -type yesno \
                   -message $caption(pretrfc,fichNoirResDeja)]
@@ -739,8 +732,7 @@ proc getPluginHelp { } {
       } else {
          #--- Teste si les fichiers sources existent
          for {set i 1} {$i <= $conf_pt_fc(nbNrPLU)} {incr i} {
-            set nomFich $audace(rep_images)
-            append nomFich "/" $conf_pt_fc(nmNrPLUSce) $i $ext
+            set nomFich [ file join $audace(rep_images) "$conf_pt_fc(nmNrPLUSce)$i$ext" ]
             if {[file exists $nomFich] == 0} {
                set integre(noir_PLU) non
             }
@@ -750,8 +742,7 @@ proc getPluginHelp { } {
                -message $caption(pretrfc,fichNrPLUAbs)
          } else {
             #--- Teste si le fichier resultant existe deja
-            set nomFich $audace(rep_images)
-            append nomFich "/" $conf_pt_fc(nmNrPLURes) $ext
+            set nomFich [ file join $audace(rep_images) "$conf_pt_fc(nmNrPLURes)$ext" ]
             if {[file exists $nomFich] == 1} {
                set confirmation [tk_messageBox -title $caption(pretrfc,conf) -type yesno \
                   -message $caption(pretrfc,fichNrPLUResDeja)]
@@ -882,8 +873,7 @@ proc getPluginHelp { } {
       } else {
          #--- Teste si les fichiers sources existent
          for {set i 1} {$i <= $conf_pt_fc(nbPLU)} {incr i} {
-            set nomFich $audace(rep_images)
-            append nomFich "/" $conf_pt_fc(nmPLUSce) $i $ext
+            set nomFich [ file join $audace(rep_images) "$conf_pt_fc(nmPLUSce)$i$ext" ]
             if {[file exists $nomFich] == 0} {
                set integre(PLU) non
             }
@@ -893,8 +883,7 @@ proc getPluginHelp { } {
                -message $caption(pretrfc,fichPLUAbs)
          } else {
             #--- Teste si le fichier resultant existe deja
-            set nomFich $audace(rep_images)
-            append nomFich "/" $conf_pt_fc(nmPLURes) $ext
+            set nomFich [ file join $audace(rep_images) "$conf_pt_fc(nmPLURes)$ext" ]
             if {[file exists $nomFich] == 1} {
                set confirmation [tk_messageBox -title $caption(pretrfc,conf) -type yesno \
                   -message $caption(pretrfc,fichPLUResDeja)]
@@ -907,8 +896,7 @@ proc getPluginHelp { } {
             if {$conf_pt_fc(modePLU) == "simple"} {
                #--- A partir de la, c'est selon le mode de traitement de la PLU retenue
                #--- Teste si le fichier de noir de PLU existe bien
-               set nomFich $audace(rep_images)
-               append nomFich "/" $conf_pt_fc(nmNrPLURes) $ext
+               set nomFich [ file join $audace(rep_images) "$conf_pt_fc(nmNrPLURes)$ext" ]
                if {[file exists $nomFich] == 0} {
                   testNoirDePLU
                   if {$integre(noir_PLU) == "non"} {
@@ -928,8 +916,7 @@ proc getPluginHelp { } {
             } elseif {$conf_pt_fc(modePLU) != ""} {
                #--- Dans ce cas, on a choisit les options rapp tps pose ou optimisation
                #--- Teste si le fichier de precharge existe bien
-               set nomFich $audace(rep_images)
-               append nomFich "/" $conf_pt_fc(nmPrechRes) $ext
+               set nomFich [ file join $audace(rep_images) "$conf_pt_fc(nmPrechRes)$ext" ]
                if {[file exists $nomFich] == 0} {
                   testPrecharge
                   if {$integre(precharge) == "non"} {
@@ -948,8 +935,7 @@ proc getPluginHelp { } {
                }
                if {$conf_pt_fc(fich_pour_PLU_ok) == "oui"} {
                   #--- Teste si le fichier de noir existe bien
-                  set nomFich $audace(rep_images)
-                  append nomFich "/" $conf_pt_fc(nmNoirRes) $ext
+                  set nomFich [ file join $audace(rep_images) "$conf_pt_fc(nmNoirRes)$ext" ]
                   if {[file exists $nomFich] == 0} {
                      testNoir
                      if {$integre(noir) == "non"} {
@@ -1189,20 +1175,16 @@ proc getPluginHelp { } {
       #--- Effacement du disque des images generees par le pretraitement:
       Message consolog $caption(pretrfc,effacePLUInter)
       for {set i 1} {$i <= $conf_pt_fc(nbPLU)} {incr i} {
-         set nomFich $audace(rep_images)
-         append nomFich "/" $conf_pt_fc(nmPLUSce) "_moinsnoir_" $i $ext
+         set nomFich [ file join $audace(rep_images) "$conf_pt_fc(nmPLUSce)_moinsnoir_$i$ext" ]
          file delete $nomFich
-         set nomFich $audace(rep_images)
-         append nomFich "/" $conf_pt_fc(nmPLUSce) "_auniveau" $i $ext
+         set nomFich [ file join $audace(rep_images) "$conf_pt_fc(nmPLUSce)_auniveau$i$ext" ]
          file delete $nomFich
       }
-      set nomFich $audace(rep_images)
-      append nomFich "/" "noir_pondere_temp$ext"
+      set nomFich [ file join $audace(rep_images) "noir_pondere_temp$ext" ]
       if {[file exists $nomFich]} {
          file delete $nomFich
       }
-      set nomFich $audace(rep_images)
-      append nomFich "/" "noir_avec_prech$ext"
+      set nomFich [ file join $audace(rep_images) "noir_avec_prech$ext" ]
       if {[file exists $nomFich]} {
          file delete $nomFich
       }
@@ -1272,8 +1254,7 @@ proc getPluginHelp { } {
       } else {
          #--- Teste si les fichiers sources existent
          for {set i 1} {$i <= $conf_pt_fc(nbBrut)} {incr i} {
-            set nomFich $audace(rep_images)
-            append nomFich "/" $conf_pt_fc(nmBrutSce) $i $ext
+            set nomFich [ file join $audace(rep_images) "$conf_pt_fc(nmBrutSce)$i$ext" ]
             if {[file exists $nomFich] == 0} {
                set integre(brut) non
             }
@@ -1283,8 +1264,7 @@ proc getPluginHelp { } {
                -message $caption(pretrfc,fichBrutAbs)
          } else {
             #--- Teste si le fichier de noir existe bien
-            set nomFich $audace(rep_images)
-            append nomFich "/" $conf_pt_fc(nmNoirRes) $ext
+            set nomFich [ file join $audace(rep_images) "$conf_pt_fc(nmNoirRes)$ext" ]
             if {[file exists $nomFich] == 0} {
                #--- Dans ce cas, je regarde si je peux calculer le noir...
                testNoir
@@ -1305,8 +1285,7 @@ proc getPluginHelp { } {
             }
             if {$conf_pt_fc(noir_ok) == "oui"} {
                #--- Teste si le fichier de PLU existe bien
-               set nomFich $audace(rep_images)
-               append nomFich "/" $conf_pt_fc(nmPLURes) $ext
+               set nomFich [ file join $audace(rep_images) "$conf_pt_fc(nmPLURes)$ext" ]
                if {[file exists $nomFich] == 0} {
                   #--- Dans ce cas, je regarde si je peux calculer le PLU...
                   testPLU
@@ -1328,8 +1307,7 @@ proc getPluginHelp { } {
             if {$conf_pt_fc(PLU_ok) == "oui" && $conf_pt_fc(noir_ok) == "oui"} {
                #--- Teste si les fichiers resultants existent deja
                for {set i 1} {$i <= $conf_pt_fc(nbBrut)} {incr i} {
-                  set nomFich $audace(rep_images)
-                  append nomFich "/" $conf_pt_fc(nmBrutRes) $i $ext
+                  set nomFich [ file join $audace(rep_images) "$conf_pt_fc(nmBrutRes)$i$ext" ]
                   if {[file exists $nomFich] == 1} {
                      set integre(brut) non
                   }
@@ -1347,8 +1325,7 @@ proc getPluginHelp { } {
                   #--- Teste si le fichier de precharge existe bien (dans le cas ou l'option
                   #---   retenue est optimisation ou rapp. tps de pose) ou bien si le noir
                   #---   ne contient pas la precharge: J'ai alors besoin de la precharge
-                  set nomFich $audace(rep_images)
-                  append nomFich "/" $conf_pt_fc(nmPrechRes) $ext
+                  set nomFich [ file join $audace(rep_images) "$conf_pt_fc(nmPrechRes)$ext" ]
                   if {[file exists $nomFich] == 0} {
                      #--- Dans ce cas, je regarde si je peux calculer la precharge...
                      testPrecharge
@@ -1393,16 +1370,14 @@ proc getPluginHelp { } {
       }
       if {$conf_pt_fc(precharge_a_faire_br) == "oui"} {
          #--- Je verifie que le fichier n'existe pas deja (il a pu etre cree par le traitement de PLU...)
-         set nomFich $audace(rep_images)
-         append nomFich "/" $conf_pt_fc(nmPrechRes) $ext
+         set nomFich [ file join $audace(rep_images) "$conf_pt_fc(nmPrechRes)$ext" ]
          if {[file exists $nomFich] == 0} {
             traitePrecharge
          }
       }
       if {$conf_pt_fc(noir_a_faire_br) == "oui"} {
          #--- Je verifie que le fichier n'existe pas deja (il a pu etre cree par le traitement de PLU...)
-         set nomFich $audace(rep_images)
-         append nomFich "/" $conf_pt_fc(nmNoirRes) $ext
+         set nomFich [ file join $audace(rep_images) "$conf_pt_fc(nmNoirRes)$ext" ]
          if {[file exists $nomFich] == 0} {
             traiteNoir
          }
@@ -1608,17 +1583,14 @@ proc getPluginHelp { } {
       #--- Effacement du disque des images generees par le pretraitement:
       Message consolog $caption(pretrfc,effaceBrutsInter)
       for {set i 1} {$i <= $conf_pt_fc(nbBrut)} {incr i} {
-         set nomFich $audace(rep_images)
-         append nomFich "/" $conf_pt_fc(nmBrutSce) "_moinsnoir_" $i $ext
+         set nomFich [ file join $audace(rep_images) "$conf_pt_fc(nmBrutSce)_moinsnoir_$i$ext" ]
          file delete $nomFich
       }
-      set nomFich $audace(rep_images)
-      append nomFich "/" "noir_pondere_temp$ext"
+      set nomFich [ file join $audace(rep_images) "noir_pondere_temp$ext" ]
       if {[file exists $nomFich]} {
          file delete $nomFich
       }
-      set nomFich $audace(rep_images)
-      append nomFich "/" "noir_avec_prech$ext"
+      set nomFich [ file join $audace(rep_images) "noir_avec_prech$ext" ]
       if {[file exists $nomFich]} {
          file delete $nomFich
       }
