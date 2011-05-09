@@ -242,7 +242,7 @@ proc ::acqfc::DemarrageAcqFC { visuNo } {
       set formatdate [clock format [clock seconds] -format "%Y-%m-%d"]
    }
    set file_log ""
-   set ::acqfc::fichier_log [ file join $audace(rep_images) [ append $file_log $nom_generique $formatdate ".log" ] ]
+   set ::acqfc::fichier_log [ file join $audace(rep_images) "$file_log$nom_generique$formatdate.log" ]
 
    #--- Ouverture du fichier de log
    if { [ catch { open $::acqfc::fichier_log a } ::acqfc::log_id($visuNo) ] } {
