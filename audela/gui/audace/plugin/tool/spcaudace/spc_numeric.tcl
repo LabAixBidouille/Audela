@@ -5,6 +5,51 @@
 
 
 ####################################################################
+# Resolution de d'un polynôme de deg 3 par la méthode de Newton
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 6-04-2011
+# Date modification : 6-04-2011
+# Arguments : seconde_membre, a, b, c, d (a+bx+cx^2+dx^3=lambda)
+####################################################################
+
+proc spc_deg3sol { args } {
+   global audace conf
+   set precision 0.0001
+   set nb_boucles 10000
+
+   if { [ llength $args ]==5 } {
+      set lambda [ lindex $args 0 ]
+      set a [ lindex $args 1 ]
+      set b [ lindex $args 2 ]
+      set c [ lindex $args 3 ]
+      set d [ lindex $args 4 ]
+
+      #--- Execute la commande sur tous les fichiers fits du repertoire :
+      for { set i 0 } { $i<$nb_boucles } { incr i } {
+         if { $i==0 } { set x1 10000 } else { set x1 $x2 }
+         set x2 [ expr $x1-($a-$lambda+$b*$x1+$c*pow($x1,2)+$d*pow($x1,3))/($b+2*$c*$x1+3*$d*pow($x1,2)) ]
+         #- Meth point fixe :
+         #set x2 [ expr $a-$lambda+($b-1.)*$x1+$c*pow($x1,2)+$d*pow($x1,3) ]
+         if { [ expr abs($x2-$x1)/abs($x2) ]<=$precision } {
+            ::console::affiche_resultat "La solution trouvée en $i itérations est $x2\n"
+            return $x2
+         } elseif { $x2>=1e+250 } {
+            ::console::affiche_resultat "Solution infinie (supérieure à 1e+250)\n"
+            break
+         }
+      }
+      ::console::affiche_resultat "La solution trouvée au bout du maximum d'itérations est $x2\n"
+      return $x2
+   } else {
+      ::console::affiche_erreur "Usage: spc_deg3sol lambda a b c d (a+bx+cx^2+dx^3=lambda)\n"
+   }
+}
+#**********************************************************************************#
+
+
+
+####################################################################
 # Bouclage d'une commande sur les tous les fichiers du repertoire de travail
 #
 # Auteur : Benjamin MAUCLAIRE
@@ -31,6 +76,7 @@ proc bm_cmd { args } {
    }
 }
 #**********************************************************************************#
+
 
 
 #############################################################################
