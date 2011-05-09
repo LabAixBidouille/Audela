@@ -2244,6 +2244,7 @@ proc spc_txt2png { args } {
          set abscisse [ lindex $ligne 0 ]
          if { $abscisse!="" } { lappend abscisses $abscisse }
       }
+      set xdeb1 [ lindex $abscisses 0 ]
       set xfin1 [ lindex $abscisses [ expr [ llength $abscisses ]-1 ] ]
       set abscisses [ lsort -dictionary -increasing $abscisses ]
       set xdeb [ lindex $abscisses 0 ]
@@ -2252,7 +2253,9 @@ proc spc_txt2png { args } {
       if { $xfin=="" } {
          set xfin $xfin1
       } elseif { $xfin1<$xfin } { set xfin $xfin }
-      #::console::affiche_resultat "Xdeb=$xdeb ; Xfin=$xfin\n"
+      if { $xdeb>$xdeb1 } { set xdeb $xdeb1 }
+      if { $xfin<$xfin1 } { set xfin $xfin1 }
+      # ::console::affiche_resultat "Xdeb=$xdeb ; Xfin=$xfin\n"
    }
 
    #--- Créée le fichier script pour gnuplot :
@@ -2382,6 +2385,95 @@ proc spc_txt2ps { args } {
    
    ::console::affiche_resultat "Graphique sauvé sous ${fichier_nm}.eps\n"
    return ${fichier_nm}.eps
+}
+####################################################################
+
+
+####################################################################
+#  Procedure de conversion de fichier profil de raie calibré .dat en .ps
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 3-04-2011
+# Date modification : 3-04-2011
+# Arguments : fichier .dat du profil de raie, titre, ?xdeb, xfin?
+####################################################################
+
+proc spc_txt2pserr { args } {
+   global audace spcaudace
+   global conf
+   global tcl_platform
+
+   set nbargs [ llength $args ]
+   if { $nbargs==4 } {
+      set fichier [ lindex $args 0 ]
+      set titre [ lindex $args 1 ]
+      set legendex [ lindex $args 2 ]
+      set legendey [ lindex $args 3 ]
+      set xdeb "*"
+      set xfin "*"
+      set ydeb "*"
+      set yfin "*"
+   } elseif { $nbargs==6 } {
+      set fichier [ lindex $args 0 ]
+      set titre [ lindex $args 1 ]
+      set legendex [ lindex $args 2 ]
+      set legendey [ lindex $args 3 ]
+      set xdeb [ lindex $args 4 ]
+      set xfin [ lindex $args 5 ]
+      set ydeb "*"
+      set yfin "*"
+   } elseif { $nbargs==8 } {
+      set fichier [ lindex $args 0 ]
+      set titre [ lindex $args 1 ]
+      set legendex [ lindex $args 2 ]
+      set legendey [ lindex $args 3 ]
+      set xdeb [ lindex $args 4 ]
+      set xfin [ lindex $args 5 ]
+      set ydeb [ lindex $args 6 ]
+      set yfin [ lindex $args 7 ]
+   } else {
+      ::console::affiche_erreur "Usage: spc_txt2pserr fichier_data \"Titre\" \"Légende axe x\" \"Légende axe y\" ?xdébut xfin? ?ydeb yfin?\n"
+      return ""
+   }
+
+   #--- Recherche de xdeb et xfin :
+   if { $nbargs<=4 } {
+      set fileid [ open "$audace(rep_images)/$fichier" r+ ]
+      set contents [ split [read $fileid] \n]
+      close $fileid
+      set abscisses [ list ]
+      foreach ligne $contents {
+         set abscisse [ lindex $ligne 0 ]
+         if { $abscisse!="" } { lappend abscisses $abscisse }
+      }
+      set xfin1 [ lindex $abscisses [ expr [ llength $abscisses ]-1 ] ]
+      set abscisses [ lsort -dictionary -increasing $abscisses ]
+      set xdeb [ lindex $abscisses 0 ]
+      if { $xdeb=="" } { set xdeb [ lindex $abscisses 1 ] }
+      set xfin [ lindex $abscisses [ expr [ llength $abscisses ]-1 ] ]
+      if { $xfin=="" } {
+         set xfin $xfin1
+      } elseif { $xfin1<$xfin } { set xfin $xfin }
+      #::console::affiche_resultat "Xdeb=$xdeb ; Xfin=$xfin\n"
+   }
+
+   #--- Créée le fichier script pour gnuplot :
+   set fichier_nm [ file rootname $fichier ]
+   set file_id [open "$audace(rep_images)/${fichier_nm}_werr.gp" w+]
+   puts $file_id "call \"$spcaudace(repgp)/gp_points_err_ps.cfg\" \"$audace(rep_images)/$fichier\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/${fichier_nm}_werr.eps\" \"$legendex\" \"$legendey\" "
+   close $file_id
+   
+   #--- Détermine le chemin de l'executable Gnuplot selon le système d'exploitation :
+   if { $tcl_platform(platform)=="unix" } {
+      set answer [ catch { exec gnuplot $audace(rep_images)/${fichier_nm}_werr.gp } ]
+      ::console::affiche_resultat "Export Gnuplot (0=OK) : $answer\n"
+   } else {
+      set answer [ catch { exec $spcaudace(repgp)/gpwin32/pgnuplot.exe $audace(rep_images)/${fichier_nm}werr.gp } ]
+      ::console::affiche_resultat "Export Gnuplot (0=OK) : $answer\n"
+   }
+   
+   ::console::affiche_resultat "Graphique sauvé sous ${fichier_nm}_werr.eps\n"
+   return ${fichier_nm}_werr.eps
 }
 ####################################################################
 
