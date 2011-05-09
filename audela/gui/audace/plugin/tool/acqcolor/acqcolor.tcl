@@ -43,10 +43,7 @@ set zone(image2,naxis2) "0"
 set infos(MouseState) "rien"
 set infos(box)        {1 1 1 1}
 set infos(type_image) ""
-set infos(dir)        ""
-catch {
-   set infos(dir) $audace(rep_images)
-}
+set infos(dir)        $audace(rep_images)
 
 #--- Valeurs numeriques a placer sur l'ecran
 set confcolor(exptime) "1"
@@ -1111,8 +1108,6 @@ proc testload { } {
       catch { set infos(dir) [ file dirname $filename ] }
       if { $infos(dir) == "" } {
          set infos(dir) "./"
-      } else {
-         append infos(dir) "/"
       }
       buf1000 load $filename
       if { [ buf1000 getnaxis ] == "3" } {
@@ -1137,9 +1132,7 @@ proc testsave { } {
    if { $filename != "" } {
       catch { set infos(dir) [ file dirname $filename ] }
       if { $infos(dir) == "" } {
-          set infos(dir) "./"
-      } else {
-         append infos(dir) "/"
+         set infos(dir) "./"
       }
       if { $infos(type_image) == "couleur" } {
          for { set k 1 } { $k <= 3 } { incr k } {
@@ -1483,8 +1476,6 @@ proc testjpeg { } {
       catch { set infos(dir) [ file dirname $filename ] }
       if { $infos(dir) == "" } {
          set infos(dir) "./"
-      } else {
-         append infos(dir) "/"
       }
       if { $infos(type_image) == "couleur" } {
          buf1000 save [ file join $infos(dir) rgbdummy ]
