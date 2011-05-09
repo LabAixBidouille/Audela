@@ -1072,16 +1072,6 @@ proc ::getdss::getdirname { { creat y } } {
 
    set dirname [tk_chooseDirectory -title $caption(getdss,selectrep) \
       -initialdir $::audace(rep_images)]
-   set len [ string length $dirname ]
-   set folder "$dirname"
-   #--- Ajoute un / a la fin s'il n'y en a pas
-   if { $len > "0" } {
-      set car [ string index "$dirname" [ expr $len-1 ] ]
-      if { $car != "/" } {
-         append folder "/"
-      }
-      set dirname $folder
-   }
 
    #--- Creation du repertoire si inexistant et si creat vaut 'y'
    if { $dirname != "" } {
