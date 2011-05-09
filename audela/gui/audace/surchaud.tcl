@@ -69,13 +69,8 @@ proc add {args} {
       set operand [lindex $args 0]
       set diroperand [file dirname "$operand"]
       set len [expr [string length $::audace(rep_images)]-1]
-      if {(($len>=0)&&($diroperand=="."))} {
-         set car [string index $::audace(rep_images) $len]
-         if {$car!="/"} {
-            set operand "$::audace(rep_images)/$operand"
-         } else {
-            set operand "$::audace(rep_images)$operand"
-         }
+      if {($len>=0)&&($diroperand==".")} {
+         set operand [ file join $::audace(rep_images) $operand ]
       }
       set ext [file extension "$operand"]
       if {$ext==""} {
@@ -96,12 +91,7 @@ proc add1 {args} {
       if {[file dirname $operand]=="."} {
          set len [expr [string length $::audace(rep_images)]-1]
          if {$len>=0} {
-            set car [string index $::audace(rep_images) $len]
-            if {$car!="/"} {
-               set operand "$::audace(rep_images)/$operand"
-            } else {
-               set operand "$::audace(rep_images)$operand"
-            }
+            set operand [ file join $::audace(rep_images) $operand ]
          }
       }
       set options ""
@@ -127,12 +117,7 @@ proc add2 {args} {
       if {[file dirname $operand]=="."} {
          set len [expr [string length $::audace(rep_images)]-1]
          if {$len>=0} {
-            set car [string index $::audace(rep_images) $len]
-            if {$car!="/"} {
-               set operand "$::audace(rep_images)/$operand"
-            } else {
-               set operand "$::audace(rep_images)$operand"
-            }
+            set operand [ file join $::audace(rep_images) $operand ]
          }
       }
       set first 1
@@ -217,13 +202,8 @@ proc div {args} {
       set operand [lindex $args 0]
       set diroperand [file dirname "$operand"]
       set len [expr [string length $::audace(rep_images)]-1]
-      if {(($len>=0)&&($diroperand=="."))} {
-         set car [string index $::audace(rep_images) $len]
-         if {$car!="/"} {
-            set operand "$::audace(rep_images)/$operand"
-         } else {
-            set operand "$::audace(rep_images)$operand"
-         }
+      if {($len>=0)&&($diroperand==".")} {
+         set operand [ file join $::audace(rep_images) $operand ]
       }
       set ext [file extension "$operand"]
       if {$ext==""} {
@@ -244,12 +224,7 @@ proc div1 {args} {
       if {[file dirname $operand]=="."} {
          set len [expr [string length $::audace(rep_images)]-1]
          if {$len>=0} {
-            set car [string index $::audace(rep_images) $len]
-            if {$car!="/"} {
-               set operand "$::audace(rep_images)/$operand"
-            } else {
-               set operand "$::audace(rep_images)$operand"
-            }
+            set operand [ file join $::audace(rep_images) $operand ]
          }
       }
       set options ""
@@ -275,12 +250,7 @@ proc div2 {args} {
       if {[file dirname $operand]=="."} {
          set len [expr [string length $::audace(rep_images)]-1]
          if {$len>=0} {
-            set car [string index $::audace(rep_images) $len]
-            if {$car!="/"} {
-               set operand "$::audace(rep_images)/$operand"
-            } else {
-               set operand "$::audace(rep_images)$operand"
-            }
+            set operand [ file join $::audace(rep_images) $operand ]
          }
       }
       set first 1
@@ -476,13 +446,8 @@ proc opt {args} {
       set len [expr [string length $::audace(rep_images)]-1]
       set dark [lindex $args 0]
       set dirdark [file dirname "$dark"]
-      if {(($len>=0)&&($dirdark=="."))} {
-         set car [string index $::audace(rep_images) $len]
-         if {$car!="/"} {
-            set dark   "$::audace(rep_images)/$dark"
-         } else {
-            set dark   "$::audace(rep_images)$dark"
-         }
+      if {($len>=0)&&($dirdark==".")} {
+         set dark [ file join $::audace(rep_images) $dark ]
       }
       set ext [file extension "$dark"]
       if {$ext==""} {
@@ -490,13 +455,8 @@ proc opt {args} {
       }
       set offset [lindex $args 1]
       set diroffset [file dirname "$offset"]
-      if {(($len>=0)&&($diroffset=="."))} {
-         set car [string index $::audace(rep_images) $len]
-         if {$car!="/"} {
-            set offset "$::audace(rep_images)/$offset"
-         } else {
-            set offset "$::audace(rep_images)$offset"
-         }
+      if {($len>=0)&&($diroffset==".")} {
+         set offset [ file join $::audace(rep_images) $offset ]
       }
       set ext [file extension "$offset"]
       if {$ext==""} {
@@ -517,12 +477,7 @@ proc opt1 {args} {
       if {[file dirname $operand]=="."} {
          set len [expr [string length $::audace(rep_images)]-1]
          if {$len>=0} {
-            set car [string index $::audace(rep_images) $len]
-            if {$car!="/"} {
-               set operand "$::audace(rep_images)/$operand"
-            } else {
-               set operand "$::audace(rep_images)$operand"
-            }
+            set operand [ file join $::audace(rep_images) $operand ]
          }
       }
       set ext [file extension "$operand"]
@@ -534,12 +489,7 @@ proc opt1 {args} {
       if {[file dirname $operand]=="."} {
          set len [expr [string length $::audace(rep_images)]-1]
          if {$len>=0} {
-            set car [string index $::audace(rep_images) $len]
-            if {$car!="/"} {
-               set operand "$::audace(rep_images)/$operand"
-            } else {
-               set operand "$::audace(rep_images)$operand"
-            }
+            set operand [ file join $::audace(rep_images) $operand ]
          }
       }
       set options ""
@@ -566,12 +516,7 @@ proc opt2 {args} {
       if {[file dirname $operand]=="."} {
          set len [expr [string length $::audace(rep_images)]-1]
          if {$len>=0} {
-            set car [string index $::audace(rep_images) $len]
-            if {$car!="/"} {
-               set operand "$::audace(rep_images)/$operand"
-            } else {
-               set operand "$::audace(rep_images)$operand"
-            }
+            set operand [ file join $::audace(rep_images) $operand ]
          }
       }
       set ext [file extension "$operand"]
@@ -583,12 +528,7 @@ proc opt2 {args} {
       if {[file dirname $operand]=="."} {
          set len [expr [string length $::audace(rep_images)]-1]
          if {$len>=0} {
-            set car [string index $::audace(rep_images) $len]
-            if {$car!="/"} {
-               set operand "$::audace(rep_images)/$operand"
-            } else {
-               set operand "$::audace(rep_images)$operand"
-            }
+            set operand [ file join $::audace(rep_images) $operand ]
          }
       }
       set first 1
@@ -619,13 +559,8 @@ proc prod {args} {
       set operand [lindex $args 0]
       set diroperand [file dirname "$operand"]
       set len [expr [string length $::audace(rep_images)]-1]
-      if {(($len>=0)&&($diroperand=="."))} {
-         set car [string index $::audace(rep_images) $len]
-         if {$car!="/"} {
-            set operand "$::audace(rep_images)/$operand"
-         } else {
-            set operand "$::audace(rep_images)$operand"
-         }
+      if {($len>=0)&&($diroperand==".")} {
+         set operand [ file join $::audace(rep_images) $operand ]
       }
       set ext [file extension "$operand"]
       if {$ext==""} {
@@ -1054,13 +989,8 @@ proc sub {args} {
       set operand [lindex $args 0]
       set diroperand [file dirname "$operand"]
       set len [expr [string length $::audace(rep_images)]-1]
-      if {(($len>=0)&&($diroperand=="."))} {
-         set car [string index $::audace(rep_images) $len]
-         if {$car!="/"} {
-            set operand "$::audace(rep_images)/$operand"
-         } else {
-            set operand "$::audace(rep_images)$operand"
-         }
+      if {($len>=0)&&($diroperand==".")} {
+         set operand [ file join $::audace(rep_images) $operand ]
       }
       set ext [file extension "$operand"]
       if {$ext==""} {
@@ -1081,12 +1011,7 @@ proc sub1 {args} {
       if {[file dirname $operand]=="."} {
          set len [expr [string length $::audace(rep_images)]-1]
          if {$len>=0} {
-            set car [string index $::audace(rep_images) $len]
-            if {$car!="/"} {
-               set operand "$::audace(rep_images)/$operand"
-            } else {
-               set operand "$::audace(rep_images)$operand"
-            }
+            set operand [ file join $::audace(rep_images) $operand ]
          }
       }
       set options ""
@@ -1112,12 +1037,7 @@ proc sub2 {args} {
       if {[file dirname $operand]=="."} {
          set len [expr [string length $::audace(rep_images)]-1]
          if {$len>=0} {
-            set car [string index $::audace(rep_images) $len]
-            if {$car!="/"} {
-               set operand "$::audace(rep_images)/$operand"
-            } else {
-               set operand "$::audace(rep_images)$operand"
-            }
+            set operand [ file join $::audace(rep_images) $operand ]
          }
       }
       set first 1
@@ -1168,24 +1088,14 @@ proc subdark2 {args} {
       if {[file dirname $dark]=="."} {
          set len [expr [string length $::audace(rep_images)]-1]
          if {$len>=0} {
-            set car [string index $::audace(rep_images) $len]
-            if {$car!="/"} {
-               set dark "$::audace(rep_images)/$dark"
-            } else {
-               set dark "$::audace(rep_images)$dark"
-            }
+            set dark [ file join $::audace(rep_images) $dark ]
          }
       }
 
       if {[file dirname $offset]=="."} {
          set len [expr [string length $::audace(rep_images)]-1]
          if {$len>=0} {
-            set car [string index $::audace(rep_images) $len]
-            if {$car!="/"} {
-               set offset "$::audace(rep_images)/$offset"
-            } else {
-               set offset "$::audace(rep_images)$offset"
-            }
+            set offset [ file join $::audace(rep_images) $offset ]
          }
       }
 
@@ -1519,11 +1429,11 @@ proc calibwcs {args} {
       }
       if {[file exists $cat_folder]==1} {
          set comment "cat_folder $cat_folder does not contains the $cat_format catalog!"
-         set fics [glob -nocomplain "$cat_folder/*.ACC"]
+         set fics [glob -nocomplain [file join $cat_folder "*.ACC"]]
          if {[llength $fics]<24} {
             error $comment
          }
-         set fics [glob -nocomplain "$cat_folder/*.CAT"]
+         set fics [glob -nocomplain [file join $cat_folder "*.CAT"]]
          if {[llength $fics]<24} {
             error $comment
          }
@@ -1638,11 +1548,11 @@ proc simulimage {args} {
       }
       if {[file exists $cat_folder]==1} {
          set comment "cat_folder $cat_folder does not contains the $cat_format catalog!"
-         set fics [glob -nocomplain "$cat_folder/*.ACC"]
+         set fics [glob -nocomplain [file join $cat_folder "*.ACC"]]
          if {[llength $fics]<24} {
             error $comment
          }
-         set fics [glob -nocomplain "$cat_folder/*.CAT"]
+         set fics [glob -nocomplain [file join $cat_folder "*.CAT"]]
          if {[llength $fics]<24} {
             error $comment
          }
@@ -1703,6 +1613,9 @@ proc simulimage {args} {
          set mypath "."
          set cattype $cat_format
          set cdpath "$cat_folder"
+         if { ( [ string length $cdpath ] > 0 ) && ( [ string index "$cdpath" end ] != "/" ) } {
+            append cdpath "/"
+         }
          buf$::audace(bufNo) imaseries "CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/cata.fit\" simulimage exposure=$exposure fwhmx=$fwhm  fwhmy=$fwhm teldiam=$teldiam colfilter=$colfilter sky_brightness=$sky_brightness qe=$quantum_efficiency gain=$gain readout_noise=$readout_noise shutter_mode=$shutter_mode bias_level=$bias_level thermic_response=$thermic_response flat_type=$flat_type"
          file delete [ file join ${mypath} cata.fit ]
       }
