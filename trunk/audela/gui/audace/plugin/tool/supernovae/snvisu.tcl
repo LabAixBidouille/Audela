@@ -1091,8 +1091,7 @@ proc displayImages { } {
       }
       set shortname [string range $name 0 [expr ${posimoins}-1]]
       #--- j'affiche le premier radio bouton en GROOVE si l'image existe dans rep(2)
-      set filename2 $rep(2)
-      append filename2 /${shortname}[file extension $name]
+      set filename2 [ file join $rep(2) ${shortname}[file extension $name] ]
       if { [ string last ".gz" "$filename2" ] == -1 } {
          if { [ file exists $filename2 ] == 1 || [ file exists $filename2.gz ] == 1 } {
             $audace(base).snvisu.frame5.but_rad0 configure -bg $audace(color,entryBackColor)
@@ -1114,8 +1113,7 @@ proc displayImages { } {
          }
       }
       #--- j'affiche le deuxieme radio bouton en GROOVE si l'image existe dans rep(3)
-      set filename3 $rep(3)
-      append filename3 /${shortname}[file extension $name]
+      set filename3 [ file join $rep(3) ${shortname}[file extension $name] ]
       set rep(DSS) $filename3
       #--- Cas des images DSS au format .cpa sur le DVD
       if { $snconfvisu(dss_dvd) == "1" } {
@@ -1125,8 +1123,7 @@ proc displayImages { } {
          }
          if { $snconfvisu(binarypath) == "" } {
             #--- Restauration de l'ancienne valeur de filename3
-            set filename3 $rep(3)
-            append filename3 /${shortname}[file extension $name]
+            set filename3 [ file join $rep(3) ${shortname}[file extension $name] ]
          }
       }
       #---
@@ -1714,11 +1711,10 @@ proc saveImage { } {
    if { $filename != "" } {
       set name [file tail $filename]
       set shortname [string range $name 0 [expr [string last - $name]-1]]
-      set filename $rep(2)
       if { $shortname != "" } {
-         append filename /${shortname}[file extension $name]
+         set filename [ file join $rep(2) ${shortname}[file extension $name] ]
       } else {
-         append filename /$name
+         set filename [ file join $rep(2) $name ]
       }
       #--- Destruction des eventuels fichiers existants deja
       catch { file delete $filename }
@@ -1760,14 +1756,12 @@ proc saveImagesJpeg { { invew 0 } { invns 0 } } {
    set rep(gif_dss) "[string tolower $shortname].gif"
 
    #---
-   set rep1 "$rep(1)"
-   set filename "$rep1"
+  set rep1 "$rep(1)"
    set extname $conf(extension,defaut)
-   append filename "/i$extname"
+   set filename [ file join $rep1 "i$extname" ]
 
    #--- buffer 1
    set result [buf$num(buffer1) save "$filename"]
-   set jpgname $rep(1)
    set date [lindex [buf$num(buffer1) getkwd DATE-OBS] 1]
    set rep(jpeg1_dateobs) $date
    set    daten [string range $date 0 3]
@@ -1775,7 +1769,7 @@ proc saveImagesJpeg { { invew 0 } { invns 0 } } {
    append daten [string range $date 8 9]
    append daten [string range $date 11 12]
    append daten [string range $date 14 15]
-   append jpgname [string tolower "/${shortname}-${daten}.jpg"]
+   set jpgname [ file join $rep(1) "${shortname}-${daten}.jpg" ]
    set rep(jpeg1) [string tolower "${shortname}-${daten}.jpg"]
    set rep(jpeg1_naxis1) [lindex [buf$num(buffer1) getkwd NAXIS1] 1]
    set rep(jpeg1_naxis2) [lindex [buf$num(buffer1) getkwd NAXIS2] 1]
@@ -1790,7 +1784,6 @@ proc saveImagesJpeg { { invew 0 } { invns 0 } } {
 
    #--- buffer 2
    set result [buf$num(buffer2) save $filename]
-   set jpgname $rep(1)
    set date [lindex [buf$num(buffer2) getkwd DATE-OBS] 1]
    set rep(jpeg2_dateobs) $date
    set    daten [string range $date 0 3]
@@ -1798,7 +1791,7 @@ proc saveImagesJpeg { { invew 0 } { invns 0 } } {
    append daten [string range $date 8 9]
    append daten [string range $date 11 12]
    append daten [string range $date 14 15]
-   append jpgname [string tolower "/${shortname}-${daten}.jpg"]
+   set jpgname [ file join $rep(1) [string tolower "${shortname}-${daten}.jpg"] ]
    set rep(jpeg2) [string tolower "${shortname}-${daten}.jpg"]
    set rep(jpeg2_naxis1) [lindex [buf$num(buffer2) getkwd NAXIS1] 1]
    set rep(jpeg2_naxis2) [lindex [buf$num(buffer2) getkwd NAXIS2] 1]
@@ -1813,8 +1806,7 @@ proc saveImagesJpeg { { invew 0 } { invns 0 } } {
 
    #--- conversion FIT en JPG de l'image DSS si elle existe dans rep(3)
    set repDSS $rep(3)
-   set filenameDSS $repDSS
-   append filenameDSS /${shortname}$extname
+   set filenameDSS [ file join $repDSS ${shortname}$extname ]
    set rep(jpg_dss) ""
    if { [file exists $filenameDSS] } {
       set rep(jpg_dss) "$shortname-DSS.jpg"
