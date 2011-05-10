@@ -58,12 +58,12 @@ test libtt_catchart {imaseries CATCHART} -constraints {
    file copy -force [file join $::conf(testaudela,rep_images) dummy_test.fit]  $::audace(rep_travail)/dummy.fit
 } -body {
    #--- je verifie que le catalogue MICROCAT existe
-   if { [file exists "$::conf(astrometry,catfolder)/gsc"]== 0 } {
+   if { [file exists [file join $::conf(astrometry,catfolder) gsc]]== 0 } {
       return "MICROCAT directory not found : $::conf(astrometry,catfolder)"
    }
 
    #--- je cherche les etoiles dans le catalogue microcat
-   ttscript2 "IMA/SERIES . dummy . . .fit . dummy . .fit CATCHART \"path_astromcatalog=$::conf(astrometry,catfolder)/\" astromcatalog=MicroCat \"catafile=./cdummy.fit\" "
+   ttscript2 "IMA/SERIES . dummy . . .fit . dummy . .fit CATCHART \"path_astromcatalog=$::conf(astrometry,catfolder)\" astromcatalog=MicroCat \"catafile=./cdummy.fit\" "
    #--- je compte les etoiles trouvees dans le catalogue
    set catalogueStarNb 0
    set fcom [open "usno.lst" r]
@@ -88,7 +88,7 @@ test libtt_astrometry {imaseries ASTROMETRY} -constraints {
    file copy -force [file join $::conf(testaudela,rep_images) catalog.cat]     $::audace(rep_travail)/catalog.cat
 } -body {
    #--- je verifie que le catalogue MICROCAT existe
-   if { [file exists "$::conf(astrometry,catfolder)/gsc"]== 0 } {
+   if { [file exists [file join $::conf(astrometry,catfolder) gsc]]== 0 } {
       return "MICROCAT directory not found : $::conf(astrometry,catfolder)"
    }
    #--- j'apparie les etoiles
