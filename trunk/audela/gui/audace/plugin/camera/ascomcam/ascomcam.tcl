@@ -428,18 +428,19 @@ proc ::ascomcam::setShutter { camItem shutterState ShutterOptionList } {
 
    set ::conf(ascomcam,foncobtu) $shutterState
 
+   #--- Gestion du mode de fonctionnement
    switch -exact -- $shutterState {
       1  {
+         #--- j'envoie la commande a la camera
          cam$private($camItem,camNo) shutter "closed"
-         if { [ info exists private(frm) ] } {
-            set widget(foncobtu) $::caption(ascomcam,obtu_ferme)
-         }
+         #--- je mets a jour le widget dans la fenetre de configuration si elle est ouverte
+         set widget(foncobtu) $::caption(ascomcam,obtu_ferme)
       }
       2  {
+         #--- j'envoie la commande a la camera
          cam$private($camItem,camNo) shutter "synchro"
-         if { [ info exists private(frm) ] } {
+         #--- je mets a jour le widget dans la fenetre de configuration si elle est ouverte
          set widget(foncobtu) $::caption(ascomcam,obtu_synchro)
-         }
       }
    }
 }
