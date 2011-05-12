@@ -542,18 +542,19 @@ proc ::qsi::setShutter { camItem shutterState ShutterOptionList } {
 
    set ::conf(qsi,foncobtu) $shutterState
 
+   #--- Gestion du mode de fonctionnement
    switch -exact -- $shutterState {
       1  {
+         #--- j'envoie la commande a la camera
          cam$private($camItem,camNo) shutter "closed"
-         if { [ info exists private(frm) ] } {
-            set widget(foncobtu) $::caption(qsi,obtu_ferme)
-         }
+         #--- je mets a jour le widget dans la fenetre de configuration si elle est ouverte
+         set widget(foncobtu) $::caption(qsi,obtu_ferme)
       }
       2  {
+         #--- j'envoie la commande a la camera
          cam$private($camItem,camNo) shutter "synchro"
-         if { [ info exists private(frm) ] } {
-            set widget(foncobtu) $::caption(qsi,obtu_synchro)
-         }
+         #--- je mets a jour le widget dans la fenetre de configuration si elle est ouverte
+         set widget(foncobtu) $::caption(qsi,obtu_synchro)
       }
    }
 }
