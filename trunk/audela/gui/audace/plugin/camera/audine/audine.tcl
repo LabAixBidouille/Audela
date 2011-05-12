@@ -645,21 +645,25 @@ proc ::audine::setShutter { camItem shutterState ShutterOptionList } {
    set conf(audine,foncobtu) $shutterState
    set camNo $private($camItem,camNo)
 
-   if { [ info exists private(frm) ] } {
-      #--- Gestion du mode de fonctionnement
-      switch -exact -- $shutterState {
-         0  {
-            set private(foncobtu) $caption(audine,obtu_ouvert)
-            cam$camNo shutter "opened"
-         }
-         1  {
-            set private(foncobtu) $caption(audine,obtu_ferme)
-            cam$camNo shutter "closed"
-         }
-         2  {
-            set private(foncobtu) $caption(audine,obtu_synchro)
-            cam$camNo shutter "synchro"
-         }
+   #--- Gestion du mode de fonctionnement
+   switch -exact -- $shutterState {
+      0  {
+         #--- j'envoie la commande a la camera
+         cam$camNo shutter "opened"
+         #--- je mets a jour le widget dans la fenetre de configuration si elle est ouverte
+         set private(foncobtu) $caption(audine,obtu_ouvert)
+      }
+      1  {
+         #--- j'envoie la commande a la camera
+         cam$camNo shutter "closed"
+         #--- je mets a jour le widget dans la fenetre de configuration si elle est ouverte
+         set private(foncobtu) $caption(audine,obtu_ferme)
+      }
+      2  {
+         #--- j'envoie la commande a la camera
+         cam$camNo shutter "synchro"
+         #--- je mets a jour le widget dans la fenetre de configuration si elle est ouverte
+         set private(foncobtu) $caption(audine,obtu_synchro)
       }
    }
 }
