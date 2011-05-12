@@ -560,22 +560,19 @@ proc ::sbig::setShutter { camItem shutterState ShutterOptionList } {
    set conf(sbig,foncobtu) $shutterState
    set camNo $private($camItem,camNo)
 
-   switch $shutterState {
+   #--- Gestion du mode de fonctionnement
+   switch -exact -- $shutterState {
       1  {
          #--- j'envoie la commande a la camera
          cam$camNo shutter "closed"
          #--- je mets a jour le widget dans la fenetre de configuration si elle est ouverte
-         if { [ info exists private(frm) ] } {
-            set widget(foncobtu) $caption(sbig,obtu_ferme)
-         }
+         set widget(foncobtu) $caption(sbig,obtu_ferme)
       }
       2  {
          #--- j'envoie la commande a la camera
          cam$camNo shutter "synchro"
          #--- je mets a jour le widget dans la fenetre de configuration si elle est ouverte
-         if { [ info exists private(frm) ] } {
-            set widget(foncobtu) $caption(sbig,obtu_synchro)
-         }
+         set widget(foncobtu) $caption(sbig,obtu_synchro)
       }
    }
 }
