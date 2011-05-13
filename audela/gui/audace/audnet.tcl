@@ -11,7 +11,7 @@
 # ====================================================================
 # ====================================================================
 
-proc send args {
+proc send { args } {
    sock_send [lindex $args 0]
 }
 
@@ -62,6 +62,7 @@ proc delete_client { {args ""} } {
 # --- ouvre un socket serveur et attend un ordre
 proc sock_create_server { {port 5000} } {
    global rpcid
+
    if {$rpcid(serveur)!=""} {
       return
    }
@@ -72,8 +73,9 @@ proc sock_create_server { {port 5000} } {
 }
 
 # --- proc qui est appellee pour l'ecoute du socket serveur
-proc sock_accept {fidsockc ip port} {
+proc sock_accept { fidsockc ip port } {
    global caption
+
    ::console::affiche_saut "\n"
    ::console::affiche_resultat "====================================\n"
    ::console::affiche_resultat "[mc_date2iso8601 now] : $caption(audace,reseau_connexion_client) $fidsockc (IP = $ip - Port = $port)\n"
@@ -82,7 +84,7 @@ proc sock_accept {fidsockc ip port} {
 }
 
 # --- proc qui est appelee lorsque le socket serveur a reçu un message termine par \n
-proc sock_respons {fidsockc} {
+proc sock_respons { fidsockc } {
    if {[eof $fidsockc] || [catch {gets $fidsockc line}]} {
       close $fidsockc
    } else {
@@ -97,8 +99,8 @@ proc sock_respons {fidsockc} {
 }
 
 proc sock_delete_server { {id "?"} } {
-   global rpcid
-   global caption
+   global caption rpcid
+
    if {$rpcid(state)!="server"} {
       return
    }
@@ -123,8 +125,8 @@ proc sock_delete_server { {id "?"} } {
 proc sock_create_client { {ip_serveur 192.168.0.1} {port_serveur 5000} {ip_client "?"} {port_client 5000} } {
    # sock_create_client 195.83.102.71 5000 195.83.102.71 5001
    # sock_create_client localhost 5000 localhost 5001
-   global rpcid
-   global caption
+   global caption rpcid
+
    if {$rpcid(client)!=""} {
       return
    }
@@ -149,8 +151,8 @@ proc sock_create_client { {ip_serveur 192.168.0.1} {port_serveur 5000} {ip_clien
 }
 
 proc sock_delete_client { {id "?"} } {
-   global rpcid
-   global caption
+   global caption rpcid
+
    if {$rpcid(client)==""} {
       return
    }
@@ -189,11 +191,9 @@ proc sock_delete_client { {id "?"} } {
 
 proc sock_send { arg } {
    # --- Fonction pour renvoyer des messages a executer
-   global rpcid
-   global caption
+   global caption rpcid
+
    ::console::affiche_resultat "$caption(audace,reseau_execute) $arg \n"
-  ### ::console::affiche_resultat "$caption(audace,reseau_reponse_vers) $rpcid(client)\n"
-   #puts $rpcid(client) "\{ $arg \}"
    puts $rpcid(client) "$arg"
    set res [gets $rpcid(client)]
    ::console::affiche_resultat "$res\n"
@@ -201,7 +201,7 @@ proc sock_send { arg } {
 }
 
 # --- proc pour tester la communication depuis une autre console Aud'ACE
-proc sock_client {} {
+proc sock_client { } {
    set fidsockc [socket localhost 5000]
    ::console::affiche_resultat "fidsockc=$fidsockc\n"
    fconfigure $fidsockc -buffering line -blocking 1
@@ -239,8 +239,8 @@ proc rpc_eval_serveur { arg } {
 
 proc rpc_send { arg } {
    # --- Fonction pour renvoyer des messages a executer
-   global rpcid
-   global caption
+   global caption rpcid
+
    dp_RPC $rpcid(client) ::console::affiche_resultat "$caption(audace,reseau_execute) $arg \n"
    set message "dp_RPC $rpcid(client) rpc_eval_serveur \{ $arg \}"
    eval $message
@@ -248,6 +248,7 @@ proc rpc_send { arg } {
 
 proc rpc_create_server { {port 5000} } {
    global rpcid
+
    if {$rpcid(serveur)!=""} {
       return
    }
@@ -259,8 +260,8 @@ proc rpc_create_server { {port 5000} } {
 }
 
 proc rpc_delete_server { {id "?"} } {
-   global rpcid
-   global caption
+   global caption rpcid
+
    if {$rpcid(state)!="server"} {
       return
    }
@@ -279,8 +280,8 @@ proc rpc_delete_server { {id "?"} } {
 
 proc rpc_create_client { {ip_serveur 192.168.0.1} {port_serveur 5000} {ip_client "?"} {port_client 5000} } {
    #create_client 192.168.0.202 5000 192.168.0.1 5001
-   global rpcid
-   global caption
+   global caption rpcid
+
    if {$rpcid(client)!=""} {
       return
    }
@@ -301,8 +302,8 @@ proc rpc_create_client { {ip_serveur 192.168.0.1} {port_serveur 5000} {ip_client
 }
 
 proc rpc_delete_client { {id "?"} } {
-   global rpcid
-   global caption
+   global caption rpcid
+
    if {$rpcid(client)==""} {
       return
    }
@@ -342,16 +343,19 @@ proc rpc_delete_client { {id "?"} } {
 
 proc lan_goto { radec } {
    global audace
+
    send "tel$audace(telNo) radec goto $radec -equinox J2000.0 ; tel$audace(telNo) radec coord -equinox J2000.0"
 }
 
 proc lan_match { radec } {
    global audace
+
    send "tel$audace(telNo) radec init $radec ; tel$audace(telNo) radec coord -equinox J2000.0"
 }
 
 proc lan_move { way ms } {
    global audace
+
    send "tel$audace(telNo) radec move $way 0.33 ; after $ms ; tel$audace(telNo) radec stop ; tel$audace(telNo) radec coord -equinox J2000.0"
 }
 
@@ -370,8 +374,9 @@ set rpcid(ftp,client) ""
 set rpcid(ftp,chanel) ""
 set rpcid(ftp,server) ""
 
-proc audnet_createChannelServer {{port 1234}} {
+proc audnet_createChannelServer { {port 1234} } {
    global rpcid
+
    set server [dp_connect tcp -server 1 -myport $port]
    set rpcid(ftp,server) $server
    dp_admin register $server
@@ -381,8 +386,9 @@ proc audnet_createChannelServer {{port 1234}} {
    return $server
 }
 
-proc audnet_acceptConnection {file} {
+proc audnet_acceptConnection { file } {
    global rpcid
+
    set connection [dp_accept $file]
    ::console::affiche_resultat "file=$file, connection=$connection\n";
    set newFile [lindex $connection 0]
@@ -394,8 +400,9 @@ proc audnet_acceptConnection {file} {
    dp_admin register $newFile
 }
 
-proc audnet_connectChannel {{host "127.0.0.1"} {port 1234}} {
+proc audnet_connectChannel { {host "127.0.0.1"} {port 1234} } {
    global rpcid
+
    ::console::affiche_resultat "attempting to connect\n";
    set client [dp_connect tcp -host $host -port $port];
    ::console::affiche_resultat "connected -- waiting for reply\n";
@@ -406,6 +413,7 @@ proc audnet_connectChannel {{host "127.0.0.1"} {port 1234}} {
 
 proc audnet_put { filename } {
    global rpcid
+
    if {$rpcid(ftp,chanel)!=""} {
       set f [open "$filename" r]
       dp_send $rpcid(ftp,chanel) [read $f]
@@ -415,6 +423,7 @@ proc audnet_put { filename } {
 
 proc audnet_get { filename } {
    global rpcid
+
    if {$rpcid(ftp,client)!=""} {
       set f [open "$filename" w]
       puts $f [dp_recv $rpcid(ftp,client)]
@@ -424,6 +433,7 @@ proc audnet_get { filename } {
 
 proc audnet_deleteChannel { } {
    global rpcid
+
    close $rpcid(ftp,client)
    set rpcid(ftp,client) ""
    set rpcid(ftp,chanel) ""
@@ -432,6 +442,7 @@ proc audnet_deleteChannel { } {
 
 proc audnet_deleteChannelServer { } {
    global rpcid
+
    dp_admin delete $rpcid(ftp,server)
    close $rpcid(ftp,server)
    set rpcid(ftp,client) ""
