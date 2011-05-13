@@ -457,8 +457,10 @@ proc satel_update { { server "" } {param1 ""} {param2 ""} } {
       set password [lindex $param2 0]
       # -- login & cookies
       package require http
-      set url http://www.space-track.org/perl
+      package require tls
+      set url https://www.space-track.org/perl
       set login [::http::formatQuery _submitted 1 _sessionid "" _submit Submit username $username password $password]
+      http::register https 443 ::tls::socket
       set tok [::http::geturl $url/login.pl -query $login]
       upvar \#0 $tok state
       set cookies [list]
