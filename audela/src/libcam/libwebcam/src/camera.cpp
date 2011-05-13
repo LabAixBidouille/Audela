@@ -666,6 +666,7 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
       }
    }
    result = cam->params->capture->grabFrame(cam->msg);
+	cam_update_window(cam);
 
    if ( cam->sensorColor == 1 ) {
       // Charge l'image 24 bits
