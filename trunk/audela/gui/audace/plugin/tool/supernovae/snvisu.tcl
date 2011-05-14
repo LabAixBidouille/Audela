@@ -1850,13 +1850,15 @@ proc htmImage { } {
    set htmlp(filenamehtml) [ file join ${dossier} ${name}-${a}${m}${d}.html ]
    set htmlp(name) ${name}
 
-   set htmlp(posns) 40
-   set htmlp(dirns) N
-   set htmlp(posew) 12
-   set htmlp(direw) W
-   set htmlp(magest) 17.4
-   set htmlp(invew) 0
-   set htmlp(invns) 0
+   set htmlp(observer) "Alain Klotz"
+   set htmlp(e-mail)   "alain.klotz@free.fr"
+   set htmlp(posns)    40
+   set htmlp(dirns)    N
+   set htmlp(posew)    12
+   set htmlp(direw)    W
+   set htmlp(magest)   17.4
+   set htmlp(invew)    0
+   set htmlp(invns)    0
 
    #---
    if { [winfo exists $audace(base).snvisu_2] } {
@@ -1902,18 +1904,17 @@ proc htmImage { } {
    pack $audace(base).snvisu_2.fra_button \
       -in $audace(base).snvisu_2 -anchor s -side bottom -expand 0 -fill x
 
-   #--- Frame de magest
+   #--- Frame de la magnitude estimee
    frame $audace(base).snvisu_2.fra_magest \
       -borderwidth 0 -cursor arrow
-      #--- Label de magest
+      #--- Label de la magnitude estimee
       label $audace(base).snvisu_2.fra_magest.lab_magest \
          -text "$caption(snvisu,magnitude)" \
          -borderwidth 0 -relief flat
       pack $audace(base).snvisu_2.fra_magest.lab_magest \
          -in $audace(base).snvisu_2.fra_magest -side left \
          -padx 3
-      #--- Create the command line
-      #--- Cree la ligne de commande
+      #--- Entry de la magnitude estimee
       entry $audace(base).snvisu_2.fra_magest.entry_magest \
          -textvariable htmlp(magest) \
          -borderwidth 1 -relief groove -width 10
@@ -1923,31 +1924,30 @@ proc htmImage { } {
    pack $audace(base).snvisu_2.fra_magest \
       -in $audace(base).snvisu_2 -pady 3 -anchor s -side bottom -expand 0 -fill x
 
-   #---
+   #--- Checkbutton du decalage E/W
    checkbutton $audace(base).snvisu_2.chk_invew \
       -text "$caption(snvisu,invert,mirror)" -variable htmlp(invew)
    pack $audace(base).snvisu_2.chk_invew \
       -in $audace(base).snvisu_2 -side bottom \
       -padx 20 -pady 3 -anchor w
-   #--- Frame de posew
+   #--- Frame du decalage E/W
    frame $audace(base).snvisu_2.fra_posew \
       -borderwidth 0 -cursor arrow
-      #--- Label de posew
+      #--- Label du decalage E/W
       label $audace(base).snvisu_2.fra_posew.lab_posew \
          -text "$caption(snvisu,offsetew)" \
          -borderwidth 0 -relief flat
       pack $audace(base).snvisu_2.fra_posew.lab_posew \
          -in $audace(base).snvisu_2.fra_posew -side left \
          -padx 3 -pady 3
-      #--- Create the command line
-      #--- Cree la ligne de commande
+      #--- Entry du decalage E/W
       entry $audace(base).snvisu_2.fra_posew.entry_posew \
          -textvariable htmlp(posew) \
          -borderwidth 1 -relief groove -width 10
       pack $audace(base).snvisu_2.fra_posew.entry_posew \
          -in $audace(base).snvisu_2.fra_posew -side left \
          -padx 3 -pady 3
-      #--- Create the menu 'E/W'
+      #--- Menu du decalage E/W
       menubutton $audace(base).snvisu_2.fra_posew.optionmenu1 -textvariable htmlp(direw) \
          -menu $audace(base).snvisu_2.fra_posew.optionmenu1.menu -relief raised
       pack $audace(base).snvisu_2.fra_posew.optionmenu1 -in $audace(base).snvisu_2.fra_posew \
@@ -1963,31 +1963,30 @@ proc htmImage { } {
    pack $audace(base).snvisu_2.fra_posew \
       -in $audace(base).snvisu_2 -anchor s -side bottom -expand 0 -fill x
 
-   #---
+   #--- Checkbutton du decalage N/S
    checkbutton $audace(base).snvisu_2.chk_invns \
       -text "$caption(snvisu,invert,flip)" -variable htmlp(invns)
    pack $audace(base).snvisu_2.chk_invns \
       -in $audace(base).snvisu_2 -side bottom \
       -padx 20 -pady 3 -anchor w
-         #--- Frame de posns
+   #--- Frame du decalage N/S
    frame $audace(base).snvisu_2.fra_posns \
       -borderwidth 0 -cursor arrow
-      #--- Label de posns
+      #--- Label du decalage N/S
       label $audace(base).snvisu_2.fra_posns.lab_posns \
          -text "$caption(snvisu,offsetns)" \
          -borderwidth 0 -relief flat
       pack $audace(base).snvisu_2.fra_posns.lab_posns \
          -in $audace(base).snvisu_2.fra_posns -side left \
          -padx 3 -pady 3
-      #--- Create the command line
-      #--- Cree la ligne de commande
+      #--- Entry du decalage N/S
       entry $audace(base).snvisu_2.fra_posns.entry_posns \
          -textvariable htmlp(posns) \
          -borderwidth 1 -relief groove -width 10
       pack $audace(base).snvisu_2.fra_posns.entry_posns \
          -in $audace(base).snvisu_2.fra_posns -side left \
          -padx 3 -pady 3
-      #--- Create the menu 'N/S'
+      #--- Menu du decalage N/S
       menubutton $audace(base).snvisu_2.fra_posns.optionmenu1 -textvariable htmlp(dirns) \
          -menu $audace(base).snvisu_2.fra_posns.optionmenu1.menu -relief raised
       pack $audace(base).snvisu_2.fra_posns.optionmenu1 -in $audace(base).snvisu_2.fra_posns \
@@ -2001,6 +2000,46 @@ proc htmImage { } {
             -command { }
       }
    pack $audace(base).snvisu_2.fra_posns \
+      -in $audace(base).snvisu_2 -anchor s -side bottom -expand 0 -fill x
+
+   #--- Frame de l'adresse messagerie de l'observateur
+   frame $audace(base).snvisu_2.fra_e-mail \
+      -borderwidth 0 -cursor arrow
+      #--- Label de l'adresse messagerie de l'observateur
+      label $audace(base).snvisu_2.fra_e-mail.lab_posns \
+         -text "$caption(snvisu,e-mail)" \
+         -borderwidth 0 -relief flat
+      pack $audace(base).snvisu_2.fra_e-mail.lab_posns \
+         -in $audace(base).snvisu_2.fra_e-mail -side left \
+         -padx 3 -pady 3
+      #--- Entry de l'adresse messagerie de l'observateur
+      entry $audace(base).snvisu_2.fra_e-mail.entry_posns \
+         -textvariable htmlp(e-mail) \
+         -borderwidth 1 -relief groove -width 30
+      pack $audace(base).snvisu_2.fra_e-mail.entry_posns \
+         -in $audace(base).snvisu_2.fra_e-mail -side left \
+         -padx 3 -pady 3
+   pack $audace(base).snvisu_2.fra_e-mail \
+      -in $audace(base).snvisu_2 -anchor s -side bottom -expand 0 -fill x
+
+   #--- Frame de l'observateur
+   frame $audace(base).snvisu_2.fra_observer \
+      -borderwidth 0 -cursor arrow
+      #--- Label de l'observateur
+      label $audace(base).snvisu_2.fra_observer.lab_posns \
+         -text "$caption(snvisu,observer)" \
+         -borderwidth 0 -relief flat
+      pack $audace(base).snvisu_2.fra_observer.lab_posns \
+         -in $audace(base).snvisu_2.fra_observer -side left \
+         -padx 3 -pady 3
+      #--- Entry de l'observateur
+      entry $audace(base).snvisu_2.fra_observer.entry_posns \
+         -textvariable htmlp(observer) \
+         -borderwidth 1 -relief groove -width 30
+      pack $audace(base).snvisu_2.fra_observer.entry_posns \
+         -in $audace(base).snvisu_2.fra_observer -side left \
+         -padx 3 -pady 3
+   pack $audace(base).snvisu_2.fra_observer \
       -in $audace(base).snvisu_2 -anchor s -side bottom -expand 0 -fill x
 
    #--- La fenetre est active
@@ -2031,7 +2070,7 @@ proc snMakeHtml { } {
    append texte "<h1>\n"
    append texte "Possible Supernova in $htmlp(name) </h1></center>\n"
    #--- You should adapt text from this section...
-   append texte "<center><b>by <a href=\"mailto:alain.klotz@free.fr\">Alain Klotz</a></b></center>\n"
+   append texte "<center><b>by <a href=\"mailto:$htmlp(e-mail)\">$htmlp(observer)</a></b></center>\n"
    append texte "<h2>\n"
    append texte "1. Instrumental design</h2>\n"
    append texte "I observed about 300 galaxies by clear night since 1 feb 2000 with a fully "
