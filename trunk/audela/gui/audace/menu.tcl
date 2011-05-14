@@ -38,6 +38,7 @@ proc Menubar_Delete { visuNo } {
 
 proc Menu { visuNo menuName } {
    global menu
+
    if [info exists menu(menu$visuNo,$menuName)] {
       error "Menu $menuName already defined"
    }
