@@ -430,7 +430,7 @@ namespace eval ::acqfen {
             set panneau(acqfen,bin) 2
          }
       }
-      $This.acq.butbin config -text $caption(acqfen,bin,$panneau(acqfen,bin))
+      $This.acq.butbin configure -text $caption(acqfen,bin,$panneau(acqfen,bin))
    }
 
    #--- Procedure de changement du binning (acquisitions pleine trame)
@@ -452,7 +452,7 @@ namespace eval ::acqfen {
             set panneau(acqfen,bin_centrage) 1
          }
       }
-      $This.acqcent.butbin config -text $caption(acqfen,bin,$panneau(acqfen,bin_centrage))
+      $This.acqcent.butbin configure -text $caption(acqfen,bin,$panneau(acqfen,bin_centrage))
    }
 
    #--- Procedure de mise a jour de l'interface graphique de l'outil
@@ -628,15 +628,11 @@ namespace eval ::acqfen {
                   $This.acq.but configure -text $caption(acqfen,actuxy) -command ::acqfen::actualiserCoordonnees
                   $This.acqred.but configure -text $caption(acqfen,actuxy) -command ::acqfen::actualiserCoordonnees
 
-                  #--- RAZ du fenetrage
-                  set panneau(acqfen,X1) ""
-                  set panneau(acqfen,Y1) ""
-                  set panneau(acqfen,X2) ""
-                  set panneau(acqfen,Y2) ""
+                  #--- Configuration du fenetrage
                   place forget $This.acq.matrice_color_invariant.fen
                   place forget $This.acqred.matrice_color_invariant.fen
-                  $This.acq.matrice_color_invariant.fen config -width $panneau(acqfen,mtx_x) -height $panneau(acqfen,mtx_y)
-                  $This.acqred.matrice_color_invariant.fen config -width $panneau(acqfen,mtx_x) -height $panneau(acqfen,mtx_y)
+                  $This.acq.matrice_color_invariant.fen configure -width $panneau(acqfen,mtx_x) -height $panneau(acqfen,mtx_y)
+                  $This.acqred.matrice_color_invariant.fen configure -width $panneau(acqfen,mtx_x) -height $panneau(acqfen,mtx_y)
                   place $This.acq.matrice_color_invariant.fen -x 0 -y 0
                   place $This.acqred.matrice_color_invariant.fen -x 0 -y 0
 
@@ -1770,9 +1766,9 @@ namespace eval ::acqfen {
          }
 
          set hauteur [expr $panneau(acqfen,mtx_y)*($panneau(acqfen,Y2)-$panneau(acqfen,Y1))/[lindex [cam$audace(camNo) nbcells] 1]]
-         $This.acq.matrice_color_invariant.fen config -height $hauteur \
+         $This.acq.matrice_color_invariant.fen configure -height $hauteur \
             -width [expr $panneau(acqfen,mtx_x)*($panneau(acqfen,X2)-$panneau(acqfen,X1))/[lindex [cam$audace(camNo) nbcells] 0]]
-         $This.acqred.matrice_color_invariant.fen config -height $hauteur \
+         $This.acqred.matrice_color_invariant.fen configure -height $hauteur \
             -width [expr $panneau(acqfen,mtx_x)*($panneau(acqfen,X2)-$panneau(acqfen,X1))/[lindex [cam$audace(camNo) nbcells] 0]]
          place forget $This.acq.matrice_color_invariant.fen
          place forget $This.acqred.matrice_color_invariant.fen
@@ -1834,9 +1830,9 @@ namespace eval ::acqfen {
       incr panneau(acqfen,Y2) [lindex $depl_corr 1]
 
       set hauteur [expr $panneau(acqfen,mtx_y)*($panneau(acqfen,Y2)-$panneau(acqfen,Y1))/[lindex [cam$audace(camNo) nbcells] 1]]
-      $This.acq.matrice_color_invariant.fen config -height $hauteur \
+      $This.acq.matrice_color_invariant.fen configure -height $hauteur \
          -width [expr $panneau(acqfen,mtx_x)*($panneau(acqfen,X2)-$panneau(acqfen,X1))/[lindex [cam$audace(camNo) nbcells] 0]]
-      $This.acqred.matrice_color_invariant.fen config -height $hauteur \
+      $This.acqred.matrice_color_invariant.fen configure -height $hauteur \
          -width [expr $panneau(acqfen,mtx_x)*($panneau(acqfen,X2)-$panneau(acqfen,X1))/[lindex [cam$audace(camNo) nbcells] 0]]
       place forget $This.acq.matrice_color_invariant.fen
       place forget $This.acqred.matrice_color_invariant.fen
