@@ -2763,6 +2763,13 @@ proc ::acqfc::acqfcBuildIF { visuNo } {
                -font {-size 20 -weight bold} -foreground red
             pack $panneau(acqfc,$visuNo,This).param.paramEMCCD -side right -fill x -expand true
          pack $panneau(acqfc,$visuNo,This).param -side top -fill x -pady 5
+         
+         #--- Frame Mode EMCCD : fonction meo_acq_execute de meo_com.tcl
+         frame $panneau(acqfc,$visuNo,This).acqexecute
+            button $panneau(acqfc,$visuNo,This).acqexecute.but -text "Parametres Acq Auto" -borderwidth 1\
+               -command "meo_acq_execute"
+            pack $panneau(acqfc,$visuNo,This).acqexecute.but -side top -fill x
+         pack $panneau(acqfc,$visuNo,This).acqexecute -side top -fill x
 
          #--- Frame Mode EMCCD : single or accumulate
          frame $panneau(acqfc,$visuNo,This).modechoix
