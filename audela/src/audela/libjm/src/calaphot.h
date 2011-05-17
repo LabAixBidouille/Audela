@@ -44,41 +44,43 @@ struct data {
 # define __CALAPHOT_STRINGIFY(y) __CALAPHOT_TSTRHELPER(y)
 #endif /* __CALAPHOT_STRINGIFY  */
 
-#  define calaphot_log(level,__s) \
-    if (level >= Calaphot::_log_verbosity) { calaphot_log_on_stream(log_stream,__CALAPHOT_STRINGIFY(level),__s) }
+#  define photom_log(level,__s) \
+    if (level >= Photom::_log_verbosity) { photom_log_on_stream(log_stream,__CALAPHOT_STRINGIFY(level),__s) }
 
-#  define calaphot_verbose_log(level,__s) \
-    if (level >= Calaphot::_log_verbosity) { calaphot_verbose_log_on_stream(log_stream,__CALAPHOT_STRINGIFY(level),__s) }
+#  define photom_verbose_log(level,__s) \
+    if (level >= Photom::_log_verbosity) { photom_verbose_log_on_stream(log_stream,__CALAPHOT_STRINGIFY(level),__s) }
 
 #  if defined(__GNUC__)
-#   define calaphot_log_on_stream(__stream,level,str) \
+#   define photom_log_on_stream(__stream,level,str) \
                  (__stream) << str << "\n"; \
                  (__stream).flush();
-#   define calaphot_verbose_log_on_stream(__stream,level,str) \
+#   define photom_verbose_log_on_stream(__stream,level,str) \
                  (__stream) << "[" << level << "] " <<__FILE__ << ":" << __LINE__ << " ("<<__PRETTY_FUNCTION__<<") -" << "- " << str << "\n"; \
                  (__stream).flush();
 #   else /* !__GNUC__ */
-#   define calaphot_log_on_stream(__stream,level,str) \
+#   define photom_log_on_stream(__stream,level,str) \
                  (__stream) << str << "\n"; \
                  (__stream).flush();
-#   define calaphot_verbose_log_on_stream(__stream,level,str) \
+#   define photom_verbose_log_on_stream(__stream,level,str) \
                  (__stream) << "[" << level << "] " << __FILE__ << ":" << __LINE__ << " -" << str << "\n"; \
                  (__stream).flush();
 #  endif /* !__GNUC__*/
 
-# define calaphot_error(__s)    calaphot_log(Calaphot::Error_Level,__s)
-# define calaphot_warning(__s)  calaphot_log(Calaphot::Warning_Level,__s)
-# define calaphot_notice(__s)   calaphot_log(Calaphot::Notice_Level,__s)
-# define calaphot_info1(__s)    calaphot_verbose_log(Calaphot::Info1_Level,__s)
-# define calaphot_info2(__s)    calaphot_verbose_log(Calaphot::Info2_Level,__s)
-# define calaphot_info3(__s)    calaphot_verbose_log(Calaphot::Info3_Level,__s)
-# define calaphot_debug(__s)    calaphot_verbose_log(Calaphot::Debug_Level,__s)
+# define photom_error(__s)    photom_verbose_log(Photom::Error_Level,__s)
+# define photom_warning(__s)  photom_log(Photom::Warning_Level,__s)
+# define photom_notice(__s)   photom_log(Photom::Notice_Level,__s)
+# define photom_info1(__s)    photom_verbose_log(Photom::Info1_Level,__s)
+# define photom_info2(__s)    photom_verbose_log(Photom::Info2_Level,__s)
+# define photom_info3(__s)    photom_verbose_log(Photom::Info3_Level,__s)
+# define photom_debug(__s)    photom_verbose_log(Photom::Debug_Level,__s)
+# define photom_debug2(__s)   photom_verbose_log(Photom::Debug2_Level,__s)
 
-class Calaphot
+class Photom
 {
 public :
-    struct ajustement
+    class Modele
     {
+        public :
         double X0;
         double Y0;
         double Signal;
@@ -90,57 +92,140 @@ public :
         double Sigma_2;
         double Alpha;
         double Flux;
+        Modele() : X0(0.0), Y0(0.0), Signal(0.0), Fond(0.0), Sigma_X(0.0), Sigma_Y(0.0), Ro(0.0), Sigma_1(0.0),Sigma_2(0.0), Alpha(0.0), Flux(0.0) {};
     };
-    struct rectangle {
-        int x1;
-        int x2;
-        int y1;
-        int y2;
+    class Rectangle {
+        public :
+        int xmin;
+        int xmax;
+        int ymin;
+        int ymax;
         int nx;
         int ny;
         size_t nxy;
+        void Init( const std::vector<int> & );
+        int lecture_rectangle( gsl_vector *vect_s );
+        Rectangle() : xmin(0), xmax(0), ymin(0), ymax(0), nx(0), ny(0), nxy(0) {};
+    };
+    class Astre {
+        private :
+        Rectangle * _rect;
+        Modele * _modele;
+        Modele * _incertitude;
+        public :
+        void init_rectangle( const std::vector<int> & zone ) { _rect->Init( zone ); }
+        Rectangle * rect() { return _rect; }
+        Modele * modele() { return _modele; }
+        Modele * incert() { return _incertitude;  }
+        Astre() {
+            _rect = new Rectangle();
+            _modele = new Modele();
+            _incertitude = new Modele();
+        }
+        ~Astre() {
+            delete _rect;
+            delete _modele;
+            delete _incertitude;
+        }
+    };
+
+    struct point {
+        double x;
+        double y;
+    } point;
+
+    class Limites {
+        private :
+        TYPE_PIXELS _minimum;
+        TYPE_PIXELS _maximum;
+        public :
+        Limites( TYPE_PIXELS mini, TYPE_PIXELS maxi ) {
+            _minimum = mini;
+            _maximum = maxi;
+        }
+        TYPE_PIXELS maximum() { return _maximum; }
+        TYPE_PIXELS minimum() { return _minimum; }
+        void maximum( TYPE_PIXELS m ) { _maximum = m; }
+        void minimum( TYPE_PIXELS m ) { _minimum = m; }
+    };
+
+    struct ouverture {
+        struct point centre;
+        double rayon_1;
+        double rayon_2;
+        double rayon_3;
+        double rapport_yx;
+        double facteur_ro;
+    };
+
+    struct flux_ouverture {
+        double flux_etoile;
+        double nb_pixels_etoile;
+        double intensite_fond_ciel;
+        double nb_pixels_fond_ciel;
+        double bruit_fond_ciel;
     };
 
     enum log_level
     {
-        Error_Level = 7,
-        Warning_level = 6,
-        Notice_Level = 5,
-        Info1_Level = 4,
-        Info2_Level = 3,
-        Info3_Level = 2,
-        Debug_Level = 1
+        Error_Level = 9,
+        Warning_level = 8,
+        Notice_Level = 7,
+        Info1_Level = 6,
+        Info2_Level = 5,
+        Info3_Level = 4,
+        Debug_Level = 3,
+        Debug2_Level = 2
     };
-    static Calaphot * instance();
+    enum mode_lecture_pixel
+    {
+        NORMAL = 0,
+        BILINEAIRE = 1
+    };
+
+    static Photom * instance();
     static int CmdFluxEllipse( ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] );
-    static int CmdAjustementGaussien(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] );
-    static int CmdNiveauTraces(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] );
+    static int CmdAjustementGaussien( ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] );
+    static int CmdNiveauTraces( ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] );
+    static int CmdMinMax( ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] );
+    static int CmdModeLecturePixels( ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] );
 
     static int _log_verbosity;
     static std::ofstream log_stream;
-    static std::string calaphot_log_file_name;
+    static std::string photom_log_file_name;
+    static Limites * minmax;
+    static int photom_mode;
 
 private :
-    Calaphot();
-    ~Calaphot();
-    static Calaphot * _unique_instance;
+    Photom();
+    ~Photom();
+    static Photom * _unique_instance;
     CBuffer * _buffer;
-    void Gauss (struct rectangle * rect, gsl_vector *vect_s, gsl_vector *vect_w, gsl_matrix *mat_x, gsl_vector *vect_c, gsl_matrix *mat_cov, double *chi2, double *me1, Calaphot::ajustement *p, Calaphot::ajustement *incert, int *iter);
-    int LecturePixel (int x, int y, TYPE_PIXELS *pixel);
-    int EcriturePixel (int x, int y, TYPE_PIXELS pixel);
-    void FluxEllipse (double x0, double y0, double r1x, double r1y, double ro, double r2, double r3, int c, double *flux, double *nb_pixel, double *fond, double *nb_pixel_fond, double *sigma_fond);
-    int LectureRectangle (struct rectangle * rect, gsl_vector *vect_s);
-    int Incertitude (double flux_etoile, double flux_fond, double nb_pixel, double nb_pixel_fond, double gain, double sigma, double *signal_bruit, double *incertitude, double *bruit_flux);
-    void InitRectangle (int * cadre, rectangle * rect);
+    int Gauss( Astre &, gsl_vector *, gsl_vector *, gsl_matrix *, double *me1 );
+    TYPE_PIXELS LecturePixel( double x, double y );
+    int EcriturePixel( double x, double y, TYPE_PIXELS intensite );
+    void FluxEllipse( Photom::ouverture * ouv, int c, flux_ouverture *fouv );
+    int Incertitude( double flux_etoile, double flux_fond, double nb_pixel, double nb_pixel_fond, double gain, double sigma, double *signal_bruit, double *incertitude, double *bruit_flux );
     int CmdMagnitude( ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] );
     int CmdIncertitude( ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] );
 
-    int AjustementGaussien( int *, double *, double *, Calaphot::ajustement *, Calaphot::ajustement *, int *, double *, double * );
-    int SoustractionGaussienne( int *, Calaphot::ajustement * );
+    int AjustementGaussien( Astre &, std::vector<double>, std::vector<double>, double * );
+    int SoustractionGaussienne( Astre & );
     int Magnitude( double, double, double, double * );
     void niveau_traces( int );
 
     CBuffer * set_buffer (int);
+
+    enum Erreur {
+        ERR_FATALE = -100,
+        ERR_MANQUE_PIXELS = -101,
+        ERR_PAS_DE_SIGNAL = -102,
+        ERR_MODELISATION = -200,
+        ERR_DIVERGENCE = -201,
+        ERR_AJUSTEMENT = -202
+    };
+
+    const char* message_erreur( Erreur num_erreur );
 };
 
 }

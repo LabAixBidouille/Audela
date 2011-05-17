@@ -25,6 +25,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <vector>
 
 #include <math.h>
 #include <gsl/gsl_vector.h>
@@ -64,15 +65,17 @@ extern "C" int Jm_Init( Tcl_Interp *interp )
     Tcl_CreateCommand( interp, "jm_versionlib", (Tcl_CmdProc *)LibJM::Generique::CmdVersionLib, (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL );
     Tcl_CreateCommand( interp, "jm_repertoire_log", (Tcl_CmdProc *)LibJM::Generique::CmdRepertoireLog, (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL );
 
-    Tcl_CreateCommand( interp,"jm_inittamponimage", (Tcl_CmdProc *)LibJM::Divers::CmdInitTamponImage, (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL );
-    Tcl_CreateCommand( interp,"jm_infoimage", (Tcl_CmdProc *)LibJM::Divers::CmdInfoImage, (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL );
+    Tcl_CreateCommand( interp, "jm_inittamponimage", (Tcl_CmdProc *)LibJM::Divers::CmdInitTamponImage, (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL );
+    Tcl_CreateCommand( interp, "jm_infoimage", (Tcl_CmdProc *)LibJM::Divers::CmdInfoImage, (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL );
 
-    Tcl_CreateCommand( interp,"jm_heurepc",(Tcl_CmdProc *)LibJM::Horloge::CmdHeurePC,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
-    Tcl_CreateCommand( interp,"jm_reglageheurepc",(Tcl_CmdProc *)LibJM::Horloge::CmdReglageHeurePC,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+    Tcl_CreateCommand( interp, "jm_heurepc",(Tcl_CmdProc *)LibJM::Horloge::CmdHeurePC,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+    Tcl_CreateCommand( interp, "jm_reglageheurepc",(Tcl_CmdProc *)LibJM::Horloge::CmdReglageHeurePC,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
 
-    Tcl_CreateCommand( interp, "calaphot_fluxellipse",(Tcl_CmdProc *)LibJM::Calaphot::CmdFluxEllipse,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
-    Tcl_CreateCommand( interp, "calaphot_fitgauss2d",(Tcl_CmdProc *)LibJM::Calaphot::CmdAjustementGaussien,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
-    Tcl_CreateCommand( interp, "calaphot_niveau_traces", (Tcl_CmdProc *)LibJM::Calaphot::CmdNiveauTraces, NULL, NULL );
+    Tcl_CreateCommand( interp, "calaphot_fluxellipse",(Tcl_CmdProc *)LibJM::Photom::CmdFluxEllipse,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+    Tcl_CreateCommand( interp, "calaphot_fitgauss2d",(Tcl_CmdProc *)LibJM::Photom::CmdAjustementGaussien,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+    Tcl_CreateCommand( interp, "calaphot_niveau_traces", (Tcl_CmdProc *)LibJM::Photom::CmdNiveauTraces, NULL, NULL );
+    Tcl_CreateCommand( interp, "photom_minmax", (Tcl_CmdProc *)LibJM::Photom::CmdMinMax, NULL, NULL );
+    Tcl_CreateCommand( interp, "photom_mode_lecture_pixels", (Tcl_CmdProc *)LibJM::Photom::CmdModeLecturePixels, NULL, NULL );
 
     Tcl_CreateCommand( interp, "dft2d", (Tcl_CmdProc *)LibJM::Fourier::CmdFourierDirect, NULL, NULL );
     Tcl_CreateCommand( interp, "idft2d", (Tcl_CmdProc *)LibJM::Fourier::CmdFourierInverse, NULL, NULL );
@@ -86,7 +89,7 @@ extern "C" int Jm_Init( Tcl_Interp *interp )
 
 namespace LibJM
 {
-    const std::string Generique::NUMERO_VERSION("4.1");
+    const std::string Generique::NUMERO_VERSION("4.2");
     string Generique::repertoire_log = "";
 
     int Generique::CmdVersionLib( ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] )

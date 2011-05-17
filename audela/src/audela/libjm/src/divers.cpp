@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * </pre>
  */
+
+#include <vector>
+
 #include <sysexp.h>
 #include <stdlib.h>
 
@@ -39,12 +42,7 @@ int Divers::dms2deg(int d,int m,double s,double *angle)
     return Generique::OK;
 }
 
-int Divers::DecodeListeDouble(Tcl_Interp *interp, char *list, double *tableau, int *n)
-     /*****************************************************************************/
-     /* retourne un pointeur (double*) sur les valeurs contenues par la liste Tcl.*/
-     /* retourne n, le nombre d'elements.                                         */
-     /*                                                                           */
-     /*****************************************************************************/
+std::vector<double> Divers::DecodeListeDouble( Tcl_Interp *interp, char *list )
 {
 #if defined(OS_WIN)
     const char **argv;
@@ -52,50 +50,32 @@ int Divers::DecodeListeDouble(Tcl_Interp *interp, char *list, double *tableau, i
     char **argv;
 #endif
     int argc, code;
-    int nn, k;
+    int k;
 
     argv = NULL;
-    *n = 0;
     code = Tcl_SplitList(interp, list, &argc, &argv);
-    if (argc <= 0)
-    {
-        return TCL_OK;
-    }
-    nn = argc;
-    for (k = 0; k < nn; k++)
-        tableau[k] = atof(argv[k]);
-
-    Tcl_Free((char *) argv);
-    *n = nn;
-    return TCL_OK;
+    std::vector<double> v( argc, 0.0 );
+    for ( k = 0; k < argc; ++k )
+        v[k] = atof( argv[k] );
+    return v;
 }
 
-int Divers::DecodeListeInt(Tcl_Interp *interp, char *list, int *tableau, int *n)
-     /*****************************************************************************/
-     /* retourne un pointeur (int*) sur les valeurs contenues par la liste Tcl.   */
-     /* retourne n, le nombre d'elements.                                         */
-     /*                                                                           */
-     /*****************************************************************************/
+std::vector<int> Divers::DecodeListeInt( Tcl_Interp *interp, char *list )
 {
 #if defined(OS_WIN)
     const char **argv;
 #else
     char **argv;
 #endif
-    int argc,code;
-    int nn,k;
+    int argc, code;
+    int k;
 
     argv = NULL;
-    *n = 0;
-    code = Tcl_SplitList(interp,list,&argc,&argv);
-    if (argc <= 0)
-        return TCL_OK;
-    nn = argc;
-    for (k = 0; k < nn; k++)
-        tableau[k]=atoi(argv[k]);
-    Tcl_Free((char *) argv);
-    *n = nn;
-    return TCL_OK;
+    code = Tcl_SplitList( interp, list, &argc, &argv );
+    std::vector<int> v( argc, 0 );
+    for ( k = 0; k < argc; ++k )
+        v[k] = atoi( argv[k] );
+    return v;
 }
 
 

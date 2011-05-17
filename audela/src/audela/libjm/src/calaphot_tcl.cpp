@@ -26,6 +26,8 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+#include <vector>
+#include <algorithm>
 
 #include <string.h>
 #include <math.h>
@@ -38,66 +40,128 @@
 #include "divers.h"
 #include "calaphot.h"
 
-using namespace std;
+//using namespace std;
 
 namespace LibJM {
 
-int Calaphot::CmdNiveauTraces( ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] )
+int Photom::CmdNiveauTraces( ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] )
 {
     if ( argc < 2 )
     {
-        ostringstream oss;
+        std::ostringstream oss;
         oss << "Usage: " << argv[0] << "  (0=very verbose, ..., 9=dumb)";
         Tcl_SetResult( interp, const_cast<char*>(oss.str().c_str()), TCL_VOLATILE );
         return TCL_ERROR;
     }
-    Calaphot::instance()->niveau_traces( atoi( argv[1] ) );
+    Photom::instance()->niveau_traces( atoi( argv[1] ) );
+    return TCL_OK;
+}
+
+int Photom::CmdModeLecturePixels( ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] )
+{
+    photom_info1 ( "argc = " << argc );
+    for ( int arg = 0; arg < argc; arg++ )
+        photom_info1 ( "argv[" << arg << "] = " << argv[arg] );
+
+    if ( argc < 2 )
+    {
+        std::ostringstream oss;
+        oss << "Usage: " << argv[0] << " normal|bilin";
+        Tcl_SetResult( interp, const_cast<char*>(oss.str().c_str()), TCL_VOLATILE );
+        return TCL_ERROR;
+    }
+    if ( strcmp( argv[1], "normal") == 0 )
+        photom_mode = Photom::NORMAL;
+    else if ( strcmp( argv[1], "bilin") == 0 )
+        photom_mode = Photom::BILINEAIRE;
+    else
+    {
+        std::ostringstream oss;
+        oss << "Illegal parameter : should be \"normal\" or \"bilin\" ";
+        Tcl_SetResult( interp, const_cast<char*>(oss.str().c_str()), TCL_VOLATILE );
+        return TCL_ERROR;
+    }
+    return TCL_OK;
+}
+
+ int Photom::CmdMinMax( ClientData clientData, Tcl_Interp *interp, int argc, char *argv[] )
+{
+    std::ostringstream oss;
+
+    photom_info1 ( "argc = " << argc );
+    for ( int arg = 0; arg < argc; arg++ )
+        photom_info1 ( "argv[" << arg << "] = " << argv[arg] );
+
+    if ( argc != 2 )
+    {
+        std::ostringstream oss;
+        oss << "Usage: " << argv[0] << "  { minimum value, maximum value }";
+        Tcl_SetResult( interp, const_cast<char*>( oss.str().c_str()), TCL_VOLATILE );
+        return TCL_ERROR;
+    }
+    std::vector<double> extrema = Divers::DecodeListeDouble( interp, argv[1] );
+    if ( extrema.size() != 2 ) {
+        oss << "Usage: " << argv[0] << " Missing values";
+        Tcl_SetResult( interp, const_cast<char*>( oss.str().c_str() ), TCL_VOLATILE );
+        return TCL_ERROR;
+    }
+    Photom::instance()->minmax->minimum( std::min<TYPE_PIXELS>( (TYPE_PIXELS)extrema[0], (TYPE_PIXELS)extrema[1] ) );
+    Photom::instance()->minmax->maximum( std::max<TYPE_PIXELS>( (TYPE_PIXELS)extrema[0], (TYPE_PIXELS)extrema[1] ) );
     return TCL_OK;
 }
 
 /******************************************/
 /* Calcul du flux dans une ellipse        */
 /******************************************/
-int Calaphot::CmdFluxEllipse(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+int Photom::CmdFluxEllipse(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
-    ostringstream oss;
+    std::ostringstream oss;
     int retour, tampon;
-    double nb_pixel, nb_pixel_fond;
-    double flux_etoile, flux_fond, sigma_fond;
 
-    calaphot_info1 ( "argc = " << argc );
+    photom_info1 ( "argc = " << argc );
     for ( int arg = 0; arg < argc; arg++ )
-        calaphot_info1 ( "argv[" << arg << "] = " << argv[arg] );
+        photom_info1 ( "argv[" << arg << "] = " << argv[arg] );
 
     /* La facteur de rotation doit impérativement être de module inférieur à 1 */
-    if (fabs(atof(argv[6])) >= 1.0)
+    if ( fabs( atof( argv[6] ) ) >= 1.0 )
     {
-        oss << "Le facteur de rotation doit avoir un module inférieur a 1.0";
+        oss << "Le facteur de rotation doit avoir un module inférieur à 1.0";
         Tcl_SetResult( interp, const_cast<char*>(oss.str().c_str()), TCL_VOLATILE );
         return TCL_ERROR;
     }
 
 
-    if ((argc == 9) || (argc == 10))
+    if ( ( argc == 9 ) || ( argc == 10 ) )
     {
-        /* Validite du parametre de buffer */
+        /* Validité du paramètre de buffer */
         retour = Tcl_GetInt(interp, argv[1], &tampon);
         if (retour != TCL_OK)
             return retour;
 
-        /* Récuperation des infos sur l'image */
-        if (Calaphot::instance()->set_buffer (tampon) == 0)
+        /* Récupération des infos sur l'image */
+        if (Photom::instance()->set_buffer (tampon) == 0)
         {
             oss << "Pas de buffer nr " << tampon;
             Tcl_SetResult( interp, const_cast<char*>(oss.str().c_str()), TCL_VOLATILE );
             return TCL_ERROR;
         }
 
+        ouverture ouv;
+        ouv.centre.x = atof( argv[2] );
+        ouv.centre.y = atof( argv[3] );
+        ouv.rayon_1 = sqrt( atof( argv[4] ) * atof( argv[5] ) );
+        ouv.rayon_2 = atof( argv[7] );
+        ouv.rayon_3 = atof( argv[8] );
+        ouv.facteur_ro = atof( argv[6] );
+        ouv.rapport_yx = atof( argv[5] ) / atof( argv[4] );
+
+        flux_ouverture fouv;
+
         if (argc == 9)
         {
             try
             {
-                Calaphot::instance()->FluxEllipse (atof (argv[2]), atof (argv[3]), atof (argv[4]), atof (argv[5]), atof (argv[6]), atof (argv[7]), atof (argv[8]), 1, &flux_etoile, &nb_pixel, &flux_fond, &nb_pixel_fond, &sigma_fond);
+                Photom::instance()->FluxEllipse ( &ouv, 16, &fouv );
             }
             catch ( const CError& e )
             {
@@ -109,24 +173,25 @@ int Calaphot::CmdFluxEllipse(ClientData clientData, Tcl_Interp *interp, int argc
         {
             try
             {
-                Calaphot::instance()->FluxEllipse(atof(argv[2]), atof(argv[3]), atof(argv[4]), atof(argv[5]), atof(argv[6]), atof(argv[7]), atol(argv[8]), atol(argv[9]), &flux_etoile, &nb_pixel, &flux_fond, &nb_pixel_fond, &sigma_fond);
+                Photom::instance()->FluxEllipse( &ouv, atol( argv[9] ), &fouv );
             }
             catch ( const CError& e )
             {
+                photom_error( e.gets() );
                 Tcl_SetResult( interp, e.gets(), TCL_VOLATILE );
                 return TCL_ERROR;
             }
         }
         int p = oss.precision();
-        oss << setprecision( 10 ) << flux_etoile;
-        oss << " " << nb_pixel;
-        oss << " " << flux_fond;
-        oss << " " << nb_pixel_fond;
-        oss << " " << " " << sigma_fond;
+        oss << std::setprecision( 10 ) << fouv.flux_etoile;
+        oss << " " << fouv.nb_pixels_etoile;
+        oss << " " << fouv.intensite_fond_ciel;
+        oss << " " << fouv.nb_pixels_fond_ciel;
+        oss << " " << " " << fouv.bruit_fond_ciel;
         oss.precision( p );
         Tcl_SetResult( interp, const_cast<char*>(oss.str().c_str()), TCL_VOLATILE );
 
-        calaphot_info1 ( "retour = " << oss.str().c_str() );
+        photom_info1 ( "retour = " << oss.str().c_str() );
 
         return TCL_OK;
     }
@@ -141,24 +206,24 @@ int Calaphot::CmdFluxEllipse(ClientData clientData, Tcl_Interp *interp, int argc
 /***************************/
 /* Magnitude etoile        */
 /***************************/
-int Calaphot::CmdMagnitude(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+int Photom::CmdMagnitude(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
   char s[256];
   double magnitude;
   int tampon = 0;  // En fait ce code n'est pas opérationnel. A reprendre...
 
-  calaphot_debug ("argc = " << argc);
+  photom_debug ("argc = " << argc);
 
   if (argc == 5)
     {
-      if (Calaphot::instance()->set_buffer (tampon) == 0)
+      if (Photom::instance()->set_buffer (tampon) == 0)
       {
           sprintf (s, "Pas de buffer nr %d", tampon);
           Tcl_SetResult (interp, s, TCL_VOLATILE);
           return TCL_ERROR;
       }
 
-      if (Calaphot::instance()->Magnitude(atof(argv[1]), atof(argv[2]), atof(argv[3]), &magnitude) == Generique::PB)
+      if (Photom::instance()->Magnitude(atof(argv[1]), atof(argv[2]), atof(argv[3]), &magnitude) == Generique::PB)
 
         {
           strcpy(s,"Erreur dans la fonction Magnitude");
@@ -181,20 +246,20 @@ int Calaphot::CmdMagnitude(ClientData clientData, Tcl_Interp *interp, int argc, 
 /***************************************************************/
 /* Ajustement d'un morceau d'image (etoile) par une gaussienne */
 /***************************************************************/
-int Calaphot::CmdAjustementGaussien (ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+int Photom::CmdAjustementGaussien (ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
-    ostringstream oss;
-    int carre[4], tampon;
-    double fgauss[10], stat[10], chi2, erreur;
-    int n_carre, iterations, n_fgauss, n_stat;
-    Calaphot::ajustement valeurs, incertitudes;
+    std::ostringstream oss;
+    int tampon;
+    double reliquat;
+    int iterations;
     int retour;
+    Astre astre;
 
-    calaphot_info1 ( "argc = " << argc );
+    photom_info1 ( "argc = " << argc );
     for ( int arg = 0; arg < argc; arg++ )
-        calaphot_info1 ( "argv[" << arg << "] = " << argv[arg] );
+        photom_info1( "argv[" << arg << "] = " << argv[arg] );
 
-    if((argc < 3) || (argc > 4))
+    if ( ( argc < 3 ) || ( argc > 4 ) )
     {
         oss << "Usage: " << argv[0] << " Numero_Buffer Coordonnees_Carre ?-sub?";
         Tcl_SetResult( interp, const_cast<char*>(oss.str().c_str()), TCL_VOLATILE );
@@ -203,20 +268,20 @@ int Calaphot::CmdAjustementGaussien (ClientData clientData, Tcl_Interp *interp, 
     else
     {
         /* Validite du paramètre de buffer */
-        retour = Tcl_GetInt (interp, argv[1], &tampon);
-        if (retour != TCL_OK)
+        retour = Tcl_GetInt( interp, argv[1], &tampon );
+        if ( retour != TCL_OK )
             return retour;
 
-        /* Validite de la liste des coordonnees */
-        Divers::DecodeListeInt (interp, argv[2], &carre[0], &n_carre);
-        if (n_carre != 4)
+        /* Validité de la liste des coordonnées */
+        std::vector<int> zone_ecran = Divers::DecodeListeInt( interp, argv[2] );
+        if ( zone_ecran.size() != 4 )
         {
             oss << "Usage: " << argv[0] << " Mauvaises coordonnees";
             Tcl_SetResult( interp, const_cast<char*>(oss.str().c_str()), TCL_VOLATILE );
             return TCL_ERROR;
         }
 
-        if (argc == 4)
+        if ( argc == 4 )
         {
             if (strncmp(argv[3], "-sub", 4) != 0) {
                 oss << "Usage: " << argv[0] << " Numero_Buffer Coordonnees_Carre ?-sub?";
@@ -226,7 +291,7 @@ int Calaphot::CmdAjustementGaussien (ClientData clientData, Tcl_Interp *interp, 
         }
 
         /* Récupération des infos sur l'image */
-        if (Calaphot::instance()->set_buffer (tampon) == 0)
+        if ( Photom::instance()->set_buffer (tampon) == 0 )
         {
             oss << "Pas de buffer nr " << tampon;
             Tcl_SetResult( interp, const_cast<char*>(oss.str().c_str()), TCL_VOLATILE );
@@ -235,73 +300,80 @@ int Calaphot::CmdAjustementGaussien (ClientData clientData, Tcl_Interp *interp, 
 
         try
         {
-            /* Appel a bufn fitgauss pour recuperer les valeurs caracteristiques du rectangle*/
+            /* Appel à bufn fitgauss pour récupérer les valeurs caractéristiques du rectangle */
             /* Formation de la chaine et appel */
             char s[256];
-            sprintf (s, "buf%d fitgauss {%s}", tampon, argv[2]);
-            Tcl_Eval (interp, s);
+            sprintf( s, "buf%d fitgauss {%s}", tampon, argv[2] );
+            Tcl_Eval( interp, s );
             /* Lecture des resultats */
-            Divers::DecodeListeDouble (interp, interp->result, &fgauss[0], &n_fgauss);
+            std::vector<double> fgauss = Divers::DecodeListeDouble( interp, interp->result );
 
-            /* Appel a bufn stat pour recuperer les valeurs caracteristiques du rectangle*/
+            /* Appel à bufn stat pour récupérer les valeurs caractéristiques du rectangle */
             /* Formation de la chaine et appel */
-            sprintf (s, "buf%d stat {%s}", tampon, argv[2]);
+            sprintf( s, "buf%d stat {%s}", tampon, argv[2] );
             Tcl_Eval (interp, s);
             /* Lecture des resultats */
-            Divers::DecodeListeDouble (interp, interp->result, &stat[0], &n_stat);
+            std::vector<double> stat = Divers::DecodeListeDouble( interp, interp->result );
+
+            astre.init_rectangle( zone_ecran );
 
             /* A partir des valeurs approximatives donnees par bufn stat, calcul d'un profil gaussien plausible */
-            Calaphot::instance()->AjustementGaussien (&carre[0], &fgauss[0], &stat[0], &valeurs, &incertitudes, &iterations, &chi2, &erreur);
+            iterations = Photom::instance()->AjustementGaussien( astre, fgauss, stat, &reliquat );
 
-            if (iterations == 0)
-            {
-                memset (&valeurs, 0, sizeof(valeurs));
-                memset (&incertitudes, 0, sizeof(incertitudes));
-            }
-
-            /* Soustraction du modele a l'image originale */
-            if ((argc == 4) && (iterations != 0))
-                Calaphot::instance()->SoustractionGaussienne (&carre[0], &valeurs);
+            /* Soustraction du modèle à l'image originale */
+            if ( ( argc == 4 ) && ( iterations != 0 ) )
+                Photom::instance()->SoustractionGaussienne( astre );
         }
         catch (const CError& e)
         {
-            calaphot_error (e.gets ());
-            for (int arg = 0; arg < argc; arg++)
-                calaphot_error ("\t argv[" << arg << "] = " << argv[arg]);
+            photom_error( e.gets () );
+            for( int arg = 0; arg < argc; arg++ )
+                photom_error( "\t argv[" << arg << "] = " << argv[arg] );
             Tcl_SetResult( interp, e.gets(), TCL_VOLATILE );
             return TCL_ERROR;
         }
+        catch ( Photom::Erreur erreur )
+        {
+            photom_error( Photom::instance()->message_erreur( erreur ) );
+            for( int arg = 0; arg < argc; arg++ )
+                photom_error( "\t argv[" << arg << "] = " << argv[arg] );
+            Tcl_SetResult( interp, const_cast<char*>( Photom::instance()->message_erreur( erreur ) ), TCL_VOLATILE );
+            return TCL_ERROR;
+        }
+
+        Modele * valeurs = astre.modele();
+        Modele * incertitudes = astre.incert();
 
         int p = oss.precision();
-        oss << setprecision( 10 ) << erreur;
+        oss << std::setprecision( 10 ) << reliquat;
         oss << " " << iterations;
-        oss << " " << valeurs.X0;
-        oss << " " << valeurs.Y0;
-        oss << " " << valeurs.Signal;
-        oss << " " << valeurs.Fond;
-        oss << " " << valeurs.Sigma_X * 1.66511;
-        oss << " " << valeurs.Sigma_Y * 1.66511;
-        oss << " " << valeurs.Ro;
-        oss << " " << valeurs.Alpha;
-        oss << " " << valeurs.Sigma_1 * 1.66511;
-        oss << " " << valeurs.Sigma_2 * 1.66511;
-        oss << " " << valeurs.Flux;
-        oss << " " << incertitudes.X0;
-        oss << " " << incertitudes.Y0;
-        oss << " " << incertitudes.Signal;
-        oss << " " << incertitudes.Fond;
-        oss << " " << incertitudes.Sigma_X * 1.66511;
-        oss << " " << incertitudes.Sigma_Y * 1.66511;
-        oss << " " << incertitudes.Ro;
-        oss << " " << incertitudes.Alpha;
-        oss << " " << incertitudes.Sigma_1 * 1.66511;
-        oss << " " << incertitudes.Sigma_2 * 1.66511;
-        oss << " " << incertitudes.Flux;
+        oss << " " << valeurs->X0;
+        oss << " " << valeurs->Y0;
+        oss << " " << valeurs->Signal;
+        oss << " " << valeurs->Fond;
+        oss << " " << Divers::sigma_en_fwhm( valeurs->Sigma_X );
+        oss << " " << Divers::sigma_en_fwhm( valeurs->Sigma_Y );
+        oss << " " << valeurs->Ro;
+        oss << " " << valeurs->Alpha;
+        oss << " " << Divers::sigma_en_fwhm( valeurs->Sigma_1 );
+        oss << " " << Divers::sigma_en_fwhm( valeurs->Sigma_2 );
+        oss << " " << valeurs->Flux;
+        oss << " " << incertitudes->X0;
+        oss << " " << incertitudes->Y0;
+        oss << " " << incertitudes->Signal;
+        oss << " " << incertitudes->Fond;
+        oss << " " << Divers::sigma_en_fwhm( incertitudes->Sigma_X );
+        oss << " " << Divers::sigma_en_fwhm( incertitudes->Sigma_Y );
+        oss << " " << incertitudes->Ro;
+        oss << " " << incertitudes->Alpha;
+        oss << " " << Divers::sigma_en_fwhm( incertitudes->Sigma_1 );
+        oss << " " << Divers::sigma_en_fwhm( incertitudes->Sigma_2 );
+        oss << " " << incertitudes->Flux;
         oss.precision( p );
 
-        Tcl_SetResult( interp, const_cast<char*>(oss.str().c_str()), TCL_VOLATILE );
+        Tcl_SetResult( interp, const_cast<char*>( oss.str().c_str() ), TCL_VOLATILE );
 
-        calaphot_info1 ( "retour = " << oss.str().c_str() );
+        photom_info1 ( "retour = " << oss.str().c_str() );
 
         return TCL_OK;
     }

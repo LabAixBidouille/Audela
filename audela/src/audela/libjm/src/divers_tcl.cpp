@@ -21,6 +21,8 @@
  * </pre>
  */
 
+#include <vector>
+
 #include <string.h>
 #include <stdlib.h>
 #include "cerror.h"

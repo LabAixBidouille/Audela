@@ -32,11 +32,16 @@ class Divers
 public :
     static int CmdDms2deg(ClientData clientData,Tcl_Interp *interp, int argc,char *argv[]);
 
-    static int DecodeListeInt(Tcl_Interp *interp, char *list, int *valeurs, int *n);
-    static int DecodeListeDouble(Tcl_Interp *interp, char *list, double *valeurs, int *n);
+    static std::vector<int> DecodeListeInt( Tcl_Interp *interp, char *list );
+    static std::vector<double> DecodeListeDouble(Tcl_Interp *interp, char *list );
     static int CmdInitTamponImage(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
     static int CmdInfoImage(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
     static int dms2deg(int d,int m,double s,double *angle);
+    static int sgn( double x ) { if ( x > 0.0 ) return(1); else return(-1); }
+    // 2 * sqrt(ln(2) = 1.665109222
+    static double sigma_en_fwhm( double sigma ) { return 1.66510922 * sigma; }
+    // 1 / (2 * sqrt(ln(2)) = 0.600561204
+    static double fwhm_en_sigma( double fwhm ) { return 0.600561204 * fwhm; }
 };
 
 }
