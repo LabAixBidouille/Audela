@@ -95,6 +95,21 @@ set caption(acqfc,avancement_acq)            "Acquisition\nProgress"
 set caption(acqfc,buttonShiftConfig)         "Shift"
 set caption(acqfc,acquisitionError)          "Acquisition Error. See details in the Terminal screen."
 
+set caption(acqfc,emccd,mode)                "EMCCD Mode"
+set caption(acqfc,emccd,parametres)          "EMCCD Parameters"
+set caption(acqfc,emccd,paramAcqAuto)        "Auto Acquisition Parameters"
+set caption(acqfc,emccd,single)              "Single"
+set caption(acqfc,emccd,accumulate)          "Accumulate"
+set caption(acqfc,emccd,accuCycleTime)       "Accu. Cycle Time (sec)"
+set caption(acqfc,emccd,modeTrigger)         "Trigger Mode"
+set caption(acqfc,emccd,internal)            "Internal"
+set caption(acqfc,emccd,external)            "External"
+set caption(acqfc,emccd,validation)          "VALIDATION before GO CCD"
+set caption(acqfc,emccd,gain)                "EMCCD Gain"
+set caption(acqfc,emccd,gain:)               "EMCCD Gain:"
+set caption(acqfc,emccd,ZOOM)                "ZOOM"
+set caption(acqfc,emccd,Zoom)                "Zoom"
+
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
@@ -182,6 +197,21 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,avancement_acq)         "Avancement de\nl'acquisition"
    set caption(acqfc,buttonShiftConfig)      "Décalage"
    set caption(acqfc,acquisitionError)       "Erreur à l'acquisition. Détails dans la Console."
+
+   set caption(acqfc,emccd,mode)             "Mode EMCCD"
+   set caption(acqfc,emccd,parametres)       "Paramètres EMCCD"
+   set caption(acqfc,emccd,paramAcqAuto)     "Paramètres d'acquisition auto"
+   set caption(acqfc,emccd,single)           "Single"
+   set caption(acqfc,emccd,accumulate)       "Accumulate"
+   set caption(acqfc,emccd,accuCycleTime)    "Accu. Cycle Time (sec)"
+   set caption(acqfc,emccd,modeTrigger)      "Mode Trigger"
+   set caption(acqfc,emccd,internal)         "Internal"
+   set caption(acqfc,emccd,external)         "External"
+   set caption(acqfc,emccd,validation)       "VALIDATION avant GO CCD"
+   set caption(acqfc,emccd,gain)             "Gain EMCCD"
+   set caption(acqfc,emccd,gain:)            "Gain EMCCD :"
+   set caption(acqfc,emccd,ZOOM)             "ZOOM"
+   set caption(acqfc,emccd,Zoom)             "Zoom"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -271,6 +301,21 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,buttonShiftConfig)      "Spostamento"
    set caption(acqfc,acquisitionError)       "Errore di acquisizione. Vedere i dettagli sul Console."
 
+   set caption(acqfc,emccd,mode)             "# Mode EMCCD"
+   set caption(acqfc,emccd,parametres)       "# Paramètres EMCCD"
+   set caption(acqfc,emccd,paramAcqAuto)     "# Paramètres d'acquisition auto"
+   set caption(acqfc,emccd,single)           "# Single"
+   set caption(acqfc,emccd,accumulate)       "# Accumulate"
+   set caption(acqfc,emccd,accuCycleTime)    "# Accu. Cycle Time (sec)"
+   set caption(acqfc,emccd,modeTrigger)      "# Mode Trigger"
+   set caption(acqfc,emccd,internal)         "# Internal"
+   set caption(acqfc,emccd,external)         "# External"
+   set caption(acqfc,emccd,validation)       "# VALIDATION avant GO CCD"
+   set caption(acqfc,emccd,gain)             "# Gain EMCCD"
+   set caption(acqfc,emccd,gain:)            "# Gain EMCCD :"
+   set caption(acqfc,emccd,ZOOM)             "ZOOM"
+   set caption(acqfc,emccd,Zoom)             "Zoom"
+
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
@@ -358,6 +403,21 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,avancement_acq)         "Progreso de la\nadquisición"
    set caption(acqfc,buttonShiftConfig)      "Desplazam."
    set caption(acqfc,acquisitionError)       "Error de adquisición. Ver detalles en la Consola."
+
+   set caption(acqfc,emccd,mode)             "# Mode EMCCD"
+   set caption(acqfc,emccd,parametres)       "# Paramètres EMCCD"
+   set caption(acqfc,emccd,paramAcqAuto)     "# Paramètres d'acquisition auto"
+   set caption(acqfc,emccd,single)           "# Single"
+   set caption(acqfc,emccd,accumulate)       "# Accumulate"
+   set caption(acqfc,emccd,accuCycleTime)    "# Accu. Cycle Time (sec)"
+   set caption(acqfc,emccd,modeTrigger)      "# Mode Trigger"
+   set caption(acqfc,emccd,internal)         "# Internal"
+   set caption(acqfc,emccd,external)         "# External"
+   set caption(acqfc,emccd,validation)       "# VALIDATION avant GO CCD"
+   set caption(acqfc,emccd,gain)             "# Gain EMCCD"
+   set caption(acqfc,emccd,gain:)            "# Gain EMCCD :"
+   set caption(acqfc,emccd,ZOOM)             "ZOOM"
+   set caption(acqfc,emccd,Zoom)             "Zoom"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -447,6 +507,21 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,buttonShiftConfig)      "Verschiebung"
    set caption(acqfc,acquisitionError)       "Belichtung Irrtum. Siehe Details auf der Konsole."
 
+   set caption(acqfc,emccd,mode)             "# Mode EMCCD"
+   set caption(acqfc,emccd,parametres)       "# Paramètres EMCCD"
+   set caption(acqfc,emccd,paramAcqAuto)     "# Paramètres d'acquisition auto"
+   set caption(acqfc,emccd,single)           "# Single"
+   set caption(acqfc,emccd,accumulate)       "# Accumulate"
+   set caption(acqfc,emccd,accuCycleTime)    "# Accu. Cycle Time (sec)"
+   set caption(acqfc,emccd,modeTrigger)      "# Mode Trigger"
+   set caption(acqfc,emccd,internal)         "# Internal"
+   set caption(acqfc,emccd,external)         "# External"
+   set caption(acqfc,emccd,validation)       "# VALIDATION avant GO CCD"
+   set caption(acqfc,emccd,gain)             "# Gain EMCCD"
+   set caption(acqfc,emccd,gain:)            "# Gain EMCCD :"
+   set caption(acqfc,emccd,ZOOM)             "ZOOM"
+   set caption(acqfc,emccd,Zoom)             "Zoom"
+
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
@@ -535,6 +610,21 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,buttonShiftConfig)      "Deslocamento"
    set caption(acqfc,acquisitionError)       "Erro na aquisição. Ver detalhes na Consola."
 
+   set caption(acqfc,emccd,mode)             "# Mode EMCCD"
+   set caption(acqfc,emccd,parametres)       "# Paramètres EMCCD"
+   set caption(acqfc,emccd,paramAcqAuto)     "# Paramètres d'acquisition auto"
+   set caption(acqfc,emccd,single)           "# Single"
+   set caption(acqfc,emccd,accumulate)       "# Accumulate"
+   set caption(acqfc,emccd,accuCycleTime)    "# Accu. Cycle Time (sec)"
+   set caption(acqfc,emccd,modeTrigger)      "# Mode Trigger"
+   set caption(acqfc,emccd,internal)         "# Internal"
+   set caption(acqfc,emccd,external)         "# External"
+   set caption(acqfc,emccd,validation)       "# VALIDATION avant GO CCD"
+   set caption(acqfc,emccd,gain)             "# Gain EMCCD"
+   set caption(acqfc,emccd,gain:)            "# Gain EMCCD :"
+   set caption(acqfc,emccd,ZOOM)             "ZOOM"
+   set caption(acqfc,emccd,Zoom)             "Zoom"
+
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
@@ -621,6 +711,21 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,avancement_acq)         "Acquisition\nProgress"
    set caption(acqfc,buttonShiftConfig)      "Shift"
    set caption(acqfc,acquisitionError)       "Acquisition Error. See details in the Terminal screen."
+
+   set caption(acqfc,emccd,mode)             "EMCCD Mode"
+   set caption(acqfc,emccd,parametres)       "EMCCD Parameters"
+   set caption(acqfc,emccd,paramAcqAuto)     "Auto Acquisition Parameters"
+   set caption(acqfc,emccd,single)           "Single"
+   set caption(acqfc,emccd,accumulate)       "Accumulate"
+   set caption(acqfc,emccd,accuCycleTime)    "Accu. Cycle Time (sec)"
+   set caption(acqfc,emccd,modeTrigger)      "Trigger Mode"
+   set caption(acqfc,emccd,internal)         "Internal"
+   set caption(acqfc,emccd,external)         "External"
+   set caption(acqfc,emccd,validation)       "VALIDATION before GO CCD"
+   set caption(acqfc,emccd,gain)             "EMCCD Gain"
+   set caption(acqfc,emccd,gain:)            "EMCCD Gain:"
+   set caption(acqfc,emccd,ZOOM)             "ZOOM"
+   set caption(acqfc,emccd,Zoom)             "Zoom"
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -709,6 +814,21 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,buttonShiftConfig)      "Shift"
    set caption(acqfc,acquisitionError)       "Acquisition Error. See details in the Terminal screen."
 
+   set caption(acqfc,emccd,mode)             "EMCCD Mode"
+   set caption(acqfc,emccd,parametres)       "EMCCD Parameters"
+   set caption(acqfc,emccd,paramAcqAuto)     "Auto Acquisition Parameters"
+   set caption(acqfc,emccd,single)           "Single"
+   set caption(acqfc,emccd,accumulate)       "Accumulate"
+   set caption(acqfc,emccd,accuCycleTime)    "Accu. Cycle Time (sec)"
+   set caption(acqfc,emccd,modeTrigger)      "Trigger Mode"
+   set caption(acqfc,emccd,internal)         "Internal"
+   set caption(acqfc,emccd,external)         "External"
+   set caption(acqfc,emccd,validation)       "VALIDATION before GO CCD"
+   set caption(acqfc,emccd,gain)             "EMCCD Gain"
+   set caption(acqfc,emccd,gain:)            "EMCCD Gain:"
+   set caption(acqfc,emccd,ZOOM)             "ZOOM"
+   set caption(acqfc,emccd,Zoom)             "Zoom"
+
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
@@ -795,6 +915,21 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,avancement_acq)         "Acquisition\nProgress"
    set caption(acqfc,buttonShiftConfig)      "Shift"
    set caption(acqfc,acquisitionError)       "Acquisition Error. See details in the Terminal screen."
+
+   set caption(acqfc,emccd,mode)             "EMCCD Mode"
+   set caption(acqfc,emccd,parametres)       "EMCCD Parameters"
+   set caption(acqfc,emccd,paramAcqAuto)     "Auto Acquisition Parameters"
+   set caption(acqfc,emccd,single)           "Single"
+   set caption(acqfc,emccd,accumulate)       "Accumulate"
+   set caption(acqfc,emccd,accuCycleTime)    "Accu. Cycle Time (sec)"
+   set caption(acqfc,emccd,modeTrigger)      "Trigger Mode"
+   set caption(acqfc,emccd,internal)         "Internal"
+   set caption(acqfc,emccd,external)         "External"
+   set caption(acqfc,emccd,validation)       "VALIDATION before GO CCD"
+   set caption(acqfc,emccd,gain)             "EMCCD Gain"
+   set caption(acqfc,emccd,gain:)            "EMCCD Gain:"
+   set caption(acqfc,emccd,ZOOM)             "ZOOM"
+   set caption(acqfc,emccd,Zoom)             "Zoom"
 
 }
 
