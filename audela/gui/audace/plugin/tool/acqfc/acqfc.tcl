@@ -761,7 +761,7 @@ proc ::acqfc::testParametreAcquisition { visuNo } {
                }
                #--- Envoyer un warning si l'index n'est pas a 1
                if { $panneau(acqfc,$visuNo,indexerContinue) == "1" } {
-                  if { $panneau(acqfc,$visuNo,index) != "1" } {
+                  if { $panneau(acqfc,$visuNo,index) != "1" && $panneau(acqfc,$visuNo,verifier_index_depart) == 1 } {
                      set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
                         -message $caption(acqfc,indpasun)]
                      if { $confirmation == "no" } {
@@ -806,7 +806,7 @@ proc ::acqfc::testParametreAcquisition { visuNo } {
                set integre non
             }
             #--- Envoyer un warning si l'index n'est pas a 1
-            if { $panneau(acqfc,$visuNo,index) != "1" } {
+            if { $panneau(acqfc,$visuNo,index) != "1" && $panneau(acqfc,$visuNo,verifier_index_depart) == 1 } {
                set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
                   -message $caption(acqfc,indpasun)]
                if { $confirmation == "no" } {
@@ -869,7 +869,7 @@ proc ::acqfc::testParametreAcquisition { visuNo } {
                   set integre non
                }
                #--- Envoyer un warning si l'index n'est pas a 1
-               if { $panneau(acqfc,$visuNo,index) != "1" } {
+               if { $panneau(acqfc,$visuNo,index) != "1" && $panneau(acqfc,$visuNo,verifier_index_depart) == 1 } {
                   set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
                      -message $caption(acqfc,indpasun)]
                   if { $confirmation == "no" } {
@@ -2352,7 +2352,9 @@ proc ::acqfc::webcamConfigure { visuNo } {
 
 ################ EMCCD ##############################
 proc ::acqfc::updateGainEMCCD { camNo visuNo gain } {
-   ::console::affiche_resultat "Gain EMCCD : $gain \n"
+   global caption
+
+   ::console::affiche_resultat "$caption(acqfc,emccd,gain:) $gain\n"
    cam$camNo native SetEMCCDGain $gain
 }
 
@@ -2362,17 +2364,17 @@ proc ::acqfc::EmccdValid { visuNo { mode "" } } {
 
    set camNo [::confCam::getCamNo $panneau(acqfc,$visuNo,camItem)]
    cam$camNo exptime $panneau(acqfc,$visuNo,pose)
-   ::console::affiche_resultat "cam$camNo exptime $panneau(acqfc,$visuNo,pose) \n"
+   ::console::affiche_resultat "cam$camNo exptime $panneau(acqfc,$visuNo,pose)\n"
 
    if {$panneau(acqfc,$visuNo,emccdmode)=="0"} {
       set acqmodeemccd "series"
       cam$camNo acqmode $acqmodeemccd 1 0 $panneau(acqfc,$visuNo,emccdtriggermode)
-         ::console::affiche_resultat "cam$camNo acqmode $acqmodeemccd 1 0 $panneau(acqfc,$visuNo,emccdtriggermode)\n"
+      ::console::affiche_resultat "cam$camNo acqmode $acqmodeemccd 1 0 $panneau(acqfc,$visuNo,emccdtriggermode)\n"
    } else {
       set acqmodeemccd "accumulate"
       set panneau(acqfc,$visuNo,emccdtriggermode) 0
       cam$camNo acqmode $acqmodeemccd $panneau(acqfc,$visuNo,emccd_nb) $panneau(acqfc,$visuNo,AccuCycleTme) 0
-       ::console::affiche_resultat "cam$camNo acqmode $acqmodeemccd $panneau(acqfc,$visuNo,emccd_nb) $panneau(acqfc,$visuNo,AccuCycleTme) 0\n"
+      ::console::affiche_resultat "cam$camNo acqmode $acqmodeemccd $panneau(acqfc,$visuNo,emccd_nb) $panneau(acqfc,$visuNo,AccuCycleTme) 0\n"
    }
 }
 #***** Fin de la procedure de changement du mode d'acquisition *
@@ -2423,10 +2425,10 @@ proc ::acqfc::acqfcBuildIF { visuNo } {
       }
       label $panneau(acqfc,$visuNo,This).pose.lab -text $caption(acqfc,sec)
       pack $panneau(acqfc,$visuNo,This).pose.lab -side right -fill x -expand true
-	       entry $panneau(acqfc,$visuNo,This).pose.entr -width 6 -relief groove \
-	         -textvariable panneau(acqfc,$visuNo,pose) -justify center \
-	         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 9999 }
-	      pack $panneau(acqfc,$visuNo,This).pose.entr -side left -fill both -expand true
+          entry $panneau(acqfc,$visuNo,This).pose.entr -width 6 -relief groove \
+            -textvariable panneau(acqfc,$visuNo,pose) -justify center \
+            -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 9999 }
+         pack $panneau(acqfc,$visuNo,This).pose.entr -side left -fill both -expand true
    pack $panneau(acqfc,$visuNo,This).pose -side top -fill x
 
    #--- Bouton de configuration de la WebCam en lieu et place du widget pose
@@ -2750,58 +2752,57 @@ proc ::acqfc::acqfcBuildIF { visuNo } {
 
       set camname ""
       catch {set camname [cam1 name]}
-      
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $panneau(acqfc,$visuNo,This)
 
       if {$camname=="Luc285_MONO"} {
 
-         ::console::affiche_resultat "Mode EMCCD"
+         ::console::affiche_resultat "$caption(acqfc,emccd,mode) \n"
          set camNo [::confCam::getCamNo $panneau(acqfc,$visuNo,camItem)]
-         #--- param par default
+
+         #--- Parametres par defaut
          set panneau(acqfc,$visuNo,emccd_nb)         0
          set panneau(acqfc,$visuNo,AccuCycleTme)     [expr $panneau(acqfc,$visuNo,pose)+1]
          set panneau(acqfc,$visuNo,emccdmode)        0
          set panneau(acqfc,$visuNo,emccdtriggermode) 0
+
          #--- Create a dummy space
          frame $panneau(acqfc,$visuNo,This).vide -height 10 -borderwidth 0 -relief flat -background $audace(color,listBox)
-         pack $panneau(acqfc,$visuNo,This).vide -side top -fill x -fill y 
+         pack $panneau(acqfc,$visuNo,This).vide -side top -fill x -fill y
 
          #--- Frame Titre EMCCD
          frame $panneau(acqfc,$visuNo,This).param -bg $audace(color,activeTextColor)
-            label $panneau(acqfc,$visuNo,This).param.paramEMCCD -text "Paramètres EMCCD" -foreground $audace(color,activeBackColor) -background $audace(color,listBox) \
-               -font {-size 15 -weight bold} 
+            label $panneau(acqfc,$visuNo,This).param.paramEMCCD -text $caption(acqfc,emccd,parametres) -foreground $audace(color,activeBackColor) -background $audace(color,listBox) \
+               -font {-size 15 -weight bold}
             pack $panneau(acqfc,$visuNo,This).param.paramEMCCD -side right -fill x -expand true
          pack $panneau(acqfc,$visuNo,This).param -side top -fill x -pady 5
-            
+
          #--- Create a dummy space
          frame $panneau(acqfc,$visuNo,This).vide3 -height 5 -borderwidth 0 -relief flat -background $audace(color,listBox)
-         pack $panneau(acqfc,$visuNo,This).vide3 -side top -fill x -fill y 
-          
-         #--- Frame Mode EMCCD : fonction meo_acq_execute de meo_com.tcl
+         pack $panneau(acqfc,$visuNo,This).vide3 -side top -fill x -fill y
+
+         #--- Frame Mode EMCCD : Fonction meo_acq_execute de meo_com.tcl
          frame $panneau(acqfc,$visuNo,This).acqexecute
-            button $panneau(acqfc,$visuNo,This).acqexecute.but -text "Paramètres d'acq Auto" -borderwidth 1\
+            button $panneau(acqfc,$visuNo,This).acqexecute.but -text $caption(acqfc,emccd,paramAcqAuto) -borderwidth 1\
                -command "meo_acq_execute"
             pack $panneau(acqfc,$visuNo,This).acqexecute.but -side top -fill x
          pack $panneau(acqfc,$visuNo,This).acqexecute -side top -fill x
-         
+
          #--- Create a dummy space
          frame $panneau(acqfc,$visuNo,This).vide4 -height 5 -borderwidth 0 -relief flat -background $audace(color,listBox)
-         pack $panneau(acqfc,$visuNo,This).vide4 -side top -fill x -fill y 
+         pack $panneau(acqfc,$visuNo,This).vide4 -side top -fill x -fill y
 
-         #--- Frame Mode EMCCD : single or accumulate
+         #--- Frame Mode EMCCD : Single or accumulate
          frame $panneau(acqfc,$visuNo,This).modechoix
-            label $panneau(acqfc,$visuNo,This).modechoix.titre -text "MODE EMCCD" -font {-size 10 -weight bold} 
+            label $panneau(acqfc,$visuNo,This).modechoix.titre -text $caption(acqfc,emccd,mode) -font {-size 10 -weight bold}
             pack $panneau(acqfc,$visuNo,This).modechoix.titre -side top -fill x -expand true
-            radiobutton $panneau(acqfc,$visuNo,This).modechoix.but1 -text Single -variable panneau(acqfc,$visuNo,emccdmode) -value "0"
-            radiobutton $panneau(acqfc,$visuNo,This).modechoix.but2 -text Accumulate -variable panneau(acqfc,$visuNo,emccdmode) -value "1"
+            radiobutton $panneau(acqfc,$visuNo,This).modechoix.but1 -text $caption(acqfc,emccd,single) -variable panneau(acqfc,$visuNo,emccdmode) -value "0"
+            radiobutton $panneau(acqfc,$visuNo,This).modechoix.but2 -text $caption(acqfc,emccd,accumulate) -variable panneau(acqfc,$visuNo,emccdmode) -value "1"
             pack $panneau(acqfc,$visuNo,This).modechoix.but1 $panneau(acqfc,$visuNo,This).modechoix.but2 -side right -fill x -expand true
          pack $panneau(acqfc,$visuNo,This).modechoix -side top -fill x
 
-         #--- Frame Mode EMCCD : accumulate parameter
+         #--- Frame Mode EMCCD : Accumulate parameter
          frame $panneau(acqfc,$visuNo,This).modeaccu -borderwidth 0
             frame $panneau(acqfc,$visuNo,This).modeaccu.nom -relief ridge -borderwidth 2
-               label $panneau(acqfc,$visuNo,This).modeaccu.nom.but -text "Accu Cycle Time (sec)" -pady 0
+               label $panneau(acqfc,$visuNo,This).modeaccu.nom.but -text $caption(acqfc,emccd,accuCycleTime) -pady 0
                pack $panneau(acqfc,$visuNo,This).modeaccu.nom.but -side left -fill x -expand true
                entry $panneau(acqfc,$visuNo,This).modeaccu.nom.entr -width 10 \
                   -textvariable panneau(acqfc,$visuNo,AccuCycleTme) -relief groove \
@@ -2818,26 +2819,26 @@ proc ::acqfc::acqfcBuildIF { visuNo } {
             pack $panneau(acqfc,$visuNo,This).modeaccu.nom -side top -fill x
          pack $panneau(acqfc,$visuNo,This).modeaccu -side top -fill x
 
-        #--- Create a dummy space
-        frame $panneau(acqfc,$visuNo,This).vide6 -height 5 -borderwidth 0 -relief flat -background $audace(color,listBox)
-        pack $panneau(acqfc,$visuNo,This).vide6 -side top -fill x -fill y 
-        
-         #--- Frame Mode EMCCD : trigger mode
-         frame $panneau(acqfc,$visuNo,This).modetrigger
-            label $panneau(acqfc,$visuNo,This).modetrigger.titre -text "TRIGGER MODE" -font {-size 10 -weight bold} 
-            pack $panneau(acqfc,$visuNo,This).modetrigger.titre -side top -fill x -expand true
-            radiobutton $panneau(acqfc,$visuNo,This).modetrigger.but1 -text Internal -variable panneau(acqfc,$visuNo,emccdtriggermode) -value "0"
-            radiobutton $panneau(acqfc,$visuNo,This).modetrigger.but2 -text External -variable panneau(acqfc,$visuNo,emccdtriggermode) -value "1"
-            pack $panneau(acqfc,$visuNo,This).modetrigger.but1 $panneau(acqfc,$visuNo,This).modetrigger.but2 -side right -fill x -expand true
-        pack $panneau(acqfc,$visuNo,This).modetrigger -side top -fill x
+         #--- Create a dummy space
+         frame $panneau(acqfc,$visuNo,This).vide6 -height 5 -borderwidth 0 -relief flat -background $audace(color,listBox)
+         pack $panneau(acqfc,$visuNo,This).vide6 -side top -fill x -fill y
 
-        #--- Create a dummy space
-        frame $panneau(acqfc,$visuNo,This).vide5 -height 5 -borderwidth 0 -relief flat -background $audace(color,listBox)
-        pack $panneau(acqfc,$visuNo,This).vide5 -side top -fill x -fill y 
-         
+         #--- Frame Mode EMCCD : Trigger mode
+         frame $panneau(acqfc,$visuNo,This).modetrigger
+            label $panneau(acqfc,$visuNo,This).modetrigger.titre -text $caption(acqfc,emccd,modeTrigger) -font {-size 10 -weight bold}
+            pack $panneau(acqfc,$visuNo,This).modetrigger.titre -side top -fill x -expand true
+            radiobutton $panneau(acqfc,$visuNo,This).modetrigger.but1 -text $caption(acqfc,emccd,internal) -variable panneau(acqfc,$visuNo,emccdtriggermode) -value "0"
+            radiobutton $panneau(acqfc,$visuNo,This).modetrigger.but2 -text $caption(acqfc,emccd,external) -variable panneau(acqfc,$visuNo,emccdtriggermode) -value "1"
+            pack $panneau(acqfc,$visuNo,This).modetrigger.but1 $panneau(acqfc,$visuNo,This).modetrigger.but2 -side right -fill x -expand true
+         pack $panneau(acqfc,$visuNo,This).modetrigger -side top -fill x
+
+         #--- Create a dummy space
+         frame $panneau(acqfc,$visuNo,This).vide5 -height 5 -borderwidth 0 -relief flat -background $audace(color,listBox)
+         pack $panneau(acqfc,$visuNo,This).vide5 -side top -fill x -fill y
+
          #--- Frame Mode EMCCD : validation
          frame $panneau(acqfc,$visuNo,This).valiemccd
-            button $panneau(acqfc,$visuNo,This).valiemccd.but -text "VALIDATION avant GO CCD" -borderwidth 1\
+            button $panneau(acqfc,$visuNo,This).valiemccd.but -text $caption(acqfc,emccd,validation) -borderwidth 1\
                -command "::acqfc::EmccdValid $visuNo"
             pack $panneau(acqfc,$visuNo,This).valiemccd.but -side top -fill x
          pack $panneau(acqfc,$visuNo,This).valiemccd -side top -fill x
@@ -2848,51 +2849,53 @@ proc ::acqfc::acqfcBuildIF { visuNo } {
 
          #--- Frame Titre Gain EMCCD
          frame $panneau(acqfc,$visuNo,This).titregain
-            label $panneau(acqfc,$visuNo,This).titregain.titre -text "GAIN EMCCD" -font {-size 10 -weight bold} 
+            label $panneau(acqfc,$visuNo,This).titregain.titre -text $caption(acqfc,emccd,gain) -font {-size 10 -weight bold}
             pack $panneau(acqfc,$visuNo,This).titregain.titre -side right -fill x -expand true
          pack $panneau(acqfc,$visuNo,This).titregain -side top -fill x
 
          #--- Frame Gain EMCCD
          frame $panneau(acqfc,$visuNo,This).gain
             scale $panneau(acqfc,$visuNo,This).gain.scrolbar -orient horizontal -length 200 -from 0 -to 200 \
-            -tickinterval 50  -activebackground red -bg $audace(color,entryBackColor) -relief sunken -command "::acqfc::updateGainEMCCD $camNo $visuNo"
+            -tickinterval 50 -activebackground red -bg $audace(color,entryBackColor) -relief sunken -command "::acqfc::updateGainEMCCD $camNo $visuNo"
             #\-highlightbackground backColor
             pack $panneau(acqfc,$visuNo,This).gain.scrolbar -side right -fill x -expand true
          pack $panneau(acqfc,$visuNo,This).gain -side top -fill x
-         
+
          #--- Create a dummy space
          frame $panneau(acqfc,$visuNo,This).vide7 -height 2 -borderwidth 0 -relief flat
          pack $panneau(acqfc,$visuNo,This).vide7 -side top -fill x -pady 5
 
          #--- Frame Titre Zoom EMCCD
          frame $panneau(acqfc,$visuNo,This).titrezoom
-            label $panneau(acqfc,$visuNo,This).titrezoom.titre -text "ZOOM" -font {-size 10 -weight bold} 
+            label $panneau(acqfc,$visuNo,This).titrezoom.titre -text $caption(acqfc,emccd,ZOOM) -font {-size 10 -weight bold}
             pack $panneau(acqfc,$visuNo,This).titrezoom.titre -side right -fill x -expand true
          pack $panneau(acqfc,$visuNo,This).titrezoom -side top -fill x
-         
-         #--- Taille Zoom         
-		 frame $panneau(acqfc,$visuNo,This).zoom -borderwidth 2 -relief ridge
-			  menubutton $panneau(acqfc,$visuNo,This).zoom.but -text "Zoom" \
-			     -menu $panneau(acqfc,$visuNo,This).zoom.but.menu -relief raised
-		      pack $panneau(acqfc,$visuNo,This).zoom.but -side left -fill y -expand true -ipady 1
-		      					      
-			  set m [ menu $panneau(acqfc,$visuNo,This).zoom.but.menu -tearoff 0 ]
-			  foreach zoom { 0.125 0.25 0.5 1 2 4 8 } {
-			     $m add radiobutton -label "$zoom" \
-			        -indicatoron "1" \
-			        -value "$zoom" \
-			        -variable panneau(acqfc,$visuNo,zoom) \
-			        -command {set visuNo $::audace(visuNo); ::confVisu::setZoom $visuNo $panneau(acqfc,1,zoom)} 
-			  }		
-			  
-			  label $panneau(acqfc,$visuNo,This).zoom.lab -width 10 -relief groove \
-			     -textvariable panneau(acqfc,$visuNo,zoom) -justify center    
-			  pack $panneau(acqfc,$visuNo,This).zoom.lab -side left -fill both -expand true
-			  
-		pack $panneau(acqfc,$visuNo,This).zoom -side top -fill x
+
+         #--- Taille Zoom
+         frame $panneau(acqfc,$visuNo,This).zoom -borderwidth 2 -relief ridge
+            menubutton $panneau(acqfc,$visuNo,This).zoom.but -text $caption(acqfc,emccd,Zoom) \
+               -menu $panneau(acqfc,$visuNo,This).zoom.but.menu -relief raised
+            pack $panneau(acqfc,$visuNo,This).zoom.but -side left -fill y -expand true -ipady 1
+
+            set m [ menu $panneau(acqfc,$visuNo,This).zoom.but.menu -tearoff 0 ]
+            foreach zoom { 0.125 0.25 0.5 1 2 4 8 } {
+               $m add radiobutton -label "$zoom" \
+                  -indicatoron "1" \
+                  -value "$zoom" \
+                  -variable panneau(acqfc,$visuNo,zoom) \
+                  -command {set visuNo $::audace(visuNo); ::confVisu::setZoom $visuNo $panneau(acqfc,1,zoom)}
+            }
+
+            label $panneau(acqfc,$visuNo,This).zoom.lab -width 10 -relief groove \
+               -textvariable panneau(acqfc,$visuNo,zoom) -justify center
+            pack $panneau(acqfc,$visuNo,This).zoom.lab -side left -fill both -expand true
+
+         pack $panneau(acqfc,$visuNo,This).zoom -side top -fill x
 
       }
 
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $panneau(acqfc,$visuNo,This)
+
 }
 
- 
