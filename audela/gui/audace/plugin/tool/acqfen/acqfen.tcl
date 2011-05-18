@@ -249,6 +249,10 @@ namespace eval ::acqfen {
       set panneau(acqfen,affpleinetrame)  1
       set panneau(acqfen,afffenetrees)    1
 
+      #--- Autres configurations
+      set panneau(acqfen,verifier_ecraser_fichier) "$parametres(acqfen,verifier_ecraser_fichier)"
+      set panneau(acqfen,verifier_index_depart)    "$parametres(acqfen,verifier_index_depart)"
+
       ::acqfenBuildIF $This
 
       ::acqfen::actualiserAffichage
@@ -266,18 +270,20 @@ namespace eval ::acqfen {
       if { [ file exists $fichier ] } {
          source $fichier
       }
-      if { ! [ info exists parametres(acqfen,pose_centrage) ] }  { set parametres(acqfen,pose_centrage)  ".2" }  ; #--- Temps de pose : 0.2s
-      if { ! [ info exists parametres(acqfen,obt) ] }            { set parametres(acqfen,obt)            "2" }   ; #--- Obturateur : Synchro
-      if { ! [ info exists parametres(acqfen,bin_centrage) ] }   { set parametres(acqfen,bin_centrage)   "4" }   ; #--- Binning : 4x4
-      if { ! [ info exists parametres(acqfen,pose) ] }           { set parametres(acqfen,pose)           ".05" } ; #--- Temps de pose : 0.05s
-      if { ! [ info exists parametres(acqfen,bin) ] }            { set parametres(acqfen,bin)            "1" }   ; #--- Binning : 1x1
-      if { ! [ info exists parametres(acqfen,mode) ] }           { set parametres(acqfen,mode)           "1" }   ; #--- Mode : Une image
-      if { ! [ info exists parametres(acqfen,nb_images) ] }      { set parametres(acqfen,nb_images)      "5" }   ; #--- Serie : Nombre de poses
-      if { ! [ info exists parametres(acqfen,avancement_acq) ] } { set parametres(acqfen,avancement_acq) "1" }   ; #--- Barre de progression de la pose : Oui
-      if { ! [ info exists parametres(acqfen,X1) ] }             { set parametres(acqfen,X1)             "" }    ; #--- Coordonnees de la fenetre
-      if { ! [ info exists parametres(acqfen,Y1) ] }             { set parametres(acqfen,Y1)             "" }    ; #--- Coordonnees de la fenetre
-      if { ! [ info exists parametres(acqfen,X2) ] }             { set parametres(acqfen,X2)             "" }    ; #--- Coordonnees de la fenetre
-      if { ! [ info exists parametres(acqfen,Y2) ] }             { set parametres(acqfen,Y2)             "" }    ; #--- Coordonnees de la fenetre
+      if { ! [ info exists parametres(acqfen,pose_centrage) ] }            { set parametres(acqfen,pose_centrage)            ".2" }  ; #--- Temps de pose : 0.2s
+      if { ! [ info exists parametres(acqfen,obt) ] }                      { set parametres(acqfen,obt)                      "2" }   ; #--- Obturateur : Synchro
+      if { ! [ info exists parametres(acqfen,bin_centrage) ] }             { set parametres(acqfen,bin_centrage)             "4" }   ; #--- Binning : 4x4
+      if { ! [ info exists parametres(acqfen,pose) ] }                     { set parametres(acqfen,pose)                     ".05" } ; #--- Temps de pose : 0.05s
+      if { ! [ info exists parametres(acqfen,bin) ] }                      { set parametres(acqfen,bin)                      "1" }   ; #--- Binning : 1x1
+      if { ! [ info exists parametres(acqfen,mode) ] }                     { set parametres(acqfen,mode)                     "1" }   ; #--- Mode : Une image
+      if { ! [ info exists parametres(acqfen,nb_images) ] }                { set parametres(acqfen,nb_images)                "5" }   ; #--- Serie : Nombre de poses
+      if { ! [ info exists parametres(acqfen,avancement_acq) ] }           { set parametres(acqfen,avancement_acq)           "1" }   ; #--- Barre de progression de la pose : Oui
+      if { ! [ info exists parametres(acqfen,X1) ] }                       { set parametres(acqfen,X1)                       "" }    ; #--- Coordonnees de la fenetre
+      if { ! [ info exists parametres(acqfen,Y1) ] }                       { set parametres(acqfen,Y1)                       "" }    ; #--- Coordonnees de la fenetre
+      if { ! [ info exists parametres(acqfen,X2) ] }                       { set parametres(acqfen,X2)                       "" }    ; #--- Coordonnees de la fenetre
+      if { ! [ info exists parametres(acqfen,Y2) ] }                       { set parametres(acqfen,Y2)                       "" }    ; #--- Coordonnees de la fenetre
+      if { ! [ info exists parametres(acqfen,verifier_ecraser_fichier) ] } { set parametres(acqfen,verifier_ecraser_fichier) "1" }   ; #--- Flag ecrasement fichier
+      if { ! [ info exists parametres(acqfen,verifier_index_depart) ] }    { set parametres(acqfen,verifier_index_depart)    "1" }   ; #--- Flag index a 1
 
       #--- je convertis les anciennes valeurs pour assurer la compatibilite
       if { $parametres(acqfen,mode) == "une" }     { set parametres(acqfen,mode) 1 }
@@ -291,18 +297,20 @@ namespace eval ::acqfen {
       global panneau
 
       #---
-      set parametres(acqfen,pose_centrage)  $panneau(acqfen,pose_centrage)
-      set parametres(acqfen,obt)            $panneau(acqfen,obt)
-      set parametres(acqfen,bin_centrage)   $panneau(acqfen,bin_centrage)
-      set parametres(acqfen,pose)           $panneau(acqfen,pose)
-      set parametres(acqfen,bin)            $panneau(acqfen,bin)
-      set parametres(acqfen,mode)           $panneau(acqfen,mode)
-      set parametres(acqfen,nb_images)      $panneau(acqfen,nb_images)
-      set parametres(acqfen,avancement_acq) $panneau(acqfen,avancement_acq)
-      set parametres(acqfen,X1)             $panneau(acqfen,X1)
-      set parametres(acqfen,Y1)             $panneau(acqfen,Y1)
-      set parametres(acqfen,X2)             $panneau(acqfen,X2)
-      set parametres(acqfen,Y2)             $panneau(acqfen,Y2)
+      set parametres(acqfen,pose_centrage)            $panneau(acqfen,pose_centrage)
+      set parametres(acqfen,obt)                      $panneau(acqfen,obt)
+      set parametres(acqfen,bin_centrage)             $panneau(acqfen,bin_centrage)
+      set parametres(acqfen,pose)                     $panneau(acqfen,pose)
+      set parametres(acqfen,bin)                      $panneau(acqfen,bin)
+      set parametres(acqfen,mode)                     $panneau(acqfen,mode)
+      set parametres(acqfen,nb_images)                $panneau(acqfen,nb_images)
+      set parametres(acqfen,avancement_acq)           $panneau(acqfen,avancement_acq)
+      set parametres(acqfen,X1)                       $panneau(acqfen,X1)
+      set parametres(acqfen,Y1)                       $panneau(acqfen,Y1)
+      set parametres(acqfen,X2)                       $panneau(acqfen,X2)
+      set parametres(acqfen,Y2)                       $panneau(acqfen,Y2)
+      set parametres(acqfen,verifier_ecraser_fichier) $panneau(acqfen,verifier_ecraser_fichier)
+      set parametres(acqfen,verifier_index_depart)    $panneau(acqfen,verifier_index_depart)
 
       #--- Sauvegarde des parametres
       catch {
@@ -762,7 +770,7 @@ namespace eval ::acqfen {
                         return
                      }
                      #--- Envoie un warning si l'index n'est pas a 1
-                     if { $panneau(acqfen,index) != "1" } {
+                     if { $panneau(acqfen,index) != "1" && $panneau(acqfen,verifier_index_depart) == 1 } {
                         set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
                            -message $caption(acqfen,indpasun)]
                         if { $confirmation == "no" } {
@@ -816,7 +824,7 @@ namespace eval ::acqfen {
                               #--- Verifie que le nom du fichier n'existe pas deja...
                               set nom1 "$nom"
                               append nom1 $panneau(acqfen,index) $ext
-                              if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+                              if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" && $panneau(acqfen,verifier_ecraser_fichier) == 1 } {
                                  #--- Dans ce cas, le fichier existe deja...
                                  set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
                                     -message $caption(acqfen,fichdeja)]
@@ -866,7 +874,7 @@ namespace eval ::acqfen {
                               #--- Verifie que le nom du fichier n'existe pas deja...
                               set nom1 "$nom"
                               append nom1 $panneau(acqfen,index) $ext
-                              if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+                              if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" && $panneau(acqfen,verifier_ecraser_fichier) == 1 } {
                                  #--- Dans ce cas, le fichier existe deja...
                                  set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
                                     -message $caption(acqfen,fichdeja)]
@@ -908,7 +916,7 @@ namespace eval ::acqfen {
                               #--- Verifie que le nom du fichier n'existe pas deja...
                               set nom1 "$nom"
                               append nom1 $panneau(acqfen,index) $ext
-                              if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+                              if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" && $panneau(acqfen,verifier_ecraser_fichier) == 1 } {
                                  #--- Dans ce cas, le fichier existe deja...
                                  set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
                                     -message $caption(acqfen,fichdeja)]
@@ -966,7 +974,7 @@ namespace eval ::acqfen {
                               #--- Verifie que le nom du fichier n'existe pas deja...
                               set nom1 "$nom"
                               append nom1 [lindex $ima 1] $ext
-                              if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+                              if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" && $panneau(acqfen,verifier_ecraser_fichier) == 1 } {
                                  #--- Dans ce cas, le fichier existe deja...
                                  set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
                                     -message $caption(acqfen,fichdeja)]
@@ -1027,7 +1035,7 @@ namespace eval ::acqfen {
                               #--- Verifie que le nom du fichier n'existe pas deja...
                               set nom1 "$nom"
                               append nom1 [lindex $ima 1] $ext
-                              if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+                              if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" && $panneau(acqfen,verifier_ecraser_fichier) == 1 } {
                                  #--- Dans ce cas, le fichier existe deja...
                                  set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
                                     -message $caption(acqfen,fichdeja)]
@@ -1080,7 +1088,7 @@ namespace eval ::acqfen {
                               #--- Verifie que le nom du fichier n'existe pas deja...
                               set nom1 "$nom"
                               append nom1 [lindex $ima 1] $ext
-                              if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+                              if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" && $panneau(acqfen,verifier_ecraser_fichier) == 1 } {
                                  #--- Dans ce cas, le fichier existe deja...
                                  set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
                                     -message $caption(acqfen,fichdeja)]
@@ -1149,7 +1157,7 @@ namespace eval ::acqfen {
                            return
                         }
                         #--- Envoie un warning si l'index n'est pas a 1
-                        if { $panneau(acqfen,index) != "1" } {
+                        if { $panneau(acqfen,index) != "1" && $panneau(acqfen,verifier_index_depart) == 1 } {
                            set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
                               -message $caption(acqfen,indpasun)]
                            if { $confirmation == "no" } {
@@ -1194,7 +1202,7 @@ namespace eval ::acqfen {
                                  #--- Verifie que le nom du fichier n'existe pas deja...
                                  set nom1 "$nom"
                                  append nom1 $panneau(acqfen,index) $ext
-                                 if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+                                 if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" && $panneau(acqfen,verifier_ecraser_fichier) == 1 } {
                                     #--- Dans ce cas, le fichier existe deja...
                                     set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
                                        -message $caption(acqfen,fichdeja)]
@@ -1233,7 +1241,7 @@ namespace eval ::acqfen {
                                  #--- Verifie que le nom du fichier n'existe pas deja...
                                  set nom1 "$nom"
                                  append nom1 $panneau(acqfen,index) $ext
-                                 if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+                                 if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" && $panneau(acqfen,verifier_ecraser_fichier) == 1 } {
                                     #--- Dans ce cas, le fichier existe deja...
                                     set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
                                        -message $caption(acqfen,fichdeja)]
@@ -1264,7 +1272,7 @@ namespace eval ::acqfen {
                                  #--- Verifie que le nom du fichier n'existe pas deja...
                                  set nom1 "$nom"
                                  append nom1 $panneau(acqfen,index) $ext
-                                 if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+                                 if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" && $panneau(acqfen,verifier_ecraser_fichier) == 1 } {
                                     #--- Dans ce cas, le fichier existe deja...
                                     set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
                                        -message $caption(acqfen,fichdeja)]
@@ -1312,7 +1320,7 @@ namespace eval ::acqfen {
                               #--- Verifie que le nom du fichier n'existe pas deja
                               set nom1 "$nom"
                               append nom1 [lindex $ima 1] $ext
-                              if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+                              if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" && $panneau(acqfen,verifier_ecraser_fichier) == 1 } {
                                  #--- Dans ce cas, le fichier existe deja...
                                  set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
                                     -message $caption(acqfen,fichdeja)]
@@ -1359,7 +1367,7 @@ namespace eval ::acqfen {
                               #--- Verifie que le nom du fichier n'existe pas deja...
                               set nom1 "$nom"
                               append nom1 [lindex $ima 1] $ext
-                              if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+                              if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" && $panneau(acqfen,verifier_ecraser_fichier) == 1 } {
                                  #--- Dans ce cas, le fichier existe deja...
                                  set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
                                     -message $caption(acqfen,fichdeja)]
@@ -1398,7 +1406,7 @@ namespace eval ::acqfen {
                               #--- Verifie que le nom du fichier n'existe pas deja...
                               set nom1 "$nom"
                               append nom1 [lindex $ima 1] $ext
-                              if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+                              if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" && $panneau(acqfen,verifier_ecraser_fichier) == 1 } {
                                  #--- Dans ce cas, le fichier existe deja...
                                  set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
                                     -message $caption(acqfen,fichdeja)]
@@ -1886,7 +1894,7 @@ namespace eval ::acqfen {
       #--- Verifie que le nom du fichier n'existe pas deja...
       set nom1 "$nom"
       append nom1 $ext
-      if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+      if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" && $panneau(acqfen,verifier_ecraser_fichier) == 1 } {
          #--- Dans ce cas, le fichier existe deja...
          set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
             -message $caption(acqfen,fichdeja)]
@@ -2297,7 +2305,7 @@ proc creeFenReglFen { } {
    if {[winfo exists $audace(base).fenreglfen] == 0} {
       #--- Creation de la fenetre
       toplevel $audace(base).fenreglfen
-      wm geometry $audace(base).fenreglfen 400x405$panneau(acqfen,position)
+      wm geometry $audace(base).fenreglfen 400x480$panneau(acqfen,position)
       wm title $audace(base).fenreglfen $caption(acqfen,fenreglfen)
       wm protocol $audace(base).fenreglfen WM_DELETE_WINDOW ::acqfen::quitFenReglFen
 
@@ -2407,12 +2415,27 @@ proc creeFenReglFen { } {
       checkbutton $audace(base).fenreglfen.5.1.check -text $caption(acqfen,fenreglfen51) \
          -variable panneau(acqfen,fenreglfen5)
       pack $audace(base).fenreglfen.5.1.check -side left
+      frame $audace(base).fenreglfen.6
+      pack $audace(base).fenreglfen.6 -expand true -fill x
+      label $audace(base).fenreglfen.6.lab -text $caption(acqfen,fenreglfen6)
+      pack $audace(base).fenreglfen.6.lab
+      frame $audace(base).fenreglfen.6.1
+      pack $audace(base).fenreglfen.6.1 -expand true -fill x
+      checkbutton $audace(base).fenreglfen.6.1.check -text $caption(acqfen,fenreglfen61) \
+         -variable panneau(acqfen,verifier_ecraser_fichier)
+      pack $audace(base).fenreglfen.6.1.check -side left
+      frame $audace(base).fenreglfen.6.2
+      pack $audace(base).fenreglfen.6.2 -expand true -fill x
+      checkbutton $audace(base).fenreglfen.6.2.check -text $caption(acqfen,fenreglfen62) \
+         -variable panneau(acqfen,verifier_index_depart)
+      pack $audace(base).fenreglfen.6.2.check -side left
 
       #--- Sous-trame boutons OK & quitter
       frame $audace(base).fenreglfen.buttons
       pack $audace(base).fenreglfen.buttons
       button $audace(base).fenreglfen.buttons.ok -text $caption(acqfen,ok) -width 19 \
          -command {
+            ::acqfen::enregistrerParametres
             ::acqfen::recupPosition
             set conf(fenreglfen,position) $panneau(acqfen,position)
             destroy $audace(base).fenreglfen
