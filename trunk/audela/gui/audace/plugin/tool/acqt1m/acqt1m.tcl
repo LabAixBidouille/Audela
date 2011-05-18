@@ -530,7 +530,7 @@ proc ::acqt1m::ChangeMode { visuNo { mode "" } } {
 
 #--- Procedure de changement du binning
 proc ::acqt1m::changerBinningCent { { visuNo 1 } } {
-   global caption panneau
+   global audace caption panneau
 
    switch -exact -- $panneau(acqt1m,$visuNo,binning) {
       "1x1" {
@@ -547,7 +547,10 @@ proc ::acqt1m::changerBinningCent { { visuNo 1 } } {
       }
    }
    #::console::affiche_resultat "bin = $caption(acqt1m,bin,$panneau(acqt1m,$visuNo,binning))\n"
-   $panneau(acqt1m,$visuNo,This).binningt.but config -text $caption(acqt1m,bin,$panneau(acqt1m,$visuNo,binning))
+   $panneau(acqt1m,$visuNo,This).binningt.but configure -text $caption(acqt1m,bin,$panneau(acqt1m,$visuNo,binning))
+   if { [ winfo exists $audace(base).selection_filtre ] } {
+      ::acqt1m_flatciel::Changebin $visuNo $panneau(acqt1m,$visuNo,binning)
+   }
 }
 
 #***** Procedure de changement de l'obturateur *****************
