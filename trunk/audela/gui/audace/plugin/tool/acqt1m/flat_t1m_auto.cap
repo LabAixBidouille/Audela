@@ -53,6 +53,25 @@ set caption(flat_t1m_auto,fondflat2)                 "#    fondflat :"
 set caption(flat_t1m_auto,enregistre)                "Saving:"
 set caption(flat_t1m_auto,finAcq)                    "Stop acquiring with filter:"
 
+set caption(flat_t1m_auto,choixFiltres)              "Filter Selection - Pic du Midi - T1M"
+set caption(flat_t1m_auto,butDebutNuit)              "Beginning of Night"
+set caption(flat_t1m_auto,butFinNuit)                "End of Night"
+set caption(flat_t1m_auto,fermer)                    "Close"
+set caption(flat_t1m_auto,goFlatsAuto)               "GO AUTO FLATS"
+
+set caption(flat_t1m_auto,acqAutoFlat)               "Auto Flats Acquisition - Pic du Midi - T1M"
+set caption(flat_t1m_auto,camera)                    "Camera:"
+set caption(flat_t1m_auto,nbPixelsMax)               "Max. Number of Pixels:"
+set caption(flat_t1m_auto,ADAmax)                    "Max. ADU:"
+set caption(flat_t1m_auto,gain)                      "Gain:"
+set caption(flat_t1m_auto,temperature)               "Temperature:"
+set caption(flat_t1m_auto,repImages)                 "Image Folder:"
+set caption(flat_t1m_auto,obturateur)                "Shutter:"
+set caption(flat_t1m_auto,nbFlats)                   "Number of Flat Field frames"
+set caption(flat_t1m_auto,mysquare1)                 "Size of Measurement Window"
+set caption(flat_t1m_auto,nbPixels)                  "Pixels Number:"
+set caption(flat_t1m_auto,stop)                      "STOP"
+
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
@@ -97,6 +116,25 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(flat_t1m_auto,fondflat2)              "   fondflat :"
    set caption(flat_t1m_auto,enregistre)             "Enregistrement de :"
    set caption(flat_t1m_auto,finAcq)                 "Fin des acquisitions avec le filtre :"
+
+   set caption(flat_t1m_auto,choixFiltres)           "Choix des filtres - Pic du Midi - T1M"
+   set caption(flat_t1m_auto,butDebutNuit)           "Début de Nuit"
+   set caption(flat_t1m_auto,butFinNuit)             "Fin de Nuit"
+   set caption(flat_t1m_auto,fermer)                 "Fermer"
+   set caption(flat_t1m_auto,goFlatsAuto)            "GO FLATS AUTO"
+
+   set caption(flat_t1m_auto,acqAutoFlat)            "Acquisition des flats auto - Pic du Midi - T1M"
+   set caption(flat_t1m_auto,camera)                 "Caméra :"
+   set caption(flat_t1m_auto,nbPixelsMax)            "Nombre maxi de pixels :"
+   set caption(flat_t1m_auto,ADAmax)                 "ADU max :"
+   set caption(flat_t1m_auto,gain)                   "Gain :"
+   set caption(flat_t1m_auto,temperature)            "Température :"
+   set caption(flat_t1m_auto,repImages)              "Répertoire des images :"
+   set caption(flat_t1m_auto,obturateur)             "Obturateur :"
+   set caption(flat_t1m_auto,nbFlats)                "Nombre de flats"
+   set caption(flat_t1m_auto,mysquare1)              "Taille de la fenêtre de mesure"
+   set caption(flat_t1m_auto,nbPixels)               "Nombre de pixels :"
+   set caption(flat_t1m_auto,stop)                   "STOP"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -143,6 +181,25 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(flat_t1m_auto,enregistre)             "# Enregistrement de :"
    set caption(flat_t1m_auto,finAcq)                 "# Fin des acquisitions avec le filtre :"
 
+   set caption(flat_t1m_auto,choixFiltres)           "# Choix des filtres - Pic du Midi - T1M"
+   set caption(flat_t1m_auto,butDebutNuit)           "# Début de Nuit"
+   set caption(flat_t1m_auto,butFinNuit)             "# Fin de Nuit"
+   set caption(flat_t1m_auto,fermer)                 "# Fermer"
+   set caption(flat_t1m_auto,goFlatsAuto)            "# GO FLATS AUTO"
+
+   set caption(flat_t1m_auto,acqAutoFlat)            "# Acquisition des flats auto - Pic du Midi - T1M"
+   set caption(flat_t1m_auto,camera)                 "# Caméra :"
+   set caption(flat_t1m_auto,nbPixelsMax)            "# Nombre maxi de pixels :"
+   set caption(flat_t1m_auto,ADAmax)                 "# ADU max :"
+   set caption(flat_t1m_auto,gain)                   "# Gain :"
+   set caption(flat_t1m_auto,temperature)            "# Température :"
+   set caption(flat_t1m_auto,repImages)              "# Répertoire des images :"
+   set caption(flat_t1m_auto,obturateur)             "# Obturateur :"
+   set caption(flat_t1m_auto,nbFlats)                "# Nombre de flats"
+   set caption(flat_t1m_auto,mysquare1)              "# Taille de la fenêtre de mesure"
+   set caption(flat_t1m_auto,nbPixels)               "# Nombre de pixels :"
+   set caption(flat_t1m_auto,stop)                   "# STOP"
+
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
@@ -187,6 +244,25 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(flat_t1m_auto,fondflat2)              "#    fondflat :"
    set caption(flat_t1m_auto,enregistre)             "# Enregistrement de :"
    set caption(flat_t1m_auto,finAcq)                 "# Fin des acquisitions avec le filtre :"
+
+   set caption(flat_t1m_auto,choixFiltres)           "# Choix des filtres - Pic du Midi - T1M"
+   set caption(flat_t1m_auto,butDebutNuit)           "# Début de Nuit"
+   set caption(flat_t1m_auto,butFinNuit)             "# Fin de Nuit"
+   set caption(flat_t1m_auto,fermer)                 "# Fermer"
+   set caption(flat_t1m_auto,goFlatsAuto)            "# GO FLATS AUTO"
+
+   set caption(flat_t1m_auto,acqAutoFlat)            "# Acquisition des flats auto - Pic du Midi - T1M"
+   set caption(flat_t1m_auto,camera)                 "# Caméra :"
+   set caption(flat_t1m_auto,nbPixelsMax)            "# Nombre maxi de pixels :"
+   set caption(flat_t1m_auto,ADAmax)                 "# ADU max :"
+   set caption(flat_t1m_auto,gain)                   "# Gain :"
+   set caption(flat_t1m_auto,temperature)            "# Température :"
+   set caption(flat_t1m_auto,repImages)              "# Répertoire des images :"
+   set caption(flat_t1m_auto,obturateur)             "# Obturateur :"
+   set caption(flat_t1m_auto,nbFlats)                "# Nombre de flats"
+   set caption(flat_t1m_auto,mysquare1)              "# Taille de la fenêtre de mesure"
+   set caption(flat_t1m_auto,nbPixels)               "# Nombre de pixels :"
+   set caption(flat_t1m_auto,stop)                   "# STOP"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -233,6 +309,25 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(flat_t1m_auto,enregistre)             "# Enregistrement de :"
    set caption(flat_t1m_auto,finAcq)                 "# Fin des acquisitions avec le filtre :"
 
+   set caption(flat_t1m_auto,choixFiltres)           "# Choix des filtres - Pic du Midi - T1M"
+   set caption(flat_t1m_auto,butDebutNuit)           "# Début de Nuit"
+   set caption(flat_t1m_auto,butFinNuit)             "# Fin de Nuit"
+   set caption(flat_t1m_auto,fermer)                 "# Fermer"
+   set caption(flat_t1m_auto,goFlatsAuto)            "# GO FLATS AUTO"
+
+   set caption(flat_t1m_auto,acqAutoFlat)            "# Acquisition des flats auto - Pic du Midi - T1M"
+   set caption(flat_t1m_auto,camera)                 "# Caméra :"
+   set caption(flat_t1m_auto,nbPixelsMax)            "# Nombre maxi de pixels :"
+   set caption(flat_t1m_auto,ADAmax)                 "# ADU max :"
+   set caption(flat_t1m_auto,gain)                   "# Gain :"
+   set caption(flat_t1m_auto,temperature)            "# Température :"
+   set caption(flat_t1m_auto,repImages)              "# Répertoire des images :"
+   set caption(flat_t1m_auto,obturateur)             "# Obturateur :"
+   set caption(flat_t1m_auto,nbFlats)                "# Nombre de flats"
+   set caption(flat_t1m_auto,mysquare1)              "# Taille de la fenêtre de mesure"
+   set caption(flat_t1m_auto,nbPixels)               "# Nombre de pixels :"
+   set caption(flat_t1m_auto,stop)                   "# STOP"
+
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
@@ -277,6 +372,25 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(flat_t1m_auto,fondflat2)              "#    fondflat :"
    set caption(flat_t1m_auto,enregistre)             "# Enregistrement de :"
    set caption(flat_t1m_auto,finAcq)                 "# Fin des acquisitions avec le filtre :"
+
+   set caption(flat_t1m_auto,choixFiltres)           "# Choix des filtres - Pic du Midi - T1M"
+   set caption(flat_t1m_auto,butDebutNuit)           "# Début de Nuit"
+   set caption(flat_t1m_auto,butFinNuit)             "# Fin de Nuit"
+   set caption(flat_t1m_auto,fermer)                 "# Fermer"
+   set caption(flat_t1m_auto,goFlatsAuto)            "# GO FLATS AUTO"
+
+   set caption(flat_t1m_auto,acqAutoFlat)            "# Acquisition des flats auto - Pic du Midi - T1M"
+   set caption(flat_t1m_auto,camera)                 "# Caméra :"
+   set caption(flat_t1m_auto,nbPixelsMax)            "# Nombre maxi de pixels :"
+   set caption(flat_t1m_auto,ADAmax)                 "# ADU max :"
+   set caption(flat_t1m_auto,gain)                   "# Gain :"
+   set caption(flat_t1m_auto,temperature)            "# Température :"
+   set caption(flat_t1m_auto,repImages)              "# Répertoire des images :"
+   set caption(flat_t1m_auto,obturateur)             "# Obturateur :"
+   set caption(flat_t1m_auto,nbFlats)                "# Nombre de flats"
+   set caption(flat_t1m_auto,mysquare1)              "# Taille de la fenêtre de mesure"
+   set caption(flat_t1m_auto,nbPixels)               "# Nombre de pixels :"
+   set caption(flat_t1m_auto,stop)                   "# STOP"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -323,6 +437,25 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(flat_t1m_auto,enregistre)             "Saving:"
    set caption(flat_t1m_auto,finAcq)                 "Stop acquiring with filter:"
 
+   set caption(flat_t1m_auto,choixFiltres)           "Filter Selection - Pic du Midi - T1M"
+   set caption(flat_t1m_auto,butDebutNuit)           "Beginning of Night"
+   set caption(flat_t1m_auto,butFinNuit)             "End of Night"
+   set caption(flat_t1m_auto,fermer)                 "Close"
+   set caption(flat_t1m_auto,goFlatsAuto)            "GO AUTO FLATS"
+
+   set caption(flat_t1m_auto,acqAutoFlat)            "Auto Flats Acquisition - Pic du Midi - T1M"
+   set caption(flat_t1m_auto,camera)                 "Camera:"
+   set caption(flat_t1m_auto,nbPixelsMax)            "Max. Number of Pixels:"
+   set caption(flat_t1m_auto,ADAmax)                 "Max. ADU:"
+   set caption(flat_t1m_auto,gain)                   "Gain:"
+   set caption(flat_t1m_auto,temperature)            "Temperature:"
+   set caption(flat_t1m_auto,repImages)              "Image Folder:"
+   set caption(flat_t1m_auto,obturateur)             "Shutter:"
+   set caption(flat_t1m_auto,nbFlats)                "Number of Flat Field frames"
+   set caption(flat_t1m_auto,mysquare1)              "Size of Measurement Window"
+   set caption(flat_t1m_auto,nbPixels)               "Pixels Number:"
+   set caption(flat_t1m_auto,stop)                   "STOP"
+
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
@@ -368,6 +501,25 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(flat_t1m_auto,enregistre)             "Saving:"
    set caption(flat_t1m_auto,finAcq)                 "Stop acquiring with filter:"
 
+   set caption(flat_t1m_auto,choixFiltres)           "Filter Selection - Pic du Midi - T1M"
+   set caption(flat_t1m_auto,butDebutNuit)           "Beginning of Night"
+   set caption(flat_t1m_auto,butFinNuit)             "End of Night"
+   set caption(flat_t1m_auto,fermer)                 "Close"
+   set caption(flat_t1m_auto,goFlatsAuto)            "GO AUTO FLATS"
+
+   set caption(flat_t1m_auto,acqAutoFlat)            "Auto Flats Acquisition - Pic du Midi - T1M"
+   set caption(flat_t1m_auto,camera)                 "Camera:"
+   set caption(flat_t1m_auto,nbPixelsMax)            "Max. Number of Pixels:"
+   set caption(flat_t1m_auto,ADAmax)                 "Max. ADU:"
+   set caption(flat_t1m_auto,gain)                   "Gain:"
+   set caption(flat_t1m_auto,temperature)            "Temperature:"
+   set caption(flat_t1m_auto,repImages)              "Image Folder:"
+   set caption(flat_t1m_auto,obturateur)             "Shutter:"
+   set caption(flat_t1m_auto,nbFlats)                "Number of Flat Field frames"
+   set caption(flat_t1m_auto,mysquare1)              "Size of Measurement Window"
+   set caption(flat_t1m_auto,nbPixels)               "Pixels Number:"
+   set caption(flat_t1m_auto,stop)                   "STOP"
+
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
@@ -412,6 +564,25 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(flat_t1m_auto,fondflat2)              "#    fondflat :"
    set caption(flat_t1m_auto,enregistre)             "Saving:"
    set caption(flat_t1m_auto,finAcq)                 "Stop acquiring with filter:"
+
+   set caption(flat_t1m_auto,choixFiltres)           "Filter Selection - Pic du Midi - T1M"
+   set caption(flat_t1m_auto,butDebutNuit)           "Beginning of Night"
+   set caption(flat_t1m_auto,butFinNuit)             "End of Night"
+   set caption(flat_t1m_auto,fermer)                 "Close"
+   set caption(flat_t1m_auto,goFlatsAuto)            "GO AUTO FLATS"
+
+   set caption(flat_t1m_auto,acqAutoFlat)            "Auto Flats Acquisition - Pic du Midi - T1M"
+   set caption(flat_t1m_auto,camera)                 "Camera:"
+   set caption(flat_t1m_auto,nbPixelsMax)            "Max. Number of Pixels:"
+   set caption(flat_t1m_auto,ADAmax)                 "Max. ADU:"
+   set caption(flat_t1m_auto,gain)                   "Gain:"
+   set caption(flat_t1m_auto,temperature)            "Temperature:"
+   set caption(flat_t1m_auto,repImages)              "Image Folder:"
+   set caption(flat_t1m_auto,obturateur)             "Shutter:"
+   set caption(flat_t1m_auto,nbFlats)                "Number of Flat Field frames"
+   set caption(flat_t1m_auto,mysquare1)              "Size of Measurement Window"
+   set caption(flat_t1m_auto,nbPixels)               "Pixels Number:"
+   set caption(flat_t1m_auto,stop)                   "STOP"
 
 }
 
