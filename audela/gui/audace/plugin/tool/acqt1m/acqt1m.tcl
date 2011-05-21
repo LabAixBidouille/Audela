@@ -555,14 +555,19 @@ proc ::acqt1m::changerBinningCent { { visuNo 1 } } {
 
 #***** Procedure de changement de l'obturateur *****************
 proc ::acqt1m::ChangeObt { visuNo } {
-   global panneau
+   global audace panneau
 
    #---
    set camItem [ ::confVisu::getCamItem $visuNo ]
+   set camNo $panneau(acqt1m,$visuNo,camNo)
+
    set result [::confCam::setShutter $camItem $panneau(acqt1m,$visuNo,obt) ]
    if { $result != -1 } {
       set panneau(acqt1m,$visuNo,obt) $result
       $panneau(acqt1m,$visuNo,This).obt.lab configure -text $panneau(acqt1m,$visuNo,obt,$panneau(acqt1m,$visuNo,obt))
+      if { [ winfo exists $audace(base).selection_filtre ] } {
+         $audace(base).selection_filtre.a2.lb2 configure -text [ cam$camNo shutter ]
+      }
    }
 }
 #***** Fin de la procedure de changement de l'obturateur *******
