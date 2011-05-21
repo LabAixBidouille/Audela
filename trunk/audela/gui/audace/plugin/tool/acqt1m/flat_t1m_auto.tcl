@@ -26,7 +26,6 @@ namespace eval ::acqt1m_flatciel {
    }
 
    proc createDialog { visuNo } {
-
       ::console::affiche_resultat "$::caption(flat_t1m_auto,titre1)\n"
       ::console::affiche_resultat "$::caption(flat_t1m_auto,titre2)\n"
       ::console::affiche_resultat "$::caption(flat_t1m_auto,titre3)\n"
@@ -46,24 +45,23 @@ namespace eval ::acqt1m_flatciel {
    proc Initialisation { visuNo } {
       variable private
 
-      # Activation du test du programme dans les conditions hors crepuscule : private(testprog) = 1
+      # Activation du programme dans des conditions de test hors crepuscule : private(testprog) = 1
+      # Activation du programme dans les conditions d'observation           : private(testprog) = 0
       set private(testprog) 0
      ### set private(testprog) 1
 
-      # Activation des sons
-      set private(sound) 1
-
-      # Par defaut : On fait les flat en debut de nuit
+      # Par defaut : On fait les flats en debut de nuit
       set private(sensnuit) 0
 
+      # Raccourcis pratiques lies a la camera
       set private($visuNo,camItem) [ ::confVisu::getCamItem $visuNo ]
       set private($visuNo,camNo)   [ ::confCam::getCamNo $private($visuNo,camItem) ]
       set private($visuNo,camera)  cam$private($visuNo,camNo)
 
+      # Teste la presence d'une camera connectee
       set err [catch {$private($visuNo,camera) info} msg]
       if { $err == 1 } {
          ::console::affiche_resultat "$::caption(flat_t1m_auto,pasCamera)\n\n"
-
          set choix [ tk_messageBox -title $::caption(acqt1m,pb) -type ok \
             -message $::caption(acqt1m,selcam) ]
          set integre non
@@ -78,19 +76,19 @@ namespace eval ::acqt1m_flatciel {
       set private(attente) 30
 
       # % de dynamique
-      set private(dynamique) 0.5
+      set private(mydynamique) 0.5
 
-      # Temps d exposition maximum
+      # Temps d'exposition maximum
       set private(limitexptime) 35
 
-      # Temps d exposition minimum
+      # Temps d'exposition minimum
       set private(exptimemini) 5
 
       # Initialisation de la liste des filtres
       ::t1m_roue_a_filtre::init
 
-      # Initialisation du binning
-      set private(mybin) "2x2"
+      # Initialisation du binning (identique a celui de l'interface principale)
+      set private(mybin) $::panneau(acqt1m,$visuNo,binning)
 
       # Initialisation du nombre de flats
       set private(mynbflat) 10
@@ -98,24 +96,23 @@ namespace eval ::acqt1m_flatciel {
       # Initialisation du carre d'analyse pour la dynamique du flat
       set private(mysquare) 50
 
-      # Initialisation du binning de la camera
-      set private(savebinning) [$private($visuNo,camera) bin]
-      $private($visuNo,camera) bin [list [lindex [split $private(mybin) "x"] 0] [lindex [split $private(mybin) "x"] 1]]
-      ::console::affiche_resultat "savebinning: $private(savebinning)\n"
+      # Initialisation du nombre de photosites
+      set private(nbcells) [$private($visuNo,camera) nbcells]
 
-      set private(nbpixmax) [$private($visuNo,camera) nbcells]
-
+      # Initialisation de la dynamique maximale
       set private(maxdyn) [format "%6.f" [$private($visuNo,camera) maxdyn]]
 
       # Initialisation des listes
-      set private(binning) {"1x1" "2x2" "3x3" "4x4"}
-      set private(nbflat)  {1 2 3 4 5 6 7 8 9 10 50 100}
-      set private(square)  {10 20 30 40 50 60 70 80 90 100 200 300}
+      set private(binning)   {"1x1" "2x2" "3x3" "4x4"}
+      set private(nbflat)    {1 2 3 4 5 6 7 8 9 10 50 100}
+      set private(square)    {10 20 30 40 50 60 70 80 90 100 200 300}
+      set private(dynamique) {0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9}
 
-      set private(rep_images)  [ file join $::audace(rep_images) "CALIB"]
+      # Initialisation du repertoire
+      set private(rep_images) [ file join $::audace(rep_images) "CALIB" ]
       if { [file exists $private(rep_images)]==0} {
          if { [ catch {file mkdir $private(rep_images)} msg] } {
-             ::console::affiche_erreur "impossible de creer le repertoire $private(rep_images)"
+             ::console::affiche_erreur "$::caption(flat_t1m_auto,msgRepertoire) $private(rep_images)/n"
          }
       }
 
@@ -148,23 +145,23 @@ namespace eval ::acqt1m_flatciel {
    proc ArretScript { visuNo } {
       variable private
 
-
-
       $private($visuNo,camera) stop
-      $private($visuNo,camera) bin $private(savebinning)
-      $private($visuNo,camera) window [list 1 1 [lindex $private(nbpixmax) 0] [lindex $private(nbpixmax) 1] ]
-      $private($visuNo,camera) shutter synchro
+
       set private(stop) 1
+
+      # Initialisation de la camera (image pleine trame et obturateur synchro)
+      $private($visuNo,camera) window [list 1 1 [lindex $private(nbcells) 0] [lindex $private(nbcells) 1] ]
+      $private($visuNo,camera) shutter synchro
    }
 
    proc push { i } {
       variable private
 
       if {[lindex $::t1m_roue_a_filtre::private(filtre,$i) 0] == 0} {
-         $::audace(base).selection_choix.a.b$i config -bg $::audace(color,disabledTextColor)
+         $::audace(base).selection_choix.a.b$i configure -bg $::audace(color,disabledTextColor)
          set ::t1m_roue_a_filtre::private(filtre,$i) [lreplace $::t1m_roue_a_filtre::private(filtre,$i) 0 0 1]
          } else {
-         $::audace(base).selection_choix.a.b$i config -bg $::audace(color,backColor2)
+         $::audace(base).selection_choix.a.b$i configure -bg $::audace(color,backColor2)
          set ::t1m_roue_a_filtre::private(filtre,$i) [lreplace $::t1m_roue_a_filtre::private(filtre,$i) 0 0 0]
       }
    }
@@ -173,15 +170,20 @@ namespace eval ::acqt1m_flatciel {
       variable private
 
       if {$i == 0} {
-         $::audace(base).selection_choix.nuit.deb config -bg $::audace(color,disabledTextColor)
-         $::audace(base).selection_choix.nuit.fin config -bg $::audace(color,backColor2)
+         $::audace(base).selection_choix.nuit.deb configure -bg $::audace(color,disabledTextColor)
+         $::audace(base).selection_choix.nuit.fin configure -bg $::audace(color,backColor2)
          set private(sensnuit) 0
+         set info_sens_nuit    $::caption(flat_t1m_auto,butDebutNuit)
          ::console::affiche_resultat "$::caption(flat_t1m_auto,debutNuit)\n"
       } else {
-         $::audace(base).selection_choix.nuit.deb config -bg $::audace(color,backColor2)
-         $::audace(base).selection_choix.nuit.fin config -bg $::audace(color,disabledTextColor)
+         $::audace(base).selection_choix.nuit.deb configure -bg $::audace(color,backColor2)
+         $::audace(base).selection_choix.nuit.fin configure -bg $::audace(color,disabledTextColor)
          set private(sensnuit) 1
+         set info_sens_nuit    $::caption(flat_t1m_auto,butFinNuit)
          ::console::affiche_resultat "$::caption(flat_t1m_auto,finNuit)\n"
+      }
+      if { [ winfo exists $::audace(base).selection_filtre.g.sens ] } {
+         $::audace(base).selection_filtre.g.sens configure -text $info_sens_nuit
       }
    }
 
@@ -189,7 +191,7 @@ namespace eval ::acqt1m_flatciel {
       variable private
 
       for {set x 1} {$x<10} {incr x} {
-         set private(texte_bouton,$x) [concat "Filtre " [lindex $::t1m_roue_a_filtre::private(filtre,$x) 2] ]
+         set private(texte_bouton,$x) [concat "$::caption(flat_t1m_auto,filtre) " [lindex $::t1m_roue_a_filtre::private(filtre,$x) 2] ]
       }
    }
 
@@ -209,7 +211,7 @@ namespace eval ::acqt1m_flatciel {
          toplevel $::audace(base).selection_choix -class Toplevel -borderwidth 2 -relief groove
          wm geometry $::audace(base).selection_choix $::conf(acqt1m,affichageChoixFiltres,position)
          wm resizable $::audace(base).selection_choix 1 1
-         wm title $::audace(base).selection_choix "Choix des filtres - Pic du Midi - T1M"
+         wm title $::audace(base).selection_choix $::caption(flat_t1m_auto,choixFiltres)
          wm transient $::audace(base).selection_choix .audace
          wm protocol $::audace(base).selection_choix WM_DELETE_WINDOW "::acqt1m_flatciel::fermerAffichageChoixFiltres $visuNo"
 
@@ -226,18 +228,18 @@ namespace eval ::acqt1m_flatciel {
          frame $::audace(base).selection_choix.nuit -borderwidth 0 -relief solid
          pack  $::audace(base).selection_choix.nuit -in $::audace(base).selection_choix -anchor center -side top -expand 0 -fill both -padx 3 -pady 0
 
-            button $::audace(base).selection_choix.nuit.deb -text "Début de Nuit" -command "::acqt1m_flatciel::push_sens_nuit 0" -bg $::audace(color,disabledTextColor)
+            button $::audace(base).selection_choix.nuit.deb -text $::caption(flat_t1m_auto,butDebutNuit) -command "::acqt1m_flatciel::push_sens_nuit 0" -bg $::audace(color,disabledTextColor)
             pack   $::audace(base).selection_choix.nuit.deb -in $::audace(base).selection_choix.nuit -anchor center -side left -fill x -padx 4 -pady 4 -ipadx 30 -expand 1
-            button $::audace(base).selection_choix.nuit.fin -text "Fin de Nuit" -command "::acqt1m_flatciel::push_sens_nuit 1" -bg $::audace(color,backColor2)
+            button $::audace(base).selection_choix.nuit.fin -text $::caption(flat_t1m_auto,butFinNuit) -command "::acqt1m_flatciel::push_sens_nuit 1" -bg $::audace(color,backColor2)
             pack   $::audace(base).selection_choix.nuit.fin -in $::audace(base).selection_choix.nuit -anchor center -side left -fill x -padx 4 -pady 4 -ipadx 30 -expand 1
 
          frame $::audace(base).selection_choix.fin -borderwidth 0 -relief solid
          pack  $::audace(base).selection_choix.fin -in $::audace(base).selection_choix -anchor center -side top -expand 1 -fill both -padx 3 -pady 0
 
-            button $::audace(base).selection_choix.fin.stop -text "Fermer" -command "::acqt1m_flatciel::fermerAffichageChoixFiltres $visuNo" -bg $::audace(color,backColor2)
+            button $::audace(base).selection_choix.fin.stop -text $::caption(flat_t1m_auto,fermer) -command "::acqt1m_flatciel::fermerAffichageChoixFiltres $visuNo" -bg $::audace(color,backColor2)
             pack $::audace(base).selection_choix.fin.stop -in $::audace(base).selection_choix.fin -anchor center -side bottom -fill x -padx 4 -pady 4 -anchor center -expand 0
 
-            button $::audace(base).selection_choix.fin.go -text "GO FLATS AUTO" -command "::acqt1m_flatciel::acqAutoFlat $visuNo" -bg $::audace(color,backColor2)
+            button $::audace(base).selection_choix.fin.go -text $::caption(flat_t1m_auto,goFlatsAuto) -command "::acqt1m_flatciel::acqAutoFlat $visuNo" -bg $::audace(color,backColor2)
             pack   $::audace(base).selection_choix.fin.go -in $::audace(base).selection_choix.fin -anchor center -side bottom -fill x -padx 4 -pady 4 -expand 0
 
          focus $::audace(base).selection_choix
@@ -272,42 +274,40 @@ namespace eval ::acqt1m_flatciel {
       variable private
 
       for {set x 1} {$x<10} {incr x} {
-         set private(texte_bouton,$x) [concat "($x) - Filtre " [lindex $::t1m_roue_a_filtre::private(filtre,$x) 1] " - Nbre =" [lindex $::t1m_roue_a_filtre::private(filtre,$x) 3]]
+         set private(texte_bouton,$x) [concat "($x) - $::caption(flat_t1m_auto,filtre) " [lindex $::t1m_roue_a_filtre::private(filtre,$x) 1] " - $::caption(flat_t1m_auto,nbre) =" 0]
       }
    }
 
    proc Changebin { visuNo mybin } {
       variable private
 
-      ::console::affiche_resultat "pmybin $::acqt1m_flatciel::private(mybin)\n"
-      set mybin $::acqt1m_flatciel::private(mybin)
-      ::console::affiche_resultat "mybin $mybin\n"
+      $::audace(base).selection_filtre.b.bin configure -text $::caption(acqt1m,bin,$::panneau(acqt1m,$visuNo,binning))
 
-
+      set mybin $::panneau(acqt1m,$visuNo,binning)
 
       $private($visuNo,camera) bin [list [lindex [split $mybin "x"] 0] [lindex [split $mybin "x"] 1]]
       set nbpix [$private($visuNo,camera) nbpix]
-      $::audace(base).selection_filtre.a2.lb4 config -text $nbpix
+      $::audace(base).selection_filtre.a2.lb4 configure -text $nbpix
 
       set binning [$private($visuNo,camera) bin]
       ::console::affiche_resultat "$::caption(flat_t1m_auto,tailleImage) $nbpix\n"
       ::console::affiche_resultat "$::caption(flat_t1m_auto,binning) $binning\n"
-
    }
 
    proc majbouton { i fin} {
       variable private
 
-      set private(texte_bouton,$i) [concat "($i) - Filtre " [lindex $::t1m_roue_a_filtre::private(filtre,$i) 1] " - Nbre =" [lindex $::t1m_roue_a_filtre::private(filtre,$i) 3]]
-      $::audace(base).selection_filtre.filtres.$i config -text $private(texte_bouton,$i)
+      set private(texte_bouton,$i) [concat "($i) - $::caption(flat_t1m_auto,filtre) " [lindex $::t1m_roue_a_filtre::private(filtre,$i) 1] " - $::caption(flat_t1m_auto,nbre) =" [lindex $::t1m_roue_a_filtre::private(filtre,$i) 3]]
+      $::audace(base).selection_filtre.filtres.$i configure -text $private(texte_bouton,$i)
       if {$fin == 1} {
-         $::audace(base).selection_filtre.filtres.$i config -bg $::audace(color,disabledTextColor)
+         $::audace(base).selection_filtre.filtres.$i configure -bg $::audace(color,disabledTextColor)
       }
-
    }
 
    proc acqAutoFlat { visuNo } {
       variable private
+
+      ::acqt1m_flatciel::init_texte_bouton_filtre
 
       if { [ winfo exists $::audace(base).selection_filtre ] } {
          destroy $::audace(base).selection_filtre
@@ -324,16 +324,14 @@ namespace eval ::acqt1m_flatciel {
       toplevel $::audace(base).selection_filtre -class Toplevel -borderwidth 2 -relief groove
       wm geometry $::audace(base).selection_filtre 530x$sizey$::conf(acqt1m,acqAutoFlat,position)
       wm resizable $::audace(base).selection_filtre 1 1
-      wm title $::audace(base).selection_filtre "Acquisition des flats auto - Pic du Midi - T1M"
+      wm title $::audace(base).selection_filtre $::caption(flat_t1m_auto,acqAutoFlat)
       wm transient $::audace(base).selection_filtre .audace
       wm protocol $::audace(base).selection_filtre WM_DELETE_WINDOW "::acqt1m_flatciel::fermerAcqAutoFlat $visuNo"
 
-      ::acqt1m_flatciel::init_texte_bouton_filtre
-
       if {$private(sensnuit) == 0} {
-         set info_sens_nuit "Début de nuit"
+         set info_sens_nuit $::caption(flat_t1m_auto,butDebutNuit)
       } else {
-         set info_sens_nuit "Fin de nuit"
+         set info_sens_nuit $::caption(flat_t1m_auto,butFinNuit)
       }
 
       set private(stop) 0
@@ -343,10 +341,11 @@ namespace eval ::acqt1m_flatciel {
       set nbcells [$private($visuNo,camera) nbcells]
       set gain [format "%4.2f" [$private($visuNo,camera) gain]]
       set temperature [format "%4.1f" [$private($visuNo,camera) temperature]]
+      $private($visuNo,camera) bin [list [lindex [split $::panneau(acqt1m,$visuNo,binning) "x"] 0] [lindex [split $::panneau(acqt1m,$visuNo,binning) "x"] 1]]
       set nbpix [$private($visuNo,camera) nbpix]
 
-      set info0 "Caméra : [$private($visuNo,camera) info]"
-      set info1 "Pixels actifs : $nbcells / ADU max : $private(maxdyn) / Gain : $gain / Température : $temperature"
+      set info0 "$::caption(flat_t1m_auto,camera) [$private($visuNo,camera) info]"
+      set info1 "$::caption(flat_t1m_auto,nbPixelsMax) $nbcells / $::caption(flat_t1m_auto,ADAmax) $private(maxdyn) / $::caption(flat_t1m_auto,gain) $gain / $::caption(flat_t1m_auto,temperature) $temperature"
 
       frame $::audace(base).selection_filtre.a0 -borderwidth 0 -relief ridge
       pack $::audace(base).selection_filtre.a0 -in $::audace(base).selection_filtre -anchor center -side top -expand 0 -fill both -padx 3 -pady 0
@@ -357,7 +356,7 @@ namespace eval ::acqt1m_flatciel {
       frame $::audace(base).selection_filtre.ae2 -borderwidth 0 -relief ridge
       pack $::audace(base).selection_filtre.ae2 -in $::audace(base).selection_filtre -anchor center -side top -expand 0 -fill both -padx 3 -pady 0
 
-         label $::audace(base).selection_filtre.ae2.repimg -text "Répertoire des images : $private(rep_images)" -borderwidth 0 -relief flat
+         label $::audace(base).selection_filtre.ae2.repimg -text "$::caption(flat_t1m_auto,repImages) $private(rep_images)" -borderwidth 0 -relief flat
          pack $::audace(base).selection_filtre.ae2.repimg -in $::audace(base).selection_filtre.ae2 -side left -anchor w -padx 4 -pady 4 -expand 0
 
       frame $::audace(base).selection_filtre.a1 -borderwidth 0 -relief ridge
@@ -369,68 +368,77 @@ namespace eval ::acqt1m_flatciel {
       frame $::audace(base).selection_filtre.b -borderwidth 0 -relief solid
       pack $::audace(base).selection_filtre.b -in $::audace(base).selection_filtre -anchor center -side top -expand 0 -fill both -padx 3 -pady 0
 
-      #--- Binning
-      menubutton $::audace(base).selection_filtre.b.bin -text "Binning" -relief raised \
-         -menu $::audace(base).selection_filtre.b.bin.menu
-      pack $::audace(base).selection_filtre.b.bin -side left
-      set m [menu $::audace(base).selection_filtre.b.bin.menu -tearoff 0]
-      foreach n $private(binning) {
-         $m add radiobutton -label "$n" \
-            -indicatoron "1" \
-            -value "$n" \
-            -variable ::acqt1m_flatciel::private(mybin) \
-            -command "::acqt1m_flatciel::Changebin $visuNo $::acqt1m_flatciel::private(mybin)"
-      }
-      #--- Ligne de saisie
-      entry $::audace(base).selection_filtre.b.val -width 4 -textvariable ::acqt1m_flatciel::private(mybin) \
-         -relief groove -justify center \
-         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 9999 }
-      pack $::audace(base).selection_filtre.b.val -side left -fill y
+         #--- Binning
+         button $::audace(base).selection_filtre.b.bin -borderwidth 1 -text $::caption(acqt1m,bin,$::panneau(acqt1m,$visuNo,binning)) \
+            -command "::acqt1m::changerBinningCent $visuNo"
+         pack $::audace(base).selection_filtre.b.bin -side left -fill y
 
-      #--- Nombre de Flat
-      menubutton $::audace(base).selection_filtre.b.nbi -text "Nombre de flat" -relief raised \
-         -menu $::audace(base).selection_filtre.b.nbi.menu
-      pack $::audace(base).selection_filtre.b.nbi -side left
-      set m [menu $::audace(base).selection_filtre.b.nbi.menu -tearoff 0]
-      foreach n $private(nbflat) {
-         $m add radiobutton -label "$n" \
-            -indicatoron "1" \
-            -value "$n" \
-            -variable ::acqt1m_flatciel::private(mynbflat) \
-            -command {::console::affiche_resultat "$::caption(flat_t1m_auto,nbFlat) $::acqt1m_flatciel::private(mynbflat)\n" }
-      }
-      #--- Ligne de saisie
-      entry $::audace(base).selection_filtre.b.nbival -width 4 -textvariable ::acqt1m_flatciel::private(mynbflat) \
-         -relief groove -justify center \
-         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 9999 }
-      pack $::audace(base).selection_filtre.b.nbival -side left -fill y
+         #--- Nombre de Flat
+         menubutton $::audace(base).selection_filtre.b.nbi -text $::caption(flat_t1m_auto,nbFlats) -relief raised \
+            -menu $::audace(base).selection_filtre.b.nbi.menu
+         pack $::audace(base).selection_filtre.b.nbi -side left
+         set m [menu $::audace(base).selection_filtre.b.nbi.menu -tearoff 0]
+         foreach n $private(nbflat) {
+            $m add radiobutton -label "$n" \
+               -indicatoron "1" \
+               -value "$n" \
+               -variable ::acqt1m_flatciel::private(mynbflat) \
+               -command {::console::affiche_resultat "$::caption(flat_t1m_auto,nbFlatDemande) $::acqt1m_flatciel::private(mynbflat)\n" }
+         }
+         #--- Ligne de saisie
+         entry $::audace(base).selection_filtre.b.nbival -width 4 -textvariable ::acqt1m_flatciel::private(mynbflat) \
+            -relief groove -justify center \
+            -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 9999 }
+         pack $::audace(base).selection_filtre.b.nbival -side left -fill y
 
-      #--- Carre de mesure de l'intensite pour le calcul du temps de pose
-      menubutton $::audace(base).selection_filtre.b.sqr -text "Size Square" -relief raised \
-         -menu $::audace(base).selection_filtre.b.sqr.menu
-      pack $::audace(base).selection_filtre.b.sqr -side left
-      set m [menu $::audace(base).selection_filtre.b.sqr.menu -tearoff 0]
-      foreach n $private(square) {
-         $m add radiobutton -label "$n" \
-            -indicatoron "1" \
-            -value "$n" \
-            -variable ::acqt1m_flatciel::private(mysquare) \
-            -command { ::console::affiche_resultat "$::caption(flat_t1m_auto,mysquare) $::acqt1m_flatciel::private(mysquare)\n" }
-      }
-      #--- Ligne de saisie
-      entry $::audace(base).selection_filtre.b.sqrval -width 4 -textvariable ::acqt1m_flatciel::private(mysquare) \
-         -relief groove -justify center \
-         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 9999 }
-      pack $::audace(base).selection_filtre.b.sqrval -side left -fill y
+         #--- Carre de mesure de l'intensite pour le calcul du temps de pose
+         menubutton $::audace(base).selection_filtre.b.sqr -text $::caption(flat_t1m_auto,mysquare1) -relief raised \
+            -menu $::audace(base).selection_filtre.b.sqr.menu
+         pack $::audace(base).selection_filtre.b.sqr -side left
+         set m [menu $::audace(base).selection_filtre.b.sqr.menu -tearoff 0]
+         foreach n $private(square) {
+            $m add radiobutton -label "$n" \
+               -indicatoron "1" \
+               -value "$n" \
+               -variable ::acqt1m_flatciel::private(mysquare) \
+               -command { ::console::affiche_resultat "$::caption(flat_t1m_auto,mysquare) $::acqt1m_flatciel::private(mysquare)\n" }
+         }
+         #--- Ligne de saisie
+         entry $::audace(base).selection_filtre.b.sqrval -width 4 -textvariable ::acqt1m_flatciel::private(mysquare) \
+            -relief groove -justify center \
+            -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 9999 }
+         pack $::audace(base).selection_filtre.b.sqrval -side left -fill y
+
+      frame $::audace(base).selection_filtre.b1 -borderwidth 0 -relief ridge
+      pack $::audace(base).selection_filtre.b1 -in $::audace(base).selection_filtre -anchor center -side top -expand 0 -fill both -padx 3 -pady 0
+
+         #--- Dynamique maxi des flats
+         menubutton $::audace(base).selection_filtre.b1.menudynflat -text $::caption(flat_t1m_auto,dynflat) -relief raised \
+            -menu $::audace(base).selection_filtre.b1.menudynflat.menu
+         pack $::audace(base).selection_filtre.b1.menudynflat -side left
+         set m [menu $::audace(base).selection_filtre.b1.menudynflat.menu -tearoff 0]
+         foreach n $private(dynamique) {
+            $m add radiobutton -label "$n" \
+               -indicatoron "1" \
+               -value "$n" \
+               -variable ::acqt1m_flatciel::private(mydynamique) \
+               -command {::console::affiche_resultat "$::caption(flat_t1m_auto,fondflat1) $::acqt1m_flatciel::private(mydynamique)\n" }
+         }
+         #--- Ligne de saisie
+         entry $::audace(base).selection_filtre.b1.entdynflat -width 4 -textvariable ::acqt1m_flatciel::private(mydynamique) \
+            -relief groove -justify center \
+            -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0 9999 }
+         pack $::audace(base).selection_filtre.b1.entdynflat -side left -fill y
 
       frame $::audace(base).selection_filtre.a2 -borderwidth 0 -relief ridge
       pack $::audace(base).selection_filtre.a2 -in $::audace(base).selection_filtre -anchor center -side top -expand 0 -fill both -padx 3 -pady 0
 
-         label $::audace(base).selection_filtre.a2.lb1 -text "Obturateur :" -borderwidth 0 -relief flat
+         #--- Obturateur et nombre de pixels
+         label $::audace(base).selection_filtre.a2.lb1 -text $::caption(flat_t1m_auto,obturateur) -borderwidth 0 -relief flat
          pack  $::audace(base).selection_filtre.a2.lb1 -in $::audace(base).selection_filtre.a2 -side left -anchor w -padx 4 -pady 4 -expand 0
          label $::audace(base).selection_filtre.a2.lb2 -text [$private($visuNo,camera) shutter] -borderwidth 0 -relief flat
          pack  $::audace(base).selection_filtre.a2.lb2 -in $::audace(base).selection_filtre.a2 -side left -anchor w -padx 4 -pady 4 -expand 0
-         label $::audace(base).selection_filtre.a2.lb3 -text "           Nombre de pixels :" -borderwidth 0 -relief flat
+         label $::audace(base).selection_filtre.a2.lb3 -text "           $::caption(flat_t1m_auto,nbPixels)" -borderwidth 0 -relief flat
          pack  $::audace(base).selection_filtre.a2.lb3 -in $::audace(base).selection_filtre.a2 -side left -anchor e -padx 4 -pady 4 -expand 0
          label $::audace(base).selection_filtre.a2.lb4 -text $nbpix -borderwidth 0 -relief flat
          pack  $::audace(base).selection_filtre.a2.lb4 -in $::audace(base).selection_filtre.a2 -side left -anchor e -padx 4 -pady 4 -expand 0
@@ -446,7 +454,7 @@ namespace eval ::acqt1m_flatciel {
       frame $::audace(base).selection_filtre.f -borderwidth 0 -relief solid
       pack $::audace(base).selection_filtre.f -in $::audace(base).selection_filtre -anchor s -side bottom -expand 0 -fill both -padx 3 -pady 0
 
-         button $::audace(base).selection_filtre.f.fin -text "STOP" -command "::acqt1m_flatciel::fermerAcqAutoFlat $visuNo" -bg $::audace(color,backColor2)
+         button $::audace(base).selection_filtre.f.fin -text $::caption(flat_t1m_auto,stop) -command "::acqt1m_flatciel::fermerAcqAutoFlat $visuNo" -bg $::audace(color,backColor2)
          pack $::audace(base).selection_filtre.f.fin -in $::audace(base).selection_filtre.f -anchor center -side top -fill x -padx 4 -pady 4 -anchor center -expand 1
 
       frame $::audace(base).selection_filtre.g -borderwidth 0 -relief ridge
@@ -456,6 +464,7 @@ namespace eval ::acqt1m_flatciel {
          pack $::audace(base).selection_filtre.g.sens -in $::audace(base).selection_filtre.g -side left -anchor w -padx 4 -pady 4 -expand 0
 
       focus $::audace(base).selection_filtre
+
       ::confColor::applyColor $::audace(base).selection_filtre
    }
 
@@ -487,20 +496,15 @@ namespace eval ::acqt1m_flatciel {
 
       set attentems [expr $private(attente) * 1000]
 
-#      $private($visuNo,camera) bin [list [lindex [split $private(mybin) "x"] 0] [lindex [split $private(mybin) "x"] 1]]
-#      $private($visuNo,camera) nbpix [list [lindex [split $private(mybin) "x"] 0] [lindex [split $private(mybin) "x"] 1]]
-
-
-      set nbpix   [$private($visuNo,camera) nbpix]
-      set binning [$private($visuNo,camera) bin]
-      set xcent [expr [lindex $nbpix 0]/2]
-      set ycent [expr [lindex $nbpix 1]/2]
-      set xmin  [expr $xcent - $private(mysquare) / 2]
-      set ymin  [expr $ycent - $private(mysquare) / 2]
-      set xmax  [expr $xcent + $private(mysquare) / 2]
-      set ymax  [expr $ycent + $private(mysquare) / 2]
-
-      set fondflat [expr $private(maxdyn) * $private(dynamique)]
+      set nbpix    [$private($visuNo,camera) nbpix]
+      set binning  [$private($visuNo,camera) bin]
+      set xcent    [expr [lindex $nbpix 0]/2]
+      set ycent    [expr [lindex $nbpix 1]/2]
+      set xmin     [expr $xcent - $private(mysquare) / 2]
+      set ymin     [expr $ycent - $private(mysquare) / 2]
+      set xmax     [expr $xcent + $private(mysquare) / 2]
+      set ymax     [expr $ycent + $private(mysquare) / 2]
+      set fondflat [expr $private(maxdyn) * $private(mydynamique)]
 
       ::console::affiche_saut "\n"
       ::console::affiche_resultat "$::caption(flat_t1m_auto,debutAcq) [lindex $::t1m_roue_a_filtre::private(filtre,$idfiltre) 2]\n"
@@ -515,14 +519,15 @@ namespace eval ::acqt1m_flatciel {
 
       set buffer buf$::audace(bufNo)
 
-      # Dark
+      # Dark (obturateur closed)
       $private($visuNo,camera) exptime 1
       ::console::affiche_resultat "$::caption(flat_t1m_auto,mesureDark)\n"
       $private($visuNo,camera) window [list $xmin $ymin $xmax $ymax]
       $private($visuNo,camera) shutter closed
-      $::audace(base).selection_filtre.a2.lb2 config -text [$private($visuNo,camera) shutter]
+      $::audace(base).selection_filtre.a2.lb2 configure -text [$private($visuNo,camera) shutter]
       $private($visuNo,camera) acq -blocking
       $buffer save "mesurefond"
+
       #--- Visualisation de l'image
       #::audace::autovisu $visuNo
       set stat  [$buffer stat]
@@ -531,11 +536,15 @@ namespace eval ::acqt1m_flatciel {
       ::console::affiche_resultat "$::caption(flat_t1m_auto,fluxMoyen) $dark\n"
       ::console::affiche_resultat "$::caption(flat_t1m_auto,ecartType) $stdev\n"
 
+      # Image (obturateur synchro)
       $private($visuNo,camera) shutter synchro
-      $::audace(base).selection_filtre.a2.lb2 config -text [$private($visuNo,camera) shutter]
+      $::audace(base).selection_filtre.a2.lb2 configure -text [$private($visuNo,camera) shutter]
 
-      # Boucle sur les images
+     # Boucle sur les images
       set num 1
+
+      # Initialisation a 1 pour le premier flat
+      set ::t1m_roue_a_filtre::private(filtre,$idfiltre) [lreplace $::t1m_roue_a_filtre::private(filtre,$idfiltre) 3 3 1]
 
       for {set id 0} {$id<$private(mynbflat)} {incr id} {
 
@@ -569,57 +578,77 @@ namespace eval ::acqt1m_flatciel {
                      exit
                   }
 
-                  #--- depassement du temps d exposition limite
-                  ::console::affiche_resultat "$::caption(flat_t1m_auto,estimationExptime) $private(exptimemini) < $exptime < $private(limitexptime)\n"
+                  #--- comparaison du temps d'exposition avec les limites mini et maxi
+                  if { $exptime > $private(limitexptime) } {
+                     ::console::affiche_resultat "$::caption(flat_t1m_auto,estimationExptime)\n"
+                     ::console::affiche_resultat "$::caption(flat_t1m_auto,mini) $private(exptimemini) < $::caption(flat_t1m_auto,maxi) $private(limitexptime) < $exptime\n"
+                  } elseif { $exptime > $private(exptimemini) } {
+                     ::console::affiche_resultat "$::caption(flat_t1m_auto,estimationExptime)\n"
+                     ::console::affiche_resultat "$::caption(flat_t1m_auto,mini) $private(exptimemini) < $exptime < $::caption(flat_t1m_auto,maxi) $private(limitexptime)\n"
+                  } elseif { $exptime < $private(exptimemini) } {
+                     ::console::affiche_resultat "$::caption(flat_t1m_auto,estimationExptime)\n"
+                     ::console::affiche_resultat "$exptime < $::caption(flat_t1m_auto,mini) $private(exptimemini) < $::caption(flat_t1m_auto,maxi) $private(limitexptime)\n"
+                  }
 
+                  #--- comparaison du temps d'exposition avec les limites mini et maxi
                   if {$exptime>$private(limitexptime)} {
                      set exptime $private(limitexptime)
                      if {$private(sensnuit) == 1} {
+                        #--- On fait les flats en fin de nuit
                         #--- il fait trop nuit, donc on attend
                         ::console::affiche_resultat "$::caption(flat_t1m_auto,tropNuit) $private(attente) $::caption(flat_t1m_auto,secondes)\n"
                         after $attentems
                      } else {
+                        #--- On fait les flats en debut de nuit
                         #--- il fait trop nuit, donc c'est foutu
                         ::console::affiche_resultat "\n\n$::caption(flat_t1m_auto,tropTard1)\n\n"
                         return
                      }
-                  } else {
-                     if {$exptime<$private(exptimemini)} {
-                        if {$private(sensnuit) == 1} {
-                           #--- il fait trop jour, donc c'est foutu
-                           ::console::affiche_resultat "\n\n$::caption(flat_t1m_auto,tropTard2)\n\n"
-                           return
-                        } else {
-                           #--- il fait trop jour, donc on attend
-                           ::console::affiche_resultat "$::caption(flat_t1m_auto,tropJour) $private(attente) $::caption(flat_t1m_auto,secondes)\n"
-                           after $attentems
-                        }
+                  } elseif {$exptime<$private(exptimemini)} {
+                     if {$private(sensnuit) == 1} {
+                        #--- On fait les flats en fin de nuit
+                        #--- il fait trop jour, donc c'est foutu
+                        ::console::affiche_resultat "\n\n$::caption(flat_t1m_auto,tropTard2)\n\n"
+                        return
                      } else {
-                        #--- image non saturee, et limited exposition non atteinte -> ok on y va
-                        break
+                        #--- On fait les flats en debut de nuit
+                        #--- il fait trop jour, donc on attend
+                        ::console::affiche_resultat "$::caption(flat_t1m_auto,tropJour) $private(attente) $::caption(flat_t1m_auto,secondes)\n"
+                        after $attentems
                      }
+                  } else {
+                     #--- image non saturee et temps d'exposition limite non atteint -> OK on y va
+                     break
                   }
 
                } else {
 
-                  #--- Saturation on divise le temps d exposition par 3
+                  #--- Saturation on divise le temps d'exposition par 3
                   set exptime [expr $exptime / 3.]
 
-                  ::console::affiche_resultat "$::caption(flat_t1m_auto,estimationExptime) $exptime > $private(exptimemini)\n"
-                  #--- si le temps d exposition est trop court
-                  if {$exptime<$private(exptimemini)} {
+                  #--- comparaison du temps d'exposition avec les limites mini et maxi
+                  if { $exptime > $private(exptimemini) } {
+                     ::console::affiche_resultat "$::caption(flat_t1m_auto,estimationExptime)\n"
+                     ::console::affiche_resultat "$exptime > $::caption(flat_t1m_auto,mini) $private(exptimemini)\n"
+                  } elseif { $exptime < $private(exptimemini) } {
+                     ::console::affiche_resultat "$::caption(flat_t1m_auto,estimationExptime)\n"
+                     ::console::affiche_resultat "$exptime < $::caption(flat_t1m_auto,mini) $private(exptimemini)\n"
+                  }
 
+                  #--- si le temps d'exposition est trop court
+                  if {$exptime<$private(exptimemini)} {
                      if {$private(sensnuit) == 0} {
+                        #--- On fait les flats en debut de nuit
                         #--- il fait trop jour, donc on attend
                         set exptime $private(exptimemini)
                         ::console::affiche_resultat "$::caption(flat_t1m_auto,tropJour) $private(attente) $::caption(flat_t1m_auto,secondes)\n"
                         after $attentems
                      } else {
+                        #--- On fait les flats en fin de nuit
                         #--- il fait trop jour, donc c'est foutu
                         ::console::affiche_resultat "\n\n$::caption(flat_t1m_auto,tropTard2)\n\n"
                         return
                      }
-
                   }
 
                }
@@ -632,12 +661,13 @@ namespace eval ::acqt1m_flatciel {
             }
          }
 
-         # Flat :
-         #
+         # Comptage des flats
+         ::acqt1m_flatciel::majbouton $idfiltre 0
 
+         # Flat :
          ::console::affiche_resultat "$::caption(flat_t1m_auto,parti) ([expr $id+1]/$private(mynbflat)) : $::caption(flat_t1m_auto,prochainExptime) $exptime\n"
          $private($visuNo,camera) exptime [ format %-7.2f $exptime]
-         $private($visuNo,camera) window [list 1 1 [lindex $private(nbpixmax) 0] [lindex $private(nbpixmax) 1] ]
+         $private($visuNo,camera) window [list 1 1 [lindex $private(nbcells) 0] [lindex $private(nbcells) 1] ]
          $private($visuNo,camera) shutter synchro
          $private($visuNo,camera) acq -blocking
 
@@ -654,13 +684,12 @@ namespace eval ::acqt1m_flatciel {
          ::console::affiche_resultat "$::caption(flat_t1m_auto,pixelMiniMaxi) $pixmax / $pixmin\n"
 
          set nouv   [expr $ciel / $private(maxdyn)]
-         set offset [expr $private(dynamique) - ($ciel / $private(maxdyn))]
+         set offset [expr $private(mydynamique) - ($ciel / $private(maxdyn))]
 
          ::console::affiche_resultat "$::caption(flat_t1m_auto,offset) $offset\n"
          ::console::affiche_resultat "$::caption(flat_t1m_auto,nouv) $nouv\n"
          ::console::affiche_resultat "$::caption(flat_t1m_auto,maxdyn) $private(maxdyn)\n"
          set fondflat [expr $private(maxdyn) * ($fondflat/$private(maxdyn) + $offset)]
-         #49151,25/65535 = 0.75
          ::console::affiche_resultat "$::caption(flat_t1m_auto,fondflat2) $fondflat\n"
 
          set enr 0
@@ -693,13 +722,11 @@ namespace eval ::acqt1m_flatciel {
 
          if {$num>$private(mynbflat)} {set num $private(mynbflat)}
          set ::t1m_roue_a_filtre::private(filtre,$idfiltre) [lreplace $::t1m_roue_a_filtre::private(filtre,$idfiltre) 3 3 $num]
-         ::acqt1m_flatciel::majbouton $idfiltre 0
       }
 
       ::acqt1m_flatciel::majbouton $idfiltre 1
       ::console::affiche_resultat "$::caption(flat_t1m_auto,finAcq) [lindex $::t1m_roue_a_filtre::private(filtre,$idfiltre) 2]\n\n"
    }
-
 
 }
 
