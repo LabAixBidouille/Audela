@@ -1,85 +1,94 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
 
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>Carte du Ciel Version 3</title>
-</head>
 
-<body>
-<p class="date">Date de mise &agrave; jour : 27 juin 2007</p>
-<h1>Carte du Ciel Version 3 </h1>
-<p>AudeLA peut communiquer avec &quot;Carte du ciel&quot; pour :</p>
-<p>- <a href="#visu_carte">Visualiser une carte correspondant &agrave; une image 
-  affich&eacute;e dans Audela</a>.</p>
-<p>- <a href="#pointer">Pointer un objet d&eacute;sign&eacute; dans &quot;Carte 
-  du ciel&quot;</a> et d&eacute;placer le t&eacute;lescope vers cet objet</p>
-<p>Au pr&eacute;alable, il faut configurer la communication entre AudeLA et Carte 
-  du ciel .</p>
-<p>&nbsp;</p>
-<h1>Configuration de &quot;Carte du ciel&quot; </h1>
+
+
+
+
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /><title>Carte du Ciel Version 3</title></head><body>
+<p class="date">Date de mise à jour : 22 mai 2011</p>
+<h1>Cartes du Ciel Version 3 </h1>
+<p>Aud'ACE peut communiquer avec "Cartes du Ciel" pour :</p>
+<p>- <a href="#visu_carte">Visualiser une carte correspondant à une image 
+  affichée dans Aud'ACE</a>.</p>
+<p>- <a href="#pointer">Pointer un objet désigné dans "Cartes 
+  du Ciel"</a> et déplacer le télescope vers cet objet.</p>
+
+<p>Au préalable, il faut configurer la communication entre Aud'ACE et Cartes 
+  du Ciel.<br />
+&nbsp;</p>
+<h1>Configuration de "Cartes du Ciel" </h1>
 <ul>
-  <li>Ouvrir le menu <b><i>Setup-&gt;Configure The program</i></b></li>
-  <li>S&eacute;lectionner le menu <i><b>System-&gt;Server<br>
-    </b></i><img src="config_carteduciel.png" width="567" height="429"></li>
-  <li>cocher &quot;Use TCP/IP Server&quot; </li>
-  <li>cocher &quot;Client Connction Keep Alive</li>
-  <li>renseigner Server IP Interface : 127.0.0.1</li>
-  <li>renseigner Server IP Port : 3292</li>
-  <li>enregistrer les param&egrave;tres en cliquant sur le bouton &quot;OK&quot;</li>
+  <li>Ouvrir le menu <b><i>Configuration --&gt; Système</i></b>.<b><i><br />
+    </i></b></li>
+  <li>Sélectionner l'onglet <i><b>Serveur</b></i>.<i><b><br />
+    </b></i><img style="width: 551px; height: 432px;" alt="" src="config_carteduciel.png" /></li>
+  <li>Cocher <span style="font-weight: bold;">Utiliser le serveur</span>. </li>
+  <li>Cocher <span style="font-weight: bold;">Garde la connexion client</span>.<br />
+</li>
+  <li>Renseigner <span style="font-weight: bold;">Interface réseau</span> : 127.0.0.1</li>
+  <li>Renseigner <span style="font-weight: bold;">Port</span> : 3292</li>
+  <li>Enregistrer les paramètres en cliquant sur le bouton "OK".</li>
 </ul>
-<h1>Configuration de &quot;AudeLA&quot; </h1>
+<h1>Configuration de "Aud'ACE" </h1>
 <ul>
-  <li>Ouvrir le menu <b><i>Configuration-&gt;Carte</i></b></li>
-  <li>selectionner l'onglet <i><b>&quot;</b></i><i><b>Carte du ciel V3&quot;<br>
-    <img src="config_audela.png" width="506" height="420"> </b></i></li>
-  <li>renseigner Serveur TCP/IP :<i><b> 127.0.0.1</b></i></li>
-  <li>renseigner Port :<i><b> 3292</b></i></li>
+  <li>Ouvrir le menu <b><i>Configuration-&gt;Carte</i></b>.</li>
+  <li>Sélectionner l'onglet <i><b>Carte du Ciel V3</b></i>.<i><b><br />
+    <img style="width: 638px; height: 505px;" alt="" src="config_audace.png" /> </b></i></li>
+  <li>Renseigner <span style="font-weight: bold; font-style: italic;">Serveur TCP/IP</span> :<i><b> </b></i>127.0.0.1</li>
+  <li>Renseigner <span style="font-weight: bold; font-style: italic;">Port</span> :<i><b> </b></i>3292</li>
 </ul>
-<p>Param&egrave;tres optionnels : </p>
+<p>Paramètres optionnels : </p>
 <ul>
-  <li>Cocher &quot;champ fixe&quot; pour imposer un champ de taille fixe dans 
-    Carte du Ciel. Pr&eacute;ciser la taille du champ en renseignant la valeur 
-    en degr&eacute;s, minutes, secondes. Si cette option n'est pas coch&eacute;e, 
-    la taille du champ n'est pas modifi&eacute;e.<br>
-    Exemple : 01d00m00s permet d'obtenir une carte avec un champ de 1 degr&eacute;.</li>
-  <li>Renseigner &quot;Recherche automatique&quot; avec le r&eacute;pertoire du 
-    programme &quot;Carte du ciel&quot; pour permettre &agrave; AudeLA de lancer 
-    &quot;Carte du ciel&quot; s'il n'est pas d&eacute;j&agrave; lanc&eacute;.</li>
-  <li>Renseigner &quot;Fichier &agrave; rechercher&quot; et &quot;A partir de&quot; 
-    si l'on ne connait pas le r&eacute;pertoire du programme &quot;Carte du ciel&quot; 
-    et cliquer sur le bouton &quot;Recherche automatique&quot;</li>
+  <li>Cocher <span style="font-weight: bold; font-style: italic;">Champ fixe</span> pour imposer un champ de taille fixe dans 
+    Cartes du Ciel. Préciser la taille du champ en renseignant la valeur 
+    en degrés, minutes et secondes d'angle. Si cette option n'est pas cochée, 
+    la taille du champ n'est pas modifiée.<br />
+    Exemple : 01d00m00s permet d'obtenir une carte avec un champ de 1 degré.</li>
+  <li>Renseigner <span style="font-weight: bold; font-style: italic;">Recherche (Cartes du ciel V3)</span> avec le chemin complet du 
+    programme Cartes du Ciel pour permettre à Aud'ACE de lancer Cartes du Ciel, s'il n'est pas déjà lancé.</li>
+  
 </ul>
-<h1><a name="visu_carte"></a>Visualiser une carte correspondant &agrave; une image 
-  affich&eacute;e dans Audela</h1>
+<h1><a name="visu_carte">Visualiser une carte correspondant à une image 
+  affichée dans Aud'ACE</a></h1>
 <ul>
-  <li>Ouvrir une image avec AudeLA avec le menu <i><b>Fichier-&gt;Ouvrir</b></i></li>
-  <li>s&eacute;lectionner le menu <i><b>Analyse-&gt;Carte </b></i>et la carte 
-    correspondant &agrave; l'image est affich&eacute;e dans &quot;Carte du ciel&quot;<i><b><br>
+  <li>Ouvrir une image avec Aud'ACE et le menu <i><b>Fichier-&gt;Ouvrir</b></i>.</li>
+  <li>Sélectionner le menu <i><b>Analyse-&gt;Carte </b></i>et la carte 
+    correspondant à l'image est affichée dans Cartes du Ciel".<i><b><br />
     </b></i>
-    <p><img src="visu_carte.png" width="635" height="506"><br>
+    <p><img style="width: 765px; height: 545px;" alt="" src="visu_carte.png" /><br />
+
     </p>
   </li>
 </ul>
 <p>&nbsp;</p>
-<h1><a name="pointer"></a>Pointer un objet d&eacute;sign&eacute; dans &quot;Carte 
-  du ciel&quot;</h1>
+<h1><a name="pointer">Pointer un objet désigné dans "Cartes 
+  du Ciel"</a></h1>
 <ul>
-  <li>S&eacute;lectionner une monture dans AudeLA en cochant l'option &quot;<i><b>Raquette 
-    &agrave; l'&eacute;cran</b></i>&quot; et en choisissant la raquette &quot;<i><b>superpad</b></i>&quot;</li>
-  <li>S&eacute;lectionner une &eacute;toile dans Carte du ciel 
-    <p><img src="select_star.png" width="540" height="429"></p>
+  <li>Sélectionner une monture dans Aud'ACE en cochant l'option <i><b>Raquette 
+    à l'écran</b></i> et en choisissant la raquette <i><b>superpad</b></i>.</li>
+  <li>Sélectionner une étoile dans Cartes du Ciel. 
+    <p><img style="width: 641px; height: 483px;" alt="" src="select_star.png" /></p>
   </li>
-  <li>Cliquer sur le bouton &quot;<b><i>Carte</i></b>&quot; de la raquette pour 
-    r&eacute;cup&eacute;rer l'&eacute;toile s&eacute;lectionn&eacute;e dans AudeLA 
-    <p><img src="raquette.png" width="180" height="299"> le nom de l'&eacute;toile 
-      et ses coordonn&eacute;es apparaissent dans la raquette.</p>
-  </li>
-  <li>Cliquer sur le bouton &quot;<b><i>GOTO</i></b>&quot; de la raquette pour 
-    d&eacute;placer le t&eacute;lescope vers l'&eacute;toile</li>
+  <li>Cliquer sur le bouton <b><i>Carte</i></b> de la raquette SuperPad pour 
+    récupérer dans Aud'ACE les coordonnées de l'étoile sélectionnée dans Cartes du Ciel.</li>
+  <li> 
+    <p>&nbsp;Le nom de l'étoile (Alpha Vir) 
+      et ses coordonnées (Ascension Droite et Déclinaison) apparaissent dans la raquette.</p></li>
 </ul>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-</body>
+<p style="margin-left: 40px;"><img style="width: 186px; height: 372px;" alt="" src="raquette.png" /></p>
 
-</html>
+  
+<ul>
+
+  <li>Cliquer sur le bouton <b><i>GOTO</i></b> de la raquette pour 
+    déplacer le télescope vers l'étoile.</li>
+</ul>
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+</body></html>
