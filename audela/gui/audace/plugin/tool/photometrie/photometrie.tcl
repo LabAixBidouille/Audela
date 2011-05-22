@@ -54,6 +54,10 @@ namespace eval ::Photometrie {
 
         set photometrie(champ,nomad1) [ list RAJ2000 DEJ2000 NOMAD1 Bmag Rmag ]
         set photometrie(champ,usnob1) [ list RAJ2000 DEJ2000 USNO-B1.0 B1mag R1mag ]
+        set photometrie(champ,usnoa2) [ list RAJ2000 DEJ2000 USNO-A2.0 Bmag Rmag ]
+        set photometrie(champ,ucac3) [ list RAJ2000 DEJ2000 3UC Bmag R2mag ]
+        set photometrie(champ,loneos) [ list RAJ2000 DEJ2000 LN Bmag R2mag ]
+
 
         set photometrie(mode_debug) 0
         calaphot_niveau_traces 0
@@ -450,7 +454,7 @@ namespace eval ::Photometrie {
             -relief groove ]
 
         set photometrie(cata_internet) nomad1
-        foreach cata_internet [ list usnob1 nomad1 ] {
+        foreach cata_internet [ list usnoa2 usnob1 ucac3 nomad1 ] {
             radiobutton $tlf1.rb_$cata_internet -variable ::Photometrie::photometrie(cata_internet) -text $photometrie_texte($cata_internet) -value $cata_internet
             pack $tlf1.rb_$cata_internet -fill both -expand true
         }
@@ -758,8 +762,11 @@ namespace eval ::Photometrie {
         set coords "$ra $dec"
 
         switch -exact -- $photometrie(cata_internet) {
+            usnoa2 { set catalog "USNOA2" }
             usnob1 { set catalog "USNOB1" }
             nomad1 { set catalog "NOMAD1" }
+            ucac3 { set catalog "UCAC3" }
+            loneos { set catalog "LONEOS" }
         }
 
         # Création de la requête
