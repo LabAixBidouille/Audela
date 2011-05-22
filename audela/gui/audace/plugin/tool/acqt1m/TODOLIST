@@ -1,21 +1,19 @@
 ** APPLI AUDELA
 
 - ecrire une ligne d information au dessus du frame du plugin
-  et en dessous des menu "Fichier Affichage etc..."
-  dans lequel je rajouterai les infos suivantes
+  et en dessous des menu "Fichier Affichage etc."
+  dans lequel je rajouterai les infos suivantes :
         temps sideral
         angle horaire
         temperature ccd
         AIRMASS
-  y a t il la possibilite de voir ces infos mise a jour de maniere temps reel.
+  y a t il la possibilite de voir ces infos mise a jour de maniere temps reel
 
-- bouton flat auto :
-  durant l acquisition on n a pas la main sur le reste de l appli.
-  on n a pas la possibilite de quitter proprement (meme avec ::acqt1m_flatciel::ArretScript)
-  il faudrait la boite d avancement
+- il faudrait la boite d avancement
 
 - supprimer les mots cles RA et DEC du script lorsque les codeurs du T1m seront lus
-  par Aud'ACE, ils seront renseignes en auto par l'interface des mots cles.
+  par Aud'ACE, ils seront renseignes en auto par l'interface des mots cles
+
 
 
 ** SYSTEME :
@@ -29,13 +27,13 @@
 ** UTILISATION :
 
 - gerer les filtres en sachant que :
-  qu on modifie regulierement la position des filtres dans la roue.
+  on modifie regulierement la position des filtres dans la roue
   maj des temps et ordre d acquisition pour la partie flat auto
 
 - utilisation du telescope avec ou sans reducteur focal
   protocole de modification des header en consequence
 
-- protocole de gestion des images:
+- protocole de gestion des images :
   images brutes
   stoquage brut
   insertion BDI
