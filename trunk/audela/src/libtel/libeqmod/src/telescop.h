@@ -26,6 +26,26 @@
 #include <tcl.h>
 #include <libtel/libstruc.h>
 
+#define EQMOD_STATE_NOT_INITIALIZED 0   // On ne sait pas ou on en est
+#define EQMOD_STATE_HALT            1   // Init en cours, moteur pas alimente
+#define EQMOD_STATE_STOPPED         2   // Moteur alimente, a l'arret
+#define EQMOD_STATE_GOTO            3   // GOTO: goto
+#define EQMOD_STATE_TRACK           4   // TRACK: suivi permanent
+#define EQMOD_STATE_SLEW            5   // SLEW: deplacement manuel, qui interromp le suivi
+#define state2string(s) (s==EQMOD_STATE_NOT_INITIALIZED?"NOT_INITIALIZED":(s==EQMOD_STATE_HALT?"HALT":(s==EQMOD_STATE_STOPPED?"STOPPED":(s==EQMOD_STATE_GOTO?"GOTO":(s==EQMOD_STATE_TRACK?"TRACK":(s==EQMOD_STATE_SLEW?"SLEW":"NOT DEFINED"))))))
+
+#define AXE_RA   1
+#define AXE_DEC  2
+
+#define axe(c) (((toupper(c)=='N')||(toupper(c)=='S')) ? AXE_DEC : AXE_RA)
+#define dir(c) (((toupper(c)=='N')||(toupper(c)=='W')) ? 0 : 1)
+
+#define TUBE_OUEST   0
+#define TUBE_EST     1
+#define TubePos2string(s) ( s == TUBE_OUEST ? "W" : "E" )
+
+#define PRINTF printf
+
 /*
  * Donnees propres a chaque telescope.
  */

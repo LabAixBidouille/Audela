@@ -524,3 +524,16 @@ int cmdTelDeadDelaySlew(ClientData clientData, Tcl_Interp *interp, int argc, cha
    return TCL_OK;
 }
 
+/*
+ *   retourne l'etat logique de tracking
+ */
+int cmdTelState(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   char s[1024];
+   struct telprop *tel;
+   tel = (struct telprop *)clientData;   
+   sprintf(s,"state=%s, old_state=%s\n",state2string(tel->state),state2string(tel->old_state));
+   Tcl_SetResult(interp,s,TCL_VOLATILE);
+   return TCL_OK;
+}
+
+
