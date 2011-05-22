@@ -367,6 +367,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    tel->state = EQMOD_STATE_STOPPED;
 
    if ( start_motor )
+		tel->radec_motor=0;
       eqmod2_action_motor(tel);
 
 	tel->dead_delay_slew=1.8; /* delai en secondes estime pour un slew sans bouger */
@@ -840,6 +841,7 @@ int eqmod_hadec_match(struct telprop *tel)
    }
 
    if ( tel->state == EQMOD_STATE_TRACK ) {
+		tel->radec_motor=1;
       eqmod2_action_motor(tel);
    }
    
@@ -1425,6 +1427,16 @@ int eqmod2_action_stop(struct telprop *tel, char *direction)
 
 int eqmod2_action_motor(struct telprop *tel)
 {
+	if (tel->radec_motor==0) {
+      eqmod2_track(tel);
+      tel->old_state = tel->state;
+      tel->state = EQMOD_STATE_TRACK;
+	} else {
+      eqmod2_stopmotor(tel, AXE_RA | AXE_DEC);
+      tel->old_state = tel->state;
+      tel->state = EQMOD_STATE_STOPPED;
+	}
+	/*
    switch ( tel->state ) {
       case EQMOD_STATE_NOT_INITIALIZED:
          return -1;
@@ -1445,7 +1457,7 @@ int eqmod2_action_motor(struct telprop *tel)
       case EQMOD_STATE_SLEW:
          return -1;
    }
-
+	*/
    printf("CMD_MOTOR: state=%s, old_state=%s\n",state2string(tel->state),state2string(tel->old_state));
 
    return 0;
@@ -1454,6 +1466,7 @@ int eqmod2_action_motor(struct telprop *tel)
 
 int eqmod2_action_goto(struct telprop *tel)
 {
+	char ligne[300];
    // On impose toujours un goto bloquant sinon le moteur 
 	// ne fait pas le suivi apres pointage.
    tel->radec_goto_blocking = 1;
@@ -1498,7 +1511,8 @@ int eqmod2_action_goto(struct telprop *tel)
          return -1;
    }
 
-   printf("CMD_GOTO: state=%s, old_state=%s\n",state2string(tel->state),state2string(tel->old_state));
+   sprintf(ligne,"CMD_GOTO: state=%s, old_state=%s\n",state2string(tel->state),state2string(tel->old_state));
+	printf("%s",ligne);
 
    return 0;
 }
