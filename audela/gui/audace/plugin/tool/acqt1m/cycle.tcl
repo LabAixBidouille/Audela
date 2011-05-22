@@ -190,8 +190,9 @@ namespace eval ::cycle {
             #--------
             ::console::affiche_resultat "$::caption(cycle,acquisition) $private(exptime) $private(filtrecourant)\n"
             $::cycle::camera exptime $private(exptime)
-            $::cycle::camera acq -blocking
-            ::audace::autovisu $visuNo
+            $::cycle::camera acq
+            vwait status_$::cycle::camera
+            ::confVisu::autovisu $visuNo
 
             set ent      [ mc_date2ymdhms [ ::audace::date_sys2ut now] ]
             set entete   [ format "%04d%02d%02d%02d%02d" [lindex $ent 0] [lindex $ent 1] [lindex $ent 2] [lindex $ent 3] [lindex $ent 4] ]
