@@ -478,6 +478,11 @@ proc ::acqt1m::stopTool { { visuNo 1 } } {
       return -1
    }
 
+   #--- Je verifie si une operation est en cours (acquisition des flats auto)
+   if { $::acqt1m_flatciel::private(pose_en_cours) == 1 } {
+      return -1
+   }
+
    #--- Sauvegarde de la configuration de prise de vue
    ::acqt1m::enregistrerVariable $visuNo
 
@@ -549,7 +554,7 @@ proc ::acqt1m::changerBinningCent { { visuNo 1 } } {
    #::console::affiche_resultat "bin = $caption(acqt1m,bin,$panneau(acqt1m,$visuNo,binning))\n"
    $panneau(acqt1m,$visuNo,This).binningt.but configure -text $caption(acqt1m,bin,$panneau(acqt1m,$visuNo,binning))
    if { [ winfo exists $audace(base).selection_filtre ] } {
-      ::acqt1m_flatciel::Changebin $visuNo $panneau(acqt1m,$visuNo,binning)
+      ::acqt1m_flatciel::changeBin $visuNo $panneau(acqt1m,$visuNo,binning)
    }
 }
 
@@ -1670,7 +1675,7 @@ proc ::acqt1m::dispTime { visuNo } {
    update
 
    #--- je mets a jour la fenetre de progression
-   avancementPose $visuNo $t
+   ::acqt1m::avancementPose $visuNo $t
 
    if { $t > 0 } {
       #--- je lance l'iteration suivante avec un delai de 1000 millisecondes
