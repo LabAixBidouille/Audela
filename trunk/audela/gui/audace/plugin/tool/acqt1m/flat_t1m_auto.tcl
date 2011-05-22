@@ -10,9 +10,6 @@
 
 namespace eval ::acqt1m_flatciel {
 
-   #--- Charge le fichier
-   # source [ file join [file dirname [info script]] flat_t1m_auto.cap ]
-
    proc run { visuNo } {
       variable private
 
@@ -20,11 +17,20 @@ namespace eval ::acqt1m_flatciel {
       if { ! [ info exists ::conf(acqt1m,affichageChoixFiltres,position) ] } { set ::conf(acqt1m,affichageChoixFiltres,position) "+650+120" }
       if { ! [ info exists ::conf(acqt1m,acqAutoFlat,position) ] }           { set ::conf(acqt1m,acqAutoFlat,position)           "+650+120" }
 
-      set private(entetelog) "flatauto"
-      ::acqt1m_flatciel::createDialog $visuNo
+      if { [ winfo exists $::audace(base).selection_choix ] } {
+         wm withdraw $::audace(base).selection_choix
+         wm deiconify $::audace(base).selection_choix
+         focus $::audace(base).selection_choix
+      } else {
+         ::acqt1m_flatciel::createDialog $visuNo
+      }
       return
    }
 
+   #------------------------------------------------------------
+   # createDialog
+   #    Creation de l'interface graphique
+   #------------------------------------------------------------
    proc createDialog { visuNo } {
       ::console::affiche_resultat "$::caption(flat_t1m_auto,titre1)\n"
       ::console::affiche_resultat "$::caption(flat_t1m_auto,titre2)\n"
@@ -116,10 +122,14 @@ namespace eval ::acqt1m_flatciel {
          }
       }
 
+      # Initialisation des variables de surveillance
+      set private(pose_en_cours) 0
+      set private(demande_stop)  0
+
       return 0
    }
 
-   proc Liste_sens_filtre_actif { sensnuit } {
+   proc listeSensFiltreActif { sensnuit } {
       variable private
 
       set l {}
@@ -142,16 +152,27 @@ namespace eval ::acqt1m_flatciel {
       return $l
    }
 
-   proc ArretScript { visuNo } {
+   #------------------------------------------------------------
+   # arretAcqFlat
+   #    Arret de l'acquisition des flats
+   #------------------------------------------------------------
+   proc arretAcqFlat { visuNo } {
       variable private
 
-      $private($visuNo,camera) stop
+      #--- Je positionne l'indicateur d'arret de la pose
+      set private(demande_stop) 1
 
-      set private(stop) 1
+      #--- Arret de la capture de l'image
+      ::camera::stopAcquisition $private($visuNo,camItem)
+      #--- J'attends la fin de l'acquisition
+      vwait ::acqt1m_flatciel::private(finAquisition)
 
       # Initialisation de la camera (image pleine trame et obturateur synchro)
       $private($visuNo,camera) window [list 1 1 [lindex $private(nbcells) 0] [lindex $private(nbcells) 1] ]
       $private($visuNo,camera) shutter synchro
+
+      #--- Message
+      ::console::affiche_resultat "$::caption(flat_t1m_auto,arretDemande)\n"
    }
 
    proc push { i } {
@@ -166,7 +187,7 @@ namespace eval ::acqt1m_flatciel {
       }
    }
 
-   proc push_sens_nuit { i } {
+   proc pushSensNuit { i } {
       variable private
 
       if {$i == 0} {
@@ -187,7 +208,7 @@ namespace eval ::acqt1m_flatciel {
       }
    }
 
-   proc init_texte_bouton_choix { } {
+   proc initTexteBoutonChoix { } {
       variable private
 
       for {set x 1} {$x<10} {incr x} {
@@ -195,56 +216,54 @@ namespace eval ::acqt1m_flatciel {
       }
    }
 
+   #------------------------------------------------------------
+   # affichageChoixFiltres
+   #    Interface graphique de la fenetre de choix des filtres
+   #------------------------------------------------------------
    proc affichageChoixFiltres { visuNo } {
       variable private
 
-      if { [ winfo exists $::audace(base).selection_choix ] } {
-         wm withdraw $::audace(base).selection_choix
-         wm deiconify $::audace(base).selection_choix
-         focus $::audace(base).selection_choix
-      } else {
-         if { [ info exists private(geometryAffichageChoixFiltres) ] } {
-            set deb [ expr 1 + [ string first + $private(geometryAffichageChoixFiltres) ] ]
-            set fin [ string length $private(geometryAffichageChoixFiltres) ]
-            set ::conf(acqt1m,affichageChoixFiltres,position) "+[string range $private(geometryAffichageChoixFiltres) $deb $fin]"
-         }
-         toplevel $::audace(base).selection_choix -class Toplevel -borderwidth 2 -relief groove
-         wm geometry $::audace(base).selection_choix $::conf(acqt1m,affichageChoixFiltres,position)
-         wm resizable $::audace(base).selection_choix 1 1
-         wm title $::audace(base).selection_choix $::caption(flat_t1m_auto,choixFiltres)
-         wm transient $::audace(base).selection_choix .audace
-         wm protocol $::audace(base).selection_choix WM_DELETE_WINDOW "::acqt1m_flatciel::fermerAffichageChoixFiltres $visuNo"
-
-         ::acqt1m_flatciel::init_texte_bouton_choix
-
-         frame $::audace(base).selection_choix.a -borderwidth 0 -relief ridge
-         pack  $::audace(base).selection_choix.a -in $::audace(base).selection_choix -anchor center -side top -expand 0 -fill both -padx 3 -pady 0
-
-         for {set x 1} {$x<10} {incr x} {
-            button $::audace(base).selection_choix.a.b$x -text $private(texte_bouton,$x) -command "::acqt1m_flatciel::push $x" -bg $::audace(color,backColor2)
-            pack   $::audace(base).selection_choix.a.b$x -in $::audace(base).selection_choix.a -side top -anchor n -fill x -padx 4 -pady 4 -expand 1
-            }
-
-         frame $::audace(base).selection_choix.nuit -borderwidth 0 -relief solid
-         pack  $::audace(base).selection_choix.nuit -in $::audace(base).selection_choix -anchor center -side top -expand 0 -fill both -padx 3 -pady 0
-
-            button $::audace(base).selection_choix.nuit.deb -text $::caption(flat_t1m_auto,butDebutNuit) -command "::acqt1m_flatciel::push_sens_nuit 0" -bg $::audace(color,disabledTextColor)
-            pack   $::audace(base).selection_choix.nuit.deb -in $::audace(base).selection_choix.nuit -anchor center -side left -fill x -padx 4 -pady 4 -ipadx 30 -expand 1
-            button $::audace(base).selection_choix.nuit.fin -text $::caption(flat_t1m_auto,butFinNuit) -command "::acqt1m_flatciel::push_sens_nuit 1" -bg $::audace(color,backColor2)
-            pack   $::audace(base).selection_choix.nuit.fin -in $::audace(base).selection_choix.nuit -anchor center -side left -fill x -padx 4 -pady 4 -ipadx 30 -expand 1
-
-         frame $::audace(base).selection_choix.fin -borderwidth 0 -relief solid
-         pack  $::audace(base).selection_choix.fin -in $::audace(base).selection_choix -anchor center -side top -expand 1 -fill both -padx 3 -pady 0
-
-            button $::audace(base).selection_choix.fin.stop -text $::caption(flat_t1m_auto,fermer) -command "::acqt1m_flatciel::fermerAffichageChoixFiltres $visuNo" -bg $::audace(color,backColor2)
-            pack $::audace(base).selection_choix.fin.stop -in $::audace(base).selection_choix.fin -anchor center -side bottom -fill x -padx 4 -pady 4 -anchor center -expand 0
-
-            button $::audace(base).selection_choix.fin.go -text $::caption(flat_t1m_auto,goFlatsAuto) -command "::acqt1m_flatciel::acqAutoFlat $visuNo" -bg $::audace(color,backColor2)
-            pack   $::audace(base).selection_choix.fin.go -in $::audace(base).selection_choix.fin -anchor center -side bottom -fill x -padx 4 -pady 4 -expand 0
-
-         focus $::audace(base).selection_choix
-         ::confColor::applyColor $::audace(base).selection_choix
+      if { [ info exists private(geometryAffichageChoixFiltres) ] } {
+         set deb [ expr 1 + [ string first + $private(geometryAffichageChoixFiltres) ] ]
+         set fin [ string length $private(geometryAffichageChoixFiltres) ]
+         set ::conf(acqt1m,affichageChoixFiltres,position) "+[string range $private(geometryAffichageChoixFiltres) $deb $fin]"
       }
+      toplevel $::audace(base).selection_choix -class Toplevel -borderwidth 2 -relief groove
+      wm geometry $::audace(base).selection_choix $::conf(acqt1m,affichageChoixFiltres,position)
+      wm resizable $::audace(base).selection_choix 1 1
+      wm title $::audace(base).selection_choix $::caption(flat_t1m_auto,choixFiltres)
+      wm transient $::audace(base).selection_choix .audace
+      wm protocol $::audace(base).selection_choix WM_DELETE_WINDOW "::acqt1m_flatciel::fermerAffichageChoixFiltres $visuNo"
+
+      ::acqt1m_flatciel::initTexteBoutonChoix
+
+      frame $::audace(base).selection_choix.a -borderwidth 0 -relief ridge
+      pack  $::audace(base).selection_choix.a -in $::audace(base).selection_choix -anchor center -side top -expand 0 -fill both -padx 3 -pady 0
+
+      for {set x 1} {$x<10} {incr x} {
+         button $::audace(base).selection_choix.a.b$x -text $private(texte_bouton,$x) -command "::acqt1m_flatciel::push $x" -bg $::audace(color,backColor2)
+         pack   $::audace(base).selection_choix.a.b$x -in $::audace(base).selection_choix.a -side top -anchor n -fill x -padx 4 -pady 4 -expand 1
+         }
+
+      frame $::audace(base).selection_choix.nuit -borderwidth 0 -relief solid
+      pack  $::audace(base).selection_choix.nuit -in $::audace(base).selection_choix -anchor center -side top -expand 0 -fill both -padx 3 -pady 0
+
+         button $::audace(base).selection_choix.nuit.deb -text $::caption(flat_t1m_auto,butDebutNuit) -command "::acqt1m_flatciel::pushSensNuit 0" -bg $::audace(color,disabledTextColor)
+         pack   $::audace(base).selection_choix.nuit.deb -in $::audace(base).selection_choix.nuit -anchor center -side left -fill x -padx 4 -pady 4 -ipadx 30 -expand 1
+         button $::audace(base).selection_choix.nuit.fin -text $::caption(flat_t1m_auto,butFinNuit) -command "::acqt1m_flatciel::pushSensNuit 1" -bg $::audace(color,backColor2)
+         pack   $::audace(base).selection_choix.nuit.fin -in $::audace(base).selection_choix.nuit -anchor center -side left -fill x -padx 4 -pady 4 -ipadx 30 -expand 1
+
+      frame $::audace(base).selection_choix.fin -borderwidth 0 -relief solid
+      pack  $::audace(base).selection_choix.fin -in $::audace(base).selection_choix -anchor center -side top -expand 1 -fill both -padx 3 -pady 0
+
+         button $::audace(base).selection_choix.fin.stop -text $::caption(flat_t1m_auto,fermer) -command "::acqt1m_flatciel::fermerAffichageChoixFiltres $visuNo" -bg $::audace(color,backColor2)
+         pack $::audace(base).selection_choix.fin.stop -in $::audace(base).selection_choix.fin -anchor center -side bottom -fill x -padx 4 -pady 4 -anchor center -expand 0
+
+         button $::audace(base).selection_choix.fin.go -text $::caption(flat_t1m_auto,goFlatsAuto) -command "::acqt1m_flatciel::acqAutoFlat $visuNo" -bg $::audace(color,backColor2)
+         pack   $::audace(base).selection_choix.fin.go -in $::audace(base).selection_choix.fin -anchor center -side bottom -fill x -padx 4 -pady 4 -expand 0
+
+      focus $::audace(base).selection_choix
+      ::confColor::applyColor $::audace(base).selection_choix
    }
 
    #------------------------------------------------------------
@@ -252,7 +271,6 @@ namespace eval ::acqt1m_flatciel {
    #    Ferme la fenetre affichageChoixFiltres
    #------------------------------------------------------------
    proc fermerAffichageChoixFiltres { visuNo } {
-      ::acqt1m_flatciel::ArretScript $visuNo
       ::acqt1m_flatciel::recupPositionAffichageChoixFiltres
       destroy $::audace(base).selection_choix
    }
@@ -270,7 +288,7 @@ namespace eval ::acqt1m_flatciel {
       set ::conf(acqt1m,affichageChoixFiltres,position) "+[string range $private(geometryAffichageChoixFiltres) $deb $fin]"
    }
 
-   proc init_texte_bouton_filtre { } {
+   proc initTexteBoutonFiltre { } {
       variable private
 
       for {set x 1} {$x<10} {incr x} {
@@ -278,7 +296,11 @@ namespace eval ::acqt1m_flatciel {
       }
    }
 
-   proc Changebin { visuNo mybin } {
+   #------------------------------------------------------------
+   # changeBin
+   #    Changement du binning
+   #------------------------------------------------------------
+   proc changeBin { visuNo mybin } {
       variable private
 
       $::audace(base).selection_filtre.b.bin configure -text $::caption(acqt1m,bin,$::panneau(acqt1m,$visuNo,binning))
@@ -294,20 +316,26 @@ namespace eval ::acqt1m_flatciel {
       ::console::affiche_resultat "$::caption(flat_t1m_auto,binning) $binning\n"
    }
 
-   proc majbouton { i fin} {
+   proc majBouton { i fin} {
       variable private
 
       set private(texte_bouton,$i) [concat "($i) - $::caption(flat_t1m_auto,filtre) " [lindex $::t1m_roue_a_filtre::private(filtre,$i) 1] " - $::caption(flat_t1m_auto,nbre) =" [lindex $::t1m_roue_a_filtre::private(filtre,$i) 3]]
-      $::audace(base).selection_filtre.filtres.$i configure -text $private(texte_bouton,$i)
-      if {$fin == 1} {
-         $::audace(base).selection_filtre.filtres.$i configure -bg $::audace(color,disabledTextColor)
+      if { [ winfo exists $::audace(base).selection_filtre ] } {
+         $::audace(base).selection_filtre.filtres.$i configure -text $private(texte_bouton,$i)
+         if {$fin == 1} {
+            $::audace(base).selection_filtre.filtres.$i configure -bg $::audace(color,disabledTextColor)
+         }
       }
    }
 
+   #------------------------------------------------------------
+   # acqAutoFlat
+   #    Interface graphique de la fenetre d'acquisition des flats
+   #------------------------------------------------------------
    proc acqAutoFlat { visuNo } {
       variable private
 
-      ::acqt1m_flatciel::init_texte_bouton_filtre
+      ::acqt1m_flatciel::initTexteBoutonFiltre
 
       if { [ winfo exists $::audace(base).selection_filtre ] } {
          destroy $::audace(base).selection_filtre
@@ -318,7 +346,7 @@ namespace eval ::acqt1m_flatciel {
          set fin [ string length $private(geometryAcqAutoFlat) ]
          set ::conf(acqt1m,acqAutoFlat,position) "+[string range $private(geometryAcqAutoFlat) $deb $fin]"
       }
-      set listeFiltreActif [ ::acqt1m_flatciel::Liste_sens_filtre_actif $private(sensnuit) ]
+      set listeFiltreActif [ ::acqt1m_flatciel::listeSensFiltreActif $private(sensnuit) ]
       set sizey [expr 210 + [llength $listeFiltreActif] * 40]
 
       toplevel $::audace(base).selection_filtre -class Toplevel -borderwidth 2 -relief groove
@@ -333,8 +361,6 @@ namespace eval ::acqt1m_flatciel {
       } else {
          set info_sens_nuit $::caption(flat_t1m_auto,butFinNuit)
       }
-
-      set private(stop) 0
 
       set info [$private($visuNo,camera) info]
       set size [$private($visuNo,camera) nbcells]
@@ -451,10 +477,16 @@ namespace eval ::acqt1m_flatciel {
             pack   $::audace(base).selection_filtre.filtres.$x -in $::audace(base).selection_filtre.filtres -side top -anchor center -fill x -padx 4 -pady 4 -expand 1
          }
 
+      frame $::audace(base).selection_filtre.h -borderwidth 0 -relief solid
+      pack $::audace(base).selection_filtre.h -in $::audace(base).selection_filtre -anchor s -side bottom -expand 0 -fill both -padx 3 -pady 0
+
+         button $::audace(base).selection_filtre.h.fin -text $::caption(flat_t1m_auto,fermer) -command "::acqt1m_flatciel::fermerAcqAutoFlat $visuNo" -bg $::audace(color,backColor2)
+         pack $::audace(base).selection_filtre.h.fin -in $::audace(base).selection_filtre.h -anchor center -side top -fill x -padx 4 -pady 4 -anchor center -expand 1
+
       frame $::audace(base).selection_filtre.f -borderwidth 0 -relief solid
       pack $::audace(base).selection_filtre.f -in $::audace(base).selection_filtre -anchor s -side bottom -expand 0 -fill both -padx 3 -pady 0
 
-         button $::audace(base).selection_filtre.f.fin -text $::caption(flat_t1m_auto,stop) -command "::acqt1m_flatciel::fermerAcqAutoFlat $visuNo" -bg $::audace(color,backColor2)
+         button $::audace(base).selection_filtre.f.fin -text $::caption(flat_t1m_auto,stop) -command "::acqt1m_flatciel::arretAcqFlat $visuNo" -bg $::audace(color,backColor2) -state disabled
          pack $::audace(base).selection_filtre.f.fin -in $::audace(base).selection_filtre.f -anchor center -side top -fill x -padx 4 -pady 4 -anchor center -expand 1
 
       frame $::audace(base).selection_filtre.g -borderwidth 0 -relief ridge
@@ -473,7 +505,6 @@ namespace eval ::acqt1m_flatciel {
    #    Ferme la fenetre acqAutoFlat
    #------------------------------------------------------------
    proc fermerAcqAutoFlat { visuNo } {
-      ::acqt1m_flatciel::ArretScript $visuNo
       ::acqt1m_flatciel::recupPositionAcqAutoFlat
       destroy $::audace(base).selection_filtre
    }
@@ -491,6 +522,10 @@ namespace eval ::acqt1m_flatciel {
       set ::conf(acqt1m,acqAutoFlat,position) "+[string range $private(geometryAcqAutoFlat) $deb $fin]"
    }
 
+   #------------------------------------------------------------
+   # acqFlat
+   #    Acquisition des flats en automatique
+   #------------------------------------------------------------
    proc acqFlat { visuNo idfiltre } {
       variable private
 
@@ -520,16 +555,17 @@ namespace eval ::acqt1m_flatciel {
       set buffer buf$::audace(bufNo)
 
       # Dark (obturateur closed)
-      $private($visuNo,camera) exptime 1
+      set exptime 1
       ::console::affiche_resultat "$::caption(flat_t1m_auto,mesureDark)\n"
       $private($visuNo,camera) window [list $xmin $ymin $xmax $ymax]
       $private($visuNo,camera) shutter closed
       $::audace(base).selection_filtre.a2.lb2 configure -text [$private($visuNo,camera) shutter]
-      $private($visuNo,camera) acq -blocking
+      #--- Declenchement de l'acquisition
+      ::camera::acquisition $private($visuNo,camItem) "::acqt1m_flatciel::attendImage $visuNo" $exptime
+      #--- J'attends la fin de l'acquisition
+      vwait ::acqt1m_flatciel::private(finAquisition)
       $buffer save "mesurefond"
 
-      #--- Visualisation de l'image
-      #::audace::autovisu $visuNo
       set stat  [$buffer stat]
       set dark  [lindex $stat 4]
       set stdev [lindex $stat 5]
@@ -540,7 +576,7 @@ namespace eval ::acqt1m_flatciel {
       $private($visuNo,camera) shutter synchro
       $::audace(base).selection_filtre.a2.lb2 configure -text [$private($visuNo,camera) shutter]
 
-     # Boucle sur les images
+      # Boucle sur les images
       set num 1
 
       # Initialisation a 1 pour le premier flat
@@ -548,20 +584,28 @@ namespace eval ::acqt1m_flatciel {
 
       for {set id 0} {$id<$private(mynbflat)} {incr id} {
 
+         #--- Initialisation d'une variable
+         set private(finAquisition) ""
+
+         #--- Pose en cours
+         set private(pose_en_cours) 1
+
          set exptime 1
 
          if {$private(testprog) == 0} {
+
             while {$exptime > 0} {
 
                # Fond du ciel
-               $private($visuNo,camera) exptime 1
+               set exptime 1
                ::console::affiche_resultat "$::caption(flat_t1m_auto,mesureCiel) [lindex $::t1m_roue_a_filtre::private(filtre,$idfiltre) 2] :\n"
                $private($visuNo,camera) window [list $xmin $ymin $xmax $ymax]
-               $private($visuNo,camera) acq -blocking
+               #--- Declenchement de l'acquisition
+               ::camera::acquisition $private($visuNo,camItem) "::acqt1m_flatciel::attendImage $visuNo" $exptime
+               #--- J'attends la fin de l'acquisition
+               vwait ::acqt1m_flatciel::private(finAquisition)
                $buffer save "mesurefond"
 
-               #--- Visualisation de l'image
-               #::audace::autovisu $visuNo
                set stat  [$buffer stat]
                set ciel  [lindex $stat 4]
                set stdev [lindex $stat 5]
@@ -653,26 +697,26 @@ namespace eval ::acqt1m_flatciel {
 
                }
 
-               if {$private(stop) == 1} {
-                  ::console::affiche_resultat "$::caption(flat_t1m_auto,arretDemande)\n"
-                  return
-               }
-
             }
+
          }
 
          # Comptage des flats
-         ::acqt1m_flatciel::majbouton $idfiltre 0
+         ::acqt1m_flatciel::majBouton $idfiltre 0
+
+         #--- Bouton Stop Auto Flats actif
+         $::audace(base).selection_filtre.f.fin configure -state normal
 
          # Flat :
-         ::console::affiche_resultat "$::caption(flat_t1m_auto,parti) ([expr $id+1]/$private(mynbflat)) : $::caption(flat_t1m_auto,prochainExptime) $exptime\n"
-         $private($visuNo,camera) exptime [ format %-7.2f $exptime]
+         ::console::affiche_resultat "$::caption(flat_t1m_auto,parti) ([expr $id+1]/$private(mynbflat))\n"
+         ::console::affiche_resultat "$::caption(flat_t1m_auto,prochainExptime) $exptime $::caption(flat_t1m_auto,secondes)\n"
          $private($visuNo,camera) window [list 1 1 [lindex $private(nbcells) 0] [lindex $private(nbcells) 1] ]
          $private($visuNo,camera) shutter synchro
-         $private($visuNo,camera) acq -blocking
+         #--- Declenchement de l'acquisition
+         ::camera::acquisition $private($visuNo,camItem) "::acqt1m_flatciel::attendImage $visuNo" $exptime
+         #--- J'attends la fin de l'acquisition
+         vwait ::acqt1m_flatciel::private(finAquisition)
 
-         #--- Visualisation de l'image
-         ::audace::autovisu $visuNo
          set stat   [$buffer stat]
          set pixmin [lindex $stat 3]
          set pixmax [lindex $stat 2]
@@ -707,8 +751,7 @@ namespace eval ::acqt1m_flatciel {
                   $buffer setkwd $keyword
                }
                #--- Rajoute d'autres mots cles
-               $buffer setkwd [list "IMAGETYP" "Flat" string "" "" ]
-               $buffer setkwd [list "TELESCOP" "t1m" string "Telescope name" ""]
+               $buffer setkwd [list "IMAGETYP" "Flat" string "Image type" "" ]
                $buffer setkwd [list "OBJECT"   "FLAT" string "" "" ]
                $buffer setkwd [list "FILTER"   [lindex $::t1m_roue_a_filtre::private(filtre,$idfiltre) 2] string "" "" ]
                saveima $filelong $visuNo
@@ -722,10 +765,53 @@ namespace eval ::acqt1m_flatciel {
 
          if {$num>$private(mynbflat)} {set num $private(mynbflat)}
          set ::t1m_roue_a_filtre::private(filtre,$idfiltre) [lreplace $::t1m_roue_a_filtre::private(filtre,$idfiltre) 3 3 $num]
+
+         #--- Bouton Stop Auto Flats inactif
+         $::audace(base).selection_filtre.f.fin configure -state disabled
+
+         #--- Pose en cours
+         set private(pose_en_cours) 0
+
+         #--- Arret de la pose et de la serie
+         if {$private(demande_stop) == 1} {
+            ::console::affiche_resultat "$::caption(flat_t1m_auto,arretDemande)\n"
+            break
+         }
+
       }
 
-      ::acqt1m_flatciel::majbouton $idfiltre 1
+      #--- Je positionne l'indicateur d'arret de la pose
+      set private(demande_stop) 0
+
+      ::acqt1m_flatciel::majBouton $idfiltre 1
       ::console::affiche_resultat "$::caption(flat_t1m_auto,finAcq) [lindex $::t1m_roue_a_filtre::private(filtre,$idfiltre) 2]\n\n"
+   }
+
+   #------------------------------------------------------------
+   # attendImage
+   #    Controle de la thread d'acquisition
+   #------------------------------------------------------------
+   proc attendImage { visuNo message args } {
+      variable private
+
+      switch $message {
+         "autovisu" {
+            #--- ce message signale que l'image est prete dans le buffer
+            #--- on peut l'afficher sans attendre la fin complete de la thread de la camera
+            ::confVisu::autovisu $visuNo
+         }
+         "acquisitionResult" {
+            #--- ce message signale que la thread de la camera a termine completement l'acquisition
+            #--- je peux traiter l'image
+            set private(finAquisition) "acquisitionResult"
+         }
+         "error" {
+            #--- ce message signale qu'une erreur est survenue dans la thread de la camera
+            #--- j'affiche l'erreur dans la console
+            ::console::affiche_erreur "acqt1m_flatciel::acqFlat error: $args\n"
+            set private(finAquisition) "acquisitionResult"
+         }
+      }
    }
 
 }
