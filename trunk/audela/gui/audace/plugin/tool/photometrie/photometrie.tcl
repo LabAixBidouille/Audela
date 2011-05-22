@@ -10,21 +10,23 @@
 
 namespace eval ::Photometrie {
     variable photometrie
-    global ::Photometrie::attente_aladin
-    global ::Photometrie::selection_aladin
 
     catch { unset photometrie }
 
     ##
     # @brief Séquencement principal des opérations
     proc Principal {} {
+        package require http
+
         variable photometrie_texte
         variable photometrie
 
+        # Message console "%s\n" [ info level  [info level ] ]
+
         Initialisations
         if { [ PresenceImage ] < 0 } { return }
-        AnalyseEnvironnement
-        AnalyseImage
+        # AnalyseEnvironnement
+        if { [ catch { AnalyseImage } ] } { return }
         ChoixManuelAutomatique
 
         set erreur 0
@@ -33,8 +35,8 @@ namespace eval ::Photometrie {
             auto_internet { set erreur [ ModeAutoInternet ] }
             manuel { set erreur [ ModeManuel ] }
         }
-
         if { $erreur != 0 } { return }
+
         PhotometrieEcran
     }
 
@@ -42,10 +44,13 @@ namespace eval ::Photometrie {
     # @brief initialisation de valeurs par défaut
     proc Initialisations {} {
         variable photometrie
+
+        # Message console "%s\n" [ info level  [info level ] ]
+
         set photometrie(defaut,diametre,interieur) 2.25
         set photometrie(defaut,diametre,exterieur1) 6.0
         set photometrie(defaut,diametre,exterieur2) 8.0
-        set photometrie(defaut,carre,modelisation) 3.0
+        set photometrie(defaut,carre,modelisation) 4.0
 
         set photometrie(champ,nomad1) [ list RAJ2000 DEJ2000 NOMAD1 Bmag Rmag ]
         set photometrie(champ,usnob1) [ list RAJ2000 DEJ2000 USNO-B1.0 B1mag R1mag ]
@@ -55,48 +60,14 @@ namespace eval ::Photometrie {
     }
 
     ##
-    # @brief Vérifie que Java et Aladin sont utilisables sur la machine
-    proc AnalyseEnvironnement {} {
-        variable photometrie_texte
-        variable photometrie
-
-        set photometrie(internet) 0
-        if { [ file exists $::conf(exec_aladin) ] } {
-            if { ( [ file executable $::conf(exec_aladin) ] ) && ( [ file extension $::conf(exec_aladin) ] == ".exe" ) } {
-                # Mode windows, avec aladin.exe
-                set photometrie(internet) 1
-                set photometrie(mode_aladin) exe
-            } else {
-                # On a un aladin.jar qui requiert java
-                if { [ file exists $::conf(exec_java) ] && [ file executable $::conf(exec_java) ] } {
-                    # On teste la version de aladin.jar
-                    set retour_version [ exec $::conf(exec_java) -jar $::conf(exec_aladin) -version ]
-                    set version_aladin [ string range [ lindex $retour_version 2 ] 1 end ]
-                    if { $version_aladin > 7.0 } {
-                        set photometrie(internet) 1
-                        set photometrie(mode_aladin) jar
-                    } else {
-                        ::console::affiche_erreur "$photometrie_texte(err_version_aladin) \n"
-                        set photometrie(internet) 0
-                    }
-                } else {
-                    ::console::affiche_erreur "$photometrie_texte(err_java) \n"
-                    set photometrie(internet) 0
-                }
-            }
-        } else {
-            ::console::affiche_erreur "$photometrie_texte(err_aladin) \n"
-            set photometrie(internet) 0
-        }
-    }
-
-    ##
     # @brief Détecte la présence d'une image valide
     # @param[out] photometrie(astrometrie) = 1 si l'image contient tous les mot-clés, 0 sinon
     # @return -1 si l'image est absente ou non pertinente
     proc PresenceImage {} {
         variable photometrie_texte
         variable photometrie
+
+        # Message console "%s\n" [ info level  [info level ] ]
 
         #--- Recherche une image dans le buffer
         if { [ buf$::audace(bufNo) imageready ] == "0" } {
@@ -118,6 +89,8 @@ namespace eval ::Photometrie {
     proc CalculChampImage {} {
         variable photometrie
 
+        #Message console "%s\n" [ info level [ info level ] ]
+
         # Récupération des ad et dec des points extrêmes de l'image
         set addec1 [ buf$::audace(bufNo) xy2radec [ list 1 1 ] ]
         set addec2 [ buf$::audace(bufNo) xy2radec [ list $photometrie(naxis1) $photometrie(naxis2) ] ]
@@ -131,16 +104,19 @@ namespace eval ::Photometrie {
         # Calcul du champ de la diagonale en arcmin
         set coschamp [ expr sin($d1) * sin($d2) + cos($d1) * cos($d2) * cos($a1 - $a2) ]
         set champ [ expr acos($coschamp) * 3437.75 ]
+
         return [ expr int(ceil($champ)) ]
     }
 
     ##
     # @brief Recherche de mots-clés typiques d'une image recalée astrométriquement
     # @param[out] photometrie(astrometrie) = 1 si l'image contient tous les mot-clés, 0 sinon
-    # @param[out] photometrie(internet) si le champ a une taille inférieure à 30 min d'arc
+    # @param[out] photometrie(internet) si l'image est recalée astrométriquement et si le champ a une taille inférieure à 30 min d'arc
     proc AnalyseImage {} {
         variable photometrie_texte
         variable photometrie
+
+        # Message console "%s\n" [ info level  [info level ] ]
 
         set photometrie(astrometrie) 1
         set liste_cle [ buf$::audace(bufNo) getkwds ]
@@ -150,31 +126,40 @@ namespace eval ::Photometrie {
                 set photometrie($cle) [ lindex [ buf$::audace(bufNo) getkwd $cle_majuscule ] 1 ]
             } else {
                 ::console::affiche_erreur "$photometrie_texte(err_pas_astrometrie) $cle_majuscule\n"
-                set photometrie(astrometrie) 0
-                break
+                return -code error
             }
+        }
+
+        # Positionnement des valeurs min et max possibles pour les intensités des pixels
+        switch -exact -- [ buf$::audace(bufNo) bitpix ] {
+            byte { photom_minmax [ list 0 255 ] }
+            short { photom_minmax [ list -32768 32767 ] }
+            ushort { photom_minmax [ list 0 65535 ] }
+            long { photom_minmax [ list -2147483648 2147483647 ] }
+            ulong { photom_minmax [ list 0 4294967295 ] }
+            float { photom_minmax [ list -3.4e+38 3.4e+38 ] }
+            double { photom_minmax [ list -1.7e+308 1.7e+308 ] }
         }
 
         if { [ catch { buf$::audace(bufNo) xy2radec [ list 1 1 ] } ] } {
             ::console::affiche_erreur "$photometrie_texte(err_pas_astrometrie)\n"
             set photometrie(astrometrie) 0
-            return
         }
-
-        set fwhm [ buf$::audace(bufNo) fwhm [ list 1 1 $photometrie(naxis1) $photometrie(naxis1) ] ]
-        set photometrie(fwhm) [ expr ( [ lindex $fwhm 0 ] + [ lindex $fwhm 1 ] ) / 2 ]
-
-        # A SUPPRIMER
-        # set photometrie(fwhm) 1.0
 
         if { $photometrie(astrometrie) == 1 } {
             set photometrie(champ) [ CalculChampImage ]
-            # Limite à 30 minutes d'arc
+            # Limite à 45 minutes d'arc
             if { $photometrie(champ) > 45 } {
                 ::console::affiche_erreur "$photometrie_texte(err_champ_trop_large) : $photometrie(champ) ' \n"
                 set photometrie(internet) 0
+            } else {
+                set photometrie(internet) 1
             }
+        } else {
+            set photometrie(internet) 0
         }
+
+        return -code ok
     }
 
 
@@ -187,14 +172,14 @@ namespace eval ::Photometrie {
         # Animation sur l'image
         $::audace(hCanvas) itemconfigure ovale_$photometrie(ancienne_selection) -outline red
         $::audace(hCanvas) itemconfigure texte_$photometrie(ancienne_selection) -fill red
-        $::audace(hCanvas) itemconfigure ovale_$photometrie(selection_aladin) -outline green
-        $::audace(hCanvas) itemconfigure texte_$photometrie(selection_aladin) -fill green
+        $::audace(hCanvas) itemconfigure ovale_$photometrie(selection_reference) -outline green
+        $::audace(hCanvas) itemconfigure texte_$photometrie(selection_reference) -fill green
 
         # Animation sur la fenêtre de sélection
         ::confColor::applyColor $fen
-        ${fen}.${photometrie(selection_aladin)}_$photometrie(selection_couleur) configure -foreground blue
+        ${fen}.${photometrie(selection_reference)}_$photometrie(selection_couleur) configure -foreground blue
 
-        set photometrie(ancienne_selection) $photometrie(selection_aladin)
+        set photometrie(ancienne_selection) $photometrie(selection_reference)
         set photometrie(selection,id) $id
     }
 
@@ -376,8 +361,8 @@ namespace eval ::Photometrie {
     proc CalculMagnitude {} {
         variable photometrie
 
-        if { ( [ lindex $photometrie(flux_mod_ref) 0 ] > 0 ) && ( [ lindex $photometrie(flux_mod_inc) 0 ]  > 0 ) } {
-            set photometrie(magnitude_inc,mod) [ expr $photometrie(reference,magnitude) + 2.5 * log10( [ lindex $photometrie(flux_mod_ref) 0 ] / [ lindex $photometrie(flux_mod_inc) 0 ] ) ]
+        if { ( [ lindex $photometrie(flux_mod_ref) 1 ] > 0 ) && ( [ lindex $photometrie(flux_mod_inc) 1 ]  > 0 ) } {
+            set photometrie(magnitude_inc,mod) [ expr $photometrie(reference,magnitude) + 2.5 * log10( [ lindex $photometrie(flux_mod_ref) 1 ] / [ lindex $photometrie(flux_mod_inc) 1 ] ) ]
             $photometrie(label_mag_mod_inc) configure -text [ format "%.3f" $photometrie(magnitude_inc,mod) ]
         } else {
             set photometrie(magnitude_inc,mod) 99
@@ -505,7 +490,9 @@ namespace eval ::Photometrie {
         variable photometrie_texte
         variable photometrie
 
-        # Si pas de racalage astrométrique, pas de possibilité de récupérer un catalogue local ou distant
+        # Message console "%s\n" [ info level  [info level ] ]
+
+        # Si pas de recalage astrométrique, pas de possibilité de récupérer un catalogue local ou distant
         if { $photometrie(astrometrie) == 0 } {
             ::console::affiche_erreur "$photometrie_texte(err_pas_internet) \n"
             set photometrie(choix_mode) manuel
@@ -513,11 +500,11 @@ namespace eval ::Photometrie {
         }
 
         # Temporaire en attendant le mode catalogue local qui pourra être valide
-        if { $photometrie(internet) == 0 } {
-            ::console::affiche_erreur "$photometrie_texte(err_pas_internet) \n"
-            set photometrie(choix_mode) manuel
-            return
-        }
+        #if { $photometrie(internet) == 0 } {
+            #::console::affiche_erreur "$photometrie_texte(err_pas_internet) \n"
+            #set photometrie(choix_mode) manuel
+            #return
+        #}
 
         set tl [ toplevel $::audace(base).photometrie_auto_manuel \
             -borderwidth 2 \
@@ -614,10 +601,24 @@ namespace eval ::Photometrie {
 
         set catalogue $photometrie(cata_internet)
 
-        if { [ gets $fichier ligne ] <= 0 } {
+        # Recherche de la première ligne non commentée (cad qui ne commence pas par un #)
+        set trouve 0
+        while { ( ( $trouve == 0 ) && ( [ gets $fichier ligne ] >= 0 ) ) } {
+            set liste_ligne [ split $ligne \t ]
+            if { [ llength $liste_ligne ] != 0 } {
+                set premier_mot [ lindex $liste_ligne 0 ]
+                set premier_car [ string index $premier_mot 0 ]
+                if { $premier_car != "#" } {
+                    set trouve 1
+                }
+            }
+        }
+        if { $trouve == 0 } {
+            # On a atteint la fin du fichier, et pas de ligne non commentée. Donc erreur.
             return -1
         }
-        set liste_ligne [ split $ligne \t ]
+
+        # Message console "%s %s\n" $premier_car $liste_ligne
         set probleme 0
         foreach champ_catalogue $photometrie(champ,$catalogue) champ_script [ list ad dec nom mag_b mag_r ] {
             set t [ lsearch -exact $liste_ligne $champ_catalogue ]
@@ -679,8 +680,6 @@ namespace eval ::Photometrie {
         if { $photometrie(mode_debug) == 0 } {
             # Toutes les données sont dans data(), plus besoin du fichier catalogue
             file delete $photometrie(catalogue)
-            # Là, on est sur que Aladin s'est bien terminé, puisqu'on a pu lire le catalogue
-            file delete $photometrie(script_aladin)
         }
 
         return 0
@@ -710,11 +709,11 @@ namespace eval ::Photometrie {
                 -width 1 \
                 -tags [ list photom $tag $cercle ]
         }
-        $::audace(hCanvas) itemconfigure exterieur1 -dash { 3 6 3 3 }
-        $::audace(hCanvas) itemconfigure exterieur2 -dash { 3 6 3 3 }
+#        $::audace(hCanvas) itemconfigure exterieur1 -dash { 3 6 3 3 }
+#        $::audace(hCanvas) itemconfigure exterieur2 -dash { 3 6 3 3 }
 
-        set demi_largeur [ expr $photometrie(defaut,carre,modelisation) * $fwhm / 2 *$zoom ]
-        $::audace(hCanvas) create rectangle \
+#        set demi_largeur [ expr $photometrie(defaut,carre,modelisation) * $fwhm / 2 * $zoom ]
+#        $::audace(hCanvas) create rectangle \
             [ expr $x - $demi_largeur ] \
             [ expr $y + $demi_largeur ] \
             [ expr $x + $demi_largeur ] \
@@ -722,64 +721,6 @@ namespace eval ::Photometrie {
             -outline green \
             -width 1 \
             -tags [ list photom $tag carre ]
-    }
-
-    ##
-    # @brief Gestion des retours de Aladin
-    # @param canal : canal de comm (ou "pipe")
-    # @param mode : fermé si la minuterie a déclenché, ouvert sinon
-    #
-    proc AttenteAladin { canal mode } {
-        variable attente
-        variable photometrie
-        if { $mode == "ouvert" } {
-            if { [ eof $canal ] } {
-                if { [ file exists $photometrie(catalogue) ] } {
-                    set ::Photometrie::attente ok
-                } else {
-                    set ::Photometrie::attente probleme
-                }
-                catch { close $canal }
-            } else {
-                if { [ gets $canal data ] > 0 } {
-                    ::console::affiche_erreur "$data \n"
-                }
-            }
-        } else {
-            set ::Photometrie::attente trop_tard
-            close $canal
-        }
-    }
-
-    ##
-    # @brief Exécution de Aladin en mode non bloquant
-    # @param nom du fichier script Aladin à exécuter.
-    # @return -1 en cas d'échec, 0 sinon
-    proc ExecutionAladin { script_aladin temps_attente_max } {
-        variable canal
-        variable attente
-        variable photometrie
-
-        set attente rien
-        if { $photometrie(mode_aladin) == "jar" } {
-            set commande "\"$::conf(exec_java)\" -jar \"$::conf(exec_aladin)\" -script \"$script_aladin\" 2>@1"
-        } else {
-            # mode aladin.exe
-            set commande "\"$::conf(exec_aladin)\" -script \"$script_aladin\" 2>@1"
-        }
-        set canal [ open "| $commande" r ]
-        fconfigure $canal -blocking 0 -encoding binary
-        fileevent $canal readable { ::Photometrie::AttenteAladin $::Photometrie::canal ouvert }
-        set troptard [ after $temps_attente_max { ::Photometrie::AttenteAladin $::Photometrie::canal ferme } ]
-
-        vwait ::Photometrie::attente
-        after cancel $troptard
-        if { $attente == "ok" } {
-            return 0
-        } else {
-            return -1
-        }
-
     }
 
     ##
@@ -798,12 +739,11 @@ namespace eval ::Photometrie {
         bind $::audace(hCanvas) <ButtonRelease> { ::Photometrie::CalculFluxMagnitude %W %x %y }
     }
 
+
     ##
-    # @brief Génération du script pour Aladin et lancement de l'exécution
+    # @brief Requête HTTP de type POST sur Vizier
     # @return -1 en cas d'échec, 0 sinon
-    proc InterfaceAladin {} {
-        global ::Photometrie::attente_aladin
-        global ::Photometrie::selection_aladin
+    proc InterfaceHttp {} {
         variable photometrie_texte
         variable photometrie
 
@@ -813,57 +753,91 @@ namespace eval ::Photometrie {
 
         # Récupération des coordonnées (le champ est déjà connu)
         set res [ buf$::audace(bufNo) xy2radec [ list [ expr $photometrie(naxis1) / 2 ] [ expr $photometrie(naxis2) / 2 ] ] ]
-        set ra [ mc_angle2hms [ lindex $res 0 ] ]
-        set dec [ mc_angle2dms [ lindex $res 1 ] 90 ]
+        set ra [ lindex $res 0 ]
+        set dec [ lindex $res 1 ]
         set coords "$ra $dec"
 
         switch -exact -- $photometrie(cata_internet) {
-            usnob1 { set catalog Vizier(I/284) }
-            ucac2 { set catalog Vizier(I/289) }
-            nomad1 { set catalog VizieR(NOMAD1) }
+            usnob1 { set catalog "USNOB1" }
+            nomad1 { set catalog "NOMAD1" }
         }
 
-        # Création du script Aladin
-        catch { unset texte }
-        append texte "analyse_photo=get $catalog $coords $photometrie(champ)'\n"
-        append texte "sync\n"
-        append texte "export analyse_photo $photometrie(catalogue)\n"
-        append texte "quit\n"
+        # Création de la requête
+        catch { unset requete }
+        set requete [ ::http::formatQuery "-mime" "tsv" "-source" $catalog "-out" "**" "-c" $coords "-c.rm" $photometrie(champ) ]
+        # Message console "%s\n" $requete
 
-        set script_aladin [ file join $::audace(rep_travail) photometrie.ajs ]
-        set f [ open "$script_aladin" w ]
-        puts -nonewline $f $texte
-        close $f
-        set photometrie(script_aladin) $script_aladin
+        #::http::config -proxyhost "blablabla" -proxyport 8080
 
         # Calcul du temps d'attente max
-        # Empirisme : 2s pour minute d'arc
-        set temps_attente_max [ expr $photometrie(champ) * 2000 ]
+        # Empirisme : 1 s par minute d'arc
+        set temps_attente_max [ expr $photometrie(champ) * 1000 ]
+        # Voir les commentaires sur ::http:geturl plus bas
+        if { $temps_attente_max > 20000 } {
+            set temps_attente_max 20000
+        }
 
         # Fenêtre informative pour faire patienter
-        set tl [ toplevel $::audace(base).photometrie_exec_aladin \
+        set tl [ toplevel $::audace(base).photometrie_http_vizier \
             -borderwidth 2 \
             -relief groove ]
         wm title $tl $photometrie_texte(titre_menu)
         wm protocol $tl WM_DELETE_WINDOW ::Photometrie::Suppression
         wm transient $tl .audace
-        label $tl.l1 -text "$photometrie_texte(temps_attente_aladin) [ expr $temps_attente_max / 1000 ] s"
+        label $tl.l1 -text "$photometrie_texte(temps_attente_chargement) [ expr $temps_attente_max / 1000 ] s"
         label $tl.l2 -text $photometrie_texte(patience)
         pack $tl.l1 $tl.l2
         ::confColor::applyColor $tl
         update
 
-        # Exécution de Aladin
-        set erreur_aladin [ ExecutionAladin $script_aladin $temps_attente_max ]
+        # la routine :http::geturl a un comportement très spécial.
+        # Le mode -command la rend non bloquante, les timers continuent de courir, et c'est bien comme ça
+        # Si la commande ne peut pas envoyer la requête (pb de proxy, par ex.), elle ne rend pas la main (bien qu'étant non bloquante). Donc tcl n'exécute pas les instruction suivantes (vwait ou tkwait). De plus, # elle a un timout interne fixé en dur à 20s, sans possibilité de le changer apparement.
+        # Si la requête peut partir, elle rend la main tout de suite.
+        # D'où cette bizarrerie sur photometrie(synchro) pour tenir compte des 2 cas.
+        set photometrie(synchro) 0
+        ::http::geturl http://vizier.u-strasbg.fr/viz-bin/asu-tsv -query $requete -blocksize 4096 -timeout $temps_attente_max -command ::Photometrie::FinHttp -progress ::Photometrie::ProgressionHttp
+        if { $photometrie(synchro) == 0 } {
+            vwait ::Photometrie::photometrie(synchro)
+        }
 
-        destroy $tl
-
-        if { $erreur_aladin != 0 } {
-            tk_messageBox -message "$photometrie_texte(err_exec_aladin)" -title "$photometrie_texte(titre_menu)" -icon error
+        if { ![ file exists $photometrie(catalogue) ] } {
+            tk_messageBox -message "$photometrie_texte(err_reseau)" -title "$photometrie_texte(titre_menu)" -icon error
             set erreur -1
         }
 
         return $erreur
+    }
+
+    ##
+    # @brief Callback appelé tous les "blocksize" octets reçus
+    proc ProgressionHttp { token total current } {
+        # Sert au debogage
+        # Message console "p"
+    }
+
+    ##
+    # @brief Callback appelé à la fin de la requête sur Vizier
+    proc FinHttp { token } {
+        variable photometrie
+
+        set e [ ::http::status $token ]
+        if { $e != "ok" } {
+            # Message console "status %s\n" $e
+            # Message console "error %s\n" [ ::http::error $token ]
+        } else {
+            # Message console "status %s\n" $e
+            set a [ ::http::ncode $token ]
+            # Message console "ncode %s\n" $a
+            if { $a == 200 } {
+                set fout [ open $photometrie(catalogue) w ]
+                puts $fout [ ::http::data $token ]
+                close $fout
+            }
+        }
+        destroy $::audace(base).photometrie_http_vizier
+        set photometrie(synchro) 1
+        ::http::cleanup $token
     }
 
     proc Message { niveau args } {
@@ -882,6 +856,7 @@ namespace eval ::Photometrie {
     #
     proc MesureFlux { tag xy } {
         variable photometrie
+        variable photometrie_texte
 
         set fwhm $photometrie(fwhm)
         set f $photometrie(defaut,carre,modelisation)
@@ -889,33 +864,16 @@ namespace eval ::Photometrie {
             Message console "fwhm=%f\n" $fwhm
             Message console "f=%f\n" $f
         }
+
+        set photometrie(flux_mod_$tag) [ Modelisation $xy ]
+        if { [ lindex $photometrie(flux_mod_$tag) 0 ] < 0 } {
+            $photometrie(label_flux_mod_$tag) configure -text "???"
+        } else {
+            $photometrie(label_flux_mod_$tag) configure -text [ expr round( [ lindex $photometrie(flux_mod_$tag) 1 ] + 0.5 ) ]
+        }
+
         set x [ lindex $xy 0 ]
         set y [ lindex $xy 1 ]
-        set x1 [ expr round( $x - $f * $fwhm / 2 ) ]
-        set y1 [ expr round( $y - $f * $fwhm / 2 ) ]
-        set x2 [ expr round( $x + $f * $fwhm / 2 ) ]
-        set y2 [ expr round( $y + $f * $fwhm / 2 ) ]
-
-        catch { calaphot_fitgauss2d $::audace(bufNo) [ list $x1 $y1 $x2 $y2 ] } mesure_mod
-        if { $photometrie(mode_debug) != 0 } {
-            Message console "Mod %s\n" [ list $x1 $y1 $x2 $y2 ]
-            Message console "Mod %s\n" $mesure_mod
-        }
-        if { [ string is double [ lindex $mesure_mod 0 ] ] } {
-            if { ( [ lindex $mesure_mod 1 ] > 0 ) && ( [ lindex $mesure_mod 12 ] > 0 ) } {
-                # La modélisation est correcte
-                set photometrie(flux_mod_$tag) [ list [ lindex $mesure_mod 12 ] [ lindex $mesure_mod 23 ] ]
-                $photometrie(label_flux_mod_$tag) configure -text [ expr round( [ lindex $mesure_mod 12 ] ) ]
-            } else {
-                set photometrie(flux_mod_$tag) [ list 0.0 0.0 ]
-                $photometrie(label_flux_mod_$tag) configure -text "???"
-            }
-        } else {
-            # la valeur <0 va empêcher le calcul de la magnitude
-            set photometrie(flux_mod_$tag) -1
-            $photometrie(label_flux_mod_$tag) configure -text "???"
-        }
-
         set xr [ expr round( $x + .5 ) ]
         set yr [ expr round( $y + .5 ) ]
         catch { calaphot_fluxellipse \
@@ -937,6 +895,7 @@ namespace eval ::Photometrie {
                 $photometrie(label_flux_ouv_$tag) configure -text "???"
             }
         } else {
+            ::console::affiche_erreur "$mesure_ouv\n"
             # la valeur <0 va empêcher le calcul de la magnitude
             set photometrie(flux_ouv_$tag) -1
             $photometrie(label_flux_ouv_$tag) configure -text "???"
@@ -951,7 +910,7 @@ namespace eval ::Photometrie {
         variable photometrie
 
         ChoixCatalogueInternet
-        if { [ InterfaceAladin ] < 0 } { return -1 }
+        if { [ InterfaceHttp ] < 0 } { return -1 }
         if { [ CreationBaseDonnées ] < 0 } { return -1 }
         if { [ SelectionReference ] < 0 } { return -1 }
         return 0
@@ -1043,12 +1002,16 @@ namespace eval ::Photometrie {
             tk_messageBox -message "$photometrie_texte(err_hors_clou)" -title "$photometrie_texte(titre_menu)" -icon error
             set mesure_mod [ list -1 -1 ]
         } else {
-            set mm [ calaphot_fitgauss2d $::audace(bufNo) [ list $x1 $y1 $x2 $y2 ] ]
-            if { ( [ lindex $mm 1 ] <= 0 ) || ( [ lindex $mm 12 ] <= 0 ) } {
-                tk_messageBox -message "$photometrie_texte(err_etoile_faible)" -title "$photometrie_texte(titre_menu)" -icon error
+            if { [ catch { calaphot_fitgauss2d $::audace(bufNo) [ list $x1 $y1 $x2 $y2 ] } mm ] } {
+                ::console::affiche_erreur "$mm\n"
                 set mesure_mod [ list -1 -1 ]
             } else {
-                set mesure_mod [ list [ lindex $mm 1 ] [ lindex $mm 12 ] ]
+                if { ( [ lindex $mm 1 ] <= 0 ) || ( [ lindex $mm 12 ] <= 0 ) } {
+                    tk_messageBox -message "$photometrie_texte(err_etoile_faible)" -title "$photometrie_texte(titre_menu)" -icon error
+                    set mesure_mod [ list -1 -1 ]
+                } else {
+                    set mesure_mod [ list [ lindex $mm 1 ] [ lindex $mm 12 ] ]
+                }
             }
         }
         return $mesure_mod
@@ -1071,7 +1034,6 @@ namespace eval ::Photometrie {
     }
 
     proc SelectionReference {} {
-        global ::Photometrie::selection_aladin
         variable photometrie_texte
         variable photometrie
         variable data
@@ -1122,12 +1084,10 @@ namespace eval ::Photometrie {
         grid $tlf1mb -row $ligne -column 6
 
         set n 0
-        set photometrie(selection_aladin) 1
+        set photometrie(selection_reference) 1
         set photometrie(ancienne_selection) 1
         set premier_id 0
         set zoom [ visu$::audace(visuNo) zoom ]
-        set fwhm $photometrie(fwhm)
-        set f3 [ expr $fwhm * 3 ]
         set catalogue $photometrie(cata_internet)
         foreach cle $liste_rouge_triee {
             foreach id $index_rouge($cle) {
@@ -1150,17 +1110,18 @@ namespace eval ::Photometrie {
                     set xye [ ConvImageEcran $xyi ]
                     set xe [ lindex $xye 0 ]
                     set ye [ lindex $xye 1 ]
+                    set f3 [ expr $photometrie(fwhm) * 1.5 ]
                     $::audace(hCanvas) create oval \
-                        [ expr $xe - $fwhm ] \
-                        [ expr $ye + $fwhm ] \
-                        [ expr $xe + $fwhm ] \
-                        [ expr $ye - $fwhm ] \
+                        [ expr $xe - $f3 ] \
+                        [ expr $ye + $f3 ] \
+                        [ expr $xe + $f3 ] \
+                        [ expr $ye - $f3 ] \
                         -outline red \
                         -width 1 \
                         -tags [ list photom ovale_$n ]
                     $::audace(hCanvas) create text \
                         $xe \
-                        [ expr $ye - 3 * $fwhm ] \
+                        [ expr $ye - 1.5 * $f3 ] \
                         -text $n \
                         -tags [ list photom texte_$n ] \
                         -fill red \
@@ -1181,7 +1142,7 @@ namespace eval ::Photometrie {
                     }
                     set col 0
                     radiobutton ${tlf1}.${n}_cb \
-                        -variable ::Photometrie::photometrie(selection_aladin) \
+                        -variable ::Photometrie::photometrie(selection_reference) \
                         -command "::Photometrie::AnimationSelectionCatalogue $tlf1 $id" \
                         -value $n
                     grid ${tlf1}.${n}_cb -row $ligne -column $col
@@ -1195,7 +1156,7 @@ namespace eval ::Photometrie {
                 }
 
             }
-            if { $n > 19 } { break }
+            if { $n > 29 } { break }
         }
 
         if { $n == 0 } {
@@ -1219,7 +1180,7 @@ namespace eval ::Photometrie {
         set tlf2b2 [ button $tlf2.b2 \
             -text $photometrie_texte(arret) \
             -command {
-                set ::Photometrie::photometrie(selection_aladin) -1
+                set ::Photometrie::photometrie(selection_reference) -1
                 $::audace(hCanvas) delete photom
                 update idletasks
                 destroy $::audace(base).photometrie_selection_internet
@@ -1245,14 +1206,16 @@ namespace eval ::Photometrie {
         set id $photometrie(selection,id)
         set param $data($id)
         set photometrie(reference,nom) [ lindex $param $photometrie(position,$catalogue,nom) ]
-        set photometrie(reference,xy) [ buf$::audace(bufNo) radec2xy [ list [ expr [ lindex $param $photometrie(position,$catalogue,ad) ] * 1.0 ] [ expr [ lindex $param $photometrie(position,$catalogue,dec) ] * 1.0 ] ] ]
+        set photometrie(reference,xy) [ buf$::audace(bufNo) radec2xy \
+            [ list [ expr [ lindex $param $photometrie(position,$catalogue,ad) ] * 1.0 ] \
+            [ expr [ lindex $param $photometrie(position,$catalogue,dec) ] * 1.0 ] ] ]
         if { $photometrie(selection_couleur) == "mag_r" } {
             set photometrie(reference,magnitude) [ lindex $param $photometrie(position,$catalogue,mag_r) ]
         } else {
             set photometrie(reference,magnitude) [ lindex $param $photometrie(position,$catalogue,mag_b) ]
         }
 
-        return $photometrie(selection_aladin)
+        return $photometrie(selection_reference)
     }
 
     ##
@@ -1286,6 +1249,8 @@ namespace eval ::Photometrie {
             tk_messageBox -message "$photometrie_texte(err_pas_de_sel)" -title "$photometrie_texte(titre_menu)" -icon error
         } else {
             set photometrie(reference,xy) [ buf$::audace(bufNo) centro $rect ]
+            set fwhm [ buf$::audace(bufNo) fwhm $rect ]
+            set photometrie(fwhm) [ expr ( [ lindex $fwhm 0 ] + [ lindex $fwhm 1 ] ) / 2 ]
             if { [ ValidationMotifs $photometrie(reference,xy) ] < 0 } {
                 tk_messageBox -message "$photometrie_texte(err_hors_clou)" -title "$photometrie_texte(titre_menu)" -icon error
             } else {
@@ -1313,13 +1278,15 @@ namespace eval ::Photometrie {
             set max $photometrie(defaut,carre,modelisation)
         }
 
-        set fwhm $photometrie(fwhm)
+        set f [ buf$::audace(bufNo) fwhm [ list [ expr round($x - $max) ] [ expr round($y - $max) ] [ expr round($x + $max) ] [ expr round($y + $max) ] ] ]
+        set fwhm [ expr ( [ lindex $f 0 ] + [ lindex $f 1 ] ) / 2 ]
         if { ( [ expr $x - $max * $fwhm ] < 1 )
         || ( [ expr $x + $max * $fwhm ] > $photometrie(naxis1) )
         || ( [ expr $y - $max * $fwhm ] < 1 )
         || ( [ expr $y + $max * $fwhm ] > $photometrie(naxis2) ) } {
             return -1
         } else {
+            set photometrie(fwhm) $fwhm
             return 0
         }
     }

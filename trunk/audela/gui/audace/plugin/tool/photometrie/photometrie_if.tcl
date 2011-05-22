@@ -9,7 +9,7 @@
 #
 
 namespace eval ::Photometrie {
-    package provide photometrie 1.1
+    package provide photometrie 2.0
 
     source [ file join [ file dirname [ info script ] ] photometrie.cap ]
     source [ file join [ file dirname [ info script ] ] photometrie.tcl ]
@@ -93,8 +93,8 @@ namespace eval ::Photometrie {
             ::console::affiche_erreur "$version_lib \n"
             return 1
         } else {
-            if { [ expr double( [ string range $version_lib 0 2 ] ) ] < 4.0 } {
-                ::console::affiche_erreur "LibJM version must be greater than 4.0\n"
+            if { [ expr double( [ string range $version_lib 0 2 ] ) ] < 4.2 } {
+                ::console::affiche_erreur "LibJM version must be greater than 4.2\n"
                 return 1
             }
         }
