@@ -40,7 +40,7 @@
 #include "divers.h"
 #include "calaphot.h"
 
-//using namespace std;
+using namespace std;
 
 namespace LibJM {
 
@@ -105,8 +105,8 @@ int Photom::CmdModeLecturePixels( ClientData clientData, Tcl_Interp *interp, int
         Tcl_SetResult( interp, const_cast<char*>( oss.str().c_str() ), TCL_VOLATILE );
         return TCL_ERROR;
     }
-    Photom::instance()->minmax->minimum( std::min<TYPE_PIXELS>( (TYPE_PIXELS)extrema[0], (TYPE_PIXELS)extrema[1] ) );
-    Photom::instance()->minmax->maximum( std::max<TYPE_PIXELS>( (TYPE_PIXELS)extrema[0], (TYPE_PIXELS)extrema[1] ) );
+    Photom::instance()->minmax->minimum( min( (TYPE_PIXELS)extrema[0], (TYPE_PIXELS)extrema[1] ) );
+    Photom::instance()->minmax->maximum( max( (TYPE_PIXELS)extrema[0], (TYPE_PIXELS)extrema[1] ) );
     return TCL_OK;
 }
 
