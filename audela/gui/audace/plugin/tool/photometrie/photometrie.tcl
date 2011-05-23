@@ -467,12 +467,13 @@ namespace eval ::Photometrie {
             -text $photometrie_texte(ok) \
             -command {
                 destroy $::audace(base).photometrie_cata_internet
+                set ::Photometrie::photometrie(choix_mode) 0
             } ]
         set tlf2b2 [ button $tlf2.b2 \
             -text $photometrie_texte(arret) \
             -command {
-                set ::Photometrie::photometrie(choix_mode) arret
                 destroy $::audace(base).photometrie_cata_internet
+                set ::Photometrie::photometrie(choix_mode) -1
             } ]
         pack $tlf2b1 $tlf2b2 \
             -side left \
@@ -481,11 +482,13 @@ namespace eval ::Photometrie {
 
         pack $tlf1 $tlf2
 
-        #--- Mise a jour dynamique des couleurs
+        #--- Mise à jour dynamique des couleurs
         ::confColor::applyColor $tl
         update idletasks
 
         tkwait window $tl
+
+        return $photometrie(choix_mode)
     }
 
     ##
@@ -916,7 +919,7 @@ namespace eval ::Photometrie {
     proc ModeAutoInternet {} {
         variable photometrie
 
-        ChoixCatalogueInternet
+        if { [ ChoixCatalogueInternet ] < 0 } { return -1 }
         if { [ InterfaceHttp ] < 0 } { return -1 }
         if { [ CreationBaseDonnées ] < 0 } { return -1 }
         if { [ SelectionReference ] < 0 } { return -1 }
