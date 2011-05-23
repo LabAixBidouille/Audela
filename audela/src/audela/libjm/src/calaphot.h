@@ -196,13 +196,14 @@ public :
     static Limites * minmax;
     static int photom_mode;
 
+    TYPE_PIXELS LecturePixel( double x, double y );
+
 private :
     Photom();
     ~Photom();
     static Photom * _unique_instance;
     CBuffer * _buffer;
     int Gauss( Astre &, gsl_vector *, gsl_vector *, gsl_matrix *, double *me1 );
-    TYPE_PIXELS LecturePixel( double x, double y );
     int EcriturePixel( double x, double y, TYPE_PIXELS intensite );
     void FluxEllipse( Photom::ouverture * ouv, int c, flux_ouverture *fouv );
     int Incertitude( double flux_etoile, double flux_fond, double nb_pixel, double nb_pixel_fond, double gain, double sigma, double *signal_bruit, double *incertitude, double *bruit_flux );

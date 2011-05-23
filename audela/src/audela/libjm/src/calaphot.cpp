@@ -45,6 +45,13 @@
 #include "divers.h"
 #include "calaphot.h"
 
+using namespace std;
+
+#if defined(WIN32) && defined(_MSC_VER) &&( _MSC_VER < 1500)
+#define min(a, b) (((a) < (b)) ? (a) : (b))
+#define max(a, b) (((a) > (b)) ? (a) : (b))
+#endif
+
 namespace LibJM {
 
     Photom * Photom::_unique_instance = 0;
@@ -947,10 +954,10 @@ void Photom::Rectangle::Init( const std::vector<int> &zone ) {
     /* Tri des x1, x2 et y1, y2 */
     /* Notation bizarre, car windows.h redéfinit min et max en macros */
     /* et ça plante VC++ */
-    xmin = std::min<int>( zone[0], zone[2] );
-    xmax = std::max<int>( zone[0], zone[2] );
-    ymin = std::min<int>( zone[1], zone[3] );
-    ymax = std::max<int>( zone[1], zone[3] );
+    xmin = min( zone[0], zone[2] );
+    xmax = max( zone[0], zone[2] );
+    ymin = min( zone[1], zone[3] );
+    ymax = max( zone[1], zone[3] );
 
     /* Quelques valeurs annexes */
     nx = xmax - xmin + 1;
