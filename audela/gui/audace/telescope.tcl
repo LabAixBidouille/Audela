@@ -1016,6 +1016,10 @@ proc ::telescope::afficheCoord { } {
             if { $conf(telescope) == "temma" } {
                #--- Affichage de la position du telescope sur la monture equatoriale allemande
                monture_allemande
+               if { [ tel$audace(telNo) firmware ] == "" } {
+                  set audace(telescope,getra)  "$caption(telescope,tel)"
+                  set audace(telescope,getdec) "$caption(telescope,non_connecte)"
+               }
             }
          }
       } else {
