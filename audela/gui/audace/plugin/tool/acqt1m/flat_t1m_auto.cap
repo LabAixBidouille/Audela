@@ -77,6 +77,11 @@ set caption(flat_t1m_auto,msgRepertoire)             "Unable to create folder"
 set caption(flat_t1m_auto,filtre)                    "Filter"
 set caption(flat_t1m_auto,nbre)                      "Number"
 
+set caption(flat_t1m_auto,avancement_acq)            "Acquisition Progress"
+set caption(flat_t1m_auto,en_cours)                  "Acquiring..."
+set caption(flat_t1m_auto,lecture)                   "Read CCD"
+set caption(flat_t1m_auto,sec)                       "sec."
+
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
@@ -145,6 +150,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(flat_t1m_auto,msgRepertoire)          "Impossible de créer le répertoire"
    set caption(flat_t1m_auto,filtre)                 "Filtre"
    set caption(flat_t1m_auto,nbre)                   "Nombre"
+
+   set caption(flat_t1m_auto,avancement_acq)         "Avancement de l'acquisition"
+   set caption(flat_t1m_auto,en_cours)               "Acquisition en cours..."
+   set caption(flat_t1m_auto,lecture)                "Lecture CCD"
+   set caption(flat_t1m_auto,sec)                    "sec."
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -215,6 +225,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(flat_t1m_auto,filtre)                 "# Filtre"
    set caption(flat_t1m_auto,nbre)                   "# Nombre"
 
+   set caption(flat_t1m_auto,avancement_acq)         "Avanzamento acquisizione"
+   set caption(flat_t1m_auto,en_cours)               "Acquisizione in corso ..."
+   set caption(flat_t1m_auto,lecture)                "Lettura CCD"
+   set caption(flat_t1m_auto,sec)                    "sec."
+
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
@@ -283,6 +298,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(flat_t1m_auto,msgRepertoire)          "# Impossible de créer le répertoire"
    set caption(flat_t1m_auto,filtre)                 "# Filtre"
    set caption(flat_t1m_auto,nbre)                   "# Nombre"
+
+   set caption(flat_t1m_auto,avancement_acq)         "Progreso de la adquisición"
+   set caption(flat_t1m_auto,en_cours)               "Adquiriendo ..."
+   set caption(flat_t1m_auto,lecture)                "Leer CCD"
+   set caption(flat_t1m_auto,sec)                    "seg."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -353,6 +373,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(flat_t1m_auto,filtre)                 "# Filtre"
    set caption(flat_t1m_auto,nbre)                   "# Nombre"
 
+   set caption(flat_t1m_auto,avancement_acq)         "Belichtung im Gange"
+   set caption(flat_t1m_auto,en_cours)               "Laufende Belichtung..."
+   set caption(flat_t1m_auto,lecture)                "CCD Lesen"
+   set caption(flat_t1m_auto,sec)                    "sek."
+
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
@@ -421,6 +446,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(flat_t1m_auto,msgRepertoire)          "# Impossible de créer le répertoire"
    set caption(flat_t1m_auto,filtre)                 "# Filtre"
    set caption(flat_t1m_auto,nbre)                   "# Nombre"
+
+   set caption(flat_t1m_auto,avancement_acq)         "Adiantamento da aquisição"
+   set caption(flat_t1m_auto,en_cours)               "Aquisição em curso..."
+   set caption(flat_t1m_auto,lecture)                "Ler CCD"
+   set caption(flat_t1m_auto,sec)                    "seg."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -491,6 +521,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(flat_t1m_auto,filtre)                 "Filter"
    set caption(flat_t1m_auto,nbre)                   "Number"
 
+   set caption(flat_t1m_auto,avancement_acq)         "Acquisition\nProgress"
+   set caption(flat_t1m_auto,en_cours)               "Acquiring..."
+   set caption(flat_t1m_auto,lecture)                "Read CCD"
+   set caption(flat_t1m_auto,sec)                    "sec."
+
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
@@ -560,6 +595,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(flat_t1m_auto,filtre)                 "Filter"
    set caption(flat_t1m_auto,nbre)                   "Number"
 
+   set caption(flat_t1m_auto,avancement_acq)         "Acquisition\nProgress"
+   set caption(flat_t1m_auto,en_cours)               "Acquiring..."
+   set caption(flat_t1m_auto,lecture)                "Read CCD"
+   set caption(flat_t1m_auto,sec)                    "sec."
+
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
@@ -628,6 +668,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(flat_t1m_auto,msgRepertoire)          "Unable to create folder"
    set caption(flat_t1m_auto,filtre)                 "Filter"
    set caption(flat_t1m_auto,nbre)                   "Number"
+
+   set caption(flat_t1m_auto,avancement_acq)         "Acquisition\nProgress"
+   set caption(flat_t1m_auto,en_cours)               "Acquiring..."
+   set caption(flat_t1m_auto,lecture)                "Read CCD"
+   set caption(flat_t1m_auto,sec)                    "sec."
 
 }
 
