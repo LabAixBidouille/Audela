@@ -328,7 +328,9 @@ proc spc_sinefit { args } {
       ::plotxy::ylabel $measured_quantity
       ::plotxy::title "Fit of data $nom_dat on estimated sine function \n "
       # fin de la proc
-      ::console::affiche_resultat " Estimated amplitude : $amplitude and time shift : $tau \n"
+      set laperiode [ expr 4.*asin(1)/$omega ]
+      set phi [ expr $omega*$tau ]
+      ::console::affiche_resultat " Estimated amplitude : $amplitude and time shift : $tau \n y=$dc+$amplitude*sin(2PI*t/$laperiode-$phi)\n"
       set liste_caract [ list ]
       lappend liste_caract $amplitude
       lappend liste_caract $tau
