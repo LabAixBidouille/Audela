@@ -2002,7 +2002,7 @@ proc spc_fit2ps { args } {
 
         #--- Créée le fichier script pour gnuplot :
         set file_id [open "$audace(rep_images)/${spcfile}.gp" w+]
-        puts $file_id "call \"$spcaudace(repgp)/gp_ps.cfg\" \"$audace(rep_images)/${spcfile}$spcaudace(extdat)\" \"$titre\" $ydeb $yfin $xdeb $xfin * \"$audace(rep_images)/${spcfile}.eps\" \"$legendex\" \"$legendey\" "
+        puts $file_id "call \"$spcaudace(repgp)/gp_ps.cfg\" \"$audace(rep_images)/${spcfile}$spcaudace(extdat)\" \"$titre\" $ydeb $yfin $xdeb $xfin * \"$audace(rep_images)/${spcfile}.ps\" \"$legendex\" \"$legendey\" "
         close $file_id
 
         #--- Détermine le chemin de l'executable Gnuplot selon le système d'exploitation :
@@ -2019,8 +2019,8 @@ proc spc_fit2ps { args } {
         file delete -force "$audace(rep_images)/${spcfile}.gp"
 
         #--- Fin du script :
-        ::console::affiche_resultat "Profil de raie exporté sous ${spcfile}.eps\n"
-        return "${spcfile}.eps"
+        ::console::affiche_resultat "Profil de raie exporté sous ${spcfile}.ps\n"
+        return "${spcfile}.ps"
     } else {
         ::console::affiche_erreur "Usage: spc_fit2ps fichier_fits \"Titre\" ?legende_x lende_y? ?xdeb xfin?\n\n"
     }
@@ -2368,9 +2368,9 @@ proc spc_txt2ps { args } {
    set fichier_nm [ file rootname $fichier ]
    set file_id [open "$audace(rep_images)/${fichier_nm}.gp" w+]
    if { $joined=="n" } {
-      puts $file_id "call \"$spcaudace(repgp)/gp_pointsps.cfg\" \"$audace(rep_images)/$fichier\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/${fichier_nm}.eps\" \"$legendex\" \"$legendey\" "
+      puts $file_id "call \"$spcaudace(repgp)/gp_pointsps.cfg\" \"$audace(rep_images)/$fichier\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/${fichier_nm}.ps\" \"$legendex\" \"$legendey\" "
    } else {
-      puts $file_id "call \"$spcaudace(repgp)/gp_dataps.cfg\" \"$audace(rep_images)/$fichier\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/${fichier_nm}.eps\" \"$legendex\" \"$legendey\" "
+      puts $file_id "call \"$spcaudace(repgp)/gp_dataps.cfg\" \"$audace(rep_images)/$fichier\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/${fichier_nm}.ps\" \"$legendex\" \"$legendey\" "
    }
    close $file_id
    
@@ -2383,8 +2383,8 @@ proc spc_txt2ps { args } {
       ::console::affiche_resultat "Export Gnuplot (0=OK) : $answer\n"
    }
    
-   ::console::affiche_resultat "Graphique sauvé sous ${fichier_nm}.eps\n"
-   return ${fichier_nm}.eps
+   ::console::affiche_resultat "Graphique sauvé sous ${fichier_nm}.ps\n"
+   return ${fichier_nm}.ps
 }
 ####################################################################
 
@@ -2460,7 +2460,7 @@ proc spc_txt2pserr { args } {
    #--- Créée le fichier script pour gnuplot :
    set fichier_nm [ file rootname $fichier ]
    set file_id [open "$audace(rep_images)/${fichier_nm}_werr.gp" w+]
-   puts $file_id "call \"$spcaudace(repgp)/gp_points_err_ps.cfg\" \"$audace(rep_images)/$fichier\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/${fichier_nm}_werr.eps\" \"$legendex\" \"$legendey\" "
+   puts $file_id "call \"$spcaudace(repgp)/gp_points_err_ps.cfg\" \"$audace(rep_images)/$fichier\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/${fichier_nm}_werr.ps\" \"$legendex\" \"$legendey\" "
    close $file_id
    
    #--- Détermine le chemin de l'executable Gnuplot selon le système d'exploitation :
@@ -2472,8 +2472,8 @@ proc spc_txt2pserr { args } {
       ::console::affiche_resultat "Export Gnuplot (0=OK) : $answer\n"
    }
    
-   ::console::affiche_resultat "Graphique sauvé sous ${fichier_nm}_werr.eps\n"
-   return ${fichier_nm}_werr.eps
+   ::console::affiche_resultat "Graphique sauvé sous ${fichier_nm}_werr.ps\n"
+   return ${fichier_nm}_werr.ps
 }
 ####################################################################
 
