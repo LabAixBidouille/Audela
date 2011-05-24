@@ -2547,7 +2547,7 @@ proc ::acqt1m::acqt1mBuildIF { visuNo } {
 
       #--- Frame pour l'affichage de l'avancement de l'acqusition
       frame $panneau(acqt1m,$visuNo,This).avancement_acq -borderwidth 2 -relief ridge
-         #--- Checkbutton petit deplacement
+         #--- Checkbutton pour l'affichage de l'avancement de l'acqusition
          checkbutton $panneau(acqt1m,$visuNo,This).avancement_acq.check -highlightthickness 0 \
             -text $caption(acqt1m,avancement_acq) -variable panneau(acqt1m,$visuNo,avancement_acq)
          pack $panneau(acqt1m,$visuNo,This).avancement_acq.check -side left -fill x
