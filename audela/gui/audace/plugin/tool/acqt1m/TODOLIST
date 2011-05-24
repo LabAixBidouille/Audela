@@ -9,8 +9,6 @@
         AIRMASS
   y a t il la possibilite de voir ces infos mise a jour de maniere temps reel
 
-- il faudrait la boite d avancement
-
 - supprimer les mots cles RA et DEC du script lorsque les codeurs du T1m seront lus
   par Aud'ACE, ils seront renseignes en auto par l'interface des mots cles
 
