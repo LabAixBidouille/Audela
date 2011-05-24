@@ -479,8 +479,10 @@ proc ::acqt1m::stopTool { { visuNo 1 } } {
    }
 
    #--- Je verifie si une operation est en cours (acquisition des flats auto)
-   if { $::acqt1m_flatciel::private(pose_en_cours) == 1 } {
-      return -1
+   if { [ info exists ::acqt1m_flatciel::private(pose_en_cours) ] } {
+      if { $::acqt1m_flatciel::private(pose_en_cours) == 1 } {
+         return -1
+      }
    }
 
    #--- Sauvegarde de la configuration de prise de vue
@@ -2579,7 +2581,6 @@ proc ::acqt1m::acqt1mBuildIF { visuNo } {
          button $panneau(acqt1m,$visuNo,This).special.ressource -text "$caption(acqt1m,ressource)" \
             -command "::acqt1m::ressource"
          pack $panneau(acqt1m,$visuNo,This).special.ressource -side top -fill x -expand true
-
       pack $panneau(acqt1m,$visuNo,This).special -side top -fill x
 
       #--- Mise a jour dynamique des couleurs
