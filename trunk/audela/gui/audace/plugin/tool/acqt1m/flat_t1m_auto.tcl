@@ -263,7 +263,7 @@ namespace eval ::acqt1m_flatciel {
       pack  $::audace(base).selection_choix.fin -in $::audace(base).selection_choix -anchor center -side top -expand 1 -fill both -padx 3 -pady 0
 
          button $::audace(base).selection_choix.fin.stop -text $::caption(flat_t1m_auto,fermer) -command "::acqt1m_flatciel::fermerAffichageChoixFiltres $visuNo" -bg $::audace(color,backColor2)
-         pack $::audace(base).selection_choix.fin.stop -in $::audace(base).selection_choix.fin -anchor center -side bottom -fill x -padx 4 -pady 4 -anchor center -expand 0
+         pack $::audace(base).selection_choix.fin.stop -in $::audace(base).selection_choix.fin -anchor center -side bottom -fill x -padx 4 -pady 4 -expand 0
 
          button $::audace(base).selection_choix.fin.go -text $::caption(flat_t1m_auto,goFlatsAuto) -command "::acqt1m_flatciel::acqAutoFlat $visuNo" -bg $::audace(color,backColor2)
          pack   $::audace(base).selection_choix.fin.go -in $::audace(base).selection_choix.fin -anchor center -side bottom -fill x -padx 4 -pady 4 -expand 0
@@ -480,33 +480,33 @@ namespace eval ::acqt1m_flatciel {
 
          foreach x $listeFiltreActif {
             button $::audace(base).selection_filtre.filtres.$x -text $private(texte_bouton,$x) -command "::acqt1m_flatciel::acqFlat $visuNo $x" -bg $::audace(color,backColor2)
-            pack   $::audace(base).selection_filtre.filtres.$x -in $::audace(base).selection_filtre.filtres -side top -anchor center -fill x -padx 4 -pady 4 -expand 1
+            pack   $::audace(base).selection_filtre.filtres.$x -in $::audace(base).selection_filtre.filtres -anchor center -side top -fill x -padx 4 -pady 4 -expand 1
          }
 
       frame $::audace(base).selection_filtre.h -borderwidth 0 -relief solid
       pack $::audace(base).selection_filtre.h -in $::audace(base).selection_filtre -anchor s -side bottom -expand 0 -fill both -padx 3 -pady 0
 
          button $::audace(base).selection_filtre.h.fin -text $::caption(flat_t1m_auto,fermer) -command "::acqt1m_flatciel::fermerAcqAutoFlat $visuNo" -bg $::audace(color,backColor2)
-         pack $::audace(base).selection_filtre.h.fin -in $::audace(base).selection_filtre.h -anchor center -side top -fill x -padx 4 -pady 4 -anchor center -expand 1
+         pack $::audace(base).selection_filtre.h.fin -in $::audace(base).selection_filtre.h -anchor center -side top -fill x -padx 4 -pady 4 -expand 1
 
       frame $::audace(base).selection_filtre.f -borderwidth 0 -relief solid
       pack $::audace(base).selection_filtre.f -in $::audace(base).selection_filtre -anchor s -side bottom -expand 0 -fill both -padx 3 -pady 0
 
          button $::audace(base).selection_filtre.f.fin -text $::caption(flat_t1m_auto,stop) -command "::acqt1m_flatciel::arretAcqFlat $visuNo" -bg $::audace(color,backColor2) -state disabled
-         pack $::audace(base).selection_filtre.f.fin -in $::audace(base).selection_filtre.f -anchor center -side top -fill x -padx 4 -pady 4 -anchor center -expand 1
+         pack $::audace(base).selection_filtre.f.fin -in $::audace(base).selection_filtre.f -anchor center -side top -fill x -padx 4 -pady 4 -expand 1
 
       frame $::audace(base).selection_filtre.j -borderwidth 0 -relief ridge
       pack $::audace(base).selection_filtre.j -in $::audace(base).selection_filtre -anchor s -side bottom -expand 0 -fill both -padx 3 -pady 0
 
          checkbutton $::audace(base).selection_filtre.j.check -highlightthickness 0 \
             -text $::caption(flat_t1m_auto,avancement_acq) -variable ::acqt1m_flatciel::private(avancement_acq)
-         pack $::audace(base).selection_filtre.j.check -side left -fill x
+         pack $::audace(base).selection_filtre.j.check -in $::audace(base).selection_filtre.j -anchor w -side left -expand 0 -fill both -padx 3 -pady 0
 
       frame $::audace(base).selection_filtre.g -borderwidth 0 -relief ridge
       pack $::audace(base).selection_filtre.g -in $::audace(base).selection_filtre -anchor s -side bottom -expand 0 -fill both -padx 3 -pady 0
 
          label $::audace(base).selection_filtre.g.sens -text $info_sens_nuit -borderwidth 0 -relief flat
-         pack $::audace(base).selection_filtre.g.sens -in $::audace(base).selection_filtre.g -side left -anchor w -padx 4 -pady 4 -expand 0
+         pack $::audace(base).selection_filtre.g.sens -in $::audace(base).selection_filtre.g -anchor w -side left -expand 0 -fill both -padx 4 -pady 4
 
       focus $::audace(base).selection_filtre
 
