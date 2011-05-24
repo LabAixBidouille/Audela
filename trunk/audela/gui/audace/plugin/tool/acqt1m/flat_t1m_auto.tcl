@@ -16,6 +16,7 @@ namespace eval ::acqt1m_flatciel {
       #--- Initialisation de variables de configuration
       if { ! [ info exists ::conf(acqt1m,affichageChoixFiltres,position) ] } { set ::conf(acqt1m,affichageChoixFiltres,position) "+650+120" }
       if { ! [ info exists ::conf(acqt1m,acqAutoFlat,position) ] }           { set ::conf(acqt1m,acqAutoFlat,position)           "+650+120" }
+      if { ! [ info exists ::conf(acqt1m,avancement1,position) ] }           { set ::conf(acqt1m,avancement1,position)           "+700+300" }
 
       if { [ winfo exists $::audace(base).selection_choix ] } {
          wm withdraw $::audace(base).selection_choix
@@ -125,6 +126,11 @@ namespace eval ::acqt1m_flatciel {
       # Initialisation des variables de surveillance
       set private(pose_en_cours) 0
       set private(demande_stop)  0
+
+      # Initialisation des variables de gestion de l'avancement
+      set private(avancement_acq)       1
+      set private(dispTimeAfterId)      ""
+      set private(avancement1,position) $::conf(acqt1m,avancement1,position)
 
       return 0
    }
@@ -347,7 +353,7 @@ namespace eval ::acqt1m_flatciel {
          set ::conf(acqt1m,acqAutoFlat,position) "+[string range $private(geometryAcqAutoFlat) $deb $fin]"
       }
       set listeFiltreActif [ ::acqt1m_flatciel::listeSensFiltreActif $private(sensnuit) ]
-      set sizey [expr 210 + [llength $listeFiltreActif] * 40]
+      set sizey [expr 230 + [llength $listeFiltreActif] * 40]
 
       toplevel $::audace(base).selection_filtre -class Toplevel -borderwidth 2 -relief groove
       wm geometry $::audace(base).selection_filtre 530x$sizey$::conf(acqt1m,acqAutoFlat,position)
@@ -489,6 +495,13 @@ namespace eval ::acqt1m_flatciel {
          button $::audace(base).selection_filtre.f.fin -text $::caption(flat_t1m_auto,stop) -command "::acqt1m_flatciel::arretAcqFlat $visuNo" -bg $::audace(color,backColor2) -state disabled
          pack $::audace(base).selection_filtre.f.fin -in $::audace(base).selection_filtre.f -anchor center -side top -fill x -padx 4 -pady 4 -anchor center -expand 1
 
+      frame $::audace(base).selection_filtre.j -borderwidth 0 -relief ridge
+      pack $::audace(base).selection_filtre.j -in $::audace(base).selection_filtre -anchor s -side bottom -expand 0 -fill both -padx 3 -pady 0
+
+         checkbutton $::audace(base).selection_filtre.j.check -highlightthickness 0 \
+            -text $::caption(flat_t1m_auto,avancement_acq) -variable ::acqt1m_flatciel::private(avancement_acq)
+         pack $::audace(base).selection_filtre.j.check -side left -fill x
+
       frame $::audace(base).selection_filtre.g -borderwidth 0 -relief ridge
       pack $::audace(base).selection_filtre.g -in $::audace(base).selection_filtre -anchor s -side bottom -expand 0 -fill both -padx 3 -pady 0
 
@@ -505,6 +518,9 @@ namespace eval ::acqt1m_flatciel {
    #    Ferme la fenetre acqAutoFlat
    #------------------------------------------------------------
    proc fermerAcqAutoFlat { visuNo } {
+      variable private
+
+      set ::conf(acqt1m,avancement1,position) $private(avancement1,position)
       ::acqt1m_flatciel::recupPositionAcqAutoFlat
       destroy $::audace(base).selection_filtre
    }
@@ -714,6 +730,8 @@ namespace eval ::acqt1m_flatciel {
          $private($visuNo,camera) shutter synchro
          #--- Declenchement de l'acquisition
          ::camera::acquisition $private($visuNo,camItem) "::acqt1m_flatciel::attendImage $visuNo" $exptime
+         #--- Je lance la boucle d'affichage de l'avancement
+         after 10 ::acqt1m_flatciel::dispTime $visuNo $exptime
          #--- J'attends la fin de l'acquisition
          vwait ::acqt1m_flatciel::private(finAquisition)
 
@@ -772,6 +790,9 @@ namespace eval ::acqt1m_flatciel {
          #--- Pose en cours
          set private(pose_en_cours) 0
 
+         #--- Effacement de la barre de progression quand la pose est terminee
+         ::acqt1m_flatciel::avancementPose $visuNo -1
+
          #--- Arret de la pose et de la serie
          if {$private(demande_stop) == 1} {
             ::console::affiche_resultat "$::caption(flat_t1m_auto,arretDemande)\n"
@@ -811,6 +832,162 @@ namespace eval ::acqt1m_flatciel {
             ::console::affiche_erreur "acqt1m_flatciel::acqFlat error: $args\n"
             set private(finAquisition) "acquisitionResult"
          }
+      }
+   }
+
+   #------------------------------------------------------------
+   # dispTime
+   #    Timer de l'exposition
+   #------------------------------------------------------------
+   proc dispTime { visuNo exptime } {
+      variable private
+
+      #--- j'arrete le timer s'il est deja lance
+      if { [ info exists private(dispTimeAfterId) ] && $private(dispTimeAfterId)!="" } {
+         after cancel $private(dispTimeAfterId)
+         set private(dispTimeAfterId) ""
+      }
+
+      set private(exptime) $exptime
+
+      set t [ $private($visuNo,camera) timer -1 ]
+      #--- je mets a jour le status
+      if { $private(pose_en_cours) == 0 } {
+         #--- je supprime la fenetre s'il n'y a plus de pose en cours
+         set status ""
+      } else {
+         if { $private(demande_stop) == "0" } {
+            if { [expr $t > 0] } {
+               set status "[ expr $t ] / [ format "%d" [ expr int($exptime) ] ]"
+            } else {
+               set status "$::caption(flat_t1m_auto,lecture)"
+            }
+         } else {
+            set status "$::caption(flat_t1m_auto,lecture)"
+         }
+      }
+      update
+
+      #--- je mets a jour la fenetre de progression
+      ::acqt1m_flatciel::avancementPose $visuNo $t
+
+      if { $t > 0 } {
+         #--- je lance l'iteration suivante avec un delai de 1000 millisecondes
+         #--- (mode asynchone pour eviter l'empilement des appels recursifs)
+         set private(dispTimeAfterId) [ after 1000 ::acqt1m_flatciel::dispTime $visuNo $exptime ]
+      } else {
+         #--- je ne relance pas le timer
+         set private(dispTimeAfterId) ""
+      }
+   }
+
+   #------------------------------------------------------------
+   # avancementPose
+   #    Fenetre pour l'avancement de la pose
+   #------------------------------------------------------------
+   proc avancementPose { visuNo { t } } {
+      variable private
+
+      if { $private(avancement_acq) != "1" } {
+         return
+      }
+
+      #--- Recuperation de la position de la fenetre
+      ::acqt1m_flatciel::recupPositionAvancement $visuNo
+
+      #--- Initialisation de la barre de progression
+      set cpt "100"
+
+      #---
+      if { [ winfo exists $::audace(base).progress ] != "1" } {
+
+         #--- Cree la fenetre toplevel
+         toplevel $::audace(base).progress
+         wm transient $::audace(base).progress $::audace(base).selection_filtre
+         wm resizable $::audace(base).progress 0 0
+         wm title $::audace(base).progress "$::caption(flat_t1m_auto,en_cours)"
+         wm geometry $::audace(base).progress $private(avancement1,position)
+
+         #--- Cree le widget et le label du temps ecoule
+         label $::audace(base).progress.lab_status -text "" -justify center
+         pack $::audace(base).progress.lab_status -side top -fill x -expand true -pady 5
+
+         #---
+         if { $private(demande_stop) == "1" } {
+            $::audace(base).progress.lab_status configure -text $::caption(flat_t1m_auto,lecture)
+         } else {
+            if { $t < 0 } {
+               destroy $::audace(base).progress
+            } elseif { $t > 0 } {
+               $::audace(base).progress.lab_status configure -text "$t $::caption(flat_t1m_auto,sec) /\
+                  [ format "%d" [ expr int( $private(exptime) ) ] ] $::caption(flat_t1m_auto,sec)"
+               set cpt [ expr $t * 100 / int( $private(exptime) ) ]
+               set cpt [ expr 100 - $cpt ]
+            } else {
+               $::audace(base).progress.lab_status configure -text "$::caption(flat_t1m_auto,lecture)"
+           }
+         }
+
+         catch {
+            #--- Cree le widget pour la barre de progression
+            frame $::audace(base).progress.cadre -width 200 -height 30 -borderwidth 2 -relief groove
+            pack $::audace(base).progress.cadre -in $::audace(base).progress -side top \
+               -anchor center -fill x -expand true -padx 8 -pady 8
+
+            #--- Affiche de la barre de progression
+            frame $::audace(base).progress.cadre.barre_color_invariant -height 26 -bg $::color(blue)
+            place $::audace(base).progress.cadre.barre_color_invariant -in $::audace(base).progress.cadre -x 0 -y 0 \
+               -relwidth [ expr $cpt / 100.0 ]
+            update
+         }
+
+         #--- Mise a jour dynamique des couleurs
+         if { [ winfo exists $::audace(base).progress ] == "1" } {
+            ::confColor::applyColor $::audace(base).progress
+         }
+
+      } else {
+
+         if { $private(pose_en_cours) == 0 } {
+            #--- je supprime la fenetre s'il n'y a plus de pose en cours
+            destroy $::audace(base).progress
+         } else {
+            if { $private(demande_stop) == "0" } {
+               if { $t > 0 } {
+                  $::audace(base).progress.lab_status configure -text "[ expr $t ] $::caption(flat_t1m_auto,sec) /\
+                     [ format "%d" [ expr int( $private(exptime) ) ] ] $::caption(flat_t1m_auto,sec)"
+                  set cpt [ expr $t * 100 / int( $private(exptime) ) ]
+                 set cpt [ expr 100 - $cpt ]
+               } else {
+                  $::audace(base).progress.lab_status configure -text "$::caption(flat_t1m_auto,lecture)"
+               }
+            } else {
+               #--- j'affiche "lecture" des qu'une demande d'arret est demandee
+               $::audace(base).progress.lab_status configure -text "$::caption(flat_t1m_auto,lecture)"
+            }
+            #--- Met a jour la barre de progression
+            place $::audace(base).progress.cadre.barre_color_invariant -in $::audace(base).progress.cadre -x 0 -y 0 \
+               -relwidth [ expr $cpt / 100.0 ]
+            update
+         }
+
+      }
+
+   }
+
+   #------------------------------------------------------------
+   # recupPositionAvancement
+   #    Recupere la position de la fenetre d'avancement de la pose
+   #------------------------------------------------------------
+   proc recupPositionAvancement { visuNo } {
+      variable private
+
+      if [ winfo exists $::audace(base).progress ] {
+         #--- Determination de la position de la fenetre
+         set geometry [ wm geometry $::audace(base).progress ]
+         set deb [ expr 1 + [ string first + $geometry ] ]
+         set fin [ string length $geometry ]
+         set private(avancement1,position) "+[ string range $geometry $deb $fin ]"
       }
    }
 
