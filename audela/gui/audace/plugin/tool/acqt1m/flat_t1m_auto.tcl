@@ -69,8 +69,8 @@ namespace eval ::acqt1m_flatciel {
       set err [catch {$private($visuNo,camera) info} msg]
       if { $err == 1 } {
          ::console::affiche_resultat "$::caption(flat_t1m_auto,pasCamera)\n\n"
-         set choix [ tk_messageBox -title $::caption(acqt1m,pb) -type ok \
-            -message $::caption(acqt1m,selcam) ]
+         set choix [ tk_messageBox -title $::caption(flat_t1m_auto,pb) -type ok \
+            -message $::caption(flat_t1m_auto,selcam) ]
          set integre non
          if { $choix == "ok" } {
             #--- Ouverture de la fenetre de selection des cameras
@@ -200,13 +200,13 @@ namespace eval ::acqt1m_flatciel {
          $::audace(base).selection_choix.nuit.deb configure -bg $::audace(color,disabledTextColor)
          $::audace(base).selection_choix.nuit.fin configure -bg $::audace(color,backColor2)
          set private(sensnuit) 0
-         set info_sens_nuit    $::caption(flat_t1m_auto,butDebutNuit)
+         set info_sens_nuit $::caption(flat_t1m_auto,butDebutNuit)
          ::console::affiche_resultat "$::caption(flat_t1m_auto,debutNuit)\n"
       } else {
          $::audace(base).selection_choix.nuit.deb configure -bg $::audace(color,backColor2)
          $::audace(base).selection_choix.nuit.fin configure -bg $::audace(color,disabledTextColor)
          set private(sensnuit) 1
-         set info_sens_nuit    $::caption(flat_t1m_auto,butFinNuit)
+         set info_sens_nuit $::caption(flat_t1m_auto,butFinNuit)
          ::console::affiche_resultat "$::caption(flat_t1m_auto,finNuit)\n"
       }
       if { [ winfo exists $::audace(base).selection_filtre.g.sens ] } {
@@ -467,20 +467,20 @@ namespace eval ::acqt1m_flatciel {
 
          #--- Obturateur et nombre de pixels
          label $::audace(base).selection_filtre.a2.lb1 -text $::caption(flat_t1m_auto,obturateur) -borderwidth 0 -relief flat
-         pack  $::audace(base).selection_filtre.a2.lb1 -in $::audace(base).selection_filtre.a2 -side left -anchor w -padx 4 -pady 4 -expand 0
+         pack $::audace(base).selection_filtre.a2.lb1 -in $::audace(base).selection_filtre.a2 -side left -anchor w -padx 4 -pady 4 -expand 0
          label $::audace(base).selection_filtre.a2.lb2 -text [$private($visuNo,camera) shutter] -borderwidth 0 -relief flat
-         pack  $::audace(base).selection_filtre.a2.lb2 -in $::audace(base).selection_filtre.a2 -side left -anchor w -padx 4 -pady 4 -expand 0
+         pack $::audace(base).selection_filtre.a2.lb2 -in $::audace(base).selection_filtre.a2 -side left -anchor w -padx 4 -pady 4 -expand 0
          label $::audace(base).selection_filtre.a2.lb3 -text "           $::caption(flat_t1m_auto,nbPixels)" -borderwidth 0 -relief flat
-         pack  $::audace(base).selection_filtre.a2.lb3 -in $::audace(base).selection_filtre.a2 -side left -anchor e -padx 4 -pady 4 -expand 0
+         pack $::audace(base).selection_filtre.a2.lb3 -in $::audace(base).selection_filtre.a2 -side left -anchor e -padx 4 -pady 4 -expand 0
          label $::audace(base).selection_filtre.a2.lb4 -text $nbpix -borderwidth 0 -relief flat
-         pack  $::audace(base).selection_filtre.a2.lb4 -in $::audace(base).selection_filtre.a2 -side left -anchor e -padx 4 -pady 4 -expand 0
+         pack $::audace(base).selection_filtre.a2.lb4 -in $::audace(base).selection_filtre.a2 -side left -anchor e -padx 4 -pady 4 -expand 0
 
       frame $::audace(base).selection_filtre.filtres -borderwidth 0 -relief solid
       pack  $::audace(base).selection_filtre.filtres -in $::audace(base).selection_filtre -anchor center -side top -expand 0 -fill both -padx 3 -pady 0
 
          foreach x $listeFiltreActif {
             button $::audace(base).selection_filtre.filtres.$x -text $private(texte_bouton,$x) -command "::acqt1m_flatciel::acqFlat $visuNo $x" -bg $::audace(color,backColor2)
-            pack   $::audace(base).selection_filtre.filtres.$x -in $::audace(base).selection_filtre.filtres -anchor center -side top -fill x -padx 4 -pady 4 -expand 1
+            pack $::audace(base).selection_filtre.filtres.$x -in $::audace(base).selection_filtre.filtres -anchor center -side top -fill x -padx 4 -pady 4 -expand 1
          }
 
       frame $::audace(base).selection_filtre.h -borderwidth 0 -relief solid
@@ -568,7 +568,7 @@ namespace eval ::acqt1m_flatciel {
       ::console::affiche_resultat "$::caption(flat_t1m_auto,exptimemini) $private(exptimemini)\n"
       ::console::affiche_resultat "$::caption(flat_t1m_auto,fondflat1) $fondflat\n"
 
-      set buffer buf$::audace(bufNo)
+      set buffer buf[ ::confVisu::getBufNo $visuNo ]
 
       # Dark (obturateur closed)
       set exptime 1
