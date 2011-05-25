@@ -11,6 +11,8 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
+set caption(flat_t1m_auto,pb)                        "Problem"
+set caption(flat_t1m_auto,selcam)                    "You must select a camera first\n(Setup/Camera)."
 set caption(flat_t1m_auto,titre1)                    "------------------------------------------"
 set caption(flat_t1m_auto,titre2)                    "       Automatic Flat Field Frames"
 set caption(flat_t1m_auto,titre3)                    "         for the 1-meter telescope"
@@ -85,7 +87,9 @@ set caption(flat_t1m_auto,sec)                       "sec."
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-  set caption(flat_t1m_auto,titre1)                 "------------------------------------------"
+   set caption(flat_t1m_auto,pb)                     "Problème"
+   set caption(flat_t1m_auto,selcam)                 "Vous devez d'abord sélectionner une caméra\n(menu Configuration/Caméra)."
+   set caption(flat_t1m_auto,titre1)                 "------------------------------------------"
    set caption(flat_t1m_auto,titre2)                 "          Flats automatiques"
    set caption(flat_t1m_auto,titre3)                 "    pour le télescope de 1 mètre"
    set caption(flat_t1m_auto,titre4)                 "              du Pic du Midi"
@@ -159,6 +163,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
+   set caption(flat_t1m_auto,pb)                     "Problema"
+   set caption(flat_t1m_auto,selcam)                 "Occorre selezionare preventivamente una\ncamera CCD (menu Configurazione/Camera)."
    set caption(flat_t1m_auto,titre1)                 "------------------------------------------"
    set caption(flat_t1m_auto,titre2)                 "#           Flats automatiques"
    set caption(flat_t1m_auto,titre3)                 "#     pour le télescope de 1 mètre"
@@ -233,6 +239,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
+   set caption(flat_t1m_auto,pb)                     "Problema"
+   set caption(flat_t1m_auto,selcam)                 "Debe seleccionar primero una cámara\n(menú Configuración/Cámara)."
    set caption(flat_t1m_auto,titre1)                 "------------------------------------------"
    set caption(flat_t1m_auto,titre2)                 "#           Flats automatiques"
    set caption(flat_t1m_auto,titre3)                 "#     pour le télescope de 1 mètre"
@@ -307,6 +315,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
+   set caption(flat_t1m_auto,pb)                     "Problem"
+   set caption(flat_t1m_auto,selcam)                 "Sie müssen erst eine Kamera wählen\n(Konfiguration/Kamera Menu)."
    set caption(flat_t1m_auto,titre1)                 "------------------------------------------"
    set caption(flat_t1m_auto,titre2)                 "#           Flats automatiques"
    set caption(flat_t1m_auto,titre3)                 "#     pour le télescope de 1 mètre"
@@ -381,6 +391,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
+   set caption(flat_t1m_auto,pb)                     "Problema"
+   set caption(flat_t1m_auto,selcam)                 "Deve seleccionar primeiro uma câmara\n(menu Configuração/Câmara)."
    set caption(flat_t1m_auto,titre1)                 "------------------------------------------"
    set caption(flat_t1m_auto,titre2)                 "#           Flats automatiques"
    set caption(flat_t1m_auto,titre3)                 "#     pour le télescope de 1 mètre"
@@ -455,6 +467,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
+   set caption(flat_t1m_auto,pb)                     "Problem"
+   set caption(flat_t1m_auto,selcam)                 "You must select a camera first\n(Setup/Camera)."
    set caption(flat_t1m_auto,titre1)                 "------------------------------------------"
    set caption(flat_t1m_auto,titre2)                 "       Automatic Flat Field Frames"
    set caption(flat_t1m_auto,titre3)                 "         for the 1-meter telescope"
@@ -529,6 +543,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
+   set caption(flat_t1m_auto,pb)                     "Problem"
+   set caption(flat_t1m_auto,selcam)                 "You must select a camera first\n(Setup/Camera)."
    set caption(flat_t1m_auto,titre1)                 "------------------------------------------"
    set caption(flat_t1m_auto,titre2)                 "       Automatic Flat Field Frames"
    set caption(flat_t1m_auto,titre3)                 "         for the 1-meter telescope"
@@ -603,6 +619,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
+   set caption(flat_t1m_auto,pb)                     "Problem"
+   set caption(flat_t1m_auto,selcam)                 "You must select a camera first\n(Setup/Camera)."
    set caption(flat_t1m_auto,titre1)                 "------------------------------------------"
    set caption(flat_t1m_auto,titre2)                 "       Automatic Flat Field Frames"
    set caption(flat_t1m_auto,titre3)                 "         for the 1-meter telescope"
