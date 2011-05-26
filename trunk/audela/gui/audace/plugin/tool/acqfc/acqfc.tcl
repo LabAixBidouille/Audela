@@ -24,6 +24,7 @@ proc ::acqfc::createPluginInstance { { in "" } { visuNo 1 } } {
    #--- Chargement des fichiers auxiliaires
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqfc acqfcSetup.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqfc dlgshift.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqfc acqfcAutoFlat.tcl ]\""
 
    #---
    set panneau(acqfc,$visuNo,base) "$in"
@@ -551,6 +552,13 @@ proc ::acqfc::stopTool { { visuNo 1 } } {
    #--- Je verifie si une operation est en cours
    if { $panneau(acqfc,$visuNo,pose_en_cours) == 1 } {
       return -1
+   }
+
+   #--- Je verifie si une operation est en cours (acquisition des flats auto)
+   if { [ info exists ::acqfcAutoFlat::private(pose_en_cours) ] } {
+      if { $::acqfcAutoFlat::private(pose_en_cours) == 1 } {
+         return -1
+      }
    }
 
    #--- Sauvegarde de la configuration de prise de vue
@@ -2749,6 +2757,14 @@ proc ::acqfc::acqfcBuildIF { visuNo } {
             -command "::acqfc::cmdShiftConfig $visuNo"
          pack $panneau(acqfc,$visuNo,This).shift.buttonShiftConfig -side right -fill x -expand true
       pack $panneau(acqfc,$visuNo,This).shift -side top -fill x
+
+      #--- Frame Flat Auto
+      frame $panneau(acqfc,$visuNo,This).special -borderwidth 2 -relief ridge
+         #--- Bouton Flat auto
+         button $panneau(acqfc,$visuNo,This).special.flatauto -text "$caption(acqfc,flatAuto)" \
+            -command "::acqfcAutoFlat::run $visuNo"
+         pack $panneau(acqfc,$visuNo,This).special.flatauto -side top -fill x -expand true
+      pack $panneau(acqfc,$visuNo,This).special -side top -fill x
 
       set camname ""
       catch {set camname [cam1 name]}
