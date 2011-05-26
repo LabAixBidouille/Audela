@@ -575,7 +575,9 @@ namespace eval ::acqt1m_flatciel {
       ::console::affiche_resultat "$::caption(flat_t1m_auto,mesureDark)\n"
       $private($visuNo,camera) window [list $xmin $ymin $xmax $ymax]
       $private($visuNo,camera) shutter closed
-      $::audace(base).selection_filtre.a2.lb2 configure -text [$private($visuNo,camera) shutter]
+      if [ winfo exists $::audace(base).selection_filtre ] {
+         $::audace(base).selection_filtre.a2.lb2 configure -text [$private($visuNo,camera) shutter]
+      }
       #--- Declenchement de l'acquisition
       ::camera::acquisition $private($visuNo,camItem) "::acqt1m_flatciel::attendImage $visuNo" $exptime
       #--- J'attends la fin de l'acquisition
@@ -590,7 +592,9 @@ namespace eval ::acqt1m_flatciel {
 
       # Image (obturateur synchro)
       $private($visuNo,camera) shutter synchro
-      $::audace(base).selection_filtre.a2.lb2 configure -text [$private($visuNo,camera) shutter]
+      if [ winfo exists $::audace(base).selection_filtre ] {
+         $::audace(base).selection_filtre.a2.lb2 configure -text [$private($visuNo,camera) shutter]
+      }
 
       # Boucle sur les images
       set num 1
@@ -662,6 +666,8 @@ namespace eval ::acqt1m_flatciel {
                         #--- On fait les flats en debut de nuit
                         #--- il fait trop nuit, donc c'est foutu
                         ::console::affiche_resultat "\n\n$::caption(flat_t1m_auto,tropTard1)\n\n"
+                        #--- Pose en cours
+                        set private(pose_en_cours) 0
                         return
                      }
                   } elseif {$exptime<$private(exptimemini)} {
@@ -669,6 +675,8 @@ namespace eval ::acqt1m_flatciel {
                         #--- On fait les flats en fin de nuit
                         #--- il fait trop jour, donc c'est foutu
                         ::console::affiche_resultat "\n\n$::caption(flat_t1m_auto,tropTard2)\n\n"
+                        #--- Pose en cours
+                        set private(pose_en_cours) 0
                         return
                      } else {
                         #--- On fait les flats en debut de nuit
@@ -707,6 +715,8 @@ namespace eval ::acqt1m_flatciel {
                         #--- On fait les flats en fin de nuit
                         #--- il fait trop jour, donc c'est foutu
                         ::console::affiche_resultat "\n\n$::caption(flat_t1m_auto,tropTard2)\n\n"
+                        #--- Pose en cours
+                        set private(pose_en_cours) 0
                         return
                      }
                   }
@@ -721,7 +731,9 @@ namespace eval ::acqt1m_flatciel {
          ::acqt1m_flatciel::majBouton $idfiltre 0
 
          #--- Bouton Stop Auto Flats actif
-         $::audace(base).selection_filtre.f.fin configure -state normal
+         if [ winfo exists $::audace(base).selection_filtre ] {
+            $::audace(base).selection_filtre.f.fin configure -state normal
+         }
 
          # Flat :
          ::console::affiche_resultat "$::caption(flat_t1m_auto,parti) ([expr $id+1]/$private(mynbflat))\n"
@@ -785,7 +797,9 @@ namespace eval ::acqt1m_flatciel {
          set ::t1m_roue_a_filtre::private(filtre,$idfiltre) [lreplace $::t1m_roue_a_filtre::private(filtre,$idfiltre) 3 3 $num]
 
          #--- Bouton Stop Auto Flats inactif
-         $::audace(base).selection_filtre.f.fin configure -state disabled
+         if [ winfo exists $::audace(base).selection_filtre ] {
+            $::audace(base).selection_filtre.f.fin configure -state disabled
+         }
 
          #--- Pose en cours
          set private(pose_en_cours) 0
@@ -903,7 +917,9 @@ namespace eval ::acqt1m_flatciel {
 
          #--- Cree la fenetre toplevel
          toplevel $::audace(base).progress
-         wm transient $::audace(base).progress $::audace(base).selection_filtre
+         if [ winfo exists $::audace(base).selection_filtre ] {
+            wm transient $::audace(base).progress $::audace(base).selection_filtre
+         }
          wm resizable $::audace(base).progress 0 0
          wm title $::audace(base).progress "$::caption(flat_t1m_auto,en_cours)"
          wm geometry $::audace(base).progress $private(avancement1,position)
