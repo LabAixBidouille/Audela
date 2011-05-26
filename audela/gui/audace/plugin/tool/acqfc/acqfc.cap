@@ -109,6 +109,7 @@ set caption(acqfc,emccd,gain)                "EMCCD Gain"
 set caption(acqfc,emccd,gain:)               "EMCCD Gain:"
 set caption(acqfc,emccd,ZOOM)                "ZOOM"
 set caption(acqfc,emccd,Zoom)                "Zoom"
+set caption(acqfc,flatAuto)                  "Automatic Flat\nField Frames"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -197,6 +198,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,avancement_acq)         "Avancement de\nl'acquisition"
    set caption(acqfc,buttonShiftConfig)      "Décalage"
    set caption(acqfc,acquisitionError)       "Erreur à l'acquisition. Détails dans la Console."
+   set caption(acqfc,flatAuto)               "Flats Auto"
 
    set caption(acqfc,emccd,mode)             "Mode EMCCD"
    set caption(acqfc,emccd,parametres)       "Paramètres EMCCD"
@@ -300,6 +302,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,avancement_acq)         "Avanzamento\nacquisizione"
    set caption(acqfc,buttonShiftConfig)      "Spostamento"
    set caption(acqfc,acquisitionError)       "Errore di acquisizione. Vedere i dettagli sul Console."
+   set caption(acqfc,flatAuto)               "# Flats Auto"
 
    set caption(acqfc,emccd,mode)             "# Mode EMCCD"
    set caption(acqfc,emccd,parametres)       "# Paramètres EMCCD"
@@ -403,6 +406,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,avancement_acq)         "Progreso de la\nadquisición"
    set caption(acqfc,buttonShiftConfig)      "Desplazam."
    set caption(acqfc,acquisitionError)       "Error de adquisición. Ver detalles en la Consola."
+   set caption(acqfc,flatAuto)               "# Flats Auto"
 
    set caption(acqfc,emccd,mode)             "# Mode EMCCD"
    set caption(acqfc,emccd,parametres)       "# Paramètres EMCCD"
@@ -506,6 +510,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,avancement_acq)         "Belichtung\nim Gange"
    set caption(acqfc,buttonShiftConfig)      "Verschiebung"
    set caption(acqfc,acquisitionError)       "Belichtung Irrtum. Siehe Details auf der Konsole."
+   set caption(acqfc,flatAuto)               "# Flats Auto"
 
    set caption(acqfc,emccd,mode)             "# Mode EMCCD"
    set caption(acqfc,emccd,parametres)       "# Paramètres EMCCD"
@@ -609,6 +614,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,avancement_acq)         "Adiantamento da\naquisição"
    set caption(acqfc,buttonShiftConfig)      "Deslocamento"
    set caption(acqfc,acquisitionError)       "Erro na aquisição. Ver detalhes na Consola."
+   set caption(acqfc,flatAuto)               "# Flats Auto"
 
    set caption(acqfc,emccd,mode)             "# Mode EMCCD"
    set caption(acqfc,emccd,parametres)       "# Paramètres EMCCD"
@@ -711,6 +717,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,avancement_acq)         "Acquisition\nProgress"
    set caption(acqfc,buttonShiftConfig)      "Shift"
    set caption(acqfc,acquisitionError)       "Acquisition Error. See details in the Terminal screen."
+   set caption(acqfc,flatAuto)               "Automatic Flat\nField Frames"
 
    set caption(acqfc,emccd,mode)             "EMCCD Mode"
    set caption(acqfc,emccd,parametres)       "EMCCD Parameters"
@@ -813,6 +820,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,avancement_acq)         "Acquisition\nProgress"
    set caption(acqfc,buttonShiftConfig)      "Shift"
    set caption(acqfc,acquisitionError)       "Acquisition Error. See details in the Terminal screen."
+   set caption(acqfc,flatAuto)               "Automatic Flat\nField Frames"
 
    set caption(acqfc,emccd,mode)             "EMCCD Mode"
    set caption(acqfc,emccd,parametres)       "EMCCD Parameters"
@@ -915,6 +923,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,avancement_acq)         "Acquisition\nProgress"
    set caption(acqfc,buttonShiftConfig)      "Shift"
    set caption(acqfc,acquisitionError)       "Acquisition Error. See details in the Terminal screen."
+   set caption(acqfc,flatAuto)               "Automatic Flat\nField Frames"
 
    set caption(acqfc,emccd,mode)             "EMCCD Mode"
    set caption(acqfc,emccd,parametres)       "EMCCD Parameters"
