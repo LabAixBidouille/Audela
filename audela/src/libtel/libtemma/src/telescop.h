@@ -122,7 +122,6 @@ int temma_setderive(struct telprop *tel,int var,int vdec);
 int temma_getderive(struct telprop *tel,int *var,int *vdec);
 
 int temma_settsl(struct telprop *tel);
-int temma_home(struct telprop *tel, char *home_default);
 double temma_tsl(struct telprop *tel,int *h, int *m,int *sec);
 void temma_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function);
 
