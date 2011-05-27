@@ -145,7 +145,6 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    tel->boostindex=0;
    tel->ra_backlash=(double)0.;
    tel->dec_backlash=(double)0.;
-   audecom_home(tel,"GPS 0 E 45 0");
    return 0;
 }
 
@@ -1213,25 +1212,6 @@ int kauf_match_lx200(struct telprop *tel)
    /* Send MS */
    sprintf(s,"puts -nonewline %s \"#:CM#\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   return 0;
-}
-
-/************************************************************/
-
-int audecom_home(struct telprop *tel, char *home_default)
-{
-   char s[1024];
-   sprintf(s,"info exists audace(posobs,observateur,gps)");
-   mytel_tcleval(tel,s);
-   if (strcmp(tel->interp->result,"1")==0) {
-      sprintf(s,"set audace(posobs,observateur,gps)");
-      mytel_tcleval(tel,s);
-      strcpy(tel->home,tel->interp->result);
-	} else {
-      if (strcmp(home_default,"")!=0) {
-         strcpy(tel->home,home_default);
-      }
-   }
    return 0;
 }
 
