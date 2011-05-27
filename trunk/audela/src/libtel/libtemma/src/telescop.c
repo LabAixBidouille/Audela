@@ -84,12 +84,27 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    char s[1024],ssres[1024];
    char ss[256],ssusb[256];
    int k;
-   double latitude;
+   int i;
+   double longitude,latitude,altitude;
+   char ligne[256],ew[3];
+   
+
    /*
    FILE *f;
    f=fopen("mouchard_temma.txt","wt");
    fclose(f);
    */
+   // j'initialise à vide la position de l'observatoire 
+   strcpy(tel->homePosition,"");
+
+   // je recupere la position  de l'observatoire 
+   for (i=3;i<argc-1;i++) {
+	   if (strcmp(argv[i],"-home")==0) {
+			   strncpy(tel->homePosition, argv[i+1],sizeof(tel->homePosition));
+		 }
+   }
+
+
    /* --- transcode a port argument into comX or into /dev... */
    strcpy(ss,argv[2]);
    sprintf(s,"string range [string toupper %s] 0 2",ss);
@@ -144,15 +159,34 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    temma_LA(tel,50);
    temma_LB(tel,50);
    sate_move_radec=' ';
-   /* update site for local sideral time */
-   strcpy(tel->home0,"");
-   temma_home(tel,"GPS 7 E 48 150");
-   strcpy(tel->home0,tel->home);
-   sprintf(s,"lindex {%s} 3",tel->home); mytel_tcleval(tel,s);
-   latitude=atof(tel->interp->result);
-   temma_setlatitude(tel,latitude);
-   temma_settsl(tel);
-   tel->tsl00=tel->tsl;
+
+   if (strcmp(tel->homePosition,"")!= 0) {
+      // je calcule la latitude
+      sprintf(ligne,"lindex {%s} 1",argv[2]);
+      Tcl_Eval(tel->interp,ligne);
+      longitude=(double)atof(tel->interp->result);
+      sprintf(ligne,"string toupper [lindex {%s} 2]",argv[2]);
+      Tcl_Eval(tel->interp,ligne);
+      if (strcmp(tel->interp->result,"W")==0) {
+         strcpy(ew,"w");
+      } else {
+         strcpy(ew,"e");
+      }
+      sprintf(ligne,"lindex {%s} 3",argv[2]);
+      Tcl_Eval(tel->interp,ligne);
+      latitude=(double)atof(tel->interp->result);
+      sprintf(ligne,"lindex {%s} 4",argv[2]);
+      Tcl_Eval(tel->interp,ligne);
+      altitude=(double)atof(tel->interp->result);
+
+      // send  latitude to mount
+      mytel_home_set(tel, longitude, ew, latitude, altitude);
+
+      /* update site for local sideral time */
+      temma_settsl(tel);
+      tel->tsl00=tel->tsl;
+   }
+
    temma_setderive(tel,0,0);
    /* update E/W for the german mount */
    temma_coord(tel,ssres);
@@ -164,7 +198,24 @@ int tel_testcom(struct telprop *tel)
 /* --- called by : tel1 testcom --- */
 /* -------------------------------- */
 {
-   return 0;
+   char  s[1024];
+   char ss[1024];
+
+   //--- interroge "automatic Introduction motion" juste pour savoir si la monture est connectee 
+   sprintf(s,"puts -nonewline %s \"s\r\n\"",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+
+   //--- Lit la chaine de resultat
+   sprintf(s,"gets %s",tel->channel); mytel_tcleval(tel,s);
+   strcpy(ss,tel->interp->result);
+
+   // si la chaine est vide, la monture n'est pas connectee
+   if (strcmp(ss,"")==0) {
+      return 0;
+   }
+
+   return 1;
+
 }
 
 int tel_close(struct telprop *tel)
@@ -640,7 +691,7 @@ int mytel_date_set(struct telprop *tel,int y,int m,int d,int h, int min,double s
 
 int mytel_home_get(struct telprop *tel,char *ligne)
 {
-   strcpy(ligne,tel->home0);
+   strcpy(ligne,tel->homePosition);
    return 0;
 }
 
@@ -653,7 +704,6 @@ int mytel_home_set(struct telprop *tel,double longitude,char *ew,double latitude
    }
    if (latitude>90.) {latitude=90.;}
    if (latitude<-90.) {latitude=-90.;}
-   sprintf(tel->home0,"GPS %f %c %f %f",longitude,ew[0],latitude,altitude);
    temma_setlatitude(tel,latitude);
    return 0;
 }
@@ -721,7 +771,7 @@ int temma_getlatitude(struct telprop *tel,double *latitude)
    sprintf(s,"read %s 10",tel->channel); mytel_tcleval(tel,s);
    /* --- transforme +/-SDDMMZ en latitude */
    strcpy(slat,tel->interp->result);
-   sprintf(s,"mc_angle2deg {%c%c%c %c%c.%c}",slat[1],slat[2],slat[3],slat[4],slat[5],slat[6]); mytel_tcleval(tel,s);
+   sprintf(s,"mc_angle2deg {%c%c%c%c %c%c.%c}",slat[0],slat[1],slat[2],slat[3],slat[4],slat[5],slat[6]); mytel_tcleval(tel,s);
    *latitude=atof(tel->interp->result);
    return 0;
 }
@@ -1116,36 +1166,14 @@ int temma_settsl(struct telprop *tel)
    return 0;
 }
 
-int temma_home(struct telprop *tel, char *home_default)
-{
-   char s[1024];
-   if (strcmp(tel->home0,"")!=0) {
-      strcpy(tel->home,tel->home0);
-      return 0;
-   }
-   sprintf(s,"info exists audace(posobs,observateur,gps)");
-   mytel_tcleval(tel,s);
-   if (strcmp(tel->interp->result,"1")==0) {
-      sprintf(s,"set audace(posobs,observateur,gps)");
-      mytel_tcleval(tel,s);
-      strcpy(tel->home,tel->interp->result);
-	} else {
-      if (strcmp(home_default,"")!=0) {
-         strcpy(tel->home,home_default);
-      }
-   }
-   return 0;
-}
-
 double temma_tsl(struct telprop *tel,int *h, int *m,int *sec)
 {
    char s[1024];
    char ss[1024];
    static double tsl;
    /* --- temps sideral local */
-   temma_home(tel,"");
    temma_GetCurrentFITSDate_function(tel->interp,ss,"::audace::date_sys2ut");
-   sprintf(s,"mc_date2lst %s {%s}",ss,tel->home);
+   sprintf(s,"mc_date2lst %s {%s}",ss,tel->homePosition);
    mytel_tcleval(tel,s);
    strcpy(ss,tel->interp->result);
    sprintf(s,"lindex {%s} 0",ss);
