@@ -767,6 +767,14 @@ namespace eval ::AlignManager {
          set private(targetDec)  $dec
          set private(targetName) $name
          update
+         #--- Je recherche la visu dans laquelle l'outil Telescope est actif
+         foreach visuNo [ ::visu::list ] {
+            if { [ ::confVisu::getTool $visuNo ] == "tlscp" } {
+               set visu $visuNo
+               #--- Je mets a jour le nom, les coordonnees et l'equinoxe dans l'outil Telescope
+               ::tlscp::cmdSkyMap $visuNo
+            }
+         }
       }
    }
 
