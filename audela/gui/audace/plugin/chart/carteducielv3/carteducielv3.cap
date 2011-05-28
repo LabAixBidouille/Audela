@@ -62,7 +62,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(carteducielv3,rate)                    "Accès non possible"
    set caption(carteducielv3,gagne)                   "Accès réussi"
    set caption(carteducielv3,no_connect)              "La connexion à Cartes du Ciel a échoué."
-   set caption(carteducielv3,no_object_select)        "Pas d'objet sélectionné dans la carte."
+   set caption(carteducielv3,no_object_select)        "Pas d'objet sélectionné sur la carte."
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
