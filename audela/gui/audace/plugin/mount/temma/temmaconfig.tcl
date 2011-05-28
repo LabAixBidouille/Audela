@@ -6,7 +6,7 @@
 #
 
 #
-# Renvoi l'etat des moteurs (non encore inclu dans la librairie)
+# Renvoi l'etat des moteurs (non encore inclu dans la librairie libtemma.dll)
 #    1 : Si les moteurs fonctionnent
 #    0 : Si les moteurs sont hors tension
 #   -1 : Si Temma n'est pas connecte
