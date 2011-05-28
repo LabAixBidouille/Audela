@@ -97,6 +97,10 @@ namespace eval carteducielv3 {
       if { ! [ info exists conf(carteducielv3,port) ] }          { set conf(carteducielv3,port)          "3292" }
 
       set private(socket) ""
+
+      #--- Temoin de premier lancement (n'a jamais ete lance)
+      set private(premierLancement) 0
+
       return
    }
 
@@ -506,6 +510,7 @@ namespace eval carteducielv3 {
    #     http://astrosurf.com/astropc/cartes/prog/ugc.zip  (ancienne version non catgen)
    #------------------------------------------------------------
    proc getSelectedObject { } {
+      variable private
       global caption
 
       set result [ sendRequest "GETMSGBOX" ]
@@ -560,7 +565,10 @@ namespace eval carteducielv3 {
 
       #--- Mise en forme de objName
       if { $objType=="" || $objType=="port:" } {
-         console::affiche_erreur "$caption(carteducielv3,no_object_select)\n\n"
+         if { $private(premierLancement) == 1 } {
+            console::affiche_erreur "$caption(carteducielv3,no_object_select)\n\n"
+            return ""
+         }
          return ""
       } else {
          #--- j'extrait les coordonnees du detail de la ligne2
@@ -835,9 +843,14 @@ namespace eval carteducielv3 {
                tk_messageBox -message "$caption(carteducielv3,no_connect)" -icon info
                return ""
             }
+            #--- Temoin de premier lancement (n'a jamais ete lance)
+            set private(premierLancement) 0
          } else {
             return ""
          }
+      } else {
+         #--- Temoin de premier lancement (a deja ete lance)
+         set private(premierLancement) 1
       }
 
       set result ""
