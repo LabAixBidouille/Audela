@@ -183,11 +183,14 @@ proc diaghr_extract { file_image_1 file_image_2 ra_center dec_center radius_arcm
    ::console::affiche_resultat "[llength $star2s] stars found in the list 2\n"
    # --- appariement
    ::console::affiche_resultat "match stars in the two lists\n"
+   if {[info exists audace(diaghr_extract,pix_radius)]==0} {
+      set audace(diaghr_extract,pix_radius) 2
+   }
    if {$wcs==1} {
       set res [lindex [buf$bufno getkwd CDELT1] 1]
-      set sepmax [expr abs($res*3600)*$radius_over] ; # 1 pixel en arcsec
+      set sepmax [expr abs($audace(diaghr_extract,pix_radius)*$res*3600)*$radius_over] ; # 2 pixels en arcsec
    } else {
-      set sepmax [expr 1.*$radius_over] ; # 1 pixel
+      set sepmax [expr $audace(diaghr_extract,pix_radius)*$radius_over] ; # 2 pixels
    }
    set stars ""
    set nstar 0
