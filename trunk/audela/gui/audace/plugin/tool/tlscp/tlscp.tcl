@@ -766,7 +766,7 @@ proc ::tlscp::cmdGoto { visuNo } {
 
 #------------------------------------------------------------
 #  cmdSkyMap
-#     Recupere les coordonnees et le nom de l'objet selectionne dans une carte
+#     Recupere le nom, les coordonnees et l'equinoxe de l'objet selectionne dans une carte
 #
 #  parametres :
 #    visuNo : numero de la visu courante
@@ -778,11 +778,12 @@ proc ::tlscp::cmdSkyMap { visuNo } {
 
    set result [::carte::getSelectedObject]
    if { [llength $result] == 5 } {
-      set ra        [mc_angle2hms [lindex $result 0] 360 nozero 0 auto string]
-      set dec       [mc_angle2dms [lindex $result 1] 90 nozero 0 + string]
-      set equinox   [lindex $result 2]
-      set name      [lindex $result 3]
-      set magnitude ""
+      set ra                          [mc_angle2hms [lindex $result 0] 360 nozero 0 auto string]
+      set dec                         [mc_angle2dms [lindex $result 1] 90 nozero 0 + string]
+      set equinox                     [lindex $result 2]
+      set name                        [lindex $result 3]
+      set magnitude                   ""
+      set ::catalogue(choisi,$visuNo) $::caption(tlscp,cartesduciel)
       ::tlscp::setRaDec $visuNo [list $ra $dec] $name $equinox $magnitude
    }
 }
