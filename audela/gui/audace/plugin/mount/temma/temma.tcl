@@ -366,8 +366,10 @@ proc ::temma::configureMonture { } {
    global caption conf
 
    set catchResult [ catch {
-      #--- Je cree la monture
-      set telNo [ tel::create temma $conf(temma,port) ]
+      #--- Je cree la monture et j'envoie les coordonnees de l'observatoire
+      #--- La commande "create" de Temma doit toujours avoir l'argument "_home"
+      set telNo [ tel::create temma $conf(temma,port) -home $::audace(posobs,observateur,gps) ]
+      #--- Lit le modele
       if { $conf(temma,modele) == "0" } {
          set private(modele) $caption(temma,modele_1)
       } elseif { $conf(temma,modele) == "1" } {
@@ -382,22 +384,17 @@ proc ::temma::configureMonture { } {
       set version [ tel$telNo firmware ]
       ::console::affiche_entete "$caption(temma,version) $version\n"
       ::console::affiche_saut "\n"
-      #--- Demande et recoit la latitude
+      #--- Interroge et recoit la latitude
       set latitude_temma [ tel$telNo getlatitude ]
-      #--- Mise en forme de la latitude du lieu du format Temma au format d'affichage
-      set signe_lat [ string range $latitude_temma 0 0 ]
-      if { $signe_lat == "-" } {
-         set signe_lat "S"
-         set lat_deg [ lindex [ mc_angle2dms $latitude_temma 90 zero ] 0 ]
-         set lat_deg [ string range $lat_deg 1 2 ]
+      #--- Mise en forme de la latitude pour affichage dans la Console
+      set latitude_temma [ mc_angle2dms $latitude_temma 90 nozero 1 auto list ]
+      if { [ lindex $latitude_temma 0 ] < 0 } {
+         set nordsud "S"
+         set latitude_temma "S [expr abs([ lindex $latitude_temma 0 ])]° [ lindex $latitude_temma 1 ]' [ lindex $latitude_temma 2 ]''"
       } else {
-         set signe_lat "N"
-         set lat_deg [ lindex [ mc_angle2dms $latitude_temma 90 zero ] 0 ]
+         set nordsud "N"
+         set latitude_temma "N [expr abs([ lindex $latitude_temma 0 ])]° [ lindex $latitude_temma 1 ]' [ lindex $latitude_temma 2 ]''"
       }
-      set lat_min [ lindex [ mc_angle2dms $latitude_temma 90 zero ] 1 ]
-      set lat_min_deci [ format "%.1f" [ expr [ lindex [ mc_angle2dms $latitude_temma 90 zero ] 2 ] / 60.0 ] ]
-      set lat_min_deci [ string range $lat_min_deci 2 2 ]
-      set latitude_temma "$signe_lat $lat_deg° $lat_min.$lat_min_deci'"
       #--- Affichage de la latitude
       ::console::affiche_entete "$caption(temma,init_module)\n"
       ::console::affiche_entete "$caption(temma,latitude) $latitude_temma\n\n"
