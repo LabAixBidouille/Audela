@@ -3,8 +3,9 @@
 
 
 
+
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /><title>Fonctions de pilotage de télescopes</title></head><body>
-<p class="date">Date de mise à jour : 23 mai 2011</p>
+<p class="date">Date de mise à jour : 28 mai 2011</p>
 <h1>Fonctions de pilotage de télescopes </h1>
 <p> Ces commandes permettent de contrôler des télescopes reconnus par
 AudeLA : LX200. Les commandes qui permettent de contrôler un télescope,
@@ -20,15 +21,15 @@ problèmes avec certaines caméras. </p>
 <p> Les commandes spécifiques : propres à chaque télescope en fonction de fonctionnalités propres. </p>
 <h1> 1. Commandes communes</h1>
 <h2> 1.1. Commandes d'informations générales</h2>
-<h3> <a name="drivername" id="drivername" />tel1 drivername</h3>
+<h3> <a name="drivername" id="drivername">tel1 drivername</a></h3>
 <p>Retourne le nom de la librairie et la date de la dernière compilation.</p>
-<h3> <a name="name" id="name" />tel1 name</h3>
+<h3> <a name="name" id="name">tel1 name</a></h3>
 <p>Retourne le nom du type de télescope associé au driver.</p>
-<h3> <a name="protocol" id="protocol" />tel1 protocol</h3>
+<h3> <a name="protocol" id="protocol">tel1 protocol</a></h3>
 <p>Retourne le nom du protocole utilisé.</p>
-<h3> <a name="port" id="port" />tel1 port</h3>
+<h3> <a name="port" id="port">tel1 port</a></h3>
 <p>Retourne le nom du port de communication (COM1, etc.).</p>
-<h3> <a name="channel" id="channel" />tel1 channel</h3>
+<h3> <a name="channel" id="channel">tel1 channel</a></h3>
 <p>Retourne le nom de "channel Tcl" associé au port de communication
 ouvert par l'interpréteur Tcl. En effet, les communications par le port
 série sont programmées dans le driver via l'interpréteur Tcl afin de
@@ -36,13 +37,15 @@ pouvoir communiquer, hors driver, avec l'instrument (fonction puts et
 read de Tcl). </p>
 <p>Par exemple, dans cet exemple, on envoie la chaîne #:L# dans le port de communication et on recueille 4 caractères en retour :</p>
 <p><code>set c [tel1 channel]</code> <br />
+
   <code>puts $c "#:L#</code> <br />
+
   <code>set result [read $c 4]</code> </p>
-<h3> <a name="foclen" id="foclen" />tel1 foclen ?foclen?</h3>
+<h3> <a name="foclen" id="foclen">tel1 foclen ?foclen?</a></h3>
 <p>Retourne ou assigne longueur focale (mètres) de l'optique.</p>
-<h3> <a name="testcom" id="testcom" />tel1 testcom</h3>
-<p>Teste si la communication est correcte (=1) ou incorrecte (=0).</p>
-<h3> <a name="model" id="model" />tel1 model ?function_cat2tel function_tel2cat?</h3>
+<h3> <a name="testcom" id="testcom">tel1 testcom</a></h3>
+<p>Teste si la communication est correcte (1) ou incorrecte (0).</p>
+<h3> <a name="model" id="model">tel1 model ?function_cat2tel function_tel2cat?</a></h3>
 <p>Modèle de pointage. Assigne le nom des fonctions Tcl qui permet de
 transformer les coordonnées catalogue (cat) en coordonnées télescope
 (tel) et son contraire. Il faut évidemment avoir défini ces fonctions
@@ -57,8 +60,11 @@ aux moteurs RA,DEC se nomment tel1 radec et les commandes associées au
 moteur de focalisation se nomment tel1 focus. Les arguments suivants
 permettent de préciser la nature du mouvement. Tout est résumé dans le
 tableau ci-dessous :<br />
+
     <br />
+
     retourne l'état des moteurs (unknown, tracking, pointing)<br />
+
     <table>
   <tbody><tr>
     <td><br />
@@ -72,7 +78,7 @@ tableau ci-dessous :<br />
     <td> state </td>
   </tr>
   <tr>
-    <td><a name="radec" id="radec" />tel1 radec </td>
+    <td><a name="radec" id="radec">tel1 radec </a></td>
     <td> ?on|off? marche/arrêt du suivi sidéral </td>
     <td> {ra dec} <br />
       Initialise les codeurs <br />
@@ -104,7 +110,7 @@ pour terminer la commande.<br />
     </td>
   </tr>
   <tr>
-    <td><a name="focus" id="focus" />tel1 focus</td>
+    <td><a name="focus" id="focus">tel1 focus</a></td>
     <td> ?on|off? <br />
       Marche/arrêt du moteur </td>
     <td> value <br />
@@ -136,25 +142,25 @@ non (=0) pour terminer la commande.<br />
 <p>Par exemple, pour rallier le télescope aux coordonnées 4h56m et -7d32m, on écrira : </p>
 <p><code>tel1 radec goto {4h56m -7d32m}</code> </p>
 <p>Les fonctions de type tel1 radec peuvent parfois se rencontrer sous leur forme obsolète : </p>
-<h3> <a name="coord" id="coord" />tel1 coord</h3>
+<h3> <a name="coord" id="coord">tel1 coord</a></h3>
 <p>Retourne les coordonnées en ascension droite et en déclinaison du
 télescope ou des codeurs, à condition qu'il soit initialisé, sous la
 forme d'une liste à deux éléments. Par exemple : {14h2m32s +12d42m7s}</p>
-<h3> <a name="match" id="match" />tel1 match <em>coord</em></h3>
+<h3> <a name="match" id="match">tel1 match <em>coord</em></a></h3>
 <p>Resynchronise les coordonnées du télescope sur celles passées à la
 commande sous forme d'une liste à deux éléments : [list 14h2m32s
 +12d42m7s] par exemple.</p>
-<h3> <a name="goto" id="goto" />tel1 goto <em>coord</em></h3>
+<h3> <a name="goto" id="goto">tel1 goto <em>coord</em></a></h3>
 <p>Déplace le télescope aux coordonnées passées en paramètres (liste formée de l'ascension droite et de la déclinaison).</p>
-<h3> <a name="move" id="move" />tel1 move <em>direction</em></h3>
+<h3> <a name="move" id="move">tel1 move <em>direction</em></a></h3>
 <p>Déplace le télescope dans la direction donnée, à choisir entre <em>n</em>, <em>s</em>, <em>e</em> ou <em>w</em>.</p>
-<h3> <a name="stop" id="stop" />tel1 stop <em>direction</em></h3>
+<h3> <a name="stop" id="stop">tel1 stop <em>direction</em></a></h3>
 <p>Arrête le déplacement dans la direction donnée (<em>n</em>, <em>s</em>, <em>e</em> ou <em>w)</em>.</p>
-<h3> <a name="speed" id="speed" />tel1 speed <em>vitesse</em></h3>
+<h3> <a name="speed" id="speed">tel1 speed <em>vitesse</em></a></h3>
 <p>Initialise la vitesse de déplacement du télescope, à choisir entre <em>slew</em>, <em>find</em>, <em>center</em> ou <em>guide</em>.</p>
 De même, les fonctions de type tel1 focus, peuvent parfois se rencontrer sous leur forme obsolète :
 
-<h3> <a name="focus" id="focus" />tel1 focus <em>param</em></h3>
+<h3> <a name="focus" id="focus">tel1 focus <em>param</em></a></h3>
 <p>Actionne le moteur de focalisation du télescope, en fonction du paramètre <em>param</em> : </p>
 <p><em>slow</em> : Vitesse lente. </p>
 <p><em>fast</em> : Vitesse rapide. </p>
@@ -162,35 +168,15 @@ De même, les fonctions de type tel1 focus, peuvent parfois se rencontrer sous le
 <p><em>out</em> : Déplacement dans l'autre sens. </p>
 <p><em>stop</em> : Arrêt du moteur de focalisation.</p>
 <p> La commande <em>in</em> ou <em>out</em> active les moteurs, il faut bien entendu l'arrêter par la commande <em>stop</em> avant que des dégâts ne soient commis...<br />
+
  </p>
 <h2> 2. Commandes spécifique LX200</h2>
 <h3> 2.1. Commandes du driver externe (liblx200.dll) :</h3>
-<h3> <a name="date" id="date" />tel1 date ?Date?</h3>
+<h3> <a name="date" id="date">tel1 date ?Date?</a></h3>
 <p>Mise à jour de l'horloge du microcontrôleur du télescope.</p>
-<h3> <a name="home" id="home" />tel1 home ?Home?</h3>
+<h3> <a name="home" id="home">tel1 home ?Home?</a></h3>
 <p>Mise à jour de l'observatoire du microcontrôleur du télescope.</p>
-<h3> <a name="longformat" id="longformat" />tel1 longformat ?on|off?</h3>
+<h3> <a name="longformat" id="longformat">tel1 longformat ?on|off?</a></h3>
 <p>Choix du format de coordonnées.</p>
-<h3> <a name="tempo" id="tempo" />tel1 tempo ?ms?</h3>
-<p>Fixe le délais de temporisation (millisecondes) entre une entrée/sortie.</p>
-<h3> 2.2. Commandes du driver interne (libaudela.dll) :</h3>
-<h3> <a name="send" id="send" />tel1 send <em>chaîne</em></h3>
-<p>Envoie la chaîne donnée en paramètre au télescope. Cette fonction
-permet d'utiliser des fonctions du télescope non implémentées dans
-AudeLA. Par exemple pour le LX200, la commande permettant de faire
-basculer le mode d'horloge 12h/24h est #:H#, il faut donc lancer la
-commande : </p>
-<p> <code>tel1 send {#:H#}</code></p>
-<h3> <a name="receive" id="receive" />tel1 receive <em>num ?stopchar?</em></h3>
-<p>Lit des données provenant du télescope. Le paramètre <em>num</em> indique le nombre de caractères attendus. Si <em>stopchar</em>
-est précisé alors il correspond au caractère qui arrêterait la lecture
-s'il était rencontré. Il convient de préciser qu'il faut avoir la
-documentation du télescope pour savoir ce qu'on fait. </p>
-<p>Pour lire la fréquence du moteur d'ascension droite du LX200 par exemple, il faut envoyer deux commandes :</p>
-<code>tel1 send {#:GT#}</code> <br />
-<code>tel1 receive 5</code> <em>ou</em> <code>tel1 receive 10 #</code> <br />
-et renvoie 50.0# en général.
-<h3> <a name="flush" id="flush" />tel1 flush</h3>
-<p>Vide les buffers d'émission et de réception de l'ordinateur (à effectuer de préférence avant chaque échange sur la ligne).</p>
-
-</body></html>
+<h3> <a name="tempo" id="tempo">tel1 tempo ?ms?</a></h3>
+<p>Fixe le délais de temporisation (millisecondes) entre une entrée/sortie.</p></body></html>
