@@ -221,7 +221,7 @@ int tt_ima_rot(TT_IMA_SERIES *pseries)
    if (((0<theta)&&(theta<90.0*TT_PI/180))||((-360.0*TT_PI/180<theta)&&(theta<-270.0*TT_PI/180))) {
 		w= (int) ( floor (cos_theta*p_in->naxis1+sin_theta*p_in->naxis2));
 		h= (int) ( floor (sin_theta*p_in->naxis1+cos_theta*p_in->naxis2));
-   } else if (((-90.0*TT_PI/180<theta)&&(theta<0))||((270.0*TT_PI/180<theta)&&(theta<360.0*TT_PI/180))) {
+   } else if(((-90.0*TT_PI/180<theta)&&(theta<0))||((270.0*TT_PI/180<theta)&&(theta<360.0*TT_PI/180))) {
 		w= (int) ( floor (cos_theta*p_in->naxis1-sin_theta*p_in->naxis2));
 		h= (int) ( floor (-sin_theta*p_in->naxis1+cos_theta*p_in->naxis2));
    } else if(((90.0*TT_PI/180<theta)&&(theta<180.0*TT_PI/180))||((-270.0*TT_PI/180<theta)&&(theta<-180.0*TT_PI/180))) {
@@ -230,7 +230,10 @@ int tt_ima_rot(TT_IMA_SERIES *pseries)
    } else if(((-180.0*TT_PI/180<theta)&&(theta<-90.0*TT_PI/180))||((180.0*TT_PI/180<theta)&&(theta<270.0*TT_PI/180))) {
 		w= (int) ( floor (-cos_theta*p_in->naxis1-sin_theta*p_in->naxis2));
 		h= (int) ( floor (-sin_theta*p_in->naxis1-cos_theta*p_in->naxis2));
-   } else {
+   } else if ((theta==90.0*TT_PI/180)||(theta==270.0*TT_PI/180)||(theta==-90.0*TT_PI/180)||(theta==-270.0*TT_PI/180)) {
+		w=p_in->naxis2;
+		h=p_in->naxis1;
+   } else if ((theta==0)||(theta==180.0*TT_PI/180)||(theta==360.0*TT_PI/180)||(theta==-180.0*TT_PI/180)||(theta==-360.0*TT_PI/180)) {
 		w=p_in->naxis1;
 		h=p_in->naxis2;
    }
