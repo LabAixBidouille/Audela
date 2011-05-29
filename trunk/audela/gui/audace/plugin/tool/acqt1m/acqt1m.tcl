@@ -732,7 +732,7 @@ proc ::acqt1m::testParametreAcquisition { visuNo } {
                }
                #--- Envoyer un warning si l'index n'est pas a 1
                if { $panneau(acqt1m,$visuNo,indexerContinue) == "1" } {
-                  if { $panneau(acqt1m,$visuNo,index) != "1" } {
+                  if { $panneau(acqt1m,$visuNo,index) != "1" && $panneau(acqt1m,$visuNo,verifier_index_depart) == 1 } {
                      set confirmation [tk_messageBox -title $caption(acqt1m,conf) -type yesno \
                         -message $caption(acqt1m,indpasun)]
                      if { $confirmation == "no" } {
@@ -777,7 +777,7 @@ proc ::acqt1m::testParametreAcquisition { visuNo } {
                set integre non
             }
             #--- Envoyer un warning si l'index n'est pas a 1
-            if { $panneau(acqt1m,$visuNo,index) != "1" } {
+            if { $panneau(acqt1m,$visuNo,index) != "1" && $panneau(acqt1m,$visuNo,verifier_index_depart) == 1 } {
                set confirmation [tk_messageBox -title $caption(acqt1m,conf) -type yesno \
                   -message $caption(acqt1m,indpasun)]
                if { $confirmation == "no" } {
@@ -840,7 +840,7 @@ proc ::acqt1m::testParametreAcquisition { visuNo } {
                   set integre non
                }
                #--- Envoyer un warning si l'index n'est pas a 1
-               if { $panneau(acqt1m,$visuNo,index) != "1" } {
+               if { $panneau(acqt1m,$visuNo,index) != "1" && $panneau(acqt1m,$visuNo,verifier_index_depart) == 1 } {
                   set confirmation [tk_messageBox -title $caption(acqt1m,conf) -type yesno \
                      -message $caption(acqt1m,indpasun)]
                   if { $confirmation == "no" } {
