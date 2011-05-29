@@ -218,84 +218,39 @@ int tt_ima_rot(TT_IMA_SERIES *pseries)
    cos_theta = cos(theta);
    sin_theta = sin(theta);
 
-   if (((0<theta)&&(theta<90.0*TT_PI/180))||((-360.0*TT_PI/180<theta)&&(theta<-270.0*TT_PI/180))) {
-		w= (int) ( floor (cos_theta*p_in->naxis1+sin_theta*p_in->naxis2));
-		h= (int) ( floor (sin_theta*p_in->naxis1+cos_theta*p_in->naxis2));
-   } else if(((-90.0*TT_PI/180<theta)&&(theta<0))||((270.0*TT_PI/180<theta)&&(theta<360.0*TT_PI/180))) {
-		w= (int) ( floor (cos_theta*p_in->naxis1-sin_theta*p_in->naxis2));
-		h= (int) ( floor (-sin_theta*p_in->naxis1+cos_theta*p_in->naxis2));
-   } else if(((90.0*TT_PI/180<theta)&&(theta<180.0*TT_PI/180))||((-270.0*TT_PI/180<theta)&&(theta<-180.0*TT_PI/180))) {
-		w= (int) ( floor (-cos_theta*p_in->naxis1+sin_theta*p_in->naxis2));
-		h= (int) ( floor (sin_theta*p_in->naxis1-cos_theta*p_in->naxis2));
-   } else if(((-180.0*TT_PI/180<theta)&&(theta<-90.0*TT_PI/180))||((180.0*TT_PI/180<theta)&&(theta<270.0*TT_PI/180))) {
-		w= (int) ( floor (-cos_theta*p_in->naxis1-sin_theta*p_in->naxis2));
-		h= (int) ( floor (-sin_theta*p_in->naxis1-cos_theta*p_in->naxis2));
-   } else if ((theta==90.0*TT_PI/180)||(theta==270.0*TT_PI/180)||(theta==-90.0*TT_PI/180)||(theta==-270.0*TT_PI/180)) {
-		w=p_in->naxis2;
-		h=p_in->naxis1;
-   } else if ((theta==0)||(theta==180.0*TT_PI/180)||(theta==360.0*TT_PI/180)||(theta==-180.0*TT_PI/180)||(theta==-360.0*TT_PI/180)) {
-		w=p_in->naxis1;
-		h=p_in->naxis2;
-   }
-   if ((w%2!=0)&&(w>1)) {
-		w=w-1;
-   }
-   if ((h%2!=0)&&(h>1)) {
-		h=h-1;
-   }
+#define max(a,b) (a>b?a:b)
+
+   w = max( fabs(p_in->naxis1*cos_theta - p_in->naxis2*sin_theta) , fabs(p_in->naxis1*cos_theta + p_in->naxis2*sin_theta) );
+   h = max( fabs(p_in->naxis1*sin_theta + p_in->naxis2*cos_theta) , fabs(p_in->naxis1*sin_theta - p_in->naxis2*cos_theta) );
+   
    /* --- coordonnéees du centre de rotation dans l'image initiale --- */
    x0=pseries->user5.x0;
    y0=pseries->user5.y0;
    /* --- coordonnéees du centre de rotation dans la nouvelle image --- */
-   x1=pseries->user5.x0*w/p_in->naxis1;
-   y1=pseries->user5.y0*h/p_in->naxis2;
+   x1=0.5*w;
+   y1=0.5*h;
 
    /* --- initialisation ---*/
-   /*tt_imabuilder(p_out);*/
-   tt_imacreater(p_tmp1,w,h);
    tt_imacreater(p_out,w,h);
 
-   /* --- translation de l'image initiale dans la grande image --- */
+   /* --- combinaison translation + rotation de l'image initiale dans la grande image --- */
    for(x = 0;x < w;x++)
    {
       for(y = 0;y < h;y++)
       {
-         old_x = x-(x1-x0);
-         old_y = y-(y1-y0);
+         old_x = x0 + (x-x1) * cos_theta + (y-y1) * sin_theta;
+         old_y = y0 - (x-x1) * sin_theta + (y-y1) * cos_theta;
          value = interpol2(pseries,p_in,old_x,old_y,1);
-		 p_tmp1->p[x+y*w]=(TT_PTYPE)(value);
+         p_out->p[x+y*w]=(TT_PTYPE)(value);
       } 
    } 
-   a[0]=1;
-   a[1]=0;
-   a[2]=x1-x0;
-   a[3]=0;
-   a[4]=1;
-   a[5]=y1-y0;
-   tt_util_update_wcs(p_in,p_tmp1,a,2,NULL);
-
-   //tt_imasaver(p_tmp1,"D:/translation.fit",16);
-  
-   /* --- rotation de l'image dans la grande image --- */
-   for(x = 0;x < w;x++)
-   {
-      for(y = 0;y < h;y++)
-      {
-         old_x = cos_theta * (x - x1) + sin_theta * (y - y1) + x1;
-         old_y = - sin_theta * (x - x1) + cos_theta * (y - y1) + y1;
-         value = interpol2(pseries,p_tmp1,old_x,old_y,1);
-         p_out->p[x+y*w]=(TT_PTYPE)(value);
-      } /* end of y-loop */
-   } /* end of x_loop */
-
-   /* --- calcule les nouveaux parametres de projection ---*/ //A REVOIR pour la translation
    a[0]=cos_theta;
    a[1]=sin_theta;
-   a[2]=-cos_theta*x1-sin_theta*y1+x1;
+   a[2]=x1-x0;
    a[3]=-sin_theta;
    a[4]=cos_theta;
-   a[5]=sin_theta*x1-cos_theta*y1+y1;
-   tt_util_update_wcs(p_tmp1,p_out,a,2,NULL);
+   a[5]=y1-y0;
+   tt_util_update_wcs(p_in,p_tmp1,a,2,NULL);
 
    /* --- calcul des temps (pour l'entete fits) ---*/
    pseries->jj_stack=pseries->jj[index-1];
