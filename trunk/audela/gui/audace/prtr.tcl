@@ -840,19 +840,28 @@ namespace eval ::prtr {
 
       #--   cherche les info dans bd
       set info [lindex [array get bd [lindex $private(todo) 0]] 1]
-      #--   rem en absence de CRPIX les valeurs sont au centre de l'image
-      set crpix1 [lindex $info 5]
-      set crpix2 [lindex $info 6]
 
-      #--   modifie les valeurs initiales
-      foreach parametre $private(obligatoire) {
-         switch $parametre {
-            x0       {set ::prtr::x0       $crpix1   ; #-- REC2POL POL2REC}
-            y0       {set ::prtr::y0       $crpix2   ; #-- REC2POL POL2REC}
-            xcenter  {set ::prtr::xcenter  $crpix1   ; #-- RGRADIENT RADIAL}
-            ycenter  {set ::prtr::ycenter  $crpix2   ; #-- RGRADIENT RADIAL}
-            default  {}
+      #--   rem en absence de CRPIX les valeurs sont au centre de l'image
+      if {$private(function) ne "ROTENTIERE"} {
+
+         set crpix1 [lindex $info 5]
+         set crpix2 [lindex $info 6]
+
+         #--   modifie les valeurs initiales
+         foreach parametre $private(obligatoire) {
+            switch $parametre {
+               x0       {set ::prtr::x0       $crpix1   ; #-- ROT REC2POL POL2REC}
+               y0       {set ::prtr::y0       $crpix2   ; #-- ROT REC2POL POL2REC}
+               xcenter  {set ::prtr::xcenter  $crpix1   ; #-- RGRADIENT RADIAL}
+               ycenter  {set ::prtr::ycenter  $crpix2   ; #-- RGRADIENT RADIAL}
+               default  {}
+            }
          }
+      } elseif {$private(function) eq "ROTENTIERE"} {
+
+         #--   exception pour ROTENTIERE
+         set ::prtr::x0 [expr {[lindex $info 2]/2.}]
+         set ::prtr::y0 [expr {[lindex $info 3]/2.}]
       }
    }
 
