@@ -1003,19 +1003,22 @@ proc ::telescope::afficheCoord { } {
       if { [ ::confTel::getPluginProperty hasCoordinates ] == "1" } {
          set radec [ tel$audace(telNo) radec coord -equinox J2000.0 ]
          #--- Traitement des coordonnees
-         if { $radec == " +" } {
-            #--- Cas du cable AudeCom non connecte
-            set audace(telescope,getra)  "$caption(telescope,tel)"
-            set audace(telescope,getdec) "$caption(telescope,non_connecte)"
-         } elseif { [ lindex $radec 0 ] == "tel$audace(telNo)" } {
+         if { [ lindex $radec 0 ] == "tel$audace(telNo)" } {
             set audace(telescope,getra)  "$caption(telescope,astre_est)"
             set audace(telescope,getdec) "$caption(telescope,pas_leve)"
          } else {
             set audace(telescope,getra)  [ lindex $radec 0 ]
             set audace(telescope,getdec) [ lindex $radec 1 ]
+            #--- Cas de la monture Temma non connectee
             if { $conf(telescope) == "temma" } {
                #--- Affichage de la position du telescope sur la monture equatoriale allemande
                monture_allemande
+               if { [ tel$audace(telNo) firmware ] == "" } {
+                  set audace(telescope,getra)  "$caption(telescope,tel)"
+                  set audace(telescope,getdec) "$caption(telescope,non_connecte)"
+               }
+            #--- Cas de la monture AudeCom non connectee
+            } elseif { $conf(telescope) == "audecom" } {
                if { [ tel$audace(telNo) firmware ] == "" } {
                   set audace(telescope,getra)  "$caption(telescope,tel)"
                   set audace(telescope,getdec) "$caption(telescope,non_connecte)"
