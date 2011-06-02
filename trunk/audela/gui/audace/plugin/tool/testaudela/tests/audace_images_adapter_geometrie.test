@@ -355,41 +355,42 @@ test imaseries_rotation1 {rotation de rz_rgbr_30} -constraints {AUDACE} -setup {
    #--   verifie le deplacement du point {227 108}
    set intensite2 [lrange [buf$bufNo getpix {227 108}] 1 end]
    if {$attendu eq "$intensite2"} {incr result}
-   set liste [list rz_rgbr_30 demi-tour]
+   set liste [list rz_rgbr_30 demi-tour un_tour]
    return $result
  } -cleanup $CLEANUP -result "2"
 
 #-----------------------------------------------------------------------------
-#--   le test ROTENTIERE a pour entree une image RGB a traiter
+#--   le test ROTENTIERE a pour entree une image N&B a traiter
 #--   le test porte sur :
-#        constance des intensites RGB lors du deplacement du point {227 108} apres un tour
+#        constance des intensites lors du deplacement du point {227 108} apres un tour
 #     attention les naxis ne sont pas conserves
 #-----------------------------------------------------------------------------
 #--   test IMA/SERIES ROTENTIERE
-test imaseries_rotation2 {rotation de un_tour} -constraints {AUDACE} -setup {
-   loadima [file join $::audace(rep_images) un_tour.fit]
+test imaseries_rotation2 {rotation de m57} -constraints {AUDACE} -setup {
+   file copy -force [file join $::conf(testaudela,rep_images) m57.fit] $::audace(rep_images)
+   loadima [file join $::audace(rep_images) m57.fit]
 } -body {
    #--   clic sur le menu "Images/Adapter la géométrie/Rotation libre (image redimensionnée)"..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,geometry)" "$::caption(audace,menu,rotation2)..."
-   ::testaudela::putLabelEntry $z.funoptions.angle "360"
+   ::testaudela::putLabelEntry $z.funoptions.angle "45"
    #-- saisit le nom de sortie
-   set name_out "deux_tours"
+   set name_out "rotent"
    ::testaudela::putLabelEntry $z.sortie.out "$name_out"
    #--   clic sur le bouton Appliquer
    ::testaudela::clicButton $z.cmd.appliquer
 
    #--   procedure de controle
    set result 0
-   #--   verifie le deplacement du point {227 108}
    ::blt::vector create attendu mesure -watchunset 1
-   mesure set [lrange [buf$bufNo getpix [list 227 108]] 1 end]
-   attendu set [list 16125.000000 15775.000000 9425.000000]
+   attendu set 506
+   #--   verifie le deplacement du point {339 227}
+   mesure set [lrange [buf$bufNo getpix [list 247 400]] 1 end]
    attendu expr {attendu-mesure}
    attendu expr {abs(attendu) <= 1}
    set result [llength [attendu search 1]]
    #--   les naxis ne sont pas conservés
-   set liste [ list un_tour deux_tours]
+   set liste [ list m57 rotent]
    ::blt::vector destroy attendu mesure
    return $result
- } -cleanup $CLEANUP -result "3"
+ } -cleanup $CLEANUP -result "1"
 
