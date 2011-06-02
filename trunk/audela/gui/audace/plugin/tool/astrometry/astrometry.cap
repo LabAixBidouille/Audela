@@ -268,7 +268,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astrometry,empty_keywords) "Sie müssen die Schlüsselwörter in dieses Fenster mit einen lehren Feld\nvervollständigen, um eine Astrometrische Kalibrierung zu erreichen."
 
    set caption(astrometry,comment)        "Die astromethische Kalibrierung ist erfolgreich wenn alle Rote Punkte sich mit Sterne überschneiden."
-   set caption(astrometry,erreur_USNO)    "Der USNO Katalog  %s (CD n°%s USNO-A2.0) ist notwendig."
+   set caption(astrometry,erreur_USNO)    "Der USNO Katalog %s (CD n°%s USNO-A2.0) ist notwendig."
    set caption(astrometry,erreur_USNO_1)  "USNO %s (CD n°%s USNO-A2.0) und %s (CD n°%s USNO-A2.0) Katalogen sind gleichzeitig Notwendig."
    set caption(astrometry,erreur_USNO_2)  "Sie (.ACC et .CAT) müssen in ein Verzeichnis der Festplatte nachgebildet sein."
    set caption(astrometry,erreur_USNO_3)  "Sie müssen den neuen Pfad zu die Astrometrische Kalibrierung Anwendung geben."
