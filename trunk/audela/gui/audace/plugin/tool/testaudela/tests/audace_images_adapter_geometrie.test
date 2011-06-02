@@ -362,8 +362,8 @@ test imaseries_rotation1 {rotation de rz_rgbr_30} -constraints {AUDACE} -setup {
 #-----------------------------------------------------------------------------
 #--   le test ROTENTIERE a pour entree une image N&B a traiter
 #--   le test porte sur :
-#        constance des intensites lors du deplacement du point {227 108} apres un tour
-#     attention les naxis ne sont pas conserves
+#        le deplacement du point {339 227} apres rotation de 45°
+#     attention les naxis ne sont pas conserves, ni les intensités.
 #-----------------------------------------------------------------------------
 #--   test IMA/SERIES ROTENTIERE
 test imaseries_rotation2 {rotation de m57} -constraints {AUDACE} -setup {
