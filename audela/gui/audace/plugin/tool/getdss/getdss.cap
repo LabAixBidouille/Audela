@@ -54,13 +54,16 @@ set caption(getdss,NGC)              "Objects: NGC%s to NGC%s"
 set caption(getdss,IC)               "Objects: IC%s to IC%s"
 set caption(getdss,champ)            "Center field: $caption(getdss,ad) %s $caption(getdss,dec) %s"
 set caption(getdss,attention)        "Warning"
-set caption(getdss,texte1a)          "When loading objects %s to %s the following objects were missing:"
-set caption(getdss,texte1b)          "When loading field (%s - %s) the field was missing:"
+set caption(getdss,texte1a)          "Loading objects %s to %s."
+set caption(getdss,texte1b)          "Loading field (%s - %s)."
+set caption(getdss,texte1c)          "When loading the following object was missing: %s"
+set caption(getdss,texte1d)          "When loading the field was missing: %s"
 set caption(getdss,texte2)           "You must choose a catalog."
 set caption(getdss,texte3)           "You must enter the start index."
 set caption(getdss,texte4)           "You must enter the end index."
 set caption(getdss,texte5)           "The image does not have the required keywords (RA & DEC)."
 set caption(getdss,texte6)           "The image does not have the required keywords (CRVAL1 & CRVAL2)."
+set caption(getdss,texte7)           "No image."
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -108,13 +111,16 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(getdss,IC)            "Objets : IC%s à IC%s"
    set caption(getdss,champ)         "Centre du champ : $caption(getdss,ad) %s $caption(getdss,dec) %s"
    set caption(getdss,attention)     "Attention"
-   set caption(getdss,texte1a)       "Lors du chargement des objets %s à %s les objets suivants étaient manquants :"
-   set caption(getdss,texte1b)       "Lors du chargement du champ (%s - %s) le champ manquant était :"
+   set caption(getdss,texte1a)       "Chargement des objets %s à %s."
+   set caption(getdss,texte1b)       "Chargement du champ (%s - %s)."
+   set caption(getdss,texte1c)       "Lors du chargement l'objet suivant était manquant : %s"
+   set caption(getdss,texte1d)       "Lors du chargement le champ manquant était : %s"
    set caption(getdss,texte2)        "Vous devez choisir un catalogue."
    set caption(getdss,texte3)        "Vous devez renseigner l'indice de début."
    set caption(getdss,texte4)        "Vous devez renseigner l'indice de fin."
    set caption(getdss,texte5)        "Cette image n'a pas les mots clés requis (RA & DEC)."
    set caption(getdss,texte6)        "Cette image n'a pas les mots clés requis (CRVAL1 & CRVAL2)."
+   set caption(getdss,texte7)        "Pas d'image."
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -162,13 +168,16 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(getdss,IC)            "# Objets : IC%s à IC%s"
    set caption(getdss,champ)         "# Centre du champ : $caption(getdss,ad) %s $caption(getdss,dec) %s"
    set caption(getdss,attention)     "Attenzione"
-   set caption(getdss,texte1a)       "# Lors du chargement des objets %s à %s les objets suivants étaient manquants :"
-   set caption(getdss,texte1b)       "# Lors du chargement du champ (%s - %s) le champ manquant était :"
+   set caption(getdss,texte1a)       "# Chargement des objets %s à %s."
+   set caption(getdss,texte1b)       "# Chargement du champ (%s - %s)."
+   set caption(getdss,texte1c)       "# Lors du chargement l'objet suivant était manquant : %s"
+   set caption(getdss,texte1d)       "# Lors du chargement le champ manquant était : %s"
    set caption(getdss,texte2)        "# Vous devez choisir un catalogue."
    set caption(getdss,texte3)        "# Vous devez renseigner l'indice de début."
    set caption(getdss,texte4)        "# Vous devez renseigner l'indice de fin."
    set caption(getdss,texte5)        "# Cette image n'a pas les mots clés requis (RA & DEC)."
    set caption(getdss,texte6)        "# Cette image n'a pas les mots clés requis (CRVAL1 & CRVAL2)."
+   set caption(getdss,texte7)        "Nessuna immagine."
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -216,13 +225,16 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(getdss,IC)            "# Objets : IC%s à IC%s"
    set caption(getdss,champ)         "# Centre du champ : $caption(getdss,ad) %s $caption(getdss,dec) %s"
    set caption(getdss,attention)     "Aviso"
-   set caption(getdss,texte1a)       "# Lors du chargement des objets %s à %s les objets suivants étaient manquants :"
-   set caption(getdss,texte1b)       "# Lors du chargement du champ (%s - %s) le champ manquant était :"
+   set caption(getdss,texte1a)       "# Chargement des objets %s à %s."
+   set caption(getdss,texte1b)       "# Chargement du champ (%s - %s)."
+   set caption(getdss,texte1c)       "# Lors du chargement l'objet suivant était manquant : %s"
+   set caption(getdss,texte1d)       "# Lors du chargement le champ manquant était : %s"
    set caption(getdss,texte2)        "# Vous devez choisir un catalogue."
    set caption(getdss,texte3)        "# Vous devez renseigner l'indice de début."
    set caption(getdss,texte4)        "# Vous devez renseigner l'indice de fin."
    set caption(getdss,texte5)        "# Cette image n'a pas les mots clés requis (RA & DEC)."
    set caption(getdss,texte6)        "# Cette image n'a pas les mots clés requis (CRVAL1 & CRVAL2)."
+   set caption(getdss,texte7)        "No hay imagen."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -270,13 +282,16 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(getdss,IC)            "# Objets : IC%s à IC%s"
    set caption(getdss,champ)         "# Centre du champ : $caption(getdss,ad) %s $caption(getdss,dec) %s"
    set caption(getdss,attention)     "Achtung"
-   set caption(getdss,texte1a)       "# Lors du chargement des objets %s à %s les objets suivants étaient manquants :"
-   set caption(getdss,texte1b)       "# Lors du chargement du champ (%s - %s) le champ manquant était :"
+   set caption(getdss,texte1a)       "# Chargement des objets %s à %s."
+   set caption(getdss,texte1b)       "# Chargement du champ (%s - %s)."
+   set caption(getdss,texte1c)       "# Lors du chargement l'objet suivant était manquant : %s"
+   set caption(getdss,texte1d)       "# Lors du chargement le champ manquant était : %s"
    set caption(getdss,texte2)        "# Vous devez choisir un catalogue."
    set caption(getdss,texte3)        "# Vous devez renseigner l'indice de début."
    set caption(getdss,texte4)        "# Vous devez renseigner l'indice de fin."
    set caption(getdss,texte5)        "# Cette image n'a pas les mots clés requis (RA & DEC)."
    set caption(getdss,texte6)        "# Cette image n'a pas les mots clés requis (CRVAL1 & CRVAL2)."
+   set caption(getdss,texte7)        "Kein Bild."
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -324,13 +339,16 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(getdss,IC)            "# Objets : IC%s à IC%s"
    set caption(getdss,champ)         "# Centre du champ : $caption(getdss,ad) %s $caption(getdss,dec) %s"
    set caption(getdss,attention)     "Aviso"
-   set caption(getdss,texte1a)       "# Lors du chargement des objets %s à %s les objets suivants étaient manquants :"
-   set caption(getdss,texte1b)       "# Lors du chargement du champ (%s - %s) le champ manquant était :"
+   set caption(getdss,texte1a)       "# Chargement des objets %s à %s."
+   set caption(getdss,texte1b)       "# Chargement du champ (%s - %s)."
+   set caption(getdss,texte1c)       "# Lors du chargement l'objet suivant était manquant : %s"
+   set caption(getdss,texte1d)       "# Lors du chargement le champ manquant était : %s"
    set caption(getdss,texte2)        "# Vous devez choisir un catalogue."
    set caption(getdss,texte3)        "# Vous devez renseigner l'indice de début."
    set caption(getdss,texte4)        "# Vous devez renseigner l'indice de fin."
    set caption(getdss,texte5)        "# Cette image n'a pas les mots clés requis (RA & DEC)."
    set caption(getdss,texte6)        "# Cette image n'a pas les mots clés requis (CRVAL1 & CRVAL2)."
+   set caption(getdss,texte7)        "Não existe imagem."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -378,13 +396,16 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(getdss,IC)            "Objects: IC%s to IC%s"
    set caption(getdss,champ)         "Center field: $caption(getdss,ad) %s $caption(getdss,dec) %s"
    set caption(getdss,attention)     "Warning"
-   set caption(getdss,texte1a)       "When loading objects %s to %s the following objects were missing:"
-   set caption(getdss,texte1b)       "When loading field (%s - %s) the field was missing:"
+   set caption(getdss,texte1a)       "Loading objects %s to %s."
+   set caption(getdss,texte1b)       "Loading field (%s - %s)."
+   set caption(getdss,texte1c)       "When loading the following object was missing: %s"
+   set caption(getdss,texte1d)       "When loading the field was missing: %s"
    set caption(getdss,texte2)        "You must choose a catalog."
    set caption(getdss,texte3)        "You must enter the start index."
    set caption(getdss,texte4)        "You must enter the end index."
    set caption(getdss,texte5)        "The image does not have the required keywords (RA & DEC)."
    set caption(getdss,texte6)        "The image does not have the required keywords (CRVAL1 & CRVAL2)."
+   set caption(getdss,texte7)        "No image."
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -432,13 +453,16 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(getdss,IC)            "Objects: IC%s to IC%s"
    set caption(getdss,champ)         "Center field: $caption(getdss,ad) %s $caption(getdss,dec) %s"
    set caption(getdss,attention)     "Warning"
-   set caption(getdss,texte1a)       "When loading objects %s to %s the following objects were missing:"
-   set caption(getdss,texte1b)       "When loading field (%s - %s) the field was missing:"
+   set caption(getdss,texte1a)       "Loading objects %s to %s."
+   set caption(getdss,texte1b)       "Loading field (%s - %s)."
+   set caption(getdss,texte1c)       "When loading the following object was missing: %s"
+   set caption(getdss,texte1d)       "When loading the field was missing: %s"
    set caption(getdss,texte2)        "You must choose a catalog."
    set caption(getdss,texte3)        "You must enter the start index."
    set caption(getdss,texte4)        "You must enter the end index."
    set caption(getdss,texte5)        "The image does not have the required keywords (RA & DEC)."
    set caption(getdss,texte6)        "The image does not have the required keywords (CRVAL1 & CRVAL2)."
+   set caption(getdss,texte7)        "No image."
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -486,13 +510,16 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(getdss,IC)            "Objects: IC%s to IC%s"
    set caption(getdss,champ)         "Center field: $caption(getdss,ad) %s $caption(getdss,dec) %s"
    set caption(getdss,attention)     "Warning"
-   set caption(getdss,texte1a)       "When loading objects %s to %s the following objects were missing:"
-   set caption(getdss,texte1b)       "When loading field (%s - %s) the field was missing:"
+   set caption(getdss,texte1a)       "Loading objects %s to %s."
+   set caption(getdss,texte1b)       "Loading field (%s - %s)."
+   set caption(getdss,texte1c)       "When loading the following object was missing: %s"
+   set caption(getdss,texte1d)       "When loading the field was missing: %s"
    set caption(getdss,texte2)        "You must choose a catalog."
    set caption(getdss,texte3)        "You must enter the start index."
    set caption(getdss,texte4)        "You must enter the end index."
    set caption(getdss,texte5)        "The image does not have the required keywords (RA & DEC)."
    set caption(getdss,texte6)        "The image does not have the required keywords (CRVAL1 & CRVAL2)."
+   set caption(getdss,texte7)        "No image."
 
 }
 
