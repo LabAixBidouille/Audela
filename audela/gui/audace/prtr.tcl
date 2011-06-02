@@ -580,9 +580,12 @@ namespace eval ::prtr {
       #--   recommence la liste
       set private(todo) ""
 
+      #--   identifie le profil de l'image selectionnee
+      set profil [lrange [$tbl get $row] 2 end]
+
       #--   cree un profil referent avec la premiere image selectionnee
-      if {$private(profil) eq "" && [set ::prtr::private(file_$row)]} {
-         set private(profil) [lrange [$tbl get $row] 2 end]
+      if {$private(profil) eq "" || $private(profil) ne "" && $private(profil) ne "$profil"} {
+         set private(profil) $profil
          $tbl seecell $row,0
       }
 
@@ -596,7 +599,7 @@ namespace eval ::prtr {
 
          for {set row 0} {$row < $private(size)} {incr row} {
             set w [$tbl windowpath $row,0]
-            set select_state [set ::prtr::private(file_$row)]
+            set select_state $::prtr::private(file_$row)
             if {$function_type == 1} {
                if {$select_state eq "0"} {
                   $w configure -state disabled
@@ -834,7 +837,7 @@ namespace eval ::prtr {
    #  Affiche les coordonnees du centre
    #  Lancee lors de la construction de l'activation d'une fonction avec centre
    #--------------------------------------------------------------------------
-   proc getCenterCoord {} {
+   proc getCenterCoord { } {
       variable private
       variable bd
 
@@ -842,26 +845,18 @@ namespace eval ::prtr {
       set info [lindex [array get bd [lindex $private(todo) 0]] 1]
 
       #--   rem en absence de CRPIX les valeurs sont au centre de l'image
-      if {$private(function) ne "ROTENTIERE"} {
+      set crpix1 [lindex $info 5]
+      set crpix2 [lindex $info 6]
 
-         set crpix1 [lindex $info 5]
-         set crpix2 [lindex $info 6]
-
-         #--   modifie les valeurs initiales
-         foreach parametre $private(obligatoire) {
-            switch $parametre {
-               x0       {set ::prtr::x0       $crpix1   ; #-- ROT REC2POL POL2REC}
-               y0       {set ::prtr::y0       $crpix2   ; #-- ROT REC2POL POL2REC}
-               xcenter  {set ::prtr::xcenter  $crpix1   ; #-- RGRADIENT RADIAL}
-               ycenter  {set ::prtr::ycenter  $crpix2   ; #-- RGRADIENT RADIAL}
-               default  {}
-            }
+      #--   modifie les valeurs initiales
+      foreach parametre $private(obligatoire) {
+         switch $parametre {
+            x0       {set ::prtr::x0       $crpix1   ; #-- ROT REC2POL POL2REC}
+            y0       {set ::prtr::y0       $crpix2   ; #-- ROT REC2POL POL2REC}
+            xcenter  {set ::prtr::xcenter  $crpix1   ; #-- RGRADIENT RADIAL}
+            ycenter  {set ::prtr::ycenter  $crpix2   ; #-- RGRADIENT RADIAL}
+            default  {}
          }
-      } elseif {$private(function) eq "ROTENTIERE"} {
-
-         #--   exception pour ROTENTIERE
-         set ::prtr::x0 [expr {[lindex $info 2]/2.}]
-         set ::prtr::y0 [expr {[lindex $info 3]/2.}]
       }
    }
 
@@ -979,6 +974,7 @@ namespace eval ::prtr {
    #--------------------------------------------------------------------------
    proc cmdApply { tbl visuNo } {
       variable private
+      variable bd
 
       #--   arrete si une erreur ou un oubli
       set opt [::prtr::cmdVerif]
@@ -1017,6 +1013,14 @@ namespace eval ::prtr {
                            }
          "ROT180"          {  lappend data "$private(function)"
                               set private(error) [::prtr::cmdRot $data $opt]
+                           }
+         "ROTENTIERE"      {  set data [concat \"IMA/SERIES\" $data]
+                              lappend data "$private(function)"
+                              set info [lindex [array get bd [lindex $private(todo) 0]] 1]
+                              set x0 [expr {[lindex $info 2]/2.}]
+                              set y0 [expr {[lindex $info 3]/2.}]
+                              set opt [linsert $opt 0 "x0=$x0" "y0=$y0"]
+                              set private(error) [::prtr::cmdExec $data $opt]
                            }
          default           {  switch $private(ima) PILE {set appl "IMA/STACK"} default {set appl "IMA/SERIES"}
                               set data [linsert $data 0 $appl]
@@ -1575,7 +1579,7 @@ namespace eval ::prtr {
       dict set SERIES "$caption(audace,menu,rotation1)"           opt $options
       dict set SERIES "$caption(audace,menu,rotation2)"           fun ROTENTIERE
       dict set SERIES "$caption(audace,menu,rotation2)"           hlp "$help(dir,prog) ttus1-fr.htm ROTENTIERE"
-      dict set SERIES "$caption(audace,menu,rotation2)"           par "x0 1. y0 1. angle 1."
+      dict set SERIES "$caption(audace,menu,rotation2)"           par "angle 1."
       dict set SERIES "$caption(audace,menu,rotation2)"           opt $options
 
       return [::prtr::consultDic SERIES $function]
@@ -1949,8 +1953,8 @@ namespace eval ::prtr {
       dict set Var   xcenter           "double labelentry"           ;#RGRADIENT RADIAL
       dict set Var   ycenter           "double labelentry"           ;#RGRADIENT RADIAL
       dict set Var   power             "double labelentry"           ;#RADIAL
-      dict set Var   x0                "double naxis1 labelentry"    ;#ROT ROTENTIERE REC2POL POL2REC
-      dict set Var   y0                "double naxis2 labelentry"    ;#ROT ROTENTIERE REC2POL POL2REC
+      dict set Var   x0                "double naxis1 labelentry"    ;#ROT REC2POL POL2REC
+      dict set Var   y0                "double naxis2 labelentry"    ;#ROT REC2POL POL2REC
       dict set Var   angle             "double labelentry"           ;#ROT ROTENTIERE RGRADIENT
       dict set Var   scale_rho         "double labelentry"           ;#REC2POL POL2REC
       dict set Var   scale_theta       "double labelentry"           ;#REC2POL POL2REC
