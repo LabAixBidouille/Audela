@@ -233,10 +233,10 @@ proc ::getdss::createPanel { visuNo } {
    radiobutton $private($visuNo,This).f0.but4 -variable ::getdss::private($visuNo,NomObjet) -text $caption(getdss,coord) -value Coord
    pack $private($visuNo,This).f0.but4 -side left
 
-   $private($visuNo,This).f0.but1 configure -command "::getdss::active_objet $visuNo"
-   $private($visuNo,This).f0.but2 configure -command "::getdss::active_objet $visuNo"
-   $private($visuNo,This).f0.but3 configure -command "::getdss::active_objet $visuNo"
-   $private($visuNo,This).f0.but4 configure -command "::getdss::active_objet $visuNo"
+   $private($visuNo,This).f0.but1 configure -command "::getdss::activeObjet $visuNo"
+   $private($visuNo,This).f0.but2 configure -command "::getdss::activeObjet $visuNo"
+   $private($visuNo,This).f0.but3 configure -command "::getdss::activeObjet $visuNo"
+   $private($visuNo,This).f0.but4 configure -command "::getdss::activeObjet $visuNo"
 
    #--- Indices de debut et de fin de recherche
    frame $private($visuNo,This).f01 -borderwidth 5
@@ -250,8 +250,8 @@ proc ::getdss::createPanel { visuNo } {
       -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 9999 }
    pack $private($visuNo,This).f01.e1 -side left -fill x -padx 5
 
-   bind $private($visuNo,This).f01.e1 <Enter> "::getdss::active_objet $visuNo"
-   bind $private($visuNo,This).f01.e1 <Leave> "::getdss::active_objet $visuNo"
+   bind $private($visuNo,This).f01.e1 <Enter> "::getdss::activeObjet $visuNo"
+   bind $private($visuNo,This).f01.e1 <Leave> "::getdss::activeObjet $visuNo"
 
    #--- Entry pour l'indice de fin
    label $private($visuNo,This).f01.l2 -text $caption(getdss,fin)
@@ -261,8 +261,8 @@ proc ::getdss::createPanel { visuNo } {
       -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 9999 }
    pack $private($visuNo,This).f01.e2 -side left -fill x -padx 5
 
-   bind $private($visuNo,This).f01.e2 <Enter> "::getdss::active_objet $visuNo"
-   bind $private($visuNo,This).f01.e2 <Leave> "::getdss::active_objet $visuNo"
+   bind $private($visuNo,This).f01.e2 <Enter> "::getdss::activeObjet $visuNo"
+   bind $private($visuNo,This).f01.e2 <Leave> "::getdss::activeObjet $visuNo"
 
    #--- Entry pour les coordonnees
    frame $private($visuNo,This).f001 -borderwidth 5
@@ -312,14 +312,14 @@ proc ::getdss::createPanel { visuNo } {
    label $private($visuNo,This).f001.addec.ad.lADs -text "s"
    pack $private($visuNo,This).f001.addec.ad.lADs -side left -anchor w
 
-   bind $private($visuNo,This).f001.addec.ad.eADh  <Enter> "::getdss::active_objet $visuNo"
-   bind $private($visuNo,This).f001.addec.ad.eADh  <Leave> "::getdss::active_objet $visuNo"
-   bind $private($visuNo,This).f001.addec.ad.eADm  <Enter> "::getdss::active_objet $visuNo"
-   bind $private($visuNo,This).f001.addec.ad.eADm  <Leave> "::getdss::active_objet $visuNo"
-   bind $private($visuNo,This).f001.addec.ad.eADs  <Enter> "::getdss::active_objet $visuNo"
-   bind $private($visuNo,This).f001.addec.ad.eADs  <Leave> "::getdss::active_objet $visuNo"
-   bind $private($visuNo,This).f001.addec.ad.eADss <Enter> "::getdss::active_objet $visuNo"
-   bind $private($visuNo,This).f001.addec.ad.eADss <Leave> "::getdss::active_objet $visuNo"
+   bind $private($visuNo,This).f001.addec.ad.eADh  <Enter> "::getdss::activeObjet $visuNo"
+   bind $private($visuNo,This).f001.addec.ad.eADh  <Leave> "::getdss::activeObjet $visuNo"
+   bind $private($visuNo,This).f001.addec.ad.eADm  <Enter> "::getdss::activeObjet $visuNo"
+   bind $private($visuNo,This).f001.addec.ad.eADm  <Leave> "::getdss::activeObjet $visuNo"
+   bind $private($visuNo,This).f001.addec.ad.eADs  <Enter> "::getdss::activeObjet $visuNo"
+   bind $private($visuNo,This).f001.addec.ad.eADs  <Leave> "::getdss::activeObjet $visuNo"
+   bind $private($visuNo,This).f001.addec.ad.eADss <Enter> "::getdss::activeObjet $visuNo"
+   bind $private($visuNo,This).f001.addec.ad.eADss <Leave> "::getdss::activeObjet $visuNo"
 
    #--- Entry la Dec.
    label $private($visuNo,This).f001.addec.dec.lDec -text $caption(getdss,dec)
@@ -353,14 +353,14 @@ proc ::getdss::createPanel { visuNo } {
    label $private($visuNo,This).f001.addec.dec.lDecss -text "''"
    pack $private($visuNo,This).f001.addec.dec.lDecss -side left -anchor w
 
-   bind $private($visuNo,This).f001.addec.dec.eDecd  <Enter> "::getdss::active_objet $visuNo"
-   bind $private($visuNo,This).f001.addec.dec.eDecd  <Leave> "::getdss::active_objet $visuNo"
-   bind $private($visuNo,This).f001.addec.dec.eDecm  <Enter> "::getdss::active_objet $visuNo"
-   bind $private($visuNo,This).f001.addec.dec.eDecm  <Leave> "::getdss::active_objet $visuNo"
-   bind $private($visuNo,This).f001.addec.dec.eDecs  <Enter> "::getdss::active_objet $visuNo"
-   bind $private($visuNo,This).f001.addec.dec.eDecs  <Leave> "::getdss::active_objet $visuNo"
-   bind $private($visuNo,This).f001.addec.dec.eDecss <Enter> "::getdss::active_objet $visuNo"
-   bind $private($visuNo,This).f001.addec.dec.eDecss <Leave> "::getdss::active_objet $visuNo"
+   bind $private($visuNo,This).f001.addec.dec.eDecd  <Enter> "::getdss::activeObjet $visuNo"
+   bind $private($visuNo,This).f001.addec.dec.eDecd  <Leave> "::getdss::activeObjet $visuNo"
+   bind $private($visuNo,This).f001.addec.dec.eDecm  <Enter> "::getdss::activeObjet $visuNo"
+   bind $private($visuNo,This).f001.addec.dec.eDecm  <Leave> "::getdss::activeObjet $visuNo"
+   bind $private($visuNo,This).f001.addec.dec.eDecs  <Enter> "::getdss::activeObjet $visuNo"
+   bind $private($visuNo,This).f001.addec.dec.eDecs  <Leave> "::getdss::activeObjet $visuNo"
+   bind $private($visuNo,This).f001.addec.dec.eDecss <Enter> "::getdss::activeObjet $visuNo"
+   bind $private($visuNo,This).f001.addec.dec.eDecss <Leave> "::getdss::activeObjet $visuNo"
 
    #--- Boutons pour la recuperation des donnees
    button $private($visuNo,This).f001.but.butTlscp -text $caption(getdss,telescope) -command "::getdss::cmdTakeTlscpCoord $visuNo"
@@ -434,7 +434,7 @@ proc ::getdss::createPanel { visuNo } {
    pack $private($visuNo,This).f3.e3 -side left -padx 5
    $private($visuNo,This).f3.e3 xview end
 
-   button $private($visuNo,This).f3.b3 -text $caption(getdss,parcourir) -command "::getdss::getdir $visuNo"
+   button $private($visuNo,This).f3.b3 -text $caption(getdss,parcourir) -command "::getdss::getDir $visuNo"
    pack $private($visuNo,This).f3.b3 -side left
 
    #--- Compresser le fichier
@@ -450,7 +450,7 @@ proc ::getdss::createPanel { visuNo } {
 
    checkbutton $private($visuNo,This).f5.cbproxy -text $caption(getdss,proxy) -variable ::getdss::private($visuNo,proxy) -onvalue yes -offvalue no
    pack $private($visuNo,This).f5.cbproxy -side left
-   $private($visuNo,This).f5.cbproxy configure -command "::getdss::active_proxy $visuNo"
+   $private($visuNo,This).f5.cbproxy configure -command "::getdss::activeProxy $visuNo"
    set private($visuNo,proxy) no
 
    #--- Frames pour les donnees du Proxy
@@ -533,8 +533,8 @@ proc ::getdss::createPanel { visuNo } {
    wm title     .dialog($visuNo) $caption(getdss,imagerecup)
    wm protocol  .dialog($visuNo) WM_DELETE_WINDOW "::getdss::quitter $visuNo"
 
-   ::getdss::active_objet $visuNo
-   ::getdss::active_proxy $visuNo
+   ::getdss::activeObjet $visuNo
+   ::getdss::activeProxy $visuNo
 
    #--- Cache la fenetre wish par defaut
    wm withdraw .
@@ -557,12 +557,12 @@ proc ::getdss::buildProxyHeaders { u p } {
 }
 
 #------------------------------------------------------------
-# Charge_Objet_SIMBAD
+# chargeObjetSIMBAD
 #    procedure de recuperation d'une image dont les coordonnees sont obtenues par SIMBAD
 #
 #    exemple : objet peut etre M27 IC434 NGC15
 #------------------------------------------------------------
-proc ::getdss::Charge_Objet_SIMBAD { visuNo objet } {
+proc ::getdss::chargeObjetSIMBAD { visuNo objet } {
    variable private
    global audace ferreur
 
@@ -663,7 +663,7 @@ proc ::getdss::Charge_Objet_SIMBAD { visuNo objet } {
       }
 
       #--- Recuperation dans $html de l'image proprement dite
-      set html  [::http::data $token2]
+     set html  [::http::data $token2]
       ::http::cleanup $token2
 
       update
@@ -688,7 +688,14 @@ proc ::getdss::Charge_Objet_SIMBAD { visuNo objet } {
          catch { buf[ ::confVisu::getBufNo $visuNo ] save $fichier_objet }
       }
    } else {
-      puts $ferreur $objet
+      set ligne ""
+      if { $private($visuNo,NomObjet) != "Coord" } {
+         append ligne [ format $caption(getdss,texte1c) $objet ]
+      } else {
+         append ligne [ format $caption(getdss,texte1d) $objet ]
+      }
+      puts $ferreur $ligne
+      puts $ferreur "-------------------------------------------------"
       flush $ferreur
    }
 }
@@ -697,7 +704,7 @@ proc ::getdss::Charge_Objet_SIMBAD { visuNo objet } {
 # recuperation
 #    Procedure principale a completer pour pouvoir recuperer n'importe quoi !!!
 #    Quelques exemples :
-#    En fait, on passe en parametre a la fonction Charge_Objet_SIMBAD le nom que l'on met normalement
+#    En fait, on passe en parametre a la fonction chargeObjetSIMBAD le nom que l'on met normalement
 #    sur la page WEB
 #------------------------------------------------------------
 proc ::getdss::recuperation { visuNo } {
@@ -728,13 +735,15 @@ proc ::getdss::recuperation { visuNo } {
    }
 
    if { [file isdirectory $private($visuNo,rep)] } {
+      #--- Bouton Lancer inactif
+      $private($visuNo,This).f9.b1 configure -state disabled
+
       #--- Sauvegarde le repertoire de base
       set old_rep [pwd]
       cd $private($visuNo,rep)
 
       #--- Ouverture du fichier des erreurs
       set ferreur [open notloaded.txt a]
-      puts $ferreur "-------------------------------------------------"
 
       set ligne "[clock format [clock seconds] -format "20%y %m %d - %X"] - "
       if { $private($visuNo,NomObjet) != "Coord" } {
@@ -752,11 +761,23 @@ proc ::getdss::recuperation { visuNo } {
             update
             wm deiconify .dialog($visuNo)
 
-            set catchError [ catch { ::getdss::Charge_Objet_SIMBAD $visuNo $private($visuNo,NomObjet)$x } ]
+            set catchError [ catch { ::getdss::chargeObjetSIMBAD $visuNo $private($visuNo,NomObjet)$x } ]
             if { $catchError != "0" } {
                wm iconify .dialog($visuNo)
-               tk_messageBox -title $caption(getdss,attention) -message $caption(getdss,texte2)
-               return
+               set ligne ""
+               if { $private($visuNo,catalogue) == "" } {
+                  append ligne $caption(getdss,texte7)
+                  puts $ferreur $ligne
+                  puts $ferreur "-------------------------------------------------"
+                  flush $ferreur
+                  tk_messageBox -title $caption(getdss,attention) -message $caption(getdss,texte2)
+                  $private($visuNo,This).f9.b1 configure -state normal
+                  return
+               } else {
+                  append ligne [ format $caption(getdss,texte1c) $private($visuNo,NomObjet)$x ]
+                  puts $ferreur $ligne
+                  flush $ferreur
+               }
             }
 
             wm iconify .dialog($visuNo)
@@ -768,11 +789,23 @@ proc ::getdss::recuperation { visuNo } {
          update
          wm deiconify .dialog($visuNo)
 
-         set catchError [ catch { ::getdss::Charge_Objet_SIMBAD $visuNo $private($visuNo,NomObjet) } ]
+         set catchError [ catch { ::getdss::chargeObjetSIMBAD $visuNo $private($visuNo,NomObjet) } ]
          if { $catchError != "0" } {
             wm iconify .dialog($visuNo)
-            tk_messageBox -title $caption(getdss,attention) -message $caption(getdss,texte2)
-            return
+            set ligne ""
+            if { $private($visuNo,catalogue) == "" } {
+               append ligne $caption(getdss,texte7)
+               puts $ferreur $ligne
+               puts $ferreur "-------------------------------------------------"
+               flush $ferreur
+               tk_messageBox -title $caption(getdss,attention) -message $caption(getdss,texte2)
+               $private($visuNo,This).f9.b1 configure -state normal
+               return
+            } else {
+               append ligne [ format $caption(getdss,texte1d) $private($visuNo,NomObjet) ]
+               puts $ferreur $ligne
+               flush $ferreur
+            }
          }
 
          wm iconify .dialog($visuNo)
@@ -783,22 +816,27 @@ proc ::getdss::recuperation { visuNo } {
       wm withdraw .dialog($visuNo)
 
       #--- Fermeture du fichier des erreurs
+      puts $ferreur "-------------------------------------------------"
       close $ferreur
 
       #--- Restaure le repertoire de base
       cd $old_rep
 
+      #--- Message de fin de traitement
       tk_messageBox -title $caption(getdss,attention) -message $caption(getdss,fintraitement)
+
+      #--- Bouton Lancer inactif
+      $private($visuNo,This).f9.b1 configure -state normal
    }
 
    focus -force $private($visuNo,This).f9.b1
 }
 
 #------------------------------------------------------------
-# active_proxy
+# activeProxy
 #    active et desactive les widgets du proxy
 #------------------------------------------------------------
-proc ::getdss::active_proxy { visuNo } {
+proc ::getdss::activeProxy { visuNo } {
    variable private
 
    if { $private($visuNo,proxy) == "yes" } {
@@ -815,12 +853,12 @@ proc ::getdss::active_proxy { visuNo } {
 }
 
 #------------------------------------------------------------
-# active_objet
+# activeObjet
 #    active et desactive les widgets des indices et des
 #    coordonnees
 #    active la mise a jour du rappel de recherche
 #------------------------------------------------------------
-proc ::getdss::active_objet { visuNo } {
+proc ::getdss::activeObjet { visuNo } {
    variable private
    global caption
 
@@ -899,7 +937,7 @@ proc ::getdss::cmdTakeFITS1Keywords { visuNo } {
          set private($visuNo,ad)    "$private($visuNo,adh)h$private($visuNo,adm)m$private($visuNo,ads).$private($visuNo,adss)s"
          set private($visuNo,dec)   "$private($visuNo,decd)d$private($visuNo,decm)m$private($visuNo,decs).$private($visuNo,decss)s"
          #--- Rafraichissement du rappel
-         ::getdss::active_objet $visuNo
+         ::getdss::activeObjet $visuNo
       } else {
          #--- Traitement de l'affichage
          set private($visuNo,adh)   ""
@@ -913,7 +951,7 @@ proc ::getdss::cmdTakeFITS1Keywords { visuNo } {
          set private($visuNo,ad)    ""
          set private($visuNo,dec)   ""
          #--- Rafraichissement du rappel
-         ::getdss::active_objet $visuNo
+         ::getdss::activeObjet $visuNo
          #--- Affichage de l'alerte
          tk_messageBox -title $caption(getdss,attention) -message $caption(getdss,texte5)
       }
@@ -948,7 +986,7 @@ proc ::getdss::cmdTakeFITS2Keywords { visuNo } {
          set private($visuNo,ad)    "$private($visuNo,adh)h$private($visuNo,adm)m$private($visuNo,ads).$private($visuNo,adss)s"
          set private($visuNo,dec)   "$private($visuNo,decd)d$private($visuNo,decm)m$private($visuNo,decs).$private($visuNo,decss)s"
          #--- Rafraichissement du rappel
-         ::getdss::active_objet $visuNo
+         ::getdss::activeObjet $visuNo
       } else {
          #--- Traitement de l'affichage
          set private($visuNo,adh)   ""
@@ -962,7 +1000,7 @@ proc ::getdss::cmdTakeFITS2Keywords { visuNo } {
          set private($visuNo,ad)    ""
          set private($visuNo,dec)   ""
          #--- Rafraichissement du rappel
-         ::getdss::active_objet $visuNo
+         ::getdss::activeObjet $visuNo
          #--- Affichage de l'alerte
          tk_messageBox -title $caption(getdss,attention) -message $caption(getdss,texte6)
       }
@@ -994,17 +1032,17 @@ proc ::getdss::cmdTakeTlscpCoord { visuNo } {
       set private($visuNo,ad)    "$private($visuNo,adh)h$private($visuNo,adm)m$private($visuNo,ads).$private($visuNo,adss)s"
       set private($visuNo,dec)   "$private($visuNo,decd)d$private($visuNo,decm)m$private($visuNo,decs).$private($visuNo,decss)s"
       #--- Rafraichissement du rappel
-      ::getdss::active_objet $visuNo
+      ::getdss::activeObjet $visuNo
    } else {
       ::confTel::run
    }
 }
 
 #------------------------------------------------------------
-# ajout_ini
+# ajoutExtension
 #    ajoute l'extension .ini au fichier de configuration
 #------------------------------------------------------------
-proc ::getdss::ajout_ini { fic } {
+proc ::getdss::ajoutExtension { fic } {
    if { [file extension $fic] != ".ini" } {
       return "${fic}.ini"
    } else {
@@ -1040,7 +1078,7 @@ proc ::getdss::ouvrir { visuNo } {
    #--- Charge dans private de l'interpreteur courant les valeur du private_temp
    array set private [array get private_temp]
 
-   active_proxy $visuNo
+   activeProxy $visuNo
 }
 
 #------------------------------------------------------------
@@ -1056,7 +1094,7 @@ proc ::getdss::enregistrer { } {
       -filetypes $filetypes \
       -initialdir "$::audace(rep_home)" ]
 
-   set fp [open [::getdss::ajout_ini ${fichier}] w]
+   set fp [open [::getdss::ajoutExtension ${fichier}] w]
    foreach a [array names private] {
       puts $fp "set private($a) \"[lindex [array get private $a] 1]\""
    }
@@ -1064,10 +1102,10 @@ proc ::getdss::enregistrer { } {
 }
 
 #------------------------------------------------------------
-# getdirname
+# getDirname
 #    navigateur de repertoire
 #------------------------------------------------------------
-proc ::getdss::getdirname { { creat y } } {
+proc ::getdss::getDirname { { creat y } } {
    global caption
 
    set dirname [tk_chooseDirectory -title $caption(getdss,selectrep) \
@@ -1086,15 +1124,15 @@ proc ::getdss::getdirname { { creat y } } {
 }
 
 #------------------------------------------------------------
-# getdir
+# getDir
 #    fournit le repertoire
 #------------------------------------------------------------
-proc ::getdss::getdir { visuNo } {
+proc ::getdss::getDir { visuNo } {
    variable private
 
    set old_dir $private($visuNo,rep)
 
-   set rep [ ::getdss::getdirname ]
+   set rep [ ::getdss::getDirname ]
    if { $rep != "" } {
       set private($visuNo,rep) $rep
    }
