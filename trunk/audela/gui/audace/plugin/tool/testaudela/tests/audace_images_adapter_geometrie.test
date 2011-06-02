@@ -365,15 +365,12 @@ test imaseries_rotation1 {rotation de rz_rgbr_30} -constraints {AUDACE} -setup {
 #        constance des intensites RGB lors du deplacement du point {227 108} apres un tour
 #     attention les naxis ne sont pas conserves
 #-----------------------------------------------------------------------------
-
 #--   test IMA/SERIES ROTENTIERE
 test imaseries_rotation2 {rotation de un_tour} -constraints {AUDACE} -setup {
    loadima [file join $::audace(rep_images) un_tour.fit]
 } -body {
    #--   clic sur le menu "Images/Adapter la géométrie/Rotation libre (image redimensionnée)"..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,geometry)" "$::caption(audace,menu,rotation2)..."
-   ::testaudela::putLabelEntry $z.funoptions.x0 "173.5"
-   ::testaudela::putLabelEntry $z.funoptions.y0 "96.5"
    ::testaudela::putLabelEntry $z.funoptions.angle "360"
    #-- saisit le nom de sortie
    set name_out "deux_tours"
@@ -385,8 +382,8 @@ test imaseries_rotation2 {rotation de un_tour} -constraints {AUDACE} -setup {
    set result 0
    #--   verifie le deplacement du point {227 108}
    ::blt::vector create attendu mesure -watchunset 1
-   mesure set [lrange [buf$bufNo getpix [list 226 108]] 1 end]
-   attendu set [list 1304.000000 1191.000000 537.000000]
+   mesure set [lrange [buf$bufNo getpix [list 227 108]] 1 end]
+   attendu set [list 16125.000000 15775.000000 9425.000000]
    attendu expr {attendu-mesure}
    attendu expr {abs(attendu) <= 1}
    set result [llength [attendu search 1]]
