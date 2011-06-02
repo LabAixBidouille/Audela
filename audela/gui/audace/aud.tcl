@@ -347,7 +347,7 @@ namespace eval ::audace {
 
       #--- On utilise les valeurs contenues dans le tableau conf pour l'initialisation
       set confgene(posobs,observateur,gps) $conf(posobs,observateur,gps)
-      set audace(posobs,observateur,gps)   $confgene(posobs,observateur,gps)
+      set audace(posobs,observateur,gps)   $conf(posobs,observateur,gps)
       set confgene(fichier,compres)        $conf(fichier,compres)
    }
 
