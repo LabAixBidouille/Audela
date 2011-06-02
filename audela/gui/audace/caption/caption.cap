@@ -424,7 +424,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confVisu,fermeture_impossible)         "Impossível parar Aud'ACE devido a uma operação em curso na ferramenta: %s"
    set caption(confVisu,fermeture_outil_impossible)   "Impossível parar %s porque uma operação está em curso."
    set caption(confVisu,label_1)                      "Limiares RGB"
-  set caption(confVisu,label_2)                      "Limiares inferiores"
+   set caption(confVisu,label_2)                      "Limiares inferiores"
    set caption(confVisu,label_3)                      "Limiares superiores"
    set caption(confVisu,msg)                          "O cabeçalho FITS não contém as palavras-chave necessárias."
 
