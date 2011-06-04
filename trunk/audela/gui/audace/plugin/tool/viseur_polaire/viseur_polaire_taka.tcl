@@ -317,7 +317,6 @@ namespace eval ::viseurPolaireTaka {
       bind $This.labURL3 <ButtonPress-1> {
          ::confPosObs::run "$audace(base).confPosObs"
          tkwait window $audace(base).confPosObs
-         set audace(posobs,observateur,gps) $conf(posobs,observateur,gps)
          set viseurPolaireTaka(longitude) "$conf(posobs,estouest) $conf(posobs,long)"
          catch {
             #--- Redessine le viseur Takahashi
