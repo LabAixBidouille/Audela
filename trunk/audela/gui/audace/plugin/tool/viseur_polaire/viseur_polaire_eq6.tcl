@@ -316,7 +316,6 @@ namespace eval ::viseurPolaireEQ6 {
       bind $This.labURL3 <ButtonPress-1> {
          ::confPosObs::run "$audace(base).confPosObs"
          tkwait window $audace(base).confPosObs
-         set audace(posobs,observateur,gps) $conf(posobs,observateur,gps)
          set viseurPolaireEQ6(longitude) "$conf(posobs,estouest) $conf(posobs,long)"
          catch {
             #--- Redessine le viseur EQ6
