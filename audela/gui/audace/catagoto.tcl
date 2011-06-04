@@ -154,7 +154,7 @@ namespace eval cataGoto {
    #    type_objets : Type de catalogue utilise
    #
    proc gestionCata { visuNo { type_objets "" } } {
-      global audace caption catalogue conf
+      global audace caption catalogue
 
       #--- Force le type d'objets
       if { $type_objets != "" } {
@@ -186,7 +186,7 @@ namespace eval cataGoto {
          ::cataGoto::cataObjetUtilisateurChoix $visuNo
       } elseif { $catalogue(choisi,$visuNo) == "$caption(catagoto,zenith)" } {
          ::cataGoto::nettoyage
-         set lat_zenith [ mc_angle2dms [ lindex $conf(posobs,observateur,gps) 3 ] 90 nozero 0 auto string ]
+         set lat_zenith [ mc_angle2dms [ lindex $audace(posobs,observateur,gps) 3 ] 90 nozero 0 auto string ]
          set catalogue($visuNo,list_radec) "$audace(tsl,format,zenith) $lat_zenith"
          set catalogue($visuNo,nom_objet)  "$caption(catagoto,zenith)"
          set catalogue($visuNo,equinoxe)   "J2000.0"
