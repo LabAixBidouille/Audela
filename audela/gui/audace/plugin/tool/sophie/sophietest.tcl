@@ -784,7 +784,7 @@ proc ::sophie::test::configure { } {
          $private(telescopeControl,sideralSpeed) $private(telescopeControl,lunarSpeed) \
          $private(telescopeControl,guidingSpeed) $private(telescopeControl,centeringSpeed) \
          $private(telescopeControl,centering2Speed) $private(telescopeControl,gotoSpeed) \
-         $::conf(posobs,observateur,gps)]
+         $::audace(posobs,observateur,gps)]
 }
 
 #============================================================
