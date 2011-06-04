@@ -504,7 +504,7 @@ proc ::t193::configureMonture { } {
                -increaseFilterRelay 1 \
                -minDetectorFilterInput 2 \
                -maxDetectorFilterInput 3 \
-               -filterMaxDelay $conf(t193,dureeMaxAttenuateur) \
+               -filterMaxDelay $::conf(t193,dureeMaxAttenuateur) \
             ]
             #--- Je parametre le delai mini le HP1000
             tel$telNo radec mindelay $::conf(t193,minDelay)
@@ -536,7 +536,7 @@ proc ::t193::configureMonture { } {
                -increaseFilterRelay 1 \
                -minDetectorFilterInput 2 \
                -maxDetectorFilterInput 3 \
-               -filterMaxDelay $conf(t193,dureeMaxAttenuateur) \
+               -filterMaxDelay $::conf(t193,dureeMaxAttenuateur) \
             ]
              #--- J'affiche un message d'information dans la Console
              ::console::affiche_entete "$caption(t193,port_t193) $caption(t193,2points) $conf(t193,portSerie)\n"
@@ -553,13 +553,13 @@ proc ::t193::configureMonture { } {
       }
       #--- Je configure la position geographique du telescope
       #--- (la position geographique est utilisee pour calculer le temps sideral)
-      #--- format :  tel$telno home GPS long e|w lat alt
-      tel$telNo home $::conf(posobs,observateur,gps)
+      #--- format : tel$telno home GPS long e|w lat alt
+      tel$telNo home $::audace(posobs,observateur,gps)
       tel$telNo home name $::conf(posobs,nom_observatoire)
 
        #--- Je configure le modele de pointage
       if { $::conf(t193,model,enabled) == 1 } {
-          tel$telNo home $::conf(posobs,observateur,gps)
+          tel$telNo home $::audace(posobs,observateur,gps)
           set modelId $::conf(t193,model,id)
           tel$telNo radec model -enabled 1 \
             -symbols $::conf(confTel,model,$modelId,symbols) \
