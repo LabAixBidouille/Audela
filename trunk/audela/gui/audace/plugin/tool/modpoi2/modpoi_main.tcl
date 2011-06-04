@@ -628,23 +628,23 @@ proc ::modpoi2::main::displayStar { visuNo starList} {
 
          #--- je recupere les coordonnees apparentes à la date de l'observation
          set hipRecord [list $starName "0" [mc_angle2deg $raCat] [mc_angle2deg $deCat] $eqCat 0 0 0 0 ]
-         set coords [mc_hip2tel $hipRecord [lindex $starLine 6] $::conf(posobs,observateur,gps) $pressure $temperature]
+         set coords [mc_hip2tel $hipRecord [lindex $starLine 6] $::audace(posobs,observateur,gps) $pressure $temperature]
          set raApp [lindex $coords 0]
          set deApp [lindex $coords 1]
          set haApp [mc_angle2hms [lindex $coords 2] 360 zero 0 auto string]
          set azApp [lindex $coords 3]
          set elApp [lindex $coords 4]
          #--- je calcule l'ecart en arcmin
-         ###set haObs [lindex [mc_radec2altaz [mc_angle2deg $raObs] [mc_angle2deg $deObs] $::conf(posobs,observateur,gps) [lindex $starLine 6]  ] 2]
+         ###set haObs [lindex [mc_radec2altaz [mc_angle2deg $raObs] [mc_angle2deg $deObs] $::audace(posobs,observateur,gps) [lindex $starLine 6] ] 2]
          ####---mc_hadec2altaz Angle_HA Angle_dec Home  => az , el, parallactic
-         ###set altaz [mc_hadec2altaz [lindex $coords 2] [lindex $coords 1] $::conf(posobs,observateur,gps)]
+         ###set altaz [mc_hadec2altaz [lindex $coords 2] [lindex $coords 1] $::audace(posobs,observateur,gps)]
          ####---mc_altaz2radec Angle_az Angle_alt Home Date
-         ###set radec [mc_altaz2radec [lindex $altaz 0] [lindex *$altaz 1] $::conf(posobs,observateur,gps)  [lindex $starLine 6] ]
+         ###set radec [mc_altaz2radec [lindex $altaz 0] [lindex *$altaz 1] $::audace(posobs,observateur,gps) [lindex $starLine 6] ]
          ###set raApp [lindex $radec 0]
 
          #---- attention
-         set raDelta [format "%8.3f" [expr 60.0 * [mc_anglescomp $raObs  - $raApp ]]]
-         set deDelta [format "%8.3f" [expr 60.0 * [mc_anglescomp $deObs  - $deApp ]]]
+         set raDelta [format "%8.3f" [expr 60.0 * [mc_anglescomp $raObs - $raApp ]]]
+         set deDelta [format "%8.3f" [expr 60.0 * [mc_anglescomp $deObs - $deApp ]]]
       } else {
          set date    ""
          set raCat   ""
