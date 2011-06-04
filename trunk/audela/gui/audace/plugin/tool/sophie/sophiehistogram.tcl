@@ -1,6 +1,6 @@
 #
 # Fichier : sophiehistogram.tcl
-# Description : Fenetre affcihat l'histogramme des ecarts étoile/consigne
+# Description : Fenetre affichant l'histogramme des ecarts étoile/consigne
 # Mise à jour $Id$
 #
 
@@ -414,7 +414,7 @@ proc ::sophie::histogram::displayData { visuNo fileName { inputStartList "" } } 
             set startDate [string range [lindex $item 0] 11 end]
             if { [lindex $item 1] != "*" } {
                set stopDate  [string range [lindex $item 1] 11 end]
-               set duration  [expr ( [mc_date2jd  [lindex $item 1]] - [mc_date2jd  [lindex $item 0 ]] )*24*60 ]
+               set duration  [expr ( [mc_date2jd  [lindex $item 1]] - [mc_date2jd [lindex $item 0 ]] )*24*60 ]
                set minutes   [expr int($duration)]
                set secondes  [expr int(60*($duration - $minutes) ) ]
                set duration  [format "%3d mn %02d s" $minutes $secondes]
@@ -426,7 +426,7 @@ proc ::sophie::histogram::displayData { visuNo fileName { inputStartList "" } } 
             set pointNb   [lindex $item 2]
             set ra        [lindex $item 3]
             set dec       [lindex $item 4]
-            set altaz      [mc_radec2altaz $ra $dec $::conf(posobs,observateur,gps) [lindex $item 0]]
+            set altaz     [mc_radec2altaz $ra $dec $::audace(posobs,observateur,gps) [lindex $item 0]]
             #---  mc_radec2altaz  : Retourne une liste : Azimut, Hauteur, Angle horaire et Angle parallactique.
             set az        [format "%.2f" [lindex $altaz 0]]
             set el        [format "%.2f" [lindex $altaz 1]]
@@ -690,7 +690,7 @@ proc ::sophie::histogram::writeGuidingStart {  ra dec } {
       set pointNb   0
       set ra        $ra
       set dec       $dec
-      set altaz     [mc_radec2altaz $ra $dec $::conf(posobs,observateur,gps) $date ]
+      set altaz     [mc_radec2altaz $ra $dec $::audace(posobs,observateur,gps) $date ]
       #---  mc_radec2altaz  : Retourne une liste : Azimut, Hauteur, Angle horaire et Angle parallactique.
       set az        [format "%.2f" [lindex $altaz 0]]
       set el        [format "%.2f" [lindex $altaz 1]]
