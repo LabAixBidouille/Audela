@@ -381,7 +381,7 @@ proc ::horizon::displayHorizon { visuNo } {
    set horizonId $::conf(horizon,currentHorizon)
    set type $::conf(horizon,$horizonId,type)
    set coordinates $::conf(horizon,$horizonId,coordinates)
-   set horizons [mc_horizon $::conf(posobs,observateur,gps) $type $coordinates]
+   set horizons [mc_horizon $::audace(posobs,observateur,gps) $type $coordinates]
 
    #--- Visualise la carte des points d'amer
    ###set figureNo [expr $visuNo + 10]
