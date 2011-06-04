@@ -709,9 +709,9 @@ namespace eval ::confPosObs {
    # GOTO vers l'observatoire via Google Earth
    #
    proc gotoObservatory { } {
-      global conf
+      global audace
 
-      google_earth_home_goto $conf(posobs,observateur,gps)
+      google_earth_home_goto $audace(posobs,observateur,gps)
    }
 
    #
