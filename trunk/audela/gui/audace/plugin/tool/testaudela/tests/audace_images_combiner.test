@@ -330,7 +330,7 @@ test imastack_moyenne_kappa_sigma {moyenne K de rz_rgbr_8, rz_rgbr_15 et rz_rgbr
    #--   nb de differences
    attendu expr {attendu == 0}
    set result [llength [attendu search 1]]
-   if {[lindex [buf$bufNo getkwd EXPOSURE] 1] == 0.069} {incr result}
+   if {[lindex [buf$bufNo getkwd EXPOSURE] 1] == "6.89999983e-002"} {incr result}
    return $result
 } -cleanup $CLEANUP -result "4"
 
