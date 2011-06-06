@@ -346,6 +346,9 @@ namespace eval ::prtr {
       lassign [${private(ima)}Functions "$::prtr::operation"] private(function) \
          private(l_obligatoire) private(l_optionnel) private(aide)
 
+      #--   force la maj de la liste des fichiers (du fait des images wcs)
+      ::prtr::updateTbl $visuNo
+
       ::prtr::configOutName
 
       #--   initialise les compteurs de lignes
@@ -601,16 +604,23 @@ namespace eval ::prtr {
             set w [$tbl windowpath $row,0]
             set select_state $::prtr::private(file_$row)
             if {$function_type == 1} {
+               #--   pour ces fonctions on ne peut selectionner qu'une seule image
                if {$select_state eq "0"} {
+                  $w deselect
                   $w configure -state disabled
                } else {
                   lappend private(todo) [$tbl cellcget $row,1 -text]
                }
             } else {
-               if {![ string match $private(profil) [lrange [$tbl get $row] 2 end]]} {
+               #--   pour ces fonctions on peut selectionner plusieurs images
+               set match_profil [string match $private(profil) [lrange [$tbl get $row] 2 end]]
+               if {$match_profil == "0"} {
+                  $w deselect
                   $w configure -state disabled
-               } elseif {$select_state eq "1"} {
-                  lappend private(todo) [$tbl cellcget $row,1 -text]
+               } else {
+                  if {$select_state == "1"} {
+                     lappend private(todo) [$tbl cellcget $row,1 -text]
+                  }
                }
             }
          }
@@ -694,6 +704,10 @@ namespace eval ::prtr {
       #--   construit la bdd
       foreach file $files {
          set result [::prtr::analyseFitsHeader [file join $dir $file]]
+         if {$::prtr::operation eq "$::caption(audace,menu,reg_wcs)" && [lindex $result 8] == "0"} {
+            #--   filtre les images non wcs
+            set result ""
+         }
          if {$result ne ""} {
             regsub "$::prtr::ext" [file tail $file] "" nom_court
             array set bd [list $nom_court $result]
@@ -714,7 +728,7 @@ namespace eval ::prtr {
          if {$naxis eq 2} {set type "M"} else {set type "C"}
          if {$type eq "M" || ($type eq "C" && $private(ima) ni {MAITRE PRETRAITEE})} {
             $w insert end [list "" "$cible" "$type" "${naxis1} X ${naxis2}"]
-            $w cellconfigure end,0 -window [list ::prtr::createCheckButton]
+            $w cellconfigure end,0 -window "::prtr::createCheckButton"
             $w configrows $nb -name "$cible"
             [$w windowpath $cible,0] deselect
             incr nb
@@ -769,6 +783,14 @@ namespace eval ::prtr {
             }
          }
          if { $error == "0" } {
+            #--   test wcs
+            set wcs 1
+            set wcs_kwd [list cdelt1 cdelt2 crota2 crpix1 crpix2 crval1 crval2 cd1_1 cd1_2 cd2_1 cd2_2]
+            #--   autre kwd ctype1 ctype2 cunit1 cunit2 equinox lonpole radesys
+            foreach var $wcs_kwd {
+               set $var  [lindex [array get kwds [ string toupper $var]] 1]
+               if {[set $var] eq ""} {set wcs 0}
+            }
             #--   affecte les valeurs aux variables
             foreach var {bitpix bzero crpix1 crpix2 mean naxis naxis1 naxis2 naxis3} {
                set $var  [lindex [array get kwds [ string toupper $var]] 1]
@@ -781,7 +803,8 @@ namespace eval ::prtr {
                   set crpix1 [expr {$naxis1/2}]
                   set crpix2 [expr {$naxis2/2}]
                }
-               set result [list $naxis $naxis3 $naxis1 $naxis2 $bitpix $crpix1 $crpix2 $mean]
+			   #-- rajout de l'indicateur wcs
+               set result [list $naxis $naxis3 $naxis1 $naxis2 $bitpix $crpix1 $crpix2 $mean $wcs]
             }
          }
       }
@@ -1366,7 +1389,7 @@ namespace eval ::prtr {
 
       checkbutton $w -height 1 -indicatoron 1 -onvalue 1 -offvalue 0 \
          -variable ::prtr::private(file_$row) \
-         -command [list ::prtr::selectFiles $row]
+         -command "::prtr::selectFiles $row"
    }
 
    #--   chaque fonction est accompagnee de quatre variables (eventuellement vides) :
@@ -1442,7 +1465,7 @@ namespace eval ::prtr {
       dict set CENTER "$caption(audace,menu,reg_tri)"             opt "bitpix +16 skylevel 0 nullpixel 0."
       dict set CENTER "$caption(audace,menu,reg_fine)"            fun "REGISTERFINE"
       dict set CENTER "$caption(audace,menu,reg_fine)"            hlp "$help(dir,prog) ttus1-fr.htm REGISTERFINE"
-      dict set CENTER "$caption(audace,menu,reg_fine)"            par "file img delta 2 oversampling 10"
+      dict set CENTER "$caption(audace,menu,reg_fine)"            par "file img oversampling 10 delta 2"
       dict set CENTER "$caption(audace,menu,reg_fine)"            opt "bitpix +16 skylevel 0 nullpixel 0."
       dict set CENTER "$caption(audace,menu,reg_wcs)"             fun "REGISTER matchwcs"
       dict set CENTER "$caption(audace,menu,reg_wcs)"             hlp "$help(dir,prog) ttus1-fr.htm REGISTER"
