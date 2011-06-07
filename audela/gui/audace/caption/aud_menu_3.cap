@@ -362,12 +362,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,pretraitee)                  "Pretrattamento immagini raw"
 
    set caption(audace,menu,center)                      "Allineare"
-   set caption(audace,menu,recentrer_manu)              "# Sélection"
+   set caption(audace,menu,recentrer_manu)              "Selezione"
    set caption(audace,menu,reg_trans)                   "# Translation automatique"
-   set caption(audace,menu,reg_inter)                   "# Intercorrélation"
-   set caption(audace,menu,reg_tri)                     "# Transformation affine"
-   set caption(audace,menu,reg_wcs)                     "# Astrométrie WCS"
-   set caption(audace,menu,reg_fine)                    "# Moindres carrés"
+   set caption(audace,menu,reg_inter)                   "Intercorrelazione"
+   set caption(audace,menu,reg_tri)                     "Trasformazione affine"
+   set caption(audace,menu,reg_wcs)                     "Astrometria WCS"
+   set caption(audace,menu,reg_fine)                    "Medie quadratiche"
 
    set caption(audace,menu,pile)                        "Combinare"
    set caption(audace,menu,somme)                       "Somma"
@@ -389,7 +389,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,miroir_xy)                   "Simmetria diagonale"
    set caption(audace,menu,window1)                     "Reinquadrare"
    set caption(audace,menu,scale)                       "Ricampionamento"
-   set caption(audace,menu,translate)                   "Traduci"
+   set caption(audace,menu,translate)                   "# Translater"
    set caption(audace,menu,rotation1)                   "Rotazione (immagine troncata)"
    set caption(audace,menu,rotation2)                   "Rotazione (immagine estesa)"
 
@@ -435,12 +435,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,tfd)                         "Trasformata di Fourier"
    set caption(audace,menu,tfdi)                        "Antitrasformata di Fourier"
    set caption(audace,menu,acorr)                       "Autocorrelazione"
-   set caption(audace,menu,icorr)                       "Correlazione incrociata"
+   set caption(audace,menu,icorr)                       "Intercorrelazione"
    set caption(audace,menu,cart2pol)                    "Rettangolare->Polare"
    set caption(audace,menu,pol2cart)                    "Polare->Rettangolare"
    set caption(audace,menu,hough)                       "Funzione di Hough"
 
-   set caption(audace,menu,convoluer)                   "Convoluzione"
+   set caption(audace,menu,convoluer)                   "Fare convoluzione"
    set caption(audace,menu,convolution)                 "Convoluzione"
 
    set caption(pretraitement,all)                       "Converti tutti i file"
@@ -529,7 +529,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,center)                      "Alinear"
    set caption(audace,menu,recentrer_manu)              "Selección"
-   set caption(audace,menu,reg_trans)                   "Traslación automática"
+   set caption(audace,menu,reg_trans)                   "Desplazamiento automático"
    set caption(audace,menu,reg_inter)                   "Intercorrelación"
    set caption(audace,menu,reg_tri)                     "Transformación afín"
    set caption(audace,menu,reg_wcs)                     "Astrometria WCS"
@@ -555,7 +555,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,miroir_xy)                   "Simetría diagonal"
    set caption(audace,menu,window1)                     "Recortar"
    set caption(audace,menu,scale)                       "Remuestreo"
-   set caption(audace,menu,translate)                   "Traducir"
+   set caption(audace,menu,translate)                   "Desplazar"
    set caption(audace,menu,rotation1)                   "Rotación (imagen truncada)"
    set caption(audace,menu,rotation2)                   "Rotación (zona de imagen)"
 
@@ -695,7 +695,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,center)                      "Angleichen"
    set caption(audace,menu,recentrer_manu)              "Wählen"
-   set caption(audace,menu,reg_trans)                   "Automatische Übersetzung"
+   set caption(audace,menu,reg_trans)                   "Automatische Verschiebung"
    set caption(audace,menu,reg_inter)                   "Interkorrelation"
    set caption(audace,menu,reg_tri)                     "Affine Transformation"
    set caption(audace,menu,reg_wcs)                     "WCS Astrometrie"
@@ -721,7 +721,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,miroir_xy)                   "Diagonale Symmetrie"
    set caption(audace,menu,window1)                     "Wieder einstellen"
    set caption(audace,menu,scale)                       "Wider proben"
-   set caption(audace,menu,translate)                   "Übersetzen"
+   set caption(audace,menu,translate)                   "Schieben"
    set caption(audace,menu,rotation1)                   "Freie Umdrehung (verkürztes Bild"
    set caption(audace,menu,rotation2)                   "Freie Umdrehung (verkleinertes Bild"
 
@@ -887,7 +887,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,miroir_xy)                   "Simetria diagonal"
    set caption(audace,menu,window1)                     "Recortar"
    set caption(audace,menu,scale)                       "Reamostrar"
-   set caption(audace,menu,translate)                   "Traduzir"
+   set caption(audace,menu,translate)                   "Transladar"
    set caption(audace,menu,rotation1)                   "Rotação (imagem truncada)"
    set caption(audace,menu,rotation2)                   "Rotação (imagem estendida)"
 
@@ -1027,7 +1027,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,center)                      "Justér"
    set caption(audace,menu,recentrer_manu)              "Valg"
-   set caption(audace,menu,reg_trans)                   "Automatisk oversættelse"
+   set caption(audace,menu,reg_trans)                   "# Translation automatique"
    set caption(audace,menu,reg_inter)                   "Interkorrelation"
    set caption(audace,menu,reg_tri)                     "Affin Transformation"
    set caption(audace,menu,reg_wcs)                     "WCS Astrometri"
@@ -1053,8 +1053,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,miroir_xy)                   "Diagonal symmetri"
    set caption(audace,menu,window1)                     "Beskære"
    set caption(audace,menu,scale)                       "Resampling"
-   set caption(audace,menu,translate)                   "# Translater"
-   set caption(audace,menu,rotation1)                   "# Rotation (image tronquée)"
+   set caption(audace,menu,translate)                   "Oversæt"
+   set caption(audace,menu,rotation1)                   "# Fri rotation (image tronquée)"
    set caption(audace,menu,rotation2)                   "Fri rotation (ændret billedstørrelse)"
 
    set caption(audace,menu,improve)                     "Rediger billedet"
@@ -1082,7 +1082,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,filtre_passe-bas)            "Lav pas filter"
    set caption(audace,menu,filtre_passe-haut)           "Høj pas filter"
    set caption(audace,menu,filtre_median)               "Median filter"
-   set caption(audace,menu,filtre_mean)                 "# Filtre moyen"
+   set caption(audace,menu,filtre_mean)                 "Middel filter"
    set caption(audace,menu,filtre_minimum)              "Minimum filter"
    set caption(audace,menu,filtre_maximum)              "Maksimum filter"
    set caption(audace,menu,filtre_up)                   "Fjern øvre -> nedre gradient"
@@ -1093,9 +1093,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,ond_morlet)                  "Bølge af type Morlet"
    set caption(audace,menu,ond_mexicain)                "Mexicansk hat bølgetype"
    set caption(audace,menu,grad_rot)                    "Rotationel gradient"
-   set caption(audace,menu,radial)                      "# Filtre radial"
+   set caption(audace,menu,radial)                      "Radial filter"
 
-   set caption(audace,menu,transform)                   "# Transformer"
+   set caption(audace,menu,transform)                   "Transformer"
    set caption(audace,menu,tfd)                         "Diskret Fourier tranformation"
    set caption(audace,menu,tfdi)                        "Invers diskret Fourier tranformation"
    set caption(audace,menu,acorr)                       "Autokorrelation"
