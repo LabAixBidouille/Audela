@@ -889,8 +889,8 @@ proc ::telescope::move { direction } {
          tel$audace(telNo) radec move $direction $audace(telescope,rate)
       }
    } else {
-      ::confTel::run
-      # tkwait window $audace(base).confTel
+      #--- Comme le '::telescope::move' est toujours suivi d'un '::telescope::stop'
+      #--- c'est dans le 'stop' que je traite le cas de la monture non connectee
    }
 }
 
