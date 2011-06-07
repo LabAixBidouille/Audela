@@ -406,7 +406,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,avancement_acq)         "Progreso de la\nadquisición"
    set caption(acqfc,buttonShiftConfig)      "Desplazam."
    set caption(acqfc,acquisitionError)       "Error de adquisición. Ver detalles en la Consola."
-   set caption(acqfc,flatAuto)               "# Flats Auto"
+   set caption(acqfc,flatAuto)               "Tomas de Flat\nautomaticas"
 
    set caption(acqfc,emccd,mode)             "# Mode EMCCD"
    set caption(acqfc,emccd,parametres)       "# Paramètres EMCCD"
@@ -614,7 +614,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,avancement_acq)         "Adiantamento da\naquisição"
    set caption(acqfc,buttonShiftConfig)      "Deslocamento"
    set caption(acqfc,acquisitionError)       "Erro na aquisição. Ver detalhes na Consola."
-   set caption(acqfc,flatAuto)               "# Flats Auto"
+   set caption(acqfc,flatAuto)               "Flat Field\nautomático"
 
    set caption(acqfc,emccd,mode)             "# Mode EMCCD"
    set caption(acqfc,emccd,parametres)       "# Paramètres EMCCD"
