@@ -450,9 +450,9 @@ proc ::tkutil::afficherNomGenerique { filename { animation 0 } } {
 #    avec eventuellement un message optionnel
 #
 proc ::tkutil::displayErrorInfo { title { messageOptionnel "" } } {
-   #--- j'affiche le message complet dans la console
-   ::console::affiche_erreur "$::errorInfo\n"
-   #--- j'affiche le message d'erreur dasn une fenetre modale.
+   #--- j'affiche le message d'erreur complet dans la Console
+   ::console::affiche_erreur "$::errorInfo\n\n"
+   #--- j'affiche le message d'erreur complet dans une fenetre modale
    tk_messageBox -icon error -title $title \
       -message "[string range $::errorInfo 0 [string first "\n    while executing" $::errorInfo]]$messageOptionnel"
 }
