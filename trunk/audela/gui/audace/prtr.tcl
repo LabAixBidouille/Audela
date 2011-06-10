@@ -146,7 +146,7 @@ namespace eval ::prtr {
       scrollbar $This.usr.choix.vscroll -command "$tbl yview" -width 18
 
       frame $This.usr.table
-      set this [::blt::table $This.usr.table]
+      set this [blt::table $This.usr.table]
       set private(table) $this
       foreach fr {all sortie affiche edit info cmd} {
          frame $this.$fr -borderwidth 1 -relief raised
@@ -209,7 +209,7 @@ namespace eval ::prtr {
       pack $this.cmd.hlp -side right -padx 3 -pady 3
 
       #--- positionne les elements dans la table
-      ::blt::table $this \
+      blt::table $this \
          $this.hscroll 1,0 -fill both -height {18} \
          $this.nihil 1,1 \
          $this.all 2,0 -fill both -cspan 2 -height {34} \
@@ -218,8 +218,8 @@ namespace eval ::prtr {
          $this.info 7,0 -fill both -cspan 2 -height {34} \
          $this.cmd 8,0 -fill both -cspan 2 -height {50}
       pack $this -in $This.usr -side bottom -fill both -expand 0
-      ::blt::table configure $this c1 -width 18 -resize none
-      #::blt::table configure $this r5 r6 r7 r8 -resize none
+      blt::table configure $this c1 -width 18 -resize none
+      #blt::table configure $this r5 r6 r7 r8 -resize none
 
       #--- definit la structure et les caracteristiques
       ::tablelist::tablelist $tbl -borderwidth 2 \
@@ -384,7 +384,7 @@ namespace eval ::prtr {
       label $w.label  -text "$::caption(prtr,param)"
       set private(fun_lignes) [::prtr::configZone $w obligatoire]
       grid $w.label -row 0 -column 0 -padx 10 -pady 5 -rowspan $private(fun_lignes)
-      ::blt::table $private(table) $w 3,0 -fill both -cspan 2 \
+      blt::table $private(table) $w 3,0 -fill both -cspan 2 \
          -height [list [expr {$private(fun_lignes)*34}]]
 
       #--   modifie les variables initiales
@@ -416,7 +416,7 @@ namespace eval ::prtr {
             -variable ::prtr::ttoptions -text "$::caption(prtr,options)" \
             -command "::prtr::dispOptions $w"
          grid $w.che -row 0 -column 0 -padx 10 -pady 5 -rowspan 1
-         ::blt::table $private(table) $w 4,0 -fill both -cspan 2
+         blt::table $private(table) $w 4,0 -fill both -cspan 2
       }
       ::prtr::confBitPix
       dispOptions $w
@@ -784,16 +784,23 @@ namespace eval ::prtr {
          }
          if { $error == "0" } {
             #--   test wcs
-            set wcs 1
-            set wcs_kwd [list cdelt1 cdelt2 crota2 crpix1 crpix2 crval1 crval2 cd1_1 cd1_2 cd2_1 cd2_2]
-            #--   autre kwd ctype1 ctype2 cunit1 cunit2 equinox lonpole radesys
+            set wcs_kwd [list crota2 cd1_1 cd1_2 cd2_1 cd2_2 cdelt1 cdelt2 dec foclen pixsize1 pixsize2 ra]
+            #--   test la presence des mot-cles
             foreach var $wcs_kwd {
-               set $var  [lindex [array get kwds [ string toupper $var]] 1]
-               if {[set $var] eq ""} {set wcs 0}
+               set $var 0
+               set value [lindex [array get kwds [string toupper $var]] 1]
+               if {$value ne ""} {set $var 1}
             }
+
+            set wcs 0
+            if {(($cd1_1 && $cd1_2 && $cd2_1 && $cd2_2) || ($cdelt1 && $cdelt2 && $crota2 ) || \
+               ($foclen && $pixsize1 && $pixsize2 && $ra && $dec && $crota2))== "1"} {
+                  set wcs 1
+            }
+
             #--   affecte les valeurs aux variables
             foreach var {bitpix bzero crpix1 crpix2 mean naxis naxis1 naxis2 naxis3} {
-               set $var  [lindex [array get kwds [ string toupper $var]] 1]
+               set $var [lindex [array get kwds [string toupper $var]] 1]
             }
             if {[info exists bzero] && $bzero ne ""} {set bitpix "+$bitpix"}
             array unset kwds
@@ -1280,7 +1287,7 @@ namespace eval ::prtr {
       #--   cherche la largeur de la fenetre
       if {$widgetHeight ne ""} {
          #--   cherche la hauteur totale de la table
-         regexp {[0-9]+} [::blt::table configure $private(table) -reqheight] tableHeight
+         regexp {[0-9]+} [blt::table configure $private(table) -reqheight] tableHeight
          #--   cherche la hauteur sans la table
          set fixeHeight [expr {$widgetHeight-$tableHeight}]
          #--   sauve la position de la fenetre avec la hauteur fixe
@@ -1300,7 +1307,7 @@ namespace eval ::prtr {
 
       #--   fixe la hauteur de la table
       set TableHeight [expr {($private(fun_lignes)+$private(tt_lignes))*34+204}]
-      ::blt::table configure $private(table) -reqheight $TableHeight
+      blt::table configure $private(table) -reqheight $TableHeight
 
       #--   cherche la hauteur fixe de la fenetre
       regexp {.x([0-9]+)\+.} $::conf(prtr,geometry) match fixeHeight
@@ -2247,17 +2254,17 @@ namespace eval ::prtr {
             return [::prtr::avertiUser err_par_def $parametre]
          }
          #--   tous les parametres doivent etre numeriques
-         ::blt::vector create temp -watchunset 1
+         blt::vector create temp -watchunset 1
          if {[catch {temp append $value}]} {
-            ::blt::vector destroy temp
+            blt::vector destroy temp
             return [::prtr::avertiUser err_par_def $parametre]
          }
          #--   teste les valeurs
          if {[expr {$temp(1)*$temp(3)-$temp(0)*$temp(4)}] == "0"} {
-            ::blt::vector destroy temp
+            blt::vector destroy temp
             return [::prtr::avertiUser err_list_val $parametre]
          }
-         ::blt::vector destroy temp
+         blt::vector destroy temp
          return "\"paramresample=$value\""
       }
    }
@@ -2518,14 +2525,14 @@ namespace eval ::prtr {
          return "[$w cellcget $k,2 -text]"
       }
 
-      ::blt::vector create Vnaxis Vnaxis3 -watchunset 1
+      blt::vector create Vnaxis Vnaxis3 -watchunset 1
       foreach file $files {
          foreach {naxis naxis3} [lindex [array get bd $file] 1] {break}
          Vnaxis append $naxis
          Vnaxis3 append $naxis3
       }
       switch [Vnaxis3 length] 0 {set type "M"} [Vnaxis length] {set type "C"} default {set type "error"}
-      ::blt::vector destroy Vnaxis Vnaxis3
+      blt::vector destroy Vnaxis Vnaxis3
       return $type
    }
 
@@ -3260,7 +3267,7 @@ namespace eval ::prtr {
       set dest crosscorrelation$extOut
 
       #--   cree deux vecteurs
-      ::blt::vector create Vx Vy -watchunset 1
+      blt::vector create Vx Vy -watchunset 1
 
       #--   si compression
       if {$::conf(fichier,compres) eq "0"} {
@@ -3397,7 +3404,7 @@ namespace eval ::prtr {
             set ${var}2 [expr {int($naxis+$min)}]
         }
       }
-      ::blt::vector destroy Vx Vy
+      blt::vector destroy Vx Vy
 
       #--   liste les fichiers a fenetrer
       if {$type ne "C"} {
