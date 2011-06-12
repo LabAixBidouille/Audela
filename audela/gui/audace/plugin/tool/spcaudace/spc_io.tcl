@@ -2721,7 +2721,7 @@ proc spc_dats2fits { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 17-09-2006
-# Date modification : 17-09-2006
+# Date modification : 04-06-2011
 # Arguments : aucun
 ###################################################################
 proc spc_readchemfiles { args } {
@@ -2732,54 +2732,50 @@ proc spc_readchemfiles { args } {
     set fileelements "stellar_lines.txt"
     set fileneon "neon.txt"
     set fileeau "h2o.txt"
+    set fileargon "argon.txt"
+    set listefichierschem [ list stellar_lines.txt h2o.txt argon.txt neon.txt ]
 
-    if { [ llength $args ] <= 1 } {
-        if { [ llength $args ] == 1 } {
-            set repertoire [ lindex $args 0 ]
-        } elseif { [ llength $args ] == 0 } {
-            set repertoire ""
-        } else {
-            ::console::affiche_erreur "Usage: spc_readchemfiles ?répertoire des catalogues chimiques?\n\n"
-        }
+    set nbargs [ llength $args ]
+    if { $nbargs==1 } {
+       set fichierchem [ lindex $args 0 ]
 
-        #--- Lecture du fichier des raies stellaires
-        set input [open "$spcaudace(repchimie)/$fileelements" r]
-        set contents [split [read $input] \n]
-        close $input
-        foreach ligne $contents {
-            set element [ lindex $ligne 0 ]
-            set lambda [ lindex $ligne 1 ]
-            append listelambdaschem "$element:$lambda "
-            # lappend listelambdaschem "$ligne"
-        }
+       #--- Lecture du fichier des raies stellaires
+       if { [ file exists "$spcaudace(repchimie)/$fichierchem" } {
+          set input [ open "$spcaudace(repchimie)/$fichierchem" r ]
+          set contents [split [read $input] \n]
+          close $input
+          set listelambdaschem ""
+          foreach ligne $contents {
+             set element [ lindex $ligne 0 ]
+             set lambda [ lindex $ligne 1 ]
+             append listelambdaschem "$element:$lambda "
+             # lappend listelambdaschem "$ligne"
+          }
+       }
 
-        #--- Lecture du fichier des raies de l'eau
-        set input [open "$spcaudace(reptelluric)/$fileeau" r]
-        set contents [split [read $input] \n]
-        close $input
-        foreach ligne $contents {
-            set element [ lindex $ligne 0 ]
-            set lambda [ lindex $ligne 1 ]
-            append listelambdaschem "$element:$lambda "
-            # lappend listelambdaschem "$ligne"
-        }
+       #--- Fin du script :
+       set listelambdaschem [ split $listelambdaschem " " ]
+       return $listelambdaschem
+    } elseif { $nbargs==0 } {
+       set listelambdaschem ""
+       foreach fichier $listefichierschem {
+          set input [ open "$spcaudace(repchimie)/$fichier" r ]
+          set contents [split [read $input] \n]
+          close $input
+          foreach ligne $contents {
+             set element [ lindex $ligne 0 ]
+             set lambda [ lindex $ligne 1 ]
+             append listelambdaschem "$element:$lambda "
+             # lappend listelambdaschem "$ligne"
+          }
+       }
 
-        #--- Lecture du fichier des raies du neon
-        set input [open "$spcaudace(repchimie)/$fileneon" r]
-        set contents [split [read $input] \n]
-        close $input
-        foreach ligne $contents {
-            set element [ lindex $ligne 0 ]
-            set lambda [ lindex $ligne 1 ]
-            append listelambdaschem "$element:$lambda "
-            # lappend listelambdaschem "$ligne"
-        }
-
-        #--- Fin du script :
-        set listelambdaschem [ split $listelambdaschem " " ]
-        return $listelambdaschem
+       #--- Fin du script :
+       set listelambdaschem [ split $listelambdaschem " " ]
+       return $listelambdaschem
     } else {
-        ::console::affiche_erreur "Usage: spc_readchemfiles ?répertoire des catalogues chimiques?\n\n"
+       ::console::affiche_erreur "Usage: spc_readchemfiles ?fichier_texte_catalogue_chimique?\n"
+       return ""
     }
 }
 #**********************************************************************************#
