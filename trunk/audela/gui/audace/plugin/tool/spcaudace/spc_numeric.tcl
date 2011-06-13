@@ -109,7 +109,6 @@ proc spc_gausslist { args } {
 #***************************************************************************#
 
 
-
 #############################################################################
 # Auteur : Patrick LAILLY
 # Date de création : 1-09-10
@@ -179,10 +178,10 @@ proc spc_maxsearch { args } {
 	 set nb_max [ llength $liste_max ]
       }
       for {set k 0} { $k < $nb_max } {incr k} {
-      set kk [ expr $k + 1 ]
+	 set kk [ expr $k + 1 ]
 	 set period [ lindex $periods [ lindex $liste_max $k ] ]
 	 set dens [ lindex $density [ lindex $liste_max $k ] ]
-	 ::console::affiche_resultat "Maximum N°$kk trouve ($dens) pour une periode de $period\n"
+	 #::console::affiche_resultat "Maximum N°$kk trouve ($dens) pour une periode de $period\n"
 	 lappend lperiod $period
 	 lappend ldens $dens
       }
@@ -192,12 +191,13 @@ proc spc_maxsearch { args } {
       for {set k 0} { $k < $nb_max } {incr k} {
 	 set dens [ lindex $ord_dens $k ]
 	 set kk [ lsearch -exact $ldens $dens ]
+	 ::console::affiche_resultat "Maximum N°[ expr $k+1 ] trouve pour une periode de [ lindex $lperiod $kk ] avec une valeur de $dens\n"
 	 lappend ord_kk $kk
 	 lappend ord_period [ lindex $lperiod $kk ]
       }
       return $ord_period
    } else {
-      ::console::affiche_erreur "Usage: spc_maxsearch data_filename.dat ?nombre_max_recherches?\n"
+      ::console::affiche_erreur "Usage: spc_maxsearch data_filename.dat? nombre_max_recherches? \n\n"
       return ""
    }
 }
@@ -258,7 +258,7 @@ proc spc_sinefit { args } {
       set num 0.
       set den 0.
       for { set j 0 } { $j < $nb_echant } { incr j } {
-	 set phase [ expr 2. * $omega * [ lindex $abscisses $j ] ]
+	 set phase [ expr $omega * [ lindex $abscisses $j ] ]
 	 set num [ expr $num + sin($phase) ]
 	 set den [ expr $den + cos($phase) ]
       }
@@ -304,7 +304,9 @@ proc spc_sinefit { args } {
       }
       set tau $tau2
       set amplitude $amplitude2
+      set rms $l22
       if { $l21 < $l22 } {
+      set rms $l21
 	 set tau $tau1
 	 set amplitude $amplitude1	
       }
@@ -316,7 +318,7 @@ proc spc_sinefit { args } {
 	 set temps [ expr $temps_deb + $k * $dt ]
 	 lappend ltemps $temps
 	 lappend lintens [ expr $dc + $amplitude * sin($omega * ( $temps - $tau) ) ]
-   	} 	
+      } 	
       ::plotxy::figure 1 
       ::plotxy::plot $abscisses $ordonnees_orig *b
       ::plotxy::hold on   
@@ -328,15 +330,24 @@ proc spc_sinefit { args } {
       ::plotxy::ylabel $measured_quantity
       ::plotxy::title "Fit of data $nom_dat on estimated sine function \n "
       # fin de la proc
-      set laperiode [ expr 4.*asin(1)/$omega ]
-      set phi [ expr $omega*$tau ]
-      ::console::affiche_resultat " Estimated amplitude : $amplitude and time shift : $tau \n y=$dc+$amplitude*sin(2PI*t/$laperiode-$phi)\n"
+      set time_shift $tau
+      if { $amplitude < 0. } {
+	 set time_shift [ expr $tau - .5 * $period ] 
+      }
+      set phase [ expr  [ lindex $abscisses 0 ] - $time_shift ]
+      set nbperiod [ expr int ($phase/$period) ]
+      set phase [ expr ( $phase - $nbperiod * $period ) / $period ]
+      set amplit [ expr .01 * round(100. * $amplitude) ]
+      set phase [ expr .01 * round(100. * $phase) ]
+      set period [ expr .01 * round(100. * $period) ]
+      set dc [ expr .01 * round(100. * $dc) ]
+      ::console::affiche_resultat "  Sinefit : RMS= $rms\n Estimated amplitude : [ expr abs($amplit) ]\n Phase : $phase\n Form of the fitting function:y(t)=$dc+$amplitude*sin(2pi*t/$period-$phase)\n"
       set liste_caract [ list ]
       lappend liste_caract $amplitude
       lappend liste_caract $tau
       return $liste_caract
    } else {
-      ::console::affiche_erreur "Usage: spc_sinefit data_filename.dat \"time_unit\" \"measured_quantity\" data_period\n"
+      ::console::affiche_erreur "Usage: spc_sinefit data_filename.dat time_unit measured_quantity period \n\n"
       return ""
    }
 }
