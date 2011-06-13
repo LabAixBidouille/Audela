@@ -37,77 +37,273 @@
 
 
 #############################################################################################
+
 # Auteur : Patrick LAILLY
 # Date de création : 1-09-10
-# Date de modification : 1-09-10
-# cette procédure lance en cascade les differentes procs permettant le calcul d'un periodogramme et l'analyse des resultats 
-# pour analyse le comportement d'une quantite physique en fonction du temps calendaire 
-# 2 arguments  d'entree obligatoires : le nom du fichier dat contenant les donnees mesurees, l'unite utilisee pour la
-# mesure du temps calendaire
-# 1 argument d'entree facultatif : l'estimation du nombre de periodes mesurees. Cette quantite sert a calculer la periode maximale possible : il vaut donc mieux pecher par defaut que par exces.
-# En l'absence de specification la valeur par defaut est 2. 
-# la procedure retourne le nom du fichier contenant les echantillons du periodogramme et affiche le graphique du
-# periodogramme, le graphique illustrant l'ajustement des donnees par la fonction sinusoidale associee a la periode donnant
-# le maximum du peridogramme, laquelle est affichee a la console.  L'amplitude et le decalage temporel caracterisant la sinusoide optimale sont affiches a la console.
+# Date de modification : 10-06-11
+# cette procédure calcule le  periodogramme associé à la mesure d'une quantité physique en fonction du temps calendaire  
+# 3 arguments  d'entree obligatoires : le nom du fichier dat contenant les donnees mesurees, l'unite utilisee pour la
+# mesure du temps calendaire, nature de la quantite physique mesuree
+# 4 arguments d'entree facultatifs :  nombres de periodes plausibles qui seront affichees a la console (valeur par défaut : 10),  borne inferieure a la periode recherchée (valeur par défaut : 0.), periode maximum (valeur par defaut : duree d'enregistrement des mesures), estimation d'une borne inférieure au pas d'echantillonage du periodogramme (valeur par defaut := (periode max-periode min)/10000).
+# 
+# la procedure retourne le nom du fichier contenant les echantillons du periodogramme et cree un fichier png donnant le graphique du
+# periodogramme
 # L'algorithme utilise est celui decrit par Scargle (Astrophys. J., 263:835-853, 1982)
-# Exemple : spc_periodogram data.dat "jours juliens"
-# Exemple : spc_periodogram data.dat jour
-# Exemple : spc_periodogram data.dat jour 3
-# reste a regler : pb lecture fichier dat
+# Exemple : spc_periodogram data.dat "jours juliens" "vitesse radiale (m/s)"
+# Exemple : spc_periodogram data.dat jour "vitesse radiale (m/s)"
+# Exemple : spc_periodogram data.dat jour "vitesse radiale (m/s)" 19
+# Exemple : spc_periodogram data.dat jour "vitesse radiale (m/s)" 19 2.
+# Exemple : spc_periodogram data.dat jour "vitesse radiale (m/s)" 19 2. 5.
+# Exemple : spc_periodogram data.dat jour "vitesse radiale (m/s)" 19 2. 5. .01
 ###########################################################################################
 
 proc spc_periodogram { args } {
-
-   set nbargs [ llength $args ]
-   if { $nbargs<=3 } {
-      if { $nbargs==1 } {
-         ::console::affiche_erreur "Usage: spc_periodogram data_filename.dat time_unit ?period_number?\n"
-         return ""
-      } elseif { $nbargs==2 } {
-         set nom_dat [ lindex $args 0 ]
-         set unit_temps [ lindex $args 1 ]
-         set nb_period 2
-      } elseif { $nbargs==3 } {
-         set nom_dat [ lindex $args 0 ]
-         set unit_temps [ lindex $args 1 ]
-         set nb_period [ lindex $args 2 ]
-      } else {
-         ::console::affiche_erreur "Usage: spc_periodogram data_filename.dat time_unit ?period_number?\n"
+   global audace spcaudace
+   ###########variable environnement
+   set precision .1
+   set fileout periodogram.dat
+   set nargs [ llength $args ]
+   if { $nargs <=7 } {
+      if { $nargs <= 2 } {
+         ::console::affiche_erreur "Usage: spc_periodogram data_filename.dat time_unit measured_quantity ?nb_periodes_plausibles (10)? ?period_min (0.)? ?period_max (=duree enregistrement des mesures)? ?borne inférieure au pas d'echantillonage du periodogramme (valeur par defaut := (period_max-period_min) /(nb_data*30))?\n\n"
          return ""
       }
-      set periodog_filename [ spc_periodog $nom_dat $unit_temps $nb_period ]
-      # set labscisses_max [ spc_maxsearch $periodog_filename 3 ]
-      set labscisses_max [ spc_maxsearch $periodog_filename 10 ]
-      set period [ lindex $labscisses_max 0 ]
-      # set sine_caract [ spc_sinefit $nom_dat $unit_temps $period ]
-      ## set sine_cacact [ spc_sinefit $nom_dat $unit_temps "Quantity" $period ]
-      return $periodog_filename
+      set nom_dat [ lindex $args 0 ]
+      set unit_temps [ lindex $args 1 ]
+      set measured_quantity [ lindex $args 2 ]
+      set nb_printed_period 10
+      set period_min 0.
+      
+      if { $nargs >= 4 } {
+	 set nb_printed_period [ lindex $args 3 ]
+      }
+      if { $nargs >= 5 } {
+	 set period_min [ lindex $args 4 ]
+      }
+      if { $nargs >= 6 } {
+         set period_max [ lindex $args 5 ]
+      }
+      if { $nargs == 7 } {
+         set sample_min [ lindex $args 6 ]
+      }
+      # regler ici le pb de la chronologie des donnees entrees
+      #set periodog_filename [ spc_periodog $nom_dat $unit_temps $nb_period ]
+      # lecture du fichier dat
+      set input [open "$audace(rep_images)/$nom_dat" r]
+      set contents [split [read $input] \n]
+      close $input
+      set nb_echant [llength $contents]
+      # modification ad hoc : a comprendre !!!!!!!!!!!!!!!!!!!!!!!!
+      set nb_echant [ expr $nb_echant -1 ]
+      set nb_echant_1 [ expr $nb_echant - 1 ] 
+      set abscisses [ list ]
+      set ordonnees_orig [ list ]
+      for {set k 0} { $k < $nb_echant } {incr k} {
+	 set ligne [lindex $contents $k]
+	 set x [lindex $ligne 0]
+	 set y [lindex $ligne 1]
+	 #::console::affiche_resultat " x= $x   y= $y \n"
+	 lappend abscisses [lindex $ligne 0] 
+	 lappend ordonnees_orig [lindex $ligne 1] 
+      }
+      set temps_max [ expr [ lindex $abscisses $nb_echant_1 ] - [ lindex $abscisses 0 ] ]
+      # elimination de la composante continue
+      set dc 0.
+      for {set k 0} { $k < $nb_echant } {incr k} {
+	 set dc [ expr $dc + [ lindex $ordonnees_orig $k ] ]
+      }
+      set dc [ expr $dc / $nb_echant ]
+      set ordonnees [ list ]
+      for {set k 0} { $k < $nb_echant } {incr k} {
+	 lappend ordonnees [ expr [ lindex $ordonnees_orig $k ] - $dc ]	
+      }
+      if { $nargs < 6 } {
+	 set period_max $temps_max
+      }
+      if { $period_min > $period_max } {
+	 ::console::affiche_erreur "spc_periodogram : la periode minimale $period_min est plus grande que la periode maximale $period_max \n\n"
+         return ""
+      }
+      set larg_interv [ expr ( $period_max - $period_min ) * 1. ]
+      if { $nargs < 7 } {
+	 set sample_min [ expr $larg_interv / (30 * $nb_echant) ]
+      }
+      # fin des entrees
+      # recherche du nombre maximum (sous forme de puissance de 2 ) de subdivisions de l'intervalle des periodes considerees
+      for { set n 0 } { $n < 20 } { incr n } {
+	 set nn $n
+	 if { [ expr $larg_interv / ( 2**$n ) ] < $sample_min } {
+	    #::console::affiche_resultat "on ne raffine plus l'echantillonage : le seuil bas est atteint pour n= $n, sample_min= $sample_min\n\n"
+	    #if { $n == 8 } {
+	    #set last_period $period_max
+	    #}
+	    break
+      	}
+      }
+      set nn [ expr $nn + 1 ]
+      if { $nn < 8 } {
+      # dans ce cas sample_min apparait trop grossier
+	 ::console::affiche_erreur "spc_periodogram : la valeur specifiee pour le pas d'echantillonage $sample_min apparait trop grossiere : le programme va la changer  \n\n"
+	 set nn 8
+      }
+      set llperiod [ list ] 
+      set lldensity [ list ]
+      #premier echantillonage avec n=8
+      set n 8
+      while { $n < 20 } {
+	 if { $period_min > $period_max } {
+	    ::console::affiche_erreur "spc_periodogram : la periode minimale $period_min est plus grande que la periode maximale $period_max \n\n"
+	    return ""
+	 }
+	 #::console::affiche_resultat "n= $n  \n\n"
+	 set lperiodog [ spc_calperiodog $abscisses $ordonnees $period_min $period_max $n $unit_temps]
+	 set lperiod [ lindex $lperiodog 0 ]
+	 set ldensity [ lindex $lperiodog 1 ]
+	 set ll [ llength $lperiod ]
+	 #parcours du periodogramme en sens inverse pour voir jusqu'ou l'echantillonage est suffisamment representatif
+	 # on n'examine que les noeuds interieurs et il y en a ll-2
+	 set last_period indefini
+	 for { set i 2 } { $i < $ll } { incr i } {
+	    set ni [ expr $ll - $i ]
+	    #test sur la representativite de la representation echantillonnee
+	    # le test ci-dessous verifie la pertinence d'un developpement de taylor au 1er ordre
+	    set y2 [ lindex $ldensity $ni ]
+	    #::console::affiche_resultat "ni= $ni period= [ lindex $lperiod $ni ] y2= $y2 \n\n"
+	    set y3 [ lindex $ldensity [ expr $ni -1 ] ]
+	    set y1 [ lindex $ldensity [ expr $ni +1 ] ]
+	    if { [ expr abs ( 1. - .5 * ( $y1 + $y3 ) / $y2 ) > $precision ] } {
+	       break
+	    }
+	    # ni est alors l'indice de la liste pour lequel le test s'est avere negatif pour la premiere fois  
+	 }
+	 set curr_sampling [ expr [ lindex $lperiod [ expr $ni +1 ] ] - [ lindex $lperiod $ni ] ]
+      	
+	 if { $ni != 1 && $curr_sampling  > $sample_min } {
+	    #::console::affiche_resultat " test precision negatif pour ni= $ni  \n\n"
+	    set last_period [ lindex $lperiod $ni ]
+	    ::console::affiche_resultat "test precision negatif pour periode $last_period $unit_temps\n\n"
+	    set period_max [ lindex $lperiod [ expr $ni +1 ] ]
+	    # sauvegarde des bonnes valeurs des listes constituant le periodogramme
+	    set last [ expr [ llength $lperiod ] -1 ]
+	    #set llperiod [ concat [ lrange $lperiod [ expr $ni + 1 ] $last ] $llperiod ]
+	    set llperiod [ concat [ lrange $lperiod [ expr $ni +2 ] $last ] $llperiod ]
+	    #set lldensity [ concat [ lrange $ldensity [ expr $ni + 1 ] $last ] $llperiod ]
+	    set lldensity [ concat [ lrange $ldensity [ expr $ni + 2 ] $last ] $lldensity ]     			
+	    set n [ expr $n + 1 ]
+	 } else {
+	    break
+	 }
+      }
+      if {$last_period == "indefini"} {
+	 ::console::affiche_resultat "spc_periodogram :  ou bien la période minimale est atteinte ou bien le calcul n'a pas pu etre poursuivi car le pas d'echantillonage specifie (7eme parametre) $sample_min est trop grand : diminuez sa valeur si vous voulez poursuivre \n\n"
+      } else {
+	 ::console::affiche_resultat "spc_periodogram : $last_period est la plus petite periode pour laquelle la precision demandee $precision a ete satisfaite. Pour trouver des resultats pertinents aux periodes inferieures, il faut specifier un pas d'echantillonage (7 eme argument) plus petit \n\n"
+      }
+      #post processing
+      # ecriture des points constituant le periodogramme sous forme de fichier dat
+      set file_id [open "$audace(rep_images)/$fileout" w+]
+      #--- configure le fichier de sortie avec les fin de ligne "xODx0A"
+      #-- independamment du systeme LINUX ou WINDOWS
+      fconfigure $file_id -translation crlf
+      for { set k 0 } { $k < [ llength $llperiod ] } { incr k } {
+	 set x [ lindex $llperiod $k ]
+	 set y [ lindex $lldensity $k ]
+         puts $file_id "$x\t$y"
+      }
+      close $file_id
+      ::console::affiche_resultat " le fichier $fileout a ete cree \n"
+      set fich_png [ spc_txt2png $fileout "Periodogram" "period ($unit_temps)" "pseudo-density" o ]
+      set labscisses_max [ spc_maxsearch $fileout $nb_printed_period ]
+      return $fileout
    } else {
-      ::console::affiche_erreur "Usage: spc_periodogram data_filename.dat time_unit ?period_number?\n"
+      ::console::affiche_erreur "Usage: spc_periodogram data_filename.dat time_unit measured_quantity ?nb_periodes_plausibles (10)? ?period_min (0.)? ?period_max (=duree enregistrement des mesures)? ?borne inférieure au pas d'echantillonage du periodogramme (valeur par defaut := (period_max-period_min) /400)?\n\n"
+      return ""
    }
 }
+#***************************************************************************************************************#
+
+#################################################################################################################
+#Procedure pour calculer un periodogramme sur un intervalle de periodes specifiees à partir de donnees liste 
+#d'abscisses et liste d'ordonnees, l'echantillonage etant obtenu en subdivisant l'intervalle de periodes considérées
+#par un nombre qui sera une puissance de 2. 
+# Auteur : Patrick LAILLY
+# Date de création : 23-03-11
+# Date de modification : 23-03-11
+# entrees : liste d'abscisses (temps) , liste d'ordonnees (mesures associees a ces temps), periode min, periode max, puissance a 
+# laquelle sera elevee le nombre 2 pour definir le nombre des sous intervalles, unite_temps.
+# exemple  : spc_calperiodog $abscisses $ordonnees $period_min $period_max 9
+#################################################################################################################
+proc spc_calperiodog { args } {
+   if { [ llength $args ] == 6 } {
+      set abscisses [ lindex $args 0 ]
+      set ordonnees [ lindex $args 1 ]
+      set period_min [ lindex $args 2 ]
+      set period_max [ lindex $args 3 ]
+      set exposant [ lindex $args 4 ]
+      set time_unit [ lindex $args 5 ]
+      set pi [ expr acos(-1.) ]
+      set nb_echant [ llength $abscisses ] 
+      if { $period_min > $period_max } {
+	 ::console::affiche_erreur "spc_calperiodog : la periode minimale $period_min est plus grande que la periode max $period_max ! \n\n"
+         return ""
+      }
+      set nb_sample_periodog_1 [ expr 2 ** $exposant ]
+      set nb_sample_periodog [ expr $nb_sample_periodog_1 + 1 ] 
+      set period_samplingrate [ expr ( $period_max - $period_min ) / $nb_sample_periodog_1 ]
+      ::console::affiche_resultat "on [ clock format [ clock seconds ] -locale LOCALE ], the period sampling rate (subdivision of the interval to be explored in 2^$exposant intervals) is $period_samplingrate\n"
+      #calcul des echantillons du periodogramme
+      set lperiod [ list ]
+      set ldensity  [ list ]
+      for { set k 0 } { $k < $nb_sample_periodog } { incr k } {
+	 set period [ expr $period_min + $k * $period_samplingrate ]
+	 lappend lperiod $period
+	 set omega [ expr 2. *$pi / $period ]
+	 set num 0.
+	 set den 0.
+	 for { set j 0 } { $j < $nb_echant } { incr j } {
+	    set phase [ expr 2. * $omega * [ lindex $abscisses $j ] ]
+	    set num [ expr $num + sin($phase) ]
+	    set den [ expr $den + cos($phase) ]
+	 }
+	 set ratio [ expr $num / $den ]
+	 set tau [ expr atan($ratio) ]
+	 set tau [ expr .5 * $tau / $omega ]
+	 set numa 0.
+	 set dena 0.
+	 set numb 0.
+	 set denb 0.
+	 # on pourrait gagner du CPU en programmant via gsl la boucle ci-dessous
+	 for { set j 0 } { $j < $nb_echant } { incr j } {
+	    set phase [ expr $omega * ( [ lindex $abscisses $j ] -$tau ) ]
+	    set co [ expr cos($phase) ]
+	    set si [ expr sin($phase) ]
+	    set numa [ expr $numa + $co * [ lindex $ordonnees $j ] ]
+	    set dena [ expr $dena + $co * $co ]
+	    set numb [ expr $numb + $si * [ lindex $ordonnees $j ] ]
+	    set denb [ expr $denb + $si * $si ]
+	 }
+	 set result [ expr .5 * ( $numa * $numa / $dena + $numb * $numb / $denb ) ]
+	 #::console::affiche_resultat " $k $result \n"
+	 lappend ldensity $result
+      }
+     
+      set lperiodog [ list ]
+      lappend lperiodog $lperiod
+      lappend lperiodog $ldensity
+      return $lperiodog
+   } else {
+      ::console::affiche_erreur "Usage: spc_calperiodog list_abscisses list_ordonnees period_min period_max exposant \n\n"
+      return ""
+   }
+}
+
 #***************************************************************************#
 
 
-#############################################################################
-# Auteur : Patrick LAILLY
-# Date de création : 1-09-10
-# Date de modification : 1-09-10
-# cette procédure cree un peridogramme pour analyse le comportement d'une quantite physique en fonction du temps calendaire 
-# 2 arguments  d'entree obligatoires : le nom du fichier dat contenant les donnees mesurees, l'unite utilisee pour la
-# mesure du temps calendaire
-# 1 argument d'entree facultatif : l'estimation du nombre de periodes mesurees. Cette quantite sert a calculer la periode maximale possible : il vaut donc mieux pecher par defaut que par exces.
-# En l'absence de specification la valeur par defaut est 2. 
-# la procedure retourne le nom du fichier contenant les echantillons du periodogramme et affiche le graphique du
-# periodogramme, le graphique illustrant l'ajustement des donnees par la fonction harmonique associee a la periode donnant
-# le maximum du peridogramme, laquelle est affichee a la console. Est egalement affichee a la console l'amplitude des oscillations estimee
-# L'algorithme utilise est celui decrit par Scargle (Astrophys. J., 263:835-853, 1982)
-# Exemple : spc_periodog data.dat "jours juliens"
-# Exemple : spc_periodog data.dat jour
-# Exemple : spc_periodog data.dat jour 3
-# reste a regler : pb lecture fichier dat
-#############################################################################
-proc spc_periodog { args } {
+## Fonction periodog associee a preiodogram : note qu'elle a un echantillonnage qui est adpate a l'etude de hd57682, soit duree_obs/1000 ou quelque chose comme cela et le temps de calcul est suportable
+# modif qui reste a faire
+###########################################################################
+proc spc_periodog_old { args } {
    global audace
 
    set nbargs [ llength $args ]
@@ -124,7 +320,7 @@ proc spc_periodog { args } {
          set unit_temps [ lindex $args 1 ]
 	 set nb_period [ lindex $args 2 ]
       } else {
-	 ::console::affiche_erreur "Usage: spc_periodog data_filename.dat time_unit ?period_number?\n"
+	 ::console::affiche_erreur "Usage: spc_periodog_old data_filename.dat time_unit ?period_number?\n"
 	 return ""
       }
       # lecture du fichier dat
@@ -226,7 +422,7 @@ proc spc_periodog { args } {
       close $file_id
       return periodogram.dat
    } else {
-      ::console::affiche_erreur "Usage: spc_periodog data_filename.dat time_unit ?period_number?\n"
+      ::console::affiche_erreur "Usage: spc_periodog_old data_filename.dat time_unit ?period_number?\n"
    }
 }
 #***************************************************************************#
@@ -240,7 +436,7 @@ proc spc_periodog { args } {
 # La procedure analyse le fit des donnees avec la fonction sinusoidale associee a la periode (on calcule au passage le dephasage optimal : cette analyse est menee en visualisant les données en fonction de la phase (export PNG) et les donnees en fonction du temps en superposition avec la sinusoide associee (plotxy).  Le decalage temporel caracterisant la sinusoide est affiche a la console.
 # 4 paramètres obligatoires : nom du fichier dat donnant l'evolution de la quantite physique en fonction du temps calendaire, unite de temps utilisee, nature de la quantite physique mesuree, periode sur laquelle l'utilisateur veut mener l'analyse 
 # La procedure retourne le nom du fichier .png representant les donnees en fonction de la phase.
-# Exemple : spc_periodana data.dat "julian days" "radial velocity (m/s)" 7.84
+# Exemple : spc_phaseplot data.dat "julian days" "radial velocity (m/s)" 7.84
 ###########################################################################################
 proc spc_phaseplot { args } {
    global audace
@@ -252,7 +448,11 @@ proc spc_phaseplot { args } {
       set measured_quantity [ lindex $args 2 ]
       set period [ lindex $args 3 ]
       set sine_caract [ spc_sinefit $nom_dat $unit_temps $measured_quantity $period ]
+      set amplit [ lindex $sine_caract 0 ]
       set time_shift [ lindex $sine_caract 1 ]
+      if { $amplit < 0. } {
+	 set time_shift [ expr $time_shift - .5 * $period ] 
+      }
       #lecture du fichier dat
       set input [open "$audace(rep_images)/$nom_dat" r]
       set contents [split [read $input] \n]
@@ -264,35 +464,47 @@ proc spc_phaseplot { args } {
       #::console::affiche_resultat " donnees spc_sinefit : $nom_dat $unit_temps $period \n"
       set pi [ expr acos(-1.) ]
       set abscisses [ list ]
-      set ordonnees_orig [ list ]
+      set ordonnees [ list ]
       for {set k 0} { $k < $nb_echant } {incr k} {
 	 set ligne [lindex $contents $k]
 	 #set x [lindex $ligne 0]
 	 #set y [lindex $ligne 1]
 	 #::console::affiche_resultat " x= $x   y= $y \n"
 	 lappend abscisses [lindex $ligne 0] 
-	 lappend ordonnees [lindex $ligne 1]
-         #lappend coords [ list [lindex $ligne 0] [lindex $ligne 1] ]
+	 lappend ordonnees [lindex $ligne 1] 
       }
-      #set coords [ lsort -increasing $coords ]
-      set temps_max [ expr [ lindex $abscisses $nb_echant_1 ] - [ lindex $abscisses 0 ] ]
+      set temps_deb [ lindex $abscisses 0 ]
+      #set temps_max [ expr [ lindex $abscisses $nb_echant_1 ] - [ lindex $abscisses 0 ] ]
       set omega [ expr 2. *$pi / $period ]
       # classement des donnees en fonction de la phase
       set phase [ list ]
       for {set k 0} { $k < $nb_echant } {incr k} {
-	 set phi [ expr $omega * ( [ lindex $abscisses $k ] - $time_shift ) ]
-	 set iphi [ expr int ($phi/$period) ]
-	 set phi [ expr ( $phi - $iphi *$period ) / $period ]
+	 set phi [ expr  [ lindex $abscisses $k ] - $time_shift ]
+	 set nbperiod [ expr int ($phi/$period) ]
+	 set phi [ expr ( $phi - $nbperiod * $period ) / $period ]
 	 lappend phase $phi
       }
+      # classement par phase croissante
+      set resultat [ list ]
+      for { set k 0 } { $k < $nb_echant } { incr k } {
+	 set couple [list ] 
+	 set x [ lindex $phase $k ]
+	 set y [ lindex $ordonnees $k ]
+	 set couple " $x $y "
+	 lappend resultat $couple
+      }
+      set resultat [ lsort -increasing -real -index 0 $resultat ]
       # ecriture des points de mesure en fonction de la phase sous forme de fichier dat
       set file_id [open "$audace(rep_images)/$fileout" w+]
       #--- configure le fichier de sortie avec les fin de ligne "xODx0A"
       #-- independamment du systeme LINUX ou WINDOWS
+      #set result [list ]
       fconfigure $file_id -translation crlf
       for { set k 0 } { $k < $nb_echant } { incr k } {
-	 set x [ lindex $phase $k ]
-	 set y [ lindex $ordonnees $k ]
+	 set couple [ lindex $resultat $k ]
+	 set x [ lindex $couple 0 ]
+	 set y [ lindex $couple 1 ]
+	 #::console::affiche_resultat " x= $x y=$y  \n"
          puts $file_id "$x\t$y"
       }
       close $file_id
@@ -301,7 +513,106 @@ proc spc_phaseplot { args } {
       set fich_png [ spc_txt2png $fileout "Measured quantity versus phase" "Phase" $measured_quantity n ]
       return $fich_png
    } else {
-      ::console::affiche_erreur "Usage: spc_phaseplot data_filename.dat \"time_unit\" \"measured_quantity\" data_period\n"
+      ::console::affiche_erreur "Usage: spc_phaseplot data_filename.dat time_unit  measured_quantity periode etudiee \n\n"
+      return ""
+   }
+}
+#***************************************************************************#
+
+
+
+
+
+###########################################################################################
+# Auteur : Patrick LAILLY
+# Date de création : 23-02-11
+# Date de modification : 09-06-11
+# La procedure analyse le fit des donnees avec la fonction sinusoidale associee a la periode (on calcule au passage le dephasage optimal : cette analyse est menee en visualisant les données en fonction de la phase (export PNG) et les donnees en fonction du temps en superposition avec la sinusoide associee (plotxy).  Le decalage temporel caracterisant la sinusoide est affiche a la console.
+# 4 paramètres obligatoires : nom du fichier dat donnant l'evolution de la quantite physique en fonction du temps calendaire, unite de temps utilisee, nature de la quantite physique mesuree, periode sur laquelle l'utilisateur veut mener l'analyse 
+# La procedure retourne le nom du fichier .png representant les donnees en fonction de la phase.
+# La procedure spc_phaseplot_err se distingue de spc_phaseplot par la possibilite de gerer une 3eme colonne dans le fichier dat, cette colonne donnant les incertitudes sur les mesures realisees. Dans la version actuelle la gestion des incertudes ne porte que sur la représentation graphique du résultat.
+# Exemple : spc_phaseplot_err data.dat "julian days" "radial velocity (m/s)" 7.84
+###########################################################################################
+proc spc_phaseplot_err { args } {
+   global audace
+   set nb_args [ llength $args ]
+   if { $nb_args ==4 } {
+      set fileout data_phase.dat 
+      set nom_dat [ lindex $args 0 ]
+      set unit_temps [ lindex $args 1 ]
+      set measured_quantity [ lindex $args 2 ]
+      set period [ lindex $args 3 ]
+      set sine_caract [ spc_sinefit $nom_dat $unit_temps $measured_quantity $period ]
+      set amplit [ lindex $sine_caract 0 ]
+      set time_shift [ lindex $sine_caract 1 ]
+      if { $amplit < 0. } {
+	 set time_shift [ expr $time_shift - .5 * $period ] 
+      }
+      #lecture du fichier dat
+      set input [open "$audace(rep_images)/$nom_dat" r]
+      set contents [split [read $input] \n]
+      close $input
+      set nb_echant [llength $contents]
+      # modification ad hoc : a comprendre !!!!!!!!!!!!!!!!!!!!!!!!
+      set nb_echant [ expr $nb_echant -1 ]
+      set nb_echant_1 [ expr $nb_echant - 1 ] 
+      #::console::affiche_resultat " donnees spc_sinefit : $nom_dat $unit_temps $period \n"
+      set pi [ expr acos(-1.) ]
+      set abscisses [ list ]
+      set ordonnees [ list ]
+      for {set k 0} { $k < $nb_echant } {incr k} {
+	 set ligne [lindex $contents $k]
+	 #set x [lindex $ligne 0]
+	 #set y [lindex $ligne 1]
+	 #::console::affiche_resultat " x= $x   y= $y \n"
+	 lappend abscisses [lindex $ligne 0] 
+	 lappend ordonnees [lindex $ligne 1]
+	 lappend yerrors [lindex $ligne 2] 
+      }
+      set temps_deb [ lindex $abscisses 0 ]
+      #set temps_max [ expr [ lindex $abscisses $nb_echant_1 ] - [ lindex $abscisses 0 ] ]
+      set omega [ expr 2. *$pi / $period ]
+      # classement des donnees en fonction de la phase
+      set phase [ list ]
+      for {set k 0} { $k < $nb_echant } {incr k} {
+	 set phi [ expr  [ lindex $abscisses $k ] - $time_shift ]
+	 set nbperiod [ expr int ($phi/$period) ]
+	 set phi [ expr ( $phi - $nbperiod * $period ) / $period ]
+	 lappend phase $phi
+      }
+      # classement par phase croissante
+      set resultat [ list ]
+      for { set k 0 } { $k < $nb_echant } { incr k } {
+	 set couple [list ] 
+	 set x [ lindex $phase $k ]
+	 set y [ lindex $ordonnees $k ]
+	 set z [ lindex $yerrors $k ]
+	 set couple " $x $y $z"
+	 lappend resultat $couple
+      }
+      set resultat [ lsort -increasing -real -index 0 $resultat ]
+      # ecriture des points de mesure en fonction de la phase sous forme de fichier dat
+      set file_id [open "$audace(rep_images)/$fileout" w+]
+      #--- configure le fichier de sortie avec les fin de ligne "xODx0A"
+      #-- independamment du systeme LINUX ou WINDOWS
+      #set result [list ]
+      fconfigure $file_id -translation crlf
+      for { set k 0 } { $k < $nb_echant } { incr k } {
+	 set couple [ lindex $resultat $k ]
+	 set x [ lindex $couple 0 ]
+	 set y [ lindex $couple 1 ]
+	 set z [ lindex $couple 2 ]
+	 #::console::affiche_resultat " x= $x y=$y  \n"
+         puts $file_id "$x\t$y\t$z"
+      }
+      close $file_id
+      ::console::affiche_resultat " le fichier $fileout a ete cree \n"
+      # creation du fichier png
+      set fich_ps [ spc_txt2pserr $fileout "Measured quantity versus phase" "Phase" $measured_quantity ]
+      #spc_txt2pserr fichier_data \"Titre\" \"Légende axe x\" \"Légende axe y\" ?xdébut xfin? ?ydeb yfin?\n"
+      return $fich_ps
+   } else {
+      ::console::affiche_erreur "Usage: spc_phaseplot_err data_filename.dat time_unit  measured_quantity periode etudiee \n\n"
       return ""
    }
 }
