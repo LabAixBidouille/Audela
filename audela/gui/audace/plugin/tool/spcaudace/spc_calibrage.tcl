@@ -3902,6 +3902,7 @@ proc spc_rinstrum { args } {
                #-- Lhires3+résos 600 t/mm et 1200 t/mm-kaf1600 :
                ## set rinstrum [ spc_pwlfilter $result_division 280 o 51 201 10 2 50 ]
                # set rinstrum [  spc_lowresfilterfile $result_division "$spcaudace(reptelluric)/forgetlambda.dat" 1.3 10000 { 1.0 2.0 } "o" 18 ]
+	      # La version lissee du resultat division etant, dans un premier temps, representee par une fonction lineaire par morceaux, la valeur 50 apparaissant ci-dessous est la largeur des morceaux exprimee en nombre d'echantillons
                set rinstrum [  spc_lowresfilterfile $result_division "$spcaudace(reptelluric)/forgetlambda.dat" 1.0 6. { 1.0 1.0 10000000. 1. } "o" 50 ]
            } else {
            #-- Lhires3+résos 300 et 150 t/mm :
