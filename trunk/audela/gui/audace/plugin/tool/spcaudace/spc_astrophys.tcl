@@ -2957,7 +2957,7 @@ proc spc_vrmes { args } {
 	set len2 $k
 
 	#--- Détermination du maximum de la raie 1 par parabole :
-	set coefs [ spc_ajustpolynome $nabscisses1 $nintensites1 2 150 o ]
+	set coefs [ spc_ajustdeg2 $nabscisses1 $nintensites1 2 150 o ]
 	set a [ lindex $coefs 0 ]
 	set b [ lindex $coefs 1 ]
 	set c [ lindex $coefs 2 ]
@@ -2965,7 +2965,7 @@ proc spc_vrmes { args } {
 	set imax1 [ expr $a+$b*$xm1+$c*$xm1*$xm1 ]
 
 	#--- Détermination du maximum de la raie 1 par parabole :
-	set coefs [ spc_ajustpolynome $nabscisses2 $nintensites2 2 150 o ]
+	set coefs [ spc_ajustdeg2 $nabscisses2 $nintensites2 2 150 o ]
 	set a [ lindex $coefs 0 ]
 	set b [ lindex $coefs 1 ]
 	set c [ lindex $coefs 2 ]
