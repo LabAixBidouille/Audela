@@ -220,9 +220,10 @@ proc info_fichier { nomfich } {
          buf$bufno setkwd [list "TELESCOP" "Unknown" string "Telescop name" ""]
       }
       # --- nettoye comment= dans img ohp-120
-      if {[string trim [lindex $key 1]] == "OHP-120"} {
-         ::console::affiche_resultat "DEL KWD COMMENT du BUF OHP-120"
-#         catch {buf$audace(bufNo) delkwd COMMENT=}
+      if {[string trim [lindex $key 1]] == "OHP-120" && [lindex [buf$bufno getkwd "COMMENT="] 0] != ""} {
+         ::console::affiche_resultat "DEL KWD COMMENT du BUF OHP-120 -> $nomfich \n"
+         buf$bufno delkwd COMMENT=
+         buf$bufno save $nomfich
       }
    }
 
