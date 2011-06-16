@@ -211,13 +211,18 @@ proc info_fichier { nomfich } {
    if {$form3 == "img"} {
       set errnum [catch {buf$bufno load $nomfichdata} msg ]
       if { $errnum != 0 } {
-         bddimages_sauve_fich "info_fichier: ERREUR 3 : Erreur de Chargement de l image en memoire <err:$errnum> <msg:$msg>"
+         bddimages_sauve_fich "info_fichier: ERREUR 3 : Erreur de Chargement de l'image en memoire <err:$errnum> <msg:$msg>"
          return [list "3" $etat $nomfichfits $dateiso $site $sizefich $tabkey]
       }
       # --- verif si TELESCOP exist
       set key [buf$bufno getkwd "TELESCOP"]
       if {[lindex $key 0] == "" } {
          buf$bufno setkwd [list "TELESCOP" "Unknown" string "Telescop name" ""]
+      }
+      # --- nettoye comment= dans img ohp-120
+      if {[string trim [lindex $key 1]] == "OHP-120"} {
+         ::console::affiche_resultat "DEL KWD COMMENT du BUF OHP-120"
+#         catch {buf$audace(bufNo) delkwd COMMENT=}
       }
    }
 
