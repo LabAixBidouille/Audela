@@ -203,6 +203,7 @@ namespace eval bddimages_analyse {
       #  source /data/install/develop/audela/gui/audace/surchaud.tcl
       set catalog "/data/astrodata/Catalog/USNOA2/"
       set catalog "/home/t1m/astrodata/Catalog/USNOA2/"
+      set catalog "/astrodata/USNOA2/"
 
       # copie image courante dans rep temp en .fit -> bddimages_imgcorrection.tcl 
       set erreur [catch {::bddimages_imgcorrection::copy_to_tmp "IMG" $img_list} tmp_file_list]
@@ -226,17 +227,20 @@ namespace eval bddimages_analyse {
          set idbddimg    [::bddimages_liste::lget $img idbddimg]
          set file        [file join $bddconf(dirbase) $dirfilename $filename]
 
-         #::console::affiche_resultat "ra $ra\n"
-         #::console::affiche_resultat "dec $dec\n"
-         #::console::affiche_resultat "pixsize1 $pixsize1\n"
-         #::console::affiche_resultat "pixsize2 $pixsize2\n"
-         #::console::affiche_resultat "foclen $foclen\n"
-         #::console::affiche_resultat "filename $filename\n"
-         #::console::affiche_resultat "dirfilename $dirfilename\n"
-         #::console::affiche_resultat "file $file\n"
+         ::console::affiche_resultat "ra $ra\n"
+         ::console::affiche_resultat "dec $dec\n"
+         ::console::affiche_resultat "pixsize1 $pixsize1\n"
+         ::console::affiche_resultat "pixsize2 $pixsize2\n"
+         ::console::affiche_resultat "foclen $foclen\n"
+         ::console::affiche_resultat "filename $filename\n"
+         ::console::affiche_resultat "dirfilename $dirfilename\n"
+         ::console::affiche_resultat "file $file\n"
 
          # Charge l'image
          buf$::audace(bufNo) load $file
+         
+         ::console::affiche_resultat "calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO $catalog \n"
+         
          set result [calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO $catalog]
          if {$result < 3} {
             ::console::affiche_erreur "Echec d identification\n"
