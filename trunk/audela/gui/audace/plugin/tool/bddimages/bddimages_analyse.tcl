@@ -202,7 +202,7 @@ namespace eval bddimages_analyse {
 
       #  source /data/install/develop/audela/gui/audace/surchaud.tcl
       set catalog "/data/astrodata/Catalog/USNOA2/"
-      set catalog "/home/t1m/astrodata/Catalog/USNOA2/"
+      #set catalog "/home/t1m/astrodata/Catalog/USNOA2/"
       set catalog "/astrodata/USNOA2/"
 
       # copie image courante dans rep temp en .fit -> bddimages_imgcorrection.tcl 
