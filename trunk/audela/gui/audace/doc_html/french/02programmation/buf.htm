@@ -3,8 +3,9 @@
 
 
 
+
   <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" /><title>Buffer</title></head><body>
-<p class="date">Date de mise &#224; jour : 02 avril 2011</p>
+<p class="date">Date de mise &#224; jour : 18 juin 2011</p>
 <h1>Buffer</h1>
 <p>Les commandes qui suivent peuvent &#234;tre appel&#233;es
 gr&#226;ce aux commandes <code>buf1</code>, <code>buf2</code>,
@@ -44,7 +45,7 @@ COMPRESS_NONE|COMPRESS_I420|COMPRESS_JPEG|COMPRESS_RAW<br />
 toujours 0 (z&#233;ro) quand on utilise cette commande depuis un script TCL.
 Quand on utilise cette commande depuis un programme C, ce param&#232;tre
 peut recevoir le pointeur d'un tableau de valeurs des pixels en m&#233;moire
-pour initiliaser le buffer, sinon mettre NULL.<br />
+pour initialiser le buffer, sinon mettre NULL.<br />
 
 </p>
 </blockquote>
@@ -52,15 +53,15 @@ pour initiliaser le buffer, sinon mettre NULL.<br />
 
 <blockquote>
   <p><span style="font-weight: bold;">-keep_keywords </span>: Conserve les mots cl&#233;s qui &#233;taient
-d&#233;j&#224; dans le buffer<br />
+d&#233;j&#224; dans le buffer.<br />
   <span style="font-weight: bold;">
 -pixelSize size</span> : Nombre d'octets point&#233;s par pixelData pour
 les images JPEG et RAW (*). Ce param&#232;tre est obligatoire
 pour les images JPEG et RAW.<br />
   <span style="font-weight: bold;">
--reverseX</span> : Si "1", applique un miroir vertical<br />
+-reverseX</span> : Si "1", applique un miroir vertical.<br />
   <span style="font-weight: bold;">
--reverseY</span> : Si "1", applique un miroir horizontal</p>
+-reverseY</span> : Si "1", applique un miroir horizontal.</p>
 </blockquote>
 <p>(*) Pour les images JPEG ou RAW
 (compression=COMPRESS_JPEG|COMPRESS_RAW), les param&#232;tres
@@ -157,24 +158,24 @@ interne, AudeLA manipule des images de type float mais il est
 possible de les contraindre &#224; un autre type lors de
 l'enregistrement FITS avec cette fonction.<br />
 </p>
-<p>byte : entiers &#224; 1 octet non sign&#233; soit 8 bits non sign&#233;s (0 &#224; 255).</p>
-<p>short : entiers &#224; 2 octets sign&#233;s soit 16 bits sign&#233;s (-32768 &#224;
+<p>byte : Entiers &#224; 1 octet non sign&#233; soit 8 bits non sign&#233;s (0 &#224; 255).</p>
+<p>short : Entiers &#224; 2 octets sign&#233;s soit 16 bits sign&#233;s (-32768 &#224;
 32767).</p>
 
-<p>ushort : entiers &#224; 2 octets non sign&#233;s soit 16 bits non sign&#233;s (0 &#224;
+<p>ushort : Entiers &#224; 2 octets non sign&#233;s soit 16 bits non sign&#233;s (0 &#224;
 65535) (Note 1).</p>
 
-<p>long : entiers &#224; 4 octets sign&#233;s soit 32 bits sign&#233;s (-2 147 483 648
+<p>long : Entiers &#224; 4 octets sign&#233;s soit 32 bits sign&#233;s (-2 147 483 648
 &#224; 2 147 483
 647).</p>
 
-<p>ulong : entiers &#224; 4 octets non sign&#233;s soit 32 bits non sign&#233;s (0 &#224; 4
+<p>ulong : Entiers &#224; 4 octets non sign&#233;s soit 32 bits non sign&#233;s (0 &#224; 4
 294 967 295) (Note 1).</p>
 
-<p>float : flottants &#224; 4 octets soit 32 bits (-3,4*10<sup>+38</sup> &#224;
+<p>float : Flottants &#224; 4 octets soit 32 bits (-3,4*10<sup>+38</sup> &#224;
 3,4*10<sup>+38</sup>) (Note 2).</p>
 
-<p>double : flottants &#224; 8 octets soit 64 bits (-1,7*10<sup>+308</sup>
+<p>double : Flottants &#224; 8 octets soit 64 bits (-1,7*10<sup>+308</sup>
 &#224; 1,7*10<sup>+308</sup>) (Note 3).</p>
 
 <p><span style="text-decoration: underline;">Note 1 :</span> Les
@@ -182,9 +183,9 @@ valeurs +16 et +32 ne sont pas des valeurs normalis&#233;es du standard
 FITS. Elles sont sp&#233;cifiques &#224; AudeLA et ne sont utilisables qu'en tant
 que param&#232;tres de certaines commandes de libaudela et de libtt.<big><span style="font-size: 9pt; font-family: &quot;Arial&quot;,&quot;sans-serif&quot;;" /></big><span style="font-family: &quot;Arial&quot;,&quot;sans-serif&quot;;"><br />
 </span></p>
-<p><span style="font-family: &quot;Arial&quot;,&quot;sans-serif&quot;;"><span style="text-decoration: underline;">Note 2 :</span> Cette notation
+<p><span style="text-decoration: underline;">Note 2 :</span> Cette notation
 pr&#233;sente 2 discontinuit&#233;s, en effet il est impossible d'affecter une
-valeur d'ADU dans les intervalles suivants :</span></p>
+valeur d'ADU dans les intervalles suivants :</p>
 <ul>
   <li>0 &#224; +3,4*10<sup class="moz-txt-sup">-38</sup></li>
   <li>-3,4*10<sup class="moz-txt-sup">-38</sup>&nbsp; &#224; 0</li>
@@ -298,14 +299,16 @@ si l'extension par d&#233;faut est <b>.xxx</b></code></td>
 </table>
 <h3><a name="savejpeg" id="savejpeg">buf1 savejpeg
 <em>filename ?quality? ?locut? ?hicut?</em></a></h3>
-<p>Enregistre l'image au format JPEG N&amp;B. Si l'extension est
+<p>L'image du fichier FITS d'origine est enregistr&#233;e au format Jpeg N&amp;B. Si l'extension est
 donn&#233;e, elle peut &#234;tre diff&#233;rente de
 "<code>.jpg</code>". L'option <em>quality</em> fixe la
 qualit&#233; de l'image (de 5 pour une perte &#233;norme &#224;
 100 pour une compression sans perte). La valeur par d&#233;faut
 de <em>quality</em> est 75. <em>Locut</em> et <em>hicut</em> sont
 les seuils de visualisation correspondant respectivement au noir
-et au blanc.</p>
+et au blanc de l'image du fichier FITS d'origine. Par d&#233;faut
+    les valeurs des seuils bas et haut sont lues comme les valeurs des mots cl&#233;s
+    MIPS-LO et MIPS-HI de l'en-t&#234;te FITS.</p>
 <h2>3. Gestion des mots cl&#233;s FITS</h2>
 <h3><a name="getkwds" id="getkwds">buf1 getkwds</a></h3>
 <p>Retourne la liste des mots cl&#233;s FITS du buffer sous forme
