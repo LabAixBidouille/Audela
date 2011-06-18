@@ -115,7 +115,6 @@ proc ::lx200::initPlugin { } {
    if { ! [ info exists conf(lx200,ite-lente_tempo) ] }   { set conf(lx200,ite-lente_tempo)   "10" }
    if { ! [ info exists conf(lx200,alphaGuidingSpeed) ] } { set conf(lx200,alphaGuidingSpeed) "3.0" }
    if { ! [ info exists conf(lx200,deltaGuidingSpeed) ] } { set conf(lx200,deltaGuidingSpeed) "3.0" }
-   set private(tracesConsole) "0"
 }
 
 #
