@@ -395,7 +395,7 @@ proc sauve_jpeg {args} {
          #--- Ouvre la boite de choix des images
          set nom_complet [ ::tkutil::box_save $fenetre $rep $audace(bufNo) "2" ]
       } else {
-         set nom_complet [file join "$rep" "$fichier$ext"]
+         set nom_complet [ file join "$rep" [ file rootname [ file tail "$fichier$ext" ] ] ]
       }
 
       if {[string compare $nom_complet ""] != 0 } {
