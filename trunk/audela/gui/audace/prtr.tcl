@@ -448,7 +448,7 @@ namespace eval ::prtr {
             }
             "labelentry"   {
                set valuewidth [expr {[string length [set ::prtr::$child]]+4}]
-               if {$valuewidth < "6"} {set valuewidth 7}
+               if {$valuewidth < "8"} {set valuewidth 9}
                LabelEntry $w.$child -label "$child" -labelanchor e\
                   -labelwidth $labelwidth -textvariable ::prtr::$child \
                   -padx $d -width $valuewidth -justify center
@@ -1463,19 +1463,19 @@ namespace eval ::prtr {
       dict set CENTER "$caption(audace,menu,reg_inter)"           par "image_ref \"\" "
       dict set CENTER "$caption(audace,menu,reg_inter)"           opt "bitpix +16 skylevel 0 nullpixel 0."
       dict set CENTER "$caption(audace,menu,reg_trans)"           fun "REGISTER translate=before"
-      dict set CENTER "$caption(audace,menu,reg_trans)"           hlp "$help(dir,prog) ttus1-fr.htm REGISTER"
+      dict set CENTER "$caption(audace,menu,reg_trans)"           hlp "$help(dir,images) 1040aligner.htm"
       dict set CENTER "$caption(audace,menu,reg_trans)"           par "normaflux 1."
       dict set CENTER "$caption(audace,menu,reg_trans)"           opt "bitpix +16 skylevel 0 nullpixel 0."
       dict set CENTER "$caption(audace,menu,reg_tri)"             fun "REGISTER translate=never"
-      dict set CENTER "$caption(audace,menu,reg_tri)"             hlp "$help(dir,prog) ttus1-fr.htm REGISTER"
+      dict set CENTER "$caption(audace,menu,reg_tri)"             hlp "$help(dir,images) 1040aligner.htm"
       dict set CENTER "$caption(audace,menu,reg_tri)"             par "normaflux 1."
       dict set CENTER "$caption(audace,menu,reg_tri)"             opt "bitpix +16 skylevel 0 nullpixel 0."
       dict set CENTER "$caption(audace,menu,reg_fine)"            fun "REGISTERFINE"
-      dict set CENTER "$caption(audace,menu,reg_fine)"            hlp "$help(dir,prog) ttus1-fr.htm REGISTERFINE"
+      dict set CENTER "$caption(audace,menu,reg_fine)"            hlp "$help(dir,images) 1040aligner.htm"
       dict set CENTER "$caption(audace,menu,reg_fine)"            par "file img oversampling 10 delta 2"
       dict set CENTER "$caption(audace,menu,reg_fine)"            opt "bitpix +16 skylevel 0 nullpixel 0."
       dict set CENTER "$caption(audace,menu,reg_wcs)"             fun "REGISTER matchwcs"
-      dict set CENTER "$caption(audace,menu,reg_wcs)"             hlp "$help(dir,prog) ttus1-fr.htm REGISTER"
+      dict set CENTER "$caption(audace,menu,reg_wcs)"             hlp "$help(dir,images) 1040aligner.htm"
       dict set CENTER "$caption(audace,menu,reg_wcs)"             par "normaflux 1."
       dict set CENTER "$caption(audace,menu,reg_wcs)"             opt "bitpix +16 skylevel 0 nullpixel 0."
 
