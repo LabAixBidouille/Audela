@@ -207,6 +207,53 @@ test aligner_intercorrelation_RGB {alignement RGB par intercorrelation} -constra
    file delete rz_rgbr_8.fit rz_rgbr_15.fit
 } -result "2"
 
+test aligner_translation_moindres_carres {alignement par moindes carres} -constraints {AUDACE} -setup {
+   #--   configure l'extension et la compression
+   set ::conf(extension,defaut) ".fit"
+   set ::conf(fichier,compres) 0
+   file copy -force [file join $::conf(testaudela,rep_images) m45_champ.fit] $::audace(rep_images)
+   buf$bufNo load [file join $::audace(rep_images) m45_champ.fit]
+   set coords [list 381 391]
+   set attendu [lindex [buf$bufNo getpix $coords] 1]
+   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans1 . .fit TRANS trans_x=2 trans_y=2"
+   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans2 . .fit TRANS trans_x=2 trans_y=-2"
+   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans3 . .fit TRANS trans_x=-2 trans_y=2"
+   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans4 . .fit TRANS trans_x=-2 trans_y=-2"
+} -body {
+   #--   clic sur le menu "Images/Aligner/Moindres carrés..."
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,center)" "$::caption(audace,menu,reg_fine)..."
+   #--   selection des images
+   foreach img {trans1 trans2 trans3 trans4} {
+      ::testaudela::clicCheckButton [$w windowpath $img,0] 1
+   }
+   #--   l'image de reference
+  ::testaudela::putLabelEntry $z.funoptions.file "./m45_champ.fit"
+   #-- saisit le nom de sortie
+   set name_out "trans_mc"
+   ::testaudela::putLabelEntry $z.sortie.out "$name_out"
+   #--   clic sur le bouton Appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
+
+   #-- procédure de controle
+   set result 0
+   ::blt::vector create resultat_exp -watchunset 1
+   resultat_exp set [list 155 68 55 98]
+   resultat_exp offset 1
+
+   #--   verifie l'existence de 4 images
+   for {set i 1} {$i <= 4} {incr i} {
+      set file [file join $::audace(rep_images) ${name_out}$i.fit]
+      if {[file exists $file]} {
+         incr result
+         buf$bufNo load $file
+         if {[lindex [buf$bufNo getpix  $coords] 1] == "$resultat_exp($i)"} {incr result}
+         file delete $file
+      }
+   }
+   ::blt::vector destroy resultat_exp
+   return $result
+} -cleanup $CLEANUP -result "8"
+
 test aligner_selection {alignement par selection} -constraints {AUDACE} -setup {
     ::confVisu::clear $visuNo
    #--- j'impose le mode seuil iris , car le mode "loadima" ne focntionne pas bien
@@ -285,3 +332,11 @@ test aligner_selection {alignement par selection} -constraints {AUDACE} -setup {
    ::testaudela::clicButton $w.cmd.fermer
    file delete trans1.fit trans2.fit trans3.fit trans4.fit trans5.fit
 } -result "4"
+
+
+
+
+
+
+
+
