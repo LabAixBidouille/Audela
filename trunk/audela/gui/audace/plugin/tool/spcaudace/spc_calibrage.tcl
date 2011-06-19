@@ -3898,12 +3898,15 @@ proc spc_rinstrum { args } {
            set rinstrum [ spc_polynomefilter $result_division 3 150 "o" ]
            file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale-3$conf(extension,defaut)"
        } elseif { $flag_br==1 } {
-           if { $dispersion<=1. } {
+           if { $dispersion<=1. && $dispersion>0.2 } {
                #-- Lhires3+résos 600 t/mm et 1200 t/mm-kaf1600 :
                ## set rinstrum [ spc_pwlfilter $result_division 280 o 51 201 10 2 50 ]
                # set rinstrum [  spc_lowresfilterfile $result_division "$spcaudace(reptelluric)/forgetlambda.dat" 1.3 10000 { 1.0 2.0 } "o" 18 ]
 	      # La version lissee du resultat division etant, dans un premier temps, representee par une fonction lineaire par morceaux, la valeur 50 apparaissant ci-dessous est la largeur des morceaux exprimee en nombre d'echantillons
                set rinstrum [  spc_lowresfilterfile $result_division "$spcaudace(reptelluric)/forgetlambda.dat" 1.0 6. { 1.0 1.0 10000000. 1. } "o" 50 ]
+           } elseif { $dispersion<=0.2 } {
+           #-- Spectres eShell :
+              set rinstrum [  spc_lowresfilterfile $result_division "$spcaudace(reptelluric)/forgetlambda_eshell.dat" 1. 8. { 1.0 1.0 } "o" 200 ]
            } else {
            #-- Lhires3+résos 300 et 150 t/mm :
               ## set rinstrum [ spc_pwlfilter $result_division 50 o 11 51 70 50 100 ]
