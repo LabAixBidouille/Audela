@@ -833,20 +833,32 @@ int tt_ima_series_registerfine_1(TT_IMA_SERIES *pseries)
       nelem_tmp=(long)(0);
       strcpy(fullname,pseries->file);
       if ((msg=tt_imaloader(p_tmp1,fullname,firstelem,nelem_tmp))!=0) {
-	 sprintf(message,"Problem concerning file %s",fullname);
+	 sprintf(message,"[tt_ima_series_registerfine_1] Problem concerning file %s",fullname);
 	 tt_errlog(msg,message);
 	 return(msg);
       }
-      /* --- verification des dimensions ---*/
-      if ((p_tmp1->naxis1!=p_in->naxis1)||(p_tmp1->naxis2!=p_in->naxis2)) {
-	 sprintf(message,"(%d,%d) of %s must be equal to (%d,%d) of %s",p_tmp1->naxis1,p_tmp1->naxis2,p_tmp1->load_fullname,p_in->naxis1,p_in->naxis2,p_in->load_fullname);
-	 tt_errlog(TT_ERR_IMAGES_NOT_SAME_SIZE,message);
-	 return(TT_ERR_IMAGES_NOT_SAME_SIZE);
+      if ((msg=tt_imacreater(p_tmp2,p_in->naxis1,p_in->naxis2))!=0) {
+	 sprintf(message,"[tt_ima_series_registerfine_1] Can not initialize p_tmp2");
+	 tt_errlog(msg,message);
+	 return(msg);
       }
    }
 
+   /* --- verification des dimensions ---*/
+   if ((p_tmp1->naxis1!=p_in->naxis1)||(p_tmp1->naxis2!=p_in->naxis2)) {
+      sprintf(message,"(%d,%d) of %s must be equal to (%d,%d) of %s",p_tmp1->naxis1,p_tmp1->naxis2,p_tmp1->load_fullname,p_in->naxis1,p_in->naxis2,p_in->load_fullname);
+      tt_errlog(TT_ERR_IMAGES_NOT_SAME_SIZE,message);
+      return(TT_ERR_IMAGES_NOT_SAME_SIZE);
+   }
+
+   /* --- allocation de l'image de sortie ---*/
+   if ((msg=tt_imacreater(p_out,p_in->naxis1,p_in->naxis2))!=0) {
+      sprintf(message,"[tt_ima_series_registerfine_1] Can not initialize p_out");
+      tt_errlog(msg,message);
+      return(msg);
+   }
+
    /* --- copie l'image initiale dans p_tmp2 ---*/
-   tt_imacreater(p_tmp2,p_in->naxis1,p_in->naxis2);
    for (kkk=0;kkk<(int)(nelem);kkk++) {
       value=p_in->p[kkk];
       p_tmp2->p[kkk]=(TT_PTYPE)(value);
@@ -864,7 +876,6 @@ int tt_ima_series_registerfine_1(TT_IMA_SERIES *pseries)
    deltaint=(int)ceil(delta);
    dtrans=1./oversampling;
    /* --- calcul de la meilleure translation ---*/
-   tt_imacreater(p_out,p_in->naxis1,p_in->naxis2);
    residumin=TT_MAX_DOUBLE;
    trans_x0=0.;
    trans_y0=0.;
