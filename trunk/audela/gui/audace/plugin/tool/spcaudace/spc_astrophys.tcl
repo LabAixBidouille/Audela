@@ -44,8 +44,7 @@
 # cette procédure calcule le  periodogramme associé à la mesure d'une quantité physique en fonction du temps calendaire  
 # 3 arguments  d'entree obligatoires : le nom du fichier dat contenant les donnees mesurees, l'unite utilisee pour la
 # mesure du temps calendaire, nature de la quantite physique mesuree
-# 4 arguments d'entree facultatifs :  nombres de periodes plausibles qui seront affichees a la console (valeur par défaut : 10),  borne inferieure a la periode recherchée (valeur par défaut : 0.), periode maximum (valeur par defaut : duree d'enregistrement des mesures), estimation d'une borne inférieure au pas d'echantillonage du periodogramme (valeur par defaut := (periode max-periode min)/10000).
-# 
+# 4 arguments d'entree facultatifs :  nombres de periodes plausibles qui seront affichees a la console (valeur par défaut : 10),  borne inferieure a la periode recherchée (valeur par défaut : 0.), periode maximum (valeur par defaut : duree d'enregistrement des mesures), estimation d'une borne inférieure au pas d'echantillonage du periodogramme (valeur par defaut =(pe#riod_max-period_min) /(nb_data*30 ). 
 # la procedure retourne le nom du fichier contenant les echantillons du periodogramme et cree un fichier png donnant le graphique du
 # periodogramme
 # L'algorithme utilise est celui decrit par Scargle (Astrophys. J., 263:835-853, 1982)
@@ -63,16 +62,12 @@ proc spc_periodogram { args } {
    set precision .1
    set fileout periodogram.dat
    set nargs [ llength $args ]
-   if { $nargs <=7 } {
-      if { $nargs <= 2 } {
-         ::console::affiche_erreur "Usage: spc_periodogram data_filename.dat time_unit measured_quantity ?nb_periodes_plausibles (10)? ?period_min (0.)? ?period_max (=duree enregistrement des mesures)? ?borne inférieure au pas d'echantillonage du periodogramme (valeur par defaut := (period_max-period_min) /(nb_data*30))?\n\n"
-         return ""
-      }
+   if { $nargs <=7 && $nargs >2 } {
       set nom_dat [ lindex $args 0 ]
       set unit_temps [ lindex $args 1 ]
       set measured_quantity [ lindex $args 2 ]
       set nb_printed_period 10
-      set period_min 0.
+      set period_min 0.01
       
       if { $nargs >= 4 } {
 	 set nb_printed_period [ lindex $args 3 ]
@@ -118,7 +113,7 @@ proc spc_periodogram { args } {
 	 lappend ordonnees [ expr [ lindex $ordonnees_orig $k ] - $dc ]	
       }
       if { $nargs < 6 } {
-	 set period_max $temps_max
+	 set period_max [ expr $temps_max * .5 ]
       }
       if { $period_min > $period_max } {
 	 ::console::affiche_erreur "spc_periodogram : la periode minimale $period_min est plus grande que la periode maximale $period_max \n\n"
@@ -216,7 +211,7 @@ proc spc_periodogram { args } {
       set labscisses_max [ spc_maxsearch $fileout $nb_printed_period ]
       return $fileout
    } else {
-      ::console::affiche_erreur "Usage: spc_periodogram data_filename.dat time_unit measured_quantity ?nb_periodes_plausibles (10)? ?period_min (0.)? ?period_max (=duree enregistrement des mesures)? ?borne inférieure au pas d'echantillonage du periodogramme (valeur par defaut := (period_max-period_min) /400)?\n\n"
+      ::console::affiche_erreur "Usage: spc_periodogram data_filename.dat time_unit measured_quantity ?nb_periodes_plausibles (10)? ?period_min (0.)? ?period_max (=duree enregistrement des mesures)? ?valeur minimum autorisee pour le pas d'echantillonage du periodogramme?\n\n"
       return ""
    }
 }
@@ -247,7 +242,7 @@ proc spc_calperiodog { args } {
 	 ::console::affiche_erreur "spc_calperiodog : la periode minimale $period_min est plus grande que la periode max $period_max ! \n\n"
          return ""
       }
-      set nb_sample_periodog_1 [ expr 2 ** $exposant ]
+      set nb_sample_periodog_1 [ expr pow(2,$exposant) ]
       set nb_sample_periodog [ expr $nb_sample_periodog_1 + 1 ] 
       set period_samplingrate [ expr ( $period_max - $period_min ) / $nb_sample_periodog_1 ]
       ::console::affiche_resultat "on [ clock format [ clock seconds ] -locale LOCALE ], the period sampling rate (subdivision of the interval to be explored in 2^$exposant intervals) is $period_samplingrate\n"
