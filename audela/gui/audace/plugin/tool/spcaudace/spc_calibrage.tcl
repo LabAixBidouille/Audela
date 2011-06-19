@@ -1538,8 +1538,7 @@ proc spc_resolution { args } {
          #set x1 [ expr round((-$spc_b+sqrt($spc_b*$spc_b-4*($spc_a-($lambda_raie-$ecart))*$spc_c))/(2*$spc_c) +$crpix1) ]
          #set x2 [ expr round((-$spc_b+sqrt($spc_b*$spc_b-4*($spc_a-($lambda_raie+$ecart))*$spc_c))/(2*$spc_c) +$crpix1) ]
 	 set x1 [ expr round([ spc_deg3sol [ expr $lambda_raie-$ecart ] $spc_a $spc_b $spc_c $spc_d ]) ]
-        set x2 [ expr round([ spc_deg3sol [ expr $lambda_raie+$ecart ]
-$spc_a $spc_b $spc_c $spc_d ]) ]
+         set x2 [ expr round([ spc_deg3sol [ expr $lambda_raie+$ecart ] $spc_a $spc_b $spc_c $spc_d ]) ]
       } else {
          set x1 [ expr round(($lambda_raie-$ecart-$crval1)/$cdelt1 +$crpix1) ]
          set x2 [ expr round(($lambda_raie+$ecart-$crval1)/$cdelt1 +$crpix1) ]
