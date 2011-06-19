@@ -218,7 +218,9 @@ int tt_ima_rot(TT_IMA_SERIES *pseries)
    cos_theta = cos(theta);
    sin_theta = sin(theta);
 
+#ifndef max
 #define max(a,b) (a>b?a:b)
+#endif
 
    w = max( fabs(p_in->naxis1*cos_theta - p_in->naxis2*sin_theta) , fabs(p_in->naxis1*cos_theta + p_in->naxis2*sin_theta) );
    h = max( fabs(p_in->naxis1*sin_theta + p_in->naxis2*cos_theta) , fabs(p_in->naxis1*sin_theta - p_in->naxis2*cos_theta) );
