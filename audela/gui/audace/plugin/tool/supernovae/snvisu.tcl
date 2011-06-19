@@ -1779,7 +1779,7 @@ proc saveImagesJpeg { { invew 0 } { invns 0 } } {
    if {$invns==1} {
       ttscript2 "IMA/SERIES \"$rep1\" \"i\" . . \"$extname\" \"$rep1\" \"i\" . \"$extname\" INVERT flip "
    }
-   ttscript2 "IMA/SERIES \"$rep1\" \"i\" . . \"$extname\" \"$rep1\" \"i\" . \"$extname\" COPY \"jpegfile=$jpgname\""
+   ttscript2 "IMA/SERIES \"$rep1\" \"i\" . . \"$extname\" \"$rep1\" \"i\" . \"$extname\" STAT \"jpegfile=$jpgname\""
    ttscript2 "IMA/SERIES \"$rep1\" \"i\" . . \"$extname\" \"$rep1\" \"i\" . \"$extname\" DELETE"
 
    #--- buffer 2
@@ -1801,7 +1801,7 @@ proc saveImagesJpeg { { invew 0 } { invns 0 } } {
    if {$invns==1} {
       ttscript2 "IMA/SERIES \"$rep1\" \"i\" . . \"$extname\" \"$rep1\" \"i\" . \"$extname\" INVERT flip "
    }
-   ttscript2 "IMA/SERIES \"$rep1\" \"i\" . . \"$extname\" \"$rep1\" \"i\" . \"$extname\" COPY \"jpegfile=$jpgname\""
+   ttscript2 "IMA/SERIES \"$rep1\" \"i\" . . \"$extname\" \"$rep1\" \"i\" . \"$extname\" STAT \"jpegfile=$jpgname\""
    ttscript2 "IMA/SERIES \"$rep1\" \"i\" . . \"$extname\" \"$rep1\" \"i\" . \"$extname\" DELETE"
 
    #--- conversion FIT en JPG de l'image DSS si elle existe dans rep(3)
@@ -1810,7 +1810,7 @@ proc saveImagesJpeg { { invew 0 } { invns 0 } } {
    set rep(jpg_dss) ""
    if { [file exists $filenameDSS] } {
       set rep(jpg_dss) "$shortname-DSS.jpg"
-      ttscript2 "IMA/SERIES \"$repDSS\" \"$shortname\" . . \"$extname\" \"$rep1\" \"$shortname-DSS\" . \"$extname\" COPY \"jpegfile\""
+      ttscript2 "IMA/SERIES \"$repDSS\" \"$shortname\" . . \"$extname\" \"$rep1\" \"$shortname-DSS\" . \"$extname\" STAT \"jpegfile\""
       ttscript2 "IMA/SERIES \"$rep1\" \"$shortname-DSS\" . . \"$extname\" \"$rep1\" \"$shortname-DSS\" . \"$extname\" DELETE"
    }
 }
