@@ -227,9 +227,9 @@ int tt_util_calloc_ptr2(void **args)
    /* --- cas du pointeur non nul et parametres optionnels ---*/
    if (*(char**)pp!=NULL) {
       if (argu[4]!=NULL) {
-	 sprintf(message,"Problem with the not NULL pointer %s",(char*)argu[4]);
+	 sprintf(message,"[tt_util_calloc_ptr2] Problem with the not NULL pointer %s",(char*)argu[4]);
       } else {
-	 sprintf(message,"Problem with a not NULL pointer");
+	 sprintf(message,"[tt_util_calloc_ptr2] Problem with a not NULL pointer");
       }
       tt_errlog(TT_WAR_ALLOC_NOTNULLPTR,message);
       return(TT_WAR_ALLOC_NOTNULLPTR);
@@ -281,7 +281,7 @@ int tt_util_calloc_ptrptr_char2(void **args)
    /* --- cas du pointeur non nul et parametres optionnels ---*/
    if (*pp!=NULL) {
       if (argu[4]!=NULL) {
-	 sprintf(message,"Problem with the not NULL pointer %s",(char*)argu[4]);
+	 sprintf(message,"[tt_util_calloc_ptrptr_char2] Problem with the not NULL pointer %s",(char*)argu[4]);
       } else {
 	 sprintf(message,"Problem with a not NULL pointer");
       }
