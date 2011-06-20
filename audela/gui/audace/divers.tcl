@@ -5,7 +5,7 @@
 # Mise à jour $Id$
 #
 
-# Documentation : voir le fichier divers.htm dans le dossier doc_html
+# Documentation : Voir le fichier divers.htm dans le dossier doc_html
 
 ######################################################
 ###############   Fonctions basiques   ###############
@@ -75,7 +75,7 @@ proc charge {args} {
          #--- Fenetre parent
          set fenetre "$audace(base)"
          #--- Ouvre la boite de choix des images
-         set nom_complet [ ::tkutil::box_load $fenetre $rep $audace(bufNo) "1" ]
+         set nom_complet [ ::tkutil::box_load $fenetre $rep $buf "1" ]
        # 2nd cas : selon $fichier, on rajoute ou pas les infos de nom de
        # répertoire et d'extension pour former le nom complet.
       } else {
@@ -121,7 +121,7 @@ proc charge {args} {
                   if {[string compare $buf $audace(bufNo)] == 0} {
                      if {$novisu != "-novisu"} {
                         ::confVisu::setFileName $audace(visuNo) "$nom_complet"
-                        audace::autovisu $audace(visuNo)
+                        ::audace::autovisu $audace(visuNo)
                      }
                   }
                }
@@ -143,7 +143,7 @@ proc charge {args} {
                   if {[string compare $buf $audace(bufNo)] == 0} {
                      if {$novisu != "-novisu"} {
                         ::confVisu::setFileName $audace(visuNo) "$nom_complet"
-                        audace::autovisu $audace(visuNo)
+                        ::audace::autovisu $audace(visuNo)
                      }
                   }
                }
@@ -185,7 +185,7 @@ proc charge {args} {
                      if {[string compare $buf $audace(bufNo)] == 0} {
                         if {$novisu != "-novisu"} {
                            ::confVisu::setFileName $audace(visuNo) "$nom_complet"
-                           audace::autovisu $audace(visuNo)
+                           ::audace::autovisu $audace(visuNo)
                         }
                      }
                   }
@@ -262,7 +262,7 @@ proc sauve {args} {
          #--- Fenetre parent
          set fenetre "$audace(base)"
          #--- Ouvre la boite de choix des images
-         set nom_complet [ ::tkutil::box_save $fenetre $rep $audace(bufNo) "1" ]
+         set nom_complet [ ::tkutil::box_save $fenetre $rep $buf "1" ]
 
          # 2nd cas : selon $fichier, on rajoute ou pas les infos de nom de
          # répertoire et d'extension pour former le nom complet.
@@ -357,7 +357,7 @@ proc sauve {args} {
 proc sauve_jpeg {args} {
    global audace caption conf
 
-   if {[syntaxe_args $args 0 1 [list "" [list "-rep" "-ext"]]]=="1"} {
+   if {[syntaxe_args $args 0 1 [list "" [list "-buf" "-rep" "-ext"]]]=="1"} {
 
       # Configuration des options
       set range_options [range_options $args]
@@ -373,9 +373,15 @@ proc sauve_jpeg {args} {
       # Configuration des options à 1 paramètre
       set options_1param [lindex $range_options 2]
 
+      set buf_index [lsearch -regexp $options_1param "-buf"]
       set rep_index [lsearch -regexp $options_1param "-rep"]
       set ext_index [lsearch -regexp $options_1param "-ext"]
 
+      if {$buf_index>=0} {
+         set buf [lindex [lindex $options_1param $buf_index] 1]
+      } else {
+         set buf $audace(bufNo)
+      }
       if {$rep_index>=0} {
          set rep [lindex [lindex $options_1param $rep_index] 1]
       } else {
@@ -393,13 +399,13 @@ proc sauve_jpeg {args} {
          #--- Fenetre parent
          set fenetre "$audace(base)"
          #--- Ouvre la boite de choix des images
-         set nom_complet [ ::tkutil::box_save $fenetre $rep $audace(bufNo) "2" ]
+         set nom_complet [ ::tkutil::box_save $fenetre $rep $buf "2" ]
       } else {
          set nom_complet [ file join "$rep" [ file rootname [ file tail "$fichier$ext" ] ] ]
       }
 
       if {[string compare $nom_complet ""] != 0 } {
-         if { [ buf$audace(bufNo) imageready ] == "1" } {
+         if { [ buf$buf imageready ] == "1" } {
 
             # Deux cas sont possibles :
             # - si la palette est monochrome, on enregistre en jpeg N&B.
@@ -421,7 +427,7 @@ proc sauve_jpeg {args} {
                # Création du buffer temporaire
                set num_buf_tmp [buf::create]
                buf$num_buf_tmp extension $conf(extension,defaut)
-               buf$audace(bufNo) copyto $num_buf_tmp
+               buf$buf copyto $num_buf_tmp
 
                set catchError [ catch { bm_hard2visu $num_buf_tmp [lindex [visu$audace(visuNo) cut] 0] [lindex [visu$audace(visuNo) cut] 1] ${palette_R} } ]
                if { $catchError == "1" } {
@@ -462,7 +468,7 @@ proc sauve_jpeg {args} {
 
                # Enregistrement des plans R, V et B
                # plan R
-               buf$audace(bufNo) copyto $num_buf_tmp
+               buf$buf copyto $num_buf_tmp
                set catchError [ catch { bm_hard2visu $num_buf_tmp [lindex [visu$audace(visuNo) cut] 0] [lindex [visu$audace(visuNo) cut] 1] ${palette_R} } ]
                if { $catchError == "1" } {
                   # Affichage d'un message d'erreur
@@ -476,11 +482,11 @@ proc sauve_jpeg {args} {
                }
                sauve plan_R -buf $num_buf_tmp -rep "$rep_tmp" -ext $conf(extension,defaut)
                # plan V
-               buf$audace(bufNo) copyto $num_buf_tmp
+               buf$buf copyto $num_buf_tmp
                bm_hard2visu $num_buf_tmp [lindex [visu$audace(visuNo) cut] 0] [lindex [visu$audace(visuNo) cut] 1] ${palette_V}
                sauve plan_V -buf $num_buf_tmp -rep "$rep_tmp" -ext $conf(extension,defaut)
                # plan B
-               buf$audace(bufNo) copyto $num_buf_tmp
+               buf$buf copyto $num_buf_tmp
                bm_hard2visu $num_buf_tmp [lindex [visu$audace(visuNo) cut] 0] [lindex [visu$audace(visuNo) cut] 1] ${palette_B}
                sauve plan_B -buf $num_buf_tmp -rep "$rep_tmp" -ext $conf(extension,defaut)
 
@@ -552,7 +558,7 @@ proc soustrait {args} {
 
       # Si le buffer de travail est le buffer Aud'ACE, on refraîchit l'affichage
       if {$audace(bufNo) == $buf} {
-         audace::autovisu $audace(visuNo)
+         ::audace::autovisu $audace(visuNo)
       }
 
    } else {
@@ -618,7 +624,7 @@ proc normalise {args} {
 
       # Si le buffer de travail est le buffer Aud'ACE, on rafraîchit l'affichage
       if {$audace(bufNo) == $buf} {
-         audace::autovisu $audace(visuNo)
+         ::audace::autovisu $audace(visuNo)
       }
 
    } else {
