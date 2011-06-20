@@ -1496,7 +1496,7 @@ proc testjpeg { } {
          catch { file delete [ file join $infos(dir) rgbdummy3 ]$::conf(extension,defaut) }
       } elseif { $infos(type_image) == "noiretblanc" } {
          set filename [ file rootname [ file tail $filename ] ]
-         sauve_jpeg $filename
+         sauve_jpeg $filename -buf 1000
       }
    }
 }
