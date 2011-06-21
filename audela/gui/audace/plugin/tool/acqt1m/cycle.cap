@@ -86,7 +86,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cycle,lancement)             "Laufen lassen 'Cycle'"
    set caption(cycle,initFiltres)           "Filtern Initialisierung"
    set caption(cycle,initCamera)            "Kamera Initialisierung"
-   set caption(cycle,pasCamera)             "# Aucune caméra n'est définie"
+   set caption(cycle,pasCamera)             "Keine Kamera definiert"
    set caption(cycle,initBuffer)            "Buffer Initialisierung"
    set caption(cycle,initCom)               "Die Verbindung mit das Filterrad initialisieren"
    set caption(cycle,roueNonInitialise)     "Filterrad nicht initialisiert"
@@ -96,7 +96,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cycle,fermeCom)              "Verbindung mit das Filterrad schließen"
    set caption(cycle,filtre)                "Filter:"
    set caption(cycle,acquisition)           "Belichtung:"
-   set caption(cycle,energistre)            "# Enregistrement de :"
+   set caption(cycle,energistre)            "Speichern:"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
