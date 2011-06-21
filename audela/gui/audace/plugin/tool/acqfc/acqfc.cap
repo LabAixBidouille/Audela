@@ -510,7 +510,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,avancement_acq)         "Belichtung\nim Gange"
    set caption(acqfc,buttonShiftConfig)      "Verschiebung"
    set caption(acqfc,acquisitionError)       "Belichtung Irrtum. Siehe Details auf der Konsole."
-   set caption(acqfc,flatAuto)               "# Flats Auto"
+   set caption(acqfc,flatAuto)               "Automatische\nFlat Field Bild"
 
    set caption(acqfc,emccd,mode)             "# Mode EMCCD"
    set caption(acqfc,emccd,parametres)       "# Paramètres EMCCD"
