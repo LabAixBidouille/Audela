@@ -35,6 +35,7 @@
 #include "telescop.h"
 #include <libtel/util.h>
 
+void logConsole(struct telprop *tel, char *messageFormat, ...);
 
  /*
  *  Definition of different cameras supported by this driver
@@ -88,6 +89,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    double longitude,latitude,altitude;
    char ligne[256],ew[3];
    
+   tel->consoleLog = 0;
 
    /*
    FILE *f;
@@ -101,7 +103,10 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    for (i=3;i<argc-1;i++) {
 	   if (strcmp(argv[i],"-home")==0) {
 			   strncpy(tel->homePosition, argv[i+1],sizeof(tel->homePosition));
-		 }
+		}
+	   if (strcmp(argv[i],"-consolelog")==0) {
+         tel->consoleLog = atoi( argv[i+1]);
+		}
    }
 
 
@@ -162,20 +167,20 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 
    if (strcmp(tel->homePosition,"")!= 0) {
       // je calcule la latitude
-      sprintf(ligne,"lindex {%s} 1",argv[2]);
+      sprintf(ligne,"lindex {%s} 1",tel->homePosition);
       Tcl_Eval(tel->interp,ligne);
       longitude=(double)atof(tel->interp->result);
-      sprintf(ligne,"string toupper [lindex {%s} 2]",argv[2]);
+      sprintf(ligne,"string toupper [lindex {%s} 2]",tel->homePosition);
       Tcl_Eval(tel->interp,ligne);
       if (strcmp(tel->interp->result,"W")==0) {
          strcpy(ew,"w");
       } else {
          strcpy(ew,"e");
       }
-      sprintf(ligne,"lindex {%s} 3",argv[2]);
+      sprintf(ligne,"lindex {%s} 3",tel->homePosition);
       Tcl_Eval(tel->interp,ligne);
       latitude=(double)atof(tel->interp->result);
-      sprintf(ligne,"lindex {%s} 4",argv[2]);
+      sprintf(ligne,"lindex {%s} 4",tel->homePosition);
       Tcl_Eval(tel->interp,ligne);
       altitude=(double)atof(tel->interp->result);
 
@@ -753,10 +758,17 @@ int temma_setlatitude(struct telprop *tel,double latitude)
    sprintf(s,"%f",latitude);
    temma_angle_dms2dec(tel,s,slat);
    /* --- */
+   if ( tel->consoleLog >= 1 ) {
+      logConsole(tel, "Set latitude=I%s\n", slat);
+   }
    sprintf(s,"puts -nonewline %s \"I%s\r\n\"",tel->channel,slat); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    /* --- Lit sur le port serie */
    sprintf(s,"read %s 10",tel->channel); mytel_tcleval(tel,s);
+   if ( tel->consoleLog >= 1 ) {
+      logConsole(tel, "reponse=%s\n", tel->interp->result);
+   }
+   
    return 0;
 }
 
@@ -765,14 +777,22 @@ int temma_getlatitude(struct telprop *tel,double *latitude)
    char s[1024];
    char slat[256];
    /* --- */
+   if ( tel->consoleLog >= 1 ) {
+      logConsole(tel, "getlatitude=i\n", slat);
+   }
+
    sprintf(s,"puts -nonewline %s \"i\r\n\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    /* --- Lit sur le port serie */
    sprintf(s,"read %s 10",tel->channel); mytel_tcleval(tel,s);
-   /* --- transforme +/-SDDMMZ en latitude */
+   // --- transforme iSDDMMZ en latitude en degré
+   // exemple : "i+43559" => mc_angle2deg { +43 55.9 }=> +43.93...
    strcpy(slat,tel->interp->result);
-   sprintf(s,"mc_angle2deg {%c%c%c%c %c%c.%c}",slat[0],slat[1],slat[2],slat[3],slat[4],slat[5],slat[6]); mytel_tcleval(tel,s);
+   sprintf(s,"mc_angle2deg {%c%c%c %c%c.%c}",slat[1],slat[2],slat[3],slat[4],slat[5],slat[6]); mytel_tcleval(tel,s);
    *latitude=atof(tel->interp->result);
+   if ( tel->consoleLog >= 1 ) {
+      logConsole(tel, "reponse=%s latitude=%f\n", slat,*latitude);
+   }   
    return 0;
 }
 
