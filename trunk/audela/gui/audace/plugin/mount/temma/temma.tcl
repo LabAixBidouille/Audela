@@ -96,6 +96,7 @@ proc ::temma::initPlugin { } {
    if { ! [ info exists conf(temma,suivi_ad) ] }   { set conf(temma,suivi_ad)   "0" }
    if { ! [ info exists conf(temma,suivi_dec) ] }  { set conf(temma,suivi_dec)  "0" }
    if { ! [ info exists conf(temma,type) ] }       { set conf(temma,type)       "0" }
+   if { ! [ info exists conf(temma,debug) ] }      { set conf(temma,debug)      "0" }
 }
 
 #
@@ -115,6 +116,7 @@ proc ::temma::confToWidget { } {
    set private(suivi_ad)   $conf(temma,suivi_ad)
    set private(suivi_dec)  $conf(temma,suivi_dec)
    set private(type)       $conf(temma,type)
+   set private(debug)      $conf(temma,debug)
    set private(raquette)   $conf(raquette)
 }
 
@@ -135,6 +137,7 @@ proc ::temma::widgetToConf { } {
    set conf(temma,suivi_ad)   $private(suivi_ad)
    set conf(temma,suivi_dec)  $private(suivi_dec)
    set conf(temma,type)       $private(type)
+   set conf(temma,debug)      $private(debug)
    set conf(raquette)         $private(raquette)
 }
 
@@ -181,7 +184,10 @@ proc ::temma::fillConfigPage { frm } {
    pack $frm.frame7 -side top -fill x
 
    frame $frm.frame8 -borderwidth 0 -relief raised
-   pack $frm.frame8 -side bottom -fill x -pady 2
+   pack $frm.frame8 -side top -fill x
+
+   frame $frm.frame9 -borderwidth 0 -relief raised
+   pack $frm.frame9 -side bottom -fill x -pady 2
 
    #--- Definition du port
    label $frm.lab1 -text "$caption(temma,port)"
@@ -294,41 +300,25 @@ proc ::temma::fillConfigPage { frm } {
    pack $frm.pos_tel_ew -in $frm.frame3 -anchor center -side left -pady 10
 
    #--- Initialisation de l'instrument au zenith
-   if { [ ::temma::isReady ] == 1 } {
-      button $frm.init_zenith -text "$caption(temma,init_zenith)" -relief raised -state normal -command {
-         tel$::temma::private(telNo) initzenith
-         ::telescope::afficheCoord
-      }
-      pack $frm.init_zenith -in $frm.frame3 -anchor nw -side right -padx 10 -pady 10 -ipadx 10 -ipady 5
-   } else {
-      button $frm.init_zenith -text "$caption(temma,init_zenith)" -relief raised -state disabled
-      pack $frm.init_zenith -in $frm.frame3 -anchor nw -side right -padx 10 -pady 10 -ipadx 10 -ipady 5
-   }
+   button $frm.init_zenith -text "$caption(temma,init_zenith)"
+   pack $frm.init_zenith -in $frm.frame3 -anchor nw -side right -padx 10 -pady 10 -ipadx 10 -ipady 5
 
    #--- Nouvelle position d'origine du telescope : A l'est ou a l'ouest
    label $frm.pos_tel_est -text "$caption(temma,change_position_telescope)"
    pack $frm.pos_tel_est -in $frm.frame6 -anchor center -side left -padx 10 -pady 5
 
-   if { [ ::temma::isReady ] == 1 } {
-      button $frm.chg_pos_tel -relief raised -state normal -textvariable audace(chg_pos_tel) -command {
-         set pos_tel [ tel$::temma::private(telNo) german ]
-         if { $pos_tel == "E" } {
-            tel$::temma::private(telNo) german W
-         } elseif { $pos_tel == "W" } {
-            tel$::temma::private(telNo) german E
-         }
-         ::telescope::monture_allemande
-      }
-      pack $frm.chg_pos_tel -in $frm.frame6 -anchor nw -side left -padx 10 -pady 10 -ipadx 10 -ipady 5
-   } else {
-      button $frm.chg_pos_tel -text "  ?  " -relief raised -state disabled
-      pack $frm.chg_pos_tel -in $frm.frame6 -anchor nw -side left -padx 10 -pady 10 -ipadx 10 -ipady 5
-   }
+   button $frm.chg_pos_tel -relief raised -state normal -textvariable audace(chg_pos_tel)
+   pack $frm.chg_pos_tel -in $frm.frame6 -anchor nw -side left -padx 10 -pady 10 -ipadx 10 -ipady 5
 
    #--- Bouton de controle de la vitesse de suivi
    button $frm.tracking -text "$caption(temma,ctl_mobile)" -state normal \
       -command { ::confTemmaMobile::run "$audace(base).confTemmaMobile" }
    pack $frm.tracking -in $frm.frame6 -anchor center -side right -padx 10 -pady 10 -ipadx 10 -ipady 5
+
+   #--- Le checkbutton pour le mode debug ou non
+   checkbutton $frm.debug -text "$caption(temma,debug)" -highlightthickness 0 \
+      -variable ::temma::private(debug)
+   pack $frm.debug -in $frm.frame7 -side left -padx 10 -pady 10
 
    #--- Rafraichissement de la position du telescope par rapport a la monture
    if { [ ::temma::isReady ] == 1 } {
@@ -339,19 +329,26 @@ proc ::temma::fillConfigPage { frm } {
    #--- Le checkbutton pour la visibilite de la raquette a l'ecran
    checkbutton $frm.raquette -text "$caption(temma,raquette_tel)" \
       -highlightthickness 0 -variable ::temma::private(raquette)
-   pack $frm.raquette -in $frm.frame7 -side left -padx 10 -pady 10
+   pack $frm.raquette -in $frm.frame8 -side left -padx 10 -pady 10
 
    #--- Frame raquette
    ::confPad::createFramePad $frm.nom_raquette "::confTel::private(nomRaquette)"
-   pack $frm.nom_raquette -in $frm.frame7 -side left -padx 0 -pady 10
+   pack $frm.nom_raquette -in $frm.frame8 -side left -padx 0 -pady 10
 
    #--- Site web officiel Temma et Takahashi
    label $frm.lab103 -text "$caption(temma,titre_site_web)"
-   pack $frm.lab103 -in $frm.frame8 -side top -fill x -pady 2
+   pack $frm.lab103 -in $frm.frame9 -side top -fill x -pady 2
 
-   set labelName [ ::confTel::createUrlLabel $frm.frame8 "$caption(temma,site_temma)" \
-      "$caption(temma,site_temma)" ]
-   pack $labelName -side top -fill x -pady 2
+  ### set labelName [ ::confTel::createUrlLabel $frm.frame9 "$caption(temma,site_temma)" \
+  ###    "$caption(temma,site_temma)" ]
+  ### pack $labelName -side top -fill x -pady 2
+
+   #--- Lorsque "caption(temma,site_temma)" contiendra l'adresse web d'un site Temma
+   #--- Il faudra supprimer les 4 lignes ci-dessous et decommenter les 3 lignes ci-dessus
+   label $frm.labURL -text "$caption(temma,site_temma)" -fg $::color(blue)
+   pack $frm.labURL -in $frm.frame9 -side top -fill x -pady 2
+   bind $frm.labURL <Enter> "$frm.labURL configure -fg $::color(purple)"
+   bind $frm.labURL <Leave> "$frm.labURL configure -fg $::color(blue)"
 
    #--- Gestion des boutons actifs/inactifs
    ::temma::confTemma
@@ -368,7 +365,7 @@ proc ::temma::configureMonture { } {
    set catchResult [ catch {
       #--- Je cree la monture et j'envoie les coordonnees de l'observatoire
       #--- La commande "create" de Temma doit toujours avoir l'argument "_home"
-      set telNo [ tel::create temma $conf(temma,port) -home $::audace(posobs,observateur,gps) ]
+      set telNo [ tel::create temma $conf(temma,port) -home $::audace(posobs,observateur,gps) -consolelog $conf(temma,debug) ]
       #--- Lit le modele
       if { $conf(temma,modele) == "0" } {
          set private(modele) $caption(temma,modele_1)
@@ -497,6 +494,7 @@ proc ::temma::confTemma { } {
             #--- Boutons de la monture inactifs
             $frm.init_zenith configure -state disabled
             $frm.chg_pos_tel configure -text "  ?  " -state disabled
+
          }
       }
    }
@@ -513,9 +511,12 @@ proc ::temma::confTemmaInactif { } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
          if { [ ::temma::isReady ] == 1 } {
+            #--- Initialise les variables comme a l'origine : indefinis
+            set ::audace(pos_tel_ew)  ""
+            set ::audace(chg_pos_tel) ""
             #--- Boutons de la monture inactifs
             $frm.init_zenith configure -state disabled
-            $frm.chg_pos_tel configure -text "  ?  " -state disabled
+            $frm.chg_pos_tel configure -state disabled
          }
       }
    }
