@@ -33,13 +33,14 @@ set caption(temma,mobile_ad)                     "Right Ascension Speed"
 set caption(temma,mobile_dec)                    "Declination Speed"
 set caption(temma,position_telescope)            "Telescope Position:"
 set caption(temma,change_position_telescope)     "Change the Telescope Initial Position:"
+set caption(temma,debug)                         "Debug Mode"
 set caption(temma,raquette_tel)                  "Hand controller on screen"
 
 set caption(temma,port_temma)                    "Temma Port"
 set caption(temma,2points)                       ":"
 
 set caption(temma,titre_site_web)                "Reference Web Site:"
-set caption(temma,site_temma)                    "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
+set caption(temma,site_temma)                    "Does not exist"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -66,13 +67,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temma,mobile_dec)                 "Vitesse en déclinaison"
    set caption(temma,position_telescope)         "Position du télescope :"
    set caption(temma,change_position_telescope)  "Changer la position d'origine du télescope :"
+   set caption(temma,debug)                      "Mode débug"
    set caption(temma,raquette_tel)               "Raquette à l'écran"
 
    set caption(temma,port_temma)                 "Port Temma"
    set caption(temma,2points)                    ":"
 
    set caption(temma,titre_site_web)             "Site Web de référence :"
-   set caption(temma,site_temma)                 "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
+   set caption(temma,site_temma)                 "N'existe pas"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -99,13 +101,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temma,mobile_dec)                 "Velocita` in declinazione"
    set caption(temma,position_telescope)         "Posizione telescopio:"
    set caption(temma,change_position_telescope)  "Cambiare la posizione iniziale del telescopio:"
+   set caption(temma,debug)                      "Modalita` debug"
    set caption(temma,raquette_tel)               "Pulsantiera a schermo"
 
    set caption(temma,port_temma)                 "Porta Temma"
    set caption(temma,2points)                    ":"
 
    set caption(temma,titre_site_web)             "Sito Web di riferimento:"
-   set caption(temma,site_temma)                 "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
+   set caption(temma,site_temma)                 "Non esiste"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -132,13 +135,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temma,mobile_dec)                 "Velocidad en Declinación"
    set caption(temma,position_telescope)         "Situación del Telescopio:"
    set caption(temma,change_position_telescope)  "Cambiar la posición inicial del telescopio:"
+   set caption(temma,debug)                      "Modo depuracion"
    set caption(temma,raquette_tel)               "Controlador virtual"
 
    set caption(temma,port_temma)                 "Puerto Temma"
    set caption(temma,2points)                    ":"
 
    set caption(temma,titre_site_web)             "Sitio Web de referencia:"
-   set caption(temma,site_temma)                 "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
+   set caption(temma,site_temma)                 "No existe"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -165,13 +169,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temma,mobile_dec)                 "Deklination Tempo"
    set caption(temma,position_telescope)         "Teleskop Stellung:"
    set caption(temma,change_position_telescope)  "Die beginn Position des Teleskop ändern:"
+   set caption(temma,debug)                      "Debug Modus"
    set caption(temma,raquette_tel)               "Hand Kontroller am Bildschirm"
 
    set caption(temma,port_temma)                 "Temma Port"
    set caption(temma,2points)                    ":"
 
    set caption(temma,titre_site_web)             "Referenz Webseite:"
-   set caption(temma,site_temma)                 "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
+   set caption(temma,site_temma)                 "Existiert nicht"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -198,13 +203,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temma,mobile_dec)                 "Velocidade em declinação"
    set caption(temma,position_telescope)         "Posição do Telescópio:"
    set caption(temma,change_position_telescope)  "Mudar a Posição Inicial do Telescópio:"
+   set caption(temma,debug)                      "Modo debug"
    set caption(temma,raquette_tel)               "Controlador de mão no ecrã"
 
    set caption(temma,port_temma)                 "Porta Temma"
    set caption(temma,2points)                    ":"
 
    set caption(temma,titre_site_web)             "Site Web de referência:"
-   set caption(temma,site_temma)                 "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
+   set caption(temma,site_temma)                 "Não existe"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -231,13 +237,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temma,mobile_dec)                 "Declination Speed"
    set caption(temma,position_telescope)         "Telescope Position:"
    set caption(temma,change_position_telescope)  "Change the Telescope Initial Position:"
+   set caption(temma,debug)                      "Debug Mode"
    set caption(temma,raquette_tel)               "Hand controller on screen"
 
    set caption(temma,port_temma)                 "Temma Port"
    set caption(temma,2points)                    ":"
 
    set caption(temma,titre_site_web)             "Reference Web Site:"
-   set caption(temma,site_temma)                 "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
+   set caption(temma,site_temma)                 "Does not exist"
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -264,13 +271,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temma,mobile_dec)                 "Declination Speed"
    set caption(temma,position_telescope)         "Telescope Position:"
    set caption(temma,change_position_telescope)  "Change the Telescope Initial Position:"
+   set caption(temma,debug)                      "Debug Mode"
    set caption(temma,raquette_tel)               "Hand controller on screen"
 
    set caption(temma,port_temma)                 "Temma Port"
    set caption(temma,2points)                    ":"
 
    set caption(temma,titre_site_web)             "Reference Web Site:"
-   set caption(temma,site_temma)                 "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
+   set caption(temma,site_temma)                 "Does not exist"
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -297,13 +305,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temma,mobile_dec)                 "Declination Speed"
    set caption(temma,position_telescope)         "Telescope Position:"
    set caption(temma,change_position_telescope)  "Change the Telescope Initial Position:"
+   set caption(temma,debug)                      "Debug Mode"
    set caption(temma,raquette_tel)               "Hand controller on screen"
 
    set caption(temma,port_temma)                 "Temma Port"
    set caption(temma,2points)                    ":"
 
    set caption(temma,titre_site_web)             "Reference Web Site:"
-   set caption(temma,site_temma)                 "http://www.optique-unterlinden.com/taka2001/temma-pc.htm"
+   set caption(temma,site_temma)                 "Does not exist"
 
 }
 
