@@ -6,17 +6,14 @@
 #
 
 variable cmconf
-global audace
-global caption
-global compteur
-global loopexit
+global audace caption compteur loopexit
 
 #--- Initialisation de l'heure TU ou TL
 set now [::audace::date_sys2ut now]
 #--- Acquisition of an image
 set actuel [mc_date2jd $now]
 #---
-set folder [ file join $audace(rep_plugin) tool cmaude ]
+set folder $audace(rep_images)
 set namehtml [string range [mc_date2iso8601 $actuel] 0 9].html
 ::console::affiche_erreur "\n"
 ::console::affiche_erreur "$caption(cmaude,fichier_html) $namehtml\n"
@@ -44,7 +41,7 @@ if { $existence == "0" } {
    append texte "<h2>\n"
    append texte "1. MASCOT Instrument</h2>\n"
    append texte "<b>MASCOT</b> stands for <b>M</b>ini <b>A</b>ll-<b>S</b>ky <b>C</b>loud <b>O</b>bservation <b>T</b>ool. <br>"
-   append texte "Its purpose is to make images of the whole night sky over ESO Paranal Observatory  "
+   append texte "Its purpose is to make images of the whole night sky over $::conf(posobs,nom_observatoire)  "
    append texte "in order to permit to evaluate the night sky quality. <br>\n"
    append texte "The observations are made automatically and are available in FITS format as well as\n"
    append texte "in JPEG format. This page is an observation log of the night and makes a link\n"
@@ -53,9 +50,9 @@ if { $existence == "0" } {
    append texte "It requires to have the images in the same directory as this HTML document.\n"
    append texte "\n"          append texte "<h2>\n"
    append texte "2. Local Ephemeris</h2>\n"
-   append texte "Here are some local ephemeris for the current night at Paranal: <br>\n"
-   append texte "$cmconf(resultb)<br>\n"
-   append texte "$cmconf(resulte)<br>\n"
+   append texte "Here are some local ephemeris for the current night at $::conf(posobs,nom_observatoire): <br>\n"
+   append texte "Night begins at $cmconf(resultb)<br>\n"
+   append texte "Night ends at $cmconf(resulte)<br>\n"
    set localite "$cmconf(localite)"
    append texte "Lunar phase at the beginning of the night: $cmconf(phaslun)<br>\n"
    append texte "Illuminated fraction of the Moon at the beginning of the night: $cmconf(illufrac)<br>\n"
@@ -73,12 +70,15 @@ if { $loopexit == "0" } {
    append texte "(Local Sideral Time $sidertime) - "
    append texte "<a href=\"file:///[ file rootname $cmconf(nameima) ].jpg\">| JPG |</a> - "
    append texte " <a href=\"file:///[ file rootname $cmconf(nameima) ]$cmconf(extension)\">| FITS |</a> <br>"
-}
-
-if { $loopexit == "1" } {
+} else {
+   set texte "Image <b>[ file rootname [ file tail $cmconf(nameima) ] ]</b> done the [string range [mc_date2iso8601 $actuel] 0 9] "
+   append texte "at <b>[string range [mc_date2iso8601 $actuel] 11 18] UT</b> "
+   append texte "(Local Sideral Time $sidertime) - "
+   append texte "<a href=\"file:///[ file rootname $cmconf(nameima) ].jpg\">| JPG |</a> - "
+   append texte " <a href=\"file:///[ file rootname $cmconf(nameima) ]$cmconf(extension)\">| FITS |</a> <br>"
+   set nbtotimages $compteur
    append texte "<p>End of observations the [string range [mc_date2iso8601 $actuel] 0 9] at "
    append texte "[string range [mc_date2iso8601 $actuel] 11 20]UT <br>"
-   set nbtotimages [expr $compteur-1]
    append texte "<b>$nbtotimages images</b> have been taken during this night.<br>"
    append texte "MASCOT is tired now and it will have a good sleep until next night..."
    append texte "</p> <hr>\n"
@@ -93,7 +93,7 @@ if { $loopexit == "1" } {
    append texte "    this.length = imageArray.arguments.length;\n"
    append texte "    for (var i=0; i<this.length; i++)\n"
    append texte "     {\n"
-   append texte "       this[i] = imageArray.arguments[i];  \n"
+  ### append texte "       this[i] = imageArray.arguments[i];  \n"
    append texte "     }\n"
    append texte "}\n"
 
@@ -103,13 +103,13 @@ if { $loopexit == "1" } {
       append texte "\"[string range [mc_date2jd now] 0 6]-$compteur$cmconf(extension).jpg\","
    }
    append texte "\"[string range [mc_date2jd now] 0 6]-[expr $compteur-1]$cmconf(extension).jpg\");\n"
-   append texte "document.write('<img name=\"myImages\" border=\"3\" src=\"'+imgz[0]+'\">');\n"
+  ### append texte "document.write('<img name=\"myImages\" border=\"3\" src=\"'+imgz[0]+'\">');\n"
    append texte "function getPosition(val) {\n"
    append texte "   var goodnum = current+val;\n"
    append texte "   //Wrap around\n"
    append texte "   if (goodnum < 0) goodnum = imgz.length-1;\n"
    append texte "   else if (goodnum > imgz.length-1) goodnum = 0;\n"
-   append texte "   document.myImages.src = imgz[goodnum];\n"
+  ### append texte "   document.myImages.src = imgz[goodnum];\n"
    append texte "   current = goodnum; }\n"
    append texte "//-->\n"
 
