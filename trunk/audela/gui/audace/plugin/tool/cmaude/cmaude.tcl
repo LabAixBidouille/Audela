@@ -152,7 +152,7 @@ namespace eval ::cmaude {
       set panneau(cmaude,label_nom)       "$caption(cmaude,nom_image)"
       set panneau(cmaude,nom)             [ file join $cmconf(folder) "[string range [mc_date2jd $now] 0 6]-" ]
       set panneau(cmaude,label_page_html) "$caption(cmaude,page_html)"
-      set panneau(cmaude,page_html)       "0"
+      set panneau(cmaude,page_html)       "1"
       set panneau(cmaude,label_binning)   "$caption(cmaude,binning)"
       set panneau(cmaude,binning)         "$cmconf(binning)"
       set panneau(cmaude,list_binning)    "1x1 2x2"
@@ -168,6 +168,7 @@ namespace eval ::cmaude {
       set panneau(cmaude,status2)         "$caption(cmaude,status2)"
       set panneau(cmaude,status3)         "$caption(cmaude,status2)"
       set panneau(cmaude,acquisition)     "0"
+      set panneau(cmaude,initCompteur)    "0"
       #--- Construction de l'interface
       cmaudeBuildIF $This
    }
@@ -234,7 +235,6 @@ namespace eval ::cmaude {
       if { [ ::cam::list ] != "" } {
          set panneau(cmaude,acquisition) "1"
          $This.fra2.but1 configure -relief groove -state disabled
-         update
          #--- Initialisation de l'heure TU ou TL
          set now [::audace::date_sys2ut now]
          set loopexit "0"
@@ -299,7 +299,7 @@ namespace eval ::cmaude {
             }
             set jd_deb "$jj"
             set resultb "$caption(cmaude,debut_nuit) [mc_date2iso8601 $jd_deb] $caption(cmaude,TU)\n"
-            set cmconf(resultb) $resultb
+            set cmconf(resultb) "[mc_date2iso8601 $jd_deb] UT\n"
             ::console::affiche_erreur "$caption(cmaude,hauteur_soleil_debut_nuit) < $cmconf(haurore)°\n"
             ::console::affiche_erreur "$resultb"
             ::console::affiche_erreur "$caption(cmaude,jour_julien) = $jd_deb\n"
@@ -324,7 +324,7 @@ namespace eval ::cmaude {
             set jd0 "$jd_fin"
             set jd_fin "$jj"
             set resulte "$caption(cmaude,fin_nuit) [mc_date2iso8601 $jd_fin] $caption(cmaude,TU)\n"
-            set cmconf(resulte) $resulte
+            set cmconf(resulte) "[mc_date2iso8601 $jd_fin] UT\n"
             ::console::affiche_erreur "$resulte"
             ::console::affiche_erreur "$caption(cmaude,jour_julien) = $jd_fin\n"
             ::console::affiche_erreur "###############################\n\n"
@@ -388,8 +388,15 @@ namespace eval ::cmaude {
             $This.fra3.labURL3 configure -text "$panneau(cmaude,status2)"
 
             while { [mc_date2jd $now] <= $jd_fin } {
-            #--- Test to exit the loop if push on STOP
+               set panneau(cmaude,status2) "$caption(cmaude,boucle_acquisition)"
+               $This.fra3.labURL3 configure -text "$panneau(cmaude,status2)"
+               #--- Test to exit the loop if push on STOP
                if { $loopexit == "1" } {
+                  #--- Surveillance de l'intialisation du compteur
+                  if { $panneau(cmaude,initCompteur) == "1" } {
+                     set compteur "1"
+                     set panneau(cmaude,initCompteur) "0"
+                  }
                   break
                }
                #--- Acquisition procedure
@@ -400,6 +407,7 @@ namespace eval ::cmaude {
                update
                set actuel [mc_date2jd $now]
                set flag [expr [expr $panneau(cmaude,rythm) / 86400.0] + $actuel]
+               $This.fra2.but2 configure -relief groove -state disabled
                #--- Loop waiting to take the following image
                while { $actuel <= $flag } {
                   if { $loopexit == "1" } {
@@ -409,12 +417,11 @@ namespace eval ::cmaude {
                   set now [::audace::date_sys2ut now]
                   update
                   set actuel [mc_date2jd $now]
-                  set panneau(cmaude,status2) "$caption(cmaude,boucle_acquisition)"
-                  $This.fra3.labURL3 configure -text "$panneau(cmaude,status2)"
                   set panneau(cmaude,status3) "$caption(cmaude,prochaine_image) [string range [mc_date2iso8601 [format "%f" [expr $flag - $actuel]]] 11 18]"
                   $This.fra3.labURL4 configure -text "$panneau(cmaude,status3)"
                   update
                }
+               $This.fra2.but2 configure -relief raised -state normal
             }
             if { $loopexit == "0" } {
                ::console::affiche_prompt "$caption(cmaude,jour_a_commence)\n"
@@ -442,7 +449,7 @@ namespace eval ::cmaude {
          $This.fra3.labURL3 configure -text "$panneau(cmaude,status2)"
          set panneau(cmaude,status3) "$caption(cmaude,status2)"
          $This.fra3.labURL4 configure -text "$panneau(cmaude,status3)"
-         set dateend [mc_date2iso8601 now]
+         set dateend [mc_date2iso8601 $actuel]
          catch {
             set fileId [open $cmconf(folder)/$namelog.log a]
             puts $fileId "\n$caption(cmaude,fin_boucle_acquisition_a) $dateend !\n"
@@ -450,7 +457,6 @@ namespace eval ::cmaude {
          }
          set panneau(cmaude,acquisition) "0"
          $This.fra2.but1 configure -relief raised -state normal
-         update
       } else {
          ::confCam::run
       }
@@ -463,23 +469,22 @@ namespace eval ::cmaude {
    proc cmdStop { } {
    #--- Fonction called by pushing button STOP
       variable This
-      global audace caption compteur loopexit panneau
+      global caption loopexit panneau
 
       if { [ ::cam::list ] != "" } {
          $This.fra2.but2 configure -relief groove -state disabled
-         update
-         #--- Initialisation a la demande du compteur des images a 1
+         #--- Initialisation a la demande du compteur des images
          set choix [ tk_messageBox -type yesno -icon warning -title "$caption(cmaude,initialisation)" \
             -message "$caption(cmaude,texte_init)" ]
          if { $choix == "yes" } {
-            set compteur "1"
+            set panneau(cmaude,initCompteur) "1"
+         } else {
+            set panneau(cmaude,initCompteur) "0"
          }
          #---
          set loopexit "1"
          set panneau(cmaude,status) "$caption(cmaude,arret_auto_script)"
          $This.fra3.lab2 configure -text "$panneau(cmaude,status)"
-         $This.fra2.but2 configure -relief raised -state normal
-         update
       } else {
          ::confCam::run
       }
@@ -492,7 +497,7 @@ namespace eval ::cmaude {
    #--- Fonction of acquisition
       variable This
       variable cmconf
-      global audace caption compteur namelog panneau
+      global audace caption compteur namelog panneau loopexit
 
       #--- Initialisation de l'heure TU ou TL
       set now [::audace::date_sys2ut now]
@@ -521,7 +526,7 @@ namespace eval ::cmaude {
       ::cmaude::acq $panneau(cmaude,time) $panneau(cmaude,binning)
       set nameima "[string range [mc_date2jd $now] 0 6]-$compteur$cmconf(extension)"
       set cmconf(nameima) [ file join $cmconf(folder) [string range [mc_date2jd $now] 0 6]-$compteur ]
-      set sidertime [ mc_date2lst now $localite ]
+      set sidertime [ mc_date2lst $now $localite ]
       #--- Specific keywords
       buf$audace(bufNo) setkwd [ list "OPTICS"   $cmconf(fits,OPTICS)   string "Type of optics used" " " ]
       buf$audace(bufNo) setkwd [ list "SIDERAL"  $sidertime             string "Local Sideral Time" " " ]
@@ -547,7 +552,7 @@ namespace eval ::cmaude {
       #--- Save FITS image
       saveima $nameima
       #--- Save Jpeg image
-      sauve_jpeg $nameima
+      sauve_jpeg [ file rootname $nameima ]
       #---
       ::console::affiche_erreur "$caption(cmaude,image_sauvee)\n"
       ::console::affiche_erreur "\n"
@@ -643,11 +648,9 @@ namespace eval ::cmaude {
       if { $t > "1" } {
          $labelTime configure -text "[ expr $t-1 ] / [ format "%d" [ expr int([ cam$numcam exptime ]) ] ]" \
             -fg $colorLabel
-         update
          after 1000 ::cmaude::dispTime $labelTime $colorLabel
       } else {
          $labelTime configure -text "$caption(cmaude,numerisation)" -fg $colorLabel
-         update
       }
    }
 
