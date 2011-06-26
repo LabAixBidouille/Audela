@@ -1,6 +1,6 @@
 #
 # Fichier : telpad.tcl
-# Description : Raquette simplifiee a l'usage des telescopes
+# Description : Raquette simplifiee a l'usage des montures et des telescopes
 # Auteur : Robert DELMAS
 # Mise à jour $Id$
 #
@@ -203,6 +203,74 @@ namespace eval telpad {
    }
 
    #------------------------------------------------------------
+   #  moveRadec
+   #     demarre un mouvement de la monture dans une direction
+   #
+   #  direction : direction du deplacement e w n s
+   #------------------------------------------------------------
+   proc moveRadec { direction } {
+      set catchError [ catch {
+         #--- Debut du mouvement
+         ::telescope::move $direction
+      } ]
+
+      if { $catchError != 0 } {
+         ::tkutil::displayErrorInfo $::caption(telpad,titre)
+         #--- Je fais un beep sonore pour signaler que la commande n'est pas prise en compte
+         bell
+      }
+
+   }
+
+   #------------------------------------------------------------
+   #  stopRadec
+   #     arrete le mouvement de la monture dans une direction
+   #
+   #  direction : direction du deplacement e w n s
+   #------------------------------------------------------------
+   proc stopRadec { direction } {
+      #--- Fin de mouvement
+      ::telescope::stop $direction
+
+   }
+
+   #------------------------------------------------------------
+   #  controleSuiviRadec
+   #     met en marche ou arrete l'axe d'AD de la monture
+   #------------------------------------------------------------
+   proc controleSuiviRadec { } {
+      set catchError [ catch {
+         #--- Marche/Arret du moteur d'AD
+         ::telescope::controleSuivi
+      } ]
+
+      if { $catchError != 0 } {
+         ::tkutil::displayErrorInfo $::caption(telpad,titre)
+         #--- Je fais un beep sonore pour signaler que la commande n'est pas prise en compte
+         bell
+      }
+
+   }
+
+   #------------------------------------------------------------
+   #  incrementSpeedRadec
+   #     gere les vitesses disponibles pour la monture
+   #------------------------------------------------------------
+   proc incrementSpeedRadec { } {
+      set catchError [ catch {
+         #--- Gestion des vitesses
+         ::telescope::incrementSpeed
+      } ]
+
+      if { $catchError != 0 } {
+         ::tkutil::displayErrorInfo $::caption(telpad,titre)
+         #--- Je fais un beep sonore pour signaler que la commande n'est pas prise en compte
+         bell
+      }
+
+   }
+
+   #------------------------------------------------------------
    #  createDialog
    #     creation de l'interface graphique
    #------------------------------------------------------------
@@ -322,21 +390,21 @@ namespace eval telpad {
          label $This.frame2.s.lab1 -textvariable audace(telescope,controle) -borderwidth 0 -relief flat \
             -fg $color(white) -bg $color(blue_pad) -font [ list {Arial} 10 bold ]
          pack $This.frame2.s.lab1 -expand 1 -side left
-         bind $This.frame2.s.lab1 <ButtonPress-1> { ::telescope::controleSuivi }
+         bind $This.frame2.s.lab1 <ButtonPress-1> { ::telpad::controleSuiviRadec }
       }
 
-      #--- Binding de la vitesse du telescope
-      bind $This.frame2.we.lab <ButtonPress-1> { ::telescope::incrementSpeed }
+      #--- Binding de la vitesse de la monture
+      bind $This.frame2.we.lab <ButtonPress-1> { ::telpad::incrementSpeedRadec }
 
       #--- Cardinal moves
-      bind $zone(e) <ButtonPress-1>   { catch { ::telescope::move e } }
-      bind $zone(e) <ButtonRelease-1> { ::telescope::stop e }
-      bind $zone(w) <ButtonPress-1>   { catch { ::telescope::move w } }
-      bind $zone(w) <ButtonRelease-1> { ::telescope::stop w }
-      bind $zone(s) <ButtonPress-1>   { catch { ::telescope::move s } }
-      bind $zone(s) <ButtonRelease-1> { ::telescope::stop s }
-      bind $zone(n) <ButtonPress-1>   { catch { ::telescope::move n } }
-      bind $zone(n) <ButtonRelease-1> { ::telescope::stop n }
+      bind $zone(e) <ButtonPress-1>   { ::telpad::moveRadec e }
+      bind $zone(e) <ButtonRelease-1> { ::telpad::stopRadec e }
+      bind $zone(w) <ButtonPress-1>   { ::telpad::moveRadec w }
+      bind $zone(w) <ButtonRelease-1> { ::telpad::stopRadec w }
+      bind $zone(s) <ButtonPress-1>   { ::telpad::moveRadec s }
+      bind $zone(s) <ButtonRelease-1> { ::telpad::stopRadec s }
+      bind $zone(n) <ButtonPress-1>   { ::telpad::moveRadec n }
+      bind $zone(n) <ButtonRelease-1> { ::telpad::stopRadec n }
 
       #--- Label pour moteur focus
       label $This.frame3.lab1 -text $caption(telpad,moteur_foc) -relief flat \
@@ -381,9 +449,9 @@ namespace eval telpad {
       bind $This.frame3.we.lab <ButtonPress-1> { ::focus::incrementSpeed $::conf(telpad,focuserLabel) pad }
 
       #--- Cardinal moves
-      bind $zone(moins) <ButtonPress-1>   { catch { ::focus::move $::conf(telpad,focuserLabel) - } }
+      bind $zone(moins) <ButtonPress-1>   { ::focus::move $::conf(telpad,focuserLabel) - }
       bind $zone(moins) <ButtonRelease-1> { ::focus::move $::conf(telpad,focuserLabel) stop }
-      bind $zone(plus)  <ButtonPress-1>   { catch { ::focus::move $::conf(telpad,focuserLabel) + } }
+      bind $zone(plus)  <ButtonPress-1>   { ::focus::move $::conf(telpad,focuserLabel) + }
       bind $zone(plus)  <ButtonRelease-1> { ::focus::move $::conf(telpad,focuserLabel) stop }
 
       #--- Initialise et affiche la vitesse du focuser
