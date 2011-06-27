@@ -199,7 +199,6 @@ namespace eval telpad {
 
       #--- Je refraichis l'affichage des coordonnees
       ::telescope::afficheCoord
-
    }
 
    #------------------------------------------------------------
@@ -219,7 +218,6 @@ namespace eval telpad {
          #--- Je fais un beep sonore pour signaler que la commande n'est pas prise en compte
          bell
       }
-
    }
 
    #------------------------------------------------------------
@@ -231,7 +229,6 @@ namespace eval telpad {
    proc stopRadec { direction } {
       #--- Fin de mouvement
       ::telescope::stop $direction
-
    }
 
    #------------------------------------------------------------
@@ -249,7 +246,6 @@ namespace eval telpad {
          #--- Je fais un beep sonore pour signaler que la commande n'est pas prise en compte
          bell
       }
-
    }
 
    #------------------------------------------------------------
@@ -267,7 +263,6 @@ namespace eval telpad {
          #--- Je fais un beep sonore pour signaler que la commande n'est pas prise en compte
          bell
       }
-
    }
 
    #------------------------------------------------------------
@@ -429,7 +424,7 @@ namespace eval telpad {
       #--- Write the label of speed for LX200 and compatibles
       label $This.frame3.we.lab -font [ list {Arial} 12 bold ] -textvariable audace(focus,labelspeed) \
          -bg $color(blue_pad) -fg $color(white) -width 2 -borderwidth 0 -relief flat
-     pack $This.frame3.we.lab -expand 1 -side left
+      pack $This.frame3.we.lab -expand 1 -side left
 
       #--- Button '+'
       button $This.frame3.we.canv2 -borderwidth 2 \
