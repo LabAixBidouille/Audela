@@ -485,13 +485,14 @@ proc ::confEqt::connectEquipement { } {
 #    frm                : chemin TK de la frame a creer
 #    variablePluginName : contient le nom de la variable dans laquelle sera
 #                         copie le nom du focuser selectionne
+#    specificFocuser    : si un seul focuser est utilisable (option)
 # Return :
 #    nothing
 # Exemple :
 #    ::confEqt::createFrameFocuser $frm.focuserList ::panneau(foc,focuser)
 #    pack $frm.focuserList -in $frm -anchor center -side right -padx 10
 #------------------------------------------------------------
-proc ::confEqt::createFrameFocuser { frm variablePluginName } {
+proc ::confEqt::createFrameFocuser { frm variablePluginName { specificFocuser "" } } {
    variable private
    global caption
 
@@ -503,10 +504,14 @@ proc ::confEqt::createFrameFocuser { frm variablePluginName } {
 
    #--- je cree la liste des plugins de type "focuser"
    set pluginList [list $::caption(confeqt,pas_focuser) ]
-   foreach pluginName $private(pluginNamespaceList) {
-      if {  [::$pluginName\::getPluginType] == "focuser" } {
-         lappend pluginList $pluginName
+   if { $specificFocuser != "focuserlx200" } {
+      foreach pluginName $private(pluginNamespaceList) {
+         if {  [::$pluginName\::getPluginType] == "focuser" } {
+            lappend pluginList $pluginName
+         }
       }
+   } else {
+      lappend pluginList focuserlx200
    }
 
    ComboBox $frm.list \
