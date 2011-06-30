@@ -295,6 +295,10 @@ proc ::focuserlx200::possedeControleEtendu { } {
 #     retourne la position courante du focuser
 #------------------------------------------------------------
 proc ::focuserlx200::getPosition { } {
-   return [tel$::audace(telNo) focus coord]
+   if { [ ::tel::list ] != "" } {
+      return [tel$::audace(telNo) focus coord]
+   } else {
+      ::confTel::run
+   }
 }
 
