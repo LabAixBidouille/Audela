@@ -76,8 +76,9 @@ namespace eval ::lx200pad {
    proc initConf { } {
       global conf
 
-      if { ! [ info exists conf(lx200pad,padsize) ] }  { set conf(lx200pad,padsize)  "0.6" }
-      if { ! [ info exists conf(lx200pad,position) ] } { set conf(lx200pad,position) "657+252" }
+      if { ! [ info exists conf(lx200pad,padsize) ] }      { set conf(lx200pad,padsize)      "0.6" }
+      if { ! [ info exists conf(lx200pad,position) ] }     { set conf(lx200pad,position)     "657+252" }
+      if { ! [ info exists conf(lx200pad,focuserLabel) ] } { set conf(lx200pad,focuserLabel) "focuserlx200" }
 
       return
    }
@@ -93,7 +94,8 @@ namespace eval ::lx200pad {
       variable widget
       global conf
 
-      set widget(padsize) $conf(lx200pad,padsize)
+      set widget(padsize)      $conf(lx200pad,padsize)
+      set widget(focuserLabel) $conf(lx200pad,focuserLabel)
    }
 
    #------------------------------------------------------------
@@ -107,7 +109,8 @@ namespace eval ::lx200pad {
       variable widget
       global conf
 
-      set conf(lx200pad,padsize) $widget(padsize)
+      set conf(lx200pad,padsize)      $widget(padsize)
+      set conf(lx200pad,focuserLabel) $widget(focuserLabel)
    }
 
    #------------------------------------------------------------
@@ -122,6 +125,14 @@ namespace eval ::lx200pad {
 
       #--- Je memorise la reference de la frame
       set widget(frm) $frm
+
+      #--- Frame pour le choix du focuser
+      frame $frm.frame0 -borderwidth 0 -relief raised
+
+         ::confEqt::createFrameFocuser $frm.frame0.focuser ::lx200pad::widget(focuserLabel) focuserlx200
+         pack $frm.frame0.focuser -anchor nw -side left -padx 10 -pady 10
+
+      pack $frm.frame0 -side top -fill both -expand 0
 
       #--- Frame de la taille de la raquette
       frame $frm.frame1 -borderwidth 0 -relief raised
@@ -1062,52 +1073,52 @@ namespace eval ::lx200pad {
 
       if { [ string compare $audace(telNo) 0 ] != "0" } {
          #--- Cardinal moves
-         bind $zonelx200(e) <ButtonPress-1>       { ::telescope::move e }
-         bind $zonelx200(e).lab <ButtonPress-1>   { ::telescope::move e }
-         bind $zonelx200(e) <ButtonRelease-1>     { ::telescope::stop e }
-         bind $zonelx200(e).lab <ButtonRelease-1> { ::telescope::stop e }
+         bind $zonelx200(e) <ButtonPress-1>       { ::lx200pad::moveRadec e }
+         bind $zonelx200(e).lab <ButtonPress-1>   { ::lx200pad::moveRadec e }
+         bind $zonelx200(e) <ButtonRelease-1>     { ::lx200pad::stopRadec e }
+         bind $zonelx200(e).lab <ButtonRelease-1> { ::lx200pad::stopRadec e }
 
-         bind $zonelx200(w) <ButtonPress-1>       { ::telescope::move w }
-         bind $zonelx200(w).lab <ButtonPress-1>   { ::telescope::move w }
-         bind $zonelx200(w) <ButtonRelease-1>     { ::telescope::stop w }
-         bind $zonelx200(w).lab <ButtonRelease-1> { ::telescope::stop w }
+         bind $zonelx200(w) <ButtonPress-1>       { ::lx200pad::moveRadec w }
+         bind $zonelx200(w).lab <ButtonPress-1>   { ::lx200pad::moveRadec w }
+         bind $zonelx200(w) <ButtonRelease-1>     { ::lx200pad::stopRadec w }
+         bind $zonelx200(w).lab <ButtonRelease-1> { ::lx200pad::stopRadec w }
 
-         bind $zonelx200(s) <ButtonPress-1>       { ::telescope::move s }
-         bind $zonelx200(s).lab <ButtonPress-1>   { ::telescope::move s }
-         bind $zonelx200(s) <ButtonRelease-1>     { ::telescope::stop s }
-         bind $zonelx200(s).lab <ButtonRelease-1> { ::telescope::stop s }
+         bind $zonelx200(s) <ButtonPress-1>       { ::lx200pad::moveRadec s }
+         bind $zonelx200(s).lab <ButtonPress-1>   { ::lx200pad::moveRadec s }
+         bind $zonelx200(s) <ButtonRelease-1>     { ::lx200pad::stopRadec s }
+         bind $zonelx200(s).lab <ButtonRelease-1> { ::lx200pad::stopRadec s }
 
-         bind $zonelx200(n) <ButtonPress-1>       { ::telescope::move n }
-         bind $zonelx200(n).lab <ButtonPress-1>   { ::telescope::move n }
-         bind $zonelx200(n) <ButtonRelease-1>     { ::telescope::stop n }
-         bind $zonelx200(n).lab <ButtonRelease-1> { ::telescope::stop n }
+         bind $zonelx200(n) <ButtonPress-1>       { ::lx200pad::moveRadec n }
+         bind $zonelx200(n).lab <ButtonPress-1>   { ::lx200pad::moveRadec n }
+         bind $zonelx200(n) <ButtonRelease-1>     { ::lx200pad::stopRadec n }
+         bind $zonelx200(n).lab <ButtonRelease-1> { ::lx200pad::stopRadec n }
 
          #--- Focus moves
-         bind $zonelx200(next) <ButtonPress-1> { ::focus::move focuserlx200 "+" }
-         bind $zonelx200(next).lab1 <ButtonPress-1> { ::focus::move focuserlx200 "+" }
-         bind $zonelx200(next) <ButtonRelease-1> { ::focus::move focuserlx200 stop }
+         bind $zonelx200(next) <ButtonPress-1>        { ::focus::move focuserlx200 "+" }
+         bind $zonelx200(next).lab1 <ButtonPress-1>   { ::focus::move focuserlx200 "+" }
+         bind $zonelx200(next) <ButtonRelease-1>      { ::focus::move focuserlx200 stop }
          bind $zonelx200(next).lab1 <ButtonRelease-1> { ::focus::move focuserlx200 stop }
-         bind $zonelx200(prev) <ButtonPress-1> { ::focus::move focuserlx200 "-" }
-         bind $zonelx200(prev).lab1 <ButtonPress-1> { ::focus::move focuserlx200 "-" }
-         bind $zonelx200(prev) <ButtonRelease-1> { ::focus::move focuserlx200 stop }
+         bind $zonelx200(prev) <ButtonPress-1>        { ::focus::move focuserlx200 "-" }
+         bind $zonelx200(prev).lab1 <ButtonPress-1>   { ::focus::move focuserlx200 "-" }
+         bind $zonelx200(prev) <ButtonRelease-1>      { ::focus::move focuserlx200 stop }
          bind $zonelx200(prev).lab1 <ButtonRelease-1> { ::focus::move focuserlx200 stop }
 
-         #--- Set speeds
-         bind $zonelx200(7) <ButtonPress-1>      {::telescope::setSpeed "4"}
-         bind $zonelx200(7).lab1 <ButtonPress-1> {::telescope::setSpeed "4"}
-         bind $zonelx200(7).lab2 <ButtonPress-1> {::telescope::setSpeed "4"}
+         #--- Set speeds moveRadec
+         bind $zonelx200(7) <ButtonPress-1>      { ::lx200pad::setSpeedRadec "4" }
+         bind $zonelx200(7).lab1 <ButtonPress-1> { ::lx200pad::setSpeedRadec "4" }
+         bind $zonelx200(7).lab2 <ButtonPress-1> { ::lx200pad::setSpeedRadec "4" }
 
-         bind $zonelx200(4) <ButtonPress-1>      {::telescope::setSpeed "3"}
-         bind $zonelx200(4).lab1 <ButtonPress-1> {::telescope::setSpeed "3"}
-         bind $zonelx200(4).lab2 <ButtonPress-1> {::telescope::setSpeed "3"}
+         bind $zonelx200(4) <ButtonPress-1>      { ::lx200pad::setSpeedRadec "3" }
+         bind $zonelx200(4).lab1 <ButtonPress-1> { ::lx200pad::setSpeedRadec "3" }
+         bind $zonelx200(4).lab2 <ButtonPress-1> { ::lx200pad::setSpeedRadec "3" }
 
-         bind $zonelx200(1) <ButtonPress-1>      {::telescope::setSpeed "2"}
-         bind $zonelx200(1).lab1 <ButtonPress-1> {::telescope::setSpeed "2"}
-         bind $zonelx200(1).lab2 <ButtonPress-1> {::telescope::setSpeed "2"}
+         bind $zonelx200(1) <ButtonPress-1>      { ::lx200pad::setSpeedRadec "2" ; ::focus::setSpeed focuserlx200 "1" }
+         bind $zonelx200(1).lab1 <ButtonPress-1> { ::lx200pad::setSpeedRadec "2" ; ::focus::setSpeed focuserlx200 "1" }
+         bind $zonelx200(1).lab2 <ButtonPress-1> { ::lx200pad::setSpeedRadec "2" ; ::focus::setSpeed focuserlx200 "1" }
 
-         bind $zonelx200(0) <ButtonPress-1>      {::telescope::setSpeed "1"}
-         bind $zonelx200(0).lab1 <ButtonPress-1> {::telescope::setSpeed "1"}
-         bind $zonelx200(0).lab2 <ButtonPress-1> {::telescope::setSpeed "1"}
+         bind $zonelx200(0) <ButtonPress-1>      { ::lx200pad::setSpeedRadec "1" ; ::focus::setSpeed focuserlx200 "0" }
+         bind $zonelx200(0).lab1 <ButtonPress-1> { ::lx200pad::setSpeedRadec "1" ; ::focus::setSpeed focuserlx200 "0" }
+         bind $zonelx200(0).lab2 <ButtonPress-1> { ::lx200pad::setSpeedRadec "1" ; ::focus::setSpeed focuserlx200 "0" }
       }
 
       #--- Je refraichi l'affichage des coordonnees
@@ -1190,6 +1201,55 @@ namespace eval ::lx200pad {
       $zonelx200(find)  itemconfigure 1 -fill $color(black)
       $zonelx200(cntr)  itemconfigure 1 -fill $color(black)
       $zonelx200(guide) itemconfigure 1 -fill $color(red)
+   }
+
+   #------------------------------------------------------------
+   #  moveRadec
+   #     demarre un mouvement de la monture dans une direction
+   #
+   #  direction : direction du deplacement e w n s
+   #------------------------------------------------------------
+   proc moveRadec { direction } {
+      set catchError [ catch {
+         #--- Debut du mouvement
+         ::telescope::move $direction
+      } ]
+
+      if { $catchError != 0 } {
+         ::tkutil::displayErrorInfo $::caption(lx200pad,titre)
+         #--- Je fais un beep sonore pour signaler que la commande n'est pas prise en compte
+         bell
+      }
+   }
+
+   #------------------------------------------------------------
+   #  stopRadec
+   #     arrete le mouvement de la monture dans une direction
+   #
+   #  direction : direction du deplacement e w n s
+   #------------------------------------------------------------
+   proc stopRadec { direction } {
+      #--- Fin de mouvement
+      ::telescope::stop $direction
+   }
+
+   #------------------------------------------------------------
+   #  setSpeedRadec
+   #     envoie le numero de la vitesse selectionnee
+   #
+   #  rate : le numero de la vitesse selectionnee
+   #------------------------------------------------------------
+   proc setSpeedRadec { rate } {
+      set catchError [ catch {
+         #--- Envoie le numero de la vitesse selectionnee
+         ::telescope::setSpeed $rate
+      } ]
+
+      if { $catchError != 0 } {
+         ::tkutil::displayErrorInfo $::caption(lx200pad,titre)
+         #--- Je fais un beep sonore pour signaler que la commande n'est pas prise en compte
+         bell
+      }
    }
 
 }
