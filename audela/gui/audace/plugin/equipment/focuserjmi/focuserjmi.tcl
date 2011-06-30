@@ -476,6 +476,10 @@ proc ::focuserjmi::possedeControleEtendu { } {
 #     retourne la position courante du focuser
 #------------------------------------------------------------
 proc ::focuserjmi::getPosition { } {
-   return [tel$::audace(telNo) focus coord]
+   if { [ ::tel::list ] != "" } {
+      return [tel$::audace(telNo) focus coord]
+   } else {
+      ::confTel::run
+   }
 }
 
