@@ -266,6 +266,66 @@ namespace eval telpad {
    }
 
    #------------------------------------------------------------
+   #  moveFocus
+   #     demarre le mouvement du focuser
+   #------------------------------------------------------------
+   proc moveFocus { direction } {
+      set catchError [ catch {
+         #--- Debut du mouvement
+         ::focus::move $::conf(telpad,focuserLabel) $direction
+      } ]
+
+      if { $catchError != 0 } {
+         ::tkutil::displayErrorInfo $::caption(telpad,titre)
+      }
+   }
+
+   #------------------------------------------------------------
+   #  stopFocus
+   #     arrete le mouvement du focuser
+   #------------------------------------------------------------
+   proc stopFocus { } {
+      #--- Fin de mouvement
+      ::focus::move $::conf(telpad,focuserLabel) stop
+   }
+
+   #------------------------------------------------------------
+   #  incrementSpeedFocus
+   #     gere les vitesses disponibles du focuser
+   #------------------------------------------------------------
+   proc incrementSpeedFocus { } {
+      set catchError [ catch {
+         #--- Gestion des vitesses
+         ::focus::incrementSpeed $::conf(telpad,focuserLabel) pad
+      } ]
+
+      if { $catchError != 0 } {
+         ::tkutil::displayErrorInfo $::caption(telpad,titre)
+         #--- Je fais un beep sonore pour signaler que la commande n'est pas prise en compte
+         bell
+      }
+   }
+
+   #------------------------------------------------------------
+   #  setSpeedFocus
+   #     envoie le numero de la vitesse selectionnee
+   #
+   #  rate : le numero de la vitesse selectionnee
+   #------------------------------------------------------------
+   proc setSpeedFocus { rate } {
+      set catchError [ catch {
+         #--- Envoie le numero de la vitesse selectionnee
+         ::focus::setSpeed $::conf(telpad,focuserLabel) $rate
+      } ]
+
+      if { $catchError != 0 } {
+         ::tkutil::displayErrorInfo $::caption(telpad,titre)
+         #--- Je fais un beep sonore pour signaler que la commande n'est pas prise en compte
+         bell
+      }
+   }
+
+   #------------------------------------------------------------
    #  createDialog
    #     creation de l'interface graphique
    #------------------------------------------------------------
@@ -441,16 +501,16 @@ namespace eval telpad {
       set zone(plus)  $This.frame3.we.canv2
 
       #--- Binding de la vitesse du moteur de focalisation
-      bind $This.frame3.we.lab <ButtonPress-1> { ::focus::incrementSpeed $::conf(telpad,focuserLabel) pad }
+      bind $This.frame3.we.lab <ButtonPress-1> { ::telpad::incrementSpeedFocus }
 
       #--- Cardinal moves
-      bind $zone(moins) <ButtonPress-1>   { ::focus::move $::conf(telpad,focuserLabel) - }
-      bind $zone(moins) <ButtonRelease-1> { ::focus::move $::conf(telpad,focuserLabel) stop }
-      bind $zone(plus)  <ButtonPress-1>   { ::focus::move $::conf(telpad,focuserLabel) + }
-      bind $zone(plus)  <ButtonRelease-1> { ::focus::move $::conf(telpad,focuserLabel) stop }
+      bind $zone(moins) <ButtonPress-1>   { ::telpad::moveFocus - }
+      bind $zone(moins) <ButtonRelease-1> { ::telpad::stopFocus }
+      bind $zone(plus)  <ButtonPress-1>   { ::telpad::moveFocus + }
+      bind $zone(plus)  <ButtonRelease-1> { ::telpad::stopFocus }
 
       #--- Initialise et affiche la vitesse du focuser
-      ::focus::setSpeed "$conf(telpad,focuserLabel)" "0"
+      ::telpad::setSpeedFocus 0
 
       #--- La fenetre est active
       focus $This
