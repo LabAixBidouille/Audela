@@ -84,7 +84,7 @@ proc ::focus::goto { focuserLabel { blocking 0 } { gotoButton "" } } {
       set catchError [catch {
          ::$focuserLabel\::goto $blocking
 
-         if { $blocking == 0  } {
+         if { $blocking == 0 } {
             #--- Boucle tant que le focus n'est pas arretee (si on n'utilise pas le mode bloquant du goto)
             set position [::focus::getPosition $focuserLabel]
             #--- j'attends que le focus commence a bouger
