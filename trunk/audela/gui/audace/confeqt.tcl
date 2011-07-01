@@ -137,6 +137,11 @@ proc ::confEqt::appliquer { } {
    #--- je recupere le nom du plugin selectionne
    set selectedPluginName [ $private(frm).usr.onglet raise ]
 
+   #--- je mets a jour la combobox du nom du focuser
+   if { [::$selectedPluginName\::getPluginType] == "focuser" } {
+      set private(selectedFocuser) $selectedPluginName
+   }
+
    #--- Affichage d'un message d'alerte si necessaire
    ::confEqt::connectEquipement
 
@@ -169,9 +174,9 @@ proc ::confEqt::afficheAide { } {
    variable private
 
    #--- j'affiche la documentation
-   set selectedPluginName  [ $private(frm).usr.onglet raise ]
-   set pluginTypeDirectory [ ::audace::getPluginTypeDirectory [ $selectedPluginName\::getPluginType ] ]
-   set pluginHelp          [ $selectedPluginName\::getPluginHelp ]
+   set selectedPluginName   [ $private(frm).usr.onglet raise ]
+   set pluginTypeDirectory  [ ::audace::getPluginTypeDirectory [ $selectedPluginName\::getPluginType ] ]
+   set pluginHelp           [ $selectedPluginName\::getPluginHelp ]
    ::audace::showHelpPlugin "$pluginTypeDirectory" "$selectedPluginName" "$pluginHelp"
 }
 
@@ -199,7 +204,7 @@ proc ::confEqt::recupPosDim { } {
    global conf
 
    set private(confEqt,geometry) [ wm geometry $private(frm) ]
-   set conf(confEqt,geometry) $private(confEqt,geometry)
+   set conf(confEqt,geometry)    $private(confEqt,geometry)
 }
 
 #------------------------------------------------------------
@@ -253,7 +258,7 @@ proc ::confEqt::createDialog { } {
    #--- Creation de la fenetre toplevel
    toplevel $private(frm)
    wm geometry $private(frm) $private(confEqt,geometry)
-   wm minsize $private(frm) 460 415
+   wm minsize $private(frm) 460 465
    wm resizable $private(frm) 1 1
    wm deiconify $private(frm)
    wm title $private(frm) "$caption(confeqt,config)"
@@ -289,7 +294,7 @@ proc ::confEqt::createDialog { } {
       set notebook [ NoteBook $private(frm).usr.onglet ]
       foreach namespace $private(notebookNameList) {
          set title [ ::$namespace\::getPluginTitle ]
-         set frm   [ $notebook insert end $namespace -text "$title    "  ]
+         set frm   [ $notebook insert end $namespace -text "$title    " ]
          ### -raisecmd "::confEqt::onRaiseNotebook $namespace"
          ::$namespace\::fillConfigPage $frm
       }
@@ -506,7 +511,7 @@ proc ::confEqt::createFrameFocuser { frm variablePluginName { specificFocuser ""
    set pluginList [list $::caption(confeqt,pas_focuser) ]
    if { $specificFocuser != "focuserlx200" } {
       foreach pluginName $private(pluginNamespaceList) {
-         if {  [::$pluginName\::getPluginType] == "focuser" } {
+         if { [::$pluginName\::getPluginType] == "focuser" } {
             lappend pluginList $pluginName
          }
       }
@@ -607,7 +612,7 @@ proc ::confEqt::activeFocuser { configureButton variablePluginName } {
 
    if { $private(selectedFocuser) == $::caption(confeqt,pas_focuser) } {
        set $variablePluginName ""
-   } else  {
+   } else {
       set $variablePluginName $private(selectedFocuser)
    }
 
