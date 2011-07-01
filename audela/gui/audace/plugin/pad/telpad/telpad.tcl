@@ -268,6 +268,8 @@ namespace eval telpad {
    #------------------------------------------------------------
    #  moveFocus
    #     demarre le mouvement du focuser
+   #
+   #  direction : direction du deplacement - +
    #------------------------------------------------------------
    proc moveFocus { direction } {
       set catchError [ catch {
