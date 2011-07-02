@@ -216,43 +216,46 @@ proc ::focuseraudecom::move { command } {
 proc ::focuseraudecom::goto { blocking } {
    global audace conf
 
-   set blocking 0
-   #--- Direction de focalisation prioritaire : Extrafocale
-   if { $conf(audecom,intra_extra) == "1" } {
-      if { $audace(focus,targetFocus) > "$audace(focus,currentFocus)" } {
-         #--- Envoie la foc a la consigne
-         #--- Format de la commande : tel1 focus goto number ?-rate value? ?-blocking boolean?
-         tel$audace(telNo) focus goto $audace(focus,targetFocus) -blocking $blocking
-      } else {
-         #--- Depasse la consigne de $conf(audecom,dep_val) pas pour le rattrapage des jeux
-         #--- 250 pas correspondent a 1/2 tour du moteur de focalisation
-         set nbpas [ expr $audace(focus,targetFocus)-$conf(audecom,dep_val) ]
-         if { $nbpas < "-32767" } {
-            set nbpas "-32767"
+   if { [ ::tel::list ] != "" } {
+      #--- Direction de focalisation prioritaire : Extrafocale
+      if { $conf(audecom,intra_extra) == "1" } {
+         if { $audace(focus,targetFocus) > "$audace(focus,currentFocus)" } {
+            #--- Envoie la foc a la consigne
+            #--- Format de la commande : tel1 focus goto number ?-rate value? ?-blocking boolean?
+            tel$audace(telNo) focus goto $audace(focus,targetFocus) -blocking $blocking
+         } else {
+            #--- Depasse la consigne de $conf(audecom,dep_val) pas pour le rattrapage des jeux
+            #--- 250 pas correspondent a 1/2 tour du moteur de focalisation
+            set nbpas [ expr $audace(focus,targetFocus)-$conf(audecom,dep_val) ]
+            if { $nbpas < "-32767" } {
+               set nbpas "-32767"
+            }
+            tel$audace(telNo) focus goto $nbpas -blocking $blocking
+            #--- Envoie la foc a la consigne
+            tel$audace(telNo) focus goto $audace(focus,targetFocus) -blocking $blocking
          }
-         tel$audace(telNo) focus goto $nbpas -blocking $blocking
-         #--- Envoie la foc a la consigne
-         tel$audace(telNo) focus goto $audace(focus,targetFocus) -blocking $blocking
+      #--- Direction de focalisation prioritaire : Intrafocale
+      } else {
+         if { $audace(focus,targetFocus) < "$audace(focus,currentFocus)" } {
+            #--- Envoie la foc a la consigne
+            tel$audace(telNo) focus goto $audace(focus,targetFocus) -blocking $blocking
+         } else {
+            #--- Depasse la consigne de $conf(audecom,dep_val) pas pour le rattrapage des jeux
+            #--- 250 pas correspondent a 1/2 tour du moteur de focalisation
+            set nbpas [ expr $audace(focus,targetFocus) + $conf(audecom,dep_val) ]
+            if { $nbpas > "32767" } {
+               set nbpas "32767"
+            }
+            tel$audace(telNo) focus goto $nbpas -blocking $blocking
+            #--- Envoie la foc a la consigne
+            tel$audace(telNo) focus goto $audace(focus,targetFocus) -blocking $blocking
+         }
       }
-   #--- Direction de focalisation prioritaire : Intrafocale
+      #--- Boucle tant que la foc n'est pas arretee
+      ::focuseraudecom::displayCurrentPosition
    } else {
-      if { $audace(focus,targetFocus) < "$audace(focus,currentFocus)" } {
-         #--- Envoie la foc a la consigne
-         tel$audace(telNo) focus goto $audace(focus,targetFocus) -blocking $blocking
-      } else {
-         #--- Depasse la consigne de $conf(audecom,dep_val) pas pour le rattrapage des jeux
-         #--- 250 pas correspondent a 1/2 tour du moteur de focalisation
-         set nbpas [ expr $audace(focus,targetFocus) + $conf(audecom,dep_val) ]
-         if { $nbpas > "32767" } {
-            set nbpas "32767"
-         }
-         tel$audace(telNo) focus goto $nbpas -blocking $blocking
-         #--- Envoie la foc a la consigne
-         tel$audace(telNo) focus goto $audace(focus,targetFocus) -blocking $blocking
-      }
+      ::confTel::run
    }
-   #--- Boucle tant que la foc n'est pas arretee
-   ::focuseraudecom::displayCurrentPosition
 }
 
 #------------------------------------------------------------
