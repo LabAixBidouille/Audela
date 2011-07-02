@@ -436,7 +436,7 @@ proc ::focuserjmi::testMove { command } {
 #  ::focuserjmi::goto
 #     envoie le focaliseur a moteur pas a pas a une position predeterminee (AudeCom)
 #------------------------------------------------------------
-proc ::focuserjmi::goto { } {
+proc ::focuserjmi::goto { blocking } {
    # non supportee
 }
 
