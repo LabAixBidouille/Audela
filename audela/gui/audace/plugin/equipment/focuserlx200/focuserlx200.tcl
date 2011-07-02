@@ -200,7 +200,7 @@ proc ::focuserlx200::move { command } {
 #  ::focuserlx200::goto
 #     envoie le focaliseur a moteur pas a pas a une position predeterminee (AudeCom)
 #------------------------------------------------------------
-proc ::focuserlx200::goto { } {
+proc ::focuserlx200::goto { blocking } {
    # non supportee
 }
 
