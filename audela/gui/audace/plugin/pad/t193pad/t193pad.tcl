@@ -259,11 +259,6 @@ proc ::t193pad::createDialog { } {
    bind $This.frame1.ent1 <ButtonPress-1> { ::telescope::afficheCoord }
    bind $This.frame1.ent2 <ButtonPress-1> { ::telescope::afficheCoord }
 
-   #         0     1      2
-   #    0          N     monocoup
-   #    1    E   speed    W
-   #    2          S
-
    #--- Bouton 'N'
    button $This.frame2.nord -borderwidth 2 \
       -font [ list {Arial} 16 bold ] -width 4 \
@@ -336,7 +331,7 @@ proc ::t193pad::createDialog { } {
    grid columnconfigure $This.frame2 2 -weight 1
 
    #--- Bind de la vitesse de la monture
-   bind $This.frame2.vitesseMonture <ButtonPress-1> { ::telescope::incrementSpeed }
+   bind $This.frame2.vitesseMonture <ButtonPress-1> { ::t193pad::incrementSpeedRadec }
    #--- Bind valeur impulsion monocoup
    bind $This.frame2.pulseMode.value <ButtonPress-1> { ::t193pad::incrementRadecPulse }
 
@@ -412,13 +407,13 @@ proc ::t193pad::createDialog { } {
          bind $This.focus.pm.buttonPlus  <ButtonRelease-1> { ::t193pad::stopFocus }
 
          #--- Label de la vitesse du moteur de focalisation
-         ###label $This.focus.vitesseFocus -font [ list {Arial} 12 bold ] \
-         ###   -textvariable audace(focus,labelspeed) -bg $color(blue_pad) -fg $color(white) \
-         ###   -width 2 -borderwidth 0 -relief flat
-         ###pack $This.focus.vitesseFocus -anchor center -fill none -pady 2
+        ### label $This.focus.vitesseFocus -font [ list {Arial} 12 bold ] \
+        ###    -textvariable audace(focus,labelspeed) -bg $color(blue_pad) -fg $color(white) \
+        ###    -width 2 -borderwidth 0 -relief flat
+        ### pack $This.focus.vitesseFocus -anchor center -fill none -pady 2
 
          #--- Bind de la vitesse du moteur de focalisation
-         ###bind $This.focus.vitesseFocus <ButtonPress-1> { ::focus::incrementSpeed $::conf(t193pad,focuserLabel) pad }
+        ### bind $This.focus.vitesseFocus <ButtonPress-1> { ::focus::incrementSpeed $::conf(t193pad,focuserLabel) pad }
 
       pack $This.focus.pm -side top -fill x
 
@@ -515,7 +510,7 @@ proc ::t193pad::createDialog { } {
    #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
    bind $This <Key-F1> { ::console::GiveFocus }
 
-   #--- je recupere la position du
+   #--- je recupere la position du focuser
    set ::audace(focus,currentFocus) [::focus::getPosition $conf(t193pad,focuserLabel)]
    set ::audace(focus,targetFocus)  $::audace(focus,currentFocus)
 }
@@ -589,6 +584,7 @@ proc ::t193pad::setRadecPulseEnabled { } {
    variable This
 
    if { $::conf(t193pad,radecPulse,enabled) == 0 } {
+
       #--- je descative acces au choix de la duree de l'impulsion
       $This.frame2.pulseMode.value configure -state disabled
       $This.frame2.pulseMode.unit  configure -state disabled
@@ -609,6 +605,7 @@ proc ::t193pad::setRadecPulseEnabled { } {
       $This.frame2.nord  configure -command ""
 
    } else {
+
       #--- je donne acces au choix de la duree de l'impulsion
       $This.frame2.pulseMode.value configure -state normal
       $This.frame2.pulseMode.unit  configure -state normal
@@ -632,6 +629,24 @@ proc ::t193pad::setRadecPulseEnabled { } {
       $This.frame2.ouest configure -command "::t193pad::moveRadecPulse w"
       $This.frame2.sud   configure -command "::t193pad::moveRadecPulse s"
       $This.frame2.nord  configure -command "::t193pad::moveRadecPulse n"
+
+   }
+}
+
+#------------------------------------------------------------
+#  incrementSpeedRadec
+#     gere les vitesses disponibles pour la monture
+#------------------------------------------------------------
+proc ::t193pad::incrementSpeedRadec { } {
+   set catchError [ catch {
+      #--- Gestion des vitesses
+      ::telescope::incrementSpeed
+   } ]
+
+   if { $catchError != 0 } {
+      ::tkutil::displayErrorInfo $::caption(t193pad,titre)
+      #--- Je fais un beep sonore pour signaler que la commande n'est pas prise en compte
+      bell
    }
 }
 
@@ -669,6 +684,8 @@ proc ::t193pad::cmdStartGoto { } {
 
    if { $catchError != 0 } {
       ::tkutil::displayErrorInfo $::caption(t193pad,titre)
+      #--- Je fais un beep sonore pour signaler que la commande n'est pas prise en compte
+      bell
    }
 }
 
@@ -679,11 +696,12 @@ proc ::t193pad::cmdStartGoto { } {
 proc ::t193pad::moveFocus { direction } {
    set catchError [catch {
       ::focus::move $::conf(t193pad,focuserLabel) $direction
-
    }]
 
    if { $catchError != 0 } {
       ::tkutil::displayErrorInfo $::caption(t193pad,titre)
+      #--- Je fais un beep sonore pour signaler que la commande n'est pas prise en compte
+      bell
    }
 }
 
@@ -692,21 +710,17 @@ proc ::t193pad::moveFocus { direction } {
 #     arrete le mouvement du focus du T193
 #------------------------------------------------------------
 proc ::t193pad::stopFocus { } {
-   set catchError [catch {
-      ::focus::move $::conf(t193pad,focuserLabel) stop
-   }]
-
-   if { $catchError != 0 } {
-      ::tkutil::displayErrorInfo $::caption(t193pad,titre)
-   }
+   #--- fin de mouvement
+   ::focus::move $::conf(t193pad,focuserLabel) stop
 }
 
 #------------------------------------------------------------
 #  gotoFocus
-#     lance un goto du focus
+#     lance un goto du focus du T193
 #------------------------------------------------------------
 proc ::t193pad::gotoFocus { } {
    variable This
+
    set catchError [catch {
       set blocking 0
       ::focus::goto $::conf(t193pad,focuserLabel) $blocking $This.focus.goto.buttonGotoFoc
@@ -714,6 +728,8 @@ proc ::t193pad::gotoFocus { } {
 
    if { $catchError != 0 } {
       ::tkutil::displayErrorInfo $::caption(t193pad,titre)
+      #--- Je fais un beep sonore pour signaler que la commande n'est pas prise en compte
+      bell
    }
 }
 
