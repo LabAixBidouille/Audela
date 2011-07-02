@@ -210,9 +210,8 @@ namespace eval ::superpad {
          set deb [expr 1+[string first + $geom ]]
          set fin [string length $geom]
          set conf(superpad,position) [string range $geom $deb $fin]
-
          #--- supprime la raquette
-         catch { destroy .superpad }
+         destroy .superpad
       }
 
       return
@@ -376,6 +375,53 @@ namespace eval ::telescopePad {
    }
 
    #------------------------------------------------------------
+   #  moveRadec
+   #     demarre un mouvement de la monture dans une direction
+   #
+   #  direction : direction du deplacement e w n s
+   #------------------------------------------------------------
+   proc moveRadec { direction } {
+      set catchError [ catch {
+         #--- Debut du mouvement
+         ::telescope::move $direction
+      } ]
+
+      if { $catchError != 0 } {
+         ::tkutil::displayErrorInfo $::caption(superpad,titre)
+         #--- Je fais un beep sonore pour signaler que la commande n'est pas prise en compte
+         bell
+      }
+   }
+
+   #------------------------------------------------------------
+   #  stopRadec
+   #     arrete le mouvement de la monture dans une direction
+   #
+   #  direction : direction du deplacement e w n s
+   #------------------------------------------------------------
+   proc stopRadec { direction } {
+      #--- Fin de mouvement
+      ::telescope::stop $direction
+   }
+
+   #------------------------------------------------------------
+   #  setSpeedRadec
+   #     gere les vitesses disponibles pour la monture
+   #------------------------------------------------------------
+   proc setSpeedRadec { rate } {
+      set catchError [ catch {
+         #--- Gestion des vitesses
+         ::telescope::setSpeed $rate
+      } ]
+
+      if { $catchError != 0 } {
+         ::tkutil::displayErrorInfo $::caption(superpad,titre)
+         #--- Je fais un beep sonore pour signaler que la commande n'est pas prise en compte
+         bell
+      }
+   }
+
+   #------------------------------------------------------------
    #  addFrame
    #     add a frame with move button
    #------------------------------------------------------------
@@ -385,7 +431,7 @@ namespace eval ::telescopePad {
 
       set This $parentFrame.movepad
 
-      frame $This -borderwidth 0  -bg $colorpad(backpad) -borderwidth 2 -relief groove
+      frame $This -borderwidth 0 -bg $colorpad(backpad) -borderwidth 2 -relief groove
 
       #--- Frame des boutons de deplacement manuel
 
@@ -405,7 +451,7 @@ namespace eval ::telescopePad {
          -fg $colorpad(textkey) \
          -selectcolor $colorpad(backdisp) \
          -text "4" -value 4 -variable audace(telescope,speed) \
-         -command { ::telescope::setSpeed "4" }
+         -command { ::telescopePad::setSpeedRadec 4 }
 
       radiobutton $This.card.speed.3 -indicatoron 0 \
          -font [ list {Arial} $geompad(fontsize16) $geompad(textthick) ] \
@@ -414,7 +460,7 @@ namespace eval ::telescopePad {
          -selectcolor $colorpad(backdisp) \
          -highlightcolor $colorpad(green) \
          -text "3" -value 3 -variable audace(telescope,speed) \
-         -command { ::telescope::setSpeed "3" }
+         -command { ::telescopePad::setSpeedRadec 3 }
 
       radiobutton $This.card.speed.2 -indicatoron 0 \
          -font [ list {Arial} $geompad(fontsize16) $geompad(textthick) ] \
@@ -422,7 +468,7 @@ namespace eval ::telescopePad {
          -fg $colorpad(textkey) \
          -selectcolor $colorpad(backdisp) \
          -text "2" -value 2 -variable audace(telescope,speed) \
-         -command { ::telescope::setSpeed "2" }
+         -command { ::telescopePad::setSpeedRadec 2 }
 
       radiobutton $This.card.speed.1 -indicatoron 0 \
          -font [ list {Arial} $geompad(fontsize16) $geompad(textthick) ] \
@@ -430,14 +476,14 @@ namespace eval ::telescopePad {
          -fg $colorpad(textkey) \
          -selectcolor $colorpad(backdisp) \
          -text "1" -value 1 -variable audace(telescope,speed) \
-         -command { ::telescope::setSpeed "1" }
+         -command { ::telescopePad::setSpeedRadec 1 }
 
       pack $This.card.speed.4 -in $This.card.speed -fill y -expand 1
       pack $This.card.speed.3 -in $This.card.speed -fill y -expand 1
       pack $This.card.speed.2 -in $This.card.speed -fill y -expand 1
       pack $This.card.speed.1 -in $This.card.speed -fill y -expand 1
 
-      button  $This.card.w -borderwidth 4 \
+      button $This.card.w -borderwidth 4 \
          -font [ list {Arial} $geompad(fontsize20) $geompad(textthick) ] \
          -text "W" \
          -width 2 \
@@ -450,7 +496,7 @@ namespace eval ::telescopePad {
          -width $geompad(larg2) \
          -borderwidth 0 -relief flat -bg $colorpad(backpad)
 
-      button  $This.card.ns.n -borderwidth 4 \
+      button $This.card.ns.n -borderwidth 4 \
          -font [ list {Arial} $geompad(fontsize20) $geompad(textthick) ] \
          -text "N" \
          -width 2 \
@@ -459,7 +505,7 @@ namespace eval ::telescopePad {
          -anchor center \
          -relief ridge
 
-      button  $This.card.ns.s -borderwidth 4 \
+      button $This.card.ns.s -borderwidth 4 \
          -font [ list {Arial} $geompad(fontsize20) $geompad(textthick) ] \
          -text "S" \
          -width 2 \
@@ -468,7 +514,7 @@ namespace eval ::telescopePad {
          -anchor center \
          -relief ridge
 
-      button  $This.card.e -borderwidth 4 \
+      button $This.card.e -borderwidth 4 \
          -font [ list {Arial} $geompad(fontsize20) $geompad(textthick) ] \
          -text "E" \
          -width 2 \
@@ -505,14 +551,14 @@ namespace eval ::telescopePad {
       pack $This -in $parentFrame  -fill both -expand 1
 
       #--- bind Cardinal move button
-      bind $This.card.e <ButtonPress-1>      { ::telescope::move e }
-      bind $This.card.e <ButtonRelease-1>    { ::telescope::stop e }
-      bind $This.card.w <ButtonPress-1>      { ::telescope::move w }
-      bind $This.card.w <ButtonRelease-1>    { ::telescope::stop w }
-      bind $This.card.ns.s <ButtonPress-1>   { ::telescope::move s }
-      bind $This.card.ns.s <ButtonRelease-1> { ::telescope::stop s }
-      bind $This.card.ns.n <ButtonPress-1>   { ::telescope::move n }
-      bind $This.card.ns.n <ButtonRelease-1> { ::telescope::stop n }
+      bind $This.card.e <ButtonPress-1>      { ::telescopePad::moveRadec e }
+      bind $This.card.e <ButtonRelease-1>    { ::telescopePad::stopRadec e }
+      bind $This.card.w <ButtonPress-1>      { ::telescopePad::moveRadec w }
+      bind $This.card.w <ButtonRelease-1>    { ::telescopePad::stopRadec w }
+      bind $This.card.ns.s <ButtonPress-1>   { ::telescopePad::moveRadec s }
+      bind $This.card.ns.s <ButtonRelease-1> { ::telescopePad::stopRadec s }
+      bind $This.card.ns.n <ButtonPress-1>   { ::telescopePad::moveRadec n }
+      bind $This.card.ns.n <ButtonRelease-1> { ::telescopePad::stopRadec n }
 
       #--- bind display zone
       bind $This.frameCoord <ButtonPress-1>          { ::telescope::afficheCoord }
@@ -632,7 +678,7 @@ namespace eval ::AlignManager {
          ::telescope::move $direction
          after [expr ($moveTime -2500)/16 ]
          ::telescope::stop $direction
-         set moveTime  2000
+         set moveTime 2000
       }
 
       #--- use low speed
@@ -938,16 +984,70 @@ namespace eval ::AlignManager {
 
 namespace eval FrameFocusManager {
    array set private {
-      This   ""
-      speed  "2"
+      This  ""
+      speed "2"
    }
 
    #------------------------------------------------------------
-   #  cmdFocusSpeed
-   #     change speed of focus motor
+   #  moveFocus
+   #     demarre le mouvement du focuser
+   #
+   #  direction : direction du deplacement - +
    #------------------------------------------------------------
-   proc cmdFocusSpeed { {value " "} } {
-      ::focus::incrementSpeed $::conf(superpad,focuserLabel) pad
+   proc moveFocus { direction } {
+      set catchError [ catch {
+         #--- Debut du mouvement
+         ::focus::move $::conf(superpad,focuserLabel) $direction
+      } ]
+
+      if { $catchError != 0 } {
+         ::tkutil::displayErrorInfo $::caption(superpad,titre)
+      }
+   }
+
+   #------------------------------------------------------------
+   #  stopFocus
+   #     arrete le mouvement du focuser
+   #------------------------------------------------------------
+   proc stopFocus { } {
+      #--- Fin de mouvement
+      ::focus::move $::conf(superpad,focuserLabel) stop
+   }
+
+   #------------------------------------------------------------
+   #  incrementSpeedFocus
+   #     gere les vitesses disponibles du focuser
+   #------------------------------------------------------------
+   proc incrementSpeedFocus { } {
+      set catchError [ catch {
+         #--- Gestion des vitesses
+         ::focus::incrementSpeed $::conf(superpad,focuserLabel) pad
+      } ]
+
+      if { $catchError != 0 } {
+         ::tkutil::displayErrorInfo $::caption(superpad,titre)
+         #--- Je fais un beep sonore pour signaler que la commande n'est pas prise en compte
+         bell
+      }
+   }
+
+   #------------------------------------------------------------
+   #  setSpeedFocus
+   #     envoie le numero de la vitesse selectionnee
+   #
+   #  rate : le numero de la vitesse selectionnee
+   #------------------------------------------------------------
+   proc setSpeedFocus { rate } {
+      set catchError [ catch {
+         #--- Envoie le numero de la vitesse selectionnee
+         ::focus::setSpeed $::conf(superpad,focuserLabel) $rate
+      } ]
+
+      if { $catchError != 0 } {
+         ::tkutil::displayErrorInfo $::caption(superpad,titre)
+         #--- Je fais un beep sonore pour signaler que la commande n'est pas prise en compte
+         bell
+      }
    }
 
    #------------------------------------------------------------
@@ -1026,27 +1126,27 @@ namespace eval FrameFocusManager {
 
       if { $::conf(superpad,focuserLabel) != "" } {
         #--- toggles speed
-        bind $This.we.lab <ButtonPress-1> { ::FrameFocusManager::cmdFocusSpeed }
+        bind $This.we.lab <ButtonPress-1> { ::FrameFocusManager::incrementSpeedFocus }
         #--- focus move
         bind $zone(moins) <ButtonPress-1> {
-           ::focus::move $::conf(superpad,focuserLabel) "-"
+           ::FrameFocusManager::moveFocus -
            [::FrameFocusManager::getFrame].we.buttonMoins configure -bg $colorpad(backpad)
         }
         bind $zone(moins) <ButtonRelease-1> {
-           ::focus::move $::conf(superpad,focuserLabel) "stop"
+           ::FrameFocusManager::stopFocus
            [::FrameFocusManager::getFrame].we.buttonMoins configure -bg $colorpad(backkey)
         }
         bind $zone(plus) <ButtonPress-1> {
-           ::focus::move $::conf(superpad,focuserLabel) "+"
+           ::FrameFocusManager::moveFocus +
            [::FrameFocusManager::getFrame].we.buttonPlus configure -bg $colorpad(backpad)
         }
         bind $zone(plus) <ButtonRelease-1> {
-           ::focus::move $::conf(superpad,focuserLabel) "stop"
+           ::FrameFocusManager::stopFocus
            [::FrameFocusManager::getFrame].we.buttonPlus configure -bg $colorpad(backkey)
         }
       }
       #--- initialise et affiche la vitesse du focuser
-      ::focus::setSpeed "$conf(superpad,focuserLabel)" "0"
+      ::FrameFocusManager::setSpeedFocus 0
    }
 }
 
