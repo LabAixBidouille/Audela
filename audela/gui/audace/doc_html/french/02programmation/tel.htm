@@ -5,8 +5,9 @@
 
 
 
+
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /><title>Fonctions de pilotage de télescopes</title></head><body>
-<p class="date">Date de mise à jour : 28 mai 2011</p>
+<p class="date">Date de mise à jour : 02 juillet 2011</p>
 <h1>Fonctions de pilotage de télescopes </h1>
 <p> Ces commandes permettent de contrôler des télescopes reconnus par
 AudeLA : LX200. Les commandes qui permettent de contrôler un télescope,
@@ -63,8 +64,6 @@ permettent de préciser la nature du mouvement. Tout est résumé dans le
 tableau ci-dessous :<br />
 
     <br />
-
-    retourne l'état des moteurs (unknown, tracking, pointing)<br />
 
     <table border="2" cellpadding="5">
   <tbody><tr>
@@ -140,8 +139,8 @@ non (=0) pour terminer la commande.<br />
     
   </tr>
 </tbody></table>
-<p>Par exemple, pour rallier le télescope aux coordonnées 4h56m et -7d32m, on écrira : </p>
-<p><code>tel1 radec goto {4h56m -7d32m}</code> </p>
+<p>Par exemple, pour rallier le télescope aux coordonnées 4h56m12s et -7d32m23s, on écrira : </p>
+<p><code>tel1 radec goto {4h56m12s -7d32m23s}</code> </p>
 <p>Les fonctions de type tel1 radec peuvent parfois se rencontrer sous leur forme obsolète : </p>
 <h3> <a name="coord" id="coord">tel1 coord</a></h3>
 <p>Retourne les coordonnées en ascension droite et en déclinaison du
