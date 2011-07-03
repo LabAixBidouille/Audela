@@ -158,7 +158,7 @@ proc ::tlscp::createPluginInstance { { tkBase "" } { visuNo 1 } } {
    set private($visuNo,pose_en_cours)     "0"
 
    #--- Coordonnees J2000.0 de M104
-   setRaDec $visuNo [list "12h40m0s" "-11d37m22"] "M104" "J2000.0" ""
+   setRaDec $visuNo [list "12h40m0s" "-11d37m22s"] "M104" "J2000.0" ""
 
    #--- Frame principal
    frame $private($visuNo,This) -borderwidth 2 -relief groove
