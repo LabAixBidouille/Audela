@@ -187,7 +187,7 @@ namespace eval cataGoto {
       } elseif { $catalogue(choisi,$visuNo) == "$caption(catagoto,zenith)" } {
          ::cataGoto::nettoyage
          set lat_zenith [ mc_angle2dms [ lindex $audace(posobs,observateur,gps) 3 ] 90 nozero 0 auto string ]
-         set catalogue($visuNo,list_radec) "$audace(tsl,format,zenith) $lat_zenith"
+         set catalogue($visuNo,list_radec) "$audace(tsl,format,zenith)s $lat_zenith"
          set catalogue($visuNo,nom_objet)  "$caption(catagoto,zenith)"
          set catalogue($visuNo,equinoxe)   "J2000.0"
          set catalogue($visuNo,magnitude)  ""
@@ -1229,9 +1229,9 @@ namespace eval cataGoto {
       } else {
          set catalogue(M-NGC-IC_choisie) "[lindex $objet_choisi 0]"
          set catalogue(M-NGC-IC_mag)     "[lindex $objet_choisi 5]"
-         set catalogue(M-NGC-IC_ad)      "[lindex $objet_choisi 1]h[string range [lindex $objet_choisi 2] 0 1]m[expr ([string range [lindex $objet_choisi 2] 3 3])*60/10]"
+         set catalogue(M-NGC-IC_ad)      "[lindex $objet_choisi 1]h[string range [lindex $objet_choisi 2] 0 1]m[expr ([string range [lindex $objet_choisi 2] 3 3])*60/10]s"
          set catalogue(objet_ad)         "$catalogue(M-NGC-IC_ad)"
-         set catalogue(M-NGC-IC_dec)     "[lindex $objet_choisi 3]d[lindex $objet_choisi 4]m00"
+         set catalogue(M-NGC-IC_dec)     "[lindex $objet_choisi 3]d[lindex $objet_choisi 4]m00s"
          set catalogue(objet_dec)        "$catalogue(M-NGC-IC_dec)"
       }
 
@@ -1463,8 +1463,8 @@ namespace eval cataGoto {
          set catalogue(etoile_nom_courant) "[lindex $thisstar 0]"
          set catalogue(etoile_choisie)     "[lindex $thisstar 1] [lindex $thisstar 2]"
          set catalogue(etoile_mag)         "[lindex $thisstar 9]"
-         set catalogue(etoile_ad)          "[lindex $thisstar 3]h[lindex $thisstar 4]m[lindex $thisstar 5]"
-         set catalogue(etoile_dec)         "[lindex $thisstar 6]d[lindex $thisstar 7]m[lindex $thisstar 8]"
+         set catalogue(etoile_ad)          "[lindex $thisstar 3]h[lindex $thisstar 4]m[lindex $thisstar 5]s"
+         set catalogue(etoile_dec)         "[lindex $thisstar 6]d[lindex $thisstar 7]m[lindex $thisstar 8]s"
          #--- Extraction des coordonnees pour l'affichage de la carte de champ
          set cataGoto(carte,nom_objet)  "#etoile#"
          set cataGoto(carte,ad)         "[lindex $thisstar 3]h[lindex $thisstar 4]m[lindex $thisstar 5]s"
@@ -1815,9 +1815,9 @@ namespace eval cataGoto {
             #--- sinon le separateur est un espace ou une serie d'espaces
             set catalogue(utilisateur_choisie)   "[lindex $thisuser 0]"
             set catalogue(utilisateur_mag)       "[lindex $thisuser 7]"
-            set catalogue(objet_utilisateur_ad)  "[lindex $thisuser 1]h[lindex $thisuser 2]m[lindex $thisuser 3]"
+            set catalogue(objet_utilisateur_ad)  "[lindex $thisuser 1]h[lindex $thisuser 2]m[lindex $thisuser 3]s"
             set catalogue(utilisateur_ad)        $catalogue(objet_utilisateur_ad)
-            set catalogue(objet_utilisateur_dec) "[lindex $thisuser 4]d[lindex $thisuser 5]m[lindex $thisuser 6]"
+            set catalogue(objet_utilisateur_dec) "[lindex $thisuser 4]d[lindex $thisuser 5]m[lindex $thisuser 6]s"
             set catalogue(utilisateur_dec)       $catalogue(objet_utilisateur_dec)
          }
          if { ($catalogue(objet_utilisateur_ad) == "hm") || ($catalogue(objet_utilisateur_dec) == "dm") } {
