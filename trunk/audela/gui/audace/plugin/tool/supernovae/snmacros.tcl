@@ -118,56 +118,52 @@ proc sunInfo0h { {localite "GPS 2.33 e 48.8 67"} } {
 
 proc sunset { {hauteurlim "0"} {localite "GPS 2.33 e 48.8 67"} } {
    #--- Calcule le jour julien correspondant au prochain commencement de nuit
-   #--- (fixee ici lorsque le soleil est a hauteur deg)
+   #--- (fixee ici lorsque le soleil atteind la hauteur "hauteurlim" en deg)
+   #--- Date du moment
    set now [::audace::date_sys2ut now]
-   set jd_deb [mc_date2jd $now]
-   set k 0
-   for {set jj [expr $jd_deb]} {$jj < [expr $jd_deb+1.]} {set jj [expr $jj+0.0005]} {
-      set hauteur [lindex [mc_ephem sun [list [mc_date2tt $jj ]] {altitude} -topo $localite] 0]
-      if {$k>0} {
-         set dh [expr $hauteur-$hauteurlim]
-         if {$k>1} {
-            set signe [expr $dh*$dh0]
-            #set result "[mc_date2ymdhms $jj] $hauteur $signe"
-            #console::affiche_erreur "$result\n"
-            if {$signe<=0} {
-               if {$dh<0} {
-                  break;
-               }
-            }
-         }
-         set dh0 $dh
+   set actuel [ mc_date2ymdhms [ mc_date2jd $now ] ]
+   if { [ lindex $actuel 3 ] < "6" } {
+      #--- Debut du jour j
+      set actuel [ mc_date2ymdhms [ mc_date2jd now0 ] ]
+   } else {
+      #--- Debut du jour j+1
+      set actuel [ mc_date2ymdhms [ mc_date2jd now1 ] ]
+   }
+   #--- Debut du jour du moment
+   set amj "[ lindex $actuel 0 ] [ lindex $actuel 1 ] [ lindex $actuel 2 ]"
+   set jd_deb [mc_date2jd $amj ]
+   #--- Iteration pour trouver le debut de la nuit en fonction de la hauteur du Soleil sous l'horizon
+   for { set jj [ expr $jd_deb-0.5 ] } { $jj < [ expr $jd_deb ] } { set jj [ expr $jj+0.001 ] } {
+      set hauteur [ lindex [ mc_ephem sun [ list [ mc_date2tt $jj ] ] {altitude} -topo $localite ] 0 ]
+      if { $hauteur < $hauteurlim } {
+         break
       }
-      incr k
-      set hauteur0 $hauteur
    }
    return $jj
 }
 
 proc sunrise { {hauteurlim "0"} {localite "GPS 2.33 e 48.8 67"} } {
    #--- Calcule le jour julien correspondant a la prochaine fin de nuit
-   #--- (fixee ici lorsque le soleil est a hauteur deg)
+   #--- (fixee ici lorsque le soleil atteind la hauteur "hauteurlim" en deg)
+   #--- Date du moment
    set now [::audace::date_sys2ut now]
-   set jd_deb [mc_date2jd $now]
-   set k 0
-   for {set jj [expr $jd_deb]} {$jj < [expr $jd_deb+1.]} {set jj [expr $jj+0.0005]} {
-      set hauteur [lindex [mc_ephem sun [list [mc_date2tt $jj ]] {altitude} -topo $localite] 0]
-      if {$k>0} {
-         set dh [expr $hauteur-$hauteurlim]
-         if {$k>1} {
-            set signe [expr $dh*$dh0]
-            #set result "[mc_date2ymdhms $jj] $hauteur $signe"
-            #console::affiche_erreur "$result\n"
-            if {$signe<=0} {
-               if {$dh>0} {
-                  break;
-               }
-            }
-         }
-         set dh0 $dh
+   set actuel [ mc_date2ymdhms [ mc_date2jd $now ] ]
+   if { [ lindex $actuel 3 ] < "6" } {
+      #--- Debut du jour j
+      set actuel [ mc_date2ymdhms [ mc_date2jd now0 ] ]
+   } else {
+      #--- Debut du jour j+1
+      set actuel [ mc_date2ymdhms [ mc_date2jd now1 ] ]
+   }
+   #--- Debut du jour du moment
+   set amj "[ lindex $actuel 0 ] [ lindex $actuel 1 ] [ lindex $actuel 2 ]"
+   set jd_fin [ mc_date2jd $amj ]
+   #--- Iteration pour trouver la fin de la nuit en fonction de la hauteur du Soleil sous l'horizon
+   for { set jj $jd_fin } { $jj < [ expr $jd_fin+0.5 ] } { set jj [ expr $jj+0.001 ] } {
+      set hauteur [ lindex [ mc_ephem sun [ list [ mc_date2tt $jj ] ] {altitude} -topo $localite ] 0 ]
+      if { $hauteur > $hauteurlim } {
+          break
       }
-      incr k
-      set hauteur0 $hauteur
    }
    return $jj
 }
