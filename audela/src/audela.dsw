@@ -367,6 +367,18 @@ Package=<4>
 
 ###############################################################################
 
+Project: "libcagire"=".\libcam\libcagire\vc60\libcagire.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "libcemes"=".\libcam\libcemes\vc60\libcemes.dsp" - Package Owner=<4>
 
 Package=<5>
