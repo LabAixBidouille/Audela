@@ -46,7 +46,7 @@ subfolders of audela-1.2.3/dev can be grouped by categories :
 categories | folders
 
 BASE       = libaudela libgzip libmc libtt main
-LIBCAMS    = libaudine libcookbook libethernaude libhisis libkitty libstarlight libwebcam libsbig libaudinet libcamth libsynonyme
+LIBCAMS    = libaudine libcagire libcookbook libethernaude libhisis libkitty libstarlight libwebcam libsbig libaudinet libcamth libsynonyme
 LIBTELS    = liblx200 libcompad liblxnet libaudecom libavrcom libouranos libtemma libmcmt
 EXTRA      = librgb libgsltcl libjm libak
 DRVCAMS    = ethernaude
