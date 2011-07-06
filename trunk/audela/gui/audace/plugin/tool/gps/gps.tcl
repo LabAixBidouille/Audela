@@ -467,7 +467,7 @@ namespace eval ::gps {
         frame $This.fra1 \
             -borderwidth 2 \
             -relief groove
-        #--- Bouton du titre
+        # Bouton du titre
         Button $This.fra1.but \
             -borderwidth 2 \
             -text "$caption(gps,help,titre1)\n$caption(gps,titre1)" \
@@ -507,6 +507,9 @@ namespace eval ::gps {
             -label $caption(gps,port) \
             -menu $m1.sm1
         $m1 add cascade \
+            -label $caption(gps,baud) \
+            -menu $m1.sm3
+        $m1 add cascade \
             -label $caption(gps,intervalle_synchro) \
             -menu $m1.sm2
         $m1 add command \
@@ -516,6 +519,8 @@ namespace eval ::gps {
             -tearoff 0]
         set sm2 [menu $m1.sm2 \
             -tearoff 0]
+        set sm3 [menu $m1.sm3 \
+           -tearoff 0]
         # Les sous-menus des ports et des intervalles de synchro sont crees plus tard pour tenir compte des parametres initialises ulterieurement
         # Positionnement de la trame
         pack $t1 \
@@ -759,8 +764,7 @@ namespace eval ::gps {
         set gps(configuration_serie_buffering) [fconfigure $serie -buffering]
 
         # Changement de vitesse
-        fconfigure $serie -mode "4800,n,8,1" -blocking 0 -buffering line
-
+        fconfigure $serie -mode "$parametres(baud),n,8,1" -translation auto
         set gps(erreur_lecture) 0
         set gps_reveil_synchro 0
         # Gestion de la liaison serie par filevent
@@ -989,21 +993,26 @@ namespace eval ::gps {
         if { [ file exists $gps(fichier_ini) ] } {
             source $gps(fichier_ini)
         }
-        if {![info exists parametres(os)]} {set parametres(os) $::tcl_platform(os)}
+        if {![info exists parametres(os)]}         {set parametres(os)         $::tcl_platform(os)}
         if {![info exists parametres(port_serie)]} {set parametres(port_serie) [lindex [ ::serialport::getPorts ] 0]}
+        if {![info exists parametres(baud)]}       {set parametres(baud)       4800}
         # Cas du changement d'OS
-        if {$parametres(os) != $::tcl_platform(os)} {set parametres(port_serie) [lindex [ ::serialport::getPorts ] 0]}
-        if {![info exists parametres(seuil_ok)]} {set parametres(seuil_ok) 20}
-        if {![info exists parametres(decalage)]} {set parametres(decalage) 0}
-        if {![info exists parametres(reglage)]} {set parametres(reglage) 100}
-        if {![info exists parametres(temps_minimal)]} {set parametres(temps_minimal) 55}
-        if {![info exists parametres(mise_heure)]} {set parametres(mise_heure) [clock seconds]}
-        if {![info exists parametres(choix_synchro)]} {set parametres(choix_synchro) [list 60 120 300 600 1800 3600 7200]}
+        if {$parametres(os) != $::tcl_platform(os)}        {set parametres(port_serie)         [lindex [ ::serialport::getPorts ] 0]}
+        if {![info exists parametres(seuil_ok)]}           {set parametres(seuil_ok)           20}
+        if {![info exists parametres(decalage)]}           {set parametres(decalage)           0}
+        if {![info exists parametres(reglage)]}            {set parametres(reglage)            100}
+        if {![info exists parametres(temps_minimal)]}      {set parametres(temps_minimal)      55}
+        if {![info exists parametres(mise_heure)]}         {set parametres(mise_heure)         [clock seconds]}
+        if {![info exists parametres(choix_synchro)]}      {set parametres(choix_synchro)      [list 60 120 300 600 1800 3600 7200]}
         if {![info exists parametres(intervalle_synchro)]} {set parametres(intervalle_synchro) [lindex $parametres(choix_synchro) 0]}
 
         # Sous-menu des ports
         foreach port [ ::serialport::getPorts ] {
             $This.fparametre.mb.menu.sm1 add radio -label $port -variable ::gps::parametres(port_serie) -value $port
+        }
+        # Sous-menu des baud
+        foreach baud [ list 4800 9600 ] {
+            $This.fparametre.mb.menu.sm3 add radio -label $baud -variable ::gps::parametres(baud) -value $baud
         }
         # Sous-menu des intervalles de synchro
         foreach intervalle $parametres(choix_synchro) {
@@ -1057,8 +1066,7 @@ namespace eval ::gps {
         Message consolog "%s %s\n" $caption(gps,ouverture_serie) $parametres(port_serie)
 
         # Changement de vitesse
-        fconfigure $serie -mode "4800,n,8,1" -blocking 0 -buffering line
-
+        fconfigure $serie -mode "$parametres(baud),n,8,1" -translation auto
         set gps(erreur_lecture) 0
 
         # Gestion par filevent
@@ -1219,11 +1227,16 @@ namespace eval ::gps {
         global caption
         global audace
 
-        # Mise a jour des champs de configuration
-        set conf(posobs,lat) $position(DD_lat)
-        append conf(posobs,lat) "d" $position(MM_lat) "m" $position(SS_lat) "s"
-        set conf(posobs,nordsud) $position(NS)
-        set conf(posobs,long) $position(DD_lon)
+        # Fermeture de la fenetre Position de l'observateur si elle est ouverte
+        if { [ winfo exists .audace.confPosObs ] } {
+            destroy .audace.confPosObs
+        }
+
+        # Mise a jour des champs de configuration de la Position de l'observateur
+        set conf(posobs,lat)      $position(DD_lat)
+        append conf(posobs,lat)   "d" $position(MM_lat) "m" $position(SS_lat) "s"
+        set conf(posobs,nordsud)  $position(NS)
+        set conf(posobs,long)     $position(DD_lon)
         append conf(posobs,long)  "d" $position(MM_lon) "m" $position(SS_lon) "s"
         set conf(posobs,estouest) $position(EW)
         set conf(posobs,altitude) $position(altitude)
@@ -1233,7 +1246,7 @@ namespace eval ::gps {
         if {$position(NS) == "S"} {
             set SDD_lat -$SDD_lat
         }
-        set conf(posobs,observateur,gps) "GPS [mc_angle2deg [list $position(DD_lon) $position(MM_lon) $position(SS_lon)]] $position(EW) [mc_angle2deg [list $SDD_lat $position(MM_lat) $position(SS_lat)]] $position(altitude)"
+        set conf(posobs,observateur,gps) "GPS [string trimleft [mc_angle2deg [list $position(DD_lon) $position(MM_lon) $position(SS_lon)]] " "] $position(EW) [string trimleft [mc_angle2deg [list $SDD_lat $position(MM_lat) $position(SS_lat)]] " "] $position(altitude)"
         set audace(posobs,observateur,gps) $conf(posobs,observateur,gps)
 
         Message consolog "%s\n" $caption(gps,m_synchro_position_1)
@@ -1308,6 +1321,8 @@ namespace eval ::gps {
 
         # Suppression des sous-menus
         $This.fparametre.mb.menu.sm1 delete 0 end
+        $This.fparametre.mb.menu.sm2 delete 0 end
+        $This.fparametre.mb.menu.sm3 delete 0 end
     }
 
     ##############################################################
