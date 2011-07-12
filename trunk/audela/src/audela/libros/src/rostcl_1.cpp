@@ -956,6 +956,7 @@ ros_velleman close
 				   FreeLibrary(velleman);
                return TCL_ERROR;
 				}
+				/*
 				VELLEMAN_Version = (VELLEMAN_Version_C *) GetProcAddress(velleman,VELLEMAN_Version_Q);
 				if (VELLEMAN_Version == NULL) {
 					sprintf(s,"Function %s not found in library %s.",VELLEMAN_Version_Q,VELLEMAN_NAME);
@@ -977,6 +978,7 @@ ros_velleman close
 				   FreeLibrary(velleman);
                return TCL_ERROR;
 				}
+				*/
 			} else {
 				sprintf(s,"Library %s not loaded", VELLEMAN_NAME);
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
