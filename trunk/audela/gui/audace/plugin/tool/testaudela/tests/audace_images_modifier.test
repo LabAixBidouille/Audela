@@ -66,9 +66,6 @@ test imaseries_add {additionner rz_rgbr_8 et rz_rgbr_15 avec rz_rgbr_30} -constr
    #-- saisit l'offset
    set offset "500"
    ::testaudela::putLabelEntry $z.ttoptions.offset $offset
-   #--   saisit nullpixel
-   set nullpixel "0."
-   ::testaudela::putLabelEntry $z.ttoptions.nullpixel $nullpixel
    #-- saisit le nom de sortie
    set name_out "ajout"
    ::testaudela::putLabelEntry $z.sortie.out "$name_out"
@@ -80,11 +77,7 @@ test imaseries_add {additionner rz_rgbr_8 et rz_rgbr_15 avec rz_rgbr_30} -constr
    #--   charge le resultat obtenu
    mesure set [lrange [buf$bufNo getpix $coords] 1 end]
    attendu expr {attendu+$offset}
-   temp expr {attendu < $nullpixel}
    set indexes [temp search 1]
-   foreach index $indexes {
-      set attendu($index) $nullpixel
-   }
    #--   calcule la difference
    attendu expr {round(attendu-mesure)}
    #--   compte le nombre de resultats nuls
@@ -275,11 +268,6 @@ test imaseries_mult {multiplier rz_rgbr_8 rz_rgbr_15 par constante} -constraints
    #--   charge le resultat obtenu
    mesure set [lrange [buf$bufNo getpix $coords] 1 end]
    attendu expr {attendu*$constante}
-   temp expr {attendu < $nullpixel}
-   set indexes [temp search 1]
-   foreach index $indexes {
-      set attendu($index) $nullpixel
-   }
    #--   calcule la difference
    attendu expr {round(attendu-mesure)}
    attendu expr {attendu <-1 || attendu > 1}
@@ -291,7 +279,7 @@ test imaseries_mult {multiplier rz_rgbr_8 rz_rgbr_15 par constante} -constraints
 
 #--   IMA/SERIES LOG
 test imaseries_log {appliquer logarithme a rz_rgbr_8 rz_rgbr_15} -constraints {AUDACE} -setup $SETUP -body {
-   #--   clic sur le menu "Images/Modifier/Logarithme..."
+  #--   clic sur le menu "Images/Modifier/Logarithme..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,arithm)" "$::caption(audace,menu,log)..."
    #--   selectionne rz_rgbr_8 rz_rgbr_15
    foreach img {rz_rgbr_8 rz_rgbr_15} {
@@ -318,11 +306,6 @@ test imaseries_log {appliquer logarithme a rz_rgbr_8 rz_rgbr_15} -constraints {A
    #--   charge le resultat obtenu
    mesure set [lrange [buf$bufNo getpix $coords] 1 end]
    attendu expr {log10(attendu-$offsetlog)*$coef}
-   temp expr {attendu < $nullpixel}
-   set indexes [temp search 1]
-   foreach index $indexes {
-      set attendu($index) $nullpixel
-   }
    #--   calcule le ratio
    attendu expr {round(mesure/attendu)}
    #--   compte le nombre de resultats nuls (bizarre bizarre)
