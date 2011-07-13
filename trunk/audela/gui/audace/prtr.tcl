@@ -1414,20 +1414,21 @@ namespace eval ::prtr {
       variable MAITRE
       global caption help
 
-      set options "bitpix +16 skylevel 0 nullpixel 0."
+      set options "bitpix +16 skylevel 0"
+      #--   l'option nullpixel est specifiee dans la fonction
 
       dict set MAITRE "$caption(audace,menu,faire_offset)"        fun "BIAS"
       dict set MAITRE "$caption(audace,menu,faire_offset)"        hlp "$help(dir,images) 1020elaborer_maitre.htm BIAS"
       dict set MAITRE "$caption(audace,menu,faire_offset)"        par ""
-      dict set MAITRE "$caption(audace,menu,faire_offset)"        opt $options
+      dict set MAITRE "$caption(audace,menu,faire_offset)"        opt "$options nullpixel 0."
       dict set MAITRE "$caption(audace,menu,faire_dark)"          fun "DARK"
       dict set MAITRE "$caption(audace,menu,faire_dark)"          hlp "$help(dir,images) 1020elaborer_maitre.htm DARK"
       dict set MAITRE "$caption(audace,menu,faire_dark)"          par "methode MED bias \"\" "
-      dict set MAITRE "$caption(audace,menu,faire_dark)"          opt $options
+      dict set MAITRE "$caption(audace,menu,faire_dark)"          opt "$options nullpixel 0."
       dict set MAITRE "$caption(audace,menu,faire_flat_field)"    fun "FLAT"
       dict set MAITRE "$caption(audace,menu,faire_flat_field)"    hlp "$help(dir,images) 1020elaborer_maitre.htm FLAT"
       dict set MAITRE "$caption(audace,menu,faire_flat_field)"    par "bias  \"\" dark \"\" normoffset_value 0."
-      dict set MAITRE "$caption(audace,menu,faire_flat_field)"    opt $options
+      dict set MAITRE "$caption(audace,menu,faire_flat_field)"    opt "$options nullpixel 0."
 
       return [consultDic MAITRE $function]
    }
@@ -1441,10 +1442,13 @@ namespace eval ::prtr {
       variable PRETRAITEE
       global caption help
 
+      set options "bitpix +16 skylevel 0"
+      #--   l'option nullpixel est specifiee dans la fonction
+
       dict set PRETRAITEE "$caption(audace,menu,pretraitee)"      fun "PRETRAITEMENT"
       dict set PRETRAITEE "$caption(audace,menu,pretraitee)"      hlp "$help(dir,images) 1020elaborer_maitre.htm PRETRAITER"
       dict set PRETRAITEE "$caption(audace,menu,pretraitee)"      par "bias \"\" dark \"\" opt_black 0 flat \"\" constant 1."
-      dict set PRETRAITEE "$caption(audace,menu,pretraitee)"      opt "bitpix +16 skylevel 0 nullpixel 0."
+      dict set PRETRAITEE "$caption(audace,menu,pretraitee)"      opt "$options nullpixel 0."
 
       return [consultDic PRETRAITEE $function]
    }
@@ -1458,26 +1462,29 @@ namespace eval ::prtr {
       variable CENTER
       global caption help
 
+      set options "bitpix +16 skylevel 0"
+      #--   l'option nullpixel est specifiee dans la fonction
+
       dict set CENTER "$caption(audace,menu,reg_inter)"           fun "CENTER"
       dict set CENTER "$caption(audace,menu,reg_inter)"           hlp "$help(dir,images) 1040aligner.htm"
       dict set CENTER "$caption(audace,menu,reg_inter)"           par "image_ref \"\" "
-      dict set CENTER "$caption(audace,menu,reg_inter)"           opt "bitpix +16 skylevel 0 nullpixel 0."
+      dict set CENTER "$caption(audace,menu,reg_inter)"           opt "$options nullpixel 0."
       dict set CENTER "$caption(audace,menu,reg_trans)"           fun "REGISTER translate=before"
       dict set CENTER "$caption(audace,menu,reg_trans)"           hlp "$help(dir,images) 1040aligner.htm"
       dict set CENTER "$caption(audace,menu,reg_trans)"           par "normaflux 1."
-      dict set CENTER "$caption(audace,menu,reg_trans)"           opt "bitpix +16 skylevel 0 nullpixel 0."
+      dict set CENTER "$caption(audace,menu,reg_trans)"           opt "$options nullpixel 0."
       dict set CENTER "$caption(audace,menu,reg_tri)"             fun "REGISTER translate=never"
       dict set CENTER "$caption(audace,menu,reg_tri)"             hlp "$help(dir,images) 1040aligner.htm"
       dict set CENTER "$caption(audace,menu,reg_tri)"             par "normaflux 1."
-      dict set CENTER "$caption(audace,menu,reg_tri)"             opt "bitpix +16 skylevel 0 nullpixel 0."
+      dict set CENTER "$caption(audace,menu,reg_tri)"             opt "$options nullpixel 0."
       dict set CENTER "$caption(audace,menu,reg_fine)"            fun "REGISTERFINE"
       dict set CENTER "$caption(audace,menu,reg_fine)"            hlp "$help(dir,images) 1040aligner.htm"
       dict set CENTER "$caption(audace,menu,reg_fine)"            par "file img oversampling 10 delta 2"
-      dict set CENTER "$caption(audace,menu,reg_fine)"            opt "bitpix +16 skylevel 0 nullpixel 0."
+      dict set CENTER "$caption(audace,menu,reg_fine)"            opt "$options nullpixel 0."
       dict set CENTER "$caption(audace,menu,reg_wcs)"             fun "REGISTER matchwcs"
       dict set CENTER "$caption(audace,menu,reg_wcs)"             hlp "$help(dir,images) 1040aligner.htm"
       dict set CENTER "$caption(audace,menu,reg_wcs)"             par "normaflux 1."
-      dict set CENTER "$caption(audace,menu,reg_wcs)"             opt "bitpix +16 skylevel 0 nullpixel 0."
+      dict set CENTER "$caption(audace,menu,reg_wcs)"             opt "$options nullpixel 0."
 
       return [consultDic CENTER $function]
    }
@@ -1492,44 +1499,46 @@ namespace eval ::prtr {
       global caption help conf
 
       if {![info exists conf(prtr,sk,kappa)]} {set conf(prtr,sk,kappa) "0.8"}
-      set options "bitpix +16 skylevel 0 nullpixel 0."
+
+      set options "bitpix +16 skylevel 0"
+      #--   l'option nullpixel est specifiee dans la fonction
 
       dict set STACK "$caption(audace,menu,somme)"                fun ADD
       dict set STACK "$caption(audace,menu,somme)"                hlp "$help(dir,prog) ttus1-fr.htm stackADD"
       dict set STACK "$caption(audace,menu,somme)"                par ""
-      dict set STACK "$caption(audace,menu,somme)"                opt $options
+      dict set STACK "$caption(audace,menu,somme)"                opt "$options nullpixel 0."
       dict set STACK "$caption(audace,menu,moyenne)"              fun MEAN
       dict set STACK "$caption(audace,menu,moyenne)"              hlp "$help(dir,prog) ttus1-fr.htm MEAN"
       dict set STACK "$caption(audace,menu,moyenne)"              par ""
-      dict set STACK "$caption(audace,menu,moyenne)"              opt $options
+      dict set STACK "$caption(audace,menu,moyenne)"              opt "$options nullpixel 0."
       dict set STACK "$caption(audace,menu,mediane)"              fun MED
       dict set STACK "$caption(audace,menu,mediane)"              hlp "$help(dir,prog) ttus1-fr.htm MED"
       dict set STACK "$caption(audace,menu,mediane)"              par ""
-      dict set STACK "$caption(audace,menu,mediane)"              opt $options
+      dict set STACK "$caption(audace,menu,mediane)"              opt "$options nullpixel 0."
       dict set STACK "$caption(audace,menu,produit)"              fun PROD
       dict set STACK "$caption(audace,menu,produit)"              hlp "$help(dir,prog) ttus1-fr.htm stackPROD"
       dict set STACK "$caption(audace,menu,produit)"              par ""
-      dict set STACK "$caption(audace,menu,produit)"              opt "powernorm 0 $options"
+      dict set STACK "$caption(audace,menu,produit)"              opt "powernorm 0 $options nullpixel 0."
       dict set STACK "$caption(audace,menu,racine_carree)"        fun PYTHAGORE
       dict set STACK "$caption(audace,menu,racine_carree)"        hlp "$help(dir,prog) ttus1-fr.htm PYTHAGORE"
       dict set STACK "$caption(audace,menu,racine_carree)"        par ""
-      dict set STACK "$caption(audace,menu,racine_carree)"        opt $options
+      dict set STACK "$caption(audace,menu,racine_carree)"        opt "$options nullpixel 0."
       dict set STACK "$caption(audace,menu,ecart_type)"           fun SIG
       dict set STACK "$caption(audace,menu,ecart_type)"           hlp "$help(dir,prog) ttus1-fr.htm SIG"
       dict set STACK "$caption(audace,menu,ecart_type)"           par ""
-      dict set STACK "$caption(audace,menu,ecart_type)"           opt $options
+      dict set STACK "$caption(audace,menu,ecart_type)"           opt "$options nullpixel 0."
       dict set STACK "$caption(audace,menu,moyenne_k)"            fun SK
       dict set STACK "$caption(audace,menu,moyenne_k)"            hlp "$help(dir,prog) ttus1-fr.htm SK"
       dict set STACK "$caption(audace,menu,moyenne_k)"            par "kappa $conf(prtr,sk,kappa)"
-      dict set STACK "$caption(audace,menu,moyenne_k)"            opt $options
+      dict set STACK "$caption(audace,menu,moyenne_k)"            opt "$options nullpixel 0."
       dict set STACK "$caption(audace,menu,moyenne_tri)"          fun SORT
       dict set STACK "$caption(audace,menu,moyenne_tri)"          hlp "$help(dir,prog) ttus1-fr.htm SORT"
       dict set STACK "$caption(audace,menu,moyenne_tri)"          par ""
-      dict set STACK "$caption(audace,menu,moyenne_tri)"          opt "percent 50 $options"
+      dict set STACK "$caption(audace,menu,moyenne_tri)"          opt "percent 50 $options nullpixel 0."
       dict set STACK "$caption(audace,menu,obturateur)"           fun SHUTTER
       dict set STACK "$caption(audace,menu,obturateur)"           hlp "$help(dir,prog) ttus1-fr.htm SHUTTER"
       dict set STACK "$caption(audace,menu,obturateur)"           par ""
-      dict set STACK "$caption(audace,menu,obturateur)"           opt $options
+      dict set STACK "$caption(audace,menu,obturateur)"           opt "$options nullpixel 0."
 
       return [::prtr::consultDic STACK $function]
    }
@@ -1543,20 +1552,22 @@ namespace eval ::prtr {
       variable ROTATION
       global caption help
 
-      set options "bitpix +16 skylevel 0 nullpixel 0."
+      set options "bitpix +16 skylevel 0"
+      #--   l'option nullpixel est specifiee dans la fonction
+      #--   les fonctions combinent des fonctions INVERT qui ont l'option nullpixel
 
       dict set ROTATION "$caption(audace,menu,rot+90)"            fun "ROT+90"
       dict set ROTATION "$caption(audace,menu,rot+90)"            hlp "$help(dir,images) 1050tourner.htm ROT+90"
       dict set ROTATION "$caption(audace,menu,rot+90)"            par ""
-      dict set ROTATION "$caption(audace,menu,rot+90)"            opt $options
+      dict set ROTATION "$caption(audace,menu,rot+90)"            opt "$options nullpixel 0."
       dict set ROTATION "$caption(audace,menu,rot-90)"            fun "ROT-90"
       dict set ROTATION "$caption(audace,menu,rot-90)"            hlp "$help(dir,images) 1050tourner.htm ROT-90"
       dict set ROTATION "$caption(audace,menu,rot-90)"            par ""
-      dict set ROTATION "$caption(audace,menu,rot-90)"            opt $options
+      dict set ROTATION "$caption(audace,menu,rot-90)"            opt "$options nullpixel 0."
       dict set ROTATION "$caption(audace,menu,rot180)"            fun "ROT180"
       dict set ROTATION "$caption(audace,menu,rot180)"            hlp "$help(dir,images) 1050tourner.htm ROT180"
       dict set ROTATION "$caption(audace,menu,rot180)"            par ""
-      dict set ROTATION "$caption(audace,menu,rot180)"            opt $options
+      dict set ROTATION "$caption(audace,menu,rot180)"            opt "$options nullpixel 0."
 
       return [consultDic ROTATION $function]
    }
@@ -1577,20 +1588,21 @@ namespace eval ::prtr {
          unset conf(multx) conf(multy)
       }
 
-      set options "bitpix +16 skylevel 0 nullpixel 0."
+      set options "bitpix +16 skylevel 0"
+      #--   l'option nullpixel est specifiee dans la fonction
 
       dict set SERIES "$caption(audace,menu,miroir_x)"            fun "INVERT mirror"
       dict set SERIES "$caption(audace,menu,miroir_x)"            hlp "$help(dir,prog) ttus1-fr.htm INVERT"
       dict set SERIES "$caption(audace,menu,miroir_x)"            par ""
-      dict set SERIES "$caption(audace,menu,miroir_x)"            opt $options
+      dict set SERIES "$caption(audace,menu,miroir_x)"            opt "$options nullpixel 0."
       dict set SERIES "$caption(audace,menu,miroir_y)"            fun "INVERT flip"
       dict set SERIES "$caption(audace,menu,miroir_y)"            hlp "$help(dir,prog) ttus1-fr.htm INVERT"
       dict set SERIES "$caption(audace,menu,miroir_y)"            par ""
-      dict set SERIES "$caption(audace,menu,miroir_y)"            opt $options
+      dict set SERIES "$caption(audace,menu,miroir_y)"            opt "$options nullpixel 0."
       dict set SERIES "$caption(audace,menu,miroir_xy)"           fun "INVERT xy"
       dict set SERIES "$caption(audace,menu,miroir_xy)"           hlp "$help(dir,prog) ttus1-fr.htm INVERT"
       dict set SERIES "$caption(audace,menu,miroir_xy)"           par ""
-      dict set SERIES "$caption(audace,menu,miroir_xy)"           opt $options
+      dict set SERIES "$caption(audace,menu,miroir_xy)"           opt "$options nullpixel 0."
       dict set SERIES "$caption(audace,menu,window1)"             fun WINDOW
       dict set SERIES "$caption(audace,menu,window1)"             hlp "$help(dir,prog) ttus1-fr.htm WINDOW"
       dict set SERIES "$caption(audace,menu,window1)"             par "x1 1 y1 1 x2 2 y2 2"
@@ -1598,19 +1610,19 @@ namespace eval ::prtr {
       dict set SERIES "$caption(audace,menu,scale)"               fun RESAMPLE
       dict set SERIES "$caption(audace,menu,scale)"               hlp "$help(dir,prog) ttus1-fr.htm RESAMPLE"
       dict set SERIES "$caption(audace,menu,scale)"               par "paramresample \"$conf(prtr,resample,paramresample)\" normaflux 1."
-      dict set SERIES "$caption(audace,menu,scale)"               opt $options
+      dict set SERIES "$caption(audace,menu,scale)"               opt "$options nullpixel 0."
       dict set SERIES "$caption(audace,menu,translate)"           fun TRANS
       dict set SERIES "$caption(audace,menu,translate)"           hlp "$help(dir,prog) ttus1-fr.htm TRANS"
       dict set SERIES "$caption(audace,menu,translate)"           par "trans_x 1. trans_y 1."
-      dict set SERIES "$caption(audace,menu,translate)"           opt $options
+      dict set SERIES "$caption(audace,menu,translate)"           opt "$options nullpixel 0."
       dict set SERIES "$caption(audace,menu,rotation1)"           fun ROT
       dict set SERIES "$caption(audace,menu,rotation1)"           hlp "$help(dir,prog) ttus1-fr.htm ROT"
       dict set SERIES "$caption(audace,menu,rotation1)"           par "x0 1. y0 1. angle 1."
-      dict set SERIES "$caption(audace,menu,rotation1)"           opt $options
+      dict set SERIES "$caption(audace,menu,rotation1)"           opt "$options nullpixel 0."
       dict set SERIES "$caption(audace,menu,rotation2)"           fun ROTENTIERE
       dict set SERIES "$caption(audace,menu,rotation2)"           hlp "$help(dir,prog) ttus1-fr.htm ROTENTIERE"
       dict set SERIES "$caption(audace,menu,rotation2)"           par "angle 1."
-      dict set SERIES "$caption(audace,menu,rotation2)"           opt $options
+      dict set SERIES "$caption(audace,menu,rotation2)"           opt "$options nullpixel 0."
 
       return [::prtr::consultDic SERIES $function]
    }
@@ -1637,7 +1649,8 @@ namespace eval ::prtr {
          unset conf(back_threshold)
       }
 
-      set options "bitpix +16 skylevel 0 nullpixel 0."
+      set options "bitpix +16 skylevel 0"
+      #--   l'option nullpixel est specifiee dans la fonction
 
       dict set SERIES "$caption(audace,menu,trainee)"             fun UNSMEARING
       dict set SERIES "$caption(audace,menu,trainee)"             hlp "$help(dir,prog) ttus1-fr.htm UNSMEARING"
@@ -1654,7 +1667,7 @@ namespace eval ::prtr {
       dict set SERIES "$caption(audace,menu,subsky)"              fun BACK
       dict set SERIES "$caption(audace,menu,subsky)"              hlp "$help(dir,prog) ttus1-fr.htm BACK"
       dict set SERIES "$caption(audace,menu,subsky)"              par "back_kernel $conf(prtr,back,back_kernel) back_threshold $conf(prtr,back,back_threshold)"
-      dict set SERIES "$caption(audace,menu,subsky)"              opt "sub 0 div 0 $options"
+      dict set SERIES "$caption(audace,menu,subsky)"              opt "sub 0 div 0 $options nullpixel 0."
 
       return [::prtr::consultDic SERIES $function]
    }
@@ -1681,7 +1694,8 @@ namespace eval ::prtr {
          unset conf(clip_maxi)
       }
 
-      set options "bitpix +16 skylevel 0 nullpixel 0."
+      set options "bitpix +16 skylevel 0"
+      #--   l'option nullpixel est specifiee dans la fonction
 
       dict set SERIES "$caption(audace,menu,addition)"            fun ADD
       dict set SERIES "$caption(audace,menu,addition)"            hlp "$help(dir,prog) ttus1-fr.htm seriesADD"
@@ -1710,15 +1724,15 @@ namespace eval ::prtr {
       dict set SERIES "$caption(audace,menu,log)"                 fun LOG
       dict set SERIES "$caption(audace,menu,log)"                 hlp "$help(dir,prog) ttus1-fr.htm LOG"
       dict set SERIES "$caption(audace,menu,log)"                 par "coef 20. offsetlog 1."
-      dict set SERIES "$caption(audace,menu,log)"                 opt $options
+      dict set SERIES "$caption(audace,menu,log)"                 opt "$options nullpixel 0."
       dict set SERIES "$caption(audace,menu,noffset)"             fun NORMOFFSET
       dict set SERIES "$caption(audace,menu,noffset)"             hlp "$help(dir,prog) ttus1-fr.htm NORMOFFSET"
       dict set SERIES "$caption(audace,menu,noffset)"             par "normoffset_value 0."
-      dict set SERIES "$caption(audace,menu,noffset)"             opt $options
+      dict set SERIES "$caption(audace,menu,noffset)"             opt "$options nullpixel 0."
       dict set SERIES "$caption(audace,menu,ngain)"               fun NORMGAIN
       dict set SERIES "$caption(audace,menu,ngain)"               hlp "$help(dir,prog) ttus1-fr.htm NORMGAIN"
       dict set SERIES "$caption(audace,menu,ngain)"               par "normgain_value 200."
-      dict set SERIES "$caption(audace,menu,ngain)"               opt $options
+      dict set SERIES "$caption(audace,menu,ngain)"               opt "$options nullpixel 0."
       #--   CLIP fonction artificielle inexistante dans IMA/SERIES
       dict set SERIES "$caption(audace,menu,clip)"                fun CLIP
       dict set SERIES "$caption(audace,menu,clip)"                hlp "$help(dir,images) 1080ecreter.htm"
@@ -1749,7 +1763,9 @@ namespace eval ::prtr {
         set conf(prtr,flou,constant) $conf(coef_mult)
          unset conf(coef_mult)
       }
-      set options "bitpix +16 skylevel 0 nullpixel 0."
+
+      set options "bitpix +16 skylevel 0"
+      #--   l'option nullpixel est specifiee dans la fonction
 
       #--   FLOU fonction artificielle inexistante dans IMA/SERIES
       dict set SERIES "$caption(audace,menu,masque_flou)"         fun FLOU
@@ -1811,7 +1827,7 @@ namespace eval ::prtr {
       dict set SERIES "$caption(audace,menu,grad_rot)"            fun RGRADIENT
       dict set SERIES "$caption(audace,menu,grad_rot)"            hlp "$help(dir,prog) ttus1-fr.htm RGRADIENT"
       dict set SERIES "$caption(audace,menu,grad_rot)"            par "xcenter 1. ycenter 1. radius 1. angle 1."
-      dict set SERIES "$caption(audace,menu,grad_rot)"            opt $options
+      dict set SERIES "$caption(audace,menu,grad_rot)"            opt "$options nullpixel 0."
       dict set SERIES "$caption(audace,menu,radial)"              fun RADIAL
       dict set SERIES "$caption(audace,menu,radial)"              hlp "$help(dir,prog) ttus1-fr.htm RADIAL"
       dict set SERIES "$caption(audace,menu,radial)"              par "sigma 10 power 2 xcenter 1. ycenter 1. radius 1."
@@ -1829,16 +1845,17 @@ namespace eval ::prtr {
       variable SERIES
       global caption help
 
-      set options "bitpix +16 skylevel 0 nullpixel 0."
+      set options "bitpix +16 skylevel 0"
+      #--   l'option nullpixel est specifiee dans la fonction
 
       dict set SERIES "$caption(audace,menu,cart2pol)"            fun REC2POL
       dict set SERIES "$caption(audace,menu,cart2pol)"            hlp "$help(dir,prog) ttus1-fr.htm REC2POL"
       dict set SERIES "$caption(audace,menu,cart2pol)"            par "x0 1. y0 1. scale_theta 1. scale_rho 1."
-      dict set SERIES "$caption(audace,menu,cart2pol)"            opt $options
+      dict set SERIES "$caption(audace,menu,cart2pol)"            opt "$options nullpixel 0."
       dict set SERIES "$caption(audace,menu,pol2cart)"            fun POL2REC
       dict set SERIES "$caption(audace,menu,pol2cart)"            hlp "$help(dir,prog) ttus1-fr.htm POL2REC"
       dict set SERIES "$caption(audace,menu,pol2cart)"            par "x0 1.  y0 1. scale_theta 1. scale_rho 1. width 100 height 100"
-      dict set SERIES "$caption(audace,menu,pol2cart)"            opt $options
+      dict set SERIES "$caption(audace,menu,pol2cart)"            opt "$options nullpixel 0."
       dict set SERIES "$caption(audace,menu,hough)"               fun HOUGH
       dict set SERIES "$caption(audace,menu,hough)"               hlp "$help(dir,prog) ttus1-fr.htm HOUGH"
       dict set SERIES "$caption(audace,menu,hough)"               par ""
@@ -1856,7 +1873,8 @@ namespace eval ::prtr {
       variable SERIES
       global caption help
 
-      set options "bitpix +16 skylevel 0 nullpixel 0."
+      set options "bitpix +16 skylevel 0"
+      #--   l'option nullpixel est specifiee dans la fonction
 
       dict set SERIES "$caption(audace,menu,ligne)"               fun "PROFILE direction=x"
       dict set SERIES "$caption(audace,menu,ligne)"               hlp "$help(dir,prog) ttus1-fr.htm PROFILE"
@@ -3413,8 +3431,12 @@ namespace eval ::prtr {
          set toResize [concat referencer referenceg referenceb $toResize]
       }
 
+      #--   ote l'option nullpixel si elle existe
+      regsub "[lsearch -regexp -inline $options "nullpixel=*"]" $options "" options
+
       #--   ca marche aussi si x1=1, y1=1, x2=naxis1 ou y2=naxis2
       set script "IMA/SERIES \"$dirOut\" \"$toResize\" * * $extOut \"$dirOut\" temp 1 $extOut WINDOW x1=$x1 x2=$x2 y1=$y1 y2=$y2 $options"
+
       ::prtr::editScript $script
       set catchError [catch {ttscript2 $script} ErrInfo]
       if {$catchError eq "1"} {
