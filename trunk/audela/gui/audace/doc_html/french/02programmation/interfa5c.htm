@@ -1,8 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><head>
 
+
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><title>Liste de toutes les fonctions</title></head><body>
-<p class="date">Date de mise à jour : 18 juin 2011</p>
+<p class="date">Date de mise à jour : 14 juillet 2011</p>
 <h1>Liste de toutes les fonctions </h1>
 <p>Nous donnons la liste de toutes les fonctions disponibles dans
 AudeLA, plus quelques unes de TCL et TK qui sont très utiles. En
@@ -48,7 +49,7 @@ pwd : [TC] retourne le nom du dossier courant <br />
 <a href="aud1.htm#saveima">saveima</a> : [AC] enregistre une image FITS
 à partir d'un buffer <br />
 <a href="buf.htm#savejpeg">buf1 savejpeg</a> : [AL] enregistre une
-image au format Jpeg <br />
+image au format JPEG<br />
 <a href="buf.htm#bitpix">buf1 bitpix</a> : [AL] fixe le type de
 données à enregistrer dans le fichier FITS (16 bits
 signés par défaut) <br />
@@ -179,9 +180,9 @@ seulement) <br />
 <a href="cam.htm#portadress">cam1 portadress</a> : [DC] fixe la valeur
 décimale de l'adresse du port parallèle (Audine) <br />
 <a href="cam.htm#videosource">cam1 videosource</a> : [DC] modification
-des paramètres d'acquisition (driver webcam seulement) <br />
+des paramètres d'acquisition (WebCam seulement) <br />
 <a href="cam.htm#videoformat">cam1 videoformat</a> : [DC] modification
-du format d'image (driver webcam seulement) <br />
+du format d'image (WebCam seulement) <br />
 <a href="cam.htm#wipe">cam1 wipe</a> : [DC] rinçage de tous les
 pixels du CCD (Audine seulement) <br />
 <a href="cam.htm#read">cam1 read</a> : [DC] lecture immédiate,
@@ -221,15 +222,15 @@ actuel du microcontrôleur (Hi-SIS seulement) <br />
 gain de l'amplificateur de la chaîne analogique (Hi-SIS
 seulement) <br />
 <a href="cam.htm#longuepose">cam1 longuepose</a> : [DC] choix du type
-de pose pour les Webcam modifiées (Webcam seulement) <br />
+de pose pour les WebCam modifiées (WebCam seulement) <br />
 <a href="cam.htm#longueposeport">cam1 longueposeport</a> : [DC] port de
-contrôle pour les Webcam modifiées (Webcam seulement) <br />
+contrôle pour les WebCam modifiées (WebCam seulement) <br />
 <a href="cam.htm#longueposestartvalue">cam1 longueposestartvalue</a> :
-[DC] valeur de du bit au départ pour les Webcam modifiées
-(Webcam seulement) <br />
+[DC] valeur de du bit au départ pour les WebCam modifiées
+(WebCam seulement) <br />
 <a href="cam.htm#longueposestopvalue">cam1 longueposestopvalue</a> :
-[DC] valeur de du bit de fin de pose pour les Webcam modifiées
-(Webcam seulement) <br />
+[DC] valeur de du bit de fin de pose pour les WebCam modifiées
+(WebCam seulement) <br />
 <h1> Visualisation des images</h1>
 <a href="aud1.htm#mirrorx">mirrorx</a> : [AC] miroir suivant l'axe X
 (échange de colonnes) <br />
@@ -257,21 +258,13 @@ couleur à l'écran à partir de trois buffers <br />
 haut et bas <br />
 <a href="aud3.htm#animate">animate</a> : [AC] effectue une animation
 à partir de fichiers FITS <br />
-<a href="aud.htm#audaceonCutLabelLeftClick">::audace::onCutLabelLeftClick</a>
-: [AC] calcule les seuils de visualisation et affiche l'image <br />
-<a href="aud.htm#audaceautovisu">::audace::autovisu</a> : [AC] calcule
+<a href="aud.htm#audaceonCutLabelLeftClick"></a><a href="aud.htm">::audace::autovisu</a> : [AC] calcule
 les seuils de visualisation et affiche l'image <br />
-<a href="aud.htm#audacecursor">::audace::cursor</a> : [AC] change
+<a href="aud.htm">::audace::cursor</a> : [AC] change
 l'aspect du curseur sur la zone image <br />
-<a href="aud.htm#audacebg">::audace::bg</a> : [AC] change la couleur du
+<a href="aud.htm">::audace::bg</a> : [AC] change la couleur du
 fond de la zone de visu en dehors de l'image <br />
-<a href="aud.htm#audacechangeHiCut">::audace::changeHiCut</a> : [AC]
-Cette commande change le seuil haut de l'image, en modifiant
-également la valeur du texte du seuil <br />
-<a href="aud.htm#audacecursor">::audace::changeLoCut</a> : [AC] Cette
-commande change le seuil bas de l'image, en modifiant également
-la valeur du texte du seuil
-<h1> Analyse d'images</h1>
+<a href="aud.htm#audacechangeHiCut"></a><h1>Analyse d'images</h1>
 <h2> Analyse de points</h2>
 <a href="buf.htm#getpix">buf1 getpix</a> : [AL] : retourne la valeur du
 pixel
@@ -714,66 +707,82 @@ données à dessiner
 <h1> Télescopes</h1>
 <a href="tel.htm#drivername">tel1 drivername</a> : [DT] nom de la
 librairie et date de la compilation <br />
-<a href="tel.htm#name">tel1 name</a> : [DT] nom du télescope <br />
+<a href="tel.htm#name">tel1 name</a> : [DT] nom du modèle de la monture <br />
+<a href="tel.htm#product">tel1 product</a> : [DT] nom générique de la monture <br />
 <a href="tel.htm#protocol">tel1 protocol </a>: [DT] nom du protocole <br />
 <a href="tel.htm#port">tel1 port</a> : [DT] nom du port de
 communication <br />
-<a href="tel.htm#channel">tel1 channel</a> : [DT] nom de channel TCL du
+<a href="tel.htm#channel">tel1 channel</a> : [DT] nom du channel TCL du
 port de communication ouvert <br />
 <a href="tel.htm#foclen">tel1 foclen</a> : [DT] longueur focale
 (mètres) de l'optique <br />
-<a href="tel.htm#testcom">tel1 testcom</a> : [DT] test si la
+<a href="tel.htm#testcom">tel1 testcom</a> : [DT] teste si la
 communication est correcte <br />
 <a href="tel.htm#model">tel1 model</a> : [DT] assigne le nom des
-fonctions de conversion pour le modèle de pointage <br />
-<a href="tel.htm#radec">tel1 radec goto</a> : [DT] commence le pointage
-vers les coordonnées ra,dec <br />
-<a href="tel.htm#radec">tel1 radec stop</a> : [DT] arrête tout
-mouvement des moteurs ra,dec en cours <br />
-<a href="tel.htm#radec">tel1 radec move</a> : [DT] fait fonctionner un
-moteur ra ou dec dans une direction donnée <br />
-<a href="tel.htm#radec">tel1 radec coord</a> : [DT] lit les
-coordonnées courantes ra,dec <br />
+fonctions TCL de conversion<br />
 <a href="tel.htm#radec">tel1 radec motor</a> : [DT] allume ou
 éteint le moteur de suivi sidéral <br />
+
 <a href="tel.htm#radec">tel1 radec init</a> : [DT] initialise les
 coordonnées à la position ra,dec <br />
-<a href="file:///D:/audela/doc_html/tel.htm#radec">tel1 radec state</a>
-: [DT] retourne l'état des moteurs ra,dec <br />
-<a href="tel.htm#coord">tel1 coord</a> : [DT] équivalent
-à tel1 radec coord <br />
-<a href="tel.htm#goto">tel1 goto</a> : [DT] équivalent à
-tel1 radec goto <br />
-<a href="tel.htm#stop">tel1 stop</a> : [DT] équivalent à
-tel1 radec stop <br />
+<a href="tel.htm#radec">tel1 radec coord</a> : [DT] lit les
+coordonnées courantes ra,dec <br />
+
+<a href="tel.htm#radec">tel1 radec goto</a> : [DT] commence le pointage
+vers les coordonnées ra,dec <br />
+<a href="tel.htm#radec">tel1 radec move</a> : [DT] fait fonctionner un
+moteur ra ou dec dans une direction donnée <br />
+
+<a href="tel.htm#radec">tel1 radec stop</a> : [DT] arrête tout
+mouvement des moteurs ra et dec en cours <br />
+<a href="tel.htm#radec">tel1 radec state</a> : [DT] retourne l'état des moteurs ra et dec <br />
+<div style="margin-left: 40px;">Commandes obsolètes :<br />
 <a href="tel.htm#match">tel1 match</a> : [DT] équivalent
 à tel1 radec init <br />
-<a href="tel.htm#speed">tel1 speed</a> : [DT] fixe la vitesse pour la
-fonction tel1 move <br />
+
+<a href="tel.htm#coord">tel1 coord</a> : [DT] équivalent
+à tel1 radec coord <br />
+
+<a href="tel.htm#goto">tel1 goto</a> : [DT] équivalent à
+tel1 radec goto<br />
 <a href="tel.htm#move">tel1 move</a> : [DT] équivalent à
-tel1 radec move <br />
-<a href="tel.htm#">tel1 focus goto</a> : [DT] amène le moteur de
-focalisation à une valeur de codeur fixée <br />
-<a href="tel.htm#stop">tel1 focus stop</a> : [DT] arrête tout
-mouvement du moteur de focalisation <br />
-<a href="tel.htm#move">tel1 focus move</a> : [DT] fait fonctionner le
-moteur de focalisation dans une direction donnée <br />
-<a href="tel.htm#focus">tel1 focus coord</a> : [DT] lit la valeur
-courante du codeur de focalisation <br />
+tel1 radec move<br />
+
+<a href="tel.htm#stop">tel1 stop</a> : [DT] équivalent à
+tel1 radec stop<br />
+<a href="tel.htm#speed">tel1 speed</a> : [DT] fixe la vitesse pour la
+fonction tel1 goto et tel1 move<br />
+</div>
+
+
+
+
+
+
 <a href="tel.htm#focus">tel1 focus motor</a> : [DT] allume ou
 éteint le moteur de focalisation <br />
-<a href="tel.htm#">tel1 focus init</a> : [DT] initialise la valeur du
+<a href="tel.htm#focus">tel1 focus init</a> : [DT] initialise la valeur du
 codeur du moteur de focalisation <br />
-<a href="file:///D:/audela/doc_html/tel.htm#">tel1 focus state</a> :
-[DT] retourne l'état du moteur de focalisation <br />
+
+<a href="tel.htm#focus">tel1 focus coord</a> : [DT] lit la valeur
+courante du codeur de focalisation <br />
+
+
+<a href="tel.htm#focus">tel1 focus goto</a> : [DT] amène le moteur de
+focalisation à une valeur de codeur fixée <br />
+<a href="tel.htm#focus">tel1 focus move</a> : [DT] fait fonctionner le
+moteur de focalisation dans une direction donnée <br />
+
+<a href="tel.htm#focus">tel1 focus stop</a> : [DT] arrête tout
+mouvement du moteur de focalisation <br />
 <a href="tel.htm#date">tel1 date</a> : [DT] mise à jour de
 l'horloge du microcontrôleur du télescope (LX200) <br />
 <a href="tel.htm#home">tel1 home</a> : [DT] mise à jour de
 l'observatoire du microcontrôleur du télescope (LX200) <br />
 <a href="tel.htm#longformat">tel1 longformat</a> : [DT] choix du format
-de coordonnées (LX200) <br />
+des coordonnées (LX200) <br />
 <a href="tel.htm#tempo">tel1 tempo</a>: [DT] fixe le délais de
-temporisation (millisecondes) entre une entrée/sortie (LX200)
+temporisation (millisecondes) pour une entrée/sortie (LX200)
 <h1> Calcul scientifique matriciel</h1>
 <a href="gsltclus-fr.htm#gsl_mlength">gsl_mlength</a> : [GS] retourne
 les dimensions d'une matrice de type "liste de liste" <br />
