@@ -2,9 +2,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml"><head>
 
 
+
   <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><title>Librairie MC : Manuel Utilisateur</title></head><body>
 <center>
-<p style="text-align: left;" class="date">Date de mise à jour : 23 mai 2011</p>
+<p style="text-align: left;" class="date">Date de mise à jour : 14 juillet 2011</p>
 <div style="text-align: left;">
 </div>
 <h1 style="text-align: left;">LIB MC - Une librairie de calculs de mécanique céleste</h1>
@@ -631,17 +632,22 @@ une liste RA DEC (en degrés) à partir d'une
 seule chaîne au format du protocole Nexstar.
 </p>
 <p><a name="mc_radec2altaz" id="mc_radec2altaz"><span style="font-weight: bold;">mc_radec2altaz</span> </a><a href="#angle">Angle_ra</a>
-<a href="#angle">Angle_dec</a> <a href="#home">Home</a> <a href="#date">Date</a> : Retourne une liste des quatre
+<a href="#angle">Angle_dec</a> <a href="#home">Home</a> <a href="#date">Date</a>
+: Retourne une liste des quatre
 paramètres utiles pour le système altazimutal : Azimut,
 Hauteur, Angle horaire et Angle parallactique. La date donnée en
-paramètre doit contenir l'heure TU. </p>
+paramètre doit contenir l'heure TU. Les coordonnées Angle_ra et
+Angle_dec sont les coordonnées équatoriales à l'équinoxe de la date
+courante (now).<br />
+ </p>
 <p><a name="mc_hadec2altaz" id="mc_hadec2altaz"><span style="font-weight: bold;">mc_hadec2altaz</span> </a><a href="#angle">Angle_ha</a>
 <a href="#angle">Angle_dec</a> <a href="#home">Home</a> <a href="#date">Date</a> : Retourne une liste des quatre
 paramètres utiles pour le système altazimutal : Azimut,
 Hauteur, Angle horaire et Angle parallactique.</p>
 <p><a name="mc_altaz2radec" id="mc_altaz2radec"><span style="font-weight: bold;">mc_altaz2radec</span> </a><a href="#angle">Angle_Azimuth</a>
 <a href="#angle">Angle_Altitude</a> <a href="#date">Home</a> <a href="#date">Date</a> : Retourne une liste Ra,Dec à partir de
-l'azimut et de la hauteur. </p>
+l'azimut et de la hauteur, les coordonnées équatoriales retournées sont les coordonnées à l'équinoxe de la date courante (now). La date donnée en
+paramètre doit contenir l'heure TU. </p>
 <p><a name="mc_altaz2hadec" id="mc_altaz2hadec"><span style="font-weight: bold;">mc_altaz2hadec</span> </a><a href="#angle">Angle_Azimuth</a>
 <a href="#angle">Angle_Altitude</a> <a href="#date">Home</a> <a href="#date">Date</a> : Retourne une liste Angle Horaire,Dec à
 partir de l'azimut et de la hauteur. </p>
