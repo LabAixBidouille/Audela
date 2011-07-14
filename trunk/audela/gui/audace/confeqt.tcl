@@ -519,6 +519,10 @@ proc ::confEqt::createFrameFocuser { frm variablePluginName { specificFocuser ""
       lappend pluginList focuserlx200
    }
 
+   #--- je mets la liste des plugins dans une variable consultable de l'exterieur
+   set private(pluginListFocuser) $pluginList
+
+   #--- combobox
    ComboBox $frm.list \
       -width [ ::tkutil::lgEntryComboBox $pluginList ] \
       -height [llength $pluginList] \
@@ -537,6 +541,23 @@ proc ::confEqt::createFrameFocuser { frm variablePluginName { specificFocuser ""
 
    #--- j'adapte l'affichage du bouton de configuration
    ::confEqt::activeFocuser $frm.configure $variablePluginName
+}
+
+#------------------------------------------------------------
+# setValueFrameFocuser
+#    Configure la combobox creee avec ::confEqt::createFrameFocuser
+#
+# Parametres :
+#    frm    : chemin TK de la frame a configurer
+#    plugin : plugin a afficher dans la combobox
+# Return :
+#    nothing
+#------------------------------------------------------------
+proc ::confEqt::setValueFrameFocuser { frm plugin } {
+   variable private
+
+   set rank [ lsearch -exact $private(pluginListFocuser) $plugin ]
+   $frm.list setvalue @$rank
 }
 
 #------------------------------------------------------------
@@ -567,7 +588,7 @@ proc ::confEqt::createFrameFocuserTool { frm variablePluginName } {
    #--- je cree la liste des plugins de type "focuser"
    set pluginList [list $::caption(confeqt,pas_focuser) ]
    foreach pluginName $private(pluginNamespaceList) {
-      if {  [::$pluginName\::getPluginType] == "focuser" } {
+      if { [::$pluginName\::getPluginType] == "focuser" } {
          lappend pluginList $pluginName
       }
    }
@@ -579,6 +600,10 @@ proc ::confEqt::createFrameFocuserTool { frm variablePluginName } {
       set private(selectedFocuser) [set $variablePluginName]
    }
 
+   #--- je mets la liste des plugins dans une variable consultable de l'exterieur
+   set private(pluginListFocuserTool) $pluginList
+
+   #--- combobox
    ComboBox $frm.list \
       -width [ ::tkutil::lgEntryComboBox $pluginList ] \
       -height [llength $pluginList] \
@@ -594,6 +619,23 @@ proc ::confEqt::createFrameFocuserTool { frm variablePluginName } {
    button $frm.configure -text "$caption(confeqt,configurer) ..." \
       -command "::confEqt::run $variablePluginName focuser"
    pack $frm.configure -in $frm -anchor center -side top -padx 0 -pady 2 -ipadx 10 -ipady 5 -expand true
+}
+
+#------------------------------------------------------------
+# setValueFrameFocuserTool
+#    Configure la combobox creee avec ::confEqt::createFrameFocuserTool
+#
+# Parametres :
+#    frm    : chemin TK de la frame a configurer
+#    plugin : plugin a afficher dans la combobox
+# Return :
+#    nothing
+#------------------------------------------------------------
+proc ::confEqt::setValueFrameFocuserTool { frm plugin } {
+   variable private
+
+   set rank [ lsearch -exact $private(pluginListFocuserTool) $plugin ]
+   $frm.list setvalue @$rank
 }
 
 #------------------------------------------------------------
