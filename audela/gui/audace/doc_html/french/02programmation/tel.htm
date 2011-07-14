@@ -6,8 +6,11 @@
 
 
 
+
+
+
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /><title>Fonctions de pilotage de télescopes</title></head><body>
-<p class="date">Date de mise à jour : 02 juillet 2011</p>
+<p class="date">Date de mise à jour : 14 juillet 2011</p>
 <h1>Fonctions de pilotage de télescopes </h1>
 <p> Ces commandes permettent de contrôler des télescopes reconnus par
 AudeLA : LX200. Les commandes qui permettent de contrôler un télescope,
@@ -26,7 +29,13 @@ problèmes avec certaines caméras. </p>
 <h3> <a name="drivername" id="drivername">tel1 drivername</a></h3>
 <p>Retourne le nom de la librairie et la date de la dernière compilation.</p>
 <h3> <a name="name" id="name">tel1 name</a></h3>
-<p>Retourne le nom du type de télescope associé au driver.</p>
+<p>Retourne le nom du modèle de la monture associée au driver.</p>
+<h3><a name="product" id="name">tel1 product</a></h3>
+<p>Retourne le nom générique de la monture associée au driver.</p>
+
+
+
+
 <h3> <a name="protocol" id="protocol">tel1 protocol</a></h3>
 <p>Retourne le nom du protocole utilisé.</p>
 <h3> <a name="port" id="port">tel1 port</a></h3>
@@ -48,19 +57,25 @@ read de Tcl). </p>
 <h3> <a name="testcom" id="testcom">tel1 testcom</a></h3>
 <p>Teste si la communication est correcte (1) ou incorrecte (0).</p>
 <h3> <a name="model" id="model">tel1 model ?function_cat2tel function_tel2cat?</a></h3>
-<p>Modèle de pointage. Assigne le nom des fonctions Tcl qui permet de
+<p>Assigne le nom des fonctions Tcl qui permettent de
 transformer les coordonnées catalogue (cat) en coordonnées télescope
 (tel) et son contraire. Il faut évidemment avoir défini ces fonctions
-précédemment. Le modèle de pointage s'applique alors automatiquement
+Tcl
+précédemment. La transformation s'applique alors automatiquement
 lors du pointage (tel1 radec goto qui utilise function_cat2tel} et lors
 de la lecture des coordonnées (tel1 radec coord qui utilise
-function_tel2cat).</p>
+function_tel2cat). Ces 2 procédures sont exécutées dans la thread du
+télescope, elles ne peuvent donc pas utiliser les procédures et les
+variables du thread principal du Tcl. La fonctionfunction_cat2tel est utilisée par tel1 radec goto et la fonction function_tel2cat est utilisée par tel1 radec coord. <br />
+</p>
 <h2> 1.2. Commandes de mouvements</h2>
 Ces commandes affectent les moteurs de l'axe horaire (RA), de
 déclinaison (DEC), de focalisation (éventuel). Les commandes affectées
-aux moteurs RA,DEC se nomment tel1 radec et les commandes associées au
-moteur de focalisation se nomment tel1 focus. Les arguments suivants
-permettent de préciser la nature du mouvement. Tout est résumé dans le
+aux moteurs RA et DEC se nomment <span style="font-weight: bold;">tel1 radec</span> et les commandes associées au
+moteur de focalisation se nomment <span style="font-weight: bold;">tel1 focus</span>. Les arguments suivants
+permettent de préciser la nature du mouvement.<br />
+<br />
+Tout est résumé dans le
 tableau ci-dessous :<br />
 
     <br />
@@ -69,71 +84,86 @@ tableau ci-dessous :<br />
   <tbody><tr>
     <td><br />
 </td>
-    <td> motor </td>
-    <td> init </td>
-    <td> coord </td>
-    <td> goto </td>
-    <td> move </td>
-    <td> stop </td>
-    <td> state </td>
+    <td><span style="font-weight: bold;"> motor</span> </td>
+    <td><span style="font-weight: bold;"> init</span> </td>
+    <td style="width: 103px;"><span style="font-weight: bold;"> coord</span> </td>
+    <td style="width: 211px;"><span style="font-weight: bold;"> goto</span> </td>
+    <td><span style="font-weight: bold;"> move</span> </td>
+    <td><span style="font-weight: bold;"> stop</span> </td>
+    <td><span style="font-weight: bold;"> state</span> </td>
   </tr>
   <tr>
-    <td><a name="radec" id="radec">tel1 radec </a></td>
-    <td> ?on|off? marche/arrêt du suivi sidéral </td>
+    <td><a name="radec" id="radec"><span style="font-weight: bold;">tel1 radec</span> </a></td>
+    <td> ?on|off? Marche/Arrêt du suivi sidéral. </td>
     <td> {ra dec} <br />
       Initialise les codeurs <br />
-      sur des coordonnées </td>
-    <td> pas d'arguments <br />
-      Retourne la valeur actuelle <br />
-      des codeurs </td>
-    <td> {ra dec}<br />
+      sur des coordonnées. </td>
+    <td style="width: 103px;">
+      ?-equinox value?<br />
+Retourne la valeur actuelle <br />
+      des codeurs.<br />
+L'option -equinox précise la référence des coordonnées.<br />
+ </td>
+    <td style="width: 211px;"> {ra dec}<br />
       ?-rate value?<br />
-      ?-blocking boolean? <br />
+?-blocking boolean?<br />
+?-backlash boolean?<br />
+
+      ?-equinox value?<br />
       Rallie à la position <br />
-      indiquée.<br />
-L'option -rate fixe la vitesse (entre 0 et 1). L'option -blocking
+      indiquée. L'option -rate est un nombre qui varie entre 0 (vitesse <br />
+
+      la plus petite) et 1 (vitesse la plus grande). L'option -blocking
 précise s'il faut attendre la fin du pointage (=1 défaut) ou non (=0)
-pour terminer la commande.<br />
+pour terminer la commande. <br />
+L'option -equinox précise la référence des coordonnées.<br />
     </td>
-    <td> n|s|e|w ?rate? <br />
+    <td> n|s|e|w<br />
+?-rate value?<br />
       Bouge le télescope <br />
-      dans une direction. <br />
-      Rate est un nombre <br />
+      dans une direction.<br />L'option -rate est un nombre <br />
       qui varie entre 0 (vitesse <br />
-      la plus petite) à 1 (vitesse la plus grande). </td>
+      la plus petite) et 1 (vitesse la plus grande). </td>
     <td> ?n|s|e|w? <br />
       Arrête le mouvement <br />
-      spécifié du télescope </td>
-    <td align="center">pas d'arguments.<br />
+      spécifié du télescope. </td>
+    <td style="text-align: left;">Pas d'argument.<br />
       <br />
-      retourne l'état des moteurs (unknown, tracking, pointing)<br />
+      Retourne l'état des moteurs (unknown, tracking, pointing).<br />
     </td>
   </tr>
   <tr>
-    <td><a name="focus" id="focus">tel1 focus</a></td>
+    <td style="font-weight: bold;"><a name="focus" id="focus">tel1 focus</a></td>
     <td> ?on|off? <br />
-      Marche/arrêt du moteur </td>
+      Marche/Arrêt du moteur. </td>
     <td> value <br />
       Initialise le codeur <br />
-      sur la valeur </td>
-    <td> pas d'arguments <br />
+      sur la valeur. </td>
+    <td style="width: 103px;"> Pas d'argument.<br />
+<br />
       Retourne la valeur actuelle <br />
-      du codeur </td>
-    <td> value<br />
-      ?-rate value?<br />
+      du codeur. </td>
+    <td style="width: 211px;"> value<br />
+?-rate value?<br />
       ?-blocking boolean? <br />
       Rallie à la position <br />
-indiquée. L'option -rate fixe la vitesse (entre 0 et 1). L'option
+indiquée. L'option -rate est un nombre qui varie entre 0 (vitesse <br />
+
+
+      la plus petite) et 1 (vitesse la plus grande). L'option
 -blocking précise s'il faut attendre la fin du pointage (=1 défaut) ou
 non (=0) pour terminer la commande.<br />
     </td>
-    <td> +|- ?rate? <br />
+    <td> +|-<br />
+?-rate value? <br />
       Bouge la focalisation dans <br />
-      le sens indiqué. <br />
-      Rate, cf. ci dessus. </td>
-    <td> ?-|+? <br />
-      Arrête le mouvement <br />
-      de focalisation </td>
+      le sens indiqué.<br />L'option -rate est un nombre qui varie entre 0 (vitesse <br />
+
+
+
+      la plus petite) et 1 (vitesse la plus grande). </td>
+    <td>Arrête le mouvement <br />
+      de focalisation. </td>
     <td><br />
 </td>
     
@@ -141,24 +171,49 @@ non (=0) pour terminer la commande.<br />
 </tbody></table>
 <p>Par exemple, pour rallier le télescope aux coordonnées 4h56m12s et -7d32m23s, on écrira : </p>
 <p><code>tel1 radec goto {4h56m12s -7d32m23s}</code> </p>
-<p>Les fonctions de type tel1 radec peuvent parfois se rencontrer sous leur forme obsolète : </p>
-<h3> <a name="coord" id="coord">tel1 coord</a></h3>
-<p>Retourne les coordonnées en ascension droite et en déclinaison du
-télescope ou des codeurs, à condition qu'il soit initialisé, sous la
-forme d'une liste à deux éléments. Par exemple : {14h2m32s +12d42m7s}</p>
+<p><br />
+</p>- Les fonctions de type <span style="font-weight: bold;">tel1 radec</span> peuvent parfois se rencontrer sous leur forme obsolète :<br />
 <h3> <a name="match" id="match">tel1 match <em>coord</em></a></h3>
+
 <p>Resynchronise les coordonnées du télescope sur celles passées à la
-commande sous forme d'une liste à deux éléments : [list 14h2m32s
+commande sous forme d'une liste de deux éléments : [list 14h2m32s
 +12d42m7s] par exemple.</p>
-<h3> <a name="goto" id="goto">tel1 goto <em>coord</em></a></h3>
-<p>Déplace le télescope aux coordonnées passées en paramètres (liste formée de l'ascension droite et de la déclinaison).</p>
+
+<p>Commande obsolète remplacée par <span style="font-weight: bold;">tel1 radec init <span style="font-style: italic;">coord</span></span><br />
+ 
+</p>
+<h3> <a name="coord" id="coord">tel1 coord<br />
+</a></h3>
+Retourne les coordonnées en ascension droite et en déclinaison du
+télescope ou des codeurs, à condition qu'il soit initialisé, sous la
+forme d'une liste à deux éléments. Par exemple : {14h2m32s +12d42m7s}
+<p>Commande obsolète remplacée par <span style="font-weight: bold;">tel1 radec coord <span style="font-style: italic;">
+      ?-equinox value?</span></span><br />
+</p>
+<h3><a name="goto" id="goto">tel1 goto <em>coord</em></a></h3>
+
+<p>Déplace le télescope aux coordonnées passées à la
+commande sous forme d'une liste de deux éléments : [list 14h2m32s
++12d42m7s] par exemple.</p>
+<p>Commande obsolète remplacée par <span style="font-weight: bold;">tel1 radec goto <span style="font-style: italic;">coord </span></span><span style="font-style: italic; font-weight: bold;">?-rate value?</span><span style="font-weight: bold;"><span style="font-style: italic;">
+      ?</span></span><span style="font-weight: bold;"><span style="font-style: italic;">-blocking boolean</span></span><span style="font-weight: bold;"><span style="font-style: italic;">?</span></span><span style="font-weight: bold;"><span style="font-style: italic;" /></span><span style="font-style: italic; font-weight: bold;" /><span style="font-weight: bold;"><span style="font-style: italic;">
+      </span></span><span style="font-style: italic; font-weight: bold;">?-backlash boolean?</span> <span style="font-weight: bold;"><span style="font-style: italic;">?</span></span><span style="font-weight: bold;"><span style="font-style: italic;">-equinox value</span></span><span style="font-weight: bold;"><span style="font-style: italic;">?</span></span></p>
+
 <h3> <a name="move" id="move">tel1 move <em>direction</em></a></h3>
 <p>Déplace le télescope dans la direction donnée, à choisir entre <em>n</em>, <em>s</em>, <em>e</em> ou <em>w</em>.</p>
+<p>Commande obsolète remplacée par <span style="font-weight: bold;">tel1 radec move <span style="font-style: italic;">direction&nbsp;</span></span><span style="font-weight: bold;"><span style="font-style: italic;">
+      ?</span></span><span style="font-weight: bold;"><span style="font-style: italic;">-rate value?</span></span></p>
+
 <h3> <a name="stop" id="stop">tel1 stop <em>direction</em></a></h3>
-<p>Arrête le déplacement dans la direction donnée (<em>n</em>, <em>s</em>, <em>e</em> ou <em>w)</em>.</p>
+<p>Arrête le déplacement dans la direction donnée, à choisir entre <em>n</em>, <em>s</em>, <em>e</em> ou <em>w</em>.</p>
+<p>Commande obsolète remplacée par <span style="font-weight: bold;">tel1 radec stop <span style="font-style: italic;" /><span style="font-weight: bold;"><span style="font-style: italic;">?</span></span><span style="font-weight: bold;"><span style="font-style: italic;">direction</span></span><span style="font-weight: bold;"><span style="font-style: italic;">?</span></span></span></p>
+
 <h3> <a name="speed" id="speed">tel1 speed <em>vitesse</em></a></h3>
 <p>Initialise la vitesse de déplacement du télescope, à choisir entre <em>slew</em>, <em>find</em>, <em>center</em> ou <em>guide</em>.</p>
-De même, les fonctions de type tel1 focus, peuvent parfois se rencontrer sous leur forme obsolète :
+<p>Commande obsolète, la vitesse est un paramètre facultatif de <span style="font-weight: bold;">tel1 radec goto </span>et de<span style="font-weight: bold;"> tel1 radec move</span>.<span style="font-weight: bold;"><span style="font-style: italic;" /></span><span style="font-weight: bold;"><span style="font-style: italic;" /></span><span style="font-weight: bold;"><span style="font-style: italic;"><br />
+</span></span></p>
+<br />
+- De même, les fonctions de type <span style="font-weight: bold;">tel1 focus</span> peuvent parfois se rencontrer sous leur forme obsolète :
 
 <h3> <a name="focus" id="focus">tel1 focus <em>param</em></a></h3>
 <p>Actionne le moteur de focalisation du télescope, en fonction du paramètre <em>param</em> : </p>
@@ -167,16 +222,15 @@ De même, les fonctions de type tel1 focus, peuvent parfois se rencontrer sous le
 <p><em>in</em> : Déplacement du moteur dans un sens. </p>
 <p><em>out</em> : Déplacement dans l'autre sens. </p>
 <p><em>stop</em> : Arrêt du moteur de focalisation.</p>
-<p> La commande <em>in</em> ou <em>out</em> active les moteurs, il faut bien entendu l'arrêter par la commande <em>stop</em> avant que des dégâts ne soient commis...<br />
-
- </p>
-<h2> 2. Commandes spécifique LX200</h2>
+<p> La commande <em>in</em> ou <em>out</em> active les moteurs, il faut bien entendu l'arrêter par la commande <em>stop</em> avant que des dégâts ne soient commis.</p>
+<p></p>
+Commande obsolète, se reporter au tableau du paragraphe 1.2 pour les commandes <span style="font-style: italic;"><span style="font-weight: bold;">tel1 focus ......</span></span><span style="font-weight: bold;"><span style="font-style: italic;"></span></span><h2> 2. Commandes spécifique LX200</h2>
 <h3> 2.1. Commandes du driver externe (liblx200.dll) :</h3>
 <h3> <a name="date" id="date">tel1 date ?Date?</a></h3>
 <p>Mise à jour de l'horloge du microcontrôleur du télescope.</p>
 <h3> <a name="home" id="home">tel1 home ?Home?</a></h3>
 <p>Mise à jour de l'observatoire du microcontrôleur du télescope.</p>
 <h3> <a name="longformat" id="longformat">tel1 longformat ?on|off?</a></h3>
-<p>Choix du format de coordonnées.</p>
+<p>Choix du format de coordonnées (long ou court).</p>
 <h3> <a name="tempo" id="tempo">tel1 tempo ?ms?</a></h3>
 <p>Fixe le délais de temporisation (millisecondes) entre une entrée/sortie.</p></body></html>
