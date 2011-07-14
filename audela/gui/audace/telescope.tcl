@@ -147,9 +147,7 @@ proc ::telescope::match { radec { radecEquinox "J2000.0" } } {
          #--- cas des autres modeles (lx200, audecom, skysensor, ...)
          set choix [ tk_messageBox -type yesno -icon warning -title "$caption(telescope,match)" \
             -message "$caption(telescope,match_confirm)" ]
-#--   modif RZ
          set private(choix) $choix
-#--   fin modif RZ
          if { $choix == "yes" } {
             #--- Cas de la monture principale
             tel$audace(telNo) radec init $radec
@@ -187,9 +185,8 @@ proc ::telescope::match { radec { radecEquinox "J2000.0" } } {
 proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { objectName "" } { radecEquinox "J2000.0" } } {
    global audace caption cataGoto conf
 
-#--   ajout RZ
+   #--- Fixe la valeur de la variable de parking
       set conf($conf(telescope),park_usage) 0
-#--   fin ajout RZ
 
    if { [ ::tel::list ] != "" } {
       set audace(telescope,targetRa)      [lindex $list_radec 0]
@@ -889,9 +886,8 @@ proc ::telescope::move { direction } {
    variable AfterState
    global audace conf
 
-#--   ajout RZ
+   #--- Fixe la valeur de la variable de parking
    set conf($conf(telescope),park_usage) 0
-#--   fin ajout RZ
 
    if { $audace(telNo) != "0" } {
       if { $conf(telescope) == "temma" } {
