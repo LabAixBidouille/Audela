@@ -147,7 +147,6 @@ namespace eval ::foc {
 
    proc adaptOutilFoc { { a "" } { b "" } { c "" } } {
       variable This
-      global audace
 
       if { [ ::focus::possedeControleEtendu $::panneau(foc,focuser) ] == "1" } {
          #--- Avec controle etendu
@@ -174,7 +173,10 @@ namespace eval ::foc {
          pack forget $This.fra5.fra2.lab4
          pack forget $This.fra5.but3
       }
-      $This.fra4.we.labPoliceInvariant configure -text $audace(focus,labelspeed)
+      $This.fra4.we.labPoliceInvariant configure -text $::audace(focus,labelspeed)
+
+      #--- Je configure la combobox du focuser
+      ::confEqt::setValueFrameFocuserTool $This.fra4.focuser $::panneau(foc,focuser)
    }
 
    #------------------------------------------------------------
@@ -203,7 +205,8 @@ namespace eval ::foc {
       }
 
       #--- Initialisation du fenetrage
-      catch {
+      set camItem [ ::confVisu::getCamItem $audace(visuNo) ]
+      if { [ ::confCam::isReady $camItem ] == "1" } {
          set n1n2 [ cam$audace(camNo) nbcells ]
          cam$audace(camNo) window [ list 1 1 [ lindex $n1n2 0 ] [ lindex $n1n2 1 ] ]
       }
@@ -311,7 +314,7 @@ namespace eval ::foc {
       ::camera::alarmeSonore $panneau(foc,exptime)
 
       #--- Appel de l'arret du moteur de foc a 100 millisecondes de la fin de pose
-      if { $::panneau(foc,focuser) !=  "" } {
+      if { $::panneau(foc,focuser) != "" } {
          set delay 0.100
          if { [ expr $panneau(foc,exptime)-$delay ] > "0" } {
             set delay [ expr $panneau(foc,exptime)-$delay ]
@@ -471,7 +474,7 @@ namespace eval ::foc {
          }
 
          #---
-         catch {
+         if { [ winfo exists $audace(base).progress_pose ] == "1" } {
             #--- Cree le widget pour la barre de progression
             frame $audace(base).progress_pose.cadre -width 200 -height 30 -borderwidth 2 -relief groove
             pack $audace(base).progress_pose.cadre -in $audace(base).progress_pose -side top \
@@ -509,12 +512,10 @@ namespace eval ::foc {
                #--- J'affiche "Lecture" des qu'une demande d'arret est demandee
                $audace(base).progress_pose.lab_status configure -text "$caption(foc,numerisation)"
             }
-            catch {
-               #--- Affiche de la barre de progression
-               place $audace(base).progress_pose.cadre.barre_color_invariant -in $audace(base).progress_pose.cadre \
-                  -x 0 -y 0 -relwidth [ expr $cpt / 100.0 ]
-               update
-            }
+            #--- Affiche de la barre de progression
+            place $audace(base).progress_pose.cadre.barre_color_invariant -in $audace(base).progress_pose.cadre \
+               -x 0 -y 0 -relwidth [ expr $cpt / 100.0 ]
+            update
          }
 
       }
@@ -576,8 +577,9 @@ namespace eval ::foc {
    proc cmdSauveLog { namefile } {
       global panneau
 
-      catch {
-         set fileId [ open [ file join $::audace(rep_log) $namefile ] w ]
+     if [ catch { open [ file join $::audace(rep_log) $namefile ] w } fileId ] {
+        return
+     } else {
          puts -nonewline $fileId $::graphik(fichier)
          close $fileId
       }
@@ -586,7 +588,7 @@ namespace eval ::foc {
    proc cmdSpeed { } {
       #--- Commande et gestion de l'erreur
       set catchResult [ catch {
-         if { $::panneau(foc,focuser)  != "" } {
+         if { $::panneau(foc,focuser) != "" } {
             ::focus::incrementSpeed $::panneau(foc,focuser) "tool foc"
          }
       } ]
@@ -607,7 +609,7 @@ namespace eval ::foc {
       $This.fra4.we.canv2PoliceInvariant configure -relief ridge
       #--- Commande et gestion de l'erreur
       set catchResult [ catch {
-         if { $::panneau(foc,focuser)  != "" } {
+         if { $::panneau(foc,focuser) != "" } {
             ::focus::move $::panneau(foc,focuser) $command
          }
       } ]
@@ -866,8 +868,8 @@ proc visuf { win_name x y { title "" } { yesno "yes" } } {
    global audace
 
    if { [ winfo exists $audace(base).visufoc.$win_name ] == "1" } {
-      catch { ::blt::vector delete vx$win_name }
-      catch { ::blt::vector delete vy$win_name }
+      ::blt::vector delete vx$win_name
+      ::blt::vector delete vy$win_name
       catch { $audace(base).visufoc.$win_name element delete line1 }
       ::blt::vector create vx$win_name
       vx$win_name set $x
