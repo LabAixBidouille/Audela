@@ -24,20 +24,62 @@ namespace eval ::Photometrie {
         # Message console "%s\n" [ info level  [info level ] ]
 
         Initialisations
-        if { [ PresenceImage ] < 0 } { return }
-        # AnalyseEnvironnement
-        if { [ catch { AnalyseImage } ] } { return }
-        ChoixManuelAutomatique
 
-        set erreur 0
-        switch -exact -- $photometrie(choix_mode) {
-            arret { return }
-            auto_internet { set erreur [ ModeAutoInternet ] }
-            manuel { set erreur [ ModeManuel ] }
+        # Séquenceur
+        set tout_va_bien "oui"
+        set etape presence_image
+        while { $tout_va_bien == "oui" } {
+            # Message console "%s %s\n" "etape avant traitement" $etape
+
+            switch -exact -- $etape {
+                presence_image {
+                    if { [ PresenceImage ] < 0 } {
+                        set tout_va_bien "non"
+                    }
+                    set etape analyse_image
+                }
+
+                analyse_image {
+                    if { [ catch { AnalyseImage } ] } {
+                        set tout_va_bien "non"
+                    }
+                    set etape selection_reference
+                }
+
+                selection_reference {
+                    ChoixManuelAutomatique
+                    switch -exact -- $photometrie(choix_mode) {
+                        arret {
+                            set tout_va_bien "non"
+                        }
+                        auto_internet {
+                            if { [ ModeAutoInternet ] != 0 } {
+                                set tout_va_bien "non"
+                            }
+                        }
+                        manuel {
+                            if { [ ModeManuel ] != 0 } {
+                                set tout_va_bien "non"
+                            }
+                        }
+                    }
+                    set etape photometrie_ecran
+                }
+
+                photometrie_ecran {
+                    PhotometrieEcran
+                    set etape fin
+                }
+
+                default {
+                    set tout_va_bien "non"
+                }
+            }
+            # Message console "%s %s\n" "étape après traitement" $etape
+            # Message console "%s %s\n" "tout va bien : " $tout_va_bien
         }
-        if { $erreur != 0 } { return }
 
-        PhotometrieEcran
+        ::confVisu::removeZoomListener $::audace(visuNo) "::Photometrie::ChangementZoom"
     }
 
     ##
@@ -46,6 +88,7 @@ namespace eval ::Photometrie {
         variable photometrie
 
         # Message console "%s\n" [ info level  [info level ] ]
+        set photometrie(etat) indefini
 
         set photometrie(defaut,diametre,interieur) 2.25
         set photometrie(defaut,diametre,exterieur1) 6.0
@@ -61,6 +104,9 @@ namespace eval ::Photometrie {
 
         set photometrie(mode_debug) 0
         calaphot_niveau_traces 0
+
+        # Pour la gestion dynamique des zooms
+        ::confVisu::addZoomListener $::audace(visuNo) { ::Photometrie::ChangementZoom }
     }
 
     ##
@@ -194,20 +240,6 @@ namespace eval ::Photometrie {
         variable photometrie_texte
         variable photometrie
         variable data
-
-        set zoom [ visu$::audace(visuNo) zoom ]
-        set fwhm $photometrie(fwhm)
-
-        set xy $photometrie(reference,xy)
-        set x [ expr round( [ lindex $xy 0 ] ) ]
-        set y [ expr round( [ lindex $xy 1 ] ) ]
-        $::audace(hCanvas) create text \
-            [ expr $x * $zoom ] \
-            [ expr ( $photometrie(naxis2) - $y ) * $zoom - 3 * $fwhm ] \
-            -text $photometrie(reference,nom) \
-            -tag photom \
-            -fill red \
-            -anchor n \
 
         set tl [ toplevel $::audace(base).photometrie_mesure \
             -borderwidth 2 \
@@ -433,6 +465,24 @@ namespace eval ::Photometrie {
         set xyi [ ConvEcranImage [ list $xe $ye ] ]
         MesureFlux inc $xyi
         CalculMagnitude
+    }
+
+    ##
+    # @brief Call-back pour les changement au niveau de l'affichage : retrace les graphismes insérés à l'image
+    proc ChangementZoom { args } {
+        variable photometrie
+
+        #set zoom [ visu$::audace(visuNo) zoom ]
+        #::console::affiche_resultat "Le zoom vaut $zoom\n"
+        #::console::affiche_resultat "photometrie(etat)=$photometrie(etat)\n"
+        if { $photometrie(etat) == "selection_etoiles_reference" } {
+            AffichageEtoilesReference
+        }
+        if { $photometrie(etat) == "photometrie_ecran" } {
+            set xy_ecran [ ConvImageEcran $photometrie(reference,xy) ]
+            DessinCercles ref $xy_ecran
+            DessinTexte ref $xy_ecran
+        }
     }
 
     ##
@@ -693,12 +743,37 @@ namespace eval ::Photometrie {
     }
 
     ##
+    # @brief Dessin des textes accompagnant les étoiles
+    # @param tag du texte à gérer
+    # @param liste des coordonnées dans le repère écran
+    proc DessinTexte { tag xy } {
+        variable photometrie
+
+        $::audace(hCanvas) delete texte_$tag
+
+        set zoom [ visu$::audace(visuNo) zoom ]
+        set fwhm $photometrie(fwhm)
+
+        set xy $photometrie(reference,xy)
+        set x [ expr round( [ lindex $xy 0 ] ) ]
+        set y [ expr round( [ lindex $xy 1 ] ) ]
+        $::audace(hCanvas) create text \
+            [ expr $x * $zoom ] \
+            [ expr ( $photometrie(naxis2) - $y ) * $zoom - 3 * $fwhm ] \
+            -text $photometrie(reference,nom) \
+            -tags [ list photom texte_$tag ]\
+            -fill red \
+            -anchor n \
+    }
+
+    ##
     # @brief Dessin des cercles représentant les ouvertures
+    # @param tag du texte à gérer
     # @param liste des coordonnées dans le repère écran
     proc DessinCercles { tag xy } {
         variable photometrie
 
-        $::audace(hCanvas) delete $tag
+        $::audace(hCanvas) delete cercle_$tag
 
         set zoom [ visu$::audace(visuNo) zoom ]
         set fwhm $photometrie(fwhm)
@@ -714,7 +789,7 @@ namespace eval ::Photometrie {
                 [ expr $y - $rayon ] \
                 -outline red \
                 -width 1 \
-                -tags [ list photom $tag $cercle ]
+                -tags [ list photom cercle_$tag $cercle ]
         }
 #        $::audace(hCanvas) itemconfigure exterieur1 -dash { 3 6 3 3 }
 #        $::audace(hCanvas) itemconfigure exterieur2 -dash { 3 6 3 3 }
@@ -733,6 +808,9 @@ namespace eval ::Photometrie {
     ##
     # @brief Mise en place des évènements souris
     proc GestionSouris {} {
+
+        # Message console "%s\n" [ info level  [ info level ] ]
+
         variable photometrie_texte
         variable photometrie
 
@@ -1039,8 +1117,38 @@ namespace eval ::Photometrie {
         set y [ $canevas canvasy $y ]
         set dx [ expr $x - [ lindex $photometrie(coord_souris) 0 ] ]
         set dy [ expr $y - [ lindex $photometrie(coord_souris) 1 ] ]
-        $canevas move inc $dx $dy
+        $canevas move cercle_inc $dx $dy
         set photometrie(coord_souris) [ list $x $y ]
+    }
+
+    proc AffichageEtoilesReference { } {
+        variable photometrie
+
+        $::audace(hCanvas) delete photom
+        for { set e 1 } { $e < $photometrie(nbre_pos_ref) } { incr e } {
+            set xyi $photometrie(pos_etoile_ref,$e)
+
+            set xye [ ConvImageEcran $xyi ]
+            set xe [ lindex $xye 0 ]
+            set ye [ lindex $xye 1 ]
+            set f3 [ expr $photometrie(fwhm) * 1.5 ]
+            $::audace(hCanvas) create oval \
+                [ expr $xe - $f3 ] \
+                [ expr $ye + $f3 ] \
+            [ expr $xe + $f3 ] \
+            [ expr $ye - $f3 ] \
+            -outline red \
+            -width 1 \
+            -tags [ list photom ovale_$e ]
+            $::audace(hCanvas) create text \
+            $xe \
+            [ expr $ye - 1.5 * $f3 ] \
+            -text $e \
+            -tags [ list photom texte_$e ] \
+            -fill red \
+            -anchor n \
+            -tags [ list photom texte_$e ]
+        }
     }
 
     proc SelectionReference {} {
@@ -1117,26 +1225,8 @@ namespace eval ::Photometrie {
                     if { $n == 1 } {
                         set premier_id $id
                     }
-                    set xye [ ConvImageEcran $xyi ]
-                    set xe [ lindex $xye 0 ]
-                    set ye [ lindex $xye 1 ]
-                    set f3 [ expr $photometrie(fwhm) * 1.5 ]
-                    $::audace(hCanvas) create oval \
-                        [ expr $xe - $f3 ] \
-                        [ expr $ye + $f3 ] \
-                        [ expr $xe + $f3 ] \
-                        [ expr $ye - $f3 ] \
-                        -outline red \
-                        -width 1 \
-                        -tags [ list photom ovale_$n ]
-                    $::audace(hCanvas) create text \
-                        $xe \
-                        [ expr $ye - 1.5 * $f3 ] \
-                        -text $n \
-                        -tags [ list photom texte_$n ] \
-                        -fill red \
-                        -anchor n \
-                        -tags [ list photom texte_$n ]
+
+                    set photometrie(pos_etoile_ref,$n) $xyi
 
                     set val(n) $n
                     set val(x) $x
@@ -1164,10 +1254,13 @@ namespace eval ::Photometrie {
                         grid ${tlf1}.${n}_$champ -row $ligne -column $col -sticky news
                     }
                 }
-
             }
             if { $n > 29 } { break }
         }
+
+        set photometrie(nbre_pos_ref) $n
+        AffichageEtoilesReference
+        set photometrie(etat) selection_etoiles_reference
 
         if { $n == 0 } {
             destroy $tl
@@ -1233,10 +1326,14 @@ namespace eval ::Photometrie {
     proc PhotometrieEcran {} {
         variable photometrie
 
+        # Message console "%s\n" [ info level  [ info level ] ]
+
         set tl [ CadreMesurePhotometrie ]
 
+        set photometrie(etat) photometrie_ecran
         set xy_ecran [ ConvImageEcran $photometrie(reference,xy) ]
         DessinCercles ref $xy_ecran
+        DessinTexte ref $xy_ecran
         MesureFlux ref $photometrie(reference,xy)
 
         GestionSouris
