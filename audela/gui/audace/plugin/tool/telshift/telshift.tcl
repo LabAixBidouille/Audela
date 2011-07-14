@@ -1001,12 +1001,6 @@ namespace eval ::telshift {
       set camera cam$audace(camNo)
       set buffer buf$audace(bufNo)
 
-      #---
-      catch {
-         set n1n2 [$camera nbcells]
-         $camera window [list 1 1 [lindex $n1n2 0] [lindex $n1n2 1] ]
-      }
-
       #--- the exptime control is used to determine the exposure time for the image
       $camera exptime $exptime
 
@@ -1065,12 +1059,6 @@ namespace eval ::telshift {
       #--- shortcuts
       set camera cam$audace(camNo)
       set buffer buf$audace(bufNo)
-
-      #---
-      catch {
-         set n1n2 [$camera nbcells]
-         $camera window [list 1 1 [lindex $n1n2 0] [lindex $n1n2 1] ]
-      }
 
       #--- the exptime control is used to determine the exposure time for the image
       $camera exptime $exptime
