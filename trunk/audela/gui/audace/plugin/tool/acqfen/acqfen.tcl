@@ -313,16 +313,14 @@ namespace eval ::acqfen {
       set parametres(acqfen,verifier_index_depart)    $panneau(acqfen,verifier_index_depart)
 
       #--- Sauvegarde des parametres
-      catch {
-         set nom_fichier [ file join $::audace(rep_home) acqfen.ini ]
-         if [ catch { open $nom_fichier w } fichier ] {
-            #---
-         } else {
-            foreach { a b } [ array get parametres ] {
-               puts $fichier "set parametres($a) \"$b\""
-            }
-            close $fichier
+      set nom_fichier [ file join $::audace(rep_home) acqfen.ini ]
+      if [ catch { open $nom_fichier w } fichier ] {
+         return
+      } else {
+         foreach { a b } [ array get parametres ] {
+            puts $fichier "set parametres($a) \"$b\""
          }
+         close $fichier
       }
    }
 
@@ -363,7 +361,8 @@ namespace eval ::acqfen {
       ::keyword::setKeywordState $visuNo $::conf(acqfen,keywordConfigName) [ list ]
 
       #--- Initialisation du fenetrage
-      catch {
+      set camItem [ ::confVisu::getCamItem $audace(visuNo) ]
+      if { [ ::confCam::isReady $camItem ] == "1" } {
          set n1n2 [cam$audace(camNo) nbcells]
          cam$audace(camNo) window [ list 1 1 [lindex $n1n2 0] [lindex $n1n2 1] ]
       }
@@ -1464,7 +1463,7 @@ namespace eval ::acqfen {
          cam$audace(camNo) bin [list $panneau(acqfen,bin) $panneau(acqfen,bin)]
 
          #--- La commande window permet de fixer le fenetrage de numerisation du CCD
-         if {$panneau(acqfen,X1) == ""} {
+         if {($panneau(acqfen,X1) == "") || ($panneau(acqfen,Y1) == "") || ($panneau(acqfen,X2) == "") || ($panneau(acqfen,Y2) == "")} {
             cam$audace(camNo) window [list 1 1 $camxis1 $camxis2]
          } else {
             cam$audace(camNo) window [list $panneau(acqfen,X1) $panneau(acqfen,Y1) \
@@ -1651,7 +1650,7 @@ namespace eval ::acqfen {
          }
 
          #---
-         catch {
+         if { [ winfo exists $audace(base).progress_pose ] == "1" } {
             #--- Cree le widget pour la barre de progression
             frame $audace(base).progress_pose.cadre -width 200 -height 30 -borderwidth 2 -relief groove
             pack $audace(base).progress_pose.cadre -in $audace(base).progress_pose -side top \
@@ -1689,12 +1688,10 @@ namespace eval ::acqfen {
                #--- J'affiche "Lecture" des qu'une demande d'arret est demandee
                $audace(base).progress_pose.lab_status configure -text "$caption(acqfen,numerisation)"
             }
-            catch {
-               #--- Affiche de la barre de progression
-               place $audace(base).progress_pose.cadre.barre_color_invariant -in $audace(base).progress_pose.cadre \
-                  -x 0 -y 0 -relwidth [ expr $cpt / 100.0 ]
-               update
-            }
+            #--- Affiche de la barre de progression
+            place $audace(base).progress_pose.cadre.barre_color_invariant -in $audace(base).progress_pose.cadre \
+               -x 0 -y 0 -relwidth [ expr $cpt / 100.0 ]
+            update
          }
 
       }
