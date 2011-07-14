@@ -75,16 +75,6 @@
          if { $panneau(remotectrl,binning) == "2x2" } { set bin 2 }
          if { $panneau(remotectrl,binning) == "1x1" } { set bin 1 }
 
-         #--- Initialisation du fenetrage
-         catch {
-            #--- Debut modif reseau
-            set message "send \{set n1n2 \[cam\$audace(camNo) nbcells\]\}"
-            set n1n2 [eval $message]
-            set message "send \{cam\$audace(camNo) window \[list 1 1 \[lindex \$n1n2 0\] \[lindex \$n1n2 1\] ]\}"
-            eval $message
-            #--- Fin modif reseau
-         }
-
          #--- Alarme sonore de fin de pose
          set message "send \{::camera::alarmeSonore $exptime\}"
          eval $message
