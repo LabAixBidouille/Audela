@@ -19,27 +19,30 @@ namespace eval ::telescope {
 #------------------------------------------------------------
 proc ::telescope::init { } {
    variable private
-   global audace caption
+   global audace caption conf
 
    #--- Chargement des captions
    source [ file join $audace(rep_caption) telescope.cap ]
 
    #--- Initialisation de variables audace
-   set audace(telescope,getra)         "00h00m00"
-   set audace(telescope,getdec)        "+00d00m00"
-   set audace(telescope,targetRa)      "00h00m00"
-   set audace(telescope,targetDec)     "+00d00m00"
-   set audace(telescope,targetName)    ""
-   set audace(telescope,targetEquinox) "J2000.0"
-   set audace(telescope,rate)          "1"
-   set audace(telescope,labelspeed)    "$caption(telescope,interro)"
-   set audace(telescope,speed)         "1"
-   set audace(telescope,goto)          "0"
-   set audace(telescope,inittel)       "$caption(telescope,init)"
-   set audace(telescope,controle)      "$caption(telescope,suivi_marche)"
+   set audace(telescope,getra)           "00h00m00"
+   set audace(telescope,getdec)          "+00d00m00"
+   set audace(telescope,targetRa)        "00h00m00"
+   set audace(telescope,targetDec)       "+00d00m00"
+   set audace(telescope,targetName)      ""
+   set audace(telescope,targetEquinox)   "J2000.0"
+   set audace(telescope,rate)            "1"
+   set audace(telescope,labelspeed)      "$caption(telescope,interro)"
+   set audace(telescope,speed)           "1"
+   set audace(telescope,goto)            "0"
+   set audace(telescope,inittel)         "$caption(telescope,init)"
+   set audace(telescope,controle)        "$caption(telescope,suivi_marche)"
+
+   #--- Initialisation de variables conf
+   if { ! [ info exists conf($conf(telescope),park_usage) ] } { set conf($conf(telescope),park_usage) "0" }
 
    #--- Initialisation de variables private
-   set private(tescopeIsMoving)        "0"
+   set private(tescopeIsMoving)         "0"
 }
 
 #------------------------------------------------------------
@@ -144,6 +147,9 @@ proc ::telescope::match { radec { radecEquinox "J2000.0" } } {
          #--- cas des autres modeles (lx200, audecom, skysensor, ...)
          set choix [ tk_messageBox -type yesno -icon warning -title "$caption(telescope,match)" \
             -message "$caption(telescope,match_confirm)" ]
+#--   modif RZ
+         set private(choix) $choix
+#--   fin modif RZ
          if { $choix == "yes" } {
             #--- Cas de la monture principale
             tel$audace(telNo) radec init $radec
@@ -180,6 +186,10 @@ proc ::telescope::match { radec { radecEquinox "J2000.0" } } {
 #------------------------------------------------------------
 proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { objectName "" } { radecEquinox "J2000.0" } } {
    global audace caption cataGoto conf
+
+#--   ajout RZ
+      set conf($conf(telescope),park_usage) 0
+#--   fin ajout RZ
 
    if { [ ::tel::list ] != "" } {
       set audace(telescope,targetRa)      [lindex $list_radec 0]
@@ -879,6 +889,10 @@ proc ::telescope::move { direction } {
    variable AfterState
    global audace conf
 
+#--   ajout RZ
+   set conf($conf(telescope),park_usage) 0
+#--   fin ajout RZ
+
    if { $audace(telNo) != "0" } {
       if { $conf(telescope) == "temma" } {
          set AfterState "1"
@@ -990,18 +1004,18 @@ proc ::telescope::Boucle { } {
 #    les variables audace(telescope,getra) et audace(telescope,getdec)
 #
 # Parametres :
-#    Aucun
+#    equinox : Parametre facultatif, par defaut il vaut J2000.0
 # Return :
 #    radec : Liste des coordonnees AD et Dec a pointer
 #------------------------------------------------------------
-proc ::telescope::afficheCoord { } {
+proc ::telescope::afficheCoord { { equinox "J2000.0" } } {
    global audace caption conf
 
    set radec ""
 
    if { [ ::tel::list ] != "" } {
       if { [ ::confTel::getPluginProperty hasCoordinates ] == "1" } {
-         set radec [ tel$audace(telNo) radec coord -equinox J2000.0 ]
+         set radec [ tel$audace(telNo) radec coord -equinox $equinox ]
          #--- Traitement des coordonnees
          if { [ lindex $radec 0 ] == "tel$audace(telNo)" } {
             set audace(telescope,getra)  "$caption(telescope,astre_est)"
