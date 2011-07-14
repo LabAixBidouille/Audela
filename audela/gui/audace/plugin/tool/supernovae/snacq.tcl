@@ -1032,12 +1032,6 @@ proc goSnAcq { {sndebug 0} } {
             set camera "cam$audace(camNo)"
             set buffer buf[cam$audace(camNo) buf]
 
-            #--- Initialisation du fenetrage
-            catch {
-               set n1n2 [$camera nbcells]
-               $camera window [list 1 1 [lindex $n1n2 0] [lindex $n1n2 1] ]
-            }
-
             #--- La commande exptime permet de fixer le temps de pose de l'image
             $camera exptime $snconf(exptime)
 
