@@ -25,24 +25,24 @@ proc ::telescope::init { } {
    source [ file join $audace(rep_caption) telescope.cap ]
 
    #--- Initialisation de variables audace
-   set audace(telescope,getra)           "00h00m00"
-   set audace(telescope,getdec)          "+00d00m00"
-   set audace(telescope,targetRa)        "00h00m00"
-   set audace(telescope,targetDec)       "+00d00m00"
-   set audace(telescope,targetName)      ""
-   set audace(telescope,targetEquinox)   "J2000.0"
-   set audace(telescope,rate)            "1"
-   set audace(telescope,labelspeed)      "$caption(telescope,interro)"
-   set audace(telescope,speed)           "1"
-   set audace(telescope,goto)            "0"
-   set audace(telescope,inittel)         "$caption(telescope,init)"
-   set audace(telescope,controle)        "$caption(telescope,suivi_marche)"
+   set audace(telescope,getra)         "00h00m00"
+   set audace(telescope,getdec)        "+00d00m00"
+   set audace(telescope,targetRa)      "00h00m00"
+   set audace(telescope,targetDec)     "+00d00m00"
+   set audace(telescope,targetName)    ""
+   set audace(telescope,targetEquinox) "J2000.0"
+   set audace(telescope,rate)          "1"
+   set audace(telescope,labelspeed)    "$caption(telescope,interro)"
+   set audace(telescope,speed)         "1"
+   set audace(telescope,goto)          "0"
+   set audace(telescope,inittel)       "$caption(telescope,init)"
+   set audace(telescope,controle)      "$caption(telescope,suivi_marche)"
 
    #--- Initialisation de variables conf
    if { ! [ info exists conf($conf(telescope),park_usage) ] } { set conf($conf(telescope),park_usage) "0" }
 
    #--- Initialisation de variables private
-   set private(tescopeIsMoving)         "0"
+   set private(telescopeMoving)        "0"
 }
 
 #------------------------------------------------------------
@@ -186,7 +186,7 @@ proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { 
    global audace caption cataGoto conf
 
    #--- Fixe la valeur de la variable de parking
-      set conf($conf(telescope),park_usage) 0
+   set conf($conf(telescope),park_usage) 0
 
    if { [ ::tel::list ] != "" } {
       set audace(telescope,targetRa)      [lindex $list_radec 0]
@@ -939,7 +939,7 @@ proc ::telescope::stop { direction } {
    global audace conf
 
    #--- j'interromps la boucle dans ::telescope::moveTelescope
-   set private(tescopeIsMoving) 0
+   set private(telescopeMoving) 0
 
    if { [ ::tel::list ] != "" } {
       if { $conf(telescope) == "audecom" } {
@@ -1234,7 +1234,7 @@ proc ::telescope::getTargetEquinox { } {
 #------------------------------------------------------------
 # moveTelescope
 #    Deplace le telescope pendant un duree determinee
-#    Le deplacement est interrompu si private(tescopeIsMoving)!=1
+#    Le deplacement est interrompu si private(telescopeMoving)!=1
 #
 # @param alphaDirection : Direction (e ou w) du mouvement en AD
 # @param alphaDiff      : Deplacement alpha en arcseconde
@@ -1253,7 +1253,7 @@ proc ::telescope::moveTelescope { alphaDirection alphaDiff deltaDirection deltaD
    set alphaDelay    [expr int(1000.0 * ($alphaDiff / [lindex $guidingSpeed 0 ])) ]
    set deltaDelay    [expr int(1000.0 * ($deltaDiff / [lindex $guidingSpeed 1 ])) ]
 
-   set private(tescopeIsMoving) 1
+   set private(telescopeMoving) 1
 
    if { [ ::confTel::getPluginProperty hasMotionWhile ] == "0" } {
       #--- je demarre le deplacement alpha
@@ -1261,7 +1261,7 @@ proc ::telescope::moveTelescope { alphaDirection alphaDiff deltaDirection deltaD
       #--- j'attend l'expiration du delai par tranche de 1 seconde
       set delay $alphaDelay
       while { $delay > 0 } {
-         if { $private(tescopeIsMoving) == 1 } {
+         if { $private(telescopeMoving) == 1 } {
             if { $delay > 1000 } {
                after 999
                set delay [expr $delay - 1000 ]
@@ -1286,7 +1286,7 @@ proc ::telescope::moveTelescope { alphaDirection alphaDiff deltaDirection deltaD
       #--- j'attend l'expiration du delai par tranche de 1 seconde
       set delay $deltaDelay
       while { $delay > 0 } {
-         if { $private(tescopeIsMoving) == 1 } {
+         if { $private(telescopeMoving) == 1 } {
             if { $delay > 10000 } {
                after 9990
                set delay [expr $delay - 10000 ]
