@@ -58,7 +58,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeqt,pas_equipement)      "Nessun equipaggiamento."
    set caption(confeqt,pas_focuser)         "Nessun focheggiatore"
 
-
    set caption(confeqt,attention)           "Attenzione"
    set caption(confeqt,connexion_texte1)    "Attendere qualche secondo per la"
    set caption(confeqt,connexion_texte2)    "connessione del equipaggiamento."
@@ -76,7 +75,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confeqt,pas_equipement)      "No hay equipamiento."
    set caption(confeqt,pas_focuser)         "No hay enfocador"
-
 
    set caption(confeqt,attention)           "!Cuidado¡"
    set caption(confeqt,connexion_texte1)    "Conectando con al equipamiento..."
