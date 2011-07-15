@@ -664,7 +664,7 @@ namespace eval ::obj_lune {
 
       label $frm.frame4.lab2 -text "$caption(obj_lune,date)"
       pack $frm.frame4.lab2 -side left -padx 0 -pady 0
-      label $frm.frame4.lab2a -textvariable "audace(tu_date,format,dmy)"
+      label $frm.frame4.lab2a -textvariable "audace(tu,format,dmy)"
       pack $frm.frame4.lab2a -side left -padx 0 -pady 0
 
       label $frm.frame5.lab3 -text "$caption(obj_lune,heure)"
