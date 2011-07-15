@@ -1000,18 +1000,18 @@ proc ::telescope::Boucle { } {
 #    les variables audace(telescope,getra) et audace(telescope,getdec)
 #
 # Parametres :
-#    equinox : Parametre facultatif, par defaut il vaut J2000.0
+#    aucun
 # Return :
 #    radec : Liste des coordonnees AD et Dec a pointer
 #------------------------------------------------------------
-proc ::telescope::afficheCoord { { equinox "J2000.0" } } {
+proc ::telescope::afficheCoord { } {
    global audace caption conf
 
    set radec ""
 
    if { [ ::tel::list ] != "" } {
       if { [ ::confTel::getPluginProperty hasCoordinates ] == "1" } {
-         set radec [ tel$audace(telNo) radec coord -equinox $equinox ]
+         set radec [ tel$audace(telNo) radec coord -equinox J2000.0 ]
          #--- Traitement des coordonnees
          if { [ lindex $radec 0 ] == "tel$audace(telNo)" } {
             set audace(telescope,getra)  "$caption(telescope,astre_est)"
