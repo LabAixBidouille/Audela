@@ -830,8 +830,13 @@ namespace eval ::audace {
       set tsl_zenith [format "%02dh%02dm%02d" [lindex $tsl 0] [lindex $tsl 1] [expr int($tslsec)]]
       set audace(tsl,format,zenith) $tsl_zenith
       #--- Formatage et affichage de la date et de l'heure TU dans l'interface Aude'ACE
-      set audace(tu_date,format,dmy)  [ clock format [ clock seconds ] -format "%d/%m/%Y" -timezone :UTC ]
+      set audace(tu,format,dmy)  [ clock format [ clock seconds ] -format "%d/%m/%Y" -timezone :UTC ]
       set audace(tu,format,dmyhmsint) [ clock format [ clock seconds ] -format "%d/%m/%Y %H:%M:%S $caption(audace,temps_universel)" -timezone :UTC ]
+      #--- Formatage heure HL pour timer
+      set secondes [ clock seconds ]
+      if { [expr { fmod($secondes,60) } ] == 0 } {
+         set audace(hl,format,hm) [ clock format $secondes -format "%H %M" -timezone :localtime ]
+      }
       after 1000 ::audace::dispClock1
    }
 
