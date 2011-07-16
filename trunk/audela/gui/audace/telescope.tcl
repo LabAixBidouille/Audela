@@ -38,9 +38,6 @@ proc ::telescope::init { } {
    set audace(telescope,inittel)       "$caption(telescope,init)"
    set audace(telescope,controle)      "$caption(telescope,suivi_marche)"
 
-   #--- Initialisation de variables conf
-   if { ! [ info exists conf($conf(telescope),park_usage) ] } { set conf($conf(telescope),park_usage) "0" }
-
    #--- Initialisation de variables private
    set private(telescopeMoving)        "0"
 }
@@ -184,9 +181,6 @@ proc ::telescope::match { radec { radecEquinox "J2000.0" } } {
 #------------------------------------------------------------
 proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { objectName "" } { radecEquinox "J2000.0" } } {
    global audace caption cataGoto conf
-
-   #--- Fixe la valeur de la variable de parking
-   set conf($conf(telescope),park_usage) 0
 
    if { [ ::tel::list ] != "" } {
       set audace(telescope,targetRa)      [lindex $list_radec 0]
@@ -885,9 +879,6 @@ proc ::telescope::move { direction } {
    variable AfterId
    variable AfterState
    global audace conf
-
-   #--- Fixe la valeur de la variable de parking
-   set conf($conf(telescope),park_usage) 0
 
    if { $audace(telNo) != "0" } {
       if { $conf(telescope) == "temma" } {
