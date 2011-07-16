@@ -1525,7 +1525,7 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    # addHduListener
-   #   ajoute une procedure a appeler si on change de Hdu
+   #    ajoute une procedure a appeler si on change de Hdu
    # parametres :
    #    visuNo: numero de la visu
    #    cmd : commande TCL a lancer
@@ -1536,7 +1536,7 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    # removeHduListener
-   #   supprime une procedure a appeler si on change de HDU
+   #    supprime une procedure a appeler si on change de HDU
    # parametres :
    #    visuNo: numero de la visu
    #    cmd : commande TCL a lancer
@@ -1544,9 +1544,10 @@ namespace eval ::confVisu {
    proc removeHduListener { visuNo cmd } {
       trace remove variable ::confVisu::private($visuNo,currentHduNo) write $cmd
    }
+
    #------------------------------------------------------------
    # addFileNameListener
-   #   ajoute une procedure a appeler si on change de nom de fichier image
+   #    ajoute une procedure a appeler si on change de nom de fichier image
    # parametres :
    #    visuNo: numero de la visu
    #    cmd : commande TCL a lancer quand le fichier change
@@ -1557,7 +1558,7 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    # removeFileNameListener
-   #   supprime une procedure a appeler si on change de nom de fichier image
+   #    supprime une procedure a appeler si on change de nom de fichier image
    # parametres :
    #    visuNo: numero de la visu
    #    cmd : commande TCL a lancer quand le fichier change
@@ -1603,7 +1604,7 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    # removeSubWindowListener
-   #   supprime une procedure a appeler si on change le fenetrage
+   #    supprime une procedure a appeler si on change le fenetrage
    # parametres :
    #    visuNo: numero de la visu
    #    cmd : commande TCL a lancer quand le zoom change
@@ -1621,18 +1622,39 @@ namespace eval ::confVisu {
    #------------------------------------------------------------
    proc addZoomListener { visuNo cmd } {
       trace add variable ::confVisu::private($visuNo,zoomListenerFlag) write $cmd
-
    }
 
    #------------------------------------------------------------
    # removeZoomListener
-   #   supprime une procedure a appeler si on change de zoom
+   #    supprime une procedure a appeler si on change de zoom
    # parametres :
    #    visuNo: numero de la visu
    #    cmd : commande TCL a lancer quand le zoom change
    #------------------------------------------------------------
    proc removeZoomListener { visuNo cmd } {
       trace remove variable ::confVisu::private($visuNo,zoomListenerFlag) write $cmd
+   }
+
+   #------------------------------------------------------------
+   # addTimeListener
+   #    ajoute une procedure a appeler au changement du temps (hh mm)
+   # parametres :
+   #    visuNo: numero de la visu
+   #    cmd : commande TCL a lancer quand le temps change
+   #------------------------------------------------------------
+   proc addTimeListener { visuNo cmd } {
+      trace add variable ::audace(hl,format,hm) write "$cmd"
+   }
+
+   #------------------------------------------------------------
+   # removeTimeListener
+   #    supprime une procedure a appeler au changement du temps (hh mm)
+   # parametres :
+   #    visuNo: numero de la visu
+   #    cmd : commande TCL a lancer quand le temps change
+   #------------------------------------------------------------
+   proc removeTimeListener {  visuNo cmd } {
+      trace remove variable ::audace(hl,format,hm) write "$cmd"
    }
 
    #------------------------------------------------------------
