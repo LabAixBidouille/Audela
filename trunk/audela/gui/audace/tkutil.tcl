@@ -457,6 +457,32 @@ proc ::tkutil::displayErrorInfo { title { messageOptionnel "" } } {
       -message "[string range $::errorInfo 0 [string first "\n    while executing" $::errorInfo]]$messageOptionnel"
 }
 
+#
+# transalteDate
+#    Traduit une date (jour et mois) dans la langue de l'utilisateur
+#
+proc ::tkutil::transalteDate { date } {
+   global caption
+
+   #--- Je recupere le jour
+   set nameDay     [ lindex $date 0 ]
+   set listDay     [ list nihil Monday Tuesday Wednesday Thursday Friday Saturday Sunday ]
+   set listeJour   [ list nihil $caption(tkutil,lundi) $caption(tkutil,mardi) $caption(tkutil,mercredi) $caption(tkutil,jeudi) \
+                   $caption(tkutil,vendredi) $caption(tkutil,samedi) $caption(tkutil,dimanche) ]
+   set jourLettres [ lindex $listeJour [ lsearch -regexp $listDay $nameDay ] ]
+
+   #--- Je recupere le mois
+   set nameMonth   [ lindex $date 2 ]
+   set listMonth   [ list nihil January February March April May June July August September October November December ]
+   set listeMois   [ list nihil $caption(tkutil,janvier) $caption(tkutil,fevrier) $caption(tkutil,mars) $caption(tkutil,avril) \
+                   $caption(tkutil,mai) $caption(tkutil,juin) $caption(tkutil,juillet) $caption(tkutil,aout) \
+                   $caption(tkutil,septembre) $caption(tkutil,octobre) $caption(tkutil,novembre) $caption(tkutil,decembre) ]
+   set moisLettres [ lindex $listeMois [ lsearch -regexp $listMonth $nameMonth ] ]
+
+   #--- Je formate la date dans la langue de l'utilisateur
+   set date [ list $jourLettres [ lindex $date 1 ] $moisLettres [ lindex $date 3 ] ]
+}
+
 ##--------------------------------------------------------------
 # validateNumber
 #    verifie la valeur saisie dans un widget
