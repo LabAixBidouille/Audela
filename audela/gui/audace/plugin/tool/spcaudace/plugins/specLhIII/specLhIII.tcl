@@ -75,11 +75,12 @@ namespace eval ::spbmfc {
 # # est déjà lancé à ce stade... Tout ce que je fais, c'est inviter l'utilisateur à
 # # changer d'outil !
 #          } else {
-#          # Entête du fichier
-#     Message log $caption(specLhIII,ouvsess) $numero_version
-#        set date [clock format [clock seconds] -format "%A %d %B %Y"]
-#          set heure $audace(tu,format,hmsint)
-#     Message log $caption(specLhIII,affheure) $date $heure
+#             # Entête du fichier
+#             Message log $caption(specLhIII,ouvsess) $numero_version
+#             set date [clock format [clock seconds] -format "%A %d %B %Y"]
+#             set date [ ::tkutil::transalteDate $date ]
+#             set heure $audace(tu,format,hmsint)
+#             Message log $caption(specLhIII,affheure) $date $heure
 #          }
    }
 #***** Fin de la procédure Demarragespbmfc **********************
