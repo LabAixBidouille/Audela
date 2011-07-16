@@ -49,6 +49,7 @@ proc ::sophie::log::startLogFile { visuNo } {
       #--- En-tete du fichier
       writeLogFile $visuNo log $::caption(sophie,ouvsess) [ package version sophie ]
       set date [ clock format [ clock seconds ] -format "%A %d %B %Y" ]
+      set date [ ::tkutil::transalteDate $date ]
       set heure $::audace(tu,format,hmsint)
       writeLogFile $visuNo log $::caption(sophie,affheure) $date $heure
    }
