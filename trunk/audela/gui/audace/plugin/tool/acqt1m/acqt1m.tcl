@@ -283,6 +283,7 @@ proc ::acqt1m::Demarrageacqt1m { visuNo } {
       #--- En-tete du fichier
       Message $visuNo log $caption(acqt1m,ouvsess) [ package version acqt1m ]
       set date [clock format [clock seconds] -format "%A %d %B %Y"]
+      set date [ ::tkutil::transalteDate $date ]
       set heure $audace(tu,format,hmsint)
       Message $visuNo consolog $caption(acqt1m,affheure) $date $heure
       #--- Definition du binding pour declencher l'acquisition (ou l'arret) par Echap.
