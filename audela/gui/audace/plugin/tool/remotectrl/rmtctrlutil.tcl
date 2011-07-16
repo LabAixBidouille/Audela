@@ -252,6 +252,7 @@
       }
       set nom "DSLR remotectrl "
       set date [clock format [clock seconds] -format "%A %d %B %Y"]
+      set date [ ::tkutil::transalteDate $date ]
       append nom $date ".log"
       set panneau(remotectrl,log) [ file join $rep $nom ]
       writeLog $panneau(remotectrl,log) "$caption(remotectrl,ouvsess)"
