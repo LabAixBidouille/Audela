@@ -403,6 +403,7 @@ namespace eval ::acqdslr {
       set rep "$audace(rep_images)"
       set nom "DSLR acqdslr "
       set date [clock format [clock seconds] -format "%A %d %B %Y"]
+      set date [ ::tkutil::transalteDate $date ]
       append nom $date ".log"
       set panneau(acqdslr,log) [ file join $rep $nom ]
       #writeLog $panneau(acqdslr,log) "$caption(acqdslr,ouvsess)"
