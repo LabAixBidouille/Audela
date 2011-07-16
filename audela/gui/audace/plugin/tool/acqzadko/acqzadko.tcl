@@ -262,6 +262,7 @@ proc ::acqzadko::Demarrageacqzadko { visuNo } {
       #--- En-tete du fichier
       Message $visuNo log $caption(acqzadko,ouvsess) [ package version acqzadko ]
       set date [clock format [clock seconds] -format "%A %d %B %Y"]
+      set date [ ::tkutil::transalteDate $date ]
       set heure $audace(tu,format,hmsint)
       Message $visuNo consolog $caption(acqzadko,affheure) $date $heure
       #--- Definition du binding pour declencher l'acquisition (ou l'arret) par Echap.
