@@ -61,6 +61,7 @@ namespace eval ::pretrfc {
                #--- En-tete du fichier
                Message log $caption(pretrfc,ouvsess) [ package version pretrfc ]
                set date [clock format [clock seconds] -format "%A %d %B %Y"]
+               set date [ ::tkutil::transalteDate $date ]
                set heure $audace(tu,format,hmsint)
                Message consolog $caption(pretrfc,affheure) $date $heure
             }
