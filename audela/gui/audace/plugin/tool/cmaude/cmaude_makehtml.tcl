@@ -18,6 +18,7 @@ set namehtml [string range [mc_date2iso8601 $actuel] 0 9].html
 ::console::affiche_erreur "\n"
 ::console::affiche_erreur "$caption(cmaude,fichier_html) $namehtml\n"
 ::console::affiche_erreur "\n\n"
+
 set existence [ file exists [ file join $folder $namehtml ] ]
 if { $existence == "0" } {
    #--- Here is made the html page header
@@ -48,7 +49,8 @@ if { $existence == "0" } {
    append texte "to both formats, allowing the user to browse easily the images of the night\n"
    append texte "by visualising the JPEG version on a web browser.<br>\n"
    append texte "It requires to have the images in the same directory as this HTML document.\n"
-   append texte "\n"          append texte "<h2>\n"
+   append texte "\n"
+   append texte "<h2>\n"
    append texte "2. Local Ephemeris</h2>\n"
    append texte "Here are some local ephemeris for the current night at $::conf(posobs,nom_observatoire): <br>\n"
    append texte "Night begins at $cmconf(resultb)<br>\n"
@@ -85,37 +87,43 @@ if { $loopexit == "0" } {
    append texte "Here is a fast-to-use Java image browser:"
 
    append texte "<CENTER>\n"
-   append texte "<FORM ACTION=\"\" METHOD=POST\n>"
+   append texte "<FORM NAME=\"myForm\"\n>"
    append texte "<SCRIPT LANGUAGE=JavaScript>\n"
-   append texte "<!--\n"
    append texte "var current = 0;\n"
    append texte "function imageArray() {\n"
    append texte "    this.length = imageArray.arguments.length;\n"
    append texte "    for (var i=0; i<this.length; i++)\n"
-   append texte "     {\n"
-  ### append texte "       this[i] = imageArray.arguments[i];  \n"
-   append texte "     }\n"
-   append texte "}\n"
+   append texte "    {\n"
+   append texte "       this\[i\] = imageArray.arguments\[i\];\n"
+   append texte "    } // end for \n"
+   append texte "} // end imageArray \n"
 
    append texte "// All images in same dir, same size\n"
    append texte "var imgz = new imageArray("
-   for { set k 1 } { $k <= [expr $compteur-2] } { incr k } {
-      append texte "\"[string range [mc_date2jd now] 0 6]-$compteur$cmconf(extension).jpg\","
+   for { set k 1 } { $k <= [expr $compteur-1] } { incr k } {
+      append texte "\"[string range [mc_date2jd now] 0 6]-$k.jpg\","
    }
-   append texte "\"[string range [mc_date2jd now] 0 6]-[expr $compteur-1]$cmconf(extension).jpg\");\n"
-  ### append texte "document.write('<img name=\"myImages\" border=\"3\" src=\"'+imgz[0]+'\">');\n"
+   append texte "\"[string range [mc_date2jd now] 0 6]-$k.jpg\");\n"
+   append texte "var description = new Array("
+   for { set k 1 } { $k <= [expr $compteur-1] } { incr k } {
+      append texte "\"[string range [mc_date2jd now] 0 6]-$k\","
+   }
+   append texte "\"[string range [mc_date2jd now] 0 6]-$k\");\n"
+
+   append texte "document.write('<img name=\"myImages\" border=\"3\" src=\"'+imgz\[0\]+'\">');\n"
+
    append texte "function getPosition(val) {\n"
    append texte "   var goodnum = current+val;\n"
-   append texte "   //Wrap around\n"
    append texte "   if (goodnum < 0) goodnum = imgz.length-1;\n"
    append texte "   else if (goodnum > imgz.length-1) goodnum = 0;\n"
-  ### append texte "   document.myImages.src = imgz[goodnum];\n"
+   append texte "   document.myImages.src = imgz\[goodnum\];\n"
+   append texte "   document.myForm.txtDescription.value = description\[goodnum\];\n"
    append texte "   current = goodnum; }\n"
-   append texte "//-->\n"
 
    append texte "</SCRIPT> <BR>\n"
-   append texte "<INPUT TYPE=button NAME=button VALUE=\"Backward\" onclick=\"getPosition(-1)\">\n"
-   append texte "<INPUT TYPE=button NAME=button VALUE=\"Forward\" onclick=\"getPosition(1)\">\n"
+   append texte "<INPUT TYPE=button NAME=button VALUE=\"Previous\" onclick=\"getPosition(-1)\">\n"
+   append texte "<INPUT TYPE=text NAME=txtDescription VALUE=\"First image\">\n"
+   append texte "<INPUT TYPE=button NAME=button VALUE=\"Next\" onclick=\"getPosition(1)\">\n"
    append texte "</FORM><br><hr></CENTER>\n"
    append texte "</body>\n"
    append texte "</html>\n"
