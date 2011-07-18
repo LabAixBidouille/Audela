@@ -28,7 +28,7 @@
  * (la majuscule est importante pour permettre un chargement par load libxx).
  * Attention : ne pas mettre de chiffres dans le nom du point d'entree.
  */
-#define TEL_ENTRYPOINT Tninefourzero_Init
+#define TEL_ENTRYPOINT T_Init
 
 /*
  * Informations sur le driver, le nom est celui qui apparait quand on fait "package names"

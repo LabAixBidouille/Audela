@@ -1,7 +1,9 @@
+::tel::create t940 -mode 0
+
 tel::create t940 PCI -mode 1
 after 1000
 tel1 appcoord
-tel1 radec coord
+tel1 hadec coord
 
 tel1 extradrift radec 
 set m 7 ; ::console::affiche_resultat "[tel1 get_register_s 0 M $m] [tel1 get_register_s 1 M $m] [tel1 get_register_s 2 M $m]\n"
