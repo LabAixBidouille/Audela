@@ -2,6 +2,7 @@
 
 tel::create t940 PCI -mode 1
 after 1000
+
 tel1 appcoord
 tel1 hadec coord
 
@@ -21,7 +22,7 @@ set k 212 ; ::console::affiche_resultat "[tel1 get_register_s 0 K $k] [tel1 get_
 
 set x 13 ; ::console::affiche_resultat "[tel1 get_register_s 0 X $m] [tel1 get_register_s 1 X $x] [tel1 get_register_s 2 X $x]\n"
 
-set via 100
+set via 1000
 tel1 set_register_s 0 X 13 0 [expr abs($via)]
 if {$via<0} {
    tel1 execute_command_x_s 0 26 1 0 0 71
