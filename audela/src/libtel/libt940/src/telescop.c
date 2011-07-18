@@ -1397,7 +1397,7 @@ int mytel_loadparams(struct telprop *tel,int naxisno) {
 				continue;
 			}
 			// CMD 26 1 {0 0 79} : init
-			if (err=mytel_execute_command(tel,axisno,26,1,0,0,79)) { mytel_error(tel,axisno,err); return 1; }
+//			if (err=mytel_execute_command(tel,axisno,26,1,0,0,79)) { mytel_error(tel,axisno,err); return 1; }
 			// X22.0 coefficients des vitesses
 			if (err=mytel_get_register(tel,axisno,ETEL_X,22,0,&val)) { mytel_error(tel,axisno,err); return 1; }
 			tel->axis_param[axisno].coef_vs=val;
@@ -1420,7 +1420,7 @@ int mytel_loadparams(struct telprop *tel,int naxisno) {
 			if (err=mytel_get_register(tel,axisno,ETEL_M,90,0,&val)) { mytel_error(tel,axisno,err); return 1; }
 			tel->axis_param[axisno].temperature=val;
 			// CMD 26 1 {0 0 77} : arret moteur + index au milieu
-			if (err=mytel_execute_command(tel,axisno,26,1,0,0,77)) { mytel_error(tel,axisno,err); return 1; }
+//			if (err=mytel_execute_command(tel,axisno,26,1,0,0,77)) { mytel_error(tel,axisno,err); return 1; }
 			// M7.0 position au milieu du codeur
 			if (err=mytel_get_register(tel,axisno,ETEL_M,7,0,&val)) { mytel_error(tel,axisno,err); return 1; }
 			tel->axis_param[axisno].posinit=val; 
