@@ -1,2 +1,2 @@
 LIBRARY libt940
-EXPORTS Tninefourzero_Init @1
+EXPORTS T_Init @1
