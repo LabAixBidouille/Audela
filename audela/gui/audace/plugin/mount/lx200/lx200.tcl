@@ -741,7 +741,7 @@ proc ::lx200::getPluginProperty { propertyName } {
       hasGoto                 { return 1 }
       hasMatch                { return 1 }
       hasManualMotion         { return 1 }
-      hasControlSuivi         { return 0 }
+      hasControlSuivi         { return 1 }
       hasModel                { return 1 }
       hasMotionWhile          {
          if { $::conf(lx200,modele) == "$::caption(lx200,modele_ite-lente)" } {
