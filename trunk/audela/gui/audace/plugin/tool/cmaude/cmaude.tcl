@@ -279,10 +279,14 @@ namespace eval ::cmaude {
             set panneau(cmaude,status) "$caption(cmaude,execution_auto)"
             $This.fra3.lab2 configure -text "$panneau(cmaude,status)"
 
+            #--- Calculate local date for comparaison to 'now0' and 'now1' dates
+            #--- because 'now0' and 'now1' dates are based on local date and not on UT date
+            set localDate [ clock format [ clock seconds ] -format "%Y %m %d %H %M %S" -timezone :localtime ]
+
             #--- Calculate 'jd_deb', le julian day corresponding to the beginning
             #--- of the night (sun altitude equals "haurore")
 
-            set date1 [mc_date2ymdhms [mc_date2jd $now]]
+            set date1 [mc_date2ymdhms [mc_date2jd $localDate]]
             if { [lindex $date1 3] < "6" } {
                set date1 [mc_date2ymdhms [mc_date2jd now0]]
             } else {
@@ -292,7 +296,6 @@ namespace eval ::cmaude {
             set jd_deb [mc_date2jd $amj ]
             for { set jj [expr $jd_deb-0.5] } { $jj < [expr $jd_deb] } { set jj [expr $jj+0.001] } {
                set hauteur [lindex [mc_ephem sun [list [mc_date2tt $jj]] {altitude} -topo $localite] 0]
-               set result "[mc_date2ymdhms $jj] => h= $hauteur degres "
                if { $hauteur < $haurore } {
                   break
                }
@@ -307,7 +310,7 @@ namespace eval ::cmaude {
             #--- Calculate 'jd_fin', the julian day corresponding to the end
             #--- of the night (sun altitude equals "haurore")
 
-            set date1 [mc_date2ymdhms [mc_date2jd $now]]
+            set date1 [mc_date2ymdhms [mc_date2jd $localDate]]
             if { [lindex $date1 3] < "6" } {
                set date1 [mc_date2ymdhms [mc_date2jd now0]]
             } else {
@@ -321,7 +324,6 @@ namespace eval ::cmaude {
                    break
                }
             }
-            set jd0 "$jd_fin"
             set jd_fin "$jj"
             set resulte "$caption(cmaude,fin_nuit) [mc_date2iso8601 $jd_fin] $caption(cmaude,TU)\n"
             set cmconf(resulte) "[mc_date2iso8601 $jd_fin] UT\n"
@@ -350,6 +352,7 @@ namespace eval ::cmaude {
                #--- Waiting loop
                while { $actuel <= $flag } {
                   if { $loopexit == "1" } {
+                     $This.fra2.but2 configure -relief raised -state normal
                      break
                   }
                   #--- Bouclage sur l'heure systeme
@@ -580,12 +583,6 @@ namespace eval ::cmaude {
 
       #--- Petit raccourci
       set numcam [ ::confCam::getCamNo [::confVisu::getCamItem $audace(visuNo)] ]
-
-      #--- Initialisation du fenetrage
-      catch {
-         set n1n2 [ cam$numcam nbcells ]
-         cam$numcam window [ list 1 1 [ lindex $n1n2 0 ] [ lindex $n1n2 1 ] ]
-      }
 
       #--- La commande exptime permet de fixer le temps de pose de l'image
       cam$numcam exptime $exptime
