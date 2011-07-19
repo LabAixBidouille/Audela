@@ -117,11 +117,11 @@ proc sunInfo0h { {localite "GPS 2.33 e 48.8 67"} } {
 }
 
 proc sunset { {hauteurlim "0"} {localite "GPS 2.33 e 48.8 67"} } {
+   #--- Date locale (pas TU)
+   set nowLocal [ clock format [ clock seconds ] -format "%Y %m %d %H %M %S" -timezone :localtime ]
    #--- Calcule le jour julien correspondant au prochain commencement de nuit
-   #--- (fixee ici lorsque le soleil atteind la hauteur "hauteurlim" en deg)
-   #--- Date du moment
-   set now [::audace::date_sys2ut now]
-   set actuel [ mc_date2ymdhms [ mc_date2jd $now ] ]
+   #--- (fixee ici lorsque le soleil atteind la hauteur "hauteurlim" en degres)
+   set actuel [ mc_date2ymdhms [ mc_date2jd $nowLocal ] ]
    if { [ lindex $actuel 3 ] < "6" } {
       #--- Debut du jour j
       set actuel [ mc_date2ymdhms [ mc_date2jd now0 ] ]
@@ -143,11 +143,11 @@ proc sunset { {hauteurlim "0"} {localite "GPS 2.33 e 48.8 67"} } {
 }
 
 proc sunrise { {hauteurlim "0"} {localite "GPS 2.33 e 48.8 67"} } {
+   #--- Date locale (pas TU)
+   set nowLocal [ clock format [ clock seconds ] -format "%Y %m %d %H %M %S" -timezone :localtime ]
    #--- Calcule le jour julien correspondant a la prochaine fin de nuit
-   #--- (fixee ici lorsque le soleil atteind la hauteur "hauteurlim" en deg)
-   #--- Date du moment
-   set now [::audace::date_sys2ut now]
-   set actuel [ mc_date2ymdhms [ mc_date2jd $now ] ]
+   #--- (fixee ici lorsque le soleil atteind la hauteur "hauteurlim" en degres)
+   set actuel [ mc_date2ymdhms [ mc_date2jd $nowLocal ] ]
    if { [ lindex $actuel 3 ] < "6" } {
       #--- Debut du jour j
       set actuel [ mc_date2ymdhms [ mc_date2jd now0 ] ]
