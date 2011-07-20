@@ -605,7 +605,9 @@ namespace eval ::confVisu {
                            set window [visu$visuNo window]
                            if { $window == "full" } {
                               #--- je calcule la statistique sur l'image entiere
-                              visu $visuNo [ lrange [ buf$bufNo stat ] 0 1 ]
+                              buf$bufNo imaseries "STAT NULLPIXEL=0.0"
+                              visu $visuNo [ list [ lindex [ buf$bufNo getkwd MIPS-HI ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LO ] 1 ] ]
+                              #visu $visuNo [ lrange [ buf$bufNo stat ] 0 1 ]
                            } else {
                               #--- je calcule la statistique sur la fenetre
                               visu $visuNo [ lrange [ buf$bufNo stat $window ] 0 1 ]
@@ -616,7 +618,9 @@ namespace eval ::confVisu {
                         set window [visu$visuNo window]
                         if { $window == "full" } {
                            #--- je calcule la statistique sur l'image entiere
-                           visu $visuNo [ lrange [ buf$bufNo stat ] 0 1 ]
+                           buf$bufNo imaseries "STAT NULLPIXEL=0.0"
+                           visu $visuNo [ list [ lindex [ buf$bufNo getkwd MIPS-HI ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LO ] 1 ] ]
+                           #visu $visuNo [ lrange [ buf$bufNo stat ] 0 1 ]
                         } else {
                            #--- je calcule la statistique sur la fenetre
                            visu $visuNo [ lrange [ buf$bufNo stat $window ] 0 1 ]
