@@ -172,7 +172,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 	
    if (strcmp(tel->name,"LX200") == 0  ) {
       // --- identify a LX200 GPS ---
-      mytel_sendLX(tel, RETURN_STRING, s, "#:GVP#");
+      mytel_sendLXTempo(tel, RETURN_STRING, s, 5000, "#:GVP#");
 	   k=(int)strlen(s);
 	   if (k>=7) {
 		   // if (strcmp(s+k-7,"LX2001#")==0) { // remarque : la chaine retournee par mytel_sendLX ne contient pas #
@@ -188,6 +188,13 @@ int tel_init(struct telprop *tel, int argc, char **argv)
       tel->refractionCorrection = 0; // la monture n'a assure pas la correction de la refraction
    } else {
       tel->refractionCorrection = 1; // la monture assure la correction de la refraction
+   }
+
+      // je configure la correction de la refraction
+   if ( strcmp(tel->name,"FS2") == 0 ) {
+      tel->reponseSRSD = RETURN_NONE; // ne pas attendre de reponse a une commande Sr ou Sd
+   } else {
+      tel->reponseSRSD = RETURN_CHAR; // attendre la reponse d'un caractere a une commande Sr ou Sd
    }
 
    return 0;
@@ -377,14 +384,16 @@ int mytel_radec_init(struct telprop *tel)
       nbcar_1=8;
       nbcar_2=7;
    }
+
+   
    // Send Sr
    sprintf(s,"mc_angle2lx200ra %f %s",tel->ra0,ls); mytel_tcleval(tel,s);
-	strcpy(ss,tel->interp->result);
-   mytel_sendLX(tel, RETURN_CHAR, s, "#:Sr%s#",ss);
+   strcpy(ss,tel->interp->result);
+   mytel_sendLX(tel, tel->reponseSRSD, s, "#:Sr%s%s#",tel->autostar_char,ss);
    // Send Sd 
    sprintf(s,"mc_angle2lx200dec %f %s",tel->dec0,ls); mytel_tcleval(tel,s);
-	strcpy(ss,tel->interp->result);
-   mytel_sendLX(tel, RETURN_CHAR, s, "#:Sd%s#", ss);
+   strcpy(ss,tel->interp->result);
+    mytel_sendLX(tel, tel->reponseSRSD, s, "#:Sd%s%s#",tel->autostar_char,ss);
    // match
    mytel_sendLX(tel, RETURN_STRING, s, "#:CM#");
    return 0;
@@ -411,11 +420,11 @@ int mytel_radec_init_additional(struct telprop *tel)
    
    sprintf(s,"mc_angle2lx200ra %f %s",tel->ra0,ls); mytel_tcleval(tel,s);
    // Send Sr 
-   mytel_sendLX(tel, RETURN_CHAR, s, "#:Sr%s#", tel->interp->result);
+   mytel_sendLX(tel, tel->reponseSRSD, s, "#:Sr%s%s#", tel->autostar_char, tel->interp->result);
 
    sprintf(s,"mc_angle2lx200dec %f %s",tel->dec0,ls); mytel_tcleval(tel,s);
    // Send Sd 
-   mytel_sendLX(tel, RETURN_CHAR, s, "#:Sd%s#", tel->interp->result);
+   mytel_sendLX(tel, tel->reponseSRSD, s, "#:Sd%s%s#", tel->autostar_char, tel->interp->result);
 
    // Send Cm 
    mytel_sendLX(tel, RETURN_STRING, s, "#:Cm#");
@@ -454,11 +463,11 @@ int mytel_radec_goto(struct telprop *tel)
 
    // Send Sr
    sprintf(s,"mc_angle2lx200ra %f %s",tel->ra0,ls); mytel_tcleval(tel,s);
-   mytel_sendLX(tel, RETURN_CHAR, s, "#:Sr%s#", tel->interp->result);
+   mytel_sendLX(tel, tel->reponseSRSD, s, "#:Sr%s%s#", tel->autostar_char, tel->interp->result);
 
    // Send Sd
    sprintf(s,"mc_angle2lx200dec %f %s",tel->dec0,ls); mytel_tcleval(tel,s);
-   mytel_sendLX(tel, RETURN_CHAR, s, "#:Sd%s#", tel->interp->result);
+   mytel_sendLX(tel, tel->reponseSRSD, s, "#:Sd%s%s#", tel->autostar_char, tel->interp->result);
 
    // Send MS 
    mytel_sendLX(tel, RETURN_CHAR, ss, "#:MS#");
@@ -936,6 +945,20 @@ int mytel_correct(struct telprop *tel,char *direction, int duration)
    return 0;
 }
 
+
+int mytel_sendLX(struct telprop *tel, int returnType, char *response, char *commandFormat, ...) {
+   va_list mkr;
+   char command[1024];
+
+   // j'assemble la commande 
+   va_start(mkr, commandFormat);
+   vsprintf(command, commandFormat, mkr);
+	va_end (mkr);
+
+   return mytel_sendLXTempo( tel, returnType, response, 100, command);
+}
+
+
 /**
  * sendLX : send a command to the telescop
  * @param tel  
@@ -955,12 +978,11 @@ int mytel_correct(struct telprop *tel,char *direction, int duration)
  *    0= error , with error message in tel->msg 
  *  return cr
  */
-int mytel_sendLX(struct telprop *tel, int returnType, char *response,  char *commandFormat, ...) {
+int mytel_sendLXTempo(struct telprop *tel, int returnType, char *response, int nbLoopMax, char *commandFormat, ...) {
 	char command[1024];
 	char s[1024];
 	int cr = 0;
    va_list mkr;
-   int nbLoopMax=5000; // nombre maximum de boucle d'attente de 1 ms
    
    // j'assemble la commande 
    va_start(mkr, commandFormat);
@@ -969,7 +991,7 @@ int mytel_sendLX(struct telprop *tel, int returnType, char *response,  char *com
 
 	mytel_flush(tel);
    // j'envoie la commande
-   sprintf(s,"puts -nonewline %s %s",tel->channel,command); mytel_tcleval(tel,s);
+   sprintf(s,"puts -nonewline %s \"%s\"",tel->channel,command); mytel_tcleval(tel,s);
    // je temporise avant de lire la reponse
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
 
