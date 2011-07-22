@@ -1031,10 +1031,16 @@ int temma_stategoto(struct telprop *tel,int *state)
    int result=0;
    /* ---  */
    sprintf(s,"puts -nonewline %s \"s\r\n\"",tel->channel); mytel_tcleval(tel,s);
+   if ( tel->consoleLog >= 1 ) {
+      logConsole(tel, "State=s\n");
+   }
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    /* --- Lit sur la reponse sur le port serie */
    sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
+   if ( tel->consoleLog >= 1 ) {
+      logConsole(tel, "State result=%s\n", s);
+   }
    if ((int)strlen(s)>=2) {
       if (strcmp(s,"s0")==0) { result=1; } /* tracking */
       if (strcmp(s,"s1")==0) { result=2; } /* goto */
