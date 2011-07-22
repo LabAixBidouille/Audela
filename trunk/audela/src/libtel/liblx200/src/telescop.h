@@ -42,6 +42,7 @@ struct telprop {
    int longformatindex;
    int tempo;
 	char autostar_char[3];
+   int reponseSRSD;
 };
 
 int tel_init(struct telprop *tel, int argc, char **argv);
@@ -92,7 +93,7 @@ int mytel_flush(struct telprop *tel);
 int mytel_tcleval(struct telprop *tel,char *ligne);
 int mytel_correct(struct telprop *tel,char *direction, int duration);
 int mytel_sendLX(struct telprop *tel, int returnType, char *response,  char *commandFormat, ...);
-
+int mytel_sendLXTempo(struct telprop *tel, int returnType, char *response, int nbLoopMax, char *commandFormat, ...);
 #ifdef __cplusplus
 }
 #endif
