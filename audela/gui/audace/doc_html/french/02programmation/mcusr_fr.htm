@@ -3,9 +3,10 @@
 
 
 
+
   <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><title>Librairie MC : Manuel Utilisateur</title></head><body>
 <center>
-<p style="text-align: left;" class="date">Date de mise à jour : 14 juillet 2011</p>
+<p style="text-align: left;" class="date">Date de mise à jour : 23 juillet 2011</p>
 <div style="text-align: left;">
 </div>
 <h1 style="text-align: left;">LIB MC - Une librairie de calculs de mécanique céleste</h1>
@@ -623,12 +624,12 @@ degrés par défaut. Pour avoir un résultat en
 radians ajouter Unit=Radian.</p>
 <p><b><a name="mc_angles2nexstar">mc_angles2nexstar</a></b> <a href="mcusr_fr_new.htm#angle">Angle</a> <a href="mcusr_fr_new.htm#angle">Angle</a> ?bits?: Retourne
 les
-deux angles RA DEC en une seule chaîne au format du protocole
+deux angles Ra et Dec en une seule chaîne au format du protocole
 Nexstar. Bits=16 (par défaut) ou 24.</p>
 <p> <b><a name="mc_nexstar2angles">mc_nexstar2angles </a></b>Nexstar_string
 :
 Retourne
-une liste RA DEC (en degrés) à partir d'une
+une liste Ra Dec (en degrés) à partir d'une
 seule chaîne au format du protocole Nexstar.
 </p>
 <p><a name="mc_radec2altaz" id="mc_radec2altaz"><span style="font-weight: bold;">mc_radec2altaz</span> </a><a href="#angle">Angle_ra</a>
@@ -645,11 +646,16 @@ courante (now).<br />
 paramètres utiles pour le système altazimutal : Azimut,
 Hauteur, Angle horaire et Angle parallactique.</p>
 <p><a name="mc_altaz2radec" id="mc_altaz2radec"><span style="font-weight: bold;">mc_altaz2radec</span> </a><a href="#angle">Angle_Azimuth</a>
-<a href="#angle">Angle_Altitude</a> <a href="#date">Home</a> <a href="#date">Date</a> : Retourne une liste Ra,Dec à partir de
-l'azimut et de la hauteur, les coordonnées équatoriales retournées sont les coordonnées à l'équinoxe de la date courante (now). La date donnée en
+<a href="#angle">Angle_Altitude</a> <a href="#date">Home</a> <a href="#date">Date</a> : Retourne une liste de quatre
+paramètres : Ra, Dec, Angle horaire et Angle parallactique
+à partir de
+l'azimut et de la hauteur, les coordonnées équatoriales retournées sont
+les coordonnées à l'équinoxe de la date courante (now). La date donnée
+en
 paramètre doit contenir l'heure TU. </p>
 <p><a name="mc_altaz2hadec" id="mc_altaz2hadec"><span style="font-weight: bold;">mc_altaz2hadec</span> </a><a href="#angle">Angle_Azimuth</a>
-<a href="#angle">Angle_Altitude</a> <a href="#date">Home</a> <a href="#date">Date</a> : Retourne une liste Angle Horaire,Dec à
+<a href="#angle">Angle_Altitude</a> <a href="#date">Home</a> <a href="#date">Date</a> : Retourne une liste de trois
+paramètres : Angle Horaire, Dec et Angle parallactique à
 partir de l'azimut et de la hauteur. </p>
 <p><a name="mc_refraction" id="mc_refraction"><span style="font-weight: bold;">mc_refraction</span> altitude out2in|in2out
 ?temperature? ?pressure? : Calcule la correction (en degrés) due
