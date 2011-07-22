@@ -1347,7 +1347,7 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                }
             }
          } else {
-            sprintf(ligne,"Usage: %s %s goto {angle_ra angle_dec} ?-rate value? ?-blocking boolean? ?-backlash boolean?",argv[0],argv[1]);
+            sprintf(ligne,"Usage: %s %s goto {angle_ra angle_dec} ?-rate value? ?-blocking boolean? ?-backlash boolean? ?-equinox Jxxxx.x|now?",argv[0],argv[1]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             result = TCL_ERROR;
          }
@@ -1364,6 +1364,10 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                Tcl_SetResult(interp,tel->msg,TCL_VOLATILE);
                result = TCL_ERROR;
             }
+		 } else {
+            sprintf(ligne,"Usage: %s %s move n|s|e|w ?-rate value?",argv[0],argv[1]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            result = TCL_ERROR;
          }
          
       } else if (strcmp(argv[2],"correct")==0) {
