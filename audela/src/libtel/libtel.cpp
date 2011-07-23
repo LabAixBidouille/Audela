@@ -1364,16 +1364,15 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                Tcl_SetResult(interp,tel->msg,TCL_VOLATILE);
                result = TCL_ERROR;
             }
-		 } else {
+         } else {
             sprintf(ligne,"Usage: %s %s move n|s|e|w ?-rate value?",argv[0],argv[1]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             result = TCL_ERROR;
          }
-         
       } else if (strcmp(argv[2],"correct")==0) {
          // correction pour le guidage en ascension droite et en declinaison
-         //  cette commande permet de faire des corrections simultanees sur les deux axes par les telescopes qui
-         //  en sont capables. 
+         // cette commande permet de faire des corrections simultanees sur les deux axes par les telescopes qui
+         // en sont capables.
          char   alphaDirection[2];
          double alphaDistance;
          char   deltaDirection[2];
@@ -1689,7 +1688,7 @@ int cmdTelFocus(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
             tel_focus_move(tel,argv[3]);
             Tcl_SetResult(interp,"",TCL_VOLATILE);
          } else {
-            sprintf(ligne,"Usage: %s %s move +|- ?rate?",argv[0],argv[1]);
+            sprintf(ligne,"Usage: %s %s move +|- ?-rate value?",argv[0],argv[1]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             result = TCL_ERROR;
          }
@@ -1718,18 +1717,18 @@ int cmdTelFocus(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
          }
       } else if(strcmp(argv[2],"out")==0) {
          /* obsolete function */
-		 sprintf(ligne,"%s focus move - %f",argv[0],tel->focus_move_rate);
+         sprintf(ligne,"%s focus move - %f",argv[0],tel->focus_move_rate);
          result=Tcl_Eval(interp,ligne);
       } else if(strcmp(argv[2],"in")==0) {
          /* obsolete function */
-		 sprintf(ligne,"%s focus move + %f",argv[0],tel->focus_move_rate);
+         sprintf(ligne,"%s focus move + %f",argv[0],tel->focus_move_rate);
          result=Tcl_Eval(interp,ligne);
       } else if(strcmp(argv[2],"fast")==0) {
          /* obsolete funstion */
-		 tel->focus_move_rate=1.;
+         tel->focus_move_rate=1.;
       } else if(strcmp(argv[2],"slow")==0) {
          /* obsolete funstion */
-		 tel->focus_move_rate=0.;
+         tel->focus_move_rate=0.;
       } else {
          /* --- sub command not found ---*/
          sprintf(ligne,comment,argv[0],argv[1]);
