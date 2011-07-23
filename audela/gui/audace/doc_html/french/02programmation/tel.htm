@@ -9,8 +9,9 @@
 
 
 
+
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /><title>Fonctions de pilotage de télescopes</title></head><body>
-<p class="date">Date de mise à jour : 14 juillet 2011</p>
+<p class="date">Date de mise à jour : 23 juillet 2011</p>
 <h1>Fonctions de pilotage de télescopes </h1>
 <p> Ces commandes permettent de contrôler des télescopes reconnus par
 AudeLA : LX200. Les commandes qui permettent de contrôler un télescope,
@@ -66,7 +67,9 @@ lors du pointage (tel1 radec goto qui utilise function_cat2tel} et lors
 de la lecture des coordonnées (tel1 radec coord qui utilise
 function_tel2cat). Ces 2 procédures sont exécutées dans la thread du
 télescope, elles ne peuvent donc pas utiliser les procédures et les
-variables du thread principal du Tcl. La fonctionfunction_cat2tel est utilisée par tel1 radec goto et la fonction function_tel2cat est utilisée par tel1 radec coord. <br />
+variables du thread principal du Tcl. La fonctionfunction_cat2tel est
+utilisée par tel1 radec goto et la fonction function_tel2cat est
+utilisée par tel1 radec coord. <br />
 </p>
 <h2> 1.2. Commandes de mouvements</h2>
 Ces commandes affectent les moteurs de l'axe horaire (RA), de
@@ -112,11 +115,11 @@ L'option -equinox précise la référence des coordonnées.<br />
       ?-equinox value?<br />
       Rallie à la position <br />
       indiquée. L'option -rate est un nombre qui varie entre 0 (vitesse <br />
-
-      la plus petite) et 1 (vitesse la plus grande). L'option -blocking
+la plus petite) et 1 (vitesse la plus grande). L'option -blocking
 précise s'il faut attendre la fin du pointage (=1 défaut) ou non (=0)
-pour terminer la commande. <br />
-L'option -equinox précise la référence des coordonnées.<br />
+pour terminer la commande. L'option -backlash précise si le rattrapage
+des jeux est acif (=1) ou inactif (=0 défaut). L'option -equinox
+précise la référence des coordonnées.<br />
     </td>
     <td> n|s|e|w<br />
 ?-rate value?<br />
@@ -196,8 +199,8 @@ forme d'une liste à deux éléments. Par exemple : {14h2m32s +12d42m7s}
 commande sous forme d'une liste de deux éléments : [list 14h2m32s
 +12d42m7s] par exemple.</p>
 <p>Commande obsolète remplacée par <span style="font-weight: bold;">tel1 radec goto <span style="font-style: italic;">coord </span></span><span style="font-style: italic; font-weight: bold;">?-rate value?</span><span style="font-weight: bold;"><span style="font-style: italic;">
-      ?</span></span><span style="font-weight: bold;"><span style="font-style: italic;">-blocking boolean</span></span><span style="font-weight: bold;"><span style="font-style: italic;">?</span></span><span style="font-weight: bold;"><span style="font-style: italic;" /></span><span style="font-style: italic; font-weight: bold;" /><span style="font-weight: bold;"><span style="font-style: italic;">
-      </span></span><span style="font-style: italic; font-weight: bold;">?-backlash boolean?</span> <span style="font-weight: bold;"><span style="font-style: italic;">?</span></span><span style="font-weight: bold;"><span style="font-style: italic;">-equinox value</span></span><span style="font-weight: bold;"><span style="font-style: italic;">?</span></span></p>
+      ?</span></span><span style="font-weight: bold;"><span style="font-style: italic;">-blocking boolean</span></span><span style="font-weight: bold;"><span style="font-style: italic;">?</span></span><span style="font-weight: bold;"><span style="font-style: italic;" /><span style="font-style: italic; font-weight: bold;"><span style="font-weight: bold;"><span style="font-style: italic;">
+      </span></span><span style="font-style: italic; font-weight: bold;">?-backlash boolean?</span> <span style="font-weight: bold;"><span style="font-style: italic;">?</span></span><span style="font-weight: bold;"><span style="font-style: italic;">-equinox value</span></span><span style="font-weight: bold;"><span style="font-style: italic;">?</span></span></span></span></p>
 
 <h3> <a name="move" id="move">tel1 move <em>direction</em></a></h3>
 <p>Déplace le télescope dans la direction donnée, à choisir entre <em>n</em>, <em>s</em>, <em>e</em> ou <em>w</em>.</p>
@@ -206,12 +209,12 @@ commande sous forme d'une liste de deux éléments : [list 14h2m32s
 
 <h3> <a name="stop" id="stop">tel1 stop <em>direction</em></a></h3>
 <p>Arrête le déplacement dans la direction donnée, à choisir entre <em>n</em>, <em>s</em>, <em>e</em> ou <em>w</em>.</p>
-<p>Commande obsolète remplacée par <span style="font-weight: bold;">tel1 radec stop <span style="font-style: italic;" /><span style="font-weight: bold;"><span style="font-style: italic;">?</span></span><span style="font-weight: bold;"><span style="font-style: italic;">direction</span></span><span style="font-weight: bold;"><span style="font-style: italic;">?</span></span></span></p>
+<p>Commande obsolète remplacée par <span style="font-weight: bold;">tel1 radec stop <span style="font-style: italic;"><span style="font-weight: bold;"><span style="font-style: italic;">?</span></span><span style="font-weight: bold;"><span style="font-style: italic;">direction</span></span><span style="font-weight: bold;"><span style="font-style: italic;">?</span></span></span></span></p>
 
 <h3> <a name="speed" id="speed">tel1 speed <em>vitesse</em></a></h3>
 <p>Initialise la vitesse de déplacement du télescope, à choisir entre <em>slew</em>, <em>find</em>, <em>center</em> ou <em>guide</em>.</p>
-<p>Commande obsolète, la vitesse est un paramètre facultatif de <span style="font-weight: bold;">tel1 radec goto </span>et de<span style="font-weight: bold;"> tel1 radec move</span>.<span style="font-weight: bold;"><span style="font-style: italic;" /></span><span style="font-weight: bold;"><span style="font-style: italic;" /></span><span style="font-weight: bold;"><span style="font-style: italic;"><br />
-</span></span></p>
+<p>Commande obsolète, la vitesse est un paramètre facultatif de <span style="font-weight: bold;">tel1 radec goto </span>et de<span style="font-weight: bold;"> tel1 radec move</span>.<span style="font-weight: bold;"><span style="font-style: italic;" /><span style="font-weight: bold;"><span style="font-style: italic;" /><span style="font-weight: bold;"><span style="font-style: italic;"><br />
+</span></span></span></span></p>
 <br />
 - De même, les fonctions de type <span style="font-weight: bold;">tel1 focus</span> peuvent parfois se rencontrer sous leur forme obsolète :
 
@@ -223,8 +226,8 @@ commande sous forme d'une liste de deux éléments : [list 14h2m32s
 <p><em>out</em> : Déplacement dans l'autre sens. </p>
 <p><em>stop</em> : Arrêt du moteur de focalisation.</p>
 <p> La commande <em>in</em> ou <em>out</em> active les moteurs, il faut bien entendu l'arrêter par la commande <em>stop</em> avant que des dégâts ne soient commis.</p>
-<p></p>
-Commande obsolète, se reporter au tableau du paragraphe 1.2 pour les commandes <span style="font-style: italic;"><span style="font-weight: bold;">tel1 focus ......</span></span><span style="font-weight: bold;"><span style="font-style: italic;"></span></span><h2> 2. Commandes spécifique LX200</h2>
+<p />
+Commande obsolète, se reporter au tableau du paragraphe 1.2 pour les commandes <span style="font-style: italic;"><span style="font-weight: bold;">tel1 focus ......</span></span><span style="font-weight: bold;"><span style="font-style: italic;" /></span><h2> 2. Commandes spécifique LX200</h2>
 <h3> 2.1. Commandes du driver externe (liblx200.dll) :</h3>
 <h3> <a name="date" id="date">tel1 date ?Date?</a></h3>
 <p>Mise à jour de l'horloge du microcontrôleur du télescope.</p>
