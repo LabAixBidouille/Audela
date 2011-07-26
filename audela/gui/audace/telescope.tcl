@@ -226,7 +226,7 @@ proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { 
       set catchError [catch {
          if { $audace(telescope,stopgoto) == "0" } {
             tel$audace(telNo) radec goto $list_radec -blocking $blocking -equinox $radecEquinox
-            if { $blocking == 0  } {
+            if { $blocking == 0 } {
                #--- Boucle tant que la monture n'est pas arretee (si on n'utilise pas le mode bloquant du goto)
                set audace(telescope,goto) "1"
                set radec0 [ tel$audace(telNo) radec coord -equinox $radecEquinox ]
@@ -840,7 +840,7 @@ proc ::telescope::controleSuivi { { value " " } } {
    global audace caption conf
 
    if { [ ::tel::list ] != "" } {
-      if { ( $conf(telescope) == "audecom" ) || ( $conf(telescope) == "eqmod" ) || ( $conf(telescope) == "t94" ) || ( $conf(telescope) == "t193" ) || ( $conf(telescope) == "temma" ) } {
+      if { [ ::confTel::getPluginProperty hasControlSuivi ] == "1" } {
          if { $value == " " } {
             if { $audace(telescope,controle) == "$caption(telescope,suivi_marche)" } {
                tel$audace(telNo) radec motor off
