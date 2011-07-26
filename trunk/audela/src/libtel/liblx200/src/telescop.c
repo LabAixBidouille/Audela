@@ -167,20 +167,20 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    // et le retour du premier caractere de la réponse
    tel->tempo=50;
 
-	strcpy(tel->autostar_char," ");
+   strcpy(tel->autostar_char," ");
    mytel_set_format(tel,0);
-	
+
    if (strcmp(tel->name,"LX200") == 0  ) {
       // --- identify a LX200 GPS ---
       mytel_sendLXTempo(tel, RETURN_STRING, s, 5000, "#:GVP#");
-	   k=(int)strlen(s);
-	   if (k>=7) {
-		   // if (strcmp(s+k-7,"LX2001#")==0) { // remarque : la chaine retournee par mytel_sendLX ne contient pas #
-		   if (strcmp(s+k-7,"LX2001#")==0) {
-			   strcpy(tel->autostar_char,"");
-			   tel->tempo=800;
-		   }
-	   }
+      k=(int)strlen(s);
+      if (k>=7) {
+         // if (strcmp(s+k-7,"LX2001#")==0) { // remarque : la chaine retournee par mytel_sendLX ne contient pas #
+         if (strcmp(s+k-7,"LX2001#")==0) {
+            strcpy(tel->autostar_char,"");
+            tel->tempo=800;
+         }
+      }
    }
 
    // je configure la correction de la refraction
@@ -488,16 +488,16 @@ int mytel_radec_goto(struct telprop *tel)
       /* A loop is actived until the telescope is stopped */
       tel_radec_coord(tel,coord0);
       while (1==1) {
-   	   time_in++;
-			if ((strcmp(tel->autostar_char,"")==0)&&(time_in==1)) {
-				sprintf(s,"after 3000"); mytel_tcleval(tel,s);
-			} else {
-				sprintf(s,"after 350"); mytel_tcleval(tel,s);
-			}
+         time_in++;
+         if ((strcmp(tel->autostar_char,"")==0)&&(time_in==1)) {
+            sprintf(s,"after 3000"); mytel_tcleval(tel,s);
+         } else {
+            sprintf(s,"after 350"); mytel_tcleval(tel,s);
+         }
          tel_radec_coord(tel,coord1);
          if (strcmp(coord0,coord1)==0) {break;}
          strcpy(coord0,coord1);
-	     if (time_in>=time_out) {break;}
+         if (time_in>=time_out) {break;}
       }
    }
    return 0;
@@ -578,18 +578,41 @@ int mytel_radec_motor(struct telprop *tel)
    sprintf(s,"after 20"); mytel_tcleval(tel,s);
    if (tel->radec_motor==1) {
       /* stop the motor */
-		if (strcmp(tel->autostar_char,"")==0) {
+      if (strcmp(tel->name,"FS2")==0) {
+         //The speed rate 2 must be set to exactly 1.00x.
+         //For stopping the motor, you must first send the :RC# command. This command selects speed rate 2.
+         //Then you must send the :Me# command, and the motor will immediately stop.
+         mytel_sendLX(tel, RETURN_NONE, NULL, "#:RC#");
+         mytel_sendLX(tel, RETURN_NONE, NULL, "#:Me#");
+      } else if (strcmp(tel->autostar_char,"")==0) {
          //mytel_sendLX(tel, RETURN_NONE, NULL, "#:hW#");
-		} else {
+      } else {
          mytel_sendLX(tel, RETURN_NONE, NULL, "#:AL#");
-		}
+      }
    } else {
       /* start the motor */
-		if (strcmp(tel->autostar_char,"")==0) {
+      if (strcmp(tel->name,"FS2")==0) {
+         //If you send a :Q# command, the motor will continue to run.
+         //I restore the initial speed to send it to the FS2 Hand Controller.
+         mytel_sendLX(tel, RETURN_NONE, NULL, "#:Q#");
+         if ((tel->radec_move_rate<=0.25)) {
+            /* Guide */
+            mytel_sendLX(tel, RETURN_NONE, NULL, "#:RG#");
+         } else if ((tel->radec_move_rate>0.25)&&(tel->radec_move_rate<=0.5)) {
+            /* Center */
+            mytel_sendLX(tel, RETURN_NONE, NULL, "#:RC#");
+         } else if ((tel->radec_move_rate>0.5)&&(tel->radec_move_rate<=0.75)) {
+            /* Find */
+            mytel_sendLX(tel, RETURN_NONE, NULL, "#:RM#");
+         } else if ((tel->radec_move_rate>0.75)) {
+            /* Slew */
+            mytel_sendLX(tel, RETURN_NONE, NULL, "#:RS#");
+         }
+      } else if (strcmp(tel->autostar_char,"")==0) {
          //mytel_sendLX(tel, RETURN_NONE, NULL, "#:hN#");
-		} else {
+      } else {
          mytel_sendLX(tel, RETURN_NONE, NULL, "#:AP#");
-		}
+      }
    }
    //sprintf(s,"after 50"); mytel_tcleval(tel,s);
    return 0;
@@ -761,9 +784,9 @@ int mytel_date_get(struct telprop *tel,char *ligne)
  * mytel_date_set : send a command to the telescop
  * @param tel  
  * @param returntype : type of string returned by LX
- *			0 (return nothing)
- *			1 (return one char)
- *			2 (return string terminated by #)
+ *    0 (return nothing)
+ *    1 (return one char)
+ *    2 (return string terminated by #)
  * @param response  pointeur sur une chaine de caractere dans laquelle sera copiée la reponse 
  * @param commandFormat  commande LX200
  *   exemple "xxxxx#" 
@@ -953,7 +976,7 @@ int mytel_sendLX(struct telprop *tel, int returnType, char *response, char *comm
    // j'assemble la commande 
    va_start(mkr, commandFormat);
    vsprintf(command, commandFormat, mkr);
-	va_end (mkr);
+   va_end (mkr);
 
    return mytel_sendLXTempo( tel, returnType, response, 100, command);
 }
@@ -963,15 +986,15 @@ int mytel_sendLX(struct telprop *tel, int returnType, char *response, char *comm
  * sendLX : send a command to the telescop
  * @param tel  
  * @param returntype : type of string returned by LX
- *			0 (return nothing)
- *			1 (return one char)
- *			2 (return string terminated by #)
+ *    0 (return nothing)
+ *    1 (return one char)
+ *    2 (return string terminated by #)
  * @param response  pointeur sur une chaine de caractere dans laquelle sera copiée la reponse 
  * @param commandFormat  commande LX200
  *   exemple "xxxxx#" 
  *
  * return :
- *		1= OK
+ *    1= OK
  *       if returnType = 0  response = ""
  *       if returnType = 1  response = "0" or "1"
  *       if returnType = 2  response = "...#"
@@ -979,17 +1002,17 @@ int mytel_sendLX(struct telprop *tel, int returnType, char *response, char *comm
  *  return cr
  */
 int mytel_sendLXTempo(struct telprop *tel, int returnType, char *response, int nbLoopMax, char *commandFormat, ...) {
-	char command[1024];
-	char s[1024];
-	int cr = 0;
+   char command[1024];
+   char s[1024];
+   int cr = 0;
    va_list mkr;
-   
+
    // j'assemble la commande 
    va_start(mkr, commandFormat);
    vsprintf(command, commandFormat, mkr);
-	va_end (mkr);
+   va_end (mkr);
 
-	mytel_flush(tel);
+   mytel_flush(tel);
    // j'envoie la commande
    sprintf(s,"puts -nonewline %s \"%s\"",tel->channel,command); mytel_tcleval(tel,s);
    // je temporise avant de lire la reponse
@@ -1067,7 +1090,7 @@ int mytel_sendLXTempo(struct telprop *tel, int returnType, char *response, int n
       mytel_logConsole(tel, "command=%s response=%s\n",command, response);
    }
 
-	return cr;
+   return cr;
 }
 
 void mytel_logConsole(struct telprop *tel, char *messageFormat, ...) {
@@ -1079,7 +1102,7 @@ void mytel_logConsole(struct telprop *tel, char *messageFormat, ...) {
    // j'assemble la commande 
    va_start(mkr, messageFormat);
    vsprintf(message, messageFormat, mkr);
-	va_end (mkr);
+   va_end (mkr);
 
    if ( strcmp(tel->telThreadId,"") == 0 ) {
       sprintf(ligne,"after 0 { ::console::disp \"liblx200: %s\n\"}",message); 
