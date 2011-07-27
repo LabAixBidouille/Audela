@@ -185,12 +185,12 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 
    // je configure la correction de la refraction
    if ( strcmp(tel->name,"AudeCom") == 0 || strcmp(tel->name,"Ite-lente") == 0 ) {
-      tel->refractionCorrection = 0; // la monture n'a assure pas la correction de la refraction
+      tel->refractionCorrection = 0; // la monture n'assure pas la correction de la refraction
    } else {
       tel->refractionCorrection = 1; // la monture assure la correction de la refraction
    }
 
-      // je configure la correction de la refraction
+      // je configure au protocole LX200 du FS2, different du protocole LX200 officiel
    if ( strcmp(tel->name,"FS2") == 0 ) {
       tel->reponseSRSD = RETURN_NONE; // ne pas attendre de reponse a une commande Sr ou Sd
    } else {
