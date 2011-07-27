@@ -51,7 +51,7 @@ struct telini tel_ini[] = {
    {"",       /* telescope name */
     "",       /* protocol name */
     "",       /* product */
-	1.        /* default focal lenght of optic system */
+    1.        /* default focal lenght of optic system */
    },
 };
 
@@ -101,12 +101,12 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 
    // je recupere la position  de l'observatoire 
    for (i=3;i<argc-1;i++) {
-	   if (strcmp(argv[i],"-home")==0) {
-			   strncpy(tel->homePosition, argv[i+1],sizeof(tel->homePosition));
-		}
-	   if (strcmp(argv[i],"-consolelog")==0) {
+      if (strcmp(argv[i],"-home")==0) {
+         strncpy(tel->homePosition, argv[i+1],sizeof(tel->homePosition));
+      }
+      if (strcmp(argv[i],"-consolelog")==0) {
          tel->consoleLog = atoi( argv[i+1]);
-		}
+      }
    }
 
 
@@ -388,9 +388,13 @@ int mytel_radec_state(struct telprop *tel,char *result)
 {
    int state;
    temma_stategoto(tel,&state);
-   if (state==1) {strcpy(result,"tracking");}
-   else if (state==2) {strcpy(result,"pointing");}
-   else {strcpy(result,"unknown");}
+   if (state==1) {
+      strcpy(result,"tracking");
+   } else if (state==2) {
+      strcpy(result,"pointing");
+   } else {
+      strcpy(result,"unknown");
+   }
    return 0;
 }
 
@@ -409,12 +413,12 @@ int mytel_radec_goto(struct telprop *tel)
          /* A loop is actived until the telescope is stopped */
          tel_radec_coord(tel,coord0);
          while (1==1) {
-      	   time_in++;
+            time_in++;
             sprintf(s,"after 350"); mytel_tcleval(tel,s);
             tel_radec_coord(tel,coord1);
             if (strcmp(coord0,coord1)==0) {break;}
             strcpy(coord0,coord1);
-	         if (time_in>=time_out) {break;}
+            if (time_in>=time_out) {break;}
          }
          sate_move_radec=' ';
       }
@@ -481,7 +485,7 @@ int mytel_radec_goto(struct telprop *tel)
          tel_radec_coord(tel,coord1);
          if (strcmp(coord0,coord1)==0) {break;}
          strcpy(coord0,coord1);
-	      if (time_in>=time_out) {break;}
+         if (time_in>=time_out) {break;}
       }
       sate_move_radec=' ';
       tel->ra0=ra00;
@@ -501,7 +505,7 @@ int mytel_radec_goto(struct telprop *tel)
             tel_radec_coord(tel,coord1);
             if (strcmp(coord0,coord1)==0) {break;}
             strcpy(coord0,coord1);
-	         if (time_in>=time_out) {break;}
+            if (time_in>=time_out) {break;}
          }
          sate_move_radec=' ';
       }
@@ -956,7 +960,7 @@ int temma_match(struct telprop *tel)
    /* --- set Zenith (bug of temma for resync) ---*/
    sprintf(s,"puts -nonewline %s \"Z\r\n\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* --- update local sideral time  */
+   /* --- update local sideral time */
    temma_settsl(tel);
    tel->tsl00=tel->tsl;
    /* --- update radec */
@@ -967,10 +971,11 @@ int temma_match(struct telprop *tel)
    strcpy(s,tel->interp->result);
    len=(int)strlen(s);
    if (len>=2) {
-      if (strcmp(s,"R0")==0) { result=0; }
+      if (strcmp(s,"R0")==0) { result=0; } /* OK */
       if (strcmp(s,"R1")==0) { result=1; } /* error synchro RA */
       if (strcmp(s,"R2")==0) { result=2; } /* error synchro DEC */
-      if (strcmp(s,"R3")==0) { result=3; } /* error too digits */
+      if (strcmp(s,"R3")==0) { result=3; } /* error too many digits */
+      if (strcmp(s,"R4")==0) { result=4; } /* error object under horizon */
    }
    if (tel->encoder==0) {
       tel->ha00=tel->ra0;
@@ -1028,31 +1033,39 @@ int temma_stopgoto(struct telprop *tel)
 int temma_stategoto(struct telprop *tel,int *state)
 {
    char s[1024];
-   int result=0;
-   /* ---  */
+   int result=0,len;
+   // ---
    sprintf(s,"puts -nonewline %s \"s\r\n\"",tel->channel); mytel_tcleval(tel,s);
    if ( tel->consoleLog >= 1 ) {
       logConsole(tel, "State=s\n");
    }
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* --- Lit sur la reponse sur le port serie */
+   // --- Lit sur la reponse sur le port serie
    sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
    if ( tel->consoleLog >= 1 ) {
-      logConsole(tel, "State result=%s\n", s);
+      logConsole(tel, "State result=|%s|\n", s);
    }
-   if ((int)strlen(s)>=2) {
-      if (strcmp(s,"s0")==0) { result=1; } /* tracking */
-      if (strcmp(s,"s1")==0) { result=2; } /* goto */
+   len=(int)strlen(s);
+   if (len>=2) {
+      if (strcmp(s,"s0\n")==0) {
+         result=1;
+      } // tracking
+      if (strcmp(s,"s1\n")==0) {
+         result=2;
+      } // pointing
    }
    *state=result;
+   if ( tel->consoleLog >= 1 ) {
+      logConsole(tel, "Result=|%d|\n", result);
+   }
    return result;
 }
 
 int temma_suivi_arret (struct telprop *tel)
 {
    char s[1024];
-   /* ---  */
+   /* --- */
    sprintf(s,"puts -nonewline %s \"STN-ON\r\n\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    /* --- Lit sur la reponse sur le port serie */
@@ -1220,7 +1233,7 @@ double temma_tsl(struct telprop *tel,int *h, int *m,int *sec)
 void temma_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function)
 {
    /* --- conversion TSystem -> TU pour l'interface Aud'ACE par exemple ---*/
-	/*     (function = ::audace::date_sys2ut) */
+   /*     (function = ::audace::date_sys2ut) */
    char ligne[1024];
    sprintf(ligne,"info commands  %s",function);
    Tcl_Eval(interp,ligne);
@@ -1228,7 +1241,7 @@ void temma_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *functio
       sprintf(ligne,"mc_date2iso8601 [%s now]",function);
       Tcl_Eval(interp,ligne);
       strcpy(s,interp->result);
-	}
+   }
 }
 
 int temma_angle_ra2hms(char *in, char *out)
