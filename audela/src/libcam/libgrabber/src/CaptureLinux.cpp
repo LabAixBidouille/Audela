@@ -375,9 +375,7 @@ BOOL CCaptureLinux::initHardware( UINT uIndex, CCaptureListener * captureListene
 
     if ( io == IO_METHOD_MMAP ) {
         // Allocation des buffers dans la mémoire du pilote de la caméra
-        if ( alloc_driver_memory( 2 ) == 0 ) {
-        }
-        else {
+        if ( alloc_driver_memory( 2 ) != 0 ) {
             sprintf(errorMessage, "error alloc_driver_memory");
             close(cam_fd);
             cam_fd = -1;
@@ -506,10 +504,12 @@ BOOL CCaptureLinux::setVideoFormat( char *formatname, char *errorMessage )
     struct v4l2_pix_format *p = (struct v4l2_pix_format *)&fmt.fmt;
 
     /* Parfois indispensable pour appeler VIDIOC_S_FMT */
-    if ( alloc_driver_memory( 0 ) ) {
-        sprintf( errorMessage, "setVideoFormat : Cannot free driver buffers" );
-        webcam_log( LOG_ERROR, "setVideoFormat : Cannot free driver buffers" );
-        return FALSE;
+    if ( io == IO_METHOD_MMAP ) {
+        if ( alloc_driver_memory( 0 ) ) {
+            sprintf( errorMessage, "setVideoFormat : Cannot free driver buffers" );
+            webcam_log( LOG_ERROR, "setVideoFormat : Cannot free driver buffers" );
+            return FALSE;
+        }
     }
 
 
@@ -578,7 +578,11 @@ BOOL CCaptureLinux::setVideoFormat( char *formatname, char *errorMessage )
 
     /* Le nombre et la taille des buffers internes au pilote peuvent dépendre du format */
     if ( io == IO_METHOD_MMAP ) {
-        alloc_driver_memory( 2 );
+        if ( alloc_driver_memory( 2 ) != 0 ) {
+            sprintf( errorMessage, "setVideoFormat : Cannot allocate driver buffers" );
+            webcam_log( LOG_ERROR, "setVideoFormat : Cannot allocate driver buffers" );
+            return FALSE;
+        }
     }
 
     webcam_log( LOG_DEBUG, "setVideoFormat : yuvBufferSize = %d", yuvBufferSize );
@@ -1017,7 +1021,7 @@ int CCaptureLinux::alloc_driver_memory( unsigned int n_buffer ) {
 
     webcam_log( LOG_DEBUG, "alloc_driver_memory : ioctl VIDEOC_REQBUFS" );
     if ( -1 == ioctl( cam_fd, VIDIOC_REQBUFS, &reqbuf ) ) {
-        webcam_log( LOG_DEBUG, "webcam_smmapInit : strerror( errno )" );
+        webcam_log( LOG_DEBUG, "alloc_driver_memory : strerror( errno )" );
         return -1;
     }
     else if ( n_buffer > 0 ) {
