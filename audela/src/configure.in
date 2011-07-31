@@ -194,7 +194,7 @@ if test x"$TARGET" = x"Linux" ; then
 	LIBCAMS="$LIBCAMS libaudine libcagire libcamth libcookbook libhisis libk2 libquicka libstarlight libsynonyme"
 fi
 if test x"$WEBCAM_ENABLE" = x"1" ; then
-	LIBCAMS="$LIBCAMS libwebcam"
+	LIBCAMS="$LIBCAMS libwebcam libgrabber"
 fi
 if test $ARCHITECTURE != "x86_64"; then
 	LIBCAMS="$LIBCAMS libsbig"
