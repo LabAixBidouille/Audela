@@ -855,7 +855,7 @@ BOOL CCaptureLinux::startCapture(unsigned short exptime, unsigned long microSecP
                 webcam_log( LOG_DEBUG, "startCapture : buffer n %d : ioctl VIDEOC_QUERYBUF", i );
                 if ( -1 == ioctl( cam_fd, VIDIOC_QUERYBUF, &buffer ) ) {
                     webcam_log( LOG_DEBUG, "startCapture : %s ", strerror( errno ) );
-                    return -1;
+                    return FALSE;
                 }
 
                 webcam_log( LOG_DEBUG, "startCapture : buffer n %d : ioctl VIDEOC_QUERYBUF : bytesused = %d / field = %d", i, buffer.bytesused, buffer.flags );
@@ -869,7 +869,7 @@ BOOL CCaptureLinux::startCapture(unsigned short exptime, unsigned long microSecP
 
                 if ( MAP_FAILED == mmap_buffers[i].start ) {
                     webcam_log( LOG_ERROR, "startCapture : buffer n %d : %s", i, strerror( errno ) );
-                    return -1;
+                    return FALSE;
                         /* If you do not exit here you should unmap() and free()
                            the buffers mapped so far. */
                         // perror ("mmap");
