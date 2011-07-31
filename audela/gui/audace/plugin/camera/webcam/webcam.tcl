@@ -124,6 +124,7 @@ proc ::webcam::initPlugin { } {
    #--- Attention : Les valeurs de private(videoFormatLabels) et private(videoFormatNames)
    #---             doivent etre dans le meme ordre
    set private(videoFormatLabels) [ list \
+      "720x576 - 720 x 576"  \
       "VGA - 640 x 480"  \
       "CIF - 352 x 288"  \
       "SIF - 320 x 240"  \
@@ -132,7 +133,7 @@ proc ::webcam::initPlugin { } {
       "QSIF - 160 x 120" \
       "SQCIF - 128 x 96" \
    ]
-   set private(videoFormatNames) [ list "VGA" "CIF" "SIF" "SSIF" "QCIF" "QSIF" "SQCIF" ]
+   set private(videoFormatNames) [ list "720x576" "VGA" "CIF" "SIF" "SSIF" "QCIF" "QSIF" "SQCIF" ]
 
    set private(portList) ""
 }
@@ -609,7 +610,12 @@ proc ::webcam::configureCamera { camItem bufNo } {
       }
 
       #--- Je cree la camera
-      set camNo [ cam::create webcam "$conf(webcam,$camItem,port)" \
+      if { $conf(webcam,$camItem,select) == "0" } {
+         set camtype webcam
+      } else {
+         set camtype grabber
+      }
+      set camNo [ cam::create $camtype "$conf(webcam,$camItem,port)" \
          -channel $conf(webcam,$camItem,channel) \
          -lpport $conf(webcam,$camItem,longueposeport) \
          -name WEBCAM \
