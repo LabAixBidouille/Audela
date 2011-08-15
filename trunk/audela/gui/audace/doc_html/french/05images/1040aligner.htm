@@ -3,7 +3,7 @@
 
 
 <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" /><title>Aligner une s&#233;rie d'images</title></head><body>
-<p class="date">Date de mise &#224; jour : 19 juin 2011</p>
+<p class="date">Date de mise &#224; jour : 15 ao&#251;t 2011</p>
 <h1><a name="MANUEL" id="MANUEL">Aligner une s&#233;rie
 d'images</a></h1>
 <h2>1. Quelles images faut-il aligner ?</h2>
@@ -49,7 +49,8 @@ doivent donc pas &#234;tre trop d&#233;cal&#233;s.</td>
 <td style="font-weight: bold;">Intercorr&#233;lation</td>
 <td align="center">oui</td>
 <td align="center">S&#233;lectionner l'image de
-r&#233;f&#233;rence dans l'entr&#233;e <b>image_ref</b></td>
+r&#233;f&#233;rence dans l'entr&#233;e <b>image_ref</b> et le
+plan couleur de r&#233;f&#233;rence</td>
 <td align="center">Alignement sur l'image de r&#233;f&#233;rence
 par intercorr&#233;lation apr&#232;s transform&#233;e de
 Fourier.</td>
@@ -57,20 +58,21 @@ Fourier.</td>
 <td align="center">Plan&#233;taire, solaire, &#233;clipse.</td>
 </tr>
 <tr>
-<td style="font-weight: bold;"><a href="../02programmation/ttus1-fr.htm#REGISTER">Translation automatique</a></td>
+<td style="font-weight: bold;"><a href="../02programmation/ttus1-fr.htm#REGISTER">Translation
+automatique</a></td>
 <td align="center">oui</td>
 <td align="center">Pas de saisie</td>
 <td align="center">Recherche automatique des &#233;toiles puis
-test des translations en attribuant une confiance
-proportionnelle au nombre d'&#233;toiles qui se retrouvent
-superpos&#233;es.</td>
+test des translations en attribuant une confiance proportionnelle
+au nombre d'&#233;toiles qui se retrouvent superpos&#233;es.</td>
 <td align="center">non</td>
 <td align="center">M&#233;thode assez lente s'il y a beaucoup
 d'&#233;toiles. N&#233;anmoins, plus il y a d'&#233;toiles, plus
 la m&#233;thode est efficace.</td>
 </tr>
 <tr>
-<td style="font-weight: bold;"><a href="../02programmation/ttus1-fr.htm#REGISTERFINE">Transformation affine</a></td>
+<td style="font-weight: bold;"><a href="../02programmation/ttus1-fr.htm#REGISTERFINE">Transformation
+affine</a></td>
 <td align="center">oui</td>
 <td align="center">Pas de saisie</td>
 <td align="center">Recherche automatique des &#233;toiles puis
@@ -97,7 +99,8 @@ faites avec le m&#234;me instrument et le m&#234;me temps de
 pose.</td>
 </tr>
 <tr>
-<td style="font-weight: bold;"><a href="../02programmation/ttus1-fr.htm#REGISTER">Astrom&#233;trie WCS</a></td>
+<td style="font-weight: bold;"><a href="../02programmation/ttus1-fr.htm#REGISTER">Astrom&#233;trie
+WCS</a></td>
 <td align="center">oui</td>
 <td align="center">Pas de saisie</td>
 <td align="center">R&#233;alignement par une transformation
@@ -114,10 +117,9 @@ calibr&#233; astrom&#233;triquement les images.</td>
 pr&#233;alable, d&#233;composer en plans couleurs. Les images
 doivent &#234;tre des s&#233;ries num&#233;rot&#233;es.</p>
 <p>Une fois l'image affich&#233;e, il faut d&#233;signer l'objet
-en l'entourant d'une bo&#238;te de s&#233;lection &#224; l'aide de la souris. La translation
-de chacune des images est r&#233;alis&#233;e
-automatiquement.</p>
-
+en l'entourant d'une bo&#238;te de s&#233;lection &#224; l'aide
+de la souris. La translation de chacune des images est
+r&#233;alis&#233;e automatiquement.</p>
 <h2>4. Autres m&#233;thodes</h2>
 <p>Chaque fonction ex&#233;cut&#233;e utilise l'interface
 suivante :</p>
@@ -128,35 +130,39 @@ g&#233;n&#233;rique des images de sortie, puis, suivant le cas,
 de compl&#233;ter et/ou modifier les param&#232;tres
 sp&#233;cifiques &#224; chaque fonction :</p>
 <ul>
-
 <li><b>Intercorr&#233;lation</b> : Indiquer l'image de
 r&#233;f&#233;rence (&#224; saisir dans le champ
-<b>image_ref</b>). Si on a n images &#224; aligner, on choisis une image comme image de r&#233;f&#233;rence et les n-1 images restantes sont
-coch&#233;es dans l'interface graphique ci-dessus. On r&#233;cup&#232;re n images
-realign&#233;es.</li>
-  <li><b>Moindres carr&#233;s</b> : Indiquer l'image de
+<b>image_ref</b>). Si on a n images &#224; aligner, on choisis
+une image comme image de r&#233;f&#233;rence et les n-1 images
+restantes sont coch&#233;es dans l'interface graphique ci-dessus.
+On r&#233;cup&#232;re n images r&#233;align&#233;es.</li>
+<li><b>Moindres carr&#233;s</b> : Indiquer l'image de
 r&#233;f&#233;rence (&#224; saisir dans le champ <span style="font-weight: bold;">file</span> &#224; la place de <b>img</b>)
 et adapter les param&#232;tres obligatoires (delta et
-oversampling). Le choix de l'image de r&#233;f&#233;rence est primordial, on a int&#233;r&#234;t &#224; prendre pour image de 
-r&#233;f&#233;rence celle dont les &#233;toiles sont les plus proches de la position moyenne, et 
-surtout pas celle o&#249; les &#233;toiles sont les plus &#233;loign&#233;es de la position 
-moyenne. <span style="font-style: italic; font-weight: bold;">delta</span> va servir &#224; d&#233;finir la gamme de recherche de la translation. Il 
-faudra donc que la valeur de delta soit sup&#233;rieure au plus grand 
-d&#233;calage entre les images. Si les images flottent toutes dans une boite de 25 pixels de 
-cot&#233;, alors il faudra prendre delta = 25. <span style="font-style: italic; font-weight: bold;">oversampling</span>
-va d&#233;finir la pr&#233;cision avec laquelle l'algorithme va recentrer les
-images. Si on choisit oversampling = 10 alors la registration se fera
-au dixi&#232;me de pixel, si oversampling = 100, ce sera au centi&#232;me de
-pixel. Si on a n images &#224; aligner, l'image de position moyenne est
-choisie comme image de r&#233;f&#233;rence et les n-1 images restantes sont
-coch&#233;es dans l'interface graphique ci-dessus. On r&#233;cup&#232;re n-1 images
-realign&#233;es et l'image de r&#233;f&#233;rence, soit n images.
-
-  </li>
-
-<li>Autres (<span style="font-weight: bold;">Translation automatique</span>, <span style="font-weight: bold;">Transformation affine</span> et <span style="font-weight: bold;">Astrom&#233;trie WCS</span>) : Indiquer la valeur de normaflux. En cas de doute
-laisser la valeur initiale 1 (conservation de la dynamique
-initiale).</li>
+oversampling). Le choix de l'image de r&#233;f&#233;rence est
+primordial, on a int&#233;r&#234;t &#224; prendre pour image de
+r&#233;f&#233;rence celle dont les &#233;toiles sont les plus
+proches de la position moyenne, et surtout pas celle o&#249; les
+&#233;toiles sont les plus &#233;loign&#233;es de la position
+moyenne. <span style="font-style: italic; font-weight: bold;">delta</span> va servir
+&#224; d&#233;finir la gamme de recherche de la translation. Il
+faudra donc que la valeur de delta soit sup&#233;rieure au plus
+grand d&#233;calage entre les images. Si les images flottent
+toutes dans une boite de 25 pixels de cot&#233;, alors il faudra
+prendre delta = 25. <span style="font-style: italic; font-weight: bold;">oversampling</span> va
+d&#233;finir la pr&#233;cision avec laquelle l'algorithme va
+recentrer les images. Si on choisit oversampling = 10 alors la
+registration se fera au dixi&#232;me de pixel, si oversampling =
+100, ce sera au centi&#232;me de pixel. Si on a n images &#224;
+aligner, l'image de position moyenne est choisie comme image de
+r&#233;f&#233;rence et les n-1 images restantes sont coch&#233;es
+dans l'interface graphique ci-dessus. On r&#233;cup&#232;re n-1
+images r&#233;align&#233;es et l'image de r&#233;f&#233;rence, soit n
+images.</li>
+<li>Autres (<span style="font-weight: bold;">Translation
+automatique</span>, <span style="font-weight: bold;">Transformation affine</span> et <span style="font-weight: bold;">Astrom&#233;trie WCS</span>) : Indiquer la
+valeur de normaflux. En cas de doute laisser la valeur initiale 1
+(conservation de la dynamique initiale).</li>
 </ul>
 <p>Les options TT sont &#233;galement accessibles.</p>
 <p>La fonction <b>Intercorr&#233;lation</b> inclut, outre les
@@ -171,26 +177,20 @@ commandes de <b>Images/Combiner</b>.</p>
 <p>Les fonctions d'alignement sont ex&#233;cutables en ligne de
 commande pour des s&#233;ries d'images index&#233;es :</p>
 <ol>
-
 <li>
-<h3>S&#233;lection<br />
-</h3>
+<h3>S&#233;lection<br /></h3>
 <pre>registerbox in out number ?first_index? ?tt_options?<br />
 </pre></li>
-  <li>
-    <h3>Translation automatique</h3>
-
+<li>
+<h3>Translation automatique</h3>
 <pre>register in out number ?tt_options?<br />
 </pre></li>
-
 <li>
-<h3>Transformation affine<br />
-</h3>
+<h3>Transformation affine<br /></h3>
 <pre>register2 in out number ?first_index? ?tt_options?<br />
 </pre></li>
 <li>
-<h3>Moindres carr&#233;s<br />
-</h3>
+<h3>Moindres carr&#233;s<br /></h3>
 <pre>registerfine in out number ?delta? ?oversampling? ?first_index? ?tt_options?<br />
 </pre></li>
 <li>
@@ -222,6 +222,5 @@ dans un autre r&#233;pertoire que les images &#224; traiter).</p>
 <p>Elle renvoie 0 s'il n'y a pas d'erreur, sinon 1.</p>
 <ul class="noindent" />
 </li>
-  </ol>
-
+</ol>
 </body></html>
