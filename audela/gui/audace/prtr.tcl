@@ -462,17 +462,25 @@ namespace eval ::prtr {
                }
             }
             "radiobutton" {
-               #--   reserve a offset
-               if {![winfo exists $w.methode]} {
-                  frame $w.methode
-                  label $w.methode.label -text "$::caption(prtr,methode)"
-                  pack $w.methode.label -side left
-                  foreach radio {somme moyenne mediane} function {ADD MEAN MED} {
-                     radiobutton $w.methode.$radio -text "$::caption(audace,menu,$radio)" \
-                        -indicatoron 1 -variable ::prtr::methode -value $function
-                     pack $w.methode.$radio -side left -expand 1
+               if {![winfo exists $w.$child]} {
+                  frame $w.$child
+                  label $w.$child.label -text "$::caption(prtr,$child)"
+                  pack $w.$child.label -side left
+                  switch -exact $child {
+                     "methode"   {  foreach radio {somme moyenne mediane} function {ADD MEAN MED} {
+                                       radiobutton $w.$child.$radio -text "$::caption(audace,menu,$radio)" \
+                                          -indicatoron 1 -variable ::prtr::${child} -value $function
+                                       pack $w.$child.$radio -side left -expand 1
+                                    }
+                                 }
+                     "plan"      {  foreach radio {r g b} {
+                                       radiobutton $w.$child.$radio -text "$::caption(prtr,$child,$radio)" \
+                                          -indicatoron 1 -variable ::prtr::${child} -value $radio
+                                       pack $w.$child.$radio -side left -expand 1
+                                    }
+                                 }
                   }
-                  grid $w.methode -row $row -column $col -columnspan 2 -padx $d -pady 5 -sticky ew
+                  grid $w.$child -row $row -column $col -columnspan 2 -padx $d -pady 5 -sticky ew
                }
                incr col "1"
             }
@@ -1149,6 +1157,11 @@ namespace eval ::prtr {
                   set children [lreplace $children $k $k]
                   set children [concat $children "$this.$fr.methode.somme" \
                      "$this.$fr.methode.moyenne" "$this.$fr.methode.mediane"]
+               } elseif {"$this.$fr.plan" in $children} {
+                  set k [lsearch $children "$this.$fr.plan"]
+                  set children [lreplace $children $k $k]
+                  set children [concat $children "$this.$fr.plan.label" "$this.$fr.plan.r" \
+                     "$this.$fr.plan.g" "$this.$fr.plan.b"]
                }
                set private(frames) [concat $private(frames) $children]
             }
@@ -1467,7 +1480,7 @@ namespace eval ::prtr {
 
       dict set CENTER "$caption(audace,menu,reg_inter)"           fun "CENTER"
       dict set CENTER "$caption(audace,menu,reg_inter)"           hlp "$help(dir,images) 1040aligner.htm"
-      dict set CENTER "$caption(audace,menu,reg_inter)"           par "image_ref \"\" "
+      dict set CENTER "$caption(audace,menu,reg_inter)"           par "plan g image_ref \"\" "
       dict set CENTER "$caption(audace,menu,reg_inter)"           opt "$options nullpixel 0."
       dict set CENTER "$caption(audace,menu,reg_trans)"           fun "REGISTER translate=before"
       dict set CENTER "$caption(audace,menu,reg_trans)"           hlp "$help(dir,images) 1040aligner.htm"
@@ -2028,6 +2041,7 @@ namespace eval ::prtr {
       dict set Var   maxi              "double labelentry"           ;#CLIP
       dict set Var   opt_black         "boolean checkbutton"         ;#PRETRAITEMENT
       dict set Var   methode           "boolean radiobutton"         ;#DARK
+      dict set Var   plan              "boolean radiobutton"         ;#INTERCORRELATION
       dict set Var   kernel_width      "integer combobox"            ;#FILTER
       dict set Var   kernel_coef       "integer combobox"            ;#FILTER
       dict set Var   type_threshold    "integer combobox"            ;#FILTER
@@ -2154,11 +2168,13 @@ namespace eval ::prtr {
       if {$test == "boolean"} {
          #--   teste un parametre booleen
          if {$value == "1"}  {
-               if {$parametre eq "opt_black" && ($::prtr::bias eq "" || $::prtr::dark eq "")} {
-                  return [::prtr::avertiUser err_opt_noir $parametre]
-               } else {
-                  return "$parametre"
-               }
+            if {$parametre eq "opt_black" && ($::prtr::bias eq "" || $::prtr::dark eq "")} {
+               return [::prtr::avertiUser err_opt_noir $parametre]
+            } else {
+               return "$parametre"
+            }
+         } elseif {$value in [list r g b]} {
+            return "$parametre=$value"
          }
       } elseif {$test eq "alpha"} {
          #--   teste un parametre alphanumerique
@@ -3274,6 +3290,9 @@ namespace eval ::prtr {
       set toResize ""
       set toDestroy ""
 
+      #--   extrait le nom du plan principal
+      lassign [::prtr::extractData $options "plan"] options plan_ref
+
       #--   extrait le nom de l'image de reference
       lassign [::prtr::extractData $options "image_ref"] options imgRef
 
@@ -3314,14 +3333,14 @@ namespace eval ::prtr {
       if {$type ne "C"} {
          set ref "reference$extOut"
       } else {
-
          #--   decompose toutes les images en plans couleurs
          foreach file "$imgList reference" {
             ::prtr::decompRGB $file
             set toDestroy [concat $toDestroy ${file}r ${file}g ${file}b]
          }
          #--   indique le plan vert de l'image de reference
-         set ref "referenceg$extOut"
+         #set ref "referenceg$extOut"
+         set ref "reference${plan_ref}$extOut"
       }
 
       #--   gere le repertoire de sortie
@@ -3332,7 +3351,9 @@ namespace eval ::prtr {
       foreach img $imgList {
 
          set plan $img
-         if {$type eq "C"} {set plan ${img}g}
+         if {$type eq "C"} {
+            set plan ${img}${plan_ref}
+         }
 
          set catchError [catch {icorr2d $ref ${plan}$extIn $dest} ErrInfo]
 
