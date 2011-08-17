@@ -202,7 +202,7 @@ struct _PrivateParams {
 #define LOG_WARNING 2
 #define LOG_INFO    3
 #define LOG_DEBUG   4
-int webcam_debug_level = LOG_DEBUG;
+int webcam_debug_level = LOG_INFO;
 
 #include <time.h>
 #include <sys/timeb.h>          /* ftime, struct timebuffer */
@@ -615,7 +615,7 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 
 void cam_stop_exp(struct camprop *cam)
 {
-   webcam_log(LOG_DEBUG,"cam_stop_exp begin");
+   webcam_log( LOG_DEBUG,"cam_stop_exp begin" );
    if (cam->longuepose == 1) {
       //long exposure
       int stop;
@@ -630,7 +630,7 @@ void cam_stop_exp(struct camprop *cam)
       }
       cam->params->capture->grabFrame(cam->msg);
    }
-   webcam_log(LOG_DEBUG,"cam_stop_exp end OK");
+   webcam_log( LOG_DEBUG,"cam_stop_exp end OK" );
 }
 
 /**
@@ -670,7 +670,7 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
     cam_update_window(cam);
 
     if ( cam->sensorColor == 1 ) {
-      // Charge l'image 24 bits
+        // Charge l'image 24 bits
         if ((strcmp(cam->convertbw,"cols")==0)||(strcmp(cam->convertbw,"cfa")==0)) {
             strcpy(cam->pixels_classe, "CLASS_GRAY");
         } else {
@@ -678,21 +678,23 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
         }
         strcpy(cam->pixels_format, "FORMAT_BYTE");
         strcpy(cam->pixels_compression, "COMPRESS_NONE");
-      cam->pixels_reverse_y = 1;
+        cam->pixels_reverse_y = 1;
         if (strcmp(cam->convertbw,"cfa")==0) {
-          cam->pixel_data = (char*)malloc(cam->w * cam->h);
-        } else if (strcmp(cam->convertbw,"cols")==0) {
-          cam->pixel_data = (char*)malloc(cam->w * cam->h);
-        } else {
-          cam->pixel_data = (char*)malloc(cam->w * cam->h * 3);
+            cam->pixel_data = (char*)malloc(cam->w * cam->h);
+        }
+        else if (strcmp(cam->convertbw,"cols")==0) {
+            cam->pixel_data = (char*)malloc(cam->w * cam->h);
+        }
+        else {
+            cam->pixel_data = (char*)malloc(cam->w * cam->h * 3);
         }
 
-      if( cam->pixel_data != NULL) {
-         // copy rgbBuffer into cam->pixel_data and convert color order  BGR -> RGB
-         frameBuffer = cam->params->capture->getGrabbedFrame(cam->msg);
-         if( frameBuffer != NULL ) {
-            unsigned char *pOut = (unsigned char *) cam->pixel_data  ;
-            // j'applique le fenetrage
+        if( cam->pixel_data != NULL) {
+            // copy rgbBuffer into cam->pixel_data and convert color order BGR -> RGB
+            frameBuffer = cam->params->capture->getGrabbedFrame( cam->msg );
+            if( frameBuffer != NULL ) {
+                unsigned char *pOut = (unsigned char *) cam->pixel_data  ;
+                // j'applique le fenetrage
                 if (strcmp(cam->convertbw,"cols")==0) {
                     for(int y = cam->y2; y >= cam->y1; y-- ) {
                         unsigned char *pIn = frameBuffer + y * cam->imax *3 ;
@@ -702,7 +704,8 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
                             *(pOut++)= *(pIn + x*3 +0);
                         }
                     }
-                } else if (strcmp(cam->convertbw,"cfa")==0) {
+                }
+                else if (strcmp(cam->convertbw,"cfa")==0) {
                     for(int y = cam->y2; y >= cam->y1; y-- ) {
                         unsigned char *pIn = frameBuffer + y * cam->imax *3 ;
                         for(int x= cam->x1; x <= cam->x2; x++) {
@@ -712,7 +715,8 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
                             *(pOut+ (2*(cam->y2-y)+1) * cam->w + 2 * (x-cam->x1) + 1)= *(pIn + x*3 +0);
                         }
                     }
-                } else {
+                }
+                else {
                     for(int y = cam->y2; y >= cam->y1; y-- ) {
                         unsigned char *pIn = frameBuffer + y * cam->imax *3 ;
                         for(int x= cam->x1; x <= cam->x2; x++) {
@@ -722,54 +726,60 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
                         }
                     }
                 }
-         } else {
-            // je retourne un message d'erreur
-            sprintf(cam->msg, "cam_read_ccd: frameBuffer is empty");
-         }
-      } else {
-         // je retourne un message d'erreur
-         sprintf(cam->msg, "cam_read_ccd: Not enougt memory");
-      }
-
-   } else {
-     // Charge l'image 8 bits
-      strcpy(cam->pixels_classe, "CLASS_GRAY");
-      strcpy(cam->pixels_format, "FORMAT_BYTE");
-      strcpy(cam->pixels_compression, "COMPRESS_NONE");
-      cam->pixels_reverse_y = 1;
-      //cam->pixel_data = (char*)malloc(cam->imax*cam->jmax);
-      cam->pixel_data = (char*)malloc(cam->w * cam->h);
-      if( cam->pixel_data != NULL) {
-         // copy rgbBuffer into cam->pixel_data   convert color order  BGR -> RGB
-         frameBuffer = cam->params->capture->getGrabbedFrame(cam->msg);
-         if( frameBuffer != NULL ) {
-            unsigned char *pOut = (unsigned char *) cam->pixel_data;
-            //for(int y = cam->jmax -1; y >= 0; y-- ) {
-            //   unsigned char * pIn = frameBuffer + y * cam->imax *3 ;
-            //   for(int x=0; x <cam->imax; x++) {
-            //      *(pOut++)= *(pIn + x*3 );
-            //   }
-            //}
-            for(int y = cam->y2; y >= cam->y1; y-- ) {
-               unsigned char * pIn = frameBuffer + y * cam->imax *3 ;
-               for(int x= cam->x1; x <= cam->x2; x++) {
-                  *(pOut++)= *(pIn + x*3 );
-               }
             }
-         } else {
+            else {
+                // je retourne un message d'erreur
+                sprintf(cam->msg, "cam_read_ccd: frameBuffer is empty");
+            }
+        }
+        else {
             // je retourne un message d'erreur
-            sprintf(cam->msg, "cam_read_ccd: frameBuffer is empty");
-         }
-      } else {
-         // je retourne un message d'erreur
-         sprintf(cam->msg, "cam_read_ccd: Not enougt memory");
-      }
-   }
-   if (strlen(cam->msg) == 0) {
-      webcam_log(LOG_DEBUG,"cam_read_ccd end OK");
-   } else {
-      webcam_log(LOG_DEBUG,"cam_read_ccd error: %s",cam->msg);
-   }
+            sprintf(cam->msg, "cam_read_ccd: Not enough memory");
+        }
+
+    }
+    else {
+        // Charge l'image 8 bits
+        strcpy(cam->pixels_classe, "CLASS_GRAY");
+        strcpy(cam->pixels_format, "FORMAT_BYTE");
+        strcpy(cam->pixels_compression, "COMPRESS_NONE");
+        cam->pixels_reverse_y = 1;
+        //cam->pixel_data = (char*)malloc(cam->imax*cam->jmax);
+        cam->pixel_data = (char*)malloc(cam->w * cam->h);
+        if( cam->pixel_data != NULL) {
+            // copy rgbBuffer into cam->pixel_data   convert color order  BGR -> RGB
+            frameBuffer = cam->params->capture->getGrabbedFrame(cam->msg);
+            if( frameBuffer != NULL ) {
+                unsigned char *pOut = (unsigned char *) cam->pixel_data;
+                //for(int y = cam->jmax -1; y >= 0; y-- ) {
+                //   unsigned char * pIn = frameBuffer + y * cam->imax *3 ;
+                //   for(int x=0; x <cam->imax; x++) {
+                //      *(pOut++)= *(pIn + x*3 );
+                //   }
+                //}
+                for(int y = cam->y2; y >= cam->y1; y-- ) {
+                    unsigned char * pIn = frameBuffer + y * cam->imax *3 ;
+                    for(int x= cam->x1; x <= cam->x2; x++) {
+                        *(pOut++)= *(pIn + x*3 );
+                    }
+                }
+            }
+            else {
+                // je retourne un message d'erreur
+                sprintf(cam->msg, "cam_read_ccd: frameBuffer is empty");
+            }
+        }
+        else {
+            // je retourne un message d'erreur
+            sprintf(cam->msg, "cam_read_ccd: Not enough memory");
+        }
+    }
+    if (strlen(cam->msg) == 0) {
+        webcam_log(LOG_DEBUG,"cam_read_ccd end OK");
+    }
+    else {
+        webcam_log(LOG_DEBUG,"cam_read_ccd error: %s",cam->msg);
+    }
 }
 
 void cam_shutter_on(struct camprop *cam)
