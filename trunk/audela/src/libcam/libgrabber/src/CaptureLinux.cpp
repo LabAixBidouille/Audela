@@ -94,8 +94,8 @@ CCaptureLinux::CCaptureLinux(char * portName)
     shutterSpeed = -1;
     longExposure = FALSE;
     mmap_buffers = 0;
-    io = IO_METHOD_MMAP;
     capturing = FALSE;
+    driver_params = new v4l2_parameters();
 }
 
 CCaptureLinux::~CCaptureLinux()
@@ -129,177 +129,192 @@ CCaptureLinux::~CCaptureLinux()
 *
 *----------------------------------------------------------------------
 */
-BOOL CCaptureLinux::initHardware( UINT uIndex, CCaptureListener * captureListener, char * errorMessage ) {
-   int index;
-   struct v4l2_format fmt;
-   struct v4l2_capability cap;
-   v4l2_std_id stdid;
 
-   /**
-   * Window size, this function sets maximal as possible size,
-   * usually it is 640 x 480 pixels.
-   */
+BOOL CCaptureLinux::get_parameters( v4l2_parameters * param, char * errorMessage ) {
+    struct v4l2_capability cap;
 
-    ng_color_yuv2rgb_init();
-    if ( -1 == ( cam_fd = open( portName, O_RDWR ) ) ) {
-        sprintf( errorMessage, "Can't open %s - %s", portName, strerror(errno) );
-        return FALSE;
-    }
-
-    webcam_log( LOG_DEBUG, "initHardware %s cam_fd=%d\n", portName, cam_fd );
-
-    webcam_log( LOG_DEBUG, "initHardware : ioctl VIDEO_QUERY_CAP" );
+    webcam_log( LOG_DEBUG, "get_capabilities : ioctl VIDEO_QUERY_CAP" );
     if ( EINVAL == ioctl( cam_fd, VIDIOC_QUERYCAP, &cap ) ) {
         sprintf( errorMessage, "No VIDIOC_QUERY_CAP : %s ", strerror( errno ) );
-        close( cam_fd );
-        cam_fd = -1;
-        webcam_log( LOG_ERROR, "initHardware : VIDEOC_QUERY_CAP non supporté, pilote non compatible V4L2" );
+        webcam_log( LOG_ERROR, "get_capabilities : VIDEOC_QUERY_CAP non supporté, pilote non compatible V4L2" );
         return FALSE;
     }
     else {
-        webcam_log( LOG_DEBUG, "initHardware : pilote %s %u.%u.%u, materiel %s, bus %s", cap.driver, (cap.version >> 16) & 0xff, (cap.version >> 8) & 0xff, cap.version & 0xff, cap.card, cap.bus_info );
+        webcam_log( LOG_DEBUG, "get_capabilities : pilote %s %u.%u.%u, materiel %s, bus %s", cap.driver, (cap.version >> 16) & 0xff, (cap.version >> 8) & 0xff, cap.version & 0xff, cap.card, cap.bus_info );
         unsigned int capabilities = cap.capabilities;
         if ( ( capabilities & V4L2_CAP_VIDEO_CAPTURE ) == 0 ) {
             sprintf( errorMessage, "Not a video capture device" );
-            close( cam_fd );
-            cam_fd = -1;
-            webcam_log( LOG_ERROR, "initHardware : Pas de capture video possible");
+            webcam_log( LOG_ERROR, "get_capabilities : Pas de capture video possible");
             return FALSE;
         }
+
+        param->io |= IO_METHOD_NIL;
         if ( ( capabilities & V4L2_CAP_STREAMING ) != 0 ) {
-            webcam_log( LOG_INFO, "initHardware : Acces en mmap possible");
-            io = IO_METHOD_MMAP;
-            // Libération de la mémoire allouée dans le pilote
-            // Parfois indispensable pour appeler VIDIOC_S_FMT
-            alloc_driver_memory(0);
+            webcam_log( LOG_INFO, "get_capabilities : Accès en mmap possible");
+            param->io |= IO_METHOD_MMAP;
         }
-        else {
-            if ( ( capabilities & V4L2_CAP_READWRITE ) != 0 ) {
-                webcam_log( LOG_DEBUG, "initHardware : Acces en read possible");
-                io = IO_METHOD_READ;
-            }
-            else {
-                sprintf( errorMessage, "No read or mmap access to the device" );
-                close( cam_fd );
-                cam_fd = -1;
-                webcam_log( LOG_ERROR, "initHardware : Pas de lecture possible par read ou mmap");
-                return FALSE;
-            }
+
+        if ( ( capabilities & V4L2_CAP_READWRITE ) != 0 ) {
+            webcam_log( LOG_DEBUG, "get_capabilities : Accès en read possible");
+            param->io |= IO_METHOD_READ;
+        }
+
+        if ( param->io == IO_METHOD_NIL ) {
+            sprintf( errorMessage, "No supported io method (mmap or read)" );
+            webcam_log( LOG_ERROR, "get_capabilities : Pas de lecture possible par read ou mmap");
+            return FALSE;
         }
     }
 
-    /* Recherche des formats de données disponibles et sélection */
+    /* Recherche de tous les formats de données de sortie disponibles (numériques) */
     struct v4l2_fmtdesc fmt_desc;
     fmt_desc.index = 0;
     fmt_desc.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-    unsigned int supp_format = 0;
-    webcam_log( LOG_DEBUG, "initHardware : ioctl VIDEOC_ENUM_FMT" );
+    param->data_format = FORMAT_NIL;
+    webcam_log( LOG_DEBUG, "get_capabilities : ioctl VIDEOC_ENUM_FMT" );
     while ( ioctl( cam_fd, VIDIOC_ENUM_FMT, &fmt_desc ) >= 0 ) {
-        webcam_log( LOG_DEBUG, "initHardware : VIDIOC_ENUM_FMT : format %s disponible (fourcc=%x)", fmt_desc.description, fmt_desc.pixelformat );
+        webcam_log( LOG_DEBUG, "get_capabilities : VIDIOC_ENUM_FMT : format %s disponible (fourcc=%x)", fmt_desc.description, fmt_desc.pixelformat );
         if ( fmt_desc.pixelformat == fourcc('Y', 'U', 'Y', 'V') )
-            supp_format |= FORMAT_YUV422;
+            param->data_format |= FORMAT_YUV422;
         if ( fmt_desc.pixelformat == fourcc('Y', 'U', '1', '2') )
-            supp_format |= FORMAT_YUV420;
+            param->data_format |= FORMAT_YUV420;
         if ( fmt_desc.pixelformat == fourcc('R', 'G', 'B', '3') )
-            supp_format |= FORMAT_RGB24;
+            param->data_format |= FORMAT_RGB24;
         if ( fmt_desc.pixelformat == fourcc('G', 'R', 'B', 'G') )
-            supp_format |= FORMAT_BAYER_GRBG;
+            param->data_format |= FORMAT_BAYER_GRBG;
         fmt_desc.index ++;
     }
-    webcam_log( LOG_DEBUG, "initHardware : format supportés = %u", supp_format );
+    if ( param->data_format == FORMAT_NIL ) {
+        sprintf( errorMessage, "No supported data format" );
+        webcam_log( LOG_ERROR, "get_capabilities : Pas de format de donnée valide");
+        return FALSE;
+    }
 
-    if ( io == IO_METHOD_READ ) {
+    /* Recherche de tous les formats de données d'entrée disponibles (normes vidéo) */
+    webcam_log( LOG_DEBUG, "initHardware : ioctl VIDEOC_G_STD" );
+    if ( ioctl( cam_fd, VIDIOC_G_STD, &(param->stdid) ) < 0 ) {
+        webcam_log( LOG_WARNING, "initHardware : VIDEOC_G_STD %s", strerror( errno ) );
+        webcam_log( LOG_WARNING, "initHardware : VIDEOC_G_STD not supported. Not an issue as it is optional" );
+    }
+    else {
+        if ( ( param->stdid & 0xffff ) != 0 )
+            webcam_log( LOG_INFO, "VIDIOC_G_STD : PAL video format supported" );
+    }
+
+
+    return TRUE;
+
+}
+
+BOOL CCaptureLinux::select_parameters( v4l2_parameters * param, char * errorMessage ) {
+    /* Sélection du mode d'accès : on favorise le mode mmap */
+    if ( ( param->io & IO_METHOD_MMAP ) != 0 ) {
+        param->io = IO_METHOD_MMAP;
+        webcam_log( LOG_INFO, "select_parameters : Accès en mmap selectionné");
+    }
+    else if ( ( param->io & IO_METHOD_READ ) != 0 ) {
+        param->io = IO_METHOD_READ;
+        webcam_log( LOG_INFO, "select_parameters : Accès en read selectionné");
+    }
+    else {
+        /* On ne devrait jamais passer ici */
+            sprintf( errorMessage, "No supported io method (mmap or read)" );
+            webcam_log( LOG_ERROR, "get_capabilities : Pas de lecture possible par read ou mmap");
+            return FALSE;
+    }
+
+    if ( param->io == IO_METHOD_READ ) {
         /* en mode read, on ne supporte que le mode YUV422, car les autres n'ont jamais été testés */
         /* par la suite, cette discrimination devrait disparaitre */
-        if ( ( supp_format & FORMAT_YUV422 ) != 0 ) {
-            data_format = FORMAT_YUV422;
+        if ( ( param->data_format & FORMAT_YUV422 ) != 0 ) {
+            param->data_format = FORMAT_YUV422;
             webcam_log( LOG_INFO, "initHardware : Data format in YUV422" );
         }
         else {
-            sprintf( errorMessage, "No supported data format in driver %s", cap.driver );
-            webcam_log( LOG_ERROR, "initHardware : No supported data format in driver %s", cap.driver );
-            close( cam_fd );
-            cam_fd = -1;
+            sprintf( errorMessage, "No supported data format for the read mode" );
+            webcam_log( LOG_ERROR, "select_parameters : No supported data format for the read mode" );
             return FALSE;
         }
     }
     else { // io = IO_METHOD_MMAP
         /* Sélection du format RGB24 en priorité */
-        if ( ( supp_format & FORMAT_RGB24 ) != 0 ) {
-            data_format = FORMAT_RGB24;
-            webcam_log( LOG_INFO, "initHardware : Data format in RGB24" );
+        if ( ( param->data_format & FORMAT_RGB24 ) != 0 ) {
+            param->data_format = FORMAT_RGB24;
+            webcam_log( LOG_INFO, "get_capabilities : Data format in RGB24" );
         }
-        else if ( ( supp_format & FORMAT_YUV422 ) != 0 ) {
-            data_format = FORMAT_YUV422;
-            webcam_log( LOG_INFO, "initHardware : Data format in YUV422" );
+        else if ( ( param->data_format & FORMAT_YUV422 ) != 0 ) {
+            param->data_format = FORMAT_YUV422;
+            webcam_log( LOG_INFO, "get_capabilities : Data format in YUV422" );
         }
-        else if ( ( supp_format & FORMAT_YUV420 ) != 0 ) {
-            data_format = FORMAT_YUV420;
-            webcam_log( LOG_INFO, "initHardware : Data format in YUV420" );
+        else if ( ( param->data_format & FORMAT_YUV420 ) != 0 ) {
+            param->data_format = FORMAT_YUV420;
+            webcam_log( LOG_INFO, "get_capabilities : Data format in YUV420" );
         }
         /* Format non testé car grosse bogue dans le pilote STV06xx */
     //    else if ( ( supp_format & FORMAT_BAYER_GRBG ) != 0 ) {
     //        data_format = FORMAT_BAYER_GRBG;
-    //        webcam_log( LOG_INFO, "initHardware : Data format in Bayer GRBG" );
+    //        webcam_log( LOG_INFO, "get_capabilities : Data format in Bayer GRBG" );
     //    }
         else {
-            sprintf( errorMessage, "No supported data format in driver %s", cap.driver );
-            webcam_log( LOG_ERROR, "initHardware : No supported data format in driver %s", cap.driver );
+            sprintf( errorMessage, "No supported data format" );
+            webcam_log( LOG_ERROR, "get_capabilities : No supported data format" );
             close( cam_fd );
             cam_fd = -1;
             return FALSE;
         }
     }
 
-    index = 0;
-    webcam_log( LOG_DEBUG, "initHardware : ioctl VIDEOC_S_INPUT" );
+    /* On ne garde que les formats PAL */
+    param->stdid = param->stdid & 0xffff;
+
+    return TRUE;
+}
+
+BOOL CCaptureLinux::set_parameters( v4l2_parameters * param, char * errorMessage ) {
+   struct v4l2_format fmt;
+
+    // Libération de la mémoire allouée dans le pilote
+    // Parfois indispensable pour appeler VIDIOC_S_FMT
+    if ( param->io == IO_METHOD_MMAP ) {
+        alloc_driver_memory(0);
+    }
+
+    // Source video 0. A changer ?
+    int index = 0;
+    webcam_log( LOG_DEBUG, "set_parameters : ioctl VIDEOC_S_INPUT" );
     if ( ioctl( cam_fd, VIDIOC_S_INPUT, &index ) < 0 ) {
-        webcam_log( LOG_ERROR, "initHardware : VIDEOC_S_INPUT %s", strerror( errno ) );
-        close( cam_fd );
-        cam_fd = -1;
+        sprintf( errorMessage, "VIDEOC_S_INPUT %s", strerror( errno ) );
+        webcam_log( LOG_ERROR, "set_parameters : VIDEOC_S_INPUT %s", strerror( errno ) );
         return FALSE;
     }
 
-    webcam_log( LOG_DEBUG, "initHardware : ioctl VIDEOC_G_STD" );
-    if ( ioctl( cam_fd, VIDIOC_G_STD, &stdid ) < 0 ) {
-        sprintf( errorMessage, "VIDIOC_G_STD : %s", strerror( errno ) );
-        webcam_log( LOG_WARNING, "initHardware : VIDEOC_G_STD %s", strerror( errno ) );
-        webcam_log( LOG_WARNING, "initHardware : VIDEOC_G_STD not supported. Not an issue as it is optional" );
-    }
-    else {
-        if ( ( stdid & 0xffff ) != 0 )
-            webcam_log( LOG_INFO, "VIDIOC_G_STD : PAL video format supported" );
-    }
 
-    /* On ne garde que les formats PAL */
-    stdid = stdid & 0xffff;
-    webcam_log( LOG_DEBUG, "initHardware : ioctl VIDEOC_S_STD" );
-    if ( ioctl( cam_fd, VIDIOC_S_STD, &stdid ) < 0 ) {
+    /* Format de la video en entrée */
+    webcam_log( LOG_DEBUG, "set_parameters : ioctl VIDEOC_S_STD" );
+    if ( ioctl( cam_fd, VIDIOC_S_STD, &(param->stdid) ) < 0 ) {
         sprintf( errorMessage, "VIDIOC_S_STD : %s", strerror( errno ) );
-        webcam_log( LOG_WARNING, "initHardware : VIDEOC_S_STD %s", strerror( errno ) );
-        webcam_log( LOG_WARNING, "initHardware : VIDEOC_S_STD not supported. Not an issue as it is optional" );
+        webcam_log( LOG_WARNING, "set_parameters : VIDEOC_S_STD %s", strerror( errno ) );
+        webcam_log( LOG_WARNING, "set_parameters : VIDEOC_S_STD not supported. Not an issue as it is optional" );
     }
 
 
     /* Initialisation */
     fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
     struct v4l2_pix_format *p = (struct v4l2_pix_format *)&fmt.fmt;
-    webcam_log( LOG_DEBUG, "initHardware : ioctl VIDEOC_G_FMT" );
+    webcam_log( LOG_DEBUG, "set_parameters : ioctl VIDEOC_G_FMT" );
     if ( ioctl( cam_fd,VIDIOC_G_FMT, &fmt ) < 0 ) {
         sprintf( errorMessage, "VIDIOC_G_FMT  : %s", strerror( errno ) );
-        webcam_log( LOG_ERROR, "initHardware : VIDEOC_G_FMT %s", strerror( errno ) );
-        close(cam_fd);
-        cam_fd = -1;
+        webcam_log( LOG_ERROR, "set_parameters : VIDEOC_G_FMT %s", strerror( errno ) );
         return FALSE;
     }
     else {
-        webcam_log( LOG_DEBUG, "initHardware : VIDEOC_G_FMT dimensions image %u x %u", p->width, p->height );
-        webcam_log( LOG_DEBUG, "initHardware : VIDEOC_G_FMT format %c%c%c%c", p->pixelformat & 0xff, ( p->pixelformat >> 8 ) & 0xff , ( p->pixelformat >> 16 ) & 0xff, ( p->pixelformat >> 24 ) & 0xff );
+        webcam_log( LOG_DEBUG, "set_parameters : VIDEOC_G_FMT dimensions image %u x %u", p->width, p->height );
+        webcam_log( LOG_DEBUG, "set_parameters : VIDEOC_G_FMT format %c%c%c%c", p->pixelformat & 0xff, ( p->pixelformat >> 8 ) & 0xff , ( p->pixelformat >> 16 ) & 0xff, ( p->pixelformat >> 24 ) & 0xff );
     }
 
     /* Initialisation du pilote */
     unsigned int pixel_format;
-    switch ( data_format ) {
+    switch ( param->data_format ) {
         case FORMAT_YUV422 :
             pixel_format = V4L2_PIX_FMT_YUYV;
             break;
@@ -319,61 +334,43 @@ BOOL CCaptureLinux::initHardware( UINT uIndex, CCaptureListener * captureListene
     p->colorspace = V4L2_COLORSPACE_470_SYSTEM_BG;
     p->field = V4L2_FIELD_INTERLACED;
 
-    webcam_log( LOG_DEBUG, "initHardware : ioctl VIDEOC_S_FMT" );
-    webcam_log( LOG_DEBUG, "initHardware : VIDEOC_S_FMT format %c%c%c%c", p->pixelformat & 0xff, ( p->pixelformat >> 8 ) & 0xff , ( p->pixelformat >> 16 ) & 0xff, ( p->pixelformat >> 24 ) & 0xff );
+    webcam_log( LOG_DEBUG, "set_parameters : ioctl VIDEOC_S_FMT" );
+    webcam_log( LOG_DEBUG, "set_parameters : VIDEOC_S_FMT format %c%c%c%c", p->pixelformat & 0xff, ( p->pixelformat >> 8 ) & 0xff , ( p->pixelformat >> 16 ) & 0xff, ( p->pixelformat >> 24 ) & 0xff );
     if ( ioctl( cam_fd,VIDIOC_S_FMT, &fmt ) < 0 ) {
         sprintf( errorMessage, "VIDIOC_S_FMT %s", strerror( errno ) );
-        webcam_log( LOG_ERROR, "initHardware : VIDEOC_S_FMT %s", strerror( errno ) );
-        close(cam_fd);
-        cam_fd = -1;
+        webcam_log( LOG_ERROR, "set_parameters : VIDEOC_S_FMT %s", strerror( errno ) );
         return FALSE;
    }
 
-    /* Un peu de paranoia, mais certains pilotes de caméra sont assez folkloriques */
-    webcam_log( LOG_DEBUG, "initHardware : ioctl VIDEOC_G_FMT" );
+    /* Un peu de paranoia, mais c'est malheureusement nécessaire, car certains pilotes de caméra sont assez folkloriques */
+    webcam_log( LOG_DEBUG, "set_parameters : ioctl VIDEOC_G_FMT" );
     if ( ioctl( cam_fd,VIDIOC_G_FMT, &fmt ) < 0 ) {
         sprintf( errorMessage, "VIDIOC_G_FMT  : %s", strerror( errno ) );
-        webcam_log( LOG_ERROR, "initHardware : VIDEOC_G_FMT %s", strerror( errno ) );
-        close( cam_fd );
-        cam_fd = -1;
+        webcam_log( LOG_ERROR, "set_parameters : VIDEOC_G_FMT %s", strerror( errno ) );
         return FALSE;
     }
     else {
-        webcam_log( LOG_DEBUG, "initHardware : VIDEOC_G_FMT dimensions image %u x %u", p->width, p->height );
-        webcam_log( LOG_DEBUG, "initHardware : VIDEOC_G_FMT format %c%c%c%c", p->pixelformat & 0xff, ( p->pixelformat >> 8 ) & 0xff , ( p->pixelformat >> 16 ) & 0xff, ( p->pixelformat >> 24 ) & 0xff );
+        webcam_log( LOG_DEBUG, "set_parameters : VIDEOC_G_FMT dimensions image %u x %u", p->width, p->height );
+        webcam_log( LOG_DEBUG, "set_parameters : VIDEOC_G_FMT format %c%c%c%c", p->pixelformat & 0xff, ( p->pixelformat >> 8 ) & 0xff , ( p->pixelformat >> 16 ) & 0xff, ( p->pixelformat >> 24 ) & 0xff );
         if ( p->pixelformat != pixel_format ) {
-            webcam_log( LOG_WARNING, "initHardware : the driver has a bug" );
+            webcam_log( LOG_WARNING, "set_parameters : the driver has a bug" );
             if ( p->pixelformat == V4L2_PIX_FMT_RGB24 ) {
-                data_format = FORMAT_RGB24;
-                webcam_log( LOG_WARNING, "initHardware : data format set to RGB24" );
+                param->data_format = FORMAT_RGB24;
+                webcam_log( LOG_WARNING, "set_parameters : data format set to RGB24" );
             }
             else if ( p->pixelformat == V4L2_PIX_FMT_YUYV ) {
-                data_format = FORMAT_YUV422;
-                webcam_log( LOG_WARNING, "initHardware : data format set to YUV422" );
+                param->data_format = FORMAT_YUV422;
+                webcam_log( LOG_WARNING, "set_parameters : data format set to YUV422" );
             }
             else {
                 sprintf( errorMessage, "VIDIOC_G_FMT  : %s", strerror( errno ) );
-                webcam_log( LOG_ERROR, "initHardware : cannot set the data format to a supported format" );
-                close(cam_fd);
-                cam_fd = -1;
+                webcam_log( LOG_ERROR, "set_parameters : cannot set the data format to a supported format" );
                 return FALSE;
             }
         }
     }
 
-    //v4l2_streamparm stream_parm;
-    //stream_parm.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-    //struct v4l2_captureparm *q = (struct v4l2_captureparm *)&stream_parm.parm;
-
-    //webcam_log( LOG_DEBUG, "initHardware : ioctl VIDEOC_G_PARM" );
-    //if ( ioctl( cam_fd, VIDIOC_G_PARM, &stream_parm ) < 0 ) {
-        //webcam_log( LOG_ERROR, "initHardware : VIDEOC_G_PARM %s", strerror( errno ) );
-    //}
-    //else
-        //webcam_log( LOG_DEBUG, "initHardware : VIDEOC_G_PARM n buffers = %d", q->readbuffers );
-
-
-    if ( io == IO_METHOD_MMAP ) {
+    if ( param->io == IO_METHOD_MMAP ) {
         // Allocation des buffers dans la mémoire du pilote de la caméra
         if ( alloc_driver_memory( 2 ) != 0 ) {
             sprintf(errorMessage, "error alloc_driver_memory");
@@ -382,6 +379,37 @@ BOOL CCaptureLinux::initHardware( UINT uIndex, CCaptureListener * captureListene
             return FALSE;
         }
     }
+    return TRUE;
+}
+
+BOOL CCaptureLinux::initHardware( UINT uIndex, CCaptureListener * captureListener, char * errorMessage ) {
+
+    ng_color_yuv2rgb_init();
+    if ( -1 == ( cam_fd = open( portName, O_RDWR ) ) ) {
+        sprintf( errorMessage, "Can't open %s - %s", portName, strerror(errno) );
+        return FALSE;
+    }
+
+    webcam_log( LOG_DEBUG, "initHardware %s cam_fd=%d\n", portName, cam_fd );
+
+    if ( get_parameters( driver_params, errorMessage ) == FALSE ) {
+        close( cam_fd );
+        cam_fd = -1;
+        return FALSE;
+    }
+
+    if ( select_parameters( driver_params, errorMessage ) == FALSE ) {
+        close( cam_fd );
+        cam_fd = -1;
+        return FALSE;
+    }
+
+    if ( set_parameters( driver_params, errorMessage ) == FALSE ) {
+        close( cam_fd );
+        cam_fd = -1;
+        return FALSE;
+    }
+
 
     return TRUE;
 }
@@ -453,47 +481,47 @@ unsigned long    CCaptureLinux::getVideoFormat(BITMAPINFO * pbi, int size ) {
 BOOL CCaptureLinux::setVideoFormat( char *formatname, char *errorMessage )
 {
     webcam_log( LOG_DEBUG, "setVideoFormat : formatname = %s", formatname );
-   char ligne[128];
-   int imax, jmax, box = 1;
+    char ligne[128];
+    int imax, jmax, box = 1;
 
-   //change to upper: void libcam_strupr(char *chainein, char *chaineout)
-   libcam_strupr( formatname, ligne );
+    //change to upper: void libcam_strupr(char *chainein, char *chaineout)
+    libcam_strupr( formatname, ligne );
 
-   imax = 0;
-   jmax = 0;
-   if (strcmp(ligne, "SAME") == 0) {
-      box = 0;
-   }
-   if (strcmp(ligne, "VGA") == 0) {
-      imax = 640;
-      jmax = 480;
-   } else if (strcmp(ligne, "CIF") == 0) {
-      imax = 352;
-      jmax = 288;
-   } else if (strcmp(ligne, "SIF") == 0) {
-      imax = 320;
-      jmax = 240;
+    imax = 0;
+    jmax = 0;
+    if (strcmp(ligne, "SAME") == 0) {
+        box = 0;
+    }
+    if (strcmp(ligne, "VGA") == 0) {
+        imax = 640;
+        jmax = 480;
+    } else if (strcmp(ligne, "CIF") == 0) {
+        imax = 352;
+        jmax = 288;
+    } else if (strcmp(ligne, "SIF") == 0) {
+        imax = 320;
+        jmax = 240;
    } else if (strcmp(ligne, "SSIF") == 0) {
-      imax = 240;
-      jmax = 176;
-   } else if (strcmp(ligne, "QCIF") == 0) {
-      imax = 176;
-      jmax = 144;
-   } else if (strcmp(ligne, "QSIF") == 0) {
-      imax = 160;
-      jmax = 120;
-   } else if (strcmp(ligne, "SQCIF") == 0) {
-      imax = 128;
-      jmax = 96;
-   } else if (strcmp(ligne, "720X576") == 0) {
-      imax = 720;
-      jmax = 576;
-   }
-   if (jmax == 0 || imax == 0) {
+        imax = 240;
+        jmax = 176;
+    } else if (strcmp(ligne, "QCIF") == 0) {
+        imax = 176;
+        jmax = 144;
+    } else if (strcmp(ligne, "QSIF") == 0) {
+        imax = 160;
+        jmax = 120;
+    } else if (strcmp(ligne, "SQCIF") == 0) {
+        imax = 128;
+        jmax = 96;
+    } else if (strcmp(ligne, "720X576") == 0) {
+        imax = 720;
+        jmax = 576;
+    }
+    if (jmax == 0 || imax == 0) {
         sprintf(errorMessage, "Unknown format: %s", formatname);
         webcam_log( LOG_DEBUG, "setVideoFormat : Unknown format: %s", formatname );
         return FALSE;
-   }
+    }
 
     /* New buffer size */
     currentWidth = imax;
@@ -504,12 +532,8 @@ BOOL CCaptureLinux::setVideoFormat( char *formatname, char *errorMessage )
     struct v4l2_pix_format *p = (struct v4l2_pix_format *)&fmt.fmt;
 
     /* Parfois indispensable pour appeler VIDIOC_S_FMT */
-    if ( io == IO_METHOD_MMAP ) {
-        if ( alloc_driver_memory( 0 ) ) {
-            sprintf( errorMessage, "setVideoFormat : Cannot free driver buffers" );
-            webcam_log( LOG_ERROR, "setVideoFormat : Cannot free driver buffers" );
-            return FALSE;
-        }
+    if ( driver_params->io == IO_METHOD_MMAP ) {
+        alloc_driver_memory( 0 );
     }
 
 
@@ -577,7 +601,7 @@ BOOL CCaptureLinux::setVideoFormat( char *formatname, char *errorMessage )
     bgrBuffer = (unsigned char *) calloc(currentWidth * currentHeight * 3, 1);
 
     /* Le nombre et la taille des buffers internes au pilote peuvent dépendre du format */
-    if ( io == IO_METHOD_MMAP ) {
+    if ( driver_params->io == IO_METHOD_MMAP ) {
         if ( alloc_driver_memory( 2 ) != 0 ) {
             sprintf( errorMessage, "setVideoFormat : Cannot allocate driver buffers" );
             webcam_log( LOG_ERROR, "setVideoFormat : Cannot allocate driver buffers" );
@@ -727,7 +751,7 @@ BOOL CCaptureLinux::grabFrame(char *errorMessage){
         return FALSE;
     }
 
-    switch ( io ) {
+    switch ( driver_params->io ) {
         case IO_METHOD_READ :
             for ( i = 0 ; i < validFrame; i++)  {
                 webcam_mmapSync();
@@ -839,7 +863,7 @@ BOOL CCaptureLinux::startCapture(unsigned short exptime, unsigned long microSecP
 
     webcam_log( LOG_DEBUG, "startCapture" );
 
-    switch ( io ) {
+    switch ( driver_params->io ) {
         case IO_METHOD_READ :
             retcode = TRUE;
             break;
@@ -1007,37 +1031,51 @@ void CCaptureLinux::setWindowSize(int width, int height) {
 /*                                                     */
 /*******************************************************/
 
-int CCaptureLinux::alloc_driver_memory( unsigned int n_buffer ) {
+int CCaptureLinux::alloc_driver_memory( unsigned int nb_bloc ) {
     struct v4l2_requestbuffers reqbuf;
+    int retcode = 0;
 
-    webcam_log( LOG_DEBUG, "alloc_driver_memory n_buffer = %d", n_buffer );
+    webcam_log( LOG_DEBUG, "alloc_driver_memory nb_bloc = %d", nb_bloc );
 
-
-    /* Allocation des blocs mémoire dans l'espace mémoire du pilote */
+    /* Allocation des blocs dans l'espace mémoire du pilote */
     memset( &reqbuf, 0, sizeof (reqbuf) );
-    reqbuf.count = n_buffer;
+    reqbuf.count = nb_bloc;
     reqbuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
     reqbuf.memory = V4L2_MEMORY_MMAP;
 
-    webcam_log( LOG_DEBUG, "alloc_driver_memory : ioctl VIDEOC_REQBUFS" );
-    if ( -1 == ioctl( cam_fd, VIDIOC_REQBUFS, &reqbuf ) ) {
-        webcam_log( LOG_DEBUG, "alloc_driver_memory : strerror( errno )" );
-        return -1;
+    if ( nb_bloc == 0 ) {
+        /* Il s'agit d'une libération mémoire dans le pilote */
+        webcam_log( LOG_DEBUG, "alloc_driver_memory : ioctl VIDEOC_REQBUFS" );
+        if ( -1 == ioctl( cam_fd, VIDIOC_REQBUFS, &reqbuf ) ) {
+            /* Certains pilotes ne sont pas conformes à l'API V4L2 et sortent en erreur si reqbuf.count vaut 0 */
+            /* On se contente de tracer le problème, mais on ne sort pas en erreur systématiquement */
+            webcam_log( LOG_WARNING, "alloc_driver_memory : strerror( errno )" );
+            webcam_log( LOG_WARNING, "alloc_driver_memory : ce pilote ne supporte pas la libération de la mémoire interne." );
+        }
+        retcode = 0;
     }
-    else if ( n_buffer > 0 ) {
-        webcam_log( LOG_DEBUG, "alloc_driver_memory : %d buffers alloués", reqbuf.count );
-        if ( reqbuf.count < 2 ) {
+    else { // ( nb_bloc > 0 )
+        /* Il s'agit d'une allocation mémoire dans le pilote */
+        webcam_log( LOG_DEBUG, "alloc_driver_memory : ioctl VIDEOC_REQBUFS" );
+        if ( -1 == ioctl( cam_fd, VIDIOC_REQBUFS, &reqbuf ) ) {
+            webcam_log( LOG_WARNING, "alloc_driver_memory : strerror( errno )" );
+            retcode = -1;
+        }
+        else if ( reqbuf.count < 2 ) {
+            /* Pas assez de blocs mémoire alloués */
             /* Désallocation des buffers alloués */
-            webcam_log( LOG_DEBUG, "alloc_driver_memory : desallocation des buffers", reqbuf.count );
+            webcam_log( LOG_ERROR, "alloc_driver_memory : pas assez de bloc mémoire alloués (reqbuf.count=%d)", reqbuf.count );
+            webcam_log( LOG_DEBUG, "alloc_driver_memory : désallocation des blocs mémoire" );
             reqbuf.count = 0;
             ioctl( cam_fd, VIDIOC_REQBUFS, &reqbuf );
-            webcam_log( LOG_ERROR, "alloc_driver_memory : pas assez de buffers alloués" );
-            return -1;
+            retcode = -1;
         }
-        n_mmap_buffers = reqbuf.count;
+        else {
+            n_mmap_buffers = reqbuf.count;
+            retcode = 0;
+        }
     }
-
-    return 0;
+    return retcode;
 }
 
 void CCaptureLinux::webcam_mmapSync() {
@@ -1122,7 +1160,7 @@ BOOL CCaptureLinux::webcam_mmapCapture() {
     }
     webcam_log( LOG_INFO, "webcam_mmapCapture : buffer n %d received, with payload size %d", buffer.index, buffer.bytesused );
 
-    switch ( data_format ) {
+    switch ( driver_params->data_format ) {
         case FORMAT_YUV422 :
             yuv422_to_bgr24( (unsigned char *)mmap_buffers[buffer.index].start, bgrBuffer, currentWidth, currentHeight );
             break;

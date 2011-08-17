@@ -152,11 +152,10 @@ private :
     void rgb24_to_bgr24( unsigned char *rgb_s, unsigned char *rgb_d, int width, int height );
     void ng_color_yuv2rgb_init( void );
 
-    enum io_method {
-        IO_METHOD_READ,
-        IO_METHOD_MMAP
-    };
-    io_method io;
+    static const int IO_METHOD_NIL = 0;
+    static const int IO_METHOD_READ = 1;
+    static const int IO_METHOD_MMAP = 2;
+
     int alloc_driver_memory( unsigned int n_buffer );
 
     /* Format des données issues du pilote */
@@ -165,10 +164,24 @@ private :
         return ( (unsigned int) (((d)<<24) | (unsigned int)c<<16 | (unsigned int)b<<8) | (unsigned int)a );
     };
 
+    static const int FORMAT_NIL = 0;
     static const int FORMAT_YUV422 = 1;
     static const int FORMAT_RGB24 = 2;
     static const int FORMAT_YUV420 = 4;
     static const int FORMAT_BAYER_GRBG = 8;
-    int data_format;
+
+    class v4l2_parameters {
+        public :
+        int io;
+        int data_format;
+        v4l2_std_id stdid;
+    };
+
+    BOOL get_parameters( v4l2_parameters *, char * );
+    BOOL select_parameters( v4l2_parameters *, char * );
+    BOOL set_parameters( v4l2_parameters *, char * );
+
+    v4l2_parameters * driver_params;
+
 };
 #endif // __CCAPTURELINUX_H__
