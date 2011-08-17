@@ -5,7 +5,7 @@
 #ifndef __CCAPTURELINUX_H__
 #define __CCAPTURELINUX_H__
 
-#include <linux/videodev.h> // pour video_mbuf
+#include <linux/videodev2.h> // pour video_mbuf
 #include "Capture.h"
 #include "CaptureListener.h"
 
