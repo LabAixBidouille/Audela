@@ -3,7 +3,7 @@
 # Description : Acquisition de flat sur le ciel - Observation en automatique
 # Camera : Script optimise pour une Andor ikon-L
 # Auteur : Frédéric Vachier
-# Mise à jour $Id:  $
+# Mise à jour $Id$
 #
 # source audace/plugin/tool/acqt1m/flat_t1m_auto.tcl
 #
