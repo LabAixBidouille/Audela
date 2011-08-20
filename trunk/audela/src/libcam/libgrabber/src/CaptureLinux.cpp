@@ -133,35 +133,35 @@ CCaptureLinux::~CCaptureLinux()
 BOOL CCaptureLinux::get_parameters( v4l2_parameters * param, char * errorMessage ) {
     struct v4l2_capability cap;
 
-    webcam_log( LOG_DEBUG, "get_capabilities : ioctl VIDEO_QUERY_CAP" );
+    webcam_log( LOG_DEBUG, "get_parameters : ioctl VIDEO_QUERY_CAP" );
     if ( EINVAL == ioctl( cam_fd, VIDIOC_QUERYCAP, &cap ) ) {
         sprintf( errorMessage, "No VIDIOC_QUERY_CAP : %s ", strerror( errno ) );
-        webcam_log( LOG_ERROR, "get_capabilities : VIDEOC_QUERY_CAP non supporté, pilote non compatible V4L2" );
+        webcam_log( LOG_ERROR, "get_parameters : VIDEOC_QUERY_CAP non supporté, pilote non compatible V4L2" );
         return FALSE;
     }
     else {
-        webcam_log( LOG_DEBUG, "get_capabilities : pilote %s %u.%u.%u, materiel %s, bus %s", cap.driver, (cap.version >> 16) & 0xff, (cap.version >> 8) & 0xff, cap.version & 0xff, cap.card, cap.bus_info );
+        webcam_log( LOG_DEBUG, "get_parameters : pilote %s %u.%u.%u, materiel %s, bus %s", cap.driver, (cap.version >> 16) & 0xff, (cap.version >> 8) & 0xff, cap.version & 0xff, cap.card, cap.bus_info );
         unsigned int capabilities = cap.capabilities;
         if ( ( capabilities & V4L2_CAP_VIDEO_CAPTURE ) == 0 ) {
             sprintf( errorMessage, "Not a video capture device" );
-            webcam_log( LOG_ERROR, "get_capabilities : Pas de capture video possible");
+            webcam_log( LOG_ERROR, "get_parameters : Pas de capture video possible");
             return FALSE;
         }
 
         param->io |= IO_METHOD_NIL;
         if ( ( capabilities & V4L2_CAP_STREAMING ) != 0 ) {
-            webcam_log( LOG_INFO, "get_capabilities : Accès en mmap possible");
+            webcam_log( LOG_INFO, "get_parameters : Accès en mmap possible");
             param->io |= IO_METHOD_MMAP;
         }
 
         if ( ( capabilities & V4L2_CAP_READWRITE ) != 0 ) {
-            webcam_log( LOG_DEBUG, "get_capabilities : Accès en read possible");
+            webcam_log( LOG_DEBUG, "get_parameters : Accès en read possible");
             param->io |= IO_METHOD_READ;
         }
 
         if ( param->io == IO_METHOD_NIL ) {
             sprintf( errorMessage, "No supported io method (mmap or read)" );
-            webcam_log( LOG_ERROR, "get_capabilities : Pas de lecture possible par read ou mmap");
+            webcam_log( LOG_ERROR, "get_parameters : Pas de lecture possible par read ou mmap");
             return FALSE;
         }
     }
@@ -171,9 +171,9 @@ BOOL CCaptureLinux::get_parameters( v4l2_parameters * param, char * errorMessage
     fmt_desc.index = 0;
     fmt_desc.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
     param->data_format = FORMAT_NIL;
-    webcam_log( LOG_DEBUG, "get_capabilities : ioctl VIDEOC_ENUM_FMT" );
+    webcam_log( LOG_DEBUG, "get_parameters : ioctl VIDEOC_ENUM_FMT" );
     while ( ioctl( cam_fd, VIDIOC_ENUM_FMT, &fmt_desc ) >= 0 ) {
-        webcam_log( LOG_DEBUG, "get_capabilities : VIDIOC_ENUM_FMT : format %s disponible (fourcc=%x)", fmt_desc.description, fmt_desc.pixelformat );
+        webcam_log( LOG_DEBUG, "get_parameters : VIDIOC_ENUM_FMT : format %s disponible (fourcc=%x)", fmt_desc.description, fmt_desc.pixelformat );
         if ( fmt_desc.pixelformat == fourcc('Y', 'U', 'Y', 'V') )
             param->data_format |= FORMAT_YUV422;
         if ( fmt_desc.pixelformat == fourcc('Y', 'U', '1', '2') )
@@ -186,24 +186,22 @@ BOOL CCaptureLinux::get_parameters( v4l2_parameters * param, char * errorMessage
     }
     if ( param->data_format == FORMAT_NIL ) {
         sprintf( errorMessage, "No supported data format" );
-        webcam_log( LOG_ERROR, "get_capabilities : Pas de format de donnée valide");
+        webcam_log( LOG_ERROR, "get_parameters : Pas de format de donnée valide");
         return FALSE;
     }
 
     /* Recherche de tous les formats de données d'entrée disponibles (normes vidéo) */
-    webcam_log( LOG_DEBUG, "initHardware : ioctl VIDEOC_G_STD" );
+    webcam_log( LOG_DEBUG, "get_parameters : ioctl VIDEOC_G_STD" );
     if ( ioctl( cam_fd, VIDIOC_G_STD, &(param->stdid) ) < 0 ) {
-        webcam_log( LOG_WARNING, "initHardware : VIDEOC_G_STD %s", strerror( errno ) );
-        webcam_log( LOG_WARNING, "initHardware : VIDEOC_G_STD not supported. Not an issue as it is optional" );
+        webcam_log( LOG_WARNING, "get_parameters : VIDEOC_G_STD %s", strerror( errno ) );
+        webcam_log( LOG_WARNING, "get_parameters : VIDEOC_G_STD not supported. Not an issue as it is optional" );
     }
     else {
         if ( ( param->stdid & 0xffff ) != 0 )
             webcam_log( LOG_INFO, "VIDIOC_G_STD : PAL video format supported" );
     }
 
-
     return TRUE;
-
 }
 
 BOOL CCaptureLinux::select_parameters( v4l2_parameters * param, char * errorMessage ) {
@@ -219,7 +217,7 @@ BOOL CCaptureLinux::select_parameters( v4l2_parameters * param, char * errorMess
     else {
         /* On ne devrait jamais passer ici */
             sprintf( errorMessage, "No supported io method (mmap or read)" );
-            webcam_log( LOG_ERROR, "get_capabilities : Pas de lecture possible par read ou mmap");
+            webcam_log( LOG_ERROR, "select_parameters : Pas de lecture possible par read ou mmap");
             return FALSE;
     }
 
@@ -228,7 +226,7 @@ BOOL CCaptureLinux::select_parameters( v4l2_parameters * param, char * errorMess
         /* par la suite, cette discrimination devrait disparaitre */
         if ( ( param->data_format & FORMAT_YUV422 ) != 0 ) {
             param->data_format = FORMAT_YUV422;
-            webcam_log( LOG_INFO, "initHardware : Data format in YUV422" );
+            webcam_log( LOG_INFO, "select_parameters : Data format in YUV422" );
         }
         else {
             sprintf( errorMessage, "No supported data format for the read mode" );
@@ -240,15 +238,15 @@ BOOL CCaptureLinux::select_parameters( v4l2_parameters * param, char * errorMess
         /* Sélection du format RGB24 en priorité */
         if ( ( param->data_format & FORMAT_RGB24 ) != 0 ) {
             param->data_format = FORMAT_RGB24;
-            webcam_log( LOG_INFO, "get_capabilities : Data format in RGB24" );
+            webcam_log( LOG_INFO, "select_parameters : Data format in RGB24" );
         }
         else if ( ( param->data_format & FORMAT_YUV422 ) != 0 ) {
             param->data_format = FORMAT_YUV422;
-            webcam_log( LOG_INFO, "get_capabilities : Data format in YUV422" );
+            webcam_log( LOG_INFO, "select_parameters : Data format in YUV422" );
         }
         else if ( ( param->data_format & FORMAT_YUV420 ) != 0 ) {
             param->data_format = FORMAT_YUV420;
-            webcam_log( LOG_INFO, "get_capabilities : Data format in YUV420" );
+            webcam_log( LOG_INFO, "select_parameters : Data format in YUV420" );
         }
         /* Format non testé car grosse bogue dans le pilote STV06xx */
     //    else if ( ( supp_format & FORMAT_BAYER_GRBG ) != 0 ) {
@@ -257,7 +255,7 @@ BOOL CCaptureLinux::select_parameters( v4l2_parameters * param, char * errorMess
     //    }
         else {
             sprintf( errorMessage, "No supported data format" );
-            webcam_log( LOG_ERROR, "get_capabilities : No supported data format" );
+            webcam_log( LOG_ERROR, "select_parameters : No supported data format" );
             close( cam_fd );
             cam_fd = -1;
             return FALSE;
@@ -288,7 +286,6 @@ BOOL CCaptureLinux::set_parameters( v4l2_parameters * param, char * errorMessage
         return FALSE;
     }
 
-
     /* Format de la video en entrée */
     webcam_log( LOG_DEBUG, "set_parameters : ioctl VIDEOC_S_STD" );
     if ( ioctl( cam_fd, VIDIOC_S_STD, &(param->stdid) ) < 0 ) {
@@ -296,7 +293,6 @@ BOOL CCaptureLinux::set_parameters( v4l2_parameters * param, char * errorMessage
         webcam_log( LOG_WARNING, "set_parameters : VIDEOC_S_STD %s", strerror( errno ) );
         webcam_log( LOG_WARNING, "set_parameters : VIDEOC_S_STD not supported. Not an issue as it is optional" );
     }
-
 
     /* Initialisation */
     fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
