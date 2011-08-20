@@ -2,7 +2,7 @@
 # Fichier : acqt1m.tcl
 # Description : Outil d'acquisition specifique pour le T1m
 # Auteur : Frédéric Vachier
-# Mise à jour $Id:  $
+# Mise à jour $Id$
 #
 
 #==============================================================
