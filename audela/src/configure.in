@@ -110,13 +110,13 @@ if test ! -f /usr/include/asm/system.h ; then
     fi
 fi
 
-dnl Check for webcam headers presence
+dnl Check for Video4Linux headers presence
 dnl
 WEBCAM_ENABLE=1
 AC_CHECK_HEADER([linux/videodev.h],,[WEBCAM_ENABLE=0])
 AC_CHECK_HEADER([linux/ppdev.h],,[WEBCAM_ENABLE=0])
 AC_CHECK_HEADER([linux/parport.h],,[WEBCAM_ENABLE=0])
-AC_MSG_CHECKING([if webcam is supported])
+AC_MSG_CHECKING([if Video4Linux webcams are supported])
 if test x"$WEBCAM_ENABLE" = x"1" ; then
         AC_MSG_RESULT([yes.])
 else
@@ -124,6 +124,17 @@ else
 fi
 AC_SUBST(WEBCAM_ENABLE)
 
+dnl Check for Video4Linux2 headers presence
+dnl
+V4L2_ENABLE=1
+AC_CHECK_HEADER([linux/videodev2.h],,[V4L2_ENABLE=0])
+AC_MSG_CHECKING([if Video4Linux2 (V4L2) webcams and grabbers are supported])
+if test x"$V4L2_ENABLE" = x"1" ; then
+        AC_MSG_RESULT([yes.])
+else
+        AC_MSG_RESULT([no, disabling the libgrabber interface.])
+fi
+AC_SUBST(V4L2_ENABLE)
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 dnl
@@ -140,16 +151,16 @@ echo "Found architecture $ARCHITECTURE"
 TARGET=`uname -s`
 echo "Found target $TARGET"
 if test $TARGET = "Darwin"; then
-	CXXFLAGS += "-fno-common "
-	LDFLAGS += "-dynamiclib "
+    CXXFLAGS += "-fno-common "
+    LDFLAGS += "-dynamiclib "
 fi
 if test $TARGET = "Linux"; then
-	CXXFLAGS=$CXXFLAGS" -fPIC "
-	LDFLAGS=$LDFLAGS" -shared "
+    CXXFLAGS=$CXXFLAGS" -fPIC "
+    LDFLAGS=$LDFLAGS" -shared "
 fi
 
 if test x"${TCL_THREADS}" = x"1" ; then
-	CXXFLAGS=$CXXFLAGS" -DTCL_THREADS "
+    CXXFLAGS=$CXXFLAGS" -DTCL_THREADS "
 fi
 
 AC_SUBST(CXXFLAGS)
@@ -164,10 +175,10 @@ dnl
 
 EXTERNAL="andor blt cfitsio fitstcl gzip jpeg6b libdcjpeg libdcraw libftd2xx libgphoto2 libusb porttalk sbig sextractor tcl"
 if test -f /usr/bin/mysql_config ; then
-	EXTERNAL="$EXTERNAL mysqltcl"
+    EXTERNAL="$EXTERNAL mysqltcl"
 fi
 if test x"$TCL_THREADS" = x"1" ; then
-	EXTERNAL="$EXTERNAL libthread"
+    EXTERNAL="$EXTERNAL libthread"
 fi
 
 AC_ARG_WITH([tls],
@@ -179,25 +190,28 @@ AS_IF([test "x$with_tls" != xno], [EXTERNAL="$EXTERNAL tls"])
 
 CONTRIB="ethernaude libgs"
 if test x"$GSL_FOUND" = x"1" ; then
-	CONTRIB="$CONTRIB libbm"
+    CONTRIB="$CONTRIB libbm"
 fi
 dnl CONTRIB="$CONTRIB quicka"
 dnl quicka only works on Windows for the moment.
 
 AUDELA="audela libaudela libaudelatk libgzip libmc librgb libtt"
 if test x"$GSL_FOUND" = x"1" ; then
-	AUDELA="$AUDELA libak libgsltcl libjm libml libros libyd"
+    AUDELA="$AUDELA libak libgsltcl libjm libml libros libyd"
 fi
 
 LIBCAMS="libaudinet libethernaude"
 if test x"$TARGET" = x"Linux" ; then
-	LIBCAMS="$LIBCAMS libaudine libcagire libcamth libcookbook libhisis libk2 libquicka libstarlight libsynonyme"
+    LIBCAMS="$LIBCAMS libaudine libcagire libcamth libcookbook libhisis libk2 libquicka libstarlight libsynonyme"
 fi
 if test x"$WEBCAM_ENABLE" = x"1" ; then
-	LIBCAMS="$LIBCAMS libwebcam libgrabber"
+    LIBCAMS="$LIBCAMS libwebcam"
+fi
+if test x"$V4L2_ENABLE" = x"1" ; then
+    LIBCAMS="$LIBCAMS libgrabber"
 fi
 if test $ARCHITECTURE != "x86_64"; then
-	LIBCAMS="$LIBCAMS libsbig"
+    LIBCAMS="$LIBCAMS libsbig"
 fi
 
 

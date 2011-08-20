@@ -598,6 +598,7 @@ LIBCAMS
 AUDELA
 CONTRIB
 EXTERNAL
+V4L2_ENABLE
 WEBCAM_ENABLE
 EGREP
 GREP
@@ -5217,8 +5218,8 @@ else
 fi
 
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if webcam is supported" >&5
-$as_echo_n "checking if webcam is supported... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if Video4Linux webcams are supported" >&5
+$as_echo_n "checking if Video4Linux webcams are supported... " >&6; }
 if test x"$WEBCAM_ENABLE" = x"1" ; then
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes." >&5
 $as_echo "yes." >&6; }
@@ -5227,6 +5228,25 @@ else
 $as_echo "no, disabling libwebcam driver." >&6; }
 fi
 
+
+V4L2_ENABLE=1
+ac_fn_c_check_header_mongrel "$LINENO" "linux/videodev2.h" "ac_cv_header_linux_videodev2_h" "$ac_includes_default"
+if test "x$ac_cv_header_linux_videodev2_h" = x""yes; then :
+
+else
+  V4L2_ENABLE=0
+fi
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if Video4Linux2 (V4L2) webcams and grabbers are supported" >&5
+$as_echo_n "checking if Video4Linux2 (V4L2) webcams and grabbers are supported... " >&6; }
+if test x"$V4L2_ENABLE" = x"1" ; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes." >&5
+$as_echo "yes." >&6; }
+else
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no, disabling the libgrabber interface." >&5
+$as_echo "no, disabling the libgrabber interface." >&6; }
+fi
 
 
 
@@ -5239,16 +5259,16 @@ echo "Found architecture $ARCHITECTURE"
 TARGET=`uname -s`
 echo "Found target $TARGET"
 if test $TARGET = "Darwin"; then
-	CXXFLAGS += "-fno-common "
-	LDFLAGS += "-dynamiclib "
+    CXXFLAGS += "-fno-common "
+    LDFLAGS += "-dynamiclib "
 fi
 if test $TARGET = "Linux"; then
-	CXXFLAGS=$CXXFLAGS" -fPIC "
-	LDFLAGS=$LDFLAGS" -shared "
+    CXXFLAGS=$CXXFLAGS" -fPIC "
+    LDFLAGS=$LDFLAGS" -shared "
 fi
 
 if test x"${TCL_THREADS}" = x"1" ; then
-	CXXFLAGS=$CXXFLAGS" -DTCL_THREADS "
+    CXXFLAGS=$CXXFLAGS" -DTCL_THREADS "
 fi
 
 
@@ -5343,10 +5363,10 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 EXTERNAL="andor blt cfitsio fitstcl gzip jpeg6b libdcjpeg libdcraw libftd2xx libgphoto2 libusb porttalk sbig sextractor tcl"
 if test -f /usr/bin/mysql_config ; then
-	EXTERNAL="$EXTERNAL mysqltcl"
+    EXTERNAL="$EXTERNAL mysqltcl"
 fi
 if test x"$TCL_THREADS" = x"1" ; then
-	EXTERNAL="$EXTERNAL libthread"
+    EXTERNAL="$EXTERNAL libthread"
 fi
 
 
@@ -5363,23 +5383,26 @@ fi
 
 CONTRIB="ethernaude libgs"
 if test x"$GSL_FOUND" = x"1" ; then
-	CONTRIB="$CONTRIB libbm"
+    CONTRIB="$CONTRIB libbm"
 fi
 
 AUDELA="audela libaudela libaudelatk libgzip libmc librgb libtt"
 if test x"$GSL_FOUND" = x"1" ; then
-	AUDELA="$AUDELA libak libgsltcl libjm libml libros libyd"
+    AUDELA="$AUDELA libak libgsltcl libjm libml libros libyd"
 fi
 
 LIBCAMS="libaudinet libethernaude"
 if test x"$TARGET" = x"Linux" ; then
-	LIBCAMS="$LIBCAMS libaudine libcagire libcamth libcookbook libhisis libk2 libquicka libstarlight libsynonyme"
+    LIBCAMS="$LIBCAMS libaudine libcagire libcamth libcookbook libhisis libk2 libquicka libstarlight libsynonyme"
 fi
 if test x"$WEBCAM_ENABLE" = x"1" ; then
-	LIBCAMS="$LIBCAMS libwebcam libgrabber"
+    LIBCAMS="$LIBCAMS libwebcam"
+fi
+if test x"$V4L2_ENABLE" = x"1" ; then
+    LIBCAMS="$LIBCAMS libgrabber"
 fi
 if test $ARCHITECTURE != "x86_64"; then
-	LIBCAMS="$LIBCAMS libsbig"
+    LIBCAMS="$LIBCAMS libsbig"
 fi
 
 
