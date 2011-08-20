@@ -2,7 +2,7 @@
 # Fichier : cycle.tcl
 # Description : Observation en automatique
 # Auteur : Frédéric Vachier
-# Mise à jour $Id:  $
+# Mise à jour $Id$
 #
 # source audace/plugin/tool/acqt1m/cycle.tcl
 #

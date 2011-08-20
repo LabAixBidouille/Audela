@@ -2,7 +2,7 @@
 # Fichier : dlgshiftt1m.tcl
 # Description : Fenetre de dialogue pour saisir les parametres de deplacement entre 2 images
 # Auteur : Michel PUJOL
-# Mise à jour $Id:  $
+# Mise à jour $Id$
 #
 
 namespace eval ::DlgShiftt1m {

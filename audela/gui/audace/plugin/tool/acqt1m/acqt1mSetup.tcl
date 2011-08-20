@@ -2,7 +2,7 @@
 # Fichier : acqt1mSetup.tcl
 # Description : Configuration de certains parametres de l'outil Acquisition
 # Auteur : Robert DELMAS
-# Mise à jour $Id:  $
+# Mise à jour $Id$
 #
 
 namespace eval ::acqt1mSetup {
