@@ -157,9 +157,9 @@ static int cam_init_common(struct camprop *cam, int argc, char **argv);
 static struct cmditem cmdlist[] = {
     /* === Common commands for all cameras === */
     COMMON_CMDLIST
-	/* === Specific commands for that camera === */
-	SPECIFIC_CMDLIST
-	/* === Last function terminated by NULL pointers === */
+    /* === Specific commands for that camera === */
+    SPECIFIC_CMDLIST
+    /* === Last function terminated by NULL pointers === */
     {NULL, NULL}
 };
 
@@ -194,8 +194,8 @@ char *getlogdate(char *buf, size_t size)
     getdate(&d1);
     gettime(&t1);
     sprintf(buf, "%04d-%02d-%02d %02d:%02d:%02d.%02d : ", d1.da_year,
-	    d1.da_mon, d1.da_day, t1.ti_hour, t1.ti_min, t1.ti_sec,
-	    t1.ti_hund);
+        d1.da_mon, d1.da_day, t1.ti_hour, t1.ti_min, t1.ti_sec,
+        t1.ti_hund);
   #endif
 #elif defined(OS_LIN)
     struct timeb timebuffer;
@@ -270,9 +270,9 @@ int CAM_ENTRYPOINT(Tcl_Interp * interp)
     libcam_log(LOG_INFO, "Calling entrypoint for driver %s", CAM_DRIVNAME);
 
     if (Tcl_InitStubs(interp, "8.3", 0) == NULL) {
-	Tcl_SetResult(interp, "Tcl Stubs initialization failed in " CAM_LIBNAME " (" CAM_LIBVER ").", TCL_VOLATILE);
-	libcam_log(LOG_ERROR, "Tcl Stubs initialization failed.");
-	return TCL_ERROR;
+    Tcl_SetResult(interp, "Tcl Stubs initialization failed in " CAM_LIBNAME " (" CAM_LIBVER ").", TCL_VOLATILE);
+    libcam_log(LOG_ERROR, "Tcl Stubs initialization failed.");
+    return TCL_ERROR;
     }
 
     libcam_log(LOG_DEBUG, "cmdCamCreate = %p", cmdCamCreate);
@@ -636,7 +636,7 @@ void libcam_GetCurrentFITSDate(Tcl_Interp * interp, char *s)
    /*
    struct _SYSTEMTIME temps_pc;
    clock = 1;
-	GetSystemTime(&temps_pc);
+    GetSystemTime(&temps_pc);
    sprintf(s, "%04d-%02d-%02dT%02d:%02d:%02d.%03d",
       temps_pc.wYear, temps_pc.wMonth, temps_pc.wDay,
       temps_pc.wHour, temps_pc.wMinute, temps_pc.wSecond,
@@ -938,9 +938,9 @@ static int cmdCamHeaderProc(ClientData clientData, Tcl_Interp *interp, int argc,
       result = TCL_ERROR;
    } else {
       cam = (struct camprop*)clientData;
-		if(argc!=2) {
-	      sprintf(cam->headerproc,"%s",argv[2]);
-		}
+        if(argc!=2) {
+          sprintf(cam->headerproc,"%s",argv[2]);
+        }
       sprintf(ligne,"%s",cam->headerproc);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
    }
@@ -1004,7 +1004,7 @@ static void AcqRead(ClientData clientData )
 {
    char errorMessage[1024];
    char s[30000];
-   unsigned short *p;		/* cameras de 1 a 16 bits non signes */
+   unsigned short *p;       /* cameras de 1 a 16 bits non signes */
    double exptime=0.;
    double ra, dec;
    int status;
@@ -1030,7 +1030,7 @@ static void AcqRead(ClientData clientData )
 
    libcam_GetCurrentFITSDate(cam->interpCam, cam->date_end);
 
-   
+
    //  capture
    // TODO 2 : une autre solution serait de passer l'adresse de p  comme ceci :
    // CAM_DRV.read_ccd(cam, (unsigned short **)&p);
@@ -1107,7 +1107,7 @@ static void AcqRead(ClientData clientData )
          (int)(void *) p, cam->pixel_size, cam->pixels_reverse_x, cam->pixels_reverse_y);
       */
       libcam_log(LOG_DEBUG, s);
-      if (Tcl_Eval(interp, s) == TCL_ERROR) {         
+      if (Tcl_Eval(interp, s) == TCL_ERROR) {
          libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
          sprintf(errorMessage,"Errors setpixels: %s", interp->result);
       }
@@ -1235,7 +1235,7 @@ static void AcqRead(ClientData clientData )
          }
       }
 
-      // je soustrais le dark 
+      // je soustrais le dark
       if ( cam->darkBufNo != 0 ) {
          sprintf(s, "buf%d sub %d", cam->bufno, cam->darkBufNo );
          if (Tcl_Eval(interp, s) == TCL_ERROR) {
@@ -1295,7 +1295,7 @@ static void AcqRead(ClientData clientData )
       free(cam->timerExpiration);
       cam->timerExpiration = NULL;
    }
-   
+
    if ( cam->blockingAcquisition == 1 ) {
       // je prepare le message d'erreur qui sera retourne par cmdCamAcq
       strcpy(cam->msg,errorMessage);
@@ -1409,25 +1409,29 @@ static int cmdCamAcq(ClientData clientData, Tcl_Interp * interp, int argc, char 
  */
 static int cmdCamStop(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
-   struct camprop *cam;
-   int retour = TCL_OK;
+    struct camprop *cam;
+    int retour = TCL_OK;
 
-   cam = (struct camprop *) clientData;
-   cam->acquisitionInProgress = 2;
+    cam = (struct camprop *) clientData;
+    cam->acquisitionInProgress = 2;
 
-   if (cam->timerExpiration != NULL ) {
-      Tcl_DeleteTimerHandler(cam->timerExpiration->TimerToken);
-      if (cam->timerExpiration != NULL) {
-         free(cam->timerExpiration);
-         cam->timerExpiration = NULL;
-      }
-      CAM_DRV.stop_exp(cam);
-      AcqRead((ClientData) cam);
-   } else {
-      setCameraStatus(cam,interp,"stand");
-   }
+    if (cam->timerExpiration != NULL ) {
+        Tcl_DeleteTimerHandler(cam->timerExpiration->TimerToken);
+        if (cam->timerExpiration != NULL) {
+            free(cam->timerExpiration);
+            cam->timerExpiration = NULL;
+        }
+        CAM_DRV.stop_exp(cam);
+        AcqRead((ClientData) cam);
+    }
+    else if ( cam->capabilities.videoMode == 1 ) {
+        CAM_DRV.stop_exp(cam);
+    }
+    else {
+        setCameraStatus(cam,interp,"stand");
+    }
 
-   return retour;
+    return retour;
 }
 
 static int cmdCamCapabilities(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
@@ -1511,7 +1515,7 @@ static int cmdCamCelldim(ClientData clientData, Tcl_Interp * interp, int argc, c
    char ligne[256];
    struct camprop *cam;
    cam = (struct camprop *) clientData;
-   
+
    if ((argc != 2) && (argc != 4)) {
       sprintf(ligne, "Usage: %s %s ?celldimx? ?celldimy?", argv[0], argv[1]);
       Tcl_SetResult(interp, ligne, TCL_VOLATILE);
@@ -1834,8 +1838,8 @@ static int cmdCamOverscan(ClientData clientData, Tcl_Interp * interp, int argc, 
          }
          k++;
       }
-      cam->nb_photox = CAM_INI[cam->index_cam].maxx;	/* nombre de photosites sur X */
-      cam->nb_photoy = CAM_INI[cam->index_cam].maxy;	/* nombre de photosites sur Y */
+      cam->nb_photox = CAM_INI[cam->index_cam].maxx;    /* nombre de photosites sur X */
+      cam->nb_photoy = CAM_INI[cam->index_cam].maxy;    /* nombre de photosites sur Y */
       if (cam->overscanindex == 0) {
          /* nb photosites masques autour du CCD */
          cam->nb_deadbeginphotox = CAM_INI[cam->index_cam].overscanxbeg;
@@ -2099,8 +2103,8 @@ static int cam_init_common(struct camprop *cam, int argc, char **argv)
    }
    /* --- L'axe X est choisi parallele au registre horizontal. --- */
    cam->overscanindex = CAM_INI[cam->index_cam].overscanindex;
-   cam->nb_photox = CAM_INI[cam->index_cam].maxx;	/* nombre de photosites sur X */
-   cam->nb_photoy = CAM_INI[cam->index_cam].maxy;	/* nombre de photosites sur Y */
+   cam->nb_photox = CAM_INI[cam->index_cam].maxx;   /* nombre de photosites sur X */
+   cam->nb_photoy = CAM_INI[cam->index_cam].maxy;   /* nombre de photosites sur Y */
    if (cam->overscanindex == 0) {
       /* nb photosites masques autour du CCD */
       cam->nb_deadbeginphotox = CAM_INI[cam->index_cam].overscanxbeg;
@@ -2116,9 +2120,9 @@ static int cam_init_common(struct camprop *cam, int argc, char **argv)
       cam->nb_deadbeginphotoy = 0;
       cam->nb_deadendphotoy = 0;
    }
-   cam->celldimx = CAM_INI[cam->index_cam].celldimx;	/* taille d'un photosite sur X (en metre) */
-   cam->celldimy = CAM_INI[cam->index_cam].celldimy;	/* taille d'un photosite sur Y (en metre) */
-   cam->fillfactor = CAM_INI[cam->index_cam].fillfactor;	/* fraction du photosite sensible a la lumiere */
+   cam->celldimx = CAM_INI[cam->index_cam].celldimx;    /* taille d'un photosite sur X (en metre) */
+   cam->celldimy = CAM_INI[cam->index_cam].celldimy;    /* taille d'un photosite sur Y (en metre) */
+   cam->fillfactor = CAM_INI[cam->index_cam].fillfactor;    /* fraction du photosite sensible a la lumiere */
    cam->foclen = CAM_INI[cam->index_cam].foclen;
    /* --- initialisation de la fenetre par defaut --- */
    cam->x1 = 0;
@@ -2136,7 +2140,7 @@ static int cam_init_common(struct camprop *cam, int argc, char **argv)
    cam->mirrorv = 0;
    /* --- initialisation du numero de port parallele du PC --- */
    cam->portindex = 0;
-   cam->port = 0x378;		/* lpt1 par defaut */
+   cam->port = 0x378;       /* lpt1 par defaut */
    if (argc >= 2) {
       if (strcmp(argv[2], cam_ports[1]) == 0) {
          cam->portindex = 1;
@@ -2154,7 +2158,7 @@ static int cam_init_common(struct camprop *cam, int argc, char **argv)
    cam->capabilities.videoMode      = 0;  // existence  du mode video
    cam->acquisitionInProgress = 0;
    cam->gps_date = 0;
-   cam->darkBufNo = 0;                // buffer contenant l'image du dark a soustraire apres chaque acquisition  
+   cam->darkBufNo = 0;                // buffer contenant l'image du dark a soustraire apres chaque acquisition
    cam->darkFileName = NULL;
    return 0;
 }
@@ -2219,7 +2223,7 @@ void setScanResult(struct camprop *cam, Tcl_Interp * interp, char * status)
 static int cmdCamDark(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
    char ligne[1024];
-   int result = TCL_OK;   
+   int result = TCL_OK;
 
    if ((argc != 2) && (argc != 3)) {
       sprintf(ligne, "Usage: %s %s ?filename? ", argv[0], argv[1]);
@@ -2232,7 +2236,7 @@ static int cmdCamDark(ClientData clientData, Tcl_Interp * interp, int argc, char
          Tcl_SetResult(interp, "", TCL_VOLATILE);;
       } else {
          Tcl_SetResult(interp, cam->darkFileName, TCL_VOLATILE);
-      }      
+      }
       result = TCL_OK;
    } else {
       struct camprop *cam = (struct camprop *) clientData;
@@ -2267,7 +2271,7 @@ static int cmdCamDark(ClientData clientData, Tcl_Interp * interp, int argc, char
             } else {
                cam->darkBufNo = atoi(interp->result);
             }
-         } 
+         }
          // je charge l'image
          if ( result==TCL_OK) {
             sprintf(ligne, "buf%d load {%s}", cam->darkBufNo,argv[2]);
@@ -2285,7 +2289,7 @@ static int cmdCamDark(ClientData clientData, Tcl_Interp * interp, int argc, char
                } else {
                   int darkWidth = atoi(interp->result);
                   if ( darkWidth != cam->nb_photox / cam->binx ) {
-                     sprintf(ligne, "%s %s %s \nError : dark width (%d) is different from camera width (%d)", 
+                     sprintf(ligne, "%s %s %s \nError : dark width (%d) is different from camera width (%d)",
                         argv[0], argv[1], argv[2], darkWidth, cam->nb_photox / cam->binx);
                      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
                      result = TCL_ERROR;
@@ -2300,14 +2304,14 @@ static int cmdCamDark(ClientData clientData, Tcl_Interp * interp, int argc, char
                   } else {
                      int darkHeight = atoi(interp->result);
                      if ( darkHeight != cam->nb_photoy / cam->biny ) {
-                        sprintf(ligne, "%s %s %s : dark width (%d) is different from camera width (%d) ", 
+                        sprintf(ligne, "%s %s %s : dark width (%d) is different from camera width (%d) ",
                            argv[0], argv[1], argv[2], darkHeight, cam->nb_photoy / cam->biny);
                         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
                         result = TCL_ERROR;
                      }
                   }
                }
-               if ( result == TCL_OK) {                  
+               if ( result == TCL_OK) {
                   // je memorise le nom du fichier
                   if ( cam->darkFileName != NULL ) {
                      free(cam->darkFileName);
@@ -2317,7 +2321,7 @@ static int cmdCamDark(ClientData clientData, Tcl_Interp * interp, int argc, char
                   strcpy(cam->darkFileName, argv[2]);
                   Tcl_SetResult(interp, "", TCL_VOLATILE);
                } else {
-                  // je supprime le buffer 
+                  // je supprime le buffer
                   if ( cam->darkBufNo != 0 ) {
                      sprintf(ligne, "buf::delete %d", cam->darkBufNo);
                      Tcl_Eval(interp, ligne);
@@ -2332,12 +2336,12 @@ static int cmdCamDark(ClientData clientData, Tcl_Interp * interp, int argc, char
                }
             }
          }
-      } 
+      }
    }
    return result;
 }
 
-int cmdCamAvailable(struct camprop *cam, Tcl_Interp * interp, int argc, char *argv[]) 
+int cmdCamAvailable(struct camprop *cam, Tcl_Interp * interp, int argc, char *argv[])
 {
 #ifdef CMD_CAM_AVAILABLE
    int result;
@@ -2355,7 +2359,7 @@ int cmdCamAvailable(struct camprop *cam, Tcl_Interp * interp, int argc, char *ar
    }
    free(ligne);
    return result;
-#else 
+#else
    Tcl_SetResult(interp, "command \"available\" not implemented for this camera", TCL_VOLATILE);
    return TCL_ERROR;
 #endif
