@@ -519,6 +519,15 @@ BOOL CCaptureLinux::setVideoFormat( char *formatname, char *errorMessage )
         return FALSE;
     }
 
+    /* Il faut impérativement arrêter le mode capture de la caméra */
+    if ( capturing == TRUE ) {
+        if ( abortCapture() == FALSE ) {
+            sprintf( errorMessage, "Canot stop the capture mode" );
+            webcam_log( LOG_DEBUG, "setVideoFormat : Impossible d'arrêter la capture vidéo" );
+            return FALSE;
+        }
+    }
+
     /* New buffer size */
     currentWidth = imax;
     currentHeight= jmax;
@@ -865,6 +874,7 @@ BOOL CCaptureLinux::startCapture(unsigned short exptime, unsigned long microSecP
             break;
 
         case IO_METHOD_MMAP  :
+            retcode = TRUE;
             /* Mappage dans l'espace mémoire local */
             mmap_buffers = (s_mmap_buffers *)calloc( n_mmap_buffers, sizeof( s_mmap_buffers ) );
 
@@ -927,7 +937,6 @@ BOOL CCaptureLinux::startCapture(unsigned short exptime, unsigned long microSecP
                 retcode = FALSE;
                 break;
             }
-            retcode = TRUE;
             break;
 
         default :
@@ -951,7 +960,25 @@ BOOL CCaptureLinux::startCapture(unsigned short exptime, unsigned long microSecP
  */
 BOOL CCaptureLinux::abortCapture() {
     webcam_log( LOG_DEBUG, "abortCapture" );
-   return FALSE;
+
+    int retcode = TRUE;
+    enum v4l2_buf_type type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+
+    if ( capturing == TRUE ) {
+        if ( driver_params->io == IO_METHOD_MMAP ) {
+            webcam_log( LOG_DEBUG, "abortCapture : ioctl VIDEOC_STREAMOFF" );
+            if ( -1 == ioctl( cam_fd, VIDIOC_STREAMOFF, &type ) ) {
+                webcam_log( LOG_ERROR, "abortCapture %s : ioctl VIDEOC_STREAMOFF : ", strerror( errno ) );
+                retcode = FALSE;
+            }
+            webcam_mmapDelete();
+        }
+        capturing = FALSE;
+    }
+    else {
+        webcam_log( LOG_ERROR, "abortCapture %s : La caméra n'est pas en mode capture video" );
+    }
+    return retcode;
 }
 
 /**

@@ -202,7 +202,7 @@ struct _PrivateParams {
 #define LOG_WARNING 2
 #define LOG_INFO    3
 #define LOG_DEBUG   4
-int webcam_debug_level = LOG_INFO;
+int webcam_debug_level = LOG_DEBUG;
 
 #include <time.h>
 #include <sys/timeb.h>          /* ftime, struct timebuffer */
@@ -336,6 +336,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    cam->sensorColor = 1;
    cam->videoStatusVarNamePtr[0] = 0;
    cam->videoEndCaptureCommandPtr[0] = 0;
+   cam->capabilities.videoMode = 1;
    cam->params = (PrivateParams*)malloc(sizeof(PrivateParams));
 
    // je decode les options de cam::create
@@ -495,25 +496,25 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 
 int cam_close(struct camprop *cam)
 {
-   webcam_log(LOG_DEBUG,"cam_close begin");
-   if (cam->params->capture != NULL) {
-      delete cam->params->capture;
-      cam->params->capture = NULL;
-   }
+    webcam_log(LOG_DEBUG,"cam_close begin");
+    if ( cam->params->capture != 0 ) {
+        delete cam->params->capture;
+        cam->params->capture = 0;
+    }
 
-   if (cam->params->captureListener != NULL) {
-      delete cam->params->captureListener;
-      cam->params->captureListener = NULL;
-   }
+    if ( cam->params->captureListener != 0 ) {
+        delete cam->params->captureListener;
+        cam->params->captureListener = 0;
+    }
 
 
-   if( cam->params != NULL) {
-      free(cam->params);
-      cam->params = NULL;
-   }
+    if( cam->params != 0 ) {
+        free( cam->params );
+        cam->params = 0;
+    }
 
-   webcam_log(LOG_DEBUG,"cam_close end OK");
-   return TCL_OK;
+    webcam_log(LOG_DEBUG,"cam_close end OK");
+    return TCL_OK;
 }
 
 
@@ -615,22 +616,28 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 
 void cam_stop_exp(struct camprop *cam)
 {
-   webcam_log( LOG_DEBUG,"cam_stop_exp begin" );
-   if (cam->longuepose == 1) {
-      //long exposure
-      int stop;
-      if ( cam->longueposestart == 0 ) {
-         stop = 1;
-      } else {
-         stop = 0;
-      }
-      if (webcam_setLongExposureDevice(cam, stop)) {
-         //error description in cam->msg
-         return;
-      }
-      cam->params->capture->grabFrame(cam->msg);
-   }
-   webcam_log( LOG_DEBUG,"cam_stop_exp end OK" );
+    webcam_log( LOG_DEBUG,"cam_stop_exp begin" );
+    if (cam->longuepose == 1) {
+        //long exposure
+        int stop;
+        if ( cam->longueposestart == 0 ) {
+            stop = 1;
+        }
+        else {
+            stop = 0;
+        }
+        if (webcam_setLongExposureDevice(cam, stop)) {
+            //error description in cam->msg
+            return;
+        }
+        cam->params->capture->grabFrame(cam->msg);
+    }
+#if defined(OS_LIN)
+    else {
+        cam->params->capture->abortCapture();
+    }
+#endif // OS_LIN
+    webcam_log( LOG_DEBUG,"cam_stop_exp end OK" );
 }
 
 /**
@@ -652,6 +659,10 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
     unsigned char *frameBuffer;
     BOOL result ;
 
+    if ( ( cam->params == 0 ) || ( cam->params->capture == 0 ) ) {
+        return;
+    }
+
     webcam_log(LOG_DEBUG,"cam_read_ccd begin");
     if (cam->longuepose == 1) {
         //long exposure
@@ -666,6 +677,7 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
             return;
         }
     }
+
     result = cam->params->capture->grabFrame(cam->msg);
     cam_update_window(cam);
 
