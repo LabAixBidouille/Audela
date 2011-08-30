@@ -610,12 +610,18 @@ proc ::webcam::configureCamera { camItem bufNo } {
       }
 
       #--- Je cree la camera
-      if { $conf(webcam,$camItem,select) == "0" } {
-         set camtype webcam
-      } else {
-         set camtype grabber
-      }
-      set camNo [ cam::create $camtype "$conf(webcam,$camItem,port)" \
+    if { $::tcl_platform(os) == "Linux" } {
+        if { $conf(webcam,$camItem,select) == "0" } {
+            set camtype webcam
+        } else {
+            set camtype grabber
+        }
+    } else {
+        # windows
+        set camtype webcam
+    }
+
+    set camNo [ cam::create $camtype "$conf(webcam,$camItem,port)" \
          -channel $conf(webcam,$camItem,channel) \
          -lpport $conf(webcam,$camItem,longueposeport) \
          -name WEBCAM \
