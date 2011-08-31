@@ -25,7 +25,11 @@ proc ::eshel::instrumentgui::run { tkbase visuNo } {
    variable private
 
    set private(configList)  [list]
-   set private(actionTypeList)  [ list biasSerie darkSerie flatfieldSerie flatSerie tharSerie neonSerie wait readOut]
+
+   #Modif OTz20110826-start
+   set private(actionTypeList)  [ list biasSerie darkSerie flatfieldSerie flatSerie tharSerie tungstenSerie mirrorON mirrorOFF wait readOut]
+   #Modif OTz20110826-end
+
    #--- liste des paraemtres des actions
    set private(actionParamNames) [ list expTime expNb ]
    set private(action,biasSerie,paramNames) [ list expNb ]
@@ -33,8 +37,10 @@ proc ::eshel::instrumentgui::run { tkbase visuNo } {
    set private(action,flatfieldSerie,paramNames) [ list expTime expNb ]
    set private(action,flatSerie,paramNames) [ list expTime expNb ]
    set private(action,tharSerie,paramNames) [ list expTime expNb ]
-   set private(action,neonSerie,paramNames) [ list expTime expNb ]
+   set private(action,tungstenSerie,paramNames) [ list expTime expNb ]
    set private(action,wait,paramNames)      [ list expTime ]
+   set private(action,mirrorON,paramNames)  [ list expTime ]
+   set private(action,mirrorOFF,paramNames) [ list expTime ]
    set private(action,readOut,paramNames)   [ list expNb ]
    set private(action,expTime) 1
    set private(action,expNb) 1
@@ -266,15 +272,15 @@ proc ::eshel::instrumentgui::fillSpectrographPage { frm visuNo } {
          -editable 0                    \
          -values $bitList
 
-      #--- Commande de la lampe Neon
-      label $frm.link.neonLabel -text $::caption(eshel,instrument,spectrograph,neonBit) -justify left
+      #--- Commande de la lampe Tungsten
+      label $frm.link.tungstenLabel -text $::caption(eshel,instrument,spectrograph,tungstenBit) -justify left
       set bitList [ list 1 2 3 4 5 6 7 8 ]
-      ComboBox $frm.link.neonBit \
+      ComboBox $frm.link.tungstenBit \
          -width 3                       \
          -height [ llength $bitList ]   \
          -relief sunken                 \
          -borderwidth 1                 \
-         -textvariable ::eshel::instrumentgui::private(neonBit) \
+         -textvariable ::eshel::instrumentgui::private(tungstenBit) \
          -editable 0                    \
          -values $bitList
 
@@ -291,8 +297,8 @@ proc ::eshel::instrumentgui::fillSpectrographPage { frm visuNo } {
       grid $frm.link.tharBit     -in [$frm.link getframe] -row 2 -column 1 -sticky ens
       grid $frm.link.flatLabel   -in [$frm.link getframe] -row 3 -column 0 -sticky w
       grid $frm.link.flatBit     -in [$frm.link getframe] -row 3 -column 1 -sticky ens
-      grid $frm.link.neonLabel   -in [$frm.link getframe] -row 4 -column 0 -sticky w
-      grid $frm.link.neonBit     -in [$frm.link getframe] -row 4 -column 1 -sticky ens
+      grid $frm.link.tungstenLabel   -in [$frm.link getframe] -row 4 -column 0 -sticky w
+      grid $frm.link.tungstenBit     -in [$frm.link getframe] -row 4 -column 1 -sticky ens
 
    pack $frm.name    -side top -anchor w -fill none -expand 0
    pack $frm.grating -side top -anchor w -fill none -expand 0
@@ -870,7 +876,7 @@ proc ::eshel::instrumentgui::setConfig { visuNo configId } {
    set private(mirrorBit)  $::conf(eshel,instrument,config,$configId,mirror,bit)
    set private(tharBit)    $::conf(eshel,instrument,config,$configId,thar,bit)
    set private(flatBit)    $::conf(eshel,instrument,config,$configId,flat,bit)
-   set private(neonBit)   $::conf(eshel,instrument,config,$configId,neon,bit)
+   set private(tungstenBit)   $::conf(eshel,instrument,config,$configId,tungsten,bit)
    #--- widgets telescope
    set private(telescopeName) $::conf(eshel,instrument,config,$configId,telescopeName)
    #--- widgets camera
@@ -1001,7 +1007,7 @@ proc ::eshel::instrumentgui::apply { visuNo } {
    set ::conf(eshel,instrument,config,$configId,mirror,bit)    $private(mirrorBit)
    set ::conf(eshel,instrument,config,$configId,thar,bit)      $private(tharBit)
    set ::conf(eshel,instrument,config,$configId,flat,bit)      $private(flatBit)
-   set ::conf(eshel,instrument,config,$configId,neon,bit)      $private(neonBit)
+   set ::conf(eshel,instrument,config,$configId,tungsten,bit)      $private(tungstenBit)
 
    set ::conf(eshel,instrument,config,$configId,cameraName)    $private(cameraName)
    set ::conf(eshel,instrument,config,$configId,cameraLabel)   $private(cameraLabel)

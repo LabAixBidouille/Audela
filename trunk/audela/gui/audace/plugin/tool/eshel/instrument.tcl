@@ -138,7 +138,7 @@ proc ::eshel::instrument::setCurrentConfig { configId } {
 #  offsetEnabled
 #  hotPixelEnabled
 #  gamma
-#  neon,bit
+#  tungsten,bit
 #  name
 #  orderDefinition
 #  tharExposure
@@ -150,8 +150,8 @@ proc ::eshel::instrument::setCurrentConfig { configId } {
 #  darkExposure
 #  flatEnabled
 #  spectroName
-#  neonEnabled
-#  neonNb
+#  tungstenEnabled
+#  tungstenNb
 #  lineList
 #  flatNb
 #  spectrograhLink
@@ -163,7 +163,7 @@ proc ::eshel::instrument::setCurrentConfig { configId } {
 #  cameraBinning
 #  boxWide
 #  hotPixelList
-#  neonExposure
+#  tungstenExposure
 #  thar,bit
 #  cameraNamespace
 #  maxOrder
@@ -402,7 +402,7 @@ proc ::eshel::instrument::importCalibrationConfig { fileName } {
       set param(mirrorBit)       0
       set param(tharBit)         1
       set param(flatBit)         2
-      set param(neonBit)         3
+      set param(tungstenBit)         3
 
       $hFile close
       set hFile ""
@@ -505,7 +505,7 @@ proc ::eshel::instrument::exportConfig { fileName } {
 #  allume ou eteint une lampe du spectrographe
 #
 # Parameters :
-#    commandName : mirror thar flat neon
+#    commandName : mirror thar flat tungsten
 #    state    : 1=allume 0=eteint
 #------------------------------------------------------------
 proc ::eshel::instrument::setSpectrographLamp { bonnetteLinkNo commandName state  } {
@@ -517,13 +517,13 @@ proc ::eshel::instrument::setSpectrographLamp { bonnetteLinkNo commandName state
       "mirror" -
       "thar" -
       "flat" -
-      "neon" {
+      "tungsten" {
          link$bonnetteLinkNo bit $::conf(eshel,instrument,config,$currentInstrument,$commandName,bit) $state
          #--- je donne un
          after 500
       }
       default {
-         error "Incorrect lamp $lampName . Must be (thar|flat|neon)\n"
+         error "Incorrect lamp $lampName . Must be (thar|flat|tungsten)\n"
       }
    }
 }
