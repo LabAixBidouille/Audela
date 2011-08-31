@@ -35,6 +35,9 @@ set caption(trigger,helpdelai)                        "Starting delay must be an
 set caption(trigger,periode)                          "Period"
 set caption(trigger,helpperiode)                      "Interval between each shoot\n must be an integer of seconds\nhihger than duration."
 set caption(trigger,prisedevue)                       "Shooting series No. %s - Image No. %s"
+set caption(trigger,auto)                             "# Auto"
+set caption(trigger,hr)                               "# h"
+set caption(trigger,min)                              "# m"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -63,6 +66,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(trigger,periode)                       "Période"
    set caption(trigger,helpperiode)                   "L'intervalle entre chaque début d'image\ndoit être un nombre entier de secondes,\nsupérieur à la durée."
    set caption(trigger,prisedevue)                    "Prise de vue série N° %s - Image N° %s"
+   set caption(trigger,auto)                          "Auto"
+   set caption(trigger,hr)                            "h"
+   set caption(trigger,min)                           "m"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -91,6 +97,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(trigger,periode)                       "Intervallo"
    set caption(trigger,helpperiode)                   "L'intervallo tra ogni inizio di image\ndoit essere un numero intero di secondi."
    set caption(trigger,prisedevue)                    "Riprese serie n. %s - immagine n. %s"
+
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
