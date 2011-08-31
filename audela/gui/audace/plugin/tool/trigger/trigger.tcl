@@ -234,6 +234,39 @@ namespace eval ::trigger {
             -indicatoron "1" -offvalue "0" -onvalue "1" \
             -variable ::trigger::lp -command "::trigger::configTime"
 
+         frame $Trigger.timer
+
+         checkbutton $Trigger.timer.auto -text "$caption(trigger,auto)" \
+            -indicatoron 1 -offvalue 0 -onvalue 1 -variable ::trigger::panneau(trigger,auto) \
+            -command "::trigger::confTimeListener $::audace(visuNo)"
+         pack $Trigger.timer.auto -side left -padx 1 -pady 2
+
+         for {set i 1} {$i < 24} {incr i} {
+            lappend lhr [format "%02.f" $i]
+         }
+         lappend lhr "00" $lhr
+         tk::spinbox $Trigger.timer.hr \
+            -width 2 -relief sunken -borderwidth 1 \
+            -state readonly -values $lhr -wrap 1 \
+            -textvariable ::trigger::panneau(trigger,hr)
+
+         label $Trigger.timer.lab_hr -text "$caption(trigger,hr)"
+
+         for {set i 1} {$i < 60} {incr i} {
+            lappend lmin [format "%02.f" $i]
+         }
+         lappend lmin "00" $lmin
+         tk::spinbox $Trigger.timer.min \
+            -width 2 -relief sunken -borderwidth 1 \
+            -state readonly -values $lmin -wrap 1 \
+            -textvariable ::trigger::panneau(trigger,min)
+
+         label $Trigger.timer.lab_min -text "$caption(trigger,min)"
+
+         pack $Trigger.timer.hr $Trigger.timer.lab_hr \
+            $Trigger.timer.min $Trigger.timer.lab_min \
+            -in $Trigger.timer -side left
+
          #--   configure le bouton de lancement d'acquisition
          button $Trigger.but1 -borderwidth 2 -text "$caption(trigger,go)" \
             -command "::trigger::timer"
@@ -253,7 +286,8 @@ namespace eval ::trigger {
             $Trigger.activtime 7,0 -cspan 2 \
             $Trigger.delai 8,0 -cspan 2 \
             $Trigger.periode 9,0 -cspan 2 \
-            $Trigger.but1 10,0 -cspan 2 -ipady 3 -fill x
+            $Trigger.timer 10,0 -cspan 2 \
+            $Trigger.but1 11,0 -cspan 2 -ipady 3 -fill x
             ::blt::table configure $Trigger r* -pady 2
 
          #--   ajoute les aides
@@ -261,9 +295,10 @@ namespace eval ::trigger {
             DynamicHelp::add $Trigger.$child -text $caption(trigger,help$child)
          }
 
-         lassign { "1" " " "0" "1" " " "0" "" } ::trigger::lp ::trigger::activtime \
-            ::trigger::delai ::trigger::periode panneau(trigger,action) \
-            panneau(trigger,serieNo) panneau(trigger,msgbox)
+         lassign { "1" " " "0" "1" " " "0" "" "0" "0"} ::trigger::lp \
+            ::trigger::activtime ::trigger::delai ::trigger::periode \
+            panneau(trigger,action) panneau(trigger,serieNo) \
+            panneau(trigger,msgbox) panneau(trigger,hr) panneau(trigger,min)
 
          $Trigger.lp invoke
          configPan
@@ -358,6 +393,8 @@ namespace eval ::trigger {
       #--   retablit les valeurs initiales
       lassign $panneau(trigger,settings) ::trigger::nb_poses \
          ::trigger::periode ::trigger::activtime
+
+      set panneau(trigger,action) " "
    }
 
    ######################################################################
@@ -548,6 +585,37 @@ namespace eval ::trigger {
          chan close $fichier
       }
       ::console::affiche_resultat "$msg\n"
+   }
+
+   #------------------------------------------------------------
+   # confTimeListener : met en place/arrete le listener de minuteur
+   # commande du bouton de programmation de shoot 'Auto'
+   # Parametres : visuNo
+   # Return : rien
+   #------------------------------------------------------------
+   proc confTimeListener { visuNo } {
+      variable panneau
+
+      if {$panneau(trigger,auto) == "1"} {
+         ::confVisu::addTimeListener $visuNo "::trigger::autoShoot $visuNo"
+      } else {
+         ::confVisu::removeTimeListener $visuNo "::trigger::autoShoot $visuNo"
+      }
+   }
+
+   #------------------------------------------------------------
+   # autoShoot :
+   # Parametres : numero de la visu
+   # Return : rien
+   #------------------------------------------------------------
+   proc autoShoot { visuNo args } {
+      variable panneau
+      global audace caption
+
+      #--   lance le parquage affiche dans le selecteur
+      if {$audace(hl,format,hm) != "" && $audace(hl,format,hm) eq "$panneau(trigger,hr) $panneau(trigger,min)"} {
+         ::trigger::timer
+      }
    }
 
 #--   fin du namespace
