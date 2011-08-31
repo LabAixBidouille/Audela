@@ -28,7 +28,7 @@ proc ::eshel::acquisition::validateFitsData { value valueLabel } {
 # @param visuNo numero de la visu
 # @param actionList liste des actions d'acquisitions a faire. C'est une liste de couples de valeurs :
 #          -  actionType  : type de l'action
-#              types d'action connus:  objectSerie, darkSerie, flatfieldSerie,flatSerie, tharSerie, neonSerie, biasSerie, wait
+#              types d'action connus:  objectSerie, darkSerie, flatfieldSerie,flatSerie, tharSerie, tungstenSerie, biasSerie, wait
 #          - actionParams : parametres de l'action
 #              expTime     (defaut= 0 seconde)
 #              expNb       (defaut= 1 image)
@@ -165,8 +165,9 @@ proc ::eshel::acquisition::startSequence { visuNo actionList { sequenceName "" }
                   if { $::conf(eshel,enableGuidingUnit) == 1  } {
                      #--- j'active le miroir
                      ::eshel::instrument::setSpectrographLamp $bonnetteLinkNo "mirror" 1
-                     #--- j'allume la lampe Flat
+                     #--- j'allume les lampes LEDs (flat) et Tungsten (Tungsten) en meme temps
                      ::eshel::instrument::setSpectrographLamp $bonnetteLinkNo "flat" 1
+                     ::eshel::instrument::setSpectrographLamp $bonnetteLinkNo "tungsten" 1
                   }
                }
                tharSerie  {
@@ -180,17 +181,25 @@ proc ::eshel::acquisition::startSequence { visuNo actionList { sequenceName "" }
                      ::eshel::instrument::setSpectrographLamp $bonnetteLinkNo "thar" 1
                   }
                }
-               neonSerie  {
-                  set statusLabel "neon"
+               tungstenSerie  {
+                  set statusLabel "tungsten"
                   #--- je mets l'obturateur en mode syncho
                   ::confCam::setShutter $camItem 2 "set"
                   if { $::conf(eshel,enableGuidingUnit) == 1  } {
                      #--- j'active le miroir
                      ::eshel::instrument::setSpectrographLamp $bonnetteLinkNo "mirror" 1
                      #--- j'allume la lampe
-                     ::eshel::instrument::setSpectrographLamp $bonnetteLinkNo "neon" 1
+                     ::eshel::instrument::setSpectrographLamp $bonnetteLinkNo "tungsten" 1
                   }
                }
+
+               mirrorOFF  {
+               # ::eshel::instrument::setSpectrographLamp $bonnetteLinkNo "mirror" 0
+               }
+               mirrorON  {
+               # ::eshel::instrument::setSpectrographLamp $bonnetteLinkNo "mirror" 1
+               }
+
                biasSerie  {
                   set statusLabel "bias"
                   #--- je ferme l'obturateur de la camera
@@ -291,10 +300,10 @@ proc ::eshel::acquisition::startSequence { visuNo actionList { sequenceName "" }
                          append fileName "TUNGSTEN-$actionParams(expTime)s"
                          set imageType "TUNGSTEN"
                      }
-                     neonSerie {
-                       #--- Mode Neon
-                        append fileName "NEON-$actionParams(expTime)s"
-                        set imageType "FLAT"
+                     tungstenSerie {
+                       #--- Mode Tungsten
+                        append fileName "TUNGSTEN-$actionParams(expTime)s"
+                        set imageType "TUNGSTEN"
                      }
                      biasSerie  {
                         #--- Mode bias
@@ -388,8 +397,9 @@ proc ::eshel::acquisition::startSequence { visuNo actionList { sequenceName "" }
                   }
                   flatSerie  {
                      if { $::conf(eshel,enableGuidingUnit) == 1  } {
-                        #--- j'eteins la lampe
+                        #--- j'eteins les lampees
                         ::eshel::instrument::setSpectrographLamp $bonnetteLinkNo "flat" 0
+                        ::eshel::instrument::setSpectrographLamp $bonnetteLinkNo "tungsten" 0
                         #--- je desactive le miroir
                         ::eshel::instrument::setSpectrographLamp $bonnetteLinkNo "mirror" 0
                      }
@@ -405,10 +415,11 @@ proc ::eshel::acquisition::startSequence { visuNo actionList { sequenceName "" }
                         ::eshel::instrument::setSpectrographLamp $bonnetteLinkNo "mirror" 0
                      }
                   }
-                  neonSerie {
+
+                  tungstenSerie {
                      if { $::conf(eshel,enableGuidingUnit) == 1  } {
                         #--- j'eteins la lampe
-                        ::eshel::instrument::setSpectrographLamp $bonnetteLinkNo "neon" 0
+                        ::eshel::instrument::setSpectrographLamp $bonnetteLinkNo "tungsten" 0
                         #--- je desactive le miroir
                         ::eshel::instrument::setSpectrographLamp $bonnetteLinkNo "mirror" 0
                      }

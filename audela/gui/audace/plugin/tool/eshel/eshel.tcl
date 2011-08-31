@@ -186,7 +186,7 @@ proc ::eshel::createPluginInstance { {tkbase "" } { visuNo 1 } } {
    if { ! [ info exists conf($prefix,mirror,bit) ] }      { set conf($prefix,mirror,bit)       1 }
    if { ! [ info exists conf($prefix,thar,bit) ] }        { set conf($prefix,thar,bit)         2 }
    if { ! [ info exists conf($prefix,flat,bit) ] }        { set conf($prefix,flat,bit)         3 }
-   if { ! [ info exists conf($prefix,neon,bit) ] }        { set conf($prefix,neon,bit)         4 }
+   if { ! [ info exists conf($prefix,tungsten,bit) ] }        { set conf($prefix,tungsten,bit)         4 }
    #------ Telescope
    if { ! [ info exists conf($prefix,telescopeName) ] }   { set conf($prefix,telescopeName)    "default telescope" }
    #------ Camera
@@ -771,7 +771,7 @@ proc ::eshel::adaptPanel { visuNo args } {
             darkPreview -
             flatPreview -
             tharPreview -
-            neonPreview {
+            tungstenPreview {
                #--- l'utilisateur peut choisir le temps de pose et le binning
                pack forget $frm.acq.object
                pack $frm.acq.exptime -in [$frm.acq getframe] -side top -fill x -before $frm.acq.auto
@@ -972,9 +972,9 @@ proc ::eshel::onStartAcquisition { visuNo args } {
                set actionParam [list expTime $::conf(eshel,exptime) expNb 1 saveFile 0 binning $binning ]
                set actionList  [list [list $actionType $actionParam]]
             }
-            neonPreview {
+            tungstenPreview {
                #--- j'ajoute une serie d'une image avec le temps de pose choisi par l'utilisateur
-               set actionType  "neonSerie"
+               set actionType  "tungstenSerie"
                set actionParam [list expTime $::conf(eshel,exptime) expNb 1 saveFile 0 binning $binning ]
                set actionList  [list [list $actionType $actionParam]]
             }
@@ -1120,7 +1120,7 @@ proc ::eshel::setSequenceList { visuNo } {
    }
 
    #--- j'ajoute les sequences "preview"
-   foreach sequenceId [list objectPreview tharPreview flatPreview darkPreview biasPreview neonPreview]  {
+   foreach sequenceId [list objectPreview tharPreview flatPreview darkPreview biasPreview tungstenPreview]  {
       lappend private($visuNo,sequenceList) [list "previewSequence" $sequenceId $::caption(eshel,acquisition,$sequenceId)]
    }
 
