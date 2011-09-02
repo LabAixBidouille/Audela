@@ -122,7 +122,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    strcpy(tel->channel,tel->interp->result);
    tel->tempo = 50;
    tel->consoleLog = 0; 
-   // 
+   tel->suiviOnFS2 = 1;
    tel->waitResponse = 1;
    
    // j'ouvre le port serie 
@@ -506,6 +506,10 @@ int mytel_radec_goto(struct telprop *tel)
 int mytel_radec_move(struct telprop *tel,char *direction)
 {
    char s[1024],direc[10];
+   // Pour le FS2 il faut mettre le moteur en marche si le suivi est arrete
+   if (strcmp(tel->name,"FS2")==0 && tel->suiviOnFS2 == 0) {
+      mytel_sendLX(tel, RETURN_NONE, NULL, "#:Q#");
+   }
    /* LX200 protocol has 4 motion rates */
    if ((tel->radec_move_rate<=0.25)) {
       /* Guide */
@@ -567,6 +571,11 @@ int mytel_radec_stop(struct telprop *tel,char *direction)
       mytel_sendLX(tel, RETURN_NONE, NULL, "#:Qe#");
       mytel_sendLX(tel, RETURN_NONE, NULL, "#:Qw#");
    }
+   // Pour le FS2 il faut arreter le moteur si le suivi etait arrete
+   if (strcmp(tel->name,"FS2")==0 && tel->suiviOnFS2 == 0) {
+      mytel_sendLX(tel, RETURN_NONE, NULL, "#:RC#");
+      mytel_sendLX(tel, RETURN_NONE, NULL, "#:Me#");
+   }
    //sprintf(s,"after 50"); mytel_tcleval(tel,s);
    return 0;
 }
@@ -584,6 +593,7 @@ int mytel_radec_motor(struct telprop *tel)
          //Then you must send the :Me# command, and the motor will immediately stop.
          mytel_sendLX(tel, RETURN_NONE, NULL, "#:RC#");
          mytel_sendLX(tel, RETURN_NONE, NULL, "#:Me#");
+         tel->suiviOnFS2 = 0;
       } else if (strcmp(tel->autostar_char,"")==0) {
          //mytel_sendLX(tel, RETURN_NONE, NULL, "#:hW#");
       } else {
@@ -595,6 +605,7 @@ int mytel_radec_motor(struct telprop *tel)
          //If you send a :Q# command, the motor will continue to run.
          //I restore the initial speed to send it to the FS2 Hand Controller.
          mytel_sendLX(tel, RETURN_NONE, NULL, "#:Q#");
+         tel->suiviOnFS2 = 1;
          if ((tel->radec_move_rate<=0.25)) {
             /* Guide */
             mytel_sendLX(tel, RETURN_NONE, NULL, "#:RG#");

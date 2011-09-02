@@ -41,8 +41,9 @@ struct telprop {
    int waitResponse;
    int longformatindex;
    int tempo;
-	char autostar_char[3];
+   char autostar_char[3];
    int reponseSRSD;
+   int suiviOnFS2;
 };
 
 int tel_init(struct telprop *tel, int argc, char **argv);
