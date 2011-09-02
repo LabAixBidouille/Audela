@@ -5,30 +5,6 @@
 # Mise à jour $Id$
 #
 
-#
-# Renvoi l'etat des moteurs (non encore inclu dans la librairie libtemma.dll)
-#    1 : Si les moteurs fonctionnent
-#    0 : Si les moteurs sont hors tension
-#   -1 : Si Temma n'est pas connecte
-#
-proc temma_get_motor { } {
-   global audace
-
-   puts -nonewline [ tel$audace(telNo) channel ] "STN-COD\r\n"
-   after [ tel$audace(telNo) tempo ]
-   set res [ read [ tel$audace(telNo) channel ] 30 ]
-   after [ tel$audace(telNo) tempo ]
-   set res [ lindex [ split $res "\r\n" ] 0 ]
-   if { $res == "stn-off" } {
-      set resu "1"
-   } elseif { $res == "stn-on" } {
-      set resu "0"
-   } else {
-      set resu "-1"
-   }
-   return $resu
-}
-
 namespace eval confTemmaMobile {
 
    #
