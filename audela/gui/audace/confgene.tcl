@@ -1864,6 +1864,30 @@ namespace eval ::confChoixOutil {
       destroy $This
    }
 
+   #
+   # confChoixOutil::ordreMenuDeroulant
+   # Tri dans l'ordre d'affichage des menus deroulants dans la barre des menus
+   #
+   proc ordreMenuDeroulant { m } {
+      set nomMenu [ ::[ string trimleft [ string trimleft $m "menu_name" ] "," ]\::getPluginProperty function ]
+      if { $nomMenu == "file" } {
+         set rangMenu 1
+      } elseif { $nomMenu == "display" } {
+         set rangMenu 2
+      } elseif { $nomMenu == "images" } {
+         set rangMenu 3
+      } elseif { $nomMenu == "analysis" } {
+         set rangMenu 4
+      } elseif { $nomMenu == "acquisition" } {
+         set rangMenu 5
+      } elseif { $nomMenu == "aiming" } {
+         set rangMenu 6
+      } elseif { $nomMenu == "setup" } {
+         set rangMenu 7
+      }
+      return $rangMenu
+   }
+
    proc createDialog { visuNo } {
       variable This
       variable private
@@ -1908,9 +1932,8 @@ namespace eval ::confChoixOutil {
       pack $This.frame6 -in $This.frame2 -side right -fill both -expand 1
 
       #--- Initialisation des variables
-      set num     "0"
-      set colonne "0"
-      set liste   ""
+      set num   "0"
+      set liste ""
 
       #--- Cree le frame pour les commentaires
       label $This.lab1 -text "$caption(confgene,choix_outils_1)"
@@ -1918,13 +1941,24 @@ namespace eval ::confChoixOutil {
 
       #--- Ouvre le choix a l'affichage ou non des plugins dans les menus
       foreach m [array names panneau menu_name,*] {
-         lappend liste [list "$panneau($m) " $m]
+         lappend liste [ list [ ::confChoixOutil::ordreMenuDeroulant $m ] "$panneau($m) " $m ]
+      }
+      #--- Longueur de la liste
+      set longList [ llength $liste ]
+      #--- Nombre de lignes dans la fenetre
+      set a [ expr $longList / 2.0 ]
+      set b [ expr int($a) ]
+      set c [ expr $a - $b ]
+      if { $c == 0 } {
+         set nblignes $b
+      } else {
+         set nblignes [ expr $b + 1 ]
       }
       #--- Je copie la liste dans un tableau affiche(namespace)
       array set affiche $conf(outilsActifsInactifs)
       #---
       foreach m [lsort -dictionary $liste] {
-         set namespace [lindex [ split $m "," ] 1]
+         set namespace [lindex [lindex [ split $m "," ] 1] 0]
          set num [expr $num + 1]
          if { [ info exist affiche($namespace) ] } {
             set private(affiche,$namespace)   [ lindex $affiche($namespace) 0 ]
@@ -1946,7 +1980,7 @@ namespace eval ::confChoixOutil {
             $caption(touche,controle,R) $caption(touche,controle,T) $caption(touche,controle,U) \
             $caption(touche,controle,V) $caption(touche,controle,W) $caption(touche,controle,X) \
             $caption(touche,controle,Y) $caption(touche,controle,Z) ]
-         if { $colonne == "0" } {
+         if { $num <= $nblignes } {
             frame $This.framea$num -borderwidth 0
                #--- Selection d'un plugin a afficher et du menu deroulant d'appartenance
                set function [ ::$namespace\::getPluginProperty function ]
@@ -1967,8 +2001,7 @@ namespace eval ::confChoixOutil {
                   -textvariable ::confChoixOutil::private(raccourci,$namespace) \
                   -values $list_combobox
                pack $This.raccourci$num -in $This.framea$num -side right -padx 5 -pady 0
-            pack $This.framea$num -in $This.frame5 -side top -fill both -expand 1
-            set colonne "1"
+            pack $This.framea$num -in $This.frame5 -side top -fill x -expand 0
          } else {
             frame $This.frameb$num -borderwidth 0
                #--- Selection d'un plugin a afficher et du menu deroulant d'appartenance
@@ -1986,8 +2019,7 @@ namespace eval ::confChoixOutil {
                   -textvariable ::confChoixOutil::private(raccourci,$namespace) \
                   -values $list_combobox
                pack $This.raccourci$num -in $This.frameb$num -side right -padx 5 -pady 0
-            pack $This.frameb$num -in $This.frame6 -side top -fill both -expand 1
-            set colonne "0"
+            pack $This.frameb$num -in $This.frame6 -side top -fill x -expand 0
          }
       }
 
