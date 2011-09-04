@@ -417,6 +417,9 @@ proc ::temma::configureMonture { } {
             [ lindex $correction_suivi 0 ]\n"
          ::console::affiche_resultat "$caption(temma,mobile_dec) $caption(temma,2points)\
             [ lindex $correction_suivi 1 ]\n\n"
+      } elseif { $conf(temma,type) == "2" } {
+         # tel$telNo solartracking
+         ::console::affiche_resultat "$caption(temma,mobile_soleil)\n\n"
       }
       #--- Affichage de la position du telescope
       if { [ ::temma::isReady ] == 1 } {
