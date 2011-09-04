@@ -98,6 +98,7 @@ int temma_position_tube(struct telprop *tel,char *sens);
 int temma_setlatitude(struct telprop *tel,double latitude);
 int temma_getlatitude(struct telprop *tel,double *latitude);
 int temma_gettsl(struct telprop *tel,double *tsl);
+int temma_motorstate(struct telprop *tel);
 int temma_LA (struct telprop *tel, int value);
 int temma_LB (struct telprop *tel, int value);
 int temma_lg (struct telprop *tel, int *vra, int *vdec);
