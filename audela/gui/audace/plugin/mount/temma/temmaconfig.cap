@@ -19,11 +19,20 @@ set caption(temmaconfig,para_ctl_mobile)          "Tracking Speed Control:"
 set caption(temmaconfig,para_mobile_ad)           "Right Ascension Speed"
 set caption(temmaconfig,para_mobile_dec)          "Declination Speed"
 set caption(temmaconfig,para_mobile_etoile)       "Sidereal Tracking"
+set caption(temmaconfig,para_mobile_soleil)       "Sun"
 set caption(temmaconfig,para_mobile_comete)       "Comet, Asteroid or UFO"
 
 set caption(temmaconfig,2points)                  ":"
 
 set caption(temmaconfig,para_mobile,aide0)        "Use an integral number to enter the travelling speed of your object.\
+                                                 \nRA: Adjust Sidereal tracking by seconds per day.\
+                                                 \nRA Speed adjustment is how many RA seconds are added or subtracted\
+                                                 \nper 24 hour period.\
+                                                 \nDEC: Adjust DEC tracking by minutes per day.\
+                                                 \nDEC adjustment is how many minutes per 24 hour period.\
+                                                 \nExample:\
+                                                 \nRA = -120, would slow the RA speed by 86164/86284.\
+                                                 \nDEC = +30, the DEC would track at 30 minutes a day.\
                                                  \nLimit Values: ±21541 in RA and ±600 in DEC.\
                                                  \n-21541: Sidereal tracking slowed down at 0.75x the sidereal speed.\
                                                  \n+21541: Sidereal tracking accelerated at 1.25x the sidereal speed.\
@@ -41,11 +50,20 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temmaconfig,para_mobile_ad)        "Vitesse en ascension droite"
    set caption(temmaconfig,para_mobile_dec)       "Vitesse en déclinaison"
    set caption(temmaconfig,para_mobile_etoile)    "Suivi sidéral"
+   set caption(temmaconfig,para_mobile_soleil)    "Soleil"
    set caption(temmaconfig,para_mobile_comete)    "Comète, astéroïde ou OVNI"
 
    set caption(temmaconfig,2points)               ":"
 
    set caption(temmaconfig,para_mobile,aide0)     "Indiquer sous la forme d'un entier la vitesse de déplacement de votre objet.\
+                                                 \nRA : Réglage du suivi sidéral en secondes par jour.\
+                                                 \nRéglage de la vitesse sidérale : Combien de secondes sont ajoutées ou\
+                                                 \nsoustraites par période de 24 heures.\
+                                                 \nDEC : Réglage du suivi sur la déclinaison en minutes par jour.\
+                                                 \nRéglage du suivi sur la déc. : Combien de minutes par période de 24 heures.\
+                                                 \nExemple :\
+                                                 \nRA = -120, ralentit la vitesse sidérale à 86164/86284.\
+                                                 \nDEC = +30, la vitesse sur la déclinaison est de 30 minutes par jour.\
                                                  \nValeurs limites : +/-21541 en ascension droite et +/-600 en déclinaison.\
                                                  \n-21541 : Suivi sidéral ralenti à 0,75x la vitesse sidérale.\
                                                  \n+21541 : Suivi sidéral accéléré à 1,25x la vitesse sidérale.\
@@ -63,11 +81,20 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temmaconfig,para_mobile_ad)        "Velocita` in ascensione retta"
    set caption(temmaconfig,para_mobile_dec)       "Velocita` in declinazione"
    set caption(temmaconfig,para_mobile_etoile)    "Tracciamento siderale"
+   set caption(temmaconfig,para_mobile_soleil)    "Sole"
    set caption(temmaconfig,para_mobile_comete)    "Comete, asteroidi o UFO"
 
    set caption(temmaconfig,2points)               ":"
 
    set caption(temmaconfig,para_mobile,aide0)     "Usate un numero intero per indicare la velocita` di spostamento dell' oggetto.\
+                                                 \n# RA : Réglage du suivi sidéral en secondes par jour.\
+                                                 \n# Réglage de la vitesse sidérale : Combien de secondes sont ajoutées ou\
+                                                 \n# soustraites par période de 24 heures.\
+                                                 \n# DEC : Réglage du suivi sur la déclinaison en minutes par jour.\
+                                                 \n# Réglage du suivi sur la déc. : Combien de minutes par période de 24 heures.\
+                                                 \n# Exemple :\
+                                                 \n# RA = -120, ralentit la vitesse sidérale à 86164/86284.\
+                                                 \n# DEC = +30, la vitesse sur la déclinaison est de 30 minutes par jour.\
                                                  \nValori limite: ±21541 in AR and ±600 in DEC.\
                                                  \n-21541: Tracciamento siderale rallentato a 0.75x della velocita' siderale.\
                                                  \n+21541: Tracciamento siderale accelerato a 1.25x della velocita` siderale.\
@@ -85,11 +112,20 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temmaconfig,para_mobile_ad)        "Velocidad en Ascensión Recta"
    set caption(temmaconfig,para_mobile_dec)       "Velocidad en Declinación"
    set caption(temmaconfig,para_mobile_etoile)    "Seguimiento sidéreo"
+   set caption(temmaconfig,para_mobile_soleil)    "Sol"
    set caption(temmaconfig,para_mobile_comete)    "Cometa, asteroide u OVNI"
 
    set caption(temmaconfig,2points)               ":"
 
    set caption(temmaconfig,para_mobile,aide0)     "Introducir un número entero para la velocidad de tu objecto.\
+                                                 \n# RA : Réglage du suivi sidéral en secondes par jour.\
+                                                 \n# Réglage de la vitesse sidérale : Combien de secondes sont ajoutées ou\
+                                                 \n# soustraites par période de 24 heures.\
+                                                 \n# DEC : Réglage du suivi sur la déclinaison en minutes par jour.\
+                                                 \n# Réglage du suivi sur la déc. : Combien de minutes par période de 24 heures.\
+                                                 \n# Exemple :\
+                                                 \n# RA = -120, ralentit la vitesse sidérale à 86164/86284.\
+                                                 \n# DEC = +30, la vitesse sur la déclinaison est de 30 minutes par jour.\
                                                  \nValores límite: ±21541 en AR y ±600 en DEC.\
                                                  \n-21541: Velocidad siderea ralentizada a 0.75x de su valor nominal.\
                                                  \n+21541: Velocidad siderea acelerada a 1.25x de su valor nominal.\
@@ -107,11 +143,20 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temmaconfig,para_mobile_ad)        "Rektaszension Tempo"
    set caption(temmaconfig,para_mobile_dec)       "Deklination Tempo"
    set caption(temmaconfig,para_mobile_etoile)    "Siderische Folgung"
+   set caption(temmaconfig,para_mobile_soleil)    "Sonne"
    set caption(temmaconfig,para_mobile_comete)    "Komet, Asteroid oder UFO"
 
    set caption(temmaconfig,2points)               ":"
 
    set caption(temmaconfig,para_mobile,aide0)     "Geben sie das Bewegung Tempo euren Objekt in die Gestalt eines Ganz.\
+                                                 \n# RA : Réglage du suivi sidéral en secondes par jour.\
+                                                 \n# Réglage de la vitesse sidérale : Combien de secondes sont ajoutées ou\
+                                                 \n# soustraites par période de 24 heures.\
+                                                 \n# DEC : Réglage du suivi sur la déclinaison en minutes par jour.\
+                                                 \n# Réglage du suivi sur la déc. : Combien de minutes par période de 24 heures.\
+                                                 \n# Exemple :\
+                                                 \n# RA = -120, ralentit la vitesse sidérale à 86164/86284.\
+                                                 \n# DEC = +30, la vitesse sur la déclinaison est de 30 minutes par jour.\
                                                  \nGränze Werten: ±21541 in RA und ±600 in DEK.\
                                                  \n-21541: Siderische Folgung bis 0.75 der siderische Geschwindigzeit verlangsamt.\
                                                  \nSiderische Folgung bis 1,25 der siderische Geschwindigzeit verschnellt.\
@@ -129,11 +174,20 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temmaconfig,para_mobile_ad)        "Velocidade em ascenção recta"
    set caption(temmaconfig,para_mobile_dec)       "Velocidade em declinação"
    set caption(temmaconfig,para_mobile_etoile)    "Seguimento sideral"
+   set caption(temmaconfig,para_mobile_soleil)    "Sol"
    set caption(temmaconfig,para_mobile_comete)    "Cometa, asteróide ou OVNI"
 
    set caption(temmaconfig,2points)               ":"
 
    set caption(temmaconfig,para_mobile,aide0)     "Indicar sobre a forma de inteiro a velocidade de deslocamento do objecto.\
+                                                 \n# RA : Réglage du suivi sidéral en secondes par jour.\
+                                                 \n# Réglage de la vitesse sidérale : Combien de secondes sont ajoutées ou\
+                                                 \n# soustraites par période de 24 heures.\
+                                                 \n# DEC : Réglage du suivi sur la déclinaison en minutes par jour.\
+                                                 \n# Réglage du suivi sur la déc. : Combien de minutes par période de 24 heures.\
+                                                 \n# Exemple :\
+                                                 \n# RA = -120, ralentit la vitesse sidérale à 86164/86284.\
+                                                 \n# DEC = +30, la vitesse sur la déclinaison est de 30 minutes par jour.\
                                                  \nValores limites: +/-21541 em ascenção recta e +/-600 en declinação.\
                                                  \n-21541: Seguimento sideral desacelerado a 0,75x da velocidade sideral.\
                                                  \n+21541: Seguimento sideral acelerado a 1,25x da velocidade sideral.\
@@ -151,11 +205,20 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temmaconfig,para_mobile_ad)        "Right Ascension Speed"
    set caption(temmaconfig,para_mobile_dec)       "Declination Speed"
    set caption(temmaconfig,para_mobile_etoile)    "Sidereal Tracking"
+   set caption(temmaconfig,para_mobile_soleil)    "Sun"
    set caption(temmaconfig,para_mobile_comete)    "Comet, Asteroid or UFO"
 
    set caption(temmaconfig,2points)               ":"
 
    set caption(temmaconfig,para_mobile,aide0)     "Use an integral number to enter the travelling speed of your object.\
+                                                 \nRA: Adjust Sidereal tracking by seconds per day.\
+                                                 \nRA Speed adjustment is how many RA seconds are added or subtracted\
+                                                 \nper 24 hour period.\
+                                                 \nDEC: Adjust DEC tracking by minutes per day.\
+                                                 \nDEC adjustment is how many minutes per 24 hour period.\
+                                                 \nExample:\
+                                                 \nRA = -120, would slow the RA speed by 86164/86284.\
+                                                 \nDEC = +30, the DEC would track at 30 minutes a day.\
                                                  \nLimit Values: ±21541 in RA and ±600 in DEC.\
                                                  \n-21541: Sidereal tracking slowed down at 0.75x the sidereal speed.\
                                                  \n+21541: Sidereal tracking accelerated at 1.25x the sidereal speed.\
@@ -173,11 +236,20 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temmaconfig,para_mobile_ad)        "Right Ascension Speed"
    set caption(temmaconfig,para_mobile_dec)       "Declination Speed"
    set caption(temmaconfig,para_mobile_etoile)    "Sidereal Tracking"
+   set caption(temmaconfig,para_mobile_soleil)    "Sun"
    set caption(temmaconfig,para_mobile_comete)    "Comet, Asteroid or UFO"
 
    set caption(temmaconfig,2points)               ":"
 
    set caption(temmaconfig,para_mobile,aide0)     "Use an integral number to enter the travelling speed of your object.\
+                                                 \nRA: Adjust Sidereal tracking by seconds per day.\
+                                                 \nRA Speed adjustment is how many RA seconds are added or subtracted\
+                                                 \nper 24 hour period.\
+                                                 \nDEC: Adjust DEC tracking by minutes per day.\
+                                                 \nDEC adjustment is how many minutes per 24 hour period.\
+                                                 \nExample:\
+                                                 \nRA = -120, would slow the RA speed by 86164/86284.\
+                                                 \nDEC = +30, the DEC would track at 30 minutes a day.\
                                                  \nLimit Values: ±21541 in RA and ±600 in DEC.\
                                                  \n-21541: Sidereal tracking slowed down at 0.75x the sidereal speed.\
                                                  \n+21541: Sidereal tracking accelerated at 1.25x the sidereal speed.\
@@ -195,11 +267,20 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temmaconfig,para_mobile_ad)        "Right Ascension Speed"
    set caption(temmaconfig,para_mobile_dec)       "Declination Speed"
    set caption(temmaconfig,para_mobile_etoile)    "Sidereal Tracking"
+   set caption(temmaconfig,para_mobile_soleil)    "Sun"
    set caption(temmaconfig,para_mobile_comete)    "Comet, Asteroid or UFO"
 
    set caption(temmaconfig,2points)               ":"
 
    set caption(temmaconfig,para_mobile,aide0)     "Use an integral number to enter the travelling speed of your object.\
+                                                 \nRA: Adjust Sidereal tracking by seconds per day.\
+                                                 \nRA Speed adjustment is how many RA seconds are added or subtracted\
+                                                 \nper 24 hour period.\
+                                                 \nDEC: Adjust DEC tracking by minutes per day.\
+                                                 \nDEC adjustment is how many minutes per 24 hour period.\
+                                                 \nExample:\
+                                                 \nRA = -120, would slow the RA speed by 86164/86284.\
+                                                 \nDEC = +30, the DEC would track at 30 minutes a day.\
                                                  \nLimit Values: ±21541 in RA and ±600 in DEC.\
                                                  \n-21541: Sidereal tracking slowed down at 0.75x the sidereal speed.\
                                                  \n+21541: Sidereal tracking accelerated at 1.25x the sidereal speed.\
