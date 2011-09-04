@@ -106,7 +106,7 @@ namespace eval confTemmaMobile {
       wm title $This $caption(temmaconfig,para_mobile)
       set posx_temma_para_mobile [ lindex [ split [ wm geometry $audace(base).confTel ] "+" ] 1 ]
       set posy_temma_para_mobile [ lindex [ split [ wm geometry $audace(base).confTel ] "+" ] 2 ]
-      wm geometry $This +[ expr $posx_temma_para_mobile + 0 ]+[ expr $posy_temma_para_mobile + 70 ]
+      wm geometry $This +[ expr $posx_temma_para_mobile - 30 ]+[ expr $posy_temma_para_mobile + 70 ]
       wm resizable $This 0 0
 
       #--- On utilise les valeurs contenues dans le tableau ::temma::private pour l'initialisation
@@ -128,13 +128,16 @@ namespace eval confTemmaMobile {
       pack $This.frame4 -in $This.frame1 -side top -fill both -expand 1
 
       frame $This.frame5 -borderwidth 0 -relief raised
-      pack $This.frame5 -in $This.frame4 -side right -fill both -expand 1
+      pack $This.frame5 -in $This.frame1 -side top -fill both -expand 1
 
       frame $This.frame6 -borderwidth 0 -relief raised
-      pack $This.frame6 -in $This.frame5 -side top -fill both -expand 1
+      pack $This.frame6 -in $This.frame5 -side right -fill both -expand 1
 
       frame $This.frame7 -borderwidth 0 -relief raised
-      pack $This.frame7 -in $This.frame5 -side top -fill both -expand 1
+      pack $This.frame7 -in $This.frame6 -side top -fill both -expand 1
+
+      frame $This.frame8 -borderwidth 0 -relief raised
+      pack $This.frame8 -in $This.frame6 -side top -fill both -expand 1
 
       #--- Radio-bouton etoile
       radiobutton $This.rad4 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
@@ -143,28 +146,35 @@ namespace eval confTemmaMobile {
          -command { ::confTemmaMobile::griser "$audace(base).confTemmaMobile" }
       pack $This.rad4 -in $This.frame3 -anchor s -side left -padx 10 -pady 5
 
+      #--- Radio-bouton soleil
+      radiobutton $This.rad3a -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
+         -text "$caption(temmaconfig,para_mobile_soleil)" \
+         -value 2 -variable ::confTemmaMobile::private(temma,type) \
+         -command { ::confTemmaMobile::griser "$audace(base).confTemmaMobile" }
+      pack $This.rad3a -in $This.frame4 -anchor s -side left -padx 10 -pady 5
+
       #--- Radio-bouton comete, etc.
       radiobutton $This.rad3 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(temmaconfig,para_mobile_comete)" \
          -value 1 -variable ::confTemmaMobile::private(temma,type) \
          -command { ::confTemmaMobile::activer "$audace(base).confTemmaMobile" }
-      pack $This.rad3 -in $This.frame4 -anchor n -side left -padx 10 -pady 5
+      pack $This.rad3 -in $This.frame5 -anchor n -side left -padx 10 -pady 5
 
       #--- Cree la zone a renseigner de la vitesse en ascension droite
       entry $This.suivi_ad -textvariable ::confTemmaMobile::private(temma,suivi_ad) -width 10 -justify center
-      pack $This.suivi_ad -in $This.frame6 -anchor n -side left -padx 5 -pady 5
+      pack $This.suivi_ad -in $This.frame7 -anchor n -side left -padx 5 -pady 5
 
       #--- Etiquette vitesse d'ascension droite
       label $This.lab_1 -text "$caption(temmaconfig,para_mobile_ad)"
-      pack $This.lab_1 -in $This.frame6 -anchor n -side left -padx 10 -pady 5
+      pack $This.lab_1 -in $This.frame7 -anchor n -side left -padx 10 -pady 5
 
       #--- Cree la zone a renseigner de la vitesse en declinaison
       entry $This.suivi_dec -textvariable ::confTemmaMobile::private(temma,suivi_dec) -width 10 -justify center
-      pack $This.suivi_dec -in $This.frame7 -anchor n -side left -padx 5 -pady 5
+      pack $This.suivi_dec -in $This.frame8 -anchor n -side left -padx 5 -pady 5
 
       #--- Etiquette vitesse de declinaison
       label $This.lab_2 -text "$caption(temmaconfig,para_mobile_dec)"
-      pack $This.lab_2 -in $This.frame7 -anchor n -side left -padx 10 -pady 5
+      pack $This.lab_2 -in $This.frame8 -anchor n -side left -padx 10 -pady 5
 
       #--- Cree le bouton 'OK'
       button $This.but_ok -text "$caption(temmaconfig,ok)" -width 7 -borderwidth 2 \
@@ -177,7 +187,7 @@ namespace eval confTemmaMobile {
       pack $This.but_cancel -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- Cree la console texte d'aide
-      text $This.lst1 -height 6 -borderwidth 1 -relief sunken -wrap word
+      text $This.lst1 -height 14 -borderwidth 1 -relief sunken -wrap word
       pack $This.lst1 -in $This -fill x -side bottom -padx 3 -pady 3
       $This.lst1 insert end "$caption(temmaconfig,para_mobile,aide0)\n"
 
