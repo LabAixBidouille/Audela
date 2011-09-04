@@ -251,6 +251,26 @@ int cmdTelGetTsl(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
    return result;
 }
 
+int cmdTelMotorState(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+/***************************************************************************************/
+// Retourne l'etat des moteurs
+/***************************************************************************************/
+   struct telprop *tel;
+   char ligne[256];
+   int result = TCL_OK;
+   tel = (struct telprop *)clientData;
+   if((argc<=1)) {
+      sprintf(ligne,"Usage: %s %s",argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else {
+      int state;
+      state = temma_motorstate(tel);
+      sprintf(ligne,"%d",state);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+   }
+   return result;
+}
 int cmdTelGerman(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 /***************************************************************************************/
 /* Valeurs du E/W actuel dans Temma (german mounts) */
