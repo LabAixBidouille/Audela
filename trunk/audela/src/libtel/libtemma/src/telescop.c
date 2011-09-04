@@ -380,8 +380,7 @@ int tel_home_set(struct telprop *tel,double longitude,char *ew,double latitude,d
 int mytel_radec_init(struct telprop *tel)
 /* it corresponds to the "match" function of an LX200 */
 {
-   temma_match(tel);
-   return 0;
+   return temma_match(tel);
 }
 
 int mytel_radec_state(struct telprop *tel,char *result)
@@ -405,22 +404,25 @@ int mytel_radec_goto(struct telprop *tel)
    int time_in=0,time_out=1000;
    double ra00,dec00,dra,ddec;
    int nbgoto=1,old;
+   int result;
 
    if ((tel->ra_play==0.)&&(tel->dec_play==0.)) {
-      temma_goto(tel);
-      sate_move_radec='A';
-      if (tel->radec_goto_blocking==1) {
-         /* A loop is actived until the telescope is stopped */
-         tel_radec_coord(tel,coord0);
-         while (1==1) {
-            time_in++;
-            sprintf(s,"after 350"); mytel_tcleval(tel,s);
-            tel_radec_coord(tel,coord1);
-            if (strcmp(coord0,coord1)==0) {break;}
-            strcpy(coord0,coord1);
-            if (time_in>=time_out) {break;}
+      result = temma_goto(tel);
+      if (result == 0) {
+         sate_move_radec='A';
+         if (tel->radec_goto_blocking==1) {
+            /* A loop is actived until the telescope is stopped */
+            tel_radec_coord(tel,coord0);
+            while (1==1) {
+               time_in++;
+               sprintf(s,"after 350"); mytel_tcleval(tel,s);
+               tel_radec_coord(tel,coord1);
+               if (strcmp(coord0,coord1)==0) {break;}
+               strcpy(coord0,coord1);
+               if (time_in>=time_out) {break;}
+            }
+            sate_move_radec=' ';
          }
-         sate_move_radec=' ';
       }
    } else {
       /* --- rattrapage de jeux ---*/
@@ -475,27 +477,8 @@ int mytel_radec_goto(struct telprop *tel)
          nbgoto=2;
       }
       /* --- premier goto ---*/
-      temma_goto(tel);
-      sate_move_radec='A';
-      /* A loop is actived until the telescope is stopped */
-      tel_radec_coord(tel,coord0);
-      while (1==1) {
-         time_in++;
-         sprintf(s,"after 350"); mytel_tcleval(tel,s);
-         tel_radec_coord(tel,coord1);
-         if (strcmp(coord0,coord1)==0) {break;}
-         strcpy(coord0,coord1);
-         if (time_in>=time_out) {break;}
-      }
-      sate_move_radec=' ';
-      tel->ra0=ra00;
-      tel->dec0=dec00;
-      /* --- second goto eventuel ---*/
-      if (nbgoto==2) {
-         old=tel->slewpathindex;
-         tel->slewpathindex=0;
-         temma_goto(tel);
-         tel->slewpathindex=old;
+      result = temma_goto(tel);
+      if (result == 0) {
          sate_move_radec='A';
          /* A loop is actived until the telescope is stopped */
          tel_radec_coord(tel,coord0);
@@ -508,9 +491,32 @@ int mytel_radec_goto(struct telprop *tel)
             if (time_in>=time_out) {break;}
          }
          sate_move_radec=' ';
+         tel->ra0=ra00;
+         tel->dec0=dec00;
+         /* --- second goto eventuel ---*/
+         if (nbgoto==2) {
+            old=tel->slewpathindex;
+            tel->slewpathindex=0;
+            result = temma_goto(tel);
+            if (result == 0) {
+               tel->slewpathindex=old;
+               sate_move_radec='A';
+               /* A loop is actived until the telescope is stopped */
+               tel_radec_coord(tel,coord0);
+               while (1==1) {
+                  time_in++;
+                  sprintf(s,"after 350"); mytel_tcleval(tel,s);
+                  tel_radec_coord(tel,coord1);
+                  if (strcmp(coord0,coord1)==0) {break;}
+                  strcpy(coord0,coord1);
+                  if (time_in>=time_out) {break;}
+               }
+               sate_move_radec=' ';
+            }
+         }
       }
    }
-   return 0;
+   return result;
 }
 
 int mytel_radec_move(struct telprop *tel,char *direction)
@@ -630,7 +636,7 @@ int mytel_radec_stop(struct telprop *tel,char *direction)
       total+=(16*a+8*b+4*c+2*d+y);
       sprintf(s,"puts -nonewline %s \"M%c\r\n\"",tel->channel,total); mytel_tcleval(tel,s);
       sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-      /* --- Lit sur le port serie */
+      /* --- Lit la reponse sur le port serie */
       sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
    }
    return 0;
@@ -767,7 +773,7 @@ int temma_setlatitude(struct telprop *tel,double latitude)
    }
    sprintf(s,"puts -nonewline %s \"I%s\r\n\"",tel->channel,slat); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* --- Lit sur le port serie */
+   /* --- Lit la reponse sur le port serie */
    sprintf(s,"read %s 10",tel->channel); mytel_tcleval(tel,s);
    if ( tel->consoleLog >= 1 ) {
       logConsole(tel, "reponse=%s\n", tel->interp->result);
@@ -787,7 +793,7 @@ int temma_getlatitude(struct telprop *tel,double *latitude)
 
    sprintf(s,"puts -nonewline %s \"i\r\n\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* --- Lit sur le port serie */
+   /* --- Lit la reponse sur le port serie */
    sprintf(s,"read %s 10",tel->channel); mytel_tcleval(tel,s);
    // --- transforme iSDDMMZ en latitude en degré
    // exemple : "i+43559" => mc_angle2deg { +43 55.9 }=> +43.93...
@@ -807,7 +813,7 @@ int temma_gettsl(struct telprop *tel,double *tsl)
    /* --- */
    sprintf(s,"puts -nonewline %s \"g\r\n\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* --- Lit sur le port serie */
+   /* --- Lit la reponse sur le port serie */
    sprintf(s,"read %s 10",tel->channel); mytel_tcleval(tel,s);
    /* --- transforme HHMMSS en tsl */
    strcpy(slat,tel->interp->result);
@@ -816,6 +822,32 @@ int temma_gettsl(struct telprop *tel,double *tsl)
    return 0;
 }
 
+// Retourne l'etat des moteurs
+// 1  : Si les moteurs fonctionnent
+// 0  : Si les moteurs sont hors tension
+// -1 : Si Temma n'est pas connecte
+int temma_motorstate(struct telprop *tel)
+{
+   char s[1024];
+   int result;
+   /* --- */
+   sprintf(s,"puts -nonewline %s \"STN-COD\r\n\"",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+   /* --- Lit la reponse sur le port serie */
+   sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
+   strcpy(s,tel->interp->result);
+   if ( tel->consoleLog >= 1 ) {
+      logConsole(tel, "StateMotor=|%s|\n",s);
+   }
+   if ( strcmp(s,"stn-off\n") == 0 ) {
+      result = 1;
+   } else if ( strcmp(s,"stn-on\n") == 0 ) {
+      result = 0;
+   } else {
+      result = -1;
+   }
+   return result;
+}
 int temma_LA (struct telprop *tel, int value)
 {
    char s[1024];
@@ -824,7 +856,7 @@ int temma_LA (struct telprop *tel, int value)
    if (value>90) {value=90;}
    sprintf(s,"puts -nonewline %s \"LA%02d\r\n\"",tel->channel,value); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* --- Lit sur le port serie */
+   /* --- Lit la reponse sur le port serie */
    sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
    return 0;
 }
@@ -837,7 +869,7 @@ int temma_LB (struct telprop *tel, int value)
    if (value>90) {value=90;}
    sprintf(s,"puts -nonewline %s \"LB%02d\r\n\"",tel->channel,value); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* --- Lit sur le port serie */
+   /* --- Lit la reponse sur le port serie */
    sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
    return 0;
 }
@@ -849,7 +881,7 @@ int temma_lg (struct telprop *tel, int *vra, int *vdec)
    /* --- lit les vitesses RA-move DEC-move en speed Normal */
    sprintf(s,"puts -nonewline %s \"lg\r\n\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* --- Lit sur le port serie */
+   /* --- Lit la reponse sur le port serie */
    sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
    /* decode le retour */
    strcpy(s,tel->interp->result);
@@ -905,7 +937,7 @@ F = Automatic introduction complete after goto operation retour F F F
    /* --- Demande radec */
    sprintf(s,"puts -nonewline %s \"E\r\n\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* --- Lit sur la reponse sur le port serie */
+   /* --- Lit la reponse sur le port serie */
    sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
    /* --- transforme RA en HHhMMmSSs */
@@ -966,16 +998,34 @@ int temma_match(struct telprop *tel)
    /* --- update radec */
    sprintf(s,"puts -nonewline %s \"D%s%s\r\n\"",tel->channel,sra,sdec); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* --- Lit sur la reponse sur le port serie */
+   /* --- Lit la reponse sur le port serie */
    sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
+   if ( tel->consoleLog >= 1 ) {
+      logConsole(tel, "Error Code Match=|%s|\n",s);
+   }
    len=(int)strlen(s);
    if (len>=2) {
-      if (strcmp(s,"R0")==0) { result=0; } /* OK */
-      if (strcmp(s,"R1")==0) { result=1; } /* error synchro RA */
-      if (strcmp(s,"R2")==0) { result=2; } /* error synchro DEC */
-      if (strcmp(s,"R3")==0) { result=3; } /* error too many digits */
-      if (strcmp(s,"R4")==0) { result=4; } /* error object under horizon */
+      if (strncmp(s,"R0",2)==0) {
+         // OK
+         result=0;
+      } else if (strncmp(s,"R1",2)==0) {
+         // error synchro RA
+         strcpy(tel->msg, "Error Synchro RA");
+         result=1;
+      } else if (strncmp(s,"R2",2)==0) {
+         // error synchro DEC
+         strcpy(tel->msg, "Error Synchro DEC");
+         result=2;
+      } else if (strncmp(s,"R3",2)==0) {
+         // error too many digits
+         result=3;
+         strcpy(tel->msg, "Error too many Digits");
+      } else if (strncmp(s,"R4",2)==0) {
+         // error object under horizon
+         result=4;
+         strcpy(tel->msg, "Object below Horizon");
+      }
    }
    if (tel->encoder==0) {
       tel->ha00=tel->ra0;
@@ -988,6 +1038,8 @@ int temma_goto(struct telprop *tel)
    char s[1024];
    char sra[256];
    char sdec[256];
+   int result;
+   int len;
    /* --- transforme en tel->ra0 en HHMMZZ */
    sprintf(s,"%f",tel->ra0);
    temma_angle_hms2ra(tel,s,sra);
@@ -998,10 +1050,40 @@ int temma_goto(struct telprop *tel)
    temma_settsl(tel);
    sprintf(s,"puts -nonewline %s \"P%s%s\r\n\"",tel->channel,sra,sdec); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* --- Lit sur la reponse sur le port serie */
+   /* --- Lit la reponse sur le port serie */
    sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
-   return 0;
+   if ( tel->consoleLog >= 1 ) {
+      logConsole(tel, "Error Code Goto=|%s|\n",s);
+   }
+   len=(int)strlen(s);
+   if (len>=2) {
+      if (strncmp(s,"R0",2)==0) {
+         // OK
+         result=0;
+      } else if (strncmp(s,"R1",2)==0) {
+         // error synchro RA
+         strcpy(tel->msg, "Error GOTO RA");
+         result=1;
+      } else if (strncmp(s,"R2",2)==0) {
+         // error synchro DEC
+         strcpy(tel->msg, "Error GOTO DEC");
+         result=2;
+      } else if (strncmp(s,"R3",2)==0) {
+         // error too many digits
+         result=3;
+         strcpy(tel->msg, "Error too many Digits");
+      } else if (strncmp(s,"R4",2)==0) {
+         // error object under horizon
+         result=4;
+         strcpy(tel->msg, "Object below Horizon");
+      } else if (strncmp(s,"R5",2)==0) {
+         // sate standby ON
+         result=5;
+         strcpy(tel->msg, "State Standby ON");
+      }
+   }
+   return result;
 }
 
 int temma_initzenith(struct telprop *tel)
@@ -1012,7 +1094,7 @@ int temma_initzenith(struct telprop *tel)
    /* ---  */
    sprintf(s,"puts -nonewline %s \"Z\r\n\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* --- Lit sur la reponse sur le port serie */
+   /* --- Lit la reponse sur le port serie */
    sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
    return 0;
@@ -1024,7 +1106,7 @@ int temma_stopgoto(struct telprop *tel)
    /* ---  */
    sprintf(s,"puts -nonewline %s \"PS\r\n\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* --- Lit sur la reponse sur le port serie */
+   /* --- Lit la reponse sur le port serie */
    sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
    return 0;
@@ -1040,7 +1122,7 @@ int temma_stategoto(struct telprop *tel,int *state)
       logConsole(tel, "State=s\n");
    }
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   // --- Lit sur la reponse sur le port serie
+   // --- Lit la reponse sur le port serie
    sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
    if ( tel->consoleLog >= 1 ) {
@@ -1048,12 +1130,13 @@ int temma_stategoto(struct telprop *tel,int *state)
    }
    len=(int)strlen(s);
    if (len>=2) {
-      if (strcmp(s,"s0\n")==0) {
+      if (strncmp(s,"s0",2)==0) {
+         // tracking
          result=1;
-      } // tracking
-      if (strcmp(s,"s1\n")==0) {
+      } else if (strncmp(s,"s1",2)==0) {
+         // pointing
          result=2;
-      } // pointing
+      }
    }
    *state=result;
    if ( tel->consoleLog >= 1 ) {
@@ -1068,7 +1151,7 @@ int temma_suivi_arret (struct telprop *tel)
    /* --- */
    sprintf(s,"puts -nonewline %s \"STN-ON\r\n\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* --- Lit sur la reponse sur le port serie */
+   /* --- Lit la reponse sur le port serie */
    sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
    return 0;
@@ -1080,7 +1163,7 @@ int temma_suivi_marche (struct telprop *tel)
    /* ---  */
    sprintf(s,"puts -nonewline %s \"STN-OFF\r\n\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* --- Lit sur la reponse sur le port serie */
+   /* --- Lit la reponse sur le port serie */
    sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
    return 0;
@@ -1100,7 +1183,7 @@ int temma_position_tube(struct telprop *tel,char *sens)
       /*--- switch position W|E du tube */
       sprintf(s,"puts -nonewline %s \"PT\r\n\"",tel->channel); mytel_tcleval(tel,s);
       sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-      /* --- Lit sur la reponse sur le port serie */
+      /* --- Lit la reponse sur le port serie */
       /*
       sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
       strcpy(s,tel->interp->result);
@@ -1119,7 +1202,7 @@ int temma_setderive(struct telprop *tel,int var, int vdec)
    if (vdec>9999) {vdec=9999;}
    sprintf(s,"puts -nonewline %s \"LM%+d,%+d\r\n\"",tel->channel,var,vdec); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* --- Lit sur la reponse sur le port serie */
+   /* --- Lit la reponse sur le port serie */
    sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
    return 0;
@@ -1146,7 +1229,7 @@ DEC adjustment is how many Minutes per 24 hour period.
    /* --- Demande radec */
    sprintf(s,"puts -nonewline %s \"lm\r\n\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* --- Lit sur la reponse sur le port serie */
+   /* --- Lit la reponse sur le port serie */
    sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
    /* --- */
@@ -1197,7 +1280,7 @@ int temma_settsl(struct telprop *tel)
    tel->tsl=temma_tsl(tel,&h,&m,&sec);
    sprintf(s,"puts -nonewline %s \"T%02d%02d%02d\r\n\"",tel->channel,h,m,sec); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* --- Lit sur la reponse sur le port serie */
+   /* --- Lit la reponse sur le port serie */
    /*
    sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
