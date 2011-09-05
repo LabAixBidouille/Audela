@@ -938,7 +938,7 @@ namespace eval ::prtr {
 
       #--   verifie que l'extension est identique a celle des fichiers traites
       if {$ext ne "$::prtr::ext"} {
-         return [::prtr::avertiUser err_file_ext "$::prtr:ext"]
+         return [::prtr::avertiUser err_file_ext $ext $::prtr::ext]
       }
 
       #--   affiche la valeur moyenne du flat dans la constante
