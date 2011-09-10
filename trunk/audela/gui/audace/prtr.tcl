@@ -868,6 +868,8 @@ namespace eval ::prtr {
          $private(table).cmd.ok configure -state $etat
       }
       $private(table).cmd.appliquer configure -state $etat
+#--   ajout RZ
+      $private(table).cmd.fermer configure -state $etat
    }
 
    #--------------------------------------------------------------------------
@@ -1102,6 +1104,10 @@ namespace eval ::prtr {
       #--   desinhibe les zones sensibles
       ::prtr::windowActive $tbl normal
 
+      #--   evite une erreur si appuie sur Fermer avant la fin
+      if {![info exists private(error)]} {
+         set private(error) 0
+      }
       return $private(error)
    }
 
@@ -1180,7 +1186,6 @@ namespace eval ::prtr {
                $w configure -state $etat
             } else {
                #--   memorise le nom de l'image
-
                lappend private(disabled) "[$tbl windowpath $row,1]"
             }
          }
