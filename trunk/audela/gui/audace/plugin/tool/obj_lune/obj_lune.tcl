@@ -49,7 +49,12 @@ namespace eval ::obj_lune {
       $This.cmd.fermer configure -relief raised -state disabled
       update
       #--- Gestion des differents telescopes goto
-      ::telescope::goto [list $obj_lune(ad_site) $obj_lune(dec_site)] 0 $This.cmd.goto $This.cmd.match
+      set catchError [ catch {
+         ::telescope::goto [list $obj_lune(ad_site) $obj_lune(dec_site)] 0 $This.cmd.goto $This.cmd.match
+      } ]
+      if { $catchError != 0 } {
+         ::tkutil::displayErrorInfoTelescope "GOTO Error"
+      }
       #--- Gestion des boutons actifs/inactifs
       $This.cmd.goto configure -relief raised -state normal
       $This.cmd.match configure -relief raised -state normal
