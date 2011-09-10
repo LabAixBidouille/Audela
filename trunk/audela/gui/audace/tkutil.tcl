@@ -477,6 +477,8 @@ proc ::tkutil::displayErrorInfoTelescope { title { messageOptionnel "" } } {
       ::console::affiche_erreur "[string range $::errorInfo 0 [string first "\n    while executing" $::errorInfo]]\n\n"
    } elseif { [string range $::errorInfo 0 [string first "\n    while executing" $::errorInfo]] == "Object below Horizon\n" } {
       ::console::affiche_erreur "[string range $::errorInfo 0 [string first "\n    while executing" $::errorInfo]]\n\n"
+   } elseif { [string range $::errorInfo 0 [string first "\n    while executing" $::errorInfo]] == "Object below Higher\n" } {
+      ::console::affiche_erreur "[string range $::errorInfo 0 [string first "\n    while executing" $::errorInfo]]\n\n"
    } elseif { [string range $::errorInfo 0 [string first "\n    while executing" $::errorInfo]] == "State Standby ON\n" } {
       ::console::affiche_erreur "[string range $::errorInfo 0 [string first "\n    while executing" $::errorInfo]]\n\n"
    } else {
