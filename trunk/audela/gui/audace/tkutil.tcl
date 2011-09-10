@@ -458,6 +458,36 @@ proc ::tkutil::displayErrorInfo { title { messageOptionnel "" } } {
 }
 
 #
+# displayErrorInfoTelescope
+#    Affiche le contenu de ::errorInfo dans la Console et dans une fenetre modale
+#    avec eventuellement un message optionnel avec une limitation du message dans
+#    la Console en fonction du message d'erreur renvoye par le telescope
+#
+proc ::tkutil::displayErrorInfoTelescope { title { messageOptionnel "" } } {
+   #--- j'affiche le message d'erreur complet dans la Console
+   if { [string range $::errorInfo 0 [string first "\n    while executing" $::errorInfo]] == "Error GOTO RA\n" } {
+      ::console::affiche_erreur "[string range $::errorInfo 0 [string first "\n    while executing" $::errorInfo]]\n\n"
+   } elseif { [string range $::errorInfo 0 [string first "\n    while executing" $::errorInfo]] == "Error GOTO DEC\n" } {
+      ::console::affiche_erreur "[string range $::errorInfo 0 [string first "\n    while executing" $::errorInfo]]\n\n"
+   } elseif { [string range $::errorInfo 0 [string first "\n    while executing" $::errorInfo]] == "Error Synchro RA\n" } {
+      ::console::affiche_erreur "[string range $::errorInfo 0 [string first "\n    while executing" $::errorInfo]]\n\n"
+   } elseif { [string range $::errorInfo 0 [string first "\n    while executing" $::errorInfo]] == "Error Synchro DEC\n" } {
+      ::console::affiche_erreur "[string range $::errorInfo 0 [string first "\n    while executing" $::errorInfo]]\n\n"
+   } elseif { [string range $::errorInfo 0 [string first "\n    while executing" $::errorInfo]] == "Error too many Digits\n" } {
+      ::console::affiche_erreur "[string range $::errorInfo 0 [string first "\n    while executing" $::errorInfo]]\n\n"
+   } elseif { [string range $::errorInfo 0 [string first "\n    while executing" $::errorInfo]] == "Object below Horizon\n" } {
+      ::console::affiche_erreur "[string range $::errorInfo 0 [string first "\n    while executing" $::errorInfo]]\n\n"
+   } elseif { [string range $::errorInfo 0 [string first "\n    while executing" $::errorInfo]] == "State Standby ON\n" } {
+      ::console::affiche_erreur "[string range $::errorInfo 0 [string first "\n    while executing" $::errorInfo]]\n\n"
+   } else {
+      ::console::affiche_erreur "$::errorInfo\n\n"
+   }
+   #--- j'affiche le message d'erreur complet dans une fenetre modale
+   tk_messageBox -icon error -title $title \
+      -message "[string range $::errorInfo 0 [string first "\n    while executing" $::errorInfo]]$messageOptionnel"
+}
+
+#
 # transalteDate
 #    Traduit une date (jour et mois) dans la langue de l'utilisateur
 #
