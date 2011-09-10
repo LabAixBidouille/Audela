@@ -722,7 +722,7 @@ proc ::tlscp::cmdMatch { visuNo } {
       ::telescope::match [list $private($visuNo,raObjet) $private($visuNo,decObjet)]
    } ]
    if { $catchError != 0 } {
-      ::tkutil::displayErrorInfo "MATCH Error"
+      ::tkutil::displayErrorInfoTelescope "MATCH Error"
    }
    $private($visuNo,This).fra2.fra1a.match configure -relief raised -state normal
    update
@@ -756,7 +756,7 @@ proc ::tlscp::cmdGoto { visuNo } {
          $private($visuNo,equinoxObjet)
    } ]
    if { $catchError != 0 } {
-      ::tkutil::displayErrorInfo "GOTO Error"
+      ::tkutil::displayErrorInfoTelescope "GOTO Error"
    }
 
    #--- Affichage des coordonnees pointees par le telescope dans la Console
