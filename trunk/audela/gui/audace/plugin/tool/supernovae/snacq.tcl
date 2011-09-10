@@ -1013,7 +1013,13 @@ proc goSnAcq { {sndebug 0} } {
          if {$sndebug==0} {
             #--- Pointe le telescope
             if {$indice_image==1} {
-               ::telescope::goto [ list $ra $dec ] 1 "" "" [lindex $ligne 0]
+               set catchError [ catch {
+                  ::telescope::goto [ list $ra $dec ] 1 "" "" [lindex $ligne 0]
+               } ]
+               if { $catchError != 0 } {
+                  ::tkutil::displayErrorInfoTelescope "GOTO Error"
+                  return
+               }
             }
 
             #--- Delai d'attente
