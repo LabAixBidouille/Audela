@@ -418,7 +418,7 @@ proc ::temma::configureMonture { } {
          ::console::affiche_resultat "$caption(temma,mobile_dec) $caption(temma,2points)\
             [ lindex $correction_suivi 1 ]\n\n"
       } elseif { $conf(temma,type) == "2" } {
-         # tel$telNo solartracking
+         tel$telNo solartracking
          ::console::affiche_resultat "$caption(temma,mobile_soleil)\n\n"
       }
       #--- Affichage de la position du telescope
