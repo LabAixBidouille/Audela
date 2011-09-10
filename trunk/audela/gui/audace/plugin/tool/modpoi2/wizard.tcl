@@ -1906,7 +1906,12 @@ proc ::modpoi2::wizard::modpoi_goto { } {
       set deCat $private(star$amerIndex,deCat)
       set blocking 0
       #--- je lance la commande goto en mode non bloquant
-      ::telescope::goto [list $raCat $deCat] $blocking
+      set catchError [ catch {
+         ::telescope::goto [list $raCat $deCat] $blocking
+      } ]
+      if { $catchError != 0 } {
+         ::tkutil::displayErrorInfoTelescope "GOTO Error"
+      }
    } else {
       ::confTel::run
    }
