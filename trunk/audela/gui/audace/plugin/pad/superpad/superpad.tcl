@@ -589,7 +589,12 @@ namespace eval ::AlignManager {
    proc cmdAlign { } {
       variable private
 
-      ::telescope::match [list $private(targetRa) $private(targetDec)]
+      set catchError [ catch {
+         ::telescope::match [list $private(targetRa) $private(targetDec)]
+      } ]
+      if { $catchError != 0 } {
+         ::tkutil::displayErrorInfoTelescope "MATCH Error"
+      }
    }
 
    #------------------------------------------------------------
@@ -760,7 +765,12 @@ namespace eval ::AlignManager {
       variable This
       variable private
 
-      ::telescope::goto [list $private(targetRa) $private(targetDec)] 0 $This.frameGoto.buttonStartGoto
+      set catchError [ catch {
+         ::telescope::goto [list $private(targetRa) $private(targetDec)] 0 $This.frameGoto.buttonStartGoto
+      } ]
+      if { $catchError != 0 } {
+         ::tkutil::displayErrorInfoTelescope "GOTO Error"
+      }
    }
 
    #------------------------------------------------------------
