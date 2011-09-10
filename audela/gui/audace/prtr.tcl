@@ -818,7 +818,7 @@ namespace eval ::prtr {
                   set crpix1 [expr {$naxis1/2}]
                   set crpix2 [expr {$naxis2/2}]
                }
-			   #-- rajout de l'indicateur wcs
+               #-- rajout de l'indicateur wcs
                set result [list $naxis $naxis3 $naxis1 $naxis2 $bitpix $crpix1 $crpix2 $mean $wcs]
             }
          }
@@ -868,7 +868,6 @@ namespace eval ::prtr {
          $private(table).cmd.ok configure -state $etat
       }
       $private(table).cmd.appliquer configure -state $etat
-#--   ajout RZ
       $private(table).cmd.fermer configure -state $etat
    }
 
