@@ -7,7 +7,7 @@
 <title>Monture Temma (2 Jr)</title>
 </head>
 <body>
-<p class="date">Date de mise &#224; jour : 7 septembre 2011</p>
+<p class="date">Date de mise &#224; jour : 10 septembre 2011</p>
 <h1>Monture Temma</h1>
 <h2>1. Pr&#233;ciser la position de l'observateur</h2>
 <p>La position de l'observateur est une donn&#233;e importante
@@ -181,11 +181,12 @@ NTP-020J-100250-T4A--2508 (pour la motorisation test&#233;e)</li>
 <li>Fonctionnement des encodeurs : <code>[ tel$telNo encoder
 ]</code> ---&gt; 0 ou 1</li>
 <li>Op&#233;ration en cours : <code>[ tel$telNo radec state
-]</code> ---&gt; unknown, tracking ou pointing (GOTO en
+]</code> ---&gt; stopped, tracking ou pointing (GOTO en
 cours)</li>
 <li>Etat des moteurs (sp&#233;cifique &#224; cette monture) :
 <code>[ tel$telNo motorstate ]</code> ---&gt; -1 (inconnu), 0
-(arr&#234;t) ou 1 (en marche)</li>
+(arr&#234;t) ou 1 (en marche). Cette commande est inop&#233;rante
+durant un pointage.</li>
 <li>Temps Sid&#233;ral Local : <code>[ tel$telNo getlst
 ]</code></li>
 <li>Latitude : <code>[ tel$telNo getlatitude ]</code></li>
@@ -200,9 +201,6 @@ actuelles, r&#233;glage par d&#233;faut)</code></code></li>
 <li>Rattrapage des jeux m&#233;caniques <code>[ tel$telNo
 mechanicalplay ]</code> ---&gt; ex 0.000000 0.000000</li>
 </ul>
-</li>
-<li style=
-"list-style-type: none; list-style-image: none; list-style-position: outside;">
 <br /></li>
 <li>
 <h3>Pour donner des ordres</h3>
@@ -255,6 +253,17 @@ stop</code></li>
 <li>GOTO : <code>tel$telNo radec goto {$ra $dec} -rate {0|1}
 -blocking {0|1}</code></li>
 </ul>
+<br /></li>
+<li>
+<h3>Messages d'erreur</h3>
+<div style="margin-left: 2em">Les erreurs &#233;ventuellement
+rencontr&#233;es par la monture dans un MATCH ou un GOTO sont
+signal&#233;es dans une fen&#234;tre d'erreur, comme par exemple
+la tentative de pointer sous l'horizon :
+<p><img style="width: 177px; height: 126px;" alt="" src=
+"images/error.gif" /></p>
+<p>Le GOTO n'est pas ex&#233;cut&#233;</p>
+</div>
 </li>
 </ol>
 <h2>5. Informations diverses sur la monture Temma</h2>
