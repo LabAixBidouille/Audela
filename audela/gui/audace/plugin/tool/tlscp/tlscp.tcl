@@ -718,7 +718,12 @@ proc ::tlscp::cmdMatch { visuNo } {
 
    $private($visuNo,This).fra2.fra1a.match configure -relief groove -state disabled
    update
-   ::telescope::match [list $private($visuNo,raObjet) $private($visuNo,decObjet)]
+   set catchError [ catch {
+      ::telescope::match [list $private($visuNo,raObjet) $private($visuNo,decObjet)]
+   } ]
+   if { $catchError != 0 } {
+      ::tkutil::displayErrorInfo "MATCH Error"
+   }
    $private($visuNo,This).fra2.fra1a.match configure -relief raised -state normal
    update
 }
@@ -743,11 +748,16 @@ proc ::tlscp::cmdGoto { visuNo } {
    }
 
    #--- Goto
-   ::telescope::goto $private($visuNo,list_radec) 0 \
-      $private($visuNo,This).fra2.fra2a.but1 \
-      $private($visuNo,This).fra2.fra1a.match \
-      $private($visuNo,nomObjet) \
-      $private($visuNo,equinoxObjet)
+   set catchError [ catch {
+      ::telescope::goto $private($visuNo,list_radec) 0 \
+         $private($visuNo,This).fra2.fra2a.but1 \
+         $private($visuNo,This).fra2.fra1a.match \
+         $private($visuNo,nomObjet) \
+         $private($visuNo,equinoxObjet)
+   } ]
+   if { $catchError != 0 } {
+      ::tkutil::displayErrorInfo "GOTO Error"
+   }
 
    #--- Affichage des coordonnees pointees par le telescope dans la Console
    if { $private($visuNo,equinoxObjet) != "now" } {
