@@ -404,7 +404,13 @@ namespace eval ::telshift {
                   ::console::affiche_resultat "$caption(telshift,pointevers) $ra $dec\n"
                   if {$k>0} {
                      #--- only if we are not on the first field
-                     ::telescope::goto [list $ra $dec] 1
+                     set catchError [ catch {
+                        ::telescope::goto [list $ra $dec] 1
+                     } ]
+                     if { $catchError != 0 } {
+                        ::tkutil::displayErrorInfoTelescope "GOTO Error"
+                        return
+                     }
                   }
                   #--- shoot an image
                   ::console::affiche_resultat "$caption(telshift,lancepose) $kk\n\n"
@@ -554,8 +560,12 @@ namespace eval ::telshift {
                   ::console::affiche_resultat "$caption(telshift,pointevers) $ra $dec\n"
                   if {$k>0} {
                      #--- only if we are not on the first field
-                     catch {
+                     set catchError [ catch {
                         ::telescope::goto [list $ra $dec] 1
+                     } ]
+                     if { $catchError != 0 } {
+                        ::tkutil::displayErrorInfoTelescope "GOTO Error"
+                        return
                      }
                   }
                   #--- shoot an image
@@ -728,10 +738,14 @@ namespace eval ::telshift {
                   set dec "${decd}d${decm}m${decs}s"
                   #--- aiming scope to new field
                   ::console::affiche_resultat "$caption(telshift,pointevers) $ra $dec\n"
-                  catch {
+                  set catchError [ catch {
                      ::telescope::goto [list $ra $dec] 1
-                     ::console::affiche_resultat "$caption(telshift,pointesur) $ra $dec\n"
+                  } ]
+                  if { $catchError != 0 } {
+                     ::tkutil::displayErrorInfoTelescope "GOTO Error"
+                     return
                   }
+                  ::console::affiche_resultat "$caption(telshift,pointesur) $ra $dec\n"
 
                   for {set s 0} {$s<$nbr} {incr s 1} {
 
@@ -898,7 +912,13 @@ namespace eval ::telshift {
                   ::console::affiche_resultat "$caption(telshift,pointevers) $ra $dec\n"
                   if {$k>0} {
                      #--- only if we are not on the first field
-                     ::telescope::goto [list $ra $dec] 1
+                     set catchError [ catch {
+                        ::telescope::goto [list $ra $dec] 1
+                     } ]
+                     if { $catchError != 0 } {
+                        ::tkutil::displayErrorInfoTelescope "GOTO Error"
+                        return
+                     }
                      ::console::affiche_resultat "$caption(telshift,pointesur) $ra $dec\n"
                   }
 
