@@ -139,25 +139,31 @@ namespace eval confTemmaMobile {
       frame $This.frame8 -borderwidth 0 -relief raised
       pack $This.frame8 -in $This.frame6 -side top -fill both -expand 1
 
-      #--- Radio-bouton etoile
+      #--- Radio-bouton etoile (suivi sideral)
       radiobutton $This.rad4 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(temmaconfig,para_mobile_etoile)" \
          -value 0 -variable ::confTemmaMobile::private(temma,type) \
-         -command { ::confTemmaMobile::griser "$audace(base).confTemmaMobile" }
+         -command {
+            ::confTemmaMobile::griser "$audace(base).confTemmaMobile"
+         }
       pack $This.rad4 -in $This.frame3 -anchor s -side left -padx 10 -pady 5
 
-      #--- Radio-bouton soleil
+      #--- Radio-bouton Soleil (suivi solaire)
       radiobutton $This.rad3a -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(temmaconfig,para_mobile_soleil)" \
          -value 2 -variable ::confTemmaMobile::private(temma,type) \
-         -command { ::confTemmaMobile::griser "$audace(base).confTemmaMobile" }
+         -command {
+            ::confTemmaMobile::griser "$audace(base).confTemmaMobile"
+         }
       pack $This.rad3a -in $This.frame4 -anchor s -side left -padx 10 -pady 5
 
-      #--- Radio-bouton comete, etc.
+      #--- Radio-bouton comete, etc. (suivi cometaire)
       radiobutton $This.rad3 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(temmaconfig,para_mobile_comete)" \
          -value 1 -variable ::confTemmaMobile::private(temma,type) \
-         -command { ::confTemmaMobile::activer "$audace(base).confTemmaMobile" }
+         -command {
+            ::confTemmaMobile::activer "$audace(base).confTemmaMobile"
+         }
       pack $This.rad3 -in $This.frame5 -anchor n -side left -padx 10 -pady 5
 
       #--- Cree la zone a renseigner de la vitesse en ascension droite
