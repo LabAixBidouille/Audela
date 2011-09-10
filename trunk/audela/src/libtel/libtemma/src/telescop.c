@@ -387,12 +387,21 @@ int mytel_radec_state(struct telprop *tel,char *result)
 {
    int state;
    temma_stategoto(tel,&state);
-   if (state==1) {
-      strcpy(result,"tracking");
-   } else if (state==2) {
-      strcpy(result,"pointing");
+   if (temma_motorstate(tel)==1) {
+      // Cas du moteur RA en marche
+      if (state==1) {
+         strcpy(result,"tracking");
+      } else if (state==2) {
+         strcpy(result,"pointing");
+      } else {
+         strcpy(result,"unknown");
+      }
+   } else if (temma_motorstate(tel)==0) {
+      // Cas du moteur RA arretes
+      strcpy(result,"stopped");
    } else {
-      strcpy(result,"unknown");
+      // Cas du GOTO ou l'etat du moteur RA est indetermine
+      strcpy(result,"pointing");
    }
    return 0;
 }
@@ -822,6 +831,21 @@ int temma_gettsl(struct telprop *tel,double *tsl)
    return 0;
 }
 
+int temma_solar_tracking(struct telprop *tel)
+{
+   char s[1024];
+   int result;
+   //--- Suivi solaire
+   sprintf(s,"puts -nonewline %s \"LK\r\n\"",tel->channel);
+   mytel_tcleval(tel,s);
+   result = mytel_tcleval(tel,s);
+   if ( result == 0 ) {
+      sprintf(s,"after %d",tel->tempo);
+      mytel_tcleval(tel,s);
+   }
+   return result;
+}
+
 // Retourne l'etat des moteurs
 // 1  : Si les moteurs fonctionnent
 // 0  : Si les moteurs sont hors tension
@@ -831,10 +855,13 @@ int temma_motorstate(struct telprop *tel)
    char s[1024];
    int result;
    /* --- */
-   sprintf(s,"puts -nonewline %s \"STN-COD\r\n\"",tel->channel); mytel_tcleval(tel,s);
-   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+   sprintf(s,"puts -nonewline %s \"STN-COD\r\n\"",tel->channel);
+   mytel_tcleval(tel,s);
+   sprintf(s,"after %d",tel->tempo);
+   mytel_tcleval(tel,s);
    /* --- Lit la reponse sur le port serie */
-   sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"read %s 30",tel->channel);
+   mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
    if ( tel->consoleLog >= 1 ) {
       logConsole(tel, "StateMotor=|%s|\n",s);
@@ -1008,6 +1035,7 @@ int temma_match(struct telprop *tel)
    if (len>=2) {
       if (strncmp(s,"R0",2)==0) {
          // OK
+         strcpy(tel->msg, "");
          result=0;
       } else if (strncmp(s,"R1",2)==0) {
          // error synchro RA
@@ -1059,6 +1087,7 @@ int temma_goto(struct telprop *tel)
    len=(int)strlen(s);
    if (len>=2) {
       if (strncmp(s,"R0",2)==0) {
+         strcpy(tel->msg, "");
          // OK
          result=0;
       } else if (strncmp(s,"R1",2)==0) {
@@ -1389,4 +1418,3 @@ int temma_angle_dms2dec(struct telprop *tel, char *in, char *out)
    }
    return 0;
 }
-

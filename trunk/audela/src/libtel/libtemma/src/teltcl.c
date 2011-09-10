@@ -121,9 +121,25 @@ int cmdTelFirmware(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
    return TCL_OK;
 }
 
+int cmdTelSolarTracking(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+/***************************************************************************************/
+/* Suivi solaire                                                                       */
+/***************************************************************************************/
+   int result;
+   struct telprop *tel;
+   tel = (struct telprop *)clientData;
+   result = temma_solar_tracking(tel);
+   if ( result == 0 ) {
+      Tcl_SetResult(interp,"",TCL_VOLATILE);
+      return TCL_OK;
+   } else {
+      return TCL_ERROR;
+   }
+}
+
 int cmdTelInitZenith(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 /***************************************************************************************/
-/* init le tube au zenith                                                                */
+/* init le tube au zenith                                                              */
 /***************************************************************************************/
    struct telprop *tel;
    tel = (struct telprop *)clientData;
@@ -132,14 +148,9 @@ int cmdTelInitZenith(ClientData clientData, Tcl_Interp *interp, int argc, char *
    return TCL_OK;
 }
 
-/*
-int kauf_derive_ar(struct telprop *tel,int var);
-int kauf_derive_dec(struct telprop *tel,int vdec);
-*/
-
 int cmdTelDriftspeed(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 /***************************************************************************************/
-/* Fixe les vitesses de derive sur RA et DEC                         */
+/* Fixe les vitesses de derive sur RA et DEC                                           */
 /*
 * Set Comet Tracking
 LM+/-99999,+/-9999
@@ -188,7 +199,7 @@ DEC adjustment is how many Minutes per 24 hour period.
 
 int cmdTelMechanicalplay(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 /***************************************************************************************/
-/* Valeurs des jeux mecaniques sur les axes (en degres) */
+/* Valeurs des jeux mecaniques sur les axes (en degres)                                */
 /***************************************************************************************/
    struct telprop *tel;
    char ligne[256];
@@ -211,7 +222,7 @@ int cmdTelMechanicalplay(ClientData clientData, Tcl_Interp *interp, int argc, ch
 
 int cmdTelGetlatitude(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 /***************************************************************************************/
-/* Valeurs de la latitude actuelle dans Temma (en degres) */
+/* Valeurs de la latitude actuelle dans Temma (en degres)                              */
 /***************************************************************************************/
    struct telprop *tel;
    char ligne[256];
@@ -232,7 +243,7 @@ int cmdTelGetlatitude(ClientData clientData, Tcl_Interp *interp, int argc, char 
 
 int cmdTelGetTsl(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 /***************************************************************************************/
-/* Valeurs du TSL actuel dans Temma (en degres) */
+/* Valeurs du TSL actuel dans Temma (en degres)                                        */
 /***************************************************************************************/
    struct telprop *tel;
    char ligne[256];
@@ -253,7 +264,7 @@ int cmdTelGetTsl(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
 
 int cmdTelMotorState(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 /***************************************************************************************/
-// Retourne l'etat des moteurs
+/* Retourne l'etat des moteurs                                                         */
 /***************************************************************************************/
    struct telprop *tel;
    char ligne[256];
@@ -273,7 +284,7 @@ int cmdTelMotorState(ClientData clientData, Tcl_Interp *interp, int argc, char *
 }
 int cmdTelGerman(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 /***************************************************************************************/
-/* Valeurs du E/W actuel dans Temma (german mounts) */
+/* Valeurs du E/W actuel dans Temma (german mounts)                                    */
 /***************************************************************************************/
    char ligne[256];
    int result = TCL_OK,pb=0;
@@ -358,5 +369,4 @@ int cmdTelCorrectionSpeed(ClientData clientData, Tcl_Interp *interp, int argc, c
       return result;
    }
    return result;
-
 }

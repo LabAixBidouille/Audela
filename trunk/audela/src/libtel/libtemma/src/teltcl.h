@@ -35,5 +35,6 @@ int cmdTelEncoder(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 int cmdTelCorrectionSpeed(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelGerman(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelMotorState(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelSolarTracking(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 #endif
