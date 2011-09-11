@@ -202,7 +202,7 @@ struct _PrivateParams {
 #define LOG_WARNING 2
 #define LOG_INFO    3
 #define LOG_DEBUG   4
-int webcam_debug_level = LOG_DEBUG;
+int webcam_debug_level = LOG_INFO;
 
 #include <time.h>
 #include <sys/timeb.h>          /* ftime, struct timebuffer */
@@ -1041,13 +1041,13 @@ int webcam_setLongExposureDevice(struct camprop *cam, unsigned char value)
  * - 0 when success.
  * - no 0 when error occurred, error description in cam->msg.
 */
-int webcam_getVideoParameter(struct camprop *cam, char *result, int command)
+int webcam_getVideoParameter( struct camprop *cam, char *result, int command )
 {
-   if (cam->params->capture->getVideoParameter(result, command, cam->msg)==TRUE) {
-      return 0;
-   } else {
-      return 1;
-   }
+    webcam_log( LOG_DEBUG, "webcam_getVideoParameter command = %d", command );
+    if ( cam->params->capture->getVideoParameter( result, command, cam->msg ) == TRUE )
+        return 0;
+    else
+        return 1;
 }
 
 /**
@@ -1059,13 +1059,12 @@ int webcam_getVideoParameter(struct camprop *cam, char *result, int command)
  *
  * Function implemented for Linux.
 */
-int webcam_setVideoParameter(struct camprop *cam, int paramValue, int command)
+int webcam_setVideoParameter( struct camprop *cam, int paramValue, int command )
 {
-  if (cam->params->capture->setVideoParameter(paramValue, command, cam->msg)==FALSE) {
-      return 1;
-   } else {
-      return 0;
-   }
+    if ( cam->params->capture->setVideoParameter( paramValue, command, cam->msg ) == FALSE )
+        return 1;
+    else
+        return 0;
 }
 
 

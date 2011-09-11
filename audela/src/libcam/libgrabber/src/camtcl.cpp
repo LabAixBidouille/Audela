@@ -254,128 +254,126 @@ int cmdCamLonguePoseLinkno(ClientData clientData, Tcl_Interp * interp,
 int cmdCamGetVideoParameter(ClientData clientData, Tcl_Interp * interp,
                          int argc, char *argv[])
 {
-   struct camprop *cam;
-   int result = TCL_OK;
+    struct camprop *cam;
+    int result = TCL_OK;
 
-   char returnValue[512], *curValue;
-   int i, n;
-   char commands[] =
-      "-restoreUser -restoreFactory -picSettings -gain -sharpness -shutter -noise -compression -whiteBalance -backlight -flicker";
+    char returnValue[512], *curValue;
+    int i, n;
+    char commands[] =
+        "-restoreUser -restoreFactory -picSettings -gain -sharpness -shutter -noise -compression -whiteBalance -backlight -flicker";
 
-   cam = (struct camprop *) clientData;
+    cam = (struct camprop *) clientData;
 
-   strcpy(returnValue, "");
-   curValue = returnValue;
+    memset( returnValue, 0, sizeof( returnValue ) );
+    curValue = returnValue;
 
-   for (i = 2; i < argc; i++) {
-      if ((n = strlen(returnValue)) > 0) {
-         curValue = returnValue + n;
-         sprintf(curValue, " ");
-         curValue++;
-      }
-      if (strcmp(argv[i], "-restoreUser") == 0) {
-         if (webcam_getVideoParameter(cam, curValue, RESTOREUSER)) {
-            strcpy(returnValue, cam->msg);
-            result = TCL_ERROR;
-            break;
-         }
-         continue;
-      }
-      if (strcmp(argv[i], "-picSettings") == 0) {
-         if (webcam_getVideoParameter(cam, curValue, GETPICSETTINGS)) {
-            strcpy(returnValue, cam->msg);
-            result = TCL_ERROR;
-            break;
-         }
-         continue;
-      }
-      if (strcmp(argv[i], "-restoreFactory") == 0) {
-         if (webcam_getVideoParameter(cam, curValue, RESTOREFACTORY)) {
-            strcpy(returnValue, cam->msg);
-            result = TCL_ERROR;
-            break;
-         }
-         continue;
-      }
-      if (strcmp(argv[i], "-gain") == 0) {
-         if (webcam_getVideoParameter(cam, curValue, GETGAIN)) {
-            strcpy(returnValue, cam->msg);
-            result = TCL_ERROR;
-            break;
-         }
-         continue;
-      }
-      if (strcmp(argv[i], "-sharpness") == 0) {
-         if (webcam_getVideoParameter(cam, curValue, GETSHARPNESS)) {
-            strcpy(returnValue, cam->msg);
-            result = TCL_ERROR;
-            break;
-         }
-         continue;
-      }
-      if (strcmp(argv[i], "-shutter") == 0) {
-         if (webcam_getVideoParameter(cam, curValue, GETSHUTTER)) {
-            strcpy(returnValue, cam->msg);
-            result = TCL_ERROR;
-            break;
-         }
-         continue;
-      }
-      if (strcmp(argv[i], "-noise") == 0) {
-         if (webcam_getVideoParameter(cam, curValue, GETNOISE)) {
-            strcpy(returnValue, cam->msg);
-            result = TCL_ERROR;
-            break;
-         }
-         continue;
-      }
-      if (strcmp(argv[i], "-compression") == 0) {
-         if (webcam_getVideoParameter(cam, curValue, GETCOMPRESSION)) {
-            strcpy(returnValue, cam->msg);
-            result = TCL_ERROR;
-            break;
-         }
-         continue;
-      }
-      if (strcmp(argv[i], "-whiteBalance") == 0) {
-         if (webcam_getVideoParameter(cam, curValue, GETWHITEBALANCE)) {
-            strcpy(returnValue, cam->msg);
-            result = TCL_ERROR;
-            break;
-         }
-         continue;
-      }
-      if (strcmp(argv[i], "-backlight") == 0) {
-         if (webcam_getVideoParameter(cam, curValue, GETBACKLIGHT)) {
-            strcpy(returnValue, cam->msg);
-            result = TCL_ERROR;
-            break;
-         }
-         continue;
-      }
-      if (strcmp(argv[i], "-flicker") == 0) {
-         if (webcam_getVideoParameter(cam, curValue, GETFLICKER)) {
-            strcpy(returnValue, cam->msg);
-            result = TCL_ERROR;
-            break;
-         }
-         continue;
-      }
+    for ( i = 2; i < argc; i++ ) {
+        if ( ( n = strlen( returnValue ) ) > 0 ) {
+            curValue = returnValue + n;
+            sprintf(curValue, " ");
+            curValue++;
+        }
+        if (strcmp(argv[i], "-restoreUser") == 0) {
+            if (webcam_getVideoParameter(cam, curValue, RESTOREUSER)) {
+                strcpy(returnValue, cam->msg);
+                result = TCL_ERROR;
+                break;
+            }
+            continue;
+        }
+        if (strcmp(argv[i], "-picSettings") == 0) {
+            if (webcam_getVideoParameter(cam, curValue, GETPICSETTINGS)) {
+                strcpy(returnValue, cam->msg);
+                result = TCL_ERROR;
+                break;
+            }
+            continue;
+        }
+        if (strcmp(argv[i], "-restoreFactory") == 0) {
+            if (webcam_getVideoParameter(cam, curValue, RESTOREFACTORY)) {
+                strcpy(returnValue, cam->msg);
+                result = TCL_ERROR;
+                break;
+            }
+            continue;
+        }
+        if ( strcmp( argv[i], "-gain" ) == 0 ) {
+            if ( webcam_getVideoParameter( cam, curValue, GETGAIN ) ) {
+                strcpy( returnValue, cam->msg );
+                result = TCL_ERROR;
+                break;
+            }
+            continue;
+        }
+        if (strcmp(argv[i], "-sharpness") == 0) {
+            if (webcam_getVideoParameter(cam, curValue, GETSHARPNESS)) {
+                strcpy(returnValue, cam->msg);
+                result = TCL_ERROR;
+                break;
+            }
+            continue;
+        }
+        if (strcmp(argv[i], "-shutter") == 0) {
+            if (webcam_getVideoParameter(cam, curValue, GETSHUTTER)) {
+                strcpy(returnValue, cam->msg);
+                result = TCL_ERROR;
+                break;
+            }
+            continue;
+        }
+        if (strcmp(argv[i], "-noise") == 0) {
+            if (webcam_getVideoParameter(cam, curValue, GETNOISE)) {
+                strcpy(returnValue, cam->msg);
+                result = TCL_ERROR;
+                break;
+            }
+            continue;
+        }
+        if (strcmp(argv[i], "-compression") == 0) {
+            if (webcam_getVideoParameter(cam, curValue, GETCOMPRESSION)) {
+                strcpy(returnValue, cam->msg);
+                result = TCL_ERROR;
+                break;
+            }
+            continue;
+        }
+        if (strcmp(argv[i], "-whiteBalance") == 0) {
+            if (webcam_getVideoParameter(cam, curValue, GETWHITEBALANCE)) {
+                strcpy(returnValue, cam->msg);
+                result = TCL_ERROR;
+                break;
+            }
+            continue;
+        }
+        if (strcmp(argv[i], "-backlight") == 0) {
+            if (webcam_getVideoParameter(cam, curValue, GETBACKLIGHT)) {
+                strcpy(returnValue, cam->msg);
+                result = TCL_ERROR;
+                break;
+            }
+            continue;
+        }
+        if (strcmp(argv[i], "-flicker") == 0) {
+            if (webcam_getVideoParameter(cam, curValue, GETFLICKER)) {
+                strcpy(returnValue, cam->msg);
+                result = TCL_ERROR;
+                break;
+            }
+            continue;
+        }
 
-      sprintf(returnValue, "%s - command unknown. Possible commands: %s",
-              argv[i], commands);
-      result = TCL_ERROR;
-      break;
-   }
+        sprintf( returnValue, "%s - command unknown. Possible commands: %s", argv[i], commands );
+        result = TCL_ERROR;
+        break;
+    }
 
-   if (argc <= 2) {
-      sprintf(returnValue, "%s - possible commands: %s",
-              argv[1], commands);
-      result = TCL_ERROR;
-   }
+    if ( argc <= 2 ) {
+        sprintf(returnValue, "%s - possible commands: %s", argv[1], commands);
+        result = TCL_ERROR;
+    }
 
-   Tcl_SetResult(interp, returnValue, TCL_VOLATILE);
-   return result;
+    Tcl_SetResult( interp, returnValue, TCL_VOLATILE );
+    return result;
 }
 
 

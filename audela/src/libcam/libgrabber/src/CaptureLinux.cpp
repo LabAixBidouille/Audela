@@ -130,6 +130,25 @@ CCaptureLinux::~CCaptureLinux()
 *----------------------------------------------------------------------
 */
 
+void CCaptureLinux::enumerate_menu( struct v4l2_queryctrl * queryctrl )
+{
+    struct v4l2_querymenu querymenu;
+
+    webcam_log( LOG_INFO, "enumerate-menu  Entrée du menu pour %s :", queryctrl->name);
+    memset( &querymenu, 0, sizeof(querymenu) );
+    querymenu.id = queryctrl->id;
+
+    for ( querymenu.index = queryctrl->minimum; querymenu.index <= queryctrl->maximum; querymenu.index++ ) {
+        if ( 0 == ioctl( cam_fd, VIDIOC_QUERYMENU, &querymenu ) ) {
+            webcam_log( LOG_INFO, "enumerate-menu VIDIOC_QUERYMENU \t%s", querymenu.name);
+        }
+        else {
+            webcam_log( LOG_INFO, "enumerate-menu VIDIOC_QUERYMENU %s", strerror(errno) );
+            return;
+        }
+    }
+}
+
 BOOL CCaptureLinux::get_parameters( v4l2_parameters * param, char * errorMessage ) {
     struct v4l2_capability cap;
 
@@ -140,7 +159,7 @@ BOOL CCaptureLinux::get_parameters( v4l2_parameters * param, char * errorMessage
         return FALSE;
     }
     else {
-        webcam_log( LOG_DEBUG, "get_parameters : pilote %s %u.%u.%u, materiel %s, bus %s", cap.driver, (cap.version >> 16) & 0xff, (cap.version >> 8) & 0xff, cap.version & 0xff, cap.card, cap.bus_info );
+        webcam_log( LOG_INFO, "get_parameters : pilote %s %u.%u.%u, materiel %s, bus %s", cap.driver, (cap.version >> 16) & 0xff, (cap.version >> 8) & 0xff, cap.version & 0xff, cap.card, cap.bus_info );
         unsigned int capabilities = cap.capabilities;
         if ( ( capabilities & V4L2_CAP_VIDEO_CAPTURE ) == 0 ) {
             sprintf( errorMessage, "Not a video capture device" );
@@ -148,14 +167,14 @@ BOOL CCaptureLinux::get_parameters( v4l2_parameters * param, char * errorMessage
             return FALSE;
         }
 
-        param->io |= IO_METHOD_NIL;
+        param->io = IO_METHOD_NIL;
         if ( ( capabilities & V4L2_CAP_STREAMING ) != 0 ) {
             webcam_log( LOG_INFO, "get_parameters : Accès en mmap possible");
             param->io |= IO_METHOD_MMAP;
         }
 
         if ( ( capabilities & V4L2_CAP_READWRITE ) != 0 ) {
-            webcam_log( LOG_DEBUG, "get_parameters : Accès en read possible");
+            webcam_log( LOG_INFO, "get_parameters : Accès en read possible");
             param->io |= IO_METHOD_READ;
         }
 
@@ -173,7 +192,7 @@ BOOL CCaptureLinux::get_parameters( v4l2_parameters * param, char * errorMessage
     param->data_format = FORMAT_NIL;
     webcam_log( LOG_DEBUG, "get_parameters : ioctl VIDEOC_ENUM_FMT" );
     while ( ioctl( cam_fd, VIDIOC_ENUM_FMT, &fmt_desc ) >= 0 ) {
-        webcam_log( LOG_DEBUG, "get_parameters : VIDIOC_ENUM_FMT : format %s disponible (fourcc=%x)", fmt_desc.description, fmt_desc.pixelformat );
+        webcam_log( LOG_INFO, "get_parameters : VIDIOC_ENUM_FMT : format %s disponible (fourcc=%x)", fmt_desc.description, fmt_desc.pixelformat );
         if ( fmt_desc.pixelformat == fourcc('Y', 'U', 'Y', 'V') )
             param->data_format |= FORMAT_YUV422;
         if ( fmt_desc.pixelformat == fourcc('Y', 'U', '1', '2') )
@@ -186,7 +205,7 @@ BOOL CCaptureLinux::get_parameters( v4l2_parameters * param, char * errorMessage
     }
     if ( param->data_format == FORMAT_NIL ) {
         sprintf( errorMessage, "No supported data format" );
-        webcam_log( LOG_ERROR, "get_parameters : Pas de format de donnée valide");
+        webcam_log( LOG_ERROR, "get_parameters : Pas de format de donnée valide" );
         return FALSE;
     }
 
@@ -201,6 +220,72 @@ BOOL CCaptureLinux::get_parameters( v4l2_parameters * param, char * errorMessage
             webcam_log( LOG_INFO, "VIDIOC_G_STD : PAL video format supported" );
     }
 
+    /* Recherche des réglages possibles */
+    struct v4l2_queryctrl queryctrl;
+    memset ( &queryctrl, 0, sizeof (queryctrl) );
+
+    for (queryctrl.id = V4L2_CID_BASE; queryctrl.id < V4L2_CID_LASTP1; queryctrl.id++) {
+        if ( 0 == ioctl( cam_fd, VIDIOC_QUERYCTRL, &queryctrl ) ) {
+            if ( queryctrl.flags & V4L2_CTRL_FLAG_DISABLED )
+                continue;
+
+            webcam_log( LOG_INFO, "get_parameters : VIDIOC_QUERYCTRL : %s", queryctrl.name );
+            if ( queryctrl.type == V4L2_CTRL_TYPE_MENU )
+                enumerate_menu( &queryctrl );
+            switch( queryctrl.id ) {
+                case V4L2_CID_BRIGHTNESS :
+                param->brightness.enabled = true;
+                param->brightness.current = queryctrl.default_value;
+                param->brightness.minimum = queryctrl.minimum;
+                param->brightness.maximum = queryctrl.maximum;
+                webcam_log( LOG_INFO, "get_parameters : VIDIOC_QUERYCTRL : current = %d / minimum = %d / maximum = %d", queryctrl.default_value, queryctrl.minimum, queryctrl.maximum );
+                break;
+                case V4L2_CID_GAIN :
+                param->gain.enabled = true;
+                param->gain.current = queryctrl.default_value;
+                param->gain.minimum = queryctrl.minimum;
+                param->gain.maximum = queryctrl.maximum;
+                webcam_log( LOG_INFO, "get_parameters : VIDIOC_QUERYCTRL : current = %d / minimum = %d / maximum = %d", queryctrl.default_value, queryctrl.minimum, queryctrl.maximum );
+                break;
+                case V4L2_CID_EXPOSURE :
+                param->shutter.enabled = true;
+                param->shutter.current = queryctrl.default_value;
+                param->shutter.minimum = queryctrl.minimum;
+                param->shutter.maximum = queryctrl.maximum;
+                webcam_log( LOG_INFO, "get_parameters : VIDIOC_QUERYCTRL : current = %d / minimum = %d / maximum = %d", queryctrl.default_value, queryctrl.minimum, queryctrl.maximum );
+                break;
+                case V4L2_CID_AUTOGAIN :
+                param->auto_gain.enabled = true;
+                param->auto_gain.current = queryctrl.default_value;
+                webcam_log( LOG_INFO, "get_parameters : VIDIOC_QUERYCTRL : current = %d", queryctrl.default_value );
+                break;
+                case V4L2_CID_SHARPNESS :
+                param->sharpness.enabled = true;
+                param->sharpness.current = queryctrl.default_value;
+                param->sharpness.minimum = queryctrl.minimum;
+                param->sharpness.maximum = queryctrl.maximum;
+                webcam_log( LOG_INFO, "get_parameters : VIDIOC_QUERYCTRL : current = %d / minimum = %d / maximum = %d", queryctrl.default_value, queryctrl.minimum, queryctrl.maximum );
+                break;
+                case V4L2_CID_BACKLIGHT_COMPENSATION :
+                param->backlight.enabled = true;
+                param->backlight.current = queryctrl.default_value;
+                param->backlight.minimum = queryctrl.minimum;
+                param->backlight.maximum = queryctrl.maximum;
+                webcam_log( LOG_INFO, "get_parameters : VIDIOC_QUERYCTRL : current = %d / minimum = %d / maximum = %d", queryctrl.default_value, queryctrl.minimum, queryctrl.maximum );
+                break;
+                default:
+                break;
+            }
+        }
+        else {
+            if ( errno == EINVAL )
+                continue;
+            sprintf( errorMessage, "VIDIOC_QUERYCTRL : %s", strerror(errno) );
+            webcam_log( LOG_ERROR, "get_parameters : VIDIOC_QUERYCTRL : %s", strerror(errno) );
+            return FALSE;
+        }
+    }
+
     return TRUE;
 }
 
@@ -208,11 +293,11 @@ BOOL CCaptureLinux::select_parameters( v4l2_parameters * param, char * errorMess
     /* Sélection du mode d'accès : on favorise le mode mmap */
     if ( ( param->io & IO_METHOD_MMAP ) != 0 ) {
         param->io = IO_METHOD_MMAP;
-        webcam_log( LOG_INFO, "select_parameters : Accès en mmap selectionné");
+        webcam_log( LOG_INFO, "select_parameters : Accès en mmap selectionné" );
     }
     else if ( ( param->io & IO_METHOD_READ ) != 0 ) {
         param->io = IO_METHOD_READ;
-        webcam_log( LOG_INFO, "select_parameters : Accès en read selectionné");
+        webcam_log( LOG_INFO, "select_parameters : Accès en read selectionné" );
     }
     else {
         /* On ne devrait jamais passer ici */
@@ -630,7 +715,7 @@ BOOL CCaptureLinux::setVideoFormat( char *formatname, char *errorMessage )
 */
 BOOL CCaptureLinux::getVideoParameter(char *result, int command, char* errorMessage)
 {
-    webcam_log( LOG_DEBUG, "getVideoParameter" );
+    webcam_log( LOG_DEBUG, "getVideoParameter command = %d", command );
 
     int ret = TRUE;
 
@@ -640,13 +725,112 @@ BOOL CCaptureLinux::getVideoParameter(char *result, int command, char* errorMess
         sprintf(result, "%d",validFrame);
         break;
 
+    case GETGAIN :
+        if ( driver_params->auto_gain.enabled == true ) {
+            if ( driver_params->auto_gain.current == true ) {
+                sprintf( result, "%d", -1 );
+            }
+            else {
+                if ( driver_params->gain.enabled == true ) {
+                    int gain = (int)( 65535.0 * (double)( driver_params->gain.current - driver_params->gain.minimum ) /  (double)( driver_params->gain.maximum - driver_params->gain.minimum ) );
+                    sprintf( result, "%d", gain );
+                }
+                else {
+                    strcpy( errorMessage, "The video gain is not managed by this camera" );
+                    ret = FALSE;
+                }
+            }
+        }
+        else {
+            if ( driver_params->gain.enabled == true ) {
+                int gain = (int)( 65535.0 * (double)( driver_params->gain.current - driver_params->gain.minimum ) /  (double)( driver_params->gain.maximum - driver_params->gain.minimum ) );
+                sprintf( result, "%d", gain );
+            }
+            else {
+                strcpy( errorMessage, "The video gain is not managed by this camera" );
+                ret = FALSE;
+            }
+        }
+        webcam_log( LOG_INFO, "getVideoParameter GAIN value = %s", result );
+        break;
+
+    case GETSHUTTER :
+        if ( driver_params->shutter.enabled == true ) {
+            int shutter_speed = (int)( 65535.0 * (double)( driver_params->shutter.current - driver_params->shutter.minimum ) /  (double)( driver_params->shutter.maximum - driver_params->shutter.minimum ) );
+            sprintf( result, "%d", shutter_speed );
+        }
+        else {
+            strcpy( errorMessage, "The shutter speed is not managed by this camera" );
+            ret = FALSE;
+        }
+        webcam_log( LOG_INFO, "getVideoParameter SHUTTER value = %d", * result );
+        break;
+
+    case GETSHARPNESS :
+        if ( driver_params->sharpness.enabled == true ) {
+            int sharpness = (int)( 65535.0 * (double)( driver_params->sharpness.current - driver_params->sharpness.minimum ) /  (double)( driver_params->sharpness.maximum - driver_params->sharpness.minimum ) );
+            sprintf( result, "%d", sharpness );
+        }
+        else {
+            strcpy( errorMessage, "The image sharpness is not managed by this camera" );
+            ret = FALSE;
+        }
+        break;
+
+    case GETBACKLIGHT :
+        if ( driver_params->backlight.enabled == true ) {
+            int backlight = (int)( 65535.0 * (double)( driver_params->backlight.current - driver_params->backlight.minimum ) /  (double)( driver_params->backlight.maximum - driver_params->backlight.minimum ) );
+            sprintf( result, "%d", backlight );
+        }
+        else {
+            strcpy( errorMessage, "The image backlight is not managed by this camera" );
+            ret = FALSE;
+        }
+        break;
+
     default:
-        strcpy(errorMessage, "command not found");
+        strcpy(errorMessage, "command not supported for this camera");
         ret = FALSE;
         break;
     }
 
    return ret;
+}
+
+BOOL CCaptureLinux::set_control( int id, int value, local_v4l2_control_value * local_control, char * errorMessage ) {
+    struct v4l2_control control;
+    int ret = TRUE;
+
+    memset ( &control, 0, sizeof (control) );
+    control.id = id;
+    double dval = (double)( local_control->maximum - local_control->minimum ) / 65535.0 * (double)value + local_control->minimum;
+    control.value = (int)dval;
+    local_control->current = control.value;
+
+    if ( -1 == ioctl( cam_fd, VIDIOC_S_CTRL, &control ) ) {
+        webcam_log( LOG_ERROR, "setVideoParameter : VIDIOC_S_CTRL : %s", strerror( errno ) );
+        strcpy( errorMessage, strerror( errno ) );
+        ret =  FALSE;
+    }
+    return ret;
+}
+
+BOOL CCaptureLinux::set_control( int id, bool value, local_v4l2_control_flag * local_control, char * errorMessage ) {
+    struct v4l2_control control;
+    int ret = TRUE;
+
+    memset ( &control, 0, sizeof (control) );
+    control.id = id;
+    control.value = value;
+    local_control->current = value;
+    webcam_log( LOG_INFO, "set_control : current = %d", local_control->current );
+
+    if ( -1 == ioctl( cam_fd, VIDIOC_S_CTRL, &control ) ) {
+        webcam_log( LOG_ERROR, "setVideoParameter : VIDIOC_S_CTRL : %s", strerror( errno ) );
+        strcpy( errorMessage, strerror( errno ) );
+        ret =  FALSE;
+    }
+    return ret;
 }
 
 /**
@@ -660,8 +844,7 @@ BOOL CCaptureLinux::getVideoParameter(char *result, int command, char* errorMess
 */
 BOOL CCaptureLinux::setVideoParameter(int paramValue, int command, char * errorMessage)
 {
-    webcam_log( LOG_DEBUG, "setVideoParameter paramValue=%d, command=%d", paramValue, command );
-
+    webcam_log( LOG_DEBUG, "setVideoParameter command=%d : paramValue=%d", command, paramValue );
     int ret = TRUE;
     switch (command) {
 
@@ -669,14 +852,93 @@ BOOL CCaptureLinux::setVideoParameter(int paramValue, int command, char * errorM
         validFrame = paramValue;
         break;
 
+    case SETGAIN :
+        if ( paramValue < 0 ) {
+            /* Passage en mode auto si la caméra le supporte */
+            if ( driver_params->auto_gain.enabled == true ) {
+                if ( driver_params->auto_gain.current == false ) {
+                    ret = set_control( V4L2_CID_AUTOGAIN, true, &(driver_params->auto_gain), errorMessage );
+                    webcam_log( LOG_INFO, "set_control : AUTOGAIN : current = %d", driver_params->auto_gain.current );
+                }
+            }
+            /* sinon on ne fait rien */
+        }
+        else {
+            /* Débrayage du mode auto si nécessaire */
+            if ( driver_params->auto_gain.enabled == true ) {
+                if ( driver_params->auto_gain.current == true ) {
+                    ret = set_control( V4L2_CID_AUTOGAIN, false, &(driver_params->auto_gain), errorMessage );
+                    webcam_log( LOG_INFO, "set_control : AUTOGAIN : current = %d", driver_params->auto_gain.current );
+                }
+            }
+            /* Changement du gain si possible */
+            if ( ret == TRUE ) {
+                if ( driver_params->gain.enabled == true ) {
+                    ret = set_control( V4L2_CID_GAIN, paramValue, &(driver_params->gain), errorMessage );
+                    webcam_log( LOG_INFO, "set_control : GAIN : current = %d / minimum = %d / maximum = %d", driver_params->gain.current, driver_params->gain.minimum, driver_params->gain.maximum );
+                }
+                else {
+                    webcam_log( LOG_ERROR, "setVideoParameter : le changement de gain n'est pas supporté par cette caméra" );
+                    strcpy( errorMessage, "Gain setting is not supported by this camera" );
+                    ret = FALSE;
+                }
+            }
+        }
+        break;
+
+    case SETSHUTTER :
+        /* -1 veut dire mode auto : on ne fait rien dans ce cas */
+        if ( paramValue >= 0 ) {
+            if ( driver_params->shutter.enabled == true ) {
+                ret = set_control( V4L2_CID_EXPOSURE, paramValue, &(driver_params->shutter), errorMessage );
+                webcam_log( LOG_INFO, "set_control : SHUTTER : current = %d / minimum = %d / maximum = %d", driver_params->shutter.current, driver_params->shutter.minimum, driver_params->shutter.maximum );
+            }
+            else {
+                webcam_log( LOG_ERROR, "setVideoParameter : le changement de vitesse d'obturation n'est pas supporté par cette caméra" );
+                strcpy( errorMessage, "shutter speed setting is not supported by this camera" );
+                ret = FALSE;
+            }
+        }
+        break;
+
+    case SETSHARPNESS :
+        /* -1 veut dire mode auto : on ne fait rien dans ce cas */
+        if ( paramValue >= 0 ) {
+            if ( driver_params->sharpness.enabled == true ) {
+                ret = set_control( V4L2_CID_SHARPNESS, paramValue, &(driver_params->sharpness), errorMessage );
+                webcam_log( LOG_INFO, "set_control : SHARPNESS : current = %d / minimum = %d / maximum = %d", driver_params->sharpness.current, driver_params->sharpness.minimum, driver_params->sharpness.maximum );
+            }
+            else {
+                webcam_log( LOG_ERROR, "setVideoParameter : le changement de filtre n'est pas supporté par cette caméra" );
+                strcpy( errorMessage, "sharpness setting is not supported by this camera" );
+                ret = FALSE;
+            }
+        }
+        break;
+
+    case SETBACKLIGHT :
+        /* -1 veut dire mode auto : on ne fait rien dans ce cas */
+        if ( paramValue >= 0 ) {
+            if ( driver_params->backlight.enabled == true ) {
+                ret = set_control( V4L2_CID_BACKLIGHT_COMPENSATION, paramValue, &(driver_params->backlight), errorMessage );
+                webcam_log( LOG_INFO, "set_control : backlight : current = %d / minimum = %d / maximum = %d", driver_params->backlight.current, driver_params->backlight.minimum, driver_params->backlight.maximum );
+            }
+            else {
+                webcam_log( LOG_ERROR, "setVideoParameter : le changement de filtre n'est pas supporté par cette caméra" );
+                strcpy( errorMessage, "backlight compensation is not supported by this camera" );
+                ret = FALSE;
+            }
+        }
+        break;
+
     default:
-        strcpy(errorMessage, "command not found");
+        strcpy( errorMessage, "This command is not supported yet" );
         ret = FALSE;
         break;
     }
 
-    if (ret == FALSE) {
-        printf("setVideoParameter errorMessage=%s\n",errorMessage);
+    if ( ret == FALSE ) {
+        printf( "setVideoParameter errorMessage=%s\n", errorMessage );
     }
     return ret;
 }
@@ -746,7 +1008,7 @@ void CCaptureLinux::setCaptureAudio(BOOL value){
 }
 
 BOOL CCaptureLinux::grabFrame(char *errorMessage){
-    webcam_log( LOG_DEBUG, "grabFrame" );
+    //webcam_log( LOG_DEBUG, "grabFrame" );
     int readResult;
     int i;
     BOOL retcode = TRUE;
@@ -1171,7 +1433,7 @@ BOOL CCaptureLinux::webcam_mmapCapture() {
         }
     }
 
-    webcam_log( LOG_INFO, "webcam_mmapCapture : buffer n %d : ioctl VIDEOC_DQBUF : bytesused = %d / field = %d", buffer.index, buffer.bytesused, buffer.flags );
+    webcam_log( LOG_DEBUG, "webcam_mmapCapture : buffer n %d : ioctl VIDEOC_DQBUF : bytesused = %d / field = %d", buffer.index, buffer.bytesused, buffer.flags );
 
     if ( buffer.index >= n_mmap_buffers ) {
         webcam_log( LOG_ERROR, "webcam_mmapCapture : buffer index (%d) is greater than number of buffers (%d)", buffer.index, n_mmap_buffers );
@@ -1181,7 +1443,7 @@ BOOL CCaptureLinux::webcam_mmapCapture() {
         webcam_log( LOG_ERROR, "webcam_mmapCapture : buffer n %d length (%d) is greater than YUV buffer (%d)", buffer.index, buffer.bytesused, yuvBufferSize );
         return FALSE;
     }
-    webcam_log( LOG_INFO, "webcam_mmapCapture : buffer n %d received, with payload size %d", buffer.index, buffer.bytesused );
+    webcam_log( LOG_DEBUG, "webcam_mmapCapture : buffer n %d received, with payload size %d", buffer.index, buffer.bytesused );
 
     switch ( driver_params->data_format ) {
         case FORMAT_YUV422 :
@@ -1203,7 +1465,7 @@ BOOL CCaptureLinux::webcam_mmapCapture() {
         webcam_log( LOG_ERROR, "webcam_mmapCapture : VIDIOC_DQBUF : %s", strerror( errno ) );
         return FALSE;
     }
-    webcam_log( LOG_INFO, "webcam_mmapCapture : buffer n %d : ioctl VIDEOC_QBUF : bytesused = %d / field = %d", buffer.index, buffer.bytesused, buffer.flags );
+    webcam_log( LOG_DEBUG, "webcam_mmapCapture : buffer n %d : ioctl VIDEOC_QBUF : bytesused = %d / field = %d", buffer.index, buffer.bytesused, buffer.flags );
     return TRUE;
 
 }
