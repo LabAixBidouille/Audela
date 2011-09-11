@@ -170,16 +170,50 @@ private :
     static const int FORMAT_YUV420 = 4;
     static const int FORMAT_BAYER_GRBG = 8;
 
+    class local_v4l2_control_value {
+        public:
+        bool enabled;
+        int current;
+        int minimum;
+        int maximum;
+        local_v4l2_control_value() {
+            enabled = false;
+            current = 0;
+            minimum = 0;
+            maximum = 0;
+        };
+    };
+
+    class local_v4l2_control_flag {
+        public:
+        bool enabled;
+        bool current;
+        local_v4l2_control_flag() {
+            enabled = false;
+            current = false;
+        };
+    };
+
     class v4l2_parameters {
         public :
         int io;
         int data_format;
         v4l2_std_id stdid;
+        local_v4l2_control_value brightness;
+        local_v4l2_control_value gain;
+        local_v4l2_control_flag auto_gain;
+        local_v4l2_control_value shutter;
+        local_v4l2_control_value sharpness;
+        local_v4l2_control_value backlight;
     };
 
     BOOL get_parameters( v4l2_parameters *, char * );
     BOOL select_parameters( v4l2_parameters *, char * );
     BOOL set_parameters( v4l2_parameters *, char * );
+    void enumerate_menu( struct v4l2_queryctrl * queryctrl );
+    BOOL set_control( int, int, local_v4l2_control_value *, char * );
+    BOOL set_control( int, bool, local_v4l2_control_flag *, char * );
+
 
     v4l2_parameters * driver_params;
 
