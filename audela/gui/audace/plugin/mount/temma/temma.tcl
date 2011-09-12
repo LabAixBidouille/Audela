@@ -97,6 +97,9 @@ proc ::temma::initPlugin { } {
    if { ! [ info exists conf(temma,suivi_dec) ] }  { set conf(temma,suivi_dec)  "0" }
    if { ! [ info exists conf(temma,type) ] }       { set conf(temma,type)       "0" }
    if { ! [ info exists conf(temma,debug) ] }      { set conf(temma,debug)      "0" }
+#---  parquage
+   if { ! [ info exists conf(temma,park_usage) ] } { set conf(temma,park_usage) "0" }
+#---  fin parquage
 }
 
 #
@@ -360,7 +363,7 @@ proc ::temma::fillConfigPage { frm } {
 #
 proc ::temma::configureMonture { } {
    variable private
-   global caption conf
+   global audace caption conf
 
    set catchResult [ catch {
       #--- Je cree la monture et j'envoie les coordonnees de l'observatoire
@@ -369,7 +372,7 @@ proc ::temma::configureMonture { } {
       #--- Lit le modele
       if { $conf(temma,modele) == "0" } {
          set private(modele) $caption(temma,modele_1)
-      } elseif { $conf(temma,modele) == "1" } {
+     } elseif { $conf(temma,modele) == "1" } {
          set private(modele) $caption(temma,modele_2)
       } else {
          set private(modele) $caption(temma,modele_3)
@@ -398,7 +401,21 @@ proc ::temma::configureMonture { } {
       #--- Prise en compte des encodeurs
       tel$telNo encoder "1"
       #--- Force la mise en marche des moteurs
-      tel$telNo radec motor on
+#---  parquage
+      if {$conf(temma,park_usage) == "1"} {
+         #--- Force l'arret des moteurs meme si telNo == 0
+         tel$telNo radec motor off
+         set audace(telescope,controle) "$caption(telescope,suivi_arret)"
+      } else {
+         #--- Force la mise en marche des moteurs meme si telNo == 0
+         tel$telNo radec motor on
+         set audace(telescope,controle) "$caption(telescope,suivi_marche)"
+      }
+      if { [ info commands ::tlscp::diagnostic ] != "" } {
+         ::tlscp::diagnostic in
+      }
+#---  fin parquage
+
       #--- Prise en compte des corrections de la vitesse normale en AD et en Dec.
       if { $conf(temma,liaison) == "1" } {
          tel$telNo correctionspeed $conf(temma,correc_AD) $conf(temma,correc_AD)
@@ -408,7 +425,9 @@ proc ::temma::configureMonture { } {
       #--- Correction de la vitesse de suivi en ad et en dec
       if { $conf(temma,type) == "0" } {
          tel$telNo driftspeed 0 0
-         ::console::affiche_resultat "$caption(temma,mobile_etoile)\n\n"
+#-- modif RZ
+         ::console::affiche_resultat "$caption(temma,ctl_mobile:) $caption(temma,mobile_etoile)\n\n"
+#-- fin modif RZ
       } elseif { $conf(temma,type) == "1" } {
          tel$telNo driftspeed $conf(temma,suivi_ad) $conf(temma,suivi_dec)
          set correction_suivi [ tel$telNo driftspeed ]
@@ -449,16 +468,28 @@ proc ::temma::configureMonture { } {
 proc ::temma::stop { } {
    variable private
 
+   set telNo $private(telNo)
+
    #--- Sortie anticipee si le telescope n'existe pas
-   if { $private(telNo) == "0" } {
+   if { $telNo == "0" } {
       return
    }
 
+#---  securite
+   tel$telNo radec motor off
+
+#---  parquage
+   set ::audace(telescope,controle) "$::caption(telescope,suivi_arret)"
+   if { [ info commands ::tlscp::diagnostic ] != "" } {
+      ::tlscp::diagnostic out
+   }
+#---  fin parquage
+
    #--- Gestion du bouton actif/inactif
-   ::temma::confTemmaInactif
+   #::temma::confTemmaInactif
 
    #--- Je memorise le port
-   set telPort [ tel$private(telNo) port ]
+   set telPort [ tel$telNo port ]
    #--- J'arrete la monture
    tel::delete $private(telNo)
    #--- J'arrete le link
@@ -483,7 +514,7 @@ proc ::temma::confTemma { } {
             $frm.init_zenith configure -state normal -command {
                tel$::temma::private(telNo) initzenith
                ::telescope::afficheCoord
-            }
+          }
             $frm.chg_pos_tel configure -state normal -textvariable audace(chg_pos_tel) -command {
                set pos_tel [ tel$::temma::private(telNo) german ]
                if { $pos_tel == "E" } {
@@ -653,6 +684,7 @@ proc ::temma::getPluginProperty { propertyName } {
             return 0
          }
       }
+      isGermanMount           { return 1 }
       hasModel                { return 1 }
       hasPark                 { return 0 }
       hasUnpark               { return 0 }

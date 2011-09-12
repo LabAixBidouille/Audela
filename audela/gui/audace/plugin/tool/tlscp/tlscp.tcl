@@ -16,6 +16,7 @@ namespace eval ::tlscp {
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] tlscp.cap ]
+   source [ file join [file dirname [info script]] tlscp_tech.tcl ]
 }
 
 #------------------------------------------------------------
@@ -364,6 +365,15 @@ proc ::tlscp::createPluginInstance { { tkBase "" } { visuNo 1 } } {
       bind $zone(s) <ButtonRelease-1> { ::tlscp::cmdStop s }
       bind $zone(n) <ButtonPress-1> { ::tlscp::cmdMove n }
       bind $zone(n) <ButtonRelease-1> { ::tlscp::cmdStop n }
+
+#----complement pour le panneau technique
+      frame $private($visuNo,This).tech -borderwidth 1 -relief groove
+      checkbutton $private($visuNo,This).tech.comp -text "$caption(tlscp,moreinfo)" \
+         -indicatoron 1 -offvalue 0 -onvalue 1 -variable ::tlscp::private($visuNo,info_select)\
+         -command "::tlscp::createMyTel $visuNo"
+      pack $private($visuNo,This).tech.comp -anchor w
+      pack $private($visuNo,This).tech -side top -fill x
+#----fin complement
 
       #--- Frame de la camera
       frame $private($visuNo,This).camera -borderwidth 1 -relief groove
@@ -2162,4 +2172,21 @@ proc ::tlscp::config::onSelectDetection { visuNo frm } {
       }
    }
 }
+
+proc ::tlscp::createMyTel { visuNo } {
+   variable private
+
+   switch -exact $private($visuNo,info_select) {
+      0  {  if {[winfo exists $private($visuNo,This).info]} {
+               ::tlscp::fermerMyTel $visuNo
+            }
+         }
+      1  {  ::tlscp::createMyTelPanel $visuNo }
+   }
+}
+
+
+
+
+
 
