@@ -88,11 +88,18 @@ tel1 get_register_s 1 M 7
 
 tel1 set_register_s 0 X 13 0 900
 tel1 execute_command_x_s 0 26 1 0 0 71
+
+
 tel::create t940 pci
 after 1000
 tel1 radec motor on
-for {set k 0} {$k<20} {incr k} {
+for {set k 0} {$k<3} {incr k} {
 ::console::affiche_resultat "[tel1 get_register_s 0 M 7] [tel1 get_register_s 1 M 7] [tel1 get_register_s 2 M 7]\n"
 after 1000
 }
 ::console::affiche_resultat "[tel1 get_register_s 0 M 7] [tel1 get_register_s 1 M 7] [tel1 get_register_s 2 M 7]\n"
+
+set sens s
+tel1 action move_${sens}
+after 4000
+tel1 action move_${sens}_stop

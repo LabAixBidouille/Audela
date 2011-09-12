@@ -74,9 +74,14 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 /* --------------------------------------------------------- */
 {
    char s[1024];
-
 	int threadpb=0,k;
 
+#if defined(MOUCHARD)
+   FILE *f;
+   f=fopen("mouchard_t940.txt","wt");
+   fprintf(f,"Demarre une init\n");
+	fclose(f);
+#endif
    Tcl_CreateCommand(tel->interp,"Thread940_Init", (Tcl_CmdProc *)Thread940_Init, (ClientData)NULL, NULL);
    if (Tcl_Eval(tel->interp, "thread::create { thread::wait } ") == TCL_OK) {
 		//MessageBox(NULL,"Thread créé","LibT940",MB_OK);
@@ -106,6 +111,11 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		strcpy(tel->msg,tel->interp->result);
 		threadpb=2;
 	}
+#if defined(MOUCHARD)
+   f=fopen("mouchard_t940.txt","at");
+   fprintf(f,"Fin de l'init\n");
+	fclose(f);
+#endif
 	return threadpb;
 }
 
@@ -436,7 +446,6 @@ int Thread940_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 
 	// decode les arguments
 	telthread->mode = MODE_REEL;
-	telthread->mode = 0;
    telthread->type_mount=MOUNT_ALTAZ;
 	strcpy(telthread->alignmentMode,"ALTAZ");
 	axis[0]=0;
@@ -632,21 +641,40 @@ int Thread940_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 		/**************/
 	   /*** move_n ***/
 		/**************/
-		strcpy(telthread->action_cur,telthread->action_next);
-		// --- TODO n'actionner la fonction que si elle n'a pas encore été lancée
-		if (telthread->mode==MODE_REEL) {
-			if (telthread->type_mount==MOUNT_ALTAZ) {
-				axisno=AXIS_ELEV;
-			} else {
-				axisno=AXIS_DEC;
+		if (strcmp(telthread->action_cur,telthread->action_next)!=0) {
+			// actionne la fonction que si elle n'a pas encore été lancée
+			strcpy(telthread->action_cur,telthread->action_next);
+			if (telthread->mode==MODE_REEL) {
+				if (telthread->type_mount==MOUNT_ALTAZ) {
+					axisno=AXIS_ELEV;
+				} else {
+					axisno=AXIS_DEC;
+				}
+				seqno=79; if (err=mytel_execute_command(telthread,axisno,26,1,0,0,seqno)) { mytel_error(telthread,axisno,err); }
+				seqno=76; if (err=mytel_execute_command(telthread,axisno,26,1,0,0,seqno)) { mytel_error(telthread,axisno,err); }
 			}
-			seqno=79; if (err=mytel_execute_command(telthread,axisno,26,1,0,0,seqno)) { mytel_error(telthread,axisno,err); }
-			seqno=76; if (err=mytel_execute_command(telthread,axisno,26,1,0,0,seqno)) { mytel_error(telthread,axisno,err); }
 		}
-	} else if (strcmp(telthread->action_next,"move_n_stop")==0) {
-		/*******************/
-	   /*** move_n_stop ***/
-		/*******************/
+	} else if (strcmp(telthread->action_next,"move_s")==0) {
+		/**************/
+	   /*** move_s ***/
+		/**************/
+		if (strcmp(telthread->action_cur,telthread->action_next)!=0) {
+			// actionne la fonction que si elle n'a pas encore été lancée
+			strcpy(telthread->action_cur,telthread->action_next);
+			if (telthread->mode==MODE_REEL) {
+				if (telthread->type_mount==MOUNT_ALTAZ) {
+					axisno=AXIS_ELEV;
+				} else {
+					axisno=AXIS_DEC;
+				}
+				seqno=79; if (err=mytel_execute_command(telthread,axisno,26,1,0,0,seqno)) { mytel_error(telthread,axisno,err); }
+				seqno=75; if (err=mytel_execute_command(telthread,axisno,26,1,0,0,seqno)) { mytel_error(telthread,axisno,err); }
+			}
+		}
+	} else if ((strcmp(telthread->action_next,"move_n_stop")==0)||(strcmp(telthread->action_next,"move_s_stop")==0)) {
+		/**********************************/
+	   /*** move_n_stop OR move_s_stop ***/
+		/**********************************/
 		strcpy(telthread->action_cur,telthread->action_next);
 		if (telthread->mode==MODE_REEL) {
 			if (telthread->type_mount==MOUNT_ALTAZ) {
@@ -1095,18 +1123,18 @@ int tel_close(struct telprop *tel)
 /* ================================================================ */
 
 
-//#define MOUCHARD
+//#define MOUCHARD_EVAL
 
 int mytel_tcleval(struct telprop *tel,char *ligne)
 {
    int result;
-#if defined(MOUCHARD)
+#if defined(MOUCHARD_EVAL)
    FILE *f;
    f=fopen("mouchard_ascom.txt","at");
    fprintf(f,"%s\n",ligne);
 #endif
    result = Tcl_Eval(tel->interp,ligne);
-#if defined(MOUCHARD)
+#if defined(MOUCHARD_EVAL)
    fprintf(f,"# [%d] = %s\n", result, tel->interp->result);
    fclose(f);
 #endif
@@ -1122,18 +1150,37 @@ void mytel_error(struct telprop *tel,int axisno, int err)
 
 int mytel_get_register(struct telprop *tel,int axisno,int typ,int idx,int sidx,int *val) {
 	int err;
+#if defined(MOUCHARD)
+	FILE *f;
+#endif
 	err = dsa_get_register_s(tel->drv[axisno],typ,idx,sidx,val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT);
+#if defined(MOUCHARD)
+   f=fopen("mouchard_t940.txt","at");
+   fprintf(f,"dsa_get_register_s(%d=>axe%d,%d,%d,%d) => %d\n",tel->drv[axisno],axisno,typ,idx,sidx,*val);
+	fclose(f);
+#endif
 	return err;
 }
 
 int mytel_set_register(struct telprop *tel,int axisno,int typ,int idx,int sidx,int val) {
 	int err;
+#if defined(MOUCHARD)
+	FILE *f;
+#endif
 	err = dsa_set_register_s(tel->drv[axisno],typ,idx,sidx,val,DSA_DEF_TIMEOUT);
+#if defined(MOUCHARD)
+   f=fopen("mouchard_t940.txt","at");
+   fprintf(f,"dsa_set_register_s(%d=>axe%d,%d,%d,%d,%d)\n",tel->drv[axisno],axisno,typ,idx,sidx,val);
+	fclose(f);
+#endif
 	return err;
 }
 
 int mytel_execute_command(struct telprop *tel,int axisno,int cmd,int nparams,int typ,int conv,double val) {
 	int err;
+#if defined(MOUCHARD)
+	FILE *f;
+#endif
 	DSA_COMMAND_PARAM params[] = { {0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0} };
 	params[0].typ=typ;
 	params[0].conv=conv;
@@ -1142,6 +1189,11 @@ int mytel_execute_command(struct telprop *tel,int axisno,int cmd,int nparams,int
 	} else {
 		params[0].val.d=val;
 	}
+#if defined(MOUCHARD)
+   f=fopen("mouchard_t940.txt","at");
+   fprintf(f,"dsa_execute_command_x_s(%d=>axe%d,%d,%d,%d)\n",tel->drv[axisno],axisno,cmd,params[0].val.i,nparams);
+	fclose(f);
+#endif
 	err = dsa_execute_command_x_s(tel->drv[axisno],cmd,params,nparams,FALSE,FALSE,DSA_DEF_TIMEOUT);
 	return err;
 }
@@ -1420,7 +1472,7 @@ int mytel_loadparams(struct telprop *tel,int naxisno) {
 			if (err=mytel_get_register(tel,axisno,ETEL_M,90,0,&val)) { mytel_error(tel,axisno,err); return 1; }
 			tel->axis_param[axisno].temperature=val;
 			// CMD 26 1 {0 0 77} : arret moteur + index au milieu
-//			if (err=mytel_execute_command(tel,axisno,26,1,0,0,77)) { mytel_error(tel,axisno,err); return 1; }
+			if (err=mytel_execute_command(tel,axisno,26,1,0,0,77)) { mytel_error(tel,axisno,err); return 1; }
 			// M7.0 position au milieu du codeur
 			if (err=mytel_get_register(tel,axisno,ETEL_M,7,0,&val)) { mytel_error(tel,axisno,err); return 1; }
 			tel->axis_param[axisno].posinit=val; 

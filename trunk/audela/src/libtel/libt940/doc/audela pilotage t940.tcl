@@ -75,7 +75,7 @@ set paramaltaz(xsap)   	"3675864"
 set paramaltaz(vshm) 	"1298651"
 set paramaltaz(vshp) 	"1297414"
 set paramaltaz(xshm) 	"7285000"
-set paramaltaz(xshp) 	"7278061"
+set paramaltaz(xshp) 	"7275000"
 set paramaltaz(vsc) 		"924492"
 set paramaltaz(xsc) 		"1728694"
 #**********init_monture
@@ -102,10 +102,7 @@ set paramaltaz(xsc) 		"1728694"
 # clocher grazac =>	meridien	-54,5°	-200662072 incréments
 # clocher grazac =>	equateur	45,87°	337774671 incréments
 # puis remonter de 15°			
-			
-#--- Initialisation combit
-::console::affiche_resultat "[mc_date2iso8601 now] : autorisation combit\n"
-porttalk open all
+		
 
 #--- Initialisation moteurs
 ::console::affiche_resultat "[mc_date2iso8601 now] : init monture en cours...\n"
@@ -115,6 +112,9 @@ set err [catch {::tel::create etel pci} msg]
 if {$err==0} {
    ::console::affiche_resultat "[mc_date2iso8601 now] : Mode réel\n"
    set etelsimu(simulation) 0
+	#--- Initialisation combit
+	::console::affiche_resultat "[mc_date2iso8601 now] : autorisation combit\n"
+	porttalk open all
 } else {
    ::console::affiche_resultat "[mc_date2iso8601 now] : Mode simulation\n"
    set etelsimu(simulation) 1
@@ -156,11 +156,9 @@ if {$err==0} {
 #--- axe champ=2 
 
 set paramaltaz(vsa)    [tel1 get_register_s 0 X 22]
-::console::affiche_resultat "[mc_date2iso8601 now] : x 22=$paramaltaz(vsa)\n"
 set paramaltaz(vsh)    [tel1 get_register_s 1 X 22]
 set paramaltaz(vsc)    [tel1 get_register_s 2 X 22]
 set paramaltaz(xsa)    [tel1 get_register_s 0 X 23]
-#la valeur theorique serait 3611762
 set paramaltaz(xsh)    [tel1 get_register_s 1 X 23]
 set paramaltaz(xsc)    [tel1 get_register_s 2 X 23]
 
@@ -206,10 +204,10 @@ tel1 execute_command_x_s  ! 69  1 0 0 0
 set base .horloge_astro
 catch { destroy $base}
 toplevel $base -class Toplevel
-wm geometry $base 600x580+0+0
+wm geometry $base 640x480+0+0
 wm focusmodel $base passive
-wm maxsize $base 600 750
-wm minsize $base 600 750
+wm maxsize $base 600 700
+wm minsize $base 600 700
 #wm overrideredirect $base 0
 wm resizable $base 1 1
 wm deiconify $base
@@ -230,7 +228,7 @@ proc etel_grande_boucle { } {
    global etelsimu
    global caption
    ::console::affiche_resultat "[mc_date2iso8601 now] : Entree dans la grande boucle\n"
-	catch {exec espeak.exe -v fr "démarre"}
+	catch {exec espeak.exe -v fr "démarre boodu congue"}
    while {1==1} {
       # --- mise a jour des widgets
       set now now
@@ -239,12 +237,12 @@ proc etel_grande_boucle { } {
       set h [format "%02d" [lindex $tu 3]]
       set m [format "%02d" [lindex $tu 4]]
       set s [format "%02d" [expr int(floor([lindex $tu 5]))]]
-      $base.f.lab_tu configure -text "$caption(horloge_astro,tu) ${h}h ${m}mn ${s}s"
+      catch {$base.f.lab_tu configure -text "$caption(horloge_astro,tu) ${h}h ${m}mn ${s}s"}
       set tsl [mc_date2lst $now $paramaltaz(home)]
       set h [format "%02d" [lindex $tsl 0]]
       set m [format "%02d" [lindex $tsl 1]]
       set s [format "%02d" [expr int(floor([lindex $tsl 2]))]]
-      $base.f.lab_tsl configure -text "$caption(horloge_astro,tsl) ${h}h ${m}mn ${s}s"
+      catch {$base.f.lab_tsl configure -text "$caption(horloge_astro,tsl) ${h}h ${m}mn ${s}s"}
       if {[info exists paramaltaz(ra)]==0} {
          set paramaltaz(ra) $tsl
       }
@@ -261,8 +259,10 @@ proc etel_grande_boucle { } {
       set h [format "%02d" [lindex $res 0]]
       set m [format "%02d" [lindex $res 1]]
       set s [format "%02d" [expr int(floor([lindex $res 2]))]]
-      $base.f.lab_ha configure -text "$caption(horloge_astro,angle_horaire) ${h}h ${m}mn ${s}s"
-      $base.f.lab_altaz configure -text "$caption(horloge_astro,azimut) ${az}° - $caption(horloge_astro,hauteur) ${alt}°"
+      catch {
+	      $base.f.lab_ha configure -text "$caption(horloge_astro,angle_horaire) ${h}h ${m}mn ${s}s"
+	      $base.f.lab_altaz configure -text "$caption(horloge_astro,azimut) ${az}° - $caption(horloge_astro,hauteur) ${alt}°"
+      }
       # --- decode l'action a effectuer
       if {[info exists paramaltaz(action)]==0} {
          set paramaltaz(action) "motor_off"
@@ -511,6 +511,9 @@ proc etel_suivi_diurne { } {
    set app_drift_elev [lindex $res 5] ; # : Vitesse en elevation apparente avec modèle (arcsec/sec)
    set app_drift_rot  [lindex $res 7] ; # : Vitesse en angle parallactique apparent avec modèle (arcsec/sec)
    set coef 15.041; #$app_drift_HA
+   #pierre
+   set paramaltaz(rotchamp)  $app_rot
+   #pierre
    if {$app_drift_az>0} {
 	   set vsa $paramaltaz(vsap)
    } else {
@@ -986,6 +989,8 @@ proc  tourisme { } {
    	set paramaltaz(libre)		"2000"
    	set infos(portHandle)         ""
    	set infos(encours)          	""
+   	set paramaltaz(stoptr) 	"0"
+
    	
    	#::console::affiche_resultat "passage 2"
    	#=========================================================
@@ -1186,8 +1191,13 @@ proc  tourisme { } {
    		global caption
    		global base
    		global paramaltaz
+   		global etelsimu
    		#set paramaltaz(sortie)  "0" 
    		global audace
+   		
+   		# je change le texte du bouton executer
+   		
+   		.test5.but_valid  configure -text "FIN" -command ::stoptour
    
    		tel1 set_register_s 0 X 24 0 [expr $paramaltaz(libre)/2]
    		tel1 set_register_s 1 X 24 0 $paramaltaz(libre)
@@ -1225,7 +1235,13 @@ proc  tourisme { } {
       		set hmmax 	[ lindex $paramaltaz(maxalpha) 1 ]
       		set dmin 	[ lindex $paramaltaz(mindelta) 0 ]
       		set dmax 	[ lindex $paramaltaz(maxdelta) 0 ]
-      		
+      			if { $paramaltaz(stoptr) ==1 } {
+      		set hmax 	[ lindex $paramaltaz(minalpha) 0 ]
+      		set hmax  [expr $hmax-1]
+      		if { $hmax < 0 } {
+	      		set hmax 23
+      		}
+      		}
       		# je passe outre les lignes hors du cadre retenu
       		if { $h<$hmin } {
       			continue
@@ -1270,8 +1286,8 @@ proc  tourisme { } {
       		#::calcul
       		::etel_suivi_diurne
       		after 500
-      		::etel_suivi_diurne
       		catch {exec espeak.exe -v fr "suivi en cours"}
+      		::etel_suivi_diurne
       		after 500
       		#::calcul		
       		set choixmsg [expr round(rand()*5)]
@@ -1337,7 +1353,8 @@ proc  tourisme { } {
       					#}
        				}
       		   }
-      			
+      			::etel_suivi_diurne
+      			update
       			set w "[combit 1 9]"
       			after 500
       	   	# catch {exec espeak.exe -v fr "Appuie sur bouton noir pour passer à l'objet suivant. w=$w"}
@@ -1393,6 +1410,18 @@ proc  tourisme { } {
    }
    
 	after 2000
+	   proc stoptour { } {
+   	global caption
+   	global base
+   	global infos
+   	global audace
+      global paramaltaz
+      global daquin
+      set ::infos(encours) "0"
+      set infos(sortie) 1
+     	set paramaltaz(stoptr) "1"
+      set paramaltaz(sortie) "0"
+   }
 	
 }
 
@@ -1431,6 +1460,7 @@ frame $base.f -bg $paramaltaz(color,back)
          -font $paramaltaz(font)
            pack $base.f.ca.lab1 -side left -fill none
    		pack $base.f.ca -fill none -pady 2
+
    #---
    frame $base.f.ra -bg $paramaltaz(color,back)
       label $base.f.ra.lab1 -text "$caption(horloge_astro,ad) " \
@@ -1605,11 +1635,16 @@ frame $base.f -bg $paramaltaz(color,back)
 	   #********RAQUETTE rapide
 		button $base.f.b2.but7 -text "accelerer raquette" -command {paramraq}
 	   pack $base.f.b2.but7 -ipadx 5 -ipady 2 -side left -anchor center -padx 3 -pady 3
-   pack $base.f.b2 -fill none -pady 2
+   	pack $base.f.b2 -fill none -pady 2
    	   #********RAQUETTE lente
 		button $base.f.b2.but8 -text "ralentir raquette" -command {paramraq1}
 	   pack $base.f.b2.but8 -ipadx 5 -ipady 2 -side left -anchor center -padx 3 -pady 3
-   pack $base.f.b2 -fill none -pady 2
+   	pack $base.f.b2 -fill none -pady 2
+    #********initialisation monture
+    	button $base.f.b2.but9 -text "initialisation monture" -command {init_monture1}
+	   pack $base.f.b2.but9 -ipadx 5 -ipady 2 -side left -anchor center -padx 3 -pady 3
+   	pack $base.f.b2 -fill none -pady 2
+    
    
 pack $base.f -fill both
 
@@ -1667,8 +1702,8 @@ proc shiftn  { } {
 		set paramaltaz(sortie) "0"
 		#after 1500
 	}
-			if { $paramaltaz(vrac) == 1 }  {
-			#copie
+	if { $paramaltaz(vrac) == 1 }  {
+		#copie
 		#création d'une vitesse de rappel lente
 		set vrh  [tel1 get_register_s 1 X 41]
 		#récupération de la vitesse actuelle de suivi
@@ -1685,23 +1720,22 @@ proc shiftn  { } {
 		set sens [tel1 get_register_s 1 X 40]
 		::console::affiche_resultat "  $vrh $vh $ $vhr $vhl sens=$sens 1=82 $vhr \n"
 	   #mouvement télescope
-			  if { $sens == 1  } {
-				  tel1 execute_command_x_s 1 26 1 0 0 82	
-			  }
-					  if { $sens == 0  } {
-						     	if { $vhl < 0  } {
-								tel1 execute_command_x_s 1 26 1 0 0 85	
-								::console::affiche_resultat "  85 $vhl \n"
-			   				}
-			   					if { $vhl >= 0  } {
-								tel1 execute_command_x_s 1 26 1 0 0 83
-								::console::affiche_resultat " 83 $vhl \n"
-			   				}
-					  }
+		if { $sens == 1  } {
+			tel1 execute_command_x_s 1 26 1 0 0 82	
+		}
+		if { $sens == 0  } {
+	     	if { $vhl < 0  } {
+				tel1 execute_command_x_s 1 26 1 0 0 85	
+				::console::affiche_resultat "  85 $vhl \n"
+			}
+			if { $vhl >= 0  } {
+				tel1 execute_command_x_s 1 26 1 0 0 83
+				::console::affiche_resultat " 83 $vhl \n"
+			}
+		}
 		set e 0
 		set o 0
-		
-				for {set k 1} {$k<100000} {incr k} {
+		for {set k 1} {$k<100000} {incr k} {
 			# mesure de la variable d'état des bits  
 			set n "[combit 1 1]"
 			after 50
@@ -1710,13 +1744,11 @@ proc shiftn  { } {
 				::console::affiche_resultat "   shiftn5 \n"
 			}
 		}
-
-	 tel1 execute_command_x_s 1 26 1 0 0 79
-	set paramaltaz(sortie) "0"
-
-   	}
-
-   
+    	#pierre pierre
+	 	#tel1 execute_command_x_s 1 26 1 0 0 79
+	 	::::etel_suivi_diurne
+		set paramaltaz(sortie) "0"
+   }
 
 }
 
@@ -1724,6 +1756,8 @@ proc shiftn  { } {
 #################################################################################
 #### proc shifts
 #################################################################################
+
+########################il conviendrait de créer une procédure (comme parraq) complète comprenant les X40 41 42 ET LES SEQUENCES 82 83 84 85 ET DE L'APPELER dans tous les shift et les move-e o n s et l'autoguidage
 proc shifts  { } {
 	global audace
 	global caption
@@ -1801,7 +1835,9 @@ proc shifts  { } {
 			::console::affiche_resultat "   shifts5 \n"
 		}
 	}
-		 tel1 execute_command_x_s 1 26 1 0 0 79
+    #pierre pierre
+	 #tel1 execute_command_x_s 1 26 1 0 0 79
+	 ::::etel_suivi_diurne
 		set paramaltaz(sortie) "0"
 	
 	} 
@@ -1882,7 +1918,9 @@ proc shifte  { } {
 		}
 
 	}
-	 tel1 execute_command_x_s 0 26 1 0 0 79
+    #pierre pierre
+	 #tel1 execute_command_x_s 1 26 1 0 0 79
+	 ::::etel_suivi_diurne
 	set paramaltaz(sortie) "0"
 
    	} 
@@ -1967,7 +2005,9 @@ proc shifto  { } {
 												::console::affiche_resultat "   shifto3 \n"
 											}
 										}
-				 tel1 execute_command_x_s 0 26 1 0 0 79
+    #pierre pierre
+	 #tel1 execute_command_x_s 1 26 1 0 0 79
+	 ::::etel_suivi_diurne
 				set paramaltaz(sortie) "0"
 			
 			   }
@@ -2154,31 +2194,54 @@ proc init_monture1 { } {
    
    set caption(acqcolor,fonc_titre3)	"reglage des parametres de la monture "
    set caption(acqcolor,fonc_comment5)	" "
-   set caption(fonc_vsam)	"vitesse azimutale sens horaire....."
-   set caption(fonc_vsap)	"vitesse azimutale sens anti-horaire"
-   set caption(fonc_xsam)	"degré azimutal sens horaire........"
-   set caption(fonc_xsap)	"degré azimutal sens anti-horaire..."
-   set caption(fonc_vshm)	"vitesse hauteur sens horaire......."
-   set caption(fonc_vshp)	"vitesse hauteur sens anti-horaire.."
-   set caption(fonc_xshm)	"degré hauteur sens horaire........."
-   set caption(fonc_xshp)	"degré hauteur sens horaire........."
-   set caption(fonc_vsc)		"vitesse champ tous sens............"
-   set caption(fonc_xsc)		"degré champ tous sens.............." 
-   set caption(acqcolor,fonc_executer)	"Exécuter"
+   set caption(fonc_vsam)	"vitesse azimutale sens horaire......$paramaltaz(vsam)."
+   set caption(fonc_vsap)	"vitesse azimutale sens anti-horaire $paramaltaz(vsap)."
+   set caption(fonc_xsam)	"degré azimutal sens horaire.........$paramaltaz(xsam)."
+   set caption(fonc_xsap)	"degré azimutal sens anti-horaire....$paramaltaz(xsap)."
+   set caption(fonc_vshm)	"vitesse hauteur sens horaire........$paramaltaz(vshm)."
+   set caption(fonc_vshp)	"vitesse hauteur sens anti-horaire...$paramaltaz(vshp)."
+   set caption(fonc_xshm)	"degré hauteur sens horaire..........$paramaltaz(xshm)."
+   set caption(fonc_xshp)	"degré hauteur sens anti-horaire.....$paramaltaz(xshp)."
+   set caption(fonc_vsc)	"vitesse champ tous sens.............$paramaltaz(vscm)."
+   set caption(fonc_xsc)	"degré champ tous sens...............$paramaltaz(xscp)." 
+   set caption(acqcolor,fonc_executer)	"enregistrer les paramètres que vous avez changé"
 
-   #--- Initialisation des variables
-   set paramaltaz(vsam) 	"655050"
-   set paramaltaz(vsap) 	"655273"
-   set paramaltaz(xsam)   	"3674614"
-   set paramaltaz(xsap)   	"3675864"
-   set paramaltaz(vshm) 	"1298651"
-   set paramaltaz(vshp) 	"1297414"
-   set paramaltaz(xshm) 	"7285000"
-   set paramaltaz(xshp) 	"7278061"
-   set paramaltaz(vsc) 		"924492"
-   set paramaltaz(xsc) 		"1728694"
-   set infos(portHandle)         ""
-   set infos(encours)          	""
+   #--- valeurs initiales des variables
+#    set paramaltaz(vsam) 	"655050"
+#    set paramaltaz(vsap) 	"655273"
+#    set paramaltaz(xsam)  "3674614"
+#    set paramaltaz(xsap)  "3675864"
+#    set paramaltaz(vshm) 	"1298651"
+#    set paramaltaz(vshp) 	"1297414"
+#    set paramaltaz(xshm) 	"7285000"
+#    set paramaltaz(xshp) 	"7278061"
+#    set paramaltaz(vsc) 	"924492"
+#    set paramaltaz(xsc) 	"1728694"
+#    set infos(portHandle)         ""
+#    set infos(encours)          	""
+   
+set paramaltaz(n-vsa)    [tel1 get_register_s 0 X 22]
+set paramaltaz(n-vsh)    [tel1 get_register_s 1 X 22]
+set paramaltaz(n-vsc)    [tel1 get_register_s 2 X 22]
+set paramaltaz(n-xsa)    [tel1 get_register_s 0 X 23]
+set paramaltaz(n-xsh)    [tel1 get_register_s 1 X 23]
+set paramaltaz(n-xsc)    [tel1 get_register_s 2 X 23]
+
+set paramaltaz(n-vsam)    [tel1 get_register_s 0 X 26]
+set paramaltaz(n-vshm)    [tel1 get_register_s 1 X 26]
+set paramaltaz(n-vscm)    [tel1 get_register_s 2 X 26]
+
+set paramaltaz(n-vsap)    [tel1 get_register_s 0 X 27]
+set paramaltaz(n-vshp)    [tel1 get_register_s 1 X 27]
+set paramaltaz(n-vscp)    [tel1 get_register_s 2 X 27]
+
+set paramaltaz(n-xsam)    [tel1 get_register_s 0 X 28]
+set paramaltaz(n-xshm)    [tel1 get_register_s 1 X 28]
+set paramaltaz(n-xscm)    [tel1 get_register_s 2 X 28]
+
+set paramaltaz(n-xsap)    [tel1 get_register_s 0 X 29]
+set paramaltaz(n-xshp)    [tel1 get_register_s 1 X 29]
+set paramaltaz(n-xscp)    [tel1 get_register_s 2 X 29]
 
    #=========================================================
    # fenetre init_monture
@@ -2193,7 +2256,7 @@ proc init_monture1 { } {
       return
    }
    toplevel .init_monture1 -class Toplevel -bg $color(back)
-   wm geometry .init_monture1 400x300+600+50
+   wm geometry .init_monture1 400x400+600+50
    wm title .init_monture1 $caption(acqcolor,fonc_titre3)
    
    #--- La nouvelle fenetre est active
@@ -2227,7 +2290,7 @@ proc init_monture1 { } {
    
       #--- Cree l'entry
       entry .init_monture1.frame1.ent \
-         -textvariable paramaltaz(vsam) -width 10
+         -textvariable paramaltaz(n-vsam) -width 10
       pack .init_monture1.frame1.ent \
          -in .init_monture1.frame1 -side left -anchor center -expand 1 -fill x \
          -padx 10 -pady 3
@@ -2247,7 +2310,7 @@ proc init_monture1 { } {
    
       #--- Cree l'entry
       entry .init_monture1.frame2.ent \
-         -textvariable paramaltaz(vsap)  -width 10
+         -textvariable paramaltaz(n-vsap)  -width 10
       pack .init_monture1.frame2.ent \
          -in .init_monture1.frame2 -side left -anchor center -expand 1 -fill x \
          -padx 10 -pady 3
@@ -2267,7 +2330,7 @@ proc init_monture1 { } {
    
       #--- Cree l'entry
       entry .init_monture1.frame3.ent \
-         -textvariable paramaltaz(xsam) -width 10
+         -textvariable paramaltaz(n-xsam) -width 10
       pack .init_monture1.frame3.ent \
          -in .init_monture1.frame3 -side left -anchor center -expand 1 -fill x \
          -padx 10 -pady 3
@@ -2287,7 +2350,7 @@ proc init_monture1 { } {
    
       #--- Cree l'entry
       entry .init_monture1.frame4.ent \
-         -textvariable paramaltaz(xsap) -width 10
+         -textvariable paramaltaz(n-xsap) -width 10
       pack .init_monture1.frame4.ent \
          -in .init_monture1.frame4 -side left -anchor center -expand 1 -fill x \
          -padx 10 -pady 3
@@ -2307,7 +2370,7 @@ proc init_monture1 { } {
    
       #--- Cree l'entry
       entry .init_monture1.frame5.ent \
-         -textvariable paramaltaz(vshm) -width 10
+         -textvariable paramaltaz(n-vshm) -width 10
       pack .init_monture1.frame5.ent \
          -in .init_monture1.frame5 -side left -anchor center -expand 1 -fill x \
          -padx 10 -pady 3
@@ -2327,7 +2390,7 @@ proc init_monture1 { } {
    
       #--- Cree l'entry
       entry .init_monture1.frame6.ent \
-         -textvariable paramaltaz(vshp) -width 10
+         -textvariable paramaltaz(n-vshp) -width 10
       pack .init_monture1.frame6.ent \
          -in .init_monture1.frame6 -side left -anchor center -expand 1 -fill x \
          -padx 10 -pady 3
@@ -2346,7 +2409,7 @@ proc init_monture1 { } {
    
       #--- Cree l'entry
       entry .init_monture1.frame7.ent \
-         -textvariable paramaltaz(xshm) -width 10
+         -textvariable paramaltaz(n-xshm) -width 10
       pack .init_monture1.frame7.ent \
          -in .init_monture1.frame7 -side left -anchor center -expand 1 -fill x \
          -padx 10 -pady 3
@@ -2366,7 +2429,7 @@ proc init_monture1 { } {
    
       #--- Cree l'entry
       entry .init_monture1.frame8.ent \
-         -textvariable paramaltaz(xshp) -width 10
+         -textvariable paramaltaz(n-xshp) -width 10
       pack .init_monture1.frame8.ent \
          -in .init_monture1.frame8 -side left -anchor center -expand 1 -fill x \
          -padx 10 -pady 3
@@ -2386,7 +2449,7 @@ proc init_monture1 { } {
    
       #--- Cree l'entry
       entry .init_monture1.frame9.ent \
-         -textvariable paramaltaz(vsc) -width 10
+         -textvariable paramaltaz(n-vsc) -width 10
       pack .init_monture1.frame9.ent \
          -in .init_monture1.frame9 -side left -anchor center -expand 1 -fill x \
          -padx 10 -pady 3
@@ -2406,7 +2469,7 @@ proc init_monture1 { } {
    
       #--- Cree l'entry
       entry .init_monture1.frame10.ent \
-         -textvariable paramaltaz(xsc) -width 10
+         -textvariable paramaltaz(n-xsc) -width 10
       pack .init_monture1.frame10.ent \
          -in .init_monture1.frame10 -side left -anchor center -expand 1 -fill x \
          -padx 10 -pady 3
@@ -2414,7 +2477,7 @@ proc init_monture1 { } {
    #--- Cree le bouton 'Validation'
    button .init_monture1.but_valid \
       -text "$caption(acqcolor,fonc_executer)" -borderwidth 4 \
-      -command {}
+      -command {modif_paraminit}
    pack .init_monture1.but_valid \
       -in .init_monture1 -side bottom -anchor center \
       -padx 3 -pady 3
@@ -2423,7 +2486,39 @@ proc init_monture1 { } {
    bind .init_monture1 <Destroy> {
       fermerinit_monture
    }
-
+   
+   # procédure changement des paramètres
+			proc modif_paraminit { } {
+			   global caption
+			   global base
+			   global paramaltaz
+			   set paramaltaz(sortie)  "0" 
+			   set paramaltaz(tour)  "1"
+			   global audace
+			   
+			set paramaltaz(vsa)    	$paramaltaz(n-vsa)
+			set paramaltaz(vsh)     $paramaltaz(n-vsh)
+			set paramaltaz(vsc)     $paramaltaz(n-vsc)
+			set paramaltaz(xsa)     $paramaltaz(n-xsa)
+			set paramaltaz(xsh)     $paramaltaz(n-xsh)
+			set paramaltaz(xsc)     $paramaltaz(n-xsc)
+			
+			set paramaltaz(vsam)    $paramaltaz(n-vsam)
+			set paramaltaz(vshm)    $paramaltaz(n-vshm)
+			set paramaltaz(vscm)    $paramaltaz(n-vscm)
+			
+			set paramaltaz(vsap)    $paramaltaz(n-vsap)
+			set paramaltaz(vshp)    $paramaltaz(n-vshp)
+			set paramaltaz(vscp)    $paramaltaz(n-vscp)
+			
+			set paramaltaz(xsam)    $paramaltaz(n-xsam)
+			set paramaltaz(xshm)    $paramaltaz(n-xshm)
+			set paramaltaz(xscm)    $paramaltaz(n-xscm)
+			set paramaltaz(xsap)    $paramaltaz(n-xsap)
+			set paramaltaz(xshp)    $paramaltaz(n-xshp)
+			set paramaltaz(xscp)    $paramaltaz(n-xscp)
+			   
+			}
    #=========================================================
    # fermerinit_monture
    #   cette procedure ferme  la fenetre tourisme
@@ -2456,8 +2551,12 @@ proc autoguid { } {
    global color
    global infos
    global paramaltaz
+	global base
+	global etelsimu
+	global daquin
    set caption(acqcolor,interro)		"?"
    
+
    #--- Definition des couleurs
    set color(back)       #56789A
    set color(text)       #FFFFFF
@@ -2468,10 +2567,10 @@ proc autoguid { } {
    set color(rectangle)  #0000EF
    set color(scroll)     #BBBBBB
 
-   set caption(guid_titre)	"AUTOGUIDAGE BINNING 2x2 1 image/sec GUID T400 PAR T180"
+   set caption(guid_titre)	"AUTOGUIDAGE BINNING 2x2 1 image/sec GUID T940"
    set caption(guid_comment)	"avant de lancer ce script acquérir une image bin 2x2 "
    set caption(guid_comment1)	" et tracer un large cadre autour de l'etoile guide"
-   set caption(guid_focale_guide)	"Focale de guidage 1600 ou 2560"
+   set caption(guid_focale_guide)	"faire tourner le champ en degres ex +90 -40"
    set caption(guid_focale_imagerie)	"Focale d'imagerie 200 1000 1600"
    set caption(guid_distance_equateur)	"Multiplicateur des rappels en alpha base 6 10 14 20 "
    set caption(guid_rappels_delta)	"Multiplicateur des rappels en delta base 5 7 9 11 "
@@ -2483,12 +2582,14 @@ proc autoguid { } {
    set caption(guid_fonc_executer)	"Exécuter"
    #--- Initialisation des variables
    set infos(decallage)		"3"
-   set infos(focale_guide)		"2560"
-   set infos(focale_acq)   	"1600"
-   set infos(asc_droite)   	"30"
-   set infos(declinaison) 		"12"
+   set infos(focale_guide)		"4000"
+   set infos(rot_poc)		"0"
+   set infos(rot_pos)		"0"
+   set infos(focale_acq)   	"4000"
+   set infos(asc_droite)   	"3"
+   set infos(declinaison) 		"5"
    set infos(tolérance) 		"1"
-   set infos(x0) 			"160"
+   set infos(x0) 			"127"
    set infos(y0) 			"120"
    set infos(e5)			"150"
    set infos(portHandle)          ""
@@ -2498,8 +2599,9 @@ proc autoguid { } {
    set infos(stop) "1"
    set infos(objet) "la conjecture de pointcarré"
    set infos(raz)	"0"
-   set infos(rah) "0"
-   set paramaltaz(rac)  "1"
+   set infos(rah) "1"
+   
+   set paramaltaz(rac)  "0"
    set paramaltaz(va)  "a"
    set paramaltaz(vh)  "h"
    set paramaltaz(vc)  "c"
@@ -2550,10 +2652,166 @@ proc autoguid { } {
       global infos
       global paramaltaz
       global audace
+      global daquin
       
       set ::infos(encours)  "1" 
       set paramaltaz(sortie) "0"
+      
+#################################################################################
+#### proc parametres raquette
+#################################################################################
+proc parraq	{ } {
+	global audace
+	global caption
+	global base
+	global paramaltaz
+	global etelsimu
+	global daquin
+	global conf
+   global color
+   global infos
+	#shift nord
 
+		#création d'une vitesse de rappel lente
+		set vrh  [tel1 get_register_s 1 X 41]
+		#récupération de la vitesse actuelle de suivi
+		set vh  [tel1 get_register_s 1 X 13]
+		#vitesse rappel lent plus
+	   set vhr [expr $vh+$vrh]
+	   #vitesse rappel lent moins
+	   set vhl [expr $vh-$vrh]
+	   #enregistrement vitesses
+	   tel1 set_register_s 1 X 42 0 [expr abs($vhr) ]
+	   tel1 set_register_s 1 X 43 0 [expr abs($vhl) ] 
+	   ::console::affiche_resultat "  $vrh $vh $ $vhr $vhl \n"
+	   #récupération du sens actuel de rotation
+		set sens [tel1 get_register_s 1 X 40]
+		::console::affiche_resultat "  $vrh $vh $ $vhr $vhl sens=$sens 1=82 $vhr \n"
+	   #mouvement télescope
+			  if { $sens == 1  } {
+				  #tel1 execute_command_x_s 1 26 1 0 0 82
+				  set daquin(snr) 82	
+			  }
+					  if { $sens == 0  } {
+						     	if { $vhl < 0  } {
+								#tel1 execute_command_x_s 1 26 1 0 0 85
+								set daquin(snr) 85	
+								::console::affiche_resultat "  85 $vhl \n"
+			   				}
+			   					if { $vhl >= 0  } {
+								#tel1 execute_command_x_s 1 26 1 0 0 83
+								set daquin(snr) 83
+								::console::affiche_resultat " 83 $vhl \n"
+			   				}
+					  }
+
+# shift sud
+
+		
+		#création d'une vitesse de rappel lente
+		set vrh  [tel1 get_register_s 1 X 41]
+		#récupération de la vitesse actuelle de suivi
+		set vh  [tel1 get_register_s 1 X 13]
+		#vitesse rappel lent plus
+	   set vhr [expr $vh+$vrh]
+	   #vitesse rappel lent moins
+	   set vhl [expr $vh-$vrh]
+	   #enregistrement vitesses
+	   tel1 set_register_s 1 X 42 0 [expr abs($vhr)]
+	   tel1 set_register_s 1 X 43 0 [expr abs($vhl)] 
+	   #tel1 set_register_s 1 X 13 0 [expr abs($vih)]
+	   ::console::affiche_resultat "  $vrh $vh $ $vhr $vhl \n"
+	   #récupération du sens actuel de rotation
+		set sens [tel1 get_register_s 1 X 40]
+		::console::affiche_resultat "  $vrh $vh $ $vhr $vhl sens=$sens 0=84 $vhr \n"
+	   #mouvement télescope	   
+		if { $sens == 0  } {
+			#tel1 execute_command_x_s 1 26 1 0 0 84
+			set daquin(ssr) 84		
+		}
+		if { $sens == 1  } {
+			if { $vhl < 0  } {
+				#tel1 execute_command_x_s 1 26 1 0 0 85
+				set daquin(ssr) 85		
+				::console::affiche_resultat " 85 $vhl \n"
+			}
+			if { $vhl >= 0  } {
+				#tel1 execute_command_x_s 1 26 1 0 0 83
+				set daquin(ssr) 83	
+				::console::affiche_resultat " 83 $vhl \n"
+			}
+		}
+
+# shift est
+	
+	#création d'une vitesse de rappel lente
+	set vra  [tel1 get_register_s 0 X 41]
+	#récupération de la vitesse actuelle de suivi
+	set va  [tel1 get_register_s 0 X 13]
+	#vitesse rappel lent plus
+   set var [expr $va+$va+$vra]
+   #vitesse rappel lent moins
+   set val [expr $vra]
+   #enregistrement vitesses
+   tel1 set_register_s 0 X 42 0 [expr abs($var) ]
+   tel1 set_register_s 0 X 43 0 [expr abs($val) ] 
+   #récupération du sens actuel de rotation
+	set sens [tel1 get_register_s 0 X 40]
+	::console::affiche_resultat "  $vra $va $ $var $val $sens 1=82 $var \n"
+   #mouvement télescope
+			  if { $sens == 1  } {
+				  # tel1 execute_command_x_s 0 26 1 0 0 82
+				  	set daquin(ser) 82	
+			  }
+					  if { $sens == 0  } {
+						     	#if { $val < 0  } {
+								#tel1 execute_command_x_s 0 26 1 0 0 83
+									set daquin(ser) 83	
+								::console::affiche_resultat "  83 $val \n"
+# 			   				}
+# 			   					if { $val >= 0  } {
+# 								#tel1 execute_command_x_s 0 26 1 0 0 85
+# 								set daquin(ser) 85	
+# 								::console::affiche_resultat "  85 $val \n"
+# 			   				}
+					  }
+
+# shift ouest
+				
+				#création d'une vitesse de rappel lente
+				set vra  [tel1 get_register_s 0 X 41]
+				#récupération de la vitesse actuelle de suivi
+				set va  [tel1 get_register_s 0 X 13]
+				#vitesse rappel lent plus
+			   set var [expr $va+$va+$vra]
+			   #vitesse rappel lent moins
+			   set val [expr $vra]
+			   #enregistrement vitesses
+			   tel1 set_register_s 0 X 42 0 [expr abs($var) ]
+			   tel1 set_register_s 0 X 43 0 [expr abs($val) ] 
+			   
+			   #récupération du sens actuel de rotation
+				set sens [tel1 get_register_s 0 X 40]
+				::console::affiche_resultat "  $vra $va $ $var $val $sens 0=84 $var \n"
+			   #mouvement télescope
+						  if { $sens == 0  } {
+							 # tel1 execute_command_x_s 0 26 1 0 0 84	
+							 set daquin(sor) 84	
+						  }
+								  if { $sens == 1  } {
+									     	#if { $val < 0  } {
+											#tel1 execute_command_x_s 0 26 1 0 0 85
+											set daquin(sor) 85	
+											::console::affiche_resultat "  85 $val \n"
+# 						   				}
+# 						   					if { $val >= 0  } {
+# 											#tel1 execute_command_x_s 0 26 1 0 0 83	
+# 											set daquin(sor) 83
+# 											::console::affiche_resultat "  83 $val \n"
+# 						   				}
+								  }
+
+}
       # Initialisation de la monture Etel
       
       #Pour le centroid dans une boite draguee sur l'ecran :
@@ -2593,8 +2851,8 @@ proc autoguid { } {
       # set y0 120
       
       # je calcule le décallage sur l'instument guide pour obtenir le décallage de l'image
-      set n0 [expr $infos(decallage)*$infos(focale_guide)/$infos(focale_acq)]
-      
+      #set n0 [expr $infos(decallage)*$infos(focale_guide)/$infos(focale_acq)]
+      set n0 [expr $infos(decallage)*1]
       # je calcule la correction des rappels en fonction de la déclimaison (monture équatoriale)
       #set res1  [format "%5.2f" [lindex $paramaltaz(dec) 0]]
       #set p $infos(asc_droite)
@@ -2604,16 +2862,16 @@ proc autoguid { } {
       #set p [expr round($p/$cla) ]
       
       # je calcule la correction des rappels en fonction de la hauteur (monture azimutale)
-		set now now
-		catch {set now [::audace::date_sys2ut now]}
-      set res [mc_radec2altaz2 "$paramaltaz(ra1)" "$paramaltaz(dec1)" "$paramaltaz(home)" $now]
-      set az  [format "%5.2f" [lindex $res 0]]
-      set alt [format "%5.2f" [lindex $res 1] ]
+# 		set now now
+# 		catch {set now [::audace::date_sys2ut now]}
+#       set res [mc_radec2altaz2 "$paramaltaz(ra1)" "$paramaltaz(dec1)" "$paramaltaz(home)" $now]
+#       set az  [format "%5.2f" [lindex $res 0]]
+#       set alt [format "%5.2f" [lindex $res 1] ]
       set p $infos(asc_droite)
-		::console::disp  "$alt\n"
-		set lar       [mc_angle2rad $alt ]
-		set cla       [expr cos($lar)]
-		set p [expr round($p/$cla) ]
+# 		::console::disp  "$alt\n"
+# 		set lar       [mc_angle2rad $alt ]
+# 		set cla       [expr cos($lar)]
+# 		set p [expr round($p/$cla) ]
 		
       #::console::affiche_resultat "x0=$x0 y0=$y0"
       ::console::disp "autoguidage images au T400 Guidage T180 \n"
@@ -2655,7 +2913,8 @@ proc autoguid { } {
       set c 2
       set d 3
       set e $infos(tolérance)
-      set e1 [expr $infos(tolérance)*$infos(focale_guide)/$infos(focale_acq)/2.0]
+      #set e1 [expr $infos(tolérance)*$infos(focale_guide)/$infos(focale_acq)/2.0]
+      set e1 [expr $infos(tolérance)/2.0]
       set e2 [expr $e1*2]
       set e3 [expr $e1*3]
       set e4 [expr $e1*4]
@@ -2722,54 +2981,82 @@ proc autoguid { } {
       # boucle d'autoguidage
       ##########################
       set cb 0
-      if {$infos(raz)==0}  {
-      	set sra1  20
-      	set sra2  30
-      }
-      if {$infos(raz)==1}  {
-      	set sra1  30
-      	set sra2  20
-      }
-      
-      if {$infos(rah)==0}  {
-      	set srh1  20
-      	set srh2	 30
-      }
-      if {$infos(rah)==1}  {
-      	set srh1  30
-      	set srh2  20
-      }
+#       if {$infos(raz)==0}  {
+#       	set sra1  20
+#       	set sra2  30
+#       }
+#       if {$infos(raz)==1}  {
+#       	set sra1  30
+#       	set sra2  20
+#       }
+#       
+#       if {$infos(rah)==0}  {
+#       	set srh1  20
+#       	set srh2	 30
+#       }
+#       if {$infos(rah)==1}  {
+#       	set srh1  30
+#       	set srh2  20
+#       }
       #tel1 set_register_s 0 X 14 0 [expr abs($infos(raz))]
       
       #tel1 set_register_s 1 X 14 0 [expr abs($infos(rah))]
-       
+                ::etel_suivi_diurne
+         set rot0 $paramaltaz(rotchamp)
+     
 
       for {set k 1} {$k<100000 &&  $::infos(encours)==1 } {incr k} {
          # acq .3 2
+       ::console::disp  "1 \n"
          ::etel_suivi_diurne
+         set rot $paramaltaz(rotchamp)
+         set drot [expr $rot-$rot0+$infos(rot_pos)]
+     		set drot       [mc_angle2rad $drot ]
+      	set crot       [expr cos($drot)]
+      	set srot       [expr sin($drot)]
+      	::console::disp  "2 \n"
+         ::parraq
          set t0 [clock seconds]
+         ::console::disp  "3 \n"
          acq $::panneau(acqfc,$infos(visuNo),pose) 2
          # sub n3 15
          #visu$audace(visuNo) disp [list 60 -4]
          #incrémentation compteur de boucles
          set cb [expr $cb+1]
-      
+			::console::disp  "4 \n"
          #creation d'une vitesse de rappel egale a la vitesse de suivi
-         
-         set va  [tel1 get_register_s 0 X 13]
-         set va [expr $va-2]
-         if {$va < 100}  {
-         	set va 100 
-         }
-         tel1 set_register_s 0 X 14 0 [expr abs($va) ]
-         after 1000
-         set vh  [tel1 get_register_s 1 X 13]
-         set vh [expr $vh-2]
-      
-      	if {$vh< 100}  {
-      	set vh 100
-      	}
-         tel1 set_register_s 1 X 14 0 [expr abs($vh) ]
+     
+       if {$infos(raz)==0}  {
+       	set  sra1 $daquin(sor)
+         set  sra2 $daquin(ser)
+       }
+       if {$infos(raz)==1}  {
+       	set  sra2 $daquin(sor)
+         set  sra1 $daquin(ser)
+       }
+       
+       if {$infos(rah)==0}  {
+       	set  srh1 $daquin(snr) 
+         set  srh2 $daquin(ssr)
+       }
+       if {$infos(rah)==1}  {
+       	set  srh2 $daquin(snr) 
+         set  srh1 $daquin(ssr)
+       }
+#          set va  [tel1 get_register_s 0 X 13]
+#          set va [expr $va-2]
+#          if {$va < 100}  {
+#          	set va 100 
+#          }
+#          tel1 set_register_s 0 X 14 0 [expr abs($va) ]
+#          after 1000
+#          set vh  [tel1 get_register_s 1 X 13]
+#          set vh [expr $vh-2]
+#       
+#       	if {$vh< 100}  {
+#       	set vh 100
+#       	}
+#          tel1 set_register_s 1 X 14 0 [expr abs($vh) ]
       
          # mesure de la variable d'état du bit 1 6
          set w "[combit $infos(portnum) 6]"
@@ -2818,8 +3105,24 @@ proc autoguid { } {
          set y [lindex $res 1]
          set dx [expr $x-$infos(x1)]
          set dy [expr $y-$infos(y1)]
+         set du $dx
+         set dt $dy
+   
+         #correction rotation de champ
+                  if { $paramaltaz(rac)  == 0} {
+	                  set cosx [expr $dx*$crot]
+	                  set sinx [expr $dx*$srot]
+	                  set cosy [expr $dy*$crot]
+	                  set siny [expr $dy*$srot]
+	                  set dx [expr -$siny+$cosx]
+	                  set dy [expr $cosy+$sinx]
+	      ::console::affiche_resultat "dxccd=$du dxtel=$dx dyccd=$dt dytel=$dy  "  
+	               	 	} 
+	   
          set dx [format "%5.2f" $dx ]
          set dy [format "%5.2f" $dy ]
+         
+         
          # j'enregistre le resultat dans le fichier de sortie
          set infos(dx) [expr $x-$infos(x1)]
          set infos(dy) [expr $y-$infos(y1)]
@@ -2834,16 +3137,7 @@ proc autoguid { } {
             set infos(dpp) 0
             #::console::disp  "$p4  \n"
          }
-      
-         if { $dx > $infos(e5) } {
-         	set dx 0
-            set dy 0
-            set infos(dm) 0
-            set infos(dp) 0
-            set infos(dmm) 0
-            set infos(dpp) 0
-            #::console::disp  "$p4  \n"
-         }
+
          if { $dy > $infos(e5) } {
          	set dx 0
             set dy 0
@@ -3263,6 +3557,43 @@ proc autoguid { } {
    }
    
    #################################################################################
+   #### proc Rotation du porte occulaire
+   #################################################################################
+   proc rot_port_occ { } {
+      global caption
+      global base
+      global infos
+      global audace
+      global paramaltaz
+      catch {exec espeak.exe -v fr "le porte occulaire va tourner attention aux câbles"}
+      tel1 execute_command_x_s 2 26 1 0 0 77
+      after 2000
+      set rotini [tel1 get_register_s 2 M 7]
+		set rotmulth [tel1 get_register_s 2 X 28]
+		set rotmultah [tel1 get_register_s 2 X 29]
+				if {$infos(rot_poc) > 0 } {
+           	set rotmove  [expr $infos(rot_poc)*$rotmulth]
+           	
+         	}
+	         	if {$infos(rot_poc) < 0 } {
+	           	set rotmove  [expr $infos(rot_poc)*$rotmultah]
+	         	}
+	   set infos(rot_pos) [expr $infos(rot_pos)+ $infos(rot_poc)]
+		   if {$infos(rot_pos) < 0 } {
+		           	set infos(rot_pos)  [expr 360 + $infos(rot_pos)]
+		         	}
+	   set rotfin [expr $rotini+$rotmove]
+		tel1 set_register_s 2 X 21 0 [expr abs($rotfin) ]
+		tel1 execute_command_x_s  2 26 1 0 0 73
+		after 10000
+		::console::affiche_resultat "$infos(rot_pos),  $rotini,   $rotfin /n"
+		catch {exec espeak.exe -v fr "ça y est c'est tout enmêlé"}
+			
+      #puts $infos(ftraite) "$infos(dx);$infos(dy);$infos(e5)"
+      .guid.but3 configure -text "RELANCER" -command ::autoguider
+   }
+   
+   #################################################################################
    #### proc fermer fichier
    #################################################################################
    proc fermefich { } {
@@ -3330,7 +3661,7 @@ proc autoguid { } {
    
    #################################################################################
    #################################################################################
-   #### Programme principal
+   #### Fenêtre d'autoguidage
    #################################################################################
    #################################################################################
    
@@ -3342,7 +3673,7 @@ proc autoguid { } {
       return
    }
    toplevel .guid -class Toplevel -bg $color(back)
-   wm geometry .guid 300x480+240+190
+   wm geometry .guid 300x520+240+190
    wm title .guid $caption(guid_titre)
    
    #--- La nouvelle fenetre est active
@@ -3409,7 +3740,7 @@ proc autoguid { } {
    
       #--- Cree l'entry
       entry .guid.frame3.ent \
-         -textvariable infos(focale_guide) -width 10
+         -textvariable infos(rot_poc) -width 10
       pack .guid.frame3.ent \
          -in .guid.frame3 -side left -anchor center -expand 1 -fill x \
          -padx 10 -pady 3
@@ -3642,7 +3973,7 @@ proc autoguid { } {
    
       #--- Cree le label
       label .guid.frame15.lab \
-         -text "ARRET ROTATION CHAMP" -bg $color(back) -fg $color(text)
+         -text "ARRET ROTATION CHAMP 0 rotation 1 pasde rotation " -bg $color(back) -fg $color(text)
       pack .guid.frame15.lab \
          -in .guid.frame15 -side left -anchor center \
          -padx 3 -pady 3
@@ -3665,6 +3996,10 @@ proc autoguid { } {
    #--- button executer
    button .guid.but3 -text "$caption(guid_fonc_executer)" -command {autoguider }
       pack .guid.but3 -ipadx 5 -ipady 2
+      
+   #--- button tourner le porte occulaire
+   button .guid.but4 -text "tourner le porte occulaire" -command {rot_port_occ }
+      pack .guid.but4 -ipadx 5 -ipady 2
    
    #--- Detruit la fenetre avec la croix en haut a droite
    bind .guid <Destroy> {
@@ -3831,54 +4166,6 @@ if {1==1} {
 ::posini
 
 
-proc paramraq0	{ } {
-	global audace
-	global caption
-	global base
-	global paramaltaz
-	global etelsimu
-	
-	#création d'une vitesse de rappel lente
-	set vra  [tel1 get_register_s 0 X 41]
-	#récupération de la vitesse actuelle de suivi
-	set va  [tel1 get_register_s 0 X 13]
-	#vitesse rappel lent plus
-   set var [expr $va+$vra]
-   #vitesse rappel lent moins
-   set val [expr $va-$vra]
-   #enregistrement vitesses
-   tel1 set_register_s 0 X 42 0 [expr abs($var) ]
-   tel1 set_register_s 0 X 43 0 [expr abs($val) ] 
-   #récupération du sens actuel de rotation
-	set sens [tel1 get_register_s 0 X 40]
-   #mouvement télescope
-   	if { $val < 0  } {
-				   	if { $sens == 0  } {
-					   	tel1 execute_command_x_s 0 26 1 0 0 82	
-				   	}	
-				   	if { $sens == 1  } {
-					   	tel1 execute_command_x_s 0 26 1 0 0 83	
-	   				}	
-   	} 
-   					if { $sens == 0  } {
-					   	tel1 execute_command_x_s 0 26 1 0 0 83	
-				   	}	
-				   	if { $sens == 1  } {
-					   	tel1 execute_command_x_s 0 26 1 0 0 82	
-						}
-# passage vitesse normale vitesse lente
-
-		if { $paramaltaz(vrac) == 1  } {
-		set paramaltaz(vrac) 0
-		set caption(raquette) "raquette vitesse rapide "
-		}
-		if { $paramaltaz(vrac) == 0  } {
-		set paramaltaz(vrac) 1
-		set caption(raquette) "raquette vitesse lente "
-		}
-
-
-}
 #------------------------------------------------------------
 #  createDialog
 #     creation de l'interface graphique
