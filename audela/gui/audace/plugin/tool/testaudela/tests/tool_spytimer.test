@@ -1,0 +1,89 @@
+
+set visuNo 1
+set this $::audace(base).tool.spytimer
+
+#-------------------------------------------------------------------------------
+#  déclenchement manuel
+#-------------------------------------------------------------------------------
+test tool_spytimer_manuel {declenchement manuel} -constraints {
+   AUDACE
+} -setup {
+   #--- je charge le package spytimer
+   package require spytimer
+   #--- je cree une instance
+   ::confVisu::createPluginInstance $visuNo ::spytimer
+   #--- je demarre l'outil
+   ::confVisu::selectTool $visuNo ::spytimer
+   update
+} -body {
+   #--   selectionne GO
+   ::testaudela::clicButton "$this.fra3.but1"
+
+   #--   controle
+   set result 0
+   if {$::::spytimer::private(msg) ne ""} {incr result}
+   return $result
+} -cleanup {
+
+} -result "1"
+
+#-------------------------------------------------------------------------------
+#  surveille un repertoire
+#-------------------------------------------------------------------------------
+test tool_spytimer_survey {charge une image} -constraints {
+   AUDACE
+} -setup {
+   file copy -force [file join $::conf(testaudela,rep_images) m57.fit] $::audace(rep_temp)
+   file rename -force [file join $::audace(rep_temp) m57.fit] [file join $::audace(rep_temp) m57.cr2]
+} -body {
+   #--   selectionne "Surveiller le répertoire"
+   ::testaudela::clicCheckButton "$this.fra2.opt" 1
+   after 1200
+   file copy -force [file join $::audace(rep_temp) m57.cr2] $::audace(rep_images)
+   set fileName [file join $::audace(rep_images) m57.cr2]
+
+   #--   controle
+   set result 0
+   #--   il faut laisser le temps au temps
+   while {[::confVisu::getFileName $visuNo] eq "$fileName"} {
+   }
+   incr result
+   return $result
+} -cleanup {
+   ::confVisu::clear $visuNo
+   file delete $fileName
+   file delete -force [file join $::audace(rep_temp) m57.cr2]
+   #--   deselectionne "Surveiller le répertoire"
+   ::testaudela::clicCheckButton "$this.fra2.opt" 0
+} -result "1"
+
+#-------------------------------------------------------------------------------
+#  déclenchement programmé
+#--  attention ce test prend du temps
+#-------------------------------------------------------------------------------
+test tool_spytimer_auto {declenchement programme} -constraints {
+   AUDACE
+} -setup {
+   #--   programme l'heure et les minutes
+   lassign [clock format [clock seconds] -format "%H %M" -timezone :localtime] ::spytimer::private(hr) minutes
+   set minutes [expr {$minutes+1}]
+   set ::spytimer::private(min) [format %02.f $minutes]
+} -body {
+   #--   selectionne Auto
+   ::testaudela::clicCheckButton "$this.fra3.timer.auto" 1
+
+   #--   controle
+   set result 0
+   vwait ::spytimer::private(msg)
+   if {$::spytimer::private(msg) ne ""} {incr result}
+   return $result
+} -cleanup {
+   #--   deselectionne "Auto"
+   ::testaudela::clicCheckButton "$this.fra3.timer.auto" 0
+   #--- j'efface l'image dans la visu
+   ::confVisu::clear $visuNo
+   #--- je supprime l'instance (cette commande arrete l'outil si ce n'est pas deja fait)
+   ::confVisu::deletePluginInstance $visuNo ::spytimer
+   #--- je supprime le package de la memoire
+   package forget spytimer
+} -result "1"
