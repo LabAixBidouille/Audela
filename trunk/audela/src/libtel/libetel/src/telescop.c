@@ -76,6 +76,12 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 {
    char s[1024];
 	int err,k,kk,axis[3];
+#if defined(MOUCHARD)
+   FILE *f;
+   f=fopen("mouchard_etel.txt","wt");
+   fprintf(f,"Demarre une init\n");
+	fclose(f);
+#endif
 	axis[0]=0;
 	axis[1]=1; //4
 	axis[2]=2; //5
@@ -153,6 +159,11 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 	}
 	/* --- init special T193 ---*/
 	mytel_init_mount_default(tel,0);
+#if defined(MOUCHARD)
+   f=fopen("mouchard_etel.txt","at");
+   fprintf(f,"Fin de l'init\n");
+	fclose(f);
+#endif
 	return 0;
 }
 
@@ -868,18 +879,18 @@ int mytel_init_mount_default(struct telprop *tel,int mountno)
 /* ================================================================ */
 
 
-//#define MOUCHARD
+//#define MOUCHARD_EVAL
 
 int mytel_tcleval(struct telprop *tel,char *ligne)
 {
    int result;
-#if defined(MOUCHARD)
+#if defined(MOUCHARD_EVAL)
    FILE *f;
-   f=fopen("mouchard_ascom.txt","at");
+   f=fopen("mouchard_etel.txt","at");
    fprintf(f,"%s\n",ligne);
 #endif
    result = Tcl_Eval(tel->interp,ligne);
-#if defined(MOUCHARD)
+#if defined(MOUCHARD_EVAL)
    fprintf(f,"# [%d] = %s\n", result, tel->interp->result);
    fclose(f);
 #endif
