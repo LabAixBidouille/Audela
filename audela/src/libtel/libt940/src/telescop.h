@@ -54,6 +54,8 @@
 #define ETEL_K 2
 #define ETEL_M 3
 
+#define MOUCHARD
+
 typedef struct {
    int type;
 	int posinit;
