@@ -99,9 +99,6 @@ set caption(tlscp,matching)              "Matching"
 set caption(tlscp,detection)             "Star Detection Method"
 set caption(tlscp,cataloguePath)         "Folder"
 set caption(tlscp,selectPath)            "Select Catalogue Folder"
-#--   ajout RZ
-   set caption(tlscp,moreinfo)           "# Plus d'info"
-#--   fin ajout RZ
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -194,9 +191,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,detection)          "Méthode de détection des étoiles"
    set caption(tlscp,cataloguePath)      "Répertoire"
    set caption(tlscp,selectPath)         "Choisir le répertoire du catalogue"
-#--   ajout RZ
-   set caption(tlscp,moreinfo)           "Plus d'info"
-#--   fin ajout RZ
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
