@@ -68,6 +68,9 @@ int cmdTelExecuteCommandXS(ClientData clientData, Tcl_Interp *interp, int argc, 
    struct telprop *tel;
 	int cmd, nparams,k,kk;
    int axisno;
+#if defined(MOUCHARD)
+	FILE *f;
+#endif
 
    tel = (struct telprop *)clientData;
    if (argc<4) {
@@ -94,9 +97,14 @@ int cmdTelExecuteCommandXS(ClientData clientData, Tcl_Interp *interp, int argc, 
 		if (params[kk].conv==0) {
 		   params[kk].val.i=atoi(argv[k+2]);
 		} else {
-		   params[kk].val.d=atof(argv[k+1]);
+		   params[kk].val.d=atof(argv[k+2]);
 		}
 	}
+#if defined(MOUCHARD)
+   f=fopen("mouchard_etel.txt","at");
+   fprintf(f,"dsa_execute_command_x_s(%d=>axe%d,%d,%d,%d)\n",tel->drv[axisno],axisno,cmd,params[kk].val.i,nparams);
+	fclose(f);
+#endif
 	if (err = dsa_execute_command_x_s(tel->drv[axisno],cmd,params,nparams,FALSE,FALSE,DSA_DEF_TIMEOUT)) {
 		mytel_error(tel,k,err);
    	sprintf(ligne,"%s",tel->msg);
@@ -112,6 +120,9 @@ int cmdTelGetRegisterS(ClientData clientData, Tcl_Interp *interp, int argc, char
    int result = TCL_OK,err=0,axisno;
    struct telprop *tel;
 	int typ,idx,sidx=0,val;
+#if defined(MOUCHARD)
+	FILE *f;
+#endif
    tel = (struct telprop *)clientData;
    if (argc<5) {
    	sprintf(ligne,"usage: %s %s axisno typ(X|K|M) idx ?sidx?",argv[0],argv[1]);
@@ -138,6 +149,11 @@ int cmdTelGetRegisterS(ClientData clientData, Tcl_Interp *interp, int argc, char
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 		return TCL_ERROR;
 	}
+#if defined(MOUCHARD)
+   f=fopen("mouchard_etel.txt","at");
+   fprintf(f,"dsa_get_register_s(%d=>axe%d,%d,%d,%d) => %d\n",tel->drv[axisno],axisno,typ,idx,sidx,val);
+	fclose(f);
+#endif
   	sprintf(ligne,"%d",val);
    Tcl_SetResult(interp,ligne,TCL_VOLATILE);
    return result;
@@ -148,6 +164,9 @@ int cmdTelSetRegisterS(ClientData clientData, Tcl_Interp *interp, int argc, char
    int result = TCL_OK,err=0,axisno;
    struct telprop *tel;
 	int typ,idx,sidx=0,val;
+#if defined(MOUCHARD)
+	FILE *f;
+#endif
    tel = (struct telprop *)clientData;
    if (argc<7) {
    	sprintf(ligne,"usage: %s %s axisno typ(X|K|M) idx sidx value",argv[0],argv[1]);
@@ -167,6 +186,11 @@ int cmdTelSetRegisterS(ClientData clientData, Tcl_Interp *interp, int argc, char
 	idx=atoi(argv[4]);
   	sidx=atoi(argv[5]);
   	val=atoi(argv[6]);
+#if defined(MOUCHARD)
+   f=fopen("mouchard_etel.txt","at");
+   fprintf(f,"dsa_set_register_s(%d=>axe%d,%d,%d,%d,%d)\n",tel->drv[axisno],axisno,typ,idx,sidx,val);
+	fclose(f);
+#endif
 	if (err = dsa_set_register_s(tel->drv[axisno],typ,idx,sidx,val,DSA_DEF_TIMEOUT)) {
 		mytel_error(tel,axisno,err);
    	sprintf(ligne,"%s",tel->msg);
