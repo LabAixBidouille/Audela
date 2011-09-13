@@ -392,8 +392,10 @@ proc ::ouranos::configureMonture { } {
       #--- Je cree la monture
       set telNo [ tel::create ouranos $conf(ouranos,port) -resol_ra $conf(ouranos,cod_ra) \
          -resol_dec $conf(ouranos,cod_dec) -initial_dec $conf(ouranos,init) ]
-      #--- J'initialise la position de l'observateur
+      #--- Je configure la position geographique et le nom de la monture
+      #--- (la position geographique est utilisee pour calculer le temps sideral)
       tel$telNo home $::audace(posobs,observateur,gps)
+      tel$telNo home name $::conf(posobs,nom_observatoire)
       #--- J'initialise le sens de rotation des codeurs
       tel$telNo invert $conf(ouranos,inv_ra) $conf(ouranos,inv_dec)
       #--- J'affiche un message d'information dans la Console

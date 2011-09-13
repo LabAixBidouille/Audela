@@ -261,6 +261,10 @@ proc ::deltatau::configureMonture { } {
          #--- Mode Umac
          set telNo [ tel::create deltatau Ethernet -type umac -ip $conf(deltatau,host) -port $conf(deltatau,port) ]
       }
+      #--- Je configure la position geographique et le nom de la monture
+      #--- (la position geographique est utilisee pour calculer le temps sideral)
+      tel$telNo home $::audace(posobs,observateur,gps)
+      tel$telNo home name $::conf(posobs,nom_observatoire)
       #--- J'affiche un message d'information dans la Console
       if { $conf(deltatau,mode) == "0" } {
          #--- Mode Pmac

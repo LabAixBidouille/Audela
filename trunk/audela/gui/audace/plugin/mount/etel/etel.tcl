@@ -164,6 +164,10 @@ proc ::etel::configureMonture { } {
    set catchResult [ catch {
       #--- Je cree la monture
       set telNo [ tel::create etel PCI ]
+      #--- Je configure la position geographique et le nom de la monture
+      #--- (la position geographique est utilisee pour calculer le temps sideral)
+      tel$telNo home $::audace(posobs,observateur,gps)
+      tel$telNo home name $::conf(posobs,nom_observatoire)
       #--- J'affiche un message d'information dans la Console
       ::console::affiche_entete "$caption(etel,port_etel) $caption(etel,2points) PCI\n"
       ::console::affiche_saut "\n"

@@ -253,6 +253,10 @@ proc ::celestron::configureMonture { } {
    set catchResult [ catch {
       #--- Je cree la monture
       set telNo [ tel::create celestron $conf(celestron,port) ]
+      #--- Je configure la position geographique et le nom de la monture
+      #--- (la position geographique est utilisee pour calculer le temps sideral)
+      tel$telNo home $::audace(posobs,observateur,gps)
+      tel$telNo home name $::conf(posobs,nom_observatoire)
       #--- J'affiche un message d'information dans la Console
       ::console::affiche_entete "$caption(celestron,port_celestron)\
          $caption(celestron,2points) $conf(celestron,port)\n"
