@@ -455,6 +455,10 @@ proc ::lx200::configureMonture { } {
             set private(telNo) $telNo
          }
       }
+      #--- Je configure la position geographique et le nom de la monture
+      #--- (la position geographique est utilisee pour calculer le temps sideral)
+      tel$telNo home $::audace(posobs,observateur,gps)
+      tel$telNo home name $::conf(posobs,nom_observatoire)
       #--- Gestion du bouton actif/inactif
       ::lx200::confLX200
       #--- Traces dans la Console

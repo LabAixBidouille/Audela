@@ -366,6 +366,10 @@ proc ::temma::configureMonture { } {
       #--- Je cree la monture et j'envoie les coordonnees de l'observatoire
       #--- La commande "create" de Temma doit toujours avoir l'argument "_home"
       set telNo [ tel::create temma $conf(temma,port) -home $::audace(posobs,observateur,gps) -consolelog $conf(temma,debug) ]
+      #--- Je configure la position geographique et le nom de la monture
+      #--- (la position geographique est utilisee pour calculer le temps sideral)
+      tel$telNo home $::audace(posobs,observateur,gps)
+      tel$telNo home name $::conf(posobs,nom_observatoire)
       #--- Lit le modele
       if { $conf(temma,modele) == "0" } {
          set private(modele) $caption(temma,modele_1)
