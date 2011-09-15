@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="libt940"
-	ProjectGUID="{2F4EEDE2-4FF4-4FB8-89B7-D66EA4AC970A}"
+	ProjectGUID="{FB585FAE-CCD8-4407-B778-7DA4FEF70E04}"
 	TargetFrameworkVersion="0"
 	>
 	<Platforms>
