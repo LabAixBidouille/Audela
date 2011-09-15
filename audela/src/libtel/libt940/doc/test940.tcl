@@ -103,3 +103,11 @@ set sens s
 tel1 action move_${sens}
 after 4000
 tel1 action move_${sens}_stop
+
+
+tel::create t940 pci -mode 0
+after 1000
+tel1 radec goto {330 10}
+tel1 appcoord
+tel1 radec coord
+
