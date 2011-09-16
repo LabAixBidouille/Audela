@@ -39,10 +39,13 @@ set caption(spytimer,auto)                             "Auto"
 set caption(spytimer,hr)                               "h"
 set caption(spytimer,min)                              "m"
 set caption(spytimer,survey)                           "# Surveiller répertoire"
-set caption(spytimer,convert)                          "# Convertir"
-set caption(spytimer,survey_interv)                    "# Toutes les (sec)"
+set caption(spytimer,convert)                          "Convert RAW -> FITS"
+set caption(spytimer,survey_interv)                    "# Délai de surveillance du répertoire (sec.)"
 set caption(spytimer,helpinterval)                     "# Le nombre de secondes doit être un entier."
-set caption(spytimer,configuration)                    "# Configuration mots clés"
+set caption(spytimer,configuration)                    "Setup"
+set caption(spytimer,titre)                            "Acquisition - Setup"
+set caption(spytimer,en-tete_fits)                     "FITS Header"
+set caption(spytimer,keywords)                         "Keywords"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -75,10 +78,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spytimer,hr)                            "h"
    set caption(spytimer,min)                           "m"
    set caption(spytimer,survey)                        "Surveiller répertoire"
-   set caption(spytimer,convert)                       "Convertir"
-   set caption(spytimer,survey_interv)                 "Toutes les (sec)"
+   set caption(spytimer,convert)                       "Convertir RAW -> FITS"
+   set caption(spytimer,survey_interv)                 "Délai de surveillance du répertoire (sec.)"
    set caption(spytimer,helpinterval)                  "Le nombre de secondes doit être un entier."
-   set caption(spytimer,configuration)                 "Configuration mots clés"
+   set caption(spytimer,configuration)                 "Configuration"
+   set caption(spytimer,titre)                         "Acquisition - Configuration"
+   set caption(spytimer,en-tete_fits)                  "En-tête FITS"
+   set caption(spytimer,keywords)                      "Mots clés"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -111,16 +117,19 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spytimer,hr)                            "h"
    set caption(spytimer,min)                           "m"
    set caption(spytimer,survey)                        "# Surveiller répertoire"
-   set caption(spytimer,convert)                       "# Convertir"
-   set caption(spytimer,survey_interv)                 "# Toutes les (sec)"
+   set caption(spytimer,convert)                       "Conversione RAW -> FITS"
+   set caption(spytimer,survey_interv)                 "# Délai de surveillance du répertoire (sec.)"
    set caption(spytimer,helpinterval)                  "# Le nombre de secondes doit être un entier."
-   set caption(spytimer,configuration)                 "# Configuration mots clés"
+   set caption(spytimer,configuration)                 "Configurazione"
+   set caption(spytimer,titre)                         "Acquisizione - Configurazione"
+   set caption(spytimer,en-tete_fits)                  "Intestazione FITS"
+   set caption(spytimer,keywords)                      "Parole chiave"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(spytimer,title)                         "SpyTimer"
-  set caption(spytimer,help_titre)                    "Ayuda para esta herramienta"
+   set caption(spytimer,help_titre)                    "Ayuda para esta herramienta"
    set caption(spytimer,help_titre1)                   "Ajuda para del herramienta:"
    set caption(spytimer,attention)                     "Aviso"
    set caption(spytimer,action,acq)                    "Adquiriendo"
@@ -147,10 +156,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spytimer,hr)                            "h"
    set caption(spytimer,min)                           "m"
    set caption(spytimer,survey)                        "# Surveiller répertoire"
-   set caption(spytimer,convert)                       "# Convertir"
-   set caption(spytimer,survey_interv)                 "# Toutes les (sec)"
+   set caption(spytimer,convert)                       "Conversion RAW -> FITS"
+   set caption(spytimer,survey_interv)                 "# Délai de surveillance du répertoire (sec.)"
    set caption(spytimer,helpinterval)                  "# Le nombre de secondes doit être un entier."
-   set caption(spytimer,configuration)                 "# Configuration mots clés"
+   set caption(spytimer,configuration)                 "Configuración"
+   set caption(spytimer,titre)                         "Adquisición - Configuración"
+   set caption(spytimer,en-tete_fits)                  "Cabecera FITS"
+   set caption(spytimer,keywords)                      "Palabras clave"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -183,10 +195,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spytimer,hr)                            "h"
    set caption(spytimer,min)                           "m"
    set caption(spytimer,survey)                        "# Surveiller répertoire"
-   set caption(spytimer,convert)                       "# Convertir"
-   set caption(spytimer,survey_interv)                 "# Toutes les (sec)"
+   set caption(spytimer,convert)                       "RAW -> FITS Umwandlung"
+   set caption(spytimer,survey_interv)                 "# Délai de surveillance du répertoire (sec.)"
    set caption(spytimer,helpinterval)                  "# Le nombre de secondes doit être un entier."
-   set caption(spytimer,configuration)                 "# Configuration mots clés"
+   set caption(spytimer,configuration)                 "Konfiguration"
+   set caption(spytimer,titre)                         "Belichtung - Konfiguration"
+   set caption(spytimer,en-tete_fits)                  "FITS Header"
+   set caption(spytimer,keywords)                      "Stichwörter"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -219,10 +234,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spytimer,hr)                            "h"
    set caption(spytimer,min)                           "m"
    set caption(spytimer,survey)                        "# Surveiller répertoire"
-   set caption(spytimer,convert)                       "# Convertir"
-   set caption(spytimer,survey_interv)                 "# Toutes les (sec)"
+   set caption(spytimer,convert)                       "Conversão RAW -> FITS"
+   set caption(spytimer,survey_interv)                 "# Délai de surveillance du répertoire (sec.)"
    set caption(spytimer,helpinterval)                  "# Le nombre de secondes doit être un entier."
-   set caption(spytimer,configuration)                 "# Configuration mots clés"
+   set caption(spytimer,configuration)                 "Configuração"
+   set caption(spytimer,titre)                         "Aquisição - Configuração"
+   set caption(spytimer,en-tete_fits)                  "Cabeçalho FITS"
+   set caption(spytimer,keywords)                      "Palavras-chave"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -255,10 +273,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spytimer,hr)                            "h"
    set caption(spytimer,min)                           "m"
    set caption(spytimer,survey)                        "# Surveiller répertoire"
-   set caption(spytimer,convert)                       "# Convertir"
-   set caption(spytimer,survey_interv)                 "# Toutes les (sec)"
+   set caption(spytimer,convert)                       "Konvertering: RAW -> FITS"
+   set caption(spytimer,survey_interv)                 "# Délai de surveillance du répertoire (sec.)"
    set caption(spytimer,helpinterval)                  "# Le nombre de secondes doit être un entier."
-   set caption(spytimer,configuration)                 "# Configuration mots clés"
+   set caption(spytimer,configuration)                 "Setup"
+   set caption(spytimer,titre)                         "Acquisition - Setup"
+   set caption(spytimer,en-tete_fits)                  "FITS Header"
+   set caption(spytimer,keywords)                      "Keywords"
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -291,10 +312,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spytimer,hr)                            "h"
    set caption(spytimer,min)                           "m"
    set caption(spytimer,survey)                        "# Surveiller répertoire"
-   set caption(spytimer,convert)                       "# Convertir"
-   set caption(spytimer,survey_interv)                 "# Toutes les (sec)"
+   set caption(spytimer,convert)                       "Convert RAW -> FITS"
+   set caption(spytimer,survey_interv)                 "# Délai de surveillance du répertoire (sec.)"
    set caption(spytimer,helpinterval)                  "# Le nombre de secondes doit être un entier."
-   set caption(spytimer,configuration)                 "# Configuration mots clés"
+   set caption(spytimer,configuration)                 "Setup"
+   set caption(spytimer,titre)                         "Acquisition - Setup"
+   set caption(spytimer,en-tete_fits)                  "FITS Header"
+   set caption(spytimer,keywords)                      "Keywords"
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -327,10 +351,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spytimer,hr)                            "h"
    set caption(spytimer,min)                           "m"
    set caption(spytimer,survey)                        "# Surveiller répertoire"
-   set caption(spytimer,convert)                       "# Convertir"
-   set caption(spytimer,survey_interv)                 "# Toutes les (sec)"
+   set caption(spytimer,convert)                       "Convert RAW -> FITS"
+   set caption(spytimer,survey_interv)                 "# Délai de surveillance du répertoire (sec.)"
    set caption(spytimer,helpinterval)                  "# Le nombre de secondes doit être un entier."
-   set caption(spytimer,configuration)                 "# Configuration mots clés"
+   set caption(spytimer,configuration)                 "Setup"
+   set caption(spytimer,titre)                         "Acquisition - Setup"
+   set caption(spytimer,en-tete_fits)                  "FITS Header"
+   set caption(spytimer,keywords)
 
 }
 
