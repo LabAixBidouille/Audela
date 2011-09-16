@@ -15,7 +15,7 @@
 </style>
 </head>
 <body>
-<p class="date">Date de mise &#224; jour : 12 septembre 2011</p>
+<p class="date">Date de mise &#224; jour : 16 septembre 2011</p>
 <h1>SpyTimer</h1>
 <p>SpyTimer est un outil hybride comprenant :</p>
 <ol>
@@ -72,7 +72,10 @@ du r&#233;pertoire des images. Attention : les images seront
 charg&#233;es dans un sous-dossier ; si ce sous-dossier n'existe
 pas il sera cr&#233;&#233; ; il est pr&#233;f&#233;rable de le
 cr&#233;er manuellement car c'est <b>ce sous-dossier qu'il faudra
-d&#233;signer comme r&#233;pertoire images dans AudeLA</b>.
+d&#233;signer comme r&#233;pertoire images dans AudeLA</b>. Le
+maintien de la date dans le nom du r&#233;pertoire a pour effet
+de cr&#233;er un nouveau dossier &#224; 00h00m00s pr&#233;cises.
+Il est possible de personnaliser la cr&#233;ation du dossier.
 <p><img style="width: 710px; height: 406px;" alt="" src=
 "images/destination.gif" /></p>
 </li>
@@ -93,8 +96,10 @@ t&#233;l&#233;charg&#233;es</b>.
 "images/telecharger.gif" /></p>
 </li>
 <li>Onglet <b>Logiciel li&#233;</b> : s&#233;lectionner l'option
-<b>Aucun</b> ou s&#233;lectionner audela.exe avec le bouton
-<b>Inscrire ...</b> pour ouvrir AudeLA avec EOS Utility.
+<b>Aucun</b>. Ce ne serait pas une bonne id&#233;e de
+s&#233;lectionner audela.exe avec le bouton <b>Inscrire ...</b>
+pour ouvrir AudeLA avec EOS Utility car il ouvrirait des
+instances multiples.
 <p><img style="width: 710px; height: 406px;" alt="" src=
 "images/logiciels.gif" /></p>
 </li>
@@ -108,11 +113,12 @@ d&#233;finir une fr&#233;quence de surveillance (en secondes).
 Note : la proc&#233;dure de surveillance dure une poign&#233;e de
 millisecondes (hors chargement de l'image). D&#233;cocher
 l'option pour arr&#234;ter la surveillance.</p>
-<p><img style="width: 146px; height: 138px;" alt="" src=
+<p><img style="width: 150px; height: 58px;" alt="" src=
 "images/survey.gif" /></p>
 <p>L'option <b>Convertir</b> permet de cr&#233;er l'image au
-format fits par d&#233;faut dans le même répertoire image en pr&#233;servant l'original. Les images FITS
-contiennent les mots-cl&#233;s s&#233;lectionn&#233;s.</p>
+format fits par d&#233;faut dans le m&#234;me r&#233;pertoire
+image en pr&#233;servant l'original. Les images FITS contiennent
+les mots-cl&#233;s s&#233;lectionn&#233;s.</p>
 <p>Les extensions des images reconnues sont : CR2 CRW JPG cr2 crw
 jpg.</p>
 <p>Conseils :</p>
@@ -120,31 +126,60 @@ jpg.</p>
 <li>Un test de prise de vue confirmera que les images sont
 charg&#233;es dans le bon dossier et que Aud'ACE affiche chaque
 nouvelle image.</li>
-<li>Eviter de s&#233;lectionner le mode RAW+JPEG : quelle sera la
-derni&#232;re image charg&#233;e et affich&#233;e ?</li>
+<li>La cadence de prises de vues peut &#234;tre tr&#232;s si
+&#233;lev&#233;e que AudeLA est incapable de suivre le rythme de
+conversion et d'affichage. Pour &#233;viter ce
+probl&#232;me AudeLA ne traite que la derni&#232;re image
+transf&#233;r&#233;e.</li>
 </ol>
 <h2>Timer-Intervallom&#232;tre</h2>
+<p>L'outil comporte (du haut en bas), outre le bouton d'aide de
+l'outil et le sous-panneau de surveillance pr&#233;cit&#233; un
+bouton de <b>Configuration</b> qui donne acc&#232;s &#224; une
+fen&#234;tre annexe; Elle comporte :</p>
+<table>
+<tbody>
+<tr>
+<td rowspan="6"><img style="width: 326px; height: 181px;" alt=""
+src="images/annexe.gif" /></td>
+</tr>
+<tr>
+<td>Un bouton donnant acc&#232;s &#224; la configuration des mots
+cl&#233;s &#224; int&#233;grer dans l'en-t&#234;te FITS des
+images.</td>
+</tr>
+<tr>
+<td>Une liste d&#233;roulante de s&#233;lection du <b>Port</b>.
+Les options disponibles sont identiques &#224; celles
+propos&#233;es dans l'onglet Configuration/Cam&#233;ra/APN.</td>
+</tr>
+<tr>
+<td>Une liste d&#233;roulante de s&#233;lection du <b>Bit</b> de
+commande. Les options disponibles sont modifi&#233;es par le
+choix du port qu'il convient de r&#233;gler en premier. La
+s&#233;lection d'un port LPT permet de choisir un bit entre 0 et
+7 alors qu'un port COM permet de s&#233;lectionner une option
+parmi <b>{ DTR | RTS }</b>.</td>
+</tr>
+<tr>
+<td>Une liste d&#233;roulante de s&#233;lection de la commande
+d'activation <b>Front</b>. Les deux options possibles sont <b>{
+0</b> (front descendant) <b>| 1</b> (front montant)
+<b>}</b>.</td>
+</tr>
+<tr>
+<td>Une fen&#234;tre de saisie du d&#233;lai en secondes entre
+deux explorations du r&#233;pertoire.</td>
+</tr>
+</tbody>
+</table>
+<p>Le reste du panneau comporte :</p>
 <table>
 <tbody>
 <tr>
 <td><img src="images/spytimer.gif" alt=
 "description du panneau SpyTimer" /></td>
 <td>
-<p>L'outil comporte (du haut en bas), outre le bouton d'aide de
-l'outil et le sous-panneau de surveillance pr&#233;cit&#233;, un
-sous-panneau sp&#233;cifique :</p>
-<p>Une liste d&#233;roulante de s&#233;lection du <b>Port</b>.
-Les options disponibles sont identiques &#224; celles
-propos&#233;es dans l'onglet Configuration/Cam&#233;ra/APN.</p>
-<p>Une liste d&#233;roulante de s&#233;lection du <b>Bit</b> de
-commande. Les options disponibles sont modifi&#233;es par le
-choix du port qu'il convient de r&#233;gler en premier. La
-s&#233;lection d'un port LPT permet de choisir un bit entre 0 et
-7 alors qu'un port COM permet de s&#233;lectionner une option
-parmi <b>{ DTR | RTS }</b>.</p>
-<p>Une liste d&#233;roulante de s&#233;lection de la commande
-d'activation <b>Front</b>. Les deux options possibles sont <b>{
-0</b> (front descendant) <b>| 1</b> (front montant) <b>}</b>.</p>
 <p>Une liste d&#233;roulante de s&#233;lection du <b>Mode</b>
 comporte deux options <b>{ Un | S&#233;rie }</b>.</p>
 <ul>
