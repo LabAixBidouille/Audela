@@ -70,6 +70,7 @@ namespace eval ::spytimer {
          function     { return "acquisition" }
          subfunction  { return "dslr" }
          display      { return "panel" }
+         multivisu    { return 1 }
       }
    }
 
@@ -103,7 +104,7 @@ namespace eval ::spytimer {
          Message console "%s\n" $fichier
       } else {
          foreach var [ list port bit cde ] \
-            val [ list $private(port) $private(bit) $private(cde) ] {
+           val [ list $private($visuNo,port) $private($visuNo,bit) $private($visuNo,cde) ] {
             puts $fichier "set parametres($var) \"$val\""
          }
          close $fichier
@@ -123,20 +124,36 @@ namespace eval ::spytimer {
       variable private
       global audace
 
-      set private(fichier_ini) [ file join $audace(rep_home) spytimer.ini ]
+      set private(fichier_ini) [ file join $audace(rep_home) spytimer$visuNo.ini ]
       if [ file exists $private(fichier_ini) ] {
          source $private(fichier_ini)
          foreach var { port bit cde } {
             if [ info exists parametres($var) ]  {
                #--   affecte les valeurs initiales sauvegardees dans le fichier ini
-               set private($var) $parametres($var)
+               set private($visuNo,$var) $parametres($var)
             }
          }
       }
 
+      #--   initialise les variables du panneau de configuration
+      set private($visuNo,portLabels) [ ::confLink::getLinkLabels { "parallelport" "quickremote" "serialport" "external" } ]
+      if ![ info exists private($visuNo,port) ] {
+         set private($visuNo,port) [ lindex $private($visuNo,portLabels) 0 ]
+      }
+      set private($visuNo,bitLabels) [ ::confLink::getPluginProperty $private($visuNo,port) bitList ]
+      if ![ info exists private($visuNo,bit) ] {
+         set private($visuNo,bit) [ lindex $private($visuNo,bitLabels) 0 ]
+      }
+      set private($visuNo,cdeLabels) { 0 1 }
+      if ![ info exists private($visuNo,cde) ] {
+         set private($visuNo,cde) [ lindex $private($visuNo,cdeLabels) 1 ]
+      }
+      set private($visuNo,intervalle) 1
+
       #---
       set private($visuNo,base) "$this"
 
+      if {[winfo exists $this]} {destroy $this}
       triggerBuildIF $visuNo
    }
 
@@ -192,80 +209,55 @@ namespace eval ::spytimer {
       #-- frame de la configuration et de la surveillance
       frame $This.fra2 -borderwidth 2 -relief groove
          button $This.fra2.but -borderwidth 2 -text $caption(spytimer,configuration) \
-             -command "::keyword::run $::audace(visuNo) ::conf(spytimer,keywordConfigName)"
+            -command "::spytimer::configParameters $visuNo"
+            #-command "::keyword::run $::audace(visuNo) ::conf(spytimer,keywordConfigName)"
          pack $This.fra2.but -side top -fill x -ipadx 2 -ipady 5
+      pack $This.fra2 -side top -fill x
 
-         checkbutton $This.fra2.opt -text "$caption(spytimer,survey)" \
+      frame $This.fra3 -borderwidth 2 -relief groove
+         checkbutton $This.fra3.opt -text "$caption(spytimer,survey)" \
             -indicatoron 1 -onvalue 1 -offvalue 0 \
-            -variable ::spytimer::private(survey) \
+            -variable ::spytimer::private($visuNo,survey) \
             -command "::spytimer::initSurvey $visuNo"
 
-         LabelEntry $This.fra2.interval -label $caption(spytimer,survey_interv) \
-               -textvariable ::spytimer::private(intervalle) -labelanchor w -labelwidth 15 \
-               -borderwidth 1 -relief flat -padx 2 -justify right \
-               -width 5 -relief sunken
-         bind $This.fra2.interval <Leave> [ list ::spytimer::test $This.fra2 interval ]
-
-         checkbutton $This.fra2.convert -text "$caption(spytimer,convert)" \
+         checkbutton $This.fra3.convert -text "$caption(spytimer,convert)" \
             -indicatoron 1 -onvalue 1 -offvalue 0 \
-            -variable ::spytimer::private(convert)
-
-         pack $This.fra2.opt $This.fra2.interval $This.fra2.convert \
-            -anchor w -pady 2
-     pack $This.fra2 -side top -fill x
+            -variable ::spytimer::private($visuNo,convert)
+         pack $This.fra3.opt $This.fra3.convert -anchor w -pady 2
+     pack $This.fra3 -side top -fill x
 
      #--   le frame cantonnant les commandes  du timer-intervallometre et le bouton GO
-     set this [frame $This.fra3 -borderwidth 2 -relief groove]
+     set this [frame $This.fra4 -borderwidth 2 -relief groove]
      set private($visuNo,this) $this
      pack $this -side top -fill x
 
-         #--   initialise les listes pour les combobox
-         set private(portLabels) [ ::confLink::getLinkLabels { "parallelport" "quickremote" "serialport" "external" } ]
-         if ![ info exists private(port) ] {
-            set private(port) [ lindex $private(portLabels) 0 ]
-         }
-         set private(bitLabels) [ ::confLink::getPluginProperty $private(port) bitList ]
-         if ![ info exists private(bit) ] {
-            set private(bit) [ lindex $private(bitLabels) 0 ]
-         }
-         set private(cdeLabels) { 0 1 }
-         if ![ info exists private(cde) ] {
-            set private(cde) [ lindex $private(cdeLabels) 1 ]
-         }
-         set private(modeLabels) [ list "$caption(spytimer,mode,one)" "$caption(spytimer,mode,serie)" ]
-         set private(mode) [ lindex $private(modeLabels) 0 ]
-
-         ::blt::table $this
-
-         #--   construction des combobox
-         foreach child { port bit cde mode } {
-            set len [ llength $private(${child}Labels) ]
-            label $this.${child}_lab -text $caption(spytimer,$child)
-            ComboBox $this.$child -borderwidth 1 -width 5 -height $len \
-               -relief sunken -justify center \
-               -textvariable ::spytimer::private($child) \
-               -values "$private(${child}Labels)"
-         }
-         $this.port configure -modifycmd "::spytimer::configBit $visuNo" -width 9
-         $this.mode configure -modifycmd "::spytimer::configPan $visuNo"
+         label $this.mode_lab -text $caption(spytimer,mode)
+         set private($visuNo,modeLabels) [ list "$caption(spytimer,mode,one)" "$caption(spytimer,mode,serie)" ]
+         set private($visuNo,mode) [ lindex $private($visuNo,modeLabels) 0 ]
+         ComboBox $this.mode -borderwidth 1 -width 5 \
+            -height [ llength $private($visuNo,modeLabels) ] \
+            -relief sunken -justify center \
+            -textvariable ::spytimer::private($visuNo,mode) \
+            -values "$private($visuNo,modeLabels)" \
+            -modifycmd "::spytimer::configPan $visuNo"
 
          #--   construit les entrees de donnees
          foreach child { nb_poses activtime delai periode } {
             LabelEntry $this.$child -label $caption(spytimer,$child) \
-               -textvariable ::spytimer::$child -labelanchor w -labelwidth 8 \
+               -textvariable ::spytimer::private($visuNo,$child) -labelanchor w -labelwidth 8 \
                -borderwidth 1 -relief flat -padx 2 -justify right \
                -width 5 -relief sunken
-            bind $this.$child <Leave> [ list ::spytimer::test $this $child ]
+            bind $this.$child <Leave> [ list ::spytimer::test $visuNo $this $child ]
          }
 
          #--   label pour afficher les etapes
-         label $this.state -textvariable private(action) \
+         label $this.state -textvariable ::spytimer::private($visuNo,action) \
             -width 14 -borderwidth 2 -relief sunken
 
          #-- checkbutton pour la longuepose
          checkbutton $this.lp -text $caption(spytimer,lp) \
             -indicatoron 1 -offvalue 0 -onvalue 1 \
-            -variable ::spytimer::lp -command "::spytimer::configTime $visuNo"
+            -variable ::spytimer::private($visuNo,lp) -command "::spytimer::configTime $visuNo"
 
          #--   configure le bouton de lancement d'acquisition
          button $this.but1 -borderwidth 2 -text "$caption(spytimer,go)" \
@@ -275,60 +267,55 @@ namespace eval ::spytimer {
 
          checkbutton $this.timer.auto -text "$caption(spytimer,auto)" \
             -indicatoron 1 -offvalue 0 -onvalue 1 \
-            -variable ::spytimer::private(auto) \
+           -variable ::spytimer::private($visuNo,auto) \
             -command "::spytimer::confTimeListener $::audace(visuNo)"
 
          for {set i 1} {$i < 24} {incr i} {
             lappend lhr [format "%02.f" $i]
          }
-         lappend lhr "00" $lhr
+         lappend lhr [format "%02.f" 0] $lhr
          tk::spinbox $this.timer.hr \
             -width 2 -relief sunken -borderwidth 1 \
             -state readonly -values $lhr -wrap 1 \
-            -textvariable ::spytimer::private(hr)
+            -textvariable ::spytimer::private($visuNo,hr)
 
          label $this.timer.lab_hr -text "$caption(spytimer,hr)"
 
          for {set i 1} {$i < 60} {incr i} {
             lappend lmin [format "%02.f" $i]
          }
-         lappend lmin "00" $lmin
+         lappend lmin [format "%02.f" 0] $lmin
          tk::spinbox $this.timer.min \
             -width 2 -relief sunken -borderwidth 1 \
             -state readonly -values $lmin -wrap 1 \
-            -textvariable ::spytimer::private(min)
+            -textvariable ::spytimer::private($visuNo,min)
 
          label $this.timer.lab_min -text "$caption(spytimer,min)"
          pack $this.timer.auto $this.timer.hr $this.timer.lab_hr $this.timer.min $this.timer.lab_min -side left
 
          ::blt::table $this \
-            $this.port_lab 0,0 \
-            $this.port 0,1 \
-            $this.bit_lab 1,0 \
-            $this.bit 1,1 \
-            $this.cde_lab 2,0 \
-            $this.cde 2,1 \
-            $this.mode_lab 3,0 \
-            $this.mode 3,1 \
-            $this.state 4,0 -cspan 2 \
-            $this.nb_poses 5,0 -cspan 2 \
-            $this.lp 6,0 -cspan 2 \
-            $this.activtime 7,0 -cspan 2 \
-            $this.delai 8,0 -cspan 2 \
-            $this.periode 9,0 -cspan 2 \
-            $this.but1 10,0 -cspan 2 -ipady 3 -fill x \
-            $this.timer 11,0 -cspan 2
+            $this.mode_lab 0,0 \
+            $this.mode 0,1 \
+            $this.state 1,0 -cspan 2 \
+            $this.nb_poses 2,0 -cspan 2 \
+            $this.lp 3,0 -cspan 2 \
+            $this.activtime 4,0 -cspan 2 \
+            $this.delai 5,0 -cspan 2 \
+            $this.periode 6,0 -cspan 2 \
+            $this.but1 7,0 -cspan 2 -ipady 3 -fill x \
+            $this.timer 8,0 -cspan 2
             ::blt::table configure $this r* -pady 2
+      pack $this -side top -fill x
 
       #--   ajoute les aides
-      foreach child { cde nb_poses activtime delai periode } {
+      foreach child { nb_poses activtime delai periode } {
          DynamicHelp::add $this.$child -text $caption(spytimer,help$child)
       }
 
-      lassign { "1" "1" " " "0" "1" " " "0" "" "0" "0"} private(intervalle) \
-         ::spytimer::lp ::spytimer::activtime ::spytimer::delai \
-         ::spytimer::periode private(action) private(serieNo) \
-         private(msgbox) private(hr) private(min)
+      lassign { "1" "1" " " "0" "1" " " "0" "" "0" "0"} private($visuNo,intervalle) \
+         private($visuNo,lp) private($visuNo,activtime) private($visuNo,delai) \
+         private($visuNo,periode) private($visuNo,action) private($visuNo,serieNo) \
+         private($visuNo,msgbox) private($visuNo,hr) private($visuNo,min)
 
       $this.lp invoke
       configPan $visuNo
@@ -345,58 +332,58 @@ namespace eval ::spytimer {
       global caption
 
       foreach var [ list nb_poses periode activtime delai ] {
-         ::spytimer::test $private($visuNo,this) $var
+         ::spytimer::test $visuNo $private($visuNo,this) $var
       }
 
       #--   gele les commandes
       setWindowState $visuNo disabled
 
       #--   affiche 'Attente'
-      set private(action) $caption(spytimer,action,wait)
+      set private($visuNo,action) $caption(spytimer,action,wait)
 
       #--   memorise les valeurs initiales
-      set private(settings) [ list $::spytimer::nb_poses \
-         $::spytimer::periode $::spytimer::activtime ]
+      set private($visuNo,settings) [ list $private($visuNo,nb_poses) \
+         $private($visuNo,periode) $private($visuNo,activtime) ]
 
       #--   raccourcis
-      lassign $private(settings) nb_poses periode activtime
+      lassign $private($visuNo,settings) nb_poses periode activtime
 
       #--   cherche l'index de Une Image/Une série
-      set mode [ lsearch $private(modeLabels) $private(mode) ]
+      set mode [ lsearch $private($visuNo,modeLabels) $private($visuNo,mode) ]
 
       #---  si la pose est differee, affichage du temps restant
-      if { $::spytimer::delai != 0 } {
+      if { $private($visuNo,delai) != 0 } {
          delay delai
       }
 
       #--   compteur de shoot
-      incr private(serieNo) "1"
+      incr private($visuNo,serieNo) "1"
 
       #--   cree une liaison avec le port
-      set linkNo [ ::confLink::create "$private(port)" "camera inconnue" "pose" "" ]
+      set linkNo [ ::confLink::create "$private($visuNo,port)" "camera inconnue" "pose" "" ]
 
       #--   compte les declenchements
       set count 1
 
-      while { $::spytimer::nb_poses > 0 } {
+      while { $private($visuNo,nb_poses) > 0 } {
 
          #--   prepare le message de log
-         set private(msg) [ format $caption(spytimer,prisedevue) $private(serieNo) $count ]
+         set private($visuNo,msg) [ format $caption(spytimer,prisedevue) $private($visuNo,serieNo) $count ]
          if { $activtime != " " } {
-            append private(msg) "  $activtime sec."
+            append private($visuNo,msg) "  $activtime sec."
          }
 
          #--   affiche 'Acquisition'
-         set private(action) "$caption(spytimer,action,acq)"
+         set private($visuNo,action) "$caption(spytimer,action,acq)"
 
          #--   declenche ; t = temps au debut du shoot en secondes,millisecondes
-         set time_start [ shoot $linkNo "$activtime" ]
+         set time_start [ shoot $visuNo $linkNo "$activtime" ]
 
          #--   decremente et affiche le nombre de poses qui reste a prendre
-         incr ::spytimer::nb_poses "-1"
+         incr private($visuNo,nb_poses) "-1"
 
          #--   recharge la duree
-         set ::spytimer::activtime $activtime
+         set private($visuNo,activtime) $activtime
 
          #--   si c'est Une serie
          if { $mode == "1" } {
@@ -405,7 +392,7 @@ namespace eval ::spytimer {
             }
             #--   si ce n'etait pas la derniere image
             if { $count < $nb_poses } {
-               set ::spytimer::periode [ expr { $time_first + $periode*$count - [ clock seconds ] } ]
+               set private($visuNo,periode) [ expr { $time_first + $periode*$count - [ clock seconds ] } ]
                delay periode
             }
          }
@@ -415,36 +402,36 @@ namespace eval ::spytimer {
       }
 
       #--- ferme la liaison
-      ::confLink::delete "$private(port)" "camera inconnue" "pose"
+      ::confLink::delete "$private($visuNo,port)" "camera inconnue" "pose"
 
       #--   degele les commandes
       setWindowState $visuNo normal
 
       #--   retablit les valeurs initiales
-      lassign $private(settings) ::spytimer::nb_poses \
-         ::spytimer::periode ::spytimer::activtime
+      lassign $private($visuNo,settings) private($visuNo,nb_poses) \
+         private($visuNo,periode) private($visuNo,activtime)
 
-      set private(action) " "
+      set private($visuNo,action) " "
    }
 
    #---------------------------------------------------------------------------
    #  shoot : declenche un shoot
    #  Parametre : N° du lien et duree
    #---------------------------------------------------------------------------
-   proc shoot { linkNo t } {
+   proc shoot { visuNo linkNo t } {
       variable private
 
       #--   definit les variables locales
-      set start $private(cde)
+      set start $private($visuNo,cde)
       set stop  [ expr { 1-$start } ]
 
-      majLog
+      majLog $visuNo
 
       #--   intercepte l'erreur sur le test
       #  et sur l'absence de laison serie
       if {[catch {
          #--- demarre une pose
-         link$linkNo bit $private(bit) $start
+         link$linkNo bit $private($visuNo,bit) $start
       } ErrInfo]} {
          return
       }
@@ -459,66 +446,53 @@ namespace eval ::spytimer {
       }
 
       #--- arrete la pose
-      link$linkNo bit $private(bit) $stop
+      link$linkNo bit $private($visuNo,bit) $stop
 
       return $time_start
    }
 
-  #---------------------------------------------------------------------------
-  #   setWindowState : gere l'etat des widgets
-  #   Parametre : etat
-  #---------------------------------------------------------------------------
-  proc setWindowState { visuNo state } {
+   #---------------------------------------------------------------------------
+   #   setWindowState : gere l'etat des widgets
+   #   Parametre : etat
+   #---------------------------------------------------------------------------
+   proc setWindowState { visuNo state } {
       variable private
 
       if { $state == "disabled" } {
-         foreach child [ list port bit cde mode lp nb_poses activtime delai periode but1 ] {
+         foreach child [ list mode lp nb_poses activtime delai periode but1 ] {
             $private($visuNo,this).$child configure -state "$state"
          }
       } else {
-         foreach child [ list port bit cde mode lp delai but1 ] {
+         foreach child [ list mode lp delai but1 ] {
             $private($visuNo,this).$child configure -state "$state"
          }
          configPan $visuNo
-         configTime $visuNo
+         #configTime $visuNo
       }
    }
 
-  #---------------------------------------------------------------------------
-  #   configPan : configure le panneau en fonction du mode
-  #  appele par le bouton de mode et par setWindowState
-  #---------------------------------------------------------------------------
+   #---------------------------------------------------------------------------
+   #   configPan : configure le panneau en fonction du mode
+   #  appele par le bouton de mode et par setWindowState
+   #---------------------------------------------------------------------------
    proc configPan { visuNo } {
       variable private
 
-      set indice [ lsearch $private(modeLabels) $private(mode) ]
+      set indice [ lsearch $private($visuNo,modeLabels) $private($visuNo,mode) ]
       switch $indice {
-         "0"   {  lassign { "1" " " } ::spytimer::nb_poses ::spytimer::periode
+         "0"   {  lassign { "1" " " } private($visuNo,nb_poses) private($visuNo,periode)
                   foreach child { nb_poses periode } {
                      $private($visuNo,this).$child configure -state disabled
                   }
                }
-         "1"   {  lassign [ list "2" "1" " " ] ::spytimer::nb_poses \
-                     ::spytimer::periode private(action)
+         "1"   {  lassign [ list "2" "1" " " ] private($visuNo,nb_poses) \
+                     private($visuNo,periode) private($visuNo,action)
                   foreach child { nb_poses periode } {
                      $private($visuNo,this).$child configure -state normal
                   }
                }
       }
-      set private(intervalle) 1
-  }
-
-  #---------------------------------------------------------------------------
-  #   Configure l'entree de .bit en fonction du port
-  #---------------------------------------------------------------------------
-  proc configBit { visuNo } {
-      variable private
-
-      set private(bitLabels) [ ::confLink::getPluginProperty \
-         $private(port) bitList ]
-      set len [ llength $private(bitLabels) ]
-      $private($visuNo,this).bit configure -values "$private(bitLabels)" -height $len
-      $private($visuNo,this).bit setvalue @0
+      configTime $visuNo
    }
 
    #---------------------------------------------------------------------------
@@ -527,8 +501,8 @@ namespace eval ::spytimer {
    proc configTime { visuNo } {
       variable private
 
-      set time $::spytimer::activtime
-      if { $::spytimer::lp == "1" } {
+      set time $private($visuNo,activtime)
+      if { $private($visuNo,lp) == "1" } {
          if { $time == " " } {
             set data [ list "normal" "1" ]
          } else {
@@ -537,7 +511,7 @@ namespace eval ::spytimer {
       } else {
          set data [ list "disabled" " " ]
       }
-      lassign $data state ::spytimer::activtime
+      lassign $data state private($visuNo,activtime)
       $private($visuNo,this).activtime configure -state $state
    }
 
@@ -546,7 +520,8 @@ namespace eval ::spytimer {
    #  sont des entiers ; teste si la periode > duree
    #  Parametres : fenetre et entree
    #---------------------------------------------------------------------------
-   proc test { w child } {
+   proc test { visuNo w child } {
+      variable private
 
       #--   arrete si l'entree est disabled
       if { [ $w.$child cget -state ] == "disabled" } {
@@ -554,18 +529,22 @@ namespace eval ::spytimer {
       }
 
       set nom_var [ LabelEntry::cget $w.$child -textvariable ]
-
       if ![ TestEntier [ set $nom_var ] ] {
-         avertiUser $child
+
+         avertiUser $visuNo $child
          if { $child in [list nb_poses activtime periode interval] } {
             set $nom_var "1"
          } elseif { $child == "delai" } {
             set $nom_var "0"
          }
       }
-      if { $child == "periode" &&  ( [ set $nom_var ] <= "$::spytimer::activtime" ) } {
-         avertiUser "periode"
-         set $nom_var [ expr { $::spytimer::activtime+1 } ]
+      if { $child == "periode"} {
+         if {[$w.activtime cget -state] eq "normal"} {
+            if {[set $nom_var] <= $private($visuNo,activtime)} {
+               avertiUser $visuNo "periode"
+               set $nom_var [ expr { $private($visuNo,activtime)+1 } ]
+            }
+         }
       }
    }
 
@@ -573,22 +552,22 @@ namespace eval ::spytimer {
    #  avertiUser :  fenetre d'avertissement
    #  parametre : variable de caption
    #---------------------------------------------------------------------------
-   proc avertiUser { nom } {
+   proc avertiUser { visuNo nom } {
       variable private
       global caption
 
       #--   pour eviter les ouvertures multiples
-      if { $private(msgbox) != "$nom" } {
+      if { $private($visuNo,msgbox) != "$nom" } {
 
          #--   memorise l'affichage de l'erreur
-         set private(msgbox) $nom
+         set private($visuNo,msgbox) $nom
 
          tk_messageBox -title $caption(acqdslr,attention)\
            -icon error -type ok -message $caption(spytimer,help$nom)
 
          #--   au retour annule la memoire
-         set private(msgbox) ""
-     }
+         set private($visuNo,msgbox) ""
+      }
    }
 
    #---------------------------------------------------------------------------
@@ -610,11 +589,11 @@ namespace eval ::spytimer {
    #---------------------------------------------------------------------------
    #   majLog :  Maj du fichier log
    #---------------------------------------------------------------------------
-   proc majLog {} {
+   proc majLog { visuNo } {
       variable private
 
       set file_log [ file join $::audace(rep_log) spytimer.log ]
-      set msg "$::audace(tu,format,dmyhmsint) $private(msg)"
+      set msg "$::audace(tu,format,dmyhmsint) $private($visuNo,msg)"
 
       if ![ catch { open $file_log a } fichier ] {
          chan puts $fichier $msg
@@ -623,32 +602,99 @@ namespace eval ::spytimer {
       ::console::affiche_resultat "$msg\n"
    }
 
-   #---------------------------------------------------------------------------
-   # confTimeListener : met en place/arrete le listener de minuteur
-   # commande du bouton de programmation de shoot 'Auto'
-   # Parametres : visuNo
-   #---------------------------------------------------------------------------
-   proc confTimeListener { visuNo } {
-      variable private
+   #------------------------------- fenetre de configuration ------------------
 
-      if {$private(auto) == "1"} {
-         ::confVisu::addTimeListener $visuNo "::spytimer::autoShoot $visuNo"
-      } else {
-         ::confVisu::removeTimeListener $visuNo "::spytimer::autoShoot $visuNo"
+   #---------------------------------------------------------------------------
+   #  configParameters : cree la fenetre de configuration
+   #---------------------------------------------------------------------------
+   proc configParameters { visuNo } {
+      variable private
+      global audace conf caption color
+
+      set this $private($visuNo,base).config
+      if {[winfo exists $this]} {
+         wm withdraw $this
+         wm deiconify $this
+         focus $this
+         return
       }
+
+      #--- Cree la fenetre $This de niveau le plus haut
+      toplevel $this
+      wm transient $this $private($visuNo,base)
+      wm title $this "$caption(spytimer,titre)"
+      wm geometry $this "+150+80"
+      wm resizable $this 0 0
+      wm protocol $this WM_DELETE_WINDOW ""
+
+      label $this.label_kwd -text $caption(spytimer,en-tete_fits)
+      button $this.but -borderwidth 2 -text $caption(spytimer,keywords) -width 10 \
+         -command "::keyword::run $::audace(visuNo) ::conf(spytimer,keywordConfigName)"
+      entry $this.name_kwd -width 10 -state readonly -takefocus 0 \
+         -textvariable ::conf(acqfc,keywordConfigName)
+
+      #--   construction des combobox
+      foreach child { port bit cde } {
+         set len [ llength $private($visuNo,${child}Labels) ]
+         label $this.${child}_lab -text $caption(spytimer,$child)
+         ComboBox $this.$child -borderwidth 1 -width 5 -height $len \
+            -relief sunken -justify center \
+            -textvariable ::spytimer::private($visuNo,$child) \
+            -values "$private($visuNo,${child}Labels)"
+      }
+      $this.port configure -modifycmd "::spytimer::configBit $visuNo" -width 9
+
+      label $this.interval_lab -text $caption(spytimer,survey_interv)
+      entry $this.interval -width 5 -borderwidth 1 -relief sunken -justify right \
+         -textvariable ::spytimer::private($visuNo,intervalle)
+      bind $this.interval <Leave> [ list ::spytimer::test $visuNo $this interval ]
+
+      ::blt::table $this \
+         $this.label_kwd 0,0 -anchor w -padx {10 5} \
+         $this.but 0,1 -anchor w -padx 5 \
+         $this.name_kwd 0,2 -padx 5 \
+         $this.port_lab 1,0 -anchor w -padx {10 5} \
+         $this.port 1,1 -anchor w -padx 5 \
+         $this.bit_lab 2,0 -anchor w -padx {10 5} \
+         $this.bit 2,1 -anchor w -padx 5 \
+         $this.cde_lab 3,0 -anchor w -padx {10 5} \
+         $this.cde 3,1 -anchor w -padx 5 \
+         $this.interval_lab 4,0 -anchor w -padx {10 5} -cspan 2 \
+         $this.interval 4,2 -padx 5
+      ::blt::table configure $this r* -pady 5
+
+      DynamicHelp::add $this.cde -text $caption(spytimer,help$child)
+   }
+
+   #------------------------------------------------------------
+   # configToolKeywords
+   #    configure les mots cles FITS de l'outil
+   #------------------------------------------------------------
+   proc configToolKeywords { visuNo { configName "" } } {
+
+      #--- Je traite la variable configName
+      if { $configName == "" } {
+         set configName $::conf(spytimer,keywordConfigName)
+      }
+
+      #--- Je selectionne les mots cles optionnels a ajouter dans les images
+      #--- Ce sont les mots cles CRPIX1, CRPIX2
+      #::keyword::selectKeywords $visuNo $configName [ list CRPIX1 CRPIX2 ]
    }
 
    #---------------------------------------------------------------------------
-   # autoShoot : lance le programme
-   # Parametres : numero de la visu
+   #   Configure l'entree de .bit en fonction du port
    #---------------------------------------------------------------------------
-   proc autoShoot { visuNo args } {
+   proc configBit { visuNo } {
       variable private
 
-      if {$::audace(hl,format,hm) != "" && $::audace(hl,format,hm) eq "$private(hr) $private(min)"} {
-         ::spytimer::timer $visuNo
-      }
+      set w $private($visuNo,base).config.bit
+      set len [ llength $private($visuNo,bitLabels) ]
+      $w configure -values "$private($visuNo,bitLabels)" -height $len
+      $w setvalue @0
    }
+
+   #----------------- fonction de surveillance du répertoire ------------------
 
    #---------------------------------------------------------------------------
    # initSurvey : initialise la surveillance
@@ -656,14 +702,13 @@ namespace eval ::spytimer {
    proc initSurvey { visuNo } {
       variable private
 
-      if {$private(survey) ==1} {
+      if {$private($visuNo,survey) ==1} {
 
          #--   fait et memorise la liste initiale des fichiers presents
-         ::spytimer::::listeFiles
-         set private(oldList) $private(formatList)
+         set private($visuNo,oldList) [::spytimer::listeFiles visuNo]
 
          #--  lance la surveillance
-         ::spytimer::::surveyDirectory $visuNo
+         ::spytimer::surveyDirectory $visuNo
       } else {
          if {[info exists private(afterId)] == 1 && [after info $private(afterId)] ne ""} {
             after cancel $private(afterId)
@@ -679,24 +724,25 @@ namespace eval ::spytimer {
       global audace
 
       #--   fait la liste des fichiers presents
-      ::spytimer::::listeFiles
+      ::spytimer::listeFiles $visuNo
 
       #--   supprime les anciennes images
-      regsub -all $private(oldList) $private(listFiles) "" newFile
-      #--   supprime les espaces
-      regsub {(\s)+} $newFile "" newFile
+      regsub -all $private($visuNo,oldList) $private($visuNo,listFiles) "" newFile
+
+      #--   en cas de plusieurs fichiers, retient le dernier
+      set newFile [lindex $newFile end]
 
       if {$newFile ne ""} {
 
          #--   memorise la nouvelle liste
-         set private(oldList) $private(formatList)
+         set private($visuNo,oldList) $private($visuNo,formatList)
          set fileName [file join $::audace(rep_images) $newFile]
          set ext [file extension $newFile]
 
          #--   charge l'image
          loadima $fileName
 
-         if {$private(convert) == 1 && $ext ni [list JPG jpg]} {
+         if {$private($visuNo,convert) == 1 && $ext ni [list JPG jpg]} {
 
             #--- Rajoute des mots cles dans l'en-tete FITS
             set bufNo [::confVisu::getBufNo $visuNo]
@@ -709,14 +755,14 @@ namespace eval ::spytimer {
          }
       }
 
-      set intervalle [expr {$private(intervalle)*1000}]
+      set intervalle [expr {$private($visuNo,intervalle)*1000}]
       set private(afterId) [after $intervalle ::spytimer::surveyDirectory $visuNo]
    }
 
    #---------------------------------------------------------------------------
    #  listeFiles : liste les nom courts des fichiers images
    #---------------------------------------------------------------------------
-   proc listeFiles { } {
+   proc listeFiles { visuNo } {
       variable private
       global audace
 
@@ -735,35 +781,53 @@ namespace eval ::spytimer {
          }
       }
 
-      set private(listFiles) ""
-      set formatList "("
-      foreach file [lsort -dictionary  $raw] {
-         set short_name [file tail $file]
-         lappend private(listFiles) $short_name
-         append formatList $short_name |
-      }
-      set private(formatList) [string trimright $formatList "|"]
-      append private(formatList) ")"
-   }
+      lassign [list "" ""] private($visuNo,listFiles) private($visuNo,formatList)
 
-   #------------------------------------------------------------
-   # configToolKeywords
-   #    configure les mots cles FITS de l'outil
-   #------------------------------------------------------------
-   proc configToolKeywords { visuNo { configName "" } } {
-
-      #--- Je traite la variable configName
-      if { $configName == "" } {
-         set configName $::conf(spytimer,keywordConfigName)
+      if {$raw ne ""} {
+         set formatList "("
+         foreach file [lsort -dictionary  $raw] {
+            set short_name [file tail $file]
+            lappend private($visuNo,listFiles) $short_name
+            append formatList $short_name |
+         }
+         set private($visuNo,formatList) [string trimright $formatList "|"]
+         append private($visuNo,formatList) ")"
       }
 
-      #--- Je selectionne les mots cles optionnels a ajouter dans les images
-      #--- Ce sont les mots cles CRPIX1, CRPIX2
-      #::keyword::selectKeywords $visuNo $configName [ list CRPIX1 CRPIX2 ]
-
-      #--- Je selectionne la liste des mots cles non modifiables
-      #::keyword::setKeywordState $visuNo $configName [ list CRPIX1 CRPIX2 ]
+      return $private($visuNo,formatList)
    }
+
+   #-----------------------fonction de lancement auto -------------------------
+
+   #---------------------------------------------------------------------------
+   # confTimeListener : met en place/arrete le listener de minuteur
+   # commande du bouton de programmation de shoot 'Auto'
+   # Parametres : visuNo
+   #---------------------------------------------------------------------------
+   proc confTimeListener { visuNo } {
+      variable private
+
+      if {$private($visuNo,auto) == "1"} {
+         ::confVisu::addTimeListener $visuNo "::spytimer::autoShoot $visuNo"
+      } else {
+         ::confVisu::removeTimeListener $visuNo "::spytimer::autoShoot $visuNo"
+      }
+   }
+
+   #---------------------------------------------------------------------------
+   # autoShoot : lance le programme
+   # Parametres : numero de la visu
+   #---------------------------------------------------------------------------
+   proc autoShoot { visuNo args } {
+      variable private
+
+      set progr "$private($visuNo,hr) $private($visuNo,min)"
+
+      if {$::audace(hl,format,hm) != "" && $::audace(hl,format,hm) eq "$progr"} {
+         ::spytimer::timer $visuNo
+      }
+   }
+
 
 #--   fin du namespace ::spytimer
 }
