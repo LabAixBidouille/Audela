@@ -3113,10 +3113,12 @@ namespace eval ::prtr {
    #  Prétraitement sans optimisation du noir
    #--------------------------------------------------------------------------
    proc fairePretraitement  { data options } {
+      variable private
 
       cd $::audace(rep_images)
       set extOut $::conf(extension,defaut)
       lassign $data imgList dirOut nameOut extIn
+
       set l [llength $imgList]
       if {$l eq "1"} {
          lassign [list . . ] indexIn indexOut
@@ -3148,7 +3150,6 @@ namespace eval ::prtr {
 
       set catchError [catch {
          if {$flat ne ""} {
-
             #--   divise les images par le flat et multiplie par la constante
             set script "IMA/SERIES . \"$imgList\" $indexIn $indexIn $extIn \"$dirOut\" $nameOut $indexOut $extOut DIV \"file=$flat\" $options"
             ::prtr::editScript $script
@@ -3162,9 +3163,9 @@ namespace eval ::prtr {
             }
          } else {
             #--   renomme les fichiers temp en l'absence de flat
-            foreach file $private(todo) {
+            foreach file $imgList {
                regsub "temp" $file "$nameOut" newName
-               file rename-force [file join $dirOut $file$ext_out] [file join $dirOut $newName$extOut]
+               file rename -force [file join $dirOut $file$extOut] [file join $dirOut $newName$extOut]
             }
          }
        }  ErrInfo]
