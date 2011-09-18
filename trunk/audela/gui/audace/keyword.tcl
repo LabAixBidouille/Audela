@@ -597,6 +597,67 @@ proc ::keyword::openSetTemperature { visuNo } {
 }
 
 #------------------------------------------------------------------------------
+# onChangeValueCRPIXManu
+#    permet de fixer manuellement les valeurs de CRPIX1 et CRPIX2
+#    quand aucune camera ne peut etre connectee en mettant les
+#    entry a l'etat normal
+#
+# Parametres :
+#    visuNo
+# Return :
+#    rien
+#------------------------------------------------------------------------------
+proc ::keyword::onChangeValueCRPIXManu { visuNo } {
+   variable private
+
+   if { [ info exists ::keyword::private($visuNo,table) ] == 1 } {
+      if { [ winfo exists $::keyword::private($visuNo,table) ] == 1 } {
+         #--- Mot cle CRPIX1
+         #--- Je recupere le nomTK de l'entry
+         set wOBJNAME [$::keyword::private($visuNo,table) windowpath CRPIX1,valeur ]
+         #--- Je configure l'etat de l'entry
+         $wOBJNAME configure -state normal
+
+         #--- Mot cle CRPIX2
+         #--- Je recupere le nomTK de l'entry
+         set wOBJNAME [$::keyword::private($visuNo,table) windowpath CRPIX2,valeur ]
+         #--- Je configure l'etat de l'entry
+         $wOBJNAME configure -state normal
+      }
+   }
+}
+
+#------------------------------------------------------------------------------
+# noChangeValueCRPIXManu
+#    remet les entry CRPIX1 et CRPIX2 a l'etat disabled pour interdire
+#    une mise a jour manuelle
+#
+# Parametres :
+#    visuNo
+# Return :
+#    rien
+#------------------------------------------------------------------------------
+proc ::keyword::noChangeValueCRPIXManu { visuNo } {
+   variable private
+
+   if { [ info exists ::keyword::private($visuNo,table) ] == 1 } {
+      if { [ winfo exists $::keyword::private($visuNo,table) ] == 1 } {
+         #--- Mot cle CRPIX1
+         #--- Je recupere le nomTK de l'entry
+         set wOBJNAME [$::keyword::private($visuNo,table) windowpath CRPIX1,valeur ]
+         #--- Je configure l'etat de l'entry
+         $wOBJNAME configure -state disabled
+
+         #--- Mot cle CRPIX2
+         #--- Je recupere le nomTK de l'entry
+         set wOBJNAME [$::keyword::private($visuNo,table) windowpath CRPIX2,valeur ]
+         #--- Je configure l'etat de l'entry
+         $wOBJNAME configure -state disabled
+      }
+   }
+}
+
+#------------------------------------------------------------------------------
 # onChangeValueComboBox
 #    action coordonnee au changement de valeur dans la combobox
 #
