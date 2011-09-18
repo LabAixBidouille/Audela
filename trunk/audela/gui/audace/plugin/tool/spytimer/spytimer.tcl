@@ -210,7 +210,6 @@ namespace eval ::spytimer {
       frame $This.fra2 -borderwidth 2 -relief groove
          button $This.fra2.but -borderwidth 2 -text $caption(spytimer,configuration) \
             -command "::spytimer::configParameters $visuNo"
-            #-command "::keyword::run $::audace(visuNo) ::conf(spytimer,keywordConfigName)"
          pack $This.fra2.but -side top -fill x -ipadx 2 -ipady 5
       pack $This.fra2 -side top -fill x
 
@@ -305,7 +304,7 @@ namespace eval ::spytimer {
             $this.but1 7,0 -cspan 2 -ipady 3 -fill x \
             $this.timer 8,0 -cspan 2
             ::blt::table configure $this r* -pady 2
-      pack $this -side top -fill x
+         pack $this -side top -fill x
 
       #--   ajoute les aides
       foreach child { nb_poses activtime delai periode } {
@@ -528,22 +527,20 @@ namespace eval ::spytimer {
          return
       }
 
-      set nom_var [ LabelEntry::cget $w.$child -textvariable ]
-      if ![ TestEntier [ set $nom_var ] ] {
-
+      if ![ TestEntier $private($visuNo,$child) ] {
          avertiUser $visuNo $child
          if { $child in [list nb_poses activtime periode interval] } {
-            set $nom_var "1"
+            set private($visuNo,$child) "1"
          } elseif { $child == "delai" } {
-            set $nom_var "0"
+            set private($visuNo,$child) "0"
          }
       }
-      if { $child == "periode"} {
-         if {[$w.activtime cget -state] eq "normal"} {
-            if {[set $nom_var] <= $private($visuNo,activtime)} {
-               avertiUser $visuNo "periode"
-               set $nom_var [ expr { $private($visuNo,activtime)+1 } ]
-            }
+
+      #--   compare la période a la duree
+      if { $child == "periode" && [$w.activtime cget -state] eq "normal"} {
+         if {$private($visuNo,periode) <= $private($visuNo,activtime)} {
+            avertiUser $visuNo "periode"
+            set private($visuNo,periode) [ expr { $private($visuNo,activtime)+1 } ]
          }
       }
    }
@@ -644,10 +641,10 @@ namespace eval ::spytimer {
       }
       $this.port configure -modifycmd "::spytimer::configBit $visuNo" -width 9
 
-      label $this.interval_lab -text $caption(spytimer,survey_interv)
-      entry $this.interval -width 5 -borderwidth 1 -relief sunken -justify right \
+      label $this.intervalle_lab -text $caption(spytimer,survey_interv)
+      entry $this.intervalle -width 5 -borderwidth 1 -relief sunken -justify right \
          -textvariable ::spytimer::private($visuNo,intervalle)
-      bind $this.interval <Leave> [ list ::spytimer::test $visuNo $this interval ]
+      bind $this.intervalle <Leave> [ list ::spytimer::test $visuNo $this intervalle ]
 
       ::blt::table $this \
          $this.label_kwd 0,0 -anchor w -padx {10 5} \
@@ -742,7 +739,7 @@ namespace eval ::spytimer {
          #--   charge l'image
          loadima $fileName
 
-         if {$private($visuNo,convert) == 1 && $ext ni [list JPG jpg]} {
+         if {$private($visuNo,convert) == 1 && $ext ni [list .JPG .jpg]} {
 
             #--- Rajoute des mots cles dans l'en-tete FITS
             set bufNo [::confVisu::getBufNo $visuNo]
@@ -766,7 +763,7 @@ namespace eval ::spytimer {
       variable private
       global audace
 
-      set dir $audace(rep_images)
+     set dir $audace(rep_images)
 
       set raw ""
       if { $::tcl_platform(platform) == "windows" } {
