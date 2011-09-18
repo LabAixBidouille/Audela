@@ -597,62 +597,78 @@ proc ::keyword::openSetTemperature { visuNo } {
 }
 
 #------------------------------------------------------------------------------
-# onChangeValueCRPIXManu
-#    permet de fixer manuellement les valeurs de CRPIX1 et CRPIX2
+# onChangeValuePIXSZManu
+#    permet de fixer manuellement les valeurs de XPIXSZ et YPIXSZ
 #    quand aucune camera ne peut etre connectee en mettant les
-#    entry a l'etat normal
+#    entry a l'etat normal et les boutons a l'etat disabled
 #
 # Parametres :
 #    visuNo
 # Return :
 #    rien
 #------------------------------------------------------------------------------
-proc ::keyword::onChangeValueCRPIXManu { visuNo } {
+proc ::keyword::onChangeValuePIXSZManu { visuNo } {
    variable private
 
    if { [ info exists ::keyword::private($visuNo,table) ] == 1 } {
       if { [ winfo exists $::keyword::private($visuNo,table) ] == 1 } {
-         #--- Mot cle CRPIX1
+         #--- Mot cle XPIXSZ
          #--- Je recupere le nomTK de l'entry
-         set wOBJNAME [$::keyword::private($visuNo,table) windowpath CRPIX1,valeur ]
+         set wXPIXSZvaleur [$::keyword::private($visuNo,table) windowpath XPIXSZ,valeur ]
          #--- Je configure l'etat de l'entry
-         $wOBJNAME configure -state normal
+         $wXPIXSZvaleur configure -state normal
+         #--- Je recupere le nomTK de l'entry
+         set wXPIXSZmodification [$::keyword::private($visuNo,table) windowpath XPIXSZ,modification ]
+         #--- Je supprime le bouton
+         $wXPIXSZmodification configure -state disabled
 
-         #--- Mot cle CRPIX2
+         #--- Mot cle YPIXSZ
          #--- Je recupere le nomTK de l'entry
-         set wOBJNAME [$::keyword::private($visuNo,table) windowpath CRPIX2,valeur ]
+         set wYPIXSZvaleur [$::keyword::private($visuNo,table) windowpath YPIXSZ,valeur ]
          #--- Je configure l'etat de l'entry
-         $wOBJNAME configure -state normal
+         $wYPIXSZvaleur configure -state normal
+         #--- Je recupere le nomTK de l'entry
+         set wYPIXSZmodification [$::keyword::private($visuNo,table) windowpath YPIXSZ,modification ]
+         #--- Je supprime le bouton
+         $wYPIXSZmodification configure -state disabled
       }
    }
 }
 
 #------------------------------------------------------------------------------
-# noChangeValueCRPIXManu
-#    remet les entry CRPIX1 et CRPIX2 a l'etat disabled pour interdire
-#    une mise a jour manuelle
+# noChangeValuePIXSZManu
+#    remet les entry XPIXSZ et YPIXSZ a l'etat disabled et les boutons a l'etat
+#    normal pour interdire une mise a jour manuelle
 #
 # Parametres :
 #    visuNo
 # Return :
 #    rien
 #------------------------------------------------------------------------------
-proc ::keyword::noChangeValueCRPIXManu { visuNo } {
+proc ::keyword::noChangeValuePIXSZManu { visuNo } {
    variable private
 
    if { [ info exists ::keyword::private($visuNo,table) ] == 1 } {
       if { [ winfo exists $::keyword::private($visuNo,table) ] == 1 } {
-         #--- Mot cle CRPIX1
+         #--- Mot cle XPIXSZ
          #--- Je recupere le nomTK de l'entry
-         set wOBJNAME [$::keyword::private($visuNo,table) windowpath CRPIX1,valeur ]
+         set wXPIXSZvaleur [$::keyword::private($visuNo,table) windowpath XPIXSZ,valeur ]
          #--- Je configure l'etat de l'entry
-         $wOBJNAME configure -state disabled
+         $wXPIXSZvaleur configure -state disabled
+         #--- Je recupere le nomTK de l'entry
+         set wXPIXSZmodification [$::keyword::private($visuNo,table) windowpath XPIXSZ,modification ]
+         #--- Je supprime le bouton
+         $wXPIXSZmodification configure -state normal
 
-         #--- Mot cle CRPIX2
+         #--- Mot cle YPIXSZ
          #--- Je recupere le nomTK de l'entry
-         set wOBJNAME [$::keyword::private($visuNo,table) windowpath CRPIX2,valeur ]
+         set wYPIXSZvaleur [$::keyword::private($visuNo,table) windowpath YPIXSZ,valeur ]
          #--- Je configure l'etat de l'entry
-         $wOBJNAME configure -state disabled
+         $wYPIXSZvaleur configure -state disabled
+         #--- Je recupere le nomTK de l'entry
+         set wYPIXSZmodification [$::keyword::private($visuNo,table) windowpath YPIXSZ,modification ]
+         #--- Je supprime le bouton
+         $wYPIXSZmodification configure -state normal
       }
    }
 }
