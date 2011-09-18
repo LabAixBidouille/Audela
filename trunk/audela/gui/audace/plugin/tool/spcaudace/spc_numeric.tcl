@@ -1995,8 +1995,9 @@ proc spc_spline85 { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 18-04-2006
-# Date modification : 18-04-2006
-# Arguments : nom du fichier de sortie
+# Date modification : 18-07-2011
+# Arguments : nom_fichier_fit_modèle lambda_centre imax fwhm type_raie(a/e) ?icontinuum?
+# Remarque : focntionne surr les spectres calibrés et non calibrés
 ####################################################################
 
 proc spc_gaussienne { args } {
@@ -2032,12 +2033,37 @@ proc spc_gaussienne { args } {
       #--- CAlcul les valeurs de la guaisiien :
       buf$audace(bufNo) load "$audace(rep_images)/$filename"
       set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
-      set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-      set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
-      set crpix1 [ lindex [ buf$audace(bufNo) getkwd "CRPIX1" ] 1 ]
-      #-- Traduit en pixels les valeurs fournies en arguments :
-      set xc [ expr ($lambda_c-$crval1)/$cdelt1+$crpix1 ]
-      set fwhm [ expr $lfwhm/$cdelt1 ]
+
+      set listemotsclef [ buf$audace(bufNo) getkwds ]
+      if { [ lsearch $listemotsclef "CRPIX1" ] !=-1 } {
+         set crpix1 [ lindex [ buf$audace(bufNo) getkwd "CRPIX1" ] 1 ]
+      } else {
+         set crpix1 1
+      }
+      if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
+         set flag_cal 1
+         set spc_a [ lindex [ buf$audace(bufNo) getkwd "SPC_A" ] 1 ]
+         set spc_b [ lindex [ buf$audace(bufNo) getkwd "SPC_B" ] 1 ]
+         set spc_c [ lindex [ buf$audace(bufNo) getkwd "SPC_C" ] 1 ]
+         set spc_d [ lindex [ buf$audace(bufNo) getkwd "SPC_D" ] 1 ]
+      } elseif { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
+         set flag_cal 1
+         set spc_a [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+         set spc_b [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
+         set spc_c 0
+         set spc_d 0
+      } else {
+         set flag_cal 0
+      }
+
+      #--- Traduit en pixels les valeurs fournies en arguments :
+   if { $flag_cal==1 } {
+      set xc [ expr ($lambda_c-$spc_a)/$spc_b+$crpix1 ]
+      set fwhm [ expr $lfwhm/$spc_b ]
+   } else {
+      set xc $lambda_c
+      set fwhm $lfwhm
+   }
 
       #--- Calcul les valeurs dela gaussienne entre [+-4 fhhm ] :
       set coef 1.5
@@ -2082,6 +2108,7 @@ proc spc_gaussienne { args } {
       buf$audace(bufNo) save "$audace(rep_images)/${filename}_gauss"
       buf$audace(bufNo) bitpix short
       ::console::affiche_resultat "Courbe gaussienne sauvée sous ${filename}_gauss\n"
+      return "${filename}_gauss"
 }
 #****************************************************************#
 
