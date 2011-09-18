@@ -4,5 +4,5 @@
 # Mise à jour $Id: pkgIndex.tcl,v 1.23 2010/12/29 11:52:43 bmauclaire Exp $
 #
 
-package ifneeded spcaudace 2.7 [ list source [ file join $dir spcaudace.tcl ] ]
+package ifneeded spcaudace 2.9 [ list source [ file join $dir spcaudace.tcl ] ]
 
