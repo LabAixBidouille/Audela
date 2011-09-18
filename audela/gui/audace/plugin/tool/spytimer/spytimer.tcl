@@ -656,8 +656,8 @@ namespace eval ::spytimer {
          $this.bit 2,1 -anchor w -padx 5 \
          $this.cde_lab 3,0 -anchor w -padx {10 5} \
          $this.cde 3,1 -anchor w -padx 5 \
-         $this.interval_lab 4,0 -anchor w -padx {10 5} -cspan 2 \
-         $this.interval 4,2 -padx 5
+         $this.intervalle_lab 4,0 -anchor w -padx {10 5} -cspan 2 \
+         $this.intervalle 4,2 -padx 5
       ::blt::table configure $this r* -pady 5
 
       DynamicHelp::add $this.cde -text $caption(spytimer,help$child)
