@@ -103,6 +103,7 @@ proc spc_winini { } {
       menu .spc.menuBar.conv -tearoff 0 -bg $colorspc(backmenu)
       .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_spc2png_w) -command "spc_export2png" -underline 0
       .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_spc2png2_w) -command "spc_fit2pngopt" -underline 0
+      .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_multifit2png_w) -command "spc_multifit2png" -underline 0
       # .spc.menuBar.conv add command -label $caption(spcaudace,gui,writeps) -command "spc_postscript" -underline 0
       .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_fit2ps) -command "spc_fit2ps" -underline 0
       .spc.menuBar.conv add command -label $caption(spcaudace,gui,writegif) -command "spc_scgif" -underline 0
@@ -175,6 +176,7 @@ proc spc_winini { } {
       menu .spc.menuBar.mesures -tearoff 0 -background $colorspc(backmenu)
       # .spc configure -menu .spc.menuBar
       .spc.menuBar.mesures add command -label $caption(spcaudace,gui,spc_centergrav_w) -command "spc_centergrav" -underline 0
+      .spc.menuBar.mesures add command -label $caption(spcaudace,gui,spc_centergaussl_w) -command "spc_centergaussl" -underline 0
       .spc.menuBar.mesures add command -label $caption(spcaudace,gui,spc_centergauss_w) -command "spc_centergauss" -underline 0
       .spc.menuBar.mesures add command -label $caption(spcaudace,gui,spc_fwhm_w) -command "spc_fwhm" -underline 0
       .spc.menuBar.mesures add command -label $caption(spcaudace,gui,spc_ew_w) -command "spc_autoew" -underline 0
@@ -263,7 +265,7 @@ proc spc_winini { } {
       .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_bebuil) -command "spc_bebuil" -underline 0
       .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_file_space)
       .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_vradiale_w) -command "spc_vradiale" -underline 0
-      .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_vradialecorr_w) -command "spc_vradialecorr" -underline 0
+      .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_vradialecorr_w) -command "spc_vradialecorraccur" -underline 0
       .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_vhelio) -command "spc_vhelio" -underline 0
       .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_vrmes_w) -command "spc_vrmes" -underline 0
       #.spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_vexp_w) -command "spc_vexp" -underline 0
