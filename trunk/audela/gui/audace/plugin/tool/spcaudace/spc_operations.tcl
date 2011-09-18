@@ -2045,12 +2045,17 @@ proc spc_somme { args } {
        buf$audace(bufNo) load "$audace(rep_images)/${nom_generique}-s$nb_file"
        set dateobs [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ]
        set mjdobsdeb [ mc_date2jd $dateobs ]
+       #- Corrige l'erreur de calcul de MJD-OBS qui provient des sommes sadd... de Audela (-2400000.5) :
+       set mjd_obs [ format "%7.9f" [ expr $mjdobsdeb-2400000. ] ]
+       buf$audace(bufNo) setkwd [ list "MJD-OBS" $mjd_obs double "Start of exposure. Modified JD=JD-2400000" "d" ]
 
        #-- Création de MID-HJD :
        if { [ lsearch $listemotsclef "MID-MJD" ]==-1 } {
           #- Calcul a revoir car il doit etre tenu compte de  date julienne heliocentrique qui tient compte de la position de la terre sur son orbite et la ramène au soleil.
-          set midhjd [ expr 0.5*($mjdobsend+$mjdobsdeb) ]
+          #set midhjd [ expr 0.5*($mjdobsend+$mjdobsdeb) ]
           # ::console::affiche_resultat "end=$mjdobsend ; deb=$mjdobsdeb ; mid=$midhjd\n"
+          #- Augmente la precision des decimales :
+          set midhjd [ format "%7.9f" [ expr 0.5*($mjdobsend+$mjdobsdeb) ] ]
           buf$audace(bufNo) setkwd [ list "MID-JD" $midhjd double "Heliocentric Julian Date at mid-exposure" "day" ]
        }
 
@@ -2202,6 +2207,7 @@ proc spc_norma { args } {
        #--- Filtrage d'élimination des raies :
        buf$audace(bufNo) load "$audace(rep_images)/$fichier"
        buf$audace(bufNo) imaseries "BACK kernel=$lraie threshold=$pourcent div"
+       buf$audace(bufNo) setkwd [ list "SPC_NORM" "Dividing by filtered continuum" string "Technic used for normalisation" "" ]
        buf$audace(bufNo) bitpix float
        buf$audace(bufNo) save "$audace(rep_images)/${fichier}_norm$conf(extension,defaut)"
        buf$audace(bufNo) bitpix short
@@ -2278,7 +2284,7 @@ proc spc_normaraie { args } {
      set coeff [ expr 1./$continuum ]
      ::console::affiche_resultat "Coéfficient de normalisation : $coeff\n"
      buf$audace(bufNo) mult $coeff
-     buf$audace(bufNo) setkwd [ list "BSS_NORM" "Scaled on continuum closed to main line" string "Method used for normalisation" ""]
+     buf$audace(bufNo) setkwd [ list "SPC_NORM" "Scaled on continuum closed to main line" string "Method used for normalisation" ""]
      buf$audace(bufNo) bitpix float
      buf$audace(bufNo) save "$audace(rep_images)/${fichier}_lnorm"
      buf$audace(bufNo) bitpix short
@@ -2400,7 +2406,7 @@ proc spc_autonorma { args } {
 
        #--- Traitement du resultat :
        buf$audace(bufNo) load "$audace(rep_images)/$sp_norma"
-       buf$audace(bufNo) setkwd [ list "BSS_NORM" "Dividing by continuum polynome extracted" string "Technic used for normalisation" "" ]
+       buf$audace(bufNo) setkwd [ list "SPC_NORM" "Dividing by continuum polynome extracted" string "Technic used for normalisation" "" ]
        buf$audace(bufNo) bitpix float
        buf$audace(bufNo) save "$audace(rep_images)/${fichier}_norm"
        buf$audace(bufNo) bitpix short
