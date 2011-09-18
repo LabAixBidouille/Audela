@@ -236,6 +236,7 @@ proc spc_findlinelimits { args } {
       }
 
       #--- Recherche le la limite gauche :
+      set xdeb [ expr $lcentre-0.5 ]
       set valindex $idcentre
       for { set xval $lcentre } { $xval>=$ldeb } { set xval [ expr $xval-$pas ] } {
          set yval [ lindex $yvals $valindex ]
@@ -246,9 +247,10 @@ proc spc_findlinelimits { args } {
          }
          set valindex [ expr $valindex-1 ]
       }
-      if { $valindex==0 } { set $xdeb [ expr $lcentre-0.5 ] }
+      if { $valindex==0 } { set xdeb [ expr $lcentre-0.5 ] }
 
       #--- Recherche le la limite droite :
+      set xfin [ expr $lcentre+0.5 ]
       set valindex $idcentre
       for { set xval $lcentre } { $xval<=$lfin } { set xval [ expr $xval+$pas ] } {
          set yval [ lindex $yvals $valindex ]
@@ -259,7 +261,7 @@ proc spc_findlinelimits { args } {
          }
          set valindex [ expr $valindex+1 ]
       }
-      if { $valindex==[ expr $lldata-1 ] } { set $xfin [ expr $lcentre+0.5 ] }
+      if { $valindex==[ expr $lldata-1 ] } { set xfin [ expr $lcentre+0.5 ] }
 
       #--- Fin du script :
       set ylimits [ list $xdeb $xfin ]
@@ -393,6 +395,135 @@ proc spc_centergaussl { args } {
    } else {
      ::console::affiche_erreur "Usage: spc_centergaussl nom_profil_calibré_fits lambda_debut lambda_fin type_raie (a/e)\n\n"
    }
+}
+#****************************************************************#
+
+
+##########################################################
+# Procedure de détermination des paramètres d'une gaussienne fitté a la raie etudiée
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 18-07-2011
+# Date de mise à jour : 18-07-2011
+# Arguments : fichier .fit du profil de raie, x_debut (wavelength), x_fin (wavelength), a/e (renseigne sur raie emission ou absorption)
+# Focntionne sur les spectres calibrés et non calibrés
+##########################################################
+
+proc spc_fitgauss { args } {
+
+   global audace
+   global conf
+
+   set nbargs [ llength $args ]
+   if { $nbargs==4} {
+      set fichier [ lindex $args 0 ]
+      set ldeb [ lindex $args 1 ]
+      set lfin [ lindex $args 2 ]
+      set type [ lindex $args 3 ]
+      set trace "n"
+   } elseif { $nbargs==5 } {
+      set fichier [ lindex $args 0 ]
+      set ldeb [ lindex $args 1 ]
+      set lfin [ lindex $args 2 ]
+      set type [ lindex $args 3 ]
+      set trace [ lindex $args 4 ]
+   } else {
+      ::console::affiche_erreur "Usage: spc_fitgauss nom_profil_calibré_fits lambda_debut lambda_fin type_raie (a/e) ?visualise_gaussienne (o/n)?\n"
+      return ""
+   }
+
+      #--- Récupère les mots clef de la calibration :
+      buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+      set listemotsclef [ buf$audace(bufNo) getkwds ]
+      if { [ lsearch $listemotsclef "CRPIX1" ] !=-1 } {
+         set crpix1 [ lindex [ buf$audace(bufNo) getkwd "CRPIX1" ] 1 ]
+      } else {
+         set crpix1 1
+      }
+      if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
+         set flag_cal 1
+         set spc_a [ lindex [ buf$audace(bufNo) getkwd "SPC_A" ] 1 ]
+         set spc_b [ lindex [ buf$audace(bufNo) getkwd "SPC_B" ] 1 ]
+         set spc_c [ lindex [ buf$audace(bufNo) getkwd "SPC_C" ] 1 ]
+         set spc_d [ lindex [ buf$audace(bufNo) getkwd "SPC_D" ] 1 ]
+      } elseif { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
+         set flag_cal 1
+         set spc_a [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+         set spc_b [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
+         set spc_c 0
+         set spc_d 0
+      } else {
+         set flag_cal 0
+      }
+
+      #--- Détermine les valaurs d'encadrement :
+      #- 2007-04-27 : int -> round 
+      if { $flag_cal==1 } {
+         set xdeb [ expr round(($ldeb-$spc_a)/$spc_b+$crpix1) ]
+         set xfin [ expr round(($lfin-$spc_a)/$spc_b+$crpix1) ]
+      } else {
+         set xdeb $ldeb
+         set xfin $lfin
+      }
+
+      #--- Modéilse la raie par une gaussienne :
+      set listcoords [list $xdeb 1 $xfin 1]
+      if { [string compare $type "a"] == 0 } {
+         #-- fitgauss ne fonctionne qu'avec les raies d'emission, on inverse donc le spectre d'absorption
+         buf$audace(bufNo) mult -1.0
+         # set lreponse [buf$audace(bufNo) fitgauss $listcoords -fwhmx 10]
+         set lreponse [ buf$audace(bufNo) fitgauss $listcoords ]
+      } elseif { [string compare $type "e"] == 0 } {
+         set lreponse [ buf$audace(bufNo) fitgauss $listcoords ]
+      }
+
+      #--- Centre de la gaussienne :
+      set xcentre [ lindex $lreponse 1 ]
+      if { $flag_cal==1 } {
+         set centre [ spc_calpoly $xcentre $crpix1 $spc_a $spc_b $spc_c $spc_d ]
+         #-- Converti le pixel en longueur d'onde :
+      } else {
+         set centre $xcentre
+      }
+
+      #--- Fwhm :
+      set fwhmx [ lindex $lreponse 2 ]
+      set cstefw [ expr 0.69*2*log(2) ]
+      if { $flag_cal==1 } {
+         set fwhm [ expr $fwhmx*$spc_b*$cstefw ]
+         #-- Converti le pixel en longueur d'onde :
+      } else {
+         set fwhm [ expr $fwhmx*$cstefw ]
+      }
+
+   #--- Intensite :
+   set intensite [ expr 2.15*[ lindex $lreponse 0 ] ]
+   #set intensite [ spc_imax $fichier $centre [ expr $xfin-$xdeb ] ]
+
+   #--- Superpose la gaussienne a la raie :
+   if { $trace=="o" } {
+      spc_gdeleteall
+      spc_load $fichier
+      #-- Determine la valeur du continuum autour de la raie :
+      if { $flag_cal==1 } {
+         set xleft [ expr $ldeb-3*$fwhm ]
+         set xright [ expr $lfin+3*$fwhm ]
+         set icontl [ spc_icontinuum $fichier $xleft ]
+         set icontr [ spc_icontinuum $fichier $xright ]
+         set icont [ expr 0.5*($icontl+$icontr) ]
+         ::console::affiche_resultat "Continuum autour de la raie : $icont\n"
+         set gausssynth [ spc_gaussienne $fichier $centre $intensite [ expr 8*$fwhm ] $type $icont ]
+      } else {
+         set gausssynth [ spc_gaussienne $fichier $centre $intensite [ expr 7*$fwhm ] $type ]
+      }
+      spc_loadmore $gausssynth
+      file delete -force "$audace(rep_images)/$gausssynth$conf(extension,defaut)"
+   }
+
+   #--- Traitement du résultat :
+   set resultats [ list $centre $fwhm $intensite ]
+   ::console::affiche_resultat "La gausienne ajustée est définie par :\n centre=$centre, FWHM=$fwhm, Intensité=$intensite\n"
+   return $resultats
 }
 #****************************************************************#
 
@@ -615,7 +746,8 @@ proc spc_autocentergaussl { args } {
        #-- Le second element de la liste reponse est le centre X de la gaussienne
        set xcentre [lindex $lreponse 1]
        #-- BUG fitgauss : non, car l'origine du fitgauss est 1 plutot que 0.
-       set xcentre [ expr $xcentre-1 ]
+       #set xcentre [ expr $xcentre-1 ]
+       # commentée le 20110718
        #set lreponse [ buf$audace(bufNo) centro $listcoords ]
        #set xcentre [lindex $lreponse 0]
 
