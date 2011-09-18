@@ -261,9 +261,21 @@ namespace eval ::bess {
 
          #-- Importe le contenu de mots clef SCP :
          set listemotsclef [ buf$audace(bufNo) getkwds ]
+         #- Normalisation :
          if { [ lsearch $listemotsclef "SPC_NORM" ] != -1 } {
             set method_norma [ lindex [ buf$audace(bufNo) getkwd "SPC_NORM" ] 1 ]
-            buf$audace(bufNo) setkwd [ list "BSS_NORM" "$method_norma" string "Process used for transforming the continuum" "" ]
+            if { $method_norma=="Rescaling local middle continuum" } {
+               buf$audace(bufNo) setkwd [ list "BSS_NORM" "none" string "Process used for transforming the continuum" "" ]
+            } else {
+               buf$audace(bufNo) setkwd [ list "BSS_NORM" "$method_norma" string "Process used for transforming the continuum" "" ]
+            }
+         }
+         #- Pouvoir de resolution :
+         if { [ lsearch $listemotsclef "SPC_RESP" ] != -1 } {
+            set respow [ lindex [ buf$audace(bufNo) getkwd "SPC_RESP" ] 1 ]
+            set reslon [ lindex [ buf$audace(bufNo) getkwd "SPC_RESL" ] 1 ]
+            buf$audace(bufNo) setkwd [ list "BSS_ESRP" $respow float "Power of resolution at wavelength BSS_RESW" "" ]
+            buf$audace(bufNo) setkwd [ list "BSS_SRPW" $reslon double "Wavelength where BSS_ESRP was measured" "Angstrom" ]
          }
 
          # On liste les mots-clé BeSS
@@ -676,16 +688,10 @@ namespace eval ::bess {
                buf$audace(bufNo) setkwd [ list BSS_VHEL 0.0 float "Heliocentric velocity at data date" "km/s" ]
             }
             if { [ lsearch $listemotsclef "BSS_NORM" ] ==-1 } {
-               buf$audace(bufNo) setkwd [ list BSS_NORM "no" string "Yes or no if normalisation has been done" "" ]
+               buf$audace(bufNo) setkwd [ list BSS_NORM "none" string "Yes or no if normalisation has been done" "" ]
             }
             if { [ lsearch $listemotsclef "BSS_COSM" ] ==-1 } {
                buf$audace(bufNo) setkwd [ list BSS_COSM "no" string "Yes or no if cosmics correction has been done" "" ]
-            }
-            if { [ lsearch $listemotsclef "SPC_RESP" ] !=-1 } {
-               set spc_resp [ lindex [ buf$audace(bufNo) getkwd "SPC_RESP" ] 1 ]
-               set spc_resl [ lindex [ buf$audace(bufNo) getkwd "SPC_RESL" ] 1 ]
-               buf$audace(bufNo) setkwd [ list "BSS_RESP" $spc_resp float "Power of resolution at BSS_RESL wavelength" "" ]
-               buf$audace(bufNo) setkwd [ list "BSS_RESL" $spc_resl double "Wavelength where power of resolution was computed" "angstrom" ]
             }
             #- Efface ce mot clef qui pose un probleme d'arrondi au centieme de seconde avec la validation Bess :
             if { [ lsearch $listemotsclef "DATE-END" ] !=-1 } {
