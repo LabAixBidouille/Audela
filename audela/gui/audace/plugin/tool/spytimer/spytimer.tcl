@@ -137,6 +137,11 @@ namespace eval ::spytimer {
 
       #--   initialise les variables du panneau de configuration
       set private($visuNo,portLabels) [ ::confLink::getLinkLabels { "parallelport" "quickremote" "serialport" "external" } ]
+      #--   arrete si aucun port
+      if {$private($visuNo,portLabels) eq ""} {
+         ::spytimer::stopTool
+         ::spytimer::deletePluginInstance
+      }
       if ![ info exists private($visuNo,port) ] {
          set private($visuNo,port) [ lindex $private($visuNo,portLabels) 0 ]
       }
@@ -427,7 +432,7 @@ namespace eval ::spytimer {
       majLog $visuNo
 
       #--   intercepte l'erreur sur le test
-      #  et sur l'absence de laison serie
+      #  et sur l'absence de liaison serie
       if {[catch {
          #--- demarre une pose
          link$linkNo bit $private($visuNo,bit) $start
