@@ -71,18 +71,25 @@ test tool_spytimer_multivisu {independance multivisu} -constraints {
    ::confVisu::selectTool $visu2 ::spytimer
    #--   fait l'inventaire des variables et de leur valeur (par defaut) du panneau de la visu1
    set variablesList1 ""
-   foreach variable_name [list port bit cde intervalle survey convert \
-      mode nb_poses activtime delai periode lp auto hr min] {
+   foreach variable_name [list intervalle survey convert mode nb_poses \
+      activtime delai periode lp auto hr min] {
       set variablesList1 [concat $variablesList1 [list $variable_name "$::spytimer::private($visuNo,$variable_name)"] ]
    }
    #--   fait la liste de toutes les variables actives et des valeurs de la visu2
    set variableList2 ""
-   set variablesList2 [list port com5 bit DTR cde 0 intervalle 2 survey 1 \
-      convert 1 mode "$::caption(spytimer,mode,serie)" nb_poses 2 \
-      activtime 40 delai 10 periode 2 lp 1 auto 1 ]
+   set variablesList2 [list intervalle 2 survey 1 convert 1 \
+      mode "$::caption(spytimer,mode,serie)" nb_poses 2 activtime 40 \
+      delai 10 periode 2 lp 1 auto 1 ]
    #--   programme l'heure et les minutes
    lassign [clock format [clock seconds] -format "%H %M" -timezone :localtime] hr minutes
    set minutes [expr {$minutes+1}]
+   if {$minutes == "60"} {
+      set minutes 0
+      incr hr
+      if {$hr == 24} { set hr 0}
+   }
+   set hr [format %02.f $hr]
+   set minutes [format %02.f $minutes]
    lappend variablesList2 hr $hr min $minutes
    #--   configure spytimer de la visu2
    foreach {variable_name variable_value} $variablesList2 {
@@ -103,7 +110,7 @@ test tool_spytimer_multivisu {independance multivisu} -constraints {
 } -cleanup {
    #--ferme la visu2
    ::confVisu::close $visu2
-} -result "15"
+} -result "12"
 
 
 #-------------------------------------------------------------------------------
@@ -117,12 +124,13 @@ test tool_spytimer_auto {declenchement programme} -constraints {
    lassign [clock format [clock seconds] -format "%H %M" -timezone :localtime] hr minutes
    set minutes [expr {$minutes+1}]
    if {$minutes == "60"} {
+      set minutes 0
       incr hr
       if {$hr == 24} { set hr 0}
-      set minutes 0
    }
    set ::spytimer::private($visuNo,hr) [format %02.f $hr]
    set ::spytimer::private($visuNo,min) [format %02.f $minutes]
+
 } -body {
    #--   selectionne Auto
    ::testaudela::clicCheckButton "$this.fra4.timer.auto" 1
