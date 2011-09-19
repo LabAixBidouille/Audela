@@ -641,7 +641,7 @@ namespace eval ::spytimer {
       }
       $this.port configure -modifycmd "::spytimer::configBit $visuNo" -width 9
 
-      label $this.intervalle_lab -text $caption(spytimer,survey_interv)
+      label $this.intervalle_lab -text $caption(spytimer,intervalle)
       entry $this.intervalle -width 5 -borderwidth 1 -relief sunken -justify right \
          -textvariable ::spytimer::private($visuNo,intervalle)
       bind $this.intervalle <Leave> [ list ::spytimer::test $visuNo $this intervalle ]
