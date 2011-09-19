@@ -14,6 +14,12 @@ test tool_spytimer_manuel {declenchement manuel} -constraints {
    ::confVisu::createPluginInstance $visuNo ::spytimer
    #--- je demarre l'outil
    ::confVisu::selectTool $visuNo ::spytimer
+   #--   sauve les reglages utilisateur
+   set settings [list $::spytimer::private($visuNo,port) \
+      $::spytimer::private($visuNo,bit) \
+      $::spytimer::private($visuNo,cde)]
+   #--   regle sur external1
+   set ::spytimer::private($visuNo,port) "external1"
    update
 } -body {
    #--   selectionne GO
@@ -24,6 +30,10 @@ test tool_spytimer_manuel {declenchement manuel} -constraints {
    if {$::spytimer::private($visuNo,msg) ne ""} {incr result}
    return $result
 } -cleanup {
+   #--   retablit les reglages utilisateur
+   lassign $settings ::spytimer::private($visuNo,port) \
+      ::spytimer::private($visuNo,bit) \
+      ::spytimer::private($visuNo,cde)
 
 } -result "1"
 
@@ -130,7 +140,12 @@ test tool_spytimer_auto {declenchement programme} -constraints {
    }
    set ::spytimer::private($visuNo,hr) [format %02.f $hr]
    set ::spytimer::private($visuNo,min) [format %02.f $minutes]
-
+   #--   sauve les reglages utilisateur
+   set settings [list $::spytimer::private($visuNo,port) \
+      $::spytimer::private($visuNo,bit) \
+      $::spytimer::private($visuNo,cde)]
+   #--   regle sur external1
+   set ::spytimer::private($visuNo,port) "external1"
 } -body {
    #--   selectionne Auto
    ::testaudela::clicCheckButton "$this.fra4.timer.auto" 1
@@ -141,6 +156,10 @@ test tool_spytimer_auto {declenchement programme} -constraints {
    if {$::spytimer::private($visuNo,msg) ne ""} {incr result}
    return $result
 } -cleanup {
+   #--   retablit les reglages utilisateur
+   lassign $settings ::spytimer::private($visuNo,port) \
+      ::spytimer::private($visuNo,bit) \
+      ::spytimer::private($visuNo,cde)
    #--   deselectionne "Auto"
    ::testaudela::clicCheckButton "$this.fra4.timer.auto" 0
    #--- j'efface l'image dans la visu
