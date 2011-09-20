@@ -597,83 +597,6 @@ proc ::keyword::openSetTemperature { visuNo } {
 }
 
 #------------------------------------------------------------------------------
-# onChangeValuePIXSZManu
-#    permet de fixer manuellement les valeurs de XPIXSZ et YPIXSZ
-#    quand aucune camera ne peut etre connectee en mettant les
-#    entry a l'etat normal et les boutons a l'etat disabled
-#
-# Parametres :
-#    visuNo
-# Return :
-#    rien
-#------------------------------------------------------------------------------
-proc ::keyword::onChangeValuePIXSZManu { visuNo } {
-   variable private
-
-   if { [ info exists ::keyword::private($visuNo,table) ] == 1 } {
-      if { [ winfo exists $::keyword::private($visuNo,table) ] == 1 } {
-         #--- Mot cle XPIXSZ
-         #--- Je recupere le nomTK de l'entry
-         set wXPIXSZvaleur [$::keyword::private($visuNo,table) windowpath XPIXSZ,valeur ]
-         #--- Je configure l'etat de l'entry
-         $wXPIXSZvaleur configure -state normal
-         #--- Je recupere le nomTK de l'entry
-         set wXPIXSZmodification [$::keyword::private($visuNo,table) windowpath XPIXSZ,modification ]
-         #--- Je supprime le bouton
-         $wXPIXSZmodification configure -state disabled
-
-         #--- Mot cle YPIXSZ
-         #--- Je recupere le nomTK de l'entry
-         set wYPIXSZvaleur [$::keyword::private($visuNo,table) windowpath YPIXSZ,valeur ]
-         #--- Je configure l'etat de l'entry
-         $wYPIXSZvaleur configure -state normal
-         #--- Je recupere le nomTK de l'entry
-         set wYPIXSZmodification [$::keyword::private($visuNo,table) windowpath YPIXSZ,modification ]
-         #--- Je supprime le bouton
-         $wYPIXSZmodification configure -state disabled
-      }
-   }
-}
-
-#------------------------------------------------------------------------------
-# noChangeValuePIXSZManu
-#    remet les entry XPIXSZ et YPIXSZ a l'etat disabled et les boutons a l'etat
-#    normal pour interdire une mise a jour manuelle
-#
-# Parametres :
-#    visuNo
-# Return :
-#    rien
-#------------------------------------------------------------------------------
-proc ::keyword::noChangeValuePIXSZManu { visuNo } {
-   variable private
-
-   if { [ info exists ::keyword::private($visuNo,table) ] == 1 } {
-      if { [ winfo exists $::keyword::private($visuNo,table) ] == 1 } {
-         #--- Mot cle XPIXSZ
-         #--- Je recupere le nomTK de l'entry
-         set wXPIXSZvaleur [$::keyword::private($visuNo,table) windowpath XPIXSZ,valeur ]
-         #--- Je configure l'etat de l'entry
-         $wXPIXSZvaleur configure -state disabled
-         #--- Je recupere le nomTK de l'entry
-         set wXPIXSZmodification [$::keyword::private($visuNo,table) windowpath XPIXSZ,modification ]
-         #--- Je supprime le bouton
-         $wXPIXSZmodification configure -state normal
-
-         #--- Mot cle YPIXSZ
-         #--- Je recupere le nomTK de l'entry
-         set wYPIXSZvaleur [$::keyword::private($visuNo,table) windowpath YPIXSZ,valeur ]
-         #--- Je configure l'etat de l'entry
-         $wYPIXSZvaleur configure -state disabled
-         #--- Je recupere le nomTK de l'entry
-         set wYPIXSZmodification [$::keyword::private($visuNo,table) windowpath YPIXSZ,modification ]
-         #--- Je supprime le bouton
-         $wYPIXSZmodification configure -state normal
-      }
-   }
-}
-
-#------------------------------------------------------------------------------
 # onChangeValueComboBox
 #    action coordonnee au changement de valeur dans la combobox
 #
@@ -831,12 +754,12 @@ proc ::keyword::cmdOKNewValueTypeImage { visuNo } {
 
    if { $private(newValueTypeImage) != "" } {
       destroy $private(base)
-      set private(typeImage)         $private(newValueTypeImage)
-      set private(typeImageSelected) $private(newValueTypeImage)
+      set private(typeImage)          $private(newValueTypeImage)
+      set private(typeImageSelected)  $private(newValueTypeImage)
       #--- Je reconstitue la liste de la combobox
       lappend ::conf(keyword,listTypeImage) $private(newValueTypeImage)
-      set private(listTypeImage)            $::conf(keyword,listTypeImage)
-      lappend private(listTypeImage) $::caption(keyword,newValue)
+      set private(listTypeImage)      $::conf(keyword,listTypeImage)
+      lappend private(listTypeImage)  $::caption(keyword,newValue)
       set w [ $private($visuNo,table) windowpath IMAGETYP,modification ]
       $w configure -values $private(listTypeImage)
    }
