@@ -1042,7 +1042,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,ecart_type)                  "Standardafvigelse"
    set caption(audace,menu,moyenne_k)                   "Kappa-Sigma gennemsnit"
    set caption(audace,menu,moyenne_tri)                 "Percentil sortering"
-   set caption(audace,menu,obturateur)                  "# Cartographier le retard de l'obturateur"
+   set caption(audace,menu,obturateur)                  "Afbild lukker forsinkelse"
 
    set caption(audace,menu,geometry)                    "Tilpas geometrien"
    set caption(audace,menu,rot+90)                      "Rotér 90°med uret"
@@ -1054,7 +1054,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,window1)                     "Beskære"
    set caption(audace,menu,scale)                       "Resampling"
    set caption(audace,menu,translate)                   "Oversæt"
-   set caption(audace,menu,rotation1)                   "# Fri rotation (image tronquée)"
+   set caption(audace,menu,rotation1)                   "Fri rotation (beskåret billede)"
    set caption(audace,menu,rotation2)                   "Fri rotation (ændret billedstørrelse)"
 
    set caption(audace,menu,improve)                     "Rediger billedet"
