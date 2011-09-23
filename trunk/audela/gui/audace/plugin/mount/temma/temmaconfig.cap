@@ -149,15 +149,15 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temmaconfig,2points)               ":"
 
    set caption(temmaconfig,para_mobile,aide0)     "Geben sie das Bewegung Tempo euren Objekt in die Gestalt eines Ganz.\
-                                                 \n# RA : Réglage du suivi sidéral en secondes par jour.\
-                                                 \n# Réglage de la vitesse sidérale : Combien de secondes sont ajoutées ou\
-                                                 \n# soustraites par période de 24 heures.\
-                                                 \n# DEC : Réglage du suivi sur la déclinaison en minutes par jour.\
-                                                 \n# Réglage du suivi sur la déc. : Combien de minutes par période de 24 heures.\
+                                                 \nRA: Stellen Sie Siderisch Verfolgung in Sekunden pro Tag.\
+                                                 \nRA Drehzahleinstellung ist, wie viele RA Sekunden addiert\
+                                                 \noder subtrahiert pro 24 Stunden.\
+                                                 \nDek.: Dek. Verfolgung in Minuten pro Tag einstellen.\
+                                                 \nDek. Verfolgung Einstellung: Ist wie viele Minuten pro 24 Stunde Periode.\
                                                  \nBeispiel:\
-                                                 \n# RA = -120, ralentit la vitesse sidérale à 86164/86284.\
-                                                 \n# DEC = +30, la vitesse sur la déclinaison est de 30 minutes par jour.\
-                                                 \nGränze Werten: ±21541 in RA und ±600 in DEK.\
+                                                 \nRA = -120, würde die RA Geschwindigkeit von 86164/86284 verlangsamen.\
+                                                 \nDek. = +30, die Dek. würde bei 30 Minuten pro Tag verfolgen.\
+                                                 \nGränze Werten: ±21541 in RA und ±600 in Dek.\
                                                  \n-21541: Siderische Folgung bis 0.75 der siderische Geschwindigzeit verlangsamt.\
                                                  \nSiderische Folgung bis 1,25 der siderische Geschwindigzeit verschnellt.\
                                                  \n-600: Bewegung von +10°/Tag in die nord Richtung.\

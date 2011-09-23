@@ -168,7 +168,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temma,init_zenith)                "Am Zenit Initialisieren"
    set caption(temma,ctl_mobile)                 "Folgung Tempo Kontrolle"
    set caption(temma,mobile_etoile)              "Siderische Folgung"
-   set caption(temma,mobile_soleil)              "# Suivi solaire"
+   set caption(temma,mobile_soleil)              "Sonnennachführung"
    set caption(temma,ctl_mobile:)                "Folgung Tempo Kontrolle:"
    set caption(temma,mobile_ad)                  "Rektaszension Tempo"
    set caption(temma,mobile_dec)                 "Deklination Tempo"
