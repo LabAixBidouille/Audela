@@ -92,7 +92,8 @@ test tool_spytimer_multivisu {independance multivisu} -constraints {
       delai 10 periode 2 lp 1 auto 1 ]
    #--   programme l'heure et les minutes
    lassign [clock format [clock seconds] -format "%H %M" -timezone :localtime] hr minutes
-   set minutes [expr {$minutes+1}]
+   set hr [string trimleft $hr 0]
+   set minutes [expr {[string trimleft $minutes 0]+1}]
    if {$minutes == "60"} {
       set minutes 0
       incr hr
@@ -132,7 +133,8 @@ test tool_spytimer_auto {declenchement programme} -constraints {
 } -setup {
    #--   programme l'heure et les minutes
    lassign [clock format [clock seconds] -format "%H %M" -timezone :localtime] hr minutes
-   set minutes [expr {$minutes+1}]
+   set hr [string trimleft $hr 0]
+   set minutes [expr {[string trimleft $minutes 0]+1}]
    if {$minutes == "60"} {
       set minutes 0
       incr hr
