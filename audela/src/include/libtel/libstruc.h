@@ -55,9 +55,9 @@ extern "C" {            /* Assume C declarations for C++ */
    int    radecGuidingState; \
    double radecGuidingSpeed; \
    double focus0;\
-   int focus_motor;\
+   int    focus_motor;\
    double focus_goto_rate;\
-   int focus_goto_blocking;\
+   int    focus_goto_blocking;\
    double focus_move_rate;\
    char channel[30];\
    char homeName[128];\
@@ -82,6 +82,7 @@ extern "C" {            /* Assume C declarations for C++ */
    int            consoleLog; \
    char alignmentMode[10]; \
    int refractionCorrection; \
+   int coordSurveyState;\
    struct telprop *next;
 
 /*Tcl_TimerToken timerToken; \ */

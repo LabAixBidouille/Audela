@@ -986,7 +986,7 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
    char ligne[2256],texte[256];
    int result = TCL_OK,k;
    struct telprop *tel;
-   char comment[]="Usage: %s %s ?goto|stop|move|coord|motor|init|state|model|mindelay(ms)? ?options?";
+   char comment[]="Usage: %s %s ?goto|stop|move|coord|motor|init|state|model|survey|mindelay(ms)? ?options?";
    if (argc<3) {
       sprintf(ligne,comment,argv[0],argv[1]);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -1573,6 +1573,33 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             result = TCL_ERROR;
          }
+      } else if (strcmp(argv[2],"survey")==0) {
+         // --- survey --
+         if (argc>=4) {
+            // set coord survey
+            if (strcmp(argv[3],"0")==0) {
+               tel->coordSurveyState = 0;
+            } else {
+               if (tel->coordSurveyState == 0 ) {
+                  // je lance la recuperation des coordonnees
+                  tel->coordSurveyState = 1;
+                  surveyCoord(tel);
+               }
+            }
+            // je retourne "0" ou "1" dans le resultat de la commande
+            Tcl_SetResult(interp,argv[3],TCL_VOLATILE);
+            result = TCL_OK;
+         } else if (argc==3){
+            // get coord survey
+            sprintf(ligne,"%d", tel->coordSurveyState);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            result = TCL_OK;
+         } else {
+            // print usage
+            sprintf(ligne,"Usage: %s %s survey 0|1",argv[0],argv[1]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            result = TCL_ERROR;
+         }
       } else if (strcmp(argv[2],"mindelay")==0) {
          /* --- mindelay delay minimal de correction ---*/
          if (argc>=4) {
@@ -1954,6 +1981,49 @@ int default_tel_set_radec_guiding(struct telprop *tel, int guiding) {
    return 0;
 }
 
+//-------------------------------------------------------------
+// surveyCoord
+//
+// recupere les coordonnees du telescope toutes les secondes 
+//  
+
+// @return  0 = OK,  1= erreur
+//-------------------------------------------------------------
+static void surveyCoord (ClientData clienData)
+{
+   struct telprop* tel = (struct telprop*) clienData ;
+
+   char ligne[1024];
+   char radec[1024];
+   int result;
+
+   // je traite les autres evenements en attente dans le thread 
+   //foundEvent = Tcl_DoOneEvent(TCL_ALL_EVENTS);
+
+   // je recupere les coordonnes du telescope
+   sprintf(ligne,"tel%d radec coord",tel->telno);
+   result=Tcl_Eval(tel->interp,ligne);
+   if ( result == TCL_OK ) {
+	   // les coordonnees sont dans une chaine "HHhMMmSSs  +DDdMMmSSsddd"  
+	   strcpy(radec, tel->interp->result);
+
+	   // j'envoie les nouvelles coordonnes au thread principal dans les variables audace(telescope,getra) et audace(telescope,getdec)
+      sprintf(ligne,"::thread::send -async %s { set ::audace(telescope,getra) [lindex \"%s\" 0]; set ::audace(telescope,getdec) [lindex \"%s\" 1] ;  update} " , tel->mainThreadId, radec, radec); 
+
+	   Tcl_Eval(tel->interp,ligne);
+   }
+
+   if ( tel->coordSurveyState == 1 ) {
+		Tcl_TimerToken timerToken;
+   
+	   // je cree un timer pour recuperer les coordonnees du telescope
+	   timerToken = Tcl_CreateTimerHandler(1000, surveyCoord, (ClientData) tel);
+   }
+   return;
+}
+
+
+
 int tel_init_common(struct telprop *tel, int argc, const char **argv)
 /* --------------------------------------------------------- */
 /* --- tel_init permet d'initialiser les variables de la --- */
@@ -2023,6 +2093,7 @@ int tel_init_common(struct telprop *tel, int argc, const char **argv)
    strcpy(tel->model_tel2cat,"");
    strcpy(tel->homeName,"");
    strcpy(tel->homePosition,"");
+   tel->coordSurveyState = 0;
    return 0;
 }
 
