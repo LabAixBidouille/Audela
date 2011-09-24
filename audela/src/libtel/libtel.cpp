@@ -81,7 +81,7 @@ void logConsole(struct telprop *tel, char *messageFormat, ...) {
    // j'assemble la commande 
    va_start(mkr, messageFormat);
    vsprintf(message, messageFormat, mkr);
-	va_end (mkr);
+   va_end (mkr);
 
    if ( strcmp(tel->telThreadId,"") == 0 ) {
       sprintf(ligne,"::console::disp \"Telescope: %s\" ",message); 
@@ -98,7 +98,6 @@ void logConsole(struct telprop *tel, char *messageFormat, ...) {
 /* === Common commands for all telescopes ===*/
 int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, const char *argv[]);
 int cmdTel(ClientData clientData, Tcl_Interp *interp, int argc, const char *argv[]);
-
 
 static struct telprop *telprops = NULL;
 
@@ -154,14 +153,13 @@ int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, const char
       const char *platform;
       const char *threaded;
 
-
       /*
        * On initialise le telescope sur le port. S'il y a une erreur, alors on
        * renvoie le message qui va bien, en supprimant la structure cree.
        * Si OK, la commande TCL est creee d'apres l'argv[1], et on garde
        * trace de la structure creee.
        */
-	   tel = (struct telprop*)calloc(1,sizeof(struct telprop));
+      tel = (struct telprop*)calloc(1,sizeof(struct telprop));
       strcpy(tel->msg,"");
       /* --- verify the platform ---*/
       Tcl_Eval(interp,"set ::tcl_platform(os)");
@@ -172,7 +170,7 @@ int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, const char
          tel->authorized=0;
       }
 
-      // 
+      //
       if((platform=Tcl_GetVar(interp,"tcl_platform(platform)",TCL_GLOBAL_ONLY))==NULL) {
          sprintf(s, "cmdTelCreate: Global variable tcl_platform(os) not found");
          Tcl_SetResult(interp, s, TCL_VOLATILE);
@@ -183,7 +181,6 @@ int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, const char
          Tcl_SetResult(interp, s, TCL_VOLATILE);
          return TCL_ERROR;
       }
-
 
       if ( strcmp(argv[argc-2],"mainThreadId") != 0 ) {
          if ( strcmp(threaded,"1") == 0 ) {
@@ -207,17 +204,17 @@ int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, const char
             }
 
             // je duplique la commande "::console::disp" dans la thread du telescope
-				strcpy(cmd,"::console::disp");
-				sprintf(s,"info command %s",cmd);
-				Tcl_Eval(interp,s);
-				if (strcmp(interp->result,cmd)==0) {
-					sprintf(s,"thread::copycommand %s %s ",telThreadId,cmd);
-					if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
-						sprintf(s, "cmdTelCreate: %s",interp->result);
-						Tcl_SetResult(interp, s, TCL_VOLATILE);
-						return TCL_ERROR;
-					}  
-				}
+            strcpy(cmd,"::console::disp");
+            sprintf(s,"info command %s",cmd);
+            Tcl_Eval(interp,s);
+            if (strcmp(interp->result,cmd)==0) {
+               sprintf(s,"thread::copycommand %s %s ",telThreadId,cmd);
+               if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
+                  sprintf(s, "cmdTelCreate: %s",interp->result);
+                  Tcl_SetResult(interp, s, TCL_VOLATILE);
+                  return TCL_ERROR;
+               }
+            }
 
             // je duplique la commande "mc_angle2lx200ra" dans la thread du telescope
             sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_angle2lx200ra");
@@ -249,8 +246,8 @@ int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, const char
                sprintf(s, "cmdTelCreate: %s",interp->result);
                Tcl_SetResult(interp, s, TCL_VOLATILE);
                return TCL_ERROR;
-            }            
-            
+            }
+
             // je duplique la commande "mc_date2iso8601" dans la thread du telescope
             sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_date2iso8601");
             if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
@@ -266,7 +263,7 @@ int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, const char
                Tcl_SetResult(interp, s, TCL_VOLATILE);
                return TCL_ERROR;
             }
-            
+
             // je duplique la commande "mc_date2jd" dans la thread du telescope
             sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_date2jd");
             if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
@@ -290,7 +287,7 @@ int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, const char
                Tcl_SetResult(interp, s, TCL_VOLATILE);
                return TCL_ERROR;
             }
-            
+
             // je duplique la commande "mc_date2lst" dans la thread du telescope
             sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_date2lst");
             if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
@@ -298,7 +295,7 @@ int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, const char
                Tcl_SetResult(interp, s, TCL_VOLATILE);
                return TCL_ERROR;
             }
-            
+
             // je duplique la commande "mc_anglesep" dans la thread du telescope
             sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_anglesep");
             if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
@@ -339,17 +336,17 @@ int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, const char
             }
 
             // je duplique la commande "mc_sepangle" dans la thread du telescope
-				strcpy(cmd,"mc_sepangle");
-				sprintf(s,"info command %s",cmd);
-				Tcl_Eval(interp,s);
-				if (strcmp(interp->result,cmd)==0) {
-					sprintf(s,"thread::copycommand %s %s ",telThreadId,cmd);
-					if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
-						sprintf(s, "cmdTelCreate: %s",interp->result);
-						Tcl_SetResult(interp, s, TCL_VOLATILE);
-						return TCL_ERROR;
-					}  
-				}
+            strcpy(cmd,"mc_sepangle");
+            sprintf(s,"info command %s",cmd);
+            Tcl_Eval(interp,s);
+            if (strcmp(interp->result,cmd)==0) {
+               sprintf(s,"thread::copycommand %s %s ",telThreadId,cmd);
+               if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
+                  sprintf(s, "cmdTelCreate: %s",interp->result);
+                  Tcl_SetResult(interp, s, TCL_VOLATILE);
+                  return TCL_ERROR;
+               }
+            }
 
             // je duplique la commande "mc_hip2tel" dans la thread du telescope
             sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_hip2tel");
@@ -366,7 +363,6 @@ int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, const char
                Tcl_SetResult(interp, s, TCL_VOLATILE);
                return TCL_ERROR;
             }
-
 
             // je prepare la commande de creation du telescope dans la thread du telescope :
             // thread::send $threadId { {argv0} {argv1} ... {argvn} mainThreadId $mainThreadId }
@@ -387,7 +383,7 @@ int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, const char
             strcpy(mainThreadId, "");
             strcpy(telThreadId,  "");
             // je memorise l'interpreteur du thread principal
-        	   tel->interp=interp;  
+            tel->interp=interp;  
          }
       } else {
          // on est dans le thread du telescope
@@ -395,7 +391,7 @@ int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, const char
          Tcl_Eval(interp, "thread::id");
          strcpy(telThreadId, interp->result);
          // je memorise l'interpreteur du thread du telescope
-     	   tel->interp=interp;
+         tel->interp=interp;
       }
 
       // je copie les identifiants de thread dans la structure du telescope
@@ -477,7 +473,6 @@ int cmdTel(ClientData clientData, Tcl_Interp *interp, int argc, const char *argv
          }
       }
 
-
       for(cmd=cmdlist;cmd->cmd!=NULL;cmd++) {
          if(strcmp(cmd->cmd,argv[1])==0) {
             retour = (*cmd->func)(clientData, interp, argc, argv);
@@ -540,7 +535,7 @@ void libtel_GetCurrentFITSDate(Tcl_Interp *interp, char s[23])
 void libtel_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function)
 {
    /* --- conversion TSystem -> TU pour l'interface Aud'ACE par exemple ---*/
-	/*     (function = ::audace::date_sys2ut) */
+   /*     (function = ::audace::date_sys2ut) */
    char ligne[1024];
    sprintf(ligne,"info commands  %s",function);
    Tcl_Eval(interp,ligne);
@@ -548,7 +543,7 @@ void libtel_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *functi
       sprintf(ligne,"mc_date2iso8601 [%s now]",function);
       Tcl_Eval(interp,ligne);
       strcpy(s,interp->result);
-	}
+   }
 }
 
 int libtel_Getradec(Tcl_Interp *interp,char *tcllist,double *ra,double *dec)
@@ -661,7 +656,7 @@ int cmdTelSpeed(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
       if (strcmp(argv[2],"find")==0) {
          tel->speed=0.75;
          Tcl_SetResult(interp,argv[2],TCL_VOLATILE);
-	}
+      }
    } else {
       Tcl_SetResult(interp,"slew",TCL_VOLATILE);
       if (tel->speed<=0.25) {
@@ -713,7 +708,6 @@ int cmdTelMatch(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
    return result;
 }
 
-
 /* ========================== */
 /* === Official functions === */
 /* ========================== */
@@ -741,7 +735,7 @@ int cmdTelRefraction(ClientData clientData, Tcl_Interp *interp, int argc, char *
    } else {
       int refractionFlag = 0; 
       if(Tcl_GetInt(interp,argv[2],&refractionFlag)!=TCL_OK) {
-	      sprintf(ligne,"Usage: %s %s ?0|1?\ninvalid value '%s'. Must be 0 or 1",argv[0],argv[1],argv[2]);
+         sprintf(ligne,"Usage: %s %s ?0|1?\ninvalid value '%s'. Must be 0 or 1",argv[0],argv[1],argv[2]);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          result = TCL_ERROR;
       } else {
@@ -771,7 +765,7 @@ int cmdTelClose(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
    char ligne[256];
    tel = (struct telprop *)clientData;
    tel_close(tel);
-   
+
    // je supprime le thread du telescope
    if ( strcmp(tel->telThreadId,"")!= 0 ) {
       sprintf(ligne,"thread::release %s" , tel->telThreadId);
@@ -892,28 +886,28 @@ int cmdTelDate(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
    } else {
       tel = (struct telprop*)clientData;
-	  sprintf(ligne,"mc_date2ymdhms {%s}",argv[2]);
+      sprintf(ligne,"mc_date2ymdhms {%s}",argv[2]);
       if (Tcl_Eval(interp,ligne)==TCL_OK) {
          strcpy(ligne2,interp->result);
       } else {
          strcpy(ligne2,"2000 1 1 0 0 0.0");
       }
-	  sprintf(ligne,"lindex {%s} 0",ligne2);
+      sprintf(ligne,"lindex {%s} 0",ligne2);
       Tcl_Eval(interp,ligne);
       y=(int)atoi(interp->result);
-	  sprintf(ligne,"lindex {%s} 1",ligne2);
+      sprintf(ligne,"lindex {%s} 1",ligne2);
       Tcl_Eval(interp,ligne);
       m=(int)atoi(interp->result);
-	  sprintf(ligne,"lindex {%s} 2",ligne2);
+      sprintf(ligne,"lindex {%s} 2",ligne2);
       Tcl_Eval(interp,ligne);
       d=(int)atoi(interp->result);
-	  sprintf(ligne,"lindex {%s} 3",ligne2);
+      sprintf(ligne,"lindex {%s} 3",ligne2);
       Tcl_Eval(interp,ligne);
       h=(int)atoi(interp->result);
-	  sprintf(ligne,"lindex {%s} 4",ligne2);
+      sprintf(ligne,"lindex {%s} 4",ligne2);
       Tcl_Eval(interp,ligne);
       min=(int)atoi(interp->result);
-	  sprintf(ligne,"lindex {%s} 5",ligne2);
+      sprintf(ligne,"lindex {%s} 5",ligne2);
       Tcl_Eval(interp,ligne);
       s=(double)atof(interp->result);
       tel_date_set(tel,y,m,d,h,min,s);
@@ -1060,7 +1054,7 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                   } else {
                      strcpy(refractionOption,"");
                   }
-                              
+
                   if (tel->radec_model_enabled == 1 ) {
                      if ( strcmp(outputEquinox,"NOW")==0 ) {
                         // j'applique le modèle de pointage inverse , pas de changement d'equinoxe a faire (modele seulement)
@@ -1085,7 +1079,7 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                         logConsole(tel, "radec coord: %s\n", ligne);
                      }
                      result = mytel_tcleval(tel,ligne);
-                     if ( result == TCL_OK) {                     
+                     if ( result == TCL_OK) {
                         // je convertis les angles en HMS et DMS
                         sprintf(ligne,"list [mc_angle2hms [lindex {%s} 0] 360 zero 0 auto string]  [mc_angle2dms [lindex {%s} 1] 90 zero 0 + string]",interp->result, interp->result); 
                         if ( mytel_tcleval(tel,ligne) == TCL_ERROR) {
@@ -1094,7 +1088,7 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                         } else {
                            strcpy(ligne,interp->result);
                            result = TCL_OK; 
-                        } 
+                        }
                      } else {
                         // erreur de mc_tel2cat 
                         strcpy(ligne, interp->result);
@@ -1111,7 +1105,7 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                         } else {
                            sprintf(tel->msg, "cmdTelRaDec %s error: %s", ligne, tel->interp->result);
                            result = TCL_ERROR; 
-                        } 
+                        }
                      } else {
                         // je convertis les coordonnes du telescope (equinox du jour) en coordonnes catalogue (equinox=J2000) 
                         // sans appliquer le modele de pointage (les parametres symbols et values sont absents) 
@@ -1133,7 +1127,7 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                            } else {
                               strcpy(ligne,interp->result);
                               result = TCL_OK; 
-                           }                            
+                           }
                            /*
                            char raString[21];
                            char deString[21];
@@ -1191,7 +1185,7 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
             mytel_tcleval(tel,ligne);
             mytel_tcleval(tel,"set libtel(radec) $libtel(radec)");
             strcpy(ligne,interp->result);
-         } 
+         }
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 
       } else if (strcmp(argv[2],"state")==0) {
@@ -1219,12 +1213,12 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                   strncpy(inputEquinox,argv[k+1], sizeof(inputEquinox));
                }
             }
-                    
+
             // j'affiche une trace des coordonnees du catalogue dans la console
             if ( tel->consoleLog >= 1 ) {
                logConsole(tel, "radec goto: catalog coord (%s): %s\n", inputEquinox, argv[3]);
-            }          
-            
+            }
+
             if (strcmp(tel->model_cat2tel,"")==0) {
                // je convertis les coordonnes en double
                libtel_Getradec(interp,argv[3],&tel->ra0,&tel->dec0);
@@ -1241,7 +1235,7 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                      } else {
                         strcpy(refractionOption,"");
                      }
-                  
+
                      // usage mc_hip2tel $hiprecord $date $home $pressure $temperature $modpoi_symbols $modpoi_coefs
                      // avec hipRecord = 
                      //   0 id   : identifiant hyparcos de l'etoile (nombre entier), si non utilisé =0  
@@ -1264,7 +1258,7 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                      //   5 ??  : parametre obligatoire non utilisé
                      //   6 ??  : parametre obligatoire non utilisé
                      //   7 ??  : parametre obligatoire non utilisé
-                     //   8 ??  : parametre obligatoire non utilisé                  
+                     //   8 ??  : parametre obligatoire non utilisé
 
                      if (tel->radec_model_enabled == 1 ) {
                         // correction avec le modele de pointage 
@@ -1293,7 +1287,7 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                         const char **listArgv;
                         int listArgc;
 
-                        //  je recupere les coordonnees corrigees a partir des index 10 et 11 de la liste retournee par mc_hip2tel
+                        // je recupere les coordonnees corrigees a partir des index 10 et 11 de la liste retournee par mc_hip2tel
                         result = Tcl_SplitList(tel->interp,tel->interp->result,&listArgc,&listArgv) ;
                         if(result == TCL_OK) {
                            if ( listArgc >= 11 ) {
@@ -1304,7 +1298,7 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                               result = TCL_ERROR;
                            }
-                        } else { 
+                        } else {
                            // rien a faire car la fonction Tcl_SplitList a deja renseigne les message d'erreur
                            result = TCL_ERROR;
                         } 
@@ -1322,10 +1316,10 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                // j'applique le modele de pointage avec la procedure modpoi_cat2tel du TCL
                // ========================================================================
                sprintf(ligne,"set libtel(radec) {%s}",argv[3]);
-                mytel_tcleval(tel,ligne);
+               mytel_tcleval(tel,ligne);
                sprintf(ligne,"set libtel(radec) [%s {%s}]",tel->model_cat2tel,argv[3]);
-                mytel_tcleval(tel,ligne);
-                mytel_tcleval(tel,"set libtel(radec) $libtel(radec)");
+               mytel_tcleval(tel,ligne);
+               mytel_tcleval(tel,"set libtel(radec) $libtel(radec)");
                strcpy(ligne,interp->result);
                libtel_Getradec(interp,ligne,&tel->ra0,&tel->dec0);
                /* - end of pointing model-*/
@@ -1340,7 +1334,7 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                       sprintf(ligne,"list [mc_angle2hms %f 360 zero 0 auto string]  [mc_angle2dms %f 90 zero 0 + string]",tel->ra0, tel->dec0); 
                        mytel_tcleval(tel,ligne);
                       logConsole(tel, "radec goto: catalog coord (now): %s \n", interp->result);                     
-                  }          
+                  }
                } else {
                   Tcl_SetResult(interp,tel->msg,TCL_VOLATILE);
                   result = TCL_ERROR;
@@ -1423,7 +1417,7 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                   result =  TCL_ERROR;
                }
             }
-            
+
             if ( result == TCL_OK) {
                if (Tcl_GetDouble(interp, argv[6], &deltaDistance) != TCL_OK) {
                   sprintf(ligne,"Usage: %s %s %s distance \ndistance shall be a decimal number",argv[0],argv[1],argv[2]);
@@ -1431,7 +1425,7 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                   result =  TCL_ERROR;
                }
             }
-            
+
             if ( result == TCL_OK) {
                if (Tcl_GetDouble(interp, argv[7], &tel->radec_move_rate) != TCL_OK) {
                   sprintf(ligne,"Usage: %s %s %s speed \nspeed shall be a decimal number between 0.0 and 1.0",argv[0],argv[1],argv[2]);
@@ -1439,7 +1433,7 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                   result =  TCL_ERROR;
                }
             }
-            
+
             // j'applique la correction
             if ( result == TCL_OK) {
                int correctResult = TEL_DRV.tel_correct(tel,alphaDirection,alphaDistance,deltaDirection,deltaDistance);
@@ -1451,7 +1445,7 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                   result =  TCL_ERROR;
                }
             }
-         }         
+         }
       } else if (strcmp(argv[2],"model")==0) {
          /* --- model ---*/
          if (argc>=5) {
@@ -1508,7 +1502,7 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                   tel->radec_model_temperature =atoi(argv[k+1]);
                }
             }
-            
+
          } else if (argc==4) {
             // je retourne les valeurs des parametres
             if (strcmp(argv[3],"-enabled")==0) {
@@ -1540,7 +1534,7 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                result =  TCL_ERROR;
             }
-               
+
          } else {
             sprintf(ligne,"Usage: %s %s model -enabled 0|1 -name ?value? -date ?value? -symbols {IH ID ... } -coefficients ?values? -temperature ?value? -pressure ?value?",argv[0],argv[1]);            
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -1776,16 +1770,15 @@ int cmdTelModel(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
       result = TCL_ERROR;
    } else {
       tel = (struct telprop*)clientData;
-		if(argc!=2) {
-	      sprintf(tel->model_cat2tel,"%s",argv[2]);
-	      sprintf(tel->model_tel2cat,"%s",argv[3]);
-		}
+      if(argc!=2) {
+         sprintf(tel->model_cat2tel,"%s",argv[2]);
+         sprintf(tel->model_tel2cat,"%s",argv[3]);
+      }
       sprintf(ligne,"%s %s",tel->model_cat2tel,tel->model_tel2cat);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
    }
    return result;
 }
-
 
 /* -----------------------------------------------------------------------------
  *  cmdTelThreadId()
@@ -1842,10 +1835,8 @@ int cmdTelConsoleLog(ClientData clientData, Tcl_Interp *interp, int argc, char *
 //-------------------------------------------------------------
 
 static void timerCallback(ClientData tel ) {
-  ((struct telprop *)tel)->timeDone  = 1;
+   ((struct telprop *)tel)->timeDone  = 1;
 }
-
-
 
 //-------------------------------------------------------------
 // default_tel_correct
@@ -1896,12 +1887,12 @@ int default_tel_correct(struct telprop *tel, char *alphaDirection, double alphaD
          if ( tel->consoleLog >= 1 ) {
             sprintf(alphaLog, "%s %.3fs",  alphaDirection, (float)timerDelay/1000);
          }
-         
+
       } else {
          if ( tel->consoleLog >= 1 ) {
             sprintf(alphaLog, "%s %.3fs ignored (<%.3fs)", alphaDirection, (float)timerDelay/1000,(float) tel->minRadecDelay/1000);
          }
-      } 
+      }
    } else {
       strcpy(alphaLog,"");
    }
@@ -1909,7 +1900,7 @@ int default_tel_correct(struct telprop *tel, char *alphaDirection, double alphaD
       // je calcule le delai de deplacement en milliseconde sur l'axe delta
       // delai(miliseconde) = 1000 * distance(arcsec) * vitesse(arsec/seconde)
       int timerDelay = (int) (1000.0 * deltaDistance / tel->radecGuidingSpeed);
-      
+
       if ( timerDelay >= tel->minRadecDelay ) {
          int foundEvent= 1;
          Tcl_TimerToken timerToken;
@@ -1919,7 +1910,7 @@ int default_tel_correct(struct telprop *tel, char *alphaDirection, double alphaD
          timerToken = Tcl_CreateTimerHandler(timerDelay, timerCallback, (ClientData) tel);
          // je demarre le mouvement
          tel_radec_move(tel,deltaDirection);
-         
+
          // j'attends un evenement de fin du timer
          while (tel->timeDone == 0) {
             foundEvent = Tcl_DoOneEvent(TCL_ALL_EVENTS);
@@ -1928,23 +1919,23 @@ int default_tel_correct(struct telprop *tel, char *alphaDirection, double alphaD
             //}
          }
          // j'arrete le mouvement
-         tel_radec_stop(tel,deltaDirection);            
+         tel_radec_stop(tel,deltaDirection);
          // je ssupprime le timer
          Tcl_DeleteTimerHandler(timerToken);
-         
+
          if ( tel->consoleLog >= 1 ) {
             sprintf(deltaLog, "%s %.3fs", deltaDirection, (float)timerDelay/1000);
          }
-         
+
       } else {
          if ( tel->consoleLog >= 1 ) {
             sprintf(deltaLog, "%s %.3fs ignored (<%.3fs)", deltaDirection, (float)timerDelay/1000,(float) tel->minRadecDelay/1000);
          }
-      } 
+      }
    } else {
       strcpy(deltaLog,"");
    }
-   
+
    if ( tel->consoleLog >= 1 ) {
       logConsole(tel, "move to %s %s\n", alphaLog, deltaLog);
    }
@@ -1962,7 +1953,7 @@ int default_tel_correct(struct telprop *tel, char *alphaDirection, double alphaD
 //-------------------------------------------------------------
 int default_tel_get_radec_guiding(struct telprop *tel, int *guiding) {   
    *guiding = tel->radecGuidingState;   
-   return 0;  
+   return 0;
 }
 
 //-------------------------------------------------------------
@@ -2001,28 +1992,26 @@ static void surveyCoord (ClientData clienData)
    //foundEvent = Tcl_DoOneEvent(TCL_ALL_EVENTS);
 
    // je recupere les coordonnes du telescope
-   sprintf(ligne,"tel%d radec coord",tel->telno);
+   sprintf(ligne,"tel%d radec coord -equinox J2000.0",tel->telno);
    result=Tcl_Eval(tel->interp,ligne);
    if ( result == TCL_OK ) {
-	   // les coordonnees sont dans une chaine "HHhMMmSSs  +DDdMMmSSsddd"  
-	   strcpy(radec, tel->interp->result);
+      // les coordonnees sont dans une chaine "HHhMMmSSs  +DDdMMmSSsddd"  
+      strcpy(radec, tel->interp->result);
 
-	   // j'envoie les nouvelles coordonnes au thread principal dans les variables audace(telescope,getra) et audace(telescope,getdec)
+      // j'envoie les nouvelles coordonnes au thread principal dans les variables audace(telescope,getra) et audace(telescope,getdec)
       sprintf(ligne,"::thread::send -async %s { set ::audace(telescope,getra) [lindex \"%s\" 0]; set ::audace(telescope,getdec) [lindex \"%s\" 1] ;  update} " , tel->mainThreadId, radec, radec); 
 
-	   Tcl_Eval(tel->interp,ligne);
+      Tcl_Eval(tel->interp,ligne);
    }
 
    if ( tel->coordSurveyState == 1 ) {
-		Tcl_TimerToken timerToken;
-   
-	   // je cree un timer pour recuperer les coordonnees du telescope
-	   timerToken = Tcl_CreateTimerHandler(1000, surveyCoord, (ClientData) tel);
+      Tcl_TimerToken timerToken;
+
+      // je cree un timer pour recuperer les coordonnees du telescope
+      timerToken = Tcl_CreateTimerHandler(1000, surveyCoord, (ClientData) tel);
    }
    return;
 }
-
-
 
 int tel_init_common(struct telprop *tel, int argc, const char **argv)
 /* --------------------------------------------------------- */
@@ -2096,4 +2085,3 @@ int tel_init_common(struct telprop *tel, int argc, const char **argv)
    tel->coordSurveyState = 0;
    return 0;
 }
-
