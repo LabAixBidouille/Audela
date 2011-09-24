@@ -12,7 +12,7 @@ global audela audace
 global spcaudace
 
 #--- Version d'SpcAudace :
-set spcaudace(version) "2.9 - 18/09/2011"
+set spcaudace(version) "2.9 - 24/09/2011"
 # ::audace::date_sys2ut ?Date?
 #set spcaudace(version) [ file mtime $spcaudace(repspc) ]
 
@@ -111,6 +111,9 @@ set spcaudace(methbin) "rober"
 #--- Options prédéfinies (par defaut addi, options=add, moy, med, sigmakappa) :
 set spcaudace(meth_somme) "addi"
 
+#--- Constantes de calcul :
+#-- Vitesse de la lumière en km/s :
+set spcaudace(vlum) 299792.458
 
 #--- Valeur de paramètres des euristhiques algorithmiques :
 #-- Taux adoucissement pour l'extraction de continuum ew via piecewiselinear :
