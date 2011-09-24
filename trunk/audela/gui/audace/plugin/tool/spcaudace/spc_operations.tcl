@@ -2494,6 +2494,13 @@ proc spc_select { args } {
        set xfin [ lindex $args 2 ]
        set fichier [ file rootname $infichier ]
 
+      #--- Test de conformite :
+      if { $xdeb>$xfin } {
+         set xfin1 $xdeb
+         set xdeb $xfin
+         set xfin $xfin1
+      }
+
        #--- Linéarise la calibration avant cette operation :
        set spectre_lin [ spc_linearcal "$fichier" ]
 
