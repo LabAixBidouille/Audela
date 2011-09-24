@@ -38,8 +38,6 @@ struct telprop {
    double ra_play;
    double dec_play;
    int slewpathindex;
-   char home[60];  /* home as it is decoded by temma_home function */
-   char home0[60]; /* home used by tel1 home */
    char v_firmware[30];
    int encoder; /* 0 if no encoders, 1 if encoders are installed */
    double tsl;  /* TSL du dernier appel a la mise a jour du TSL de Temma */
