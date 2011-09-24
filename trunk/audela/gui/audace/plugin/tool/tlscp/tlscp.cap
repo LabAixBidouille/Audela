@@ -38,7 +38,7 @@ set caption(tlscp,entier_positif)        "Exposure time not valid\n(must be a po
 
 set caption(tlscp,coord_catalogue)       "Catalogue Coordinates (J2000.0):"
 set caption(tlscp,coord_corrigees)       "Corrected Coordinates (aberration, precession and nutation):"
-set caption(tlscp,coord_pointees)        "Coordinates aimed at by the telescope:"
+set caption(tlscp,coord_pointees)        "Coordinates aimed at by the telescope (%s):"
 set caption(tlscp,ad)                    "    RA:"
 set caption(tlscp,dec)                   "    Dec.:"
 
@@ -130,7 +130,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(tlscp,coord_catalogue)    "Coordonnées catalogue (J2000.0) :"
    set caption(tlscp,coord_corrigees)    "Coordonnées corrigées (aberration, précession et nutation) :"
-   set caption(tlscp,coord_pointees)     "Coordonnées pointées par le télescope :"
+   set caption(tlscp,coord_pointees)     "Coordonnées pointées par le télescope (%s) :"
    set caption(tlscp,ad)                 "    AD :"
    set caption(tlscp,dec)                "    Déc. :"
 
@@ -222,7 +222,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(tlscp,coord_catalogue)    "Coordinate da catalogo (J2000.0):"
    set caption(tlscp,coord_corrigees)    "Coordinate corrette (aberrazione, precessione e nutazione):"
-   set caption(tlscp,coord_pointees)     "Coordinate puntate dal telescopio:"
+   set caption(tlscp,coord_pointees)     "Coordinate puntate dal telescopio (%s):"
    set caption(tlscp,ad)                 "    AR:"
    set caption(tlscp,dec)                "    Dec.:"
 
@@ -314,7 +314,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(tlscp,coord_catalogue)    "Coordenadas de catálogo (J2000.0):"
    set caption(tlscp,coord_corrigees)    "Coordenadas corregidas (aberración, precesión y nutación):"
-   set caption(tlscp,coord_pointees)     "Coordenadas apuntadas por el telescopio:"
+   set caption(tlscp,coord_pointees)     "Coordenadas apuntadas por el telescopio (%s):"
    set caption(tlscp,ad)                 "    RA:"
    set caption(tlscp,dec)                "    Dec.:"
 
@@ -406,7 +406,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(tlscp,coord_catalogue)    "Katalog Koordinaten (J2000.0):"
    set caption(tlscp,coord_corrigees)    "Korrigierten Koordinaten (Aberration, Präzession und Nutation):"
-   set caption(tlscp,coord_pointees)     "Übergetragten Koordinaten:"
+   set caption(tlscp,coord_pointees)     "Übergetragten Koordinaten (%s):"
    set caption(tlscp,ad)                 "    RA:"
    set caption(tlscp,dec)                "    Dek.:"
 
@@ -498,7 +498,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(tlscp,coord_catalogue)    "Coordenadas catálogo (J2000.0):"
    set caption(tlscp,coord_corrigees)    "Coordonadas corrigidas (aberração, precessão e nutação):"
-   set caption(tlscp,coord_pointees)     "Coordonadas apontadas pelo telescópio:"
+   set caption(tlscp,coord_pointees)     "Coordonadas apontadas pelo telescópio (%s):"
    set caption(tlscp,ad)                 "    AR:"
    set caption(tlscp,dec)                "    Dec.:"
 
@@ -590,7 +590,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(tlscp,coord_catalogue)    "Catalogue Coordinates (J2000.0):"
    set caption(tlscp,coord_corrigees)    "Corrected Coordinates (aberration, precession and nutation):"
-   set caption(tlscp,coord_pointees)     "Coordinates aimed at by the telescope:"
+   set caption(tlscp,coord_pointees)     "Coordinates aimed at by the telescope (%s):"
    set caption(tlscp,ad)                 "    RA:"
    set caption(tlscp,dec)                "    Dec.:"
 
@@ -682,7 +682,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(tlscp,coord_catalogue)    "Catalogue Coordinates (J2000.0):"
    set caption(tlscp,coord_corrigees)    "Corrected Coordinates (aberration, precession and nutation):"
-   set caption(tlscp,coord_pointees)     "Coordinates aimed at by the telescope:"
+   set caption(tlscp,coord_pointees)     "Coordinates aimed at by the telescope (%s):"
    set caption(tlscp,ad)                 "    RA:"
    set caption(tlscp,dec)                "    Dec.:"
 
@@ -774,7 +774,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(tlscp,coord_catalogue)    "Catalogue Coordinates (J2000.0):"
    set caption(tlscp,coord_corrigees)    "Corrected Coordinates (aberration, precession and nutation):"
-   set caption(tlscp,coord_pointees)     "Coordinates aimed at by the telescope:"
+   set caption(tlscp,coord_pointees)     "Coordinates aimed at by the telescope (%s):"
    set caption(tlscp,ad)                 "    RA:"
    set caption(tlscp,dec)                "    Dec.:"
 
