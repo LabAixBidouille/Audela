@@ -1758,7 +1758,7 @@ proc spc_caloverif { args } {
             set listeraieseau [ lindex $args 2 ]
         } else {
             ::console::affiche_erreur "Usage: spc_caloverif nom_profil_de_raies ?largeur_raie (A)? ?liste_raies_référence?\n"
-            return 0
+            return ""
         }
         set ecart [ expr $largeur_raie/2. ]
 
@@ -1861,8 +1861,30 @@ proc spc_caloverif { args } {
 
         #--- Traitement des résultats :
         ::console::affiche_resultat "\n\nQualité de la calibration :\nChi2=$chi2\nRMS=$rms A\nEcart moyen=$mean_shift A\n"
-
-        return $cal_infos
+       #-- Maj du mot clef SPC_RMSO :
+       buf$audace(bufNo) load "$audace(rep_images)/$filename"
+       set listemotsclef [ buf$audace(bufNo) getkwds ]
+       if { [ lsearch $listemotsclef "SPC_RMSO" ] !=-1 } {
+          set spcrmso [ lindex [ buf$audace(bufNo) getkwd "SPC_RMSO" ] 1 ]
+          if { $rms<$spcrmso } {
+             buf$audace(bufNo) setkwd [ list "SPC_RMSO" $rms double "Wavelength RMS computed with telluric lines" "Angstrom" ]
+             buf$audace(bufNo) setkwd [ list "SPC_MDEC" $mean_shift double "Mean shift from tellruic lines" "Angstrom" ]
+             buf$audace(bufNo) bitpix float
+             buf$audace(bufNo) save "$audace(rep_images)/$filename"
+             buf$audace(bufNo) bitpix short
+             ::console::affiche_resultat "\nRMSO de $filename mis à jour.\n"
+          } else {
+             ::console::affiche_resultat "\nRMSO de $filename inchangé.\n"
+          }
+       } else {
+          buf$audace(bufNo) setkwd [ list "SPC_RMSO" $rms double "Wavelength RMS computed with telluric lines" "Angstrom" ]
+          buf$audace(bufNo) setkwd [ list "SPC_MDEC" $mean_shift double "Mean shift from tellruic lines" "Angstrom" ]
+          buf$audace(bufNo) bitpix float
+          buf$audace(bufNo) save "$audace(rep_images)/$filename"
+          buf$audace(bufNo) bitpix short
+          ::console::affiche_resultat "\nRMSO de $filename mis à jour.\n"
+       }
+       return $cal_infos
    } else {
        ::console::affiche_erreur "Usage: spc_caloverif profil_de_raies_a_calibrer ?largeur_raie (A)? ?liste_raies_référence?\n\n"
    }
