@@ -831,7 +831,7 @@ proc spc_fits2dat { args } {
 
      #--- Type de spectre : LINEAR ou NONLINEAR (elinine les espaces dans la valeur du mot clef.
      #set len [ expr int($naxis1/$dispersion) ]
-     ::console::affiche_resultat "$naxis1 intensités à traiter\n"
+     #::console::affiche_resultat "$naxis1 intensités à traiter\n"
      
      if { $nbargs==1 || $nbargs==0 } {
         set fileetalonnespc [ file rootname $filenamespc ]
@@ -937,6 +937,95 @@ proc spc_fits2dat { args } {
   } else {
      ::console::affiche_erreur "Usage: spc_fits2dat fichier_profil_fit ?fichier_sortie.dat?\n\n"
   }
+}
+#****************************************************************#
+
+
+
+####################################################################
+#  Procedure de conversion de fichier profil de raies .fit en .dat avec une echelle en vitesse radiale
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 24-09-2011
+# Date modification : 24-09-2011
+# Inspire de spc_fits2dat
+# Arguments : fichier .fit du profil de raie lon,gueur de dreference\
+####################################################################
+
+proc spc_fits2datvel { args } {
+
+  global conf
+  global audace spcaudace
+  global audela caption
+
+  set nbargs [ llength $args ]
+  if { $nbargs==2 } {
+     set filenamespc [ lindex $args 0 ]
+     set lambda_ref [ lindex $args 1 ]
+  } else {
+     ::console::affiche_erreur "Usage: spc_fits2dat fichier_profil.fit ?fichier_sortie.dat?\n\n"
+     return ""
+  }
+
+  buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
+  set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+  set listemotsclef [ buf$audace(bufNo) getkwds ]
+  if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
+     set lambda0 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+     if { $lambda0==1. } {
+        set flag_noncal 1
+     } else {
+        set flag_noncal 0
+     }
+  } else {
+     set flag_noncal 1
+  }
+
+  if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
+     set dispersion [ lindex [buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+     set flag_noncal 0
+  }
+  if { [ lsearch $listemotsclef "CRPIX1" ] !=-1 } {
+     set crpix1 [ lindex [buf$audace(bufNo) getkwd "CRPIX1" ] 1 ]
+  } else {
+     set crpix1 1
+  }
+  if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
+     ::console::affiche_erreur "Le profils de raies doit être calibré linérairement en longueur d'onde"
+     return ""
+  }
+  
+  if { $flag_noncal==1 } {
+     ::console::affiche_erreur "Le profils de raies doit être calibré linérairement en longueur d'onde"
+     return ""
+  }
+
+  #--- Type de spectre : LINEAR ou NONLINEAR (elinine les espaces dans la valeur du mot clef.
+  set fileetalonnespc [ file rootname $filenamespc ]
+  set fileout ${fileetalonnespc}$spcaudace(extdat)
+  set file_id [open "$audace(rep_images)/$fileout" w+]
+     
+  #--- configure le fichier de sortie avec les fin de ligne "xODx0A"
+  #-- independamment du systeme LINUX ou WINDOWS
+  fconfigure $file_id -translation crlf
+  #--- Lecture pixels Audela 140 :
+  #-- Calibration linéaire :
+  #-- Une liste commence à 0 ; Un vecteur fits commence à 1
+  for {set k 1} {$k<=$naxis1} {incr k} {
+     #-- Donne les bonnes valeurs aux abscisses si le spectre est étalonné en longueur d'onde (attention : lambda0=crval!=a+b) :
+     set lambda [ spc_calpoly $k $crpix1 $lambda0 $dispersion 0 0 ]
+     set vitesse [ expr ($lambda-$lambda_ref)*$spcaudace(vlum)/$lambda_ref ]
+     #-- Lit la valeur des elements du fichier fit
+     set intensite [ lindex [ buf$audace(bufNo) getpix [list $k 1] ] 1 ]
+     #-- Ecrit les couples "Lambda Intensite" dans le fichier de sortie
+     puts $file_id "$vitesse\t$intensite"
+  }
+
+
+  close $file_id
+  ::console::affiche_resultat "Fichier fits exporté sous $audace(rep_images)/$fileout\n"
+  #--- Renvoie le nom du fichier avec l'extension $extsp :
+  return $fileout
 }
 #****************************************************************#
 
@@ -1825,6 +1914,9 @@ proc spc_multifit2png { args } {
 ####################################################################
 
 
+
+
+
 ####################################################################
 #  Procedure de conversion de fichier profil de raie calibré .fit en .png
 #
@@ -1921,6 +2013,245 @@ proc spc_multifit2pngopt { args } {
     } else {
         ::console::affiche_erreur "Usage: spc_multifit2pngopt xdeb xfin ydeb yfin fichier_fits1 fichier_fits2 ... fichier_fitsn\n\n"
     }
+}
+####################################################################
+
+
+####################################################################
+#  Procedure de conversion de fichier profil de raie calibré .fit en .png
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 20-09-2011
+# Date modification : 20-09-2011
+# Arguments : offset vertical entre les profils, travaille sur les spectres du répertoire de travail
+####################################################################
+
+proc spc_multifit2pngdec { args } {
+   global audace spcaudace
+   global conf
+   global tcl_platform
+
+   #-- 3%=0.03
+   set lpart 0
+   #set coef_conv_gp 7.8
+   #set yheight_graph 600
+   set xpos 70
+   set nbargs [ llength $args ]
+   
+   if { $nbargs==1 } {
+      set offset [ lindex $args 0 ]
+      set lambda_ref 0
+   } elseif { $nbargs==3 } {
+      set offset [ lindex $args 0 ]
+      set xsdeb [ lindex $args 1 ]
+      set xsfin [ lindex $args 2 ]
+      set lambda_ref 0
+   } elseif { $nbargs==4 } {
+      set offset [ lindex $args 0 ]
+      set xsdeb [ lindex $args 1 ]
+      set xsfin [ lindex $args 2 ]
+      set lambda_ref [ lindex $args 3 ]
+   } else {
+      ::console::affiche_erreur "Usage: spc_multifit2pngdec offset_vertical_entre_profils ?xdeb xfin? ?lambda_reference?\n"
+      return ""
+   }
+
+   #--- Liste des fichiers du répertoire :
+   set listefile [ lsort -dictionary [ glob -tail -dir $audace(rep_images) *$conf(extension,defaut) ] ]
+
+   #--- Verifie si les spectres sont tous normalisés et recupere la date JD :
+   set listejd [ list ]
+   set listefiledec [ list ]
+   set yoffset 0
+   set objname ""
+   foreach fichier $listefile {
+      buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+
+      #-- Calcul le JD reduit du spectre :
+      # set dateobs [ mc_date2jd [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ] ]
+      lappend listejd [ format "%4.4f" [ expr 0.0001*round(10000*([ mc_date2jd [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ] ]-2450000.)) ] ]
+
+      #-- Recherche du nom de l'objet :
+      if { $objname == "" } {
+         set listemotsclef [ buf$audace(bufNo) getkwds ]
+         if { [ lsearch $listemotsclef "OBJNAME" ] !=-1 } {
+            set objname [ lindex [ buf$audace(bufNo) getkwd "OBJNAME" ] 1 ]
+         }
+      }
+
+      #-- Selection de la zone si des longueurs d'ondes sont données :
+      if { $nbargs==3 || $nbargs==4 } {
+         set fichier_sel [ spc_select $fichier $xsdeb $xsfin ]
+      } elseif { $nbargs==1 } {
+         set fichier_sel "$fichier"
+      }
+
+      #-- Verifie si le spectre est mis a l'echelle du continuum à 1 et decale les intensites de $yoffset :
+      set icont [ spc_icontinuum $fichier_sel ]
+      if { [ expr abs($icont-1.) ]>0.2 } {
+         set fileout1 [ spc_rescalecont $fichier_sel ]
+         set fileout2 [ spc_offset $fileout1 $yoffset ]
+         lappend listefiledec $fileout2
+         file delete -force "$audace(rep_images)/$fileout1$conf(extension,defaut)"
+      } else {
+         set fileout [ spc_offset $fichier_sel $yoffset ]
+         lappend listefiledec $fileout
+      }
+      if { $nbargs==3 || $nbargs==4 } {
+         file delete -force "$audace(rep_images)/$fichier_sel$conf(extension,defaut)"
+      }
+      set yoffset [ expr $yoffset+$offset ]
+   }
+
+   #--- Adapte la légende de l'abscisse :
+   set fichier1 [ lindex $listefiledec 0 ]
+   buf$audace(bufNo) load "$audace(rep_images)/$fichier1"
+   set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
+   set listemotsclef [ buf$audace(bufNo) getkwds ]
+   if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
+      set flag_cal 1
+      set xdeb [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+      set disp [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
+      if { [ lsearch $listemotsclef "CRPIX1" ] !=-1 } {
+         set crpix1 [ lindex [buf$audace(bufNo) getkwd "CRPIX1"] 1 ]
+      } else {
+         set crpix1 1
+      }
+      set xfin [ spc_calpoly $naxis1 $crpix1 $xdeb $disp 0 0 ]
+   } else {
+      set falg_cal 0
+      set xdeb 1
+      set xfin $naxis1
+   }
+   if { $flag_cal==0 } {
+      set legendex "Position (Pixel)"
+   } else {
+      if { $lambda_ref==0 } {
+         set legendex "Wavelength (A)"
+      } else {
+         set legendex "Radial velocity (km/s)"
+         set xdeb [ expr ($xdeb-$lambda_ref)*$spcaudace(vlum)/$lambda_ref ]
+         set xfin [ expr ($xfin-$lambda_ref)*$spcaudace(vlum)/$lambda_ref ]
+      }
+   }
+   #-- Determination du continuum a l'extreme droite du premier spectre :
+   set x1_legende [ expr $xfin*0.87 ]
+   set y1_legende 0
+   set y1_legende [ spc_icontinuum $fichier1 $x1_legende ]
+   if { $y1_legende==0 } { set y1_legende 1.3 }
+
+   #--- Initialisation des legendes :
+   set nbfiles [ llength $listefiledec ]
+   set jd_deb [ expr [ lindex $listejd 0 ]+2450000. ]
+   set jd_fin [ expr [ lindex $listejd [ expr $nbfiles-1 ] ]+2450000. ]
+   #regsub " " "$objname" "" objname
+   if { $objname == "" } {
+      set titre "Time evolution from $jd_deb to $jd_fin"
+   } else {
+      set titre "Time evolution of $objname from $jd_deb to $jd_fin"
+   }
+   set legendey "Spectra shifted by $offset unit along intensity axis"
+   
+   #--- Conversion en dat :
+   set i 1
+   set listedat [ list ]
+   set plotcmd ""
+   foreach fichier $listefiledec jd $listejd {
+      if { $lambda_ref==0 } {
+         set filedat [ spc_fits2dat "$fichier" ]
+      } else {
+         set filedat [ spc_fits2datvel "$fichier" $lambda_ref ]
+      }
+      lappend listedat $filedat
+      if { $i != $nbfiles } {
+         #append plotcmd "'$audace(rep_images)/$filedat' w l, "
+         #append plotcmd "'$filedat' using 1:($2+$i) w l, "
+         #append plotcmd "'$filedat' w l, "
+         append plotcmd "'$filedat' w l title 'MJD $jd', "
+      } elseif { $i==1 } {
+         append plotcmd "'$filedat' w l title 'MJD $jd', "
+      } else {
+         #append plotcmd "'$audace(rep_images)/$filedat' w l"
+         append plotcmd "'$filedat' w l title 'MJD $jd'"
+      }
+      incr i
+   }
+
+   #--- Modification du fichier de config :
+   #-- Modification de dla position des legendes dans le fichier de config de gnuplot :
+   #set ypos1 [ expr $y1_legende+$offset/10. ]
+   set ypos1 [ expr $y1_legende*(1+$offset/10.) ]
+   set file_idin [ open "$spcaudace(repgp)/gp_multiover.cfg" r+ ]
+   set file_id [ open "$audace(rep_images)/gp_multiover.cfg" w+ ]
+   fconfigure $file_id -translation crlf
+   set contents [ split [ read $file_idin ] \n ]
+   foreach ligne $contents {
+      if { [ regexp "set key invert" $ligne match ligne_modif ]  } {
+         # regsub -all "set key invert" $ligne "set key invert bottom samplen 0 height -13 spacing $moffset at $xfin, first $ypremier" ligne_modif
+         regsub -all "set key invert" $ligne "set key off" ligne_modif
+         puts $file_id "$ligne_modif"
+         set nofile 0
+         foreach jd $listejd {
+            set ypos [ expr $ypos1+$offset*$nofile ]
+            puts $file_id "set label \"MJD $jd\" right at character $xpos, first $ypos"
+            incr nofile
+         }
+      } else {
+         puts $file_id "$ligne"
+      }
+   }
+   close $file_id
+   close $file_idin
+
+   #--- Construction du fichier btach de Gnuplot :
+   #set file_id [open "$audace(rep_images)/multiplot.gp" w+]
+   # set xdeb "*"
+   # set xfin "*"
+   ## puts $file_id "call \"$spcaudace(repgp)/gp_multi.cfg\" \"$plotcmd\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/multiplot.png\" \"$legendex\" \"$legendey\" "
+   #puts $file_id "call \"$spcaudace(repgp)/gp_multi.cfg\" \"$plotcmd\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/multiplot.png\" \"$legendex\" "
+   #close $file_id
+   set file_id [ open "$audace(rep_images)/multiplot.gp" w+ ]
+   fconfigure $file_id -translation crlf
+   set largeur [ expr $xfin-$xdeb ]
+   if { $naxis1<=3500 } {
+      if { $largeur<=2000 && $flag_cal==1 } {
+         #puts $file_id "call \"$spcaudace(repgp)/gp_multiover.cfg\" \"$plotcmd\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/multiplot.png\" \"$legendex\" \"$legendey\" "
+         puts $file_id "call \"$audace(rep_images)/gp_multiover.cfg\" \"$plotcmd\" \"$titre\" * * '$xdeb' '$xfin' * \"$audace(rep_images)/multiplot.png\" \"$legendex\" \"$legendey\" "
+      } elseif { $largeur>2000 && $flag_cal==1 } {
+         puts $file_id "call \"$spcaudace(repgp)/gp_multilarge.cfg\" \"$plotcmd\" \"$titre\" * * '$xdeb' '$xfin' * \"$audace(rep_images)/multiplot.png\" \"$legendex\" \"$legendey\" "
+      } elseif { $flag_cal==0 } {
+         puts $file_id "call \"$audace(rep_images)/gp_multiover.cfg\" \"$plotcmd\" \"$titre\" * * '$xdeb' '$xfin' * \"$audace(rep_images)/multiplot.png\" \"$legendex\" \"$legendey\" "
+      }
+   } else {
+      puts $file_id "call \"$spcaudace(repgp)/gp_multilarge.cfg\" \"$plotcmd\" \"$titre\" * * '$xdeb' '$xfin' * \"$audace(rep_images)/multiplot.png\" \"$legendex\" "
+   }
+   close $file_id
+
+   #--- Détermine le chemin de l'executable Gnuplot selon le système d'exploitation :
+   set repdflt [ bm_goodrep ]
+   if { $tcl_platform(platform)=="unix" } {
+      set answer [ catch { exec gnuplot $audace(rep_images)/multiplot.gp } ]
+      ::console::affiche_resultat "gnuplot résultat (0=OK) : $answer\n"
+   } else {
+      set answer [ catch { exec $spcaudace(repgp)/gpwin32/pgnuplot.exe $audace(rep_images)/multiplot.gp } ]
+      ::console::affiche_resultat "gnuplot résultat (0=OK) : $answer\n"
+   }
+   cd $repdflt
+
+   #--- Effacement des fichiers de batch :
+   #if { 1==0 } {
+
+   file delete -force "$audace(rep_images)/multiplot.gp"
+   file delete -force "$audace(rep_images)/gp_multiover.cfg"
+   foreach fichier $listedat {
+      file delete -force "$audace(rep_images)/$fichier"
+      set fichierfit [ file rootname $fichier ]
+      set fichierfit "$fichierfit$conf(extension,defaut)"
+      file delete -force "$audace(rep_images)/$fichierfit"
+   }
+   #}
+   ::console::affiche_resultat "\nGraphique sauvé sous multiplot.png\n"
+   return "multiplot.png"
 }
 ####################################################################
 
