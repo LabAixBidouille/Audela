@@ -762,7 +762,7 @@ proc ::tlscp::cmdGoto { visuNo } {
    #--- Affichage des coordonnees pointees par le telescope dans la Console
    if { $private($visuNo,equinoxObjet) != "now" } {
       ::telescope::afficheCoord
-      ::console::disp "$caption(tlscp,coord_pointees) \n"
+      ::console::disp "[format $caption(tlscp,coord_pointees) $private($visuNo,equinoxObjet)]\n"
       ::console::disp "$caption(tlscp,ad) $audace(telescope,getra) \n"
       ::console::disp "$caption(tlscp,dec) $audace(telescope,getdec) \n"
       ::console::disp "\n"
