@@ -244,6 +244,13 @@ cp -r $rep_audela_ready/images $DIRECTORY
 
 #--- Petit menage :
 echo "Effacement des fichiers et repertoires inutiles..."
+#-- Effacement des repertoire .svn
+dirw=`pwd`
+cd $DIRECTORY
+find . -name .svn -print0 | xargs -0 rm -rf
+cd $dirw
+
+#-- Reste du menage :
 cp $rep_audela_src/COPYING $DIRECTORY
 cp $rep_audela_ready/readme.txt $DIRECTORY
 rm -f $DIRECTORY/bin/version.tcl.in
