@@ -383,7 +383,7 @@ int tt_ima_series_prod_1(TT_IMA_SERIES *pseries)
    /*tt_imabuilder(p_out);*/
    tt_imacreater(p_out,p_in->naxis1,p_in->naxis2);
    for (kkk=0;kkk<(int)(nelem);kkk++) {
-      if (p_tmp1->p[kkk]==0) {
+      if (constant==0) {
 	 value=p_in->p[kkk];
       } else {
 	 value=p_in->p[kkk]*p_tmp1->p[kkk]/constant;
