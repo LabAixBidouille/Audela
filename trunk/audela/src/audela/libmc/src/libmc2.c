@@ -1293,7 +1293,7 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
    FILE *fichier_in=NULL;
    double timelim=1e3;
    time_t ltime;
-   long t0,t1;
+   time_t t0,t1;
    Tcl_DString dsptr;
    double equinoxe=J2000,ttutc=0.,jjutc;
 	int astrometric=1,ttmoinsutc=0;
@@ -2296,6 +2296,67 @@ int Cmd_mctcl_tle2ephem2(ClientData clientData, Tcl_Interp *interp, int argc, ch
       Tcl_DStringResult(interp,&dsptr);
       Tcl_DStringFree(&dsptr);
    }
+   return result;
+}
+
+int Cmd_mctcl_earthshadow(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+   Tcl_DString dsptr;
+   int result;
+   char s[524];
+   char sss[524];
+   double longmpc,rhocosphip,rhosinphip;
+   double equinoxe=J2000;
+	int astrometric=1;
+	double asd_center,dec_center,semi_angle_eq,semi_angle_po,asd_west,dec_west,asd_east,dec_east,asd_north,dec_north,asd_south,dec_south;
+	double asd_satel_west,asd_satel_east,dec_satel;
+	double nrevperday,jjutc,jjtt,impact;
+   if(argc<3) {
+      /* 		{gps 6.92389 e 43.75222 1270}
+      set date 2011-10-01T21:00:00.00 ; set home {gps 2.375 E 43.644348 137}
+      set date 2011-09-21T21:00:00.00 ; set home {gps 2.375 E 43.644348 137}
+		mc_earthshadow $date $home 1.0
+      */
+      sprintf(s,"Usage: %s Date_UTC Home ?nrevperday?", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      result = TCL_ERROR;
+	   return(result);
+   } else {
+      /* --- decode la Date---*/
+      mctcl_decode_date(interp,argv[1],&jjutc);
+		mc_tu2td(jjutc,&jjtt);
+      /* --- decode le Home ---*/
+      longmpc=0.;
+      rhocosphip=0.;
+      rhosinphip=0.;
+      mctcl_decode_topo(interp,argv[2],&longmpc,&rhocosphip,&rhosinphip);
+		/* --- decode le nombre de revolutions par jour ---*/
+		nrevperday=1;
+		if (argc>=4) {
+			nrevperday=atof(argv[3]);
+		}
+  	   result=TCL_OK;
+		/* --- on lance le calcul ---*/
+		mc_adshadow(jjtt,jjutc,equinoxe,astrometric,longmpc,rhocosphip,rhosinphip,nrevperday,&asd_center,&dec_center,&semi_angle_eq,&semi_angle_po,&asd_west,&dec_west,&asd_east,&dec_east,&asd_north,&dec_north,&asd_south,&dec_south,&asd_satel_west,&asd_satel_east,&dec_satel,&impact);
+	   Tcl_DStringInit(&dsptr);		
+		sprintf(sss,"{%.6f %.6f} ",asd_center/(DR),dec_center/(DR));
+		Tcl_DStringAppend(&dsptr,sss,-1);
+		sprintf(sss,"{%.6f %.6f} ",semi_angle_eq/(DR),semi_angle_po/(DR));
+		Tcl_DStringAppend(&dsptr,sss,-1);
+		sprintf(sss,"{%.6f %.6f} ",asd_west/(DR),dec_west/(DR));
+		Tcl_DStringAppend(&dsptr,sss,-1);
+		sprintf(sss,"{%.6f %.6f} ",asd_east/(DR),dec_east/(DR));
+		Tcl_DStringAppend(&dsptr,sss,-1);
+		sprintf(sss,"{%.6f %.6f} ",asd_north/(DR),dec_north/(DR));
+		Tcl_DStringAppend(&dsptr,sss,-1);
+		sprintf(sss,"{%.6f %.6f} ",asd_south/(DR),dec_south/(DR));
+		Tcl_DStringAppend(&dsptr,sss,-1);
+		sprintf(sss,"{%.6f %.6f %.6f %.6f} ",asd_satel_west/(DR),asd_satel_east/(DR),dec_satel/(DR),impact/(DR));
+		Tcl_DStringAppend(&dsptr,sss,-1);
+		/* --- libere les pointeurs ---*/
+      Tcl_DStringResult(interp,&dsptr);
+      Tcl_DStringFree(&dsptr);
+	}
    return result;
 }
 
@@ -3328,7 +3389,7 @@ int Cmd_mctcl_simulc_sat_stl(ClientData clientData, Tcl_Interp *interp, int argc
          cdrpos[k].mag0=mag;
          cdrpos[k].mag1=mag;
          cdrpos[k].mag2=mag;
-		 cdrpos[k].mag3=mag;
+			cdrpos[k].mag3=mag;
          cdrpos[k].mag4=mag;
          if (cdr.frame_center==0) {
             /* heliocentric */
