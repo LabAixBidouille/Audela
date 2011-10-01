@@ -94,6 +94,7 @@
    Tcl_CreateCommand(interp,"mc_lonlat2xy",(Tcl_CmdProc *)Cmd_mctcl_lonlat2xy,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_date2tt",(Tcl_CmdProc *)Cmd_mctcl_date2tt,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_tle2ephem",(Tcl_CmdProc *)Cmd_mctcl_tle2ephem,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"mc_earthshadow",(Tcl_CmdProc *)Cmd_mctcl_earthshadow,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_tle2ephem2",(Tcl_CmdProc *)Cmd_mctcl_tle2ephem2,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_tle2xyz",(Tcl_CmdProc *)Cmd_mctcl_tle2xyz,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_tt2bary",(Tcl_CmdProc *)Cmd_mctcl_tt2bary,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);

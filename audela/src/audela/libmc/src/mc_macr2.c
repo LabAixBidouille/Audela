@@ -1196,6 +1196,236 @@ void mc_adelemap_sgp(int sgp_method,double jj,double jjutc, double equinoxe, int
 
 }
 
+void mc_adshadow(double jj,double jjutc, double equinoxe, int astrometric, double longmpc,double rhocosphip,double rhosinphip, double nrevperday, double *asd_center, double *dec_center, double *semi_angle_eq, double *semi_angle_po, double *asd_west, double *dec_west, double *asd_east, double *dec_east, double *asd_north, double *dec_north, double *asd_south, double *dec_south, double *asd_satel_west, double *asd_satel_east, double *dec_satel, double *impact)
+/***************************************************************************/
+/* Calcul de l'asd, dec de l'ombre de la Terre */
+/***************************************************************************/
+/***************************************************************************/
+{
+   double llp[10],mmp[10],uup[10],jjd,ls,bs,rs,eps,/*dpsi,deps,*/xs,ys,zs;
+   double dxeq,dyeq,dzeq;
+   double reqter=(EARTH_SEMI_MAJOR_RADIUS)/UA,reqsol=696000./UA*1e3;
+	double xgeo,ygeo,zgeo;
+	double asd,dec;
+	double ux,uy,uz,aa,bb,cc,delta,alpha,beta,theta_eq,theta_po,ff;
+	double rpoter,rc_eq,rc_po;
+	double k_gauss,n,a,alpha0,alphans,alphaew;
+	double y0,xc,x,y,z,sepang,posang;
+	double dz,pos,alphacosp;
+   jjd=jj;
+
+   /*--- soleil geo ---*/
+	// Tenir compte de l'abberation de la lumiere a 1 UA ?
+   mc_jd2lbr1a(jjd,llp,mmp,uup);
+   mc_jd2lbr1b(jjd,SOLEIL,llp,mmp,uup,&ls,&bs,&rs);
+   mc_lbr2xyz(ls,bs,rs,&xs,&ys,&zs);
+   mc_obliqmoy(jjd,&eps);
+   mc_xyzec2eq(xs,ys,zs,eps,&xs,&ys,&zs); /* equatoriale a la date */
+	rs=sqrt(xs*xs+ys*ys+zs*zs);
+
+   /*--- vecteur unitaire geo en direction du sommet du cone d'ombre ---*/
+	ux=-xs/rs;
+	uy=-ys/rs;
+	uz=-zs/rs;
+
+	/* --- angle equatorial du cone d'ombre ---*/
+	theta_eq=mc_asin((reqsol-reqter)/rs);
+
+	/* --- angle polaire du cone d'ombre ---*/
+	ff=1./EARTH_INVERSE_FLATTENING;
+   rpoter=reqter*(1-ff);
+	theta_po=mc_asin((reqsol-rpoter)/rs);
+
+	/* --- longueur du cone d'ombre ---*/
+	rc_eq=reqter/sin(theta_eq);
+	rc_po=rpoter/sin(theta_po);
+
+	/* --- conversion du nrevperday en demi-grand axe de l'orbite ---*/
+   k_gauss=KGEOS;
+   n=nrevperday*360.; /* deg/day */
+   a=pow(k_gauss/(DR)/n,2./3.);
+
+	/* === coordonnees de l'axe du cone d'ombre qui intercepte une orbite equatoriale === */
+	xgeo=ux*a;
+	ygeo=uy*a;
+	zgeo=uz*a;
+	alpha0=atan2(ygeo,xgeo);
+   /*--- calcul de la parallaxe ---*/
+   mc_paraldxyzeq(jjutc,longmpc,rhocosphip,rhosinphip,&dxeq,&dyeq,&dzeq);
+	/* geo -> topo */
+   mc_he2ge(xgeo,ygeo,zgeo,-dxeq,-dyeq,-dzeq,&x,&y,&z);
+   mc_xyz2add(x,y,z,&asd,&dec,&delta);
+   /*--- correction de l'aberration annuelle ---*/
+	if (astrometric==0) {
+		mc_nutradec(jjd,asd,dec,&asd,&dec,1);
+		mc_aberration_annuelle(jjd,asd,dec,&asd,&dec,1);
+	}
+   /*--- correction de la precession ---*/
+   mc_precad(jjd,asd,dec,equinoxe,&asd,&dec); /* equatoriale J2000 */
+	*asd_center=asd;
+	*dec_center=dec;
+
+	*asd_west=*asd_center;
+	*dec_west=*dec_center;
+	*asd_east=*asd_center;
+	*dec_east=*dec_center;
+	*asd_north=*asd_center;
+	*dec_north=*dec_center;
+	*asd_south=*asd_center;
+	*dec_south=*dec_center;
+	*semi_angle_eq=0;
+	*semi_angle_po=0;
+	if (a>rc_po) {
+		// toujours au dela du cone d'ombre
+		return;
+	}
+
+	/* === calcul de l'angle alpha des bords est-west du cone d'ombre qui intercepte une orbite equatoriale === */
+	y0=rc_eq*tan(theta_eq);
+	xc=rc_eq;
+	aa=xc*xc+y0*y0;
+	bb=-2*y0*y0;
+	cc=y0*y0-a*a;
+	delta=bb*bb-4*aa*cc;
+	if (delta>=0) {
+		beta=(-bb+sqrt(delta))/2./aa;
+		alpha=mc_acos(xc/a*beta);
+	} else {
+		beta=1;
+		alpha=0;
+	}
+
+	/* === coordonnees du bord west du cone d'ombre qui intercepte une orbite equatoriale === */
+	xgeo=a*cos(alpha0-alpha);
+	ygeo=a*sin(alpha0-alpha);
+	zgeo=uz*a;
+   /*--- calcul de la parallaxe ---*/
+   mc_paraldxyzeq(jjutc,longmpc,rhocosphip,rhosinphip,&dxeq,&dyeq,&dzeq);
+	/* geo -> topo */
+   mc_he2ge(xgeo,ygeo,zgeo,-dxeq,-dyeq,-dzeq,&x,&y,&z);
+   mc_xyz2add(x,y,z,&asd,&dec,&delta);
+   /*--- correction de l'aberration annuelle ---*/
+	if (astrometric==0) {
+		mc_nutradec(jjd,asd,dec,&asd,&dec,1);
+		mc_aberration_annuelle(jjd,asd,dec,&asd,&dec,1);
+	}
+   /*--- correction de la precession ---*/
+   mc_precad(jjd,asd,dec,equinoxe,&asd,&dec); /* equatoriale J2000 */
+	*asd_west=asd;
+	*dec_west=dec;
+   mc_sepangle(*asd_center,asd,*dec_center,dec,&sepang,&posang);
+	*semi_angle_eq=sepang;
+	alphaew=sepang;
+
+	/* === coordonnees du bord east du cone d'ombre === */
+	xgeo=a*cos(alpha0+alpha);
+	ygeo=a*sin(alpha0+alpha);
+	zgeo=uz*a;
+   /*--- calcul de la parallaxe ---*/
+   mc_paraldxyzeq(jjutc,longmpc,rhocosphip,rhosinphip,&dxeq,&dyeq,&dzeq);
+	/* geo -> topo */
+   mc_he2ge(xgeo,ygeo,zgeo,-dxeq,-dyeq,-dzeq,&x,&y,&z);
+   mc_xyz2add(x,y,z,&asd,&dec,&delta);
+   /*--- correction de l'aberration annuelle ---*/
+	if (astrometric==0) {
+		mc_nutradec(jjd,asd,dec,&asd,&dec,1);
+		mc_aberration_annuelle(jjd,asd,dec,&asd,&dec,1);
+	}
+   /*--- correction de la precession ---*/
+   mc_precad(jjd,asd,dec,equinoxe,&asd,&dec); /* equatoriale J2000 */
+	*asd_east=asd;
+	*dec_east=dec;
+
+	/* === calcul de l'angle alpha des bords north-south du cone d'ombre qui intercepte une orbite equatoriale === */
+	y0=rc_po*tan(theta_po);
+	xc=rc_po;
+	aa=xc*xc+y0*y0;
+	bb=-2*y0*y0;
+	cc=y0*y0-a*a;
+	delta=bb*bb-4*aa*cc;
+	if (delta>=0) {
+		beta=(-bb+sqrt(delta))/2./aa;
+		alpha=mc_acos(xc/a*beta);
+	} else {
+		beta=1;
+		alpha=0;
+	}
+
+	/* === coordonnees du bord north du cone d'ombre === */
+	xgeo=ux*a;
+	ygeo=uy*a;
+	zgeo=uz*a+a*sin(alpha);
+   /*--- calcul de la parallaxe ---*/
+   mc_paraldxyzeq(jjutc,longmpc,rhocosphip,rhosinphip,&dxeq,&dyeq,&dzeq);
+	/* geo -> topo */
+   mc_he2ge(xgeo,ygeo,zgeo,-dxeq,-dyeq,-dzeq,&x,&y,&z);
+   mc_xyz2add(x,y,z,&asd,&dec,&delta);
+   /*--- correction de l'aberration annuelle ---*/
+	if (astrometric==0) {
+		mc_nutradec(jjd,asd,dec,&asd,&dec,1);
+		mc_aberration_annuelle(jjd,asd,dec,&asd,&dec,1);
+	}
+   /*--- correction de la precession ---*/
+   mc_precad(jjd,asd,dec,equinoxe,&asd,&dec); /* equatoriale J2000 */
+	*asd_north=asd;
+	*dec_north=dec;
+   mc_sepangle(*asd_center,asd,*dec_center,dec,&sepang,&posang);
+	*semi_angle_po=sepang;
+	alphans=sepang;
+
+	/* === coordonnees du bord south du cone d'ombre === */
+	xgeo=ux*a;
+	ygeo=uy*a;
+	zgeo=uz*a-a*sin(alpha);
+   /*--- calcul de la parallaxe ---*/
+   mc_paraldxyzeq(jjutc,longmpc,rhocosphip,rhosinphip,&dxeq,&dyeq,&dzeq);
+	/* geo -> topo */
+   mc_he2ge(xgeo,ygeo,zgeo,-dxeq,-dyeq,-dzeq,&x,&y,&z);
+   mc_xyz2add(x,y,z,&asd,&dec,&delta);
+   /*--- correction de l'aberration annuelle ---*/
+	if (astrometric==0) {
+		mc_nutradec(jjd,asd,dec,&asd,&dec,1);
+		mc_aberration_annuelle(jjd,asd,dec,&asd,&dec,1);
+	}
+   /*--- correction de la precession ---*/
+   mc_precad(jjd,asd,dec,equinoxe,&asd,&dec); /* equatoriale J2000 */
+	*asd_south=asd;
+	*dec_south=dec;
+
+	/* === passage d'un satellite a orbite équatoriale === */
+	delta=sqrt(ux*ux+uy*uy);
+	xgeo=ux/delta*a;
+	ygeo=uy/delta*a;
+	zgeo=0;
+   /*--- calcul de la parallaxe ---*/
+   mc_paraldxyzeq(jjutc,longmpc,rhocosphip,rhosinphip,&dxeq,&dyeq,&dzeq);
+	/* geo -> topo */
+   mc_he2ge(xgeo,ygeo,zgeo,-dxeq,-dyeq,-dzeq,&x,&y,&z);
+   mc_xyz2add(x,y,z,&asd,&dec,&delta);
+   /*--- correction de l'aberration annuelle ---*/
+	if (astrometric==0) {
+		mc_nutradec(jjd,asd,dec,&asd,&dec,1);
+		mc_aberration_annuelle(jjd,asd,dec,&asd,&dec,1);
+	}
+   /*--- correction de la precession ---*/
+   mc_precad(jjd,asd,dec,equinoxe,&asd,&dec); /* equatoriale J2000 */
+	*asd_satel_west=asd;
+	*asd_satel_east=asd;
+	*dec_satel=dec;
+	*impact=(*dec_satel-*dec_center);
+	if (fabs(*impact)<alphans) {
+		dz=fabs(*impact/alphans);
+		alpha=alphans*dz+alphaew*(1-dz);
+		alphacosp=alpha*(1-dz*dz);
+		asd=*asd_center-alphacosp;
+	   asd=fmod(4*PI+asd,2*PI);
+		*asd_satel_west=asd;
+		asd=*asd_center+alphacosp;
+	   asd=fmod(4*PI+asd,2*PI);
+		*asd_satel_east=asd;
+	}
+}
+
 void mc_xyzgeoelem(double jj,double jjutc, double equinoxe, int astrometric, struct elemorb elem, double longmpc,double rhocosphip,double rhosinphip, int planete, double *xageo, double *yageo, double *zageo, double *xtgeo, double *ytgeo, double *ztgeo, double *xsgeo, double *ysgeo, double *zsgeo, double *xlgeo, double *ylgeo, double *zlgeo)
 /***************************************************************************/
 /* Calcul de X,Y,Z geocentrique d'un astre defini par ses elements d'orbite a jj donne.   */
