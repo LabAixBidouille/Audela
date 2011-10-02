@@ -100,10 +100,6 @@ SOURCE=..\..\libtel.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\src\routine.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\src\telescop.c
 # End Source File
 # Begin Source File
