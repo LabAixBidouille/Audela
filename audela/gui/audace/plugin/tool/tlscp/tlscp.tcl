@@ -760,13 +760,11 @@ proc ::tlscp::cmdGoto { visuNo } {
    }
 
    #--- Affichage des coordonnees pointees par le telescope dans la Console
-   if { $private($visuNo,equinoxObjet) != "now" } {
-      ::telescope::afficheCoord
-      ::console::disp "[format $caption(tlscp,coord_pointees) $private($visuNo,equinoxObjet)]\n"
-      ::console::disp "$caption(tlscp,ad) $audace(telescope,getra) \n"
-      ::console::disp "$caption(tlscp,dec) $audace(telescope,getdec) \n"
-      ::console::disp "\n"
-   }
+   ::telescope::afficheCoord
+   ::console::disp "[format $caption(tlscp,coord_pointees) $private($visuNo,equinoxObjet)]\n"
+   ::console::disp "$caption(tlscp,ad) $audace(telescope,getra) \n"
+   ::console::disp "$caption(tlscp,dec) $audace(telescope,getdec) \n"
+   ::console::disp "\n"
 
    #--- Gestion graphique du bouton Stop
    $private($visuNo,This).fra2.fra2a.but2 configure -relief raised -state normal -text $caption(tlscp,coord) \
