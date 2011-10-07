@@ -839,61 +839,71 @@ int mytel_home_get(struct telprop *tel,char *ligne)
    int d1,m1,d2,m2;
    double longitude,latitude;
    /* Get the longitude */
-   mytel_sendLX(tel, RETURN_STRING, ss, "#:Gg#");
-   sprintf(s,"string range \"%s\" 0 2",ss); mytel_tcleval(tel,s);
-   strcpy(s,tel->interp->result);
-   d1=atoi(s);
-   sprintf(s,"string range \"%s\" 4 5",ss); mytel_tcleval(tel,s);
-   strcpy(s,tel->interp->result);
-   m1=atoi(s);
-   longitude=(double)d1+(double)m1/60.;
-   if (longitude>180) {
-      longitude=360.-longitude;
-      strcpy(ew,"e");
+
+   if ( strcmp(tel->name,"FS2") != 0 ) {
+      mytel_sendLX(tel, RETURN_STRING, ss, "#:Gg#");
+      sprintf(s,"string range \"%s\" 0 2",ss); mytel_tcleval(tel,s);
+      strcpy(s,tel->interp->result);
+      d1=atoi(s);
+      sprintf(s,"string range \"%s\" 4 5",ss); mytel_tcleval(tel,s);
+      strcpy(s,tel->interp->result);
+      m1=atoi(s);
+      longitude=(double)d1+(double)m1/60.;
+      if (longitude>180) {
+         longitude=360.-longitude;
+         strcpy(ew,"e");
+      } else {
+         strcpy(ew,"w");
+      }
+      /* Get the latitude */
+      mytel_sendLX(tel, RETURN_STRING, ss, "#:Gt#");   
+      sprintf(s,"string range \"%s\" 1 2",ss); mytel_tcleval(tel,s);
+      strcpy(s,tel->interp->result);
+      d2=atoi(s);
+      sprintf(s,"string range \"%s\" 4 5",ss); mytel_tcleval(tel,s);
+      strcpy(s,tel->interp->result);
+      m2=atoi(s);
+      sprintf(s,"string range \"%s\" 0 0",ss); mytel_tcleval(tel,s);
+      strcpy(s,tel->interp->result);
+      if (strcmp(s,"-")==0) {
+         strcpy(signe,"-");
+      } else {
+         strcpy(signe,"+");
+      }
+      latitude=fabs((double)d2)+(double)m2/60.;
+      /* Returns the result */
+      sprintf(ligne,"GPS %f %s %s%f 0",longitude,ew,signe,latitude);
    } else {
-      strcpy(ew,"w");
+      // le modele FS2 ne possede pas de commande pour recupere la longitude et la latitude.
+      // A la place, je retourne la valeur qui est dasn la variable tel->homePosition
+      sprintf(ligne, tel->homePosition);
    }
-   /* Get the latitude */
-   mytel_sendLX(tel, RETURN_STRING, ss, "#:Gt#");   
-   sprintf(s,"string range \"%s\" 1 2",ss); mytel_tcleval(tel,s);
-   strcpy(s,tel->interp->result);
-   d2=atoi(s);
-   sprintf(s,"string range \"%s\" 4 5",ss); mytel_tcleval(tel,s);
-   strcpy(s,tel->interp->result);
-   m2=atoi(s);
-   sprintf(s,"string range \"%s\" 0 0",ss); mytel_tcleval(tel,s);
-   strcpy(s,tel->interp->result);
-   if (strcmp(s,"-")==0) {
-      strcpy(signe,"-");
-   } else {
-      strcpy(signe,"+");
-   }
-   latitude=fabs((double)d2)+(double)m2/60.;
-   /* Returns the result */
-   sprintf(ligne,"GPS %f %s %s%f 0",longitude,ew,signe,latitude);
    return 0;
 }
 
 int mytel_home_set(struct telprop *tel,double longitude,char *ew,double latitude,double altitude)
 {
    char ligne[1024],ligne2[1024];
-   /* Set the longitude */
-   mytel_flush(tel);
-   if ((strcmp(ew,"E")==0)||(strcmp(ew,"e")==0)) {
-      longitude=360.-longitude;
-   }
-   sprintf(ligne,"mc_angle2dms %f 360 zero 0 + list",longitude); mytel_tcleval(tel,ligne);
-   strcpy(ligne2,tel->interp->result);
-   sprintf(ligne,"string range \"[string range [lindex {%s} 0] 1 3]\xDF[string range [lindex {%s} 1] 0 1]\" 0 6",ligne2,ligne2); mytel_tcleval(tel,ligne);
-   strcpy(ligne2,tel->interp->result);
-   mytel_sendLX(tel, RETURN_CHAR, ligne, "#:Sg%s#", ligne2);
+   // Set the longitude
+   //   cas particulier du modele FS2 : je n'envoie pas cette commmande si c'est un FS2 car elle n'est pas reconnue par FS2
+   if ( strcmp(tel->name,"FS2") != 0 ) {
+      mytel_flush(tel);
+      if ((strcmp(ew,"E")==0)||(strcmp(ew,"e")==0)) {
+         longitude=360.-longitude;
+      }
+      sprintf(ligne,"mc_angle2dms %f 360 zero 0 + list",longitude); mytel_tcleval(tel,ligne);
+      strcpy(ligne2,tel->interp->result);
+      sprintf(ligne,"string range \"[string range [lindex {%s} 0] 1 3]\xDF[string range [lindex {%s} 1] 0 1]\" 0 6",ligne2,ligne2); mytel_tcleval(tel,ligne);
+      strcpy(ligne2,tel->interp->result);
+      mytel_sendLX(tel, RETURN_CHAR, ligne, "#:Sg%s#", ligne2);
 
-   /* Set the latitude */
-   sprintf(ligne,"mc_angle2dms %f 90 zero 0 + list",latitude); mytel_tcleval(tel,ligne);
-   strcpy(ligne2,tel->interp->result);
-   sprintf(ligne,"string range \"[string range [lindex {%s} 0] 0 0][string range [lindex {%s} 0] 1 2]\xDF[string range [lindex {%s} 1] 0 1]\" 0 6",ligne2,ligne2,ligne2); mytel_tcleval(tel,ligne);
-   strcpy(ligne2,tel->interp->result);
-   mytel_sendLX(tel, RETURN_CHAR, ligne, "#:St%s#", ligne2);
+      /* Set the latitude */
+      sprintf(ligne,"mc_angle2dms %f 90 zero 0 + list",latitude); mytel_tcleval(tel,ligne);
+      strcpy(ligne2,tel->interp->result);
+      sprintf(ligne,"string range \"[string range [lindex {%s} 0] 0 0][string range [lindex {%s} 0] 1 2]\xDF[string range [lindex {%s} 1] 0 1]\" 0 6",ligne2,ligne2,ligne2); mytel_tcleval(tel,ligne);
+      strcpy(ligne2,tel->interp->result);
+      mytel_sendLX(tel, RETURN_CHAR, ligne, "#:St%s#", ligne2);
+   }
    return 0;
 }
 /* ================================================================ */
