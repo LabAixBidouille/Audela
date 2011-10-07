@@ -41,6 +41,11 @@
 #include "teltcl.h"
 #include "telcmd.h"
 
+#ifndef strupr 
+#define strupr _strupr
+#endif
+
+
 /* valeurs des structures tel_* privees */
 
 char *tel_ports[] = {
@@ -966,11 +971,15 @@ int cmdTelHome(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
          Tcl_Eval(interp,ligne);
          altitude=(double)atof(interp->result);
          tel_home_set(tel,longitude,ew,latitude,altitude);
-         tel_home_get(tel,ligne);
-         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          // je memorise la position pour eviter d'envoyer une nouvelle requete au
-         // telescope chaque fois qu'on utilise "tel radec coord" ou "tel radec goto"
+         // telescope chaque fois qu'on utilise "tel radec coord" ou "tel radec goto" 
+         sprintf(tel->homePosition,"GPS %f %s %+f 0",longitude,ew,latitude);
+         // attention : la fonction tel_home_get() de certains telescope (ex: FS2) retourne la valeur de 
+         // tel->homePosition pour pallier à l'absence de commande pour lire la longitude et la latitude.
+         // il est donc important d'appeler tel_home_get() apres avoir valorise tel->homePosition
+         tel_home_get(tel,ligne);
          strcpy(tel->homePosition,ligne);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       }
    }
    return result;
@@ -1022,7 +1031,8 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
          // je lis les parametres optionnels
          for (k=3;k<=argc-1;k++) {
             if (strcmp(argv[k],"-equinox")==0) {
-               strncpy(outputEquinox,argv[k+1], sizeof(outputEquinox));
+               // je recupere la valeur de l'equinoxe et je la convertis en majuscule systematiquement
+               strncpy(outputEquinox,strupr(argv[k+1]), sizeof(outputEquinox));
             }
          }
          if ( strcmp(tel->model_tel2cat,"") == 0 ) {
