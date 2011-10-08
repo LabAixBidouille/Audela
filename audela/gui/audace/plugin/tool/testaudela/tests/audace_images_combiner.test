@@ -362,7 +362,7 @@ test imastack_shutter {shutter de rz_shutter1 rz_shutter2 rz_shutter3} -constrai
    #--   procedure de controle
    set result 0
    mesure set [lrange [buf$bufNo getpix $coords] 1 end ]
-   attendu set [list 320]
+   attendu set [list 319]
    if {$attendu(:) eq "$mesure(:)"} {set result "1"}
    return $result
 } -cleanup {
