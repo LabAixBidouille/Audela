@@ -246,7 +246,7 @@ namespace eval ::fieldchart {
             label $This.usr.1.lab3 -text "$caption(fieldchart,recherche)"
             grid $This.usr.1.lab3 -row 2 -column 0 -padx 5 -pady 2 -sticky w
 
-            entry $This.usr.1.ent1 -textvariable ::fieldchart::widget(fieldchart,pathCatalog)
+            entry $This.usr.1.ent1 -textvariable ::fieldchart::widget(fieldchart,pathCatalog) -width 30
             grid $This.usr.1.ent1 -row 2 -column 1 -padx 5 -pady 2 -sticky e
             $This.usr.1.ent1 xview end
 
@@ -287,25 +287,25 @@ namespace eval ::fieldchart {
             label $This.usr.2.lab3 -text "$caption(fieldchart,ad_centre)"
             grid $This.usr.2.lab3 -column 0 -row 2 -padx 5 -pady 2 -sticky w
 
-            entry $This.usr.2.ent3 -textvariable fieldchart(CentreRA) -width 10
+            entry $This.usr.2.ent3 -textvariable fieldchart(CentreRA) -width 14
             grid $This.usr.2.ent3 -column 1 -row 2 -padx 5 -pady 2 -sticky w
 
             label $This.usr.2.lab4 -text "$caption(fieldchart,dec_centre)"
             grid $This.usr.2.lab4 -column 0 -row 3 -padx 5 -pady 2 -sticky w
 
-            entry $This.usr.2.ent4 -textvariable fieldchart(CentreDec) -width 10
+            entry $This.usr.2.ent4 -textvariable fieldchart(CentreDec) -width 14
             grid $This.usr.2.ent4 -column 1 -row 3 -padx 5 -pady 2 -sticky w
 
             label $This.usr.2.lab5 -text "$caption(fieldchart,inclinaison_camera)"
             grid $This.usr.2.lab5 -column 0 -row 4 -padx 5 -pady 2 -sticky w
 
-            entry $This.usr.2.ent5 -textvariable fieldchart(Inclin) -width 10
+            entry $This.usr.2.ent5 -textvariable fieldchart(Inclin) -width 14
             grid $This.usr.2.ent5 -column 1 -row 4 -padx 5 -pady 2 -sticky w
 
             label $This.usr.2.lab6 -text "$caption(fieldchart,focale_instrument)"
             grid $This.usr.2.lab6 -column 0 -row 5 -padx 5 -pady 2 -sticky w
 
-            entry $This.usr.2.ent6 -textvariable fieldchart(FocLen) -width 10
+            entry $This.usr.2.ent6 -textvariable fieldchart(FocLen) -width 14
             grid $This.usr.2.ent6 -column 1 -row 5 -padx 5 -pady 2 -sticky w
 
             label $This.usr.2.lab7 -text "$caption(fieldchart,taille_pixels)"
@@ -313,16 +313,16 @@ namespace eval ::fieldchart {
 
             frame $This.usr.2.1 -borderwidth 0 -relief flat
 
-               entry $This.usr.2.1.ent1 -textvariable fieldchart(PixSize1) -width 3
+               entry $This.usr.2.1.ent1 -textvariable fieldchart(PixSize1) -width 5
                pack $This.usr.2.1.ent1 -side left
 
                label $This.usr.2.1.lab1 -text "$caption(fieldchart,x)"
                pack $This.usr.2.1.lab1 -side left
 
-               entry $This.usr.2.1.ent2 -textvariable fieldchart(PixSize2) -width 3
+               entry $This.usr.2.1.ent2 -textvariable fieldchart(PixSize2) -width 5
                pack $This.usr.2.1.ent2 -side left
 
-            grid $This.usr.2.1 -column 1 -row 6 -columnspan 3 -padx 5 -pady 2 -sticky w
+            grid $This.usr.2.1 -column 1 -row 6 -padx 5 -pady 2 -sticky w
 
             label $This.usr.2.lab8 -text "$caption(fieldchart,crpix1)"
             grid $This.usr.2.lab8 -column 0 -row 7 -padx 5 -pady 2 -sticky w
@@ -340,7 +340,7 @@ namespace eval ::fieldchart {
                -command "::fieldchart::cmdTakeFITSKeywords"
             grid $This.usr.2.but3 -column 2 -row 0 -rowspan 9 -padx 5 -pady 5 -ipady 5 -sticky news
 
-         pack $This.usr.2 -side top -fill both
+         pack $This.usr.2 -side top -fill both -expand 1
 
       pack $This.usr -side top -fill both -expand 1
 
