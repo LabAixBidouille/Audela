@@ -30,8 +30,8 @@ test affichage_zoom_05 {zoom x0.5} {AUDACE} {
    update
    after 300
    #--- je recupere les coordonnees et l'intensite
-   return "[.audace.fra1.labURLX cget -text] [.audace.fra1.labURLY cget -text] [.audace.fra1.labURLX cget -text] [.audace.fra1.labI cget -text]"
-} "X = 42 Y = 196 X = 42 I = 323.000000"
+   return "[.audace.fra1.labURLX cget -text] [.audace.fra1.labURLY cget -text] [.audace.fra1.labI cget -text]"
+} "X = 42 Y = 196 I = 323.000000"
 
 #-------------------------------------------------------------------------------
 test affichage_script_zoom_1 {zoom x1 par script} {AUDACE} {
@@ -75,8 +75,10 @@ test visu_color {affiche une image couleur} {AUDACE} {
    #--- je deplace la souris sur le point 20,20
    mouveMouse $visuNo 20 20
    #--- je recupere les coordonnees et l'intensite
-   return "[.audace.fra1.labURLX cget -text] [.audace.fra1.labURLY cget -text] [.audace.fra1.labURLX cget -text] [.audace.fra1.labI cget -text]"
-} "X = 21 Y = 579 X = 21 R:1.000000 V:0.000000 B:0.000000"
+   set Irvb [.audace.fra1.labI cget -text]
+   set IsansRVB "[ lindex [ split [ lindex $Irvb 0 ] : ] 1 ] [ lindex [ split [ lindex $Irvb 1 ] : ] 1 ] [ lindex [ split [ lindex $Irvb 2 ] : ] 1 ]"
+   return "[.audace.fra1.labURLX cget -text] [.audace.fra1.labURLY cget -text] $IsansRVB"
+} "X = 21 Y = 579 1.000000 0.000000 0.000000"
 
 #-------------------------------------------------------------------------------
 test visu_end {raz de la visu} {AUDACE} {
