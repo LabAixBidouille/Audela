@@ -810,7 +810,7 @@ namespace eval ::prtr {
             foreach var {bitpix bzero crpix1 crpix2 mean naxis naxis1 naxis2 naxis3} {
                set $var [lindex [array get kwds [string toupper $var]] 1]
             }
-            if {[info exists bzero] && $bzero ne ""} {set bitpix "+$bitpix"}
+            if {[info exists bzero] && $bzero ne ""} {set bitpix "$bitpix"}
             array unset kwds
             if {$naxis eq "2" || $naxis eq "3"} {
                #--   si CRPIX1 et CRPIX2 indefinis, calcule le centre de l'image
@@ -3344,7 +3344,6 @@ namespace eval ::prtr {
             set toDestroy [concat $toDestroy ${file}r ${file}g ${file}b]
          }
          #--   indique le plan vert de l'image de reference
-         #set ref "referenceg$extOut"
          set ref "reference${plan_ref}$extOut"
       }
 
