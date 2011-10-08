@@ -118,7 +118,7 @@ test aligner_translation_moindres_carres {alignement par moindes carres} -constr
    set ::conf(fichier,compres) 0
    file copy -force [file join $::conf(testaudela,rep_images) m45_champ.fit] $::audace(rep_images)
    buf$bufNo load [file join $::audace(rep_images) m45_champ.fit]
-   set coords [list 381 391]
+   #set coords [list 381 391]
    set attendu [lindex [buf$bufNo getpix $coords] 1]
    ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans1 . .fit TRANS trans_x=2 trans_y=2"
    ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans2 . .fit TRANS trans_x=2 trans_y=-2"
@@ -142,7 +142,7 @@ test aligner_translation_moindres_carres {alignement par moindes carres} -constr
    #-- procédure de controle
    set result 0
    ::blt::vector create resultat_exp -watchunset 1
-   resultat_exp set [list 155 68 55 98]
+   resultat_exp set [list 155 67 55 98]
    resultat_exp offset 1
 
    #--   verifie l'existence de 4 images
