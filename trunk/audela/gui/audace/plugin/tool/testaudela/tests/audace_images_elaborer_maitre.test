@@ -189,6 +189,7 @@ test audace_pretrait_flat {faire un flat sans/avec offset sans/avec dark} -const
    set attenduFlat $mediane(0)
    #--   calcule la difference
    set difference [expr {$attenduFlat-$mesure}]
+   set difference [expr {fmod($difference,32768)}]
    if {$difference eq "0.0"} {incr result}
    file delete $nom_flat.fit.gz
 
@@ -313,7 +314,7 @@ test audace_pretrait_pretraitee {faire une image avec/sans optimisation du noir}
    set result 0
    if {[file exists $nom_cal.fit.gz]} {incr result}
    #--   valeur obtenue par un traitement pas à pas
-   set attendu "33267"
+   set attendu "32767"
    #--   cherche la valeur obtenue
    set mesure [lrange [buf$bufNo getpix $coords] 1 end]
    #--   calcule la difference
