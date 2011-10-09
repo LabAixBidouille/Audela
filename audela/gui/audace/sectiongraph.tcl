@@ -121,8 +121,8 @@ proc ::sectiongraph::refresh { visuNo itemNo args } {
    #--- je calcule l'hypothenuse et ses ratios horizontaux et verticaux (=echelle de graduation en pixel)
    set numPixels [expr {hypot($xDiff,$yDiff)}]
    if { $numPixels != 0 } {
-      set xRatio    [expr {$xDiff / $numPixels}]
-      set yRatio    [expr {$yDiff / $numPixels}]
+      set xRatio [expr {$xDiff / $numPixels}]
+      set yRatio [expr {$yDiff / $numPixels}]
    } else {
       set xRatio 1
       set yRatio 1
@@ -154,7 +154,7 @@ proc ::sectiongraph::refresh { visuNo itemNo args } {
             lappend lyB [lindex [buf$bufNo getpix [list $x $y ] ] 3]
          }
       } else {
-         #--- si le point est hors de l'image , j'affecte la valeur 0
+         #--- si le point est hors de l'image, j'affecte la valeur 0
          lappend lyR 0
          if { $nbcolor($visuNo) == 3 } {
             lappend lyG 0
@@ -176,7 +176,7 @@ proc ::sectiongraph::refresh { visuNo itemNo args } {
    } else {
       sectiongraphYG$visuNo set $lyG
       sectiongraphYB$visuNo set $lyB
-      #--- j'affiche trois courbes rouge, verte et bleue
+      #--- j'affiche trois courbes, une rouge, une verte et une bleue
       $private($visuNo,graph,horz) element configure lineR -color red
       $private($visuNo,graph,horz) element configure lineG -color green
       $private($visuNo,graph,horz) element configure lineB -color blue
@@ -225,17 +225,17 @@ proc ::sectiongraph::createToplevel { visuNo } {
 
    #--- Horizontal Graph
    set private($visuNo,graph,horz) [blt::graph $This.horz \
-            -title "" \
-            -width $width -height $height \
-            -takefocus 0 \
-            -bd 0 -relief flat \
-            -rightmargin 1 -leftmargin 60 \
-            -topmargin 1 -bottommargin 25 \
-            -background $fgColor \
-            -plotborderwidth 2 -plotrelief groove \
-            -plotpadx 0 -plotpady 0 \
-            -plotbackground $fgColor \
-         ]
+         -title "" \
+         -width $width -height $height \
+         -takefocus 0 \
+         -bd 0 -relief flat \
+         -rightmargin 1 -leftmargin 60 \
+         -topmargin 1 -bottommargin 25 \
+         -background $fgColor \
+         -plotborderwidth 2 -plotrelief groove \
+         -plotpadx 0 -plotpady 0 \
+         -plotbackground $fgColor \
+      ]
 
    $private($visuNo,graph,horz) element create lineR \
       -xdata sectiongraphX$visuNo -ydata sectiongraphYR$visuNo -color $fgColor -symbol ""
