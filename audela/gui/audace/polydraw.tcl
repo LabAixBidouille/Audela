@@ -20,26 +20,25 @@ proc ::polydraw::init { visuNo } {
 
    set private($visuNo,hCanvas) [::confVisu::getCanvas $visuNo]
 
-   set private($visuNo,mouseAddItem) "0"
-   set private($visuNo,mouseAddNode) "0"
-   set private($visuNo,mouseMoveLine) "1"
+   set private($visuNo,mouseAddItem)   "0"
+   set private($visuNo,mouseAddNode)   "0"
+   set private($visuNo,mouseMoveLine)  "1"
 
-   set private($visuNo,previousZoom)  [confVisu::getZoom $visuNo]
+   set private($visuNo,previousZoom)   [confVisu::getZoom $visuNo]
    ::confVisu::addZoomListener $visuNo "::polydraw::setZoom $visuNo"
 
    interp alias {} tags$private($visuNo,hCanvas) {} $private($visuNo,hCanvas) itemcget current -tags
 
    #-- add bindings for drawing/editing polygons to a canvas
-   $private($visuNo,hCanvas) bind polydraw <Button-1>         "::polydraw::mark   $visuNo %W %x %y "
-   $private($visuNo,hCanvas) bind polydraw <B1-Motion>        "::polydraw::move   $visuNo %W %x %y "
-   $private($visuNo,hCanvas) bind polydraw <Shift-B1-Motion>  "::polydraw::move   $visuNo %W %x %y 1 "
+   $private($visuNo,hCanvas) bind polydraw <Button-1>         "::polydraw::mark   $visuNo %W %x %y"
+   $private($visuNo,hCanvas) bind polydraw <B1-Motion>        "::polydraw::move   $visuNo %W %x %y"
+   $private($visuNo,hCanvas) bind polydraw <Shift-B1-Motion>  "::polydraw::move   $visuNo %W %x %y 1"
    $private($visuNo,hCanvas) bind polydraw <Button-3>         "::polydraw::delete $visuNo %W 1"
-   $private($visuNo,hCanvas) bind polydraw <Double-1>         "::polydraw::insert $visuNo %W "
+   $private($visuNo,hCanvas) bind polydraw <Double-1>         "::polydraw::insert $visuNo %W"
    $private($visuNo,hCanvas) bind polydraw <Button-2>         "::polydraw::rotate $visuNo %W 0.1"
    $private($visuNo,hCanvas) bind polydraw <Shift-2>          "::polydraw::rotate $visuNo %W -0.1"
-   $private($visuNo,hCanvas) bind polydraw <Button-3>         "::polydraw::delete $visuNo %W "
+   $private($visuNo,hCanvas) bind polydraw <Button-3>         "::polydraw::delete $visuNo %W"
    $private($visuNo,hCanvas) bind polydraw <Shift-3>          "::polydraw::delete $visuNo %W 1"
-
 }
 
 #------------------------------------------------------------
@@ -64,7 +63,6 @@ proc ::polydraw::close { visuNo } {
       $private($visuNo,hCanvas) delete polydraw
    }
    confVisu::removeZoomListener $visuNo "::polydraw::setZoom $visuNo"
-
 }
 
 #------------------------------------------------------------
@@ -113,7 +111,7 @@ proc ::polydraw::setMouseMoveLine { visuNo value } {
 #  setZoom
 #     applique un zoom sur tous les items, cette procedure peut etre appelee:
 #      - soit par une autre procedure
-#           exemple:  ::polydraw::setZoom 1
+#           exemple: ::polydraw::setZoom 1
 #      - soit automatiquement a chaque modification du zoom de la visu
 #          voir ::confVisu::addZoomListener
 #  parametres
@@ -152,7 +150,7 @@ proc ::polydraw::setZoom { visuNo args } {
 #  createLine
 #     cree une ligne
 #  exemple :
-#     ::polydraw::createLine  1 { 10 10 10 50 }
+#     ::polydraw::createLine 1 { 10 10 10 50 }
 #  parametres
 #     visuNo : numero de la visu
 #     points : liste des points { {x1 y1 x2 y2} }
@@ -161,7 +159,7 @@ proc ::polydraw::setZoom { visuNo args } {
 proc ::polydraw::createLine {visuNo points { moveCommand ""} } {
    variable private
 
-   if {  [llength $points] < 4  } {
+   if { [llength $points] < 4 } {
       console::affiche_erreur "::polydraw::createLine must be >= 4 coordinates\n"
       return ""
    }
@@ -176,7 +174,7 @@ proc ::polydraw::createLine {visuNo points { moveCommand ""} } {
 #  createPolygon
 #     cree un polygone
 #  exemple :
-#     ::polydraw::createPolygon  1 { 10 10 10 50 50 50 50 10  }
+#     ::polydraw::createPolygon 1 { 10 10 10 50 50 50 50 10 }
 #  parametres
 #     visuNo : numero de la visu
 #     points : liste des points { {x1 y1} {x2 y2} ... }
@@ -185,7 +183,7 @@ proc ::polydraw::createLine {visuNo points { moveCommand ""} } {
 proc ::polydraw::createPolygon {visuNo points } {
    variable private
 
-   if {  [llength $points] < "6"  } {
+   if { [llength $points] < "6" } {
       console::affiche_erreur "::polydraw::createPolygon points llength must be >= 6\n"
       return ""
    }
@@ -276,7 +274,7 @@ proc ::polydraw::delete { visuNo w {all 0}} {
    variable private
 
    set tags [tags$w]
-   ##set visuNo [::confVisu::getVisuNo $w ]
+   ###set visuNo [::confVisu::getVisuNo $w ]
    if {[regexp {of:([^ ]+)} $tags -> poly]} {
       if {$all} {
          #--- supprime un item
@@ -306,7 +304,7 @@ proc ::polydraw::delete { visuNo w {all 0}} {
 proc ::polydraw::insert {visuNo w} {
    variable private
 
-   ##set visuNo [::confVisu::getVisuNo $w ]
+   ###set visuNo [::confVisu::getVisuNo $w ]
    if { $private($visuNo,mouseAddNode) == "1" } {
       set tags [tags$w]
       if {[has $tags node]} {
@@ -334,28 +332,26 @@ proc ::polydraw::mark {visuNo w x y} {
    set result ""
 
    set x [$w canvasx $x]; set y [$w canvasy $y]
-   ##set visuNo [::confVisu::getVisuNo $w ]
    catch {unset private($visuNo,currentItem)}
    if {[has [tags$w] node]} {
-       set private($visuNo,currentItem) [$w find withtag current]
-       set private($visuNo,currentx)       $x
-       set private($visuNo,currenty)       $y
-       set result $private($visuNo,currentItem)
+      set private($visuNo,currentItem) [$w find withtag current]
+      set private($visuNo,currentx)    $x
+      set private($visuNo,currenty)    $y
+      set result $private($visuNo,currentItem)
    } elseif {[has [tags$w] line]} {
       set private($visuNo,currentItem) [$w find withtag current]
-      set private($visuNo,currentx)       $x
-      set private($visuNo,currenty)       $y
+      set private($visuNo,currentx)    $x
+      set private($visuNo,currenty)    $y
       set result $private($visuNo,currentItem)
    } elseif {[has [tags$w] polygon]} {
       set private($visuNo,currentItem) [$w find withtag current]
-      set private($visuNo,currentx)       $x
-      set private($visuNo,currenty)       $y
+      set private($visuNo,currentx)    $x
+      set private($visuNo,currenty)    $y
       set result $private($visuNo,currentItem)
    } else {
       set result [::polydraw::add $visuNo $w $x $y]
    }
    ###return $result
-
 }
 
 #------------------------------------------------------------
@@ -397,15 +393,19 @@ proc ::polydraw::move {visuNo w x y {all 0}} {
          set typeItem [lindex $tags 0]
          if { $typeItem == "node" } {
             #--- je translate le point d'inflexion de la ligne
-            ::polydraw::moveNode $visuNo $w $dx $dy
-         } elseif  { $typeItem == "line" } {
+            if { $private($visuNo,mouseMoveLine) == 1 } {
+               ::polydraw::moveNode $visuNo $w $dx $dy
+            }
+         } elseif { $typeItem == "line" } {
             if { $private($visuNo,mouseMoveLine) == 1 } {
                $w move $private($visuNo,currentItem)    $dx $dy
                $w move of:$private($visuNo,currentItem) $dx $dy
             }
-         } elseif  { $typeItem == "polygon" } {
-            $w move $private($visuNo,currentItem)   $dx $dy
-            $w move of:$private($visuNo,currentItem) $dx $dy
+         } elseif { $typeItem == "polygon" } {
+            if { $private($visuNo,mouseMoveLine) == 1 } {
+               $w move $private($visuNo,currentItem)    $dx $dy
+               $w move of:$private($visuNo,currentItem) $dx $dy
+            }
          }
       } elseif [regexp {of:([^ ]+)} [tags$w] -> itemNo] {
           ###::console::disp "move all itemNo=$itemNo\n"
@@ -414,9 +414,9 @@ proc ::polydraw::move {visuNo w x y {all 0}} {
       }
 
       #--- je lance le listener de deplacement s'il existe
-      if { [info exists private($visuNo,listener,$private($visuNo,currentItem))] } {
+      if { [info exists ::polydraw::private($visuNo,listener,$private($visuNo,currentItem))] } {
          #--- j'ecris dans la variable pour activer le listener
-         set private($visuNo,listener,$private($visuNo,currentItem)) "1"
+         set ::polydraw::private($visuNo,listener,$private($visuNo,currentItem)) "1"
       }
    }
 }
@@ -433,7 +433,7 @@ proc ::polydraw::move {visuNo w x y {all 0}} {
 proc ::polydraw::addMoveItemListener { visuNo item cmd } {
    variable private
 
-   set private($visuNo,listener,$item) "1"
+   set ::polydraw::private($visuNo,listener,$item) "1"
    trace add variable "::polydraw::private($visuNo,listener,$item)" write $cmd
 }
 
@@ -460,7 +460,7 @@ proc ::polydraw::removeMoveItemListener { visuNo item cmd } {
 #    deplace un point d'inflexion de la ligne
 # @param hCanvas : nom tk du canvas
 # @param dx : translation horizontale (en coordonnees canvas)
-# @param dy :  translation verticale (en coordonnees canvas)
+# @param dy : translation verticale (en coordonnees canvas)
 # @return void
 #------------------------------------------------------------
 proc ::polydraw::moveNode { visuNo hCanvas dx dy} {
@@ -469,18 +469,18 @@ proc ::polydraw::moveNode { visuNo hCanvas dx dy} {
    set tags [tags$hCanvas]
 
    if [regexp {of:([^ ]+)} $tags -> lineNo] {
-      #--- je deplace l'extemite de la ligne
+      #--- je deplace l'extremite de la ligne
       regexp {at:([^ ]+)} $tags -> xPos
       set yPos [expr {$xPos + 1}]
       set coords [$hCanvas coords $lineNo]
       if { $private($visuNo,moveCommand,$lineNo) ne "" } {
-          #--- je corrige la translation en avec la procedure specifique si elle existe
+          #--- je corrige la translation avec la procedure specifique si elle existe
           set nodeNo [expr $xPos / 2 + 1 ]
           set dCoord [eval $private($visuNo,moveCommand,$lineNo) $nodeNo [lindex $coords $xPos] [lindex $coords $yPos] $dx $dy ]
           set dx [lindex $dCoord 0]
           set dy [lindex $dCoord 1]
       }
-      #--- je calcule les nouvelles coordonnees en faisnt une translation
+      #--- je calcule les nouvelles coordonnees en faisant une translation
       set x [expr [lindex $coords $xPos] + $dx ]
       set y [expr [lindex $coords $yPos] + $dy ]
       $hCanvas coords $lineNo [lreplace $coords $xPos $yPos $x $y]
@@ -523,10 +523,11 @@ proc ::polydraw::has {list element} {
 
 proc ::polydraw::listAll { visuNo } {
    variable private
+
    ::console::disp "listAll:\n"
 
    foreach item [$private($visuNo,hCanvas) find all] {
-       ::console::disp "   item $item tag=[$private($visuNo,hCanvas) itemcget $item -tags]\n"
+      ::console::disp "   item $item tag=[$private($visuNo,hCanvas) itemcget $item -tags]\n"
    }
 }
 
