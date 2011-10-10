@@ -1,5 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content=
@@ -15,20 +15,25 @@
 </style>
 </head>
 <body>
-<p class="date">Date de mise &#224; jour : 16 septembre 2011</p>
+<p class="date">Date de mise &#224; jour : 7 octobre 2011</p>
 <h1>SpyTimer</h1>
 <p>SpyTimer est un outil hybride comprenant :</p>
 <ol>
-<li>un timer-intervallom&#232;tre programmable, permettant de
-commander le d&#233;clenchement des longues poses des APN Canon,
-notamment ceux non reconnus par Aud'ACE, tels que 7D 60D etc. Il
-peut aussi commander les interfaces actionn&#233;es par un front
-montant ou descendant sur le port s&#233;rie.</li>
 <li>associ&#233; &#224; EOS Utility (logiciel Canon), il permet
 de charger les images prises (RAW ou JPEG) et de les afficher
 dans Aud'ACE, au format initial ou au format fits avec les
 mots-cl&#233;s choisis par l'utilisateur. Cette fonction est
 aussi utilisable m&#234;me si Aud'ACE reconna&#238;t l'APN.</li>
+<li>la d&#233;finition des mots cl&#233;s &#224; inscrire dans
+l'en-t&#234;te FITS des images, y compris les param&#232;tres
+optiques, bien que la cam&#233;ra ne soit pas pas
+d&#233;tect&#233;e par Aud'ACE.</li>
+<li>une aide &#224; la focalisation.</li>
+<li>un timer-intervallom&#232;tre programmable, permettant de
+commander le d&#233;clenchement des longues poses des APN Canon,
+notamment ceux non reconnus par Aud'ACE, tels que 7D 60D etc. Il
+peut aussi commander les interfaces actionn&#233;es par un front
+montant ou descendant sur le port s&#233;rie.</li>
 </ol>
 <p>Le mat&#233;riel n&#233;cessaire est tr&#232;s limit&#233;
 (consulter l'aide disponible sous le menu
@@ -54,8 +59,8 @@ mise au point.</li>
 combin&#233;s. Dans les deux cas la configuration de la connexion
 de la cam&#233;ra dans ll menu
 <b>Configuration/Cam&#233;ra...</b> est sans objet.</p>
-<h2>Surveillance du r&#233;pertoire images et utilisation de EOS
-Utility</h2>
+<h2>1. Surveillance du r&#233;pertoire images et utilisation de
+EOS Utility</h2>
 <p>Le principe est simple : EOS Utility d&#233;clenche la prise
 de vue et le chargement ; Aud'ACE fait le reste : surveillance du
 r&#233;pertoire pour d&#233;tecter le chargement, affichage de
@@ -65,62 +70,80 @@ FITS. Voici comment proc&#233;der :</p>
 <p>Ouvrir <b>EOS Utility</b> (appareil connect&#233; ou non) ;
 cliquer sur le bouton <b>Pr&#233;f&#233;rences</b> d'EOS Utlity.
 Une fen&#234;tre &#224; onglets s'ouvre :</p>
-<ol>
-<li>Onglet <b>Dossier de destination</b> : C'est sans doute le
-point le plus d&#233;licat des r&#233;glages. Indiquer le chemin
-du r&#233;pertoire des images. Attention : les images seront
-charg&#233;es dans un sous-dossier ; si ce sous-dossier n'existe
-pas il sera cr&#233;&#233; ; il est pr&#233;f&#233;rable de le
-cr&#233;er manuellement car c'est <b>ce sous-dossier qu'il faudra
+<table>
+<tr>
+<td></td>
+</tr>
+</table>
+&gt;
+<table>
+<tbody>
+<tr>
+<td>Onglet <b>Dossier de destination</b></td>
+<td><img style="width: 600px; height: 406px;" alt="" src=
+"images/destination.gif" /></td>
+<td align="center">C'est sans doute le point le plus d&#233;licat
+des r&#233;glages. Indiquer le chemin du r&#233;pertoire des
+images. Attention : les images seront charg&#233;es dans un
+sous-dossier ; si ce sous-dossier n'existe pas il sera
+cr&#233;&#233; ; il est pr&#233;f&#233;rable de le cr&#233;er
+manuellement car c'est <b>ce sous-dossier qu'il faudra
 d&#233;signer comme r&#233;pertoire images dans AudeLA</b>. Le
 maintien de la date dans le nom du r&#233;pertoire a pour effet
 de cr&#233;er un nouveau dossier &#224; 00h00m00s pr&#233;cises.
-Il est possible de personnaliser la cr&#233;ation du dossier.
-<p><img style="width: 710px; height: 406px;" alt="" src=
-"images/destination.gif" /></p>
-</li>
-<li>Onglet <b>Nom du fichier</b> : laisser en l'&#233;tat ou
-personnaliser la gen&#232;se du nom de l'image, peu importe car
-la derni&#232;re image sera affich&#233;e quel que soit son nom.
-<p><img style="width: 710px; height: 406px;" alt="" src=
-"images/nom_fichier.gif" /></p>
-</li>
-<li>Onglet <b>T&#233;l&#233;charger images</b> :
-s&#233;lectionner l'option <b>Images pas encore
-t&#233;l&#233;charg&#233;es</b>.
-<p><img style="width: 710px; height: 406px;" alt="" src=
-"images/distance.gif" /></p>
-</li>
-<li>Onglet <b>Prise de vue &#224; distance</b> :.
-<p><img style="width: 710px; height: 406px;" alt="" src=
-"images/telecharger.gif" /></p>
-</li>
-<li>Onglet <b>Logiciel li&#233;</b> : s&#233;lectionner l'option
-<b>Aucun</b>. Ce ne serait pas une bonne id&#233;e de
-s&#233;lectionner audela.exe avec le bouton <b>Inscrire ...</b>
-pour ouvrir AudeLA avec EOS Utility car il ouvrirait des
-instances multiples.
-<p><img style="width: 710px; height: 406px;" alt="" src=
-"images/logiciels.gif" /></p>
-</li>
-</ol>
-<p>Dans <b>Aud'ACE</b> : d&#233;signer le r&#233;pertoire images
-dans le menu <b>Configuration/R&#233;pertoires</b> puis lancer le
-menu <b>Cam&#233;ra/SpyTimer</b>. Pour activer la surveillance du
-r&#233;pertoire, cocher l'option <b>Surveiller le
-r&#233;pertoire</b> dans le sous-panneau de surveillance et
-d&#233;finir une fr&#233;quence de surveillance (en secondes).
-Note : la proc&#233;dure de surveillance dure une poign&#233;e de
-millisecondes (hors chargement de l'image). D&#233;cocher
-l'option pour arr&#234;ter la surveillance.</p>
-<p><img style="width: 150px; height: 58px;" alt="" src=
-"images/survey.gif" /></p>
-<p>L'option <b>Convertir</b> permet de cr&#233;er l'image au
-format fits par d&#233;faut dans le m&#234;me r&#233;pertoire
-image en pr&#233;servant l'original. Les images FITS contiennent
-les mots-cl&#233;s s&#233;lectionn&#233;s.</p>
-<p>Les extensions des images reconnues sont : CR2 CRW JPG cr2 crw
-jpg.</p>
+Il est possible de personnaliser la cr&#233;ation du
+dossier.</td>
+</tr>
+<tr>
+<td>Onglet <b>Nom du fichier</b></td>
+<td><img style="width: 600px; height: 406px;" alt="" src=
+"images/nom_fichier.gif" /></td>
+<td>Laisser en l'&#233;tat ou personnaliser la gen&#232;se du nom
+de l'image, peu importe car la derni&#232;re image sera
+affich&#233;e quel que soit son nom.</td>
+</tr>
+<tr>
+<td>Onglet <b>T&#233;l&#233;charger images</b></td>
+<td><img style="width: 600px; height: 406px;" alt="" src=
+"images/distance.gif" /></td>
+<td>S&#233;lectionner l'option <b>Images pas encore
+t&#233;l&#233;charg&#233;es.</b></td>
+</tr>
+<tr>
+<td>Onglet <b>Logiciel li&#233;</b></td>
+<td><img style="width: 600px; height: 406px;" alt="" src=
+"images/logiciels.gif" /></td>
+<td>S&#233;lectionner l'option <b>Aucun</b>. Ce ne serait pas une
+bonne id&#233;e de s&#233;lectionner audela.exe avec le bouton
+<b>Inscrire ...</b> pour ouvrir AudeLA avec EOS Utility car il
+ouvrirait des instances multiples.</td>
+</tr>
+<tr>
+<td colspan="3">Dans <b>Aud'ACE</b> : d&#233;signer le
+r&#233;pertoire images dans le menu
+<b>Configuration/R&#233;pertoires</b> puis lancer le menu
+<b>Cam&#233;ra/SpyTimer</b>.</td>
+</tr>
+<tr>
+<td>Dans le panneau SpyTimer<b>Aud'ACE</b></td>
+<td><img style="width: 150px; height: 58px;" alt="" src=
+"images/survey.gif" /></td>
+<td>Pour activer la surveillance du r&#233;pertoire, cocher
+l'option <b>Surveiller le r&#233;pertoire</b> dans le
+sous-panneau de surveillance. Note : la proc&#233;dure de
+surveillance dure une poign&#233;e de millisecondes (hors
+chargement de l'image). Le d&#233;lai de surveillance est
+r&#233;glable dans le panneau de <b>Configuration</b>.<br />
+L'option <b>Convertir</b> permet de cr&#233;er l'image au format
+fits par d&#233;faut dans le m&#234;me r&#233;pertoire image en
+pr&#233;servant l'original. Les images FITS contiennent les
+mots-cl&#233;s s&#233;lectionn&#233;s dans le panneau de
+<b>Configuration</b>.<br />
+Les extensions des images reconnues sont : CR2 CRW JPG cr2 crw
+jpg.</td>
+</tr>
+</tbody>
+</table>
 <p>Conseils :</p>
 <ol>
 <li>Un test de prise de vue confirmera que les images sont
@@ -128,52 +151,85 @@ charg&#233;es dans le bon dossier et que Aud'ACE affiche chaque
 nouvelle image.</li>
 <li>La cadence de prises de vues peut &#234;tre tr&#232;s si
 &#233;lev&#233;e que AudeLA est incapable de suivre le rythme de
-conversion et d'affichage. Pour &#233;viter ce
-probl&#232;me AudeLA ne traite que la derni&#232;re image
+conversion et d'affichage. Pour &#233;viter ce probl&#232;me
+AudeLA ne traite que la derni&#232;re image
 transf&#233;r&#233;e.</li>
 </ol>
-<h2>Timer-Intervallom&#232;tre</h2>
-<p>L'outil comporte (du haut en bas), outre le bouton d'aide de
-l'outil et le sous-panneau de surveillance pr&#233;cit&#233; un
-bouton de <b>Configuration</b> qui donne acc&#232;s &#224; une
-fen&#234;tre annexe; Elle comporte :</p>
+<h2>2. Configuration</h2>
+<p>Le bouton <b>Configuration</b> ouvre un panneau comportant
+quatre sections de configuration :</p>
 <table>
 <tbody>
 <tr>
-<td rowspan="6"><img style="width: 326px; height: 181px;" alt=""
-src="images/annexe.gif" /></td>
-</tr>
-<tr>
-<td>Un bouton donnant acc&#232;s &#224; la configuration des mots
+<td rowspan="4"><img style="width: 429px; height: 379px;" alt=""
+src="images/configuration.gif" /></td>
+<td>1. Section de configuration des mots cl&#233;s :<br />
+Un bouton donnant acc&#232;s &#224; la configuration des mots
 cl&#233;s &#224; int&#233;grer dans l'en-t&#234;te FITS des
-images.</td>
+images. Comme l'APN n'est pas reconnu par Aud'ACE, les valeurs
+des mots cl&#233;s concernant le syt&#232;me optique seront
+nulles : des cases &#224; cocher et des fen&#234;tres de saisies
+des param&#232;tres permettent de corriger cette lacune.<br />
+Le pouvoir s&#233;parateur sera calcul&#233; automatiquement. Le
+champ et l'&#233;chantillonnage sont calcul&#233;s &#224; chaque
+prise de vue en tenant compte des options en mati&#232;re de
+qualit&#233; des images.</td>
 </tr>
 <tr>
-<td>Une liste d&#233;roulante de s&#233;lection du <b>Port</b>.
-Les options disponibles sont identiques &#224; celles
-propos&#233;es dans l'onglet Configuration/Cam&#233;ra/APN.</td>
-</tr>
-<tr>
-<td>Une liste d&#233;roulante de s&#233;lection du <b>Bit</b> de
+<td>2. Section de configuration du d&#233;clenchement automatique
+de poses :<br />
+Une liste d&#233;roulante de s&#233;lection du <b>Port</b>. Les
+options disponibles sont identiques &#224; celles propos&#233;es
+dans l'onglet Configuration/Cam&#233;ra/APN.<br />
+Une liste d&#233;roulante de s&#233;lection du <b>Bit</b> de
 commande. Les options disponibles sont modifi&#233;es par le
 choix du port qu'il convient de r&#233;gler en premier. La
 s&#233;lection d'un port LPT permet de choisir un bit entre 0 et
 7 alors qu'un port COM permet de s&#233;lectionner une option
-parmi <b>{ DTR | RTS }</b>.</td>
-</tr>
-<tr>
-<td>Une liste d&#233;roulante de s&#233;lection de la commande
+parmi <b>{ DTR | RTS }</b>.<br />
+Une liste d&#233;roulante de s&#233;lection de la commande
 d'activation <b>Front</b>. Les deux options possibles sont <b>{
 0</b> (front descendant) <b>| 1</b> (front montant)
 <b>}</b>.</td>
 </tr>
 <tr>
-<td>Une fen&#234;tre de saisie du d&#233;lai en secondes entre
+<td>3. Une fen&#234;tre de saisie du d&#233;lai en secondes entre
 deux explorations du r&#233;pertoire.</td>
+</tr>
+<tr>
+<td>4. Une zone avec deux boutons, l'un activant l'aide &#224; la
+focalisation (CF ci-apr&#232;s).</td>
 </tr>
 </tbody>
 </table>
-<p>Le reste du panneau comporte :</p>
+<h2>3. Focalisation</h2>
+<table>
+<tbody>
+<tr>
+<td><img style="width: 508px; height: 627px;" alt="" src=
+"images/focalisation.gif" /></td>
+<td valign="middle">Le bouton <b>Focalisation</b> d&#233;clenche
+le suivi du r&#233;pertoire, sans contraindre la conversion
+RAW-&gt;FITS, de mani&#232;re &#224; pouvoir utiliser des images
+JPEG dont le chargement est tr&#232;s rapide. Une fen&#234;tre
+annexe presque identique &#224; celle de l'outil Focalisation
+donne l'intensit&#233; et le contraste de l'image, la FWHM
+moyenne et le rapport FWHM x/ FHWM y d'une bo&#238;te de
+s&#233;lection (l'image enti&#232;re par d&#233;faut).<br />
+La valeur maximale de l'axe des ordonn&#233;es de FWHM s'adapte
+&#224; la valeur courante en masquant &#233;ventuellement des
+valeurs tr&#232;s sup&#233;rieures.<br />
+Les index images vont de 1 &#224; 20. Si ce nombre est
+d&#233;pass&#233;, la fen&#234;tre affiche les 19 derni&#232;res
+mesures. Un bouton <b>Re-initialiser</b> permet d'effacer la
+totalit&#233; des mesures.</td>
+</tr>
+</tbody>
+</table>
+<h2>4. Timer-Intervallom&#232;tre</h2>
+<p>L'outil comporte (du haut en bas), outre le bouton d'aide de
+l'outil, le bouton de <b>Configuration</b> et le sous-panneau de
+surveillance pr&#233;cit&#233;s :</p>
 <table>
 <tbody>
 <tr>
@@ -226,7 +282,7 @@ sont gel&#233;es durant une session : Aucun changement n'est
 possible.</p>
 <p>Si l'option <b>Auto</b> est coch&#233;e les op&#233;rations
 d&#233;buteront &#224; l'heure et &#224; la minute
-sp&#233;cifi&#233;e (heure civile). Inutile d'appuuer sur GO : le
+sp&#233;cifi&#233;e (heure civile). Inutile d'appuyer sur GO : le
 timer le fera.</p>
 </td>
 </tr>
@@ -249,7 +305,11 @@ sur la Console indiquant le temps UTC, le num&#233;ro de
 s&#233;rie de la prise de vue, le num&#233;ro de l'image et
 &#233;ventuellement la dur&#233;e d'exposition (Longue Pose). Ces
 informations figurent &#233;galement dans le fichier
-spytimer.log.</li>
+<b>C:\Documents and Settings\xxx\Application Data\AudeLA\log\
+spytimer.log</b>.</li>
+<li>Les param&#232;tres utilisateur sont sauv&#233;s dans le
+fichier <b>C:\Documents and Settings\xxx\Application Data\AudeLA\
+spytimer${N&#176; visu}.</b>.</li>
 </ul>
 </body>
 </html>
