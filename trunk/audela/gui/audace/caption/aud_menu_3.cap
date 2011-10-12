@@ -1027,7 +1027,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,center)                      "Justér"
    set caption(audace,menu,recentrer_manu)              "Valg"
-   set caption(audace,menu,reg_trans)                   "# Translation automatique"
+   set caption(audace,menu,reg_trans)                   "Automatisk overførsel"
    set caption(audace,menu,reg_inter)                   "Interkorrelation"
    set caption(audace,menu,reg_tri)                     "Affin Transformation"
    set caption(audace,menu,reg_wcs)                     "WCS Astrometri"
