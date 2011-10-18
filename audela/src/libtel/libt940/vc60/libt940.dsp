@@ -54,7 +54,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib tclstub85.lib dsa20c.lib /nologo /dll /machine:I386 /out:"..\..\..\..\bin\libt940.dll" /libpath:"..\..\..\external\lib"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib tclstub85.lib dsa20c.lib pthread.lib /nologo /dll /machine:I386 /out:"..\..\..\..\bin\libt940.dll" /libpath:"..\..\..\external\lib"
 
 !ELSEIF  "$(CFG)" == "libt940 - Win32 Debug"
 
@@ -81,7 +81,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib tclstub85.lib dsa20c.lib /nologo /subsystem:windows /dll /pdb:".\Debug/libt940.pdb" /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"..\..\..\..\bin\libt940.dll" /implib:".\Debug/libt940.lib" /libpath:"..\..\..\external\lib"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib tclstub85.lib dsa20c.lib pthread.lib /nologo /subsystem:windows /dll /pdb:".\Debug/libt940.pdb" /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"..\..\..\..\bin\libt940.dll" /implib:".\Debug/libt940.lib" /libpath:"..\..\..\external\lib"
 # SUBTRACT LINK32 /pdb:none
 
 !ENDIF 

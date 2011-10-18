@@ -114,7 +114,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 	fclose(f);
 #endif
 	/* - ce clock format permet de debloquer les prochains acces a cette fonction - */
-   Tcl_Eval(tel->interp,"clock format 1318667930");
+//   Tcl_Eval(tel->interp,"clock format 1318667930");
 
 	/* - creates mutex -*/
    pthread_mutexattr_init(&mutexAttr);
@@ -414,7 +414,11 @@ int mytel_hadec_coord(struct telprop *tel,char *result)
 int mytel_adu_coord(struct telprop *tel,char *result)
 {
    my_pthread_mutex_lock(&mutex);
-	sprintf(result,"{%f %f %f} {%f %f %f}",telthread->coord_app_cod_adu_ha,telthread->coord_app_cod_adu_dec,telthread->coord_app_cod_adu_hapec,telthread->coord_app_sim_adu_ha,telthread->coord_app_sim_adu_dec,telthread->coord_app_sim_adu_hapec);
+	if (tel->type_mount==MOUNT_EQUATORIAL) {
+		sprintf(result,"{%f %f %f} {%f %f %f}",telthread->coord_app_cod_adu_ha,telthread->coord_app_cod_adu_dec,telthread->coord_app_cod_adu_hapec,telthread->coord_app_sim_adu_ha,telthread->coord_app_sim_adu_dec,telthread->coord_app_sim_adu_hapec);
+	} else {
+		sprintf(result,"{%f %f %f} {%f %f %f}",telthread->coord_app_cod_adu_az,telthread->coord_app_cod_adu_elev,telthread->coord_app_cod_adu_rot,telthread->coord_app_sim_adu_az,telthread->coord_app_sim_adu_elev,telthread->coord_app_sim_adu_rot);
+	}
    my_pthread_mutex_unlock(&mutex);
    return 0;
 }
@@ -578,8 +582,8 @@ int ThreadT940_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 				mytel_error(telthread,axisno,err);
 				return 1;
 			}
-			sprintf(s,"etb:dummy:7:6:19366144:4:0",axis[kaxisno]);
-			//sprintf(s,"etb:DSTEB3:%d",axis[kaxisno]);
+			//sprintf(s,"etb:dummy:7:6:19366144:4:0",axis[kaxisno]);
+			sprintf(s,"etb:DSTEB3:%d",axis[kaxisno]);
 			if (err = dsa_open_u(telthread->drv[axisno],s)) {
 				if (kaxisno==0) {
 					mytel_error(telthread,axisno,err);
@@ -1448,19 +1452,19 @@ double mytel_sec2jd(time_t secs1970)
 /***************************************************************************/
 int mytel_app_cod_getadu(struct telprop *tel) {
    time_t ltime;
-   double jd,az,elev,ha,dec,rot;
+   double jd;
 	int err,axisno,val;
 	/* --- */
 	axisno=0;
 	if (telthread->type_mount==MOUNT_ALTAZ) {
 		if (err=mytel_get_register(telthread,AXIS_AZ,ETEL_M,7,0,&val)) { mytel_error(telthread,axisno,err); }
-		az=(double)val;
+		tel->coord_app_cod_adu_az=(double)val;
 		tel->utcjd_app_cod_adu_az=mytel_sec2jd((int)time(&ltime));			
 		if (err=mytel_get_register(telthread,AXIS_ELEV,ETEL_M,7,0,&val)) { mytel_error(telthread,axisno,err); }
-		elev=(double)val;
+		tel->coord_app_cod_adu_elev=(double)val;
 		tel->utcjd_app_cod_adu_elev=mytel_sec2jd((int)time(&ltime));			
 		if (err=mytel_get_register(telthread,AXIS_PARALLACTIC,ETEL_M,7,0,&val)) { mytel_error(telthread,axisno,err); }
-		rot=(double)val;
+		tel->coord_app_cod_adu_rot=(double)val;
 		tel->utcjd_app_cod_adu_rot=mytel_sec2jd((int)time(&ltime));			
 		jd=mytel_sec2jd((int)time(&ltime));
 		tel->coord_app_cod_adu_ha=0;
@@ -1469,12 +1473,10 @@ int mytel_app_cod_getadu(struct telprop *tel) {
 		tel->utcjd_app_cod_adu_dec=jd;	
 	} else {
 		if (err=mytel_get_register(telthread,AXIS_HA,ETEL_M,7,0,&val)) { mytel_error(telthread,axisno,err); }
-		ha=(double)val;
-		tel->coord_app_cod_adu_ha=ha;
+		tel->coord_app_cod_adu_ha=(double)val;
 		tel->utcjd_app_cod_adu_ha=mytel_sec2jd((int)time(&ltime));			
 		if (err=mytel_get_register(telthread,AXIS_DEC,ETEL_M,7,0,&val)) { mytel_error(telthread,axisno,err); }
-		dec=(double)val;
-		tel->coord_app_cod_adu_dec=dec;
+		tel->coord_app_cod_adu_dec=(double)val;
 		tel->utcjd_app_cod_adu_dec=mytel_sec2jd((int)time(&ltime));	
 		jd=mytel_sec2jd((int)time(&ltime));
 		tel->coord_app_cod_adu_az=0;
