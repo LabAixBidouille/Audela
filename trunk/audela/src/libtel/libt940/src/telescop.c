@@ -453,7 +453,7 @@ int Thread940_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 	axis[2]=2; //5
 	if (argc >= 1) {
 		for (kk = 0; kk < argc-1; kk++) {
-			// mode : 0=simulation 1=reel
+			// mode : 0=simulation 1=reel 2=simuEtel
 			if (strcmp(argv[kk], "-mode") == 0) {
 				telthread->mode = atoi(argv[kk + 1]);
 			}
@@ -507,11 +507,54 @@ int Thread940_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 				mytel_error(telthread,axisno,err);
 				return 1;
 			}
-			sprintf(s,"etb:DSTEB3:%d",axis[kaxisno]);
+			sprintf(s,"etb:dummy:7:6:19366144:4:0",axis[kaxisno]);
+			//sprintf(s,"etb:DSTEB3:%d",axis[kaxisno]);
 			if (err = dsa_open_u(telthread->drv[axisno],s)) {
 				if (kaxisno==0) {
 					mytel_error(telthread,axisno,err);
 					sprintf(s," {etb:DSTEB3:%d}",axis[kaxisno]);
+					strcat(telthread->msg,s);
+					tel_close(telthread);
+					return 2;
+				} else {
+					break;
+				}
+			} else {
+				if (telthread->type_mount == MOUNT_EQUATORIAL) {
+					if (kaxisno==0) { telthread->axis_param[axisno].type = telthread->axes[0]; }
+					if (kaxisno==1) { telthread->axis_param[axisno].type = telthread->axes[1]; }
+				} else {
+					if (kaxisno==0) { telthread->axis_param[axisno].type = telthread->axes[0]; }
+					if (kaxisno==1) { telthread->axis_param[axisno].type = telthread->axes[1]; }
+					if (kaxisno==2) { telthread->axis_param[axisno].type = telthread->axes[2]; }
+				}
+			}
+			// Reset error
+			if (err = dsa_reset_error_s(telthread->drv[axisno], 1000)) {
+				mytel_error(telthread,axisno,err);
+				tel_close(telthread);
+				return 3;
+			}
+			// power on
+			if (err = dsa_power_on_s(telthread->drv[axisno], 10000)) {
+				mytel_error(telthread,axisno,err);
+				tel_close(telthread);
+				return 4;
+			}
+		}
+	} else if (telthread->mode == MODE_SIMULATION_ETEL) {
+		for (kaxisno=0;kaxisno<telthread->nb_axis;kaxisno++) {
+			axisno=telthread->axes[kaxisno];
+			// create drive
+			if (err = dsa_create_drive(&telthread->drv[axisno])) {
+				mytel_error(telthread,axisno,err);
+				return 1;
+			}
+			sprintf(s,"etb:dummy:1:6:19366144:4:0");
+			if (err = dsa_open_u(telthread->drv[axisno],s)) {
+				if (kaxisno==0) {
+					mytel_error(telthread,axisno,err);
+					sprintf(s," {etb:dummy axisno=%d}",axisno);
 					strcat(telthread->msg,s);
 					tel_close(telthread);
 					return 2;
@@ -551,6 +594,11 @@ int Thread940_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 			telthread->axis_param[2].type = telthread->axes[2];
 		}
 	}
+
+	if (telthread->mode == MODE_SIMULATION_ETEL) {
+		telthread->mode = MODE_REEL;
+	}
+		
 	// extradrift = rattrapage additionnel (arcsec/sec) au suivi diurne
 	strcpy(telthread->extradrift_type,"altaz");
 	telthread->extradrift_axis0=0;

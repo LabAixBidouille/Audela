@@ -35,6 +35,7 @@
 
 #define MODE_SIMULATION 0
 #define MODE_REEL 1
+#define MODE_SIMULATION_ETEL 2
 
 #define STATUS_MOTOR_OFF 0
 #define STATUS_MOTOR_ON 1
