@@ -25,6 +25,12 @@ static struct cmditem cmdlist[] = {
    COMMON_CMDLIST
    /* === Specific commands for that telescope ===*/
    /* === Specific commands for that telescope ===*/
+   {"action", (Tcl_CmdProc *)cmdTelAction},\
+   {"loopeval", (Tcl_CmdProc *)cmdTelLoopEval},\
+   {"allcoord", (Tcl_CmdProc *)cmdTelAllCoord},\
+   {"allcoordjd", (Tcl_CmdProc *)cmdTelAllCoordJd},\
+   {"hadec", (Tcl_CmdProc *)cmdTelHaDec},\
+   {"adu", (Tcl_CmdProc *)cmdTelAdu},\
    {"status", (Tcl_CmdProc *)cmdTelStatus},\
    {"execute_command_x_s", (Tcl_CmdProc *)cmdTelExecuteCommandXS},\
    {"get_register_s", (Tcl_CmdProc *)cmdTelGetRegisterS},\
@@ -32,9 +38,7 @@ static struct cmditem cmdlist[] = {
    {"type_mount", (Tcl_CmdProc *)cmdTelTypeMount},\
    {"type_axes", (Tcl_CmdProc *)cmdTelTypeAxes},\
    {"inc_axis", (Tcl_CmdProc *)cmdTelIncAxis},\
-   {"action", (Tcl_CmdProc *)cmdTelAction},\
    {"extradrift", (Tcl_CmdProc *)cmdTelExtradrift},\
-   {"appcoord", (Tcl_CmdProc *)cmdTelAppCoord},\
    {"temperature", (Tcl_CmdProc *)cmdTelTemperature},\
    {"parameters", (Tcl_CmdProc *)cmdTelParams},\
    /* === Last function terminated by NULL pointers ===*/
