@@ -72,7 +72,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="tclstub85.lib dsa20c.lib"
+				AdditionalDependencies="tclstub85.lib dsa20c.lib ..\..\..\external\lib\pthread.lib"
 				OutputFile="..\..\..\..\bin\libt940.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -171,7 +171,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="tclstub85.lib dsa20c.lib"
+				AdditionalDependencies="tclstub85.lib dsa20c.lib ..\..\..\external\lib\pthread.lib"
 				OutputFile="..\..\..\..\bin\libt940.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

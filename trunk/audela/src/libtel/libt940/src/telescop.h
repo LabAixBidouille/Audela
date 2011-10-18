@@ -75,6 +75,34 @@ typedef struct {
 	double temperature;
 } axis_params;
 
+/***************************************************************************************/
+/* There are five fields to define coordinates:                                        */
+/* ----------------------------------------------------------------------------------- */
+/* frame_corrections_source_units_angle                                                */
+/* ----------------------------------------------------------------------------------- */
+/*                                                                                     */
+/* frame : coord, utcjd	                                                               */
+/*    coord : coordinate frame                                                         */
+/*    utcjd : time frame expressed in UTC julian day                                   */
+/* corrections : cat, tru, app                                                         */
+/*    cat : astrometric topocentric coordinates at current epoch (= ra,dec,J2000)      */
+/*    tru : true coordinates (cat + precession, nutation, aberration, annual parallax) */
+/*    app : apparent coordinates (tru + refraction + pointing model included)          */
+/* source : cod, sim                                                                   */
+/*    sim : computed theoretically using initial parameters and current time           */
+/*    cod : computed from/for coder current time informations                          */
+/* units : deg, adu                                                                    */
+/*    deg : degrees                                                                    */
+/*    adu : analog-digital-units (coder, microsteps)                                   */
+/* angle :                                                                             */
+/*    ha : Hour angle                                                                  */
+/*    dec : Declination                                                                */
+/*    ra : Right ascension                                                             */
+/*    az : Azimuth                                                                     */
+/*    elev : Elevation                                                                 */
+/*    rot : Parallactic angle for altaz mount                                          */
+/***************************************************************************************/
+
 /* --- structure qui accueille les parametres---*/
 struct telprop {
    /* --- parametres standards, ne pas changer ---*/
@@ -135,11 +163,158 @@ struct telprop {
 	char extradrift_type[20];
 	double extradrift_axis0;
 	double extradrift_axis1;
-   /*
-   int longformatindex;
    int tempo;
-   */
+	long N0;
+	long N1;
+	double sideral_sep_per_day;
+	double ha0;
+
+	// START OF COORDSYS (do not delete this comment)
+	double coord_cat_cod_deg_ra; // current catalog coordinates computed from coders
+	double coord_cat_cod_deg_dec; // current catalog coordinates computed from coders
+	double utcjd_cat_cod_deg_ra; // date of catalog coordinates computed from coders
+	double utcjd_cat_cod_deg_dec; // date of catalog coordinates computed from coders
+	
+	double coord_cat_cod_deg_ra0; // initial catalog coordinates computed from coders
+	double coord_cat_cod_deg_dec0; // initial catalog coordinates computed from coders
+	double utcjd_cat_cod_deg_ra0; // date of initial catalog coordinates computed from coders
+	double utcjd_cat_cod_deg_dec0; // date of initial catalog coordinates computed from coders
+
+	double coord_app_cod_deg_ha; // current apparent coordinates computed from coders
+	double coord_app_cod_deg_dec; // current apparent coordinates computed from coders
+	double coord_app_cod_deg_ra; // current apparent coordinates computed from coders
+	double coord_app_cod_deg_az; // current apparent coordinates computed from coders
+	double coord_app_cod_deg_elev; // current apparent coordinates computed from coders
+	double coord_app_cod_deg_rot; // current apparent coordinates computed from coders	
+	double utcjd_app_cod_deg_ha; // date of current apparent coordinates computed from coders
+	double utcjd_app_cod_deg_dec; // date of current apparent coordinates computed from coders
+	double utcjd_app_cod_deg_ra; // date of current apparent coordinates computed from coders
+	double utcjd_app_cod_deg_az; // date of current apparent coordinates computed from coders
+	double utcjd_app_cod_deg_elev; // date of current apparent coordinates computed from coders
+	double utcjd_app_cod_deg_rot; // date of current apparent coordinates computed from coders
+	
+	double coord_app_cod_deg_ha0; // initial apparent coordinates computed from coders
+	double coord_app_cod_deg_dec0; // initial apparent coordinates computed from coders
+	double coord_app_cod_deg_ra0; // initial apparent coordinates computed from coders
+	double coord_app_cod_deg_az0; // initial apparent coordinates computed from coders
+	double coord_app_cod_deg_elev0; // initial apparent coordinates computed from coders
+	double coord_app_cod_deg_rot0; // initial apparent coordinates computed from coders	
+	double utcjd_app_cod_deg_ha0; // date of initial apparent coordinates computed from coders
+	double utcjd_app_cod_deg_dec0; // date of initial apparent coordinates computed from coders
+	double utcjd_app_cod_deg_ra0; // date of initial apparent coordinates computed from coders
+	double utcjd_app_cod_deg_az0; // date of initial apparent coordinates computed from coders
+	double utcjd_app_cod_deg_elev0; // date of initial apparent coordinates computed from coders
+	double utcjd_app_cod_deg_rot0; // date of initial apparent coordinates computed from coders
+
+	double coord_app_cod_adu_ha; // current ADU from/to coder
+	double coord_app_cod_adu_dec; // current ADU from/to coder
+	double coord_app_cod_adu_az; // current ADU from/to coder
+	double coord_app_cod_adu_elev; // current ADU from/to coder
+	double coord_app_cod_adu_rot; // current ADU from/to coder
+	double coord_app_cod_adu_hapec; // current ADU from/to coder	
+	double utcjd_app_cod_adu_ha; // date of current ADU from/to coder
+	double utcjd_app_cod_adu_dec; // date of current ADU from/to coder
+	double utcjd_app_cod_adu_az; // current ADU from/to coder
+	double utcjd_app_cod_adu_elev; // current ADU from/to coder
+	double utcjd_app_cod_adu_rot; // current ADU from/to coder
+	double utcjd_app_cod_adu_hapec; // current ADU from/to coder
+	
+	double coord_app_cod_adu_ha0; // initial ADU from/to coder
+	double coord_app_cod_adu_dec0; // initial ADU from/to coder
+	double coord_app_cod_adu_az0; // initial ADU from/to coder
+	double coord_app_cod_adu_elev0; // initial ADU from/to coder
+	double coord_app_cod_adu_rot0; // initial ADU from/to coder
+	double utcjd_app_cod_adu_ha0; // date of initial ADU from/to coder
+	double utcjd_app_cod_adu_dec0; // date of initial ADU from/to coder
+	double utcjd_app_cod_adu_az0; // date of initial ADU from/to coder
+	double utcjd_app_cod_adu_elev0; // date of initial ADU from/to coder
+	double utcjd_app_cod_adu_rot0; // date of initial ADU from/to coder
+
+	double coord_cat_sim_deg_ra; // current catalog coordinates computed from coders
+	double coord_cat_sim_deg_dec; // current catalog coordinates computed from coders
+	double utcjd_cat_sim_deg_ra; // date of catalog coordinates computed from coders
+	double utcjd_cat_sim_deg_dec; // date of catalog coordinates computed from coders
+	
+	double coord_cat_sim_deg_ra0; // initial catalog coordinates computed from coders
+	double coord_cat_sim_deg_dec0; // initial catalog coordinates computed from coders
+	double utcjd_cat_sim_deg_ra0; // date of initial catalog coordinates computed from coders
+	double utcjd_cat_sim_deg_dec0; // date of initial catalog coordinates computed from coders
+
+	double coord_app_sim_deg_ha; // current apparent coordinates computed from coders
+	double coord_app_sim_deg_dec; // current apparent coordinates computed from coders
+	double coord_app_sim_deg_ra; // current apparent coordinates computed from coders
+	double coord_app_sim_deg_az; // current apparent coordinates computed from coders
+	double coord_app_sim_deg_elev; // current apparent coordinates computed from coders
+	double coord_app_sim_deg_rot; // current apparent coordinates computed from coders	
+	double utcjd_app_sim_deg_ha; // date of current apparent coordinates computed from coders
+	double utcjd_app_sim_deg_dec; // date of current apparent coordinates computed from coders
+	double utcjd_app_sim_deg_ra; // date of current apparent coordinates computed from coders
+	double utcjd_app_sim_deg_az; // date of current apparent coordinates computed from coders
+	double utcjd_app_sim_deg_elev; // date of current apparent coordinates computed from coders
+	double utcjd_app_sim_deg_rot; // date of current apparent coordinates computed from coders
+	
+	double coord_app_sim_deg_ha0; // initial apparent coordinates computed from coders
+	double coord_app_sim_deg_dec0; // initial apparent coordinates computed from coders
+	double coord_app_sim_deg_ra0; // initial apparent coordinates computed from coders
+	double coord_app_sim_deg_az0; // initial apparent coordinates computed from coders
+	double coord_app_sim_deg_elev0; // initial apparent coordinates computed from coders
+	double coord_app_sim_deg_rot0; // initial apparent coordinates computed from coders	
+	double utcjd_app_sim_deg_ha0; // date of initial apparent coordinates computed from coders
+	double utcjd_app_sim_deg_dec0; // date of initial apparent coordinates computed from coders
+	double utcjd_app_sim_deg_ra0; // date of initial apparent coordinates computed from coders
+	double utcjd_app_sim_deg_az0; // date of initial apparent coordinates computed from coders
+	double utcjd_app_sim_deg_elev0; // date of initial apparent coordinates computed from coders
+	double utcjd_app_sim_deg_rot0; // date of initial apparent coordinates computed from coders
+
+	double coord_app_sim_adu_ha; // current ADU from/to coder
+	double coord_app_sim_adu_dec; // current ADU from/to coder
+	double coord_app_sim_adu_az; // current ADU from/to coder
+	double coord_app_sim_adu_elev; // current ADU from/to coder
+	double coord_app_sim_adu_rot; // current ADU from/to coder
+	double coord_app_sim_adu_hapec; // current ADU from/to coder	
+	double utcjd_app_sim_adu_ha; // date of current ADU from/to coder
+	double utcjd_app_sim_adu_dec; // date of current ADU from/to coder
+	double utcjd_app_sim_adu_az; // current ADU from/to coder
+	double utcjd_app_sim_adu_elev; // current ADU from/to coder
+	double utcjd_app_sim_adu_rot; // current ADU from/to coder
+	double utcjd_app_sim_adu_hapec; // current ADU from/to coder
+	
+	double coord_app_sim_adu_ha0; // initial ADU from/to coder
+	double coord_app_sim_adu_dec0; // initial ADU from/to coder
+	double coord_app_sim_adu_az0; // initial ADU from/to coder
+	double coord_app_sim_adu_elev0; // initial ADU from/to coder
+	double coord_app_sim_adu_rot0; // initial ADU from/to coder
+	double coord_app_sim_adu_hapec0; // initial ADU from/to coder
+	double utcjd_app_sim_adu_ha0; // date of initial ADU from/to coder
+	double utcjd_app_sim_adu_dec0; // date of initial ADU from/to coder
+	double utcjd_app_sim_adu_az0; // date of initial ADU from/to coder
+	double utcjd_app_sim_adu_elev0; // date of initial ADU from/to coder
+	double utcjd_app_sim_adu_rot0; // date of initial ADU from/to coder
+	double utcjd_app_sim_adu_hapec0; // date of initial ADU from/to coder
+
+	double coord_app_cod_adu_dha; // next goto ADU from/to coder
+	double coord_app_cod_adu_ddec; // next goto ADU from/to coder
+	double coord_app_cod_adu_daz; // next goto ADU from/to coder
+	double coord_app_cod_adu_delev; // next goto ADU from/to coder
+	double coord_app_cod_adu_drot; // next goto ADU from/to coder
+
+	double coord_app_sim_adu_dha; // next goto ADU from/to coder
+	double coord_app_sim_adu_ddec; // next goto ADU from/to coder
+	double coord_app_sim_adu_daz; // next goto ADU from/to coder
+	double coord_app_sim_adu_delev; // next goto ADU from/to coder
+	double coord_app_sim_adu_drot; // next goto ADU from/to coder
+
+	double coord_app_sim_adu_cumdha; // cumulative gotos ADU from/to coder
+	double coord_app_sim_adu_cumddec; // cumulative gotos ADU from/to coder
+	double coord_app_sim_adu_cumdaz; // cumulative gotos ADU from/to coder
+	double coord_app_sim_adu_cumdelev; // cumulative gotos ADU from/to coder
+	double coord_app_sim_adu_cumdrot; // cumulative gotos ADU from/to coder
+	// END OF COORDSYS (do not delete this comment)
 };
+
+#include "pthread.h"
+pthread_mutex_t mutex;
+pthread_mutexattr_t mutexAttr;
 
 int tel_init(struct telprop *tel, int argc, char **argv);
 int tel_goto(struct telprop *tel);
@@ -187,11 +362,16 @@ int mytel_home_get(struct telprop *tel,char *ligne);
 int mytel_home_set(struct telprop *tel,double longitude,char *ew,double latitude,double altitude);
 int mytel_init_mount_default(struct telprop *tel,int mountno);
 
+int mytel_adu_coord(struct telprop *tel,char *result);
+
 int mytel_get_format(struct telprop *tel);
 int mytel_set_format(struct telprop *tel,int longformatindex);
 int mytel_flush(struct telprop *tel);
 int mytel_tcleval(struct telprop *tel,char *ligne);
 int mytel_correct(struct telprop *tel,char *direction, int duration);
+
+int my_pthread_mutex_lock (pthread_mutex_t * mutex);
+int my_pthread_mutex_unlock (pthread_mutex_t * mutex);
 
 void mytel_decimalsymbol(char *strin, char decin, char decout, char *strout);
 void mytel_error(struct telprop *tel,int axisno, int err);
@@ -209,14 +389,40 @@ void mytel_coord_stopped(struct telprop *tel);
 int mytel_loadparams(struct telprop *tel,int naxisno);
 int mytel_limites(void);
 
+// --- 
+int mytel_motor_stop(struct telprop *tel);
+int mytel_tcl_procs(struct telprop *tel);
+
+// --- cod and sim coordinate systems
+double mytel_sec2jd(time_t secs1970);
+int mytel_app_cod_getadu(struct telprop *tel);
+int mytel_app_cod_setadu(struct telprop *tel);
+void mytel_app_cod_setadu0(struct telprop *tel);
+void mytel_app_cod_setdadu(struct telprop *tel);
+void mytel_app_cod_adu2deg(struct telprop *tel);
+void mytel_app2cat_cod_deg(struct telprop *tel);
+void mytel_cat2app_cod_deg(struct telprop *tel, double jd);
+void mytel_app_cod_deg2adu(struct telprop *tel);
+void mytel_app2cat_cod_deg0(struct telprop *tel);
+void mytel_cat2app_cod_deg0(struct telprop *tel);
+int mytel_app_sim_getadu(struct telprop *tel);
+void mytel_app_sim_setadu0(struct telprop *tel);
+int mytel_app_sim_setadu(struct telprop *tel);
+void mytel_app_sim_setdadu(struct telprop *tel);
+void mytel_app_sim_adu2deg(struct telprop *tel);
+void mytel_app2cat_sim_deg(struct telprop *tel);
+void mytel_cat2app_sim_deg(struct telprop *tel, double jd);
+void mytel_app_sim_deg2adu(struct telprop *tel);
+void mytel_app2cat_sim_deg0(struct telprop *tel);
+void mytel_cat2app_sim_deg0(struct telprop *tel);
+void mytel_app_setutcjd0_now(struct telprop *tel);
+void mytel_app_setutcjd_now(struct telprop *tel);
+
 // --- thread
 struct telprop *telthread;
-int Thread940_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-static int Thread940_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-static int CmdThread940_radec_init(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-static int CmdThread940_radec_coord(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-static int CmdThread940_radec_goto(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-static int CmdThread940_appcoord(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int ThreadT940_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+static int ThreadT940_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+static int CmdThreadT940_loopeval(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 #endif
 
