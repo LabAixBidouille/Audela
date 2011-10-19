@@ -1,16 +1,103 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
 
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>Carte de champ</title>
-</head>
 
-<body>
-<p class="date">Date de mise &agrave; jour : 31 octobre 2009</p>
-<h1>Carte de champ </h1>
-<p>Vous devez t&eacute;l&eacute;charger le catalogue MicroCat &agrave; l'adresse :</p>
-<ul><a href="http://www.audela.org/download/microcat.tar.gz">http://www.audela.org/download/microcat.tar.gz</a></ul>
-</body>
-
-</html>
+<meta http-equiv="Content-Type" content="text/html; charset=us-ascii" /><title>Carte de champ</title></head><body>
+<p class="date">Date de mise &#224; jour : 19 octobre 2011</p>
+<h1>Carte de champ</h1>
+<p>Vous devez t&#233;l&#233;charger le catalogue MicroCat &#224;
+l'adresse :</p>
+<div style="margin-left: 2em;"><a href="http://www.audela.org/download/microcat.tar.gz">http://www.audela.org/download/microcat.tar.gz</a></div>
+<h2>Mots cl&#233;s</h2>
+<p>Pour que cet outil puisse fonctionner l'en-t&#234;te FITS de
+l'image doit contenir les mots cl&#233;s suivants :</p>
+<ul>
+<li>Les dimensions de l'image (NAXIS1 et NAXIS2).</li>
+<li>Les coordonn&#233;es vis&#233;es (AD et DEC).</li>
+<li>L'angle d'inclinaison de la cam&#233;ra (CROTA2).</li>
+<li>La longueur focale de l'instrument (FOCLEN).</li>
+<li>Les dimensions des pixels (PIXSIZE1 et PIXSIZE2).</li>
+<li>Les coordonn&#233;es du pixel correspondant aux
+coordonn&#233;es vis&#233;es (CRPIX1 et CRPIX2).</li>
+</ul>
+<p>Si tous les mots cl&#233;s sont pr&#233;sents, un rond rouge
+est dessin&#233; sur les &#233;toiles de magnitude
+inf&#233;rieure ou &#233;gale &#224; celle
+s&#233;lectionn&#233;e dans l'interface. Le passage de la souris sur l'un des
+ronds rouges provoque l'affichage d'informations sur
+l'&#233;toile (voir l'exemple) :</p>
+<p><img style="width: 319px; height: 238px;" alt="" src="images/infos.gif" /></p>
+<p>L'absence ou l'impr&#233;cision de CRPIX1, CRPIX2 ou CROTA2
+peut &#234;tre compens&#233;e comme indiqu&#233; ci-dessous.</p>
+<h2>Compl&#233;ment ou correction de valeurs</h2>
+<table>
+<tbody valign="middle">
+<tr>
+<td><br />
+</td>
+</tr>
+<tr>
+<td><img style="width: 319px; height: 238px;" alt="" src="images/crpix.gif" /></td>
+<td>La carte du champ ne peut pas &#234;tre &#233;tablie si les
+valeurs du pixel de r&#233;f&#233;rence pour Naxis1 et pour
+Naxis2 sont absentes comme c'est le cas de l'image M45_champ.fit par exemple.
+L'outil fixe alors arbitrairement ces valeurs &#224; Naxis1/2 et
+&#224; Naxis2/2. On obtient ainsi une carte d&#233;cal&#233;e par
+rapport aux &#233;toiles (cf. l'image ci-contre). Il faut donc
+adapter les param&#232;tres pour arriver &#224; une carte du
+champ correcte. Modifier les param&#232;tres manuellement pour en
+voir les effets risque d'&#234;tre long et harassant. Voici un
+mode op&#233;ratoire plus efficace :<br />
+1) R&#233;gler le zoom sur une valeur &#233;gale ou
+inf&#233;rieure &#224; 1.<br />
+2) Commencer par r&#233;gler la <b>magnitude limite</b> de
+mani&#232;re &#224; voir quelques &#233;toiles, pas
+n&#233;cessairement toutes surtout s'il y en a beaucoup.</td>
+</tr>
+<tr>
+<td><img style="width: 319px; height: 238px;" alt="" src="images/translation.gif" /></td>
+<td>3) Pour affiner les valeurs des <b>pixels de
+r&#233;f&#233;rence</b>, il suffit de pointer le rond rouge
+correspondant &#224; une &#233;toile avec la souris (de
+pr&#233;f&#233;rence &#224; un bord, gauche ou droit du rond rouge), de cliquer
+sur le bouton gauche de la souris, puis, sans rel&#226;cher le
+bouton, d'amener le point rouge en superposition de son &#233;toile : Au
+rel&#226;chement du bouton, tous les points sont translat&#233;s
+en x et en y. Les valeurs des pixels de r&#233;f&#233;rence sont
+alors mises &#224; jour dans la fen&#234;tre de l'outil ainsi que dans
+l'en-t&#234;te FITS de l'image, la carte est redessin&#233;e
+automatiquement.</td>
+</tr>
+<tr>
+<td><img style="width: 319px; height: 238px;" alt="" src="images/rotation.gif" /></td>
+<td>4 ) Dans l'exemple pr&#233;c&#233;dent il subsiste un
+d&#233;calage li&#233; &#224; une <b>inclinaison</b> non nulle de
+la cam&#233;ra. Pour l'approche, il suffit de s&#233;lectionner
+un rond rouge &#224; une extr&#233;mit&#233; (droite
+ou gauche) de l'image avec la souris puis d'amener le point rouge sur
+l'&#233;toile correspondante et faire <b>Crtl + Clic gauche</b>.
+La carte est automatiquement tourn&#233;e de l'angle
+correspondant, le champ <b>Inclinaison de la
+cam&#233;ra </b>se met &#224; jour.<br />
+Si la commande semble inactive, cliquer &#224; nouveau sur
+l'&#233;toile de r&#233;f&#233;rence (celle qui a servi &#224; la
+translation), puis recommencer le processus.</td>
+</tr>
+<tr>
+<td style="font-weight: bold;" align="center" valign="middle">Finalisation</td>
+<td>5) Il est possible qu'il soit n&#233;cessaire de d&#233;caler
+la carte d'un ou deux pixels ou de modifier l&#233;g&#232;rement
+le param&#232;tre <b>Focale de l'instrument</b>. Il suffit de
+faire <b>Enregistrer</b> ou <b>Enregistrer sous...</b> pour
+sauvegarder les informations corrig&#233;es ou
+compl&#233;t&#233;es. L'image est pr&#234;te pour la calibration
+astrom&#233;trique.<br />
+Bon &#224; savoir : Toute modification manuelle des
+param&#232;tres affich&#233;s doit &#234;tre suivie de la
+commande <b>Appliquer</b> pour qu'elle soit prise en compte dans
+le calcul de la carte de champ mais elle ne sera pas prise en
+compte dans les mots cl&#233;s de l'en-t&#234;te FITS.</td>
+</tr>
+</tbody>
+</table>
+</body></html>
