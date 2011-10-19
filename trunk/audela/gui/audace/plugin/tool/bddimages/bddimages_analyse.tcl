@@ -204,6 +204,7 @@ namespace eval bddimages_analyse {
       set catalog "/data/astrodata/Catalog/USNOA2/"
       #set catalog "/home/t1m/astrodata/Catalog/USNOA2/"
       set catalog "/astrodata/USNOA2/"
+      set catalog "/data/astrodata/Catalog/USNOA2/"
 
       # copie image courante dans rep temp en .fit -> bddimages_imgcorrection.tcl 
       set erreur [catch {::bddimages_imgcorrection::copy_to_tmp "IMG" $img_list} tmp_file_list]
