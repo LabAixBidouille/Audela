@@ -1,0 +1,100 @@
+#
+# Fichier : acqvideolinux_extraction.cap
+# Mise a jour $Id: acqvideolinux_extraction.cap 7099 2011-04-06 16:39:22Z robertdelmas  $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(acqvideolinux_extraction,main_title)          "acqvideolinux - Statut"
+set caption(acqvideolinux_extraction,titre)               "Statut de la base de données"
+
+set caption(acqvideolinux_extraction,label_bdd)           "Information du Serveur MySQL Local"
+set caption(acqvideolinux_extraction,label_connect)       "Connexion Serveur................"
+set caption(acqvideolinux_extraction,label_nbimg)         "Nb requêtes......................"
+set caption(acqvideolinux_extraction,label_nbheader)      "Nb scènes........................"
+
+set caption(acqvideolinux_extraction,label_rep)           "Information du Télescope"
+set caption(acqvideolinux_extraction,label_tconnect)      "Webservice......................"
+
+set caption(acqvideolinux_extraction,raz)                 "RAZ de la base de données"
+set caption(acqvideolinux_extraction,verif)               "Vérification"
+set caption(acqvideolinux_extraction,aide)                "Aide"
+set caption(acqvideolinux_extraction,fermer)              "Fermer"
+set caption(acqvideolinux_extraction,cancelRAZ)           "RAZ BDD annulée"
+
+set caption(acqvideolinux_extraction,msg_erreur)          "Erreur"
+set caption(acqvideolinux_extraction,msg_internet)        "Reconnexion à la base"
+
+set caption(acqvideolinux_extraction,msg_prevent)         "Attention !"
+set caption(acqvideolinux_extraction,msg_prevent2)        "Cette action va réinitialiser la base de données. Toutes les données seront définitivement effacées du disque. Etes-vous sûr ?"
+set caption(acqvideolinux_extraction,efface)              "Effacement de la base de données"
+set caption(acqvideolinux_extraction,mdprootsql)          "Veuillez saisir le mot de passe root du serveur SQL"
+
+# *************** Version française **** **********************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(acqvideolinux_extraction,main_title)       "acqvideolinux - Statut"
+   set caption(acqvideolinux_extraction,titre)            "Statut de la base de données"
+
+   set caption(acqvideolinux_extraction,label_bdd)        "Information du Serveur MySQL Local"
+   set caption(acqvideolinux_extraction,label_connect)    "Connexion Serveur................"
+   set caption(acqvideolinux_extraction,label_nbrequetes) "Nb requêtes......................"
+   set caption(acqvideolinux_extraction,label_nbscenes)   "Nb scènes........................"
+
+   set caption(acqvideolinux_extraction,label_rep)        "Information du Télescope"
+   set caption(acqvideolinux_extraction,label_tconnect)   "Webservice......................."
+
+   set caption(acqvideolinux_extraction,raz)              "RAZ de la base de données"
+   set caption(acqvideolinux_extraction,verif)            "Vérification"
+   set caption(acqvideolinux_extraction,aide)             "Aide"
+   set caption(acqvideolinux_extraction,fermer)           "Fermer"
+   set caption(acqvideolinux_extraction,cancelRAZ)        "RAZ BDD annulée"
+
+   set caption(acqvideolinux_extraction,msg_erreur)       "Erreur"
+   set caption(acqvideolinux_extraction,msg_internet)     "Reconnexion à la base"
+
+   set caption(acqvideolinux_extraction,msg_prevent)      "Attention !"
+   set caption(acqvideolinux_extraction,msg_prevent2)     "Cette action va réinitialiser la base de données. Toutes les données seront définitivement effacées du disque. Etes-vous sûr ?"
+   set caption(acqvideolinux_extraction,efface)           "Effacement de la base de données"
+   set caption(acqvideolinux_extraction,mdprootsql)       "Veuillez saisir le mot de passe root du serveur SQL"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
