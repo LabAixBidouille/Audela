@@ -417,7 +417,7 @@ namespace eval ::fieldchart {
                   FOCLEN $fieldchart(FocLen) PIXSIZE1 $fieldchart(PixSize1)$unit PIXSIZE2 $fieldchart(PixSize2)$unit \
                   CROTA2 $fieldchart(Inclin) RA $fieldchart(CentreRA) DEC $fieldchart(CentreDec) \
                   CRPIX1 $fieldchart(Crpix1) CRPIX2 $fieldchart(Crpix2) ]
-               } else {
+            } else {
                return
             }
          } else {
@@ -481,6 +481,11 @@ namespace eval ::fieldchart {
    proc cmdDelete { } {
       global audace
 
+      #--   supprime les bindings
+      foreach cmd [ list Enter Leave ButtonPress-1 ButtonRelease-1 Control-ButtonRelease-1 ] {
+         $audace(hCanvas) bind chart \<$cmd\> ""
+     }
+
       #--- Effacement des etoiles rouges visualisant la carte de champ
       $audace(hCanvas) delete chart
    }
@@ -492,17 +497,31 @@ namespace eval ::fieldchart {
    proc refreshChart { args } {
       global audace color etoiles
 
+      set w $audace(hCanvas)
+
       #--- Efface les points rouges meme s'ils n'existent pas
       ::fieldchart::cmdDelete
-
       #--- Dessine les points rouges
       foreach star $etoiles {
          if { [ llength $star ] == "7" } {
             set coord [ lrange $star 4 5 ]
             lassign [ ::audace::picture2Canvas $coord ] x y
-            lassign [ list [ expr $x-2 ] [ expr $y-2 ] [ expr $x+2 ] [ expr $y+2 ] ] x1 y1 x2 y2
-            $audace(hCanvas) create oval $x1 $y1 $x2 $y2 -fill $color(red) -width 0 -tag chart
+            lassign [ list [expr {$x-2}] [expr {$y-2}] [expr {$x+2}] [expr {$y+2}] ] x1 y1 x2 y2
+            set starNo [ lsearch $etoiles $star ]
+            $w create oval $x1 $y1 $x2 $y2 -fill $color(red) -width 0 \
+               -tags [list chart star $starNo ]
          }
+      }
+
+      if { [ llength $star ] >= 4 } {
+         #--   ajoute les bindings pour l'affichage des info
+         $w bind chart <Enter> "::fieldchart::seeInfo %W"
+         $w bind chart <Leave> "$w delete info"
+
+         #--   ajoute les bindings pour la translation et la rotation
+         $w bind chart <ButtonPress-1> "::fieldchart::startMotion %W"
+         $w bind chart <ButtonRelease-1> "::fieldchart::shiftChart %W %x %y"
+         $w bind chart <Control-ButtonRelease-1> "::fieldchart::rotateChart %W %x %y"
       }
    }
 
@@ -519,11 +538,20 @@ namespace eval ::fieldchart {
       set fieldchart(CentreRA)      [ lindex [ buf$audace(bufNo) getkwd RA ] 1 ]
       set fieldchart(CentreDec)     [ lindex [ buf$audace(bufNo) getkwd DEC ] 1 ]
       set fieldchart(Inclin)        [ lindex [ buf$audace(bufNo) getkwd CROTA2 ] 1 ]
-      set fieldchart(FocLen)        [ lindex [ buf$audace(bufNo) getkwd FOCLEN ] 1 ]
-      set fieldchart(PixSize1)      [ lindex [ buf$audace(bufNo) getkwd PIXSIZE1 ] 1 ]
-      set fieldchart(PixSize2)      [ lindex [ buf$audace(bufNo) getkwd PIXSIZE2 ] 1 ]
+      if {$fieldchart(Inclin) == ""} {
+         set fieldchart(Inclin)     [ format %0.6f $fieldchart(Inclin) ]
+      }
+      set fieldchart(FocLen)        [ format %0.3f [ lindex [ buf$audace(bufNo) getkwd FOCLEN ] 1 ] ]
+      set fieldchart(PixSize1)      [ format %0.3f [ lindex [ buf$audace(bufNo) getkwd PIXSIZE1 ] 1 ] ]
+      set fieldchart(PixSize2)      [ format %0.3f [ lindex [ buf$audace(bufNo) getkwd PIXSIZE2 ] 1 ] ]
       set fieldchart(Crpix1)        [ lindex [ buf$audace(bufNo) getkwd CRPIX1 ] 1 ]
       set fieldchart(Crpix2)        [ lindex [ buf$audace(bufNo) getkwd CRPIX2 ] 1 ]
+      if {$fieldchart(Crpix1) == ""} {
+         set fieldchart(Crpix1) [ format %0.2f [expr {$fieldchart(PictureWidth)/2.}] ]
+      }
+      if {$fieldchart(Crpix2) == ""} {
+         set fieldchart(Crpix2)     [ format %0.2f [expr {$fieldchart(PictureHeight)/2.}] ]
+      }
    }
 
    #------------------------------------------------------------
@@ -622,6 +650,204 @@ namespace eval ::fieldchart {
       }
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $audace(base).loadMicrocat
+   }
+
+   #------------------------------------------------------------
+   # seeInfo
+   #    Affiche les info sur une etoile particuliere
+   #     Binding avec <Enter>
+   #------------------------------------------------------------
+   proc seeInfo { w } {
+      global caption color etoiles
+
+      #--   efface une fenetre d'info existante
+      $w delete [ $w find withtag info ]
+
+      #--   identifie le N° de l'etoile selectionnee
+      set starNo  [ lindex [ ::fieldchart::getStarNo $w ] 0 ]
+
+      #--   recherche les donnees
+      lassign [ lindex $etoiles $starNo ] ra dec mgb mgr
+
+      #--   prend les coordonnes de l'etoile pour definir celle du texte
+      lassign [ $w coords [ $w find withtag current ] ] x1 y1 x2 y2
+
+      #--   dessine et complete la fenetre de texte
+      $w create text [ expr { $x2 + 10 } ] $y2 -justify left -anchor w \
+         -text [ format $caption(fieldchart,info) $starNo $ra $dec $mgb $mgr] \
+         -fill $color(yellow) -tags [ list chart info ]
+   }
+
+   #------------------------------------------------------------
+   # startMotion
+   #  Memorise le N° de l'item selectionne et les coordonnes de l'etoile
+   #     Binding avec <ButtonPress-1>
+   #------------------------------------------------------------
+   proc startMotion { w } {
+      variable widget
+      global etoiles
+
+      #--   identifie l'item courant
+      set itemNo [ $w find withtag current ]
+      set widget(fieldchart,itemNo) $itemNo
+
+      #--   identifie le N° de l'etoile selectionnee
+      set starNo  [ ::fieldchart::getStarNo $w ]
+
+      #--   recupere les caractéristiques (ra, dec, mgb et mgr) de l'etoile
+      set widget(fieldchart,star_ref) [lrange [ lindex $etoiles $starNo ] 0 3]
+   }
+
+   #------------------------------------------------------------
+   # shiftChart
+   #    Calcule la translation dx dy de CRPIX1 et CRPIX2
+   #     et rafraichit la carte
+   #     Binding avec <ButtonRelease-1>
+   #------------------------------------------------------------
+   proc shiftChart { w x2 y2 } {
+      variable widget
+      global audace fieldchart
+
+      if { ![ info exists widget(fieldchart,itemNo) ] } { return }
+
+      set visuNo $audace(visuNo)
+
+      #--   ajuste les coordonnes d'arrivee au centre FWHM de l'etoile
+      lassign [ ::fieldchart::searchStarCenter [list $x2 $y2 ] ] x2 y2
+
+      #--   identifie le centre du point rouge deplace
+      set red_point [ ::polydraw::center $visuNo $w $widget(fieldchart,itemNo) ]
+      #--   convertit les references canvas en coordonnes picture
+      lassign [ ::confVisu::canvas2Picture $visuNo $red_point left ] x1 y1
+
+      #--   calcule les ecarts
+      set dx [ expr { ($x2-$x1) } ]
+      set dy [ expr { ($y2-$y1) } ]
+
+      #--   calcule des nouvelles valeurs
+      set crpix1 [expr { $fieldchart(Crpix1) + $dx } ]
+      set crpix2 [expr { $fieldchart(Crpix2) + $dy } ]
+      set fieldchart(Crpix1) [ format %0.2f $crpix1 ]
+      set fieldchart(Crpix2) [ format %0.2f $crpix2 ]
+
+      #--   met a jour l'en-tete FITS
+      set bufNo $audace(bufNo)
+      buf$bufNo setkwd [ list CRPIX1 $fieldchart(Crpix1) float { [pixel] Reference pixel for naxis1 } pixel ]
+      buf$bufNo setkwd [ list CRPIX2 $fieldchart(Crpix2) float { [pixel] Reference pixel for naxis2 } pixel ]
+
+      #--   cmaApply rafraichit completement chart et les infos des tags
+      #--   les N° des items changent, de nouvelles etoiles peuvent apparaitre
+      #--   donc l'ordre n'est pas conserve
+      ::fieldchart::cmdApply
+
+      #--   repere le point rouge deplace dans le nouveau referentiel
+      set itemNo [ ::fieldchart::getItemNo $w $widget(fieldchart,star_ref) ]
+      set widget(fieldchart,itemRef) $itemNo
+      set widget(fieldchart,itemNo) $itemNo
+
+      if { $widget(fieldchart,itemRef)  == "" } {
+         ::console::affiche_resultat "Star not found\n"
+      }
+   }
+
+   #------------------------------------------------------------
+   # rotateChart
+   #  Calcule l'angle de rotation et rafraichit la carte
+   #     Binding avec <Control-ButtonRelease-1>
+   #------------------------------------------------------------
+   proc rotateChart { w x2 y2 } {
+      variable widget
+      global audace color fieldchart etoiles
+
+       #--   ajuste les coordonnes d'arrivee au centre FWHM de l'etoile
+      lassign [ ::fieldchart::searchStarCenter [ list $x2 $y2 ] ] x2 y2
+
+      set listItems [ list $widget(fieldchart,itemRef) $widget(fieldchart,itemNo) ]
+
+      foreach star $listItems data [ list star1 star2 ] {
+         set starNo [ ::fieldchart::getStarNo $w $star ]
+         set $data [ lrange [ lindex $etoiles $starNo ] 4 5 ]
+      }
+      lassign $star1 xc yc
+      lassign $star2 x1 y1
+
+      #--   interception d'une erreur sur le calcul avec un diviseur 0
+      if { [ catch {
+         #--   en degres
+         set angle_initial [ expr { atan2(($y1-$yc),($x1-$xc)) } ]
+         set angle_final [ expr { atan2(($y2-$yc),($x2-$xc)) } ]
+         set delta_deg [ expr { 180*($angle_final-$angle_initial)/acos(-1) } ]
+         if { $delta_deg < 0 } { set delta_deg [ expr { 360+$delta_deg } ] }
+      } ErrInfo ] } {
+         return
+      }
+
+      #--   met a jour l'angle d'inclinaison et l'en-tête FITS
+      set angle_deg [ expr { $fieldchart(Inclin) + $delta_deg } ]
+
+      #--   pour eviter une accumulation des angles de rotation
+      set fieldchart(Inclin) [ format %0.6f [expr { fmod($angle_deg,360) } ] ]
+
+      buf$audace(bufNo) setkwd [ list CROTA2 $fieldchart(Inclin) float { [deg] position angle } deg ]
+
+      ::fieldchart::cmdApply
+   }
+
+   #------------------------------------------------------------
+   # getStarNo
+   #    Retourne le N° de l'etoile
+   #------------------------------------------------------------
+   proc getStarNo { w { itemNo "" } } {
+
+      if { $itemNo eq "" } {
+         set infos [ $w itemcget [ $w find withtag current ] -tags ]
+      } else {
+         set infos [ $w itemcget $itemNo -tags ]
+      }
+      return [ lindex $infos 2 ]
+   }
+
+   #------------------------------------------------------------
+   # getItemNo
+   #    Retourne le N° de l'item qui correspond aux RADEC de l'etoile
+   #------------------------------------------------------------
+   proc getItemNo { w star_info } {
+      global etoiles
+
+      #--   cherche le rang de l'etoile avec les caracteristiques
+      set starNo [ lsearch -regexp $etoiles $star_info ]
+
+      set result ""
+      #--   identifie le N° de l'item correspondant
+      foreach itemNo [ $w find withtag star ] {
+         if { [ ::fieldchart::getStarNo $w $itemNo ] == $starNo } {
+            set result $itemNo
+            break
+         }
+      }
+      return $result
+   }
+
+   #------------------------------------------------------------
+   # searchStarCenter
+   #     Retourne les coordonnees picture du centre de l'etoile
+   #     (au 1/100 de pixel) a partir des cordonnees canvas (au pixel)
+   #     par ajustement d'une gaussienne
+   #------------------------------------------------------------
+   proc searchStarCenter { coord } {
+      global audace
+
+      #--   convertit les coordonnees canvas en coordonnees image
+      lassign [ ::confVisu::canvas2Picture $audace(visuNo) $coord ]  x y
+
+      #--   definit une boite de selection
+      set box [list [expr {$x-5}] [expr {$y-5}] [expr { $x+5 }] [expr { $y+5 }]]
+
+      #--   cherche le centre FWHM de l'etoile recouverte
+      #--   et remplace x,y par ces nouvelles coordonnees
+      lassign [ buf$audace(bufNo) fitgauss $box ] -> x -> -> -> y
+
+      return [ list $x $y ]
    }
 
 }
