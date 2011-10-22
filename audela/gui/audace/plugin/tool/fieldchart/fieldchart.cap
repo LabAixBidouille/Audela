@@ -35,6 +35,7 @@ set caption(fieldchart,focale_instrument)             "Equipment Focal Length (m
 set caption(fieldchart,taille_pixels)                 "Pixel Size (µm)"
 set caption(fieldchart,pas_etoile)                    "No star in this field."
 set caption(fieldchart,info)                          "Star N° %s :\nRA %s °\nDEC %s °\nmagb %s\nmagr %s\n"
+set caption(fieldchart,error_no_image)                "Please display an image first."
 
 set caption(fieldchart,erreur)                        "Error"
 set caption(fieldchart,attention)                     "Warning!"
@@ -74,6 +75,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fieldchart,taille_pixels)              "Taille des pixels (en µm)"
    set caption(fieldchart,pas_etoile)                 "Pas d'étoile dans ce champ."
    set caption(fieldchart,info)                       "Etoile N° %s :\nAD %s °\nDEC %s °\nmagb %s\nmagr %s\n"
+   set caption(fieldchart,error_no_image)             "Veuillez d'abord afficher une image."
 
    set caption(fieldchart,erreur)                     "Erreur"
    set caption(fieldchart,attention)                  "Attention !"
@@ -113,6 +115,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fieldchart,taille_pixels)              "Dimensione dei pixel (µm)"
    set caption(fieldchart,pas_etoile)                 "Nessuna stella nel campo."
    set caption(fieldchart,info)                       "Stella N° %s :\nRA %s °\nDEC %s °\nmagb %s\nmagr %s\n"
+   set caption(fieldchart,error_no_image)             "Prima visualizzare un'immagine."
 
    set caption(fieldchart,erreur)                     "Errore"
    set caption(fieldchart,attention)                  "Attenzione!"
@@ -152,6 +155,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fieldchart,taille_pixels)              "Tamaño de píxeles (µm)"
    set caption(fieldchart,pas_etoile)                 "No hay estrellas en este campo."
    set caption(fieldchart,info)                       "Estrella N° %s :\nRA %s °\nDEC %s °\nmagb %s\nmagr %s\n"
+   set caption(fieldchart,error_no_image)             "Por favor, muestre una imagen primero."
 
    set caption(fieldchart,erreur)                     "Error"
    set caption(fieldchart,attention)                  "!Cuidado¡"
@@ -191,6 +195,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fieldchart,taille_pixels)              "Rasterpunkten Größe (in µm)"
    set caption(fieldchart,pas_etoile)                 "Kein Stern in diesem Feld."
    set caption(fieldchart,info)                       "Stern N° %s :\nRA %s °\nDEC %s °\nmagb %s\nmagr %s\n"
+   set caption(fieldchart,error_no_image)             "Bitte ein Bild erst anzeigen."
 
    set caption(fieldchart,erreur)                     "Irrtum"
    set caption(fieldchart,attention)                  "Achtung!"
@@ -230,6 +235,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fieldchart,taille_pixels)              "Tamanho do Pixel (µm)"
    set caption(fieldchart,pas_etoile)                 "Campo sem estrelas."
    set caption(fieldchart,info)                       "Estrela N° %s :\nRA %s °\nDEC %s °\nmagb %s\nmagr %s\n"
+   set caption(fieldchart,error_no_image)             "Por favor, mostre primeiro uma imagem."
 
    set caption(fieldchart,erreur)                     "Erro"
    set caption(fieldchart,attention)                  "Aviso!"
@@ -269,6 +275,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fieldchart,taille_pixels)              "Pixelstørrelse (µm)"
    set caption(fieldchart,pas_etoile)                 "Ingen stjerner i dette felt."
    set caption(fieldchart,info)                       "Stjerne N° %s :\nRA %s °\nDEC %s °\nmagb %s\nmagr %s\n"
+   set caption(fieldchart,error_no_image)             "Vær vise et billede først."
 
    set caption(fieldchart,erreur)                     "Fejl"
    set caption(fieldchart,attention)                  "Advarsel!"
@@ -308,6 +315,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fieldchart,taille_pixels)              "Pixel Size (µm)"
    set caption(fieldchart,pas_etoile)                 "No star in this field."
    set caption(fieldchart,info)                       "Star N° %s :\nRA %s °\nDEC %s °\nmagb %s\nmagr %s\n"
+   set caption(fieldchart,error_no_image)             "Please display an image first."
 
    set caption(fieldchart,erreur)                     "Error"
    set caption(fieldchart,attention)                  "Warning!"
@@ -347,6 +355,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fieldchart,taille_pixels)              "Pixel Size (µm)"
    set caption(fieldchart,pas_etoile)                 "No star in this field."
    set caption(fieldchart,info)                       "Star N° %s :\nRA %s °\nDEC %s °\nmagb %s\nmagr %s\n"
+   set caption(fieldchart,error_no_image)             "Please display an image first."
 
    set caption(fieldchart,erreur)                     "Error"
    set caption(fieldchart,attention)                  "Warning!"
