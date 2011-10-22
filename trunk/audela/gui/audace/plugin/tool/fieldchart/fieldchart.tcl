@@ -361,7 +361,7 @@ namespace eval ::fieldchart {
          button $This.cmd.aide -text "$caption(fieldchart,aide)" -width 8 \
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::fieldchart::getPluginType ] ] \
                [ ::fieldchart::getPluginDirectory ] [ ::fieldchart::getPluginHelp ]"
-         pack $This.cmd.aide -side left -padx 3 -pady 3 -ipady 5 -fill x
+         pack $This.cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
 
       pack $This.cmd -side top -fill x
 
@@ -404,57 +404,65 @@ namespace eval ::fieldchart {
 
       set unit "e-6"
 
-      if { [ buf$audace(bufNo) imageready ] == "1" } {
-         #--- Efface la carte de champ precedante
-         ::fieldchart::cmdDelete
-         #--- Definition des parametres optiques
-         if { $fieldchart(FieldFromImage) == "0" } {
-            if { $fieldchart(PictureWidth) != "" && $fieldchart(PictureHeight) != "" && $fieldchart(CentreRA) != "" && \
-                 $fieldchart(CentreDec) != "" && $fieldchart(Inclin) != "" && $fieldchart(FocLen) != "" && \
-                 $fieldchart(PixSize1) != "" && $fieldchart(PixSize2) != "" && $fieldchart(Crpix1) != "" &&
-                 $fieldchart(Crpix2) != "" } {
-               set field [ list OPTIC NAXIS1 $fieldchart(PictureWidth) NAXIS2 $fieldchart(PictureHeight) \
-                  FOCLEN $fieldchart(FocLen) PIXSIZE1 $fieldchart(PixSize1)$unit PIXSIZE2 $fieldchart(PixSize2)$unit \
-                  CROTA2 $fieldchart(Inclin) RA $fieldchart(CentreRA) DEC $fieldchart(CentreDec) \
-                  CRPIX1 $fieldchart(Crpix1) CRPIX2 $fieldchart(Crpix2) ]
-            } else {
-               return
-            }
-         } else {
-            set field [ list BUFFER $audace(bufNo) ]
-         }
-
-         #--- Liste des objets
-         set choix [ $This.usr.1.cata get ]
-         if { ! [ string compare $choix $caption(fieldchart,microcat) ] } {
-            set objects [ list * ASTROMMICROCAT $::fieldchart::widget(fieldchart,pathCatalog) ]
-         } elseif { ! [ string compare $choix $caption(fieldchart,tycho) ] } {
-            set objects [ list * TYCHOMICROCAT $::fieldchart::widget(fieldchart,pathCatalog) ]
-         } elseif { ! [ string compare $choix $caption(fieldchart,loneos) ] } {
-            set objects [ list * LONEOSMICROCAT $::fieldchart::widget(fieldchart,pathCatalog) ]
-         } elseif { ! [ string compare $choix $caption(fieldchart,usno) ] } {
-            set objects [ list * USNO $::fieldchart::widget(fieldchart,pathCatalog) ]
-         }
-         set result [ list LIST ]
-         set magmax [ $This.usr.1.magmax get ]
-
-         set a_executer { mc_readcat $field $objects $result -magb< $magmax -magr< $magmax }
-
-         set msg [ eval $a_executer ]
-
-         if { [ llength $msg ] == "1" } {
-            set msg [ lindex $msg 0 ]
-            if { [ lindex $msg 0 ] == "Pb" } {
-               tk_messageBox -message "[ lindex $msg 1 ]" -icon error -title "$caption(fieldchart,erreur)"
-            } else {
-               tk_messageBox -message "$caption(fieldchart,pas_etoile)" -icon warning \
-                  -title "$caption(fieldchart,attention)"
-            }
-         } else {
-             set etoiles [ lreplace $msg end end ]
-             ::fieldchart::refreshChart
-         }
+      #--- Recherche une image dans le buffer
+      if { [ buf$audace(bufNo) imageready ] == "0" } {
+         tk_messageBox -message "$caption(fieldchart,error_no_image)" \
+            -title "$caption(fieldchart,carte_champ)" -icon error
+         return
       }
+
+      #--- Efface la carte de champ precedante
+      ::fieldchart::cmdDelete
+
+      #--- Definition des parametres optiques
+      if { $fieldchart(FieldFromImage) == "0" } {
+         if { $fieldchart(PictureWidth) != "" && $fieldchart(PictureHeight) != "" && $fieldchart(CentreRA) != "" && \
+            $fieldchart(CentreDec) != "" && $fieldchart(Inclin) != "" && $fieldchart(FocLen) != "" && \
+            $fieldchart(PixSize1) != "" && $fieldchart(PixSize2) != "" && $fieldchart(Crpix1) != "" &&
+            $fieldchart(Crpix2) != "" } {
+
+            set field [ list OPTIC NAXIS1 $fieldchart(PictureWidth) NAXIS2 $fieldchart(PictureHeight) \
+               FOCLEN $fieldchart(FocLen) PIXSIZE1 $fieldchart(PixSize1)$unit PIXSIZE2 $fieldchart(PixSize2)$unit \
+               CROTA2 $fieldchart(Inclin) RA $fieldchart(CentreRA) DEC $fieldchart(CentreDec) \
+               CRPIX1 $fieldchart(Crpix1) CRPIX2 $fieldchart(Crpix2) ]
+         } else {
+            return
+         }
+      } else {
+         set field [ list BUFFER $audace(bufNo) ]
+      }
+
+      #--- Liste des objets
+      set choix [ $This.usr.1.cata get ]
+      if { ! [ string compare $choix $caption(fieldchart,microcat) ] } {
+         set objects [ list * ASTROMMICROCAT $::fieldchart::widget(fieldchart,pathCatalog) ]
+      } elseif { ! [ string compare $choix $caption(fieldchart,tycho) ] } {
+         set objects [ list * TYCHOMICROCAT $::fieldchart::widget(fieldchart,pathCatalog) ]
+      } elseif { ! [ string compare $choix $caption(fieldchart,loneos) ] } {
+         set objects [ list * LONEOSMICROCAT $::fieldchart::widget(fieldchart,pathCatalog) ]
+      } elseif { ! [ string compare $choix $caption(fieldchart,usno) ] } {
+         set objects [ list * USNO $::fieldchart::widget(fieldchart,pathCatalog) ]
+      }
+      set result [ list LIST ]
+      set magmax [ $This.usr.1.magmax get ]
+
+      set a_executer { mc_readcat $field $objects $result -magb< $magmax -magr< $magmax }
+
+      set msg [ eval $a_executer ]
+
+      if { [ llength $msg ] == "1" } {
+         set msg [ lindex $msg 0 ]
+         if { [ lindex $msg 0 ] == "Pb" } {
+            tk_messageBox -message "[ lindex $msg 1 ]" -icon error -title "$caption(fieldchart,erreur)"
+         } else {
+            tk_messageBox -message "$caption(fieldchart,pas_etoile)" -icon warning \
+               -title "$caption(fieldchart,attention)"
+         }
+      } else {
+         set etoiles [ lreplace $msg end end ]
+         ::fieldchart::refreshChart
+      }
+
       ::fieldchart::recupPosition
    }
 
@@ -531,21 +539,34 @@ namespace eval ::fieldchart {
    #    camera, la focale de l'instrument et la taille des pixels
    #------------------------------------------------------------
    proc cmdTakeFITSKeywords { } {
-      global audace fieldchart
+      global audace caption fieldchart
+
+      #--- Recherche une image dans le buffer
+      if { [ buf$audace(bufNo) imageready ] == "0" } {
+         tk_messageBox -message "$caption(fieldchart,error_no_image)" \
+            -title "$caption(fieldchart,carte_champ)" -icon error
+         return
+      }
 
       set fieldchart(PictureWidth)  [ lindex [ buf$audace(bufNo) getkwd NAXIS1 ] 1 ]
       set fieldchart(PictureHeight) [ lindex [ buf$audace(bufNo) getkwd NAXIS2 ] 1 ]
       set fieldchart(CentreRA)      [ lindex [ buf$audace(bufNo) getkwd RA ] 1 ]
       set fieldchart(CentreDec)     [ lindex [ buf$audace(bufNo) getkwd DEC ] 1 ]
       set fieldchart(Inclin)        [ lindex [ buf$audace(bufNo) getkwd CROTA2 ] 1 ]
-      if {$fieldchart(Inclin) == ""} {
-         set fieldchart(Inclin)     [ format %0.6f $fieldchart(Inclin) ]
-      }
-      set fieldchart(FocLen)        [ format %0.3f [ lindex [ buf$audace(bufNo) getkwd FOCLEN ] 1 ] ]
-      set fieldchart(PixSize1)      [ format %0.3f [ lindex [ buf$audace(bufNo) getkwd PIXSIZE1 ] 1 ] ]
-      set fieldchart(PixSize2)      [ format %0.3f [ lindex [ buf$audace(bufNo) getkwd PIXSIZE2 ] 1 ] ]
+      set fieldchart(FocLen)        [ lindex [ buf$audace(bufNo) getkwd FOCLEN ] 1 ]
+      set fieldchart(PixSize1)      [ lindex [ buf$audace(bufNo) getkwd PIXSIZE1 ] 1 ]
+      set fieldchart(PixSize2)      [ lindex [ buf$audace(bufNo) getkwd PIXSIZE2 ] 1 ]
       set fieldchart(Crpix1)        [ lindex [ buf$audace(bufNo) getkwd CRPIX1 ] 1 ]
       set fieldchart(Crpix2)        [ lindex [ buf$audace(bufNo) getkwd CRPIX2 ] 1 ]
+
+      #--   formate les valeurs si elles ne sont pas vides
+      foreach var [ list Inclin FocLen PixSize1 PixSize2 ] form [ list %0.6f %0.4f %0.3f %0.3f ] {
+         if {$fieldchart($var) != ""} {
+            set fieldchart($var) [ format $form $fieldchart($var) ]
+         }
+      }
+
+      #--   calcule et formate les valeurs si elles sont vides
       if {$fieldchart(Crpix1) == ""} {
          set fieldchart(Crpix1) [ format %0.2f [expr {$fieldchart(PictureWidth)/2.}] ]
       }
@@ -778,6 +799,11 @@ namespace eval ::fieldchart {
          set angle_final [ expr { atan2(($y2-$yc),($x2-$xc)) } ]
          set delta_deg [ expr { 180*($angle_final-$angle_initial)/acos(-1) } ]
          if { $delta_deg < 0 } { set delta_deg [ expr { 360+$delta_deg } ] }
+
+         #--   calcule le facteur d'homothetie entre les rayons
+         set distance_1 [ expr { hypot($y1-$yc,$x1-$xc) } ]
+         set distance_2 [ expr { hypot($y2-$yc,$x2-$xc) } ]
+         set ratio [ expr { $distance_2/$distance_1 } ]
       } ErrInfo ] } {
          return
       }
@@ -785,10 +811,17 @@ namespace eval ::fieldchart {
       #--   met a jour l'angle d'inclinaison et l'en-tête FITS
       set angle_deg [ expr { $fieldchart(Inclin) + $delta_deg } ]
 
+      set bufNo $audace(bufNo)
       #--   pour eviter une accumulation des angles de rotation
       set fieldchart(Inclin) [ format %0.6f [expr { fmod($angle_deg,360) } ] ]
+      buf$bufNo setkwd [ list CROTA2 $fieldchart(Inclin) float { [deg] position angle } deg ]
 
-      buf$audace(bufNo) setkwd [ list CROTA2 $fieldchart(Inclin) float { [deg] position angle } deg ]
+      if { $ratio != 1.0000 } {
+         set foclen_kwd [ buf$bufNo getkwd FOCLEN ]
+         set fieldchart(FocLen) [ format  %0.4f [ expr { $fieldchart(FocLen)*$ratio } ] ]
+         set foclen_kwd [ lreplace $foclen_kwd 1 1 $fieldchart(FocLen) ]
+         buf$bufNo setkwd $foclen_kwd
+      }
 
       ::fieldchart::cmdApply
    }
