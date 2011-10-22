@@ -2,7 +2,7 @@
 # Fichier : etc_tools.tcl
 # Description : Exposure Time Calculation
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: etc_tools.tcl 7239 2011-05-13 19:30:57Z alainklotz $
+# Mise à jour $Id$
 #
 # source "$audace(rep_install)/gui/audace/etc_tools.tcl"
 #

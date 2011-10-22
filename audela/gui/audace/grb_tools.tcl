@@ -2,7 +2,7 @@
 # Fichier : grb_tools.tcl
 # Description : Outil pour les sursauts gamma
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: grb_tools.tcl 7239 2011-05-13 19:30:57Z alainklotz $
+# Mise à jour $Id$
 #
 # source "$audace(rep_install)/gui/audace/grb_tools.tcl"
 #
