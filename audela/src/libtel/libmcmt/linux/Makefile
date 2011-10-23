@@ -1,7 +1,7 @@
 
 LIBTEL = 1
 
-OUTPUT = libmcmt.so
+OUTPUT = libmcmt.so $(OBJ) -lpthread
 
 SRC  = $(LIBTELDIR)/util.c $(LIBTELDIR)/libtel.c
 SRC += $(SRCDIR)/telescop.c $(SRCDIR)/teltcl.c

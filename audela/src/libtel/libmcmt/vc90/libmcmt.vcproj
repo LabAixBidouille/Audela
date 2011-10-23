@@ -4,6 +4,7 @@
 	Version="9,00"
 	Name="libmcmt"
 	ProjectGUID="{A915ACA1-C9A4-4965-A52C-0EA3E890737D}"
+	RootNamespace="libmcmt"
 	TargetFrameworkVersion="0"
 	>
 	<Platforms>
@@ -71,7 +72,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib ..\..\..\external\lib\tclstub85.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib ..\..\..\external\lib\tclstub85.lib ..\..\..\external\lib\pthread.lib"
 				OutputFile="..\..\..\..\bin\libmcmt.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -169,7 +170,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib ..\..\..\external\lib\tclstub85.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib ..\..\..\external\lib\tclstub85.lib ..\..\..\external\lib\pthread.lib"
 				OutputFile="..\..\..\..\bin\libmcmt.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

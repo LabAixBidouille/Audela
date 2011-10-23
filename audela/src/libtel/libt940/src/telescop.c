@@ -288,7 +288,7 @@ int tel_home_get(struct telprop *tel,char *ligne)
 
 int tel_home_set(struct telprop *tel,double longitude,char *ew,double latitude,double altitude)
 /* ---------------------------------------------------- */
-/* --- called by : tel1 home {PGS long e|w lat alt} --- */
+/* --- called by : tel1 home {GPS long e|w lat alt} --- */
 /* ---------------------------------------------------- */
 {
    return mytel_home_set(tel,longitude,ew,latitude,altitude);
@@ -678,6 +678,7 @@ int ThreadT940_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 	strcpy(telthread->extradrift_type,"altaz");
 	telthread->extradrift_axis0=0;
 	telthread->extradrift_axis1=0;
+
 	// init home
 	strcpy(telthread->home,"GPS 1.7187 E 43.8740 220");
 	strcpy(telthread->home0,telthread->home);
@@ -686,11 +687,12 @@ int ThreadT940_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 		return 1;
 	}
 	
-	// open connections
+	// load parameters
 	if (telthread->mode == MODE_REEL) {
 
 		telthread->N0=(long)telthread->axis_param[AXIS_AZ].coef_xs*360;
 		telthread->N1=(long)telthread->axis_param[AXIS_ELEV].coef_xs*360;
+		telthread->N2=(long)telthread->axis_param[AXIS_PARALLACTIC].coef_xs*360;
 		
 		// initial position from coders
 		telthread->coord_app_cod_deg_ha=0;
@@ -706,6 +708,7 @@ int ThreadT940_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 
 		telthread->N0=(long)telthread->axis_param[AXIS_AZ].coef_xs*360;
 		telthread->N1=(long)telthread->axis_param[AXIS_ELEV].coef_xs*360;
+		telthread->N2=(long)telthread->axis_param[AXIS_PARALLACTIC].coef_xs*360;
 		telthread->coord_app_sim_adu_cumdha=0; // cumulative gotos ADU from/to coder
 		telthread->coord_app_sim_adu_cumddec=0; // cumulative gotos ADU from/to coder
 		telthread->coord_app_sim_adu_cumdaz=0; // cumulative gotos ADU from/to coder
@@ -715,12 +718,11 @@ int ThreadT940_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 
 	}
 
-
 	// initial position from coders for simulation
 	telthread->coord_app_sim_deg_ha0=0;
-	telthread->coord_app_sim_deg_dec0=0;
-	telthread->coord_app_sim_adu_ha=0;
-	telthread->coord_app_sim_adu_dec=0;
+	telthread->coord_app_sim_deg_dec0=-40;
+	telthread->coord_app_sim_adu_ha=telthread->coord_app_sim_deg_ha0;
+	telthread->coord_app_sim_adu_dec=telthread->coord_app_sim_deg_dec0;
 	telthread->coord_app_sim_adu_hapec=0;
 	telthread->coord_app_sim_adu_az=(int)pow(2,30);
 	telthread->coord_app_sim_adu_elev=(int)pow(2,30);
@@ -755,11 +757,8 @@ int ThreadT940_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 /************************/
 int ThreadT940_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 	int action_ok=0;
-//	double jdnow,jdinit,dt;
-//	double raJ2000,decJ2000;
-//	char s[1024],ss[1024];
+	int axisno, seqno, err;
 	char action_locale[80];
-//   time_t ltime;
 
    my_pthread_mutex_lock(&mutex);
 	strcpy(action_locale,telthread->action_next);
@@ -843,7 +842,8 @@ int ThreadT940_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 		mytel_app_sim_adu2deg(telthread);
 		// --- convert apparent to catalog degs
 		mytel_app2cat_sim_deg(telthread);
-		// --- faire ici les corrections de Pec
+		// --- corrections de vitesse (Pec, altaz, etc.)
+		mytel_speed_corrections(telthread);
 		// --- on arrete les moteurs en cas de depassement des limites ---
 		mytel_limites();
 		strcpy(telthread->action_prev,action_locale);
@@ -966,32 +966,52 @@ int ThreadT940_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 		}
 		// on impose l'action motor_on pour le prochain tour de boucle
 		strcpy(telthread->action_next,"motor_on");
-	} else if (strcmp(action_locale,"move_n")==0) {
+	} else if (strcmp(telthread->action_next,"move_n")==0) {
 		/**************/
 	   /*** move_n ***/
 		/**************/
-		if (strcmp(telthread->action_cur,action_locale)!=0) {
+		if (strcmp(telthread->action_cur,telthread->action_next)!=0) {
 			// actionne la fonction que si elle n'a pas encore été lancée
-			strcpy(telthread->action_cur,action_locale);
+			strcpy(telthread->action_cur,telthread->action_next);
 			if (telthread->mode==MODE_REEL) {
+				if (telthread->type_mount==MOUNT_ALTAZ) {
+					axisno=AXIS_ELEV;
+				} else {
+					axisno=AXIS_DEC;
+				}
+				seqno=79; if (err=mytel_execute_command(telthread,axisno,26,1,0,0,seqno)) { mytel_error(telthread,axisno,err); }
+				seqno=76; if (err=mytel_execute_command(telthread,axisno,26,1,0,0,seqno)) { mytel_error(telthread,axisno,err); }
 			}
 		}
-	} else if (strcmp(action_locale,"move_s")==0) {
+	} else if (strcmp(telthread->action_next,"move_s")==0) {
 		/**************/
 	   /*** move_s ***/
 		/**************/
-		if (strcmp(telthread->action_cur,action_locale)!=0) {
+		if (strcmp(telthread->action_cur,telthread->action_next)!=0) {
 			// actionne la fonction que si elle n'a pas encore été lancée
-			strcpy(telthread->action_cur,action_locale);
+			strcpy(telthread->action_cur,telthread->action_next);
 			if (telthread->mode==MODE_REEL) {
+				if (telthread->type_mount==MOUNT_ALTAZ) {
+					axisno=AXIS_ELEV;
+				} else {
+					axisno=AXIS_DEC;
+				}
+				seqno=79; if (err=mytel_execute_command(telthread,axisno,26,1,0,0,seqno)) { mytel_error(telthread,axisno,err); }
+				seqno=75; if (err=mytel_execute_command(telthread,axisno,26,1,0,0,seqno)) { mytel_error(telthread,axisno,err); }
 			}
 		}
-	} else if ((strcmp(action_locale,"move_n_stop")==0)||(strcmp(action_locale,"move_s_stop")==0)) {
+	} else if ((strcmp(telthread->action_next,"move_n_stop")==0)||(strcmp(telthread->action_next,"move_s_stop")==0)) {
 		/**********************************/
 	   /*** move_n_stop OR move_s_stop ***/
 		/**********************************/
-		strcpy(telthread->action_cur,action_locale);
+		strcpy(telthread->action_cur,telthread->action_next);
 		if (telthread->mode==MODE_REEL) {
+			if (telthread->type_mount==MOUNT_ALTAZ) {
+				axisno=AXIS_ELEV;
+			} else {
+				axisno=AXIS_DEC;
+			}
+			seqno=79; if (err=mytel_execute_command(telthread,axisno,26,1,0,0,seqno)) { mytel_error(telthread,axisno,err); }
 		}
 	} else {
 		action_ok=0;
@@ -1565,18 +1585,33 @@ void mytel_app_cod_setadu0(struct telprop *tel) {
 void mytel_app2cat_cod_deg0(struct telprop *tel) {
    char s[1024],ss[1024];
    double coord1, coord2, jd;
-   coord1 = tel->coord_app_cod_deg_ha0;
-   coord2 = tel->coord_app_cod_deg_dec0;   
-   jd=tel->utcjd_app_cod_deg_ha0;
-   sprintf(s,"mc_tel2cat {%.6f %.6f} HADEC {%f} {%s} %d %d {%s} {%s}",coord1,coord2, jd, tel->homePosition,tel->radec_model_pressure, tel->radec_model_temperature, tel->radec_model_symbols, tel->radec_model_coefficients);
-	mytel_tcleval(tel,s);
-	strcpy(ss,tel->interp->result);
-	sprintf(s,"string trim [lindex {%s} 0]",ss); mytel_tcleval(tel,s);
-	tel->coord_cat_cod_deg_ra=atof(tel->interp->result);
-	tel->utcjd_cat_cod_deg_ra=jd;	
-	sprintf(s,"string trim [lindex {%s} 1]",ss); mytel_tcleval(tel,s);
-	tel->coord_cat_cod_deg_dec=atof(tel->interp->result);
-	tel->utcjd_cat_cod_deg_dec=jd;	
+	if (telthread->type_mount==MOUNT_ALTAZ) {
+		coord1 = tel->coord_app_cod_deg_az0;
+		coord2 = tel->coord_app_cod_deg_elev0;   
+		jd=tel->utcjd_app_cod_deg_az0;
+		sprintf(s,"mc_tel2cat {%.6f %.6f} ALTAZ {%f} {%s} %d %d {%s} {%s}",coord1,coord2, jd, tel->homePosition,tel->radec_model_pressure, tel->radec_model_temperature, tel->radec_model_symbols, tel->radec_model_coefficients);
+		mytel_tcleval(tel,s);
+		strcpy(ss,tel->interp->result);
+		sprintf(s,"string trim [lindex {%s} 0]",ss); mytel_tcleval(tel,s);
+		tel->coord_cat_cod_deg_ra0=atof(tel->interp->result);
+		tel->utcjd_cat_cod_deg_ra0=jd;	
+		sprintf(s,"string trim [lindex {%s} 1]",ss); mytel_tcleval(tel,s);
+		tel->coord_cat_cod_deg_dec0=atof(tel->interp->result);
+		tel->utcjd_cat_cod_deg_dec0=jd;	
+	} else {
+		coord1 = tel->coord_app_cod_deg_ha0;
+		coord2 = tel->coord_app_cod_deg_dec0;   
+		jd=tel->utcjd_app_cod_deg_ha0;
+		sprintf(s,"mc_tel2cat {%.6f %.6f} HADEC {%f} {%s} %d %d {%s} {%s}",coord1,coord2, jd, tel->homePosition,tel->radec_model_pressure, tel->radec_model_temperature, tel->radec_model_symbols, tel->radec_model_coefficients);
+		mytel_tcleval(tel,s);
+		strcpy(ss,tel->interp->result);
+		sprintf(s,"string trim [lindex {%s} 0]",ss); mytel_tcleval(tel,s);
+		tel->coord_cat_cod_deg_ra0=atof(tel->interp->result);
+		tel->utcjd_cat_cod_deg_ra0=jd;	
+		sprintf(s,"string trim [lindex {%s} 1]",ss); mytel_tcleval(tel,s);
+		tel->coord_cat_cod_deg_dec0=atof(tel->interp->result);
+		tel->utcjd_cat_cod_deg_dec0=jd;	
+	}
 }
 
 /***************************************************************************/
@@ -1584,15 +1619,31 @@ void mytel_app2cat_cod_deg0(struct telprop *tel) {
 /***************************************************************************/
 void mytel_app_cod_adu2deg(struct telprop *tel) {
 	double dadu,ddeg;
-	// tel->N0; // number of ADU for 360 deg
-	dadu=(tel->coord_app_cod_adu_ha-tel->coord_app_cod_adu_ha0);
-	ddeg=dadu/tel->N0*360;
-	tel->coord_app_cod_deg_ha=fmod(tel->coord_app_cod_deg_ha0+ddeg+720,360);
-	tel->utcjd_app_cod_deg_ha=tel->utcjd_app_cod_adu_ha;
-	dadu=(tel->coord_app_cod_adu_dec-tel->coord_app_cod_adu_dec0);
-	ddeg=dadu/tel->N1*360;
-	tel->coord_app_cod_deg_dec=tel->coord_app_cod_deg_dec0+ddeg;
-	tel->utcjd_app_cod_deg_dec=tel->utcjd_app_cod_adu_dec;
+	if (telthread->type_mount==MOUNT_ALTAZ) {
+		// tel->N0; // number of ADU for 360 deg
+		dadu=(tel->coord_app_cod_adu_az-tel->coord_app_cod_adu_az0);
+		ddeg=dadu/tel->N0*360;
+		tel->coord_app_cod_deg_az=fmod(tel->coord_app_cod_deg_az0+ddeg+720,360);
+		tel->utcjd_app_cod_deg_az=tel->utcjd_app_cod_adu_az;
+		dadu=(tel->coord_app_cod_adu_elev-tel->coord_app_cod_adu_elev0);
+		ddeg=dadu/tel->N1*360;
+		tel->coord_app_cod_deg_elev=tel->coord_app_cod_deg_elev0+ddeg;
+		tel->utcjd_app_cod_deg_elev=tel->utcjd_app_cod_adu_elev;
+		dadu=(tel->coord_app_cod_adu_rot-tel->coord_app_cod_adu_rot0);
+		ddeg=dadu/tel->N2*360;
+		tel->coord_app_cod_deg_rot=tel->coord_app_cod_deg_rot0+ddeg;
+		tel->utcjd_app_cod_deg_rot=tel->utcjd_app_cod_adu_rot;
+	} else {
+		// tel->N0; // number of ADU for 360 deg
+		dadu=(tel->coord_app_cod_adu_ha-tel->coord_app_cod_adu_ha0);
+		ddeg=dadu/tel->N0*360;
+		tel->coord_app_cod_deg_ha=fmod(tel->coord_app_cod_deg_ha0+ddeg+720,360);
+		tel->utcjd_app_cod_deg_ha=tel->utcjd_app_cod_adu_ha;
+		dadu=(tel->coord_app_cod_adu_dec-tel->coord_app_cod_adu_dec0);
+		ddeg=dadu/tel->N1*360;
+		tel->coord_app_cod_deg_dec=tel->coord_app_cod_deg_dec0+ddeg;
+		tel->utcjd_app_cod_deg_dec=tel->utcjd_app_cod_adu_dec;
+	}
 }
 
 /***************************************************************************/
@@ -1601,18 +1652,33 @@ void mytel_app_cod_adu2deg(struct telprop *tel) {
 void mytel_app2cat_cod_deg(struct telprop *tel) {
    char s[1024],ss[1024];
    double coord1, coord2, jd;
-   coord1 = tel->coord_app_cod_deg_ha;
-   coord2 = tel->coord_app_cod_deg_dec;   
-   jd=tel->utcjd_app_cod_deg_ha;
-   sprintf(s,"mc_tel2cat {%.6f %.6f} HADEC {%f} {%s} %d %d {%s} {%s}",coord1,coord2, jd, tel->homePosition,tel->radec_model_pressure, tel->radec_model_temperature, tel->radec_model_symbols, tel->radec_model_coefficients);
-	mytel_tcleval(tel,s);
-	strcpy(ss,tel->interp->result);
-	sprintf(s,"string trim [lindex {%s} 0]",ss); mytel_tcleval(tel,s);
-	tel->coord_cat_cod_deg_ra=atof(tel->interp->result);
-	tel->utcjd_cat_cod_deg_ra=jd;	
-	sprintf(s,"string trim [lindex {%s} 1]",ss); mytel_tcleval(tel,s);
-	tel->coord_cat_cod_deg_dec=atof(tel->interp->result);
-	tel->utcjd_cat_cod_deg_dec=jd;	
+	if (telthread->type_mount==MOUNT_ALTAZ) {
+		coord1 = tel->coord_app_cod_deg_az;
+		coord2 = tel->coord_app_cod_deg_elev;   
+		jd=tel->utcjd_app_cod_deg_az;
+		sprintf(s,"mc_tel2cat {%.6f %.6f} ALTAZ {%f} {%s} %d %d {%s} {%s}",coord1,coord2, jd, tel->homePosition,tel->radec_model_pressure, tel->radec_model_temperature, tel->radec_model_symbols, tel->radec_model_coefficients);
+		mytel_tcleval(tel,s);
+		strcpy(ss,tel->interp->result);
+		sprintf(s,"string trim [lindex {%s} 0]",ss); mytel_tcleval(tel,s);
+		tel->coord_cat_cod_deg_ra=atof(tel->interp->result);
+		tel->utcjd_cat_cod_deg_ra=jd;	
+		sprintf(s,"string trim [lindex {%s} 1]",ss); mytel_tcleval(tel,s);
+		tel->coord_cat_cod_deg_dec=atof(tel->interp->result);
+		tel->utcjd_cat_cod_deg_dec=jd;	
+	} else {
+		coord1 = tel->coord_app_cod_deg_ha;
+		coord2 = tel->coord_app_cod_deg_dec;   
+		jd=tel->utcjd_app_cod_deg_ha;
+		sprintf(s,"mc_tel2cat {%.6f %.6f} HADEC {%f} {%s} %d %d {%s} {%s}",coord1,coord2, jd, tel->homePosition,tel->radec_model_pressure, tel->radec_model_temperature, tel->radec_model_symbols, tel->radec_model_coefficients);
+		mytel_tcleval(tel,s);
+		strcpy(ss,tel->interp->result);
+		sprintf(s,"string trim [lindex {%s} 0]",ss); mytel_tcleval(tel,s);
+		tel->coord_cat_cod_deg_ra=atof(tel->interp->result);
+		tel->utcjd_cat_cod_deg_ra=jd;	
+		sprintf(s,"string trim [lindex {%s} 1]",ss); mytel_tcleval(tel,s);
+		tel->coord_cat_cod_deg_dec=atof(tel->interp->result);
+		tel->utcjd_cat_cod_deg_dec=jd;	
+	}
 }
 
 /***************************************************************************/
@@ -1621,11 +1687,12 @@ void mytel_app2cat_cod_deg(struct telprop *tel) {
 void mytel_cat2app_cod_deg(struct telprop *tel, double jd) {
    char s[1024],ss[1024];
    double raJ2000,decJ2000;
+	double coef=15.0410686;
 	raJ2000=tel->coord_cat_cod_deg_ra;
 	tel->utcjd_cat_cod_deg_ra=jd;
 	decJ2000=tel->coord_cat_cod_deg_dec;
 	tel->utcjd_cat_cod_deg_dec=jd;
-   sprintf(s, "mc_hip2tel { 1 1 %f %f J2000 J2000 0 0 0 } %f {%s} %d %d {%s} {%s}",raJ2000, decJ2000,jd, tel->homePosition, tel->radec_model_pressure, tel->radec_model_temperature,tel->radec_model_symbols, tel->radec_model_coefficients);
+   sprintf(s, "mc_hip2tel { 1 1 %f %f J2000 J2000 0 0 0 } %f {%s} %d %d {%s} {%s} -drift %s -driftvalues {%f %f}",raJ2000, decJ2000,jd, tel->homePosition, tel->radec_model_pressure, tel->radec_model_temperature,tel->radec_model_symbols, tel->radec_model_coefficients,tel->extradrift_type,tel->extradrift_axis0,tel->extradrift_axis1);
 	mytel_tcleval(tel,s);
 	// --- deg
 	sprintf(s,"string trim [lindex {%s} 10]",ss); mytel_tcleval(tel,s);
@@ -1646,6 +1713,29 @@ void mytel_cat2app_cod_deg(struct telprop *tel, double jd) {
 	sprintf(s,"string trim [lindex {%s} 15]",ss); mytel_tcleval(tel,s);
 	tel->coord_app_cod_deg_rot=atof(tel->interp->result);
 	tel->utcjd_app_cod_deg_rot=jd;
+
+	// --- speed (arcsec/sec)
+	if (tel->status==STATUS_MOTOR_OFF) {
+		tel->speed_app_cod_deg_ra=coef;
+		tel->speed_app_cod_deg_dec=0;
+		tel->speed_app_cod_deg_ha=0;
+		tel->speed_app_cod_deg_az=0;
+		tel->speed_app_cod_deg_elev=0;
+		tel->speed_app_cod_deg_rot=0;
+	} else {
+		sprintf(s,"string trim [lindex {%s} 16]",ss); mytel_tcleval(tel,s);
+		tel->speed_app_cod_deg_ra=atof(tel->interp->result);
+		sprintf(s,"string trim [lindex {%s} 17]",ss); mytel_tcleval(tel,s);
+		tel->speed_app_cod_deg_dec=atof(tel->interp->result);
+		sprintf(s,"string trim [lindex {%s} 18]",ss); mytel_tcleval(tel,s);
+		tel->speed_app_cod_deg_ha=atof(tel->interp->result);
+		sprintf(s,"string trim [lindex {%s} 19]",ss); mytel_tcleval(tel,s);
+		tel->speed_app_cod_deg_az=atof(tel->interp->result);
+		sprintf(s,"string trim [lindex {%s} 20]",ss); mytel_tcleval(tel,s);
+		tel->speed_app_cod_deg_elev=atof(tel->interp->result);
+		sprintf(s,"string trim [lindex {%s} 21]",ss); mytel_tcleval(tel,s);
+		tel->speed_app_cod_deg_rot=atof(tel->interp->result);
+	}
 }
 
 /***************************************************************************/
@@ -1653,15 +1743,31 @@ void mytel_cat2app_cod_deg(struct telprop *tel, double jd) {
 /***************************************************************************/
 void mytel_app_cod_deg2adu(struct telprop *tel) {
 	double dadu,ddeg;
-	// tel->N0; // number of ADU for 360 deg
-	ddeg=tel->coord_app_cod_deg_ha-tel->coord_app_cod_deg_ha0;
-	dadu=ddeg/360*tel->N0;
-	tel->coord_app_cod_adu_ha=tel->coord_app_cod_adu_ha0+dadu;
-	tel->utcjd_app_cod_adu_ha=tel->utcjd_app_cod_deg_ha;
-	ddeg=tel->coord_app_cod_deg_dec-tel->coord_app_cod_deg_dec0;
-	dadu=ddeg/360*tel->N0;
-	tel->coord_app_cod_adu_dec=tel->coord_app_cod_adu_dec0+dadu;
-	tel->utcjd_app_cod_adu_dec=tel->utcjd_app_cod_deg_dec;
+	if (telthread->type_mount==MOUNT_ALTAZ) {
+		// tel->N0; // number of ADU for 360 deg
+		ddeg=tel->coord_app_cod_deg_az-tel->coord_app_cod_deg_az0;
+		dadu=ddeg/360*tel->N0;
+		tel->coord_app_cod_adu_az=tel->coord_app_cod_adu_az0+dadu;
+		tel->utcjd_app_cod_adu_az=tel->utcjd_app_cod_deg_az;
+		ddeg=tel->coord_app_cod_deg_elev-tel->coord_app_cod_deg_elev0;
+		dadu=ddeg/360*tel->N1;
+		tel->coord_app_cod_adu_elev=tel->coord_app_cod_adu_elev0+dadu;
+		tel->utcjd_app_cod_adu_elev=tel->utcjd_app_cod_deg_elev;
+		ddeg=tel->coord_app_cod_deg_rot-tel->coord_app_cod_deg_rot0;
+		dadu=ddeg/360*tel->N2;
+		tel->coord_app_cod_adu_rot=tel->coord_app_cod_adu_rot0+dadu;
+		tel->utcjd_app_cod_adu_rot=tel->utcjd_app_cod_deg_rot;
+	} else {
+		// tel->N0; // number of ADU for 360 deg
+		ddeg=tel->coord_app_cod_deg_ha-tel->coord_app_cod_deg_ha0;
+		dadu=ddeg/360*tel->N0;
+		tel->coord_app_cod_adu_ha=tel->coord_app_cod_adu_ha0+dadu;
+		tel->utcjd_app_cod_adu_ha=tel->utcjd_app_cod_deg_ha;
+		ddeg=tel->coord_app_cod_deg_dec-tel->coord_app_cod_deg_dec0;
+		dadu=ddeg/360*tel->N1;
+		tel->coord_app_cod_adu_dec=tel->coord_app_cod_adu_dec0+dadu;
+		tel->utcjd_app_cod_adu_dec=tel->utcjd_app_cod_deg_dec;
+	}
 }
 
 /***************************************************************************/
@@ -1706,20 +1812,45 @@ int mytel_app_sim_getadu(struct telprop *tel) {
    double jd,dsec;
 	/* --- */
 	jd=mytel_sec2jd(time(&ltime));
-	tel->utcjd_app_sim_adu_ha=jd;	
-	dsec=(jd-tel->utcjd_app_sim_adu_ha0)*86400.;
-	tel->coord_app_sim_adu_ha=(int)(tel->coord_app_sim_adu_ha0+dsec/tel->sideral_sep_per_day*tel->N0+telthread->coord_app_sim_adu_cumdha);
-	tel->utcjd_app_sim_adu_dec=jd;	
-	dsec=(jd-tel->utcjd_app_sim_adu_dec0)*86400.;
-	tel->coord_app_sim_adu_dec=tel->coord_app_sim_adu_dec0+telthread->coord_app_sim_adu_cumddec;
-	dsec=(jd-tel->utcjd_app_sim_adu_hapec0)*86400.;	
-	tel->coord_app_sim_adu_hapec=(int)(fmod(telthread->coord_app_sim_adu_hapec0+25600*dsec/480.,25600));
-	tel->coord_app_sim_adu_az=0;
-	tel->coord_app_sim_adu_elev=0;
-	tel->coord_app_sim_adu_rot=0;
-	tel->utcjd_app_sim_adu_az=jd;
-	tel->utcjd_app_sim_adu_elev=jd;
-	tel->utcjd_app_sim_adu_rot=jd;
+	if (telthread->type_mount==MOUNT_ALTAZ) {
+		tel->utcjd_app_sim_adu_az=jd;	
+		tel->coord_app_sim_adu_az=1;
+		tel->utcjd_app_sim_adu_elev=jd;	
+		tel->coord_app_sim_adu_elev=1;
+		tel->utcjd_app_sim_adu_rot=jd;	
+		tel->coord_app_sim_adu_rot=1;
+		/* --- a remplacer par un calcul theorique hip2tel
+		tel->utcjd_app_sim_adu_az=jd;	
+		dsec=(jd-tel->utcjd_app_sim_adu_az0)*86400.;
+		tel->coord_app_sim_adu_az=(int)(tel->coord_app_sim_adu_az0+dsec/tel->sideral_sep_per_day*tel->N0+telthread->coord_app_sim_adu_cumdaz);
+		tel->utcjd_app_sim_adu_elev=jd;	
+		dsec=(jd-tel->utcjd_app_sim_adu_elev0)*86400.;
+		tel->coord_app_sim_adu_elev=(int)(tel->coord_app_sim_adu_elev0+dsec/tel->sideral_sep_per_day*tel->N1+telthread->coord_app_sim_adu_cumdelev);
+		tel->utcjd_app_sim_adu_rot=jd;	
+		dsec=(jd-tel->utcjd_app_sim_adu_rot0)*86400.;
+		tel->coord_app_sim_adu_rot=(int)(tel->coord_app_sim_adu_rot0+dsec/tel->sideral_sep_per_day*tel->N2+telthread->coord_app_sim_adu_cumdrot);
+		*/
+		tel->coord_app_sim_adu_ha=0;
+		tel->coord_app_sim_adu_dec=0;
+		tel->utcjd_app_sim_adu_ha=jd;			
+		tel->utcjd_app_sim_adu_dec=jd;	
+	} else {
+		dsec=(jd-tel->utcjd_app_sim_adu_ha0)*86400.;
+		tel->coord_app_sim_adu_ha=(int)(tel->coord_app_sim_adu_ha0+dsec/tel->sideral_sep_per_day*tel->N0+telthread->coord_app_sim_adu_cumdha);
+		tel->utcjd_app_sim_adu_ha=jd;	
+		dsec=(jd-tel->utcjd_app_sim_adu_dec0)*86400.;
+		tel->coord_app_sim_adu_dec=tel->coord_app_sim_adu_dec0+telthread->coord_app_sim_adu_cumddec;
+		tel->utcjd_app_sim_adu_dec=jd;	
+		dsec=(jd-tel->utcjd_app_sim_adu_hapec0)*86400.;	
+		tel->coord_app_sim_adu_hapec=(int)(fmod(telthread->coord_app_sim_adu_hapec0+25600*dsec/480.,25600));
+		tel->utcjd_app_sim_adu_hapec=jd;
+		tel->coord_app_sim_adu_az=0;
+		tel->coord_app_sim_adu_elev=0;
+		tel->coord_app_sim_adu_rot=0;
+		tel->utcjd_app_sim_adu_az=jd;
+		tel->utcjd_app_sim_adu_elev=jd;
+		tel->utcjd_app_sim_adu_rot=jd;
+	}
 	return 0;
 }
 
@@ -1747,18 +1878,33 @@ void mytel_app_sim_setadu0(struct telprop *tel) {
 void mytel_app2cat_sim_deg0(struct telprop *tel) {
    char s[1024],ss[1024];
    double coord1, coord2, jd;
-   coord1 = tel->coord_app_sim_deg_ha0;
-   coord2 = tel->coord_app_sim_deg_dec0;   
-   jd=tel->utcjd_app_sim_deg_ha0;
-   sprintf(s,"mc_tel2cat {%.6f %.6f} HADEC {%f} {%s} %d %d {%s} {%s}",coord1,coord2, jd, tel->homePosition,tel->radec_model_pressure, tel->radec_model_temperature, tel->radec_model_symbols, tel->radec_model_coefficients);
-	mytel_tcleval(tel,s);
-	strcpy(ss,tel->interp->result);
-	sprintf(s,"string trim [lindex {%s} 0]",ss); mytel_tcleval(tel,s);
-	tel->coord_cat_sim_deg_ra=atof(tel->interp->result);
-	tel->utcjd_cat_sim_deg_ra=jd;	
-	sprintf(s,"string trim [lindex {%s} 1]",ss); mytel_tcleval(tel,s);
-	tel->coord_cat_sim_deg_dec=atof(tel->interp->result);
-	tel->utcjd_cat_sim_deg_dec=jd;	
+	if (telthread->type_mount==MOUNT_ALTAZ) {
+		coord1 = tel->coord_app_sim_deg_az0;
+		coord2 = tel->coord_app_sim_deg_elev0;   
+		jd=tel->utcjd_app_sim_deg_az0;
+		sprintf(s,"mc_tel2cat {%.6f %.6f} ALTAZ {%f} {%s} %d %d {%s} {%s}",coord1,coord2, jd, tel->homePosition,tel->radec_model_pressure, tel->radec_model_temperature, tel->radec_model_symbols, tel->radec_model_coefficients);
+		mytel_tcleval(tel,s);
+		strcpy(ss,tel->interp->result);
+		sprintf(s,"string trim [lindex {%s} 0]",ss); mytel_tcleval(tel,s);
+		tel->coord_cat_sim_deg_ra0=atof(tel->interp->result);
+		tel->utcjd_cat_sim_deg_ra0=jd;	
+		sprintf(s,"string trim [lindex {%s} 1]",ss); mytel_tcleval(tel,s);
+		tel->coord_cat_sim_deg_dec0=atof(tel->interp->result);
+		tel->utcjd_cat_sim_deg_dec0=jd;	
+	} else {
+		coord1 = tel->coord_app_sim_deg_ha0;
+		coord2 = tel->coord_app_sim_deg_dec0;   
+		jd=tel->utcjd_app_sim_deg_ha0;
+		sprintf(s,"mc_tel2cat {%.6f %.6f} HADEC {%f} {%s} %d %d {%s} {%s}",coord1,coord2, jd, tel->homePosition,tel->radec_model_pressure, tel->radec_model_temperature, tel->radec_model_symbols, tel->radec_model_coefficients);
+		mytel_tcleval(tel,s);
+		strcpy(ss,tel->interp->result);
+		sprintf(s,"string trim [lindex {%s} 0]",ss); mytel_tcleval(tel,s);
+		tel->coord_cat_sim_deg_ra0=atof(tel->interp->result);
+		tel->utcjd_cat_sim_deg_ra0=jd;	
+		sprintf(s,"string trim [lindex {%s} 1]",ss); mytel_tcleval(tel,s);
+		tel->coord_cat_sim_deg_dec0=atof(tel->interp->result);
+		tel->utcjd_cat_sim_deg_dec0=jd;
+	}
 }
 
 /***************************************************************************/
@@ -1766,15 +1912,31 @@ void mytel_app2cat_sim_deg0(struct telprop *tel) {
 /***************************************************************************/
 void mytel_app_sim_adu2deg(struct telprop *tel) {
 	double dadu,ddeg;
-	// tel->N0; // number of ADU for 360 deg
-	dadu=(tel->coord_app_sim_adu_ha-tel->coord_app_sim_adu_ha0);
-	ddeg=dadu/tel->N0*360;
-	tel->coord_app_sim_deg_ha=fmod(tel->coord_app_sim_deg_ha0+ddeg+720,360);
-	tel->utcjd_app_sim_deg_ha=tel->utcjd_app_sim_adu_ha;
-	dadu=(tel->coord_app_sim_adu_dec-tel->coord_app_sim_adu_dec0);
-	ddeg=dadu/tel->N0*360;
-	tel->coord_app_sim_deg_dec=tel->coord_app_sim_deg_dec0+ddeg;
-	tel->utcjd_app_sim_deg_dec=tel->utcjd_app_sim_adu_dec;
+	if (telthread->type_mount==MOUNT_ALTAZ) {
+		// tel->N0; // number of ADU for 360 deg
+		dadu=(tel->coord_app_sim_adu_az-tel->coord_app_sim_adu_az0);
+		ddeg=dadu/tel->N0*360;
+		tel->coord_app_sim_deg_az=fmod(tel->coord_app_sim_deg_az0+ddeg+720,360);
+		tel->utcjd_app_sim_deg_az=tel->utcjd_app_sim_adu_az;
+		dadu=(tel->coord_app_sim_adu_elev-tel->coord_app_sim_adu_elev0);
+		ddeg=dadu/tel->N1*360;
+		tel->coord_app_sim_deg_elev=tel->coord_app_sim_deg_elev0+ddeg;
+		tel->utcjd_app_sim_deg_elev=tel->utcjd_app_sim_adu_elev;
+		dadu=(tel->coord_app_sim_adu_rot-tel->coord_app_sim_adu_rot0);
+		ddeg=dadu/tel->N2*360;
+		tel->coord_app_sim_deg_rot=tel->coord_app_sim_deg_rot0+ddeg;
+		tel->utcjd_app_sim_deg_rot=tel->utcjd_app_sim_adu_rot;
+	} else {
+		// tel->N0; // number of ADU for 360 deg
+		dadu=(tel->coord_app_sim_adu_ha-tel->coord_app_sim_adu_ha0);
+		ddeg=dadu/tel->N0*360;
+		tel->coord_app_sim_deg_ha=fmod(tel->coord_app_sim_deg_ha0+ddeg+720,360);
+		tel->utcjd_app_sim_deg_ha=tel->utcjd_app_sim_adu_ha;
+		dadu=(tel->coord_app_sim_adu_dec-tel->coord_app_sim_adu_dec0);
+		ddeg=dadu/tel->N1*360;
+		tel->coord_app_sim_deg_dec=tel->coord_app_sim_deg_dec0+ddeg;
+		tel->utcjd_app_sim_deg_dec=tel->utcjd_app_sim_adu_dec;
+	}
 }
 
 /***************************************************************************/
@@ -1783,18 +1945,33 @@ void mytel_app_sim_adu2deg(struct telprop *tel) {
 void mytel_app2cat_sim_deg(struct telprop *tel) {
    char s[1024],ss[1024];
    double coord1, coord2, jd;
-   coord1 = tel->coord_app_sim_deg_ha;
-   coord2 = tel->coord_app_sim_deg_dec;   
-   jd=tel->utcjd_app_sim_deg_ha;
-   sprintf(s,"mc_tel2cat {%.6f %.6f} HADEC {%f} {%s} %d %d {%s} {%s}",coord1,coord2, jd, tel->homePosition,tel->radec_model_pressure, tel->radec_model_temperature, tel->radec_model_symbols, tel->radec_model_coefficients);
-	mytel_tcleval(tel,s);
-	strcpy(ss,tel->interp->result);
-	sprintf(s,"string trim [lindex {%s} 0]",ss); mytel_tcleval(tel,s);
-	tel->coord_cat_sim_deg_ra=atof(tel->interp->result);
-	tel->utcjd_cat_sim_deg_ra=jd;	
-	sprintf(s,"string trim [lindex {%s} 1]",ss); mytel_tcleval(tel,s);
-	tel->coord_cat_sim_deg_dec=atof(tel->interp->result);
-	tel->utcjd_cat_sim_deg_dec=jd;	
+	if (telthread->type_mount==MOUNT_ALTAZ) {
+		coord1 = tel->coord_app_sim_deg_az;
+		coord2 = tel->coord_app_sim_deg_elev;   
+		jd=tel->utcjd_app_sim_deg_az;
+		sprintf(s,"mc_tel2cat {%.6f %.6f} ALTAZ {%f} {%s} %d %d {%s} {%s}",coord1,coord2, jd, tel->homePosition,tel->radec_model_pressure, tel->radec_model_temperature, tel->radec_model_symbols, tel->radec_model_coefficients);
+		mytel_tcleval(tel,s);
+		strcpy(ss,tel->interp->result);
+		sprintf(s,"string trim [lindex {%s} 0]",ss); mytel_tcleval(tel,s);
+		tel->coord_cat_sim_deg_ra=atof(tel->interp->result);
+		tel->utcjd_cat_sim_deg_ra=jd;	
+		sprintf(s,"string trim [lindex {%s} 1]",ss); mytel_tcleval(tel,s);
+		tel->coord_cat_sim_deg_dec=atof(tel->interp->result);
+		tel->utcjd_cat_sim_deg_dec=jd;	
+	} else {
+		coord1 = tel->coord_app_sim_deg_ha;
+		coord2 = tel->coord_app_sim_deg_dec;   
+		jd=tel->utcjd_app_sim_deg_ha;
+		sprintf(s,"mc_tel2cat {%.6f %.6f} HADEC {%f} {%s} %d %d {%s} {%s}",coord1,coord2, jd, tel->homePosition,tel->radec_model_pressure, tel->radec_model_temperature, tel->radec_model_symbols, tel->radec_model_coefficients);
+		mytel_tcleval(tel,s);
+		strcpy(ss,tel->interp->result);
+		sprintf(s,"string trim [lindex {%s} 0]",ss); mytel_tcleval(tel,s);
+		tel->coord_cat_sim_deg_ra=atof(tel->interp->result);
+		tel->utcjd_cat_sim_deg_ra=jd;	
+		sprintf(s,"string trim [lindex {%s} 1]",ss); mytel_tcleval(tel,s);
+		tel->coord_cat_sim_deg_dec=atof(tel->interp->result);
+		tel->utcjd_cat_sim_deg_dec=jd;	
+	}
 }
 
 /***************************************************************************/
@@ -1803,6 +1980,7 @@ void mytel_app2cat_sim_deg(struct telprop *tel) {
 void mytel_cat2app_sim_deg(struct telprop *tel, double jd) {
    char s[1024],ss[1024];
    double raJ2000,decJ2000;
+	double coef=15.0410686;
 	raJ2000=tel->coord_cat_sim_deg_ra;
 	tel->utcjd_cat_sim_deg_ra=jd;
 	decJ2000=tel->coord_cat_sim_deg_dec;
@@ -1828,6 +2006,28 @@ void mytel_cat2app_sim_deg(struct telprop *tel, double jd) {
 	sprintf(s,"string trim [lindex {%s} 15]",ss); mytel_tcleval(tel,s);
 	tel->coord_app_sim_deg_rot=atof(tel->interp->result);
 	tel->utcjd_app_sim_deg_rot=jd;
+	// --- arcsec/sec
+	if (tel->status==STATUS_MOTOR_OFF) {
+		tel->speed_app_sim_deg_ra=coef;
+		tel->speed_app_sim_deg_dec=0;
+		tel->speed_app_sim_deg_ha=0;
+		tel->speed_app_sim_deg_az=0;
+		tel->speed_app_sim_deg_elev=0;
+		tel->speed_app_sim_deg_rot=0;
+	} else {
+		sprintf(s,"string trim [lindex {%s} 16]",ss); mytel_tcleval(tel,s);
+		tel->speed_app_sim_deg_ra=atof(tel->interp->result);
+		sprintf(s,"string trim [lindex {%s} 17]",ss); mytel_tcleval(tel,s);
+		tel->speed_app_sim_deg_dec=atof(tel->interp->result);
+		sprintf(s,"string trim [lindex {%s} 18]",ss); mytel_tcleval(tel,s);
+		tel->speed_app_sim_deg_ha=atof(tel->interp->result);
+		sprintf(s,"string trim [lindex {%s} 19]",ss); mytel_tcleval(tel,s);
+		tel->speed_app_sim_deg_az=atof(tel->interp->result);
+		sprintf(s,"string trim [lindex {%s} 20]",ss); mytel_tcleval(tel,s);
+		tel->speed_app_sim_deg_elev=atof(tel->interp->result);
+		sprintf(s,"string trim [lindex {%s} 21]",ss); mytel_tcleval(tel,s);
+		tel->speed_app_sim_deg_rot=atof(tel->interp->result);
+	}
 }
 
 /***************************************************************************/
@@ -1835,15 +2035,70 @@ void mytel_cat2app_sim_deg(struct telprop *tel, double jd) {
 /***************************************************************************/
 void mytel_app_sim_deg2adu(struct telprop *tel) {
 	double dadu,ddeg;
-	// tel->N0; // number of ADU for 360 deg
-	ddeg=tel->coord_app_sim_deg_ha-tel->coord_app_sim_deg_ha0;
-	dadu=ddeg/360*tel->N0;
-	tel->coord_app_sim_adu_ha=tel->coord_app_sim_adu_ha0+dadu;
-	tel->utcjd_app_sim_adu_ha=tel->utcjd_app_sim_deg_ha;
-	ddeg=tel->coord_app_sim_deg_dec-tel->coord_app_sim_deg_dec0;
-	dadu=ddeg/360*tel->N0;
-	tel->coord_app_sim_adu_dec=tel->coord_app_sim_adu_dec0+dadu;
-	tel->utcjd_app_sim_adu_dec=tel->utcjd_app_sim_deg_dec;
+	double coef=15.0410686;
+	if (tel->type_mount==MOUNT_ALTAZ) {
+		// coords
+		// tel->N0; // number of ADU for 360 deg
+		ddeg=tel->coord_app_sim_deg_az-tel->coord_app_sim_deg_az0;
+		dadu=ddeg/360*tel->N0;
+		tel->coord_app_sim_adu_az=tel->coord_app_sim_adu_az0+dadu;
+		tel->utcjd_app_sim_adu_az=tel->utcjd_app_sim_deg_az;
+		// tel->N1; // number of ADU for 360 deg
+		ddeg=tel->coord_app_sim_deg_elev-tel->coord_app_sim_deg_elev0;
+		dadu=ddeg/360*tel->N1;
+		tel->coord_app_sim_adu_elev=tel->coord_app_sim_adu_elev0+dadu;
+		tel->utcjd_app_sim_adu_elev=tel->utcjd_app_sim_deg_elev;
+		// tel->N0; // number of ADU for 360 deg
+		ddeg=tel->coord_app_sim_deg_rot-tel->coord_app_sim_deg_rot0;
+		dadu=ddeg/360*tel->N2;
+		tel->coord_app_sim_adu_rot=tel->coord_app_sim_adu_rot0+dadu;
+		tel->utcjd_app_sim_adu_rot=tel->utcjd_app_sim_deg_rot;
+		// speeds
+		tel->speed_app_sim_adu_ra=0;
+		tel->speed_app_sim_adu_ha=0;
+		tel->speed_app_sim_adu_dec=0;
+		if (tel->speed_app_sim_deg_az>0) {
+			tel->speed_app_sim_adu_az=-tel->speed_app_sim_deg_az/coef*tel->axis_param[AXIS_AZ].coef_vsp/1000;
+		} else {
+			tel->speed_app_sim_adu_az=-tel->speed_app_sim_deg_az/coef*tel->axis_param[AXIS_AZ].coef_vsm/1000;
+		}
+		if (tel->app_drift_elev>0) {
+			tel->speed_app_sim_adu_elev=-tel->speed_app_sim_deg_elev/coef*tel->axis_param[AXIS_ELEV].coef_vsp/1000;
+		} else {
+			tel->speed_app_sim_adu_elev=-tel->speed_app_sim_deg_elev/coef*tel->axis_param[AXIS_ELEV].coef_vsm/1000;
+		}
+		if (tel->app_drift_rot>0) {
+			tel->speed_app_sim_adu_rot=-tel->speed_app_sim_deg_rot/coef*tel->axis_param[AXIS_PARALLACTIC].coef_vsp/1000;
+		} else {
+			tel->speed_app_sim_adu_rot=-tel->speed_app_sim_deg_rot/coef*tel->axis_param[AXIS_PARALLACTIC].coef_vsm/1000;
+		}
+	} else {
+		// coords
+		// tel->N0; // number of ADU for 360 deg
+		ddeg=tel->coord_app_sim_deg_ha-tel->coord_app_sim_deg_ha0;
+		dadu=ddeg/360*tel->N0;
+		tel->coord_app_sim_adu_ha=tel->coord_app_sim_adu_ha0+dadu;
+		tel->utcjd_app_sim_adu_ha=tel->utcjd_app_sim_deg_ha;
+		ddeg=tel->coord_app_sim_deg_dec-tel->coord_app_sim_deg_dec0;
+		dadu=ddeg/360*tel->N1;
+		tel->coord_app_sim_adu_dec=tel->coord_app_sim_adu_dec0+dadu;
+		tel->utcjd_app_sim_adu_dec=tel->utcjd_app_sim_deg_dec;
+		// speeds
+		tel->speed_app_sim_deg_ra=0;
+		if (tel->speed_app_sim_deg_ha>0) {
+			tel->speed_app_sim_adu_ha=-tel->speed_app_sim_deg_ha/coef*tel->axis_param[AXIS_HA].coef_vsp/1000;
+		} else {
+			tel->speed_app_sim_adu_ha=-tel->speed_app_sim_deg_ha/coef*tel->axis_param[AXIS_HA].coef_vsm/1000;
+		}
+		if (tel->speed_app_sim_deg_dec>0) {
+			tel->speed_app_sim_adu_dec=-tel->speed_app_sim_deg_dec/coef*tel->axis_param[AXIS_DEC].coef_vsp/1000;
+		} else {
+			tel->speed_app_sim_adu_dec=-tel->speed_app_sim_deg_dec/coef*tel->axis_param[AXIS_DEC].coef_vsm/1000;
+		}
+		tel->speed_app_sim_deg_az=0;
+		tel->speed_app_sim_deg_elev=0;
+		tel->speed_app_sim_deg_rot=0;
+	}
 }
 
 /***************************************************************************/
@@ -2098,4 +2353,37 @@ void mytel_app_sim_setdadu(struct telprop *tel) {
 	tel->coord_app_sim_adu_daz=0;
 	tel->coord_app_sim_adu_delev=0;
 	tel->coord_app_sim_adu_drot=0;
+}
+
+/******************************************************************************/
+/* Set speeds to the motors for take count for corrections (Pec, altaz, etc.) */
+/******************************************************************************/
+void mytel_speed_corrections(struct telprop *tel) {
+	int val, axisno, err, seqno, valplus;
+	if (tel->mode==MODE_REEL) {
+		if (tel->type_mount==MOUNT_ALTAZ) {
+			val=(int)tel->speed_app_cod_adu_az; axisno=AXIS_AZ;
+			valplus=(int)fabs(val);
+			if (err=mytel_set_register(telthread,axisno,ETEL_X,13,0,valplus)) { mytel_error(telthread,axisno,err); }
+			if (val>=0) { seqno = 72; } else { seqno = 71; }
+			if (err=mytel_execute_command(telthread,axisno,26,1,0,0,seqno)) { mytel_error(telthread,axisno,err); }
+			val=(int)telthread->speed_app_cod_adu_elev; axisno=AXIS_ELEV;
+			if (err=mytel_set_register(telthread,axisno,ETEL_X,13,0,(int)fabs(val))) { mytel_error(telthread,axisno,err); }
+			if (val>=0) { seqno = 72; } else { seqno = 71; }
+			if (err=mytel_execute_command(telthread,axisno,26,1,0,0,seqno)) { mytel_error(telthread,axisno,err); }
+			val=(int)telthread->speed_app_cod_adu_rot; axisno=AXIS_PARALLACTIC;
+			if (err=mytel_set_register(telthread,axisno,ETEL_X,13,0,(int)fabs(val))) { mytel_error(telthread,axisno,err); }
+			if (val>=0) { seqno = 72; } else { seqno = 71; }
+			if (err=mytel_execute_command(telthread,axisno,26,1,0,0,seqno)) { mytel_error(telthread,axisno,err); }
+		} else {
+			val=(int)telthread->speed_app_cod_adu_ha; axisno=AXIS_HA;
+			if (err=mytel_set_register(telthread,axisno,ETEL_X,13,0,(int)fabs(val))) { mytel_error(telthread,axisno,err); }
+			if (val>=0) { seqno = 72; } else { seqno = 71; }
+			if (err=mytel_execute_command(telthread,axisno,26,1,0,0,seqno)) { mytel_error(telthread,axisno,err); }
+			val=(int)telthread->speed_app_cod_adu_dec; axisno=AXIS_DEC;
+			if (err=mytel_set_register(telthread,axisno,ETEL_X,13,0,(int)fabs(val))) { mytel_error(telthread,axisno,err); }
+			if (val>=0) { seqno = 72; } else { seqno = 71; }
+			if (err=mytel_execute_command(telthread,axisno,26,1,0,0,seqno)) { mytel_error(telthread,axisno,err); }
+		}
+	}
 }
