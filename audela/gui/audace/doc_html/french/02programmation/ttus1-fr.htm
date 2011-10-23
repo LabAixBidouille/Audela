@@ -4,8 +4,10 @@
 
 
 
+
+
   <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" /><title>Librairie TT : Manuel Utilisateur</title></head><body>
-<p class="date">Date de mise &#224; jour : 15 juillet 2011</p>
+<p class="date">Date de mise &#224; jour : 23 octobre 2011</p>
 <h1>LIB TT - Librairie de pr&#233;traitement d'images
 astronomiques</h1>
 <h1>Manuel Utilisateur</h1>
@@ -190,6 +192,8 @@ jpeg_quality]</td>
       <p><br />
 Fonctions &#233;crites par tt_user2</p>
       <a href="#LOPT">LOPT</a> [y1] [y2] [height]<br />
+      <a href="../../../../../../../Audela_Divers/ttus1-fr.htm#LOPT5">LOPT5</a> [y1] [y2] [height]
+[cosmic_threshold] [file]<br />
       <a href="#PROFILE2">PROFILE2</a> [offset] [direction]
 [filename]<br />
       <p><br />
@@ -1306,13 +1310,29 @@ dans un spectre.</p>
   </li>
   <li>
     <h3><a name="LOPT" id="LOPT">Fonction LOPT</a></h3>
-    <p>Calcul la somme normalis&#233;e &#224; 32767 et optimis&#233;e
+    <p>Calcule la somme normalis&#233;e &#224; 32767 et optimis&#233;e
 entre les lignes [y1] et [y2] d'apr&#232;s J. G. Robertson, PASP
 98, 1220-1231, November 1986. Le code est copi&#233; du logiciel
 IRIS. L'image finale comporte [height] lignes (20 par
+d&#233;faut).</p></li>
+  <li>
+    <h3><a name="LOPT5" id="LOPT">Fonction LOPT5</a></h3>
+
+    Calcule la somme normalis&#233;e &#224; 32767 et optimis&#233;e
+entre les lignes [y1] et [y2]. Il s'agit de l'impl&#233;mentation
+raisonnable de l'algorithme de Hornes. Le profil spatial du spectre (axe
+vertical) est obtenu localement par une moyenne m&#233;diane. On se
+sert &#233;ventuellement de la somme de toutes les images [file] pour
+calculer&nbsp;le profil vertical du spectre. La distribution est alors
+mieux d&#233;finie. Le param&#232;tre [cosmic_threshold] est le
+coefficient de r&#233;jection des cosmiques. Une valeur typique est
+comprise entre 20 et 100. Une valeur inf&#233;rieure peut conduite
+&#224; un lissage du spectre perceptible &#224; haut Rapport Signal sur Bruit. Le code
+est copi&#233; de la fonction LOPT5 du logiciel
+IRIS. L'image finale comporte [height] lignes (20 par
 d&#233;faut).<br />
-    </p>
   </li>
+
 </ol>
 <h2>3.10. Les fonctions 'utilitaires'</h2>
 <ol>
