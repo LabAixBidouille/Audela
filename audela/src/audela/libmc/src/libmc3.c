@@ -888,7 +888,7 @@ List_ModelValues
       /* --- decode les coordonnees catalogue ---*/
       code=Tcl_SplitList(interp,argv[1],&argcc,&argvv);
 		if (argcc>1) {
-			/* --- decode l'angle RA ou AZ ---*/
+			/* --- decode l'angle RA ou HA ou AZ ---*/
 			mctcl_decode_angle(interp,argvv[0],&ra0);
 			ra0*=(DR);
 			az0=ra0;
@@ -1002,6 +1002,11 @@ List_ModelValues
 			/* --- free pointers ---*/
 			if (matx!=NULL) { free(matx); }
 			if (vecy!=NULL) { free(vecy); }
+		} else {
+			if ((type==0)||(type==2)) {
+				mc_hd2ah(ha,dec,latrad,&az,&hauteur);
+				mc_hd2ad(jd,longmpc,ha,&ra);
+			}
 		}
 		/* === CALCULS === */
       /* --- refraction ---*/
