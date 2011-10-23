@@ -68,6 +68,32 @@ proc etc_init { } {
    etc_inputs_set_defaults
 }
 
+proc etc_set_camera { {typecam ""} } {
+	global audace
+	if {$typecam=="Andor DW436"} {
+		etc_params_set C_th 0.002 ; # Thermic coefficient (electrons/sec/photocell)
+		etc_params_set G 1.8; # CCD gain (electrons/ADU)
+		etc_params_set N_ro 8.5; # Readout noise (electrons)
+		etc_params_set eta 0.9; # CCD Quantum efficiency in the photometric band (electron/photon)
+		etc_params_set naxis1 2048; # Number of pixels on an axis (assumed a square CCD matrix)
+		etc_params_set photocell1 13.5e-6; # Pixel size (m)
+		return ""
+	} elseif {$typecam=="Audine Kaf401ME"} {
+		etc_params_set C_th 0.02 ; # Thermic coefficient (electrons/sec/photocell)
+		etc_params_set G 2.1; # CCD gain (electrons/ADU)
+		etc_params_set N_ro 12; # Readout noise (electrons)
+		etc_params_set eta 0.55; # CCD Quantum efficiency in the photometric band (electron/photon)
+		etc_params_set naxis1 512; # Number of pixels on an axis (assumed a square CCD matrix)
+		etc_params_set photocell1 9e-6; # Pixel size (m)
+		return ""
+	} else {
+		set textes ""
+		lappend textes "Andor DW436"
+		lappend textes "Audine Kaf401ME"
+		return $textes
+	}
+}
+
 # ===========================================================================================
 # Set default input parameters
 #
@@ -113,16 +139,19 @@ proc etc_params_set_defaults { {band V} {moon_age 0} } {
    set audace(etc,param,ccd,naxis1,comment) "Number of pixels on an axis (assumed a square CCD matrix)"
    set audace(etc,param,ccd,naxis1) 2048
 
-   set audace(etc,param,ccd,pixsize1,comment) "Pixel size (m)"
-   set audace(etc,param,ccd,pixsize1) 13.5e-6
+   set audace(etc,param,ccd,photocell1,comment) "Photocell size (m)"
+   set audace(etc,param,ccd,photocell1) 13.5e-6
 
+   set audace(etc,param,ccd,bin1,comment) "Binning (photocells/pixel)"
+   set audace(etc,param,ccd,bin1) 1
+   
    set audace(etc,param,ccd,eta,comment) "CCD Quantum efficiency in the photometric band (electron/photon)"
    set audace(etc,param,ccd,eta) 0.9
 
    set audace(etc,param,ccd,N_ro,comment) "Readout noise (electrons)"
    set audace(etc,param,ccd,N_ro) 8.5
 
-   set audace(etc,param,ccd,C_th,comment) "Thermic coefficient (electrons/sec/pix)"
+   set audace(etc,param,ccd,C_th,comment) "Thermic coefficient (electrons/sec/photocell)"
    set audace(etc,param,ccd,C_th) 0.002
 
    set audace(etc,param,ccd,G,comment) "CCD gain (electrons/ADU)"
@@ -377,29 +406,32 @@ proc etc_preliminary_computations { } {
    set audace(etc,comp1,Foclen,comment) "Focal length (m)"
    set audace(etc,comp1,Foclen) [expr $audace(etc,param,optic,FonD) * $audace(etc,param,optic,D)]
 
+   set audace(etc,comp1,pixsize1,comment) "Pixel spatial sampling (arcsec/pix)"
+   set audace(etc,comp1,pixsize1) [expr $audace(etc,param,ccd,photocell1) * $audace(etc,param,ccd,bin1)]
+
    set audace(etc,comp1,cdelt1,comment) "Pixel spatial sampling (arcsec/pix)"
-   set audace(etc,comp1,cdelt1) [expr 2 * atan ( $audace(etc,param,ccd,pixsize1) / $audace(etc,comp1,Foclen) / 2.) * 180. / $pi * 3600.]
+   set audace(etc,comp1,cdelt1) [expr 2 * atan ( $audace(etc,comp1,pixsize1) / $audace(etc,comp1,Foclen) / 2.) * 180. / $pi * 3600.]
 
    set audace(etc,comp1,W,comment) "Pixel solid angle (arcsec2/pix)"
    set audace(etc,comp1,W) [expr $audace(etc,comp1,cdelt1) * $audace(etc,comp1,cdelt1)]
 
    set audace(etc,comp1,FoV,comment) "Field of view of the CCD image (deg)"
-   set audace(etc,comp1,FoV) [expr 2 * atan ( $audace(etc,param,ccd,naxis1) * $audace(etc,param,ccd,pixsize1) / $audace(etc,comp1,Foclen) / 2.) * 180. / $pi]
+   set audace(etc,comp1,FoV) [expr 2 * atan ( $audace(etc,param,ccd,naxis1) * $audace(etc,comp1,pixsize1) / $audace(etc,comp1,Foclen) / 2.) * 180. / $pi]
 
    set audace(etc,comp1,Fwhm_psf_seeing,comment) "Fwhm of the seeing in the image plane (m)"
-   set audace(etc,comp1,Fwhm_psf_seeing) [expr $audace(etc,param,local,seeing) * $audace(etc,param,ccd,pixsize1) / $audace(etc,comp1,cdelt1)]
+   set audace(etc,comp1,Fwhm_psf_seeing) [expr $audace(etc,param,local,seeing) * $audace(etc,comp1,pixsize1) / $audace(etc,comp1,cdelt1)]
 
    set audace(etc,comp1,Fwhm_psf,comment) "Fwhm of the PSF in the image plane (m)"
    set audace(etc,comp1,Fwhm_psf) [expr sqrt ( $audace(etc,param,optic,Fwhm_psf_opt)*$audace(etc,param,optic,Fwhm_psf_opt) + $audace(etc,comp1,Fwhm_psf_seeing)*$audace(etc,comp1,Fwhm_psf_seeing) )]
 
    set audace(etc,comp1,fpix1,comment) "Flux fraction in the brightest pixel in the favorable case (max flux at the center of the pixel)"
-   set audace(etc,comp1,fpix1) [expr pow((1.+pow($audace(etc,comp1,Fwhm_psf)/$audace(etc,param,ccd,pixsize1),3.4)),[expr -1/1.7])]
+   set audace(etc,comp1,fpix1) [expr pow((1.+pow($audace(etc,comp1,Fwhm_psf)/$audace(etc,comp1,pixsize1),3.4)),[expr -1/1.7])]
 
    set audace(etc,comp1,fpix3,comment) "Flux fraction in the brightest pixel in the worst case (max flux at the corner of the pixel)"
-   set audace(etc,comp1,fpix3) [expr pow((pow(0.25,-1.4)+pow($audace(etc,comp1,Fwhm_psf)/$audace(etc,param,ccd,pixsize1),2.8)),[expr -1/1.4])]
+   set audace(etc,comp1,fpix3) [expr pow((pow(0.25,-1.4)+pow($audace(etc,comp1,Fwhm_psf)/$audace(etc,comp1,pixsize1),2.8)),[expr -1/1.4])]
 
    set audace(etc,comp1,fpix2,comment) "Flux fraction in the brightest pixel in the intermediate case"
-   set audace(etc,comp1,fpix2) [expr pow((pow(0.5,-1.55)+pow($audace(etc,comp1,Fwhm_psf)/$audace(etc,param,ccd,pixsize1),3.1)),[expr -1/1.55])]
+   set audace(etc,comp1,fpix2) [expr pow((pow(0.5,-1.55)+pow($audace(etc,comp1,Fwhm_psf)/$audace(etc,comp1,pixsize1),3.1)),[expr -1/1.55])]
 
    # --- Object
    set audace(etc,comp1,F_Jy,comment) "Total flux of the object outside atmosphere (Jy)"
@@ -446,7 +478,7 @@ proc etc_t2snr_computations {} {
    etc_preliminary_computations
 
    set audace(etc,compsnr,S_th,comment) "Thermic signal (electrons/pixel)"
-   set audace(etc,compsnr,S_th) [expr $audace(etc,param,ccd,C_th) * $audace(etc,input,ccd,t) * $audace(etc,param,ccd,Em)]
+   set audace(etc,compsnr,S_th) [expr $audace(etc,param,ccd,C_th) * $audace(etc,param,ccd,bin1) * $audace(etc,param,ccd,bin1) * $audace(etc,input,ccd,t) * $audace(etc,param,ccd,Em)]
 
    set audace(etc,compsnr,S_sk,comment) "Sky signal (electrons/pixel)"
    set audace(etc,compsnr,S_sk) [expr $audace(etc,comp1,Skypix_el) * $audace(etc,param,ccd,Em)]
@@ -455,7 +487,7 @@ proc etc_t2snr_computations {} {
    set audace(etc,compsnr,S_ph) [expr $audace(etc,comp1,Fpix_el) * $audace(etc,param,ccd,Em)]
 
    set audace(etc,compsnr,N_th,comment) "Thermic noise (electrons/pixel)"
-   set audace(etc,compsnr,N_th) [expr sqrt($audace(etc,param,ccd,C_th) * $audace(etc,input,ccd,t) * $audace(etc,comp1,fex)) * $audace(etc,param,ccd,Em)]
+   set audace(etc,compsnr,N_th) [expr sqrt($audace(etc,param,ccd,C_th) * $audace(etc,param,ccd,bin1) * $audace(etc,param,ccd,bin1) * $audace(etc,input,ccd,t) * $audace(etc,comp1,fex)) * $audace(etc,param,ccd,Em)]
 
    set audace(etc,compsnr,N_sk,comment) "Sky noise (electrons/pixel)"
    set audace(etc,compsnr,N_sk) [expr sqrt($audace(etc,comp1,Skypix_el) * $audace(etc,comp1,fex)) * $audace(etc,param,ccd,Em)]
@@ -500,7 +532,7 @@ proc etc_snr2t_computations {} {
 
    set pi [expr 4*atan(1)]
    set C [expr $audace(etc,input,constraint,snr)*$audace(etc,input,constraint,snr) * $audace(etc,param,ccd,N_ro)*$audace(etc,param,ccd,N_ro)]
-   set B [expr $audace(etc,input,constraint,snr)*$audace(etc,input,constraint,snr) * ( ($audace(etc,param,ccd,C_th) * $audace(etc,comp1,fex) * $audace(etc,param,ccd,Em)*$audace(etc,param,ccd,Em)) + ($audace(etc,comp1,Sky_ph) * $pi * $audace(etc,param,optic,D)*$audace(etc,param,optic,D) / 4. * $audace(etc,comp1,W) * $audace(etc,param,ccd,eta) * $audace(etc,comp1,fex) * $audace(etc,param,ccd,Em)*$audace(etc,param,ccd,Em)) + ($audace(etc,comp1,F_ph) * $pi * $audace(etc,param,optic,D)*$audace(etc,param,optic,D) / 4. * $audace(etc,comp1,Tatm) * $audace(etc,param,optic,Topt) * $audace(etc,param,ccd,eta) * $audace(etc,comp1,fpix1) * $audace(etc,comp1,fex) * $audace(etc,param,ccd,Em)*$audace(etc,param,ccd,Em)) )]
+   set B [expr $audace(etc,input,constraint,snr)*$audace(etc,input,constraint,snr) * ( ($audace(etc,param,ccd,C_th) * $audace(etc,param,ccd,bin1) * $audace(etc,param,ccd,bin1) * $audace(etc,comp1,fex) * $audace(etc,param,ccd,Em)*$audace(etc,param,ccd,Em)) + ($audace(etc,comp1,Sky_ph) * $pi * $audace(etc,param,optic,D)*$audace(etc,param,optic,D) / 4. * $audace(etc,comp1,W) * $audace(etc,param,ccd,eta) * $audace(etc,comp1,fex) * $audace(etc,param,ccd,Em)*$audace(etc,param,ccd,Em)) + ($audace(etc,comp1,F_ph) * $pi * $audace(etc,param,optic,D)*$audace(etc,param,optic,D) / 4. * $audace(etc,comp1,Tatm) * $audace(etc,param,optic,Topt) * $audace(etc,param,ccd,eta) * $audace(etc,comp1,fpix1) * $audace(etc,comp1,fex) * $audace(etc,param,ccd,Em)*$audace(etc,param,ccd,Em)) )]
    set A [expr -pow( $audace(etc,comp1,F_ph) * $pi * $audace(etc,param,optic,D)*$audace(etc,param,optic,D) / 4. * $audace(etc,comp1,Tatm) * $audace(etc,param,optic,Topt) * $audace(etc,param,ccd,eta) * $audace(etc,comp1,fpix1) * $audace(etc,param,ccd,Em) , 2) ]
    # We have A<0, B>0 and C >0. From the equation A*t^2 + B*t + C = 0, we can find the t value:
    set D [expr $B*$B - 4*$A*$C] ; # (always positive)
