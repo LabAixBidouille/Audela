@@ -27,6 +27,7 @@ int tt_ima_stack_2_tutu(TT_IMA_STACK *pstack);
 
 int tt_ima_series_profile2(TT_IMA_SERIES *pseries);
 int tt_ima_series_lopt(TT_IMA_SERIES *pseries);
+int tt_ima_series_lopt5(TT_IMA_SERIES *pseries);
 int tt_ima_series_smoothsg(TT_IMA_SERIES *pseries);
 int tt_ima_series_colorspectrum(TT_IMA_SERIES *pseries);
 
@@ -44,6 +45,7 @@ int tt_user2_ima_series_builder1(char *keys10,TT_IMA_SERIES *pseries)
 {
    if (strcmp(keys10,"PROFILE2")==0) { pseries->numfct=TT_IMASERIES_USER2_PROFILE2; }
    else if (strcmp(keys10,"LOPT")==0) { pseries->numfct=TT_IMASERIES_USER2_LOPT; }
+   else if (strcmp(keys10,"LOPT5")==0) { pseries->numfct=TT_IMASERIES_USER2_LOPT5; }
    else if (strcmp(keys10,"SMOOTHSG")==0) { pseries->numfct=TT_IMASERIES_USER2_SMOOTHSG; }
    else if (strcmp(keys10,"COLORSPECTRUM")==0) { pseries->numfct=TT_IMASERIES_USER2_COLOR_SPECTRUM; }
    return(OK_DLL);
@@ -116,6 +118,10 @@ int tt_user2_ima_series_dispatch1(TT_IMA_SERIES *pseries,int *fct_found, int *ms
    }
    else if (pseries->numfct==TT_IMASERIES_USER2_LOPT) {
       *msg=tt_ima_series_lopt(pseries);
+      *fct_found=TT_YES;
+   }
+   else if (pseries->numfct==TT_IMASERIES_USER2_LOPT5) {
+      *msg=tt_ima_series_lopt5(pseries);
       *fct_found=TT_YES;
    }
    else if (pseries->numfct==TT_IMASERIES_USER2_SMOOTHSG) {
@@ -374,9 +380,10 @@ int tt_ima_series_lopt(TT_IMA_SERIES *pseries)
    index=pseries->index;
    imax=p_in->naxis1;
    jmax=p_in->naxis2;
-   hauteur=pseries->user2.height;
-   lmin=pseries->user2.y1-1;
-   lmax=pseries->user2.y2-1;
+
+   hauteur=pseries->user2.height; // HEIGHT
+   lmin=pseries->user2.y1-1; // Y1
+   lmax=pseries->user2.y2-1; // Y2
 
    /* verification des donnees */
    if (hauteur < 0) {
@@ -598,6 +605,420 @@ int tt_ima_series_lopt(TT_IMA_SERIES *pseries)
    return(OK_DLL);
 }
 
+/**************************************************************************/
+/* Fonction lopt5                                                          */
+/* arguments possibles : y1,y2,height                                     */
+/* D'apres la routine de IRIS */
+/**************************************************************************/
+/* Voir J. G. Robertson, PASP 98, 1220-1231, November 1986              */
+/************************************************************************/
+/************************************************* L_OPT5 ************************************************/
+// Implémentation raisonnable de l'algo de HORNES. 
+// Le profil spatial du spectre (axe vertical) est obtenu localement par une moyenne médiane.
+// On se sert de la somme de toutes les images (produit 0b, décrit par lez paramètre p2) pour calculer la 
+// le profil vertical du spectre. La distribution est alors mieux défini. L'image 2à traiter est p 
+// (un sous-ensemble de p2).
+// Le paramètre COEF est le coefficient de réjection des cosmiques. Une valeur typique est comprise 
+// entre 20 et 100. Une valeur inférieure peut conduite à un lissage du spectre perceptible à haut SNR
+/********************************************************************************************************/
+int tt_ima_series_lopt5(TT_IMA_SERIES *pseries)
+{
+   TT_IMA *p_in,*p_out,*p_tmp1;
+   int index;
+   int imax,jmax,lmin,lmax;
+   int hauteur;
+   int temp;             /* temporary variable */
+   double *f=NULL,*P=NULL,*P2=NULL,*V=NULL,*M=NULL;
+   int nb;
+   int i,j,k;
+   double max,somme,norme;
+   double v,w,s;
+   double vv[50];
+   double vv2[50];
+	int largeur2 = 2;  // demi-largeur de calcul local de la médiane (médiane sur 2 x 2 + 1 pixels - codé en dur pour le moment)
+	long nelem,firstelem,nelem_tmp;
+	int kkk;
+   char fullname[(FLEN_FILENAME)+5];
+   // Bruit caméra caractéristique (Atik314L+) - codé en dur pour le moment, mais caractéristique
+   double RON = 4.3; // en e-
+   double gain = 0.255; // en e-/ADU
+   double E = 0.0,coef;
+	int it,m;
+	int adr = 0;
+
+   char message[TT_MAXLIGNE];
+   int taille,msg;
+
+   /* --- intialisations ---*/
+   p_in=pseries->p_in;
+   p_tmp1=pseries->p_tmp1;
+   p_out=pseries->p_out;
+   index=pseries->index;
+   imax=p_in->naxis1;
+   jmax=p_in->naxis2;
+   nelem=pseries->nelements;
+
+	// FILE
+   hauteur=pseries->user2.height; // HEIGHT
+   lmin=pseries->user2.y1-1; // Y1
+   lmax=pseries->user2.y2-1; // Y2
+	coef=pseries->cosmicThreshold; // COSMIC_THRESHOLD
+
+   /* verification des donnees */
+   if (hauteur < 0) {
+      sprintf(message,"height must be positive");
+      tt_errlog(TT_ERR_WRONG_VALUE,message);
+      return(TT_ERR_WRONG_VALUE);
+   }
+   if ((lmin < 2) || (lmax < 2) || (lmin >jmax -2) || (lmax > jmax-2)) {
+      sprintf(message,"y1 and y2 must be contained between 3 and %d",jmax-2);
+      tt_errlog(TT_ERR_WRONG_VALUE,message);
+      return(TT_ERR_WRONG_VALUE);
+   }
+   if(lmin > lmax) {
+      temp = lmax;
+      lmax = lmin;
+      lmin = temp;
+   }
+   if ((lmax-lmin) < 4) {
+      strcpy(message,"y2-y1 must be highter than 4");
+      tt_errlog(TT_ERR_WRONG_VALUE,message);
+      return(TT_ERR_WRONG_VALUE);
+   }
+
+	tt_imacreater(p_tmp1,p_in->naxis1,p_in->naxis2);
+	if ((strcmp(pseries->file,"file.fit")==0)||(strcmp(pseries->file,".")==0)) {
+	   /* --- in -> tmp1 ---*/
+		for (kkk=0;kkk<(int)(nelem);kkk++) {
+			p_tmp1->p[kkk]=p_in->p[kkk];
+		}
+	} else {
+	   /* --- charge l'image file dans p_tmp1---*/
+      firstelem=(long)(1);
+      nelem_tmp=(long)(0);
+      strcpy(fullname,pseries->file);
+      if ((msg=tt_imaloader(p_tmp1,fullname,firstelem,nelem_tmp))!=0) {
+			sprintf(message,"Problem concerning file %s",fullname);
+			tt_errlog(msg,message);
+			return(msg);
+      }
+      /* --- verification des dimensions ---*/
+      if ((p_tmp1->naxis1!=p_in->naxis1)||(p_tmp1->naxis2!=p_in->naxis2)) {
+			sprintf(message,"(%d,%d) of %s must be equal to (%d,%d) of %s",p_tmp1->naxis1,p_tmp1->naxis2,p_tmp1->load_fullname,p_in->naxis1,p_in->naxis2,p_in->load_fullname);
+			tt_errlog(TT_ERR_IMAGES_NOT_SAME_SIZE,message);
+			return(TT_ERR_IMAGES_NOT_SAME_SIZE);
+      }
+   }
+
+   /* Profil spectral monodimentionnel (f)*/
+   taille=sizeof(double);
+   nb=(int)(imax);
+   if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&f,&nb,&taille,"f"))!=0) {
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_ima_series_lopt5 for pointer f");
+      return(TT_ERR_PB_MALLOC);
+   }
+
+   /* Modele profil spectral colonne (P)*/
+   taille=sizeof(double);
+   nb=(int)(lmax-lmin+1);
+   if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&P,&nb,&taille,"P"))!=0) {
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_ima_series_lopt5 for pointer P");
+      tt_free(f,"f");
+      return(TT_ERR_PB_MALLOC);
+   }
+
+   /* Modele profil spectral colonne (P2)*/
+   taille=sizeof(double);
+   nb=(int)(lmax-lmin+1);
+   if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&P2,&nb,&taille,"P2"))!=0) {
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_ima_series_lopt5 for pointer P2");
+      tt_free(f,"f");
+      tt_free(P,"P");
+      return(TT_ERR_PB_MALLOC);
+   }
+
+   /* Modele profil spectral colonne (V)*/
+   taille=sizeof(double);
+   nb=(int)(lmax-lmin+1);
+   if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&V,&nb,&taille,"V"))!=0) {
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_ima_series_lopt5 for pointer V");
+      tt_free(f,"f");
+      tt_free(P,"P");
+      tt_free(P2,"P2");
+      return(TT_ERR_PB_MALLOC);
+   }
+
+   /* Modele profil spectral colonne (M)*/
+   taille=sizeof(double);
+   nb=(int)(lmax-lmin+1);
+   if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&M,&nb,&taille,"M"))!=0) {
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_ima_series_lopt5 for pointer M");
+		tt_free(f,"f");
+		tt_free(P,"P");
+		tt_free(P2,"P2");
+		tt_free(V,"V");
+      return(TT_ERR_PB_MALLOC);
+   }
+
+   /* --- initialisation ---*/
+   tt_imacreater(p_out,imax,hauteur);
+   tt_imacreater(p_out,imax,hauteur);
+
+   // ----------------------------------------------------
+   // On gère les largeur2 premières colonnes (peu critique)
+   // Algorithme simplifié (pas de détection de cosmique)
+   // ----------------------------------------------------
+   for (i = 0; i < largeur2; i++)
+   {
+       k = 0;
+       // Calcul de la fonction de poids
+       for (j = lmin - 1; j < lmax; j++, k++)
+       {
+           //P2[k] = (double)p2.pic[j * imax + i];
+           P2[k] = (double)p_tmp1->p[j * imax + i];			  
+       }
+
+       // La fonction de poids est rendue strictement positive et normalisée
+       s = 0;
+       k = 0;
+       for (j = lmin - 1; j < lmax; j++, k++)
+       {
+           if (P2[k] < 0) P2[k] = 0;
+           s = s + P2[k];
+       }
+       k = 0;
+       for (j = lmin - 1; j < lmax; j++, k++)
+       {
+           P2[k] = P2[k] / s;
+       }
+
+       // Calcul de la norme
+       s = 0;
+       k = 0;
+       for (j = lmin - 1; j < lmax; j++, k++)
+       {
+           s = s + P2[k] * P2[k];
+       }
+       norme = s;
+
+       // Calcul du profil optimisé
+       somme = 0;
+       //if (norme != 0.0 && !double.IsNaN(norme))
+       if (norme != 0.0 )
+       {
+           k = 0;
+           for (j = lmin - 1; j < lmax; j++, k++)
+           {
+               //v = (double)p.pic[j * imax + i];
+               v = (double)p_in->p[j * imax + i];
+               w = P2[k];
+               somme += w * v;
+           }
+           f[i] = somme / norme;
+       }
+       else
+           f[i] = 0.0;
+   }
+
+   // ----------------------------------------------------
+   // On gère les largeur2 dernières colonne (peu critique)
+   // Algorithme simplifié (pas de détection de cosmique)
+   // ----------------------------------------------------
+   for (i = imax - largeur2; i < imax; i++)
+   {
+       k = 0;
+       // Calcul de la fonction de poids
+       for (j = lmin - 1; j < lmax; j++, k++)
+       {
+           //P2[k] = (double)p2.pic[j * imax + i];
+           P2[k] = (double)p_tmp1->p[j * imax + i];			  
+       }
+
+       // La fonction de poids est rendue strictement positive et normalisée
+       s = 0;
+       k = 0;
+       for (j = lmin - 1; j < lmax; j++, k++)
+       {
+           if (P2[k] < 0) P2[k] = 0;
+           s = s + P2[k];
+       }
+       k = 0;
+       for (j = lmin - 1; j < lmax; j++, k++)
+       {
+           P2[k] = P2[k] / s;
+       }
+
+       // Calcul de la norme
+       s = 0;
+       k = 0;
+       for (j = lmin - 1; j < lmax; j++, k++)
+       {
+           s = s + P2[k] * P2[k];
+       }
+       norme = s;
+
+       // Calcul du profil optimisé
+       somme = 0.0;
+       //if (norme != 0.0 && !double.IsNaN(norme))
+       if (norme != 0.0 )
+       {
+           k = 0;
+           for (j = lmin - 1; j < lmax; j++, k++)
+           {
+               //v = (double)p.pic[j * imax + i];
+               v = (double)p_in->p[j * imax + i];
+               w = P2[k];
+               somme += w * v;
+           }
+           f[i] = somme / norme;
+       }
+       else
+           f[i] = 0.0;
+   }
+
+   // ------------------------------------------
+   // On gère le reste du profil...
+   // Algorithme de K. Horne modifié
+   // ------------------------------------------
+   for (i = largeur2; i < imax - largeur2; i++)
+   {
+       // Initialisation de la table de flag des cosmiques
+       k = 0;
+       for (j = lmin - 1; j < lmax; j++, k++)
+       {
+           M[k] = 1;
+       }
+       // On itère 3 x
+       for (it = 0; it < 3; it++)
+       {
+           somme = 0.0;
+           k = 0;
+           // Calcul de la fonction de poids = médiane sur 2 x largeur2 + 1 colonnes
+           for (j = lmin - 1; j < lmax; j++, k++)
+           {
+               int kk = 0;
+               for (m = -largeur2; m <= largeur2; m++, kk++)  // médiane sur +/- largeur2 + 1
+               {
+                   //vv[kk] = p.pic[j * imax + i + m];    // image à traiter
+                   vv[kk] = (double)p_in->p[j * imax + i + m];    // image à traiter						 
+                   //vv2[kk] = p2.pic[j * imax + i + m];  // image somme des éventuelles images individuelles (sinon p = p2)
+                   vv2[kk] = (double)p_tmp1->p[j * imax + i + m];  // image somme des éventuelles images individuelles (sinon p = p2)
+               }
+               //P[k] = (double)hmedian(vv);     // mediane du vecteur vv
+					tt_util_qsort_double(vv,0,1+2*largeur2,NULL);
+					P[k] = (double)vv[largeur2];
+               //P2[k] = (double)hmedian(vv2);
+					tt_util_qsort_double(vv2,0,1+2*largeur2,NULL);
+					P2[k] = (double)vv2[largeur2];
+           }
+
+           // La fonction de poids est rendue strictement positive et normalisée
+           s = 0;
+           k = 0;
+           for (j = lmin - 1; j < lmax; j++, k++)
+           {
+               if (P2[k] < 0) P2[k] = 0;
+               s = s + P2[k];
+           }
+           k = 0;
+           for (j = lmin - 1; j < lmax; j++, k++)
+           {
+               P2[k] = P2[k] / s;
+           }
+
+           // première passe (somme simple)
+           if (it == 0)
+           {
+               k = 0;
+               E = 0.0;
+               for (j = lmin - 1; j < lmax; j++, k++)
+               {
+                   //E = E + (double)p.pic[j * imax + i];
+                   E = E + (double)p_in->p[j * imax + i];
+               }
+           }
+
+           // Calcul du bruit colonne
+           k = 0;
+           for (j = lmin - 1; j < lmax; j++, k++)
+           {
+               V[k] = fabs(P2[k] * E * gain) + pow(RON, 2.0); // en e-
+           }
+
+           // Calcul de la norme
+           s = 0;
+           k = 0;
+           for (j = lmin - 1; j < lmax; j++, k++)
+           {
+               s = s + P2[k] * P2[k] / V[k];
+           }
+           norme = s;
+
+           // Calcul du profil optimisé
+           somme = 0.0;
+           //if (norme != 0.0 && !double.IsNaN(norme))
+           if (norme != 0.0 )
+           {
+               k = 0;
+               for (j = lmin - 1; j < lmax; j++, k++)
+               {
+                   //v = P2[k] * (double)p.pic[j * imax + i] / V[k];
+                   v = P2[k] * (double)p_in->p[j * imax + i] / V[k];
+                   somme += v;
+               }
+               f[i] = E = somme / norme;
+           }
+           else
+               f[i] = E = 0.0;
+
+           // Détection des cosmiques (réjection à coef sigma)
+           k = 0;
+           max = -1e-10;
+           adr = 0;
+           index = -1;
+           for (j = lmin - 1; j < lmax; j++, k++)
+           {
+               if ((M[k] == 1) && (pow(((double)p_in->p[j * imax + i] - E * P2[k]) * gain, 2.0) > coef * coef * V[k]))
+               {
+                   // Recherche du point le plus déviant par rapport au modèle (en e-)
+                   if (pow(((double)p_in->p[j * imax + i] - E * P2[k]) * gain, 2.0) > max)
+                   {
+                       max = pow(((double)p_in->p[j * imax + i] - E * P2[k]) * gain, 2.0);
+                       adr = j * imax + i;
+                       index = k;
+                   }
+               }
+           }
+           if (index != -1)
+           {
+               p_in->p[adr] = (TT_PTYPE)(P[index] + .5);
+               M[index] = 0;  // retrait d'un seul cosmique par boucle
+           }
+       }
+   }
+
+   // Profil de sortie
+   /* Normalisation du profil a 32767 non faite */
+   /*max=32767.0/max;*/
+   max=1.;
+   for (i=0;i<imax;i++) {
+      for (j=0;j<hauteur;j++) {
+         p_out->p[j*imax+i]=(TT_PTYPE)(f[i]*max);
+      }
+   }
+
+   tt_free(f,"f");
+   tt_free(P,"P");
+   tt_free(P2,"P2");
+   tt_free(V,"V");
+   tt_free(M,"M");
+
+   /* --- calcul des temps ---*/
+   pseries->jj_stack=pseries->jj[index-1];
+   pseries->exptime_stack=pseries->exptime[index-1];
+
+   return(OK_DLL);
+}
 
 // declaration des fonctions locales utilisees par savgol
 void savgol(double *c, int np, int nl, int nr, int ld, int m);
