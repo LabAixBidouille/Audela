@@ -31,6 +31,7 @@
 #define TT_IMASERIES_USER2_LOPT           2002
 #define TT_IMASERIES_USER2_SMOOTHSG       2003
 #define TT_IMASERIES_USER2_COLOR_SPECTRUM 2004
+#define TT_IMASERIES_USER2_LOPT5          2005
 
 /* --- autorized between 2001 and 2999 ---*/
 #define TT_IMASTACK_USER2_TUTU 2001

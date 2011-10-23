@@ -383,6 +383,7 @@ int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries)
    double xc=0,yc=0,radius;
    char filenamesat[FLEN_FILENAME];
    double exposure;	
+	double sampling;
   // double mode,mini,maxi;
   
    /* --- intialisations ---*/
@@ -407,7 +408,8 @@ int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries)
    
    /* --- filtre morpho sur l'image pour ne laisser que les étoiles --- */
    //longueur des trainees pour la camera Andor de TAROT
-   lt=(int)(0.004180983*exposure/(9.1441235255136e-4)+2*12);
+	sampling=9.1441235255136e-4;
+   lt=(int)(0.004180983*exposure/(sampling)+2*12);
    if (lt<150) {
 		openingByAnchor_1D_horizontal_courSE(p_out,p_out->naxis1,p_out->naxis2, lt,pseries->bitpix);
 	} else {
@@ -418,7 +420,7 @@ int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries)
 	  p_out->p[kkk]=p_in->p[kkk]-p_out->p[kkk];	 
    }
 
-   //tt_imasaver(p_out,"D:/pout_algo2.fit",16);
+   //tt_imasaver(p_out,"c:/d/geoflash/pointage5/pout_algo2.fit",16);
 
    /* --- Calcul des seuils de visualisation ---*/
    tt_util_bgk(p_out,&(pseries->bgmean),&(pseries->bgsigma));
@@ -463,6 +465,7 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 	int k,k2,y,x,ltt,fwhmybi,fwhmyhi,fwhm,nelem;
 	FILE *fic;
 	double **mat, *para, *carac;
+	double sampling;
 
 	nelem=pin->nelements;
 	posxanc=0;
@@ -477,7 +480,8 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 	fic=fopen(filename,"wt");
 
 	/* --- longueur des trainees pour la camera Andor de TAROT*/
-	lt=0.004180983*exposure/(9.1441235255136e-4);
+	sampling=9.1441235255136e-4;
+	lt=0.004180983*exposure/(sampling);
 	ltt = (int) lt;
 
 	carac = (double*)calloc(5,sizeof(double));
@@ -603,7 +607,7 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 		
 		}
 	}
-	//tt_imasaver(pout,"D:/pout_algo2.fit",16);
+	//tt_imasaver(pout,"c:/d/geoflash/pointage5/pout_algo2.fit",16);
 	free(para);
 	//free(temp);
 	free(carac);	
@@ -1169,8 +1173,8 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 /*********************************************************************************************/
 
 //buf1 load "F:/ima_a_tester_algo/IM_20070813_202524142_070813_20055300.fits.gz" 
-//buf1 load "D:/images_pb_detections_a_tester/grosse_tache/IM_20070302_190016827_070228_15083000.fits.gz"
-//set chemin "D:/"
+//buf1 load "c:/d/geoflash/pointage5/images_pb_detections_a_tester/grosse_tache/IM_20070302_190016827_070228_15083000.fits.gz"
+//set chemin "c:/d/geoflash/pointage5/"
 //buf1 imaseries "GEOGTO filename=$chemin nom_trait=TOPHATE struct_elem=RECTANGLE x1=15 y1=1"
 //buf1 imaseries "GEOGTO filename=$chemin nom_trait=$nom_Trait struct_elem=$struct_Elem x1=$dim1 y1=$dim2"
 {
@@ -1192,6 +1196,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 	TT_ASTROM p_ast;
 	TYPE_PIXELS *iX, *iY, pixel;
 	double *dX, *dY;
+	double sampling;
 
 	/* --- intialisations ---*/
 	p_in=pseries->p_in; 
@@ -1222,12 +1227,14 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 
 	tt_morphomath_1(pseries);	
 	//pour visualiser le tophat 
-	//tt_imasaver(p_out,"D:/tophat.fit",16);	
+	//tt_imasaver(p_out,"c:/d/geoflash/pointage5/tophat.fit",16);	
 
 	/* --- lit les parametres astrometriques de l'image ---*/
 	valid_ast=1;
 	tt_util_getkey0_astrometry(p_in,&p_ast,&valid_ast);
-	
+	sampling=9.1441235255136e-4;
+	sampling=fabs(p_ast.cdelta1)*180/(TT_PI); // modif AK le 9/10/2011
+
 //////////////////////////////////////////////
 /* ----------------------------------------- */
 /* --- recherche des traînées dans p_out --- */
@@ -1278,7 +1285,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 					}
 				}
 			}
-			//tt_imasaver(p_tmp3,"D:/gtopetite.fit",16);
+			//tt_imasaver(p_tmp3,"c:/d/geoflash/pointage5/gtopetite.fit",16);
 			tt_ima_series_hough_myrtille(p_tmp3,p_tmp4,n1,n2,1,eq);
 			
 			//recupère les coordonnées de la droite détectée y=a0*x+b0 y=eq[0]*x+eq[1] et eq[2]=0, si la droite est verticale x=eq[2] et eq[0]=eq[1]=0
@@ -1300,7 +1307,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 							}
 						}
 					}
-					//tt_imasaver(p_tmp3,"D:/gtopetite_rot.fit",16);
+					//tt_imasaver(p_tmp3,"c:/d/geoflash/pointage5/gtopetite_rot.fit",16);
 					tt_ima_series_hough_myrtille(p_tmp3,p_tmp4,n1,n2,1,eq);
 					rotation=1;
 				}
@@ -1401,7 +1408,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 							}
 						}
 					}
-					//tt_imasaver(p_tmp3,"D:/gtopetite2.fit",16);
+					//tt_imasaver(p_tmp3,"c:/d/geoflash/pointage5/gtopetite2.fit",16);
 					tt_ima_series_hough_myrtille(p_tmp3,p_tmp4,n1,n2,1,eq);
 
 					somme_value=0;somme_x=0;somme_y=0;		
@@ -1811,63 +1818,63 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 						j=0;
 						for(i=(int)xcc;i<naxis1-x1;i++) {
 							if (p_in->p[naxis1*(int)(floor(ycc))+i]>=pseries->bgmean+4*pseries->bgsigma) j++;
-							else if ((j==0)&&(i-xcc<0.5*0.004180983*pseries->exposure/(9.1441235255136e-4))) continue;
+							else if ((j==0)&&(i-xcc<0.5*0.004180983*pseries->exposure/(sampling))) continue;
 							else break;
 						}
 						for(i=(int)xcc;i>x1;i--) {
 							if (p_in->p[naxis1*(int)(floor(ycc))+i]>=pseries->bgmean+4*pseries->bgsigma) j++;
-							else if ((j==0)&&(xcc-i<0.5*0.004180983*pseries->exposure/(9.1441235255136e-4))) continue;
+							else if ((j==0)&&(xcc-i<0.5*0.004180983*pseries->exposure/(sampling))) continue;
 							else break;
 						}
-						if (((floor(ycc-1))>=0)&&(j<(int)(0.65*0.004180983*pseries->exposure/(9.1441235255136e-4)))) {
+						if (((floor(ycc-1))>=0)&&(j<(int)(0.65*0.004180983*pseries->exposure/(sampling)))) {
 							j=0;
 							for(i=(int)xcc;i<naxis1-x1;i++) {
 								if (p_in->p[naxis1*(int)(floor(ycc-1))+i]>=pseries->bgmean+4*pseries->bgsigma) j++;
-								else if ((j==0)&&(i-xcc<0.5*0.004180983*pseries->exposure/(9.1441235255136e-4))) continue;
+								else if ((j==0)&&(i-xcc<0.5*0.004180983*pseries->exposure/(sampling))) continue;
 								else break;
 							}
 							for(i=(int)xcc;i>x1;i--) {
 								if (p_in->p[naxis1*(int)(floor(ycc-1))+i]>=pseries->bgmean+4*pseries->bgsigma) j++;
-								else if ((j==0)&&(xcc-i<0.5*0.004180983*pseries->exposure/(9.1441235255136e-4))) continue;
+								else if ((j==0)&&(xcc-i<0.5*0.004180983*pseries->exposure/(sampling))) continue;
 								else break;
 							}
 						}
-						if ((j<(int)(0.65*0.004180983*pseries->exposure/(9.1441235255136e-4)))&&((floor(ycc+1))<naxis2)) {
+						if ((j<(int)(0.65*0.004180983*pseries->exposure/(sampling)))&&((floor(ycc+1))<naxis2)) {
 							j=0;
 							for(i=(int)xcc;i<naxis1-x1;i++) {
 								if (p_in->p[naxis1*(int)(floor(ycc+1))+i]>=pseries->bgmean+4*pseries->bgsigma) j++;
-								else if ((j==0)&&(i-xcc<0.5*0.004180983*pseries->exposure/(9.1441235255136e-4))) continue;
+								else if ((j==0)&&(i-xcc<0.5*0.004180983*pseries->exposure/(sampling))) continue;
 								else break;
 							}
 							for(i=(int)xcc;i>x1;i--) {
 								if (p_in->p[naxis1*(int)(floor(ycc+1))+i]>=pseries->bgmean+4*pseries->bgsigma) j++;
-								else if ((j==0)&&(xcc-i<0.5*0.004180983*pseries->exposure/(9.1441235255136e-4))) continue;
+								else if ((j==0)&&(xcc-i<0.5*0.004180983*pseries->exposure/(sampling))) continue;
 								else break;
 							}
 						}
-						if ((eq[0]>-0.1)&&(eq[0]<0.1)&&((floor(ycc-2))>=0)&&(j<(int)(0.65*0.004180983*pseries->exposure/(9.1441235255136e-4)))) {
+						if ((eq[0]>-0.1)&&(eq[0]<0.1)&&((floor(ycc-2))>=0)&&(j<(int)(0.65*0.004180983*pseries->exposure/(sampling)))) {
 							j=0;
 							for(i=(int)xcc;i<naxis1-x1;i++) {
 								if (p_in->p[naxis1*(int)(floor(ycc-2))+i]>=pseries->bgmean+4*pseries->bgsigma) j++;
-								else if ((j==0)&&(i-xcc<0.5*0.004180983*pseries->exposure/(9.1441235255136e-4))) continue;
+								else if ((j==0)&&(i-xcc<0.5*0.004180983*pseries->exposure/(sampling))) continue;
 								else break;
 							}
 							for(i=(int)xcc;i>x1;i--) {
 								if (p_in->p[naxis1*(int)(floor(ycc-2))+i]>=pseries->bgmean+4*pseries->bgsigma) j++;
-								else if ((j==0)&&(xcc-i<0.5*0.004180983*pseries->exposure/(9.1441235255136e-4))) continue;
+								else if ((j==0)&&(xcc-i<0.5*0.004180983*pseries->exposure/(sampling))) continue;
 								else break;
 							}
 						}
-						if ((j<(int)(0.65*0.004180983*pseries->exposure/(9.1441235255136e-4)))&&((floor(ycc+2))<naxis2)) {
+						if ((j<(int)(0.65*0.004180983*pseries->exposure/(sampling)))&&((floor(ycc+2))<naxis2)) {
 							j=0;
 							for(i=(int)xcc;i<naxis1-x1;i++) {
 								if (p_in->p[naxis1*(int)(floor(ycc+2))+i]>=pseries->bgmean+4*pseries->bgsigma) j++;
-								else if ((j==0)&&(i-xcc<0.5*0.004180983*pseries->exposure/(9.1441235255136e-4))) continue;
+								else if ((j==0)&&(i-xcc<0.5*0.004180983*pseries->exposure/(sampling))) continue;
 								else break;
 							}
 							for(i=(int)xcc;i>x1;i--) {
 								if (p_in->p[naxis1*(int)(floor(ycc+2))+i]>=pseries->bgmean+4*pseries->bgsigma) j++;
-								else if ((j==0)&&(xcc-i<0.5*0.004180983*pseries->exposure/(9.1441235255136e-4))) continue;
+								else if ((j==0)&&(xcc-i<0.5*0.004180983*pseries->exposure/(sampling))) continue;
 								else break;
 							}
 						}
@@ -1878,8 +1885,8 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 						j=0;
 					}
 					
-					//longueur de la traînée des étoiles en fonction du temps d'exposition: 0.004180983*pseries->exposure/(9.1441235255136e-4)
-					if ((l>8)&&(nb>=l/3)&&(fwhmxy>=1)&&(l*1./largxx>=1.5)&&(dvalue>0)&&(j<(int)(0.65*0.004180983*pseries->exposure/(9.1441235255136e-4)))) {
+					//longueur de la traînée des étoiles en fonction du temps d'exposition: 0.004180983*pseries->exposure/(sampling)
+					if ((l>8)&&(nb>=l/3)&&(fwhmxy>=1)&&(l*1./largxx>=1.5)&&(dvalue>0)&&(j<(int)(0.65*0.004180983*pseries->exposure/(sampling)))) {
 						/* --- parametres de mesure precise ---*/
 						xcc=somme_x;
 						ycc=somme_y;
@@ -2185,7 +2192,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 						} else {
 							strcpy(centro,"barycentre");
 						}
-						//tt_imasaver(p_out,"D:/gto2.fit",16);
+						//tt_imasaver(p_out,"c:/d/geoflash/pointage5/gto2.fit",16);
 	/* ---------------------------------------------------- */
 	/* --- enregistrer l'equation de la droite détectée --- */
 	/* ---------------------------------------------------- */					
@@ -2206,7 +2213,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 /* ------------------------------- */
 /////////////////////////////////////
 	//il faut eliminer les bords pour une largeur de SE
-	//tt_imasaver(p_out,"D:/geo2.fit",16);
+	//tt_imasaver(p_out,"c:/d/geoflash/pointage5/geo2.fit",16);
 	//boucle de recherche sur l'image
 	for (y=y1+1;y<naxis2-y1-1;y++) {
 		for (x=x1+1;x<naxis1-x1-1;x++) {
@@ -2214,7 +2221,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 			x0=x;
 			y0=y;
 			/* --- recherche du maximun local --- */	
-			somme_value=p_in->p[y*naxis1+x];
+ 			somme_value=p_in->p[y*naxis1+x];
 			while ((x0<naxis1)&&(y0<naxis2)&&(x0>0)&&(y0>0)) { 
 				k=0;
 				for (k1=-1;k1<=2;k1++) {
@@ -2239,24 +2246,24 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 			j=0;
 			for(i=(int)x0;i<naxis1;i++) {
 				if (p_in->p[naxis1*y0+i]>=pseries->bgmean+4*pseries->bgsigma) j++;
-				else if ((j==0)&&(i-x0<0.5*0.004180983*pseries->exposure/(9.1441235255136e-4))) continue;
+				else if ((j==0)&&(i-x0<0.5*0.004180983*pseries->exposure/(sampling))) continue;
 				else break;
 			}
 			for(i=(int)x0;i>=0;i--) {
 				if (p_in->p[naxis1*y0+i]>=pseries->bgmean+4*pseries->bgsigma) j++;
-				else if ((j==0)&&(x0-i<0.5*0.004180983*pseries->exposure/(9.1441235255136e-4))) continue;
+				else if ((j==0)&&(x0-i<0.5*0.004180983*pseries->exposure/(sampling))) continue;
 				else break;
 			}
 			if (((y0-1)>=0)&&(j<x1)) {
 				j=0;
 				for(i=(int)x0;i<naxis1;i++) {
 					if (p_in->p[naxis1*(y0-1)+i]>=pseries->bgmean+4*pseries->bgsigma) j++;
-					else if ((j==0)&&(i-x0<0.5*0.004180983*pseries->exposure/(9.1441235255136e-4))) continue;
+					else if ((j==0)&&(i-x0<0.5*0.004180983*pseries->exposure/(sampling))) continue;
 					else break;
 				}
 				for(i=(int)x0;i>=0;i--) {
 					if (p_in->p[naxis1*(y0-1)+i]>=pseries->bgmean+4*pseries->bgsigma) j++;
-					else if ((j==0)&&(x0-i<0.5*0.004180983*pseries->exposure/(9.1441235255136e-4))) continue;
+					else if ((j==0)&&(x0-i<0.5*0.004180983*pseries->exposure/(sampling))) continue;
 					else break;
 				}
 			}
@@ -2264,18 +2271,18 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 					j=0;
 				for(i=(int)x0;i<naxis1;i++) {
 					if (p_in->p[naxis1*(y0+1)+i]>=pseries->bgmean+4*pseries->bgsigma) j++;
-					else if ((j==0)&&(i-x0<0.5*0.004180983*pseries->exposure/(9.1441235255136e-4))) continue;
+					else if ((j==0)&&(i-x0<0.5*0.004180983*pseries->exposure/(sampling))) continue;
 					else break;
 				}
 				for(i=(int)x0;i>=0;i--) {
 					if (p_in->p[naxis1*(y0+1)+i]>=pseries->bgmean+4*pseries->bgsigma) j++;
-					else if ((j==0)&&(x0-i<0.5*0.004180983*pseries->exposure/(9.1441235255136e-4))) continue;
+					else if ((j==0)&&(x0-i<0.5*0.004180983*pseries->exposure/(sampling))) continue;
 					else break;
 				}
 			}
-			
-			
+						
 			if (j>=x1) break;
+			//if (j>x1) break; // modif AK le 9/10/2011 non validee
 
 			/* --- FWHM grossié --- */
 			fwhmx=0;
@@ -2802,7 +2809,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 			}
 		} else {
 			erode (p_in,p_out,se,x1,y1,sizex,sizey,naxis1,naxis2);
-			//tt_imasaver(p_out,"D:/erode.fit",16);
+			//tt_imasaver(p_out,"c:/d/geoflash/pointage5/erode.fit",16);
 		}
 	} 
 	
@@ -2987,7 +2994,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 		tt_util_cuts(p_in,pseries,&(pseries->hicut),&(pseries->locut),TT_YES);
 		mode1=pseries->bgmean;
 
-		//tt_imasaver(p_out,"D:/ouv_de_ferm.fit",16);
+		//tt_imasaver(p_out,"c:/d/geoflash/pointage5/ouv_de_ferm.fit",16);
 		/* --- detection des geo et des traînées du bruit --- */
 		/* --- réduction de la dynamique des images --- */
 		if ((4+(pseries->hicut-pseries->locut)/100)<8) {
@@ -3040,9 +3047,9 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 				if (p_out->p[y*naxis1+x]<0) p_out->p[y*naxis1+x]=0;	
 			}
 		}
-		//tt_imasaver(p_out,"D:/ouv_ferm_seuill.fit",16);
-		//tt_imasaver(p_tmp2,"D:/init2.fit",8);
-		//tt_imasaver(p_out,"D:/tophat.fit",8);
+		//tt_imasaver(p_out,"c:/d/geoflash/pointage5/ouv_ferm_seuill.fit",16);
+		//tt_imasaver(p_tmp2,"c:/d/geoflash/pointage5/init2.fit",8);
+		//tt_imasaver(p_out,"c:/d/geoflash/pointage5/tophat.fit",8);
 	} 
 
 	i=strcmp (nom_trait,"GRADIENT");
@@ -3130,7 +3137,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 			tt_util_histocuts(p_tmp1,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
 			seuil =(pseries->hicut)*0.4;
 			//tt_util_histocuts(p_in,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
-			//tt_imasaver(p_tmp1,"D:/gradient.fit",16);	
+			//tt_imasaver(p_tmp1,"c:/d/geoflash/pointage5/gradient.fit",16);	
 
 			//erosion par la médiane si gradient supérieur à seuil
 			// définition du centre de l'élément structurant
@@ -3303,7 +3310,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 				}
 			}
 			tt_util_histocuts(p_tmp1,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
-			//tt_imasaver(p_tmp1,"D:/gradient.fit",16);	
+			//tt_imasaver(p_tmp1,"c:/d/geoflash/pointage5/gradient.fit",16);	
 
 			seuil =(pseries->hicut+mode2)/2.0;
 
@@ -3342,7 +3349,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 					}
 				}
 			}
-			//tt_imasaver(p_out,"D:/ima_morphomaths.fit",16);	
+			//tt_imasaver(p_out,"c:/d/geoflash/pointage5/ima_morphomaths.fit",16);	
 			free(medindice);
 			free(med);
 			if (nb_test>k_test) {
@@ -3354,7 +3361,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 			}
 		}
 	}
-	//tt_imasaver(p_out,"D:/ima_morphomaths.fit",16);	
+	//tt_imasaver(p_out,"c:/d/geoflash/pointage5/ima_morphomaths.fit",16);	
 	free(se);
 	result=0;
 	return result;
@@ -3436,7 +3443,7 @@ int erosionByAnchor_1D_horizontal_courSE(TT_IMA* pin, TT_IMA* pout, int imageWid
 
 //buf1 load "F:/ima_a_tester_algo/IM_20070813_202524142_070813_20055300.fits.gz" 
 //buf1 imaseries "MORPHOMATH nom_trait=ERODE struct_elem=RECTANGLE x1=10 y1=1"
-//buf1 save "D:/ouverture2.fit"
+//buf1 save "c:/d/geoflash/pointage5/ouverture2.fit"
 {
 	long inLeft,inRight,outLeft,outRight,current,sentinel; 
 	double min;
@@ -3644,7 +3651,7 @@ int erosionByAnchor_1D_horizontal_longSE(TT_IMA* pin, TT_IMA* pout, int imageWid
 
 //buf1 load "F:/ima_a_tester_algo/IM_20070813_202524142_070813_20055300.fits.gz" 
 //buf1 imaseries "MORPHOMATH nom_trait=ERODE struct_elem=RECTANGLE x1=160 y1=1"
-//buf1 save "D:/ouverture2.fit"
+//buf1 save "c:/d/geoflash/pointage5/ouverture2.fit"
 {
 	int aux;
 	long inLeft,inRight,outLeft,outRight,current,sentinel,nbrBytes; 
@@ -3825,7 +3832,7 @@ int openingByAnchor_1D_horizontal_courSE(TT_IMA* pout, int imageWidth, int image
 /*********************************************************************************************/
 //buf1 load "F:/ima_a_tester_algo/IM_20070813_202524142_070813_20055300.fits.gz" 
 //buf1 imaseries "MORPHOMATH nom_trait=OUVERTURE struct_elem=RECTANGLE x1=10 y1=1"
-//buf1 save "D:/toqjd.fit"
+//buf1 save "c:/d/geoflash/pointage5/toqjd.fit"
 {
 	int i,end;
 	long outLeft,outRight,current,sentinel; 
@@ -3981,7 +3988,7 @@ int openingByAnchor_1D_horizontal_longSE(TT_IMA* pout, int imageWidth, int image
 
 //buf1 load "F:/ima_a_tester_algo/IM_20070813_202524142_070813_20055300.fits.gz" 
 //buf1 imaseries "MORPHOMATH nom_trait=OUVERTURE struct_elem=RECTANGLE x1=10 y1=1"
-//buf1 save "D:/toqjd.fit"
+//buf1 save "c:/d/geoflash/pointage5/toqjd.fit"
 {
 	int aux,end;
 	long outLeft,outRight,current,sentinel,nbrBytes; 
@@ -4394,7 +4401,7 @@ void tt_ima_series_hough_myrtille(TT_IMA* pin,TT_IMA* pout,int naxis1, int naxis
 		}
 	 }
 	//enregistre l'image de hough
-	//tt_imasaver(pout,"D:/hough.fit",16);
+	//tt_imasaver(pout,"c:/d/geoflash/pointage5/hough.fit",16);
 	//seuil de détection fixé arbitrairement à 15 points alignés
 	if (seuil_max>=10) {
 		threshold_ligne=seuil_max/2;
