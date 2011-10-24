@@ -69,29 +69,30 @@ proc etc_init { } {
 }
 
 proc etc_set_camera { {typecam ""} } {
-	global audace
-	if {$typecam=="Andor DW436"} {
-		etc_params_set C_th 0.002 ; # Thermic coefficient (electrons/sec/photocell)
-		etc_params_set G 1.8; # CCD gain (electrons/ADU)
-		etc_params_set N_ro 8.5; # Readout noise (electrons)
-		etc_params_set eta 0.9; # CCD Quantum efficiency in the photometric band (electron/photon)
-		etc_params_set naxis1 2048; # Number of pixels on an axis (assumed a square CCD matrix)
-		etc_params_set photocell1 13.5e-6; # Pixel size (m)
-		return ""
-	} elseif {$typecam=="Audine Kaf401ME"} {
-		etc_params_set C_th 0.02 ; # Thermic coefficient (electrons/sec/photocell)
-		etc_params_set G 2.1; # CCD gain (electrons/ADU)
-		etc_params_set N_ro 12; # Readout noise (electrons)
-		etc_params_set eta 0.55; # CCD Quantum efficiency in the photometric band (electron/photon)
-		etc_params_set naxis1 512; # Number of pixels on an axis (assumed a square CCD matrix)
-		etc_params_set photocell1 9e-6; # Pixel size (m)
-		return ""
-	} else {
-		set textes ""
-		lappend textes "Andor DW436"
-		lappend textes "Audine Kaf401ME"
-		return $textes
-	}
+   global audace
+
+   if {$typecam=="Andor DW436"} {
+      etc_params_set C_th 0.002         ; # Thermic coefficient (electrons/sec/photocell)
+      etc_params_set G 1.8              ; # CCD gain (electrons/ADU)
+      etc_params_set N_ro 8.5           ; # Readout noise (electrons)
+      etc_params_set eta 0.9            ; # CCD Quantum efficiency in the photometric band (electron/photon)
+      etc_params_set naxis1 2048        ; # Number of pixels on an axis (assumed a square CCD matrix)
+      etc_params_set photocell1 13.5e-6 ; # Pixel size (m)
+      return ""
+   } elseif {$typecam=="Audine Kaf401ME"} {
+      etc_params_set C_th 0.02          ; # Thermic coefficient (electrons/sec/photocell)
+      etc_params_set G 2.1              ; # CCD gain (electrons/ADU)
+      etc_params_set N_ro 12            ; # Readout noise (electrons)
+      etc_params_set eta 0.55           ; # CCD Quantum efficiency in the photometric band (electron/photon)
+      etc_params_set naxis1 512         ; # Number of pixels on an axis (assumed a square CCD matrix)
+      etc_params_set photocell1 9e-6    ; # Pixel size (m)
+      return ""
+   } else {
+      set textes ""
+      lappend textes "Andor DW436"
+      lappend textes "Audine Kaf401ME"
+      return $textes
+   }
 }
 
 # ===========================================================================================
@@ -144,7 +145,7 @@ proc etc_params_set_defaults { {band V} {moon_age 0} } {
 
    set audace(etc,param,ccd,bin1,comment) "Binning (photocells/pixel)"
    set audace(etc,param,ccd,bin1) 1
-   
+
    set audace(etc,param,ccd,eta,comment) "CCD Quantum efficiency in the photometric band (electron/photon)"
    set audace(etc,param,ccd,eta) 0.9
 
