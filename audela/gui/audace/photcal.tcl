@@ -107,7 +107,7 @@
 # with stars of known V and R magnitudes. To
 # determine these coefficients, we used the Loneos catalogue
 # published as "UBVRI photometry of faint field stars" (Skiff, 2007,
-# Skiff, B.A,	2007 yCat.2277....0S, VizieR On-line
+# Skiff, B.A, 2007 yCat.2277....0S, VizieR On-line
 # Data Catalog: II/277). Loneos is based on
 # Johnson-Cousins UBVRI photometry. As a consequence,
 # The R I colors are calculated on the Cousins system.
