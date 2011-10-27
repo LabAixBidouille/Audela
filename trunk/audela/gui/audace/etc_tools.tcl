@@ -72,15 +72,15 @@ proc etc_set_camera { {typecam ""} } {
    global audace
 
    if {$typecam=="Andor DW436"} {
-      etc_params_set C_th 0.002         ; # Thermic coefficient (electrons/sec/photocell)
-      etc_params_set G 1.8              ; # CCD gain (electrons/ADU)
-      etc_params_set N_ro 8.5           ; # Readout noise (electrons)
-      etc_params_set eta 0.9            ; # CCD Quantum efficiency in the photometric band (electron/photon)
-      etc_params_set naxis1 2048        ; # Number of pixels on an axis (assumed a square CCD matrix)
-      etc_params_set photocell1 13.5e-6 ; # Pixel size (m)
-      return ""
-   } elseif {$typecam=="Audine Kaf401ME"} {
-      etc_params_set C_th 0.02          ; # Thermic coefficient (electrons/sec/photocell)
+		etc_params_set C_th 0.045 ; # Thermic coefficient (electrons/sec/photocell)
+		etc_params_set G 2.8; # CCD gain (electrons/ADU)
+		etc_params_set N_ro 9.2; # Readout noise (electrons)
+		etc_params_set eta 0.9; # CCD Quantum efficiency in the photometric band (electron/photon)
+		etc_params_set naxis1 2048; # Number of pixels on an axis (assumed a square CCD matrix)
+		etc_params_set photocell1 13.5e-6; # Pixel size (m)
+		return ""
+	} elseif {$typecam=="Audine Kaf401ME"} {
+		etc_params_set C_th 0.2 ; # Thermic coefficient (electrons/sec/photocell)
       etc_params_set G 2.1              ; # CCD gain (electrons/ADU)
       etc_params_set N_ro 12            ; # Readout noise (electrons)
       etc_params_set eta 0.55           ; # CCD Quantum efficiency in the photometric band (electron/photon)
