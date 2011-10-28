@@ -4,8 +4,6 @@
 # It also implements keyboard traversal of menus and implements a few
 # other utility procedures related to menus.
 #
-# RCS: @(#) $Id: menu.tcl,v 1.1 2009-02-21 14:04:20 michelpujol Exp $
-#
 # Copyright (c) 1992-1994 The Regents of the University of California.
 # Copyright (c) 1994-1997 Sun Microsystems, Inc.
 # Copyright (c) 1998-1999 by Scriptics Corporation.
@@ -307,7 +305,7 @@ proc ::tk::MbPost {w {x {}} {y {}}} {
     	    	set x [expr {[winfo rootx $w] - [winfo reqwidth $menu]}]
     	    	set y [expr {(2 * [winfo rooty $w] + [winfo height $w]) / 2}]
     	    	set entry [MenuFindName $menu [$w cget -text]]
-    	    	if {[$w cget -indicatoron]} {
+		if {[$w cget -indicatoron] && $entry ne ""} {
 		    if {$entry == [$menu index last]} {
 		    	incr y [expr {-([$menu yposition $entry] \
 			    	+ [winfo reqheight $menu])/2}]
@@ -327,7 +325,7 @@ proc ::tk::MbPost {w {x {}} {y {}}} {
     	    	set x [expr {[winfo rootx $w] + [winfo width $w]}]
     	    	set y [expr {(2 * [winfo rooty $w] + [winfo height $w]) / 2}]
     	    	set entry [MenuFindName $menu [$w cget -text]]
-    	    	if {[$w cget -indicatoron]} {
+		if {[$w cget -indicatoron] && $entry ne ""} {
 		    if {$entry == [$menu index last]} {
 		    	incr y [expr {-([$menu yposition $entry] \
 			    	+ [winfo reqheight $menu])/2}]
@@ -405,6 +403,11 @@ proc ::tk::MenuUnpost menu {
 
     # Unpost menu(s) and restore some stuff that's dependent on
     # what was posted.
+
+    after cancel [array get Priv menuActivatedTimer]
+    unset -nocomplain Priv(menuActivated)
+    after cancel [array get Priv menuDeactivatedTimer]
+    unset -nocomplain Priv(menuDeactivated)
 
     catch {
 	if {$mb ne ""} {
@@ -547,6 +550,7 @@ proc ::tk::MbButtonUp w {
 proc ::tk::MenuMotion {menu x y state} {
     variable ::tk::Priv
     if {$menu eq $Priv(window)} {
+        set activeindex [$menu index active]
 	if {[$menu cget -type] eq "menubar"} {
 	    if {[info exists Priv(focus)] && $menu ne $Priv(focus)} {
 		$menu activate @$x,$y
@@ -556,9 +560,22 @@ proc ::tk::MenuMotion {menu x y state} {
 	    $menu activate @$x,$y
 	    GenerateMenuSelect $menu
 	}
-    }
-    if {($state & 0x1f00) != 0} {
-	$menu postcascade active
+        set index [$menu index @$x,$y]
+        if {[info exists Priv(menuActivated)] \
+                && $index ne "none" \
+                && $index ne $activeindex} {
+            set mode [option get $menu clickToFocus ClickToFocus]
+            if {[string is false $mode]} {
+                set delay [expr {[$menu cget -type] eq "menubar" ? 0 : 50}]
+                if {[$menu type $index] eq "cascade"} {
+                    set Priv(menuActivatedTimer) \
+                        [after $delay [list $menu postcascade active]]
+                } else {
+                    set Priv(menuDeactivatedTimer) \
+                        [after $delay [list $menu postcascade none]]
+                }
+            }
+        }
     }
 }
 
@@ -599,6 +616,9 @@ proc ::tk::MenuButtonDown menu {
 	    if {$::tk_strictMotif} {
 		set Priv(cursor) [$menu cget -cursor]
 		$menu configure -cursor arrow
+	    }
+	    if {[$menu type active] eq "cascade"} {
+		set Priv(menuActivated) 1
 	    }
         }
 
@@ -1202,24 +1222,35 @@ proc ::tk::PostOverPoint {menu x y {entry {}}}  {
 	}
 	incr x [expr {-[winfo reqwidth $menu]/2}]
     }
-    if {$tcl_platform(platform) == "windows"} {
+
+    if {$tcl_platform(platform) eq "windows"} {
+	# osVersion is not available in safe interps
+	set ver 5
+	if {[info exists tcl_platform(osVersion)]} {
+	    scan $tcl_platform(osVersion) %d ver
+	}
+
 	# We need to fix some problems with menu posting on Windows,
 	# where, if the menu would overlap top or bottom of screen,
 	# Windows puts it in the wrong place for us.  We must also
 	# subtract an extra amount for half the height of the current
 	# entry.  To be safe we subtract an extra 10.
-	set yoffset [expr {[winfo screenheight $menu] \
-		- $y - [winfo reqheight $menu] - 10}]
-	if {$yoffset < 0} {
-	    # The bottom of the menu is offscreen, so adjust upwards
-	    incr y $yoffset
-	    if {$y < 0} { set y 0 }
-	}
-	# If we're off the top of the screen (either because we were
-	# originally or because we just adjusted too far upwards),
-	# then make the menu popup on the top edge.
-	if {$y < 0} {
-	    set y 0
+        # NOTE: this issue appears to have been resolved in the Window
+        # manager provided with Vista and Windows 7.
+	if {$ver < 6} {
+	    set yoffset [expr {[winfo screenheight $menu] \
+				   - $y - [winfo reqheight $menu] - 10}]
+	    if {$yoffset < 0} {
+		# The bottom of the menu is offscreen, so adjust upwards
+		incr y $yoffset
+		if {$y < 0} { set y 0 }
+	    }
+	    # If we're off the top of the screen (either because we were
+	    # originally or because we just adjusted too far upwards),
+	    # then make the menu popup on the top edge.
+	    if {$y < 0} {
+		set y 0
+	    }
 	}
     }
     $menu post $x $y
@@ -1311,6 +1342,7 @@ proc ::tk_popup {menu x y {entry {}}} {
         tk::SaveGrabInfo $menu
 	grab -global $menu
 	set Priv(popup) $menu
+	set Priv(menuActivated) 1
 	tk_menuSetFocus $menu
     }
 }
