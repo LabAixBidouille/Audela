@@ -215,9 +215,9 @@ namespace eval ::spytimer {
    proc startTool { visuNo } {
       variable private
 
-	  #--- On cree la variable de configuration des mots cles
+      #--- On cree la variable de configuration des mots cles
       if { ![ info exists ::conf(spytimer,visu$visuNo,keywordConfigName) ] } {
-		   set ::conf(spytimer,visu$visuNo,keywordConfigName) "default"
+         set ::conf(spytimer,visu$visuNo,keywordConfigName) "default"
       }
       pack $private($visuNo,base) -side left -fill y
    }
@@ -579,7 +579,7 @@ namespace eval ::spytimer {
          return
       }
 
-	  #--   teste les valeurs decimales
+      #--   teste les valeurs decimales
       if {$child in [ list aptdia crota2 pixsize1 pixsize2 foclen xpixsz ypixsz ] } {
          set value $private($visuNo,$child)
          if { [ string is double -strict $value ] != 1 || $value < 0 } {
@@ -719,7 +719,7 @@ namespace eval ::spytimer {
                -command "::spytimer::configEntry $visuNo $this.kwd $var"
             grid $this.kwd.opt_$var -row $l -column 0 -padx 10 -sticky w
             label $this.kwd.label_$var -borderwidth 1 -relief sunken \
-				   -justify center -text [ string toupper $var ]
+               -justify center -text [ string toupper $var ]
             grid $this.kwd.label_$var -row $l -column 1 -sticky ew
             entry $this.kwd.$var -width 7 -borderwidth 1 -relief sunken \
                -justify right -textvariable ::spytimer::private($visuNo,$var) \
@@ -769,7 +769,7 @@ namespace eval ::spytimer {
       frame $this.cmd -borderwidth 2 -relief groove
          set len [string length $caption(spytimer,focalisation)]
          button $this.cmd.foc -borderwidth 2 -text $caption(spytimer,focalisation) \
-        	   -command "::spytimer::focGraphe $visuNo" -width $len
+            -command "::spytimer::focGraphe $visuNo" -width $len
          pack $this.cmd.foc -anchor w -side left -padx 10
       pack $this.cmd -anchor w -side top -fill x -expand 1
    }
