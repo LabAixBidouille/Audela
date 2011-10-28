@@ -1,6 +1,4 @@
 #
-# $Id: fonts.tcl,v 1.1 2009-02-21 14:04:20 michelpujol Exp $
-#
 # Font specifications.
 #
 # This file, [source]d at initialization time, sets up the following

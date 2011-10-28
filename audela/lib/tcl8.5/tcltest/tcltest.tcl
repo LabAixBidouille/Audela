@@ -15,8 +15,6 @@
 # Copyright (c) 2000 by Ajuba Solutions
 # Contributions from Don Porter, NIST, 2002.  (not subject to US copyright)
 # All rights reserved.
-#
-# RCS: @(#) $Id: tcltest.tcl,v 1.1 2009-02-21 14:30:02 michelpujol Exp $
 
 package require Tcl 8.5		;# -verbose line uses [info frame]
 namespace eval tcltest {
@@ -24,7 +22,7 @@ namespace eval tcltest {
     # When the version number changes, be sure to update the pkgIndex.tcl file,
     # and the install directory in the Makefiles.  When the minor version
     # changes (new feature) be sure to update the man page as well.
-    variable Version 2.3.0
+    variable Version 2.3.3
 
     # Compatibility support for dumb variables defined in tcltest 1
     # Do not use these.  Call [package provide Tcl] and [info patchlevel]
@@ -602,7 +600,7 @@ namespace eval tcltest {
     }
     proc configure args {
 	RemoveAutoConfigureTraces
-	set code [catch {eval Configure $args} msg]
+	set code [catch {Configure {*}$args} msg]
 	return -code $code $msg
     }
     
@@ -797,6 +795,29 @@ namespace eval tcltest {
     trace variable Option(-errfile) w \
 	    [namespace code {errorChannel $Option(-errfile) ;#}]
 
+    proc loadIntoSlaveInterpreter {slave args} {
+	variable Version
+	interp eval $slave [package ifneeded tcltest $Version]
+	interp eval $slave "tcltest::configure {*}{$args}"
+	interp alias $slave ::tcltest::ReportToMaster \
+	    {} ::tcltest::ReportedFromSlave
+    }
+    proc ReportedFromSlave {total passed skipped failed because newfiles} {
+	variable numTests
+	variable skippedBecause
+	variable createdNewFiles
+	incr numTests(Total)   $total
+	incr numTests(Passed)  $passed
+	incr numTests(Skipped) $skipped
+	incr numTests(Failed)  $failed
+	foreach {constraint count} $because {
+	    incr skippedBecause($constraint) $count
+	}
+	foreach {testfile created} $newfiles {
+	    lappend createdNewFiles($testfile) {*}$created
+	}
+	return
+    }
 }
 
 #####################################################################
@@ -1420,7 +1441,7 @@ proc tcltest::ProcessFlags {flagArray} {
 	RemoveAutoConfigureTraces
     } else {
 	set args $flagArray
-	while {[llength $args]>1 && [catch {eval configure $args} msg]} {
+	while {[llength $args]>1 && [catch {configure {*}$args} msg]} {
 
 	    # Something went wrong parsing $args for tcltest options
 	    # Check whether the problem is "unknown option"
@@ -1585,7 +1606,7 @@ proc tcltest::Replace::puts {args} {
 
     # If we haven't returned by now, we don't know how to handle the
     # input.  Let puts handle it.
-    return [eval Puts $args]
+    return [Puts {*}$args]
 }
 
 # tcltest::Eval --
@@ -2104,7 +2125,7 @@ proc tcltest::test {name description args} {
 	    }
 	}
 	if {[info exists testLine]} {
-	    puts [outputChannel] "$testFile:$testLine: test failed:\
+	    puts [outputChannel] "$testFile:$testLine: error: test failed:\
 		    $name [string trim $description]"
 	}
     }	
@@ -2242,12 +2263,12 @@ proc tcltest::Skipped {name constraints} {
 	set doTest 0
 	if {[string match {*[$\[]*} $constraints] != 0} {
 	    # full expression, e.g. {$foo > [info tclversion]}
-	    catch {set doTest [uplevel #0 expr $constraints]}
+	    catch {set doTest [uplevel #0 [list expr $constraints]]}
 	} elseif {[regexp {[^.:_a-zA-Z0-9 \n\r\t]+} $constraints] != 0} {
 	    # something like {a || b} should be turned into
 	    # $testConstraints(a) || $testConstraints(b).
 	    regsub -all {[.\w]+} $constraints {$testConstraints(&)} c
-	    catch {set doTest [eval expr $c]}
+	    catch {set doTest [eval [list expr $c]]}
 	} elseif {![catch {llength $constraints}]} {
 	    # just simple constraints such as {unixOnly fonts}.
 	    set doTest 1
@@ -2355,6 +2376,14 @@ proc tcltest::cleanupTests {{calledFromAllFile 0}} {
 
     FillFilesExisted
     set testFileName [file tail [info script]]
+
+    # Hook to handle reporting to a parent interpreter
+    if {[llength [info commands [namespace current]::ReportToMaster]]} {
+	ReportToMaster $numTests(Total) $numTests(Passed) $numTests(Skipped) \
+	    $numTests(Failed) [array get skippedBecause] \
+	    [array get createdNewFiles]
+	set testSingleFile false
+    }
 
     # Call the cleanup hook
     cleanupTestsHook
@@ -2571,7 +2600,7 @@ proc tcltest::cleanupTests {{calledFromAllFile 0}} {
 #       None
 
 # a lower case version is needed for compatibility with tcltest 1.0
-proc tcltest::getMatchingFiles args {eval GetMatchingFiles $args}
+proc tcltest::getMatchingFiles args {GetMatchingFiles {*}$args}
 
 proc tcltest::GetMatchingFiles { args } {
     if {[llength $args]} {
@@ -3326,12 +3355,12 @@ namespace eval tcltest {
 		    Tcl list: $msg"
 	    return
 	}
-	if {[llength $::env(TCLTEST_OPTIONS)] % 2} {
+	if {[llength $options] % 2} {
 	    Warn "invalid TCLTEST_OPTIONS: \"$options\":\n  should be\
 		    -option value ?-option value ...?"
 	    return
 	}
-	if {[catch {eval Configure $::env(TCLTEST_OPTIONS)} msg]} {
+	if {[catch {Configure {*}$options} msg]} {
 	    Warn "invalid TCLTEST_OPTIONS: \"$options\":\n  $msg"
 	    return
 	}

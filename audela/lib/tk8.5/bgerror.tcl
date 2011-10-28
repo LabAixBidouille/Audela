@@ -9,9 +9,6 @@
 # Copyright (c) 1998-2000 by Ajuba Solutions.
 # Copyright (c) 2007 by ActiveState Software Inc.
 # Copyright (c) 2007 Daniel A. Steffen <das@users.sourceforge.net>
-# 
-# RCS: @(#) $Id: bgerror.tcl,v 1.1 2009-02-21 14:04:20 michelpujol Exp $
-# $Id: bgerror.tcl,v 1.1 2009-02-21 14:04:20 michelpujol Exp $
 
 namespace eval ::tk::dialog::error {
     namespace import -force ::tk::msgcat::*
@@ -142,6 +139,8 @@ proc ::tk::dialog::error::bgerror err {
 
     if {$windowingsystem eq "aqua"} {
 	::tk::unsupported::MacWindowStyle style $dlg moveableAlert {}
+    } elseif {$windowingsystem eq "x11"} {
+	wm attributes $dlg -type dialog
     }
 
     frame $dlg.bot

@@ -1,8 +1,6 @@
 # scale.tcl - Copyright (C) 2004 Pat Thoyts <patthoyts@users.sourceforge.net>
 #
 # Bindings for the TScale widget
-#
-# $Id: scale.tcl,v 1.1 2009-02-21 14:04:20 michelpujol Exp $
 
 namespace eval ttk::scale {
     variable State
