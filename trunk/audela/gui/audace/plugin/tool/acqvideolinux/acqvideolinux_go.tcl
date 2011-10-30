@@ -18,6 +18,7 @@ namespace eval ::acqvideolinux {
 
    #--- Chargement des captions
    source [ file join [file dirname [info script]] acqvideolinux_go.cap ]
+   source [ file join [file dirname [info script]] acqvideolinux_extraction.cap ]
 }
 
 #------------------------------------------------------------
@@ -86,6 +87,8 @@ proc ::acqvideolinux::initPlugin { tkbase } {
    set acqvideolinuxconf(bufno)    $audace(bufNo)
    set acqvideolinuxconf(rep_plug) [file join $audace(rep_plugin) tool acqvideolinux ]
 
+   load libavi[info sharedlibextension]
+   # ::console::affiche_resultat [::hello]
 }
 
 #------------------------------------------------------------
@@ -193,7 +196,7 @@ proc ::acqvideolinux::acqvideolinuxBuildIF { This } {
 
       pack $This.fra1 -side top -fill x
 
-      #--- Frame des services
+      #--- Frame configuration
       frame $This.fra2 -borderwidth 1 -relief groove
 
          #--- Bouton d'ouverture de l'outil de configuration
@@ -203,7 +206,7 @@ proc ::acqvideolinux::acqvideolinuxBuildIF { This } {
 
       pack $This.fra2 -side top -fill x
 
-      #--- Frame des services
+      #--- Frame acquisition
       frame $This.status -borderwidth 1 -relief groove
 
          #--- Bouton d'ouverture de l'outil de statut
@@ -213,7 +216,7 @@ proc ::acqvideolinux::acqvideolinuxBuildIF { This } {
 
       pack $This.status -side top -fill x
 
-      #--- Frame des services
+      #--- Frame extraction
       frame $This.maintenance -borderwidth 1 -relief groove
 
          #--- Bouton d'ouverture de l'outil de statut
@@ -224,7 +227,7 @@ proc ::acqvideolinux::acqvideolinuxBuildIF { This } {
       pack $This.maintenance -side top -fill x
 
 
-     #--- Frame des services
+     #--- Frame des tests
      frame $This.fra6 -borderwidth 1 -relief groove
 
         #--- Bouton de test

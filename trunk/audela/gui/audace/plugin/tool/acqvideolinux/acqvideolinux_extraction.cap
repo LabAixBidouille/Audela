@@ -12,7 +12,7 @@ global caption langage
 # *************** Version anglaise ****************************
 
 set caption(acqvideolinux_extraction,main_title)          "acqvideolinux - Statut"
-set caption(acqvideolinux_extraction,titre)               "Statut de la base de données"
+set caption(acqvideolinux_extraction,titre)               "Extraction Video AVI"
 
 set caption(acqvideolinux_extraction,label_bdd)           "Information du Serveur MySQL Local"
 set caption(acqvideolinux_extraction,label_connect)       "Connexion Serveur................"
@@ -40,7 +40,7 @@ set caption(acqvideolinux_extraction,mdprootsql)          "Veuillez saisir le mo
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(acqvideolinux_extraction,main_title)       "acqvideolinux - Statut"
-   set caption(acqvideolinux_extraction,titre)            "Statut de la base de données"
+   set caption(acqvideolinux_extraction,titre)            "Extraction Video AVI"
 
    set caption(acqvideolinux_extraction,label_bdd)        "Information du Serveur MySQL Local"
    set caption(acqvideolinux_extraction,label_connect)    "Connexion Serveur................"
