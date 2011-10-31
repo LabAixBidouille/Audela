@@ -431,7 +431,7 @@ proc spc_profil_zone { args } {
 
 proc spc_detect { args } {
 
-    global audace
+    global audace spcaudace
     global conf
     #-- Fraction des bords coupée :
     set fraction_bord 0.05
@@ -459,7 +459,7 @@ proc spc_detect { args } {
 	set gparams [ buf$audace(bufNo) fitgauss $windowcoords ]
 	set ycenter [ lindex $gparams 5 ]
 	# Choix : la largeur de la gaussienne est de 3*FWHM
-	set largeur [ expr 3*[ lindex $gparams 6 ] ]
+	set largeur [ expr $spcaudace(clfwhm_binning)*[ lindex $gparams 6 ] ]
 	return [ list $ycenter $largeur ]
     } else {
 	::console::affiche_erreur "Usage: spc_detect spectre_2D_fits\n\n"
@@ -481,7 +481,7 @@ proc spc_detect { args } {
 
 proc spc_detectmoy { args } {
 
-    global audace
+    global audace spcaudace
     global conf
     #-- Fraction des bords coupée :
     set fraction_bord 0.05
@@ -509,7 +509,7 @@ proc spc_detectmoy { args } {
 	set gparams [ buf$audace(bufNo) fitgauss $windowcoords ]
 	set ycenter [ lindex $gparams 5 ]
 	# Choix : la largeur de la gaussienne est de 1.7*FWHM
-	set largeur [ expr 1.7*[ lindex $gparams 6 ] ]
+	set largeur [ expr $spcaudace(cmfwhm_binning)*[ lindex $gparams 6 ] ]
 	return [ list $ycenter $largeur ]
     } else {
 	::console::affiche_erreur "Usage: spc_detectmoy spectre_2D_fits\n\n"
@@ -613,7 +613,7 @@ proc spc_detectasym { args } {
        set gparams [ buf$audace(bufNo) fitgauss $windowcoords ]
        set ycenter [ lindex $gparams 5 ]
        #-- Choix : la largeur de la gaussienne est de 1.9*FWHM
-       set largeur [ expr 1.9*[ lindex $gparams 6 ] ]
+       set largeur [ expr $spcaudace(cafwhm_binning)*[ lindex $gparams 6 ] ]
        
        #--- Traitement des resultats :
        file delete -force "$audace(rep_images)/${filenamespc}_spcx$conf(extension,defaut)"
@@ -1150,7 +1150,12 @@ proc spc_profil { args } {
 
 	#--- Découpage de la zone à binner et retrait du fond de ciel :
 	set ycenter [ lindex $gauss_params 0 ]
-	set hauteur [ lindex $gauss_params 1 ]
+        if { $spcaudace(hauteur_binning)==0 } {
+           set hauteur [ lindex $gauss_params 1 ]
+        } else {
+           set hauteur $spcaudace(hauteur_binning)
+        }
+
 	#-- Algo : set coords_zone [list 1 [expr int($ycenter-0.5*$largeur)] $naxis1 [expr int($ycenter+0.5*$largeur)]]
 	set spectre_zone_fc [ spc_subsky $spectre2d $ycenter $hauteur $methodefc ]
 
@@ -1187,7 +1192,11 @@ proc spc_profil { args } {
 
             #--- Binning :
 	    buf$audace(bufNo) bitpix float
-	    buf$audace(bufNo) imaseries "LOPT y1=3 y2=$ylargeur height=1"
+            if { $methodebin == "rober" } {
+               buf$audace(bufNo) imaseries "LOPT y1=3 y2=$ylargeur height=1"
+            } elseif { $methodebin == "horne" } {
+               buf$audace(bufNo) imaseries "LOPT5 y1=3 y2=$ylargeur height=1 COSMIC_THRESHOLD=$spcaudace(hornethreshold)"
+            }
 	    buf$audace(bufNo) setkwd [ list "CRVAL1" 1.0 double "" "" ]
 	    buf$audace(bufNo) setkwd [ list "CDELT1" 1.0 double "" "" ]
             buf$audace(bufNo) setkwd [ list "CRPIX1" 1 int "Reference pixel" "pixel" ]

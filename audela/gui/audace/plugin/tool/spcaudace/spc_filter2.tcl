@@ -668,12 +668,19 @@ proc spc_piecewiselinearfilter { args } {
          ::console::affiche_erreur "naxis1 = $naxis1 doit etre egal a $lenorig\n"
       }
 
-      #-- elimination des termes nuls au bord
-      set limits [ spc_findnnul $ordonneesorig ]
-      # i_inf est le N° (suivant la numerotation des listes Tcl) du premier element non nul
-      # i_sup est le N° (suivant la numerotation des listes Tcl) du dernier element non nul
-      set i_inf [ lindex $limits 0 ]
-      set i_sup [ lindex $limits 1 ]
+      #--- Supprimer l'appel a spc_findnul quand on est en mode manuel (appel qui n'a pas sa raison d'etre et qui provient du poids du passe :
+      if { $mode=="auto" } {
+         #-- elimination des termes nuls au bord
+         set limits [ spc_findnnul $ordonneesorig ]
+         # i_inf est le N° (suivant la numerotation des listes Tcl) du premier element non nul
+         # i_sup est le N° (suivant la numerotation des listes Tcl) du dernier element non nul
+         set i_inf [ lindex $limits 0 ]
+         set i_sup [ lindex $limits 1 ]
+      } else {
+         set i_inf 0
+         set i_sup [ expr $naxis1-1 ]
+      }
+
       # set nechant_util [ expr $i_sup - $i_inf +1 ]
       #::console::affiche_resultat "limites profil utile $i_inf $i_sup\n"
       set nmilieu0 [ expr $i_sup -$i_inf +1 ]
@@ -790,7 +797,19 @@ proc spc_piecewiselinearfilter { args } {
 	    }
 	    # ci-dessous le calcul n'est valide que pour un spectre calibre lineairement
 	    set j [ expr round (($lambda_i-$lambdamin)*$nmilieu / $ecartlambda) -1 ]
-	    set poids [ lreplace $poids $j $j 1. ]
+	    # modif Pat 8 mai 2011 
+	    if { $j < $len } {
+	       if { $j >= 0 } {
+	 	   set poids [ lreplace $poids $j $j 1. ]
+	       } else {
+	 	   set poids [ lreplace $poids 0 0 1. ]
+	 	   }
+	    } else {
+	       ::console::affiche_erreur "j= $j len= $len\n\n"
+	       return ""
+	    }
+	    # fin modif Pat
+ 
 	 }
       }
       # prise en compte de la regularisation
@@ -1032,7 +1051,11 @@ proc spc_extractcontew { args } {
       set lambdac1 [ expr ceil([ spc_calpoly $no_pixel $crpix1 $crval1 $cdelt1 0 0 ]) ]
    } elseif { $lambdac1>$lambda_max } {
       set lambdac1 [ expr floor([ spc_calpoly $no_pixel $crpix1 $crval1 $cdelt1 0 0 ]) ]
+   } else {
+      set lambdac1 [ expr round([ spc_calpoly $no_pixel $crpix1 $crval1 $cdelt1 0 0 ]+10*$cdelt1) ]
+      #-- Benji 20111005
    }
+
    set no_tranche [ lindex [ lindex $listresults 1 ] 2 ]
    set no_pixel [ expr round($no_tranche*$largeur*1.) ]
    set lambdac2 [ expr round([ spc_calpoly $no_pixel $crpix1 $crval1 $cdelt1 0 0 ]) ]
@@ -1040,6 +1063,9 @@ proc spc_extractcontew { args } {
       set lambdac2 [ expr ceil([ spc_calpoly $no_pixel $crpix1 $crval1 $cdelt1 0 0 ]) ]
    } elseif { $lambdac2>$lambda_max } {
       set lambdac2 [ expr floor([ spc_calpoly $no_pixel $crpix1 $crval1 $cdelt1 0 0 ]) ]
+   } else {
+      set lambdac2 [ expr round([ spc_calpoly $no_pixel $crpix1 $crval1 $cdelt1 0 0 ]+10*$cdelt1) ]
+      #-- Benji 20111005
    }
    
    

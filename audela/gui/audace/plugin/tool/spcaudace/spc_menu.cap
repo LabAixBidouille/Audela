@@ -94,6 +94,8 @@ set caption(spcaudace,gui,spc_rmcosmics_w)                  "Automatic removing 
 set caption(spcaudace,gui,spc_offset_w)                     "Add an offset value to intensities"
 set caption(spcaudace,gui,spc_multc_w)                      "Multiply intensities by a number"
 set caption(spcaudace,gui,spc_ajustpoints_w)                "Fitting continuum with selected points"
+set caption(spcaudace,gui,spc_cfwhmbinning_w)               "Setup manually coefficient that multiply binning FWHM"
+set caption(spcaudace,gui,spc_hbinning_w)                   "Setup manually binning height"
 
 #--- Menu Mesures ---#
 set caption(spcaudace,gui,spc_mesures)                      "Measures"
@@ -261,6 +263,9 @@ if { [string compare $langage "french"] == "0" } {
    set caption(spcaudace,gui,spc_offset_w)                  "Ajoute une valeur aux intensités"
    set caption(spcaudace,gui,spc_multc_w)                   "Multiplie les intensités par un nombre"
    set caption(spcaudace,gui,spc_ajustpoints_w)             "Ajustement du continuum avec des points choisis"
+   set caption(spcaudace,gui,spc_cfwhmbinning_w)            "Régler amnuellement le coéfficient multiplicateur de la FWHM de binning"
+   set caption(spcaudace,gui,spc_hbinning_w)                "Régler manuellement la hauteur de binning"
+
 
    #--- Menu Mesures ---#
    set caption(spcaudace,gui,spc_mesures)                   "Mesures"

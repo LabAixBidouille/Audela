@@ -12,7 +12,7 @@ global audela audace
 global spcaudace
 
 #--- Version d'SpcAudace :
-set spcaudace(version) "2.9 - 24/09/2011"
+set spcaudace(version) "2.10 - 19/09/2011"
 # ::audace::date_sys2ut ?Date?
 #set spcaudace(version) [ file mtime $spcaudace(repspc) ]
 
@@ -156,8 +156,19 @@ set spcaudace(epaisseur_bin) 100.
 set spcaudace(nb_coupes) 10
 #-- Epaisseur de detection (verticale, latérale) pour les tranches de détection lors de spc_findtilt, spc_detect (5% de naxis2) :
 set spcaudace(epaisseur_detect) 0.05
-#-- Epaisseur binning par défaut :
+#-- Hauteur souhaitée de binning des spectres (si 0, le calcul automatique de hauteur est réalisé par spc_detectasym) :
+set spcaudace(hauteur_binning) 0
+#-- Coefficient multiplicateur de la FWHM pour l'epaisseur de binning :
+#- Pour spc_detectasym :
+set spcaudace(cafwhm_binning) 1.9
+#- Pour spc_detectmoy :
+set spcaudace(cmfwhm_binning) 1.7
+#- Pour spc_detect :
+set spcaudace(clfwhm_binning) 3.0
+#-- Epaisseur de binning par défaut pour flats et détections géométriques :
 set spcaudace(largeur_binning) 7
+#-- Coefficient de rejection des cosmics lors du binning (0-100) :
+set spcaudace(hornethreshold) 40
 #-- Angle limite en degrès autorisé pour un tilt :
 #set spcaudace(tilt_limit) 0.746
 #set spcaudace(tilt_limit) 1.5
