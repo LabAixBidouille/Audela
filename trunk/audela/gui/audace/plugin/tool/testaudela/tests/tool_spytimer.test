@@ -151,7 +151,7 @@ test tool_spytimer_auto {declenchement programme} -constraints {
 } -body {
    ::console::affiche_resultat "Test in progress... wait for completion...\n"
    #--   selectionne Auto
-   ::testaudela::clicCheckButton "$this.fra4.timer.auto" 1
+   ::testaudela::clicCheckButton "$this.fra4.auto" 1
 
    #--   controle
    set result 0
@@ -163,7 +163,7 @@ test tool_spytimer_auto {declenchement programme} -constraints {
    lassign $settings ::spytimer::private($visuNo,port) \
       ::spytimer::private($visuNo,bit) ::spytimer::private($visuNo,cde)
    #--   deselectionne "Auto"
-   ::testaudela::clicCheckButton "$this.fra4.timer.auto" 0
+   ::testaudela::clicCheckButton "$this.fra4.auto" 0
    #--- j'efface l'image dans la visu
    ::confVisu::clear $visuNo
    #--- je supprime l'instance (cette commande arrete l'outil si ce n'est pas deja fait)
