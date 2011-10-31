@@ -767,7 +767,6 @@ int tt_ima_series_lopt5(TT_IMA_SERIES *pseries)
 
    /* --- initialisation ---*/
    tt_imacreater(p_out,imax,hauteur);
-   tt_imacreater(p_out,imax,hauteur);
 
    // ----------------------------------------------------
    // On gère les largeur2 premières colonnes (peu critique)
