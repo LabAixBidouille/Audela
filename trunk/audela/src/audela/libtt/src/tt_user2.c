@@ -591,7 +591,12 @@ int tt_ima_series_lopt(TT_IMA_SERIES *pseries)
    max=1.;
    for (i=0;i<imax;i++) {
       for (j=0;j<hauteur;j++) {
-         p_out->p[j*imax+i]=(TT_PTYPE)(f[i]*max);
+        if (f[i]>0) {
+          p_out->p[j*imax+i]=(TT_PTYPE)(f[i]*max);
+        } else {
+          /* Les valeurs "nan" sont mises egales a 0 */
+          p_out->p[j*imax+i]=(TT_PTYPE)(0);
+        }
       }
    }
 
@@ -905,11 +910,11 @@ int tt_ima_series_lopt5(TT_IMA_SERIES *pseries)
                    vv2[kk] = (double)p_tmp1->p[j * imax + i + m];  // image somme des éventuelles images individuelles (sinon p = p2)
                }
                //P[k] = (double)hmedian(vv);     // mediane du vecteur vv
-					tt_util_qsort_double(vv,0,1+2*largeur2,NULL);
-					P[k] = (double)vv[largeur2];
+                 tt_util_qsort_double(vv,0,1+2*largeur2,NULL);
+                 P[k] = (double)vv[largeur2];
                //P2[k] = (double)hmedian(vv2);
-					tt_util_qsort_double(vv2,0,1+2*largeur2,NULL);
-					P2[k] = (double)vv2[largeur2];
+                 tt_util_qsort_double(vv2,0,1+2*largeur2,NULL);
+                 P2[k] = (double)vv2[largeur2];
            }
 
            // La fonction de poids est rendue strictement positive et normalisée
@@ -1006,6 +1011,7 @@ int tt_ima_series_lopt5(TT_IMA_SERIES *pseries)
         if (f[i]>0) {
           p_out->p[j*imax+i]=(TT_PTYPE)(f[i]*max);
         } else {
+          /* Les valeurs "nan" sont mises egales a 0 */
           p_out->p[j*imax+i]=(TT_PTYPE)(0);
         }
       }
