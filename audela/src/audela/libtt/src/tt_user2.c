@@ -662,7 +662,7 @@ int tt_ima_series_lopt5(TT_IMA_SERIES *pseries)
    hauteur=pseries->user2.height; // HEIGHT
    lmin=pseries->user2.y1-1; // Y1
    lmax=pseries->user2.y2-1; // Y2
-	coef=pseries->cosmicThreshold; // COSMIC_THRESHOLD
+   coef=pseries->cosmicThreshold; // COSMIC_THRESHOLD
 
    /* verification des donnees */
    if (hauteur < 0) {
@@ -1003,7 +1003,11 @@ int tt_ima_series_lopt5(TT_IMA_SERIES *pseries)
    max=1.;
    for (i=0;i<imax;i++) {
       for (j=0;j<hauteur;j++) {
-         p_out->p[j*imax+i]=(TT_PTYPE)(f[i]*max);
+        if (f[i]>0) {
+          p_out->p[j*imax+i]=(TT_PTYPE)(f[i]*max);
+        } else {
+          p_out->p[j*imax+i]=(TT_PTYPE)(0);
+        }
       }
    }
 
