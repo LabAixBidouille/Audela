@@ -130,6 +130,54 @@ proc spc_sommekappa_w {} {
 
 
 ########################################################################
+# Interface pour l'appel de la fonction spc_sommekappa_w
+#
+# Auteurs : Benjamin Mauclaire
+# Date de création : 23-03-2010
+# Date de modification : 23-03-2010
+########################################################################
+
+proc spc_hbinning_w { args } {
+   global audace spcaudace
+
+   if { [ llength $args ]==1 } {
+      set hbin [ lindex $args 0 ]
+      set spcaudace(hauteur_binning) $hbin
+      ::console::affiche_prompt "Hauteur de binning fixée à $hbin.\n"
+   } else {
+      set spcaudace(hauteur_binning) 0
+      ::console::affiche_prompt "Hauteur de binning remise à la valeur 0.\n"
+      ::console::affiche_erreur "Usage: spc_hbinning_w hauteur_binning_en_pixels. Mettre 0 pour une gestion automatique (comportement par défaut).\n"
+   }
+}
+#**********************************************************************#
+
+
+########################################################################
+# Interface pour l'appel de la fonction spc_sommekappa_w
+#
+# Auteurs : Benjamin Mauclaire
+# Date de création : 23-03-2010
+# Date de modification : 23-03-2010
+########################################################################
+
+proc spc_cafwhmbinning_w { args } {
+   global audace spcaudace
+
+   if { [ llength $args ]==1 } {
+      set cabin [ lindex $args 0 ]
+      set spcaudace(cafwhm_binning) $cabin
+      ::console::affiche_prompt "Coéfficient multiplicateur de la FWHM de binning fixé à $cabin.\n"
+   } else {
+      set spcaudace(cafwhm_binning) 1.9
+      ::console::affiche_prompt "Coéfficient multiplicateur de la FWHM de binning remis à 1.9.\n"
+      ::console::affiche_erreur "Usage: spc_cafwhmbinning_w coefficient_multiplicateur_fwhm_de_binning. 1.9 est la valeur par défaut.\n"
+   }
+}
+#**********************************************************************#
+
+
+########################################################################
 # Interface pour l'appel de la fonction spc_multc
 #
 # Auteurs : Benjamin Mauclaire

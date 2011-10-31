@@ -3928,7 +3928,8 @@ proc spc_rinstrum { args } {
            } elseif { $dispersion<=0.2 } {
            #-- Spectres eShell :
               ::console::affiche_resultat "\n~~~ Calcul de la RI pour un spectre eShell... ~~~\n"
-              set rinstrum [  spc_lowresfilterfile $result_division "$spcaudace(reptelluric)/forgetlambda_eshell.dat" 1. 8. { 1.0 1.0 } "o" 200 ]
+              # set rinstrum [  spc_lowresfilterfile $result_division "$spcaudace(reptelluric)/forgetlambda_eshell.dat" 1. 8. { 1.0 1.0 } "o" 200 ]
+              set rinstrum [  spc_lowresfilterfile $result_division "$spcaudace(reptelluric)/forgetlambda_eshell.dat" 1. 9. { 1.0 1.0 } "o" 800 ]
            } else {
            #-- Lhires3+résos 300 et 150 t/mm :
               ## set rinstrum [ spc_pwlfilter $result_division 50 o 11 51 70 50 100 ]

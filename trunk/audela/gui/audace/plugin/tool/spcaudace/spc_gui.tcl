@@ -165,6 +165,9 @@ proc spc_winini { } {
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_rmcosmics_w) -command "spc_rmcosmics_w" -underline 0
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_offset_w) -command "spc_offset_w" -underline 0
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_multc_w) -command "spc_multc_w" -underline 0
+      .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_file_space)
+      .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_cfwhmbinning_w) -command "spc_cafwhmbinning_w" -underline 0
+      .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_hbinning_w) -command "spc_hbinning_w" -underline 0
 
       .spc configure -menu .spc.menuBar
       #-- Raccourcis calviers :
