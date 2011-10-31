@@ -150,7 +150,7 @@ namespace eval ::spytimer {
             #--   affecte les valeurs initiales sauvegardees dans le fichier ini
             set private($visuNo,$param) $parametres($param)
 
-            if { $param eq "aptdia" } {
+            if { $param eq "aptdia" && $value ne ""} {
                #--   calcule le pouvoir separateur
                set private($visuNo,pouvoir_separateur) [ format "%.3f" [ expr { 0.120 / $private($visuNo,$param) } ] ]
             }
@@ -161,11 +161,14 @@ namespace eval ::spytimer {
          }
       }
 
-      #--   identifie le nom de la configuration des mots cles
+      #--   initialise le nom de la configuration des mots cles
+      if { ![ info exists conf(spytimer,visu$visuNo,keywordConfigName) ] } {
+         set conf(spytimer,visu$visuNo,keywordConfigName) "default"
+      }
       set configName $conf(spytimer,visu$visuNo,keywordConfigName)
 
       #--   obtient la liste des variables checkees
-      set checked $::conf(keyword,$configName,check)
+      set checked $conf(keyword,$configName,check)
       regsub -all "1,check," $checked " " checked
 
       #--   valide les mots cles checkes
@@ -215,10 +218,6 @@ namespace eval ::spytimer {
    proc startTool { visuNo } {
       variable private
 
-      #--- On cree la variable de configuration des mots cles
-      if { ![ info exists ::conf(spytimer,visu$visuNo,keywordConfigName) ] } {
-         set ::conf(spytimer,visu$visuNo,keywordConfigName) "default"
-      }
       pack $private($visuNo,base) -side left -fill y
    }
 
@@ -871,7 +870,7 @@ namespace eval ::spytimer {
        return [ list $champ $echantillonnage ]
    }
 
-   #----------------- fonction de surveillance du répertoire ------------------
+   #----------------- fonction de surveillance du repertoire ------------------
 
    #---------------------------------------------------------------------------
    # initSurvey : initialise la surveillance
@@ -907,7 +906,7 @@ namespace eval ::spytimer {
       ::spytimer::listeFiles $visuNo
 
       #--   oublie la liste des anciennes images
-      regsub -all $private($visuNo,oldList) $private($visuNo,listFiles) "" newFile
+      regsub -all "$private($visuNo,oldList)" $private($visuNo,listFiles) "" newFile
 
       #--  en cas de plusieurs fichiers, retient le dernier
       set newFile [ lindex $newFile end ]
