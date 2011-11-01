@@ -6,6 +6,7 @@
 # Mise à jour $Id$
 #
 
+#--- Initialisation de variables
 set ::graphik(compteur) {}
 set ::graphik(inten)    {}
 set ::graphik(fwhmx)    {}
@@ -210,7 +211,25 @@ namespace eval ::foc {
          set n1n2 [ cam$audace(camNo) nbcells ]
          cam$audace(camNo) window [ list 1 1 [ lindex $n1n2 0 ] [ lindex $n1n2 1 ] ]
       }
+
+      #--- Initialisation des variables et fermeture des fenetres auxiliaires
+      set panneau(foc,compteur) "0"
+      set ::graphik(compteur)   {}
+      set ::graphik(inten)      {}
+      set ::graphik(fwhmx)      {}
+      set ::graphik(fwhmy)      {}
+      set ::graphik(contr)      {}
+      if [ winfo exists $audace(base).parafoc ] {
+         destroy $audace(base).parafoc
+      }
+      if [ winfo exists $audace(base).visufoc ] {
+         destroy $audace(base).visufoc
+      }
+
+      #--- Arret de la surveillance de la variable conf(telescope)
       trace remove variable ::conf(telescope) write ::foc::adaptOutilFoc
+
+      #---
       pack forget $This
    }
 
@@ -541,11 +560,11 @@ namespace eval ::foc {
       if { [ ::cam::list ] != "" } {
          if { [ $This.fra2.but2 cget -text ] == "$panneau(foc,raz)" } {
             set panneau(foc,compteur) "0"
-            set ::graphik(compteur) {}
-            set ::graphik(inten)    {}
-            set ::graphik(fwhmx)    {}
-            set ::graphik(fwhmy)    {}
-            set ::graphik(contr)    {}
+            set ::graphik(compteur)  {}
+            set ::graphik(inten)     {}
+            set ::graphik(fwhmx)     {}
+            set ::graphik(fwhmy)     {}
+            set ::graphik(contr)     {}
             destroy $audace(base).parafoc
             destroy $audace(base).visufoc
             update
