@@ -560,11 +560,11 @@ namespace eval ::foc {
       if { [ ::cam::list ] != "" } {
          if { [ $This.fra2.but2 cget -text ] == "$panneau(foc,raz)" } {
             set panneau(foc,compteur) "0"
-            set ::graphik(compteur)  {}
-            set ::graphik(inten)     {}
-            set ::graphik(fwhmx)     {}
-            set ::graphik(fwhmy)     {}
-            set ::graphik(contr)     {}
+            set ::graphik(compteur)   {}
+            set ::graphik(inten)      {}
+            set ::graphik(fwhmx)      {}
+            set ::graphik(fwhmy)      {}
+            set ::graphik(contr)      {}
             destroy $audace(base).parafoc
             destroy $audace(base).visufoc
             update
