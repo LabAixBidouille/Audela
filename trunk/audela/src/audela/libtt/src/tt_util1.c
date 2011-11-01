@@ -1445,6 +1445,7 @@ int tt_thermic_signal(TT_PTYPE *p,long nelem,double response)
 		dvalue=response;
 		grand=tt_gaussian_rand(repartitions,nrep,sigmax);
 		dvalue+=grand*sqrt(dvalue);
+		if (dvalue<0) { dvalue=0; }
 		p[kkk]=(TT_PTYPE)(dvalue);
 	}
 	tt_free2((void**)&repartitions,"repartitions");
@@ -1525,7 +1526,7 @@ double tt_poissonian_rand(double lambda,double *repartitionps,int nk,int kmax,in
 			b=0;
 		}
 		return(b);
-	} else if (lambda==0) {
+	} else if (lambda<=0) {
 		b=0;
 		return(b);
 	} else {

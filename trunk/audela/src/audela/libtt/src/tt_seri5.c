@@ -1177,8 +1177,8 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 		if (fwhmy<=1e-3) {
 			fwhmy=2.5;
 		}
-		sigx=fwhmx*.601*.601;
-		sigy=fwhmy*.601*.601;
+		sigx=fwhmx / (2*sqrt(2*log(2)));
+		sigy=fwhmy / (2*sqrt(2*log(2)));
 		sigx2=sigx*sigx;
 		sigy2=sigy*sigy;
 		pi=4*atan(1);
@@ -1227,7 +1227,7 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 				/*4) calculer le flux integre en electrons : f*quantum_efficiency */
 				f = f*quantum_efficiency;
 				/*5) calculer le flux pic en electrons :  */
-				f_pic = f/sigx/sigy/3.14159265;
+				f_pic = f/sigx/sigy/2/3.14159265;
 				rayonx=(int)(5*fwhmx);
 				rayony=(int)(5*fwhmy);
 				for (kk0=k0-rayonx;kk0<=k0+rayonx;kk0++) {
