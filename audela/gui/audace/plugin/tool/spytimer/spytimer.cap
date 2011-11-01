@@ -59,10 +59,10 @@ set caption(spytimer,champ)                            "CMOS Field ( ' )"
 set caption(spytimer,echantillonnage)                  "Sampling (''/pixel)"
 set caption(spytimer,focalisation)                     "Focusing"
 set caption(spytimer,intensite)                        "Intensity (ADU)"
-set caption(spytimer,fwhm)                             "# Fwhm moyenne (pixel)"
+set caption(spytimer,fwhm)                             "Average FWHM (pixel)"
 set caption(spytimer,ratio_x_y)                        "Fwhm X / Fwhm Y"
 set caption(spytimer,contrast)                         "Contrast (ADU)"
-set caption(spytimer,init)                             "# Re-initialiser"
+set caption(spytimer,init)                             "Reset"
 set caption(spytimer,close)                            "Close"
 
 # *************** Version française ***************************
@@ -173,10 +173,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spytimer,echantillonnage)               "Campionamento (''/pixel)"
    set caption(spytimer,focalisation)                  "Messa a fuoco"
    set caption(spytimer,intensite)                     "Intensita (ADU)"
-   set caption(spytimer,fwhm)                          "# Fwhm moyenne (pixel)"
+   set caption(spytimer,fwhm)                          "Media FWHM (pixel)"
    set caption(spytimer,ratio_x_y)                     "Fwhm X / Fwhm Y"
    set caption(spytimer,contrast)                      "Contrasto (ADU)"
-   set caption(spytimer,init)                          "# Re-initialiser"
+   set caption(spytimer,init)                          "Ripristina"
    set caption(spytimer,close)                         "Chiudere"
 
 # *************** Version espagnole ***************************
@@ -230,10 +230,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spytimer,echantillonnage)               "Resolución (''/píxel)"
    set caption(spytimer,focalisation)                  "Enfoque"
    set caption(spytimer,intensite)                     "Intensidad (ADU)"
-   set caption(spytimer,fwhm)                          "# Fwhm moyenne (pixel)"
+   set caption(spytimer,fwhm)                          "FWHM promedio (pixel)"
    set caption(spytimer,ratio_x_y)                     "Fwhm X / Fwhm Y"
    set caption(spytimer,contrast)                      "Contraste (ADU)"
-   set caption(spytimer,init)                          "# Re-initialiser"
+   set caption(spytimer,init)                          "Reset"
    set caption(spytimer,close)                         "Cerrar"
 
 # *************** Version allemande ***************************
@@ -287,10 +287,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spytimer,echantillonnage)               "Entnehmung (''/Rasterpunkt)"
    set caption(spytimer,focalisation)                  "Fokussieren"
    set caption(spytimer,intensite)                     "Lichtstärke (ADU)"
-   set caption(spytimer,fwhm)                          "# Fwhm moyenne (pixel)"
+   set caption(spytimer,fwhm)                          "FWHM Durchschnitt (pixel)"
    set caption(spytimer,ratio_x_y)                     "Fwhm X / Fwhm Y"
    set caption(spytimer,contrast)                      "Kontrast (ADU)"
-   set caption(spytimer,init)                          "# Re-initialiser"
+   set caption(spytimer,init)                          "Zurückerstatten"
    set caption(spytimer,close)                         "Schließen"
 
 # *************** Version portugaise **************************
@@ -344,10 +344,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spytimer,echantillonnage)               "Amostragem (''/pixel)"
    set caption(spytimer,focalisation)                  "Focagem"
    set caption(spytimer,intensite)                     "Intensidade (ADU)"
-   set caption(spytimer,fwhm)                          "# Fwhm moyenne (pixel)"
+   set caption(spytimer,fwhm)                          "Média FWHM (pixel)"
    set caption(spytimer,ratio_x_y)                     "Fwhm X / Fwhm Y"
    set caption(spytimer,contrast)                      "Contraste (ADU)"
-   set caption(spytimer,init)                          "# Re-initialiser"
+   set caption(spytimer,init)                          "Reiniciar"
    set caption(spytimer,close)                         "Fechar"
 
 # *************** Version danoise *****************************
@@ -401,10 +401,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spytimer,echantillonnage)               "Sampling (''/pixel)"
    set caption(spytimer,focalisation)                  "Focusing"
    set caption(spytimer,intensite)                     "Intensity (ADU)"
-   set caption(spytimer,fwhm)                          "# Fwhm moyenne (pixel)"
+   set caption(spytimer,fwhm)                          "Average FWHM (pixel)"
    set caption(spytimer,ratio_x_y)                     "Fwhm X / Fwhm Y"
    set caption(spytimer,contrast)                      "Contrast (ADU)"
-   set caption(spytimer,init)                          "# Re-initialiser"
+   set caption(spytimer,init)                          "Reset"
    set caption(spytimer,close)                         "Close"
 
 
@@ -459,10 +459,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spytimer,echantillonnage)               "Sampling (''/pixel)"
    set caption(spytimer,focalisation)                  "Focusing"
    set caption(spytimer,intensite)                     "Intensity (ADU)"
-   set caption(spytimer,fwhm)                          "# Fwhm moyenne (pixel)"
+   set caption(spytimer,fwhm)                          "Average FWHM (pixel)"
    set caption(spytimer,ratio_x_y)                     "Fwhm X / Fwhm Y"
    set caption(spytimer,contrast)                      "Contrast (ADU)"
-   set caption(spytimer,init)                          "# Re-initialiser"
+   set caption(spytimer,init)                          "Reset"
    set caption(spytimer,close)                         "Close"
 
 # *************** Version russe *******************************
@@ -515,10 +515,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spytimer,echantillonnage)               "Sampling (''/pixel)"
    set caption(spytimer,focalisation)                  "Focusing"
    set caption(spytimer,intensite)                     "Intensity (ADU)"
-   set caption(spytimer,fwhm)                          "# Fwhm moyenne (pixel)"
+   set caption(spytimer,fwhm)                          "Average FWHM (pixel)"
    set caption(spytimer,ratio_x_y)                     "Fwhm X / Fwhm Y"
    set caption(spytimer,contrast)                      "Contrast (ADU)"
-   set caption(spytimer,init)                          "# Re-initialiser"
+   set caption(spytimer,init)                          "Reset"
    set caption(spytimer,close)                         "Close"
 
 }
