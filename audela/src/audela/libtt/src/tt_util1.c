@@ -1533,6 +1533,8 @@ double tt_poissonian_rand(double lambda,double *repartitionps,int nk,int kmax,in
 		dk=(1.0*kmax)/nk;
 		kl=(int)floor(lambda/dlambda);
 		frac=lambda/dlambda-kl;
+		if (frac<0) { frac=0; }
+		if (frac>1) { frac=1; }
 		//printf("frac=%f kl=%d\n",frac,kl);
 		if (kl>0) {
 			for (k2=0;k2<=nk;k2++) {
