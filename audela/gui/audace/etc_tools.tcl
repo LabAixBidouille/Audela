@@ -36,6 +36,10 @@
 #
 # --- Example. What is the exposure time for SNR = 5 and magnitude = 18 ?
 # etc_init ; etc_inputs_set snr 5 ; etc_inputs_set m 18 ; etc_disp ; etc_snr2t_computations
+#
+# --- Example. What is the magnitude for SNR = 5 and exposure time 1 sec ?
+# etc_init ; etc_inputs_set snr 5 ; etc_inputs_set t 1 ; etc_disp ; etc_snr2m_computations
+#
 
 proc etc_disp { {disptype ""} } {
    global audace
@@ -620,6 +624,25 @@ proc etc_snr2t_computations {} {
    set audace(etc,compsnr,t,comment) "Exposure time computer from a SNR value constrained"
    set audace(etc,compsnr,t) $t
    return $t
+}
+
+proc etc_snr2m_computations {} {
+   global audace
+
+   etc_preliminary_computations
+
+   set pi [expr 4*atan(1)]
+   set C [expr $audace(etc,input,constraint,snr)*$audace(etc,input,constraint,snr) * ( $audace(etc,param,ccd,N_ro)*$audace(etc,param,ccd,N_ro) +  $audace(etc,param,ccd,C_th) * $audace(etc,param,ccd,bin1) * $audace(etc,param,ccd,bin2) * $audace(etc,comp1,fex) * $audace(etc,param,ccd,Em)*$audace(etc,param,ccd,Em)*$audace(etc,input,ccd,t) + $audace(etc,comp1,Sky_ph) * $pi * $audace(etc,param,optic,D)*$audace(etc,param,optic,D) / 4. * $audace(etc,comp1,W) * $audace(etc,param,ccd,eta) * $audace(etc,comp1,fex) * $audace(etc,param,ccd,Em)*$audace(etc,param,ccd,Em)*$audace(etc,input,ccd,t))] 
+   set B [expr $audace(etc,input,constraint,snr)*$audace(etc,input,constraint,snr) * ( $pi * $audace(etc,param,optic,D)*$audace(etc,param,optic,D) / 4. * $audace(etc,comp1,Tatm) * $audace(etc,param,optic,Topt) * $audace(etc,param,ccd,eta) * $audace(etc,comp1,fpix1) * $audace(etc,comp1,fex) * $audace(etc,param,ccd,Em)*$audace(etc,param,ccd,Em)*$audace(etc,input,ccd,t)) ]
+   set A [expr -pow($pi * $audace(etc,param,optic,D)*$audace(etc,param,optic,D) / 4. * $audace(etc,comp1,Tatm) * $audace(etc,param,optic,Topt) * $audace(etc,param,ccd,eta) * $audace(etc,comp1,fpix1) * $audace(etc,param,ccd,Em) * $audace(etc,input,ccd,t) , 2) ]
+   # We have A<0, B>0 and C >0. From the equation A*t^2 + B*t + C = 0, we can find the t value:
+   set D [expr $B*$B - 4*$A*$C] ; # (always positive)
+   set F_ph [expr ( -$B - sqrt($D) ) / (2.*$A)]
+   set F_Jy [expr $F_ph / (1.51e7 * $audace(etc,param,filter,Dl)/$audace(etc,param,filter,l))]   
+   set m [expr -2.5 *log10( $F_Jy / $audace(etc,param,filter,Fm0))]
+   set audace(etc,compsnr,m,comment) "Apparent magnitude computed from a SNR and exposure value constrained"
+   set audace(etc,compsnr,m) $m
+   return $m
 }
 
 etc_init
