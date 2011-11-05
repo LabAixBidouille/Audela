@@ -115,6 +115,14 @@ proc meteosensor_channel { name } {
 	return $ress
 }
 
+proc meteosensor_type { name } {
+	global audace
+	if {[info exists audace(meteosensor,private,$name,channel)]==0} {
+		error "Cloudsensor connection not opened. Use meteosensor_open before"
+	}
+	return $audace(meteosensor,private,$name,typeu)
+}
+
 proc meteosensor_get { name } {
 	global audace
 	if {[info exists audace(meteosensor,private,$name,channel)]==0} {
