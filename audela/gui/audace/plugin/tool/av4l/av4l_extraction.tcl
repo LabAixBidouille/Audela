@@ -1,14 +1,14 @@
 #--------------------------------------------------
-# source audace/plugin/tool/acqvideolinux/acqvideolinux_extraction.tcl
+# source audace/plugin/tool/acqvideolinux/av4l_extraction.tcl
 #--------------------------------------------------
 #
-# Fichier        : acqvideolinux_extraction.tcl
+# Fichier        : av4l_extraction.tcl
 # Description    : Affiche le status de la base de donnees
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: acqvideolinux_extraction.tcl 6795 2011-02-26 16:05:27Z michelpujol $
+# Mise à jour $Id: av4l_extraction.tcl 6795 2011-02-26 16:05:27Z michelpujol $
 #
 
-namespace eval acqvideolinux_extraction {
+namespace eval av4l_extraction {
 
    global audace
    global acqvideolinuxconf
@@ -16,7 +16,7 @@ namespace eval acqvideolinux_extraction {
    #--- Chargement des captions
 
    #
-   # acqvideolinux_extraction::run this
+   # av4l_extraction::run this
    # Cree la fenetre de tests
    # this = chemin de la fenetre
    #
@@ -29,7 +29,7 @@ namespace eval acqvideolinux_extraction {
    }
 
    #
-   # acqvideolinux_extraction::fermer
+   # av4l_extraction::fermer
    # Fonction appellee lors de l'appui sur le bouton 'Fermer'
    #
    proc fermer { } {
@@ -37,13 +37,13 @@ namespace eval acqvideolinux_extraction {
 
       avi1 close
 
-      ::acqvideolinux_extraction::recup_position
+      ::av4l_extraction::recup_position
       destroy $This
       return
    }
 
    #
-   # acqvideolinux_extraction::recup_position
+   # av4l_extraction::recup_position
    # Permet de recuperer et de sauvegarder la position de la fenetre
    #
    proc recup_position { } {
@@ -62,7 +62,7 @@ namespace eval acqvideolinux_extraction {
 
 
    #
-   # acqvideolinux_extraction::createDialog
+   # av4l_extraction::createDialog
    # Creation de l'interface graphique
    #
    proc createDialog { } {
@@ -110,8 +110,8 @@ namespace eval acqvideolinux_extraction {
          toplevel $This -class Toplevel
          wm geometry $This $acqvideolinuxconf(position_status)
          wm resizable $This 1 1
-         wm title $This $caption(acqvideolinux_extraction,main_title)
-         wm protocol $This WM_DELETE_WINDOW { ::acqvideolinux_extraction::fermer }
+         wm title $This $caption(av4l_extraction,main_title)
+         wm protocol $This WM_DELETE_WINDOW { ::av4l_extraction::fermer }
 
          #--- Cree un frame pour afficher le status de la base
          frame $This.frame1 -borderwidth 0 -cursor arrow -relief groove
@@ -119,7 +119,7 @@ namespace eval acqvideolinux_extraction {
 
            #--- Cree un label pour le titre
            label $This.frame1.titre -font $acqvideolinuxconf(font,arial_14_b) \
-                 -text "$caption(acqvideolinux_extraction,titre)"
+                 -text "$caption(av4l_extraction,titre)"
            pack $This.frame1.titre \
                 -in $This.frame1 -side top -padx 3 -pady 3
 
@@ -131,7 +131,7 @@ namespace eval acqvideolinux_extraction {
            #--- Creation du bouton open
            button $This.frame1.open.but_open \
               -text "open" -borderwidth 2 \
-              -command { ::acqvideolinux_extraction::avi_open }
+              -command { ::av4l_extraction::avi_open }
            pack $This.frame1.open.but_open \
               -side left -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
@@ -139,7 +139,7 @@ namespace eval acqvideolinux_extraction {
            #--- Creation du bouton select
            button $This.frame1.open.but_select \
               -text "..." -borderwidth 2 \
-              -command { ::acqvideolinux_extraction::avi_select }
+              -command { ::av4l_extraction::avi_select }
            pack $This.frame1.open.but_select \
               -side left -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
@@ -161,7 +161,7 @@ namespace eval acqvideolinux_extraction {
            #--- Creation du bouton next image
            button $This.frame1.nextimage \
               -text "nextimage" -borderwidth 2 \
-              -command { ::acqvideolinux_extraction::avi_next_image  }
+              -command { ::av4l_extraction::avi_next_image  }
            pack $This.frame1.nextimage \
               -in $This.frame1.btnav \
               -side left -anchor w \
@@ -170,7 +170,7 @@ namespace eval acqvideolinux_extraction {
            #--- Creation du bouton setmin
            button $This.frame1.setmin \
               -text "setmin" -borderwidth 2 \
-              -command { ::acqvideolinux_extraction::avi_setmin  }
+              -command { ::av4l_extraction::avi_setmin  }
            pack $This.frame1.setmin \
               -in $This.frame1.btnav \
               -side left -anchor w \
@@ -179,7 +179,7 @@ namespace eval acqvideolinux_extraction {
            #--- Creation du bouton setmax
            button $This.frame1.setmax \
               -text "setmax" -borderwidth 2 \
-              -command { ::acqvideolinux_extraction::avi_setmax  }
+              -command { ::av4l_extraction::avi_setmax  }
            pack $This.frame1.setmax \
               -in $This.frame1.btnav \
               -side left -anchor w \
@@ -219,7 +219,7 @@ namespace eval acqvideolinux_extraction {
                #--- Cree un label pour
                button $This.frame1.doimagecount \
                 -text "count" -borderwidth 2 \
-                -command { ::acqvideolinux_extraction::avi_imagecount  }
+                -command { ::av4l_extraction::avi_imagecount  }
                pack $This.frame1.doimagecount -in $This.frame1.count -side left -pady 1 -anchor w
                #--- Cree un label pour
                entry $This.frame1.imagecount -fg $color(blue) -relief sunken
@@ -233,7 +233,7 @@ namespace eval acqvideolinux_extraction {
 
            #--- Cree un label pour
            #label $This.frame1.statusbdd -font $acqvideolinuxconf(font,arial_12_b) \
-           #     -text "LBL $caption(acqvideolinux_extraction,label_bdd)"
+           #     -text "LBL $caption(av4l_extraction,label_bdd)"
            #pack $This.frame1.statusbdd -in $This.frame1.status -side top -padx 3 -pady 1 -anchor w
 
 
@@ -263,10 +263,10 @@ namespace eval acqvideolinux_extraction {
                pack $inparam.scenes -in $inparam -side top -pady 1 -anchor w
 
 
-	   #---
+      #---
            button $This.frame1.extract \
               -text "extract" -borderwidth 2 \
-              -command { ::acqvideolinux_extraction::avi_extract }
+              -command { ::av4l_extraction::avi_extract }
            pack $This.frame1.extract \
               -side left -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
@@ -286,15 +286,15 @@ namespace eval acqvideolinux_extraction {
 
            #--- Creation du bouton fermer
            button $This.frame11.but_fermer \
-              -text "$caption(acqvideolinux_extraction,fermer)" -borderwidth 2 \
-              -command { ::acqvideolinux_extraction::fermer }
+              -text "$caption(av4l_extraction,fermer)" -borderwidth 2 \
+              -command { ::av4l_extraction::fermer }
            pack $This.frame11.but_fermer \
               -in $This.frame11 -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
            #--- Creation du bouton aide
            button $This.frame11.but_aide \
-              -text "$caption(acqvideolinux_extraction,aide)" -borderwidth 2 \
+              -text "$caption(av4l_extraction,aide)" -borderwidth 2 \
               -command { ::audace::showHelpPlugin tool acqvideolinux acqvideolinux.htm }
            pack $This.frame11.but_aide \
               -in $This.frame11 -side right -anchor e \
@@ -302,7 +302,7 @@ namespace eval acqvideolinux_extraction {
 
       } else {
 
-         tk_messageBox -title $caption(acqvideolinux_extraction,msg_erreur) -type ok -message $caption(acqvideolinux_extraction,msg_prevent2)
+         tk_messageBox -title $caption(av4l_extraction,msg_erreur) -type ok -message $caption(av4l_extraction,msg_prevent2)
          #$audace(base).acqvideolinux.fra5.but1 configure -relief raised -state normal
          return
 
@@ -319,7 +319,7 @@ namespace eval acqvideolinux_extraction {
 
    }
 
-   # acqvideolinux_extraction::list_diff_shift
+   # av4l_extraction::list_diff_shift
    # Retourne la liste test epurée de l intersection des deux listes
    proc list_diff_shift { ref test }  {
       foreach elemref $ref {
@@ -332,7 +332,7 @@ namespace eval acqvideolinux_extraction {
       return $test
    }
 
-   # acqvideolinux_extraction::verif
+   # av4l_extraction::verif
    # Verification des donnees
    proc verif { } {
    
@@ -340,39 +340,39 @@ namespace eval acqvideolinux_extraction {
    }
 
    proc avi_select { } {
-	   global audace
-	   variable This
-	   set visuNo 1
-	   set bufNo [ visu$visuNo buf ]
-	   #--- Fenetre parent
-	   set fenetre [::confVisu::getBase $visuNo]
-	   #--- Ouvre la fenetre de choix des images
-	   set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $bufNo "1" $visuNo ]
-	   $This.frame1.open.avipath delete 0 end
-	   $This.frame1.open.avipath insert 0 $filename
+      global audace
+      variable This
+      set visuNo 1
+      set bufNo [ visu$visuNo buf ]
+      #--- Fenetre parent
+      set fenetre [::confVisu::getBase $visuNo]
+      #--- Ouvre la fenetre de choix des images
+      set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $bufNo "1" $visuNo ]
+      $This.frame1.open.avipath delete 0 end
+      $This.frame1.open.avipath insert 0 $filename
    }
 
    proc avi_open { } {
-	   global audace
-	   variable This
-	   set visuNo 1
-	   set bufNo [ visu$visuNo buf ]
-	   #--- Fenetre parent
-	   set fenetre [::confVisu::getBase $visuNo]
-	   set filename [$This.frame1.open.avipath get]
-	   ::avi::create avi1
-	   avi1 load $filename
-	   avi1 next
+      global audace
+      variable This
+      set visuNo 1
+      set bufNo [ visu$visuNo buf ]
+      #--- Fenetre parent
+      set fenetre [::confVisu::getBase $visuNo]
+      set filename [$This.frame1.open.avipath get]
+      ::avi::create avi1
+      avi1 load $filename
+      avi1 next
            visu$visuNo disp
-	   $This.frame1.percent configure -command "::acqvideolinux_extraction::avi_seek"
-	   $This.frame1.percent configure -state normal
+      $This.frame1.percent configure -command "::av4l_extraction::avi_seek"
+      $This.frame1.percent configure -state normal
    }
 
 
    proc avi_next_image { } {
-	   set visuNo 1
-	   avi1 next
-	   visu$visuNo disp
+      set visuNo 1
+      avi1 next
+      visu$visuNo disp
    }
 
    proc avi_seek { arg } {
@@ -393,51 +393,51 @@ namespace eval acqvideolinux_extraction {
    }
 
    proc avi_setmin { } {
-	   global audace
-	   variable This
-	   $This.frame1.posmin delete 0 end
-	   $This.frame1.posmin insert 0 [ avi1 getpreviousoffset ]
+      global audace
+      variable This
+      $This.frame1.posmin delete 0 end
+      $This.frame1.posmin insert 0 [ avi1 getpreviousoffset ]
    }
 
    proc avi_setmax { } {
-	   global audace
-	   variable This
-	   $This.frame1.posmax delete 0 end
-	   $This.frame1.posmax insert 0 [ avi1 getpreviousoffset ]
+      global audace
+      variable This
+      $This.frame1.posmax delete 0 end
+      $This.frame1.posmax insert 0 [ avi1 getpreviousoffset ]
    }
 
    proc avi_imagecount { } {
-	   global audace
-	   variable This
-	   $This.frame1.imagecount delete 0 end
-	   $This.frame1.imagecount insert 0 [ avi1 count [ $This.frame1.posmin get ] [ $This.frame1.posmax get]]
+      global audace
+      variable This
+      $This.frame1.imagecount delete 0 end
+      $This.frame1.imagecount insert 0 [ avi1 count [ $This.frame1.posmin get ] [ $This.frame1.posmax get]]
 
    }
 
    proc avi_extract { } {
-	   global audace
-	   variable This
-	   set visuNo 1
-	   set bufNo [ visu$visuNo buf ]
+      global audace
+      variable This
+      set visuNo 1
+      set bufNo [ visu$visuNo buf ]
 
-	   set bytemin [ $This.frame1.posmin get ]
-	   set bytemax [ $This.frame1.posmax get ]
-	   set rep [  $This.frame1.status.v.requetes get ]
-	   set prefix [ $This.frame1.status.v.scenes get ]
-	   set i 0
+      set bytemin [ $This.frame1.posmin get ]
+      set bytemax [ $This.frame1.posmax get ]
+      set rep [  $This.frame1.status.v.requetes get ]
+      set prefix [ $This.frame1.status.v.scenes get ]
+      set i 0
 
-	   avi_seekbyte $bytemin
-	   avi_next_image
-	   while { 1 } {
-		   incr i
-		   puts $i
-		   set fn "$rep/$prefix$i"
-		   puts $fn
-		   buf$bufNo save $fn fits
-	           if { [avi1 getoffset] >= $bytemax } { break }
-		   avi1 next
-	   }
-	   visu$visuNo disp
+      avi_seekbyte $bytemin
+      avi_next_image
+      while { 1 } {
+         incr i
+         puts $i
+         set fn "$rep/$prefix$i"
+         puts $fn
+         buf$bufNo save $fn fits
+              if { [avi1 getoffset] >= $bytemax } { break }
+         avi1 next
+      }
+      visu$visuNo disp
    }
 
 
