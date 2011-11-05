@@ -1,0 +1,72 @@
+#
+# Fichier : av4l_go.cap
+# Mise a jour $Id: av4l_go.cap 6854 2011-03-06 09:32:09Z robertdelmas  $
+#
+
+#=========================================================================
+#   Début de la declaration des textes localises (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(av4l_go,titre)                 "Acquisition Video Linux"
+set caption(av4l_go,acqvideolinux)         "Acquisition Video Linux"
+set caption(av4l_go,help_titre)            "Aide de cet outil"
+set caption(av4l_go,help_titre1)           "Aide de l'outil :"
+
+set caption(av4l_go,setup)                 "Setup"
+set caption(av4l_go,acquisition)           "Acquisition"
+set caption(av4l_go,extraction)            "Extraction"
+set caption(av4l_go,test)                  "Test"
+set caption(av4l_go,ressource)             "Re-source"
+
+# *************** Version française **** **********************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(av4l_go,titre)              "Acquisition Video Linux"
+   set caption(av4l_go,acqvideolinux)      "Acquisition Video Linux"
+   set caption(av4l_go,help_titre)         "Aide de cet outil"
+   set caption(av4l_go,help_titre1)        "Aide de l'outil :"
+
+   set caption(av4l_go,setup)              "Configuration"
+   set caption(av4l_go,acquisition)        "Acquisition"
+   set caption(av4l_go,extraction)         "Extraction"
+   set caption(av4l_go,test)               "Test"
+   set caption(av4l_go,ressource)          "Re-source"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
