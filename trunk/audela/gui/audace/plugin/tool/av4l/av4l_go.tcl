@@ -96,12 +96,44 @@ proc ::av4l::initPlugin { tkbase } {
 #    cree une nouvelle instance de l'outil
 #------------------------------------------------------------
 proc ::av4l::createPluginInstance { { in "" } { visuNo 1 } } {
-   global audace
 
-   #--- Chargement du package Tablelist
-   package require tablelist
+   variable parametres
+   global audace caption conf panneau
+
+   #--- Chargement des fichiers auxiliaires
    ::av4l::ressource
-   ::av4l::createPanel $in.av4l
+
+   #---
+   set panneau(av4l,$visuNo,base) "$in"
+   set panneau(av4l,$visuNo,This) "$in.av4l"
+
+   set panneau(av4l,$visuNo,camItem) [::confVisu::getCamItem $visuNo]
+   set panneau(av4l,$visuNo,camNo)   [::confCam::getCamNo $panneau(av4l,$visuNo,camItem)]
+
+
+   #--- Recuperation de la derniere configuration de l'outil
+   ::av4l::chargerVariable $visuNo
+
+
+   #--- Initialisation d'autres variables
+   set panneau(av4l,$visuNo,index)                "1"
+   set panneau(av4l,$visuNo,indexEndSerie)        ""
+   set panneau(av4l,$visuNo,indexEndSerieContinu) ""
+   set panneau(av4l,$visuNo,nom_image)            ""
+   set panneau(av4l,$visuNo,extension)            "$conf(extension,defaut)"
+   set panneau(av4l,$visuNo,indexer)              "0"
+   set panneau(av4l,$visuNo,indexerContinue)      "1"
+   set panneau(av4l,$visuNo,nb_images)            "5"
+   set panneau(av4l,$visuNo,session_ouverture)    "1"
+   set panneau(av4l,$visuNo,avancement_acq)       "$parametres(av4l,$visuNo,avancement_acq)"
+   set panneau(av4l,$visuNo,enregistrer)          "$parametres(av4l,$visuNo,enregistrer)"
+   set panneau(av4l,$visuNo,dispTimeAfterId)      ""
+   set panneau(av4l,$visuNo,intervalle_1)         ""
+   set panneau(av4l,$visuNo,intervalle_2)         ""
+
+   #--- Construction de l'interface
+   ::av4l::BuildIF $visuNo
+
 }
 
 #------------------------------------------------------------
@@ -118,9 +150,49 @@ proc ::av4l::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_acquisition.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_extraction.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l test.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_xml.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_setup.tcl ]\""
 }
+
+
+
+
+
+#------------------------------------------------------------
+# ::av4l::chargerVariable
+#    Chargement des variables
+#------------------------------------------------------------
+proc ::av4l::chargerVariable { visuNo } {
+   variable parametres
+
+   #--- Ouverture du fichier de parametres
+   set fichier [ file join $::audace(rep_home) av4l.ini ]
+   if { [ file exists $fichier ] } {
+      source $fichier
+   }
+
+   #--- Creation des variables si elles n'existent pas
+   if { ! [ info exists parametres(av4l,$visuNo,pose) ] }           { set parametres(av4l,$visuNo,pose)        "5" }   ; #--- Temps de pose : 5s
+   if { ! [ info exists parametres(av4l,$visuNo,bin) ] }            { set parametres(av4l,$visuNo,bin)         "1x1" } ; #--- Binning : 2x2
+   if { ! [ info exists parametres(av4l,$visuNo,zoom) ] }           { set parametres(av4l,$visuNo,zoom)        "1" }  ; #--- Zoom : 1
+   if { ! [ info exists parametres(av4l,$visuNo,format) ] }         { set parametres(av4l,$visuNo,format)      "" }    ; #--- Format des APN
+   if { ! [ info exists parametres(av4l,$visuNo,obt) ] }            { set parametres(av4l,$visuNo,obt)         "2" }   ; #--- Obturateur : Synchro
+   if { ! [ info exists parametres(av4l,$visuNo,mode) ] }           { set parametres(av4l,$visuNo,mode)        "1" }   ; #--- Mode : Une image
+   if { ! [ info exists parametres(av4l,$visuNo,enregistrer) ] }    { set parametres(av4l,$visuNo,enregistrer) "1" }   ; #--- Sauvegarde des images : Oui
+   if { ! [ info exists parametres(av4l,$visuNo,avancement_acq) ] } {
+      if { $visuNo == "1" } {
+         set parametres(av4l,$visuNo,avancement_acq) "1" ; #--- Barre de progression de la pose : Oui
+      } else {
+         set parametres(av4l,$visuNo,avancement_acq) "0" ; #--- Barre de progression de la pose : Non
+      }
+   }
+
+   #--- Creation des variables de la boite de configuration si elles n'existent pas
+   ::av4l_setup::initToConf $visuNo
+
+}
+
+
+
 
 #------------------------------------------------------------
 # ::av4l::deletePluginInstance
@@ -131,46 +203,36 @@ proc ::av4l::deletePluginInstance { visuNo } {
 }
 
 #------------------------------------------------------------
-# ::av4l::createPanel
-#    prepare la creation de la fenetre de l'outil
-#------------------------------------------------------------
-proc ::av4l::createPanel { this } {
-   variable This
-   global caption 
-
-   #--- Initialisation du nom de la fenetre
-   set This $this
-   #--- Construction de l'interface
-   ::av4l::av4lBuildIF $This
-
-}
-
-#------------------------------------------------------------
 # ::av4l::startTool
 #    affiche la fenetre de l'outil
 #------------------------------------------------------------
-proc ::av4l::startTool { visuNo } {
+proc ::av4l::startTool { { visuNo 1 } } {
+   global panneau
+
    variable This
 
-   pack $This -side left -fill y
+   pack $panneau(av4l,$visuNo,This) -side left -fill y
+
 }
 
 #------------------------------------------------------------
 # ::av4l::stopTool
 #    masque la fenetre de l'outil
 #------------------------------------------------------------
-proc ::av4l::stopTool { visuNo } {
+proc ::av4l::stopTool { { visuNo 1 } } {
+
+   global panneau
    variable This
 
-   pack forget $This
+   pack forget $panneau(av4l,$visuNo,This)
 }
 
 #------------------------------------------------------------
 # ::av4l::vo_toolsBuildIF
 #    cree la fenetre de l'outil
 #------------------------------------------------------------
-proc ::av4l::av4lBuildIF { This } {
-   global audace caption
+proc ::av4l::BuildIF { visuNo } {
+   global audace caption conf panneau
 
    #--- Determination de la fenetre parente
    if { $visuNo == "1" } {
@@ -179,6 +241,7 @@ proc ::av4l::av4lBuildIF { This } {
       set base ".visu$visuNo"
    }
 
+   set This $panneau(av4l,$visuNo,This)
    #--- Frame
    frame $This -borderwidth 2 -relief groove
 
