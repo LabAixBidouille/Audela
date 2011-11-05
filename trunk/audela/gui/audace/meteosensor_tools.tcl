@@ -48,7 +48,7 @@
 
 proc meteosensor_open { type port name {parameters ""} } {
 	global audace
-	if {[info exists audace(cloudsensor,private,$name,channel)]==1} {
+	if {[info exists audace(meteosensor,private,$name,channel)]==1} {
 		catch { meteosensor_close }
 	}	
 	set typeu [string trim [string toupper $type]]	
@@ -60,13 +60,13 @@ proc meteosensor_open { type port name {parameters ""} } {
 	if {($typeu=="AAG")||($typeu=="ARDUINO1")} {
 		set f [open $port w+]
 		fconfigure $f  -mode 9600,n,8,1 -buffering none -blocking 0		
-		set audace(cloudsensor,private,$name,channel) $f
-		set audace(cloudsensor,private,$name,typeu) $typeu
+		set audace(meteosensor,private,$name,channel) $f
+		set audace(meteosensor,private,$name,typeu) $typeu
 	} elseif {$typeu=="WXT520"} {
 		set f [open $port w+]
 		fconfigure $f  -mode 19200,n,8,1 -buffering none -translation {binary binary} -blocking 0
-		set audace(cloudsensor,private,$name,channel) $f
-		set audace(cloudsensor,private,$name,typeu) $typeu
+		set audace(meteosensor,private,$name,channel) $f
+		set audace(meteosensor,private,$name,typeu) $typeu
 	} elseif {$typeu=="VANTAGEPRO"} {
 		if {$portu=="NPORT"} {			
 			set ip1 [lindex $parameters 0]
@@ -77,59 +77,59 @@ proc meteosensor_open { type port name {parameters ""} } {
 				error "Parameters must be a list of 4 elements: ip1 port1 ip2 port2"
 			}
 			set res [vantagepronport_open $ip1 $port1 $ip2 $port2]
-			set audace(cloudsensor,private,$name,channel) [lindex $res 0]
-			set audace(cloudsensor,private,$name,channelg) [lindex $res 1]
+			set audace(meteosensor,private,$name,channel) [lindex $res 0]
+			set audace(meteosensor,private,$name,channelg) [lindex $res 1]
 		} else {
 			ros_meteo open vantage
-			set audace(cloudsensor,private,$name,channel) undefined
+			set audace(meteosensor,private,$name,channel) undefined
 		}
-		set audace(cloudsensor,private,$name,typeu) $typeu
+		set audace(meteosensor,private,$name,typeu) $typeu
 	} elseif {$typeu=="BOLTWOOD"} {
 		set filename [lindex $parameters 0]
 		boltwood_open $filename
-		set audace(cloudsensor,private,$name,channel) undefined
-		set audace(cloudsensor,private,$name,typeu) $typeu
+		set audace(meteosensor,private,$name,channel) undefined
+		set audace(meteosensor,private,$name,typeu) $typeu
 	} elseif {$typeu=="LACROSSE"} {
 		fetch3600_open $port
-		set audace(cloudsensor,private,$name,channel) undefined
-		set audace(cloudsensor,private,$name,typeu) $typeu
+		set audace(meteosensor,private,$name,channel) undefined
+		set audace(meteosensor,private,$name,typeu) $typeu
 	} elseif {$typeu=="SIMULATION"} {
 		simulationmeteo_open
-		set audace(cloudsensor,private,$name,channel) undefined
-		set audace(cloudsensor,private,$name,typeu) $typeu
+		set audace(meteosensor,private,$name,channel) undefined
+		set audace(meteosensor,private,$name,typeu) $typeu
 	} else {
-		error "Type not supported. Valid types are: AAG, WXT520, ARDUINO1, VANTAGEPRO, BOLTWOOD, LACROSSE"
+		error "Type not supported. Valid types are: AAG, WXT520, ARDUINO1, VANTAGEPRO, BOLTWOOD, LACROSSE, SIMULATION"
 	}
 	return $name
 }
 
 proc meteosensor_channel { name } {
 	global audace
-	if {[info exists audace(cloudsensor,private,$name,channel)]==0} {
+	if {[info exists audace(meteosensor,private,$name,channel)]==0} {
 		error "Cloudsensor connection not opened. Use meteosensor_open before"
 	}
-	set ress $audace(cloudsensor,private,$name,channel)
-	if {[info exists audace(cloudsensor,private,$name,channelg)]==1} {
-		lappend ress $audace(cloudsensor,private,$name,channelg)
+	set ress $audace(meteosensor,private,$name,channel)
+	if {[info exists audace(meteosensor,private,$name,channelg)]==1} {
+		lappend ress $audace(meteosensor,private,$name,channelg)
 	}
 	return $ress
 }
 
 proc meteosensor_get { name } {
 	global audace
-	if {[info exists audace(cloudsensor,private,$name,channel)]==0} {
+	if {[info exists audace(meteosensor,private,$name,channel)]==0} {
 		error "Cloudsensor connection not opened. Use meteosensor_open before"
 	}
-	set typeu $audace(cloudsensor,private,$name,typeu)
+	set typeu $audace(meteosensor,private,$name,typeu)
 	if {$typeu=="AAG"} {
-		set res [aag_read $audace(cloudsensor,private,$name,channel)]
+		set res [aag_read $audace(meteosensor,private,$name,channel)]
 	} elseif {$typeu=="WXT520"} {
-		set res [wxt520_read $audace(cloudsensor,private,$name,channel)]
+		set res [wxt520_read $audace(meteosensor,private,$name,channel)]
 	} elseif {$typeu=="ARDUINO1"} {
-		set res [arduino1_rainsensor_read $audace(cloudsensor,private,$name,channel)]
+		set res [arduino1_rainsensor_read $audace(meteosensor,private,$name,channel)]
 	} elseif {$typeu=="VANTAGEPRO"} {
-		if {[info exists audace(cloudsensor,private,$name,channelg)]==1} {
-			set res [vantagepronport_read $audace(cloudsensor,private,$name,channel) $audace(cloudsensor,private,$name,channelg)]
+		if {[info exists audace(meteosensor,private,$name,channelg)]==1} {
+			set res [vantagepronport_read $audace(meteosensor,private,$name,channel) $audace(meteosensor,private,$name,channelg)]
 		} else {
 			set res [ros_meteo read vantage]
 		}
@@ -146,22 +146,22 @@ proc meteosensor_get { name } {
 proc meteosensor_getstandard { name } {
 	global audace
 	set ps [meteosensor_get $name]
-	set keystandards "SkyCover          SkyTemp        OutTemp                 WinDir WinSpeed Water"
-	set typeu $audace(cloudsensor,private,$name,typeu)
+	set keystandards "SkyCover          SkyTemp        OutTemp                 WinDir WinSpeed Humidity        Water"
+	set typeu $audace(meteosensor,private,$name,typeu)
 	if {$typeu=="AAG"} {
-		set keys      "SkyCover          SkyTemperature CloudSensorTemperature  -      -        PrecipitableWater"
+		set keys      "SkyCover          SkyTemperature CloudSensorTemperature  -      -        -               PrecipitableWater"
 	} elseif {$typeu=="WXT520"} {
-		set keys      "-                 -              OutsideTemp             WinDir WinSpeed PrecipitableWater"
+		set keys      "-                 -              OutsideTemp             WinDir WinSpeed OutsideHumidity PrecipitableWater"
 	} elseif {$typeu=="ARDUINO1"} {
-		set keys      "-                 -              -                       -      -        RainState"
+		set keys      "-                 -              -                       -      -        -               RainState"
 	} elseif {$typeu=="VANTAGEPRO"} {
-		set keys      "-                 -              OutsideTemp             WinDir WinSpeed PrecipitableWater"
+		set keys      "-                 -              OutsideTemp             WinDir WinSpeed OutsideHumidity PrecipitableWater"
 	} elseif {$typeu=="BOLTWOOD"} {
-		set keys      "CloudSkyCondition CloudSkyTemp   CloudOutsideTemp        -      -        CloudWetFlag"
+		set keys      "CloudSkyCondition CloudSkyTemp   CloudOutsideTemp        -      -        -               CloudWetFlag"
 	} elseif {$typeu=="LACROSSE"} {
-		set keys      "-                 -              OutsideTemp             WinDir WinSpeed PrecipitableWater"
+		set keys      "-                 -              OutsideTemp             WinDir WinSpeed OutsideHumidity PrecipitableWater"
 	} elseif {$typeu=="SIMULATION"} {
-		set keys      "SkyCover          SkyTemp        OutTemp                 WinDir WinSpeed Water"
+		set keys      "SkyCover          SkyTemp        OutTemp                 WinDir WinSpeed Humidity        Water"
 	}
 	set restot ""
 	set k1 0
@@ -191,32 +191,32 @@ proc meteosensor_getstandard { name } {
 
 proc meteosensor_close { name } {
 	global audace
-	if {[info exists audace(cloudsensor,private,$name,channel)]==0} {
+	if {[info exists audace(meteosensor,private,$name,channel)]==0} {
 		error "Cloudsensor connection not opened. Use meteosensor_open before"
 	}
-	set typeu $audace(cloudsensor,private,$name,typeu)
+	set typeu $audace(meteosensor,private,$name,typeu)
 	if {($typeu=="AAG")||($typeu=="WXT520")||($typeu=="ARDUINO1")} {
-		close $audace(cloudsensor,private,$name,channel)
-		unset audace(cloudsensor,private,$name,channel)
-		unset audace(cloudsensor,private,$name,typeu)
+		close $audace(meteosensor,private,$name,channel)
+		unset audace(meteosensor,private,$name,channel)
+		unset audace(meteosensor,private,$name,typeu)
 	}
 	if {($typeu=="VANTAGEPRO")} {
-		if {([info exists audace(cloudsensor,private,$name,channelg)]==1)} {
-			close $audace(cloudsensor,private,$name,channel)
-			unset audace(cloudsensor,private,$name,channel)
-			unset audace(cloudsensor,private,$name,typeu)
-			close $audace(cloudsensor,private,$name,channelg)
-			unset audace(cloudsensor,private,$name,channelg)
+		if {([info exists audace(meteosensor,private,$name,channelg)]==1)} {
+			close $audace(meteosensor,private,$name,channel)
+			unset audace(meteosensor,private,$name,channel)
+			unset audace(meteosensor,private,$name,typeu)
+			close $audace(meteosensor,private,$name,channelg)
+			unset audace(meteosensor,private,$name,channelg)
 		} else {
 			ros_meteo close vantage
-			close $audace(cloudsensor,private,$name,channel)
-			unset audace(cloudsensor,private,$name,channel)
-			unset audace(cloudsensor,private,$name,typeu)
+			close $audace(meteosensor,private,$name,channel)
+			unset audace(meteosensor,private,$name,channel)
+			unset audace(meteosensor,private,$name,typeu)
 		}
 	}
 	if {($typeu=="BOLTWOOD")||($typeu=="LACROSSE")||($typeu=="SIMULATION")} {
-		unset audace(cloudsensor,private,$name,channel)
-		unset audace(cloudsensor,private,$name,typeu)
+		unset audace(meteosensor,private,$name,channel)
+		unset audace(meteosensor,private,$name,typeu)
 	}
 }
 
@@ -1415,28 +1415,59 @@ proc fetch3600_read { } {
 # ===========================================================================
 # ===========================================================================
 proc simulationmeteo_open { } {
+	global audace
+	set keys [list SkyCover SkyTemp OutTemp WinDir WinSpeed Humidity Water]
+	set values [list Clear -20 10 0 2 60 Dry]
+	set ranges [list {Clear Cloudy VeryCloudy} {real number} {real number} {real number 0 to 360. 0=N, 90=E} {real positive number} {real number 0 to 100} {Dry Wet Rain}]	
+	set comments [list "Sky cover" "Sky temperature" "Outside temperature" "0=North 90=east" "Wind speed" "Humidity" "Dry or Wet or Rain"]
+	set units [list text Celcius Celcius deg m/s Percent text]
+	set superkeys [list keys values ranges comments units]
+	set n [llength $superkeys]
+	for {set k 0} {$k<$n} {incr k} {
+		set superkey [lindex $superkeys $k]
+		set toeval "set v \$${superkey}"
+		set audace(meteosensor,simulation,params,$superkey) [eval $toeval]
+	}
 	return ""
 }
 
+proc simulationmeteo_set { {key ""} {value ""} } {
+	global audace
+	set keys $audace(meteosensor,simulation,params,keys)
+	set comments $audace(meteosensor,simulation,params,comments)
+	set values $audace(meteosensor,simulation,params,values)
+	set ranges $audace(meteosensor,simulation,params,ranges)
+	set kk [lsearch -exact $keys $key]
+	if {$kk==-1} {
+		return $keys
+	}
+	if {$value==""} {
+		set value [lindex $values $kk]
+		return $value
+	}
+	if {$value=="?"} {
+		set range [lindex $ranges $kk]
+		return $range
+	}
+	set values [lreplace $values $kk $kk $value]
+	return $value
+}
+
 proc simulationmeteo_read { } {
-	set SkyCover Clear
-	set SkyTemp -20
-	set OutTemp 10
-	set WinDir 0
-	set WinSpeed 2
-	set Water Dry
+	global audace
+	set keys $audace(meteosensor,simulation,params,keys)
+	set values $audace(meteosensor,simulation,params,values)
+	set units $audace(meteosensor,simulation,params,units)
+	set comments $audace(meteosensor,simulation,params,comments)
 	set textes ""
-	set texte "SkyCover $SkyCover text \"Sky cover\""
-	lappend textes $texte		
-	set texte "SkyTemp $SkyTemp Celcius \"Sky temperature\""
-	lappend textes $texte		
-	set texte "OutTemp $OutTemp Celcius \"Outside temperature\""
-	lappend textes $texte		
-	set texte "WinDir $WinDir deg \"0=North 90=east\""
-	lappend textes $texte		
-	set texte "WinSpeed $WinSpeed m/s \"Wind speed\""
-	lappend textes $texte		
-	set texte "Water $Water text \"Dry or Wet or Rain\""
-	lappend textes $texte		
+	set n [llength $keys]
+	for {set k 0} {$k<$n} {incr k} {
+		set key [lindex $keys $k]
+		set value [lindex $values $k]
+		set unit [lindex $units $k]
+		set comment [lindex $comments $k]
+		set texte "$key \"$value\" \"$unit\" \"$comment\""
+		lappend textes $texte		
+	}
 	return $textes
 }
