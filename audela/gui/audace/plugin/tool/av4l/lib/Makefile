@@ -5,7 +5,8 @@ all:
 clean:
 	rm -f libavi.so avi.o
 
-INCLUDES=-I /opt/ffmpeg-0.8.5/libavformat -I /opt/ffmpeg-0.8.5/libavutil -I /opt/ffmpeg-0.8.5/libavcodec -I /opt/ffmpeg-0.8.5/libswscale
+INCLUDES=-I /opt/ffmpeg-0.8.5/libavformat -I /opt/ffmpeg-0.8.5/libavutil -I /opt/ffmpeg-0.8.5/libavcodec \
+         -I /opt/ffmpeg-0.8.5/libswscale/ -I /opt/ffmpeg-0.8.5
 all: libavi.so
 
 avi.o: avi.c
@@ -18,8 +19,7 @@ libavi.so: avi.o
 	-I /opt/ffmpeg-0.8.5/libavutil -L /opt/ffmpeg-0.8.5/libavutil \
 	-I /opt/ffmpeg-0.8.5/libavcodec -L /opt/ffmpeg-0.8.5/libavcodec \
 	-I /opt/ffmpeg-0.8.5/libswscale -L /opt/ffmpeg-0.8.5/libswscale \
-	-I /opt/ffmpeg-0.8.5/libavdevice -L /opt/ffmpeg-0.8.5/libavdevice \
 	$< \
-	-lavdevice -lavformat -lavcodec -lavutil -lswscale \
+	-lavformat -lavcodec -lavutil -lswscale \
 	-ltclstub8.5 -lm \
 	-o $@

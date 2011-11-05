@@ -4,5 +4,5 @@
 # Mise à jour $Id: pkgIndex.tcl 6795 2011-02-26 16:05:27Z michelpujol $
 #
 
-package ifneeded acqvideolinux 1.0 [ list source [ file join $dir acqvideolinux_go.tcl ] ]
+package ifneeded av4l 1.0 [ list source [ file join $dir av4l_go.tcl ] ]
 

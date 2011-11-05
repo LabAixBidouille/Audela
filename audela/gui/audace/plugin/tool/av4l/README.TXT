@@ -18,7 +18,8 @@ Dans /opt/ffmpeg-0.8.5 :
  --disable-muxers \
  --disable-demuxers --enable-demuxer=avi \
  --disable-bsfs \
- --disable-parsers
+ --disable-parsers \
+ --disable-yasm
 
 make
 
