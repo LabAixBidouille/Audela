@@ -161,7 +161,7 @@ proc ::tkutil::box_load_html { { parent } { initialdir } { numero_buffer } { typ
 proc ::tkutil::box_load_avi { { parent } { initialdir } { numero_buffer } { type } } {
    #--- Ouvre la fenetre de choix des fichiers
    if { $type == "1" } {
-      set title "$::caption(tkutil,editer_site_web)"
+      set title "$::caption(tkutil,editer_avi)"
       set filetypes [ list [ list "$::caption(tkutil,fichier_avi)" ".avi" ] ]
    }
    set filename [ file join file:///[ tk_getOpenFile -title $title \
