@@ -155,6 +155,29 @@ proc ::tkutil::box_load_html { { parent } { initialdir } { numero_buffer } { typ
 }
 
 #
+# box_load_avi parent initialdir numero_buffer type
+#    Ouvre la fenetre de selection des fichiers avi a proposer au chargement
+#
+proc ::tkutil::box_load_avi { { parent } { initialdir } { numero_buffer } { type } } {
+   #--- Ouvre la fenetre de choix des fichiers
+   if { $type == "1" } {
+      set title "$::caption(tkutil,editer_site_web)"
+      set filetypes [ list [ list "$::caption(tkutil,fichier_avi)" ".avi" ] ]
+   }
+   set filename [ file join file:///[ tk_getOpenFile -title $title \
+      -filetypes $filetypes -initialdir $initialdir -parent $parent ] ]
+   #---
+   catch {
+      #--- Je detruis la boite de dialogue cree par tk_getOpenFile
+      #--- car sous Linux la fenetre n'est pas detruite a la fin de
+      #--- l'utilisation (bug de linux ?)
+      destroy $parent.__tk_filedialog
+   }
+   #---
+   return $filename
+}
+
+#
 # getSavefiletype
 #    Gere les differentes extensions des fichiers images, ainsi que le cas ou l'extension
 #    des fichiers FITS est differente de .fit, de .fts et de .fits
