@@ -31,7 +31,6 @@ namespace eval ::av4l_setup {
       if { ! [ info exists ::av4l::parametres(av4l,$visuNo,alarme_fin_serie) ] }                   { set ::av4l::parametres(av4l,$visuNo,alarme_fin_serie)                   "1" }
       if { ! [ info exists ::av4l::parametres(av4l,$visuNo,verifier_ecraser_fichier) ] }           { set ::av4l::parametres(av4l,$visuNo,verifier_ecraser_fichier)           "1" }
       if { ! [ info exists ::av4l::parametres(av4l,$visuNo,verifier_index_depart) ] }              { set ::av4l::parametres(av4l,$visuNo,verifier_index_depart)              "1" }
-      if { ! [ info exists ::av4l::parametres(av4l,$visuNo,enregistrer_acquisiton_interrompue) ] } { set ::av4l::parametres(av4l,$visuNo,enregistrer_acquisiton_interrompue) "1" }
    }
 
    #
@@ -48,7 +47,6 @@ namespace eval ::av4l_setup {
       set panneau(av4l,$visuNo,alarme_fin_serie)                   $::av4l::parametres(av4l,$visuNo,alarme_fin_serie)
       set panneau(av4l,$visuNo,verifier_ecraser_fichier)           $::av4l::parametres(av4l,$visuNo,verifier_ecraser_fichier)
       set panneau(av4l,$visuNo,verifier_index_depart)              $::av4l::parametres(av4l,$visuNo,verifier_index_depart)
-      set panneau(av4l,$visuNo,enregistrer_acquisiton_interrompue) $::av4l::parametres(av4l,$visuNo,enregistrer_acquisiton_interrompue)
    }
 
    #
@@ -65,7 +63,6 @@ namespace eval ::av4l_setup {
       set ::av4l::parametres(av4l,$visuNo,alarme_fin_serie)                   $panneau(av4l,$visuNo,alarme_fin_serie)
       set ::av4l::parametres(av4l,$visuNo,verifier_ecraser_fichier)           $panneau(av4l,$visuNo,verifier_ecraser_fichier)
       set ::av4l::parametres(av4l,$visuNo,verifier_index_depart)              $panneau(av4l,$visuNo,verifier_index_depart)
-      set ::av4l::parametres(av4l,$visuNo,enregistrer_acquisiton_interrompue) $panneau(av4l,$visuNo,enregistrer_acquisiton_interrompue)
    }
 
    #
@@ -220,17 +217,6 @@ namespace eval ::av4l_setup {
 
          pack $panneau(av4l,$visuNo,av4l_setup).frame3.frame8 -side top -fill both -expand 1
 
-         #--- Frame pour le commentaire 6 : enregistrer_acquisiton_interrompue
-         frame $panneau(av4l,$visuNo,av4l_setup).frame3.frame9 -borderwidth 0
-
-            #--- Cree le checkbutton pour le commentaire 6
-            frame $panneau(av4l,$visuNo,av4l_setup).frame3.frame9.frame12 -borderwidth 0
-               checkbutton $panneau(av4l,$visuNo,av4l_setup).frame3.frame9.frame12.check3 -highlightthickness 0 \
-                  -text "$caption(av4l_setup,texte6)" -variable panneau(av4l,$visuNo,enregistrer_acquisiton_interrompue)
-               pack $panneau(av4l,$visuNo,av4l_setup).frame3.frame9.frame12.check3 -side right -padx 5 -pady 0
-            pack $panneau(av4l,$visuNo,av4l_setup).frame3.frame9.frame12 -side left
-
-         pack $panneau(av4l,$visuNo,av4l_setup).frame3.frame9 -side top -fill both -expand 1
 
       pack $panneau(av4l,$visuNo,av4l_setup).frame3 -side top -fill both -expand 1
    }
@@ -239,4 +225,3 @@ namespace eval ::av4l_setup {
 
 #--- Initialisation au demarrage
 ::av4l_setup::init
-
