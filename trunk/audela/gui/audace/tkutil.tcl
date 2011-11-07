@@ -164,8 +164,7 @@ proc ::tkutil::box_load_avi { { parent } { initialdir } { numero_buffer } { type
       set title "$::caption(tkutil,editer_avi)"
       set filetypes [ list [ list "$::caption(tkutil,fichier_avi)" ".avi" ] ]
    }
-   set filename [ file join file:///[ tk_getOpenFile -title $title \
-      -filetypes $filetypes -initialdir $initialdir -parent $parent ] ]
+   set filename [ tk_getOpenFile -title $title -filetypes $filetypes -initialdir $initialdir -parent $parent ] 
    #---
    catch {
       #--- Je detruis la boite de dialogue cree par tk_getOpenFile
