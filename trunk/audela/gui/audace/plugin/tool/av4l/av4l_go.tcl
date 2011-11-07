@@ -151,6 +151,7 @@ proc ::av4l::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_extraction.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l test.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_setup.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_tools.tcl ]\""
 }
 
 
@@ -282,7 +283,7 @@ proc ::av4l::BuildIF { visuNo } {
 
          #--- Bouton d'ouverture de l'outil de statut
          button $This.maintenance.but1 -borderwidth 2 -text $caption(av4l_go,extraction) \
-            -command "::av4l_extraction::run $audace(base).av4l_extraction"
+            -command "::av4l_extraction::run  $visuNo $base.av4l_extraction"
          pack $This.maintenance.but1 -in $This.maintenance -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
 
       pack $This.maintenance -side top -fill x
