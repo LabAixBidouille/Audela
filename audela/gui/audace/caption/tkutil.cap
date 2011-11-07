@@ -42,6 +42,7 @@ set caption(tkutil,fichier_tous)            "All Files"
 set caption(tkutil,fichier_pdf)             "User Guides"
 set caption(tkutil,fichier_html)            "HTML Files"
 set caption(tkutil,fichier_jar)             "JAR Files"
+set caption(tkutil,fichier_avi)             "AVI Files"
 
 set caption(tkutil,liste_serie)             "Index List:"
 set caption(tkutil,nom_generique)           "Generic Name:"
@@ -121,6 +122,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,fichier_pdf)          "Notices"
    set caption(tkutil,fichier_html)         "Fichiers HTML"
    set caption(tkutil,fichier_jar)          "Fichiers JAR"
+   set caption(tkutil,fichier_avi)          "Fichiers AVI"
 
    set caption(tkutil,liste_serie)          "Liste des index :"
    set caption(tkutil,nom_generique)        "Nom générique :"
@@ -200,6 +202,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,fichier_pdf)          "Guida utente"
    set caption(tkutil,fichier_html)         "File HTML"
    set caption(tkutil,fichier_jar)          "File JAR"
+   set caption(tkutil,fichier_avi)          "File AVI"
 
    set caption(tkutil,liste_serie)          "Elenco indici:"
    set caption(tkutil,nom_generique)        "Nomi generici:"
@@ -279,6 +282,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,fichier_pdf)          "Guías de usuario"
    set caption(tkutil,fichier_html)         "Ficheros HTML"
    set caption(tkutil,fichier_jar)          "Ficheros JAR"
+   set caption(tkutil,fichier_avi)          "Ficheros AVI"
 
    set caption(tkutil,liste_serie)          "Lista de índices:"
    set caption(tkutil,nom_generique)        "Nombre genérico:"
@@ -358,6 +362,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,fichier_pdf)          "Hinweisen"
    set caption(tkutil,fichier_html)         "HTML Datei"
    set caption(tkutil,fichier_jar)          "JAR Datei"
+   set caption(tkutil,fichier_avi)          "AVI Datei"
 
    set caption(tkutil,liste_serie)          "Index Liste:"
    set caption(tkutil,nom_generique)        "Generischen Namen:"
@@ -437,6 +442,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,fichier_pdf)          "Guias de utilizador"
    set caption(tkutil,fichier_html)         "Ficheiros HTML"
    set caption(tkutil,fichier_jar)          "Ficheiros JAR"
+   set caption(tkutil,fichier_avi)          "Ficheiros AVI"
 
    set caption(tkutil,liste_serie)          "Lista de índices:"
    set caption(tkutil,nom_generique)        "Nome genérico:"
@@ -516,6 +522,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,fichier_pdf)          "Brugsanvisning"
    set caption(tkutil,fichier_html)         "HTML Filer"
    set caption(tkutil,fichier_jar)          "JAR Filer"
+   set caption(tkutil,fichier_avi)          "AVI Filer"
 
    set caption(tkutil,liste_serie)          "Index-liste:"
    set caption(tkutil,nom_generique)        "Fællesnavn:"
@@ -595,6 +602,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,fichier_pdf)          "User Guides"
    set caption(tkutil,fichier_html)         "HTML Files"
    set caption(tkutil,fichier_jar)          "JAR Files"
+   set caption(tkutil,fichier_avi)          "AVI Files"
 
    set caption(tkutil,liste_serie)          "Index List:"
    set caption(tkutil,nom_generique)        "Generic Name:"
@@ -674,6 +682,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,fichier_pdf)          "User Guides"
    set caption(tkutil,fichier_html)         "HTML Files"
    set caption(tkutil,fichier_jar)          "JAR Files"
+   set caption(tkutil,fichier_avi)          "AVI Files"
 
    set caption(tkutil,liste_serie)          "Index List:"
    set caption(tkutil,nom_generique)        "Generic Name:"
