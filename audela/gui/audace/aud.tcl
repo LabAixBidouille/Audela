@@ -47,6 +47,10 @@ source google_earth.tcl
 source photompsf.tcl
 source prtr.tcl
 source photcal.tcl
+source etc_tools.tcl
+source meteosensor_tools.tcl
+source photrel.tcl
+source fly.tcl
 
 namespace eval ::audace {
 
