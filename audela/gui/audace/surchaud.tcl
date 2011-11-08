@@ -1508,7 +1508,7 @@ proc calibwcs2 {args} {
          ::console::affiche_resultat "Image ${out}${k} WCS calibrated with $catastar matched stars.\n"
       }
    } else {
-      error "Usage: calibwcs2 Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder number ?first_index?"
+      error "Usage: calibwcs2 in out number Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder ?first_index?"
    }
 }
 
