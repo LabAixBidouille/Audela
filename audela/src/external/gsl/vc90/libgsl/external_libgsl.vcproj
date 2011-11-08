@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="external_libgsl"
 	ProjectGUID="{91EC13AF-6E6D-4138-9545-86E10A740CD5}"
 	RootNamespace="libgsl"
@@ -68,6 +68,7 @@
 				Name="VCLinkerTool"
 				OutputFile="$(OutDir)\libgsl.dll"
 				GenerateManifest="false"
+				GenerateDebugInformation="true"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 				ImportLibrary="$(TargetDir)libgsl.lib"

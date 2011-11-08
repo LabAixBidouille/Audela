@@ -284,7 +284,9 @@ int Cmd_ydtcl_refzmgmes2vars(ClientData clientData, Tcl_Interp *interp, int argc
    double ampli;
    int minobs;
    /*fin*/
-
+	char observatory_symbol[50],ListKeyValues[1024];
+	int nl,kl,nvar=0;
+	Tcl_DString dsptr;
 /*
 #define DEBUG_refzmgmes2vars
 */
@@ -292,20 +294,27 @@ int Cmd_ydtcl_refzmgmes2vars(ClientData clientData, Tcl_Interp *interp, int argc
 FILE *f;
 #endif
    if(argc<3) {
-      sprintf(s,"Usage: %s path generic_filename", argv[0]);
+      sprintf(s,"Usage: %s path generic_filename ?minobs? ?observatory_symbol? ?ListKeyValues?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       return TCL_ERROR;
    } else {
        /* --- decodage des arguments ---*/
       strcpy(path,argv[1]);
       strcpy(generic_filename,argv[2]);
+		minobs=30;
+		if (argc>=4) {
+			 minobs=atoi(argv[3]);
+		}
+		strcpy(observatory_symbol,"TN");
+		if (argc>=5) {
+			strcpy(observatory_symbol,argv[4]);
+		}
+		strcpy(ListKeyValues,"{TAROT CALERN}");
+		if (argc>=6) {
+			strcpy(ListKeyValues,argv[5]);
+		}
 	  /*myfiltre=atof(argv[3]);
 	  myfiltre2=(unsigned char)myfiltre;*/
-	  if (argc==3) {
-		  minobs=30;
-	  } else {
-          minobs=atoi(argv[3]);
-	  }
       /* --- init des tableaux ---*/
       for (kcam=0;kcam<256;kcam++) {
          for (kfil=0;kfil<256;kfil++) {
@@ -761,7 +770,8 @@ fclose(f);
                     ra=(double)htmrefs[ind_ref[kref]].ra;
                     dec=(double)htmrefs[ind_ref[kref]].dec;
                     /* --- ouvre le fichier de sortie ---*/
-                    sprintf(filename_out,"%sTN-%s-%d-%d-%d.txt",path,generic_filename,kref,kfil,kcam);
+						  nvar++;
+                    sprintf(filename_out,"%s%s-%s-%d-%d-%d.txt",path,observatory_symbol,generic_filename,kref,kfil,kcam);
                     f_out=fopen(filename_out,"wt");
 				    if (f_out==NULL) {
 						free(htmzmgs);
@@ -774,14 +784,32 @@ fclose(f);
                         free(ind_ref);
 					}
                     /*             123456789 12345678 */
-                    fprintf(f_out,"NAME      = TN-%s-%d \n",generic_filename,kref);
+                    fprintf(f_out,"NAME      = %s-%s-%d \n",observatory_symbol,generic_filename,kref);
                     fprintf(f_out,"RA        = %10.6f \n",ra);
                     fprintf(f_out,"DEC       = %10.6f \n",dec);
                     fprintf(f_out,"EQUINOX   = J2000.0 \n");
                     /*fprintf(f_out,"FILTERNO= %u \n",ukfil);*/
                     fprintf(f_out,"FILTER    = %c \n",ukfil);
                     fprintf(f_out,"CAMERANO  = %u \n",ukcam);
-                    fprintf(f_out,"TAROT     = CALERN \n");
+                    //fprintf(f_out,"TAROT     = CALERN \n");
+							sprintf(s,"llength {%s}",ListKeyValues);
+						   Tcl_Eval(interp,s);
+							nl=atoi(interp->result);
+							for (kl=0;kl<nl;kl++) {
+								sprintf(s,"lindex [lindex {%s} %d] 0",ListKeyValues,kl);
+								Tcl_Eval(interp,s);
+								strcpy(s,interp->result);
+								if (strcmp(s,"")==0) {
+									continue;
+								}
+								strcat(s,"           ");
+								s[9]='\0';
+								fprintf(f_out,"%s = ",s);
+								sprintf(s,"lindex [lindex {%s} %d] 1",ListKeyValues,kl);
+								Tcl_Eval(interp,s);
+								strcpy(s,interp->result);
+								fprintf(f_out,"%s\n",s);
+							}
                     /*fprintf(f_out,"CRITVAR1= %d \n",critvar[1]);*/
                     fprintf(f_out,"MEAN      = %f \n",mean);
                     fprintf(f_out,"SIGMA     = %f \n",sigma);
@@ -844,6 +872,11 @@ fprintf(f," FIN DES FREE\n");
 fclose(f);
 #endif
    }
+Tcl_DStringInit(&dsptr);
+sprintf(s,"%d",nvar);
+Tcl_DStringAppend(&dsptr,s,-1);
+Tcl_DStringResult(interp,&dsptr);
+Tcl_DStringFree(&dsptr);
    return TCL_OK;
 }
 
@@ -2554,9 +2587,11 @@ int Cmd_ydtcl_refzmgmes2vars_stetson(ClientData clientData, Tcl_Interp *interp, 
 	double ra,dec,somme_delta,somme_carr_delta,jd_deb,P_delta,abs_P,sign_P,eps,somme_poids,poids_unique,w,J,K,L;
 	int minobs,nmes_ts_filtre,rien,config;
 	double delta_temps,coef1,coef2,coef3,moyenne_totale,Lseuil,mag_bright,L_bright,barerreur; 
+	char observatory_symbol[50],ListKeyValues[1024];
+	int nl,kl,nvar=0;
+	Tcl_DString dsptr;
 /*int kvar;
 double Lvar=0.,Meanvar=0.,Lseuilvar=0.;
-Tcl_DString dsptr;
 ff=fopen("resultat.txt","wt");*/
 /*
 #define DEBUG_refzmgmes2vars
@@ -2565,7 +2600,7 @@ ff=fopen("resultat.txt","wt");*/
 FILE *f;
 #endif
 	if(argc<4) {
-		sprintf(s,"Usage: %s path generic_filename config", argv[0]);
+		sprintf(s,"Usage: %s path generic_filename config ?observatory_symbol? ?ListKeyValues?", argv[0]);
 		Tcl_SetResult(interp,s,TCL_VOLATILE);
 		return TCL_ERROR;
 	} else {
@@ -2578,6 +2613,19 @@ FILE *f;
 			Tcl_SetResult(interp,s,TCL_VOLATILE);
 			return TCL_ERROR;
 		} 
+		strcpy(observatory_symbol,"TN");
+		if (argc>=5) {
+			strcpy(observatory_symbol,argv[4]);
+		}
+		strcpy(ListKeyValues,"{TAROT CALERN}");
+		if (argc>=6) {
+			strcpy(ListKeyValues,argv[5]);
+		}
+/*
+ff=fopen("c:/d/a/resultat.txt","wt");
+fprintf(ff,"%s | %s | %s | %s\n",path,generic_filename,observatory_symbol,ListKeyValues);
+fclose(ff);		
+*/
 /*kvar=atoi(argv[4]);*/
 		eps=0.0001;
 		poids_unique=0.5; /*le poids des mesures non appariees*/
@@ -3063,8 +3111,9 @@ fclose(f);
 							k++;
 						}
 						if (k>minobs) {
+							nvar++;
 							mean=moy_filtre[kfil];
-							sprintf(filename_out,"%sTN-%s-%d-%d-%d.txt",path,generic_filename,kref,kfil,kcam);
+							sprintf(filename_out,"%s%s-%s-%d-%d-%d.txt",path,observatory_symbol,generic_filename,kref,kfil,kcam);
 							f_out=fopen(filename_out,"wt");
 							if (f_out==NULL) {
 								free(codes2);
@@ -3078,13 +3127,32 @@ fclose(f);
 								free(deltas);
 							}
 							/*             123456789 12345678 */
-							fprintf(f_out,"NAME      = TN-%s-%d \n",generic_filename,kref);
+							fprintf(f_out,"NAME      = %s-%s-%d \n",observatory_symbol,generic_filename,kref);
 							fprintf(f_out,"RA        = %10.6f \n",ra);
 							fprintf(f_out,"DEC       = %10.6f \n",dec);
 							fprintf(f_out,"EQUINOX   = J2000.0 \n");
 							fprintf(f_out,"FILTER    = %c \n",ukfil);
 							fprintf(f_out,"CAMERANO  = %u \n",ukcam);
-							fprintf(f_out,"TAROT     = CALERN \n");
+							//
+							sprintf(s,"llength {%s}",ListKeyValues);
+						   Tcl_Eval(interp,s);
+							nl=atoi(interp->result);
+							for (kl=0;kl<nl;kl++) {
+								sprintf(s,"lindex [lindex {%s} %d] 0",ListKeyValues,kl);
+								Tcl_Eval(interp,s);
+								strcpy(s,interp->result);
+								if (strcmp(s,"")==0) {
+									continue;
+								}
+								strcat(s,"           ");
+								s[9]='\0';
+								fprintf(f_out,"%s = ",s);
+								sprintf(s,"lindex [lindex {%s} %d] 1",ListKeyValues,kl);
+								Tcl_Eval(interp,s);
+								strcpy(s,interp->result);
+								fprintf(f_out,"%s\n",s);
+							}
+							//
 							fprintf(f_out,"MEAN      = %f \n",mean);
 							fprintf(f_out,"CRITVAR   = %f \n",L);
 							fprintf(f_out,"END\n");
@@ -3134,5 +3202,10 @@ Tcl_DStringAppend(&dsptr,s,-1);
 Tcl_DStringResult(interp,&dsptr);
 Tcl_DStringFree(&dsptr);*/
 	}
+Tcl_DStringInit(&dsptr);
+sprintf(s,"%d",nvar);
+Tcl_DStringAppend(&dsptr,s,-1);
+Tcl_DStringResult(interp,&dsptr);
+Tcl_DStringFree(&dsptr);
 	return TCL_OK;
 }
