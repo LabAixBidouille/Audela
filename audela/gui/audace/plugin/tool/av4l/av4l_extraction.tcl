@@ -18,6 +18,8 @@ namespace eval ::av4l_extraction {
    proc init { } {
       global audace
 
+      wm focusmodel . passive
+      wm withdraw .
       #--- Chargement des captions
       source [ file join $audace(rep_plugin) tool av4l av4l_extraction.cap ]
    }
@@ -72,18 +74,12 @@ namespace eval ::av4l_extraction {
    proc run { visuNo this } {
      global audace panneau
 
-      #--- Determination de la fenetre parente
-      if { $visuNo == "1" } {
-         set base "$audace(base)"
-      } else {
-         set base ".visu$visuNo"
-      }
 
       set panneau(av4l,$visuNo,av4l_extraction) $this
-      ::confGenerique::run $visuNo "$panneau(av4l,$visuNo,av4l_extraction)" "::av4l_extraction" -modal 0
-      set posx_config [ lindex [ split [ wm geometry $base ] "+" ] 1 ]
-      set posy_config [ lindex [ split [ wm geometry $base ] "+" ] 2 ]
-      wm geometry $panneau(av4l,$visuNo,av4l_extraction) +[ expr $posx_config + 165 ]+[ expr $posy_config + 55 ]
+      #::confGenerique::run $visuNo "$panneau(av4l,$visuNo,av4l_extraction)" "::av4l_extraction" -modal 1
+
+      createdialog $this $visuNo   
+
    }
 
    #
@@ -92,6 +88,7 @@ namespace eval ::av4l_extraction {
    #
    proc apply { visuNo } {
       ::av4l_extraction::widgetToConf $visuNo
+      ::av4l_tools::avi_extract
    }
 
    #
@@ -108,10 +105,11 @@ namespace eval ::av4l_extraction {
    # av4l_extraction::closeWindow
    # Fonction appellee lors de l'appui sur le bouton 'Fermer'
    #
-   proc closeWindow { visuNo } {
+   proc closeWindow { this visuNo } {
 
+      ::av4l_extraction::widgetToConf $visuNo
       ::av4l_tools::avi_close
-
+      destroy $this
    }
 
    #
@@ -131,22 +129,47 @@ namespace eval ::av4l_extraction {
    # av4l_extraction::fillConfigPage
    # Creation de l'interface graphique
    #
-   proc fillConfigPage { frm visuNo } {
+   proc createdialog { this visuNo } {
+
+      package require Img
+
       global caption panneau av4lconf color audace
+
+      #--- Determination de la fenetre parente
+      if { $visuNo == "1" } {
+         set base "$audace(base)"
+      } else {
+         set base ".visu$visuNo"
+      }
+
+      #--- Creation de la fenetre
+      if { [winfo exists $this] } {
+         wm withdraw $this
+         wm deiconify $this
+         focus $this
+         return
+      }
+      toplevel $this -class Toplevel
+
+      set posx_config [ lindex [ split [ wm geometry $base ] "+" ] 1 ]
+      set posy_config [ lindex [ split [ wm geometry $base ] "+" ] 2 ]
+      wm geometry $this +[ expr $posx_config + 165 ]+[ expr $posy_config + 55 ]
+      wm resizable $this 1 1
+      wm title $this $caption(av4l_extraction,titre)
+      wm protocol $this WM_DELETE_WINDOW "::av4l_extraction::closeWindow $this $visuNo"
+
 
       #--- Charge la configuration de la vitesse de communication dans une variable locale
       ::av4l_extraction::confToWidget $visuNo
 
       #--- Retourne l'item de la camera associee a la visu
-      set camItem [ ::confVisu::getCamItem $visuNo ]
-      set base $panneau(av4l,$visuNo,av4l_extraction)
-      set frm $panneau(av4l,$visuNo,av4l_extraction).frmextraction
-      set frmbbar $panneau(av4l,$visuNo,av4l_extraction).frmextractionbar
+      set frm $this.frmextraction
+      set frmbbar $this.frmextractionbar
 
 
       #--- Cree un frame pour afficher le status de la base
       frame $frm -borderwidth 0 -cursor arrow -relief groove
-      pack $frm -in $base -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+      pack $frm -in $this -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
         #--- Cree un label pour le titre
         label $frm.titre -font $av4lconf(font,arial_14_b) \
@@ -229,63 +252,78 @@ namespace eval ::av4l_extraction {
            -side left -anchor w \
            -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-        #--- Creation du bouton setmin
-        button $frm.setmin \
-           -text "setmin" -borderwidth 2 \
-           -command { ::av4l_tools::avi_setmin  }
-        pack $frm.setmin \
-           -in $frm.btnav \
-           -side left -anchor w \
-           -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-        #--- Creation du bouton setmax
-        button $frm.setmax \
-           -text "setmax" -borderwidth 2 \
-           -command { ::av4l_tools::avi_setmax  }
-        pack $frm.setmax \
-           -in $frm.btnav \
-           -side left -anchor w \
-           -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
 
-        #--- Cree un frame pour 
-        frame $frm.pos \
-              -borderwidth 1 -relief raised -cursor arrow
-        pack $frm.pos \
-             -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
+          #--- Affichage positions
+          frame $frm.pos \
+                -borderwidth 1 -relief raised -cursor arrow
+          pack $frm.pos \
+               -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
 
-          #--- Cree un frame pour afficher
-          frame $frm.pos.min -borderwidth 0
-          pack $frm.pos.min -in $frm.pos -side left
-            #--- Cree un label pour
-            entry $frm.datemin -fg $color(blue) -relief sunken
-            pack $frm.datemin -in $frm.pos.min -side top -pady 1 -anchor w
-            #--- Cree un label pour
-            entry $frm.posmin -fg $color(blue) -relief sunken
-            pack $frm.posmin -in $frm.pos.min -side top -pady 1 -anchor w
+
+             #--- Creation du bouton setmin
+             button $frm.pos.setmin \
+                -text "setmin" -borderwidth 2 \
+                -command "::av4l_tools::avi_setmin"
+             pack $frm.pos.setmin \
+                -in $frm.pos \
+                -side left -anchor w \
+                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+             #--- Creation du bouton setmax
+             button $frm.pos.setmax \
+                -text "setmax" -borderwidth 2 \
+                -command "::av4l_tools::avi_setmax"
+             pack $frm.pos.setmax \
+                -in $frm.pos \
+                -side left -anchor w \
+                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+             #--- Cree un frame pour afficher
+             frame $frm.pos.min -borderwidth 0
+             pack $frm.pos.min -in $frm.pos -side left
+
+                #--- Cree un label pour
+                entry $frm.datemin -fg $color(blue) -relief sunken
+                pack $frm.datemin -in $frm.pos.min -side top -pady 1 -anchor w
+                #--- Cree un label pour
+                entry $frm.posmin -fg $color(blue) -relief sunken
+                pack $frm.posmin -in $frm.pos.min -side top -pady 1 -anchor w
 
 
           #--- Cree un frame pour afficher
           frame $frm.pos.max -borderwidth 0
           pack $frm.pos.max -in $frm.pos -side left
-            #--- Cree un label pour
-            entry $frm.datemax -fg $color(blue) -relief sunken
-            pack $frm.datemax -in $frm.pos.max -side top -pady 1 -anchor w
-            #--- Cree un label pour
-            entry $frm.posmax -fg $color(blue) -relief sunken
-            pack $frm.posmax -in $frm.pos.max -side top -pady 1 -anchor w
+
+             #--- Cree un label pour
+             entry $frm.datemax -fg $color(blue) -relief sunken
+             pack $frm.datemax -in $frm.pos.max -side top -pady 1 -anchor w
+             #--- Cree un label pour
+             entry $frm.posmax -fg $color(blue) -relief sunken
+             pack $frm.posmax -in $frm.pos.max -side top -pady 1 -anchor w
+
+
+
+
 
           #--- Cree un frame pour afficher
           frame $frm.count -borderwidth 0
           pack $frm.count -in $frm -side top
-            #--- Cree un label pour
-            button $frm.doimagecount \
-             -text "count" -borderwidth 2 \
-             -command { ::av4l_tools::avi_imagecount  }
-            pack $frm.doimagecount -in $frm.count -side left -pady 1 -anchor w
-            #--- Cree un label pour
-            entry $frm.imagecount -fg $color(blue) -relief sunken
-            pack $frm.imagecount -in $frm.count -side left -pady 1 -anchor w
+
+             #--- Cree un label
+             label $frm.labnbimg -font $av4lconf(font,courier_10) -padx 3 \
+                   -text "Nombre d'images a extraire : "
+             pack $frm.labnbimg -in $frm.count -side left -pady 1 -anchor w
+             #--- Cree un entry
+             entry $frm.imagecount -fg $color(blue) -relief sunken
+             pack $frm.imagecount -in $frm.count -side left -pady 1 -anchor w
+             #--- Cree un button
+             button $frm.doimagecount \
+              -text "calcul" -borderwidth 2 \
+              -command "::av4l_tools::avi_imagecount"
+             pack $frm.doimagecount -in $frm.count -side left -pady 1 -anchor w
+
+
 
         #--- Cree un frame pour 
         frame $frm.status \
@@ -326,41 +364,37 @@ namespace eval ::av4l_extraction {
 
 
    #---
-        button $frm.extract \
-           -text "extract" -borderwidth 2 \
-           -command { ::av4l_tools::avi_extract }
-        pack $frm.extract \
-           -side left -anchor e \
-           -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-        #--- Cree un frame pour le status des repertoires
-        frame $frm.rep \
+        #--- Cree un frame pour 
+        frame $frm.action \
               -borderwidth 1 -relief raised -cursor arrow
-        pack $frm.rep \
+        pack $frm.action \
              -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
 
+           button $frm.action.extract \
+              -text "extract" -borderwidth 2 \
+              -command { ::av4l_tools::avi_extract }
+           pack $frm.action.extract -in $frm.action \
+              -side left -anchor e \
+              -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-      #--- Cree un frame pour y mettre la barre de defilement et les boutons
-      frame $frmbbar \
-         -borderwidth 0 -cursor arrow
-      pack $frmbbar \
-         -in $base -anchor s -side bottom -expand 0 -fill x
+           #--- Creation du bouton fermer
+           button $frm.action.fermer \
+              -text "$caption(av4l_extraction,fermer)" -borderwidth 2 \
+              -command "::av4l_extraction::closeWindow $this $visuNo"
+           pack $frm.action.fermer -in $frm.action \
+              -side right -anchor e \
+              -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-        #--- Creation du bouton fermer
-        button $frmbbar.but_fermer \
-           -text "$caption(av4l_extraction,fermer)" -borderwidth 2 \
-           -command { ::av4l_extraction::fermer }
-        pack $frmbbar.but_fermer \
-           -in $frmbbar -side right -anchor e \
-           -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+           #--- Creation du bouton aide
+           button $frm.action.aide \
+              -text "$caption(av4l_extraction,aide)" -borderwidth 2 \
+              -command "::audace::showHelpPlugin tool av4l av4l_extraction.htm"
+           pack $frm.action.aide -in $frm.action \
+              -side right -anchor e \
+              -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-        #--- Creation du bouton aide
-        button $frmbbar.but_aide \
-           -text "$caption(av4l_extraction,aide)" -borderwidth 2 \
-           -command { ::audace::showHelpPlugin tool av4l av4l.htm }
-        pack $frmbbar.but_aide \
-           -in $frmbbar -side right -anchor e \
-           -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+
 
 
    }

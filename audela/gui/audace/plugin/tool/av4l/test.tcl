@@ -32,12 +32,15 @@ namespace eval testprocedure {
 
 proc test1 { } {
 
-   global conf
+   global conf audace
 
  ::console::affiche_resultat "---------------------------\n"
  ::console::affiche_resultat " Test n° 1\n"
  ::console::affiche_resultat "---------------------------\n"
 
+#  image create photo .arr -format JPEG -file [ file join $audace(rep_plugin) tool av4l img arr.jpg ]
+
+::av4l_tools::avi_exist
 
 }
 

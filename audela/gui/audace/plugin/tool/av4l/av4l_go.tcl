@@ -143,6 +143,8 @@ proc ::av4l::createPluginInstance { { in "" } { visuNo 1 } } {
 proc ::av4l::ressource {  } {
    global audace
 
+   ::console::affiche_resultat "Ressources...\n"
+
    #--- Chargement des captions
    source [ file join $audace(rep_plugin) tool av4l av4l_go.cap ]
    #--- Chargement des fichiers auxiliaires
