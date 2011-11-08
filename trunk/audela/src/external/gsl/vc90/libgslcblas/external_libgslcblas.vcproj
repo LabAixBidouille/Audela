@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="external_libgslcblas"
 	ProjectGUID="{F12C72B9-A7C8-4FE1-8CA7-00B06819033A}"
 	RootNamespace="libgslcblas"
@@ -68,6 +68,7 @@
 				Name="VCLinkerTool"
 				OutputFile="$(OutDir)\libgslcblas.dll"
 				GenerateManifest="false"
+				GenerateDebugInformation="true"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 				ImportLibrary="$(TargetDir)libgslcblas.lib"
