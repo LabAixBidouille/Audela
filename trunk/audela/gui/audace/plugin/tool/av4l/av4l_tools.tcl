@@ -32,9 +32,25 @@ namespace eval ::av4l_tools {
    
    }
 
+   proc avi_exist {  } {
+
+      catch {
+         set exist [info exists ::av4l_tools::avi1]
+         ::console::affiche_resultat "exists  : $exist\n"
+         ::console::affiche_resultat "exists  : [info exists avi1]\n"
+         ::console::affiche_resultat "globals : [info globals]\n"
+         ::console::affiche_resultat "locals  : [info locals]\n"
+         ::console::affiche_resultat "vars    : [info vars avi1]\n"
+      }
+
+   }
+
    proc avi_close {  } {
 
-      ::av4l_tools::avi1 close
+
+      catch {
+         ::av4l_tools::avi1 close
+      }
    }
 
    proc avi_select { visuNo this } {
@@ -68,7 +84,8 @@ namespace eval ::av4l_tools {
       ::avi::create ::av4l_tools::avi1
       ::av4l_tools::avi1 load $filename
       ::av4l_tools::avi1 next
-
+      ::av4l_tools::avi_exist
+      
       #::confVisu::autovisu $visuNo
 
       set autocuts [buf$bufNo autocuts]
