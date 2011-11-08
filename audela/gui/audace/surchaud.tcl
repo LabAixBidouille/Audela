@@ -60,7 +60,6 @@
 # calibwcs2  Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder number ?first_index?
 # simulimage  Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder ?exposure_s? ?fwhm_pix? \
 #             ?teldiam_m? ?colfilter? ?sky_brightness_mag/arcsec2? ?quantum_efficiency? ?gain_e/ADU? ?readout_noise_e?"
-# photrelwcs  in ra dec number ?first_index? ?htm_level?
 #
 
 proc add {args} {
@@ -1624,30 +1623,6 @@ proc simulimage {args} {
       return ""
    } else {
       error "Usage: simulimage Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder ?exposure_s? ?fwhm_pix? ?teldiam_m? ?colfilter? ?sky_brightness_mag/arcsec2? ?quantum_efficiency? ?gain_e/ADU? ?readout_noise_e? ?shutter_mode? ?bias_level_ADU? ?thermic_response_e/pix/sec? ?flat_type?"
-   }
-}
-
-proc photrelwcs {args} {
-   set n [llength $args]
-   if {$n>=4} {
-      set in "[lindex $args 0]"
-      set ra  [lindex $args 1]
-      set dec [lindex $args 2]
-      set number [lindex $args 3]
-      set first 1
-      if {$n>=5} {
-         set first "[lindex $args 4]"
-      }
-      set htm_level 8
-      if {$n>=6} {
-         set first "[lindex $args 5]"
-      }
-      set ni [expr $number+$first-1]
-      for {set ki $first} {$ki<=$ni} {incr ki} {
-         # To Continue...
-      }
-   } else {
-      error "Usage: photrelwcs in ra dec number ?first_index? ?htm_level?"
    }
 }
 
