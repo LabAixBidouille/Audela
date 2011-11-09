@@ -73,6 +73,7 @@ proc ::av4l::initPlugin { tkbase } {
    global av4lconf
 
    set av4lconf(font,courier_10) "Courier 10 normal"
+   set av4lconf(font,courier_10_b) "Courier 10 bold"
    set av4lconf(font,arial_10_b) "{Arial} 10 bold"
    set av4lconf(font,arial_12)   "{Arial} 12 normal"
    set av4lconf(font,arial_12_b) "{Arial} 12 bold"
@@ -149,7 +150,7 @@ proc ::av4l::ressource {  } {
    source [ file join $audace(rep_plugin) tool av4l av4l_go.cap ]
    #--- Chargement des fichiers auxiliaires
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_go.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_acquisition.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_acq.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_extraction.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l test.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_setup.tcl ]\""
@@ -235,7 +236,10 @@ proc ::av4l::stopTool { { visuNo 1 } } {
 #    cree la fenetre de l'outil
 #------------------------------------------------------------
 proc ::av4l::BuildIF { visuNo } {
-   global audace caption conf panneau
+
+      package require Img
+
+      global audace caption conf panneau
 
    #--- Determination de la fenetre parente
    if { $visuNo == "1" } {
@@ -250,67 +254,102 @@ proc ::av4l::BuildIF { visuNo } {
 
       #--- Frame du titre
       frame $This.fra1 -borderwidth 2 -relief groove
-
-         #--- Bouton du titre
-         Button $This.fra1.but -borderwidth 1 \
-            -text "$caption(av4l_go,help_titre1)\n$caption(av4l_go,help_titre)" \
-            -command "::audace::showHelpPlugin tool av4l av4l.htm"
-         pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
-         DynamicHelp::add $This.fra1.but -text $caption(av4l_go,help_titre)
-
       pack $This.fra1 -side top -fill x
 
-      #--- Frame configuration
-      frame $This.fra2 -borderwidth 1 -relief groove
+         #--- Creation du bouton
+         image create photo .help -format PNG -file [ file join $audace(rep_plugin) tool av4l img help.png ]
+         button $This.fra1.help -image .help\
+            -borderwidth 2 -width 48 -height 48 -compound center \
+            -command "::audace::showHelpPlugin tool av4l av4l.htm"
+         pack $This.fra1.help \
+            -in $This.fra1 \
+            -side top -anchor w \
+            -expand 0
+         DynamicHelp::add $This.fra1.help -text $caption(av4l_go,help_titre)
 
-         #--- Bouton d'ouverture de l'outil de configuration
-         button $This.fra2.but1 -borderwidth 2 -text $caption(av4l_go,setup) \
+
+         #--- Creation du bouton 
+         image create photo .setup -format PNG -file [ file join $audace(rep_plugin) tool av4l img setup.png ]
+         button $This.fra1.setup -image .setup\
+            -borderwidth 2 -width 48 -height 48 -compound center \
             -command "::av4l_setup::run  $visuNo $base.av4l_setup"
-         pack $This.fra2.but1 -in $This.fra2 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
+         pack $This.fra1.setup \
+            -in $This.fra1 \
+            -side top -anchor w \
+            -expand 0
+         DynamicHelp::add $This.fra1.setup -text $caption(av4l_go,setup)
 
-      pack $This.fra2 -side top -fill x
 
-      #--- Frame acquisition
-      frame $This.status -borderwidth 1 -relief groove
+         #--- Creation du bouton 
+         image create photo .acq -format PNG -file [ file join $audace(rep_plugin) tool av4l img acquisition.png ]
+         button $This.fra1.acq -image .acq\
+            -borderwidth 2 -width 48 -height 48 -compound center \
+            -command "::av4l_acq::run  $visuNo $base.av4l_acquisition"
+         pack $This.fra1.acq \
+            -in $This.fra1 \
+            -side top -anchor w \
+            -expand 0
+         DynamicHelp::add $This.fra1.acq -text $caption(av4l_go,acquisition)
 
-         #--- Bouton d'ouverture de l'outil de statut
-         button $This.status.but1 -borderwidth 2 -text $caption(av4l_go,acquisition) \
-            -command "::av4l_acquisition::run $audace(base).av4l_acquisition"
-         pack $This.status.but1 -in $This.status -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
 
-      pack $This.status -side top -fill x
+         #--- Creation du bouton 
+         image create photo .verif -format PNG -file [ file join $audace(rep_plugin) tool av4l img verif.png ]
+         button $This.fra1.verif -image .verif\
+            -borderwidth 2 -width 48 -height 48 -compound center \
+            -command ""
+         pack $This.fra1.verif \
+            -in $This.fra1 \
+            -side top -anchor w \
+            -expand 0
+         DynamicHelp::add $This.fra1.verif -text $caption(av4l_go,verif)
 
-      #--- Frame extraction
-      frame $This.maintenance -borderwidth 1 -relief groove
 
-         #--- Bouton d'ouverture de l'outil de statut
-         button $This.maintenance.but1 -borderwidth 2 -text $caption(av4l_go,extraction) \
+         #--- Creation du bouton 
+         image create photo .extract -format PNG -file [ file join $audace(rep_plugin) tool av4l img extraction.png ]
+         button $This.fra1.extract -image .extract\
+            -borderwidth 2 -width 48 -height 48 -compound center \
             -command "::av4l_extraction::run  $visuNo $base.av4l_extraction"
-         pack $This.maintenance.but1 -in $This.maintenance -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
+         pack $This.fra1.extract \
+            -in $This.fra1 \
+            -side top -anchor w \
+            -expand 0
+         DynamicHelp::add $This.fra1.extract -text $caption(av4l_go,extraction)
 
-      pack $This.maintenance -side top -fill x
+
+         #--- Creation du bouton 
+         image create photo .cdl -format PNG -file [ file join $audace(rep_plugin) tool av4l img cdl.png ]
+         button $This.fra1.cdl -image .cdl\
+            -borderwidth 2 -width 48 -height 48 -compound center \
+            -command ""
+         pack $This.fra1.cdl \
+            -in $This.fra1 \
+            -side top -anchor w \
+            -expand 0
+         DynamicHelp::add $This.fra1.cdl -text $caption(av4l_go,cdl)
 
 
-     #--- Frame des tests
-     frame $This.fra6 -borderwidth 1 -relief groove
+         #--- Creation du bouton 
+         image create photo .test -format PNG -file [ file join $audace(rep_plugin) tool av4l img test.png ]
+         button $This.fra1.test -image .test\
+            -borderwidth 2 -width 48 -height 48 -compound center \
+            -command "::testprocedure::run"
+         pack $This.fra1.test \
+            -in $This.fra1 \
+            -side top -anchor w \
+            -expand 0
+         DynamicHelp::add $This.fra1.test -text $caption(av4l_go,test)
 
-        #--- Bouton de test
-        button $This.fra6.but1 -borderwidth 2 -text $caption(av4l_go,test) \
-           -command "::testprocedure::run"
-        pack $This.fra6.but1 -in $This.fra6 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
 
-     pack $This.fra6 -side top -fill x
-
-      #--- Frame des services
-      frame $This.ressource -borderwidth 1 -relief groove
-
-         #--- Bouton de rechargement des sources du plugin
-         button $This.ressource.but1 -borderwidth 2 -text $caption(av4l_go,ressource) \
-            -command {::av4l::ressource}
-         pack $This.ressource.but1 -in $This.ressource -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
-
-      pack $This.ressource -side top -fill x
-
+         #--- Creation du bouton
+         image create photo .ressource -format PNG -file [ file join $audace(rep_plugin) tool av4l img ressource.png ]
+         button $This.fra1.ressource -image .ressource\
+            -borderwidth 2 -width 48 -height 48 -compound center \
+            -command "::av4l::ressource"
+         pack $This.fra1.ressource \
+            -in $This.fra1 \
+            -side top -anchor w \
+            -expand 0
+         DynamicHelp::add $This.fra1.ressource -text $caption(av4l_go,ressource)
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This

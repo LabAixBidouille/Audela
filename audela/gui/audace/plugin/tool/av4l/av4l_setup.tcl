@@ -26,11 +26,12 @@ namespace eval ::av4l_setup {
       variable parametres
 
       #--- Creation des variables de la boite de configuration si elles n'existent pas
-      if { ! [ info exists ::av4l::parametres(av4l,$visuNo,messages) ] }                           { set ::av4l::parametres(av4l,$visuNo,messages)                           "1" }
-      if { ! [ info exists ::av4l::parametres(av4l,$visuNo,save_file_log) ] }                      { set ::av4l::parametres(av4l,$visuNo,save_file_log)                      "1" }
-      if { ! [ info exists ::av4l::parametres(av4l,$visuNo,alarme_fin_serie) ] }                   { set ::av4l::parametres(av4l,$visuNo,alarme_fin_serie)                   "1" }
-      if { ! [ info exists ::av4l::parametres(av4l,$visuNo,verifier_ecraser_fichier) ] }           { set ::av4l::parametres(av4l,$visuNo,verifier_ecraser_fichier)           "1" }
-      if { ! [ info exists ::av4l::parametres(av4l,$visuNo,verifier_index_depart) ] }              { set ::av4l::parametres(av4l,$visuNo,verifier_index_depart)              "1" }
+      if { ! [ info exists ::av4l::parametres(av4l,$visuNo,messages) ] }                   { set ::av4l::parametres(av4l,$visuNo,messages)                  "1" }
+      if { ! [ info exists ::av4l::parametres(av4l,$visuNo,save_file_log) ] }              { set ::av4l::parametres(av4l,$visuNo,save_file_log)             "1" }
+      if { ! [ info exists ::av4l::parametres(av4l,$visuNo,alarme_fin_serie) ] }           { set ::av4l::parametres(av4l,$visuNo,alarme_fin_serie)          "1" }
+      if { ! [ info exists ::av4l::parametres(av4l,$visuNo,verifier_ecraser_fichier) ] }   { set ::av4l::parametres(av4l,$visuNo,verifier_ecraser_fichier)  "1" }
+      if { ! [ info exists ::av4l::parametres(av4l,$visuNo,verifier_index_depart) ] }      { set ::av4l::parametres(av4l,$visuNo,verifier_index_depart)     "1" }
+      if { ! [ info exists ::av4l::parametres(av4l,$visuNo,mode_debug) ] }                 { set ::av4l::parametres(av4l,$visuNo,mode_debug)                "1" }
    }
 
    #
@@ -42,11 +43,12 @@ namespace eval ::av4l_setup {
       global panneau
 
       #--- confToWidget
-      set panneau(av4l,$visuNo,messages)                           $::av4l::parametres(av4l,$visuNo,messages)
-      set panneau(av4l,$visuNo,save_file_log)                      $::av4l::parametres(av4l,$visuNo,save_file_log)
-      set panneau(av4l,$visuNo,alarme_fin_serie)                   $::av4l::parametres(av4l,$visuNo,alarme_fin_serie)
-      set panneau(av4l,$visuNo,verifier_ecraser_fichier)           $::av4l::parametres(av4l,$visuNo,verifier_ecraser_fichier)
-      set panneau(av4l,$visuNo,verifier_index_depart)              $::av4l::parametres(av4l,$visuNo,verifier_index_depart)
+      set panneau(av4l,$visuNo,messages)                  $::av4l::parametres(av4l,$visuNo,messages)
+      set panneau(av4l,$visuNo,save_file_log)             $::av4l::parametres(av4l,$visuNo,save_file_log)
+      set panneau(av4l,$visuNo,alarme_fin_serie)          $::av4l::parametres(av4l,$visuNo,alarme_fin_serie)
+      set panneau(av4l,$visuNo,verifier_ecraser_fichier)  $::av4l::parametres(av4l,$visuNo,verifier_ecraser_fichier)
+      set panneau(av4l,$visuNo,verifier_index_depart)     $::av4l::parametres(av4l,$visuNo,verifier_index_depart)
+      set panneau(av4l,$visuNo,mode_debug)                $::av4l::parametres(av4l,$visuNo,mode_debug)
    }
 
    #
@@ -63,6 +65,7 @@ namespace eval ::av4l_setup {
       set ::av4l::parametres(av4l,$visuNo,alarme_fin_serie)                   $panneau(av4l,$visuNo,alarme_fin_serie)
       set ::av4l::parametres(av4l,$visuNo,verifier_ecraser_fichier)           $panneau(av4l,$visuNo,verifier_ecraser_fichier)
       set ::av4l::parametres(av4l,$visuNo,verifier_index_depart)              $panneau(av4l,$visuNo,verifier_index_depart)
+      set ::av4l::parametres(av4l,$visuNo,mode_debug)                         $panneau(av4l,$visuNo,mode_debug)
    }
 
    #
@@ -216,6 +219,18 @@ namespace eval ::av4l_setup {
             pack $panneau(av4l,$visuNo,av4l_setup).frame3.frame8.frame12 -side left
 
          pack $panneau(av4l,$visuNo,av4l_setup).frame3.frame8 -side top -fill both -expand 1
+
+         #--- Frame pour le commentaire 5 : mode_debug
+         frame $panneau(av4l,$visuNo,av4l_setup).frame3.frame9 -borderwidth 0
+
+            #--- Cree le checkbutton pour le commentaire 5
+            frame $panneau(av4l,$visuNo,av4l_setup).frame3.frame9.frame12 -borderwidth 0
+               checkbutton $panneau(av4l,$visuNo,av4l_setup).frame3.frame9.frame12.check3 -highlightthickness 0 \
+                  -text "$caption(av4l_setup,texte6)" -variable panneau(av4l,$visuNo,mode_debug)
+               pack $panneau(av4l,$visuNo,av4l_setup).frame3.frame9.frame12.check3 -side right -padx 5 -pady 0
+            pack $panneau(av4l,$visuNo,av4l_setup).frame3.frame9.frame12 -side left
+
+         pack $panneau(av4l,$visuNo,av4l_setup).frame3.frame9 -side top -fill both -expand 1
 
 
       pack $panneau(av4l,$visuNo,av4l_setup).frame3 -side top -fill both -expand 1
