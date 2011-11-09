@@ -120,25 +120,22 @@ namespace eval ::av4l_tools {
       visu$visuNo disp
    }
 
-   proc avi_setmin { } {
+   proc avi_setmin { This } {
       global audace
-      variable This
-      $This.frame1.posmin delete 0 end
-      $This.frame1.posmin insert 0 [ ::av4l_tools::avi1 getpreviousoffset ]
+      $This.posmin delete 0 end
+      $This.posmin insert 0 [ ::av4l_tools::avi1 getpreviousoffset ]
    }
 
-   proc avi_setmax { } {
+   proc avi_setmax { This } {
       global audace
-      variable This
-      $This.frame1.posmax delete 0 end
-      $This.frame1.posmax insert 0 [ ::av4l_tools::avi1 getpreviousoffset ]
+      $This.posmax delete 0 end
+      $This.posmax insert 0 [ ::av4l_tools::avi1 getpreviousoffset ]
    }
 
-   proc avi_imagecount { } {
+   proc avi_imagecount { This } {
       global audace
-      variable This
-      $This.frame1.imagecount delete 0 end
-      $This.frame1.imagecount insert 0 [ ::av4l_tools::avi1 count [ $This.frame1.posmin get ] [ $This.frame1.posmax get]]
+      $This.imagecount delete 0 end
+      $This.imagecount insert 0 [ ::av4l_tools::avi1 count [ $This.posmin get ] [ $This.posmax get]]
 
    }
 
