@@ -1,281 +1,489 @@
 #--------------------------------------------------
-# source audace/plugin/tool/acqvideolinux/acqvideolinux_acquisition.tcl
+# source audace/plugin/tool/av4l/av4l_acq.tcl
 #--------------------------------------------------
 #
-# Fichier        : acqvideolinux_acquisition.tcl
+# Fichier        : av4l_acq.tcl
 # Description    : Affiche le status de la base de donnees
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: acqvideolinux_acquisition.tcl 6795 2011-02-26 16:05:27Z michelpujol $
+# Mise à jour $Id: av4l_acq.tcl 6795 2011-02-26 16:05:27Z michelpujol $
 #
 
-namespace eval acqvideolinux_acquisition {
+namespace eval ::av4l_acq {
 
-   global audace
-   global acqvideolinuxconf
-
-   #--- Chargement des captions
 
    #
-   # acqvideolinux_acquisition::run this
-   # Cree la fenetre de tests
-   # this = chemin de la fenetre
+   # av4l_acq::init
+   # Chargement des captions
    #
-   proc run { this } {
-      variable This
-
-      set This $this
-      createDialog
-      return
-   }
-
-   #
-   # acqvideolinux_acquisition::fermer
-   # Fonction appellee lors de l'appui sur le bouton 'Fermer'
-   #
-   proc fermer { } {
-      variable This
-
-      ::acqvideolinux_acquisition::recup_position
-      destroy $This
-      return
-   }
-
-   #
-   # acqvideolinux_acquisition::recup_position
-   # Permet de recuperer et de sauvegarder la position de la fenetre
-   #
-   proc recup_position { } {
-      variable This
+   proc init { } {
       global audace
-      global conf
-      global acqvideolinuxconf
 
-      set acqvideolinuxconf(geometry_status) [ wm geometry $This ]
-      set deb [ expr 1 + [ string first + $acqvideolinuxconf(geometry_status) ] ]
-      set fin [ string length $acqvideolinuxconf(geometry_status) ]
-      set acqvideolinuxconf(position_status) "+[ string range $acqvideolinuxconf(geometry_status) $deb $fin ]"
-      #---
-      set conf(acqvideolinux,position_status) $acqvideolinuxconf(position_status)
+      wm focusmodel . passive
+      wm withdraw .
+      #--- Chargement des captions
+      source [ file join $audace(rep_plugin) tool av4l av4l_acq.cap ]
    }
 
+   #
+   # av4l_acq::initToConf
+   # Initialisation des variables de configuration
+   #
+   proc initToConf { visuNo } {
+      variable parametres
+
+      #--- Creation des variables de la boite de configuration si elles n'existent pas
+      if { ! [ info exists ::av4l::parametres(av4l,$visuNo,messages) ] }                           { set ::av4l::parametres(av4l,$visuNo,messages)                           "1" }
+      if { ! [ info exists ::av4l::parametres(av4l,$visuNo,save_file_log) ] }                      { set ::av4l::parametres(av4l,$visuNo,save_file_log)                      "1" }
+      if { ! [ info exists ::av4l::parametres(av4l,$visuNo,alarme_fin_serie) ] }                   { set ::av4l::parametres(av4l,$visuNo,alarme_fin_serie)                   "1" }
+      if { ! [ info exists ::av4l::parametres(av4l,$visuNo,verifier_ecraser_fichier) ] }           { set ::av4l::parametres(av4l,$visuNo,verifier_ecraser_fichier)           "1" }
+      if { ! [ info exists ::av4l::parametres(av4l,$visuNo,verifier_index_depart) ] }              { set ::av4l::parametres(av4l,$visuNo,verifier_index_depart)              "1" }
+   }
 
    #
-   # acqvideolinux_acquisition::createDialog
-   # Creation de l'interface graphique
+   # av4l_acq::confToWidget
+   # Charge la configuration dans des variables locales
    #
-   proc createDialog { } {
-      variable This
-      global audace
-      global caption
-      global color
-      global conf
-      global acqvideolinuxconf
-
-      #--- initConf
-      if { ! [ info exists conf(acqvideolinux,position_status) ] } { set conf(acqvideolinux,position_status) "+80+40" }
+   proc confToWidget { visuNo } {
+      variable parametres
+      global panneau
 
       #--- confToWidget
-      set acqvideolinuxconf(position_status) $conf(acqvideolinux,position_status)
+      set ::av4l_acq::panneau(av4l,$visuNo,messages)                   $::av4l::parametres(av4l,$visuNo,messages)
+      set ::av4l_acq::panneau(av4l,$visuNo,save_file_log)              $::av4l::parametres(av4l,$visuNo,save_file_log)
+      set ::av4l_acq::panneau(av4l,$visuNo,alarme_fin_serie)           $::av4l::parametres(av4l,$visuNo,alarme_fin_serie)
+      set ::av4l_acq::panneau(av4l,$visuNo,verifier_ecraser_fichier)   $::av4l::parametres(av4l,$visuNo,verifier_ecraser_fichier)
+      set ::av4l_acq::panneau(av4l,$visuNo,verifier_index_depart)      $::av4l::parametres(av4l,$visuNo,verifier_index_depart)
+   }
 
-      #---
-      if { [ winfo exists $This ] } {
-         wm withdraw $This
-         wm deiconify $This
-         focus $This.frame11.but_fermer
-         #--- Gestion du bouton
-         #$audace(base).acqvideolinux.fra5.but1 configure -relief raised -state normal
+   #
+   # av4l_acq::widgetToConf
+   # Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
+   #
+   proc widgetToConf { visuNo } {
+      variable parametres
+      global panneau
+
+   }
+
+
+   #
+   # av4l_acq::run 
+   # Cree la fenetre de configuration de l'affichage des messages sur la Console
+   # et de l'enregistrement des dates dans le fichier log
+   #
+   proc run { visuNo this } {
+     global audace panneau
+
+
+      set panneau(av4l,$visuNo,av4l_acq) $this
+      #::confGenerique::run $visuNo "$panneau(av4l,$visuNo,av4l_acq)" "::av4l_acq" -modal 1
+
+      createdialog $this $visuNo   
+
+   }
+
+   #
+   # av4l_acq::apply
+   # Fonction 'Appliquer' pour memoriser et appliquer la configuration
+   #
+   proc apply { visuNo } {
+      ::av4l_acq::widgetToConf $visuNo
+      ::av4l_tools::avi_extract
+   }
+
+   #
+   # av4l_acq::showHelp
+   # Fonction appellee lors de l'appui sur le bouton 'Aide'
+   #
+   proc showHelp { } {
+      ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::av4l::getPluginType ] ] \
+         [ ::av4l::getPluginDirectory ] av4l_acq.htm
+   }
+
+
+   #
+   # av4l_acq::closeWindow
+   # Fonction appellee lors de l'appui sur le bouton 'Fermer'
+   #
+   proc closeWindow { this visuNo } {
+
+      ::av4l_acq::widgetToConf $visuNo
+      ::av4l_tools::avi_close
+      destroy $this
+   }
+
+   #
+   # av4l_acq::getLabel
+   # Retourne le nom de la fenetre d extraction
+   #
+   proc getLabel { } {
+      global caption
+
+      return "$caption(av4l_acq,titre)"
+   }
+
+
+   #
+   # av4l_acq::chgdir
+   # Ouvre une boite de dialogue pour choisir un nom  de repertoire 
+   #
+   proc chgdir { This } {
+      global caption
+      global cwdWindow
+      global audace
+
+      #--- Initialisation des variables a 2 (0 et 1 reservees a Configuration --> Repertoires)
+      set cwdWindow(rep_images)      "2"
+      set cwdWindow(rep_travail)     "2"
+      set cwdWindow(rep_scripts)     "2"
+      set cwdWindow(rep_catalogues)  "2"
+      set cwdWindow(rep_userCatalog) "2"
+
+      set parent "$audace(base)"
+      set title "Choisir un repertoire de destination"
+      set rep "$audace(rep_images)"
+
+      set numerror [ catch { set filename "[ ::cwdWindow::tkplus_chooseDir "$rep" $title $parent ]" } msg ]
+      if { $numerror == "1" } {
+         set filename "[ ::cwdWindow::tkplus_chooseDir "[pwd]" $title $parent ]"
+      }
+
+
+      ::console::affiche_resultat $audace(rep_images)
+
+      $This delete 0 end
+      $This insert 0 $filename
+      
+   }
+
+
+
+   #
+   # av4l_acq::fillConfigPage
+   # Creation de l'interface graphique
+   #
+   proc createdialog { this visuNo } {
+
+      package require Img
+
+      global caption panneau av4lconf color audace
+
+      #--- Determination de la fenetre parente
+      if { $visuNo == "1" } {
+         set base "$audace(base)"
+      } else {
+         set base ".visu$visuNo"
+      }
+
+      #--- Creation de la fenetre
+      if { [winfo exists $this] } {
+         wm withdraw $this
+         wm deiconify $this
+         focus $this
          return
       }
+      toplevel $this -class Toplevel
 
-      #---
-      if { [ info exists acqvideolinuxconf(geometry_status) ] } {
-         set deb [ expr 1 + [ string first + $acqvideolinuxconf(geometry_status) ] ]
-         set fin [ string length $acqvideolinuxconf(geometry_status) ]
-         set acqvideolinuxconf(position_status) "+[ string range $acqvideolinuxconf(geometry_status) $deb $fin ]"
-      }
-
-      #--- Lancement
-      ::console::affiche_resultat "---------------------------\n"
-      ::console::affiche_resultat " Acquisition\n"
-      ::console::affiche_resultat "---------------------------\n"
-
-      set erreur 0
-
-      #--- Gestion des erreurs
-      if { $erreur == "0"} {
-
-         #---
-         toplevel $This -class Toplevel
-         wm geometry $This $acqvideolinuxconf(position_status)
-         wm resizable $This 1 1
-         wm title $This $caption(acqvideolinux_acquisition,main_title)
-         wm protocol $This WM_DELETE_WINDOW { ::acqvideolinux_acquisition::fermer }
-
-         #--- Cree un frame pour afficher le status de la base
-         frame $This.frame1 -borderwidth 0 -cursor arrow -relief groove
-         pack $This.frame1 -in $This -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-           #--- Cree un label pour le titre
-           label $This.frame1.titre -font $acqvideolinuxconf(font,arial_14_b) \
-                 -text "$caption(acqvideolinux_acquisition,titre)"
-           pack $This.frame1.titre \
-                -in $This.frame1 -side top -padx 3 -pady 3
-
-           #--- Cree un frame pour afficher les resultats
-           frame $This.frame1.status \
-                 -borderwidth 1 -relief raised -cursor arrow
-           pack $This.frame1.status \
-                -in $This.frame1 -side top -expand 0 -fill x -padx 1 -pady 1
-
-           #--- Cree un label pour le status
-           label $This.frame1.statusbdd -font $acqvideolinuxconf(font,arial_12_b) \
-                -text "$caption(acqvideolinux_acquisition,label_bdd)"
-           pack $This.frame1.statusbdd -in $This.frame1.status -side top -padx 3 -pady 1 -anchor w
-
-             #--- Cree un frame pour afficher les intitules
-             set intitle [frame $This.frame1.status.l -borderwidth 0]
-             pack $intitle -in $This.frame1.status -side left
-
-               #--- Cree un label pour le status
-               label $intitle.ok -font $acqvideolinuxconf(font,courier_10) -padx 3 \
-                     -text "$caption(acqvideolinux_acquisition,label_connect)"
-               pack $intitle.ok -in $intitle -side top -padx 3 -pady 1 -anchor w
-               #--- Cree un label pour le nb d image
-               label $intitle.requetes -font $acqvideolinuxconf(font,courier_10) \
-                     -text "$caption(acqvideolinux_acquisition,label_nbrequetes)"
-               pack $intitle.requetes -in $intitle -side top -padx 3 -pady 1 -anchor w
-               #--- Cree un label pour le nb de header
-               label $intitle.scenes -font $acqvideolinuxconf(font,courier_10) \
-                     -text "$caption(acqvideolinux_acquisition,label_nbscenes)"
-               pack $intitle.scenes -in $intitle -side top -padx 3 -pady 1 -anchor w
-
-             #--- Cree un frame pour afficher les valeurs
-             set inparam [frame $This.frame1.status.v -borderwidth 0]
-             pack $inparam -in $This.frame1.status -side right -expand 1 -fill x
-
-               #--- Cree un label pour le status
-               label $inparam.ok \
-                     -text $status -fg $color(green)
-               if {$errconn != 0} { $inparam.ok configure -fg $color(red) }
-               pack $inparam.ok -in $inparam -side top -pady 1 -anchor w
-               #--- Cree un label pour le nb image
-               label $inparam.requetes   \
-                     -text $nbrequetes -fg $color(blue)
-               pack $inparam.requetes -in $inparam -side top -pady 1 -anchor w
-               #--- Cree un label pour le nb de header
-               label $inparam.scenes   \
-                     -text $nbscenes -fg $color(blue)
-               pack $inparam.scenes -in $inparam -side top -pady 1 -anchor w
+      set posx_config [ lindex [ split [ wm geometry $base ] "+" ] 1 ]
+      set posy_config [ lindex [ split [ wm geometry $base ] "+" ] 2 ]
+      wm geometry $this +[ expr $posx_config + 165 ]+[ expr $posy_config + 55 ]
+      wm resizable $this 1 1
+      wm title $this $caption(av4l_acq,titre)
+      wm protocol $this WM_DELETE_WINDOW "::av4l_acq::closeWindow $this $visuNo"
 
 
-           #--- Cree un frame pour le status des repertoires
-           frame $This.frame1.rep \
-                 -borderwidth 1 -relief raised -cursor arrow
-           pack $This.frame1.rep \
-                -in $This.frame1 -side top -expand 0 -fill x -padx 1 -pady 1
+      #--- Charge la configuration de la vitesse de communication dans une variable locale
+      ::av4l_acq::confToWidget $visuNo
 
-           #--- Cree un label pour le status des repertoires
-           label $This.frame1.statusrep -font $acqvideolinuxconf(font,arial_12_b) \
-                -text "$caption(acqvideolinux_acquisition,label_rep)"
-           pack $This.frame1.statusrep -in $This.frame1.rep -side top -padx 3 -pady 1 -anchor w
-
-             #--- Cree un frame pour afficher les intitules
-             set intitle [frame $This.frame1.rep.l -borderwidth 0]
-             pack $intitle -in $This.frame1.rep -side left
-
-               #--- Cree un label pour le status
-               label $intitle.tconnect -font $acqvideolinuxconf(font,courier_10) \
-                     -text "$caption(acqvideolinux_acquisition,label_tconnect)" -anchor center
-               pack $intitle.tconnect -in $intitle -side top -padx 3 -pady 1 -anchor center
+      #--- Retourne l'item de la camera associee a la visu
+      set frm $this.frmextraction
+      set frmbbar $this.frmextractionbar
 
 
-             #--- Cree un frame pour afficher les valeurs
-             set inparam [frame $This.frame1.rep.v -borderwidth 0]
-             pack $inparam -in $This.frame1.rep -side right -expand 1 -fill x
+      #--- Cree un frame pour afficher le status de la base
+      frame $frm -borderwidth 0 -cursor arrow -relief groove
+      pack $frm -in $this -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-               #--- Cree un label pour le status
-               label $inparam.tconnect  \
-                     -text $tconnect -fg $color(green)
-               #if {$nbfichbdd != $nbimg} { $inparam.nbimgrep configure -fg $color(red) }
-               pack $inparam.tconnect -in $inparam -side top -pady 1 -anchor w
+        #--- Cree un label pour le titre
+        label $frm.titre -font $av4lconf(font,arial_14_b) \
+              -text "$caption(av4l_acq,titre)"
+        pack $frm.titre \
+             -in $frm -side top -padx 3 -pady 3
+
+        #--- Cree un frame pour 
+        frame $frm.open \
+              -borderwidth 1 -relief raised -cursor arrow
+        pack $frm.open \
+             -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
+        #--- Creation du bouton open
+        button $frm.open.but_open \
+           -text "open" -borderwidth 2 \
+           -command "::av4l_tools::avi_open $visuNo $frm"
+        pack $frm.open.but_open \
+           -side left -anchor e \
+           -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+        #--- Creation du bouton select
+        button $frm.open.but_select \
+           -text "..." -borderwidth 2 -takefocus 1 \
+           -command "::av4l_tools::avi_select $visuNo $frm"
+        pack $frm.open.but_select \
+           -side left -anchor e \
+           -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+        #--- Cree un label pour le chemin de l'AVI
+        entry $frm.open.avipath 
+        pack $frm.open.avipath -side left -padx 3 -pady 1 -expand true -fill x
+
+        #--- Creation de la barre de defilement
+        scale $frm.percent -from 0 -to 100 -length 600 -variable pc \
+           -label Percentage -tickinterval 10 -orient horizontal \
+           -state disabled
+        pack $frm.percent -in $frm -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
+
+        #--- Cree un frame pour afficher
+        set btnav [frame $frm.btnav -borderwidth 0]
+        pack $btnav -in $frm -side top
+
+        #--- Creation du bouton quick prev image
+        image create photo .arr -format PNG -file [ file join $audace(rep_plugin) tool av4l img arr.png ]
+        button $frm.qprevimage -image .arr\
+           -borderwidth 2 -width 25 -height 25 -compound center \
+           -command ""
+        pack $frm.qprevimage \
+           -in $frm.btnav \
+           -side left -anchor w \
+           -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+        #--- Creation du bouton prev image
+        image create photo .arn -format PNG -file [ file join $audace(rep_plugin) tool av4l img arn.png ]
+        button $frm.previmage -image .arn\
+           -borderwidth 2 -width 25 -height 25 -compound center \
+           -command ""
+        pack $frm.previmage \
+           -in $frm.btnav \
+           -side left -anchor w \
+           -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+        #--- Creation du bouton next image
+        image create photo .avn -format PNG -file [ file join $audace(rep_plugin) tool av4l img avn.png ]
+        button $frm.nextimage -image .avn\
+           -borderwidth 2 -width 25 -height 25 -compound center \
+           -command "::av4l_tools::avi_next_image"
+        pack $frm.nextimage \
+           -in $frm.btnav \
+           -side left -anchor w \
+           -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+        #--- Creation du bouton quick next image
+        image create photo .avr -format PNG -file [ file join $audace(rep_plugin) tool av4l img avr.png ]
+        button $frm.qnextimage -image .avr\
+           -borderwidth 2 -width 25 -height 25 -compound center \
+           -command ""
+        pack $frm.qnextimage \
+           -in $frm.btnav \
+           -side left -anchor w \
+           -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
 
 
-         #--- Cree un frame pour y mettre les boutons
-         frame $This.frame11 \
-            -borderwidth 0 -cursor arrow
-         pack $This.frame11 \
-            -in $This -anchor s -side bottom -expand 0 -fill x
+          #--- Affichage positions
+          frame $frm.pos \
+                -borderwidth 1 -relief raised -cursor arrow
+          pack $frm.pos \
+               -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
+
+
+             #--- Creation du bouton setmin
+             button $frm.pos.setmin \
+                -text "setmin" -borderwidth 2 \
+                -command "::av4l_tools::avi_setmin $frm"
+             pack $frm.pos.setmin \
+                -in $frm.pos \
+                -side left -anchor w \
+                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+             #--- Creation du bouton setmax
+             button $frm.pos.setmax \
+                -text "setmax" -borderwidth 2 \
+                -command "::av4l_tools::avi_setmax $frm"
+             pack $frm.pos.setmax \
+                -in $frm.pos \
+                -side left -anchor w \
+                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+             #--- Cree un frame pour afficher
+             frame $frm.pos.min -borderwidth 0
+             pack $frm.pos.min -in $frm.pos -side left
+
+                #--- Cree un label pour
+                entry $frm.datemin -fg $color(blue) -relief sunken
+                pack $frm.datemin -in $frm.pos.min -side top -pady 1 -anchor w
+                #--- Cree un label pour
+                entry $frm.posmin -fg $color(blue) -relief sunken
+                pack $frm.posmin -in $frm.pos.min -side top -pady 1 -anchor w
+
+
+          #--- Cree un frame pour afficher
+          frame $frm.pos.max -borderwidth 0
+          pack $frm.pos.max -in $frm.pos -side left
+
+             #--- Cree un label pour
+             entry $frm.datemax -fg $color(blue) -relief sunken
+             pack $frm.datemax -in $frm.pos.max -side top -pady 1 -anchor w
+             #--- Cree un label pour
+             entry $frm.posmax -fg $color(blue) -relief sunken
+             pack $frm.posmax -in $frm.pos.max -side top -pady 1 -anchor w
+
+
+
+
+
+          #--- Cree un frame pour afficher
+          frame $frm.count -borderwidth 0
+          pack $frm.count -in $frm -side top
+
+             #--- Cree un label
+             label $frm.labnbimg -font $av4lconf(font,courier_10) -padx 3 \
+                   -text "Nombre d'images a extraire : "
+             pack $frm.labnbimg -in $frm.count -side left -pady 1 -anchor w
+             #--- Cree un entry
+             entry $frm.imagecount -fg $color(blue) -relief sunken
+             pack $frm.imagecount -in $frm.count -side left -pady 1 -anchor w
+             #--- Cree un button
+             button $frm.doimagecount \
+              -text "calcul" -borderwidth 2 \
+              -command "::av4l_tools::avi_imagecount $frm" 
+             pack $frm.doimagecount -in $frm.count -side left -pady 1 -anchor w
+
+          #--- Cree un frame pour 
+          frame $frm.status -borderwidth 0 -cursor arrow
+          pack $frm.status -in $frm -side top -expand 0
+
+          #--- Cree un frame pour afficher les intitules
+          set intitle [frame $frm.status.l -borderwidth 0]
+          pack $intitle -in $frm.status -side left
+
+            #--- Cree un label pour le status
+            label $intitle.status -font $av4lconf(font,courier_10) -text "Status"
+            pack $intitle.status -in $intitle -side top -anchor w
+
+            #--- Cree un label pour le nb d image
+            label $intitle.fps -font $av4lconf(font,courier_10) -text "fps"
+            pack $intitle.fps -in $intitle -side top -anchor w
+
+            #--- Cree un label pour le nb d image
+            label $intitle.nbtotal -font $av4lconf(font,courier_10) -text "Nb total d'images"
+            pack $intitle.nbtotal -in $intitle -side top -anchor w
+
+
+          #--- Cree un frame pour afficher les valeurs
+          set inparam [frame $frm.status.v -borderwidth 0]
+          pack $inparam -in $frm.status -side left -expand 0 -fill x
+
+            #--- Cree un label pour le repetoire destination
+            label $inparam.status -font $av4lconf(font,courier_10) -fg $color(blue) -text "Loaded / ? / Error"
+            pack  $inparam.status -in $inparam -side top -anchor w
+
+            #--- Cree un label pour le prefixe
+            label $inparam.fps -font $av4lconf(font,courier_10) -fg $color(blue) -text "25.0003"
+            pack  $inparam.fps -in $inparam -side top -anchor w
+
+            #--- Cree un label pour le prefixe
+            label $inparam.nbtotal -font $av4lconf(font,courier_10) -fg $color(blue) -text "147"
+            pack  $inparam.nbtotal -in $inparam -side top -anchor w
+
+
+
+
+
+        #--- Cree un frame pour 
+        frame $frm.form \
+              -borderwidth 1 -relief raised -cursor arrow
+        pack $frm.form \
+             -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
+
+          #--- Cree un frame pour afficher les intitules
+          set intitle [frame $frm.form.l -borderwidth 0]
+          pack $intitle -in $frm.form -side left
+
+            #--- Cree un label pour le status
+            label $intitle.destdir -font $av4lconf(font,courier_10) -padx 3 \
+                  -text "repertoire destination"
+            pack $intitle.destdir -in $intitle -side top -padx 3 -pady 1 -anchor w
+
+            #--- Cree un label pour le nb d image
+            label $intitle.prefix -font $av4lconf(font,courier_10) \
+                  -text "prefixe des fichiers"
+            pack $intitle.prefix -in $intitle -side top -padx 3 -pady 1 -anchor w
+
+
+          #--- Cree un frame pour afficher les valeurs
+          set inparam [frame $frm.form.v -borderwidth 0]
+          pack $inparam -in $frm.form -side left -expand 0 -fill x
+
+            #--- Cree un label pour le repetoire destination
+            entry $inparam.destdir -fg $color(blue)
+            pack $inparam.destdir -in $inparam -side top -pady 1 -anchor w
+
+            #--- Cree un label pour le prefixe
+            entry $inparam.prefix  -fg $color(blue)
+            pack $inparam.prefix -in $inparam -side top -pady 1 -anchor w
+
+          #--- Cree un frame pour afficher les extras
+          set inbutton [frame $frm.form.e -borderwidth 0]
+          pack $inbutton -in $frm.form -side left -expand 0 -fill x
+
+            #--- Cree un button
+            button $inbutton.chgdir \
+             -text "..." -borderwidth 2 \
+             -command "::av4l_acq::chgdir $inparam.destdir" 
+            pack $inbutton.chgdir -in $inbutton -side top -pady 0 -anchor w
+
+            #--- Cree un label pour le nb d image
+            label $inbutton.blank -font $av4lconf(font,courier_10) \
+                  -text ""
+            pack $inbutton.blank -in $inbutton -side top -padx 3 -pady 1 -anchor w
+
+
+   #---
+        #--- Cree un frame pour  les boutons d action 
+        frame $frm.action \
+              -borderwidth 1 -relief raised -cursor arrow
+        pack $frm.action \
+             -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
+
+           button $frm.action.extract \
+              -text "Extraction" -borderwidth 2 \
+              -command { ::av4l_tools::avi_extract }
+           pack $frm.action.extract -in $frm.action \
+              -side left -anchor e \
+              -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
            #--- Creation du bouton fermer
-           button $This.frame11.but_fermer \
-              -text "$caption(acqvideolinux_acquisition,fermer)" -borderwidth 2 \
-              -command { ::acqvideolinux_acquisition::fermer }
-           pack $This.frame11.but_fermer \
-              -in $This.frame11 -side right -anchor e \
+           button $frm.action.fermer \
+              -text "$caption(av4l_acq,fermer)" -borderwidth 2 \
+              -command "::av4l_acq::closeWindow $this $visuNo"
+           pack $frm.action.fermer -in $frm.action \
+              -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
            #--- Creation du bouton aide
-           button $This.frame11.but_aide \
-              -text "$caption(acqvideolinux_acquisition,aide)" -borderwidth 2 \
-              -command { ::audace::showHelpPlugin tool acqvideolinux acqvideolinux.htm }
-           pack $This.frame11.but_aide \
-              -in $This.frame11 -side right -anchor e \
+           button $frm.action.aide \
+              -text "$caption(av4l_acq,aide)" -borderwidth 2 \
+              -command "::audace::showHelpPlugin tool av4l av4l_acq.htm"
+           pack $frm.action.aide -in $frm.action \
+              -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-           #--- Creation du bouton Connect
-           button $This.frame11.but_connect \
-              -text "$caption(acqvideolinux_acquisition,verif)" -borderwidth 2 \
-              -command { ::acqvideolinux_acquisition::verif }
-           pack $This.frame11.but_connect \
-              -in $This.frame11 -side right -anchor e \
-              -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-           #--- Creation du bouton RAZ
-           button $This.frame11.but_raz \
-              -text "$caption(acqvideolinux_acquisition,raz)" -borderwidth 2 \
-              -command { }
-           pack $This.frame11.but_raz \
-              -in $This.frame11 -side right -anchor e \
-              -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-      } else {
 
-         tk_messageBox -title $caption(acqvideolinux_acquisition,msg_erreur) -type ok -message $caption(acqvideolinux_acquisition,msg_prevent2)
-         #$audace(base).acqvideolinux.fra5.but1 configure -relief raised -state normal
-         return
 
-      }
-
-      #--- Gestion du bouton
-      #$audace(base).acqvideolinux.fra5.but1 configure -relief raised -state normal
-
-      #--- La fenetre est active
-      focus $This
-
-      #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { $audace(console)::GiveFocus }
-
-   }
-
-   # acqvideolinux_acquisition::list_diff_shift
-   # Retourne la liste test epurée de l intersection des deux listes
-   proc list_diff_shift { ref test }  {
-      foreach elemref $ref {
-         set new_test ""
-         foreach elemtest $test {
-            if {$elemref!=$elemtest} {lappend new_test $elemtest}
-         }
-         set test $new_test
-      }
-      return $test
-   }
-
-   # acqvideolinux_acquisition::verif
-   # Verification des donnees
-   proc verif { } {
-   
-   
    }
 
 }
+
+
+#--- Initialisation au demarrage
+::av4l_acq::init

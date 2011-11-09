@@ -21,6 +21,7 @@ set caption(av4l_go,acquisition)           "Acquisition"
 set caption(av4l_go,extraction)            "Extraction"
 set caption(av4l_go,test)                  "Test"
 set caption(av4l_go,ressource)             "Re-source"
+set caption(av4l_go,verif)                 "Verfication"
 
 # *************** Version française **** **********************
 if { [ string compare $langage "french" ] == "0" } {
@@ -35,6 +36,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(av4l_go,extraction)         "Extraction"
    set caption(av4l_go,test)               "Test"
    set caption(av4l_go,ressource)          "Re-source"
+   set caption(av4l_go,verif)                 "Verfication"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {

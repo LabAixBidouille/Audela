@@ -1,0 +1,100 @@
+#
+# Fichier : av4l_acq.cap
+# Mise a jour $Id: av4l_acq.cap 7099 2011-04-06 16:39:22Z robertdelmas  $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(av4l_acq,main_title)          "acqvideolinux - Statut"
+set caption(av4l_acq,titre)               "Statut de la base de données"
+
+set caption(av4l_acq,label_bdd)           "Information du Serveur MySQL Local"
+set caption(av4l_acq,label_connect)       "Connexion Serveur................"
+set caption(av4l_acq,label_nbimg)         "Nb requêtes......................"
+set caption(av4l_acq,label_nbheader)      "Nb scènes........................"
+
+set caption(av4l_acq,label_rep)           "Information du Télescope"
+set caption(av4l_acq,label_tconnect)      "Webservice......................"
+
+set caption(av4l_acq,raz)                 "RAZ de la base de données"
+set caption(av4l_acq,verif)               "Vérification"
+set caption(av4l_acq,aide)                "Aide"
+set caption(av4l_acq,fermer)              "Fermer"
+set caption(av4l_acq,cancelRAZ)           "RAZ BDD annulée"
+
+set caption(av4l_acq,msg_erreur)          "Erreur"
+set caption(av4l_acq,msg_internet)        "Reconnexion à la base"
+
+set caption(av4l_acq,msg_prevent)         "Attention !"
+set caption(av4l_acq,msg_prevent2)        "Cette action va réinitialiser la base de données. Toutes les données seront définitivement effacées du disque. Etes-vous sûr ?"
+set caption(av4l_acq,efface)              "Effacement de la base de données"
+set caption(av4l_acq,mdprootsql)          "Veuillez saisir le mot de passe root du serveur SQL"
+
+# *************** Version française **** **********************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(av4l_acq,main_title)       "acqvideolinux - Acquisition"
+   set caption(av4l_acq,titre)            "Statut de la base de données"
+
+   set caption(av4l_acq,label_bdd)        "Information du Serveur MySQL Local"
+   set caption(av4l_acq,label_connect)    "Connexion Serveur................"
+   set caption(av4l_acq,label_nbrequetes) "Nb requêtes......................"
+   set caption(av4l_acq,label_nbscenes)   "Nb scènes........................"
+
+   set caption(av4l_acq,label_rep)        "Information du Télescope"
+   set caption(av4l_acq,label_tconnect)   "Webservice......................."
+
+   set caption(av4l_acq,raz)              "RAZ de la base de données"
+   set caption(av4l_acq,verif)            "Vérification"
+   set caption(av4l_acq,aide)             "Aide"
+   set caption(av4l_acq,fermer)           "Fermer"
+   set caption(av4l_acq,cancelRAZ)        "RAZ BDD annulée"
+
+   set caption(av4l_acq,msg_erreur)       "Erreur"
+   set caption(av4l_acq,msg_internet)     "Reconnexion à la base"
+
+   set caption(av4l_acq,msg_prevent)      "Attention !"
+   set caption(av4l_acq,msg_prevent2)     "Cette action va réinitialiser la base de données. Toutes les données seront définitivement effacées du disque. Etes-vous sûr ?"
+   set caption(av4l_acq,efface)           "Effacement de la base de données"
+   set caption(av4l_acq,mdprootsql)       "Veuillez saisir le mot de passe root du serveur SQL"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

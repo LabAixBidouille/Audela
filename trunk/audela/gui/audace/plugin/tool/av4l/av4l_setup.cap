@@ -19,6 +19,7 @@ set caption(av4l_setup,texte2)                    "Record dates in the log file"
 set caption(av4l_setup,texte3)                    "Aural warning when the series ends"
 set caption(av4l_setup,texte4)                    "Ask whether the user wants existing file to be replaced"
 set caption(av4l_setup,texte5)                    "Prompt the user if the index starts with a value different from 1"
+set caption(av4l_setup,texte6)                    "Debug Mode"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -31,6 +32,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(av4l_setup,texte3)                 "Alarme sonore de fin de série"
    set caption(av4l_setup,texte4)                 "Demander l'autorisation de remplacer un fichier existant"
    set caption(av4l_setup,texte5)                 "Signaler que l'index de départ est différent de 1"
+   set caption(av4l_setup,texte6)                 "Mode Debug"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
