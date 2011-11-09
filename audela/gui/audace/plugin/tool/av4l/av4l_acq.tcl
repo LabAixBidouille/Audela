@@ -237,7 +237,7 @@ namespace eval ::av4l_acq {
           pack $inparam -in $frm.form -side left -expand 0 -fill x
 
             #--- Cree un label pour le repetoire destination
-            entry $inparam.destdir -fg $color(blue)
+            entry $inparam.destdir -fg $color(blue) -width 40
             pack $inparam.destdir -in $inparam -side top -pady 1 -anchor w
 
             #--- Cree un label pour le prefixe
@@ -292,15 +292,15 @@ namespace eval ::av4l_acq {
            DynamicHelp::add $frm.demarre -text "Lance Acquisition \n test"
 
            #--- Creation du bouton stop acquisition
-           image create photo .avn -format PNG -file [ file join $audace(rep_plugin) tool av4l img stop.png ]
-           button $frm.nextimage -image .avn\
+           image create photo .stop -format PNG -file [ file join $audace(rep_plugin) tool av4l img stop.png ]
+           button $frm.stop -image .stop\
               -borderwidth 2 -width 48 -height 48 -compound center \
               -command ""
-           pack $frm.nextimage \
+           pack $frm.stop \
               -in $frm.btnav \
               -side left -anchor w \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-           DynamicHelp::add $frm.nextimage -text "Stop Acquisition"
+           DynamicHelp::add $frm.stop -text "Stop Acquisition"
 
 
 
@@ -404,7 +404,7 @@ namespace eval ::av4l_acq {
 
           #--- Cree un frame 
           frame $frm.photom -borderwidth 1 -relief raised -cursor arrow 
-          pack $frm.photom -in $frm -side top -expand 5
+          pack $frm.photom -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
 
           #--- Cree un frame 
           frame $frm.photom.values -borderwidth 0 -cursor arrow
@@ -578,17 +578,10 @@ namespace eval ::av4l_acq {
 
 
 
-
-
-
-
-
-
-
    #---
         #--- Cree un frame pour  les boutons d action 
         frame $frm.action \
-              -borderwidth 1 -relief raised -cursor arrow
+              -borderwidth 1 -cursor arrow
         pack $frm.action \
              -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
 
