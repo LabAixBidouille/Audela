@@ -654,7 +654,11 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
 	pseries->bias_level=0; /* ADU */
 	pseries->flat_type=TT_FLAT_TYPE_NONE; /* 0=no flat */
 	pseries->thermic_response=0; /* reponse terminque moyenne en electron/sec/pixel */
-	strcmp(pseries->colfilter,"R");
+	strcpy(pseries->colfilter,"R");
+	pseries->newstar=TT_NEWSTAR_NONE;
+	pseries->ra=0;
+	pseries->dec=0;
+	pseries->mag=12;
    for (k1=1;k1<=2;k1++) {
       for (k2=0;k2<=6;k2++) {
          pseries->p_ast.pv[k1][k2]=0.;
@@ -1082,6 +1086,21 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
       }
       else if (strcmp(mot,"THERMIC_RESPONSE")==0) {
          pseries->thermic_response=(double)(fabs(atof(argu)));
+      }
+      else if (strcmp(mot,"NEWSTAR")==0) {
+	      tt_strupr(argu);
+			if (strcmp(argu,"NONE")==0) { pseries->newstar=TT_NEWSTAR_NONE; }
+			if (strcmp(argu,"ADD")==0) { pseries->newstar=TT_NEWSTAR_ADD; }
+			if (strcmp(argu,"REPLACE")==0) { pseries->newstar=TT_NEWSTAR_REPLACE; }
+      }
+      else if (strcmp(mot,"RA")==0) {
+         pseries->ra=(double)(atof(argu));
+      }
+      else if (strcmp(mot,"DEC")==0) {
+         pseries->dec=(double)(atof(argu));
+      }
+      else if (strcmp(mot,"MAG")==0) {
+         pseries->mag=(double)(atof(argu));
       }
       else if (strcmp(mot,"KERNEL_COEF")==0) {
          pseries->kernel_coef=(double)(fabs(atof(argu)));

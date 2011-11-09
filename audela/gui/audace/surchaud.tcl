@@ -1513,6 +1513,7 @@ proc calibwcs2 {args} {
 }
 
 #--- Example : simulimage * * * * * USNO c:/d/usno/ 90 2.5 0.25 R 20.0 0.07 1.8 8.5  1 1000 0.5 0
+#--- Example : simulimage * * * * * USNO c:/d/usno/ 90 2.5 0.25 R 20.0 0.07 1.8 8.5  1 1000 0.5 0 REPLACE 164.630566 67.529504 8
 proc simulimage {args} {
    if {[llength $args] >= 5} {
       set Angle_ra [lindex $args 0]
@@ -1539,6 +1540,10 @@ proc simulimage {args} {
       incr k ; set bias_level 0           ; if {[llength $args] >= [expr 1+$k]} { set bias_level [lindex $args $k] }
       incr k ; set thermic_response 0     ; if {[llength $args] >= [expr 1+$k]} { set thermic_response [lindex $args $k] }
       incr k ; set flat_type 0            ; if {[llength $args] >= [expr 1+$k]} { set flat_type [lindex $args $k] }
+      incr k ; set newstar_type NONE      ; if {[llength $args] >= [expr 1+$k]} { set newstar_type [lindex $args $k] }
+      incr k ; set newstar_ra 0           ; if {[llength $args] >= [expr 1+$k]} { set newstar_ra [lindex $args $k] }
+      incr k ; set newstar_dec 0          ; if {[llength $args] >= [expr 1+$k]} { set newstar_dec [lindex $args $k] }
+      incr k ; set newstar_mag 0          ; if {[llength $args] >= [expr 1+$k]} { set newstar_mag [lindex $args $k] }
       #--- check les catalogues
       if {([string toupper $cat_format]=="USNO")||([string toupper $cat_format]=="MICROCAT")} {
       } else {
@@ -1615,14 +1620,14 @@ proc simulimage {args} {
          if { ( [ string length $cdpath ] > 0 ) && ( [ string index "$cdpath" end ] != "/" ) } {
             append cdpath "/"
          }
-         buf$::audace(bufNo) imaseries "CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/cata.fit\" simulimage exposure=$exposure fwhmx=$fwhm  fwhmy=$fwhm teldiam=$teldiam colfilter=$colfilter sky_brightness=$sky_brightness qe=$quantum_efficiency gain=$gain readout_noise=$readout_noise shutter_mode=$shutter_mode bias_level=$bias_level thermic_response=$thermic_response flat_type=$flat_type"
+         buf$::audace(bufNo) imaseries "CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/cata.fit\" simulimage exposure=$exposure fwhmx=$fwhm  fwhmy=$fwhm teldiam=$teldiam colfilter=$colfilter sky_brightness=$sky_brightness qe=$quantum_efficiency gain=$gain readout_noise=$readout_noise shutter_mode=$shutter_mode bias_level=$bias_level thermic_response=$thermic_response flat_type=$flat_type newstar=$newstar_type ra=$newstar_ra dec=$newstar_dec mag=$newstar_mag"
          file delete [ file join ${mypath} cata.fit ]
       }
       ::audace::autovisu $::audace(visuNo)
       #set catastar [lindex [buf$::audace(bufNo) getkwd CATASTAR] 1]
       return ""
    } else {
-      error "Usage: simulimage Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder ?exposure_s? ?fwhm_pix? ?teldiam_m? ?colfilter? ?sky_brightness_mag/arcsec2? ?quantum_efficiency? ?gain_e/ADU? ?readout_noise_e? ?shutter_mode? ?bias_level_ADU? ?thermic_response_e/pix/sec? ?flat_type?"
+      error "Usage: simulimage Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder ?exposure_s? ?fwhm_pix? ?teldiam_m? ?colfilter? ?sky_brightness_mag/arcsec2? ?quantum_efficiency? ?gain_e/ADU? ?readout_noise_e? ?shutter_mode? ?bias_level_ADU? ?thermic_response_e/pix/sec? ?flat_type? ?newstar_type? ?newstar_ra? ?newstar_dec? ?newstar_mag?"
    }
 }
 
