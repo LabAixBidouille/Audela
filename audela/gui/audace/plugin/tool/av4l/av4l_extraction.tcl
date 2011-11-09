@@ -123,6 +123,39 @@ namespace eval ::av4l_extraction {
    }
 
 
+   #
+   # av4l_extraction::chgdir
+   # Ouvre une boite de dialogue pour choisir un nom  de repertoire 
+   #
+   proc chgdir { This } {
+      global caption
+      global cwdWindow
+      global audace
+
+      #--- Initialisation des variables a 2 (0 et 1 reservees a Configuration --> Repertoires)
+      set cwdWindow(rep_images)      "2"
+      set cwdWindow(rep_travail)     "2"
+      set cwdWindow(rep_scripts)     "2"
+      set cwdWindow(rep_catalogues)  "2"
+      set cwdWindow(rep_userCatalog) "2"
+
+      set parent "$audace(base)"
+      set title "Choisir un repertoire de destination"
+      set rep "$audace(rep_images)"
+
+      set numerror [ catch { set filename "[ ::cwdWindow::tkplus_chooseDir "$rep" $title $parent ]" } msg ]
+      if { $numerror == "1" } {
+         set filename "[ ::cwdWindow::tkplus_chooseDir "[pwd]" $title $parent ]"
+      }
+
+
+      ::console::affiche_resultat $audace(rep_images)
+
+      $This delete 0 end
+      $This insert 0 $filename
+      
+   }
+
 
 
    #
@@ -264,7 +297,7 @@ namespace eval ::av4l_extraction {
              #--- Creation du bouton setmin
              button $frm.pos.setmin \
                 -text "setmin" -borderwidth 2 \
-                -command "::av4l_tools::avi_setmin"
+                -command "::av4l_tools::avi_setmin $frm"
              pack $frm.pos.setmin \
                 -in $frm.pos \
                 -side left -anchor w \
@@ -273,7 +306,7 @@ namespace eval ::av4l_extraction {
              #--- Creation du bouton setmax
              button $frm.pos.setmax \
                 -text "setmax" -borderwidth 2 \
-                -command "::av4l_tools::avi_setmax"
+                -command "::av4l_tools::avi_setmax $frm"
              pack $frm.pos.setmax \
                 -in $frm.pos \
                 -side left -anchor w \
@@ -320,58 +353,108 @@ namespace eval ::av4l_extraction {
              #--- Cree un button
              button $frm.doimagecount \
               -text "calcul" -borderwidth 2 \
-              -command "::av4l_tools::avi_imagecount"
+              -command "::av4l_tools::avi_imagecount $frm" 
              pack $frm.doimagecount -in $frm.count -side left -pady 1 -anchor w
 
-
-
-        #--- Cree un frame pour 
-        frame $frm.status \
-              -borderwidth 1 -relief raised -cursor arrow
-        pack $frm.status \
-             -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
-
-        #--- Cree un label pour
-        #label $frm.statusbdd -font $av4lconf(font,arial_12_b) \
-        #     -text "LBL $caption(av4l_extraction,label_bdd)"
-        #pack $frm.statusbdd -in $frm.status -side top -padx 3 -pady 1 -anchor w
-
+          #--- Cree un frame pour 
+          frame $frm.status -borderwidth 0 -cursor arrow
+          pack $frm.status -in $frm -side top -expand 0
 
           #--- Cree un frame pour afficher les intitules
           set intitle [frame $frm.status.l -borderwidth 0]
           pack $intitle -in $frm.status -side left
 
             #--- Cree un label pour le status
-            label $intitle.ok -font $av4lconf(font,courier_10) -padx 3 \
-                  -text "repertoire destination"
-            pack $intitle.ok -in $intitle -side top -padx 3 -pady 1 -anchor w
+            label $intitle.status -font $av4lconf(font,courier_10) -text "Status"
+            pack $intitle.status -in $intitle -side top -anchor w
+
             #--- Cree un label pour le nb d image
-            label $intitle.requetes -font $av4lconf(font,courier_10) \
-                  -text "prefixe des fichiers"
-            pack $intitle.requetes -in $intitle -side top -padx 3 -pady 1 -anchor w
+            label $intitle.fps -font $av4lconf(font,courier_10) -text "fps"
+            pack $intitle.fps -in $intitle -side top -anchor w
+
+            #--- Cree un label pour le nb d image
+            label $intitle.nbtotal -font $av4lconf(font,courier_10) -text "Nb total d'images"
+            pack $intitle.nbtotal -in $intitle -side top -anchor w
 
 
           #--- Cree un frame pour afficher les valeurs
           set inparam [frame $frm.status.v -borderwidth 0]
-          pack $inparam -in $frm.status -side right -expand 1 -fill x
+          pack $inparam -in $frm.status -side left -expand 0 -fill x
 
-            #--- Cree un label pour le nb image
-            entry $inparam.requetes -fg $color(blue)
-            pack $inparam.requetes -in $inparam -side top -pady 1 -anchor w
-            #--- Cree un label pour le nb de header
-            entry $inparam.scenes  -fg $color(blue)
-            pack $inparam.scenes -in $inparam -side top -pady 1 -anchor w
+            #--- Cree un label pour le repetoire destination
+            label $inparam.status -font $av4lconf(font,courier_10) -fg $color(blue) -text "Loaded / ? / Error"
+            pack  $inparam.status -in $inparam -side top -anchor w
+
+            #--- Cree un label pour le prefixe
+            label $inparam.fps -font $av4lconf(font,courier_10) -fg $color(blue) -text "25.0003"
+            pack  $inparam.fps -in $inparam -side top -anchor w
+
+            #--- Cree un label pour le prefixe
+            label $inparam.nbtotal -font $av4lconf(font,courier_10) -fg $color(blue) -text "147"
+            pack  $inparam.nbtotal -in $inparam -side top -anchor w
+
+
+
+
+
+        #--- Cree un frame pour 
+        frame $frm.form \
+              -borderwidth 1 -relief raised -cursor arrow
+        pack $frm.form \
+             -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
+
+          #--- Cree un frame pour afficher les intitules
+          set intitle [frame $frm.form.l -borderwidth 0]
+          pack $intitle -in $frm.form -side left
+
+            #--- Cree un label pour le status
+            label $intitle.destdir -font $av4lconf(font,courier_10) -padx 3 \
+                  -text "repertoire destination"
+            pack $intitle.destdir -in $intitle -side top -padx 3 -pady 1 -anchor w
+
+            #--- Cree un label pour le nb d image
+            label $intitle.prefix -font $av4lconf(font,courier_10) \
+                  -text "prefixe des fichiers"
+            pack $intitle.prefix -in $intitle -side top -padx 3 -pady 1 -anchor w
+
+
+          #--- Cree un frame pour afficher les valeurs
+          set inparam [frame $frm.form.v -borderwidth 0]
+          pack $inparam -in $frm.form -side left -expand 0 -fill x
+
+            #--- Cree un label pour le repetoire destination
+            entry $inparam.destdir -fg $color(blue)
+            pack $inparam.destdir -in $inparam -side top -pady 1 -anchor w
+
+            #--- Cree un label pour le prefixe
+            entry $inparam.prefix  -fg $color(blue)
+            pack $inparam.prefix -in $inparam -side top -pady 1 -anchor w
+
+          #--- Cree un frame pour afficher les extras
+          set inbutton [frame $frm.form.e -borderwidth 0]
+          pack $inbutton -in $frm.form -side left -expand 0 -fill x
+
+            #--- Cree un button
+            button $inbutton.chgdir \
+             -text "..." -borderwidth 2 \
+             -command "::av4l_extraction::chgdir $inparam.destdir" 
+            pack $inbutton.chgdir -in $inbutton -side top -pady 0 -anchor w
+
+            #--- Cree un label pour le nb d image
+            label $inbutton.blank -font $av4lconf(font,courier_10) \
+                  -text ""
+            pack $inbutton.blank -in $inbutton -side top -padx 3 -pady 1 -anchor w
 
 
    #---
-        #--- Cree un frame pour 
+        #--- Cree un frame pour  les boutons d action 
         frame $frm.action \
               -borderwidth 1 -relief raised -cursor arrow
         pack $frm.action \
              -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
 
            button $frm.action.extract \
-              -text "extract" -borderwidth 2 \
+              -text "Extraction" -borderwidth 2 \
               -command { ::av4l_tools::avi_extract }
            pack $frm.action.extract -in $frm.action \
               -side left -anchor e \
