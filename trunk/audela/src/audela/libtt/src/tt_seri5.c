@@ -434,6 +434,7 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
    double XXX,YYY,rienf;
    int bordurex=0,bordurey=0;
    int np_index=0;
+	double newstar_ra,newstar_dec,newstar_mag,newstar_x,newstar_y;
    /*
    double sind0;
    double cosd0;
@@ -736,6 +737,22 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
    YYYmin=bordurey;
    YYYmax=nb_pixel_y-bordurey;
 
+	/*=== remplacement d'une eventuelle etoile perso ===*/
+	newstar_ra=pseries->ra;
+	newstar_dec=pseries->dec;
+	newstar_mag=pseries->mag;
+	newstar_x=-100;
+	newstar_y=-100;
+	if (pseries->newstar==TT_NEWSTAR_REPLACE) {
+  		tt_util_astrom_radec2xy(&p,newstar_ra/(180/(TT_PI)),newstar_dec/(180/(TT_PI)),&XXX,&YYY);
+		if (XXX>=XXXmin && XXX<XXXmax && YYY>=YYYmin && YYY<YYYmax) {
+			newstar_x=XXX;
+			newstar_y=YYY;
+		} else {
+			pseries->newstar=TT_NEWSTAR_NONE;
+		}
+	}
+
    /*==== ouverture d'un fichier liste ====*/
    sprintf(name,"usno%s.lst",tt_tmpfile_ext);
    if ((out_file=fopen(name,"w"))==NULL) {
@@ -814,20 +831,24 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 				mag_bleue=((double)tmb)/10.0-3.0;
   				tt_util_astrom_radec2xy(&p,ra/(180/(TT_PI)),de/(180/(TT_PI)),&XXX,&YYY);
 				if (XXX>=XXXmin && XXX<XXXmax && YYY>=YYYmin && YYY<YYYmax && mag_red<=magrlim && mag_bleue<=magblim ) {
-					/*=== ecriture d'une ligne dans le fichier USNO.LST ===*/
-					ppx=(double)XXX;
-					ppy=(double)YYY;
-					compteur=compteur+1;
-					compteur_tyc=compteur_tyc+1;
-					if ((fprintf(out_file,"%d %f %f %f %f %f %f %f\n",compteur,ppx,ppy,mag_red,ra,de,mag_red,mag_bleue))<0) {
-						sprintf(message,"A line in file %s cannot be created\n",name);
-						tt_errlog(TT_ERR_FILE_CANNOT_BE_WRITED,message);
-						fclose(cat);
-						fclose(out_file);
-						tt_free2((void**)&p_index,"p_index");
-						return(PB_DLL);
+					if ((pseries->newstar==TT_NEWSTAR_REPLACE)&&(fabs(XXX-newstar_x)<2)&&(fabs(XXX-newstar_x)<2)) {
+						/*=== on insere pas l'etoile du catalogue car elle est trop proche de celle a inserer perso ==*/
+					} else {
+						/*=== ecriture d'une ligne dans le fichier USNO.LST ===*/
+						ppx=(double)XXX;
+						ppy=(double)YYY;
+						compteur=compteur+1;
+						compteur_tyc=compteur_tyc+1;
+						if ((fprintf(out_file,"%d %f %f %f %f %f %f %f\n",compteur,ppx,ppy,mag_red,ra,de,mag_red,mag_bleue))<0) {
+							sprintf(message,"A line in file %s cannot be created\n",name);
+							tt_errlog(TT_ERR_FILE_CANNOT_BE_WRITED,message);
+							fclose(cat);
+							fclose(out_file);
+							tt_free2((void**)&p_index,"p_index");
+							return(PB_DLL);
+						}
+						j++;
 					}
-					j++;
             }
 			}
          fclose(cat);
@@ -889,19 +910,23 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 				mag_bleue=((double)tmb)/10.0-3.0;
 				tt_util_astrom_radec2xy(&p,ra/(180/(TT_PI)),de/(180/(TT_PI)),&XXX,&YYY);
 				if (XXX>=XXXmin && XXX<XXXmax && YYY>=YYYmin && YYY<YYYmax && mag_red<=magrlim && mag_bleue<=magblim ) {
-					/*=== ecriture d'une ligne dans le fichier USNO.LST ===*/
-					ppx=(double)XXX;
-					ppy=(double)YYY;
-					compteur=compteur+1;
-					if ((fprintf(out_file,"%d %f %f %f %f %f %f %f\n",compteur,ppx,ppy,mag_red,ra,de,mag_red,mag_bleue))<0) {
-						sprintf(message,"A line in file %s cannot be created\n",name);
-						tt_errlog(TT_ERR_FILE_CANNOT_BE_WRITED,message);
-						fclose(cat);
-						fclose(out_file);
-						tt_free2((void**)&p_index,"p_index");
-						return(PB_DLL);
-               }
-				j++;
+					if ((pseries->newstar==TT_NEWSTAR_REPLACE)&&(fabs(XXX-newstar_x)<2)&&(fabs(XXX-newstar_x)<2)) {
+						/*=== on insere pas l'etoile du catalogue car elle est trop proche de celle a inserer perso ==*/
+					} else {
+						/*=== ecriture d'une ligne dans le fichier USNO.LST ===*/
+						ppx=(double)XXX;
+						ppy=(double)YYY;
+						compteur=compteur+1;
+						if ((fprintf(out_file,"%d %f %f %f %f %f %f %f\n",compteur,ppx,ppy,mag_red,ra,de,mag_red,mag_bleue))<0) {
+							sprintf(message,"A line in file %s cannot be created\n",name);
+							tt_errlog(TT_ERR_FILE_CANNOT_BE_WRITED,message);
+							fclose(cat);
+							fclose(out_file);
+							tt_free2((void**)&p_index,"p_index");
+							return(PB_DLL);
+						}
+						j++;
+					}
             }
 			}
          fclose(cat);
@@ -995,19 +1020,23 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
                }
                tt_util_astrom_radec2xy(&p,ra/(180/(TT_PI)),de/(180/(TT_PI)),&XXX,&YYY);
 			      if (XXX>=XXXmin && XXX<XXXmax && YYY>=YYYmin && YYY<YYYmax && mag_red<=magrlim && mag_bleue<=magblim ) {
-						/*=== ecriture d'une ligne dans le fichier USNO.LST ===*/
-						ppx=(double)XXX;
-						ppy=(double)YYY;
-						compteur=compteur+1;
-						if ((fprintf(out_file,"%d %f %f %f %f %f %f %f\n",compteur,ppx,ppy,mag_red,ra,de,mag_red,mag_bleue))<0) {
-							sprintf(message,"A line in file %s cannot be created\n",name);
-							tt_errlog(TT_ERR_FILE_CANNOT_BE_WRITED,message);
-							fclose(cat);
-							fclose(out_file);
-							tt_free2((void**)&p_index,"p_index");
-							return(PB_DLL);
-                  }
-               j++;
+						if ((pseries->newstar==TT_NEWSTAR_REPLACE)&&(fabs(XXX-newstar_x)<2)&&(fabs(XXX-newstar_x)<2)) {
+							/*=== on insere pas l'etoile du catalogue car elle est trop proche de celle a inserer perso ==*/
+						} else {
+							/*=== ecriture d'une ligne dans le fichier USNO.LST ===*/
+							ppx=(double)XXX;
+							ppy=(double)YYY;
+							compteur=compteur+1;
+							if ((fprintf(out_file,"%d %f %f %f %f %f %f %f\n",compteur,ppx,ppy,mag_red,ra,de,mag_red,mag_bleue))<0) {
+								sprintf(message,"A line in file %s cannot be created\n",name);
+								tt_errlog(TT_ERR_FILE_CANNOT_BE_WRITED,message);
+								fclose(cat);
+								fclose(out_file);
+								tt_free2((void**)&p_index,"p_index");
+								return(PB_DLL);
+							}
+		               j++;
+						}
                }
             }
             fclose(cat);
@@ -1039,28 +1068,48 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
                mag_bleue=mag_red;
                tt_util_astrom_radec2xy(&p,ra/(180/(TT_PI)),de/(180/(TT_PI)),&XXX,&YYY);
                if (XXX>=XXXmin && XXX<XXXmax && YYY>=YYYmin && YYY<YYYmax && mag_red<=magrlim && mag_bleue<=magblim ) {
-                  /*if (XXX>=0.0 && XXX<(double)nb_pixel_x && YYY>=0.0 && YYY<(double)nb_pixel_y) {*/
-                  /*=== ecriture d'une ligne dans le fichier USNO.LST ===*/
-                  ppx=(double)XXX;
-                  ppy=(double)YYY;
-                  compteur=compteur+1;
-                  if ((fprintf(out_file,"%d %f %f %f %f %f %f %f\n",
-                     compteur,ppx,ppy,mag_red,ra,de,mag_red,mag_bleue))<0) {
-                     sprintf(message,"A line in file %s cannot be created\n",name);
-                     tt_errlog(TT_ERR_FILE_CANNOT_BE_WRITED,message);
-                     fclose(cat);
-                     fclose(out_file);
-                     tt_free2((void**)&p_index,"p_index");
-                     return(PB_DLL);
-                  }
-                  j++;
+						if ((pseries->newstar==TT_NEWSTAR_REPLACE)&&(fabs(XXX-newstar_x)<2)&&(fabs(XXX-newstar_x)<2)) {
+							/*=== on insere pas l'etoile du catalogue car elle est trop proche de celle a inserer perso ==*/
+						} else {
+							/*if (XXX>=0.0 && XXX<(double)nb_pixel_x && YYY>=0.0 && YYY<(double)nb_pixel_y) {*/
+							/*=== ecriture d'une ligne dans le fichier USNO.LST ===*/
+							ppx=(double)XXX;
+							ppy=(double)YYY;
+							compteur=compteur+1;
+							if ((fprintf(out_file,"%d %f %f %f %f %f %f %f\n",
+								compteur,ppx,ppy,mag_red,ra,de,mag_red,mag_bleue))<0) {
+								sprintf(message,"A line in file %s cannot be created\n",name);
+								tt_errlog(TT_ERR_FILE_CANNOT_BE_WRITED,message);
+								fclose(cat);
+								fclose(out_file);
+								tt_free2((void**)&p_index,"p_index");
+								return(PB_DLL);
+							}
+							j++;
+						}
                }
             }
             k++;
          }
       } while (feof(cat)==0);
+	} else {
       fclose(cat);
    }
+
+	/* --- etoile perso --- */
+	if (pseries->newstar!=TT_NEWSTAR_NONE) {
+		compteur=compteur+1;
+		if ((fprintf(out_file,"%d %f %f %f %f %f %f %f\n",
+			compteur,newstar_x,newstar_y,newstar_mag,newstar_ra,newstar_dec,newstar_mag,newstar_mag))<0) {
+			sprintf(message,"A line in file %s cannot be created\n",name);
+			tt_errlog(TT_ERR_FILE_CANNOT_BE_WRITED,message);
+			fclose(cat);
+			fclose(out_file);
+			tt_free2((void**)&p_index,"p_index");
+			return(PB_DLL);
+		}
+		j++;
+	}
 
    /*==== fermeture du fichier liste ====*/
    fclose(out_file);
@@ -1070,6 +1119,7 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 
    /* --- on reprend le fichier usno.lst en memoire ---*/
    nbe=j;
+
    if (nbe==0) {
       tt_tblcatcreater(p_out->catalist,1);
       p_out->catalist->x[nbe]=(double)(0.);

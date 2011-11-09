@@ -289,6 +289,10 @@
 #define TT_FLAT_TYPE_NONE 0
 #define TT_FLAT_TYPE_SIMPLE_VIGNETTING 1
 
+#define TT_NEWSTAR_NONE 0
+#define TT_NEWSTAR_ADD 1
+#define TT_NEWSTAR_REPLACE 2
+
 /* --- definitions specifiques a l'OS pour l'appel de la fonction d'entree  ---*/
 #ifdef OS_WIN_VCPP_DLL
 #define libtt_main0 _libtt_main
@@ -884,6 +888,10 @@ typedef struct {
 	double bias_level;
 	int flat_type;
 	double thermic_response;
+	int newstar;
+	double ra;
+	double dec;
+	double mag;
    /* --- parametres internes (private) ---*/
    double binary_yesno;
    double val_exptime;
