@@ -58,8 +58,8 @@
 #
 # calibwcs  Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder
 # calibwcs2  Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder number ?first_index?
-# simulimage  Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder ?exposure_s? ?fwhm_pix? \
-#             ?teldiam_m? ?colfilter? ?sky_brightness_mag/arcsec2? ?quantum_efficiency? ?gain_e/ADU? ?readout_noise_e?"
+# simulimage Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder ?exposure_s? ?fwhm_pix? ?teldiam_m? ?colfilter? ?sky_brightness_mag/arcsec2? ?quantum_efficiency? ?gain_e/ADU? ?readout_noise_e? ?shutter_mode? ?bias_level_ADU? ?thermic_response_e/pix/sec? ?flat_type? ?newstar_type? ?newstar_ra? ?newstar_dec? ?newstar_mag?
+# simulimage2 out ListDatesObsUTC variable_type Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder ?exposure_s? ?fwhm_pix? ?teldiam_m? ?colfilter? ?sky_brightness_mag/arcsec2? ?quantum_efficiency? ?gain_e/ADU? ?readout_noise_e? ?shutter_mode? ?bias_level_ADU? ?thermic_response_e/pix/sec? ?flat_type?
 #
 
 proc add {args} {
@@ -1631,3 +1631,176 @@ proc simulimage {args} {
    }
 }
 
+#--- Example 1 : from an images ever loaded
+# source "$audace(rep_install)/gui/audace/surchaud.tcl" ; simulimage2 test [mc_date2listdates 2011-11-11T00:00:00 0.021 100] {FOURIER 164.630566 67.529504 2011-11-08T00:00:00 0.28 12.5 -0.86 -0.53 -0.45 0.32 0.039 0.021} * * * * * * * USNO c:/d/usno/ 90 2.5 0.25 R 20.0 0.07 1.8 8.5  1 1000 0.5 0
+#--- Example 2 :  from scratch
+# source "$audace(rep_install)/gui/audace/surchaud.tcl"
+# simulimage2 test [mc_date2listdates 2011-11-11T00:00:00 0.021 100] {FOURIER 164.630566 67.529504 2011-11-08T00:00:00 0.28 12.5 -0.86 -0.53 -0.45 0.32 0.039 0.021} 127 127 164.589733 67.515479 13.5 13.5 0.84587 USNO c:/d/usno/ 90 2.5 0.25 R 20.0 0.07 1.8 8.5  1 1000 0.5 0
+# photrel_wcs2cat test 100 new ; photrel_cat2var test ; photrel_cat2per test test 164.630637 67.529499 C 0
+proc simulimage2 {args} {
+	set pi [expr 4.*atan(1)]
+   if {[llength $args] >= 5} {
+      set arg0s [lrange $args 5 end]
+      set naxis1 [lindex $args 3]
+      set naxis2 [lindex $args 4]
+      if {($naxis1!="*")&&($naxis2!="*")} {
+			buf$::audace(bufNo) new CLASS_GRAY $naxis1 $naxis2 FORMAT_SHORT COMPRESS_NONE
+			buf$::audace(bufNo) setkwd { NAXIS 2 int "" "" }	      
+      }
+		saveima tmp
+      set out [lindex $args 0]
+      set ListDates [lindex $args 1] ; # dates-obs UTC
+      set variable_type [lindex $args 2]
+		set exposure [lindex $arg0s 7]
+		if {$exposure==""} {
+			set exposure [lindex [buf$::audace(bufNo) getkwd EXPOSURE] 1]
+		}
+		if {$exposure==""} {
+			set exposure [lindex [buf$::audace(bufNo) getkwd EXPTIME] 1]
+		}
+		if {$exposure==""} {
+			set exposure 1
+		}
+		set filter [lindex $arg0s 10]
+		if {$filter==""} {
+			set filter [lindex [buf$::audace(bufNo) getkwd FILTER] 1]
+		}
+		if {$filter==""} {
+			set filter R
+		}
+      set key [string toupper [lindex $variable_type 0]]
+      set ra 0
+      set dec 0
+      if {$key=="FOURIER"} {
+	      # FOURIER ra dec jdphase c ?a1? ?b1? ?a2? ?b2? ?a3? ?b3? ?a4? ?b4? ?a5? ?b5?
+	      set ra [mc_angle2deg [lindex $variable_type 1]]
+	      set dec [mc_angle2deg [lindex $variable_type 2]]
+	      set jdphase [mc_date2jd [lindex $variable_type 3]] ; # HJD
+	      set period [lindex $variable_type 4] ; # day
+	      set four_c [lindex $variable_type 5] ; # mag
+	      set kk 1	      
+	      for {set k 6} {$k<[expr 6+5*2]} {incr k 2} {
+		      set four_a($kk) [lindex $variable_type [expr $k+0]] ; # mag
+		      set four_b($kk) [lindex $variable_type [expr $k+1]] ; # mag
+		      if {$four_a($kk)==""} { set four_a($kk) 0 }
+		      if {$four_b($kk)==""} { set four_b($kk) 0 }
+		      incr kk
+	      }
+      }
+      if {$key=="SN"} {
+	      # SN Ia ra dec jdmax magVmax
+	      set sntype [string toupper [lindex $variable_type 1]]
+	      set ra [mc_angle2deg [lindex $variable_type 2]]
+	      set dec [mc_angle2deg [lindex $variable_type 3]]
+	      set jdmax [mc_date2jd [lindex $variable_type 4]]
+	      set magmax [lindex $variable_type 5]
+      }
+		# --- Compute HJD
+      set nd [llength $ListDates]
+      set dates ""
+	   for {set k 0} {$k<$nd} {incr k} {
+	      set date [lindex $ListDates $k] ; # date-obs UTC
+	      set date [mc_datescomp $date + [expr $exposure/2./86400.]]
+	      lappend dates $date
+      }		
+      # --- correction of time : JD UT-terrestrial -> barycentrical of the solar system
+      set hjds [mc_dates_ut2bary $dates $ra $dec J2000.0]
+		# --- Compute mags
+      set mags ""
+      if {$key=="FOURIER"} {
+		   for {set kk 1} {$kk<=5} {incr kk} {
+				#::console::affiche_resultat "$kk => $four_a($kk) $four_b($kk)\n"
+		   }
+		   for {set k 0} {$k<$nd} {incr k} {
+			   set hjd [lindex $hjds $k]
+			   set phase [expr 1.*($hjd-$jdphase)/$period]
+			   set phase [expr $phase-floor($phase)]
+			   set mag $four_c
+			   for {set kk 1} {$kk<=5} {incr kk} {
+				   set mag [expr $mag + $four_a($kk)*cos(2*$pi*$kk*$phase) + $four_a($kk)*sin(2*$pi*$kk*$phase)]
+			   }
+			   lappend mags $mag
+		   }
+   	} elseif {$key=="SN"} {
+	   	# From http://supernova.lbl.gov/~nugent/nugent_templates.html
+	   	# template $audace(rep_catalogues)/cataphotom/sn1a_lc.v1.2.dat
+		   set fic sn1a_lc.v1.2.dat ; ffs [list U B V R I J H K]
+		   if {$sntype=="IA"} { set fic sn1a_lc.v1.2.dat ; ffs [list U B V R I J H K] }
+	   	if {$sntype=="IBC"} { set fic sn1bc_lc.v1.1.dat ; ffs [list U B V R I] }
+	   	if {$sntype=="IC"} { set fic hyper_lc.v1.2.dat  ; ffs [list V]}
+	   	if {$sntype=="IIP"} { set fic sn2p_lc.v1.2.dat  ; ffs [list V]}
+	   	if {$sntype=="IIL"} { set fic sn2l_lc.v1.2.dat  ; ffs [list V]}
+	   	if {$sntype=="IIN"} { set fic sn2n_lc.v2.1.dat  ; ffs [list V]}
+	   	if {$sntype=="91BG"} { set fic sn91bg_lc.v1.1.dat ; ffs [list U B V R I] }
+	   	if {$sntype=="91T"} { set fic sn91t_lc.v1.1.dat ; ffs [list U B V R I] }
+			set kf [lsearch -exact $ffs $filter]
+			if {$kf==-1} { set kf 0 }
+			set f [open $audace(rep_catalogues)/cataphotom/$fic r]
+			set lignes [split [read $f] \n]
+			close $f
+			set template_dts ""
+			set template_mags ""
+			set nt 0
+			foreach ligne $lignes {
+				if {[llength $ligne]<=1} { continue }
+				lappend template_dts [lindex $ligne 0]
+				lappend template_mags [lindex $ligne $kf]
+				incr nt
+			}
+			set template_dt1 [lindex $template_dts 0]
+			set template_dt2 [lindex $template_dts end]
+			set template_dt20 [lindex $template_dts end-1]
+			set template_mag2 [lindex $template_mags end]
+			set template_mag20 [lindex $template_mags end-1]
+		   for {set k 0} {$k<$nd} {incr k} {
+			   set hjd [lindex $hjds $k]
+			   set dt [expr $hjd-$jdmax]
+				if {$dt<=$template_dt1} {
+					set mag [lindex $template_mags 0]
+				} elseif {$dt>=$template_dt20} {
+					set frac [expr 1.*($dt-$template_dt20)/($template_dt2-$template_dt20)]
+					set mag [expr $template_mag20 + $frac * ($template_mag2-$template_mag20)]
+				} else {
+				   for {set kt 0} {$kt<[expr $nt-1]} {incr kt} {
+						set template_dt0 [lindex $template_dts $kt]
+						if {$dt>=$template_dt0} {
+							set template_mag0 [lindex $template_mags $kt]
+							set template_dt [lindex $template_dts [expr $kt+1]]
+							set template_mag [lindex $template_mags [expr $kt+1]]
+							set frac [expr 1.*($dt-$template_dt0)/($template_dt-$template_dt0)]
+							set mag [expr $template_mag0 + $frac * ($template_mag-$template_mag0)]							
+							break
+						}
+					}
+				}
+			   lappend mags $mag
+		   }
+	   } else {
+		   for {set k 0} {$k<$nd} {incr k} {
+			   lappend mags 12.5
+		   }
+	   }
+	   ::plotxy::plot $hjds $mags o      
+	   # --- Loop over images
+		for {set k 0} {$k<$nd} {incr k} {
+			set k1 [expr $k+1]
+			buf$::audace(bufNo) load $::audace(rep_images)/tmp
+			set mag [lindex $mags $k]
+			set dateobs [mc_date2iso8601 [lindex $ListDates $k]]
+			::console::affiche_resultat "Build image ${out}$k1 : $dateobs $mag\n"
+			buf$::audace(bufNo) setkwd [list DATE-OBS $dateobs string ISO8601 "Star of exposure"]			
+			buf$::audace(bufNo) setkwd [list EXPOSURE $exposure double s "Time of exposure"]			
+	      set toeval "simulimage"
+	      foreach arg0 $arg0s {
+		      append toeval " \{$arg0\}"
+	      }
+		   append toeval " REPLACE $ra $dec $mag"
+			#::console::affiche_resultat "$toeval\n"
+			eval $toeval
+			saveima ${out}$k1
+			update
+		}	   
+   } else {
+      error "Usage: simulimage2 out ListDatesObsUTC variable_type naxis1 naxis2 Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder ?exposure_s? ?fwhm_pix? ?teldiam_m? ?colfilter? ?sky_brightness_mag/arcsec2? ?quantum_efficiency? ?gain_e/ADU? ?readout_noise_e? ?shutter_mode? ?bias_level_ADU? ?thermic_response_e/pix/sec? ?flat_type?"
+   }
+}
