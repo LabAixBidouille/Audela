@@ -436,7 +436,7 @@ namespace eval ::av4l_acq {
               pack  $image.t.titre -in $image.t -side left -anchor w -padx 30
 
               button $image.t.select -text "Select" -borderwidth 1 -takefocus 1 \
-                                     -command ""
+                                     -command "::av4l_photom::select_fullimg $visuNo $image"
               pack $image.t.select -in $image.t -side left -anchor e 
                 
               #--- Cree un frame pour les info 
@@ -475,7 +475,7 @@ namespace eval ::av4l_acq {
                  pack  $image.v.r.intmoy -in $image.v.r -side top -anchor w
 
                  #---
-                 label $image.v.l.sigma -font $av4lconf(font,courier_10) -text "Sigma"
+                 label $image.v.l.sigma -font $av4lconf(font,courier_10) -text "Ecart-type"
                  pack  $image.v.l.sigma -in $image.v.l -side top -anchor w
                  label $image.v.r.sigma -font $av4lconf(font,courier_10) -fg $color(blue) -text "?"
                  pack  $image.v.r.sigma -in $image.v.r -side top -anchor w
@@ -496,7 +496,7 @@ namespace eval ::av4l_acq {
               pack  $object.t.titre -in $object.t -side left -anchor w -padx 30
 
               button $object.t.select -text "Select" -borderwidth 1 -takefocus 1 \
-                                     -command ""
+                                     -command "::av4l_photom::select_obj $visuNo $object"
               pack $object.t.select -in $object.t -side left -anchor e 
                 
               #--- Cree un frame pour les info 
@@ -511,22 +511,34 @@ namespace eval ::av4l_acq {
 
 
                  #---
-                 label $object.v.l.fenetre -font $av4lconf(font,courier_10) -text "Position"
-                 pack  $object.v.l.fenetre -in $object.v.l -side top -anchor w
-                 label $object.v.r.fenetre -font $av4lconf(font,courier_10) -fg $color(blue) -text "?"
-                 pack  $object.v.r.fenetre -in $object.v.r -side top -anchor w
+                 label $object.v.l.position -font $av4lconf(font,courier_10) -text "Position"
+                 pack  $object.v.l.position -in $object.v.l -side top -anchor w
+                 label $object.v.r.position -font $av4lconf(font,courier_10) -fg $color(blue) -text "?"
+                 pack  $object.v.r.position -in $object.v.r -side top -anchor w
 
                  #---
-                 label $object.v.l.intmin -font $av4lconf(font,courier_10) -text "Intensite "
-                 pack  $object.v.l.intmin -in $object.v.l -side top -anchor w
-                 label $object.v.r.intmin -font $av4lconf(font,courier_10) -fg $color(blue) -text "?"
-                 pack  $object.v.r.intmin -in $object.v.r -side top -anchor w
+                 label $object.v.l.delta -font $av4lconf(font,courier_10) -text "Delta"
+                 pack  $object.v.l.delta -in $object.v.l -side top -anchor w
+                 label $object.v.r.delta -font $av4lconf(font,courier_10) -fg $color(blue) -text "?"
+                 pack  $object.v.r.delta -in $object.v.r -side top -anchor w
 
                  #---
-                 label $object.v.l.intmax -font $av4lconf(font,courier_10) -text "Fwhm"
-                 pack  $object.v.l.intmax -in $object.v.l -side top -anchor w
-                 label $object.v.r.intmax -font $av4lconf(font,courier_10) -fg $color(blue) -text "?"
-                 pack  $object.v.r.intmax -in $object.v.r -side top -anchor w
+                 label $object.v.l.int -font $av4lconf(font,courier_10) -text "Intensite "
+                 pack  $object.v.l.int -in $object.v.l -side top -anchor w
+                 label $object.v.r.int -font $av4lconf(font,courier_10) -fg $color(blue) -text "?"
+                 pack  $object.v.r.int -in $object.v.r -side top -anchor w
+
+                 #---
+                 label $object.v.l.fwhm -font $av4lconf(font,courier_10) -text "Fwhm"
+                 pack  $object.v.l.fwhm -in $object.v.l -side top -anchor w
+                 label $object.v.r.fwhm -font $av4lconf(font,courier_10) -fg $color(blue) -text "?"
+                 pack  $object.v.r.fwhm -in $object.v.r -side top -anchor w
+
+                 #---
+                 label $object.v.l.snb -font $av4lconf(font,courier_10) -text "S/B"
+                 pack  $object.v.l.snb -in $object.v.l -side top -anchor w
+                 label $object.v.r.snb -font $av4lconf(font,courier_10) -fg $color(blue) -text "?"
+                 pack  $object.v.r.snb -in $object.v.r -side top -anchor w
 
 
 
@@ -565,6 +577,12 @@ namespace eval ::av4l_acq {
                  pack  $reference.v.r.fenetre -in $reference.v.r -side top -anchor w
 
                  #---
+                 label $reference.v.l.delta -font $av4lconf(font,courier_10) -text "Delta"
+                 pack  $reference.v.l.delta -in $reference.v.l -side top -anchor w
+                 label $reference.v.r.delta -font $av4lconf(font,courier_10) -fg $color(blue) -text "?"
+                 pack  $reference.v.r.delta -in $reference.v.r -side top -anchor w
+
+                 #---
                  label $reference.v.l.intmin -font $av4lconf(font,courier_10) -text "Intensite "
                  pack  $reference.v.l.intmin -in $reference.v.l -side top -anchor w
                  label $reference.v.r.intmin -font $av4lconf(font,courier_10) -fg $color(blue) -text "?"
@@ -575,6 +593,12 @@ namespace eval ::av4l_acq {
                  pack  $reference.v.l.intmax -in $reference.v.l -side top -anchor w
                  label $reference.v.r.intmax -font $av4lconf(font,courier_10) -fg $color(blue) -text "?"
                  pack  $reference.v.r.intmax -in $reference.v.r -side top -anchor w
+
+                 #---
+                 label $reference.v.l.snb -font $av4lconf(font,courier_10) -text "S/B"
+                 pack  $reference.v.l.snb -in $reference.v.l -side top -anchor w
+                 label $reference.v.r.snb -font $av4lconf(font,courier_10) -fg $color(blue) -text "?"
+                 pack  $reference.v.r.snb -in $reference.v.r -side top -anchor w
 
 
 
