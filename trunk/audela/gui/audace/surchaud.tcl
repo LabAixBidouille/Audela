@@ -58,8 +58,8 @@
 #
 # calibwcs  Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder
 # calibwcs2  Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder number ?first_index?
-# simulimage Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder ?exposure_s? ?fwhm_pix? ?teldiam_m? ?colfilter? ?sky_brightness_mag/arcsec2? ?quantum_efficiency? ?gain_e/ADU? ?readout_noise_e? ?shutter_mode? ?bias_level_ADU? ?thermic_response_e/pix/sec? ?flat_type? ?newstar_type? ?newstar_ra? ?newstar_dec? ?newstar_mag?
-# simulimage2 out ListDatesObsUTC variable_type Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder ?exposure_s? ?fwhm_pix? ?teldiam_m? ?colfilter? ?sky_brightness_mag/arcsec2? ?quantum_efficiency? ?gain_e/ADU? ?readout_noise_e? ?shutter_mode? ?bias_level_ADU? ?thermic_response_e/pix/sec? ?flat_type?
+# simulimage Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder ?exposure_s? ?fwhm_pix? ?teldiam_m? ?colfilter? ?sky_brightness_mag/arcsec2? ?quantum_efficiency? ?gain_e/ADU? ?readout_noise_e? ?shutter_mode? ?bias_level_ADU? ?thermic_response_e/pix/sec? ?Tatm? ?Topt? ?EMCCD_mult? ?flat_type? ?newstar_type? ?newstar_ra? ?newstar_dec? ?newstar_mag?
+# simulimage2 out ListDatesObsUTC variable_type Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder ?exposure_s? ?fwhm_pix? ?teldiam_m? ?colfilter? ?sky_brightness_mag/arcsec2? ?quantum_efficiency? ?gain_e/ADU? ?readout_noise_e? ?shutter_mode? ?bias_level_ADU? ?thermic_response_e/pix/sec? ?Tatm? ?Topt? ?EMCCD_mult? ?flat_type?
 #
 
 proc add {args} {
@@ -1512,8 +1512,8 @@ proc calibwcs2 {args} {
    }
 }
 
-#--- Example : simulimage * * * * * USNO c:/d/usno/ 90 2.5 0.25 R 20.0 0.07 1.8 8.5  1 1000 0.5 0
-#--- Example : simulimage * * * * * USNO c:/d/usno/ 90 2.5 0.25 R 20.0 0.07 1.8 8.5  1 1000 0.5 0 REPLACE 164.630566 67.529504 8
+#--- Example : simulimage * * * * * USNO c:/d/usno/ 90 2.5 0.25 R 20.0 0.07 1.8 8.5  1 1000 0.5 0.6 0.85 1 0
+#--- Example : simulimage * * * * * USNO c:/d/usno/ 90 2.5 0.25 R 20.0 0.07 1.8 8.5  1 1000 0.5 0.6 0.85 1 0 REPLACE 164.630566 67.529504 8
 proc simulimage {args} {
    if {[llength $args] >= 5} {
       set Angle_ra [lindex $args 0]
@@ -1539,6 +1539,9 @@ proc simulimage {args} {
       incr k ; set shutter_mode 1         ; if {[llength $args] >= [expr 1+$k]} { set shutter_mode [lindex $args $k] }
       incr k ; set bias_level 0           ; if {[llength $args] >= [expr 1+$k]} { set bias_level [lindex $args $k] }
       incr k ; set thermic_response 0     ; if {[llength $args] >= [expr 1+$k]} { set thermic_response [lindex $args $k] }
+      incr k ; set tatm 0.6               ; if {[llength $args] >= [expr 1+$k]} { set tatm [lindex $args $k] }
+      incr k ; set topt 0.85              ; if {[llength $args] >= [expr 1+$k]} { set topt [lindex $args $k] }
+      incr k ; set elecmult 1             ; if {[llength $args] >= [expr 1+$k]} { set elecmult [lindex $args $k] }
       incr k ; set flat_type 0            ; if {[llength $args] >= [expr 1+$k]} { set flat_type [lindex $args $k] }
       incr k ; set newstar_type NONE      ; if {[llength $args] >= [expr 1+$k]} { set newstar_type [lindex $args $k] }
       incr k ; set newstar_ra 0           ; if {[llength $args] >= [expr 1+$k]} { set newstar_ra [lindex $args $k] }
@@ -1620,22 +1623,23 @@ proc simulimage {args} {
          if { ( [ string length $cdpath ] > 0 ) && ( [ string index "$cdpath" end ] != "/" ) } {
             append cdpath "/"
          }
-         buf$::audace(bufNo) imaseries "CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/cata.fit\" simulimage exposure=$exposure fwhmx=$fwhm  fwhmy=$fwhm teldiam=$teldiam colfilter=$colfilter sky_brightness=$sky_brightness qe=$quantum_efficiency gain=$gain readout_noise=$readout_noise shutter_mode=$shutter_mode bias_level=$bias_level thermic_response=$thermic_response flat_type=$flat_type newstar=$newstar_type ra=$newstar_ra dec=$newstar_dec mag=$newstar_mag"
+			#::console::affiche_resultat "CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/cata.fit\" simulimage exposure=$exposure fwhmx=$fwhm  fwhmy=$fwhm teldiam=$teldiam colfilter=$colfilter sky_brightness=$sky_brightness qe=$quantum_efficiency gain=$gain readout_noise=$readout_noise shutter_mode=$shutter_mode bias_level=$bias_level thermic_response=$thermic_response tatm=$tatm topt=$topt elecmult=$elecmult flat_type=$flat_type newstar=$newstar_type ra=$newstar_ra dec=$newstar_dec mag=$newstar_mag"
+         buf$::audace(bufNo) imaseries "CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/cata.fit\" simulimage exposure=$exposure fwhmx=$fwhm  fwhmy=$fwhm teldiam=$teldiam colfilter=$colfilter sky_brightness=$sky_brightness qe=$quantum_efficiency gain=$gain readout_noise=$readout_noise shutter_mode=$shutter_mode bias_level=$bias_level thermic_response=$thermic_response tatm=$tatm topt=$topt elecmult=$elecmult flat_type=$flat_type newstar=$newstar_type ra=$newstar_ra dec=$newstar_dec mag=$newstar_mag"
          file delete [ file join ${mypath} cata.fit ]
       }
       ::audace::autovisu $::audace(visuNo)
       #set catastar [lindex [buf$::audace(bufNo) getkwd CATASTAR] 1]
       return ""
    } else {
-      error "Usage: simulimage Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder ?exposure_s? ?fwhm_pix? ?teldiam_m? ?colfilter? ?sky_brightness_mag/arcsec2? ?quantum_efficiency? ?gain_e/ADU? ?readout_noise_e? ?shutter_mode? ?bias_level_ADU? ?thermic_response_e/pix/sec? ?flat_type? ?newstar_type? ?newstar_ra? ?newstar_dec? ?newstar_mag?"
+      error "Usage: simulimage Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder ?exposure_s? ?fwhm_pix? ?teldiam_m? ?colfilter? ?sky_brightness_mag/arcsec2? ?quantum_efficiency? ?gain_e/ADU? ?readout_noise_e? ?shutter_mode? ?bias_level_ADU? ?thermic_response_e/pix/sec? ?Tatm? ?Topt? ?EMCCD_mult? ?flat_type? ?newstar_type? ?newstar_ra? ?newstar_dec? ?newstar_mag?"
    }
 }
 
 #--- Example 1 : from an images ever loaded
-# source "$audace(rep_install)/gui/audace/surchaud.tcl" ; simulimage2 test [mc_date2listdates 2011-11-11T00:00:00 0.021 100] {FOURIER 164.630566 67.529504 2011-11-08T00:00:00 0.28 12.5 -0.86 -0.53 -0.45 0.32 0.039 0.021} * * * * * * * USNO c:/d/usno/ 90 2.5 0.25 R 20.0 0.07 1.8 8.5  1 1000 0.5 0
+# source "$audace(rep_install)/gui/audace/surchaud.tcl" ; simulimage2 test [mc_date2listdates 2011-11-11T00:00:00 0.021 100] {FOURIER 164.630566 67.529504 2011-11-08T00:00:00 0.28 12.5 -0.86 -0.53 -0.45 0.32 0.039 0.021} * * * * * * * USNO c:/d/usno/ 90 2.5 0.25 R 20.0 0.07 1.8 8.5  1 1000 0.5 0.6 0.85 1 0
 #--- Example 2 :  from scratch
 # source "$audace(rep_install)/gui/audace/surchaud.tcl"
-# simulimage2 test [mc_date2listdates 2011-11-11T00:00:00 0.021 100] {FOURIER 164.630566 67.529504 2011-11-08T00:00:00 0.28 12.5 -0.86 -0.53 -0.45 0.32 0.039 0.021} 127 127 164.589733 67.515479 13.5 13.5 0.84587 USNO c:/d/usno/ 90 2.5 0.25 R 20.0 0.07 1.8 8.5  1 1000 0.5 0
+# simulimage2 test [mc_date2listdates 2011-11-11T00:00:00 0.021 100] {FOURIER 164.630566 67.529504 2011-11-08T00:00:00 0.28 12.5 -0.86 -0.53 -0.45 0.32 0.039 0.021} 127 127 164.589733 67.515479 13.5 13.5 0.84587 USNO c:/d/usno/ 90 2.5 0.25 R 20.0 0.07 1.8 8.5  1 1000 0.5 0.6 0.85 1 0
 # photrel_wcs2cat test 100 new ; photrel_cat2var test ; photrel_cat2per test test 164.630637 67.529499 C 0
 proc simulimage2 {args} {
 	set pi [expr 4.*atan(1)]
@@ -1801,6 +1805,6 @@ proc simulimage2 {args} {
 			update
 		}	   
    } else {
-      error "Usage: simulimage2 out ListDatesObsUTC variable_type naxis1 naxis2 Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder ?exposure_s? ?fwhm_pix? ?teldiam_m? ?colfilter? ?sky_brightness_mag/arcsec2? ?quantum_efficiency? ?gain_e/ADU? ?readout_noise_e? ?shutter_mode? ?bias_level_ADU? ?thermic_response_e/pix/sec? ?flat_type?"
+      error "Usage: simulimage2 out ListDatesObsUTC variable_type naxis1 naxis2 Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder ?exposure_s? ?fwhm_pix? ?teldiam_m? ?colfilter? ?sky_brightness_mag/arcsec2? ?quantum_efficiency? ?gain_e/ADU? ?readout_noise_e? ?shutter_mode? ?bias_level_ADU? ?thermic_response_e/pix/sec? ?Tatm? ?Topt? ?EMCCD_mult? ?flat_type?"
    }
 }

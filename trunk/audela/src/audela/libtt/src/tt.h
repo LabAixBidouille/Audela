@@ -881,6 +881,9 @@ typedef struct {
 	double gain;
 	double teldiam;
 	double readout_noise;
+	double tatm;
+	double topt;
+	double elecmult;
 	int shuttermode;
 	double biaslevel;
 	int flattype;

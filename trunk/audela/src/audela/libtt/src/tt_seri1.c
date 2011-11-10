@@ -650,6 +650,9 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
 	pseries->gain=2.5; /* gain de la chaine en electron/ADU */
 	pseries->teldiam=1; /* diametre du telescope en metres */
 	pseries->readout_noise=0; /* electrons */
+	pseries->tatm=0.6; /* atmospheric transmission at observed elevation */
+	pseries->topt=0.85; /* optic transmission */
+	pseries->elecmult; /* EMCCD multiplicator factor */
 	pseries->shutter_mode=TT_SHUTTER_MODE_SYNCHRO; /* 1=synchro 0=closed 2=opened */
 	pseries->bias_level=0; /* ADU */
 	pseries->flat_type=TT_FLAT_TYPE_NONE; /* 0=no flat */
@@ -1074,6 +1077,15 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
       }
       else if (strcmp(mot,"READOUT_NOISE")==0) {
          pseries->readout_noise=(double)(fabs(atof(argu)));
+      }
+      else if (strcmp(mot,"TATM")==0) {
+         pseries->tatm=(double)(fabs(atof(argu)));
+      }
+      else if (strcmp(mot,"TOPT")==0) {
+         pseries->topt=(double)(fabs(atof(argu)));
+      }
+      else if (strcmp(mot,"ELECMULT")==0) {
+         pseries->elecmult=(double)(fabs(atof(argu)));
       }
       else if (strcmp(mot,"SHUTTER_MODE")==0) {
          pseries->shutter_mode=(int)(fabs(atoi(argu)));
