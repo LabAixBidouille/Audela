@@ -408,6 +408,7 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 	double dlambdas[]={0.15, 0.22, 0.16, 0.23, 0.19, 0.16, 0.23, 0.23, 0.14, 0.14, 0.16, 0.13};
 	double fos[]={1810, 4260, 3640, 3080, 2550, 1600, 1080, 670, 3730, 4490, 4760, 4810};
 	int shuttermode=1; // 0=CLOSED (filter=DARK) 1=SYNCHRO
+	double tatm,topt,elecmult,rayon2,flimit,fex;
    /* --- ajout Buil */
    char name[FLEN_FILENAME];
    double alpha1;
@@ -1219,6 +1220,22 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 		if (readout_noise<0) {
 			readout_noise=0;
 		}
+		tatm=pseries->tatm;
+		if (tatm>1) {
+			tatm=1;
+		}
+		topt=pseries->topt;
+		if (topt>1) {
+			topt=1;
+		}
+		elecmult=pseries->elecmult;
+		if (elecmult<1) {
+			elecmult=1;
+		}
+		fex=1;
+		if (elecmult>1) {
+			fex = 1 + pow( 2/(TT_PI) * atan( (elecmult-1)*3 ) ,3);
+		}
 		fwhmx=pseries->fwhmx; /* fwhm sur x en pixel */
 		if (fwhmx<=1e-3) {
 			fwhmx=2.5;
@@ -1273,13 +1290,29 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 				/*2) calculer le flux en photons/s/m2 : f = f_Jy * 1.51 e7 * (dlambda/lambda) */
 				f = f_Jy * 1.51e7 * (dlambda/lambda);
 				/*3) calculer le flux en photons : f*pi*teldiam*teldiam/4*exposure */
-				f = f*pi*teldiam*teldiam/4*exposure;
+				f = f*(TT_PI)*teldiam*teldiam/4*tatm*topt*exposure;
 				/*4) calculer le flux integre en electrons : f*quantum_efficiency */
 				f = f*quantum_efficiency;
 				/*5) calculer le flux pic en electrons :  */
-				f_pic = f/sigx/sigy/2/3.14159265;
+				f_pic = f/sigx/sigy/2/(TT_PI);
+				/* rayon d'action de la gaussienne > bruit */
+				rayon2=1;
+				/*
+				flimit=1;
+				if (readout_noise>flimit) { flimit=readout_noise; }
+				dvalue=sqrt(f_pic)*elecmult;
+				if (dvalue>flimit) { flimit=dvalue; }
+				rayon2=2*log(f_pic/flimit);
+				if (rayon2<0) {rayon2=0; }
+				rayon2=sqrt(sigx*sigy*rayon2);
+				if (rayon2>30) { rayon2=30*(fwhmx+fwhmy)/2 ; } // on limite a 30 fwhm pour eviter les lenteurs
+				if (rayon2<1) { rayon2=1 ; }
+				*/
+				/*  */
 				rayonx=(int)(5*fwhmx);
 				rayony=(int)(5*fwhmy);
+				if (rayon2>rayonx) { rayonx = (int)rayon2; }
+				if (rayon2>rayony) { rayony = (int)rayon2; }
 				for (kk0=k0-rayonx;kk0<=k0+rayonx;kk0++) {
 					if (kk0<0) { continue; }
 					if (kk0>=naxis1) { continue; }
@@ -1305,7 +1338,7 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 			/*2) calculer le flux en photons/s/m2 : f = f_Jy * 1.51 e7 * (dlambda/lambda) */
 			f = f_Jy * 1.51e7 * (dlambda/lambda);
 			/*3) calculer le flux en photons : f*pi*teldiam*teldiam/4*exposure */
-			f = f*pi*teldiam*teldiam/4*exposure;
+			f = f*pi*teldiam*teldiam/4*topt*exposure;
 			/*4) calculer le flux integre en electrons : f*quantum_efficiency */
 			f_sky = f*quantum_efficiency;
 		}
@@ -1334,11 +1367,6 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 			signal_star=dvalue;
 			/* --- bruit de photons + thermique poissonien de l'etoile (electrons) ---*/
 			noise_star=tt_poissonian_rand(signal_star,repartitionps,nk,kmax,nl,lambdamax,repartitions,nrep,sigmax);
-			/* --- bruit de photons gaussien de l'etoile (electrons) ---*/
-			/*
-			grand=tt_gaussian_rand(repartitions,nrep,sigmax);
-			noise_star=grand*sqrt(dvalue);
-			*/
 			if (pseries->shutter_mode!=TT_SHUTTER_MODE_CLOSED) {
 				/* --- signal de photons du ciel (electrons) ---*/
 				dvalue=f_sky;
@@ -1356,8 +1384,8 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 			signal_readout=pseries->bias_level*gain;
 			/* --- bruit de lecture = bruit de bias (electrons) ---*/
 			noise_readout=tt_poissonian_rand(readout_noise,repartitionps,nk,kmax,nl,lambdamax,repartitions,nrep,sigmax);
-			/* --- additionne tous les electrons ---*/
-			p_out->p[kkk]=(TT_PTYPE)((signal_star+signal_sky+signal_readout+noise_star+noise_sky+noise_readout)/gain);
+			/* --- additionne tous les electrons (tient compte si EMCCD) ---*/
+			p_out->p[kkk]=(TT_PTYPE)((signal_star*elecmult+signal_sky*elecmult+signal_readout+noise_star*elecmult*fex+noise_sky*elecmult*fex+noise_readout)/gain);
 		}
       tt_free2((void**)&repartitions,"repartitions");
       tt_free2((void**)&repartitionps,"repartitionps");
