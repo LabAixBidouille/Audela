@@ -149,12 +149,21 @@ proc ::av4l::ressource {  } {
    #--- Chargement des captions
    source [ file join $audace(rep_plugin) tool av4l av4l_go.cap ]
    #--- Chargement des fichiers auxiliaires
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_go.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_acq.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_extraction.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l test.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_setup.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_tools.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_go.tcl          ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_acq.tcl         ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_extraction.tcl  ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l test.tcl             ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_setup.tcl       ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_tools.tcl       ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_photom.tcl      ]\""
+
+   ::console::affiche_resultat "  update  : av4l_go.tcl          \n"
+   ::console::affiche_resultat "  update  : av4l_acq.tcl         \n"
+   ::console::affiche_resultat "  update  : av4l_extraction.tcl  \n"
+   ::console::affiche_resultat "  update  : test.tcl             \n"
+   ::console::affiche_resultat "  update  : av4l_setup.tcl       \n"
+   ::console::affiche_resultat "  update  : av4l_tools.tcl       \n"
+   ::console::affiche_resultat "  update  : av4l_photom.tcl      \n"
 }
 
 
