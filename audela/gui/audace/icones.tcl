@@ -42,6 +42,13 @@ namespace eval ::icones {
          lI8Hy4sQYoRAyTkNvE1f7jVLUAnbR4ZiaqJZK1KeW8ZdggsFADs=
       }]
 
+      #--- icone pour nouveau script
+      set private(newScriptIcon) [image create photo newScriptIcon -data {
+         R0lGODlhDAAOAKEBAAAAAP///////////yH+EUNyZWF0ZWQgd2l0aCBHSU1Q
+         ACH5BAEKAAIALAAAAAAMAA4AAAIilI8Hy4sQYoRAyTkNvE1f7n2ZsIkVKY7l
+         d64gmrbNnNRGAQA7
+      }]
+
       #--- icone pour quitter
       set private(exitIcon) [image create photo exitIcon -data {
          R0lGODlhEQARAKEBAP8AAP///////////yH5BAEKAAIALAAAAAARABEAAAI2
