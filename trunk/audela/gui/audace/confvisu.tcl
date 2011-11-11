@@ -2214,7 +2214,8 @@ namespace eval ::confVisu {
 
          Menu_Separator $visuNo "$caption(audace,menu,file)"
          Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,nouveau_script)..." \
-            "::audace::newScript"
+            "::audace::newScript" \
+            -compound left -image $::icones::private(newScriptIcon)
          Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,editer_script)..." \
             "::audace::editScript"
          Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,lancer_script)..." \
@@ -2478,8 +2479,15 @@ namespace eval ::confVisu {
             "::audace::showMenus"
          Menu_Command   $visuNo "$caption(audace,menu,aide)" "$caption(audace,menu,fonctions)" \
             "::audace::showFunctions"
-         Menu_Command   $visuNo "$caption(audace,menu,aide)" "$caption(audace,menu,tutorial)" \
+         Menu_Cascade   $visuNo "$caption(audace,menu,aide)" "$caption(audace,menu,tutorial)"
+         Menu_Command   $visuNo "$caption(audace,menu,tutorial)" "$caption(audace,menu,tutorial1)" \
             "::audace::Lance_Tutorial"
+         Menu_Command   $visuNo "$caption(audace,menu,tutorial)" "$caption(audace,menu,tutorial2)" \
+            "::audace::showTutorials 1010tutoriel_astrom1.htm"
+         Menu_Command   $visuNo "$caption(audace,menu,tutorial)" "$caption(audace,menu,tutorial3)" \
+            "::audace::showTutorials 1020tutoriel_photom1.html"
+         Menu_Command   $visuNo "$caption(audace,menu,tutorial)" "$caption(audace,menu,tutorial4)" \
+            "::audace::showTutorials 1030tutoriel_simulimage1.htm"
          Menu_Cascade   $visuNo "$caption(audace,menu,aide)" "$caption(audace,menu,site_audela)"
          Menu_Command   $visuNo "$caption(audace,menu,site_audela)" "$caption(audace,menu,site_internet)" \
             { set filename "$caption(en-tete,a_propos_de_site)" ; ::audace::Lance_Site_htm $filename }
@@ -2671,7 +2679,8 @@ namespace eval ::confVisu {
       ::confVisu::displayPlugins $visuNo file file
       Menu_Separator $visuNo "$caption(audace,menu,file)"
       Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,nouveau_script)..." \
-         "::audace::newScript"
+         "::audace::newScript" \
+         -compound left -image $::icones::private(newScriptIcon)
       Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,editer_script)..." \
          "::audace::editScript"
       Menu_Command   $visuNo "$caption(audace,menu,file)" "$caption(audace,menu,lancer_script)..." \
