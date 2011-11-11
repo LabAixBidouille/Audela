@@ -1297,17 +1297,17 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 				f_pic = f/sigx/sigy/2/(TT_PI);
 				/* rayon d'action de la gaussienne > bruit */
 				rayon2=1;
-				/*
 				flimit=1;
 				if (readout_noise>flimit) { flimit=readout_noise; }
-				dvalue=sqrt(f_pic)*elecmult;
-				if (dvalue>flimit) { flimit=dvalue; }
-				rayon2=2*log(f_pic/flimit);
-				if (rayon2<0) {rayon2=0; }
-				rayon2=sqrt(sigx*sigy*rayon2);
-				if (rayon2>30) { rayon2=30*(fwhmx+fwhmy)/2 ; } // on limite a 30 fwhm pour eviter les lenteurs
-				if (rayon2<1) { rayon2=1 ; }
-				*/
+				if (f_pic>1e-3) {
+					dvalue=sqrt(f_pic)*elecmult;
+					if (dvalue>flimit) { flimit=dvalue; }
+					rayon2=2*log(f_pic/flimit);
+					if (rayon2<0) {rayon2=0; }
+					rayon2=sqrt(sigx*sigy*rayon2);
+					if (rayon2>30) { rayon2=30*(fwhmx+fwhmy)/2 ; } // on limite a 30 fwhm pour eviter les lenteurs
+					if (rayon2<1) { rayon2=1 ; }
+				}
 				/*  */
 				rayonx=(int)(5*fwhmx);
 				rayony=(int)(5*fwhmy);
