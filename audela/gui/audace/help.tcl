@@ -36,7 +36,7 @@ set help(dir,pad)           "10setup/06pad"
 set help(dir,chart)         "10setup/07chart"
 set help(dir,config+)       "10setup"
 set help(dir,aide)          "11help"
-set help(dir,divers)        "12misc"
+set help(dir,tutoriel)      "12tutorial"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -57,7 +57,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set help(dir,chart)      "10configuration/07carte"
    set help(dir,config+)    "10configuration"
    set help(dir,aide)       "11aide"
-   set help(dir,divers)     "12divers"
+   set help(dir,tutoriel)   "12tutoriel"
 }
 
 namespace eval ::audace {
@@ -267,6 +267,33 @@ namespace eval ::audace {
       update
 
       ::HelpViewer::LoadFile $audace(help_window) [ file join $audace(help_dir) $help(dir,aide) "1020menus.htm" ] 1 ""
+
+      #--- Focus
+      focus $audace(help_window)
+
+   }
+
+   #------------------------------------------------------------
+   #  ::audace::showTutorials
+   #
+   #  ouvre les tutoriels de type html
+   #------------------------------------------------------------
+   proc ::audace::showTutorials { tutorial } {
+      global audace help
+
+      #--- J'affiche la fenetre si ce n'est pas deja fait
+      if { ! [ info exists audace(help_window) ] || ! [ winfo exists $audace(help_window) ] } {
+         ::audace::initHelp
+      }
+
+      if { [ winfo exists $audace(base).help ] } {
+         wm deiconify $audace(base).help
+      }
+
+      #--- J'attends que la fenetre d'aide soit creee
+      update
+
+      ::HelpViewer::LoadFile $audace(help_window) [ file join $audace(help_dir) $help(dir,tutoriel) "$tutorial" ] 1 ""
 
       #--- Focus
       focus $audace(help_window)
