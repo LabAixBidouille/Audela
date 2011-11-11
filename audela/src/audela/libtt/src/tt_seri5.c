@@ -744,7 +744,7 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 	newstar_mag=pseries->mag;
 	newstar_x=-100;
 	newstar_y=-100;
-	if (pseries->newstar==TT_NEWSTAR_REPLACE) {
+	if (pseries->newstar!=TT_NEWSTAR_NONE) {
   		tt_util_astrom_radec2xy(&p,newstar_ra/(180/(TT_PI)),newstar_dec/(180/(TT_PI)),&XXX,&YYY);
 		if (XXX>=XXXmin && XXX<XXXmax && YYY>=YYYmin && YYY<YYYmax) {
 			newstar_x=XXX;
