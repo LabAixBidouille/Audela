@@ -1131,11 +1131,11 @@ proc ::astrocomputer::astrocomputer_coord_compute { } {
 }
 
 # Magnitude standard
-# La magnitude standard m0 est d?nie pour une distance de 1000 km et une illumination de 50%. La formule suivante donne la magnitude visuelle connaissant la distance d et l'illumination I :
+# La magnitude standard m0 est definie pour une distance de 1000 km et une illumination de 50%. La formule suivante donne la magnitude visuelle connaissant la distance d et l'illumination I :
 #
 # m = m0 - 15.75 + 2.5 log10 (d2 / I)
 #
-# La lettre qui suit la magnitude standard est soit d, la magnitude est calcul?selon les dimensions du satellite, soit v, la magnitude est d?rmin?visuellement.
+# La lettre qui suit la magnitude standard est soit d, la magnitude est calculee selon les dimensions du satellite, soit v, la magnitude est determinee visuellement.
 # 25544  30.0 20.0  0.0 -0.5 v 404.00
 proc ::astrocomputer::astrocomputer_coord_satel_mag { norad fracill distkm phasedeg} {
    global astrocomputer audace
@@ -1169,3 +1169,4 @@ proc ::astrocomputer::astrocomputer_coord_satel_mag { norad fracill distkm phase
    }
    return $mag
 }
+
