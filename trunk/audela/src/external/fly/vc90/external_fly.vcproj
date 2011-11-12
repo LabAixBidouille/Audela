@@ -44,9 +44,9 @@
 			>
 			<Tool
 				Name="VCNMakeTool"
-				BuildCommandLine="copierfichier"
-				ReBuildCommandLine=""
-				CleanCommandLine="nettoyerfichier"
+				BuildCommandLine="cd ..&amp; nmake /f Makefile.vc install"
+				ReBuildCommandLine="cd ..&amp; nmake /f Makefile.vc clean install"
+				CleanCommandLine="cd ..&amp; nmake /f Makefile.vc clean"
 				Output=""
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				IncludeSearchPath=""
