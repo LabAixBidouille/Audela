@@ -3225,9 +3225,9 @@ proc TestReel {args} {
    if {[syntaxe_args $args 1 0 ""]=="1"} {
       set valeur [lindex $args 0]
       if { $valeur != "" } {
-         set pattern {(^|[ \t])([-+]?(\d+|\.\d+|\d+\.\d*))($|[^+-.])}
-         regexp $pattern $valeur whole char_before number digits_before_period
-         if { $valeur eq $whole } {
+         set pattern {^([-+]?[0-9]*\.?[0-9]+)([eE][-+]?[0-9]+)?$}
+         regexp $pattern $valeur whole
+         if { [ info exists whole ] && $valeur eq $whole } {
             return 1
          } else {
             return 0
