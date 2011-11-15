@@ -182,7 +182,7 @@ proc photrel_wcs2cat { args } {
       }
       set name ${path}${htm_name}
       if {[file exists "${name}_ref.bin"]==0} {
-	      return ""
+         return ""
       }
       set nref [expr ([file size "${name}_ref.bin"]/48)]
       set nzmg [expr ([file size "${name}_zmg.bin"]/24)]
