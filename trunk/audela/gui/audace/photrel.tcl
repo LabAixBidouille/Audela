@@ -97,7 +97,9 @@ proc photrel_wcs2cat { args } {
       set path $::audace(rep_images)/
       set htm_name $in
       if {$attribut=="new"} {
-         catch {file delete ${path}${htm_name}_*.bin}
+         catch {file delete ${path}${htm_name}_ref.bin}
+         catch {file delete ${path}${htm_name}_mes.bin}
+         catch {file delete ${path}${htm_name}_zmg.bin}
       }
       for {set ki $first} {$ki<=$ni} {incr ki} {
          # --- Lecture du fichier image et passage dans sextractor
@@ -120,7 +122,7 @@ proc photrel_wcs2cat { args } {
          set nl [expr [llength $lignes]-1]
          # --- On transforme le fichier catalog.cat de sextractor en fichier ASCII
          # airmass du centre du champ
-         set filter [lindex [buf$::audace(bufNo) getkwd FILTER] 1]
+         set filter [string trim [lindex [buf$::audace(bufNo) getkwd FILTER] 1]]
          if {$filter==""} {
             set filter C
          }
@@ -132,6 +134,7 @@ proc photrel_wcs2cat { args } {
                break
             }
          }
+         #::console::affiche_resultat "Filter=$filter codefiltre=$codefiltre\n"
          set naxis1 [lindex [buf$::audace(bufNo) getkwd NAXIS1] 1]
          set naxis2 [lindex [buf$::audace(bufNo) getkwd NAXIS2] 1]
          set radec [buf$::audace(bufNo) xy2radec [list [expr $naxis1/2.] [expr $naxis2/2.]]]
@@ -165,16 +168,22 @@ proc photrel_wcs2cat { args } {
          puts -nonewline $f $textes
          close $f
          ::console::affiche_resultat "Image ${in}${ki} : $nl stars filter=$filter\n"
+         if {$nl<=0} { continue }
          # --- On transforme le fichier ASCII en fichier binaire
          catch {file delete ${path}${htm_name}_.bin}
+         #::console::affiche_resultat "yd_file2htm $asciifile_in $path $htm_name -1\n"
          yd_file2htm $asciifile_in $path $htm_name -1
          # --- On eclate le fichier binaire en trois fichiers catalogues binaires
-         set filename_in ${htm_name}_.bin
+         set filename_in ${path}${htm_name}_.bin
          set generic_filename_out $htm_name
+         #::console::affiche_resultat "yd_filehtm2refzmgmes $filename_in $path $generic_filename_out $angle\n"
          yd_filehtm2refzmgmes $filename_in $path $generic_filename_out $angle
          catch {file delete ${path}${htm_name}_.bin}
       }
       set name ${path}${htm_name}
+      if {[file exists "${name}_ref.bin"]==0} {
+	      return ""
+      }
       set nref [expr ([file size "${name}_ref.bin"]/48)]
       set nzmg [expr ([file size "${name}_zmg.bin"]/24)]
       set nmes [expr ([file size "${name}_mes.bin"]/32)]
