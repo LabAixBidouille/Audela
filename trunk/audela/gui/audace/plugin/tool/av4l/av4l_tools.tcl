@@ -131,7 +131,10 @@ namespace eval ::av4l_tools {
       set nbimage [::av4l_tools::get_nbimage]
       append text "Nb d'images : $nbimage\n"
        
-       
+      append text "Test:"
+      append text [::av4l_tools::avi1 test]
+      append text "\n"
+             
       # Fin
       $panneau(av4l,$visuNo,av4l_verif).frmverif.results.txt configure -text $text
 

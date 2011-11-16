@@ -23,3 +23,5 @@ libavi.so: avi.o
 	-lavformat -lavcodec -lavutil -lswscale \
 	-ltclstub8.5 -lm \
 	-o $@
+install:
+	cp libavi.so ../../../../../../bin/
