@@ -183,6 +183,7 @@ avi_test(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
 	char s[100];
 	sprintf(s,"%s","** TEST **\n");
 	sprintf(s,"%s %s %lld \n",s,"nb img = ",avi->pFormatCtx->streams[avi->videoStream]->nb_frames);
+	sprintf(s,"%s %s %d \n",s,"index = ",avi->packet.stream_index);
 
 	Tcl_SetResult(interp,s,TCL_VOLATILE);
 	return TCL_OK;
