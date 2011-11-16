@@ -11,6 +11,8 @@
 namespace eval ::av4l_tools {
 
    variable avi1
+   variable nb_frames
+   variable cur_idframe
 
    # av4l_tools::list_diff_shift
    # Retourne la liste test epurée de l intersection des deux listes
@@ -83,14 +85,16 @@ namespace eval ::av4l_tools {
       set filename [$panneau(av4l,$visuNo,av4l_extraction).frmextraction.open.avipath get]
       ::avi::create ::av4l_tools::avi1
       ::av4l_tools::avi1 load $filename
-      ::av4l_tools::avi1 next
+      set ::av4l_tools::cur_idframe 0
+      ::av4l_tools::avi_next
       ::av4l_tools::avi_exist
       
       #::confVisu::autovisu $visuNo
 
       set autocuts [buf$bufNo autocuts]
       visu$visuNo disp [list [lindex $autocuts 0] [lindex $autocuts 1]]
-      
+      set ::av4l_tools::nb_frames [::av4l_tools::avi1 get_nb_frames]
+      set ::av4l_tools::cur_idframe 1
       
       
       $panneau(av4l,$visuNo,av4l_extraction).frmextraction.percent configure -command "::av4l_tools::avi_seek $visuNo"
@@ -119,7 +123,8 @@ namespace eval ::av4l_tools {
       set filename [$panneau(av4l,$visuNo,av4l_verif).frmverif.open.avipath get]
       ::avi::create ::av4l_tools::avi1
       ::av4l_tools::avi1 load $filename
-      ::av4l_tools::avi1 next
+      set ::av4l_tools::cur_idframe 0
+      ::av4l_tools::avi_next
       ::av4l_tools::avi_exist
       set autocuts [buf$bufNo autocuts]
       visu$visuNo disp [list [lindex $autocuts 0] [lindex $autocuts 1]]
@@ -134,7 +139,7 @@ namespace eval ::av4l_tools {
       append text "Test:"
       append text [::av4l_tools::avi1 test]
       append text "\n"
-      ::av4l_tools::avi1 next
+      ::av4l_tools::avi_next
       append text "Test:"
       append text [::av4l_tools::avi1 test]
       append text "\n"
@@ -144,16 +149,49 @@ namespace eval ::av4l_tools {
 
    }
 
-
    proc get_nbimage { } {
     return [::av4l_tools::avi1 get_nb_frames]
    }
-   
+
+   proc avi_next { } {
+      ::av4l_tools::avi1 next
+      incr ::av4l_tools::cur_idframe
+      if { $::av4l_tools::cur_idframe > $::av4l_tools::nb_frames } {
+         set ::av4l_tools::cur_idframe $::av4l_tools::nb_frames
+      }
+      if { $::av4l_tools::cur_idframe < 1 } {
+         set ::av4l_tools::cur_idframe 1
+      }
+      
+   }
+
 
    proc avi_next_image { } {
       set visuNo 1
-      ::av4l_tools::avi1 next
+      ::av4l_tools::avi_next
       visu$visuNo disp
+   }
+
+   proc avi_get_frame { visuNo idframe } {
+
+      set nbf [expr  $::av4l_tools::nb_frames * 1.0]
+      ::console::affiche_resultat "idframe  : $idframe\n"
+      ::console::affiche_resultat "nb_frames  : $nbf\n"
+
+      if {$idframe > $::av4l_tools::nb_frames} {
+         set idframe $nbf
+      }     
+      set pc [expr ($idframe-1) / ($nbf+1.0) ]
+      ::console::affiche_resultat "pc  : $pc\n"
+      ::av4l_tools::avi1 seekpercent $pc
+      ::av4l_tools::avi_next
+      set ::av4l_tools::cur_idframe $idframe
+      visu$visuNo disp
+   }
+
+   proc avi_get_idframe {  } {
+
+      ::console::affiche_resultat "idframe  : $::av4l_tools::cur_idframe\n"
    }
 
    proc avi_seek { visuNo arg } {
@@ -161,7 +199,6 @@ namespace eval ::av4l_tools {
       ::av4l_tools::avi1 seekpercent [expr $arg / 100.0 ]
       ::av4l_tools::avi1 next
       visu$visuNo disp
-
    }
 
    proc avi_seekbyte { arg } {
