@@ -32,11 +32,23 @@
 
 #define MODE_SIMULATION 0
 #define MODE_REEL 1
+#define MODE_SIMULATION_ETEL 2
 
 #define STATUS_MOTOR_OFF 0
 #define STATUS_MOTOR_ON 1
 
-#define MOUCHARD
+#define MOUNT_UNKNOWN 0
+#define MOUNT_EQUATORIAL 1
+#define MOUNT_ALTAZ 2
+
+#define AXIS_NOTDEFINED -1
+#define AXIS_HA 0
+#define AXIS_DEC 1
+#define AXIS_AZ 0
+#define AXIS_ELEV 1
+#define AXIS_PARALLACTIC 2
+
+//#define MOUCHARD
 
 typedef struct {
    int type;
@@ -119,9 +131,19 @@ struct telprop {
 	char appcoord[1024];
 	char loopThreadId[20];
    int tempo;
+
 	long N0;
 	long N1;
+	long N2;
 	double sideral_sep_per_day;
+
+   int type_mount;
+	int nb_axis;
+	int axes[5];
+
+	char extradrift_type[20];
+	double extradrift_axis0;
+	double extradrift_axis1;
 
 	// START OF COORDSYS (do not delete this comment)
 	double coord_cat_cod_deg_ra; // current catalog coordinates computed from coders
@@ -146,7 +168,21 @@ struct telprop {
 	double utcjd_app_cod_deg_az; // date of current apparent coordinates computed from coders
 	double utcjd_app_cod_deg_elev; // date of current apparent coordinates computed from coders
 	double utcjd_app_cod_deg_rot; // date of current apparent coordinates computed from coders
-	
+
+   double speed_app_cod_deg_ra; // current apparent speed computed for coders
+   double speed_app_cod_deg_dec; // current apparent speed computed for coders
+   double speed_app_cod_deg_ha; // current apparent speed computed for coders
+   double speed_app_cod_deg_az; // current apparent speed computed for coders
+   double speed_app_cod_deg_elev; // current apparent speed computed for coders
+   double speed_app_cod_deg_rot; // current apparent speed computed for coders
+
+   double speed_app_sim_deg_ra; // current apparent speed computed from simulation
+   double speed_app_sim_deg_dec; // current apparent speed computed from simulation
+   double speed_app_sim_deg_ha; // current apparent speed computed from simulation
+   double speed_app_sim_deg_az; // current apparent speed computed from simulation
+   double speed_app_sim_deg_elev; // current apparent speed computed from simulation
+   double speed_app_sim_deg_rot; // current apparent speed computed from simulation
+
 	double coord_app_cod_deg_ha0; // initial apparent coordinates computed from coders
 	double coord_app_cod_deg_dec0; // initial apparent coordinates computed from coders
 	double coord_app_cod_deg_ra0; // initial apparent coordinates computed from coders
@@ -183,6 +219,20 @@ struct telprop {
 	double utcjd_app_cod_adu_az0; // date of initial ADU from/to coder
 	double utcjd_app_cod_adu_elev0; // date of initial ADU from/to coder
 	double utcjd_app_cod_adu_rot0; // date of initial ADU from/to coder
+
+   double speed_app_cod_adu_ra; // current apparent ADU speed computed for coders
+   double speed_app_cod_adu_dec; // current apparent ADU speed computed for coders
+   double speed_app_cod_adu_ha; // current apparent ADU speed computed for coders
+   double speed_app_cod_adu_az; // current apparent ADU speed computed for coders
+   double speed_app_cod_adu_elev; // current apparent ADU speed computed for coders
+   double speed_app_cod_adu_rot; // current apparent ADU speed computed for coders
+
+   double speed_app_sim_adu_ra; // current apparent ADU speed computed from simulation
+   double speed_app_sim_adu_dec; // current apparent ADU speed computed from simulation
+   double speed_app_sim_adu_ha; // current apparent ADU speed computed from simulation
+   double speed_app_sim_adu_az; // current apparent ADU speed computed from simulation
+   double speed_app_sim_adu_elev; // current apparent ADU speed computed from simulation
+   double speed_app_sim_adu_rot; // current apparent ADU speed computed from simulation
 
 	double coord_cat_sim_deg_ra; // current catalog coordinates computed from coders
 	double coord_cat_sim_deg_dec; // current catalog coordinates computed from coders
@@ -348,7 +398,7 @@ int mytel_mcmt_stop(struct telprop *tel);
 int mytel_mcmt_tcl_procs(struct telprop *tel);
 
 // --- cod and sim coordinate systems
-double mytel_sec2jd(int secs1970);
+double mytel_sec2jd(time_t secs1970);
 int mytel_app_cod_getadu(struct telprop *tel);
 void mytel_app_cod_setadu0(struct telprop *tel);
 void mytel_app_cod_setdadu(struct telprop *tel);
@@ -369,12 +419,14 @@ void mytel_app2cat_sim_deg0(struct telprop *tel);
 void mytel_cat2app_sim_deg0(struct telprop *tel);
 void mytel_app_setutcjd0_now(struct telprop *tel);
 void mytel_app_setutcjd_now(struct telprop *tel);
+void mytel_speed_corrections(struct telprop *tel);
 
 // --- thread
 struct telprop *telthread;
-int ThreadMcmt_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-static int ThreadMcmt_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-static int CmdThreadMcmt_loopeval(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int ThreadTel_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+static int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+static int CmdThreadTel_loopeval(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+
 
 #endif
 
