@@ -181,16 +181,25 @@ static int
 avi_test(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
 {
 	char s[1000];
-	sprintf(s,"%s","** TEST **\n");
+	sprintf(s,"%s","** pFormatCtx **\n");
 	sprintf(s,"%s %s %lld \n",s,"nb img = ",avi->pFormatCtx->streams[avi->videoStream]->nb_frames);
 	sprintf(s,"%s %s %d \n",s,"index = ",avi->packet.stream_index);
 	sprintf(s,"%s %s %d \n",s,"bit_rate = ",avi->pFormatCtx->bit_rate);
 	sprintf(s,"%s %s %d \n",s,"packed_size = ",avi->pFormatCtx->packet_size);
 //	sprintf(s,"%s %s %d \n",s,"key = ",avi->pFormatCtx->key);
 	sprintf(s,"%s %s %d \n",s,"keylen = ",avi->pFormatCtx->keylen);
+	sprintf(s,"%s","** streams **\n");
 	sprintf(s,"%s %s %lld \n",s,"first_pts = ", avi->pFormatCtx->streams[avi->videoStream]->first_dts);
 	sprintf(s,"%s %s %lld \n",s,"start_time = ", avi->pFormatCtx->streams[avi->videoStream]->start_time);
 	sprintf(s,"%s %s %lld \n",s,"cur_dts = ", avi->pFormatCtx->streams[avi->videoStream]->cur_dts);
+	sprintf(s,"%s %s %lld \n",s,"last_IP_pts = ", avi->pFormatCtx->streams[avi->videoStream]->last_IP_pts);
+	sprintf(s,"%s %s %lld \n",s,"nb_index_entries = ", avi->pFormatCtx->streams[avi->videoStream]->nb_index_entries);
+	sprintf(s,"%s %s %lld \n",s,"duration = ", avi->pFormatCtx->streams[avi->videoStream]->duration);
+	sprintf(s,"%s %s %lld \n",s,"pts_wrap_bits = ", avi->pFormatCtx->streams[avi->videoStream]->pts_wrap_bits);
+
+
+
+
 	Tcl_SetResult(interp,s,TCL_VOLATILE);
 	return TCL_OK;
 }
