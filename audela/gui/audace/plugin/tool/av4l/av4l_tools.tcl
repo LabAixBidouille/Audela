@@ -86,6 +86,7 @@ namespace eval ::av4l_tools {
       ::avi::create ::av4l_tools::avi1
       ::av4l_tools::avi1 load $filename
       set ::av4l_tools::cur_idframe 0
+      set ::av4l_tools::nb_frames [::av4l_tools::avi1 get_nb_frames]
       ::av4l_tools::avi_next
       ::av4l_tools::avi_exist
       
@@ -93,8 +94,6 @@ namespace eval ::av4l_tools {
 
       set autocuts [buf$bufNo autocuts]
       visu$visuNo disp [list [lindex $autocuts 0] [lindex $autocuts 1]]
-      set ::av4l_tools::nb_frames [::av4l_tools::avi1 get_nb_frames]
-      set ::av4l_tools::cur_idframe 1
       
       
       $panneau(av4l,$visuNo,av4l_extraction).frmextraction.percent configure -command "::av4l_tools::avi_seek $visuNo"
