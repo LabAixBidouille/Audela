@@ -139,8 +139,7 @@ namespace eval ::av4l_tools {
 
 
    proc get_nbimage { } {
-
-   return 13
+    return [::av4l_tools::avi1 get_nb_frames]
    }
    
 
