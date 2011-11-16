@@ -450,9 +450,9 @@ void mytel_speed_corrections(struct telprop *tel);
 
 // --- thread
 struct telprop *telthread;
-int ThreadT940_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-static int ThreadT940_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-static int CmdThreadT940_loopeval(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int ThreadTel_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+static int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+static int CmdThreadTel_loopeval(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 #endif
 
