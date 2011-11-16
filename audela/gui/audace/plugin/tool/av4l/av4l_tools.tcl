@@ -134,6 +134,10 @@ namespace eval ::av4l_tools {
       append text "Test:"
       append text [::av4l_tools::avi1 test]
       append text "\n"
+      ::av4l_tools::avi1 next
+      append text "Test:"
+      append text [::av4l_tools::avi1 test]
+      append text "\n"
              
       # Fin
       $panneau(av4l,$visuNo,av4l_verif).frmverif.results.txt configure -text $text
