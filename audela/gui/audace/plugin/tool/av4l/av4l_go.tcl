@@ -156,6 +156,8 @@ proc ::av4l::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_setup.tcl       ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_tools.tcl       ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_photom.tcl      ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_cdl.tcl      ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_verif.tcl      ]\""
 
    ::console::affiche_resultat "  update  : av4l_go.tcl          \n"
    ::console::affiche_resultat "  update  : av4l_acq.tcl         \n"
@@ -164,6 +166,8 @@ proc ::av4l::ressource {  } {
    ::console::affiche_resultat "  update  : av4l_setup.tcl       \n"
    ::console::affiche_resultat "  update  : av4l_tools.tcl       \n"
    ::console::affiche_resultat "  update  : av4l_photom.tcl      \n"
+   ::console::affiche_resultat "  update  : av4l_cdl.tcl      \n"
+   ::console::affiche_resultat "  update  : av4l_verif.tcl      \n"
 }
 
 
@@ -305,7 +309,7 @@ proc ::av4l::BuildIF { visuNo } {
          image create photo .verif -format PNG -file [ file join $audace(rep_plugin) tool av4l img verif.png ]
          button $This.fra1.verif -image .verif\
             -borderwidth 2 -width 48 -height 48 -compound center \
-            -command ""
+            -command "::av4l_verif::run  $visuNo $base.av4l_verif"
          pack $This.fra1.verif \
             -in $This.fra1 \
             -side top -anchor w \
@@ -329,7 +333,7 @@ proc ::av4l::BuildIF { visuNo } {
          image create photo .cdl -format PNG -file [ file join $audace(rep_plugin) tool av4l img cdl.png ]
          button $This.fra1.cdl -image .cdl\
             -borderwidth 2 -width 48 -height 48 -compound center \
-            -command ""
+            -command "::av4l_cdl::run  $visuNo $base.av4l_cdl"
          pack $This.fra1.cdl \
             -in $This.fra1 \
             -side top -anchor w \

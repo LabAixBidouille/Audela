@@ -98,6 +98,55 @@ namespace eval ::av4l_tools {
    }
 
 
+
+
+
+
+
+# Verification d un fichier avi
+   proc avi_verif { visuNo this } {
+
+      global audace panneau
+
+      #--- Determination de la fenetre parente
+      if { $visuNo == "1" } {
+         set base "$audace(base)"
+      } else {
+         set base ".visu$visuNo"
+      }
+
+      set bufNo [ visu$visuNo buf ]
+      set filename [$panneau(av4l,$visuNo,av4l_verif).frmverif.open.avipath get]
+      ::avi::create ::av4l_tools::avi1
+      ::av4l_tools::avi1 load $filename
+      ::av4l_tools::avi1 next
+      ::av4l_tools::avi_exist
+      set autocuts [buf$bufNo autocuts]
+      visu$visuNo disp [list [lindex $autocuts 0] [lindex $autocuts 1]]
+ 
+      set text [$panneau(av4l,$visuNo,av4l_verif).frmverif.results.txt cget -text]
+
+
+      # Lancement des etapes de verification      
+      set nbimage [::av4l_tools::get_nbimage]
+      append text "Nb d'images : $nbimage\n"
+       
+       
+       
+       
+       
+      # Fin
+      $panneau(av4l,$visuNo,av4l_verif).frmverif.results.txt configure -text $text
+
+   }
+
+
+   proc get_nbimage { } {
+
+   return 13
+   }
+   
+
    proc avi_next_image { } {
       set visuNo 1
       ::av4l_tools::avi1 next
