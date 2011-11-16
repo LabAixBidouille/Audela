@@ -1,3 +1,10 @@
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+
+#define _FILE_OFFSET_BITS 64
+#define _LARGEFILE64_SOURCE
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -254,6 +261,15 @@ avi_count(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
 	return TCL_OK;
 }
 
+// Renvoit le nombre total d'images de la video
+static int
+avi_get_nb_frames(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
+{
+	char s[100];
+	sprintf(s,"%lld",avi->pFormatCtx->streams[avi->videoStream]->nb_frames);
+	Tcl_SetResult(interp,s,TCL_VOLATILE);
+	return TCL_OK;
+}
 
 static int
 cmdAvi(ClientData cdata, Tcl_Interp *interp, int argc, char * argv[])
@@ -278,6 +294,8 @@ cmdAvi(ClientData cdata, Tcl_Interp *interp, int argc, char * argv[])
 	 return avi_get_previous_offset(avi,interp,argc,argv);
  } else if (strcmp(argv[1], "count") == 0) {
 	 return avi_count(avi,interp,argc,argv);
+ } else if (strcmp(argv[1], "get_nb_frames") == 0) {
+	 return avi_get_nb_frames(avi,interp,argc,argv);
  } else if (strcmp(argv[1], "close") == 0) {
 	 return avi_close(avi,interp,argc,argv);
  } else {
