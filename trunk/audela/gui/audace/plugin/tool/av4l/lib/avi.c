@@ -180,11 +180,17 @@ while(av_read_frame(avi->pFormatCtx, &avi->packet)>=0) {
 static int
 avi_test(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
 {
-	char s[100];
+	char s[1000];
 	sprintf(s,"%s","** TEST **\n");
 	sprintf(s,"%s %s %lld \n",s,"nb img = ",avi->pFormatCtx->streams[avi->videoStream]->nb_frames);
 	sprintf(s,"%s %s %d \n",s,"index = ",avi->packet.stream_index);
-
+	sprintf(s,"%s %s %d \n",s,"bit_rate = ",avi->pFormatCtx->bit_rate);
+	sprintf(s,"%s %s %d \n",s,"packed_size = ",avi->pFormatCtx->packet_size);
+//	sprintf(s,"%s %s %d \n",s,"key = ",avi->pFormatCtx->key);
+	sprintf(s,"%s %s %d \n",s,"keylen = ",avi->pFormatCtx->keylen);
+	sprintf(s,"%s %s %lld \n",s,"first_pts = ", avi->pFormatCtx->streams[avi->videoStream]->first_dts);
+	sprintf(s,"%s %s %lld \n",s,"start_time = ", avi->pFormatCtx->streams[avi->videoStream]->start_time);
+	sprintf(s,"%s %s %lld \n",s,"cur_dts = ", avi->pFormatCtx->streams[avi->videoStream]->cur_dts);
 	Tcl_SetResult(interp,s,TCL_VOLATILE);
 	return TCL_OK;
 }
