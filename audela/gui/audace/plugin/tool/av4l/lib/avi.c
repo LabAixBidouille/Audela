@@ -172,6 +172,28 @@ while(av_read_frame(avi->pFormatCtx, &avi->packet)>=0) {
   return TCL_OK;
 }
 
+
+
+
+
+// Test en tout genre
+static int
+avi_test(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
+{
+	char s[100];
+	sprintf(s,"%s","** TEST **\n");
+	sprintf(s,"%s %s %lld \n",s,"nb img = ",avi->pFormatCtx->streams[avi->videoStream]->nb_frames);
+
+	Tcl_SetResult(interp,s,TCL_VOLATILE);
+	return TCL_OK;
+}
+
+
+
+
+
+
+
 static int
 avi_seek_percent(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
 {
@@ -261,6 +283,11 @@ avi_count(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
 	return TCL_OK;
 }
 
+
+
+
+
+
 // Renvoit le nombre total d'images de la video
 static int
 avi_get_nb_frames(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
@@ -270,6 +297,12 @@ avi_get_nb_frames(struct aviprop * avi, Tcl_Interp *interp, int argc, char * arg
 	Tcl_SetResult(interp,s,TCL_VOLATILE);
 	return TCL_OK;
 }
+
+
+
+
+
+
 
 static int
 cmdAvi(ClientData cdata, Tcl_Interp *interp, int argc, char * argv[])
@@ -296,6 +329,8 @@ cmdAvi(ClientData cdata, Tcl_Interp *interp, int argc, char * argv[])
 	 return avi_count(avi,interp,argc,argv);
  } else if (strcmp(argv[1], "get_nb_frames") == 0) {
 	 return avi_get_nb_frames(avi,interp,argc,argv);
+ } else if (strcmp(argv[1], "test") == 0) {
+	 return avi_test(avi,interp,argc,argv);
  } else if (strcmp(argv[1], "close") == 0) {
 	 return avi_close(avi,interp,argc,argv);
  } else {

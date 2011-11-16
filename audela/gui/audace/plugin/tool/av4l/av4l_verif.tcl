@@ -197,7 +197,7 @@ namespace eval ::av4l_verif {
 
       #--- Retourne l'item de la camera associee a la visu
       set frm $this.frmverif
-
+      set ::av4l_verif::nomfichavi "/data/Occultations/20100605_80SAPPHO/sapphoseg.00.avi"
 
       #--- Cree un frame pour afficher le status de la base
       frame $frm -borderwidth 0 -cursor arrow -relief groove
@@ -223,7 +223,7 @@ namespace eval ::av4l_verif {
            -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
         #--- Cree un label pour le chemin de l'AVI
-        entry $frm.open.avipath 
+        entry $frm.open.avipath -textvariable ::av4l_verif::nomfichavi 
         pack $frm.open.avipath -side left -padx 3 -pady 1 -expand true -fill x
 
 
