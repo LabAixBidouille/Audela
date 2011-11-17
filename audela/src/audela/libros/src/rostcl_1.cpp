@@ -718,6 +718,8 @@ double ml_getGpsDate ()
 	ULONG evt_enable;
 	int first_reading = 1;
 	struct tm *majtime;
+	time_t tutu;
+	//unsigned int toto=1000;
 	date=1;
 
 	// Set the HeartBeat Counters and the mode to Sync -> 100 Hz
@@ -742,7 +744,8 @@ double ml_getGpsDate ()
 		if ( maj != evtmaj || min != evtmin){
 
 			// Convert Binary Time to structure
-			majtime = gmtime( (const time_t *)&maj );
+			tutu=(time_t)maj;
+			majtime = gmtime( (const time_t *)&tutu );
 
 			//pour la precision au millime de seconde et pas plus
 			min=(unsigned long int)(min*0.001);
