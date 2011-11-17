@@ -107,6 +107,95 @@ avi_load(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
     return TCL_OK;
 }
 
+// Procedure independante appelee uniquement lors de l'acquisition
+static int
+convert_shared_image(ClientData cdata, Tcl_Interp *interp, int argc, char * argv[])
+{
+    static AVFrame *pFrame = 0, *pFrameRGB = 0;
+    static struct SwsContext * pSwsCtx = 0;
+
+    char * path = argv[1];
+    struct stat st;
+    off_t filesize = 0;
+    int width, height;
+    static int numBytesSrc;
+    static int numBytesDst;
+    uint8_t *buffer;
+
+    width = height = 0;
+    if(stat(path,&st) != 0) {
+        return TCL_ERROR;
+    }
+    filesize = st.st_size;
+    fprintf(stderr,"file size = %lld\n", filesize);
+    if(filesize == 2*720*576) {
+        width = 720; height=576;
+    } else if (filesize == 2*640*480) {
+        width = 640; height=480;
+    } else {
+        return TCL_ERROR;
+    }
+
+
+    if(pFrame == 0) {
+        av_register_all();
+        pFrame=avcodec_alloc_frame();
+        numBytesSrc=avpicture_get_size(PIX_FMT_YUYV422, width, height);
+        fprintf(stderr,"numBytesSrc = %d\n",numBytesSrc);
+        buffer=(uint8_t *)av_malloc(numBytesSrc*sizeof(uint8_t));
+        avpicture_fill((AVPicture *)pFrame, buffer, PIX_FMT_YUYV422, width, height);
+        fprintf(stderr," %d %d %d\n",pFrame->linesize[0], pFrame->linesize[1], pFrame->linesize[2]);
+        pFrameRGB=avcodec_alloc_frame();
+        numBytesDst=avpicture_get_size(PIX_FMT_GRAY8, width, height);
+        buffer=(uint8_t *)av_malloc(numBytesDst*sizeof(uint8_t));
+        avpicture_fill((AVPicture *)pFrameRGB, buffer, PIX_FMT_GRAY8, width, height);
+        pSwsCtx = sws_getContext(
+            width, height, PIX_FMT_YUYV422,
+            width, height, PIX_FMT_GRAY8,
+            SWS_BICUBIC,
+            NULL, NULL,
+            NULL
+            );
+    }
+
+    {
+        FILE *fp = fopen(path,"r");
+        if(fp) {
+            fread(pFrame->data[0],numBytesSrc,1,fp);
+            fclose(fp);
+        }
+    }
+
+    sws_scale( pSwsCtx,
+            pFrame->data,
+            pFrame->linesize,
+            0,
+            height,
+            pFrameRGB->data,
+            pFrameRGB->linesize
+            );
+
+    // src/libcam/libcam.c AcqRead
+    if (Tcl_Eval(interp, "buf1 clear") == TCL_ERROR) {
+        //libcam_log(LOG_WARNING, "error in this command: result='%s'", interp->result);
+        if (Tcl_Eval(interp, "buf::create 1") == TCL_ERROR) {
+            //libcam_log(LOG_ERROR, "(libcam.c @ %d) error in the command '%s': result='%s'", __LINE__, s, interp->result);
+        }
+    }
+
+    {
+        char s[4000];
+        sprintf(s,"buf1 setpixels CLASS_GRAY %d %d FORMAT_BYTE COMPRESS_NONE %ld", width, height, pFrameRGB->data[0]);
+        if (Tcl_Eval(interp, s) == TCL_ERROR) {
+            //libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+            //sprintf(errorMessage,"Errors setpixels: %s", interp->result);
+            fprintf(stderr, "ERROR setpixel\n");
+        }
+
+    }
+
+    return TCL_OK;
+}
 
 static int
 avi_next(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
@@ -382,5 +471,6 @@ Avi_Init(Tcl_Interp *interp)
         return TCL_ERROR;
     }
     Tcl_CreateCommand(interp, "::avi::create", Avi_Create, NULL, NULL);
+    Tcl_CreateCommand(interp, "::avi::convert_shared_image", convert_shared_image, NULL, NULL);
     return TCL_OK;
 }
