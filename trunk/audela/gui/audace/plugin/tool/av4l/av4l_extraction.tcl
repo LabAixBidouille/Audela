@@ -236,8 +236,8 @@ namespace eval ::av4l_extraction {
         pack $frm.open.avipath -side left -padx 3 -pady 1 -expand true -fill x
 
         #--- Creation de la barre de defilement
-        scale $frm.percent -from 0 -to 100 -length 600 -variable pc \
-           -label Percentage -tickinterval 10 -orient horizontal \
+        scale $frm.percent -from 0 -to 1 -length 600 -variable ::av4l_extraction::percent \
+           -label "" -orient horizontal \
            -state disabled
         pack $frm.percent -in $frm -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
 
@@ -259,7 +259,7 @@ namespace eval ::av4l_extraction {
         image create photo .arn -format PNG -file [ file join $audace(rep_plugin) tool av4l img arn.png ]
         button $frm.previmage -image .arn\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command ""
+           -command "::av4l_tools::avi_prev_image"
         pack $frm.previmage \
            -in $frm.btnav \
            -side left -anchor w \
@@ -317,8 +317,8 @@ namespace eval ::av4l_extraction {
              pack $frm.pos.min -in $frm.pos -side left
 
                 #--- Cree un label pour
-                entry $frm.datemin -fg $color(blue) -relief sunken
-                pack $frm.datemin -in $frm.pos.min -side top -pady 1 -anchor w
+                #entry $frm.datemin -fg $color(blue) -relief sunken
+                #pack $frm.datemin -in $frm.pos.min -side top -pady 1 -anchor w
                 #--- Cree un label pour
                 entry $frm.posmin -fg $color(blue) -relief sunken
                 pack $frm.posmin -in $frm.pos.min -side top -pady 1 -anchor w
@@ -329,8 +329,8 @@ namespace eval ::av4l_extraction {
           pack $frm.pos.max -in $frm.pos -side left
 
              #--- Cree un label pour
-             entry $frm.datemax -fg $color(blue) -relief sunken
-             pack $frm.datemax -in $frm.pos.max -side top -pady 1 -anchor w
+             #entry $frm.datemax -fg $color(blue) -relief sunken
+             #pack $frm.datemax -in $frm.pos.max -side top -pady 1 -anchor w
              #--- Cree un label pour
              entry $frm.posmax -fg $color(blue) -relief sunken
              pack $frm.posmax -in $frm.pos.max -side top -pady 1 -anchor w
@@ -368,7 +368,7 @@ namespace eval ::av4l_extraction {
             label $intitle.status -font $av4lconf(font,courier_10) -text "Status"
             pack $intitle.status -in $intitle -side top -anchor w
 
-            #--- Cree un label pour le nb d image
+            #--- Cree un label pour le nb d image par seconde
             label $intitle.fps -font $av4lconf(font,courier_10) -text "fps"
             pack $intitle.fps -in $intitle -side top -anchor w
 
@@ -381,15 +381,15 @@ namespace eval ::av4l_extraction {
           set inparam [frame $frm.status.v -borderwidth 0]
           pack $inparam -in $frm.status -side left -expand 0 -fill x
 
-            #--- Cree un label pour le repetoire destination
+            #--- Cree un label pour le 
             label $inparam.status -font $av4lconf(font,courier_10) -fg $color(blue) -text "Loaded / ? / Error"
             pack  $inparam.status -in $inparam -side top -anchor w
 
-            #--- Cree un label pour le prefixe
+            #--- Cree un label pour le 
             label $inparam.fps -font $av4lconf(font,courier_10) -fg $color(blue) -text "25.0003"
             pack  $inparam.fps -in $inparam -side top -anchor w
 
-            #--- Cree un label pour le prefixe
+            #--- Cree un label pour le 
             label $inparam.nbtotal -font $av4lconf(font,courier_10) -fg $color(blue) -text "147"
             pack  $inparam.nbtotal -in $inparam -side top -anchor w
 
@@ -455,7 +455,7 @@ namespace eval ::av4l_extraction {
 
            button $frm.action.extract \
               -text "Extraction" -borderwidth 2 \
-              -command { ::av4l_tools::avi_extract }
+              -command " ::av4l_tools::avi_extract $frm "
            pack $frm.action.extract -in $frm.action \
               -side left -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
