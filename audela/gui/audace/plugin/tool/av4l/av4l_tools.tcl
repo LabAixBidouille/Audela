@@ -89,14 +89,20 @@ namespace eval ::av4l_tools {
       set ::av4l_tools::nb_frames [::av4l_tools::avi1 get_nb_frames]
       ::av4l_tools::avi_next
       ::av4l_tools::avi_exist
-      
+
+      $panneau(av4l,$visuNo,av4l_extraction).frmextraction.status.v.status configure -text Loaded
+      $panneau(av4l,$visuNo,av4l_extraction).frmextraction.status.v.fps configure -text ?
+      $panneau(av4l,$visuNo,av4l_extraction).frmextraction.status.v.nbtotal configure -text $::av4l_tools::nb_frames
+
       #::confVisu::autovisu $visuNo
 
       set autocuts [buf$bufNo autocuts]
       visu$visuNo disp [list [lindex $autocuts 0] [lindex $autocuts 1]]
       
-      
-      $panneau(av4l,$visuNo,av4l_extraction).frmextraction.percent configure -command "::av4l_tools::avi_seek $visuNo"
+      $panneau(av4l,$visuNo,av4l_extraction).frmextraction.percent configure -from 1
+      $panneau(av4l,$visuNo,av4l_extraction).frmextraction.percent configure -to $::av4l_tools::nb_frames
+      $panneau(av4l,$visuNo,av4l_extraction).frmextraction.percent configure -tickinterval [expr $::av4l_tools::nb_frames / 5]
+      $panneau(av4l,$visuNo,av4l_extraction).frmextraction.percent configure -command "::av4l_tools::avi_slide $visuNo"
       $panneau(av4l,$visuNo,av4l_extraction).frmextraction.percent configure -state normal
    }
 
@@ -164,12 +170,26 @@ namespace eval ::av4l_tools {
       
    }
 
-
    proc avi_next_image { } {
       set visuNo 1
       ::av4l_tools::avi_next
       visu$visuNo disp
+      set ::av4l_extraction::percent $::av4l_tools::cur_idframe
    }
+
+   proc avi_prev_image { } {
+      set visuNo 1
+      set ::av4l_tools::cur_idframe [ expr $::av4l_tools::cur_idframe - 1 ]
+      if { $::av4l_tools::cur_idframe > $::av4l_tools::nb_frames } {
+         set ::av4l_tools::cur_idframe $::av4l_tools::nb_frames
+      }
+      if { $::av4l_tools::cur_idframe < 1 } {
+         set ::av4l_tools::cur_idframe 1
+      }
+      ::av4l_tools::avi_get_frame $visuNo $::av4l_tools::cur_idframe
+      visu$visuNo disp
+   }
+
 
    proc avi_get_frame { visuNo idframe } {
 
@@ -186,11 +206,17 @@ namespace eval ::av4l_tools {
       ::av4l_tools::avi_next
       set ::av4l_tools::cur_idframe $idframe
       visu$visuNo disp
+      set ::av4l_extraction::percent $::av4l_tools::cur_idframe
    }
 
    proc avi_get_idframe {  } {
 
       ::console::affiche_resultat "idframe  : $::av4l_tools::cur_idframe\n"
+   }
+
+   proc avi_slide { visuNo arg } {
+      ::console::affiche_resultat "av_slide\n"
+      ::av4l_tools::avi_get_frame $visuNo $arg
    }
 
    proc avi_seek { visuNo arg } {
@@ -211,43 +237,43 @@ namespace eval ::av4l_tools {
    proc avi_setmin { This } {
       global audace
       $This.posmin delete 0 end
-      $This.posmin insert 0 [ ::av4l_tools::avi1 getpreviousoffset ]
+      $This.posmin insert 0 $::av4l_tools::cur_idframe
+      $This.imagecount delete 0 end
    }
 
    proc avi_setmax { This } {
       global audace
       $This.posmax delete 0 end
-      $This.posmax insert 0 [ ::av4l_tools::avi1 getpreviousoffset ]
+      $This.posmax insert 0 $::av4l_tools::cur_idframe
+      $This.imagecount delete 0 end
    }
 
    proc avi_imagecount { This } {
       global audace
       $This.imagecount delete 0 end
-      $This.imagecount insert 0 [ ::av4l_tools::avi1 count [ $This.posmin get ] [ $This.posmax get]]
+      set fmin [ $This.posmin get ]
+      set fmax [ $This.posmax get ]
+      $This.imagecount insert 0 [ expr $fmax - $fmin + 1 ]
 
    }
 
-   proc avi_extract { } {
+   proc avi_extract { This } {
       global audace
-      variable This
       set visuNo 1
       set bufNo [ visu$visuNo buf ]
 
-      set bytemin [ $This.frame1.posmin get ]
-      set bytemax [ $This.frame1.posmax get ]
-      set rep [  $This.frame1.status.v.requetes get ]
-      set prefix [ $This.frame1.status.v.scenes get ]
+      set fmin [ $This.posmin get ]
+      set fmax [ $This.posmax get ]
+      set destdir [  $This.form.v.destdir get ]
+      set prefix [ $This.form.v.prefix get ]
       set i 0
 
-      avi_seekbyte $bytemin
-      avi_next_image
-      while { 1 } {
-         incr i
-         ::console::affiche_resultat "i = $i"
-         set fn "$rep/$prefix$i"
-         ::console::affiche_resultat "fn : $fn"
-         buf$bufNo save $fn fits
-              if { [::av4l_tools::avi1 getoffset] >= $bytemax } { break }
+      avi_get_frame $visuNo $fmin
+      for {set i $fmin} {$i <= $fmax} {incr i} {
+         #::console::affiche_resultat "i = $i\n"
+         set path "$destdir/$prefix$i"
+         ::console::affiche_resultat "path : $path\n"
+         buf$bufNo save $path fits
          ::av4l_tools::avi1 next
       }
       visu$visuNo disp
