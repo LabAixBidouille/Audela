@@ -249,7 +249,7 @@ namespace eval ::av4l_extraction {
         image create photo .arr -format PNG -file [ file join $audace(rep_plugin) tool av4l img arr.png ]
         button $frm.qprevimage -image .arr\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command ""
+           -command "::av4l_tools::avi_quick_prev_image"
         pack $frm.qprevimage \
            -in $frm.btnav \
            -side left -anchor w \
@@ -279,7 +279,7 @@ namespace eval ::av4l_extraction {
         image create photo .avr -format PNG -file [ file join $audace(rep_plugin) tool av4l img avr.png ]
         button $frm.qnextimage -image .avr\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command ""
+           -command "::av4l_tools::avi_quick_next_image"
         pack $frm.qnextimage \
            -in $frm.btnav \
            -side left -anchor w \

@@ -190,6 +190,32 @@ namespace eval ::av4l_tools {
       visu$visuNo disp
    }
 
+   proc avi_quick_next_image { } {
+      set visuNo 1
+      set ::av4l_tools::cur_idframe [ expr $::av4l_tools::cur_idframe + 100 ]
+      if { $::av4l_tools::cur_idframe > $::av4l_tools::nb_frames } {
+         set ::av4l_tools::cur_idframe $::av4l_tools::nb_frames
+      }
+      if { $::av4l_tools::cur_idframe < 1 } {
+         set ::av4l_tools::cur_idframe 1
+      }
+      ::av4l_tools::avi_get_frame $visuNo $::av4l_tools::cur_idframe
+      visu$visuNo disp
+   }
+
+   proc avi_quick_prev_image { } {
+      set visuNo 1
+      set ::av4l_tools::cur_idframe [ expr $::av4l_tools::cur_idframe - 100 ]
+      if { $::av4l_tools::cur_idframe > $::av4l_tools::nb_frames } {
+         set ::av4l_tools::cur_idframe $::av4l_tools::nb_frames
+      }
+      if { $::av4l_tools::cur_idframe < 1 } {
+         set ::av4l_tools::cur_idframe 1
+      }
+      ::av4l_tools::avi_get_frame $visuNo $::av4l_tools::cur_idframe
+      visu$visuNo disp
+   }
+
 
    proc avi_get_frame { visuNo idframe } {
 
@@ -267,14 +293,16 @@ namespace eval ::av4l_tools {
       set destdir [  $This.form.v.destdir get ]
       set prefix [ $This.form.v.prefix get ]
       set i 0
+      set cpt 1
 
       avi_get_frame $visuNo $fmin
       for {set i $fmin} {$i <= $fmax} {incr i} {
          #::console::affiche_resultat "i = $i\n"
-         set path "$destdir/$prefix$i"
+         set path "$destdir/$prefix$cpt"
          ::console::affiche_resultat "path : $path\n"
          buf$bufNo save $path fits
          ::av4l_tools::avi1 next
+         incr cpt
       }
       visu$visuNo disp
    }
