@@ -308,4 +308,23 @@ namespace eval ::av4l_tools {
    }
 
 
+
+   proc acq_fetch { this } {
+        global audace
+        ::avi::convert_shared_image /dev/shm/pict.yuv422
+        visu1 disp
+        file delete -force /dev/shm/pict.yuv422
+   }
+
+   proc acq_start { this } {
+        global audace
+	::console::affiche_resultat "path : [$this.form.v.destdir get]"
+        exec $audace(rep_plugin)/../../../bin/av4l-grab -d 120m -c 2m -o [$this.form.v.destdir get] &
+   }
+
+   proc acq_stop { this } {
+        global audace
+        exec pkill -x av4l-grab
+   }
+
 }
