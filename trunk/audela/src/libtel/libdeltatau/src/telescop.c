@@ -228,9 +228,9 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		tel->dead_delay_slew=2.1; /* delai en secondes estime pour un slew sans bouger */
 		/* --- Match --- */
 		tel->ha00=0.;
-		tel->roth00=1507500;
+		tel->roth00=(int)(1507500-50./60.*10000);
 		tel->dec00=-90;
-		tel->rotd00=1250000;
+		tel->rotd00=(int)(1250000+65./60.*10000);
 		/* --- stops --- */
 		tel->stop_e_uc=-13900;
 		tel->stop_w_uc=3090000;
@@ -313,9 +313,9 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		sprintf(tel->home0,"GPS 6.92353 E %+.6f 1320.0",tel->latitude);
 		/* --- Match --- */
 		tel->ha00=0.;
-		tel->roth00=1595000;
+		tel->roth00=1595500;
 		tel->dec00=43.75203;
-		tel->rotd00=800000;
+		tel->rotd00=788333;
 		/* --- stops --- */
 		tel->stop_w_uc=3100000;
 		tel->stop_e_uc=1000;
