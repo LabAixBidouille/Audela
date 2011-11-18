@@ -137,6 +137,24 @@ int cmdTelInit(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
 }
 
 /*
+ *   Points zero des coordonnes
+ */
+int cmdTelRot0(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   char ligne[2048];
+   int result = TCL_OK;
+   struct telprop *tel;
+   tel = (struct telprop *)clientData;
+   if (argc>3) {
+		tel->roth00=(int)atoi(argv[2]);
+		tel->rotd00=(int)atoi(argv[3]);
+   }
+	sprintf(ligne,"%d %d",tel->roth00,tel->rotd00);
+	Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+	result = TCL_OK;
+	return result;
+}
+
+/*
  *   Retourne les positions des axes
  */
 int cmdTelPosition(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
