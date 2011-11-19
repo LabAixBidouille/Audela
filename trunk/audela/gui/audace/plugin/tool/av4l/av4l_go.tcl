@@ -88,7 +88,9 @@ proc ::av4l::initPlugin { tkbase } {
    set av4lconf(bufno)    $audace(bufNo)
    set av4lconf(rep_plug) [file join $audace(rep_plugin) tool av4l ]
 
-   load libavi[info sharedlibextension]
+   if { [catch {load libavi[info sharedlibextension] }] } {
+	   ::console::affiche_erreur "La librairie libavi du plugin av4l n'a pas pu etre chargee\n"
+   }
    # ::console::affiche_resultat [::hello]
 }
 

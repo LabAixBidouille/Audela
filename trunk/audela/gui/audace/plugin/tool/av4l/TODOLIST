@@ -18,3 +18,8 @@ SV:
 - setmin setmax, deviennent des numero d images.
  
 - appel a une procedure qui renvoit le status de la video
+
+- Lors de l'arret de av4l-grab faire un appel a wait(2) pour supprimer le zombie
+
+- Interdire le lancement de plusieurs acquisitions simultanees
+
