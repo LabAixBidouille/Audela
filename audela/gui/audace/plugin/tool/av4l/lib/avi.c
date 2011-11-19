@@ -1,3 +1,5 @@
+/* :set ts=4 sw=4 et */
+
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
@@ -17,24 +19,25 @@
 
 #include <tcl.h>
 
+#define LIBNAME "av4l"
 
 struct aviprop {
     Tcl_Interp * interp;
-    char *path;
+    int status;
+    char *path; //!< chemin complet du fichier avi
     int current_image;
     AVFormatContext *pFormatCtx;
+    int videoStream; //!< index du flux video
     AVCodecContext *pCodecCtx;
     AVCodec *pCodec;
-    AVFrame *pFrame, *pFrameRGB;
-    uint8_t *buffer;
-    int numBytes;
-    int frameFinished;
+    AVFrame *pFrame; //!< image provenant du flux
+    AVFrame *pFrameRGB; //!< image apres conversion
     AVPacket packet;
     struct SwsContext * pSwsCtx;
-    int videoStream;
-    off_t filesize;
+    off_t filesize; //!< taille du fichier avi en octets
     off_t previous_offset;
 };
+
 
 static int
 avi_load(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
@@ -42,55 +45,70 @@ avi_load(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
     int i;
     char * path = argv[2];
     struct stat st;
+    uint8_t *buffer;
+    int numBytes;
 
     if(stat(path,&st) != 0) {
+        Tcl_SetResult(interp, "File not found in " LIBNAME ".", TCL_VOLATILE);
         return TCL_ERROR;
     }
 
     avi->filesize = st.st_size;
 
-    fprintf(stderr,"file size = %ld\n", avi->filesize);
+    //fprintf(stderr,"file size = %ld\n", avi->filesize);
 
 
-    if(av_open_input_file(&avi->pFormatCtx, path, NULL, 0, NULL)!=0)
+    if(avformat_open_input(&avi->pFormatCtx, path, NULL, NULL)!=0) {
+        Tcl_SetResult(interp, "File open failed in " LIBNAME ".", TCL_VOLATILE);
         return TCL_ERROR;
+    }
 
-    if(av_find_stream_info(avi->pFormatCtx)<0)
+    if(av_find_stream_info(avi->pFormatCtx)<0) {
+        Tcl_SetResult(interp, "Stream info not found in " LIBNAME ".", TCL_VOLATILE);
         return TCL_ERROR;
+    }
 
-    dump_format(avi->pFormatCtx, 0, path, 0);
+    // Dump format on stdout/stderr
+    av_dump_format(avi->pFormatCtx, 0, path, 0);
 
+    // Find the video stream
     avi->videoStream=-1;
-    for(i=0; i<avi->pFormatCtx->nb_streams; i++)
+    for(i=0; i<avi->pFormatCtx->nb_streams; i++) {
         if(avi->pFormatCtx->streams[i]->codec->codec_type==AVMEDIA_TYPE_VIDEO) {
             avi->videoStream=i;
             break;
         }
-    if(avi->videoStream==-1)
-        return TCL_ERROR;
-
-    // Get a pointer to the codec context for the video stream
-    avi->pCodecCtx=avi->pFormatCtx->streams[avi->videoStream]->codec;
-
-    // Find the decoder for the video stream
-    avi->pCodec=avcodec_find_decoder(avi->pCodecCtx->codec_id);
-    if(avi->pCodec==NULL) {
-        fprintf(stderr, "Unsupported codec!\n");
-        return TCL_ERROR; // Codec not found
     }
 
-    if(avcodec_open(avi->pCodecCtx, avi->pCodec)<0)
+    if(avi->videoStream==-1) {
+        Tcl_SetResult(interp, "No video stream found in " LIBNAME ".", TCL_VOLATILE);
         return TCL_ERROR;
+    }
+
+    // Get a pointer to the codec context for the video stream
+    avi->pCodecCtx = avi->pFormatCtx->streams[avi->videoStream]->codec;
+
+    // Find the decoder for the video stream
+    avi->pCodec = avcodec_find_decoder(avi->pCodecCtx->codec_id);
+    if(avi->pCodec==NULL) {
+        Tcl_SetResult(interp, "Unsupported codec in " LIBNAME ".", TCL_VOLATILE);
+        return TCL_ERROR;
+    }
+
+    if(avcodec_open(avi->pCodecCtx, avi->pCodec)<0){
+        Tcl_SetResult(interp, "Open codec failed in " LIBNAME ".", TCL_VOLATILE);
+        return TCL_ERROR;
+    }
 
 
-    avi->pFrame=avcodec_alloc_frame();
+    avi->pFrame = avcodec_alloc_frame();
 
-    avi->pFrameRGB=avcodec_alloc_frame();
+    avi->pFrameRGB = avcodec_alloc_frame();
 
-    avi->numBytes=avpicture_get_size(PIX_FMT_RGB24, avi->pCodecCtx->width,
+    numBytes=avpicture_get_size(PIX_FMT_RGB24, avi->pCodecCtx->width,
             avi->pCodecCtx->height);
-    avi->buffer=(uint8_t *)av_malloc(avi->numBytes*sizeof(uint8_t));
-    avpicture_fill((AVPicture *)avi->pFrameRGB, avi->buffer, PIX_FMT_GRAY8,
+    buffer=(uint8_t *)av_malloc(numBytes*sizeof(uint8_t));
+    avpicture_fill((AVPicture *)avi->pFrameRGB, buffer, PIX_FMT_GRAY8,
             avi->pCodecCtx->width, avi->pCodecCtx->height);
     avi->pSwsCtx = sws_getContext(
             avi->pCodecCtx->width, avi->pCodecCtx->height, avi->pCodecCtx->pix_fmt,
@@ -104,17 +122,20 @@ avi_load(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
 
     avi->previous_offset = 0;
 
+    avi->status = 0;
+
     return TCL_OK;
 }
 
-// Procedure independante appelee uniquement lors de l'acquisition
+// Procedure independante appelee uniquement par le module d'acquisition
+// argv[1] chemin d'une image brute YUYV422 ( format packed )
 static int
-convert_shared_image(ClientData cdata, Tcl_Interp *interp, int argc, char * argv[])
+convert_shared_image(ClientData cdata, Tcl_Interp *interp, int argc, const char * argv[])
 {
     static AVFrame *pFrame = 0, *pFrameRGB = 0;
     static struct SwsContext * pSwsCtx = 0;
 
-    char * path = argv[1];
+    const char * path = argv[1];
     struct stat st;
     off_t filesize = 0;
     int width, height;
@@ -127,18 +148,18 @@ convert_shared_image(ClientData cdata, Tcl_Interp *interp, int argc, char * argv
         return TCL_ERROR;
     }
     filesize = st.st_size;
-    fprintf(stderr,"file size = %lld\n", filesize);
+    //fprintf(stderr,"file size = %lld\n", filesize);
     if(filesize == 2*720*576) {
         width = 720; height=576;
     } else if (filesize == 2*640*480) {
         width = 640; height=480;
     } else {
+        Tcl_SetResult(interp, "Size of image not detected in " LIBNAME ".", TCL_VOLATILE);
         return TCL_ERROR;
     }
 
 
     if(pFrame == 0) {
-        av_register_all();
         pFrame=avcodec_alloc_frame();
         numBytesSrc=avpicture_get_size(PIX_FMT_YUYV422, width, height);
         fprintf(stderr,"numBytesSrc = %d\n",numBytesSrc);
@@ -175,11 +196,10 @@ convert_shared_image(ClientData cdata, Tcl_Interp *interp, int argc, char * argv
             pFrameRGB->linesize
             );
 
-    // src/libcam/libcam.c AcqRead
     if (Tcl_Eval(interp, "buf1 clear") == TCL_ERROR) {
-        //libcam_log(LOG_WARNING, "error in this command: result='%s'", interp->result);
         if (Tcl_Eval(interp, "buf::create 1") == TCL_ERROR) {
-            //libcam_log(LOG_ERROR, "(libcam.c @ %d) error in the command '%s': result='%s'", __LINE__, s, interp->result);
+            Tcl_SetResult(interp, "buf::create failed in " LIBNAME ".", TCL_VOLATILE);
+            return TCL_ERROR;
         }
     }
 
@@ -187,9 +207,8 @@ convert_shared_image(ClientData cdata, Tcl_Interp *interp, int argc, char * argv
         char s[4000];
         sprintf(s,"buf1 setpixels CLASS_GRAY %d %d FORMAT_BYTE COMPRESS_NONE %ld", width, height, pFrameRGB->data[0]);
         if (Tcl_Eval(interp, s) == TCL_ERROR) {
-            //libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
-            //sprintf(errorMessage,"Errors setpixels: %s", interp->result);
-            fprintf(stderr, "ERROR setpixel\n");
+            Tcl_SetResult(interp, "buf1 setpixels failed in " LIBNAME ".", TCL_VOLATILE);
+            return TCL_ERROR;
         }
 
     }
@@ -223,11 +242,10 @@ avi_next(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
                         avi->pFrameRGB->linesize
                         );
 
-                // src/libcam/libcam.c AcqRead
                 if (Tcl_Eval(interp, "buf1 clear") == TCL_ERROR) {
-                    //libcam_log(LOG_WARNING, "error in this command: result='%s'", interp->result);
                     if (Tcl_Eval(interp, "buf::create 1") == TCL_ERROR) {
-                        //libcam_log(LOG_ERROR, "(libcam.c @ %d) error in the command '%s': result='%s'", __LINE__, s, interp->result);
+                        Tcl_SetResult(interp, "buf::create failed in " LIBNAME ".", TCL_VOLATILE);
+                        return TCL_ERROR;
                     }
                 }
 
@@ -235,9 +253,8 @@ avi_next(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
                     char s[4000];
                     sprintf(s,"buf1 setpixels CLASS_GRAY %d %d FORMAT_BYTE COMPRESS_NONE %ld", avi->pCodecCtx->width, avi->pCodecCtx->height, avi->pFrameRGB->data[0]);
                     if (Tcl_Eval(interp, s) == TCL_ERROR) {
-                        //libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
-                        //sprintf(errorMessage,"Errors setpixels: %s", interp->result);
-                        fprintf(stderr, "ERROR setpixel\n");
+                        Tcl_SetResult(interp, "buf1 setpixels failed in " LIBNAME ".", TCL_VOLATILE);
+                        return TCL_ERROR;
                     }
 
                 }
@@ -301,11 +318,10 @@ avi_seek_percent(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv
 
 	Tcl_GetDouble(interp, argv[2], &pos);
 	off = pos * avi->filesize;
-//	ff_read_frame_flush(avi->pFormatCtx);
+	//ff_read_frame_flush(avi->pFormatCtx);
 	i = av_seek_frame(avi->pFormatCtx, -1, off, AVSEEK_FLAG_BYTE);
 	avi->previous_offset = avi->pFormatCtx->pb->pos;
 	return TCL_OK;
-    
 }
 
 static int
@@ -347,6 +363,16 @@ avi_get_previous_offset(struct aviprop * avi, Tcl_Interp *interp, int argc, char
 static int
 avi_close(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
 {
+    // TODO
+	return TCL_OK;
+}
+
+static int
+avi_status(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
+{
+	char s[100];
+	sprintf(s,"%d",avi->status);
+	Tcl_SetResult(interp,s,TCL_VOLATILE);
 	return TCL_OK;
 }
 
@@ -430,17 +456,21 @@ cmdAvi(ClientData cdata, Tcl_Interp *interp, int argc, char * argv[])
         return avi_test(avi,interp,argc,argv);
     } else if (strcmp(argv[1], "close") == 0) {
         return avi_close(avi,interp,argc,argv);
+    } else if (strcmp(argv[1], "status") == 0) {
+        return avi_status(avi,interp,argc,argv);
     } else {
         return TCL_ERROR;
     }
 }
 
 static int
-Avi_Create(ClientData cdata, Tcl_Interp *interp, int argc, char * argv[])
+Avi_Create(ClientData cdata, Tcl_Interp *interp, int argc, const char * argv[])
 {
     char s[1000];
     struct aviprop * avi;
+
     avi = calloc(1, sizeof(struct aviprop));
+    avi->status = -1;
     avi->interp = interp;
 
     Tcl_CreateCommand(interp, argv[1], (Tcl_CmdProc *) cmdAvi, (ClientData) avi, NULL);
@@ -470,7 +500,10 @@ Avi_Init(Tcl_Interp *interp)
     if (Tcl_PkgProvide(interp, "Avi", "1.0") == TCL_ERROR) {
         return TCL_ERROR;
     }
+
     Tcl_CreateCommand(interp, "::avi::create", Avi_Create, NULL, NULL);
+
     Tcl_CreateCommand(interp, "::avi::convert_shared_image", convert_shared_image, NULL, NULL);
+
     return TCL_OK;
 }

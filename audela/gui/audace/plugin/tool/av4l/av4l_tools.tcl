@@ -84,7 +84,14 @@ namespace eval ::av4l_tools {
       set bufNo [ visu$visuNo buf ]
       set filename [$panneau(av4l,$visuNo,av4l_extraction).frmextraction.open.avipath get]
       ::avi::create ::av4l_tools::avi1
-      ::av4l_tools::avi1 load $filename
+      catch { ::av4l_tools::avi1 load $filename }
+      if {[::av4l_tools::avi1 status] != 0} {
+	      ::console::affiche_erreur "Echec du chargement de la video\n"
+          $panneau(av4l,$visuNo,av4l_extraction).frmextraction.status.v.status configure -text Error
+          $panneau(av4l,$visuNo,av4l_extraction).frmextraction.status.v.fps configure -text ?
+          $panneau(av4l,$visuNo,av4l_extraction).frmextraction.status.v.nbtotal configure -text ?
+          return
+      }
       set ::av4l_tools::cur_idframe 0
       set ::av4l_tools::nb_frames [::av4l_tools::avi1 get_nb_frames]
       ::av4l_tools::avi_next
