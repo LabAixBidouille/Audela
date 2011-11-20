@@ -38,6 +38,7 @@
 #include "telescop.h"
 
 #include <libtel/libtel.h>
+#include <libtel/util.h>
 #include "teltcl.h"
 #include "telcmd.h"
 
@@ -1033,7 +1034,9 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
          for (k=3;k<=argc-1;k++) {
             if (strcmp(argv[k],"-equinox")==0) {
                // je recupere la valeur de l'equinoxe et je la convertis en majuscule systematiquement
-               strncpy(outputEquinox,strupr(argv[k+1]), sizeof(outputEquinox));
+					 libcam_strupr(ligne,argv[k+1]);
+               strncpy(outputEquinox,ligne, sizeof(outputEquinox));
+               //strncpy(outputEquinox,strupr(argv[k+1]), sizeof(outputEquinox));
             }
          }
          if ( strcmp(tel->model_tel2cat,"") == 0 ) {
