@@ -628,12 +628,48 @@ int CmdFitsHeader(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
    }
 	Tcl_DStringInit(&dsptr);
    for (k=0;k<nbkeys;k++) {
+		Tcl_DStringStartSublist(&dsptr);
+		Tcl_DStringAppendElement(&dsptr,keynames[k]);
+      sprintf(ligne,"string trim \"%s\" \" \"",values[k]);
+      Tcl_Eval(interp,ligne);
+		sprintf(ligne,"%s",interp->result);
+		Tcl_DStringAppendElement(&dsptr,ligne);
+      if (datatypes[k]==TBIT) {
+         strcpy(ligne,"bit");
+      } else if (datatypes[k]==TBYTE) {
+         strcpy(ligne,"byte");
+      } else if (datatypes[k]==TLOGICAL) {
+         strcpy(ligne,"logical");
+      } else if (datatypes[k]==TSTRING) {
+         strcpy(ligne,"string");
+      } else if (datatypes[k]==TUSHORT) {
+         strcpy(ligne,"ushort");
+      } else if (datatypes[k]==TINT) {
+         strcpy(ligne,"int");
+      } else if (datatypes[k]==TULONG) {
+         strcpy(ligne,"ulong");
+      } else if (datatypes[k]==TLONG) {
+         strcpy(ligne,"long");
+      } else if (datatypes[k]==TFLOAT) {
+         strcpy(ligne,"float");
+      } else if (datatypes[k]==TDOUBLE) {
+         strcpy(ligne,"double");
+      } else if (datatypes[k]==TCOMPLEX) {
+         strcpy(ligne,"complex");
+      } else if (datatypes[k]==TDBLCOMPLEX) {
+         strcpy(ligne,"dlbcomplex");
+      }
+		Tcl_DStringAppendElement(&dsptr,ligne);
+		Tcl_DStringAppendElement(&dsptr,comments[k]);
+		Tcl_DStringAppendElement(&dsptr,units[k]);
+		Tcl_DStringEndSublist(&dsptr);
+		/* --- code obsolete a effacer en 2012 si aucun bug n'est reporté
 	   Tcl_DStringAppend(&dsptr,"{",-1);
       sprintf(ligne," \"%s\" ",keynames[k]);
 	   Tcl_DStringAppend(&dsptr,ligne,-1);
       sprintf(ligne,"string trim \"%s\" \" \"",values[k]);
       Tcl_Eval(interp,ligne);
-      sprintf(ligne,"\"%s\"",interp->result);
+		sprintf(ligne,"%s",interp->result);
 	   Tcl_DStringAppend(&dsptr,ligne,-1);
       if (datatypes[k]==TBIT) {
          strcpy(ligne," bit ");
@@ -666,6 +702,7 @@ int CmdFitsHeader(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
       sprintf(ligne," \"%s\" ",units[k]);
 	   Tcl_DStringAppend(&dsptr,ligne,-1);
 	   Tcl_DStringAppend(&dsptr,"} ",-1);
+		*/
    }
    Tcl_DStringResult(interp,&dsptr);
    Tcl_DStringFree(&dsptr);
