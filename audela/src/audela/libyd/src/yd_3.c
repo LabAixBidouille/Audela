@@ -593,6 +593,44 @@ int Cmd_ydtcl_ajustement(ClientData clientData, Tcl_Interp *interp, int argc, ch
    Outputs: 1) The best periods vector sorted following the chi2 test
 			2) The final number of harmonics (only for the best period)
 			3) The Fourier coefficients vector (only for the best period)
+Example:
+	set has "" ; set dfocs "" ; set poids ""
+	set pi [expr 4*atan(1)]
+	for {set kk -180} {$kk<=360} {incr kk 5} {
+		set x [expr 1.*$kk]
+		set y -500
+		set y [expr $y+300*cos(1.*$x/$period*2*$pi)]
+		set y [expr $y+200*sin(1.*$x/$period*2*$pi)]
+		set y [expr $y+100*cos(2.*$x/$period*2*$pi)]
+		set y [expr $y+ 50*sin(2.*$x/$period*2*$pi)]
+		lappend has $x
+		lappend dfocs $y
+		lappend poids 1
+	}
+}
+::plotxy::hold off
+::plotxy::plot $has $dfocs '.o'
+set res [yd_ajustement $has 0 $dfocs $poids {360} 4]
+set period [expr [lindex $res 0]]
+set nhar [lindex $res 1]
+set coefs [lindex $res 2]
+set xs ""
+set ys ""
+set pi [expr 4*atan(1)]
+for {set kk -180} {$kk<=360} {incr kk 5} {
+	set x [expr 1.*$kk]
+	set y [lindex $coefs end]
+	for {set k 1} {$k<=[expr 2*$nhar]} {incr k 2} {
+		set harm [expr ($k+1)/2]
+		set y [expr $y+[lindex $coefs [expr $k-1]]*cos($harm*$x/$period*2*$pi)]
+		set y [expr $y+[lindex $coefs [expr $k  ]]*sin($harm*$x/$period*2*$pi)]
+	}
+	lappend xs $x
+	lappend ys $y
+}
+::plotxy::hold on
+::plotxy::plot $xs $ys '-b'
+
 */
 /***************************************************************************/
 {
@@ -605,18 +643,34 @@ int Cmd_ydtcl_ajustement(ClientData clientData, Tcl_Interp *interp, int argc, ch
     gsl_vector *residu_min,*i_bests, *nhar_bests;
     double res;
     double deltaphasemax,jdphase0;
-    int nhar0,i,j,ii,i_bestbest,nhar_bestbest;
+    int nhar0,i,j,ii,i_bestbest,nhar_bestbest,nmes1,valid=1;
 
 	if(argc!=7) {
-        sprintf(s,"Usage: %s Inputs must be jds jdphase0 mags poids best_periods nhar", argv[0]);
+        sprintf(s,"Usage: %s jds jdphase0 mags poids best_periods nhar", argv[0]);
         Tcl_SetResult(interp,s,TCL_VOLATILE);
        return TCL_ERROR;
    } else {
         /* --- decodage des arguments ---*/
         code=gsltcltcl_getgslvector(interp,argv[1],&jds,&nmes);
+		  if (nmes==0) {
+			  sprintf(s,"Error: jds has no data !");
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				return TCL_ERROR;
+		  }
+		  nmes1=nmes;
 		jdphase0=atof(argv[2]);
 		code1=gsltcltcl_getgslvector(interp,argv[3],&mags,&nmes);
+		  if (nmes!=nmes1) {
+			  sprintf(s,"Error: mags has not the same length as jds (%d instead of %d) !",nmes,nmes1);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				return TCL_ERROR;
+		  }
 		code2=gsltcltcl_getgslvector(interp,argv[4],&poids,&nmes);
+		  if (nmes!=nmes1) {
+			  sprintf(s,"Error: poids has not the same length as jds (%d instead of %d) !",nmes,nmes1);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				return TCL_ERROR;
+		  }
         code3=gsltcltcl_getgslvector(interp,argv[5],&best_periods,&nper);
 		nhar =atoi(argv[6]);
 		/* --- inits ---*/
