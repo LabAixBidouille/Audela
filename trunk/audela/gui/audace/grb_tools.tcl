@@ -290,6 +290,7 @@ proc grb_greiner { args } {
          return
       }
       set onegrb ""
+      set onegrb [lindex $args 2]
       set k [lsearch -exact $satellites $onesatellite]
       if {$k==-1} {
          # - l'argument est un numero de GRB
@@ -305,6 +306,8 @@ proc grb_greiner { args } {
          }
       }
 
+		#::console::affiche_resultat "onesatellite=$onesatellite\n"
+		#::console::affiche_resultat "onegrb=$onegrb\n"
       set n 0
       set tgrbs ""
       set jdlim [mc_date2jd 1900-01-01T00:00:00]
@@ -340,9 +343,10 @@ proc grb_greiner { args } {
 
       set fname "$audace(rep_images)/tmp[buf$audace(bufNo) extension]"
       set method 0
-      set minobjelev 5
+      set minobjelev 10
       set maxsunelev -10
       set minmoondist 5
+      #::console::affiche_resultat "mc_lightmap $jds $ras $decs $equinoxs $fname 1 1 $method $minobjelev $maxsunelev $minmoondist\n"
       mc_lightmap $jds $ras $decs $equinoxs $fname 1 1 $method $minobjelev $maxsunelev $minmoondist
       loadima $fname
 
