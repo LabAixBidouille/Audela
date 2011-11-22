@@ -37,10 +37,33 @@ proc test1 { } {
  ::console::affiche_resultat "---------------------------\n"
  ::console::affiche_resultat " Test n° 1\n"
  ::console::affiche_resultat "---------------------------\n"
+::av4l_tools::avi_next_image  
 
-#  image create photo .arr -format JPEG -file [ file join $audace(rep_plugin) tool av4l img arr.jpg ]
+ set rect [ ::confVisu::getBox 1 ]
+ ::console::affiche_resultat "rect $rect\n"
 
-::av4l_tools::avi_exist
+ if { [info exists $rect] } {
+    return
+ }
+ #set rect { [lindex $rect 0] [lindex $rect 1] [lindex $rect 2] [lindex $rect 3] }
+
+ ::console::affiche_resultat "visu \n"
+
+ buf1 window $rect
+ buf1 mirrory
+# buf1 save ocr.png
+set stat  [buf1 stat]
+ ::console::affiche_resultat "stat = $stat \n"
+
+buf1 savejpeg ocr.jpg 100 [lindex $stat 3] [lindex $stat 0] 
+
+set err [ catch {set result [exec jpegtopnm ocr.jpg | gocr -C 0-9 -f UTF8 ]} msg ]
+
+ ::console::affiche_resultat "err = $err \n"
+ ::console::affiche_resultat "msg = $msg \n"
+
+
+
 
 }
 

@@ -82,14 +82,14 @@ namespace eval ::av4l_tools {
       }
 
       set bufNo [ visu$visuNo buf ]
-      set filename [$panneau(av4l,$visuNo,av4l_extraction).frmextraction.open.avipath get]
+      set filename [$this.open.avipath get]
       ::avi::create ::av4l_tools::avi1
       catch { ::av4l_tools::avi1 load $filename }
       if {[::av4l_tools::avi1 status] != 0} {
-	      ::console::affiche_erreur "Echec du chargement de la video\n"
-          $panneau(av4l,$visuNo,av4l_extraction).frmextraction.status.v.status configure -text Error
-          $panneau(av4l,$visuNo,av4l_extraction).frmextraction.status.v.fps configure -text ?
-          $panneau(av4l,$visuNo,av4l_extraction).frmextraction.status.v.nbtotal configure -text ?
+          ::console::affiche_erreur "Echec du chargement de la video\n"
+    #      $this.status.v.status configure -text Error
+    #      $this.status.v.fps configure -text ?
+    #      $this.status.v.nbtotal configure -text ?
           return
       }
       set ::av4l_tools::cur_idframe 0
@@ -97,20 +97,20 @@ namespace eval ::av4l_tools {
       ::av4l_tools::avi_next
       ::av4l_tools::avi_exist
 
-      $panneau(av4l,$visuNo,av4l_extraction).frmextraction.status.v.status configure -text Loaded
-      $panneau(av4l,$visuNo,av4l_extraction).frmextraction.status.v.fps configure -text ?
-      $panneau(av4l,$visuNo,av4l_extraction).frmextraction.status.v.nbtotal configure -text $::av4l_tools::nb_frames
+     # $this.status.v.status configure -text Loaded
+     # $this.status.v.fps configure -text ?
+     # $this.status.v.nbtotal configure -text $::av4l_tools::nb_frames
 
       #::confVisu::autovisu $visuNo
 
       set autocuts [buf$bufNo autocuts]
       visu$visuNo disp [list [lindex $autocuts 0] [lindex $autocuts 1]]
       
-      $panneau(av4l,$visuNo,av4l_extraction).frmextraction.percent configure -from 1
-      $panneau(av4l,$visuNo,av4l_extraction).frmextraction.percent configure -to $::av4l_tools::nb_frames
-      $panneau(av4l,$visuNo,av4l_extraction).frmextraction.percent configure -tickinterval [expr $::av4l_tools::nb_frames / 5]
-      $panneau(av4l,$visuNo,av4l_extraction).frmextraction.percent configure -command "::av4l_tools::avi_slide $visuNo"
-      $panneau(av4l,$visuNo,av4l_extraction).frmextraction.percent configure -state normal
+     # $this.percent  configure -from 1
+     # $this.percent -to $::av4l_tools::nb_frames
+     # $this.percent -tickinterval [expr $::av4l_tools::nb_frames / 5]
+     # $this.percent -command "::av4l_tools::avi_slide $visuNo"
+     # $this.percent -state normal
    }
 
 
@@ -244,7 +244,8 @@ namespace eval ::av4l_tools {
 
    proc avi_get_idframe {  } {
 
-      ::console::affiche_resultat "idframe  : $::av4l_tools::cur_idframe\n"
+      #::console::affiche_resultat "idframe  : $::av4l_tools::cur_idframe"
+      return $::av4l_tools::cur_idframe
    }
 
    proc avi_slide { visuNo arg } {
@@ -325,7 +326,7 @@ namespace eval ::av4l_tools {
 
    proc acq_start { this } {
         global audace
-	::console::affiche_resultat "path : [$this.form.v.destdir get]"
+        ::console::affiche_resultat "path : [$this.form.v.destdir get]"
         exec $audace(rep_plugin)/../../../bin/av4l-grab -d 120m -c 2m -o [$this.form.v.destdir get] &
    }
 

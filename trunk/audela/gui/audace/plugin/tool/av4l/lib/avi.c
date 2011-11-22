@@ -286,7 +286,9 @@ avi_test(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
 	sprintf(s,"%s %s %d \n",s,"packed_size = ",avi->pFormatCtx->packet_size);
 //	sprintf(s,"%s %s %d \n",s,"key = ",avi->pFormatCtx->key);
 	sprintf(s,"%s %s %d \n",s,"keylen = ",avi->pFormatCtx->keylen);
-	sprintf(s,"%s","** streams **\n");
+	sprintf(s,"%s %s %lld \n",s,"fps_probe_size = ", avi->pFormatCtx->fps_probe_size);
+
+	sprintf(s,"%s %s",s,"** streams * *\n");
 	sprintf(s,"%s %s %lld \n",s,"first_pts = ", avi->pFormatCtx->streams[avi->videoStream]->first_dts);
 	sprintf(s,"%s %s %lld \n",s,"start_time = ", avi->pFormatCtx->streams[avi->videoStream]->start_time);
 	sprintf(s,"%s %s %lld \n",s,"cur_dts = ", avi->pFormatCtx->streams[avi->videoStream]->cur_dts);
