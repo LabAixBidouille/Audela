@@ -306,8 +306,8 @@ proc grb_greiner { args } {
          }
       }
 
-		#::console::affiche_resultat "onesatellite=$onesatellite\n"
-		#::console::affiche_resultat "onegrb=$onegrb\n"
+      #::console::affiche_resultat "onesatellite=$onesatellite\n"
+      #::console::affiche_resultat "onegrb=$onegrb\n"
       set n 0
       set tgrbs ""
       set jdlim [mc_date2jd 1900-01-01T00:00:00]
