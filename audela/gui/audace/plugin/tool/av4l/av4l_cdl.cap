@@ -11,8 +11,9 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
+set caption(av4l_cdl,bar_title)           "av4l - cdl"
 set caption(av4l_cdl,main_title)          "acqvideolinux - Statut"
-set caption(av4l_cdl,titre)               "Extraction Video AVI"
+set caption(av4l_cdl,titre)               "Courbe de lumiere"
 
 set caption(av4l_cdl,label_bdd)           "Information du Serveur MySQL Local"
 set caption(av4l_cdl,label_connect)       "Connexion Serveur................"
@@ -39,8 +40,9 @@ set caption(av4l_cdl,mdprootsql)          "Veuillez saisir le mot de passe root 
 # *************** Version française **** **********************
 if { [ string compare $langage "french" ] == "0" } {
 
+   set caption(av4l_cdl,bar_title)        "av4l - cdl"
    set caption(av4l_cdl,main_title)       "acqvideolinux - Statut"
-   set caption(av4l_cdl,titre)            "Extraction Video AVI"
+   set caption(av4l_cdl,titre)            "Extraction des Courbes de lumiere"
 
    set caption(av4l_cdl,label_bdd)        "Information du Serveur MySQL Local"
    set caption(av4l_cdl,label_connect)    "Connexion Serveur................"

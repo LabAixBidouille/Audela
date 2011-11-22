@@ -1,18 +1,18 @@
 #--------------------------------------------------
-# source audace/plugin/tool/av4l/av4l_extraction.tcl
+# source audace/plugin/tool/av4l/av4l_cdl_fits.tcl
 #--------------------------------------------------
 #
-# Fichier        : av4l_extraction.tcl
+# Fichier        : av4l_cdl_fits.tcl
 # Description    : Affiche le status de la base de donnees
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: av4l_extraction.tcl 6795 2011-02-26 16:05:27Z michelpujol $
+# Mise à jour $Id: av4l_cdl_fits.tcl 6795 2011-02-26 16:05:27Z michelpujol $
 #
 
-namespace eval ::av4l_extraction {
+namespace eval ::av4l_cdl_fits {
 
 
    #
-   # av4l_extraction::init
+   # av4l_cdl_fits::init
    # Chargement des captions
    #
    proc init { } {
@@ -21,11 +21,11 @@ namespace eval ::av4l_extraction {
       wm focusmodel . passive
       wm withdraw .
       #--- Chargement des captions
-      source [ file join $audace(rep_plugin) tool av4l av4l_extraction.cap ]
+      source [ file join $audace(rep_plugin) tool av4l av4l_cdl_fits.cap ]
    }
 
    #
-   # av4l_extraction::initToConf
+   # av4l_cdl_fits::initToConf
    # Initialisation des variables de configuration
    #
    proc initToConf { visuNo } {
@@ -40,7 +40,7 @@ namespace eval ::av4l_extraction {
    }
 
    #
-   # av4l_extraction::confToWidget
+   # av4l_cdl_fits::confToWidget
    # Charge la configuration dans des variables locales
    #
    proc confToWidget { visuNo } {
@@ -48,15 +48,15 @@ namespace eval ::av4l_extraction {
       global panneau
 
       #--- confToWidget
-      set ::av4l_extraction::panneau(av4l,$visuNo,messages)                   $::av4l::parametres(av4l,$visuNo,messages)
-      set ::av4l_extraction::panneau(av4l,$visuNo,save_file_log)              $::av4l::parametres(av4l,$visuNo,save_file_log)
-      set ::av4l_extraction::panneau(av4l,$visuNo,alarme_fin_serie)           $::av4l::parametres(av4l,$visuNo,alarme_fin_serie)
-      set ::av4l_extraction::panneau(av4l,$visuNo,verifier_ecraser_fichier)   $::av4l::parametres(av4l,$visuNo,verifier_ecraser_fichier)
-      set ::av4l_extraction::panneau(av4l,$visuNo,verifier_index_depart)      $::av4l::parametres(av4l,$visuNo,verifier_index_depart)
+      set ::av4l_cdl_fits::panneau(av4l,$visuNo,messages)                   $::av4l::parametres(av4l,$visuNo,messages)
+      set ::av4l_cdl_fits::panneau(av4l,$visuNo,save_file_log)              $::av4l::parametres(av4l,$visuNo,save_file_log)
+      set ::av4l_cdl_fits::panneau(av4l,$visuNo,alarme_fin_serie)           $::av4l::parametres(av4l,$visuNo,alarme_fin_serie)
+      set ::av4l_cdl_fits::panneau(av4l,$visuNo,verifier_ecraser_fichier)   $::av4l::parametres(av4l,$visuNo,verifier_ecraser_fichier)
+      set ::av4l_cdl_fits::panneau(av4l,$visuNo,verifier_index_depart)      $::av4l::parametres(av4l,$visuNo,verifier_index_depart)
    }
 
    #
-   # av4l_extraction::widgetToConf
+   # av4l_cdl_fits::widgetToConf
    # Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
    #
    proc widgetToConf { visuNo } {
@@ -67,7 +67,7 @@ namespace eval ::av4l_extraction {
 
 
    #
-   # av4l_extraction::run 
+   # av4l_cdl_fits::run 
    # Cree la fenetre de configuration de l'affichage des messages sur la Console
    # et de l'enregistrement des dates dans le fichier log
    #
@@ -75,56 +75,56 @@ namespace eval ::av4l_extraction {
      global audace panneau
 
 
-      set panneau(av4l,$visuNo,av4l_extraction) $this
-      #::confGenerique::run $visuNo "$panneau(av4l,$visuNo,av4l_extraction)" "::av4l_extraction" -modal 1
+      set panneau(av4l,$visuNo,av4l_cdl_fits) $this
+      #::confGenerique::run $visuNo "$panneau(av4l,$visuNo,av4l_cdl_fits)" "::av4l_cdl_fits" -modal 1
 
       createdialog $this $visuNo   
 
    }
 
    #
-   # av4l_extraction::apply
+   # av4l_cdl_fits::apply
    # Fonction 'Appliquer' pour memoriser et appliquer la configuration
    #
    proc apply { visuNo } {
-      ::av4l_extraction::widgetToConf $visuNo
+      ::av4l_cdl_fits::widgetToConf $visuNo
       ::av4l_tools::avi_extract
    }
 
    #
-   # av4l_extraction::showHelp
+   # av4l_cdl_fits::showHelp
    # Fonction appellee lors de l'appui sur le bouton 'Aide'
    #
    proc showHelp { } {
       ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::av4l::getPluginType ] ] \
-         [ ::av4l::getPluginDirectory ] av4l_extraction.htm
+         [ ::av4l::getPluginDirectory ] av4l_cdl_fits.htm
    }
 
 
    #
-   # av4l_extraction::closeWindow
+   # av4l_cdl_fits::closeWindow
    # Fonction appellee lors de l'appui sur le bouton 'Fermer'
    #
    proc closeWindow { this visuNo } {
 
-      ::av4l_extraction::widgetToConf $visuNo
+      ::av4l_cdl_fits::widgetToConf $visuNo
       ::av4l_tools::avi_close
       destroy $this
    }
 
    #
-   # av4l_extraction::getLabel
+   # av4l_cdl_fits::getLabel
    # Retourne le nom de la fenetre d extraction
    #
    proc getLabel { } {
       global caption
 
-      return "$caption(av4l_extraction,titre)"
+      return "$caption(av4l_cdl_fits,titre)"
    }
 
 
    #
-   # av4l_extraction::chgdir
+   # av4l_cdl_fits::chgdir
    # Ouvre une boite de dialogue pour choisir un nom  de repertoire 
    #
    proc chgdir { This } {
@@ -159,7 +159,7 @@ namespace eval ::av4l_extraction {
 
 
    #
-   # av4l_extraction::fillConfigPage
+   # av4l_cdl_fits::fillConfigPage
    # Creation de l'interface graphique
    #
    proc createdialog { this visuNo } {
@@ -188,16 +188,16 @@ namespace eval ::av4l_extraction {
       set posy_config [ lindex [ split [ wm geometry $base ] "+" ] 2 ]
       wm geometry $this +[ expr $posx_config + 165 ]+[ expr $posy_config + 55 ]
       wm resizable $this 1 1
-      wm title $this $caption(av4l_extraction,titre)
-      wm protocol $this WM_DELETE_WINDOW "::av4l_extraction::closeWindow $this $visuNo"
+      wm title $this $caption(av4l_cdl_fits,bar_title)
+      wm protocol $this WM_DELETE_WINDOW "::av4l_cdl_fits::closeWindow $this $visuNo"
 
 
       #--- Charge la configuration de la vitesse de communication dans une variable locale
-      ::av4l_extraction::confToWidget $visuNo
+      ::av4l_cdl_fits::confToWidget $visuNo
 
       #--- Retourne l'item de la camera associee a la visu
-      set frm $this.frm_av4l_extraction
-      set frmbbar $this.frm_av4l_extraction_bar
+      set frm $this.frm_av4l_cdl_fits
+      set frmbbar $this.frmextractionbar
 
 
       #--- Cree un frame pour afficher le status de la base
@@ -206,7 +206,7 @@ namespace eval ::av4l_extraction {
 
         #--- Cree un label pour le titre
         label $frm.titre -font $av4lconf(font,arial_14_b) \
-              -text "$caption(av4l_extraction,titre)"
+              -text "$caption(av4l_cdl_fits,titre)"
         pack $frm.titre \
              -in $frm -side top -padx 3 -pady 3
 
@@ -236,7 +236,7 @@ namespace eval ::av4l_extraction {
         pack $frm.open.avipath -side left -padx 3 -pady 1 -expand true -fill x
 
         #--- Creation de la barre de defilement
-        scale $frm.percent -from 0 -to 1 -length 600 -variable ::av4l_extraction::percent \
+        scale $frm.percent -from 0 -to 1 -length 600 -variable ::av4l_cdl_fits::percent \
            -label "" -orient horizontal \
            -state disabled
         pack $frm.percent -in $frm -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
@@ -437,7 +437,7 @@ namespace eval ::av4l_extraction {
             #--- Cree un button
             button $inbutton.chgdir \
              -text "..." -borderwidth 2 \
-             -command "::av4l_extraction::chgdir $inparam.destdir" 
+             -command "::av4l_cdl_fits::chgdir $inparam.destdir" 
             pack $inbutton.chgdir -in $inbutton -side top -pady 0 -anchor w
 
             #--- Cree un label pour le nb d image
@@ -462,16 +462,16 @@ namespace eval ::av4l_extraction {
 
            #--- Creation du bouton fermer
            button $frm.action.fermer \
-              -text "$caption(av4l_extraction,fermer)" -borderwidth 2 \
-              -command "::av4l_extraction::closeWindow $this $visuNo"
+              -text "$caption(av4l_cdl_fits,fermer)" -borderwidth 2 \
+              -command "::av4l_cdl_fits::closeWindow $this $visuNo"
            pack $frm.action.fermer -in $frm.action \
               -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
            #--- Creation du bouton aide
            button $frm.action.aide \
-              -text "$caption(av4l_extraction,aide)" -borderwidth 2 \
-              -command "::audace::showHelpPlugin tool av4l av4l_extraction.htm"
+              -text "$caption(av4l_cdl_fits,aide)" -borderwidth 2 \
+              -command "::audace::showHelpPlugin tool av4l av4l_cdl_fits.htm"
            pack $frm.action.aide -in $frm.action \
               -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
@@ -486,4 +486,4 @@ namespace eval ::av4l_extraction {
 
 
 #--- Initialisation au demarrage
-::av4l_extraction::init
+::av4l_cdl_fits::init

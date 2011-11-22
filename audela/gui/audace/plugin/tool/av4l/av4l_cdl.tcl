@@ -119,7 +119,7 @@ namespace eval ::av4l_cdl {
    proc getLabel { } {
       global caption
 
-      return "$caption(av4l_cdl,titre)"
+      return "$caption(av4l_cdl,bar_title)"
    }
 
 
@@ -188,7 +188,7 @@ namespace eval ::av4l_cdl {
       set posy_config [ lindex [ split [ wm geometry $base ] "+" ] 2 ]
       wm geometry $this +[ expr $posx_config + 165 ]+[ expr $posy_config + 55 ]
       wm resizable $this 1 1
-      wm title $this $caption(av4l_cdl,titre)
+      wm title $this $caption(av4l_cdl,bar_title)
       wm protocol $this WM_DELETE_WINDOW "::av4l_cdl::closeWindow $this $visuNo"
 
 
@@ -196,9 +196,7 @@ namespace eval ::av4l_cdl {
       ::av4l_cdl::confToWidget $visuNo
 
       #--- Retourne l'item de la camera associee a la visu
-      set frm $this.frmextraction
-      set frmbbar $this.frmextractionbar
-
+      set frm $this.frm_av4l_cdl_fits
 
       #--- Cree un frame pour afficher le status de la base
       frame $frm -borderwidth 0 -cursor arrow -relief groove
@@ -210,240 +208,46 @@ namespace eval ::av4l_cdl {
         pack $frm.titre \
              -in $frm -side top -padx 3 -pady 3
 
-        #--- Cree un frame pour 
-        frame $frm.open \
-              -borderwidth 1 -relief raised -cursor arrow
-        pack $frm.open \
-             -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
-        #--- Creation du bouton open
-        button $frm.open.but_open \
-           -text "open" -borderwidth 2 \
-           -command "::av4l_tools::avi_open $visuNo $frm"
-        pack $frm.open.but_open \
-           -side left -anchor e \
-           -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-        #--- Creation du bouton select
-        button $frm.open.but_select \
-           -text "..." -borderwidth 2 -takefocus 1 \
-           -command "::av4l_tools::avi_select $visuNo $frm"
-        pack $frm.open.but_select \
-           -side left -anchor e \
-           -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-        #--- Cree un label pour le chemin de l'AVI
-        entry $frm.open.avipath 
-        pack $frm.open.avipath -side left -padx 3 -pady 1 -expand true -fill x
-
-        #--- Creation de la barre de defilement
-        scale $frm.percent -from 0 -to 100 -length 600 -variable pc \
-           -label Percentage -tickinterval 10 -orient horizontal \
-           -state disabled
-        pack $frm.percent -in $frm -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
-
-        #--- Cree un frame pour afficher
-        set btnav [frame $frm.btnav -borderwidth 0]
-        pack $btnav -in $frm -side top
-
-        #--- Creation du bouton quick prev image
-        image create photo .arr -format PNG -file [ file join $audace(rep_plugin) tool av4l img arr.png ]
-        button $frm.qprevimage -image .arr\
-           -borderwidth 2 -width 25 -height 25 -compound center \
-           -command ""
-        pack $frm.qprevimage \
-           -in $frm.btnav \
-           -side left -anchor w \
-           -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-        #--- Creation du bouton prev image
-        image create photo .arn -format PNG -file [ file join $audace(rep_plugin) tool av4l img arn.png ]
-        button $frm.previmage -image .arn\
-           -borderwidth 2 -width 25 -height 25 -compound center \
-           -command ""
-        pack $frm.previmage \
-           -in $frm.btnav \
-           -side left -anchor w \
-           -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-        #--- Creation du bouton next image
-        image create photo .avn -format PNG -file [ file join $audace(rep_plugin) tool av4l img avn.png ]
-        button $frm.nextimage -image .avn\
-           -borderwidth 2 -width 25 -height 25 -compound center \
-           -command "::av4l_tools::avi_next_image"
-        pack $frm.nextimage \
-           -in $frm.btnav \
-           -side left -anchor w \
-           -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-        #--- Creation du bouton quick next image
-        image create photo .avr -format PNG -file [ file join $audace(rep_plugin) tool av4l img avr.png ]
-        button $frm.qnextimage -image .avr\
-           -borderwidth 2 -width 25 -height 25 -compound center \
-           -command ""
-        pack $frm.qnextimage \
-           -in $frm.btnav \
-           -side left -anchor w \
-           -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+        #--- Cree un frame pour les 2 actions de traitement
+        frame $frm.traitement -borderwidth 1 -relief raised -cursor arrow
+        pack $frm.traitement -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
 
 
 
-          #--- Affichage positions
-          frame $frm.pos \
-                -borderwidth 1 -relief raised -cursor arrow
-          pack $frm.pos \
-               -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
+        #--- Creation du traitement cdl par liste de fits
+        frame $frm.traitement.fits -borderwidth 1 -relief raised -cursor arrow
+        pack $frm.traitement.fits -in $frm.traitement -side left -expand 0 -fill x -padx 1 -pady 1
+
+           #--- Creation du bouton
+           image create photo .visu -format PNG -file [ file join $audace(rep_plugin) tool av4l img bouton_visu.png ]
+           button $frm.traitement.fits.ico -image .visu\
+              -borderwidth 2 -width 130 -height 130 -compound center \
+              -command "::av4l_cdl_fits::run  $visuNo $base.av4l_cdl_fits"
+           pack $frm.traitement.fits.ico \
+              -in $frm.traitement.fits \
+              -side top -anchor w \
+              -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+           DynamicHelp::add  $frm.traitement.fits.ico -text "Traitement par lot d'images"
 
 
-             #--- Creation du bouton setmin
-             button $frm.pos.setmin \
-                -text "setmin" -borderwidth 2 \
-                -command "::av4l_tools::avi_setmin $frm"
-             pack $frm.pos.setmin \
-                -in $frm.pos \
-                -side left -anchor w \
-                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-             #--- Creation du bouton setmax
-             button $frm.pos.setmax \
-                -text "setmax" -borderwidth 2 \
-                -command "::av4l_tools::avi_setmax $frm"
-             pack $frm.pos.setmax \
-                -in $frm.pos \
-                -side left -anchor w \
-                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-             #--- Cree un frame pour afficher
-             frame $frm.pos.min -borderwidth 0
-             pack $frm.pos.min -in $frm.pos -side left
-
-                #--- Cree un label pour
-                entry $frm.datemin -fg $color(blue) -relief sunken
-                pack $frm.datemin -in $frm.pos.min -side top -pady 1 -anchor w
-                #--- Cree un label pour
-                entry $frm.posmin -fg $color(blue) -relief sunken
-                pack $frm.posmin -in $frm.pos.min -side top -pady 1 -anchor w
+        #--- Creation du traitement cdl par  avi
+        frame $frm.traitement.avi -borderwidth 1 -relief raised -cursor arrow
+        pack $frm.traitement.avi -in $frm.traitement -side right -expand 0 -fill x -padx 1 -pady 1
 
 
-          #--- Cree un frame pour afficher
-          frame $frm.pos.max -borderwidth 0
-          pack $frm.pos.max -in $frm.pos -side left
-
-             #--- Cree un label pour
-             entry $frm.datemax -fg $color(blue) -relief sunken
-             pack $frm.datemax -in $frm.pos.max -side top -pady 1 -anchor w
-             #--- Cree un label pour
-             entry $frm.posmax -fg $color(blue) -relief sunken
-             pack $frm.posmax -in $frm.pos.max -side top -pady 1 -anchor w
-
-
+           #--- Creation du bouton
+           image create photo .video -format PNG -file [ file join $audace(rep_plugin) tool av4l img bouton_video.png ]
+           button $frm.traitement.avi.ico -image .video\
+              -borderwidth 2 -width 130 -height 130 -compound center \
+              -command "::av4l_cdl_avi::run  $visuNo $base.av4l_cdl_avi"
+           pack $frm.traitement.avi.ico \
+              -in $frm.traitement.avi \
+              -side left -anchor w \
+              -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+           DynamicHelp::add  $frm.traitement.avi.ico -text "Traitement direct de la video"
 
 
-
-          #--- Cree un frame pour afficher
-          frame $frm.count -borderwidth 0
-          pack $frm.count -in $frm -side top
-
-             #--- Cree un label
-             label $frm.labnbimg -font $av4lconf(font,courier_10) -padx 3 \
-                   -text "Nombre d'images a extraire : "
-             pack $frm.labnbimg -in $frm.count -side left -pady 1 -anchor w
-             #--- Cree un entry
-             entry $frm.imagecount -fg $color(blue) -relief sunken
-             pack $frm.imagecount -in $frm.count -side left -pady 1 -anchor w
-             #--- Cree un button
-             button $frm.doimagecount \
-              -text "calcul" -borderwidth 2 \
-              -command "::av4l_tools::avi_imagecount $frm" 
-             pack $frm.doimagecount -in $frm.count -side left -pady 1 -anchor w
-
-          #--- Cree un frame pour 
-          frame $frm.status -borderwidth 0 -cursor arrow
-          pack $frm.status -in $frm -side top -expand 0
-
-          #--- Cree un frame pour afficher les intitules
-          set intitle [frame $frm.status.l -borderwidth 0]
-          pack $intitle -in $frm.status -side left
-
-            #--- Cree un label pour le status
-            label $intitle.status -font $av4lconf(font,courier_10) -text "Status"
-            pack $intitle.status -in $intitle -side top -anchor w
-
-            #--- Cree un label pour le nb d image
-            label $intitle.fps -font $av4lconf(font,courier_10) -text "fps"
-            pack $intitle.fps -in $intitle -side top -anchor w
-
-            #--- Cree un label pour le nb d image
-            label $intitle.nbtotal -font $av4lconf(font,courier_10) -text "Nb total d'images"
-            pack $intitle.nbtotal -in $intitle -side top -anchor w
-
-
-          #--- Cree un frame pour afficher les valeurs
-          set inparam [frame $frm.status.v -borderwidth 0]
-          pack $inparam -in $frm.status -side left -expand 0 -fill x
-
-            #--- Cree un label pour le repetoire destination
-            label $inparam.status -font $av4lconf(font,courier_10) -fg $color(blue) -text "Loaded / ? / Error"
-            pack  $inparam.status -in $inparam -side top -anchor w
-
-            #--- Cree un label pour le prefixe
-            label $inparam.fps -font $av4lconf(font,courier_10) -fg $color(blue) -text "25.0003"
-            pack  $inparam.fps -in $inparam -side top -anchor w
-
-            #--- Cree un label pour le prefixe
-            label $inparam.nbtotal -font $av4lconf(font,courier_10) -fg $color(blue) -text "147"
-            pack  $inparam.nbtotal -in $inparam -side top -anchor w
-
-
-
-
-
-        #--- Cree un frame pour 
-        frame $frm.form \
-              -borderwidth 1 -relief raised -cursor arrow
-        pack $frm.form \
-             -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
-
-          #--- Cree un frame pour afficher les intitules
-          set intitle [frame $frm.form.l -borderwidth 0]
-          pack $intitle -in $frm.form -side left
-
-            #--- Cree un label pour le status
-            label $intitle.destdir -font $av4lconf(font,courier_10) -padx 3 \
-                  -text "repertoire destination"
-            pack $intitle.destdir -in $intitle -side top -padx 3 -pady 1 -anchor w
-
-            #--- Cree un label pour le nb d image
-            label $intitle.prefix -font $av4lconf(font,courier_10) \
-                  -text "prefixe des fichiers"
-            pack $intitle.prefix -in $intitle -side top -padx 3 -pady 1 -anchor w
-
-
-          #--- Cree un frame pour afficher les valeurs
-          set inparam [frame $frm.form.v -borderwidth 0]
-          pack $inparam -in $frm.form -side left -expand 0 -fill x
-
-            #--- Cree un label pour le repetoire destination
-            entry $inparam.destdir -fg $color(blue)
-            pack $inparam.destdir -in $inparam -side top -pady 1 -anchor w
-
-            #--- Cree un label pour le prefixe
-            entry $inparam.prefix  -fg $color(blue)
-            pack $inparam.prefix -in $inparam -side top -pady 1 -anchor w
-
-          #--- Cree un frame pour afficher les extras
-          set inbutton [frame $frm.form.e -borderwidth 0]
-          pack $inbutton -in $frm.form -side left -expand 0 -fill x
-
-            #--- Cree un button
-            button $inbutton.chgdir \
-             -text "..." -borderwidth 2 \
-             -command "::av4l_cdl::chgdir $inparam.destdir" 
-            pack $inbutton.chgdir -in $inbutton -side top -pady 0 -anchor w
-
-            #--- Cree un label pour le nb d image
-            label $inbutton.blank -font $av4lconf(font,courier_10) \
-                  -text ""
-            pack $inbutton.blank -in $inbutton -side top -padx 3 -pady 1 -anchor w
 
 
    #---
@@ -452,13 +256,6 @@ namespace eval ::av4l_cdl {
               -borderwidth 1 -relief raised -cursor arrow
         pack $frm.action \
              -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
-
-           button $frm.action.extract \
-              -text "Extraction" -borderwidth 2 \
-              -command { ::av4l_tools::avi_extract }
-           pack $frm.action.extract -in $frm.action \
-              -side left -anchor e \
-              -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
            #--- Creation du bouton fermer
            button $frm.action.fermer \
