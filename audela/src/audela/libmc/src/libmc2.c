@@ -5650,6 +5650,7 @@ mc_lightmap 2005-09-23T00:00:44.280 0.6708 0.1333 J2000.0 "c:/d/gft/test.fit" 1 
          sinr=sin(ra);
          cosd=cos(dec);
          sind=sin(dec);
+			longitude=0;rhocosphip=0;rhosinphip=0;
          mc_adsolap(jd,equinoxe,astrometric,longitude,rhocosphip,rhosinphip,&rasun, &decsun,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
          cosrsun=cos(rasun);
          sinrsun=sin(rasun);
