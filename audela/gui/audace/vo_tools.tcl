@@ -821,9 +821,16 @@ proc vo_name2coord { object_name } {
 }
 
 # ------------------------------------------------------------------------------------
-# source audace/vo_tools.tcl ; set star [vo_neareststar 23.45678 +34.56742 ]
-proc vo_neareststar { ra dec } {
+# source $audace(rep_install)/gui/audace/vo_tools.tcl ; set star [vo_neareststar 23.45678 +34.56742 ]
+# vo_neareststar ra dec => pour une seule etoile
+# vo_neareststar ra dec radius => pour toutes les etoiles dans un rayon en arcmin
+proc vo_neareststar { ra dec {radius 0} } {
    set target "[string trim [mc_angle2deg $ra]] [string trim [format %+.5f [mc_angle2deg $dec 90]]]"
+   set rad 1
+   if {$radius>0} {
+	   set rad $radius
+   }
+   set starlists ""
    if {1==0} {
       package require SOAP
       set server "http://cdsws.u-strasbg.fr/axis/services/VizieRBeta"
@@ -831,72 +838,85 @@ proc vo_neareststar { ra dec } {
          -action "urn:VizieRBeta" \
          -params { "target" "string" "radius" "double" "unit" "string" "text" "string"}
       set xml_text [vizier $target 3 arcmin " "]
-   } else {
-      set minor_planet "ceres"
+   } else {	   
       set url "http://vizier.u-strasbg.fr/viz-bin/VizieR/VizieR-2"
       package require http
-      set query [::http::formatQuery "!-4c;" "Find Data" "-source" "I/297/out" "-c" "$target" "-c.eq" "J2000" "-c.r" "1" "-c.u" "arcmin" "-oc.form" "dec" "-c.geom" "r" "-out.add" "_r" "-sort" "_r"]
+      set query [::http::formatQuery "!-4c;" "Find Data" "-source" "I/297/out" "-c" "$target" "-c.eq" "J2000" "-c.r" "$rad" "-c.u" "arcmin" "-oc.form" "dec" "-c.geom" "r" "-out.add" "_r" "-sort" "_r"]
       set token [::http::geturl $url -query "$query"]
       upvar #0 $token state
       set html_text $state(body)
       # ----
-      set k1 [string first "<EM>1</EM>" $html_text]
-      set texte [string range $html_text $k1 end]
-      set res [vo_html_decode1 $texte]
-      set val [lindex $res 0]
-      set texte [lindex $res 1]
-      set res [vo_html_decode1 $texte <EM>]
-      set id [lindex $res 0]
-      set texte [lindex $res 1]
-      set res [vo_html_decode1 $texte <EM>]
-      set val [lindex $res 0]
-      set texte [lindex $res 1]
-      set res [vo_html_decode1 $texte <EM>]
-      set ra [string trimleft [lindex $res 0] 0]
-      set texte [lindex $res 1]
-      set res [vo_html_decode1 $texte <EM>]
-      set dec [lindex $res 0]
-      set texte [lindex $res 1]
-      for {set k 1} {$k<=5} {incr k} {
-         set res [vo_html_decode1 $texte <EM>]
-         set texte [lindex $res 1]
-         set val [lindex $res 0]
-      }
-      set res [vo_html_decode1 $texte <EM>]
-      set texte [lindex $res 1]
-      set magb [lindex $res 0]
-      if {[catch {expr $magb}]==1} { set magb ""}
-      set res [vo_html_decode1 $texte <EM>]
-      set val [lindex $res 0]
-      set texte [lindex $res 1]
-      set res [vo_html_decode1 $texte <EM>]
-      set texte [lindex $res 1]
-      set magv [lindex $res 0]
-      if {[catch {expr $magv}]==1} { set magv ""}
-      set res [vo_html_decode1 $texte <EM>]
-      set val [lindex $res 0]
-      set texte [lindex $res 1]
-      set res [vo_html_decode1 $texte <EM>]
-      set texte [lindex $res 1]
-      set magr [lindex $res 0]
-      if {[catch {expr $magr}]==1} { set magr ""}
-      set res [vo_html_decode1 $texte <EM>]
-      set val [lindex $res 0]
-      set texte [lindex $res 1]
-      set res [vo_html_decode1 $texte <EM>]
-      set texte [lindex $res 1]
-      set magj [lindex $res 0]
-      if {[catch {expr $magj}]==1} { set magj ""}
-      set res [vo_html_decode1 $texte <EM>]
-      set texte [lindex $res 1]
-      set magh [lindex $res 0]
-      if {[catch {expr $magh}]==1} { set magh ""}
-      set res [vo_html_decode1 $texte <EM>]
-      set texte [lindex $res 1]
-      set magk [lindex $res 0]
-      if {[catch {expr $magk}]==1} { set magk ""}
+      set kstar 1
+      while {1==1} {
+	      set k1 [string first "<EM>$kstar</EM>" $html_text]
+	      if {$k1==-1} {
+		      break
+	      }
+	      set texte [string range $html_text $k1 end]
+	      set res [vo_html_decode1 $texte]
+	      set val [lindex $res 0]
+	      set texte [lindex $res 1]
+	      set res [vo_html_decode1 $texte <EM>]
+	      set id [lindex $res 0]
+	      set texte [lindex $res 1]
+	      set res [vo_html_decode1 $texte <EM>]
+	      set val [lindex $res 0]
+	      set texte [lindex $res 1]
+	      set res [vo_html_decode1 $texte <EM>]
+	      set ra [string trimleft [lindex $res 0] 0]
+	      set texte [lindex $res 1]
+	      set res [vo_html_decode1 $texte <EM>]
+	      set dec [lindex $res 0]
+	      set texte [lindex $res 1]
+	      for {set k 1} {$k<=5} {incr k} {
+	         set res [vo_html_decode1 $texte <EM>]
+	         set texte [lindex $res 1]
+	         set val [lindex $res 0]
+	      }
+	      set res [vo_html_decode1 $texte <EM>]
+	      set texte [lindex $res 1]
+	      set magb [lindex $res 0]
+	      if {[catch {expr $magb}]==1} { set magb ""}
+	      set res [vo_html_decode1 $texte <EM>]
+	      set val [lindex $res 0]
+	      set texte [lindex $res 1]
+	      set res [vo_html_decode1 $texte <EM>]
+	      set texte [lindex $res 1]
+	      set magv [lindex $res 0]
+	      if {[catch {expr $magv}]==1} { set magv ""}
+	      set res [vo_html_decode1 $texte <EM>]
+	      set val [lindex $res 0]
+	      set texte [lindex $res 1]
+	      set res [vo_html_decode1 $texte <EM>]
+	      set texte [lindex $res 1]
+	      set magr [lindex $res 0]
+	      if {[catch {expr $magr}]==1} { set magr ""}
+	      set res [vo_html_decode1 $texte <EM>]
+	      set val [lindex $res 0]
+	      set texte [lindex $res 1]
+	      set res [vo_html_decode1 $texte <EM>]
+	      set texte [lindex $res 1]
+	      set magj [lindex $res 0]
+	      if {[catch {expr $magj}]==1} { set magj ""}
+	      set res [vo_html_decode1 $texte <EM>]
+	      set texte [lindex $res 1]
+	      set magh [lindex $res 0]
+	      if {[catch {expr $magh}]==1} { set magh ""}
+	      set res [vo_html_decode1 $texte <EM>]
+	      set texte [lindex $res 1]
+	      set magk [lindex $res 0]
+	      if {[catch {expr $magk}]==1} { set magk ""}
+   		lappend starlists [list [list NOMAD-1 $id] $ra $dec $magb $magv $magr $magj $magh $magk]
+   		if {$radius==0} {
+	   		break
+   		}
+   		incr kstar
+		}
    }
-   return [list [list NOMAD-1 $id] $ra $dec $magb $magv $magr $magj $magh $magk]
+   set f [open c:/d/a/a/toto.html w]
+   puts $f $html_text
+   close $f
+   return $starlists
 }
 
 # ------------------------------------------------------------------------------------
