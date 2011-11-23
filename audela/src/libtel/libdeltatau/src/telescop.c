@@ -178,8 +178,8 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		fprintf(f,"PORT=%d\n",tel->port);
 		fclose(f);
 		/* --- open the port and record the channel name ---*/
-		//sprintf(s,"socket \"%s\" \"%d\"",tel->ip,tel->port);
-		sprintf(s,"after 5 {set connected timeout} ; set sock [socket -async \"%s\" \"%d\"] ; fileevent $sock w {set connected ok} ; vwait connected ; if {$connected==\"timeout\"} {set sock \"\"} else {set sock}",tel->ip,tel->port);
+		sprintf(s,"socket \"%s\" \"%d\"",tel->ip,tel->port);
+		//sprintf(s,"after 5 {set connected timeout} ; set sock [socket -async \"%s\" \"%d\"] ; fileevent $sock w {set connected ok} ; vwait connected ; if {$connected==\"timeout\"} {set sock \"\"} else {set sock}",tel->ip,tel->port);
 		//strcpy(s,"open com1 w+");
 		if (mytel_tcleval(tel,s)==1) {
 			strcpy(tel->msg,tel->interp->result);
