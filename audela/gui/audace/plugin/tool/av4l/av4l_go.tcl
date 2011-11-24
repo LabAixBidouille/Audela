@@ -89,7 +89,7 @@ proc ::av4l::initPlugin { tkbase } {
    set av4lconf(rep_plug) [file join $audace(rep_plugin) tool av4l ]
 
    if { [catch {load libavi[info sharedlibextension] }] } {
-	   ::console::affiche_erreur "La librairie libavi du plugin av4l n'a pas pu etre chargee\n"
+           ::console::affiche_erreur "La librairie libavi du plugin av4l n'a pas pu etre chargee\n"
    }
    # ::console::affiche_resultat [::hello]
 }
@@ -338,6 +338,17 @@ proc ::av4l::BuildIF { visuNo } {
 
 
          #--- Creation du bouton 
+         image create photo .time -format PNG -file [ file join $audace(rep_plugin) tool av4l img time.png ]
+         button $This.fra1.time -image .time\
+            -borderwidth 2 -width 48 -height 48 -compound center \
+            -command ""
+         pack $This.fra1.time \
+            -in $This.fra1 \
+            -side top -anchor w \
+            -expand 0
+         DynamicHelp::add $This.fra1.time -text $caption(av4l_go,time)
+
+         #--- Creation du bouton 
          image create photo .cdl -format PNG -file [ file join $audace(rep_plugin) tool av4l img cdl.png ]
          button $This.fra1.cdl -image .cdl\
             -borderwidth 2 -width 48 -height 48 -compound center \
@@ -347,6 +358,17 @@ proc ::av4l::BuildIF { visuNo } {
             -side top -anchor w \
             -expand 0
          DynamicHelp::add $This.fra1.cdl -text $caption(av4l_go,cdl)
+
+         #--- Creation du bouton 
+         image create photo .analysis -format PNG -file [ file join $audace(rep_plugin) tool av4l img brain.png ]
+         button $This.fra1.analysis -image .analysis\
+            -borderwidth 2 -width 48 -height 48 -compound center \
+            -command ""
+         pack $This.fra1.analysis \
+            -in $This.fra1 \
+            -side top -anchor w \
+            -expand 0
+         DynamicHelp::add $This.fra1.analysis -text $caption(av4l_go,analysis)
 
 
          #--- Creation du bouton 

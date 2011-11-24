@@ -381,7 +381,7 @@ variable file_mesure
         image create photo .arr -format PNG -file [ file join $audace(rep_plugin) tool av4l img arr.png ]
         button $frm.qprevimage -image .arr\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command "::av4l_tools::avi_quick_prev_image"
+           -command "::av4l_cdl_avi::avi_quick_prev_image $frm $visuNo"
         pack $frm.qprevimage \
            -in $frm.btnav \
            -side left -anchor w \
@@ -411,7 +411,7 @@ variable file_mesure
         image create photo .avr -format PNG -file [ file join $audace(rep_plugin) tool av4l img avr.png ]
         button $frm.qnextimage -image .avr\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command "::av4l_tools::avi_quick_next_image"
+           -command "::av4l_cdl_avi::avi_quick_next_image $frm $visuNo"
         pack $frm.qnextimage \
            -in $frm.btnav \
            -side left -anchor w \
@@ -798,22 +798,44 @@ variable file_mesure
 
       global color
 
-      # Recuperation du Rectangle de l image
-      set rect  [ ::confVisu::getBox $visuNo ]
+      set statebutton [ $this.t.select cget -relief]
 
-      # Affichage de la taille de la fenetre
-      if {$rect==""} {
-         $this.v.r.fenetre configure -text "Error" -fg $color(red)
-         set ::av4l_photom::rect_img ""
-      } else {
-         set taillex [expr [lindex $rect 2] - [lindex $rect 0] ]
-         set tailley [expr [lindex $rect 3] - [lindex $rect 1] ]
-         $this.v.r.fenetre configure -text "${taillex}x${tailley}" -fg $color(blue)
-         set ::av4l_photom::rect_img $rect
+      # desactivation
+      if {$statebutton=="sunken"} {
+         $this.v.r.fenetre configure -text "?"
+         $this.v.r.intmin configure -text "?"
+         $this.v.r.intmax configure -text "?"
+         $this.v.r.intmoy configure -text "?"
+         $this.v.r.sigma  configure -text "?"
+         $this.t.select  configure -relief raised
+         return
+      } 
+
+
+      # activation
+      if {$statebutton=="raised"} {
+
+         # Recuperation du Rectangle de l image
+         set rect  [ ::confVisu::getBox $visuNo ]
+
+         # Affichage de la taille de la fenetre
+         if {$rect==""} {
+            $this.v.r.fenetre configure -text "Error" -fg $color(red)
+            set ::av4l_photom::rect_img ""
+         } else {
+            set taillex [expr [lindex $rect 2] - [lindex $rect 0] ]
+            set tailley [expr [lindex $rect 3] - [lindex $rect 1] ]
+            $this.v.r.fenetre configure -text "${taillex}x${tailley}" -fg $color(blue)
+            set ::av4l_photom::rect_img $rect
+         }
+         ::av4l_cdl_avi::get_fullimg $visuNo $this
+         $this.t.select  configure -relief sunken
+         return
+
       }
-      ::av4l_cdl_avi::get_fullimg $visuNo $this
 
    }
+
 
 
 
@@ -821,20 +843,30 @@ variable file_mesure
 
       #::console::affiche_resultat "Arect_img = $::av4l_photom::rect_img \n"
 
-      if {$::av4l_photom::rect_img==""} { 
-         $this.v.r.intmin configure -text "?"
-         $this.v.r.intmax configure -text "?"
-         $this.v.r.intmoy configure -text "?"
-         $this.v.r.sigma  configure -text "?"
+      if { ! [info exists ::av4l_photom::rect_img] } {
+         return
+      }
+
+
+      if {$::av4l_photom::rect_img==""} {
+         $this.v.r.fenetre configure -text "?"
+         $this.v.r.intmin  configure -text "?"
+         $this.v.r.intmax  configure -text "?"
+         $this.v.r.intmoy  configure -text "?"
+         $this.v.r.sigma   configure -text "?"
 
       } else {
+
          set bufNo [ ::confVisu::getBufNo $visuNo ]
+
          set stat [buf$bufNo stat $::av4l_photom::rect_img]
+
          $this.v.r.intmin configure -text [lindex $stat 3]
          $this.v.r.intmax configure -text [lindex $stat 2]
          $this.v.r.intmoy configure -text [lindex $stat 4]
          $this.v.r.sigma  configure -text [lindex $stat 5]
       }
+
 
    }
 
@@ -1226,7 +1258,11 @@ variable file_mesure
             set delta [ $frm.photom.values.reference.v.r.delta get]
             ::av4l_cdl_avi::mesure_ref $::av4l_cdl_avi::ref(x) $::av4l_cdl_avi::ref(y) $visuNo $frm.photom.values.reference $delta
          }
+         set statebutton [ $frm.photom.values.image.t.select cget -relief]
+         if { $statebutton=="sunken" } {
          ::av4l_cdl_avi::get_fullimg $visuNo $frm.photom.values.image
+         }
+
          set ::av4l_cdl_avi::mesure($idframe,mesure_obj) 1
 
 
@@ -1283,15 +1319,6 @@ variable file_mesure
          set ::av4l_cdl_avi::mesure($idframe,img_xsize) [lindex $fenetrelist 0]
          set ::av4l_cdl_avi::mesure($idframe,img_ysize) [lindex $fenetrelist 1]
          if {$::av4l_cdl_avi::mesure($idframe,img_ysize)==""} { set :::av4l_cdl_avi::mesure($idframe,img_ysize) "?" }
-
-
-
-
-
-
-
-
-
 
 
          ::av4l_tools::avi_next_image  
@@ -1448,8 +1475,12 @@ variable file_mesure
          set delta [ $frm.photom.values.reference.v.r.delta get]
          ::av4l_cdl_avi::mesure_ref $::av4l_cdl_avi::ref(x) $::av4l_cdl_avi::ref(y) $visuNo $frm.photom.values.reference $delta
       }
+      set statebutton [ $frm.photom.values.image.t.select cget -relief]
+      if { $statebutton=="sunken" } {
       ::av4l_cdl_avi::get_fullimg $visuNo $frm.photom.values.image
+      }
       set idframe [::av4l_tools::avi_get_idframe]
+      
       ::console::affiche_resultat "$idframe\n"
    }
    
@@ -1472,11 +1503,86 @@ variable file_mesure
          set delta [ $frm.photom.values.reference.v.r.delta get]
          ::av4l_cdl_avi::mesure_ref $::av4l_cdl_avi::ref(x) $::av4l_cdl_avi::ref(y) $visuNo $frm.photom.values.reference $delta
       }
+      set statebutton [ $frm.photom.values.image.t.select cget -relief]
+      if { $statebutton=="sunken" } {
       ::av4l_cdl_avi::get_fullimg $visuNo $frm.photom.values.image
+      }
       set idframe [::av4l_tools::avi_get_idframe]
+      
       ::console::affiche_resultat "$idframe\n"
    }
    
+
+   #
+   # av4l_cdl_avi::avi_next_image
+   # Passe a l image suivante
+   #
+   proc avi_quick_next_image { frm visuNo } {
+         
+      cleanmark
+      ::av4l_tools::avi_quick_next_image  
+
+      set statebutton [ $frm.photom.values.object.t.select cget -relief]
+      if { $statebutton=="sunken" } {
+         set delta [ $frm.photom.values.object.v.r.delta get]
+         ::av4l_cdl_avi::mesure_obj $::av4l_cdl_avi::obj(x) $::av4l_cdl_avi::obj(y) $visuNo $frm.photom.values.object $delta
+      }
+      set statebutton [ $frm.photom.values.reference.t.select cget -relief]
+      if { $statebutton=="sunken" } {
+         set delta [ $frm.photom.values.reference.v.r.delta get]
+         ::av4l_cdl_avi::mesure_ref $::av4l_cdl_avi::ref(x) $::av4l_cdl_avi::ref(y) $visuNo $frm.photom.values.reference $delta
+      }
+      set statebutton [ $frm.photom.values.image.t.select cget -relief]
+      if { $statebutton=="sunken" } {
+      ::av4l_cdl_avi::get_fullimg $visuNo $frm.photom.values.image
+      }
+      set idframe [::av4l_tools::avi_get_idframe]
+      
+      ::console::affiche_resultat "$idframe\n"
+   }
+   
+   #
+   # av4l_cdl_avi::avi_next_image
+   # Passe a l image suivante
+   #
+   proc avi_quick_prev_image { frm visuNo } {
+         
+      cleanmark
+      ::av4l_tools::avi_quick_prev_image  
+
+      set statebutton [ $frm.photom.values.object.t.select cget -relief]
+      if { $statebutton=="sunken" } {
+         set delta [ $frm.photom.values.object.v.r.delta get]
+         ::av4l_cdl_avi::mesure_obj $::av4l_cdl_avi::obj(x) $::av4l_cdl_avi::obj(y) $visuNo $frm.photom.values.object $delta
+      }
+      set statebutton [ $frm.photom.values.reference.t.select cget -relief]
+      if { $statebutton=="sunken" } {
+         set delta [ $frm.photom.values.reference.v.r.delta get]
+         ::av4l_cdl_avi::mesure_ref $::av4l_cdl_avi::ref(x) $::av4l_cdl_avi::ref(y) $visuNo $frm.photom.values.reference $delta
+      }
+      set statebutton [ $frm.photom.values.image.t.select cget -relief]
+      if { $statebutton=="sunken" } {
+      ::av4l_cdl_avi::get_fullimg $visuNo $frm.photom.values.image
+      }
+      set idframe [::av4l_tools::avi_get_idframe]
+      
+      ::console::affiche_resultat "$idframe\n"
+   }
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    
    
 
