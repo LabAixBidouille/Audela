@@ -147,6 +147,446 @@ load libyd ; yd_reduceusno c:/d/usno/ c:/d/usnoshort ZONE0750 10
    }
 }
 
+int Cmd_ydtcl_ref2field(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+   char s[100];
+   char path[1024];
+   char filename_in[1024],generic_filename[1024];
+   struct_htmref  htmref;
+   FILE *f_in;
+   double ra,dec,dist,distmax,x,y,z;
+	int k,kmax,kmax0,kmax00,n_ref0,n_ref;
+   double dr;
+	double *cosras=NULL,*cosdecs=NULL,*sinras=NULL,*sindecs=NULL;
+   if(argc<3) {
+      sprintf(s,"Usage: %s path generic_filename", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      return TCL_ERROR;
+   } else {
+       /* --- decodage des arguments ---*/
+      strcpy(path,argv[1]); /* d:/fufu/mystar.txt */
+      strcpy(generic_filename,argv[2]); /* c:/toto/N012312312 */
+      /* --- compte le nombre d'etoiles dans HTM_ref.bin  ---*/
+      sprintf(filename_in,"%s%s_ref.bin",path,generic_filename);
+      f_in=fopen(filename_in,"rb");
+      if (f_in==NULL) {
+         sprintf(s,"filename_in %s not found",filename_in);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+      }
+      n_ref0=0;
+      while (feof(f_in)==0) {
+         if (fread(&htmref,1,sizeof(struct_htmref),f_in)>1) {
+            n_ref0++;
+         }
+      }
+      fclose(f_in);
+      if (n_ref0==0) {
+         return TCL_OK;
+      }
+      cosras=(double*)calloc(n_ref0,sizeof(double));
+		if (cosras==NULL) {
+         strcpy(s,"Problem of pointer cosras allocation");
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+		}
+      cosdecs=(double*)calloc(n_ref0,sizeof(double));
+		if (cosdecs==NULL) {
+			free(cosras);
+         strcpy(s,"Problem of pointer cosdecs allocation");
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+		}
+      sinras=(double*)calloc(n_ref0,sizeof(double));
+		if (sinras==NULL) {
+			free(cosras);
+			free(cosdecs);
+         strcpy(s,"Problem of pointer sinras allocation");
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+		}
+      sindecs=(double*)calloc(n_ref0,sizeof(double));
+		if (sindecs==NULL) {
+			free(cosras);
+			free(cosdecs);
+			free(sinras);
+         strcpy(s,"Problem of pointer sindecs allocation");
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+		}
+      f_in=fopen(filename_in,"rb");
+      if (f_in==NULL) {
+			free(cosras);
+			free(cosdecs);
+			free(sinras);
+			free(sindecs);
+         sprintf(s,"filename_in %s not found",filename_in);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+      }
+		dr=atan(1)/45.;
+      n_ref=0;
+      while (feof(f_in)==0) {
+         if (fread(&htmref,1,sizeof(struct_htmref),f_in)>1) {
+			   cosras[n_ref]=cos(htmref.ra*dr);
+			   cosdecs[n_ref]=cos(htmref.dec*dr);
+			   sinras[n_ref]=sin(htmref.ra*dr);
+			   sindecs[n_ref]=sin(htmref.dec*dr);
+				n_ref++;
+         }
+      }
+      fclose(f_in);
+		distmax=0;
+		kmax00=-1;
+		kmax0=0;
+		kmax=0;
+		while (1==1) {
+			for (k=0;k<n_ref;k++) {
+				if (k==kmax0) { continue; }
+				// c=(sin(d1)*sin(d2)+cos(d1)*cos(d2)*cos(a1-a2));
+				// dist = (sin(d1)*sin(d2)+cos(d1)*cos(d2)*( cos(a1)*cos(a2) + sin(a1)*sin(a2) )
+				dist=sindecs[k]*sindecs[kmax0]+cosdecs[k]*cosdecs[kmax0]*( cosras[k]*cosras[kmax0] + sinras[k]*sinras[kmax0] );
+				if (dist<-1) { dist=-1; }
+				if (dist>1) { dist=1; }
+				dist=acos(dist)/dr*60;
+				if (dist>distmax) {
+					kmax=k;
+					distmax=dist;
+				}
+			}
+			if (kmax==kmax00) {
+				break;
+			}
+			kmax00=kmax0;
+			kmax0=kmax;
+		}
+		x=(cosras[kmax]*cosdecs[kmax]+cosras[kmax0]*cosdecs[kmax0])/2.;
+		y=(sinras[kmax]*cosdecs[kmax]+sinras[kmax0]*cosdecs[kmax0])/2.;
+		z=(sindecs[kmax]+sindecs[kmax0])/2.;
+		dist=sqrt(x*x+y*y+z*z);
+		ra=fmod(atan2(y,x)/dr+720,360);
+		dec=asin(z/dist)/dr;
+		free(cosras);
+		free(cosdecs);
+		free(sinras);
+		free(sindecs);
+      sprintf(s,"%f %f %f",ra,dec,distmax/60); // distmax en deg
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      return TCL_OK;
+	}
+	return TCL_OK;
+}
+
+int Cmd_ydtcl_cal2ref(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+   char s[100],ligne[256],texte[256];
+   char path[1024];
+   char filename_in[1024],generic_filename[1024];
+   struct_htmref htmref,*htmrefs=NULL;
+   FILE *f_in,*f_out;
+   double ra,dec,ra0,dec0,dist,distmin;
+	float mags[256];
+	int k,kmin,n_ref0,n_ref,codefiltre,codecat;
+   double dr;
+	double sepmin=2.; // separation d'appariement en arcsec
+   if(argc<3) {
+      sprintf(s,"Usage: %s path generic_filename", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      return TCL_ERROR;
+   } else {
+       /* --- decodage des arguments ---*/
+      strcpy(path,argv[1]); 
+      strcpy(generic_filename,argv[2]); 
+      /* --- compte le nombre d'etoiles dans HTM_ref.bin  ---*/
+      sprintf(filename_in,"%s%s_ref.bin",path,generic_filename);
+      f_in=fopen(filename_in,"rb");
+      if (f_in==NULL) {
+         sprintf(s,"filename_in %s not found",filename_in);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+      }
+      n_ref0=0;
+      while (feof(f_in)==0) {
+         if (fread(&htmref,1,sizeof(struct_htmref),f_in)>1) {
+            n_ref0++;
+         }
+      }
+      fclose(f_in);
+      if (n_ref0==0) {
+         return TCL_OK;
+      }
+      htmrefs=(struct_htmref*)calloc(n_ref0,sizeof(struct_htmref));
+		if (htmrefs==NULL) {
+         strcpy(s,"Problem of pointer htmrefs allocation");
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+		}
+      f_in=fopen(filename_in,"rb");
+      if (f_in==NULL) {
+         sprintf(s,"filename_in %s not found",filename_in);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+      }
+		dr=atan(1)/45.;
+      n_ref=0;
+      while (feof(f_in)==0) {
+         if (fread(&htmref,1,sizeof(struct_htmref),f_in)>1) {
+			   htmrefs[n_ref]=htmref;
+				n_ref++;
+         }
+      }
+      fclose(f_in);
+      sprintf(filename_in,"%s%s_cal.txt",path,generic_filename);
+      f_in=fopen(filename_in,"rt");
+      if (f_in==NULL) {
+			free(htmrefs);
+         sprintf(s,"filename_in %s not found",filename_in);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+      }
+      do {
+			if (fgets(ligne,255,f_in)!=NULL) {
+	         strcpy(texte,"");
+   	      sscanf(ligne,"%s",texte);
+	         if ( (strcmp(texte,"")!=0) ) {
+               /* ra dec B V R J H K */
+				   sscanf(ligne,"%lf %lf %f %f %f %f %f %f",
+               &ra0,&dec0,&mags[66],&mags[86],&mags[82],&mags[74],&mags[72],&mags[75]);
+					ra0*=dr;
+					dec0*=dr;
+					distmin=1e9;
+					kmin=0;
+					for (k=0;k<n_ref;k++) {
+						ra=htmrefs[k].ra;
+						dec=htmrefs[k].dec;
+						ra*=dr;
+						dec*=dr;
+						dist=(sin(dec0)*sin(dec)+cos(dec0)*cos(dec)*cos(ra0-ra));
+						if (dist<-1) { dist=-1; }
+						if (dist>1) { dist=1; }
+						dist=acos(dist)/dr*3600;
+						if (dist<=distmin) {
+							distmin=dist;
+							kmin=k;
+						}
+					}
+					if (distmin<sepmin) {
+						for (k=0;k<4;k++) {
+							codefiltre=htmrefs[kmin].codefiltre[k];							
+							codecat=5;
+							if      ((codefiltre==66)&&(mags[66]!=-99.9)) { htmrefs[kmin].mag[k]=mags[66]; htmrefs[kmin].codecat[k]=codecat; }
+							else if ((codefiltre==86)&&(mags[86]!=-99.9)) { htmrefs[kmin].mag[k]=mags[86]; htmrefs[kmin].codecat[k]=codecat; }
+							else if ((codefiltre==82)&&(mags[82]!=-99.9)) { htmrefs[kmin].mag[k]=mags[82]; htmrefs[kmin].codecat[k]=codecat; }
+							else if ((codefiltre==74)&&(mags[74]!=-99.9)) { htmrefs[kmin].mag[k]=mags[74]; htmrefs[kmin].codecat[k]=codecat; }
+							else if ((codefiltre==72)&&(mags[72]!=-99.9)) { htmrefs[kmin].mag[k]=mags[72]; htmrefs[kmin].codecat[k]=codecat; }
+							else if ((codefiltre==75)&&(mags[75]!=-99.9)) { htmrefs[kmin].mag[k]=mags[75]; htmrefs[kmin].codecat[k]=codecat; }
+						}
+					}
+				}
+			}
+      } while (feof(f_in)==0) ;
+      fclose(f_in);
+		// --- on met a jour htmrefs ici
+      sprintf(filename_in,"%s%s_ref.bin",path,generic_filename);
+      f_out=fopen(filename_in,"wb");
+      for (k=0;k<n_ref;k++) {
+         fwrite(&htmrefs[k],1,sizeof(struct_htmref),f_out);
+      }
+      fclose(f_out);
+		free(htmrefs);
+      Tcl_SetResult(interp,"",TCL_VOLATILE);
+      return TCL_OK;
+	}
+	return TCL_OK;
+}
+
+int Cmd_ydtcl_mes2mes(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+   char s[100];
+   char path[1024];
+   char filename_in[1024],generic_filename[1024];
+   struct_htmref htmref,*htmrefs=NULL;
+   struct_htmmes htmmes,*htmmess=NULL;
+	double *vals=NULL;
+   FILE *f_in,*f_out;
+	int n_ref0,n_ref,n_mes,n_mes0,ncalfiltre=0;
+	unsigned char calfiltres[256],codefiltre;
+	int k,km,kv,kr,kkr,kf,kcalfiltre,nouveau;
+	float codecat,mag;
+   if(argc<3) {
+      sprintf(s,"Usage: %s path generic_filename", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      return TCL_ERROR;
+   } else {
+       /* --- decodage des arguments ---*/
+      strcpy(path,argv[1]); 
+      strcpy(generic_filename,argv[2]); 
+      /* --- compte le nombre d'etoiles dans HTM_ref.bin  ---*/
+      sprintf(filename_in,"%s%s_ref.bin",path,generic_filename);
+      f_in=fopen(filename_in,"rb");
+      if (f_in==NULL) {
+         sprintf(s,"filename_in %s not found",filename_in);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+      }
+      n_ref0=0;
+      while (feof(f_in)==0) {
+         if (fread(&htmref,1,sizeof(struct_htmref),f_in)>1) {
+            n_ref0++;
+         }
+      }
+      fclose(f_in);
+      if (n_ref0==0) {
+         return TCL_OK;
+      }
+      htmrefs=(struct_htmref*)calloc(n_ref0,sizeof(struct_htmref));
+		if (htmrefs==NULL) {
+         strcpy(s,"Problem of pointer htmrefs allocation");
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+		}
+      f_in=fopen(filename_in,"rb");
+      if (f_in==NULL) {
+			free(htmrefs);
+         sprintf(s,"filename_in %s not found",filename_in);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+      }
+      n_ref=0;
+      while (feof(f_in)==0) {
+         if (fread(&htmref,1,sizeof(struct_htmref),f_in)>1) {
+			   htmrefs[n_ref]=htmref;
+				n_ref++;
+         }
+      }
+      fclose(f_in);
+      /* --- compte le nombre d'etoiles dans HTM_mes.bin  ---*/
+      sprintf(filename_in,"%s%s_mes.bin",path,generic_filename);
+      f_in=fopen(filename_in,"rb");
+      if (f_in==NULL) {
+			free(htmrefs);
+         sprintf(s,"filename_in %s not found",filename_in);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+      }
+      n_mes0=0;
+      while (feof(f_in)==0) {
+         if (fread(&htmmes,1,sizeof(struct_htmmes),f_in)>1) {
+            n_mes0++;
+         }
+      }
+      fclose(f_in);
+      if (n_mes0==0) {
+         return TCL_OK;
+      }
+      htmmess=(struct_htmmes*)calloc(n_mes0,sizeof(struct_htmmes));
+		if (htmmess==NULL) {
+			free(htmrefs);
+         strcpy(s,"Problem of pointer htmmess allocation");
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+		}
+      vals=(double*)calloc(n_mes0,sizeof(double));
+		if (vals==NULL) {
+			free(htmrefs);
+			free(htmmess);
+         strcpy(s,"Problem of pointer vals allocation");
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+		}
+      f_in=fopen(filename_in,"rb");
+      if (f_in==NULL) {
+			free(htmrefs);
+			free(htmmess);
+         sprintf(s,"filename_in %s not found",filename_in);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+      }
+      n_mes=0;
+      while (feof(f_in)==0) {
+         if (fread(&htmmes,1,sizeof(struct_htmmes),f_in)>1) {
+			   htmmess[n_mes]=htmmes;
+				n_mes++;
+         }
+      }
+      fclose(f_in);
+		// --- scane les filtres calibres dans ref.
+		//     la liste des filtres est dans calfiltres[ncalfiltre]
+		ncalfiltre=0;
+		for (kr=0;kr<n_ref;kr++) {
+			for (kf=0;kf<4;kf++) {
+				codefiltre=htmrefs[kr].codefiltre[kf];
+				codecat=htmrefs[kr].codecat[kf];
+				if ((codefiltre==0)||(codecat!=5)) {
+					continue;
+				}
+				nouveau=1;
+				for (k=0;k<ncalfiltre;k++) {
+					if (codefiltre==calfiltres[k]) {
+						nouveau=0;
+					}
+				}
+				if (nouveau==1) {
+					calfiltres[ncalfiltre]=codefiltre;
+					ncalfiltre++;
+				}
+
+			}
+		}
+		if (ncalfiltre==0) {
+			free(htmrefs);
+			free(htmmess);
+			free(vals);
+			Tcl_SetResult(interp,"",TCL_VOLATILE);
+			return TCL_OK;
+		}
+		// --- on scanne maintenant calfiltre par calfiltre
+		for (kcalfiltre=0;kcalfiltre<ncalfiltre;kcalfiltre++) {
+			for (kr=0;kr<n_ref;kr++) {
+				for (kf=0;kf<4;kf++) {
+					codefiltre=htmrefs[kr].codefiltre[kf];
+					codecat=htmrefs[kr].codecat[k];
+					if ((codefiltre==0)||(codecat!=5)) {
+						continue;
+					}
+					// --- une etoile calibree a ete trouvee dans ref
+					mag=htmrefs[kr].mag[k];
+					// --- recherche l'etoile dans mes
+					kv=0;
+					for (km=0;km<n_mes;km++) {
+						kkr=htmmess[km].indexref;
+						if (kkr==kr) {
+							vals[kv]=htmmess[km].magcali;
+						}
+					}
+					// --- calcule la magnitude mediane
+					// TBD et TBC
+				}
+			}
+		}
+		// --- c'est fini.
+		// --- on met a jour htmrefs ici
+      sprintf(filename_in,"%s%s_ref.bin",path,generic_filename);
+      f_out=fopen(filename_in,"wb");
+      for (k=0;k<n_ref;k++) {
+         fwrite(&htmrefs[k],1,sizeof(struct_htmref),f_out);
+      }
+      fclose(f_out);
+		// --- on met a jour htmmess ici
+      sprintf(filename_in,"%s%s_mes.bin",path,generic_filename);
+      f_out=fopen(filename_in,"wb");
+      for (k=0;k<n_mes;k++) {
+         fwrite(&htmmess[k],1,sizeof(struct_htmmes),f_out);
+      }
+      fclose(f_out);
+		free(htmrefs);
+		free(htmmess);
+		free(vals);
+      Tcl_SetResult(interp,"",TCL_VOLATILE);
+      return TCL_OK;
+	}
+	return TCL_OK;
+}
 
 int Cmd_ydtcl_radecinrefzmgmes(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 /****************************************************************************/

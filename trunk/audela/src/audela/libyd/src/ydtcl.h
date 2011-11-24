@@ -177,6 +177,9 @@ int Cmd_ydtcl_photometric_parallax_avmap(ClientData clientData, Tcl_Interp *inte
 int Cmd_ydtcl_cour_finalbis(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int Cmd_ydtcl_reduceusno(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int Cmd_ydtcl_refzmgmes2vars_stetson(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int Cmd_ydtcl_ref2field(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int Cmd_ydtcl_cal2ref(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int Cmd_ydtcl_mes2mes(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 /***************************************************************************/
 /*      Prototypes des fonctions utiles qui melangent C et Tcl             */

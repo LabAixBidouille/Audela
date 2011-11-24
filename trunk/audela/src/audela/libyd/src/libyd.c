@@ -78,6 +78,9 @@
    Tcl_CreateCommand(interp,"yd_refzmgmes2vars",(Tcl_CmdProc *)Cmd_ydtcl_refzmgmes2vars,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"yd_radecinrefzmgmes",(Tcl_CmdProc *)Cmd_ydtcl_radecinrefzmgmes,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"yd_reduceusno",(Tcl_CmdProc *)Cmd_ydtcl_reduceusno,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"yd_ref2field",(Tcl_CmdProc *)Cmd_ydtcl_ref2field,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"yd_cal2ref",(Tcl_CmdProc *)Cmd_ydtcl_cal2ref,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"yd_mes2mes",(Tcl_CmdProc *)Cmd_ydtcl_mes2mes,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
 
    /* */
    Tcl_CreateCommand(interp,"yd_minlong",(Tcl_CmdProc *)Cmd_ydtcl_minlong,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
