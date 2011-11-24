@@ -22,7 +22,9 @@ set caption(av4l_go,extraction)            "Extraction"
 set caption(av4l_go,test)                  "Test"
 set caption(av4l_go,ressource)             "Re-source"
 set caption(av4l_go,verif)                 "Verfication"
+set caption(av4l_go,time)                  "Time extraction"
 set caption(av4l_go,cdl)                   "Courbe de lumiere"
+set caption(av4l_go,analysis)              "Analysis"
 
 # *************** Version française **** **********************
 if { [ string compare $langage "french" ] == "0" } {
@@ -38,7 +40,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(av4l_go,test)               "Test"
    set caption(av4l_go,ressource)          "Re-source"
    set caption(av4l_go,verif)              "Verfication"
+   set caption(av4l_go,time)               "Extraction de l'heure"
    set caption(av4l_go,cdl)                "Courbe de lumiere"
+   set caption(av4l_go,analysis)           "Analyse"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
