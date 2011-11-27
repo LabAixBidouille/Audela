@@ -161,9 +161,30 @@ namespace eval ::av4l_tools {
 
    }
 
+
+
+
+
+
+
+
+
+
+
    proc get_nbimage { } {
     return [::av4l_tools::avi1 get_nb_frames]
    }
+
+
+
+
+
+
+
+
+
+
+
 
    proc avi_next { } {
       ::av4l_tools::avi1 next
@@ -177,12 +198,36 @@ namespace eval ::av4l_tools {
       
    }
 
+
+
+
+
+
+
+
+
+
+
+
+
    proc avi_next_image { } {
       set visuNo 1
       ::av4l_tools::avi_next
       visu$visuNo disp
       set ::av4l_extraction::percent $::av4l_tools::cur_idframe
    }
+
+
+
+
+
+
+
+
+
+
+
+
 
    proc avi_prev_image { } {
       set visuNo 1
@@ -197,6 +242,18 @@ namespace eval ::av4l_tools {
       visu$visuNo disp
    }
 
+
+
+
+
+
+
+
+
+
+
+
+
    proc avi_quick_next_image { } {
       set visuNo 1
       set ::av4l_tools::cur_idframe [ expr $::av4l_tools::cur_idframe + 100 ]
@@ -210,6 +267,18 @@ namespace eval ::av4l_tools {
       visu$visuNo disp
    }
 
+
+
+
+
+
+
+
+
+
+
+
+
    proc avi_quick_prev_image { } {
       set visuNo 1
       set ::av4l_tools::cur_idframe [ expr $::av4l_tools::cur_idframe - 100 ]
@@ -222,6 +291,18 @@ namespace eval ::av4l_tools {
       ::av4l_tools::avi_get_frame $visuNo $::av4l_tools::cur_idframe
       visu$visuNo disp
    }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
    proc avi_get_frame { visuNo idframe } {
@@ -242,16 +323,52 @@ namespace eval ::av4l_tools {
       set ::av4l_extraction::percent $::av4l_tools::cur_idframe
    }
 
+
+
+
+
+
+
+
+
+
+
+
+
    proc avi_get_idframe {  } {
 
       #::console::affiche_resultat "idframe  : $::av4l_tools::cur_idframe"
       return $::av4l_tools::cur_idframe
    }
 
+
+
+
+
+
+
+
+
+
+
+
+
    proc avi_slide { visuNo arg } {
       ::console::affiche_resultat "av_slide\n"
       ::av4l_tools::avi_get_frame $visuNo $arg
    }
+
+
+
+
+
+
+
+
+
+
+
+
 
    proc avi_seek { visuNo arg } {
       ::console::affiche_resultat "% : [expr $arg / 100.0 ]"
@@ -259,6 +376,18 @@ namespace eval ::av4l_tools {
       ::av4l_tools::avi1 next
       visu$visuNo disp
    }
+
+
+
+
+
+
+
+
+
+
+
+
 
    proc avi_seekbyte { arg } {
       set visuNo 1
@@ -268,6 +397,18 @@ namespace eval ::av4l_tools {
       visu$visuNo disp
    }
 
+
+
+
+
+
+
+
+
+
+
+
+
    proc avi_setmin { This } {
       global audace
       $This.posmin delete 0 end
@@ -275,12 +416,36 @@ namespace eval ::av4l_tools {
       $This.imagecount delete 0 end
    }
 
+
+
+
+
+
+
+
+
+
+
+
+
    proc avi_setmax { This } {
       global audace
       $This.posmax delete 0 end
       $This.posmax insert 0 $::av4l_tools::cur_idframe
       $This.imagecount delete 0 end
    }
+
+
+
+
+
+
+
+
+
+
+
+
 
    proc avi_imagecount { This } {
       global audace
@@ -290,6 +455,19 @@ namespace eval ::av4l_tools {
       $This.imagecount insert 0 [ expr $fmax - $fmin + 1 ]
 
    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
    proc avi_extract { This } {
       global audace
@@ -317,6 +495,19 @@ namespace eval ::av4l_tools {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
    proc acq_fetch { this } {
         global audace
         ::avi::convert_shared_image /dev/shm/pict.yuv422
@@ -324,11 +515,37 @@ namespace eval ::av4l_tools {
         file delete -force /dev/shm/pict.yuv422
    }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
    proc acq_start { this } {
         global audace
         ::console::affiche_resultat "path : [$this.form.v.destdir get]"
         exec $audace(rep_plugin)/../../../bin/av4l-grab -d 120m -c 2m -o [$this.form.v.destdir get] &
    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
    proc acq_stop { this } {
         global audace

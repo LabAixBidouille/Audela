@@ -1,18 +1,18 @@
 #--------------------------------------------------
-# source audace/plugin/tool/av4l/av4l_cdl.tcl
+# source audace/plugin/tool/av4l/av4l_ocr.tcl
 #--------------------------------------------------
 #
-# Fichier        : av4l_cdl.tcl
+# Fichier        : av4l_ocr.tcl
 # Description    : Affiche le status de la base de donnees
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: av4l_cdl.tcl 6795 2011-02-26 16:05:27Z michelpujol $
+# Mise à jour $Id: av4l_ocr.tcl 6795 2011-02-26 16:05:27Z michelpujol $
 #
 
-namespace eval ::av4l_cdl {
+namespace eval ::av4l_ocr {
 
 
    #
-   # av4l_cdl::init
+   # av4l_ocr::init
    # Chargement des captions
    #
    proc init { } {
@@ -21,11 +21,11 @@ namespace eval ::av4l_cdl {
       wm focusmodel . passive
       wm withdraw .
       #--- Chargement des captions
-      source [ file join $audace(rep_plugin) tool av4l av4l_cdl.cap ]
+      source [ file join $audace(rep_plugin) tool av4l av4l_ocr.cap ]
    }
 
    #
-   # av4l_cdl::initToConf
+   # av4l_ocr::initToConf
    # Initialisation des variables de configuration
    #
    proc initToConf { visuNo } {
@@ -40,7 +40,7 @@ namespace eval ::av4l_cdl {
    }
 
    #
-   # av4l_cdl::confToWidget
+   # av4l_ocr::confToWidget
    # Charge la configuration dans des variables locales
    #
    proc confToWidget { visuNo } {
@@ -48,15 +48,15 @@ namespace eval ::av4l_cdl {
       global panneau
 
       #--- confToWidget
-      set ::av4l_cdl::panneau(av4l,$visuNo,messages)                   $::av4l::parametres(av4l,$visuNo,messages)
-      set ::av4l_cdl::panneau(av4l,$visuNo,save_file_log)              $::av4l::parametres(av4l,$visuNo,save_file_log)
-      set ::av4l_cdl::panneau(av4l,$visuNo,alarme_fin_serie)           $::av4l::parametres(av4l,$visuNo,alarme_fin_serie)
-      set ::av4l_cdl::panneau(av4l,$visuNo,verifier_ecraser_fichier)   $::av4l::parametres(av4l,$visuNo,verifier_ecraser_fichier)
-      set ::av4l_cdl::panneau(av4l,$visuNo,verifier_index_depart)      $::av4l::parametres(av4l,$visuNo,verifier_index_depart)
+      set ::av4l_ocr::panneau(av4l,$visuNo,messages)                   $::av4l::parametres(av4l,$visuNo,messages)
+      set ::av4l_ocr::panneau(av4l,$visuNo,save_file_log)              $::av4l::parametres(av4l,$visuNo,save_file_log)
+      set ::av4l_ocr::panneau(av4l,$visuNo,alarme_fin_serie)           $::av4l::parametres(av4l,$visuNo,alarme_fin_serie)
+      set ::av4l_ocr::panneau(av4l,$visuNo,verifier_ecraser_fichier)   $::av4l::parametres(av4l,$visuNo,verifier_ecraser_fichier)
+      set ::av4l_ocr::panneau(av4l,$visuNo,verifier_index_depart)      $::av4l::parametres(av4l,$visuNo,verifier_index_depart)
    }
 
    #
-   # av4l_cdl::widgetToConf
+   # av4l_ocr::widgetToConf
    # Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
    #
    proc widgetToConf { visuNo } {
@@ -67,7 +67,7 @@ namespace eval ::av4l_cdl {
 
 
    #
-   # av4l_cdl::run 
+   # av4l_ocr::run 
    # Cree la fenetre de configuration de l'affichage des messages sur la Console
    # et de l'enregistrement des dates dans le fichier log
    #
@@ -75,56 +75,56 @@ namespace eval ::av4l_cdl {
      global audace panneau
 
 
-      set panneau(av4l,$visuNo,av4l_cdl) $this
-      #::confGenerique::run $visuNo "$panneau(av4l,$visuNo,av4l_cdl)" "::av4l_cdl" -modal 1
+      set panneau(av4l,$visuNo,av4l_ocr) $this
+      #::confGenerique::run $visuNo "$panneau(av4l,$visuNo,av4l_ocr)" "::av4l_ocr" -modal 1
 
       createdialog $this $visuNo   
 
    }
 
    #
-   # av4l_cdl::apply
+   # av4l_ocr::apply
    # Fonction 'Appliquer' pour memoriser et appliquer la configuration
    #
    proc apply { visuNo } {
-      ::av4l_cdl::widgetToConf $visuNo
+      ::av4l_ocr::widgetToConf $visuNo
       ::av4l_tools::avi_extract
    }
 
    #
-   # av4l_cdl::showHelp
+   # av4l_ocr::showHelp
    # Fonction appellee lors de l'appui sur le bouton 'Aide'
    #
    proc showHelp { } {
       ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::av4l::getPluginType ] ] \
-         [ ::av4l::getPluginDirectory ] av4l_cdl.htm
+         [ ::av4l::getPluginDirectory ] av4l_ocr.htm
    }
 
 
    #
-   # av4l_cdl::closeWindow
+   # av4l_ocr::closeWindow
    # Fonction appellee lors de l'appui sur le bouton 'Fermer'
    #
    proc closeWindow { this visuNo } {
 
-      ::av4l_cdl::widgetToConf $visuNo
+      ::av4l_ocr::widgetToConf $visuNo
       ::av4l_tools::avi_close
       destroy $this
    }
 
    #
-   # av4l_cdl::getLabel
+   # av4l_ocr::getLabel
    # Retourne le nom de la fenetre d extraction
    #
    proc getLabel { } {
       global caption
 
-      return "$caption(av4l_cdl,bar_title)"
+      return "$caption(av4l_ocr,bar_title)"
    }
 
 
    #
-   # av4l_cdl::chgdir
+   # av4l_ocr::chgdir
    # Ouvre une boite de dialogue pour choisir un nom  de repertoire 
    #
    proc chgdir { This } {
@@ -162,19 +162,19 @@ namespace eval ::av4l_cdl {
 
    proc run_fits { this visuNo base } {
 
-     ::av4l_cdl_fits::run  $visuNo $base.av4l_cdl_fits
-     ::av4l_cdl::closeWindow $this $visuNo
+     #::av4l_ocr_fits::run  $visuNo $base.av4l_ocr_fits
+     ::av4l_ocr::closeWindow $this $visuNo
    }
 
    proc run_avi { this visuNo base } {
 
-     ::av4l_cdl_avi::run  $visuNo $base.av4l_cdl_avi
-     ::av4l_cdl::closeWindow $this $visuNo
+     ::av4l_ocr_avi::run  $visuNo $base.av4l_ocr_avi
+     ::av4l_ocr::closeWindow $this $visuNo
    }
 
 
    #
-   # av4l_cdl::fillConfigPage
+   # av4l_ocr::fillConfigPage
    # Creation de l'interface graphique
    #
    proc createdialog { this visuNo } {
@@ -203,15 +203,15 @@ namespace eval ::av4l_cdl {
       set posy_config [ lindex [ split [ wm geometry $base ] "+" ] 2 ]
       wm geometry $this +[ expr $posx_config + 165 ]+[ expr $posy_config + 55 ]
       wm resizable $this 1 1
-      wm title $this $caption(av4l_cdl,bar_title)
-      wm protocol $this WM_DELETE_WINDOW "::av4l_cdl::closeWindow $this $visuNo"
+      wm title $this $caption(av4l_ocr,bar_title)
+      wm protocol $this WM_DELETE_WINDOW "::av4l_ocr::closeWindow $this $visuNo"
 
 
       #--- Charge la configuration de la vitesse de communication dans une variable locale
-      ::av4l_cdl::confToWidget $visuNo
+      ::av4l_ocr::confToWidget $visuNo
 
       #--- Retourne l'item de la camera associee a la visu
-      set frm $this.frm_av4l_cdl_fits
+      set frm $this.frm_av4l_ocr_fits
 
       #--- Cree un frame pour afficher le status de la base
       frame $frm -borderwidth 0 -cursor arrow -relief groove
@@ -219,7 +219,7 @@ namespace eval ::av4l_cdl {
 
         #--- Cree un label pour le titre
         label $frm.titre -font $av4lconf(font,arial_14_b) \
-              -text "$caption(av4l_cdl,titre)"
+              -text "$caption(av4l_ocr,titre)"
         pack $frm.titre \
              -in $frm -side top -padx 3 -pady 3
 
@@ -238,7 +238,7 @@ namespace eval ::av4l_cdl {
            image create photo .visu -format PNG -file [ file join $audace(rep_plugin) tool av4l img bouton_visu.png ]
            button $frm.traitement.fits.ico -image .visu\
               -borderwidth 2 -width 130 -height 130 -compound center \
-              -command "::av4l_cdl::run_fits $this $visuNo $base"
+              -command "::av4l_ocr::run_fits $this $visuNo $base"
            pack $frm.traitement.fits.ico \
               -in $frm.traitement.fits \
               -side top -anchor w \
@@ -255,7 +255,7 @@ namespace eval ::av4l_cdl {
            image create photo .video -format PNG -file [ file join $audace(rep_plugin) tool av4l img bouton_video.png ]
            button $frm.traitement.avi.ico -image .video\
               -borderwidth 2 -width 130 -height 130 -compound center \
-              -command "::av4l_cdl::run_avi $this $visuNo $base"
+              -command "::av4l_ocr::run_avi $this $visuNo $base"
            pack $frm.traitement.avi.ico \
               -in $frm.traitement.avi \
               -side left -anchor w \
@@ -274,16 +274,16 @@ namespace eval ::av4l_cdl {
 
            #--- Creation du bouton fermer
            button $frm.action.fermer \
-              -text "$caption(av4l_cdl,fermer)" -borderwidth 2 \
-              -command "::av4l_cdl::closeWindow $this $visuNo"
+              -text "$caption(av4l_ocr,fermer)" -borderwidth 2 \
+              -command "::av4l_ocr::closeWindow $this $visuNo"
            pack $frm.action.fermer -in $frm.action \
               -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
            #--- Creation du bouton aide
            button $frm.action.aide \
-              -text "$caption(av4l_cdl,aide)" -borderwidth 2 \
-              -command "::audace::showHelpPlugin tool av4l av4l_cdl.htm"
+              -text "$caption(av4l_ocr,aide)" -borderwidth 2 \
+              -command "::audace::showHelpPlugin tool av4l av4l_ocr.htm"
            pack $frm.action.aide -in $frm.action \
               -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
@@ -298,4 +298,4 @@ namespace eval ::av4l_cdl {
 
 
 #--- Initialisation au demarrage
-::av4l_cdl::init
+::av4l_ocr::init
