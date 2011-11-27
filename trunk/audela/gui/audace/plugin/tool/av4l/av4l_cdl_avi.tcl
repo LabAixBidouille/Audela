@@ -1397,7 +1397,7 @@ variable file_mesure
 
 
       set sortie 0
-      set idframe 0
+      set idframe 1
       set cpt 0
       while {$sortie == 0} {
 

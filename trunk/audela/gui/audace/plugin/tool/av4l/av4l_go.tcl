@@ -163,6 +163,8 @@ proc ::av4l::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_cdl_fits.tcl      ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_cdl_avi.tcl       ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_cdl.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_ocr.tcl           ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_ocr_avi.tcl       ]\""
 
    ::console::affiche_resultat "  update  : av4l_go.tcl          \n"
    ::console::affiche_resultat "  update  : av4l_acq.tcl         \n"
@@ -176,6 +178,8 @@ proc ::av4l::ressource {  } {
    ::console::affiche_resultat "  update  : av4l_cdl_fits.tcl    \n"
    ::console::affiche_resultat "  update  : av4l_cdl_avi.tcl     \n"
    ::console::affiche_resultat "  update  : bddimages_cdl.tcl    \n"
+   ::console::affiche_resultat "  update  : av4l_ocr.tcl         \n"
+   ::console::affiche_resultat "  update  : av4l_ocr_avi.tcl     \n"
 }
 
 
@@ -341,7 +345,7 @@ proc ::av4l::BuildIF { visuNo } {
          image create photo .time -format PNG -file [ file join $audace(rep_plugin) tool av4l img time.png ]
          button $This.fra1.time -image .time\
             -borderwidth 2 -width 48 -height 48 -compound center \
-            -command ""
+            -command "::av4l_ocr::run  $visuNo $base.av4l_ocr"
          pack $This.fra1.time \
             -in $This.fra1 \
             -side top -anchor w \
