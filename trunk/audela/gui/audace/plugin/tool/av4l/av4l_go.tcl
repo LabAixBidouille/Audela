@@ -363,40 +363,49 @@ proc ::av4l::BuildIF { visuNo } {
             -expand 0
          DynamicHelp::add $This.fra1.cdl -text $caption(av4l_go,cdl)
 
+
+
+      #--- Frame du titre
+      frame $This.fradev -borderwidth 2 -relief groove
+      pack $This.fradev -side top -fill x
+
+
+
+
          #--- Creation du bouton 
-         image create photo .analysis -format PNG -file [ file join $audace(rep_plugin) tool av4l img brain.png ]
-         button $This.fra1.analysis -image .analysis\
-            -borderwidth 2 -width 48 -height 48 -compound center \
+         image create photo .analysis -format PNG -file [ file join $audace(rep_plugin) tool av4l img brain_mini.png ]
+         button $This.fradev.analysis -image .analysis\
+            -borderwidth 2 -width 10 -height 10 -compound center \
             -command ""
-         pack $This.fra1.analysis \
-            -in $This.fra1 \
-            -side top -anchor w \
+         pack $This.fradev.analysis \
+            -in $This.fradev \
+            -side left -anchor w \
             -expand 0
-         DynamicHelp::add $This.fra1.analysis -text $caption(av4l_go,analysis)
+         DynamicHelp::add $This.fradev.analysis -text $caption(av4l_go,analysis)
 
 
          #--- Creation du bouton 
-         image create photo .test -format PNG -file [ file join $audace(rep_plugin) tool av4l img test.png ]
-         button $This.fra1.test -image .test\
-            -borderwidth 2 -width 48 -height 48 -compound center \
+         image create photo .test -format PNG -file [ file join $audace(rep_plugin) tool av4l img test_mini.png ]
+         button $This.fradev.test -image .test\
+            -borderwidth 2 -width 10 -height 10 -compound center \
             -command "::testprocedure::run"
-         pack $This.fra1.test \
-            -in $This.fra1 \
-            -side top -anchor w \
+         pack $This.fradev.test \
+            -in $This.fradev \
+            -side left -anchor w \
             -expand 0
-         DynamicHelp::add $This.fra1.test -text $caption(av4l_go,test)
+         DynamicHelp::add $This.fradev.test -text $caption(av4l_go,test)
 
 
          #--- Creation du bouton
-         image create photo .ressource -format PNG -file [ file join $audace(rep_plugin) tool av4l img ressource.png ]
-         button $This.fra1.ressource -image .ressource\
-            -borderwidth 2 -width 48 -height 48 -compound center \
+         image create photo .ressource -format PNG -file [ file join $audace(rep_plugin) tool av4l img ressource_mini.png ]
+         button $This.fradev.ressource -image .ressource\
+            -borderwidth 2 -width 10 -height 10 -compound center \
             -command "::av4l::ressource"
-         pack $This.fra1.ressource \
-            -in $This.fra1 \
-            -side top -anchor w \
+         pack $This.fradev.ressource \
+            -in $This.fradev \
+            -side left -anchor w \
             -expand 0
-         DynamicHelp::add $This.fra1.ressource -text $caption(av4l_go,ressource)
+         DynamicHelp::add $This.fradev.ressource -text $caption(av4l_go,ressource)
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This

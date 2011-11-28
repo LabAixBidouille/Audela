@@ -339,7 +339,6 @@ variable timing
 
       #--- Retourne l'item de la camera associee a la visu
       set frm $this.frm_av4l_ocr_avi
-      set frmbbar $this.frm_av4l_ocr_avi_bar
 
 
       #--- Cree un frame pour afficher le status de la base
@@ -378,10 +377,10 @@ variable timing
         pack $frm.open.avipath -side left -padx 3 -pady 1 -expand true -fill x
 
         #--- Creation de la barre de defilement
-        scale $frm.percent -from 0 -to 1 -length 600 -variable ::av4l_ocr_avi::percent \
+        scale $frm.scrollbar -from 0 -to 1 -length 600 -variable ::av4l_tools::scrollbar \
            -label "" -orient horizontal \
            -state disabled
-        pack $frm.percent -in $frm -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
+        pack $frm.scrollbar -in $frm -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
 
         #--- Cree un frame pour afficher
         set btnav [frame $frm.btnav -borderwidth 0]
@@ -480,7 +479,7 @@ variable timing
              #--- Creation du bouton setmax
              button $frm.pos.crop \
                 -text "crop" -borderwidth 2 \
-                -command ""
+                -command "::av4l_ocr_avi::avi_crop $visuNo $frm "
              pack $frm.pos.crop \
                 -in $frm.pos \
                 -side left -anchor w \
@@ -522,7 +521,6 @@ variable timing
               frame $ocr.t -borderwidth 0 -cursor arrow
               pack  $ocr.t -in $ocr -side left -expand 5 -anchor w
 
-
               checkbutton $ocr.t.check -highlightthickness 0 -text "OCR" \
                           -variable ::av4l_ocr_avi::active_ocr \
                           -command "::av4l_ocr_avi::select_ocr $visuNo $frm" \
@@ -554,7 +552,7 @@ variable timing
           pack $datetime -in $frm.datation.values -side top -padx 30 -pady 1
 
               #--- Cree un frame
-              frame $datetime.y -borderwidth 0 -cursor arrow
+              frame $datetime.y -borderwidth 0 -cursor arrow 
               pack  $datetime.y -in $datetime -side left -expand 0 -anchor w
 
                  #--- Label de l'en-tete FITS
@@ -562,7 +560,7 @@ variable timing
                  pack $datetime.y.lab -in $datetime.y -side top -padx 0 -expand 0
 
                  #--- Label du nom de la configuration de l'en-tete FITS
-                 entry $datetime.y.val -takefocus 0 -justify left -width 5
+                 entry $datetime.y.val -takefocus 0 -justify left -width 5 -takefocus 1
                  pack $datetime.y.val -in $datetime.y -side top -padx 0 -expand 0
 
 
@@ -586,7 +584,7 @@ variable timing
                  pack $datetime.m.lab -in $datetime.m -side top -padx 0 -expand 0
 
                  #--- Label du nom de la configuration de l'en-tete FITS
-                 entry $datetime.m.val  -takefocus 0 -justify left -width 3
+                 entry $datetime.m.val  -takefocus 0 -justify left -width 3 -takefocus 1
                  pack $datetime.m.val -in $datetime.m -side top -padx 0 -expand 0
 
               #--- Cree un frame
@@ -609,7 +607,7 @@ variable timing
                  pack $datetime.d.lab -in $datetime.d -side top -padx 0 -expand 0
 
                  #--- Label du nom de la configuration de l'en-tete FITS
-                 entry $datetime.d.val  -takefocus 0 -justify left -width 3
+                 entry $datetime.d.val  -takefocus 0 -justify left -width 3 -takefocus 1
                  pack $datetime.d.val -in $datetime.d -side top -padx 0 -expand 0
 
               #--- Cree un frame
@@ -632,7 +630,7 @@ variable timing
                  pack $datetime.h.lab -in $datetime.h -side top -padx 0 -expand 0
 
                  #--- Label du nom de la configuration de l'en-tete FITS
-                 entry $datetime.h.val  -takefocus 0 -justify left -width 3
+                 entry $datetime.h.val  -takefocus 0 -justify left -width 3 -takefocus 1
                  pack $datetime.h.val -in $datetime.h -side top -padx 0 -expand 0
 
               #--- Cree un frame
@@ -655,7 +653,7 @@ variable timing
                  pack $datetime.min.lab -in $datetime.min -side top -padx 0 -expand 0
 
                  #--- Label du nom de la configuration de l'en-tete FITS
-                 entry $datetime.min.val  -takefocus 0 -justify left -width 3
+                 entry $datetime.min.val  -takefocus 0 -justify left -width 3 -takefocus 1
                  pack $datetime.min.val -in $datetime.min -side top -padx 0 -expand 0
 
               #--- Cree un frame
@@ -678,7 +676,7 @@ variable timing
                  pack $datetime.s.lab -in $datetime.s -side top -padx 0 -expand 0
 
                  #--- Label du nom de la configuration de l'en-tete FITS
-                 entry $datetime.s.val  -takefocus 0 -justify left -width 3
+                 entry $datetime.s.val  -takefocus 0 -justify left -width 3 -takefocus 1
                  pack $datetime.s.val -in $datetime.s -side top -padx 0 -expand 0
 
               #--- Cree un frame
@@ -701,7 +699,7 @@ variable timing
                  pack $datetime.ms.lab -in $datetime.ms -side top -padx 0 -expand 0
 
                  #--- Label du nom de la configuration de l'en-tete FITS
-                 entry $datetime.ms.val  -takefocus 0 -justify left -width 5
+                 entry $datetime.ms.val  -takefocus 0 -justify left -width 5 -takefocus 1
                  pack $datetime.ms.val -in $datetime.ms -side top -padx 0 -expand 0
 
 
@@ -833,6 +831,10 @@ variable timing
            pack $frm.action.aide -in $frm.action \
               -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+
+      bind $frm.scrollbar <ButtonRelease> "::av4l_ocr_avi::avi_scroll $visuNo $frm"
+
 
    }
    
@@ -1446,6 +1448,7 @@ variable timing
          
          set pass "no"
 
+         set ::av4l_tools::scrollbar $idframe
     
      # Verifié
 
@@ -1575,7 +1578,7 @@ variable timing
                  
                  set diff [ expr   abs(($::av4l_ocr_avi::timing($idframe,jd) - $jd ) * 86400.0) ]                            
                  #::console::affiche_resultat "diff = $diff\n"
-                 if { $diff > 1.0 } {
+                 if { $diff > 0.5 } {
                       ::console::affiche_erreur "Warning! ($idframe) $::av4l_ocr_avi::timing($idframe,dateiso)\n"
                       set ::av4l_ocr_avi::timing($idframe,ocr) 0
                       set ::av4l_ocr_avi::timing($idframe,interpol) 1
@@ -1851,6 +1854,7 @@ variable timing
       ::av4l_tools::avi_next_image  
       ::av4l_ocr_avi::workimage $visuNo $frm
       ::av4l_ocr_avi::getinfofrm $visuNo $frm
+       set ::av4l_tools::scrollbar $::av4l_tools::cur_idframe
    }
    
    #
@@ -1862,6 +1866,7 @@ variable timing
       ::av4l_tools::avi_prev_image  
       ::av4l_ocr_avi::workimage $visuNo $frm
       ::av4l_ocr_avi::getinfofrm $visuNo $frm
+       set ::av4l_tools::scrollbar $::av4l_tools::cur_idframe
    }
    
 
@@ -1874,6 +1879,7 @@ variable timing
       ::av4l_tools::avi_quick_next_image  
       ::av4l_ocr_avi::workimage $visuNo $frm
       ::av4l_ocr_avi::getinfofrm $visuNo $frm
+       set ::av4l_tools::scrollbar $::av4l_tools::cur_idframe
    }
    
    #
@@ -1885,6 +1891,7 @@ variable timing
       ::av4l_tools::avi_quick_prev_image  
       ::av4l_ocr_avi::workimage $visuNo $frm
       ::av4l_ocr_avi::getinfofrm $visuNo $frm
+       set ::av4l_tools::scrollbar $::av4l_tools::cur_idframe
    }
    
 
@@ -1893,8 +1900,39 @@ variable timing
 
 
 
+   #
+   # av4l_ocr_avi::avi_scroll
+   # 
+   #
+   proc avi_scroll { visuNo frm } {
+         
+      ::av4l_ocr_avi::workimage $visuNo $frm
+      ::av4l_ocr_avi::getinfofrm $visuNo $frm
+   }
 
 
+
+   #
+   # av4l_ocr_avi::avi_crop
+   # Passe a l image suivante
+   #
+   proc avi_crop { visuNo frm } {
+         
+      set fmin  [$frm.posmin get]
+      set fmax  [$frm.posmax get]
+         
+      if { $fmin == "" } {
+         set fmin 1
+      }
+      if { $fmax == "" } {
+         set fmax $::av4l_tools::nb_frames
+      }
+      set nbframe [expr $fmax-$fmin+1]
+
+      $frm.scrollbar configure -from $fmin
+      $frm.scrollbar configure -to $fmax
+      $frm.scrollbar configure -tickinterval [expr $nbframe / 5]
+   }
 
 
 

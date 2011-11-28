@@ -82,14 +82,6 @@ namespace eval ::av4l_extraction {
 
    }
 
-   #
-   # av4l_extraction::apply
-   # Fonction 'Appliquer' pour memoriser et appliquer la configuration
-   #
-   proc apply { visuNo } {
-      ::av4l_extraction::widgetToConf $visuNo
-      ::av4l_tools::avi_extract
-   }
 
    #
    # av4l_extraction::showHelp
@@ -148,7 +140,6 @@ namespace eval ::av4l_extraction {
          set filename "[ ::cwdWindow::tkplus_chooseDir "[pwd]" $title $parent ]"
       }
 
-
       ::console::affiche_resultat $audace(rep_images)
 
       $This delete 0 end
@@ -197,7 +188,6 @@ namespace eval ::av4l_extraction {
 
       #--- Retourne l'item de la camera associee a la visu
       set frm $this.frm_av4l_extraction
-      set frmbbar $this.frm_av4l_extraction_bar
 
 
       #--- Cree un frame pour afficher le status de la base
@@ -236,10 +226,10 @@ namespace eval ::av4l_extraction {
         pack $frm.open.avipath -side left -padx 3 -pady 1 -expand true -fill x
 
         #--- Creation de la barre de defilement
-        scale $frm.percent -from 0 -to 1 -length 600 -variable ::av4l_extraction::percent \
+        scale $frm.scrollbar -from 0 -to 1 -length 600 -variable ::av4l_tools::scrollbar \
            -label "" -orient horizontal \
            -state disabled
-        pack $frm.percent -in $frm -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
+        pack $frm.scrollbar -in $frm -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
 
         #--- Cree un frame pour afficher
         set btnav [frame $frm.btnav -borderwidth 0]
@@ -249,7 +239,7 @@ namespace eval ::av4l_extraction {
         image create photo .arr -format PNG -file [ file join $audace(rep_plugin) tool av4l img arr.png ]
         button $frm.qprevimage -image .arr\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command "::av4l_tools::avi_quick_prev_image"
+           -command "::av4l_extraction::avi_quick_prev_image $visuNo"
         pack $frm.qprevimage \
            -in $frm.btnav \
            -side left -anchor w \
@@ -259,7 +249,7 @@ namespace eval ::av4l_extraction {
         image create photo .arn -format PNG -file [ file join $audace(rep_plugin) tool av4l img arn.png ]
         button $frm.previmage -image .arn\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command "::av4l_tools::avi_prev_image"
+           -command "::av4l_extraction::avi_prev_image $visuNo"
         pack $frm.previmage \
            -in $frm.btnav \
            -side left -anchor w \
@@ -269,7 +259,7 @@ namespace eval ::av4l_extraction {
         image create photo .avn -format PNG -file [ file join $audace(rep_plugin) tool av4l img avn.png ]
         button $frm.nextimage -image .avn\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command "::av4l_tools::avi_next_image"
+           -command "::av4l_extraction::avi_next_image"
         pack $frm.nextimage \
            -in $frm.btnav \
            -side left -anchor w \
@@ -279,7 +269,7 @@ namespace eval ::av4l_extraction {
         image create photo .avr -format PNG -file [ file join $audace(rep_plugin) tool av4l img avr.png ]
         button $frm.qnextimage -image .avr\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command "::av4l_tools::avi_quick_next_image"
+           -command "::av4l_extraction::avi_quick_next_image $visuNo"
         pack $frm.qnextimage \
            -in $frm.btnav \
            -side left -anchor w \
@@ -368,10 +358,6 @@ namespace eval ::av4l_extraction {
             label $intitle.status -font $av4lconf(font,courier_10) -text "Status"
             pack $intitle.status -in $intitle -side top -anchor w
 
-            #--- Cree un label pour le nb d image par seconde
-            label $intitle.fps -font $av4lconf(font,courier_10) -text "fps"
-            pack $intitle.fps -in $intitle -side top -anchor w
-
             #--- Cree un label pour le nb d image
             label $intitle.nbtotal -font $av4lconf(font,courier_10) -text "Nb total d'images"
             pack $intitle.nbtotal -in $intitle -side top -anchor w
@@ -382,15 +368,11 @@ namespace eval ::av4l_extraction {
           pack $inparam -in $frm.status -side left -expand 0 -fill x
 
             #--- Cree un label pour le 
-            label $inparam.status -font $av4lconf(font,courier_10) -fg $color(blue) -text "Loaded / ? / Error"
+            label $inparam.status -font $av4lconf(font,courier_10) -fg $color(blue) -text "-"
             pack  $inparam.status -in $inparam -side top -anchor w
 
             #--- Cree un label pour le 
-            label $inparam.fps -font $av4lconf(font,courier_10) -fg $color(blue) -text "25.0003"
-            pack  $inparam.fps -in $inparam -side top -anchor w
-
-            #--- Cree un label pour le 
-            label $inparam.nbtotal -font $av4lconf(font,courier_10) -fg $color(blue) -text "147"
+            label $inparam.nbtotal -font $av4lconf(font,courier_10) -fg $color(blue) -text "-"
             pack  $inparam.nbtotal -in $inparam -side top -anchor w
 
 
@@ -481,6 +463,70 @@ namespace eval ::av4l_extraction {
 
 
    }
+
+
+
+
+
+   #
+   # av4l_extraction::avi_quick_prev_image
+   # 
+   #
+   proc avi_quick_prev_image { visuNo } {
+   
+       set ::av4l_tools::cur_idframe [ expr $::av4l_tools::cur_idframe - 100 ]
+       if { $::av4l_tools::cur_idframe < 1 } {
+          set ::av4l_tools::cur_idframe 1
+       }
+       ::av4l_tools::avi_get_frame $visuNo $::av4l_tools::cur_idframe
+       set ::av4l_tools::scrollbar $::av4l_tools::cur_idframe
+       visu$visuNo disp
+   
+   }
+   #
+   # av4l_extraction::avi_quick_prev_image
+   # 
+   #
+   proc avi_prev_image { visuNo } {
+   
+       set ::av4l_tools::cur_idframe [ expr $::av4l_tools::cur_idframe - 1 ]
+       if { $::av4l_tools::cur_idframe < 1 } {
+          set ::av4l_tools::cur_idframe 1
+       }
+       ::av4l_tools::avi_get_frame $visuNo $::av4l_tools::cur_idframe
+       set ::av4l_tools::scrollbar $::av4l_tools::cur_idframe
+       visu$visuNo disp
+   
+   }
+   #
+   # av4l_extraction::avi_quick_prev_image
+   # 
+   #
+   proc avi_next_image {  } {
+   
+       ::av4l_tools::avi_next
+       set ::av4l_tools::scrollbar $::av4l_tools::cur_idframe
+   
+   }
+   #
+   # av4l_extraction::avi_quick_prev_image
+   # 
+   #
+   proc avi_quick_next_image { visuNo } {
+   
+       set ::av4l_tools::cur_idframe [ expr $::av4l_tools::cur_idframe + 100 ]
+       if { $::av4l_tools::cur_idframe > $::av4l_tools::nb_frames } {
+          set ::av4l_tools::cur_idframe $::av4l_tools::nb_frames
+       }
+       ::av4l_tools::avi_get_frame $visuNo $::av4l_tools::cur_idframe
+       set ::av4l_tools::scrollbar $::av4l_tools::cur_idframe
+       visu$visuNo disp
+   
+   }
+
+
+
+
 
 }
 
