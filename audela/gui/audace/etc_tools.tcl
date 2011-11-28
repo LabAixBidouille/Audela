@@ -68,6 +68,11 @@ proc etc_disp { {disptype ""} } {
 }
 
 proc etc_init { {band V} {moon_age 0} } {
+   global audace
+
+   set audace(etc,compsnr,t,comment)       "Exposure time computer from a SNR value constrained"
+   set audace(etc,compsnr,m,comment)       "Apparent magnitude computed from a SNR and exposure value constrained"
+   set audace(etc,compsnr,SNR_obj,comment) "SNR computed from a exposure and a apparent magnitude value constrained"
    etc_params_set_defaults $band $moon_age
    etc_inputs_set_defaults
 }
@@ -317,8 +322,13 @@ proc etc_inputs_set { args } {
             set name0 $name
             if {[catch {expr $val0}]==0} {
                set audace($name) $val0
-               if {($key0=="M")||($key0=="DL_pc")} {
-                  set audace(etc,input,object,m) [expr $audace(etc,input,object,M) + 5. * log10 ($audace(etc,input,object,DL_pc) / 10.)]
+               if {$key0 in [list M m DL_pc] } {
+                  set delta [expr 5. * log10 ($audace(etc,input,object,DL_pc) / 10.)]
+                  switch -exact $key0 {
+                     "M"      { set audace(etc,input,object,m) [expr $audace(etc,input,object,M)+$delta] }
+                     "m"      { set audace(etc,input,object,M) [expr $audace(etc,input,object,m)-$delta] }
+                     "DL_pc"  { set audace(etc,input,object,m) [expr $audace(etc,input,object,M)+$delta] }
+                  }
                }
             } elseif {$val0=="?"} {
                return $audace($name,comment)
@@ -394,7 +404,9 @@ proc etc_params_set { args } {
          set key [lindex $sname 3]
          if {$key==$key0} {
             set name0 $name
-            if {[catch {expr $val0}]==0} {
+            if {$key0 eq "band" && $val0 in [list B C H I J K R U V z]} {
+               set audace($name) $val0
+            } elseif {[catch {expr $val0}]==0} {
                set audace($name) $val0
             } elseif {$val0=="?"} {
                return $audace($name,comment)
@@ -644,6 +656,4 @@ proc etc_snr2m_computations {} {
    set audace(etc,compsnr,m) $m
    return $m
 }
-
-etc_init
 
