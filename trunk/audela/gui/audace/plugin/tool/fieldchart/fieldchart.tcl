@@ -558,6 +558,8 @@ namespace eval ::fieldchart {
       set fieldchart(PixSize2)      [ lindex [ buf$audace(bufNo) getkwd PIXSIZE2 ] 1 ]
       set fieldchart(Crpix1)        [ lindex [ buf$audace(bufNo) getkwd CRPIX1 ] 1 ]
       set fieldchart(Crpix2)        [ lindex [ buf$audace(bufNo) getkwd CRPIX2 ] 1 ]
+      set fieldchart(Cdelt1)        [ lindex [ buf$audace(bufNo) getkwd CDELT1 ] 1 ]
+      set fieldchart(Cdelt2)        [ lindex [ buf$audace(bufNo) getkwd CDELT2 ] 1 ]
 
       #--   formate les valeurs si elles ne sont pas vides
       foreach var [ list Inclin FocLen PixSize1 PixSize2 ] form [ list %0.6f %0.4f %0.3f %0.3f ] {
@@ -748,13 +750,18 @@ namespace eval ::fieldchart {
       #--   calcule des nouvelles valeurs
       set crpix1 [expr { $fieldchart(Crpix1) + $dx } ]
       set crpix2 [expr { $fieldchart(Crpix2) + $dy } ]
-      set fieldchart(Crpix1) [ format %0.2f $crpix1 ]
-      set fieldchart(Crpix2) [ format %0.2f $crpix2 ]
+      set fieldchart(Crpix1) $crpix1
+      set fieldchart(Crpix2) $crpix2
 
       #--   met a jour l'en-tete FITS
       set bufNo $audace(bufNo)
-      buf$bufNo setkwd [ list CRPIX1 $fieldchart(Crpix1) float { [pixel] Reference pixel for naxis1 } pixel ]
-      buf$bufNo setkwd [ list CRPIX2 $fieldchart(Crpix2) float { [pixel] Reference pixel for naxis2 } pixel ]
+      buf$bufNo setkwd [ list CRPIX1 $crpix1 double { [pixel] Reference pixel for naxis1 } pixel ]
+      buf$bufNo setkwd [ list CRPIX2 $crpix2 double { [pixel] Reference pixel for naxis2 } pixel ]
+
+      #-- complete les mots cles WCS avec CDELT
+      if { $fieldchart(Cdelt1) eq "" || $fieldchart(Cdelt2) eq "" } {
+         ::fieldchart::setCdCoef $bufNo
+      }
 
       #--   cmaApply rafraichit completement chart et les infos des tags
       #--   les N° des items changent, de nouvelles etoiles peuvent apparaitre
@@ -780,7 +787,7 @@ namespace eval ::fieldchart {
       variable widget
       global audace color fieldchart etoiles
 
-       #--   ajuste les coordonnes d'arrivee au centre FWHM de l'etoile
+      #--   ajuste les coordonnes d'arrivee au centre FWHM de l'etoile
       lassign [ ::fieldchart::searchStarCenter [ list $x2 $y2 ] ] x2 y2
 
       set listItems [ list $widget(fieldchart,itemRef) $widget(fieldchart,itemNo) ]
@@ -813,17 +820,54 @@ namespace eval ::fieldchart {
 
       set bufNo $audace(bufNo)
       #--   pour eviter une accumulation des angles de rotation
-      set fieldchart(Inclin) [ format %0.6f [expr { fmod($angle_deg,360) } ] ]
-      buf$bufNo setkwd [ list CROTA2 $fieldchart(Inclin) float { [deg] position angle } deg ]
+      set fieldchart(Inclin) [expr { fmod($angle_deg,360) } ]
+      buf$bufNo setkwd [ list CROTA2 $fieldchart(Inclin) double "Position angle of North" deg ]
 
       if { $ratio != 1.0000 } {
          set foclen_kwd [ buf$bufNo getkwd FOCLEN ]
-         set fieldchart(FocLen) [ format  %0.4f [ expr { $fieldchart(FocLen)*$ratio } ] ]
+         set fieldchart(FocLen) [ expr { $fieldchart(FocLen)*$ratio } ]
          set foclen_kwd [ lreplace $foclen_kwd 1 1 $fieldchart(FocLen) ]
          buf$bufNo setkwd $foclen_kwd
       }
 
+      #--   creation et/ou correction des CDxxx
+      #--   doit etre place ici pour tenir compte de FOCLEN qui modifie CDELT
+      ::fieldchart::setCdCoef $bufNo
+
       ::fieldchart::cmdApply
+   }
+
+   #------------------------------------------------------------
+   # setCdCoef
+   #  Calcule/inscrit CDELT1, CDELT2, CD1-1, CD1_2, CD2_1 et CD2_2 dans l'en-tete FITS
+   #  Lancee par shiftChart et rotateChart
+   #------------------------------------------------------------
+   proc setCdCoef { bufNo } {
+      global fieldchart
+
+      set mult 1e-6
+      set pi [expr 4*atan(1.)]
+      set fieldchart(Cdelt1) [ expr {-2*atan($fieldchart(PixSize1)/$fieldchart(FocLen)*$mult/2.)*180/$pi} ]
+      set fieldchart(Cdelt2) [ expr {2*atan($fieldchart(PixSize2)/$fieldchart(FocLen)*$mult/2.)*180/$pi} ]
+      buf$bufNo setkwd [ list CDELT1 $fieldchart(Cdelt1) double "X scale" deg/pixel ]
+      buf$bufNo setkwd [ list CDELT2 $fieldchart(Cdelt2) double "Y scale" deg/pixel ]
+
+      #--   si CROTA2 n'est pas defini alors CROTA2 == 0
+      set inclin [ lindex [ buf$bufNo getkwd CROTA2 ] 1 ]
+      if { $inclin eq "" } {
+         set inclin 0
+         buf$bufNo setkwd [ list CROTA2 $inclin double "Position angle of North" "" deg ]
+      }
+      set cosr [expr cos($inclin*$pi/180.)]
+      set sinr [expr sin($inclin*$pi/180.)]
+      set cd1_1 [expr $fieldchart(Cdelt1)*$cosr ]
+      set cd1_2 [expr  abs($fieldchart(Cdelt2))*$fieldchart(Cdelt1)/abs($fieldchart(Cdelt1))*$sinr ]
+      set cd2_1 [expr -abs($fieldchart(Cdelt1))*$fieldchart(Cdelt2)/abs($fieldchart(Cdelt2))*$sinr ]
+      set cd2_2 [expr $fieldchart(Cdelt2)*$cosr ]
+      buf$bufNo setkwd [ list CD1_1 $cd1_1 double "Matrix CD11" deg/pixel ]
+      buf$bufNo setkwd [ list CD1_2 $cd1_2 double "Matrix CD12" deg/pixel ]
+      buf$bufNo setkwd [ list CD2_1 $cd2_1 double "Matrix CD21" deg/pixel ]
+      buf$bufNo setkwd [ list CD2_2 $cd2_2 double "Matrix CD22" deg/pixel ]
    }
 
    #------------------------------------------------------------
