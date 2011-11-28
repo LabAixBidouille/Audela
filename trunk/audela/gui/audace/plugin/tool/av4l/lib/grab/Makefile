@@ -2,13 +2,16 @@ ARCH=64
 
 ifeq ($(ARCH),32)
  AFLAGS = -march=i686 -m32 -msse4
- FFDIR = /opt/ffmpeg32
+ FFDIR =/opt/ffmpeg32
 else
  AFLAGS=
- FFDIR = /opt/ffmpeg-0.8.5
+ FFDIR =/opt/ffmpeg-0.8.5
 endif
 
-LDFLAGS = -v -static -L $(FFDIR)/libavformat -L $(FFDIR)/libavcodec -L $(FFDIR)/libavcodec -L $(FFDIR)/libavutil -L $(FFDIR)/libavdevice -L $(FFDIR)/libswscale
+LDFLAGS1 = -v  -L/usr/lib -L$(FFDIR)/libs -L$(FFDIR)/libavformat -L$(FFDIR)/libavcodec 
+LDFLAGS2 = -L$(FFDIR)/libavcodec -L$(FFDIR)/libavutil -L$(FFDIR)/libavdevice -L$(FFDIR)/libswscale
+LDFLAGS  = $(LDFLAGS1)  $(LDFLAGS2)
+
 LDLIBS = -lavformat -lavcodec -lavutil -lavdevice -lswscale -lm -lz -lpthread
 
 .PHONY: all doc
