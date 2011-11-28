@@ -1872,6 +1872,30 @@ namespace eval ::confVisu {
    }
 
    #------------------------------------------------------------
+   #  getMirrorX
+   #     retourne  la valeur du miroir qui inverse l'axe x (gauche/droite)
+   #  @param visuNo: numero de la visu
+   #  @return 0=miroir descativé 1=miroir activé
+   #------------------------------------------------------------
+   proc getMirrorX { visuNo } {
+      variable private
+
+      return $private($visuNo,mirror_x)
+   }
+
+   #------------------------------------------------------------
+   #  getMirrorY
+   #     retourne  la valeur du miroir qui inverse l'axe y (haut/bas)
+   #  @param visuNo: numero de la visu
+   #  @return 0=miroir descativé 1=miroir activé
+   #------------------------------------------------------------
+   proc getMirrorY { visuNo } {
+      variable private
+
+      return $private($visuNo,mirror_y)
+   }
+
+   #------------------------------------------------------------
    #  createToplevel
    #     cree une fentetre toplevel avec le canvas et la frame de seuils
    #     le numero de visu est copie dans son attribut "class"
