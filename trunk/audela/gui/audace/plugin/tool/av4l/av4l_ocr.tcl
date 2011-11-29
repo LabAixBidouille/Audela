@@ -168,7 +168,7 @@ namespace eval ::av4l_ocr {
 
    proc run_avi { this visuNo base } {
 
-     ::av4l_ocr_avi::run  $visuNo $base.av4l_ocr_avi
+     ::av4l_ocr_gui::run  $visuNo $base.av4l_ocr_gui
      ::av4l_ocr::closeWindow $this $visuNo
    }
 
