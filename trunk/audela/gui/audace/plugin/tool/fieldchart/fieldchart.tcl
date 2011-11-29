@@ -757,6 +757,10 @@ namespace eval ::fieldchart {
       set bufNo $audace(bufNo)
       buf$bufNo setkwd [ list CRPIX1 $crpix1 double { [pixel] Reference pixel for naxis1 } pixel ]
       buf$bufNo setkwd [ list CRPIX2 $crpix2 double { [pixel] Reference pixel for naxis2 } pixel ]
+      set ra  [mc_angle2deg $fieldchart(CentreRA) 360]
+      set dec [mc_angle2deg $fieldchart(CentreDec) 90]
+      buf$bufNo setkwd [ list CRVAL1 $ra double { [deg] RA for CRPIX1 } deg ]
+      buf$bufNo setkwd [ list CRVAL2 $dec double { [deg] DEC for CRPIX2 } deg ]
 
       #-- complete les mots cles WCS avec CDELT
       if { $fieldchart(Cdelt1) eq "" || $fieldchart(Cdelt2) eq "" } {
