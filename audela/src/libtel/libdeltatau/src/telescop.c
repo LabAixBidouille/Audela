@@ -233,7 +233,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		tel->dead_delay_slew=2.1; /* delai en secondes estime pour un slew sans bouger */
 		/* --- Match --- */
 		tel->ha00=0.;
-		tel->roth00=(int)(1507500-50./60.*10000);
+		tel->roth00=(int)(1507500-45./60.*10000);
 		tel->dec00=-90;
 		tel->rotd00=(int)(1250000+65./60.*10000);
 		/* --- stops --- */
