@@ -1,14 +1,14 @@
 #--------------------------------------------------
-# source audace/plugin/tool/av4l/av4l_cdl_avi.tcl
+# source audace/plugin/tool/av4l/av4l_cdl_gui.tcl
 #--------------------------------------------------
 #
-# Fichier        : av4l_cdl_avi.tcl
+# Fichier        : av4l_cdl_gui.tcl
 # Description    : Affiche le status de la base de donnees
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: av4l_cdl_avi.tcl 6795 2011-02-26 16:05:27Z michelpujol $
+# Mise à jour $Id: av4l_cdl_gui.tcl 6795 2011-02-26 16:05:27Z michelpujol $
 #
 
-namespace eval ::av4l_cdl_avi {
+namespace eval ::av4l_cdl_gui {
 
 variable obj
 variable ref
@@ -16,9 +16,9 @@ variable delta
 variable sortie
 variable mesure
 variable file_mesure
-
+variable traitement
    #
-   # av4l_cdl_avi::init
+   # av4l_cdl_gui::init
    # Chargement des captions
    #
    proc init { } {
@@ -27,11 +27,11 @@ variable file_mesure
       wm focusmodel . passive
       wm withdraw .
       #--- Chargement des captions
-      source [ file join $audace(rep_plugin) tool av4l av4l_cdl_avi.cap ]
+      source [ file join $audace(rep_plugin) tool av4l av4l_cdl_gui.cap ]
    }
 
    #
-   # av4l_cdl_avi::initToConf
+   # av4l_cdl_gui::initToConf
    # Initialisation des variables de configuration
    #
    proc initToConf { visuNo } {
@@ -58,7 +58,7 @@ variable file_mesure
 
 
    #
-   # av4l_cdl_avi::confToWidget
+   # av4l_cdl_gui::confToWidget
    # Charge la configuration dans des variables locales
    #
    proc confToWidget { visuNo } {
@@ -66,11 +66,11 @@ variable file_mesure
       global panneau
 
       #--- confToWidget
-      set ::av4l_cdl_avi::panneau(av4l,$visuNo,messages)                   $::av4l::parametres(av4l,$visuNo,messages)
-      set ::av4l_cdl_avi::panneau(av4l,$visuNo,save_file_log)              $::av4l::parametres(av4l,$visuNo,save_file_log)
-      set ::av4l_cdl_avi::panneau(av4l,$visuNo,alarme_fin_serie)           $::av4l::parametres(av4l,$visuNo,alarme_fin_serie)
-      set ::av4l_cdl_avi::panneau(av4l,$visuNo,verifier_ecraser_fichier)   $::av4l::parametres(av4l,$visuNo,verifier_ecraser_fichier)
-      set ::av4l_cdl_avi::panneau(av4l,$visuNo,verifier_index_depart)      $::av4l::parametres(av4l,$visuNo,verifier_index_depart)
+      set ::av4l_cdl_gui::panneau(av4l,$visuNo,messages)                   $::av4l::parametres(av4l,$visuNo,messages)
+      set ::av4l_cdl_gui::panneau(av4l,$visuNo,save_file_log)              $::av4l::parametres(av4l,$visuNo,save_file_log)
+      set ::av4l_cdl_gui::panneau(av4l,$visuNo,alarme_fin_serie)           $::av4l::parametres(av4l,$visuNo,alarme_fin_serie)
+      set ::av4l_cdl_gui::panneau(av4l,$visuNo,verifier_ecraser_fichier)   $::av4l::parametres(av4l,$visuNo,verifier_ecraser_fichier)
+      set ::av4l_cdl_gui::panneau(av4l,$visuNo,verifier_index_depart)      $::av4l::parametres(av4l,$visuNo,verifier_index_depart)
 
 
    }
@@ -90,7 +90,7 @@ variable file_mesure
 
 
    #
-   # av4l_cdl_avi::widgetToConf
+   # av4l_cdl_gui::widgetToConf
    # Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
    #
    proc widgetToConf { visuNo } {
@@ -114,17 +114,18 @@ variable file_mesure
 
 
    #
-   # av4l_cdl_avi::run 
+   # av4l_cdl_gui::run 
    # Cree la fenetre de configuration de l'affichage des messages sur la Console
    # et de l'enregistrement des dates dans le fichier log
    #
-   proc run { visuNo this } {
+   proc run { visuNo this traitement} {
      global audace panneau
 
-
-      set panneau(av4l,$visuNo,av4l_cdl_avi) $this
-      #::confGenerique::run $visuNo "$panneau(av4l,$visuNo,av4l_cdl_avi)" "::av4l_cdl_avi" -modal 1
-
+      set ::av4l_cdl_gui::traitement $traitement
+      set panneau(av4l,$visuNo,av4l_cdl_gui) $this
+      #::confGenerique::run $visuNo "$panneau(av4l,$visuNo,av4l_cdl_gui)" "::av4l_cdl_gui" -modal 1
+      
+      
       createdialog $this $visuNo   
 
    }
@@ -145,11 +146,11 @@ variable file_mesure
 
 
    #
-   # av4l_cdl_avi::apply
+   # av4l_cdl_gui::apply
    # Fonction 'Appliquer' pour memoriser et appliquer la configuration
    #
    proc apply { visuNo } {
-      ::av4l_cdl_avi::widgetToConf $visuNo
+      ::av4l_cdl_gui::widgetToConf $visuNo
    }
 
 
@@ -168,12 +169,12 @@ variable file_mesure
 
 
    #
-   # av4l_cdl_avi::showHelp
+   # av4l_cdl_gui::showHelp
    # Fonction appellee lors de l'appui sur le bouton 'Aide'
    #
    proc showHelp { } {
       ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::av4l::getPluginType ] ] \
-         [ ::av4l::getPluginDirectory ] av4l_cdl_avi.htm
+         [ ::av4l::getPluginDirectory ] av4l_cdl_gui.htm
    }
 
 
@@ -192,12 +193,12 @@ variable file_mesure
 
 
    #
-   # av4l_cdl_avi::closeWindow
+   # av4l_cdl_gui::closeWindow
    # Fonction appellee lors de l'appui sur le bouton 'Fermer'
    #
    proc closeWindow { this visuNo } {
 
-      ::av4l_cdl_avi::widgetToConf $visuNo
+      ::av4l_cdl_gui::widgetToConf $visuNo
       ::av4l_tools::avi_close
       destroy $this
    }
@@ -217,13 +218,13 @@ variable file_mesure
 
 
    #
-   # av4l_cdl_avi::getLabel
+   # av4l_cdl_gui::getLabel
    # Retourne le nom de la fenetre 
    #
    proc getLabel { } {
       global caption
 
-      return "$caption(av4l_cdl_avi,titre)"
+      return "$caption(av4l_cdl_gui,titre)"
    }
 
 
@@ -242,7 +243,7 @@ variable file_mesure
 
 
    #
-   # av4l_cdl_avi::chgdir
+   # av4l_cdl_gui::chgdir
    # Ouvre une boite de dialogue pour choisir un nom  de repertoire 
    #
    proc chgdir { This } {
@@ -291,7 +292,7 @@ variable file_mesure
 
 
    #
-   # av4l_cdl_avi::fillConfigPage
+   # av4l_cdl_gui::fillConfigPage
    # Creation de l'interface graphique
    #
    proc createdialog { this visuNo } {
@@ -320,16 +321,20 @@ variable file_mesure
       set posy_config [ lindex [ split [ wm geometry $base ] "+" ] 2 ]
       wm geometry $this +[ expr $posx_config + 165 ]+[ expr $posy_config + 55 ]
       wm resizable $this 1 1
-      wm title $this $caption(av4l_cdl_avi,bar_title)
-      wm protocol $this WM_DELETE_WINDOW "::av4l_cdl_avi::closeWindow $this $visuNo"
+      if { $::av4l_cdl_gui::traitement=="fits" } { wm title $this $caption(av4l_cdl_gui,bar_title_fits) }
+      if { $::av4l_cdl_gui::traitement=="avi" }  { wm title $this $caption(av4l_cdl_gui,bar_title_avi) }
+      wm protocol $this WM_DELETE_WINDOW "::av4l_cdl_gui::closeWindow $this $visuNo"
 
 
       #--- Charge la configuration de la vitesse de communication dans une variable locale
-      ::av4l_cdl_avi::confToWidget $visuNo
+      ::av4l_cdl_gui::confToWidget $visuNo
 
       #--- Retourne l'item de la camera associee a la visu
-      set frm $this.frm_av4l_cdl_avi
-      set frmbbar $this.frm_av4l_cdl_avi_bar
+      set frm $this.frm_av4l_cdl_gui
+      set frmbbar $this.frm_av4l_cdl_gui_bar
+      if { $::av4l_cdl_gui::traitement=="fits" } { set titre $caption(av4l_cdl_gui,titre_fits) }
+      if { $::av4l_cdl_gui::traitement=="avi" }  { set titre $caption(av4l_cdl_gui,titre_avi) }
+
 
 
       #--- Cree un frame pour afficher le status de la base
@@ -338,7 +343,7 @@ variable file_mesure
 
         #--- Cree un label pour le titre
         label $frm.titre -font $av4lconf(font,arial_14_b) \
-              -text "$caption(av4l_cdl_avi,titre)"
+              -text "$titre"
         pack $frm.titre \
              -in $frm -side top -padx 3 -pady 3
 
@@ -368,7 +373,7 @@ variable file_mesure
         pack $frm.open.avipath -side left -padx 3 -pady 1 -expand true -fill x
 
         #--- Creation de la barre de defilement
-        scale $frm.percent -from 0 -to 1 -length 600 -variable ::av4l_cdl_avi::percent \
+        scale $frm.percent -from 0 -to 1 -length 600 -variable ::av4l_cdl_gui::percent \
            -label "" -orient horizontal \
            -state disabled
         pack $frm.percent -in $frm -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
@@ -381,7 +386,7 @@ variable file_mesure
         image create photo .arr -format PNG -file [ file join $audace(rep_plugin) tool av4l img arr.png ]
         button $frm.qprevimage -image .arr\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command "::av4l_cdl_avi::avi_quick_prev_image $frm $visuNo"
+           -command "::av4l_cdl_gui::avi_quick_prev_image $frm $visuNo"
         pack $frm.qprevimage \
            -in $frm.btnav \
            -side left -anchor w \
@@ -391,7 +396,7 @@ variable file_mesure
         image create photo .arn -format PNG -file [ file join $audace(rep_plugin) tool av4l img arn.png ]
         button $frm.previmage -image .arn\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command "::av4l_cdl_avi::avi_prev_image $frm $visuNo"
+           -command "::av4l_cdl_gui::avi_prev_image $frm $visuNo"
         pack $frm.previmage \
            -in $frm.btnav \
            -side left -anchor w \
@@ -401,7 +406,7 @@ variable file_mesure
         image create photo .avn -format PNG -file [ file join $audace(rep_plugin) tool av4l img avn.png ]
         button $frm.nextimage -image .avn\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command "::av4l_cdl_avi::avi_next_image $frm $visuNo"
+           -command "::av4l_cdl_gui::avi_next_image $frm $visuNo"
         pack $frm.nextimage \
            -in $frm.btnav \
            -side left -anchor w \
@@ -411,7 +416,7 @@ variable file_mesure
         image create photo .avr -format PNG -file [ file join $audace(rep_plugin) tool av4l img avr.png ]
         button $frm.qnextimage -image .avr\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command "::av4l_cdl_avi::avi_quick_next_image $frm $visuNo"
+           -command "::av4l_cdl_gui::avi_quick_next_image $frm $visuNo"
         pack $frm.qnextimage \
            -in $frm.btnav \
            -side left -anchor w \
@@ -517,7 +522,7 @@ variable file_mesure
               pack  $image.t.titre -in $image.t -side left -anchor w -padx 30
 
               button $image.t.select -text "Select" -borderwidth 1 -takefocus 1 \
-                                     -command "::av4l_cdl_avi::select_fullimg $visuNo $image"
+                                     -command "::av4l_cdl_gui::select_fullimg $visuNo $image"
               pack $image.t.select -in $image.t -side left -anchor e 
                 
               #--- Cree un frame pour les info 
@@ -577,7 +582,7 @@ variable file_mesure
               pack  $object.t.titre -in $object.t -side left -anchor w -padx 30
 
               button $object.t.select -text "Select" -borderwidth 1 -takefocus 1 \
-                                     -command "::av4l_cdl_avi::select_obj $visuNo $object"
+                                     -command "::av4l_cdl_gui::select_obj $visuNo $object"
               pack $object.t.select -in $object.t -side left -anchor e 
                 
               #--- Cree un frame pour les info 
@@ -603,7 +608,7 @@ variable file_mesure
 
                  spinbox $object.v.r.delta -font $av4lconf(font,courier_10) -fg $color(blue) \
                     -value [ list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 ] \
-                    -command "::av4l_cdl_avi::mesure_obj_avance $frm $visuNo" -width 5 
+                    -command "::av4l_cdl_gui::mesure_obj_avance $frm $visuNo" -width 5 
                  pack  $object.v.r.delta -in $object.v.r -side top -anchor w
 
                  #---
@@ -664,7 +669,7 @@ variable file_mesure
               pack  $reference.t.titre -in $reference.t -side left -anchor w -padx 30
 
               button $reference.t.select -text "Select" -borderwidth 1 -takefocus 1 \
-                                     -command "::av4l_cdl_avi::select_ref $visuNo $reference"
+                                     -command "::av4l_cdl_gui::select_ref $visuNo $reference"
               pack $reference.t.select -in $reference.t -side left -anchor e 
                 
               #--- Cree un frame pour les info 
@@ -690,7 +695,7 @@ variable file_mesure
 
                  spinbox $reference.v.r.delta -font $av4lconf(font,courier_10) -fg $color(blue) \
                     -value [ list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 ] \
-                    -command "::av4l_cdl_avi::mesure_ref_avance $frm $visuNo" -width 5 
+                    -command "::av4l_cdl_gui::mesure_ref_avance $frm $visuNo" -width 5 
                  pack  $reference.v.r.delta -in $reference.v.r -side top -anchor w
 
                  #---
@@ -749,7 +754,7 @@ variable file_mesure
 
            button $frm.action.start -image .start\
               -borderwidth 2 -width 48 -height 48 -compound center \
-              -command "::av4l_cdl_avi::avi_start $visuNo $frm"
+              -command "::av4l_cdl_gui::avi_start $visuNo $frm"
            pack $frm.action.start \
               -in $frm.action \
               -side left -anchor w \
@@ -758,7 +763,7 @@ variable file_mesure
            image create photo .save  -format PNG -file [ file join $audace(rep_plugin) tool av4l img save.png ]
            button $frm.action.save -image .save\
               -borderwidth 2 -width 48 -height 48 -compound center \
-              -command "::av4l_cdl_avi::avi_save $visuNo $frm"
+              -command "::av4l_cdl_gui::avi_save $visuNo $frm"
            pack $frm.action.save \
               -in $frm.action \
               -side left -anchor w \
@@ -766,16 +771,16 @@ variable file_mesure
 
            #--- Creation du bouton fermer
            button $frm.action.fermer \
-              -text "$caption(av4l_cdl_avi,fermer)" -borderwidth 2 \
-              -command "::av4l_cdl_avi::closeWindow $this $visuNo"
+              -text "$caption(av4l_cdl_gui,fermer)" -borderwidth 2 \
+              -command "::av4l_cdl_gui::closeWindow $this $visuNo"
            pack $frm.action.fermer -in $frm.action \
               -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
            #--- Creation du bouton aide
            button $frm.action.aide \
-              -text "$caption(av4l_cdl_avi,aide)" -borderwidth 2 \
-              -command "::audace::showHelpPlugin tool av4l av4l_cdl_avi.htm"
+              -text "$caption(av4l_cdl_gui,aide)" -borderwidth 2 \
+              -command "::audace::showHelpPlugin tool av4l av4l_cdl_gui.htm"
            pack $frm.action.aide -in $frm.action \
               -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
@@ -828,7 +833,7 @@ variable file_mesure
             $this.v.r.fenetre configure -text "${taillex}x${tailley}" -fg $color(blue)
             set ::av4l_photom::rect_img $rect
          }
-         ::av4l_cdl_avi::get_fullimg $visuNo $this
+         ::av4l_cdl_gui::get_fullimg $visuNo $this
          $this.t.select  configure -relief sunken
          return
 
@@ -881,7 +886,7 @@ variable file_mesure
 
    
    #
-   # av4l_cdl_avi::select_object
+   # av4l_cdl_gui::select_object
    # Selection d un objet a partir d une getBox sur l image
    #
    proc select_obj { visuNo this} {
@@ -921,7 +926,7 @@ variable file_mesure
          set delta 5
          $this.v.r.delta delete 0 end
          $this.v.r.delta insert 0 $delta
-         ::av4l_cdl_avi::mesure_obj $xsm $ysm $visuNo $this $delta
+         ::av4l_cdl_gui::mesure_obj $xsm $ysm $visuNo $this $delta
          $this.t.select  configure -relief sunken
          return
       } 
@@ -961,7 +966,7 @@ variable file_mesure
    
    
    #
-   # av4l_cdl_avi::select_ref
+   # av4l_cdl_gui::select_ref
    # Selection d une reference a partir d une getBox sur l image
    #
    proc select_ref { visuNo this} {
@@ -1001,7 +1006,7 @@ variable file_mesure
          set delta 5
          $this.v.r.delta delete 0 end
          $this.v.r.delta insert 0 $delta
-         ::av4l_cdl_avi::mesure_ref $xsm $ysm $visuNo $this $delta
+         ::av4l_cdl_gui::mesure_ref $xsm $ysm $visuNo $this $delta
          $this.t.select  configure -relief sunken
          return
       } 
@@ -1041,7 +1046,7 @@ variable file_mesure
    
    
    #
-   # av4l_cdl_avi::mesure_obj
+   # av4l_cdl_gui::mesure_obj
    # Effectue la photometrie et l affiche
    #
    proc mesure_obj { xsm ysm visuNo this delta} {
@@ -1100,8 +1105,8 @@ variable file_mesure
       $this.v.r.snint        configure -text "$visusnint"     -fg $color(blue)
       $this.v.r.snpx         configure -text "$visusnpx"      -fg $color(blue)
       
-      set ::av4l_cdl_avi::obj(x) [format "%4.2f" $xsm]
-      set ::av4l_cdl_avi::obj(y) [format "%4.2f" $ysm]
+      set ::av4l_cdl_gui::obj(x) [format "%4.2f" $xsm]
+      set ::av4l_cdl_gui::obj(y) [format "%4.2f" $ysm]
       ::bddimages_cdl::affich_un_rond [expr $xsm + 1] [expr $ysm - 1] green $delta
    }
    
@@ -1114,7 +1119,7 @@ variable file_mesure
 
    
    #
-   # av4l_cdl_avi::mesure_ref
+   # av4l_cdl_gui::mesure_ref
    # Effectue la photometrie et l affiche
    #
    proc mesure_ref { xsm ysm visuNo this delta} {
@@ -1173,8 +1178,8 @@ variable file_mesure
       $this.v.r.snint        configure -text "$visusnint"     -fg $color(blue)
       $this.v.r.snpx         configure -text "$visusnpx"      -fg $color(blue)
       
-      set ::av4l_cdl_avi::ref(x) [format "%4.2f" $xsm]
-      set ::av4l_cdl_avi::ref(y) [format "%4.2f" $ysm]
+      set ::av4l_cdl_gui::ref(x) [format "%4.2f" $xsm]
+      set ::av4l_cdl_gui::ref(y) [format "%4.2f" $ysm]
       ::bddimages_cdl::affich_un_rond [expr $xsm + 1] [expr $ysm - 1] blue $delta
    }
    
@@ -1193,7 +1198,7 @@ variable file_mesure
       set delta [ $frm.photom.values.object.v.r.delta get]
       set statebutton [ $frm.photom.values.object.t.select cget -relief]
       if { $statebutton=="sunken" } {
-         ::av4l_cdl_avi::mesure_obj $::av4l_cdl_avi::obj(x) $::av4l_cdl_avi::obj(y) $visuNo $frm.photom.values.object $delta
+         ::av4l_cdl_gui::mesure_obj $::av4l_cdl_gui::obj(x) $::av4l_cdl_gui::obj(y) $visuNo $frm.photom.values.object $delta
       }
    }
  
@@ -1210,7 +1215,7 @@ variable file_mesure
       set delta [ $frm.photom.values.reference.v.r.delta get]
       set statebutton [ $frm.photom.values.reference.t.select cget -relief]
       if { $statebutton=="sunken" } {
-         ::av4l_cdl_avi::mesure_ref $::av4l_cdl_avi::ref(x) $::av4l_cdl_avi::ref(y) $visuNo $frm.photom.values.reference $delta
+         ::av4l_cdl_gui::mesure_ref $::av4l_cdl_gui::ref(x) $::av4l_cdl_gui::ref(y) $visuNo $frm.photom.values.reference $delta
       }
    }
  
@@ -1221,7 +1226,7 @@ variable file_mesure
  
    proc avi_stop {  } {
       ::console::affiche_resultat "-- stop \n"
-      set ::av4l_cdl_avi::sortie 1
+      set ::av4l_cdl_gui::sortie 1
    }   
  
  
@@ -1232,18 +1237,18 @@ variable file_mesure
  
    proc avi_start { visuNo frm } {
  
-      set ::av4l_cdl_avi::sortie 0
+      set ::av4l_cdl_gui::sortie 0
       set cpt 0
       $frm.action.start configure -image .stop
       $frm.action.start configure -relief sunken     
-      $frm.action.start configure -command " ::av4l_cdl_avi::avi_stop" 
+      $frm.action.start configure -command " ::av4l_cdl_gui::avi_stop" 
       
-      while {$::av4l_cdl_avi::sortie == 0} {
+      while {$::av4l_cdl_gui::sortie == 0} {
 
          set idframe [::av4l_tools::avi_get_idframe]
          ::console::affiche_resultat "\[$idframe / $::av4l_tools::nb_frames / [expr $::av4l_tools::nb_frames-$idframe] \]\n"
          if {$idframe == $::av4l_tools::nb_frames} {
-            set ::av4l_cdl_avi::sortie 1
+            set ::av4l_cdl_gui::sortie 1
          }
           
          cleanmark
@@ -1251,74 +1256,74 @@ variable file_mesure
          set statebutton [ $frm.photom.values.object.t.select cget -relief]
          if { $statebutton=="sunken" } {
             set delta [ $frm.photom.values.object.v.r.delta get]
-            ::av4l_cdl_avi::mesure_obj $::av4l_cdl_avi::obj(x) $::av4l_cdl_avi::obj(y) $visuNo $frm.photom.values.object $delta
+            ::av4l_cdl_gui::mesure_obj $::av4l_cdl_gui::obj(x) $::av4l_cdl_gui::obj(y) $visuNo $frm.photom.values.object $delta
          }
          set statebutton [ $frm.photom.values.reference.t.select cget -relief]
          if { $statebutton=="sunken" } {
             set delta [ $frm.photom.values.reference.v.r.delta get]
-            ::av4l_cdl_avi::mesure_ref $::av4l_cdl_avi::ref(x) $::av4l_cdl_avi::ref(y) $visuNo $frm.photom.values.reference $delta
+            ::av4l_cdl_gui::mesure_ref $::av4l_cdl_gui::ref(x) $::av4l_cdl_gui::ref(y) $visuNo $frm.photom.values.reference $delta
          }
          set statebutton [ $frm.photom.values.image.t.select cget -relief]
          if { $statebutton=="sunken" } {
-         ::av4l_cdl_avi::get_fullimg $visuNo $frm.photom.values.image
+         ::av4l_cdl_gui::get_fullimg $visuNo $frm.photom.values.image
          }
 
-         set ::av4l_cdl_avi::mesure($idframe,mesure_obj) 1
+         set ::av4l_cdl_gui::mesure($idframe,mesure_obj) 1
 
 
          # mesure objet
-         set ::av4l_cdl_avi::mesure($idframe,obj_delta)     [$frm.photom.values.object.v.r.delta     get]
-         set ::av4l_cdl_avi::mesure($idframe,obj_fint)      [$frm.photom.values.object.v.r.fint      cget -text]
-         set ::av4l_cdl_avi::mesure($idframe,obj_pixmax)    [$frm.photom.values.object.v.r.pixmax    cget -text]
-         set ::av4l_cdl_avi::mesure($idframe,obj_intensite) [$frm.photom.values.object.v.r.intensite cget -text]
-         set ::av4l_cdl_avi::mesure($idframe,obj_sigmafond) [$frm.photom.values.object.v.r.sigmafond cget -text]
-         set ::av4l_cdl_avi::mesure($idframe,obj_snint)     [$frm.photom.values.object.v.r.snint     cget -text]
-         set ::av4l_cdl_avi::mesure($idframe,obj_snpx)      [$frm.photom.values.object.v.r.snpx      cget -text]
+         set ::av4l_cdl_gui::mesure($idframe,obj_delta)     [$frm.photom.values.object.v.r.delta     get]
+         set ::av4l_cdl_gui::mesure($idframe,obj_fint)      [$frm.photom.values.object.v.r.fint      cget -text]
+         set ::av4l_cdl_gui::mesure($idframe,obj_pixmax)    [$frm.photom.values.object.v.r.pixmax    cget -text]
+         set ::av4l_cdl_gui::mesure($idframe,obj_intensite) [$frm.photom.values.object.v.r.intensite cget -text]
+         set ::av4l_cdl_gui::mesure($idframe,obj_sigmafond) [$frm.photom.values.object.v.r.sigmafond cget -text]
+         set ::av4l_cdl_gui::mesure($idframe,obj_snint)     [$frm.photom.values.object.v.r.snint     cget -text]
+         set ::av4l_cdl_gui::mesure($idframe,obj_snpx)      [$frm.photom.values.object.v.r.snpx      cget -text]
 
          set position  [$frm.photom.values.object.v.r.position  cget -text]
          set poslist [split $position "/"]
-         set ::av4l_cdl_avi::mesure($idframe,obj_xpos) [lindex $poslist 0]
-         set ::av4l_cdl_avi::mesure($idframe,obj_ypos) [lindex $poslist 1]
-         if {$::av4l_cdl_avi::mesure($idframe,obj_ypos)==""} { set :::av4l_cdl_avi::mesure($idframe,obj_ypos) "?" }
+         set ::av4l_cdl_gui::mesure($idframe,obj_xpos) [lindex $poslist 0]
+         set ::av4l_cdl_gui::mesure($idframe,obj_ypos) [lindex $poslist 1]
+         if {$::av4l_cdl_gui::mesure($idframe,obj_ypos)==""} { set :::av4l_cdl_gui::mesure($idframe,obj_ypos) "?" }
 
          set fwhm      [$frm.photom.values.object.v.r.fwhm cget -text]
          set fwhmlist [split $fwhm "/"]
-         set ::av4l_cdl_avi::mesure($idframe,obj_xfwhm) [lindex $fwhmlist 0]
-         set ::av4l_cdl_avi::mesure($idframe,obj_yfwhm) [lindex $fwhmlist 1]
-         if {$::av4l_cdl_avi::mesure($idframe,obj_yfwhm)==""} {set :::av4l_cdl_avi::mesure($idframe,obj_yfwhm) "?" }
+         set ::av4l_cdl_gui::mesure($idframe,obj_xfwhm) [lindex $fwhmlist 0]
+         set ::av4l_cdl_gui::mesure($idframe,obj_yfwhm) [lindex $fwhmlist 1]
+         if {$::av4l_cdl_gui::mesure($idframe,obj_yfwhm)==""} {set :::av4l_cdl_gui::mesure($idframe,obj_yfwhm) "?" }
 
          # mesure reference
-         set ::av4l_cdl_avi::mesure($idframe,ref_delta)     [$frm.photom.values.reference.v.r.delta     get]
-         set ::av4l_cdl_avi::mesure($idframe,ref_fint)      [$frm.photom.values.reference.v.r.fint      cget -text]
-         set ::av4l_cdl_avi::mesure($idframe,ref_pixmax)    [$frm.photom.values.reference.v.r.pixmax    cget -text]
-         set ::av4l_cdl_avi::mesure($idframe,ref_intensite) [$frm.photom.values.reference.v.r.intensite cget -text]
-         set ::av4l_cdl_avi::mesure($idframe,ref_sigmafond) [$frm.photom.values.reference.v.r.sigmafond cget -text]
-         set ::av4l_cdl_avi::mesure($idframe,ref_snint)     [$frm.photom.values.reference.v.r.snint     cget -text]
-         set ::av4l_cdl_avi::mesure($idframe,ref_snpx)      [$frm.photom.values.reference.v.r.snpx      cget -text]
+         set ::av4l_cdl_gui::mesure($idframe,ref_delta)     [$frm.photom.values.reference.v.r.delta     get]
+         set ::av4l_cdl_gui::mesure($idframe,ref_fint)      [$frm.photom.values.reference.v.r.fint      cget -text]
+         set ::av4l_cdl_gui::mesure($idframe,ref_pixmax)    [$frm.photom.values.reference.v.r.pixmax    cget -text]
+         set ::av4l_cdl_gui::mesure($idframe,ref_intensite) [$frm.photom.values.reference.v.r.intensite cget -text]
+         set ::av4l_cdl_gui::mesure($idframe,ref_sigmafond) [$frm.photom.values.reference.v.r.sigmafond cget -text]
+         set ::av4l_cdl_gui::mesure($idframe,ref_snint)     [$frm.photom.values.reference.v.r.snint     cget -text]
+         set ::av4l_cdl_gui::mesure($idframe,ref_snpx)      [$frm.photom.values.reference.v.r.snpx      cget -text]
 
          set position  [$frm.photom.values.reference.v.r.position  cget -text]
          set poslist [split $position "/"]
-         set ::av4l_cdl_avi::mesure($idframe,ref_xpos) [lindex $poslist 0]
-         set ::av4l_cdl_avi::mesure($idframe,ref_ypos) [lindex $poslist 1]
-         if {$::av4l_cdl_avi::mesure($idframe,ref_ypos)==""} { set :::av4l_cdl_avi::mesure($idframe,ref_ypos) "?" }
+         set ::av4l_cdl_gui::mesure($idframe,ref_xpos) [lindex $poslist 0]
+         set ::av4l_cdl_gui::mesure($idframe,ref_ypos) [lindex $poslist 1]
+         if {$::av4l_cdl_gui::mesure($idframe,ref_ypos)==""} { set :::av4l_cdl_gui::mesure($idframe,ref_ypos) "?" }
 
          set fwhm      [$frm.photom.values.reference.v.r.fwhm cget -text]
          set fwhmlist [split $fwhm "/"]
-         set ::av4l_cdl_avi::mesure($idframe,ref_xfwhm) [lindex $fwhmlist 0]
-         set ::av4l_cdl_avi::mesure($idframe,ref_yfwhm) [lindex $fwhmlist 1]
-         if {$::av4l_cdl_avi::mesure($idframe,ref_yfwhm)==""} {set :::av4l_cdl_avi::mesure($idframe,ref_yfwhm) "?" }
+         set ::av4l_cdl_gui::mesure($idframe,ref_xfwhm) [lindex $fwhmlist 0]
+         set ::av4l_cdl_gui::mesure($idframe,ref_yfwhm) [lindex $fwhmlist 1]
+         if {$::av4l_cdl_gui::mesure($idframe,ref_yfwhm)==""} {set :::av4l_cdl_gui::mesure($idframe,ref_yfwhm) "?" }
 
          # mesure image
-         set ::av4l_cdl_avi::mesure($idframe,img_intmin)  [$frm.photom.values.image.v.l.intmin  cget -text]
-         set ::av4l_cdl_avi::mesure($idframe,img_intmax)  [$frm.photom.values.image.v.l.intmax  cget -text]
-         set ::av4l_cdl_avi::mesure($idframe,img_intmoy)  [$frm.photom.values.image.v.l.intmoy  cget -text]
-         set ::av4l_cdl_avi::mesure($idframe,img_sigma)   [$frm.photom.values.image.v.l.sigma   cget -text]
+         set ::av4l_cdl_gui::mesure($idframe,img_intmin)  [$frm.photom.values.image.v.l.intmin  cget -text]
+         set ::av4l_cdl_gui::mesure($idframe,img_intmax)  [$frm.photom.values.image.v.l.intmax  cget -text]
+         set ::av4l_cdl_gui::mesure($idframe,img_intmoy)  [$frm.photom.values.image.v.l.intmoy  cget -text]
+         set ::av4l_cdl_gui::mesure($idframe,img_sigma)   [$frm.photom.values.image.v.l.sigma   cget -text]
 
          set fenetre  [$frm.photom.values.image.v.l.fenetre  cget -text]
          set fenetrelist [split $fenetre "x"]
-         set ::av4l_cdl_avi::mesure($idframe,img_xsize) [lindex $fenetrelist 0]
-         set ::av4l_cdl_avi::mesure($idframe,img_ysize) [lindex $fenetrelist 1]
-         if {$::av4l_cdl_avi::mesure($idframe,img_ysize)==""} { set :::av4l_cdl_avi::mesure($idframe,img_ysize) "?" }
+         set ::av4l_cdl_gui::mesure($idframe,img_xsize) [lindex $fenetrelist 0]
+         set ::av4l_cdl_gui::mesure($idframe,img_ysize) [lindex $fenetrelist 1]
+         if {$::av4l_cdl_gui::mesure($idframe,img_ysize)==""} { set :::av4l_cdl_gui::mesure($idframe,img_ysize) "?" }
 
 
          ::av4l_tools::avi_next_image  
@@ -1326,7 +1331,7 @@ variable file_mesure
 
       $frm.action.start configure -image .start
       $frm.action.start configure -relief raised     
-      $frm.action.start configure -command "::av4l_cdl_avi::avi_start $visuNo $frm" 
+      $frm.action.start configure -command "::av4l_cdl_gui::avi_start $visuNo $frm" 
 
    }
 
@@ -1405,41 +1410,41 @@ variable file_mesure
             set sortie 1
          }
          
-         if { [info exists ::av4l_cdl_avi::mesure($idframe,mesure_obj)] && $::av4l_cdl_avi::mesure($idframe,mesure_obj) == 1 } {
+         if { [info exists ::av4l_cdl_gui::mesure($idframe,mesure_obj)] && $::av4l_cdl_gui::mesure($idframe,mesure_obj) == 1 } {
             set reste [expr $::av4l_tools::nb_frames-$idframe]
 
             #set id [expr $idframe -1]
             set id $idframe
             
             set line "$id,"
-            append line "$::av4l_cdl_avi::mesure($idframe,obj_fint)     ,"
-            append line "$::av4l_cdl_avi::mesure($idframe,obj_pixmax)   ,"
-            append line "$::av4l_cdl_avi::mesure($idframe,obj_intensite),"
-            append line "$::av4l_cdl_avi::mesure($idframe,obj_sigmafond),"
-            append line "$::av4l_cdl_avi::mesure($idframe,obj_snint)    ,"
-            append line "$::av4l_cdl_avi::mesure($idframe,obj_snpx)     ,"
-            append line "$::av4l_cdl_avi::mesure($idframe,obj_delta)    ,"
-            append line "$::av4l_cdl_avi::mesure($idframe,obj_xpos),"
-            append line "$::av4l_cdl_avi::mesure($idframe,obj_ypos),"
-            append line "$::av4l_cdl_avi::mesure($idframe,obj_xfwhm),"
-            append line "$::av4l_cdl_avi::mesure($idframe,obj_yfwhm),"
-            append line "$::av4l_cdl_avi::mesure($idframe,ref_fint)     ,"
-            append line "$::av4l_cdl_avi::mesure($idframe,ref_pixmax)   ,"
-            append line "$::av4l_cdl_avi::mesure($idframe,ref_intensite),"
-            append line "$::av4l_cdl_avi::mesure($idframe,ref_sigmafond),"
-            append line "$::av4l_cdl_avi::mesure($idframe,ref_snint)    ,"
-            append line "$::av4l_cdl_avi::mesure($idframe,ref_snpx)     ,"
-            append line "$::av4l_cdl_avi::mesure($idframe,ref_delta)    ,"
-            append line "$::av4l_cdl_avi::mesure($idframe,ref_xpos),"
-            append line "$::av4l_cdl_avi::mesure($idframe,ref_ypos),"
-            append line "$::av4l_cdl_avi::mesure($idframe,ref_xfwhm),"
-            append line "$::av4l_cdl_avi::mesure($idframe,ref_yfwhm),"
-            append line "$::av4l_cdl_avi::mesure($idframe,img_intmin) ,"
-            append line "$::av4l_cdl_avi::mesure($idframe,img_intmax),"
-            append line "$::av4l_cdl_avi::mesure($idframe,img_intmoy),"
-            append line "$::av4l_cdl_avi::mesure($idframe,img_sigma) ,"
-            append line "$::av4l_cdl_avi::mesure($idframe,img_xsize),"
-            append line "$::av4l_cdl_avi::mesure($idframe,img_ysize),"
+            append line "$::av4l_cdl_gui::mesure($idframe,obj_fint)     ,"
+            append line "$::av4l_cdl_gui::mesure($idframe,obj_pixmax)   ,"
+            append line "$::av4l_cdl_gui::mesure($idframe,obj_intensite),"
+            append line "$::av4l_cdl_gui::mesure($idframe,obj_sigmafond),"
+            append line "$::av4l_cdl_gui::mesure($idframe,obj_snint)    ,"
+            append line "$::av4l_cdl_gui::mesure($idframe,obj_snpx)     ,"
+            append line "$::av4l_cdl_gui::mesure($idframe,obj_delta)    ,"
+            append line "$::av4l_cdl_gui::mesure($idframe,obj_xpos),"
+            append line "$::av4l_cdl_gui::mesure($idframe,obj_ypos),"
+            append line "$::av4l_cdl_gui::mesure($idframe,obj_xfwhm),"
+            append line "$::av4l_cdl_gui::mesure($idframe,obj_yfwhm),"
+            append line "$::av4l_cdl_gui::mesure($idframe,ref_fint)     ,"
+            append line "$::av4l_cdl_gui::mesure($idframe,ref_pixmax)   ,"
+            append line "$::av4l_cdl_gui::mesure($idframe,ref_intensite),"
+            append line "$::av4l_cdl_gui::mesure($idframe,ref_sigmafond),"
+            append line "$::av4l_cdl_gui::mesure($idframe,ref_snint)    ,"
+            append line "$::av4l_cdl_gui::mesure($idframe,ref_snpx)     ,"
+            append line "$::av4l_cdl_gui::mesure($idframe,ref_delta)    ,"
+            append line "$::av4l_cdl_gui::mesure($idframe,ref_xpos),"
+            append line "$::av4l_cdl_gui::mesure($idframe,ref_ypos),"
+            append line "$::av4l_cdl_gui::mesure($idframe,ref_xfwhm),"
+            append line "$::av4l_cdl_gui::mesure($idframe,ref_yfwhm),"
+            append line "$::av4l_cdl_gui::mesure($idframe,img_intmin) ,"
+            append line "$::av4l_cdl_gui::mesure($idframe,img_intmax),"
+            append line "$::av4l_cdl_gui::mesure($idframe,img_intmoy),"
+            append line "$::av4l_cdl_gui::mesure($idframe,img_sigma) ,"
+            append line "$::av4l_cdl_gui::mesure($idframe,img_xsize),"
+            append line "$::av4l_cdl_gui::mesure($idframe,img_ysize),"
             
             
             puts $f1 $line
@@ -1457,7 +1462,7 @@ variable file_mesure
 
  
    #
-   # av4l_cdl_avi::avi_next_image
+   # av4l_cdl_gui::avi_next_image
    # Passe a l image suivante
    #
    proc avi_next_image { frm visuNo } {
@@ -1468,16 +1473,16 @@ variable file_mesure
       set statebutton [ $frm.photom.values.object.t.select cget -relief]
       if { $statebutton=="sunken" } {
          set delta [ $frm.photom.values.object.v.r.delta get]
-         ::av4l_cdl_avi::mesure_obj $::av4l_cdl_avi::obj(x) $::av4l_cdl_avi::obj(y) $visuNo $frm.photom.values.object $delta
+         ::av4l_cdl_gui::mesure_obj $::av4l_cdl_gui::obj(x) $::av4l_cdl_gui::obj(y) $visuNo $frm.photom.values.object $delta
       }
       set statebutton [ $frm.photom.values.reference.t.select cget -relief]
       if { $statebutton=="sunken" } {
          set delta [ $frm.photom.values.reference.v.r.delta get]
-         ::av4l_cdl_avi::mesure_ref $::av4l_cdl_avi::ref(x) $::av4l_cdl_avi::ref(y) $visuNo $frm.photom.values.reference $delta
+         ::av4l_cdl_gui::mesure_ref $::av4l_cdl_gui::ref(x) $::av4l_cdl_gui::ref(y) $visuNo $frm.photom.values.reference $delta
       }
       set statebutton [ $frm.photom.values.image.t.select cget -relief]
       if { $statebutton=="sunken" } {
-      ::av4l_cdl_avi::get_fullimg $visuNo $frm.photom.values.image
+      ::av4l_cdl_gui::get_fullimg $visuNo $frm.photom.values.image
       }
       set idframe [::av4l_tools::avi_get_idframe]
       
@@ -1485,7 +1490,7 @@ variable file_mesure
    }
    
    #
-   # av4l_cdl_avi::avi_next_image
+   # av4l_cdl_gui::avi_next_image
    # Passe a l image suivante
    #
    proc avi_prev_image { frm visuNo } {
@@ -1496,16 +1501,16 @@ variable file_mesure
       set statebutton [ $frm.photom.values.object.t.select cget -relief]
       if { $statebutton=="sunken" } {
          set delta [ $frm.photom.values.object.v.r.delta get]
-         ::av4l_cdl_avi::mesure_obj $::av4l_cdl_avi::obj(x) $::av4l_cdl_avi::obj(y) $visuNo $frm.photom.values.object $delta
+         ::av4l_cdl_gui::mesure_obj $::av4l_cdl_gui::obj(x) $::av4l_cdl_gui::obj(y) $visuNo $frm.photom.values.object $delta
       }
       set statebutton [ $frm.photom.values.reference.t.select cget -relief]
       if { $statebutton=="sunken" } {
          set delta [ $frm.photom.values.reference.v.r.delta get]
-         ::av4l_cdl_avi::mesure_ref $::av4l_cdl_avi::ref(x) $::av4l_cdl_avi::ref(y) $visuNo $frm.photom.values.reference $delta
+         ::av4l_cdl_gui::mesure_ref $::av4l_cdl_gui::ref(x) $::av4l_cdl_gui::ref(y) $visuNo $frm.photom.values.reference $delta
       }
       set statebutton [ $frm.photom.values.image.t.select cget -relief]
       if { $statebutton=="sunken" } {
-      ::av4l_cdl_avi::get_fullimg $visuNo $frm.photom.values.image
+      ::av4l_cdl_gui::get_fullimg $visuNo $frm.photom.values.image
       }
       set idframe [::av4l_tools::avi_get_idframe]
       
@@ -1514,7 +1519,7 @@ variable file_mesure
    
 
    #
-   # av4l_cdl_avi::avi_next_image
+   # av4l_cdl_gui::avi_next_image
    # Passe a l image suivante
    #
    proc avi_quick_next_image { frm visuNo } {
@@ -1525,16 +1530,16 @@ variable file_mesure
       set statebutton [ $frm.photom.values.object.t.select cget -relief]
       if { $statebutton=="sunken" } {
          set delta [ $frm.photom.values.object.v.r.delta get]
-         ::av4l_cdl_avi::mesure_obj $::av4l_cdl_avi::obj(x) $::av4l_cdl_avi::obj(y) $visuNo $frm.photom.values.object $delta
+         ::av4l_cdl_gui::mesure_obj $::av4l_cdl_gui::obj(x) $::av4l_cdl_gui::obj(y) $visuNo $frm.photom.values.object $delta
       }
       set statebutton [ $frm.photom.values.reference.t.select cget -relief]
       if { $statebutton=="sunken" } {
          set delta [ $frm.photom.values.reference.v.r.delta get]
-         ::av4l_cdl_avi::mesure_ref $::av4l_cdl_avi::ref(x) $::av4l_cdl_avi::ref(y) $visuNo $frm.photom.values.reference $delta
+         ::av4l_cdl_gui::mesure_ref $::av4l_cdl_gui::ref(x) $::av4l_cdl_gui::ref(y) $visuNo $frm.photom.values.reference $delta
       }
       set statebutton [ $frm.photom.values.image.t.select cget -relief]
       if { $statebutton=="sunken" } {
-      ::av4l_cdl_avi::get_fullimg $visuNo $frm.photom.values.image
+      ::av4l_cdl_gui::get_fullimg $visuNo $frm.photom.values.image
       }
       set idframe [::av4l_tools::avi_get_idframe]
       
@@ -1542,7 +1547,7 @@ variable file_mesure
    }
    
    #
-   # av4l_cdl_avi::avi_next_image
+   # av4l_cdl_gui::avi_next_image
    # Passe a l image suivante
    #
    proc avi_quick_prev_image { frm visuNo } {
@@ -1553,16 +1558,16 @@ variable file_mesure
       set statebutton [ $frm.photom.values.object.t.select cget -relief]
       if { $statebutton=="sunken" } {
          set delta [ $frm.photom.values.object.v.r.delta get]
-         ::av4l_cdl_avi::mesure_obj $::av4l_cdl_avi::obj(x) $::av4l_cdl_avi::obj(y) $visuNo $frm.photom.values.object $delta
+         ::av4l_cdl_gui::mesure_obj $::av4l_cdl_gui::obj(x) $::av4l_cdl_gui::obj(y) $visuNo $frm.photom.values.object $delta
       }
       set statebutton [ $frm.photom.values.reference.t.select cget -relief]
       if { $statebutton=="sunken" } {
          set delta [ $frm.photom.values.reference.v.r.delta get]
-         ::av4l_cdl_avi::mesure_ref $::av4l_cdl_avi::ref(x) $::av4l_cdl_avi::ref(y) $visuNo $frm.photom.values.reference $delta
+         ::av4l_cdl_gui::mesure_ref $::av4l_cdl_gui::ref(x) $::av4l_cdl_gui::ref(y) $visuNo $frm.photom.values.reference $delta
       }
       set statebutton [ $frm.photom.values.image.t.select cget -relief]
       if { $statebutton=="sunken" } {
-      ::av4l_cdl_avi::get_fullimg $visuNo $frm.photom.values.image
+      ::av4l_cdl_gui::get_fullimg $visuNo $frm.photom.values.image
       }
       set idframe [::av4l_tools::avi_get_idframe]
       
@@ -1590,4 +1595,4 @@ variable file_mesure
 
 
 #--- Initialisation au demarrage
-::av4l_cdl_avi::init
+::av4l_cdl_gui::init

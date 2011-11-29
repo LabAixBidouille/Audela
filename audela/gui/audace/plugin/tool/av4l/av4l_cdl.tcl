@@ -162,13 +162,13 @@ namespace eval ::av4l_cdl {
 
    proc run_fits { this visuNo base } {
 
-     ::av4l_cdl_fits::run  $visuNo $base.av4l_cdl_fits
+     ::av4l_cdl_gui::run  $visuNo $base.av4l_cdl_gui "fits"
      ::av4l_cdl::closeWindow $this $visuNo
    }
 
    proc run_avi { this visuNo base } {
 
-     ::av4l_cdl_avi::run  $visuNo $base.av4l_cdl_avi
+     ::av4l_cdl_gui::run  $visuNo $base.av4l_cdl_gui "avi"
      ::av4l_cdl::closeWindow $this $visuNo
    }
 
