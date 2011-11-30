@@ -1,166 +1,82 @@
 #--------------------------------------------------
-# source audace/plugin/tool/av4l/av4l_extraction.tcl
+# source audace/plugin/tool/av4l/av4l_tools.tcl
 #--------------------------------------------------
 #
-# Fichier        : av4l_extraction.tcl
-# Description    : Affiche le status de la base de donnees
-# Auteur         : Frédéric Vachier
-# Mise à jour $Id: av4l_extraction.tcl 6795 2011-02-26 16:05:27Z michelpujol $
+# Fichier        : av4l_tools.tcl
+# Description    : Utilitaires de communcation avec un flux (video ou lot d'image)
+# Auteur         : Frederic Vachier
+# Mise à jour $Id: av4l_tools.tcl 6795 2011-02-26 16:05:27Z fredvachier $
 #
 
 namespace eval ::av4l_tools {
 
-   variable avi1
    variable nb_frames
+   variable nb_open_frames
    variable cur_idframe
+   variable frame_begin
+   variable frame_end
+
+
    variable scrollbar
 
-   # av4l_tools::list_diff_shift
-   # Retourne la liste test epurée de l intersection des deux listes
-   proc list_diff_shift { ref test }  {
-      foreach elemref $ref {
-         set new_test ""
-         foreach elemtest $test {
-            if {$elemref!=$elemtest} {lappend new_test $elemtest}
-         }
-         set test $new_test
-      }
-      return $test
-   }
+   variable traitement
 
-   # av4l_tools::verif
-   # Verification des donnees
-   proc verif { } {
-   
-   
-   }
+   variable avi_filename
+   variable fits_dir
+   variable fits_genericname
 
-   proc avi_exist {  } {
 
-      catch {
-         set exist [info exists ::av4l_tools::avi1]
-         ::console::affiche_resultat "exists  : $exist\n"
-         ::console::affiche_resultat "exists  : [info exists avi1]\n"
-         ::console::affiche_resultat "globals : [info globals]\n"
-         ::console::affiche_resultat "locals  : [info locals]\n"
-         ::console::affiche_resultat "vars    : [info vars avi1]\n"
+
+   #
+   # av4l_tools::open_flux
+   # ouvre un flux
+   #
+   proc ::av4l_tools::open_flux { visuNo frm } {
+         
+      if { $::av4l_tools::traitement=="fits" } {
+         ::av4l_tools_fits::open_flux $visuNo $frm
       }
 
-   }
-
-   proc avi_close {  } {
-
-
-      catch {
-         ::av4l_tools::avi1 close
-         unset ::av4l_tools::avi1
+      if { $::av4l_tools::traitement=="avi" }  {
+         ::av4l_tools_avi::open_flux $visuNo $frm
       }
-   }
-
-   proc avi_select { visuNo this } {
-
-      global audace panneau
-
-      set bufNo [ visu$visuNo buf ]
-      #--- Fenetre parent
-      set fenetre [::confVisu::getBase $visuNo]
-      
-      #--- Ouvre la fenetre de choix des images
-      set filename [ ::tkutil::box_load_avi $fenetre $audace(rep_images) $bufNo "1" ]
-      $this.open.avipath delete 0 end
-      $this.open.avipath insert 0 $filename
-      focus $this
-   }
-
-
-
-
-
-
-
-   proc avi_open { visuNo frm } {
-
-      global audace panneau
-
-      set bufNo [ visu$visuNo buf ]
-      set filename [$frm.open.avipath get]
-      ::avi::create ::av4l_tools::avi1
-      catch { ::av4l_tools::avi1 load $filename }
-      if {[::av4l_tools::avi1 status] != 0} {
-         ::console::affiche_erreur "Echec du chargement de la video\n"
-         catch {
-            $frm.status.v.status configure -text Error
-            $frm.status.v.nbtotal configure -text ?
-         }
-         return
-      }
-      set ::av4l_tools::cur_idframe 0
-      set ::av4l_tools::nb_frames [::av4l_tools::avi1 get_nb_frames]
-      ::av4l_tools::avi_next
-      ::av4l_tools::avi_exist
-
 
       catch {
          $frm.status.v.status  configure -text "Loaded"
          $frm.status.v.nbtotal configure -text $::av4l_tools::nb_frames
       }
 
+      set bufNo [ visu$visuNo buf ]
       set autocuts [buf$bufNo autocuts]
       visu$visuNo disp [list [lindex $autocuts 0] [lindex $autocuts 1]]
       set ::av4l_tools::scrollbar 1   
       $frm.scrollbar configure -from 1
       $frm.scrollbar configure -to $::av4l_tools::nb_frames
       $frm.scrollbar configure -tickinterval [expr $::av4l_tools::nb_frames / 5]
-      $frm.scrollbar configure -command "::av4l_tools::avi_slide $visuNo"
+      $frm.scrollbar configure -command "::av4l_tools::slide $visuNo"
       $frm.scrollbar configure -state normal
       $frm.scrollbar configure -variable ::av4l_tools::scrollbar
+
    }
-
-
-
-
-
-
-
-# Verification d un fichier avi
-   proc avi_verif { visuNo this } {
-
-      global audace panneau
-
-      #--- Determination de la fenetre parente
-      if { $visuNo == "1" } {
-         set base "$audace(base)"
-      } else {
-         set base ".visu$visuNo"
-      }
-
-      set bufNo [ visu$visuNo buf ]
-      set filename [$panneau(av4l,$visuNo,av4l_verif).frmverif.open.avipath get]
-      ::avi::create ::av4l_tools::avi1
-      ::av4l_tools::avi1 load $filename
-      set ::av4l_tools::cur_idframe 0
-      ::av4l_tools::avi_next
-      ::av4l_tools::avi_exist
-      set autocuts [buf$bufNo autocuts]
-      visu$visuNo disp [list [lindex $autocuts 0] [lindex $autocuts 1]]
  
-      set text [$panneau(av4l,$visuNo,av4l_verif).frmverif.results.txt cget -text]
 
 
-      # Lancement des etapes de verification      
-      set nbimage [::av4l_tools::get_nbimage]
-      append text "Nb d'images : $nbimage\n"
-       
-      append text "Test:"
-      append text [::av4l_tools::avi1 test]
-      append text "\n"
-      ::av4l_tools::avi_next
-      append text "Test:"
-      append text [::av4l_tools::avi1 test]
-      append text "\n"
-             
-      # Fin
-      $panneau(av4l,$visuNo,av4l_verif).frmverif.results.txt configure -text $text
+
+
+   #
+   # av4l_tools::select
+   # Selectionne le ou les fichiers a ouvrir
+   #
+   proc ::av4l_tools::select { visuNo frm } {
+         
+      if { $::av4l_tools::traitement=="fits" } {
+         ::av4l_tools_fits::select $visuNo $frm
+      }
+
+      if { $::av4l_tools::traitement=="avi" }  {
+         ::av4l_tools_avi::select $visuNo $frm
+         ::av4l_tools::open_flux $visuNo $frm
+      }
 
    }
 
@@ -168,100 +84,166 @@ namespace eval ::av4l_tools {
 
 
 
-
-
-
-
-
-
-   proc get_nbimage { } {
-    return [::av4l_tools::avi1 get_nb_frames]
-   }
-
-
-
-
-
-
-
-
-
-
-
-
-   proc avi_next { } {
-      ::av4l_tools::avi1 next
-      incr ::av4l_tools::cur_idframe
-      if { $::av4l_tools::cur_idframe > $::av4l_tools::nb_frames } {
-         set ::av4l_tools::cur_idframe $::av4l_tools::nb_frames
+   #
+   # av4l_tools::quick_prev_image
+   # Retour Rapide
+   #
+   proc ::av4l_tools::quick_prev_image { visuNo } {
+         
+      if { $::av4l_tools::traitement=="fits" } {
+         ::av4l_tools_fits::quick_prev_image $visuNo
       }
-      if { $::av4l_tools::cur_idframe < 1 } {
-         set ::av4l_tools::cur_idframe 1
+
+      if { $::av4l_tools::traitement=="avi" }  {
+         ::av4l_tools_avi::quick_prev_image
       }
-      
-   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   proc avi_quick_prev_image { } {
-      set visuNo 1
-      set ::av4l_tools::cur_idframe [ expr $::av4l_tools::cur_idframe - 100 ]
-      if { $::av4l_tools::cur_idframe > $::av4l_tools::nb_frames } {
-         set ::av4l_tools::cur_idframe $::av4l_tools::nb_frames
-      }
-      if { $::av4l_tools::cur_idframe < 1 } {
-         set ::av4l_tools::cur_idframe 1
-      }
-      ::av4l_tools::avi_get_frame $visuNo $::av4l_tools::cur_idframe
       visu$visuNo disp
+      set ::av4l_tools::scrollbar $::av4l_tools::cur_idframe
+
+   }
+ 
+
+
+
+
+   #
+   # av4l_tools::quick_next_image
+   # avance rapide
+   #
+   proc ::av4l_tools::quick_next_image { visuNo } {
+         
+      if { $::av4l_tools::traitement=="fits" } {
+         ::av4l_tools_fits::quick_next_image $visuNo
+      }
+
+      if { $::av4l_tools::traitement=="avi" }  {
+         ::av4l_tools_avi::quick_next_image
+      }
+
+      visu$visuNo disp
+      set ::av4l_tools::scrollbar $::av4l_tools::cur_idframe
+   
+   }
+   
+
+
+
+
+   #
+   # av4l_tools::next_image
+   # Passe a l image suivante
+   #
+   proc ::av4l_tools::next_image { visuNo } {
+         
+      if { $::av4l_tools::traitement=="fits" } {
+         ::av4l_tools_fits::next_image $visuNo
+      }
+
+      if { $::av4l_tools::traitement=="avi" }  {
+         ::av4l_tools_avi::next_image
+      }
+
+      visu$visuNo disp
+      set ::av4l_tools::scrollbar $::av4l_tools::cur_idframe
+
+   }
+
+
+
+
+
+   #
+   # av4l_tools::prev_image
+   # Passe a l image precedente
+   #
+   proc ::av4l_tools::prev_image { visuNo } {
+         
+      if { $::av4l_tools::traitement=="fits" } {
+         ::av4l_tools_fits::prev_image $visuNo
+      }
+
+      if { $::av4l_tools::traitement=="avi" }  {
+         ::av4l_tools_avi::prev_image
+      }
+
+      visu$visuNo disp
+      set ::av4l_tools::scrollbar $::av4l_tools::cur_idframe
+
+   }
+   
+
+
+   #
+   # se positionne a la l image $idframe
+   #
+   proc ::av4l_tools::set_frame { visuNo idframe } {
+
+      if { $::av4l_tools::traitement=="fits" } {
+         ::av4l_tools_fits::set_frame $visuNo $idframe
+      }
+
+      if { $::av4l_tools::traitement=="avi" }  {
+         ::av4l_tools_avi::set_frame $idframe
+      }
+
+      visu$visuNo disp
+      set ::av4l_tools::scrollbar [expr int($::av4l_tools::cur_idframe)]
+
+   }
+
+
+
+   #
+   # selection du frame de debut
+   #
+   proc ::av4l_tools::setmin { frm } {
+         
+      $frm.posmin delete 0 end
+      $frm.posmin insert 0 [expr int($::av4l_tools::cur_idframe)]
+
+   }
+   
+   #
+   # selection du frame de fin
+   #
+   proc ::av4l_tools::setmax { frm } {
+         
+      $frm.posmax delete 0 end
+      $frm.posmax insert 0 [expr int($::av4l_tools::cur_idframe)]
+
+   }
+
+   #
+   # redimensionne le flux entre la valeur min et max 
+   #
+   proc ::av4l_tools::crop { visuNo frm } {
+         
+      set fmin  [$frm.posmin get]
+      set fmax  [$frm.posmax get]
+         
+      if { $fmin == "" } {
+         set fmin 1
+      }
+      if { $fmax == "" } {
+         set fmax $::av4l_tools::nb_open_frames
+      }
+      set ::av4l_tools::nb_frames   [expr int($fmax-$fmin+1)]
+      set ::av4l_tools::frame_begin $fmin
+      set ::av4l_tools::frame_end   $fmax
+      set ::av4l_tools::cur_idframe $fmin
+      ::console::affiche_resultat "CROP! \n"
+      ::console::affiche_resultat "cur_idframe  $::av4l_tools::cur_idframe \n"
+      ::console::affiche_resultat "frame_begin  $::av4l_tools::frame_begin \n"
+      ::console::affiche_resultat "frame_end    $::av4l_tools::frame_end   \n"
+      ::console::affiche_resultat "nb_frames    $::av4l_tools::nb_frames   \n"
+
+      $frm.scrollbar configure -from $fmin
+      $frm.scrollbar configure -to $fmax
+      $frm.scrollbar configure -tickinterval [expr $::av4l_tools::nb_frames / 5]
+      
+      ::av4l_tools::set_frame $visuNo $fmin
+
    }
 
 
@@ -270,27 +252,27 @@ namespace eval ::av4l_tools {
 
 
 
+   #
+   # redimensionne le flux entre la valeur min et max 
+   #
+   proc ::av4l_tools::uncrop { visuNo frm } {
+         
+      set fmin  1
+      set fmax  $::av4l_tools::nb_open_frames
+         
+      set ::av4l_tools::nb_frames   [expr int($fmax-$fmin+1)]
+      set ::av4l_tools::frame_begin $fmin
+      set ::av4l_tools::frame_end   $fmax
+      set ::av4l_tools::cur_idframe $fmin
 
+      $frm.scrollbar configure -from $fmin
+      $frm.scrollbar configure -to $fmax
+      $frm.scrollbar configure -tickinterval [expr $::av4l_tools::nb_frames / 5]
+      $frm.posmin delete 0 end
+      $frm.posmin insert 0 ""
+      $frm.posmax delete 0 end
+      $frm.posmax insert 0 ""
 
-
-
-
-
-
-   proc avi_get_frame { visuNo idframe } {
-
-      set nbf [expr  $::av4l_tools::nb_frames * 1.0]
-      #::console::affiche_resultat "idframe  : $idframe\n"
-      #::console::affiche_resultat "nb_frames  : $nbf\n"
-
-      if {$idframe > $::av4l_tools::nb_frames} {
-         set idframe $nbf
-      }     
-      set pc [expr ($idframe-1) / ($nbf+1.0) ]
-      #::console::affiche_resultat "pc  : $pc\n"
-      ::av4l_tools::avi1 seekpercent $pc
-      ::av4l_tools::avi_next
-      set ::av4l_tools::cur_idframe $idframe
       visu$visuNo disp
       set ::av4l_tools::scrollbar $::av4l_tools::cur_idframe
    }
@@ -307,27 +289,14 @@ namespace eval ::av4l_tools {
 
 
 
-   proc avi_get_idframe {  } {
 
-      #::console::affiche_resultat "idframe  : $::av4l_tools::cur_idframe"
-      return $::av4l_tools::cur_idframe
-   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-   proc avi_slide { visuNo idframe } {
+   #
+   # av4l_tools::slide
+   # mouvement de la barre d avancement
+   #
+   proc ::av4l_tools::slide { visuNo idframe } {
       #::console::affiche_resultat "idframe  : $idframe"
-      ::av4l_tools::avi_get_frame $visuNo $idframe
+      ::av4l_tools::set_frame $visuNo [expr int($idframe)]
    }
 
 
@@ -341,219 +310,39 @@ namespace eval ::av4l_tools {
 
 
 
-
-   proc avi_seek { visuNo arg } {
-      ::console::affiche_resultat "% : [expr $arg / 100.0 ]"
-      ::av4l_tools::avi1 seekpercent [expr $arg / 100.0 ]
-      ::av4l_tools::avi1 next
-      visu$visuNo disp
-   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-   proc avi_seekbyte { arg } {
-      set visuNo 1
-      ::console::affiche_resultat "arg = $arg"
-      ::av4l_tools::avi1 seekbyte $arg
-      ::av4l_tools::avi1 next
-      visu$visuNo disp
-   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-   proc avi_setmin { This } {
-
-      if { ! [info exists ::av4l_tools::cur_idframe] } {
-          tk_messageBox -message "Veuillez charger une video" -type ok
-          return
-      }
-
-      $This.posmin delete 0 end
-      $This.posmin insert 0 $::av4l_tools::cur_idframe
-      catch { $This.imagecount delete 0 end }
-   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-   proc avi_setmax { This } {
-
-      if { ! [info exists ::av4l_tools::cur_idframe] } {
-          tk_messageBox -message "Veuillez charger une video" -type ok
-          return
-      }
-
-      $This.posmax delete 0 end
-      $This.posmax insert 0 $::av4l_tools::cur_idframe
-      catch { $This.imagecount delete 0 end }
-   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-   proc avi_imagecount { This } {
+   #
+   # av4l_acq::chgdir
+   # Ouvre une boite de dialogue pour choisir un nom  de repertoire 
+   #
+   proc ::av4l_tools::chgdir { This } {
+      global caption
+      global cwdWindow
       global audace
-      $This.imagecount delete 0 end
-      set fmin [ $This.posmin get ]
-      set fmax [ $This.posmax get ]
-      if { $fmin == "" } {
-         set fmin 1
-      }
-      if { $fmax == "" } {
-         set fmax $::av4l_tools::nb_frames
-      }
-      $This.imagecount insert 0 [ expr $fmax - $fmin + 1 ]
 
+      #--- Initialisation des variables a 2 (0 et 1 reservees a Configuration --> Repertoires)
+      set cwdWindow(rep_images)      "2"
+      set cwdWindow(rep_travail)     "2"
+      set cwdWindow(rep_scripts)     "2"
+      set cwdWindow(rep_catalogues)  "2"
+      set cwdWindow(rep_userCatalog) "2"
+
+      set parent "$audace(base)"
+      set title "Choisir un repertoire de destination"
+      set rep "$audace(rep_images)"
+
+      set numerror [ catch { set filename "[ ::cwdWindow::tkplus_chooseDir "$rep" $title $parent ]" } msg ]
+      if { $numerror == "1" } {
+         set filename "[ ::cwdWindow::tkplus_chooseDir "[pwd]" $title $parent ]"
+      }
+
+
+      ::console::affiche_resultat $audace(rep_images)
+
+      $This delete 0 end
+      $This insert 0 $filename
+      
    }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   proc avi_extract { frm } {
-      global audace
-      set visuNo 1
-      set bufNo [ visu$visuNo buf ]
-
-      set fmin    [ $frm.posmin get ]
-      set fmax    [ $frm.posmax get ]
-      set destdir [ $frm.form.v.destdir get ]
-      set prefix  [ $frm.form.v.prefix get ]
-      set i 0
-      set cpt 1
-      if { $fmin == "" } {
-         set fmin 1
-      }
-      if { $fmax == "" } {
-         set fmax $::av4l_tools::nb_frames
-      }
-      ::console::affiche_resultat "fmin=$fmin\n"
-      ::console::affiche_resultat "fmax=$fmax\n"
-
-
-      avi_get_frame $visuNo $fmin
-      for {set i $fmin} {$i <= $fmax} {incr i} {
-         set ::av4l_tools::scrollbar $i
-         #::console::affiche_resultat "$i / [expr $fmax-$fmin+1]\n"
-         ::console::affiche_resultat ""
-         
-         
-         set path "$destdir/$prefix$cpt"
-         #::console::affiche_resultat "path : $path\n"
-         buf$bufNo save $path fits
-         ::av4l_tools::avi1 next
-         incr cpt
-      }
-      visu$visuNo disp
-      ::console::affiche_resultat "Extraction Terminee\n"
-   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   proc acq_fetch { this } {
-        global audace
-        ::avi::convert_shared_image /dev/shm/pict.yuv422
-        visu1 disp
-        file delete -force /dev/shm/pict.yuv422
-   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   proc acq_start { this } {
-        global audace
-        ::console::affiche_resultat "path : [$this.form.v.destdir get]"
-        exec $audace(rep_plugin)/../../../bin/av4l-grab -d 120m -c 2m -o [$this.form.v.destdir get] &
-   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   proc acq_stop { this } {
-        global audace
-        exec pkill -x av4l-grab
-   }
 
 }

@@ -15,7 +15,7 @@ namespace eval ::av4l_ocr {
    # av4l_ocr::init
    # Chargement des captions
    #
-   proc init { } {
+   proc ::av4l_ocr::init { } {
       global audace
 
       wm focusmodel . passive
@@ -28,7 +28,7 @@ namespace eval ::av4l_ocr {
    # av4l_ocr::initToConf
    # Initialisation des variables de configuration
    #
-   proc initToConf { visuNo } {
+   proc ::av4l_ocr::initToConf { visuNo } {
       variable parametres
 
       #--- Creation des variables de la boite de configuration si elles n'existent pas
@@ -43,7 +43,7 @@ namespace eval ::av4l_ocr {
    # av4l_ocr::confToWidget
    # Charge la configuration dans des variables locales
    #
-   proc confToWidget { visuNo } {
+   proc ::av4l_ocr::confToWidget { visuNo } {
       variable parametres
       global panneau
 
@@ -59,7 +59,7 @@ namespace eval ::av4l_ocr {
    # av4l_ocr::widgetToConf
    # Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
    #
-   proc widgetToConf { visuNo } {
+   proc ::av4l_ocr::widgetToConf { visuNo } {
       variable parametres
       global panneau
 
@@ -71,31 +71,23 @@ namespace eval ::av4l_ocr {
    # Cree la fenetre de configuration de l'affichage des messages sur la Console
    # et de l'enregistrement des dates dans le fichier log
    #
-   proc run { visuNo this } {
+   proc ::av4l_ocr::run { visuNo this } {
      global audace panneau
 
 
       set panneau(av4l,$visuNo,av4l_ocr) $this
       #::confGenerique::run $visuNo "$panneau(av4l,$visuNo,av4l_ocr)" "::av4l_ocr" -modal 1
 
-      createdialog $this $visuNo   
+      ::av4l_ocr::createdialog $this $visuNo   
 
    }
 
-   #
-   # av4l_ocr::apply
-   # Fonction 'Appliquer' pour memoriser et appliquer la configuration
-   #
-   proc apply { visuNo } {
-      ::av4l_ocr::widgetToConf $visuNo
-      ::av4l_tools::avi_extract
-   }
 
    #
    # av4l_ocr::showHelp
    # Fonction appellee lors de l'appui sur le bouton 'Aide'
    #
-   proc showHelp { } {
+   proc ::av4l_ocr::showHelp { } {
       ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::av4l::getPluginType ] ] \
          [ ::av4l::getPluginDirectory ] av4l_ocr.htm
    }
@@ -105,10 +97,9 @@ namespace eval ::av4l_ocr {
    # av4l_ocr::closeWindow
    # Fonction appellee lors de l'appui sur le bouton 'Fermer'
    #
-   proc closeWindow { this visuNo } {
+   proc ::av4l_ocr::closeWindow { this visuNo } {
 
       ::av4l_ocr::widgetToConf $visuNo
-      ::av4l_tools::avi_close
       destroy $this
    }
 
@@ -116,58 +107,24 @@ namespace eval ::av4l_ocr {
    # av4l_ocr::getLabel
    # Retourne le nom de la fenetre d extraction
    #
-   proc getLabel { } {
+   proc ::av4l_ocr::getLabel { } {
       global caption
 
       return "$caption(av4l_ocr,bar_title)"
    }
 
 
-   #
-   # av4l_ocr::chgdir
-   # Ouvre une boite de dialogue pour choisir un nom  de repertoire 
-   #
-   proc chgdir { This } {
-      global caption
-      global cwdWindow
-      global audace
 
-      #--- Initialisation des variables a 2 (0 et 1 reservees a Configuration --> Repertoires)
-      set cwdWindow(rep_images)      "2"
-      set cwdWindow(rep_travail)     "2"
-      set cwdWindow(rep_scripts)     "2"
-      set cwdWindow(rep_catalogues)  "2"
-      set cwdWindow(rep_userCatalog) "2"
+   proc ::av4l_ocr::run_fits { this visuNo base } {
 
-      set parent "$audace(base)"
-      set title "Choisir un repertoire de destination"
-      set rep "$audace(rep_images)"
-
-      set numerror [ catch { set filename "[ ::cwdWindow::tkplus_chooseDir "$rep" $title $parent ]" } msg ]
-      if { $numerror == "1" } {
-         set filename "[ ::cwdWindow::tkplus_chooseDir "[pwd]" $title $parent ]"
-      }
-
-
-      ::console::affiche_resultat $audace(rep_images)
-
-      $This delete 0 end
-      $This insert 0 $filename
-      
-   }
-
-
-
-
-
-   proc run_fits { this visuNo base } {
-
-     #::av4l_ocr_fits::run  $visuNo $base.av4l_ocr_fits
+     set ::av4l_tools::traitement "fits"
+     ::av4l_ocr_gui::run  $visuNo $base.av4l_ocr_gui 
      ::av4l_ocr::closeWindow $this $visuNo
    }
 
-   proc run_avi { this visuNo base } {
+   proc ::av4l_ocr::run_avi { this visuNo base } {
 
+      set ::av4l_tools::traitement "avi"
      ::av4l_ocr_gui::run  $visuNo $base.av4l_ocr_gui
      ::av4l_ocr::closeWindow $this $visuNo
    }
@@ -177,7 +134,7 @@ namespace eval ::av4l_ocr {
    # av4l_ocr::fillConfigPage
    # Creation de l'interface graphique
    #
-   proc createdialog { this visuNo } {
+   proc ::av4l_ocr::createdialog { this visuNo } {
 
       package require Img
 

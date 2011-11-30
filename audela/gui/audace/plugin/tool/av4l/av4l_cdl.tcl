@@ -3,9 +3,9 @@
 #--------------------------------------------------
 #
 # Fichier        : av4l_cdl.tcl
-# Description    : Affiche le status de la base de donnees
-# Auteur         : Frédéric Vachier
-# Mise à jour $Id: av4l_cdl.tcl 6795 2011-02-26 16:05:27Z michelpujol $
+# Description    : Outil Courbe de lumiere
+# Auteur         : Frederic Vachier
+# Mise à jour $Id: av4l_cdl.tcl 6795 2011-02-26 16:05:27Z fredvachier $
 #
 
 namespace eval ::av4l_cdl {
@@ -15,7 +15,7 @@ namespace eval ::av4l_cdl {
    # av4l_cdl::init
    # Chargement des captions
    #
-   proc init { } {
+   proc ::av4l_cdl::init { } {
       global audace
 
       wm focusmodel . passive
@@ -28,7 +28,7 @@ namespace eval ::av4l_cdl {
    # av4l_cdl::initToConf
    # Initialisation des variables de configuration
    #
-   proc initToConf { visuNo } {
+   proc ::av4l_cdl::initToConf { visuNo } {
       variable parametres
 
       #--- Creation des variables de la boite de configuration si elles n'existent pas
@@ -43,7 +43,7 @@ namespace eval ::av4l_cdl {
    # av4l_cdl::confToWidget
    # Charge la configuration dans des variables locales
    #
-   proc confToWidget { visuNo } {
+   proc ::av4l_cdl::confToWidget { visuNo } {
       variable parametres
       global panneau
 
@@ -59,7 +59,7 @@ namespace eval ::av4l_cdl {
    # av4l_cdl::widgetToConf
    # Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
    #
-   proc widgetToConf { visuNo } {
+   proc ::av4l_cdl::widgetToConf { visuNo } {
       variable parametres
       global panneau
 
@@ -71,7 +71,7 @@ namespace eval ::av4l_cdl {
    # Cree la fenetre de configuration de l'affichage des messages sur la Console
    # et de l'enregistrement des dates dans le fichier log
    #
-   proc run { visuNo this } {
+   proc ::av4l_cdl::run { visuNo this } {
      global audace panneau
 
 
@@ -86,7 +86,7 @@ namespace eval ::av4l_cdl {
    # av4l_cdl::apply
    # Fonction 'Appliquer' pour memoriser et appliquer la configuration
    #
-   proc apply { visuNo } {
+   proc ::av4l_cdl::apply { visuNo } {
       ::av4l_cdl::widgetToConf $visuNo
       ::av4l_tools::avi_extract
    }
@@ -95,7 +95,7 @@ namespace eval ::av4l_cdl {
    # av4l_cdl::showHelp
    # Fonction appellee lors de l'appui sur le bouton 'Aide'
    #
-   proc showHelp { } {
+   proc ::av4l_cdl::showHelp { } {
       ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::av4l::getPluginType ] ] \
          [ ::av4l::getPluginDirectory ] av4l_cdl.htm
    }
@@ -105,10 +105,9 @@ namespace eval ::av4l_cdl {
    # av4l_cdl::closeWindow
    # Fonction appellee lors de l'appui sur le bouton 'Fermer'
    #
-   proc closeWindow { this visuNo } {
+   proc ::av4l_cdl::closeWindow { this visuNo } {
 
       ::av4l_cdl::widgetToConf $visuNo
-      ::av4l_tools::avi_close
       destroy $this
    }
 
@@ -116,59 +115,24 @@ namespace eval ::av4l_cdl {
    # av4l_cdl::getLabel
    # Retourne le nom de la fenetre d extraction
    #
-   proc getLabel { } {
+   proc ::av4l_cdl::getLabel { } {
       global caption
 
       return "$caption(av4l_cdl,bar_title)"
    }
 
 
-   #
-   # av4l_cdl::chgdir
-   # Ouvre une boite de dialogue pour choisir un nom  de repertoire 
-   #
-   proc chgdir { This } {
-      global caption
-      global cwdWindow
-      global audace
+   proc ::av4l_cdl::run_fits { this visuNo base } {
 
-      #--- Initialisation des variables a 2 (0 et 1 reservees a Configuration --> Repertoires)
-      set cwdWindow(rep_images)      "2"
-      set cwdWindow(rep_travail)     "2"
-      set cwdWindow(rep_scripts)     "2"
-      set cwdWindow(rep_catalogues)  "2"
-      set cwdWindow(rep_userCatalog) "2"
-
-      set parent "$audace(base)"
-      set title "Choisir un repertoire de destination"
-      set rep "$audace(rep_images)"
-
-      set numerror [ catch { set filename "[ ::cwdWindow::tkplus_chooseDir "$rep" $title $parent ]" } msg ]
-      if { $numerror == "1" } {
-         set filename "[ ::cwdWindow::tkplus_chooseDir "[pwd]" $title $parent ]"
-      }
-
-
-      ::console::affiche_resultat $audace(rep_images)
-
-      $This delete 0 end
-      $This insert 0 $filename
-      
-   }
-
-
-
-
-
-   proc run_fits { this visuNo base } {
-
-     ::av4l_cdl_gui::run  $visuNo $base.av4l_cdl_gui "fits"
+      set ::av4l_tools::traitement "fits"
+     ::av4l_cdl_gui::run  $visuNo $base.av4l_cdl_gui 
      ::av4l_cdl::closeWindow $this $visuNo
    }
 
-   proc run_avi { this visuNo base } {
+   proc ::av4l_cdl::run_avi { this visuNo base } {
 
-     ::av4l_cdl_gui::run  $visuNo $base.av4l_cdl_gui "avi"
+      set ::av4l_tools::traitement "avi"
+     ::av4l_cdl_gui::run  $visuNo $base.av4l_cdl_gui
      ::av4l_cdl::closeWindow $this $visuNo
    }
 
@@ -177,7 +141,7 @@ namespace eval ::av4l_cdl {
    # av4l_cdl::fillConfigPage
    # Creation de l'interface graphique
    #
-   proc createdialog { this visuNo } {
+   proc ::av4l_cdl::createdialog { this visuNo } {
 
       package require Img
 
