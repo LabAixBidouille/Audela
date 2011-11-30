@@ -483,7 +483,7 @@ ros_gps close symmetricom
 			EventThreadGps=NULL;
 			k=bcStartPCI(0);
 			if ( k != RC_OK ) {
-				printf(s,"Error opening device %s (bcStartPCI(0)=%d)",argv[2],k);
+				sprintf(s,"Error opening device %s (bcStartPCI(0)=%d)",argv[2],k);
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
 				return TCL_ERROR;
 			}
