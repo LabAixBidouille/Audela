@@ -729,7 +729,7 @@ namespace eval ::confPosObs {
       $This.but_maj configure -relief groove -state disabled
 
       #--- Adresse web du catalogue des observatoires UAI
-      set url "http://www.cfa.harvard.edu/iau/lists/ObsCodes.html"
+      set url "http://www.minorplanetcenter.net/iau/lists/ObsCodes.html"
 
       #--- Lecture du catalogue en ligne
       set err [ catch { ::http::geturl $url } token ]
