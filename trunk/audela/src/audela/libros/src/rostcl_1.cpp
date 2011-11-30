@@ -430,7 +430,7 @@ ros_gps close symmetricom
 {
    char s[100];
 #if defined OS_WIN
-   int mode,modele,i,k,devices_found;;
+   int mode,modele,i,k,devices_found;
    char ws[200];
    char year[5], month[5], day[5], hour[5], minute[5], sec[5], msec[5], p[10];
    MBG_DEV_HANDLE dh = mbg_open_device( 0 );
@@ -477,11 +477,13 @@ ros_gps close symmetricom
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          return TCL_ERROR;
       }
-      /* --- open ---*/
+      /* --- open symmetricom ---*/
       if ((mode==1)&&(modele==1)) {
 			// --- verif que ca marche dans le thread principal
-			if ( bcStartPCI (0) != RC_OK ) {
-				printf(s,"Error opening device %s",argv[2]);
+			EventThreadGps=NULL;
+			k=bcStartPCI(0);
+			if ( k != RC_OK ) {
+				printf(s,"Error opening device %s (bcStartPCI(0)=%d)",argv[2],k);
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
 				return TCL_ERROR;
 			}
@@ -502,6 +504,11 @@ ros_gps close symmetricom
 	   }
       /* --- read time ---*/
       if ((mode==3)&&(modele==1)) {
+			if (EventThreadGps==NULL) {
+				sprintf(s,"Error GPS not opened correctly");
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				return TCL_ERROR;
+			}
 			while (1==1) {
 				ThreadGps = 1;
 				SetEvent(EventThreadGps); // Declencheur dans le thread gps
@@ -533,11 +540,17 @@ ros_gps close symmetricom
       }
       /* --- close ---*/
       if ((mode==4)&&(modele==1)) {
-			SortieGps=1;
-			CloseHandle(EventThreadGps);
-			sprintf(s,"Connection with %s is closed",argv[2]);
-			Tcl_SetResult(interp,s,TCL_VOLATILE);
-			return TCL_OK;
+			if (EventThreadGps==NULL) {
+				sprintf(s,"Error GPS not opened correctly");
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				return TCL_ERROR;
+			} else {
+				SortieGps=1;
+				CloseHandle(EventThreadGps);
+				sprintf(s,"Connection with %s is closed",argv[2]);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				return TCL_OK;
+			}
       }
       /*There are 3 functions to deal with the meinberg capture events:
 
