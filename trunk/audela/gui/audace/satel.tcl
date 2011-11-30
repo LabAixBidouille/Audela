@@ -478,6 +478,10 @@ proc satel_update { { server "" } {param1 ""} {param2 ""} } {
          catch {::console::affiche_resultat " Problem: $res.\n"}
          return ""
       }
+      set data [::http::data $tok]
+      if {[string first "<!DOCTYPE html" $data]>=0} {
+	      error "login and/or password problem\nUse https://www.space-track.org/perl/login.pl\n"
+      }
       # --- save the TLE file
       file mkdir [ file join $::audace(rep_userCatalog) tle ]
        set elemfile spacetrack.txt
