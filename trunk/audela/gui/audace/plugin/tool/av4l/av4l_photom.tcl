@@ -13,6 +13,10 @@ namespace eval ::av4l_photom {
    variable rect_img
    variable rect_obj
 
+
+
+
+
    proc select_fullimg { visuNo this } {
 
       global color
@@ -35,26 +39,6 @@ namespace eval ::av4l_photom {
    }
 
 
-   proc get_fullimg { visuNo this } {
-
-      #::console::affiche_resultat "rect_img = $::av4l_photom::rect_img \n"
-
-      if {$::av4l_photom::rect_img==""} { 
-         $this.v.r.intmin configure -text "?"
-         $this.v.r.intmax configure -text "?"
-         $this.v.r.intmoy configure -text "?"
-         $this.v.r.sigma  configure -text "?"
-
-      } else {
-         set bufNo [ ::confVisu::getBufNo $visuNo ]
-         set stat [buf$bufNo stat $::av4l_photom::rect_img]
-         $this.v.r.intmin configure -text [lindex $stat 3]
-         $this.v.r.intmax configure -text [lindex $stat 2]
-         $this.v.r.intmoy configure -text [lindex $stat 4]
-         $this.v.r.sigma  configure -text [lindex $stat 5]
-      }
-
-   }
 
 
 
