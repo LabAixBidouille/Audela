@@ -4,29 +4,20 @@
 #
 # Fichier        : av4l_ocr_gui.tcl
 # Description    : Affiche le status de la base de donnees
-# Auteur         : Frédéric Vachier
-# Mise à jour $Id: av4l_ocr_gui.tcl 6795 2011-02-26 16:05:27Z michelpujol $
+# Auteur         : Frederic Vachier
+# Mise à jour $Id: av4l_ocr_gui.tcl 6795 2011-02-26 16:05:27Z fredvachier $
 #
 
 namespace eval ::av4l_ocr_gui {
 
-variable obj
-variable ref
-variable delta
-variable sortie
-variable mesure
-variable file_mesure
-variable active_ocr
-variable nbverif
-variable nbocr
-variable nbinterp
-variable timing
+
+
+
 
    #
-   # av4l_ocr_gui::init
    # Chargement des captions
    #
-   proc init { } {
+   proc ::av4l_ocr_gui::init { } {
       global audace
 
       wm focusmodel . passive
@@ -35,11 +26,15 @@ variable timing
       source [ file join $audace(rep_plugin) tool av4l av4l_ocr_gui.cap ]
    }
 
+
+
+
+
+
    #
-   # av4l_ocr_gui::initToConf
    # Initialisation des variables de configuration
    #
-   proc initToConf { visuNo } {
+   proc ::av4l_ocr_gui::initToConf { visuNo } {
       variable parametres
 
       #--- Creation des variables de la boite de configuration si elles n'existent pas
@@ -63,10 +58,10 @@ variable timing
 
 
    #
-   # av4l_ocr_gui::confToWidget
    # Charge la configuration dans des variables locales
    #
-   proc confToWidget { visuNo } {
+   proc ::av4l_ocr_gui::confToWidget { visuNo } {
+
       variable parametres
       global panneau
 
@@ -77,11 +72,11 @@ variable timing
       set ::av4l_ocr_gui::panneau(av4l,$visuNo,verifier_ecraser_fichier)   $::av4l::parametres(av4l,$visuNo,verifier_ecraser_fichier)
       set ::av4l_ocr_gui::panneau(av4l,$visuNo,verifier_index_depart)      $::av4l::parametres(av4l,$visuNo,verifier_index_depart)
 
-      set ::av4l_photom::rect_img ""
-      set ::av4l_ocr_gui::active_ocr 0
-      set ::av4l_ocr_gui::nbverif 0
-      set ::av4l_ocr_gui::nbocr 0
-      set ::av4l_ocr_gui::nbinterp 0
+      set ::av4l_photom::rect_img      ""
+      set ::av4l_ocr_tools::active_ocr 0
+      set ::av4l_ocr_tools::nbverif    0
+      set ::av4l_ocr_tools::nbocr      0
+      set ::av4l_ocr_tools::nbinterp   0
 
    }
 
@@ -100,10 +95,9 @@ variable timing
 
 
    #
-   # av4l_ocr_gui::widgetToConf
    # Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
    #
-   proc widgetToConf { visuNo } {
+   proc ::av4l_ocr_gui::widgetToConf { visuNo } {
       variable parametres
       global panneau
 
@@ -124,16 +118,14 @@ variable timing
 
 
    #
-   # av4l_ocr_gui::run 
    # Cree la fenetre de configuration de l'affichage des messages sur la Console
    # et de l'enregistrement des dates dans le fichier log
    #
-   proc run { visuNo this } {
-     global audace panneau
+   proc ::av4l_ocr_gui::run { visuNo this } {
 
+      global audace panneau
 
       set panneau(av4l,$visuNo,av4l_ocr_gui) $this
-      #::confGenerique::run $visuNo "$panneau(av4l,$visuNo,av4l_ocr_gui)" "::av4l_ocr_gui" -modal 1
 
       createdialog $this $visuNo   
 
@@ -154,34 +146,11 @@ variable timing
 
 
 
-   #
-   # av4l_ocr_gui::apply
-   # Fonction 'Appliquer' pour memoriser et appliquer la configuration
-   #
-   proc apply { visuNo } {
-      ::av4l_ocr_gui::widgetToConf $visuNo
-   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
    #
-   # av4l_ocr_gui::showHelp
    # Fonction appellee lors de l'appui sur le bouton 'Aide'
    #
-   proc showHelp { } {
+   proc ::av4l_ocr_gui::showHelp { } {
       ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::av4l::getPluginType ] ] \
          [ ::av4l::getPluginDirectory ] av4l_ocr_gui.htm
    }
@@ -202,10 +171,9 @@ variable timing
 
 
    #
-   # av4l_ocr_gui::closeWindow
    # Fonction appellee lors de l'appui sur le bouton 'Fermer'
    #
-   proc closeWindow { this visuNo } {
+   proc ::av4l_ocr_gui::closeWindow { this visuNo } {
 
       ::av4l_ocr_gui::widgetToConf $visuNo
       
@@ -226,85 +194,15 @@ variable timing
 
 
 
-   #
-   # av4l_ocr_gui::getLabel
-   # Retourne le nom de la fenetre 
-   #
-   proc getLabel { } {
-      global caption
-
-      return "$caption(av4l_ocr_gui,titre)"
-   }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
 
 
    #
-   # av4l_ocr_gui::chgdir
-   # Ouvre une boite de dialogue pour choisir un nom  de repertoire 
-   #
-   proc chgdir { This } {
-      global caption
-      global cwdWindow
-      global audace
-
-      #--- Initialisation des variables a 2 (0 et 1 reservees a Configuration --> Repertoires)
-      set cwdWindow(rep_images)      "2"
-      set cwdWindow(rep_travail)     "2"
-      set cwdWindow(rep_scripts)     "2"
-      set cwdWindow(rep_catalogues)  "2"
-      set cwdWindow(rep_userCatalog) "2"
-
-      set parent "$audace(base)"
-      set title "Choisir un repertoire de destination"
-      set rep "$audace(rep_images)"
-
-      set numerror [ catch { set filename "[ ::cwdWindow::tkplus_chooseDir "$rep" $title $parent ]" } msg ]
-      if { $numerror == "1" } {
-         set filename "[ ::cwdWindow::tkplus_chooseDir "[pwd]" $title $parent ]"
-      }
-
-
-      ::console::affiche_resultat $audace(rep_images)
-
-      $This delete 0 end
-      $This insert 0 $filename
-      
-   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   #
-   # av4l_ocr_gui::fillConfigPage
    # Creation de l'interface graphique
    #
-   proc createdialog { this visuNo } {
+   proc ::av4l_ocr_gui::createdialog { this visuNo } {
 
       package require Img
 
@@ -330,7 +228,10 @@ variable timing
       set posy_config [ lindex [ split [ wm geometry $base ] "+" ] 2 ]
       wm geometry $this +[ expr $posx_config + 165 ]+[ expr $posy_config + 55 ]
       wm resizable $this 1 1
-      wm title $this $caption(av4l_ocr_gui,bar_title)
+
+      if { $::av4l_tools::traitement=="fits" } { wm title $this $caption(av4l_ocr_gui,bar_title_fits) }
+      if { $::av4l_tools::traitement=="avi" }  { wm title $this $caption(av4l_ocr_gui,bar_title_avi) }
+
       wm protocol $this WM_DELETE_WINDOW "::av4l_ocr_gui::closeWindow $this $visuNo"
 
 
@@ -340,6 +241,8 @@ variable timing
       #--- Retourne l'item de la camera associee a la visu
       set frm $this.frm_av4l_ocr_gui
 
+      if { $::av4l_tools::traitement=="fits" } { set titre $caption(av4l_ocr_gui,titre_fits) }
+      if { $::av4l_tools::traitement=="avi" }  { set titre $caption(av4l_ocr_gui,titre_avi) }
 
       #--- Cree un frame pour afficher le status de la base
       frame $frm -borderwidth 0 -cursor arrow -relief groove
@@ -347,7 +250,7 @@ variable timing
 
         #--- Cree un label pour le titre
         label $frm.titre -font $av4lconf(font,arial_14_b) \
-              -text "$caption(av4l_ocr_gui,titre)"
+              -text "$titre"
         pack $frm.titre \
              -in $frm -side top -padx 3 -pady 3
 
@@ -373,7 +276,7 @@ variable timing
                     #--- Creation du bouton open
                     button $frm.form.butopen.open \
                        -text "open" -borderwidth 2 \
-                       -command "::av4l_tools::open_flux $visuNo $frm"
+                       -command "::av4l_ocr_tools::open_flux $visuNo $frm"
                     pack $frm.form.butopen.open \
                        -in $frm.form.butopen -side left -anchor e \
                        -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
@@ -447,7 +350,7 @@ variable timing
              #--- Creation du bouton open
              button $frm.open.but_open \
                 -text "open" -borderwidth 2 \
-                -command "::av4l_ocr_gui::avi_open $visuNo $frm"
+                -command "::av4l_ocr_tools::open_flux $visuNo $frm"
              pack $frm.open.but_open \
                 -side left -anchor e \
                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
@@ -455,7 +358,7 @@ variable timing
              #--- Creation du bouton select
              button $frm.open.but_select \
                 -text "..." -borderwidth 2 -takefocus 1 \
-                -command "::av4l_tools::avi_select $visuNo $frm"
+                -command "::av4l_ocr_tools::select $visuNo $frm"
              pack $frm.open.but_select \
                 -side left -anchor e \
                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
@@ -484,7 +387,7 @@ variable timing
         image create photo .arr -format PNG -file [ file join $audace(rep_plugin) tool av4l img arr.png ]
         button $frm.qprevimage -image .arr\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command "::av4l_ocr_gui::avi_quick_prev_image $frm $visuNo"
+           -command "::av4l_ocr_tools::quick_prev_image $visuNo $frm"
         pack $frm.qprevimage \
            -in $frm.btnav \
            -side left -anchor w \
@@ -494,7 +397,7 @@ variable timing
         image create photo .arn -format PNG -file [ file join $audace(rep_plugin) tool av4l img arn.png ]
         button $frm.previmage -image .arn\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command "::av4l_ocr_gui::avi_prev_image $frm $visuNo"
+           -command "::av4l_ocr_tools::prev_image $visuNo $frm"
         pack $frm.previmage \
            -in $frm.btnav \
            -side left -anchor w \
@@ -504,7 +407,7 @@ variable timing
         image create photo .avn -format PNG -file [ file join $audace(rep_plugin) tool av4l img avn.png ]
         button $frm.nextimage -image .avn\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command "::av4l_ocr_gui::avi_next_image $frm $visuNo"
+           -command "::av4l_ocr_tools::next_image $visuNo $frm"
         pack $frm.nextimage \
            -in $frm.btnav \
            -side left -anchor w \
@@ -514,7 +417,7 @@ variable timing
         image create photo .avr -format PNG -file [ file join $audace(rep_plugin) tool av4l img avr.png ]
         button $frm.qnextimage -image .avr\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command "::av4l_ocr_gui::avi_quick_next_image $frm $visuNo"
+           -command "::av4l_ocr_tools::quick_next_image $visuNo $frm"
         pack $frm.qnextimage \
            -in $frm.btnav \
            -side left -anchor w \
@@ -532,7 +435,7 @@ variable timing
              #--- Creation du bouton setmin
              button $frm.pos.setmin \
                 -text "setmin" -borderwidth 2 \
-                -command "::av4l_tools::avi_setmin $frm"
+                -command "::av4l_tools::setmin $frm"
              pack $frm.pos.setmin \
                 -in $frm.pos \
                 -side left -anchor w \
@@ -541,7 +444,7 @@ variable timing
              #--- Creation du bouton setmax
              button $frm.pos.setmax \
                 -text "setmax" -borderwidth 2 \
-                -command "::av4l_tools::avi_setmax $frm"
+                -command "::av4l_tools::setmax $frm"
              pack $frm.pos.setmax \
                 -in $frm.pos \
                 -side left -anchor w \
@@ -573,12 +476,20 @@ variable timing
              #--- Creation du bouton setmax
              button $frm.pos.crop \
                 -text "crop" -borderwidth 2 \
-                -command "::av4l_ocr_gui::avi_crop $visuNo $frm "
+                -command "::av4l_tools::crop $visuNo $frm "
              pack $frm.pos.crop \
                 -in $frm.pos \
                 -side left -anchor w \
                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
+             #--- Creation du bouton setmax
+             button $frm.pos.uncrop \
+                -text "uncrop" -borderwidth 2 \
+                -command "::av4l_tools::uncrop $visuNo $frm"
+             pack $frm.pos.uncrop \
+                -in $frm.pos \
+                -side left -anchor w \
+                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
 
 
@@ -616,8 +527,8 @@ variable timing
               pack  $ocr.t -in $ocr -side left -expand 5 -anchor w
 
               checkbutton $ocr.t.check -highlightthickness 0 -text "OCR" \
-                          -variable ::av4l_ocr_gui::active_ocr \
-                          -command "::av4l_ocr_gui::select_ocr $visuNo $frm" \
+                          -variable ::av4l_ocr_tools::active_ocr \
+                          -command "::av4l_ocr_tools::select_ocr $visuNo $frm" \
                          
               pack $ocr.t.check -in $ocr.t -side left -padx 5 -pady 0
 
@@ -638,7 +549,7 @@ variable timing
 
               #--- Cree un bouton
               button $ocr.t.selectbox -text "Select" -borderwidth 1 -takefocus 1 \
-                    -command "::av4l_ocr_gui::select_time $visuNo $frm"  -state disabled
+                    -command "::av4l_ocr_tools::select_time $visuNo $frm"  -state disabled
               pack $ocr.t.selectbox -in $ocr.t -side left -anchor e 
 
           #--- Cree un frame pour activation/desactivation ocr
@@ -811,7 +722,7 @@ variable timing
 
               #--- Cree un bouton
               button $setunset.t.verif -text "Verifi�" -borderwidth 1 -takefocus 1 \
-                                     -command "::av4l_ocr_gui::verif $visuNo $frm"
+                                     -command "::av4l_ocr_tools::verif $visuNo $frm"
               pack $setunset.t.verif -in $setunset.t -side left -anchor e 
 
               #--- Cree un bouton
@@ -886,7 +797,7 @@ variable timing
 
            button $frm.action.start -image .start\
               -borderwidth 2 -width 48 -height 48 -compound center \
-              -command "::av4l_ocr_gui::avi_start $visuNo $frm"
+              -command "::av4l_ocr_tools::start $visuNo $frm"
            pack $frm.action.start \
               -in $frm.action \
               -side left -anchor w \
@@ -895,7 +806,7 @@ variable timing
            image create photo .save  -format PNG -file [ file join $audace(rep_plugin) tool av4l img save.png ]
            button $frm.action.save -image .save\
               -borderwidth 2 -width 48 -height 48 -compound center \
-              -command "::av4l_ocr_gui::avi_save $visuNo $frm"
+              -command "::av4l_ocr_tools::save $visuNo $frm"
            pack $frm.action.save \
               -in $frm.action \
               -side left -anchor w \
@@ -927,7 +838,7 @@ variable timing
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
 
-      bind $frm.scrollbar <ButtonRelease> "::av4l_ocr_gui::avi_scroll $visuNo $frm"
+      bind $frm.scrollbar <ButtonRelease> "::av4l_ocr_tools::move_scroll $visuNo $frm"
 
 
    }

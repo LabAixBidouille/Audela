@@ -114,9 +114,11 @@ namespace eval ::av4l_cdl_gui {
    # et de l'enregistrement des dates dans le fichier log
    #
    proc ::av4l_cdl_gui::run { visuNo frm } {
-     global audace panneau
+
+      global audace panneau
 
       set panneau(av4l,$visuNo,av4l_cdl_gui) $frm
+
       createdialog $visuNo $frm
 
    }
@@ -164,7 +166,7 @@ namespace eval ::av4l_cdl_gui {
    proc ::av4l_cdl_gui::closeWindow { this visuNo } {
 
       ::av4l_cdl_gui::widgetToConf $visuNo
-      #::av4l_tools::close
+
       destroy $this
    }
 
@@ -221,6 +223,7 @@ namespace eval ::av4l_cdl_gui {
       #--- Retourne l'item de la camera associee a la visu
       set frm $this.frm_av4l_cdl_gui
       set frmbbar $this.frm_av4l_cdl_gui_bar
+
       if { $::av4l_tools::traitement=="fits" } { set titre $caption(av4l_cdl_gui,titre_fits) }
       if { $::av4l_tools::traitement=="avi" }  { set titre $caption(av4l_cdl_gui,titre_avi) }
 

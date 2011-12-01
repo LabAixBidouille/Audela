@@ -5,13 +5,19 @@
 # Fichier        : av4l_ocr_tools.tcl
 # Description    : Utilitaires pour la reconnaissance de caracteres
 # Auteur         : Frederic Vachier
-# Mise Ã  jour $Id: av4l_ocr_gui.tcl 6795 2011-02-26 16:05:27Z fredvachier $
+# Mise Ã  jour $Id: av4l_ocr_tools.tcl 6795 2011-02-26 16:05:27Z fredvachier $
 #
 
 namespace eval ::av4l_ocr_tools {
 
 
 
+variable sortie
+variable active_ocr
+variable nbverif
+variable nbocr
+variable nbinterp
+variable timing
 
 
 
@@ -62,7 +68,7 @@ namespace eval ::av4l_ocr_tools {
             set ::av4l_photom::rect_img $rect
          }
          $frm.datation.values.setup.t.selectbox  configure -relief sunken
-         ::av4l_ocr_gui::workimage $visuNo $frm
+         ::av4l_ocr_tools::workimage $visuNo $frm
          return
       }
 
@@ -79,7 +85,7 @@ namespace eval ::av4l_ocr_tools {
       global color
 
       # desactivation
-      if {$::av4l_ocr_gui::active_ocr=="0"} {
+      if {$::av4l_ocr_tools::active_ocr == "0"} {
          $frm.datation.values.setup.t.typespin  configure -state disabled
          $frm.datation.values.setup.t.selectbox configure -state disabled
          $frm.datation.values.setunset.t.ocr   configure -bg $::audace(color,backColor) -fg $::audace(color,textColor)
@@ -89,7 +95,7 @@ namespace eval ::av4l_ocr_tools {
          $frm.datation.values.setup.t.typespin  configure -state normal
          $frm.datation.values.setup.t.selectbox configure -state normal
          $frm.datation.values.setunset.t.ocr    configure -state normal
-         ::av4l_ocr_gui::workimage $visuNo $frm
+         ::av4l_ocr_tools::workimage $visuNo $frm
          return
       }
 
@@ -119,7 +125,7 @@ namespace eval ::av4l_ocr_tools {
       set statebutton [ $frm.datation.values.setup.t.selectbox cget -relief]
 
       # desactivation
-      if {$::av4l_ocr_gui::active_ocr=="1" && $statebutton=="sunken"} {
+      if {$::av4l_ocr_tools::active_ocr=="1" && $statebutton=="sunken"} {
 
           set box [$frm.datation.values.setup.t.typespin get]
           #::console::affiche_resultat "box : $box \n"
@@ -280,30 +286,31 @@ namespace eval ::av4l_ocr_tools {
  
 
           set idframe $::av4l_tools::cur_idframe
+
           ::console::affiche_resultat "$idframe - "
-          ::console::affiche_resultat "$::av4l_ocr_gui::timing($idframe,verif) . "
-          ::console::affiche_resultat "$::av4l_ocr_gui::timing($idframe,ocr) . "
-          ::console::affiche_resultat "$::av4l_ocr_gui::timing($idframe,interpol) \n"
+          ::console::affiche_resultat "$::av4l_ocr_tools::timing($idframe,verif) . "
+          ::console::affiche_resultat "$::av4l_ocr_tools::timing($idframe,ocr) . "
+          ::console::affiche_resultat "$::av4l_ocr_tools::timing($idframe,interpol) \n"
 
 
           $frm.infofrm.v.nbimage configure -text $::av4l_tools::nb_frames
 
-          $frm.infofrm.v.nbverif configure -text $::av4l_ocr_gui::nbverif
+          $frm.infofrm.v.nbverif configure -text $::av4l_ocr_tools::nbverif
 
-          set p [format %2.1f [expr $::av4l_ocr_gui::nbocr/($::av4l_tools::nb_frames*1.0)*100.0]]
-          $frm.infofrm.v.nbocr configure -text "$::av4l_ocr_gui::nbocr ($p %)"
+          set p [format %2.1f [expr $::av4l_ocr_tools::nbocr/($::av4l_tools::nb_frames*1.0)*100.0]]
+          $frm.infofrm.v.nbocr configure -text "$::av4l_ocr_tools::nbocr ($p %)"
 
-          set p [format %2.1f [expr $::av4l_ocr_gui::nbinterp/($::av4l_tools::nb_frames*1.0)*100.0]]
-          $frm.infofrm.v.nbinterp configure -text "$::av4l_ocr_gui::nbinterp ($p %)"
+          set p [format %2.1f [expr $::av4l_ocr_tools::nbinterp/($::av4l_tools::nb_frames*1.0)*100.0]]
+          $frm.infofrm.v.nbinterp configure -text "$::av4l_ocr_tools::nbinterp ($p %)"
 
-          if {$::av4l_ocr_gui::timing($::av4l_tools::cur_idframe,verif) == 1} {
+          if {$::av4l_ocr_tools::timing($::av4l_tools::cur_idframe,verif) == 1} {
              $frm.datation.values.setunset.t.verif configure -bg "#00891b" -fg $color(white)
              $frm.datation.values.setunset.t.verif configure -relief sunken
           } else {
              $frm.datation.values.setunset.t.verif configure -bg $::audace(color,backColor) -fg $::audace(color,textColor)
              $frm.datation.values.setunset.t.verif configure -relief raised
           }
-          if {$::av4l_ocr_gui::timing($::av4l_tools::cur_idframe,interpol) == 1} {
+          if {$::av4l_ocr_tools::timing($::av4l_tools::cur_idframe,interpol) == 1} {
              $frm.datation.values.setunset.t.interpol configure -bg "#00891b" -fg $color(white)
              $frm.datation.values.setunset.t.interpol configure -relief sunken
           } else {
@@ -312,9 +319,9 @@ namespace eval ::av4l_ocr_tools {
           }
           
           
-          if {$::av4l_ocr_gui::timing($::av4l_tools::cur_idframe,verif) == 1 || $::av4l_ocr_gui::timing($::av4l_tools::cur_idframe,interpol) == 1} {
+          if {$::av4l_ocr_tools::timing($::av4l_tools::cur_idframe,verif) == 1 || $::av4l_ocr_tools::timing($::av4l_tools::cur_idframe,interpol) == 1} {
 
-          set poslist [split $::av4l_ocr_gui::timing($::av4l_tools::cur_idframe,dateiso) "T"]
+          set poslist [split $::av4l_ocr_tools::timing($::av4l_tools::cur_idframe,dateiso) "T"]
           #::console::affiche_resultat "   poslist = $poslist \n"
           set ymd [lindex $poslist 0]
           set hms [lindex $poslist 1]
@@ -425,9 +432,9 @@ namespace eval ::av4l_ocr_tools {
       if {$statebutton=="sunken"} {
          $frm.datation.values.setunset.t.verif configure -bg $::audace(color,backColor) -fg $::audace(color,textColor)
          $frm.datation.values.setunset.t.verif configure -relief raised
-         incr ::av4l_ocr_gui::nbverif -1
-         set ::av4l_ocr_gui::timing($::av4l_tools::cur_idframe,verif) 0
-         ::av4l_ocr_gui::workimage $visuNo $frm
+         incr ::av4l_ocr_tools::nbverif -1
+         set ::av4l_ocr_tools::timing($::av4l_tools::cur_idframe,verif) 0
+         ::av4l_ocr_tools::workimage $visuNo $frm
          getinfofrm $visuNo $frm
          return
       } 
@@ -502,9 +509,9 @@ namespace eval ::av4l_ocr_tools {
       $frm.datation.values.setunset.t.verif configure -bg "#00891b" -fg $color(white)
       $frm.datation.values.setunset.t.verif configure -relief sunken
       
-      incr ::av4l_ocr_gui::nbverif
-      set ::av4l_ocr_gui::timing($::av4l_tools::cur_idframe,verif) 1
-      set ::av4l_ocr_gui::timing($::av4l_tools::cur_idframe,dateiso) "$y-$m-${d}T$h:$min:$s.$ms"
+      incr ::av4l_ocr_tools::nbverif
+      set ::av4l_ocr_tools::timing($::av4l_tools::cur_idframe,verif) 1
+      set ::av4l_ocr_tools::timing($::av4l_tools::cur_idframe,dateiso) "$y-$m-${d}T$h:$min:$s.$ms"
       #tk_messageBox -message "$caption(bddimages_status,consoleErr3) $msg" -type ok
       getinfofrm $visuNo $frm
 
@@ -568,27 +575,31 @@ namespace eval ::av4l_ocr_tools {
  
  
  
-   proc ::av4l_ocr_tools::avi_stop {  } {
+   proc ::av4l_ocr_tools::stop {  } {
       ::console::affiche_resultat "-- stop \n"
-      set ::av4l_ocr_gui::sortie 1
+      set ::av4l_ocr_tools::sortie 1
    }   
  
  
  
  
  
+   proc ::av4l_ocr_tools::select { visuNo frm } {
+      ::av4l_tools::select $visuNo $frm
+      ::av4l_ocr_tools::open_flux $visuNo $frm
+   }
  
- 
-   proc ::av4l_ocr_tools::avi_open { visuNo frm } {
-      ::av4l_tools::avi_open $visuNo $frm
-      for  {set x 1} {$x<=$::av4l_tools::nb_frames} {incr x} {
-         set ::av4l_ocr_gui::timing($x,verif) 0
-         set ::av4l_ocr_gui::timing($x,ocr) 0
-         set ::av4l_ocr_gui::timing($x,interpol) 0
-         set ::av4l_ocr_gui::timing($x,jd)  ""
-         set ::av4l_ocr_gui::timing($x,diff)  ""
-         set ::av4l_ocr_gui::timing($x,dateiso) ""
+   proc ::av4l_ocr_tools::open_flux { visuNo frm } {
+      ::av4l_tools::open_flux $visuNo $frm
+      for  {set x 1} {$x<=$::av4l_tools::nb_open_frames} {incr x} {
+         set ::av4l_ocr_tools::timing($x,verif) 0
+         set ::av4l_ocr_tools::timing($x,ocr) 0
+         set ::av4l_ocr_tools::timing($x,interpol) 0
+         set ::av4l_ocr_tools::timing($x,jd)  ""
+         set ::av4l_ocr_tools::timing($x,diff)  ""
+         set ::av4l_ocr_tools::timing($x,dateiso) ""
       }
+
 
    }
 
@@ -598,34 +609,34 @@ namespace eval ::av4l_ocr_tools {
 
 
 
-   proc ::av4l_ocr_tools::avi_start { visuNo frm } {
+   proc ::av4l_ocr_tools::start { visuNo frm } {
  
 
-      set idframedebut [::av4l_tools::avi_get_idframe] 
+      set idframedebut $::av4l_tools::cur_idframe
  
-      if { $::av4l_ocr_gui::timing($idframedebut,verif) != 1 } {
+      if { $::av4l_ocr_tools::timing($idframedebut,verif) != 1 } {
           tk_messageBox -message "Veuillez commencer par une image verifiée" -type ok
           return
       }
  
-      set ::av4l_ocr_gui::sortie 0
+      set ::av4l_ocr_tools::sortie 0
       set cpt 0
       $frm.action.start configure -image .stop
       $frm.action.start configure -relief sunken     
-      $frm.action.start configure -command " ::av4l_ocr_gui::avi_stop" 
+      $frm.action.start configure -command " ::av4l_ocr_tools::stop" 
       
-      set ::av4l_ocr_gui::nbocr 0
-      set ::av4l_ocr_gui::nbinterp 0
+      set ::av4l_ocr_tools::nbocr 0
+      set ::av4l_ocr_tools::nbinterp 0
       
       
-      while {$::av4l_ocr_gui::sortie == 0} {
+      while {$::av4l_ocr_tools::sortie == 0} {
 
          getinfofrm $visuNo $frm
-         set idframe [::av4l_tools::avi_get_idframe] 
+         set idframe $::av4l_tools::cur_idframe
          #::console::affiche_resultat "\[$idframe / $::av4l_tools::nb_frames / [expr $::av4l_tools::nb_frames-$idframe] \]\n"
          ::console::affiche_resultat "."
-         if {$idframe == $::av4l_tools::nb_frames} {
-            set ::av4l_ocr_gui::sortie 1
+         if {$idframe == $::av4l_tools::frame_end} {
+            set ::av4l_ocr_tools::sortie 1
          }
          
          set pass "no"
@@ -634,20 +645,20 @@ namespace eval ::av4l_ocr_tools {
     
      # Verifié
 
-         if {$::av4l_ocr_gui::timing($idframe,verif) == 1} {
+         if {$::av4l_ocr_tools::timing($idframe,verif) == 1} {
 
             # calcul jd
-            set ::av4l_ocr_gui::timing($idframe,jd) [mc_date2jd $::av4l_ocr_gui::timing($idframe,dateiso)]
+            set ::av4l_ocr_tools::timing($idframe,jd) [mc_date2jd $::av4l_ocr_tools::timing($idframe,dateiso)]
             #::console::affiche_resultat "\[$idframe / $::av4l_tools::nb_frames / [expr $::av4l_tools::nb_frames-$idframe] \] V\n"
 
-            ::av4l_tools::avi_next_image  
+            ::av4l_tools::next_image $visuNo
             set pass "ok"
          }
 
       # OCR
       
          if {$pass == "no"} {
-            set res [::av4l_ocr_gui::workimage $visuNo $frm]
+            set res [::av4l_ocr_tools::workimage $visuNo $frm]
             if {$res==1} {
 
                # calcul iso
@@ -691,14 +702,14 @@ namespace eval ::av4l_ocr_tools {
                   set s   [return_2digit $s]
                   set ms  [return_3digit $ms]
 
-                  incr ::av4l_ocr_gui::nbocr
-                  set ::av4l_ocr_gui::timing($idframe,dateiso) "$y-$m-${d}T$h:$min:$s.$ms"
-                  set ::av4l_ocr_gui::timing($idframe,jd) [mc_date2jd $::av4l_ocr_gui::timing($idframe,dateiso)]
+                  incr ::av4l_ocr_tools::nbocr
+                  set ::av4l_ocr_tools::timing($idframe,dateiso) "$y-$m-${d}T$h:$min:$s.$ms"
+                  set ::av4l_ocr_tools::timing($idframe,jd) [mc_date2jd $::av4l_ocr_tools::timing($idframe,dateiso)]
 
-                  set ::av4l_ocr_gui::timing($idframe,ocr) 1
-                  set ::av4l_ocr_gui::timing($idframe,interpol) 0
+                  set ::av4l_ocr_tools::timing($idframe,ocr) 1
+                  set ::av4l_ocr_tools::timing($idframe,interpol) 0
                   #::console::affiche_resultat "\[$idframe / $::av4l_tools::nb_frames / [expr $::av4l_tools::nb_frames-$idframe] \] O\n"
-                  ::av4l_tools::avi_next_image  
+                  ::av4l_tools::next_image $visuNo
                   set pass "ok"
                }
             }
@@ -707,11 +718,11 @@ namespace eval ::av4l_ocr_tools {
        # interpolation
        
          if {$pass == "no"} {
-            set ::av4l_ocr_gui::timing($idframe,interpol) 1
-            set ::av4l_ocr_gui::timing($idframe,ocr) 0
-            incr ::av4l_ocr_gui::nbinterp
+            set ::av4l_ocr_tools::timing($idframe,interpol) 1
+            set ::av4l_ocr_tools::timing($idframe,ocr) 0
+            incr ::av4l_ocr_tools::nbinterp
             #::console::affiche_resultat "\[$idframe / $::av4l_tools::nb_frames / [expr $::av4l_tools::nb_frames-$idframe] \] I\n"
-            ::av4l_tools::avi_next_image  
+            ::av4l_tools::next_image $visuNo
          }
 
 
@@ -728,17 +739,17 @@ namespace eval ::av4l_ocr_tools {
           #::console::affiche_resultat "Verification des OCR \n"
 
        
-          set ::av4l_ocr_gui::sortie 0
+          set ::av4l_ocr_tools::sortie 0
           
           set idframe $idframedebut
-          while {$::av4l_ocr_gui::sortie == 0} {
+          while {$::av4l_ocr_tools::sortie == 0} {
 
              #::console::affiche_resultat "."
              if {$idframe == $idframefin} {
-                set ::av4l_ocr_gui::sortie 1
+                set ::av4l_ocr_tools::sortie 1
              }
              
-             if {$::av4l_ocr_gui::timing($idframe,ocr) == 1} {
+             if {$::av4l_ocr_tools::timing($idframe,ocr) == 1} {
                
                # OK on interpole !
                  #::console::affiche_resultat "-$idframe-"
@@ -752,18 +763,18 @@ namespace eval ::av4l_ocr_tools {
                  }
                  #::console::affiche_resultat "VO : $idframe ($idfrmav<$idfrmap)  "
                  
-                 set jdav $::av4l_ocr_gui::timing($idfrmav,jd)
-                 set jdap $::av4l_ocr_gui::timing($idfrmap,jd)
+                 set jdav $::av4l_ocr_tools::timing($idfrmav,jd)
+                 set jdap $::av4l_ocr_tools::timing($idfrmap,jd)
                                   
                  set jd [expr $jdav+($jdap-$jdav)/($idfrmap-$idfrmav)*($idframe-$idfrmav)]
                  set jd [ format "%6.10f" $jd]
                  
-                 set diff [ expr   abs(($::av4l_ocr_gui::timing($idframe,jd) - $jd ) * 86400.0) ]                            
+                 set diff [ expr   abs(($::av4l_ocr_tools::timing($idframe,jd) - $jd ) * 86400.0) ]                            
                  #::console::affiche_resultat "diff = $diff\n"
                  if { $diff > 0.5 } {
-                      ::console::affiche_erreur "Warning! ($idframe) $::av4l_ocr_gui::timing($idframe,dateiso)\n"
-                      set ::av4l_ocr_gui::timing($idframe,ocr) 0
-                      set ::av4l_ocr_gui::timing($idframe,interpol) 1
+                      ::console::affiche_erreur "Warning! ($idframe) $::av4l_ocr_tools::timing($idframe,dateiso)\n"
+                      set ::av4l_ocr_tools::timing($idframe,ocr) 0
+                      set ::av4l_ocr_tools::timing($idframe,interpol) 1
                  }
                  
              }
@@ -777,17 +788,17 @@ namespace eval ::av4l_ocr_tools {
           #::console::affiche_resultat "Interpolation \n"
 
        
-          set ::av4l_ocr_gui::sortie 0
+          set ::av4l_ocr_tools::sortie 0
           
           set idframe $idframedebut
-          while {$::av4l_ocr_gui::sortie == 0} {
+          while {$::av4l_ocr_tools::sortie == 0} {
 
              #::console::affiche_resultat "."
              if {$idframe == $idframefin} {
-                set ::av4l_ocr_gui::sortie 1
+                set ::av4l_ocr_tools::sortie 1
              }
              
-             if {$::av4l_ocr_gui::timing($idframe,interpol) == 1} {
+             if {$::av4l_ocr_tools::timing($idframe,interpol) == 1} {
                
                # OK on interpole !
                  #::console::affiche_resultat "-$idframe-"
@@ -810,16 +821,16 @@ namespace eval ::av4l_ocr_tools {
                     set idfrmap [ get_idfrmav [expr $::av4l_tools::nb_frames + 1)] 1]
                  }
                  #::console::affiche_resultat "I : $idframe ($idfrmav<$idfrmap)  "
-                 set jdav $::av4l_ocr_gui::timing($idfrmav,jd)
-                 set jdap $::av4l_ocr_gui::timing($idfrmap,jd)
+                 set jdav $::av4l_ocr_tools::timing($idfrmav,jd)
+                 set jdap $::av4l_ocr_tools::timing($idfrmap,jd)
                                   
                  set jd [expr $jdav+($jdap-$jdav)/($idfrmap-$idfrmav)*($idframe-$idfrmav)]
                  set jd [ format "%6.10f" $jd]
                  
                  #::console::affiche_resultat "JD=$jd"
                  set dateiso [mc_date2iso8601 $jd]
-                 set ::av4l_ocr_gui::timing($idframe,jd) $jd
-                 set ::av4l_ocr_gui::timing($idframe,dateiso) $dateiso
+                 set ::av4l_ocr_tools::timing($idframe,jd) $jd
+                 set ::av4l_ocr_tools::timing($idframe,dateiso) $dateiso
                  
              }
            incr idframe
@@ -842,15 +853,15 @@ namespace eval ::av4l_ocr_tools {
 #          set x_avg 0
 #          set y_avg 0
 #          set cpt 0
-#          set ::av4l_ocr_gui::sortie 0
+#          set ::av4l_ocr_tools::sortie 0
 #          set idframe $idframedebut
-#          while {$::av4l_ocr_gui::sortie == 0} {
+#          while {$::av4l_ocr_tools::sortie == 0} {
 #             if {$idframe == $idframefin} {
-#                set ::av4l_ocr_gui::sortie 1
+#                set ::av4l_ocr_tools::sortie 1
 #             }
-#             if {$::av4l_ocr_gui::timing($idframe,verif) == 1 || $::av4l_ocr_gui::timing($idframe,ocr) == 1} {
+#             if {$::av4l_ocr_tools::timing($idframe,verif) == 1 || $::av4l_ocr_tools::timing($idframe,ocr) == 1} {
 #                set x_avg [expr $x_avg+$idframe]
-#                set y_avg [expr $y_avg+$::av4l_ocr_gui::timing($idframe,jd)]
+#                set y_avg [expr $y_avg+$::av4l_ocr_tools::timing($idframe,jd)]
 #                incr cpt
 #             }
 #             incr idframe
@@ -866,14 +877,14 @@ namespace eval ::av4l_ocr_tools {
 #          set sum1 0
 #          set sum2 0
 #          set cpt 0
-#          set ::av4l_ocr_gui::sortie 0
+#          set ::av4l_ocr_tools::sortie 0
 #          set idframe $idframedebut
-#          while {$::av4l_ocr_gui::sortie == 0} {
+#          while {$::av4l_ocr_tools::sortie == 0} {
 #             if {$idframe == $idframefin} {
-#                set ::av4l_ocr_gui::sortie 1
+#                set ::av4l_ocr_tools::sortie 1
 #             }
-#             if {$::av4l_ocr_gui::timing($idframe,verif) == 1 || $::av4l_ocr_gui::timing($idframe,ocr) == 1} {
-#                set sum1 [expr $sum1 + ($idframe-$x_avg)*($::av4l_ocr_gui::timing($idframe,jd)-$y_avg)]
+#             if {$::av4l_ocr_tools::timing($idframe,verif) == 1 || $::av4l_ocr_tools::timing($idframe,ocr) == 1} {
+#                set sum1 [expr $sum1 + ($idframe-$x_avg)*($::av4l_ocr_tools::timing($idframe,jd)-$y_avg)]
 #                set sum2 [expr $sum2 + pow(($idframe-$x_avg),2)]
 #                incr cpt
 #             }
@@ -888,29 +899,29 @@ namespace eval ::av4l_ocr_tools {
 #   
 #          ::console::affiche_resultat "Comparaison\n"
 #
-#          set ::av4l_ocr_gui::sortie 0
+#          set ::av4l_ocr_tools::sortie 0
 #          set idframe $idframedebut
-#          while {$::av4l_ocr_gui::sortie == 0} {
+#          while {$::av4l_ocr_tools::sortie == 0} {
 #             if {$idframe == $idframefin} {
-#                set ::av4l_ocr_gui::sortie 1
+#                set ::av4l_ocr_tools::sortie 1
 #             }
 #             set y [ expr $b1 * $idframe + $b0 ]
-#             set diff [expr ($::av4l_ocr_gui::timing($idframe,jd)-$y)*86400.0]
-#             set ::av4l_ocr_gui::timing($idframe,diff) $diff
+#             set diff [expr ($::av4l_ocr_tools::timing($idframe,jd)-$y)*86400.0]
+#             set ::av4l_ocr_tools::timing($idframe,diff) $diff
 #             if { $diff > 1.0 } {
-#                if {$::av4l_ocr_gui::timing($idframe,ocr) == 1} {
-#                    set ::av4l_ocr_gui::timing($idframe,ocr) 0
-#                    set ::av4l_ocr_gui::timing($idframe,interpol) 1
-#                    incr ::av4l_ocr_gui::nbinterp
-#                    incr ::av4l_ocr_gui::nbocr -1
-#                   ::console::affiche_resultat "REJECTED ($idframe) $::av4l_ocr_gui::timing($idframe,dateiso)\n"
+#                if {$::av4l_ocr_tools::timing($idframe,ocr) == 1} {
+#                    set ::av4l_ocr_tools::timing($idframe,ocr) 0
+#                    set ::av4l_ocr_tools::timing($idframe,interpol) 1
+#                    incr ::av4l_ocr_tools::nbinterp
+#                    incr ::av4l_ocr_tools::nbocr -1
+#                   ::console::affiche_resultat "REJECTED ($idframe) $::av4l_ocr_tools::timing($idframe,dateiso)\n"
 #                    
 #                }
-#                if {$::av4l_ocr_gui::timing($idframe,ocr) == 1} {
+#                if {$::av4l_ocr_tools::timing($idframe,ocr) == 1} {
 #                   ::console::affiche_erreur "***\n"
 #                   ::console::affiche_erreur "Attention une erreur de datation risque de flinguer le pocessus\n"
 #                   ::console::affiche_erreur "IDFRAME = $idframe\n"
-#                   ::console::affiche_erreur "DATEVERIF = $::av4l_ocr_gui::timing($idframe,dateiso)\n"
+#                   ::console::affiche_erreur "DATEVERIF = $::av4l_ocr_tools::timing($idframe,dateiso)\n"
 #                   ::console::affiche_erreur "DIFF = $diff\n"
 #                   ::console::affiche_erreur "***\n"
 #                }
@@ -922,7 +933,7 @@ namespace eval ::av4l_ocr_tools {
 
       $frm.action.start configure -image .start
       $frm.action.start configure -relief raised     
-      $frm.action.start configure -command "::av4l_ocr_gui::avi_start $visuNo $frm" 
+      $frm.action.start configure -command "::av4l_ocr_tools::start $visuNo $frm" 
       ::console::affiche_resultat "Fin\n"
 
    }
@@ -946,12 +957,12 @@ namespace eval ::av4l_ocr_tools {
           incr id -1
           if {$id == 0} { return -1 }
           if { $gtype == 1 } {
-             if {$::av4l_ocr_gui::timing($id,verif) == 1} {
+             if {$::av4l_ocr_tools::timing($id,verif) == 1} {
                 return $id
              }
           }
           if { $gtype == 2 } {
-             if {$::av4l_ocr_gui::timing($id,verif) == 1 || $::av4l_ocr_gui::timing($id,ocr) == 1 } {
+             if {$::av4l_ocr_tools::timing($id,verif) == 1 || $::av4l_ocr_tools::timing($id,ocr) == 1 } {
                 return $id
              }
           }
@@ -975,12 +986,12 @@ namespace eval ::av4l_ocr_tools {
           incr id 
           if {$id > $::av4l_tools::nb_frames} { break }
           if { $gtype == 1 } {
-             if {$::av4l_ocr_gui::timing($id,verif) == 1} {
+             if {$::av4l_ocr_tools::timing($id,verif) == 1} {
                 return $id
              }
           }
           if { $gtype == 2 } {
-             if {$::av4l_ocr_gui::timing($id,verif) == 1 || $::av4l_ocr_gui::timing($id,ocr) == 1 } {
+             if {$::av4l_ocr_tools::timing($id,verif) == 1 || $::av4l_ocr_tools::timing($id,ocr) == 1 } {
                 return $id
              }
           }
@@ -996,17 +1007,21 @@ namespace eval ::av4l_ocr_tools {
 
 
 
-   proc ::av4l_ocr_tools::avi_save { visuNo frm } {
+   proc ::av4l_ocr_tools::save { visuNo frm } {
  
 
-      set bufNo [ visu$visuNo buf ]
-      set filename [$frm.open.avipath get]
-      if { ! [file exists $filename] } {
-      ::console::affiche_erreur "Charger une video ...\n"
-      } 
-      set racinefilename "${filename}."
+      if { $::av4l_tools::traitement=="fits" } {
+         set filename [file join ${::av4l_tools::destdir} "${::av4l_tools::prefix}"]
+      }
 
-      set filename "${racinefilename}time"
+      if { $::av4l_tools::traitement=="avi" }  {
+         set filename [::av4l_tools::avi_filename]
+         if { ! [file exists $filename] } {
+         ::console::affiche_erreur "Charger une video ...\n"
+         } 
+      }
+
+      set filename "${filename}.time"
 
       ::console::affiche_resultat "Sauvegarde dans ${filename} ..."
       set f1 [open $filename "w"]
@@ -1028,16 +1043,16 @@ namespace eval ::av4l_ocr_tools {
          
          set line "$idframe,"
          
-         if { ! [info exists ::av4l_ocr_gui::timing($idframe,jd)] ||  $::av4l_ocr_gui::timing($idframe,jd) == ""} { continue }
+         if { ! [info exists ::av4l_ocr_tools::timing($idframe,jd)] ||  $::av4l_ocr_tools::timing($idframe,jd) == ""} { continue }
          
-         append line [ format %6.10f $::av4l_ocr_gui::timing($idframe,jd)] "  ,"
-#         append line "$::av4l_ocr_gui::timing($idframe,diff)     ,"
+         append line [ format %6.10f $::av4l_ocr_tools::timing($idframe,jd)] "  ,"
+#         append line "$::av4l_ocr_tools::timing($idframe,diff)     ,"
 
 
-         append line "$::av4l_ocr_gui::timing($idframe,dateiso)     ,"
-         append line "$::av4l_ocr_gui::timing($idframe,verif)     ,"
-         append line "$::av4l_ocr_gui::timing($idframe,ocr)     ,"
-         append line "$::av4l_ocr_gui::timing($idframe,interpol)"
+         append line "$::av4l_ocr_tools::timing($idframe,dateiso)     ,"
+         append line "$::av4l_ocr_tools::timing($idframe,verif)     ,"
+         append line "$::av4l_ocr_tools::timing($idframe,ocr)     ,"
+         append line "$::av4l_ocr_tools::timing($idframe,interpol)"
 
          puts $f1 $line
       }
@@ -1056,16 +1071,15 @@ namespace eval ::av4l_ocr_tools {
 
 
    #
-   # av4l_ocr_gui::avi_next_image
    # Passe a l image suivante
    #
-   proc ::av4l_ocr_tools::avi_next_image { frm visuNo } {
+   proc ::av4l_ocr_tools::next_image { visuNo frm } {
          
       cleanmark
-      ::av4l_tools::avi_next_image  
-      ::av4l_ocr_gui::workimage $visuNo $frm
-      ::av4l_ocr_gui::getinfofrm $visuNo $frm
-       set ::av4l_tools::scrollbar $::av4l_tools::cur_idframe
+      ::av4l_tools::next_image $visuNo
+      ::av4l_ocr_tools::workimage $visuNo $frm
+      ::av4l_ocr_tools::getinfofrm $visuNo $frm
+
    }
    
 
@@ -1075,34 +1089,32 @@ namespace eval ::av4l_ocr_tools {
 
 
    #
-   # av4l_ocr_gui::avi_next_image
+   # Passe a l image precedente
+   #
+   proc ::av4l_ocr_tools::prev_image { visuNo frm } {
+         
+      ::av4l_tools::prev_image $visuNo
+      ::av4l_ocr_tools::workimage $visuNo $frm
+      ::av4l_ocr_tools::getinfofrm $visuNo $frm
+
+   }
+   
+
+
+
+
+
+
+
+   #
    # Passe a l image suivante
    #
-   proc ::av4l_ocr_tools::avi_prev_image { frm visuNo } {
+   proc ::av4l_ocr_tools::quick_next_image { visuNo frm } {
          
-      ::av4l_tools::avi_prev_image  
-      ::av4l_ocr_gui::workimage $visuNo $frm
-      ::av4l_ocr_gui::getinfofrm $visuNo $frm
-       set ::av4l_tools::scrollbar $::av4l_tools::cur_idframe
-   }
-   
+      ::av4l_tools::quick_next_image $visuNo
+      ::av4l_ocr_tools::workimage $visuNo $frm
+      ::av4l_ocr_tools::getinfofrm $visuNo $frm
 
-
-
-
-
-
-
-   #
-   # av4l_ocr_gui::avi_next_image
-   # Passe a l image suivante
-   #
-   proc ::av4l_ocr_tools::avi_quick_next_image { frm visuNo } {
-         
-      ::av4l_tools::avi_quick_next_image  
-      ::av4l_ocr_gui::workimage $visuNo $frm
-      ::av4l_ocr_gui::getinfofrm $visuNo $frm
-       set ::av4l_tools::scrollbar $::av4l_tools::cur_idframe
    }
 
 
@@ -1113,15 +1125,14 @@ namespace eval ::av4l_ocr_tools {
 
    
    #
-   # av4l_ocr_gui::avi_next_image
-   # Passe a l image suivante
+   # retour rapide 
    #
-   proc ::av4l_ocr_tools::avi_quick_prev_image { frm visuNo } {
+   proc ::av4l_ocr_tools::quick_prev_image { visuNo frm } {
          
-      ::av4l_tools::avi_quick_prev_image  
-      ::av4l_ocr_gui::workimage $visuNo $frm
-      ::av4l_ocr_gui::getinfofrm $visuNo $frm
-       set ::av4l_tools::scrollbar $::av4l_tools::cur_idframe
+      ::av4l_tools::quick_prev_image $visuNo
+      ::av4l_ocr_tools::workimage $visuNo $frm
+      ::av4l_ocr_tools::getinfofrm $visuNo $frm
+
    }
    
 
@@ -1135,43 +1146,17 @@ namespace eval ::av4l_ocr_tools {
 
 
    #
-   # av4l_ocr_gui::avi_scroll
    # 
    #
-   proc ::av4l_ocr_tools::avi_scroll { visuNo frm } {
+   proc ::av4l_ocr_tools::move_scroll { visuNo frm } {
          
-      ::av4l_ocr_gui::workimage $visuNo $frm
-      ::av4l_ocr_gui::getinfofrm $visuNo $frm
+      ::av4l_ocr_tools::workimage $visuNo $frm
+      ::av4l_ocr_tools::getinfofrm $visuNo $frm
    }
 
 
 
 
-
-
-
-
-   #
-   # av4l_ocr_gui::avi_crop
-   # Passe a l image suivante
-   #
-   proc ::av4l_ocr_tools::avi_crop { visuNo frm } {
-         
-      set fmin  [$frm.posmin get]
-      set fmax  [$frm.posmax get]
-         
-      if { $fmin == "" } {
-         set fmin 1
-      }
-      if { $fmax == "" } {
-         set fmax $::av4l_tools::nb_frames
-      }
-      set nbframe [expr $fmax-$fmin+1]
-
-      $frm.scrollbar configure -from $fmin
-      $frm.scrollbar configure -to $fmax
-      $frm.scrollbar configure -tickinterval [expr $nbframe / 5]
-   }
 
 
 
