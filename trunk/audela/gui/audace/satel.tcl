@@ -12,7 +12,7 @@
 #
 # --- Pour calculer une position d'un satellite
 # satel_coords "jason 2"
-# satel_coords "jason 2" 2010-05-23T20:12:31 
+# satel_coords "jason 2" 2010-05-23T20:12:31
 # satel_coords "jason 2" 2010-05-23T20:12:31 {GPS 4 E 56 345}
 #  En sortie : nom ra dec equinox eclairement gisement elevation
 #
@@ -22,7 +22,7 @@
 #
 # --- Pour calculer la scene d'un satellite
 # satel_scene ROS1 "jason 2"
-# satel_scene ROS1 "jason 2" 2010-05-23T20:12:31 
+# satel_scene ROS1 "jason 2" 2010-05-23T20:12:31
 # satel_scene ROS1 "jason 2" 2010-05-23T20:12:31 {GPS 4 E 56 345}
 #  En sortie : Texte en clair dans la console
 
@@ -251,7 +251,7 @@ proc satel_scene { {formatscene ROS1} {satelname "ISS"} {date now} {home ""} } {
    set azim [lindex $res 8]
    set elev [lindex $res 9]
    set res [mc_radec2altaz $ra1 $dec1 $home $date]
-   set ha1 [lindex $res 2]   
+   set ha1 [lindex $res 2]
    set drasid [expr 360./(23.9344696*3600)]
    set dt 5.
    set date [mc_datescomp $date + [expr $dt/86400.]]
@@ -260,7 +260,7 @@ proc satel_scene { {formatscene ROS1} {satelname "ISS"} {date now} {home ""} } {
    set ra2 [lindex $res 1]
    set dec2 [lindex $res 2]
    set res [mc_radec2altaz $ra2 $dec2 $home $date]
-   set ha2 [lindex $res 2]   
+   set ha2 [lindex $res 2]
    set dha [expr ($ha2-$ha1)/$dt]
    if {$dha> 180} { set dha [expr $dha-180] }
    if {$dha<-180} { set dha [expr $dha+180] }
@@ -269,7 +269,7 @@ proc satel_scene { {formatscene ROS1} {satelname "ISS"} {date now} {home ""} } {
    if {$dra<-180} { set dra [expr $dra+180] }
    set ddec [expr ($dec2-$dec1)/$dt]
    set sepangle [lindex [mc_sepangle $ra1 $dec1 $ra2 $dec2] 0]
-   set speed [expr $sepangle/$dt]   
+   set speed [expr $sepangle/$dt]
    append texte "=== Format $formatscene ===\n"
    if {$formatscene=="TEL1"} {
       append texte "Name $name\n"
@@ -480,7 +480,7 @@ proc satel_update { { server "" } {param1 ""} {param2 ""} } {
       }
       set data [::http::data $tok]
       if {[string first "<!DOCTYPE html" $data]>=0} {
-	      error "login and/or password problem\nUse https://www.space-track.org/perl/login.pl\n"
+         error "login and/or password problem\nUse https://www.space-track.org/perl/login.pl\n"
       }
       # --- save the TLE file
       file mkdir [ file join $::audace(rep_userCatalog) tle ]
