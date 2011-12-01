@@ -176,7 +176,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
       // je connecte le telescope
       tel->params->telescopePtr->Connected = true;
       //tel->rateunity=0.1;           //  deg/s when rate=1   
-      tel->rateunity=0.004166667;     // vitesse siderale = 15 arsec/sec = 0.004166667 deg/sec           
+      tel->rateunity=1;     // vitesse siderale = 15 arsec/sec = 0.004166667 deg/sec           
       long nbRates = 0;
       //T->TrackingRates->get_Count( &nbRates);
       tel_home_get(tel,tel->homePosition);
@@ -511,7 +511,7 @@ int mytel_radec_move(struct telprop *tel,char *direction)
 
    //long rate = (long) tel->radec_move_rate ;
    double rate=tel->rateunity*tel->radec_move_rate;
-   rate = 2;
+   //rate = 2;
    sprintf(s,"lindex [string toupper %s] 0",direction); mytel_tcleval(tel,s);
    strcpy(direc,tel->interp->result);
    try {    
@@ -538,7 +538,8 @@ int mytel_radec_move(struct telprop *tel,char *direction)
          rate *= -1;
          tel->params->telescopePtr->MoveAxis(AscomInterfacesLib::axisPrimary,rate);
       }
-      
+	  // Reactivate tracking - seems mandatory for ASCOM scopes
+      // tel->params->telescopePtr->Tracking = true;
       return 0;
    } catch (_com_error &e) {
       sprintf(tel->msg, "mytel_radec_move error=%s",_com_util::ConvertBSTRToString(e.Description()));
