@@ -624,13 +624,13 @@ proc ::telescope::incrementSpeed { } {
       } elseif { $conf(telescope) == "ascom" } {
          #--- Pour lx200, l'increment peut prendre 4 valeurs ( 1 2 3 4 )
          if { $audace(telescope,speed) == "1" } {
-            setSpeed "2"
-         } elseif { $audace(telescope,speed) == "2" } {
-            setSpeed "3"
-         } elseif { $audace(telescope,speed) == "3" } {
-            setSpeed "4"
-         } elseif { $audace(telescope,speed) == "4" } {
             setSpeed "1"
+         } elseif { $audace(telescope,speed) == "2" } {
+            setSpeed "2"
+         } elseif { $audace(telescope,speed) == "3" } {
+            setSpeed "3"
+         } elseif { $audace(telescope,speed) == "4" } {
+            setSpeed "4"
          } else {
             setSpeed "1"
          }
@@ -740,19 +740,19 @@ proc ::telescope::setSpeed { { value "2" } } {
          if { $value == "1" } {
             set audace(telescope,speed) "1"
             set audace(telescope,labelspeed) "1"
-            set audace(telescope,rate) "1"
+            set audace(telescope,rate) "0.01"
          } elseif { $value == "2" } {
             set audace(telescope,speed) "2"
             set audace(telescope,labelspeed) "2"
-            set audace(telescope,rate) "10"
+            set audace(telescope,rate) "0.1"
          } elseif { $value == "3" } {
             set audace(telescope,speed) "3"
             set audace(telescope,labelspeed) "3"
-            set audace(telescope,rate) "100"
+            set audace(telescope,rate) "0.25"
          } elseif { $value == "4" } {
             set audace(telescope,speed) "4"
             set audace(telescope,labelspeed) "4"
-            set audace(telescope,rate) "800"
+            set audace(telescope,rate) "1"
          } else {
             set audace(telescope,speed) "1"
             set audace(telescope,labelspeed) "1"
@@ -947,6 +947,9 @@ proc ::telescope::stop { direction } {
                after 3700
             }
          }
+      } elseif { $conf(telescope) == "ascom" } {
+         tel$audace(telNo) radec stop $direction
+         tel$audace(telNo) radec motor on       
       } elseif { $conf(telescope) == "temma" } {
          set AfterState "0"
          after cancel $AfterId
@@ -1237,6 +1240,7 @@ proc ::telescope::getTargetEquinox { } {
 proc ::telescope::moveTelescope { alphaDirection alphaDiff deltaDirection deltaDiff } {
    variable private
    global audace
+   global audace conf
 
    #--- je recupere les vitesses de guidage (en arseconde par seconde de temps)
    set guidingSpeed  [::confTel::getPluginProperty "guidingSpeed"]
@@ -1295,6 +1299,12 @@ proc ::telescope::moveTelescope { alphaDirection alphaDiff deltaDirection deltaD
    } else {
       tel$audace(telNo) correct $deltaDirection $deltaDelay
    }
+
+# Added for ASCOM telescopes otherwise tracking will stop during autoguiding...
+if { $conf(telescope) == "ascom" } {
+         tel$audace(telNo) radec motor on       
+      }
+
 }
 
 #------------------------------------------------------------
