@@ -11,9 +11,10 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(av4l_ocr_gui,bar_title)           "av4l - cdl - avi"
-set caption(av4l_ocr_gui,main_title)          "acqvideolinux - Statut"
-set caption(av4l_ocr_gui,titre)               "Extraction Video AVI"
+set caption(av4l_ocr_gui,bar_title_fits)      "av4l - time - fits"
+set caption(av4l_ocr_gui,bar_title_avi)       "av4l - time - avi"
+set caption(av4l_ocr_gui,titre_fits)          "Datation d'un lot de fits"
+set caption(av4l_ocr_gui,titre_avi)           "Datation d'une Video AVI"
 
 set caption(av4l_ocr_gui,label_bdd)           "Information du Serveur MySQL Local"
 set caption(av4l_ocr_gui,label_connect)       "Connexion Serveur................"

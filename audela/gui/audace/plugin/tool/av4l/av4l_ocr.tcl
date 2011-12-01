@@ -4,8 +4,8 @@
 #
 # Fichier        : av4l_ocr.tcl
 # Description    : Affiche le status de la base de donnees
-# Auteur         : Frédéric Vachier
-# Mise à jour $Id: av4l_ocr.tcl 6795 2011-02-26 16:05:27Z michelpujol $
+# Auteur         : Frederic Vachier
+# Mise à jour $Id: av4l_ocr.tcl 6795 2011-02-26 16:05:27Z fredvachier $
 #
 
 namespace eval ::av4l_ocr {
