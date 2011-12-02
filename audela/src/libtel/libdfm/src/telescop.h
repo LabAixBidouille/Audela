@@ -26,6 +26,10 @@
 #include <tcl.h>
 #include <libtel/libstruc.h>
 
+#ifdef __cplusplus
+extern "C" {      
+#endif             // __cplusplus */
+
 /*
  * Donnees propres a chaque telescope.
  */
@@ -134,6 +138,10 @@ void dfm_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function)
 int dfm_stat(struct telprop *tel,char *result,char *bits);
 int dfm_initfiducial(struct telprop *tel);
 int dfm_movingdetect(struct telprop *tel,int hara, double *sepangledeg);
+
+#ifdef __cplusplus
+}
+#endif      // __cplusplus
 
 #endif
 

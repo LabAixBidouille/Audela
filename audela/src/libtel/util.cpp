@@ -380,7 +380,7 @@ for (muloop10=0,muloop=0;muloop<micro1;muloop++) { muloops[muloop10]=(unsigned l
 	return ((int)(n/t3*10));
 }
 
-void libcam_strupr(char *chainein, char *chaineout)
+void libtel_strupr(char *chainein, char *chaineout)
 /***************************************************************************/
 /* Fonction de mise en majuscules emulant strupr (pb sous unix)            */
 /***************************************************************************/
@@ -395,7 +395,7 @@ void libcam_strupr(char *chainein, char *chaineout)
    }
 }
 
-void libcam_strlwr(char *chainein, char *chaineout)
+void libtel_strlwr(char *chainein, char *chaineout)
 /***************************************************************************/
 /* Fonction de mise en minuscules emulant strupr (pb sous unix)            */
 /***************************************************************************/

@@ -23,6 +23,10 @@
 #ifndef __TELTCL_H__
 #define __TELTCL_H__
 
+#ifdef __cplusplus
+extern "C" {      
+#endif             // __cplusplus */
+
 /* ----- defines specifiques aux fonctions de cette camera ----*/
 int cmdTelAllCoord(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelAllCoordJd(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
@@ -30,5 +34,9 @@ int cmdTelLoopEval(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 int cmdTelAction(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelAdu(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+
+#ifdef __cplusplus
+}
+#endif      // __cplusplus
 
 #endif

@@ -33,6 +33,10 @@
 #include "etb10.h"
 #include <dmd10.h>
 
+#ifdef __cplusplus
+extern "C" {      
+#endif             // __cplusplus */
+
 #define MOUNT_UNKNOWN 0
 #define MOUNT_EQUATORIAL 1
 #define MOUNT_ALTAZ 2
@@ -133,6 +137,10 @@ double etel_tsl(struct telprop *tel,int *h, int *m,int *sec);
 void etel_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function);
 void etel_radec_coord(struct telprop *tel, int flagha, int *voidangles,double *angledegs,int *angleucs);
 
+
+#ifdef __cplusplus
+}
+#endif      // __cplusplus
 
 #endif
 

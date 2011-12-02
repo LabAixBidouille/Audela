@@ -23,6 +23,10 @@
 #ifndef __TELTCL_H__
 #define __TELTCL_H__
 
+#ifdef __cplusplus
+extern "C" {      
+#endif             // __cplusplus */
+
 #define CMD_TEL_SELECT 1
 /* ----- defines specifiques aux fonctions de cette camera ----*/
 int cmdTelPut(ClientData clientData, Tcl_Interp *interp, int argc, const char *argv[]);
@@ -31,6 +35,10 @@ int cmdTelMethods(ClientData clientData, Tcl_Interp *interp, int argc, const cha
 int cmdTelConnectedSetupDialog(ClientData clientData, Tcl_Interp * interp, int argc, const char *argv[]);
 int cmdTelSetupDialog(ClientData clientData, Tcl_Interp * interp, int argc, const char *argv[]);
 int cmdTelSelect(ClientData clientData, Tcl_Interp * interp, int argc, const char *argv[]);
+
+#ifdef __cplusplus
+}
+#endif      // __cplusplus
 
 
 #endif

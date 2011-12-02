@@ -33,6 +33,10 @@
 #include "etb10.h"
 #include <dmd10.h>
 
+#ifdef __cplusplus
+extern "C" {      
+#endif             // __cplusplus */
+
 #define MODE_SIMULATION 0
 #define MODE_REEL 1
 #define MODE_SIMULATION_ETEL 2
@@ -453,6 +457,11 @@ struct telprop *telthread;
 int ThreadTel_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 static int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 static int CmdThreadTel_loopeval(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+
+#ifdef __cplusplus
+}
+#endif      // __cplusplus
+
 
 #endif
 

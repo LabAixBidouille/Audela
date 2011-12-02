@@ -24,6 +24,10 @@
  * $Id: telcmd.h,v 1.3 2008-05-10 11:55:15 michelpujol Exp $
  */
 
+#ifdef __cplusplus
+extern "C" {      
+#endif             // __cplusplus */
+
 static struct cmditem cmdlist[] = {
    /* === Common commands for all telescopes ===*/
    COMMON_CMDLIST
@@ -37,3 +41,7 @@ static struct cmditem cmdlist[] = {
    /* === Last function terminated by NULL pointers ===*/
    {NULL, NULL}
 };
+
+#ifdef __cplusplus
+}
+#endif      // __cplusplus

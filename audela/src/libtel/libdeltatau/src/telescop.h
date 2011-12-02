@@ -26,6 +26,11 @@
 #include <tcl.h>
 #include <libtel/libstruc.h>
 
+#ifdef __cplusplus
+extern "C" {      
+#endif             // __cplusplus */
+
+
 /*
  * Donnees propres a chaque telescope.
  */
@@ -150,6 +155,10 @@ int deltatau_settsl(struct telprop *tel);
 int deltatau_home(struct telprop *tel, char *home_default);
 double deltatau_tsl(struct telprop *tel,int *h, int *m,double *sec);
 void deltatau_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function);
+
+#ifdef __cplusplus
+}
+#endif      // __cplusplus
 
 #endif
 
