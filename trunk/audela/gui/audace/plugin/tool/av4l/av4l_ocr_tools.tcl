@@ -195,14 +195,10 @@ variable timing
           }
           
           
-          if { $ms<10 } {
-             set ms "00$ms"
-          } elseif { $ms<100 } {
-             set ms "0$ms"
-          }
-          if { $h<10 }   {set h "0$h"} 
-          if { $min<10 } {set min "0$min"} 
-          if { $s<10 }   {set s "0$s"} 
+          set h   [return_2digit $h]
+          set min [return_2digit $min]
+          set s   [return_2digit $s]
+          set ms  [return_3digit $ms]
           
           
           set err [ catch {
@@ -337,8 +333,8 @@ variable timing
           set sms [lindex $poslist 2]
           set poslist [split $sms "."]
           #::console::affiche_resultat "   poslist hms = $poslist \n"
-          set s [lindex $poslist 0]
-          set ms [lindex $poslist 1]
+          set s   [return_2digit [lindex $poslist 0]]
+          set ms  [lindex $poslist 1]
           #::console::affiche_resultat "$y-$m-${d}T$h:$min:$s.$ms\n"
           $frm.datation.values.datetime.y.val   delete 0 end
           $frm.datation.values.datetime.y.val   insert 0 $y
@@ -401,19 +397,36 @@ variable timing
 
    proc ::av4l_ocr_tools::return_2digit { x } {
           set res [ regexp {[0-9]{2}} $x matched ]
-          if { $res } { return $x } 
-          if { $x<10 } {set x "0$x"} 
-          return $x
+          if { $res } { 
+             return $x
+          }
+          if { ! $res } { 
+             if { $x==0 } {
+                return "00"
+             }
+             if { $x<10 } {
+                return "0$x"
+             }
+             return "XX" 
+          } 
    }
    proc ::av4l_ocr_tools::return_3digit { x } {
           set res [ regexp {[0-9]{3}} $x matched ]
-          if { $res } { return $x } 
-          if { $x<10 } {
-             set x "00$x"
-          } elseif { $x<100 } {
-             set x "0$x"
+          if { $res } { 
+             return $x
           }
-          return $x
+          if { ! $res } { 
+             if { $x==0 } {
+                return "000"
+             }
+             if { $x<10 } {
+                return "00$x"
+             }
+             if { $x<100 } {
+                return "0$x"
+             }
+             return "XXX" 
+          } 
    }
 
 
@@ -1001,14 +1014,7 @@ variable timing
 
 
  
-
-
-
-
-
-
-   proc ::av4l_ocr_tools::save { visuNo frm } {
- 
+   proc ::av4l_ocr_tools::get_filename_time { } {
 
       if { $::av4l_tools::traitement=="fits" } {
          set filename [file join ${::av4l_tools::destdir} "${::av4l_tools::prefix}"]
@@ -1021,7 +1027,18 @@ variable timing
          } 
       }
 
-      set filename "${filename}.time"
+      return "${filename}.time"
+
+   }
+
+
+
+
+
+   proc ::av4l_ocr_tools::save { visuNo frm } {
+ 
+
+      set filename [::av4l_ocr_tools::get_filename_time]
 
       ::console::affiche_resultat "Sauvegarde dans ${filename} ..."
       set f1 [open $filename "w"]

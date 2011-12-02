@@ -20,6 +20,69 @@ namespace eval ::av4l_cdl_tools {
 
  
    #
+   # Existance et chargement d un fichier time
+   #
+   proc ::av4l_cdl_tools::file_time_exist {  } {
+
+      for  {set x 1} {$x<=$::av4l_tools::nb_open_frames} {incr x} {
+         set ::av4l_ocr_tools::timing($x,jd)  ""
+         set ::av4l_ocr_tools::timing($x,dateiso) ""
+      }
+
+
+      set filename [::av4l_ocr_tools::get_filename_time]
+      if { [file exists $filename] } {
+         set reponse [tk_messageBox -message "Un fichier 'time' a été trouvé\nVoulez vous l'associer ?" -type yesno]
+         if { $reponse == "yes"} {
+            set f [open $filename "r"]
+            set cpt 0
+            while {1} {
+                set line [gets $f]
+                if {[eof $f]} {
+                    close $f
+                    break
+                }
+                if {$cpt > 2} {
+                   set tab [ split $line "," ]
+                   set id [string trim [lindex $tab 0] " "]
+                   set jd [string trim [lindex $tab 1] " "]
+                   set dateiso [string trim [lindex $tab 2] " "]
+                   set ::av4l_ocr_tools::timing($id,dateiso) $dateiso
+                   set ::av4l_ocr_tools::timing($id,jd) $jd
+                }
+                incr cpt
+            }
+            tk_messageBox -message "Fichier 'time' chargé." -type ok
+         }
+
+      }
+
+   }
+
+
+
+   #
+   # Ouverture d un flux
+   #
+   proc ::av4l_cdl_tools::open_flux { visuNo frm } {
+
+      ::av4l_tools::open_flux $visuNo $frm
+      ::av4l_cdl_tools::file_time_exist
+
+   }
+
+   #
+   # Selection d un flux
+   #
+   proc ::av4l_cdl_tools::select { visuNo frm } {
+
+      ::av4l_tools::select $visuNo $frm
+      ::av4l_cdl_tools::file_time_exist
+
+   }
+
+
+   #
    # Sauvegarde la courbe lumiere  en memoire
    #
    proc ::av4l_cdl_tools::save { visuNo frm } {
@@ -56,6 +119,8 @@ namespace eval ::av4l_cdl_tools {
       puts $f1 "# ** AV4L - Audela - Linux  * "
       puts $f1 "#FPS = 25"
       set line "idframe,"
+      append line "jd,"
+      append line "dateiso,"
       append line "obj_fint     ,"
       append line "obj_pixmax   ,"
       append line "obj_intensite,"
@@ -99,10 +164,9 @@ namespace eval ::av4l_cdl_tools {
          if { [info exists ::av4l_cdl_tools::mesure($idframe,mesure_obj)] && $::av4l_cdl_tools::mesure($idframe,mesure_obj) == 1 } {
             set reste [expr $::av4l_tools::nb_frames-$idframe]
 
-            #set id [expr $idframe -1]
-            set id $idframe
-            
-            set line "$id,"
+            set line "$idframe,"
+            append line "$::av4l_ocr_tools::timing($idframe,jd)           ,"
+            append line "$::av4l_ocr_tools::timing($idframe,dateiso)      ,"
             append line "$::av4l_cdl_tools::mesure($idframe,obj_fint)     ,"
             append line "$::av4l_cdl_tools::mesure($idframe,obj_pixmax)   ,"
             append line "$::av4l_cdl_tools::mesure($idframe,obj_intensite),"
