@@ -938,6 +938,34 @@ proc ::acqfc::testParametreAcquisition { visuNo } {
 }
 
 #------------------------------------------------------------
+# getInfo
+#   retourne les informations courantes sur l'etat de l'outil
+#
+# @param visuNo
+# @return
+#   * exptime
+#   * binning
+#   * mode
+#   * status de pose (en cours = 1
+#   * nom de la camera
+#------------------------------------------------------------
+proc ::acqfc::getInfo { visuNo } {
+   set result ""
+
+   lappend result $::panneau(acqfc,$visuNo,pose)
+   lappend result $::panneau(acqfc,$visuNo,binning)
+   lappend result $::panneau(acqfc,$visuNo,mode)
+   lappend result $::panneau(acqfc,$visuNo,pose_en_cours)
+   set camNo [::confCam::getCamNo $::panneau(acqfc,$visuNo,camItem)]
+   if { $camNo != 0 } {
+      lappend result [cam$camNo name]
+   } else {
+      lappend result ""
+   }
+   return $result
+}
+
+#------------------------------------------------------------
 # startAcquisitionUneImage
 #   fait l'acquisition d'une image
 #
