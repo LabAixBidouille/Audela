@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="libwebcam"
 	ProjectGUID="{BDE9A95F-D118-4A10-A15A-97104609D1B7}"
+	RootNamespace="libwebcam"
 	TargetFrameworkVersion="0"
 	>
 	<Platforms>
@@ -173,7 +174,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="tclstub85.lib vfw32.lib"
 				OutputFile="..\..\..\..\bin\libwebcam.dll"
-				LinkIncremental="2"
+				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\..\external\lib"
 				IgnoreDefaultLibraryNames="msvcrt.lib"

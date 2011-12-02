@@ -698,8 +698,10 @@ BOOL CCaptureWinVfw::startCapture(unsigned short exptime, unsigned long microSec
    // allocate file space
    allocFileSpace();
    // allow yield
-   capParms.fYield = TRUE;   // callbacks won't work if Yield is TRUE
-   capSetCallbackOnYield(hwndCap, TRUE);
+   capParms.fYield = FALSE;   // callbacks won't work if Yield is TRUE
+   capSetCallbackOnYield(hwndCap, FALSE);
+   // reset callback
+   result = capSetCallbackOnVideoStream(hwndCap, NULL);
 
    // register capture params
    capCaptureSetSetup(hwndCap, &capParms, sizeof(capParms)) ;
