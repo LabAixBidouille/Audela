@@ -35,7 +35,25 @@
 #include "telescop.h"
 #include <libtel/util.h>
 
-void logConsole(struct telprop *tel, char *messageFormat, ...);
+void mytel_logConsole(struct telprop *tel, char *messageFormat, ...) {
+   char message[1024];
+   char ligne[1200];
+   va_list mkr;
+   int result;
+   
+   // j'assemble la commande 
+   va_start(mkr, messageFormat);
+   vsprintf(message, messageFormat, mkr);
+   va_end (mkr);
+
+   if ( strcmp(tel->telThreadId,"") == 0 ) {
+      sprintf(ligne,"::console::disp \"Telescope: %s\" ",message); 
+   } else {
+      sprintf(ligne,"::thread::send -async %s { ::console::disp \"Telescope: %s\" } " , tel->mainThreadId, message); 
+   }
+   result = Tcl_Eval(tel->interp,ligne);
+}
+
 
  /*
  *  Definition of different cameras supported by this driver
@@ -778,14 +796,14 @@ int temma_setlatitude(struct telprop *tel,double latitude)
    temma_angle_dms2dec(tel,s,slat);
    /* --- */
    if ( tel->consoleLog >= 1 ) {
-      logConsole(tel, "Set latitude=I%s\n", slat);
+      mytel_logConsole(tel, "Set latitude=I%s\n", slat);
    }
    sprintf(s,"puts -nonewline %s \"I%s\r\n\"",tel->channel,slat); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    /* --- Lit la reponse sur le port serie */
    sprintf(s,"read %s 10",tel->channel); mytel_tcleval(tel,s);
    if ( tel->consoleLog >= 1 ) {
-      logConsole(tel, "reponse=%s\n", tel->interp->result);
+      mytel_logConsole(tel, "reponse=%s\n", tel->interp->result);
    }
    
    return 0;
@@ -797,7 +815,7 @@ int temma_getlatitude(struct telprop *tel,double *latitude)
    char slat[256];
    /* --- */
    if ( tel->consoleLog >= 1 ) {
-      logConsole(tel, "getlatitude=i\n", slat);
+      mytel_logConsole(tel, "getlatitude=i\n", slat);
    }
 
    sprintf(s,"puts -nonewline %s \"i\r\n\"",tel->channel); mytel_tcleval(tel,s);
@@ -810,7 +828,7 @@ int temma_getlatitude(struct telprop *tel,double *latitude)
    sprintf(s,"mc_angle2deg {%c%c%c %c%c.%c}",slat[1],slat[2],slat[3],slat[4],slat[5],slat[6]); mytel_tcleval(tel,s);
    *latitude=atof(tel->interp->result);
    if ( tel->consoleLog >= 1 ) {
-      logConsole(tel, "reponse=%s latitude=%f\n", slat,*latitude);
+      mytel_logConsole(tel, "reponse=%s latitude=%f\n", slat,*latitude);
    }   
    return 0;
 }
@@ -864,7 +882,7 @@ int temma_motorstate(struct telprop *tel)
    mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
    if ( tel->consoleLog >= 1 ) {
-      logConsole(tel, "StateMotor=|%s|\n",s);
+      mytel_logConsole(tel, "StateMotor=|%s|\n",s);
    }
    if ( strcmp(s,"stn-off\n") == 0 ) {
       result = 1;
@@ -1029,7 +1047,7 @@ int temma_match(struct telprop *tel)
    sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
    if ( tel->consoleLog >= 1 ) {
-      logConsole(tel, "Error Code Match=|%s|\n",s);
+      mytel_logConsole(tel, "Error Code Match=|%s|\n",s);
    }
    len=(int)strlen(s);
    if (len>=2) {
@@ -1082,7 +1100,7 @@ int temma_goto(struct telprop *tel)
    sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
    if ( tel->consoleLog >= 1 ) {
-      logConsole(tel, "Error Code Goto=|%s|\n",s);
+      mytel_logConsole(tel, "Error Code Goto=|%s|\n",s);
    }
    len=(int)strlen(s);
    if (len>=2) {
@@ -1148,14 +1166,14 @@ int temma_stategoto(struct telprop *tel,int *state)
    // ---
    sprintf(s,"puts -nonewline %s \"s\r\n\"",tel->channel); mytel_tcleval(tel,s);
    if ( tel->consoleLog >= 1 ) {
-      logConsole(tel, "State=s\n");
+      mytel_logConsole(tel, "State=s\n");
    }
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    // --- Lit la reponse sur le port serie
    sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
    if ( tel->consoleLog >= 1 ) {
-      logConsole(tel, "State result=|%s|\n", s);
+      mytel_logConsole(tel, "State result=|%s|\n", s);
    }
    len=(int)strlen(s);
    if (len>=2) {
@@ -1169,7 +1187,7 @@ int temma_stategoto(struct telprop *tel,int *state)
    }
    *state=result;
    if ( tel->consoleLog >= 1 ) {
-      logConsole(tel, "Result=|%d|\n", result);
+      mytel_logConsole(tel, "Result=|%d|\n", result);
    }
    return result;
 }

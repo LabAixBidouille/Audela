@@ -23,6 +23,10 @@
 #ifndef __TELTCL_H__
 #define __TELTCL_H__
 
+#ifdef __cplusplus
+extern "C" {      
+#endif             // __cplusplus */
+
 /* ----- defines specifiques aux fonctions de cette camera ----*/
 int cmdTelStatus(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelExecuteCommandXS(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
@@ -33,5 +37,9 @@ int cmdTelTypeAxis(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 int cmdTelIncAxis(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelInitDefault(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+
+#ifdef __cplusplus
+}
+#endif      // __cplusplus
 
 #endif

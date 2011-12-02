@@ -38,12 +38,9 @@
 #include "telescop.h"
 
 #include <libtel/libtel.h>
+#include <libtel/util.h>
 #include "teltcl.h"
 #include "telcmd.h"
-
-#ifndef strupr 
-#define strupr _strupr
-#endif
 
 
 /* valeurs des structures tel_* privees */
@@ -102,7 +99,7 @@ void logConsole(struct telprop *tel, char *messageFormat, ...) {
  */
 /* === Common commands for all telescopes ===*/
 int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, const char *argv[]);
-int cmdTel(ClientData clientData, Tcl_Interp *interp, int argc, const char *argv[]);
+int cmdTel(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 static struct telprop *telprops = NULL;
 
@@ -440,7 +437,7 @@ int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, const char
    return TCL_OK;
 }
 
-int cmdTel(ClientData clientData, Tcl_Interp *interp, int argc, const char *argv[])
+int cmdTel(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
    char s[1024],ss[50];
    int retour = TCL_OK,k;
@@ -557,7 +554,7 @@ int libtel_Getradec(Tcl_Interp *interp,char *tcllist,double *ra,double *dec)
  */
 {
    char ligne[256];
-   const char **listArgv;
+   char **listArgv;
    int listArgc;
    int result = TCL_OK;
    if(Tcl_SplitList(interp,tcllist,&listArgc,&listArgv)!=TCL_OK) {
@@ -1032,7 +1029,12 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
          for (k=3;k<=argc-1;k++) {
             if (strcmp(argv[k],"-equinox")==0) {
                // je recupere la valeur de l'equinoxe et je la convertis en majuscule systematiquement
-               strncpy(outputEquinox,strupr(argv[k+1]), sizeof(outputEquinox));
+               char tempEquinox[20];
+               // je copie uniquement les 19 premiers caracteres pour eviter un eventuel depassement de memoire
+               // si le parametre d'entree est trop long
+               strncpy(tempEquinox,argv[k+1],sizeof(tempEquinox) -1);
+               tempEquinox[sizeof(tempEquinox) -1]=0;
+               libtel_strupr(tempEquinox, outputEquinox);
             }
          }
          if ( strcmp(tel->model_tel2cat,"") == 0 ) {
@@ -1294,7 +1296,7 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                      result =  mytel_tcleval(tel,ligne);
 
                      if (result == TCL_OK) {
-                        const char **listArgv;
+                        char **listArgv;
                         int listArgc;
 
                         // je recupere les coordonnees corrigees a partir des index 10 et 11 de la liste retournee par mc_hip2tel

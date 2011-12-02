@@ -20,6 +20,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#ifdef __cplusplus
+extern "C" {      
+#endif             // __cplusplus */
+
+
 static struct cmditem cmdlist[] = {
    /* === Common commands for all telescopes ===*/
    COMMON_CMDLIST
@@ -44,3 +49,7 @@ static struct cmditem cmdlist[] = {
    /* === Last function terminated by NULL pointers ===*/
    {NULL, NULL}
 };
+
+#ifdef __cplusplus
+}
+#endif      // __cplusplus

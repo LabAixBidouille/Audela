@@ -23,6 +23,10 @@
 #ifndef __TELTCL_H__
 #define __TELTCL_H__
 
+#ifdef __cplusplus
+extern "C" {      
+#endif             // __cplusplus */
+
 /* ----- defines specifiques aux fonctions de cette monture ----*/
 int cmdTelPut(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelRead(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
@@ -39,5 +43,9 @@ int cmdTelTempo(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 int cmdTelTempoGoto(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelDeadDelaySlew(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelState(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+
+#ifdef __cplusplus
+}
+#endif      // __cplusplus
 
 #endif

@@ -25,7 +25,9 @@
 
 #include <tcl.h>
 #include <libtel/libstruc.h>
-
+#ifdef __cplusplus
+extern "C" {      
+#endif             // __cplusplus */
 /*
  * Donnees propres a chaque telescope.
  */
@@ -104,5 +106,8 @@ int ouranos_initcoder(struct telprop *tel, int initialRa, int initialDec);
 int ouranos_readcoder(struct telprop *tel,int *ra, int *dec);
 void ouranos_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function);
 
+#ifdef __cplusplus
+}
+#endif      // __cplusplus
 #endif
 

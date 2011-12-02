@@ -26,6 +26,10 @@
 #include <tcl.h>
 #include <libtel/libstruc.h>
 
+#ifdef __cplusplus
+extern "C" {      
+#endif             // __cplusplus */
+
 #define EQMOD_STATE_NOT_INITIALIZED 0   // On ne sait pas ou on en est
 #define EQMOD_STATE_HALT            1   // Init en cours, moteur pas alimente
 #define EQMOD_STATE_STOPPED         2   // Moteur alimente, a l'arret
@@ -139,6 +143,10 @@ int eqmod2_action_move(struct telprop *tel, char *direction);
 int eqmod2_action_stop(struct telprop *tel, char *direction);
 int eqmod2_action_motor(struct telprop *tel);
 int eqmod2_action_goto(struct telprop *tel);
+
+#ifdef __cplusplus
+}
+#endif      // __cplusplus
 
 #endif
 

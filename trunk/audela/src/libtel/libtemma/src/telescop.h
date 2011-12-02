@@ -26,6 +26,9 @@
 #include <tcl.h>
 #include <libtel/libstruc.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif      // __cplusplus
 /*
  * Donnees propres a chaque telescope.
  */
@@ -124,6 +127,10 @@ int temma_getderive(struct telprop *tel,int *var,int *vdec);
 int temma_settsl(struct telprop *tel);
 double temma_tsl(struct telprop *tel,int *h, int *m,int *sec);
 void temma_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function);
+
+#ifdef __cplusplus
+}
+#endif      // __cplusplus
 
 #endif
 

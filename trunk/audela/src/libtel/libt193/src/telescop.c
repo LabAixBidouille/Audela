@@ -44,7 +44,6 @@
 
 #define DAQmxErrChk(functionCall) if( DAQmxFailed(error=(functionCall)) ) goto Error; else
 
-extern void logConsole(struct telprop *tel, char *messageFormat, ...);
  /*
  *  Definition of different cameras supported by this driver
  *  (see declaration in libstruc.h)
@@ -96,7 +95,6 @@ int mytel_checkControlInterfaceResponse(struct telprop *tel, char *fonction, cha
 
 #define BACKCMD_BAD_PARAM_NUMBER 101 // nombre de parametres incorrect
 #define BACKCMD_CAT2TEL_ERROR 102  
-
 
 
 /**
@@ -1189,7 +1187,7 @@ int tel_radec_correct(struct telprop *tel, char *alphaDirection, double alphaDis
 
             // j'affiche une trace dans la console si l'utilisateur l'a demandé
             if ( tel->consoleLog >= 1 ) {
-               logConsole(tel, "T193 %s", command);
+               mytel_logConsole(tel, "T193 %s", command);
             }
          }
       }

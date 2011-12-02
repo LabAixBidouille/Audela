@@ -38,6 +38,10 @@
 #include <tcl.h>
 #include <libtel/libstruc.h>
 
+#ifdef __cplusplus
+extern "C" {      
+#endif             // __cplusplus */
+
 #ifndef TRUE
 #define TRUE   (1)
 #endif
@@ -108,5 +112,9 @@ int mytel_set_format(struct telprop *tel,int longformatindex);
 int mytel_flush(struct telprop *tel);
 int mytel_tcleval(struct telprop *tel,char *ligne);
 int mytel_sendLX(struct telprop *tel, char *command, int returnType, char *result);
+
+#ifdef __cplusplus
+}
+#endif      // __cplusplus
 
 #endif

@@ -49,7 +49,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\src,..\..\..\include,..\..\..\external\include\win"
-				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;USE_TCL_STUBS;USE_TK_STUBS"
+				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;USE_TCL_STUBS;USE_TK_STUBS;_CRT_SECURE_NO_WARNINGS;USE_COMPAT_CONST"
 				RuntimeLibrary="1"
 				PrecompiledHeaderFile=".\Debug/libmcmt.pch"
 				AssemblerListingLocation=".\Debug/"
@@ -145,7 +145,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="..\src,..\..\..\include,..\..\..\external\include\win"
-				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;USE_TCL_STUBS;USE_TK_STUBS"
+				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;USE_TCL_STUBS;USE_TK_STUBS;_CRT_SECURE_NO_WARNINGS;USE_COMPAT_CONST"
 				StringPooling="true"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
@@ -220,27 +220,8 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\libtel.c"
+				RelativePath="..\..\libtel.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						UndefinePreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\src\telescop.c"
@@ -289,33 +270,30 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\util.c"
+				RelativePath="..\..\util.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						UndefinePreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;fi;fd"
 			>
+			<File
+				RelativePath="..\src\libname.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\telcmd.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\telescop.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\teltcl.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"

@@ -26,6 +26,10 @@
 #include <tcl.h>
 #include <libtel/libstruc.h>
 
+#ifdef __cplusplus
+extern "C" {      
+#endif             // __cplusplus */
+
 /*
  * Donnees propres a chaque telescope.
  */
@@ -426,6 +430,10 @@ struct telprop *telthread;
 int ThreadTel_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 static int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 static int CmdThreadTel_loopeval(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+
+#ifdef __cplusplus
+}
+#endif      // __cplusplus
 
 
 #endif

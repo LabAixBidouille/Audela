@@ -27,6 +27,10 @@
 #include <libtel/libstruc.h>
 #include <pthread.h>       // pcreate_thread()
 
+#ifdef __cplusplus
+extern "C" {      
+#endif             // __cplusplus */
+
 /*
  * Donnees propres a chaque telescope.
  */
@@ -104,7 +108,9 @@ int tel_filter_extremity(struct telprop *tel, char * extremity);
 
 int mytel_tcleval(struct telprop *tel,char *ligne);
 
-
+#ifdef __cplusplus
+}
+#endif      // __cplusplus
 
 #endif
 

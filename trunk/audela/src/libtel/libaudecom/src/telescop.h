@@ -26,6 +26,11 @@
 #include <tcl.h>
 #include <libtel/libstruc.h>
 
+#ifdef __cplusplus
+extern "C" {      
+#endif             // __cplusplus */
+
+
 /*
  * Donnees propres a chaque telescope.
  */
@@ -143,6 +148,10 @@ int kauf_ecrit_vit_pec(struct telprop *tel,int evpec);
 
 int audecom_home(struct telprop *tel, char *home_default);
 void audecom_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function);
+
+#ifdef __cplusplus
+}
+#endif      // __cplusplus
 
 #endif
 

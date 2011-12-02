@@ -23,6 +23,10 @@
 #ifndef __TELTCL_H__
 #define __TELTCL_H__
 
+#ifdef __cplusplus
+extern "C" {      
+#endif             // __cplusplus */
+
 /* ----- defines specifiques aux fonctions de cette camera ----*/
 int cmdTelTempo(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelFirmware(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
@@ -37,4 +41,9 @@ int cmdTelGerman(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
 int cmdTelMotorState(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelSolarTracking(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
+#ifdef __cplusplus
+}      
+#endif             // __cplusplus */
+
 #endif
+
