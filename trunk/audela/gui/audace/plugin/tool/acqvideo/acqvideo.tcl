@@ -603,14 +603,14 @@ namespace eval ::acqvideo {
                      }
                      #--- Je declare la variable qui sera mise a jour par le driver avec le decompte des frames
                      cam$panneau(acqvideo,$visuNo,camNo) setvideostatusvariable ::panneau(acqvideo,$visuNo,status)
-                     set result [ catch { cam$panneau(acqvideo,$visuNo,camNo) startvideocapture "$nom_rep" "$panneau(acqvideo,$visuNo,lg_film)" "$panneau(acqvideo,$visuNo,rate)" "1" } msg ]
+                     set result [ catch { after idle [list cam$panneau(acqvideo,$visuNo,camNo) startvideocapture "$nom_rep" "$panneau(acqvideo,$visuNo,lg_film)" "$panneau(acqvideo,$visuNo,rate)" "1"] } msg ]
                      if { $result == "1" } {
                         #--- En cas d'erreur, j'affiche un message d'erreur
                         #--- Et je passe a la suite sans attendre
                         ::console::affiche_resultat "$caption(acqvideo,start_capture_error) $msg \n"
                      } else {
                         #--- J'attends la fin de l'acquisition
-                         vwait status_cam$panneau(acqvideo,$visuNo,camNo)
+                        vwait ::status_cam$panneau(acqvideo,$visuNo,camNo)
                      }
                      #--- Incrementer l'index
                      if { $panneau(acqvideo,$visuNo,indexer) == "1" } {
@@ -707,14 +707,14 @@ namespace eval ::acqvideo {
                         }
                         #--- Je declare la variable qui sera mise a jour par le driver avec le decompte des frames
                         cam$panneau(acqvideo,$visuNo,camNo) setvideostatusvariable ::panneau(acqvideo,$visuNo,status)
-                        set result [ catch { cam$panneau(acqvideo,$visuNo,camNo) startvideocapture "$nom_rep" "$panneau(acqvideo,$visuNo,lg_film)" "$panneau(acqvideo,$visuNo,rate)" "1" } msg ]
+                        set result [ catch { after idle [cam$panneau(acqvideo,$visuNo,camNo) startvideocapture "$nom_rep" "$panneau(acqvideo,$visuNo,lg_film)" "$panneau(acqvideo,$visuNo,rate)" "1" ]} msg ]
                         if { $result == "1" } {
                            #--- En cas d'erreur, j'affiche un message d'erreur
                            #--- Et je passe a la suite sans attendre
                            ::console::affiche_resultat "$caption(acqvideo,start_capture_error) $msg \n"
                         } else {
                            #--- J'attends la fin de l'acquisition
-                           vwait status_cam$panneau(acqvideo,$visuNo,camNo)
+                           vwait ::status_cam$panneau(acqvideo,$visuNo,camNo)
                            #--- Je desactive le bouton "STOP"
                            $panneau(acqvideo,$visuNo,This).go_stop.but configure -state disabled
                         }
