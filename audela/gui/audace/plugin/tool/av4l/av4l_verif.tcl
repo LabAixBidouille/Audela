@@ -108,7 +108,6 @@ namespace eval ::av4l_verif {
    proc closeWindow { this visuNo } {
 
       ::av4l_verif::widgetToConf $visuNo
-      ::av4l_tools::avi_close
       destroy $this
    }
 

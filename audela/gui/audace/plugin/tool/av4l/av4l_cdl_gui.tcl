@@ -259,7 +259,7 @@ namespace eval ::av4l_cdl_gui {
                     #--- Creation du bouton open
                     button $frm.form.butopen.open \
                        -text "open" -borderwidth 2 \
-                       -command "::av4l_tools::open_flux $visuNo $frm"
+                       -command "::av4l_cdl_tools::open_flux $visuNo $frm"
                     pack $frm.form.butopen.open \
                        -in $frm.form.butopen -side left -anchor e \
                        -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
@@ -332,8 +332,16 @@ namespace eval ::av4l_cdl_gui {
              #--- Creation du bouton open
              button $frm.open.but_open \
                 -text "open" -borderwidth 2 \
-                -command "::av4l_tools::select $visuNo $frm"
+                -command "::av4l_cdl_tools::open_flux $visuNo $frm"
              pack $frm.open.but_open \
+                -side left -anchor e \
+                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+             #--- Creation du bouton select
+             button $frm.open.but_select \
+                -text "..." -borderwidth 2 -takefocus 1 \
+                -command "::av4l_cdl_tools::select $visuNo $frm"
+             pack $frm.open.but_select \
                 -side left -anchor e \
                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
