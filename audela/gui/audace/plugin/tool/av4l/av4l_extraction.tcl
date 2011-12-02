@@ -4,18 +4,21 @@
 #
 # Fichier        : av4l_extraction.tcl
 # Description    : Affiche le status de la base de donnees
-# Auteur         : Frédéric Vachier
-# Mise à jour $Id: av4l_extraction.tcl 6795 2011-02-26 16:05:27Z michelpujol $
+# Auteur         : Frederic Vachier
+# Mise à jour $Id: av4l_extraction.tcl 6795 2011-02-26 16:05:27Z fredvachier $
 #
 
 namespace eval ::av4l_extraction {
 
 
+
+
+
+
    #
-   # av4l_extraction::init
    # Chargement des captions
    #
-   proc init { } {
+   proc ::av4l_extraction::init { } {
       global audace
 
       wm focusmodel . passive
@@ -24,11 +27,14 @@ namespace eval ::av4l_extraction {
       source [ file join $audace(rep_plugin) tool av4l av4l_extraction.cap ]
    }
 
+
+
+
+
    #
-   # av4l_extraction::initToConf
    # Initialisation des variables de configuration
    #
-   proc initToConf { visuNo } {
+   proc ::av4l_extraction::initToConf { visuNo } {
       variable parametres
 
       #--- Creation des variables de la boite de configuration si elles n'existent pas
@@ -39,11 +45,14 @@ namespace eval ::av4l_extraction {
       if { ! [ info exists ::av4l::parametres(av4l,$visuNo,verifier_index_depart) ] }              { set ::av4l::parametres(av4l,$visuNo,verifier_index_depart)              "1" }
    }
 
+
+
+
+
    #
-   # av4l_extraction::confToWidget
    # Charge la configuration dans des variables locales
    #
-   proc confToWidget { visuNo } {
+   proc ::av4l_extraction::confToWidget { visuNo } {
       variable parametres
       global panneau
 
@@ -53,107 +62,81 @@ namespace eval ::av4l_extraction {
       set ::av4l_extraction::panneau(av4l,$visuNo,alarme_fin_serie)           $::av4l::parametres(av4l,$visuNo,alarme_fin_serie)
       set ::av4l_extraction::panneau(av4l,$visuNo,verifier_ecraser_fichier)   $::av4l::parametres(av4l,$visuNo,verifier_ecraser_fichier)
       set ::av4l_extraction::panneau(av4l,$visuNo,verifier_index_depart)      $::av4l::parametres(av4l,$visuNo,verifier_index_depart)
+
+      set ::av4l_tools::traitement "avi"
+
    }
 
+
+
+
+
    #
-   # av4l_extraction::widgetToConf
    # Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
    #
-   proc widgetToConf { visuNo } {
+   proc ::av4l_extraction::widgetToConf { visuNo } {
       variable parametres
       global panneau
 
    }
 
 
+
+
+
+
    #
-   # av4l_extraction::run 
    # Cree la fenetre de configuration de l'affichage des messages sur la Console
    # et de l'enregistrement des dates dans le fichier log
    #
-   proc run { visuNo this } {
+   proc ::av4l_extraction::run { visuNo this } {
+
      global audace panneau
 
-
       set panneau(av4l,$visuNo,av4l_extraction) $this
-      #::confGenerique::run $visuNo "$panneau(av4l,$visuNo,av4l_extraction)" "::av4l_extraction" -modal 1
-
-      createdialog $this $visuNo   
+      ::av4l_extraction::createdialog $this $visuNo   
 
    }
 
 
+
+
+
    #
-   # av4l_extraction::showHelp
    # Fonction appellee lors de l'appui sur le bouton 'Aide'
    #
-   proc showHelp { } {
+   proc ::av4l_extraction::showHelp { } {
       ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::av4l::getPluginType ] ] \
          [ ::av4l::getPluginDirectory ] av4l_extraction.htm
    }
 
 
+
+
+
+
    #
-   # av4l_extraction::closeWindow
    # Fonction appellee lors de l'appui sur le bouton 'Fermer'
    #
-   proc closeWindow { this visuNo } {
+   proc ::av4l_extraction::closeWindow { this visuNo } {
 
       ::av4l_extraction::widgetToConf $visuNo
-      ::av4l_tools::avi_close
       destroy $this
    }
 
-   #
-   # av4l_extraction::getLabel
-   # Retourne le nom de la fenetre d extraction
-   #
-   proc getLabel { } {
-      global caption
-
-      return "$caption(av4l_extraction,titre)"
-   }
 
 
-   #
-   # av4l_extraction::chgdir
-   # Ouvre une boite de dialogue pour choisir un nom  de repertoire 
-   #
-   proc chgdir { This } {
-      global caption
-      global cwdWindow
-      global audace
 
-      #--- Initialisation des variables a 2 (0 et 1 reservees a Configuration --> Repertoires)
-      set cwdWindow(rep_images)      "2"
-      set cwdWindow(rep_travail)     "2"
-      set cwdWindow(rep_scripts)     "2"
-      set cwdWindow(rep_catalogues)  "2"
-      set cwdWindow(rep_userCatalog) "2"
 
-      set parent "$audace(base)"
-      set title "Choisir un repertoire de destination"
-      set rep "$audace(rep_images)"
 
-      set numerror [ catch { set filename "[ ::cwdWindow::tkplus_chooseDir "$rep" $title $parent ]" } msg ]
-      if { $numerror == "1" } {
-         set filename "[ ::cwdWindow::tkplus_chooseDir "[pwd]" $title $parent ]"
-      }
 
-      ::console::affiche_resultat $audace(rep_images)
-
-      $This delete 0 end
-      $This insert 0 $filename
-      
-   }
 
 
 
    #
-   # av4l_extraction::fillConfigPage
    # Creation de l'interface graphique
    #
-   proc createdialog { this visuNo } {
+   proc ::av4l_extraction::createdialog { this visuNo } {
 
       package require Img
 
@@ -208,7 +191,7 @@ namespace eval ::av4l_extraction {
         #--- Creation du bouton open
         button $frm.open.but_open \
            -text "open" -borderwidth 2 \
-           -command "::av4l_tools::avi_open $visuNo $frm"
+           -command "::av4l_tools::open_flux $visuNo $frm"
         pack $frm.open.but_open \
            -side left -anchor e \
            -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
@@ -216,7 +199,7 @@ namespace eval ::av4l_extraction {
         #--- Creation du bouton select
         button $frm.open.but_select \
            -text "..." -borderwidth 2 -takefocus 1 \
-           -command "::av4l_tools::avi_select $visuNo $frm"
+           -command "::av4l_tools::select $visuNo $frm"
         pack $frm.open.but_select \
            -side left -anchor e \
            -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
@@ -239,7 +222,7 @@ namespace eval ::av4l_extraction {
         image create photo .arr -format PNG -file [ file join $audace(rep_plugin) tool av4l img arr.png ]
         button $frm.qprevimage -image .arr\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command "::av4l_extraction::avi_quick_prev_image $visuNo"
+           -command "::av4l_tools::quick_prev_image $visuNo"
         pack $frm.qprevimage \
            -in $frm.btnav \
            -side left -anchor w \
@@ -249,7 +232,7 @@ namespace eval ::av4l_extraction {
         image create photo .arn -format PNG -file [ file join $audace(rep_plugin) tool av4l img arn.png ]
         button $frm.previmage -image .arn\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command "::av4l_extraction::avi_prev_image $visuNo"
+           -command "::av4l_tools::prev_image $visuNo"
         pack $frm.previmage \
            -in $frm.btnav \
            -side left -anchor w \
@@ -259,7 +242,7 @@ namespace eval ::av4l_extraction {
         image create photo .avn -format PNG -file [ file join $audace(rep_plugin) tool av4l img avn.png ]
         button $frm.nextimage -image .avn\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command "::av4l_extraction::avi_next_image"
+           -command "::av4l_tools::next_image $visuNo"
         pack $frm.nextimage \
            -in $frm.btnav \
            -side left -anchor w \
@@ -269,7 +252,7 @@ namespace eval ::av4l_extraction {
         image create photo .avr -format PNG -file [ file join $audace(rep_plugin) tool av4l img avr.png ]
         button $frm.qnextimage -image .avr\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command "::av4l_extraction::avi_quick_next_image $visuNo"
+           -command "::av4l_tools::quick_next_image $visuNo"
         pack $frm.qnextimage \
            -in $frm.btnav \
            -side left -anchor w \
@@ -287,7 +270,7 @@ namespace eval ::av4l_extraction {
              #--- Creation du bouton setmin
              button $frm.pos.setmin \
                 -text "setmin" -borderwidth 2 \
-                -command "::av4l_tools::avi_setmin $frm"
+                -command "::av4l_tools::setmin $frm"
              pack $frm.pos.setmin \
                 -in $frm.pos \
                 -side left -anchor w \
@@ -296,7 +279,7 @@ namespace eval ::av4l_extraction {
              #--- Creation du bouton setmax
              button $frm.pos.setmax \
                 -text "setmax" -borderwidth 2 \
-                -command "::av4l_tools::avi_setmax $frm"
+                -command "::av4l_tools::setmax $frm"
              pack $frm.pos.setmax \
                 -in $frm.pos \
                 -side left -anchor w \
@@ -343,7 +326,7 @@ namespace eval ::av4l_extraction {
              #--- Cree un button
              button $frm.doimagecount \
               -text "calcul" -borderwidth 2 \
-              -command "::av4l_tools::avi_imagecount $frm" 
+              -command "::av4l_tools_avi::imagecount $frm" 
              pack $frm.doimagecount -in $frm.count -side left -pady 1 -anchor w
 
           #--- Cree un frame pour 
@@ -419,7 +402,7 @@ namespace eval ::av4l_extraction {
             #--- Cree un button
             button $inbutton.chgdir \
              -text "..." -borderwidth 2 \
-             -command "::av4l_extraction::chgdir $inparam.destdir" 
+             -command "::av4l_tools::chgdir $inparam.destdir" 
             pack $inbutton.chgdir -in $inbutton -side top -pady 0 -anchor w
 
             #--- Cree un label pour le nb d image
@@ -437,7 +420,7 @@ namespace eval ::av4l_extraction {
 
            button $frm.action.extract \
               -text "Extraction" -borderwidth 2 \
-              -command " ::av4l_tools::avi_extract $frm "
+              -command " ::av4l_extraction::extract $visuNo $frm "
            pack $frm.action.extract -in $frm.action \
               -side left -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
@@ -468,61 +451,54 @@ namespace eval ::av4l_extraction {
 
 
 
-   #
-   # av4l_extraction::avi_quick_prev_image
-   # 
-   #
-   proc avi_quick_prev_image { visuNo } {
-   
-       set ::av4l_tools::cur_idframe [ expr $::av4l_tools::cur_idframe - 100 ]
-       if { $::av4l_tools::cur_idframe < 1 } {
-          set ::av4l_tools::cur_idframe 1
-       }
-       ::av4l_tools::avi_get_frame $visuNo $::av4l_tools::cur_idframe
-       set ::av4l_tools::scrollbar $::av4l_tools::cur_idframe
-       visu$visuNo disp
-   
+
+   proc ::av4l_extraction::extract { visuNo frm } {
+      global audace
+
+      set bufNo [ visu$visuNo buf ]
+
+      set fmin    [ $frm.posmin get ]
+      set fmax    [ $frm.posmax get ]
+      set destdir [ $frm.form.v.destdir get ]
+      set prefix  [ $frm.form.v.prefix get ]
+      set i 0
+      set cpt 1
+      if { $fmin == "" } {
+         set fmin 1
+      }
+      if { $fmax == "" } {
+         set fmax $::av4l_tools::nb_open_frames
+      }
+      #::console::affiche_resultat "fmin=$fmin\n"
+      #::console::affiche_resultat "fmax=$fmax\n"
+
+
+      ::av4l_tools_avi::set_frame $fmin
+      for {set i $fmin} {$i <= $fmax} {incr i} {
+         set ::av4l_tools::scrollbar $::av4l_tools::cur_idframe
+         visu$visuNo disp
+         #::console::affiche_resultat "$i / [expr $fmax-$fmin+1]\n"
+         ::console::affiche_resultat ""
+         
+         set path "$destdir/$prefix$cpt"
+         #::console::affiche_resultat "path : $path\n"
+         buf$bufNo save $path fits
+         ::av4l_tools_avi::next_image
+         incr cpt
+      }
+      visu$visuNo disp
+      tk_messageBox -message "Extraction Terminee" -type ok
    }
-   #
-   # av4l_extraction::avi_quick_prev_image
-   # 
-   #
-   proc avi_prev_image { visuNo } {
-   
-       set ::av4l_tools::cur_idframe [ expr $::av4l_tools::cur_idframe - 1 ]
-       if { $::av4l_tools::cur_idframe < 1 } {
-          set ::av4l_tools::cur_idframe 1
-       }
-       ::av4l_tools::avi_get_frame $visuNo $::av4l_tools::cur_idframe
-       set ::av4l_tools::scrollbar $::av4l_tools::cur_idframe
-       visu$visuNo disp
-   
-   }
-   #
-   # av4l_extraction::avi_quick_prev_image
-   # 
-   #
-   proc avi_next_image {  } {
-   
-       ::av4l_tools::avi_next
-       set ::av4l_tools::scrollbar $::av4l_tools::cur_idframe
-   
-   }
-   #
-   # av4l_extraction::avi_quick_prev_image
-   # 
-   #
-   proc avi_quick_next_image { visuNo } {
-   
-       set ::av4l_tools::cur_idframe [ expr $::av4l_tools::cur_idframe + 100 ]
-       if { $::av4l_tools::cur_idframe > $::av4l_tools::nb_frames } {
-          set ::av4l_tools::cur_idframe $::av4l_tools::nb_frames
-       }
-       ::av4l_tools::avi_get_frame $visuNo $::av4l_tools::cur_idframe
-       set ::av4l_tools::scrollbar $::av4l_tools::cur_idframe
-       visu$visuNo disp
-   
-   }
+
+
+
+
+
+
+
+
+
+
 
 
 
