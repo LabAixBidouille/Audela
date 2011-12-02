@@ -126,7 +126,7 @@ int  CCaptureListener::onNewStatus(int statusID, char * message) {
 
 int  CCaptureListener::onNewError(int errID, char * message) {
    int result = TRUE;
-#if defined(OS_WIN)
+#if defined(WIN32)
    MessageBox(NULL, message, "capture", MB_OK | MB_ICONEXCLAMATION) ;
 #endif
    return result;
