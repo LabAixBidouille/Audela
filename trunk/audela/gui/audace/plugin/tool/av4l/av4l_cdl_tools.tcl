@@ -30,7 +30,7 @@ namespace eval ::av4l_cdl_tools {
       }
 
       if { $::av4l_tools::traitement=="avi" }  {
-         set filename [::av4l_tools::avi_filename]
+         set filename $::av4l_tools::avi_filename
          if { ! [file exists $filename] } {
          ::console::affiche_erreur "Charger une video ...\n"
          } 

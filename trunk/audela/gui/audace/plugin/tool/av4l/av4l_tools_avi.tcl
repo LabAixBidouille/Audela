@@ -78,15 +78,14 @@ namespace eval ::av4l_tools_avi {
 
       global audace panneau
 
-      set bufNo [ visu$visuNo buf ]
       #--- Fenetre parent
       set fenetre [::confVisu::getBase $visuNo]
       
       #--- Ouvre la fenetre de choix des images
+      set bufNo [ visu$visuNo buf ]
       set ::av4l_tools::avi_filename [ ::tkutil::box_load_avi $fenetre $audace(rep_images) $bufNo "1" ]
       $frm.open.avipath delete 0 end
       $frm.open.avipath insert 0 $::av4l_tools::avi_filename
-      
       
    }
 
@@ -119,8 +118,6 @@ namespace eval ::av4l_tools_avi {
       set ::av4l_tools::frame_end $::av4l_tools::nb_frames
 
       ::av4l_tools_avi::next_image
-
-
 
    }
 
@@ -374,18 +371,19 @@ namespace eval ::av4l_tools_avi {
 
 
 
-   proc ::av4l_tools_avi::imagecount { This } {
+   proc ::av4l_tools_avi::imagecount { frm } {
       global audace
-      $This.imagecount delete 0 end
-      set fmin [ $This.posmin get ]
-      set fmax [ $This.posmax get ]
+      
+      $frm.imagecount delete 0 end
+      set fmin [ $frm.posmin get ]
+      set fmax [ $frm.posmax get ]
       if { $fmin == "" } {
          set fmin 1
       }
       if { $fmax == "" } {
-         set fmax $::av4l_tools::nb_frames
+         set fmax $::av4l_tools::nb_open_frames
       }
-      $This.imagecount insert 0 [ expr $fmax - $fmin + 1 ]
+      $frm.imagecount insert 0 [ expr $fmax - $fmin + 1 ]
 
    }
 
@@ -404,43 +402,6 @@ namespace eval ::av4l_tools_avi {
 
 
 
-   proc ::av4l_tools_avi::extract { frm } {
-      global audace
-      set visuNo 1
-      set bufNo [ visu$visuNo buf ]
-
-      set fmin    [ $frm.posmin get ]
-      set fmax    [ $frm.posmax get ]
-      set destdir [ $frm.form.v.destdir get ]
-      set prefix  [ $frm.form.v.prefix get ]
-      set i 0
-      set cpt 1
-      if { $fmin == "" } {
-         set fmin 1
-      }
-      if { $fmax == "" } {
-         set fmax $::av4l_tools::nb_frames
-      }
-      ::console::affiche_resultat "fmin=$fmin\n"
-      ::console::affiche_resultat "fmax=$fmax\n"
-
-
-      get_frame $visuNo $fmin
-      for {set i $fmin} {$i <= $fmax} {incr i} {
-         set ::av4l_tools::scrollbar $i
-         #::console::affiche_resultat "$i / [expr $fmax-$fmin+1]\n"
-         ::console::affiche_resultat ""
-         
-         
-         set path "$destdir/$prefix$cpt"
-         #::console::affiche_resultat "path : $path\n"
-         buf$bufNo save $path fits
-         ::av4l_tools::avi1 next
-         incr cpt
-      }
-      visu$visuNo disp
-      ::console::affiche_resultat "Extraction Terminee\n"
-   }
 
 
 

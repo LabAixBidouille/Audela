@@ -126,7 +126,6 @@ namespace eval ::av4l_ocr_gui {
       global audace panneau
 
       set panneau(av4l,$visuNo,av4l_ocr_gui) $this
-
       createdialog $this $visuNo   
 
    }
@@ -293,7 +292,7 @@ namespace eval ::av4l_ocr_gui {
 
                       #--- Cree un label pour
                       label $intitle.destdir -font $av4lconf(font,courier_10) -padx 3 \
-                            -text "repertoire destination"
+                            -text "repertoire des images"
                       pack $intitle.destdir -in $intitle -side top -padx 3 -pady 1 -anchor w
 
                       #--- Cree un label pour
