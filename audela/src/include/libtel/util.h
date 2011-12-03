@@ -69,8 +69,8 @@ unsigned long loopsmicrosec();
 unsigned long loopsmillisec();
 void test_out_time(unsigned short port,unsigned long nb_out,unsigned long shouldbezero);
 
-void libcam_strupr(char *chainein, char *chaineout);
-void libcam_strlwr(char *chainein, char *chaineout);
+void libtel_strupr(char *chainein, char *chaineout);
+void libtel_strlwr(char *chainein, char *chaineout);
 
 #ifdef __cplusplus
 }
