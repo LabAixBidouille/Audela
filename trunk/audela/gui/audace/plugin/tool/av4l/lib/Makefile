@@ -1,4 +1,4 @@
-.PHONY: all clean ffmpeg-clean ffmpeg-config ffmpeg ffmpeg-uninstall ffmpeg-links install uninstall
+.PHONY: all clean ffmpeg-clean ffmpeg-config ffmpeg ffmpeg-uninstall ffmpeg-links install uninstall grab
 
 FFMPEG=/opt/ffmpeg-0.8.5
 
@@ -11,7 +11,7 @@ clean:
 	rm -f libavi.so avi.o
 	( cd grab && make clean )
 
-all: libavi.so
+all: libavi.so grab
 
 avi.o: avi.c
 	gcc -shared -fPIC $(INCLUDES) -c -o $@ -DUSE_TCL_STUBS $<
@@ -27,6 +27,9 @@ libavi.so: avi.o
 	-lavformat -lavcodec -lavutil -lswscale \
 	-ltclstub8.5 -lm \
 	-o $@
+
+grab:
+	( cd grab && make )
 
 ffmpeg-clean:
 	cd $(FFMPEG) && make clean
