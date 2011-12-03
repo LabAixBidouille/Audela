@@ -1421,23 +1421,34 @@ proc calibwcs {args} {
       buf$::audace(bufNo) setkwd [list CATASTAR 0 int ""    "Nb stars matched"   ]
 
       #--- check les catalogues
-      if {([string toupper $cat_format]=="USNO")||([string toupper $cat_format]=="MICROCAT")} {
-      } else {
-         set comment "cat_format $cat_format not valid. It must be only USNO or MICROCAT !"
+      if {[string toupper $cat_format] ni [list USNO MICROCAT]} {
+         set comment "This catalog ($cat_format) is not valid. It must be only USNO or MICROCAT!"
          error $comment
       }
       if {[file exists $cat_folder]==1} {
-         set comment "cat_folder $cat_folder does not contains the $cat_format catalog!"
-         set fics [glob -nocomplain [file join $cat_folder "*.ACC"]]
-         if {[llength $fics]<24} {
-            error $comment
-         }
-         set fics [glob -nocomplain [file join $cat_folder "*.CAT"]]
-         if {[llength $fics]<24} {
-            error $comment
+         if {[string toupper $cat_format] eq "USNO"} {
+            set comment "Path to the catalog does not contain the $cat_format catalog!\n$cat_folder"
+            set fics [glob -nocomplain [file join $cat_folder "*.ACC"]]
+            if {[llength $fics]==0} {
+               error $comment
+            }
+            set fics [glob -nocomplain [file join $cat_folder "*.CAT"]]
+            if {[llength $fics]==0} {
+               error $comment
+            }
+         } elseif {[string toupper $cat_format] eq "MICROCAT"} {
+            set comment "Path to the catalog does not contain the $cat_format catalog!\n$cat_folder"
+            set fics [glob -nocomplain -dir [file join $cat_folder usno] -type f *.ACC]
+            if {[llength $fics]<24} {
+               error $comment
+            }
+            set fics [glob -nocomplain -dir [file join $cat_folder tyc] -type f *.ACC]
+            if {[llength $fics]<24} {
+               error $comment
+            }
          }
       } else {
-         set comment "cat_folder $cat_folder does not exists !"
+         set comment "Path to the catalog does not exists:\n$cat_folder\n"
          error $comment
       }
 
@@ -1547,26 +1558,39 @@ proc simulimage {args} {
       incr k ; set newstar_ra 0           ; if {[llength $args] >= [expr 1+$k]} { set newstar_ra [string trim [mc_angle2deg [lindex $args $k]]] }
       incr k ; set newstar_dec 0          ; if {[llength $args] >= [expr 1+$k]} { set newstar_dec [string trim [mc_angle2deg [lindex $args $k] 90]] }
       incr k ; set newstar_mag 0          ; if {[llength $args] >= [expr 1+$k]} { set newstar_mag [lindex $args $k] }
+
       #--- check les catalogues
-      if {([string toupper $cat_format]=="USNO")||([string toupper $cat_format]=="MICROCAT")} {
-      } else {
-         set comment "cat_format $cat_format not valid. It must be only USNO or MICROCAT !"
+      if {[string toupper $cat_format] ni [list USNO MICROCAT]} {
+         set comment "This catalog ($cat_format) is not valid. It must be only USNO or MICROCAT!"
          error $comment
       }
       if {[file exists $cat_folder]==1} {
-         set comment "cat_folder $cat_folder does not contains the $cat_format catalog!"
-         set fics [glob -nocomplain [file join $cat_folder "*.ACC"]]
-         if {[llength $fics]<24} {
-            error $comment
-         }
-         set fics [glob -nocomplain [file join $cat_folder "*.CAT"]]
-         if {[llength $fics]<24} {
-            error $comment
+         if {[string toupper $cat_format] eq "USNO"} {
+            set comment "Path to the catalog does not contain the $cat_format catalog!\n$cat_folder"
+            set fics [glob -nocomplain [file join $cat_folder "*.ACC"]]
+            if {[llength $fics]==0} {
+               error $comment
+            }
+            set fics [glob -nocomplain [file join $cat_folder "*.CAT"]]
+            if {[llength $fics]==0} {
+               error $comment
+            }
+         } elseif {[string toupper $cat_format] eq "MICROCAT"} {
+            set comment "Path to the catalog does not contain the $cat_format catalog!\n$cat_folder"
+            set fics [glob -nocomplain -dir [file join $cat_folder usno] -type f *.ACC]
+            if {[llength $fics]<24} {
+               error $comment
+            }
+            set fics [glob -nocomplain -dir [file join $cat_folder tyc] -type f *.ACC]
+            if {[llength $fics]<24} {
+               error $comment
+            }
          }
       } else {
-         set comment "cat_folder $cat_folder does not exists !"
+         set comment "Path to the catalog does not exists:\n$cat_folder\n"
          error $comment
       }
+
       #---
       set pi [expr 4*atan(1.)]
       set naxis1 [lindex [buf$::audace(bufNo) getkwd NAXIS1] 1]
