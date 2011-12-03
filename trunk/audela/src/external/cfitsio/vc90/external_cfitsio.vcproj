@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="external_cfitsio"
 	ProjectGUID="{55983A0B-C057-416C-9AB2-C8B9D01D7D2C}"
 	RootNamespace="external_cfitsio"
@@ -72,10 +72,11 @@
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
+				CommandLine="echo VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile=".\Release/cfitsio.dll"
+				OutputFile="..\..\..\..\bin\cfitsio.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				GenerateManifest="false"
@@ -172,7 +173,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="pthread.lib"
-				OutputFile=".\Debug/cfitsio.dll"
+				OutputFile="..\..\..\..\bin\cfitsio.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="../../lib"

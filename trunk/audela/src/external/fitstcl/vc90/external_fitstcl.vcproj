@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="external_fitstcl"
 	ProjectGUID="{2E31F74D-753C-471C-90BB-1C70C6CEED08}"
 	RootNamespace="external_fitstcl"
@@ -76,7 +76,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="true"
+				IgnoreImportLibrary="false"
 				AdditionalDependencies="tcl85t.lib cfitsio.lib"
 				OutputFile="../../../../bin/libfitstcl.dll"
 				LinkIncremental="1"

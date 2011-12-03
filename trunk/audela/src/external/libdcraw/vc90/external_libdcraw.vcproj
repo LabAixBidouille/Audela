@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="external_libdcraw"
 	ProjectGUID="{A20EEC71-6B59-4898-B47A-984AEA48DCC7}"
 	TargetFrameworkVersion="0"
@@ -73,7 +73,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile=".\Debug/libdcraw.dll"
+				OutputFile="..\..\..\..\bin\libdcraw.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				ModuleDefinitionFile=".\libdcraw.def"
@@ -167,7 +167,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile=".\Release/libdcraw.dll"
+				OutputFile="..\..\..\..\bin\libdcraw.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				ModuleDefinitionFile=".\libdcraw.def"
