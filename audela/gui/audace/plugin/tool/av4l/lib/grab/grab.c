@@ -297,10 +297,16 @@ void print_usage()
             " -c 1m|60s|1500f : length of each chunk in minutes, seconds or frames\n"
             " -i /dev/video1 : force usage of this input device\n"
             " -w width : width e.g. 720\n"
-            " -h width : height e.g. 576\n"
+            " -h height : height e.g. 576\n"
             "\n"
             "/dev/shm/pict.yuv422 contains the latest image.\n"
             " To update it delete the file.\n"
+            "\n"
+            "Add the current user to the 'video' group.\n"
+            "Add the following lines to /etc/security/limits.conf\n"
+            "@video           -       rtprio          10\n"
+            "@video           -       nice            -20\n"
+            "@video           -       memlock         unlimited\n"
             "\n"
             "Example.\n"
             " Create a directory that will receive the files, let's say /tmp/session1\n"
@@ -1474,18 +1480,127 @@ void signal_handler(int signal)
     request_exit = 1;
 }
 
+char * g_input_device = NULL;
+char * g_output_dir = NULL;
+char * g_outfilepath = NULL;
+char * g_logfilepath = NULL;
+
+int one_shot(int argc, char *argv[])
+{
+    int rc,ret,i;
+
+    {
+        extern URLProtocol filex_protocol;
+        extern URLProtocol null_protocol;
+        ffurl_register_protocol(&filex_protocol,sizeof(filex_protocol));
+        ffurl_register_protocol(&null_protocol,sizeof(null_protocol));
+    }
+
+    // Video Input Device Init
+    if(video_open(&vc,g_input_device) != 0) {
+        fprintf(stderr,"E: cannot open device %s\n", g_input_device);
+        exit(1);
+    }
+    video_alloc_buffers(&vc);
+
+    // Allocation of space for shared image
+    shared_rawimage_status = 0;
+    shared_rawimage_size = vc.sizeimage;
+    shared_rawimage = malloc(shared_rawimage_size);
+    if(shared_rawimage==NULL) { perror(""); xabort(); }
+
+    // Video Output Init
+    av_register_all();
+    avcodec_register_all();
+
+    // launch acquisition
+    request_exit = 0;
+    {
+        int frame_count = 0;
+        enum v4l2_buf_type type;
+        struct v4l2_buffer buf;
+        struct pollfd pollfd;
+
+        memset(&buf,0,sizeof(buf));
+
+        pollfd.fd = vc.fd;
+        pollfd.events = POLLIN;
+        pollfd.revents = 0;
+
+        type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+        if (ioctl(vc.fd, VIDIOC_STREAMON, &type) < 0) {
+            perror("E: VIDIOC_STREAMON");
+            request_exit = 1;
+        }
+
+
+        while(request_exit == 0) {
+            ret = poll(&pollfd, 1, 100);
+
+            if (ret < 0) {
+                if(errno == EINTR) continue;
+                perror("W: poll ");
+                continue;
+            }
+
+            if (ret == 0) continue;
+
+            //        memset(&buf, 0, sizeof(struct v4l2_buffer));
+            buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+            buf.memory = V4L2_MEMORY_MMAP;
+
+            if (ioctl(vc.fd, VIDIOC_DQBUF, &buf) < 0) {
+                perror("E: VIDIOC_DQBUF");
+                request_exit = 1;
+                break;
+            }
+
+            memcpy(shared_rawimage, vc.bufs[buf.index].map, shared_rawimage_size);
+            frame_count++;
+            if(frame_count >= 10) request_exit = 1;
+
+            if (ioctl(vc.fd, VIDIOC_QBUF, &buf) < 0) {
+                perror("E: VIDIOC_QBUF");
+                request_exit = 1;
+            }
+
+
+        } // while(1)
+
+
+        type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+        if (ioctl(vc.fd, VIDIOC_STREAMOFF, &type) < 0) {
+            perror("E: VIDIOC_STREAMOFF");
+        }
+
+
+    }
+
+    // Copy the raw image for external application
+    {
+        int fd;
+        unlink("/dev/shm/pict.yuv422");
+        unlink("/dev/shm/pict.yuv422.tmp");
+        fd = open("/dev/shm/pict.yuv422.tmp",O_WRONLY|O_CREAT,0644);
+        if(fd >= 0) {
+            write(fd, shared_rawimage, shared_rawimage_size);
+            close(fd);
+            rename("/dev/shm/pict.yuv422.tmp","/dev/shm/pict.yuv422");
+        }
+    }
+
+    video_free_buffers(&vc);
+    return 0;
+}
 
 int main(int argc, char *argv[])
 {
     int rc,ret;
-    pthread_t thread_write,thread_read;
     int opt;
-    pthread_mutexattr_t mutex_attr;
-    char * input_device = NULL;
-    char * output_dir = NULL;
-    char * g_outfilepath = NULL;
-    char * g_logfilepath = NULL;
     int i;
+    int do_one_shot = 0;
+    pthread_t thread_write,thread_read;
+    pthread_mutexattr_t mutex_attr;
 
     memset(&vc, 0, sizeof(vc));
 
@@ -1506,7 +1621,7 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
-    while((opt=getopt(argc, argv, "b:h:w:i:o:d:c:z")) != -1) {
+    while((opt=getopt(argc, argv, "b:h:w:i:o:d:c:z1")) != -1) {
         switch(opt) {
             case 'b':
                 g_nbufs = atoi(optarg);
@@ -1518,10 +1633,10 @@ int main(int argc, char *argv[])
                 g_width = atoi(optarg);
                 break;
             case 'i':
-                input_device = optarg;
+                g_input_device = optarg;
                 break;
             case 'o':
-                output_dir = optarg;
+                g_output_dir = optarg;
                 break;
             case 'd':
                 // duration minutes : eg 20m
@@ -1573,11 +1688,18 @@ int main(int argc, char *argv[])
 	    case 'z':
 		g_realtime = 0;
 		break;
+        case '1':
+        do_one_shot = 1;
+        break;
             default:
                 printf("E: Argument parsing error\n");
                 print_usage();
                 exit(1);
         }
+    }
+
+    if(do_one_shot) {
+        return one_shot(argc,argv);
     }
 
     if(optind > argc) {
@@ -1617,14 +1739,14 @@ int main(int argc, char *argv[])
 
 
     // Check of output directory
-    if( output_dir == NULL) {
+    if( g_output_dir == NULL) {
         fprintf(stdout, "E: give output dir: -o /tmp/observ/asteroid1234\n");
         exit(1);
     } else {
         char path[PATH_MAX]; // TODO or +1 ?
         char *name;
 
-        if(realpath(output_dir,path) < 0) {
+        if(realpath(g_output_dir,path) < 0) {
             perror("E: realpath");
             exit(1);
         }
@@ -1780,8 +1902,8 @@ int main(int argc, char *argv[])
     signal(SIGHUP, SIG_IGN);
 
     // Video Input Device Init
-    if(video_open(&vc,input_device) != 0) {
-        fprintf(stderr,"E: cannot open device %s\n", input_device);
+    if(video_open(&vc,g_input_device) != 0) {
+        fprintf(stderr,"E: cannot open device %s\n", g_input_device);
         exit(1);
     }
     video_alloc_buffers(&vc);

@@ -264,7 +264,7 @@ namespace eval ::av4l_acq {
            image create photo .oneshot -format PNG -file [ file join $audace(rep_plugin) tool av4l img oneshot.png ]
            button $frm.oneshot -image .oneshot\
               -borderwidth 2 -width 48 -height 48 -compound center \
-              -command "::av4l_tools::acq_fetch $frm"
+              -command "::av4l_tools_avi::acq_fetch $frm"
            pack $frm.oneshot \
               -in $frm.btnav \
               -side left -anchor w \
@@ -275,7 +275,7 @@ namespace eval ::av4l_acq {
            image create photo .demarre -format PNG -file [ file join $audace(rep_plugin) tool av4l img demarre.png ]
            button $frm.demarre -image .demarre\
               -borderwidth 2 -width 48 -height 48 -compound center \
-              -command "::av4l_tools::acq_start $frm"
+              -command "::av4l_tools_avi::acq_start $frm"
            pack $frm.demarre \
               -in $frm.btnav \
               -side left -anchor w \
@@ -286,7 +286,7 @@ namespace eval ::av4l_acq {
            image create photo .stop -format PNG -file [ file join $audace(rep_plugin) tool av4l img stop.png ]
            button $frm.stop -image .stop\
               -borderwidth 2 -width 48 -height 48 -compound center \
-              -command "::av4l_tools::acq_stop $frm"
+              -command "::av4l_tools_avi::acq_stop $frm"
            pack $frm.stop \
               -in $frm.btnav \
               -side left -anchor w \

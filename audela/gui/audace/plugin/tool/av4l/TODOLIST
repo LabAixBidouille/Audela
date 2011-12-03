@@ -8,17 +8,6 @@ FV:
 
 SV:
 
-- Barre de defilement : mettre un defilement sur le nombre 
-        d image plutot qu un pourcentage.
-
-- Boutons : retour rapide ( - 1 min = 25 fps * 60 )
-            retour (- 1 image)
-            avance rapide ( + 1 min = 25 fps * 60 )
-       
-- setmin setmax, deviennent des numero d images.
- 
-- appel a une procedure qui renvoit le status de la video
-
 - Lors de l'arret de av4l-grab faire un appel a wait(2) pour supprimer le zombie
 
 - Interdire le lancement de plusieurs acquisitions simultanees
