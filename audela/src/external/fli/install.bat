@@ -8,6 +8,5 @@ if "%1" == "" set CONFIG=Release
 set FLI=fli-dist-1.71\libfli
 mkdir ..\include
 mkdir ..\lib
-copy %FLI%\windows\%CONFIG%\libfli.dll ..\..\..\bin
 copy %FLI%\windows\%CONFIG%\libfli.lib ..\lib
 copy %FLI%\libfli.h ..\include

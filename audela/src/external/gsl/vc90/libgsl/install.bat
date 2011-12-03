@@ -20,8 +20,6 @@ rem copie des entetes des sources *.h
 rem copie des entetes des librairies
 %COPY% %CONFIG%\libgsl.lib               %lib_dir%
 
-rem copie des entetes des librairies *.dll
-%COPY% %CONFIG%\libgsl.dll               %bin_dir%
 
 goto target_end
 

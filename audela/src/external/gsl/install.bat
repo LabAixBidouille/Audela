@@ -1,7 +1,7 @@
 mkdir ..\include
 mkdir ..\include\win
 mkdir ..\include\win\gsl
-@echo
+@echo on
 copy include\*.* ..\include\win\gsl
 copy lib\*.* ..\lib
 copy bin\*.* ..\..\..\bin

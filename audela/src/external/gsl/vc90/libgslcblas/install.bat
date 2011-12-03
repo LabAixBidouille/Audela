@@ -19,8 +19,6 @@ set COPY=xcopy /D /Y /I
 rem copie des entetes des librairies
 %COPY% %CONFIG%\libgslcblas.lib     %lib_dir%
 
-rem copie des entetes des librairies *.dll
-%COPY% %CONFIG%\libgslcblas.dll     %bin_dir%
 
 goto target_end
 

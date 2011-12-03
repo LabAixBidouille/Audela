@@ -7,7 +7,6 @@ set FITSIO=..\cfitsio3210
 @echo on
 mkdir ..\..\include
 mkdir ..\..\lib
-copy %CONFIG%\cfitsio.dll ..\..\..\..\bin
 copy %CONFIG%\cfitsio.lib ..\..\lib
 copy %FITSIO%\fitsio.h ..\..\include
 copy %FITSIO%\longnam.h ..\..\include

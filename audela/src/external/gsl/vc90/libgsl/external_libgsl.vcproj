@@ -67,7 +67,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="libgslcblas.lib"
-				OutputFile="$(OutDir)\libgsl.dll"
+				OutputFile="..\..\..\..\..\bin\libgsl.dll"
 				AdditionalLibraryDirectories="..\..\..\..\external\lib"
 				GenerateManifest="true"
 				GenerateDebugInformation="true"
@@ -146,7 +146,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="libgslcblas.lib"
-				OutputFile="$(OutDir)\libgsl.dll"
+				OutputFile="..\..\..\..\..\bin\libgsl.dll"
 				AdditionalLibraryDirectories="..\..\..\..\external\lib"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"

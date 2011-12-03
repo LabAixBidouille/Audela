@@ -172,7 +172,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile=".\Release/libdcjpeg.dll"
+				OutputFile="..\..\..\..\bin\libdcjpeg.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				ModuleDefinitionFile=".\libdcjpeg.def"
