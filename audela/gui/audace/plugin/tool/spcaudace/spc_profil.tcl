@@ -1196,6 +1196,8 @@ proc spc_profil { args } {
                buf$audace(bufNo) imaseries "LOPT y1=3 y2=$ylargeur height=1"
             } elseif { $methodebin == "horne" } {
                buf$audace(bufNo) imaseries "LOPT5 y1=3 y2=$ylargeur height=1 COSMIC_THRESHOLD=$spcaudace(hornethreshold)"
+               #-- Horne, K. An optimal extraction algorithm for ccd spectroscopy. Pub. Astron. Soc. Pac. 98, 609, Jun (1986).
+
             }
 	    buf$audace(bufNo) setkwd [ list "CRVAL1" 1.0 double "" "" ]
 	    buf$audace(bufNo) setkwd [ list "CDELT1" 1.0 double "" "" ]

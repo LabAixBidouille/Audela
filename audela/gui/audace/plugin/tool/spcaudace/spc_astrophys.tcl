@@ -1552,7 +1552,7 @@ proc spc_autoew { args } {
       #--- Traitement des resultats :
       return $results_ew
    } else {
-      ::console::affiche_erreur "Usage: spc_autoew nom_profil_raies lambda_raie/lambda_deb lambda_fin ?taux_doucissage_continuum (0.-10.)?\n"
+      ::console::affiche_erreur "Usage: spc_autoew nom_profil_raies lambda_raie/lambda_deb lambda_fin ?taux_doucissage_continuum (0-\[6\]-15)?\n"
    }
 }
 #***************************************************************************#
@@ -2185,13 +2185,35 @@ proc spc_ew { args } {
       set lambda_deb [ lindex $args 1 ]
       set lambda_fin [ lindex $args 2 ]
       set taux_doucissage [ lindex $args 3 ]
+   } elseif { $nbargs==5 } {
+      set filename [ lindex $args 0 ]
+      set lambda_deb [ lindex $args 1 ]
+      set lambda_fin [ lindex $args 2 ]
+      set taux_doucissage [ lindex $args 3 ]
+      set rm_conti [ lindex $args 4 ]
+   } elseif { $nbargs==6 } {
+      set filename [ lindex $args 0 ]
+      set lambda_deb [ lindex $args 1 ]
+      set lambda_fin [ lindex $args 2 ]
+      set taux_doucissage [ lindex $args 3 ]
+      set rm_conti [ lindex $args 4 ]
+      set deg_pbas [ lindex $args 5 ]
    } else {
-      ::console::affiche_erreur "Usage: spc_ew nom_profil_raies_calibré lamba_debut lambda_fin ?taux_doucissage_continuum (0.-10.)?\n"
+      ::console::affiche_erreur "Usage: spc_ew nom_profil_raies_calibré lamba_debut lambda_fin ?taux_doucissage_continuum (0-\[6\]-15)? ?efface_continuum(o)? ?degré_polynomes_continuum_methode_pbas(2)?\n"
       return ""
    }
 
    #--- Calcul de EW :
-   set results [ spc_ew4 $filename $lambda_deb $lambda_fin $taux_doucissage ]
+   if { $nbargs==3 || $nbargs==4 } {
+      set results [ spc_ew4 $filename $lambda_deb $lambda_fin $taux_doucissage ]
+   } elseif { $nbargs==5 } {
+      set results [ spc_ew4 $filename $lambda_deb $lambda_fin $taux_doucissage $rm_conti ]
+   } elseif { $nbargs==6 } {
+      set results [ spc_ew4 $filename $lambda_deb $lambda_fin $taux_doucissage $rm_conti $deg_pbas ]
+   }
+
+
+   #--- Retour resultat :
    return $results
 }
 #***************************************************************************#
@@ -2241,7 +2263,7 @@ proc spc_ew4 { args } {
       set rmconti [ lindex $args 4 ]
       set degpoly [ lindex $args 5 ]
    } else {
-      ::console::affiche_erreur "Usage: spc_ew4 nom_profil_raies lambda_deb lambda_fin ?taux_doucissage_continuum (1-\[1000000\]00)? ?efface_continuum(o)? ?degré_polynomes_continuum_methode_pbas(2)?\n"
+      ::console::affiche_erreur "Usage: spc_ew4 nom_profil_raies lambda_deb lambda_fin ?taux_doucissage_continuum (0-\[6\]-15)? ?efface_continuum(o)? ?degré_polynomes_continuum_methode_pbas(2)?\n"
       return ""
    }
 

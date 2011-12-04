@@ -12,7 +12,7 @@ global audela audace
 global spcaudace
 
 #--- Version d'SpcAudace :
-set spcaudace(version) "2.10 - 19/09/2011"
+set spcaudace(version) "2.11 - 05/11/2011"
 # ::audace::date_sys2ut ?Date?
 #set spcaudace(version) [ file mtime $spcaudace(repspc) ]
 
@@ -105,7 +105,7 @@ set spcaudace(sitearasbeam) "http://arasbeam.free.fr/"
 set spcaudace(methsel) "moy"
 set spcaudace(methreg) "spc"
 set spcaudace(methsky) "med"
-set spcaudace(methbin) "rober"
+set spcaudace(methbin) "horne"
 
 
 #--- Options prédéfinies (par defaut addi, options=add, moy, med, sigmakappa) :
