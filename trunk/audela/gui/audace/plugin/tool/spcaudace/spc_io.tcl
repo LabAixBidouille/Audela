@@ -3130,22 +3130,23 @@ proc spc_autofit2png { args } {
 
     set labely "Relative intensity"
 
-    if { [ llength $args ]==2 || [llength $args ]==4 || [llength $args ]==6 } {
-        if { [ llength $args ] == 2 } {
+    set nbargs [ llength $args ]
+    if { $nbargs==2 || $nbargs==4 || $nbargs==6 } {
+        if { $nbargs== 2 } {
             set spectre [ file rootname [ lindex $args 0 ] ]
             set nom_objet [ lindex $args 1 ]
             set xdeb "*"
             set xfin "*"
             set ydeb "*"
             set yfin "*"
-        } elseif { [ llength $args ] == 4 } {
+        } elseif { $nbargs == 4 } {
             set spectre [ file rootname [ lindex $args 0 ] ]
             set nom_objet [ lindex $args 1 ]
             set xdeb [ lindex $args 2 ]
             set xfin [ lindex $args 3 ]
             set ydeb "*"
             set yfin "*"
-        } elseif { [ llength $args ] == 6 } {
+        } elseif { $nbargs== 6 } {
             set spectre [ file rootname [ lindex $args 0 ] ]
             set nom_objet [ lindex $args 1 ]
             set xdeb [ lindex $args 2 ]
@@ -3246,23 +3247,29 @@ proc spc_autofit2png { args } {
         set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
         if { [ lsearch $listemotsclef "CDELT1" ] !=-1 && [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
             set flag_cal 1
-            if { [ llength $args ]==2 } {
+            if { $nbargs==2 } {
                set xdeb [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
             }
             if { $xdeb != 1. } {
-                set dispersion_precise [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-                set dispersion [ expr round($dispersion_precise*1000.)/1000. ]
-                set xfin [ spc_calpoly $naxis1 1 $xdeb $dispersion_precise 0 0 ]
-                set labelx "Wavelength (A)"
+               set dispersion_precise [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+               set dispersion [ expr round($dispersion_precise*1000.)/1000. ]
+               if { $nbargs==2 } {
+                  set xfin [ spc_calpoly $naxis1 1 $xdeb $dispersion_precise 0 0 ]
+               }
+               set labelx "Wavelength (A)"
             } else {
-                set dispersion 0
-                set xfin $naxis1
-                set labelx "Position (pixel)"
+               set dispersion 0
+               if { $nbargs==2 } {
+                 set xfin $naxis1
+               }
+               set labelx "Position (pixel)"
             }
         } else {
            set flag_cal 0
            set dispersion 0
-           set xfin $naxis1
+           if { $nbargs==2 } {
+              set xfin $naxis1
+           }
            set labelx "Position (pixel)"
         }
 

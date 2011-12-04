@@ -184,7 +184,7 @@ proc spc_winini { } {
       .spc.menuBar.mesures add command -label $caption(spcaudace,gui,spc_centergauss_w) -command "spc_centergauss" -underline 0
       .spc.menuBar.mesures add command -label $caption(spcaudace,gui,spc_fwhm_w) -command "spc_fwhm" -underline 0
       .spc.menuBar.mesures add command -label $caption(spcaudace,gui,spc_ew_w) -command "spc_autoew" -underline 0
-      .spc.menuBar.mesures add command -label $caption(spcaudace,gui,spc_ew1_w) -command "spc_autoew1" -underline 0
+      .spc.menuBar.mesures add command -label $caption(spcaudace,gui,spc_ew1_w) -command "spc_ew" -underline 0
       .spc.menuBar.mesures add command -label $caption(spcaudace,gui,spc_intensity_w) -command "spc_intensity" -underline 0
       .spc.menuBar.mesures add command -label $caption(spcaudace,gui,spc_imax) -command "spc_imax" -underline 0
       .spc.menuBar.mesures add command -label $caption(spcaudace,gui,spc_icontinuum) -command "spc_icontinuum" -underline 0
@@ -277,7 +277,7 @@ proc spc_winini { } {
       #.spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_vrot_w) -command "spc_vrot" -underline 0
       .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_file_space)
       .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_ew_w) -command "spc_autoew" -underline 0
-      .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_ew1_w) -command "spc_autoew1" -underline 0
+      .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_ew1_w) -command "spc_ew" -underline 0
       .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_ewcourbe_w) -command "spc_ewcourbe" -underline 0
       .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_ewdirw) -command "spc_ewdirw" -underline 0
       .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_file_space)
