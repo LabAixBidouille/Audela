@@ -76,12 +76,14 @@ proc meteosensor_open { type port name {parameters ""} } {
          if {$ip1==""} {
             error "Parameters must be a list of 4 elements: ip1 port1 ip2 port2"
          }
-         set res [vantagepronport_open $ip1 $port1 $ip2 $port2]
+         set res [vantagepronport_open_nport $ip1 $port1 $ip2 $port2]
          set audace(meteosensor,private,$name,channel) [lindex $res 0]
          set audace(meteosensor,private,$name,channelg) [lindex $res 1]
       } else {
-         ros_meteo open vantage
-         set audace(meteosensor,private,$name,channel) undefined
+	      set f [open $port w+]
+	      fconfigure $f  -mode 19200,n,8,1 -buffering none -translation {binary binary} -blocking 0
+	      set audace(meteosensor,private,$name,channel) $f
+	      set audace(meteosensor,private,$name,typeu) $typeu
       }
       set audace(meteosensor,private,$name,typeu) $typeu
    } elseif {$typeu=="BOLTWOOD"} {
@@ -139,7 +141,7 @@ proc meteosensor_get { name } {
       if {[info exists audace(meteosensor,private,$name,channelg)]==1} {
          set res [vantagepronport_read $audace(meteosensor,private,$name,channel) $audace(meteosensor,private,$name,channelg)]
       } else {
-         set res [ros_meteo read vantage]
+	      set res [vantagepro_read $audace(meteosensor,private,$name,channel)]
       }
    } elseif {$typeu=="BOLTWOOD"} {
       set res [boltwood_read]
@@ -216,8 +218,7 @@ proc meteosensor_close { name } {
          close $audace(meteosensor,private,$name,channelg)
          unset audace(meteosensor,private,$name,channelg)
       } else {
-         ros_meteo close vantage
-         close $audace(meteosensor,private,$name,channel)
+	      close $audace(meteosensor,private,$name,channel)
          unset audace(meteosensor,private,$name,channel)
          unset audace(meteosensor,private,$name,typeu)
       }
@@ -226,6 +227,70 @@ proc meteosensor_close { name } {
       unset audace(meteosensor,private,$name,channel)
       unset audace(meteosensor,private,$name,typeu)
    }
+}
+
+proc meteosensor_meteosensor_convert_base { nombre basein baseout } {
+   set symbols {0 1 2 3 4 5 6 7 8 9 A B C D E F}
+   # --- conversion vers la base decimale
+   if {$basein=="ascii"} {
+      set nombre [string index $nombre 0]
+      if {$nombre==""} {
+         set nombre " "
+      }
+      for {set k 0} {$k<256} {incr k} {
+         set car [format %c $k]
+         if {$car==$nombre} {
+            set integ_decimal $k
+         }
+      }
+   } else {
+	   set nombre [regsub -all " " $nombre ""]
+      set symbins [lrange $symbols 0 [expr $basein-1]]
+      set n [expr [string length $nombre]-1]
+      set integ_decimal 0
+      for {set k $n} {$k>=0} {incr k -1} {
+         set mult [expr pow($basein,$n-$k)]
+         set digit [string index $nombre $k]
+         set kk [lsearch -exact $symbins $digit]
+         if {$kk==-1} {
+            break
+         } else {
+            set digit $kk
+         }
+         #::console::affiche_resultat "nombre=$nombre k=$k n-k=$n-$k digit=$digit mult=$mult\n"
+         set integ_decimal [expr $integ_decimal+$digit*$mult]
+      }
+   }
+   # --- conversion vers la base de sortie
+   set symbols {0 1 2 3 4 5 6 7 8 9 A B C D E F}
+   set integ [expr abs(int($integ_decimal))]
+   if {$baseout=="ascii"} {
+      if {$integ>255} {
+         set integ 255
+      }
+      set bb [format %c $integ]
+   } else {
+      set sortie 0
+      set bb ""
+      set k 0
+      while {$sortie==0} {
+         set b [expr int(floor($integ/$baseout))]
+         set reste [lindex $symbols [expr $integ-$baseout*$b]]
+         #::console::affiche_resultat "bb=$bb\n"
+         set bb "${reste}${bb}"
+         #::console::affiche_resultat "integ=$integ base=$base => b=$b reste=$reste bb=$bb\n"
+         set integ $b
+         if {$b<1} {
+            set sortie 1
+            break
+         }
+         incr k
+      }
+      if {($baseout==16)&&([string length $bb]%2==1)} {
+	      set bb "0${bb}"
+      } 
+   }
+   return $bb
 }
 
 # ===========================================================================
@@ -838,6 +903,122 @@ proc arduino1_rainsensor_read { channel } {
    lappend rep "RainAnalogADU [lindex $reponse 6] ADU \"\""
    lappend rep "SensorModel [lindex $reponse 7] text \"Sensor model\""
    return $rep
+}
+
+# ===========================================================================
+# ===========================================================================
+# ====== Vantage Pro 
+# ===========================================================================
+# ===========================================================================
+# vantagepro_open 192.168.10.58 966 192.168.10.58 950
+
+proc vantagepro_read { f } {
+	puts -nonewline $f "\r" ; flush $f ; after 50 ; set res [read -nonewline $f] ; flush $f ; set n [string length $res] ; puts "$f ($n) <${res}>"
+	if {$n==0} {
+		puts -nonewline $f "\r" ; flush $f ; after 1500 ; set res [read -nonewline $f] ; flush $f ; set n [string length $res] ; puts "$f ($n) <${res}>"
+	}
+	puts -nonewline $f "LOOP 1\n" ; after 1500 ; set res [read -nonewline $f] ; set n [string length $res] ; puts "$f ($n) <${res}>"
+	set hexa [ascii2hexa $res]
+	#set hexa "  06 4C 4F 4F 00 00 41 00 BA 73 A0 02 0C 59 02 0D 0A 00 00 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF 17 FF FF FF FF FF FF FF 00 00 FF FF 7F 00 00 FF FF 00 00 00 00 B0 00 00 00 00 00 14 00 FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 26 03 03 C0 0C 04 1F 00 0A 0D C7 1A"
+	set key [lrange $hexa 0 3]
+	if {$key!="06 4C 4F 4F"} {
+		error "Problem communication with meteo station"
+	}
+	set hexa [lrange $hexa 1 end]
+	
+	# --- pressure (hPa)
+	set val1 [meteosensor_convert_base [lindex $hexa 7] 16 10]
+	set val2 [meteosensor_convert_base [lindex $hexa 8] 16 10]
+	set val [expr 256*$val2+$val1]
+	set val [expr $val/1000.*25.4/760*1013.25]
+	set pression $val
+	
+	# --- inside temp (degC)
+	set val1 [meteosensor_convert_base [lindex $hexa 9] 16 10]
+	set val2 [meteosensor_convert_base [lindex $hexa 10] 16 10]
+	set val [expr 256*$val2+$val1]
+	set val [expr ($val/10.-32.)*5./9.]
+   set tempint $val
+	
+	# --- inside humidity (percent)
+	set val [meteosensor_convert_base [lindex $hexa 11] 16 10]
+	set humint $val
+	
+	# --- outside temp (degC)
+	set val1 [meteosensor_convert_base [lindex $hexa 12] 16 10]
+	set val2 [meteosensor_convert_base [lindex $hexa 13] 16 10]
+	set val [expr 256*$val2+$val1]
+	set val [expr ($val/10.-32.)*5./9.]
+   set tempext $val
+	
+	# --- wind speed (m/s)
+	set val [meteosensor_convert_base [lindex $hexa 14] 16 10]
+	set val [expr $val*1609/3600.]
+	set vitvent $val
+	
+	# --- wind direction (degC) 90=East 360=North
+	set val1 [meteosensor_convert_base [lindex $hexa 16] 16 10]
+	set val2 [meteosensor_convert_base [lindex $hexa 17] 16 10]
+	set val [expr 256*$val2+$val1]
+	set dirvent $val
+	
+	# --- outside humidity (percent)
+	set val [meteosensor_convert_base [lindex $hexa 33] 16 10]
+	set humext $val
+	
+   set er [catch {
+      set dewtemp [expr pow($humext/100.,1./8.)*(112.+(0.9*$tempext))+(0.1*$tempext)-112.]
+      if {$dirvent<22.5} {
+         set pcard "S"
+      } elseif { $dirvent< 67.5} {
+         set pcard "SW"
+      } elseif { $dirvent<112.5} {
+         set pcard "W"
+      } elseif { $dirvent<157.5} {
+         set pcard "NW"
+      } elseif { $dirvent<202.5} {
+         set pcard "N"
+      } elseif { $dirvent<247.5} {
+         set pcard "NE"
+      } elseif { $dirvent<292.5} {
+         set pcard "E"
+      } elseif { $dirvent<337.5} {
+         set pcard "SE"
+      } else {
+         set pcard "S"
+      }
+      set dirvent [expr $dirvent+180]
+      if {$dirvent>360} {
+         set dirvent [expr $dirvent-360]
+      }
+   } ms ]
+   if {$er==1} {
+      error "Bad read ($ms)"
+   }
+   set resultat ""
+   set er [catch {
+      set res [mc_date2ymdhms now]
+      set month [lindex $res 1]
+      set day [lindex $res 2]
+      set year [lindex $res 0]
+      set hour [lindex $res 3]
+      set min [lindex $res 4]
+      set res "$month $day $year $hour $min"
+      set date "[format %04d $year]-[format %02d $month]-[format %02d $day]T[format %02d $hour]:[format %02d $min]:00"
+      lappend resultat [list StationTime $date ISO8601 "Date of the last measurement"]
+      lappend resultat [list OutsideTemp [format %.1f $tempext] Celcius ""]
+      lappend resultat [list InsideTemp [format %.1f $tempint] Celcius ""]
+      lappend resultat [list OutsideHumidity [format %.1f $humext] Percent ""]
+      lappend resultat [list Barometer [format %.1f $pression] mbar ""]
+      lappend resultat [list WindSpeed [format %.1f $vitvent] m/s ""]
+      lappend resultat [list WindDir [format %.1f $dirvent] deg "N=0, E=90"]
+      lappend resultat [list WindDirCardinal $pcard text "Cadinal symbol of wind direction"]
+      lappend resultat [list DewPt [format %.1f $dewtemp] Celcius "Dew point"]
+   } ms ]
+   if {$er==1} {
+      error "Bad date ($ms)"
+   }
+   return $resultat
 }
 
 # ===========================================================================
