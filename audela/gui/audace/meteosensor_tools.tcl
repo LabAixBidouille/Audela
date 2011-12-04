@@ -229,7 +229,7 @@ proc meteosensor_close { name } {
    }
 }
 
-proc meteosensor_meteosensor_convert_base { nombre basein baseout } {
+proc meteosensor_convert_base { nombre basein baseout } {
    set symbols {0 1 2 3 4 5 6 7 8 9 A B C D E F}
    # --- conversion vers la base decimale
    if {$basein=="ascii"} {
@@ -291,6 +291,16 @@ proc meteosensor_meteosensor_convert_base { nombre basein baseout } {
       } 
    }
    return $bb
+}
+
+proc meteosensor_ascii2hexa { msg } {
+	set cars "" 
+	set n [string length $msg]
+   for {set k 0} {$k<$n} {incr k} {
+	   set car [string index $msg $k]
+	   append cars " [meteosensor_convert_base $car ascii 16]"
+   }
+   return $cars
 }
 
 # ===========================================================================
@@ -913,12 +923,12 @@ proc arduino1_rainsensor_read { channel } {
 # vantagepro_open 192.168.10.58 966 192.168.10.58 950
 
 proc vantagepro_read { f } {
-	puts -nonewline $f "\r" ; flush $f ; after 50 ; set res [read -nonewline $f] ; flush $f ; set n [string length $res] ; puts "$f ($n) <${res}>"
+	puts -nonewline $f "\r" ; flush $f ; after 50 ; set res [read -nonewline $f] ; flush $f ; set n [string length $res]
 	if {$n==0} {
-		puts -nonewline $f "\r" ; flush $f ; after 1500 ; set res [read -nonewline $f] ; flush $f ; set n [string length $res] ; puts "$f ($n) <${res}>"
+		puts -nonewline $f "\r" ; flush $f ; after 1500 ; set res [read -nonewline $f] ; flush $f ; set n [string length $res]
 	}
-	puts -nonewline $f "LOOP 1\n" ; after 1500 ; set res [read -nonewline $f] ; set n [string length $res] ; puts "$f ($n) <${res}>"
-	set hexa [ascii2hexa $res]
+	puts -nonewline $f "LOOP 1\n" ; after 1500 ; set res [read -nonewline $f] ; set n [string length $res]
+	set hexa [meteosensor_ascii2hexa $res]
 	#set hexa "  06 4C 4F 4F 00 00 41 00 BA 73 A0 02 0C 59 02 0D 0A 00 00 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF 17 FF FF FF FF FF FF FF 00 00 FF FF 7F 00 00 FF FF 00 00 00 00 B0 00 00 00 00 00 14 00 FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 26 03 03 C0 0C 04 1F 00 0A 0D C7 1A"
 	set key [lrange $hexa 0 3]
 	if {$key!="06 4C 4F 4F"} {
