@@ -148,7 +148,7 @@ proc meteosensor_get { name } {
       if {[info exists audace(meteosensor,private,$name,channelg)]==1} {
          set res [vantagepronport_read $audace(meteosensor,private,$name,channel) $audace(meteosensor,private,$name,channelg)]
       } else {
-	      set res [vantagepro_read $audace(meteosensor,private,$name,channel)]
+	      set res [vantagepro_read $audace(meteosensor,private,$name,channel) $name]
       }
    } elseif {$typeu=="BOLTWOOD"} {
       set res [boltwood_read]
