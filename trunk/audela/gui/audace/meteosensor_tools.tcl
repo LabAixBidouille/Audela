@@ -57,7 +57,14 @@ proc meteosensor_open { type port name {parameters ""} } {
    if {($key=="COM")&&($::tcl_platform(os) == "Linux")} {
       # tester les /etc/...
    }
-   if {($typeu=="AAG")||($typeu=="ARDUINO1")} {
+	set audace(meteosensor,private,$name,tempo) 100
+   if {$typeu=="AAG"} {
+      set f [open $port w+]
+      fconfigure $f  -mode 9600,n,8,1 -buffering none -blocking 0
+      set audace(meteosensor,private,$name,channel) $f
+      set audace(meteosensor,private,$name,typeu) $typeu
+		set audace(meteosensor,private,$name,tempo) 50
+   } elseif {$typeu=="ARDUINO1"} {
       set f [open $port w+]
       fconfigure $f  -mode 9600,n,8,1 -buffering none -blocking 0
       set audace(meteosensor,private,$name,channel) $f
@@ -101,7 +108,7 @@ proc meteosensor_open { type port name {parameters ""} } {
       set audace(meteosensor,private,$name,typeu) $typeu
    } else {
       error "Type not supported. Valid types are: AAG, WXT520, ARDUINO1, VANTAGEPRO, BOLTWOOD, LACROSSE, SIMULATION"
-   }
+   }   
    return $name
 }
 
@@ -132,7 +139,7 @@ proc meteosensor_get { name } {
    }
    set typeu $audace(meteosensor,private,$name,typeu)
    if {$typeu=="AAG"} {
-      set res [aag_read $audace(meteosensor,private,$name,channel)]
+      set res [aag_read $audace(meteosensor,private,$name,channel) name]
    } elseif {$typeu=="WXT520"} {
       set res [wxt520_read $audace(meteosensor,private,$name,channel)]
    } elseif {$typeu=="ARDUINO1"} {
@@ -303,6 +310,14 @@ proc meteosensor_ascii2hexa { msg } {
    return $cars
 }
 
+proc meteosensor_tempo { name {ms ""} } {
+	global audace
+	if {$ms!=""} {
+		set audace(meteosensor,private,$name,tempo) $ms
+	}
+   return $audace(meteosensor,private,$name,tempo)
+}
+
 # ===========================================================================
 # ===========================================================================
 # ====== AAG Cloudwatcher
@@ -318,15 +333,14 @@ proc aag_ascii2num { ascii } {
    return -1
 }
 
-proc aag_send { channel commande } {
+proc aag_send { channel commande {tempo 50} } {
    set response [read -nonewline $channel]
    after 10
    puts -nonewline $channel "${commande}!"
    set car [string index $commande 0]
-   set tempo 50
-   if {$car=="C"} { set tempo 100 }
-   if {$car=="D"} { set tempo 100 }
-   if {$car=="E"} { set tempo 300 }
+   if {$car=="C"} { set tempo [expr $tempo+100] }
+   if {$car=="D"} { set tempo [expr $tempo+100] }
+   if {$car=="E"} { set tempo [expr $tempo+300] }
    after $tempo
    set response [read -nonewline $channel]
    if {$response==""} {
@@ -386,8 +400,10 @@ proc aag_send { channel commande } {
    return $ress
 }
 
-proc aag_read { channel } {
-   set ress [aag_send $channel M]
+proc aag_read { channel name} {
+	global audace
+	set tempo $audace(meteosensor,private,$name,tempo)
+   set ress [aag_send $channel M $tempo]
    foreach res $ress {
       set key [lindex $res 0]
       set val [lindex $res 1]
@@ -396,7 +412,7 @@ proc aag_read { channel } {
    }
    set ress ""
    # --- SkyTemp (small size sensor)
-   set res [aag_send $channel S]
+   set res [aag_send $channel S $tempo]
    set val [lindex [lindex $res 0] 1]
    set val [expr $val/100.]
    if {$val<-8} {
@@ -410,7 +426,7 @@ proc aag_read { channel } {
    lappend ress [list SkyTemperature $val $units "Sky temperature measured by an infrared sensor"]
    lappend ress [list SkyCover $com text "A word that describes sky conditions"]
    # --- SensorTemp (small size sensor)
-   set res [aag_send $channel T]
+   set res [aag_send $channel T $tempo]
    set val [lindex [lindex $res 0] 1]
    set val [expr $val/100.]
    if {$val<10} {
@@ -425,7 +441,7 @@ proc aag_read { channel } {
    set units Celcius
    lappend ress [list CloudSensorTemperature $val $units "$com"]
    # --- Light Dependent Resistor (medium size sensor)
-   set res [aag_send $channel C]
+   set res [aag_send $channel C $tempo]
    set val [lindex [lindex $res 1] 1]
    if {$val>1022} { set val 1022 }
    if {$val<1} { set val 1 }
@@ -460,7 +476,7 @@ proc aag_read { channel } {
    set units Celcius
    lappend ress [list RainSensorTemperature [format %.2f $TRain] "$com"]
    # --- Rain (large sensor)
-   set res [aag_send $channel E]
+   set res [aag_send $channel E $tempo]
    set val [lindex [lindex $res 0] 1]
    if {$val<400} {
       set com Unknown
