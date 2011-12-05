@@ -1491,10 +1491,10 @@ int cmdNew(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
    int i;
    char comment[]="class width height format compression ?-keep_keywords? ?-pixels_size?";
 	int planes;
-	char *p1;
-	short *p2;
-	unsigned short *p3;
-	float *p4;
+    char *p1 = 0;
+    short *p2 = 0;
+    unsigned short *p3 = 0;
+    float *p4 = 0;
 
    ligne = (char*)calloc(1000,sizeof(char));
    if( argc < 7 ) {
@@ -1561,16 +1561,16 @@ int cmdNew(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 		}
 		if (pixelFormat==FORMAT_BYTE) {
 	      p1=(char*)calloc(width*height*planes,sizeof(char));
-			sprintf(ligne,"%d",&p1[0]);
+            sprintf(ligne,"%p",&p1[0]);
 		} else if (pixelFormat==FORMAT_SHORT) {
 	      p2=(short*)calloc(width*height*planes,sizeof(short));
-			sprintf(ligne,"%d",&p2[0]);
+            sprintf(ligne,"%p",&p2[0]);
 		} else if (pixelFormat==FORMAT_USHORT) {
 	      p3=(unsigned short*)calloc(width*height*planes,sizeof(unsigned short));
-			sprintf(ligne,"%d",&p3[0]);
+            sprintf(ligne,"%p",&p3[0]);
 		} else { //pixelFormat==FORMAT_FLOAT
 	      p4=(float*)calloc(width*height*planes,sizeof(float));
-			sprintf(ligne,"%d",&p4[0]);
+            sprintf(ligne,"%p",&p4[0]);
 		}
 	   pixelData = atol(ligne);
       buffer = (CBuffer*)clientData;
@@ -3030,8 +3030,8 @@ int cmdTtStat(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       try {
          buffer->Stat(x1-1,y1-1,x2-1,y2-1,&locut,&hicut,&maxi, &mini, &mean, &sigma,
                          &bgmean, &bgsigma, &contrast);
-         sprintf(ligne,"%d %d %d %d %f %f %f %f %f",(int)hicut,(int)locut,(int)maxi,
-                 (int)mini,mean,sigma,bgmean,bgsigma,contrast);
+         sprintf(ligne,"%f %f %f %f %f %f %f %f %f",hicut,locut,maxi,
+                mini,mean,sigma,bgmean,bgsigma,contrast);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          retour = TCL_OK;
       } catch(const CError& e) {
