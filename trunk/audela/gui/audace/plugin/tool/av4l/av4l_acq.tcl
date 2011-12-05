@@ -275,7 +275,7 @@ namespace eval ::av4l_acq {
            image create photo .demarre -format PNG -file [ file join $audace(rep_plugin) tool av4l img demarre.png ]
            button $frm.demarre -image .demarre\
               -borderwidth 2 -width 48 -height 48 -compound center \
-              -command "::av4l_tools_avi::acq_start $frm"
+              -command "::av4l_tools_avi::acq_start $frm $visuNo"
            pack $frm.demarre \
               -in $frm.btnav \
               -side left -anchor w \

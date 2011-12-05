@@ -417,6 +417,17 @@ namespace eval ::av4l_tools_avi {
 
 
 
+   proc ::av4l_tools_avi::acq_display { visuNo } {
+        global audace
+        set bufNo [ visu$visuNo buf ]
+        ::console::affiche_resultat "One Shot ! after\n"
+        after 1000 " ::av4l_tools_avi::acq_display $visuNo "
+        if {[file exists /dev/shm/pict.yuv422 ]} {
+           ::avi::convert_shared_image $bufNo /dev/shm/pict.yuv422
+           visu$visuNo disp
+           file delete -force /dev/shm/pict.yuv422
+        }
+   }
 
    proc ::av4l_tools_avi::acq_oneshot { visuNo } {
         global audace
@@ -424,7 +435,7 @@ namespace eval ::av4l_tools_avi {
         set bufNo [ visu$visuNo buf ]
         ::console::affiche_resultat "One Shot !\n"
 
-        set err [ catch { exec $audace(rep_plugin)/../../../bin/av4l-grab -1 } msg ]
+        set err [ catch { exec sh -c "LD_LIBRARY_PATH=$audace(rep_plugin)/../../../bin $audace(rep_plugin)/../../../bin/av4l-grab -1" } msg ]
         #::console::affiche_resultat "err = $err\n"
         #::console::affiche_resultat "msg = $msg\n"
         #::console::affiche_resultat "exist = [file exists /dev/shm/pict.yuv422 ]\n"
@@ -452,10 +463,11 @@ namespace eval ::av4l_tools_avi {
 
 
 
-   proc ::av4l_tools_avi::acq_start { this } {
+   proc ::av4l_tools_avi::acq_start { frm visuNo } {
         global audace
-        ::console::affiche_resultat "path : [$this.form.v.destdir get]"
-        exec $audace(rep_plugin)/../../../bin/av4l-grab -d 120m -c 2m -o [$this.form.v.destdir get] &
+        ::console::affiche_resultat "path : [$frm.form.v.destdir get]"
+        exec sh -c "LD_LIBRARY_PATH=$audace(rep_plugin)/../../../bin $audace(rep_plugin)/../../../bin/av4l-grab -d 120m -c 2m -o [$frm.form.v.destdir get]" &
+        after 2000 " ::av4l_tools_avi::acq_display $visuNo "
    }
 
 
