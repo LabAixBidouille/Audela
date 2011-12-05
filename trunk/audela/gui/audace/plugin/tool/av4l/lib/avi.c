@@ -135,13 +135,18 @@ convert_shared_image(ClientData cdata, Tcl_Interp *interp, int argc, const char 
     static AVFrame *pFrame = 0, *pFrameRGB = 0;
     static struct SwsContext * pSwsCtx = 0;
 
-    const char * path = argv[1];
+    int bufno;
+    const char * path = argv[2];
     struct stat st;
     off_t filesize = 0;
     int width, height;
     static int numBytesSrc;
     static int numBytesDst;
     uint8_t *buffer;
+    char cmd[1000];
+
+    
+    Tcl_GetInt(interp, argv[1], &bufno);
 
     width = height = 0;
     if(stat(path,&st) != 0) {
@@ -196,8 +201,10 @@ convert_shared_image(ClientData cdata, Tcl_Interp *interp, int argc, const char 
             pFrameRGB->linesize
             );
 
-    if (Tcl_Eval(interp, "buf1 clear") == TCL_ERROR) {
-        if (Tcl_Eval(interp, "buf::create 1") == TCL_ERROR) {
+    sprintf(cmd, "buf%d clear", bufno);
+    if (Tcl_Eval(interp, cmd) == TCL_ERROR) {
+        sprintf(cmd, "buf::create %d", bufno);
+        if (Tcl_Eval(interp, cmd) == TCL_ERROR) {
             Tcl_SetResult(interp, "buf::create failed in " LIBNAME ".", TCL_VOLATILE);
             return TCL_ERROR;
         }
@@ -205,9 +212,10 @@ convert_shared_image(ClientData cdata, Tcl_Interp *interp, int argc, const char 
 
     {
         char s[4000];
-        sprintf(s,"buf1 setpixels CLASS_GRAY %d %d FORMAT_BYTE COMPRESS_NONE %ld", width, height, pFrameRGB->data[0]);
+        sprintf(s,"buf%d setpixels CLASS_GRAY %d %d FORMAT_BYTE COMPRESS_NONE %ld", bufno, width, height, pFrameRGB->data[0]);
         if (Tcl_Eval(interp, s) == TCL_ERROR) {
-            Tcl_SetResult(interp, "buf1 setpixels failed in " LIBNAME ".", TCL_VOLATILE);
+            sprintf(cmd,"buf%d setpixels failed in %s.", bufno, LIBNAME);
+            Tcl_SetResult(interp, cmd, TCL_VOLATILE);
             return TCL_ERROR;
         }
 
