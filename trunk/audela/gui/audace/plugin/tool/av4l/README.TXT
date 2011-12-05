@@ -6,14 +6,14 @@ Sur la page "Download" dans la section "FFmpeg Releases" télécharger la versio
 
 Décompresser l'archive de façon à obtenir un répertoire /opt/ffmpeg-0.8.5
 
-Dans le répertoire lib du plugin : $AUDELA/gui/audace/plugin/tool/acqvideolinux/lib
+Dans le répertoire lib du plugin : $AUDELA/gui/audace/plugin/tool/av4l/lib
 Taper les commandes suivantes :
 make ffmpeg-config
 make ffmpeg-clean
 make ffmpeg
 make ffmpeg-links
 make
-( cd grab && make )
+
 make install
 
 === ANCIEN

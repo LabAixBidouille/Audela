@@ -4,7 +4,7 @@ FFMPEG=/opt/ffmpeg-0.8.5
 
 INCLUDES=-I $(FFMPEG)/libavformat -I $(FFMPEG)/libavutil -I $(FFMPEG)/libavcodec \
          -I $(FFMPEG)/libswscale -I $(FFMPEG)/libavdevice -I $(FFMPEG) \
-	-I /usr/include/tcl8.5
+	 -I /usr/include/tcl8.5
 
 all:
 

@@ -418,12 +418,25 @@ namespace eval ::av4l_tools_avi {
 
 
 
-   proc ::av4l_tools_avi::acq_fetch { this } {
+   proc ::av4l_tools_avi::acq_oneshot { visuNo } {
         global audace
+
+        set bufNo [ visu$visuNo buf ]
+        ::console::affiche_resultat "One Shot !\n"
+
         set err [ catch { exec $audace(rep_plugin)/../../../bin/av4l-grab -1 } msg ]
-        ::avi::convert_shared_image /dev/shm/pict.yuv422
-        visu1 disp
-        #file delete -force /dev/shm/pict.yuv422
+        #::console::affiche_resultat "err = $err\n"
+        #::console::affiche_resultat "msg = $msg\n"
+        #::console::affiche_resultat "exist = [file exists /dev/shm/pict.yuv422 ]\n"
+        if {[file exists /dev/shm/pict.yuv422 ]} {
+           ::avi::convert_shared_image $bufNo /dev/shm/pict.yuv422
+           visu$visuNo disp
+           #file delete -force /dev/shm/pict.yuv422
+        } else {
+           ::console::affiche_erreur "Image inexistante \n"
+           ::console::affiche_resultat "err = $err\n"
+           ::console::affiche_resultat "msg = $msg\n"
+        }
    }
 
 
