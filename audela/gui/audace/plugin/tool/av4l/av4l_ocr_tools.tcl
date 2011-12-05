@@ -103,8 +103,19 @@ variable timing
 
 
 
+   proc ::av4l_ocr_tools::ocr_bbox { } {
 
+   }
+   
+   proc ::av4l_ocr_tools::ocr_tim10_small_font { err msg } {
+      ::console::affiche_resultat "err = $err \n"
+      ::console::affiche_resultat "msg = $msg \n"
 
+   }
+   
+   proc ::av4l_ocr_tools::ocr_tim10_big_font { } {
+
+   }
 
 
 
@@ -128,7 +139,7 @@ variable timing
       if {$::av4l_ocr_tools::active_ocr=="1" && $statebutton=="sunken"} {
 
           set box [$frm.datation.values.setup.t.typespin get]
-          #::console::affiche_resultat "box : $box \n"
+          ::console::affiche_resultat "box : $box \n"
 
 
 
@@ -152,8 +163,19 @@ variable timing
           set err [ catch {set result [exec jpegtopnm ocr.jpg | gocr -C 0-9 -f UTF8 ]} msg ]
 
           #::console::affiche_resultat "err = $err \n"
+          
+          
+          
           #::console::affiche_resultat "err = $err \n"
           #::console::affiche_resultat "msg = $msg \n"
+
+          if { $box == "Black Box"} {
+          }
+          if { $box == "TIM-10 small font"} {
+                set hms [::av4l_ocr_tools::ocr_tim10_small_font $err $msg]
+          }
+          if { $box == "TIM-10 big font"} {
+          }
 
 
           # avec deux points comme separateur

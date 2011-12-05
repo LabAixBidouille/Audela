@@ -538,7 +538,7 @@ namespace eval ::av4l_ocr_gui {
 
               #--- Cree un spinbox
               spinbox $ocr.t.typespin -font $av4lconf(font,courier_10) -fg $color(blue) \
-                    -value [ list "Black Box" "TIM-10" ] -width 10  -state disabled
+                    -value [ list "Black Box" "TIM-10 small font" "TIM-10 big font"] -width 10  -state disabled
               pack  $ocr.t.typespin -in $ocr.t -side left -anchor w
 
               #--- Cree un label

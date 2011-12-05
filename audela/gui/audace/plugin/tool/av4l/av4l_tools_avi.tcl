@@ -423,7 +423,7 @@ namespace eval ::av4l_tools_avi {
         exec $audace(rep_plugin)/../../../bin/av4l-grab -1
         ::avi::convert_shared_image /dev/shm/pict.yuv422
         visu1 disp
-        file delete -force /dev/shm/pict.yuv422
+        #file delete -force /dev/shm/pict.yuv422
    }
 
 
