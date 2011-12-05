@@ -8,7 +8,7 @@ else
  FFDIR =/opt/ffmpeg-0.8.5
 endif
 
-LDFLAGS1 = -v -L$(FFDIR)/libs -L$(FFDIR)/libavformat -L$(FFDIR)/libavcodec 
+LDFLAGS1 = -v -L$(FFDIR)/libavformat -L$(FFDIR)/libavcodec 
 LDFLAGS2 = -L$(FFDIR)/libavcodec -L$(FFDIR)/libavutil -L$(FFDIR)/libavdevice -L$(FFDIR)/libswscale
 LDFLAGS  = $(LDFLAGS1)  $(LDFLAGS2)
 

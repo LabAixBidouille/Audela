@@ -264,7 +264,7 @@ namespace eval ::av4l_acq {
            image create photo .oneshot -format PNG -file [ file join $audace(rep_plugin) tool av4l img oneshot.png ]
            button $frm.oneshot -image .oneshot\
               -borderwidth 2 -width 48 -height 48 -compound center \
-              -command "::av4l_tools_avi::acq_fetch $frm"
+              -command "::av4l_tools_avi::acq_oneshot $visuNo"
            pack $frm.oneshot \
               -in $frm.btnav \
               -side left -anchor w \
