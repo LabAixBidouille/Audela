@@ -5,11 +5,11 @@ OUTPUT = liblxnet.so
 
 LIBAUDINET = ../../../libcam/libaudinet/src
 
-SRC  = $(LIBTELDIR)/util.c $(LIBTELDIR)/libtel.c
+SRC  = $(LIBTELDIR)/util.cpp $(LIBTELDIR)/libtel.cpp
 SRC += $(SRCDIR)/telescop.c $(SRCDIR)/teltcl.c 
 SRC += $(LIBAUDINET)/socketaudinet.c  $(LIBAUDINET)/log.c $(LIBAUDINET)/setip.c
 
-OBJ  = $(patsubst $(LIBTELDIR)/%.c, %.o, $(filter $(LIBTELDIR)/%.c, $(SRC)))
+OBJ  = $(patsubst $(LIBTELDIR)/%.cpp, %.o, $(filter $(LIBTELDIR)/%.cpp, $(SRC)))
 OBJ += $(patsubst $(LIBAUDINET)/%.c, %.o, $(filter $(LIBAUDINET)/%.c, $(SRC)))
 OBJ += $(patsubst $(SRCDIR)/%.c, %.o, $(filter $(SRCDIR)/%.c, $(SRC)))
 
