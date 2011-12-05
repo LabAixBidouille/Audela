@@ -2512,6 +2512,8 @@ namespace eval ::confVisu {
             "::audace::showTutorials 1020tutoriel_photom1.html"
          Menu_Command   $visuNo "$caption(audace,menu,tutorial)" "$caption(audace,menu,tutorial4)" \
             "::audace::showTutorials 1030tutoriel_simulimage1.htm"
+         Menu_Command   $visuNo "$caption(audace,menu,tutorial)" "$caption(audace,menu,tutorial5)" \
+            "::audace::showTutorials 1040tutoriel_gamma_ray_bursts.htm"
          Menu_Cascade   $visuNo "$caption(audace,menu,aide)" "$caption(audace,menu,site_audela)"
          Menu_Command   $visuNo "$caption(audace,menu,site_audela)" "$caption(audace,menu,site_internet)" \
             { set filename "$caption(en-tete,a_propos_de_site)" ; ::audace::Lance_Site_htm $filename }
