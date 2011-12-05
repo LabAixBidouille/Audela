@@ -26,6 +26,10 @@ CXXFLAGS += -I $(SRCDIR)
 %.o: $(LIBCAMDIR)/%.c
 	@echo "*** Compiling $<"
 	$(CC) $(CXXFLAGS) -o $@ $<
+
+%.o: $(LIBCAMDIR)/%.cpp
+	@echo "*** Compiling $<"
+	$(CXX) $(CXXFLAGS) -o $@ $<
 endif
 
 ifdef LIBTEL
@@ -33,6 +37,10 @@ CXXFLAGS += -I $(SRCDIR)
 %.o: $(LIBTELDIR)/%.c
 	@echo "*** Compiling $<"
 	$(CC) $(CXXFLAGS) -o $@ $<
+
+%.o: $(LIBTELDIR)/%.cpp
+	@echo "*** Compiling $<"
+	$(CXX) $(CXXFLAGS) -o $@ $<
 endif
 
 ifdef LIBLINK
