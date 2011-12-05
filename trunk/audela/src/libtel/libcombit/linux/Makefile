@@ -3,10 +3,10 @@ LIBTEL = 1
 
 OUTPUT = libcombit.so
 
-SRC  = $(LIBTELDIR)/util.c
+SRC  = $(LIBTELDIR)/util.cpp
 SRC += $(SRCDIR)/combit.c
 
-OBJ  = $(patsubst $(LIBTELDIR)/%.c, %.o, $(filter $(LIBTELDIR)/%.c, $(SRC)))
+OBJ  = $(patsubst $(LIBTELDIR)/%.cpp, %.o, $(filter $(LIBTELDIR)/%.cpp, $(SRC)))
 OBJ += $(patsubst $(SRCDIR)/%.c, %.o, $(filter $(SRCDIR)/%.c, $(SRC)))
 
 include ../../../Makefile1
