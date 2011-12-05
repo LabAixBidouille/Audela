@@ -3,7 +3,8 @@
 FFMPEG=/opt/ffmpeg-0.8.5
 
 INCLUDES=-I $(FFMPEG)/libavformat -I $(FFMPEG)/libavutil -I $(FFMPEG)/libavcodec \
-         -I $(FFMPEG)/libswscale -I $(FFMPEG)/libavdevice -I $(FFMPEG)
+         -I $(FFMPEG)/libswscale -I $(FFMPEG)/libavdevice -I $(FFMPEG) \
+	-I /usr/include/tcl8.5
 
 all:
 
@@ -53,11 +54,16 @@ ffmpeg:
 	cd $(FFMPEG) && make
 
 ffmpeg-links:
-	ln -sf $(FFMPEG)/libavcodec/libavcodec.{so.53,so} ../../../../../../bin/
-	ln -sf $(FFMPEG)/libavfilter/libavfilter.{so.2,so} ../../../../../../bin/
-	ln -sf $(FFMPEG)/libavformat/libavformat.{so.53,so} ../../../../../../bin/
-	ln -sf $(FFMPEG)/libavutil/libavutil.{so.51,so} ../../../../../../bin/
-	ln -sf $(FFMPEG)/libswscale/libswscale.{so.2,so} ../../../../../../bin/
+	ln -sf $(FFMPEG)/libavcodec/libavcodec.so.53 ../../../../../../bin/
+	ln -sf $(FFMPEG)/libavcodec/libavcodec.so ../../../../../../bin/
+	ln -sf $(FFMPEG)/libavfilter/libavfilter.so.2 ../../../../../../bin/
+	ln -sf $(FFMPEG)/libavfilter/libavfilter.so ../../../../../../bin/
+	ln -sf $(FFMPEG)/libavformat/libavformat.so.53 ../../../../../../bin/
+	ln -sf $(FFMPEG)/libavformat/libavformat.so ../../../../../../bin/
+	ln -sf $(FFMPEG)/libavutil/libavutil.so.51 ../../../../../../bin/
+	ln -sf $(FFMPEG)/libavutil/libavutil.so ../../../../../../bin/
+	ln -sf $(FFMPEG)/libswscale/libswscale.so.2 ../../../../../../bin/
+	ln -sf $(FFMPEG)/libswscale/libswscale.so ../../../../../../bin/
 
 ffmpeg-uninstall:
 	rm -f ../../../../../../bin/{libavcodec.*,libavfilter.*,libavformat.*,libavutil.*,libswscale.*}
