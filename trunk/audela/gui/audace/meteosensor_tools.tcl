@@ -933,10 +933,10 @@ proc arduino1_rainsensor_read { channel } {
 
 # ===========================================================================
 # ===========================================================================
-# ====== Vantage Pro 
+# ====== Vantage Pro serial port
 # ===========================================================================
 # ===========================================================================
-# vantagepro_open 192.168.10.58 966 192.168.10.58 950
+# vantagepro_open VantagePro com5
 
 proc vantagepro_read { f name} {
 	global audace
@@ -960,7 +960,7 @@ proc vantagepro_read { f name} {
 	set val [expr 256*$val2+$val1]
 	set val [expr $val/1000.*25.4/760*1013.25]
 	set pression $val
-	
+		
 	# --- inside temp (degC)
 	set val1 [meteosensor_convert_base [lindex $hexa 9] 16 10]
 	set val2 [meteosensor_convert_base [lindex $hexa 10] 16 10]
@@ -994,8 +994,20 @@ proc vantagepro_read { f name} {
 	set val [meteosensor_convert_base [lindex $hexa 33] 16 10]
 	set humext $val
 	
+	# --- rain rate (mm/h)
+	set val1 [meteosensor_convert_base [lindex $hexa 41] 16 10]
+	set val2 [meteosensor_convert_base [lindex $hexa 42] 16 10]
+	set val [expr 256*$val2+$val1]
+	# - 256 = 2.56 inch/hour
+	set val [expr $val/100./2.54*10]
+   set rainrate $val
+	
    set er [catch {
       set dewtemp [expr pow($humext/100.,1./8.)*(112.+(0.9*$tempext))+(0.1*$tempext)-112.]
+      set dirvent [expr $dirvent+180]
+      if {$dirvent>360} {
+         set dirvent [expr $dirvent-360]
+      }
       if {$dirvent<22.5} {
          set pcard "S"
       } elseif { $dirvent< 67.5} {
@@ -1025,20 +1037,15 @@ proc vantagepro_read { f name} {
    }
    set resultat ""
    set er [catch {
-      set res [mc_date2ymdhms now]
-      set month [lindex $res 1]
-      set day [lindex $res 2]
-      set year [lindex $res 0]
-      set hour [lindex $res 3]
-      set min [lindex $res 4]
-      set res "$month $day $year $hour $min"
-      set date "[format %04d $year]-[format %02d $month]-[format %02d $day]T[format %02d $hour]:[format %02d $min]:00"
+      set date [mc_date2iso8601 now]
       lappend resultat [list StationTime $date ISO8601 "Date of the last measurement"]
       lappend resultat [list OutsideTemp [format %.1f $tempext] Celcius ""]
       lappend resultat [list InsideTemp [format %.1f $tempint] Celcius ""]
       lappend resultat [list OutsideHumidity [format %.1f $humext] Percent ""]
+      lappend resultat [list InsideHumidity [format %.1f $humint] Percent ""]
       lappend resultat [list Barometer [format %.1f $pression] mbar ""]
-      lappend resultat [list WindSpeed [format %.1f $vitvent] m/s ""]
+		lappend resultat [list RainRate [format %.1f $rainrate] "mm/h" ""]      
+      lappend resultat [list WindSpeed [format %.2f $vitvent] m/s ""]
       lappend resultat [list WindDir [format %.1f $dirvent] deg "N=0, E=90"]
       lappend resultat [list WindDirCardinal $pcard text "Cadinal symbol of wind direction"]
       lappend resultat [list DewPt [format %.1f $dewtemp] Celcius "Dew point"]
