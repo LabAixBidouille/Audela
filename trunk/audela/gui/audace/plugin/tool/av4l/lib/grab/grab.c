@@ -291,14 +291,17 @@ void print_usage()
 {
     printf(
             "grab version %s\n\n"
-            "grab -o dir [-d 99m] [-c 5m] [-i /dev/video9]\n"
+            "grab -o dir [-p prefix] [-d 99m] [-c 5m] [-i /dev/video9] [-w width] [-h height]\n"
+            "grab -1 [-i /dev/video9]\n"
             " -o dir : output directory (must exist)\n"
+            " -p prefix : prefix of avi files (defaults to last component of output directory)\n"
             " -d 40m : duration of recording in minutes\n"
             " -c 1m|60s|1500f : length of each chunk in minutes, seconds or frames\n"
             " -i /dev/video1 : force usage of this input device\n"
             " -w width : width e.g. 720\n"
             " -h height : height e.g. 576\n"
-            "\n"
+            " -1 one shot : grab a picture and store it in /dev/shm/pict.yuv422\n"
+            "\nSETUP\n"
             "/dev/shm/pict.yuv422 contains the latest image.\n"
             " To update it delete the file.\n"
             "\n"
@@ -307,6 +310,8 @@ void print_usage()
             "@video           -       rtprio          10\n"
             "@video           -       nice            -20\n"
             "@video           -       memlock         unlimited\n"
+	    "\n"
+            "As user root: sysctl -w kernel.sched_autogroup_enabled=0\n"
             "\n"
             "Example.\n"
             " Create a directory that will receive the files, let's say /tmp/session1\n"
@@ -1601,6 +1606,7 @@ int main(int argc, char *argv[])
     int do_one_shot = 0;
     pthread_t thread_write,thread_read;
     pthread_mutexattr_t mutex_attr;
+    char *outfileprefix = NULL;
 
     memset(&vc, 0, sizeof(vc));
 
@@ -1621,7 +1627,7 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
-    while((opt=getopt(argc, argv, "b:h:w:i:o:d:c:z1")) != -1) {
+    while((opt=getopt(argc, argv, "b:h:w:i:o:d:p:c:z1")) != -1) {
         switch(opt) {
             case 'b':
                 g_nbufs = atoi(optarg);
@@ -1637,6 +1643,9 @@ int main(int argc, char *argv[])
                 break;
             case 'o':
                 g_output_dir = optarg;
+                break;
+            case 'p':
+                outfileprefix = optarg;
                 break;
             case 'd':
                 // duration minutes : eg 20m
@@ -1795,9 +1804,9 @@ int main(int argc, char *argv[])
                 exit(EXIT_FAILURE);
             }
 
-            sprintf(tmpname,"filex:%s/%s-%s-%%03d.avi",path,name,outstr);
+            sprintf(tmpname,"filex:%s/%s-%s-%%03d.avi",path,outfileprefix?outfileprefix:name,outstr);
             g_outfilepath = strdup(tmpname);
-            sprintf(tmpname,"%s/%s-%s.log.txt",path,name,outstr);
+            sprintf(tmpname,"%s/%s-%s.log.txt",path,outfileprefix?outfileprefix:name,outstr);
             g_logfilepath = strdup(tmpname);
         }
 
