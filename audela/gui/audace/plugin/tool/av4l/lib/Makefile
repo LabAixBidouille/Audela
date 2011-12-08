@@ -64,6 +64,8 @@ ffmpeg-links:
 	ln -sf $(FFMPEG)/libavutil/libavutil.so ../../../../../../bin/
 	ln -sf $(FFMPEG)/libswscale/libswscale.so.2 ../../../../../../bin/
 	ln -sf $(FFMPEG)/libswscale/libswscale.so ../../../../../../bin/
+	ln -sf $(FFMPEG)/libavdevice/libavdevice.so ../../../../../../bin/
+	ln -sf $(FFMPEG)/libavdevice/libavdevice.so.53 ../../../../../../bin/
 
 ffmpeg-uninstall:
 	rm -f ../../../../../../bin/{libavcodec.*,libavfilter.*,libavformat.*,libavutil.*,libswscale.*}

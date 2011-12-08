@@ -421,13 +421,26 @@ namespace eval ::av4l_tools_avi {
         global audace
         set bufNo [ visu$visuNo buf ]
         ::console::affiche_resultat "One Shot ! after\n"
-        after 1000 " ::av4l_tools_avi::acq_display $visuNo "
+        set avipid ""
+        set err [ catch {set avipid [exec sh -c "pgrep av4l-grab"]} msg ]
+           ::console::affiche_resultat "err = $err\n"
+           ::console::affiche_resultat "msg = $msg\n"
+        if {$avipid == ""} {
+           ::console::affiche_resultat "Acquisition finie...\n"
+           return
+        } else {
+           ::console::affiche_resultat "Acquisition PID = $avipid\n"
+        }
         if {[file exists /dev/shm/pict.yuv422 ]} {
            ::avi::convert_shared_image $bufNo /dev/shm/pict.yuv422
            visu$visuNo disp
            file delete -force /dev/shm/pict.yuv422
+           after 1000 " ::av4l_tools_avi::acq_display $visuNo "
         }
    }
+
+
+
 
    proc ::av4l_tools_avi::acq_oneshot { visuNo } {
         global audace
@@ -435,14 +448,11 @@ namespace eval ::av4l_tools_avi {
         set bufNo [ visu$visuNo buf ]
         ::console::affiche_resultat "One Shot !\n"
 
-        set err [ catch { exec sh -c "LD_LIBRARY_PATH=$audace(rep_plugin)/../../../bin $audace(rep_plugin)/../../../bin/av4l-grab -1" } msg ]
-        #::console::affiche_resultat "err = $err\n"
-        #::console::affiche_resultat "msg = $msg\n"
-        #::console::affiche_resultat "exist = [file exists /dev/shm/pict.yuv422 ]\n"
+        set err [ catch { exec sh -c "LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab -1" } msg ]
         if {[file exists /dev/shm/pict.yuv422 ]} {
            ::avi::convert_shared_image $bufNo /dev/shm/pict.yuv422
            visu$visuNo disp
-           #file delete -force /dev/shm/pict.yuv422
+           file delete -force /dev/shm/pict.yuv422
         } else {
            ::console::affiche_erreur "Image inexistante \n"
            ::console::affiche_resultat "err = $err\n"
@@ -463,10 +473,12 @@ namespace eval ::av4l_tools_avi {
 
 
 
-   proc ::av4l_tools_avi::acq_start { frm visuNo } {
+   proc ::av4l_tools_avi::acq_start { visuNo frm } {
         global audace
-        ::console::affiche_resultat "path : [$frm.form.v.destdir get]"
-        exec sh -c "LD_LIBRARY_PATH=$audace(rep_plugin)/../../../bin $audace(rep_plugin)/../../../bin/av4l-grab -d 120m -c 2m -o [$frm.form.v.destdir get]" &
+        set destdir [$frm.form.v.destdir get]
+        ::console::affiche_resultat "path : $destdir\n"
+         ::console::affiche_resultat "cmd : LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab -d 120m -c 2m -o $destdir\n"
+        exec sh -c "LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab -d 120m -c 2m -o $destdir" &
         after 2000 " ::av4l_tools_avi::acq_display $visuNo "
    }
 
