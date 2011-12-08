@@ -18,7 +18,7 @@ make install
 
 === ANCIEN
 
-Dans $AUDELA/gui/audace/plugin/tool/acqvideolinux :
+Dans $AUDELA/gui/audace/plugin/tool/av4l :
 
 ln -s pkgIndex.tcl.nonactif pkgIndex.tcl
 
