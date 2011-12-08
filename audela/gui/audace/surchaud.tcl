@@ -1429,11 +1429,11 @@ proc calibwcs {args} {
          if {[string toupper $cat_format] eq "USNO"} {
             set comment "Path to the catalog does not contain the $cat_format catalog!\n$cat_folder"
             set fics [glob -nocomplain [file join $cat_folder "*.ACC"]]
-            if {[llength $fics]==0} {
+            if {[llength $fics]<24} {
                error $comment
             }
             set fics [glob -nocomplain [file join $cat_folder "*.CAT"]]
-            if {[llength $fics]==0} {
+            if {[llength $fics]<24} {
                error $comment
             }
          } elseif {[string toupper $cat_format] eq "MICROCAT"} {
@@ -1568,11 +1568,11 @@ proc simulimage {args} {
          if {[string toupper $cat_format] eq "USNO"} {
             set comment "Path to the catalog does not contain the $cat_format catalog!\n$cat_folder"
             set fics [glob -nocomplain [file join $cat_folder "*.ACC"]]
-            if {[llength $fics]==0} {
+            if {[llength $fics]<24} {
                error $comment
             }
             set fics [glob -nocomplain [file join $cat_folder "*.CAT"]]
-            if {[llength $fics]==0} {
+            if {[llength $fics]<24} {
                error $comment
             }
          } elseif {[string toupper $cat_format] eq "MICROCAT"} {
