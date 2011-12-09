@@ -2,7 +2,7 @@
 # Fichier : polydraw.tcl
 # Description : Dessine un polygone
 # Auteur : Michel PUJOL
-# Mise à jour $Id$
+# Mise à jour $Id: polydraw.tcl 7678 2011-10-09 17:57:36Z robertdelmas  $
 #
 
 namespace eval ::polydraw {
@@ -395,16 +395,22 @@ proc ::polydraw::move {visuNo w x y {all 0}} {
             #--- je translate le point d'inflexion de la ligne
             if { $private($visuNo,mouseMoveLine) == 1 } {
                ::polydraw::moveNode $visuNo $w $dx $dy
+               #--- je recupere le numero de la ligne a laquelle appartient le node
+               regexp {of:([^ ]+)} $tags -> lineNo
             }
          } elseif { $typeItem == "line" } {
             if { $private($visuNo,mouseMoveLine) == 1 } {
                $w move $private($visuNo,currentItem)    $dx $dy
                $w move of:$private($visuNo,currentItem) $dx $dy
+               #--- je recupere le numero de la ligne  c'est a dire l'item courant
+               set lineNo $private($visuNo,currentItem)
             }
          } elseif { $typeItem == "polygon" } {
             if { $private($visuNo,mouseMoveLine) == 1 } {
                $w move $private($visuNo,currentItem)    $dx $dy
                $w move of:$private($visuNo,currentItem) $dx $dy
+               #--- je recupere le numero de la ligne  c'est a dire l'item courant
+               set lineNo $private($visuNo,currentItem)
             }
          }
       } elseif [regexp {of:([^ ]+)} [tags$w] -> itemNo] {
@@ -414,9 +420,9 @@ proc ::polydraw::move {visuNo w x y {all 0}} {
       }
 
       #--- je lance le listener de deplacement s'il existe
-      if { [info exists ::polydraw::private($visuNo,listener,$private($visuNo,currentItem))] } {
+      if { [info exists ::polydraw::private($visuNo,listener,$lineNo)] } {
          #--- j'ecris dans la variable pour activer le listener
-         set ::polydraw::private($visuNo,listener,$private($visuNo,currentItem)) "1"
+         set ::polydraw::private($visuNo,listener,$lineNo) "1"
       }
    }
 }
