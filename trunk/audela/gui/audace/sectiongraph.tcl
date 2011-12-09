@@ -165,24 +165,25 @@ proc ::sectiongraph::refresh { visuNo itemNo args } {
 
    #--- j'affiche le graphe
    sectiongraphX$visuNo set $lx
-   sectiongraphYR$visuNo set $lyR
    if { $nbcolor($visuNo) == 1 } {
-      #--- j'affiche une courbe noire
-      $private($visuNo,graph,horz) element configure lineR -color black
-      $private($visuNo,graph,horz) element configure lineR -hide no
-      #--- je masque les deux autres courbes
-      $private($visuNo,graph,horz) element configure lineG -hide yes
-      $private($visuNo,graph,horz) element configure lineB -hide yes
+      sectiongraphYR$visuNo set $lyR
+      #--- j'affiche une courbe monochrome
+      $private($visuNo,graph,horz) element configure lineMono -hide no
+      #--- je masque les trois autres courbes
+      $private($visuNo,graph,horz) element configure color_invariant_lineR -hide yes
+      $private($visuNo,graph,horz) element configure color_invariant_lineG -hide yes
+      $private($visuNo,graph,horz) element configure color_invariant_lineB -hide yes
    } else {
+      sectiongraphYR$visuNo set $lyR
       sectiongraphYG$visuNo set $lyG
       sectiongraphYB$visuNo set $lyB
       #--- j'affiche trois courbes, une rouge, une verte et une bleue
-      $private($visuNo,graph,horz) element configure lineR -color red
-      $private($visuNo,graph,horz) element configure lineG -color green
-      $private($visuNo,graph,horz) element configure lineB -color blue
-      $private($visuNo,graph,horz) element configure lineR -hide no
-      $private($visuNo,graph,horz) element configure lineG -hide no
-      $private($visuNo,graph,horz) element configure lineB -hide no
+      $private($visuNo,graph,horz) element configure color_invariant_lineR -hide no
+      $private($visuNo,graph,horz) element configure color_invariant_lineG -hide no
+      $private($visuNo,graph,horz) element configure color_invariant_lineB -hide no
+      #--- je masque la courbe monochrome
+      $private($visuNo,graph,horz) element configure lineMono -hide yes
+
    }
 }
 
@@ -201,7 +202,6 @@ proc ::sectiongraph::createToplevel { visuNo } {
    set private($visuNo,This) $This
    set width 400
    set height 200
-   set fgColor black
 
    #--- je verifie si la fenetre existe deja
    if { [winfo exists $This] } {
@@ -223,7 +223,8 @@ proc ::sectiongraph::createToplevel { visuNo } {
    frame $private($visuNo,This).frame1 -borderwidth 2 -relief raised
    pack $private($visuNo,This).frame1 -side top -fill both -expand 1
 
-   #--- Horizontal Graph
+   #--- graphe de la coupe
+   #  remarque : les couleurs sont configurée par ::confColor::applyColo
    set private($visuNo,graph,horz) [blt::graph $This.horz \
          -title "" \
          -width $width -height $height \
@@ -231,30 +232,30 @@ proc ::sectiongraph::createToplevel { visuNo } {
          -bd 0 -relief flat \
          -rightmargin 1 -leftmargin 60 \
          -topmargin 1 -bottommargin 25 \
-         -background $fgColor \
          -plotborderwidth 2 -plotrelief groove \
-         -plotpadx 0 -plotpady 0 \
-         -plotbackground $fgColor \
+         -plotpadx 0 -plotpady 0
       ]
 
-   $private($visuNo,graph,horz) element create lineR \
-      -xdata sectiongraphX$visuNo -ydata sectiongraphYR$visuNo -color $fgColor -symbol ""
-   $private($visuNo,graph,horz) element create lineG \
-      -xdata sectiongraphX$visuNo -ydata sectiongraphYG$visuNo -color $fgColor -symbol ""
-   $private($visuNo,graph,horz) element create lineB \
-      -xdata sectiongraphX$visuNo -ydata sectiongraphYB$visuNo -color $fgColor -symbol ""
+   #--- courbe monochrome (associee au vecteur R)
+   $private($visuNo,graph,horz) element create lineMono \
+      -xdata sectiongraphX$visuNo -ydata sectiongraphYR$visuNo -color $::audace(color,textColor) -symbol ""
+   #--- courbes R G B
+   $private($visuNo,graph,horz) element create color_invariant_lineR \
+      -xdata sectiongraphX$visuNo -ydata sectiongraphYR$visuNo -color red -symbol ""
+   $private($visuNo,graph,horz) element create color_invariant_lineG \
+      -xdata sectiongraphX$visuNo -ydata sectiongraphYG$visuNo -color green -symbol ""
+   $private($visuNo,graph,horz) element create color_invariant_lineB \
+      -xdata sectiongraphX$visuNo -ydata sectiongraphYB$visuNo -color blue -symbol ""
    $private($visuNo,graph,horz) legend configure -hide yes
    $private($visuNo,graph,horz) axis configure x -min 0
-   $private($visuNo,graph,horz) xaxis configure -title "" -hide no -color $fgColor \
-      -ticklength 4
+   $private($visuNo,graph,horz) xaxis configure -title "" -hide no -ticklength 4
    $private($visuNo,graph,horz) x2axis configure -title "" -hide yes
-   $private($visuNo,graph,horz) yaxis configure -title "" -hide no -color $fgColor \
-      -ticklength 4
+   $private($visuNo,graph,horz) yaxis configure -title "" -hide no -ticklength 4
    $private($visuNo,graph,horz) y2axis configure -title "" -hide yes
    $private($visuNo,graph,horz) grid configure -mapy y -dashes ""
    $private($visuNo,graph,horz) crosshairs on
    $private($visuNo,graph,horz) crosshairs configure -color green
-   $private($visuNo,graph,horz) element configure lineR -hide no
+   $private($visuNo,graph,horz) element configure color_invariant_lineR -hide no
 
    pack $private($visuNo,graph,horz) -in $private($visuNo,This).frame1
 
