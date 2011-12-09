@@ -605,16 +605,23 @@ namespace eval confColor:: {
          Graph {
             #--- Je mets a jour la couleur des widgets
             if { [ string first simple $w ] == -1 } {
+               #--- le nom du graphe ne contient pas "simple" car il a plusieurs axes d'abcisses et d'ordonnées
                $w configure -bg $audace(color,backColor) -fg $audace(color,textColor) \
                   -plotbackground $audace(color,backColor)
-               $w axis configure x  -hide no -color $audace(color,textColor) -titlecolor $audace(color,textColor)
-               $w axis configure x2 -hide no -color $audace(color,textColor) -titlecolor $audace(color,textColor)
-               $w axis configure y  -hide no -color $audace(color,textColor) -titlecolor $audace(color,textColor)
-               $w axis configure y2 -hide no -color $audace(color,textColor) -titlecolor $audace(color,textColor)
+               $w axis configure x  -color $audace(color,textColor) -titlecolor $audace(color,textColor)
+               $w axis configure x2 -color $audace(color,textColor) -titlecolor $audace(color,textColor)
+               $w axis configure y  -color $audace(color,textColor) -titlecolor $audace(color,textColor)
+               $w axis configure y2 -color $audace(color,textColor) -titlecolor $audace(color,textColor)
+               foreach elementName [$w element names] {
+                  if { [ string first color_invariant $elementName ] == -1 } {
+                     $w element configure $elementName -color $audace(color,textColor)
+                  }
+               }
             } else {
+               #--- le nom du graphe contient "simple" car il n'a qu'un seul axe d'abcisses et d'ordonnées
                $w configure -bg $audace(color,backColor) -fg $audace(color,textColor)
-               $w axis configure x -hide no -color $audace(color,textColor) -titlecolor $audace(color,textColor)
-               $w axis configure y -hide no -color $audace(color,textColor) -titlecolor $audace(color,textColor)
+               $w axis configure x -color $audace(color,textColor) -titlecolor $audace(color,textColor)
+               $w axis configure y -color $audace(color,textColor) -titlecolor $audace(color,textColor)
             }
             #--- Je mets a jour la police des widgets
             $w configure -font "$audace(font,Graph)"
