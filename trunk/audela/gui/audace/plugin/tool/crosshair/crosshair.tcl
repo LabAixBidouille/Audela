@@ -238,7 +238,7 @@ namespace eval ::Crosshair {
       if  { "$temp" != "" } {
          set Crosshair::widget(color) "$temp"
          ${Crosshair::widget(frm)}.frameColor.butColor_color_invariant configure \
-            -bg $::Crosshair::widget(color) -bg $::Crosshair::widget(color)
+            -bg $::Crosshair::widget(color) -activebackground $::Crosshair::widget(color)
       }
    }
 
