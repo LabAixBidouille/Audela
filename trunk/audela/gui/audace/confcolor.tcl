@@ -36,7 +36,7 @@ namespace eval confColor:: {
 
       if { ! [ info exists conf(confcolor,day,canvas) ] }                { set conf(confcolor,day,canvas)                "#006886" }
       if { ! [ info exists conf(confcolor,day,listBox) ] }               { set conf(confcolor,day,listBox)               "#DDDDFF" }
-      if { ! [ info exists conf(confcolor,day,drag_rectangle) ] }        { set conf(confcolor,day,drag_rectangle)        "#0000EF" }
+      if { ! [ info exists conf(confcolor,day,drag_rectangle) ] }        { set conf(confcolor,day,drag_rectangle)        "#00EFEF" }
 
       if { ! [ info exists conf(confcolor,day,textConsoleEntete) ] }     { set conf(confcolor,day,textConsoleEntete)     "#007F00" }
       if { ! [ info exists conf(confcolor,day,textConsoleResultat) ] }   { set conf(confcolor,day,textConsoleResultat)   "azure4" }
@@ -57,7 +57,7 @@ namespace eval confColor:: {
 
       if { ! [ info exists conf(confcolor,night,canvas) ] }              { set conf(confcolor,night,canvas)              "#004559" }
       if { ! [ info exists conf(confcolor,night,listBox) ] }             { set conf(confcolor,night,listBox)             "#C40627" }
-      if { ! [ info exists conf(confcolor,night,drag_rectangle) ] }      { set conf(confcolor,night,drag_rectangle)      "#0000EF" }
+      if { ! [ info exists conf(confcolor,night,drag_rectangle) ] }      { set conf(confcolor,night,drag_rectangle)      "#00EFEF" }
 
       if { ! [ info exists conf(confcolor,night,textConsoleEntete) ] }   { set conf(confcolor,night,textConsoleEntete)   "#004000" }
       if { ! [ info exists conf(confcolor,night,textConsoleResultat) ] } { set conf(confcolor,night,textConsoleResultat) "azure4" }
@@ -605,7 +605,7 @@ namespace eval confColor:: {
          Graph {
             #--- Je mets a jour la couleur des widgets
             if { [ string first simple $w ] == -1 } {
-               #--- le nom du graphe ne contient pas "simple" car il a plusieurs axes d'abcisses et d'ordonnées
+               #--- le nom du graphe ne contient pas "simple" car il a plusieurs axes d'abcisses et d'ordonnees
                $w configure -bg $audace(color,backColor) -fg $audace(color,textColor) \
                   -plotbackground $audace(color,backColor)
                $w axis configure x  -color $audace(color,textColor) -titlecolor $audace(color,textColor)
@@ -618,7 +618,7 @@ namespace eval confColor:: {
                   }
                }
             } else {
-               #--- le nom du graphe contient "simple" car il n'a qu'un seul axe d'abcisses et d'ordonnées
+               #--- le nom du graphe contient "simple" car il n'a qu'un seul axe d'abcisses et d'ordonnees
                $w configure -bg $audace(color,backColor) -fg $audace(color,textColor)
                $w axis configure x -color $audace(color,textColor) -titlecolor $audace(color,textColor)
                $w axis configure y -color $audace(color,textColor) -titlecolor $audace(color,textColor)
