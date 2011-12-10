@@ -561,19 +561,12 @@ namespace eval ::fieldchart {
       set fieldchart(Cdelt1)        [ lindex [ buf$audace(bufNo) getkwd CDELT1 ] 1 ]
       set fieldchart(Cdelt2)        [ lindex [ buf$audace(bufNo) getkwd CDELT2 ] 1 ]
 
-      #--   formate les valeurs si elles ne sont pas vides
-      foreach var [ list Inclin FocLen PixSize1 PixSize2 ] form [ list %0.6f %0.4f %0.3f %0.3f ] {
-         if {$fieldchart($var) != ""} {
-            set fieldchart($var) [ format $form $fieldchart($var) ]
-         }
-      }
-
       #--   calcule et formate les valeurs si elles sont vides
       if {$fieldchart(Crpix1) == ""} {
-         set fieldchart(Crpix1) [ format %0.2f [expr {$fieldchart(PictureWidth)/2.}] ]
+         set fieldchart(Crpix1) [expr {$fieldchart(PictureWidth)/2.}]
       }
       if {$fieldchart(Crpix2) == ""} {
-         set fieldchart(Crpix2)     [ format %0.2f [expr {$fieldchart(PictureHeight)/2.}] ]
+         set fieldchart(Crpix2) [expr {$fieldchart(PictureHeight)/2.}]
       }
    }
 
