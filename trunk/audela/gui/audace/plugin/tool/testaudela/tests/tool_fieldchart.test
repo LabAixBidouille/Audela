@@ -60,8 +60,8 @@ test carte_de_champ {traite m45_champ.fit} -constraints {AUDACE} -setup {
    #--   je convertis les coordonnees canvas en coordonnees picture
    set coords [ ::confVisu::canvas2Picture $visuNo $coords ]
    #--   je verifie que les CRPIX ont les bonnes valeurs
-   if { $::fieldchart(Crpix1) == 249.40 } { incr result }
-   if { $::fieldchart(Crpix2) == 256.60 } { incr result }
+   if { $::fieldchart(Crpix1) == 249.399292 } { incr result }
+   if { $::fieldchart(Crpix2) == 256.595822 } { incr result }
    #--   je verifie que la translation est correcte
    if { $coords eq "$cible" } { incr result }
 
@@ -81,7 +81,7 @@ test carte_de_champ {traite m45_champ.fit} -constraints {AUDACE} -setup {
 
    #--   controle
    #--   je verifie que l'angle est correct
-   if { $::fieldchart(Inclin) == 358.438531 } { incr result }
+   if { $::fieldchart(Inclin) eq "358.438552847" } { incr result }
 
    return $result
 } -cleanup {
