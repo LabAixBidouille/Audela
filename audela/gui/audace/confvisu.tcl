@@ -103,8 +103,8 @@ namespace eval ::confVisu {
       set private($visuNo,a)               "0"
       set private($visuNo,b)               "1"
       set private($visuNo,hCanvas)         $private($visuNo,This).can1.canvas
-      set private($visuNo,hCrosshairH)     $private($visuNo,hCanvas).crosshairH
-      set private($visuNo,hCrosshairV)     $private($visuNo,hCanvas).crosshairV
+      set private($visuNo,hCrosshairH)     $private($visuNo,hCanvas).color_invariant_crosshairH
+      set private($visuNo,hCrosshairV)     $private($visuNo,hCanvas).color_invariant_crosshairV
       set private($visuNo,crosshairstate)  $conf(visu,crosshair,defaultstate)
       set private($visuNo,menu)            ""
       set private($visuNo,mode)            "image"
