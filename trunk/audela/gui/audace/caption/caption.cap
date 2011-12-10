@@ -76,7 +76,7 @@ set caption(confVisu,msg)                             "The FITS header does not 
 set caption(plotxy,figure)                            "Figure"
 
 set caption(sectiongraph,title)                       "Graph of the section"
-set caption(sectiongraph,refreshAuto)                 "# Auto Refresh"
+set caption(sectiongraph,refreshAuto)                 "Auto refresh when changing the image"
 set caption(sectiongraph,refreshManuel)               "Refresh Now"
 
 # *************** Version française ***************************
@@ -147,7 +147,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(plotxy,figure)                         "Figure"
 
    set caption(sectiongraph,title)                    "Graphe de la coupe"
-   set caption(sectiongraph,refreshAuto)              "Rafraîchissement automatique quand on change l'image"
+   set caption(sectiongraph,refreshAuto)              "Rafraîchissement automatique lors du changement de l'image"
    set caption(sectiongraph,refreshManuel)            "Rafraîchir maintenant"
 
 # *************** Version italienne ***************************
@@ -218,8 +218,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(plotxy,figure)                         "Figura"
 
    set caption(sectiongraph,title)                    "Grafico della sezione"
-   set caption(sectiongraph,refreshAuto)              "# Auto raffreddamento"
-   set caption(sectiongraph,refreshManuel)            "Raffreddamento immediato"
+   set caption(sectiongraph,refreshAuto)              "Aggiornamento automatico quando si cambia l'immagine"
+   set caption(sectiongraph,refreshManuel)            "Aggiornamento immediato"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -289,7 +289,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(plotxy,figure)                         "Figura"
 
    set caption(sectiongraph,title)                    "Gráfica de la sección"
-   set caption(sectiongraph,refreshAuto)              "# Refresco automatico"
+   set caption(sectiongraph,refreshAuto)              "Refresco automática cuando se cambia la imagen"
    set caption(sectiongraph,refreshManuel)            "Refrescar ahora"
 
 # *************** Version allemande ***************************
@@ -360,7 +360,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(plotxy,figure)                         "Figur"
 
    set caption(sectiongraph,title)                    "Abschnitt Grafik"
-   set caption(sectiongraph,refreshAuto)              "# Automatische Auffrischung"
+   set caption(sectiongraph,refreshAuto)              "Automatische Auffrischung, wenn das Bild zu ändern"
    set caption(sectiongraph,refreshManuel)            "Jetzt auffrischen"
 
 # *************** Version portugaise **************************
@@ -431,7 +431,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(plotxy,figure)                         "Figura"
 
    set caption(sectiongraph,title)                    "Gráfico da secção"
-   set caption(sectiongraph,refreshAuto)              "# Actualização automática"
+   set caption(sectiongraph,refreshAuto)              "Actualização automática quando se muda a imagem"
    set caption(sectiongraph,refreshManuel)            "Actualizar agora"
 
 # *************** Version danoise *****************************
@@ -502,7 +502,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(plotxy,figure)                         "Figur"
 
    set caption(sectiongraph,title)                    "Graf af udsnittet"
-   set caption(sectiongraph,refreshAuto)              "# Automatisk opdatering"
+   set caption(sectiongraph,refreshAuto)              "Automatisk opdatere, når der skiftes billedet"
    set caption(sectiongraph,refreshManuel)            "Opdatér nu"
 
 # *************** Version ukrainienne *************************
@@ -573,7 +573,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(plotxy,figure)                         "Figure"
 
    set caption(sectiongraph,title)                    "Graph of the section"
-   set caption(sectiongraph,refreshAuto)              "# Auto Refresh"
+   set caption(sectiongraph,refreshAuto)              "Auto refresh when changing the image"
    set caption(sectiongraph,refreshManuel)            "Refresh Now"
 
 # *************** Version russe *******************************
@@ -644,7 +644,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(plotxy,figure)                         "Figure"
 
    set caption(sectiongraph,title)                    "Graph of the section"
-   set caption(sectiongraph,refreshAuto)              "# Auto Refresh"
+   set caption(sectiongraph,refreshAuto)              "Auto refresh when changing the image"
    set caption(sectiongraph,refreshManuel)            "Refresh Now"
 
 }
