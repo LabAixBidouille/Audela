@@ -904,9 +904,18 @@ proc visuf { win_name x y { title "" } { yesno "yes" } } {
          set h 140
       }
       $audace(base).visufoc.$win_name configure -height $h
-      $audace(base).visufoc.$win_name axis configure x2 -hide no
+      $audace(base).visufoc.$win_name axis configure x  -hide no -subdivision 0
+      $audace(base).visufoc.$win_name axis configure x2 -hide no -subdivision 0
       set lx [ $audace(base).visufoc.$win_name axis limits x ]
-      $audace(base).visufoc.$win_name axis configure x2 -min [ lindex $lx 0 ] -max [ lindex $lx 1 ]
+      #--- Affichage des 20 dernieres mesures glissantes
+      set index [ lindex $x [ expr [ llength $x ] - 1 ] ]
+      if { $index > 20 } {
+         $audace(base).visufoc.$win_name axis configure x  -min [ expr $index - 19 ] -max $index -stepsize 1
+         $audace(base).visufoc.$win_name axis configure x2 -min [ expr $index - 19 ] -max $index -stepsize 1
+      } else {
+         $audace(base).visufoc.$win_name axis configure x  -min 1 -max 20 -stepsize 1
+         $audace(base).visufoc.$win_name axis configure x2 -min 1 -max 20 -stepsize 1
+      }
       $audace(base).visufoc.$win_name axis configure y2 -hide no
       set ly [ $audace(base).visufoc.$win_name axis limits y ]
       $audace(base).visufoc.$win_name axis configure y2 -min [ lindex $ly 0 ] -max [ lindex $ly 1 ]
