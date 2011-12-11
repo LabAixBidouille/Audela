@@ -396,6 +396,8 @@ proc ::ouranos::configureMonture { } {
       #--- (la position geographique est utilisee pour calculer le temps sideral)
       tel$telNo home $::audace(posobs,observateur,gps)
       tel$telNo home name $::conf(posobs,nom_observatoire)
+      #--- J'active le rafraichissement automatique des coordonnees AD et Dec. (environ toutes les secondes)
+      tel$telNo radec survey 1
       #--- J'initialise le sens de rotation des codeurs
       tel$telNo invert $conf(ouranos,inv_ra) $conf(ouranos,inv_dec)
       #--- J'affiche un message d'information dans la Console
@@ -450,6 +452,8 @@ proc ::ouranos::stop { } {
    #--- Fermeture de la communication
    ::ouranos::close_com
 
+   #--- Je desactive le rafraichissement automatique des coordonnees AD et Dec.
+   tel$private(telNo) radec survey 0
    #--- Je memorise le port
    set telPort [ tel$private(telNo) port ]
    #--- J'arrete la monture
