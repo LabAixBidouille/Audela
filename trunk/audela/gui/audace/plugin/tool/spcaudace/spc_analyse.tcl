@@ -1756,7 +1756,12 @@ proc spc_icontinuum { args } {
         set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
         set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
         set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-        set crpix1 [ lindex [ buf$audace(bufNo) getkwd "CRPIX1" ] 1 ]
+        set listemotsclef [ buf$audace(bufNo) getkwds ]
+        if { [ lsearch $listemotsclef "CRPIX1" ] !=-1 } {
+           set crpix1 [ lindex [ buf$audace(bufNo) getkwd "CRPIX1" ] 1 ]
+        } else {
+           set crpix1 1
+        }
         set largeur [ expr int($naxis1/$nbtranches) ]
 
         #--- Détermine l'intensité moyenne sur chaque tranches :
@@ -1792,7 +1797,11 @@ proc spc_icontinuum { args } {
        set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
        set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
        set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-       set crpix1 [ lindex [ buf$audace(bufNo) getkwd "CRPIX1" ] 1 ]
+       if { [ lsearch $listemotsclef "CRPIX1" ] !=-1 } {
+          set crpix1 [ lindex [ buf$audace(bufNo) getkwd "CRPIX1" ] 1 ]
+       } else {
+          set crpix1 1
+       }
        set xcenter [ expr ($lambda-$crval1)/$cdelt1+$crpix1 ]
        set xdeb [ expr round($xcenter-$dlargeur_etude) ]
        if { $xdeb < 1 } { set xdeb 1 }
