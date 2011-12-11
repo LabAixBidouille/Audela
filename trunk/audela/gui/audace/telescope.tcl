@@ -624,13 +624,13 @@ proc ::telescope::incrementSpeed { } {
       } elseif { $conf(telescope) == "ascom" } {
          #--- Pour lx200, l'increment peut prendre 4 valeurs ( 1 2 3 4 )
          if { $audace(telescope,speed) == "1" } {
-            setSpeed "1"
-         } elseif { $audace(telescope,speed) == "2" } {
             setSpeed "2"
-         } elseif { $audace(telescope,speed) == "3" } {
+         } elseif { $audace(telescope,speed) == "2" } {
             setSpeed "3"
-         } elseif { $audace(telescope,speed) == "4" } {
+         } elseif { $audace(telescope,speed) == "3" } {
             setSpeed "4"
+         } elseif { $audace(telescope,speed) == "4" } {
+            setSpeed "1"
          } else {
             setSpeed "1"
          }
@@ -949,7 +949,7 @@ proc ::telescope::stop { direction } {
          }
       } elseif { $conf(telescope) == "ascom" } {
          tel$audace(telNo) radec stop $direction
-         tel$audace(telNo) radec motor on       
+         tel$audace(telNo) radec motor on
       } elseif { $conf(telescope) == "temma" } {
          set AfterState "0"
          after cancel $AfterId
@@ -1300,11 +1300,10 @@ proc ::telescope::moveTelescope { alphaDirection alphaDiff deltaDirection deltaD
       tel$audace(telNo) correct $deltaDirection $deltaDelay
    }
 
-# Added for ASCOM telescopes otherwise tracking will stop during autoguiding...
-if { $conf(telescope) == "ascom" } {
-         tel$audace(telNo) radec motor on       
-      }
-
+   #--- Added for ASCOM telescopes otherwise tracking will stop during autoguiding...
+   if { $conf(telescope) == "ascom" } {
+      tel$audace(telNo) radec motor on
+   }
 }
 
 #------------------------------------------------------------
