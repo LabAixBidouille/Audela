@@ -2058,6 +2058,7 @@ proc spc_multifit2pngdec { args } {
 
    #--- Liste des fichiers du répertoire :
    set listefile [ lsort -dictionary [ glob -tail -dir $audace(rep_images) *$conf(extension,defaut) ] ]
+   set listefile [ spc_ldatesort $listefile ]
 
    #--- Verifie si les spectres sont tous normalisés et recupere la date JD :
    set listejd [ list ]
