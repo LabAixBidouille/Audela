@@ -1,0 +1,12 @@
+prefix=
+exec_prefix=
+libdir=${pcfiledir}
+includedir=/data/install/develop/audela/src/contrib/av4l/ffmpeg-0.8.5
+
+Name: libavcodec
+Description: FFmpeg codec library
+Version: 53.7.0
+Requires: libavutil = 51.9.1
+Conflicts:
+Libs: ${libdir}/libavcodec.a -lSDL -lpthread -lm -lz 
+Cflags: -I${includedir}
