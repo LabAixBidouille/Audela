@@ -34,7 +34,7 @@ set caption(temma,mobile_ad)                     "Right Ascension Speed"
 set caption(temma,mobile_dec)                    "Declination Speed"
 set caption(temma,position_telescope)            "Telescope Position:"
 set caption(temma,change_position_telescope)     "Change the Telescope Initial Position:"
-set caption(temma,debug)                         "Debug Mode"
+set caption(temma,tracesConsole)                 "Console Log"
 set caption(temma,raquette_tel)                  "Hand controller on screen"
 
 set caption(temma,port_temma)                    "Temma Port"
@@ -69,7 +69,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temma,mobile_dec)                 "Vitesse en déclinaison"
    set caption(temma,position_telescope)         "Position du télescope :"
    set caption(temma,change_position_telescope)  "Changer la position d'origine du télescope :"
-   set caption(temma,debug)                      "Mode débug"
+   set caption(temma,tracesConsole)              "Traces dans la Console"
    set caption(temma,raquette_tel)               "Raquette à l'écran"
 
    set caption(temma,port_temma)                 "Port Temma"
@@ -104,7 +104,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temma,mobile_dec)                 "Velocita` in declinazione"
    set caption(temma,position_telescope)         "Posizione telescopio:"
    set caption(temma,change_position_telescope)  "Cambiare la posizione iniziale del telescopio:"
-   set caption(temma,debug)                      "Modalita` debug"
+   set caption(temma,tracesConsole)              "Traccia sulla Console"
    set caption(temma,raquette_tel)               "Pulsantiera a schermo"
 
    set caption(temma,port_temma)                 "Porta Temma"
@@ -139,7 +139,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temma,mobile_dec)                 "Velocidad en Declinación"
    set caption(temma,position_telescope)         "Situación del Telescopio:"
    set caption(temma,change_position_telescope)  "Cambiar la posición inicial del telescopio:"
-   set caption(temma,debug)                      "Modo depuracion"
+   set caption(temma,tracesConsole)              "Log en la Consola"
    set caption(temma,raquette_tel)               "Controlador virtual"
 
    set caption(temma,port_temma)                 "Puerto Temma"
@@ -174,7 +174,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temma,mobile_dec)                 "Deklination Tempo"
    set caption(temma,position_telescope)         "Teleskop Stellung:"
    set caption(temma,change_position_telescope)  "Die beginn Position des Teleskop ändern:"
-   set caption(temma,debug)                      "Debug Modus"
+   set caption(temma,tracesConsole)              "Konsole Log"
    set caption(temma,raquette_tel)               "Hand Kontroller am Bildschirm"
 
    set caption(temma,port_temma)                 "Temma Port"
@@ -203,13 +203,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temma,init_zenith)                "Inicialização Zenith"
    set caption(temma,ctl_mobile)                 "Controlo da Velocidade de Guiagem"
    set caption(temma,mobile_etoile)              "Seguimento sideral"
-   set caption(temma,mobile_soleil)              "# Suivi solaire"
+   set caption(temma,mobile_soleil)              "Seguimento solar"
    set caption(temma,ctl_mobile:)                "Controlo da velocidade de seguimento:"
    set caption(temma,mobile_ad)                  "Velocidade em ascensão recta"
    set caption(temma,mobile_dec)                 "Velocidade em declinação"
    set caption(temma,position_telescope)         "Posição do Telescópio:"
    set caption(temma,change_position_telescope)  "Mudar a Posição Inicial do Telescópio:"
-   set caption(temma,debug)                      "Modo debug"
+   set caption(temma,tracesConsole)              "Log na Consola"
    set caption(temma,raquette_tel)               "Controlador de mão no ecrã"
 
    set caption(temma,port_temma)                 "Porta Temma"
@@ -244,7 +244,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temma,mobile_dec)                 "Declination Speed"
    set caption(temma,position_telescope)         "Telescope Position:"
    set caption(temma,change_position_telescope)  "Change the Telescope Initial Position:"
-   set caption(temma,debug)                      "Debug Mode"
+   set caption(temma,tracesConsole)              "Console Log"
    set caption(temma,raquette_tel)               "Hand controller on screen"
 
    set caption(temma,port_temma)                 "Temma Port"
@@ -279,7 +279,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temma,mobile_dec)                 "Declination Speed"
    set caption(temma,position_telescope)         "Telescope Position:"
    set caption(temma,change_position_telescope)  "Change the Telescope Initial Position:"
-   set caption(temma,debug)                      "Debug Mode"
+   set caption(temma,tracesConsole)              "Console Log"
    set caption(temma,raquette_tel)               "Hand controller on screen"
 
    set caption(temma,port_temma)                 "Temma Port"
@@ -314,7 +314,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temma,mobile_dec)                 "Declination Speed"
    set caption(temma,position_telescope)         "Telescope Position:"
    set caption(temma,change_position_telescope)  "Change the Telescope Initial Position:"
-   set caption(temma,debug)                      "Debug Mode"
+   set caption(temma,tracesConsole)              "Console Log"
    set caption(temma,raquette_tel)               "Hand controller on screen"
 
    set caption(temma,port_temma)                 "Temma Port"
