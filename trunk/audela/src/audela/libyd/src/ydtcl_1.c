@@ -407,11 +407,11 @@ int Cmd_ydtcl_mes2mes(ClientData clientData, Tcl_Interp *interp, int argc, char 
    char filename_in[1024],generic_filename[1024];
    struct_htmref htmref,*htmrefs=NULL;
    struct_htmmes htmmes,*htmmess=NULL;
-	double *vals=NULL;
+	double *vals=NULL,val,*cmags=NULL,cmag;
    FILE *f_in,*f_out;
-	int n_ref0,n_ref,n_mes,n_mes0,ncalfiltre=0;
+	int n_ref0,n_ref,n_mes,n_mes0,ncalfiltre=0,nrefcal=0;
 	unsigned char calfiltres[256],codefiltre;
-	int k,km,kv,kr,kkr,kf,kcalfiltre,nouveau;
+	int k,km,kv,kr,kkr,kf,kcalfiltre,nouveau,nv;
 	float codecat,mag;
    if(argc<3) {
       sprintf(s,"Usage: %s path generic_filename", argv[0]);
@@ -542,6 +542,23 @@ int Cmd_ydtcl_mes2mes(ClientData clientData, Tcl_Interp *interp, int argc, char 
 		}
 		// --- on scanne maintenant calfiltre par calfiltre
 		for (kcalfiltre=0;kcalfiltre<ncalfiltre;kcalfiltre++) {
+			// --- on compte le nombre d'etoiles calibrees nrefcal
+			nrefcal=0;
+			for (kr=0;kr<n_ref;kr++) {
+				for (kf=0;kf<4;kf++) {
+					codefiltre=htmrefs[kr].codefiltre[kf];
+					codecat=htmrefs[kr].codecat[k];
+					if ((codefiltre==0)||(codecat!=5)) {
+						continue;
+					}
+					nrefcal++;
+				}
+			}
+			// --- dimensionne le vecteur de constante des magnitudes
+			if (nrefcal==0) { continue; }
+	      cmags=(double*)calloc(nrefcal,sizeof(double));
+			// --- on calcule la constante des magnitudes avec les etoiles calibrees pour ce filtre
+			nrefcal=0;
 			for (kr=0;kr<n_ref;kr++) {
 				for (kf=0;kf<4;kf++) {
 					codefiltre=htmrefs[kr].codefiltre[kf];
@@ -557,12 +574,21 @@ int Cmd_ydtcl_mes2mes(ClientData clientData, Tcl_Interp *interp, int argc, char 
 						kkr=htmmess[km].indexref;
 						if (kkr==kr) {
 							vals[kv]=htmmess[km].magcali;
+							kv++;
 						}
 					}
+					nv=kv;
 					// --- calcule la magnitude mediane
-					// TBD et TBC
+			      yd_util_qsort_double(vals,0,nv,NULL);
+					val=vals[nv/2];
+					cmags[nrefcal]=val;
+					nrefcal++;
 				}
 			}
+			// --- calcule la constante de magnitude mediane
+	      yd_util_qsort_double(cmags,0,nrefcal,NULL);
+			cmag=cmags[nrefcal/2];
+			free(cmags);
 		}
 		// --- c'est fini.
 		// --- on met a jour htmrefs ici
@@ -2292,7 +2318,7 @@ int Cmd_ydtcl_filehtm2refzmgmes(ClientData clientData, Tcl_Interp *interp, int a
                   if (htmrefs[newref].codefiltre[k]==0) {
                      htmrefs[newref].codecat[k]=(unsigned char)1;
                      htmrefs[newref].codefiltre[k]=codefiltre0;
-					 htmrefs[newref].mag[k]=htmfiles[ind_dec_file[k_file]].maginst;
+					htmrefs[newref].mag[k]=htmfiles[ind_dec_file[k_file]].maginst;
                      saveref=1;
                      break;
                   }
