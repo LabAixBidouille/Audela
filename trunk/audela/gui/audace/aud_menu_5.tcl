@@ -26,6 +26,8 @@ proc ::audace::Histo { visuNo } {
       ::plotxy::xlabel "$caption(audace,histo_adu)"
       ::plotxy::ylabel "$caption(audace,histo_nbpix)"
       ::plotxy::plot   [ lindex $r 1 ] [ lindex $r 0 ]
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor .audace.plotxy1
    }
 }
 
