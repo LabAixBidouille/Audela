@@ -2296,6 +2296,137 @@ load libak ; ak_htm2radec N120321
    return result;
 }
 
+int Cmd_aktcl_radec2healpix(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* Retourne le code HEALPix.                             */
+/****************************************************************************/
+/*
+load libak ; ak_radec2healpix 12 45 4
+*/
+/****************************************************************************/
+{
+   int result,retour;
+   char s[100];
+   double dr,pi;
+   double ra,dec;
+	long nside,ipix1=-1,ipix2=-1;
+	double theta,phi;
+	int method;
+
+   if(argc<4) {
+      sprintf(s,"Usage: %s ra dec nside ?ring|nested?", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else {
+		method=0;
+		if (argc>=5) {
+			if (strcmp(argv[4],"ring")==0) {
+				method=1;
+			}
+			if (strcmp(argv[4],"nested")==0) {
+				method=2;
+			}
+		}			
+		pi=4*atan(1.);
+      dr=pi/180.;
+      /* --- decode les parametres obligatoires ---*/
+      retour = Tcl_GetDouble(interp,argv[1],&ra);
+      if(retour!=TCL_OK) return retour;
+		phi=fmod(ra*dr,2*pi);
+		phi=fmod(phi+2*pi,2*pi);
+      retour = Tcl_GetDouble(interp,argv[2],&dec);
+      if(retour!=TCL_OK) return retour;
+		theta=(90-dec)*dr;
+		if (theta<0) { theta=0; }
+		if (theta>pi) { theta=pi; }
+      retour = Tcl_GetInt(interp,argv[3],&nside);
+      if(retour!=TCL_OK) return retour;
+		if ((nside<=0)||(nside>8192)) {
+			strcpy(s,"Error. nside must be positive <= 8192");
+			Tcl_SetResult(interp,s,TCL_VOLATILE);
+			result = TCL_ERROR;
+		   return result;
+		}
+		ang2pix_ring(nside,theta,phi,&ipix1);
+		ang2pix_nest(nside,theta,phi,&ipix2);
+		if (method==0) {
+			sprintf(s,"%ld %ld",ipix1,ipix2);
+		} else if (method==1) {
+			sprintf(s,"%ld",ipix1);
+		} else if (method==2) {
+			sprintf(s,"%ld",ipix2);
+		}
+		Tcl_SetResult(interp,s,TCL_VOLATILE);
+      result = TCL_OK;
+   }
+   return result;
+}
+
+int Cmd_aktcl_healpix2radec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* Retourne le ra,dec en fonction du code HEALPix.                          */
+/****************************************************************************/
+/*
+load libak ; ak_healpix2radec 12 45 4 nested
+*/
+/****************************************************************************/
+{
+   int result,retour;
+   char s[100];
+   double dr,pi;
+   double ra,dec;
+	long nside,ipix;
+	double theta,phi;
+	int method;
+
+   if(argc<4) {
+      sprintf(s,"Usage: %s healpix nside ring|nested", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else {
+		pi=4*atan(1.);
+      dr=pi/180.;
+      /* --- decode les parametres obligatoires ---*/
+      retour = Tcl_GetInt(interp,argv[1],&ipix);
+      if(retour!=TCL_OK) return retour;
+      retour = Tcl_GetInt(interp,argv[2],&nside);
+      if(retour!=TCL_OK) return retour;
+		if ((nside<=0)||(nside>8192)) {
+			strcpy(s,"Error. nside must be positive <= 8192");
+			Tcl_SetResult(interp,s,TCL_VOLATILE);
+			result = TCL_ERROR;
+		   return result;
+		}
+		if ((ipix<0)||(ipix>=12*nside*nside)) {
+			sprintf(s,"Error. healpix must be null or positive < %d",12*nside*nside);
+			Tcl_SetResult(interp,s,TCL_VOLATILE);
+			result = TCL_ERROR;
+		   return result;
+		}
+		if (strcmp(argv[3],"ring")==0) {
+			method=1;
+		} else if (strcmp(argv[3],"nested")==0) {
+			method=2;
+		} else {
+			strcpy(s,"Error. Third parameters must be ring or nested");
+			Tcl_SetResult(interp,s,TCL_VOLATILE);
+			result = TCL_ERROR;
+		   return result;
+		}
+		if (method==2) {
+			pix2ang_nest(nside,ipix,&theta,&phi);
+		} else {
+			pix2ang_ring(nside,ipix,&theta,&phi);
+		}
+		ra=phi/dr;
+		dec=90-theta/dr;
+		sprintf(s,"%.8f %.8f",ra,dec);
+		Tcl_SetResult(interp,s,TCL_VOLATILE);
+      result = TCL_OK;
+   }
+   return result;
+}
+
 int Cmd_aktcl_julianday(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 /****************************************************************************/
 /* Retourne le jour julien a partir des la date en clair.                   */

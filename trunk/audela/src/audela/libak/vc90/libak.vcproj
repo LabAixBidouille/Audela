@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="libak"
 	ProjectGUID="{3BC084DB-F4A7-4C88-B1BA-359FE55315AB}"
 	TargetFrameworkVersion="0"
@@ -325,6 +325,14 @@
 						PreprocessorDefinitions=""
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\src\chealpix.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\chealpix.h"
+				>
 			</File>
 			<File
 				RelativePath="..\src\libak.c"
