@@ -180,14 +180,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temmaconfig,2points)               ":"
 
    set caption(temmaconfig,para_mobile,aide0)     "Indicar sobre a forma de inteiro a velocidade de deslocamento do objecto.\
-                                                 \n# RA : Réglage du suivi sidéral en secondes par jour.\
-                                                 \n# Réglage de la vitesse sidérale : Combien de secondes sont ajoutées ou\
-                                                 \n# soustraites par période de 24 heures.\
-                                                 \n# DEC : Réglage du suivi sur la déclinaison en minutes par jour.\
-                                                 \n# Réglage du suivi sur la déc. : Combien de minutes par période de 24 heures.\
+                                                 \nAR: Ajuste do seguimento sideral em segundos por dia.\
+                                                 \nAjuste da velocidade sideral : Quantos segundos são adicionados ou\
+                                                 \nsubtraídos por período de 24 horas.\
+                                                 \nDec: Ajuste do seguimento em declinação em minutos por dia.\
+                                                 \nAjuste do seguimento em declinação: Quantos minutos por período de 24 horas.\
                                                  \nExemplo:\
-                                                 \n# RA = -120, ralentit la vitesse sidérale à 86164/86284.\
-                                                 \n# DEC = +30, la vitesse sur la déclinaison est de 30 minutes par jour.\
+                                                 \nAR = -120, abranda a velocidade sideral em 86164/86284.\
+                                                 \nDec = +30, a velocidade em declinação é de 30 minutos por dia.\
                                                  \nValores limites: +/-21541 em ascenção recta e +/-600 en declinação.\
                                                  \n-21541: Seguimento sideral desacelerado a 0,75x da velocidade sideral.\
                                                  \n+21541: Seguimento sideral acelerado a 1,25x da velocidade sideral.\
