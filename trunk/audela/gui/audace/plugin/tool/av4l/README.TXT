@@ -51,3 +51,24 @@ Entrer le prefixe de fichiers FITS à générer : par ex. img
 
 Cliquer sur extract pour créer les fichiers /tmp/images/img1.fit etc.
 
+---------
+
+% package require math::constants
+1.0.1
+% ::math::constants::print-constants
+pi = 3.141592653589793 = ratio of circle circumference and diameter
+e = 2.718281828459045 = base for natural logarithm
+ln10 = 2.302585092994046 = natural logarithm of 10
+phi = 1.618033988749895 = golden ratio
+gamma = 0.5772156649015329 = Euler's constant
+sqrt2 = 1.4142135623730951 = Square root of 2
+thirdrt2 = 1.2599210498948732 = One-third power of 2
+sqrt3 = 1.7320508075688772 = Square root of 3
+radtodeg = 57.2957795131 = Conversion from radians to degrees
+degtorad = 0.017453292519943 = Conversion from degrees to radians
+onethird = 0.3333333333333333 = One third (0.3333....)
+twothirds = 0.6666666666666666 = Two thirds (0.3333....)
+onesixth = 0.16666666666666666 = One sixth (0.1666....)
+huge = 1.7976931348623157e+308 = (Approximately) largest number
+tiny = 5e-324 = (Approximately) smallest number not equal zero
+eps = 2.220446049250313e-16 = Smallest number such that 1+eps != 1

@@ -103,18 +103,63 @@ variable timing
 
 
 
-   proc ::av4l_ocr_tools::ocr_bbox { } {
+   proc ::av4l_ocr_tools::ocr_bbox { err msg } {
 
+      # avec deux points comme separateur
+      #::console::affiche_resultat "** avec deux points comme separateur \n"
+      set poslist [split $msg " "]
+      #::console::affiche_resultat "   poslist = $poslist \n"
+      set hms [lindex $poslist 0]
+      #::console::affiche_resultat "   hms = $hms \n"
+      set ms  [lindex $poslist 4]
+      set poslist [split $hms "_"]
+      #::console::affiche_resultat "   poslist = $poslist \n"
+      set h   [lindex $poslist 0]
+      set min [lindex $poslist 1]
+      set s   [lindex $poslist 2]
+
+      set pass "ok"
+
+      if { $h<0 || $h>24 || $h=="" } {set pass "no"}
+      if { $min<0 || $min>59 || $min=="" } {set pass "no"}
+      if { $s<0 || $s>59 || $s=="" } {set pass "no"}
+      if { $ms<0 || $ms>999 || $ms=="" } {set pass "no"}
+
+      # avec des espaces comme separateur
+      #::console::affiche_resultat "** avec des espaces comme separateur \n"
+      if { $pass == "no" } {
+         set poslist [split $msg " "]
+         #::console::affiche_resultat "   poslist = $poslist \n"
+         set h   [lindex $poslist 0]
+         set min [lindex $poslist 1]
+         set s   [lindex $poslist 2]
+         set ms  [lindex $poslist 6]
+
+         set pass "ok"
+         if { $h<0 || $h>24 || $h=="" } {set pass "no"}
+         if { $min<0 || $min>59 || $min=="" } {set pass "no"}
+         if { $s<0 || $s>59 || $s=="" } {set pass "no"}
+         if { $ms<0 || $ms>999 || $ms=="" } {set pass "no"}
+
+      }
+
+      return [list $pass $h $min $s $ms]
    }
    
    proc ::av4l_ocr_tools::ocr_tim10_small_font { err msg } {
+
+      ::console::affiche_erreur "Tim 10 small_font n est pas encore supporté \n"
       ::console::affiche_resultat "err = $err \n"
       ::console::affiche_resultat "msg = $msg \n"
-
+      return [list "no" "XX" "XX" "XX" "XXX"]
    }
    
    proc ::av4l_ocr_tools::ocr_tim10_big_font { } {
 
+      ::console::affiche_erreur "Tim 10 big_font n est pas encore supporté \n"
+      ::console::affiche_resultat "err = $err \n"
+      ::console::affiche_resultat "msg = $msg \n"
+      return [list "no" "XX" "XX" "XX" "XXX"]
    }
 
 
@@ -139,7 +184,7 @@ variable timing
       if {$::av4l_ocr_tools::active_ocr=="1" && $statebutton=="sunken"} {
 
           set box [$frm.datation.values.setup.t.typespin get]
-          ::console::affiche_resultat "box : $box \n"
+          #::console::affiche_resultat "box : $box \n"
 
 
 
@@ -153,7 +198,22 @@ variable timing
 
           set bufNo [ visu$visuNo buf ]
           buf$bufNo window $rect
-          buf$bufNo mirrory
+
+          set mx [::confVisu::getMirrorX $visuNo]
+          set my [::confVisu::getMirrorY $visuNo]
+          #::console::affiche_resultat "mx : $mx \n"
+          #::console::affiche_resultat "my : $my \n"
+          
+          if { $mx == 1 } {
+             buf$bufNo mirrorx
+          }
+          
+          if { $my == 1 } {
+             buf$bufNo mirrory
+          }
+          
+
+           
           # buf1 save ocr.png
           set stat  [buf$bufNo stat]
           #::console::affiche_resultat "stat = $stat \n"
@@ -161,83 +221,46 @@ variable timing
           buf$bufNo savejpeg ocr.jpg 100 [lindex $stat 3] [lindex $stat 0] 
 
           set err [ catch {set result [exec jpegtopnm ocr.jpg | gocr -C 0-9 -f UTF8 ]} msg ]
-
-          #::console::affiche_resultat "err = $err \n"
-          
-          
-          
           #::console::affiche_resultat "err = $err \n"
           #::console::affiche_resultat "msg = $msg \n"
 
           if { $box == "Black Box"} {
+                set hms [::av4l_ocr_tools::ocr_bbox $err $msg]
           }
           if { $box == "TIM-10 small font"} {
                 set hms [::av4l_ocr_tools::ocr_tim10_small_font $err $msg]
           }
           if { $box == "TIM-10 big font"} {
+                set hms [::av4l_ocr_tools::ocr_tim10_big_font $err $msg]
           }
 
 
-          # avec deux points comme separateur
-          #::console::affiche_resultat "** avec deux points comme separateur \n"
-          set poslist [split $msg " "]
-          #::console::affiche_resultat "   poslist = $poslist \n"
-          set hms [lindex $poslist 0]
-          #::console::affiche_resultat "   hms = $hms \n"
-          set ms  [lindex $poslist 4]
-          set poslist [split $hms "_"]
-          #::console::affiche_resultat "   poslist = $poslist \n"
-          set h   [lindex $poslist 0]
-          set min [lindex $poslist 1]
-          set s   [lindex $poslist 2]
+          
+          set pass [lindex $hms 0]
+          set h   [return_2digit [lindex $hms 1]]
+          set min [return_2digit [lindex $hms 2]]
+          set s   [return_2digit [lindex $hms 3]]
+          set ms  [return_3digit [lindex $hms 4]]
 
-          set pass "ok"
-          if { $h<0 || $h>24 || $h=="" } {set pass "no"}
-          if { $min<0 || $min>59 || $min=="" } {set pass "no"}
-          if { $s<0 || $s>59 || $s=="" } {set pass "no"}
-          if { $ms<0 || $ms>999 || $ms=="" } {set pass "no"}
-          
-          
-          # avec des espaces comme separateur
-          #::console::affiche_resultat "** avec des espaces comme separateur \n"
-          if { $pass == "no" } {
-             set poslist [split $msg " "]
-             #::console::affiche_resultat "   poslist = $poslist \n"
-             set h   [lindex $poslist 0]
-             set min [lindex $poslist 1]
-             set s   [lindex $poslist 2]
-             set ms  [lindex $poslist 6]
+          if { $pass == "ok" } {
 
-             set pass "ok"
-             if { $h<0 || $h>24 || $h=="" } {set pass "no"}
-             if { $min<0 || $min>59 || $min=="" } {set pass "no"}
-             if { $s<0 || $s>59 || $s=="" } {set pass "no"}
-             if { $ms<0 || $ms>999 || $ms=="" } {set pass "no"}
 
-          }
-          
-          
-          set h   [return_2digit $h]
-          set min [return_2digit $min]
-          set s   [return_2digit $s]
-          set ms  [return_3digit $ms]
-          
-          
-          set err [ catch {
-          
-              regexp {[0-9][0-9]} $h matched
-              if { $h!=$matched }   {set pass "no"} 
-              regexp {[0-9][0-9]} $min matched
-              if { $min!=$matched }   {set pass "no"} 
-              regexp {[0-9][0-9]} $s matched
-              if { $s!=$matched }   {set pass "no"} 
-              regexp {[0-9][0-9][0-9]} $ms matched
-              if { $ms!=$matched }   {set pass "no"} 
-          
-          } msg ]
-          
-          if { $err != 0 } {set pass "no"} 
+             set err [ catch {
+
+                 regexp {[0-9][0-9]} $h matched
+                 if { $h!=$matched }   {set pass "no"} 
+                 regexp {[0-9][0-9]} $min matched
+                 if { $min!=$matched }   {set pass "no"} 
+                 regexp {[0-9][0-9]} $s matched
+                 if { $s!=$matched }   {set pass "no"} 
+                 regexp {[0-9][0-9][0-9]} $ms matched
+                 if { $ms!=$matched }   {set pass "no"} 
+
+             } msg ]
+
+             if { $err != 0 } {set pass "no"} 
             
+          }
           
           # affichage des resultats
           if { $pass == "ok" } {
