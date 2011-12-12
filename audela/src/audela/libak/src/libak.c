@@ -64,6 +64,8 @@
    Tcl_CreateCommand(interp,"ak_infoimage",(Tcl_CmdProc *)Cmd_aktcl_infoimage,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"ak_bugbias",(Tcl_CmdProc *)Cmd_aktcl_bugbias,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    /* ajouter ici les autres fonctions d'extension que vous allez creer */
+   Tcl_CreateCommand(interp,"ak_radec2healpix",(Tcl_CmdProc *)Cmd_aktcl_radec2healpix,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"ak_healpix2radec",(Tcl_CmdProc *)Cmd_aktcl_healpix2radec,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"ak_radec2htm",(Tcl_CmdProc *)Cmd_aktcl_radec2htm,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"ak_htm2radec",(Tcl_CmdProc *)Cmd_aktcl_htm2radec,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"ak_addcol",(Tcl_CmdProc *)Cmd_aktcl_addcol,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
