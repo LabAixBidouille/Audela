@@ -152,7 +152,7 @@ namespace eval ::spytimer {
 
             if { $param eq "aptdia" && $value ne ""} {
                #--   calcule le pouvoir separateur
-               set private($visuNo,pouvoir_separateur) [ format "%.3f" [ expr { 0.120 / $private($visuNo,$param) } ] ]
+               set private($visuNo,pouvoir_separateur) [format %.3f [expr {0.120/$private($visuNo,aptdia)}]]
             }
 
          } elseif { [ info exists parametres($param) ] == 0 && $param ni [ list port bit cde ] } {
@@ -585,11 +585,6 @@ namespace eval ::spytimer {
             avertiUser $visuNo reel
          } else {
             set private($visuNo,$child) [format %.3f $value]
-            if { $child eq "aptdia" } {
-               #--   calcule le pouvoir separateur
-               set pouvoir_separateur [ format "%.3f" [ expr { 0.120/$private($visuNo,$child) } ] ]
-               set private($visuNo,pouvoir_separateur) $pouvoir_separateur
-            }
             update
          }
          return
@@ -818,19 +813,22 @@ namespace eval ::spytimer {
       set ypixsz $private($visuNo,ypixsz)
       set pixsize1 $private($visuNo,pixsize1)
       set pixsize2 $private($visuNo,pixsize2)
+      #--   calcule le pouvoir separateur
+      set private($visuNo,pouvoir_separateur) [ format %.3f [expr {0.120/$aptdia}]]
 
       #--   calcule CRPIX1 et CRPIX2 par defaut
       set naxis1 [ lindex [ buf$bufNo getkwd NAXIS1 ] 1 ]
       set naxis2 [ lindex [ buf$bufNo getkwd NAXIS2 ] 1 ]
+
       #--   valeur pas defaut
-      set crpix1 [ expr { $naxis1/2.0 } ]
-      set crpix2 [ expr { $naxis2/2.0 } ]
+      set crpix1 [ expr { $naxis1/2. } ]
+      set crpix2 [ expr { $naxis2/2. } ]
 
       foreach keyword [ ::keyword::getKeywords $visuNo $::conf(spytimer,visu$visuNo,keywordConfigName) ] {
          set key [lindex $keyword 0]
          if { $key in [ list APTDIA CROTA2 CRPIX1 CRPIX2 FOCLEN PIXSIZE1 PIXSIZE2 XPIXSZ YPIXSZ ] && [ lindex $keyword 1 ] eq ""} {
             set value [ set [ string tolower $key ] ]
-            #--   si une valeur a ete donnee
+           #--   si une valeur a ete donnee
             if { $value ne "" } {
                #--   remplace la valeur vide par la valeur reelle
                set keyword [ lreplace $keyword 1 1 $value ]
@@ -841,33 +839,33 @@ namespace eval ::spytimer {
 
       #--   calcule le champ et l'echantillonnage
       if { $xpixsz ne "" && $ypixsz ne "" && $foclen ne "" } {
-         lassign [ ::spytimer::calculette $naxis1 $naxis2 $xpixsz $ypixsz $foclen ] \
-            private($visuNo,champ) private($visuNo,echantillonnage)
+         lassign [ ::spytimer::calculette $naxis1 $naxis2 $pixsize1 $pixsize2 $foclen] cdelt1 cdelt2 fov1 fov2
+         set private($visuNo,echantillonnage) "[ format %.2f $cdelt1 ] X [ format %.2f $cdelt2 ]"
+         set private($visuNo,champ) "[ format %.2f $fov1] X [ format %.2f $fov2]"
+         buf$bufNo setkwd [ list CDELT1 $cdelt1 double "\[arcsec/pix\] scale along naxis1" arcsec/pix ]
+         buf$bufNo setkwd [ list CDELT2 $cdelt2 double "\[arcsec/pix\] scale along naxis2" arcsec/pix ]
          update
       }
    }
 
    #---------------------------------------------------------------------------
    #  calculette : calcule le champ et l'echantillonage du capteur
-   #  Parametres : naxis1 naxis2 xpixsz ypixsz foclen
+   #  Parametres : liste de {naxis1 naxis} et de {pixsize1 pixsize2} foclen
    #---------------------------------------------------------------------------
-   proc calculette { naxis1 naxis2 xpixsz ypixsz foclen } {
+   proc calculette { naxis1 naxis2 pixsize1 pixsize2 foclen } {
 
-       #--  calcule les dimensions du capteur en mm
-       set dim_x [ expr { $naxis1 * $xpixsz / 1000 } ]
-       set dim_y [ expr { $naxis2 * $ypixsz / 1000 } ]
-
-       #--- Champ en x et en y en minutes d'arc
-       set champ_x  [ format "%.1f" [ expr { 206265 * $dim_x / ( $foclen * 1000.*60. ) } ] ]
-       set champ_y  [ format "%.1f" [ expr { 206265 * $dim_y / ( $foclen * 1000.*60. ) } ] ]
-       set champ "$champ_x X $champ_y"
-
-       #--- Echantillonnage du CMOS en x et en y en secondes d'arc par pixels
-       set echantillonnage_x [ format "%.1f"  [expr {$champ_x*60./$naxis1}]]
-       set echantillonnage_y [ format "%.1f"  [expr {$champ_y*60./$naxis2}]]
-       set echantillonnage "$echantillonnage_x X $echantillonnage_y"
-
-       return [ list $champ $echantillonnage ]
+       set coef [expr {90.*60./atan(1)}]
+       blt::vector create naxis angle cdelt fov -watchunset 1
+       naxis set [list $naxis1 $naxis2]
+       angle set [list $pixsize1 $pixsize2]
+       angle expr {angle*1e-6/$foclen/2.}
+       #--- Echantillonnage du CMOS en x et en y en arcsec/pix
+       cdelt expr {atan(angle)*$coef*60.}
+       #--- Champ en x et en y en arcmin
+       fov expr {atan(naxis*angle)*$coef}
+       set result "$cdelt(:) $fov(:)"
+       blt::vector destroy cdelt fov
+       return $result
    }
 
    #----------------- fonction de surveillance du repertoire ------------------
