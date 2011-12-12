@@ -316,7 +316,7 @@ proc ::temma::fillConfigPage { frm } {
    pack $frm.tracking -in $frm.frame6 -anchor center -side right -padx 10 -pady 10 -ipadx 10 -ipady 5
 
    #--- Le checkbutton pour le mode debug ou non
-   checkbutton $frm.debug -text "$caption(temma,debug)" -highlightthickness 0 \
+   checkbutton $frm.debug -text "$caption(temma,tracesConsole)" -highlightthickness 0 \
       -variable ::temma::private(debug)
    pack $frm.debug -in $frm.frame7 -side left -padx 10 -pady 10
 
