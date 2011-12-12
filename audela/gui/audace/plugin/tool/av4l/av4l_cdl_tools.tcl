@@ -881,7 +881,7 @@ namespace eval ::av4l_cdl_tools {
 
       $frm.action.start configure -image .start
       $frm.action.start configure -relief raised     
-      $frm.action.start configure -command "::av4l_cdl_gui::start $visuNo $frm" 
+      $frm.action.start configure -command "::av4l_cdl_tools::start $visuNo $frm" 
 
    }
 

@@ -146,8 +146,6 @@ proc ::av4l::createPluginInstance { { in "" } { visuNo 1 } } {
 proc ::av4l::ressource {  } {
    global audace
 
-   ::console::affiche_resultat "Ressources...\n"
-
    #--- Chargement des captions
    source [ file join $audace(rep_plugin) tool av4l av4l_go.cap ]
    #--- Chargement des fichiers auxiliaires
@@ -170,24 +168,6 @@ proc ::av4l::ressource {  } {
 
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_cdl.tcl ]\""
 
-   ::console::affiche_resultat "  update  : av4l_acq.tcl           \n"
-   ::console::affiche_resultat "  update  : av4l_cdl_gui.tcl       \n"
-   ::console::affiche_resultat "  update  : av4l_cdl.tcl           \n"
-   ::console::affiche_resultat "  update  : av4l_cdl_tools.tcl     \n"
-   ::console::affiche_resultat "  update  : av4l_extraction.tcl    \n"
-   ::console::affiche_resultat "  update  : av4l_go.tcl            \n"
-   ::console::affiche_resultat "  update  : av4l_ocr_gui.tcl       \n"
-   ::console::affiche_resultat "  update  : av4l_ocr_tools.tcl     \n"
-   ::console::affiche_resultat "  update  : av4l_ocr.tcl           \n"
-   ::console::affiche_resultat "  update  : av4l_photom.tcl        \n"
-   ::console::affiche_resultat "  update  : av4l_setup.tcl         \n"
-   ::console::affiche_resultat "  update  : av4l_tools.tcl         \n"
-   ::console::affiche_resultat "  update  : av4l_tools_avi.tcl     \n"
-   ::console::affiche_resultat "  update  : av4l_tools_fits.tcl    \n"
-   ::console::affiche_resultat "  update  : av4l_verif.tcl         \n"
-   ::console::affiche_resultat "  update  : test.tcl               \n"
-
-   ::console::affiche_resultat "  update  : bddimages_cdl.tcl    \n"
 }
 
 
@@ -326,18 +306,6 @@ proc ::av4l::BuildIF { visuNo } {
 
 
          #--- Creation du bouton 
-         image create photo .verif -format PNG -file [ file join $audace(rep_plugin) tool av4l img verif.png ]
-         button $This.fra1.verif -image .verif\
-            -borderwidth 2 -width 48 -height 48 -compound center \
-            -command "::av4l_verif::run  $visuNo $base.av4l_verif"
-         pack $This.fra1.verif \
-            -in $This.fra1 \
-            -side top -anchor w \
-            -expand 0
-         DynamicHelp::add $This.fra1.verif -text $caption(av4l_go,verif)
-
-
-         #--- Creation du bouton 
          image create photo .extract -format PNG -file [ file join $audace(rep_plugin) tool av4l img extraction.png ]
          button $This.fra1.extract -image .extract\
             -borderwidth 2 -width 48 -height 48 -compound center \
@@ -379,7 +347,6 @@ proc ::av4l::BuildIF { visuNo } {
 
 
 
-
          #--- Creation du bouton 
          image create photo .analysis -format PNG -file [ file join $audace(rep_plugin) tool av4l img brain_mini.png ]
          button $This.fradev.analysis -image .analysis\
@@ -414,6 +381,27 @@ proc ::av4l::BuildIF { visuNo } {
             -side left -anchor w \
             -expand 0
          DynamicHelp::add $This.fradev.ressource -text $caption(av4l_go,ressource)
+
+
+      #--- Frame du titre
+      frame $This.fradev2 -borderwidth 2 -relief groove
+      pack $This.fradev2 -side top -fill x
+
+
+         #--- Creation du bouton 
+         image create photo .verif -format PNG -file [ file join $audace(rep_plugin) tool av4l img verif.png ]
+         button $This.fradev2.verif -image .verif\
+            -borderwidth 2 -width 10 -height 10 -compound center \
+            -command "::av4l_verif::run  $visuNo $base.av4l_verif"
+         pack $This.fradev2.verif \
+            -in $This.fradev2 \
+            -side top -anchor w \
+            -expand 0
+         DynamicHelp::add $This.fradev2.verif -text $caption(av4l_go,verif)
+
+
+
+
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This

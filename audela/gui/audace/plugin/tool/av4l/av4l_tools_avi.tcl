@@ -417,32 +417,57 @@ namespace eval ::av4l_tools_avi {
 
 
 
-   proc ::av4l_tools_avi::acq_display { visuNo } {
+   proc ::av4l_tools_avi::acq_display { visuNo frm } {
+
         global audace
         set bufNo [ visu$visuNo buf ]
-        ::console::affiche_resultat "One Shot ! after\n"
         set avipid ""
         set err [ catch {set avipid [exec sh -c "pgrep av4l-grab"]} msg ]
-           ::console::affiche_resultat "err = $err\n"
-           ::console::affiche_resultat "msg = $msg\n"
         if {$avipid == ""} {
            ::console::affiche_resultat "Acquisition finie...\n"
            return
         } else {
-           ::console::affiche_resultat "Acquisition PID = $avipid\n"
+           #::console::affiche_resultat "Acquisition PID = $avipid\n"
         }
-        if {[file exists /dev/shm/pict.yuv422 ]} {
+
+        if {[ file exists /dev/shm/pict.yuv422 ]} {
            ::avi::convert_shared_image $bufNo /dev/shm/pict.yuv422
            visu$visuNo disp
            file delete -force /dev/shm/pict.yuv422
-           after 1000 " ::av4l_tools_avi::acq_display $visuNo "
+
+           cleanmark
+           set statebutton [ $frm.photom.values.object.t.select cget -relief]
+           if { $statebutton=="sunken" } {
+              set delta [ $frm.photom.values.object.v.r.delta get]
+              ::av4l_cdl_tools::mesure_obj $::av4l_cdl_tools::obj(x) $::av4l_cdl_tools::obj(y) $visuNo $frm.photom.values.object $delta
+           }
+           set statebutton [ $frm.photom.values.reference.t.select cget -relief]
+           if { $statebutton=="sunken" } {
+              set delta [ $frm.photom.values.reference.v.r.delta get]
+              ::av4l_cdl_tools::mesure_ref $::av4l_cdl_tools::ref(x) $::av4l_cdl_tools::ref(y) $visuNo $frm.photom.values.reference $delta
+           }
+           set statebutton [ $frm.photom.values.image.t.select cget -relief]
+           if { $statebutton=="sunken" } {
+           ::av4l_cdl_tools::get_fullimg $visuNo $frm.photom.values.image
+           }
+
+           after 1000 " ::av4l_tools_avi::acq_display $visuNo $frm"
         }
+
+
    }
 
 
 
 
-   proc ::av4l_tools_avi::acq_oneshot { visuNo } {
+
+
+
+
+
+
+
+   proc ::av4l_tools_avi::acq_oneshot { visuNo frm } {
         global audace
 
         set bufNo [ visu$visuNo buf ]
@@ -458,6 +483,25 @@ namespace eval ::av4l_tools_avi {
            ::console::affiche_resultat "err = $err\n"
            ::console::affiche_resultat "msg = $msg\n"
         }
+
+
+       set statebutton [ $frm.photom.values.object.t.select cget -relief]
+       if { $statebutton=="sunken" } {
+          set delta [ $frm.photom.values.object.v.r.delta get]
+          ::av4l_cdl_tools::mesure_obj $::av4l_cdl_tools::obj(x) $::av4l_cdl_tools::obj(y) $visuNo $frm.photom.values.object $delta
+       }
+       set statebutton [ $frm.photom.values.reference.t.select cget -relief]
+       if { $statebutton=="sunken" } {
+          set delta [ $frm.photom.values.reference.v.r.delta get]
+          ::av4l_cdl_tools::mesure_ref $::av4l_cdl_tools::ref(x) $::av4l_cdl_tools::ref(y) $visuNo $frm.photom.values.reference $delta
+       }
+       set statebutton [ $frm.photom.values.image.t.select cget -relief]
+       if { $statebutton=="sunken" } {
+       ::av4l_cdl_tools::get_fullimg $visuNo $frm.photom.values.image
+       }
+
+
+
    }
 
 
@@ -475,11 +519,24 @@ namespace eval ::av4l_tools_avi {
 
    proc ::av4l_tools_avi::acq_start { visuNo frm } {
         global audace
+
         set destdir [$frm.form.v.destdir get]
-        ::console::affiche_resultat "path : $destdir\n"
-         ::console::affiche_resultat "cmd : LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab -d 120m -c 2m -o $destdir\n"
-        exec sh -c "LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab -d 120m -c 2m -o $destdir" &
-        after 2000 " ::av4l_tools_avi::acq_display $visuNo "
+        set prefix  [$frm.form.v.prefix get]
+        
+        if { $destdir == "" } {
+           tk_messageBox -message "Veuillez choisir un repertoire" -type ok
+           return
+        }
+        if { $prefix == "" } {
+           tk_messageBox -message "Veuillez choisir un nom de fichier" -type ok
+           return
+        }
+        ::console::affiche_resultat "Acquisition demarre ...\n"
+        ::console::affiche_resultat "           path   : $destdir\n"
+        ::console::affiche_resultat "           prefix : $prefix\n"
+        
+        exec sh -c "LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab -d 120m -c 2m -o $destdir" -p "$prefix" &
+        after 1000 " ::av4l_tools_avi::acq_display $visuNo $frm"
    }
 
 
