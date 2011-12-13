@@ -28,7 +28,7 @@ source /srv/develop/audela/gui/audace/vo_tools.tcl
 ::confVisu::addMirrorListener $::audace(visuNo) "efface_rond"
 ::confVisu::addFileNameListener $::audace(visuNo) "efface_rond"
 
-set err [read_default_config "/srv/develop/audela/gui/audace/plugin/tool/bddimages/config/bddimages_cador_fv.xml"]
+set err [read_default_config "~/.audela/bddimages_ini.xml"]
 
    # Selection de la bdd
    set err [catch {::bddimages_sql::sql query "use $bddconf(dbname);"} msg]
