@@ -68,46 +68,23 @@ gren_info "****************************************************************** \n
    set nbimg $resultsql
 
 gren_info "****************************************************************** \n"
-# 100000
-# 987144 a 23:37  980183 a 00:26
 
 
- for {set x 0} {$x<=$nbimg} {incr x} {
-       # Recupere une image de la base de donnees
        set r [get_one_image]
-       #gren_info "SSP_PLUGIN: result one_ssp   : $r \n"
-
-       if {$r !=0 } {
-          #gren_info "SSP_PLUGIN: idbddcata=$ssp_image(idbddcata) poubelle \n"
-          #gren_info "x"
-          set sqlcmd "UPDATE catas SET ssp_date='3000-01-01' WHERE idbddcata=$ssp_image(idbddcata)"
-          set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
-          if {$err} {
-             gren_info "SSP_PLUGIN: ERREUR  \n"
-             gren_info "SSP_PLUGIN:        NUM : <$err> \n" 
-             gren_info "SSP_PLUGIN:        MSG : <$msg> \n"
-             }
-       }  else {
-          gren_info "."
-          set sqlcmd "UPDATE catas SET ssp_date=now() WHERE idbddcata=$ssp_image(idbddcata)"
-          set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
-          if {$err} {
-             gren_info "SSP_PLUGIN: ERREUR  \n"
-             gren_info "SSP_PLUGIN:        NUM : <$err> \n" 
-             gren_info "SSP_PLUGIN:        MSG : <$msg> \n"
-             }
-       }
- }
+       gren_info "SSP_PLUGIN: result one_ssp   : $r \n"
 
 
-          gren_info "SSP_PLUGIN:idbddcata  = $ssp_image(idbddcata)\n"
-          gren_info "SSP_PLUGIN:idbddimage = $ssp_image(idbddimg)\n"
-          gren_info "SSP_PLUGIN:cata       = $ssp_image(dir_cata_file)/$ssp_image(cata_filename)\n"
-          gren_info "SSP_PLUGIN:image      = $ssp_image(fits_dir)/$ssp_image(fits_filename)\n"
-          gren_info "SSP_PLUGIN:idheader   = $ssp_image(idheader)\n"
-          gren_info "SSP_PLUGIN:dateobs    = $ssp_image(dateobs)\n"
-          gren_info "SSP_PLUGIN:ra         = $ssp_image(ra)\n"
-          gren_info "SSP_PLUGIN:dec        = $ssp_image(dec)\n"
-          gren_info "SSP_PLUGIN:telescop   = $ssp_image(telescop)\n"
-          gren_info "SSP_PLUGIN:exposure   = $ssp_image(exposure)\n"
-          gren_info "SSP_PLUGIN:filter     = $ssp_image(filter)\n"
+       gren_info "SSP_PLUGIN:idbddcata  = $ssp_image(idbddcata)\n"
+       gren_info "SSP_PLUGIN:idbddimage = $ssp_image(idbddimg)\n"
+       gren_info "SSP_PLUGIN:cata       = $ssp_image(dir_cata_file)/$ssp_image(cata_filename)\n"
+       gren_info "SSP_PLUGIN:image      = $ssp_image(fits_dir)/$ssp_image(fits_filename)\n"
+       gren_info "SSP_PLUGIN:idheader   = $ssp_image(idheader)\n"
+       gren_info "SSP_PLUGIN:dateobs    = $ssp_image(dateobs)\n"
+       gren_info "SSP_PLUGIN:ra         = $ssp_image(ra)\n"
+       gren_info "SSP_PLUGIN:dec        = $ssp_image(dec)\n"
+       gren_info "SSP_PLUGIN:telescop   = $ssp_image(telescop)\n"
+       gren_info "SSP_PLUGIN:exposure   = $ssp_image(exposure)\n"
+       gren_info "SSP_PLUGIN:filter     = $ssp_image(filter)\n"
+
+
+gren_info "****************************************************************** \n"
