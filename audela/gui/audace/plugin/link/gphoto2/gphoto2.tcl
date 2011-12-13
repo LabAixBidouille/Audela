@@ -127,7 +127,7 @@ proc ::gphoto2::fillConfigPage { frm } {
    set widget(frm) $frm
 
    #--- Mode debug
-   checkbutton $frm.debug -text "$caption(dslr,debug) (libgphoto.log)" -highlightthickness 0 \
+   checkbutton $frm.debug -text "$caption(dslr,debug) (gphoto2.log)" -highlightthickness 0 \
       -variable ::gphoto2::widget(gphoto2,debug)
    pack $frm.debug -in $frm -anchor center -side left -padx 10 -pady 2
 
