@@ -152,7 +152,7 @@ proc ::ethernaude::fillConfigPage { frm } {
    pack $frm.ipsetting -in $frm.frame2 -anchor center -side left -padx 10 -pady 2
 
    #--- EthernAude en mode debug ou non
-   checkbutton $frm.debug -text "$caption(ethernaude,debug) (eth.txt)" -highlightthickness 0 \
+   checkbutton $frm.debug -text "$caption(ethernaude,debug) (ethernaude.log)" -highlightthickness 0 \
       -variable ::ethernaude::widget(ethernaude,debug)
    pack $frm.debug -in $frm.frame2 -anchor center -side right -padx 10 -pady 2
 
