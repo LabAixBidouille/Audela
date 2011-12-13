@@ -21,7 +21,7 @@ proc get_astrometric_catalog { ra dec radius} {
 
 
 
-   set star_list [vo_vizier_query $ra $dec $radius arcmin I/259/tyc2]
+   set star_list [vo_vizier_query $ra $dec $radius arcmin I/315]
 
   # ::console::affiche_resultat "$star_list\n"
 

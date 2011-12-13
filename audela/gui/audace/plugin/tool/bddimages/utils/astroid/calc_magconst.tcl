@@ -1,4 +1,5 @@
 proc calc_magconst { catalist } {
+
 set magconst -1
 
   set magtycholist {}
