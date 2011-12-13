@@ -3,7 +3,7 @@ proc get_cata { catafile } {
 
  global bddconf
 
-set test "ok"
+set test "no"
 
    set filenametmpzip $bddconf(dirtmp)/ssp_tmp_cata.txt.gz
    set filenametmp $bddconf(dirtmp)/ssp_tmp_cata.txt

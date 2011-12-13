@@ -124,3 +124,6 @@ gren_info "****************************************************************** \n
    set starident [ identification $listsources "USNOA2" $astrometric_list "TYCHO2" 30.0 10.0 10.0 ]
    affich_rond $starident "TYCHO2" "red" 2
 
+   # FIN
+   gren_info "****************************************************************** \n"
+   gren_info "FIN de script\n"
