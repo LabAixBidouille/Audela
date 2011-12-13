@@ -5,6 +5,7 @@ proc get_one_image { } {
 
  global env
  global ssp_image
+ global bddconf
 
  if {[info exists env(SSP_ID)]} {
    # pour ne traiter qu'une seule image
@@ -30,7 +31,7 @@ proc get_one_image { } {
       gren_info "ASTROID: MSG : <$msg>"
       }
    set mindate  [lindex  [lindex $resultsql 0] 0]
-   # gren_info "    mindate=$mindate"
+   #gren_info "    mindate=$mindate\n"
 
    # -- recuperation d un fichier cata
    # gren_info "- Recuperation d un fichier cata"
@@ -40,7 +41,8 @@ proc get_one_image { } {
    append sqlcmd " FROM catas,cataimage,images "
    append sqlcmd " WHERE cataimage.idbddcata=catas.idbddcata "
    append sqlcmd " AND cataimage.idbddimg=images.idbddimg "
-   append sqlcmd " AND catas.ssp_date='$mindate' ORDER BY images.datemodif DESC"
+#   append sqlcmd " AND catas.ssp_date='$mindate' ORDER BY images.datemodif DESC"
+   append sqlcmd " AND catas.ssp_date<now()-1"
    append sqlcmd " LIMIT 1 "
    }
 
@@ -51,7 +53,7 @@ proc get_one_image { } {
       gren_info "ASTROID: MSG : <$msg>"
       }
 
-   if {[llength $resultsql] <= 0} then { break }
+   if {[llength $resultsql] <= 0} then { return 1 }
 
    set idbddcata -1
 
@@ -65,6 +67,9 @@ proc get_one_image { } {
       set fits_dir       [lindex $line 6]
       set header_tabname  "images_$idheader"
       }
+
+
+# gren_info "- Recuperation d info table imagex\n"
 
    set sqlcmd    "select `date-obs`,`ra`,`dec`,`telescop`,`exposure`,`filter` from $header_tabname where idbddimg='$idbddimg'"
    set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
@@ -86,4 +91,21 @@ proc get_one_image { } {
                 fits_filename fits_dir header_tabname dateobs ra dec telescop 
                 exposure filter } { set ssp_image($n) [set $n] }
 
+   set fullname [file join $bddconf(dirbase) $fits_dir $fits_filename]
+   if { ! [file exists  $fullname] } {
+       #gren_info "ASTROID: $fullname doesn't exist\n"
+       return 2;
+   } 
+
+   set fullname [file join $bddconf(dirbase) $dir_cata_file $cata_filename]
+   if { ! [file exists  $fullname] } {
+       #gren_info "ASTROID: $fullname doesn't exist\n"
+       return 3;
+   } 
+
+
+
+
+
+ return 0
  }
