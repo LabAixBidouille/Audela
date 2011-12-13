@@ -64,7 +64,6 @@ gren_info "****************************************************************** \n
       }
    gren_info "SSP_PLUGIN: NB IMAGE a traiter SUR $bddconf(dbname) =<$resultsql>\n\n"
 
-
    set nbimg $resultsql
 
 gren_info "****************************************************************** \n"
@@ -72,7 +71,6 @@ gren_info "****************************************************************** \n
 
        set r [get_one_image]
        gren_info "SSP_PLUGIN: result one_ssp   : $r \n"
-
 
        gren_info "SSP_PLUGIN:idbddcata  = $ssp_image(idbddcata)\n"
        gren_info "SSP_PLUGIN:idbddimage = $ssp_image(idbddimg)\n"
