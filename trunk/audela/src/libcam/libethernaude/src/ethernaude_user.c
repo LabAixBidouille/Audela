@@ -145,7 +145,7 @@ int new_ethernaude( struct new_ethernaude_inp *inparams, ethernaude_var * ethvar
     char value[MAXLENGTH + 1];
     int paramtype;
 #ifdef ETHERNAUDE_DEBUG
-    remove("ethernaude.txt");
+    remove("ethernaude.log");
 #endif
 
     strcpy(ethvar->message, "");

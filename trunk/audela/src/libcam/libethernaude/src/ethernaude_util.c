@@ -563,19 +563,19 @@ int util_log(char *message, int signal)
        return 0;
     }
     if (signal == 0) {
-        f = fopen("ethernaude.txt", "at");
+        f = fopen("ethernaude.log", "at");
         fprintf(f, "%s\n", message);
         fclose(f);
         return (0);
     }
     if (signal == 1) {
-        f = fopen("ethernaude.txt", "at");
+        f = fopen("ethernaude.log", "at");
         fprintf(f, "===== Send following ParamCCDIn to AskForExecuteCCDCommand =====\n");
         fclose(f);
         return (0);
     }
     if (signal == 2) {
-        f = fopen("ethernaude.txt", "at");
+        f = fopen("ethernaude.log", "at");
         fprintf(f, "----- Read following ParamCCDOut -----\n");
         fclose(f);
         return (0);
