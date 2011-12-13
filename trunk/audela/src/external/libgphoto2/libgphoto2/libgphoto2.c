@@ -46,7 +46,7 @@ void debug_func (GPLogLevel level, const char *domain, const char *format, va_li
 int action_camera_set_port (GPhotoSession *params, const char *port);
 
 
-char logFileName[] = "libgphoto.log";
+char logFileName[] = "gphoto2.log";
 FILE* logFileHandle = NULL ;
 void debugstdout_func (GPLogLevel level, const char *domain, const char *format, va_list args, void *data);
 /**
