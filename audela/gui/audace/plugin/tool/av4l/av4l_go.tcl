@@ -5,7 +5,7 @@
 # Fichier        : av4l_go.tcl
 # Description    : Acquisition Video For Linux
 # Auteur         : Stephane Vaillant & Frederic Vachier
-# Mise à jour $Id: av4l_go.tcl 6795 2011-02-26 16:05:27Z michelpujol $
+# Mise à jour $Id$
 #
 
 #============================================================
@@ -40,10 +40,10 @@ proc ::av4l::getPluginType { } {
 }
 
 #------------------------------------------------------------
-#  getPluginOS
+#  ::av4l::getPluginOS
 #     retourne le ou les OS de fonctionnement du plugin
 #------------------------------------------------------------
-proc getPluginOS { } {
+proc ::av4l::getPluginOS { } {
    return [ list Linux ]
 }
 
@@ -57,8 +57,8 @@ proc getPluginOS { } {
 #------------------------------------------------------------
 proc ::av4l::getPluginProperty { propertyName } {
    switch $propertyName {
-      function     { return "file" }
-      subfunction1 { return "display" }
+      function     { return "acquisition" }
+      subfunction1 { return "video" }
       display      { return "panel" }
    }
 }
@@ -281,7 +281,7 @@ proc ::av4l::BuildIF { visuNo } {
          DynamicHelp::add $This.fra1.help -text $caption(av4l_go,help_titre)
 
 
-         #--- Creation du bouton 
+         #--- Creation du bouton
          image create photo .setup -format PNG -file [ file join $audace(rep_plugin) tool av4l img setup.png ]
          button $This.fra1.setup -image .setup\
             -borderwidth 2 -width 48 -height 48 -compound center \
@@ -293,7 +293,7 @@ proc ::av4l::BuildIF { visuNo } {
          DynamicHelp::add $This.fra1.setup -text $caption(av4l_go,setup)
 
 
-         #--- Creation du bouton 
+         #--- Creation du bouton
          image create photo .acq -format PNG -file [ file join $audace(rep_plugin) tool av4l img acquisition.png ]
          button $This.fra1.acq -image .acq\
             -borderwidth 2 -width 48 -height 48 -compound center \
@@ -305,7 +305,7 @@ proc ::av4l::BuildIF { visuNo } {
          DynamicHelp::add $This.fra1.acq -text $caption(av4l_go,acquisition)
 
 
-         #--- Creation du bouton 
+         #--- Creation du bouton
          image create photo .extract -format PNG -file [ file join $audace(rep_plugin) tool av4l img extraction.png ]
          button $This.fra1.extract -image .extract\
             -borderwidth 2 -width 48 -height 48 -compound center \
@@ -317,7 +317,7 @@ proc ::av4l::BuildIF { visuNo } {
          DynamicHelp::add $This.fra1.extract -text $caption(av4l_go,extraction)
 
 
-         #--- Creation du bouton 
+         #--- Creation du bouton
          image create photo .time -format PNG -file [ file join $audace(rep_plugin) tool av4l img time.png ]
          button $This.fra1.time -image .time\
             -borderwidth 2 -width 48 -height 48 -compound center \
@@ -328,7 +328,7 @@ proc ::av4l::BuildIF { visuNo } {
             -expand 0
          DynamicHelp::add $This.fra1.time -text $caption(av4l_go,time)
 
-         #--- Creation du bouton 
+         #--- Creation du bouton
          image create photo .cdl -format PNG -file [ file join $audace(rep_plugin) tool av4l img cdl.png ]
          button $This.fra1.cdl -image .cdl\
             -borderwidth 2 -width 48 -height 48 -compound center \
@@ -347,7 +347,7 @@ proc ::av4l::BuildIF { visuNo } {
 
 
 
-         #--- Creation du bouton 
+         #--- Creation du bouton
          image create photo .analysis -format PNG -file [ file join $audace(rep_plugin) tool av4l img brain_mini.png ]
          button $This.fradev.analysis -image .analysis\
             -borderwidth 2 -width 10 -height 10 -compound center \
@@ -359,7 +359,7 @@ proc ::av4l::BuildIF { visuNo } {
          DynamicHelp::add $This.fradev.analysis -text $caption(av4l_go,analysis)
 
 
-         #--- Creation du bouton 
+         #--- Creation du bouton
          image create photo .test -format PNG -file [ file join $audace(rep_plugin) tool av4l img test_mini.png ]
          button $This.fradev.test -image .test\
             -borderwidth 2 -width 10 -height 10 -compound center \
@@ -388,7 +388,7 @@ proc ::av4l::BuildIF { visuNo } {
       pack $This.fradev2 -side top -fill x
 
 
-         #--- Creation du bouton 
+         #--- Creation du bouton
          image create photo .verif -format PNG -file [ file join $audace(rep_plugin) tool av4l img verif.png ]
          button $This.fradev2.verif -image .verif\
             -borderwidth 2 -width 10 -height 10 -compound center \
