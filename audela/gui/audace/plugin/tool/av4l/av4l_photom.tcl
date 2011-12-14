@@ -1,11 +1,11 @@
 #--------------------------------------------------
-# source audace/plugin/tool/av4l/av4l_extraction.tcl
+# source audace/plugin/tool/av4l/av4l_photom.tcl
 #--------------------------------------------------
 #
 # Fichier        : av4l_extraction.tcl
-# Description    : Affiche le status de la base de donnees
-# Auteur         : Frédéric Vachier
-# Mise à jour $Id: av4l_extraction.tcl 6795 2011-02-26 16:05:27Z michelpujol $
+# Description    : Effectue une mesure photometrique
+# Auteur         : Frederic Vachier
+# Mise à jour $Id: av4l_photom.tcl 6795 2011-02-26 16:05:27Z fredvachier $
 #
 
 namespace eval ::av4l_photom {
@@ -129,7 +129,11 @@ proc photom_methode { xsm ysm delta bufNo} {
       set r2          [expr int(1.25*$delta)]
       set r3          [expr int(1.75*$delta)]
 
-      set valeurs     [buf$bufNo photom [list $xs0 $ys0 $xs1 $ys1] square $r1 $r2 $r3 ]
+      set err [ catch { set valeurs [buf$bufNo photom [list $xs0 $ys0 $xs1 $ys1] square $r1 $r2 $r3 ] } msg ]
+      if {$err} {
+         return -1
+      }
+
       set fluxintegre [lindex $valeurs 0]
       set fondmed     [lindex $valeurs 1]
       set fondmoy     [lindex $valeurs 2]
