@@ -1868,15 +1868,8 @@ proc spc_ldatesort { args } {
       set couples_filedate [ list ]
       foreach fichier $listefichiers {
          buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-         set ldate [ mc_date2ymdhms [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ] ]
-         set y [ lindex $ldate 0 ]
-         set mo [ lindex $ldate 1 ]
-         set d [ lindex $ldate 2 ]
-         set h [ lindex $ldate 3 ]
-         set mi [ lindex $ldate 4 ]
-         set s [ lindex $ldate 5 ]
-         set dateobs "$y$mo$d$h$mi$s"
-         lappend couples_filedate [ list "$fichier" $dateobs ]
+         set ldate [ mc_date2jd [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ] ]
+         lappend couples_filedate [ list "$fichier" $ldate ]
       }
 
       #--- Tri :
