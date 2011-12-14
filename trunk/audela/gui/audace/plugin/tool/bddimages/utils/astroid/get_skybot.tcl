@@ -1,16 +1,18 @@
 # -- Procedure 
-proc get_skybot { dateobs ra dec uaicode} {
+proc get_skybot { dateobs ra dec radius uaicode} {
 
  global voconf
  global skybot_list
  global skybot_list2
 
 
-   set voconf(date_image)       $dateobs
-   set voconf(centre_ad_image)  $ra
-   set voconf(centre_dec_image) $dec
-   set voconf(observer)         $uaicode
-
+   set voconf(date_image)          $dateobs
+   set voconf(centre_ad_image)     $ra
+   set voconf(centre_dec_image)    $dec
+   set voconf(observer)            $uaicode
+   set voconf(taille_champ_calcul) $radius
+   set voconf(filter)              120
+   set voconf(objfilter)           "110"
 
    #"TAROT CHILI"  809 
    #"TAROT CALERN" 910 
@@ -21,9 +23,9 @@ proc get_skybot { dateobs ra dec uaicode} {
    # skybot epoch format : 2008-01-01 03:48:04
    set epoch [regsub {T} $voconf(date_image) " "]
    set epoch [regsub {\..*} $epoch ""]
-   # gren_info "    SKYBOT-STATUS for epoch $epoch"
+    gren_info "    SKYBOT-STATUS for epoch $epoch \n"
    set status [vo_skybotstatus "text" "$epoch"]
-   # gren_info "    MSG-SKYBOT-STATUS : <$status>"
+    gren_info "    MSG-SKYBOT-STATUS : <$status> \n"
    if {[lindex $status 1] >= 1} then {
     set stats [lindex $status 5]
     set lines [split $stats ";"]
@@ -37,6 +39,7 @@ proc get_skybot { dateobs ra dec uaicode} {
    }
 
    set skybot_answered 0
+   set no_answer 0
    while { ! $skybot_answered } {
    
       gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Appel au conesearch"
@@ -47,10 +50,15 @@ proc get_skybot { dateobs ra dec uaicode} {
                          $voconf(centre_dec_image) $voconf(taille_champ_calcul)            \
                          "votable" "object" $voconf(observer) $voconf(filter) $voconf(objfilter) } msg ]
 
+          gren_info ""
        if {$err} {
           gren_info "solarsystemprocess: ERREUR 7"
           gren_info "solarsystemprocess:        NUM : <$err>" 
           gren_info "solarsystemprocess:        MSG : <$msg>"
+          incr no_answer
+          if {$no_answer>10} {
+             break
+          }
           } else {
 
       #   gren_info "MSG-SKYBOT : <$msg>"
@@ -71,6 +79,7 @@ proc get_skybot { dateobs ra dec uaicode} {
                  
        }
 
+ gren_info " msg = $msg\n"
 
        set err [ catch { ::dom::parse $msg } votable ]
        if { $err } {
@@ -93,7 +102,6 @@ proc get_skybot { dateobs ra dec uaicode} {
 
 
 
-
    set skybot_list { }
 
    foreach tr [::dom::selectNode $votable {descendant::TR}] {
@@ -103,7 +111,7 @@ proc get_skybot { dateobs ra dec uaicode} {
     }
     lappend skybot_list $row
    }
-# gren_info " skybot_list = $skybot_list"
+ gren_info " skybot_list = $skybot_list\n"
    
 
 
@@ -113,7 +121,8 @@ proc get_skybot { dateobs ra dec uaicode} {
 
 
    set skybot_list2 {}
-   set fieldscommon [list ra dec poserr mag magerr]
+   set common_fields [list ra dec poserr mag magerr]
+   set fields [list $skybot_fields $common_fields]
 
    foreach tr [::dom::selectNode $votable {descendant::TR}] {
       set row {}
@@ -130,12 +139,14 @@ proc get_skybot { dateobs ra dec uaicode} {
 
       set common [list $sra $sdec $sradialerrpos $srmag $srmagerr ]
       
-      set row [list [list "skybot" $skybot_fields $row ] [list "common" $fieldscommon $common] ]
+      set row [list [list "SKYBOT" $row ] [list "COMMON" $common] ]
 
       lappend skybot_list2 $row
       }
    
-# gren_info " skybot_list2 = $skybot_list2"
+   set skybot_list2 [list $fields $skybot_list2]
+   
+ gren_info " skybot_list2 = $skybot_list2\n"
 
 
    ::dom::destroy $votable
