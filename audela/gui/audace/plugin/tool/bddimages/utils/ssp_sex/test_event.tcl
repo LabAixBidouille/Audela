@@ -1,6 +1,6 @@
 # source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/test_event.tcl
 
-# but : je cherche a arreter la procedure boucleinfinie sans la MODIFIEE !
+# but : je cherche a arreter la procedure boucleinfinie sans la MODIFIER !
 
 proc boucleinfinie {} {
     while {1} {
