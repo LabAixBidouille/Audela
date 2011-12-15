@@ -182,7 +182,7 @@ int Cmd_ydtcl_cal2ref(ClientData clientData, Tcl_Interp *interp, int argc, char 
 int Cmd_ydtcl_mes2mes(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 /* Yassine : extraction of stars from catalogs : function for Frederic Vachier */
-int Cmd_ydtcl_cstycho(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int Cmd_ydtcl_cstycho2(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int Cmd_ydtcl_csucac2(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int Cmd_ydtcl_csucac3(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
