@@ -22,6 +22,7 @@
 
 /* Function prototypes */
 int field_is_blank(char *p);
-void tycho2_search(const char* catalogCompleteName, double ra0, double dec0, double range, double magmin, double magmax);
+char** tycho2_search(const char* catalogCompleteName, double ra0, double dec0, double range,
+		double magmin, double magmax, int* numberOfOutputs);
 
 #endif /* CSTYCHO_H_ */
