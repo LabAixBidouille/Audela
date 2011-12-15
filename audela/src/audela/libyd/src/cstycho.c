@@ -11,7 +11,8 @@ int field_is_blank(char *p) {
  return (*p == '\0');
 }
 
-void tycho2_search(const char*catalogCompleteName, double ra0, double dec0, double range, double magmin, double magmax) {
+char** tycho2_search(const char*catalogCompleteName, double ra0, double dec0, double range,
+		double magmin, double magmax, int* numberOfOutputs) {
 
     double dec_min, dec_max;
     double ra_min1, ra_max1;
@@ -46,8 +47,17 @@ void tycho2_search(const char*catalogCompleteName, double ra0, double dec0, doub
     fp = fopen(catalogCompleteName,"r");
     if (fp==NULL) {
         fprintf(stderr,"Cannot open catalog : %s\n",catalogCompleteName);
-        exit(1);
+        return 1;
     }
+
+    *numberOfOutputs            = 0;
+    int lengthOfLine            = 8192;
+    int numberOfSupposedOutputs = 10000000;
+    char** outputs = (char**)malloc(numberOfSupposedOutputs * sizeof(char*));
+	if(outputs == NULL) {
+		return NULL;
+	}
+
     while((sz=fread(buf,sizeof(buf)-1,1,fp)) == 1) {
         buf[206] = '\0';
         if(buf[14-1] == 'X') continue; // no mean position
@@ -66,11 +76,18 @@ void tycho2_search(const char*catalogCompleteName, double ra0, double dec0, doub
                     buf[41-1] = '|';
                     buf[130-1] = '|';
                     //printf("ra = %3.8f dec = %3.8f mag= %3.3f [%s]\n",ra, dec, mag, buf);
-                    printf("%s\n",buf);
+                    outputs[*numberOfOutputs] = (char*)malloc(lengthOfLine * sizeof(char*));
+                    if(outputs[*numberOfOutputs] == NULL) {
+                    	return NULL;
+                    }
+                    sprintf(outputs[*numberOfOutputs],"%s",buf);
+                    *numberOfOutputs++;
                 }
             }
         }
     }
+
+	return outputs;
 }
 
 /**
@@ -105,7 +122,31 @@ int Cmd_ydtcl_cstycho(ClientData clientData, Tcl_Interp *interp, int argc, char 
 	printf("Search stars in Tycho around : ra = %f(deg) - dec = %f(deg) - radius = %f(arcmin) - magnitude in [%f,%f](mag)\n",
 			ra,dec,radius,magMin,magMax);
 
-	tycho2_search(catalogCompleteName,ra,dec,radius,magMin,magMax);
 
+	int index;
+	int numberOfOutputs = 0;
+	char** outputs = tycho2_search(catalogCompleteName,ra,dec,radius,magMin,magMax,numberOfOutputs);
+	if(outputs == NULL) {
+		return TCL_ERROR;
+	}
+
+	Tcl_DString dsptr;
+	Tcl_DStringInit(&dsptr);
+	Tcl_DStringAppend(&dsptr,"{",-1);
+	char tclLine[8192];
+	for(index = 0; index < numberOfOutputs; index++) {
+		sprintf(tclLine,"%s",outputs[index]);
+		Tcl_DStringAppend(&dsptr,tclLine,-1);
+		Tcl_DStringAppend(&dsptr,"}{",-1);
+	}
+	Tcl_DStringAppend(&dsptr,"}",-1);
+	Tcl_DStringResult(interp,&dsptr);
+	Tcl_DStringFree(&dsptr);
+
+	/* Release outputs*/
+	for(index = 0; index < numberOfOutputs; index++) {
+		free(outputs[index]);
+	}
+	free(outputs);
 	return TCL_OK;
 }
