@@ -192,7 +192,7 @@ int retrieveUnFilteredStarsUcac2(const char* pathOfCatalog, searchZoneUcac2* mys
 	resultOfFunction = readUnfiltredStarUcac2(pathOfCatalog, theUnFilteredStars, indexTable, indexZoneDecStart, indexZoneDecEnd,
 			indexZoneRaStart, indexZoneRaEnd, mysearchZoneUcac2->isArroundZeroRa);
 	if(resultOfFunction) {
-		releaseMemoryArrayTwoDOfucacStarUcac2(theUnFilteredStars);
+		releaseMemoryArrayTwoDOfStarUcac2(theUnFilteredStars);
 		return 1;
 	}
 
@@ -287,7 +287,7 @@ int readUnfiltredStarUcac2(const char* pathOfCatalog, arrayTwoDOfStarUcac2* theU
 /**
  * read stars from the catalog for one Dec zone for the un-filtered stars : case of ra not around 0
  */
-int readUnfiltredStarForOneDecZone(const char* pathOfCatalog, arrayOneDOfStarUcac2* notFilteredStarsForOneDec, int* indexTableForOneDec,
+int readUnfiltredStarForOneDecZoneUcac2(const char* pathOfCatalog, arrayOneDOfStarUcac2* notFilteredStarsForOneDec, int* indexTableForOneDec,
 		int indexDec, const int indexZoneRaStart,const int indexZoneRaEnd) {
 
 	//printf("notFilteredStarsForOneDec->length = %d\n",notFilteredStarsForOneDec->length);

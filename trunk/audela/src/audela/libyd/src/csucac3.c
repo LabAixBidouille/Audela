@@ -204,7 +204,7 @@ int retrieveUnFilteredStarsUcac3(const char* pathOfCatalog, searchZoneUcac3* mys
 	resultOfFunction = readUnfiltredStarUcac3(pathOfCatalog, theUnFilteredStars, indexTable, indexZoneDecStart, indexZoneDecEnd,
 			indexZoneRaStart, indexZoneRaEnd, (*mysearchZoneUcac3).isArroundZeroRa);
 	if(resultOfFunction) {
-		releaseMemoryarrayTwoDOfUcacStarUcac3(theUnFilteredStars);
+		releaseMemoryarrayTwoDOfStarUcac3(theUnFilteredStars);
 		return 1;
 	}
 

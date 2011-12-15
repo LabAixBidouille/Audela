@@ -109,8 +109,8 @@
    Tcl_CreateCommand(interp,"yd_requete_table",(Tcl_CmdProc *)Cmd_ydtcl_requete_table,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
 
    /* Yassine : extraction of stars from catalogs : function for Frederic Vachier */
-   Tcl_CreateCommand(interp,"yd_cstycho",(Tcl_CmdProc *)Cmd_ydtcl_cstycho,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
-   Tcl_CreateCommand(interp,"yd_csucac2",(Tcl_CmdProc *)Cmd_ydtcl_csucac2,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
-   Tcl_CreateCommand(interp,"yd_csucac3",(Tcl_CmdProc *)Cmd_ydtcl_csucac3,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"cstycho2",(Tcl_CmdProc *)Cmd_ydtcl_cstycho2,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"csucac2",(Tcl_CmdProc *)Cmd_ydtcl_csucac2,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"csucac3",(Tcl_CmdProc *)Cmd_ydtcl_csucac3,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    return TCL_OK;
 }

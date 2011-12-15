@@ -10,8 +10,6 @@
 
 #include "ydtcl.h"
 
-#define xabort() { abort(); }
-
 /* 1 mag = 1000 mili mag */
 #define MAG2MILIMAG 1000.
 /* 1 deg = 60 arcmin */
