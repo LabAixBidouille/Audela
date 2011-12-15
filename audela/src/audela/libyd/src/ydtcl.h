@@ -181,10 +181,17 @@ int Cmd_ydtcl_ref2field(ClientData clientData, Tcl_Interp *interp, int argc, cha
 int Cmd_ydtcl_cal2ref(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int Cmd_ydtcl_mes2mes(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
+/* Yassine : extraction of stars from catalogs : function for Frederic Vachier */
+int Cmd_ydtcl_cstycho(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int Cmd_ydtcl_csucac2(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int Cmd_ydtcl_csucac3(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+
 /***************************************************************************/
 /*      Prototypes des fonctions utiles qui melangent C et Tcl             */
 /***************************************************************************/
 int ydtcl_getinfoimage(Tcl_Interp *interp,int numbuf, yd_image *image);
+
+void releaseDoubleIntArray(int** theTwoDArray, const int firstDimension);
 
 #endif
 
