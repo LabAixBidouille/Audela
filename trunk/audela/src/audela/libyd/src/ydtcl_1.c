@@ -1038,7 +1038,7 @@ fclose(f);
          ukcam=(unsigned char)kcam;
          for (kfil=0;kfil<256;kfil++) {
             ukfil=(unsigned char)kfil;
-			/*Modif Yassine : puisqu'on exige 10 mes pour 1 seule étoile
+			/*Modif Yassine : puisqu'on exige 10 mes pour 1 seule ï¿½toile
 			if (codes[kcam][kfil]<2) {*/
 			if (codes[kcam][kfil]<11) {
 			/*fin*/
@@ -1178,7 +1178,7 @@ fclose(f);
 					mean=(double)flt_mes[YD_MAGMOY*n_ref+kref];
 					sigma=(double)flt_mes[YD_SIGMOY*n_ref+kref];
 					val_droite=(double)flt_mes[YD_FIT*n_ref+kref];
-					/*La combinaison mean>-99.9 avec val_droite nous évite de prendre de mauvais points*/
+					/*La combinaison mean>-99.9 avec val_droite nous ï¿½vite de prendre de mauvais points*/
 					/*Au debut je prends tous les points car val_droite=1000 partout*/
 					if (sigma<val_droite) {
 						if ((mean<=MAG_PHOTO)&&(mean>-99.9)) {
@@ -1531,7 +1531,7 @@ int Cmd_ydtcl_updatezmg(ClientData clientData, Tcl_Interp *interp, int argc, cha
             /* --- on commence par initialiser l'histogramme des mesures ---*/
             for (k=0;k<n_ref;k++) {
                flt_mes[k]=(float)0;
-			   /*Rajout Yassine : par simple précaution*/
+			   /*Rajout Yassine : par simple prï¿½caution*/
 			   flt_mes[n_ref+k]=(float)-99.9;
 			   /*fin*/
             }
@@ -1666,7 +1666,7 @@ int Cmd_ydtcl_updatezmg(ClientData clientData, Tcl_Interp *interp, int argc, cha
                   }
                }
                n=kk;
-			   /* --- on coupe à une seule étoile de reference (avant c'etait 5) --- */
+			   /* --- on coupe ï¿½ une seule ï¿½toile de reference (avant c'etait 5) --- */
                if (n<1) {
                   htmzmgs[kkzmg].cmag=(float)-99.9;
                } else if (n<3) {
@@ -2292,7 +2292,7 @@ int Cmd_ydtcl_filehtm2refzmgmes(ClientData clientData, Tcl_Interp *interp, int a
             newref=index_ref;
          } else if (newref>=0) {
             /* --- L'etoile existe dans le catalogue ref ---*/
-            /* --- on affine les coordonnées ---*/
+            /* --- on affine les coordonnï¿½es ---*/
             n=htmrefs[newref].nbmes;
             htmrefs[newref].nbmes++;
             dra=fabs(htmrefs[newref].ra-ra0);
@@ -2568,7 +2568,7 @@ int Cmd_ydtcl_filehtm2refzmgmes(ClientData clientData, Tcl_Interp *interp, int a
 int Cmd_ydtcl_file2htm(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 /****************************************************************************/
 /* Explose le fichier texte de catalogue d'observation en leur equivalents  */
-/* binaires rassemblés par meme HTM.                                        */
+/* binaires rassemblï¿½s par meme HTM.                                        */
 /****************************************************************************/
 /* Input :                                                                  */
 /* ra dec jd codecam codefiltre maginst exposure airmass (ASCII)            */
@@ -3095,7 +3095,7 @@ fclose(ff);
 /*kvar=atoi(argv[4]);*/
 		eps=0.0001;
 		poids_unique=0.5; /*le poids des mesures non appariees*/
-		/*Le seuil de variabilité L = coef3*(coef1*<mag>+coef2) */
+		/*Le seuil de variabilitï¿½ L = coef3*(coef1*<mag>+coef2) */
 		coef1=1.2;
 		coef2=-14.6;
 		/* configuration GRB : tres peu d images, il faut baisser le seuil de detection*/
@@ -3380,7 +3380,7 @@ fclose(f);
 					}*/
 					if(codes2[kkcam*256+kfil]==0) {continue;}
 					nmes_filtre=0;
-					/* --- boucle sur les mesures d'une étoile ---*/
+					/* --- boucle sur les mesures d'une ï¿½toile ---*/
 					for (kmes=kmes_deb;kmes<=kmes_end;kmes++) {
 						if (htmmess[kmes].codecam!=ukcam) {
 							continue;
@@ -3438,7 +3438,7 @@ fclose(f);
 				if (nmes_ts_filtre<minobs) {continue;}
 				moyenne_totale/=nmes_ts_filtre;
 			 
-				/* --- boucle sur les mesures d'une étoile ---*/
+				/* --- boucle sur les mesures d'une ï¿½toile ---*/
 				kmes=kmes_deb;
 				kmes_deb2=kmes_deb;
 				J=0.;
@@ -3674,4 +3674,17 @@ Tcl_DStringAppend(&dsptr,s,-1);
 Tcl_DStringResult(interp,&dsptr);
 Tcl_DStringFree(&dsptr);
 	return TCL_OK;
+}
+
+/**
+ * Release memory from one theTwoDArray
+ */
+void releaseDoubleIntArray(int** theTwoDArray, const int firstDimension) {
+
+	int index;
+
+	for(index = 0; index < firstDimension;index++) {
+		free(theTwoDArray[index]);
+	}
+	free(theTwoDArray);
 }
