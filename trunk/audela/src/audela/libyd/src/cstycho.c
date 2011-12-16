@@ -184,7 +184,7 @@ int Cmd_ydtcl_cstycho2(ClientData clientData, Tcl_Interp *interp, int argc, char
 			*(outputs[index]+iend[i]) = c;
 		}
 		//Tcl_DStringAppend(&dsptr,outputs[index],-1);
-		Tcl_DStringAppend(&dsptr,"} } }",-1);
+		Tcl_DStringAppend(&dsptr,"} } } ",-1);
 	}
 	Tcl_DStringAppend(&dsptr,"} ",-1); // end of sources list
 	Tcl_DStringResult(interp,&dsptr);

@@ -8,13 +8,17 @@
 
 int Cmd_ydtcl_csucac2(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 
+	char outputLine[1024];
+
 	if((argc == 2) && (strcmp(argv[1],"-h") == 0)) {
-		printf("Help usage : extractucacStarUcac2s pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMin(mag)? magnitudeMax(mag)?\n");
-		return TCL_OK;
+		sprintf(outputLine,"Help usage : extractucacStarUcac2s pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMin(mag)? magnitudeMax(mag)?\n");
+		Tcl_SetResult(interp,outputLine,TCL_VOLATILE);
+		return TCL_ERROR;
 	}
 
 	if((argc != 5) && (argc != 7)) {
-		printf("usage : extractucacStarUcac2s pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMax(mag)? magnitudeMin(mag)?\n");
+		sprintf(outputLine,"usage : extractucacStarUcac2s pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMax(mag)? magnitudeMin(mag)?\n");
+		Tcl_SetResult(interp,outputLine,TCL_VOLATILE);
 		return TCL_ERROR;
 	}
 
@@ -32,8 +36,8 @@ int Cmd_ydtcl_csucac2(ClientData clientData, Tcl_Interp *interp, int argc, char 
 		magMin                = -99.99;
 		magMax                = 99.99;
 	}
-	printf("Search stars in UCAC2 around : ra = %f(deg) - dec = %f(deg) - radius = %f(arcmin) - magnitude in [%f,%f](mag)\n",
-			ra,dec,radius,magMin,magMax);
+//	printf("Search stars in UCAC2 around : ra = %f(deg) - dec = %f(deg) - radius = %f(arcmin) - magnitude in [%f,%f](mag)\n",
+//			ra,dec,radius,magMin,magMax);
 
 	/* Define search zone */
 	searchZoneUcac2 mysearchZoneUcac2 = findSearchZoneUcac2(ra,dec,radius,magMin,magMax);
