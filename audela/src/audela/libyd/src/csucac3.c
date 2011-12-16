@@ -261,7 +261,7 @@ int retrieveUnFilteredStarsUcac3(const char* pathOfCatalog, searchZoneUcac3* mys
 	}
 
 	//TODO
-	printf("numberOfDecZones = %d : indexZoneDecEnd = %d - indexZoneDecStart = %d\n",numberOfDecZones,indexZoneDecEnd,indexZoneDecStart);
+	//printf("numberOfDecZones = %d : indexZoneDecEnd = %d - indexZoneDecStart = %d\n",numberOfDecZones,indexZoneDecEnd,indexZoneDecStart);
 
 	theUnFilteredStars->length    = numberOfDecZones;
 	if(numberOfDecZones == 0) {
