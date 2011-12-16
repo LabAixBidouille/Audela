@@ -11,13 +11,15 @@ int Cmd_ydtcl_csucac2(ClientData clientData, Tcl_Interp *interp, int argc, char 
 	char outputLine[1024];
 
 	if((argc == 2) && (strcmp(argv[1],"-h") == 0)) {
-		sprintf(outputLine,"Help usage : extractucacStarUcac2s pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMin(mag)? magnitudeMax(mag)?\n");
+		sprintf(outputLine,"Help usage : %s pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMin(mag)? magnitudeMax(mag)?\n",
+				argv[0]);
 		Tcl_SetResult(interp,outputLine,TCL_VOLATILE);
 		return TCL_ERROR;
 	}
 
 	if((argc != 5) && (argc != 7)) {
-		sprintf(outputLine,"usage : extractucacStarUcac2s pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMax(mag)? magnitudeMin(mag)?\n");
+		sprintf(outputLine,"usage : %s pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMax(mag)? magnitudeMin(mag)?\n",
+				argv[0]);
 		Tcl_SetResult(interp,outputLine,TCL_VOLATILE);
 		return TCL_ERROR;
 	}
