@@ -17,6 +17,7 @@
 /* 1 deg = pi / 180. rad = 0.01745329251994329547 rad */
 #define DEC2RAD 0.01745329251994329547
 #define STRING_COMMON_LENGTH 1024
+#define CATALOG_FILE_NAME "catalog.dat"
 
 /* Function prototypes */
 int field_is_blank(char *p);
