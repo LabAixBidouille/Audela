@@ -81,7 +81,7 @@ int Cmd_ydtcl_csucac2(ClientData clientData, Tcl_Interp *interp, int argc, char 
 	for(index = 0; index < theFilteredStars.length; index++) {
 
 		oneStar = theFilteredStars.arrayOneD[index];
-		sprintf(outputLine,
+		/*sprintf(outputLine,
 				"index = %3d / %5d : %8.4f %+8.4f %5.2f\n",
 
 				(double)oneStar.raInMas/DEG2MAS,
@@ -138,7 +138,7 @@ int Cmd_ydtcl_csucac2(ClientData clientData, Tcl_Interp *interp, int argc, char 
 								oneStar.yaleSpmInputCatalog,
 								oneStar.ledaGalaxyMatchFlag,
 								oneStar.extendedSourceFlag2Mass,
-								oneStar.mposStarNumber);
+								oneStar.mposStarNumber);*/
 
 
 		Tcl_DStringAppend(&dsptr,outputLine,-1);
