@@ -80,8 +80,7 @@ int Cmd_ydtcl_csucac3(ClientData clientData, Tcl_Interp *interp, int argc, char 
 	int index;
 	for(index = 0; index < theFilteredStars.length; index++) {
 
-		Tcl_DStringAppend(&dsptr,"{ UCAC3 { } ",-1);
-		Tcl_DStringAppend(&dsptr,"{",-1); // start of source fields list
+		Tcl_DStringAppend(&dsptr,"{ { UCAC3 { } {",-1);
 		oneStar = theFilteredStars.arrayOneD[index];
 		sprintf(outputLine,"%12.8f|%+12.8f|%6.3f|%6.3f|%6.3f|%1d|%1d|%12.8f|%12.8f|%1d|%1d|%1d|%1d|%12.8f|%+12.8f|"
 				"%+12.8f|%+12.8f|%12.8f|%12.8f|%8d|%6.3f|%6.3f|%6.3f|%1d|%1d|%1d|%6.3f|%6.3f|%6.3f|"
@@ -146,7 +145,7 @@ int Cmd_ydtcl_csucac3(ClientData clientData, Tcl_Interp *interp, int argc, char 
 				oneStar.mposStarNumber);
 
 		Tcl_DStringAppend(&dsptr,outputLine,-1);
-		Tcl_DStringAppend(&dsptr," } } ",-1);
+		Tcl_DStringAppend(&dsptr,"} } } ",-1);
 	}
 
 	 // end of sources list

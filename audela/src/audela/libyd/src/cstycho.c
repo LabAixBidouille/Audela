@@ -168,7 +168,7 @@ int Cmd_ydtcl_cstycho2(ClientData clientData, Tcl_Interp *interp, int argc, char
 		"e_DE posflg corr } } } ",-1);
 	Tcl_DStringAppend(&dsptr,"{",-1); // start of sources list
 	for(index = 0; index < numberOfOutputs; index++) {
-		Tcl_DStringAppend(&dsptr,"{ TYCHO2 { } ",-1);
+		Tcl_DStringAppend(&dsptr,"{ { TYCHO2 { } ",-1);
 		Tcl_DStringAppend(&dsptr,"{",-1); // start of source fields list
 		// 35 fields, must match length of istart and iend
 		for(i=0;i<35;i++) {
@@ -184,7 +184,7 @@ int Cmd_ydtcl_cstycho2(ClientData clientData, Tcl_Interp *interp, int argc, char
 			*(outputs[index]+iend[i]) = c;
 		}
 		//Tcl_DStringAppend(&dsptr,outputs[index],-1);
-		Tcl_DStringAppend(&dsptr," } }",-1);
+		Tcl_DStringAppend(&dsptr,"} } }",-1);
 	}
 	Tcl_DStringAppend(&dsptr,"} ",-1); // end of sources list
 	Tcl_DStringResult(interp,&dsptr);
