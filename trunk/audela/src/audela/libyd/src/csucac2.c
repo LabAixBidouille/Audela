@@ -36,8 +36,8 @@ int Cmd_ydtcl_csucac2(ClientData clientData, Tcl_Interp *interp, int argc, char 
 		magMin                = -99.99;
 		magMax                = 99.99;
 	}
-//	printf("Search stars in UCAC2 around : ra = %f(deg) - dec = %f(deg) - radius = %f(arcmin) - magnitude in [%f,%f](mag)\n",
-//			ra,dec,radius,magMin,magMax);
+	//	printf("Search stars in UCAC2 around : ra = %f(deg) - dec = %f(deg) - radius = %f(arcmin) - magnitude in [%f,%f](mag)\n",
+	//			ra,dec,radius,magMin,magMax);
 
 	/* Define search zone */
 	searchZoneUcac2 mysearchZoneUcac2 = findSearchZoneUcac2(ra,dec,radius,magMin,magMax);
@@ -69,77 +69,49 @@ int Cmd_ydtcl_csucac2(ClientData clientData, Tcl_Interp *interp, int argc, char 
 	Tcl_DString dsptr;
 	Tcl_DStringInit(&dsptr);
 	Tcl_DStringAppend(&dsptr,"{ { UCAC2 { } "
-		"{ ra_deg dec_deg im1_mag im2_mag sigmag_mag objt dsf sigra_deg sigdc_deg na1 nu1 us1 cn1 cepra_deg cepdc_deg"
-		"pmrac_masperyear pmdc_masperyear sigpmr_masperyear sigpmd_masperyear id2m jmag_mag hmag_mag kmag_mag jicqflg hicqflg kicqflg je2mpho he2mpho ke2mpho "
-		"smB_mag smR2_mag smI_mag clbl qfB qfR2 qfI "
-		"catflg1 catflg2 catflg3 catflg4 catflg5 catflg6 catflg7 catflg8 catflg9 catflg10 "
-		"g1 c1 leda x2m rn } } } ",-1);
+			"{ ra_deg dec_deg U2Rmag_mag e_RAm_deg e_DEm_deg nobs e_pos_deg ncat cflg "
+			"EpRAm_deg EpDEm_deg pmRA_masperyear pmDEC_masperyear e_pmRA_masperyear e_pmDE_masperyear "
+			"q_pmRA q_pmDE 2m_id 2m_J 2m_H 2m_Ks 2m_ph 2m_cc} } } ",-1);
 	Tcl_DStringAppend(&dsptr,"{",-1); // start of sources list
 
 	int index;
 	starUcac2 oneStar;
 	for(index = 0; index < theFilteredStars.length; index++) {
 
+		Tcl_DStringAppend(&dsptr,"{ { UCAC2 { } {",-1);
+
 		oneStar = theFilteredStars.arrayOneD[index];
-		/*sprintf(outputLine,
-				"index = %3d / %5d : %8.4f %+8.4f %5.2f\n",
+		sprintf(outputLine,
+				"%.8f %+.8f %.3f %.8f %.8f %d %.8f %d %d "
+				"%.8f %.8f %.8f %.8f %.8f %.8f %.8f "
+				"%.5f %.5f %d %.3f %.3f %.3f %d %d\n",
 
-				(double)oneStar.raInMas/DEG2MAS,
-								(double)oneStar.distanceToSouthPoleInMas / DEG2MAS + DEC_SOUTH_POLE_DEG,
-								(double)oneStar.ucacFitMagInMiliMag / MAG2MILIMAG,
-								(double)oneStar.ucacApertureMagInMiliMag / MAG2MILIMAG,
-								(double)oneStar.ucacErrorMagInMiliMag / MAG2MILIMAG,
-								oneStar.objectType,
-								oneStar.doubleStarFlag,
-								(double)oneStar.errorOnUcacRaInMas / DEG2MAS,
-								(double)oneStar.errorOnUcacDecInMas / DEG2MAS,
-								oneStar.numberOfCcdObservation,
-								oneStar.numberOfUsedCcdObservation,
-								oneStar.numberOfUsedCatalogsForProperMotion,
-								oneStar.numberOfMatchingCatalogs,
-								(double)oneStar.centralEpochForMeanRaInMas/ DEG2MAS,
-								(double)oneStar.centralEpochForMeanDecInMas/ DEG2MAS,
+				(double)oneStar.raInMas / DEG2MAS,
+				(double)oneStar.decInMas / DEG2MAS,
+				(double)oneStar.ucacMagInCentiMag / MAG2CENTIMAG,
+				(double)oneStar.errorRaInMas / DEG2MAS,
+				(double)oneStar.errorDecInMas / DEG2MAS,
+				oneStar.numberOfObservations,
+				(double)oneStar.errorOnUcacPositionInMas / DEG2MAS,
+				oneStar.numberOfCatalogsForPosition,
+				oneStar.majorCatalogIdForPosition,
 
-								(double)oneStar.raProperMotionInOneTenthMasPerYear * 10.,
-								(double)oneStar.decProperMotionInOneTenthMasPerYear * 10.,
-								(double)oneStar.errorOnRaProperMotionInOneTenthMasPerYear * 10.,
-								(double)oneStar.errorOnDecProperMotionInOneTenthMasPerYear * 10.,
-								oneStar.idFrom2Mass,
-								(double)oneStar.jMagnitude2MassInMiliMag / MAG2MILIMAG,
-								(double)oneStar.hMagnitude2MassInMiliMag / MAG2MILIMAG,
-								(double)oneStar.kMagnitude2MassInMiliMag / MAG2MILIMAG,
-								oneStar.jQualityFlag2Mass,
-								oneStar.hQualityFlag2Mass,
-								oneStar.kQualityFlag2Mass,
-								(double)oneStar.jErrorMagnitude2MassInCentiMag / MAG2CENTIMAG,
-								(double)oneStar.hErrorMagnitude2MassInCentiMag / MAG2CENTIMAG,
-								(double)oneStar.kErrorMagnitude2MassInCentiMag / MAG2CENTIMAG,
+				(double)oneStar.centralEpochForMeanRaInMas / DEG2MAS,
+				(double)oneStar.centralEpochForMeanDecInMas / DEG2MAS,
+				(double)oneStar.raProperMotionInOneTenthMasPerYear / 10.,
+				(double)oneStar.decProperMotionInOneTenthMasPerYear / 10.,
+				(double)oneStar.errorOnRaProperMotionInOneTenthMasPerYear / 10.,
+				(double)oneStar.errorOnDecProperMotionInOneTenthMasPerYear / 10.,
+				(double)oneStar.errorOnDecProperMotionInOneTenthMasPerYear / 10.,
 
-								(double)oneStar.bMagnitudeSCInMiliMag / MAG2MILIMAG,
-								(double)oneStar.r2MagnitudeSCInMiliMag / MAG2MILIMAG,
-								(double)oneStar.iMagnitudeSCInMiliMag / MAG2MILIMAG,
-								oneStar.scStarGalaxieClass,
-								oneStar.bQualityFlagSC,
-								oneStar.r2QualityFlagSC,
-								oneStar.iQualityFlag2SC,
-
-								oneStar.hipparcosMatchFlag,
-								oneStar.tychoMatchFlag,
-								oneStar.ac2000MatchFlag,
-								oneStar.agk2bMatchFlag,
-								oneStar.agk2hMatchFlag,
-								oneStar.zaMatchFlag,
-								oneStar.byMatchFlag,
-								oneStar.lickMatchFlag,
-								oneStar.scMatchFlag,
-								oneStar.spmMatchFlag,
-
-								oneStar.yaleSpmObjectType,
-								oneStar.yaleSpmInputCatalog,
-								oneStar.ledaGalaxyMatchFlag,
-								oneStar.extendedSourceFlag2Mass,
-								oneStar.mposStarNumber);*/
-
+				(double)oneStar.raProperMotionGoodnessOfFit * 0.05,
+				(double)oneStar.decProperMotionGoodnessOfFit * 0.05,
+				oneStar.idFrom2Mass,
+				(double)oneStar.jMagnitude2MassInMiliMag / MAG2MILIMAG,
+				(double)oneStar.hMagnitude2MassInMiliMag / MAG2MILIMAG,
+				(double)oneStar.kMagnitude2MassInMiliMag / MAG2MILIMAG,
+				oneStar.qualityFlag2Mass,
+				oneStar.ccFlag2Mass);
 
 		Tcl_DStringAppend(&dsptr,outputLine,-1);
 		Tcl_DStringAppend(&dsptr,"} } } ",-1);

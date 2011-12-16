@@ -57,8 +57,8 @@ typedef struct {
 	int raInMas;
 	int decInMas;
 	short ucacMagInCentiMag;
-	char centralEpochRaInMas;
-	char centralEpochDecInMas;
+	char errorRaInMas;
+	char errorDecInMas;
 	char numberOfObservations;
 	char errorOnUcacPositionInMas;
 	char numberOfCatalogsForPosition;
