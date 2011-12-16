@@ -82,11 +82,11 @@ int Cmd_ydtcl_csucac3(ClientData clientData, Tcl_Interp *interp, int argc, char 
 
 		Tcl_DStringAppend(&dsptr,"{ { UCAC3 { } {",-1);
 		oneStar = theFilteredStars.arrayOneD[index];
-		sprintf(outputLine,"%12.8f|%+12.8f|%6.3f|%6.3f|%6.3f|%1d|%1d|%12.8f|%12.8f|%1d|%1d|%1d|%1d|%12.8f|%+12.8f|"
-				"%+12.8f|%+12.8f|%12.8f|%12.8f|%8d|%6.3f|%6.3f|%6.3f|%1d|%1d|%1d|%6.3f|%6.3f|%6.3f|"
-				"%6.3f|%6.3f|%6.3f|%1d|%1d|%1d|%1d|"
-				"%1d|%1d|%1d|%1d|%1d|%1d|%1d|%1d|%1d|%1d|"
-				"%1d|%1d|%1d|%1d|%1d\n",
+		sprintf(outputLine,"%12.8f %+12.8f %6.3f %6.3f %6.3f %1d %1d %12.8f %12.8f %1d %1d %1d %1d %12.8f %+12.8f "
+				"%+12.8f %+12.8f %12.8f %12.8f %8d %6.3f %6.3f %6.3f %1d %1d %1d %6.3f %6.3f %6.3f "
+				"%6.3f %6.3f %6.3f %1d %1d %1d %1d "
+				"%1d %1d %1d %1d %1d %1d %1d %1d %1d %1d "
+				"%1d %1d %1d %1d %1d\n",
 
 				(double)oneStar.raInMas/DEG2MAS,
 				(double)oneStar.distanceToSouthPoleInMas / DEG2MAS + DEC_SOUTH_POLE_DEG,
