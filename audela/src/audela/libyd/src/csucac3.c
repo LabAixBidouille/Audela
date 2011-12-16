@@ -669,7 +669,7 @@ const searchZoneUcac3 findSearchZoneUcac3(const double raInDeg,const double decI
 		}
 	}
 
-	if(!DEBUG) {
+	if(DEBUG) {
 		printf("mysearchZoneUcac3.decStart        = %d\n",mysearchZoneUcac3.distanceToPoleStartInMas);
 		printf("mysearchZoneUcac3.decEnd          = %d\n",mysearchZoneUcac3.distanceToPoleEndInMas);
 		printf("mysearchZoneUcac3.raStart         = %d\n",mysearchZoneUcac3.raStartInMas);
