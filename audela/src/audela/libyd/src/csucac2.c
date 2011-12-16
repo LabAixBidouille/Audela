@@ -38,8 +38,8 @@ int Cmd_ydtcl_csucac2(ClientData clientData, Tcl_Interp *interp, int argc, char 
 		magMin                = -99.99;
 		magMax                = 99.99;
 	}
-	//	printf("Search stars in UCAC2 around : ra = %f(deg) - dec = %f(deg) - radius = %f(arcmin) - magnitude in [%f,%f](mag)\n",
-	//			ra,dec,radius,magMin,magMax);
+	printf("Search stars in UCAC2 around : ra = %f(deg) - dec = %f(deg) - radius = %f(arcmin) - magnitude in [%f,%f](mag)\n",
+				ra,dec,radius,magMin,magMax);
 
 	/* Define search zone */
 	searchZoneUcac2 mysearchZoneUcac2 = findSearchZoneUcac2(ra,dec,radius,magMin,magMax);
@@ -75,6 +75,8 @@ int Cmd_ydtcl_csucac2(ClientData clientData, Tcl_Interp *interp, int argc, char 
 			"EpRAm_deg EpDEm_deg pmRA_masperyear pmDEC_masperyear e_pmRA_masperyear e_pmDE_masperyear "
 			"q_pmRA q_pmDE 2m_id 2m_J 2m_H 2m_Ks 2m_ph 2m_cc} } } ",-1);
 	Tcl_DStringAppend(&dsptr,"{",-1); // start of sources list
+
+	printf("theFilteredStars.length = %d\n",theFilteredStars.length);
 
 	int index;
 	starUcac2 oneStar;
