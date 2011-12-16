@@ -57,7 +57,7 @@ int Cmd_ydtcl_csucac3(ClientData clientData, Tcl_Interp *interp, int argc, char 
 	resultOfFunction = filterStarsUcac3(&theUnFilteredStars,&theFilteredStars,&mysearchZoneUcac3);
 	if(resultOfFunction) {
 		releaseDoubleIntArray(indexTable, INDEX_TABLE_DEC_DIMENSION);
-		releaseMemoryarrayTwoDOfStarUcac3(&theUnFilteredStars);
+		releaseMemoryArrayTwoDOfStarUcac3(&theUnFilteredStars);
 		return TCL_ERROR;
 	}
 
@@ -73,7 +73,7 @@ int Cmd_ydtcl_csucac3(ClientData clientData, Tcl_Interp *interp, int argc, char 
 
 	/* Release the memory */
 	releaseDoubleIntArray(indexTable, INDEX_TABLE_DEC_DIMENSION);
-	releaseMemoryarrayTwoDOfStarUcac3(&theUnFilteredStars);
+	releaseMemoryArrayTwoDOfStarUcac3(&theUnFilteredStars);
 
 	return TCL_OK;
 }
@@ -204,7 +204,7 @@ int retrieveUnFilteredStarsUcac3(const char* pathOfCatalog, searchZoneUcac3* mys
 	resultOfFunction = readUnfiltredStarUcac3(pathOfCatalog, theUnFilteredStars, indexTable, indexZoneDecStart, indexZoneDecEnd,
 			indexZoneRaStart, indexZoneRaEnd, (*mysearchZoneUcac3).isArroundZeroRa);
 	if(resultOfFunction) {
-		releaseMemoryarrayTwoDOfStarUcac3(theUnFilteredStars);
+		releaseMemoryArrayTwoDOfStarUcac3(theUnFilteredStars);
 		return 1;
 	}
 
@@ -218,7 +218,7 @@ int retrieveUnFilteredStarsUcac3(const char* pathOfCatalog, searchZoneUcac3* mys
 /**
  * Release memory from one arrayTwoDOfUcacStarUcac3
  */
-void releaseMemoryarrayTwoDOfStarUcac3(arrayTwoDOfStarUcac3* theTwoDArray) {
+void releaseMemoryArrayTwoDOfStarUcac3(arrayTwoDOfStarUcac3* theTwoDArray) {
 
 	const int lengthOfTwoDArray    = theTwoDArray->length;
 	/* UCAC2 stop at dec = +42 deg*/
