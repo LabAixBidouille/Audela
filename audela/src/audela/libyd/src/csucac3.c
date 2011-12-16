@@ -68,7 +68,7 @@ int Cmd_ydtcl_csucac3(ClientData clientData, Tcl_Interp *interp, int argc, char 
 	/* Print the filtered stars */
 	Tcl_DString dsptr;
 	Tcl_DStringInit(&dsptr);
-	Tcl_DStringAppend(&dsptr,"{ { { UCAC3 { } "
+	Tcl_DStringAppend(&dsptr,"{ { UCAC3 { } "
 		"{ ra_deg dec_deg im1_mag im2_mag sigmag_mag objt dsf sigra_deg sigdc_deg na1 nu1 us1 cn1 cepra_deg cepdc_deg"
 		"pmrac_masperyear pmdc_masperyear sigpmr_masperyear sigpmd_masperyear id2m jmag_mag hmag_mag kmag_mag jicqflg hicqflg kicqflg je2mpho he2mpho ke2mpho "
 		"smB_mag smR2_mag smI_mag clbl qfB qfR2 qfI "
@@ -80,6 +80,8 @@ int Cmd_ydtcl_csucac3(ClientData clientData, Tcl_Interp *interp, int argc, char 
 	int index;
 	for(index = 0; index < theFilteredStars.length; index++) {
 
+		Tcl_DStringAppend(&dsptr,"{ UCAC3 { } ",-1);
+		Tcl_DStringAppend(&dsptr,"{",-1); // start of source fields list
 		oneStar = theFilteredStars.arrayOneD[index];
 		sprintf(outputLine,"%12.8f|%+12.8f|%6.3f|%6.3f|%6.3f|%1d|%1d|%12.8f|%12.8f|%1d|%1d|%1d|%1d|%12.8f|%+12.8f|"
 				"%+12.8f|%+12.8f|%12.8f|%12.8f|%8d|%6.3f|%6.3f|%6.3f|%1d|%1d|%1d|%6.3f|%6.3f|%6.3f|"
@@ -143,11 +145,11 @@ int Cmd_ydtcl_csucac3(ClientData clientData, Tcl_Interp *interp, int argc, char 
 				oneStar.extendedSourceFlag2Mass,
 				oneStar.mposStarNumber);
 
-		Tcl_DStringAppend(&dsptr," } } } ",-1);
-		Tcl_DStringAppend(&dsptr," } } } ",-1);
+		Tcl_DStringAppend(&dsptr,outputLine,-1);
+		Tcl_DStringAppend(&dsptr," } } ",-1);
 	}
 
-	Tcl_DStringAppend(&dsptr,outputLine,-1); // end of sources list
+	 // end of sources list
 	Tcl_DStringAppend(&dsptr,"}",-1); // end of main list
 	Tcl_DStringResult(interp,&dsptr);
 	Tcl_DStringFree(&dsptr);
