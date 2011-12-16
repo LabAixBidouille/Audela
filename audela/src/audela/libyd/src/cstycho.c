@@ -32,12 +32,15 @@ int field_is_blank(char *p) {
  * dec0 : from -90 to 90 degrees
  * range : minutes
  */
-char** tycho2_search(const char*catalogCompleteName, double ra0, double dec0, double range,
+char** tycho2_search(const char*pathName, double ra0, double dec0, double range,
 		double magmin, double magmax, int* numberOfOutputs) {
 
     double dec_min, dec_max;
     double ra_min1, ra_max1;
     double ra_min2, ra_max2;
+
+    char catalogCompleteName[1024];
+    sprintf(catalogCompleteName,"%s/%s",pathName,CATALOG_FILE_NAME);
 
     double ra,dec,mag;
     FILE *fp;
@@ -117,19 +120,22 @@ char** tycho2_search(const char*catalogCompleteName, double ra0, double dec0, do
 int Cmd_ydtcl_cstycho2(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 	int i;
 	char c;
+	char outputLine[1024];
 
 	if((argc == 2) && (strcmp(argv[1],"-h") == 0)) {
-		printf("Help usage : %s catalogCompleteName ra(deg) dec(deg) radius(arcmin) magnitudeMin(mag)? magnitudeMax(mag)?\n",argv[0]);
-		return TCL_OK;
+		sprintf(outputLine,"Help usage : %s pathToCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMin(mag)? magnitudeMax(mag)?\n",argv[0]);
+		Tcl_SetResult(interp,outputLine,TCL_VOLATILE);
+		return TCL_ERROR;
 	}
 
 	if((argc != 5) && (argc != 7)) {
-		printf("usage : %s catalogCompleteName ra(deg) dec(deg) radius(arcmin) magnitudeMax(mag)? magnitudeMin(mag)?\n",argv[0]);
+		sprintf(outputLine,"usage : %s pathToCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMax(mag)? magnitudeMin(mag)?\n",argv[0]);
+		Tcl_SetResult(interp,outputLine,TCL_VOLATILE);
 		return TCL_ERROR;
 	}
 
 	/* Read inputs */
-	const char* catalogCompleteName = argv[1];
+	const char* pathToCatalog = argv[1];
 	const double ra           = atof(argv[2]);
 	const double dec          = atof(argv[3]);
 	const double radius       = atof(argv[4]);
@@ -142,33 +148,33 @@ int Cmd_ydtcl_cstycho2(ClientData clientData, Tcl_Interp *interp, int argc, char
 		magMin                = -99.99;
 		magMax                = 99.99;
 	}
-	printf("Search stars in Tycho around : ra = %f(deg) - dec = %f(deg) - radius = %f(arcmin) - magnitude in [%f,%f](mag)\n",
-			ra,dec,radius,magMin,magMax);
+	//printf(outputLine,"Search stars in Tycho around : ra = %f(deg) - dec = %f(deg) - radius = %f(arcmin) - magnitude in [%f,%f](mag)\n",
+			//ra,dec,radius,magMin,magMax);
 
 
 	int index;
 	int numberOfOutputs = 0;
-	char** outputs = tycho2_search(catalogCompleteName,ra,dec,radius,magMin,magMax,&numberOfOutputs);
+	char** outputs = tycho2_search(pathToCatalog,ra,dec,radius,magMin,magMax,&numberOfOutputs);
 	if(outputs == NULL) {
 		return TCL_ERROR;
 	}
 
 	Tcl_DString dsptr;
 	Tcl_DStringInit(&dsptr);
-	Tcl_DStringAppend(&dsptr,"{ { { TYCHO2 { } "
+	Tcl_DStringAppend(&dsptr,"{ { TYCHO2 { } "
 		"{ TYC1 TYC2 TYC3 pflag mRAdeg mDEdeg pmRA pmDE e_mRA e_mDE "
 		"e_pmRA e_pmDE mepRA mepDE Num g_mRA g_mDE g_pmRA g_pmDE BT "
 		"e_BT VT e_VT prox TYC HIP CCDM RAdeg DEdeg epRA epDE e_RA "
 		"e_DE posflg corr } } } ",-1);
 	Tcl_DStringAppend(&dsptr,"{",-1); // start of sources list
 	for(index = 0; index < numberOfOutputs; index++) {
-		Tcl_DStringAppend(&dsptr,"{ { TYCHO2 { } ",-1);
+		Tcl_DStringAppend(&dsptr,"{ TYCHO2 { } ",-1);
 		Tcl_DStringAppend(&dsptr,"{",-1); // start of source fields list
 		// 35 fields, must match length of istart and iend
 		for(i=0;i<35;i++) {
 			c = *(outputs[index]+iend[i]);
 			*(outputs[index]+iend[i]) = '\0';
-			printf("%d %s\n",i,outputs[index]+istart[i]-1); fflush(NULL);
+			//printf("%d %s\n",i,outputs[index]+istart[i]-1); fflush(NULL);
 			Tcl_DStringAppend(&dsptr," ",-1);
 			if(field_is_blank(outputs[index]+istart[i]-1)) {
 				Tcl_DStringAppend(&dsptr,"_",-1);
@@ -178,10 +184,9 @@ int Cmd_ydtcl_cstycho2(ClientData clientData, Tcl_Interp *interp, int argc, char
 			*(outputs[index]+iend[i]) = c;
 		}
 		//Tcl_DStringAppend(&dsptr,outputs[index],-1);
-		Tcl_DStringAppend(&dsptr," } } } ",-1);
+		Tcl_DStringAppend(&dsptr," } }",-1);
 	}
 	Tcl_DStringAppend(&dsptr,"} ",-1); // end of sources list
-	Tcl_DStringAppend(&dsptr,"}",-1); // end of main list
 	Tcl_DStringResult(interp,&dsptr);
 	Tcl_DStringFree(&dsptr);
 
