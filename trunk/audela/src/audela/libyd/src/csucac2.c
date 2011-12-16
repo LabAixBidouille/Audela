@@ -197,7 +197,7 @@ int retrieveUnFilteredStarsUcac2(const char* pathOfCatalog, searchZoneUcac2* mys
 	}
 
 	if(DEBUG) {
-		printUnfilteredStar(theUnFilteredStars);
+		printUnfilteredStarUcac2(theUnFilteredStars);
 	}
 
 	return 0;
