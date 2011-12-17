@@ -690,10 +690,10 @@ namespace eval ::confVisu {
                #--- Suppression de la zone selectionnee avec la souris si elle est hors de l'image
                if { [ lindex [ list [ ::confVisu::getBox $visuNo ] ] 0 ] != "" } {
                   set box [ ::confVisu::getBox $visuNo ]
-                  set x1 [lindex  [confVisu::getBox $visuNo ] 0]
-                  set y1 [lindex  [confVisu::getBox $visuNo ] 1]
-                  set x2 [lindex  [confVisu::getBox $visuNo ] 2]
-                  set y2 [lindex  [confVisu::getBox $visuNo ] 3]
+                  set x1 [lindex [confVisu::getBox $visuNo ] 0]
+                  set y1 [lindex [confVisu::getBox $visuNo ] 1]
+                  set x2 [lindex [confVisu::getBox $visuNo ] 2]
+                  set y2 [lindex [confVisu::getBox $visuNo ] 3]
                   if { $x1 > $::confVisu::private($visuNo,picture_w)
                     || $y1 > $::confVisu::private($visuNo,picture_h)
                     || $y2 > $::confVisu::private($visuNo,picture_w)
@@ -3804,9 +3804,9 @@ namespace eval ::confVisu {
    #------------------------------------------------------------
    #  setBox
    #    affiche la boite de selection
-   #  exemple : ::confVisu::setBox  1 { 10 10 40 40 }
+   #  exemple : ::confVisu::setBox 1 { 10 10 40 40 }
    #  @param visuNo numero de la visu
-   #  @param coords liste des coordonnees de la boite { x1 y1 x2 y2 }  avec
+   #  @param coords liste des coordonnees de la boite { x1 y1 x2 y2 } avec
    #     - x1,y1 coordonnees du coin en bas à gauche
    #     - x2,y2 coordonnees du coin en haut à droite
    #  @return 0 si OK , -1 si les coordonnees ne contiennent pas dans l'image
