@@ -46,7 +46,6 @@ void debug_func (GPLogLevel level, const char *domain, const char *format, va_li
 int action_camera_set_port (GPhotoSession *params, const char *port);
 
 
-char logFileName[] = "gphoto2.log";
 FILE* logFileHandle = NULL ;
 void debugstdout_func (GPLogLevel level, const char *domain, const char *format, va_list args, void *data);
 /**
@@ -58,18 +57,20 @@ void debugstdout_func (GPLogLevel level, const char *domain, const char *format,
  *		p->context = malloc()
  *		p->abilities_list = malloc()
  */
-int libgphoto_openSession(GPhotoSession **gphotoSession, char * gphotoWinDllDir, int debug)
+int libgphoto_openSession(GPhotoSession **gphotoSession, char * gphotoWinDllDir, int debug, char * debugPath)
 {
 	int count;
    int result;
    GPhotoSession *p;   
    char line[1024];
+   char logFileName[1024]; 
 	
     p = malloc(sizeof(GPhotoSession));
     if (!p)
 		return LIBGPHOTO_ERROR;
 
 	memset (p, 0, sizeof (GPhotoSession));
+   strcpy(logFileName,"");
 
 #ifdef WIN32   
       sprintf(line,"CAMLIBS=%s",gphotoWinDllDir);
@@ -84,7 +85,26 @@ int libgphoto_openSession(GPhotoSession **gphotoSession, char * gphotoWinDllDir,
    *gphotoSession = p;
 
     // activation/desactivation des traces de deboggage de libgphoto2
-   libgphoto_setDebugLog(p, debug);
+   if (debugPath != NULL ) {
+      strcpy(logFileName,debugPath);
+      if ( logFileName[strlen(logFileName)-1]!= '\\' && logFileName[strlen(logFileName)-1]!= '/' ) {
+         strcat(logFileName,"/");
+#ifdef WIN32
+         {
+            char * cp;
+            // je remplace les / par des \ si on est sur Windows
+            for (cp=logFileName; *cp != 0 ; cp++) {
+               if (*cp == '/') {
+                  *cp = '\\';
+               }
+            }
+         }
+#endif
+      }
+   } 
+   strcat(logFileName,"gphoto2.log");
+      
+   libgphoto_setDebugLog(p, debug, logFileName);
 
    // raz des messages d'erreur
    strcpy(p->lastErrorMesssage,"");
@@ -148,7 +168,7 @@ int libgphoto_closeSession (GPhotoSession *gphotoSession)
          gp_list_free (gphotoSession->previousFileList);
 
       // je desactive les traces
-      libgphoto_setDebugLog(gphotoSession, 0);
+      libgphoto_closeLog(gphotoSession);
       //memset (gphotoSession, 0, sizeof (GPhotoSession));
       free(gphotoSession);
       gphotoSession = NULL;
@@ -763,20 +783,25 @@ int action_camera_set_port (GPhotoSession *params, const char *port)
 	return (GP_OK);
 }
 
-void libgphoto_setDebugLog(GPhotoSession *gphotoSession, int level) {
+void libgphoto_setDebugLog(GPhotoSession *gphotoSession, int level, char *logFileName) {
    if ( level == 1 ) {
      	logFileHandle=fopen(logFileName, "w");
       gphotoSession->debug_func_id = gp_log_add_func (GP_LOG_ALL, debug_func, NULL);
    } else {
-      gp_log_remove_func(gphotoSession->debug_func_id) ;
-      gphotoSession->debug_func_id = -1;
-
-      if ( logFileHandle != NULL) {
-     	   fclose(logFileHandle);
-         logFileHandle = NULL;
-      }
+      libgphoto_closeLog(gphotoSession);
    }
 }
+
+void libgphoto_closeLog(GPhotoSession *gphotoSession) {
+   gp_log_remove_func(gphotoSession->debug_func_id) ;
+   gphotoSession->debug_func_id = -1;
+
+   if ( logFileHandle != NULL) {
+  	   fclose(logFileHandle);
+      logFileHandle = NULL;
+   }
+}
+
 
 char * libgphoto_getLastErrorMessage(GPhotoSession *gphotoSession) {
    return gphotoSession->lastErrorMesssage;

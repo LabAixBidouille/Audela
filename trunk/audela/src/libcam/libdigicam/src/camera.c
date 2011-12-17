@@ -195,13 +195,15 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    int i;
    int result;
    char cameraModel[1024];
-   char cameraPath[1024];
+   char cameraPath[1024]; // repertoire des fichiers DDL des APN (libcanon.dll, libnikon.dll, ...)
+   char debugPath[1024];  // repertoire du fichier de trace
    
    cam->params = malloc(sizeof(PrivateParams));
    
    cam->authorized = 1;
    cam->params->debug = 0;
    strcpy(cam->params->gphotoWinDllDir, "../bin");            // default DLL directory
+   strcpy(debugPath,"");
    
    // je traite les parametres
    for (i = 3; i < argc - 1; i++) {
@@ -223,6 +225,12 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 	         cam->params->debug = atoi(argv[i + 1]);
          }
 	   }
+      if (strcmp(argv[i], "-debug_directory") == 0) {
+         if ( i +1 <  argc ) {
+            // je recupere le repertoire du fichier de traces
+	         strncpy(debugPath, argv[i + 1],sizeof(debugPath)-1);
+         }
+	   }
 
    }
    cam_update_window(cam);	/* met a jour x1,y1,x2,y2,h,w dans cam */
@@ -236,7 +244,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    }    
 
    // j'initialise la session
-   result = libgphoto_openSession(&cam->params->gphotoSession, cam->params->gphotoWinDllDir, cam->params->debug);
+   result = libgphoto_openSession(&cam->params->gphotoSession, cam->params->gphotoWinDllDir, cam->params->debug, debugPath);
    if ( result != LIBGPHOTO_OK ) {
       strcpy(cam->msg, libgphoto_getLastErrorMessage(cam->params->gphotoSession));
       return -1;
@@ -1009,7 +1017,7 @@ int  cam_getDebug(struct camprop *cam) {
  *   debug level
  *  
 */
-void cam_setDebug(struct camprop *cam, int value) {
-   libgphoto_setDebugLog(cam->params->gphotoSession, value);
+void cam_setDebug(struct camprop *cam, int value, char *debugPath) {
+   libgphoto_setDebugLog(cam->params->gphotoSession, value, debugPath);
    cam->params->debug = value;
 }

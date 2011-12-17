@@ -75,7 +75,7 @@ int  cam_getDebug(struct camprop *cam);
 int  cam_setAutoLoadFlag(struct camprop *cam, int value);
 int  cam_getAutoDeleteFlag(struct camprop *cam);
 int  cam_setAutoDeleteFlag(struct camprop *cam, int value);
-void  cam_setDebug(struct camprop *cam, int value) ;
+void  cam_setDebug(struct camprop *cam, int value, char *debugPath) ;
 int  cam_getQualityList(char *list);
 int  cam_getQuality(struct camprop *cam, char * value); 
 int  cam_setQuality(struct camprop *cam, char * value); 

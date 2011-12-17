@@ -384,7 +384,7 @@ proc ::dslr::configureCamera { camItem bufNo } {
       }
       #--- Je mets audela_start_dir entre guillemets pour le cas ou le nom du repertoire contient des espaces
       #--- Je cree la camera
-      set camNo [ cam::create digicam USB -name DSLR -debug_cam $conf(dslr,debug) -gphoto2_win_dll_dir $::audela_start_dir ]
+      set camNo [ cam::create digicam USB -name DSLR -debug_cam $conf(dslr,debug) -debug_directory $::audace(rep_log) -gphoto2_win_dll_dir $::audela_start_dir ]
       ::console::affiche_entete "$caption(dslr,name) $caption(dslr,2points) [ cam$camNo name ]\n"
       ::console::affiche_saut "\n"
       #--- Je change de variable
