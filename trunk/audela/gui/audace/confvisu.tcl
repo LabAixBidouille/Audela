@@ -3783,7 +3783,7 @@ namespace eval ::confVisu {
       }
       set private($visuNo,box_2) [screen2Canvas $visuNo $coord]
       set private($visuNo,hBox) [eval {$private($visuNo,hCanvas) create rect} $private($visuNo,box_1) \
-      $private($visuNo,box_2) -outline $audace(color,drag_rectangle) -tag selBox]
+         $private($visuNo,box_2) -outline $::audace(color,drag_rectangle) -tag selBox]
    }
 
    #------------------------------------------------------------
@@ -3826,16 +3826,16 @@ namespace eval ::confVisu {
       set width  $private($visuNo,picture_w)
       set height $private($visuNo,picture_h)
 
-      if { $x1 < 1 || $x1 > $x2 || $x1 > $width }  {
+      if { $x1 < 1 || $x1 > $x2 || $x1 > $width } {
          return -1
       }
-      if { $y1 < 1 || $y1 > $y2 || $y1 > $height }  {
+      if { $y1 < 1 || $y1 > $y2 || $y1 > $height } {
          return -1
       }
-      if { $x2 < 1 || $x2 < $x1 || $x2 > $width }  {
+      if { $x2 < 1 || $x2 < $x1 || $x2 > $width } {
          return -1
       }
-      if { $y2 < 1 || $y2 < $y1 || $y2 > $height }  {
+      if { $y2 < 1 || $y2 < $y1 || $y2 > $height } {
          return -1
       }
 
