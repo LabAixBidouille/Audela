@@ -402,6 +402,7 @@ namespace eval confColor:: {
    #     w : window parent des resources qui doivent changer de couleur
    #------------------------------------------------------------
    proc applyColor { w } {
+      variable private
       global audace color
 
       switch -exact -- [ winfo class $w ] {
@@ -644,10 +645,17 @@ namespace eval confColor:: {
            ### console::disp "Defaut ==> w=$w class=[ winfo class $w ]\n"
          }
       }
+      #--- Appel des fonctions de rafraichissement automatique des couleurs
       foreach i [ winfo children $w ] {
          ::confColor::applyColor $i
       }
-      #--- Mise a jour des couleurs des textes dans la Console
+      #--- Rafraichissement automatique de la couleur du rectangle de selection avec la souris
+      foreach visuNo [ ::visu::list ] {
+         if { [ info exists ::confVisu::private($visuNo,boxSize) ] } {
+            ::confVisu::setBox $visuNo [ ::confVisu::getBox $visuNo ]
+         }
+      }
+      #--- Rafraichissement automatique des couleurs des textes dans la Console
       $audace(Console).txt1 tag configure style_entete   -foreground $audace(color,textConsoleEntete)
       $audace(Console).txt1 tag configure style_resultat -foreground $audace(color,textConsoleResultat)
       $audace(Console).txt1 tag configure style_cmd      -foreground $audace(color,textConsoleCmd)
