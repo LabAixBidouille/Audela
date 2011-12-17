@@ -126,7 +126,7 @@ static int cmdCamDebug(ClientData clientData, Tcl_Interp * interp, int argc, cha
    struct camprop *cam;
    
    if ((argc != 2) && (argc != 3)) {
-      sprintf(ligne, "Usage: %s %s ?0|1?", argv[0], argv[1]);
+      sprintf(ligne, "Usage: %s %s ?0|1? [debugPath]", argv[0], argv[1]);
       Tcl_SetResult(interp, ligne, TCL_VOLATILE);
       result = TCL_ERROR;
    } else if (argc == 2) {
@@ -142,9 +142,15 @@ static int cmdCamDebug(ClientData clientData, Tcl_Interp * interp, int argc, cha
          Tcl_SetResult(interp, ligne, TCL_VOLATILE);
          result = TCL_ERROR;
       } else {
-         cam_setDebug(cam,debug);
-         Tcl_SetResult(interp, "", TCL_VOLATILE);
-         result = TCL_OK;
+         if ( argc >= 4 ) {
+            cam_setDebug(cam,debug, argv[3]);
+            Tcl_SetResult(interp, "", TCL_VOLATILE);
+            result = TCL_OK;
+         } else {
+            cam_setDebug(cam,debug, "");
+            Tcl_SetResult(interp, "", TCL_VOLATILE);
+            result = TCL_OK;
+         }
       }
    }
    return result;

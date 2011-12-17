@@ -17,7 +17,7 @@ extern "C" {
 
 typedef struct _GPhotoSession GPhotoSession;
 
-int libgphoto_openSession (GPhotoSession **gphotoSession, char * gphotoWinDllDir,int debug);
+int libgphoto_openSession (GPhotoSession **gphotoSession, char * gphotoWinDllDir,int debug, char * debugPath);
 int libgphoto_closeSession (GPhotoSession *gphotoSession);
 int libgphoto_detectCamera(GPhotoSession *gphotoSession, char *cameraModel, char *cameraPath);
 int libgphoto_openCamera(GPhotoSession *gphotoSession, char *cameraModel, char *cameraPath);
@@ -42,7 +42,8 @@ int libgphoto_setQuality (GPhotoSession *gphotoSession, char * quality);
 
 // log and errors
 char * libgphoto_getLastErrorMessage(GPhotoSession *gphotoSession);
-void libgphoto_setDebugLog(GPhotoSession *gphotoSession, int level);
+void libgphoto_setDebugLog(GPhotoSession *gphotoSession, int level, char *logFileName);
+void libgphoto_closeLog(GPhotoSession *gphotoSession);
 
 #ifdef __cplusplus
 }
