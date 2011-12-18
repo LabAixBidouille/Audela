@@ -1,6 +1,6 @@
 #
 # Fichier : prtr.tcl
-# Description : Script dedie au menu deroulant pretraitement
+# Description : Script dedie aux menus deroulants Images et Analyse --> Extraire
 # Auteur : Raymond ZACHANTKE
 # Mise à jour $Id$
 
@@ -1253,9 +1253,7 @@ namespace eval ::prtr {
 
       trace remove variable "::confVisu::private($visuNo,lastFileName)" write "::prtr::updateTbl $visuNo"
       #--   charge, affiche et nomme l'image
-      buf$bufNo load $private(lastImage)
-      ::confVisu::autovisu $visuNo
-      ::confVisu::setFileName $visuNo $private(lastImage)
+      ::confVisu::autovisu $visuNo -no $private(lastImage)
       trace add variable "::confVisu::private($visuNo,lastFileName)" write "::prtr::updateTbl $visuNo"
    }
 
