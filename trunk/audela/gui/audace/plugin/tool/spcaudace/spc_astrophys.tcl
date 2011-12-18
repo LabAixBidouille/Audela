@@ -3505,6 +3505,297 @@ proc spc_planckval { args } {
 #****************************************************************#
 #------- Fin spc_ajustplanck -----------------------------------------------#
 
+####################################################################
+#  Procedure de conversion de fichier profil de raie calibré .fit en .png
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 20-09-2011
+# Date modification : 20-09-2011
+# Arguments : offset vertical entre les profils, travaille sur les spectres du répertoire de travail
+####################################################################
+
+#-- Todo :
+#
+# verifier la calibration tellurique
+# // remove telluric
+# corriger de la vitesse heliocentrique : passer ra-dec en parametre
+# gestion de xsdeb et xsfin compatible avec l'ensebme car pb possible lors du decoupe
+# inclusion dans gnuplot
+
+proc spc_dynagraph { args } {
+   global audace spcaudace
+   global conf
+   global tcl_platform
+
+   #-- 3%=0.03
+   set lpart 0
+   #set coef_conv_gp 7.8
+   #set yheight_graph 600
+   set xpos 70
+   set pas_echant 0.1
+   set nbargs [ llength $args ]
+   
+   if { $nbargs==9 } {
+      set xsdeb [ lindex $args 0 ]
+      set xsfin [ lindex $args 1 ]
+      set lambda_ref [ lindex $args 2 ]
+      set ra_h [ lindex $args 3 ]
+      set ra_m [ lindex $args 4 ]
+      set ra_s [ lindex $args 5 ]
+      set dec_d [ lindex $args 6 ]
+      set dec_m [ lindex $args 7 ]
+      set dec_s [ lindex $args 8 ]
+   } else {
+      ::console::affiche_erreur "Usage: spc_dynagraph xdeb xfin lambda_reference RA_d RA_m RA_s DEC_h DEC_m DEC_s\n"
+      return ""
+   }
+
+   #--- Liste des fichiers du répertoire :
+   set listefile [ lsort -dictionary [ glob -tail -dir $audace(rep_images) *$conf(extension,defaut) ] ]
+   set listefile [ spc_ldatesort $listefile ]
+   set nb_spectres [ llength $listefile ]
+
+
+   #--- Nombre de jours couverts par l'observation :
+   set fichier [ lindex $listefile 0 ]
+   buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+   set date_deb [ mc_date2jd [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ] ]
+   set fichier [ lindex $listefile [ expr $nb_spectres-1 ] ]
+   buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+   set date_fin [ mc_date2jd [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ] ]
+   set nb_jours [ expr int($date_fin)-int($date_deb)+1 ]
+
+
+   #--- Boucle chaque spectre :
+   set listejd [ list ]
+   set listefiles_norma [ list ]
+   set objname ""
+   set numlist_spectre 1
+   foreach fichier $listefile {
+      #--- Chargement :
+      ::console::affiche_prompt "\nTRAITEMENT DU SPECTRE $numlist_spectre/$nb_spectres...\n"
+      buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+      #-- Calcul le JD reduit du spectre :
+      # set dateobs [ mc_date2jd [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ] ]
+      set ladate [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ]
+      lappend listejd [ format "%4.4f" [ expr 0.0001*round(10000*([ mc_date2jd $ladate ]-2450000.)) ] ]
+
+      #--- Recherche du nom de l'objet :
+      if { $objname == "" } {
+         set listemotsclef [ buf$audace(bufNo) getkwds ]
+         if { [ lsearch $listemotsclef "OBJNAME" ] !=-1 } {
+            set objname [ lindex [ buf$audace(bufNo) getkwd "OBJNAME" ] 1 ]
+         }
+      }
+
+      #--- Correction de la vitesse heliocentrique :
+      ::console::affiche_prompt "Correction de la vitesse héliocentrique du spectre...\n"
+      set raf [ list "${ra_h}h${ra_m}m${ra_s}s" ]
+      set decf [ list "${dec_d}d${dec_m}m${dec_s}s" ]
+      set vhelio [ lindex [ mc_baryvel $ladate $raf $decf J2000.0 ] 0 ]
+      set delta_lambda [ expr $lambda_ref*$vhelio/$spcaudace(vlum) ]
+      set fichier_helio [ spc_calibredecal $fichier $delta_lambda ]
+
+      #--- Reechantillonne les profils :
+      ::console::affiche_prompt "Rééchantillonnage du spectre...\n"
+      set fichier_echant [ spc_echantdelt $fichier_helio $pas_echant ]
+      file delete -force "$audace(rep_images)/$fichier_helio$conf(extension,defaut)"
+
+      #--- Selection de la zone si des longueurs d'ondes sont données :
+      ::console::affiche_prompt "Découpage du spectre...\n"
+      set fichier_sel [ spc_select $fichier_echant $xsdeb $xsfin ]
+      file delete -force "$audace(rep_images)/$fichier_echant$conf(extension,defaut)"
+
+      #--- Verifie si le spectre est mis a l'echelle du continuum à 1 et decale les intensites de $yoffset :
+      ::console::affiche_prompt "Normalisation du spectre...\n"
+      set icont [ spc_icontinuum $fichier_sel ]
+      if { [ expr abs($icont-1.) ]>0.2 } {
+         set fileout1 [ spc_rescalecont $fichier_sel ]
+         lappend listefiles_norma $fileout1
+         file delete -force "$audace(rep_images)/$fichier_sel$conf(extension,defaut)"
+      } else {
+         lappend listefiles_norma $fichier_sel
+      }
+      incr numlist_spectre
+   }
+
+
+   #--- Creation du buffer fichier-fits 2D :
+   ::console::affiche_prompt "\nCRÉATION DU SPECTRE DYNAMIQUE 2D de $nb_jours lignes...\n"
+   set spectre1 [ lindex $listefiles_norma 0 ]
+   buf$audace(bufNo) load "$audace(rep_images)/$spectre1"
+   set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+   set newBufNo [ buf::create ]
+   #buf$newBufNo bitpix float
+   buf$newBufNo setpixels CLASS_GRAY $naxis1 $nb_jours FORMAT_FLOAT COMPRESS_NONE 0
+   buf$newBufNo copykwd $audace(bufNo)
+   buf$newBufNo setkwd [ list "NAXIS" 2 int "" "" ]
+   buf$newBufNo setkwd [ list "NAXIS1" $naxis1 int "" "" ]
+   buf$newBufNo setkwd [ list "CRPIX1" 1 int "" "" ]
+   buf$newBufNo setkwd [ list "NAXIS2" $nb_jours int "" "" ]
+   #-- Echelle en vitesse radiale :
+   set crval1 [ expr ($xsdeb-$lambda_ref)*$spcaudace(vlum)/$lambda_ref ]
+   set cdelt1 [ expr $pas_echant*$spcaudace(vlum)/$lambda_ref ]
+   buf$newBufNo setkwd [ list "CRVAL1" $crval1 double "Reference value for radial velocity" "km/s" ]
+   buf$newBufNo setkwd [ list "CDELT1" $cdelt1 double "Increment for each pixel in km/s" "km/s" ]
+   buf$newBufNo setkwd [ list "CRVAL2" $date_deb double "Reference date for serie" "julian days" ]
+   buf$newBufNo setkwd [ list "CDELT2" 1 double "Increment for each day" "julian day" ]
+
+
+   #--- Remplissage de chaque ligne :
+   #-- La regle : pas plus d'un spectre par jour !
+   set num_spectre 1
+   set index_listspectres 0
+   foreach spectre $listefiles_norma jdate $listejd {
+      #--- Remplissage de chaque ligne :
+      if { $num_spectre<=$nb_jours } {
+      set yvals [ lindex [ spc_fits2data "$fichier" ] 1 ]
+      for { set x_coord 1 } { $x_coord<=$naxis1 } { incr x_coord } {
+         buf$newBufNo setpix [ list $x_coord $num_spectre ] [ lindex $yvals [ expr $x_coord-1 ] ]
+      }
+      }
+
+      #--- Interpolation eventuelle :
+      set next_num [ expr $index_listspectres+1 ]
+      if { $next_num<$nb_spectres } {
+         set jd_next [ lindex $listejd $next_num ]
+         set diff_jd [ expr $jd_next-$jdate ]
+         if { $diff_jd>1 } {
+            #if { [ expr int($diff_jd)+$num_spectre ]>=$nb_jours } {
+            #   set diff_jd [ expr $diff_jd-($nb_jours-($diff_jd+$num_spectre+1)) ]
+            #}
+            ::console::affiche_prompt "Interpolation de [ expr int($diff_jd) ] spectres depuis le n°$num_spectre...\n"
+            set spectre_next [ lindex $listefiles_norma $next_num ]
+            set BufNo_initial [ buf::create ]
+            buf$BufNo_initial load "$audace(rep_images)/$spectre"
+            set BufNo_next [ buf::create ]
+            buf$BufNo_next load "$audace(rep_images)/$spectre_next"
+            #for { set jtime [ expr int($jdate+1) ] } { $jtime<$jd_next } { incr jtime }
+            set jtime [ expr $jdate+1 ]
+            for { set k [ expr int($jdate+1) ] } { $k<[ expr int($jd_next) ] } { incr k } {
+               #-- Calcul des intensites la date jtime :
+               set a [ expr ($jd_next-$jtime)/$diff_jd ]
+               set b [ expr ($jtime-$jdate)/$diff_jd ]
+               buf$BufNo_initial mult $a
+               buf$BufNo_next mult $b
+               bm_ajoute $BufNo_initial $BufNo_next
+               #buf$BufNo_next bitpix float
+               #buf$BufNo_next save "$audace(rep_images)/toto"
+               #buf$BufNo_initial add toto 0
+               #-- Ecrit les intensites dans le fichier 2D :
+               for { set x_coord 1 } { $x_coord<=$naxis1 && $num_spectre<=$nb_jours } { incr x_coord } {
+                  buf$newBufNo setpix [ list $x_coord $num_spectre ] [ lindex [ buf$BufNo_initial getpix [ list $x_coord 1 ] ] 1 ]
+               }
+               incr num_spectre
+               set jtime [ expr $jtime+1 ]
+            }
+            buf::delete $BufNo_initial
+            buf::delete $BufNo_next
+         } elseif { $diff_jd<=1 } {
+            #-- Moyenne des spectres du meme jour :
+            # Ne fait rien pour l'instant mais passe au spectre suivant
+            incr index_listspectres
+            continue
+         }
+      }
+         
+      #--- Incremention du n° de spectre :
+      incr num_spectre
+      incr index_listspectres
+   }
+
+
+   #--- Sauvegarde finale du fichier fits-image 2D :
+   ::console::affiche_prompt "\nCréation du spectre dynamique...\n"
+   regsub -all {(\s)} "$objname" "_" objname
+   buf$newBufNo setkwd [ list "OBJNAME" "$objname" string "" "" ]
+   buf$newBufNo bitpix float
+   buf$newBufNo save "$audace(rep_images)/${objname}_dynaspectrum"
+   buf::delete $newBufNo
+   loadima "${objname}_dynaspectrum"
+   visu1 cut [ lrange [ buf1 stat ] 0 1 ]
+   visu1 disp
+   savejpeg "${objname}_dynaspectrum"
+
+
+if { 1==0} {
+   #--- Modification du fichier de config :
+   #-- Modification de dla position des legendes dans le fichier de config de gnuplot :
+   #set ypos1 [ expr $y1_legende+$offset/10. ]
+   set ypos1 [ expr $y1_legende*(1+$offset/10.) ]
+   set file_idin [ open "$spcaudace(repgp)/gp_multiover.cfg" r+ ]
+   set file_id [ open "$audace(rep_images)/gp_multiover.cfg" w+ ]
+   fconfigure $file_id -translation crlf
+   set contents [ split [ read $file_idin ] \n ]
+   foreach ligne $contents {
+      if { [ regexp "set key invert" $ligne match ligne_modif ]  } {
+         # regsub -all "set key invert" $ligne "set key invert bottom samplen 0 height -13 spacing $moffset at $xfin, first $ypremier" ligne_modif
+         regsub -all "set key invert" $ligne "set key off" ligne_modif
+         puts $file_id "$ligne_modif"
+         set nofile 0
+         foreach jd $listejd {
+            set ypos [ expr $ypos1+$offset*$nofile ]
+            puts $file_id "set label \"MJD $jd\" right at character $xpos, first $ypos"
+            incr nofile
+         }
+      } else {
+         puts $file_id "$ligne"
+      }
+   }
+   close $file_id
+   close $file_idin
+
+   #--- Construction du fichier btach de Gnuplot :
+   #set file_id [open "$audace(rep_images)/multiplot.gp" w+]
+   # set xdeb "*"
+   # set xfin "*"
+   ## puts $file_id "call \"$spcaudace(repgp)/gp_multi.cfg\" \"$plotcmd\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/multiplot.png\" \"$legendex\" \"$legendey\" "
+   #puts $file_id "call \"$spcaudace(repgp)/gp_multi.cfg\" \"$plotcmd\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/multiplot.png\" \"$legendex\" "
+   #close $file_id
+   set file_id [ open "$audace(rep_images)/multiplot.gp" w+ ]
+   fconfigure $file_id -translation crlf
+   set largeur [ expr $xfin-$xdeb ]
+   if { $naxis1<=3500 } {
+      if { $largeur<=2000 && $flag_cal==1 } {
+         #puts $file_id "call \"$spcaudace(repgp)/gp_multiover.cfg\" \"$plotcmd\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/multiplot.png\" \"$legendex\" \"$legendey\" "
+         puts $file_id "call \"$audace(rep_images)/gp_multiover.cfg\" \"$plotcmd\" \"$titre\" * * '$xdeb' '$xfin' * \"$audace(rep_images)/multiplot.png\" \"$legendex\" \"$legendey\" "
+      } elseif { $largeur>2000 && $flag_cal==1 } {
+         puts $file_id "call \"$spcaudace(repgp)/gp_multilarge.cfg\" \"$plotcmd\" \"$titre\" * * '$xdeb' '$xfin' * \"$audace(rep_images)/multiplot.png\" \"$legendex\" \"$legendey\" "
+      } elseif { $flag_cal==0 } {
+         puts $file_id "call \"$audace(rep_images)/gp_multiover.cfg\" \"$plotcmd\" \"$titre\" * * '$xdeb' '$xfin' * \"$audace(rep_images)/multiplot.png\" \"$legendex\" \"$legendey\" "
+      }
+   } else {
+      puts $file_id "call \"$spcaudace(repgp)/gp_multilarge.cfg\" \"$plotcmd\" \"$titre\" * * '$xdeb' '$xfin' * \"$audace(rep_images)/multiplot.png\" \"$legendex\" "
+   }
+   close $file_id
+
+   #--- Détermine le chemin de l'executable Gnuplot selon le système d'exploitation :
+   set repdflt [ bm_goodrep ]
+   if { $tcl_platform(platform)=="unix" } {
+      set answer [ catch { exec gnuplot $audace(rep_images)/multiplot.gp } ]
+      ::console::affiche_resultat "gnuplot résultat (0=OK) : $answer\n"
+   } else {
+      set answer [ catch { exec $spcaudace(repgp)/gpwin32/pgnuplot.exe $audace(rep_images)/multiplot.gp } ]
+      ::console::affiche_resultat "gnuplot résultat (0=OK) : $answer\n"
+   }
+   cd $repdflt
+}
+
+   #--- Effacement des fichiers de batch :
+   #if { 1==0 } {
+
+   #file delete -force "$audace(rep_images)/multiplot.gp"
+   #file delete -force "$audace(rep_images)/gp_multiover.cfg"
+   foreach fichier $listefiles_norma {
+      file delete -force "$audace(rep_images)/$fichier$conf(extension,defaut)"
+   }
+   #}
+   ::console::affiche_prompt "\nNombres de jours couverts entre [ expr int($date_deb) ] et [ expr int($date_fin) ] : $nb_jours jours.\n"
+   ::console::affiche_resultat "\nSpectre dynamique sauvé sous ${objname}_dynaspectrum$conf(extension,defaut)\n"
+   return "${objname}_dynaspectrum"
+}
+####################################################################
+
 
 
 
