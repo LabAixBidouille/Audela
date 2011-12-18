@@ -227,9 +227,9 @@ proc ::bddimages_imgcorrection::verif_filter_img {  } {
       set tabkey [::bddimages_liste::lget $img "tabkey"]
       set filter [lindex [::bddimages_liste::lget $tabkey filter] 1]
       if {$cpt==0} {
-         set filtersav $filter
+         set filtersav [string trim $filter]
       } else {
-         if {$filtersav!=$filter} {
+         if {$filtersav != [string trim $filter]} {
             return -code error $caption(bddimages_imgcorrection,pbfiltre)
          } 
       }
