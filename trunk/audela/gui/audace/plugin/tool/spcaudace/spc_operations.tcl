@@ -30,7 +30,7 @@ proc spc_zeropad { args } {
       #set nom_fich_input [ file rootname $nom_fich_input ]
       set lastsampl [ lindex $args 1 ]
       if { [ spc_testlincalib $nom_fich_input ] == -1 } {
-	 ::console::affiche_erreur " spc_selectpixels : le profil entre n'est pas calibre lineairement : l'application de la procedure n'a pas de sens \n\n"
+	 ::console::affiche_erreur " spc_selectgpixels : le profil entre n'est pas calibre lineairement : l'application de la procedure n'a pas de sens \n\n"
 	 return ""
       }
       buf$audace(bufNo) load "$audace(rep_images)/$nom_fich_input"
@@ -308,6 +308,7 @@ proc spc_anim { args } {
 
    #--- Copie des fichiers :
    set listefichiers [ lsort -dictionary [ glob -dir $audace(rep_images) -tail *$conf(extension,defaut) ] ]
+   set listefichiers [ spc_ldatesort $listefichiers ]
    if { [ file exists $audace(rep_images)/originaux ]!=1 } {
       ::console::affiche_prompt "\nSauvegardes des fichiers dans originaux...\n"
       file mkdir $audace(rep_images)/originaux
