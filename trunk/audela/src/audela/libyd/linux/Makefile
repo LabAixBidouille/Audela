@@ -3,7 +3,6 @@ OUTPUT   = libyd.so
 
 SRC  = $(SRCDIR)/libyd.c $(SRCDIR)/yd_1.c $(SRCDIR)/ydtcl_1.c
 SRC += $(SRCDIR)/yd_2.c  $(SRCDIR)/yd_3.c $(SRCDIR)/yd_4.c
-SRC += $(SRCDIR)/cstycho.c $(SRCDIR)/csucac2.c $(SRCDIR)/csucac3.c
 
 OBJ = $(patsubst $(SRCDIR)/%.c, %.o, $(filter $(SRCDIR)/%.c, $(SRC)))
 
