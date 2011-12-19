@@ -30,38 +30,38 @@
 #include "yd_3.h"
 
 int yd_aliasing(gsl_vector *jds, int nmes)
-/***************************************************************************
- Fonction aliasing
- *************************************************************************
- Inputs: The jd vector
- Outputs 1 if there is aliasing, 0 else
-***************************************************************************/
+/***************************************************************************/
+/* Fonction aliasing                                                        */
+/***************************************************************************/
+/* Inputs: The jd vector
+   Outputs 1 if there is aliasing, 0 else
+/***************************************************************************/
 {
-	/*Nous allons chercher dans ce script toutes les pï¿½riodes d'aliasing infï¿½rieures ï¿½ 5j
+	/*Nous allons chercher dans ce script toutes les périodes d'aliasing inférieures à 5j
 	car leur influence diminue audela de cette limite :
-	frï¿½quence d'artefact = frequence +/- x*frequence d'aliasing (x=0.5,1,2)*/
+	fréquence d'artefact = frequence +/- x*frequence d'aliasing (x=0.5,1,2)*/
 	double dj,maxim,limit_inf,limit_sup,pgcd;
 	int *hist=NULL;
 	int nhist,kj1,kj2,k_hist,val,kk,temoin,nbad,temoin2,temoin3;
 	double *maximums=NULL;
-	/*FILE *f;*/
+/*FILE *f;*/
 
-	/*Je vais construire 1 histogramme des pï¿½riodes d'aliasing dand le domaine 18h:4h:20h ncase=116*/
+	/*Je vais construire 1 histogramme des périodes d'aliasing dand le domaine 18h:4h:20h ncase=116*/
 	nhist=116;
 	temoin=0;
 	temoin3=0;
 	limit_inf=18./24;
-	limit_sup=20.;
-	/*J'alloue la mï¿½moire: je n'utilise pas de vecteur gsl car c'est un vecteur d'entiers*/
+    limit_sup=20.;
+	/*J'alloue la mémoire: je n'utilise pas de vecteur gsl car c'est un vecteur d'entiers*/
 	hist=(int*)calloc(nhist,sizeof(int));
 	if (hist==NULL) {return 2;}
 	/*Je construis mon histogramme*/
-	/*f=fopen("init.txt","wt");*/
+/*f=fopen("init.txt","wt");*/
 	for (kj1=0;kj1<nmes-1;kj1++) {
 		for (kj2=kj1+1;kj2<nmes;kj2++) {
-			/*par construction jds est triï¿½*/
-			dj=jds->data[kj2]-jds->data[kj1];
-			/*fprintf(f,"%10.8f\n",dj);*/
+			/*par construction jds est trié*/
+            dj=jds->data[kj2]-jds->data[kj1];
+/*fprintf(f,"%10.8f\n",dj);*/
 			if (dj>limit_sup) {continue;}
 			if (dj<limit_inf) {continue;}
 			k_hist=(int)floor(6*(dj-limit_inf));
@@ -70,16 +70,16 @@ int yd_aliasing(gsl_vector *jds, int nmes)
 			temoin3=1;
 		}
 	}
-	/*fclose(f);*/
+/*fclose(f);*/
 	if (temoin3==1) {
-		/*Je cherche le maximum de l'histogramme*/
+        /*Je cherche le maximum de l'histogramme*/
 		maxim=0.;
 		for (k_hist=0;k_hist<nhist;k_hist++) {
 			val=hist[k_hist];
 			if (val>maxim) {maxim=(double)val;}
 		}
 		maxim=0.5*maxim;
-		/*maxim=0.;*/
+/*maxim=0.;*/
 		/*Je compte le nombre de cases > maxim*/
 		kk=0;
 		for (k_hist=0;k_hist<nhist;k_hist++) {
@@ -89,7 +89,7 @@ int yd_aliasing(gsl_vector *jds, int nmes)
 			}
 		}
 		nbad=kk;
-		/*Allocation de la memoire : je suis sur que nbad>0 car temoin3>0*/
+	   /*Allocation de la memoire : je suis sur que nbad>0 car temoin3>0*/
 
 		maximums=(double*)calloc(nbad,sizeof(double));
 		if (maximums==NULL) {return 2;}
@@ -115,41 +115,42 @@ int yd_aliasing(gsl_vector *jds, int nmes)
 }
 /*********************************************************************************************************/
 int Cmd_ydtcl_minlong(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
-/*********************************************************************************************************
- Fonction minlong     $jds $mags $poids $longvar $per_range_min $per_range_max $pasfreq $nper1
- *************************************************************************
- Inputs: 1) The jd vector
-         2) The mag vector
-		 3) The weight vector
-		 4) The period vector
- Outputs 1) The minlog vector
-***************************************************************************/
+/*********************************************************************************************************/
+/* Fonction minlong     $jds $mags $poids $longvar $per_range_min $per_range_max $pasfreq $nper1                                                                                */
+/*********************************************************************************************************/
+/* Inputs: 1) The jd vector
+           2) The mag vector
+		   3) The weight vector
+		   4) The period vector
+   Outputs 1) The minlog vector
+/***************************************************************************/
 {
 	char s[200];
-	int n_jd,n_mag,nmes,nper;
-	Tcl_DString dsptr;
-	gsl_vector *jds,*mags,*errmags,*periods,*TETAS,*phase,*temp;
+    int code,code2,code3,code4;
+    int n_jd,n_mag,nmes,nper;
+    Tcl_DString dsptr;
+    gsl_vector *jds,*mags,*errmags,*periods,*TETAS,*phase,*temp;
 	double eps,delmag,minmag,maxmag;
 	double phase_prec,phase_suiv,mag_prec,mag_suiv,poids_prec,poids_suiv,delta_mag,delta_phi;
 	int k_x,k_xx,k_per;
 	gsl_permutation *perm;
 	double per,poids,somme,sommepoids;
-	/*FILE *f;*/
-	if(argc!=5) {
+    /*FILE *f;*/
+    if(argc!=5) {
 		sprintf(s,"Usage: %s jds mags poids periods", argv[0]);
-		Tcl_SetResult(interp,s,TCL_VOLATILE);
-		return TCL_ERROR;
+        Tcl_SetResult(interp,s,TCL_VOLATILE);
+        return TCL_ERROR;
 	} else {
-		/* --- decodage des arguments ---*/
-		gsltcltcl_getgslvector(interp,argv[1],&jds,&n_jd);
-		gsltcltcl_getgslvector(interp,argv[2],&mags,&n_mag);
-		gsltcltcl_getgslvector(interp,argv[3],&errmags,&n_mag);
-		gsltcltcl_getgslvector(interp,argv[4],&periods,&nper);
-		/* --- validite des arguments ---*/
+        /* --- decodage des arguments ---*/
+		code=gsltcltcl_getgslvector(interp,argv[1],&jds,&n_jd);
+		code2=gsltcltcl_getgslvector(interp,argv[2],&mags,&n_mag);
+		code3=gsltcltcl_getgslvector(interp,argv[3],&errmags,&n_mag);
+		code4=gsltcltcl_getgslvector(interp,argv[4],&periods,&nper);
+       /* --- validite des arguments ---*/
 		if (n_jd!=n_mag) {
 			/* --- message d'erreur a propos des dimensions ---*/
-			Tcl_SetResult(interp,"jds and mags vectors must have the same dimension",TCL_VOLATILE);
-			return TCL_ERROR;
+            Tcl_SetResult(interp,"jds and mags vectors must have the same dimension",TCL_VOLATILE);
+            return TCL_ERROR;
 		}
 		/* --- inits ---*/
 		nmes=n_jd;
@@ -158,7 +159,7 @@ int Cmd_ydtcl_minlong(ClientData clientData, Tcl_Interp *interp, int argc, char 
 		gsl_vector_minmax(mags,&minmag,&maxmag);
 		delmag=maxmag-minmag;
 		eps=eps/(2*delmag);
-		/*eps=0.00001;*/
+/*eps=0.00001;*/
 		/*on va redefinir les bares d'erreur en inverses de poids (bares^2) pour les besoins du calcul*/
 		for (k_x=0;k_x<nmes;k_x++) {
 			/*errmags->data[k_x]+=0.001;
@@ -172,8 +173,8 @@ int Cmd_ydtcl_minlong(ClientData clientData, Tcl_Interp *interp, int argc, char 
 		gsl_vector_add_constant(jds,-jds->data[0]);
 
 		gsl_vector_memcpy(temp,jds);
-
-
+		
+		
 		for (k_per=0;k_per<nper;k_per++) {
 			per	= periods->data[k_per];
 			gsl_vector_scale(temp,1./per);
@@ -222,7 +223,7 @@ int Cmd_ydtcl_minlong(ClientData clientData, Tcl_Interp *interp, int argc, char 
 		Tcl_DStringFree(&dsptr);
 		/* --- liberation de la memoire ---*/
 		gsl_vector_free(phase);
-		gsl_permutation_free(perm);
+	    gsl_permutation_free(perm);
 		gsl_vector_free(jds);
 		gsl_vector_free(mags);
 		gsl_vector_free(errmags);
@@ -230,7 +231,7 @@ int Cmd_ydtcl_minlong(ClientData clientData, Tcl_Interp *interp, int argc, char 
 		gsl_vector_free(periods);
 		gsl_vector_free(TETAS);
 		return TCL_OK;
-	}
+    }
 }
 
 /****************************************************************************/
@@ -243,29 +244,30 @@ int Cmd_ydtcl_periodog(ClientData clientData, Tcl_Interp *interp, int argc, char
 			3) The weigths of mags
 			4) The periods vector
    Outputs: The periodogram vector (Scargle 1982)
- */
+*/
 /***************************************************************************/
 {
-	char s[200];
-	int n_jd=0,n_mag=0,nper=0,nmes;
-	Tcl_DString dsptr;
-	gsl_vector *jds,*mags,*poids,*periods;
-	gsl_vector *Arg,*tem0,*Pxw;
+    char s[200];
+    int code,code2,code3,code4;
+    int n_jd=0,n_mag=0,nper=0,nmes;
+    Tcl_DString dsptr;
+    gsl_vector *jds,*mags,*poids,*periods;
+    gsl_vector *Arg,*tem0,*Pxw;
 	double Axc,Axs,Ax1,Ax2,Axc_som,Axs_som;
 	int i,j;
 	double pi,om,tau_s,tau_c,tau;
 	double moy,noise;
 
-	if(argc!=7) {
+    if(argc!=7) {
 		sprintf(s,"Usage: %s jds mags weigths periods moy noise", argv[0]);
 		Tcl_SetResult(interp,s,TCL_VOLATILE);
 		return TCL_ERROR;
-	} else {
+    } else {
 		/* --- decodage des arguments ---*/
-		gsltcltcl_getgslvector(interp,argv[1],&jds,&n_jd);
-		gsltcltcl_getgslvector(interp,argv[2],&mags,&n_mag);
-		gsltcltcl_getgslvector(interp,argv[3],&poids,&n_mag);
-		gsltcltcl_getgslvector(interp,argv[4],&periods,&nper);
+		code=gsltcltcl_getgslvector(interp,argv[1],&jds,&n_jd);
+		code2=gsltcltcl_getgslvector(interp,argv[2],&mags,&n_mag);
+		code3=gsltcltcl_getgslvector(interp,argv[3],&poids,&n_mag);
+		code4=gsltcltcl_getgslvector(interp,argv[4],&periods,&nper);
 		moy=atof(argv[5]);
 		noise=atof(argv[6]);
 		/* --- validite des arguments ---*/
@@ -275,25 +277,25 @@ int Cmd_ydtcl_periodog(ClientData clientData, Tcl_Interp *interp, int argc, char
 			return TCL_ERROR;
 		}
 		/* --- inits ---*/
-		Pxw=gsl_vector_calloc(nper);
+        Pxw=gsl_vector_calloc(nper);
 		pi   = 4*atan(1);
 		nmes=n_jd;
 		moy=0.;
-		tem0=gsl_vector_calloc(nmes);
+        tem0=gsl_vector_calloc(nmes);
 		gsl_vector_memcpy(tem0,mags);
 		gsl_vector_add_constant(tem0, -moy);
-		Arg =gsl_vector_calloc(nmes);
-		for (i=0; i<nper;i++){
+        Arg =gsl_vector_calloc(nmes);
+        for (i=0; i<nper;i++){
 			om   = 2*pi/periods->data[i];
 			tau_s=0;
-			tau_c=0;
+            tau_c=0;
 			for(j=0;j<nmes;j++){
 				tau_s += sin(2*om*jds->data[j]);
 				tau_c += cos(2*om*jds->data[j]);
 			}
 			tau = tau_s/tau_c;
 			tau =atan(tau)/(2*om);
-			gsl_vector_memcpy(Arg,jds);
+	 		gsl_vector_memcpy(Arg,jds);
 			gsl_vector_add_constant(Arg,-tau);
 			gsl_vector_scale (Arg,om);
 			Ax1    =0;
@@ -310,22 +312,22 @@ int Cmd_ydtcl_periodog(ClientData clientData, Tcl_Interp *interp, int argc, char
 			}
 			Ax1*=Ax1;
 			Ax2*=Ax2;
-			Pxw->data[i]=0.5*((Ax1/Axc_som)+(Ax2/Axs_som))/noise;
+            Pxw->data[i]=0.5*((Ax1/Axc_som)+(Ax2/Axs_som))/noise;
 		}
 		/* --- sortie du resultat ---*/
-		Tcl_DStringInit(&dsptr);
-		gsltcltcl_setgslvector(interp,&dsptr,Pxw,nper);
-		Tcl_DStringResult(interp,&dsptr);
-		Tcl_DStringFree(&dsptr);
+        Tcl_DStringInit(&dsptr);
+        gsltcltcl_setgslvector(interp,&dsptr,Pxw,nper);
+        Tcl_DStringResult(interp,&dsptr);
+        Tcl_DStringFree(&dsptr);
 		/* --- liberation de la memoire ---*/
-		gsl_vector_free(jds);
+	    gsl_vector_free(jds);
 		gsl_vector_free(mags);
 		gsl_vector_free(poids);
 		gsl_vector_free(periods);
 		gsl_vector_free(Pxw);
 		gsl_vector_free(tem0);
 		gsl_vector_free(Arg);
-	}
+		}
 	return TCL_OK;
 }
 
@@ -342,11 +344,11 @@ int yd_pdm_entropie(gsl_vector *phase, gsl_vector *mags, gsl_vector *poids, int 
 			7) ncol2 (see shortorlong
    Outputs: 1) The entropy matrix (Cincotta 1995)
 			2) The PDM value (Maraco 1982)
- */
+*/
 /***************************************************************************/
 {
-	int nlig,ncol,i,j;
-	gsl_matrix *EntMat,*ValMat;
+    int nlig,ncol,i,j;
+    gsl_matrix *EntMat,*ValMat;
 	double err,maxmag,minmag,delmag,valm,valmm,valx,valp,mag_variance,eps=1e-20; /*,covar,phase_variance*/
 	int x_pos,y_pos;
 
@@ -356,9 +358,9 @@ int yd_pdm_entropie(gsl_vector *phase, gsl_vector *mags, gsl_vector *poids, int 
 	delmag=maxmag-minmag;
 	ncol=nmes/10;
 	ncol=(ncol>nbin)?nbin:ncol;
-
+	
 	nlig   = (int)floor(delmag/err)+1;
-	EntMat = gsl_matrix_calloc(nlig,ncol);
+    EntMat = gsl_matrix_calloc(nlig,ncol);
 	/*ValMat = gsl_matrix_calloc(ncol,7);*/
 	ValMat = gsl_matrix_calloc(ncol,3);
 	for (i=0;i<nmes;i++) {
@@ -384,12 +386,12 @@ int yd_pdm_entropie(gsl_vector *phase, gsl_vector *mags, gsl_vector *poids, int 
 		/*les poids des phases valent 1*/
 		/* Somme des mag*/
 		gsl_matrix_set(ValMat,x_pos,0,gsl_matrix_get(ValMat,x_pos,0)+valmm);
-		/* Somme des mag^2*/
+        /* Somme des mag^2*/
 		gsl_matrix_set(ValMat,x_pos,1,gsl_matrix_get(ValMat,x_pos,1)+valmm*valm);
 		/* Somme des poids (mags)*/
 		gsl_matrix_set(ValMat,x_pos,2,gsl_matrix_get(ValMat,x_pos,2)+valp);
-		/* Somme des phase*/
-		/*gsl_matrix_set(ValMat,x_pos,3,gsl_matrix_get(ValMat,x_pos,3)+valx);*/
+        /* Somme des phase*/
+        /*gsl_matrix_set(ValMat,x_pos,3,gsl_matrix_get(ValMat,x_pos,3)+valx);*/
 		/* Somme des phase^2*/
 		/*gsl_matrix_set(ValMat,x_pos,4,gsl_matrix_get(ValMat,x_pos,4)+valx*valx);*/
 		/* Somme des phase*mag*/
@@ -404,9 +406,9 @@ int yd_pdm_entropie(gsl_vector *phase, gsl_vector *mags, gsl_vector *poids, int 
 	for (i=0;i<ncol;i++) {
 		mag_variance=gsl_matrix_get(ValMat,i,1)-gsl_matrix_get(ValMat,i,0)*gsl_matrix_get(ValMat,i,0)/(gsl_matrix_get(ValMat,i,2)+eps);
 		/*mag_variance*=gsl_matrix_get(ValMat,i,6)/(gsl_matrix_get(ValMat,i,2)+eps);
-		 phase_variance=gsl_matrix_get(ValMat,i,4)-gsl_matrix_get(ValMat,i,3)*gsl_matrix_get(ValMat,i,3)/(gsl_matrix_get(ValMat,i,6)+eps);
-		 covar = (gsl_matrix_get(ValMat,i,5))-gsl_matrix_get(ValMat,i,3)*gsl_matrix_get(ValMat,i,0)/(gsl_matrix_get(ValMat,i,2)+eps);
-		 *PDM+=mag_variance-covar*covar/(phase_variance+eps);*/
+		/*phase_variance=gsl_matrix_get(ValMat,i,4)-gsl_matrix_get(ValMat,i,3)*gsl_matrix_get(ValMat,i,3)/(gsl_matrix_get(ValMat,i,6)+eps);
+		covar = (gsl_matrix_get(ValMat,i,5))-gsl_matrix_get(ValMat,i,3)*gsl_matrix_get(ValMat,i,0)/(gsl_matrix_get(ValMat,i,2)+eps);
+		*PDM+=mag_variance-covar*covar/(phase_variance+eps);*/
 		*PDM+=mag_variance;
 	}
 	/**PDM/=(nmes-2*ncol);*/
@@ -420,7 +422,7 @@ int yd_pdm_entropie(gsl_vector *phase, gsl_vector *mags, gsl_vector *poids, int 
 	}
 	/*Normalisation*/
 	*Entropie=*Entropie/(log(nlig*ncol));
-
+	
 	gsl_matrix_free(EntMat);
 	gsl_matrix_free(ValMat);
 	return 0;
@@ -435,35 +437,36 @@ int Cmd_ydtcl_classification(ClientData clientData, Tcl_Interp *interp, int argc
 			2) N (vector,weight): each vector represents a statistic
 			3) The number of final periods
    Outputs: Final periods
- */
+*/
 /***************************************************************************/
 {
-	char s[200];
-	int i,j,nper=0,longvar,nmes,nper2;
+    char s[200];
+    int code,code1,code2,code3,code4;
+    int i,j,nper=0,longvar,nmes,nper2;
 	double w_period,w_minlong,w_periodog,w_PDM,w_Entropie,somme_w;
 	Tcl_DString dsptr;
-	gsl_permutation *perm1,*rank1;
-	gsl_permutation *perm2,*rank2;
+    gsl_permutation *perm1,*rank1;
+    gsl_permutation *perm2,*rank2;
 	gsl_permutation *perm3,*rank3;
 	gsl_permutation *perm4,*rank4;
 	gsl_permutation *perm5,*rank5;
-	gsl_permutation *perm6;
+    gsl_permutation *perm6;
 	gsl_vector *periods,*period_temp,*minlong,*periodog,*PDM,*Entropie,*best_periods, *perm;
 	if(argc!=9) {
 		sprintf(s,"Usage: %s inputs must be periods minlong periodog PDM Entropie nmes longvar nper2", argv[0]);
-		Tcl_SetResult(interp,s,TCL_VOLATILE);
-		return TCL_ERROR;
-	} else {
-		/* --- decodage des arguments ---*/
-		gsltcltcl_getgslvector(interp,argv[1],&periods,&nper);
-		gsltcltcl_getgslvector(interp,argv[2],&minlong,&nper);
-		gsltcltcl_getgslvector(interp,argv[3],&periodog,&nper);
-		gsltcltcl_getgslvector(interp,argv[4],&PDM,&nper);
-		gsltcltcl_getgslvector(interp,argv[5],&Entropie,&nper);
+        Tcl_SetResult(interp,s,TCL_VOLATILE);
+        return TCL_ERROR;
+    } else {
+      /* --- decodage des arguments ---*/
+        code = gsltcltcl_getgslvector(interp,argv[1],&periods,&nper);
+		code1=gsltcltcl_getgslvector(interp,argv[2],&minlong,&nper);
+        code2=gsltcltcl_getgslvector(interp,argv[3],&periodog,&nper);
+	    code3=gsltcltcl_getgslvector(interp,argv[4],&PDM,&nper);
+		code4=gsltcltcl_getgslvector(interp,argv[5],&Entropie,&nper);
 		nmes=atoi(argv[6]);
 		longvar=atoi(argv[7]);
 		nper2=atoi(argv[8]);
-
+		
 		/* --- inits ---*/
 		perm1=gsl_permutation_alloc(nper);
 		perm2=gsl_permutation_alloc(nper);
@@ -476,7 +479,7 @@ int Cmd_ydtcl_classification(ClientData clientData, Tcl_Interp *interp, int argc
 		rank4=gsl_permutation_alloc(nper);
 		rank5=gsl_permutation_alloc(nper);
 		perm6=gsl_permutation_alloc(nper);
-		period_temp=gsl_vector_calloc(nper);
+        period_temp=gsl_vector_calloc(nper);
 
 		/*Attribution des poids*/
 		if (longvar) {
@@ -487,7 +490,7 @@ int Cmd_ydtcl_classification(ClientData clientData, Tcl_Interp *interp, int argc
 				w_PDM=10;
 				w_Entropie=1;
 			} else {
-				w_period=1;
+                w_period=1;
 				w_periodog=0;
 				w_minlong=1;
 				w_PDM=10;
@@ -495,19 +498,19 @@ int Cmd_ydtcl_classification(ClientData clientData, Tcl_Interp *interp, int argc
 			}
 			/*nper2=5;*/
 		} else {
-			if (nmes>150) {
+            if (nmes>150) {
 				w_period=0;
 				w_minlong=1;
 				w_periodog=0;                
 				w_PDM=1;
 				w_Entropie=1;
-			} else {
+            } else {
 				w_period=0;
 				w_minlong=1;
 				w_periodog=0;                
 				w_PDM=1;
 				w_Entropie=1;
-			}
+            }
 		}
 		somme_w=w_period+w_minlong+w_periodog+w_PDM+w_Entropie;
 
@@ -527,10 +530,10 @@ int Cmd_ydtcl_classification(ClientData clientData, Tcl_Interp *interp, int argc
 			gsl_permutation_inverse (rank3,perm3);
 		}
 		if (w_PDM!=0) {
-			gsl_sort_vector_index(perm4,PDM);
+            gsl_sort_vector_index(perm4,PDM);
 			gsl_permutation_inverse (rank4,perm4);
 		}
-		if (w_Entropie!=0) {
+        if (w_Entropie!=0) {
 			gsl_sort_vector_index(perm5,Entropie);
 			gsl_permutation_inverse (rank5,perm5);
 		}
@@ -546,26 +549,26 @@ int Cmd_ydtcl_classification(ClientData clientData, Tcl_Interp *interp, int argc
 		for (i=0;i<nper2;i++){
 			j=perm6->data[i];
 			best_periods->data[i]=periods->data[j];
-		}
-		/* --- sortie du resultat ---*/
-		Tcl_DStringInit(&dsptr);
-		gsltcltcl_setgslvector(interp,&dsptr,best_periods,nper2);
-		Tcl_DStringResult(interp,&dsptr);
-		Tcl_DStringFree(&dsptr);
+        }
+        /* --- sortie du resultat ---*/
+        Tcl_DStringInit(&dsptr);
+        gsltcltcl_setgslvector(interp,&dsptr,best_periods,nper2);
+        Tcl_DStringResult(interp,&dsptr);
+        Tcl_DStringFree(&dsptr);
 		/* --- liberation de la memoire ---*/
 		gsl_vector_free(periods);
-		gsl_vector_free(minlong);
+        gsl_vector_free(minlong);
 		gsl_vector_free(periodog);
-		gsl_vector_free(PDM);
-		gsl_vector_free(Entropie);
+        gsl_vector_free(PDM);
+        gsl_vector_free(Entropie);
 		gsl_permutation_free(perm1);
-		gsl_permutation_free(perm2);
+        gsl_permutation_free(perm2);
 		gsl_permutation_free(perm3);
 		gsl_permutation_free(perm4);
 		gsl_permutation_free(perm5);
 		gsl_permutation_free(perm6);
 		gsl_permutation_free(rank1);
-		gsl_permutation_free(rank2);
+        gsl_permutation_free(rank2);
 		gsl_permutation_free(rank3);
 		gsl_permutation_free(rank4);
 		gsl_permutation_free(rank5);
@@ -628,55 +631,57 @@ for {set kk -180} {$kk<=360} {incr kk 5} {
 ::plotxy::hold on
 ::plotxy::plot $xs $ys '-b'
 
- */
+*/
 /***************************************************************************/
 {
-	char s[200];
-	int nper=0,nhar=0,nmes=0;
-	Tcl_DString dsptr;
-	gsl_vector *jds,*mags,*poids,*best_periods,*coefs,*phases;
-	double residu,residu_min0,i_best0,nhar_best0;
-	gsl_vector *residu_min,*i_bests, *nhar_bests;
-	double res;
-	double deltaphasemax,jdphase0;
-	int nhar0,i,j,ii,i_bestbest,nhar_bestbest,nmes1;
+    char s[200];
+    int code,code1,code2,code3;
+    int nper=0,nhar=0,nmes=0;
+    Tcl_DString dsptr;
+    gsl_vector *jds,*mags,*poids,*best_periods,*coefs,*phases;
+	double residu,residu_min0,residu_min00,i_best0,nhar_best0;
+    gsl_vector *residu_min,*i_bests, *nhar_bests;
+    double res;
+    double deltaphasemax,jdphase0;
+    int nhar0,i,j,ii,i_bestbest,nhar_bestbest,nmes1,valid=1;
 
 	if(argc!=7) {
-		sprintf(s,"Usage: %s jds jdphase0 mags poids best_periods nhar", argv[0]);
-		Tcl_SetResult(interp,s,TCL_VOLATILE);
-		return TCL_ERROR;
-	} else {
-		/* --- decodage des arguments ---*/
-		gsltcltcl_getgslvector(interp,argv[1],&jds,&nmes);
-		if (nmes==0) {
-			sprintf(s,"Error: jds has no data !");
-			Tcl_SetResult(interp,s,TCL_VOLATILE);
-			return TCL_ERROR;
-		}
-		nmes1=nmes;
+        sprintf(s,"Usage: %s jds jdphase0 mags poids best_periods nhar", argv[0]);
+        Tcl_SetResult(interp,s,TCL_VOLATILE);
+       return TCL_ERROR;
+   } else {
+        /* --- decodage des arguments ---*/
+        code=gsltcltcl_getgslvector(interp,argv[1],&jds,&nmes);
+		  if (nmes==0) {
+			  sprintf(s,"Error: jds has no data !");
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				return TCL_ERROR;
+		  }
+		  nmes1=nmes;
 		jdphase0=atof(argv[2]);
-		gsltcltcl_getgslvector(interp,argv[3],&mags,&nmes);
-		if (nmes!=nmes1) {
-			sprintf(s,"Error: mags has not the same length as jds (%d instead of %d) !",nmes,nmes1);
-			Tcl_SetResult(interp,s,TCL_VOLATILE);
-			return TCL_ERROR;
-		}
-		gsltcltcl_getgslvector(interp,argv[4],&poids,&nmes);
-		if (nmes!=nmes1) {
-			sprintf(s,"Error: poids has not the same length as jds (%d instead of %d) !",nmes,nmes1);
-			Tcl_SetResult(interp,s,TCL_VOLATILE);
-			return TCL_ERROR;
-		}
-		gsltcltcl_getgslvector(interp,argv[5],&best_periods,&nper);
+		code1=gsltcltcl_getgslvector(interp,argv[3],&mags,&nmes);
+		  if (nmes!=nmes1) {
+			  sprintf(s,"Error: mags has not the same length as jds (%d instead of %d) !",nmes,nmes1);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				return TCL_ERROR;
+		  }
+		code2=gsltcltcl_getgslvector(interp,argv[4],&poids,&nmes);
+		  if (nmes!=nmes1) {
+			  sprintf(s,"Error: poids has not the same length as jds (%d instead of %d) !",nmes,nmes1);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				return TCL_ERROR;
+		  }
+        code3=gsltcltcl_getgslvector(interp,argv[5],&best_periods,&nper);
 		nhar =atoi(argv[6]);
 		/* --- inits ---*/
+   	    residu_min00=1e+90;
 		phases=gsl_vector_calloc(nmes);
 		residu_min=gsl_vector_calloc(nper);
 		i_bests=gsl_vector_calloc(nper);
 		nhar_bests=gsl_vector_calloc(nper);
 
 		for (i=0;i<nper;i++) {
-			/* --- determine n_har0, le nombre d'harmoniques maximum ï¿½ prendre ---*/
+			/* --- determine n_har0, le nombre d'harmoniques maximum à prendre ---*/
 			for (j=0;j<nmes;j++) {
 				res=(jds->data[j]-jdphase0)/best_periods->data[i];
 				phases->data[j]=res-floor(res);
@@ -704,7 +709,7 @@ for {set kk -180} {$kk<=360} {incr kk 5} {
 
 			coefs=gsl_vector_calloc(1+2*nhar0);
 			yd_moin_carr(phases,mags,poids,nhar0,nmes,coefs,&residu);
-
+			
 			gsl_vector_free(coefs);
 			residu_min->data[i]=residu;
 			i_bests->data[i]=i;
@@ -737,8 +742,8 @@ for {set kk -180} {$kk<=360} {incr kk 5} {
 			phases->data[j]=res-floor(res);
 		}
 		yd_moin_carr(phases,mags,poids,nhar_bestbest,nmes,coefs,&residu);
-
-		/* --- sortie du resultat ---*/
+				
+   		/* --- sortie du resultat ---*/
 		Tcl_DStringInit(&dsptr);
 		Tcl_DStringAppend(&dsptr," {",-1);
 		for (i=0;i<nper;i++) {
@@ -762,7 +767,7 @@ for {set kk -180} {$kk<=360} {incr kk 5} {
 		gsl_vector_free(mags);
 		gsl_vector_free(poids);
 		gsl_vector_free(best_periods);
-		gsl_vector_free(phases);
+        gsl_vector_free(phases);
 		gsl_vector_free(residu_min);
 		gsl_vector_free(i_bests);
 		gsl_vector_free(coefs);
@@ -782,11 +787,11 @@ int yd_moin_carr(gsl_vector *phases, gsl_vector *mags,gsl_vector *poids, int n_a
 			6) The number of harmonics
 			7) The jds length
    Outputs: The chi2 value
- */
+*/
 /***************************************************************************/
 {
 
-	int i,j;
+    int i,j;
 	double pi,w;
 	gsl_matrix *A,*W,*Ap,*ApW,*ApWA,*ApWA_inv;
 	gsl_vector *Y,*Y_aju;
@@ -811,17 +816,17 @@ int yd_moin_carr(gsl_vector *phases, gsl_vector *mags,gsl_vector *poids, int n_a
 			gsl_matrix_set(A,j,2*i-2,cos(2*pi*i*phases->data[j]));
 		}
 	}
-	for (j=0;j<nmes;j++) {
+    for (j=0;j<nmes;j++) {
 		gsl_matrix_set(A,j,2*n_arm,1.);
 	}
-	W=gsl_matrix_calloc(nmes,nmes);
+    W=gsl_matrix_calloc(nmes,nmes);
 	for (j=0;j<nmes;j++) {
 		w=poids->data[j];
 		/*w=1/(w*w);*/
 		gsl_matrix_set(W,j,j,w);
 	}
 	/* inv(A'*W*A)*A'*W*Y(mag) */
-	gsl_matrix_transpose_memcpy(Ap,A);
+    gsl_matrix_transpose_memcpy(Ap,A);
 	gsl_blas_dgemm(CblasNoTrans,CblasNoTrans,1.0,Ap,W,0.0,ApW);
 	gsl_blas_dgemm(CblasNoTrans,CblasNoTrans,1.0,ApW,A,0.0,ApWA);
 	gsl_linalg_LU_decomp(ApWA,p,&signum);
@@ -846,7 +851,7 @@ int yd_moin_carr(gsl_vector *phases, gsl_vector *mags,gsl_vector *poids, int n_a
 	gsl_matrix_free(ApWA);
 	gsl_matrix_free(ApWA_inv);
 	gsl_matrix_free(W);
-	gsl_permutation_free(p);
+    gsl_permutation_free(p);
 	return 0;
 }
 
@@ -865,108 +870,109 @@ int Cmd_ydtcl_cour_final(ClientData clientData, Tcl_Interp *interp, int argc, ch
 			3) 0 if k_good*k_bad!=0 - +1 if k_good==0 - -1 if k_bad==0
 			4) Index of jdgoods (point lyning on the curve)
 			5) Index of jdbads (point don't lyning on the curve)
- */
+*/
 /***************************************************************************/
 {   char s[200];
-int i,j,nmes=0,n_arm,k=0,temoin=0;
-Tcl_DString dsptr;
-gsl_vector *coefs;
-double pi,stdmodel,deltamag,deltamag2,val1,val2,sigma,sigma2;
-gsl_matrix *A;
-gsl_vector *phases,*mags,*bars,*magpobss,*ind_jdgoods,*ind_jdbads;
-int k_good,k_bad;
+    int code,code1,code2,code3;
+    int i,j,nmes=0,n_arm,k=0,temoin=0;
+	Tcl_DString dsptr;
+    gsl_vector *coefs;
+	double pi,stdmodel,deltamag,deltamag2,val1,val2,sigma,sigma2;
+	gsl_matrix *A;
+	gsl_vector *phases,*mags,*bars,*magpobss,*ind_jdgoods,*ind_jdbads;
+	int k_good,k_bad;
 
-if(argc!=6) {
-	sprintf(s,"Usage: %s phases mags bars coefs sigma", argv[0]);
-	Tcl_SetResult(interp,s,TCL_VOLATILE);
-	return TCL_ERROR;
-} else {
-	/* --- decodage des arguments ---*/
-	gsltcltcl_getgslvector(interp,argv[1],&phases,&nmes);
-	gsltcltcl_getgslvector(interp,argv[2],&mags,&nmes);
-	gsltcltcl_getgslvector(interp,argv[3],&bars,&nmes);
-	gsltcltcl_getgslvector(interp,argv[4],&coefs,&k);
-	sigma =atof(argv[5]);
-	n_arm=(k-1)/2;
-	/*-----init---------*/
+	if(argc!=6) {
+        sprintf(s,"Usage: %s phases mags bars coefs sigma", argv[0]);
+        Tcl_SetResult(interp,s,TCL_VOLATILE);
+        return TCL_ERROR;
+    } else {
+        /* --- decodage des arguments ---*/
+		code=gsltcltcl_getgslvector(interp,argv[1],&phases,&nmes);
+		code1=gsltcltcl_getgslvector(interp,argv[2],&mags,&nmes);
+		code2=gsltcltcl_getgslvector(interp,argv[3],&bars,&nmes);
+		code3=gsltcltcl_getgslvector(interp,argv[4],&coefs,&k);
+		sigma =atof(argv[5]);
+		n_arm=(k-1)/2;
+		/*-----init---------*/
 
-	/* 1+2*n_arm = nb de coefs a determiner */
-	magpobss    =gsl_vector_calloc(nmes);
-	ind_jdgoods =gsl_vector_calloc(nmes);
-	ind_jdbads  =gsl_vector_calloc(nmes);
+	    /* 1+2*n_arm = nb de coefs a determiner */
+	    magpobss    =gsl_vector_calloc(nmes);
+	    ind_jdgoods =gsl_vector_calloc(nmes);
+		ind_jdbads  =gsl_vector_calloc(nmes);
 
-	A=gsl_matrix_calloc(nmes,k);
-	pi=4*atan(1);
-	for (i=1;i<n_arm+1;i++) {
-		for (j=0;j<nmes;j++){
-			gsl_matrix_set(A,j,2*i-1,sin(2*pi*i*phases->data[j]));
-			gsl_matrix_set(A,j,2*i-2,cos(2*pi*i*phases->data[j]));
+        A=gsl_matrix_calloc(nmes,k);
+	    pi=4*atan(1);
+	    for (i=1;i<n_arm+1;i++) {
+		    for (j=0;j<nmes;j++){
+				gsl_matrix_set(A,j,2*i-1,sin(2*pi*i*phases->data[j]));
+			    gsl_matrix_set(A,j,2*i-2,cos(2*pi*i*phases->data[j]));
+			}
 		}
-	}
-	for (j=0;j<nmes;j++) {
-		gsl_matrix_set(A,j,2*n_arm,1.);
-	}
-
-	/* AA*coefs */
-	gsl_blas_dgemv(CblasNoTrans,1.0,A,coefs,0.0,magpobss);
-	/*Calcul de l'esart type de magpobss*/
-	val1=0;
-	val2=0;
-	for (j=0;j<nmes;j++) {
-		val1+=magpobss->data[j];
-		val2+=magpobss->data[j]*magpobss->data[j];
-	}
-	stdmodel=(val2-val1*val1/nmes)/(nmes-1);
-	/*Cherchons maintenant les ind_jdgoods et ind_jdbads*/
-	sigma2=sigma/2;
-	k_good=0;
-	k_bad=0;
-	for (j=0;j<nmes;j++) {
-		deltamag=fabs(mags->data[j]-magpobss->data[j])-bars->data[j];
-		deltamag2=fabs(mags->data[j]-magpobss->data[j])-sigma2;
-		if ((deltamag>0)&&(deltamag2>0)) {
-			ind_jdbads->data[k_bad]=j;
-			k_bad++;
-		} else {
-			ind_jdgoods->data[k_good]=j;
-			k_good++;
+        for (j=0;j<nmes;j++) {
+		    gsl_matrix_set(A,j,2*n_arm,1.);
 		}
-	}
-	if (k_good==0) {temoin=1;}
-	if (k_bad==0) {temoin=-1;}
 
-	/* Sortie du rï¿½sultat*/
-	Tcl_DStringInit(&dsptr);
-	Tcl_DStringAppend(&dsptr,"{",-1);
-	gsltcltcl_setgslvector(interp,&dsptr,magpobss,nmes);
-	Tcl_DStringAppend(&dsptr,"} {",-1);
-	sprintf(s,"%f",stdmodel);
-	Tcl_DStringAppend(&dsptr,s,-1);
-	Tcl_DStringAppend(&dsptr,"} {",-1);
-	sprintf(s,"%d",temoin);
-	Tcl_DStringAppend(&dsptr,s,-1);
-	if (k_good>0) {
+	    /* AA*coefs */
+   	    gsl_blas_dgemv(CblasNoTrans,1.0,A,coefs,0.0,magpobss);
+	    /*Calcul de l'esart type de magpobss*/
+	    val1=0;
+	    val2=0;
+	    for (j=0;j<nmes;j++) {
+		    val1+=magpobss->data[j];
+		    val2+=magpobss->data[j]*magpobss->data[j];
+	    }
+	    stdmodel=(val2-val1*val1/nmes)/(nmes-1);
+	    /*Cherchons maintenant les ind_jdgoods et ind_jdbads*/
+		sigma2=sigma/2;
+	    k_good=0;
+	    k_bad=0;
+	    for (j=0;j<nmes;j++) {
+		    deltamag=fabs(mags->data[j]-magpobss->data[j])-bars->data[j];
+			deltamag2=fabs(mags->data[j]-magpobss->data[j])-sigma2;
+		    if ((deltamag>0)&&(deltamag2>0)) {
+			    ind_jdbads->data[k_bad]=j;
+			    k_bad++;
+		    } else {
+			    ind_jdgoods->data[k_good]=j;
+			    k_good++;
+		    }
+	    }
+		if (k_good==0) {temoin=1;}
+		if (k_bad==0) {temoin=-1;}
+
+	    /* Sortie du résultat*/
+	    Tcl_DStringInit(&dsptr);
+        Tcl_DStringAppend(&dsptr,"{",-1);
+        gsltcltcl_setgslvector(interp,&dsptr,magpobss,nmes);
 		Tcl_DStringAppend(&dsptr,"} {",-1);
-		gsltcltcl_setgslvector(interp,&dsptr,ind_jdgoods,k_good);
-	}
-	if (k_bad>0) {
+	    sprintf(s,"%f",stdmodel);
+	    Tcl_DStringAppend(&dsptr,s,-1);
 		Tcl_DStringAppend(&dsptr,"} {",-1);
-		gsltcltcl_setgslvector(interp,&dsptr,ind_jdbads,k_bad);
+		sprintf(s,"%d",temoin);
+		Tcl_DStringAppend(&dsptr,s,-1);
+	    if (k_good>0) {
+			Tcl_DStringAppend(&dsptr,"} {",-1);
+            gsltcltcl_setgslvector(interp,&dsptr,ind_jdgoods,k_good);
+	    }
+        if (k_bad>0) {
+			Tcl_DStringAppend(&dsptr,"} {",-1);
+	        gsltcltcl_setgslvector(interp,&dsptr,ind_jdbads,k_bad);
+		}
+	    Tcl_DStringAppend(&dsptr,"}",-1);
+        Tcl_DStringResult(interp,&dsptr);
+        Tcl_DStringFree(&dsptr);
+        /* --- liberation de la memoire ---*/
+   	    gsl_vector_free(phases);
+	    gsl_vector_free(mags);
+	    gsl_vector_free(bars);
+		gsl_vector_free(coefs);
+        gsl_vector_free(magpobss);
+	    gsl_vector_free(ind_jdbads);
+	    gsl_vector_free(ind_jdgoods);
+		gsl_matrix_free(A);
 	}
-	Tcl_DStringAppend(&dsptr,"}",-1);
-	Tcl_DStringResult(interp,&dsptr);
-	Tcl_DStringFree(&dsptr);
-	/* --- liberation de la memoire ---*/
-	gsl_vector_free(phases);
-	gsl_vector_free(mags);
-	gsl_vector_free(bars);
-	gsl_vector_free(coefs);
-	gsl_vector_free(magpobss);
-	gsl_vector_free(ind_jdbads);
-	gsl_vector_free(ind_jdgoods);
-	gsl_matrix_free(A);
-}
-return TCL_OK;
+	return TCL_OK;
 }
 /****************************************************************************/
 /****************************************************************************/
@@ -984,26 +990,26 @@ int gsltcltcl_getvector(Tcl_Interp *interp, char *list, double **vec, int *n)
 /****************************************************************************/
 /****************************************************************************/
 {
-	char **argv=NULL;
-	int argc;
-	int nn,k;
-	double *v=NULL;
+   char **argv=NULL;
+   int argc,code;
+   int nn,k;
+   double *v=NULL;
 
-	*n=0;
-	Tcl_SplitList(interp,list,&argc,&argv);
-	if (argc<=0) {
-		v=(double*)calloc(1,sizeof(double));
-		return TCL_OK;
-	}
-	nn=argc;
+   *n=0;
+   code=Tcl_SplitList(interp,list,&argc,&argv);
+   if (argc<=0) {
+	  v=(double*)calloc(1,sizeof(double));
+	  return TCL_OK;
+   }
+   nn=argc;
 	v=(double*)calloc(nn,sizeof(double));
-	for (k=0;k<nn;k++) {
-		v[k]=(double)atof(argv[k]);
-	}
-	Tcl_Free((char *) argv);
-	*n=nn;
-	*vec=v;
-	return TCL_OK;
+   for (k=0;k<nn;k++) {
+      v[k]=(double)atof(argv[k]);
+   }
+   Tcl_Free((char *) argv);
+   *n=nn;
+   *vec=v;
+   return TCL_OK;
 }
 
 int gsltcltcl_setvector(Tcl_Interp *interp, Tcl_DString *dsptr, double *vec, int n)
@@ -1014,13 +1020,13 @@ int gsltcltcl_setvector(Tcl_Interp *interp, Tcl_DString *dsptr, double *vec, int
 /****************************************************************************/
 /****************************************************************************/
 {
-	int k;
-	char s[200];
-	for (k=0;k<n;k++) {
-		sprintf(s,"%f",vec[k]);
-		Tcl_DStringAppendElement(dsptr,s);
-	}
-	return TCL_OK;
+   int k;
+   char s[200];
+   for (k=0;k<n;k++) {
+      sprintf(s,"%f",vec[k]);
+      Tcl_DStringAppendElement(dsptr,s);
+   }
+   return TCL_OK;
 }
 
 int gsltcltcl_getmatrix(Tcl_Interp *interp, char *list, double **mat, int *nl, int *nc)
@@ -1031,52 +1037,52 @@ int gsltcltcl_getmatrix(Tcl_Interp *interp, char *list, double **mat, int *nl, i
 /****************************************************************************/
 /****************************************************************************/
 {
-	char **argvv=NULL,**argv=NULL,s[200];
-	int argcc,argc;
-	int nlig,ncol=0,ncol1=0,klig,kcol;
-	double *m=NULL;
+   char **argvv=NULL,**argv=NULL,s[200];
+   int argcc,argc,code;
+   int nlig,ncol=0,ncol1=0,klig,kcol;
+   double *m=NULL;
 
-	argvv=NULL;
-	*nl=0;
-	*nc=0;
-	Tcl_SplitList(interp,list,&argc,&argv);
-	if (argc<=0) {
-		gsltcl_mcalloc(&m,1,1);
-		return TCL_OK;
-	}
-	nlig=argc;
-	for (klig=0;klig<nlig;klig++) {
-		argvv=NULL;
-		Tcl_SplitList(interp,argv[klig],&argcc,&argvv);
-		if (argcc<=0) {
-			if (m==NULL) {
-				gsltcl_mcalloc(&m,1,1);
-			}
-			return TCL_OK;
-		}
-		ncol=argcc;
-		if (klig>0) {
-			if (ncol!=ncol1) {
-				sprintf(s,"%d elements instead of %d in line %d",ncol,ncol1,klig);
-				Tcl_Free((char *) argv);
-				Tcl_Free((char *) argvv);
-				Tcl_SetResult(interp,s,TCL_VOLATILE);
-				return TCL_ERROR;
-			}
-		} else {
-			ncol1=ncol;
-			gsltcl_mcalloc(&m,nlig,ncol);
-		}
-		for (kcol=0;kcol<ncol;kcol++) {
-			m[ncol*klig+kcol]=(double)atof(argvv[kcol]);
-		}
-		Tcl_Free((char *) argvv);
-	}
-	Tcl_Free((char *) argv);
-	*nl=nlig;
-	*nc=ncol;
-	*mat=m;
-	return TCL_OK;
+   argvv=NULL;
+   *nl=0;
+   *nc=0;
+   code=Tcl_SplitList(interp,list,&argc,&argv);
+   if (argc<=0) {
+     gsltcl_mcalloc(&m,1,1);
+	  return TCL_OK;
+   }
+   nlig=argc;
+   for (klig=0;klig<nlig;klig++) {
+      argvv=NULL;
+      code=Tcl_SplitList(interp,argv[klig],&argcc,&argvv);
+      if (argcc<=0) {
+         if (m==NULL) {
+		   gsltcl_mcalloc(&m,1,1);
+		 }
+	     return TCL_OK;
+      }
+      ncol=argcc;
+      if (klig>0) {
+         if (ncol!=ncol1) {
+            sprintf(s,"%d elements instead of %d in line %d",ncol,ncol1,klig);
+            Tcl_Free((char *) argv);
+            Tcl_Free((char *) argvv);
+            Tcl_SetResult(interp,s,TCL_VOLATILE);
+            return TCL_ERROR;
+         }
+      } else {
+         ncol1=ncol;
+		   gsltcl_mcalloc(&m,nlig,ncol);
+      }
+      for (kcol=0;kcol<ncol;kcol++) {
+         m[ncol*klig+kcol]=(double)atof(argvv[kcol]);
+      }
+      Tcl_Free((char *) argvv);
+   }
+   Tcl_Free((char *) argv);
+   *nl=nlig;
+   *nc=ncol;
+   *mat=m;
+   return TCL_OK;
 }
 
 
@@ -1089,20 +1095,20 @@ int gsltcltcl_setmatrix(Tcl_Interp *interp, Tcl_DString *dsptr, double *mat, int
 /****************************************************************************/
 /****************************************************************************/
 {
-	int kl,kc;
-	char s[200];
-	Tcl_DStringInit(dsptr);
-	for (kl=0;kl<nl;kl++) {
-		/*Tcl_DStringStartSublist(dsptr);*/
-		Tcl_DStringAppend(dsptr," { ",3);
-		for (kc=0;kc<nc;kc++) {
-			sprintf(s,"%f",mat[nc*kl+kc]);
-			Tcl_DStringAppendElement(dsptr,s);
-		}
-		/*Tcl_DStringEndSublist(dsptr);*/
-		Tcl_DStringAppend(dsptr," } ",3);
-	}
-	return TCL_OK;
+   int kl,kc;
+   char s[200];
+   Tcl_DStringInit(dsptr);
+   for (kl=0;kl<nl;kl++) {
+      /*Tcl_DStringStartSublist(dsptr);*/
+      Tcl_DStringAppend(dsptr," { ",3);
+      for (kc=0;kc<nc;kc++) {
+         sprintf(s,"%f",mat[nc*kl+kc]);
+         Tcl_DStringAppendElement(dsptr,s);
+      }
+      /*Tcl_DStringEndSublist(dsptr);*/
+      Tcl_DStringAppend(dsptr," } ",3);
+   }
+   return TCL_OK;
 }
 
 int gsltcltcl_getgslmatrix(Tcl_Interp *interp, char *list, gsl_matrix **gslmat, int *nl, int *nc)
@@ -1113,49 +1119,49 @@ int gsltcltcl_getgslmatrix(Tcl_Interp *interp, char *list, gsl_matrix **gslmat, 
 /****************************************************************************/
 /****************************************************************************/
 {
-	char **argvv=NULL,**argv=NULL,s[200];
-	int argcc,argc;
-	int nlig,ncol=0,ncol1=0,klig,kcol;
-	gsl_matrix *m=NULL;
+   char **argvv=NULL,**argv=NULL,s[200];
+   int argcc,argc,code;
+   int nlig,ncol=0,ncol1=0,klig,kcol;
+   gsl_matrix *m=NULL;
 
-	argvv=NULL;
-	*nl=0;
-	*nc=0;
-	Tcl_SplitList(interp,list,&argc,&argv);
-	if (argc<=0) {
-		return TCL_ERROR;
-	}
-	nlig=argc;
-	for (klig=0;klig<nlig;klig++) {
-		argvv=NULL;
-		Tcl_SplitList(interp,argv[klig],&argcc,&argvv);
-		if (argcc<=0) {
-			return TCL_ERROR;
-		}
-		ncol=argcc;
-		if (klig>0) {
-			if (ncol!=ncol1) {
-				sprintf(s,"%d elements instead of %d in line %d",ncol,ncol1,klig);
-				Tcl_Free((char *) argv);
-				Tcl_Free((char *) argvv);
-				Tcl_SetResult(interp,s,TCL_VOLATILE);
-				return TCL_ERROR;
-			}
-		} else {
-			ncol1=ncol;
-			m=gsl_matrix_calloc(nlig,ncol);
-		}
-		for (kcol=0;kcol<ncol;kcol++) {
-			/*m[ncol*klig+kcol]=(double)atof(argvv[kcol]);*/
-			gsl_matrix_set(m,klig,kcol,(double)atof(argvv[kcol]));
-		}
-		Tcl_Free((char *) argvv);
-	}
-	Tcl_Free((char *) argv);
-	*nl=nlig;
-	*nc=ncol;
-	*gslmat=m;
-	return TCL_OK;
+   argvv=NULL;
+   *nl=0;
+   *nc=0;
+   code=Tcl_SplitList(interp,list,&argc,&argv);
+   if (argc<=0) {
+	  return TCL_ERROR;
+   }
+   nlig=argc;
+   for (klig=0;klig<nlig;klig++) {
+      argvv=NULL;
+      code=Tcl_SplitList(interp,argv[klig],&argcc,&argvv);
+      if (argcc<=0) {
+	     return TCL_ERROR;
+      }
+      ncol=argcc;
+      if (klig>0) {
+         if (ncol!=ncol1) {
+            sprintf(s,"%d elements instead of %d in line %d",ncol,ncol1,klig);
+            Tcl_Free((char *) argv);
+            Tcl_Free((char *) argvv);
+            Tcl_SetResult(interp,s,TCL_VOLATILE);
+            return TCL_ERROR;
+         }
+      } else {
+         ncol1=ncol;
+         m=gsl_matrix_calloc(nlig,ncol);
+      }
+      for (kcol=0;kcol<ncol;kcol++) {
+         /*m[ncol*klig+kcol]=(double)atof(argvv[kcol]);*/
+         gsl_matrix_set(m,klig,kcol,(double)atof(argvv[kcol]));
+      }
+      Tcl_Free((char *) argvv);
+   }
+   Tcl_Free((char *) argv);
+   *nl=nlig;
+   *nc=ncol;
+   *gslmat=m;
+   return TCL_OK;
 }
 
 int gsltcltcl_setgslmatrix(Tcl_Interp *interp, Tcl_DString *dsptr, gsl_matrix *gslmat, int nl, int nc)
@@ -1167,19 +1173,19 @@ int gsltcltcl_setgslmatrix(Tcl_Interp *interp, Tcl_DString *dsptr, gsl_matrix *g
 /****************************************************************************/
 /****************************************************************************/
 {
-	int kl,kc;
-	char s[200];
-	for (kl=0;kl<nl;kl++) {
-		/* Tcl_DStringStartSublist(dsptr);*/
-		Tcl_DStringAppend(dsptr," { ",3);
-		for (kc=0;kc<nc;kc++) {
-			sprintf(s,"%f",gsl_matrix_get(gslmat,kl,kc));
-			Tcl_DStringAppendElement(dsptr,s);
-		}
-		/*Tcl_DStringEndSublist(dsptr);*/
-		Tcl_DStringAppend(dsptr," } ",3);
-	}
-	return TCL_OK;
+   int kl,kc;
+   char s[200];
+   for (kl=0;kl<nl;kl++) {
+      /* Tcl_DStringStartSublist(dsptr);*/
+      Tcl_DStringAppend(dsptr," { ",3);
+      for (kc=0;kc<nc;kc++) {
+         sprintf(s,"%f",gsl_matrix_get(gslmat,kl,kc));
+         Tcl_DStringAppendElement(dsptr,s);
+      }
+      /*Tcl_DStringEndSublist(dsptr);*/
+      Tcl_DStringAppend(dsptr," } ",3);
+   }
+   return TCL_OK;
 }
 
 int gsltcltcl_getgslvector(Tcl_Interp *interp, char *list, gsl_vector **gslvec, int *n)
@@ -1190,25 +1196,25 @@ int gsltcltcl_getgslvector(Tcl_Interp *interp, char *list, gsl_vector **gslvec, 
 /****************************************************************************/
 /****************************************************************************/
 {
-	char **argv=NULL;
-	int argc;
-	int nn,k;
-	gsl_vector *v=NULL;
+   char **argv=NULL;
+   int argc,code;
+   int nn,k;
+   gsl_vector *v=NULL;
 
-	*n=0;
-	Tcl_SplitList(interp,list,&argc,&argv);
-	if (argc<=0) {
-		return TCL_ERROR;
-	}
-	nn=argc;
-	v=gsl_vector_calloc(nn);
-	for (k=0;k<nn;k++) {
-		gsl_vector_set(v,k,(double)atof(argv[k]));
-	}
-	Tcl_Free((char *) argv);
-	*n=nn;
-	*gslvec=v;
-	return TCL_OK;
+   *n=0;
+   code=Tcl_SplitList(interp,list,&argc,&argv);
+   if (argc<=0) {
+	  return TCL_ERROR;
+   }
+   nn=argc;
+   v=gsl_vector_calloc(nn);
+   for (k=0;k<nn;k++) {
+      gsl_vector_set(v,k,(double)atof(argv[k]));
+   }
+   Tcl_Free((char *) argv);
+   *n=nn;
+   *gslvec=v;
+   return TCL_OK;
 }
 
 
@@ -1220,14 +1226,14 @@ int gsltcltcl_setgslvector(Tcl_Interp *interp, Tcl_DString *dsptr, gsl_vector *v
 /****************************************************************************/
 /****************************************************************************/
 {
-	int k;
-	char s[200];
-	for (k=0;k<n;k++) {
-		/*modif yassine %f -> %.12f pour etre compatible avec le reste*/
-		sprintf(s,"%.12f",gsl_vector_get(vec,k));
-		Tcl_DStringAppendElement(dsptr,s);
-	}
-	return TCL_OK;
+   int k;
+   char s[200];
+   for (k=0;k<n;k++) {
+	  /*modif yassine %f -> %.12f pour etre compatible avec le reste*/
+      sprintf(s,"%.12f",gsl_vector_get(vec,k));
+      Tcl_DStringAppendElement(dsptr,s);
+   }
+   return TCL_OK;
 }
 
 int gsltcl_mcalloc(double **mat,int nlig,int ncol)
@@ -1236,18 +1242,18 @@ int gsltcl_mcalloc(double **mat,int nlig,int ncol)
 /***************************************************************************/
 /***************************************************************************/
 {
-	double *m=NULL;
-	if (*mat==NULL) {
-		if (nlig*ncol==0) {
-			return 2;
-		}
-		m=(double*)calloc(nlig*ncol,sizeof(double));
-		if (m==NULL) {
-			return 1;
-		}
-	}
-	*mat=m;
-	return 0;
+   double *m=NULL;
+   if (*mat==NULL) {
+	  if (nlig*ncol==0) {
+		  return 2;
+	  }
+      m=(double*)calloc(nlig*ncol,sizeof(double));
+	  if (m==NULL) {
+	     return 1;
+	  }
+   }
+   *mat=m;
+   return 0;
 }
 
 int gsltcl_mfree(double **mat)
@@ -1256,10 +1262,10 @@ int gsltcl_mfree(double **mat)
 /***************************************************************************/
 /***************************************************************************/
 {
-	if (*mat==NULL) {
-		free(*mat);
-	}
-	return 0;
+   if (*mat==NULL) {
+	   free(*mat);
+   }
+   return 0;
 }
 
 
@@ -1267,19 +1273,19 @@ int gsltcl_mfree(double **mat)
 int yd_perchoice(gsl_vector *jds, gsl_vector *mags, int nmes, double interval, int *temoin, int *indice_prem_date, int *indice_dern_date)
 /***************************************************************************/
 /* Fonction perchoice                                                       */
-/***************************************************************************
- Fonction with the aim to choose trial periods following the criterion ni*delta_Pi=accu*Pi<<Pi,
- and eliminate aliasing periods
- Inputs : 1) The jds vector
+/***************************************************************************/
+/* Fonction with the aim to choose trial periods following the criterion ni*delta_Pi=accu*Pi<<Pi,
+/* and eliminate aliasing periods
+/* Inputs : 1) The jds vector
 			2) The jds vector length
    Outputs: 1) Temoin = 0 if data length is shorter than 1 year or there isn't enough data in 1 year
                       = 1 else
 			2) The index of the first day of the choosen year (in jds vector)
 			3) The index of the last day of the choosen year (in jds vector)
- */
+*/
 /***************************************************************************/
 {
-	double delta_t;
+    double delta_t;
 	int imes,kdeb,kfin,kmil,kmes,ind1,ind2,temoin2;
 	int	compteur_date,nmesmin;
 	double amplitude,amplitude_tmp,mag,magmax,magmin;
@@ -1288,7 +1294,7 @@ int yd_perchoice(gsl_vector *jds, gsl_vector *mags, int nmes, double interval, i
 	nmesmin=150;
 	ind1=0;
 	ind2=nmes-1;
-	imes=1;
+    imes=1;
 	temoin2=0;
 	amplitude_tmp=0.;
 
@@ -1302,7 +1308,7 @@ int yd_perchoice(gsl_vector *jds, gsl_vector *mags, int nmes, double interval, i
 		while (1) {
 			if (kfin-kdeb<2) {break;}
 			kmil=(kdeb+kfin)/2;
-			delta_t=jds->data[kmil]-jds->data[imes];
+            delta_t=jds->data[kmil]-jds->data[imes];
 			if (delta_t>interval) {
 				kfin=kmil;
 				continue;
@@ -1334,7 +1340,7 @@ int yd_perchoice(gsl_vector *jds, gsl_vector *mags, int nmes, double interval, i
 		}
 		imes++;
 	}
-	/*Je sais que cest un peu bï¿½te mais j'ai encore (beaucoup) des doutes sur les pointeurs*/
+	/*Je sais que cest un peu bête mais j'ai encore (beaucoup) des doutes sur les pointeurs*/
 	*indice_prem_date=ind1;
 	*indice_dern_date=ind2;
 	*temoin=temoin2;
@@ -1347,27 +1353,27 @@ int Cmd_ydtcl_meansigma(ClientData clientData, Tcl_Interp *interp, int argc, cha
 /***************************************************************************/
 /* Inputs : A vector
    Outputs: Its mean and sigma
- */
+*/
 /***************************************************************************/
 {
 	char **argvv1=NULL,**argvv2=NULL,s[200];
-	int argcc1,argcc2;
-	int i;
+    int argcc1,argcc2;
+    int code1,code2,i,n=0;
 	double mean=0,sigma=0;
 	double *vec=NULL,*err=NULL;
 	Tcl_DString dsptr;
 	if((argc<2)||(argc>3)) {
-		sprintf(s,"Usage: %s Input must be a vector (and its errors) ", argv[0]);
-		Tcl_SetResult(interp,s,TCL_VOLATILE);
-		return TCL_ERROR;
-	} else {
-		Tcl_SplitList(interp,argv[1],&argcc1,&argvv1);
+        sprintf(s,"Usage: %s Input must be a vector (and its errors) ", argv[0]);
+        Tcl_SetResult(interp,s,TCL_VOLATILE);
+        return TCL_ERROR;
+    } else {
+		code1=Tcl_SplitList(interp,argv[1],&argcc1,&argvv1);
 		if (argcc1<=0) {
 			Tcl_SetResult(interp,"Le vecteur est nul",TCL_VOLATILE);
 			Tcl_Free((char *) argvv1);
 			Tcl_Free((char *) argvv2);
 			return TCL_ERROR;
-		}
+        }
 		vec=(double*)malloc(argcc1*sizeof(double));
 		if (vec==NULL) {
 			sprintf(s,"error : vec pointer out of memory (%d elements)",argcc1);
@@ -1391,7 +1397,7 @@ int Cmd_ydtcl_meansigma(ClientData clientData, Tcl_Interp *interp, int argc, cha
 			}
 			yd_util_meansigma_poids(vec,err,0,argcc1,0,&mean,&sigma);
 		} else {
-			Tcl_SplitList(interp,argv[2],&argcc2,&argvv2);
+            code2=Tcl_SplitList(interp,argv[2],&argcc2,&argvv2);
 			if (argcc1!=argcc2) {
 				Tcl_SetResult(interp,"Les 2 vecteurs doivent avoir la meme dimension",TCL_VOLATILE);
 				Tcl_Free((char *) argvv1);
@@ -1406,15 +1412,15 @@ int Cmd_ydtcl_meansigma(ClientData clientData, Tcl_Interp *interp, int argc, cha
 			yd_util_meansigma_poids(vec,err,0,argcc1,0,&mean,&sigma);
 		}
 		Tcl_DStringInit(&dsptr);
-		Tcl_DStringAppend(&dsptr,"{",-1);
-		sprintf(s,"%f",mean);
-		Tcl_DStringAppend(&dsptr,s,-1);
+        Tcl_DStringAppend(&dsptr,"{",-1);
+	    sprintf(s,"%f",mean);
+	    Tcl_DStringAppend(&dsptr,s,-1);
 		Tcl_DStringAppend(&dsptr,"} {",-1);
 		sprintf(s,"%f",sigma);
-		Tcl_DStringAppend(&dsptr,s,-1);
+	    Tcl_DStringAppend(&dsptr,s,-1);
 		Tcl_DStringAppend(&dsptr,"}",-1);
 		Tcl_DStringResult(interp,&dsptr);
-		Tcl_DStringFree(&dsptr);
+        Tcl_DStringFree(&dsptr);
 
 		free(vec);
 		free(err);
@@ -1431,32 +1437,32 @@ int Cmd_ydtcl_per_range(ClientData clientData, Tcl_Interp *interp, int argc, cha
 			2) The smallest real period
    Outputs: 1) The smallest authorized periog
 			2) The highest authorized periog
- */
+*/
 /***************************************************************************/
 {
 	char s[200];
-	int nmes=0,i,temoin,nmes2;
+    int code,nmes=0,i,temoin,nmes2;
 	double per_range_minmin,per_range_max,per_range_min,pgcd;
 	Tcl_DString dsptr;
-	gsl_vector *jds;
+    gsl_vector *jds;
 	double *dt;
 	if(argc!=3) {
 		sprintf(s,"Usage: %s Invalid input : must be a vector", argv[0]);
-		Tcl_SetResult(interp,s,TCL_VOLATILE);
-		return TCL_ERROR;
-	} else {
-		/* --- decodage des arguments ---*/
-		gsltcltcl_getgslvector(interp,argv[1],&jds,&nmes);
+        Tcl_SetResult(interp,s,TCL_VOLATILE);
+        return TCL_ERROR;
+    } else {
+        /* --- decodage des arguments ---*/
+		code=gsltcltcl_getgslvector(interp,argv[1],&jds,&nmes);
 		per_range_minmin=atof(argv[2]);
 		nmes2=nmes-1;
-		/*Je calcule les diffï¿½rences entre dates successives*/
+		/*Je calcule les différences entre dates successives*/
 		dt=(double*)calloc(nmes-1,sizeof(double));
 		if (dt==NULL) {
 			sprintf(s,"error : dt pointer out of memory (%d elements)",nmes2);
-			Tcl_SetResult(interp,s,TCL_VOLATILE);
-			gsl_vector_free(jds);
-			return TCL_ERROR;
-		}
+            Tcl_SetResult(interp,s,TCL_VOLATILE);
+            gsl_vector_free(jds);
+            return TCL_ERROR;
+        }
 		for (i=0;i<nmes2;i++) {
 			dt[i]=jds->data[i+1]-jds->data[i];
 		}
@@ -1483,7 +1489,7 @@ int Cmd_ydtcl_per_range(ClientData clientData, Tcl_Interp *interp, int argc, cha
 		gsl_vector_free(jds);
 		free(dt);
 	}
-	return TCL_OK;
+    return TCL_OK;
 }
 /***************************************************************************/
 int Cmd_ydtcl_moy_bars_comp(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
@@ -1494,25 +1500,25 @@ int Cmd_ydtcl_moy_bars_comp(ClientData clientData, Tcl_Interp *interp, int argc,
 			3) The mags mean
 			4) The mags sigma
    Outputs: The ratio of bad points
- */
+*/
 /***************************************************************************/
 {
 	char s[200];
-	int nmes=0,i,temoin=0,compteur;
-	double moyenne,res;
+    int code,code2,nmes=0,i,temoin=0,compteur;
+	double moyenne,res,sigma;/*,mediane*/
 	Tcl_DString dsptr;
-	gsl_vector *bars,*mags;
+    gsl_vector *bars,*mags;
 	gsl_permutation *perm;
 	if(argc!=5) {
 		sprintf(s,"Usage: %s Invalid input : must be 2 vector and a scalar", argv[0]);
-		Tcl_SetResult(interp,s,TCL_VOLATILE);
-		return TCL_ERROR;
-	} else {
-		/* --- decodage des arguments ---*/
-		gsltcltcl_getgslvector(interp,argv[1],&mags,&nmes);
-		gsltcltcl_getgslvector(interp,argv[2],&bars,&nmes);
+        Tcl_SetResult(interp,s,TCL_VOLATILE);
+        return TCL_ERROR;
+    } else {
+        /* --- decodage des arguments ---*/
+		code=gsltcltcl_getgslvector(interp,argv[1],&mags,&nmes);
+		code2=gsltcltcl_getgslvector(interp,argv[2],&bars,&nmes);
 		moyenne=atof(argv[3]);
-		//sigma=atof(argv[4]);
+		sigma=atof(argv[4]);
 
 		perm=gsl_permutation_alloc(nmes);
 		compteur=0;
@@ -1532,27 +1538,27 @@ int Cmd_ydtcl_moy_bars_comp(ClientData clientData, Tcl_Interp *interp, int argc,
 		if (sigma<5*mediane) {temoin = 1;}*/
 
 		Tcl_DStringInit(&dsptr);
-		sprintf(s,"%d",temoin);
-		Tcl_DStringAppend(&dsptr,s,-1);
-		Tcl_DStringResult(interp,&dsptr);
-		Tcl_DStringFree(&dsptr);
-		gsl_vector_free(mags);
-		gsl_vector_free(bars);
+	    sprintf(s,"%d",temoin);
+	    Tcl_DStringAppend(&dsptr,s,-1);
+	    Tcl_DStringResult(interp,&dsptr);
+        Tcl_DStringFree(&dsptr);
+	    gsl_vector_free(mags);
+	    gsl_vector_free(bars);
 		gsl_permutation_free(perm);
 	}
-	return TCL_OK;
+    return TCL_OK;
 }
 /************************************************************************************************************************************************************/
 int yd_dichotomie(double per, gsl_vector *badpers, gsl_vector *deltabadpers, int nbad, int *temoin2, int *k_bad)
 /*************************************************************************************************************************************************************/
-/* Fonction que j'utilise dans yd_nettoyage, elle me sert de retrouver les ï¿½lï¿½ments d'un vecteur
-   grace ï¿½ l'algo de dichotomie utilisï¿½ par Alain dans yd_filehtm2refzmgmes
- */
+/* Fonction que j'utilise dans yd_nettoyage, elle me sert de retrouver les éléments d'un vecteur
+   grace à l'algo de dichotomie utilisé par Alain dans yd_filehtm2refzmgmes
+*/
 {
 	int k,k_per,k_per1,k_per2,sortie;
 	double dper,badper,deltaper,badpersmax;
 
-	*temoin2=0;
+    *temoin2=0;
 	badpersmax=badpers->data[nbad-1]+deltabadpers->data[nbad-1];
 	/** badpersmax voir yd_aliasing*/
 	if (per>badpersmax) {
@@ -1560,45 +1566,45 @@ int yd_dichotomie(double per, gsl_vector *badpers, gsl_vector *deltabadpers, int
 	}
 
 	k_per=0;
-	k_per1=*k_bad;
-	k_per2=nbad-1;
+    k_per1=*k_bad;
+    k_per2=nbad-1;
 	sortie=0;
 	while(sortie==0) {
-		if ((k_per2-k_per1)<=1) { break; }
+        if ((k_per2-k_per1)<=1) { break; }
 		k_per=(k_per1+k_per2+1)/2;
-		badper=badpers->data[k_per];
-		if (per<=badper) {
+        badper=badpers->data[k_per];
+        if (per<=badper) {
 			k_per2=k_per;
-		} else {
-			k_per1=k_per;
-		}
-	}
-	for (k=k_per;k>=0;k--) {
+        } else {
+            k_per1=k_per;
+        }
+    }
+    for (k=k_per;k>=0;k--) {
 		badper=badpers->data[k];
 		deltaper=deltabadpers->data[k];
 		/*On determine le deltaper (largeur de l'histogramme)*/
-		dper=per-badper;
-		if (dper>deltaper) { break; }
+        dper=per-badper;
+        if (dper>deltaper) { break; }
 		if (dper<-deltaper) { continue; }
-		if (dper<deltaper) {
-			*temoin2=1 ;
+        if (dper<deltaper) {
+            *temoin2=1 ;
 			*k_bad=k;
 			return 0;
-		}
-	}
-	for (k=k_per+1;k<nbad;k++) {
+        }
+    }
+ 	for (k=k_per+1;k<nbad;k++) {
 		badper=badpers->data[k];
 		deltaper=deltabadpers->data[k];
 		/*On determine le deltaper (largeur de l'histogramme)*/
 		dper=badper-per;
-		if (dper>deltaper) { break; }
+        if (dper>deltaper) { break; }
 		if (dper<-deltaper) { continue; }
 		if (dper<deltaper) {
 			*temoin2=1 ;
 			*k_bad=k;
 			return 0;
 		}
-	}
+    }
 	return 0;
 }
 /************************************************************************************************************************************************************/
@@ -1649,8 +1655,8 @@ Outputs: 1) le PGCD (s'il existe)
 int Cmd_ydtcl_shortorlong(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 /*********************************************************************************************************/
 /* Fonction shortorlong  : determine si on doit chercher une longue iu une courte periode                                                                                     */
-/*********************************************************************************************************
-  Inputs: 1) The jd vector
+/*********************************************************************************************************/
+/* Inputs: 1) The jd vector
            2) The mag vector
 		   3) The mag weitgh vector
 		   4) The mag amplitude
@@ -1662,27 +1668,28 @@ int Cmd_ydtcl_shortorlong(ClientData clientData, Tcl_Interp *interp, int argc, c
            2) The frequency step
 		   3) The best period if is a long term variable
 
-***************************************************************************/
+/***************************************************************************/
 {
 	char s[200];
-	int nmes,nbin,nbin2,nper,nper2;
-	Tcl_DString dsptr;
-	gsl_vector *jds,*mags,*poids,*vraipoids,*phase,*temp,*dtemp,*PERIODS,*PDM,*ENTROPIE,*PERIODS2,*PDM2,*ENTROPIE2;
+    int code,code2,code3,code4;
+    int nmes,nbin,nbin2,nper,nper2;
+    Tcl_DString dsptr;
+    gsl_vector *jds,*mags,*poids,*vraipoids,*phase,*temp,*dtemp,*PERIODS,*PDM,*ENTROPIE,*PERIODS2,*PDM2,*ENTROPIE2;
 	double amplitude,sigma,vraiesigma,freq,freqmax;
 	double pdmmin,pdm,pdm2,entropie,pdmalias,pdmlong,vraipdmlong,vraipdmlong2,pdmlong2,maxim;
-	double per_range_min,per_range_max,limit,limit2,limit3,pi,pasfreq,pasfreq2,pasfreq3,bestper,principale;
+	double per_range_min,per_range_max,limit,limit2,limit3,limit4,pi,pasfreq,pasfreq2,pasfreq3,bestper,principale;
 	int temoin,k_x,k_per,kk,iter,predisp;
-	/*FILE *f;*/
-	if(argc!=12) {
+/*FILE *f;*/
+    if(argc!=12) {
 		sprintf(s,"Usage: %s jds mags poids vraiepoids amplitude sigma per_range_min per_range_max nper nbin", argv[0]);
-		Tcl_SetResult(interp,s,TCL_VOLATILE);
-		return TCL_ERROR;
+        Tcl_SetResult(interp,s,TCL_VOLATILE);
+        return TCL_ERROR;
 	} else {
-		/* --- decodage des arguments ---*/
-		gsltcltcl_getgslvector(interp,argv[1],&jds,&nmes);
-		gsltcltcl_getgslvector(interp,argv[2],&mags,&nmes);
-		gsltcltcl_getgslvector(interp,argv[3],&poids,&nmes);
-		gsltcltcl_getgslvector(interp,argv[4],&vraipoids,&nmes);
+        /* --- decodage des arguments ---*/
+		code=gsltcltcl_getgslvector(interp,argv[1],&jds,&nmes);
+		code2=gsltcltcl_getgslvector(interp,argv[2],&mags,&nmes);
+		code3=gsltcltcl_getgslvector(interp,argv[3],&poids,&nmes);
+		code4=gsltcltcl_getgslvector(interp,argv[4],&vraipoids,&nmes);
 		amplitude=atof(argv[5]);
 		sigma=atof(argv[6]);
 		vraiesigma=atof(argv[7]);
@@ -1695,10 +1702,11 @@ int Cmd_ydtcl_shortorlong(ClientData clientData, Tcl_Interp *interp, int argc, c
 		limit=0.4;
 		limit2=0.6;
 		limit3=0.15;
+		limit4=0.65;
 		pi=atan(1)*4;
 		nbin2=4;
 		/*on calcule le pas de frequence*/
-		pasfreq=2*sqrt(6./nmes)*sigma/(pi*per_range_max*amplitude);
+        pasfreq=2*sqrt(6./nmes)*sigma/(pi*per_range_max*amplitude);
 		/*Je le sature quand meme pour avoir au maximum 100000 periodes a tester*/
 		pasfreq3=(5e-7>pasfreq)?5e-7:pasfreq;
 		pasfreq2=(1e-4>pasfreq)?1e-4:pasfreq;
@@ -1818,7 +1826,7 @@ int Cmd_ydtcl_shortorlong(ClientData clientData, Tcl_Interp *interp, int argc, c
 
 		gsl_vector_free(PDM);
 		gsl_vector_free(PERIODS);
-		gsl_vector_free(ENTROPIE);
+        gsl_vector_free(ENTROPIE);
 		freq=1./bestper;
 		/*il vaut mieux la faire ici*/
 		gsl_vector_memcpy(temp,jds);
@@ -1828,7 +1836,7 @@ int Cmd_ydtcl_shortorlong(ClientData clientData, Tcl_Interp *interp, int argc, c
 		}
 		yd_pdm_entropie(phase,mags,poids,nmes,nbin2,&pdmlong2,&entropie);
 		pdmlong2/=sigma;
-
+			
 		temoin=0;
 		/*if ((pdmlong2<limit2)&&(pdmalias<limit2)&&(pdmlong2<1.5*pdmalias)) {*/
 		if ((pdmlong2<limit2)&&(pdmalias<limit)&&(pdmlong<limit)) {
@@ -1838,8 +1846,8 @@ int Cmd_ydtcl_shortorlong(ClientData clientData, Tcl_Interp *interp, int argc, c
 		} else if (pdmlong<0.1) {
 			temoin=1;
 		}
-		vraipdmlong=1.;
-		vraipdmlong2=1.;
+vraipdmlong=1.;
+vraipdmlong2=1.;
 		if(!temoin){
 			yd_pdm_entropie(phase,mags,vraipoids,nmes,nbin,&vraipdmlong,&entropie);
 			vraipdmlong/=(vraiesigma*vraiesigma);
@@ -1848,7 +1856,7 @@ int Cmd_ydtcl_shortorlong(ClientData clientData, Tcl_Interp *interp, int argc, c
 			vraipdmlong=(vraipdmlong<pdmlong)?vraipdmlong:pdmlong;
 			vraipdmlong2=(vraipdmlong2<pdmlong2)?vraipdmlong2:pdmlong2;
 			if((vraipdmlong<0.65)&&(vraipdmlong2<0.9)) {
-				predisp=1;
+                predisp=1;
 			} else if(vraipdmlong<0.5) {
 				predisp=1;
 			} else {
@@ -1857,7 +1865,7 @@ int Cmd_ydtcl_shortorlong(ClientData clientData, Tcl_Interp *interp, int argc, c
 		}
 		/*on teste si cette bestper n'est pas la sousharmonique d'une autre (utile pour les cepheides*/
 		if ((temoin)&&(bestper<40)) {
-			iter=2;
+            iter=2;
 			while(iter<5) {
 				principale=bestper/iter;
 				if((principale<20)&&(principale<per_range_max)) {
@@ -1887,10 +1895,10 @@ int Cmd_ydtcl_shortorlong(ClientData clientData, Tcl_Interp *interp, int argc, c
 			temoin=1;
 			predisp=0;
 		}
-		/*f=fopen("toto.txt","a");
+/*f=fopen("toto.txt","a");
 fprintf(f,"%.2f %.2f %.2f %.2f %1d %1d\n", pdmlong,pdmlong2,vraipdmlong,vraipdmlong2,temoin,predisp);
 fclose(f);*/
-
+		
 		/* --- sortie du resultat ---*/
 		Tcl_DStringInit(&dsptr);
 		sprintf(s,"%1d",temoin);
@@ -1904,7 +1912,7 @@ fclose(f);*/
 		Tcl_DStringAppend(&dsptr," ",-1);
 		sprintf(s,"%1d",predisp);
 		Tcl_DStringAppend(&dsptr,s,-1);
-
+		
 		Tcl_DStringAppend(&dsptr," {",-1);
 		gsltcltcl_setgslvector(interp,&dsptr,PERIODS2,nper2);
 		Tcl_DStringAppend(&dsptr,"} {",-1);
@@ -1914,7 +1922,7 @@ fclose(f);*/
 		Tcl_DStringAppend(&dsptr,"}",-1);
 		Tcl_DStringResult(interp,&dsptr);
 		Tcl_DStringFree(&dsptr);
-
+		
 		gsl_vector_free(mags);
 		gsl_vector_free(jds);
 		gsl_vector_free(poids);
@@ -1922,10 +1930,10 @@ fclose(f);*/
 		gsl_vector_free(temp);
 		gsl_vector_free(dtemp);
 		gsl_vector_free(phase);
-		gsl_vector_free(PERIODS2);
+        gsl_vector_free(PERIODS2);
 		gsl_vector_free(PDM2);
 		gsl_vector_free(ENTROPIE2);
-	}
+    }
 	return TCL_OK;
 }
 int Cmd_ydtcl_poids(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
@@ -1934,28 +1942,28 @@ int Cmd_ydtcl_poids(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 /***************************************************************************/
 /* Inputs : A vector
    Outputs: Its mean and sigma
- */
+*/
 /***************************************************************************/
 {
 	char **argvv1=NULL,**argvv2=NULL,s[200];
-	int argcc1,argcc2;
-	int i;
+    int argcc1,argcc2;
+    int code1,code2,i;
 	double somme_poids;
 	double *bars=NULL;
 	int *flags=NULL;
 	Tcl_DString dsptr;
-	if(argc != 3) {
-		sprintf(s,"Usage: %s bars ?flags ", argv[0]);
-		Tcl_SetResult(interp,s,TCL_VOLATILE);
-		return TCL_ERROR;
-	} else {
-		Tcl_SplitList(interp,argv[1],&argcc1,&argvv1);
+	if(argc=!3) {
+        sprintf(s,"Usage: %s bars ?flags ", argv[0]);
+        Tcl_SetResult(interp,s,TCL_VOLATILE);
+        return TCL_ERROR;
+    } else {
+		code1=Tcl_SplitList(interp,argv[1],&argcc1,&argvv1);
 		if (argcc1<=0) {
 			Tcl_SetResult(interp,"Le vecteur bars est nul",TCL_VOLATILE);
 			Tcl_Free((char *) argvv1);
 			Tcl_Free((char *) argvv2);
 			return TCL_ERROR;
-		}
+        }
 		bars=(double*)malloc(argcc1*sizeof(double));
 		if (bars==NULL) {
 			sprintf(s,"error : bars pointer out of memory (%d elements)",argcc1);
@@ -1965,7 +1973,7 @@ int Cmd_ydtcl_poids(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 			return TCL_ERROR;
 		}
 		if (argc==3) {
-			Tcl_SplitList(interp,argv[2],&argcc2,&argvv2);
+            code2=Tcl_SplitList(interp,argv[2],&argcc2,&argvv2);
 			if (argcc2<=0) {
 				Tcl_SetResult(interp,"Le vecteur flags est nul",TCL_VOLATILE);
 				Tcl_Free((char *) argvv1);
@@ -2015,19 +2023,19 @@ int Cmd_ydtcl_poids(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 			bars[i]=bars[i]/somme_poids;
 		}
 		Tcl_DStringInit(&dsptr);
-		/*Tcl_DStringAppend(&dsptr,"{",-1);*/
+        /*Tcl_DStringAppend(&dsptr,"{",-1);*/
 		for (i=0;i<argcc1;i++) {
 			sprintf(s,"%12.10f ",bars[i]);
 			Tcl_DStringAppend(&dsptr,s,-1);
 		}
 		/*Tcl_DStringAppend(&dsptr,"}",-1);*/
 		Tcl_DStringResult(interp,&dsptr);
-		Tcl_DStringFree(&dsptr);
+        Tcl_DStringFree(&dsptr);
 
 		free(bars);
 		Tcl_Free((char *) argvv1);
 		if (argc==3) {
-			free(flags);
+            free(flags);
 			Tcl_Free((char *) argvv2);
 		}
 	}
@@ -2036,8 +2044,8 @@ int Cmd_ydtcl_poids(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 int Cmd_ydtcl_entropie_pdm(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 /*********************************************************************************************************/
 /* Fonction minlong     $jds $mags $poids $longvar $per_range_min $per_range_max $pasfreq $nper1                                                                                */
-/*********************************************************************************************************
-   Inputs: 1) The jd vector
+/*********************************************************************************************************/
+/* Inputs: 1) The jd vector
            2) The mag vector
 		   3) (The mag errors vector) The weight vector
 		   4) 1 if we seek a long period - 0 else
@@ -2049,37 +2057,38 @@ int Cmd_ydtcl_entropie_pdm(ClientData clientData, Tcl_Interp *interp, int argc, 
    Outputs 1) The best periods vector 
 		   2) The PDM vector
 		   3) The ENTROPIE vector
-***************************************************************************/
+/***************************************************************************/
 {
 	char s[200];
-	int n_jd,n_mag,nmes,nper,nmes2;
-	Tcl_DString dsptr;
-	gsl_vector *jds,*jds2,*mags,*mags2,*poids,*poids2,*periods,*pdms,*entropies,*PERIODS,*PDM,*ENTROPIE,*phase,*temp,*dtemp;
+    int code,code2,code3;
+    int n_jd,n_mag,nmes,nper,nmes2;
+    Tcl_DString dsptr;
+    gsl_vector *jds,*jds2,*mags,*mags2,*poids,*poids2,*periods,*pdms,*entropies,*PERIODS,*PDM,*ENTROPIE,*phase,*temp,*dtemp;
 	double maxim;
 	int k_x,kk,k_per;
-	double pasfreq,pasfreq2,pdm,entropie;
+    double pasfreq,pasfreq2,pdm,entropie;
 	double per_range_min,per_range_max,deltafreq,freq,nfreqmax,npermax,T2;
 	int nper2,nbin,indice_prem_date,indice_dern_date,temoin,iter;
-	/*FILE *f;*/
-	if(argc!=9) {
+    /*FILE *f;*/
+    if(argc!=9) {
 		sprintf(s,"Usage: %s jds mags poids nper per_range_min per_range_max pasfreq nper nbin", argv[0]);
-		Tcl_SetResult(interp,s,TCL_VOLATILE);
-		return TCL_ERROR;
+        Tcl_SetResult(interp,s,TCL_VOLATILE);
+        return TCL_ERROR;
 	} else {
-		/* --- decodage des arguments ---*/
-		gsltcltcl_getgslvector(interp,argv[1],&jds,&n_jd);
-		gsltcltcl_getgslvector(interp,argv[2],&mags,&n_mag);
-		gsltcltcl_getgslvector(interp,argv[3],&poids,&n_mag);
+        /* --- decodage des arguments ---*/
+		code=gsltcltcl_getgslvector(interp,argv[1],&jds,&n_jd);
+		code2=gsltcltcl_getgslvector(interp,argv[2],&mags,&n_mag);
+		code3=gsltcltcl_getgslvector(interp,argv[3],&poids,&n_mag);
 		per_range_min=atof(argv[4]);
 		per_range_max=atof(argv[5]);
 		pasfreq=atof(argv[6]);
 		nper=atoi(argv[7]);
 		nbin=atoi(argv[8]);
-		/* --- validite des arguments ---*/
+        /* --- validite des arguments ---*/
 		if (n_jd!=n_mag) {
 			/* --- message d'erreur a propos des dimensions ---*/
-			Tcl_SetResult(interp,"jds and mags vectors must have the same dimension",TCL_VOLATILE);
-			return TCL_ERROR;
+            Tcl_SetResult(interp,"jds and mags vectors must have the same dimension",TCL_VOLATILE);
+            return TCL_ERROR;
 		}
 		/* --- inits ---*/
 		nmes=n_jd;
@@ -2105,7 +2114,7 @@ int Cmd_ydtcl_entropie_pdm(ClientData clientData, Tcl_Interp *interp, int argc, 
 			temoin=0;
 			iter=1;
 			while (iter<6) {
-				yd_perchoice(jds,mags,nmes,iter*T2,&temoin,&indice_prem_date,&indice_dern_date);
+                yd_perchoice(jds,mags,nmes,iter*T2,&temoin,&indice_prem_date,&indice_dern_date);
 				if (temoin) {break;}
 				iter++;
 			}
@@ -2135,7 +2144,7 @@ int Cmd_ydtcl_entropie_pdm(ClientData clientData, Tcl_Interp *interp, int argc, 
 				gsl_vector_free(poids2);
 				nmes=nmes2;
 			}
-			npermax=nfreqmax;
+            npermax=nfreqmax;
 			pasfreq=pasfreq2;
 		}
 		nper2=(int)npermax;
@@ -2172,7 +2181,7 @@ int Cmd_ydtcl_entropie_pdm(ClientData clientData, Tcl_Interp *interp, int argc, 
 			freq+=pasfreq;
 			gsl_vector_add(temp,dtemp);
 		}
-
+		
 		nper2=nper;
 		if (k_per<nper) {nper2=k_per;}
 		PERIODS=gsl_vector_calloc(nper2);
@@ -2217,7 +2226,7 @@ int Cmd_ydtcl_entropie_pdm(ClientData clientData, Tcl_Interp *interp, int argc, 
 		gsl_vector_free(PDM);
 		gsl_vector_free(ENTROPIE);
 		return TCL_OK;
-	}
+    }
 }
 int Cmd_ydtcl_ajustement_spec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 /***************************************************************************/
@@ -2232,32 +2241,33 @@ int Cmd_ydtcl_ajustement_spec(ClientData clientData, Tcl_Interp *interp, int arg
    Outputs: 1) The best periods vector sorted following the chi2 test
 			2) The final number of harmonics (only for the best period)
 			3) The Fourier coefficients vector (only for the best period)
- */
+*/
 /***************************************************************************/
 {
-	char s[200];
-	int nper=0,nhar=0,nmes=0;
-	Tcl_DString dsptr;
-	gsl_vector *jds,*mags,*poids,*best_periods,*phases,*phases_long,*phases_short;
+    char s[200];
+    int code,code1,code2,code3;
+    int nper=0,nhar=0,nmes=0;
+    Tcl_DString dsptr;
+    gsl_vector *jds,*mags,*poids,*best_periods,*phases,*phases_long,*phases_short;
 	double residu_short,residu_long;
-	gsl_vector *coefs_long,*coefs_short;
-	double res;
-	double deltaphasemax,jdphase0,rapport,eps,per_alias;
-	int nhar0,i,j,temoin,nhar_long,nhar_short,temoin2,compteur;
+    gsl_vector *coefs_long,*coefs_short;
+    double res;
+    double deltaphasemax,jdphase0,rapport,limit_per_long,eps,per_alias;
+    int nhar0,i,j,temoin,nhar_long,nhar_short,temoin2,compteur;
 	int k_phase,k_phasemax=8,k_phase_vide;
 	int hist[8];
 
 	if(argc!=7) {
-		sprintf(s,"Usage: %s Inputs must be jds jdphase0 mags poids periods_shortlong nhar", argv[0]);
-		Tcl_SetResult(interp,s,TCL_VOLATILE);
-		return TCL_ERROR;
-	} else {
-		/* --- decodage des arguments ---*/
-		gsltcltcl_getgslvector(interp,argv[1],&jds,&nmes);
+        sprintf(s,"Usage: %s Inputs must be jds jdphase0 mags poids periods_shortlong nhar", argv[0]);
+        Tcl_SetResult(interp,s,TCL_VOLATILE);
+       return TCL_ERROR;
+   } else {
+        /* --- decodage des arguments ---*/
+        code=gsltcltcl_getgslvector(interp,argv[1],&jds,&nmes);
 		jdphase0=atof(argv[2]);
-		gsltcltcl_getgslvector(interp,argv[3],&mags,&nmes);
-		gsltcltcl_getgslvector(interp,argv[4],&poids,&nmes);
-		gsltcltcl_getgslvector(interp,argv[5],&best_periods,&nper);
+		code1=gsltcltcl_getgslvector(interp,argv[3],&mags,&nmes);
+		code2=gsltcltcl_getgslvector(interp,argv[4],&poids,&nmes);
+        code3=gsltcltcl_getgslvector(interp,argv[5],&best_periods,&nper);
 		nhar =atoi(argv[6]);
 		/* --- inits ---*/
 		phases=gsl_vector_calloc(nmes);
@@ -2267,9 +2277,10 @@ int Cmd_ydtcl_ajustement_spec(ClientData clientData, Tcl_Interp *interp, int arg
 		eps=0.05;
 		per_alias=0.5;
 		/*Par construction nper=2 : 1ere periode est la periode courte, la 2eme est la periode longue*/
+		limit_per_long=20.;
 
 		for (i=0;i<nper;i++) {
-			/* --- determine n_har0, le nombre d'harmoniques maximum ï¿½ prendre ---*/
+			/* --- determine n_har0, le nombre d'harmoniques maximum à prendre ---*/
 			for (j=0;j<nmes;j++) {
 				res=(jds->data[j]-jdphase0)/best_periods->data[i];
 				phases->data[j]=res-floor(res);
@@ -2322,27 +2333,27 @@ int Cmd_ydtcl_ajustement_spec(ClientData clientData, Tcl_Interp *interp, int arg
 				if (k_phase_vide>0.5*k_phasemax) {temoin=0;}	
 			}
 		}
-
+		
 		/*je regarde si la periode trouvee est un sousmultiple de 1j*/
 		temoin2=0;
 		compteur=0;
 		if(temoin) {
 			if (best_periods->data[0]<=0.95*per_alias) {
 				compteur++;
-				rapport=2*per_alias/best_periods->data[0];
-				rapport=rapport-floor(rapport);
+                rapport=2*per_alias/best_periods->data[0];
+                rapport=rapport-floor(rapport);
 				if((rapport>eps)&&(rapport<(1.-eps))) { temoin2++; }
 			}
 			if (best_periods->data[0]>0.95*per_alias) {
 				compteur++;
-				rapport=best_periods->data[0]/per_alias;
-				rapport=rapport-floor(rapport);
+                rapport=best_periods->data[0]/per_alias;
+                rapport=rapport-floor(rapport);
 				if((rapport>eps)&&(rapport<(1.-eps))) { temoin2++; }
 			}
 			if (best_periods->data[0]>1.5*per_alias) {
 				compteur++;
-				rapport=best_periods->data[0]/per_alias/2;
-				rapport=rapport-floor(rapport);
+                rapport=best_periods->data[0]/per_alias/2;
+                rapport=rapport-floor(rapport);
 				if((rapport>eps)&&(rapport<(1.-eps))) { temoin2++; }
 			}
 			if (best_periods->data[0]>10*per_alias) { temoin=0; }
@@ -2389,7 +2400,7 @@ int Cmd_ydtcl_ajustement_spec(ClientData clientData, Tcl_Interp *interp, int arg
 		gsl_vector_free(mags);
 		gsl_vector_free(poids);
 		gsl_vector_free(best_periods);
-		gsl_vector_free(phases);
+        gsl_vector_free(phases);
 		gsl_vector_free(coefs_short);
 		gsl_vector_free(coefs_long);
 		gsl_vector_free(phases_short);
@@ -2400,31 +2411,32 @@ int Cmd_ydtcl_ajustement_spec(ClientData clientData, Tcl_Interp *interp, int arg
 int Cmd_ydtcl_coefs_rucinski(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 /*********************************************************************************************************/
 /* Fonction Coefs_rucinski : rephase la courbe de lumiere par rapport au minimum (classification des binaires)*/
-/*********************************************************************************************************
-   Inputs  Fourier coefficients
+/*********************************************************************************************************/
+/* Inputs  Fourier coefficients
    Outputs New Fourier coefficients
-***************************************************************************/
+/***************************************************************************/
 {
 	char s[200];
-	int ncoef,nmes,nhar;
-	Tcl_DString dsptr;
+    int code;
+    int ncoef,nmes,nhar;
+    Tcl_DString dsptr;
 	gsl_vector *coefs,*new_coefs;
 	double phimin,magmax,magmin,phase,magnitude,pi;
 	int k_coef;
-	double pasfreq,period,jdphi0_old,cos_phimin,sin_phimin,ai,bi;
-	/*FILE *f;*/
-	if(argc!=2) {
+    double pasfreq,period,jdphi0_old,cos_phimin,sin_phimin,ai,bi;
+    /*FILE *f;*/
+    if(argc!=2) {
 		sprintf(s,"Usage: %s coefs", argv[0]);
-		Tcl_SetResult(interp,s,TCL_VOLATILE);
-		return TCL_ERROR;
+        Tcl_SetResult(interp,s,TCL_VOLATILE);
+        return TCL_ERROR;
 	} else {
-		/* --- decodage des arguments ---*/
-		gsltcltcl_getgslvector(interp,argv[1],&coefs,&ncoef);
-		/* --- validite des arguments ---*/
+        /* --- decodage des arguments ---*/
+		code=gsltcltcl_getgslvector(interp,argv[1],&coefs,&ncoef);
+        /* --- validite des arguments ---*/
 		if (ncoef<3) {
 			/* --- message d'erreur a propos des dimensions ---*/
-			Tcl_SetResult(interp,"Coefs must have at least 3 elements",TCL_VOLATILE);
-			return TCL_ERROR;
+            Tcl_SetResult(interp,"Coefs must have at least 3 elements",TCL_VOLATILE);
+            return TCL_ERROR;
 		}
 		/* --- inits ---*/
 		pi         = 4*atan(1);
@@ -2479,7 +2491,7 @@ int Cmd_ydtcl_coefs_rucinski(ClientData clientData, Tcl_Interp *interp, int argc
 		gsl_vector_free(new_coefs);
 		gsl_vector_free(coefs);
 		return TCL_OK;
-	}
+    }
 }
 int Cmd_ydtcl_detect_multiple_per(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 /***************************************************************************/
@@ -2489,31 +2501,32 @@ int Cmd_ydtcl_detect_multiple_per(ClientData clientData, Tcl_Interp *interp, int
 			2) Periode
    Outputs: 1) New Fourier coefficients
 			2) New periode
- */
+*/
 /***************************************************************************/
 {
-	char s[200];
-	int ncoef,nmes,nhar,equidist;
-	Tcl_DString dsptr;
+    char s[200];
+    int code;
+    int ncoef,nmes,nhar,equidist;
+    Tcl_DString dsptr;
 	gsl_vector *coefs,*new_coefs,*mag_minima,*mag_maxima,*phi_minima,*phi_maxima,*magnitudes;
 	gsl_matrix *A,*A_transp,*A_transp_A,*A_transp_A_inv,*A_transp2;
 	gsl_permutation *p;
 	double phase,phase2,magnitude,pi,periode,new_periode,magnitude1,magnitude2,magnitude3;
 	int k_coef,kmag,signum,compt_extrema,compt_minima,compt_maxima,i,j,temoin,temoin1,temoin2;
-	double pasfreq,dmag1,dmag2,dmag0,dmag,dphase,rien,dphasemax,dphasemin,dphilim,dmaglim;
+    double pasfreq,dmag1,dmag2,dmag0,dmag,dphase,rien,dphasemax,dphasemin,dphilim,dmaglim;
 	if(argc!=3) {
 		sprintf(s,"Usage: %s coefs multiple", argv[0]);
-		Tcl_SetResult(interp,s,TCL_VOLATILE);
-		return TCL_ERROR;
+        Tcl_SetResult(interp,s,TCL_VOLATILE);
+        return TCL_ERROR;
 	} else {
-		/* --- decodage des arguments ---*/
-		gsltcltcl_getgslvector(interp,argv[1],&coefs,&ncoef);
+        /* --- decodage des arguments ---*/
+		code     = gsltcltcl_getgslvector(interp,argv[1],&coefs,&ncoef);
 		periode  = atof(argv[2]);
-		/* --- validite des arguments ---*/
+        /* --- validite des arguments ---*/
 		if (ncoef<3) {
 			/* --- message d'erreur a propos des dimensions ---*/
-			Tcl_SetResult(interp,"Coefs must have at least 3 elements",TCL_VOLATILE);
-			return TCL_ERROR;
+            Tcl_SetResult(interp,"Coefs must have at least 3 elements",TCL_VOLATILE);
+            return TCL_ERROR;
 		}
 		/* --- inits ---*/
 		pi         = 4*atan(1);
@@ -2575,7 +2588,7 @@ int Cmd_ydtcl_detect_multiple_per(ClientData clientData, Tcl_Interp *interp, int
 				/*c'est un minima local*/
 				mag_minima->data[compt_minima]= magnitude2;
 				if (temoin1) {
-					phi_minima->data[compt_minima]= phase-pasfreq-dphasemin;
+                    phi_minima->data[compt_minima]= phase-pasfreq-dphasemin;
 				} else {
 					phi_minima->data[compt_minima]=0;
 				}
@@ -2587,7 +2600,7 @@ int Cmd_ydtcl_detect_multiple_per(ClientData clientData, Tcl_Interp *interp, int
 				/*c'est un maxima local*/
 				mag_maxima->data[compt_maxima]= magnitude2;
 				if (temoin2) {
-					phi_maxima->data[compt_maxima]= phase-pasfreq-dphasemax;
+                    phi_maxima->data[compt_maxima]= phase-pasfreq-dphasemax;
 				} else {
 					phi_maxima->data[compt_maxima]=0;
 				}
@@ -2600,7 +2613,7 @@ int Cmd_ydtcl_detect_multiple_per(ClientData clientData, Tcl_Interp *interp, int
 			phase     += pasfreq;
 			kmag++;
 		}
-
+		
 		/*Le nombre de maxima doit etre egal au nombre de minima*/
 		/*on verifie que les minima sont equidistants en phase*/
 		equidist = 1;
@@ -2757,32 +2770,33 @@ int Cmd_ydtcl_phase_multiple_per(ClientData clientData, Tcl_Interp *interp, int 
 			2) Periode
    Outputs: 1) New Fourier coefficients
 			2) New periode
- */
+*/
 /***************************************************************************/
 {
-	char s[200];
-	int ncoef,nmes,nhar;
-	Tcl_DString dsptr;
+    char s[200];
+    int code;
+    int ncoef,nmes,nhar;
+    Tcl_DString dsptr;
 	gsl_vector *coefs,*new_coefs,*magnitudes;
 	gsl_matrix *A,*A_transp,*A_transp_A,*A_transp_A_inv,*A_transp2;
 	gsl_permutation *p;
 	double phase,phase2,pi;
 	int k_coef,kmag,signum;
-	double pasfreq,rien,rien2,multiple;
-	/*FILE *f;*/
+    double pasfreq,rien,rien2,multiple;
+/*FILE *f;*/
 	if(argc!=3) {
 		sprintf(s,"Usage: %s coefs multiple", argv[0]);
-		Tcl_SetResult(interp,s,TCL_VOLATILE);
-		return TCL_ERROR;
+        Tcl_SetResult(interp,s,TCL_VOLATILE);
+        return TCL_ERROR;
 	} else {
-		/* --- decodage des arguments ---*/
-		gsltcltcl_getgslvector(interp,argv[1],&coefs,&ncoef);
+        /* --- decodage des arguments ---*/
+		code     = gsltcltcl_getgslvector(interp,argv[1],&coefs,&ncoef);
 		multiple = atof(argv[2]);
-		/* --- validite des arguments ---*/
+        /* --- validite des arguments ---*/
 		if (ncoef<3) {
 			/* --- message d'erreur a propos des dimensions ---*/
-			Tcl_SetResult(interp,"Coefs must have at least 3 elements",TCL_VOLATILE);
-			return TCL_ERROR;
+            Tcl_SetResult(interp,"Coefs must have at least 3 elements",TCL_VOLATILE);
+            return TCL_ERROR;
 		}
 		/* --- inits ---*/
 		pi         = 4*atan(1);
@@ -2791,7 +2805,7 @@ int Cmd_ydtcl_phase_multiple_per(ClientData clientData, Tcl_Interp *interp, int 
 		nhar       = (ncoef-1)/2;
 		new_coefs  = gsl_vector_alloc(ncoef);
 		/*if (multiple>1) {*/
-		nmes   = nmes*(int)ceil(multiple);
+			nmes   = nmes*(int)ceil(multiple);
 		/*}*/
 		magnitudes = gsl_vector_alloc(nmes);
 		A          = gsl_matrix_calloc(nmes,1+2*nhar);
@@ -2800,7 +2814,7 @@ int Cmd_ydtcl_phase_multiple_per(ClientData clientData, Tcl_Interp *interp, int 
 		A_transp_A = gsl_matrix_calloc(1+2*nhar,1+2*nhar);
 		A_transp_A_inv = gsl_matrix_calloc(1+2*nhar,1+2*nhar);
 		p          = gsl_permutation_alloc(1+2*nhar);
-
+		
 		phase      = 0.;
 		kmag = 0;
 		while (kmag<nmes) {
@@ -2829,7 +2843,7 @@ int Cmd_ydtcl_phase_multiple_per(ClientData clientData, Tcl_Interp *interp, int 
 		gsl_blas_dgemm(CblasNoTrans,CblasNoTrans,1.0,A_transp_A_inv,A_transp,0.0,A_transp2);
 		gsl_blas_dgemv(CblasNoTrans,1.0,A_transp2,magnitudes,0.0,new_coefs);
 		/**/
-
+		
 		/* --- sortie du resultat ---*/
 		Tcl_DStringInit(&dsptr);
 		Tcl_DStringAppend(&dsptr,"{",-1);
@@ -2857,13 +2871,13 @@ int Cmd_ydtcl_util_reduit_nombre_digit(ClientData clientData, Tcl_Interp *interp
 /************************************************************************************************************/
 {
 	char s[200],format[200];
-	Tcl_DString dsptr;
+    Tcl_DString dsptr;
 	double x, dx,dx2;
 	int ndigit;
-	if(argc!=3) {
+    if(argc!=3) {
 		sprintf(s,"Usage: %s value delta_value", argv[0]);
-		Tcl_SetResult(interp,s,TCL_VOLATILE);
-		return TCL_ERROR;
+        Tcl_SetResult(interp,s,TCL_VOLATILE);
+        return TCL_ERROR;
 	} else {
 		/* --- decodage des arguments ---*/
 		x=atof(argv[1]);
@@ -2897,32 +2911,32 @@ int Cmd_ydtcl_util_reduit_nombre_digit(ClientData clientData, Tcl_Interp *interp
 		Tcl_DStringResult(interp,&dsptr);
 		Tcl_DStringFree(&dsptr);
 		return TCL_OK;
-	}
+    }
 }
 int Cmd_ydtcl_pasfreq(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 /*********************************************************************************************************/
 /* Fonction pasfreq  : correction pour le referee (cherche le pas de frequence)                                                                                    */
-/*********************************************************************************************************
-  Inputs: 1) periode
+/*********************************************************************************************************/
+/* Inputs: 1) periode
            2) amplitudeobs
 		   3) sigma
 		   4) per_range_min
 		   5) per_range_max
 		   6) nmes
   Outputs: 1) pasfreqfinal
-***************************************************************************/
+/***************************************************************************/
 {
 	char s[200];
-	Tcl_DString dsptr;
+    Tcl_DString dsptr;
 	double periode,amplitude,sigma,deltafreq;
 	double per_range_min,per_range_max,pasfreq,pasfreq2,pi,pasfreqfinal,nfreqmax,nfreq;
 	int nmes;
-	if(argc!=7) {
+    if(argc!=7) {
 		sprintf(s,"Usage: %s periode amplitude sigma per_range_min per_range_max nper nmes", argv[0]);
-		Tcl_SetResult(interp,s,TCL_VOLATILE);
-		return TCL_ERROR;
+        Tcl_SetResult(interp,s,TCL_VOLATILE);
+        return TCL_ERROR;
 	} else {
-		/* --- decodage des arguments ---*/
+        /* --- decodage des arguments ---*/
 		/*[yd_pasfreq $jds $mags $periode $amplitudeobs $sigma $per_range_min $per_range_max]*/
 		periode=atof(argv[1]);
 		amplitude=atof(argv[2]);
@@ -2934,14 +2948,14 @@ int Cmd_ydtcl_pasfreq(ClientData clientData, Tcl_Interp *interp, int argc, char 
 		nfreqmax=100000.;
 		pi=4*atan(1);
 		/*on calcule le pas de frequence*/
-		pasfreq=2*sqrt(6./nmes)*sigma/(pi*per_range_max*amplitude);
+        pasfreq=2*sqrt(6./nmes)*sigma/(pi*per_range_max*amplitude);
 		/*Je le sature quand meme pour avoir au maximum 100000 periodes a tester*/
 		pasfreq2=(5e-7>pasfreq)?5e-7:pasfreq;
 		if (periode>20) {
 			pasfreqfinal=pasfreq2;
 		} else {
 			pasfreqfinal=pasfreq;
-			deltafreq=1./per_range_min-1./per_range_max;
+            deltafreq=1./per_range_min-1./per_range_max;
 			nfreq=deltafreq/pasfreq;
 			if (nfreq>nfreqmax) {			
 				pasfreqfinal=deltafreq/nfreqmax;
@@ -2954,19 +2968,19 @@ int Cmd_ydtcl_pasfreq(ClientData clientData, Tcl_Interp *interp, int argc, char 
 		Tcl_DStringResult(interp,&dsptr);
 		Tcl_DStringFree(&dsptr);
 		return TCL_OK;
-	}
+    }
 }
 
 
 int Cmd_ydtcl_lireusno(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
-/*********************************************************************************************************
- Reecrire les fichiers *.cat  de l'unso en fichier ascii
- Dans cette fonction, je divise le ciel en boites rectangulaires de memes surfaces
-*********************************************************************************************************
-   Inputs: 1) path d'entree
+/*********************************************************************************************************/
+/* Reecrire les fichiers *.cat  de l'unso en fichier ascii 
+/* Dans cette fonction, je divise le ciel en boites rectangulaires de memes surfaces            */
+/*********************************************************************************************************/
+/* Inputs: 1) path d'entree
            2  catalogue in
 		   3) path de sortie
-***************************************************************************/
+/***************************************************************************/
 {
 	char s[200],fichier_in[1000],fichier_in_tail[200],fichier_out[1000],path_in[1000],path_out[1000],ligne[40],numzone[10];
 	struct {
@@ -2983,13 +2997,13 @@ int Cmd_ydtcl_lireusno(ClientData clientData, Tcl_Interp *interp, int argc, char
 	char *resultat=NULL;
 	int *compteurs=NULL;
 	int indicedeb,indicefin,i,j,zonenumero,compteur,nres;
-	int fact_glob_dec,fact_gran_ra,fact_petit_dec;
+	int fact_glob_dec,fact_gran_dec,fact_gran_ra,fact_petit_dec;
 	double size_gran_ra,fact_peti_ra;
 	int grand_bte_dec_deb,grand_bte_dec_fin,nb_boite_delta,nligne,ncarac,ncarac_lignes,case_number;
 	int ind_grande_bte_ra,ind_petite_bte_ra,ind_grande_bte_dec,ind_petite_bte_dec,indice_global_dec;
 
 	/* Dans cette fonction, je divise le ciel en 20(ra)x10(dec) boites rectangulaires de memes surfaces :
-	=> 200 tables : (20x18ï¿½)(ra) X (10x18ï¿½) (dec) : Attention pour dec cest une moyenne car on va utiliser
+	=> 200 tables : (20x18°)(ra) X (10x18°) (dec) : Attention pour dec cest une moyenne car on va utiliser
 	des boites de meme surface donc cest delta_(sin(dec))=constant
 	RA :  chaque table contient : 240 sous tables (240*4.5 arcmin)  : 240 pour faire un TINYINT en MYSQL
 	      => ind_grande_bte_ra   = floor(ra/18)
@@ -3007,20 +3021,20 @@ int Cmd_ydtcl_lireusno(ClientData clientData, Tcl_Interp *interp, int argc, char
 		 fact_peti_ra  = 40/3 (double)
 		 fact_gran_ra  = 20   (int)
 		 fact_petit_dec= 240  (int)
-	 */
-	if(argc!=4) {
+	*/
+    if(argc!=4) {
 		sprintf(s,"Usage: %s path_in fichier_in_tail path_out", argv[0]);
-		Tcl_SetResult(interp,s,TCL_VOLATILE);
-		return TCL_ERROR;
+        Tcl_SetResult(interp,s,TCL_VOLATILE);
+        return TCL_ERROR;
 	} else {
-		/* --- decodage des arguments ---*/
+        /* --- decodage des arguments ---*/
 		strcpy(path_in,argv[1]);
 		strcpy(fichier_in_tail,argv[2]);
 		strcpy(path_out,argv[3]);
-		/*init*/
+        /*init*/
 		dr=4*atan(1.)/180.;
-		fact_glob_dec = 1200;
-		//fact_gran_dec = 10;
+		fact_glob_dec = 1200; 
+		fact_gran_dec = 10;
 		size_gran_ra  = 18.;
 		fact_peti_ra  = 40./3;
 		fact_gran_ra  = 20;
@@ -3032,21 +3046,21 @@ int Cmd_ydtcl_lireusno(ClientData clientData, Tcl_Interp *interp, int argc, char
 		/*je recupere le numero de la zone*/
 		sprintf(numzone,"%c%c%c%c%c",fichier_in_tail[4],fichier_in_tail[5],fichier_in_tail[6],fichier_in_tail[7]);
 		zonenumero=atoi(numzone);
-		deltadeb=-90+0.1*zonenumero; /*voir formatage des zone USNO (zone de 7.5ï¿½)*/
+		deltadeb=-90+0.1*zonenumero; /*voir formatage des zone USNO (zone de 7.5°)*/
 		deltafin=deltadeb+7.5;
 		grand_bte_dec_deb=(int)floor(fact_glob_dec*(1+sin(deltadeb*dr)));
 		grand_bte_dec_deb=(int)floor(grand_bte_dec_deb/fact_petit_dec);
 		grand_bte_dec_fin=(int)floor(fact_glob_dec*(1+sin(deltafin*dr)));
 		grand_bte_dec_fin=(int)floor(grand_bte_dec_fin/fact_petit_dec);
 		nb_boite_delta=1+grand_bte_dec_fin-grand_bte_dec_deb;
-		/*J'alloue une chaine de caracteres de 10*38*200 = nb_boite_delta*76000 */
+        /*J'alloue une chaine de caracteres de 10*38*200 = nb_boite_delta*76000 */
 		nres=nb_boite_delta*fact_gran_ra;
 		resultat=(char*)malloc(nres*ncarac_lignes*sizeof(char));
-		if (resultat==NULL) {
+        if (resultat==NULL) {
 			sprintf(s,"error : resultat pointer out of memory (%d elements)",nres);
 		}
 		compteurs=(int*)malloc(nres*sizeof(int));
-		if (compteurs==NULL) {
+        if (compteurs==NULL) {
 			sprintf(s,"error : compteurs pointer out of memory (%d elements)",nres);
 		}	
 		/*initialise le compteur*/
@@ -3056,7 +3070,7 @@ int Cmd_ydtcl_lireusno(ClientData clientData, Tcl_Interp *interp, int argc, char
 			compteur++;
 		}
 
-		sprintf(fichier_in,"%s%s",path_in,fichier_in_tail);
+        sprintf(fichier_in,"%s%s",path_in,fichier_in_tail);
 		f_in=fopen(fichier_in,"rb");
 		if (f_in==NULL) {
 			sprintf(s,"fichier_in %s not found",fichier_in);
@@ -3093,9 +3107,9 @@ int Cmd_ydtcl_lireusno(ClientData clientData, Tcl_Interp *interp, int argc, char
 				indice_global_dec  =(int)floor(fact_glob_dec*(1+sin(dec*dr)));
 				ind_grande_bte_dec =(int)floor((double)indice_global_dec/fact_petit_dec);
 				ind_petite_bte_dec =indice_global_dec-fact_petit_dec*ind_grande_bte_dec;
-
+			
 				sprintf(ligne,"%03d|%03d|%010.6f|%010.6f|%03d|%03d\n",ind_petite_bte_ra,ind_petite_bte_dec,ra,dec,magb,magr);
-				case_number=ind_grande_bte_dec-grand_bte_dec_deb;
+                case_number=ind_grande_bte_dec-grand_bte_dec_deb;
 				indicedeb=ncarac_lignes*case_number+ncarac*compteurs[case_number];
 				indicefin=indicedeb+ncarac;
 				j=0;
@@ -3129,17 +3143,17 @@ int Cmd_ydtcl_lireusno(ClientData clientData, Tcl_Interp *interp, int argc, char
 		free(resultat);
 		free(compteurs);
 		return TCL_OK;
-	}
+    }
 }
 
 int Cmd_ydtcl_lire2mass(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
-/*********************************************************************************************************
- Reecrire les fichiers psc du 2mass en fichier ascii (en ne gardant que quelques colonnes
-*********************************************************************************************************
-   Inputs: 1) fichier d'entre
+/*********************************************************************************************************/
+/* Reecrire les fichiers psc du 2mass en fichier ascii (en ne gardant que quelques colonnes               */
+/*********************************************************************************************************/
+/* Inputs: 1) fichier d'entre
 		   2) path de sortie
 		   3) hemisphere (1=N, 2=S)
-***************************************************************************/
+/***************************************************************************/
 {
 	char s[200],fichier_in[1000],fichier_out[1000],path_out[1000],ligne[1000];
 	char riens[20],corresp[3],photomcal[5];/*,blend[3];*/
@@ -3149,25 +3163,25 @@ int Cmd_ydtcl_lire2mass(ClientData clientData, Tcl_Interp *interp, int argc, cha
 	int *compteurs=NULL;
 	int case_number,indicedeb,indicefin,i,j,hemis,compteur;
 	int magj2,magh2,magk2,blend,corresp2;
-	int fact_glob_dec,fact_gran_ra,fact_petit_dec;
+	int fact_glob_dec,fact_gran_dec,fact_gran_ra,fact_petit_dec;
 	double size_gran_ra,fact_peti_ra;
 	int grand_bte_dec_deb,nb_boite_delta,nligne,ncarac,ncarac_lignes,nres;
 	int ind_grande_bte_ra,ind_petite_bte_ra,ind_grande_bte_dec,ind_petite_bte_dec,indice_global_dec;
 
 
-	if(argc!=4) {
+    if(argc!=4) {
 		sprintf(s,"Usage: %s fichier_in path_out hemis", argv[0]);
-		Tcl_SetResult(interp,s,TCL_VOLATILE);
-		return TCL_ERROR;
+        Tcl_SetResult(interp,s,TCL_VOLATILE);
+        return TCL_ERROR;
 	} else {
-		/* --- decodage des arguments ---*/
+        /* --- decodage des arguments ---*/
 		strcpy(fichier_in,argv[1]);
 		strcpy(path_out,argv[2]);
 		hemis=atoi(argv[3]);
-		/*init*/
+   		/*init*/
 		dr=4*atan(1.)/180.;
 		fact_glob_dec = 1200; 
-		//fact_gran_dec = 10;
+		fact_gran_dec = 10;
 		size_gran_ra  = 18.;
 		fact_peti_ra  = 40./3;
 		fact_gran_ra  = 20;
@@ -3182,11 +3196,11 @@ int Cmd_ydtcl_lire2mass(ClientData clientData, Tcl_Interp *interp, int argc, cha
 		/*J'alloue une chaine de caracteres de 10*38*200 = nb_boite_delta*76000 */
 		nres=nb_boite_delta*fact_gran_ra;
 		resultat=(char*)malloc(nres*ncarac_lignes*sizeof(char));
-		if (resultat==NULL) {
+        if (resultat==NULL) {
 			sprintf(s,"error : resultat pointer out of memory (%d elements)",nres);
 		}
 		compteurs=(int*)malloc(nres*sizeof(int));
-		if (compteurs==NULL) {
+        if (compteurs==NULL) {
 			sprintf(s,"error : compteurs pointer out of memory (%d elements)",nres);
 		}	
 		/*initialise le compteur*/
@@ -3210,10 +3224,10 @@ int Cmd_ydtcl_lire2mass(ClientData clientData, Tcl_Interp *interp, int argc, cha
 
 			if (fgets(ligne,1000,f_in)!=NULL) {
 				sscanf(ligne,"%lf|%lf|%lf|%lf|%lf|%17s |%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%3s|%3s|%3d|%3s|%6s|%lf|%lf|%lf|%lf|%lf|%lf|%1s|%10s|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%2s|%lf|%lf|%1s|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf\n",
-						&ra,&dec,&rienf,&rienf,&rienf,riens,&magj,&rienf,&rienf,&rienf,&magh,&rienf,&rienf,&rienf,&magk,
-						&rienf,&rienf,&rienf,photomcal,riens,&blend,riens,riens,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,riens,
-						riens,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,
-						&rienf,&rienf,&rienf,riens,&rienf,&rienf,corresp,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf);
+				&ra,&dec,&rienf,&rienf,&rienf,&riens,&magj,&rienf,&rienf,&rienf,&magh,&rienf,&rienf,&rienf,&magk,
+				&rienf,&rienf,&rienf,photomcal,&riens,&blend,&riens,&riens,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&riens,
+				&riens,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,
+				&rienf,&rienf,&rienf,&riens,&rienf,&rienf,corresp,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf);
 				/*conversion en milieme de magnitude*/
 				magj2=(int)(1000*magj);
 				magh2=(int)(1000*magh);
@@ -3222,26 +3236,26 @@ int Cmd_ydtcl_lire2mass(ClientData clientData, Tcl_Interp *interp, int argc, cha
 				if (magj<-1e30) {
 					/*je rescane la ligne avec le format*/
 					sscanf(ligne,"%lf|%lf|%lf|%lf|%lf|%17s |%2s|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%3s|%3s|%3d|%3s|%6s|%lf|%lf|%lf|%lf|%lf|%lf|%1s|%10s|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%2s|%lf|%lf|%1s|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf\n",
-							&ra,&dec,&rienf,&rienf,&rienf,riens,&magj,&rienf,&rienf,&rienf,&magh,&rienf,&rienf,&rienf,&magk,
-							&rienf,&rienf,&rienf,photomcal,riens,&blend,riens,riens,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,riens,
-							riens,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,
-							&rienf,&rienf,&rienf,riens,&rienf,&rienf,corresp,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf);
+					&ra,&dec,&rienf,&rienf,&rienf,&riens,&magj,&rienf,&rienf,&rienf,&magh,&rienf,&rienf,&rienf,&magk,
+					&rienf,&rienf,&rienf,photomcal,&riens,&blend,&riens,&riens,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&riens,
+					&riens,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,
+					&rienf,&rienf,&rienf,&riens,&rienf,&rienf,corresp,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf);
 
 					if (magh<-1e30) {
 						/*je rescane la ligne avec le format*/
 						sscanf(ligne,"%lf|%lf|%lf|%lf|%lf|%17s |%2s|%lf|%lf|%lf|%2s|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%3s|%3s|%3d|%3s|%6s|%lf|%lf|%lf|%lf|%lf|%lf|%1s|%10s|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%2s|%lf|%lf|%1s|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf\n",
-								&ra,&dec,&rienf,&rienf,&rienf,riens,&magj,&rienf,&rienf,&rienf,&magh,&rienf,&rienf,&rienf,&magk,
-								&rienf,&rienf,&rienf,photomcal,riens,&blend,riens,riens,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,riens,
-								riens,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,
-								&rienf,&rienf,&rienf,riens,&rienf,&rienf,corresp,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf);
+						&ra,&dec,&rienf,&rienf,&rienf,&riens,&magj,&rienf,&rienf,&rienf,&magh,&rienf,&rienf,&rienf,&magk,
+						&rienf,&rienf,&rienf,photomcal,&riens,&blend,&riens,&riens,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&riens,
+						&riens,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,
+						&rienf,&rienf,&rienf,&riens,&rienf,&rienf,corresp,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf);
 
 						if (magk<-1e30) {
 							/*je rescane la ligne avec le format*/
 							sscanf(ligne,"%lf|%lf|%lf|%lf|%lf|%17s |%2s|%lf|%lf|%lf|%2s|%lf|%lf|%lf|%2s|%lf|%lf|%lf|%3s|%3s|%3d|%3s|%6s|%lf|%lf|%lf|%lf|%lf|%lf|%1s|%10s|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%2s|%lf|%lf|%1s|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf\n",
-									&ra,&dec,&rienf,&rienf,&rienf,riens,&magj,&rienf,&rienf,&rienf,&magh,&rienf,&rienf,&rienf,&magk,
-									&rienf,&rienf,&rienf,photomcal,riens,&blend,riens,riens,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,riens,
-									riens,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,
-									&rienf,&rienf,&rienf,riens,&rienf,&rienf,corresp,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf);
+							&ra,&dec,&rienf,&rienf,&rienf,&riens,&magj,&rienf,&rienf,&rienf,&magh,&rienf,&rienf,&rienf,&magk,
+							&rienf,&rienf,&rienf,photomcal,&riens,&blend,&riens,&riens,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&riens,
+							&riens,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,
+							&rienf,&rienf,&rienf,&riens,&rienf,&rienf,corresp,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf);
 							magk2=-32000;
 						}
 						magh2=-32000;
@@ -3251,18 +3265,18 @@ int Cmd_ydtcl_lire2mass(ClientData clientData, Tcl_Interp *interp, int argc, cha
 				if (magh<-1e30) {
 					/*je rescane la ligne avec le format*/
 					sscanf(ligne,"%lf|%lf|%lf|%lf|%lf|%17s |%lf|%lf|%lf|%lf|%2s|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%3s|%3s|%3d|%3s|%6s|%lf|%lf|%lf|%lf|%lf|%lf|%1s|%10s|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%2s|%lf|%lf|%1s|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf\n",
-							&ra,&dec,&rienf,&rienf,&rienf,riens,&magj,&rienf,&rienf,&rienf,&magh,&rienf,&rienf,&rienf,&magk,
-							&rienf,&rienf,&rienf,photomcal,riens,&blend,riens,riens,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,riens,
-							riens,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,
-							&rienf,&rienf,&rienf,riens,&rienf,&rienf,corresp,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf);
+					&ra,&dec,&rienf,&rienf,&rienf,&riens,&magj,&rienf,&rienf,&rienf,&magh,&rienf,&rienf,&rienf,&magk,
+					&rienf,&rienf,&rienf,photomcal,&riens,&blend,&riens,&riens,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&riens,
+					&riens,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,
+					&rienf,&rienf,&rienf,&riens,&rienf,&rienf,corresp,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf);
 
 					if (magk<-1e30) {
 						/*je rescane la ligne avec le format*/
 						sscanf(ligne,"%lf|%lf|%lf|%lf|%lf|%17s |%lf|%lf|%lf|%lf|%2s|%lf|%lf|%lf|%2s|%lf|%lf|%lf|%3s|%3s|%3d|%3s|%6s|%lf|%lf|%lf|%lf|%lf|%lf|%1s|%10s|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%2s|%lf|%lf|%1s|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf\n",
-								&ra,&dec,&rienf,&rienf,&rienf,riens,&magj,&rienf,&rienf,&rienf,&magh,&rienf,&rienf,&rienf,&magk,
-								&rienf,&rienf,&rienf,photomcal,riens,&blend,riens,riens,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,riens,
-								riens,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,
-								&rienf,&rienf,&rienf,riens,&rienf,&rienf,corresp,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf);
+						&ra,&dec,&rienf,&rienf,&rienf,&riens,&magj,&rienf,&rienf,&rienf,&magh,&rienf,&rienf,&rienf,&magk,
+						&rienf,&rienf,&rienf,photomcal,&riens,&blend,&riens,&riens,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&riens,
+						&riens,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,
+						&rienf,&rienf,&rienf,&riens,&rienf,&rienf,corresp,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf);
 						magk2=-32000;
 					}
 					magh2=-32000;
@@ -3270,10 +3284,10 @@ int Cmd_ydtcl_lire2mass(ClientData clientData, Tcl_Interp *interp, int argc, cha
 				if (magk<-1e30) {
 					/*je rescane la ligne avec le format*/
 					sscanf(ligne,"%lf|%lf|%lf|%lf|%lf|%17s |%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%2s|%lf|%lf|%lf|%3s|%3s|%3d|%3s|%6s|%lf|%lf|%lf|%lf|%lf|%lf|%1s|%10s|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%2s|%lf|%lf|%1s|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf|%lf\n",
-							&ra,&dec,&rienf,&rienf,&rienf,riens,&magj,&rienf,&rienf,&rienf,&magh,&rienf,&rienf,&rienf,&magk,
-							&rienf,&rienf,&rienf,photomcal,riens,&blend,riens,riens,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,riens,
-							riens,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,
-							&rienf,&rienf,&rienf,riens,&rienf,&rienf,corresp,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf);
+					&ra,&dec,&rienf,&rienf,&rienf,&riens,&magj,&rienf,&rienf,&rienf,&magh,&rienf,&rienf,&rienf,&magk,
+					&rienf,&rienf,&rienf,photomcal,&riens,&blend,&riens,&riens,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&riens,
+					&riens,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,
+					&rienf,&rienf,&rienf,&riens,&rienf,&rienf,corresp,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf,&rienf);
 					magk2=-32000;
 				}
 				if (blend>255) {blend=255;}
@@ -3285,7 +3299,7 @@ int Cmd_ydtcl_lire2mass(ClientData clientData, Tcl_Interp *interp, int argc, cha
 				indice_global_dec  =(int)floor(fact_glob_dec*(1+sin(dec*dr)));
 				ind_grande_bte_dec =(int)floor((double)indice_global_dec/fact_petit_dec);
 				ind_petite_bte_dec =indice_global_dec-fact_petit_dec*ind_grande_bte_dec;
-
+			
 				sprintf(ligne,"%03d|%03d|%010.6f|%010.6f|%06d|%06d|%06d|%3s|%03d|%1d\n",ind_petite_bte_ra,ind_petite_bte_dec,ra,dec,magj2,magh2,magk2,photomcal,blend,corresp2);
 				case_number=(ind_grande_bte_dec-grand_bte_dec_deb)*fact_gran_ra+ind_grande_bte_ra;
 				indicedeb=ncarac_lignes*case_number+ncarac*compteurs[case_number];
@@ -3323,15 +3337,15 @@ int Cmd_ydtcl_lire2mass(ClientData clientData, Tcl_Interp *interp, int argc, cha
 		free(resultat);
 		free(compteurs);
 		return TCL_OK;
-	}
+    }
 }
 
 
 int Cmd_ydtcl_requete_table(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
-/*********************************************************************************************************
- calcule les indices dans les tables pour effectuer des requetes dans l'usno ou le 2mass
-*********************************************************************************************************
-   Inputs: 1) ra
+/*********************************************************************************************************/
+/* calcule les indices dans les tables pour effectuer des requetes dans l'usno ou le 2mass              */
+/*********************************************************************************************************/
+/* Inputs: 1) ra
 		   2) de
 		   3) rayon
    Outputs:1) ind_ra_table
@@ -3342,33 +3356,33 @@ int Cmd_ydtcl_requete_table(ClientData clientData, Tcl_Interp *interp, int argc,
 		   6) rafin
 		   7) decdeb
 		   8) decfin
-***************************************************************************/
+/***************************************************************************/
 {
 	char s[200];
 	double ra,dec,dr,radius,decfin,decdeb,rafin,radeb,radius2;
-	int fact_glob_dec,fact_petit_dec,fact_petit_dec2;
+	int fact_glob_dec,fact_gran_dec,fact_gran_ra,fact_petit_dec,fact_petit_dec2;
 	double size_gran_ra,fact_peti_ra;
 	int indice_global_dec,kra,kdec;
 	int ind_grande_bte_radeb,ind_grande_bte_rafin,nbr_grande_bte_ra,ind_petite_bte_radeb,ind_petite_bte_rafin;
 	int ind_grande_bte_decdeb,ind_grande_bte_decfin,nbr_grande_bte_dec,ind_petite_bte_decdeb,ind_petite_bte_decfin;
 	Tcl_DString dsptr;
 
-	if(argc!=4) {
+    if(argc!=4) {
 		sprintf(s,"Usage: %s ra dec radius", argv[0]);
-		Tcl_SetResult(interp,s,TCL_VOLATILE);
-		return TCL_ERROR;
+        Tcl_SetResult(interp,s,TCL_VOLATILE);
+        return TCL_ERROR;
 	} else {
-		/* --- decodage des arguments ---*/
+        /* --- decodage des arguments ---*/
 		ra=atof(argv[1]);
 		dec=atof(argv[2]);
 		radius=atof(argv[3]);
-		/*init*/
+   		/*init*/
 		dr=4*atan(1.)/180.;
 		fact_glob_dec = 1200; 
-		//fact_gran_dec = 10;
+		fact_gran_dec = 10;
 		size_gran_ra  = 18.;
 		fact_peti_ra  = 40./3;
-		//act_gran_ra  = 20;
+		fact_gran_ra  = 20;
 		fact_petit_dec= 240;
 		fact_petit_dec2=fact_petit_dec-1;
 		/**************************************/
@@ -3402,8 +3416,8 @@ int Cmd_ydtcl_requete_table(ClientData clientData, Tcl_Interp *interp, int argc,
 		if(nbr_grande_bte_ra+nbr_grande_bte_dec==0) {
 			/*on est dans une seule zone*/
 			sprintf(s,"{%f %f %f %f} {%02d %d %d %d %d %d}",radeb,rafin,decdeb,decfin,ind_grande_bte_radeb,\
-					ind_petite_bte_radeb,ind_petite_bte_rafin,ind_grande_bte_decdeb,ind_petite_bte_decdeb,ind_petite_bte_decfin);
-			Tcl_DStringAppend(&dsptr,s,-1);
+				ind_petite_bte_radeb,ind_petite_bte_rafin,ind_grande_bte_decdeb,ind_petite_bte_decdeb,ind_petite_bte_decfin);
+            Tcl_DStringAppend(&dsptr,s,-1);
 		} else {
 			/*on est dans plusieurs zones*/
 			sprintf(s,"{%f %f %f %f}",radeb,rafin,decdeb,decfin);
@@ -3412,168 +3426,168 @@ int Cmd_ydtcl_requete_table(ClientData clientData, Tcl_Interp *interp, int argc,
 				if(nbr_grande_bte_ra<1){
 					/*nbr_grande_bte_dec est forcement > 0*/
 					sprintf(s," {%02d %d %d %d %d %d}",ind_grande_bte_radeb,ind_petite_bte_radeb,ind_petite_bte_rafin,\
-							ind_grande_bte_decdeb,ind_petite_bte_decdeb,fact_petit_dec2);
+						ind_grande_bte_decdeb,ind_petite_bte_decdeb,fact_petit_dec2);
 					Tcl_DStringAppend(&dsptr,s,-1);
 					kdec=ind_grande_bte_decdeb+1;
 					while(kdec<ind_grande_bte_decfin) {
 						sprintf(s," {%02d %d %d %d 0 %d}",ind_grande_bte_radeb,ind_petite_bte_radeb,ind_petite_bte_rafin,\
-								kdec,fact_petit_dec2);
+							kdec,fact_petit_dec2);
 						Tcl_DStringAppend(&dsptr,s,-1);
 						kdec++;
 					}
 					sprintf(s," {%02d %d %d %d 0 %d}",ind_grande_bte_radeb,ind_petite_bte_radeb,ind_petite_bte_rafin,\
-							ind_grande_bte_decfin,ind_petite_bte_decfin);
+						ind_grande_bte_decfin,ind_petite_bte_decfin);
 					Tcl_DStringAppend(&dsptr,s,-1);
 				} else {
 					if(nbr_grande_bte_dec<1){
 						sprintf(s," {%02d %d %d %d %d %d}",ind_grande_bte_radeb,ind_petite_bte_radeb,fact_petit_dec2,\
-								ind_grande_bte_decdeb,ind_petite_bte_decdeb,ind_petite_bte_decfin);
+							ind_grande_bte_decdeb,ind_petite_bte_decdeb,ind_petite_bte_decfin);
 						Tcl_DStringAppend(&dsptr,s,-1);
 						kra=ind_grande_bte_radeb+1;
 						while(kra<ind_grande_bte_rafin) {
 							sprintf(s," {%02d 0 %d %d %d %d}",kra,fact_petit_dec2,\
-									ind_grande_bte_decdeb,ind_petite_bte_decdeb,ind_petite_bte_decfin);
+								ind_grande_bte_decdeb,ind_petite_bte_decdeb,ind_petite_bte_decfin);
 							Tcl_DStringAppend(&dsptr,s,-1);
 							kra++;
 						}
 						sprintf(s," {%02d 0 %d %d %d %d}",ind_grande_bte_rafin,ind_petite_bte_rafin,\
-								ind_grande_bte_decdeb,ind_petite_bte_decdeb,ind_petite_bte_decfin);
+							ind_grande_bte_decdeb,ind_petite_bte_decdeb,ind_petite_bte_decfin);
 						Tcl_DStringAppend(&dsptr,s,-1);
 					} else {
 						sprintf(s," {%02d %d %d %d %d %d}",ind_grande_bte_radeb,ind_petite_bte_radeb,fact_petit_dec2,\
-								ind_grande_bte_decdeb,ind_petite_bte_decdeb,fact_petit_dec2);
+							ind_grande_bte_decdeb,ind_petite_bte_decdeb,fact_petit_dec2);
 						Tcl_DStringAppend(&dsptr,s,-1);
 						kra=ind_grande_bte_radeb+1;
 						while(kra<ind_grande_bte_rafin) {
 							sprintf(s," {%02d 0 %d %d %d %d}",kra,fact_petit_dec2,\
-									ind_grande_bte_decdeb,ind_petite_bte_decdeb,fact_petit_dec2);
+								ind_grande_bte_decdeb,ind_petite_bte_decdeb,fact_petit_dec2);
 							Tcl_DStringAppend(&dsptr,s,-1);
 							kra++;
 						}
 						sprintf(s," {%02d 0 %d %d %d %d}",ind_grande_bte_rafin,ind_petite_bte_rafin,\
-								ind_grande_bte_decdeb,ind_petite_bte_decdeb,fact_petit_dec2);
+							ind_grande_bte_decdeb,ind_petite_bte_decdeb,fact_petit_dec2);
 						Tcl_DStringAppend(&dsptr,s,-1);
 						kdec=ind_grande_bte_decdeb+1;
 						while(kdec<ind_grande_bte_decfin) {
 							sprintf(s," {%02d %d %d %d 0 %d}",ind_grande_bte_radeb,ind_petite_bte_radeb,fact_petit_dec2,\
-									kdec,fact_petit_dec2);
+								kdec,fact_petit_dec2);
 							Tcl_DStringAppend(&dsptr,s,-1);
 							kra=ind_grande_bte_radeb+1;
 							while(kra<ind_grande_bte_rafin) {
 								sprintf(s," {%02d 0 %d %d 0 %d}",kra,fact_petit_dec2,\
-										kdec,fact_petit_dec2);
+									kdec,fact_petit_dec2);
 								Tcl_DStringAppend(&dsptr,s,-1);
 								kra++;
 							}
 							sprintf(s," {%02d 0 %d %d 0 %d}",ind_grande_bte_rafin,ind_petite_bte_rafin,\
-									kdec,fact_petit_dec2);
+								kdec,fact_petit_dec2);
 							Tcl_DStringAppend(&dsptr,s,-1);
 							kdec++;
 						}
 						sprintf(s," {%02d %d %d %d 0 %d}",ind_grande_bte_radeb,ind_petite_bte_radeb,fact_petit_dec2,\
-								ind_grande_bte_decfin,ind_petite_bte_decfin);
+							ind_grande_bte_decfin,ind_petite_bte_decfin);
 						Tcl_DStringAppend(&dsptr,s,-1);
 						kra=ind_grande_bte_radeb+1;
 						while(kra<ind_grande_bte_rafin) {
 							sprintf(s," {%02d 0 %d %d 0 %d}",kra,fact_petit_dec2,\
-									ind_grande_bte_decfin,ind_petite_bte_decfin);
+								ind_grande_bte_decfin,ind_petite_bte_decfin);
 							Tcl_DStringAppend(&dsptr,s,-1);
 							kra++;
 						}
 						sprintf(s," {%02d 0 %d %d 0 %d}",ind_grande_bte_rafin,ind_petite_bte_rafin,\
-								ind_grande_bte_decfin,ind_petite_bte_decfin);
+							ind_grande_bte_decfin,ind_petite_bte_decfin);
 						Tcl_DStringAppend(&dsptr,s,-1);
 					}
 				}
 			} else {
-				/*par exemple on passe de 350 ï¿½ 5*/
+				/*par exemple on passe de 350 à 5*/
 				/*nbr_grande_bte_ra est forcement > 0*/
 				if(nbr_grande_bte_dec<1){
 					sprintf(s," {%02d %d %d %d %d %d}",ind_grande_bte_radeb,ind_petite_bte_radeb,fact_petit_dec2,\
-							ind_grande_bte_decdeb,ind_petite_bte_decdeb,ind_petite_bte_decfin);
+						ind_grande_bte_decdeb,ind_petite_bte_decdeb,ind_petite_bte_decfin);
 					Tcl_DStringAppend(&dsptr,s,-1);
 					kra=ind_grande_bte_radeb+1;
 					while(kra<20) {
-						sprintf(s," {%02d 0 %d %d %d %d}",kra,fact_petit_dec2,\
-								ind_grande_bte_decdeb,ind_petite_bte_decdeb,ind_petite_bte_decfin);
+                        sprintf(s," {%02d 0 %d %d %d %d}",kra,fact_petit_dec2,\
+							ind_grande_bte_decdeb,ind_petite_bte_decdeb,ind_petite_bte_decfin);
 						Tcl_DStringAppend(&dsptr,s,-1);
 						kra++;
 					}
 					kra=0;
 					while(kra<ind_grande_bte_rafin) {
-						sprintf(s," {%02d 0 %d %d %d %d}",kra,fact_petit_dec2,\
-								ind_grande_bte_decdeb,ind_petite_bte_decdeb,ind_petite_bte_decfin);
+                        sprintf(s," {%02d 0 %d %d %d %d}",kra,fact_petit_dec2,\
+							ind_grande_bte_decdeb,ind_petite_bte_decdeb,ind_petite_bte_decfin);
 						Tcl_DStringAppend(&dsptr,s,-1);
 						kra++;
 					}
 					sprintf(s," {%02d 0 %d %d %d %d}",ind_grande_bte_rafin,ind_petite_bte_rafin,\
-							ind_grande_bte_decdeb,ind_petite_bte_decdeb,ind_petite_bte_decfin);
+						ind_grande_bte_decdeb,ind_petite_bte_decdeb,ind_petite_bte_decfin);
 					Tcl_DStringAppend(&dsptr,s,-1);
 				} else {
 					sprintf(s," {%02d %d %d %d %d %d}",ind_grande_bte_radeb,ind_petite_bte_radeb,fact_petit_dec2,\
-							ind_grande_bte_decdeb,ind_petite_bte_decdeb,fact_petit_dec2);
+						ind_grande_bte_decdeb,ind_petite_bte_decdeb,fact_petit_dec2);
 					Tcl_DStringAppend(&dsptr,s,-1);
 					kra=ind_grande_bte_radeb+1;
 					while(kra<20) {
-						sprintf(s," {%02d 0 %d %d %d %d}",kra,fact_petit_dec2,\
-								ind_grande_bte_decdeb,ind_petite_bte_decdeb,fact_petit_dec2);
+                       sprintf(s," {%02d 0 %d %d %d %d}",kra,fact_petit_dec2,\
+							ind_grande_bte_decdeb,ind_petite_bte_decdeb,fact_petit_dec2);
 						Tcl_DStringAppend(&dsptr,s,-1);
 						kra++;
 					}
 					kra=0;
 					while(kra<ind_grande_bte_rafin) {
-						sprintf(s," {%02d 0 %d %d %d %d}",kra,fact_petit_dec2,\
-								ind_grande_bte_decdeb,ind_petite_bte_decdeb,fact_petit_dec2);
+                        sprintf(s," {%02d 0 %d %d %d %d}",kra,fact_petit_dec2,\
+							ind_grande_bte_decdeb,ind_petite_bte_decdeb,fact_petit_dec2);
 						Tcl_DStringAppend(&dsptr,s,-1);
 						kra++;
 					}
 					sprintf(s," {%02d 0 %d %d %d %d}",ind_grande_bte_rafin,ind_petite_bte_rafin,\
-							ind_grande_bte_decdeb,ind_petite_bte_decdeb,fact_petit_dec2);
+						ind_grande_bte_decdeb,ind_petite_bte_decdeb,fact_petit_dec2);
 					Tcl_DStringAppend(&dsptr,s,-1);
 
 					kdec=ind_grande_bte_decdeb+1;
 					while(kdec<ind_grande_bte_decfin) {
 						sprintf(s," {%02d %d %d %d 0 %d}",ind_grande_bte_radeb,ind_petite_bte_radeb,fact_petit_dec2,\
-								kdec,fact_petit_dec2);
+							kdec,fact_petit_dec2);
 						Tcl_DStringAppend(&dsptr,s,-1);
 						kra=ind_grande_bte_radeb+1;
 						while(kra<20) {
 							sprintf(s," {%02d 0 %d %d 0 %d}",kra,fact_petit_dec2,\
-									kdec,fact_petit_dec2);
+								kdec,fact_petit_dec2);
 							Tcl_DStringAppend(&dsptr,s,-1);
 							kra++;
 						}
 						kra=0;
 						while(kra<ind_grande_bte_rafin) {
 							sprintf(s," {%02d 0 %d %d 0 %d}",kra,fact_petit_dec2,\
-									kdec,fact_petit_dec2);
+								kdec,fact_petit_dec2);
 							Tcl_DStringAppend(&dsptr,s,-1);
 							kra++;
 						}
 						sprintf(s," {%02d 0 %d %d 0 %d}",ind_grande_bte_rafin,ind_petite_bte_rafin,\
-								kdec,fact_petit_dec2);
+							kdec,fact_petit_dec2);
 						Tcl_DStringAppend(&dsptr,s,-1);
 						kdec++;
 					}
 					sprintf(s," {%02d %d %d %d 0 %d}",ind_grande_bte_radeb,ind_petite_bte_radeb,fact_petit_dec2,\
-							ind_grande_bte_decfin,ind_petite_bte_decfin);
+						ind_grande_bte_decfin,ind_petite_bte_decfin);
 					Tcl_DStringAppend(&dsptr,s,-1);
 					kra=ind_grande_bte_radeb+1;
 					while(kra<20) {
-						sprintf(s," {%02d 0 %d %d 0 %d}}",kra,fact_petit_dec2,\
-								ind_grande_bte_decfin,ind_petite_bte_decfin);
+                       sprintf(s," {%02d 0 %d %d 0 %d}}",kra,fact_petit_dec2,\
+							ind_grande_bte_decfin,ind_petite_bte_decfin);
 						Tcl_DStringAppend(&dsptr,s,-1);
 						kra++;
 					}
 					kra=0;
 					while(kra<ind_grande_bte_rafin) {
-						sprintf(s," {%02d 0 %d %d 0 %d}",kra,fact_petit_dec2,\
-								ind_grande_bte_decfin,ind_petite_bte_decfin);
+                        sprintf(s," {%02d 0 %d %d 0 %d}",kra,fact_petit_dec2,\
+							ind_grande_bte_decfin,ind_petite_bte_decfin);
 						Tcl_DStringAppend(&dsptr,s,-1);
 						kra++;
 					}
 					sprintf(s," {%02d 0 %d %d 0 %d}",ind_grande_bte_rafin,ind_petite_bte_rafin,\
-							ind_grande_bte_decfin,ind_petite_bte_decfin);
+						ind_grande_bte_decfin,ind_petite_bte_decfin);
 					Tcl_DStringAppend(&dsptr,s,-1);
 				}
 			}
@@ -3581,6 +3595,6 @@ int Cmd_ydtcl_requete_table(ClientData clientData, Tcl_Interp *interp, int argc,
 		Tcl_DStringResult(interp,&dsptr);
 		Tcl_DStringFree(&dsptr);
 		return TCL_OK;
-	}
+    }
 }
 
