@@ -170,7 +170,7 @@ int cmd_ydtcl_cstycho2(ClientData clientData, Tcl_Interp *interp, int argc, char
 	Tcl_DString dsptr;
 	Tcl_DStringInit(&dsptr);
 	Tcl_DStringAppend(&dsptr,"{ { TYCHO2 { } "
-		"{ TYC1 TYC2 TYC3 pflag mRAdeg mDEdeg pmRA pmDE e_mRA e_mDE "
+		"{ ID TYC1 TYC2 TYC3 pflag mRAdeg mDEdeg pmRA pmDE e_mRA e_mDE "
 		"e_pmRA e_pmDE mepRA mepDE Num g_mRA g_mDE g_pmRA g_pmDE BT "
 		"e_BT VT e_VT prox TYC HIP CCDM RAdeg DEdeg epRA epDE e_RA "
 		"e_DE posflg corr } } } ",-1);
