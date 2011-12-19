@@ -112,9 +112,7 @@ char** tycho2_search(const char*pathName, double ra0, double dec0, double range,
                     	sprintf(outputLine,"outputs[%d] out of memory\n",*numberOfOutputs);
                     	return (NULL);
                     }
-                    sprintf(outputs[*numberOfOutputs],"%s",buf);
-                    //TODO : have to correct the following function
-                    //sprintf(outputs[*numberOfOutputs],"%d|%s",id,buf);
+                    sprintf(outputs[*numberOfOutputs],"%d|%s",id,buf);
                     (*numberOfOutputs)++;
                 }
             }
@@ -182,16 +180,17 @@ int cmd_ydtcl_cstycho2(ClientData clientData, Tcl_Interp *interp, int argc, char
 		Tcl_DStringAppend(&dsptr,"{",-1); // start of source fields list
 		// 35 fields, must match length of istart and iend
 		for(i=0;i<35;i++) {
-			c = *(outputs[index]+iend[i]);
-			*(outputs[index]+iend[i]) = '\0';
+			char *line = strchr(outputs[index],'|') + 1;
+			c = *(line+iend[i]);
+			*(line+iend[i]) = '\0';
 			//printf("%d %s\n",i,outputs[index]+istart[i]-1); fflush(NULL);
 			Tcl_DStringAppend(&dsptr," ",-1);
-			if(field_is_blank(outputs[index]+istart[i]-1)) {
+			if(field_is_blank(line+istart[i]-1)) {
 				Tcl_DStringAppend(&dsptr,"_",-1);
 			} else {
-				Tcl_DStringAppend(&dsptr,outputs[index]+istart[i]-1,-1);
+				Tcl_DStringAppend(&dsptr,line+istart[i]-1,-1);
 			}
-			*(outputs[index]+iend[i]) = c;
+			*(line+iend[i]) = c;
 		}
 		//Tcl_DStringAppend(&dsptr,outputs[index],-1);
 		Tcl_DStringAppend(&dsptr,"} } } ",-1);
