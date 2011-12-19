@@ -38,12 +38,12 @@ proc affich_un_rond { ra dec color width } {
         #gren_info "DD =  $ra $dec \n"
        # Affiche un rond vert
        set img_xy [ buf$bufno radec2xy [ list $ra $dec ] ]
-        gren_info "img_xy =  $img_xy \n"
+       # gren_info "img_xy =  $img_xy \n"
        #--- Transformation des coordonnees image en coordonnees canvas
        set can_xy [ ::audace::picture2Canvas $img_xy ]
        set x [lindex $can_xy 0]
        set y [lindex $can_xy 1]
-        gren_info "XY =  $x $y \n"
+       # gren_info "XY =  $x $y \n"
        set radius 5           
        #--- Dessine l'objet selectionne en vert dans l'image
        $audace(hCanvas) create oval [ expr $x - $radius ] [ expr $y - $radius ] [ expr $x + $radius ] [ expr $y + $radius ] \

@@ -64,7 +64,7 @@ gren_info "fichier dezippé\n"
    set cmfields  [list ra dec poserr mag magerr]
    set allfields [list id flag xpos ypos instr_mag err_mag flux_sex err_flux_sex ra dec calib_mag calib_mag_ss1 err_calib_mag_ss1 calib_mag_ss2 err_calib_mag_ss2 nb_neighbours radius background_sex x2_momentum_sex y2_momentum_sex xy_momentum_sex major_axis_sex minor_axis_sex position_angle_sex fwhm_sex flag_sex]
 
-   set list_fields [list [list "IMG" $cmfields $allfields] [list "USNO2" $cmfields {}]]
+   set list_fields [list [list "IMG" $cmfields $allfields] [list "USNOA2" $cmfields {}]]
 
 
    set list_sources {}
