@@ -187,5 +187,149 @@ namespace eval ::manage_source {
       ::console::affiche_resultat "$listsources\n"
    }
 
+   #
+   # manage_source::set_common_fields
+   # initialise les champ common de la liste
+   # 
+   #
+   # listsources : liste en entree
+   # catalog : ou il faut puiser l info
+   # fieldlist : les champs a utiliser
+   #
+   proc ::manage_source::set_common_fields { listsources catalog fieldlist } {
+
+
+      set cst 0
+      foreach f $fieldlist {
+         if {[string is double -strict $f]} {
+            incr cst
+         }
+      }
+      #gren_info "cst = $cst \n"
+
+      set idlist ""
+      set fields [lindex $listsources 0]
+      foreach cata $fields {
+         if { [lindex $cata 0]==$catalog } {
+            set cols [lindex $cata 2]
+            foreach f $fieldlist {
+               #gren_info "f = $f \n"
+               if {[string is double -strict $f]} {
+                  #gren_info "double \n"
+                  lappend idlist -1
+               } else {
+                  #gren_info "char \n"
+                  set cpt 0
+                  foreach col $cols {
+                     if {$f==$col} {
+                         lappend idlist $cpt
+                     }
+                     incr cpt
+                  }
+               }
+            }
+         }
+      }
+
+      #gren_info "idlist = $idlist \n"
+      if {[llength $idlist]!=5} {
+          gren_info "erreur nom des champs\n"
+          return $listsources
+      }
+
+      set sources [lindex $listsources 1]
+      set ids 0
+      foreach s $sources {
+         set sa($ids,catalog) ""
+         foreach cata $s {
+            lappend sa($ids,catalog) [lindex $cata 0]
+            set sa($ids,[lindex $cata 0]) $cata
+               if {$ids == -1 } {
+                  gren_info "catalog = $sa($ids,[lindex $cata 0])\n"
+               }
+         }
+      incr ids
+      }
+      set nbs $ids
+      #gren_info "idlist = $idlist\n"
+      #gren_info "nbs = $nbs\n"
+      
+      for {set ids 0} {$ids<$nbs} {incr ids} {
+         if {[info exists sa($ids,$catalog)] } {
+               set data [lindex $sa($ids,$catalog) 2]
+               
+               if {[string is double -strict [lindex $fieldlist 0]]} {
+                  set ra [lindex $fieldlist 0]
+               } else {
+                  set ra [lindex $data [lindex $idlist 0]]
+               }
+               
+               
+               if {[string is double -strict [lindex $fieldlist 1]]} {
+                  set dec [lindex $fieldlist 1]
+               } else {
+                  set dec [lindex $data [lindex $idlist 1]]
+               }
+               
+               
+               if {[string is double -strict [lindex $fieldlist 2]]} {
+                  set poserr [lindex $fieldlist 2]
+               } else {
+                  set poserr [lindex $data [lindex $idlist 2]]
+               }
+               
+               if {[string is double -strict [lindex $fieldlist 3]]} {
+                  set mag [lindex $fieldlist 3]
+               } else {
+                  set mag [lindex $data [lindex $idlist 3]]
+               }
+               
+               if {[string is double -strict [lindex $fieldlist 4]]} {
+                  set magerr [lindex $fieldlist 4]
+               } else {
+                  set magerr [lindex $data [lindex $idlist 4]]
+               }
+               
+               
+               
+               set com [list $ra \
+                             $dec \
+                             $poserr \
+                             $mag \
+                             $magerr \
+                       ]
+               set sa($ids,$catalog) [lreplace $sa($ids,$catalog) 1 1 $com]
+               if {$ids == -1 } {
+                  gren_info "sa $catalog = $sa($ids,$catalog)\n"
+                  gren_info "catalog = $catalog\n"
+                  gren_info "data = $data\n"
+               
+                  gren_info "com = $com\n"
+               }
+         }
+      }
+
+      set sources ""       
+      for {set ids 0} {$ids<$nbs} {incr ids} {
+         set s ""
+         foreach cata $sa($ids,catalog) {
+            lappend s $sa($ids,$cata)
+         }
+         lappend sources $s
+      }
+
+      #gren_info "fin\n"
+      
+      return  [list $fields $sources]
+
+   }
+
+
+# source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/manage_source.tcl
+# ::manage_source::set_common_fields $listsources IMG { id flag xpos ypos instr_mag }
+# ::manage_source::imprim_3_sources $listsources
+# set l [::manage_source::set_common_fields $listsources IMG { id flag xpos ypos instr_mag }]
+# ::manage_source::imprim_3_sources $l
+
 
 }

@@ -1,6 +1,11 @@
+# ******************************************************************
+#                     Execution du programme 
+# ******************************************************************
+# source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/priam/main.tcl
 
-# source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/main.tcl
-
+# ******************************************************************
+#                     Entete Doxygen
+# ******************************************************************
 ##
 # @file
 #
@@ -8,14 +13,38 @@
 #
 # @brief Traitement des archives dans bddimages a partir de la base de donnees SSP
 
+
+# ******************************************************************
+#                     Avant de commencer :
+# ******************************************************************
+#
+# il est preferable d installer audela, comme pour la structure ros. cad : /srv/develop/audela
+# inserer l image et le cata dans ton bddimages local.
+# retrouver l idbddimage auquel il correspond
+# modifier la valeur suivante pour le bon id :
+
+   set idbddimg 909408
+
+# puis lancer ce code en faisant un copier coller dans la console de la premiere ligne de ce fichier : source ...
+# ******************************************************************
+# A FAIRE : 
+# Modifier le fichier priam.tcl pour qu il genere les fichiers Priam.
+# Ajouter une procedure de lancement de Priam
+# Ajouter une procedure de verification avant le lancement de Priam (reponse accepted / rejected )
+#                        ce qui permet de voir si la donnee est suffisante a priam par exemple.
+# Ajouter une procedure d interpretation de resultats de Priam, (accepted/rejected) pour savoir comment ca s est passé.
+# ******************************************************************
+
+   source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/get_one_image.tcl
+   source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/manage_source.tcl
+   source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/priam/priam.tcl
+
    source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/get_cata.tcl
    source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/visu.tcl
-   source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/get_one_image.tcl
    source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/imprimlist.tcl
    source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/astrometry.tcl
    source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/photometry.tcl
    source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/identification.tcl
-   source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/manage_source.tcl
    source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/analyse_source.tcl
    source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/get_skybot.tcl
 
@@ -183,60 +212,17 @@
    gren_info " Chargement TYCHO2 \n"
    gren_info "****************************************************************** \n"
 
-
-   set tycho2 [cstycho2 /astrodata/Catalog/TYCHO-2 $ssp_image(ra) $ssp_image(dec) 70]
-   gren_info "rollup = [::manage_source::get_nb_sources_rollup $tycho2]\n"
-   set tycho2 [::manage_source::set_common_fields $tycho2 TYCHO2 { RAdeg DEdeg 5 VT e_VT }]
-
-
-   gren_info "\n****************************************************************** \n"
-   gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
-   gren_info " Chargement UCAC2 \n"
-   gren_info "****************************************************************** \n"
-
-   set ucac2 [csucac2 /astrodata/Catalog/UCAC2 $ssp_image(ra) $ssp_image(dec) 70]
-   gren_info "rollup = [::manage_source::get_nb_sources_rollup $ucac2]\n"
-   set ucac2 [::manage_source::set_common_fields $ucac2 UCAC2 { ra_deg dec_deg e_pos_deg U2Rmag_mag 0.5 }]
-
-   gren_info "\n****************************************************************** \n"
-   gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
-   gren_info " Chargement UCAC3 \n"
-   gren_info "****************************************************************** \n"
-
-   set ucac3 [csucac3 /astrodata/Catalog/UCAC3 $ssp_image(ra) $ssp_image(dec) 70]
-   gren_info "rollup = [::manage_source::get_nb_sources_rollup $ucac3]\n"
-   set ucac3 [::manage_source::set_common_fields $ucac3 UCAC3 { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
-
-   gren_info "\n****************************************************************** \n"
-   gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
-   gren_info " Indentification des Etoiles \n"
-   gren_info "****************************************************************** \n"
-
-   gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: TYCHO2\n"
-   #set listsources [ identification $listsources IMG $tycho2 TYCHO2 30.0 10.0 10.0] 
-
-   #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: UCAC2\n"
-   #set listsources [ identification $listsources IMG $ucac2 UCAC2 30.0 10.0 10.0] 
-
-   #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: UCAC3\n"
-   #set listsources [ identification $listsources IMG $ucac3 UCAC3 30.0 10.0 10.0] 
-
-   gren_info "\n****************************************************************** \n"
-   gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
-   gren_info " Affichage des Etoiles \n"
-   gren_info "****************************************************************** \n"
-
-   affich_rond $listsources TYCHO2 "red"    3
-   #affich_rond $listsources UCAC2  "yellow" 3
-   #affich_rond $listsources UCAC3  "blue"   3
    affich_rond $listsources SKYBOT "green"  3
 
-
    gren_info "\n****************************************************************** \n"
    gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
-   gren_info " Extraction des Etoiles de type Solaire\n"
+   gren_info " sortie pour priam\n"
    gren_info "****************************************************************** \n"
 
+   # on extrait les skybot de l image, a la difference de la variable precedente
+   # qui pointait vers tous les SKYBOT susceptible d etre dans l image
+   set listmesure [::manage_source::extract_sources_by_catalog $listsources SKYBOT]
+   ::priam::create_file_oldformat $listsources USNOA2 $listmesure
 
 
 
