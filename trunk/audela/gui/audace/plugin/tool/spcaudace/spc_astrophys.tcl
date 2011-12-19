@@ -3577,8 +3577,9 @@ proc spc_dynagraph { args } {
       buf$audace(bufNo) load "$audace(rep_images)/$fichier"
       #-- Calcul le JD reduit du spectre :
       # set dateobs [ mc_date2jd [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ] ]
-      set ladate [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ]
-      lappend listejd [ format "%4.4f" [ expr 0.0001*round(10000*([ mc_date2jd $ladate ]-2450000.)) ] ]
+      set ladate [ mc_date2jd [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ] ]
+      #lappend listejd [ format "%4.4f" [ expr 0.0001*round(10000*([ mc_date2jd $ladate ]-2450000.)) ] ]
+      lappend listejd $ladate
 
       #--- Recherche du nom de l'objet :
       if { $objname == "" } {
@@ -3649,7 +3650,7 @@ proc spc_dynagraph { args } {
    foreach spectre $listefiles_norma jdate $listejd {
       #--- Remplissage de chaque ligne :
       if { $num_spectre<=$nb_jours } {
-      set yvals [ lindex [ spc_fits2data "$fichier" ] 1 ]
+      set yvals [ lindex [ spc_fits2data "$spectre" ] 1 ]
       for { set x_coord 1 } { $x_coord<=$naxis1 } { incr x_coord } {
          buf$newBufNo setpix [ list $x_coord $num_spectre ] [ lindex $yvals [ expr $x_coord-1 ] ]
       }
@@ -3665,17 +3666,18 @@ proc spc_dynagraph { args } {
             #   set diff_jd [ expr $diff_jd-($nb_jours-($diff_jd+$num_spectre+1)) ]
             #}
             ::console::affiche_prompt "Interpolation de [ expr int($diff_jd) ] spectres depuis le n°$num_spectre...\n"
-            set spectre_next [ lindex $listefiles_norma $next_num ]
             set BufNo_initial [ buf::create ]
             buf$BufNo_initial load "$audace(rep_images)/$spectre"
+            set spectre_next [ lindex $listefiles_norma $next_num ]
             set BufNo_next [ buf::create ]
             buf$BufNo_next load "$audace(rep_images)/$spectre_next"
             #for { set jtime [ expr int($jdate+1) ] } { $jtime<$jd_next } { incr jtime }
             set jtime [ expr $jdate+1 ]
             for { set k [ expr int($jdate+1) ] } { $k<[ expr int($jd_next) ] } { incr k } {
+               #set jtime $k
                #-- Calcul des intensites la date jtime :
-               set a [ expr ($jd_next-$jtime)/$diff_jd ]
-               set b [ expr ($jtime-$jdate)/$diff_jd ]
+               set a [ expr 1.*($jd_next-$jtime)/$diff_jd ]
+               set b [ expr 1.*($jtime-$jdate)/$diff_jd ]
                buf$BufNo_initial mult $a
                buf$BufNo_next mult $b
                bm_ajoute $BufNo_initial $BufNo_next
