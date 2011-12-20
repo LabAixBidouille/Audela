@@ -125,7 +125,7 @@ char** tycho2_search(const char*pathName, double ra0, double dec0, double range,
 /**
  * Extract stars from Tycho catalog
  */
-int cmd_ydtcl_cstycho2(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+int cmd_tcl_cstycho2(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 	int i;
 	char c;
 
