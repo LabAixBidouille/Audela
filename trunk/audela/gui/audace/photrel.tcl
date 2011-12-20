@@ -12,9 +12,14 @@
 # photrel_cat2var : Find automatically variable sources from a binary catalog of sources.
 # photrel_wcs2var : Find automatically variable sources from an image series.
 # photrel_cat2per : Compute the best period from a (ra,dec) and a binary catalog of sources.
+#
 # ------------------------------------------------------------------------------
 # Work that remains to do:
 # 1) Photometric calibration from a binary catalog and a photometric catalog
+# photrel_cat2con : Extract the center coordinates and the radius of a binary catalog of sources.
+# photrel_nom2cal : Download a list of Nomad1 stars in an ascii catalogue as calibrated magnitudes.
+# photrel_cal2cat : Add calibrated magnitudes in a binary catalog of sources.
+# photrel_mes2mes : Calibration of a binary catalog of sources.
 # 2) photrel_cat2mov to find automatically moving objects
 # ------------------------------------------------------------------------------
 # On part avec une serie d'images. Exemple: ic1.fit a ic10.fit
@@ -50,6 +55,87 @@
 # source "$audace(rep_install)/gui/audace/photrel.tcl" ; photrel_cat2per N321200310 mystar 23.033801 1.341922 C 2
 #
 # =============================================================================
+
+# photrel_cat2con : Extract the center coordinates and the radius of a binary catalog of sources.
+# =============================================================================
+proc photrel_cat2con { args } {
+   global audace
+   set n [llength $args]
+   if {$n>=1} {
+      set in "[lindex $args 0]"
+      set path $::audace(rep_images)/
+      set res [yd_ref2field ${path} ${in}]
+      return $res
+   } else {
+      error "Usage: photrel_cat2con file_cat"
+   }
+}
+
+# photrel_nom2cal : Download a list of Nomad1 stars in an ascii catalogue as calibrated magnitudes.
+# =============================================================================
+proc photrel_nom2cal { args } {
+   global audace
+   set n [llength $args]
+   if {$n>=1} {
+      set ra "[lindex $args 0]"
+      set dec "[lindex $args 1]"
+      set radius "[lindex $args 2]"
+      set out "[lindex $args 3]"
+      set path $::audace(rep_images)/
+      set stars [vo_neareststar $ra $dec [expr $radius*60]]
+      set texte ""
+      foreach star $stars {
+	      set ra [lindex $star 1]
+	      set dec [lindex $star 2]
+	      append texte "$ra $dec"
+	      for {set k 0} {$k<6} {incr k} {
+		      set mag [lindex $star [expr 3+$k]]
+		      if {$mag=={}} {
+			      set mag -99.9
+		      } 
+		      append texte " [format %7.3f $mag]"		      
+      	}
+      	append texte "\n"		      
+      }
+      set f [open ${path}/${out}_cal.txt w]
+      puts -nonewline $f $texte
+   	close $f
+      return $texte
+   } else {
+      error "Usage: photrel_nom2cal ra dec radius_deg file_nomad"
+   }
+}
+
+# photrel_cal2cat : Add calibrated magnitudes in a binary catalog of sources.
+# =============================================================================
+proc photrel_cal2cat { args } {
+   global audace
+   set n [llength $args]
+   if {$n>=1} {
+      set in "[lindex $args 0]"
+      set path $::audace(rep_images)/
+      yd_cal2ref ${path} ${in}
+      yd_refzmgmes2ascii ${path} ${in}
+      return ""
+   } else {
+      error "Usage: photrel_cal2cat file_cat"
+   }
+}
+
+# photrel_mes2mes : Calibration of a binary catalog of sources.
+proc photrel_mes2mes { args } {
+   global audace
+   set n [llength $args]
+   if {$n>=1} {
+      set in "[lindex $args 0]"
+      set path $::audace(rep_images)/
+      yd_mes2mes ${path} ${in}
+      #yd_refzmgmes2ascii ${path} ${in}
+      return ""
+   } else {
+      error "Usage: photrel_cal2cat file_cat"
+   }
+}
 
 # =============================================================================
 proc photrel_cat2mes { args } {
@@ -160,7 +246,7 @@ proc photrel_wcs2cat { args } {
             set jd [mc_datescomp $date_obs + [expr $exposure/2./86400.]]
             set codecam 0
             set maginst [lindex $ligne 3]
-            set texte "$ra $dec $jd $codecam $codefiltre $maginst $exposure $airmass"
+            set texte "$ra $dec $jd $codecam $codefiltre $maginst $exposure $airmass 0 1"
             append textes "${texte}\n"
          }
          set asciifile_in $::audace(rep_images)/catalog.txt
