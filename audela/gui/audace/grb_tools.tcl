@@ -369,50 +369,52 @@ proc grb_gcnc { args } {
    set t0 [clock seconds]
 
    set sats {\
-   {"MAXI" "MAXI-GSC"} \
-   {"FERMI" "Fermi"} \
-   {"XRT" "Swift-XRT"} \
+   {"ASM" "Beppo-SAX"} \
    {"BAT" "Swift-BAT"} \
-   {"SWIFT" "Swift"} \
-   {"INTEGRAL" "Integral"} \
-   {"HETE" "HETE"} \
+   {"BATSE" "BATSE"} \
+   {"BEPPO" "Beppo-SAX"} \
+   {"CHANDRA" "Chandra"} \
+   {"FERMI" "Fermi"} \
+   {"FREGATE" "HETE-Fregate"} \
+   {"GRBM" "GRBM"} \
    {"HERSCHEL" "Herschel"} \
-   {"UVOT" "Swift-UVOT"} \
-   {"SUZAKU" "Suzaku"} \
-   {"WAM" "Suzaku-WAM"} \
+   {"HETE" "HETE"} \
+   {"IBAS" "Integral-IBAS"} \
+   {"INTEGRAL" "Integral"} \
+   {"IPN" "IPN"} \
    {"KONUS" "KONUS-Wind"} \
    {"KONUS-WIND" "KONUS-Wind"} \
-   {"WIND" "KONUS-Wind"} \
-   {"IPN" "IPN"} \
-   {"IBAS" "Integral-IBAS"} \
-   {"TEST " ""} \
-   {"SPITZER" "Spitzer"} \
-   {"XMM" "XMM-Newton"} \
-   {"BATSE" "BATSE"} \
-   {"FREGATE" "HETE-Fregate"} \
-   {"BEPPO" "Beppo-SAX"} \
-   {"SAX" "Beppo-SAX"} \
+   {"MAXI" "MAXI-GSC"} \
    {"NFI" "Beppo-SAX"} \
-   {"ASM" "Beppo-SAX"} \
-   {"XRTE" "XRTE"} \
-   {"GRBM" "GRBM"} \
-   {"CHANDRA" "Chandra"} \
    {"ROSAT" "ROSAT"} \
+   {"SAX" "Beppo-SAX"} \
+   {"SPITZER" "Spitzer"} \
+   {"SuperAGILE" "AGILE"} \
+   {"SUZAKU" "Suzaku"} \
+   {"SWIFT" "Swift"} \
+   {"TEST " ""} \
+   {"UVOT" "Swift-UVOT"} \
+   {"WAM" "Suzaku-WAM"} \
+   {"WIND" "KONUS-Wind"} \
+   {"XMM" "XMM-Newton"} \
+   {"XRT" "Swift-XRT"} \
+   {"XRTE" "XRTE"} \   
    }
 
    set miscs {\
-   {"EVLA" "VLA"} \
-   {"MAMBO" "MAMBO"} \
-   {"IRAM" "IRAM"} \
-   {"WSRT" "WSRT"} \
-   {"RHESSI" "RHESSI"} \
-   {"VLA" "VLA"} \
-   {"PSEUDO" "Pseudo-redshift"} \
-   {"CORRECTION" ""} \
+   {"APEX" "APEX"} \
    {"ATCA" "ATCA"} \
+   {"CORRECTION" ""} \
+   {"EVLA" "VLA"} \
+   {"IRAM" "IRAM"} \
+   {"MAMBO" "MAMBO"} \
    {"MILAGRO" "MILAGRO"} \
+   {"PSEUDO" "Pseudo-redshift"} \
+   {"RHESSI" "RHESSI"} \
    {"SDSS" "SDSS"} \
    {"SMA" "SMA"} \
+   {"VLA" "VLA"} \
+   {"WSRT" "WSRT"} \
    }
 
    set tels {\
@@ -429,6 +431,7 @@ proc grb_gcnc { args } {
    {"BOOTES2" "BOOTES2"} \
    {"BOOTES3" "BOOTES3"} \
    {"BOOTES-3" "BOOTES3"} \
+   {"BTA" "BTA"} \
    {"CASSINI" "CASSINI"} \
    {"CAHA" "CAHA-1.23m"} \
    {"CFHT" "CFHT"} \
@@ -436,7 +439,8 @@ proc grb_gcnc { args } {
    {"CQUEAN" "McDonald-2.1m"} \
    {"CRAO" "Shajn"} \
    {"CRNI VRH" "PIKA"} \
-   {"Danish" "ESO/Danish"} \
+   {"D50" "D50"} \
+   {"DANISH" "ESO/Danish"} \
    {"DANISH/DFOSC" "ESO/Danish"} \
    {"DFOSC" "ESO/Danish"} \
    {" EST " "EST"} \
@@ -447,9 +451,11 @@ proc grb_gcnc { args } {
    {"GAO" "GAO"} \
    {"GEMINI" "Gemini-*"} \
    {"GETS " "GETS"} \
-   {'GMOS" "Gemini-*"} \
+   {"GMOS" "Gemini-*"} \
+   {"GMG" "GMG_240"} \
    {"GORT " "GORT"} \
    {"GROND" "GROND"} \
+   {"GTC" "GTC"} \
    {"IAC " "IAC-80"} \
    {"IAC80" "IAC-80"} \
    {" INT " "INT"} \
@@ -477,10 +483,13 @@ proc grb_gcnc { args } {
    {"MASTER" "MASTER"} \
    {"MDM" "MDM_*"} \
    {"MIKE " "Gemini-*"} \
+   {"MINITAO" "MiniTAO"} \
    {"MIRO" "MIRO"} \
    {"MITSUME" "MITSuME"} \
    {"MIYAZAKI" "Miyazaki"} \
    {"MONDY" "SAYAN-1.5m"} \
+   {" MOA " "MOA_61"} \   
+   {"NAYUTA" "NAYUTA"} \
    {" NOT " "NOT"} \
    {"NTT" "NTT"} \
    {"OHP" "OHP"} \
@@ -522,6 +531,7 @@ proc grb_gcnc { args } {
    {"WATCHER" "Watcher"} \
    {"WHT" "WHT"} \
    {"WIDGET" "WIDGET"} \
+   {"WIYN" "WIYN"} \
    {"XINGLONG" "TNT"} \
    {"ZADKO" "Zadko"} \
    }
