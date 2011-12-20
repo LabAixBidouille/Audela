@@ -2,6 +2,8 @@
 
 DIR = linux
 
+install:
+
 build:
 	make -C $(DIR)
 
