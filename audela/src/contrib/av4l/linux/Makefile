@@ -61,10 +61,11 @@ doc: Doxyfile $(SRC)/grab.c $(SRC)/proto_filex.c $(SRC)/proto_null.c
 	doxygen
 
 ffmpeg-clean:
-	cd $(FFMPEG) && make clean
+	cd $(FFMPEG) && make clean && rm -f config.mak
 
 ffmpeg-config:
 	cd $(FFMPEG) && \
+	if test ! -e config.mak ; then \
 	./configure --enable-pic --enable-shared --enable-static \
 	--disable-doc --disable-pthreads --disable-network \
 	--disable-outdevs \
@@ -76,7 +77,8 @@ ffmpeg-config:
 	--disable-demuxers --enable-demuxer=avi \
 	--disable-bsfs \
 	--disable-parsers \
-	--disable-yasm
+	--disable-yasm \
+	; fi
 
 ffmpeg:
 	cd $(FFMPEG) && make
