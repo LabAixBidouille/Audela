@@ -1886,7 +1886,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 					}
 					
 					//longueur de la traînée des étoiles en fonction du temps d'exposition: 0.004180983*pseries->exposure/(sampling)
-					if ((l>8)&&(nb>=l/3)&&(fwhmxy>=1)&&(l*1./largxx>=1.5)&&(dvalue>0)&&(j<(int)(0.65*0.004180983*pseries->exposure/(sampling)))) {
+					if ((l>8)&&(nb>=l/3)&&(fwhmxy>=2)&&(l*1./largxx>=1.5)&&(dvalue>0)&&(j<(int)(0.65*0.004180983*pseries->exposure/(sampling)))) {
 						/* --- parametres de mesure precise ---*/
 						xcc=somme_x;
 						ycc=somme_y;
