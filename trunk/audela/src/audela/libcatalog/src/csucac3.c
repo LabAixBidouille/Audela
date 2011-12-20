@@ -54,7 +54,7 @@ int cmd_tcl_csucac3(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 	arrayTwoDOfStarUcac3 theUnFilteredStars;
 	resultOfFunction = retrieveUnFilteredStarsUcac3(pathOfCatalog,&mysearchZoneUcac3,indexTable,&theUnFilteredStars);
 	if(resultOfFunction) {
-		releaseDoubleIntArray(indexTable, INDEX_TABLE_DEC_DIMENSION);
+		releaseDoubleArray((void**)indexTable, INDEX_TABLE_DEC_DIMENSION);
 		Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
 		return (TCL_ERROR);
 	}
@@ -62,7 +62,7 @@ int cmd_tcl_csucac3(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 	arrayOneDOfStarUcac3 theFilteredStars;
 	resultOfFunction = filterStarsUcac3(&theUnFilteredStars,&theFilteredStars,&mysearchZoneUcac3);
 	if(resultOfFunction) {
-		releaseDoubleIntArray(indexTable, INDEX_TABLE_DEC_DIMENSION);
+		releaseDoubleArray((void**)indexTable, INDEX_TABLE_DEC_DIMENSION);
 		releaseMemoryArrayTwoDOfStarUcac3(&theUnFilteredStars);
 		Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
 		return (TCL_ERROR);
@@ -157,7 +157,7 @@ int cmd_tcl_csucac3(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 	Tcl_DStringFree(&dsptr);
 
 	/* Release the memory */
-	releaseDoubleIntArray(indexTable, INDEX_TABLE_DEC_DIMENSION);
+	releaseDoubleArray((void**)indexTable, INDEX_TABLE_DEC_DIMENSION);
 	releaseMemoryArrayTwoDOfStarUcac3(&theUnFilteredStars);
 
 	return (TCL_OK);

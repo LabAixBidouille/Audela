@@ -10,8 +10,7 @@
 
 #include "libcatalog.h"
 
-void releaseDoubleIntArray(int** theTwoDArray, const int firstDimension);
-void releaseDoubleCharArray(char** theTwoDArray, const int firstDimension);
+void releaseDoubleArray(void** theTwoDArray, const int firstDimension);
 
 
 #endif /* USEFUL_H_ */
