@@ -200,7 +200,7 @@ int cmd_tcl_cstycho2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 	Tcl_DStringFree(&dsptr);
 
 	/* Release outputs*/
-	releaseDoubleCharArray(outputs, numberOfOutputs);
+	releaseDoubleArray((void**)outputs, numberOfOutputs);
 
 	return (TCL_OK);
 }
