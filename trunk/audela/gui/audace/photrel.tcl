@@ -85,21 +85,21 @@ proc photrel_nom2cal { args } {
       set stars [vo_neareststar $ra $dec [expr $radius*60]]
       set texte ""
       foreach star $stars {
-	      set ra [lindex $star 1]
-	      set dec [lindex $star 2]
-	      append texte "$ra $dec"
-	      for {set k 0} {$k<6} {incr k} {
-		      set mag [lindex $star [expr 3+$k]]
-		      if {$mag=={}} {
-			      set mag -99.9
-		      } 
-		      append texte " [format %7.3f $mag]"		      
-      	}
-      	append texte "\n"		      
+         set ra [lindex $star 1]
+         set dec [lindex $star 2]
+         append texte "$ra $dec"
+         for {set k 0} {$k<6} {incr k} {
+            set mag [lindex $star [expr 3+$k]]
+            if {$mag=={}} {
+               set mag -99.9
+            }
+            append texte " [format %7.3f $mag]"
+         }
+         append texte "\n"
       }
       set f [open ${path}/${out}_cal.txt w]
       puts -nonewline $f $texte
-   	close $f
+      close $f
       return $texte
    } else {
       error "Usage: photrel_nom2cal ra dec radius_deg file_nomad"
