@@ -5,7 +5,7 @@
 # Fichier        : av4l_cdl.tcl
 # Description    : Outil Courbe de lumiere
 # Auteur         : Frederic Vachier
-# Mise à jour $Id: av4l_cdl.tcl 6795 2011-02-26 16:05:27Z fredvachier $
+# Mise à jour $Id$
 #
 
 namespace eval ::av4l_cdl {
