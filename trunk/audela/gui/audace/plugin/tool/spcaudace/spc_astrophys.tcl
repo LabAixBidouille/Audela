@@ -3655,38 +3655,42 @@ proc spc_dynagraph { args } {
          buf$newBufNo setpix [ list $x_coord $num_spectre ] [ lindex $yvals [ expr $x_coord-1 ] ]
       }
       }
+      incr num_spectre
 
       #--- Interpolation eventuelle :
       set next_num [ expr $index_listspectres+1 ]
       if { $next_num<$nb_spectres } {
          set jd_next [ lindex $listejd $next_num ]
          set diff_jd [ expr $jd_next-$jdate ]
-         if { $diff_jd>1 } {
+         if { [ expr int($diff_jd) ]>1 } {
+            #-- Securite :
             #if { [ expr int($diff_jd)+$num_spectre ]>=$nb_jours } {
             #   set diff_jd [ expr $diff_jd-($nb_jours-($diff_jd+$num_spectre+1)) ]
             #}
-            ::console::affiche_prompt "Interpolation de [ expr int($diff_jd) ] spectres depuis le n°$num_spectre...\n"
+            set nb_inter [ expr int($jd_next)-int($jdate)-1 ]
+            #-- ::console::affiche_prompt "Interpolation de $nb_inter spectres depuis le n°[ expr $num_spectre-1 ]...\n"
+            ##::console::affiche_prompt "diff_jd=$diff_jd...\njdeb=$jdate ; jfin=$jd_next\n"
             set BufNo_initial [ buf::create ]
-            buf$BufNo_initial load "$audace(rep_images)/$spectre"
             set spectre_next [ lindex $listefiles_norma $next_num ]
             set BufNo_next [ buf::create ]
-            buf$BufNo_next load "$audace(rep_images)/$spectre_next"
-            #for { set jtime [ expr int($jdate+1) ] } { $jtime<$jd_next } { incr jtime }
             set jtime [ expr $jdate+1 ]
-            for { set k [ expr int($jdate+1) ] } { $k<[ expr int($jd_next) ] } { incr k } {
+            #- Boucle aux limites :
+            #- for { set jtime [ expr int($jdate+1) ] } { $jtime<$jd_next } { incr jtime }
+            #- for { set k [ expr int($jdate+1) ] } { $k<[ expr int($jd_next)+1 ] } { incr k } 
+            for { set k 1 } { $k<=$nb_inter } { incr k } {
                #set jtime $k
                #-- Calcul des intensites la date jtime :
-               set a [ expr 1.*($jd_next-$jtime)/$diff_jd ]
-               set b [ expr 1.*($jtime-$jdate)/$diff_jd ]
+               set a [ expr ($jd_next-$jtime)/$diff_jd ]
+               set b [ expr ($jtime-$jdate)/$diff_jd ]
+               buf$BufNo_initial load "$audace(rep_images)/$spectre"
                buf$BufNo_initial mult $a
+               buf$BufNo_next load "$audace(rep_images)/$spectre_next"
                buf$BufNo_next mult $b
                bm_ajoute $BufNo_initial $BufNo_next
-               #buf$BufNo_next bitpix float
-               #buf$BufNo_next save "$audace(rep_images)/toto"
-               #buf$BufNo_initial add toto 0
                #-- Ecrit les intensites dans le fichier 2D :
                for { set x_coord 1 } { $x_coord<=$naxis1 && $num_spectre<=$nb_jours } { incr x_coord } {
                   buf$newBufNo setpix [ list $x_coord $num_spectre ] [ lindex [ buf$BufNo_initial getpix [ list $x_coord 1 ] ] 1 ]
+                  #- Test lieux interpol : buf$newBufNo setpix [ list $x_coord $num_spectre ] 0.0
                }
                incr num_spectre
                set jtime [ expr $jtime+1 ]
@@ -3702,13 +3706,13 @@ proc spc_dynagraph { args } {
       }
          
       #--- Incremention du n° de spectre :
-      incr num_spectre
       incr index_listspectres
    }
 
 
    #--- Sauvegarde finale du fichier fits-image 2D :
-   ::console::affiche_prompt "\nCréation du spectre dynamique...\n"
+   ::console::affiche_prompt "\nNombres de jours couverts entre [ expr int($date_deb) ] et [ expr int($date_fin) ] : $nb_jours jours.\n"
+   ::console::affiche_prompt "Enregistrement du spectre dynamique sous ${objname}_dynaspectrum.jpg+fit\n"
    regsub -all {(\s)} "$objname" "_" objname
    buf$newBufNo setkwd [ list "OBJNAME" "$objname" string "" "" ]
    buf$newBufNo bitpix float
@@ -3792,8 +3796,7 @@ if { 1==0} {
       file delete -force "$audace(rep_images)/$fichier$conf(extension,defaut)"
    }
    #}
-   ::console::affiche_prompt "\nNombres de jours couverts entre [ expr int($date_deb) ] et [ expr int($date_fin) ] : $nb_jours jours.\n"
-   ::console::affiche_resultat "\nSpectre dynamique sauvé sous ${objname}_dynaspectrum$conf(extension,defaut)\n"
+   #::console::affiche_resultat "\nSpectre dynamique sauvé sous ${objname}_dynaspectrum$conf(extension,defaut)\n"
    return "${objname}_dynaspectrum"
 }
 ####################################################################
