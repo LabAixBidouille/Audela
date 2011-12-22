@@ -5,7 +5,7 @@
 # Fichier        : av4l_tools_avi.tcl
 # Description    : Utilitaires pour la manipulation des AVI
 # Auteur         : Frederic Vachier
-# Mise à jour $Id: av4l_ocr_gui.tcl 6795 2011-02-26 16:05:27Z fredvachier $
+# Mise à jour $Id$
 #
 
 namespace eval ::av4l_tools_avi {
@@ -534,9 +534,8 @@ namespace eval ::av4l_tools_avi {
         ::console::affiche_resultat "Acquisition demarre ...\n"
         ::console::affiche_resultat "           path   : $destdir\n"
         ::console::affiche_resultat "           prefix : $prefix\n"
-        
-        exec sh -c "LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab -d 120m -c 2m -o $destdir" -p "$prefix" &
-        after 1000 " ::av4l_tools_avi::acq_display $visuNo $frm"
+        exec sh -c "LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab -d 120m -c 2m -o $destdir -p $prefix" &
+        after 100 " ::av4l_tools_avi::acq_display $visuNo $frm"
    }
 
 

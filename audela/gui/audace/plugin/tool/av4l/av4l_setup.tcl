@@ -2,7 +2,7 @@
 # Fichier : av4l_setup.tcl
 # Description : Configuration de certains parametres de l'outil Acquisition
 # Auteur : Robert DELMAS
-# Mise à jour $Id: av4l_setup.tcl 6795 2011-02-26 16:05:27Z michelpujol $
+# Mise à jour $Id$
 #
 
 namespace eval ::av4l_setup {

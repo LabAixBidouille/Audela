@@ -3,7 +3,7 @@
 # Fichier        : test.tcl
 # Description    : Test de fonctionnement de procedures
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: test.tcl 6795 2011-02-26 16:05:27Z michelpujol $
+# Mise à jour $Id$
 #
 
 namespace eval testprocedure {
