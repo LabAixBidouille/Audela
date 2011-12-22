@@ -144,6 +144,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="..\..\..\..\..\bin\libgslcblas.dll"
+				LinkIncremental="1"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 				ImportLibrary="$(TargetDir)libgslcblas.lib"

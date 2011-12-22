@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="libqsi"
 	ProjectGUID="{76478489-9E93-46FC-A31C-633B59030C00}"
 	TargetFrameworkVersion="0"
@@ -167,7 +167,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="..\..\..\external\lib\tclstub85.lib"
 				OutputFile="..\..\..\..\bin\libqsi.dll"
-				LinkIncremental="0"
+				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames=""
 				ModuleDefinitionFile=".\libqsi.def"

@@ -147,6 +147,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="libgslcblas.lib"
 				OutputFile="..\..\..\..\..\bin\libgsl.dll"
+				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\..\..\external\lib"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
