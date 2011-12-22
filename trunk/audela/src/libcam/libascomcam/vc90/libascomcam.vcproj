@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="libascomcam"
 	ProjectGUID="{66ADD21C-621A-499C-BF64-93D2729A2A5F}"
 	RootNamespace="libascomcam"
@@ -143,6 +143,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="..\..\..\external\lib\tclstub85.lib"
 				OutputFile="..\..\..\..\bin\libascomcam.dll"
+				LinkIncremental="1"
 				ModuleDefinitionFile=".\libascomcam.def"
 				AddModuleNamesToAssembly=""
 				GenerateDebugInformation="false"
