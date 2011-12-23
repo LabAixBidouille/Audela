@@ -473,17 +473,33 @@ namespace eval ::av4l_tools_avi {
         set bufNo [ visu$visuNo buf ]
         ::console::affiche_resultat "One Shot !\n"
 
-        set err [ catch { exec sh -c "LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab -1" } msg ]
-        if {[file exists /dev/shm/pict.yuv422 ]} {
-           ::avi::convert_shared_image $bufNo /dev/shm/pict.yuv422
-           visu$visuNo disp
-           file delete -force /dev/shm/pict.yuv422
+        set err [ catch { exec sh -c "LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab -1 2>&1" } msg ]
+        if { $err != 0 } {
+            ::console::affiche_erreur "Echec lors de l'appel a av4l-grab\n"
+            ::console::affiche_erreur "Code d'erreur : $err\n"
+            ::console::affiche_erreur "=== Messages retournes par av4l-grab :\n"
+            foreach line [split $msg "\n"] {
+                ::console::affiche_erreur "$line\n"
+            }
+            ::console::affiche_erreur "=== Fin des messages\n"
+            return $err
         } else {
-           ::console::affiche_erreur "Image inexistante \n"
-           ::console::affiche_resultat "err = $err\n"
-           ::console::affiche_resultat "msg = $msg\n"
-        }
+            ::console::affiche_resultat "=== Messages retournes par av4l-grab :\n"
+            foreach line [split $msg "\n"] {
+                ::console::affiche_resultat "$line\n"
+            }
+            ::console::affiche_resultat "=== Fin des messages\n"
+	}
 
+        if { $err == 0 } {
+            if {[file exists /dev/shm/pict.yuv422 ]} {
+                ::avi::convert_shared_image $bufNo /dev/shm/pict.yuv422
+                visu$visuNo disp
+                file delete -force /dev/shm/pict.yuv422
+            } else {
+                ::console::affiche_erreur "Image inexistante \n"
+            }
+        }
 
        set statebutton [ $frm.photom.values.object.t.select cget -relief]
        if { $statebutton=="sunken" } {
@@ -534,7 +550,12 @@ namespace eval ::av4l_tools_avi {
         ::console::affiche_resultat "Acquisition demarre ...\n"
         ::console::affiche_resultat "           path   : $destdir\n"
         ::console::affiche_resultat "           prefix : $prefix\n"
-        exec sh -c "LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab -d 120m -c 2m -o $destdir -p $prefix" &
+        set err [catch { exec sh -c "LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab -d 120m -c 2m -o $destdir -p $prefix" & } processes]
+        if { $err != 0 } {
+            ::console::affiche_erreur "Echec lors de l'execution de av4l-grab\n"
+            return
+        }
+
         after 100 " ::av4l_tools_avi::acq_display $visuNo $frm"
    }
 

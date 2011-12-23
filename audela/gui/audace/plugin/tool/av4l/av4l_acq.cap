@@ -11,58 +11,27 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(av4l_acq,main_title)          "acqvideolinux - Statut"
-set caption(av4l_acq,titre)               "Statut de la base de données"
+   set caption(av4l_acq,titre)            "av4l - Acquisition video"
+   set caption(av4l_acq,aide)             "Aide"
+   set caption(av4l_acq,fermer)           "Fermer"
 
-set caption(av4l_acq,label_bdd)           "Information du Serveur MySQL Local"
-set caption(av4l_acq,label_connect)       "Connexion Serveur................"
-set caption(av4l_acq,label_nbimg)         "Nb requêtes......................"
-set caption(av4l_acq,label_nbheader)      "Nb scènes........................"
+   set caption(av4l_acq,rep_dest)         "Repertoire destination"
+   set caption(av4l_acq,prefixe_fichiers) "Prefixe des fichiers"
 
-set caption(av4l_acq,label_rep)           "Information du Télescope"
-set caption(av4l_acq,label_tconnect)      "Webservice......................"
+   set caption(av4l_acq,btn_oneshot)      "Prend une image"
+   set caption(av4l_acq,btn_start)        "Lance l'aquisition"
+   set caption(av4l_acq,btn_stop)         "Arrete l'aquisition"
 
-set caption(av4l_acq,raz)                 "RAZ de la base de données"
-set caption(av4l_acq,verif)               "Vérification"
-set caption(av4l_acq,aide)                "Aide"
-set caption(av4l_acq,fermer)              "Fermer"
-set caption(av4l_acq,cancelRAZ)           "RAZ BDD annulée"
-
-set caption(av4l_acq,msg_erreur)          "Erreur"
-set caption(av4l_acq,msg_internet)        "Reconnexion à la base"
-
-set caption(av4l_acq,msg_prevent)         "Attention !"
-set caption(av4l_acq,msg_prevent2)        "Cette action va réinitialiser la base de données. Toutes les données seront définitivement effacées du disque. Etes-vous sûr ?"
-set caption(av4l_acq,efface)              "Effacement de la base de données"
-set caption(av4l_acq,mdprootsql)          "Veuillez saisir le mot de passe root du serveur SQL"
+   set caption(av4l_acq,info_video)       "Info Video"
+   set caption(av4l_acq,info_fps)         "fps"
+   set caption(av4l_acq,info_nbi)         "nb image"
+   set caption(av4l_acq,info_duree)       "Duree"
+   set caption(av4l_acq,info_size)        "taille fichier"
+   set caption(av4l_acq,info_dispo)       "taille dispo"
+   set caption(av4l_acq,info_restduree)   "Duree restante"
 
 # *************** Version française **** **********************
 if { [ string compare $langage "french" ] == "0" } {
-
-   set caption(av4l_acq,main_title)       "acqvideolinux - Acquisition"
-   set caption(av4l_acq,titre)            "Statut de la base de données"
-
-   set caption(av4l_acq,label_bdd)        "Information du Serveur MySQL Local"
-   set caption(av4l_acq,label_connect)    "Connexion Serveur................"
-   set caption(av4l_acq,label_nbrequetes) "Nb requêtes......................"
-   set caption(av4l_acq,label_nbscenes)   "Nb scènes........................"
-
-   set caption(av4l_acq,label_rep)        "Information du Télescope"
-   set caption(av4l_acq,label_tconnect)   "Webservice......................."
-
-   set caption(av4l_acq,raz)              "RAZ de la base de données"
-   set caption(av4l_acq,verif)            "Vérification"
-   set caption(av4l_acq,aide)             "Aide"
-   set caption(av4l_acq,fermer)           "Fermer"
-   set caption(av4l_acq,cancelRAZ)        "RAZ BDD annulée"
-
-   set caption(av4l_acq,msg_erreur)       "Erreur"
-   set caption(av4l_acq,msg_internet)     "Reconnexion à la base"
-
-   set caption(av4l_acq,msg_prevent)      "Attention !"
-   set caption(av4l_acq,msg_prevent2)     "Cette action va réinitialiser la base de données. Toutes les données seront définitivement effacées du disque. Etes-vous sûr ?"
-   set caption(av4l_acq,efface)           "Effacement de la base de données"
-   set caption(av4l_acq,mdprootsql)       "Veuillez saisir le mot de passe root du serveur SQL"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
