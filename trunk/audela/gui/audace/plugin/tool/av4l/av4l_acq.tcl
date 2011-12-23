@@ -214,12 +214,12 @@ namespace eval ::av4l_acq {
 
             #--- Cree un label pour
             label $intitle.destdir -font $av4lconf(font,courier_10) -padx 3 \
-                  -text "repertoire destination"
+                  -text "$caption(av4l_acq,rep_dest)"
             pack $intitle.destdir -in $intitle -side top -padx 3 -pady 1 -anchor w
 
             #--- Cree un label pour
             label $intitle.prefix -font $av4lconf(font,courier_10) \
-                  -text "Prefixe du fichier"
+                  -text "$caption(av4l_acq,prefixe_fichiers)"
             pack $intitle.prefix -in $intitle -side top -padx 3 -pady 1 -anchor w
 
 
@@ -269,7 +269,7 @@ namespace eval ::av4l_acq {
               -in $frm.btnav \
               -side left -anchor w \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-           DynamicHelp::add $frm.oneshot -text "Prend 1 image"
+           DynamicHelp::add $frm.oneshot -text "$caption(av4l_acq,btn_oneshot)"
 
            #--- Creation du bouton start acquisition
            image create photo .demarre -format PNG -file [ file join $audace(rep_plugin) tool av4l img demarre.png ]
@@ -280,7 +280,7 @@ namespace eval ::av4l_acq {
               -in $frm.btnav \
               -side left -anchor w \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-           DynamicHelp::add $frm.demarre -text "Lance Acquisition \n test"
+           DynamicHelp::add $frm.demarre -text "$caption(av4l_acq,btn_start)"
 
            #--- Creation du bouton stop acquisition
            image create photo .stop -format PNG -file [ file join $audace(rep_plugin) tool av4l img stop.png ]
@@ -291,7 +291,7 @@ namespace eval ::av4l_acq {
               -in $frm.btnav \
               -side left -anchor w \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-           DynamicHelp::add $frm.stop -text "Stop Acquisition"
+           DynamicHelp::add $frm.stop -text "$caption(av4l_acq,btn_stop)"
 
 
 
@@ -304,7 +304,7 @@ namespace eval ::av4l_acq {
           pack $frm.tinfovideo -in $frm -side top -anchor w
 
           #---Titre
-          label $frm.tinfovideo.title -font $av4lconf(font,arial_10_b) -text "Info Video"
+          label $frm.tinfovideo.title -font $av4lconf(font,arial_10_b) -text "$caption(av4l_acq,info_video)"
           pack  $frm.tinfovideo.title -in $frm.tinfovideo -side top -anchor w -expand 0
 
 
@@ -342,19 +342,19 @@ namespace eval ::av4l_acq {
            #- Colonne de droite
            
               #---FPS
-              label $ivll.fps -font $av4lconf(font,courier_10) -text "fps"
+              label $ivll.fps -font $av4lconf(font,courier_10) -text "$caption(av4l_acq,info_fps)"
               pack  $ivll.fps -in $ivll -side top -anchor w
               label $ivlv.fps -font $av4lconf(font,courier_10) -fg $color(blue) -text "?"
               pack  $ivlv.fps -in $ivlv -side top -anchor w
 
               #---Frame
-              label $ivll.nbi -font $av4lconf(font,courier_10) -text "nb image"
+              label $ivll.nbi -font $av4lconf(font,courier_10) -text "$caption(av4l_acq,info_nbi)"
               pack  $ivll.nbi -in $ivll -side top -anchor w
               label $ivlv.nbi -font $av4lconf(font,courier_10) -fg $color(blue) -text "?"
               pack  $ivlv.nbi -in $ivlv -side top -anchor w
 
               #---Duree
-              label $ivll.duree -font $av4lconf(font,courier_10) -text "Duree"
+              label $ivll.duree -font $av4lconf(font,courier_10) -text "$caption(av4l_acq,info_duree)"
               pack  $ivll.duree -in $ivll -side top -anchor w
               label $ivlv.duree -font $av4lconf(font,courier_10) -fg $color(blue) -text "00:00:00"
               pack  $ivlv.duree -in $ivlv -side top -anchor w
@@ -362,19 +362,19 @@ namespace eval ::av4l_acq {
            #- Colonne de gauche
 
               #---taille fichier
-              label $ivrl.size -font $av4lconf(font,courier_10) -text "taille fichier"
+              label $ivrl.size -font $av4lconf(font,courier_10) -text "$caption(av4l_acq,info_size)"
               pack  $ivrl.size -in $ivrl -side top -anchor w
               label $ivrv.size -font $av4lconf(font,courier_10) -fg $color(blue) -text "?"
               pack  $ivrv.size -in $ivrv -side top -anchor w
 
               #---taille dispo
-              label $ivrl.dispo -font $av4lconf(font,courier_10) -text "taille dispo"
+              label $ivrl.dispo -font $av4lconf(font,courier_10) -text "$caption(av4l_acq,info_dispo)"
               pack  $ivrl.dispo -in $ivrl -side top -anchor w
               label $ivrv.dispo -font $av4lconf(font,courier_10) -fg $color(blue) -text "?"
               pack  $ivrv.dispo -in $ivrv -side top -anchor w
 
               #---taille fichier
-              label $ivrl.restduree -font $av4lconf(font,courier_10) -text "Duree restante"
+              label $ivrl.restduree -font $av4lconf(font,courier_10) -text "$caption(av4l_acq,info_restduree)"
               pack  $ivrl.restduree -in $ivrl -side top -anchor w
               label $ivrv.restduree -font $av4lconf(font,courier_10) -fg $color(blue) -text "?"
               pack  $ivrv.restduree -in $ivrv -side top -anchor w
@@ -671,7 +671,7 @@ namespace eval ::av4l_acq {
            #--- Creation du bouton aide
            button $frm.action.aide \
               -text "$caption(av4l_acq,aide)" -borderwidth 2 \
-              -command "::audace::showHelpPlugin tool av4l av4l_acq.htm"
+              -command "::audace::showHelpPlugin tool av4l av4l.htm"
            pack $frm.action.aide -in $frm.action \
               -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
