@@ -85,16 +85,16 @@ ffmpeg:
 
 ffmpeg-links:
 	cp -vf $(FFMPEG)/libavcodec/libavcodec.so.53 ../../../../bin/
-	cp -vf $(FFMPEG)/libavcodec/libavcodec.so ../../../../bin/
+	cp -avf $(FFMPEG)/libavcodec/libavcodec.so ../../../../bin/
 	cp -vf $(FFMPEG)/libavfilter/libavfilter.so.2 ../../../../bin/
-	cp -vf $(FFMPEG)/libavfilter/libavfilter.so ../../../../bin/
+	cp -avf $(FFMPEG)/libavfilter/libavfilter.so ../../../../bin/
 	cp -vf $(FFMPEG)/libavformat/libavformat.so.53 ../../../../bin/
-	cp -vf $(FFMPEG)/libavformat/libavformat.so ../../../../bin/
+	cp -avf $(FFMPEG)/libavformat/libavformat.so ../../../../bin/
 	cp -vf $(FFMPEG)/libavutil/libavutil.so.51 ../../../../bin/
-	cp -vf $(FFMPEG)/libavutil/libavutil.so ../../../../bin/
+	cp -avf $(FFMPEG)/libavutil/libavutil.so ../../../../bin/
 	cp -vf $(FFMPEG)/libswscale/libswscale.so.2 ../../../../bin/
-	cp -vf $(FFMPEG)/libswscale/libswscale.so ../../../../bin/
-	cp -vf $(FFMPEG)/libavdevice/libavdevice.so ../../../../bin/
+	cp -avf $(FFMPEG)/libswscale/libswscale.so ../../../../bin/
+	cp -avf $(FFMPEG)/libavdevice/libavdevice.so ../../../../bin/
 	cp -vf $(FFMPEG)/libavdevice/libavdevice.so.53 ../../../../bin/
 
 ffmpeg-uninstall:

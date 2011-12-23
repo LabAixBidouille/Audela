@@ -716,6 +716,8 @@ int video_open(struct video_context_s *vc, const char *path)
         return 1;
     }
 
+    fprintf(stderr,"I: opened video device %s\n",path);
+
     if(0)
     {
         struct v4l2_requestbuffers reqbuf;
@@ -1503,9 +1505,14 @@ int one_shot(int argc, char *argv[])
 
     // Video Input Device Init
     if(video_open(&vc,g_input_device) != 0) {
-        fprintf(stderr,"E: cannot open device %s\n", g_input_device);
+        if(g_input_device) {
+            fprintf(stderr,"E: cannot open device %s\n", g_input_device);
+        } else {
+            fprintf(stderr,"E: no video device could be opened\n");
+        }
         exit(1);
     }
+
     video_alloc_buffers(&vc);
 
     // Allocation of space for shared image
@@ -1912,9 +1919,16 @@ int main(int argc, char *argv[])
 
     // Video Input Device Init
     if(video_open(&vc,g_input_device) != 0) {
-        fprintf(stderr,"E: cannot open device %s\n", g_input_device);
+        if(g_input_device) {
+            fprintf(stderr,"E: cannot open device %s\n", g_input_device);
+        } else {
+            fprintf(stderr,"E: no video device could be opened\n");
+        }
+
+        fprintf(fp_timelog, "# End of recording reason : %s\n", "video device opening failed");
         exit(1);
     }
+
     video_alloc_buffers(&vc);
 
     // Allocation of space for shared image
