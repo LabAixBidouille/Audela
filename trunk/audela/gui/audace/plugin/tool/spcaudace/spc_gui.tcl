@@ -288,6 +288,7 @@ proc spc_winini { } {
       .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_npne_w) -command "spc_npne" -underline 0
       .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_normahbeta) -command "spc_normahbeta" -underline 0
       .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_file_space)
+      .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_dynagraph) -command "spc_dynagraph" -underline 0
       .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_periodogram) -command "spc_periodogram" -underline 0
       .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_file_space)
       .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_spectrum) -command "spc_spectrum" -underline 0

@@ -168,6 +168,7 @@ set caption(spcaudace,gui,spc_normahbeta)                   "Normalisation with 
 set caption(spcaudace,gui,spc_spectrum)                     "SPECTRUM: Launch synthetic spectra software"
 set caption(spcaudace,gui,spc_ajustplanck_w)                "Compute stellar temperature by Planck fitting"
 set caption(spcaudace,gui,spc_periodogram)                  "Build a periodogram and plot sine function from an ascii data file"
+set caption(spcaudace,gui,spc_dynagraph)                    "Build a 2D dynamic spectrum from a spectra serie"
 
 #--- Menu Aide ---#
 set caption(spcaudace,gui,spc_aide)                         "Help"
@@ -338,6 +339,7 @@ if { [string compare $langage "french"] == "0" } {
    set caption(spcaudace,gui,spc_spectrum)                  "SPECTRUM : Synthèse de spectres"
    set caption(spcaudace,gui,spc_ajustplanck_w)             "Détermination de la température stellaire par ajustement de Planck"
    set caption(spcaudace,gui,spc_periodogram)               "Construit le periodogramme et affiche la sinusoide des mesures issues d'un fichier ascii"
+   set caption(spcaudace,gui,spc_dynagraph)                 "Construit le spectre dynamique 2D d'une série de profils"
 
    #--- Menu Aide ---#
    set caption(spcaudace,gui,spc_aide)                      "Aide"
