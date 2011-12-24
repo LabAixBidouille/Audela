@@ -11,58 +11,28 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(av4l_extraction,main_title)          "acqvideolinux - Statut"
-set caption(av4l_extraction,titre)               "Extraction Video AVI"
+   set caption(av4l_extraction,titre)               "Extraction Video AVI"
 
-set caption(av4l_extraction,label_bdd)           "Information du Serveur MySQL Local"
-set caption(av4l_extraction,label_connect)       "Connexion Serveur................"
-set caption(av4l_extraction,label_nbimg)         "Nb requêtes......................"
-set caption(av4l_extraction,label_nbheader)      "Nb scènes........................"
-
-set caption(av4l_extraction,label_rep)           "Information du Télescope"
-set caption(av4l_extraction,label_tconnect)      "Webservice......................"
-
-set caption(av4l_extraction,raz)                 "RAZ de la base de données"
-set caption(av4l_extraction,verif)               "Vérification"
-set caption(av4l_extraction,aide)                "Aide"
-set caption(av4l_extraction,fermer)              "Fermer"
-set caption(av4l_extraction,cancelRAZ)           "RAZ BDD annulée"
-
-set caption(av4l_extraction,msg_erreur)          "Erreur"
-set caption(av4l_extraction,msg_internet)        "Reconnexion à la base"
-
-set caption(av4l_extraction,msg_prevent)         "Attention !"
-set caption(av4l_extraction,msg_prevent2)        "Cette action va réinitialiser la base de données. Toutes les données seront définitivement effacées du disque. Etes-vous sûr ?"
-set caption(av4l_extraction,efface)              "Effacement de la base de données"
-set caption(av4l_extraction,mdprootsql)          "Veuillez saisir le mot de passe root du serveur SQL"
+   set caption(av4l_extraction,aide)                "Aide"
+   set caption(av4l_extraction,fermer)              "Fermer"
+   set caption(av4l_extraction,ouvrir)              "Ouvrir"
+   
+   set caption(av4l_extraction,setmin)              "Marq. debut"
+   set caption(av4l_extraction,setmax)              "Marq. fin"
+   set caption(av4l_extraction,nbimg)               "Nombre d'images a extraire : "
+   set caption(av4l_extraction,calcul)              "Calcul"
+   
+   set caption(av4l_extraction,statut)              "Statut"
+   set caption(av4l_extraction,nbtotal)             "Nb total d'images"
+   
+   set caption(av4l_extraction,destdir)             "Repertoire destination"
+   set caption(av4l_extraction,prefix)              "Prefixe des fichiers"
+   set caption(av4l_extraction,extract)             "Extraction"
+   set caption(av4l_extraction,extractfin)          "Extraction Terminee"
 
 # *************** Version française **** **********************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(av4l_extraction,main_title)       "acqvideolinux - Statut"
-   set caption(av4l_extraction,titre)            "Extraction Video AVI"
-
-   set caption(av4l_extraction,label_bdd)        "Information du Serveur MySQL Local"
-   set caption(av4l_extraction,label_connect)    "Connexion Serveur................"
-   set caption(av4l_extraction,label_nbrequetes) "Nb requêtes......................"
-   set caption(av4l_extraction,label_nbscenes)   "Nb scènes........................"
-
-   set caption(av4l_extraction,label_rep)        "Information du Télescope"
-   set caption(av4l_extraction,label_tconnect)   "Webservice......................."
-
-   set caption(av4l_extraction,raz)              "RAZ de la base de données"
-   set caption(av4l_extraction,verif)            "Vérification"
-   set caption(av4l_extraction,aide)             "Aide"
-   set caption(av4l_extraction,fermer)           "Fermer"
-   set caption(av4l_extraction,cancelRAZ)        "RAZ BDD annulée"
-
-   set caption(av4l_extraction,msg_erreur)       "Erreur"
-   set caption(av4l_extraction,msg_internet)     "Reconnexion à la base"
-
-   set caption(av4l_extraction,msg_prevent)      "Attention !"
-   set caption(av4l_extraction,msg_prevent2)     "Cette action va réinitialiser la base de données. Toutes les données seront définitivement effacées du disque. Etes-vous sûr ?"
-   set caption(av4l_extraction,efface)           "Effacement de la base de données"
-   set caption(av4l_extraction,mdprootsql)       "Veuillez saisir le mot de passe root du serveur SQL"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {

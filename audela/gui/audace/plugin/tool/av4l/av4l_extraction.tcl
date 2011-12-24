@@ -3,7 +3,7 @@
 #--------------------------------------------------
 #
 # Fichier        : av4l_extraction.tcl
-# Description    : Affiche le status de la base de donnees
+# Description    : 
 # Auteur         : Frederic Vachier
 # Mise à jour $Id$
 #
@@ -190,7 +190,7 @@ namespace eval ::av4l_extraction {
              -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
         #--- Creation du bouton open
         button $frm.open.but_open \
-           -text "open" -borderwidth 2 \
+           -text "$caption(av4l_extraction,ouvrir)" -borderwidth 2 \
            -command "::av4l_tools::open_flux $visuNo $frm"
         pack $frm.open.but_open \
            -side left -anchor e \
@@ -269,7 +269,7 @@ namespace eval ::av4l_extraction {
 
              #--- Creation du bouton setmin
              button $frm.pos.setmin \
-                -text "setmin" -borderwidth 2 \
+                -text "$caption(av4l_extraction,setmin)" -borderwidth 2 \
                 -command "::av4l_tools::setmin $frm"
              pack $frm.pos.setmin \
                 -in $frm.pos \
@@ -278,7 +278,7 @@ namespace eval ::av4l_extraction {
 
              #--- Creation du bouton setmax
              button $frm.pos.setmax \
-                -text "setmax" -borderwidth 2 \
+                -text "$caption(av4l_extraction,setmax)" -borderwidth 2 \
                 -command "::av4l_tools::setmax $frm"
              pack $frm.pos.setmax \
                 -in $frm.pos \
@@ -318,14 +318,14 @@ namespace eval ::av4l_extraction {
 
              #--- Cree un label
              label $frm.labnbimg -font $av4lconf(font,courier_10) -padx 3 \
-                   -text "Nombre d'images a extraire : "
+                   -text "$caption(av4l_extraction,nbimg)"
              pack $frm.labnbimg -in $frm.count -side left -pady 1 -anchor w
              #--- Cree un entry
              entry $frm.imagecount -fg $color(blue) -relief sunken
              pack $frm.imagecount -in $frm.count -side left -pady 1 -anchor w
              #--- Cree un button
              button $frm.doimagecount \
-              -text "calcul" -borderwidth 2 \
+              -text "$caption(av4l_extraction,calcul)" -borderwidth 2 \
               -command "::av4l_tools_avi::imagecount $frm" 
              pack $frm.doimagecount -in $frm.count -side left -pady 1 -anchor w
 
@@ -338,11 +338,11 @@ namespace eval ::av4l_extraction {
           pack $intitle -in $frm.status -side left
 
             #--- Cree un label pour le status
-            label $intitle.status -font $av4lconf(font,courier_10) -text "Status"
+            label $intitle.status -font $av4lconf(font,courier_10) -text "$caption(av4l_extraction,statut)"
             pack $intitle.status -in $intitle -side top -anchor w
 
             #--- Cree un label pour le nb d image
-            label $intitle.nbtotal -font $av4lconf(font,courier_10) -text "Nb total d'images"
+            label $intitle.nbtotal -font $av4lconf(font,courier_10) -text "$caption(av4l_extraction,nbtotal)"
             pack $intitle.nbtotal -in $intitle -side top -anchor w
 
 
@@ -374,12 +374,12 @@ namespace eval ::av4l_extraction {
 
             #--- Cree un label pour le status
             label $intitle.destdir -font $av4lconf(font,courier_10) -padx 3 \
-                  -text "repertoire destination"
+                  -text "$caption(av4l_extraction,destdir)"
             pack $intitle.destdir -in $intitle -side top -padx 3 -pady 1 -anchor w
 
             #--- Cree un label pour le nb d image
             label $intitle.prefix -font $av4lconf(font,courier_10) \
-                  -text "prefixe des fichiers"
+                  -text "$caption(av4l_extraction,prefix)"
             pack $intitle.prefix -in $intitle -side top -padx 3 -pady 1 -anchor w
 
 
@@ -419,7 +419,7 @@ namespace eval ::av4l_extraction {
              -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
 
            button $frm.action.extract \
-              -text "Extraction" -borderwidth 2 \
+              -text "$caption(av4l_extraction,extract)" -borderwidth 2 \
               -command " ::av4l_extraction::extract $visuNo $frm "
            pack $frm.action.extract -in $frm.action \
               -side left -anchor e \
@@ -436,7 +436,7 @@ namespace eval ::av4l_extraction {
            #--- Creation du bouton aide
            button $frm.action.aide \
               -text "$caption(av4l_extraction,aide)" -borderwidth 2 \
-              -command "::audace::showHelpPlugin tool av4l av4l_extraction.htm"
+              -command "::audace::showHelpPlugin tool av4l av4l.htm"
            pack $frm.action.aide -in $frm.action \
               -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
@@ -453,7 +453,7 @@ namespace eval ::av4l_extraction {
 
 
    proc ::av4l_extraction::extract { visuNo frm } {
-      global audace
+      global audace caption
 
       set bufNo [ visu$visuNo buf ]
 
@@ -487,7 +487,7 @@ namespace eval ::av4l_extraction {
          incr cpt
       }
       visu$visuNo disp
-      tk_messageBox -message "Extraction Terminee" -type ok
+      tk_messageBox -message "$caption(av4l_extraction,extractfin)" -type ok
    }
 
 
