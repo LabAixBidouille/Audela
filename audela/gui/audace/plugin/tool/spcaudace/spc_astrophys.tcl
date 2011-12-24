@@ -3671,8 +3671,12 @@ proc spc_dynagraph { args } {
             #-- ::console::affiche_prompt "Interpolation de $nb_inter spectres depuis le n°[ expr $num_spectre-1 ]...\n"
             ##::console::affiche_prompt "diff_jd=$diff_jd...\njdeb=$jdate ; jfin=$jd_next\n"
             set BufNo_initial [ buf::create ]
+            buf$BufNo_initial load "$audace(rep_images)/$spectre"
             set spectre_next [ lindex $listefiles_norma $next_num ]
             set BufNo_next [ buf::create ]
+            buf$BufNo_next load "$audace(rep_images)/$spectre_next"
+            set BufNo_spa [ buf::create ]
+            set BufNo_spb [ buf::create ]
             set jtime [ expr $jdate+1 ]
             #- Boucle aux limites :
             #- for { set jtime [ expr int($jdate+1) ] } { $jtime<$jd_next } { incr jtime }
@@ -3682,14 +3686,14 @@ proc spc_dynagraph { args } {
                #-- Calcul des intensites la date jtime :
                set a [ expr ($jd_next-$jtime)/$diff_jd ]
                set b [ expr ($jtime-$jdate)/$diff_jd ]
-               buf$BufNo_initial load "$audace(rep_images)/$spectre"
-               buf$BufNo_initial mult $a
-               buf$BufNo_next load "$audace(rep_images)/$spectre_next"
-               buf$BufNo_next mult $b
-               bm_ajoute $BufNo_initial $BufNo_next
+               buf$BufNo_initial copyto $BufNo_spa
+               buf$BufNo_spa mult $a
+               buf$BufNo_next copyto $BufNo_spb
+               buf$BufNo_spb mult $b
+               bm_ajoute $BufNo_spa $BufNo_spb
                #-- Ecrit les intensites dans le fichier 2D :
                for { set x_coord 1 } { $x_coord<=$naxis1 && $num_spectre<=$nb_jours } { incr x_coord } {
-                  buf$newBufNo setpix [ list $x_coord $num_spectre ] [ lindex [ buf$BufNo_initial getpix [ list $x_coord 1 ] ] 1 ]
+                  buf$newBufNo setpix [ list $x_coord $num_spectre ] [ lindex [ buf$BufNo_spa getpix [ list $x_coord 1 ] ] 1 ]
                   #- Test lieux interpol : buf$newBufNo setpix [ list $x_coord $num_spectre ] 0.0
                }
                incr num_spectre
@@ -3697,6 +3701,8 @@ proc spc_dynagraph { args } {
             }
             buf::delete $BufNo_initial
             buf::delete $BufNo_next
+            buf::delete $BufNo_spa
+            buf::delete $BufNo_spb
          } elseif { $diff_jd<=1 } {
             #-- Moyenne des spectres du meme jour :
             # Ne fait rien pour l'instant mais passe au spectre suivant
