@@ -83,7 +83,7 @@ namespace eval ::av4l_tools_avi {
       
       #--- Ouvre la fenetre de choix des images
       set bufNo [ visu$visuNo buf ]
-      set ::av4l_tools::avi_filename [ ::tkutil::box_load_avi $fenetre $audace(rep_images) $bufNo "1" ]
+      set ::av4l_tools::avi_filename [ ::tkutil::box_load_avi $frm $audace(rep_images) $bufNo "1" ]
       $frm.open.avipath delete 0 end
       $frm.open.avipath insert 0 $::av4l_tools::avi_filename
       
