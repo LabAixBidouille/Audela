@@ -142,9 +142,9 @@ namespace eval ::av4l_verif {
       set title "Choisir un repertoire de destination"
       set rep "$audace(rep_images)"
 
-      set numerror [ catch { set filename "[ ::cwdWindow::tkplus_chooseDir "$rep" $title $parent ]" } msg ]
+      set numerror [ catch { set filename "[ ::cwdWindow::tkplus_chooseDir "$rep" $title $This ]" } msg ]
       if { $numerror == "1" } {
-         set filename "[ ::cwdWindow::tkplus_chooseDir "[pwd]" $title $parent ]"
+         set filename "[ ::cwdWindow::tkplus_chooseDir "[pwd]" $title $This ]"
       }
 
 
