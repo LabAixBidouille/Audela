@@ -5381,7 +5381,7 @@ if test "x$with_tls" != xno; then :
   EXTERNAL="$EXTERNAL tls"
 fi
 
-CONTRIB="ethernaude libgs"
+CONTRIB="ethernaude libgs av4l"
 if test x"$GSL_FOUND" = x"1" ; then
     CONTRIB="$CONTRIB libbm"
 fi
