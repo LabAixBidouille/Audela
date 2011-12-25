@@ -249,10 +249,10 @@ make \endverbatim
 
 #include <linux/videodev2.h>
 
-#include <libavcodec/avcodec.h>
-#include <libavformat/avformat.h>
-#include <libavformat/url.h>
-#include <libswscale/swscale.h>
+#include "libavcodec/avcodec.h"
+#include "libavformat/avformat.h"
+#include "libavformat/url.h"
+#include "libswscale/swscale.h"
 
 const char * g_version_string = "20111117-1";
 
@@ -1494,7 +1494,7 @@ char * g_logfilepath = NULL;
 
 int one_shot(int argc, char *argv[])
 {
-    int rc,ret,i;
+    int ret;
 
     {
         extern URLProtocol filex_protocol;

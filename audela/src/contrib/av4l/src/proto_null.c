@@ -53,7 +53,7 @@ static int file_read(URLContext *h, unsigned char *buf, int size)
 	return 0;
 }
 
-static int file_write(URLContext *h, unsigned char *buf, int size)
+static int file_write(URLContext *h, const unsigned char *buf, int size)
 {
 	return size;
 }
@@ -66,6 +66,7 @@ static int64_t file_seek(URLContext *h, int64_t pos, int whence)
 
 static int file_close(URLContext *h)
 {
+	return 0;
 }
 
 static int file_get_handle(URLContext *h)

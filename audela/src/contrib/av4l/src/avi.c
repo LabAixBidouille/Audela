@@ -10,10 +10,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
+#include <inttypes.h>
 
-#include "avformat.h"
-#include "avcodec.h"
-#include "swscale.h"
+#include "libavformat/avformat.h"
+#include "libavcodec/avcodec.h"
+#include "libswscale/swscale.h"
 
 #include <sys/stat.h>
 
@@ -167,10 +169,10 @@ convert_shared_image(ClientData cdata, Tcl_Interp *interp, int argc, const char 
     if(pFrame == 0) {
         pFrame=avcodec_alloc_frame();
         numBytesSrc=avpicture_get_size(PIX_FMT_YUYV422, width, height);
-        fprintf(stderr,"numBytesSrc = %d\n",numBytesSrc);
+        //fprintf(stderr,"numBytesSrc = %d\n",numBytesSrc);
         buffer=(uint8_t *)av_malloc(numBytesSrc*sizeof(uint8_t));
         avpicture_fill((AVPicture *)pFrame, buffer, PIX_FMT_YUYV422, width, height);
-        fprintf(stderr," %d %d %d\n",pFrame->linesize[0], pFrame->linesize[1], pFrame->linesize[2]);
+        //fprintf(stderr," %d %d %d\n",pFrame->linesize[0], pFrame->linesize[1], pFrame->linesize[2]);
         pFrameRGB=avcodec_alloc_frame();
         numBytesDst=avpicture_get_size(PIX_FMT_GRAY8, width, height);
         buffer=(uint8_t *)av_malloc(numBytesDst*sizeof(uint8_t));
@@ -193,7 +195,7 @@ convert_shared_image(ClientData cdata, Tcl_Interp *interp, int argc, const char 
     }
 
     sws_scale( pSwsCtx,
-            pFrame->data,
+            (const uint8_t**)pFrame->data,
             pFrame->linesize,
             0,
             height,
@@ -212,7 +214,7 @@ convert_shared_image(ClientData cdata, Tcl_Interp *interp, int argc, const char 
 
     {
         char s[4000];
-        sprintf(s,"buf%d setpixels CLASS_GRAY %d %d FORMAT_BYTE COMPRESS_NONE %ld", bufno, width, height, pFrameRGB->data[0]);
+        sprintf(s,"buf%d setpixels CLASS_GRAY %d %d FORMAT_BYTE COMPRESS_NONE %ld", bufno, width, height, (long)pFrameRGB->data[0]);
         if (Tcl_Eval(interp, s) == TCL_ERROR) {
             sprintf(cmd,"buf%d setpixels failed in %s.", bufno, LIBNAME);
             Tcl_SetResult(interp, cmd, TCL_VOLATILE);
@@ -242,7 +244,7 @@ avi_next(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
             if(frameFinished) {
                 // Convert the image from its native format to RGB
                 sws_scale( avi->pSwsCtx,
-                        avi->pFrame->data,
+                        (const uint8_t**)avi->pFrame->data,
                         avi->pFrame->linesize,
                         0,
                         avi->pCodecCtx->height,
@@ -259,7 +261,7 @@ avi_next(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
 
                 {
                     char s[4000];
-                    sprintf(s,"buf1 setpixels CLASS_GRAY %d %d FORMAT_BYTE COMPRESS_NONE %ld", avi->pCodecCtx->width, avi->pCodecCtx->height, avi->pFrameRGB->data[0]);
+                    sprintf(s,"buf1 setpixels CLASS_GRAY %d %d FORMAT_BYTE COMPRESS_NONE %ld", avi->pCodecCtx->width, avi->pCodecCtx->height, (long)avi->pFrameRGB->data[0]);
                     if (Tcl_Eval(interp, s) == TCL_ERROR) {
                         Tcl_SetResult(interp, "buf1 setpixels failed in " LIBNAME ".", TCL_VOLATILE);
                         return TCL_ERROR;
@@ -294,16 +296,16 @@ avi_test(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
 	sprintf(s,"%s %s %d \n",s,"packed_size = ",avi->pFormatCtx->packet_size);
 //	sprintf(s,"%s %s %d \n",s,"key = ",avi->pFormatCtx->key);
 	sprintf(s,"%s %s %d \n",s,"keylen = ",avi->pFormatCtx->keylen);
-	sprintf(s,"%s %s %lld \n",s,"fps_probe_size = ", avi->pFormatCtx->fps_probe_size);
+	sprintf(s,"%s %s %d \n",s,"fps_probe_size = ", avi->pFormatCtx->fps_probe_size);
 
 	sprintf(s,"%s %s",s,"** streams * *\n");
 	sprintf(s,"%s %s %lld \n",s,"first_pts = ", avi->pFormatCtx->streams[avi->videoStream]->first_dts);
 	sprintf(s,"%s %s %lld \n",s,"start_time = ", avi->pFormatCtx->streams[avi->videoStream]->start_time);
 	sprintf(s,"%s %s %lld \n",s,"cur_dts = ", avi->pFormatCtx->streams[avi->videoStream]->cur_dts);
 	sprintf(s,"%s %s %lld \n",s,"last_IP_pts = ", avi->pFormatCtx->streams[avi->videoStream]->last_IP_pts);
-	sprintf(s,"%s %s %lld \n",s,"nb_index_entries = ", avi->pFormatCtx->streams[avi->videoStream]->nb_index_entries);
+	sprintf(s,"%s %s %d \n",s,"nb_index_entries = ", avi->pFormatCtx->streams[avi->videoStream]->nb_index_entries);
 	sprintf(s,"%s %s %lld \n",s,"duration = ", avi->pFormatCtx->streams[avi->videoStream]->duration);
-	sprintf(s,"%s %s %lld \n",s,"pts_wrap_bits = ", avi->pFormatCtx->streams[avi->videoStream]->pts_wrap_bits);
+	sprintf(s,"%s %s %d \n",s,"pts_wrap_bits = ", avi->pFormatCtx->streams[avi->videoStream]->pts_wrap_bits);
 
 
 
@@ -321,7 +323,6 @@ avi_test(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
 static int
 avi_seek_percent(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
 {
-	int frameFinished;
 	int i;
 	double pos;
 	off_t off;
@@ -337,7 +338,6 @@ avi_seek_percent(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv
 static int
 avi_seek_byte(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
 {
-	int frameFinished;
 	int i;
 	int pos;
 	off_t off;
@@ -392,7 +392,6 @@ avi_count(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
 	int posmin, posmax,pos;
 	int count=0;
 	char s[100];
-	int frameFinished;
 
 	Tcl_GetInt(interp,argv[2],&posmin);
 	Tcl_GetInt(interp,argv[3],&posmax);
@@ -411,7 +410,7 @@ avi_count(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
 	 }
 	 count++;
 	}
-	sprintf(s,"%ld",count);
+	sprintf(s,"%d",count);
 	Tcl_SetResult(interp,s,TCL_VOLATILE);
 	return TCL_OK;
 }

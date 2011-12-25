@@ -74,7 +74,7 @@ static int file_read(URLContext *h, unsigned char *buf, int size)
     return read(fd, buf, size);
 }
 
-static int file_write(URLContext *h, unsigned char *buf, int size)
+static int file_write(URLContext *h, const unsigned char *buf, int size)
 {
     static long long int count = 0;
     int fd = (intptr_t) h->priv_data;
