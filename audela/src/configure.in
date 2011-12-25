@@ -188,7 +188,7 @@ AC_ARG_WITH([tls],
             [with_tls=no])
 AS_IF([test "x$with_tls" != xno], [EXTERNAL="$EXTERNAL tls"])
 
-CONTRIB="ethernaude libgs"
+CONTRIB="ethernaude libgs av4l"
 if test x"$GSL_FOUND" = x"1" ; then
     CONTRIB="$CONTRIB libbm"
 fi
