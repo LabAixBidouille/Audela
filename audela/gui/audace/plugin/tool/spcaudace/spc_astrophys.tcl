@@ -2366,7 +2366,7 @@ proc spc_ew4 { args } {
       ::console::affiche_resultat "Attention : largeur d'intégration<EW !\n"
    }
    if { $snr != 0 } {
-      set sigma [ expr sqrt(1+1/(1-$ew/$deltal))*(($deltal-$ew)/$snr) ]
+      set sigma [ expr 0.5*sqrt(1+1/(1-$ew/$deltal))*(($deltal-$ew)/$snr) ]
       #set sigma [ expr sqrt(1+1/(1-abs($ew)/$deltal))*(($deltal-abs($ew))/$snr) ]
    } else {
       ::console::affiche_resultat "Incertitude non calculable car SNR non calculable\n"
@@ -3546,7 +3546,7 @@ proc spc_dynagraph { args } {
       set dec_m [ lindex $args 7 ]
       set dec_s [ lindex $args 8 ]
    } else {
-      ::console::affiche_erreur "Usage: spc_dynagraph xdeb xfin lambda_reference RA_d RA_m RA_s DEC_h DEC_m DEC_s\n"
+      ::console::affiche_erreur "Usage: spc_dynagraph lambda_deb lambda_fin lambda_reference RA_d RA_m RA_s DEC_h DEC_m DEC_s\n"
       return ""
    }
 
