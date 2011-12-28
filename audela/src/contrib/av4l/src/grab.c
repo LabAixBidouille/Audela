@@ -254,7 +254,7 @@ make \endverbatim
 #include "libavformat/url.h"
 #include "libswscale/swscale.h"
 
-const char * g_version_string = "20111117-1";
+const char * g_version_string = "20111227-1";
 
 //! The threads will finish their job on this value
 volatile int request_exit = 0;
@@ -266,6 +266,7 @@ int g_width = 720;
 int g_height = 576;
 //! Number of buffers for storing the frames
 int g_nbufs = 300;
+int g_auto = 0;
 
 uint64_t g_timeorigin = 0;
 uint64_t g_chunktimelimit = 0;
@@ -300,6 +301,8 @@ void print_usage()
             " -i /dev/video1 : force usage of this input device\n"
             " -w width : width e.g. 720\n"
             " -h height : height e.g. 576\n"
+            " -a auto configure device\n"
+            " -0 only print info\n"
             " -1 one shot : grab a picture and store it in /dev/shm/pict.yuv422\n"
             "\nSETUP\n"
             "/dev/shm/pict.yuv422 contains the latest image.\n"
@@ -365,6 +368,7 @@ struct timelog_s {
  *
  */
 struct video_context_s {
+    char path[PATH_MAX];
     int fd;
     struct v4l2_input input;
     struct v4l2_format fmt;
@@ -615,6 +619,23 @@ void ofile_nextfile(struct ofile_s *of)
 }
 
 
+//! Print device capabilities
+void video_print_capabilities(struct video_context_s *vc)
+{
+    struct v4l2_capability cap;
+
+    memset(&cap,0,sizeof(cap));
+    if ( ioctl(vc->fd, VIDIOC_QUERYCAP, &cap) < 0 ) {
+        printf("cap_driver = %s\n", "undef");
+        printf("cap_card = %s\n", "undef");
+        printf("cap_bus_info = %s\n", "undef");
+    } else {
+        printf("cap_driver = %s\n", cap.driver);
+        printf("cap_card = %s\n", cap.card);
+        printf("cap_bus_info = %s\n", cap.bus_info);
+    }
+
+}
 
 //! Enumerate Pixel Formats
 void video_print_formats(struct video_context_s *vc)
@@ -650,14 +671,13 @@ void video_print_format(struct video_context_s *vc)
     }
 
     struct v4l2_pix_format *p = (struct v4l2_pix_format *)&fmt.fmt;
-    printf("Format\n");
-    printf("        width : %d\n", p->width);
-    printf("        height : %d\n", p->height);
-    printf("        pixelformat : %04X\n", p->pixelformat);
-    printf("        field : %d\n", p->field);
-    printf("        bytesperline : %d\n", p->bytesperline);
-    printf("        sizeimage : %d\n", p->sizeimage);
-    printf("        colorspace : %d\n", p->colorspace);
+    printf("format_width = %d\n", p->width);
+    printf("format_height = %d\n", p->height);
+    printf("format_pixelformat = 0x%04x\n", p->pixelformat);
+    printf("format_field = %d\n", p->field);
+    printf("format_bytesperline = %d\n", p->bytesperline);
+    printf("format_sizeimage = %d\n", p->sizeimage);
+    printf("format_colorspace = %d\n", p->colorspace);
 
 
 }
@@ -676,6 +696,38 @@ void video_print_inputs(struct video_context_s *vc)
         if ( (rc = ioctl(vc->fd, VIDIOC_ENUMINPUT, &desc)) < 0 ) break;
         printf("video_input;%d;%s;%d;%d;%d;%08llX;%d\n", desc.index, desc.name, desc.type, desc.audioset, desc.tuner, desc.std, desc.status);
     }
+}
+
+//! Print device current parameters
+void video_print_parameters(struct video_context_s *vc)
+{
+
+    fprintf(stdout,"video_device = %s\n",vc->path);
+    
+    video_print_capabilities(vc);
+    
+    {
+        int input_num = -1;
+
+        if (-1 == ioctl (vc->fd, VIDIOC_G_INPUT, &input_num)) {
+            perror("VIDIOC_G_INPUT");
+            printf("video_input_index = undef\n");
+        } else {
+            printf("video_input_index = %d\n", input_num);
+        }
+    }
+
+    {
+        v4l2_std_id stdid;
+        if(-1==ioctl(vc->fd,VIDIOC_G_STD,&stdid)) {
+            perror("VIDIOC_G_STD");
+            printf("standard_id = undef\n");
+        } else {
+            printf("standard_id = %lld\n", stdid);
+        }
+    }
+
+    video_print_format(vc);
 }
 
 
@@ -716,7 +768,7 @@ int video_open(struct video_context_s *vc, const char *path)
         return 1;
     }
 
-    fprintf(stderr,"I: opened video device %s\n",path);
+//    fprintf(stdout,"video_device = %s\n",path);
 
     if(0)
     {
@@ -751,7 +803,7 @@ int video_open(struct video_context_s *vc, const char *path)
         printf ("I: Current audio input: %d %s\n", audio.index, audio.name);
     }
 
-    if(1)
+    if(0)
     {
         //struct v4l2_input input;
         int input_num = -1;
@@ -763,7 +815,7 @@ int video_open(struct video_context_s *vc, const char *path)
             exit (EXIT_FAILURE);
         }
 
-        printf ("I: Current video input num: %d\n", input_num);
+        printf ("video_input_index = %d\n", input_num);
     }
 
     if(0) {
@@ -771,7 +823,7 @@ int video_open(struct video_context_s *vc, const char *path)
         video_print_formats(vc);
     }
 
-    if(1)
+    if(g_auto)
     {
         index = 0;
         if ( (rc = ioctl(vc->fd, VIDIOC_S_INPUT, &index)) < 0 ) {
@@ -785,7 +837,9 @@ int video_open(struct video_context_s *vc, const char *path)
         if (std.id & V4L2_STD_PAL_B) break;
         std.index++;
     }
+    
     //printf("rc=%d stdidx=%d\n",rc, std.index);
+    if(g_auto) {
     if((std.id & V4L2_STD_PAL_B) == 0) {
         fprintf(stderr,"W: Standard not found\n");
         return 1;
@@ -800,11 +854,15 @@ int video_open(struct video_context_s *vc, const char *path)
             xabort();
         }
     }
-    if(-1==ioctl(vc->fd,VIDIOC_G_STD,&stdid)) {
-        perror("VIDIOC_G_STD");
-        xabort();
     }
-    printf("I: Current standard: id=%lld\n", stdid);
+    
+    if(0) {
+        if(-1==ioctl(vc->fd,VIDIOC_G_STD,&stdid)) {
+            perror("VIDIOC_G_STD");
+            xabort();
+        }
+        printf("standard_id = %lld\n", stdid);
+    }
 
 
     memset(&fmt,0,sizeof(fmt));
@@ -814,23 +872,27 @@ int video_open(struct video_context_s *vc, const char *path)
         xabort();
     }
 
-    {
-        struct v4l2_pix_format *p = (struct v4l2_pix_format *)&fmt.fmt;
-        p->width=g_width;
-        p->height=g_height;
-        p->pixelformat=V4L2_PIX_FMT_YUYV; // Packed YUYV aka YUV 4:2:2, 0x56595559
-        p->colorspace = 1;
-        p->field = V4L2_FIELD_INTERLACED;
-    }
+    if(g_auto) {
+        {
+            struct v4l2_pix_format *p = (struct v4l2_pix_format *)&fmt.fmt;
+            p->width=g_width;
+            p->height=g_height;
+            p->pixelformat=V4L2_PIX_FMT_YUYV; // Packed YUYV aka YUV 4:2:2, 0x56595559
+            p->colorspace = 1;
+            p->field = V4L2_FIELD_INTERLACED;
 
-    if(1) {
-        if ( (rc = ioctl(vc->fd, VIDIOC_S_FMT, &fmt)) < 0 ) {
-            perror("VIDIOC_S_FMT");
-            xabort();
+            if ( (rc = ioctl(vc->fd, VIDIOC_S_FMT, &fmt)) < 0 ) {
+                perror("VIDIOC_S_FMT");
+            }
+
         }
+    } else {
+        struct v4l2_pix_format *p = (struct v4l2_pix_format *)&fmt.fmt;
+        g_width = p->width;
+        g_height = p->height;
     }
 
-    video_print_format(vc);
+//    video_print_format(vc);
 
     fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
     if ( (rc = ioctl(vc->fd, VIDIOC_G_FMT, &fmt)) < 0 ) {
@@ -904,6 +966,8 @@ int video_open(struct video_context_s *vc, const char *path)
         }
     }
 
+    strcpy(vc->path, path);
+    
     return 0;
 }
 
@@ -1211,7 +1275,13 @@ void* frame_write_thread(void *arg)
             if(statfs(strchr(ofile->filename,':')+1,&vfs) == 0) {
                 int64_t sz = vfs.f_bavail * vfs.f_bsize;
                 //fprintf(stderr,"fsid : 0x%x\n",vfs.f_type);
+#if 0
                 fprintf(stderr, "I: available buffers = %4d  free disk space = %lld MB(SI)\n", freebufs, sz/1000000LL);
+#else
+                fprintf(stderr, "tcl: { free_bufs %d } { free_disk  {%lld MB(SI)} } ", freebufs, sz/1000000LL);
+                fprintf(stderr, "{ frame_count %d } ", frame_count);
+                fprintf(stderr, "\n");
+#endif
                 if(sz <= UINT64_C(100)*1000*1000) {
                     fprintf(stderr,"I: Disk Free Space Low\n");
                     g_exit_reason = "Ran out of disk space";
@@ -1611,6 +1681,7 @@ int main(int argc, char *argv[])
     int opt;
     int i;
     int do_one_shot = 0;
+    int do_print_info = 0;
     pthread_t thread_write,thread_read;
     pthread_mutexattr_t mutex_attr;
     char *outfileprefix = NULL;
@@ -1634,8 +1705,11 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
-    while((opt=getopt(argc, argv, "b:h:w:i:o:d:p:c:z1")) != -1) {
+    while((opt=getopt(argc, argv, "ab:h:w:i:o:d:p:c:z01")) != -1) {
         switch(opt) {
+            case 'a':
+                g_auto = 1;
+                break;
             case 'b':
                 g_nbufs = atoi(optarg);
                 break;
@@ -1704,6 +1778,8 @@ int main(int argc, char *argv[])
 	    case 'z':
 		g_realtime = 0;
 		break;
+        case '0':
+        do_print_info = 1;
         case '1':
         do_one_shot = 1;
         break;
@@ -1714,10 +1790,25 @@ int main(int argc, char *argv[])
         }
     }
 
+    if(do_print_info){
+        if(video_open(&vc,g_input_device) != 0) {
+            if(g_input_device) {
+                fprintf(stderr,"E: cannot open device %s\n", g_input_device);
+            } else {
+                fprintf(stderr,"E: no video device could be opened\n");
+            }
+            return 1;
+        }
+        
+        video_print_parameters(&vc);
+        return 0;
+    }
+
     if(do_one_shot) {
         return one_shot(argc,argv);
     }
 
+    
     if(optind > argc) {
         printf("E: Expected argument after options\n");
         print_usage();
@@ -1811,10 +1902,17 @@ int main(int argc, char *argv[])
                 exit(EXIT_FAILURE);
             }
 
-            sprintf(tmpname,"filex:%s/%s-%s-%%03d.avi",path,outfileprefix?outfileprefix:name,outstr);
-            g_outfilepath = strdup(tmpname);
-            sprintf(tmpname,"%s/%s-%s.log.txt",path,outfileprefix?outfileprefix:name,outstr);
-            g_logfilepath = strdup(tmpname);
+            if(outfileprefix) {
+                sprintf(tmpname,"filex:%s/%s-%%03d.avi",path,outfileprefix);
+                g_outfilepath = strdup(tmpname);
+                sprintf(tmpname,"%s/%s.log.txt",path,outfileprefix);
+                g_logfilepath = strdup(tmpname);
+            } else {
+                sprintf(tmpname,"filex:%s/%s-%s-%%03d.avi",path,outfileprefix?outfileprefix:name,outstr);
+                g_outfilepath = strdup(tmpname);
+                sprintf(tmpname,"%s/%s-%s.log.txt",path,outfileprefix?outfileprefix:name,outstr);
+                g_logfilepath = strdup(tmpname);
+            }
         }
 
 #if 0
@@ -2037,6 +2135,8 @@ int main(int argc, char *argv[])
     free(ofile);
     if(g_outfilepath) free(g_outfilepath);
     if(g_logfilepath) free(g_logfilepath);
+    
+    fprintf(stderr, "I: Finished.\n");
 
     exit(EXIT_SUCCESS);
 }

@@ -414,6 +414,16 @@ namespace eval ::av4l_tools_avi {
 
 
 
+   proc ::av4l_tools_avi::acq_is_running { } {
+        global audace
+        set avipid ""
+        set err [ catch {set avipid [exec sh -c "pgrep av4l-grab"]} msg ]
+        if {$avipid == ""} {
+            return 0
+        } else {
+           return 1
+        }
+   }
 
 
 
@@ -462,6 +472,67 @@ namespace eval ::av4l_tools_avi {
 
 
 
+   proc ::av4l_tools_avi::acq_getdevinfo { visuNo frm autoflag } {
+        global audace
+
+        set bufNo [ visu$visuNo buf ]
+        ::console::affiche_resultat "Get device info\n"
+        
+        set dev [$frm.formin.v.devpath get]
+        
+        if { [ string equal $dev ""] } {
+         set options "-0"
+        } else {
+         set options "-0 -i $dev"
+        }
+        
+        if { [ string equal $autoflag auto ] } {
+            set options "$options -a"
+        }
+
+        set devparams { }
+        
+        set err [ catch { exec sh -c "LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab $options 2>&1" } msg ]
+        if { $err != 0 } {
+            ::console::affiche_erreur "Echec lors de l'appel a av4l-grab\n"
+            ::console::affiche_erreur "Code d'erreur : $err\n"
+            ::console::affiche_erreur "=== Messages retournes par av4l-grab :\n"
+            foreach line [split $msg "\n"] {
+                ::console::affiche_erreur "$line\n"
+            }
+            ::console::affiche_erreur "=== Fin des messages\n"
+            $frm.oneshot configure -state disabled
+            $frm.demarre configure -state disabled
+            $frm.infodev.left.val.modele configure -text ?
+            $frm.infodev.left.val.input configure -text ?
+            $frm.infodev.left.val.width configure -text ?
+            $frm.infodev.left.val.height configure -text ?
+            return $err
+        } else {
+            ::console::affiche_resultat "=== Messages retournes par av4l-grab :\n"
+            foreach line [split $msg "\n"] {
+                set l [split $line "="]
+                if { [llength $l] == 2 } {
+                    lappend devparams [list [string trim [lindex $l 0]] [string trim [lindex $l 1]] ]
+                }
+                ::console::affiche_resultat "$line\n"
+            }
+            ::console::affiche_resultat "=== Fin des messages\n"
+
+            $frm.oneshot configure -state normal
+            $frm.demarre configure -state normal
+
+            $frm.infodev.left.val.modele configure -text [lindex [lsearch -index 0 -inline $devparams cap_card] 1]
+            $frm.infodev.left.val.input configure -text [lindex [lsearch -index 0 -inline $devparams video_input_index] 1]
+            $frm.infodev.left.val.width configure -text [lindex [lsearch -index 0 -inline $devparams format_width] 1]
+            $frm.infodev.left.val.height configure -text [lindex [lsearch -index 0 -inline $devparams format_height] 1]
+            if { [ string equal $dev ""] } {
+                $frm.formin.v.devpath delete 0 end
+                $frm.formin.v.devpath insert 0 [lindex [lsearch -index 0 -inline $devparams video_device] 1]
+            }
+	    }
+
+   }
 
 
 
@@ -471,9 +542,31 @@ namespace eval ::av4l_tools_avi {
         global audace
 
         set bufNo [ visu$visuNo buf ]
+
+        if { [acq_is_running] } {
+            ::console::affiche_resultat "Acquisition en cours.\n"
+            return
+        }
+
         ::console::affiche_resultat "One Shot !\n"
 
-        set err [ catch { exec sh -c "LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab -1 2>&1" } msg ]
+        set dev [$frm.formin.v.devpath get]
+        if { [ string equal $dev ""] } {
+         set options ""
+         return
+        } else {
+         set options "-1 -i $dev"
+        }
+
+        set err [ catch { set chan [open "|sh -c \"LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab $options 2>&1\"" r+] } msg ]
+        puts "err = $err"
+        puts "msg = $msg"
+        fconfigure $chan -blocking 0
+        fileevent $chan readable [list ::av4l_tools_avi::GetData $chan]
+        return
+
+
+        set err [ catch { exec sh -c "LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab $options 2>&1" } msg ]
         if { $err != 0 } {
             ::console::affiche_erreur "Echec lors de l'appel a av4l-grab\n"
             ::console::affiche_erreur "Code d'erreur : $err\n"
@@ -527,6 +620,22 @@ namespace eval ::av4l_tools_avi {
 
 
 
+   proc ::av4l_tools_avi::acq_grab_read_status {chan frm} {
+      if {![eof $chan]} {
+        gets $chan line
+        if {[string equal -length 4 "tcl:" $line]} {
+            set line [string range $line 4 end]
+            set free_disk [lindex [lsearch -index 0 -inline $line free_disk] 1]
+            $frm.infovideo.right.val.dispo configure -text $free_disk
+            set frame_count [lindex [lsearch -index 0 -inline $line frame_count] 1]
+            $frm.infovideo.left.val.nbi configure -text $frame_count
+        } else {
+            ::console::affiche_resultat "$line\n"
+        }
+      } else {
+         close $chan
+      }
+   }
 
 
 
@@ -536,25 +645,53 @@ namespace eval ::av4l_tools_avi {
    proc ::av4l_tools_avi::acq_start { visuNo frm } {
         global audace
 
+        set dev [$frm.formin.v.devpath get]
         set destdir [$frm.form.v.destdir get]
         set prefix  [$frm.form.v.prefix get]
+
+        if { [acq_is_running] } {
+            ::console::affiche_resultat "Acquisition en cours.\n"
+            return
+        }
         
+        if { $dev == "" } {
+           tk_messageBox -message "Veuillez choisir un peripherique de capture" -type ok
+           return
+        }
         if { $destdir == "" } {
            tk_messageBox -message "Veuillez choisir un repertoire" -type ok
            return
         }
+
+        set prefix [string trim $prefix]
+        set prefix [string map {" " _} $prefix]
         if { $prefix == "" } {
            tk_messageBox -message "Veuillez choisir un nom de fichier" -type ok
            return
         }
+
+        set tag [clock format [clock seconds] -gmt 1 -format %Y%m%dT%H%M%S]
+        set prefix "$prefix-$tag"
+        
+        set options "-i $dev -d 120m -c 120m -o $destdir -p $prefix"
+
         ::console::affiche_resultat "Acquisition demarre ...\n"
         ::console::affiche_resultat "           path   : $destdir\n"
         ::console::affiche_resultat "           prefix : $prefix\n"
-        set err [catch { exec sh -c "LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab -d 120m -c 2m -o $destdir -p $prefix" & } processes]
+
+#        set err [catch { exec sh -c "LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab $options" & } processes]
+
+        set err [ catch { set chan [open "|sh -c \"LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab $options 2>&1\"" r+] } msg ]
+        puts "err = $err"
+        puts "msg = $msg"
+        
         if { $err != 0 } {
             ::console::affiche_erreur "Echec lors de l'execution de av4l-grab\n"
             return
         }
+
+        fconfigure $chan -blocking 0
+        fileevent $chan readable [list ::av4l_tools_avi::acq_grab_read_status $chan $frm]
 
         after 100 " ::av4l_tools_avi::acq_display $visuNo $frm"
    }
@@ -574,7 +711,21 @@ namespace eval ::av4l_tools_avi {
 
    proc ::av4l_tools_avi::acq_stop { this } {
         global audace
-        exec pkill -x av4l-grab
+        set avipid ""
+        set err [ catch {set avipid [exec sh -c "pgrep av4l-grab"]} msg ]
+        if {$avipid == ""} {
+            ::console::affiche_resultat "Aucune acquisition en cours\n"
+            return
+        } else {
+        }
+
+        set err [ catch {[exec pkill -x av4l-grab]} msg ]
+        
+        after 2000
+        
+        if { [acq_is_running] } {
+            ::console::affiche_erreur "L'acquisition n'a pas pu etre arretee\n"
+        }
    }
 
 
