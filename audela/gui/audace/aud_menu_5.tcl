@@ -404,11 +404,11 @@ proc fitgauss { visuNo } {
 #
 proc refreshFitgauss { visuNo args } {
    variable private
-   global caption color conf audace
+   global audace caption color conf
 
    #--- Capture de la fenetre d'analyse
    set private(fitgauss,results) ""
-   set private(fitgauss,box) [ ::confVisu::getBox $visuNo ]
+   set private(fitgauss,box)     [ ::confVisu::getBox $visuNo ]
    if { $private(fitgauss,box) == "" } {
       return
    }
@@ -461,7 +461,7 @@ proc refreshFitgauss { visuNo args } {
    lappend fitgauss_result [list flux $if0]
    lappend fitgauss_result [list dflux $dif]
    set private(fitgauss,results) $fitgauss_result
-   set audace(fitgauss,results) $fitgauss_result
+   set audace(fitgauss,results)  $fitgauss_result
 
    #--- Cree les etiquettes
    ::console::affiche_resultat "=== Visu$visuNo $caption(audace,titre_gauss)\n"
