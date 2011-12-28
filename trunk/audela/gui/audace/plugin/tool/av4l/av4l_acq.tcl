@@ -3,7 +3,7 @@
 #--------------------------------------------------
 #
 # Fichier        : av4l_acq.tcl
-# Description    : Affiche le status de la base de donnees
+# Description    : Outil Acquisition video
 # Auteur         : Frédéric Vachier
 # Mise à jour $Id$
 #
@@ -197,9 +197,123 @@ namespace eval ::av4l_acq {
       pack $frm -in $this -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
 
+  #--- Cree un frame pour le peripherique d'entree
+
+        #--- Cree un frame 
+        frame $frm.tformin -borderwidth 1
+        pack $frm.tformin -in $frm -side top -anchor w
+
+        #---Titre
+        label $frm.tformin.title -font $av4lconf(font,arial_10_b) -text "Peripherique de capture video4linux2"
+        pack  $frm.tformin.title -in $frm.tformin -side top -anchor w -expand 0
+
+
+
+        #--- Cree un frame pour
+        frame $frm.formin \
+              -borderwidth 1 -relief raised -cursor arrow
+        pack $frm.formin \
+             -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
+
+          #--- Cree un frame pour afficher les intitules
+          set intitle [frame $frm.formin.l -borderwidth 0]
+          pack $intitle -in $frm.formin -side left
+
+            #--- Cree un label pour
+            label $intitle.devpath -font $av4lconf(font,courier_10) -padx 3 \
+                  -text "Chemin du periph."
+            pack $intitle.devpath -in $intitle -side top -padx 3 -pady 1 -anchor w
+
+          #--- Cree un frame pour afficher les valeurs
+          set inparam [frame $frm.formin.v -borderwidth 0]
+          pack $inparam -in $frm.formin -side left -expand 0 -fill x
+
+            #--- Cree un label pour le chemin du peripherique
+            entry $inparam.devpath -fg $color(blue) -width 20
+            pack $inparam.devpath -in $inparam -side top -pady 1 -anchor w
+
+          #--- Cree un frame pour afficher les extras
+          set inbutton [frame $frm.formin.e -borderwidth 0]
+          pack $inbutton -in $frm.formin -side left -expand 0 -fill x
+
+            #--- Cree un button
+            button $inbutton.getinfo \
+             -text "Detection" -borderwidth 2 \
+             -command "::av4l_tools_avi::acq_getdevinfo $visuNo $frm noauto" 
+            pack $inbutton.getinfo -in $inbutton -side top -pady 0 -anchor w
+
+            #--- Cree un button
+            button $inbutton.initdev \
+             -text "Reconfiguration" -borderwidth 2 \
+             -command "::av4l_tools_avi::acq_getdevinfo $visuNo $frm auto"
+            pack $inbutton.initdev -in $inbutton -side top -pady 0 -anchor w
+
+
+          #--- Cree un frame pour les info
+          frame $frm.infodev -borderwidth 1 -relief raised -cursor arrow 
+          pack $frm.infodev -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
+
+          #--- Cree un frame pour colonne de gauche
+          set ivl [frame $frm.infodev.left -borderwidth 1]
+          pack $ivl -in $frm.infodev -side left -padx 30 -pady 1
+
+          #--- Cree un frame pour colonne de droite
+          set ivr [frame $frm.infodev.right -borderwidth 1]
+          pack $ivr -in $frm.infodev -side left -padx 30 -pady 1
+
+          #--- Cree un frame pour les labels
+          set ivll [frame $frm.infodev.left.lab -borderwidth 0]
+          pack $ivll -in $ivl -side left
+
+          #--- Cree un frame pour les valeurs
+          set ivlv [frame $frm.infodev.left.val -borderwidth 0]
+          pack $ivlv -in $ivl -side left
+
+          #--- Cree un frame pour les labels
+          set ivrl [frame $frm.infodev.right.lab -borderwidth 0]
+          pack $ivrl -in $ivr -side left
+
+          #--- Cree un frame pour les valeurs
+          set ivrv [frame $frm.infodev.right.val -borderwidth 0]
+          pack $ivrv -in $ivr -side left
+
+           #- Colonne de gauche
+
+              #---Nom
+              label $ivll.modele -font $av4lconf(font,courier_10) -text "Modele"
+              pack  $ivll.modele -in $ivll -side top -anchor w
+              label $ivlv.modele -font $av4lconf(font,courier_10) -fg $color(blue) -text "?"
+              pack  $ivlv.modele -in $ivlv -side top -anchor w
+           
+              #---Entree
+              label $ivll.input -font $av4lconf(font,courier_10) -text "Entree"
+              pack  $ivll.input -in $ivll -side top -anchor w
+              label $ivlv.input -font $av4lconf(font,courier_10) -fg $color(blue) -text "?"
+              pack  $ivlv.input -in $ivlv -side top -anchor w
+
+              #---Width
+              label $ivll.width -font $av4lconf(font,courier_10) -text "Width"
+              pack  $ivll.width -in $ivll -side top -anchor w
+              label $ivlv.width -font $av4lconf(font,courier_10) -fg $color(blue) -text "?"
+              pack  $ivlv.width -in $ivlv -side top -anchor w
+
+              #---Height
+              label $ivll.height -font $av4lconf(font,courier_10) -text "Height"
+              pack  $ivll.height -in $ivll -side top -anchor w
+              label $ivlv.height -font $av4lconf(font,courier_10) -fg $color(blue) -text "?"
+              pack  $ivlv.height -in $ivlv -side top -anchor w
 
 
   #--- Cree un frame pour afficher la gestion des fichiers generes
+
+          #--- Cree un frame 
+          frame $frm.tform -borderwidth 1
+          pack $frm.tform -in $frm -side top -anchor w
+
+          #---Titre
+          label $frm.tform.title -font $av4lconf(font,arial_10_b) -text "Destination"
+          pack  $frm.tform.title -in $frm.tform -side top -anchor w -expand 0
+
 
 
         #--- Cree un frame pour la gestion de fichier
@@ -264,6 +378,7 @@ namespace eval ::av4l_acq {
            image create photo .oneshot -format PNG -file [ file join $audace(rep_plugin) tool av4l img oneshot.png ]
            button $frm.oneshot -image .oneshot\
               -borderwidth 2 -width 48 -height 48 -compound center \
+              -state disabled \
               -command "::av4l_tools_avi::acq_oneshot $visuNo $frm"
            pack $frm.oneshot \
               -in $frm.btnav \
@@ -275,6 +390,7 @@ namespace eval ::av4l_acq {
            image create photo .demarre -format PNG -file [ file join $audace(rep_plugin) tool av4l img demarre.png ]
            button $frm.demarre -image .demarre\
               -borderwidth 2 -width 48 -height 48 -compound center \
+              -state disabled \
               -command "::av4l_tools_avi::acq_start $visuNo $frm"
            pack $frm.demarre \
               -in $frm.btnav \
