@@ -176,11 +176,14 @@ int cmd_tcl_cstycho2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 		"e_DE posflg corr } } } ",-1);
 	Tcl_DStringAppend(&dsptr,"{",-1); // start of sources list
 	for(index = 0; index < numberOfOutputs; index++) {
+		char *line = strchr(outputs[index],'|') + 1;
 		Tcl_DStringAppend(&dsptr,"{ { TYCHO2 { } ",-1);
-		Tcl_DStringAppend(&dsptr,"{",-1); // start of source fields list
+		Tcl_DStringAppend(&dsptr,"{ ",-1); // start of source fields list
+		*(line-1) = '\0';
+		Tcl_DStringAppend(&dsptr,outputs[index],-1);
+		*(line-1) = '|';
 		// 35 fields, must match length of istart and iend
 		for(i=0;i<35;i++) {
-			char *line = strchr(outputs[index],'|') + 1;
 			c = *(line+iend[i]);
 			*(line+iend[i]) = '\0';
 			//printf("%d %s\n",i,outputs[index]+istart[i]-1); fflush(NULL);
