@@ -461,8 +461,8 @@ namespace eval ::av4l_tools_avi {
            ::av4l_cdl_tools::get_fullimg $visuNo $frm.photom.values.image
            }
 
-           after 1000 " ::av4l_tools_avi::acq_display $visuNo $frm"
         }
+        after 1000 " ::av4l_tools_avi::acq_display $visuNo $frm"
 
 
    }
@@ -557,14 +557,6 @@ namespace eval ::av4l_tools_avi {
         } else {
          set options "-1 -i $dev"
         }
-
-        set err [ catch { set chan [open "|sh -c \"LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab $options 2>&1\"" r+] } msg ]
-        puts "err = $err"
-        puts "msg = $msg"
-        fconfigure $chan -blocking 0
-        fileevent $chan readable [list ::av4l_tools_avi::GetData $chan]
-        return
-
 
         set err [ catch { exec sh -c "LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab $options 2>&1" } msg ]
         if { $err != 0 } {
@@ -682,8 +674,6 @@ namespace eval ::av4l_tools_avi {
 #        set err [catch { exec sh -c "LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab $options" & } processes]
 
         set err [ catch { set chan [open "|sh -c \"LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab $options 2>&1\"" r+] } msg ]
-        puts "err = $err"
-        puts "msg = $msg"
         
         if { $err != 0 } {
             ::console::affiche_erreur "Echec lors de l'execution de av4l-grab\n"
