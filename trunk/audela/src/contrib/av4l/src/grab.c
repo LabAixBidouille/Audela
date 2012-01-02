@@ -1326,9 +1326,6 @@ int frame_store(struct ofile_s *of, uint8_t *buf)
     static uint64_t last_frame_t2 = 0;
     uint8_t *tmpptr;
 
-    g_tid_reader = gettid();
-    pthread_mutex_unlock(&mutex_create);
-
     pthread_mutex_lock(&buflist_mutex);
     pbuf = buf_pop(&buflist_free);
 
@@ -1403,6 +1400,9 @@ void* frame_read_thread(void *arg)
     enum v4l2_buf_type type;
     struct v4l2_buffer buf;
     struct pollfd pollfd;
+
+    g_tid_reader = gettid();
+    pthread_mutex_unlock(&mutex_create);
 
     memset(&buf,0,sizeof(buf));
 
