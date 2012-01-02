@@ -622,7 +622,11 @@ namespace eval ::av4l_tools_avi {
             set frame_count [lindex [lsearch -index 0 -inline $line frame_count] 1]
             $frm.infovideo.left.val.nbi configure -text $frame_count
         } else {
-            ::console::affiche_resultat "$line\n"
+            if {[string equal -length 2 "W:" $line] || [string equal -length 2 "E:" $line]} {
+                ::console::affiche_erreur "$line\n"
+            } else {
+                ::console::affiche_resultat "$line\n"
+            }
         }
       } else {
          close $chan

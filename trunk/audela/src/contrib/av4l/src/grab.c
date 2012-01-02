@@ -246,6 +246,7 @@ make \endverbatim
 #include <pthread.h>
 #include <sched.h>
 #include <sys/resource.h>
+#include <sys/syscall.h>
 
 #include <linux/videodev2.h>
 
@@ -254,7 +255,7 @@ make \endverbatim
 #include "libavformat/url.h"
 #include "libswscale/swscale.h"
 
-const char * g_version_string = "20111227-1";
+const char * g_version_string = "20120101-1";
 
 //! The threads will finish their job on this value
 volatile int request_exit = 0;
@@ -996,8 +997,8 @@ void video_alloc_buffers(struct video_context_s *vc)
         xabort();
     }
 
-    // 32 buffers sur le X1
-    printf("I: Device buffers allocated: %d\n",vc->reqbufs.count);
+    // 32 buffers ?
+    // printf("I: Device buffers allocated: %d\n",vc->reqbufs.count);
     if ((vc->bufs = calloc(vc->reqbufs.count, sizeof(struct videobuf_s))) == NULL) {
         perror("calloc");
         xabort();
@@ -1143,6 +1144,13 @@ void buffers_free()
 
 
 struct ofile_s *ofile;
+pthread_mutex_t mutex_create = PTHREAD_MUTEX_INITIALIZER;
+pid_t g_tid_reader, g_tid_writer;
+
+pid_t gettid()
+{
+    return syscall(__NR_gettid);
+}
 
 pthread_mutex_t mutex_raw = PTHREAD_MUTEX_INITIALIZER;
 uint8_t * shared_rawimage;
@@ -1167,17 +1175,9 @@ void* frame_write_thread(void *arg)
     AVFrame *frame;
     struct statfs vfs;
     int freebufs;
-    int rc;
 
-    if(g_realtime) {
-        errno = 0;
-        rc = nice(-20);
-        if(rc == -1 && errno != 0) {
-            perror("W: cannot change priority of process");
-            fprintf(stderr,"I: maybe add a line of the following form to /etc/security/limits.conf\n");
-            fprintf(stderr," @video - nice -20\n");
-        }
-    }
+    g_tid_writer = gettid();
+    pthread_mutex_unlock(&mutex_create);
 
     // The temporary buffer used for encoding the picture is twice the size
     // of a raw picture ( should be enough ? )
@@ -1326,6 +1326,9 @@ int frame_store(struct ofile_s *of, uint8_t *buf)
     static uint64_t last_frame_t2 = 0;
     uint8_t *tmpptr;
 
+    g_tid_reader = gettid();
+    pthread_mutex_unlock(&mutex_create);
+
     pthread_mutex_lock(&buflist_mutex);
     pbuf = buf_pop(&buflist_free);
 
@@ -1403,29 +1406,10 @@ void* frame_read_thread(void *arg)
 
     memset(&buf,0,sizeof(buf));
 
-    if(g_realtime)
-    {
-        struct sched_param sp;
-        sp.__sched_priority = 10;
-        if(pthread_setschedparam(pthread_self(), SCHED_FIFO, &sp) != 0) {
-            perror("E: pthread_setschedparam\n");
-            fprintf(stderr,"I: maybe add a line of the following form to /etc/security/limits.conf\n");
-            fprintf(stderr," @video - rtprio 10\n");
-            exit(1);
-        }
-    } else {
-        //         if(pthread_setschedprio(thread, -5) != 0) {
-        //             fprintf(stderr,"pthread_setschedprio\n");
-        //             perror("");
-        //         }
-    }
-
-
     pollfd.fd = vc.fd;
     pollfd.events = POLLIN;
     pollfd.revents = 0;
 
-    //    fflush(stdout); fflush(stderr);
     fflush(NULL);
 
 
@@ -1495,39 +1479,6 @@ void* frame_read_thread(void *arg)
             timelog_cur.t2 = buf.timestamp.tv_sec*UINT64_C(1000000) + buf.timestamp.tv_usec - g_timeorigin;
             timelog_cur.dt = 0;
             timelog_cur.seq = buf.sequence;
-        }
-
-
-        if(0)
-        {
-            static int t = 0;
-            int i;
-            uint8_t *p = vc.bufs[buf.index].map;
-            for(i=0;i<16;i++) {
-                if(((t>>i) & 1) == 1) {
-                    *(p+2*i) = 200;
-                    //                 *(p+1*IMGWIDTH*2+2*i) = 200;
-                } else {
-                    *(p+2*i) = 50;
-                    //                 *(p+1*IMGWIDTH*2+2*i) = 50;
-                }
-            }
-            t++;
-        }
-
-        if(0)
-        {
-            uint64_t t = getelapsed() / 10000;
-            int i;
-            uint8_t *p = vc.bufs[buf.index].map;
-            for(i=0;i<16;i++) {
-                if(((t>>i) & 1) == 1) {
-                    *(p+2*(i+50)) = 200;
-                } else {
-                    *(p+2*(i+50)) = 50;
-                }
-            }
-            t++;
         }
 
         frame_store(ofile, vc.bufs[buf.index].map);
@@ -1677,7 +1628,7 @@ int one_shot(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-    int rc,ret;
+    int rc;
     int opt;
     int i;
     int do_one_shot = 0;
@@ -1685,6 +1636,7 @@ int main(int argc, char *argv[])
     pthread_t thread_write,thread_read;
     pthread_mutexattr_t mutex_attr;
     char *outfileprefix = NULL;
+    int warn_realtime = 0;
 
     memset(&vc, 0, sizeof(vc));
 
@@ -1827,11 +1779,6 @@ int main(int argc, char *argv[])
 
     sync();
 
-    if(mlockall(MCL_CURRENT|MCL_FUTURE) != 0) {
-        perror("W: mlockall");
-        exit(1);
-    }
-
     {
         extern URLProtocol filex_protocol;
         extern URLProtocol null_protocol;
@@ -1859,9 +1806,6 @@ int main(int argc, char *argv[])
         }
 
         name = basename(path);
-//        printf("output_dir |%s|\n",output_dir);
-//        printf("path |%s|\n",path);
-//        printf("basename |%s|\n",name);
 
         if(name[0] == '\0') {
             fprintf(stderr,"Cannot use root of filesystem as output dir.\n");
@@ -1929,15 +1873,6 @@ int main(int argc, char *argv[])
     }
 
 
-
-#if 0
-    // Open file descriptor for storing log
-    if(is_valid_fd(3)) {
-        fp_timelog = fdopen(3, "a");
-        fprintf(fp_timelog,"#system_time;driver_time;delta_driver_time;free_bufs;driver_seq_no;dropped_frames\n");
-    }
-#endif
-
     // Opening of timelog
     fp_timelog = fopen(g_logfilepath,"a");
     if(fp_timelog == NULL) {
@@ -1962,7 +1897,8 @@ int main(int argc, char *argv[])
             fprintf(fp_timelog, "# grab version %s\n",g_version_string);
             fprintf(fp_timelog, "# Start of execution on %s UTC\n",outstr);
     }
-    // TODO outputs command line arguments
+
+    // outputs command line arguments
     fprintf(fp_timelog, "# Command line arguments:");
     for(i=1;i<argc;i++) {
         fprintf(fp_timelog, " %s", argv[i]);
@@ -1981,7 +1917,8 @@ int main(int argc, char *argv[])
             fprintf(fp_timelog, "# System info: OS hardware = %s\n", u.machine);
         }
     }
-    // TODO get cpuinfo with cat /proc/cpuinfo | sed 's/\(.*\)/# cpuinfo: \1/'
+
+    // get cpuinfo
     {
         FILE *fp;
         char buf[200];
@@ -1996,19 +1933,13 @@ int main(int argc, char *argv[])
         }
         pclose(fp);
     }
+
+#define XSTR(s) XXSTR(s)
+#define XXSTR(s) #s
     // TODO get version of different libav*
-    fprintf(fp_timelog,
-            "# For each picture processed a line prefixed with 'T:' is recorded.\n"
-            "# Detail of parameters:\n"
-            "# Note: unix times in usec are relative to Origin of times\n"
-            "#  1: unix time (usec) when the picture was read by the application\n"
-            "#  2: unix time (usec) when the picture was processed by the driver\n"
-            "#  3: difference of argument 2 of this picture and of the previous recorded one\n"
-            "#  4: number of free buffers when the picture was read by the application\n"
-            "#  5: sequence number attributed by the driver\n"
-            "#  6: number of dropped frames between this picture and the\n"
-            "#     previous recorded one by the application\n"
-           );
+    fprintf(fp_timelog,"# ffmpeg avcodec version: " XSTR(LIBAVCODEC_VERSION) "\n");
+    fprintf(fp_timelog,"# ffmpeg avformat version: " XSTR(LIBAVFORMAT_VERSION) "\n");
+    fprintf(fp_timelog,"# ffmpeg swscale version: " XSTR(LIBSWSCALE_VERSION) "\n");
 
     // Registering of signal handler
     signal(SIGINT, signal_handler);
@@ -2048,25 +1979,109 @@ int main(int argc, char *argv[])
     // Allocation of intermediate buffers
     buffers_alloc(ofile->c, g_nbufs);
 
-    if(0)
-    {
-        id_t pid;
-        pid = getpid();
-        ret = setpriority(PRIO_PROCESS, pid, -10);
-        if(ret != 0) {
-            fprintf(stderr, "E: Can't set priority.\n");
-            exit(1);
-        }
-    }
-
+    fprintf(fp_timelog,
+            "# For each picture processed a line prefixed with 'T:' is recorded.\n"
+            "# Detail of parameters:\n"
+            "# Note: unix times in usec are relative to Origin of times\n"
+            "#  1: unix time (usec) when the picture was read by the application\n"
+            "#  2: unix time (usec) when the picture was processed by the driver\n"
+            "#  3: difference of argument 2 of this picture and of the previous recorded one\n"
+            "#  4: number of free buffers when the picture was read by the application\n"
+            "#  5: sequence number attributed by the driver\n"
+            "#  6: number of dropped frames between this picture and the\n"
+            "#     previous recorded one by the application\n"
+           );
 
     sync();
 
+    if(g_realtime) {
+        if(mlockall(MCL_CURRENT|MCL_FUTURE) != 0) {
+            warn_realtime = 1;
+            fprintf(fp_timelog, "# W: cannot lock memory: ");
+            fprintf(fp_timelog, "unix error %d %s\n", errno, strerror(errno));
+            perror("W: mlockall");
+            fprintf(stderr,"I: maybe add a line of the following form to /etc/security/limits.conf\n");
+            fprintf(stderr," @video - memlock unlimited\n");
+        }
+    }
 
     // This thread writes buffers to AVI files
+    pthread_mutex_lock(&mutex_create);
     if(pthread_create(&thread_write, NULL, frame_write_thread, NULL) != 0) xabort();
+
     // This thread reads frames from the grabber and store them into buffers
+    pthread_mutex_lock(&mutex_create);
     if(pthread_create(&thread_read, NULL, frame_read_thread, NULL) != 0) xabort();
+
+    pthread_mutex_lock(&mutex_create);
+
+    if(g_realtime)
+    {
+        struct sched_param sp;
+
+        sp.__sched_priority = 10;
+        if(pthread_setschedparam(thread_read, SCHED_FIFO, &sp) != 0) {
+            warn_realtime = 1;
+            fprintf(fp_timelog, "# W: cannot change reader thread scheduler: ");
+            fprintf(fp_timelog, "unix error %d %s\n", errno, strerror(errno));
+            perror("W: pthread_setschedparam");
+            fprintf(stderr,"I: maybe add a line of the following form to /etc/security/limits.conf\n");
+            fprintf(stderr," @video - rtprio 10\n");
+        }
+
+        errno = 0;
+        rc = setpriority(PRIO_PROCESS, g_tid_writer, -20);
+        if(rc == -1 && errno != 0) {
+            warn_realtime = 1;
+            fprintf(fp_timelog, "# W: cannot renice writer thread: ");
+            fprintf(fp_timelog, "unix error %d %s\n", errno, strerror(errno));
+            perror("W: cannot change priority of process");
+            fprintf(stderr,"I: maybe add a line of the following form to /etc/security/limits.conf\n");
+            fprintf(stderr," @video - nice -20\n");
+        }
+    }
+
+    // display threads priority
+    {
+        struct sched_param sp;
+        int policy;
+        int prio;
+
+        rc = nice(0);
+        fprintf(fp_timelog,"# priority of main thread: %d\n", rc);
+
+        if(pthread_getschedparam(thread_read,&policy,&sp)!=0) {
+        } else {
+            if(policy == 0) {
+                prio = getpriority(PRIO_PROCESS,g_tid_reader);
+                fprintf(fp_timelog,"# priority of reader thread: policy=%d, prio=%d, nice=%d\n", policy, sp.sched_priority, prio);
+            } else {
+                fprintf(fp_timelog,"# priority of reader thread: policy=%d, prio=%d\n", policy, sp.sched_priority);
+            }
+        }
+
+        if(pthread_getschedparam(thread_write,&policy,&sp)!=0) {
+        } else {
+            if(policy == 0) {
+                prio = getpriority(PRIO_PROCESS,g_tid_writer);
+                fprintf(fp_timelog,"# priority of writer thread: policy=%d, prio=%d, nice=%d\n", policy, sp.sched_priority, prio);
+            } else {
+                fprintf(fp_timelog,"# priority of writer thread: policy=%d, prio=%d\n", policy, sp.sched_priority);
+            }
+        }
+
+    }
+
+    if(warn_realtime) {
+        fprintf(fp_timelog, "# realtime mode: not properly set up.\n");
+        fprintf(stderr, "W: realtime mode: not properly set up.\n");
+    } else {
+        if(!g_realtime) {
+            fprintf(fp_timelog, "# realtime mode: not requested by user.\n");
+        } else {
+            fprintf(fp_timelog, "# realtime mode: ok.\n");
+        }
+    }
 
     // Copy the raw image for external application
     shared_rawimage_status = 0;
