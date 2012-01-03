@@ -73,7 +73,7 @@
 				GenerateDebugInformation="true"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(TargetDir)libgsl.lib"
+				ImportLibrary="..\..\..\lib\libgsl.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -151,7 +151,7 @@
 				AdditionalLibraryDirectories="..\..\..\..\external\lib"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(TargetDir)libgsl.lib"
+				ImportLibrary="..\..\..\lib\libgsl.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"

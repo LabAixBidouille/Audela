@@ -71,7 +71,7 @@
 				GenerateDebugInformation="true"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(TargetDir)libgslcblas.lib"
+				ImportLibrary="..\..\..\lib\libgslcblas.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -147,7 +147,7 @@
 				LinkIncremental="1"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(TargetDir)libgslcblas.lib"
+				ImportLibrary="..\..\..\lib\libgslcblas.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
