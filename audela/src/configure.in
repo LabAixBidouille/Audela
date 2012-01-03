@@ -197,7 +197,7 @@ dnl quicka only works on Windows for the moment.
 
 AUDELA="audela libaudela libaudelatk libgzip libmc librgb libtt"
 if test x"$GSL_FOUND" = x"1" ; then
-    AUDELA="$AUDELA libak libgsltcl libjm libml libros libyd"
+    AUDELA="$AUDELA libak libgsltcl libjm libml libros libyd libcatalog"
 fi
 
 LIBCAMS="libaudinet libethernaude"
