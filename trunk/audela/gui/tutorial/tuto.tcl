@@ -437,7 +437,11 @@ if { $catchError != "0" } {
 }
 
 #--- declare pwd folder
-set num(rep_pwd) [pwd]
+if {[lindex [split [pwd] /] end]=="bin"} {
+	set num(rep_pwd) [pwd]/../gui/tutorial
+} else {
+	set num(rep_pwd) [pwd]
+}
 
 #--- declare an Audine Kaf-0400 camera
 if { $::tcl_platform(os) == "Windows NT" } {
