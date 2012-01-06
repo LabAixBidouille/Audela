@@ -230,12 +230,29 @@ void mc_tdminusut(double jj,double *dt)
 /***************************************************************************/
 /* Algo : Meeus "Astronomical Algorithms" p72                              */
 /* and ftp://maia.usno.navy.mil/ser7/tai-utc.dat                           */
+/*                                                ET 1960-1983             */
+/*                                                TDT 1984-2000            */
+/* UTC 1972-  GPS 1980-    TAI 1958-               TT 2001-                */
+/*----+---------+-------------+-------------------------+-----             */
+/*    |         |             |                         |                  */
+/*    |<------ TAI-UTC ------>|<-----   TT-TAI    ----->|                  */
+/*    |         |             |      32.184s fixed      |                  */
+/*    |<GPS-UTC>|<- TAI-GPS ->|                         |                  */
+/*    |         |  19s fixed  |                         |                  */
+/*    |                                                 |                  */
+/*    <> delta-UT = UT1-UTC                             |                  */
+/*     | (max 0.9 sec)                                  |                  */
+/*-----+------------------------------------------------+-----             */
+/*     |<-------------- delta-T = TT-UT1 -------------->|                  */
+/*    UT1 (UT)                                       TT/TDT/ET             */
+/*                                                                         */
+/* http://stjarnhimlen.se/comp/time.html                                   */
 /***************************************************************************/
 {
    double ds=0.,ds1,ds2,t=0.;
-   int indexmax=200,k,k2;
+   int indexmax=201,k,k2;
    double jjmax,jj1,jj2;
-   double table[201*2]={
+   double table[202*2]={
       2312752.5, +124., /* 1620 */
       2313483.5, +115.,
       2314213.5, +106.,
@@ -436,7 +453,8 @@ void mc_tdminusut(double jj,double *dt)
       2450630.5, 63.184,  /* 1997 JUL  1 */
       2451179.5, 64.184,  /* 1999 JAN  1 */
       2453736.5, 65.184,  /* 2006 JAN  1 */
-      2454832.5, 66.184   /* 2009 JAN  1 */
+      2454832.5, 66.184,  /* 2009 JAN  1 */
+      2456109.5, 67.184   /* 2012 JUL  1 from 2012 July 1,    0h UTC, until further notice    : UTC-TAI = - 35s */
    };
    jjmax=table[(indexmax-1)*2];
    if (jj<=2067314.5) {
