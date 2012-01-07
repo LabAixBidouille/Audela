@@ -39,8 +39,6 @@
 
 extern struct camini CAM_INI[];
 
-
-
 /*
  * -----------------------------------------------------------------------------
  *  cmdCamAutoLoadFlag()
@@ -118,44 +116,6 @@ int cmdCamAutoDeleteFlag(ClientData clientData, Tcl_Interp * interp, int argc, c
    }
    return result;
 }
-
-static int cmdCamDebug(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
-{
-   char ligne[256];
-   int result = TCL_OK;
-   struct camprop *cam;
-   
-   if ((argc != 2) && (argc != 3)) {
-      sprintf(ligne, "Usage: %s %s ?0|1? [debugPath]", argv[0], argv[1]);
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-      result = TCL_ERROR;
-   } else if (argc == 2) {
-      cam = (struct camprop *) clientData;
-      sprintf(ligne, "%d", cam_getDebug(cam));
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-      result = TCL_OK;
-   } else {
-      int debug;
-      cam = (struct camprop *) clientData;
-      if (Tcl_GetInt(interp, argv[2], &debug) != TCL_OK) {
-         sprintf(ligne, "Usage: %s %s ?0|1?\nvalue must be 0 or 1", argv[0], argv[1]);
-         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-         result = TCL_ERROR;
-      } else {
-         if ( argc >= 4 ) {
-            cam_setDebug(cam,debug, argv[3]);
-            Tcl_SetResult(interp, "", TCL_VOLATILE);
-            result = TCL_OK;
-         } else {
-            cam_setDebug(cam,debug, "");
-            Tcl_SetResult(interp, "", TCL_VOLATILE);
-            result = TCL_OK;
-         }
-      }
-   }
-   return result;
-}
-
 
 /*
  * -----------------------------------------------------------------------------
@@ -388,7 +348,6 @@ int cmdCamLoadLastImage(ClientData clientData, Tcl_Interp * interp, int argc, ch
    return result;
 }
 
-
 /*
  * -----------------------------------------------------------------------------
  *  cmdCamSystemService()
@@ -547,7 +506,6 @@ int cmdCamLonguePoseLinkno(ClientData clientData, Tcl_Interp * interp,
    return result;
 }
 
-
 /**
  * cmdCamLonguePoseLinkbit
  * Change the bit number 
@@ -560,7 +518,6 @@ int cmdCamLonguePoseLinkbit(ClientData clientData, Tcl_Interp * interp,
    struct camprop *cam;
    cam = (struct camprop *) clientData;
    cam->interp = interp;
-
 
    if (argc < 2  && argc > 3) {
       sprintf(ligne, "Usage: %s %s ?numbit", argv[0], argv[1]);
@@ -580,8 +537,6 @@ int cmdCamLonguePoseLinkbit(ClientData clientData, Tcl_Interp * interp,
    }
    return result;
 }
-
-
 
 /**
  * cmdCamLonguePoseStartValue - définition du caractere de debut de pose.
