@@ -1,5 +1,5 @@
 # This is the graphical user interface for
-# students who want to modify the file tp.c 
+# students who want to modify the file tp.c
 # of the Audine camera.
 #
 # 1st method to launch the GUI :
@@ -7,7 +7,7 @@
 #
 # 2nd method to launch the GUI :
 # Create a shortcut to audela.exe and add arguments: --file ../gui/ups/ups.tcl
-# 
+#
 # 3rd method to launch the GUI :
 # Create a batch file (eg audela.bat), edit it and write: C:/audela/bin/audela.exe --file ../gui/ups/ups.tcl
 # (adapt the forder of Audela to yours)
@@ -49,7 +49,7 @@ if {[string compare $langage english] ==0 } {
 if {[string compare $langage french] ==0 } {
      set caption(main_title) "TP camera (c) A. Klotz & D. Marchais"
      set caption(acq) "Acquisition CCD"
-     set caption(acqs) "Acquisition Spéciale"
+     set caption(acqs) "Acquisition SpÃ©ciale"
      set caption(load) "Charger"
      set caption(save) "Sauver"
      set caption(go) "GO"
@@ -209,7 +209,6 @@ canvas .test.image1 \
 pack .test.image1 \
    -in .test -expand 1 -side top -anchor center -fill both
 set zone(image1) .test.image1
-
 
 # =========================================
 # === Setting the binding.
@@ -414,7 +413,7 @@ proc camacqs { {e "1"} {b "2"} } {
    global info_image
 
    .test.lst1 delete 0 end
-   .test.lst1 insert end "Acquisition spéciale en cours ($e s, binning $b x $b)..."
+   .test.lst1 insert end "Acquisition spÃ©ciale en cours ($e s, binning $b x $b)..."
    .test.lst1 see end
    $zone(but_acqs) configure -relief sunken -command { }
 
@@ -446,3 +445,4 @@ proc camacqs { {e "1"} {b "2"} } {
    visu1 disp
    $zone(but_acqs) configure -relief raised -command { acqs_image $exposure $binning }
 }
+
