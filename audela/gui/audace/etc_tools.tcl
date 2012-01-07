@@ -90,8 +90,28 @@ proc etc_set_camera { {typecam ""} } {
       etc_params_set photocell1 13.5e-6 ; # Pixel size (m)
       etc_params_set photocell2 13.5e-6 ; # Pixel size (m)
       return ""
+   } elseif {$typecam=="Andor Neo sCMOS"} {
+      etc_params_set C_th 0.07          ; # Thermic coefficient (electrons/sec/photocell)
+      etc_params_set G 4.               ; # (TBV) CCD gain (electrons/ADU)
+      etc_params_set N_ro 1.4           ; # Readout noise (electrons)
+      etc_params_set eta 0.57           ; # CCD Quantum efficiency in the photometric band (electron/photon)
+      etc_params_set naxis1 2560        ; # Number of pixels on axis1
+      etc_params_set naxis2 2160        ; # Number of pixels on axis2
+      etc_params_set photocell1 6.5e-6  ; # Pixel size (m)
+      etc_params_set photocell2 6.5e-6  ; # Pixel size (m)
+      return ""
+   } elseif {$typecam=="Andor Lucas R DL-604"} {
+      etc_params_set C_th 0.07          ; # Thermic coefficient (electrons/sec/photocell)
+      etc_params_set G 3.               ; # (TBV) CCD gain (electrons/ADU)
+      etc_params_set N_ro 18            ; # Readout noise (electrons)
+      etc_params_set eta 0.65           ; # CCD Quantum efficiency in the photometric band (electron/photon)
+      etc_params_set naxis1 1004        ; # Number of pixels on axis1
+      etc_params_set naxis2 1002        ; # Number of pixels on axis2
+      etc_params_set photocell1 8e-6    ; # Pixel size (m)
+      etc_params_set photocell2 8e-6    ; # Pixel size (m)
+      return ""
    } elseif {$typecam=="Audine Kaf401ME"} {
-      etc_params_set C_th 0.2 ; # Thermic coefficient (electrons/sec/photocell)
+      etc_params_set C_th 0.2           ; # Thermic coefficient (electrons/sec/photocell)
       etc_params_set G 2.1              ; # CCD gain (electrons/ADU)
       etc_params_set N_ro 12            ; # Readout noise (electrons)
       etc_params_set eta 0.5            ; # CCD Quantum efficiency in the photometric band (electron/photon)
@@ -100,10 +120,45 @@ proc etc_set_camera { {typecam ""} } {
       etc_params_set photocell1 9e-6    ; # Pixel size (m)
       etc_params_set photocell2 9e-6    ; # Pixel size (m)
       return ""
+   } elseif {$typecam=="SBIG STL-11000M"} {
+      etc_params_set C_th 0.2           ; # Thermic coefficient (electrons/sec/photocell)
+      etc_params_set G 0.8              ; # CCD gain (electrons/ADU)
+      etc_params_set N_ro 13            ; # Readout noise (electrons)
+      etc_params_set eta 0.5            ; # CCD Quantum efficiency in the photometric band (electron/photon)
+      etc_params_set naxis1 4008        ; # Number of pixels on axis1
+      etc_params_set naxis2 2672        ; # Number of pixels on axis2
+      etc_params_set photocell1 9e-6    ; # Pixel size (m)
+      etc_params_set photocell2 9e-6    ; # Pixel size (m)
+      return ""
+   } elseif {$typecam=="SBIG STX-16803"} {
+      etc_params_set C_th 0.2           ; # Thermic coefficient (electrons/sec/photocell)
+      etc_params_set G 1.27             ; # CCD gain (electrons/ADU)
+      etc_params_set N_ro 13            ; # Readout noise (electrons)
+      etc_params_set eta 0.6            ; # CCD Quantum efficiency in the photometric band (electron/photon)
+      etc_params_set naxis1 4096        ; # Number of pixels on axis1
+      etc_params_set naxis2 4096        ; # Number of pixels on axis2
+      etc_params_set photocell1 9e-6    ; # Pixel size (m)
+      etc_params_set photocell2 9e-6    ; # Pixel size (m)
+      return ""
+   } elseif {$typecam=="ST-2000XM"} {
+      etc_params_set C_th 0.1           ; # Thermic coefficient (electrons/sec/photocell)
+      etc_params_set G 0.6              ; # CCD gain (electrons/ADU)
+      etc_params_set N_ro 7.9           ; # Readout noise (electrons)
+      etc_params_set eta 0.35           ; # CCD Quantum efficiency in the photometric band (electron/photon)
+      etc_params_set naxis1 1600        ; # Number of pixels on axis1
+      etc_params_set naxis2 1200        ; # Number of pixels on axis2
+      etc_params_set photocell1 7.4e-6  ; # Pixel size (m)
+      etc_params_set photocell2 7.4e-6  ; # Pixel size (m)
+      return ""
    } else {
       set textes ""
       lappend textes "Andor DW436"
+      lappend textes "Andor Neo sCMOS"
+      lappend textes "Andor Lucas R DL-604"
       lappend textes "Audine Kaf401ME"
+      lappend textes "SBIG STL-11000M"
+      lappend textes "SBIG STX-16803"
+      lappend textes "ST-2000XM"
       return $textes
    }
 }
@@ -122,10 +177,20 @@ proc etc_params_set_defaults { {band V} {moon_age 0} } {
       unset audace($name)
    }
 
+#--   ajout RZ
+   set audace(etc,param,local,moon_age,comment) "Age of the Moon (day)"
+   set audace(etc,param,local,moon_age) 0
+#--   fin ajout RZ
+
    set audace(etc,param,object,band,comment) "Photometric system symbol"
    set audace(etc,param,object,band) $band
 
-   etc_params_set_filter $audace(etc,param,object,band)
+#--   modif RZ
+   #--   remplacement par etc_modify_band
+   #etc_params_set_filter $audace(etc,param,object,band)
+   #etc_params_set_msky $audace(etc,param,object,band) $moon_age
+   etc_modify_band
+#-- fin ajout RZ
 
    set audace(etc,param,local,Elev,comment) "Elevation above horizon (deg)"
    set audace(etc,param,local,Elev) 65
@@ -135,8 +200,6 @@ proc etc_params_set_defaults { {band V} {moon_age 0} } {
 
    set audace(etc,param,local,seeing,comment) "Fwhm of the seeing (arcsec)"
    set audace(etc,param,local,seeing) 3.0
-
-   etc_params_set_msky $audace(etc,param,object,band) $moon_age
 
    set audace(etc,param,optic,D,comment) "Optic diameter (m)"
    set audace(etc,param,optic,D) 0.3
@@ -309,6 +372,7 @@ proc etc_inputs_set { args } {
 
       set key0 [lindex $args 0]
       set val0 [lindex $args 1]
+
       foreach name $names {
          set sname [split $name ,]
          set key [lindex $sname 0]
@@ -320,8 +384,8 @@ proc etc_inputs_set { args } {
          set key [lindex $sname 3]
          if {$key==$key0} {
             set name0 $name
-            if {[catch {expr $val0}]==0} {
-               set audace($name) $val0
+             if {[catch {expr $val0}]==0} {
+                set audace($name) $val0
                if {$key0 in [list M m DL_pc] } {
                   set delta [expr 5. * log10 ($audace(etc,input,object,DL_pc) / 10.)]
                   switch -exact $key0 {
@@ -336,7 +400,6 @@ proc etc_inputs_set { args } {
             return "$audace($name) \"$audace($name,comment)\""
          }
       }
-
    }
 
    if {$name0==""} {
@@ -393,7 +456,7 @@ proc etc_params_set { args } {
 
       set key0 [lindex $args 0]
       set val0 [lindex $args 1]
-      foreach name $names {
+     foreach name $names {
          set sname [split $name ,]
          set key [lindex $sname 0]
          if {$key!="etc"} { continue }
@@ -404,19 +467,23 @@ proc etc_params_set { args } {
          set key [lindex $sname 3]
          if {$key==$key0} {
             set name0 $name
-            if {$key0 eq "band" && $val0 in [list B C H I J K R U V z]} {
+     #-- modif RZ
+            if {$key0 eq "moon_age" && [catch {expr $val0}]==0} {
                set audace($name) $val0
+               etc_params_set_msky $audace(etc,param,object,band) $val0
+            } elseif {$key0 eq "band" && $val0 in [list B C H I J K R U V z]} {
+                set audace($name) $val0
+                etc_modify_band $val0
+     #-- fin modif RZ
             } elseif {[catch {expr $val0}]==0} {
                set audace($name) $val0
             } elseif {$val0=="?"} {
                return $audace($name,comment)
             }
-            return "$audace($name) \"$audace($name,comment)\""
+           return "$audace($name) \"$audace($name,comment)\""
          }
       }
-
    }
-
    if {$name0==""} {
 
       foreach name $names {
@@ -435,6 +502,23 @@ proc etc_params_set { args } {
    }
 
 }
+
+#--   ajout RZ
+proc etc_modify_band { {band V} } {
+   global audace
+
+   #---  calcul des cofficients L, Dl et Fm0
+   etc_params_set_filter $band
+
+   #---  calcul de msky
+   etc_params_set_msky $band $audace(etc,param,local,moon_age)
+
+   #---  modification des commentaires
+   set audace(etc,input,object,M,comment) "Absolute stellar magnitude in the $band band"
+   set audace(etc,input,object,m,comment) "Apparent stellar magnitude in the $band band"
+
+}
+#--   fin ajout RZ
 
 proc etc_preliminary_computations { } {
    global audace
@@ -549,6 +633,7 @@ proc etc_preliminary_computations { } {
    set audace(etc,comp1,Fpix_el) [expr $audace(etc,comp1,Ftot_el) * $audace(etc,comp1,fpix1)]
 
    # --- Sky brightness
+
    set audace(etc,comp1,Sky_Jy,comment) "Brightness of the sky (Jy/arsec2)"
    set audace(etc,comp1,Sky_Jy) [expr $audace(etc,param,filter,Fm0) * pow(10,-0.4 * $audace(etc,param,local,msky)) ]
 
