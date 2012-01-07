@@ -30,7 +30,6 @@
 #define SPECIFIC_CMDLIST \
    {"autoload",            (Tcl_CmdProc *)cmdCamAutoLoadFlag}, \
    {"delete",              (Tcl_CmdProc *)cmdCamAutoDeleteFlag}, \
-   {"debug_cam",           (Tcl_CmdProc *)cmdCamDebug}, \
    {"drivemode",           (Tcl_CmdProc *)cmdCamDriveMode}, \
    {"quality",             (Tcl_CmdProc *)cmdCamQuality}, \
    {"loadlastimage",       (Tcl_CmdProc *)cmdCamLoadLastImage}, \
