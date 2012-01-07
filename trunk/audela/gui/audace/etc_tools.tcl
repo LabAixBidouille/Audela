@@ -177,20 +177,16 @@ proc etc_params_set_defaults { {band V} {moon_age 0} } {
       unset audace($name)
    }
 
-#--   ajout RZ
    set audace(etc,param,local,moon_age,comment) "Age of the Moon (day)"
    set audace(etc,param,local,moon_age) 0
-#--   fin ajout RZ
 
    set audace(etc,param,object,band,comment) "Photometric system symbol"
    set audace(etc,param,object,band) $band
 
-#--   modif RZ
    #--   remplacement par etc_modify_band
    #etc_params_set_filter $audace(etc,param,object,band)
    #etc_params_set_msky $audace(etc,param,object,band) $moon_age
    etc_modify_band
-#-- fin ajout RZ
 
    set audace(etc,param,local,Elev,comment) "Elevation above horizon (deg)"
    set audace(etc,param,local,Elev) 65
@@ -467,14 +463,12 @@ proc etc_params_set { args } {
          set key [lindex $sname 3]
          if {$key==$key0} {
             set name0 $name
-     #-- modif RZ
             if {$key0 eq "moon_age" && [catch {expr $val0}]==0} {
                set audace($name) $val0
                etc_params_set_msky $audace(etc,param,object,band) $val0
             } elseif {$key0 eq "band" && $val0 in [list B C H I J K R U V z]} {
                 set audace($name) $val0
                 etc_modify_band $val0
-     #-- fin modif RZ
             } elseif {[catch {expr $val0}]==0} {
                set audace($name) $val0
             } elseif {$val0=="?"} {
@@ -503,7 +497,6 @@ proc etc_params_set { args } {
 
 }
 
-#--   ajout RZ
 proc etc_modify_band { {band V} } {
    global audace
 
@@ -518,7 +511,6 @@ proc etc_modify_band { {band V} } {
    set audace(etc,input,object,m,comment) "Apparent stellar magnitude in the $band band"
 
 }
-#--   fin ajout RZ
 
 proc etc_preliminary_computations { } {
    global audace
