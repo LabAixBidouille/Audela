@@ -26,7 +26,7 @@
 
 
 struct _GPhotoSession {
-	Camera *camera;
+   Camera *camera;
    GPContext *context;
    CameraAbilitiesList *abilities_list;
    GPPortInfoList *portList;
@@ -84,23 +84,23 @@ int libgphoto_openSession(GPhotoSession **gphotoSession, char * gphotoWinDllDir,
 #endif
    *gphotoSession = p;
 
-    // activation/desactivation des traces de deboggage de libgphoto2
+   // activation/desactivation des traces de deboggage de libgphoto2
    if (debugPath != NULL ) {
       strcpy(logFileName,debugPath);
-      if ( logFileName[strlen(logFileName)-1]!= '\\' && logFileName[strlen(logFileName)-1]!= '/' ) {
+      if ( logFileName[strlen(logFileName)-1]!= '\\' && logFileName[strlen(logFileName)-1]!= '/' && strlen(logFileName)!=0 ) {
          strcat(logFileName,"/");
+      }
 #ifdef WIN32
-         {
-            char * cp;
-            // je remplace les / par des \ si on est sur Windows
-            for (cp=logFileName; *cp != 0 ; cp++) {
-               if (*cp == '/') {
-                  *cp = '\\';
-               }
+      {
+         char * cp;
+         // je remplace les / par des \ si on est sur Windows
+         for (cp=logFileName; *cp != 0 ; cp++) {
+            if (*cp == '/') {
+               *cp = '\\';
             }
          }
-#endif
       }
+#endif
    } 
    strcat(logFileName,"gphoto2.log");
       
@@ -432,8 +432,6 @@ int libgphoto_setLongExposure (GPhotoSession *gphotoSession, int value)
    return LIBGPHOTO_OK;
 }
 
-
-
 /** 
  *  libgphoto_startLongExposure
  *
@@ -545,7 +543,6 @@ int libgphoto_captureAndLoadImageWithoutCF (GPhotoSession *gphotoSession, char *
    return (result);
 }
 
-
 //  CameraFileType
 //	    GP_FILE_TYPE_PREVIEW,
 //	    GP_FILE_TYPE_NORMAL,
@@ -646,7 +643,6 @@ int libgphoto_deleteImage (GPhotoSession *gphotoSession,  char * cameraFolder, c
    CR(gp_camera_file_delete (gphotoSession->camera, cameraFolder, fileName, gphotoSession->context))
    return (LIBGPHOTO_OK);
 }
-
 
 //==================== local functions ======================
 void ctx_status_func (GPContext *context, const char *format, va_list args, void *data)
@@ -785,7 +781,7 @@ int action_camera_set_port (GPhotoSession *params, const char *port)
 
 void libgphoto_setDebugLog(GPhotoSession *gphotoSession, int level, char *logFileName) {
    if ( level == 1 ) {
-     	logFileHandle=fopen(logFileName, "w");
+      logFileHandle=fopen(logFileName, "w");
       gphotoSession->debug_func_id = gp_log_add_func (GP_LOG_ALL, debug_func, NULL);
    } else {
       libgphoto_closeLog(gphotoSession);
@@ -797,7 +793,7 @@ void libgphoto_closeLog(GPhotoSession *gphotoSession) {
    gphotoSession->debug_func_id = -1;
 
    if ( logFileHandle != NULL) {
-  	   fclose(logFileHandle);
+      fclose(logFileHandle);
       logFileHandle = NULL;
    }
 }
