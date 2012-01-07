@@ -228,7 +228,7 @@ static void libcam_log(int level, const char *fmt, ...)
 
    if (level <= debug_level) {
       getlogdate(buf,100);
-      f = fopen("libcam.txt","at+");
+      f = fopen("libcam.log","at+");
       switch (level) {
       case LOG_ERROR:
          fprintf(f,"%s - %s(%s) <ERROR> : ", buf, CAM_LIBNAME, CAM_LIBVER);
@@ -967,12 +967,12 @@ static int cmdCamRadecFromTel(ClientData clientData, Tcl_Interp * interp, int ar
       Tcl_SetResult(interp, ligne, TCL_VOLATILE);
    } else {
       if (Tcl_GetInt(interp, argv[2], &value) != TCL_OK) {
-         sprintf(ligne, "Usage: %s %s ?0|1?\n Value must be an integer 0 or 1", argv[0], argv[1]);
+         sprintf(ligne, "Usage: %s %s ?0|1?\n   Value must be an integer 0 or 1", argv[0], argv[1]);
          Tcl_SetResult(interp, ligne, TCL_VOLATILE);
          result = TCL_ERROR;
       } else {
          if ( value !=0 && value != 1 ) {
-            sprintf(ligne, "Usage: %s %s ?0|1?\n Value must be an integer 0 or 1", argv[0], argv[1]);
+            sprintf(ligne, "Usage: %s %s ?0|1?\n   Value must be an integer 0 or 1", argv[0], argv[1]);
             Tcl_SetResult(interp, ligne, TCL_VOLATILE);
             result = TCL_ERROR;
          } else {
@@ -1937,7 +1937,7 @@ static int cmdCamMirrorH(ClientData clientData, Tcl_Interp * interp, int argc, c
    } else {
       cam = (struct camprop *) clientData;
       if (Tcl_GetInt(interp, argv[2], &cam->mirrorh) != TCL_OK) {
-         sprintf(ligne, "Usage: %s %s ?0|1?\nvalues must be 0 or 1", argv[0], argv[1]);
+         sprintf(ligne, "Usage: %s %s ?0|1?\n   Value must be 0 or 1", argv[0], argv[1]);
          Tcl_SetResult(interp, ligne, TCL_VOLATILE);
          result = TCL_ERROR;
       } else {
@@ -1968,7 +1968,7 @@ static int cmdCamMirrorV(ClientData clientData, Tcl_Interp * interp, int argc, c
    } else {
       cam = (struct camprop *) clientData;
       if (Tcl_GetInt(interp, argv[2], &cam->mirrorv) != TCL_OK) {
-         sprintf(ligne, "Usage: %s %s ?0|1?\nvalue must be 0 or 1", argv[0], argv[1]);
+         sprintf(ligne, "Usage: %s %s ?0|1?\n   Value must be 0 or 1", argv[0], argv[1]);
          Tcl_SetResult(interp, ligne, TCL_VOLATILE);
          result = TCL_ERROR;
       } else {
@@ -2181,7 +2181,7 @@ static int cmdCamDebug(ClientData clientData, Tcl_Interp * interp, int argc, cha
    } else {
       cam = (struct camprop *) clientData;
       if (Tcl_GetInt(interp, argv[2], &debug_level) != TCL_OK) {
-         sprintf(ligne, "Usage: %s %s ?0|1?\nvalue must be 0 or 1", argv[0], argv[1]);
+         sprintf(ligne, "Usage: %s %s ?0|1|2|3|4?\n   Value must be 0 to 4", argv[0], argv[1]);
          Tcl_SetResult(interp, ligne, TCL_VOLATILE);
          result = TCL_ERROR;
       } else {
