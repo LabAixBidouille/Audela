@@ -47,6 +47,7 @@ set caption(cwdWindow,changement_12h)             "12 h"
 set caption(cwdWindow,creation_sous_rep)          "Create"
 set caption(cwdWindow,repertoire_scripts)         "Script Folder:"
 set caption(cwdWindow,repertoire_catalogues)      "Catalogue Folder:"
+set caption(cwdWindow,repertoire_archives)        "Archives folder:"
 set caption(cwdWindow,boite_erreur)               "Error"
 set caption(cwdWindow,pas_repertoire)             " is not a folder."
 
@@ -107,6 +108,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cwdWindow,creation_sous_rep)       "Créer"
    set caption(cwdWindow,repertoire_scripts)      "Répertoire des scripts :"
    set caption(cwdWindow,repertoire_catalogues)   "Répertoire des catalogues :"
+   set caption(cwdWindow,repertoire_archives)     "Répertoire des archives :"
    set caption(cwdWindow,boite_erreur)            "Erreur"
    set caption(cwdWindow,pas_repertoire)          " n'est pas un répertoire."
 
@@ -167,6 +169,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cwdWindow,creation_sous_rep)       "Generazione"
    set caption(cwdWindow,repertoire_scripts)      "Cartella degli script:"
    set caption(cwdWindow,repertoire_catalogues)   "Cartella dei cataloghi:"
+   set caption(cwdWindow,repertoire_archives)     "# Répertoire des archives :"
    set caption(cwdWindow,boite_erreur)            "Errore"
    set caption(cwdWindow,pas_repertoire)          " non e' una cartella."
 
@@ -227,6 +230,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cwdWindow,creation_sous_rep)       "Crear"
    set caption(cwdWindow,repertoire_scripts)      "Carpeta de scripts:"
    set caption(cwdWindow,repertoire_catalogues)   "Carpeta de catalogos:"
+   set caption(cwdWindow,repertoire_archives)     "# Répertoire des archives :"
    set caption(cwdWindow,boite_erreur)            "Error"
    set caption(cwdWindow,pas_repertoire)          " no es una carpeta."
 
@@ -287,6 +291,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cwdWindow,creation_sous_rep)       "Schaffen"
    set caption(cwdWindow,repertoire_scripts)      "Skripten Verzeichnis:"
    set caption(cwdWindow,repertoire_catalogues)   "Katalogen Verzeichnis:"
+   set caption(cwdWindow,repertoire_archives)     "# Répertoire des archives :"
    set caption(cwdWindow,boite_erreur)            "Irrtum"
    set caption(cwdWindow,pas_repertoire)          "das ist kein Verzeichnis."
 
@@ -347,6 +352,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cwdWindow,creation_sous_rep)       "Criar"
    set caption(cwdWindow,repertoire_scripts)      "Pasta de scripts:"
    set caption(cwdWindow,repertoire_catalogues)   "Pasta de catálogos:"
+   set caption(cwdWindow,repertoire_archives)     "# Répertoire des archives :"
    set caption(cwdWindow,boite_erreur)            "Erro"
    set caption(cwdWindow,pas_repertoire)          " não é uma pasta."
 
@@ -407,6 +413,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cwdWindow,creation_sous_rep)       "Dan"
    set caption(cwdWindow,repertoire_scripts)      "Skriptmappe:"
    set caption(cwdWindow,repertoire_catalogues)   "Katalogmappe:"
+   set caption(cwdWindow,repertoire_archives)     "# Répertoire des archives :"
    set caption(cwdWindow,boite_erreur)            "Fejl"
    set caption(cwdWindow,pas_repertoire)          " er ingen mappe."
 
@@ -467,6 +474,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cwdWindow,creation_sous_rep)       "Create"
    set caption(cwdWindow,repertoire_scripts)      "Script Folder:"
    set caption(cwdWindow,repertoire_catalogues)   "Catalogue Folder:"
+   set caption(cwdWindow,repertoire_archives)     "Archives folder:"
    set caption(cwdWindow,boite_erreur)            "Error"
    set caption(cwdWindow,pas_repertoire)          " is not a folder."
 
@@ -527,6 +535,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cwdWindow,creation_sous_rep)       "Create"
    set caption(cwdWindow,repertoire_scripts)      "Script Folder:"
    set caption(cwdWindow,repertoire_catalogues)   "Catalogue Folder:"
+   set caption(cwdWindow,repertoire_archives)     "Archives folder:"
    set caption(cwdWindow,boite_erreur)            "Error"
    set caption(cwdWindow,pas_repertoire)          " is not a folder."
 
