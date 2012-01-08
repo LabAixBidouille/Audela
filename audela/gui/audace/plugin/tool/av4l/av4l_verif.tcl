@@ -10,7 +10,6 @@
 
 namespace eval ::av4l_verif {
 
-
    #
    # av4l_verif::init
    # Chargement des captions
@@ -241,7 +240,7 @@ namespace eval ::av4l_verif {
               -in $frm.btnav \
               -side left -anchor w \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-           DynamicHelp::add $frm.verif -text "Lance la vérification"
+           DynamicHelp::add $frm.verif -text "Lance la vÃ©rification"
 
 
 
