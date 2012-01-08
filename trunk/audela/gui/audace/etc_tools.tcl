@@ -183,9 +183,6 @@ proc etc_params_set_defaults { {band V} {moon_age 0} } {
    set audace(etc,param,object,band,comment) "Photometric system symbol"
    set audace(etc,param,object,band) $band
 
-   #--   remplacement par etc_modify_band
-   #etc_params_set_filter $audace(etc,param,object,band)
-   #etc_params_set_msky $audace(etc,param,object,band) $moon_age
    etc_modify_band
 
    set audace(etc,param,local,Elev,comment) "Elevation above horizon (deg)"
