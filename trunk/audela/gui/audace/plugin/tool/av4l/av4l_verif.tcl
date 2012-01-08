@@ -67,7 +67,7 @@ namespace eval ::av4l_verif {
 
 
    #
-   # av4l_verif::run 
+   # av4l_verif::run
    # Cree la fenetre de configuration de l'affichage des messages sur la Console
    # et de l'enregistrement des dates dans le fichier log
    #
@@ -78,7 +78,7 @@ namespace eval ::av4l_verif {
       set panneau(av4l,$visuNo,av4l_verif) $this
       #::confGenerique::run $visuNo "$panneau(av4l,$visuNo,av4l_verif)" "::av4l_verif" -modal 1
 
-      createdialog $this $visuNo   
+      createdialog $this $visuNo
 
    }
 
@@ -124,7 +124,7 @@ namespace eval ::av4l_verif {
 
    #
    # av4l_verif::chgdir
-   # Ouvre une boite de dialogue pour choisir un nom  de repertoire 
+   # Ouvre une boite de dialogue pour choisir un nom  de repertoire
    #
    proc chgdir { This } {
       global caption
@@ -137,6 +137,7 @@ namespace eval ::av4l_verif {
       set cwdWindow(rep_scripts)     "2"
       set cwdWindow(rep_catalogues)  "2"
       set cwdWindow(rep_userCatalog) "2"
+      set cwdWindow(rep_archives)    "2"
 
       set parent "$audace(base)"
       set title "Choisir un repertoire de destination"
@@ -152,7 +153,7 @@ namespace eval ::av4l_verif {
 
       $This delete 0 end
       $This insert 0 $filename
-      
+
    }
 
 
@@ -208,7 +209,7 @@ namespace eval ::av4l_verif {
         pack $frm.titre \
              -in $frm -side top -padx 3 -pady 3
 
-        #--- Cree un frame pour 
+        #--- Cree un frame pour
         frame $frm.open \
               -borderwidth 1 -relief raised -cursor arrow
         pack $frm.open \
@@ -222,7 +223,7 @@ namespace eval ::av4l_verif {
            -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
         #--- Cree un label pour le chemin de l'AVI
-        entry $frm.open.avipath -textvariable ::av4l_verif::nomfichavi 
+        entry $frm.open.avipath -textvariable ::av4l_verif::nomfichavi
         pack $frm.open.avipath -side left -padx 3 -pady 1 -expand true -fill x
 
 
@@ -265,7 +266,7 @@ namespace eval ::av4l_verif {
 
 
    #---
-        #--- Cree un frame pour  les boutons d action 
+        #--- Cree un frame pour  les boutons d action
         frame $frm.action \
               -borderwidth 1 -relief raised -cursor arrow
         pack $frm.action \
@@ -287,14 +288,10 @@ namespace eval ::av4l_verif {
               -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-
-
-
-
    }
 
 }
 
-
 #--- Initialisation au demarrage
 ::av4l_verif::init
+

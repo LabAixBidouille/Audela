@@ -67,7 +67,7 @@ namespace eval ::av4l_acq {
 
 
    #
-   # av4l_acq::run 
+   # av4l_acq::run
    # Cree la fenetre de configuration de l'affichage des messages sur la Console
    # et de l'enregistrement des dates dans le fichier log
    #
@@ -78,7 +78,7 @@ namespace eval ::av4l_acq {
       set panneau(av4l,$visuNo,av4l_acq) $this
       #::confGenerique::run $visuNo "$panneau(av4l,$visuNo,av4l_acq)" "::av4l_acq" -modal 1
 
-      createdialog $this $visuNo   
+      createdialog $this $visuNo
 
    }
 
@@ -116,7 +116,7 @@ namespace eval ::av4l_acq {
 
    #
    # av4l_acq::chgdir
-   # Ouvre une boite de dialogue pour choisir un nom  de repertoire 
+   # Ouvre une boite de dialogue pour choisir un nom  de repertoire
    #
    proc chgdir { This } {
       global caption
@@ -129,6 +129,7 @@ namespace eval ::av4l_acq {
       set cwdWindow(rep_scripts)     "2"
       set cwdWindow(rep_catalogues)  "2"
       set cwdWindow(rep_userCatalog) "2"
+      set cwdWindow(rep_archives)    "2"
 
       set parent "$audace(base)"
       set title "Choisir un repertoire de destination"
@@ -144,7 +145,7 @@ namespace eval ::av4l_acq {
 
       $This delete 0 end
       $This insert 0 $filename
-      
+
    }
 
 
@@ -199,7 +200,7 @@ namespace eval ::av4l_acq {
 
   #--- Cree un frame pour le peripherique d'entree
 
-        #--- Cree un frame 
+        #--- Cree un frame
         frame $frm.tformin -borderwidth 1
         pack $frm.tformin -in $frm -side top -anchor w
 
@@ -239,7 +240,7 @@ namespace eval ::av4l_acq {
             #--- Cree un button
             button $inbutton.getinfo \
              -text "Detection" -borderwidth 2 \
-             -command "::av4l_tools_avi::acq_getdevinfo $visuNo $frm noauto" 
+             -command "::av4l_tools_avi::acq_getdevinfo $visuNo $frm noauto"
             pack $inbutton.getinfo -in $inbutton -side top -pady 0 -anchor w
 
             #--- Cree un button
@@ -250,7 +251,7 @@ namespace eval ::av4l_acq {
 
 
           #--- Cree un frame pour les info
-          frame $frm.infodev -borderwidth 1 -relief raised -cursor arrow 
+          frame $frm.infodev -borderwidth 1 -relief raised -cursor arrow
           pack $frm.infodev -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
 
           #--- Cree un frame pour colonne de gauche
@@ -284,7 +285,7 @@ namespace eval ::av4l_acq {
               pack  $ivll.modele -in $ivll -side top -anchor w
               label $ivlv.modele -font $av4lconf(font,courier_10) -fg $color(blue) -text "?"
               pack  $ivlv.modele -in $ivlv -side top -anchor w
-           
+
               #---Entree
               label $ivll.input -font $av4lconf(font,courier_10) -text "Entree"
               pack  $ivll.input -in $ivll -side top -anchor w
@@ -306,7 +307,7 @@ namespace eval ::av4l_acq {
 
   #--- Cree un frame pour afficher la gestion des fichiers generes
 
-          #--- Cree un frame 
+          #--- Cree un frame
           frame $frm.tform -borderwidth 1
           pack $frm.tform -in $frm -side top -anchor w
 
@@ -356,7 +357,7 @@ namespace eval ::av4l_acq {
             #--- Cree un button
             button $inbutton.chgdir \
              -text "..." -borderwidth 2 \
-             -command "::av4l_acq::chgdir $inparam.destdir" 
+             -command "::av4l_acq::chgdir $inparam.destdir"
             pack $inbutton.chgdir -in $inbutton -side top -pady 0 -anchor w
 
             #--- Cree un label pour le nb d image
@@ -415,7 +416,7 @@ namespace eval ::av4l_acq {
   #--- infos video
 
 
-          #--- Cree un frame 
+          #--- Cree un frame
           frame $frm.tinfovideo -borderwidth 1
           pack $frm.tinfovideo -in $frm -side top -anchor w
 
@@ -427,7 +428,7 @@ namespace eval ::av4l_acq {
 
 
           #--- Cree un frame pour les info video
-          frame $frm.infovideo -borderwidth 1 -relief raised -cursor arrow 
+          frame $frm.infovideo -borderwidth 1 -relief raised -cursor arrow
           pack $frm.infovideo -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
 
           #--- Cree un frame pour colonne de gauche
@@ -456,7 +457,7 @@ namespace eval ::av4l_acq {
 
 
            #- Colonne de droite
-           
+
               #---FPS
               label $ivll.fps -font $av4lconf(font,courier_10) -text "$caption(av4l_acq,info_fps)"
               pack  $ivll.fps -in $ivll -side top -anchor w
@@ -474,7 +475,7 @@ namespace eval ::av4l_acq {
               pack  $ivll.duree -in $ivll -side top -anchor w
               label $ivlv.duree -font $av4lconf(font,courier_10) -fg $color(blue) -text "00:00:00"
               pack  $ivlv.duree -in $ivlv -side top -anchor w
-           
+
            #- Colonne de gauche
 
               #---taille fichier
@@ -504,20 +505,20 @@ namespace eval ::av4l_acq {
 
   #--- infos photometrie
 
-          #--- Cree un frame 
+          #--- Cree un frame
           frame $frm.tphotom -borderwidth 0 -cursor arrow
           pack $frm.tphotom -in $frm -side top -anchor w
 
           #---Titre
-          label $frm.tphotom.title -font $av4lconf(font,arial_10_b) -text "Photometrie" 
+          label $frm.tphotom.title -font $av4lconf(font,arial_10_b) -text "Photometrie"
           pack  $frm.tphotom.title -in $frm.tphotom -side top -anchor w -ipady 10
 
 
-          #--- Cree un frame 
-          frame $frm.photom -borderwidth 1 -relief raised -cursor arrow 
+          #--- Cree un frame
+          frame $frm.photom -borderwidth 1 -relief raised -cursor arrow
           pack $frm.photom -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
 
-          #--- Cree un frame 
+          #--- Cree un frame
           frame $frm.photom.values -borderwidth 0 -cursor arrow
           pack $frm.photom.values -in $frm.photom -side top -expand 5
 
@@ -541,9 +542,9 @@ namespace eval ::av4l_acq {
 
               button $image.t.select -text "Select" -borderwidth 1 -takefocus 1 \
                                      -command "::av4l_cdl_tools::select_fullimg $visuNo $image"
-              pack $image.t.select -in $image.t -side left -anchor e 
-                
-              #--- Cree un frame pour les info 
+              pack $image.t.select -in $image.t -side left -anchor e
+
+              #--- Cree un frame pour les info
               frame $image.v -borderwidth 0 -cursor arrow
               pack  $image.v -in $image -side top
 
@@ -601,9 +602,9 @@ namespace eval ::av4l_acq {
 
               button $object.t.select -text "Select" -borderwidth 1 -takefocus 1 \
                                      -command "::av4l_cdl_tools::select_obj $visuNo $object"
-              pack $object.t.select -in $object.t -side left -anchor e 
-                
-              #--- Cree un frame pour les info 
+              pack $object.t.select -in $object.t -side left -anchor e
+
+              #--- Cree un frame pour les info
               frame $object.v -borderwidth 0 -cursor arrow
               pack  $object.v -in $object -side top
 
@@ -626,7 +627,7 @@ namespace eval ::av4l_acq {
 
                  spinbox $object.v.r.delta -font $av4lconf(font,courier_10) -fg $color(blue) \
                     -value [ list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 ] \
-                    -command "::av4l_cdl_tools::mesure_obj_avance $visuNo $frm" -width 5 
+                    -command "::av4l_cdl_tools::mesure_obj_avance $visuNo $frm" -width 5
                  pack  $object.v.r.delta -in $object.v.r -side top -anchor w
 
                  #---
@@ -688,9 +689,9 @@ namespace eval ::av4l_acq {
 
               button $reference.t.select -text "Select" -borderwidth 1 -takefocus 1 \
                                      -command "::av4l_cdl_tools::select_ref $visuNo $reference"
-              pack $reference.t.select -in $reference.t -side left -anchor e 
-                
-              #--- Cree un frame pour les info 
+              pack $reference.t.select -in $reference.t -side left -anchor e
+
+              #--- Cree un frame pour les info
               frame $reference.v -borderwidth 0 -cursor arrow
               pack  $reference.v -in $reference -side top
 
@@ -713,7 +714,7 @@ namespace eval ::av4l_acq {
 
                  spinbox $reference.v.r.delta -font $av4lconf(font,courier_10) -fg $color(blue) \
                     -value [ list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 ] \
-                    -command "::av4l_cdl_tools::mesure_ref_avance $visuNo $frm" -width 5 
+                    -command "::av4l_cdl_tools::mesure_ref_avance $visuNo $frm" -width 5
                  pack  $reference.v.r.delta -in $reference.v.r -side top -anchor w
 
                  #---
@@ -770,7 +771,7 @@ namespace eval ::av4l_acq {
 
 
    #---
-        #--- Cree un frame pour  les boutons d action 
+        #--- Cree un frame pour  les boutons d action
         frame $frm.action \
               -borderwidth 1 -cursor arrow
         pack $frm.action \
@@ -792,14 +793,10 @@ namespace eval ::av4l_acq {
               -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-
-
-
-
    }
 
 }
 
-
 #--- Initialisation au demarrage
 ::av4l_acq::init
+
