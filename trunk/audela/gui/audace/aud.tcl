@@ -319,6 +319,26 @@ namespace eval ::audace {
          ::console::affiche_erreur "$::errorInfo\n"
       }
 
+      #--- Creation du repertoire des archives
+      set catchError [ catch {
+         if { ! [ info exists conf(rep_archives) ] } {
+            if { $::tcl_platform(os) == "Linux" } {
+               set repArchives [ file join $::env(HOME) audela ]
+            } else {
+               set mesDocuments [ ::registry get "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders" Personal ]
+               set repArchives [ file normalize [ file join $mesDocuments audela ] ]
+            }
+            set conf(rep_archives) [ file join $repArchives archives ]
+         }
+         if { ! [ file exists $conf(rep_archives) ] } {
+            file mkdir $conf(rep_archives)
+         }
+         set audace(rep_archives) $conf(rep_archives)
+      } ]
+      if { $catchError != "0" } {
+         ::console::affiche_erreur "$::errorInfo\n"
+      }
+
       #--- Repertoire des plugins
       set audace(rep_plugin) [ file join $audace(rep_gui) audace plugin ]
 
