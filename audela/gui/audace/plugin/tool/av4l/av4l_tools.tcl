@@ -32,7 +32,7 @@ namespace eval ::av4l_tools {
    # ouvre un flux
    #
    proc ::av4l_tools::open_flux { visuNo frm } {
-         
+
       if { $::av4l_tools::traitement=="fits" } {
          ::av4l_tools_fits::open_flux $visuNo $frm
       }
@@ -49,7 +49,7 @@ namespace eval ::av4l_tools {
       set bufNo [ visu$visuNo buf ]
       set autocuts [buf$bufNo autocuts]
       visu$visuNo disp [list [lindex $autocuts 0] [lindex $autocuts 1]]
-      set ::av4l_tools::scrollbar 1   
+      set ::av4l_tools::scrollbar 1
       $frm.scrollbar configure -from 1
       $frm.scrollbar configure -to $::av4l_tools::nb_frames
       $frm.scrollbar configure -tickinterval [expr $::av4l_tools::nb_frames / 5]
@@ -58,7 +58,7 @@ namespace eval ::av4l_tools {
       $frm.scrollbar configure -variable ::av4l_tools::scrollbar
 
    }
- 
+
 
 
 
@@ -68,7 +68,7 @@ namespace eval ::av4l_tools {
    # Selectionne le ou les fichiers a ouvrir
    #
    proc ::av4l_tools::select { visuNo frm } {
-         
+
       if { $::av4l_tools::traitement=="fits" } {
          ::av4l_tools_fits::select $visuNo $frm
       }
@@ -89,7 +89,7 @@ namespace eval ::av4l_tools {
    # Retour Rapide
    #
    proc ::av4l_tools::quick_prev_image { visuNo } {
-         
+
       if { $::av4l_tools::traitement=="fits" } {
          ::av4l_tools_fits::quick_prev_image $visuNo
       }
@@ -102,7 +102,7 @@ namespace eval ::av4l_tools {
       set ::av4l_tools::scrollbar $::av4l_tools::cur_idframe
 
    }
- 
+
 
 
 
@@ -112,7 +112,7 @@ namespace eval ::av4l_tools {
    # avance rapide
    #
    proc ::av4l_tools::quick_next_image { visuNo } {
-         
+
       if { $::av4l_tools::traitement=="fits" } {
          ::av4l_tools_fits::quick_next_image $visuNo
       }
@@ -123,9 +123,9 @@ namespace eval ::av4l_tools {
 
       visu$visuNo disp
       set ::av4l_tools::scrollbar $::av4l_tools::cur_idframe
-   
+
    }
-   
+
 
 
 
@@ -135,7 +135,7 @@ namespace eval ::av4l_tools {
    # Passe a l image suivante
    #
    proc ::av4l_tools::next_image { visuNo } {
-         
+
       if { $::av4l_tools::traitement=="fits" } {
          ::av4l_tools_fits::next_image $visuNo
       }
@@ -158,7 +158,7 @@ namespace eval ::av4l_tools {
    # Passe a l image precedente
    #
    proc ::av4l_tools::prev_image { visuNo } {
-         
+
       if { $::av4l_tools::traitement=="fits" } {
          ::av4l_tools_fits::prev_image $visuNo
       }
@@ -171,7 +171,7 @@ namespace eval ::av4l_tools {
       set ::av4l_tools::scrollbar $::av4l_tools::cur_idframe
 
    }
-   
+
 
 
    #
@@ -198,30 +198,30 @@ namespace eval ::av4l_tools {
    # selection du frame de debut
    #
    proc ::av4l_tools::setmin { frm } {
-         
+
       $frm.posmin delete 0 end
       $frm.posmin insert 0 [expr int($::av4l_tools::cur_idframe)]
 
    }
-   
+
    #
    # selection du frame de fin
    #
    proc ::av4l_tools::setmax { frm } {
-         
+
       $frm.posmax delete 0 end
       $frm.posmax insert 0 [expr int($::av4l_tools::cur_idframe)]
 
    }
 
    #
-   # redimensionne le flux entre la valeur min et max 
+   # redimensionne le flux entre la valeur min et max
    #
    proc ::av4l_tools::crop { visuNo frm } {
-         
+
       set fmin  [$frm.posmin get]
       set fmax  [$frm.posmax get]
-         
+
       if { $fmin == "" } {
          set fmin 1
       }
@@ -241,7 +241,7 @@ namespace eval ::av4l_tools {
       $frm.scrollbar configure -from $fmin
       $frm.scrollbar configure -to $fmax
       $frm.scrollbar configure -tickinterval [expr $::av4l_tools::nb_frames / 5]
-      
+
       ::av4l_tools::set_frame $visuNo $fmin
 
    }
@@ -253,13 +253,13 @@ namespace eval ::av4l_tools {
 
 
    #
-   # redimensionne le flux entre la valeur min et max 
+   # redimensionne le flux entre la valeur min et max
    #
    proc ::av4l_tools::uncrop { visuNo frm } {
-         
+
       set fmin  1
       set fmax  $::av4l_tools::nb_open_frames
-         
+
       set ::av4l_tools::nb_frames   [expr int($fmax-$fmin+1)]
       set ::av4l_tools::frame_begin $fmin
       set ::av4l_tools::frame_end   $fmax
@@ -312,7 +312,7 @@ namespace eval ::av4l_tools {
 
    #
    # av4l_acq::chgdir
-   # Ouvre une boite de dialogue pour choisir un nom  de repertoire 
+   # Ouvre une boite de dialogue pour choisir un nom  de repertoire
    #
    proc ::av4l_tools::chgdir { This } {
       global caption
@@ -325,6 +325,7 @@ namespace eval ::av4l_tools {
       set cwdWindow(rep_scripts)     "2"
       set cwdWindow(rep_catalogues)  "2"
       set cwdWindow(rep_userCatalog) "2"
+      set cwdWindow(rep_archives)    "2"
 
       set parent "$audace(base)"
       set title "Choisir un repertoire de destination"
@@ -335,14 +336,12 @@ namespace eval ::av4l_tools {
          set filename "[ ::cwdWindow::tkplus_chooseDir "[pwd]" $title $This ]"
       }
 
-
       ::console::affiche_resultat $audace(rep_images)
 
       $This delete 0 end
       $This insert 0 $filename
-      
+
    }
 
-
-
 }
+
