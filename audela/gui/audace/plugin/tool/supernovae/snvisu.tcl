@@ -889,6 +889,7 @@ proc changeDir { numbuf } {
    set cwdWindow(rep_scripts)     "2"
    set cwdWindow(rep_catalogues)  "2"
    set cwdWindow(rep_userCatalog) "2"
+   set cwdWindow(rep_archives)    "2"
 
    #--- Initialisation du titre de la fenetre de navigation des repertoires
    if { $numbuf == "1" } {
