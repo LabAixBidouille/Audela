@@ -8,7 +8,7 @@ namespace eval ::cwdWindow {
 
    #
    # ::cwdWindow::run this
-   # Lance la boite de dialogue de reglage des repertoires
+   # Lance la fenetre de dialogue pour la configuration des repertoires
    # this : Chemin de la fenetre
    #
    proc run { this } {
@@ -30,6 +30,7 @@ namespace eval ::cwdWindow {
          set cwdWindow(travail_images)         $::conf(rep_travail,travail_images)
          set cwdWindow(dir_scripts)            [file nativename $audace(rep_scripts)]
          set cwdWindow(dir_catalogues)         [file nativename $audace(rep_userCatalog)]
+         set cwdWindow(dir_archives)           [file nativename $audace(rep_archives)]
          set cwdWindow(long)                   [string length $cwdWindow(dir_images)]
          if {[string length $cwdWindow(dir_images)] > $cwdWindow(long)} {
             set cwdWindow(long) [string length $cwdWindow(dir_images)]
@@ -42,6 +43,9 @@ namespace eval ::cwdWindow {
          }
          if {[string length $cwdWindow(dir_catalogues)] > $cwdWindow(long)} {
             set cwdWindow(long) [string length $cwdWindow(dir_catalogues)]
+         }
+         if {[string length $cwdWindow(dir_archives)] > $cwdWindow(long)} {
+            set cwdWindow(long) [string length $cwdWindow(dir_archives)]
          }
 
          #--- je calcule la date du jour (a partir de l'heure TU)
@@ -87,6 +91,7 @@ namespace eval ::cwdWindow {
       set cwdWindow(rep_travail)     "0"
       set cwdWindow(rep_scripts)     "0"
       set cwdWindow(rep_userCatalog) "0"
+      set cwdWindow(rep_archives)    "0"
 
       #--- Frame pour les repertoires
       frame $This.usr -borderwidth 0 -relief raised
@@ -189,6 +194,17 @@ namespace eval ::cwdWindow {
             entry $This.usr.3.ent3 -textvariable cwdWindow(dir_catalogues) -width $cwdWindow(long)
             pack $This.usr.3.ent3 -side right -padx 5 -pady 5
          pack $This.usr.3 -side top -fill both -expand 1
+
+         #--- Frame du répertoire des archives
+         frame $This.usr.4 -borderwidth 1 -relief raised
+            label $This.usr.4.lab4 -text "$caption(cwdWindow,repertoire_archives)"
+            pack $This.usr.4.lab4 -side left -padx 5 -pady 5
+            button $This.usr.4.explore -text "$caption(aud_menu_7,parcourir)" -width 1 \
+               -command ::cwdWindow::changeRepArchives
+            pack $This.usr.4.explore -side right -padx 5 -pady 5 -ipady 5
+            entry $This.usr.4.ent4 -textvariable cwdWindow(dir_archives) -width $cwdWindow(long)
+            pack $This.usr.4.ent4 -side right -padx 5 -pady 5
+         pack $This.usr.4 -side top -fill both -expand 1
 
       pack $This.usr -side top -fill both -expand 1
 
@@ -341,6 +357,29 @@ namespace eval ::cwdWindow {
    }
 
    #
+   # ::cwdWindow::changeRepArchives
+   # Ouvre le navigateur pour choisir le repertoire des archives
+   #
+   proc changeRepArchives { } {
+      variable This
+      global audace caption cwdWindow
+
+      #--- Recuperation de la police par defaut des entry
+      set cwdWindow(rep_font) $audace(font,Entry)
+      #--- Transformation de la police en italique
+      set cwdWindow(rep_font_italic) [ lreplace $cwdWindow(rep_font) 2 2 italic ]
+      #---
+      set cwdWindow(rep_archives) "1"
+      $This.usr.4.ent4 configure -font $cwdWindow(rep_font_italic) -relief solid
+      set initialdir [file normalize $cwdWindow(dir_archives)]
+      set title $caption(cwdWindow,repertoire_archives)
+      set cwdWindow(dir_archives) [file nativename [ ::cwdWindow::tkplus_chooseDir $initialdir $title $This ]]
+      $This.usr.4.ent4 configure -textvariable cwdWindow(dir_archives) -width $cwdWindow(long) \
+         -font $cwdWindow(rep_font) -relief sunken
+      focus $This.usr.4
+   }
+
+   #
    # ::cwdWindow::changeState
    # Change l'etat du widget : Disabled - Normal
    #
@@ -388,6 +427,8 @@ namespace eval ::cwdWindow {
          set cwdWindow(rep_scripts) "0"
       } elseif { $cwdWindow(rep_userCatalog) == "1" } {
          set cwdWindow(rep_userCatalog) "0"
+      } elseif { $cwdWindow(rep_archives) == "1" } {
+         set cwdWindow(rep_archives) "0"
       }
       set res [ tk_chooseDirectory -title "$title" -initialdir "$inidir" -parent "$parent" ]
       if {$res==""} {
@@ -419,6 +460,7 @@ namespace eval ::cwdWindow {
       set normalized_dir_travail    [file normalize $cwdWindow(dir_travail)]
       set normalized_dir_scripts    [file normalize $cwdWindow(dir_scripts)]
       set normalized_dir_catalogues [file normalize $cwdWindow(dir_catalogues)]
+      set normalized_dir_archives   [file normalize $cwdWindow(dir_archives)]
 
       set conf(rep_travail,travail_images) $cwdWindow(travail_images)
 
@@ -501,6 +543,16 @@ namespace eval ::cwdWindow {
          set audace(rep_userCatalog) $normalized_dir_catalogues
       } else {
          set m "$cwdWindow(dir_catalogues)"
+         append m "$caption(cwdWindow,pas_repertoire)"
+         tk_messageBox -message $m -title "$caption(cwdWindow,boite_erreur)"
+         return -1
+      }
+
+      if {[file exists $normalized_dir_archives] && [file isdirectory $normalized_dir_archives]} {
+         set conf(rep_archives)   $normalized_dir_archives
+         set audace(rep_archives) $normalized_dir_archives
+      } else {
+         set m "$cwdWindow(dir_archives)"
          append m "$caption(cwdWindow,pas_repertoire)"
          tk_messageBox -message $m -title "$caption(cwdWindow,boite_erreur)"
          return -1
