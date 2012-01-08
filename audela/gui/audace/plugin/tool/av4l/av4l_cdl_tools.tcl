@@ -18,7 +18,7 @@ namespace eval ::av4l_cdl_tools {
    variable file_mesure
    variable sortie
 
- 
+
    #
    # Existance et chargement d un fichier time
    #
@@ -32,7 +32,7 @@ namespace eval ::av4l_cdl_tools {
 
       set filename [::av4l_ocr_tools::get_filename_time]
       if { [file exists $filename] } {
-         set reponse [tk_messageBox -message "Un fichier 'time' a été trouvé\nVoulez vous l'associer ?" -type yesno]
+         set reponse [tk_messageBox -message "Un fichier 'time' a Ã©tÃ© trouvÃ©\nVoulez vous l'associer ?" -type yesno]
          if { $reponse == "yes"} {
             set f [open $filename "r"]
             set cpt 0
@@ -52,7 +52,7 @@ namespace eval ::av4l_cdl_tools {
                 }
                 incr cpt
             }
-            tk_messageBox -message "Fichier 'time' chargé." -type ok
+            tk_messageBox -message "Fichier 'time' chargÃ©." -type ok
          }
 
       }
@@ -86,7 +86,7 @@ namespace eval ::av4l_cdl_tools {
    # Sauvegarde la courbe lumiere  en memoire
    #
    proc ::av4l_cdl_tools::save { visuNo frm } {
- 
+
 
       if { $::av4l_tools::traitement=="fits" } {
          set filename [file join ${::av4l_tools::destdir} "${::av4l_tools::prefix}"]
@@ -96,7 +96,7 @@ namespace eval ::av4l_cdl_tools {
          set filename $::av4l_tools::avi_filename
          if { ! [file exists $filename] } {
          ::console::affiche_erreur "Charger une video ...\n"
-         } 
+         }
       }
 
       set racinefilename "${filename}."
@@ -160,7 +160,7 @@ namespace eval ::av4l_cdl_tools {
          if {$idframe == $::av4l_tools::nb_frames} {
             set sortie 1
          }
-         
+
          if { [info exists ::av4l_cdl_tools::mesure($idframe,mesure_obj)] && $::av4l_cdl_tools::mesure($idframe,mesure_obj) == 1 } {
             set reste [expr $::av4l_tools::nb_frames-$idframe]
 
@@ -195,25 +195,25 @@ namespace eval ::av4l_cdl_tools {
             append line "$::av4l_cdl_tools::mesure($idframe,img_sigma) ,"
             append line "$::av4l_cdl_tools::mesure($idframe,img_xsize),"
             append line "$::av4l_cdl_tools::mesure($idframe,img_ysize)"
-            
-            
+
+
             puts $f1 $line
             incr cpt
          }
-         
+
          incr idframe
       }
 
       close $f1
       ::console::affiche_resultat "nb frame save = $cpt   .. Fin  ..\n"
-      
+
 
    }
-   
 
 
 
-   
+
+
 
 
 
@@ -222,7 +222,7 @@ namespace eval ::av4l_cdl_tools {
    # Stop les mesures photometriques
    #
    proc ::av4l_cdl_tools::stop { } {
-         
+
       if { $::av4l_tools::traitement=="fits" } {
          ::av4l_cdl_tools_fits::stop
       }
@@ -232,7 +232,7 @@ namespace eval ::av4l_cdl_tools {
       }
 
    }
-   
+
 
 
 
@@ -244,7 +244,7 @@ namespace eval ::av4l_cdl_tools {
 
 
    #
-   # 
+   #
    #
    proc ::av4l_cdl_tools::mesure_obj_avance { visuNo frm } {
 
@@ -257,16 +257,16 @@ namespace eval ::av4l_cdl_tools {
       }
 
    }
- 
- 
- 
+
+
+
 
 
 
 
 
    #
-   # 
+   #
    #
    proc ::av4l_cdl_tools::mesure_ref_avance { visuNo frm } {
 
@@ -279,7 +279,7 @@ namespace eval ::av4l_cdl_tools {
       }
 
    }
- 
+
 
 
 
@@ -288,15 +288,15 @@ namespace eval ::av4l_cdl_tools {
    # Effectue la photometrie de la reference et l affiche
    #
    proc ::av4l_cdl_tools::mesure_ref { xsm ysm visuNo frm delta} {
-         
+
       global color
-         
+
       set bufNo [ ::confVisu::getBufNo $visuNo ]
       set err 0
-      
+
       set err [ catch { set valeurs  [::av4l_photom::mesure_obj $xsm $ysm $delta $bufNo] } msg ]
 
-      if {$err>0} { 
+      if {$err>0} {
          ::console::affiche_erreur $msg
          $frm.v.r.position  configure -text "?" -fg $color(blue)
          $frm.v.r.delta     configure -text "?" -fg $color(blue)
@@ -309,7 +309,7 @@ namespace eval ::av4l_cdl_tools {
          $frm.v.r.snpx      configure -text "?" -fg $color(blue)
          return
       }
-      
+
       set xsm         [lindex $valeurs 0]
       set ysm         [lindex $valeurs 1]
       set fwhmx       [lindex $valeurs 2]
@@ -342,7 +342,7 @@ namespace eval ::av4l_cdl_tools {
       $frm.v.r.sigmafond    configure -text "$visusigmafond" -fg $color(blue)
       $frm.v.r.snint        configure -text "$visusnint"     -fg $color(blue)
       $frm.v.r.snpx         configure -text "$visusnpx"      -fg $color(blue)
-      
+
       set ::av4l_cdl_tools::ref(x) [format "%4.2f" $xsm]
       set ::av4l_cdl_tools::ref(y) [format "%4.2f" $ysm]
       ::bddimages_cdl::affich_un_rond [expr $xsm + 1] [expr $ysm - 1] blue $delta
@@ -353,15 +353,15 @@ namespace eval ::av4l_cdl_tools {
    # Effectue la photometrie de l objet et l affiche
    #
    proc ::av4l_cdl_tools::mesure_obj { xsm ysm visuNo frm delta} {
-         
+
       global color
-         
+
       set bufNo [ ::confVisu::getBufNo $visuNo ]
       set err 0
-      
+
       set err [ catch { set valeurs  [::av4l_photom::mesure_obj $xsm $ysm $delta $bufNo] } msg ]
 
-      if {$err>0} { 
+      if {$err>0} {
          ::console::affiche_erreur $msg
          $frm.v.r.position  configure -text "?" -fg $color(blue)
          $frm.v.r.delta     configure -text "?" -fg $color(blue)
@@ -374,7 +374,7 @@ namespace eval ::av4l_cdl_tools {
          $frm.v.r.snpx      configure -text "?" -fg $color(blue)
          return
       }
-      
+
       set xsm         [lindex $valeurs 0]
       set ysm         [lindex $valeurs 1]
       set fwhmx       [lindex $valeurs 2]
@@ -407,7 +407,7 @@ namespace eval ::av4l_cdl_tools {
       $frm.v.r.sigmafond    configure -text "$visusigmafond" -fg $color(blue)
       $frm.v.r.snint        configure -text "$visusnint"     -fg $color(blue)
       $frm.v.r.snpx         configure -text "$visusnpx"      -fg $color(blue)
-      
+
       set ::av4l_cdl_tools::obj(x) [format "%4.2f" $xsm]
       set ::av4l_cdl_tools::obj(y) [format "%4.2f" $ysm]
       ::bddimages_cdl::affich_un_rond [expr $xsm + 1] [expr $ysm - 1] green $delta
@@ -422,7 +422,7 @@ namespace eval ::av4l_cdl_tools {
 
 
    #
-   # 
+   #
    #
    proc ::av4l_cdl_tools::select_fullimg { visuNo this } {
 
@@ -439,7 +439,7 @@ namespace eval ::av4l_cdl_tools {
          $this.v.r.sigma   configure -text   "?"
          $this.t.select    configure -relief raised
          return
-      } 
+      }
 
 
       # activation
@@ -470,7 +470,7 @@ namespace eval ::av4l_cdl_tools {
 
 
    #
-   # Selection de la zone dans l image correspond a l image effective. 
+   # Selection de la zone dans l image correspond a l image effective.
    # Sans l inscrustation de la date par exemple
    #
    proc ::av4l_cdl_tools::get_fullimg { visuNo frm } {
@@ -513,14 +513,14 @@ namespace eval ::av4l_cdl_tools {
 
 
 
-   
+
    #
    # Selection d un objet a partir d une getBox sur l image
    #
    proc ::av4l_cdl_tools::select_obj { visuNo frm } {
-   
+
       global color
-   
+
       set statebutton [ $frm.t.select cget -relief]
 
       # activation
@@ -528,7 +528,7 @@ namespace eval ::av4l_cdl_tools {
 
          set err [ catch {set rect  [ ::confVisu::getBox $visuNo ]} msg ]
 
-         if {$err>0 || $rect ==""} { 
+         if {$err>0 || $rect ==""} {
             ::console::affiche_erreur "$msg\n"
             ::console::affiche_erreur "      * * * *\n"
             ::console::affiche_erreur "Selectionnez un cadre dans l'image\n"
@@ -539,8 +539,8 @@ namespace eval ::av4l_cdl_tools {
 
          set bufNo [ ::confVisu::getBufNo $visuNo ]
          set err [ catch {set valeurs  [::av4l_photom::select_obj $rect $bufNo]} msg ]
-         
-         if {$err>0} { 
+
+         if {$err>0} {
             ::console::affiche_erreur "$msg\n"
             ::console::affiche_erreur "      * * * *\n"
             ::console::affiche_erreur "Mesure Photometrique impossible\n"
@@ -548,7 +548,7 @@ namespace eval ::av4l_cdl_tools {
             $frm.v.r.position configure -text "Error" -fg $color(red)
             return
          }
-         
+
          set xsm      [lindex $valeurs 0]
          set ysm      [lindex $valeurs 1]
          set delta 5
@@ -557,49 +557,49 @@ namespace eval ::av4l_cdl_tools {
          ::av4l_cdl_tools::mesure_obj $xsm $ysm $visuNo $frm $delta
          $frm.t.select  configure -relief sunken
          return
-      } 
-      
+      }
+
       # desactivation
       if {$statebutton=="sunken"} {
 
-         $frm.v.r.position  configure -text "?" 
-         $frm.v.r.delta     configure -text "?" 
-         $frm.v.r.fint      configure -text "?" 
-         $frm.v.r.fwhm      configure -text "?" 
-         $frm.v.r.pixmax    configure -text "?" 
-         $frm.v.r.intensite configure -text "?" 
-         $frm.v.r.sigmafond configure -text "?" 
-         $frm.v.r.snint     configure -text "?" 
-         $frm.v.r.snpx      configure -text "?" 
+         $frm.v.r.position  configure -text "?"
+         $frm.v.r.delta     configure -text "?"
+         $frm.v.r.fint      configure -text "?"
+         $frm.v.r.fwhm      configure -text "?"
+         $frm.v.r.pixmax    configure -text "?"
+         $frm.v.r.intensite configure -text "?"
+         $frm.v.r.sigmafond configure -text "?"
+         $frm.v.r.snint     configure -text "?"
+         $frm.v.r.snpx      configure -text "?"
 
          $frm.t.select  configure -relief raised
          return
-      } 
-      
+      }
+
       $frm.t.select  configure -relief raised
       return
 
    }
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
+
+
+
+
+
+
+
+
+
+
+
+
+
    #
    # Selection d une reference a partir d une getBox sur l image
    #
    proc ::av4l_cdl_tools::select_ref { visuNo frm } {
-   
+
       global color
-   
+
       set statebutton [ $frm.t.select cget -relief]
 
       # activation
@@ -607,7 +607,7 @@ namespace eval ::av4l_cdl_tools {
 
          set err [ catch {set rect  [ ::confVisu::getBox $visuNo ]} msg ]
 
-         if {$err>0 || $rect ==""} { 
+         if {$err>0 || $rect ==""} {
             ::console::affiche_erreur "$msg\n"
             ::console::affiche_erreur "      * * * *\n"
             ::console::affiche_erreur "Selectionnez un cadre dans l'image\n"
@@ -618,8 +618,8 @@ namespace eval ::av4l_cdl_tools {
 
          set bufNo [ ::confVisu::getBufNo $visuNo ]
          set err [ catch {set valeurs  [::av4l_photom::select_obj $rect $bufNo]} msg ]
-         
-         if {$err>0} { 
+
+         if {$err>0} {
             ::console::affiche_erreur "$msg\n"
             ::console::affiche_erreur "      * * * *\n"
             ::console::affiche_erreur "Mesure Photometrique impossible\n"
@@ -627,7 +627,7 @@ namespace eval ::av4l_cdl_tools {
             $frm.v.r.position configure -text "Error" -fg $color(red)
             return
          }
-         
+
          set xsm      [lindex $valeurs 0]
          set ysm      [lindex $valeurs 1]
          set delta 5
@@ -636,37 +636,37 @@ namespace eval ::av4l_cdl_tools {
          ::av4l_cdl_tools::mesure_ref $xsm $ysm $visuNo $frm $delta
          $frm.t.select  configure -relief sunken
          return
-      } 
-      
+      }
+
       # desactivation
       if {$statebutton=="sunken"} {
 
-         $frm.v.r.position  configure -text "?" 
-         $frm.v.r.delta     configure -text "?" 
-         $frm.v.r.fint      configure -text "?" 
-         $frm.v.r.fwhm      configure -text "?" 
-         $frm.v.r.pixmax    configure -text "?" 
-         $frm.v.r.intensite configure -text "?" 
-         $frm.v.r.sigmafond configure -text "?" 
-         $frm.v.r.snint     configure -text "?" 
-         $frm.v.r.snpx      configure -text "?" 
+         $frm.v.r.position  configure -text "?"
+         $frm.v.r.delta     configure -text "?"
+         $frm.v.r.fint      configure -text "?"
+         $frm.v.r.fwhm      configure -text "?"
+         $frm.v.r.pixmax    configure -text "?"
+         $frm.v.r.intensite configure -text "?"
+         $frm.v.r.sigmafond configure -text "?"
+         $frm.v.r.snint     configure -text "?"
+         $frm.v.r.snpx      configure -text "?"
 
          $frm.t.select  configure -relief raised
          return
-      } 
-      
+      }
+
       $frm.t.select  configure -relief raised
       return
 
    }
-   
-   
-   
+
+
+
    #
    # Retour Rapide
    #
    proc ::av4l_cdl_tools::quick_prev_image { visuNo frm } {
-         
+
        cleanmark
        ::av4l_tools::quick_prev_image $visuNo
 
@@ -684,15 +684,15 @@ namespace eval ::av4l_cdl_tools {
        if { $statebutton=="sunken" } {
        ::av4l_cdl_tools::get_fullimg $visuNo $frm.photom.values.image
        }
-      
+
    }
- 
+
 
    #
    # avance rapide
    #
    proc ::av4l_cdl_tools::quick_next_image { visuNo frm } {
-         
+
        cleanmark
        ::av4l_tools::quick_next_image $visuNo
 
@@ -710,15 +710,15 @@ namespace eval ::av4l_cdl_tools {
        if { $statebutton=="sunken" } {
        ::av4l_cdl_tools::get_fullimg $visuNo $frm.photom.values.image
        }
-   
+
    }
-   
+
 
    #
    # Passe a l image suivante
    #
    proc ::av4l_cdl_tools::next_image { visuNo frm } {
-         
+
        cleanmark
        ::av4l_tools::next_image $visuNo
 
@@ -744,7 +744,7 @@ namespace eval ::av4l_cdl_tools {
    # Passe a l image precedente
    #
    proc ::av4l_cdl_tools::prev_image { visuNo frm } {
-         
+
        cleanmark
        ::av4l_tools::prev_image $visuNo
 
@@ -764,8 +764,8 @@ namespace eval ::av4l_cdl_tools {
        }
 
    }
-   
-   
+
+
 
 
 
@@ -786,13 +786,13 @@ namespace eval ::av4l_cdl_tools {
    # Lance les mesures photometriques
    #
    proc ::av4l_cdl_tools::start { visuNo frm } {
- 
+
       set ::av4l_cdl_tools::sortie 0
       set cpt 0
       $frm.action.start configure -image .stop
-      $frm.action.start configure -relief sunken     
-      $frm.action.start configure -command " ::av4l_cdl_tools::stop" 
-      
+      $frm.action.start configure -relief sunken
+      $frm.action.start configure -command " ::av4l_cdl_tools::stop"
+
       while {$::av4l_cdl_tools::sortie == 0} {
 
          set idframe $::av4l_tools::cur_idframe
@@ -800,9 +800,9 @@ namespace eval ::av4l_cdl_tools {
          if {$idframe == $::av4l_tools::nb_frames} {
             set ::av4l_cdl_tools::sortie 1
          }
-          
+
          cleanmark
-         
+
          set statebutton [ $frm.photom.values.object.t.select cget -relief]
          if { $statebutton=="sunken" } {
             set delta [ $frm.photom.values.object.v.r.delta get]
@@ -880,8 +880,8 @@ namespace eval ::av4l_cdl_tools {
       }
 
       $frm.action.start configure -image .start
-      $frm.action.start configure -relief raised     
-      $frm.action.start configure -command "::av4l_cdl_tools::start $visuNo $frm" 
+      $frm.action.start configure -relief raised
+      $frm.action.start configure -command "::av4l_cdl_tools::start $visuNo $frm"
 
    }
 
@@ -899,9 +899,9 @@ namespace eval ::av4l_cdl_tools {
       ::console::affiche_resultat "-- stop \n"
       set ::av4l_cdl_tools::sortie 1
 
-   }   
- 
-   
- 
+   }
+
+
+
 
 }
