@@ -2,7 +2,7 @@
 # Fichier : sn_tarot_go.tcl
 # Description : Outil pour la recherche de supernovae
 # Auteur : Alain KLOTZ et Raymond ZACHANTKE
-# Mise à jour $Id:
+# Mise à jour $Id$
 #
 
 #============================================================
