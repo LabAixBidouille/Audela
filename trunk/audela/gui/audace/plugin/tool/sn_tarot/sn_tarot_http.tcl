@@ -2,7 +2,7 @@
 # Fichier : sn_tarot_http.tcl
 # Description : Procedures pour la connexion a des sites http
 # Auteur : Alain KLOTZ et Raymond ZACHANTKE
-# Mise à jour $Id:
+# Mise à jour $Id$
 #
 
 #--------------proc lancees par sn_tarot_go.tcl -------------

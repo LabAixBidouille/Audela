@@ -2,7 +2,7 @@
 # Fichier : sn_tarot.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ et Raymond ZACHANTKE
-# Mise à jour $Id:
+# Mise à jour $Id$
 #
 
 #--- Conventions pour ce script :

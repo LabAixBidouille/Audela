@@ -2,7 +2,7 @@
 # Fichier : sn_tarot_macros.tcl
 # Description : Macros des scripts pour la recherche de supernovae
 # Auteur : Alain KLOTZ et Raymond ZACHANTKE
-# Mise à jour $Id:
+# Mise à jour $Id$
 #
 
 #--   Liste des proc
