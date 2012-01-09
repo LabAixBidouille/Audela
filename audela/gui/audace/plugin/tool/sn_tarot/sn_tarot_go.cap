@@ -1,0 +1,279 @@
+#
+# Fichier : sn_tarot_go.cap
+# Mise a jour $Id:
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(sn_tarot_go,init)              "# Tarot supernovae - Mise à jour"
+set caption(sn_tarot_go,wait)              "# Patienter jusqu'à la fin des opérations :"
+set caption(sn_tarot_go,folder)            "# Vérification des dossiers dans %s"
+set caption(sn_tarot_go,available)         "# Inventaire des fichiers disponibles pour %s"
+set caption(sn_tarot_go,ref)               "# Téléchargement des images de référence %s"
+set caption(sn_tarot_go,refunzip)          "# Décompression des images de référence dans %s"
+set caption(sn_tarot_go,go)                "GO"
+set caption(sn_tarot_go,hlp)               "Help"
+set caption(sn_tarot_go,cancel)            "Cancel"
+
+set caption(sn_tarot_go,supernovae)        "Tarot supernovae"
+set caption(sn_tarot_go,help,titre)        "Help for this Tool"
+set caption(sn_tarot_go,help,titre1)       "Help for the Tool:"
+set caption(sn_tarot_go,telecharger)       "Download"
+set caption(sn_tarot_go,telechargement)    "Download\nstarted..."
+set caption(sn_tarot_go,recherche_sn)      "Search for\nsupernovae"
+
+set caption(sn_tarot_go,telecharge)        "Download %s ?"
+set caption(sn_tarot_go,yes)               "YES"
+set caption(sn_tarot_go,no)                "NO"
+set caption(sn_tarot_go,unzip)             "# Décompression de %s en %s fichiers \ndans le dossier %s."
+
+set caption(sn_tarot_go,attention)         "Warning"
+set caption(sn_tarot_go,url_error)         "# L'adresse %s n'est pas accessible."
+set caption(sn_tarot_go,file_error)        "# Le fichier %s n'existe pas."
+set caption(sn_tarot_go,nozip_error)       "# Pas d'archive.\nSélectionner une date et télécharger l'archive."
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(sn_tarot_go,init)           "Tarot supernovae - Mise à jour"
+   set caption(sn_tarot_go,wait)           "Patienter jusqu'à la fin des opérations :"
+   set caption(sn_tarot_go,folder)         "Vérification des dossiers dans %s"
+   set caption(sn_tarot_go,available)      "Inventaire des fichiers disponibles pour %s"
+   set caption(sn_tarot_go,ref)            "Téléchargement des images de référence %s"
+   set caption(sn_tarot_go,refunzip)       "Décompression des images de référence dans %s"
+   set caption(sn_tarot_go,go)             "GO"
+   set caption(sn_tarot_go,hlp)            "Aide"
+   set caption(sn_tarot_go,cancel)         "Annuler"
+
+   set caption(sn_tarot_go,supernovae)     "Tarot supernovae"
+   set caption(sn_tarot_go,help,titre)     "Aide de cet outil"
+   set caption(sn_tarot_go,help,titre1)    "Aide de l'outil :"
+   set caption(sn_tarot_go,telecharger)    "Télécharger"
+   set caption(sn_tarot_go,telechargement) "Téléchargement\nen cours..."
+   set caption(sn_tarot_go,recherche_sn)   "Recherche\nsupernovae"
+
+   set caption(sn_tarot_go,telecharge)     "Télécharger %s ?"
+   set caption(sn_tarot_go,yes)            "OUI"
+   set caption(sn_tarot_go,no)             "NON"
+   set caption(sn_tarot_go,unzip)          "Décompression de %s en %s fichiers \ndans le dossier %s."
+
+   set caption(sn_tarot_go,attention)      "Attention"
+   set caption(sn_tarot_go,url_error)      "L'adresse %s n'est pas accessible."
+   set caption(sn_tarot_go,file_error)     "Le fichier %s n'existe pas."
+   set caption(sn_tarot_go,nozip_error)    "Pas d'archive.\nSélectionner une date et télécharger l'archive."
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(sn_tarot_go,init)           "# Tarot supernovae - Mise à jour"
+   set caption(sn_tarot_go,wait)           "# Patienter jusqu'à la fin des opérations :"
+   set caption(sn_tarot_go,folder)         "# Vérification des dossiers dans %s"
+   set caption(sn_tarot_go,available)      "# Inventaire des fichiers disponibles pour %s"
+   set caption(sn_tarot_go,ref)            "# Téléchargement des images de référence %s"
+   set caption(sn_tarot_go,refunzip)       "# Décompression des images de référence dans %s"
+   set caption(sn_tarot_go,go)             "GO"
+   set caption(sn_tarot_go,hlp)            "Aiuto"
+   set caption(sn_tarot_go,cancel)         "Cancellare"
+
+   set caption(sn_tarot_go,supernovae)     "Tarot supernovae"
+   set caption(sn_tarot_go,help,titre)     "Aiuto per questo tool"
+   set caption(sn_tarot_go,help,titre1)    "Aiuto per lo tool:"
+   set caption(sn_tarot_go,telecharger)    "Scaricare"
+   set caption(sn_tarot_go,recherche_sn)   "Ricerca\nsupernovae"
+
+   set caption(sn_tarot_go,telecharge)     "Scaricare %s ?"
+   set caption(sn_tarot_go,yes)            "# OUI"
+   set caption(sn_tarot_go,no)             "# NON"
+   set caption(sn_tarot_go,unzip)          "# Décompression de %s en %s fichiers \ndans le dossier %s."
+
+   set caption(sn_tarot_go,attention)      "Attenzione"
+   set caption(sn_tarot_go,url_error)      "# L'adresse %s n'est pas accessible."
+   set caption(sn_tarot_go,file_error)     "# Le fichier %s n'existe pas."
+   set caption(sn_tarot_go,nozip_error)    "# Pas d'archive.\nSélectionner une date et télécharger l'archive."
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(sn_tarot_go,init)           "# Tarot supernovae - Mise à jour"
+   set caption(sn_tarot_go,wait)           "# Patienter jusqu'à la fin des opérations :"
+   set caption(sn_tarot_go,folder)         "# Vérification des dossiers dans %s"
+   set caption(sn_tarot_go,available)      "# Inventaire des fichiers disponibles pour %s"
+   set caption(sn_tarot_go,ref)            "# Téléchargement des images de référence %s"
+   set caption(sn_tarot_go,refunzip)       "# Décompression des images de référence dans %s"
+   set caption(sn_tarot_go,go)             "# GO"
+   set caption(sn_tarot_go,hlp)            "Ayuda"
+   set caption(sn_tarot_go,cancel)         "Cancelar"
+
+   set caption(sn_tarot_go,supernovae)     "Tarot Supernovae"
+   set caption(sn_tarot_go,help,titre)     "Ayuda para esta herramienta"
+   set caption(sn_tarot_go,help,titre1)    "Ajuda para del herramienta:"
+   set caption(sn_tarot_go,telecharger)    "Descargar"
+   set caption(sn_tarot_go,recherche_sn)   "Buscar\nsupernovae"
+
+   set caption(sn_tarot_go,telecharge)     "Descargar %s ?"
+   set caption(sn_tarot_go,yes)            "# OUI"
+   set caption(sn_tarot_go,no)             "# NON"
+   set caption(sn_tarot_go,unzip)          "# Décompression de %s en %s fichiers \ndans le dossier %s."
+
+   set caption(sn_tarot_go,attention)      "!Cuidado¡"
+   set caption(sn_tarot_go,url_error)      "# L'adresse %s n'est pas accessible."
+   set caption(sn_tarot_go,file_error)     "# Le fichier %s n'existe pas."
+   set caption(sn_tarot_go,nozip_error)    "# Pas d'archive.\nSélectionner une date et télécharger l'archive."
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(sn_tarot_go,init)           "# Tarot supernovae - Mise à jour"
+   set caption(sn_tarot_go,wait)           "# Patienter jusqu'à la fin des opérations :"
+   set caption(sn_tarot_go,folder)         "# Vérification des dossiers dans %s"
+   set caption(sn_tarot_go,available)      "# Inventaire des fichiers disponibles pour %s"
+   set caption(sn_tarot_go,ref)            "# Téléchargement des images de référence %s"
+   set caption(sn_tarot_go,refunzip)       "# Décompression des images de référence dans %s"
+   set caption(sn_tarot_go,go)             "GO"
+   set caption(sn_tarot_go,refunzip)       "Hilfe"
+   set caption(sn_tarot_go,cancel)         "Annullieren"
+
+   set caption(sn_tarot_go,supernovae)     "Tarot Supernovae"
+   set caption(sn_tarot_go,help,titre)     "Hilfe für dieses Gerät"
+   set caption(sn_tarot_go,help,titre1)    "Hilfe für die Gerät:"
+   set caption(sn_tarot_go,telecharger)    "Herunterladen"
+   set caption(sn_tarot_go,recherche_sn)   "Supernovae\nsuchen"
+
+   set caption(sn_tarot_go,telecharge)     "Herunterladen %s ?"
+   set caption(sn_tarot_go,yes)            "YA"
+   set caption(sn_tarot_go,no)             "NEIN"
+   set caption(sn_tarot_go,unzip)          "# Décompression de %s en %s fichiers \ndans le dossier %s."
+
+   set caption(sn_tarot_go,attention)      "Achtung"
+   set caption(sn_tarot_go,url_error)      "# L'adresse %s n'est pas accessible."
+   set caption(sn_tarot_go,file_error)     "# Le fichier %s n'existe pas."
+   set caption(sn_tarot_go,nozip_error)    "# Pas d'archive.\nSélectionner une date et télécharger l'archive."
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(sn_tarot_go,init)           "# Tarot supernovae - Mise à jour"
+   set caption(sn_tarot_go,wait)           "# Patienter jusqu'à la fin des opérations :"
+   set caption(sn_tarot_go,folder)         "# Vérification des dossiers dans %s"
+   set caption(sn_tarot_go,available)      "# Inventaire des fichiers disponibles pour %s"
+   set caption(sn_tarot_go,ref)            "# Téléchargement des images de référence %s"
+   set caption(sn_tarot_go,refunzip)       "# Décompression des images de référence dans %s"
+   set caption(sn_tarot_go,go)             "GO"
+   set caption(sn_tarot_go,hlp)            "Ajuda"
+   set caption(sn_tarot_go,cancel)         "Cancelar"
+
+   set caption(sn_tarot_go,supernovae)     "Tarot Supernova"
+   set caption(sn_tarot_go,help,titre)     "Ajuda para esta ferramenta"
+   set caption(sn_tarot_go,help,titre1)    "Ajuda para del ferramenta:"
+   set caption(sn_tarot_go,telecharger)    "Descarregar"
+   set caption(sn_tarot_go,recherche_sn)   "Procurar\nsupernova"
+
+   set caption(sn_tarot_go,telecharge)     "Descarregar %s ?"
+   set caption(sn_tarot_go,yes)            "# OUI"
+   set caption(sn_tarot_go,no)             "# NON"
+   set caption(sn_tarot_go,unzip)          "# Décompression de %s en %s fichiers \ndans le dossier %s."
+
+   set caption(sn_tarot_go,attention)      "Atenção"
+   set caption(sn_tarot_go,url_error)      "# L'adresse %s n'est pas accessible."
+   set caption(sn_tarot_go,file_error)     "# Le fichier %s n'existe pas."
+   set caption(sn_tarot_go,nozip_error)    "# Pas d'archive.\nSélectionner une date et télécharger l'archive."
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(sn_tarot_go,init)           "# Tarot supernovae - Mise à jour"
+   set caption(sn_tarot_go,wait)           "# Patienter jusqu'à la fin des opérations :"
+   set caption(sn_tarot_go,folder)         "# Vérification des dossiers dans %s"
+   set caption(sn_tarot_go,available)      "# Inventaire des fichiers disponibles pour %s"
+   set caption(sn_tarot_go,ref)            "# Téléchargement des images de référence %s"
+   set caption(sn_tarot_go,refunzip)       "# Décompression des images de référence dans %s"
+   set caption(sn_tarot_go,go)             "GO"
+   set caption(sn_tarot_go,hlp)            "Hjælp"
+   set caption(sn_tarot_go,cancel)         "Cancel"
+
+   set caption(sn_tarot_go,supernovae)     "Tarot Supernova"
+   set caption(sn_tarot_go,help,titre)     "Hjælp til dette værktøj"
+   set caption(sn_tarot_go,help,titre1)    "Hjælp til i værktøj:"
+   set caption(sn_tarot_go,telecharger)    "Download"
+   set caption(sn_tarot_go,recherche_sn)   "Søgning efter\nsupernova"
+
+   set caption(sn_tarot_go,telecharge)     "Download %s ?"
+   set caption(sn_tarot_go,yes)            "YES"
+   set caption(sn_tarot_go,no)             "NO"
+   set caption(sn_tarot_go,unzip)          "# Décompression de %s en %s fichiers \ndans le dossier %s."
+
+   set caption(sn_tarot_go,attention)      "Warning"
+   set caption(sn_tarot_go,url_error)      "# L'adresse %s n'est pas accessible."
+   set caption(sn_tarot_go,file_error)     "# Le fichier %s n'existe pas."
+   set caption(sn_tarot_go,nozip_error)    "# Pas d'archive.\nSélectionner une date et télécharger l'archive."
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(sn_tarot_go,init)           "# Tarot supernovae - Mise à jour"
+   set caption(sn_tarot_go,wait)           "# Patienter jusqu'à la fin des opérations :"
+   set caption(sn_tarot_go,folder)         "# Vérification des dossiers dans %s"
+   set caption(sn_tarot_go,available)      "# Inventaire des fichiers disponibles pour %s"
+   set caption(sn_tarot_go,ref)            "# Téléchargement des images de référence %s"
+   set caption(sn_tarot_go,refunzip)       "# Décompression des images de référence dans %s"
+   set caption(sn_tarot_go,go)             "GO"
+   set caption(sn_tarot_go,hlp)            "Help"
+   set caption(sn_tarot_go,cancel)         "Cancel"
+
+   set caption(sn_tarot_go,supernovae)     "Tarot Supernovae"
+   set caption(sn_tarot_go,help,titre)     "Help for this Tool"
+   set caption(sn_tarot_go,help,titre1)    "Help for the Tool:"
+   set caption(sn_tarot_go,telecharger)    "Download"
+   set caption(sn_tarot_go,recherche_sn)   "Search for\nsupernovae"
+
+   set caption(sn_tarot_go,telecharge)     "Download %s ?"
+   set caption(sn_tarot_go,yes)            "YES"
+   set caption(sn_tarot_go,no)             "NO"
+   set caption(sn_tarot_go,unzip)          "# Décompression de %s en %s fichiers \ndans le dossier %s."
+
+   set caption(sn_tarot_go,attention)      "Warning"
+   set caption(sn_tarot_go,url_error)      "# L'adresse %s n'est pas accessible."
+   set caption(sn_tarot_go,file_error)     "# Le fichier %s n'existe pas."
+  set caption(sn_tarot_go,nozip_error)    " # Pas d'archive.\nSélectionner une date et télécharger l'archive."
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(sn_tarot_go,init)           "# Tarot supernovae - Mise à jour"
+   set caption(sn_tarot_go,wait)           "# Patienter jusqu'à la fin des opérations :"
+   set caption(sn_tarot_go,folder)         "# Vérification des dossiers dans %s"
+   set caption(sn_tarot_go,available)      "# Inventaire des fichiers disponibles pour %s"
+   set caption(sn_tarot_go,ref)            "# Téléchargement des images de référence %s"
+   set caption(sn_tarot_go,refunzip)       "# Décompression des images de référence dans %s"
+   set caption(sn_tarot_go,go)             "GO"
+   set caption(sn_tarot_go,hlp)            "Help"
+   set caption(sn_tarot_go,cancel)         "Cancel"
+
+   set caption(sn_tarot_go,supernovae)     "Tarot Supernovae"
+   set caption(sn_tarot_go,help,titre)     "Help for this Tool"
+   set caption(sn_tarot_go,help,titre1)    "Help for the Tool:"
+   set caption(sn_tarot_go,telecharger)    "Download"
+   set caption(sn_tarot_go,recherche_sn)   "Search for\nsupernovae"
+
+   set caption(sn_tarot_go,telecharge)     "Download %s ?"
+   set caption(sn_tarot_go,yes)            "YES"
+   set caption(sn_tarot_go,no)             "NO"
+   set caption(sn_tarot_go,unzip)          "# Décompression de %s en %s fichiers \ndans le dossier %s."
+
+   set caption(sn_tarot_go,attention)      "Warning"
+   set caption(sn_tarot_go,url_error)      "# L'adresse %s n'est pas accessible."
+   set caption(sn_tarot_go,file_error)     "# Le fichier %s n'existe pas."
+   set caption(sn_tarot_go,nozip_error)    "# Pas d'archive.\nSélectionner une date et télécharger l'archive."
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
