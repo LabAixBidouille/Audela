@@ -837,16 +837,7 @@ proc ::sn_tarot::snSelect { } {
          regsub -all ".fit" $file_to_load "" file_to_load
          set total [ llength $file_to_load ]
 
-         #set t0 [ clock seconds ]
-
-         #set n [ ::sn_tarot::listRequest $file_to_load ]
          ::sn_tarot::listRequest $file_to_load
-
-         #--   signale la fin du chargement
-         #set t1 [ clock seconds ]
-         #set t [ expr { $t1-$t0} ]
-         #tk_messageBox -icon info -type ok \
-         #   -message "[ format $caption(sn_tarot,dss_end) $n $total $t]"
 
          #--   met a jour la liste des fichiers et leur nombre
          set rep(x3) [ lsort -dictionary [ glob -nocomplain -type f -dir $rep(name3) *$conf(extension,defaut) ] ]
@@ -1446,16 +1437,23 @@ proc ::sn_tarot::createProgressBar { } {
    lassign $pos -> -> x y
    incr x 100
    incr y 250
-   wm geometry $fconf "420x38+$x+$y"
+   wm geometry $fconf "420x78+$x+$y"
    wm resizable $fconf 0 0
    wm transient $fconf $audace(base).snvisu
    wm protocol $fconf WM_DELETE_WINDOW ""
 
    pack [ frame $fconf.fr ]
-   ttk::progressbar $fconf.fr.p -orient horizontal -length 400 -mode determinate \
-      -maximum 100.0 -variable snvisu(progress)
-   pack $fconf.fr.p -padx 10 -pady 10
+   label $fconf.fr.d -textvariable snvisu(start_load) -width 40
+   pack $fconf.fr.d -padx 10 -pady 5
+   ttk::progressbar $fconf.fr.p -orient horizontal -length 400 -maximum 100.0 \
+      -mode determinate -variable snvisu(progress)
+   pack $fconf.fr.p -padx 10 -pady 5
+
+   #--   initialise
+   set snvisu(start_load) [ format $caption(sn_tarot,dss_galaxy) "-" ]
    set snvisu(progress) 0.0
+
+   focus $fconf
 
    return $fconf
 }

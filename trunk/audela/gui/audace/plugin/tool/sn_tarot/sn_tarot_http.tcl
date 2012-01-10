@@ -92,7 +92,6 @@ proc ::sn_tarot::listRequest { files_to_load } {
 
    set snvisu(dss) 1
    set ext $conf(extension,defaut)
-   set pi [ expr {4*atan(1)} ]
    set n 0
    set len [ llength $files_to_load ]
 
@@ -110,38 +109,17 @@ proc ::sn_tarot::listRequest { files_to_load } {
 
    set todestroy [ ::sn_tarot::createProgressBar ]
 
-   #::console::affiche_resultat "\n$caption(sn_tarot,main_title) :\n"
-
    foreach name $files_to_load {
 
       if {![catch { set kwds_list [ fitsheader [ file join $rep(name1) $name$ext ] ] } ] } {
 
-         #--   extrait les mots cles et leur valeur
+         #--   extrait les valeurs des mots cles
          foreach kwd [ list CROTA2 CDELT1 CDELT2 CRPIX1 CRPIX2 CRVAL1 CRVAL2 FOCLEN NAXIS1 NAXIS2 ] {
             set index [ lsearch -index 0 -regexp -exact $kwds_list "$kwd" ]
             set [ string tolower $kwd ] [ lindex $kwds_list [ list $index 1 ] ]
          }
 
-         set coscrota2 [expr cos($crota2*$pi/180.)]
-         set sincrota2 [expr sin($crota2*$pi/180.)]
-         set cd11 [expr $pi/180*($cdelt1*$coscrota2)]
-         set cd12 [expr $pi/180*(abs($cdelt2)*$cdelt1/abs($cdelt1)*$sincrota2)]
-         set cd21 [expr $pi/180*(-abs($cdelt1)*$cdelt2/abs($cdelt2)*$sincrota2)]
-         set cd22 [expr $pi/180*($cdelt2*$coscrota2)]
-
-         set x [expr $naxis1/2.]
-         set y [expr $naxis2/2.]
-         set dra  [expr $cd11*($x-($crpix1-0.5)) + $cd12*($y-($crpix2-0.5))]
-         set ddec [expr $cd21*($x-($crpix1-0.5)) + $cd22*($y-($crpix2-0.5))]
-         set coscrval2 [expr cos($crval2*$pi/180.)]
-         set sincrval2 [expr sin($crval2*$pi/180.)]
-         set delta [expr $coscrval2 -$ddec*$sincrval2 ]
-         set gamma [expr sqrt($dra*$dra + $delta*$delta) ]
-         set ra [expr $crval1 + 180./$pi*atan($dra/$delta)]
-         set dec [expr 180./$pi*atan( ($sincrval2+$ddec*$coscrval2)/$gamma )]
-
-         set fov_x [ format %.6f [expr abs($cdelt1)*$naxis1]]
-         set fov_y [ format %.6f [expr abs($cdelt2)*$naxis2]]
+         lassign [ ::sn_tarot::getImgCenterRaDec $naxis1 $naxis2 $crota2 $cdelt1 $cdelt2 $crpix1 $crpix2 $crval1 $crval2 ] ra dec fov_x fov_y
 
          #--   formate la requete
          set query [ format $sentence $ra $dec $fov_x $fov_y $naxis1 $naxis2 $crota2 ]
@@ -150,10 +128,11 @@ proc ::sn_tarot::listRequest { files_to_load } {
          #--   initialisation
          lassign [ list 0 "" ]  ok reason
 
+         set snvisu(start_load) [ format $caption(sn_tarot,dss_galaxy) $name$ext ]
+
          #--   traitement des erreurs
          lassign [ ::sn_tarot::loadDSS "$url" "$query" $name ] ok reason
          if { $reason eq "" } {
-            #::console::affiche_resultat "[ format $caption(sn_tarot,dss_download_ok) $name$ext ]\n"
             incr n
             set snvisu(progress) [ expr { $n*100./$len } ]
             update
@@ -164,7 +143,6 @@ proc ::sn_tarot::listRequest { files_to_load } {
             }
             ::console::affiche_resultat "$msg\n"
             if {$reason eq "url_error"} {
-               #return $n
                destroy $todestroy
             }
          }
@@ -173,9 +151,7 @@ proc ::sn_tarot::listRequest { files_to_load } {
 
    destroy $todestroy
    set snvisu(dss) 0
-
-   #--   retourne le nombre de fichiers telecharges
-   #return $n
+   unset snvisu(start_load)
 }
 
 #------------------------------------------------------------
@@ -189,7 +165,7 @@ proc ::sn_tarot::loadDSS { url query name } {
    set ok 0
 
    if { [catch { set tok [ ::http::geturl "$url" -query "$query" ] } ErrInfo ] } {
-       return [ list $ok url_error ]
+      return [ list $ok url_error ]
    }
 
    upvar #0 $tok state

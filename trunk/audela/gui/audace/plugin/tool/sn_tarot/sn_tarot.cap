@@ -26,10 +26,10 @@ set caption(sn_tarot,dss)                    "DSS"
 set caption(sn_tarot,image1)                 "Image 1 --> %s %s %s %s %s %s"
 set caption(sn_tarot,image2)                 "Image 2 --> %s %s"
 
-set caption(sn_tarot,galaxy_center)          "# Centre de galaxie hôte"
+set caption(sn_tarot,galaxy_center)          "# Centre de la galaxie hôte"
 set caption(sn_tarot,star_ref)               "# Position d'une étoile de référence"
-set caption(sn_tarot,star_pos)               "# Position candidate SN"
-set caption(sn_tarot,star_id)                "# Création fiche candidate"
+set caption(sn_tarot,star_pos)               "# Position de la candidate SN"
+set caption(sn_tarot,star_id)                "# Création de la fiche de la candidate SN"
 
 set caption(sn_tarot,save1)                  "Save"
 set caption(sn_tarot,confirm)                "Continue?"
@@ -60,8 +60,7 @@ set caption(sn_tarot,fits_header)            "FITS Header"
 set caption(sn_tarot,header,noimage)         "No image in memory."
 
 set caption(sn_tarot,dss_title)              "# Téléchargement des images DSS"
-#set caption(sn_tarot,dss_end)                "# Fin du téléchargement de :\n %s/%s images DSS\n en %s secondes."
-#set caption(sn_tarot,dss_download)           "# Téléchargement DSS %s OK."
+set caption(sn_tarot,dss_galaxy)             "Galaxy: %s"
 set caption(sn_tarot,dss_not_found)          "# %s pas chargé ; motif : %s"
 set caption(sn_tarot_go,all)                 "# Toutes les images DSS sont présentes."
 set caption(sn_tarot_go,manq)                "# Télécharge les images DSS :\n %s."
@@ -132,8 +131,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,header,noimage)      "Il n'y a pas d'image actuellement en mémoire."
 
    set caption(sn_tarot,dss_title)           "Téléchargement des images DSS"
-   #set caption(sn_tarot,dss_end)             "Fin du téléchargement de :\n %s/%s images DSS\n en %s secondes."
-   #set caption(sn_tarot,dss_download_ok)     "Téléchargement DSS %s OK."
+   set caption(sn_tarot,dss_galaxy)          "Galaxie : %s"
    set caption(sn_tarot,dss_not_found)       "%s pas chargé, motif : %s"
    set caption(sn_tarot_go,no_dss_download)  "Toutes les images DSS sont présentes."
    set caption(sn_tarot_go,dss_download)     "Télécharge les images DSS :\n %s."
@@ -170,10 +168,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,image1)              "Immagine 1 --> %s %s %s %s %s %s"
    set caption(sn_tarot,image2)              "Immagine 2 --> %s %s"
 
-   set caption(sn_tarot,galaxy_center)       "# Centre de galaxie hôte"
+   set caption(sn_tarot,galaxy_center)       "# Centre de la galaxie hôte"
    set caption(sn_tarot,star_ref)            "# Position d'une étoile de référence"
-   set caption(sn_tarot,star_pos)            "# Position candidate SN"
-   set caption(sn_tarot,star_id)             "# Création fiche candidate"
+   set caption(sn_tarot,star_pos)            "# Position de la candidate SN"
+   set caption(sn_tarot,star_id)             "# Création de la fiche de la candidate SN"
 
    set caption(sn_tarot,save1)               "Salvare"
    set caption(sn_tarot,confirm)             "Volete continuare?"
@@ -204,8 +202,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,header,noimage)      "Nessuna immagine in memoria."
 
    set caption(sn_tarot,dss_title)           "# Téléchargement des images DSS"
-   #set caption(sn_tarot,dss_end)             "# Fin du téléchargement de :\n %s/%s images DSS\n en %s secondes."
-   #set caption(sn_tarot,dss_download_ok)     "# Téléchargement DSS %s OK."
+   set caption(sn_tarot,dss_galaxy)          "# Galaxie : %s"
    set caption(sn_tarot,dss_not_found)       "# %s pas chargé ; motif : %s"
    set caption(sn_tarot_go,no_dss_download)  "# Toutes les images DSS sont présentes."
    set caption(sn_tarot_go,dss_download)     "# Télécharge les images DSS :\n %s."
@@ -242,10 +239,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,image1)              "Imagen 1 --> %s %s %s %s %s %s"
    set caption(sn_tarot,image2)              "Imagen 2 --> %s %s"
 
-   set caption(sn_tarot,galaxy_center)       "# Centre de galaxie hôte"
+   set caption(sn_tarot,galaxy_center)       "# Centre de la galaxie hôte"
    set caption(sn_tarot,star_ref)            "# Position d'une étoile de référence"
-   set caption(sn_tarot,star_pos)            "# Position candidate SN"
-   set caption(sn_tarot,star_id)             "# Création fiche candidate"
+   set caption(sn_tarot,star_pos)            "# Position de la candidate SN"
+   set caption(sn_tarot,star_id)             "# Création de la fiche de la candidate SN"
 
    set caption(sn_tarot,save1)               "Salvar"
    set caption(sn_tarot,confirm)             "Continuar?"
@@ -276,8 +273,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,header,noimage)      "No hay imagen en memoria."
 
    set caption(sn_tarot,dss_title)           "# Téléchargement des images DSS"
-   #set caption(sn_tarot,dss_end)             "# Fin du téléchargement de :\n %s/%s images DSS\n en %s secondes."
-   #set caption(sn_tarot,dss_download_ok)     "# Téléchargement DSS %s OK."
+   set caption(sn_tarot,dss_galaxy)          "# Galaxie : %s"
    set caption(sn_tarot,dss_not_found)       "# %s pas chargé ; motif : %s"
    set caption(sn_tarot_go,no_dss_download)  "# Toutes les images DSS sont présentes."
    set caption(sn_tarot_go,dss_download)     "# Télécharge les images DSS :\n %s."
@@ -314,10 +310,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,image1)              "Bild 1 --> %s %s %s %s %s %s"
    set caption(sn_tarot,image2)              "Bild 2 --> %s %s"
 
-   set caption(sn_tarot,galaxy_center)       "# Centre de galaxie hôte"
+   set caption(sn_tarot,galaxy_center)       "# Centre de la galaxie hôte"
    set caption(sn_tarot,star_ref)            "# Position d'une étoile de référence"
-   set caption(sn_tarot,star_pos)            "# Position candidate SN"
-   set caption(sn_tarot,star_id)             "# Création fiche candidate"
+   set caption(sn_tarot,star_pos)            "# Position de la candidate SN"
+   set caption(sn_tarot,star_id)             "# Création de la fiche de la candidate SN"
 
    set caption(sn_tarot,save1)               "Speichern"
    set caption(sn_tarot,confirm)             "Vollen sie weiterführen ?"
@@ -348,8 +344,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,header,noimage)      "Kein Bild zur Zeit in Speicher."
 
    set caption(sn_tarot,dss_title)           "# Téléchargement des images DSS"
-   #set caption(sn_tarot,dss_end)             "# Fin du téléchargement de :\n %s/%s images DSS\n en %s secondes."
-   #set caption(sn_tarot,dss_download_ok)     "# Téléchargement DSS %s OK."
+   set caption(sn_tarot,dss_galaxy)          "# Galaxie : %s"
    set caption(sn_tarot,dss_not_found)       "# %s pas chargé ; motif : %s"
    set caption(sn_tarot_go,no_dss_download)  "# Toutes les images DSS sont présentes."
    set caption(sn_tarot_go,dss_download)     "# Télécharge les images DSS :\n %s."
@@ -386,10 +381,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,image1)              "Imagem 1 --> %s %s %s %s %s %s"
    set caption(sn_tarot,image2)              "Imagem 2 --> %s %s"
 
-   set caption(sn_tarot,galaxy_center)       "# Centre de galaxie hôte"
+   set caption(sn_tarot,galaxy_center)       "# Centre de la galaxie hôte"
    set caption(sn_tarot,star_ref)            "# Position d'une étoile de référence"
-   set caption(sn_tarot,star_pos)            "# Position candidate SN"
-   set caption(sn_tarot,star_id)             "# Création fiche candidate"
+   set caption(sn_tarot,star_pos)            "# Position de la candidate SN"
+   set caption(sn_tarot,star_id)             "# Création de la fiche de la candidate SN"
 
    set caption(sn_tarot,save1)               "Guardar"
    set caption(sn_tarot,confirm)             "Deseja continuar?"
@@ -420,8 +415,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,header,noimage)      "Não existe imagem em memória neste momento."
 
    set caption(sn_tarot,dss_title)           "# Téléchargement des images DSS"
-   #set caption(sn_tarot,dss_end)             "# Fin du téléchargement de :\n %s/%s images DSS\n en %s secondes."
-   #set caption(sn_tarot,dss_download)        "# Téléchargement DSS %s OK."
+   set caption(sn_tarot,dss_galaxy)          "# Galaxie : %s"
    set caption(sn_tarot,dss_not_found)       "# %s pas chargé ; motif : %s"
    set caption(sn_tarot_go,all)              "# Toutes les images DSS sont présentes."
    set caption(sn_tarot_go,manq)             "# Télécharge les images DSS :\n %s."
@@ -458,15 +452,15 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,image1)              "Image 1 --> %s %s %s %s %s %s"
    set caption(sn_tarot,image2)              "Image 2 --> %s %s"
 
-   set caption(sn_tarot,galaxy_center)       "# Centre de galaxie hôte"
+   set caption(sn_tarot,galaxy_center)       "# Centre de la galaxie hôte"
    set caption(sn_tarot,star_ref)            "# Position d'une étoile de référence"
-   set caption(sn_tarot,star_pos)            "# Position candidate SN"
-   set caption(sn_tarot,star_id)             "# Création fiche candidate"
+   set caption(sn_tarot,star_pos)            "# Position de la candidate SN"
+   set caption(sn_tarot,star_id)             "# Création de la fiche de la candidate SN"
 
    set caption(sn_tarot,save1)               "Save"
    set caption(sn_tarot,confirm)             "Continue?"
 
-  set caption(sn_tarot,cancel)              "Cancel"
+   set caption(sn_tarot,cancel)              "Cancel"
    set caption(sn_tarot,go)                  "GO"
 
    set caption(sn_tarot,secondary_title)     "Tarot Sn View - Go to"
@@ -492,8 +486,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,header,noimage)      "No image in memory."
 
    set caption(sn_tarot,dss_title)           "# Téléchargement des images DSS"
-   #set caption(sn_tarot,dss_end)             "# Fin du téléchargement de :\n %s/%s images DSS\n en %s secondes."
-   #set caption(sn_tarot,dss_download)        "# Téléchargement DSS %s OK."
+   set caption(sn_tarot,dss_galaxy)          "Galaxy: %s"
    set caption(sn_tarot,dss_not_found)       "# %s pas chargé ; motif : %s"
    set caption(sn_tarot_go,all)              "# Toutes les images DSS sont présentes."
    set caption(sn_tarot_go,manq)             "# Télécharge les images DSS :\n %s."
@@ -530,10 +523,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,image1)              "Image 1 --> %s %s %s %s %s %s"
    set caption(sn_tarot,image2)              "Image 2 --> %s %s"
 
-   set caption(sn_tarot,galaxy_center)       "# Centre de galaxie hôte"
+   set caption(sn_tarot,galaxy_center)       "# Centre de la galaxie hôte"
    set caption(sn_tarot,star_ref)            "# Position d'une étoile de référence"
-   set caption(sn_tarot,star_pos)            "# Position candidate SN"
-   set caption(sn_tarot,star_id)             "# Création fiche candidate"
+   set caption(sn_tarot,star_pos)            "# Position de la candidate SN"
+   set caption(sn_tarot,star_id)             "# Création de la fiche de la candidate SN"
 
    set caption(sn_tarot,save1)               "Save"
    set caption(sn_tarot,confirm)             "Continue?"
@@ -564,8 +557,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,header,noimage)      "No image in memory."
 
    set caption(sn_tarot,dss_title)           "# Téléchargement des images DSS"
-   #set caption(sn_tarot,dss_end)             "# Fin du téléchargement de :\n %s/%s images DSS\n en %s secondes."
-   #set caption(sn_tarot,dss_download)        "# Téléchargement DSS %s OK."
+   set caption(sn_tarot,dss_galaxy)          "Galaxy: %s"
    set caption(sn_tarot,dss_not_found)       "# %s pas chargé ; motif : %s"
    set caption(sn_tarot_go,all)              "# Toutes les images DSS sont présentes."
    set caption(sn_tarot_go,manq)             "# Télécharge les images DSS :\n %s."
@@ -602,10 +594,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,image1)              "Image 1 --> %s %s %s %s %s %s"
    set caption(sn_tarot,image2)              "Image 2 --> %s %s"
 
-   set caption(sn_tarot,galaxy_center)       "# Centre de galaxie hôte"
+   set caption(sn_tarot,galaxy_center)       "# Centre de la galaxie hôte"
    set caption(sn_tarot,star_ref)            "# Position d'une étoile de référence"
-   set caption(sn_tarot,star_pos)            "# Position candidate SN"
-   set caption(sn_tarot,star_id)             "# Création fiche candidate"
+   set caption(sn_tarot,star_pos)            "# Position de la candidate SN"
+   set caption(sn_tarot,star_id)             "# Création de la fiche de la candidate SN"
 
    set caption(sn_tarot,save1)               "Save"
    set caption(sn_tarot,confirm)             "Continue?"
@@ -635,9 +627,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,fits_header)         "FITS Header"
    set caption(sn_tarot,header,noimage)      "No image in memory."
 
-  set caption(sn_tarot,dss_title)           "# Téléchargement des images DSS"
-   #set caption(sn_tarot,dss_end)             "# Fin du téléchargement de :\n %s/%s images DSS\n en %s secondes."
-   #set caption(sn_tarot,dss_download)        "# Téléchargement DSS %s OK."
+   set caption(sn_tarot,dss_title)           "# Téléchargement des images DSS"
+   set caption(sn_tarot,dss_galaxy)          "Galaxy: %s"
    set caption(sn_tarot,dss_not_found)       "# %s pas chargé ; motif : %s"
    set caption(sn_tarot_go,all)              "# Toutes les images DSS sont présentes."
    set caption(sn_tarot_go,manq)             "# Télécharge les images DSS :\n %s."

@@ -11,7 +11,7 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(sn_tarot_go,init)              "# Tarot supernovae - Mise à jour"
+set caption(sn_tarot_go,init)              "# Tarot Supernovae - Mise à jour"
 set caption(sn_tarot_go,wait)              "# Patienter jusqu'à la fin des opérations :"
 set caption(sn_tarot_go,folder)            "# Vérification des dossiers dans %s"
 set caption(sn_tarot_go,available)         "# Inventaire des fichiers disponibles pour %s"
@@ -21,7 +21,7 @@ set caption(sn_tarot_go,go)                "GO"
 set caption(sn_tarot_go,hlp)               "Help"
 set caption(sn_tarot_go,cancel)            "Cancel"
 
-set caption(sn_tarot_go,supernovae)        "Tarot supernovae"
+set caption(sn_tarot_go,supernovae)        "Tarot Supernovae"
 set caption(sn_tarot_go,help,titre)        "Help for this Tool"
 set caption(sn_tarot_go,help,titre1)       "Help for the Tool:"
 set caption(sn_tarot_go,telecharger)       "Download"
@@ -41,7 +41,7 @@ set caption(sn_tarot_go,nozip_error)       "# Pas d'archive.\nSélectionner une 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(sn_tarot_go,init)           "Tarot supernovae - Mise à jour"
+   set caption(sn_tarot_go,init)           "Tarot Supernovae - Mise à jour"
    set caption(sn_tarot_go,wait)           "Patienter jusqu'à la fin des opérations :"
    set caption(sn_tarot_go,folder)         "Vérification des dossiers dans %s"
    set caption(sn_tarot_go,available)      "Inventaire des fichiers disponibles pour %s"
@@ -51,7 +51,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot_go,hlp)            "Aide"
    set caption(sn_tarot_go,cancel)         "Annuler"
 
-   set caption(sn_tarot_go,supernovae)     "Tarot supernovae"
+   set caption(sn_tarot_go,supernovae)     "Tarot Supernovae"
    set caption(sn_tarot_go,help,titre)     "Aide de cet outil"
    set caption(sn_tarot_go,help,titre1)    "Aide de l'outil :"
    set caption(sn_tarot_go,telecharger)    "Télécharger"
@@ -71,7 +71,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(sn_tarot_go,init)           "# Tarot supernovae - Mise à jour"
+   set caption(sn_tarot_go,init)           "# Tarot Supernovae - Mise à jour"
    set caption(sn_tarot_go,wait)           "# Patienter jusqu'à la fin des opérations :"
    set caption(sn_tarot_go,folder)         "# Vérification des dossiers dans %s"
    set caption(sn_tarot_go,available)      "# Inventaire des fichiers disponibles pour %s"
@@ -81,7 +81,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot_go,hlp)            "Aiuto"
    set caption(sn_tarot_go,cancel)         "Cancellare"
 
-   set caption(sn_tarot_go,supernovae)     "Tarot supernovae"
+   set caption(sn_tarot_go,supernovae)     "Tarot Supernovae"
    set caption(sn_tarot_go,help,titre)     "Aiuto per questo tool"
    set caption(sn_tarot_go,help,titre1)    "Aiuto per lo tool:"
    set caption(sn_tarot_go,telecharger)    "Scaricare"
@@ -100,7 +100,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(sn_tarot_go,init)           "# Tarot supernovae - Mise à jour"
+   set caption(sn_tarot_go,init)           "# Tarot Supernovae - Mise à jour"
    set caption(sn_tarot_go,wait)           "# Patienter jusqu'à la fin des opérations :"
    set caption(sn_tarot_go,folder)         "# Vérification des dossiers dans %s"
    set caption(sn_tarot_go,available)      "# Inventaire des fichiers disponibles pour %s"
@@ -129,7 +129,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(sn_tarot_go,init)           "# Tarot supernovae - Mise à jour"
+   set caption(sn_tarot_go,init)           "# Tarot Supernovae - Mise à jour"
    set caption(sn_tarot_go,wait)           "# Patienter jusqu'à la fin des opérations :"
    set caption(sn_tarot_go,folder)         "# Vérification des dossiers dans %s"
    set caption(sn_tarot_go,available)      "# Inventaire des fichiers disponibles pour %s"
@@ -158,7 +158,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(sn_tarot_go,init)           "# Tarot supernovae - Mise à jour"
+   set caption(sn_tarot_go,init)           "# Tarot Supernovae - Mise à jour"
    set caption(sn_tarot_go,wait)           "# Patienter jusqu'à la fin des opérations :"
    set caption(sn_tarot_go,folder)         "# Vérification des dossiers dans %s"
    set caption(sn_tarot_go,available)      "# Inventaire des fichiers disponibles pour %s"
@@ -168,7 +168,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot_go,hlp)            "Ajuda"
    set caption(sn_tarot_go,cancel)         "Cancelar"
 
-   set caption(sn_tarot_go,supernovae)     "Tarot Supernova"
+   set caption(sn_tarot_go,supernovae)     "Tarot Supernovae"
    set caption(sn_tarot_go,help,titre)     "Ajuda para esta ferramenta"
    set caption(sn_tarot_go,help,titre1)    "Ajuda para del ferramenta:"
    set caption(sn_tarot_go,telecharger)    "Descarregar"
@@ -187,7 +187,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(sn_tarot_go,init)           "# Tarot supernovae - Mise à jour"
+   set caption(sn_tarot_go,init)           "# Tarot Supernovae - Mise à jour"
    set caption(sn_tarot_go,wait)           "# Patienter jusqu'à la fin des opérations :"
    set caption(sn_tarot_go,folder)         "# Vérification des dossiers dans %s"
    set caption(sn_tarot_go,available)      "# Inventaire des fichiers disponibles pour %s"
@@ -197,7 +197,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot_go,hlp)            "Hjælp"
    set caption(sn_tarot_go,cancel)         "Cancel"
 
-   set caption(sn_tarot_go,supernovae)     "Tarot Supernova"
+   set caption(sn_tarot_go,supernovae)     "Tarot Supernovae"
    set caption(sn_tarot_go,help,titre)     "Hjælp til dette værktøj"
    set caption(sn_tarot_go,help,titre1)    "Hjælp til i værktøj:"
    set caption(sn_tarot_go,telecharger)    "Download"
@@ -216,7 +216,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
-   set caption(sn_tarot_go,init)           "# Tarot supernovae - Mise à jour"
+   set caption(sn_tarot_go,init)           "# Tarot Supernovae - Mise à jour"
    set caption(sn_tarot_go,wait)           "# Patienter jusqu'à la fin des opérations :"
    set caption(sn_tarot_go,folder)         "# Vérification des dossiers dans %s"
    set caption(sn_tarot_go,available)      "# Inventaire des fichiers disponibles pour %s"
@@ -245,7 +245,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
-   set caption(sn_tarot_go,init)           "# Tarot supernovae - Mise à jour"
+   set caption(sn_tarot_go,init)           "# Tarot Supernovae - Mise à jour"
    set caption(sn_tarot_go,wait)           "# Patienter jusqu'à la fin des opérations :"
    set caption(sn_tarot_go,folder)         "# Vérification des dossiers dans %s"
    set caption(sn_tarot_go,available)      "# Inventaire des fichiers disponibles pour %s"
