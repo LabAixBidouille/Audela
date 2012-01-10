@@ -475,7 +475,10 @@ proc ::sn_tarot::sn_tarotStart { } {
       #--   chemin de unzip.exe
       set tarot_unzip [ file join $audace(rep_plugin) tool sn_tarot unzip.exe ]
       #--   dezippe refgaltarot.zip
-      exec $tarot_unzip -u -d $dir $file
+      catch { exec $tarot_unzip -u -d $dir $file } Errinfo
+      if { [info exists ErrInfo ] } {
+         ::console::affiche_resultat "$ErrInfo\n"
+      }
       #--   change le nom du repertoire en reference
       file rename -force [ file join $dir refgaltarot ] $panneau(sn_tarot,references)
    }

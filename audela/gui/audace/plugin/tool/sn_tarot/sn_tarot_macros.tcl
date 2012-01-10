@@ -10,10 +10,14 @@
 # ::sn_tarot::snStarRef
 # ::sn_tarot::snCandidate
 # ::sn_tarot::snCreateCandidateId
+# ::sn_tarot::searchinArchives
+# ::sn_tarot::SNChecker
+# ::sn_tarot::MPChecker
 # ::sn_tarot::prevnight
-# ::sn_tarot::searchGalaxySn
 # ::sn_tarot::snVerifWCS
 # ::sn_tarot::snCenterRaDec
+# ::sn_tarot::getImgCenterRaDec
+
 
 proc ::sn_tarot::snGalaxyCenter { } {
    global snvisu snconfvisu num
@@ -588,7 +592,7 @@ proc ::sn_tarot::MPChecker { date ra dec {obscod 500} } {
 }
 
 #------------------------------------------------------------
-# prevnight
+# ::sn_tarot::prevnight
 #  Retourne la date de la nuit courante et le creneau horaire
 #  Lancee par
 #------------------------------------------------------------
@@ -657,5 +661,40 @@ proc ::sn_tarot::snCenterRaDec { bufNo } {
    set ra [mc_angle2hms $ra 360 zero 2 auto list]
    set dec [mc_angle2dms $dec 90 zero 1 + list]
    return "{ $ra $dec }"
+}
+
+#------------------------------------------------------------
+#  ::sn_tarot::getImgCenterRaDec
+#  Retourne la liste des coordonnees RaDec du centre de l'image
+#  et le champ de l'image en degres
+#  Parametres : naxis1 naxis2 crota2 cdelt1 cdelt2 crpix1 crpix2 crval1 crval2
+#  issus des mot cles d'une image (les valeurs angulaires sont en degres)
+#  Lancee par ::sn_tarot::listRequest
+#------------------------------------------------------------
+proc ::sn_tarot::getImgCenterRaDec { naxis1 naxis2 crota2 cdelt1 cdelt2 crpix1 crpix2 crval1 crval2 } {
+
+   set pi [ expr {4*atan(1)} ]
+   set coscrota2 [expr cos($crota2*$pi/180.)]
+   set sincrota2 [expr sin($crota2*$pi/180.)]
+   set cd11 [expr $pi/180*($cdelt1*$coscrota2)]
+   set cd12 [expr $pi/180*(abs($cdelt2)*$cdelt1/abs($cdelt1)*$sincrota2)]
+   set cd21 [expr $pi/180*(-abs($cdelt1)*$cdelt2/abs($cdelt2)*$sincrota2)]
+   set cd22 [expr $pi/180*($cdelt2*$coscrota2)]
+
+   set x [expr $naxis1/2.]
+   set y [expr $naxis2/2.]
+   set dra  [expr $cd11*($x-($crpix1-0.5)) + $cd12*($y-($crpix2-0.5))]
+   set ddec [expr $cd21*($x-($crpix1-0.5)) + $cd22*($y-($crpix2-0.5))]
+   set coscrval2 [expr cos($crval2*$pi/180.)]
+   set sincrval2 [expr sin($crval2*$pi/180.)]
+   set delta [expr $coscrval2 -$ddec*$sincrval2 ]
+   set gamma [expr sqrt($dra*$dra + $delta*$delta) ]
+   set ra [expr $crval1 + 180./$pi*atan($dra/$delta)]
+   set dec [expr 180./$pi*atan( ($sincrval2+$ddec*$coscrval2)/$gamma )]
+
+   set fov_x [ format %.6f [expr abs($cdelt1)*$naxis1]]
+   set fov_y [ format %.6f [expr abs($cdelt2)*$naxis2]]
+
+   return [ list $ra $dec $fov_x $fov_y ]
 }
 
