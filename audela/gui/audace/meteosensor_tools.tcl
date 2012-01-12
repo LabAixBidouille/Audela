@@ -487,9 +487,9 @@ proc aag_read { channel name} {
    } else {
       set com Dry
    }
-   set units Frequency
-   #lappend ress [list RainSensorFrequency $val $units "Rain frequency counter"]
    lappend ress [list PrecipitableWater $com text "Rain or Wet or Dry"]
+   set units Frequency
+   lappend ress [list RainSensorFrequency $val $units "Rain frequency counter"]
    # --- return results
    return $ress
 }
