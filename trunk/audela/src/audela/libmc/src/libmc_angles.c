@@ -1924,6 +1924,84 @@ int Cmd_mctcl_refraction(ClientData clientData, Tcl_Interp *interp, int argc, ch
    return(result);
 }
 
+int Cmd_mctcl_refraction_difradec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* Calcul de la refraction differentielle sur ra,dec pendant un delais      */
+/****************************************************************************/
+/*                                                                          */
+/* Entrees :                 												             */
+/*                                                                          */
+/*
+mc_refraction_difradec 130 0 {GPS 70 W -29 2300} 2012-01-12T00:00:00 0
+*/
+/****************************************************************************/
+{
+   char s[524];
+   int result,inout=1;
+   double pressure,temperature,refraction;
+   double ra,dec,longi,rhocosphip,rhosinphip,jj;
+   double ha,latitude,altitude,az,h;
+	double ra1,dec1,ra2,dec2,delay_sec,h1,h2,dra,ddec;
+   if(argc<6) {
+      sprintf(s,"Usage: %s ra dec home date delay_sec ?temperature? ?pressure?", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      result = TCL_ERROR;
+ 	   return(result);
+   } else {
+	   result=TCL_OK;
+      /* --- decode l'angle RA ---*/
+      mctcl_decode_angle(interp,argv[1],&ra);
+      ra*=(DR);
+      /* --- decode l'angle DEC ---*/
+      mctcl_decode_angle(interp,argv[2],&dec);
+      dec*=(DR);
+      /* --- decode le Home ---*/
+      mctcl_decode_topo(interp,argv[3],&longi,&rhocosphip,&rhosinphip);
+      mc_rhophi2latalt(rhosinphip,rhocosphip,&latitude,&altitude);
+      latitude*=(DR);
+      /* --- decode la date ---*/
+      mctcl_decode_date(interp,argv[4],&jj);
+      /* --- decode le delais ---*/
+      delay_sec=atof(argv[5]);
+      /* --- decode la temperature (K) ---*/
+		temperature=283.;
+		if (argc>=7) {
+         temperature=atof(argv[6]);
+		}
+      /* --- decode la temperature (Pa) ---*/
+		pressure=101000.;
+		if (argc>=8) {
+         pressure=atof(argv[7]);
+		}
+      /* --- calcul de refraction a jj ---*/
+      mc_ad2hd(jj,longi,ra,&ha);
+      mc_hd2ah(ha,dec,latitude,&az,&h);
+      mc_refraction(h,inout,temperature,pressure,&refraction);
+		h=h+refraction;
+      mc_ah2hd(az,h,latitude,&ha,&dec1);
+		mc_hd2ad(jj,longi,ha,&ra1);
+		h1=h;
+      /* --- calcul de refraction a jj+delay ---*/
+      mc_ad2hd(jj+delay_sec/86400.,longi,ra,&ha);
+      mc_hd2ah(ha,dec,latitude,&az,&h);
+      mc_refraction(h,inout,temperature,pressure,&refraction);
+		h=h+refraction;
+      mc_ah2hd(az,h,latitude,&ha,&dec2);
+		mc_hd2ad(jj+delay_sec/86400.,longi,ha,&ra2);
+		h2=h;
+		/* --- refraction differentielle pendant le delay */
+		dra=(ra2-ra1)/(DR);
+		if (dra>180) { dra-=360; }
+		if (dra<-180) { dra+=360; }
+		ddec=(dec2-dec1)/(DR);
+	   /* --- sortie des resultats ---*/
+      sprintf(s,"%f %f %f %f %f %f %f %f",dra,ddec,ra1/(DR),dec1/(DR),h1/(DR),ra2/(DR),dec2/(DR),h2/(DR));
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      result = TCL_OK;
+   }
+   return(result);
+}
+
 int Cmd_mctcl_radec2xy(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 /****************************************************************************/
 /* conversion ra,dec -> x,y                                                 */

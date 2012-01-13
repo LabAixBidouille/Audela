@@ -231,6 +231,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		tel->radec_move_rate_max=1.0; /* deg/s */
 		tel->radec_tol=10 ; /* 10 arcsec */
 		tel->dead_delay_slew=2.1; /* delai en secondes estime pour un slew sans bouger */
+		tel->refrac_delay=0;
 		/* --- Match --- */
 		tel->ha00=0.;
 		tel->roth00=(int)(1507500-45./60.*10000);
@@ -313,6 +314,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		tel->radec_move_rate_max=1.0; /* deg/s */
 		tel->radec_tol=10 ; /* 10 arcsec */
 		tel->dead_delay_slew=2.4; /* delai en secondes estime pour un slew sans bouger */
+		tel->refrac_delay=0;
 		/* --- Home --- */
 		tel->latitude=43.75203;
 		sprintf(tel->home0,"GPS 6.92353 E %+.6f 1320.0",tel->latitude);
@@ -1424,15 +1426,31 @@ int deltatau_suivi_arret (struct telprop *tel)
 int deltatau_suivi_marche (struct telprop *tel)
 {
    /* ==== suivi sidral ===*/
-   char s[1024],axe,s1[1024],s2[1024],s10[1024],s20[1024],sens1,sens2;
+   char s[1024],axe,s1[1024],s2[1024],s10[1024],s20[1024],sens1,sens2,ss[1024];
    int res;
-   double v;
+   double v,speed_track_ra,speed_track_dec,dradif,ddecdif;
 	if (tel->latitude<0) {
 		sens1='-';
 		sens2='+';
 	} else {
 		sens1='+';
 		sens2='-';
+	}
+	/*--- differential refraction */
+	speed_track_ra=tel->speed_track_ra;
+	speed_track_dec=tel->speed_track_dec;
+	if (tel->refrac_delay>0) {
+	   deltatau_GetCurrentFITSDate_function(tel->interp,ss,"::audace::date_sys2ut");
+		sprintf(s,"mc_refraction_difradec %f %f {%s} %s %f",tel->ra0,tel->dec0,tel->home,ss,tel->refrac_delay); 
+		if (mytel_tcleval(tel,s)==TCL_OK) {
+			strcpy(ss,tel->interp->result);
+			sprintf(s,"lindex {%s} 0",ss); mytel_tcleval(tel,s);
+			dradif=atof(tel->interp->result);
+			sprintf(s,"lindex {%s} 1",ss); mytel_tcleval(tel,s);
+			ddecdif=atof(tel->interp->result);
+			speed_track_ra+=dradif;
+			speed_track_dec+=ddecdif;
+		}
 	}
    /*--- Track alpha */
    v=fabs(tel->speed_track_ra*tel->radec_speed_ra_conversion);
