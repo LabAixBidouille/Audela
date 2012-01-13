@@ -42,6 +42,7 @@ int cmdTelTolPos(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
 int cmdTelSimultaneus(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelDeadDelaySlew(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelRot0(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelRefracDelay(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 #ifdef __cplusplus
 }

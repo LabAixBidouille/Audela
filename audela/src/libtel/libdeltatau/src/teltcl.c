@@ -670,3 +670,18 @@ int cmdTelDeadDelaySlew(ClientData clientData, Tcl_Interp *interp, int argc, cha
    Tcl_SetResult(interp,s,TCL_VOLATILE);
    return TCL_OK;
 }
+
+/*
+ *   delai en secondes pour prendre en compte la refraction differentielle
+ */
+int cmdTelRefracDelay(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   char s[1024];
+   struct telprop *tel;
+   tel = (struct telprop *)clientData;   
+   if (argc>=3) {   
+      tel->refrac_delay=atof(argv[2]);
+   }
+   sprintf(s,"%f",tel->refrac_delay);
+   Tcl_SetResult(interp,s,TCL_VOLATILE);
+   return TCL_OK;
+}
