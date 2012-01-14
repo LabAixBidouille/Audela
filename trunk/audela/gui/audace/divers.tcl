@@ -3274,24 +3274,8 @@ proc suppr_accents {args} {
    global caption
 
    if {[syntaxe_args $args 1 0 ""]=="1"} {
-
-      regsub -all "à" [lindex $args 0] "a" chaine
-      regsub -all "â" $chaine "a" chaine
-      regsub -all "ç" $chaine "c" chaine
-      regsub -all "é" $chaine "e" chaine
-      regsub -all "è" $chaine "e" chaine
-      regsub -all "ê" $chaine "e" chaine
-      regsub -all "ë" $chaine "e" chaine
-      regsub -all "î" $chaine "i" chaine
-      regsub -all "ï" $chaine "i" chaine
-      regsub -all "ô" $chaine "o" chaine
-      regsub -all "ö" $chaine "o" chaine
-      regsub -all "û" $chaine "u" chaine
-      regsub -all "ü" $chaine "u" chaine
-      regsub -all "ù" $chaine "u" chaine
-
-      return $chaine
-
+      set entities [list à a â a ç c é e è e ê e ë e î i ï i ô o ö o û u ü u ü u]
+      return [string map -nocase $entities [lindex $args 0]]
    } else {
       error $caption(divers,syntax,suppr_accents)
    }
