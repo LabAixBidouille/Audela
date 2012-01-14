@@ -124,10 +124,8 @@ proc ::sn_tarot::createPanel { this } {
    set rep(name2)    "[ file join $panneau(init_dir) references ] " ; # chemin du repertoire images de reference galtarot
    set rep(name3)    "[ file join $panneau(init_dir) dss ]" ; # chemin du repertoire images de reference dss
 
-   set panneau(sn_tarot,Tarot_Calern,home)   {GPS 6.92353 E 43.75203 1320}
-   set panneau(sn_tarot,Tarot_Calern,url)    "http://tarot6.obs-azur.fr/ros/supernovae/zip"
-   set panneau(sn_tarot,Tarot_Chili,home)    {GPS 70.7326 W -29.259917 2398}
-   set panneau(sn_tarot,Tarot_Chili,url)     "http://tarotchili3.oamp.fr/ros/supernovae/zip"
+   set panneau(sn_tarot,Tarot_Calern,url)    "http://tarot6.obs-azur.fr/ros/supernovae/zip/"
+   set panneau(sn_tarot,Tarot_Chili,url)     "http://tarotchili3.oamp.fr/ros/supernovae/zip/"
    set panneau(sn_tarot,ohp,url)             "http://cador.obs-hp.fr/tarot"
 
    ::sn_tarot::updateFiles
@@ -248,17 +246,10 @@ proc ::sn_tarot::selectSite { } {
    global panneau
 
    set prefix $panneau(sn_tarot,prefix)
-
-   switch -exact $prefix {
-      "Tarot_Calern" {  set panneau(sn_tarot,home) "$panneau(sn_tarot,Tarot_Calern,home)"
-                        set panneau(sn_tarot,url0) "$panneau(sn_tarot,Tarot_Calern,url)"
-                     }
-      "Tarot_Chili"  {  set panneau(sn_tarot,home) "$panneau(sn_tarot,Tarot_Chili,home)"
-                        set panneau(sn_tarot,url0) "$panneau(sn_tarot,Tarot_Chili,url)"
-                     }
-   }
-
    $This.fra2.file configure -values $panneau(sn_tarot,$prefix)
+
+   #--   met a jour l'url correspondant a la selction
+   set panneau(sn_tarot,url0) "$panneau(sn_tarot,${prefix},url)"
 
    #--   pointe le premier de la liste
    set panneau(sn_tarot,date) [ lindex $panneau(sn_tarot,$prefix) 0 ]
@@ -274,10 +265,9 @@ proc ::sn_tarot::selectSite { } {
 proc ::sn_tarot::defineFileZip { } {
    global panneau snconfvisu
 
-   set panneau(sn_tarot,file_zip) "${panneau(sn_tarot,prefix)}_${panneau(sn_tarot,date)}.zip"
-
    #-- positionne la combobox sur le fichier
-   regsub -all ".zip" $panneau(sn_tarot,file_zip) "" snconfvisu(night)
+   set snconfvisu(night) "${panneau(sn_tarot,prefix)}_${panneau(sn_tarot,date)}"
+   set panneau(sn_tarot,file_zip) "$snconfvisu(night).zip"
 }
 
 #------------------------------------------------------------
@@ -520,53 +510,25 @@ proc ::sn_tarot::changeUpdateState { state } {
 
 #------------------------------------------------------------
 # inventaire
-#     Liste les 100 fichiers zip les plus recents, excluant _old.zip
+#     Liste les 100 fichiers zip les plus recents
 # exemple ::sn_tarot::inventaire Tarot_Chili "http://tarotchili3.oamp.fr/ros/supernovae/zip"
 #------------------------------------------------------------
 proc ::sn_tarot::inventaire { prefix url } {
    global panneau caption rep
 
-   set list_zip ""
-
-   #--   chemin du fichier temporaire
-   set temp_file [ file join $::audace(rep_temp) $prefix.txt ]
-
-   set error [ ::sn_tarot::httpcopy $url $temp_file ]
-
    #--   cree la liste des dates specifique a chaque telescope
-   if { $error eq "" } {
-      #--   si connexion au site reussie, exploite la page html
-      set fd [ open $temp_file r+ ]
-      while { ![ eof $fd ] } {
-         #--   recherche l'existence du pattern
-         regexp ".>${prefix}_(\[0-9\]\{8\})\.zip<." [ gets $fd ] match date
-         if { [ info exists date ] } {
-            lappend list_zip $date
-            unset date
-         }
-      }
-      chan close $fd
-   } else {
-      #--   si echec de connexion au site, liste le contenu du dossier archives
-      #--   masque refgaltarot
-      regsub -all "refgaltarot" [ glob -nocomplain -type f -dir $rep(archives) -tails *.zip ] "" list_archives
-      foreach archive $list_archives {
-         regexp "${prefix}_(\[0-9\]\{8\})\.zip" $archive match date
-         if { [ info exists date ] } {
-            lappend list_zip $date
-            unset date
-         }
-      }
-   }
+   lassign [ ::sn_tarot::httpcopy $prefix $url ] error list_zip
 
-   #--   trie la liste par ordre decroissant et garde les 100 premiers
-   set list_zip [ lrange [ lsort -decreasing $list_zip ] 0 99 ]
+   if { $error eq "0" } {
 
-   #--   ne s'execute que si la liste html a ete telechargee
-   if { $error eq "" } {
+      #--   si connexion reussie
+      switch -exact $prefix {
+         Tarot_Calern {set home {GPS 6.92353 E 43.75203 1320} }
+         Tarot_Chili  {set home {GPS 70.7326 W -29.259917 2398} }
+      }
 
       #--   recherche la date courante et le creneau horaire
-      lassign [ ::sn_tarot::prevnight $panneau(sn_tarot,$prefix,home) ] date day_night
+      lassign [ ::sn_tarot::prevnight $home ] date day_night
 
       #--   si la premiere date est la date courante et day_night == Night
       set old [ lindex $list_zip 0 ]_old
@@ -580,11 +542,24 @@ proc ::sn_tarot::inventaire { prefix url } {
             file delete $file
          }
       }
-   }
 
-   #--   nettoie le fichier provisoire
-   file delete $temp_file
+   } else {
 
-   set panneau(sn_tarot,$prefix) $list_zip
+      #--   si echec de connexion au site, liste le contenu du dossier archives
+      #--   masque refgaltarot
+      regsub -all "refgaltarot" [ glob -nocomplain -type f -dir $rep(archives) -tails *.zip ] "" list_archives
+      foreach archive $list_archives {
+         regexp "${prefix}_(\[0-9\]\{8\})\.zip" $archive match date
+         if { [ info exists date ] } {
+            lappend list_zip $date
+            unset date
+         }
+      }
+      #--   trie la liste par ordre decroissant et garde les 100 premiers
+      set list_zip [ lrange [ lsort -decreasing $list_zip ] 0 99 ]
+
+  }
+
+  set panneau(sn_tarot,$prefix) $list_zip
 }
 

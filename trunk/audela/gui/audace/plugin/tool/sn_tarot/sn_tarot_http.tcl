@@ -16,7 +16,7 @@
 proc ::sn_tarot::downloadFile { url0 param file } {
    global panneau caption
 
-   if { [catch { set tok [ ::http::geturl ${url0}/$param ] } ErrInfo ] } {
+   if { [catch { set tok [ ::http::geturl ${url0}$param ] } ErrInfo ] } {
       tk_messageBox -icon info -type ok \
          -message [ format $caption(sn_tarot_go,url_error) $url0 ]
       return 0
@@ -55,29 +55,48 @@ proc ::sn_tarot::downloadFile { url0 param file } {
 
 #------------------------------------------------------------
 # ::sn_tarot::httpcopy
-#  Adapte de http://tmml.sourceforge.net/doc/tcl/http.html
-#  Liee a proc ::sn_tarot::inventaire de sn_tarot_go.tcl
-#  Integre la redirection
+# Rtorune : liste des 100 dates les plus recentes
+# Liee a proc ::sn_tarot::inventaire de sn_tarot_go.tcl
 #------------------------------------------------------------
-proc ::sn_tarot::httpcopy { url file {chunk 4096} } {
+proc ::sn_tarot::httpcopy { prefix url } {
 
-   #--   copie la page html dans le fichier provisoire $file
-   set out [ open $file w ]
+   set error 0
 
-   if {[catch {set token [ ::http::geturl $url -channel $out -blocksize $chunk ]} ErrInfo]} {
-      close $out
-      return $ErrInfo
+   if { [ catch {set tok [ ::http::geturl $url ] } ErrInfo ] } {
+      set error 1
+      return [ list $error "" ]
    }
-   close $out
 
-   upvar #0 $token state
+   upvar #0 $tok state
 
-   foreach {name value} $state(meta) {
-      #--   cas de redirection
-      if {[regexp -nocase ^location$ $name]} {
-         return [ ::sn_tarot::httpcopy [string trim $value] $file $chunk ]
+   if {[ ::http::status $tok ] != "ok"} {
+      set error 1
+      return [ list $error "" ]
+   }
+
+   #--   verifie le contenu
+   if { [ string range [::http::data $tok ] 0 4 ] == "<?xml" } {
+      set error 1
+      return [ list $error "" ]
+   }
+
+   set lignes [ ::http::data $tok ]
+   ::http::cleanup $tok
+
+   regsub -all \" $lignes "" lignes
+   set index [ llength $lignes ]
+   set list_zip ""
+   while { [ llength $list_zip ] != 100 && $index >=0 } {
+      incr index -1
+      #--   recherche l'existence du pattern
+      regexp "${prefix}_(\[0-9\]\{8\})\.zip" [ lindex $lignes $index ] match date
+      if { [ info exists date ] } {
+         lappend list_zip $date
+         unset date
       }
    }
+
+   return [ list $error $list_zip ]
 }
 
 #--------  gestion des requetes DSS aupres de Skyview -------
