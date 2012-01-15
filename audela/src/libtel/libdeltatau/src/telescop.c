@@ -1441,35 +1441,35 @@ int deltatau_suivi_marche (struct telprop *tel)
 	speed_track_dec=tel->speed_track_dec;
 	if (tel->refrac_delay>0) {
 	   deltatau_GetCurrentFITSDate_function(tel->interp,ss,"::audace::date_sys2ut");
-		sprintf(s,"mc_refraction_difradec %f %f {%s} %s %f",tel->ra0,tel->dec0,tel->home,ss,tel->refrac_delay); 
+		sprintf(s,"mc_refraction_difradec %f %f {%s} %s %f 288 80000",tel->ra0,tel->dec0,tel->home,ss,tel->refrac_delay); 
 		if (mytel_tcleval(tel,s)==TCL_OK) {
 			strcpy(ss,tel->interp->result);
 			sprintf(s,"lindex {%s} 0",ss); mytel_tcleval(tel,s);
-			dradif=atof(tel->interp->result);
+			dradif=atof(tel->interp->result)/tel->refrac_delay;
 			sprintf(s,"lindex {%s} 1",ss); mytel_tcleval(tel,s);
-			ddecdif=atof(tel->interp->result);
-			speed_track_ra+=dradif;
-			speed_track_dec+=ddecdif;
+			ddecdif=atof(tel->interp->result)/tel->refrac_delay;
+			speed_track_ra-=(dradif/2);
+			speed_track_dec+=(ddecdif/2);
 		}
 	}
    /*--- Track alpha */
-   v=fabs(tel->speed_track_ra*tel->radec_speed_ra_conversion);
+   v=fabs(speed_track_ra*tel->radec_speed_ra_conversion);
    axe='1';
    sprintf(s10,"#%cI%c22=%.12f",axe,axe,v);
-   if (tel->speed_track_ra>0) {
+   if (speed_track_ra>0) {
       sprintf(s1,"#%cj%c",axe,sens2);
-   } else if (tel->speed_track_ra<0) {
+   } else if (speed_track_ra<0) {
       sprintf(s1,"#%cj%c",axe,sens1);
    } else {
       sprintf(s1,"#%cj%c",axe,sens2);
 	}
    /*--- Track delta */
-   v=fabs(tel->speed_track_dec*tel->radec_speed_dec_conversion);
+   v=fabs(speed_track_dec*tel->radec_speed_dec_conversion);
    axe='2';
    sprintf(s20,"#%cI%c22=%.12f",axe,axe,v);
-	if (tel->speed_track_dec>0) {
+	if (speed_track_dec>0) {
 		sprintf(s2,"#%cj%c",axe,sens1);
-	} else if (tel->speed_track_dec<0) {
+	} else if (speed_track_dec<0) {
 		sprintf(s2,"#%cj%c",axe,sens2);
 	} else {
 		sprintf(s2,"#%cj%c",axe,sens1);

@@ -218,6 +218,14 @@ int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, const char
                }
             }
 
+            // je duplique la commande "mc_refraction_difradec" dans la thread du telescope
+            sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_refraction_difradec");
+            if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
+               sprintf(s, "cmdTelCreate: %s",interp->result);
+               Tcl_SetResult(interp, s, TCL_VOLATILE);
+               return TCL_ERROR;
+            }
+
             // je duplique la commande "mc_angle2lx200ra" dans la thread du telescope
             sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_angle2lx200ra");
             if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
