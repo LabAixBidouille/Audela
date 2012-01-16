@@ -82,7 +82,7 @@ namespace eval bddimages_sql {
    proc connect { } {
    
       global bddconf
-      set connected "Connect√© √† $bddconf(dbname)"
+      set connected "Connect√© √† $bddconf(dbname) sur $bddconf(server)"
 
       set err [catch {sql query "use $bddconf(dbname);"} msg]
       if {$err} {
@@ -99,7 +99,7 @@ namespace eval bddimages_sql {
                gren_info "Erreur de connexion a† $bddconf(dbname) <$err> <$msg>\n"
                return -code error "Erreur de connexion a† $bddconf(dbname) <$err> <$msg>"
             } else {
-               gren_info "Connecte a† $bddconf(dbname)\n"
+               #gren_info "Connecte a† $bddconf(dbname)\n"
                return -code 0 $connected
             }
          }
