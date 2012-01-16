@@ -221,7 +221,7 @@ proc info_fichier { nomfich } {
       }
       # --- nettoye comment= dans img ohp-120
       if {[string trim [lindex $key 1]] == "OHP-120" && [lindex [buf$bufno getkwd "COMMENT="] 0] != ""} {
-         ::console::affiche_resultat "DEL KWD COMMENT du BUF OHP-120 -> $nomfich \n"
+         bddimages_sauve_fich "DEL KWD COMMENT du BUF OHP-120 -> $nomfich \n"
          buf$bufno delkwd COMMENT=
          buf$bufno save $nomfich
       }
@@ -430,7 +430,6 @@ proc bddimages_images_datainsert { tabkey idheader filename site dateobs sizefic
     set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
     if {$err} {
        bddimages_sauve_fich "bddimages_images_datainsert: ERREUR : <$err> <$msg>"
-       ::console::affiche_erreur "bddimages_images_datainsert: ERREUR : <$err> <$msg>"
 
       if {[string last "images' doesn't exist" $msg]>0} {
          set sqlcmdcrea ""
@@ -479,7 +478,6 @@ proc bddimages_images_datainsert { tabkey idheader filename site dateobs sizefic
     set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
     if {$err} {
        bddimages_sauve_fich "bddimages_images_datainsert: ERREUR : <$err> <$msg>"
-       ::console::affiche_erreur "bddimages_images_datainsert: ERREUR : <$err> <$msg>"
 
       if {[string last "commun' doesn't exist" $msg]>0} {
          set sqlcmdcrea ""
@@ -731,11 +729,7 @@ proc bddimages_catas_datainsert { filename sizefich form } {
 
   set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
   if {$err} {
-  
-      ::console::affiche_erreur "  SQL : <$sqlcmd>\n"
-      ::console::affiche_erreur "  ERR : <$err>\n"
-      ::console::affiche_erreur "  MSG : <$msg>\n"
-  
+    
       if {[string last "catas' doesn't exist" $msg]>0} {
           set sqlcmdcrea ""
           append sqlcmdcrea "CREATE TABLE catas (                                      "
@@ -1009,7 +1003,7 @@ proc bddimages_image_identification { idbddimg } {
    set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
    if {$err} {
       bddimages_sauve_fich "WARNING: table cata inexistante"
-      ::console::affiche_resultat "WARNING: table cata inexistante\n"
+
       } else {
       foreach line $resultsql {
          set dirfilename [lindex $line 0]
