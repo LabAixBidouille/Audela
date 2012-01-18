@@ -12,7 +12,7 @@ global caption langage
 # *************** Version anglaise ****************************
 
 set caption(sn_tarot,main_title)             "Tarot Sn View"
-set caption(sn_tarot,title)                  "# Image du jour <--  Analyse de l'archive : %s  --> Référence"
+set caption(sn_tarot,title)                  "Today Image <--  Archive Analysis: %s  --> Reference"
 set caption(sn_tarot,prev)                   "Previous"
 set caption(sn_tarot,next)                   "Next\n(F1)"
 set caption(sn_tarot,goto)                   "Go to"
@@ -26,10 +26,10 @@ set caption(sn_tarot,dss)                    "DSS"
 set caption(sn_tarot,image1)                 "Image 1 --> %s %s %s %s %s %s"
 set caption(sn_tarot,image2)                 "Image 2 --> %s %s"
 
-set caption(sn_tarot,galaxy_center)          "# Centre de la galaxie hôte"
-set caption(sn_tarot,star_ref)               "# Position d'une étoile de référence"
-set caption(sn_tarot,star_pos)               "# Position de la candidate SN"
-set caption(sn_tarot,star_id)                "# Création de la fiche de la candidate SN"
+set caption(sn_tarot,galaxy_center)          "Center of host galaxy"
+set caption(sn_tarot,star_ref)               "Position of a reference star"
+set caption(sn_tarot,star_pos)               "Position of SN candidate"
+set caption(sn_tarot,star_id)                "Creating data sheet about SN candidate"
 
 set caption(sn_tarot,save1)                  "Save"
 set caption(sn_tarot,confirm)                "Continue?"
@@ -59,25 +59,25 @@ set caption(sn_tarot,0image)                 "No image."
 set caption(sn_tarot,fits_header)            "FITS Header"
 set caption(sn_tarot,header,noimage)         "No image in memory."
 
-set caption(sn_tarot,dss_title)              "# Téléchargement des images DSS"
+set caption(sn_tarot,dss_title)              "DSS image download"
 set caption(sn_tarot,dss_galaxy)             "Galaxy: %s"
-set caption(sn_tarot,dss_not_found)          "# %s pas chargé ; motif : %s"
-set caption(sn_tarot_go,all)                 "# Toutes les images DSS sont présentes."
-set caption(sn_tarot_go,manq)                "# Télécharge les images DSS :\n %s."
+set caption(sn_tarot,dss_not_found)          "%s not loaded ; Reason: %s"
+set caption(sn_tarot_go,all)                 "All DSS images are available."
+set caption(sn_tarot_go,manq)                "Downloads DSS images:\n %s."
 
 set caption(sn_tarot,configuration)          "Setup"
-set caption(sn_tarot,select)                 "# Sélectionner une archive :"
+set caption(sn_tarot,select)                 "Choose an archive:"
 set caption(sn_tarot,aide)                   "Help"
 set caption(sn_tarot,exit)                   "Exit"
 
-set caption(sn_tarot,candidate)              "Supernova candidate"
-set caption(sn_tarot,modify)                 "Modify the candidate file"
+set caption(sn_tarot,candidate)              "Supernovae Candidate"
+set caption(sn_tarot,modify)                 "Edit candidate file"
 set caption(sn_tarot,ok)                     "OK"
 
-set caption(sn_tarot,cand_wait)              "Waiting for the creation of the candidate file..."
-set caption(sn_tarot,cand_wait_mp)           "Check for known asteroids..."
-set caption(sn_tarot,cand_wait_sn)           "Check for known supernovae..."
-set caption(sn_tarot,cand_wait_ar)           "Check for archived images..."
+set caption(sn_tarot,cand_wait)              "Please wait while the candidate data sheet is created..."
+set caption(sn_tarot,cand_wait_mp)           "Checks if there are asteroids..."
+set caption(sn_tarot,cand_wait_sn)           "Checks if there is a known supernovae..."
+set caption(sn_tarot,cand_wait_ar)           "Checks if the galaxy is in the archives..."
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -438,7 +438,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(sn_tarot,main_title)          "Tarot Sn View"
-   set caption(sn_tarot,title)               "# Image du jour <--  Analyse de l'archive : %s  --> Référence"
+   set caption(sn_tarot,title)               "Today Image <--  Archive Analysis: %s  --> Reference"
    set caption(sn_tarot,prev)                "Previous"
    set caption(sn_tarot,next)                "Next\n(F1)"
    set caption(sn_tarot,goto)                "Go to"
@@ -452,10 +452,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,image1)              "Image 1 --> %s %s %s %s %s %s"
    set caption(sn_tarot,image2)              "Image 2 --> %s %s"
 
-   set caption(sn_tarot,galaxy_center)       "# Centre de la galaxie hôte"
-   set caption(sn_tarot,star_ref)            "# Position d'une étoile de référence"
-   set caption(sn_tarot,star_pos)            "# Position de la candidate SN"
-   set caption(sn_tarot,star_id)             "# Création de la fiche de la candidate SN"
+   set caption(sn_tarot,galaxy_center)       "Center of host galaxy"
+   set caption(sn_tarot,star_ref)            "Position of a reference star"
+   set caption(sn_tarot,star_pos)            "Position of SN candidate"
+   set caption(sn_tarot,star_id)             "Creating data sheet about SN candidate"
 
    set caption(sn_tarot,save1)               "Save"
    set caption(sn_tarot,confirm)             "Continue?"
@@ -485,31 +485,31 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,fits_header)         "FITS Header"
    set caption(sn_tarot,header,noimage)      "No image in memory."
 
-   set caption(sn_tarot,dss_title)           "# Téléchargement des images DSS"
+   set caption(sn_tarot,dss_title)           "DSS image download"
    set caption(sn_tarot,dss_galaxy)          "Galaxy: %s"
-   set caption(sn_tarot,dss_not_found)       "# %s pas chargé ; motif : %s"
-   set caption(sn_tarot_go,all)              "# Toutes les images DSS sont présentes."
-   set caption(sn_tarot_go,manq)             "# Télécharge les images DSS :\n %s."
+   set caption(sn_tarot,dss_not_found)       "%s not loaded ; Reason: %s"
+   set caption(sn_tarot_go,all)              "All DSS images are available."
+   set caption(sn_tarot_go,manq)             "Downloads DSS images:\n %s."
 
    set caption(sn_tarot,configuration)       "Setup"
-   set caption(sn_tarot,select)              "# Sélectionner une archive :"
+   set caption(sn_tarot,select)              "Choose an archive:"
    set caption(sn_tarot,aide)                "Help"
    set caption(sn_tarot,exit)                "Exit"
 
-   set caption(sn_tarot,candidate)           "# Candidate supernova"
-   set caption(sn_tarot,modify)              "# Modifier le fichier candidat"
-   set caption(sn_tarot,ok)                  "# OK"
+   set caption(sn_tarot,candidate)           "Supernovae Candidate"
+   set caption(sn_tarot,modify)              "Edit candidate file"
+   set caption(sn_tarot,ok)                  "OK"
 
-   set caption(sn_tarot,cand_wait)           "# Patientez pendant la création de la fiche candidate..."
-   set caption(sn_tarot,cand_wait_mp)        "# Vérifie la présence d'astéroïdes..."
-   set caption(sn_tarot,cand_wait_sn)        "# Vérifie la présence d'une supernova cconnue..."
-   set caption(sn_tarot,cand_wait_ar)        "# Vérifie la présence de la galaxie dans les archives..."
+   set caption(sn_tarot,cand_wait)           "Please wait while the candidate data sheet is created..."
+   set caption(sn_tarot,cand_wait_mp)        "Checks if there are asteroids..."
+   set caption(sn_tarot,cand_wait_sn)        "Checks if there is a known supernovae..."
+   set caption(sn_tarot,cand_wait_ar)        "Checks if the galaxy is in the archives..."
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
    set caption(sn_tarot,main_title)          "Tarot Sn View"
-   set caption(sn_tarot,title)               "# Image du jour <--  Analyse de l'archive : %s  --> Référence"
+   set caption(sn_tarot,title)               "Today Image <--  Archive Analysis: %s  --> Reference"
    set caption(sn_tarot,prev)                "Previous"
    set caption(sn_tarot,next)                "Next\n(F1)"
    set caption(sn_tarot,goto)                "Go to"
@@ -523,10 +523,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,image1)              "Image 1 --> %s %s %s %s %s %s"
    set caption(sn_tarot,image2)              "Image 2 --> %s %s"
 
-   set caption(sn_tarot,galaxy_center)       "# Centre de la galaxie hôte"
-   set caption(sn_tarot,star_ref)            "# Position d'une étoile de référence"
-   set caption(sn_tarot,star_pos)            "# Position de la candidate SN"
-   set caption(sn_tarot,star_id)             "# Création de la fiche de la candidate SN"
+   set caption(sn_tarot,galaxy_center)       "Center of host galaxy"
+   set caption(sn_tarot,star_ref)            "Position of a reference star"
+   set caption(sn_tarot,star_pos)            "Position of SN candidate"
+   set caption(sn_tarot,star_id)             "Creating data sheet about SN candidate"
 
    set caption(sn_tarot,save1)               "Save"
    set caption(sn_tarot,confirm)             "Continue?"
@@ -556,31 +556,31 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,fits_header)         "FITS Header"
    set caption(sn_tarot,header,noimage)      "No image in memory."
 
-   set caption(sn_tarot,dss_title)           "# Téléchargement des images DSS"
+   set caption(sn_tarot,dss_title)           "DSS image download"
    set caption(sn_tarot,dss_galaxy)          "Galaxy: %s"
-   set caption(sn_tarot,dss_not_found)       "# %s pas chargé ; motif : %s"
-   set caption(sn_tarot_go,all)              "# Toutes les images DSS sont présentes."
-   set caption(sn_tarot_go,manq)             "# Télécharge les images DSS :\n %s."
+   set caption(sn_tarot,dss_not_found)       "%s not loaded ; Reason: %s"
+   set caption(sn_tarot_go,all)              "All DSS images are available."
+   set caption(sn_tarot_go,manq)             "Downloads DSS images:\n %s."
 
    set caption(sn_tarot,configuration)       "Setup"
-   set caption(sn_tarot,select)              "# Sélectionner une archive :"
+   set caption(sn_tarot,select)              "Choose an archive:"
    set caption(sn_tarot,aide)                "Help"
    set caption(sn_tarot,exit)                "Exit"
 
-   set caption(sn_tarot,candidate)           "# Candidate supernova"
-   set caption(sn_tarot,modify)              "# Modifier le fichier candidat"
-   set caption(sn_tarot,ok)                  "# OK"
+   set caption(sn_tarot,candidate)           "Supernovae Candidate"
+   set caption(sn_tarot,modify)              "Edit candidate file"
+   set caption(sn_tarot,ok)                  "OK"
 
-   set caption(sn_tarot,cand_wait)           "# Patientez pendant la création de la fiche candidate..."
-   set caption(sn_tarot,cand_wait_mp)        "# Vérifie la présence d'astéroïdes..."
-   set caption(sn_tarot,cand_wait_sn)        "# Vérifie la présence d'une supernova cconnue..."
-   set caption(sn_tarot,cand_wait_ar)        "# Vérifie la présence de la galaxie dans les archives..."
+   set caption(sn_tarot,cand_wait)           "Please wait while the candidate data sheet is created..."
+   set caption(sn_tarot,cand_wait_mp)        "Checks if there are asteroids..."
+   set caption(sn_tarot,cand_wait_sn)        "Checks if there is a known supernovae..."
+   set caption(sn_tarot,cand_wait_ar)        "Checks if the galaxy is in the archives..."
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
    set caption(sn_tarot,main_title)          "Tarot Sn View"
-   set caption(sn_tarot,title)               "# Image du jour <--  Analyse de l'archive : %s  --> Référence"
+   set caption(sn_tarot,title)               "Today Image <--  Archive Analysis: %s  --> Reference"
    set caption(sn_tarot,prev)                "Previous"
    set caption(sn_tarot,next)                "Next\n(F1)"
    set caption(sn_tarot,goto)                "Go to"
@@ -594,10 +594,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,image1)              "Image 1 --> %s %s %s %s %s %s"
    set caption(sn_tarot,image2)              "Image 2 --> %s %s"
 
-   set caption(sn_tarot,galaxy_center)       "# Centre de la galaxie hôte"
-   set caption(sn_tarot,star_ref)            "# Position d'une étoile de référence"
-   set caption(sn_tarot,star_pos)            "# Position de la candidate SN"
-   set caption(sn_tarot,star_id)             "# Création de la fiche de la candidate SN"
+   set caption(sn_tarot,galaxy_center)       "Center of host galaxy"
+   set caption(sn_tarot,star_ref)            "Position of a reference star"
+   set caption(sn_tarot,star_pos)            "Position of SN candidate"
+   set caption(sn_tarot,star_id)             "Creating data sheet about SN candidate"
 
    set caption(sn_tarot,save1)               "Save"
    set caption(sn_tarot,confirm)             "Continue?"
@@ -627,25 +627,26 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,fits_header)         "FITS Header"
    set caption(sn_tarot,header,noimage)      "No image in memory."
 
-   set caption(sn_tarot,dss_title)           "# Téléchargement des images DSS"
+   set caption(sn_tarot,dss_title)           "DSS image download"
    set caption(sn_tarot,dss_galaxy)          "Galaxy: %s"
-   set caption(sn_tarot,dss_not_found)       "# %s pas chargé ; motif : %s"
-   set caption(sn_tarot_go,all)              "# Toutes les images DSS sont présentes."
-   set caption(sn_tarot_go,manq)             "# Télécharge les images DSS :\n %s."
+   set caption(sn_tarot,dss_not_found)       "%s not loaded ; Reason: %s"
+   set caption(sn_tarot_go,all)              "All DSS images are available."
+   set caption(sn_tarot_go,manq)             "Downloads DSS images:\n %s."
 
    set caption(sn_tarot,configuration)       "Setup"
-   set caption(sn_tarot,select)              "# Sélectionner une archive :"
+   set caption(sn_tarot,select)              "Choose an archive:"
    set caption(sn_tarot,aide)                "Help"
    set caption(sn_tarot,exit)                "Exit"
 
-   set caption(sn_tarot,candidate)           "# Candidate supernova"
-   set caption(sn_tarot,modify)              "# Modifier le fichier candidat"
-   set caption(sn_tarot,ok)                  "# OK"
+   set caption(sn_tarot,candidate)           "Supernovae Candidate"
+   set caption(sn_tarot,modify)              "Edit candidate file"
+   set caption(sn_tarot,ok)                  "OK"
 
-   set caption(sn_tarot,cand_wait)           "# Patientez pendant la création de la fiche candidate..."
-   set caption(sn_tarot,cand_wait_mp)        "# Vérifie la présence d'astéroïdes..."
-   set caption(sn_tarot,cand_wait_sn)        "# Vérifie la présence d'une supernova cconnue..."
-   set caption(sn_tarot,cand_wait_ar)        "# Vérifie la présence de la galaxie dans les archives..."
+   set caption(sn_tarot,cand_wait)           "Please wait while the candidate data sheet is created..."
+   set caption(sn_tarot,cand_wait_mp)        "Checks if there are asteroids..."
+   set caption(sn_tarot,cand_wait_sn)        "Checks if there is a known supernovae..."
+   set caption(sn_tarot,cand_wait_ar)        "Checks if the galaxy is in the archives..."
+
 }
 
 #=========================================================================
