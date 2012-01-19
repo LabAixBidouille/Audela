@@ -97,11 +97,13 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    Tcl_DString dsptr;
    char **argvv=NULL;
    int argcc,res;
-   FILE *f;
+   //FILE *f;
 
 	/* -ip 127.0.0.1 -port 1025 -type umac|pmac*/
+	/*
    f=fopen("mouchard_deltatau.txt","wt");
    fclose(f);
+	*/
 	/* --- decode type (umac by default) ---*/
 	strcpy(s,"umac");
    if (argc >= 1) {
@@ -159,9 +161,11 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 			}
 		}
 		sprintf(tel->ip, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
+		/*
 		f=fopen("mouchard_deltatau.txt","at");
 		fprintf(f,"IP=%s\n",tel->ip);
 		fclose(f);
+		*/
 		/* --- decode port  --- */
 		tel->port = 1025;
 		if (argc >= 1) {
@@ -174,9 +178,11 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 				}
 			}
 		}
+		/*
 		f=fopen("mouchard_deltatau.txt","at");
 		fprintf(f,"PORT=%d\n",tel->port);
 		fclose(f);
+		*/
 		/* --- open the port and record the channel name ---*/
 		sprintf(s,"socket \"%s\" \"%d\"",tel->ip,tel->port);
 		//sprintf(s,"after 5 {set connected timeout} ; set sock [socket -async \"%s\" \"%d\"] ; fileevent $sock w {set connected ok} ; vwait connected ; if {$connected==\"timeout\"} {set sock \"\"} else {set sock}",tel->ip,tel->port);
