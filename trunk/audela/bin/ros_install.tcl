@@ -97,16 +97,13 @@ namespace eval ::ros_install {
          set ros(ros_install,audelabin) $::audela_start_dir
       }
 
-      set audace(ros_install,variables) {ros data ressources logs htdocs cgi-bin catalogs extinctionmaps conf}
+      set audace(ros_install,variables) {data ressources logs htdocs cgi-bin catalogs extinctionmaps conf}
       set audace(ros_install,variables,descr) $audace(ros_install,variables)
       set audace(ros_install,print) ""
 
       set k 0
       foreach name $audace(ros_install,variables) {
          set b $base
-         if {[lsearch -exact "ros" $name]>=0} {
-            set b $dirros
-         }
          if {[lsearch -exact "data ressources logs catalogs extinctionmaps" $name]>=0} {
             set b $dirwork
          }
@@ -510,7 +507,7 @@ namespace eval ::ros_install {
       # --- copy lib
       set base1 [::ros_install::compact "$ros_install_base/install/lib"]
       set fichiers [split [files_in_dir $base1] \n]
-      set base2 [::ros_install::compact "$ros(ros_install,audelabin)/lib"]
+      set base2 [::ros_install::compact "$ros(ros_install,audelabin)/../lib"]
       ::ros_install::copy $base1 $fichiers $base2
       #
       set roots ""
@@ -619,12 +616,12 @@ namespace eval ::ros_install {
          }
          # ---
          if {($name=="catalogs")} {
-                 catch {file mkdir $ros_install_base/$name}
-                 }
+                 #catch {file mkdir $ros_install_base/$name}
+         }
          # ---
          if {($name=="extinctionmaps")} {
-                 catch {file mkdir $ros_install_base/$name}
-                 }
+                 #catch {file mkdir $ros_install_base/$name}
+         }
          # ---
          if {($name=="data")} {
             set base1 [::ros_install::compact $ros_install_base/install/$name]
@@ -637,7 +634,8 @@ namespace eval ::ros_install {
       #
       ::ros_install::print "\n"
       ::ros_install::print "INTALLATION FINISHED WITH SUCCESS\n"
-      set fichier [::ros_install::compact "$ros_install_base/ros_install.log"]
+      set fichier [::ros_install::compact [file join $::audela_start_dir ros_install.log]]
+      
       set f [open $fichier w]
       puts $f $audace(ros_install,print)
       puts $f [mc_date2iso8601 now]
@@ -678,10 +676,6 @@ namespace eval ::ros_install {
       }
       return $folder
    }
-
-
-
-
 
 #--------------------------------------------------
 #  ::ros_install::copy { }
