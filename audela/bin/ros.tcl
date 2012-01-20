@@ -73,8 +73,8 @@ if {$name=="audela"} {
          puts "log= Fin sauvage du programme"
          destroy .
          exit
-      }  
-   } 
+      }
+   }
 }
 
 
@@ -98,4 +98,5 @@ if {$errno==1} {
 if {$ros(withtk)==1} {
    exit
 }
- puts "eject"
+puts "eject"
+
