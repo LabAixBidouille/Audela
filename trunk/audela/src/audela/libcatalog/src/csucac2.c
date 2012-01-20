@@ -10,8 +10,6 @@ char outputLogChar[1024];
 
 int cmd_tcl_csucac2(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 
-	char outputLine[1024];
-
 	if((argc == 2) && (strcmp(argv[1],"-h") == 0)) {
 		sprintf(outputLogChar,"Help usage : %s pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMin(mag)? magnitudeMax(mag)?\n",
 				argv[0]);
@@ -90,7 +88,7 @@ int cmd_tcl_csucac2(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 		Tcl_DStringAppend(&dsptr,"{ { UCAC2 { } {",-1);
 
 		oneStar = theFilteredStars.arrayOneD[index];
-		sprintf(outputLine,
+		sprintf(outputLogChar,
 				"%.8f %+.8f %.3f %.8f %.8f %d %.8f %d %d "
 				"%.8f %.8f %.8f %.8f %.8f %.8f %.8f "
 				"%.5f %.5f %d %.3f %.3f %.3f %d %d\n",
