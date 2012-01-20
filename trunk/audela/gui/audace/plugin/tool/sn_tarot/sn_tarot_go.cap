@@ -100,7 +100,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(sn_tarot_go,init)           "Tarot Supernova - Actualizar"
+   set caption(sn_tarot_go,init)           "Tarot Supernovae - Actualizar"
    set caption(sn_tarot_go,wait)           "Esperar el fin de la operación:"
    set caption(sn_tarot_go,folder)         "Verificación de las carpetas en %s"
    set caption(sn_tarot_go,available)      "Lista de ficheros disponibles para %s"
