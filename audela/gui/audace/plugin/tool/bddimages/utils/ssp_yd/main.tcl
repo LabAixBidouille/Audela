@@ -8,6 +8,7 @@
 #
 # @brief Traitement des archives dans bddimages a partir de la base de donnees SSP
 
+   load libcatalog.so
    source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/get_cata.tcl
    source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/visu.tcl
    source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/get_one_image.tcl
@@ -26,6 +27,7 @@
    ::bddimagesXML::get_config bddimages_cador
 
    cleanmark
+   set tt0 [clock clicks -milliseconds]
 
    gren_info "\n****************************************************************** \n"
    gren_info "** info de la configuration \n"
@@ -146,14 +148,14 @@
    set datejd  [ expr $datejd + $ssp_image(exposure)/86400.0/2.0 ]
    set dateiso [ mc_date2iso8601 $datejd ]
    gren_info "dateiso = $dateiso \n"
-   set listskybot [ get_skybot $dateiso $ssp_image(ra) $ssp_image(dec) 1000 809 ]
-   gren_info "rollup skybot= [::manage_source::get_nb_sources_rollup $listskybot]\n"
+#   set listskybot [ get_skybot $dateiso $ssp_image(ra) $ssp_image(dec) 1000 809 ]
+#   gren_info "rollup skybot= [::manage_source::get_nb_sources_rollup $listskybot]\n"
 
    gren_info "\n****************************************************************** \n"
    gren_info "** Impressions \n"
    gren_info "****************************************************************** \n"
 
-   ::manage_source::imprim_3_sources $listskybot
+#   ::manage_source::imprim_3_sources $listskybot
    ::manage_source::imprim_3_sources $listsources
 
    gren_info "\n****************************************************************** \n"
@@ -161,13 +163,13 @@
    gren_info " Identification \n"
    gren_info "****************************************************************** \n"
 
-   gren_info "rollup skybot= [::manage_source::get_nb_sources_rollup $listsources]\n"
-   set listsources [ identification $listsources "OVNI" $listskybot "SKYBOT" 30.0 10.0 10.0] 
+#   gren_info "rollup skybot= [::manage_source::get_nb_sources_rollup $listsources]\n"
+#   set listsources [ identification $listsources "OVNI" $listskybot "SKYBOT" 30.0 10.0 10.0] 
    gren_info "rollup skybot= [::manage_source::get_nb_sources_rollup $listsources]\n"
 
    ::manage_source::imprim_sources $listsources "SKYBOT"
-   affich_rond $listskybot "SKYBOT" "green" 1
-   affich_rond $listsources "OVNI" "blue" 1
+#   affich_rond $listskybot "SKYBOT" "green" 1
+   #affich_rond $listsources "OVNI" "blue" 1
 
    gren_info "\n****************************************************************** \n"
    gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
@@ -178,65 +180,97 @@
    set listsources [::manage_source::set_common_fields $listsources IMG { ra dec 5 calib_mag err_mag }]
    ::manage_source::imprim_3_sources $listsources
 
-   gren_info "\n****************************************************************** \n"
-   gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
-   gren_info " Chargement TYCHO2 \n"
-   gren_info "****************************************************************** \n"
 
 
-   set tycho2 [cstycho2 /astrodata/Catalog/TYCHO-2 $ssp_image(ra) $ssp_image(dec) 70]
-   gren_info "rollup = [::manage_source::get_nb_sources_rollup $tycho2]\n"
-   set tycho2 [::manage_source::set_common_fields $tycho2 TYCHO2 { RAdeg DEdeg 5 VT e_VT }]
 
 
-   gren_info "\n****************************************************************** \n"
-   gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
-   gren_info " Chargement UCAC2 \n"
-   gren_info "****************************************************************** \n"
 
-   set ucac2 [csucac2 /astrodata/Catalog/UCAC2 $ssp_image(ra) $ssp_image(dec) 70]
-   gren_info "rollup = [::manage_source::get_nb_sources_rollup $ucac2]\n"
-   set ucac2 [::manage_source::set_common_fields $ucac2 UCAC2 { ra_deg dec_deg e_pos_deg U2Rmag_mag 0.5 }]
 
-   gren_info "\n****************************************************************** \n"
-   gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
-   gren_info " Chargement UCAC3 \n"
-   gren_info "****************************************************************** \n"
+   if {1==0} {
+      gren_info "\n****************************************************************** \n"
+      gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
+      gren_info " Chargement TYCHO2 \n"
+      gren_info "****************************************************************** \n"
 
-   set ucac3 [csucac3 /astrodata/Catalog/UCAC3 $ssp_image(ra) $ssp_image(dec) 70]
-   gren_info "rollup = [::manage_source::get_nb_sources_rollup $ucac3]\n"
-   set ucac3 [::manage_source::set_common_fields $ucac3 UCAC3 { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
+      set tycho2 [cstycho2 /astrodata/Catalog/TYCHO-2 $ssp_image(ra) $ssp_image(dec) 70]
+      gren_info "rollup = [::manage_source::get_nb_sources_rollup $tycho2]\n"
+      set tycho2 [::manage_source::set_common_fields $tycho2 TYCHO2 { RAdeg DEdeg 5 VT e_VT }]
+      ::manage_source::imprim_3_sources $tycho2
 
-   gren_info "\n****************************************************************** \n"
-   gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
-   gren_info " Indentification des Etoiles \n"
-   gren_info "****************************************************************** \n"
+      gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
+      set a [buf$bddconf(bufno) xy2radec {680 1801}]
+      set b [buf$bddconf(bufno) xy2radec {713 1826}]
+      set f [list [lindex $a 0] [lindex $a 1] [lindex $b 0] [lindex $b 1] ]
+      set log 0
+      set listsources [ identification $listsources IMG $tycho2 TYCHO2 30.0 -30.0 $f $log] 
 
-   gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: TYCHO2\n"
-   #set listsources [ identification $listsources IMG $tycho2 TYCHO2 30.0 10.0 10.0] 
+      affich_rond $tycho2      TYCHO2 "blue"   2
+      affich_rond $listsources TYCHO2 "red"    1
+   }
 
-   #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: UCAC2\n"
-   #set listsources [ identification $listsources IMG $ucac2 UCAC2 30.0 10.0 10.0] 
 
-   #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: UCAC3\n"
-   #set listsources [ identification $listsources IMG $ucac3 UCAC3 30.0 10.0 10.0] 
+   if {1==0} {
+      gren_info "\n****************************************************************** \n"
+      gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
+      gren_info " Chargement UCAC2 \n"
+      gren_info "****************************************************************** \n"
 
-   gren_info "\n****************************************************************** \n"
-   gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
-   gren_info " Affichage des Etoiles \n"
-   gren_info "****************************************************************** \n"
+      set ucac2 [csucac2 /astrodata/Catalog/UCAC2 $ssp_image(ra) $ssp_image(dec) 70]
+      gren_info "rollup = [::manage_source::get_nb_sources_rollup $ucac2]\n"
+      set ucac2 [::manage_source::set_common_fields $ucac2 UCAC2 { ra_deg dec_deg e_pos_deg U2Rmag_mag 0.5 }]
+      ::manage_source::imprim_3_sources $ucac2
 
-   affich_rond $listsources TYCHO2 "red"    3
-   #affich_rond $listsources UCAC2  "yellow" 3
+      gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
+      set a [buf$bddconf(bufno) xy2radec {680 1801}]
+      set b [buf$bddconf(bufno) xy2radec {713 1826}]
+      set f [list [lindex $a 0] [lindex $a 1] [lindex $b 0] [lindex $b 1] ]
+      set log 0
+      set listsources [ identification $listsources IMG $ucac2 UCAC2  30.0 -30.0 $f $log] 
+
+      affich_rond $ucac2       UCAC2 "blue"   2
+      affich_rond $listsources UCAC2 "red"    1
+   }
+
+   if {1==1} {
+      gren_info "\n****************************************************************** \n"
+      gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
+      gren_info " Chargement UCAC3 \n"
+      gren_info "****************************************************************** \n"
+
+      set ucac3 [csucac3 /astrodata/Catalog/UCAC3 $ssp_image(ra) $ssp_image(dec) 60]
+      gren_info "rollup = [::manage_source::get_nb_sources_rollup $ucac3]\n"
+      set ucac3 [::manage_source::set_common_fields $ucac3 UCAC3 { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
+      ::manage_source::imprim_3_sources $ucac3
+
+      gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
+      set a [buf$bddconf(bufno) xy2radec {680 1801}]
+      set b [buf$bddconf(bufno) xy2radec {713 1826}]
+      set f [list [lindex $a 0] [lindex $a 1] [lindex $b 0] [lindex $b 1] ]
+      set log 0
+      set listsources [ identification $listsources IMG $ucac3  UCAC3  30.0 -30.0 $f $log] 
+
+      affich_rond $ucac3       UCAC3 "blue"   2
+      affich_rond $listsources UCAC3 "red"    1
+   }
+
+
+   #gren_info "\n****************************************************************** \n"
+   #gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
+   #gren_info " Affichage des Etoiles \n"
+   #gren_info "****************************************************************** \n"
+
+   #affich_rond $tycho2      TYCHO2 "blue"   2
+   #affich_rond $listsources TYCHO2 "red"    1
+   #affich_rond $ucac2      UCAC2 "blue"   2
+   #affich_rond $listsources UCAC2  "red" 3
    #affich_rond $listsources UCAC3  "blue"   3
-   affich_rond $listsources SKYBOT "green"  3
+   #affich_rond $listsources SKYBOT "green"  3
 
 
-   gren_info "\n****************************************************************** \n"
-   gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
-   gren_info " Extraction des Etoiles de type Solaire\n"
-   gren_info "****************************************************************** \n"
-
+   #gren_info "\n****************************************************************** \n"
+   #gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
+   #gren_info " Extraction des Etoiles de type Solaire\n"
+   #gren_info "****************************************************************** \n"
 
 
 
@@ -244,5 +278,11 @@
    gren_info "****************************************************************** \n"
    gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
    gren_info "FIN de script\n"
+   
+   set tt1 [clock clicks -milliseconds]
+   set tt [expr ($tt1 - $tt0)/1000.]
+   gren_info "Total duration $tt sec \n"
+
+   
 
 
