@@ -29,8 +29,8 @@ set caption(sn_tarot_go,telechargement)    "Download\nstarted..."
 set caption(sn_tarot_go,recherche_sn)      "Search for\nsupernovae"
 
 set caption(sn_tarot_go,telecharge)        "Download %s?"
-set caption(sn_tarot_go,yes)               "YES"
-set caption(sn_tarot_go,no)                "NO"
+set caption(sn_tarot_go,yes)               "Yes"
+set caption(sn_tarot_go,no)                "No"
 set caption(sn_tarot_go,unzip)             "Decompressing %s of %s files \nin %s folder."
 
 set caption(sn_tarot_go,attention)         "Warning"
@@ -59,8 +59,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot_go,recherche_sn)   "Recherche\nsupernovae"
 
    set caption(sn_tarot_go,telecharge)     "Télécharger %s ?"
-   set caption(sn_tarot_go,yes)            "OUI"
-   set caption(sn_tarot_go,no)             "NON"
+   set caption(sn_tarot_go,yes)            "Oui"
+   set caption(sn_tarot_go,no)             "Non"
    set caption(sn_tarot_go,unzip)          "Décompression de %s en %s fichiers \ndans le dossier %s."
 
    set caption(sn_tarot_go,attention)      "Attention"
@@ -88,8 +88,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot_go,recherche_sn)   "Ricerca\nsupernovae"
 
    set caption(sn_tarot_go,telecharge)     "Scaricare %s ?"
-   set caption(sn_tarot_go,yes)            "# OUI"
-   set caption(sn_tarot_go,no)             "# NON"
+   set caption(sn_tarot_go,yes)            "Si"
+   set caption(sn_tarot_go,no)             "No"
    set caption(sn_tarot_go,unzip)          "# Décompression de %s en %s fichiers \ndans le dossier %s."
 
    set caption(sn_tarot_go,attention)      "Attenzione"
@@ -100,13 +100,13 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(sn_tarot_go,init)           "# Tarot Supernovae - Mise à jour"
-   set caption(sn_tarot_go,wait)           "# Patienter jusqu'à la fin des opérations :"
-   set caption(sn_tarot_go,folder)         "# Vérification des dossiers dans %s"
-   set caption(sn_tarot_go,available)      "# Inventaire des fichiers disponibles pour %s"
-   set caption(sn_tarot_go,ref)            "# Téléchargement des images de référence %s"
-   set caption(sn_tarot_go,refunzip)       "# Décompression des images de référence dans %s"
-   set caption(sn_tarot_go,go)             "# GO"
+   set caption(sn_tarot_go,init)           "Tarot Supernova - Actualizar"
+   set caption(sn_tarot_go,wait)           "Esperar el fin de la operación:"
+   set caption(sn_tarot_go,folder)         "Verificación de las carpetas en %s"
+   set caption(sn_tarot_go,available)      "Lista de ficheros disponibles para %s"
+   set caption(sn_tarot_go,ref)            "Descargando imágenes de referencia %s"
+   set caption(sn_tarot_go,refunzip)       "Descomprimiendo imágenes de referencia en %s"
+   set caption(sn_tarot_go,go)             "GO"
    set caption(sn_tarot_go,hlp)            "Ayuda"
    set caption(sn_tarot_go,cancel)         "Cancelar"
 
@@ -117,14 +117,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot_go,recherche_sn)   "Buscar\nsupernovae"
 
    set caption(sn_tarot_go,telecharge)     "Descargar %s ?"
-   set caption(sn_tarot_go,yes)            "# OUI"
-   set caption(sn_tarot_go,no)             "# NON"
-   set caption(sn_tarot_go,unzip)          "# Décompression de %s en %s fichiers \ndans le dossier %s."
+   set caption(sn_tarot_go,yes)            "Sí"
+   set caption(sn_tarot_go,no)             "No"
+   set caption(sn_tarot_go,unzip)          "Descomprimiendo %s de %s ficheros \nen la carpeta %s."
 
    set caption(sn_tarot_go,attention)      "!Cuidado¡"
-   set caption(sn_tarot_go,url_error)      "# L'adresse %s n'est pas accessible."
-   set caption(sn_tarot_go,file_error)     "# Le fichier %s n'existe pas."
-   set caption(sn_tarot_go,nozip_error)    "# Pas d'archive.\nSélectionner une date et télécharger l'archive."
+   set caption(sn_tarot_go,url_error)      "La dirección %s no es accesible."
+   set caption(sn_tarot_go,file_error)     "El fichero %s no existe."
+   set caption(sn_tarot_go,nozip_error)    "No archivo.\nSeleccionar una fecha y descargar archivo."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -146,8 +146,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot_go,recherche_sn)   "Supernovae\nsuchen"
 
    set caption(sn_tarot_go,telecharge)     "Herunterladen %s ?"
-   set caption(sn_tarot_go,yes)            "YA"
-   set caption(sn_tarot_go,no)             "NEIN"
+   set caption(sn_tarot_go,yes)            "Ja"
+   set caption(sn_tarot_go,no)             "Nein"
    set caption(sn_tarot_go,unzip)          "# Décompression de %s en %s fichiers \ndans le dossier %s."
 
    set caption(sn_tarot_go,attention)      "Achtung"
@@ -175,8 +175,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot_go,recherche_sn)   "Procurar\nsupernova"
 
    set caption(sn_tarot_go,telecharge)     "Descarregar %s ?"
-   set caption(sn_tarot_go,yes)            "# OUI"
-   set caption(sn_tarot_go,no)             "# NON"
+   set caption(sn_tarot_go,yes)            "Sim"
+   set caption(sn_tarot_go,no)             "Não"
    set caption(sn_tarot_go,unzip)          "# Décompression de %s en %s fichiers \ndans le dossier %s."
 
    set caption(sn_tarot_go,attention)      "Atenção"
@@ -205,8 +205,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot_go,recherche_sn)   "Search for\nsupernovae"
 
    set caption(sn_tarot_go,telecharge)     "Download %s?"
-   set caption(sn_tarot_go,yes)            "YES"
-   set caption(sn_tarot_go,no)             "NO"
+   set caption(sn_tarot_go,yes)            "Yes"
+   set caption(sn_tarot_go,no)             "No"
    set caption(sn_tarot_go,unzip)          "Decompressing %s of %s files \nin %s folder."
 
    set caption(sn_tarot_go,attention)      "Warning"
@@ -235,8 +235,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot_go,recherche_sn)   "Search for\nsupernovae"
 
    set caption(sn_tarot_go,telecharge)     "Download %s?"
-   set caption(sn_tarot_go,yes)            "YES"
-   set caption(sn_tarot_go,no)             "NO"
+   set caption(sn_tarot_go,yes)            "Yes"
+   set caption(sn_tarot_go,no)             "No"
    set caption(sn_tarot_go,unzip)          "Decompressing %s of %s files \nin %s folder."
 
    set caption(sn_tarot_go,attention)      "Warning"
@@ -265,8 +265,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot_go,recherche_sn)   "Search for\nsupernovae"
 
    set caption(sn_tarot_go,telecharge)     "Download %s?"
-   set caption(sn_tarot_go,yes)            "YES"
-   set caption(sn_tarot_go,no)             "NO"
+   set caption(sn_tarot_go,yes)            "Yes"
+   set caption(sn_tarot_go,no)             "No"
    set caption(sn_tarot_go,unzip)          "Decompressing %s of %s files \nin %s folder."
 
    set caption(sn_tarot_go,attention)      "Warning"

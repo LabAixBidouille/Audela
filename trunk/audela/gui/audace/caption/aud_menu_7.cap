@@ -230,7 +230,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cwdWindow,creation_sous_rep)       "Crear"
    set caption(cwdWindow,repertoire_scripts)      "Carpeta de scripts:"
    set caption(cwdWindow,repertoire_catalogues)   "Carpeta de catalogos:"
-   set caption(cwdWindow,repertoire_archives)     "# Répertoire des archives :"
+   set caption(cwdWindow,repertoire_archives)     "Carpeta de archivos:"
    set caption(cwdWindow,boite_erreur)            "Error"
    set caption(cwdWindow,pas_repertoire)          " no es una carpeta."
 
