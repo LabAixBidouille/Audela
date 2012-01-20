@@ -147,6 +147,19 @@ load libak ; ak_reduceusno c:/d/usno/ c:/d/usnoshort ZONE0750 10
    }
 }
 
+int Cmd_aktcl_sizeofrefzmgmes(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* Extrait les parametres photometriques de l'etoile de coord ra,dec        */
+/* On prend l'etoile la plus proche.                                        */
+/* a partir des trois fichiers htm_ref.bin, htm_zmg.bin, htm_mes.bin        */
+/****************************************************************************/
+/****************************************************************************/
+{
+   char s[100];
+	sprintf(s,"{ref %d} {zmg %d} {mes %d}",sizeof(struct_htmref),sizeof(struct_htmzmg),sizeof(struct_htmmes));
+   Tcl_SetResult(interp,s,TCL_VOLATILE);
+   return TCL_OK;
+}
 
 int Cmd_aktcl_radecinrefzmgmes(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 /****************************************************************************/
