@@ -173,6 +173,7 @@ int Cmd_aktcl_addcol(ClientData clientData, Tcl_Interp *interp, int argc, char *
 int Cmd_aktcl_radec2healpix(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int Cmd_aktcl_healpix2radec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
+int Cmd_aktcl_sizeofrefzmgmes(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int Cmd_aktcl_radec2htm(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int Cmd_aktcl_htm2radec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int Cmd_aktcl_refzmgmes2vars(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
