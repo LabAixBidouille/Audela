@@ -481,6 +481,10 @@ proc ros { args } {
          # ros var replaceany old_work new_word
          set old_word [lindex $params 0]
          set new_word [lindex $params 1]
+         if {$new_word==""} {
+            set msg "$syntax\nERROR: ros var $action2 old_word new_word"
+            error $msg
+         }
          if {[info exists ros(audela,var,fichiers)]==0} {
             set msg "$syntax\nERROR: Execute ros var files before..."
             error $msg
@@ -516,7 +520,7 @@ proc ros { args } {
             }
          }
       } else {
-         set msg "$syntax\nERROR: Action must be amongst files find findarray ros2map replacearrays raplaceword"
+         set msg "$syntax\nERROR: Action must be amongst files find findarray ros2map replacearrays replaceword"
       }
 
    } elseif {$action=="modpoi"} {
