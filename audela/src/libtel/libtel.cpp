@@ -109,7 +109,7 @@ static struct telprop *telprops = NULL;
 #if defined(OS_WIN)
 int __cdecl TEL_ENTRYPOINT (Tcl_Interp *interp)
 #else
-int TEL_ENTRYPOINT (Tcl_Interp *interp)
+extern "C" int TEL_ENTRYPOINT (Tcl_Interp *interp)
 #endif
 {
    struct cmditem *cmd;
