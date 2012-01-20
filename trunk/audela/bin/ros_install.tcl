@@ -97,13 +97,16 @@ namespace eval ::ros_install {
          set ros(ros_install,audelabin) $::audela_start_dir
       }
 
-      set audace(ros_install,variables) {data ressources logs htdocs cgi-bin catalogs extinctionmaps conf}
+      set audace(ros_install,variables) {ros data ressources logs htdocs cgi-bin catalogs extinctionmaps conf}
       set audace(ros_install,variables,descr) $audace(ros_install,variables)
       set audace(ros_install,print) ""
 
       set k 0
       foreach name $audace(ros_install,variables) {
          set b $base
+         if {[lsearch -exact "ros" $name]>=0} {
+            set b $dirros
+         }
          if {[lsearch -exact "data ressources logs catalogs extinctionmaps" $name]>=0} {
             set b $dirwork
          }
@@ -587,8 +590,10 @@ namespace eval ::ros_install {
             #
          }
          # --- Cree les dossiers
-         ::ros_install::print "FOR $cap_name CREATE $audace(ros_install,configure,config,$name)/${name}\n"
-         file mkdir $audace(ros_install,configure,config,$name)/${name}
+         if {($name!="ros")} {
+	         ::ros_install::print "FOR $cap_name CREATE $audace(ros_install,configure,config,$name)/${name}\n"
+	         file mkdir $audace(ros_install,configure,config,$name)/${name}
+         }
          # --- htdocs & cgi-bin : copie des fichiers specifiques en ecrasant au besoin ceux de AudeLA
          if {($name=="htdocs")||($name=="cgi-bin")} {
             set base1 [::ros_install::compact $ros_install_base/install/httpd/$name]

@@ -477,8 +477,46 @@ proc ros { args } {
                close $f
             }
          }
+      } elseif {$action2=="replaceword"} {
+         # ros var replaceany old_work new_word
+         set old_word [lindex $params 0]
+         set new_word [lindex $params 1]
+         if {[info exists ros(audela,var,fichiers)]==0} {
+            set msg "$syntax\nERROR: Execute ros var files before..."
+            error $msg
+         }
+         set textes ""
+         set thearrays ""
+         foreach fichier $ros(audela,var,fichiers) {
+            set ext [file extension $fichier]
+            if {$ext!=".tcl"} {
+               continue
+            }
+            set err [catch {set f [open $fichier r]}]
+            if {$err==1} { continue }
+            set lignes [split [read $f] \n]
+            close $f
+            set n [llength $lignes]
+            set nmap 0
+            set ligne2s ""
+            #::console::affiche_resultat "$fichier : $n\n"
+            for {set k 0} {$k<$n} {incr k} {
+               set ligne [lindex $lignes $k]
+               set ligne2 [string map [list $old_word $new_word] $ligne]
+               if {[string compare $ligne $ligne2]!=0} {
+                  incr nmap
+               }
+               append ligne2s "$ligne2\n"
+            }
+            if {$nmap>0} {
+               ::console::affiche_resultat "$fichier => $nmap\n"
+               set f [open $fichier w]
+               puts -nonewline $f "$ligne2s"
+               close $f
+            }
+         }
       } else {
-         set msg "$syntax\nERROR: Action must be amongst files find findarray ros2map replacearrays"
+         set msg "$syntax\nERROR: Action must be amongst files find findarray ros2map replacearrays raplaceword"
       }
 
    } elseif {$action=="modpoi"} {
