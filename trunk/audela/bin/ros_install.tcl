@@ -9,7 +9,7 @@ namespace eval ::ros_install {
 #--------------------------------------------------
 # Chargement des chemins pour ros
 # @param positionxy position de la fenetre (par defaut : 20+20)
-# @return 
+# @return
 #--------------------------------------------------
    proc ::ros_install::get_lastconfig {  } {
 
@@ -19,14 +19,14 @@ namespace eval ::ros_install {
       set err [catch {source [file join $::audela_start_dir ros_install_lastconfig.tcl]} msg]
       return -code $err $msg
    }
-   
-   
+
+
 #--------------------------------------------------
 #  ::ros_install::get_root { }
 #--------------------------------------------------
 # Chargement des chemins pour ros
 # @param positionxy position de la fenetre (par defaut : 20+20)
-# @return 
+# @return
 #--------------------------------------------------
    proc ::ros_install::get_root {  } {
 
@@ -36,15 +36,15 @@ namespace eval ::ros_install {
       set err [catch {source [file join $::audela_start_dir ros_root.tcl]} msg]
       return -code $err $msg
    }
-   
-   
-   
+
+
+
 #--------------------------------------------------
 #  ::ros_install::run { positionxy}
 #--------------------------------------------------
 # Demarrage de l interface d installation (fenetree ou ligne de commande)
 # @param positionxy position de la fenetre (par defaut : 20+20)
-# @return 
+# @return
 #--------------------------------------------------
    proc ::ros_install::run { { positionxy 20+20 } } {
 
@@ -134,7 +134,7 @@ namespace eval ::ros_install {
                break
             }
          }
-   
+
          if {$a!=""} {
             #::console::affiche_resultat "a=$a\n"
             for {set k 0} {$k<3} {incr k} {
@@ -151,7 +151,7 @@ namespace eval ::ros_install {
                }
             }
             set audace(ros_install,configure,config,htdocs)     "$a"
-            set audace(ros_install,configure,config,cgi-bin)    "$a"         
+            set audace(ros_install,configure,config,cgi-bin)    "$a"
          }
       }
 
@@ -338,9 +338,9 @@ namespace eval ::ros_install {
 #--------------------------------------------------
 #  ::ros_install::analdir { }
 #--------------------------------------------------
-# 
-# @param  
-# @return 
+#
+# @param
+# @return
 #--------------------------------------------------
    proc ::ros_install::analdir { base {filefilter *} } {
 
@@ -382,9 +382,9 @@ namespace eval ::ros_install {
 #--------------------------------------------------
 #  ::ros_install::files_in_dir { }
 #--------------------------------------------------
-# 
-# @param  
-# @return 
+#
+# @param
+# @return
 #--------------------------------------------------
    proc ::ros_install::files_in_dir { base {filefilter *} } {
 
@@ -408,7 +408,7 @@ namespace eval ::ros_install {
 #  ::ros_install::quit { }
 #--------------------------------------------------
 # Action du bouton quitter, detruit la fenetre active
-# @return 
+# @return
 #--------------------------------------------------
    proc ::ros_install::quit { } {
       global conf audace ros
@@ -437,7 +437,7 @@ namespace eval ::ros_install {
 #  ::ros_install::print { }
 #--------------------------------------------------
 # affiche sur la sortie standard (console ou shell)
-# @return 
+# @return
 #--------------------------------------------------
    proc ::ros_install::print { msg } {
 
@@ -460,9 +460,9 @@ namespace eval ::ros_install {
 #--------------------------------------------------
 #  ::ros_install::go { ros_install_base}
 #--------------------------------------------------
-# 
-# @param ros_install_base 
-# @return 
+#
+# @param ros_install_base
+# @return
 #--------------------------------------------------
    proc ::ros_install::go { ros_install_base } {
       global audace
@@ -591,8 +591,8 @@ namespace eval ::ros_install {
          }
          # --- Cree les dossiers
          if {($name!="ros")} {
-	         ::ros_install::print "FOR $cap_name CREATE $audace(ros_install,configure,config,$name)/${name}\n"
-	         file mkdir $audace(ros_install,configure,config,$name)/${name}
+            ::ros_install::print "FOR $cap_name CREATE $audace(ros_install,configure,config,$name)/${name}\n"
+            file mkdir $audace(ros_install,configure,config,$name)/${name}
          }
          # --- htdocs & cgi-bin : copie des fichiers specifiques en ecrasant au besoin ceux de AudeLA
          if {($name=="htdocs")||($name=="cgi-bin")} {
@@ -640,7 +640,7 @@ namespace eval ::ros_install {
       ::ros_install::print "\n"
       ::ros_install::print "INTALLATION FINISHED WITH SUCCESS\n"
       set fichier [::ros_install::compact [file join $::audela_start_dir ros_install.log]]
-      
+
       set f [open $fichier w]
       puts $f $audace(ros_install,print)
       puts $f [mc_date2iso8601 now]
@@ -662,8 +662,8 @@ namespace eval ::ros_install {
 #  ::ros_install::compact { }
 #--------------------------------------------------
 # compact the directory name
-# @param  
-# @return 
+# @param
+# @return
 #--------------------------------------------------
    proc ::ros_install::compact { folder } {
 
@@ -685,9 +685,9 @@ namespace eval ::ros_install {
 #--------------------------------------------------
 #  ::ros_install::copy { }
 #--------------------------------------------------
-# 
-# @param  
-# @return 
+#
+# @param
+# @return
 #--------------------------------------------------
    proc ::ros_install::copy { base1 fichiers base2 } {
 
@@ -728,9 +728,9 @@ namespace eval ::ros_install {
 #--------------------------------------------------
 #  ::ros_install::button1 { }
 #--------------------------------------------------
-# 
-# @param  
-# @return 
+#
+# @param
+# @return
 #--------------------------------------------------
    proc ::ros_install::button1 { name descr } {
 
@@ -755,9 +755,9 @@ namespace eval ::ros_install {
 #--------------------------------------------------
 #  ::ros_install::button2 { }
 #--------------------------------------------------
-# 
-# @param  
-# @return 
+#
+# @param
+# @return
 #--------------------------------------------------
    proc button2 { name } {
    }
