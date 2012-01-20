@@ -1093,7 +1093,7 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
             k++;
          }
       } while (feof(cat)==0);
-	} else {
+	//} else {
       fclose(cat);
    }
 
