@@ -186,7 +186,7 @@
 
 
 
-   if {1==0} {
+   if {1==1} {
       gren_info "\n****************************************************************** \n"
       gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
       gren_info " Chargement TYCHO2 \n"
@@ -231,7 +231,7 @@
       affich_rond $listsources UCAC2 "red"    1
    }
 
-   if {1==1} {
+   if {1==0} {
       gren_info "\n****************************************************************** \n"
       gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
       gren_info " Chargement UCAC3 \n"
