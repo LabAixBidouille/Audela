@@ -17,7 +17,7 @@ namespace eval ::priam {
 
 proc ::priam::create_file_oldformat { listsources stars listmesure } {
 
-      global bddconf
+   global bddconf
 
 
    ::manage_source::imprim_3_sources $listsources
