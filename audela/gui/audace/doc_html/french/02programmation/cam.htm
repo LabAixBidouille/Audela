@@ -8,7 +8,7 @@
 </head>
 
 <body>
-<p class="date">Date de mise à jour : 22 mai 2010</p>
+<p class="date">Date de mise à jour : 21 janvier 2012</p>
 
 <h1>Caméra </h1>
 
@@ -83,6 +83,38 @@ la lecture du CCD est déclenchée tout de suite, et l'image est disponible dans
 le buffer d'acquisition dès que cette commande rend la main.</p>
 
 <h2>1.2. Informations de la caméra</h2>
+
+<h3><a name="debug" id="stop">cam1 debug ?<em>0|1|2|3|4</em>?
+(defaut=0)</a></h3>
+
+<p>Active (1|2|3|4) ou désactive (0) l'édition d'un fichier de traces
+pour les fonctions de la partie commune du driver. Il prendra le nom
+suivant : libcam.log. </p>
+
+<p>Attention le niveau de traces 1 ne crée le fichier "libcam.log" que
+si le fonctionnement de la caméra est perturbé par des erreurs.<br />
+</p>
+
+Les différents niveaux de traces sont les suivants :<br />
+
+<ul>
+
+  <li>1 : Correspond à LOG_ERROR, les traces sont précédées de
+&lt;ERROR&gt; (erreurs graves).<br />
+  </li>
+  <li>2 : Correspond à LOG_WARNING, les traces sont précédées de
+&lt;WARNING&gt; (erreurs bénignes).<br />
+</li>
+  <li>3 : Correspond à LOG_INFO, les traces sont précédées de
+&lt;INFO&gt; (informations).<br />
+</li>
+  <li>4 : Correspond à LOG_DEBUG, les traces sont précédées de
+&lt;DEBUG&gt; (informations détaillées pour débuggage).<br />
+</li>
+</ul>
+
+<p>La commande "cam1 debug" retourne le niveau de traces courant.<br />
+</p>
 
 <h3><a name="info" id="info"></a>cam1 info</h3>
 
