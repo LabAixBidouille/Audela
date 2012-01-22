@@ -711,7 +711,11 @@ namespace eval ::audace {
 
       #---
       toplevel $This
-      wm geometry $This 631x453+0+0
+      if { [ info exists conf(audace,visu1,wmgeometry) ] == "1" } {
+         wm geometry $This $conf(audace,visu1,wmgeometry)
+      } else {
+         wm geometry $This 631x453+0+0
+      }
       wm maxsize $This [winfo screenwidth .] [winfo screenheight .]
       wm minsize $This 631 453
       wm resizable $This 1 1
@@ -783,12 +787,7 @@ namespace eval ::audace {
       ::confColor::applyColor $audace(base)
       ::confColor::applyColor $audace(Console)
 
-      #--- Prise en compte des dimensions et des positions des fenetres
-      if { [ info exists conf(audace,visu$visuNo,wmgeometry) ] == "1" } {
-         wm geometry $This $conf(audace,visu$visuNo,wmgeometry)
-      } else {
-         wm geometry $This 631x453+0+0
-      }
+      #--- Prise en compte des dimensions et de la position de la Console
       if { [ info exists conf(console,wmgeometry) ] == "1" } {
          wm geometry $audace(Console) $conf(console,wmgeometry)
       } else {

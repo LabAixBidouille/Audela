@@ -1072,17 +1072,29 @@ namespace eval ::confEditScript {
 namespace eval ::audace {
 
    #
-   # ::audace::enregistrerConfiguration visuNo
+   # ::audace::enregistrerConfiguration
    # Demande la confirmation pour enregistrer la configuration
    #
-   proc enregistrerConfiguration { visuNo } {
+   proc enregistrerConfiguration { } {
+      variable private
       global audace caption conf
 
       #---
       menustate disabled
       #--- Positions et tailles des fenetres
-      set conf(audace,visu$visuNo,wmgeometry) [ wm geometry $audace(base) ]
-      set conf(console,wmgeometry)            [ wm geometry $audace(Console) ]
+      #--- Je recupere les visuNo des visu ouvertes
+      set list_visuNo [list ]
+      foreach visuNo [::visu::list] {
+         lappend list_visuNo "$visuNo"
+      }
+      foreach visuNo $list_visuNo {
+         if { $visuNo == 1 } {
+            set conf(audace,visu$visuNo,wmgeometry) [ wm geometry $audace(base) ]
+         } else {
+            set conf(audace,visu$visuNo,wmgeometry) [ wm geometry $::confVisu::private($visuNo,This) ]
+         }
+      }
+      set conf(console,wmgeometry) [ wm geometry $audace(Console) ]
 
       #---
       set filename [ file join $::audace(rep_home) audace.ini ]
