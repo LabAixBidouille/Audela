@@ -2443,9 +2443,9 @@ int cmdPhotom(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
             r1=atof(argv[4]);
             r2=atof(argv[5]);
             r3=atof(argv[6]);
-				if (r1<=1) { r1=1; }
-				if (r2<r1) { r2=r1; }
-				if (r3<r2) { r3=r2+1; }
+				if (r1<1)    { r1=1; }
+				if (r2<r1)   { r2=r1; }
+				if (r3<r2+1) { r3=r2+1; }
             try {
                buffer->AstroPhotom(x1, y1, x2, y2, method, r1, r2, r3, &flux, &f23, &fmoy, &sigma,&n1);
                // - sortie des resultats
