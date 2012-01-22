@@ -2493,7 +2493,7 @@ namespace eval ::confVisu {
 
          Menu_Separator $visuNo "$caption(audace,menu,setup)"
          Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,sauve_config)" \
-            "::audace::enregistrerConfiguration $visuNo"
+            "::audace::enregistrerConfiguration"
 
          Menu           $visuNo "$caption(audace,menu,aide)"
          Menu_Command   $visuNo "$caption(audace,menu,aide)" "$caption(audace,menu,sommaire)" \
@@ -2979,7 +2979,7 @@ namespace eval ::confVisu {
       ::confVisu::displayPlugins $visuNo setup setup
       Menu_Separator $visuNo "$caption(audace,menu,setup)"
       Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,sauve_config)" \
-         "::audace::enregistrerConfiguration $visuNo"
+         "::audace::enregistrerConfiguration"
 
       #---
       set This "$audace(base)"

@@ -161,7 +161,6 @@ namespace eval ::audace {
       menustate disabled
       set catchError [ catch {
          #--- Positions et tailles des fenetres
-         set conf(audace,visu1,wmgeometry) [ wm geometry $audace(base) ]
          set conf(console,wmgeometry)      [ wm geometry $audace(Console) ]
 
          #--- tous les outils de la visu 1
@@ -207,8 +206,8 @@ namespace eval ::audace {
             }
          }
 
-         set filename [ file join $::audace(rep_home) audace.ini ]
-         set filebak  [ file join $::audace(rep_home) audace.bak ]
+         set filename  [ file join $::audace(rep_home) audace.ini ]
+         set filebak   [ file join $::audace(rep_home) audace.bak ]
          set filename2 $filename
          catch {
             file copy -force $filename $filebak
