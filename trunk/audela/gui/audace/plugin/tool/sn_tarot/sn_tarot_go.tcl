@@ -125,7 +125,7 @@ proc ::sn_tarot::createPanel { this } {
    set rep(name3)    "[ file join $panneau(init_dir) dss ]" ; # chemin du repertoire images de reference dss
 
    set panneau(sn_tarot,Tarot_Calern,url)    "http://tarot6.obs-azur.fr/ros/supernovae/zip/"
-   set panneau(sn_tarot,Tarot_Chili,url)     "http://tarotchili3.oamp.fr/ros/supernovae/zip/"
+   set panneau(sn_tarot,Tarot_Chili,url)     "http://tarotchili5.oamp.fr/ros/supernovae/zip/"
    set panneau(sn_tarot,ohp,url)             "http://cador.obs-hp.fr/tarot"
 
    ::sn_tarot::updateFiles
@@ -511,7 +511,7 @@ proc ::sn_tarot::changeUpdateState { state } {
 #------------------------------------------------------------
 # inventaire
 #     Liste les 100 fichiers zip les plus recents
-# exemple ::sn_tarot::inventaire Tarot_Chili "http://tarotchili3.oamp.fr/ros/supernovae/zip"
+# exemple ::sn_tarot::inventaire Tarot_Chili "http://tarotchili5.oamp.fr/ros/supernovae/zip"
 #------------------------------------------------------------
 proc ::sn_tarot::inventaire { prefix url } {
    global panneau caption rep
