@@ -156,9 +156,6 @@ proc ::supernovae::stopTool { visuNo } {
    #--- Je supprime la liste des mots clefs non modifiables
    ::keyword::setKeywordState $visuNo $::conf(supernovae,keywordConfigName) [ list ]
 
-   #--- Je force la capture des mots cles OBJNAME, RA et DEC en manuel
-   ::keyword::setKeywordsObjRaDecManuel
-
    #---
    pack forget $This
 }
@@ -193,7 +190,7 @@ proc ::supernovae::configToolKeywords { visuNo { configName "" } } {
    ::keyword::setKeywordState $visuNo $configName [ list CRPIX1 CRPIX2 OBJNAME RA DEC XPIXSZ YPIXSZ ]
 
    #--- Je force la capture des mots cles OBJNAME, RA et DEC en automatique
-   ::keyword::setKeywordsObjRaDecAuto
+   ::keyword::setKeywordsObjRaDecAuto $visuNo
 }
 
 #------------------------------------------------------------
