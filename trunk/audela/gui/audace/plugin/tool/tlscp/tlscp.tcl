@@ -643,10 +643,6 @@ proc ::tlscp::stopTool { visuNo } {
    #--- Je supprime la liste des mots clefs non modifiables
    ::keyword::setKeywordState $visuNo $::conf(tlscp,keywordConfigName) [ list ]
 
-   #--- Je force la capture des mots cles OBJNAME, RA, DEC et EQUINOX en manuel
-   ::keyword::setKeywordsObjRaDecManuel
-   ::keyword::setKeywordsEquinoxManuel
-
    #--- je masque les axes
    ::tlscp::deleteAlphaDeltaAxis $visuNo
    #--- j'efface les cercles autour des etoiles
@@ -705,8 +701,8 @@ proc ::tlscp::configToolKeywords { visuNo { configName "" } } {
    ::keyword::setKeywordState $visuNo $configName [ list CRPIX1 CRPIX2 CRVAL1 CRVAL2 OBJNAME RA DEC EQUINOX ]
 
    #--- Je force la capture des mots cles OBJNAME, RA, DEC et EQUINOX en automatique
-   ::keyword::setKeywordsObjRaDecAuto
-   ::keyword::setKeywordsEquinoxAuto
+   ::keyword::setKeywordsObjRaDecAuto $visuNo
+   ::keyword::setKeywordsEquinoxAuto $visuNo
 }
 
 #------------------------------------------------------------

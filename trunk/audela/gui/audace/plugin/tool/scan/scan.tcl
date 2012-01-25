@@ -550,15 +550,11 @@ proc ::scan::configToolKeywords { visuNo { configName "" } } {
    #--- Ce sont les mots cles CRPIX1, CRPIX2
    ::keyword::selectKeywords $visuNo $configName [ list CRPIX1 CRPIX2 ]
 
-   #--- Je selectionne les mots cles optionnels a decocher
-   #--- Les mots cles RA et DEC doivent obligatoirement etre decoches
-   ::keyword::deselectKeywords $visuNo $configName [ list RA DEC ]
-
    #--- Je selectionne la liste des mots cles non modifiables
-   ::keyword::setKeywordState $visuNo $configName [ list CRPIX1 CRPIX2 RA DEC ]
+   ::keyword::setKeywordState $visuNo $configName [ list CRPIX1 CRPIX2 ]
 
    #--- Je force la capture des mots cles RA et DEC en manuel
-   ::keyword::setKeywordsRaDecManuel
+   ::keyword::setKeywordsRaDecManuel $visuNo
 }
 
 #------------------------------------------------------------
