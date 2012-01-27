@@ -1199,12 +1199,14 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
          } else {
             // j'applique le modele de pointage avec la procedure modpoi_tel2cat du TCL
             // ========================================================================
-            sprintf(ligne,"set libtel(radec) {%s}",texte);
-            mytel_tcleval(tel,ligne);
-            sprintf(ligne,"catch {set libtel(radec) [%s {%s}]}",tel->model_tel2cat,texte);
-            mytel_tcleval(tel,ligne);
-            mytel_tcleval(tel,"set libtel(radec) $libtel(radec)");
-            strcpy(ligne,interp->result);
+            if ( tel_radec_coord(tel,texte) == 0 ) {
+					sprintf(ligne,"set libtel(radec) {%s}",texte);
+					mytel_tcleval(tel,ligne);
+					sprintf(ligne,"catch {set libtel(radec) [%s {%s}]}",tel->model_tel2cat,texte);
+					mytel_tcleval(tel,ligne);
+					mytel_tcleval(tel,"set libtel(radec) $libtel(radec)");
+					strcpy(ligne,interp->result);
+				}
          }
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 
