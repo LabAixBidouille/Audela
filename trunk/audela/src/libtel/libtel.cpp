@@ -1206,7 +1206,11 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 					mytel_tcleval(tel,ligne);
 					mytel_tcleval(tel,"set libtel(radec) $libtel(radec)");
 					strcpy(ligne,interp->result);
-				}
+            } else {
+               // erreur de tel_radec_coord 
+               strcpy(ligne, tel->msg);
+               result = TCL_ERROR;
+            }            
          }
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 
