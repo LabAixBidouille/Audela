@@ -243,12 +243,14 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		tel->roth00=(int)(1507500-45./60.*10000);
 		tel->dec00=-90;
 		tel->rotd00=(int)(1250000+65./60.*10000);
+		tel->dec00=17.070925;
+		tel->rotd00=167891;
 		/* --- stops --- */
 		tel->stop_e_uc=-13900;
 		tel->stop_w_uc=3090000;
 		/* --- Home --- */
-		tel->latitude=-29.260406;
-		sprintf(tel->home0,"GPS 70.732222 W %+.6f 2347",tel->latitude);
+		tel->latitude=-29.2601;
+		sprintf(tel->home0,"GPS 70.7326 W %+.6f 2365",tel->latitude);
 	}
 	/* ============ */
 	/* === PMAC === */
