@@ -1,7 +1,7 @@
 #
 # Fichier : temma.tcl
 # Description : Fenetre de configuration pour le parametrage du suivi d'objets mobiles pour la monture Temma
-# Auteur : Robert DELMAS
+# Auteur : Robert DELMAS et Raymond ZACHANTKE
 # Mise à jour $Id$
 #
 
@@ -241,56 +241,27 @@ proc ::temma::fillConfigPage { frm } {
    label $frm.lab2 -text "$caption(temma,modele)"
    pack $frm.lab2 -in $frm.frame1 -anchor center -side right -padx 10 -pady 10
 
-   #--- Liaison des curseurs d'AD et de Dec.
-   if { $private(liaison) != "1" } {
+    #--- Le checkbutton pour la liaison physique des 2 reglages en Ad et en Dec.
+   checkbutton $frm.liaison -text "$caption(temma,liaison_AD_Dec)" -highlightthickness 0 \
+      -variable ::temma::private(liaison) -command { ::temma::configCorrectionTemma }
+   pack $frm.liaison -in $frm.frame4 -anchor center -side left -padx 10
 
-      #--- Label de la correction en AD
-      label $frm.lab3 -text "$caption(temma,correc_AD)"
-      pack $frm.lab3 -in $frm.frame4 -anchor e -side top -pady 7
+   #--- Label de la correction en AD
+   label $frm.lab3 -text "$caption(temma,correc_AD)"
+   pack $frm.lab3 -in $frm.frame4 -anchor e -side top
 
-      #--- Le checkbutton pour la liaison physique des 2 reglages en Ad et en Dec.
-      checkbutton $frm.liaison -text "$caption(temma,liaison_AD_Dec)" -highlightthickness 0 \
-         -variable ::temma::private(liaison) -onvalue 1 -offvalue 0 -command { ::temma::configCorrectionTemma }
-      pack $frm.liaison -in $frm.frame4 -anchor w -side top -padx 10
+   #--- Label de la correction en Dec
+   label $frm.lab4 -text "$caption(temma,correc_Dec)"
+   pack $frm.lab4 -in $frm.frame4 -anchor e -side top
 
-      #--- Label de la correction en Dec
-      label $frm.lab4 -text "$caption(temma,correc_Dec)"
-      pack $frm.lab4 -in $frm.frame4 -anchor e -side top -pady 7
+   #--- Reglage de la vitesse de correction en AD pour la vitesse normale (NS)
+   scale $frm.correc_variantAD -from 10 -to 90 -length 210 -orient horizontal -showvalue true \
+      -tickinterval 10 -borderwidth 2 -relief groove -variable ::temma::private(correc_AD) -width 10
+   pack $frm.correc_variantAD -in $frm.frame5 -side top -padx 10
+   bind $frm.correc_variantAD <ButtonRelease-1> {::temma::setCorrectionSpeed}
 
-      #--- Reglage de la vitesse de correction en AD pour la vitesse normale (NS)
-      scale $frm.correc_variantAD -from 10 -to 90 -length 210 -orient horizontal -showvalue true \
-         -tickinterval 10 -borderwidth 2 -relief groove -variable ::temma::private(correc_AD) -width 10
-      pack $frm.correc_variantAD -in $frm.frame5 -side top -padx 10
-
-      #--- Reglage de la vitesse de correction en Dec. pour la vitesse normale (NS)
-      scale $frm.correc_variantDec -from 10 -to 90 -length 210 -orient horizontal -showvalue true \
-         -tickinterval 10 -borderwidth 2 -relief groove -variable ::temma::private(correc_Dec) -width 10
-      pack $frm.correc_variantDec -in $frm.frame5 -side top -padx 10
-
-   } else {
-
-      #--- Label de la correction en AD
-      label $frm.lab3 -text "$caption(temma,correc_AD)"
-      pack $frm.lab3 -in $frm.frame4 -anchor e -side top
-
-      #--- Le checkbutton pour la liaison physique des 2 reglages en Ad et en Dec.
-      checkbutton $frm.liaison -text "$caption(temma,liaison_AD_Dec)" -highlightthickness 0 \
-         -variable ::temma::private(liaison) -command { ::temma::configCorrectionTemma }
-      pack $frm.liaison -in $frm.frame4 -anchor w -side top -padx 10
-
-      #--- Label de la correction en Dec
-      label $frm.lab4 -text "$caption(temma,correc_Dec)"
-      pack $frm.lab4 -in $frm.frame4 -anchor e -side top
-
-      #--- Reglage de la vitesse de correction en AD pour la vitesse normale (NS)
-      scale $frm.correc_variantAD -from 10 -to 90 -length 210 -orient horizontal -showvalue true \
-         -tickinterval 10 -borderwidth 2 -relief groove -variable ::temma::private(correc_AD) -width 10
-      pack $frm.correc_variantAD -in $frm.frame5 -side top -padx 10
-
-      #--- Liaison des corrections en AD et en Dec.
-      set private(correc_Dec) $private(correc_AD)
-
-   }
+  #--- Configure les echelles de vitesse de correction lente d'AD et de Dec.
+   ::temma::configCorrectionTemma
 
    #--- Position du telescope sur la monture equatoriale allemande : A l'est ou a l'ouest
    label $frm.pos_tel -text "$caption(temma,position_telescope)"
@@ -541,71 +512,60 @@ proc ::temma::configCorrectionTemma { } {
    variable private
    global caption
 
-   if { [ info exists private(frm) ] } {
-      set frm $private(frm)
-      if { $private(liaison) != "1" } {
+   if {[info exists private(frm)] ==0} {return}
 
-         destroy $frm.lab3
-         destroy $frm.liaison
-         destroy $frm.lab4
-         destroy $frm.correc_variantAD
+   set frm $private(frm)
+
+   if { $private(liaison) != "1" } {
+
+      #--- Reglage de la vitesse de correction en Dec. pour la vitesse normale (NS)
+      scale $frm.correc_variantDec -from 10 -to 90 -length 210 -orient horizontal -showvalue true \
+         -tickinterval 10 -borderwidth 2 -relief groove -variable ::temma::private(correc_Dec) -width 10
+      pack $frm.correc_variantDec -in $frm.frame5 -side top -padx 10
+
+      $frm.lab3 configure -pady 20
+      $frm.lab4 configure -pady 20
+
+      #--  Bindings
+      bind $frm.correc_variantDec <ButtonRelease-1> {::temma::setCorrectionSpeed}
+
+   } else {
+
+      if {[winfo exists $frm.correc_variantDec]} {
+         bind $frm.correc_variantDec <ButtonRelease-1> {}
          destroy $frm.correc_variantDec
-
-         #--- Label de la correction en AD
-         label $frm.lab3 -text "$caption(temma,correc_AD)"
-         pack $frm.lab3 -in $frm.frame4 -anchor e -side top -pady 7
-
-         #--- Le checkbutton pour la liaison physique des 2 reglages en Ad et en Dec.
-         checkbutton $frm.liaison -text "$caption(temma,liaison_AD_Dec)" -highlightthickness 0 \
-            -variable ::temma::private(liaison) -command { ::temma::configCorrectionTemma }
-         pack $frm.liaison -in $frm.frame4 -anchor w -side top -padx 10
-
-         #--- Label de la correction en Dec
-         label $frm.lab4 -text "$caption(temma,correc_Dec)"
-         pack $frm.lab4 -in $frm.frame4 -anchor e -side top -pady 7
-
-         #--- Reglage de la vitesse de correction en AD pour la vitesse normale (NS)
-         scale $frm.correc_variantAD -from 10 -to 90 -length 210 -orient horizontal -showvalue true \
-            -tickinterval 10 -borderwidth 2 -relief groove -variable ::temma::private(correc_AD) -width 10
-         pack $frm.correc_variantAD -in $frm.frame5 -side top -padx 10
-
-         #--- Reglage de la vitesse de correction en Dec. pour la vitesse normale (NS)
-         scale $frm.correc_variantDec -from 10 -to 90 -length 210 -orient horizontal -showvalue true \
-            -tickinterval 10 -borderwidth 2 -relief groove -variable ::temma::private(correc_Dec) -width 10
-         pack $frm.correc_variantDec -in $frm.frame5 -side top -padx 10
-
-      } else {
-
-         destroy $frm.lab3
-         destroy $frm.liaison
-         destroy $frm.lab4
-         destroy $frm.correc_variantAD
-         destroy $frm.correc_variantDec
-
-         #--- Label de la correction en AD
-         label $frm.lab3 -text "$caption(temma,correc_AD)"
-         pack $frm.lab3 -in $frm.frame4 -anchor e -side top
-
-         #--- Le checkbutton pour la liaison physique des 2 reglages en Ad et en Dec.
-         checkbutton $frm.liaison -text "$caption(temma,liaison_AD_Dec)" -highlightthickness 0 \
-            -variable ::temma::private(liaison) -command { ::temma::configCorrectionTemma }
-         pack $frm.liaison -in $frm.frame4 -anchor w -side top -padx 10
-
-         #--- Label de la correction en Dec
-         label $frm.lab4 -text "$caption(temma,correc_Dec)"
-         pack $frm.lab4 -in $frm.frame4 -anchor e -side top
-
-         #--- Reglage de la vitesse de correction en AD pour la vitesse normale (NS)
-         scale $frm.correc_variantAD -from 10 -to 90 -length 210 -orient horizontal -showvalue true \
-            -tickinterval 10 -borderwidth 2 -relief groove -variable ::temma::private(correc_AD) -width 10
-         pack $frm.correc_variantAD -in $frm.frame5 -side top -padx 10
-
-         #--- Liaison des corrections en AD et en Dec.
-         set private(correc_Dec) $private(correc_AD)
-
       }
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $frm
+
+      $frm.lab3 configure -pady 7
+      $frm.lab4 configure -pady 7
+
+      #--- Liaison des corrections en AD et en Dec.
+      set private(correc_Dec) $private(correc_AD)
+
+   }
+
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $frm
+}
+
+#
+# setCorrectionSpeed
+# Permet de modifier les reglages de vitesse de correction lente durant la connexion
+#
+proc ::temma::setCorrectionSpeed { args } {
+   variable private
+   global audace conf
+
+   set conf(temma,correc_AD) $private(correc_AD)
+   if { $private(liaison) != "1" } {
+      set conf(temma,correc_Dec) $private(correc_Dec)
+   } else {
+      set conf(temma,correc_Dec) $conf(temma,correc_AD)
+   }
+
+   set telNo $audace(telNo)
+   if {$telNo != 0} {
+      tel$telNo correctionspeed $conf(temma,correc_AD) $conf(temma,correc_Dec)
    }
 }
 
@@ -620,6 +580,7 @@ proc ::temma::configCorrectionTemma { } {
 # multiMount              Retourne la possibilite de se connecter avec Ouranos (1 : Oui, 0 : Non)
 # name                    Retourne le modele de la monture
 # product                 Retourne le nom du produit
+# isGermanMount           Retourne la possibilite d'etre une monture allemande
 # hasCoordinates          Retourne la possibilite d'afficher les coordonnees
 # hasGoto                 Retourne la possibilite de faire un Goto
 # hasMatch                Retourne la possibilite de faire un Match
@@ -650,6 +611,7 @@ proc ::temma::getPluginProperty { propertyName } {
             return ""
          }
       }
+      isGermanMount           { return 1 }
       hasCoordinates          { return 1 }
       hasGoto                 { return 1 }
       hasMatch                { return 1 }
