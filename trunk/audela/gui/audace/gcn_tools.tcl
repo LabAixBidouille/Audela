@@ -171,6 +171,7 @@ proc socket_client_send_gcn { name ipserver portserver {data {3 2008 07 07 23 45
 proc socket_client_send_gcn_native { name ipserver portserver longs } {
    global audace
    global gcn
+
    # --- convert longs into the binary stream
    #::console::affiche_resultat "longs=<$longs>\n"
    set line [binary format I* $longs]
@@ -212,6 +213,7 @@ proc socket_client_send_gcn_native { name ipserver portserver longs } {
 proc socket_client_close_gcn { name } {
    global audace
    global gcn
+
    if {[info exists audace(socket,client,$name)]==1} {
       close $audace(socket,client,$name)
       unset audace(socket,client,$name)
@@ -226,6 +228,7 @@ proc socket_client_close_gcn { name } {
 proc socket_server_open_gcn { name portgcn {portout 0} {index_html ""} {redir_hosts ""} {redir_ports 0} } {
    global audace
    global gcn
+
    set proc_accept socket_server_accept_gcn_${name}
    if {[info exists audace(socket,server,$name)]==1} {
       error "server $name already opened"
@@ -296,6 +299,7 @@ proc socket_server_open_gcn { name portgcn {portout 0} {index_html ""} {redir_ho
 # socket_server_respons_gcn : decode the GCN stream
 proc socket_server_respons_gcn {fid {sockname dummy} {redir_hosts ""} {redir_ports 0} } {
    global gcn audace
+
    set gcn(gcn_${sockname},redir_msg) ""
    set errsoc [ catch {
       set line [read $fid 160]
@@ -371,6 +375,7 @@ proc socket_server_respons_gcn {fid {sockname dummy} {redir_hosts ""} {redir_por
 # socket_server_close_gcn : to close a named socket server
 proc socket_server_close_gcn { name } {
    global audace
+
    set errno [catch {
       catch {close $audace(socket,server,$name)}
       catch {close $audace(socket,server,x$name)}
@@ -401,6 +406,7 @@ proc socket_server_close_gcn { name } {
 proc socket_server_respons_out {fid {$sockname dummy} } {
    global audace
    global gcn
+
    set errsoc [ catch {
       set line [read $fid 160]
       if {[eof $fid]} {
@@ -435,6 +441,7 @@ proc socket_server_respons_out {fid {$sockname dummy} } {
 proc gcn_print { msg } {
    global gcn
    global audace
+
    if {[info commands ::console::affiche_resultat]=="::console::affiche_resultat"} {
       ::console::affiche_resultat "$msg\n"
    } else {
@@ -445,6 +452,7 @@ proc gcn_print { msg } {
 proc gcn_decode { longs sockname } {
    global gcn
    global ros
+
    set errno [catch {
       # --- reinit gcn array
       set comments ""
@@ -707,9 +715,9 @@ proc gcn_decode { longs sockname } {
       }
       # --- new decode
       catch {
-	      gcn_definition_from_sock_pkt_def_doc
-			set gcn($sockname,textlists) [gcn_longs2textlists $longs]
-		}
+         gcn_definition_from_sock_pkt_def_doc
+         set gcn($sockname,textlists) [gcn_longs2textlists $longs]
+      }
       # --- use by ROS
       catch { source $ros(root,ros)/src/majordome/gcn.tcl }
       # --- infos
@@ -1038,174 +1046,174 @@ proc gcn_read_url_contents { url {fullfile_out ""} } {
 # Input: the fullname of the file sock_pkt_def_doc.html
 # downloaded from URL http://gcn.gsfc.nasa.gov/sock_pkt_def_doc.html
 #
-# Output: 
-# Return none 
+# Output:
+# Return none
 # Two global variables are set:
 # gcn(sock_pkt_def_doc,number_names)
 # gcn(sock_pkt_def_doc,item_descriptions)
 # ----------------------------------------------------------
 proc gcn_definition_from_sock_pkt_def_doc { {fsock ""} } {
-	global gcn ros
-	
-	# INTERNET  SOCKET  PACKET  DEFINITION  DOC
-	if {$fsock==""} { 
-		if {[info exists ::audace(rep_userCatalog)]==1} {
-			set path [ file join $::audace(rep_userCatalog) gcn ]
-			catch {file mkdir $path}
-		} elseif {[info exists ros(root,ressources)]==1} {
-			set path [ file join $ros(root,ressources) ressources gcn ]			
-			catch {file mkdir $path}
-		} else {
-			set path [pwd]
-		}
-		set fsock ${path}/sock_pkt_def_doc.html
-		if {[file exists $fsock]==0} {
-			gcn_read_url_contents http://gcn.gsfc.nasa.gov/sock_pkt_def_doc.html $fsock
-		}
-	} 
-	
-	# --- lecture du fichier en memoire
-	set f [open $fsock r]
-	set lignes [split [read $f] \n]
-	close $f
+   global gcn ros
 
-	# --- recherche la table de relation entre number et name
-	# gcn(sock_pkt_def_doc,number_names)
-	set gcn(sock_pkt_def_doc,number_names) ""
-	set nl [llength $lignes]
-	set kl 0
-	while {$kl<=$nl} {
-		set ligne [lindex $lignes $kl]
-		set kkey1 [string first "This table lists all the currently valid notices (by their name)" $ligne]
-		if {$kkey1>=0} {
-			incr kl ; set ligne [lindex $lignes $kl]
-			incr kl ; set ligne [lindex $lignes $kl]
-			incr kl ; set ligne [lindex $lignes $kl]
-			incr kl ; set ligne [lindex $lignes $kl]
-			incr kl ; set ligne [lindex $lignes $kl]
-			for {set kl2 $kl} {$kl2<$nl} {incr kl2} {
-				set ligne [lindex $lignes $kl2]			
-				set number [lindex $ligne 0]
-				set name   [lindex $ligne 1]
-				if {$number==""} { break }
-				lappend gcn(sock_pkt_def_doc,number_names) [list $number $name]
-			}
-		}
-		incr kl
-	}
-	lappend gcn(sock_pkt_def_doc,number_names) [list 901 ANTARES_GRB_POSITION]
-	lappend gcn(sock_pkt_def_doc,number_names) [list 902 ANTARES_GRB_POS_TEST]
-	lappend gcn(sock_pkt_def_doc,number_names) [list 903 ANTARES_GRB_POS_REFINED]
-	lappend gcn(sock_pkt_def_doc,number_names) [list 905 LOOCUP_GRB_POSITION]
-	lappend gcn(sock_pkt_def_doc,number_names) [list 906 LOOCUP_GRB_POS_TEST]
-	lappend gcn(sock_pkt_def_doc,number_names) [list 907 LOOCUP_GRB_POS_REFINED]
+   # INTERNET  SOCKET  PACKET  DEFINITION  DOC
+   if {$fsock==""} {
+      if {[info exists ::audace(rep_userCatalog)]==1} {
+         set path [ file join $::audace(rep_userCatalog) gcn ]
+         catch {file mkdir $path}
+      } elseif {[info exists ros(root,ressources)]==1} {
+         set path [ file join $ros(root,ressources) ressources gcn ]
+         catch {file mkdir $path}
+      } else {
+         set path [pwd]
+      }
+      set fsock ${path}/sock_pkt_def_doc.html
+      if {[file exists $fsock]==0} {
+         gcn_read_url_contents http://gcn.gsfc.nasa.gov/sock_pkt_def_doc.html $fsock
+      }
+   }
 
-	# --- Transforme le fichier sock_pkt_def_doc.html
-	# en une liste qui definit les records pour chaque
-	# type de notice
-	set gcn(sock_pkt_def_doc,item_descriptions) ""
-	set sock_pkt_def_docs ""
-	set nl [llength $lignes]
-	set kl 0
-	while {$kl<=$nl} {
-		set ligne [lindex $lignes $kl]
-		set kkey1 [string first " PACKET CONTENTS:</b>" $ligne]
-		set kkey2 [string first "PACKET ITEM DESCRIPTIONS for type=" $ligne]
-		if {$kkey1>=0} {
-			set k1 [string first =   $ligne]
-			set k2 [string first " " $ligne $k1]		
-			set xpkt_type [string trim [string range $ligne [expr 1+$k1] $k2]]
-		} elseif {$kkey2>=0} {
-			set k1 [string first =   $ligne]
-			set k2 [string first ":" $ligne $k1]		
-			set xpkt_type [string trim [string range $ligne [expr 1+$k1] [expr $k2-1]]]
-		} else {
-			incr kl
-			continue
-		}
-		#
-		set kl2 [expr $kl+1]
-		set nl2 [expr $kl2+10]
-		#::console::affiche_resultat "======== xpkt_type=$xpkt_type ($kkey1,$kkey2)\n"	
-		while {$kl2<=$nl2} {
-			set ligne [lindex $lignes $kl2]
-			set kkey [string first "-----------  -----   ---------    ----------      ----------------" $ligne]
-			if {$kkey>=0} { break }
-			incr kl2
-		}
-		set records ""
-		set kl [expr 1+$kl2]
-		set ligne [lindex $lignes $kl]
-		#
-		set kl2 [expr $kl]
-		set nl2 [expr $kl2+41]
-		while {$kl2<=$nl2} {
-			set ligne [lindex $lignes $kl2]
-			set number [lindex $ligne 0]
-			set indice [lindex $ligne 1]
-			set indices [regsub -all -- - $indice " "]
-			set indice1 [lindex $indices 0]
-			set indice2 [lindex $indices 1]
-			if {$indice2==""} { set indice2 $indice1 }
-			set name [lindex $ligne 2]
-			if {$name==""} { incr kl2 ; continue }
-			set k [string first \[ $name]
-			if {$k>=0} { set name [string range $name 0 [expr $k-1]] }
-			set unit [lindex $ligne 3]
-			set unit2 [regsub -all -- \\\[ $unit ""]
-			set unit [regsub -all -- \\\] $unit2 ""]
-			set comment [string range $ligne 50 end]
-			#if {$xpkt_type==83} {
-			#	::console::affiche_resultat "$number $indice1 $indice2 $name $unit $comment\n"	
-			#}
-			set record "$number $indice1 $indice2 $name $unit \"$comment\""
-			lappend records $record
-			if {($number!="long")&&($number!="quad_char")} { break }
-			if {$indice2==39} { break }
-			incr kl2
-		}
-		lappend gcn(sock_pkt_def_doc,item_descriptions) [list $xpkt_type $records]
-		incr kl
-	}
-	# --- ANTARES et LOCCUP	
-	set xpkt_types {901 902 903}
-	foreach xpkt_type $xpkt_types {
-		set records ""
-		lappend records "long  0  0 pkt_type     integer         \"Packet type number\""
-		lappend records "long  4  4 trig_num     integer         \"Trigger number\""	
-		lappend records "long  5  5 burst_tjd    days            \"Truncated Julian Day\""
-		lappend records "long  6  6 burst_sod    centi-sec       \"(int)(sssss.sss *100)\""
-		lappend records "long  7  7 burst_ra     0.0001-deg      \"(int)(0.0 to 359.9999 *10000)\""
-		lappend records "long  8  8 burst_dec    0.0001-deg      \"(int)(-90.0 to +90.0 *10000)\""
-		lappend records "long  9  9 burst_flue   integer         \"Number of neutrinos for this trigger\""
-		lappend records "long 11 11 burst_error  0.0001-deg      \"(int)(0.0 to 180.0 *10000)\""
-		lappend records "long 14 14 integ_time   4mSec           \"Time between two neutrinos\""
-		lappend records "long 18 18 follow_up    integer         \"=1 if we must have a follow-up after prompt\""
-		lappend gcn(sock_pkt_def_doc,item_descriptions) [list $xpkt_type $records]
-	}
-	set xpkt_types {905 906 907}
-	foreach xpkt_type $xpkt_types {
-		set records ""
-		lappend records "long  0  0 pkt_type     integer         \"Packet type number\""
-		lappend records "long  4  4 trig_num     integer         \"Trigger number\""	
-		lappend records "long  5  5 burst_tjd    days            \"Truncated Julian Day\""
-		lappend records "long  6  6 burst_sod    centi-sec       \"(int)(sssss.sss *100)\""
-		lappend records "long  7  7 burst_ra     0.0001-deg      \"(int)(0.0 to 359.9999 *10000)\""
-		lappend records "long  8  8 burst_dec    0.0001-deg      \"(int)(-90.0 to +90.0 *10000)\""
-		lappend records "long  9  9 burst_flue   integer         \"Number of neutrinos for this trigger\""
-		lappend records "long 10 10 burst_ra_2   0.0001-deg      \"(int)(0.0 to 359.9999 *10000)\""
-		lappend records "long 11 11 burst_dec_2  0.0001-deg      \"(int)(-90.0 to +90.0 *10000)\""
-		lappend records "long 12 12 burst_ra_3   0.0001-deg      \"(int)(0.0 to 359.9999 *10000)\""
-		lappend records "long 13 13 burst_dec_3  0.0001-deg      \"(int)(-90.0 to +90.0 *10000)\""
-		lappend records "long 14 14 burst_ra_4   0.0001-deg      \"(int)(0.0 to 359.9999 *10000)\""
-		lappend records "long 15 15 burst_dec_4  0.0001-deg      \"(int)(-90.0 to +90.0 *10000)\""
-		lappend records "long 16 16 burst_ra_5   0.0001-deg      \"(int)(0.0 to 359.9999 *10000)\""
-		lappend records "long 17 17 burst_dec_5  0.0001-deg      \"(int)(-90.0 to +90.0 *10000)\""
-		#lappend records "long 11 11 burst_error  0.0001-deg      \"(int)(0.0 to 180.0 *10000)\""
-		lappend records "long 14 14 integ_time   4mSec           \"Time between two neutrinos\""
-		lappend records "long 18 18 time_burst   integer         \"Not defined\""
-		lappend gcn(sock_pkt_def_doc,item_descriptions) [list $xpkt_type $records]
-	}
+   # --- lecture du fichier en memoire
+   set f [open $fsock r]
+   set lignes [split [read $f] \n]
+   close $f
+
+   # --- recherche la table de relation entre number et name
+   # gcn(sock_pkt_def_doc,number_names)
+   set gcn(sock_pkt_def_doc,number_names) ""
+   set nl [llength $lignes]
+   set kl 0
+   while {$kl<=$nl} {
+      set ligne [lindex $lignes $kl]
+      set kkey1 [string first "This table lists all the currently valid notices (by their name)" $ligne]
+      if {$kkey1>=0} {
+         incr kl ; set ligne [lindex $lignes $kl]
+         incr kl ; set ligne [lindex $lignes $kl]
+         incr kl ; set ligne [lindex $lignes $kl]
+         incr kl ; set ligne [lindex $lignes $kl]
+         incr kl ; set ligne [lindex $lignes $kl]
+         for {set kl2 $kl} {$kl2<$nl} {incr kl2} {
+            set ligne [lindex $lignes $kl2]
+            set number [lindex $ligne 0]
+            set name   [lindex $ligne 1]
+            if {$number==""} { break }
+            lappend gcn(sock_pkt_def_doc,number_names) [list $number $name]
+         }
+      }
+      incr kl
+   }
+   lappend gcn(sock_pkt_def_doc,number_names) [list 901 ANTARES_GRB_POSITION]
+   lappend gcn(sock_pkt_def_doc,number_names) [list 902 ANTARES_GRB_POS_TEST]
+   lappend gcn(sock_pkt_def_doc,number_names) [list 903 ANTARES_GRB_POS_REFINED]
+   lappend gcn(sock_pkt_def_doc,number_names) [list 905 LOOCUP_GRB_POSITION]
+   lappend gcn(sock_pkt_def_doc,number_names) [list 906 LOOCUP_GRB_POS_TEST]
+   lappend gcn(sock_pkt_def_doc,number_names) [list 907 LOOCUP_GRB_POS_REFINED]
+
+   # --- Transforme le fichier sock_pkt_def_doc.html
+   # en une liste qui definit les records pour chaque
+   # type de notice
+   set gcn(sock_pkt_def_doc,item_descriptions) ""
+   set sock_pkt_def_docs ""
+   set nl [llength $lignes]
+   set kl 0
+   while {$kl<=$nl} {
+      set ligne [lindex $lignes $kl]
+      set kkey1 [string first " PACKET CONTENTS:</b>" $ligne]
+      set kkey2 [string first "PACKET ITEM DESCRIPTIONS for type=" $ligne]
+      if {$kkey1>=0} {
+         set k1 [string first =   $ligne]
+         set k2 [string first " " $ligne $k1]
+         set xpkt_type [string trim [string range $ligne [expr 1+$k1] $k2]]
+      } elseif {$kkey2>=0} {
+         set k1 [string first =   $ligne]
+         set k2 [string first ":" $ligne $k1]
+         set xpkt_type [string trim [string range $ligne [expr 1+$k1] [expr $k2-1]]]
+      } else {
+         incr kl
+         continue
+      }
+      #
+      set kl2 [expr $kl+1]
+      set nl2 [expr $kl2+10]
+      #::console::affiche_resultat "======== xpkt_type=$xpkt_type ($kkey1,$kkey2)\n"
+      while {$kl2<=$nl2} {
+         set ligne [lindex $lignes $kl2]
+         set kkey [string first "-----------  -----   ---------    ----------      ----------------" $ligne]
+         if {$kkey>=0} { break }
+         incr kl2
+      }
+      set records ""
+      set kl [expr 1+$kl2]
+      set ligne [lindex $lignes $kl]
+      #
+      set kl2 [expr $kl]
+      set nl2 [expr $kl2+41]
+      while {$kl2<=$nl2} {
+         set ligne [lindex $lignes $kl2]
+         set number [lindex $ligne 0]
+         set indice [lindex $ligne 1]
+         set indices [regsub -all -- - $indice " "]
+         set indice1 [lindex $indices 0]
+         set indice2 [lindex $indices 1]
+         if {$indice2==""} { set indice2 $indice1 }
+         set name [lindex $ligne 2]
+         if {$name==""} { incr kl2 ; continue }
+         set k [string first \[ $name]
+         if {$k>=0} { set name [string range $name 0 [expr $k-1]] }
+         set unit [lindex $ligne 3]
+         set unit2 [regsub -all -- \\\[ $unit ""]
+         set unit [regsub -all -- \\\] $unit2 ""]
+         set comment [string range $ligne 50 end]
+         #if {$xpkt_type==83} {
+         #  ::console::affiche_resultat "$number $indice1 $indice2 $name $unit $comment\n"
+         #}
+         set record "$number $indice1 $indice2 $name $unit \"$comment\""
+         lappend records $record
+         if {($number!="long")&&($number!="quad_char")} { break }
+         if {$indice2==39} { break }
+         incr kl2
+      }
+      lappend gcn(sock_pkt_def_doc,item_descriptions) [list $xpkt_type $records]
+      incr kl
+   }
+   # --- ANTARES et LOCCUP
+   set xpkt_types {901 902 903}
+   foreach xpkt_type $xpkt_types {
+      set records ""
+      lappend records "long  0  0 pkt_type     integer         \"Packet type number\""
+      lappend records "long  4  4 trig_num     integer         \"Trigger number\""
+      lappend records "long  5  5 burst_tjd    days            \"Truncated Julian Day\""
+      lappend records "long  6  6 burst_sod    centi-sec       \"(int)(sssss.sss *100)\""
+      lappend records "long  7  7 burst_ra     0.0001-deg      \"(int)(0.0 to 359.9999 *10000)\""
+      lappend records "long  8  8 burst_dec    0.0001-deg      \"(int)(-90.0 to +90.0 *10000)\""
+      lappend records "long  9  9 burst_flue   integer         \"Number of neutrinos for this trigger\""
+      lappend records "long 11 11 burst_error  0.0001-deg      \"(int)(0.0 to 180.0 *10000)\""
+      lappend records "long 14 14 integ_time   4mSec           \"Time between two neutrinos\""
+      lappend records "long 18 18 follow_up    integer         \"=1 if we must have a follow-up after prompt\""
+      lappend gcn(sock_pkt_def_doc,item_descriptions) [list $xpkt_type $records]
+   }
+   set xpkt_types {905 906 907}
+   foreach xpkt_type $xpkt_types {
+      set records ""
+      lappend records "long  0  0 pkt_type     integer         \"Packet type number\""
+      lappend records "long  4  4 trig_num     integer         \"Trigger number\""
+      lappend records "long  5  5 burst_tjd    days            \"Truncated Julian Day\""
+      lappend records "long  6  6 burst_sod    centi-sec       \"(int)(sssss.sss *100)\""
+      lappend records "long  7  7 burst_ra     0.0001-deg      \"(int)(0.0 to 359.9999 *10000)\""
+      lappend records "long  8  8 burst_dec    0.0001-deg      \"(int)(-90.0 to +90.0 *10000)\""
+      lappend records "long  9  9 burst_flue   integer         \"Number of neutrinos for this trigger\""
+      lappend records "long 10 10 burst_ra_2   0.0001-deg      \"(int)(0.0 to 359.9999 *10000)\""
+      lappend records "long 11 11 burst_dec_2  0.0001-deg      \"(int)(-90.0 to +90.0 *10000)\""
+      lappend records "long 12 12 burst_ra_3   0.0001-deg      \"(int)(0.0 to 359.9999 *10000)\""
+      lappend records "long 13 13 burst_dec_3  0.0001-deg      \"(int)(-90.0 to +90.0 *10000)\""
+      lappend records "long 14 14 burst_ra_4   0.0001-deg      \"(int)(0.0 to 359.9999 *10000)\""
+      lappend records "long 15 15 burst_dec_4  0.0001-deg      \"(int)(-90.0 to +90.0 *10000)\""
+      lappend records "long 16 16 burst_ra_5   0.0001-deg      \"(int)(0.0 to 359.9999 *10000)\""
+      lappend records "long 17 17 burst_dec_5  0.0001-deg      \"(int)(-90.0 to +90.0 *10000)\""
+      #lappend records "long 11 11 burst_error  0.0001-deg      \"(int)(0.0 to 180.0 *10000)\""
+      lappend records "long 14 14 integ_time   4mSec           \"Time between two neutrinos\""
+      lappend records "long 18 18 time_burst   integer         \"Not defined\""
+      lappend gcn(sock_pkt_def_doc,item_descriptions) [list $xpkt_type $records]
+   }
 }
 
 # ----------------------------------------------------------
@@ -1220,11 +1228,12 @@ proc gcn_definition_from_sock_pkt_def_doc { {fsock ""} } {
 # Output: Returns the list of the alert type definition.
 # ----------------------------------------------------------
 proc gcn_get_definition { number } {
-	global gcn
-	set knumber [lsearch -index 0 -exact $gcn(sock_pkt_def_doc,item_descriptions) $number]
-	if {$knumber==-1} { return }
-	set records [lindex [lindex $gcn(sock_pkt_def_doc,item_descriptions) $knumber] 1]
-	return $records
+   global gcn
+
+   set knumber [lsearch -index 0 -exact $gcn(sock_pkt_def_doc,item_descriptions) $number]
+   if {$knumber==-1} { return }
+   set records [lindex [lindex $gcn(sock_pkt_def_doc,item_descriptions) $knumber] 1]
+   return $records
 }
 
 # ----------------------------------------------------------
@@ -1239,13 +1248,14 @@ proc gcn_get_definition { number } {
 # Output: Returns the GCN alert type name
 # ----------------------------------------------------------
 proc gcn_number2name { number } {
-	global gcn
-	set k [lsearch -index 0 $gcn(sock_pkt_def_doc,number_names) $number]
-	if {$k==-1} {
-		error "Number $number not found in gcn(sock_pkt_def_doc,number_names)"
-	}
-	set name [lindex [lindex $gcn(sock_pkt_def_doc,number_names) $k] 1]
-	return $name
+   global gcn
+
+   set k [lsearch -index 0 $gcn(sock_pkt_def_doc,number_names) $number]
+   if {$k==-1} {
+      error "Number $number not found in gcn(sock_pkt_def_doc,number_names)"
+   }
+   set name [lindex [lindex $gcn(sock_pkt_def_doc,number_names) $k] 1]
+   return $name
 }
 
 # ----------------------------------------------------------
@@ -1260,13 +1270,14 @@ proc gcn_number2name { number } {
 # Output: Returns the GCN alert type number
 # ----------------------------------------------------------
 proc gcn_name2number { name } {
-	global gcn
-	set k [lsearch -index 1 $gcn(sock_pkt_def_doc,number_names) $name]
-	if {$k==-1} {
-		error "Name $name not found in gcn(sock_pkt_def_doc,number_names)"
-	}
-	set number [lindex [lindex $gcn(sock_pkt_def_doc,number_names) $k] 0]
-	return $number
+   global gcn
+
+   set k [lsearch -index 1 $gcn(sock_pkt_def_doc,number_names) $name]
+   if {$k==-1} {
+      error "Name $name not found in gcn(sock_pkt_def_doc,number_names)"
+   }
+   set number [lindex [lindex $gcn(sock_pkt_def_doc,number_names) $k] 0]
+   return $number
 }
 
 # ----------------------------------------------------------
@@ -1279,7 +1290,7 @@ proc gcn_name2number { name } {
 # Output: Returns a list of two elements: satellite pertinence
 # ----------------------------------------------------------
 proc gcn_number2infos { number } {
-	set pkt_type $number
+   set pkt_type $number
    # --- satellite identification
    set satellite UNKNOWN
    if {($pkt_type>=11)&&($pkt_type<=24)} {
@@ -1359,8 +1370,7 @@ proc gcn_number2infos { number } {
    }
    return [list $satellite $prompt]
 }
-   
-   
+
 # ----------------------------------------------------------
 # Use gcn_longs2textlists to return a clear list from the longs.
 #
@@ -1394,195 +1404,196 @@ proc gcn_number2infos { number } {
 # processed mag_error (0.17 | ...)
 # ----------------------------------------------------------
 proc gcn_longs2textlists { longs {date ""} } {
-	global gcn
-	if {$date==""} {
-	   if {[info commands ::audace::date_sys2ut]=="::audace::date_sys2ut"} {
-	      set date_rec_notice [mc_date2iso8601 [::audace::date_sys2ut now]]
-	   } else {
-	      set date_rec_notice [mc_date2iso8601 now]
-	   }
-	} else {
-	   set date_rec_notice [mc_date2iso8601 $date]
-	}
-	set textlists ""
-	set number [lindex $longs 0]
-	set records [gcn_get_definition $number]	
-	foreach record $records {
-		set number [lindex $record 0]
-		set indice1 [lindex $record 1]
-		set indice2 [lindex $record 2]
-		set name [lindex $record 3]
-		set unit [lindex $record 4]
-		set comment [lindex $record 5]
-		#::console::affiche_resultat "$record\n"
-		#::console::affiche_resultat "$number $indice1 $indice2 $name <<<$unit>>> $comment\n"
-		if {$indice2==$indice1} {
-			set val [lindex $longs $indice1]
-			lappend textlists "raw $name $val $unit \"$comment\""
-			set namep ""
-			set valp $val
-			set unitp $val
-			set commentp $comment
-			# --- convert units
-			if {$unit=="0.0001-deg"} {
-				set valp [expr 0.0001*$valp]
-				set unitp "deg"
-			}
-			if {$unit=="10^-4-deg"} {
-				set valp [expr 0.0001*$valp]
-				set unitp "deg"
-			}
-			if {$unit=="centi-sec"} {
-				set valp [expr 0.01*$valp]
-				set unitp "sec"
-			}
-			if {$unit=="arcsec"} {
-				set valp [expr $valp/3600.]
-				set unitp "deg"
-			}
-			if {$unit=="4mSec"} {
-				set valp [expr $valp*0.004]
-				set unitp "sec"
-			}
-			# --- 
-			if {[lsearch -exact {pkt_type} $name]>=0} {
-				set res [gcn_number2name $val]
-				lappend textlists "processed pkt_typename $res \"text\" \"Name of the packet\""
-				set res [gcn_number2infos $val]
-				set satellite [lindex $res 0]
-				set prompt [lindex $res 1]
-				set def_not_grb ""
-				if {$satellite=="INTEGRAL"} { 
-					set kfound [lsearch -exact -index 3 $records test_mpos]
-					if {$kfound>=0} {
-						set ind1 [lindex [lindex $records $kfound] 1]
-						set test_mpos [lindex $longs $ind1]
-						set bits [gcn_long2bits $test_mpos]
-						set bit30 [string index $bits 30] ;
-						lappend textlists "processed def_not_grb $bit30 \"bit\" \"0=No or 1=Yes, it is definitely not a GRB\""
-						set def_not_grb $bit30
-						set bit31 [string index $bits 31] ;
-						lappend textlists "processed test_mpos_test $bit31 \"bit\" \"0=No or 1=Yes, it is a Test_Notice\""
-						if {$bit31==1} {
-							set prompt INFOS
-						}
-					}
-				}
-				if {$satellite=="SWIFT"} { 
-					set kfound [lsearch -exact -index 3 $records soln_status]
-					if {$kfound>=0} {
-						set ind1 [lindex [lindex $records $kfound] 1]
-						set soln_status [lindex $longs $ind1]				
-		            set bits [gcn_long2bits $soln_status]
-						set bit5 [string index $bits 5] ;
-						lappend textlists "processed def_not_grb $bit5 \"bit\" \"0=No or 1=Yes, it is definitely not a GRB\""
-						set def_not_grb $bit5
-						if {$bit5==1} {
-							set prompt REFINED
-						}
-					}
-				}
-				if {$satellite=="ANTARES"} { 
-					if {($val=="901")||($val=="903")} {
-						set bit 0
-					} else {
-						set bit 1
-					}
-					lappend textlists "processed def_not_grb $bit \"bit\" \"0=No or 1=Yes, it is definitely not a neutrino\""
-				}
-				if {$satellite=="LOOCUP"} { 
-					if {($val=="905")||($val=="907")} {
-						set bit 0
-					} else {
-						set bit 1
-					}
-					lappend textlists "processed def_not_grb $bit \"bit\" \"0=No or 1=Yes, it is definitely not a GW\""
-				}
-				lappend textlists "processed trigger_experiment $satellite \"text\" \"Name of the trigger experiment\""
-				lappend textlists "processed position_type $prompt \"text\" \"INFOS, POINTDIR, PROMPT, REFINED\""
-			}
-			if {[lsearch -exact {integ_time} $name]>=0} { set namep integ_time ; set commentp "Duration of the trigger interval" }
-			if {[lsearch -exact {burst_error} $name]>=0} { set valp [expr abs($valp)] ; set namep error ; set commentp "error box radius" }
-			if {[lsearch -exact {point_ra burst_ra src_ra next_sc_ra} $name]>=0} { set namep ra ; set commentp "ra" 
-				set equinox J2000
-				if {$satellite=="INTEGRAL"} { set equinox $date_rec_notice }
-				lappend textlists "processed equinox $equinox \"Date\" \"Date of equinox for ra,dec\""
-			}
-			if {[lsearch -exact {point_dec burst_dec src_dec next_sc_dec} $name]>=0} { set namep dec ; set commentp "dec" }
-			if {[lsearch -exact {point_roll} $name]>=0} { set namep roll ; set commentp "" }
-			if {[lsearch -exact {obs_time slew_sod} $name]>=0} { set namep $name ; set commentp "" }
-			if {[lsearch -exact {pkt_sod} $name]>=0} {
-		      set res [mc_date2ymdhms $date_rec_notice]
-		      set res [lrange $res 0 2]
-		      set pkt_date [mc_date2jd $res]
-		      set pkt_time [expr $val/100.]
-		      set pkt_jd [expr $pkt_date+$pkt_time/86400.] ; # jd de la notice
-		      if {[expr $pkt_jd-[mc_date2jd $date_rec_notice]]>0.5} {
-		         set pkt_jd [expr $pkt_jd-1.]
-		      }
-				set namep $name
-				set commentp ""
-				lappend textlists "processed pkt_jd $pkt_jd \"Date\" \"Julian day of the packet\""
-				lappend textlists "processed pkt_date [mc_date2iso8601 $pkt_jd] \"Date\" \"ISO 8601 date of the packet\""
-			}
-			if {[lsearch -exact {burst_tjd} $name]>=0} {  
-				set kfound [lsearch -exact -index 3 $records burst_sod]
-				if {$kfound>=0} {
-					set ind1 [lindex [lindex $records $kfound] 1]
-					set burst_sod [lindex $longs $ind1]
-					if {$satellite=="INTEGRAL"} { 
-			         set grb_date [expr $val-12640.+[mc_date2jd {2003 1 1}]]
-		         } else {
-			         set grb_date [expr $val-13370.-1.+[mc_date2jd {2005 1 1}]] ; # TJD=13370 is 01 Jan 2005
-		         }
-		         set grb_time [expr $burst_sod/100.]
-		         set burst_jd [expr $grb_date+$grb_time/86400.] ; # jd du trigger
-					if {$satellite=="SWIFT"} { 
-			         if {($burst_jd-$pkt_jd)>0.5} {
-			            set $burst_jd [expr $burst_jd-1] ; # bug GCN du quart d'heure avant minuit
-			         }
-					}
-					lappend textlists "processed burst_jd $burst_jd \"Date\" \"Origin Julian day of the trigger\""
-					lappend textlists "processed burst_date [mc_date2iso8601 $burst_jd] \"Date\" \"ISO8601 Origin date of the trigger\""
-				}
-			}
-			if {[lsearch -exact {trig_sub_num} $name]>=0} { 
-				set burst_trig  $val
-				if {$satellite=="INTEGRAL"} { 
-	            set trigger_subnum [expr int($burst_trig/pow(2,16))]
-	            set trigger_num [expr int($burst_trig-$trigger_subnum*pow(2,16))] ; # identificateur du trigger
-					lappend textlists "processed trigger_num $trigger_num \"text\" \"Trigger number ID\""
-					lappend textlists "processed trigger_subnum $trigger_subnum \"text\" \"Trigger subnumber ID\""
-				}
-			}
-			if {[lsearch -exact {trig_obs_num} $name]>=0} { 
-				set trigger_num $val
-				lappend textlists "processed trigger_num $trigger_num \"text\" \"Trigger number ID\""
-			}
-			if {[lsearch -exact {burst_mag} $name]>=0} {  
-				set namep burst_mag				
-				set valp [expr $val/100.]
-				set commentp "UVOT magnitude"
-				set unitp mag
-			}
-			if {[lsearch -exact {mag_error} $name]>=0} {  
-				set namep mag_error
-				set valp [expr $val/100.]
-				set commentp "UVOT magnitude error"
-				set unitp mag
-			}
-			# --- 
-			if {$namep!=""} {
-				lappend textlists "processed $namep $valp \"$unitp\" \"$commentp\""
-			}
-		} else {
-			if {$number=="quad_char"} {
-				set val [lrange $longs $indice1 $indice2]
-				lappend textlists "raw $name \"$val\" $unit \"$comment\""			
-			}
-		}
-	}
-	return $textlists
+   global gcn
+
+   if {$date==""} {
+      if {[info commands ::audace::date_sys2ut]=="::audace::date_sys2ut"} {
+         set date_rec_notice [mc_date2iso8601 [::audace::date_sys2ut now]]
+      } else {
+         set date_rec_notice [mc_date2iso8601 now]
+      }
+   } else {
+      set date_rec_notice [mc_date2iso8601 $date]
+   }
+   set textlists ""
+   set number [lindex $longs 0]
+   set records [gcn_get_definition $number]
+   foreach record $records {
+      set number [lindex $record 0]
+      set indice1 [lindex $record 1]
+      set indice2 [lindex $record 2]
+      set name [lindex $record 3]
+      set unit [lindex $record 4]
+      set comment [lindex $record 5]
+      #::console::affiche_resultat "$record\n"
+      #::console::affiche_resultat "$number $indice1 $indice2 $name <<<$unit>>> $comment\n"
+      if {$indice2==$indice1} {
+         set val [lindex $longs $indice1]
+         lappend textlists "raw $name $val $unit \"$comment\""
+         set namep ""
+         set valp $val
+         set unitp $val
+         set commentp $comment
+         # --- convert units
+         if {$unit=="0.0001-deg"} {
+            set valp [expr 0.0001*$valp]
+            set unitp "deg"
+         }
+         if {$unit=="10^-4-deg"} {
+            set valp [expr 0.0001*$valp]
+            set unitp "deg"
+         }
+         if {$unit=="centi-sec"} {
+            set valp [expr 0.01*$valp]
+            set unitp "sec"
+         }
+         if {$unit=="arcsec"} {
+            set valp [expr $valp/3600.]
+            set unitp "deg"
+         }
+         if {$unit=="4mSec"} {
+            set valp [expr $valp*0.004]
+            set unitp "sec"
+         }
+         # ---
+         if {[lsearch -exact {pkt_type} $name]>=0} {
+            set res [gcn_number2name $val]
+            lappend textlists "processed pkt_typename $res \"text\" \"Name of the packet\""
+            set res [gcn_number2infos $val]
+            set satellite [lindex $res 0]
+            set prompt [lindex $res 1]
+            set def_not_grb ""
+            if {$satellite=="INTEGRAL"} {
+               set kfound [lsearch -exact -index 3 $records test_mpos]
+               if {$kfound>=0} {
+                  set ind1 [lindex [lindex $records $kfound] 1]
+                  set test_mpos [lindex $longs $ind1]
+                  set bits [gcn_long2bits $test_mpos]
+                  set bit30 [string index $bits 30] ;
+                  lappend textlists "processed def_not_grb $bit30 \"bit\" \"0=No or 1=Yes, it is definitely not a GRB\""
+                  set def_not_grb $bit30
+                  set bit31 [string index $bits 31] ;
+                  lappend textlists "processed test_mpos_test $bit31 \"bit\" \"0=No or 1=Yes, it is a Test_Notice\""
+                  if {$bit31==1} {
+                     set prompt INFOS
+                  }
+               }
+            }
+            if {$satellite=="SWIFT"} {
+               set kfound [lsearch -exact -index 3 $records soln_status]
+               if {$kfound>=0} {
+                  set ind1 [lindex [lindex $records $kfound] 1]
+                  set soln_status [lindex $longs $ind1]
+                  set bits [gcn_long2bits $soln_status]
+                  set bit5 [string index $bits 5] ;
+                  lappend textlists "processed def_not_grb $bit5 \"bit\" \"0=No or 1=Yes, it is definitely not a GRB\""
+                  set def_not_grb $bit5
+                  if {$bit5==1} {
+                     set prompt REFINED
+                  }
+               }
+            }
+            if {$satellite=="ANTARES"} {
+               if {($val=="901")||($val=="903")} {
+                  set bit 0
+               } else {
+                  set bit 1
+               }
+               lappend textlists "processed def_not_grb $bit \"bit\" \"0=No or 1=Yes, it is definitely not a neutrino\""
+            }
+            if {$satellite=="LOOCUP"} {
+               if {($val=="905")||($val=="907")} {
+                  set bit 0
+               } else {
+                  set bit 1
+               }
+               lappend textlists "processed def_not_grb $bit \"bit\" \"0=No or 1=Yes, it is definitely not a GW\""
+            }
+            lappend textlists "processed trigger_experiment $satellite \"text\" \"Name of the trigger experiment\""
+            lappend textlists "processed position_type $prompt \"text\" \"INFOS, POINTDIR, PROMPT, REFINED\""
+         }
+         if {[lsearch -exact {integ_time} $name]>=0} { set namep integ_time ; set commentp "Duration of the trigger interval" }
+         if {[lsearch -exact {burst_error} $name]>=0} { set valp [expr abs($valp)] ; set namep error ; set commentp "error box radius" }
+         if {[lsearch -exact {point_ra burst_ra src_ra next_sc_ra} $name]>=0} { set namep ra ; set commentp "ra"
+            set equinox J2000
+            if {$satellite=="INTEGRAL"} { set equinox $date_rec_notice }
+            lappend textlists "processed equinox $equinox \"Date\" \"Date of equinox for ra,dec\""
+         }
+         if {[lsearch -exact {point_dec burst_dec src_dec next_sc_dec} $name]>=0} { set namep dec ; set commentp "dec" }
+         if {[lsearch -exact {point_roll} $name]>=0} { set namep roll ; set commentp "" }
+         if {[lsearch -exact {obs_time slew_sod} $name]>=0} { set namep $name ; set commentp "" }
+         if {[lsearch -exact {pkt_sod} $name]>=0} {
+            set res [mc_date2ymdhms $date_rec_notice]
+            set res [lrange $res 0 2]
+            set pkt_date [mc_date2jd $res]
+            set pkt_time [expr $val/100.]
+            set pkt_jd [expr $pkt_date+$pkt_time/86400.] ; # jd de la notice
+            if {[expr $pkt_jd-[mc_date2jd $date_rec_notice]]>0.5} {
+               set pkt_jd [expr $pkt_jd-1.]
+            }
+            set namep $name
+            set commentp ""
+            lappend textlists "processed pkt_jd $pkt_jd \"Date\" \"Julian day of the packet\""
+            lappend textlists "processed pkt_date [mc_date2iso8601 $pkt_jd] \"Date\" \"ISO 8601 date of the packet\""
+         }
+         if {[lsearch -exact {burst_tjd} $name]>=0} {
+            set kfound [lsearch -exact -index 3 $records burst_sod]
+            if {$kfound>=0} {
+               set ind1 [lindex [lindex $records $kfound] 1]
+               set burst_sod [lindex $longs $ind1]
+               if {$satellite=="INTEGRAL"} {
+                  set grb_date [expr $val-12640.+[mc_date2jd {2003 1 1}]]
+               } else {
+                  set grb_date [expr $val-13370.-1.+[mc_date2jd {2005 1 1}]] ; # TJD=13370 is 01 Jan 2005
+               }
+               set grb_time [expr $burst_sod/100.]
+               set burst_jd [expr $grb_date+$grb_time/86400.] ; # jd du trigger
+               if {$satellite=="SWIFT"} {
+                  if {($burst_jd-$pkt_jd)>0.5} {
+                     set $burst_jd [expr $burst_jd-1] ; # bug GCN du quart d'heure avant minuit
+                  }
+               }
+               lappend textlists "processed burst_jd $burst_jd \"Date\" \"Origin Julian day of the trigger\""
+               lappend textlists "processed burst_date [mc_date2iso8601 $burst_jd] \"Date\" \"ISO8601 Origin date of the trigger\""
+            }
+         }
+         if {[lsearch -exact {trig_sub_num} $name]>=0} {
+            set burst_trig  $val
+            if {$satellite=="INTEGRAL"} {
+               set trigger_subnum [expr int($burst_trig/pow(2,16))]
+               set trigger_num [expr int($burst_trig-$trigger_subnum*pow(2,16))] ; # identificateur du trigger
+               lappend textlists "processed trigger_num $trigger_num \"text\" \"Trigger number ID\""
+               lappend textlists "processed trigger_subnum $trigger_subnum \"text\" \"Trigger subnumber ID\""
+            }
+         }
+         if {[lsearch -exact {trig_obs_num} $name]>=0} {
+            set trigger_num $val
+            lappend textlists "processed trigger_num $trigger_num \"text\" \"Trigger number ID\""
+         }
+         if {[lsearch -exact {burst_mag} $name]>=0} {
+            set namep burst_mag
+            set valp [expr $val/100.]
+            set commentp "UVOT magnitude"
+            set unitp mag
+         }
+         if {[lsearch -exact {mag_error} $name]>=0} {
+            set namep mag_error
+            set valp [expr $val/100.]
+            set commentp "UVOT magnitude error"
+            set unitp mag
+         }
+         # ---
+         if {$namep!=""} {
+            lappend textlists "processed $namep $valp \"$unitp\" \"$commentp\""
+         }
+      } else {
+         if {$number=="quad_char"} {
+            set val [lrange $longs $indice1 $indice2]
+            lappend textlists "raw $name \"$val\" $unit \"$comment\""
+         }
+      }
+   }
+   return $textlists
 }
 
 # ===================================
@@ -1614,7 +1625,6 @@ proc grb_man {} {
 }
 
 proc grb_copy { {first 1} {date_trigger ""} {fov_arcmin ""} } {
-
    global audace
 
    set toto [info script]
@@ -1765,7 +1775,6 @@ proc grb_copy { {first 1} {date_trigger ""} {fov_arcmin ""} } {
 }
 
 proc grb_register { {name ic} {number 0} } {
-
    global audace
 
    set toto [info script]
@@ -1802,7 +1811,6 @@ proc grb_register { {name ic} {number 0} } {
 }
 
 proc grb_sum { {name ic} {first 1} {number 0} } {
-
    global audace
 
    set toto [info script]
@@ -1839,7 +1847,6 @@ proc grb_sum { {name ic} {first 1} {number 0} } {
 }
 
 proc grb_aladin { {name ic} {catalogs "VizieR(NOMAD1)"} } {
-
    global audace
 
    set toto [info script]
