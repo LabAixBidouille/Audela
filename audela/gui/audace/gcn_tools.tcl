@@ -706,7 +706,10 @@ proc gcn_decode { longs sockname } {
          }
       }
       # --- new decode
-		set gcn($sockname,textlists) [gcn_longs2textlists $longs]
+      catch {
+	      gcn_definition_from_sock_pkt_def_doc
+			set gcn($sockname,textlists) [gcn_longs2textlists $longs]
+		}
       # --- use by ROS
       catch { source $ros(root,ros)/src/majordome/gcn.tcl }
       # --- infos
@@ -1050,7 +1053,7 @@ proc gcn_definition_from_sock_pkt_def_doc { {fsock ""} } {
 			set path [ file join $::audace(rep_userCatalog) gcn ]
 			catch {file mkdir $path}
 		} elseif {[info exists ros(root,ressources)]==1} {
-			set path [ file join $ros(root,ressources) gcn ]			
+			set path [ file join $ros(root,ressources) ressources gcn ]			
 			catch {file mkdir $path}
 		} else {
 			set path [pwd]
