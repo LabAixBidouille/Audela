@@ -296,7 +296,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(sn_tarot,main_title)          "Tarot SN Visu"
-   set caption(sn_tarot,title)               "# Image du jour <--  Analyse de l'archive : %s  --> Référence"
+   set caption(sn_tarot,title)               "Tages Bild <--  Archiv Analyse: %s  --> Referenz"
    set caption(sn_tarot,prev)                "Vorigen"
    set caption(sn_tarot,next)                "Nächsten\n(F1)"
    set caption(sn_tarot,goto)                "Gehen zu"
@@ -310,10 +310,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,image1)              "Bild 1 --> %s %s %s %s %s %s"
    set caption(sn_tarot,image2)              "Bild 2 --> %s %s"
 
-   set caption(sn_tarot,galaxy_center)       "# Centre de la galaxie hôte"
-   set caption(sn_tarot,star_ref)            "# Position d'une étoile de référence"
-   set caption(sn_tarot,star_pos)            "# Position de la candidate SN"
-   set caption(sn_tarot,star_id)             "# Création de la fiche de la candidate SN"
+   set caption(sn_tarot,galaxy_center)       "Mittelpunkt der Host Galaxie"
+   set caption(sn_tarot,star_ref)            "Ein Referenz-Stern Position"
+   set caption(sn_tarot,star_pos)            "Position der SN Kandidat"
+   set caption(sn_tarot,star_id)             "Datei der SN Kandidat erstellten"
 
    set caption(sn_tarot,save1)               "Speichern"
    set caption(sn_tarot,confirm)             "Vollen sie weiterführen ?"
@@ -343,25 +343,25 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,fits_header)         "FITS Header"
    set caption(sn_tarot,header,noimage)      "Kein Bild zur Zeit in Speicher."
 
-   set caption(sn_tarot,dss_title)           "# Téléchargement des images DSS"
-   set caption(sn_tarot,dss_galaxy)          "# Galaxie : %s"
-   set caption(sn_tarot,dss_not_found)       "# %s pas chargé. Motif : %s"
-   set caption(sn_tarot_go,no_dss_download)  "# Toutes les images DSS sont présentes."
-   set caption(sn_tarot_go,dss_download)     "# Télécharge les images DSS :\n %s."
+   set caption(sn_tarot,dss_title)           "DSS Bilder herunterladen"
+   set caption(sn_tarot,dss_galaxy)          "Galaxis: %s"
+   set caption(sn_tarot,dss_not_found)       "%s nicht geladen. Grund: %s"
+   set caption(sn_tarot_go,no_dss_download)  "Alle DSS Bilder sind da."
+   set caption(sn_tarot_go,dss_download)     "Diese DSS Bilder herunterladen:\n %s."
 
    set caption(sn_tarot,exit)                "Beenden"
-   set caption(sn_tarot,select)              "# Sélectionner une archive :"
+   set caption(sn_tarot,select)              "Ein Archiv wählen:"
    set caption(sn_tarot,configuration)       "Konfiguration"
    set caption(sn_tarot,aide)                "Hilfe"
 
-   set caption(sn_tarot,candidate)           "# Candidate supernova"
-   set caption(sn_tarot,modify)              "# Modifier le fichier candidat"
+   set caption(sn_tarot,candidate)           "Supernovae Kandidat"
+   set caption(sn_tarot,modify)              "Die Datei des Kandidaten bearbeiten"
    set caption(sn_tarot,ok)                  "OK"
 
-   set caption(sn_tarot,cand_wait)           "# Patientez pendant la création de la fiche candidate..."
-   set caption(sn_tarot,cand_wait_mp)        "# Vérifie la présence d'astéroïdes..."
-   set caption(sn_tarot,cand_wait_sn)        "# Vérifie la présence d'une supernova cconnue..."
-   set caption(sn_tarot,cand_wait_ar)        "# Vérifie la présence de la galaxie dans les archives..."
+   set caption(sn_tarot,cand_wait)           "Bitte während die Schaffung der Kandidat Datei warten..."
+   set caption(sn_tarot,cand_wait_mp)        "Asteroiden Präsenz Prüfung..."
+   set caption(sn_tarot,cand_wait_sn)        "Bekannte Supernovae Präsenz Prüfung..."
+   set caption(sn_tarot,cand_wait_ar)        "Prüft die Präsenz der Galaxie in den Archiven..."
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
