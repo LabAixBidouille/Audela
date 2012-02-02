@@ -1606,9 +1606,9 @@ proc simulimage {args} {
          set val(CDELT1) [expr -2*atan($valpixsize1/$valfoclen*$mult/2.)*180/$pi]
          set val(CDELT2) [expr  2*atan($valpixsize2/$valfoclen*$mult/2.)*180/$pi]
          set val(CROTA2) 0
-         set val(FOCLEN) valfoclen
-         set val(PIXSIZE1) valpixsize1
-         set val(PIXSIZE2) valpixsize2
+         set val(FOCLEN) $valfoclen
+         set val(PIXSIZE1) $valpixsize1
+         set val(PIXSIZE2) $valpixsize2
          set cosr [expr cos($val(CROTA2)*$pi/180.)]
          set sinr [expr sin($val(CROTA2)*$pi/180.)]
          set val(CD1_1) [expr $val(CDELT1)*$cosr ]
