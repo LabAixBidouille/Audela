@@ -291,7 +291,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cwdWindow,creation_sous_rep)       "Schaffen"
    set caption(cwdWindow,repertoire_scripts)      "Skripten Verzeichnis:"
    set caption(cwdWindow,repertoire_catalogues)   "Katalogen Verzeichnis:"
-   set caption(cwdWindow,repertoire_archives)     "# Répertoire des archives :"
+   set caption(cwdWindow,repertoire_archives)     "Archiven Verzeichnis:"
    set caption(cwdWindow,boite_erreur)            "Irrtum"
    set caption(cwdWindow,pas_repertoire)          "das ist kein Verzeichnis."
 

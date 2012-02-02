@@ -129,12 +129,12 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(sn_tarot_go,init)           "# Tarot Supernovae - Mise à jour"
-   set caption(sn_tarot_go,wait)           "# Patienter jusqu'à la fin des opérations :"
-   set caption(sn_tarot_go,folder)         "# Vérification des dossiers dans %s"
-   set caption(sn_tarot_go,available)      "# Inventaire des fichiers disponibles pour %s"
-   set caption(sn_tarot_go,ref)            "# Téléchargement des images de référence %s"
-   set caption(sn_tarot_go,refunzip)       "# Décompression des images de référence dans %s"
+   set caption(sn_tarot_go,init)           "Tarot Supernovae - Aktualisierung"
+   set caption(sn_tarot_go,wait)           "Bitte bis Ende warten:"
+   set caption(sn_tarot_go,folder)         "Ordner in %s Überprüfung"
+   set caption(sn_tarot_go,available)      "Bestandsaufnahme der Dateien für %s"
+   set caption(sn_tarot_go,ref)            "Herunterladung der %s Referenzbilder"
+   set caption(sn_tarot_go,refunzip)       "Referenzbilder in %s Dekomprimierung"
    set caption(sn_tarot_go,go)             "GO"
    set caption(sn_tarot_go,refunzip)       "Hilfe"
    set caption(sn_tarot_go,cancel)         "Annullieren"
@@ -148,12 +148,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot_go,telecharge)     "Herunterladen %s ?"
    set caption(sn_tarot_go,yes)            "Ja"
    set caption(sn_tarot_go,no)             "Nein"
-   set caption(sn_tarot_go,unzip)          "# Décompression de %s en %s fichiers \ndans le dossier %s."
+   set caption(sn_tarot_go,unzip)          "Von %s bis %s Dateien in Ordner\n%s Dekomprimieren."
 
    set caption(sn_tarot_go,attention)      "Achtung"
-   set caption(sn_tarot_go,url_error)      "# L'adresse %s n'est pas accessible."
-   set caption(sn_tarot_go,file_error)     "# Le fichier %s n'existe pas."
-   set caption(sn_tarot_go,nozip_error)    "# Pas d'archive.\nSélectionner une date et télécharger l'archive."
+   set caption(sn_tarot_go,url_error)      "Die Adresse %s ist nicht zugänglich."
+   set caption(sn_tarot_go,file_error)     "Die Datei %s existiert nicht."
+   set caption(sn_tarot_go,nozip_error)    "Kein Archiv.\nBitte ein Datum wählen und das Archiv herunterladen."
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
