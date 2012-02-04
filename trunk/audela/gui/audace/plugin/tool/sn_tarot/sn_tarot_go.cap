@@ -58,7 +58,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot_go,telecharger)    "Télécharger"
    set caption(sn_tarot_go,telechargement) "Téléchargement\nen cours..."
    set caption(sn_tarot_go,recherche_sn)   "Recherche\nsupernovae"
-	set caption(sn_tarot_go,refresh)        "Rafraichir"
+   set caption(sn_tarot_go,refresh)        "Rafraîchir"
 
    set caption(sn_tarot_go,telecharge)     "Télécharger %s ?"
    set caption(sn_tarot_go,yes)            "Oui"
@@ -88,6 +88,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot_go,help,titre1)    "Aiuto per lo tool:"
    set caption(sn_tarot_go,telecharger)    "Scaricare"
    set caption(sn_tarot_go,recherche_sn)   "Ricerca\nsupernovae"
+   set caption(sn_tarot_go,refresh)        "Rinfresca"
 
    set caption(sn_tarot_go,telecharge)     "Scaricare %s ?"
    set caption(sn_tarot_go,yes)            "Si"
@@ -117,6 +118,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot_go,help,titre1)    "Ajuda para del herramienta:"
    set caption(sn_tarot_go,telecharger)    "Descargar"
    set caption(sn_tarot_go,recherche_sn)   "Buscar\nsupernovae"
+   set caption(sn_tarot_go,refresh)        "Recargar"
 
    set caption(sn_tarot_go,telecharge)     "Descargar %s ?"
    set caption(sn_tarot_go,yes)            "Sí"
@@ -146,6 +148,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot_go,help,titre1)    "Hilfe für die Gerät:"
    set caption(sn_tarot_go,telecharger)    "Herunterladen"
    set caption(sn_tarot_go,recherche_sn)   "Supernovae\nsuchen"
+   set caption(sn_tarot_go,refresh)        "Aktualisieren"
 
    set caption(sn_tarot_go,telecharge)     "Herunterladen %s ?"
    set caption(sn_tarot_go,yes)            "Ja"
@@ -175,6 +178,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot_go,help,titre1)    "Ajuda para del ferramenta:"
    set caption(sn_tarot_go,telecharger)    "Descarregar"
    set caption(sn_tarot_go,recherche_sn)   "Procurar\nsupernova"
+   set caption(sn_tarot_go,refresh)        "Actualizar"
 
    set caption(sn_tarot_go,telecharge)     "Descarregar %s ?"
    set caption(sn_tarot_go,yes)            "Sim"
@@ -205,6 +209,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot_go,telecharger)    "Download"
    set caption(sn_tarot_go,telechargement) "Download\nstarted..."
    set caption(sn_tarot_go,recherche_sn)   "Search for\nsupernovae"
+   set caption(sn_tarot_go,refresh)        "Refresh"
 
    set caption(sn_tarot_go,telecharge)     "Download %s?"
    set caption(sn_tarot_go,yes)            "Yes"
@@ -235,6 +240,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot_go,telecharger)    "Download"
    set caption(sn_tarot_go,telechargement) "Download\nstarted..."
    set caption(sn_tarot_go,recherche_sn)   "Search for\nsupernovae"
+   set caption(sn_tarot_go,refresh)        "Refresh"
 
    set caption(sn_tarot_go,telecharge)     "Download %s?"
    set caption(sn_tarot_go,yes)            "Yes"
@@ -265,6 +271,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot_go,telecharger)    "Download"
    set caption(sn_tarot_go,telechargement) "Download\nstarted..."
    set caption(sn_tarot_go,recherche_sn)   "Search for\nsupernovae"
+   set caption(sn_tarot_go,refresh)        "Refresh"
 
    set caption(sn_tarot_go,telecharge)     "Download %s?"
    set caption(sn_tarot_go,yes)            "Yes"
