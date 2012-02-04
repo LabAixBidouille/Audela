@@ -452,6 +452,9 @@ proc ::sn_tarot::displayImages { {subsky 0} } {
    if { $a == 1 } {
       #--   Met a jour la ligne de titre
       $zone(labelh2) configure -text "-"
+      if {$snconfvisu(pers_or_dss)==0} {
+	      ::sn_tarot::saveImage 0
+      }
       return
    }
 
@@ -748,7 +751,7 @@ proc ::sn_tarot::snBlinkImage { } {
 #  saveImage
 #  Sauve la nouvelle image de reference
 #-----------------------------------------------------
-proc ::sn_tarot::saveImage { } {
+proc ::sn_tarot::saveImage { {redisp 1} } {
    variable console_msg
    global caption num rep
 
@@ -785,10 +788,12 @@ proc ::sn_tarot::saveImage { } {
       if {$k==-1} {
          lappend rep(x2) $filename
       }
-      ::sn_tarot::searchGalaxy
-      ::sn_tarot::afficheConsole
-      #--- Mise a jour de l'affichage avec la nouvelle image de reference
-      ::sn_tarot::displayImages
+      if {$redisp==1} {
+	      ::sn_tarot::searchGalaxy
+	      ::sn_tarot::afficheConsole
+	      #--- Mise a jour de l'affichage avec la nouvelle image de reference
+	      ::sn_tarot::displayImages
+      }
    } else {
       set console_msg "$caption(sn_tarot,0image)"
       ::sn_tarot::afficheConsole
