@@ -27,6 +27,7 @@ set caption(sn_tarot_go,help,titre1)       "Help for the Tool:"
 set caption(sn_tarot_go,telecharger)       "Download"
 set caption(sn_tarot_go,telechargement)    "Download\nstarted..."
 set caption(sn_tarot_go,recherche_sn)      "Search for\nsupernovae"
+set caption(sn_tarot_go,refresh)           "Refresh"
 
 set caption(sn_tarot_go,telecharge)        "Download %s?"
 set caption(sn_tarot_go,yes)               "Yes"
@@ -57,6 +58,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot_go,telecharger)    "Télécharger"
    set caption(sn_tarot_go,telechargement) "Téléchargement\nen cours..."
    set caption(sn_tarot_go,recherche_sn)   "Recherche\nsupernovae"
+	set caption(sn_tarot_go,refresh)        "Rafraichir"
 
    set caption(sn_tarot_go,telecharge)     "Télécharger %s ?"
    set caption(sn_tarot_go,yes)            "Oui"

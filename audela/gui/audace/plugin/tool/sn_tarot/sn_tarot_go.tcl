@@ -203,6 +203,12 @@ proc ::sn_tarot::tarotBuildIF { } {
    pack $This.fra2.file -anchor center -fill none -pady 5
    $This.fra2.file setvalue @0
 
+   #--- Bouton Rafraichir
+   button $This.fra2.but0 -borderwidth 2 \
+      -text "$caption(sn_tarot_go,refresh)" \
+      -command "catch {unset panneau(sn_tarot,init)} ; ::sn_tarot::updateFiles ; vwait panneau(sn_tarot,init) ; ::sn_tarot::listArchives"
+   pack $This.fra2.but0 -anchor center -fill none -pady 5 -ipadx 5 -ipady 5
+   
    #--- Bouton Telecharger
    button $This.fra2.but1 -borderwidth 2 \
       -text "$caption(sn_tarot_go,telecharger)" \
