@@ -453,7 +453,7 @@ proc ::sn_tarot::displayImages { {subsky 0} } {
       #--   Met a jour la ligne de titre
       $zone(labelh2) configure -text "-"
       if {$snconfvisu(pers_or_dss)==0} {
-	      ::sn_tarot::saveImage 0
+         ::sn_tarot::saveImage 0
       }
       return
    }
@@ -789,10 +789,10 @@ proc ::sn_tarot::saveImage { {redisp 1} } {
          lappend rep(x2) $filename
       }
       if {$redisp==1} {
-	      ::sn_tarot::searchGalaxy
-	      ::sn_tarot::afficheConsole
-	      #--- Mise a jour de l'affichage avec la nouvelle image de reference
-	      ::sn_tarot::displayImages
+         ::sn_tarot::searchGalaxy
+         ::sn_tarot::afficheConsole
+         #--- Mise a jour de l'affichage avec la nouvelle image de reference
+         ::sn_tarot::displayImages
       }
    } else {
       set console_msg "$caption(sn_tarot,0image)"
