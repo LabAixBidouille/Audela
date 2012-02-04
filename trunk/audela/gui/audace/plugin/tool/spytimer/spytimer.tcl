@@ -55,7 +55,7 @@ namespace eval ::spytimer {
    #    retourne le ou les OS de fonctionnement du plugin
    #------------------------------------------------------------
    proc getPluginOS { } {
-      return [ list Windows Linux Darwin ]
+      return [ list Windows Darwin ]
    }
 
    #------------------------------------------------------------
