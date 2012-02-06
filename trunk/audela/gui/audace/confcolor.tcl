@@ -500,6 +500,18 @@ namespace eval confColor:: {
                $w configure -font "$audace(font,PoliceInvariant)"
             }
          }
+         TButton {
+            set layout [ttk::style layout TButton]
+            set tail [lindex $layout end]
+            set tail [list TButton.fill -sticky news -children $tail]
+            ttk::style layout TButton [lreplace $layout end end $tail]
+            ttk::style configure TButton {*}[ttk::style configure TButton] \
+               -background $audace(color,backColor) \
+               -foreground $audace(color,textColor)
+            ttk::style map TButton {*}[ttk::style map TButton] \
+               -background [list active $audace(color,backColor)] \
+               -foreground [list active $audace(color,activeTextColor)]
+         }
          Checkbutton {
             #--- Je mets a jour la couleur des widgets
             if { [ string first color_invariant $w ] == -1 } {
