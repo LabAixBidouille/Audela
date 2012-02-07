@@ -420,11 +420,11 @@ proc ::sn_tarot::displayImages { {subsky 0} } {
 
    set user [lindex [buf$num(buffer1) getkwd USER] 1]
    if {$user!=""} {
-      set user "(user=[string trim ${user}])"
+      set user "[string trim ${user}]"
    }
    set name [lindex [buf$num(buffer1) getkwd NAME] 1]
    if {$name!=""} {
-      set name "(name=[string trim ${name}])"
+      set name "[string trim ${name}]"
    }
    set gren_ha [lindex [buf$num(buffer1) getkwd GREN_HA] 1]
    set gren_dec [lindex [buf$num(buffer1) getkwd DEC] 1]
@@ -432,9 +432,9 @@ proc ::sn_tarot::displayImages { {subsky 0} } {
    set fwhm [lindex [buf$num(buffer1) getkwd FWHM] 1]
    set complus ""
    if {($gren_ha!="")&&($gren_dec!="")&&($gren_alt!="")&&($fwhm!="")} {
-      set complus " (ha=[string trim ${gren_ha}] dec=[string trim ${gren_dec}] elev=[string trim ${gren_alt}] fwhm=[string trim ${fwhm}])"
+      set complus " [string trim ${gren_ha}] dec=[string trim ${gren_dec}] elev=[string trim ${gren_alt}] fwhm=[string trim ${fwhm}]"
    }
-   set console_msg "[ format $caption(sn_tarot,image1) [ ::sn_tarot::shortPath $filename 7 ] $result [::sn_tarot::snCenterRaDec $num(buffer1)] $user $name $complus ]"
+   set console_msg "[ format $caption(sn_tarot,image1) [ ::sn_tarot::shortPath $filename 7 ] $result [string trim [lindex [::sn_tarot::snCenterRaDec $num(buffer1)] 0]] $user $name $complus ]"
    ::sn_tarot::afficheConsole
 
    #--   charge l'image dans la visu 2 selon le choix Personnel ou DSS
