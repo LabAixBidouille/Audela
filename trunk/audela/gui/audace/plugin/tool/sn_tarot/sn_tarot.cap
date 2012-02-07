@@ -12,7 +12,7 @@ global caption langage
 # *************** Version anglaise ****************************
 
 set caption(sn_tarot,main_title)             "Tarot SN View"
-set caption(sn_tarot,title)                  "Today Image <--  Archive Analysis: %s  --> Reference"
+set caption(sn_tarot,title)                  "Today Image <-  Archive Analysis: %s  -> Reference"
 set caption(sn_tarot,prev)                   "Previous"
 set caption(sn_tarot,next)                   "Next\n(F1)"
 set caption(sn_tarot,goto)                   "Go to"
@@ -23,8 +23,8 @@ set caption(sn_tarot,save)                   "Save\n(F4)"
 set caption(sn_tarot,perso)                  "Personal"
 set caption(sn_tarot,dss)                    "DSS"
 
-set caption(sn_tarot,image1)                 "Image 1 --> %s %s %s %s %s %s"
-set caption(sn_tarot,image2)                 "Image 2 --> %s %s"
+set caption(sn_tarot,image1)                 "Image 1 -> %s %s %s %s %s %s"
+set caption(sn_tarot,image2)                 "Image 2 -> %s %s"
 
 set caption(sn_tarot,galaxy_center)          "Center of host galaxy"
 set caption(sn_tarot,star_ref)               "Position of a reference star"
@@ -54,7 +54,7 @@ set caption(sn_tarot,alerte)                 "Display Refresh changes will only 
 
 set caption(sn_tarot,reference)              "Reference"
 set caption(sn_tarot,newref)                 "New Reference Image 1"
-set caption(sn_tarot,filter)                 "Filtering of %s --> %s %s"
+set caption(sn_tarot,filter)                 "Filtering of %s -> %s %s"
 set caption(sn_tarot,0image)                 "No image."
 set caption(sn_tarot,fits_header)            "FITS Header"
 set caption(sn_tarot,header,noimage)         "No image in memory."
@@ -83,7 +83,7 @@ set caption(sn_tarot,cand_wait_ar)           "Checks if the galaxy is in the arc
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(sn_tarot,main_title)          "Tarot SN Visu"
-   set caption(sn_tarot,title)               "Image du jour <--  Analyse de l'archive : %s  --> Référence"
+   set caption(sn_tarot,title)               "Image du jour <-  Analyse de l'archive : %s  -> Référence"
    set caption(sn_tarot,prev)                "Précédente"
    set caption(sn_tarot,next)                "Suivante\n(F1)"
    set caption(sn_tarot,goto)                "Aller à"
@@ -94,8 +94,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,perso)               "Personnel"
    set caption(sn_tarot,dss)                 "DSS"
 
-   set caption(sn_tarot,image1)              "Image 1 --> %s %s %s %s %s %s"
-   set caption(sn_tarot,image2)              "Image 2 --> %s %s"
+   set caption(sn_tarot,image1)              "Image 1 -> %s %s %s %s %s %s"
+   set caption(sn_tarot,image2)              "Image 2 -> %s %s"
 
    set caption(sn_tarot,galaxy_center)       "Centre de la galaxie hôte"
    set caption(sn_tarot,star_ref)            "Position d'une étoile de référence"
@@ -125,7 +125,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(sn_tarot,reference)           "Référence"
    set caption(sn_tarot,newref)              "Nouvelle référence Image 1"
-   set caption(sn_tarot,filter)              "Filtrage de %s --> %s %s"
+   set caption(sn_tarot,filter)              "Filtrage de %s -> %s %s"
    set caption(sn_tarot,0image)              "Pas d'image."
    set caption(sn_tarot,fits_header)         "En-tête FITS"
    set caption(sn_tarot,header,noimage)      "Il n'y a pas d'image actuellement en mémoire."
@@ -154,7 +154,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(sn_tarot,main_title)          "Tarot Vista SN"
-   set caption(sn_tarot,title)               "# Image du jour <--  Analyse de l'archive : %s  --> Référence"
+   set caption(sn_tarot,title)               "# Image du jour <-  Analyse de l'archive : %s  -> Référence"
    set caption(sn_tarot,prev)                "Precedente"
    set caption(sn_tarot,next)                "Successivo\n(F1)"
    set caption(sn_tarot,goto)                "Vai a"
@@ -165,8 +165,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,perso)               "Personali"
    set caption(sn_tarot,dss)                 "DSS"
 
-   set caption(sn_tarot,image1)              "Immagine 1 --> %s %s %s %s %s %s"
-   set caption(sn_tarot,image2)              "Immagine 2 --> %s %s"
+   set caption(sn_tarot,image1)              "Immagine 1 -> %s %s %s %s %s %s"
+   set caption(sn_tarot,image2)              "Immagine 2 -> %s %s"
 
    set caption(sn_tarot,galaxy_center)       "# Centre de la galaxie hôte"
    set caption(sn_tarot,star_ref)            "# Position d'une étoile de référence"
@@ -196,7 +196,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(sn_tarot,reference)           "Riferimento"
    set caption(sn_tarot,newref)              "Nuovo riferimento Immagine 1"
-   set caption(sn_tarot,filter)              "Filtraggio di %s --> %s %s"
+   set caption(sn_tarot,filter)              "Filtraggio di %s -> %s %s"
    set caption(sn_tarot,0image)              "Nessuna immagine."
    set caption(sn_tarot,fits_header)         "Header FITS"
    set caption(sn_tarot,header,noimage)      "Nessuna immagine in memoria."
@@ -225,7 +225,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(sn_tarot,main_title)          "Tarot SN Ver"
-   set caption(sn_tarot,title)               "Imagen del día <--  Análisis del archivo: %s  --> Referencia"
+   set caption(sn_tarot,title)               "Imagen del día <-  Análisis del archivo: %s  -> Referencia"
    set caption(sn_tarot,prev)                "Previo"
    set caption(sn_tarot,next)                "Siguiente\n(F1)"
    set caption(sn_tarot,goto)                "Ir a"
@@ -236,8 +236,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,perso)               "Personal"
    set caption(sn_tarot,dss)                 "DSS"
 
-   set caption(sn_tarot,image1)              "Imagen 1 --> %s %s %s %s %s %s"
-   set caption(sn_tarot,image2)              "Imagen 2 --> %s %s"
+   set caption(sn_tarot,image1)              "Imagen 1 -> %s %s %s %s %s %s"
+   set caption(sn_tarot,image2)              "Imagen 2 -> %s %s"
 
    set caption(sn_tarot,galaxy_center)       "Centro de la galaxia"
    set caption(sn_tarot,star_ref)            "Posición de una estrella de referencia"
@@ -267,7 +267,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(sn_tarot,reference)           "Referencia"
    set caption(sn_tarot,newref)              "Nueva referencia Imagen 1"
-   set caption(sn_tarot,filter)              "Filtrado de %s --> %s %s"
+   set caption(sn_tarot,filter)              "Filtrado de %s -> %s %s"
    set caption(sn_tarot,0image)              "No hay imagen."
    set caption(sn_tarot,fits_header)         "Cabecera FITS"
    set caption(sn_tarot,header,noimage)      "No hay imagen en memoria."
@@ -296,7 +296,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(sn_tarot,main_title)          "Tarot SN Visu"
-   set caption(sn_tarot,title)               "Tages Bild <--  Archiv Analyse: %s  --> Referenz"
+   set caption(sn_tarot,title)               "Tages Bild <-  Archiv Analyse: %s  -> Referenz"
    set caption(sn_tarot,prev)                "Vorigen"
    set caption(sn_tarot,next)                "Nächsten\n(F1)"
    set caption(sn_tarot,goto)                "Gehen zu"
@@ -307,8 +307,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,perso)               "Persönlichen"
    set caption(sn_tarot,dss)                 "DSS"
 
-   set caption(sn_tarot,image1)              "Bild 1 --> %s %s %s %s %s %s"
-   set caption(sn_tarot,image2)              "Bild 2 --> %s %s"
+   set caption(sn_tarot,image1)              "Bild 1 -> %s %s %s %s %s %s"
+   set caption(sn_tarot,image2)              "Bild 2 -> %s %s"
 
    set caption(sn_tarot,galaxy_center)       "Mittelpunkt der Host Galaxie"
    set caption(sn_tarot,star_ref)            "Ein Referenz-Stern Position"
@@ -338,7 +338,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(sn_tarot,reference)           "Bezug"
    set caption(sn_tarot,newref)              "Neue Bild 1 Bezug"
-   set caption(sn_tarot,filter)              "Filtrierung von %s --> %s %s"
+   set caption(sn_tarot,filter)              "Filtrierung von %s -> %s %s"
    set caption(sn_tarot,0image)              "Kein Bild."
    set caption(sn_tarot,fits_header)         "FITS Header"
    set caption(sn_tarot,header,noimage)      "Kein Bild zur Zeit in Speicher."
@@ -367,7 +367,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(sn_tarot,main_title)          "Tarot Visualização SN"
-   set caption(sn_tarot,title)               "# Image du jour <--  Analyse de l'archive : %s  --> Référence"
+   set caption(sn_tarot,title)               "# Image du jour <-  Analyse de l'archive : %s  -> Référence"
    set caption(sn_tarot,prev)                "Anterior"
    set caption(sn_tarot,next)                "Seguinte\n(F1)"
    set caption(sn_tarot,goto)                "Ir para"
@@ -378,8 +378,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,perso)               "Pessoal"
    set caption(sn_tarot,dss)                 "DSS"
 
-   set caption(sn_tarot,image1)              "Imagem 1 --> %s %s %s %s %s %s"
-   set caption(sn_tarot,image2)              "Imagem 2 --> %s %s"
+   set caption(sn_tarot,image1)              "Imagem 1 -> %s %s %s %s %s %s"
+   set caption(sn_tarot,image2)              "Imagem 2 -> %s %s"
 
    set caption(sn_tarot,galaxy_center)       "# Centre de la galaxie hôte"
    set caption(sn_tarot,star_ref)            "# Position d'une étoile de référence"
@@ -409,7 +409,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(sn_tarot,reference)           "Referência"
    set caption(sn_tarot,newref)              "Nova referência Imagem 1"
-   set caption(sn_tarot,filter)              "Filtragem de  %s --> %s %s"
+   set caption(sn_tarot,filter)              "Filtragem de  %s -> %s %s"
    set caption(sn_tarot,0image)              "Não existe imagem."
    set caption(sn_tarot,fits_header)         "Cabeçalho FITS"
    set caption(sn_tarot,header,noimage)      "Não existe imagem em memória neste momento."
@@ -438,7 +438,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(sn_tarot,main_title)          "Tarot SN View"
-   set caption(sn_tarot,title)               "Today Image <--  Archive Analysis: %s  --> Reference"
+   set caption(sn_tarot,title)               "Today Image <-  Archive Analysis: %s  -> Reference"
    set caption(sn_tarot,prev)                "Previous"
    set caption(sn_tarot,next)                "Next\n(F1)"
    set caption(sn_tarot,goto)                "Go to"
@@ -449,8 +449,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,perso)               "Personal"
    set caption(sn_tarot,dss)                 "DSS"
 
-   set caption(sn_tarot,image1)              "Image 1 --> %s %s %s %s %s %s"
-   set caption(sn_tarot,image2)              "Image 2 --> %s %s"
+   set caption(sn_tarot,image1)              "Image 1 -> %s %s %s %s %s %s"
+   set caption(sn_tarot,image2)              "Image 2 -> %s %s"
 
    set caption(sn_tarot,galaxy_center)       "Center of host galaxy"
    set caption(sn_tarot,star_ref)            "Position of a reference star"
@@ -480,7 +480,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(sn_tarot,reference)           "Reference"
    set caption(sn_tarot,newref)              "New Reference Image 1"
-   set caption(sn_tarot,filter)              "Filtering of %s --> %s %s"
+   set caption(sn_tarot,filter)              "Filtering of %s -> %s %s"
    set caption(sn_tarot,0image)              "No image."
    set caption(sn_tarot,fits_header)         "FITS Header"
    set caption(sn_tarot,header,noimage)      "No image in memory."
@@ -509,7 +509,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
    set caption(sn_tarot,main_title)          "Tarot SN View"
-   set caption(sn_tarot,title)               "Today Image <--  Archive Analysis: %s  --> Reference"
+   set caption(sn_tarot,title)               "Today Image <-  Archive Analysis: %s  -> Reference"
    set caption(sn_tarot,prev)                "Previous"
    set caption(sn_tarot,next)                "Next\n(F1)"
    set caption(sn_tarot,goto)                "Go to"
@@ -520,8 +520,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,perso)               "Personal"
    set caption(sn_tarot,dss)                 "DSS"
 
-   set caption(sn_tarot,image1)              "Image 1 --> %s %s %s %s %s %s"
-   set caption(sn_tarot,image2)              "Image 2 --> %s %s"
+   set caption(sn_tarot,image1)              "Image 1 -> %s %s %s %s %s %s"
+   set caption(sn_tarot,image2)              "Image 2 -> %s %s"
 
    set caption(sn_tarot,galaxy_center)       "Center of host galaxy"
    set caption(sn_tarot,star_ref)            "Position of a reference star"
@@ -551,7 +551,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(sn_tarot,reference)           "Reference"
    set caption(sn_tarot,newref)              "New Reference Image 1"
-   set caption(sn_tarot,filter)              "Filtering of %s --> %s %s"
+   set caption(sn_tarot,filter)              "Filtering of %s -> %s %s"
    set caption(sn_tarot,0image)              "No image."
    set caption(sn_tarot,fits_header)         "FITS Header"
    set caption(sn_tarot,header,noimage)      "No image in memory."
@@ -580,7 +580,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
    set caption(sn_tarot,main_title)          "Tarot SN View"
-   set caption(sn_tarot,title)               "Today Image <--  Archive Analysis: %s  --> Reference"
+   set caption(sn_tarot,title)               "Today Image <-  Archive Analysis: %s  -> Reference"
    set caption(sn_tarot,prev)                "Previous"
    set caption(sn_tarot,next)                "Next\n(F1)"
    set caption(sn_tarot,goto)                "Go to"
@@ -591,8 +591,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,perso)               "Personal"
    set caption(sn_tarot,dss)                 "DSS"
 
-   set caption(sn_tarot,image1)              "Image 1 --> %s %s %s %s %s %s"
-   set caption(sn_tarot,image2)              "Image 2 --> %s %s"
+   set caption(sn_tarot,image1)              "Image 1 -> %s %s %s %s %s %s"
+   set caption(sn_tarot,image2)              "Image 2 -> %s %s"
 
    set caption(sn_tarot,galaxy_center)       "Center of host galaxy"
    set caption(sn_tarot,star_ref)            "Position of a reference star"
@@ -622,7 +622,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(sn_tarot,reference)           "Reference"
    set caption(sn_tarot,newref)              "New Reference Image 1"
-   set caption(sn_tarot,filter)              "Filtering of %s --> %s %s"
+   set caption(sn_tarot,filter)              "Filtering of %s -> %s %s"
    set caption(sn_tarot,0image)              "No image."
    set caption(sn_tarot,fits_header)         "FITS Header"
    set caption(sn_tarot,header,noimage)      "No image in memory."
