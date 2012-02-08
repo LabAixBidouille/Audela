@@ -300,7 +300,7 @@ proc ::sn_tarot::confirmTelecharge { } {
    }
 
    #--   inhibe les selecteurs et les boutons 'Telecharger' 'Recherche Supernovae'
-   foreach child [ list site file but1 but2 ] {
+   foreach child [ list site file but0 but1 but2 ] {
       $This.fra2.$child configure -state disabled
    }
    $This.fra2.but1 configure -text "$caption(sn_tarot_go,telechargement)"
@@ -312,7 +312,7 @@ proc ::sn_tarot::confirmTelecharge { } {
 
    #--   desinhibe
    $This.fra2.but1 configure -text "$caption(sn_tarot_go,telecharger)"
-   foreach child [ list site file but1 but2 ] {
+   foreach child [ list site file but0 but1 but2 ] {
       $This.fra2.$child configure -state normal
    }
    update
