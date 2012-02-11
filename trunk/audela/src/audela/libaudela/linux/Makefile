@@ -24,7 +24,7 @@ CXXFLAGS += -I$(EXTINC) -Wno-deprecated
 
 
 $(OUTPUT): $(OBJ) $(OUTPUTDIR)/libdcraw.so $(OUTPUTDIR)/libdcjpeg.so
-	$(LD) $(LDFLAGS) -Wl,-rpath,. -L$(OUTPUTDIR) -ldcraw -ldcjpeg -o $@ $(OBJ) -lpthread
+	$(LD) $(OBJ) $(LDFLAGS) -Wl,-rpath,. -L$(OUTPUTDIR) -ldcraw -ldcjpeg -lpthread -o $@
 	$(CP) $@ $(OUTPUTDIR)
 	mkdir -p  ../../include
 	cp -f ../src/cpool.h   ../../include
@@ -44,12 +44,12 @@ all: $(OUTPUT)
 
 libdcraw.so : $(OBJ) $(A_LIBS)
 	@echo "*** Linking library $@"
-	$(LD) $(LDFLAGS) -o $@ $^
+	$(LD) $^ $(LDFLAGS) -o $@ 
 	$(CP) $@ $(OUTPUTDIR)
 
 libdcjpeg.so : $(OBJ) $(A_LIBS)
 	@echo "*** Linking library $@"
-	$(LD) $(LDFLAGS) -o $@ $^
+	$(LD) $^ $(LDFLAGS) -o $@ 
 	$(CP) $@ $(OUTPUTDIR)
 	
 %.o: $(SRCDIR)/%.cpp
