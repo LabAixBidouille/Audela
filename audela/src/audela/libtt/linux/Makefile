@@ -32,7 +32,7 @@ all: $(OUTPUT)
 
 $(OUTPUT): $(OBJ)
 	@echo "*** Linking library $@"
-	$(LD) $(LDFLAGS) -o $@ $^
+	$(LD) $^ $(LDFLAGS) -o $@ 
 	$(CP) $@ $(OUTPUTDIR)
 
 %.o: $(SRCDIR)/%.c

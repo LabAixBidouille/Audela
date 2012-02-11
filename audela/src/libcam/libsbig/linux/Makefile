@@ -22,7 +22,7 @@ CXXFLAGS += -I $(EXTINC)
 # dynamiques .so seront recherchees en priorite au runtime.
 libsbig.so: $(OBJ)
 	@echo "*** Linking library $@"
-	$(LD) $(LDFLAGS)  -Wl,-rpath,. -L$(EXTLIB) -lsbigudrv.1.4.60 -lm  -o $@ $^
+	$(LD) $^ $(LDFLAGS)  -Wl,-rpath,. -L$(EXTLIB) -lsbigudrv.1.4.60 -lm  -o $@ 
 	$(CP) $@ $(OUTPUTDIR)
 
 libsbigparallel.so: $(OBJ)
@@ -30,7 +30,7 @@ libsbigparallel.so: $(OBJ)
 	$(RM) libcam.o
 	$(CC) $(CXXFLAGS) -DCAM_ENTRYPOINT=Sbigparallel_Init -DCAM_LIBNAME='"libsbigparallel"' -DCAM_DRIVNAME='"sbigparallel"' -o libcam.o $(LIBCAMDIR)/libcam.c
 	@echo "*** Linking library $@"
-	$(LD) $(LDFLAGS) -o $@ $^ $(EXTLIB)/udrv4.0.a
+	$(LD) $^ $(LDFLAGS) -o $@ $(EXTLIB)/udrv4.0.a
 	$(CP) $@ $(OUTPUTDIR)
 	$(RM) libcam.o
 

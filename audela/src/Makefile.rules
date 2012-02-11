@@ -6,7 +6,7 @@ all: $(OUTPUT)
 
 $(OUTPUT): $(OBJ) $(A_LIBS)
 	@echo "*** Linking library $@"
-	$(LD) $(LDFLAGS) -o $@ $^
+	$(LD) $^ $(LDFLAGS) -o $@ 
 	$(CP) $@ $(OUTPUTDIR)
 
 %.o: $(SRCDIR)/%.cpp

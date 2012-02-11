@@ -17,12 +17,12 @@ CXXFLAGS += -I$(EXTINC) -I../../include
 # dynamiques libaudela.so sera recherche en priorite au runtime.
 
 $(OUTPUT): $(OBJ) $(OUTPUTDIR)/libaudela.so 
-	$(LD) $(LDFLAGS) -Wl,-rpath,. -L $(OUTPUTDIR) -laudela -o $@ $(OBJ)
+	$(LD) $(OBJ) $(LDFLAGS) -Wl,-rpath,. -L $(OUTPUTDIR) -laudela -o $@ 
 	$(CP) $@ $(OUTPUTDIR)
 
 libaudela.so : $(OBJ) $(A_LIBS)
 	@echo "*** Linking library $@"
-	$(LD) $(LDFLAGS) -o $@ $^
+	$(LD) $^ $(LDFLAGS) -o $@
 	$(CP) $@ $(OUTPUTDIR)
 
 %.o: $(SRCDIR)/%.cpp
