@@ -79,6 +79,8 @@ set caption(sn_tarot,cand_wait_mp)           "Checks if there are asteroids..."
 set caption(sn_tarot,cand_wait_sn)           "Checks if there is a known supernovae..."
 set caption(sn_tarot,cand_wait_ar)           "Checks if the galaxy is in the archives..."
 
+set caption(sn_tarot,ancand_wait)            "Please wait while the candidate data sheets are analyzed..."
+
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
@@ -149,6 +151,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,cand_wait_mp)        "Vérifie la présence d'astéroïdes..."
    set caption(sn_tarot,cand_wait_sn)        "Vérifie la présence d'une supernova connue..."
    set caption(sn_tarot,cand_wait_ar)        "Vérifie la présence de la galaxie dans les archives..."
+
+   set caption(sn_tarot,ancand_wait)         "Patientez pendant l'analyse des fiches candidates..."
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
