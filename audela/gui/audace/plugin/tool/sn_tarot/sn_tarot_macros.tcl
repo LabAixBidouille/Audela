@@ -793,78 +793,78 @@ proc ::sn_tarot::snAnalyzeCandidateId { } {
 
    # --- File readings
    update
-   set path "$rep(archives)/../alert"   
+   set path "$rep(archives)/../alert"
    set fichiers [lsort [glob -nocomplain ${path}/*.txt]]
    set ficlists ""
    set objname0 ""
    set objdates ""
    foreach fichier $fichiers {
-		set fics [split [file tail $fichier] _]
-		set objname [lindex $fics 0]
-		set objdate [lindex $fics 3]
-		if {$objname!=$objname0} {
-			if {$objname0!=""} {
-			   lappend ficlists $comment
-			}
-			set comment [list $objname $objdate $fichier]
-		} else {
-			lappend comment $fichier
-		}
-		set objname0 $objname
-   }	   
+      set fics [split [file tail $fichier] _]
+      set objname [lindex $fics 0]
+      set objdate [lindex $fics 3]
+      if {$objname!=$objname0} {
+         if {$objname0!=""} {
+            lappend ficlists $comment
+         }
+         set comment [list $objname $objdate $fichier]
+      } else {
+         lappend comment $fichier
+      }
+      set objname0 $objname
+   }
    set ficlists [lsort -index 1 -decreasing $ficlists]
    set objname0 ""
-	set comments "Analysis result:\n\n"
+   set comments "Analysis result:\n\n"
    foreach ficlist $ficlists {
-	   set objname [lindex $ficlist 0]
-	   set fichiers [lrange $ficlist 2 end]
-		append comments "---------------------------\n"
-		append comments "--- $objname ---\n"
-	   foreach fichier $fichiers {		   
-		   append comments "[file tail $fichier]\n"
-		   ::console::affiche_resultat "fichier=[file normalize $fichier]\n"
-		   $snvisu(status_list) insert end "[file normalize $fichier]\n"
-		   $snvisu(status_list) yview moveto 1.0
-		   set f [open $fichier r]
-		   set lignes [split [read $f] \n]
-		   close $f
-			set fics [split [file tail $fichier] _]
-			set objname [lindex $fics 0]
-			set objdate [lindex $fics 3]
-			if {$objname!=$objname0} {
-				set comment ""
-			}			
-		   set n [expr [llength $lignes]-1]
-		   #::console::affiche_resultat "n=$n\n"
-		   for {set k 0} {$k<$n} {incr k} {
-			   set ligne [lindex $lignes $k]
-			   set key [string range $ligne 0 36]
-			   #::console::affiche_resultat "<$key>\n"
-			   if {[string compare $key "Personal comment about this candidate"]==0} {
-					incr k
-				   for {set kk $k} {$kk<$n} {incr kk} {
-			   		set ligne [lindex $lignes $kk]
-					   set key [string range $ligne 0 4]
-					   if {$key=="-----"} {
-						   break
-					   } else {
-						   if {$ligne!=""} {
-							   append comments "$ligne\n"
-						   }
-					   }
-				   }
-			   }
-		   }
-	   }
-	   set arfichiers [lsort -decreasing [::sn_tarot::searchinArchives [file rootname $objname]]]
-		append comments "-> List of archives:\n"
-	   foreach arfichier $arfichiers {
-			append comments "$arfichier\n"
-	   }
-		append comments "---------------------------\n\n"
-	   
+      set objname [lindex $ficlist 0]
+      set fichiers [lrange $ficlist 2 end]
+      append comments "---------------------------\n"
+      append comments "--- $objname ---\n"
+      foreach fichier $fichiers {
+         append comments "[file tail $fichier]\n"
+         ::console::affiche_resultat "fichier=[file normalize $fichier]\n"
+         $snvisu(status_list) insert end "[file normalize $fichier]\n"
+         $snvisu(status_list) yview moveto 1.0
+         set f [open $fichier r]
+         set lignes [split [read $f] \n]
+         close $f
+         set fics [split [file tail $fichier] _]
+         set objname [lindex $fics 0]
+         set objdate [lindex $fics 3]
+         if {$objname!=$objname0} {
+            set comment ""
+         }
+         set n [expr [llength $lignes]-1]
+         #::console::affiche_resultat "n=$n\n"
+         for {set k 0} {$k<$n} {incr k} {
+            set ligne [lindex $lignes $k]
+            set key [string range $ligne 0 36]
+            #::console::affiche_resultat "<$key>\n"
+            if {[string compare $key "Personal comment about this candidate"]==0} {
+               incr k
+               for {set kk $k} {$kk<$n} {incr kk} {
+                  set ligne [lindex $lignes $kk]
+                  set key [string range $ligne 0 4]
+                  if {$key=="-----"} {
+                     break
+                  } else {
+                     if {$ligne!=""} {
+                        append comments "$ligne\n"
+                     }
+                  }
+               }
+            }
+         }
+      }
+      set arfichiers [lsort -decreasing [::sn_tarot::searchinArchives [file rootname $objname]]]
+      append comments "-> List of archives:\n"
+      foreach arfichier $arfichiers {
+         append comments "$arfichier\n"
+      }
+      append comments "---------------------------\n\n"
+
    }
-   
+
    #
    ::console::affiche_resultat "\n$comments"
 
@@ -877,3 +877,4 @@ proc ::sn_tarot::snAnalyzeCandidateId { } {
    $fcand.fra1.lst1 configure -font {courier 8 bold}
    update
 }
+
