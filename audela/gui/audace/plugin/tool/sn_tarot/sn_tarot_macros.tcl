@@ -698,3 +698,182 @@ proc ::sn_tarot::getImgCenterRaDec { naxis1 naxis2 crota2 cdelt1 cdelt2 crpix1 c
    return [ list $ra $dec $fov_x $fov_y ]
 }
 
+# source $audace(rep_install)/gui/audace/plugin/tool/sn_tarot/sn_tarot_macros.tcl
+proc ::sn_tarot::snAnalyzeCandidateId { } {
+   global audace snvisu snconfvisu num caption rep
+
+   set textes ""
+
+   #--   fenetre de sortie
+   set fcand $audace(base).snvisu_ancand
+
+   if { [ winfo exists $fcand ] } {
+      destroy $fcand
+   }
+
+   #--- Create the toplevel window .snvisu_ancand
+   #--- Cree la fenetre .snvisu_ancand de niveau le plus haut
+   toplevel $fcand -class Toplevel
+   wm title $fcand $caption(sn_tarot,candidate)
+   regsub -all {[\+|x]} [ wm geometry $audace(base).snvisu ]  " " pos
+   wm geometry $fcand 600x600+[expr {[ lindex $pos 1 ] + 20 } ]+[ expr {[ lindex $pos 2 ] + 0} ]
+   wm resizable $fcand 1 1
+   wm transient $fcand $audace(base).snvisu
+   wm protocol $fcand WM_DELETE_WINDOW "destroy $fcand"
+
+   #--- Create the label and the radiobutton
+   #--- Cree l'etiquette et les radiobuttons
+   frame $fcand.frame1 -borderwidth 0 -relief raised
+      #--- Label
+      label $fcand.frame1.label -text " " \
+         -borderwidth 0 -relief flat
+      pack $fcand.frame1.label -fill x -side left -padx 5 -pady 5
+   pack $fcand.frame1 -side top -fill both -expand 0
+
+   #--- cree un acsenseur vertical pour la console de retour d'etats
+   frame $fcand.fra1
+      scrollbar $fcand.fra1.scr1 -orient vertical \
+         -command "$fcand.fra1.lst1 yview" -takefocus 0 -borderwidth 1
+      pack $fcand.fra1.scr1 \
+         -in $fcand.fra1 -side right -fill y
+      set snvisu(status_scrl) $fcand.fra1.scr1
+
+      scrollbar $fcand.fra1.scr2 -orient horizontal \
+         -command "$fcand.fra1.lst1 xview" -takefocus 0 -borderwidth 1
+      pack $fcand.fra1.scr2 \
+         -in $fcand.fra1 -side bottom -fill x
+      set snvisu(status_scrlx) $fcand.fra1.scr2
+
+      #--- cree la console de retour d'etats
+      text $fcand.fra1.lst1 \
+         -borderwidth 1 -relief sunken  -height 6 -font {courier 8 bold} \
+         -yscrollcommand "$fcand.fra1.scr1 set"  -xscrollcommand "$fcand.fra1.scr2 set" -wrap none
+      pack $fcand.fra1.lst1 \
+         -in $fcand.fra1 -expand yes -fill both \
+         -padx 3 -pady 3
+      set snvisu(status_list) $fcand.fra1.lst1
+   pack $fcand.fra1 -side top -fill both -expand 1
+
+   $snvisu(status_list) insert end "$caption(sn_tarot,ancand_wait)\n"
+   $snvisu(status_list) yview moveto 1.0
+   update
+
+   #--- Create the button 'Modify'
+   #--- Cree le bouton 'Modify'
+#    button $fcand.but_modify -text $caption(sn_tarot,modify) \
+#       -borderwidth 2 -command {
+#          global snvisu audace
+#          set res [$snvisu(status_list) dump -text 1.0 end]
+#          set snvisu(candidate,textes) ""
+#          set n [llength $res]
+#          for {set k 1} {$k<$n} {incr k 3} {
+#             #::console::affiche_resultat "[lindex $res $k]"
+#             append snvisu(candidate,textes) [lindex $res $k]
+#          }
+#          set fichier "$snvisu(candidate,candidate_file)"
+#          set f [open $fichier w]
+#          puts -nonewline $f $snvisu(candidate,textes)
+#          close $f
+#        }
+#    pack $fcand.but_modify -side left -anchor w -padx 5 -pady 5
+#    $fcand.but_modify configure  -state disabled
+
+   #--- Create the button 'OK'
+   #--- Cree le bouton 'OK'
+   button $fcand.but_ok -text $caption(sn_tarot,ok) -width 8 \
+      -borderwidth 2 -command "destroy $audace(base).snvisu_ancand"
+   pack $fcand.but_ok -side right -anchor w -padx 5 -pady 5
+   $fcand.but_ok configure  -state disabled
+
+   #--- La fenetre est active
+   focus $fcand
+
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $fcand
+
+   # --- File readings
+   update
+   set path "$rep(archives)/../alert"   
+   set fichiers [lsort [glob -nocomplain ${path}/*.txt]]
+   set ficlists ""
+   set objname0 ""
+   set objdates ""
+   foreach fichier $fichiers {
+		set fics [split [file tail $fichier] _]
+		set objname [lindex $fics 0]
+		set objdate [lindex $fics 3]
+		if {$objname!=$objname0} {
+			if {$objname0!=""} {
+			   lappend ficlists $comment
+			}
+			set comment [list $objname $objdate $fichier]
+		} else {
+			lappend comment $fichier
+		}
+		set objname0 $objname
+   }	   
+   set ficlists [lsort -index 1 -decreasing $ficlists]
+   set objname0 ""
+	set comments "Analysis result:\n\n"
+   foreach ficlist $ficlists {
+	   set objname [lindex $ficlist 0]
+	   set fichiers [lrange $ficlist 2 end]
+		append comments "---------------------------\n"
+		append comments "--- $objname ---\n"
+	   foreach fichier $fichiers {		   
+		   append comments "[file tail $fichier]\n"
+		   ::console::affiche_resultat "fichier=[file normalize $fichier]\n"
+		   $snvisu(status_list) insert end "[file normalize $fichier]\n"
+		   $snvisu(status_list) yview moveto 1.0
+		   set f [open $fichier r]
+		   set lignes [split [read $f] \n]
+		   close $f
+			set fics [split [file tail $fichier] _]
+			set objname [lindex $fics 0]
+			set objdate [lindex $fics 3]
+			if {$objname!=$objname0} {
+				set comment ""
+			}			
+		   set n [expr [llength $lignes]-1]
+		   #::console::affiche_resultat "n=$n\n"
+		   for {set k 0} {$k<$n} {incr k} {
+			   set ligne [lindex $lignes $k]
+			   set key [string range $ligne 0 36]
+			   #::console::affiche_resultat "<$key>\n"
+			   if {[string compare $key "Personal comment about this candidate"]==0} {
+					incr k
+				   for {set kk $k} {$kk<$n} {incr kk} {
+			   		set ligne [lindex $lignes $kk]
+					   set key [string range $ligne 0 4]
+					   if {$key=="-----"} {
+						   break
+					   } else {
+						   if {$ligne!=""} {
+							   append comments "$ligne\n"
+						   }
+					   }
+				   }
+			   }
+		   }
+	   }
+	   set arfichiers [lsort -decreasing [::sn_tarot::searchinArchives [file rootname $objname]]]
+		append comments "-> List of archives:\n"
+	   foreach arfichier $arfichiers {
+			append comments "$arfichier\n"
+	   }
+		append comments "---------------------------\n\n"
+	   
+   }
+   
+   #
+   ::console::affiche_resultat "\n$comments"
+
+   $snvisu(status_list) delete 1.0 end
+   $snvisu(status_list) insert end "$comments"
+   $snvisu(status_list) yview moveto 0.0
+   $fcand.but_modify configure  -state normal
+   $fcand.but_ok configure  -state normal
+   #$fcand.frame1.label configure -text $snvisu(candidate,candidate_file)
+   $fcand.fra1.lst1 configure -font {courier 8 bold}
+   update
+}
