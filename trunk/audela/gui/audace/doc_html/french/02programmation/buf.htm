@@ -4,8 +4,10 @@
 
 
 
+
+
   <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" /><title>Buffer</title></head><body>
-<p class="date">Date de mise &#224; jour : 18 juin 2011</p>
+<p class="date">Date de mise &#224; jour : 12 f&#233;vrier 2012</p>
 <h1>Buffer</h1>
 <p>Les commandes qui suivent peuvent &#234;tre appel&#233;es
 gr&#226;ce aux commandes <code>buf1</code>, <code>buf2</code>,
@@ -158,24 +160,24 @@ interne, AudeLA manipule des images de type float mais il est
 possible de les contraindre &#224; un autre type lors de
 l'enregistrement FITS avec cette fonction.<br />
 </p>
-<p>byte : Entiers &#224; 1 octet non sign&#233; soit 8 bits non sign&#233;s (0 &#224; 255).</p>
-<p>short : Entiers &#224; 2 octets sign&#233;s soit 16 bits sign&#233;s (-32768 &#224;
+<p>byte (bitpix = 8) : Entiers &#224; 1 octet non sign&#233; soit 8 bits non sign&#233;s (0 &#224; 255).</p>
+<p>short (bitpix = 16) : Entiers &#224; 2 octets sign&#233;s soit 16 bits sign&#233;s (-32768 &#224;
 32767).</p>
 
-<p>ushort : Entiers &#224; 2 octets non sign&#233;s soit 16 bits non sign&#233;s (0 &#224;
+<p>ushort (bitpix = +16) : Entiers &#224; 2 octets non sign&#233;s soit 16 bits non sign&#233;s (0 &#224;
 65535) (Note 1).</p>
 
-<p>long : Entiers &#224; 4 octets sign&#233;s soit 32 bits sign&#233;s (-2 147 483 648
+<p>long (bitpix = 32) : Entiers &#224; 4 octets sign&#233;s soit 32 bits sign&#233;s (-2 147 483 648
 &#224; 2 147 483
 647).</p>
 
-<p>ulong : Entiers &#224; 4 octets non sign&#233;s soit 32 bits non sign&#233;s (0 &#224; 4
+<p>ulong (bitpix = +32) : Entiers &#224; 4 octets non sign&#233;s soit 32 bits non sign&#233;s (0 &#224; 4
 294 967 295) (Note 1).</p>
 
-<p>float : Flottants &#224; 4 octets soit 32 bits (-3,4*10<sup>+38</sup> &#224;
+<p>float (bitpix = -32) : Flottants &#224; 4 octets soit 32 bits (-3,4*10<sup>+38</sup> &#224;
 3,4*10<sup>+38</sup>) (Note 2).</p>
 
-<p>double : Flottants &#224; 8 octets soit 64 bits (-1,7*10<sup>+308</sup>
+<p>double (bitpix = -64) : Flottants &#224; 8 octets soit 64 bits (-1,7*10<sup>+308</sup>
 &#224; 1,7*10<sup>+308</sup>) (Note 3).</p>
 
 <p><span style="text-decoration: underline;">Note 1 :</span> Les
@@ -200,8 +202,8 @@ d'affecter une valeur d'ADU dans les intervalles suivants :</p>
 <p>
 </p><p>Les r&#233;glages accessibles dans la fen&#234;tre <span style="font-weight: bold;">Configuration</span> --&gt; <span style="font-weight: bold;">Fichiers image</span> sont :</p>
 <ul>
-  <li>Entiers (ushort, 16 bits non sign&#233;s).</li>
-  <li>Flottant (float, cod&#233; sur 32 bits).</li>
+  <li>Entiers (ushort, 16 bits non sign&#233;s --&gt; +16).</li>
+  <li>Flottant (float, cod&#233; sur 32 bits --&gt; -32).</li>
 </ul>
 <p>La s&#233;lection de l'une des deux options a pour effet
 d'appliquer cette option au buffer de chaque visu ouverte ou
