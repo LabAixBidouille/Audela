@@ -491,12 +491,13 @@ namespace eval ::prtr {
                set type_thresholdValues  [list -1 0 +1]
                set translateValues [list after before never only]
                set height [llength [set ${child}Values]]
-
                frame $w.combo$child
                label $w.combo$child.lbl_$child -text "$child" -width $labelwidth
                ComboBox $w.combo$child.$child -textvariable ::prtr::$child -relief sunken \
                   -width 6 -height $height -values [set ${child}Values]
-               pack $w.combo$child.lbl_$child $w.combo$child.$child -side left
+               button $w.combo$child.aide -text "?" -width 2 \
+                  -command "::prtr::afficheAideBitpix"
+               pack $w.combo$child.lbl_$child $w.combo$child.$child $w.combo$child.aide -side left
                grid $w.combo$child -row $row -column $col -padx $d -pady 5 -sticky e
                #--   retablit la valeur par defaut de bitpix
                if {$child eq "bitpix"} {
@@ -1400,6 +1401,17 @@ namespace eval ::prtr {
 
       foreach {dir page item} $private(aide) {break}
       ::audace::showHelpItem $dir $page $item
+   }
+
+   #--------------------------------------------------------------------------
+   #  ::prtr::afficheAideBitpix
+   #  Selectionne l'aide associee a la definition de bitpix
+   #  Procedure lancee par le bouton ?
+   #--------------------------------------------------------------------------
+   proc afficheAideBitpix { } {
+      variable private
+
+      ::audace::showHelpItem "$::help(dir,prog)" "ttus1-fr.htm" "defBitpix"
    }
 
    #--------------------------------------------------------------------------
