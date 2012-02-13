@@ -129,6 +129,21 @@ proc photom_methode { xsm ysm delta bufNo} {
       set r2          [expr int(1.25*$delta)]
       set r3          [expr int(1.75*$delta)]
 
+      if {0} {
+         if {$r1<1} {set r1 1}
+         if {$r2<$r1} {set r2 $r1}
+         if {$r3<[expr $r2+1]} {set r3 [expr $r2+1]}
+         gren_info "--- photom --- \n"
+         gren_info "xs0  = $xs0 \n"
+         gren_info "ys0  = $ys0 \n"
+         gren_info "xs1  = $xs1 \n"
+         gren_info "ys1  = $ys1 \n"
+         gren_info "r1   = $r1  \n"
+         gren_info "r2   = $r2  \n"
+         gren_info "r3   = $r3  \n"
+         gren_info "--- \n"
+      }
+      
       set err [ catch { set valeurs [buf$bufNo photom [list $xs0 $ys0 $xs1 $ys1] square $r1 $r2 $r3 ] } msg ]
       if {$err} {
          return -1
