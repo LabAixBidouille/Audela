@@ -206,36 +206,25 @@ namespace eval ::av4l_acq {
 
         #---Titre
         label $frm.tformin.title -font $av4lconf(font,arial_10_b) -text "Peripherique de capture video4linux2"
-        pack  $frm.tformin.title -in $frm.tformin -side top -anchor w -expand 0
+        pack  $frm.tformin.title -in $frm.tformin -side top -anchor w
 
+        #--- Cree un frame pour le peripherique d'entree
+        set periph [frame $frm.tformin.periph -borderwidth 1 -relief raised -cursor arrow]
+        pack $frm.tformin.periph -in $frm.tformin -side top -expand 1 -fill x -padx 1 -pady 1
 
-
-        #--- Cree un frame pour
-        frame $frm.formin \
-              -borderwidth 1 -relief raised -cursor arrow
-        pack $frm.formin \
-             -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
-
-          #--- Cree un frame pour afficher les intitules
-          set intitle [frame $frm.formin.l -borderwidth 0]
-          pack $intitle -in $frm.formin -side left
-
+        
             #--- Cree un label pour
-            label $intitle.devpath -font $av4lconf(font,courier_10) -padx 3 \
+            label $periph.intitle -font $av4lconf(font,courier_10) -padx 3 \
                   -text "Chemin du periph."
-            pack $intitle.devpath -in $intitle -side top -padx 3 -pady 1 -anchor w
-
-          #--- Cree un frame pour afficher les valeurs
-          set inparam [frame $frm.formin.v -borderwidth 0]
-          pack $inparam -in $frm.formin -side left -expand 0 -fill x
+            pack $periph.intitle -in $periph -side left -padx 3 -pady 1 -anchor w
 
             #--- Cree un label pour le chemin du peripherique
-            entry $inparam.devpath -fg $color(blue) -width 20
-            pack $inparam.devpath -in $inparam -side top -pady 1 -anchor w
+            entry $periph.devpath -fg $color(blue) -width 20
+            pack $periph.devpath -in $periph -side left -pady 1 -anchor w
 
-          #--- Cree un frame pour afficher les extras
-          set inbutton [frame $frm.formin.e -borderwidth 0]
-          pack $inbutton -in $frm.formin -side left -expand 0 -fill x
+          #--- Cree un frame pour afficher les boutons
+          set inbutton [frame $periph.bout -borderwidth 0]
+          pack $inbutton -in $periph -side left -expand 0 -fill x
 
             #--- Cree un button
             button $inbutton.getinfo \
@@ -251,31 +240,31 @@ namespace eval ::av4l_acq {
 
 
           #--- Cree un frame pour les info
-          frame $frm.infodev -borderwidth 1 -relief raised -cursor arrow
-          pack $frm.infodev -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
+          frame $periph.infodev -borderwidth 1 -relief flat -cursor arrow
+          pack $periph.infodev -in $periph -side top -expand 0 -fill x -padx 1 -pady 1
 
           #--- Cree un frame pour colonne de gauche
-          set ivl [frame $frm.infodev.left -borderwidth 1]
-          pack $ivl -in $frm.infodev -side left -padx 30 -pady 1
+          set ivl [frame $periph.infodev.left -borderwidth 1]
+          pack $ivl -in $periph.infodev -side left -padx 30 -pady 1
 
           #--- Cree un frame pour colonne de droite
-          set ivr [frame $frm.infodev.right -borderwidth 1]
-          pack $ivr -in $frm.infodev -side left -padx 30 -pady 1
+          set ivr [frame $periph.infodev.right -borderwidth 1]
+          pack $ivr -in $periph.infodev -side left -padx 30 -pady 1
 
           #--- Cree un frame pour les labels
-          set ivll [frame $frm.infodev.left.lab -borderwidth 0]
+          set ivll [frame $periph.infodev.left.lab -borderwidth 0]
           pack $ivll -in $ivl -side left
 
           #--- Cree un frame pour les valeurs
-          set ivlv [frame $frm.infodev.left.val -borderwidth 0]
+          set ivlv [frame $periph.infodev.left.val -borderwidth 0]
           pack $ivlv -in $ivl -side left
 
           #--- Cree un frame pour les labels
-          set ivrl [frame $frm.infodev.right.lab -borderwidth 0]
+          set ivrl [frame $periph.infodev.right.lab -borderwidth 0]
           pack $ivrl -in $ivr -side left
 
           #--- Cree un frame pour les valeurs
-          set ivrv [frame $frm.infodev.right.val -borderwidth 0]
+          set ivrv [frame $periph.infodev.right.val -borderwidth 0]
           pack $ivrv -in $ivr -side left
 
            #- Colonne de gauche

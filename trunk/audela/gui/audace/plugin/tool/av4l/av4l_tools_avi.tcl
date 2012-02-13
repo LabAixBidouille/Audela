@@ -478,7 +478,8 @@ namespace eval ::av4l_tools_avi {
         set bufNo [ visu$visuNo buf ]
         ::console::affiche_resultat "Get device info\n"
         
-        set dev [$frm.formin.v.devpath get]
+        set dev [$frm.tformin.periph.devpath get]
+        set infodev $frm.tformin.periph.infodev
         
         if { [ string equal $dev ""] } {
          set options "-0"
@@ -503,10 +504,10 @@ namespace eval ::av4l_tools_avi {
             ::console::affiche_erreur "=== Fin des messages\n"
             $frm.oneshot configure -state disabled
             $frm.demarre configure -state disabled
-            $frm.infodev.left.val.modele configure -text ?
-            $frm.infodev.left.val.input configure -text ?
-            $frm.infodev.left.val.width configure -text ?
-            $frm.infodev.left.val.height configure -text ?
+            $infodev.left.val.modele configure -text ?
+            $infodev.left.val.input configure -text ?
+            $infodev.left.val.width configure -text ?
+            $infodev.left.val.height configure -text ?
             return $err
         } else {
             ::console::affiche_resultat "=== Messages retournes par av4l-grab :\n"
@@ -522,13 +523,13 @@ namespace eval ::av4l_tools_avi {
             $frm.oneshot configure -state normal
             $frm.demarre configure -state normal
 
-            $frm.infodev.left.val.modele configure -text [lindex [lsearch -index 0 -inline $devparams cap_card] 1]
-            $frm.infodev.left.val.input configure -text [lindex [lsearch -index 0 -inline $devparams video_input_index] 1]
-            $frm.infodev.left.val.width configure -text [lindex [lsearch -index 0 -inline $devparams format_width] 1]
-            $frm.infodev.left.val.height configure -text [lindex [lsearch -index 0 -inline $devparams format_height] 1]
+            $infodev.left.val.modele configure -text [lindex [lsearch -index 0 -inline $devparams cap_card] 1]
+            $infodev.left.val.input configure -text [lindex [lsearch -index 0 -inline $devparams video_input_index] 1]
+            $infodev.left.val.width configure -text [lindex [lsearch -index 0 -inline $devparams format_width] 1]
+            $infodev.left.val.height configure -text [lindex [lsearch -index 0 -inline $devparams format_height] 1]
             if { [ string equal $dev ""] } {
-                $frm.formin.v.devpath delete 0 end
-                $frm.formin.v.devpath insert 0 [lindex [lsearch -index 0 -inline $devparams video_device] 1]
+                $frm.tformin.periph.devpath delete 0 end
+                $frm.tformin.periph.devpath insert 0 [lindex [lsearch -index 0 -inline $devparams video_device] 1]
             }
 	    }
 
@@ -550,7 +551,7 @@ namespace eval ::av4l_tools_avi {
 
         ::console::affiche_resultat "One Shot !\n"
 
-        set dev [$frm.formin.v.devpath get]
+        set dev [$frm.tformin.periph.devpath get]
         if { [ string equal $dev ""] } {
          set options ""
          return
@@ -641,7 +642,7 @@ namespace eval ::av4l_tools_avi {
    proc ::av4l_tools_avi::acq_start { visuNo frm } {
         global audace
 
-        set dev [$frm.formin.v.devpath get]
+        set dev [$frm.tformin.periph.devpath get]
         set destdir [$frm.form.v.destdir get]
         set prefix  [$frm.form.v.prefix get]
 
