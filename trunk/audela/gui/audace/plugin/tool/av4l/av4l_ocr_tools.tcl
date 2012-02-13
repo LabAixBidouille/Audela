@@ -164,7 +164,9 @@ variable timing
 
 
 
+   proc ::av4l_ocr_tools::test { visuNo frm } {
 
+   }
 
 
    proc ::av4l_ocr_tools::workimage { visuNo frm } {

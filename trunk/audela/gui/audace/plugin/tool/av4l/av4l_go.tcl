@@ -100,7 +100,6 @@ proc ::av4l::initPlugin { tkbase } {
 #------------------------------------------------------------
 proc ::av4l::createPluginInstance { { in "" } { visuNo 1 } } {
 
-   variable parametres
    global audace caption conf panneau
 
    #--- Chargement des fichiers auxiliaires
@@ -117,22 +116,14 @@ proc ::av4l::createPluginInstance { { in "" } { visuNo 1 } } {
    #--- Recuperation de la derniere configuration de l'outil
    ::av4l::chargerVariable $visuNo
 
-
    #--- Initialisation d'autres variables
-   set panneau(av4l,$visuNo,index)                "1"
-   set panneau(av4l,$visuNo,indexEndSerie)        ""
-   set panneau(av4l,$visuNo,indexEndSerieContinu) ""
-   set panneau(av4l,$visuNo,nom_image)            ""
-   set panneau(av4l,$visuNo,extension)            "$conf(extension,defaut)"
-   set panneau(av4l,$visuNo,indexer)              "0"
-   set panneau(av4l,$visuNo,indexerContinue)      "1"
-   set panneau(av4l,$visuNo,nb_images)            "5"
-   set panneau(av4l,$visuNo,session_ouverture)    "1"
-   set panneau(av4l,$visuNo,avancement_acq)       "$parametres(av4l,$visuNo,avancement_acq)"
-   set panneau(av4l,$visuNo,enregistrer)          "$parametres(av4l,$visuNo,enregistrer)"
-   set panneau(av4l,$visuNo,dispTimeAfterId)      ""
-   set panneau(av4l,$visuNo,intervalle_1)         ""
-   set panneau(av4l,$visuNo,intervalle_2)         ""
+   #set panneau(av4l,$visuNo,index)                "1"
+   #set panneau(av4l,$visuNo,indexEndSerie)        ""
+   #set panneau(av4l,$visuNo,nom_image)            ""
+   #set panneau(av4l,$visuNo,indexEndSerieContinu) ""
+   #set panneau(av4l,$visuNo,nom_image)            ""
+   #set panneau(av4l,$visuNo,indexer)              "0"
+   #set panneau(av4l,$visuNo,indexer)              "0"
 
    #--- Construction de l'interface
    ::av4l::BuildIF $visuNo
@@ -179,28 +170,11 @@ proc ::av4l::ressource {  } {
 #    Chargement des variables
 #------------------------------------------------------------
 proc ::av4l::chargerVariable { visuNo } {
-   variable parametres
 
    #--- Ouverture du fichier de parametres
    set fichier [ file join $::audace(rep_home) av4l.ini ]
    if { [ file exists $fichier ] } {
       source $fichier
-   }
-
-   #--- Creation des variables si elles n'existent pas
-   if { ! [ info exists parametres(av4l,$visuNo,pose) ] }           { set parametres(av4l,$visuNo,pose)        "5" }   ; #--- Temps de pose : 5s
-   if { ! [ info exists parametres(av4l,$visuNo,bin) ] }            { set parametres(av4l,$visuNo,bin)         "1x1" } ; #--- Binning : 2x2
-   if { ! [ info exists parametres(av4l,$visuNo,zoom) ] }           { set parametres(av4l,$visuNo,zoom)        "1" }  ; #--- Zoom : 1
-   if { ! [ info exists parametres(av4l,$visuNo,format) ] }         { set parametres(av4l,$visuNo,format)      "" }    ; #--- Format des APN
-   if { ! [ info exists parametres(av4l,$visuNo,obt) ] }            { set parametres(av4l,$visuNo,obt)         "2" }   ; #--- Obturateur : Synchro
-   if { ! [ info exists parametres(av4l,$visuNo,mode) ] }           { set parametres(av4l,$visuNo,mode)        "1" }   ; #--- Mode : Une image
-   if { ! [ info exists parametres(av4l,$visuNo,enregistrer) ] }    { set parametres(av4l,$visuNo,enregistrer) "1" }   ; #--- Sauvegarde des images : Oui
-   if { ! [ info exists parametres(av4l,$visuNo,avancement_acq) ] } {
-      if { $visuNo == "1" } {
-         set parametres(av4l,$visuNo,avancement_acq) "1" ; #--- Barre de progression de la pose : Oui
-      } else {
-         set parametres(av4l,$visuNo,avancement_acq) "0" ; #--- Barre de progression de la pose : Non
-      }
    }
 
    #--- Creation des variables de la boite de configuration si elles n'existent pas
@@ -240,6 +214,7 @@ proc ::av4l::stopTool { { visuNo 1 } } {
 
    global panneau
    variable This
+
 
    pack forget $panneau(av4l,$visuNo,This)
 }
@@ -340,6 +315,7 @@ proc ::av4l::BuildIF { visuNo } {
          DynamicHelp::add $This.fra1.cdl -text $caption(av4l_go,cdl)
 
 
+     if { $::av4l::parametres(av4l,$visuNo,mode_debug)==1 } {
 
       #--- Frame du titre
       frame $This.fradev -borderwidth 2 -relief groove
@@ -400,6 +376,7 @@ proc ::av4l::BuildIF { visuNo } {
          DynamicHelp::add $This.fradev2.verif -text $caption(av4l_go,verif)
 
 
+     }
 
 
 
