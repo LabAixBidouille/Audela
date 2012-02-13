@@ -450,14 +450,30 @@ proc ::sn_tarot::displayImages { {subsky 0} } {
    set result ""
    set a [catch { buf$num(buffer2) load $filename } result]
    if { $a == 1 } {
-      #--   Met a jour la ligne de titre
-      $zone(labelh2) configure -text "-"
-      if {$snconfvisu(pers_or_dss)==0} {
-         ::sn_tarot::saveImage 0
+	   if { $a == 1 } {	   
+	      #--   Met a jour la ligne de titre
+	      $zone(labelh2) configure -text "-"
+	      if {$snconfvisu(pers_or_dss)==0} {
+	         ::sn_tarot::saveImage 0
+	      }
       }
-      return
+	   set filename ""
+	   if { ($snconfvisu(pers_or_dss) == 0) } {
+	      set filename [ lindex $rep(x3) $rep(index3) ]
+		   set result ""
+		   set a [catch { buf$num(buffer2) load $filename } result]
+	   }
+	   if { $a == 1 } {	   
+	      return
+      } else {
+	      $zone(labelh2) configure -text "$caption(sn_tarot,dss)"
+	      # $fr4.but_rad0 et $fr4.but_rad1
+      }
+   } else {
+	   #--   Met a jour la ligne de titre
+	   $zone(labelh2) configure -text [lindex [buf$num(buffer2) getkwd DATE-OBS] 1]
    }
-
+   
    set console_msg "[ format $caption(sn_tarot,image2) [ ::sn_tarot::shortPath $filename 7 ] $result ]"
    ::sn_tarot::afficheConsole
 
@@ -465,9 +481,6 @@ proc ::sn_tarot::displayImages { {subsky 0} } {
    if {$subsky==1} {
       buf$num(buffer2) imaseries "BACK sub back_kernel=$back_kernel back_threshold=$back_threshold"
    }
-
-   #--   Met a jour la ligne de titre
-   $zone(labelh2) configure -text [lindex [buf$num(buffer2) getkwd DATE-OBS] 1]
 
    #---
    catch {
