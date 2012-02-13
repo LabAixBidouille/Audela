@@ -378,36 +378,36 @@ namespace eval ::av4l_acq {
            #--- Creation du bouton one shot
            image create photo .oneshot -format PNG -file [ file join $audace(rep_plugin) tool av4l img oneshot.png ]
            button $frm.oneshot -image .oneshot\
-              -borderwidth 2 -width 48 -height 48 -compound center \
+              -borderwidth 2 -width 30 -height 30 -compound center \
               -state disabled \
               -command "::av4l_tools_avi::acq_oneshot $visuNo $frm"
            pack $frm.oneshot \
               -in $frm.btnav \
               -side left -anchor w \
-              -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+              -padx 1 -pady 1 -ipadx 1 -ipady 1 -expand 0
            DynamicHelp::add $frm.oneshot -text "$caption(av4l_acq,btn_oneshot)"
 
            #--- Creation du bouton start acquisition
            image create photo .demarre -format PNG -file [ file join $audace(rep_plugin) tool av4l img demarre.png ]
            button $frm.demarre -image .demarre\
-              -borderwidth 2 -width 48 -height 48 -compound center \
+              -borderwidth 2 -width 30 -height 30 -compound center \
               -state disabled \
               -command "::av4l_tools_avi::acq_start $visuNo $frm"
            pack $frm.demarre \
               -in $frm.btnav \
               -side left -anchor w \
-              -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+              -padx 1 -pady 1 -ipadx 1 -ipady 1 -expand 0
            DynamicHelp::add $frm.demarre -text "$caption(av4l_acq,btn_start)"
 
            #--- Creation du bouton stop acquisition
            image create photo .stop -format PNG -file [ file join $audace(rep_plugin) tool av4l img stop.png ]
            button $frm.stop -image .stop\
-              -borderwidth 2 -width 48 -height 48 -compound center \
+              -borderwidth 2 -width 30 -height 30 -compound center \
               -command "::av4l_tools_avi::acq_stop $frm"
            pack $frm.stop \
               -in $frm.btnav \
               -side left -anchor w \
-              -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+              -padx 1 -pady 1 -ipadx 1 -ipady 1 -expand 0
            DynamicHelp::add $frm.stop -text "$caption(av4l_acq,btn_stop)"
 
 
