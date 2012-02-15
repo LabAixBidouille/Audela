@@ -43,7 +43,7 @@ proc ::andorusb::getPluginType { } {
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::andorusb::getPluginOS { } {
-   return [ list Windows Linux Darwin ]
+   return [ list Linux ]
 }
 
 #
