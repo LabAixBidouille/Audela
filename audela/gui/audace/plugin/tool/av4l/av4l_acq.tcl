@@ -479,7 +479,7 @@ namespace eval ::av4l_acq {
               label $ivrv.dispo -font $av4lconf(font,courier_10) -fg $color(blue) -text "?"
               pack  $ivrv.dispo -in $ivrv -side top -anchor w
 
-              #---taille fichier
+              #---duree restante
               label $ivrl.restduree -font $av4lconf(font,courier_10) -text "$caption(av4l_acq,info_restduree)"
               pack  $ivrl.restduree -in $ivrl -side top -anchor w
               label $ivrv.restduree -font $av4lconf(font,courier_10) -fg $color(blue) -text "?"
