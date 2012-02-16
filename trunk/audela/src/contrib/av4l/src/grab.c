@@ -255,7 +255,7 @@ make \endverbatim
 #include "libavformat/url.h"
 #include "libswscale/swscale.h"
 
-const char * g_version_string = "20120101-1";
+const char * g_version_string = "20120201-1";
 
 //! The threads will finish their job on this value
 volatile int request_exit = 0;
@@ -268,6 +268,7 @@ int g_height = 576;
 //! Number of buffers for storing the frames
 int g_nbufs = 300;
 int g_auto = 0;
+int g_stats_every_frames = 1*25;
 
 uint64_t g_timeorigin = 0;
 uint64_t g_chunktimelimit = 0;
@@ -305,6 +306,7 @@ void print_usage()
             " -a auto configure device\n"
             " -0 only print info\n"
             " -1 one shot : grab a picture and store it in /dev/shm/pict.yuv422\n"
+            " -y time : send stats every time milliseconds\n"
             "\nSETUP\n"
             "/dev/shm/pict.yuv422 contains the latest image.\n"
             " To update it delete the file.\n"
@@ -1271,15 +1273,28 @@ void* frame_write_thread(void *arg)
 
 
         // Prints stats every 5 seconds
-        if(frame_count % (25*5) == 0) {
-            if(statfs(strchr(ofile->filename,':')+1,&vfs) == 0) {
+        if(frame_count % g_stats_every_frames == 0) {
+            struct stat st;
+            char *path = strchr(ofile->filename,':')+1;
+            int64_t free_disk;
+            stat(path,&st);
+            if(statfs(path,&vfs) == 0) {
                 int64_t sz = vfs.f_bavail * vfs.f_bsize;
+                int64_t duree = (gettimeofday64() - g_timeorigin) / 1000000;
+                int64_t mean_rate;
                 //fprintf(stderr,"fsid : 0x%x\n",vfs.f_type);
 #if 0
                 fprintf(stderr, "I: available buffers = %4d  free disk space = %lld MB(SI)\n", freebufs, sz/1000000LL);
 #else
-                fprintf(stderr, "tcl: { free_bufs %d } { free_disk  {%lld MB(SI)} } ", freebufs, sz/1000000LL);
+                free_disk = sz/1000000LL;
+                if(duree==0) duree = 1;
+                mean_rate = st.st_size  / duree; // bytes per sec
+                fprintf(stderr, "tcl: { free_bufs %d } { free_disk  {%lld MB(SI)} } ", freebufs, free_disk);
                 fprintf(stderr, "{ frame_count %d } ", frame_count);
+                fprintf(stderr, "{ file_size_mb { %lld MB(SI)} } ", st.st_size / 1000000); // MiB
+                fprintf(stderr, "{ duree %lld } ", duree); // seconds
+                fprintf(stderr, "{ duree_rest %lld } ", (sz / mean_rate) ); // MiB/s
+                fprintf(stderr, "{ fps %d } ", g_framerate);
                 fprintf(stderr, "\n");
 #endif
                 if(sz <= UINT64_C(100)*1000*1000) {
@@ -1657,7 +1672,7 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
-    while((opt=getopt(argc, argv, "ab:h:w:i:o:d:p:c:z01")) != -1) {
+    while((opt=getopt(argc, argv, "ab:h:w:i:o:d:p:c:y:z01")) != -1) {
         switch(opt) {
             case 'a':
                 g_auto = 1;
@@ -1670,6 +1685,14 @@ int main(int argc, char *argv[])
                 break;
             case 'w':
                 g_width = atoi(optarg);
+                break;
+            case 'y':
+                {
+                    int n = atoi(optarg);
+                    if(n<100) n = 100; // 0.1 second
+                    if(n>10000) n = 10000; // 10 seconds
+                    g_stats_every_frames = n * g_framerate / 1000;
+                }
                 break;
             case 'i':
                 g_input_device = optarg;

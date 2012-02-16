@@ -611,7 +611,13 @@ namespace eval ::av4l_tools_avi {
 
 
 
-
+   proc ::av4l_tools_avi::format_seconds { n } {
+            set h [expr int($n / 3600)]
+            set n [expr $n - $h * 3600]
+            set m [expr int($n / 60)]
+            set s [expr $n - $m * 60]
+            return [format "%02d:%02d:%02d" $h $m $s]
+   }
 
    proc ::av4l_tools_avi::acq_grab_read_status {chan frm} {
       if {![eof $chan]} {
@@ -620,8 +626,14 @@ namespace eval ::av4l_tools_avi {
             set line [string range $line 4 end]
             set free_disk [lindex [lsearch -index 0 -inline $line free_disk] 1]
             $frm.infovideo.right.val.dispo configure -text $free_disk
+            set file_size [lindex [lsearch -index 0 -inline $line file_size_mb] 1]
+            $frm.infovideo.right.val.size configure -text $file_size
             set frame_count [lindex [lsearch -index 0 -inline $line frame_count] 1]
             $frm.infovideo.left.val.nbi configure -text $frame_count
+            set duree [lindex [lsearch -index 0 -inline $line duree] 1]
+            $frm.infovideo.left.val.duree configure -text [format_seconds $duree]
+            set restduree [lindex [lsearch -index 0 -inline $line duree_rest] 1]
+            $frm.infovideo.right.val.restduree configure -text [format_seconds $restduree]
         } else {
             if {[string equal -length 2 "W:" $line] || [string equal -length 2 "E:" $line]} {
                 ::console::affiche_erreur "$line\n"
@@ -670,11 +682,12 @@ namespace eval ::av4l_tools_avi {
         set tag [clock format [clock seconds] -gmt 1 -format %Y%m%dT%H%M%S]
         set prefix "$prefix-$tag"
         
-        set options "-i $dev -d 120m -c 120m -o $destdir -p $prefix"
+        set options "-i $dev -y $::av4l::parametres(av4l,$visuNo,screen_refresh) -d 120m -c 120m -o $destdir -p $prefix"
 
         ::console::affiche_resultat "Acquisition demarre ...\n"
         ::console::affiche_resultat "           path   : $destdir\n"
         ::console::affiche_resultat "           prefix : $prefix\n"
+        ::console::affiche_resultat "           options: $options\n"
 
 #        set err [catch { exec sh -c "LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab $options" & } processes]
 
