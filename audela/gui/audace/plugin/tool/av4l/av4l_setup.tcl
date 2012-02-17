@@ -33,6 +33,7 @@ namespace eval ::av4l_setup {
       if { ! [ info exists ::av4l::parametres(av4l,$visuNo,mode_debug) ] }                 { set ::av4l::parametres(av4l,$visuNo,mode_debug)                "0" }
       if { ! [ info exists ::av4l::parametres(av4l,$visuNo,screen_refresh) ] }             { set ::av4l::parametres(av4l,$visuNo,screen_refresh)            "1000" }
       if { ! [ info exists ::av4l::parametres(av4l,$visuNo,exec_ocr) ] }                   { set ::av4l::parametres(av4l,$visuNo,exec_ocr)                  "jpegtopnm ocr.jpg | gocr -C 0-9 -f UTF8" }
+      if { ! [ info exists ::av4l::parametres(av4l,$visuNo,free_space) ] }                 { set ::av4l::parametres(av4l,$visuNo,free_space)                "500" }
    }
 
 
@@ -252,7 +253,21 @@ namespace eval ::av4l_setup {
 
          pack $frms.frame3.ocr -side top -fill both -expand 1
 
+         #--- Frame pour le : free_space
+         frame $frms.frame3.free_space -borderwidth 0
 
+            frame $frms.frame3.free_space.frm -borderwidth 0
+               entry $frms.frame3.free_space.frm.value -width 5 -textvariable ::av4l::parametres(av4l,$visuNo,free_space)
+               pack $frms.frame3.free_space.frm.value -side right -padx 5 -pady 0
+               label $frms.frame3.free_space.frm.lab -text "$caption(av4l_setup,free_space)"
+               pack $frms.frame3.free_space.frm.lab -side right -padx 5 -pady 0 
+
+            pack $frms.frame3.free_space.frm -side left
+
+         pack $frms.frame3.free_space -side top -fill both -expand 1
+
+
+      # --
       pack $frms.frame3 -side top -fill both -expand 1
    }
 
