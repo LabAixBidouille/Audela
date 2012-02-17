@@ -273,6 +273,7 @@ int g_stats_every_frames = 1*25;
 uint64_t g_timeorigin = 0;
 uint64_t g_chunktimelimit = 0;
 int g_chunkmaxframes = 0;
+uint64_t g_free_disk_limit = UINT64_C(100)*1000*1000; // bytes
 
 #define xabort() { fprintf(stderr, "\nabort() file %s line %d\n", __FILE__, __LINE__); abort(); }
 
@@ -304,6 +305,8 @@ void print_usage()
             " -w width : width e.g. 720\n"
             " -h height : height e.g. 576\n"
             " -a auto configure device\n"
+            " -s size : stop recording when disk space drops below 'size' Mb\n"
+            " -y TCL refresh rate (ms)\n"
             " -0 only print info\n"
             " -1 one shot : grab a picture and store it in /dev/shm/pict.yuv422\n"
             " -y time : send stats every time milliseconds\n"
@@ -1297,7 +1300,7 @@ void* frame_write_thread(void *arg)
                 fprintf(stderr, "{ fps %d } ", g_framerate);
                 fprintf(stderr, "\n");
 #endif
-                if(sz <= UINT64_C(100)*1000*1000) {
+                if(sz <= g_free_disk_limit) {
                     fprintf(stderr,"I: Disk Free Space Low\n");
                     g_exit_reason = "Ran out of disk space";
                     request_exit = 1;
@@ -1672,7 +1675,7 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
-    while((opt=getopt(argc, argv, "ab:h:w:i:o:d:p:c:y:z01")) != -1) {
+    while((opt=getopt(argc, argv, "ab:h:w:i:o:d:p:c:y:s:z01")) != -1) {
         switch(opt) {
             case 'a':
                 g_auto = 1;
@@ -1685,6 +1688,17 @@ int main(int argc, char *argv[])
                 break;
             case 'w':
                 g_width = atoi(optarg);
+                break;
+            case 's':
+                {
+                    int n = atoi(optarg);
+                    if(n<100) {
+                       n = 100; // 100 Mbytes
+                       fprintf(stderr,"W: option x, free disk space limit cannot be set under 100 Mbytes\n");
+                    }
+                    g_free_disk_limit = n; // Mbytes
+                    g_free_disk_limit *= 1000000; // bytes
+                }
                 break;
             case 'y':
                 {
