@@ -6,8 +6,8 @@
  */
 
 
-unsigned char OpenPortTalk(int argc, char ** argv, char * resultMessage );
-unsigned  char GrantPort( char *port,  char * resultMessage  );
+unsigned char OpenPortTalk(int argc, char ** argv, char * inputDirectory, char * resultMessage );
+unsigned  char GrantPort( char *port, char * inputDirectory, char * resultMessage  );
 void ClosePortTalk( void);
 int  GetPortTalkHandle(void);
 

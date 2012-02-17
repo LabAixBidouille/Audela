@@ -35,8 +35,6 @@
 HANDLE PortTalk_Handle = NULL;         // Handle for PortTalk Driver */
 int    winnt ;                         // is WinNT, Win2000, WinXP  
 
-#define ORIGINAL_FILE "..\\bin\\PortTalk.sys"
-
 /** 
  * getFileVersion
  *   gets the file version info structure
@@ -157,7 +155,7 @@ unsigned char checkFileVersion( char * fileName, DWORD referenceVersionMS, DWORD
 
 
 
-unsigned char InstallPortTalkDriver(char *  resultMessage)
+unsigned char InstallPortTalkDriver(char * inputDirectory, char * resultMessage)
 {
     SC_HANDLE  SchSCManager;
     SC_HANDLE  schService;
@@ -186,7 +184,18 @@ unsigned char InstallPortTalkDriver(char *  resultMessage)
 
     /* Copy Driver to System32/drivers directory. This fails if the file doesn't exist. */
 
-    if (!CopyFile(ORIGINAL_FILE, driverFileName, FALSE))
+    char inputFileName [1024];
+    strcpy(inputFileName,inputDirectory);
+    for(unsigned int c=0;c<strlen(inputFileName); c++){
+       if(inputFileName[c]=='/'){
+          inputFileName[c]='\\';
+       }
+    }
+    if(inputFileName[strlen(inputFileName)-1]!='\\'){
+       strcat(inputFileName,"\\");
+    }
+    strcat(inputFileName,"PortTalk.sys");
+    if (!CopyFile(inputFileName, driverFileName, FALSE))
         {
          sprintf(resultMessage,"PortTalk: Failed to copy driver to %s . Please manually copy driver to your system32/driver directory.",driverFileName);
         }
@@ -232,7 +241,7 @@ unsigned char InstallPortTalkDriver(char *  resultMessage)
 }
 
 
-unsigned char StartPortTalkDriver( char * resultMessage )
+unsigned char StartPortTalkDriver(char * inputDirectory, char * resultMessage )
 {
     SC_HANDLE  SchSCManager;
     SC_HANDLE  schService;
@@ -273,10 +282,10 @@ unsigned char StartPortTalkDriver( char * resultMessage )
                   return(-1);
                   break;
                case ERROR_SERVICE_DOES_NOT_EXIST:
-                  InstallPortTalkDriver(resultMessage);
+                  InstallPortTalkDriver(inputDirectory, resultMessage);
                   break;
                case ERROR_ALREADY_EXISTS:
-                  InstallPortTalkDriver(resultMessage);
+                  InstallPortTalkDriver(inputDirectory, resultMessage);
                   break;
                default:
                   sprintf(resultMessage,"PortTalk: OpenService PortTalk error=%ld.",err);
@@ -314,7 +323,7 @@ unsigned char StartPortTalkDriver( char * resultMessage )
  *    ouvre l'access pour un port supplementaire 
  */
 
-unsigned  char GrantPort( char *port,  char * resultMessage  )
+unsigned  char GrantPort( char *port, char * inputDirectory, char * resultMessage  )
 {
     
    DWORD BytesReturned;        
@@ -337,7 +346,7 @@ unsigned  char GrantPort( char *port,  char * resultMessage  )
    if( winnt == 1 ) {
 
       if( PortTalk_Handle == NULL ) {
-         error = OpenPortTalk(0, 0, resultMessage);
+         error = OpenPortTalk(0, 0, inputDirectory, resultMessage);
          if( error != 0 ) {
             return -1;
          }
@@ -393,7 +402,7 @@ void ClosePortTalk(void) {
  *
  * return 0 si OK, -1 si erreur
  */
-unsigned  char OpenPortTalk( int argc, char ** argv,  char * resultMessage )
+unsigned  char OpenPortTalk( int argc, char ** argv, char * inputDirectory, char * resultMessage )
 {
     
    DWORD pid;
@@ -429,7 +438,7 @@ unsigned  char OpenPortTalk( int argc, char ** argv,  char * resultMessage )
 
       if(PortTalk_Handle == INVALID_HANDLE_VALUE) {
             // Start or Install PortTalk Driver 
-            error = StartPortTalkDriver(resultMessage);
+            error = StartPortTalkDriver(inputDirectory, resultMessage);
             // Then try to open once more, before failing 
             if( error == 0 ) {
                PortTalk_Handle = CreateFile("\\\\.\\PortTalk", 

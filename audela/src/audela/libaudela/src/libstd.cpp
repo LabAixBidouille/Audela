@@ -313,13 +313,15 @@ int CmdPortTalk(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
          return TCL_ERROR;
       } else {
 
+         char inputDirectory [1024];
          ptargv = (char**) calloc(argc - 2,sizeof(char*));
          // je copie les arguments
          for( i = 0; i<(argc-2); i++ ) {
             //strcpy(ptemp+(256*i), argv[i+2] );
             ptargv[i]= argv[i+2];
          }
-         res = OpenPortTalk(argc-2, ptargv, result);
+         strcpy(inputDirectory, Tcl_GetVar(interp,"audela_start_dir",TCL_GLOBAL_ONLY));
+         res = OpenPortTalk(argc-2, ptargv, inputDirectory, result);
          //res =-1;
          //strcpy(result," test");
          free(ptargv);
@@ -338,7 +340,9 @@ int CmdPortTalk(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
          Tcl_SetResult(interp,result,TCL_VOLATILE);
          return TCL_ERROR;
       } else {
-         GrantPort( argv[2], result);
+         char inputDirectory [1024];
+         strcpy(inputDirectory, Tcl_GetVar(interp,"audela_start_dir",TCL_GLOBAL_ONLY));
+         GrantPort( argv[2], inputDirectory, result);
          Tcl_SetResult(interp,"result",TCL_VOLATILE);
       }
    } else if(strcmp(argv[1],"close")==0) {
