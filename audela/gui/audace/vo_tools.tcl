@@ -841,7 +841,8 @@ proc vo_neareststar { ra dec {radius 0} } {
    } else {
       set url "http://vizier.u-strasbg.fr/viz-bin/VizieR/VizieR-2"
       package require http
-      set query [::http::formatQuery "!-4c;" "Find Data" "-source" "I/297/out" "-c" "$target" "-c.eq" "J2000" "-c.r" "$rad" "-c.u" "arcmin" "-oc.form" "dec" "-c.geom" "r" "-out.add" "_r" "-sort" "_r"]
+      set max 1000
+      set query [::http::formatQuery "!-4c;" "Find Data" "-source" "I/297/out" "-c" "$target" "-c.eq" "J2000" "-c.r" "$rad" "-c.u" "arcmin" "-oc.form" "dec" "-c.geom" "r" "-out.add" "_r" "-sort" "_r" "-out.max" "$max"]
       set token [::http::geturl $url -query "$query"]
       upvar #0 $token state
       set html_text $state(body)
@@ -913,9 +914,9 @@ proc vo_neareststar { ra dec {radius 0} } {
          incr kstar
       }
    }
-   set f [open c:/d/a/a/toto.html w]
-   puts $f $html_text
-   close $f
+   #set f [open $audace(rep_install)/bin/toto.html w]
+   #puts $f $html_text
+   #close $f
    return $starlists
 }
 
