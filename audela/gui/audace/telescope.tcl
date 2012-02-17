@@ -947,9 +947,6 @@ proc ::telescope::stop { direction } {
                after 3700
             }
          }
-      } elseif { $conf(telescope) == "ascom" } {
-         tel$audace(telNo) radec stop $direction
-         tel$audace(telNo) radec motor on
       } elseif { $conf(telescope) == "temma" } {
          set AfterState "0"
          after cancel $AfterId
@@ -1298,11 +1295,6 @@ proc ::telescope::moveTelescope { alphaDirection alphaDiff deltaDirection deltaD
       tel$audace(telNo) radec stop $deltaDirection
    } else {
       tel$audace(telNo) correct $deltaDirection $deltaDelay
-   }
-
-   #--- Added for ASCOM telescopes otherwise tracking will stop during autoguiding...
-   if { $conf(telescope) == "ascom" } {
-      tel$audace(telNo) radec motor on
    }
 }
 
