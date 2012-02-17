@@ -22,6 +22,7 @@ set caption(av4l_setup,texte5)                    "Prompt the user if the index 
 set caption(av4l_setup,texte6)                    "Debug Mode"
 set caption(av4l_setup,screen_refresh)            "Screen refresh during acquisition in millisecond"
 set caption(av4l_setup,exec_ocr)                  "OCR command line"
+set caption(av4l_setup,free_space)                "Stop capture when free disk space drops below (Mo)"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -37,6 +38,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(av4l_setup,texte6)                 "Mode Debug"
    set caption(av4l_setup,screen_refresh)         "Delai d'affichage durant l'acquisition en milliseconde"
    set caption(av4l_setup,exec_ocr)               "Ligne de commande de l'OCR"
+   set caption(av4l_setup,free_space)             "Arrete la capture si la taille du disque restante depasse (Mo)"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
