@@ -538,8 +538,6 @@ int mytel_radec_move(struct telprop *tel,char *direction)
          rate *= -1;
          tel->params->telescopePtr->MoveAxis(AscomInterfacesLib::axisPrimary,rate);
       }
-	  // Reactivate tracking - seems mandatory for ASCOM scopes
-      // tel->params->telescopePtr->Tracking = true;
       return 0;
    } catch (_com_error &e) {
       sprintf(tel->msg, "mytel_radec_move error=%s",_com_util::ConvertBSTRToString(e.Description()));
@@ -557,19 +555,20 @@ int mytel_radec_stop(struct telprop *tel,char *direction)
       strcpy(direc,tel->interp->result);
    }
    try {
-      
       if (strcmp(direc,"N")==0 || strcmp(direc,"S")==0) {
-         tel->params->telescopePtr->MoveAxis(AscomInterfacesLib::axisSecondary,tel->params->telescopePtr->TrackingRate);      
+         tel->params->telescopePtr->MoveAxis(AscomInterfacesLib::axisSecondary,tel->params->telescopePtr->TrackingRate);
       } else if (strcmp(direc,"E")==0 || strcmp(direc,"W")==0) {
-         tel->params->telescopePtr->MoveAxis(AscomInterfacesLib::axisPrimary,tel->params->telescopePtr->TrackingRate);         
+         tel->params->telescopePtr->MoveAxis(AscomInterfacesLib::axisPrimary,tel->params->telescopePtr->TrackingRate);
       } else {
          tel->params->telescopePtr->AbortSlew();
-         tel->params->telescopePtr->MoveAxis(AscomInterfacesLib::axisSecondary,0); 
-         tel->params->telescopePtr->MoveAxis(AscomInterfacesLib::axisPrimary,0); 
+         tel->params->telescopePtr->MoveAxis(AscomInterfacesLib::axisSecondary,0);
+         tel->params->telescopePtr->MoveAxis(AscomInterfacesLib::axisPrimary,0);
          // je restaure la vitesse de suivi
-          tel->params->telescopePtr->MoveAxis(AscomInterfacesLib::axisPrimary,tel->params->telescopePtr->TrackingRate);   
-          tel->params->telescopePtr->MoveAxis(AscomInterfacesLib::axisSecondary,tel->params->telescopePtr->TrackingRate); 
+         tel->params->telescopePtr->MoveAxis(AscomInterfacesLib::axisPrimary,tel->params->telescopePtr->TrackingRate);
+         tel->params->telescopePtr->MoveAxis(AscomInterfacesLib::axisSecondary,tel->params->telescopePtr->TrackingRate);
       }
+      // j'active le suivi sideral
+      tel->params->telescopePtr->Tracking = true;
    } catch( _com_error &e ) {
       sprintf(tel->msg, "mytel_radec_stop error=%s",_com_util::ConvertBSTRToString(e.Description()));
       return -1;
@@ -582,7 +581,7 @@ int mytel_radec_motor(struct telprop *tel)
 
    try {
       if (tel->radec_motor==1) {
-         tel->params->telescopePtr->Tracking = false;   
+         tel->params->telescopePtr->Tracking = false;
       } else {
          /* start the motor */
          if ( tel->params->telescopePtr->CanPark == VARIANT_TRUE ) {
@@ -590,7 +589,7 @@ int mytel_radec_motor(struct telprop *tel)
                tel->params->telescopePtr->Unpark();
             }
          }
-         // j'active le suivi
+         // j'active le suivi sideral
          tel->params->telescopePtr->Tracking = true;
       }
    } catch( _com_error &e ) {
