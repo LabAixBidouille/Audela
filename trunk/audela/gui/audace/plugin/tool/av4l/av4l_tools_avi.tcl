@@ -682,7 +682,7 @@ namespace eval ::av4l_tools_avi {
         set tag [clock format [clock seconds] -gmt 1 -format %Y%m%dT%H%M%S]
         set prefix "$prefix-$tag"
         
-        set options "-i $dev -y $::av4l::parametres(av4l,$visuNo,screen_refresh) -d 120m -c 120m -o $destdir -p $prefix"
+        set options "-i $dev -y $::av4l::parametres(av4l,$visuNo,screen_refresh) -s $::av4l::parametres(av4l,$visuNo,free_space) -d 120m -c 120m -o $destdir -p $prefix"
 
         ::console::affiche_resultat "Acquisition demarre ...\n"
         ::console::affiche_resultat "           path   : $destdir\n"
