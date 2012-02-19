@@ -298,7 +298,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,cand_wait_sn)        "Verificar la presencia de una supernova conocida..."
    set caption(sn_tarot,cand_wait_ar)        "Verificar la presencia de la galaxia en los archivos..."
 
-   set caption(sn_tarot,ancand_wait)         "# Patientez pendant l'analyse des fiches candidates..."
+   set caption(sn_tarot,ancand_wait)         "Por favor, esperar al análisis de los ficheros candidatos..."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
