@@ -6,6 +6,7 @@
 #
 # La syntaxe est la plus proche possible de Matlab
 #
+# source $audace(rep_install)/gui/audace/plotxy.tcl
 # # here are two vectors
 # set x {1 2 3 4 5 6 7 8 9}
 # set y {4 6 8 3 2 5 8 5 4 }
@@ -306,6 +307,10 @@ namespace eval ::plotxy {
       set plotxy(fig$num,axis) ""
       set params [::plotxy::getgcf $num]
       set mylinewidth $plotxy(fig$num,linewidth)
+      set k [lsearch -exact $options -linewidth]
+      if {$k>=0} {
+	      set mylinewidth [lindex $options [expr $k+1]]
+      }
       set baseplotxy $plotxy(fig$num,parent)
       set lastline $plotxy(fig$num,lastline)
       #--- show the graph of hide=0
@@ -402,6 +407,7 @@ namespace eval ::plotxy {
          }
          append texte " -errorbarwidth 1 -errorbarcolor $mycolor -yhigh \{$yhigh\} -ylow \{$ylow\}"
       }
+      ::console::affiche_resultat "$texte\n"
       eval $texte
       #
       $baseplotxy.xy legend configure -hide yes
