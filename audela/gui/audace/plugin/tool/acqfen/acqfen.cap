@@ -391,7 +391,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfen,pb)              "Problem"
    set caption(acqfen,donnomfich)      "Eine Datei Namen geben"
    set caption(acqfen,nomblanc)        "Die Bilddatei muss keinen freien Platz enthalten"
-   set caption(acqfen,mauvcar)         "Die Bilddatei enthaltet\n unfähige Druckschriften"
+   set caption(acqfen,mauvcar)         "Die Bilddatei enthaltet\nunfähige Druckschriften"
    set caption(acqfen,saisind)         "Einen Index Wert erfassen"
    set caption(acqfen,indinv)          "unfähiges Index\n(muss ein positives Ganz sein)"
    set caption(acqfen,saisnbim)        "Das Bilder Zahl zu anschaffen geben"

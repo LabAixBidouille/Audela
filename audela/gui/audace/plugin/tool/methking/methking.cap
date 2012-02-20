@@ -493,7 +493,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(methking,etoile)               "   > Stella %s: x = %7.2f y = %7.2f\n"
    set caption(methking,sb_insuffisant)       "Rapporto S/R insufficiente"
    set caption(methking,et_non_isolee)        "Stella non isolata\n(o troppo estesa)"
-   set caption(methking,pixel_chaud)          "Pixel caldo, o pochi\n pixels significativi"
+   set caption(methking,pixel_chaud)          "Pixel caldo, o pochi\npixels significativi"
    set caption(methking,et_non_valide)        "Stella non valida"
    set caption(methking,pas_selectionne)      "Non sono state selezionate stelle !!"
    set caption(methking,et_selectionnees)     "    > %s stella/e selezionata/e\n"

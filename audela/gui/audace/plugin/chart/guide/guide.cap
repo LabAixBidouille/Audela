@@ -112,7 +112,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(guide,creation)      "Criação de uma carta de campo com GUIDE"
    set caption(guide,non)           "Para utilizar esta opção, o software GUIDE tem de estar em execução."
    set caption(guide,lance)         "Deseja iniciar GUIDE ?"
-   set caption(guide,verification)  "Verifique que GUIDE se encontra instalado e seleccionado no\n menu 'Configuração --> Carta'."
+   set caption(guide,verification)  "Verifique que GUIDE se encontra instalado e seleccionado no\nmenu 'Configuração --> Carta'."
    set caption(guide,rate)          "Acesso falhado"
    set caption(guide,gagne)         "Acesso OK"
 

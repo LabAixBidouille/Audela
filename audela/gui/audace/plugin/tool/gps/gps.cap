@@ -446,7 +446,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(gps,help,titre)               "Help for this Tool"
    set caption(gps,help,titre1)              "Help for the Tool:"
    set caption(gps,non_rs232)                "This port is not an RS232 serial port."
-   set caption(gps,droit_acces)              "Insufficient privileges for setting the system clock.\n You need to be an administrator of this computer."
+   set caption(gps,droit_acces)              "Insufficient privileges for setting the system clock.\nYou need to be an administrator of this computer."
    set caption(gps,pas_synchro)              "No synchronisation"
 
 # *************** Version ukrainienne *************************
