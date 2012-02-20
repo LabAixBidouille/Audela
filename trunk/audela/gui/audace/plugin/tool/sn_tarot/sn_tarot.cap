@@ -50,7 +50,7 @@ set caption(sn_tarot,auto_blink)             "Auto"
 set caption(sn_tarot,image_gzip)             "Saving Reference Images:"
 
 set caption(sn_tarot,attention)              "Warning"
-set caption(sn_tarot,alerte)                 "Display Refresh changes will only be applied\n after Tarot SN View is relaunched."
+set caption(sn_tarot,alerte)                 "Display Refresh changes will only be applied\nafter Tarot SN View is relaunched."
 
 set caption(sn_tarot,reference)              "Reference"
 set caption(sn_tarot,newref)                 "New Reference Image 1"
@@ -63,7 +63,7 @@ set caption(sn_tarot,dss_title)              "DSS image download"
 set caption(sn_tarot,dss_galaxy)             "Galaxy: %s"
 set caption(sn_tarot,dss_not_found)          "%s not loaded. Reason: %s"
 set caption(sn_tarot_go,all)                 "All DSS images are available."
-set caption(sn_tarot_go,manq)                "Downloads DSS images:\n %s."
+set caption(sn_tarot_go,manq)                "Downloads DSS images:\n%s."
 
 set caption(sn_tarot,configuration)          "Setup"
 set caption(sn_tarot,select)                 "Choose an archive:"
@@ -123,7 +123,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,image_gzip)          "Enregistrement des images de référence :"
 
    set caption(sn_tarot,attention)           "Attention"
-   set caption(sn_tarot,alerte)              "Le changement de configuration du rafraîchissement de la visualisation\n ne prendra effet qu'au prochain démarrage de Tarot SN Visu."
+   set caption(sn_tarot,alerte)              "Le changement de configuration du rafraîchissement de la visualisation\nne prendra effet qu'au prochain démarrage de Tarot SN Visu."
 
    set caption(sn_tarot,reference)           "Référence"
    set caption(sn_tarot,newref)              "Nouvelle référence Image 1"
@@ -136,7 +136,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,dss_galaxy)          "Galaxie : %s"
    set caption(sn_tarot,dss_not_found)       "%s pas chargé. Motif : %s"
    set caption(sn_tarot_go,no_dss_download)  "Toutes les images DSS sont présentes."
-   set caption(sn_tarot_go,dss_download)     "Télécharge les images DSS :\n %s."
+   set caption(sn_tarot_go,dss_download)     "Télécharge les images DSS :\n%s."
 
    set caption(sn_tarot,configuration)       "Configuration"
    set caption(sn_tarot,select)              "Sélectionner une archive :"
@@ -196,7 +196,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,image_gzip)          "Salvataggio immagini di riferimento:"
 
    set caption(sn_tarot,attention)           "Attenzione"
-   set caption(sn_tarot,alerte)              "# Le changement de configuration du rafraîchissement de la visualisation\n ne prendra effet qu'au prochain démarrage de Tarot Vista SN."
+   set caption(sn_tarot,alerte)              "# Le changement de configuration du rafraîchissement de la visualisation\nne prendra effet qu'au prochain démarrage de Tarot Vista SN."
 
    set caption(sn_tarot,reference)           "Riferimento"
    set caption(sn_tarot,newref)              "Nuovo riferimento Immagine 1"
@@ -209,7 +209,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,dss_galaxy)          "# Galaxie : %s"
    set caption(sn_tarot,dss_not_found)       "# %s pas chargé. Motif : %s"
    set caption(sn_tarot_go,no_dss_download)  "# Toutes les images DSS sont présentes."
-   set caption(sn_tarot_go,dss_download)     "# Télécharge les images DSS :\n %s."
+   set caption(sn_tarot_go,dss_download)     "# Télécharge les images DSS :\n%s."
 
    set caption(sn_tarot,configuration)       "Configurazione"
    set caption(sn_tarot,select)              "# Sélectionner une archive :"
@@ -222,7 +222,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(sn_tarot,cand_wait)           "# Patientez pendant la création de la fiche candidate..."
    set caption(sn_tarot,cand_wait_mp)        "# Vérifie la présence d'astéroïdes..."
-   set caption(sn_tarot,cand_wait_sn)        "# Vérifie la présence d'une supernova cconnue..."
+   set caption(sn_tarot,cand_wait_sn)        "# Vérifie la présence d'une supernova connue..."
    set caption(sn_tarot,cand_wait_ar)        "# Vérifie la présence de la galaxie dans les archives..."
 
    set caption(sn_tarot,ancand_wait)         "# Patientez pendant l'analyse des fiches candidates..."
@@ -269,7 +269,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,image_gzip)          "Registro de imágenes de referencia:"
 
    set caption(sn_tarot,attention)           "!Cuidado¡"
-   set caption(sn_tarot,alerte)              "El cambio de configuración de refresco de la pantalla sólo\n se aplican tras el rearranque de Tarot SN Ver."
+   set caption(sn_tarot,alerte)              "El cambio de configuración de refresco de la pantalla sólo\nse aplican tras el rearranque de Tarot SN Ver."
 
    set caption(sn_tarot,reference)           "Referencia"
    set caption(sn_tarot,newref)              "Nueva referencia Imagen 1"
@@ -282,7 +282,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,dss_galaxy)          "Galaxia: %s"
    set caption(sn_tarot,dss_not_found)       "%s no cargada. Motivo: %s"
    set caption(sn_tarot_go,no_dss_download)  "Todas las imágenes DSS etán presentes."
-   set caption(sn_tarot_go,dss_download)     "Descarga de imágenes DSS:\n %s."
+   set caption(sn_tarot_go,dss_download)     "Descarga de imágenes DSS:\n%s."
 
    set caption(sn_tarot,configuration)       "Configuración"
    set caption(sn_tarot,select)              "Seleccionar un archivo:"
@@ -342,7 +342,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,image_gzip)          "Referenz Bilder speichern:"
 
    set caption(sn_tarot,attention)           "Achtung"
-   set caption(sn_tarot,alerte)              "# Le changement de configuration du rafraîchissement de la visualisation\n ne prendra effet qu'au prochain démarrage de Tarot SN Visu."
+   set caption(sn_tarot,alerte)              "# Le changement de configuration du rafraîchissement de la visualisation\nne prendra effet qu'au prochain démarrage de Tarot SN Visu."
 
    set caption(sn_tarot,reference)           "Bezug"
    set caption(sn_tarot,newref)              "Neue Bild 1 Bezug"
@@ -355,7 +355,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,dss_galaxy)          "Galaxis: %s"
    set caption(sn_tarot,dss_not_found)       "%s nicht geladen. Grund: %s"
    set caption(sn_tarot_go,no_dss_download)  "Alle DSS Bilder sind da."
-   set caption(sn_tarot_go,dss_download)     "Diese DSS Bilder herunterladen:\n %s."
+   set caption(sn_tarot_go,dss_download)     "Diese DSS Bilder herunterladen:\n%s."
 
    set caption(sn_tarot,exit)                "Beenden"
    set caption(sn_tarot,select)              "Ein Archiv wählen:"
@@ -377,7 +377,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(sn_tarot,main_title)          "Tarot Visualização SN"
-   set caption(sn_tarot,title)               "# Image du jour <-  Analyse de l'archive : %s  -> Référence"
+   set caption(sn_tarot,title)               "Imagem do dia <-  Análise do arquivo: %s  -> Referência"
    set caption(sn_tarot,prev)                "Anterior"
    set caption(sn_tarot,next)                "Seguinte\n(F1)"
    set caption(sn_tarot,goto)                "Ir para"
@@ -391,10 +391,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,image1)              "Imagem 1 -> %s %s %s %s %s %s"
    set caption(sn_tarot,image2)              "Imagem 2 -> %s %s"
 
-   set caption(sn_tarot,galaxy_center)       "# Centre de la galaxie hôte"
-   set caption(sn_tarot,star_ref)            "# Position d'une étoile de référence"
-   set caption(sn_tarot,star_pos)            "# Position de la candidate SN"
-   set caption(sn_tarot,star_id)             "# Création de la fiche de la candidate SN"
+   set caption(sn_tarot,galaxy_center)       "Centro da galáxia anfitriã"
+   set caption(sn_tarot,star_ref)            "Posição de uma estrela de referência"
+   set caption(sn_tarot,star_pos)            "Posição da candidata SN"
+   set caption(sn_tarot,star_id)             "Criação da ficha da candidate SN"
 
    set caption(sn_tarot,save1)               "Guardar"
    set caption(sn_tarot,confirm)             "Deseja continuar?"
@@ -415,7 +415,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,image_gzip)          "Mostrar imagens de referência:"
 
    set caption(sn_tarot,attention)           "Atenção"
-   set caption(sn_tarot,alerte)              "# Le changement de configuration du rafraîchissement de la visualisation\n ne prendra effet qu'au prochain démarrage de Tarot Visualização SN."
+   set caption(sn_tarot,alerte)              "As alterações nas actualizações da visualização apenas\nterão efeito quando Tarot Visualização SN for reiniciado."
 
    set caption(sn_tarot,reference)           "Referência"
    set caption(sn_tarot,newref)              "Nova referência Imagem 1"
@@ -424,27 +424,27 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,fits_header)         "Cabeçalho FITS"
    set caption(sn_tarot,header,noimage)      "Não existe imagem em memória neste momento."
 
-   set caption(sn_tarot,dss_title)           "# Téléchargement des images DSS"
-   set caption(sn_tarot,dss_galaxy)          "# Galaxie : %s"
-   set caption(sn_tarot,dss_not_found)       "# %s pas chargé. Motif : %s"
-   set caption(sn_tarot_go,all)              "# Toutes les images DSS sont présentes."
-   set caption(sn_tarot_go,manq)             "# Télécharge les images DSS :\n %s."
+   set caption(sn_tarot,dss_title)           "Download das imagens DSS"
+   set caption(sn_tarot,dss_galaxy)          "Galáxia: %s"
+   set caption(sn_tarot,dss_not_found)       "%s não carregado. Motivo: %s"
+   set caption(sn_tarot_go,all)              "Todas as imagens DSS estão disponíveis."
+   set caption(sn_tarot_go,manq)             "Descarrega as imagens DSS:\n%s."
 
    set caption(sn_tarot,configuration)       "Configuração"
-   set caption(sn_tarot,select)              "# Sélectionner une archive :"
+   set caption(sn_tarot,select)              "Escolher um arquivo:"
    set caption(sn_tarot,aide)                "Ajuda"
    set caption(sn_tarot,exit)                "Sair"
 
-   set caption(sn_tarot,candidate)           "# Candidate supernova"
-   set caption(sn_tarot,modify)              "# Modifier le fichier candidat"
+   set caption(sn_tarot,candidate)           "Candidata supernova"
+   set caption(sn_tarot,modify)              "Modificar o ficheiro da candidata"
    set caption(sn_tarot,ok)                  "OK"
 
-   set caption(sn_tarot,cand_wait)           "# Patientez pendant la création de la fiche candidate..."
-   set caption(sn_tarot,cand_wait_mp)        "# Vérifie la présence d'astéroïdes..."
-   set caption(sn_tarot,cand_wait_sn)        "# Vérifie la présence d'une supernova cconnue..."
-   set caption(sn_tarot,cand_wait_ar)        "# Vérifie la présence de la galaxie dans les archives..."
+   set caption(sn_tarot,cand_wait)           "Por favor aguarde enquanto a ficha da candidata é criada..."
+   set caption(sn_tarot,cand_wait_mp)        "Verifica a presença de asteróides..."
+   set caption(sn_tarot,cand_wait_sn)        "Verifica a presença de uma supernova conhecida..."
+   set caption(sn_tarot,cand_wait_ar)        "Verifica a presença da galáxia nos arquivos..."
 
-   set caption(sn_tarot,ancand_wait)         "# Patientez pendant l'analyse des fiches candidates..."
+   set caption(sn_tarot,ancand_wait)         "Por favor aguarde, enquanto as fichas candidatas são analisadas..."
 
 # *************** Version danoise *************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -488,7 +488,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,image_gzip)          "Saving Reference Images:"
 
    set caption(sn_tarot,attention)           "Warning"
-   set caption(sn_tarot,alerte)              "Display Refresh changes will only be applied\n after Tarot SN View is relaunched."
+   set caption(sn_tarot,alerte)              "Display Refresh changes will only be applied\nafter Tarot SN View is relaunched."
 
    set caption(sn_tarot,reference)           "Reference"
    set caption(sn_tarot,newref)              "New Reference Image 1"
@@ -501,7 +501,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,dss_galaxy)          "Galaxy: %s"
    set caption(sn_tarot,dss_not_found)       "%s not loaded. Reason: %s"
    set caption(sn_tarot_go,all)              "All DSS images are available."
-   set caption(sn_tarot_go,manq)             "Downloads DSS images:\n %s."
+   set caption(sn_tarot_go,manq)             "Downloads DSS images:\n%s."
 
    set caption(sn_tarot,configuration)       "Setup"
    set caption(sn_tarot,select)              "Choose an archive:"
@@ -561,7 +561,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,image_gzip)          "Saving Reference Images:"
 
    set caption(sn_tarot,attention)           "Warning"
-   set caption(sn_tarot,alerte)              "Display Refresh changes will only be applied\n after Tarot SN View is relaunched."
+   set caption(sn_tarot,alerte)              "Display Refresh changes will only be applied\nafter Tarot SN View is relaunched."
 
    set caption(sn_tarot,reference)           "Reference"
    set caption(sn_tarot,newref)              "New Reference Image 1"
@@ -574,7 +574,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,dss_galaxy)          "Galaxy: %s"
    set caption(sn_tarot,dss_not_found)       "%s not loaded. Reason: %s"
    set caption(sn_tarot_go,all)              "All DSS images are available."
-   set caption(sn_tarot_go,manq)             "Downloads DSS images:\n %s."
+   set caption(sn_tarot_go,manq)             "Downloads DSS images:\n%s."
 
    set caption(sn_tarot,configuration)       "Setup"
    set caption(sn_tarot,select)              "Choose an archive:"
@@ -634,7 +634,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,image_gzip)          "Saving Reference Images:"
 
    set caption(sn_tarot,attention)           "Warning"
-   set caption(sn_tarot,alerte)              "Display Refresh changes will only be applied\n after Tarot SN View is relaunched."
+   set caption(sn_tarot,alerte)              "Display Refresh changes will only be applied\nafter Tarot SN View is relaunched."
 
    set caption(sn_tarot,reference)           "Reference"
    set caption(sn_tarot,newref)              "New Reference Image 1"
@@ -647,7 +647,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,dss_galaxy)          "Galaxy: %s"
    set caption(sn_tarot,dss_not_found)       "%s not loaded. Reason: %s"
    set caption(sn_tarot_go,all)              "All DSS images are available."
-   set caption(sn_tarot_go,manq)             "Downloads DSS images:\n %s."
+   set caption(sn_tarot_go,manq)             "Downloads DSS images:\n%s."
 
    set caption(sn_tarot,configuration)       "Setup"
    set caption(sn_tarot,select)              "Choose an archive:"
