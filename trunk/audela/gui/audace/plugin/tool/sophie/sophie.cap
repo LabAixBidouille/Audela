@@ -221,7 +221,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sophie,newExposure)                   "Temps de pose"
    set caption(sophie,newValue)                      "Nouvelle valeur (sec.)"
 
-   set caption(sophie,directoryNotFound)             "Le répertoire %s n'existe pas. \n Veuillez vérifier la configuration de l'outil."
+   set caption(sophie,directoryNotFound)             "Le répertoire %s n'existe pas.\nVeuillez vérifier la configuration de l'outil."
    set caption(sophie,invalidDirectory)              "Le répertoire %s n'existe pas."
 
    set caption(sophie,configStandard)                "Configuration standard"

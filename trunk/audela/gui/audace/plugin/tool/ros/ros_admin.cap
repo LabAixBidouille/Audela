@@ -11,54 +11,110 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(ros_admin,msg_prevent)        "Warning!"
-set caption(ros_admin,msg_prevent2)       "This will reset the database. All data will be deleted from the disk. Are you sure?"
+set caption(ros_admin,msg_prevent)        "Warning"
+set caption(ros_admin,msg_prevent2)       "This will reset the database (DB). All data will be deleted from the disk. Are you sure?"
 set caption(ros_admin,efface)             "Data base will be deleted"
 set caption(ros_admin,mdprootsql)         "Enter the root password for the SQL server"
 set caption(ros_admin,cancelRAZ)          "DB reset canceled"
 set caption(ros_admin,mysqlconnecterr)    "MySQL connection error:"
 set caption(ros_admin,mysqlshowerr)       "Request failed:"
-set caption(ros_admin,mysqlok)            "Connecting to DB:\n Success"
+set caption(ros_admin,mysqlok)            "Connecting to DB:\nSuccess"
 
 # *************** Version française **** **********************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(ros_admin,msg_prevent)     "Attention !"
-   set caption(ros_admin,msg_prevent2)    "Cette action va réinitialiser la base de données. Toutes les données seront définitivement effacées du disque. Etes-vous sûr ?"
+   set caption(ros_admin,msg_prevent)     "Attention "
+   set caption(ros_admin,msg_prevent2)    "Cette action va réinitialiser la base de données (BDD). Toutes les données seront définitivement effacées du disque. Etes-vous sûr ?"
    set caption(ros_admin,efface)          "Effacement de la base de données"
    set caption(ros_admin,mdprootsql)      "Veuillez saisir le mot de passe root du serveur SQL"
    set caption(ros_admin,cancelRAZ)       "RAZ annulée de la BDD"
    set caption(ros_admin,mysqlconnecterr) "Erreur de connexion à MySQL :"
    set caption(ros_admin,mysqlshowerr)    "La requête a échoué :"
-   set caption(ros_admin,mysqlok)         "Connexion à la bdd :\n OK"
+   set caption(ros_admin,mysqlok)         "Connexion à la BDD :\nOK"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
+   set caption(ros_admin,msg_prevent)     "# Attention"
+   set caption(ros_admin,msg_prevent2)    "# Cette action va réinitialiser la base de données (BDD). Toutes les données seront définitivement effacées du disque. Etes-vous sûr ?"
+   set caption(ros_admin,efface)          "# Effacement de la base de données"
+   set caption(ros_admin,mdprootsql)      "# Veuillez saisir le mot de passe root du serveur SQL"
+   set caption(ros_admin,cancelRAZ)       "# RAZ annulée de la BDD"
+   set caption(ros_admin,mysqlconnecterr) "# Erreur de connexion à MySQL :"
+   set caption(ros_admin,mysqlshowerr)    "# La requête a échoué :"
+   set caption(ros_admin,mysqlok)         "# Connexion à la BDD :\nOK"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
+   set caption(ros_admin,msg_prevent)     "# Attention"
+   set caption(ros_admin,msg_prevent2)    "# Cette action va réinitialiser la base de données (BDD). Toutes les données seront définitivement effacées du disque. Etes-vous sûr ?"
+   set caption(ros_admin,efface)          "# Effacement de la base de données"
+   set caption(ros_admin,mdprootsql)      "# Veuillez saisir le mot de passe root du serveur SQL"
+   set caption(ros_admin,cancelRAZ)       "# RAZ annulée de la BDD"
+   set caption(ros_admin,mysqlconnecterr) "# Erreur de connexion à MySQL :"
+   set caption(ros_admin,mysqlshowerr)    "# La requête a échoué :"
+   set caption(ros_admin,mysqlok)         "# Connexion à la BDD :\nOK"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
+   set caption(ros_admin,msg_prevent)     "# Attention"
+   set caption(ros_admin,msg_prevent2)    "# Cette action va réinitialiser la base de données (BDD). Toutes les données seront définitivement effacées du disque. Etes-vous sûr ?"
+   set caption(ros_admin,efface)          "# Effacement de la base de données"
+   set caption(ros_admin,mdprootsql)      "# Veuillez saisir le mot de passe root du serveur SQL"
+   set caption(ros_admin,cancelRAZ)       "# RAZ annulée de la BDD"
+   set caption(ros_admin,mysqlconnecterr) "# Erreur de connexion à MySQL :"
+   set caption(ros_admin,mysqlshowerr)    "# La requête a échoué :"
+   set caption(ros_admin,mysqlok)         "# Connexion à la BDD :\nOK"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
+   set caption(ros_admin,msg_prevent)     "# Attention"
+   set caption(ros_admin,msg_prevent2)    "# Cette action va réinitialiser la base de données (BDD). Toutes les données seront définitivement effacées du disque. Etes-vous sûr ?"
+   set caption(ros_admin,efface)          "# Effacement de la base de données"
+   set caption(ros_admin,mdprootsql)      "# Veuillez saisir le mot de passe root du serveur SQL"
+   set caption(ros_admin,cancelRAZ)       "# RAZ annulée de la BDD"
+   set caption(ros_admin,mysqlconnecterr) "# Erreur de connexion à MySQL :"
+   set caption(ros_admin,mysqlshowerr)    "# La requête a échoué :"
+   set caption(ros_admin,mysqlok)         "# Connexion à la BDD :\nOK"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
+   set caption(ros_admin,msg_prevent)     "Warning"
+   set caption(ros_admin,msg_prevent2)    "This will reset the database (DB). All data will be deleted from the disk. Are you sure?"
+   set caption(ros_admin,efface)          "Data base will be deleted"
+   set caption(ros_admin,mdprootsql)      "Enter the root password for the SQL server"
+   set caption(ros_admin,cancelRAZ)       "DB reset canceled"
+   set caption(ros_admin,mysqlconnecterr) "MySQL connection error:"
+   set caption(ros_admin,mysqlshowerr)    "Request failed:"
+   set caption(ros_admin,mysqlok)         "Connecting to DB:\nSuccess"
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
+   set caption(ros_admin,msg_prevent)     "Warning"
+   set caption(ros_admin,msg_prevent2)    "This will reset the database (DB). All data will be deleted from the disk. Are you sure?"
+   set caption(ros_admin,efface)          "Data base will be deleted"
+   set caption(ros_admin,mdprootsql)      "Enter the root password for the SQL server"
+   set caption(ros_admin,cancelRAZ)       "DB reset canceled"
+   set caption(ros_admin,mysqlconnecterr) "MySQL connection error:"
+   set caption(ros_admin,mysqlshowerr)    "Request failed:"
+   set caption(ros_admin,mysqlok)         "Connecting to DB:\nSuccess"
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
+   set caption(ros_admin,msg_prevent)     "Warning"
+   set caption(ros_admin,msg_prevent2)    "This will reset the database (DB). All data will be deleted from the disk. Are you sure?"
+   set caption(ros_admin,efface)          "Data base will be deleted"
+   set caption(ros_admin,mdprootsql)      "Enter the root password for the SQL server"
+   set caption(ros_admin,cancelRAZ)       "DB reset canceled"
+   set caption(ros_admin,mysqlconnecterr) "MySQL connection error:"
+   set caption(ros_admin,mysqlshowerr)    "Request failed:"
+   set caption(ros_admin,mysqlok)         "Connecting to DB:\nSuccess"
 
 }
 
