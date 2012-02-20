@@ -169,7 +169,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cwdWindow,creation_sous_rep)       "Generazione"
    set caption(cwdWindow,repertoire_scripts)      "Cartella degli script:"
    set caption(cwdWindow,repertoire_catalogues)   "Cartella dei cataloghi:"
-   set caption(cwdWindow,repertoire_archives)     "# Répertoire des archives :"
+   set caption(cwdWindow,repertoire_archives)     "Cartella di archivio:"
    set caption(cwdWindow,boite_erreur)            "Errore"
    set caption(cwdWindow,pas_repertoire)          " non e' una cartella."
 
@@ -352,7 +352,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cwdWindow,creation_sous_rep)       "Criar"
    set caption(cwdWindow,repertoire_scripts)      "Pasta de scripts:"
    set caption(cwdWindow,repertoire_catalogues)   "Pasta de catálogos:"
-   set caption(cwdWindow,repertoire_archives)     "# Répertoire des archives :"
+   set caption(cwdWindow,repertoire_archives)     "Pasta de arquivos:"
    set caption(cwdWindow,boite_erreur)            "Erro"
    set caption(cwdWindow,pas_repertoire)          " não é uma pasta."
 
