@@ -220,6 +220,11 @@ proc ::sn_tarot::tarotBuildIF { } {
      -command "::sn_tarot::Explore"
    pack $This.fra2.but2 -anchor center -fill none -pady 5 -ipadx 5 -ipady 5
 
+   #--- Bouton Status candidates
+   button $This.fra2.but3 -borderwidth 2 -text "$caption(sn_tarot_go,status_candidates)" \
+     -command "::sn_tarot::snAnalyzeCandidateId"
+   pack $This.fra2.but3 -anchor center -fill none -pady 5 -ipadx 5 -ipady 5
+   
    pack $This.fra2 -side top -fill x
 
    #--   pour definir le fichier courant
@@ -300,7 +305,7 @@ proc ::sn_tarot::confirmTelecharge { } {
    }
 
    #--   inhibe les selecteurs et les boutons 'Telecharger' 'Recherche Supernovae'
-   foreach child [ list site file but0 but1 but2 ] {
+   foreach child [ list site file but0 but1 but2 but3 ] {
       $This.fra2.$child configure -state disabled
    }
    $This.fra2.but1 configure -text "$caption(sn_tarot_go,telechargement)"
@@ -312,7 +317,7 @@ proc ::sn_tarot::confirmTelecharge { } {
 
    #--   desinhibe
    $This.fra2.but1 configure -text "$caption(sn_tarot_go,telecharger)"
-   foreach child [ list site file but0 but1 but2 ] {
+   foreach child [ list site file but0 but1 but2 but3 ] {
       $This.fra2.$child configure -state normal
    }
    update
