@@ -715,10 +715,12 @@ proc ::sn_tarot::snAnalyzeCandidateId { } {
    #--- Cree la fenetre .snvisu_ancand de niveau le plus haut
    toplevel $fcand -class Toplevel
    wm title $fcand $caption(sn_tarot,candidate)
-   regsub -all {[\+|x]} [ wm geometry $audace(base).snvisu ]  " " pos
+   regsub -all {[\+|x]} [ wm geometry $audace(base).snvisu_ancand ]  " " pos
    wm geometry $fcand 600x600+[expr {[ lindex $pos 1 ] + 20 } ]+[ expr {[ lindex $pos 2 ] + 0} ]
    wm resizable $fcand 1 1
-   wm transient $fcand $audace(base).snvisu
+   if {[info exists audace(base).snvisu]==1} {
+	   wm transient $fcand $audace(base).snvisu
+   }
    wm protocol $fcand WM_DELETE_WINDOW "destroy $fcand"
 
    #--- Create the label and the radiobutton
@@ -822,7 +824,7 @@ proc ::sn_tarot::snAnalyzeCandidateId { } {
       append comments "--- $objname ---\n"
       foreach fichier $fichiers {
          append comments "[file tail $fichier]\n"
-         ::console::affiche_resultat "fichier=[file normalize $fichier]\n"
+         #::console::affiche_resultat "fichier=[file normalize $fichier]\n"
          $snvisu(status_list) insert end "[file normalize $fichier]\n"
          $snvisu(status_list) yview moveto 1.0
          set f [open $fichier r]
@@ -871,7 +873,7 @@ proc ::sn_tarot::snAnalyzeCandidateId { } {
    $snvisu(status_list) delete 1.0 end
    $snvisu(status_list) insert end "$comments"
    $snvisu(status_list) yview moveto 0.0
-   $fcand.but_modify configure  -state normal
+   #$fcand.but_modify configure  -state normal
    $fcand.but_ok configure  -state normal
    #$fcand.frame1.label configure -text $snvisu(candidate,candidate_file)
    $fcand.fra1.lst1 configure -font {courier 8 bold}
