@@ -309,7 +309,7 @@ namespace eval ::plotxy {
       set mylinewidth $plotxy(fig$num,linewidth)
       set k [lsearch -exact $options -linewidth]
       if {$k>=0} {
-	      set mylinewidth [lindex $options [expr $k+1]]
+         set mylinewidth [lindex $options [expr $k+1]]
       }
       set baseplotxy $plotxy(fig$num,parent)
       set lastline $plotxy(fig$num,lastline)
