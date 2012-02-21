@@ -48,13 +48,13 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(ros_admin,msg_prevent)     "Aviso"
-   set caption(ros_admin,msg_prevent2)    "# Cette action va réinitialiser la base de données. Toutes les données seront définitivement effacées du disque. Etes-vous sûr ?"
-   set caption(ros_admin,efface)          "# Effacement de la base de données"
-   set caption(ros_admin,mdprootsql)      "# Veuillez saisir le mot de passe root du serveur SQL"
-   set caption(ros_admin,cancelRAZ)       "# RAZ annulée de la base de données"
-   set caption(ros_admin,mysqlconnecterr) "# Erreur de connexion à MySQL :"
-   set caption(ros_admin,mysqlshowerr)    "# La requête a échoué :"
-   set caption(ros_admin,mysqlok)         "# Connexion à la base de données :\nOK"
+   set caption(ros_admin,msg_prevent2)    "Esta acción reiniciará la base de datos. Todos los datos serán definitivamente borrados del disco. ¿Estas seguro?"
+   set caption(ros_admin,efface)          "Borrado de la base de datos"
+   set caption(ros_admin,mdprootsql)      "Entrar contraseña de root del servidor SQL"
+   set caption(ros_admin,cancelRAZ)       "Cancelado reset de la base de datos"
+   set caption(ros_admin,mysqlconnecterr) "Error de conexión a MySQL:"
+   set caption(ros_admin,mysqlshowerr)    "Petición fallida:"
+   set caption(ros_admin,mysqlok)         "Conexión a la base de datos:\nOK"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -72,13 +72,13 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(ros_admin,msg_prevent)     "Aviso"
-   set caption(ros_admin,msg_prevent2)    "# Cette action va réinitialiser la base de données. Toutes les données seront définitivement effacées du disque. Etes-vous sûr ?"
-   set caption(ros_admin,efface)          "# Effacement de la base de données"
-   set caption(ros_admin,mdprootsql)      "# Veuillez saisir le mot de passe root du serveur SQL"
-   set caption(ros_admin,cancelRAZ)       "# RAZ annulée de la base de données"
-   set caption(ros_admin,mysqlconnecterr) "# Erreur de connexion à MySQL :"
-   set caption(ros_admin,mysqlshowerr)    "# La requête a échoué :"
-   set caption(ros_admin,mysqlok)         "# Connexion à la base de données :\nOK"
+   set caption(ros_admin,msg_prevent2)    "Esta acção vai reiniciar a base de dados. Todos os dados serão apagados do disco. Tem a certeza?"
+   set caption(ros_admin,efface)          "Base de dados será apagada"
+   set caption(ros_admin,mdprootsql)      "Insira palavra-chave raiz do servidor SQL"
+   set caption(ros_admin,cancelRAZ)       "Reset da base de dados foi cancelado"
+   set caption(ros_admin,mysqlconnecterr) "Erro de ligação a MySQL:"
+   set caption(ros_admin,mysqlshowerr)    "O pedido falhou:"
+   set caption(ros_admin,mysqlok)         "Ligação à base de dados:\nOK"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
