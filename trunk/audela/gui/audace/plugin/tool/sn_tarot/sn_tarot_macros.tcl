@@ -719,7 +719,7 @@ proc ::sn_tarot::snAnalyzeCandidateId { } {
    wm geometry $fcand 600x600+[expr {[ lindex $pos 1 ] + 20 } ]+[ expr {[ lindex $pos 2 ] + 0} ]
    wm resizable $fcand 1 1
    if {[info exists audace(base).snvisu]==1} {
-	   wm transient $fcand $audace(base).snvisu
+      wm transient $fcand $audace(base).snvisu
    }
    wm protocol $fcand WM_DELETE_WINDOW "destroy $fcand"
 
