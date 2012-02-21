@@ -816,7 +816,7 @@ proc ::sn_tarot::snAnalyzeCandidateId { } {
    }
    set ficlists [lsort -index 1 -decreasing $ficlists]
    set objname0 ""
-   set comments "Analysis result:\n\n"
+   set comments "$caption(sn_tarot,result_analysis)\n\n"
    foreach ficlist $ficlists {
       set objname [lindex $ficlist 0]
       set fichiers [lrange $ficlist 2 end]

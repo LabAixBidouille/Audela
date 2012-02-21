@@ -73,6 +73,7 @@ set caption(sn_tarot,exit)                   "Exit"
 set caption(sn_tarot,candidate)              "Supernovae Candidate"
 set caption(sn_tarot,modify)                 "Edit candidate file"
 set caption(sn_tarot,ok)                     "OK"
+set caption(sn_tarot,result_analysis)        "Result of the analysis:"
 
 set caption(sn_tarot,cand_wait)              "Please wait while the candidate data sheet is created..."
 set caption(sn_tarot,cand_wait_mp)           "Checks if there are asteroids..."
@@ -146,6 +147,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,candidate)           "Candidate supernova"
    set caption(sn_tarot,modify)              "Modifier le fichier de la candidate"
    set caption(sn_tarot,ok)                  "OK"
+   set caption(sn_tarot,result_analysis)     "Résultat de l'analyse :"
 
    set caption(sn_tarot,cand_wait)           "Patientez pendant la création de la fiche de la candidate..."
    set caption(sn_tarot,cand_wait_mp)        "Vérifie la présence d'astéroïdes..."
@@ -219,6 +221,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,candidate)           "# Candidate supernova"
    set caption(sn_tarot,modify)              "# Modifier le fichier candidat"
    set caption(sn_tarot,ok)                  "OK"
+   set caption(sn_tarot,result_analysis)     "Risultato delle analisi:"
 
    set caption(sn_tarot,cand_wait)           "# Patientez pendant la création de la fiche candidate..."
    set caption(sn_tarot,cand_wait_mp)        "# Vérifie la présence d'astéroïdes..."
@@ -292,6 +295,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,candidate)           "Supernova candidata"
    set caption(sn_tarot,modify)              "Modificar fichero de la candidata"
    set caption(sn_tarot,ok)                  "OK"
+   set caption(sn_tarot,result_analysis)     "Resultados del análisis:"
 
    set caption(sn_tarot,cand_wait)           "Por favor esperar mientras se crea la ficha de la candidata..."
    set caption(sn_tarot,cand_wait_mp)        "Verificar la presencia de asteroides..."
@@ -365,6 +369,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,candidate)           "Supernovae Kandidat"
    set caption(sn_tarot,modify)              "Die Datei des Kandidaten bearbeiten"
    set caption(sn_tarot,ok)                  "OK"
+   set caption(sn_tarot,result_analysis)     "Ergebnis der Analyse:"
 
    set caption(sn_tarot,cand_wait)           "Bitte während die Schaffung der Kandidat Datei warten..."
    set caption(sn_tarot,cand_wait_mp)        "Asteroiden Präsenz Prüfung..."
@@ -438,6 +443,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,candidate)           "Candidata supernova"
    set caption(sn_tarot,modify)              "Modificar o ficheiro da candidata"
    set caption(sn_tarot,ok)                  "OK"
+   set caption(sn_tarot,result_analysis)     "Resultado da análise:"
 
    set caption(sn_tarot,cand_wait)           "Por favor aguarde enquanto a ficha da candidata é criada..."
    set caption(sn_tarot,cand_wait_mp)        "Verifica a presença de asteróides..."
@@ -511,6 +517,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,candidate)           "Supernovae Candidate"
    set caption(sn_tarot,modify)              "Edit candidate file"
    set caption(sn_tarot,ok)                  "OK"
+   set caption(sn_tarot,result_analysis)     "Result of the analysis:"
 
    set caption(sn_tarot,cand_wait)           "Please wait while the candidate data sheet is created..."
    set caption(sn_tarot,cand_wait_mp)        "Checks if there are asteroids..."
@@ -584,6 +591,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,candidate)           "Supernovae Candidate"
    set caption(sn_tarot,modify)              "Edit candidate file"
    set caption(sn_tarot,ok)                  "OK"
+   set caption(sn_tarot,result_analysis)     "Result of the analysis:"
 
    set caption(sn_tarot,cand_wait)           "Please wait while the candidate data sheet is created..."
    set caption(sn_tarot,cand_wait_mp)        "Checks if there are asteroids..."
@@ -657,6 +665,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,candidate)           "Supernovae Candidate"
    set caption(sn_tarot,modify)              "Edit candidate file"
    set caption(sn_tarot,ok)                  "OK"
+   set caption(sn_tarot,result_analysis)     "Result of the analysis:"
 
    set caption(sn_tarot,cand_wait)           "Please wait while the candidate data sheet is created..."
    set caption(sn_tarot,cand_wait_mp)        "Checks if there are asteroids..."
