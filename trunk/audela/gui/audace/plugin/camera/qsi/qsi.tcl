@@ -56,7 +56,7 @@ proc ::qsi::getPluginType { } {
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::qsi::getPluginOS { } {
-   return [ list Windows ]
+   return [ list Windows Linux ]
 }
 
 #
