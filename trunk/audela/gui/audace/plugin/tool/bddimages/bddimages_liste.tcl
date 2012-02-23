@@ -199,6 +199,14 @@ proc ::bddimages_liste::lexist { tabkey inkey } {
 
 }
 
+
+
+
+
+
+
+
+
 #--- Fin Classe
 
 }

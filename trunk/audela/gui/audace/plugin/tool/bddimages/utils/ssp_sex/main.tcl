@@ -19,6 +19,8 @@ cleanmark
    set pixsize1 [lindex [buf$audace(bufNo) getkwd PIXSIZE1] 1]
    set pixsize2 [lindex [buf$audace(bufNo) getkwd PIXSIZE2] 1]
    set foclen   [lindex [buf$audace(bufNo) getkwd FOCLEN  ] 1]
+   set dateobs  [lindex [buf$audace(bufNo) getkwd DATE-OBS] 1]
+   set exposure [lindex [buf$audace(bufNo) getkwd EXPOSURE] 1]
 
    gren_info "Calibration de l image\n"
    #calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO c:/d/usno
@@ -70,5 +72,17 @@ cleanmark
       affich_rond $listsources OVNI "blue"   1
       affich_rond $listsources UCAC3 "green"  1
 
+      set datejd  [ mc_date2jd $dateobs ]
+      set datejd  [ expr $datejd + $exposure/86400.0/2.0 ]
+      set dateiso [ mc_date2iso8601 $datejd ]
+      gren_info "dateiso = $dateiso \n"
+      set listskybot [ get_skybot $dateiso $ra $dec 600 586 ]
+      gren_info "rollup skybot= [::manage_source::get_nb_sources_rollup $listskybot]\n"
+      set listsources [ identification $listsources "OVNI" $listskybot "SKYBOT" 30.0 10.0 {} 0] 
+      affich_rond $listsources "SKYBOT" "red" 3
 
-#deleteFileConfigSextractor
+
+      ::priam::create_file_oldformat $listsources SKYBOT
+
+      deleteFileConfigSextractor
+      gren_info "Fin script\n"

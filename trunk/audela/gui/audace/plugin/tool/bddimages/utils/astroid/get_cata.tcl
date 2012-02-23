@@ -130,7 +130,7 @@ proc get_ascii_txt { } {
 
  global audace
 
-   set filenametmp "$audace(rep_travail)/ascii.txt"
+   set filenametmp [ file join [pwd] ascii.txt ]
 
 #{ 
 # { 
@@ -178,8 +178,6 @@ proc get_ascii_txt { } {
          if {[llength $row] > 0} {
             lappend list_sources $row
             }
-        
-         #if {$lineCount > 215} {  return [list $list_fields $list_sources] }
       }
 
    if {[catch {close $chan} err]} {

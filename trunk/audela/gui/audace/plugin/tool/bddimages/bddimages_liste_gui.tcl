@@ -154,7 +154,7 @@ namespace eval bddimages_liste_gui {
    #    variables en sortie :
    #
    #--------------------------------------------------
-   proc ::bddimages_liste::run { this {listname ?} } {
+   proc ::bddimages_liste_gui::run { this {listname ?} } {
       variable This
       global entetelog
 
@@ -164,7 +164,7 @@ namespace eval bddimages_liste_gui {
       return
    }
 
-   proc ::bddimages_liste::runnormal { this } {
+   proc ::bddimages_liste_gui::runnormal { this } {
 
       global This
       global entetelog
@@ -211,7 +211,7 @@ namespace eval bddimages_liste_gui {
       pack configure $framecurrent.buttons -side top -fill x
         button $framecurrent.buttons.cancel -text Cancel -command "destroy $This"
         pack configure $framecurrent.buttons.cancel -side left
-        button $framecurrent.buttons.ok -text Ok -command { set getnamenewlist(result) 1; ::bddimages_liste::build_normallist; destroy $This }
+        button $framecurrent.buttons.ok -text Ok -command { set getnamenewlist(result) 1; ::bddimages_liste_gui::build_normallist; destroy $This }
         pack configure $framecurrent.buttons.ok -side right
    
       grab set $This
@@ -257,10 +257,10 @@ namespace eval bddimages_liste_gui {
    #    variables en sortie :
    #
    #--------------------------------------------------
-   proc fermer { } {
+   proc ::bddimages_liste_gui::fermer { } {
       variable This
 
-      ::bddimages_liste::recup_position
+      ::bddimages_liste_gui::recup_position
       destroy $This
       return
    }
@@ -298,7 +298,7 @@ namespace eval bddimages_liste_gui {
    #    variables en sortie :
    #
    #--------------------------------------------------
-   proc recup_position { } {
+   proc ::bddimages_liste_gui::recup_position { } {
       variable This
       global audace
       global conf
@@ -332,45 +332,6 @@ namespace eval bddimages_liste_gui {
 
 
 
-   #--------------------------------------------------
-   #  get_list_box_champs { }
-   #--------------------------------------------------
-   #
-   #    fonction  :
-   #       fournit la liste des champs
-   #
-   #    procedure externe :
-   #
-   #    variables en entree : none
-   #
-   #    variables en sortie : liste
-   #
-   #--------------------------------------------------
-   proc get_list_box_champs { } {
-   
-      global list_key_to_var
-   
-      set list_box_champs [list ]
-      set nbl1 0
-      set sqlcmd "select distinct keyname,variable from header order by keyname;"
-      set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
-      if {$err} {
-         bddimages_sauve_fich "Erreur de lecture de la liste des header par SQL"
-         return -code error "Erreur de lecture de la liste des header par SQL"
-      }
-      foreach line $resultsql {
-         set key [lindex $line 0]
-         set var [lindex $line 1]
-         set list_key_to_var($key) $var
-         if {$nbl1<[string length $key]} {
-            set nbl1 [string length $key]
-         }
-         lappend list_box_champs $key
-      }
-      set nbl1 [expr $nbl1 + 3]
-      return [list $nbl1 $list_box_champs]
-   }
-
 
 
 
@@ -403,7 +364,7 @@ namespace eval bddimages_liste_gui {
    #    variables en sortie : liste
    #
    #--------------------------------------------------
-   proc get_list_combobox { } {
+   proc ::bddimages_liste_gui::get_list_combobox { } {
       global caption
       return [list "=" ">" "<" ">=" "<=" "!=" $caption(bddimages_liste,contient) $caption(bddimages_liste,notcontient)]
    }
@@ -440,7 +401,7 @@ namespace eval bddimages_liste_gui {
    #    variables en sortie : liste
    #
    #--------------------------------------------------
-   proc affich_form_req { } {
+   proc ::bddimages_liste_gui::affich_form_req { } {
    
      set jjdatemin [ mc_date2jd $form_req(datemin) ]
      set jjdatemax [ mc_date2jd $form_req(datemax) ]
@@ -480,7 +441,7 @@ namespace eval bddimages_liste_gui {
 
 
 
-   proc ::bddimages_liste::get_val_intellilist { intellilist val } {
+   proc ::bddimages_liste_gui::get_val_intellilist { intellilist val } {
    
       set y ""
       foreach  l $intellilist  {
@@ -510,7 +471,7 @@ namespace eval bddimages_liste_gui {
 
 
 
-   proc ::bddimages_liste::affiche_intellilist { intellilist } {
+   proc ::bddimages_liste_gui::affiche_intellilist { intellilist } {
    
      ::console::affiche_resultat "-- affiche_intellilist\n"
      ::console::affiche_resultat "intellilist = $intellilist \n"
@@ -556,7 +517,7 @@ namespace eval bddimages_liste_gui {
    #    variables en sortie : none
    #
    #--------------------------------------------------
-   proc get_intellilist_by_name { name } {
+   proc ::bddimages_liste_gui::get_intellilist_by_name { name } {
    
      global nbintellilist
      global intellilisttotal
@@ -572,7 +533,7 @@ namespace eval bddimages_liste_gui {
 
 
 
-   proc exec_intellilist { num } {
+   proc ::bddimages_liste_gui::exec_intellilist { num } {
    
     ::bddimages_recherche::Affiche_listes
     ::bddimages_recherche::get_intellist $num
@@ -594,15 +555,15 @@ namespace eval bddimages_liste_gui {
 
 
 
-   proc ::bddimages_liste::new_normallist { lid } {
+   proc ::bddimages_liste_gui::new_normallist { lid } {
 
       set imgtmplist     ""
       lappend imgtmplist [list "type"               "normal"]              
       lappend imgtmplist [list "name"               "tmp"]              
       lappend imgtmplist [list "idlist"             ""]              
-      set imgtmplist [::bddimages_liste::add_to_normallist $lid $imgtmplist]
+      set imgtmplist [::bddimages_liste_gui::add_to_normallist $lid $imgtmplist]
       #::console::affiche_resultat "imgtmplist=$imgtmplist\n"
-      set imgtmplist [::bddimages_liste::intellilist_to_imglist $imgtmplist]
+      set imgtmplist [::bddimages_liste_gui::intellilist_to_imglist $imgtmplist]
       #::console::affiche_resultat "imgtmplist=$imgtmplist\n"
       return $imgtmplist
    }
@@ -628,7 +589,7 @@ namespace eval bddimages_liste_gui {
 
 
 
-   proc ::bddimages_liste::add_to_normallist { lid normallist } {
+   proc ::bddimages_liste_gui::add_to_normallist { lid normallist } {
 
 
       #recupere la liste des idbddimg
@@ -674,7 +635,7 @@ namespace eval bddimages_liste_gui {
       #::console::affiche_resultat "comp = [array get comp]\n"
 
 
-      set oldidlist [::bddimages_liste::get_val_intellilist $normallist "idlist"]
+      set oldidlist [::bddimages_liste_gui::get_val_intellilist $normallist "idlist"]
 
       foreach l $oldidlist {
          set table [lindex $l 0]
@@ -706,7 +667,7 @@ namespace eval bddimages_liste_gui {
       #::console::affiche_resultat "idlist=$idlist\n"
    
 
-      if { [::bddimages_liste::get_val_intellilist $normallist "type"] != "normal"} {
+      if { [::bddimages_liste_gui::get_val_intellilist $normallist "type"] != "normal"} {
          ::console::affiche_erreur "Ne peut etre associe a la liste $namelist\n"
          return
       }
@@ -727,7 +688,20 @@ namespace eval bddimages_liste_gui {
 
 
 
-   proc ::bddimages_liste::delete_from_normallist { lid normallist } {
+
+
+
+
+
+
+
+
+
+
+
+
+
+   proc ::bddimages_liste_gui::delete_from_normallist { lid normallist } {
 
 
 
@@ -769,7 +743,7 @@ namespace eval bddimages_liste_gui {
 
 
 
-   proc ::bddimages_liste::build_normallist { } {
+   proc ::bddimages_liste_gui::build_normallist { } {
    
       global getnamenewlist
       global nbintellilist intellilisttotal
@@ -809,7 +783,7 @@ namespace eval bddimages_liste_gui {
 
 
    # Construit une intelliliste a partir du formulaire
-   proc ::bddimages_liste::build_intellilist { name } {
+   proc ::bddimages_liste_gui::build_intellilist { name } {
    
       global indicereq
       global list_req
@@ -820,8 +794,8 @@ namespace eval bddimages_liste_gui {
       set intellilist ""
       lappend intellilist [list "type"               "intellilist"]              
       lappend intellilist [list "name"               $name]              
-      lappend intellilist [list "datemin"            $::bddimages_liste::form_req(datemin)]              
-      lappend intellilist [list "datemax"            $::bddimages_liste::form_req(datemax)]              
+      lappend intellilist [list "datemin"            $::bddimages_liste_gui::form_req(datemin)]              
+      lappend intellilist [list "datemax"            $::bddimages_liste_gui::form_req(datemax)]              
       lappend intellilist [list "type_req_check"     $form_req(type_req_check)]       
       lappend intellilist [list "type_requ"          $form_req(type_requ)]            
       lappend intellilist [list "choix_limit_result" $form_req(choix_limit_result)]
@@ -870,25 +844,25 @@ namespace eval bddimages_liste_gui {
 
 
    # Construit une intelliliste a partir du formulaire
-   proc ::bddimages_liste::load_intellilist { intellilist } {
+   proc ::bddimages_liste_gui::load_intellilist { intellilist } {
    
       global indicereq
       global list_req
       global form_req
    
-      set ::bddimages_liste::form_req(name)               [get_val_intellilist $intellilist "name"]
-      set ::bddimages_liste::form_req(datemin)            [get_val_intellilist $intellilist "datemin"]
-      set ::bddimages_liste::form_req(datemax)            [get_val_intellilist $intellilist "datemax"]
-      set ::bddimages_liste::form_req(type_req_check)     [get_val_intellilist $intellilist "type_req_check"]
-      set ::bddimages_liste::form_req(type_requ)          [get_val_intellilist $intellilist "type_requ"]
-      set ::bddimages_liste::form_req(choix_limit_result) [get_val_intellilist $intellilist "choix_limit_result"]
-      set ::bddimages_liste::form_req(limit_result)       [get_val_intellilist $intellilist "limit_result"]
-      set ::bddimages_liste::form_req(type_result)        [get_val_intellilist $intellilist "type_result"]
-      set ::bddimages_liste::form_req(type_select)        [get_val_intellilist $intellilist "type_select"]
-      set ::bddimages_liste::reqlist                      [get_val_intellilist $intellilist "reqlist"]
+      set ::bddimages_liste_gui::form_req(name)               [get_val_intellilist $intellilist "name"]
+      set ::bddimages_liste_gui::form_req(datemin)            [get_val_intellilist $intellilist "datemin"]
+      set ::bddimages_liste_gui::form_req(datemax)            [get_val_intellilist $intellilist "datemax"]
+      set ::bddimages_liste_gui::form_req(type_req_check)     [get_val_intellilist $intellilist "type_req_check"]
+      set ::bddimages_liste_gui::form_req(type_requ)          [get_val_intellilist $intellilist "type_requ"]
+      set ::bddimages_liste_gui::form_req(choix_limit_result) [get_val_intellilist $intellilist "choix_limit_result"]
+      set ::bddimages_liste_gui::form_req(limit_result)       [get_val_intellilist $intellilist "limit_result"]
+      set ::bddimages_liste_gui::form_req(type_result)        [get_val_intellilist $intellilist "type_result"]
+      set ::bddimages_liste_gui::form_req(type_select)        [get_val_intellilist $intellilist "type_select"]
+      set ::bddimages_liste_gui::reqlist                      [get_val_intellilist $intellilist "reqlist"]
    
       set indicereq 0
-      foreach req $::bddimages_liste::reqlist {
+      foreach req $::bddimages_liste_gui::reqlist {
          incr indicereq
          set list_req($indicereq,valide)    "ok"
          set list_req($indicereq,condition) [lindex $req 2]
@@ -918,7 +892,7 @@ namespace eval bddimages_liste_gui {
 
 
 
-   proc conf_save_intellilists { } {
+   proc ::bddimages_liste_gui::conf_save_intellilists { } {
    
       global bddconf
    
@@ -941,6 +915,44 @@ namespace eval bddimages_liste_gui {
 
 
 
+   #--------------------------------------------------
+   #  get_list_box_champs { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       fournit la liste des champs
+   #
+   #    procedure externe :
+   #
+   #    variables en entree : none
+   #
+   #    variables en sortie : liste
+   #
+   #--------------------------------------------------
+   proc ::bddimages_liste_gui::get_list_box_champs { } {
+   
+      global list_key_to_var
+   
+      set list_box_champs [list ]
+      set nbl1 0
+      set sqlcmd "select distinct keyname,variable from header order by keyname;"
+      set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
+      if {$err} {
+         bddimages_sauve_fich "Erreur de lecture de la liste des header par SQL"
+         return -code error "Erreur de lecture de la liste des header par SQL"
+      }
+      foreach line $resultsql {
+         set key [lindex $line 0]
+         set var [lindex $line 1]
+         set list_key_to_var($key) $var
+         if {$nbl1<[string length $key]} {
+            set nbl1 [string length $key]
+         }
+         lappend list_box_champs $key
+      }
+      set nbl1 [expr $nbl1 + 3]
+      return [list $nbl1 $list_box_champs]
+   }
 
 
 
@@ -950,7 +962,7 @@ namespace eval bddimages_liste_gui {
 
 
 
-   proc conf_load_intellilists { } {
+   proc ::bddimages_liste_gui::conf_load_intellilists { } {
    
       global nbintellilist
       global intellilisttotal
@@ -959,7 +971,7 @@ namespace eval bddimages_liste_gui {
       set nbintellilist 0
       
       # hack pour initialisation
-      if { [catch {get_list_box_champs} msg] } {
+      if { [catch {::bddimages_liste_gui::get_list_box_champs} msg] } {
          return -code error $msg
       }
       if { ! [info exists ::conf(bddimages,$bddconf(current_config),intellilists) ] } then { return }
@@ -989,7 +1001,7 @@ namespace eval bddimages_liste_gui {
 
 
 
-   proc accept { } {
+   proc ::bddimages_liste_gui::accept { } {
    
       global indicereq
       global list_req
@@ -1004,7 +1016,7 @@ namespace eval bddimages_liste_gui {
          set idx $nbintellilist
       }
 
-      set intellilist [::bddimages_liste::build_intellilist "$form_req(name)"]
+      set intellilist [::bddimages_liste_gui::build_intellilist "$form_req(name)"]
       set intellilisttotal($idx) $intellilist
       
       # ::bddimages_recherche::Affiche_listes
@@ -1013,7 +1025,7 @@ namespace eval bddimages_liste_gui {
             
       exec_intellilist $idx
       conf_save_intellilists
-      ::bddimages_liste::fermer
+      ::bddimages_liste_gui::fermer
    }
 
 
@@ -1048,7 +1060,7 @@ namespace eval bddimages_liste_gui {
    #    variables en sortie : requete sql
    #
    #--------------------------------------------------
-   proc ::bddimages_liste::get_sqlcritere { intellilist table } {
+   proc ::bddimages_liste_gui::get_sqlcritere { intellilist table } {
    
       global indicereq
       global list_req
@@ -1126,7 +1138,7 @@ namespace eval bddimages_liste_gui {
 
 
 
-   proc ::bddimages_liste::transform_tabkey { table } {
+   proc ::bddimages_liste_gui::transform_tabkey { table } {
 
       set tableresult ""
       
@@ -1178,18 +1190,18 @@ namespace eval bddimages_liste_gui {
    #    variables en sortie : liste des images
    #
    #--------------------------------------------------
-   proc ::bddimages_liste::intellilist_to_imglist { intellilist } {
+   proc ::bddimages_liste_gui::intellilist_to_imglist { intellilist } {
    
-      set type [::bddimages_liste::get_val_intellilist $intellilist "type"]
+      set type [::bddimages_liste_gui::get_val_intellilist $intellilist "type"]
       
       if {$type == "intellilist"} {
-         set img_list [::bddimages_liste::intellilist_to_imglist_i $intellilist]
-         set img_list [::bddimages_liste::transform_tabkey $img_list]
+         set img_list [::bddimages_liste_gui::intellilist_to_imglist_i $intellilist]
+         set img_list [::bddimages_liste_gui::transform_tabkey $img_list]
       }
       if {$type == "normal"} {
          #::console::affiche_resultat "intellilist = $intellilist\n"
-         set img_list [::bddimages_liste::intellilist_to_imglist_n $intellilist]
-         set img_list [::bddimages_liste::transform_tabkey $img_list]
+         set img_list [::bddimages_liste_gui::intellilist_to_imglist_n $intellilist]
+         set img_list [::bddimages_liste_gui::transform_tabkey $img_list]
       }
 
       #::console::affiche_erreur "img_list = $img_list\n"
@@ -1229,12 +1241,12 @@ namespace eval bddimages_liste_gui {
    #    variables en sortie : liste des images
    #
    #--------------------------------------------------
-   proc ::bddimages_liste::intellilist_to_imglist_n { intellilist } {
+   proc ::bddimages_liste_gui::intellilist_to_imglist_n { intellilist } {
    
       #::console::affiche_resultat "intellilist = $intellilist\n"
    
       # Recupere la liste des id image et table header correspondante
-      set idlist [::bddimages_liste::get_val_intellilist $intellilist "idlist"]
+      set idlist [::bddimages_liste_gui::get_val_intellilist $intellilist "idlist"]
       #::console::affiche_resultat "idlist = $idlist\n"
       if {[llength $idlist] == 0} {return}
       set img_list ""
@@ -1287,7 +1299,7 @@ namespace eval bddimages_liste_gui {
    
             if {$nbresult>0} {
    
-               set tabkey [::bddimages_liste::idhd_to_tabkey $idhd]
+               set tabkey [::bddimages_liste_gui::idhd_to_tabkey $idhd]
                set colvar [lindex $resultcount 0]
                set rowvar [lindex $resultcount 1]
                set nbcol  [llength $colvar]
@@ -1328,7 +1340,7 @@ namespace eval bddimages_liste_gui {
          }
       }
 
-      set img_list [::bddimages_liste::add_info_cata $img_list]
+      set img_list [::bddimages_liste_gui::add_info_cata $img_list]
 
       #::console::affiche_erreur " img_list = $img_list\n"
       return $img_list
@@ -1346,7 +1358,7 @@ namespace eval bddimages_liste_gui {
 
 
 
-   proc ::bddimages_liste::idhd_to_tabkey { idhd } {
+   proc ::bddimages_liste_gui::idhd_to_tabkey { idhd } {
 
 
          # lecture des infos de chaque champ
@@ -1416,7 +1428,7 @@ namespace eval bddimages_liste_gui {
    #
    #--------------------------------------------------
 
-   proc ::bddimages_liste::intellilist_to_imglist_i { intellilist } {
+   proc ::bddimages_liste_gui::intellilist_to_imglist_i { intellilist } {
 
       # Itere sur les idhd
 
@@ -1439,7 +1451,7 @@ namespace eval bddimages_liste_gui {
 
 
          # lecture des valeurs de chaque champ
-         set sqlcritere [::bddimages_liste::get_sqlcritere $intellilist "images_$idhd"]
+         set sqlcritere [::bddimages_liste_gui::get_sqlcritere $intellilist "images_$idhd"]
          set sqlcmd "SELECT images.idbddimg,
                             images.idheader,
                             images.tabname,
@@ -1463,7 +1475,7 @@ namespace eval bddimages_liste_gui {
 
          if {$nbresult>0} {
 
-            set tabkey [::bddimages_liste::idhd_to_tabkey $idhd]
+            set tabkey [::bddimages_liste_gui::idhd_to_tabkey $idhd]
             set colvar [lindex $resultcount 0]
             set rowvar [lindex $resultcount 1]
             set nbcol  [llength $colvar]
@@ -1503,7 +1515,7 @@ namespace eval bddimages_liste_gui {
          }
       }
 
-      set img_list [::bddimages_liste::add_info_cata $img_list]
+      set img_list [::bddimages_liste_gui::add_info_cata $img_list]
 
       #::console::affiche_erreur " img_list = $img_list\n"
       return $img_list
@@ -1533,7 +1545,7 @@ namespace eval bddimages_liste_gui {
    #
    #--------------------------------------------------
 
-   proc ::bddimages_liste::add_info_cata { img_list } {
+   proc ::bddimages_liste_gui::add_info_cata { img_list } {
 
       set sqlcmd "SELECT cataimage.idbddimg,
                          catas.idbddcata,
@@ -1638,13 +1650,13 @@ namespace eval bddimages_liste_gui {
    #    variables en sortie : liste
    #
    #--------------------------------------------------
-   proc ::bddimages_liste::calcul_nbimg { } {
+   proc ::bddimages_liste_gui::calcul_nbimg { } {
    
       global form_req
    
-      set intellilist [::bddimages_liste::build_intellilist "calcul_nbimg"]
+      set intellilist [::bddimages_liste_gui::build_intellilist "calcul_nbimg"]
 
-      set form_req(nbimg) [llength [::bddimages_liste::intellilist_to_imglist $intellilist]]
+      set form_req(nbimg) [llength [::bddimages_liste_gui::intellilist_to_imglist $intellilist]]
       #::console::affiche_resultat "Nb img = $form_req(nbimg) \n"
       return
    }
@@ -1682,7 +1694,7 @@ namespace eval bddimages_liste_gui {
    #    variables en sortie : none
    #
    #--------------------------------------------------
-   proc ::bddimages_liste::remove_requete { } {
+   proc ::bddimages_liste_gui::remove_requete { } {
    
       variable This
       global indicereq
@@ -1735,7 +1747,7 @@ namespace eval bddimages_liste_gui {
    #    variables en sortie : none
    #
    #--------------------------------------------------
-   proc ::bddimages_liste::add_requete { } {
+   proc ::bddimages_liste_gui::add_requete { } {
 
       variable This
       global audace
@@ -1745,7 +1757,7 @@ namespace eval bddimages_liste_gui {
       global framereqcurrent
       
       #--- Initialisation des combox
-      set result [get_list_box_champs]
+      set result [::bddimages_liste_gui::get_list_box_champs]
       set list_box_champs [lindex $result 1]
       set nbrows1 [ llength $list_box_champs ]
       set nbcols1 [lindex $result 0]
@@ -1801,11 +1813,11 @@ namespace eval bddimages_liste_gui {
          pack $frchch.dat -in $frchch -side left -anchor w -padx 1
          #--- Cree un bouton supprime requete
          button $frchch.sup -state normal -borderwidth 1 -relief groove -anchor c -text "-" \
-            -command { ::bddimages_liste::remove_requete }
+            -command { ::bddimages_liste_gui::remove_requete }
          pack $frchch.sup -in $frchch -side left -anchor w -padx 1
          #--- Cree un bouton ajout requete
          button $frchch.add -state active -borderwidth 1 -relief groove -anchor c -text "+" \
-            -command { ::bddimages_liste::add_requete }
+            -command { ::bddimages_liste_gui::add_requete }
          pack $frchch.add -in $frchch -side left -anchor w -padx 1
    
       return
@@ -1845,7 +1857,7 @@ namespace eval bddimages_liste_gui {
    #    variables en sortie :
    #
    #--------------------------------------------------
-   proc ouvreCalendrier { x y clockformat wdate } {
+   proc ::bddimages_liste_gui::ouvreCalendrier { x y clockformat wdate } {
    
       variable This
       global langage
@@ -1920,7 +1932,7 @@ namespace eval bddimages_liste_gui {
    #    variables en sortie :
    #
    #--------------------------------------------------
-   proc createDialog { listname } {
+   proc ::bddimages_liste_gui::createDialog { listname } {
 
       variable This
       global audace
@@ -1971,7 +1983,7 @@ namespace eval bddimages_liste_gui {
          set l $intellilisttotal($editid)
          #::console::affiche_resultat "edit : $edit\n"
          #::console::affiche_resultat "l : $l\n"
-         ::bddimages_liste::load_intellilist $l
+         ::bddimages_liste_gui::load_intellilist $l
          parray form_req
          if { [info exists list_req ] } then { parray list_req }
       } else {
@@ -2003,7 +2015,7 @@ namespace eval bddimages_liste_gui {
       wm geometry $This $bddconf(list_pos_stat)
       wm resizable $This 1 1
       wm title $This $caption(bddimages_liste,main_title)
-      wm protocol $This WM_DELETE_WINDOW { ::bddimages_liste::fermer }
+      wm protocol $This WM_DELETE_WINDOW { ::bddimages_liste_gui::fermer }
 
       #--- Cree un frame pour le titre
       set framecurrent $This.title
@@ -2041,15 +2053,15 @@ namespace eval bddimages_liste_gui {
             label $framecurrent.datemin.lab -text "DATE-OBS start" -width 20
             pack $framecurrent.datemin.lab -in $framecurrent.datemin -side left -anchor w -padx 1
             #--- Cree une ligne d'entree pour la variable form_req(datemin)
-            entry $framecurrent.datemin.date -textvariable ::bddimages_liste::form_req(datemin) -borderwidth 1 -relief groove  -justify left
+            entry $framecurrent.datemin.date -textvariable ::bddimages_liste_gui::form_req(datemin) -borderwidth 1 -relief groove  -justify left
             pack $framecurrent.datemin.date -in $framecurrent.datemin -side left -anchor w -padx 1
             #--- Creation du bouton d'acces au calendrier graphique
             button $framecurrent.datemin.calstart -image icon_calendar -borderwidth 1 \
-               -command [list ::bddimages_liste::ouvreCalendrier %X %Y $clockformat ::bddimages_liste::form_req(datemin)]
+               -command [list ::bddimages_liste_gui::ouvreCalendrier %X %Y $clockformat ::bddimages_liste_gui::form_req(datemin)]
             pack $framecurrent.datemin.calstart -in $framecurrent.datemin -side left -anchor e -padx 2 -pady 2 -expand 0
             #--- Creation du bouton de remise a zero de form_req(datemin)
             button $framecurrent.datemin.cleanstart -image icon_clean -borderwidth 1 \
-               -command { set ::bddimages_liste::form_req(datemin) "" }
+               -command { set ::bddimages_liste_gui::form_req(datemin) "" }
             pack $framecurrent.datemin.cleanstart -in $framecurrent.datemin -side left -anchor e -padx 2 -pady 2 -expand 0
 
          # Date START
@@ -2059,15 +2071,15 @@ namespace eval bddimages_liste_gui {
             label $framecurrent.datemax.lab -text "DATE-OBS stop" -width 20
             pack $framecurrent.datemax.lab -in $framecurrent.datemax -side left -anchor w -padx 1
             #--- Cree une ligne d'entree pour la variable form_req(datemax)
-            entry $framecurrent.datemax.date -textvariable ::bddimages_liste::form_req(datemax) -borderwidth 1 -relief groove -justify left
+            entry $framecurrent.datemax.date -textvariable ::bddimages_liste_gui::form_req(datemax) -borderwidth 1 -relief groove -justify left
             pack $framecurrent.datemax.date -in $framecurrent.datemax -side left -anchor w -padx 1
             #--- Creation du bouton d'acces au calendrier graphique
             button $framecurrent.datemax.calstop -image icon_calendar -borderwidth 1 \
-               -command [list ::bddimages_liste::ouvreCalendrier %X %Y $clockformat ::bddimages_liste::form_req(datemax)]
+               -command [list ::bddimages_liste_gui::ouvreCalendrier %X %Y $clockformat ::bddimages_liste_gui::form_req(datemax)]
             pack $framecurrent.datemax.calstop -in $framecurrent.datemax -side left -anchor e -padx 2 -pady 2 -expand 0
             #--- Creation du bouton de remise a zero de form_req(datemax)
             button $framecurrent.datemax.cleanstart -image icon_clean -borderwidth 1 \
-               -command { set ::bddimages_liste::form_req(datemax) "" }
+               -command { set ::bddimages_liste_gui::form_req(datemax) "" }
             pack $framecurrent.datemax.cleanstart -in $framecurrent.datemax -side left -anchor e -padx 2 -pady 2 -expand 0
 
       #--- Cree un frame pour afficher le type de logique AND / OR
@@ -2099,7 +2111,7 @@ namespace eval bddimages_liste_gui {
 
          #--- Cree un bouton d'ajout de requete
          button $framereqcurrent.add -state active -borderwidth 1 -width 45 -text "$caption(bddimages_liste,addrule)" \
-            -command { ::bddimages_liste::add_requete }
+            -command { ::bddimages_liste_gui::add_requete }
          pack $framereqcurrent.add -in $framereqcurrent -side top -padx 5 -pady 5 
 
          #--- Cree un frame pour afficher les requetes
@@ -2107,7 +2119,7 @@ namespace eval bddimages_liste_gui {
          pack $framereqcurrent.framereq -in $framereqcurrent -anchor s -side top -expand 1 -fill both
          #--- Ajout des requetes
          for { set x 0 } { $x < $indicereqinit } { incr x } {
-            ::bddimages_liste::add_requete
+            ::bddimages_liste_gui::add_requete
          }
 
       #--- Cree un frame pour les options
@@ -2169,7 +2181,7 @@ namespace eval bddimages_liste_gui {
          pack $framecurrent.dat -in $framecurrent -side left -anchor w -padx 1
          #--- Cree un bouton ajout requete
          button $framecurrent.calc -state active -borderwidth 1 -relief groove -anchor c -text "$caption(bddimages_liste,calcul)" \
-            -command { ::bddimages_liste::calcul_nbimg }
+            -command { ::bddimages_liste_gui::calcul_nbimg }
          pack $framecurrent.calc -in $framecurrent -side left -anchor w -padx 1
 
       #--- Cree un frame pour y mettre les boutons
@@ -2178,11 +2190,11 @@ namespace eval bddimages_liste_gui {
 
          #--- Creation du bouton annuler
          button $This.frame11.but_annuler -text "$caption(bddimages_liste,annuler)" -borderwidth 2 \
-              -command { ::bddimages_liste::fermer }
+              -command { ::bddimages_liste_gui::fermer }
          pack $This.frame11.but_annuler -in $This.frame11 -side right -anchor e -padx 2 -pady 2 -ipadx 2 -ipady 2 -expand 0
          #--- Creation du bouton ok
          button $This.frame11.but_ok -text "$caption(bddimages_liste,ok)" -borderwidth 2 \
-              -command { ::bddimages_liste::accept }
+              -command { ::bddimages_liste_gui::accept }
          pack $This.frame11.but_ok -in $This.frame11 -side right -anchor e -padx 2 -pady 2 -ipadx 2 -ipady 2 -expand 0
          #--- Creation du bouton aide
          button $This.frame11.but_aide -text "$caption(bddimages_liste,aide)" -borderwidth 2 \
@@ -2207,74 +2219,6 @@ namespace eval bddimages_liste_gui {
 
 
 
-proc ::bddimages_liste::lget { tabkey inkey } {
-
-   foreach keyval $tabkey {
-      set key [lindex $keyval 0]
-      set val [string trim [lindex $keyval 1]]
-      if { [string equal -nocase [ string trim $key ] [ string trim $inkey ]]} {
-         return $val
-      }
-   }
-   return ""
-
-}
-
-
-proc ::bddimages_liste::lupdate { tabkey inkey inval } {
-
-   set result_list ""
-   foreach keyval $tabkey {
-      set key [lindex $keyval 0]
-      set val [lindex $keyval 1]
-      if { [string equal -nocase [ string trim $key ] [ string trim $inkey ]]} {
-         lappend result_list [list $inkey $inval]
-      } else {
-         lappend result_list [list $key $val]
-      }
-   }
-   return $result_list
-
-}
-
-
-proc ::bddimages_liste::ladd { tabkey inkey inval } {
-
-   if {[::bddimages_liste::lexist $tabkey $inkey]} {
-      set tabkey [::bddimages_liste::lupdate $tabkey $inkey $inval]
-   } else {
-      lappend tabkey [list $inkey $inval]
-   }
-   return $tabkey
-
-}
-
-proc ::bddimages_liste::ldelete { tabkey inkey } {
-
-   set result_list ""
-   foreach keyval $tabkey {
-      set key [lindex $keyval 0]
-      set val [lindex $keyval 1]
-      if { ! [string equal -nocase [ string trim $key ] [ string trim $inkey ]]} {
-         lappend result_list [list $key $val]
-      }
-   }
-   return $result_list
-
-}
-
-
-proc ::bddimages_liste::lexist { tabkey inkey } {
-
-   foreach keyval $tabkey {
-      set key [lindex $keyval 0]
-      if { [string equal -nocase [ string trim $key ] [ string trim $inkey ]]} {
-         return 1
-      }
-   }
-   return 0
-
-}
 
 #--- Fin Classe
 
