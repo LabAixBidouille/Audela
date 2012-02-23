@@ -3,7 +3,7 @@
  * @brief : routines d'usage général
  * @author : Jacques MICHELET <jacques.michelet@aquitania.org>
  *
- * Mise à jour $Id: divers.cpp,v 1.3 2010-05-26 12:00:17 jacquesmichelet Exp $
+ * Mise à jour $Id$
  *
  * This file is part of the AudeLA project : <http://software.audela.free.fr>
  * Copyright (C) 1998-2004 The AudeLA Core Team
@@ -187,12 +187,12 @@ void cam_log(int level, const char *fmt, ...)
 /* Il faut donc, au moins laisser ces fonctions vides.       */
 /* ========================================================= */
 
-int cam_init(struct camprop *cam, int argc, char **argv)
+int cam_init( struct camprop *cam, int argc, char **argv )
 {
-    // aucune trace n'est gÃ©nÃ©rÃ©e par dÃ©faut dans le fichier qsi.log
+    // aucune trace n'est générée par défaut dans le fichier qsi.log
     debug_level = LOG_DEBUG;
 
-    //  RÃ©cuperation des paramÃ¨tres optionnels
+    //  Récuperation des paramètres optionnels
     if ( argc >= 5 )
     {
         for ( int kk = 3; kk < argc - 1; kk++ )
@@ -210,10 +210,10 @@ int cam_init(struct camprop *cam, int argc, char **argv)
         cam_log( LOG_DEBUG,"cam_init fin OK" );
     }
 
-    cam->params = (PrivateParams*) malloc(sizeof(PrivateParams));
+    cam->params = (PrivateParams*) malloc( sizeof(PrivateParams) );
     cam->params->qsicam = new QSICamera();
 
-    // Pour simplifier les Ã©critures
+    // Pour simplifier les écritures
     QSICamera * qsi = cam->params->qsicam;
     if ( qsi == 0 ) {
         sprintf( cam->msg, "Cannot create a camera handler" );
@@ -221,7 +221,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
         return -1;
     }
 
-    // Utilisation systÃ©matique des mÃ©thodes try/catch
+    // Utilisation systématique des méthodes try/catch
     qsi->put_UseStructuredExceptions( true );
 
     try
@@ -230,7 +230,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
         qsi->get_DriverInfo( info );
         cam_log( LOG_INFO, "qsiapi driver : version %s", info.c_str() );
 
-        // Recherche des camÃ©ras QSI branchÃ©es
+        // Recherche des caméras QSI branchées
         int iNumFound;
         std::string camSerial[QSICamera::MAXCAMERAS];
         std::string camDesc[QSICamera::MAXCAMERAS];
@@ -240,7 +240,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
             cam_log( LOG_DEBUG, "Caméras disponibles %s : %s", camSerial[i].c_str(), camDesc[i].c_str() );
 
         cam_log( LOG_DEBUG, "cam_init avant connexion" );
-        // On ne considÃ¨re que la premiÃ¨re. Bogue potentiel.
+        // On ne considère que la première. Bogue potentiel.
         qsi->put_SelectCamera( camSerial[0] );
 
         qsi->put_IsMainCamera( true );
@@ -287,14 +287,14 @@ int cam_init(struct camprop *cam, int argc, char **argv)
         qsi->get_CameraYSize( (long *)&cam->nb_photoy );
         cam_log( LOG_INFO, "Dimensions du capteur en b1x1 %d x %d", cam->nb_photox, cam->nb_photoy );
 
-        // Dimensions des pixels en micromÃ¨tres
+        // Dimensions des pixels en micromètres
         qsi->get_PixelSizeX( &cam->celldimx );
         qsi->get_PixelSizeY( &cam->celldimy );
         cam_log( LOG_INFO, "Dimensions des pixels en um %f x %f", cam->celldimx, cam->celldimy );
         cam->celldimx *= 1e-6;
         cam->celldimy *= 1e-6;
 
-        // Autres paramÃ¨tres
+        // Autres paramètres
         qsi->get_ElectronsPerADU( &CAM_INI[cam->index_cam].gain );
         cam_log( LOG_INFO, "Gain (e/adu) = %.3f", CAM_INI[cam->index_cam].gain );
         qsi->get_FullWellCapacity( &cam->fillfactor );
@@ -339,7 +339,7 @@ int cam_close(struct camprop * cam)
     cam_log(LOG_DEBUG,"cam_close debut");
     try
     {
-        // DÃ©connection de la camÃ©ra
+        // Déconnection de la caméra
         cam->params->qsicam->put_Connected( false ) ;
         // Suppression de la camera
         delete cam->params->qsicam;
@@ -447,7 +447,7 @@ void cam_start_exp( struct camprop *cam, char *amplionoff )
     {
         try
         {
-            // Pour simplifier les Ã©critures
+            // Pour simplifier les écritures
             QSICamera * qsi = cam->params->qsicam;
 
             float exptime ;
@@ -495,7 +495,7 @@ void cam_stop_exp( struct camprop *cam )
          return;
     }
 
-    // Si la camÃ©ra ne supporte pas l 'arrÃªt brutal d'acquisition, il y aura une exception gÃ©nÃ©rÃ©e
+    // Si la caméra ne supporte pas l 'arrÃªt brutal d'acquisition, il y aura une exception générée
     // Pas besoin donc de tester via camAbortExposure()
     try
     {
@@ -579,7 +579,7 @@ void cam_ampli_off(struct camprop *cam)
 
 void cam_measure_temperature( struct camprop *cam )
 {
-    cam_log( LOG_DEBUG, "cam_measure_temperature dÃ©but" );
+    cam_log( LOG_DEBUG, "cam_measure_temperature début" );
     if ( cam->params->qsicam == 0 )
     {
          cam_log( LOG_ERROR, "cam_measure_temperature camera not initialized" );
@@ -665,7 +665,7 @@ void cam_cooler_check( struct camprop *cam )
     }
     try
     {
-        cam_log( LOG_DEBUG, "TempÃ©rature de consigne = %.1f", cam->check_temperature );
+        cam_log( LOG_DEBUG, "Température de consigne = %.1f", cam->check_temperature );
         cam->params->qsicam->put_SetCCDTemperature( cam->check_temperature );
     }
     catch ( std::runtime_error &err )
@@ -694,7 +694,7 @@ void qsiGetTemperatureInfo( struct camprop *cam, double *setTemperature, double 
     {
         // Temp. de consigne du capteur
         cam->params->qsicam->get_SetCCDTemperature( setTemperature );
-        // Temp. rÃ©elle du capteur
+        // Temp. réelle du capteur
         cam->params->qsicam->get_CCDTemperature( ccdTemperature );
         // Temp. du dissipateur
         cam->params->qsicam->get_HeatSinkTemperature( ambientTemperature );
@@ -706,7 +706,7 @@ void qsiGetTemperatureInfo( struct camprop *cam, double *setTemperature, double 
         if ( cooler_on )
             *regulationEnabled = 1;
 
-        // La puissance de refroidissement est exprimÃ©e directement en pourcentage
+        // La puissance de refroidissement est exprimée directement en pourcentage
         double puissance;
         cam->params->qsicam->get_CoolerPower( &puissance );
         *power = (int)puissance;
@@ -918,7 +918,7 @@ int qsiGetWheelNames( struct camprop *cam, char **names )
             cam_log( LOG_DEBUG, "Nombre de position de la roue Ã  filtre : %d", filtres );
             std::string * noms = new std::string[filtres];
             long * dec_map = new long[filtres];
-            /* Allocation. La lbÃ©ration sera fait dans la routine appelante */
+            /* Allocation. La libération sera fait dans la routine appelante */
             *names = (char*) calloc( filtres, 256 );
             cam_log( LOG_DEBUG, "qsiGetWheelNames avant GetNames filter Wheel : noms = %p, dec_map = %p", noms, dec_map );
             cam->params->qsicam->get_Names( noms );
@@ -999,7 +999,4 @@ int qsiGetProperty( struct camprop *cam, char *propertyName, char *propertyValue
         return -1;
     }
 }
-
-
-
 
