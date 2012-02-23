@@ -598,6 +598,7 @@ LIBCAMS
 AUDELA
 CONTRIB
 EXTERNAL
+QSI_ENABLE
 V4L2_ENABLE
 WEBCAM_ENABLE
 EGREP
@@ -5251,6 +5252,31 @@ fi
 
 
 
+QSI_ENABLE=1
+ac_fn_c_check_header_mongrel "$LINENO" "tiff.h" "ac_cv_header_tiff_h" "$ac_includes_default"
+if test "x$ac_cv_header_tiff_h" = x""yes; then :
+
+else
+  QSI_ENABLE=0
+fi
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if QSI cameras are supported" >&5
+$as_echo_n "checking if QSI cameras are supported... " >&6; }
+if test x"$QSI_ENABLE" = x"1" ; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes." >&5
+$as_echo "yes." >&6; }
+else
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no, disabling the libqsi interface." >&5
+$as_echo "no, disabling the libqsi interface." >&6; }
+fi
+
+
+
+
+
+
+
 
 
 ARCHITECTURE=`uname -m`
@@ -5368,7 +5394,9 @@ fi
 if test x"$TCL_THREADS" = x"1" ; then
     EXTERNAL="$EXTERNAL libthread"
 fi
-
+if test x"$QSI_ENABLE" = x"1" ; then
+    EXTERNAL="$EXTERNAL qsi"
+fi
 
 # Check whether --with-tls was given.
 if test "${with_tls+set}" = set; then :
@@ -5400,6 +5428,9 @@ if test x"$WEBCAM_ENABLE" = x"1" ; then
 fi
 if test x"$V4L2_ENABLE" = x"1" ; then
     LIBCAMS="$LIBCAMS libgrabber"
+fi
+if test x"$QSI_ENABLE" = x"1" ; then
+    LIBCAMS="$LIBCAMS libqsi"
 fi
 if test $ARCHITECTURE != "x86_64"; then
     LIBCAMS="$LIBCAMS libsbig"

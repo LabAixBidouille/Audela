@@ -136,6 +136,22 @@ else
 fi
 AC_SUBST(V4L2_ENABLE)
 
+
+
+dnl Check for the libtiff header
+QSI_ENABLE=1
+AC_CHECK_HEADER([tiff.h],,[QSI_ENABLE=0])
+AC_MSG_CHECKING([if QSI cameras are supported])
+if test x"$QSI_ENABLE" = x"1" ; then
+        AC_MSG_RESULT([yes.])
+else
+        AC_MSG_RESULT([no, disabling the libqsi interface.])
+fi
+AC_SUBST(QSI_ENABLE)
+
+
+
+
 dnl Checks for typedefs, structures, and compiler characteristics.
 dnl
 
@@ -180,7 +196,9 @@ fi
 if test x"$TCL_THREADS" = x"1" ; then
     EXTERNAL="$EXTERNAL libthread"
 fi
-
+if test x"$QSI_ENABLE" = x"1" ; then
+    EXTERNAL="$EXTERNAL qsi"
+fi
 AC_ARG_WITH([tls],
             [AS_HELP_STRING([--with-tls],
               [compile external/tls @<:@default=no@:>@])],
@@ -209,6 +227,9 @@ if test x"$WEBCAM_ENABLE" = x"1" ; then
 fi
 if test x"$V4L2_ENABLE" = x"1" ; then
     LIBCAMS="$LIBCAMS libgrabber"
+fi
+if test x"$QSI_ENABLE" = x"1" ; then
+    LIBCAMS="$LIBCAMS libqsi"
 fi
 if test $ARCHITECTURE != "x86_64"; then
     LIBCAMS="$LIBCAMS libsbig"
