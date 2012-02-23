@@ -81,8 +81,9 @@ proc ::bddimages::initPlugin { tkbase } {
    }
 
    set bddconf(bufno)    $audace(bufNo)
-   set bddconf(visuno)    $audace(visuNo)
-   set bddconf(rep_plug) [file join $audace(rep_plugin) tool bddimages ]
+   set bddconf(visuno)   $audace(visuNo)
+   set bddconf(rep_plug) [file join $audace(rep_plugin) tool bddimages]
+   set bddconf(astroid)  [file join $audace(rep_plugin) tool bddimages utils astroid]
 
    set bddconf(extension_bdd) ".fits.gz"
    set bddconf(extension_tmp) ".fit"
@@ -132,6 +133,7 @@ proc ::bddimages::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_sub_header.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_sub_insertion.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_liste.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_liste_gui.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_xml.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_admin.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_define.tcl ]\""

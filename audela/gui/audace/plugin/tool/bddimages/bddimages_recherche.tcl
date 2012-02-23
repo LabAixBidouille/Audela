@@ -280,7 +280,7 @@ namespace eval bddimages_recherche {
       set i [$tbl curselection]
       set row [$tbl get $i $i]
       set ::bddimages_recherche::current_list_name [lindex $row 0]
-      set ::bddimages_recherche::current_list_id [::bddimages_liste::get_intellilist_by_name $::bddimages_recherche::current_list_name]
+      set ::bddimages_recherche::current_list_id [::bddimages_liste_gui::get_intellilist_by_name $::bddimages_recherche::current_list_name]
 
       ::console::affiche_resultat "Chargement ... "
 
@@ -325,13 +325,13 @@ namespace eval bddimages_recherche {
       set i [$tbl curselection]
       set row [$tbl get $i $i]
       set name [lindex $row 0]
-      set num [::bddimages_liste::get_intellilist_by_name $name]
+      set num [::bddimages_liste_gui::get_intellilist_by_name $name]
       for { set i 0 } { $i < $::nbintellilist } { incr i } {
          set ::intellilisttotal($i) $::intellilisttotal([expr $i+1])
          }
       set ::nbintellilist [expr $::nbintellilist - 1]
       ::bddimages_recherche::Affiche_listes
-      ::bddimages_liste::conf_save_intellilists
+      ::bddimages_liste_gui::conf_save_intellilists
       return
    }
 
@@ -512,7 +512,7 @@ namespace eval bddimages_recherche {
       }
 
       set nbintellilist 0
-      if { [catch {::bddimages_liste::conf_load_intellilists } msg] } {
+      if { [catch {::bddimages_liste_gui::conf_load_intellilists } msg] } {
          tk_messageBox -message "$msg" -type ok
          return
       }
@@ -603,8 +603,8 @@ namespace eval bddimages_recherche {
            #--- menu Fichier
            menubutton $This.frame0.file -text "$caption(search,fichier)" -underline 0 -menu $This.frame0.file.menu
            menu $This.frame0.file.menu
-             $This.frame0.file.menu add command -label "$caption(bddimages_recherche,new_list_i)" -command { ::bddimages_liste::run $audace(base).bddimages_liste }
-             $This.frame0.file.menu add command -label "$caption(bddimages_recherche,new_list_n)" -command { ::bddimages_liste::runnormal $audace(base).bddimages_liste }
+             $This.frame0.file.menu add command -label "$caption(bddimages_recherche,new_list_i)" -command { ::bddimages_liste_gui::run $audace(base).bddimages_liste_gui }
+             $This.frame0.file.menu add command -label "$caption(bddimages_recherche,new_list_n)" -command { ::bddimages_liste_gui::runnormal $audace(base).bddimages_liste_gui }
              #$This.frame0.file.menu add command -label "$caption(bddimages_recherche,delete_list)" -command " ::bddimages_recherche::cmd_list_delete $This.frame6.liste.tbl "
            pack $This.frame0.file -side left
            #--- menu aide
@@ -813,7 +813,7 @@ namespace eval bddimages_recherche {
      set row [$tbl get $i $i]
      set name [lindex $row 0]
      puts "Tbl2GetListName : $name"
-     ::bddimages_liste::run $audace(base).bddimages_liste $name
+     ::bddimages_liste_gui::run $audace(base).bddimages_liste_gui $name
    }
    
 
@@ -846,7 +846,7 @@ namespace eval bddimages_recherche {
      #::console::affiche_resultat "name = $name \n"
      #::console::affiche_resultat "tbl  = $tbl \n"
 
-     set num [::bddimages_liste::get_intellilist_by_name $name]
+     set num [::bddimages_liste_gui::get_intellilist_by_name $name]
      #::console::affiche_resultat "num  = $num \n"
      #::console::affiche_resultat "count  =  [array get intellilisttotal] \n"
      set total [array get intellilisttotal]
@@ -858,12 +858,12 @@ namespace eval bddimages_recherche {
      #::console::affiche_resultat "prevision effacement :\n"
      for {set x 1} {$x<=$::nbintellilist} {incr x} {
 
-        if { [::bddimages_liste::get_val_intellilist $::intellilisttotal($x) "name"] == $name} {
+        if { [::bddimages_liste_gui::get_val_intellilist $::intellilisttotal($x) "name"] == $name} {
            #::console::affiche_resultat "on efface $name \n"
         } else {
            incr cpt
            set ::intellilisttotal($cpt) $::intellilisttotal($x)
-           #::console::affiche_resultat "[::bddimages_liste::get_val_intellilist $::intellilisttotal($x) "name"] $cpt\n"
+           #::console::affiche_resultat "[::bddimages_liste_gui::get_val_intellilist $::intellilisttotal($x) "name"] $cpt\n"
         }
         #lappend l [list $::intellilisttotal($x)]
      }
@@ -874,7 +874,7 @@ namespace eval bddimages_recherche {
 
       set ::nbintellilist $cpt
       ::bddimages_recherche::Affiche_listes
-      ::bddimages_liste::conf_save_intellilists
+      ::bddimages_liste_gui::conf_save_intellilists
       return
 
    }
@@ -933,11 +933,11 @@ namespace eval bddimages_recherche {
         
         # Nouvelle liste intelligente
         $popupTbl add command -label "$caption(bddimages_recherche,new_list_i)" \
-           -command { ::bddimages_liste::run $audace(base).bddimages_liste }
+           -command { ::bddimages_liste_gui::run $audace(base).bddimages_liste_gui }
 
         # Nouvelle liste normale
         $popupTbl add command -label "$caption(bddimages_recherche,new_list_n)" \
-           -command { ::bddimages_liste::runnormal $audace(base).bddimages_liste }
+           -command { ::bddimages_liste_gui::runnormal $audace(base).bddimages_liste_gui }
 
         # Separateur
         $popupTbl add separator
@@ -1146,10 +1146,10 @@ namespace eval bddimages_recherche {
       set lid [lsort -decreasing -integer $lid]
       
       #ajoute l ancienne idlist
-      set num [::bddimages_liste::get_intellilist_by_name $namelist]   
+      set num [::bddimages_liste_gui::get_intellilist_by_name $namelist]   
       set normallist $::intellilisttotal($num)
 
-      set ::intellilisttotal($num) [::bddimages_liste::add_to_normallist $lid $normallist]
+      set ::intellilisttotal($num) [::bddimages_liste_gui::add_to_normallist $lid $normallist]
       return
    }
 
@@ -1240,7 +1240,7 @@ namespace eval bddimages_recherche {
 
       set lid [$::bddimages_recherche::This.frame6.result.tbl curselection ]
       set lid [lsort -decreasing -integer $lid]
-      set img_list [::bddimages_liste::new_normallist $lid]
+      set img_list [::bddimages_liste_gui::new_normallist $lid]
       foreach img $img_list {
 
          set filename    [string trim [::bddimages_liste::lget $img "filename"] ]
@@ -1294,7 +1294,7 @@ namespace eval bddimages_recherche {
       }
       
       # recupere l info de l image
-      set img [lindex [::bddimages_liste::new_normallist $lid] 0]
+      set img [lindex [::bddimages_liste_gui::new_normallist $lid] 0]
 
       # Verification des champs
       set tabkey [::bddimages_liste::lget $img "tabkey"]
@@ -1417,7 +1417,7 @@ namespace eval bddimages_recherche {
 
          set lid [$::bddimages_recherche::This.frame6.result.tbl curselection ]
          set lid [lsort -decreasing -integer $lid]
-         set imglist [::bddimages_liste::new_normallist $lid]
+         set imglist [::bddimages_liste_gui::new_normallist $lid]
 
             if {$type=="mirroirx"} {
                ::bddimages_imgcorrection::bddimages_mirroirx $imglist
@@ -1449,7 +1449,7 @@ namespace eval bddimages_recherche {
 
          set lid [$::bddimages_recherche::This.frame6.result.tbl curselection ]
          set lid [lsort -decreasing -integer $lid]
-         set imglist [::bddimages_liste::new_normallist $lid]
+         set imglist [::bddimages_liste_gui::new_normallist $lid]
 
          ::bddimages_analyse::charge_cata $imglist
 
@@ -1469,7 +1469,7 @@ namespace eval bddimages_recherche {
 
          set lid [$::bddimages_recherche::This.frame6.result.tbl curselection ]
          set lid [lsort -decreasing -integer $lid]
-         set imglist [::bddimages_liste::new_normallist $lid]
+         set imglist [::bddimages_liste_gui::new_normallist $lid]
 
          ::bddimages_analyse::creation_wcs $imglist
 
@@ -1780,7 +1780,7 @@ namespace eval bddimages_recherche {
       for { set i 1 } { $i <= $nbintellilist } { incr i } {
         
         set intellilist  $intellilisttotal($i)
-        set name [::bddimages_liste::get_val_intellilist $intellilist "name"]
+        set name [::bddimages_liste_gui::get_val_intellilist $intellilist "name"]
         #::console::affiche_resultat " $name\n"
         $::bddimages_recherche::This.frame6.liste.tbl insert end $name
 
@@ -1791,9 +1791,9 @@ namespace eval bddimages_recherche {
          #--- Les noms des objets sont en bleu
          for { set j 1 } { $j <= $nbintellilist } { incr j } {
             set intellilist  $intellilisttotal($j)
-            set type [::bddimages_liste::get_val_intellilist $intellilist "type"]
+            set type [::bddimages_liste_gui::get_val_intellilist $intellilist "type"]
             
-            #::console::affiche_resultat "[::bddimages_liste::get_val_intellilist $intellilist "name"] = [::bddimages_liste::get_val_intellilist $intellilist "type"] \n"
+            #::console::affiche_resultat "[::bddimages_liste_gui::get_val_intellilist $intellilist "name"] = [::bddimages_liste_gui::get_val_intellilist $intellilist "type"] \n"
             set ccolor $color(red)
             if { $type == "intellilist" } { set ccolor $color(blue) } 
             if { $type == "normal" } { set ccolor $color(black) }
@@ -1832,10 +1832,10 @@ proc ::bddimages_recherche::get_intellist { i } {
 
    #::console::affiche_resultat "get_intellist  $i\n"
    set intellilist  $intellilisttotal($i)
-   set nl [::bddimages_liste::get_val_intellilist $intellilist "name"]
+   set nl [::bddimages_liste_gui::get_val_intellilist $intellilist "name"]
    set bddconf(namelist) "Liste : $nl"
 
-   #::console::affiche_resultat "[::bddimages_liste::get_val_intellilist $intellilist "name"] ... "
+   #::console::affiche_resultat "[::bddimages_liste_gui::get_val_intellilist $intellilist "name"] ... "
    #::console::affiche_resultat "intellilist = $intellilist\n"
 
 #  Table_tmp
@@ -1848,7 +1848,7 @@ proc ::bddimages_recherche::get_intellist { i } {
 #   {commundatejj 2455121.77616018}
 #   {tabkey {..}}
 
-   set table_tmp [::bddimages_liste::intellilist_to_imglist $intellilist]
+   set table_tmp [::bddimages_liste_gui::intellilist_to_imglist $intellilist]
 
    #::console::affiche_resultat "table_tmp = $table_tmp\n"
    set table_result($i) ""
@@ -1857,8 +1857,8 @@ proc ::bddimages_recherche::get_intellist { i } {
 
       set tabkey               [::bddimages_liste::lget $img "tabkey"]
 
-      set idbddimg             [list "idbddimg" [::bddimages_liste::lget $img "idbddimg"] ]
-      set filename             [list "filename" [::bddimages_liste::lget $img "filename"] ]
+      set idbddimg             [list "idbddimg"             [::bddimages_liste::lget $img "idbddimg"] ]
+      set filename             [list "filename"             [::bddimages_liste::lget $img "filename"] ]
       set telescop             [list "telescop"             [lindex [::bddimages_liste::lget $tabkey "telescop"            ] 1] ]
       set dateobs              [list "date-obs"             [lindex [::bddimages_liste::lget $tabkey "date-obs"            ] 1] ]
       set exposure             [list "exposure"             [lindex [::bddimages_liste::lget $tabkey "exposure"            ] 1] ]

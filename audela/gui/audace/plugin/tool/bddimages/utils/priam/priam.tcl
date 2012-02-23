@@ -40,7 +40,7 @@ proc ::priam::create_file_oldformat { listsources stars listmesure } {
    ::manage_source::imprim_3_sources $listsources
 
    # creation du fichier de mesures
-   set filemes [file join $bddconf(dirtmp) barbara.mes]
+   set filemes [file join $bddconf(dirtmp) aster.mes]
    set chan0 [open $filemes w]
    puts $chan0 "#? Centroid measures formatted for Priam"
    puts $chan0 "#?   Source: Audela - jan. 2012"
