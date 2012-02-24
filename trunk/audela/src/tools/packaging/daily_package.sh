@@ -5,12 +5,20 @@
 #   Ce script permet de generer une archive deb et rpm a partir d'un repertoire de dev.
 #
 
+set -x
 
-DAILY=20080510
+DAILY=`date +%Y%m%d`
 
-BUILD_DIR=audela-0.0.$DAILY
-INST_DIR=/usr/lib/audela/0.0.$DAILY
+BUILD_DIR=audela-2.0.$DAILY
+INST_DIR=/usr/lib/audela/2.0.$DAILY
 DIRECTORY=$BUILD_DIR$INST_DIR
+MACHINE=`uname -m`
+if [ $MACHINE = "x86_64" ] ; then
+	ARCH=amd64
+else
+	ARCH=i386
+fi
+PACKET_NAME=$BUILD_DIR.$ARCH
 
 # Menage
 rm -rf $BUILD_DIR
@@ -20,12 +28,12 @@ rm -rf rpm
 # Creation des fichiers necessaire a l'empaquetage
 mkdir -p $BUILD_DIR/DEBIAN
 echo "Package: audela
-Version: 0.0.$DAILY
+Version: 2.0.$DAILY-$ARCH
 Section: science 
 Priority: optional
-Architecture: i386
+Architecture: $ARCH
 Essential: no
-Depends: tk8.4, libgcc1, libstdc++6, gsl-bin
+Depends: tcl8.5, tk8.5, libgcc1, libstdc++6, gsl-bin
 Recommends: gzip, gnuplot, libusb-0.1-4
 Installed-Size: 57521
 Maintainer: Denis Marchais <denis.marchais@free.fr>
@@ -47,12 +55,12 @@ chmod 755 $BUILD_DIR/DEBIAN/postrm
 
 # Creation de l'arborescence, copie des repertoires entiers
 mkdir -p $DIRECTORY
-cp -r ../../bin $DIRECTORY
-cp -r ../../lib $DIRECTORY
-cp -r ../../gui $DIRECTORY
-cp -r ../../images $DIRECTORY
-cp ../COPYING $DIRECTORY
-cp ../../readme.txt $DIRECTORY
+cp -r ../../../bin $DIRECTORY
+cp -r ../../../lib $DIRECTORY
+cp -r ../../../gui $DIRECTORY
+cp -r ../../../images $DIRECTORY
+cp ../../COPYING $DIRECTORY
+cp ../../../readme.txt $DIRECTORY
 
 # Petit menage
 rm -f $DIRECTORY/bin/version.tcl.in
@@ -65,6 +73,7 @@ rm -f $DIRECTORY/gui/default.nww
 
 
 find $DIRECTORY | grep CVS | xargs rm -rf
+find $DIRECTORY | grep .svn | xargs rm -rf
 
 # Creation du fichier de demarrage de audela
 echo "#!/bin/bash
@@ -75,12 +84,12 @@ cd $INST_DIR/bin
 chmod +x $DIRECTORY/bin/audela.sh
 
 # Creation du paquet
-sudo dpkg -b $BUILD_DIR $BUILD_DIR.deb
+sudo dpkg -b $BUILD_DIR $PACKET_NAME.deb
 
 # Creation du rpm
 mkdir rpm
 cd rpm
-sudo alien -v --to-rpm --scripts ../$BUILD_DIR.deb
+sudo alien -v --to-rpm --scripts ../$PACKET_NAME.deb
 mv *.rpm ..
 cd ..
 rm -rf rpm
