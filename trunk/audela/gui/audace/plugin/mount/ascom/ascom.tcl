@@ -239,7 +239,7 @@ proc ::ascom::configureMonture { } {
 
    set catchResult [ catch {
       #--- Je cree la monture
-      set telNo [ tel::create ascom [lindex $::ascom::private(modele) 1] ]
+      set telNo [ tel::create ascom [lindex $conf(ascom,modele) 1] ]
       #--- Je configure la position geographique et le nom de la monture
       #--- (la position geographique est utilisee pour calculer le temps sideral)
       tel$telNo home $::audace(posobs,observateur,gps)
