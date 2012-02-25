@@ -493,7 +493,8 @@ proc spc_delcal { args } {
 proc spc_calibrms { args } {
    global audace conf
 
-   if { [llength $args] == 7 } {
+   set nbargs [ llength $args ]
+   if { $nbargs==7 } {
       set crpix1 [ lindex $args 0 ]
       set a [ lindex $args 1 ]
       set b [ lindex $args 2 ]
@@ -501,26 +502,44 @@ proc spc_calibrms { args } {
       set d [ lindex $args 4 ]
       set pixels [ lindex $args 5 ]
       set lambdas [ lindex $args 6 ]
+   } elseif { $nbargs==8 } {
+      set crpix1 [ lindex $args 0 ]
+      set a [ lindex $args 1 ]
+      set b [ lindex $args 2 ]
+      set c [ lindex $args 3 ]
+      set d [ lindex $args 4 ]
+      set e [ lindex $args 5 ]
+      set pixels [ lindex $args 6 ]
+      set lambdas [ lindex $args 7 ]
+   } else {
+      ::console::affiche_erreur "Usage : spc_calibrms crpix1 a b c d ?e? \{positions en pixels\} \{longueurs d'onde\}\n\n"
+      return ""
+   }
 
-      #--- Calcul la différence entre les O-C des lambdas ayant servi a la calibration :
-      set diff 0.0
-      set diff2 0.0
-      set nblines [ llength $pixels ]
+   #--- Calcul la différence entre les O-C des lambdas ayant servi a la calibration :
+   set diff 0.0
+   set diff2 0.0
+   set nblines [ llength $pixels ]
+   if { $nbargs==7} {
       foreach x $pixels lambda $lambdas {
          set lambda_cal [ spc_calpoly $x $crpix1 $a $b $c $d ]
          set diff [ expr $diff+($lambda_cal-$lambda) ]
          set diff2 [ expr $diff2+($lambda_cal-$lambda)*($lambda_cal-$lambda) ]
       }
-
-      #--- Calculs de la dispersion :
-      set meanshift [ expr $diff/$nblines ]
-      set rms [ expr sqrt($diff2/$nblines) ]
-
-      ::console::affiche_resultat "Decalage moyen=$meanshift ; RMS=$rms.\n"
-      return $rms
-   } else {
-      ::console::affiche_erreur "Usage : spc_calibrms crpix1 a b c d \{positions en pixels\} \{longueurs d'onde\}\n\n"
+   } elseif { $nbargs==8 } {
+      foreach x $pixels lambda $lambdas {
+         set lambda_cal [ spc_calpoly $x $crpix1 $a $b $c $d $e ]
+         set diff [ expr $diff+($lambda_cal-$lambda) ]
+         set diff2 [ expr $diff2+($lambda_cal-$lambda)*($lambda_cal-$lambda) ]
+      }
    }
+   
+   #--- Calculs de la dispersion :
+   set meanshift [ expr $diff/$nblines ]
+   set rms [ expr sqrt($diff2/$nblines) ]
+   
+   ::console::affiche_resultat "Decalage moyen=$meanshift ; RMS=$rms.\n"
+   return $rms
 }
 #*****************************************************************#
 
@@ -1062,11 +1081,21 @@ proc spc_calibren { args } {
          set c [ lindex $coeffs 2 ]
          set b [ lindex $coeffs 1 ]
          set a [ lindex $coeffs 0 ]
-      } elseif { $nbraies > 3 } {
+      } elseif { $nbraies == 4 } {
          #-- Calcul du polynôme de calibration a+b*x+c*x^2+d*x^3 :
          set sortie [ spc_ajustdeg3 $xvals $lambdas $errors $crpix1 ]
          set coeffs [ lindex $sortie 0 ]
          set chi2 [ lindex $sortie 1 ]
+         set d [ lindex $coeffs 3 ]
+         set c [ lindex $coeffs 2 ]
+         set b [ lindex $coeffs 1 ]
+         set a [ lindex $coeffs 0 ]
+      } elseif { $nbraies > 4 } {
+         #-- Calcul du polynôme de calibration a+b*x+c*x^2+d*x^3 :
+         set sortie [ spc_ajustdegn $xvals $lambdas $erreur $spcaudace(degmax_cal) $crpix1 ]
+         set coeffs [ lindex $sortie 0 ]
+         set chi2 [ lindex $sortie 1 ]
+         set e [ lindex $coeffs 4 ]
          set d [ lindex $coeffs 3 ]
          set c [ lindex $coeffs 2 ]
          set b [ lindex $coeffs 1 ]
@@ -1077,17 +1106,25 @@ proc spc_calibren { args } {
       }
 
       #--- Calcul de la longueur au pixel de reference :
-      set lambdaRef [ spc_calpoly $crpix1 $crpix1 $a $b $c $d ]
+      if { $nbraies <= 4 } {
+         set lambdaRef [ spc_calpoly $crpix1 $crpix1 $a $b $c $d ]
+      } else {
+         set lambdaRef [ spc_calpoly $crpix1 $crpix1 $a $b $c $d $e ]
+      }
 
       #--- Calcul du RMS :
       #- set rms [ expr $lambda0deg3*sqrt($chi2/$nbraies) ]
       #- set sigma 1.0
       #- set rms [ expr $sigma*sqrt($chi2/$nbraies) ]
-      set rms [ spc_calibrms $crpix1 $a $b $c $d $xvals $lambdas ]
+      if { $nbraies <= 4 } {
+         set rms [ spc_calibrms $crpix1 $a $b $c $d $xvals $lambdas ]
+      } else {
+         set rms [ spc_calibrms $crpix1 $a $b $c $d $e $xvals $lambdas ]
+      }
       ::console::affiche_resultat "RMS=$rms angstrom\n"
 
       #--- Calcul des coéfficients de linéarisation provisoire de la calibration a1+b1*x (régression linéaire sur les abscisses choisies et leur lambda issues du polynome) :
-      if { $nbraies>=3 } {
+      if { $nbraies<=4 } {
          #-- Calcul d'une série de longueurs d'ondes passant par le polynome pour la linéarisation qui suit :
          #- for { set x 20 } { $x<=[ expr $naxis1-10 ] } { set x [ expr $x+20 ]} {
          #-    lappend xpos $x
@@ -1099,6 +1136,10 @@ proc spc_calibren { args } {
          #- set coeffsdeg1 [ spc_ajustdeg1hp $xpos $lambdaspoly 1. $crpix1 ]
          #- set b1 [ lindex [ lindex $coeffsdeg1 0 ] 1 ]
          set lambdafin [ spc_calpoly $naxis1 $crpix1 $a $b $c $d ]
+         set dispersion [ expr 1.0*($lambdafin-$lambdaRef)/($naxis1-1) ]
+         ::console::affiche_prompt "Loi linéarisée : $lambdaRef+$dispersion*(x-$crpix1)\n"
+      } elseif { $nbraies>=5 } {
+         set lambdafin [ spc_calpoly $naxis1 $crpix1 $a $b $c $d $e ]
          set dispersion [ expr 1.0*($lambdafin-$lambdaRef)/($naxis1-1) ]
          ::console::affiche_prompt "Loi linéarisée : $lambdaRef+$dispersion*(x-$crpix1)\n"
       } else {
@@ -1125,12 +1166,19 @@ proc spc_calibren { args } {
       #-- Corrdonnée représentée sur l'axe 1 (ie X) :
       buf$audace(bufNo) setkwd [list "CTYPE1" "Wavelength" string "" ""]
       #-- Mots clefs du polynôme :
-      if { $nbraies>=3 } {
+      if { $nbraies<=4 } {
          buf$audace(bufNo) setkwd [list "SPC_DESC" "A+B.x+C.x.x+D.x.x.x" string "" ""]
          buf$audace(bufNo) setkwd [list "SPC_A" $a double "" "angstrom"]
          buf$audace(bufNo) setkwd [list "SPC_B" $b double "" "angstrom/pixel"]
          buf$audace(bufNo) setkwd [list "SPC_C" $c double "" "angstrom.angstrom/pixel.pixel"]
          buf$audace(bufNo) setkwd [list "SPC_D" $d double "" "angstrom.angstrom.angstrom/pixel.pixel.pixel"]
+      } elseif { $nbraies>=5 } {
+         buf$audace(bufNo) setkwd [list "SPC_DESC" "A+B.x+C.x.x+D.x.x.x+E.x.x.x.x" string "" ""]
+         buf$audace(bufNo) setkwd [list "SPC_A" $a double "" "angstrom"]
+         buf$audace(bufNo) setkwd [list "SPC_B" $b double "" "angstrom/pixel"]
+         buf$audace(bufNo) setkwd [list "SPC_C" $c double "" "angstrom.angstrom/pixel.pixel"]
+         buf$audace(bufNo) setkwd [list "SPC_D" $d double "" "angstrom.angstrom.angstrom/pixel.pixel.pixel"]
+         buf$audace(bufNo) setkwd [list "SPC_E" $e double "" "A.A.A.A/pixel.pixel.pixel.pixel"]
       }
       buf$audace(bufNo) setkwd [list "SPC_RMS" $rms double "" "angstrom"]
       
@@ -1138,7 +1186,11 @@ proc spc_calibren { args } {
       buf$audace(bufNo) bitpix float
       buf$audace(bufNo) save "$audace(rep_images)/l${filename}"
       buf$audace(bufNo) bitpix short
-      ::console::affiche_prompt "\nLoi de calibration : $a+$b*(x-$crpix1)+$c*(x-$crpix1)^2+$d*(x-$crpix1)^3 avec RMS=$rms\n"
+      if { $nbraies<=4 } {
+         ::console::affiche_prompt "\nLoi de calibration : $a+$b*(x-$crpix1)+$c*(x-$crpix1)^2+$d*(x-$crpix1)^3 avec RMS=$rms\n"
+      } elseif { $nbraies>=5 } {
+         ::console::affiche_prompt "\nLoi de calibration : $a+$b*(x-$crpix1)+$c*(x-$crpix1)^2+$d*(x-$crpix1)^3+$e*(x-$crpix1)^4 avec RMS=$rms\n"
+      }
       ::console::affiche_resultat "Spectre étalonné sauvé sous l${filename}\n"
       return l${filename}
    } else {
@@ -1198,6 +1250,11 @@ proc spc_linearcal { args } {
          } else {
             set spc_d 0.0
          }
+         if { [ lsearch $listemotsclef "SPC_E" ] !=-1 } {
+            set spc_e [ lindex [ buf$audace(bufNo) getkwd "SPC_E" ] 1 ]
+         } else {
+            set spc_e 0.0
+         }
          set flag_spccal 1
          #-- Calcul l'incertitude sur une lecture de longueur d'onde :
          set mes_incertitude [ expr 1.0/($spc_a*$spc_b) ]
@@ -1233,7 +1290,7 @@ proc spc_linearcal { args } {
          #set lambda_deb $spc_a
          #set lambda_deb [ spc_calpoly 1. $crpix1 $spc_a $spc_b $spc_c $spc_d ]
          set lambda_deb $crval1
-         set lambda_fin [ spc_calpoly $len $crpix1 $spc_a $spc_b $spc_c $spc_d ]
+         set lambda_fin [ spc_calpoly $len $crpix1 $spc_a $spc_b $spc_c $spc_d $spc_e ]
          
          #- modif michel
          # set pas [ expr ($lambda_fin-$lambda_deb)/$len ]
@@ -1273,6 +1330,9 @@ proc spc_linearcal { args } {
          buf$audace(bufNo) delkwd "SPC_C"
          if { [ lsearch $listemotsclef "SPC_D" ] !=-1 } {
             buf$audace(bufNo) delkwd "SPC_D"
+         }
+         if { [ lsearch $listemotsclef "SPC_E" ] !=-1 } {
+            buf$audace(bufNo) delkwd "SPC_E"
          }
          if { [ lsearch $listemotsclef "SPC_DESC" ] !=-1 } {
             buf$audace(bufNo) delkwd "SPC_DESC"
@@ -1365,12 +1425,32 @@ proc spc_loadneon { args } {
    global spcaudace
    global conf
 
+   if { [ llength $args ] == 2 } {
+      set type_resolution [ lindex $args 0 ]
+      set num_visu [ lindex $args 1 ]
+   } else {
+      ::console::affiche_erreur "Usage: spc_loadneon type_resolution(hr/br) numero_visu(1,2)\n"
+      return ""
+   }
+
    #--- Affichage de l'image du neon de la bibliothèque de calibration :
-   loadima $spcaudace(rep_spccal)/Neon.jpg
-   visu1 zoom 1
-   #::confVisu::setZoom 1 1
-   ::confVisu::autovisu 1
-   visu1 disp {251 -15}
+   if { $type_resolution=="hr" } {
+      buf$num_visu load $spcaudace(rep_spccal)/Neon.jpg
+      visu$num_visu zoom 1
+      #::confVisu::setZoom 1 1
+      ::confVisu::autovisu $num_visu
+      visu$num_visu disp {251 -15}
+   }
+
+   #--- Affichage spécifique à la basse résolution :
+   if { $type_resolution=="br" } {
+      set num_newvisu [ ::confVisu::create ]
+      buf$num_newvisu load $spcaudace(rep_spccal)/neon_br.png
+      visu$num_newvisu zoom 1
+      #::confVisu::setZoom 1 1
+      ::confVisu::autovisu $num_newvisu
+      visu$num_newvisu disp {251 -15}
+   }
 }
 
 
@@ -1388,7 +1468,7 @@ proc spc_loadneon { args } {
 proc spc_calibre { args } {
 
    global audace
-   global conf caption
+   global conf caption spcaudace
    #- spcalibre : nom de la variable retournee par la gui param_spc_audace_calibreprofil qui contient le nom du fichier de la lampe calibree
    global spcalibre
 
@@ -1408,8 +1488,10 @@ proc spc_calibre { args } {
            return 0
        }
 
-       spc_gdeleteall
-       spc_loadfit $profiletalon
+      #--- Affichage du profil de raies du spectre à calibrer :
+      spc_gdeleteall
+      spc_loadfit $profiletalon
+
        #--- Détection des raies dans le profil de raies de la lampe :
        set raies [ spc_findbiglines $profiletalon e ]
        #foreach raie $raies {
@@ -1422,8 +1504,13 @@ proc spc_calibre { args } {
        #::console::affiche_resultat "Chim : $listelambdaschem\n"
        set listeargs [ list $profiletalon $listeabscisses_i $listelambdaschem ]
 
-       #--- Affiche l'image du neon de bibliothèque :
-       spc_loadneon
+      #--- Affichage du spectre modèle pour une aide à la calibration :
+      #-- Haute résolution :
+      spc_loadneon "hr" 1
+      #-- Basse résolution :
+      if { $spcaudace(br) } {
+         spc_loadneon "br" 2
+      }
 
        #--- Boîte de dialogue pour saisir les paramètres de calibration :
        set err [ catch {

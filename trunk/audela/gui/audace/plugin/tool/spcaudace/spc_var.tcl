@@ -12,7 +12,8 @@ global audela audace
 global spcaudace
 
 #--- Version d'SpcAudace :
-set spcaudace(version) "2.12 - 25/12/2011"
+set spcaudace(num_version) "2.14"
+set spcaudace(version) "$spcaudace(num_version) - 12/02/2012"
 # ::audace::date_sys2ut ?Date?
 #set spcaudace(version) [ file mtime $spcaudace(repspc) ]
 
@@ -114,6 +115,16 @@ set spcaudace(meth_somme) "addi"
 #--- Constantes de calcul :
 #-- Vitesse de la lumière en km/s :
 set spcaudace(vlum) 299792.458
+
+#--- Valeurs liees aux precisions de mesure :
+#-- Mesure d'un photocentre en pixel :
+set spcaudace(precision_centerpix) 0.2
+
+#--- Vakeur de paramètres lés à la calibration :
+#-- Degre maximum par defaut du policnoime  decalibration (pour 5 raies et plus) :
+set spcaudace(degmax_cal) 4
+#-- Flag délcarant que les traitements sont pour la basse résolution (affichage modèle calibration...) :
+set spcaudace(br) 0
 
 #--- Valeur de paramètres des euristhiques algorithmiques :
 #-- Taux adoucissement pour l'extraction de continuum ew via piecewiselinear :

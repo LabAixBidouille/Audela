@@ -16,7 +16,7 @@
 # * This file is part of the AudeLA project: <http://www.audela.org>
 # * Copyright (C) 2004-2009 B. Mauclaire
 # *
-# * Initial author : Benjamin MAUCLAIRE <bmauclaire@gmail.com>
+# * Initial author : Benjamin MAUCLAIRE <bma.ova@gmail.com>
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@
 #============================================================
 namespace eval ::spcaudace {
    global caption
-   package provide spcaudace 2.12
+   package provide spcaudace 2.14
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [ file dirname [info script] ] spcaudace.cap ]
@@ -123,7 +123,6 @@ proc ::spcaudace::createPluginInstance { { in "" } { visuNo 1 } } {
    uplevel #0 "source \"[ file join $spcaudace(rep_spc) spc_gui_metaboxes.tcl ]\""
    uplevel #0 "source \"[ file join $spcaudace(rep_spc) spc_gui_runs.tcl ]\""
    uplevel #0 "source \"[ file join $spcaudace(rep_spc) spc_gui.tcl ]\""
-
 }
 
 #------------------------------------------------------------
@@ -201,6 +200,8 @@ proc ::spcaudace::deletePluginInstance { visuNo } {
 proc ::spcaudace::startTool { visuNo } {
    #--- J'ouvre la fenetre
    spc_winini
+   #--- Verifie si une maj est necessaire :
+   spc_versionsite
 }
 
 #------------------------------------------------------------

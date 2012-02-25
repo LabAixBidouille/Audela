@@ -7,6 +7,109 @@
 # Mise a jour $Id$
 
 
+####################################################################
+# Compare la version d'SpcAduace en cours d'execution et averti de la maj
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 20120201
+# Date modification : 20120201
+####################################################################
+
+proc spc_versionsite {} {
+   global spcaudace flagvs_ok audace
+
+   #--- Recherche la version diponible sur le site d'Spcaudace :
+   set pagecontent [ spc_read_url_contents $spcaudace(webpage) ]
+   if { $pagecontent!=0 } {
+      regexp {KIT\s:\sspcaudace\-([0-9]+\.[0-9]+)} $pagecontent match version_site
+
+      #--- Compare avec la version en cours d'exécution et signale la maj :
+      if { $spcaudace(num_version)<$version_site } {
+         ::console::affiche_erreur "A newer SpcAudace release is available. You should upgrade your SpcAudace!\n"
+
+         #-- Création de la fenêtre :
+         set flagvs_ok 0
+         if { [ winfo exists .spcv ] } {
+            destroy .spcv
+         }
+         toplevel .spcv
+         wm geometry .spcv
+         wm title .spcv "A newer SpcAudace release is available"
+         wm transient .spcv .audace
+   
+         #--- Textes d'avertissement
+         label .spcv.lab -text "You should upgrade your SpcAudace!"
+         pack .spcv.lab -expand true -expand true -fill both
+   
+         #--- Sous-trame pour boutons
+         frame .spcv.but
+         pack .spcv.but -expand true -fill both
+   
+         #--- Bouton "Ok"
+         button .spcv.but.1 -command {set flagvs_ok 1} -text "OK"
+         pack .spcv.but.1 -side left -expand true -fill both
+
+         #--- Attend le click user :
+         vwait flagvs_ok
+
+         if { $flagvs_ok == 1 } {
+	    destroy .spcv
+            #return ""
+         }
+
+      } else {
+         ::console::affiche_prompt "\nYour SpcAudace release is up to date.\n"
+      }
+   }
+}
+#**********************************************************************************#
+
+
+####################################################################
+# Lecture d'une page HTML via http
+#
+# Version originale : Alain KLOTZ
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 20120201
+# Date modification : 20120201
+####################################################################
+
+proc spc_read_url_contents { url {fullfile_out ""} } {
+   package require http
+
+   if { [ spc_test_url $url ] } {
+      set token [::http::geturl $url]
+      upvar #0 $token state
+      set res $state(body)
+      set len [string length $res]
+      if {$fullfile_out!=""} {
+         set f [open $fullfile_out w]
+         puts -nonewline $f "$res"
+         close $f
+      }
+      return $res
+   } else {
+      return 0
+   }
+}
+#**********************************************************************************#
+
+
+####################################################################
+# Lecture d'une page HTML via http
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 20120201
+# Date modification : 20120201
+####################################################################
+
+proc spc_test_url { url } {
+   package require http
+
+   if { [ catch { ::http::geturl $url -timeout 2000 } ] } { return 0 } else {  return 1 }
+}
+#**********************************************************************************#
+
 
 ###############################################################################
 # Procédure de lancement du navigateur internet pour consulter la documentation d'SpcAudace

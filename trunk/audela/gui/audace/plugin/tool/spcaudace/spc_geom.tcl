@@ -5,6 +5,61 @@
 # Mise a jour $Id$
 
 
+
+####################################################################
+# Procédure de découpe puis raboutage de 2 lampes de calibration pour calibration BR
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 20120122
+# Date modification : 20120202
+####################################################################
+
+proc spc_lampmerge { args } {
+   global conf
+   global audace spcaudace
+
+   set nbargs [ llength $args ]
+   if { $nbargs == 2 } {
+      set sp_long [ lindex $args 0 ]
+      set sp_short [ lindex $args 1 ]
+   } else {
+      ::console::affiche_erreur "Usage: spc_lampmerge spectre_lamp_long_exposed spectre_lamp_short_exposed\n"
+      return ""
+   }
+
+   #--- Get infos :
+   buf$audace(bufNo) load "$audace(rep_images)/$sp_long"
+   set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+   set naxis2 [ lindex [ buf$audace(bufNo) getkwd "NAXIS2" ] 1 ]
+   set xcrop [ expr int($naxis1/2) ]
+   set xrestant [ expr $naxis1-$xcrop ]
+   buf$audace(bufNo) noffset 0
+
+   #--- Mise a zero des pixels de la partie rouge du spectre longue pose :
+   #for { set i [ expr $xcrop+1 ] } { $i<=$naxis1 } { incr i } {
+   #   for { set j 1 } { $j<=$naxis2} { incr j } {
+   #      buf$audace(bufNo) setpix [ list $i $j ] 0
+   #   }
+   #}
+   buf$audace(bufNo) imaseries "TRANS trans_x=$xrestant trans_y=0"
+   buf$audace(bufNo) imaseries "TRANS trans_x=-$xrestant trans_y=0"
+
+   #--- Addition du spectre courte pose :
+   buf$audace(bufNo) add "$sp_short" 0
+   buf$audace(bufNo) save "$audace(rep_images)/lamp_merged"
+
+   #--- Fin de script :
+   file delete -force "$audace(rep_images)/${sp_short}_gain$conf(extension,defaut)"
+   loadima lamp_merged
+   return "lamp_merged$conf(extension,defaut)"
+
+   #--- Suite : tracer le profil de raies
+   # spc_profily lamp_merged [ expr int($naxis1/2) ] 160
+}
+#**********************************************************************************#
+
+
+
 ####################################################################
 # Procédure de determination des bords de la base d'une raie.
 #

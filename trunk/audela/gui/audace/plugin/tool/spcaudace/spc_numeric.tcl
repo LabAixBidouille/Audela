@@ -373,7 +373,8 @@ proc spc_sinefit { args } {
 
 proc spc_calpoly { args } {
    
-   if { [ llength $args ]==6 } {
+   set nbargs [ llength $args ]
+   if { $nbargs==6 } {
       set xval [lindex $args 0 ]
       set crpix1 [ lindex $args 1 ]
       set a [lindex $args 2 ]
@@ -382,8 +383,18 @@ proc spc_calpoly { args } {
       set d [lindex $args 5 ]
 
       return [ expr $a*1.0+$b*($xval-$crpix1)*1.0+$c*pow($xval-$crpix1,2)*1.0+$d*pow($xval-$crpix1,3)*1.0 ]
+   } elseif { $nbargs==7 } {
+      set xval [lindex $args 0 ]
+      set crpix1 [ lindex $args 1 ]
+      set a [lindex $args 2 ]
+      set b [lindex $args 3 ]
+      set c [lindex $args 4 ]
+      set d [lindex $args 5 ]
+      set e [lindex $args 6 ]
+
+      return [ expr $a*1.0+$b*($xval-$crpix1)*1.0+$c*pow($xval-$crpix1,2)*1.0+$d*pow($xval-$crpix1,3)*1.0+$e*pow($xval-$crpix1,4)*1.0 ]
    } else {
-      ::console::affiche_erreur "Usage : spc_calpoly pixelval crpix1 a b c d\n\n"
+      ::console::affiche_erreur "Usage : spc_calpoly pixelval crpix1 a b c d ?e?\n\n"
    }
 }
 #*********************************************************************#
@@ -1713,6 +1724,131 @@ proc spc_ajustdeg3v1 { args } {
 #****************************************************************#
 
 
+############################################################
+# Procedure de calcul de factorielle
+# Auteur : Patrick Lailly
+############################################################
+
+proc spc_fac {n} {
+	set prod 1
+	for {set i 1} {$i<=$n} {incr i} {
+		set prod [ expr $prod * $i ]
+	}
+	return $prod
+}
+#****************************************************************#
+
+
+####################################################################
+# Procedure d'ajustement d'un nuage de points par un polynôme de degré N
+#
+# Auteur : Patrick LAILLY
+# Date creation : 23-01-2012
+# Date modification : 23-01-2012
+# Cette procedure generalise les procedures d'ajustement d'un nuage de points par un polynôme de degré 3
+# on utilise ici un autre preconditionnement du systeme lineaire a resoudre rendant la programmation plus aisee  
+# Arguments : liste abscisses, liste ordonnees, erreur, degre polynome 
+# Condition : il faut N+2 couples de points !
+####################################################################
+#spc_ajustdegN {24.3 61.62 118.71 145.34 175.25 243.87 588.4 763.52 876.26 976.19 1218. 1299.} {3974. 4065. 4200.67 4272.17 4348.06 4522.72 5400.56 5852.49 6143.06 6402.25 7032.41 7245.17} 1 4 1
+
+proc spc_ajustdegn { args } {
+   global conf
+   global audace
+
+   set nbargs [ llength $args ]
+   if { $nbargs==4} {
+      set abscisses_orig [lindex $args 0]
+      set ordonnees [lindex $args 1]
+      set erreur [lindex $args 2]
+      set Ndeg [lindex $args 3]
+   } elseif { $nbargs==5 } {
+      set abscisses_orig [ lindex $args 0 ]
+      set ordonnees [ lindex $args 1 ]
+      set erreur [ lindex $args 2 ]
+      set Ndeg [lindex $args 3]
+      set crpix1 [ lindex $args 4 ]
+   } else {
+      ::console::affiche_erreur "Usage: spc_ajustdegn liste_abscisses liste_ordonnees erreur (ex. 1) degre_polyn ?crpix1?\n"
+      return ""
+   }
+	set abscisses_new $abscisses_orig
+   #--- Prise en compte de crpix1 :
+   if { $nbargs==5 } {
+      set abscisses_new [ list ]
+      foreach absi $abscisses_orig {
+         lappend abscisses_new [ expr $absi-$crpix1 ]
+      }
+      #set abscisses_orig $abscisses_new
+   }
+   
+
+      #--- Initialisation de variables :
+      set n [llength $abscisses_orig]
+      set len [llength $ordonnees]
+      set abscisses_rangees [ lsort -real -increasing $abscisses_new ]
+      set abs_min [ lindex $abscisses_rangees 0 ]
+      set abs_max [ lindex $abscisses_rangees [ expr $n -1 ] ]
+      ::console::affiche_resultat "$abs_min $abs_max\n"
+
+      #--- Changement de variable ( autre preconditionnement du systeme lineaire) :
+      set aa [ expr 1./ ($abs_max - $abs_min) ]
+		set bb [ expr -$aa ]
+      #::console::affiche_resultat "aa= $aa\n"
+      #::console::affiche_resultat "bb= $bb\n"
+      set abscisses [ list ]
+      for { set i 0 } { $i<$n } {incr i} {
+	 		set xi [ expr $aa * ([ lindex $abscisses_new $i ]-$abs_min) ]
+	 		lappend abscisses $xi
+      }
+
+      #--- Calcul des coefficients du polynôme d'ajustement :
+      #-- Calcul de la matrice X : calcul les monônes correspondant aux différents degrés à l'abscisse xi
+      set x ""
+      set X "" 
+      for {set i 0} {$i<$n} {incr i} { 
+	 		set xi [lindex $abscisses $i] 
+         set ligne_i 1
+	 		lappend erreurs $erreur
+	 		for {set k 1} {$k<=$Ndeg} {incr k} {
+	 			lappend ligne_i [ expr pow($xi,$k) ]
+	 		}
+	 		lappend X $ligne_i 
+      } 
+      #-- Calcul de l'ajustement :
+      set result [gsl_mfitmultilin $ordonnees $X $erreurs] 
+      #-- Extrait le resultat :
+      set coeffs [lindex $result 0] 
+      set chi2 [lindex $result 1] 
+      set covar [lindex $result 2]
+      ::console::affiche_resultat "Chi2=$chi2, Covar=$covar\n"
+
+      #--- Determination des coefficients associes aux abscisses d'origine :
+      set coefs [ list ]
+      for { set k 0 } {$k<=$Ndeg} {incr k} {
+      	set coef 0.
+      	set ak [ expr pow($aa,$k) ]
+      	for { set kk $k } {$kk<=$Ndeg} {incr kk} {
+      		#::console::affiche_resultat "kk= $kk\n"
+      		set k_kk [expr $kk-$k]
+      		#ci dessous interviennent les combinaisons comme dans la formule du binome
+      		set Ck_kk [ expr [ spc_fac $kk ]/([ spc_fac $k ] * [ spc_fac $k_kk ]) ]
+      		set coef [ expr $coef + $ak * pow($bb,$k_kk) * $Ck_kk * pow($abs_min,$k_kk) * [lindex $coeffs $kk] ]
+      	}
+      lappend coefs $coef
+      }
+      
+	
+      ::console::affiche_resultat "Coefficients de polynome: $coefs\n"
+      # set adj_vals [list $coefs $abscisses $yadj]
+      set adj_vals [ list $coefs $chi2 $covar ]
+      #set adj_vals [ list $coefs ]
+      return $adj_vals
+}
+#****************************************************************#
+
+
+
 
 ####################################################################
 #  Procédure d'ajustement d'un nuage de points.
@@ -2094,7 +2230,9 @@ proc spc_gaussienne { args } {
                # set y [ expr -(-$imax+$icont)*exp(-0.5*pow(($x-$xc)*2*sqrt(2*log(2))/$fwhm,2))+$icont ]
                # set y [ expr -(-$imax+$icont)*exp(-1.0*($x-$xc)*($x-$xc)/$fwhm)+$icont ]
                #-- pour fwhm de spc_fwhm non multipliee par 2 et plus realiste :
-               set y [ expr -(-$imax+$icont)*exp(-0.5*($x-$xc)*($x-$xc)/$fwhm)+$icont ]
+               # set y [ expr -(-$imax+$icont)*exp(-0.5*($x-$xc)*($x-$xc)/$fwhm)+$icont ]
+               #-- 21120103 :
+               set y [ expr $icont-($imax-$icont)*exp(-0.5*($x-$xc)*($x-$xc)/$fwhm) ]
             } else {
                set y $icont
             }

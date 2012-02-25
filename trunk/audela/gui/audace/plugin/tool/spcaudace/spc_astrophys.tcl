@@ -626,20 +626,28 @@ proc spc_phaseplot_err { args } {
 
 proc spc_vdoppler { args } {
 
-   global audace
-   global conf
+   global audace conf spcaudace
 
-   if { [llength $args] == 2 } {
-       set delta_lambda [ lindex $args 0 ]
-       set lambda [lindex $args 1 ]
-
-       set vrad [ expr 299792.458*$delta_lambda/$lambda ]
-       ::console::affiche_resultat "La vitesse Doppler de l'objet est : $vrad km/s\n"
-       return $vrad
+   set nb_args [ llength $args ]
+   if { $nb_args==2 } {
+      set lambda_mes [ lindex $args 0 ]
+      set lambda_ref [lindex $args 1 ]
+      set delta_lambda 0
+   } elseif { $nb_args==3 } {
+      set lambda_mes [ lindex $args 0 ]
+      set lambda_ref [lindex $args 1 ]
+      set delta_lambda [ lindex $args 2 ]
    } else {
-       ::console::affiche_erreur "Usage: spc_vdoppler delta_lambda lambda_raie_référence\n\n"
+      ::console::affiche_erreur "Usage: spc_vdoppler lambda_mesurée lambda_raie_référence ?incertitude_lambda?\n\n"
+      return ""
    }
 
+   set vrad [ format "%4.4f" [ expr $spcaudace(vlum)*($lambda_mes-$lambda_ref)/$lambda_ref ] ]
+   set delta_vrad [ format "%4.4f" [ expr abs($vrad*$delta_lambda/($lambda_mes-$lambda_ref)) ] ]
+
+   ::console::affiche_resultat "La vitesse Doppler de l'objet est : $vrad +- $delta_vrad km/s\n"
+   set result [ list $vrad $delta_vrad ]
+   return $result
 }
 #*******************************************************************************#
 
@@ -775,6 +783,133 @@ proc spc_vhelio { args } {
 }
 #*******************************************************************************#
 
+
+
+
+##########################################################
+# Procedure de correction  de la vitesse héliocentrique
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 27-12-2011
+# Date de mise à jour : 27-12-2011
+# Arguments : profil_raies_étalonné lambda_raie_approché lambda_réf ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?
+# Explication : la correciton héliocentrique possède déjà le bon signe tandis que la vitesse héliocentrique non.
+#  La mesure de vitesse radiale nécessite d'être corrigée de la vitesse héliocentrique même si la calibration a été faite sur les raies telluriques car le centre du référentiel n'est pas la Terre mais le barycentre du Système Solaire.
+##########################################################
+
+proc spc_vheliocorr { args } {
+
+   global audace conf spcaudace
+
+   if { [llength $args] == 1 || [llength $args] == 7 || [llength $args] == 10 } {
+       if { [llength $args] == 1 } {
+	   set spectre [ lindex $args 0 ]
+       } elseif { [llength $args] == 7 } {
+	   set spectre [ lindex $args 0 ]
+	   set ra_h [ lindex $args 1 ]
+	   set ra_m [ lindex $args 2 ]
+	   set ra_s [ lindex $args 3 ]
+	   set dec_d [ lindex $args 4 ]
+	   set dec_m [ lindex $args 5 ]
+	   set dec_s [ lindex $args 6 ]
+       } elseif { [llength $args] == 10 } {
+	   set spectre [ lindex $args 0 ]
+	   set ra_h [ lindex $args 1 ]
+	   set ra_m [ lindex $args 2 ]
+	   set ra_s [ lindex $args 3 ]
+	   set dec_d [ lindex $args 4 ]
+	   set dec_m [ lindex $args 5 ]
+	   set dec_s [ lindex $args 6 ]
+	   set jj [ lindex $args 7 ]
+	   set mm [ lindex $args 8 ]
+	   set aaaa [ lindex $args 9 ]
+       } else {
+	   ::console::affiche_erreur "Usage: spc_vheliocorr profil_raies_étalonné ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
+	   return 0
+       }
+
+       #--- Charge les mots clefs :
+       buf$audace(bufNo) load "$audace(rep_images)/$spectre"
+       set listemotsclef [ buf$audace(bufNo) getkwds ]
+       set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+       set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+       set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+       set lambda_ref [ expr 0.5*(($naxis1-1)*$cdelt1+$crval1) ]
+
+       #--- Détermine les paramètres de date et de coordonnées si nécessaire :
+       # mc_baryvel {2006 7 22} {19h24m58.00s} {11d57m00.0s} J2000.0
+       if { [llength $args] == 1 } {
+	   # OBJCTRA = '00 16 42.089'
+	   if { [ lsearch $listemotsclef "OBJCTRA" ] !=-1 } {
+	       set ra [ lindex [buf$audace(bufNo) getkwd "OBJCTRA" ] 1 ]
+	       set ra_h [ lindex $ra 0 ]
+	       set ra_m [ lindex $ra 0 ]
+	       set ra_s [ lindex $ra 0 ]
+	       set raf [ list "${ra_h}h${ra_m}m${ra_s}s" ]
+           } elseif { [ lsearch $listemotsclef "RA" ] !=-1 } {
+               set raf [ lindex [buf$audace(bufNo) getkwd "RA" ] 1 ]
+               if { [ regexp {\s+} $raf match resul ] } { 
+                 ::console::affiche_erreur "Aucune coordonnée trouvée.\n"
+                 return ""
+               }
+	   } else {
+	       ::console::affiche_erreur "Aucune coordonnée trouvée.\n"
+	       return ""
+	   }
+	   # OBJCTDEC= '-05 23 52.444'
+	   if { [ lsearch $listemotsclef "OBJCTDEC" ] !=-1 } {
+	       set dec [ lindex [buf$audace(bufNo) getkwd "OBJCTDEC" ] 1 ]
+	       set dec_d [ lindex $dec 0 ]
+	       set dec_m [ lindex $dec 0 ]
+	       set dec_s [ lindex $dec 0 ]
+	       set decf [ list "${dec_d}d${dec_m}m${dec_s}s" ]
+           } elseif { [ lsearch $listemotsclef "DEC" ] !=-1 } {
+               set decf [ lindex [buf$audace(bufNo) getkwd "DEC" ] 1 ]
+	   }
+	   # DATE-OBS : 2005-11-26T20:47:04
+	   if { [ lsearch $listemotsclef "DATE-OBS" ] !=-1 } {
+	       set ladate [ lindex [buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ]
+	       set ldate [ mc_date2ymdhms $ladate ]
+	       set y [ lindex $ldate 0 ]
+	       set mo [ lindex $ldate 1 ]
+	       set d [ lindex $ldate 2 ]
+	       set datef [ list $y $mo $d ]
+	   }
+       } elseif { [llength $args] == 7 } {
+	   # DATE-OBS : 2005-11-26T20:47:04
+	   if { [ lsearch $listemotsclef "DATE-OBS" ] !=-1 } {
+	       set ladate [ lindex [buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ]
+	       set ldate [ mc_date2ymdhms $ladate ]
+	       set y [ lindex $ldate 0 ]
+	       set mo [ lindex $ldate 1 ]
+	       set d [ lindex $ldate 2 ]
+	       set datef [ list $y $mo $d ]
+	   }
+	   set raf [ list "${ra_h}h${ra_m}m${ra_s}s" ]
+	   set decf [ list "${dec_d}d${dec_m}m${dec_s}s" ]
+       } elseif { [llength $args] == 10 } {
+	   set raf [ list "${ra_h}h${ra_m}m${ra_s}s" ]
+	   set decf [ list "${dec_d}d${dec_m}m${dec_s}s" ]
+	   set datef [ list $aaaa $mm $jj ]
+       }
+
+       #--- Calcul de la vitesse héliocentrique :
+       ::console::affiche_resultat "Correction de la vitesse héliocentrique du spectre...\n"
+       set raf [ list "${ra_h}h${ra_m}m${ra_s}s" ]
+       set decf [ list "${dec_d}d${dec_m}m${dec_s}s" ]
+       set vhelio [ lindex [ mc_baryvel $ladate $raf $decf J2000.0 ] 0 ]
+       set delta_lambda [ expr $lambda_ref*$vhelio/$spcaudace(vlum) ]
+       set fichier_helio [ spc_calibredecal $spectre $delta_lambda ]
+
+
+       #--- Formatage du résultat :
+       ::console::affiche_resultat "Spectre corrigé de $delta_lambda A sauvé sous $fichier_helio\n"
+       return $fichier_helio
+   } else {
+	   ::console::affiche_erreur "Usage: spc_vheliocorr profil_raies_étalonné ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
+   }
+}
+#*******************************************************************************#
 
 
 ##########################################################

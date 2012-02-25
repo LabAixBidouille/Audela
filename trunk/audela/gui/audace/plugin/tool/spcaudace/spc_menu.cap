@@ -145,6 +145,8 @@ set caption(spcaudace,gui,spc_specLhIII_w)                  "LhiresIII spectral 
 set caption(spcaudace,gui,spc_sommeadd_w)                   "Set summ to simple summ"
 set caption(spcaudace,gui,spc_sommekappa_w)                 "Set summ to sigma-kappa summ"
 set caption(spcaudace,gui,spc_anim_w)                       "Make an animation of a whole of spectra"
+set caption(spcaudace,gui,spc_br_w)                         "Activate low resolution mode"
+set caption(spcaudace,gui,spc_hr_w)                         "Activate high resolution mode"
 
 #--- Menu Astrophysique ---#
 set caption(spcaudace,gui,spc_analyse)                      "Astrophysic"
@@ -316,6 +318,8 @@ if { [string compare $langage "french"] == "0" } {
    set caption(spcaudace,gui,spc_sommeadd_w)                "Paramètre l'addition de spectres en somme simple"
    set caption(spcaudace,gui,spc_sommekappa_w)              "Paramètre l'addition de spectres en somme kappa-sigma"
    set caption(spcaudace,gui,spc_anim_w)                    "Fabrique une animation d'une série de spectres"
+   set caption(spcaudace,gui,spc_br_w)                      "Activer le mode basse résolution"
+   set caption(spcaudace,gui,spc_hr_w)                      "Activer le mode haute résolution"
 
    #--- Menu Astrophysique ---#
    set caption(spcaudace,gui,spc_analyse)                   "Astrophysique"
