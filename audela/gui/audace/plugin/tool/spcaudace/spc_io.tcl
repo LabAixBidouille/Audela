@@ -828,6 +828,11 @@ proc spc_fits2dat { args } {
      } else {
         set spc_d 0.0
      }
+     if { [ lsearch $listemotsclef "SPC_E" ] !=-1 } {
+        set spc_e [ lindex [ buf$audace(bufNo) getkwd "SPC_E" ] 1 ]
+     } else {
+        set spc_e 0.0
+     }
 
      #--- Type de spectre : LINEAR ou NONLINEAR (elinine les espaces dans la valeur du mot clef.
      #set len [ expr int($naxis1/$dispersion) ]
@@ -907,7 +912,7 @@ proc spc_fits2dat { args } {
                  }
               } else {
                  for {set k 1} {$k<=$naxis1} {incr k} {
-                    set lambda [ spc_calpoly $k $crpix1 $spc_a $spc_b $spc_c $spc_d ]
+                    set lambda [ spc_calpoly $k $crpix1 $spc_a $spc_b $spc_c $spc_d $spc_e ]
                     set intensite [ lindex [ buf$audace(bufNo) getpix [list $k 1] ] 1 ]
                     #puts $file_id "$lambda\t$intensite\r"
                     puts $file_id "$lambda\t$intensite"
@@ -1243,6 +1248,12 @@ proc spc_fits2data { args } {
      } else {
          set spc_d 0.0
      }
+     if { [ lsearch $listemotsclef "SPC_E" ] !=-1 } {
+        set spc_e [ lindex [ buf$audace(bufNo) getkwd "SPC_E" ] 1 ]
+     } else {
+        set spc_e 0.0
+     }
+
 
      #--- Valeur minimale de l'abscisse : =0 si profil non étalonné
      #::console::affiche_resultat "spc_fits2data: $naxis1 intensités à traiter...\n"
@@ -1303,7 +1314,7 @@ proc spc_fits2data { args } {
                  for {set k 1} {$k<=$naxis1} {incr k} {
                     #- Une liste commence à 0 ; Un vecteur fits commence à 1
                     #- LENT : lappend abscisses [ spc_calpoly $k $crpix1 $spc_a $spc_b $spc_c $spc_d ]
-                    lappend abscisses [ expr $spc_a+$spc_b*($k-$crpix1)+$spc_c*pow($k-$crpix1,2)+$spc_d*pow($k-$crpix1,3) ]
+                    lappend abscisses [ expr $spc_a+$spc_b*($k-$crpix1)+$spc_c*pow($k-$crpix1,2)+$spc_d*pow($k-$crpix1,3)+$spc_e*pow($k-$crpix1,4) ]
                     lappend intensites [ lindex [ buf$audace(bufNo) getpix [list [ expr $k ] 1] ] 1 ]
                  }
               }
@@ -2035,7 +2046,10 @@ proc spc_multifit2pngdec { args } {
    set lpart 0
    #set coef_conv_gp 7.8
    #set yheight_graph 600
+   #- Pour png :
    set xpos 70
+   #- Pour ps :
+   #set xpos 60
    set nbargs [ llength $args ]
    
    if { $nbargs==1 } {
@@ -2182,6 +2196,7 @@ proc spc_multifit2pngdec { args } {
    #-- Modification de dla position des legendes dans le fichier de config de gnuplot :
    #set ypos1 [ expr $y1_legende+$offset/10. ]
    set ypos1 [ expr $y1_legende*(1+$offset/10.) ]
+   # set file_idin [ open "$spcaudace(repgp)/gp_multiover_ps.cfg" r+ ]
    set file_idin [ open "$spcaudace(repgp)/gp_multiover.cfg" r+ ]
    set file_id [ open "$audace(rep_images)/gp_multiover.cfg" w+ ]
    fconfigure $file_id -translation crlf

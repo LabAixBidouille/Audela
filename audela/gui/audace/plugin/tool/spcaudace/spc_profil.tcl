@@ -2011,7 +2011,7 @@ proc spc_load { args } {
 
 	#::console::affiche_resultat "name=$filename ; ext=$extension\n"
 	#--- Affiche le profil de rais selon l'extension :
-	if { "$file_extension"=="$conf(extension,defaut)" } {
+	if { "$file_extension"=="$conf(extension,defaut)" || "$file_extension"==".fits" } {
 	    spc_loadfit "$filename"
 	} elseif { "$file_extension"=="$spcaudace(extdat)" } {
 	    spc_loaddat "$filename"
@@ -2136,6 +2136,11 @@ proc spc_loadfit { {filenamespc ""} } {
       } else {
          set spc_d 0.0
       }
+      if { [ lsearch $listemotsclef "SPC_E" ] !=-1 } {
+         set spc_e [ lindex [ buf$audace(bufNo) getkwd "SPC_E" ] 1 ]
+      } else {
+         set spc_e 0.0
+      }
    }
 
   #--- Gestion de la commande getpix selon la version d'Audela :
@@ -2203,7 +2208,7 @@ proc spc_loadfit { {filenamespc ""} } {
 	       # for {set k 0} {$k<$naxis1} {incr k}
 	       for {set k 1} {$k<=$naxis1} {incr k} {
                   #- lappend profilspc(pixels) [ expr $spc_d*pow($k-$crpix1,3)+$spc_c*pow($k-$crpix1,2)+$spc_b*($k-$crpix1)+$spc_a ]
-                  lappend profilspc(pixels) [ spc_calpoly $k $crpix1 $spc_a $spc_b $spc_c $spc_d ]
+                  lappend profilspc(pixels) [ spc_calpoly $k $crpix1 $spc_a $spc_b $spc_c $spc_d $spc_e ]
                   lappend profilspc(intensite) [ lindex [ buf$audace(bufNo) getpix [list $k 1] ] 1 ]
 	       }
 	   }

@@ -8,6 +8,42 @@
 # Mise a jour $Id$
 
 
+
+########################################################################
+# PAsser en basse resolution
+#
+# Auteurs : Benjamin Mauclaire
+# Date de création : 20-04-2010
+# Date de modification : 20-04-2010
+########################################################################
+
+proc spc_br_w {} {
+
+   global audace spcaudace
+
+   set spcaudace(br) 1
+   ::console::affiche_prompt "Mode basse résolution activé.\n\n"
+}
+#**********************************************************************#
+
+########################################################################
+# PAsser en haute resolution
+#
+# Auteurs : Benjamin Mauclaire
+# Date de création : 20-04-2010
+# Date de modification : 20-04-2010
+########################################################################
+
+proc spc_hr_w {} {
+
+   global audace spcaudace
+
+   set spcaudace(br) 0
+   ::console::affiche_prompt "Mode haute résolution activé.\n\n"
+}
+#**********************************************************************#
+
+
 ########################################################################
 # Interface pour l'appel de la fonction spc_anim
 #

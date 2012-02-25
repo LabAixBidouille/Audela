@@ -578,13 +578,14 @@ proc spc_centergrav { args } {
 
 proc spc_centergravl { args } {
 
-    global audace
-    global conf
+    global audace conf spcaudace
+    set delta_x $spcaudace(precision_centerpix)
 
-    if {[llength $args] == 3} {
+    if {[llength $args] == 4} {
         set fichier [ file rootname [ lindex $args 0 ] ]
         set ldeb [ lindex $args 1 ]
         set lfin [ lindex $args 2 ]
+       set type_raie [ lindex $args 3 ]
 
         #--- Conversion des longeurs d'onde en pixels :
         buf$audace(bufNo) load "$audace(rep_images)/$fichier"
@@ -621,12 +622,15 @@ proc spc_centergravl { args } {
         #--- Détermination du barycentre de la raie d'absorption :
         ##set listecoefscale [ list 1 3 ]
         ## buf$audace(bufNo) scale $listecoefscale 1
-        #buf$audace(bufNo) mult -1.0
-        #set lreponse [ buf$audace(bufNo) centro $listcoords ]
-        #set xcenter [ lindex $lreponse 0 ]
+       if { $type_raie=="a" } {
+          buf$audace(bufNo) mult -1.0
+       }
+        set lreponse [ buf$audace(bufNo) centro $listcoords ]
+        set xcenter [ lindex $lreponse 0 ]
         #- BUG centro :
         #- set xcenter [ expr $xcenter-1 ]
 
+       if { 1==0 } {
        set sommei 0.
        set sommeixi 0.
        if { $flag_spccal==1 } {
@@ -645,20 +649,25 @@ proc spc_centergravl { args } {
           }
        }
        set lcentre [ expr $sommeixi/$sommei ]
-
+       }
 
         #--- Traduit la position en longueur d'onde :
-        #if { $flag_spccal==1 } {
-        #  set lcentre [ spc_calpoly $xcenter $crpix1 $spc_a $spc_b $spc_c $spc_d ]
-        #} else {
-        #  set lcentre [ spc_calpoly $xcenter $crpix1 $crval $cdelt 0 0 ]
-        #}
+        if { $flag_spccal==1 } {
+          set lcentre [ spc_calpoly $xcenter $crpix1 $spc_a $spc_b $spc_c $spc_d ]
+        } else {
+          set lcentre [ spc_calpoly $xcenter $crpix1 $crval $cdelt 0 0 ]
+        }
+
+       #--- Calcul de l'incertitude :
+       #set delta_l [ format "%4.4f" [ expr $cdelt*$delta_x*$lcentre/$xcenter ] ]
+       set delta_l [ format "%4.4f" [ expr $cdelt*$delta_x ] ]
 
         #--- Traitement du resultat :
-        ::console::affiche_resultat "Le centre de gravité de la raie est : $lcentre A\n"
-        return $lcentre
+        ::console::affiche_resultat "Le centre de gravité de la raie est : $lcentre +- $delta_l A\n"
+       set resultat [ list $lcentre $delta_l ]
+        return $resultat
     } else {
-        ::console::affiche_erreur "Usage: spc_centergravl profil_de_raies_calibré lambda_debut lambda_fin\n\n"
+        ::console::affiche_erreur "Usage: spc_centergravl profil_de_raies_calibré lambda_debut lambda_fin type_raie(a/e)\n\n"
     }
 }
 #****************************************************************#
@@ -1065,6 +1074,8 @@ proc spc_findbiglines { args } {
     global audace spcaudace
     # set pas 10
     set ecart 4.0
+    #-- 20120202 : avant, c'etait a 12
+    set nb_max_raies 12
 
     set nbargs [ llength $args ]
     if { $nbargs <= 3 } {
@@ -1202,7 +1213,7 @@ proc spc_findbiglines { args } {
 
         #--- Sélection des abscisses des 12 raies les plus intenses :
         set doublelistesorted2 [ lsort -decreasing -real -index 1 $doublelistesorted ]
-        set selection12 [ lrange $doublelistesorted2 0 12 ]
+        set selection12 [ lrange $doublelistesorted2 0 $nb_max_raies ]
 #::console::affiche_resultat "Double liste : $selection12\n"
 
         #--- Retire dans la cette selection les raies détectées aui sont les mêmes en fait :

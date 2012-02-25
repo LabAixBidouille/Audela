@@ -247,6 +247,8 @@ proc spc_winini { } {
       .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_pipelines_space)
       .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_sommeadd_w) -command "spc_sommeadd_w" -underline 0
       .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_sommekappa_w) -command "spc_sommekappa_w" -underline 0
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_br_w) -command "spc_br_w" -underline 0
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_hr_w) -command "spc_hr_w" -underline 0
 
       .spc configure -menu .spc.menuBar
       #-- Raccourcis calviers :
@@ -1134,6 +1136,5 @@ proc spc_scgif {} {
 #---- Démarre l'interface grphisque -----------#
 spc_winini
 
-
-
-
+#--- Verifie si une maj est necessaire :
+#spc_versionsite
