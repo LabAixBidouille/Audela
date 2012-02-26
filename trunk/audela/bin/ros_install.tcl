@@ -571,9 +571,9 @@ namespace eval ::ros_install {
             set base2 [::ros_install::compact "$audace(ros_install,configure,config,$name)/${name}/ros"]
             ::ros_install::copy $base1 $fichiers $base2
             # /users.tcl from ros/conf/users.txt
-            set f1 [::ros_install::compact "$audace(ros_install,configure,config,conf)/conf/users.txt"] ; # TAG-CONF
-            set f2 [::ros_install::compact "$audace(ros_install,configure,config,$name)/${name}/ros/users.txt"]
-            ::ros_install::print "COPY $f1 => $f2\n"
+            #set f1 [::ros_install::compact "$audace(ros_install,configure,config,conf)/conf/users.txt"] ; # TAG-CONF
+            #set f2 [::ros_install::compact "$audace(ros_install,configure,config,$name)/${name}/ros/users.txt"]
+            #::ros_install::print "COPY $f1 => $f2\n"
             file copy -force $f1 $f2
             # create audela.exe in cgi-bin in the case of Linux
             if { $::tcl_platform(os) == "Linux" } {
