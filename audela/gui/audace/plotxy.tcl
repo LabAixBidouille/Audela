@@ -407,7 +407,6 @@ namespace eval ::plotxy {
          }
          append texte " -errorbarwidth 1 -errorbarcolor $mycolor -yhigh \{$yhigh\} -ylow \{$ylow\}"
       }
-      ::console::affiche_resultat "$texte\n"
       eval $texte
       #
       $baseplotxy.xy legend configure -hide yes
