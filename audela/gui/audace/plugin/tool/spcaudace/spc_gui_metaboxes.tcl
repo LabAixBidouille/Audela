@@ -39,44 +39,44 @@ proc spc_testguiargs { listeargs } {
     set i 0
     #--- Gestion des champs vides et test d'existence des fichiers
     foreach arg $listeargs {
-	incr i
-	#if { [ string compare $arg "" ] }
-	if { $arg == "" } {
-	    set flag_empty [ expr $flag_empty | 1 ]
-	    #-- Ajoute le nom de l'argument a la liste s'il est vide
-	    lappend liste_args_vides $i
-	} else {
-	    set flag_empty [ expr $flag_empty | 0 ]
-	    #--- Test le cas des fichiers inexistants
-	    set ext $conf(extension,defaut)
-	    #-- regexp a ameliorer
-	    #set flag_file [ regexp {.+\$ext} $arg match filename ]
-	    #if { $flag_file } {
-		#-- Si le fichier n'existe pas :
-		#if { [ expr ! [ file exists $arg ] ] } {
-		#    set flag_exist [ expr $flag_exist & 1 ]
-		    #-- Ajoute le nom de l'argument a la liste si le fichier n'existe pas
-		#    lappend liste_files_out $i
-		#}
-	    #}
-	}
+      incr i
+      #if { [ string compare $arg "" ] }
+      if { $arg == "" } {
+          set flag_empty [ expr $flag_empty | 1 ]
+          #-- Ajoute le nom de l'argument a la liste s'il est vide
+          lappend liste_args_vides $i
+      } else {
+          set flag_empty [ expr $flag_empty | 0 ]
+          #--- Test le cas des fichiers inexistants
+          set ext $conf(extension,defaut)
+          #-- regexp a ameliorer
+          #set flag_file [ regexp {.+\$ext} $arg match filename ]
+          #if { $flag_file } {
+          #-- Si le fichier n'existe pas :
+          #if { [ expr ! [ file exists $arg ] ] } {
+          #    set flag_exist [ expr $flag_exist & 1 ]
+              #-- Ajoute le nom de l'argument a la liste si le fichier n'existe pas
+          #    lappend liste_files_out $i
+          #}
+          #}
+       }
     }
 
     #--- Affiche un message d'erreur en focntion de l'erreur de saisie :
     if { [ expr $flag_empty & $flag_exist ] } {
-	tk_messageBox -title $caption(spcaudace,gui,erreur,saisie)  -icon error \
-	-message [format $caption(spcaudace,metaboxes,erreur,champ1) $liste_args_vides $liste_files_out ]
-	return 0
+        tk_messageBox -title $caption(spcaudace,gui,erreur,saisie)  -icon error \
+        -message [format $caption(spcaudace,metaboxes,erreur,champ1) $liste_args_vides $liste_files_out ]
+        return 0
     } elseif { $flag_empty } {
-	tk_messageBox -title $caption(spcaudace,gui,erreur,saisie)  -icon error \
-	-message [format $caption(spcaudace,metaboxes,erreur,champ2) $liste_args_vides ]
-	return 0
+        tk_messageBox -title $caption(spcaudace,gui,erreur,saisie)  -icon error \
+        -message [format $caption(spcaudace,metaboxes,erreur,champ2) $liste_args_vides ]
+        return 0
     } elseif { $flag_exist } {
-	tk_messageBox -title $caption(spcaudace,gui,erreur,saisie)  -icon error \
-	-message [format $caption(spcaudace,metaboxes,erreur,champ3) $liste_file_out ]
-	return 0
+        tk_messageBox -title $caption(spcaudace,gui,erreur,saisie)  -icon error \
+        -message [format $caption(spcaudace,metaboxes,erreur,champ3) $liste_file_out ]
+        return 0
     } else {
-	return 1
+        return 1
     }
 }
 
@@ -1781,13 +1781,15 @@ namespace eval ::param_spc_audace_calibreprofil {
       # === Initialisation des variables qui seront changées
       set i 1
       foreach raie $listeabscisses_i {
-	  set intensite [ lindex $raie 1 ]
-	  if { $intensite != 0.0 } {
-	      set audace(param_spc_audace,calibreprofil,config,x$i) [ lindex $raie 0 ]
-	  } else {
-	      set audace(param_spc_audace,calibreprofil,config,x$i) ""
-	  }
-	  incr i
+         set intensite [ lindex $raie 1 ]
+         if { $intensite != 0.0 } {
+            set abscisse_line  [ lindex $raie 0 ]
+            set audace(param_spc_audace,calibreprofil,config,x$i) $abscisse_line
+            lappend listeabscisses $abscisse_line
+         } else {
+            set audace(param_spc_audace,calibreprofil,config,x$i) ""
+         }
+         incr i
       }
       #set audace(param_spc_audace,calibreprofil,config,x1) [ lindex $listeabscisses 0 ]
       #set audace(param_spc_audace,calibreprofil,config,x2) [ lindex $listeabscisses 1 ]
@@ -1816,8 +1818,7 @@ namespace eval ::param_spc_audace_calibreprofil {
 
       #--- Cree la fenetre .param_spc_audace_calibreprofil de niveau le plus haut
       toplevel .param_spc_audace_calibreprofil -class Toplevel -bg $audace(param_spc_audace,calibreprofil,color,backpad)
-      # wm geometry .param_spc_audace_calibreprofil 460x450+10+10
-      wm geometry .param_spc_audace_calibreprofil 460x450-23-14
+      wm geometry .param_spc_audace_calibreprofil 360x480-23-14
       wm resizable .param_spc_audace_calibreprofil 1 1
       wm title .param_spc_audace_calibreprofil $caption(spcaudace,metaboxes,calibreprofil,titre)
       wm protocol .param_spc_audace_calibreprofil WM_DELETE_WINDOW "::param_spc_audace_calibreprofil::annuler"
@@ -1825,29 +1826,29 @@ namespace eval ::param_spc_audace_calibreprofil {
       #--- Create the title
       #--- Cree le titre
       label .param_spc_audace_calibreprofil.title \
-	      -font [ list {Arial} 16 bold ] -text $caption(spcaudace,metaboxes,calibreprofil,titre2) \
-	      -borderwidth 0 -relief flat -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
-	      -fg $audace(param_spc_audace,calibreprofil,color,textkey)
+         -font [ list {Arial} 16 bold ] -text $caption(spcaudace,metaboxes,calibreprofil,titre2) \
+         -borderwidth 0 -relief flat -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
+         -fg $audace(param_spc_audace,calibreprofil,color,textkey)
       pack .param_spc_audace_calibreprofil.title \
-	      -in .param_spc_audace_calibreprofil -fill x -side top -pady 15
+         -in .param_spc_audace_calibreprofil -fill x -side top -pady 15
 
       # --- Boutons du bas
       frame .param_spc_audace_calibreprofil.buttons -borderwidth 1 -relief raised -bg $audace(param_spc_audace,calibreprofil,color,backpad)
       #-- Bouton Annuler
       button .param_spc_audace_calibreprofil.stop_button  \
-	      -font $audace(param_spc_audace,calibreprofil,font,c12b) \
-	      -text "$caption(spcaudace,metaboxes,calibreprofil,stop_button)" \
-	      -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
-	      -fg $audace(param_spc_audace,calibreprofil,color,textkey) \
-	      -command {::param_spc_audace_calibreprofil::annuler}
+         -font $audace(param_spc_audace,calibreprofil,font,c12b) \
+         -text "$caption(spcaudace,metaboxes,calibreprofil,stop_button)" \
+         -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
+         -fg $audace(param_spc_audace,calibreprofil,color,textkey) \
+         -command {::param_spc_audace_calibreprofil::annuler}
       pack  .param_spc_audace_calibreprofil.stop_button -in .param_spc_audace_calibreprofil.buttons -side left -fill none -padx 3 -pady 3
       #-- Bouton OK
       button .param_spc_audace_calibreprofil.return_button  \
-	      -font $audace(param_spc_audace,calibreprofil,font,c12b) \
-	      -text "$caption(spcaudace,metaboxes,calibreprofil,return_button)" \
-	      -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
-	      -fg $audace(param_spc_audace,calibreprofil,color,textkey) \
-	      -command {::param_spc_audace_calibreprofil::go}
+         -font $audace(param_spc_audace,calibreprofil,font,c12b) \
+         -text "$caption(spcaudace,metaboxes,calibreprofil,return_button)" \
+         -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
+         -fg $audace(param_spc_audace,calibreprofil,color,textkey) \
+         -command {::param_spc_audace_calibreprofil::go}
       pack  .param_spc_audace_calibreprofil.return_button -in .param_spc_audace_calibreprofil.buttons -side right -fill none -padx 3 -pady 3
       pack .param_spc_audace_calibreprofil.buttons -in .param_spc_audace_calibreprofil -fill x -pady 0 -padx 0 -anchor s -side bottom
 
@@ -1855,44 +1856,65 @@ namespace eval ::param_spc_audace_calibreprofil {
       #--- Label + Entry pour lampe
       frame .param_spc_audace_calibreprofil.lampe -borderwidth 0 -relief flat -bg $audace(param_spc_audace,calibreprofil,color,backpad)
       label .param_spc_audace_calibreprofil.lampe.label -text "$caption(spcaudace,metaboxes,calibreprofil,config,lampe)" -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
-	      -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief flat \
-	      -font $audace(param_spc_audace,calibreprofil,font,c12b)
-      pack  .param_spc_audace_calibreprofil.lampe.label -in .param_spc_audace_calibreprofil.lampe -side left -fill none
+         -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief flat \
+         -font $audace(param_spc_audace,calibreprofil,font,c12b)
+      pack  .param_spc_audace_calibreprofil.lampe.label -in .param_spc_audace_calibreprofil.lampe -side top -fill none  -anchor w
       button .param_spc_audace_calibreprofil.lampe.explore -text "$caption(spcaudace,gui,parcourir)" -width 1 \
-	      -font $audace(param_spc_audace,calibreprofil,font,c12b) \
-	      -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief raised \
-	      -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
-	      -command { set audace(param_spc_audace,calibreprofil,config,lampe) [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] }
+         -font $audace(param_spc_audace,calibreprofil,font,c12b) \
+         -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief raised \
+         -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
+         -command { set audace(param_spc_audace,calibreprofil,config,lampe) [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] }
       pack .param_spc_audace_calibreprofil.lampe.explore -side left -padx 7 -pady 3 -ipady 0
       entry  .param_spc_audace_calibreprofil.lampe.entry  \
-	      -font $audace(param_spc_audace,calibreprofil,font,c12b) \
-	      -textvariable audace(param_spc_audace,calibreprofil,config,lampe) -bg $audace(param_spc_audace,calibreprofil,color,backdisp) \
-	      -fg $audace(param_spc_audace,calibreprofil,color,textdisp) -relief flat -width 100
-      pack  .param_spc_audace_calibreprofil.lampe.entry -in .param_spc_audace_calibreprofil.lampe -side left -fill none
-      pack .param_spc_audace_calibreprofil.lampe -in .param_spc_audace_calibreprofil -fill none -pady 1 -padx 12
+         -font $audace(param_spc_audace,calibreprofil,font,c12b) \
+         -textvariable audace(param_spc_audace,calibreprofil,config,lampe) -bg $audace(param_spc_audace,calibreprofil,color,backdisp) \
+         -fg $audace(param_spc_audace,calibreprofil,color,textdisp) -relief flat -width 20
+      pack  .param_spc_audace_calibreprofil.lampe.entry -in .param_spc_audace_calibreprofil.lampe -side bottom -fill none -anchor w
+      pack .param_spc_audace_calibreprofil.lampe -in .param_spc_audace_calibreprofil -fill none
 
 
-       if { 1==0 } {
+   if { 1==0 } {
       #--- Message sur les raies :
       label .param_spc_audace_calibreprofil.message1 \
-	      -font [ list {Arial} 12 bold ] -text $caption(spcaudace,metaboxes,calibreprofil,message1) \
-	      -borderwidth 0 -relief flat -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
-	      -fg $audace(param_spc_audace,calibreprofil,color,textkey)
+         -font [ list {Arial} 12 bold ] -text $caption(spcaudace,metaboxes,calibreprofil,message1) \
+         -borderwidth 0 -relief flat -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
+         -fg $audace(param_spc_audace,calibreprofil,color,textkey)
       pack .param_spc_audace_calibreprofil.message1 \
-	      -in .param_spc_audace_calibreprofil -fill x -side top -pady 15
-  }
+         -in .param_spc_audace_calibreprofil -fill x -side top -pady 15
+   }
 
-      #--- Label + Entry pour X1
+
+      frame .param_spc_audace_calibreprofil.n -borderwidth 0 -relief flat -bg $audace(param_spc_audace,calibreprofil,color,backpad)
+      pack .param_spc_audace_calibreprofil.n -in .param_spc_audace_calibreprofil -fill none -side bottom -pady 15
+
+
+      #--- Labels des colonnes
+      label .param_spc_audace_calibreprofil.n.label01  \
+         -font $audace(param_spc_audace,calibreprofil,font,c12b) \
+         -text "$caption(spcaudace,metaboxes,calibreprofil,config,raienum)" -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
+         -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief flat
+      grid  .param_spc_audace_calibreprofil.n.label01 -in .param_spc_audace_calibreprofil.n -row 0 -column 0 -sticky ew
+      label .param_spc_audace_calibreprofil.n.label02  \
+         -font $audace(param_spc_audace,calibreprofil,font,c12b) \
+         -text "$caption(spcaudace,metaboxes,calibreprofil,config,abscisse)" -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
+         -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief flat
+      grid  .param_spc_audace_calibreprofil.n.label02 -in .param_spc_audace_calibreprofil.n -row 0 -column 1 -sticky ew
+      label .param_spc_audace_calibreprofil.n.label03  \
+         -font $audace(param_spc_audace,calibreprofil,font,c12b) \
+         -text "$caption(spcaudace,metaboxes,calibreprofil,config,wavelength)" -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
+         -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief flat
+      grid  .param_spc_audace_calibreprofil.n.label03 -in .param_spc_audace_calibreprofil.n -row 0 -column 2 -sticky ew
+
+
+      #--- Label + Combobox pour la raie numero 1
       #-- Partie Label
-      frame .param_spc_audace_calibreprofil.x1 -borderwidth 0 -relief flat -bg $audace(param_spc_audace,calibreprofil,color,backpad)
-      label .param_spc_audace_calibreprofil.x1.label  \
-	      -font $audace(param_spc_audace,calibreprofil,font,c12b) \
-	      -text "$caption(spcaudace,metaboxes,calibreprofil,config,x1) " -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
-	      -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief flat
-      pack  .param_spc_audace_calibreprofil.x1.label -in .param_spc_audace_calibreprofil.x1 -side left -fill none
-      #-- Partie Combobox
-       #-height [ llength $listeabscisses ]
-      ComboBox .param_spc_audace_calibreprofil.x1.combobox \
+      label .param_spc_audace_calibreprofil.n.label1  \
+         -font $audace(param_spc_audace,calibreprofil,font,c12b) \
+         -text "1" -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
+         -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief flat
+      grid  .param_spc_audace_calibreprofil.n.label1 -in .param_spc_audace_calibreprofil.n -row 1 -column 0 -sticky ew
+      #-- Partie Combobox abscisse
+      ComboBox .param_spc_audace_calibreprofil.n.combobox_x1 \
          -width 12          \
          -height 4  \
          -relief sunken    \
@@ -1900,31 +1922,9 @@ namespace eval ::param_spc_audace_calibreprofil {
          -editable 1       \
          -textvariable audace(param_spc_audace,calibreprofil,config,x1) \
          -values $listeabscisses
-      pack  .param_spc_audace_calibreprofil.x1.combobox -in .param_spc_audace_calibreprofil.x1 -side right -fill none
-      pack .param_spc_audace_calibreprofil.x1 -in .param_spc_audace_calibreprofil -fill x -pady 1 -padx 12
-
-
-     #--- Label + Entry pour lambda1
-
-      #--- Cree l'affichage des sites lunaires du type choisi
-      #scrollbar $frm.frame3.scrollbar -orient vertical -command [list $frm.frame3.lb1 yview] -takefocus 1 -borderwidth 1
-      #pack $frm.frame3.scrollbar -side right -anchor ne -fill both
-      #listbox $frm.frame3.lb1 -width 24 -height 40 -borderwidth 2 -relief sunken \
-      #   -yscrollcommand [list $frm.frame3.scrollbar set]
-      #pack $frm.frame3.lb1 -side right -anchor ne -fill both
-      #set zone(list_site) $frm.frame3.lb1
-      # obj_Lune_2::LitCataChoisi :
-      #-- Partie Label
-      frame .param_spc_audace_calibreprofil.lambda1 -borderwidth 0 -relief flat -bg $audace(param_spc_audace,calibreprofil,color,backpad)
-      label .param_spc_audace_calibreprofil.lambda1.label  \
-	      -font $audace(param_spc_audace,calibreprofil,font,c12b) \
-	      -text "$caption(spcaudace,metaboxes,calibreprofil,config,lambda1) " -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
-	      -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief flat
-      pack  .param_spc_audace_calibreprofil.lambda1.label -in .param_spc_audace_calibreprofil.lambda1 -side left -fill none
-      #-- Partie Combobox
-       #-height [ llength $listelambdaschem ]
-       #- On limite l'affichage de 30 longueurs d'onde, docn création automatique d'un ascenseur :
-      ComboBox .param_spc_audace_calibreprofil.lambda1.combobox \
+      grid  .param_spc_audace_calibreprofil.n.combobox_x1 -in .param_spc_audace_calibreprofil.n -row 1 -column 1 -sticky ew
+      #-- Partie Combobox longueur d'onde
+      ComboBox .param_spc_audace_calibreprofil.n.combobox_lambda1 \
          -width 12          \
          -height 6  \
          -relief sunken    \
@@ -1932,20 +1932,18 @@ namespace eval ::param_spc_audace_calibreprofil {
          -editable 1       \
          -textvariable audace(param_spc_audace,calibreprofil,config,lambda1) \
          -values $listelambdaschem
-      pack  .param_spc_audace_calibreprofil.lambda1.combobox -in .param_spc_audace_calibreprofil.lambda1 -side right -fill none
-      pack .param_spc_audace_calibreprofil.lambda1 -in .param_spc_audace_calibreprofil -fill x -pady 1 -padx 12
+      grid  .param_spc_audace_calibreprofil.n.combobox_lambda1 -in .param_spc_audace_calibreprofil.n -row 1 -column 2 -sticky ew
 
 
-      #--- Label + Entry pour X2
+      #--- Label + Combobox pour la raie numero 2
       #-- Partie Label
-      frame .param_spc_audace_calibreprofil.x2 -borderwidth 0 -relief flat -bg $audace(param_spc_audace,calibreprofil,color,backpad)
-      label .param_spc_audace_calibreprofil.x2.label  \
-	      -font $audace(param_spc_audace,calibreprofil,font,c12b) \
-	      -text "$caption(spcaudace,metaboxes,calibreprofil,config,x2) " -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
-	      -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief flat
-      pack  .param_spc_audace_calibreprofil.x2.label -in .param_spc_audace_calibreprofil.x2 -side left -fill none
-      #-- Partie Combobox
-      ComboBox .param_spc_audace_calibreprofil.x2.combobox \
+      label .param_spc_audace_calibreprofil.n.label2  \
+         -font $audace(param_spc_audace,calibreprofil,font,c12b) \
+         -text "2" -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
+         -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief flat
+      grid  .param_spc_audace_calibreprofil.n.label2 -in .param_spc_audace_calibreprofil.n -row 2 -column 0 -sticky ew
+      #-- Partie Combobox abscisse
+      ComboBox .param_spc_audace_calibreprofil.n.combobox_x2 \
          -width 12          \
          -height 4  \
          -relief sunken    \
@@ -1953,19 +1951,9 @@ namespace eval ::param_spc_audace_calibreprofil {
          -editable 1       \
          -textvariable audace(param_spc_audace,calibreprofil,config,x2) \
          -values $listeabscisses
-      pack  .param_spc_audace_calibreprofil.x2.combobox -in .param_spc_audace_calibreprofil.x2 -side right -fill none
-      pack .param_spc_audace_calibreprofil.x2 -in .param_spc_audace_calibreprofil -fill x -pady 1 -padx 12
-
-      #--- Label + Entry pour lambda2
-      #-- Partie Label
-      frame .param_spc_audace_calibreprofil.lambda2 -borderwidth 0 -relief flat -bg $audace(param_spc_audace,calibreprofil,color,backpad)
-      label .param_spc_audace_calibreprofil.lambda2.label  \
-	      -font $audace(param_spc_audace,calibreprofil,font,c12b) \
-	      -text "$caption(spcaudace,metaboxes,calibreprofil,config,lambda2) " -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
-	      -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief flat
-      pack  .param_spc_audace_calibreprofil.lambda2.label -in .param_spc_audace_calibreprofil.lambda2 -side left -fill none
-      #-- Partie Combobox
-      ComboBox .param_spc_audace_calibreprofil.lambda2.combobox \
+      grid  .param_spc_audace_calibreprofil.n.combobox_x2 -in .param_spc_audace_calibreprofil.n -row 2 -column 1 -sticky ew
+      #-- Partie Combobox longueur d'onde
+      ComboBox .param_spc_audace_calibreprofil.n.combobox_lambda2 \
          -width 12          \
          -height 6  \
          -relief sunken    \
@@ -1973,20 +1961,18 @@ namespace eval ::param_spc_audace_calibreprofil {
          -editable 1       \
          -textvariable audace(param_spc_audace,calibreprofil,config,lambda2) \
          -values $listelambdaschem
-      pack  .param_spc_audace_calibreprofil.lambda2.combobox -in .param_spc_audace_calibreprofil.lambda2 -side right -fill none
-      pack .param_spc_audace_calibreprofil.lambda2 -in .param_spc_audace_calibreprofil -fill x -pady 1 -padx 12
+      grid  .param_spc_audace_calibreprofil.n.combobox_lambda2 -in .param_spc_audace_calibreprofil.n -row 2 -column 2 -sticky ew
 
 
-      #--- Label + Entry pour X3
+      #--- Label + Combobox pour la raie numero 3
       #-- Partie Label
-      frame .param_spc_audace_calibreprofil.x3 -borderwidth 0 -relief flat -bg $audace(param_spc_audace,calibreprofil,color,backpad)
-      label .param_spc_audace_calibreprofil.x3.label  \
-	      -font $audace(param_spc_audace,calibreprofil,font,c12b) \
-	      -text "$caption(spcaudace,metaboxes,calibreprofil,config,x3) " -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
-	      -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief flat
-      pack  .param_spc_audace_calibreprofil.x3.label -in .param_spc_audace_calibreprofil.x3 -side left -fill none
-      #-- Partie Combobox
-      ComboBox .param_spc_audace_calibreprofil.x3.combobox \
+      label .param_spc_audace_calibreprofil.n.label3  \
+         -font $audace(param_spc_audace,calibreprofil,font,c12b) \
+         -text "3" -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
+         -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief flat
+      grid  .param_spc_audace_calibreprofil.n.label3 -in .param_spc_audace_calibreprofil.n -row 3 -column 0 -sticky ew
+      #-- Partie Combobox abscisse
+      ComboBox .param_spc_audace_calibreprofil.n.combobox_x3 \
          -width 12          \
          -height 4  \
          -relief sunken    \
@@ -1994,19 +1980,9 @@ namespace eval ::param_spc_audace_calibreprofil {
          -editable 1       \
          -textvariable audace(param_spc_audace,calibreprofil,config,x3) \
          -values $listeabscisses
-      pack  .param_spc_audace_calibreprofil.x3.combobox -in .param_spc_audace_calibreprofil.x3 -side right -fill none
-      pack .param_spc_audace_calibreprofil.x3 -in .param_spc_audace_calibreprofil -fill x -pady 1 -padx 12
-
-      #--- Label + Entry pour lambda3
-      #-- Partie Label
-      frame .param_spc_audace_calibreprofil.lambda3 -borderwidth 0 -relief flat -bg $audace(param_spc_audace,calibreprofil,color,backpad)
-      label .param_spc_audace_calibreprofil.lambda3.label  \
-	      -font $audace(param_spc_audace,calibreprofil,font,c12b) \
-	      -text "$caption(spcaudace,metaboxes,calibreprofil,config,lambda3) " -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
-	      -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief flat
-      pack  .param_spc_audace_calibreprofil.lambda3.label -in .param_spc_audace_calibreprofil.lambda3 -side left -fill none
-      #-- Partie Combobox
-      ComboBox .param_spc_audace_calibreprofil.lambda3.combobox \
+      grid  .param_spc_audace_calibreprofil.n.combobox_x3 -in .param_spc_audace_calibreprofil.n -row 3 -column 1 -sticky ew
+      #-- Partie Combobox longueur d'onde
+      ComboBox .param_spc_audace_calibreprofil.n.combobox_lambda3 \
          -width 12          \
          -height 6  \
          -relief sunken    \
@@ -2014,20 +1990,18 @@ namespace eval ::param_spc_audace_calibreprofil {
          -editable 1       \
          -textvariable audace(param_spc_audace,calibreprofil,config,lambda3) \
          -values $listelambdaschem
-      pack  .param_spc_audace_calibreprofil.lambda3.combobox -in .param_spc_audace_calibreprofil.lambda3 -side right -fill none
-      pack .param_spc_audace_calibreprofil.lambda3 -in .param_spc_audace_calibreprofil -fill x -pady 1 -padx 12
+      grid  .param_spc_audace_calibreprofil.n.combobox_lambda3 -in .param_spc_audace_calibreprofil.n -row 3 -column 2 -sticky ew
 
 
-      #--- Label + Entry pour X4
+      #--- Label + Combobox pour la raie numero 4
       #-- Partie Label
-      frame .param_spc_audace_calibreprofil.x4 -borderwidth 0 -relief flat -bg $audace(param_spc_audace,calibreprofil,color,backpad)
-      label .param_spc_audace_calibreprofil.x4.label  \
-	      -font $audace(param_spc_audace,calibreprofil,font,c12b) \
-	      -text "$caption(spcaudace,metaboxes,calibreprofil,config,x4) " -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
-	      -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief flat
-      pack  .param_spc_audace_calibreprofil.x4.label -in .param_spc_audace_calibreprofil.x4 -side left -fill none
-      #-- Partie Combobox
-      ComboBox .param_spc_audace_calibreprofil.x4.combobox \
+      label .param_spc_audace_calibreprofil.n.label4  \
+         -font $audace(param_spc_audace,calibreprofil,font,c12b) \
+         -text "4" -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
+         -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief flat
+      grid  .param_spc_audace_calibreprofil.n.label4 -in .param_spc_audace_calibreprofil.n -row 4 -column 0 -sticky ew
+      #-- Partie Combobox abscisse
+      ComboBox .param_spc_audace_calibreprofil.n.combobox_x4 \
          -width 12          \
          -height 4  \
          -relief sunken    \
@@ -2035,19 +2009,9 @@ namespace eval ::param_spc_audace_calibreprofil {
          -editable 1       \
          -textvariable audace(param_spc_audace,calibreprofil,config,x4) \
          -values $listeabscisses
-      pack  .param_spc_audace_calibreprofil.x4.combobox -in .param_spc_audace_calibreprofil.x4 -side right -fill none
-      pack .param_spc_audace_calibreprofil.x4 -in .param_spc_audace_calibreprofil -fill x -pady 1 -padx 12
-
-      #--- Label + Entry pour lambda4
-      #-- Partie Label
-      frame .param_spc_audace_calibreprofil.lambda4 -borderwidth 0 -relief flat -bg $audace(param_spc_audace,calibreprofil,color,backpad)
-      label .param_spc_audace_calibreprofil.lambda4.label  \
-	      -font $audace(param_spc_audace,calibreprofil,font,c12b) \
-	      -text "$caption(spcaudace,metaboxes,calibreprofil,config,lambda4) " -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
-	      -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief flat
-      pack  .param_spc_audace_calibreprofil.lambda4.label -in .param_spc_audace_calibreprofil.lambda4 -side left -fill none
-      #-- Partie Combobox
-      ComboBox .param_spc_audace_calibreprofil.lambda4.combobox \
+      grid  .param_spc_audace_calibreprofil.n.combobox_x4 -in .param_spc_audace_calibreprofil.n -row 4 -column 1 -sticky ew
+      #-- Partie Combobox longueur d'onde
+      ComboBox .param_spc_audace_calibreprofil.n.combobox_lambda4 \
          -width 12          \
          -height 6  \
          -relief sunken    \
@@ -2055,20 +2019,18 @@ namespace eval ::param_spc_audace_calibreprofil {
          -editable 1       \
          -textvariable audace(param_spc_audace,calibreprofil,config,lambda4) \
          -values $listelambdaschem
-      pack  .param_spc_audace_calibreprofil.lambda4.combobox -in .param_spc_audace_calibreprofil.lambda4 -side right -fill none
-      pack .param_spc_audace_calibreprofil.lambda4 -in .param_spc_audace_calibreprofil -fill x -pady 1 -padx 12
+      grid  .param_spc_audace_calibreprofil.n.combobox_lambda4 -in .param_spc_audace_calibreprofil.n -row 4 -column 2 -sticky ew
 
 
-      #--- Label + Entry pour X5
+      #--- Label + Combobox pour la raie numero 5
       #-- Partie Label
-      frame .param_spc_audace_calibreprofil.x5 -borderwidth 0 -relief flat -bg $audace(param_spc_audace,calibreprofil,color,backpad)
-      label .param_spc_audace_calibreprofil.x5.label  \
-	      -font $audace(param_spc_audace,calibreprofil,font,c12b) \
-	      -text "$caption(spcaudace,metaboxes,calibreprofil,config,x5) " -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
-	      -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief flat
-      pack  .param_spc_audace_calibreprofil.x5.label -in .param_spc_audace_calibreprofil.x5 -side left -fill none
-      #-- Partie Combobox
-      ComboBox .param_spc_audace_calibreprofil.x5.combobox \
+      label .param_spc_audace_calibreprofil.n.label5  \
+         -font $audace(param_spc_audace,calibreprofil,font,c12b) \
+         -text "5" -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
+         -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief flat
+      grid  .param_spc_audace_calibreprofil.n.label5 -in .param_spc_audace_calibreprofil.n -row 5 -column 0 -sticky ew
+      #-- Partie Combobox abscisse
+      ComboBox .param_spc_audace_calibreprofil.n.combobox_x5 \
          -width 12          \
          -height 4  \
          -relief sunken    \
@@ -2076,19 +2038,9 @@ namespace eval ::param_spc_audace_calibreprofil {
          -editable 1       \
          -textvariable audace(param_spc_audace,calibreprofil,config,x5) \
          -values $listeabscisses
-      pack  .param_spc_audace_calibreprofil.x5.combobox -in .param_spc_audace_calibreprofil.x5 -side right -fill none
-      pack .param_spc_audace_calibreprofil.x5 -in .param_spc_audace_calibreprofil -fill x -pady 1 -padx 12
-
-      #--- Label + Entry pour lambda5
-      #-- Partie Label
-      frame .param_spc_audace_calibreprofil.lambda5 -borderwidth 0 -relief flat -bg $audace(param_spc_audace,calibreprofil,color,backpad)
-      label .param_spc_audace_calibreprofil.lambda5.label  \
-	      -font $audace(param_spc_audace,calibreprofil,font,c12b) \
-	      -text "$caption(spcaudace,metaboxes,calibreprofil,config,lambda5) " -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
-	      -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief flat
-      pack  .param_spc_audace_calibreprofil.lambda5.label -in .param_spc_audace_calibreprofil.lambda5 -side left -fill none
-      #-- Partie Combobox
-      ComboBox .param_spc_audace_calibreprofil.lambda5.combobox \
+      grid  .param_spc_audace_calibreprofil.n.combobox_x5 -in .param_spc_audace_calibreprofil.n -row 5 -column 1 -sticky ew
+      #-- Partie Combobox longueur d'onde
+      ComboBox .param_spc_audace_calibreprofil.n.combobox_lambda5 \
          -width 12          \
          -height 6  \
          -relief sunken    \
@@ -2096,20 +2048,18 @@ namespace eval ::param_spc_audace_calibreprofil {
          -editable 1       \
          -textvariable audace(param_spc_audace,calibreprofil,config,lambda5) \
          -values $listelambdaschem
-      pack  .param_spc_audace_calibreprofil.lambda5.combobox -in .param_spc_audace_calibreprofil.lambda5 -side right -fill none
-      pack .param_spc_audace_calibreprofil.lambda5 -in .param_spc_audace_calibreprofil -fill x -pady 1 -padx 12
+      grid  .param_spc_audace_calibreprofil.n.combobox_lambda5 -in .param_spc_audace_calibreprofil.n -row 5 -column 2 -sticky ew
 
 
-      #--- Label + Entry pour X6
+      #--- Label + Combobox pour la raie numero 6
       #-- Partie Label
-      frame .param_spc_audace_calibreprofil.x6 -borderwidth 0 -relief flat -bg $audace(param_spc_audace,calibreprofil,color,backpad)
-      label .param_spc_audace_calibreprofil.x6.label  \
-	      -font $audace(param_spc_audace,calibreprofil,font,c12b) \
-	      -text "$caption(spcaudace,metaboxes,calibreprofil,config,x6) " -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
-	      -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief flat
-      pack  .param_spc_audace_calibreprofil.x6.label -in .param_spc_audace_calibreprofil.x6 -side left -fill none
-      #-- Partie Combobox
-      ComboBox .param_spc_audace_calibreprofil.x6.combobox \
+      label .param_spc_audace_calibreprofil.n.label6  \
+         -font $audace(param_spc_audace,calibreprofil,font,c12b) \
+         -text "6" -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
+         -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief flat
+      grid  .param_spc_audace_calibreprofil.n.label6 -in .param_spc_audace_calibreprofil.n -row 6 -column 0 -sticky ew
+      #-- Partie Combobox abscisse
+      ComboBox .param_spc_audace_calibreprofil.n.combobox_x6 \
          -width 12          \
          -height 4  \
          -relief sunken    \
@@ -2117,19 +2067,9 @@ namespace eval ::param_spc_audace_calibreprofil {
          -editable 1       \
          -textvariable audace(param_spc_audace,calibreprofil,config,x6) \
          -values $listeabscisses
-      pack  .param_spc_audace_calibreprofil.x6.combobox -in .param_spc_audace_calibreprofil.x6 -side right -fill none
-      pack .param_spc_audace_calibreprofil.x6 -in .param_spc_audace_calibreprofil -fill x -pady 1 -padx 12
-
-      #--- Label + Entry pour lambda6
-      #-- Partie Label
-      frame .param_spc_audace_calibreprofil.lambda6 -borderwidth 0 -relief flat -bg $audace(param_spc_audace,calibreprofil,color,backpad)
-      label .param_spc_audace_calibreprofil.lambda6.label  \
-	      -font $audace(param_spc_audace,calibreprofil,font,c12b) \
-	      -text "$caption(spcaudace,metaboxes,calibreprofil,config,lambda6) " -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
-	      -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief flat
-      pack  .param_spc_audace_calibreprofil.lambda6.label -in .param_spc_audace_calibreprofil.lambda6 -side left -fill none
-      #-- Partie Combobox
-      ComboBox .param_spc_audace_calibreprofil.lambda6.combobox \
+      grid  .param_spc_audace_calibreprofil.n.combobox_x6 -in .param_spc_audace_calibreprofil.n -row 6 -column 1 -sticky ew
+      #-- Partie Combobox longueur d'onde
+      ComboBox .param_spc_audace_calibreprofil.n.combobox_lambda6 \
          -width 12          \
          -height 6  \
          -relief sunken    \
@@ -2137,8 +2077,181 @@ namespace eval ::param_spc_audace_calibreprofil {
          -editable 1       \
          -textvariable audace(param_spc_audace,calibreprofil,config,lambda6) \
          -values $listelambdaschem
-      pack  .param_spc_audace_calibreprofil.lambda6.combobox -in .param_spc_audace_calibreprofil.lambda6 -side right -fill none
-      pack .param_spc_audace_calibreprofil.lambda6 -in .param_spc_audace_calibreprofil -fill x -pady 1 -padx 12
+      grid  .param_spc_audace_calibreprofil.n.combobox_lambda6 -in .param_spc_audace_calibreprofil.n -row 6 -column 2 -sticky ew
+
+
+      #--- Label + Combobox pour la raie numero 7
+      #-- Partie Label
+      label .param_spc_audace_calibreprofil.n.label7  \
+         -font $audace(param_spc_audace,calibreprofil,font,c12b) \
+         -text "7" -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
+         -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief flat
+      grid  .param_spc_audace_calibreprofil.n.label7 -in .param_spc_audace_calibreprofil.n -row 7 -column 0 -sticky ew
+      #-- Partie Combobox abscisse
+      ComboBox .param_spc_audace_calibreprofil.n.combobox_x7 \
+         -width 12          \
+         -height 4  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,calibreprofil,config,x7) \
+         -values $listeabscisses
+      grid  .param_spc_audace_calibreprofil.n.combobox_x7 -in .param_spc_audace_calibreprofil.n -row 7 -column 1 -sticky ew
+      #-- Partie Combobox longueur d'onde
+      ComboBox .param_spc_audace_calibreprofil.n.combobox_lambda7 \
+         -width 12          \
+         -height 6  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,calibreprofil,config,lambda7) \
+         -values $listelambdaschem
+      grid  .param_spc_audace_calibreprofil.n.combobox_lambda7 -in .param_spc_audace_calibreprofil.n -row 7 -column 2 -sticky ew
+
+
+      #--- Label + Combobox pour la raie numero 8
+      #-- Partie Label
+      label .param_spc_audace_calibreprofil.n.label8  \
+         -font $audace(param_spc_audace,calibreprofil,font,c12b) \
+         -text "8" -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
+         -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief flat
+      grid  .param_spc_audace_calibreprofil.n.label8 -in .param_spc_audace_calibreprofil.n -row 8 -column 0 -sticky ew
+      #-- Partie Combobox abscisse
+      ComboBox .param_spc_audace_calibreprofil.n.combobox_x8 \
+         -width 12          \
+         -height 4  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,calibreprofil,config,x8) \
+         -values $listeabscisses
+      grid  .param_spc_audace_calibreprofil.n.combobox_x8 -in .param_spc_audace_calibreprofil.n -row 8 -column 1 -sticky ew
+      #-- Partie Combobox longueur d'onde
+      ComboBox .param_spc_audace_calibreprofil.n.combobox_lambda8 \
+         -width 12          \
+         -height 6  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,calibreprofil,config,lambda8) \
+         -values $listelambdaschem
+      grid  .param_spc_audace_calibreprofil.n.combobox_lambda8 -in .param_spc_audace_calibreprofil.n -row 8 -column 2 -sticky ew
+
+
+      #--- Label + Combobox pour la raie numero 9
+      #-- Partie Label
+      label .param_spc_audace_calibreprofil.n.label9  \
+         -font $audace(param_spc_audace,calibreprofil,font,c12b) \
+         -text "9" -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
+         -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief flat
+      grid  .param_spc_audace_calibreprofil.n.label9 -in .param_spc_audace_calibreprofil.n -row 9 -column 0 -sticky ew
+      #-- Partie Combobox abscisse
+      ComboBox .param_spc_audace_calibreprofil.n.combobox_x9 \
+         -width 12          \
+         -height 4  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,calibreprofil,config,x9) \
+         -values $listeabscisses
+      grid  .param_spc_audace_calibreprofil.n.combobox_x9 -in .param_spc_audace_calibreprofil.n -row 9 -column 1 -sticky ew
+      #-- Partie Combobox longueur d'onde
+      ComboBox .param_spc_audace_calibreprofil.n.combobox_lambda9 \
+         -width 12          \
+         -height 6  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,calibreprofil,config,lambda9) \
+         -values $listelambdaschem
+      grid  .param_spc_audace_calibreprofil.n.combobox_lambda9 -in .param_spc_audace_calibreprofil.n -row 9 -column 2 -sticky ew
+
+
+      #--- Label + Combobox pour la raie numero 10
+      #-- Partie Label
+      label .param_spc_audace_calibreprofil.n.label10  \
+         -font $audace(param_spc_audace,calibreprofil,font,c12b) \
+         -text "10" -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
+         -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief flat
+      grid  .param_spc_audace_calibreprofil.n.label10 -in .param_spc_audace_calibreprofil.n -row 10 -column 0 -sticky ew
+      #-- Partie Combobox abscisse
+      ComboBox .param_spc_audace_calibreprofil.n.combobox_x10 \
+         -width 12          \
+         -height 4  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,calibreprofil,config,x10) \
+         -values $listeabscisses
+      grid  .param_spc_audace_calibreprofil.n.combobox_x10 -in .param_spc_audace_calibreprofil.n -row 10 -column 1 -sticky ew
+      #-- Partie Combobox longueur d'onde
+      ComboBox .param_spc_audace_calibreprofil.n.combobox_lambda10 \
+         -width 12          \
+         -height 6  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,calibreprofil,config,lambda10) \
+         -values $listelambdaschem
+      grid  .param_spc_audace_calibreprofil.n.combobox_lambda10 -in .param_spc_audace_calibreprofil.n -row 10 -column 2 -sticky ew
+
+
+      #--- Label + Combobox pour la raie numero 11
+      #-- Partie Label
+      label .param_spc_audace_calibreprofil.n.label11  \
+         -font $audace(param_spc_audace,calibreprofil,font,c12b) \
+         -text "11" -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
+         -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief flat
+      grid  .param_spc_audace_calibreprofil.n.label11 -in .param_spc_audace_calibreprofil.n -row 11 -column 0 -sticky ew
+      #-- Partie Combobox abscisse
+      ComboBox .param_spc_audace_calibreprofil.n.combobox_x11 \
+         -width 12          \
+         -height 4  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,calibreprofil,config,x11) \
+         -values $listeabscisses
+      grid  .param_spc_audace_calibreprofil.n.combobox_x11 -in .param_spc_audace_calibreprofil.n -row 11 -column 1 -sticky ew
+      #-- Partie Combobox longueur d'onde
+      ComboBox .param_spc_audace_calibreprofil.n.combobox_lambda11 \
+         -width 12          \
+         -height 6  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,calibreprofil,config,lambda11) \
+         -values $listelambdaschem
+      grid  .param_spc_audace_calibreprofil.n.combobox_lambda11 -in .param_spc_audace_calibreprofil.n -row 11 -column 2 -sticky ew
+
+
+      #--- Label + Combobox pour la raie numero 12
+      #-- Partie Label
+      label .param_spc_audace_calibreprofil.n.label12  \
+         -font $audace(param_spc_audace,calibreprofil,font,c12b) \
+         -text "12" -bg $audace(param_spc_audace,calibreprofil,color,backpad) \
+         -fg $audace(param_spc_audace,calibreprofil,color,textkey) -relief flat
+      grid  .param_spc_audace_calibreprofil.n.label12 -in .param_spc_audace_calibreprofil.n -row 12 -column 0 -sticky ew
+      #-- Partie Combobox abscisse
+      ComboBox .param_spc_audace_calibreprofil.n.combobox_x12 \
+         -width 12          \
+         -height 4  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,calibreprofil,config,x12) \
+         -values $listeabscisses
+      grid  .param_spc_audace_calibreprofil.n.combobox_x12 -in .param_spc_audace_calibreprofil.n -row 12 -column 1 -sticky ew
+      #-- Partie Combobox longueur d'onde
+      ComboBox .param_spc_audace_calibreprofil.n.combobox_lambda12 \
+         -width 12          \
+         -height 6  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,calibreprofil,config,lambda12) \
+         -values $listelambdaschem
+      grid  .param_spc_audace_calibreprofil.n.combobox_lambda12 -in .param_spc_audace_calibreprofil.n -row 12 -column 2 -sticky ew
 
 
   }
@@ -2164,10 +2277,22 @@ namespace eval ::param_spc_audace_calibreprofil {
       set lambda5 $audace(param_spc_audace,calibreprofil,config,lambda5)
       set x6 $audace(param_spc_audace,calibreprofil,config,x6)
       set lambda6 $audace(param_spc_audace,calibreprofil,config,lambda6)
-      set listeargs [ list $lampe $x1 $lambda1 $x2 $lambda2 ]
+      set x7 $audace(param_spc_audace,calibreprofil,config,x7)
+      set lambda7 $audace(param_spc_audace,calibreprofil,config,lambda7)
+      set x8 $audace(param_spc_audace,calibreprofil,config,x8)
+      set lambda8 $audace(param_spc_audace,calibreprofil,config,lambda8)
+      set x9 $audace(param_spc_audace,calibreprofil,config,x9)
+      set lambda9 $audace(param_spc_audace,calibreprofil,config,lambda9)
+      set x10 $audace(param_spc_audace,calibreprofil,config,x10)
+      set lambda10 $audace(param_spc_audace,calibreprofil,config,lambda10)
+      set x11 $audace(param_spc_audace,calibreprofil,config,x11)
+      set lambda11 $audace(param_spc_audace,calibreprofil,config,lambda11)
+      set x12 $audace(param_spc_audace,calibreprofil,config,x12)
+      set lambda12 $audace(param_spc_audace,calibreprofil,config,lambda12)
+      #set listeargs [ list $lampe $x1 $lambda1 $x2 $lambda2 ]
 
       #--- Validation du format des longueurs d'onde :
-      set listel [ list $lambda1 $lambda2 $lambda3 $lambda4 $lambda5 $lambda6 ]
+      set listel [ list $lambda1 $lambda2 $lambda3 $lambda4 $lambda5 $lambda6 $lambda7 $lambda8 $lambda9 $lambda10 $lambda11 $lambda12 ]
       foreach lamb $listel {
 	  if { [ llength $lamb ] < 2 } {
 	      set lamb [ linsert $lamb 0 "l" ]
@@ -2175,8 +2300,8 @@ namespace eval ::param_spc_audace_calibreprofil {
       }
 
       #--- Mise à vide des abscisses dont les lambda sont vides :
-      set i 0
-      set listex [ list $x1 $x2 $x3 $x4 $x5 $x6 ]
+      #set i 0
+      set listex [ list $x1 $x2 $x3 $x4 $x5 $x6 $x7 $x8 $x9 $x10 $x11 $x12 ]
 
       #--- Tri des deux listes x et Lmabda et reaffectation :
       #-- Création de la liste contenant les couples (x,Lambda) :
@@ -2190,61 +2315,62 @@ namespace eval ::param_spc_audace_calibreprofil {
 	  }
       }
 
-      #-- Réaffectation et initialisation à "" des abscisses Xi non utilisées :
-      set i 1
-      foreach couple $doubleliste {
-	  set lambdaread [ lindex $couple 1 ]
-	  if { $lambdaread != "" } {
-	      set x$i [ lindex $couple 0 ]
-	      set lambda$i $lambdaread
-	  } else {
-	      set x$i ""
-	  }
-	  incr i
-      }
+
+     #*** NVersion :
+     #--- Calibration associée au nombre de raies données :
+     #set chaine_xi_lambdai ""
+     set liste_xi_lambdai [ list ]
+     set nb_lines 0
+     foreach couple $doubleliste {
+        set x_i [ lindex $couple 0 ]
+        set lambda_i [ lindex $couple 1 ]
+        #-- Initialisation à "" des abscisses Xi non utilisées :
+        if { $lambda_i == ""} { set x_i "" }
+        #-- Extrait les longueurs d'onde de la chaîne de caractère :
+        set elements_lambda [ split $lambda_i ":" ]
+        if { [ llength $elements_lambda ] == 2 } {
+           #- Structure issue de la bibliotheque : espece_chimique:lambda
+           set lambda_i [ lindex $elements_lambda 1 ]
+        } elseif { [ llength $elements_lambda ] == 0 } {
+           #- Longueur d'onde laissee vide :
+           set lambda_i ""
+        } elseif { [ llength $elements_lambda ] == 1 } {
+           #- Longueur d'onde saisie manuellement non vide :
+           set lambda_i [ lindex $elements_lambda 0 ]
+        }
+        #-- Construction de la chaîne pour la commande spc_calibren :
+        if { $lambda_i != "" && $x_i != "" } {
+           lappend liste_xi_lambdai $x_i
+           lappend liste_xi_lambdai $lambda_i
+           incr nb_lines
+        }
+     }
 
 
-      #--- Extrait les longueurs d'onde de la chîne de caractère :
-      set i 1
-      set lambdas [ list $lambda1 $lambda2 $lambda3 $lambda4 $lambda5 $lambda6 ]
-      foreach lambda $lambdas {
-	  set elements_lambda [ split $lambda ":" ]
-	  if { [ llength $elements_lambda ] == 2 } {
-	      set lambda$i [ lindex $elements_lambda 1 ]
-	  } elseif { [ llength $elements_lambda ] == 0 } {
-	      set lambda$i ""
-	  } elseif { [ llength $elements_lambda ] == 1 } {
-	      set lambda$i [ lindex $elements_lambda 0 ]
-	  }
-	  incr i
-      }
+     #--- Calibration associée au nombre de raies données :
+     if { $nb_lines >= 2 } {
+        #-- Chaine :
+        #set spcalibre [ spc_calibren $lampe $chaine_xi_lambdai ]
+        #-- Liste :
+        #set liste_xi_lambdai [ linsert $liste_xi_lambdai 0 $lampe ]
+        #set nbel [ llength $liste_xi_lambdai ]
+        #set spcalibre [ spc_calibren $liste_xi_lambdai ]
 
-      #--- Calibration associée au nombre de raies données :
-      if { $x1!="" && $x2!="" && $x3=="" } {
-	  set spcalibre [ spc_calibren $lampe $x1 $lambda1 $x2 $lambda2 ]
-	  destroy .param_spc_audace_calibreprofil
-	  return $spcalibre
-      } elseif { $x1!="" && $x2!="" && $x3!="" && $x4=="" } {
-	  set spcalibre [ spc_calibren $lampe $x1 $lambda1 $x2 $lambda2 $x3 $lambda3 ]
-	  destroy .param_spc_audace_calibreprofil
-	  return $spcalibre
-      } elseif { $x1!="" && $x2!="" && $x3!="" && $x4!="" && $x5=="" } {
-	  set spcalibre [ spc_calibren $lampe $x1 $lambda1 $x2 $lambda2 $x3 $lambda3 $x4 $lambda4 ]
-	  destroy .param_spc_audace_calibreprofil
-	  return $spcalibre
-      } elseif { $x1!="" && $x2!="" && $x3!="" && $x4!="" && $x5!="" && $x6=="" } {
-	  set spcalibre [ spc_calibren $lampe $x1 $lambda1 $x2 $lambda2 $x3 $lambda3 $x4 $lambda4 $x5 $lambda5 ]
-	  destroy .param_spc_audace_calibreprofil
-	  return $spcalibre
-      } elseif { $x1!="" && $x2!="" && $x3!="" && $x4!=""&& $x5!="" && $x6!=""  } {
-	  set spcalibre [ spc_calibren $lampe $x1 $lambda1 $x2 $lambda2 $x3 $lambda3 $x4 $lambda4 $x5 $lambda5 $x6 $lambda6  ]
-	  destroy .param_spc_audace_calibreprofil
-	  return $spcalibre
+        set chaine_commande "spc_calibren $lampe"
+        foreach elemt $liste_xi_lambdai {
+           append chaine_commande " $elemt"
+        }
+        set spcalibre [ eval [ format $chaine_commande ] ]
+
+        destroy .param_spc_audace_calibreprofil
+        return $spcalibre
       } else {
 	  tk_messageBox -title $caption(spcaudace,gui,erreur,saisie) -icon error -message "Nombre de raies insufisant pour effectuer une calibration"
 	  return 0
       }
+
   }
+
 
   proc annuler {} {
       global audace
@@ -5226,3 +5352,4 @@ namespace eval ::param_spc_audace_traitenebula {
 
 }
 #****************************************************************************#
+
