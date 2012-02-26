@@ -84,7 +84,7 @@ set caption(spcaudace,metaboxes,calibreprofil,titre2)                   "Wavelen
 set caption(spcaudace,metaboxes,calibreprofil,titre)                    "Wavelength calibration"
 set caption(spcaudace,metaboxes,calibreprofil,stop_button)              "Cancel"
 set caption(spcaudace,metaboxes,calibreprofil,return_button)            "OK"
-set caption(spcaudace,metaboxes,calibreprofil,config,lampe)             "Calibration light's lines profile name"
+set caption(spcaudace,metaboxes,calibreprofil,config,lampe)             "Calibration light's lines profile name:"
 set caption(spcaudace,metaboxes,calibreprofil,config,x1)                "Abscisse of line n°1"
 set caption(spcaudace,metaboxes,calibreprofil,config,lambda1)           "Wavelength associated to line n°1"
 set caption(spcaudace,metaboxes,calibreprofil,config,x2)                "Abscisse of line n°2"
@@ -98,6 +98,9 @@ set caption(spcaudace,metaboxes,calibreprofil,config,lambda5)           "Wavelen
 set caption(spcaudace,metaboxes,calibreprofil,config,x6)                "Abscisse of line 6"
 set caption(spcaudace,metaboxes,calibreprofil,config,lambda6)           "Wavelength associated to line n°6"
 set caption(spcaudace,metaboxes,calibreprofil,message1)                 "Lines with non nul intensity are #Les raies d'intensité non nulle sont préinscrites.\nMettez à vide les abscisses des raies non identifiées,\n sinon saisissez une longueur d'onde."
+set caption(spcaudace,metaboxes,calibreprofil,config,raienum)           "Line n°"
+set caption(spcaudace,metaboxes,calibreprofil,config,abscisse)          "Abscisse\n(pixels)"
+set caption(spcaudace,metaboxes,calibreprofil,config,wavelength)        "Wavelength\n(A)"
 
 set caption(spcaudace,metaboxes,traite2scalibre,titre2)                 "Setup application (without RI) to others spectrum"
 set caption(spcaudace,metaboxes,traite2scalibre,titre)                  "Setup application (without RI) to others spectrum"
@@ -324,7 +327,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spcaudace,metaboxes,calibreprofil,titre)                 "Calibration spectrale"
    set caption(spcaudace,metaboxes,calibreprofil,stop_button)           "Annuler"
    set caption(spcaudace,metaboxes,calibreprofil,return_button)         "OK"
-   set caption(spcaudace,metaboxes,calibreprofil,config,lampe)          "Nom du profil de la lampe de calibration"
+   set caption(spcaudace,metaboxes,calibreprofil,config,lampe)          "Nom du profil de la lampe de calibration :"
    set caption(spcaudace,metaboxes,calibreprofil,config,x1)             "Abscisse de la raie n°1"
    set caption(spcaudace,metaboxes,calibreprofil,config,lambda1)        "Longueur d'onde associée à la raie n°1"
    set caption(spcaudace,metaboxes,calibreprofil,config,x2)             "Abscisse de la raie n°2"
@@ -338,6 +341,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spcaudace,metaboxes,calibreprofil,config,x6)             "Abscisse de la raie n°6"
    set caption(spcaudace,metaboxes,calibreprofil,config,lambda6)        "Longueur d'onde associée à la raie n°6"
    set caption(spcaudace,metaboxes,calibreprofil,message1)              "Les raies d'intensité non nulle sont préinscrites.\nMettez à vide les abscisses des raies non identifiées,\n sinon saisissez une longueur d'onde."
+   set caption(spcaudace,metaboxes,calibreprofil,config,raienum)        "Raie n°"
+   set caption(spcaudace,metaboxes,calibreprofil,config,abscisse)       "Abscisse\n(pixels)"
+   set caption(spcaudace,metaboxes,calibreprofil,config,wavelength)     "Longueur\nd'onde (A)"
+
 
    set caption(spcaudace,metaboxes,traite2scalibre,titre2)              "Application des calibrations (sans RI)\n aux spectres"
    set caption(spcaudace,metaboxes,traite2scalibre,titre)               "Réduction de spectres"
