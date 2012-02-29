@@ -789,6 +789,7 @@ proc ::sn_tarot::saveImage { {redisp 1} } {
       catch { file delete $filename }
       catch { file delete $filename.gz }
       #---
+      buf$num(buffer1) bitpix float
       if { $rep(gz) == "yes" } {
          set result [ buf$num(buffer1) save $filename ]
          gzip $filename
