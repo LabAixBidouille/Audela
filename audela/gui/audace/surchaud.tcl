@@ -1340,7 +1340,8 @@ proc window2 {args} {
 }
 
 proc calibwcs {args} {
-   if {[llength $args] >= 5} {
+	set argc [llength $args]
+   if {$argc >= 5} {
       #--- Chargement des arguments
       set Angle_ra    [lindex $args 0]
       set Angle_dec   [lindex $args 1]
@@ -1349,9 +1350,18 @@ proc calibwcs {args} {
       set valfoclen   [lindex $args 4]
       set cat_format ""
       set cat_folder ""
-      if {[llength $args] >= 7} {
+      if {$argc >= 7} {
          set cat_format [lindex $args 5]
          set cat_folder [lindex $args 6]
+      }
+      set del_tmp_files 1
+      if {$argc >= 9} {
+	      for {set k 7} {$k<[expr $argc-1]} {incr k} {
+	         set key [lindex $args $k]
+	         if {$key=="-del_tmp_files"} {
+		         del_tmp_files [lindex $args [expr $k+1]]
+	         }
+         }
       }
 
       set pi [expr 4*atan(1.)]
@@ -1479,8 +1489,10 @@ proc calibwcs {args} {
             ttscript2 "IMA/SERIES \"$mypath\" \"c$sky\" . . \"$ext\" . . . \"$ext\" DELETE"
             buf$::audace(bufNo) load [ file join ${mypath} ${sky}$ext ]
          }
-         ::astrometry::delete_lst
-         ::astrometry::delete_dummy
+         if {$del_tmp_files==1} {
+	         ::astrometry::delete_lst
+	         ::astrometry::delete_dummy
+         }
          #---
       }
       #---
