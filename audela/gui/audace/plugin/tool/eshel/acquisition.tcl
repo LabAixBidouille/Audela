@@ -165,8 +165,10 @@ proc ::eshel::acquisition::startSequence { visuNo actionList { sequenceName "" }
                   if { $::conf(eshel,enableGuidingUnit) == 1  } {
                      #--- j'active le miroir
                      ::eshel::instrument::setSpectrographLamp $bonnetteLinkNo "mirror" 1
+				after 600
                      #--- j'allume les lampes LEDs (flat) et Tungsten (Tungsten) en meme temps
                      ::eshel::instrument::setSpectrographLamp $bonnetteLinkNo "flat" 1
+				after 600
                      ::eshel::instrument::setSpectrographLamp $bonnetteLinkNo "tungsten" 1
                   }
                }
