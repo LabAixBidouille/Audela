@@ -1340,7 +1340,7 @@ proc window2 {args} {
 }
 
 proc calibwcs {args} {
-	set argc [llength $args]
+   set argc [llength $args]
    if {$argc >= 5} {
       #--- Chargement des arguments
       set Angle_ra    [lindex $args 0]
@@ -1356,11 +1356,11 @@ proc calibwcs {args} {
       }
       set del_tmp_files 1
       if {$argc >= 9} {
-	      for {set k 7} {$k<[expr $argc-1]} {incr k} {
-	         set key [lindex $args $k]
-	         if {$key=="-del_tmp_files"} {
-		         del_tmp_files [lindex $args [expr $k+1]]
-	         }
+         for {set k 7} {$k<[expr $argc-1]} {incr k} {
+            set key [lindex $args $k]
+            if {$key=="-del_tmp_files"} {
+               del_tmp_files [lindex $args [expr $k+1]]
+            }
          }
       }
 
@@ -1490,8 +1490,8 @@ proc calibwcs {args} {
             buf$::audace(bufNo) load [ file join ${mypath} ${sky}$ext ]
          }
          if {$del_tmp_files==1} {
-	         ::astrometry::delete_lst
-	         ::astrometry::delete_dummy
+            ::astrometry::delete_lst
+            ::astrometry::delete_dummy
          }
          #---
       }
