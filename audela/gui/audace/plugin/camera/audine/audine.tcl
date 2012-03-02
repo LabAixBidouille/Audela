@@ -412,15 +412,20 @@ proc ::audine::configureCamera { camItem bufNo } {
             #--- Je cree la liaison utilisee par la camera pour l'acquisition (cette commande arctive porttalk si necessaire)
             set linkNo [ ::confLink::create $conf(audine,port) "cam$camItem" "acquisition" "bits 1 to 8" ]
             #--- Je cree la camera
-            if { [ catch { set camNo [ cam::create audine $conf(audine,port) -name Audine -ccd $ccd ] } m ] == 1 } {
-               error "" "" "NotRoot"
+            if { [ catch { set camNo [ cam::create audine $conf(audine,port) -debug_directory $::audace(rep_log) -name Audine -ccd $ccd ] } catchError ] == 1 } {
+               console::disp "$catchError\n"
+               if { [string first "sufficient privileges to access parallel port" $catchError] != -1 } {
+                  error "" "" "NotRoot"
+               } else {
+                  error $catchError
+               }
             }
             #--- Je configure le nom du CAN utilise
             cam$camNo cantype $conf(audine,can)
          }
          quickaudine {
             #--- Je cree la camera
-            set camNo [ cam::create quicka $conf(audine,port) -name Audine -ccd $ccd ]
+            set camNo [ cam::create quicka $conf(audine,port) -debug_directory $::audace(rep_log) -name Audine -ccd $ccd ]
             #--- Je configure le delai avant la lecture du CCD
             cam$camNo delayshutter $conf(quickaudine,delayshutter)
             #--- Je configure la vitesse de lecture de chaque pixel
@@ -454,11 +459,13 @@ proc ::audine::configureCamera { camItem bufNo } {
             if { $conf(ethernaude,debug) == "0" } {
                #--- Je cree la camera
                set camNo [ cam::create ethernaude $conf(audine,port) -ip $conf(ethernaude,host) \
-                  -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert ]
+                  -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert \
+                  -debug_directory $::audace(rep_log) ]
             } else {
                #--- Je cree la camera
                set camNo [ cam::create ethernaude $conf(audine,port) -ip $conf(ethernaude,host) \
-                  -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert -debug_eth ]
+                  -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert -debug_eth \ 
+                  -debug_directory $::audace(rep_log) ]
             }
             #--- Je cree la liaison utilisee par la camera pour l'acquisition
             set linkNo [ ::confLink::create $conf(audine,port) "cam$camNo" "acquisition" "" ]
@@ -468,7 +475,8 @@ proc ::audine::configureCamera { camItem bufNo } {
             set camNo [ cam::create audinet $conf(audine,port) -ccd $ccd -name Audine \
                -host $conf(audinet,host) -protocole $conf(audinet,protocole) -udptempo $conf(audinet,udptempo) \
                -ipsetting $conf(audinet,ipsetting) -macaddress $conf(audinet,mac_address) \
-               -debug_cam $conf(audinet,debug) ]
+               -debug_cam $conf(audinet,debug) \
+               -debug_directory $::audace(rep_log) ]
             #--- Je cree la liaison utilisee par la camera pour l'acquisition
             set linkNo [ ::confLink::create $conf(audine,port) "cam$camNo" "acquisition" "" ]
          }

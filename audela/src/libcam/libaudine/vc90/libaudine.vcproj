@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="libaudine"
 	ProjectGUID="{5A2EC434-F5FE-409F-B861-750EE5A36EFD}"
 	TargetFrameworkVersion="0"
@@ -49,7 +49,7 @@
 				Optimization="0"
 				AdditionalIncludeDirectories="..\src,..\..\..\include,..\..\..\external\include\win"
 				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;USE_TCL_STUBS;USE_TK_STUBS;_CRT_SECURE_NO_WARNINGS"
-				MinimalRebuild="true"
+				MinimalRebuild="false"
 				RuntimeLibrary="1"
 				PrecompiledHeaderFile=".\Debug/libaudine.pch"
 				ExpandAttributedSource="false"
@@ -76,7 +76,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="odbc32.lib odbccp32.lib ..\..\..\external\lib\tclstub85.lib"
 				OutputFile="..\..\..\..\bin\libaudine.dll"
-				LinkIncremental="2"
+				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames="msvcrt.lib"
 				ModuleDefinitionFile=".\libaudine.def"

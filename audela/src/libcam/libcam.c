@@ -43,6 +43,7 @@
 #include "camera.h"
 
 #include <libcam/libcam.h>
+#include <libcam/libstruc.h>
 #include "camtcl.h"
 
 
@@ -105,7 +106,7 @@ void MessageBox(void *handle, char *msg, char *title, int bof)
 /* === Common commands for all cameras ===*/
 static int cmdCamCreate(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 static int cmdCam(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
-static int cmdCamAvailable(struct camprop *cam, Tcl_Interp * interp, int argc, char *argv[]);
+static int cmdCamAvailable(struct camprop *cam, Tcl_Interp * interp, int argc, const char *argv[]);
 
 /* --- Information commands ---*/
 static int cmdCamDrivername(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
@@ -171,6 +172,7 @@ static struct camprop *camprops = NULL;
 #define LOG_DEBUG   4
 
 static int debug_level = 0;
+static char logFileName[1024];
 
 /*
  * char* getlogdate(char *buf, size_t size)
@@ -228,7 +230,7 @@ static void libcam_log(int level, const char *fmt, ...)
 
    if (level <= debug_level) {
       getlogdate(buf,100);
-      f = fopen("libcam.log","at+");
+      f = fopen(logFileName,"at+");
       switch (level) {
       case LOG_ERROR:
          fprintf(f,"%s - %s(%s) <ERROR> : ", buf, CAM_LIBNAME, CAM_LIBVER);
@@ -2069,6 +2071,7 @@ static int cam_init_common(struct camprop *cam, int argc, char **argv)
    /* --- Decode les options de cam::create en fonction de argv[>=3] --- */
    cam->index_cam = 0;
    strcpy(cam->portname,"unknown");
+   strcpy(logFileName,"libcam.log");
    if (argc >= 5) {
       // je copie le nom du port en limitant le nombre de caractères à la taille maximal de cam->portname
       strncpy(cam->portname,argv[2], sizeof(cam->portname) -1);
@@ -2093,6 +2096,31 @@ static int cam_init_common(struct camprop *cam, int argc, char **argv)
                k++;
             }
          }
+         if (strcmp(argv[kk], "-debug_directory") == 0) {
+            if ( kk +1 <  argc ) {
+               char fileTempName[1024];
+               // je conserve le nom du fichier de log
+               strcpy(fileTempName,logFileName);
+               // je recupere le repertoire du fichier de traces
+	            strcpy(logFileName, argv[kk + 1]);
+               // je concatene un "/" a la fin du repertoire s'il n'y est pas deja
+               if ( logFileName[strlen(logFileName)-1]!= '\\' && logFileName[strlen(logFileName)-1]!= '/' && strlen(logFileName)!=0 ) {
+                  strcat(logFileName,"/");
+               }
+               // je concatene le nom du fichier de trace 
+               strcat(logFileName, fileTempName);
+#ifdef WIN32
+               {
+                  unsigned int c;
+                  for(c=0; c<strlen(logFileName); c++ ) {
+                     if( logFileName[c] == '/' ) {
+                        logFileName[c] = '\\';
+                     }
+                  }
+               }
+#endif
+            }
+	      }
       }
    }
    /* --- authorize the sti/cli functions --- */
@@ -2341,7 +2369,7 @@ static int cmdCamDark(ClientData clientData, Tcl_Interp * interp, int argc, char
    return result;
 }
 
-int cmdCamAvailable(struct camprop *cam, Tcl_Interp * interp, int argc, char *argv[])
+int cmdCamAvailable(struct camprop *cam, Tcl_Interp * interp, int argc, const char *argv[])
 {
 #ifdef CMD_CAM_AVAILABLE
    int result;
