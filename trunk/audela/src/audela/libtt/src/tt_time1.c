@@ -261,11 +261,11 @@ void tt_jd2dateobs(double jj, char *date)
       seconde=0.;
    }
    seca=(int)(floor(seconde));
-   secb=(int)(floor((seconde-(double)seca)*1.e2));
+   secb=(int)(floor((seconde-(double)seca)*1.e3));
 #ifdef OS_LINUX_GCC_SO
-   sprintf(date,"%4d-%2d-%2dT%2d:%2d:%2d.%2d",annee,mois,jour,heure,minute,seca,secb);
+   sprintf(date,"%4d-%2d-%2dT%2d:%2d:%2d.%3d",annee,mois,jour,heure,minute,seca,secb);
 #else
-   sprintf(date,"%4ld-%2ld-%2ldT%2ld:%2ld:%2ld.%2ld",annee,mois,jour,heure,minute,seca,secb);
+   sprintf(date,"%4ld-%2ld-%2ldT%2ld:%2ld:%2ld.%3ld",annee,mois,jour,heure,minute,seca,secb);
 #endif
    for (k=0;k<=(int)strlen(date);k++) {if (date[k]==' ') date[k]='0';}
 }
@@ -515,8 +515,8 @@ int tt_dateobs_convert(char *date_obs, char *time_obs, char *new_date_obs)
    }
    if (time_used==TT_YES) {
       seca=(int)(floor(seconde));
-      secb=(int)(floor((seconde-(double)seca)*1.e2+.001));
-      sprintf(new_date_obs,"%4d-%2d-%2dT%2d:%2d:%2d.%2d",annee,mois,jour,heure,minute,seca,secb);
+      secb=(int)(floor((seconde-(double)seca)*1.e3+.0001));
+      sprintf(new_date_obs,"%4d-%2d-%2dT%2d:%2d:%2d.%3d",annee,mois,jour,heure,minute,seca,secb);
    } else {
       sprintf(new_date_obs,"%4d-%2d-%2dT",annee,mois,jour);
    }
