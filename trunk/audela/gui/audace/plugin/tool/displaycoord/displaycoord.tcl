@@ -90,10 +90,10 @@ proc ::displaycoord::createPluginInstance { { tkParent "" } { visuNo 1 } } {
    variable private
 
    #--- Creation des variables si elles n'exitaitent pas
-   if { ! [ info exists ::conf(displaycoord,serverHost) ] }  { set ::conf(displaycoord,serverHost)  "localhost" }
-   if { ! [ info exists ::conf(displaycoord,serverPort) ] }  { set ::conf(displaycoord,serverPort)  "5028" }
-   if { ! [ info exists ::conf(displaycoord,windowPosition) ] } { set ::conf(displaycoord,windowPosition)     "640x480+50+15" }
-   if { ! [ info exists ::conf(displaycoord,windowMaximize) ] } { set ::conf(displaycoord,windowMaximize)     0 }
+   if { ! [ info exists ::conf(displaycoord,serverHost) ] }     { set ::conf(displaycoord,serverHost)     "localhost" }
+   if { ! [ info exists ::conf(displaycoord,serverPort) ] }     { set ::conf(displaycoord,serverPort)     "5028" }
+   if { ! [ info exists ::conf(displaycoord,windowPosition) ] } { set ::conf(displaycoord,windowPosition) "640x480+50+15" }
+   if { ! [ info exists ::conf(displaycoord,windowMaximize) ] } { set ::conf(displaycoord,windowMaximize) 0 }
 
    set dir [ file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [getPluginType]] [getPluginDirectory]]
    source [ file join $dir displayconfig.tcl ]
@@ -104,13 +104,8 @@ proc ::displaycoord::createPluginInstance { { tkParent "" } { visuNo 1 } } {
    set private(connexionTimerId) ""
 
    #--- Initialisation
-   set private(base) "$tkParent.displaycoord"
-   set private(sortie)     "0"
-   ###set private(fonttitle)  {arial  75 bold}
-   ###set private(font1)      {tahoma 60 bold}
-   ###set private(font2)      {tahoma 17 normal}
-   ###set private(font3)      {arial  15 bold}
-   ###set private(font4)      {tahoma 22 normal}
+   set private(base)   "$tkParent.displaycoord"
+   set private(sortie) "0"
 
    font create displayCoordFont1 -family tahoma -size 60 -weight bold
    font create displayCoordFont2 -family tahoma -size 20 -weight normal
@@ -121,13 +116,13 @@ proc ::displaycoord::createPluginInstance { { tkParent "" } { visuNo 1 } } {
    set private(font3)      {displayCoordFont3}
    set private(font4)      {displayCoordFont2}
 
-   set private(ra0)        "00h 00m 00.00s"
-   set private(dec0)       "+00° 00' 00.00''"
-   set private(equinox0)   ""
-   set private(azimutDms)  "000° 00' 00.0''"
-   set private(hauteurDms) "+00° 00' 00.0''"
-   set private(modelName)  ""
-   set private(modelEnabled)  0
+   set private(ra0)          "00h 00m 00.00s"
+   set private(dec0)         "+00° 00' 00.00''"
+   set private(equinox0)     ""
+   set private(azimutDms)    "000° 00' 00.0''"
+   set private(hauteurDms)   "+00° 00' 00.0''"
+   set private(modelName)    ""
+   set private(modelEnabled) 0
 
 }
 
@@ -526,22 +521,22 @@ proc ::displaycoord::readSocketCoord {  } {
    variable private
 
    set catchError [catch {
-      set returnCode ""
-      set tu  "0000-00-00T00:00:00"
-      set ts  "00:00:00"
-      set ra  "00h00m00s00"
-      set dec "00d00m00s00"
-      set ra0 "00h00m00s00"
-      set dec0 "00d00m00s00"
-      set raCalage "A"
-      set decCalage "A"
-      set longitudeDegres  "000.0"
-      set estouest  "E"
-      set latitudeDegres   "+00.0"
-      set altitude  "0000.0"
-      set nomObservatoire  ""
+      set returnCode         ""
+      set tu                 "0000-00-00T00:00:00"
+      set ts                 "00:00:00"
+      set ra                 "00h00m00s00"
+      set dec                "00d00m00s00"
+      set ra0                "00h00m00s00"
+      set dec0               "00d00m00s00"
+      set raCalage           "A"
+      set decCalage          "A"
+      set longitudeDegres    "000.0"
+      set estouest           "E"
+      set latitudeDegres     "+00.0"
+      set altitude           "0000.0"
+      set nomObservatoire    ""
       set nomModelePointage  ""
-      set etatModelePointage  0
+      set etatModelePointage 0
 
       if { $private(socketChannel) == "" } {
          #--- j'affiche les valeurs par defaut
