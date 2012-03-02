@@ -260,7 +260,11 @@ proc ::temma::fillConfigPage { frm } {
    pack $frm.correc_variantAD -in $frm.frame5 -side top -padx 10
    bind $frm.correc_variantAD <ButtonRelease-1> {::temma::setCorrectionSpeed}
 
-  #--- Configure les echelles de vitesse de correction lente d'AD et de Dec.
+   #--- Reglage de la vitesse de correction en Dec. pour la vitesse normale (NS)
+   scale $frm.correc_variantDec -from 10 -to 90 -length 210 -orient horizontal -showvalue true \
+      -tickinterval 10 -borderwidth 2 -relief groove -variable ::temma::private(correc_Dec) -width 10
+
+   #--- Configure les echelles de vitesse de correction lente d'AD et de Dec.
    ::temma::configCorrectionTemma
 
    #--- Position du telescope sur la monture equatoriale allemande : A l'est ou a l'ouest
@@ -518,9 +522,6 @@ proc ::temma::configCorrectionTemma { } {
 
    if { $private(liaison) != "1" } {
 
-      #--- Reglage de la vitesse de correction en Dec. pour la vitesse normale (NS)
-      scale $frm.correc_variantDec -from 10 -to 90 -length 210 -orient horizontal -showvalue true \
-         -tickinterval 10 -borderwidth 2 -relief groove -variable ::temma::private(correc_Dec) -width 10
       pack $frm.correc_variantDec -in $frm.frame5 -side top -padx 10
 
       $frm.lab3 configure -pady 20
@@ -531,10 +532,8 @@ proc ::temma::configCorrectionTemma { } {
 
    } else {
 
-      if {[winfo exists $frm.correc_variantDec]} {
-         bind $frm.correc_variantDec <ButtonRelease-1> {}
-         destroy $frm.correc_variantDec
-      }
+      pack forget $frm.correc_variantDec
+      bind $frm.correc_variantDec <ButtonRelease-1> {}
 
       $frm.lab3 configure -pady 7
       $frm.lab4 configure -pady 7
