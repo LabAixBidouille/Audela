@@ -35,7 +35,7 @@ namespace eval ::priam {
 
 proc ::priam::create_file_oldformat { listsources science } {
 
-   global bddconf
+   global bddconf audace
 
    # constantes provisoires
    set nameofcata "SKYBOT"
@@ -47,9 +47,9 @@ proc ::priam::create_file_oldformat { listsources science } {
    set humidity 35.0
    set bandwith 0.57000
 
-   set filenametmp [ file join [pwd] science.mes ]
+   set filenametmp [ file join $audace(rep_travail) science.mes ]
    # creation du fichier de mesures
-   set filemes [ file join [pwd] science.mes ]
+   set filemes [ file join $audace(rep_travail) science.mes ]
    set chan0 [open $filemes w]
    puts $chan0 "#? Centroid measures formatted for Priam"
    puts $chan0 "#?   Source: Astroid - jan. 2012"
@@ -61,7 +61,7 @@ proc ::priam::create_file_oldformat { listsources science } {
    puts $chan0 "$dateobsjd $temperature $pression  $humidity $bandwith"
 
    # creation du fichier stellaire
-   set filelocal [ file join [pwd] local.cat ]
+   set filelocal [ file join $audace(rep_travail) local.cat ]
    set chan1 [open $filelocal w]
 
 

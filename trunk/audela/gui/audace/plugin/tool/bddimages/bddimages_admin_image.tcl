@@ -164,8 +164,6 @@ namespace eval bddimages_admin_image {
 
 
 
-
-
 #--- Fin Classe
 
 }

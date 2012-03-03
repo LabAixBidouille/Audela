@@ -67,11 +67,11 @@ namespace eval ::analyse_source {
    # xsm         ysm        fwhmx    fwhmy    fwhm     fluxintegre errflux  pixmax  intensite sigmafond snint         snpx          delta
    # 1936.447981 844.076965 3.510291 1.861599 2.685945 799.000000  0        1310    246.0     33.616402 23.7681593646 7.31785632502 3.21
 
-   proc ::analyse_source::test2 { listsources radius_threshold } {
+   proc ::analyse_source::psf { listsources radius_threshold } {
 
       global bddconf
 
-      set log 1
+      set log 0
       set cpt 0
       set doute 0
 
