@@ -135,6 +135,7 @@ namespace eval bddimages_recherche {
    global bddconf
 
    variable ::bddimages_recherche::current_list_id
+   variable ::bddimages_recherche::action
 
    #--------------------------------------------------
    # run { this }
@@ -152,7 +153,7 @@ namespace eval bddimages_recherche {
    #        @return
    #
    #--------------------------------------------------
-   proc run { this } {
+   proc ::bddimages_recherche::run { this } {
       variable This
 
       set entetelog "recherche"
@@ -176,7 +177,7 @@ namespace eval bddimages_recherche {
    #    variables en sortie :
    #
    #--------------------------------------------------
-   proc fermer { } {
+   proc ::bddimages_recherche::fermer { } {
       variable This
 
       ::bddimages_recherche::recup_position
@@ -199,7 +200,7 @@ namespace eval bddimages_recherche {
    #    variables en sortie :
    #
    #--------------------------------------------------
-   proc recup_position { } {
+   proc ::bddimages_recherche::recup_position { } {
       variable This
       global audace
       global conf
@@ -216,7 +217,7 @@ namespace eval bddimages_recherche {
    #
    #    fonction  :
    #       Permet d afficher l image d un fichier
-   #       selectionné
+   #       selectionne
    #
    #    procedure externe :
    #        charge $fp : $fp est le chemin de l image sur le disque
@@ -227,7 +228,7 @@ namespace eval bddimages_recherche {
    #    variables en sortie :
    #
    #--------------------------------------------------
-   proc affiche_image_by_idbddimg { id } {
+   proc ::bddimages_recherche::affiche_image_by_idbddimg { id } {
      
       set sqlcmd "SELECT dirfilename,filename FROM images WHERE idbddimg = $id"
       set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
@@ -321,7 +322,7 @@ namespace eval bddimages_recherche {
    #    variables en sortie :
    #
    #--------------------------------------------------
-   proc cmd_list_delete { tbl } {
+   proc ::bddimages_recherche::cmd_list_delete { tbl } {
       set i [$tbl curselection]
       set row [$tbl get $i $i]
       set name [lindex $row 0]
@@ -454,13 +455,13 @@ namespace eval bddimages_recherche {
 # | |-table--------------------------------|  |
 # | |                                      |  |
 # | | |-liste---| |-images---------------| |  |
-# | | |	       | |			              | |  |
-# | | |	       | |			              | |  |
-# | | |	       | |	             	     | |  |
-# | | |	       | |		                 | |  |
-# | | |	       | |             			  | |  |
-# | | |         | |	                    | |  |
-# | | |	       | |	                    | |  |
+# | | |	        | |                      | |  |
+# | | |	        | |                      | |  |
+# | | |	        | |                      | |  |
+# | | |	        | |                      | |  |
+# | | |	        | |                      | |  |
+# | | |         | |                      | |  |
+# | | |	        | |	                 | |  |
 # | | |---------| |----------------------| |  |
 # | |                                      |  |
 # | |--------------------------------------|  |
@@ -471,7 +472,7 @@ namespace eval bddimages_recherche {
 # |                                           |
 # |-------------------------------------------|
 
-   proc createDialog { } {
+   proc ::bddimages_recherche::createDialog { } {
 
       variable This
       global audace
@@ -807,12 +808,12 @@ namespace eval bddimages_recherche {
 #    variables en sortie :
 #
 #--------------------------------------------------
-   proc Tbl2Edit { tbl } {
+   proc ::bddimages_recherche::Tbl2Edit { tbl } {
      global audace
      set i [$tbl curselection]
      set row [$tbl get $i $i]
      set name [lindex $row 0]
-     puts "Tbl2GetListName : $name"
+     gren_info "Tbl2GetListName : $name\n"
      ::bddimages_liste_gui::run $audace(base).bddimages_liste_gui $name
    }
    
@@ -833,7 +834,7 @@ namespace eval bddimages_recherche {
    #    variables en sortie :
    #
    #--------------------------------------------------
-   proc Tbl2Delete { tbl } {
+   proc ::bddimages_recherche::Tbl2Delete { tbl } {
 
      global audace
      global intellilisttotal
@@ -893,7 +894,7 @@ namespace eval bddimages_recherche {
    #    variables en sortie : void
    #
    #--------------------------------------------------
-   proc createTbl2 { frame } {
+   proc ::bddimages_recherche::createTbl2 { frame } {
       variable This
       global audace
       global caption
@@ -965,7 +966,7 @@ namespace eval bddimages_recherche {
    #    variables en sortie : void
    #
    #--------------------------------------------------
-   proc createTbl1 { frame } {
+   proc ::bddimages_recherche::createTbl1 { frame } {
       variable This
       global audace
       global caption
@@ -1081,8 +1082,11 @@ namespace eval bddimages_recherche {
       menu $popupTbl.analyse -tearoff 0
       $popupTbl add cascade -label "Analyse" -menu $popupTbl.analyse
 
-           $popupTbl.analyse add command -label "Creer le Cata" \
+           $popupTbl.analyse add command -label "Creer le WCS" \
               -command { ::bddimages_recherche::bddimages_creation_wcs }
+
+           $popupTbl.analyse add command -label "Creer le Cata" \
+              -command { ::bddimages_recherche::bddimages_creation_cata }
 
            $popupTbl.analyse add command -label "CdL" \
               -command { ::bddimages_cdl::run}
@@ -1355,7 +1359,7 @@ namespace eval bddimages_recherche {
    #    variables en sortie : void
    #
    #--------------------------------------------------
-   proc bddimages_define {  } {
+   proc ::bddimages_recherche::bddimages_define {  } {
    
       global audace
       global bddconf
@@ -1389,7 +1393,7 @@ namespace eval bddimages_recherche {
    #    variables en sortie : void
    #
    #--------------------------------------------------
-   proc bddimages_images_delete {  } {
+   proc ::bddimages_recherche::bddimages_images_delete {  } {
    
       variable This
       global caption
@@ -1459,26 +1463,40 @@ namespace eval bddimages_recherche {
 
 
 
+   proc ::bddimages_recherche::bddimages_creation_cata { } {
+
+      variable This
+      global caption
+
+      set lid [$::bddimages_recherche::This.frame6.result.tbl curselection ]
+      set lid [lsort -decreasing -integer $lid]
+      set imglist [::bddimages_liste_gui::new_normallist $lid]
+
+      ::bddimages_analyse::creation_cata $imglist
+
+      ::bddimages_recherche::get_intellist $::bddimages_recherche::current_list_id
+      ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id [array get action_label]
+
+   }
+
+
+
+
    proc ::bddimages_recherche::bddimages_creation_wcs { } {
 
       variable This
       global caption
-      set reply [tk_dialog $This.confirmDialog "BddImages" "$caption(bddimages_recherche,confirmWCS)" \
-                    questhead 1 "$caption(bddimages_recherche,confirmNo)" "$caption(bddimages_recherche,confirmYes)"]
-      if {$reply} {
 
-         set lid [$::bddimages_recherche::This.frame6.result.tbl curselection ]
-         set lid [lsort -decreasing -integer $lid]
-         set imglist [::bddimages_liste_gui::new_normallist $lid]
+      set lid [$::bddimages_recherche::This.frame6.result.tbl curselection ]
+      set lid [lsort -decreasing -integer $lid]
+      set imglist [::bddimages_liste_gui::new_normallist $lid]
 
-         ::bddimages_analyse::creation_wcs $imglist
+      set z [::bddimages_analyse::creation_wcs $imglist]
 
-         ::bddimages_recherche::get_intellist $::bddimages_recherche::current_list_id
-         ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id [array get action_label]
-      }
+      ::bddimages_recherche::get_intellist $::bddimages_recherche::current_list_id
+      ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id [array get action_label]
 
    }
-
 
 
 
@@ -1498,7 +1516,7 @@ namespace eval bddimages_recherche {
    #    variables en sortie :
    #
    #--------------------------------------------------
-   proc cmdFormatColumn { column_name } {
+   proc ::bddimages_recherche::cmdFormatColumn { column_name } {
       variable column_format
 
       #--- Suppression des caracteres "(" et ")"
@@ -1556,7 +1574,7 @@ namespace eval bddimages_recherche {
    #    variables en sortie :
    #
    #--------------------------------------------------
-   proc cmdSortColumn { tbl col } {
+   proc ::bddimages_recherche::cmdSortColumn { tbl col } {
       tablelist::sortByColumn $tbl $col
    }
 
@@ -1585,7 +1603,7 @@ namespace eval bddimages_recherche {
       global list_of_columns
 
       # Recupere le tableau des action
-      array set zaction $action
+      array set ::bddimages_recherche::action $action
 
       # Definition
       set empty [list "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-" "-"]
@@ -1653,7 +1671,7 @@ namespace eval bddimages_recherche {
       foreach line $affich_table {
 
          # Dans le cas d'une action non nulle (i.e. on a clique sur un des boutons TYPE ou STATE
-         if {[array size zaction] > 1} {
+         if {[array size ::bddimages_recherche::action] > 1} {
 
             # Valeur de bdi_state pour la ligne courante 
             set bdi_state [ string trim [lindex $line 10] ]
@@ -1662,18 +1680,18 @@ namespace eval bddimages_recherche {
 
             # Doit on afficher la ligne d'apres bdi_state ?
             set voir 1
-            if {[string equal -nocase $bdi_state "RAW"]       && $zaction(raw) == 0}      { set voir 0 }
-            if {[string equal -nocase $bdi_state "CORR"]      && $zaction(corr) == 0}     { set voir 0 }
-            if {[string equal -nocase $bdi_state "CATA"]      && $zaction(cata) == 0}     { set voir 0 }
-            if {[string equal -nocase $bdi_state "?"]         && $zaction(unkstate) == 0} { set voir 0 }
+            if {[string equal -nocase $bdi_state "RAW"]       && $::bddimages_recherche::action(raw) == 0}      { set voir 0 }
+            if {[string equal -nocase $bdi_state "CORR"]      && $::bddimages_recherche::action(corr) == 0}     { set voir 0 }
+            if {[string equal -nocase $bdi_state "CATA"]      && $::bddimages_recherche::action(cata) == 0}     { set voir 0 }
+            if {[string equal -nocase $bdi_state "?"]         && $::bddimages_recherche::action(unkstate) == 0} { set voir 0 }
             
             # Si oui, doit on afficher la ligne d'apres bdi_type ? 
             if {$voir} {
-               if {[string equal -nocase $bdi_type "IMG"]     && $zaction(img) == 0}      { set voir 0 }
-               if {[string equal -nocase $bdi_type "FLAT"]    && $zaction(flat) == 0}     { set voir 0 }
-               if {[string equal -nocase $bdi_type "DARK"]    && $zaction(dark) == 0}     { set voir 0 }
-               if {[string equal -nocase $bdi_type "OFFSET"]  && $zaction(offset) == 0}   { set voir 0 }
-               if {[string equal -nocase $bdi_type "?"]       && $zaction(unktype) == 0}  { set voir 0 }
+               if {[string equal -nocase $bdi_type "IMG"]     && $::bddimages_recherche::action(img) == 0}      { set voir 0 }
+               if {[string equal -nocase $bdi_type "FLAT"]    && $::bddimages_recherche::action(flat) == 0}     { set voir 0 }
+               if {[string equal -nocase $bdi_type "DARK"]    && $::bddimages_recherche::action(dark) == 0}     { set voir 0 }
+               if {[string equal -nocase $bdi_type "OFFSET"]  && $::bddimages_recherche::action(offset) == 0}   { set voir 0 }
+               if {[string equal -nocase $bdi_type "?"]       && $::bddimages_recherche::action(unktype) == 0}  { set voir 0 }
             }
 
             # Si oui
@@ -1921,7 +1939,6 @@ proc ::bddimages_recherche::get_intellist { i } {
 #  "bddimages_cataastrom"
 #  "bddimages_photometry"
 #  "bddimages_cataphotom"
-#
 
    return 0
 }
@@ -1933,23 +1950,25 @@ proc ::bddimages_recherche::get_intellist { i } {
 
 
 
+# peut etre obsolete ?
 
- proc ::ldelete {liste index} {
- 
-    if {[llength $liste] <= 1} {return $liste}
-    if {$index +1 > [llength $liste]} {return $liste}
-    if {$index +1 == [llength $liste]} {set index end}
-    if {$index == 0} {
-        set range [list 0 1]
-        set index 1
-    } elseif {$index eq "end"} {
-        set index [expr {[llength $liste]-2}]
-        set range [list $index [expr {[llength $liste]-1}]]
-    } elseif {![string is integer -strict $index]} {
-        return $liste
-    } else {
-        set range [list $index [incr index]]
-    }
-    return [eval lreplace [list $liste] $range [list [lindex $liste $index]]]
- }
+proc ::bddimages_recherche::ldelete {liste index} {
+
+   if {[llength $liste] <= 1} {return $liste}
+   if {$index +1 > [llength $liste]} {return $liste}
+   if {$index +1 == [llength $liste]} {set index end}
+   if {$index == 0} {
+       set range [list 0 1]
+       set index 1
+   } elseif {$index eq "end"} {
+       set index [expr {[llength $liste]-2}]
+       set range [list $index [expr {[llength $liste]-1}]]
+   } elseif {![string is integer -strict $index]} {
+       return $liste
+   } else {
+       set range [list $index [incr index]]
+   }
+   return [eval lreplace [list $liste] $range [list [lindex $liste $index]]]
+}
+
 

@@ -153,7 +153,7 @@ proc ::bddimages_imgcorrection::get_info_img {  } {
    #recupere la liste des idbddimg
    set lid [$::bddimages_recherche::This.frame6.result.tbl curselection ]
    set lid [lsort -decreasing -integer $lid]
-   set imgtmplist [::bddimages_liste::new_normallist $lid]
+   set imgtmplist [::bddimages_liste_gui::new_normallist $lid]
    #::console::affiche_resultat "imgtmplist=$imgtmplist\n"
    return $imgtmplist
 }
@@ -294,7 +294,6 @@ proc ::bddimages_imgcorrection::cleanEntities { chunk } {
    regsub -all {\.} $chunk {} chunk
    return $chunk
 }
-
 
 #proc ::bddimages_imgcorrection::create_filename_deflat { file } {
 #
@@ -706,7 +705,7 @@ proc ::bddimages_imgcorrection::create_image_deflat {  } {
       # Soustraction des Dark et Offset
       if {$nbsoffset == 1 && $nbsdark == 1 } {
          ::console::affiche_resultat "Soustraction des Dark et Offset\n"
-         ttscript2 "IMA/SERIES $bddconf(dirtmp) deflat 0 $k $ext $bddconf(dirtmp) deflat 0 $ext SUBDARK dark=sdark0$ext bias=soffset0$ext exptime=EXPOSURE dexptime=EXPOSURE nullpixel=-10000"
+         ttscript2 "IMA/SERIES $bddconf(dirtmp) deflat 0 $k $ext $bddconf(dirtmp) deflat 0 $ext SUBDARK dark=sdark0$ext bias=soffset0$ext "
       }
       # Soustraction des Offset (pas de Dark)
       if {$nbsoffset == 1 && $nbsdark == 0 } {
@@ -735,6 +734,7 @@ proc ::bddimages_imgcorrection::create_image_deflat {  } {
             ttscript2 "IMA/SERIES $bddconf(dirtmp) deflat 0 $k $ext $bddconf(dirtmp) deflat 0 $ext SUB file=$bddconf(dirtmp)/sdark0$ext offset=0"
          }
       }
+
       # Division par le Flat
       if { $nbsflat == 1 } {
          set f [file join $bddconf(dirtmp) "sflat0$ext"]
@@ -1076,7 +1076,7 @@ proc ::bddimages_imgcorrection::chrono_last_img { img_list } {
 proc ::bddimages_imgcorrection::chrono_sort_img { img_list } {
 
    set sort_img_list ""
-   foreach img $::bddimages_cdl::img_list {
+   foreach img $img_list {
       set commundatejj [::bddimages_liste::lget $img "commundatejj"]
       lappend sort_img_list [list $commundatejj $img]
    }

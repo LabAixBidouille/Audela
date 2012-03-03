@@ -114,7 +114,7 @@
 #   {limit_result       ...  }
 #   {type_result        ...  }
 #   {type_select        ...  }
-#   {reqlist            { 
+#   {idlist             { 
 #                         {34 {134 345 677}}
 #                         {38 {135 344 679}}
 #                       }
@@ -160,7 +160,7 @@ namespace eval bddimages_liste_gui {
 
       set entetelog "liste"
       set This $this
-      createDialog $listname
+      ::bddimages_liste_gui::createDialog $listname
       return
    }
 
@@ -403,21 +403,21 @@ namespace eval bddimages_liste_gui {
    #--------------------------------------------------
    proc ::bddimages_liste_gui::affich_form_req { } {
    
-     set jjdatemin [ mc_date2jd $form_req(datemin) ]
-     set jjdatemax [ mc_date2jd $form_req(datemax) ]
+     set jjdatemin [ mc_date2jd $::bddimages_liste_gui::form_req(datemin) ]
+     set jjdatemax [ mc_date2jd $::bddimages_liste_gui::form_req(datemax) ]
    
      ::console::affiche_resultat "-- affich_form_req"
-     ::console::affiche_resultat "datemin             = $form_req(datemin)"
-     ::console::affiche_resultat "datemax             = $form_req(datemax)"
-     ::console::affiche_resultat "jjdatemin           = $jjdatemin"
-     ::console::affiche_resultat "jjdatemax           = $jjdatemax"
-     ::console::affiche_resultat "type_req_check 		= $form_req(type_req_check)"
-     ::console::affiche_resultat "type_requ 		      = $form_req(type_requ)"
-     ::console::affiche_resultat "choix_limit_result	= $form_req(choix_limit_result)"
-     ::console::affiche_resultat "limit_result		   = $form_req(limit_result)"
-     ::console::affiche_resultat "type_result		   = $form_req(type_result)"
-     ::console::affiche_resultat "type_select		   = $form_req(type_select)"
-     ::console::affiche_resultat "nbimg			      = $form_req(nbimg)"
+     ::console::affiche_resultat "datemin             = $::bddimages_liste_gui::form_req(datemin)\n"
+     ::console::affiche_resultat "datemax             = $::bddimages_liste_gui::form_req(datemax)\n"
+     ::console::affiche_resultat "jjdatemin           = $jjdatemin\n"
+     ::console::affiche_resultat "jjdatemax           = $jjdatemax\n"
+     ::console::affiche_resultat "type_req_check      = $::bddimages_liste_gui::form_req(type_req_check)\n"
+     ::console::affiche_resultat "type_requ 	      = $::bddimages_liste_gui::form_req(type_requ)\n"
+     ::console::affiche_resultat "choix_limit_result  = $::bddimages_liste_gui::form_req(choix_limit_result)\n"
+     ::console::affiche_resultat "limit_result	      = $::bddimages_liste_gui::form_req(limit_result)\n"
+     ::console::affiche_resultat "type_result	      = $::bddimages_liste_gui::form_req(type_result)\n"
+     ::console::affiche_resultat "type_select	      = $::bddimages_liste_gui::form_req(type_select)\n"
+     ::console::affiche_resultat "nbimg		      = $::bddimages_liste_gui::form_req(nbimg)\n"
    
    }
 
@@ -530,6 +530,32 @@ namespace eval bddimages_liste_gui {
      }
      if { $found } { return $i } else { return -1 }
    }
+
+   #--------------------------------------------------
+   #  get_intellilist_by_id { }
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #       fournit la liste des conditions de la requete
+   #
+   #    procedure externe :
+   #
+   #    variables en entree : id
+   #
+   #    variables en sortie : none
+   #
+   #--------------------------------------------------
+   proc ::bddimages_liste_gui::get_intellilist_by_id { id } {
+   
+     global intellilisttotal
+   
+     return $intellilisttotal($id)
+   }
+
+
+
+
+
 
 
 
@@ -787,7 +813,7 @@ namespace eval bddimages_liste_gui {
    
       global indicereq
       global list_req
-      global form_req
+      global ::bddimages_liste_gui::form_req
       global caption
       global nbintellilist
 
@@ -848,7 +874,7 @@ namespace eval bddimages_liste_gui {
    
       global indicereq
       global list_req
-      global form_req
+      global ::bddimages_liste_gui::form_req
    
       set ::bddimages_liste_gui::form_req(name)               [get_val_intellilist $intellilist "name"]
       set ::bddimages_liste_gui::form_req(datemin)            [get_val_intellilist $intellilist "datemin"]
@@ -1005,7 +1031,7 @@ namespace eval bddimages_liste_gui {
    
       global indicereq
       global list_req
-      global form_req
+      global ::bddimages_liste_gui::form_req
       global caption
       global nbintellilist
       global intellilisttotal
@@ -1064,7 +1090,7 @@ namespace eval bddimages_liste_gui {
    
       global indicereq
       global list_req
-      global form_req
+      global ::bddimages_liste_gui::form_req
       global caption
       global list_key_to_var
 
@@ -1413,6 +1439,114 @@ namespace eval bddimages_liste_gui {
    }
 
 
+
+
+   proc ::bddimages_liste_gui::file_to_img { filename dirfilename } {
+
+         set sqlcmd "SELECT images.idbddimg,
+                            images.idheader
+                     FROM images
+   		     WHERE images.filename = \"$filename\"
+                       AND images.dirfilename = \"$dirfilename\";"
+
+      set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
+      if {$err} {
+         bddimages_sauve_fich "Erreur de lecture des images, commun par SQL"
+         bddimages_sauve_fich "	sqlcmd = $sqlcmd"
+         bddimages_sauve_fich "	err = $err"
+         bddimages_sauve_fich "	msg = $msg"
+         return
+      }
+
+      set img_list ""
+
+      foreach line $resultsql {
+         set idbddimg [lindex $line 0]
+         set idhd     [lindex $line 1]
+         break 
+      }
+
+         set sqlcmd "SELECT images.idbddimg,
+                            images.idheader,
+                            images.tabname,
+                            images.filename,
+                            images.dirfilename,
+                            images.sizefich,
+                            images.datemodif,
+                            commun.datejj as commundatejj,
+                            images_$idhd.* 
+                     FROM images,images_$idhd,commun
+   		     WHERE images.idbddimg = images_$idhd.idbddimg 
+                     AND   commun.idbddimg = images_$idhd.idbddimg
+                     AND   images.idbddimg = $idbddimg;"
+
+         set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
+
+         if {[string first "Unknown column" $msg]==-1} {
+
+            if {$err} {
+               bddimages_sauve_fich "Erreur de lecture de la liste des header par SQL"
+               bddimages_sauve_fich "        sqlcmd = $sqlcmd"
+               bddimages_sauve_fich "        err = $err"
+               bddimages_sauve_fich "        msg = $msg"
+               ::console::affiche_erreur "Erreur de lecture de la liste des header par SQL\n"
+               ::console::affiche_erreur "        sqlcmd = $sqlcmd\n"
+               ::console::affiche_erreur "        err = $err\n"
+               ::console::affiche_erreur "        msg = $msg\n"
+               return
+            }
+   
+            set nbresult [llength $resultcount]
+
+            if {$nbresult>0} {
+   
+               set tabkey [::bddimages_liste_gui::idhd_to_tabkey $idhd]
+               set colvar [lindex $resultcount 0]
+               set rowvar [lindex $resultcount 1]
+               set nbcol  [llength $colvar]
+   
+               foreach keyline $rowvar {
+
+                  set result_img ""
+
+                  # Common fields to manage BDI
+
+                      # idbddimg
+                      set key [lindex $colvar 8]
+                      set val [lindex $keyline 8]
+                      lappend result_img [list $key $val]
+
+                      # others...
+                      for {set id 1} {$id<=7} {incr id} {
+                         set key [lindex $colvar $id]
+                         set val [lindex $keyline $id]
+                         lappend result_img [list $key $val]
+                      }
+
+                  #  TABKEY 
+
+                      for {set id 9} {$id<$nbcol} {incr id} {
+                         set key [lindex $colvar $id]
+                         set val [lindex $keyline $id]
+                         set inline [lreplace [::bddimages_liste::lget $tabkey $key] 1 1 $val]
+                         set tabkey [::bddimages_liste::lupdate $tabkey $key $inline]
+                      }
+
+
+                  lappend result_img [list "tabkey" $tabkey]
+                  lappend img_list $result_img
+
+               }
+
+            }
+ 
+         }
+
+      set img_list [::bddimages_liste_gui::add_info_cata $img_list]
+
+      return [lindex $img_list 0]
+   }
+
    #--------------------------------------------------
    #  intellilist_to_imglist_i { }
    #--------------------------------------------------
@@ -1652,11 +1786,11 @@ namespace eval bddimages_liste_gui {
    #--------------------------------------------------
    proc ::bddimages_liste_gui::calcul_nbimg { } {
    
-      global form_req
+      global ::bddimages_liste_gui::form_req
    
       set intellilist [::bddimages_liste_gui::build_intellilist "calcul_nbimg"]
 
-      set form_req(nbimg) [llength [::bddimages_liste_gui::intellilist_to_imglist $intellilist]]
+      set ::bddimages_liste_gui::form_req(nbimg) [llength [::bddimages_liste_gui::intellilist_to_imglist $intellilist]]
       #::console::affiche_resultat "Nb img = $form_req(nbimg) \n"
       return
    }
@@ -1772,6 +1906,7 @@ namespace eval bddimages_liste_gui {
       set indicereq [expr $indicereq + 1]
 
       if { [ info exists list_req($indicereq,champ) ] } {
+         gren_info "yes $list_req($indicereq,champ) $indicereq\n"
          set list_req($indicereq,valide) "ok"
          if { $list_req($indicereq,condition) eq "LIKE" } {
             set list_req($indicereq,condition) $caption(bddimages_liste,contient)
@@ -1942,11 +2077,10 @@ namespace eval bddimages_liste_gui {
       global bddconf
       global intellilisttotal
       global indicereq
-      global form_req
+      global ::bddimages_liste_gui::form_req
       global list_req
       global framereqcurrent
 
-      set indicereq 0
 
       set list_comb1 [list $caption(bddimages_liste,toutes) $caption(bddimages_liste,nimporte)]
       set list_comb2 [list $caption(bddimages_liste,elem)]
@@ -1958,37 +2092,45 @@ namespace eval bddimages_liste_gui {
                            $caption(bddimages_liste,plrecajo) \
                            $caption(bddimages_liste,morecajo) ]
 
-      set form_req(name) "Newlist[ expr $::nbintellilist + 1 ]"
-      set form_req(type_req_check) ""
-      set form_req(datemin) ""
-      set form_req(datemax) ""
-      set form_req(type_req_check) 1
-      set form_req(type_requ) [lindex $list_comb1 0]
-      set form_req(choix_limit_result) 0
-      set form_req(limit_result) "25"
-      set form_req(type_result) [lindex $list_comb2 0]
-      set form_req(type_select) [lindex $list_comb3 0]
-      set form_req(nbimg) "?"
+      set ::bddimages_liste_gui::form_req(name) "Newlist[ expr $::nbintellilist + 1 ]"
+      set ::bddimages_liste_gui::form_req(type_req_check) ""
+      set ::bddimages_liste_gui::form_req(datemin) ""
+      set ::bddimages_liste_gui::form_req(datemax) ""
+      set ::bddimages_liste_gui::form_req(type_req_check) 1
+      set ::bddimages_liste_gui::form_req(type_requ) [lindex $list_comb1 0]
+      set ::bddimages_liste_gui::form_req(choix_limit_result) 0
+      set ::bddimages_liste_gui::form_req(limit_result) "25"
+      set ::bddimages_liste_gui::form_req(type_result) [lindex $list_comb2 0]
+      set ::bddimages_liste_gui::form_req(type_select) [lindex $list_comb3 0]
+      set ::bddimages_liste_gui::form_req(nbimg) "?"
 
       set edit 0
       if { ! ($listname eq "?") } {
         set edit 1
-        set editname $listname
-        set editid [get_intellilist_by_name $listname]
       }
 
-      set indicereqinit 0
 
       if { $edit } {
-         set l $intellilisttotal($editid)
+         set editname $listname
+         set editid [get_intellilist_by_name $listname]
+         ::bddimages_liste_gui::load_intellilist $intellilisttotal($editid)
+         ::bddimages_liste_gui::affiche_intellilist $intellilisttotal($editid)  
+         ::bddimages_liste_gui::affich_form_req
+         set indicereqinit [llength [get_val_intellilist $intellilisttotal($editid) "reqlist"]]
+         gren_info "\n ** indicereqinit= $indicereqinit\n"
+         gren_info "\n ** indicereq= $indicereq\n"
+         gren_info "\n ** list_req= [array get list_req]\n"
+         #set l $intellilisttotal($editid)
          #::console::affiche_resultat "edit : $edit\n"
          #::console::affiche_resultat "l : $l\n"
-         ::bddimages_liste_gui::load_intellilist $l
-         parray form_req
-         if { [info exists list_req ] } then { parray list_req }
+         #::bddimages_liste_gui::load_intellilist $l
+         #parray ::bddimages_liste_gui::form_req
+         #if { [info exists list_req ] } then { parray list_req }
       } else {
+         set indicereqinit 0
          array unset list_req
       }
+      set indicereq 0
 
       #--- initConf
       if { ! [ info exists conf(bddimages,list_pos_stat) ] } { set conf(bddimages,list_pos_stat) "+80+40" }
@@ -2033,7 +2175,7 @@ namespace eval bddimages_liste_gui {
         label $framecurrent.lab -text "$caption(bddimages_liste,nom)" -width 20
         pack $framecurrent.lab -in $framecurrent -side left -anchor w -padx 1
         #--- Cree une ligne d'entree pour la variable
-        entry $framecurrent.dat -textvariable form_req(name) -borderwidth 1 -relief groove -width 25 -justify left
+        entry $framecurrent.dat -textvariable ::bddimages_liste_gui::form_req(name) -borderwidth 1 -relief groove -width 25 -justify left
         pack $framecurrent.dat -in $framecurrent -side left -anchor w -padx 1
 
       #--- Cree un frame pour le choix de date min et max
@@ -2052,14 +2194,14 @@ namespace eval bddimages_liste_gui {
             #--- Cree un label
             label $framecurrent.datemin.lab -text "DATE-OBS start" -width 20
             pack $framecurrent.datemin.lab -in $framecurrent.datemin -side left -anchor w -padx 1
-            #--- Cree une ligne d'entree pour la variable form_req(datemin)
+            #--- Cree une ligne d'entree pour la variable ::bddimages_liste_gui::form_req(datemin)
             entry $framecurrent.datemin.date -textvariable ::bddimages_liste_gui::form_req(datemin) -borderwidth 1 -relief groove  -justify left
             pack $framecurrent.datemin.date -in $framecurrent.datemin -side left -anchor w -padx 1
             #--- Creation du bouton d'acces au calendrier graphique
             button $framecurrent.datemin.calstart -image icon_calendar -borderwidth 1 \
                -command [list ::bddimages_liste_gui::ouvreCalendrier %X %Y $clockformat ::bddimages_liste_gui::form_req(datemin)]
             pack $framecurrent.datemin.calstart -in $framecurrent.datemin -side left -anchor e -padx 2 -pady 2 -expand 0
-            #--- Creation du bouton de remise a zero de form_req(datemin)
+            #--- Creation du bouton de remise a zero de ::bddimages_liste_gui::form_req(datemin)
             button $framecurrent.datemin.cleanstart -image icon_clean -borderwidth 1 \
                -command { set ::bddimages_liste_gui::form_req(datemin) "" }
             pack $framecurrent.datemin.cleanstart -in $framecurrent.datemin -side left -anchor e -padx 2 -pady 2 -expand 0
@@ -2070,14 +2212,14 @@ namespace eval bddimages_liste_gui {
             #--- Cree un label
             label $framecurrent.datemax.lab -text "DATE-OBS stop" -width 20
             pack $framecurrent.datemax.lab -in $framecurrent.datemax -side left -anchor w -padx 1
-            #--- Cree une ligne d'entree pour la variable form_req(datemax)
+            #--- Cree une ligne d'entree pour la variable ::bddimages_liste_gui::form_req(datemax)
             entry $framecurrent.datemax.date -textvariable ::bddimages_liste_gui::form_req(datemax) -borderwidth 1 -relief groove -justify left
             pack $framecurrent.datemax.date -in $framecurrent.datemax -side left -anchor w -padx 1
             #--- Creation du bouton d'acces au calendrier graphique
             button $framecurrent.datemax.calstop -image icon_calendar -borderwidth 1 \
                -command [list ::bddimages_liste_gui::ouvreCalendrier %X %Y $clockformat ::bddimages_liste_gui::form_req(datemax)]
             pack $framecurrent.datemax.calstop -in $framecurrent.datemax -side left -anchor e -padx 2 -pady 2 -expand 0
-            #--- Creation du bouton de remise a zero de form_req(datemax)
+            #--- Creation du bouton de remise a zero de ::bddimages_liste_gui::form_req(datemax)
             button $framecurrent.datemax.cleanstart -image icon_clean -borderwidth 1 \
                -command { set ::bddimages_liste_gui::form_req(datemax) "" }
             pack $framecurrent.datemax.cleanstart -in $framecurrent.datemax -side left -anchor e -padx 2 -pady 2 -expand 0
@@ -2088,7 +2230,7 @@ namespace eval bddimages_liste_gui {
       pack $framecurrent -in $This -anchor s -side top -expand 0 -padx 5 -pady 5
 
          #--- Bouton a cocher
-         checkbutton $framecurrent.check -highlightthickness 0 -state normal -variable form_req(type_req_check) -command { }
+         checkbutton $framecurrent.check -highlightthickness 0 -state normal -variable ::bddimages_liste_gui::form_req(type_req_check) -command { }
          pack $framecurrent.check -in $framecurrent -side left -anchor center -padx 5
          #--- Cree un label
          label $framecurrent.txt1 -font $bddconf(font,arial_10_b) -text "$caption(bddimages_liste,repondrea)"
@@ -2097,7 +2239,7 @@ namespace eval bddimages_liste_gui {
          ComboBox $framecurrent.combo1 \
              -width 20 -height 2 -font $bddconf(font,arial_10_b)\
              -relief raised -borderwidth 1 -editable 0 \
-             -textvariable form_req(type_requ) \
+             -textvariable ::bddimages_liste_gui::form_req(type_requ) \
              -values $list_comb1
          pack $framecurrent.combo1 -anchor center -side left -fill x -expand 0
          #--- Cree un label
@@ -2131,7 +2273,7 @@ namespace eval bddimages_liste_gui {
          frame $framecurrent.1 -borderwidth 0 -cursor arrow
          pack $framecurrent.1 -in $framecurrent -anchor n -side left -expand 1 -fill x -padx 1 -pady 5
             #--- Bouton check
-            checkbutton $framecurrent.1.check -highlightthickness 0 -state normal -variable form_req(choix_limit_result) -command { }
+            checkbutton $framecurrent.1.check -highlightthickness 0 -state normal -variable ::bddimages_liste_gui::form_req(choix_limit_result) -command { }
             pack $framecurrent.1.check -in $framecurrent.1 -side left -anchor c -padx 5
 
          #--- Options:
@@ -2145,13 +2287,13 @@ namespace eval bddimages_liste_gui {
                label $framecurrent.2.l.txt1 -font $bddconf(font,arial_10_b) -text "$caption(bddimages_liste,limitera)"
                pack $framecurrent.2.l.txt1 -in $framecurrent.2.l -side left -anchor w -padx 2
                #--- Cree une ligne d'entree pour la variable
-               entry $framecurrent.2.l.dat -textvariable form_req(limit_result) -borderwidth 1 -relief groove -width 8 -justify center
+               entry $framecurrent.2.l.dat -textvariable ::bddimages_liste_gui::form_req(limit_result) -borderwidth 1 -relief groove -width 8 -justify center
                pack $framecurrent.2.l.dat -in $framecurrent.2.l -side left -anchor w -padx 2
                #--- Cree un combox pour le choix
                ComboBox $framecurrent.2.l.combo \
                    -width 10 -height 1 \
                    -relief sunken -borderwidth 1 -editable 0 \
-                   -textvariable form_req(type_result) \
+                   -textvariable ::bddimages_liste_gui::form_req(type_result) \
                    -values $list_comb2
                pack $framecurrent.2.l.combo -in $framecurrent.2.l -anchor center -side left -fill x -expand 0
             #--- selection
@@ -2164,7 +2306,7 @@ namespace eval bddimages_liste_gui {
                ComboBox $framecurrent.2.s.combo2 \
                    -width 27 -height 7 \
                    -relief sunken -borderwidth 1 -editable 0 \
-                   -textvariable form_req(type_select) \
+                   -textvariable ::bddimages_liste_gui::form_req(type_select) \
                    -values $list_comb3
                pack $framecurrent.2.s.combo2 -in $framecurrent.2.s -anchor center -side left -fill x -expand 0
 
@@ -2177,7 +2319,7 @@ namespace eval bddimages_liste_gui {
          label $framecurrent.txt1 -font $bddconf(font,arial_10_b) -text "$caption(bddimages_liste,nbresreq)"
          pack $framecurrent.txt1 -in $framecurrent -side left -anchor w -padx 1
          #--- Cree une ligne d'entree pour la variable
-         entry $framecurrent.dat -textvariable form_req(nbimg) -state readonly -borderwidth 1 -relief groove -width 8 -justify center
+         entry $framecurrent.dat -textvariable ::bddimages_liste_gui::form_req(nbimg) -state readonly -borderwidth 1 -relief groove -width 8 -justify center
          pack $framecurrent.dat -in $framecurrent -side left -anchor w -padx 1
          #--- Cree un bouton ajout requete
          button $framecurrent.calc -state active -borderwidth 1 -relief groove -anchor c -text "$caption(bddimages_liste,calcul)" \

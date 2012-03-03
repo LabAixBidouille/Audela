@@ -137,6 +137,17 @@ namespace eval bddimages_analyse {
 
    variable current_image
    variable current_cata
+   variable fen
+   variable stateback
+   variable statenext
+
+
+
+   variable color_wcs_good "green"
+   variable color_wcs_bad  "gray"
+   variable color_wcs      
+   variable bddimages_wcs 
+
 
 
 
@@ -195,7 +206,7 @@ namespace eval bddimages_analyse {
 
 
 
-   proc ::bddimages_analyse::creation_wcs { img_list } {
+   proc ::bddimages_analyse::creation_wcs_1 { img_list } {
 
       global audace
       global bddconf
@@ -204,7 +215,7 @@ namespace eval bddimages_analyse {
       set catalog "/data/astrodata/Catalog/USNOA2/"
       #set catalog "/home/t1m/astrodata/Catalog/USNOA2/"
       set catalog "/astrodata/USNOA2/"
-      set catalog "/data/astrodata/Catalog/USNOA2/"
+      set catalog "/astrodata/Catalog/USNOA2/"
 
       # copie image courante dans rep temp en .fit -> bddimages_imgcorrection.tcl 
       set erreur [catch {::bddimages_imgcorrection::copy_to_tmp "IMG" $img_list} tmp_file_list]
@@ -500,6 +511,672 @@ proc get_one_image { idbddimg } {
 
 
 
+
+
+
+
+
+
+
+
+
+   #
+   # av4l_acq::initToConf
+   # Initialisation des variables de configuration
+   #
+   proc ::bddimages_analyse::inittoconf {  } {
+
+      global bddconf
+
+      set ::analyse_tools::use_skybot  1
+      set ::analyse_tools::use_usnoa2  1
+      set ::analyse_tools::use_ucac2   1
+      set ::analyse_tools::use_ucac3   1
+      set ::analyse_tools::use_nomad1  0
+      set ::analyse_tools::use_tycho2  1
+
+      set ::analyse_tools::catalog_usnoa2  "/astrodata/Catalog/USNOA2/"
+      set ::analyse_tools::catalog_ucac2   "/astrodata/Catalog/UCAC2/"
+      set ::analyse_tools::catalog_ucac3   "/astrodata/Catalog/UCAC3"
+      set ::analyse_tools::catalog_nomad1  ""
+      set ::analyse_tools::catalog_tycho2  "/astrodata/Catalog/TYCHO-2"
+      set ::analyse_tools::use_skybot      1
+      set ::analyse_tools::keep_radec      1
+      set ::analyse_tools::create_cata     0
+      set ::analyse_tools::boucle          0
+
+      #--- Creation des variables de la boite de configuration si elles n'existent pas
+      #if { ! [ info exists $bddconf(catalog_ucac2) ] } { set ::analyse_tools::catalog_ucac2 "" }
+   }
+
+
+
+
+
+   proc ::bddimages_analyse::next { } {
+
+         if {$::analyse_tools::id_current_image < $::analyse_tools::nb_img_list} {
+            incr ::analyse_tools::id_current_image
+            ::bddimages_analyse::charge_current_image
+         }
+   }
+
+
+   proc ::bddimages_analyse::back { } {
+
+         if {$::analyse_tools::id_current_image > 1 } {
+            incr ::analyse_tools::id_current_image -1
+            ::bddimages_analyse::charge_current_image
+         }
+   }
+
+
+
+   proc ::bddimages_analyse::charge_current_image { } {
+
+      global audace
+      global bddconf
+
+         cleanmark
+
+         # Charge l image en memoire
+         #gren_info "cur id $::analyse_tools::id_current_image: \n"
+         set ::analyse_tools::current_image [lindex $::analyse_tools::img_list [expr $::analyse_tools::id_current_image - 1] ]
+         set tabkey      [::bddimages_liste::lget $::analyse_tools::current_image "tabkey"]
+         set date        [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
+
+         set idbddimg    [::bddimages_liste::lget $::analyse_tools::current_image idbddimg]
+         set dirfilename [::bddimages_liste::lget $::analyse_tools::current_image dirfilename]
+         set filename    [::bddimages_liste::lget $::analyse_tools::current_image filename   ]
+         set file        [file join $bddconf(dirbase) $dirfilename $filename]
+         set ::analyse_tools::current_image_name $filename
+         set ::analyse_tools::current_image_date $date
+
+         set ::analyse_tools::ra        [lindex [::bddimages_liste::lget $tabkey ra         ] 1]
+         set ::analyse_tools::dec       [lindex [::bddimages_liste::lget $tabkey dec        ] 1]
+         set ::analyse_tools::pixsize1  [lindex [::bddimages_liste::lget $tabkey pixsize1   ] 1]
+         set ::analyse_tools::pixsize2  [lindex [::bddimages_liste::lget $tabkey pixsize2   ] 1]
+         set ::analyse_tools::foclen    [lindex [::bddimages_liste::lget $tabkey foclen     ] 1]
+         set ::analyse_tools::exposure  [lindex [::bddimages_liste::lget $tabkey EXPOSURE   ] 1]
+         set ::analyse_tools::bddimages_wcs  [string trim [lindex [::bddimages_liste::lget $tabkey bddimages_wcs  ] 1] ]
+
+         #gren_info "$::analyse_tools::id_current_image = date : $date  idbddimg : $idbddimg  file : $filename $::bddimages_analyse::bddimages_wcs\n"
+
+         # Charge l image a l ecran
+         loadima $file
+
+         # Mise a jour GUI
+         $::bddimages_analyse::fen.frm_creation_wcs.bouton.back configure -state disabled
+         $::bddimages_analyse::fen.frm_creation_wcs.bouton.back configure -state disabled
+         $::bddimages_analyse::fen.frm_creation_wcs.infoimage.nomimage    configure -text $::analyse_tools::current_image_name
+         $::bddimages_analyse::fen.frm_creation_wcs.infoimage.dateimage   configure -text $::analyse_tools::current_image_date
+         $::bddimages_analyse::fen.frm_creation_wcs.infoimage.stimage     configure -text "$::analyse_tools::id_current_image / $::analyse_tools::nb_img_list"
+
+         if {$::analyse_tools::id_current_image == 1 && $::analyse_tools::nb_img_list > 1 } {
+            $::bddimages_analyse::fen.frm_creation_wcs.bouton.back configure -state disabled
+         }
+         if {$::analyse_tools::id_current_image == $::analyse_tools::nb_img_list && $::analyse_tools::nb_img_list > 1 } {
+            $::bddimages_analyse::fen.frm_creation_wcs.bouton.next configure -state disabled
+         }
+         if {$::analyse_tools::id_current_image > 1 } {
+            $::bddimages_analyse::fen.frm_creation_wcs.bouton.back configure -state normal
+         }
+         if {$::analyse_tools::id_current_image < $::analyse_tools::nb_img_list } {
+            $::bddimages_analyse::fen.frm_creation_wcs.bouton.next configure -state normal
+         }
+         if {$::bddimages_analyse::bddimages_wcs == "Y"} {
+            set ::bddimages_analyse::color_wcs $::bddimages_analyse::color_wcs_good
+            set ::bddimages_analyse::state_wcs disabled
+         } else {
+            set ::bddimages_analyse::color_wcs $::bddimages_analyse::color_wcs_bad
+            set ::bddimages_analyse::state_wcs normal
+         }
+         $::bddimages_analyse::fen.frm_creation_wcs.bouton.go configure -bg $::bddimages_analyse::color_wcs -state $::bddimages_analyse::state_wcs
+
+
+   }
+   proc ::bddimages_analyse::get_wcs { } {
+
+         if { $::analyse_tools::boucle ==1 } {
+            ::bddimages_analyse::get_all_wcs
+         }  else {
+            ::bddimages_analyse::get_one_wcs
+         }
+
+   }
+
+
+   proc ::bddimages_analyse::get_all_wcs { } {
+
+         
+         while {1==1} {
+            ::bddimages_analyse::get_one_wcs
+            if {$::analyse_tools::id_current_image == $::analyse_tools::nb_img_list} { break }
+            ::bddimages_analyse::next
+         }
+
+   }
+
+   proc ::bddimages_analyse::get_one_wcs { } {
+
+         set tabkey         [::bddimages_liste::lget $::analyse_tools::current_image "tabkey"]
+         set date           [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs" ] 1] ]
+         set bddimages_wcs  [string trim [lindex [::bddimages_liste::lget $tabkey bddimages_wcs] 1] ]
+         set idbddimg       [::bddimages_liste::lget $::analyse_tools::current_image idbddimg]
+         set filename       [::bddimages_liste::lget $::analyse_tools::current_image filename   ]
+         set dirfilename    [::bddimages_liste::lget $::analyse_tools::current_image dirfilename]
+         #gren_info "idbddimg : $idbddimg   wcs : $bddimages_wcs \n"
+
+         set result [::analyse_tools::get_wcs]
+
+         if {$result == true } {
+            set newimg [::bddimages_liste_gui::file_to_img $filename $dirfilename]
+            
+            set ::analyse_tools::img_list [lreplace $::analyse_tools::img_list [expr $::analyse_tools::id_current_image -1] [expr $::analyse_tools::id_current_image-1] $newimg]
+            
+            set idbddimg    [::bddimages_liste::lget $newimg idbddimg]
+            set tabkey      [::bddimages_liste::lget $newimg "tabkey"]
+            set bddimages_wcs  [string trim [lindex [::bddimages_liste::lget $tabkey bddimages_wcs] 1] ]
+            #gren_info "idbddimg : $idbddimg   wcs : $bddimages_wcs  \n"
+
+            set ::bddimages_analyse::color_wcs $::bddimages_analyse::color_wcs_good
+            set ::bddimages_analyse::state_wcs disabled
+            $::bddimages_analyse::fen.frm_creation_wcs.bouton.go configure -bg $::bddimages_analyse::color_wcs -state $::bddimages_analyse::state_wcs
+
+            set ::analyse_tools::ra        [lindex [::bddimages_liste::lget $tabkey ra         ] 1]
+            set ::analyse_tools::dec       [lindex [::bddimages_liste::lget $tabkey dec        ] 1]
+            set ::analyse_tools::pixsize1  [lindex [::bddimages_liste::lget $tabkey pixsize1   ] 1]
+            set ::analyse_tools::pixsize2  [lindex [::bddimages_liste::lget $tabkey pixsize2   ] 1]
+            set ::analyse_tools::foclen    [lindex [::bddimages_liste::lget $tabkey foclen     ] 1]
+            set ::analyse_tools::exposure  [lindex [::bddimages_liste::lget $tabkey EXPOSURE   ] 1]
+
+            #affich_rond $::analyse_tools::current_listsources IMG    $::analyse_tools::color_img     4
+            affich_rond $::analyse_tools::current_listsources USNOA2 $::analyse_tools::color_usnoa2  1
+            #affich_rond $::analyse_tools::current_listsources OVNI   $::analyse_tools::color_ovni    2
+
+            #::analyse_tools::nb_img   
+            #::analyse_tools::nb_ovni  
+            #::analyse_tools::nb_usnoa2
+            
+         } else {
+            gren_info "idbddimg : $idbddimg   filename : $filename wcs : erreur \n"
+
+         }
+   }
+
+
+
+   proc ::bddimages_analyse::charge_list { img_list } {
+
+      global audace
+      global bddconf
+
+     catch {
+         if { [ info exists $::analyse_tools::img_list ] }           {unset ::analyse_tools::img_list}
+         if { [ info exists $::analyse_tools::nb_img_list ] }        {unset ::analyse_tools::nb_img_list}
+         if { [ info exists $::analyse_tools::current_image ] }      {unset ::analyse_tools::current_image}
+         if { [ info exists $::analyse_tools::current_image_name ] } {unset ::analyse_tools::current_image_name}
+      }
+      
+      set ::analyse_tools::img_list [::bddimages_imgcorrection::chrono_sort_img $img_list]
+      set ::analyse_tools::nb_img_list   [llength $::analyse_tools::img_list]
+      gren_info "nb images : $::analyse_tools::nb_img_list\n"
+
+      foreach ::analyse_tools::current_image $::analyse_tools::img_list {
+         set tabkey      [::bddimages_liste::lget $::analyse_tools::current_image "tabkey"]
+         set date        [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
+         set idbddimg    [::bddimages_liste::lget $::analyse_tools::current_image idbddimg]
+         gren_info "date : $date  idbddimg : $idbddimg\n"
+      }
+
+      # Chargement premiere image sans GUI
+      gren_info "* Premiere image :\n"
+      set ::analyse_tools::id_current_image 1
+      set ::analyse_tools::current_image [lindex $::analyse_tools::img_list 0]
+
+      set tabkey      [::bddimages_liste::lget $::analyse_tools::current_image "tabkey"]
+      set date        [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
+
+      set idbddimg    [::bddimages_liste::lget $::analyse_tools::current_image idbddimg]
+      set dirfilename [::bddimages_liste::lget $::analyse_tools::current_image dirfilename]
+      set filename    [::bddimages_liste::lget $::analyse_tools::current_image filename   ]
+      set file        [file join $bddconf(dirbase) $dirfilename $filename]
+
+      set ::analyse_tools::ra        [lindex [::bddimages_liste::lget $tabkey ra         ] 1]
+      set ::analyse_tools::dec       [lindex [::bddimages_liste::lget $tabkey dec        ] 1]
+      set ::analyse_tools::pixsize1  [lindex [::bddimages_liste::lget $tabkey pixsize1   ] 1]
+      set ::analyse_tools::pixsize2  [lindex [::bddimages_liste::lget $tabkey pixsize2   ] 1]
+      set ::analyse_tools::foclen    [lindex [::bddimages_liste::lget $tabkey foclen     ] 1]
+      set ::analyse_tools::exposure  [lindex [::bddimages_liste::lget $tabkey EXPOSURE   ] 1]
+      set ::bddimages_analyse::bddimages_wcs  [string trim [lindex [::bddimages_liste::lget $tabkey bddimages_wcs  ] 1]]
+
+      set ::analyse_tools::current_image_name $filename
+      set ::analyse_tools::current_image_date $date
+      gren_info "$::analyse_tools::id_current_image = date : $date  idbddimg : $idbddimg  file : $filename $::bddimages_analyse::bddimages_wcs\n"
+
+      # Charge l image a l ecran
+      loadima $file
+
+      # Etat des boutons
+      set ::bddimages_analyse::stateback disabled
+      if {$::analyse_tools::nb_img_list == 1} {
+         set ::bddimages_analyse::statenext disabled
+      } else {
+         set ::bddimages_analyse::statenext normal
+      }
+      if {$::bddimages_analyse::bddimages_wcs == "Y"} {
+         set ::bddimages_analyse::color_wcs $::bddimages_analyse::color_wcs_good
+         set ::bddimages_analyse::state_wcs disabled
+      } else {
+         set ::bddimages_analyse::color_wcs $::bddimages_analyse::color_wcs_bad
+         set ::bddimages_analyse::state_wcs normal
+      }
+      set ::analyse_tools::nb_img     0
+      set ::analyse_tools::nb_ovni    0
+      set ::analyse_tools::nb_usnoa2  0    
+      cleanmark
+
+   }
+
+
+
+
+
+
+
+
+
+   proc ::bddimages_analyse::creation_wcs { img_list } {
+
+      global audace
+      global bddconf
+
+      ::bddimages_analyse::charge_list $img_list
+      ::bddimages_analyse::inittoconf
+      
+      set ::bddimages_analyse::fen .new
+      
+      #--- Creation de la fenetre
+      if { [winfo exists $::bddimages_analyse::fen] } {
+         wm withdraw $::bddimages_analyse::fen
+         wm deiconify $::bddimages_analyse::fen
+         focus $::bddimages_analyse::fen
+         return
+      }
+      toplevel $::bddimages_analyse::fen -class Toplevel
+      set posx_config [ lindex [ split [ wm geometry $::bddimages_analyse::fen ] "+" ] 1 ]
+      set posy_config [ lindex [ split [ wm geometry $::bddimages_analyse::fen ] "+" ] 2 ]
+      wm geometry $::bddimages_analyse::fen +[ expr $posx_config + 165 ]+[ expr $posy_config + 55 ]
+      wm resizable $::bddimages_analyse::fen 1 1
+      wm title $::bddimages_analyse::fen "Creation du WCS"
+      wm protocol $::bddimages_analyse::fen WM_DELETE_WINDOW "destroy $::bddimages_analyse::fen"
+
+      set frm $::bddimages_analyse::fen.frm_creation_wcs
+
+      #--- Cree un frame general
+      frame $frm -borderwidth 0 -cursor arrow -relief groove
+      pack $frm -in $::bddimages_analyse::fen -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+        #--- Cree un label pour le titre
+        label $frm.titre -text "Repertoire des catalogues"
+        pack $frm.titre -in $frm -side top -padx 3 -pady 3
+
+        #--- Cree un frame pour afficher ucac2
+        set usnoa2 [frame $frm.usnoa2 -borderwidth 0 -cursor arrow -relief groove]
+        pack $usnoa2 -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             #--- Cree un checkbutton
+             checkbutton $usnoa2.check -highlightthickness 0 -text "USNO-A2" \
+                              -variable ::analyse_tools::use_usnoa2 -state disabled
+             pack $usnoa2.check -in $usnoa2 -side left -padx 5 -pady 0
+             #--- Cree un entry
+             entry $usnoa2.dir -relief sunken -textvariable ::analyse_tools::catalog_usnoa2
+             pack $usnoa2.dir -in $usnoa2 -side right -pady 1 -anchor w
+    
+        #--- Cree un frame pour afficher "utiliser les RA/DEC precedent
+        set keepradec [frame $frm.keepradec -borderwidth 0 -cursor arrow -relief groove]
+        pack $keepradec -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             #--- Cree un checkbutton
+             checkbutton $keepradec.check -highlightthickness 0 -text "Utiliser RADEC precedent" -variable ::analyse_tools::keep_radec
+             pack $keepradec.check -in $keepradec -side left -padx 5 -pady 0
+  
+        #--- Cree un frame pour afficher boucle
+        set boucle [frame $frm.boucle -borderwidth 0 -cursor arrow -relief groove]
+        pack $boucle -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             #--- Cree un checkbutton
+             checkbutton $boucle.check -highlightthickness 0 -text "Analyse continue" -variable ::analyse_tools::boucle
+             pack $boucle.check -in $boucle -side left -padx 5 -pady 0
+  
+        #--- Cree un frame pour afficher boucle
+        set bouton [frame $frm.bouton -borderwidth 0 -cursor arrow -relief groove]
+        pack $bouton -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             button $bouton.back -text "Precedent" -borderwidth 2 -takefocus 1 \
+                -command "::bddimages_analyse::back" -state $::bddimages_analyse::stateback
+             pack $bouton.back -side left -anchor e \
+                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+             button $bouton.next -text "Next" -borderwidth 2 -takefocus 1 \
+                -command "::bddimages_analyse::next" -state $::bddimages_analyse::statenext
+             pack $bouton.next -side left -anchor e \
+                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+             button $bouton.go -text "Create WCS" -borderwidth 2 -takefocus 1 \
+                -command "::bddimages_analyse::get_wcs" \
+                -bg $::bddimages_analyse::color_wcs -state $::bddimages_analyse::state_wcs
+             pack $bouton.go -side left -anchor e \
+                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+        #--- Cree un frame pour afficher info image
+        set infoimage [frame $frm.infoimage -borderwidth 0 -cursor arrow -relief groove]
+        pack $infoimage -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+            #--- Cree un label pour le Nom de l image
+            label $infoimage.nomimage -text $::analyse_tools::current_image_name
+            pack $infoimage.nomimage -in $infoimage -side top -padx 3 -pady 3
+
+            #--- Cree un label pour la date de l image
+            label $infoimage.dateimage -text $::analyse_tools::current_image_date
+            pack $infoimage.dateimage -in $infoimage -side top -padx 3 -pady 3
+
+            #--- Cree un label pour la date de l image
+            label $infoimage.stimage -text "$::analyse_tools::id_current_image / $::analyse_tools::nb_img_list"
+            pack $infoimage.stimage -in $infoimage -side top -padx 3 -pady 3
+
+        #--- Cree un frame pour afficher les champs du header
+        set keys [frame $frm.keys -borderwidth 0 -cursor arrow -relief groove]
+        pack $keys -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+            #--- RA
+            set ra [frame $keys.ra -borderwidth 0 -cursor arrow -relief groove]
+            pack $ra -in $keys -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+                label $ra.name -text "RA : "
+                pack $ra.name -in $ra -side left -padx 3 -pady 3
+                entry $ra.val -relief sunken -textvariable ::analyse_tools::ra
+                pack $ra.val -in $ra -side right -pady 1 -anchor w
+
+            #--- DEC
+            set dec [frame $keys.dec -borderwidth 0 -cursor arrow -relief groove]
+            pack $dec -in $keys -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+                label $dec.name -text "DEC : "
+                pack $dec.name -in $dec -side left -padx 3 -pady 3
+                entry $dec.val -relief sunken -textvariable ::analyse_tools::dec
+                pack $dec.val -in $dec -side right -pady 1 -anchor w
+
+            #--- pixsize1
+            set pixsize1 [frame $keys.pixsize1 -borderwidth 0 -cursor arrow -relief groove]
+            pack $pixsize1 -in $keys -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+                label $pixsize1.name -text "PIXSIZE1 : "
+                pack $pixsize1.name -in $pixsize1 -side left -padx 3 -pady 3
+                entry $pixsize1.val -relief sunken -textvariable ::analyse_tools::pixsize1
+                pack $pixsize1.val -in $pixsize1 -side right -pady 1 -anchor w
+
+            #--- pixsize2
+            set pixsize2 [frame $keys.pixsize2 -borderwidth 0 -cursor arrow -relief groove]
+            pack $pixsize2 -in $keys -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+                label $pixsize2.name -text "PIXSIZE2 : "
+                pack $pixsize2.name -in $pixsize2 -side left -padx 3 -pady 3
+                entry $pixsize2.val -relief sunken -textvariable ::analyse_tools::pixsize2
+                pack $pixsize2.val -in $pixsize2 -side right -pady 1 -anchor w
+
+            #--- foclen
+            set foclen [frame $keys.foclen -borderwidth 0 -cursor arrow -relief groove]
+            pack $foclen -in $keys -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+                label $foclen.name -text "FOCLEN : "
+                pack $foclen.name -in $foclen -side left -padx 3 -pady 3
+                entry $foclen.val -relief sunken -textvariable ::analyse_tools::foclen
+                pack $foclen.val -in $foclen -side right -pady 1 -anchor w
+
+            #--- exposure
+            set exposure [frame $keys.exposure -borderwidth 0 -cursor arrow -relief groove]
+            pack $exposure -in $keys -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+                label $exposure.name -text "EXPOSURE : "
+                pack $exposure.name -in $exposure -side left -padx 3 -pady 3
+                entry $exposure.val -relief sunken -textvariable ::analyse_tools::exposure
+                pack $exposure.val -in $exposure -side right -pady 1 -anchor w
+
+        #--- Cree un frame pour afficher boucle
+        set count [frame $frm.count -borderwidth 0 -cursor arrow -relief groove]
+        pack $count -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+           #--- Cree un frame pour afficher boucle
+           set img [frame $count.img -borderwidth 0 -cursor arrow -relief groove]
+           pack $img -in $count -anchor w -side top -expand 0 -fill x -padx 10 -pady 5
+
+                #--- Cree un label pour le titre
+                label $img.name -text "IMG : " -width 7
+                pack $img.name -in $img -side left -padx 3 -pady 3 -anchor w 
+                label $img.val -textvariable ::analyse_tools::nb_img
+                pack $img.val -in $img -side left -padx 3 -pady 3
+                button $img.color -borderwidth 0 -takefocus 1 -bg $::analyse_tools::color_img -command ""
+                pack $img.color -side left -anchor e -expand 0 
+                spinbox $img.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 5
+                pack  $img.radius -in $img -side left -anchor w
+
+           #--- Cree un frame pour afficher boucle
+           set usnoa2 [frame $count.usnoa2 -borderwidth 0 -cursor arrow -relief groove]
+           pack $usnoa2 -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                #--- Cree un label pour le titre
+                label $usnoa2.name -text "USNOA2 : " -width 7
+                pack $usnoa2.name -in $usnoa2 -side left -padx 3 -pady 3 -anchor w 
+                label $usnoa2.val -textvariable ::analyse_tools::nb_usnoa2
+                pack $usnoa2.val -in $usnoa2 -side left -padx 3 -pady 3
+                button $usnoa2.color -borderwidth 0 -takefocus 1 -bg $::analyse_tools::color_usnoa2 -command ""
+                pack $usnoa2.color -side left -anchor e -expand 0 
+                spinbox $usnoa2.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 5
+                pack  $usnoa2.radius -in $usnoa2 -side left -anchor w
+
+           #--- Cree un frame pour afficher boucle
+           set ovni [frame $count.ovni -borderwidth 0 -cursor arrow -relief groove]
+           pack $ovni -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                #--- Cree un label pour le titre
+                label   $ovni.name   -text "OVNI : " -width 7
+                pack    $ovni.name   -in $ovni -side left -padx 3 -pady 3 -anchor w  -fill x
+                label   $ovni.val    -textvariable ::analyse_tools::nb_ovni
+                pack    $ovni.val    -in $ovni -side left -padx 3 -pady 3
+                button  $ovni.color  -borderwidth 0 -takefocus 1 -bg $::analyse_tools::color_ovni -command ""
+                pack    $ovni.color  -side left -anchor e -expand 0 
+                spinbox $ovni.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 5
+                pack    $ovni.radius -in $ovni -side left -anchor w
+
+
+
+   }
+   
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   proc ::bddimages_analyse::creation_cata { img_list } {
+
+      global audace
+      global bddconf
+
+      if { [ info exists $::analyse_tools::img_list ] }      {unset ::analyse_tools::img_list}
+      if { [ info exists $::analyse_tools::nb_img_list ] }   {unset ::analyse_tools::nb_img_list}
+      if { [ info exists $::analyse_tools::current_image ] } {unset ::analyse_tools::current_image}
+      set ::analyse_tools::img_list      $img_list
+      set ::analyse_tools::nb_img_list   [llength $::analyse_tools::img_list]
+      gren_info "nb images : $::analyse_tools::nb_img_list\n"
+      
+      ::bddimages_analyse::inittoconf
+      
+      set this .new
+      
+      #--- Creation de la fenetre
+      if { [winfo exists $this] } {
+         wm withdraw $this
+         wm deiconify $this
+         focus $this
+         return
+      }
+      toplevel $this -class Toplevel
+      set posx_config [ lindex [ split [ wm geometry $::audace(base) ] "+" ] 1 ]
+      set posy_config [ lindex [ split [ wm geometry $::audace(base) ] "+" ] 2 ]
+      wm geometry $this +[ expr $posx_config + 165 ]+[ expr $posy_config + 55 ]
+      wm resizable $this 1 1
+      wm title $this "Creation du WCS"
+      wm protocol $this WM_DELETE_WINDOW "destroy $this"
+
+      set frm $this.frm_creation_wcs
+
+      #--- Cree un frame general
+      frame $frm -borderwidth 0 -cursor arrow -relief groove
+      pack $frm -in $this -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+        #--- Cree un label pour le titre
+        label $frm.titre -text "Repertoire des catalogues"
+        pack $frm.titre -in $frm -side top -padx 3 -pady 3
+
+        #--- Cree un frame pour afficher ucac2
+        set usnoa2 [frame $frm.usnoa2 -borderwidth 0 -cursor arrow -relief groove]
+        pack $usnoa2 -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             #--- Cree un checkbutton
+             checkbutton $usnoa2.check -highlightthickness 0 -text "USNO-A2" \
+                              -variable ::analyse_tools::use_usnoa2 -state disabled
+             pack $usnoa2.check -in $usnoa2 -side left -padx 5 -pady 0
+             #--- Cree un entry
+             entry $usnoa2.dir -relief sunken -textvariable ::analyse_tools::catalog_usnoa2
+             pack $usnoa2.dir -in $usnoa2 -side right -pady 1 -anchor w
+  
+        #--- Cree un frame pour afficher ucac2
+        set tycho2 [frame $frm.tycho2 -borderwidth 0 -cursor arrow -relief groove]
+        pack $tycho2 -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             #--- Cree un checkbutton
+             checkbutton $tycho2.check -highlightthickness 0 -text "tycho2" -variable ::analyse_tools::use_tycho2
+             pack $tycho2.check -in $tycho2 -side left -padx 5 -pady 0
+             #--- Cree un entry
+             entry $tycho2.dir -relief sunken -textvariable ::analyse_tools::catalog_tycho2
+             pack $tycho2.dir -in $tycho2 -side right -pady 1 -anchor w
+  
+        #--- Cree un frame pour afficher ucac2
+        set ucac2 [frame $frm.ucac2 -borderwidth 0 -cursor arrow -relief groove]
+        pack $ucac2 -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             #--- Cree un checkbutton
+             checkbutton $ucac2.check -highlightthickness 0 -text "ucac2" -variable ::analyse_tools::use_ucac2
+             pack $ucac2.check -in $ucac2 -side left -padx 5 -pady 0
+             #--- Cree un entry
+             entry $ucac2.dir -relief sunken -textvariable ::analyse_tools::catalog_ucac2
+             pack $ucac2.dir -in $ucac2 -side right -pady 1 -anchor w
+  
+        #--- Cree un frame pour afficher ucac3
+        set ucac3 [frame $frm.ucac3 -borderwidth 0 -cursor arrow -relief groove]
+        pack $ucac3 -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             #--- Cree un checkbutton
+             checkbutton $ucac3.check -highlightthickness 0 -text "ucac3" -variable ::analyse_tools::use_ucac3
+             pack $ucac3.check -in $ucac3 -side left -padx 5 -pady 0
+             #--- Cree un entry
+             entry $ucac3.dir -relief sunken -textvariable ::analyse_tools::catalog_ucac3
+             pack $ucac3.dir -in $ucac3 -side right -pady 1 -anchor w
+  
+        #--- Cree un frame pour afficher nomad1
+        set nomad1 [frame $frm.nomad1 -borderwidth 0 -cursor arrow -relief groove]
+        pack $nomad1 -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             #--- Cree un checkbutton
+             checkbutton $nomad1.check -highlightthickness 0 -text "nomad1" -variable ::analyse_tools::use_nomad1
+             pack $nomad1.check -in $nomad1 -side left -padx 5 -pady 0
+             #--- Cree un entry
+             entry $nomad1.dir -relief sunken -textvariable ::analyse_tools::catalog_nomad1
+             pack $nomad1.dir -in $nomad1 -side right -pady 1 -anchor w
+  
+        #--- Cree un frame pour afficher "utiliser les RA/DEC precedent
+        set keepradec [frame $frm.keepradec -borderwidth 0 -cursor arrow -relief groove]
+        pack $keepradec -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             #--- Cree un checkbutton
+             checkbutton $keepradec.check -highlightthickness 0 -text "Utiliser RADEC precedent" -variable ::analyse_tools::keep_radec
+             pack $keepradec.check -in $keepradec -side left -padx 5 -pady 0
+  
+        #--- Cree un frame pour afficher creation du cata
+        set create_cata [frame $frm.create_cata -borderwidth 0 -cursor arrow -relief groove]
+        pack $create_cata -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             #--- Cree un checkbutton
+             checkbutton $create_cata.check -highlightthickness 0 -text "Creer le fichier CATA" -variable ::analyse_tools::create_cata
+             pack $create_cata.check -in $create_cata -side left -padx 5 -pady 0
+  
+        #--- Cree un frame pour afficher boucle
+        set boucle [frame $frm.boucle -borderwidth 0 -cursor arrow -relief groove]
+        pack $boucle -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             #--- Cree un checkbutton
+             checkbutton $boucle.check -highlightthickness 0 -text "Analyse continue" -variable ::analyse_tools::boucle
+             pack $boucle.check -in $boucle -side left -padx 5 -pady 0
+  
+        #--- Cree un frame pour afficher boucle
+        set bouton [frame $frm.bouton -borderwidth 0 -cursor arrow -relief groove]
+        pack $bouton -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             button $bouton.back -text "Precedent" -borderwidth 2 -takefocus 1 \
+                -command ""
+             pack $bouton.back -side left -anchor e \
+                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+             button $bouton.next -text "Next" -borderwidth 2 -takefocus 1 \
+                -command ""
+             pack $bouton.next -side left -anchor e \
+                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+             button $bouton.go -text "Go" -borderwidth 2 -takefocus 1 \
+                -command "::bddimages_analyse::analyse"
+             pack $bouton.go -side left -anchor e \
+                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+
+        #--- Cree un label pour le titre
+        label $frm.nomimage -text "Image : "
+        pack $frm.nomimage -in $frm -side top -padx 3 -pady 3
+
+
+        #--- Cree un frame pour afficher boucle
+        set count [frame $frm.count -borderwidth 0 -cursor arrow -relief groove]
+        pack $count -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+           #--- Cree un frame pour afficher boucle
+           set img [frame $count.img -borderwidth 0 -cursor arrow -relief groove]
+           pack $img -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                #--- Cree un label pour le titre
+                label $img.name -text "IMG : "
+                pack $img.name -in $img -side left -padx 3 -pady 3
+                label $img.val -text "127"
+                pack $img.val -in $img -side left -padx 3 -pady 3
+                button $img.color -text "Color" -borderwidth 0 -takefocus 1 \
+                   -command ""
+                pack $img.color -side left -anchor e -expand 0 -padx 2 -pady 2 -ipadx 2 -ipady 2 
+                spinbox $img.epaisseur -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 5
+                pack  $img.epaisseur -in $img -side left -anchor w
+
+
+
+   }
+   
 
 
 
