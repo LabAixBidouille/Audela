@@ -632,6 +632,7 @@ proc ::webcam::configureCamera { camItem bufNo } {
          -longueposelinkno $linkNo \
          -longueposelinkbit $conf(webcam,$camItem,longueposelinkbit) \
          -longueposestart $conf(webcam,$camItem,longueposestartvalue) \
+         -debug_directory $::audace(rep_log) \
       ]
 
       #--- J'envoie les dimensions des pixels a la librairie

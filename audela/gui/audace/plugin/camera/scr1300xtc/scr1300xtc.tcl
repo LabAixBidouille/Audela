@@ -231,8 +231,12 @@ proc ::scr1300xtc::configureCamera { camItem bufNo } {
       #--- Je cree la liaison utilisee par la camera pour l'acquisition (cette commande arctive porttalk si necessaire)
       set linkNo [ ::confLink::create $conf(scr1300xtc,port) "cam$camItem" "acquisition" "bits 1 to 8" ]
       #--- Je cree la camera
-      if { [ catch { set camNo [ cam::create synonyme $conf(scr1300xtc,port) -name SCR1300XTC ] } m ] == 1 } {
-         error "" "" "NotRoot"
+      if { [ catch { set camNo [ cam::create synonyme $conf(scr1300xtc,port) -debug_directory $::audace(rep_log) -name SCR1300XTC ] } catchError ] == 1 } {
+         if { [ string first "sufficient privileges to access parallel port" $catchError ] != -1 } {
+            error "" "" "NotRoot"
+         } else {
+            error $catchError
+         }
       }
       console::affiche_entete "$caption(scr1300xtc,port_camera) $caption(scr1300xtc,2points) $conf(scr1300xtc,port)\n"
       console::affiche_saut "\n"

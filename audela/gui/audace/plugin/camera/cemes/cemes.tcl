@@ -256,7 +256,7 @@ proc ::cemes::configureCamera { camItem bufNo } {
          error "" "" "CameraUnique"
       }
       #--- Je cree la camera
-      set camNo [ cam::create cemes PCI ]
+      set camNo [ cam::create cemes PCI -debug_directory $::audace(rep_log) ]
       console::affiche_entete "$caption(cemes,port_camera) $caption(cemes,2points) [ cam$camNo port ]\n"
       console::affiche_saut "\n"
       #--- Je change de variable

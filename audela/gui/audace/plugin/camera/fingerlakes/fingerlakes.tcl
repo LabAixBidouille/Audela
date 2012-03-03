@@ -296,7 +296,7 @@ proc ::fingerlakes::configureCamera { camItem bufNo } {
          error "" "" "CameraUnique"
       }
       #--- Je cree la camera
-      set camNo [ cam::create fingerlakes USB ]
+      set camNo [ cam::create fingerlakes USB -debug_directory $::audace(rep_log) ]
       console::affiche_entete "$caption(fingerlakes,port_camera) ([ cam$camNo name ]) $caption(fingerlakes,2points) USB\n"
       console::affiche_saut "\n"
       #--- Je change de variable

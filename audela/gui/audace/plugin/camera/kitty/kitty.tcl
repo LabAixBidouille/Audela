@@ -300,8 +300,12 @@ proc ::kitty::configureCamera { camItem bufNo } {
       #--- Je cree la liaison utilisee par la camera pour l'acquisition (cette commande arctive porttalk si necessaire)
       set linkNo [ ::confLink::create $conf(kitty,port) "cam$camItem" "acquisition" "bits 1 to 8" ]
       #--- Je cree la camera
-      if { [ catch { set camNo [ cam::create k2 $conf(kitty,port) -name KITTYK2 ] } m ] == 1 } {
-         error "" "" "NotRoot"
+      if { [ catch { set camNo [ cam::create k2 $conf(kitty,port) -debug_directory $::audace(rep_log) -name KITTYK2 ] } catchError ] == 1 } {
+         if { [ string first "sufficient privileges to access parallel port" $catchError ] != -1 } {
+            error "" "" "NotRoot"
+         } else {
+            error $catchError
+         }
       }
       console::affiche_entete "$caption(kitty,port_camera) $caption(kitty,2points) $conf(kitty,port)\n"
       console::affiche_saut "\n"
