@@ -682,7 +682,7 @@ proc ::confEqt::startPlugin { } {
          set catchError [ catch { ::$pluginLabel\::createPlugin } catchMessage ]
          if { $catchError == 1 } {
             #--- j'affiche un message d'erreur
-            ::console::affiche_erreur "Error start equipment $pluginLabel : $catchMessage\n"
+            ::console::affiche_erreur "Error start equipment $pluginLabel: $catchMessage\n\n"
          }
          #--- Effacement du message d'alerte s'il existe
          if [ winfo exists $audace(base).connectEquipement ] {
