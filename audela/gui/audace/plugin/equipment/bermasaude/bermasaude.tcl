@@ -135,6 +135,11 @@ namespace eval bermasaude {
          set conf(bermasaude,port) [ lindex $widget(list_connexion) 0 ]
       }
 
+      #--- Rajoute le nom du port dans le cas d'une connexion automatique au demarrage
+      if { $bermasaude(connect) != 0 && [ lsearch $widget(list_connexion) $conf(bermasaude,port) ] == -1 } {
+         lappend widget(list_connexion) $conf(bermasaude,port)
+      }
+
       #--- Copie de conf(...) dans la variable widget
       set widget(port)  $conf(bermasaude,port)
       set widget(combi) [ lindex "$caption(bermasaude,bermasaude_bvri) $caption(bermasaude,bermasaude_cmj)" \
@@ -330,36 +335,48 @@ namespace eval bermasaude {
       ::bermasaude::deletePlugin
 
       #--- Ouvre le port comx de communication de la roue a filtres BerMasAude
-      set ttybermasaude [ ::bermasaude::bermasaude_create $conf(bermasaude,port) ]
-      if { [ ::bermasaude::bermasaude_etat_roue $ttybermasaude ] == "0" } {
-         ::bermasaude::bermasaude_reset $ttybermasaude
-         #--- Attente de l'arret en rotation de la roue a filtres
-         after 1000
-         while { [ ::bermasaude::bermasaude_etat_roue $ttybermasaude ] == "1" } {
+      set catchResult [ catch {
+         set ttybermasaude [ ::bermasaude::bermasaude_create $conf(bermasaude,port) ]
+         if { [ ::bermasaude::bermasaude_etat_roue $ttybermasaude ] == "0" } {
+            ::bermasaude::bermasaude_reset $ttybermasaude
+            #--- Attente de l'arret en rotation de la roue a filtres
             after 1000
+            while { [ ::bermasaude::bermasaude_etat_roue $ttybermasaude ] == "1" } {
+               after 1000
+            }
+            console::affiche_entete "$caption(bermasaude,bermasaude_port)\
+               $caption(bermasaude,caractere_2points) $conf(bermasaude,port)\n"
+            console::affiche_entete "$caption(bermasaude,bermasaude_combinaison)\
+               $caption(bermasaude,caractere_2points) [ lindex "$caption(bermasaude,bermasaude_bvri) \
+               $caption(bermasaude,bermasaude_cmj)" $conf(bermasaude,combi) ]\n"
+            #--- Demande et affiche la version du logiciel du microcontroleur
+            set v_firmware [ ::bermasaude::bermasaude_v_firmware $ttybermasaude ]
+            console::affiche_entete "$caption(bermasaude,bermasaude_version_micro) $v_firmware\n"
+            #--- Demande et affiche le nombre de filtres de la roue
+            set nbr_filtres [ ::bermasaude::bermasaude_nbr_filtres $ttybermasaude ]
+            console::affiche_entete "[ format $caption(bermasaude,bermasaude_nbr_filtres)\
+               $nbr_filtres ]\n\n"
+            set bermasaude(connect) "1"
+            #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par l'equipement)
+            set linkNo [ ::confLink::create $conf(bermasaude,port) "bermasaude" "control" "" -noopen ]
+            #--- Gestion des boutons actifs/inactifs
+            ::bermasaude::connectBerMasAude
+         } else {
+            ::bermasaude::deletePlugin
+            set bermasaude(connect) "0"
+            #--- Configure l'etat des boutons (normal ou disabled)
+            ::bermasaude::configureEtatBoutons
          }
-         console::affiche_entete "$caption(bermasaude,bermasaude_port)\
-            $caption(bermasaude,caractere_2points) $conf(bermasaude,port)\n"
-         console::affiche_entete "$caption(bermasaude,bermasaude_combinaison)\
-            $caption(bermasaude,caractere_2points) [ lindex "$caption(bermasaude,bermasaude_bvri) \
-            $caption(bermasaude,bermasaude_cmj)" $conf(bermasaude,combi) ]\n"
-         #--- Demande et affiche la version du logiciel du microcontroleur
-         set v_firmware [ ::bermasaude::bermasaude_v_firmware $ttybermasaude ]
-         console::affiche_entete "$caption(bermasaude,bermasaude_version_micro) $v_firmware\n"
-         #--- Demande et affiche le nombre de filtres de la roue
-         set nbr_filtres [ ::bermasaude::bermasaude_nbr_filtres $ttybermasaude ]
-         console::affiche_entete "[ format $caption(bermasaude,bermasaude_nbr_filtres)\
-            $nbr_filtres ]\n\n"
-         set bermasaude(connect) "1"
-         #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par l'equipement)
-         set linkNo [ ::confLink::create $conf(bermasaude,port) "bermasaude" "control" "" -noopen ]
-         #--- Gestion des boutons actifs/inactifs
-         ::bermasaude::connectBerMasAude
-      } else {
+      } catchMessage ]
+
+      if { $catchResult == "1" } {
+         #--- En cas d'erreur, je libere toutes les ressources allouees
          ::bermasaude::deletePlugin
          set bermasaude(connect) "0"
          #--- Configure l'etat des boutons (normal ou disabled)
          ::bermasaude::configureEtatBoutons
+         #--- Je transmets l'erreur a la procedure appelante
+         ::console::affiche_erreur "Error start equipment bermasaude: $catchMessage\n\n"
       }
 
       #--- Effacement du message d'alerte s'il existe
