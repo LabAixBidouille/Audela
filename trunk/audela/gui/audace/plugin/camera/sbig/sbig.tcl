@@ -375,12 +375,12 @@ proc ::sbig::configureCamera { camItem bufNo } {
       set linkNo [ ::confLink::create $conf(sbig,port) "cam$camItem" "acquisition" "bits 1 to 8" ]
       #--- Je cree la camera
       if { $::tcl_platform(platform) == "windows" } {
-        set camNo [ cam::create sbig $conf(sbig,port) -ip $conf(sbig,host) -lptaddress $lptAddress ]
+        set camNo [ cam::create sbig $conf(sbig,port) -debug_directory $::audace(rep_log) -ip $conf(sbig,host) -lptaddress $lptAddress ]
       } else {
          if { $conf(sbig,port)=="USB" || $conf(sbig,port)=="Ethernet" } {
-           set camNo [ cam::create sbig $conf(sbig,port) -ip $conf(sbig,host) ]
+           set camNo [ cam::create sbig $conf(sbig,port) -debug_directory $::audace(rep_log) -ip $conf(sbig,host) ]
          } else {
-           set camNo [ cam::create sbigparallel $conf(sbig,port) -lptaddress $lptAddress ]
+           set camNo [ cam::create sbigparallel $conf(sbig,port) -debug_directory $::audace(rep_log) -lptaddress $lptAddress ]
          }
       }
       console::affiche_entete "$caption(sbig,port_camera) ([ cam$camNo name ]) $caption(sbig,2points) $conf(sbig,port)\n"

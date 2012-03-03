@@ -316,7 +316,7 @@ proc ::andorusb::configureCamera { camItem bufNo } {
       }
       #--- Je mets conf(andorusb,config) entre guillemets pour le cas ou le nom du repertoire contient des espaces
       #--- Je cree la camera
-      set camNo [ cam::create andorusb USB $conf(andorusb,config) ]
+      set camNo [ cam::create andorusb USB $conf(andorusb,config) -debug_directory $::audace(rep_log) ]
       console::affiche_entete "$caption(andorusb,port_camera) ([ cam$camNo name ]) \
          $caption(andorusb,2points) $conf(andorusb,config)\n"
       console::affiche_saut "\n"

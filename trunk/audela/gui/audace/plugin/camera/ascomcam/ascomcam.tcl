@@ -266,7 +266,7 @@ proc ::ascomcam::configureCamera { camItem bufNo } {
          error "" "CameraUnique"
       }
       #--- Je cree la camera
-      set camNo [ cam::create ascomcam $conf(ascomcam,modele) ]
+      set camNo [ cam::create ascomcam $conf(ascomcam,modele) -debug_directory $::audace(rep_log) ]
       console::affiche_entete "$caption(ascomcam,port_camera) $caption(ascomcam,2points) $conf(ascomcam,modele)\n"
       console::affiche_saut "\n"
       #--- Je change de variable

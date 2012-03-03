@@ -308,7 +308,8 @@ proc ::cagire::configureCamera { camItem bufNo } {
       }
       #--- Je mets conf(cagire,config) entre guillemets pour le cas ou le nom du repertoire contient des espaces
       #--- Je cree la camera
-      set camNo [ cam::create cagire TCP -ip $conf(cagire,ipserver) -port $conf(cagire,portserver) -impath $conf(cagire,config) -simu 1]
+      set camNo [ cam::create cagire TCP -debug_directory $::audace(rep_log) -ip $conf(cagire,ipserver) \
+         -port $conf(cagire,portserver) -impath $conf(cagire,config) -simu 1]
       console::affiche_entete "$caption(cagire,port_camera) ([ cam$camNo name ]) \
          $caption(cagire,2points) $conf(cagire,config)\n"
       console::affiche_saut "\n"

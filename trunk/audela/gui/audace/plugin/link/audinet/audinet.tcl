@@ -171,7 +171,7 @@ proc ::audinet::fillConfigPage { frm } {
          if { $::audinet::widget(audinet,ipsetting) == "1" } {
             #--- Remarque : Comme setip est une commande specifique a une camera audinet,
             #--- il faut creer temporairement une camera de type audinet pour pouvoir executer la commande
-            set camtemp [ cam::create audinet ]
+            set camtemp [ cam::create audinet -debug_directory $::audace(rep_log) ]
             set erreur [ catch { cam$camtemp setip $::audinet::widget(audinet,mac_address) $::audinet::widget(audinet,host) } msg ]
             if { $erreur == "1" } {
                tk_messageBox -message "$caption(audinet,erreur_setip)" -icon error

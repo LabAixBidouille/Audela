@@ -413,8 +413,7 @@ proc ::audine::configureCamera { camItem bufNo } {
             set linkNo [ ::confLink::create $conf(audine,port) "cam$camItem" "acquisition" "bits 1 to 8" ]
             #--- Je cree la camera
             if { [ catch { set camNo [ cam::create audine $conf(audine,port) -debug_directory $::audace(rep_log) -name Audine -ccd $ccd ] } catchError ] == 1 } {
-               console::disp "$catchError\n"
-               if { [string first "sufficient privileges to access parallel port" $catchError] != -1 } {
+               if { [ string first "sufficient privileges to access parallel port" $catchError ] != -1 } {
                   error "" "" "NotRoot"
                } else {
                   error $catchError
@@ -464,7 +463,7 @@ proc ::audine::configureCamera { camItem bufNo } {
             } else {
                #--- Je cree la camera
                set camNo [ cam::create ethernaude $conf(audine,port) -ip $conf(ethernaude,host) \
-                  -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert -debug_eth \ 
+                  -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert -debug_eth \
                   -debug_directory $::audace(rep_log) ]
             }
             #--- Je cree la liaison utilisee par la camera pour l'acquisition

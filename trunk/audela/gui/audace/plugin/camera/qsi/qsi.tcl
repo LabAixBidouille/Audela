@@ -284,7 +284,7 @@ proc ::qsi::configureCamera { camItem bufNo } {
          error "" "CameraUnique"
       }
       #--- Je cree la camera
-      set camNo [ cam::create qsi USB ]
+      set camNo [ cam::create qsi USB -debug_directory $::audace(rep_log) ]
       console::affiche_entete "$caption(qsi,port_camera) $caption(qsi,2points) USB\n"
       console::affiche_saut "\n"
       #--- Je change de variable

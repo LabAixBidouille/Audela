@@ -194,8 +194,12 @@ proc ::th7852a::configureCamera { camItem bufNo } {
          error "" "" "CameraUnique"
       }
       #--- Je cree la camera
-      if { [ catch { set camNo [ cam::create camth "unknown" -name TH7852A ] } m ] == 1 } {
-         error "" "" "NotRoot"
+      if { [ catch { set camNo [ cam::create camth "unknown" -debug_directory $::audace(rep_log) -name TH7852A ] } catchError ] == 1 } {
+         if { [ string first "sufficient privileges to access parallel port" $catchError ] != -1 } {
+            error "" "" "NotRoot"
+         } else {
+            error $catchError
+         }
       }
       console::affiche_entete "$caption(th7852a,port_camera) $caption(th7852a,2points) $caption(th7852a,bus_ISA)\n"
       console::affiche_saut "\n"

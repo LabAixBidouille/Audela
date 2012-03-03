@@ -440,8 +440,12 @@ proc ::hisis::configureCamera { camItem bufNo } {
          #--- Je cree la liaison utilisee par la camera pour l'acquisition (cette commande arctive porttalk si necessaire)
          set linkNo [ ::confLink::create $conf(hisis,port) "cam$camItem" "acquisition" "bits 1 to 8" ]
          #--- Je cree la camera
-         if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS11 -loglevel $logLevel ] } m ] == 1 } {
-            error "" "" "NotRoot"
+         if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -debug_directory $::audace(rep_log) -name Hi-SIS11 -loglevel $logLevel ] } catchError ] == 1 } {
+            if { [ string first "sufficient privileges to access parallel port" $catchError ] != -1 } {
+               error "" "" "NotRoot"
+            } else {
+               error $catchError
+            }
          }
          console::affiche_entete "$caption(hisis,port_camera) $conf(hisis,modele)\
             $caption(hisis,2points) $conf(hisis,port)\n"
@@ -457,8 +461,12 @@ proc ::hisis::configureCamera { camItem bufNo } {
          #--- Je cree la liaison utilisee par la camera pour l'acquisition (cette commande arctive porttalk si necessaire)
          set linkNo [ ::confLink::create $conf(hisis,port) "cam$camItem" "acquisition" "bits 1 to 8" ]
          #--- Je cree la camera
-         if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS22-[ lindex $conf(hisis,res) 0 ] -loglevel $logLevel ] } m ] == 1 } {
-            error "" "" "NotRoot"
+         if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -debug_directory $::audace(rep_log) -name Hi-SIS22-[ lindex $conf(hisis,res) 0 ] -loglevel $logLevel ] } catchError ] == 1 } {
+            if { [ string first "sufficient privileges to access parallel port" $catchError ] != -1 } {
+               error "" "" "NotRoot"
+            } else {
+               error $catchError
+            }
          }
          console::affiche_entete "$caption(hisis,port_camera) $conf(hisis,modele) ($conf(hisis,res))\
             $caption(hisis,2points) $conf(hisis,port)\n"
@@ -488,8 +496,12 @@ proc ::hisis::configureCamera { camItem bufNo } {
          #--- Je cree la liaison utilisee par la camera pour l'acquisition (cette commande arctive porttalk si necessaire)
          set linkNo [ ::confLink::create $conf(hisis,port) "cam$camItem" "acquisition" "bits 1 to 8" ]
          #--- Je cree la camera
-         if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS23 -loglevel $logLevel ] } m ] == 1 } {
-            error "" "" "NotRoot"
+         if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -debug_directory $::audace(rep_log) -name Hi-SIS23 -loglevel $logLevel ] } catchError ] == 1 } {
+            if { [ string first "sufficient privileges to access parallel port" $catchError ] != -1 } {
+               error "" "" "NotRoot"
+            } else {
+               error $catchError
+            }
           }
          console::affiche_entete "$caption(hisis,port_camera) $conf(hisis,modele)\
             $caption(hisis,2points) $conf(hisis,port)\n"
@@ -517,8 +529,12 @@ proc ::hisis::configureCamera { camItem bufNo } {
          #--- Je cree la liaison utilisee par la camera pour l'acquisition (cette commande arctive porttalk si necessaire)
          set linkNo [ ::confLink::create $conf(hisis,port) "cam$camItem" "acquisition" "bits 1 to 8" ]
          #--- Je cree la camera
-         if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS24 -loglevel $logLevel ] } m ] == 1 } {
-            error "" "" "NotRoot"
+         if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -debug_directory $::audace(rep_log) -name Hi-SIS24 -loglevel $logLevel ] } catchError ] == 1 } {
+            if { [ string first "sufficient privileges to access parallel port" $catchError ] != -1 } {
+               error "" "" "NotRoot"
+            } else {
+               error $catchError
+            }
          }
          console::affiche_entete "$caption(hisis,port_camera) $conf(hisis,modele)\
             $caption(hisis,2points) $conf(hisis,port)\n"
@@ -546,8 +562,12 @@ proc ::hisis::configureCamera { camItem bufNo } {
          #--- Je cree la liaison utilisee par la camera pour l'acquisition (cette commande arctive porttalk si necessaire)
          set linkNo [ ::confLink::create $conf(hisis,port) "cam$camItem" "acquisition" "bits 1 to 8" ]
          #--- Je cree la camera
-         if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS33 -loglevel $logLevel ] } m ] == 1 } {
-            error "" "" "NotRoot"
+         if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -debug_directory $::audace(rep_log) -name Hi-SIS33 -loglevel $logLevel ] } catchError ] == 1 } {
+            if { [ string first "sufficient privileges to access parallel port" $catchError ] != -1 } {
+               error "" "" "NotRoot"
+            } else {
+               error $catchError
+            }
          }
          console::affiche_entete "$caption(hisis,port_camera) $conf(hisis,modele)\
             $caption(hisis,2points) $conf(hisis,port)\n"
@@ -575,8 +595,12 @@ proc ::hisis::configureCamera { camItem bufNo } {
          #--- Je cree la liaison utilisee par la camera pour l'acquisition (cette commande arctive porttalk si necessaire)
          set linkNo [ ::confLink::create $conf(hisis,port) "cam$camItem" "acquisition" "bits 1 to 8" ]
          #--- Je cree la camera
-         if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS36 -loglevel $logLevel ] } m ] == 1 } {
-            error "" "" "NotRoot"
+         if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -debug_directory $::audace(rep_log) -name Hi-SIS36 -loglevel $logLevel ] } catchError ] == 1 } {
+            if { [ string first "sufficient privileges to access parallel port" $catchError ] != -1 } {
+               error "" "" "NotRoot"
+            } else {
+               error $catchError
+            }
          }
          console::affiche_entete "$caption(hisis,port_camera) $conf(hisis,modele)\
             $caption(hisis,2points) $conf(hisis,port)\n"
@@ -604,8 +628,12 @@ proc ::hisis::configureCamera { camItem bufNo } {
          #--- Je cree la liaison utilisee par la camera pour l'acquisition (cette commande arctive porttalk si necessaire)
          set linkNo [ ::confLink::create $conf(hisis,port) "cam$camItem" "acquisition" "bits 1 to 8" ]
          #--- Je cree la camera
-         if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS39 -loglevel $logLevel ] } m ] == 1 } {
-            error "" "" "NotRoot"
+         if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -debug_directory $::audace(rep_log) -name Hi-SIS39 -loglevel $logLevel ] } catchError ] == 1 } {
+            if { [ string first "sufficient privileges to access parallel port" $catchError ] != -1 } {
+               error "" "" "NotRoot"
+            } else {
+               error $catchError
+            }
          }
          console::affiche_entete "$caption(hisis,port_camera) $conf(hisis,modele)\
             $caption(hisis,2points) $conf(hisis,port)\n"
@@ -633,8 +661,12 @@ proc ::hisis::configureCamera { camItem bufNo } {
          #--- Je cree la liaison utilisee par la camera pour l'acquisition (cette commande arctive porttalk si necessaire)
          set linkNo [ ::confLink::create $conf(hisis,port) "cam$camItem" "acquisition" "bits 1 to 8" ]
          #--- Je cree la camera
-         if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS43 -loglevel $logLevel ] } m ] == 1 } {
-            error "" "" "NotRoot"
+         if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -debug_directory $::audace(rep_log) -name Hi-SIS43 -loglevel $logLevel ] } catchError ] == 1 } {
+            if { [ string first "sufficient privileges to access parallel port" $catchError ] != -1 } {
+               error "" "" "NotRoot"
+            } else {
+               error $catchError
+            }
          }
          console::affiche_entete "$caption(hisis,port_camera) $conf(hisis,modele)\
             $caption(hisis,2points) $conf(hisis,port)\n"
@@ -662,8 +694,12 @@ proc ::hisis::configureCamera { camItem bufNo } {
          #--- Je cree la liaison utilisee par la camera pour l'acquisition (cette commande arctive porttalk si necessaire)
          set linkNo [ ::confLink::create $conf(hisis,port) "cam$camItem" "acquisition" "bits 1 to 8" ]
          #--- Je cree la camera
-         if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS44 -loglevel $logLevel ] } m ] == 1 } {
-            error "" "" "NotRoot"
+         if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -debug_directory $::audace(rep_log) -name Hi-SIS44 -loglevel $logLevel ] } catchError ] == 1 } {
+            if { [ string first "sufficient privileges to access parallel port" $catchError ] != -1 } {
+               error "" "" "NotRoot"
+            } else {
+               error $catchError
+            }
          }
          console::affiche_entete "$caption(hisis,port_camera) $conf(hisis,modele)\
             $caption(hisis,2points) $conf(hisis,port)\n"
@@ -691,8 +727,12 @@ proc ::hisis::configureCamera { camItem bufNo } {
          #--- Je cree la liaison utilisee par la camera pour l'acquisition (cette commande arctive porttalk si necessaire)
          set linkNo [ ::confLink::create $conf(hisis,port) "cam$camItem" "acquisition" "bits 1 to 8" ]
          #--- Je cree la camera
-         if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS48 -loglevel $logLevel ] } m ] == 1 } {
-            error "" "" "NotRoot"
+         if { [ catch { set camNo [ cam::create hisis $conf(hisis,port) -debug_directory $::audace(rep_log) -name Hi-SIS48 -loglevel $logLevel ] } catchError ] == 1 } {
+            if { [ string first "sufficient privileges to access parallel port" $catchError ] != -1 } {
+               error "" "" "NotRoot"
+            } else {
+               error $catchError
+            }
          }
          console::affiche_entete "$caption(hisis,port_camera) $conf(hisis,modele)\
             $caption(hisis,2points) $conf(hisis,port)\n"

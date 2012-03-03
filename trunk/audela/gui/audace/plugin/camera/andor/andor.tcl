@@ -316,7 +316,7 @@ proc ::andor::configureCamera { camItem bufNo } {
       }
       #--- Je mets conf(andor,config) entre guillemets pour le cas ou le nom du repertoire contient des espaces
       #--- Je cree la camera
-      set camNo [ cam::create andor PCI $conf(andor,config) ]
+      set camNo [ cam::create andor PCI $conf(andor,config) -debug_directory $::audace(rep_log) ]
       console::affiche_entete "$caption(andor,port_camera) ([ cam$camNo name ]) \
          $caption(andor,2points) $conf(andor,config)\n"
       console::affiche_saut "\n"
