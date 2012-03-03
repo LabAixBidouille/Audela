@@ -173,6 +173,11 @@ proc ::ouranos::fillConfigPage { frm } {
       set conf(ouranos,port) [ lindex $list_connexion 0 ]
    }
 
+   #--- Rajoute le nom du port dans le cas d'une connexion automatique au demarrage
+   if { $private(telNo) != 0 && [ lsearch $list_connexion $conf(ouranos,port) ] == -1 } {
+      lappend list_connexion $conf(ouranos,port)
+   }
+
    #--- confToWidget
    ::ouranos::confToWidget
 
