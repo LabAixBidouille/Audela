@@ -169,9 +169,14 @@ proc ::lx200::fillConfigPage { frm } {
    set private(ite-lente_A1) "0"
 
    #--- Prise en compte des liaisons
-   set list_connexion [::confLink::getLinkLabels { "serialport" "audinet" } ]
+   set list_connexion [ ::confLink::getLinkLabels { "serialport" "audinet" } ]
    if { $conf(lx200,port) == "" } {
       set conf(lx200,port) [ lindex $list_connexion 0 ]
+   }
+
+   #--- Rajoute le nom du port dans le cas d'une connexion automatique au demarrage
+   if { $private(telNo) != 0 && [ lsearch $list_connexion $conf(lx200,port) ] == -1 } {
+      lappend list_connexion $conf(lx200,port)
    }
 
    #--- confToWidget

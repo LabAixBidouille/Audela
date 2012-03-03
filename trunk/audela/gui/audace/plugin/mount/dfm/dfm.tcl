@@ -140,6 +140,11 @@ proc ::dfm::fillConfigPage { frm } {
       set conf(dfm,portSerie) [ lindex $list_connexion 0 ]
    }
 
+   #--- Rajoute le nom du port dans le cas d'une connexion automatique au demarrage
+   if { $private(telNo) != 0 && [ lsearch $list_connexion $conf(dfm,portSerie) ] == -1 } {
+      lappend list_connexion $conf(dfm,portSerie)
+   }
+
    #--- confToWidget
    ::dfm::confToWidget
 

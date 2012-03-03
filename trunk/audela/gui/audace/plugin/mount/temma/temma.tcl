@@ -158,6 +158,11 @@ proc ::temma::fillConfigPage { frm } {
       set conf(temma,port) [ lindex $list_connexion 0 ]
    }
 
+   #--- Rajoute le nom du port dans le cas d'une connexion automatique au demarrage
+   if { $private(telNo) != 0 && [ lsearch $list_connexion $conf(temma,port) ] == -1 } {
+      lappend list_connexion $conf(temma,port)
+   }
+
    #--- confToWidget
    ::temma::confToWidget
 

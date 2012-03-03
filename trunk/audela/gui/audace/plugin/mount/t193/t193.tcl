@@ -192,6 +192,11 @@ proc ::t193::fillConfigPage { frm } {
       set conf(t193,portSerie) [ lindex $list_connexion 0 ]
    }
 
+   #--- Rajoute le nom du port dans le cas d'une connexion automatique au demarrage
+   if { $private(telNo) != 0 && [ lsearch $list_connexion $conf(t193,portSerie) ] == -1 } {
+      lappend list_connexion $conf(t193,portSerie)
+   }
+
    #--- confToWidget
    ::t193::confToWidget
 

@@ -149,6 +149,11 @@ proc ::eqmod::fillConfigPage { frm } {
       set conf(eqmod,port) [ lindex $list_connexion 0 ]
    }
 
+   #--- Rajoute le nom du port dans le cas d'une connexion automatique au demarrage
+   if { $private(telNo) != 0 && [ lsearch $list_connexion $conf(eqmod,port) ] == -1 } {
+      lappend list_connexion $conf(eqmod,port)
+   }
+
    #--- confToWidget
    ::eqmod::confToWidget
 
