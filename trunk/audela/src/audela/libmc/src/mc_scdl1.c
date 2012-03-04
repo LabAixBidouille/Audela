@@ -2979,7 +2979,7 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 				}
 			}
 			// --- compute the maximum duration of this sequence, including slewing
-			duration=objectdescr[kd].delay_slew+objectdescr[kd].delay_instrum+objectdescr[kd].delay_exposures;
+			duration=objectdescr[kd].delay_slew+objectdescr[kd].delay_exposures;
 			angle=180;
 			d1=angle/objectdescr[kd].axe_slew1;
 			angle=130;
