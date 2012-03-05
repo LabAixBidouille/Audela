@@ -96,7 +96,7 @@ SOURCE=.\libdeltatau.def
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\libtel.c
+SOURCE=..\..\libtel.cpp
 # End Source File
 # Begin Source File
 
@@ -108,7 +108,7 @@ SOURCE=..\src\teltcl.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\util.c
+SOURCE=..\..\util.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
