@@ -44,7 +44,7 @@ RSC=rc.exe
 # PROP Target_Dir ""
 F90=df.exe
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "LIBetel_EXPORTS" /YX /FD /c
-# ADD CPP /nologo /MT /W3 /GX /O2 /I "..\src" /I "..\..\..\include" /I "..\..\..\external\include\win" /I "..\..\..\external\include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "USE_TCL_STUBS" /D "USE_TK_STUBS" /FR"" /FD /c
+# ADD CPP /nologo /MT /W3 /GX /O2 /I "..\src" /I "..\..\..\include" /I "..\..\..\external\include\win" /I "..\..\..\external\include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "USE_TCL_STUBS" /D "USE_TK_STUBS" /D "_CRT_SECURE_NO_WARNINGS" /D "USE_COMPAT_CONST" /FR"" /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x40c /d "NDEBUG"
@@ -71,7 +71,7 @@ LINK32=link.exe
 # PROP Target_Dir ""
 F90=df.exe
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "LIBetel_EXPORTS" /YX /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /GX /ZI /Od /I "..\src" /I "..\..\..\include" /I "..\..\..\external\include\win" /I "..\..\..\external\include" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "USE_TCL_STUBS" /D "USE_TK_STUBS" /FR".\Debug/" /Fo".\Debug/" /Fd".\Debug/" /FD /c
+# ADD CPP /nologo /MTd /W3 /GX /ZI /Od /I "..\src" /I "..\..\..\include" /I "..\..\..\external\include\win" /I "..\..\..\external\include" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "USE_TCL_STUBS" /D "USE_TK_STUBS" /D "_CRT_SECURE_NO_WARNINGS" /D "USE_COMPAT_CONST" /FR".\Debug/" /Fo".\Debug/" /Fd".\Debug/" /FD /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x40c /d "_DEBUG"
@@ -99,7 +99,7 @@ SOURCE=.\libetel.def
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\libtel.c
+SOURCE=..\..\libtel.cpp
 # End Source File
 # Begin Source File
 
@@ -111,7 +111,7 @@ SOURCE=..\src\teltcl.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\util.c
+SOURCE=..\..\util.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
