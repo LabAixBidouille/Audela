@@ -331,7 +331,11 @@ echo "Creation du paquet Debian..."
 #- sudo chown $luser.$luser *.deb
 #-- dpkg-buildpackage -b -ai386 -rfakeroot ou Rapide : fakeroot debian/rules binary
 fakeroot dpkg -b $BUILD_DIR $BUILD_DIR$lesuffixe.deb
-echo "Paquet DEB cree."
+if test -e $BUILD_DIR$lesuffixe.deb ; then
+   echo "Paquet DEB cree."
+else
+   echo "Echec à la création du paquet DEB."
+fi
 
 
 #--- Creation du rpm :
@@ -350,7 +354,11 @@ then
     cd ..
     rm -rf rpm
     rm -f *.deb
-    echo "Paquet RPM cree."
+    if test -e $BUILD_DIR$lesuffixe.rpm ; then
+       echo "Paquet RPM cree."
+    else
+       echo "Echec à la création du paquet RPM."
+    fi
 fi
 
 rm -rf $BUILD_DIR
