@@ -11,7 +11,7 @@ set date [mc_date2iso8601 now]
 set a [regsub -all -- - $date ""]
 set a [regsub -all -- : $a ""]
 set a [regsub -all -- T $a ""]
-set a [string range $a 0 13]
+set a [string range $a 0 7]
 set version $a
 #set version 2.0.1
 set makes {audela bin}
