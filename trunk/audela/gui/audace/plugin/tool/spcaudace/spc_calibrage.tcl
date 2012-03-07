@@ -893,6 +893,11 @@ proc spc_calibreloifile { args } {
       } else {
           set spc_d 0.0
       }
+      if { [ lsearch $listemotsclef "SPC_E" ] !=-1 } {
+          set spc_e [ lindex [ buf$audace(bufNo) getkwd "SPC_E" ] 1 ]
+      } else {
+          set spc_e 0.0
+      }
       if { [ lsearch $listemotsclef "SPC_RMS" ] !=-1 } {
           set spc_rms [ lindex [ buf$audace(bufNo) getkwd "SPC_RMS" ] 1 ]
       }
@@ -940,9 +945,12 @@ proc spc_calibreloifile { args } {
               buf$audace(bufNo) setkwd [ list "SPC_B" $spc_b double "" "angstrom/pixel" ]
           }
           if { [ lsearch $listemotsclef "SPC_C" ] !=-1 } {
-              buf$audace(bufNo) setkwd [ list "SPC_C" $spc_c double "" "angstrom*angstrom/pixel*pilxe" ]
+              buf$audace(bufNo) setkwd [ list "SPC_C" $spc_c double "" "angstrom*angstrom/pixel*pixel" ]
           }
-          buf$audace(bufNo) setkwd [ list "SPC_D" $spc_d double "" "angstrom*angstrom*angstrom/pixel*pilxe*pixel" ]
+          buf$audace(bufNo) setkwd [ list "SPC_D" $spc_d double "" "angstrom*angstrom*angstrom/pixel*pixel*pixel" ]
+          if { $spc_e!=0 } {
+              buf$audace(bufNo) setkwd [ list "SPC_E" $spc_e double "" "A*A*A*A/pixel*pixel*pixel*pixel" ]
+          }
           if { [ lsearch $listemotsclef "SPC_RMS" ] !=-1 } {
               buf$audace(bufNo) setkwd [ list "SPC_RMS" $spc_rms double "" "angstrom" ]
           }
