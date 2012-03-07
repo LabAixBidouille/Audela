@@ -13,7 +13,7 @@ global spcaudace
 
 #--- Version d'SpcAudace :
 set spcaudace(num_version) "2.14"
-set spcaudace(version) "$spcaudace(num_version) - 12/02/2012"
+set spcaudace(version) "$spcaudace(num_version) - 26/02/2012"
 # ::audace::date_sys2ut ?Date?
 #set spcaudace(version) [ file mtime $spcaudace(repspc) ]
 
