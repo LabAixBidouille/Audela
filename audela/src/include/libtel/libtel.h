@@ -111,7 +111,7 @@ void libtel_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *functi
 int libtel_Getradec(Tcl_Interp *interp,char *tcllist,double *ra,double *dec);
 
 int tel_init_common(struct telprop *tel, int argc, const char **argv);
-void surveyCoord (ClientData clienData);
+static void surveyCoord (ClientData clienData);
 
 // ---- fonctions par defaut de struct tel_drv_t TEL_DRV 
 int default_tel_correct(struct telprop *tel, char *alphaDirection, double alphaDistance, char *deltaDirection, double deltaDistance);
