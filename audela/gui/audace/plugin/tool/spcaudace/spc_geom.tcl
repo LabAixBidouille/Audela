@@ -870,10 +870,12 @@ proc spc_smilex { args } {
 
 	set naxis2i [lindex [ buf$audace(bufNo) getkwd "NAXIS2" ] 1 ]
 	# set pas [ expr $naxis2i/200 ]
-	set pas [ expr int($pourcentimg*$naxis2i) ]
+	set pas [ expr round($pourcentimg*$naxis2i) ]
+       if { $pas==1 } { set pas 2 }
 
 	#----- Si hauteur>hmax : on tient compte du smilex :
-	if { $naxis2i > $spcaudace(hmax) } {
+       if { $naxis2i > $spcaudace(hmax) } {
+       # if { $naxis2i > $spcaudace(hmax) || ( $naxis2i<$spcaudace(hmax) && $flagmanuel == "o" ) }
 	    #------------------------------------------------------------------------#
 	    #--- Selection d'une raie à la sourie
 	    if { $flagmanuel == "o" } {
@@ -920,8 +922,8 @@ proc spc_smilex { args } {
 		    ##set wincoords [ list $xdeb 1 $xfin $naxis2 ]
 		    #set wincoords [ list $xdeb $ydeb $xfin $yfin ]
 		    buf$audace(bufNo) window $wincoords
-               set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
-               set naxis2 [ lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1 ]
+                    set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
+                    set naxis2 [ lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1 ]
 		    #-- Suppression de la zone selectionnee avec la souris
 		    ::confVisu::deleteBox 1
 		} else {
@@ -939,7 +941,8 @@ proc spc_smilex { args } {
                set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
                set naxis2 [ lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1 ]
                buf$audace(bufNo) window [ list $x_bord_gauche 1 $x_bord_droit $naxis2 ]
-               set pas [ expr int($pourcentimg*$naxis2) ]
+               set pas [ expr round($pourcentimg*$naxis2) ]
+               if { $pas==1 } { set pas 2 }
                # buf$audace(bufNo) save "$audace(rep_images)/${filenamespc}_zone"
             }
 
@@ -1291,7 +1294,8 @@ proc spc_autoslant { args } {
        set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
        set naxis2 [ lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1 ]
        buf$audace(bufNo) window [ list $x_bord_gauche 1 $x_bord_droit $naxis2 ]
-       set pas [ expr int($pourcentimg*$naxis2) ]
+       set pas [ expr round($pourcentimg*$naxis2) ]
+       if { $pas==1 } { set pas 2 }
        # buf$audace(bufNo) save "$audace(rep_images)/${filenamespc}_zone"
        #-- Calcul de points présents sur la raie penchée par centrage gaussien sur une ligne :
        ::console::affiche_resultat "Traitement de [expr $naxis2/$pas] lignes.\n"
