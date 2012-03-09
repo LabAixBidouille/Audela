@@ -77,90 +77,129 @@ proc etc_init { {band V} {moon_age 0} } {
    etc_inputs_set_defaults
 }
 
-proc etc_set_camera { {typecam ""} } {
-   global audace
+proc etc_set_array_cameras { } {
+   global cameras
 
-   if {$typecam=="Andor DW436"} {
-      etc_params_set C_th 0.045         ; # Thermic coefficient (electrons/sec/photocell)
-      etc_params_set G 2.8              ; # CCD gain (electrons/ADU)
-      etc_params_set N_ro 9.2           ; # Readout noise (electrons)
-      etc_params_set eta 0.85           ; # CCD Quantum efficiency in the photometric band (electron/photon)
-      etc_params_set naxis1 2048        ; # Number of pixels on axis1
-      etc_params_set naxis2 2048        ; # Number of pixels on axis2
-      etc_params_set photocell1 13.5e-6 ; # Pixel size (m)
-      etc_params_set photocell2 13.5e-6 ; # Pixel size (m)
-      return ""
-   } elseif {$typecam=="Andor Neo sCMOS"} {
-      etc_params_set C_th 0.07          ; # Thermic coefficient (electrons/sec/photocell)
-      etc_params_set G 4.               ; # (TBV) CCD gain (electrons/ADU)
-      etc_params_set N_ro 1.4           ; # Readout noise (electrons)
-      etc_params_set eta 0.57           ; # CCD Quantum efficiency in the photometric band (electron/photon)
-      etc_params_set naxis1 2560        ; # Number of pixels on axis1
-      etc_params_set naxis2 2160        ; # Number of pixels on axis2
-      etc_params_set photocell1 6.5e-6  ; # Pixel size (m)
-      etc_params_set photocell2 6.5e-6  ; # Pixel size (m)
-      return ""
-   } elseif {$typecam=="Andor Lucas R DL-604"} {
-      etc_params_set C_th 0.07          ; # Thermic coefficient (electrons/sec/photocell)
-      etc_params_set G 3.               ; # (TBV) CCD gain (electrons/ADU)
-      etc_params_set N_ro 18            ; # Readout noise (electrons)
-      etc_params_set eta 0.65           ; # CCD Quantum efficiency in the photometric band (electron/photon)
-      etc_params_set naxis1 1004        ; # Number of pixels on axis1
-      etc_params_set naxis2 1002        ; # Number of pixels on axis2
-      etc_params_set photocell1 8e-6    ; # Pixel size (m)
-      etc_params_set photocell2 8e-6    ; # Pixel size (m)
-      return ""
-   } elseif {$typecam=="Audine Kaf401ME"} {
-      etc_params_set C_th 0.2           ; # Thermic coefficient (electrons/sec/photocell)
-      etc_params_set G 2.1              ; # CCD gain (electrons/ADU)
-      etc_params_set N_ro 12            ; # Readout noise (electrons)
-      etc_params_set eta 0.5            ; # CCD Quantum efficiency in the photometric band (electron/photon)
-      etc_params_set naxis1 768         ; # Number of pixels on axis1
-      etc_params_set naxis2 512         ; # Number of pixels on axis2
-      etc_params_set photocell1 9e-6    ; # Pixel size (m)
-      etc_params_set photocell2 9e-6    ; # Pixel size (m)
-      return ""
-   } elseif {$typecam=="SBIG STL-11000M"} {
-      etc_params_set C_th 0.2           ; # Thermic coefficient (electrons/sec/photocell)
-      etc_params_set G 0.8              ; # CCD gain (electrons/ADU)
-      etc_params_set N_ro 13            ; # Readout noise (electrons)
-      etc_params_set eta 0.5            ; # CCD Quantum efficiency in the photometric band (electron/photon)
-      etc_params_set naxis1 4008        ; # Number of pixels on axis1
-      etc_params_set naxis2 2672        ; # Number of pixels on axis2
-      etc_params_set photocell1 9e-6    ; # Pixel size (m)
-      etc_params_set photocell2 9e-6    ; # Pixel size (m)
-      return ""
-   } elseif {$typecam=="SBIG STX-16803"} {
-      etc_params_set C_th 0.2           ; # Thermic coefficient (electrons/sec/photocell)
-      etc_params_set G 1.27             ; # CCD gain (electrons/ADU)
-      etc_params_set N_ro 13            ; # Readout noise (electrons)
-      etc_params_set eta 0.6            ; # CCD Quantum efficiency in the photometric band (electron/photon)
-      etc_params_set naxis1 4096        ; # Number of pixels on axis1
-      etc_params_set naxis2 4096        ; # Number of pixels on axis2
-      etc_params_set photocell1 9e-6    ; # Pixel size (m)
-      etc_params_set photocell2 9e-6    ; # Pixel size (m)
-      return ""
-   } elseif {$typecam=="ST-2000XM"} {
-      etc_params_set C_th 0.1           ; # Thermic coefficient (electrons/sec/photocell)
-      etc_params_set G 0.6              ; # CCD gain (electrons/ADU)
-      etc_params_set N_ro 7.9           ; # Readout noise (electrons)
-      etc_params_set eta 0.35           ; # CCD Quantum efficiency in the photometric band (electron/photon)
-      etc_params_set naxis1 1600        ; # Number of pixels on axis1
-      etc_params_set naxis2 1200        ; # Number of pixels on axis2
-      etc_params_set photocell1 7.4e-6  ; # Pixel size (m)
-      etc_params_set photocell2 7.4e-6  ; # Pixel size (m)
+   #--   respecter imperativemznt l'ordre [list camname  {naxis1 naxis2 photocell1 photocell2 C_th G N_ro eta Em}]
+   #   naxis1     == Number of pixels on axis1
+   #   naxis2     == Number of pixels on axis2
+   #   photocell1 == Pixel size (m)
+   #   photocell2 == Pixel size (m)
+   #   C_th       == Thermic coefficient (electrons/sec/photocell)
+   #   G          == CCD gain (electrons/ADU)
+   #   N_ro       == Readout noise (electrons)
+   #   eta        == CCD Quantum efficiency in the photometric band (electron/photon)
+   #   Em         == Electron multiplier (>1 if EMCCD, else =1)
+
+   array set cameras [list {Andor DW436} {2048 2048 13.5e-6 13.5e-6 0.045 2.8 9.2 0.85 1}]
+   array set cameras [list {Andor Neo sCMOS} {2560 2160 6.5e-6 6.5e-6 0.07 4. 1.4 0.57 1}]
+   array set cameras [list {Andor Lucas R DL-604} {1004 1002 8e-6 8e-6 0.07 3. 18 0.65 1}]
+   array set cameras [list {Audine Kaf401ME} {768 512 9e-6 9e-6 0.2 2.1 12 0.5 1}]
+   array set cameras [list {SBIG STL-11000M} {4008 2672 9e-6 9e-6 0.2 0.8 13 0.5 1}]
+   array set cameras [list {SBIG STX-16803} {4096 4096 9e-6 9e-6 0.2 1.27 13 0.6 1}]
+   array set cameras [list {ST-2000XM} {1600 1200 7.4e-6 7.4e-6 0.1 0.6 7.9 0.35 1}]
+}
+
+proc etc_set_camera { {typecam ""} } {
+   global audace cameras
+
+   etc_set_array_cameras
+
+   #--   liste des parametres
+   set list_of_params {naxis1 naxis2 photocell1 photocell2 C_th G N_ro eta Em}
+   set list_of_of_cam [lsort -dictionary [array names cameras]]
+
+   if {$typecam in $list_of_of_cam} {
+      lassign [array get cameras $typecam] -> data
+      foreach var $list_of_params val $data {
+         etc_params_set $var $val
+      }
       return ""
    } else {
-      set textes ""
-      lappend textes "Andor DW436"
-      lappend textes "Andor Neo sCMOS"
-      lappend textes "Andor Lucas R DL-604"
-      lappend textes "Audine Kaf401ME"
-      lappend textes "SBIG STL-11000M"
-      lappend textes "SBIG STX-16803"
-      lappend textes "ST-2000XM"
-      return $textes
+      return $list_of_of_cam
    }
+
+   #if {$typecam=="Andor DW436"} {
+   #   etc_params_set C_th 0.045         ; # Thermic coefficient (electrons/sec/photocell)
+   #   etc_params_set G 2.8              ; # CCD gain (electrons/ADU)
+   #   etc_params_set N_ro 9.2           ; # Readout noise (electrons)
+   #   etc_params_set eta 0.85           ; # CCD Quantum efficiency in the photometric band (electron/photon)
+   #   etc_params_set naxis1 2048        ; # Number of pixels on axis1
+   #   etc_params_set naxis2 2048        ; # Number of pixels on axis2
+   #   etc_params_set photocell1 13.5e-6 ; # Pixel size (m)
+   #   etc_params_set photocell2 13.5e-6 ; # Pixel size (m)
+   #   return ""
+   #} elseif {$typecam=="Andor Neo sCMOS"} {
+   #   etc_params_set C_th 0.07          ; # Thermic coefficient (electrons/sec/photocell)
+   #   etc_params_set G 4.               ; # (TBV) CCD gain (electrons/ADU)
+   #   etc_params_set N_ro 1.4           ; # Readout noise (electrons)
+   #   etc_params_set eta 0.57           ; # CCD Quantum efficiency in the photometric band (electron/photon)
+   #   etc_params_set naxis1 2560        ; # Number of pixels on axis1
+   #   etc_params_set naxis2 2160        ; # Number of pixels on axis2
+   #   etc_params_set photocell1 6.5e-6  ; # Pixel size (m)
+   #   etc_params_set photocell2 6.5e-6  ; # Pixel size (m)
+   #   return ""
+   #} elseif {$typecam=="Andor Lucas R DL-604"} {
+   #   etc_params_set C_th 0.07          ; # Thermic coefficient (electrons/sec/photocell)
+   #   etc_params_set G 3.               ; # (TBV) CCD gain (electrons/ADU)
+   #   etc_params_set N_ro 18            ; # Readout noise (electrons)
+   #   etc_params_set eta 0.65           ; # CCD Quantum efficiency in the photometric band (electron/photon)
+   #   etc_params_set naxis1 1004        ; # Number of pixels on axis1
+   #   etc_params_set naxis2 1002        ; # Number of pixels on axis2
+   #   etc_params_set photocell1 8e-6    ; # Pixel size (m)
+   #   etc_params_set photocell2 8e-6    ; # Pixel size (m)
+   #   return ""
+   #} elseif {$typecam=="Audine Kaf401ME"} {
+   #   etc_params_set C_th 0.2           ; # Thermic coefficient (electrons/sec/photocell)
+   #   etc_params_set G 2.1              ; # CCD gain (electrons/ADU)
+   #   etc_params_set N_ro 12            ; # Readout noise (electrons)
+   #   etc_params_set eta 0.5            ; # CCD Quantum efficiency in the photometric band (electron/photon)
+   #   etc_params_set naxis1 768         ; # Number of pixels on axis1
+   #   etc_params_set naxis2 512         ; # Number of pixels on axis2
+   #   etc_params_set photocell1 9e-6    ; # Pixel size (m)
+   #   etc_params_set photocell2 9e-6    ; # Pixel size (m)
+   #   return ""
+   #} elseif {$typecam=="SBIG STL-11000M"} {
+   #   etc_params_set C_th 0.2           ; # Thermic coefficient (electrons/sec/photocell)
+   #   etc_params_set G 0.8              ; # CCD gain (electrons/ADU)
+   #   etc_params_set N_ro 13            ; # Readout noise (electrons)
+   #   etc_params_set eta 0.5            ; # CCD Quantum efficiency in the photometric band (electron/photon)
+   #   etc_params_set naxis1 4008        ; # Number of pixels on axis1
+   #   etc_params_set naxis2 2672        ; # Number of pixels on axis2
+   #   etc_params_set photocell1 9e-6    ; # Pixel size (m)
+   #   etc_params_set photocell2 9e-6    ; # Pixel size (m)
+   #   return ""
+   #} elseif {$typecam=="SBIG STX-16803"} {
+   #   etc_params_set C_th 0.2           ; # Thermic coefficient (electrons/sec/photocell)
+   #   etc_params_set G 1.27             ; # CCD gain (electrons/ADU)
+   #   etc_params_set N_ro 13            ; # Readout noise (electrons)
+   #   etc_params_set eta 0.6            ; # CCD Quantum efficiency in the photometric band (electron/photon)
+   #   etc_params_set naxis1 4096        ; # Number of pixels on axis1
+   #   etc_params_set naxis2 4096        ; # Number of pixels on axis2
+   #   etc_params_set photocell1 9e-6    ; # Pixel size (m)
+   #   etc_params_set photocell2 9e-6    ; # Pixel size (m)
+   #   return ""
+   #} elseif {$typecam=="ST-2000XM"} {
+   #   etc_params_set C_th 0.1           ; # Thermic coefficient (electrons/sec/photocell)
+   #   etc_params_set G 0.6              ; # CCD gain (electrons/ADU)
+   #   etc_params_set N_ro 7.9           ; # Readout noise (electrons)
+   #   etc_params_set eta 0.35           ; # CCD Quantum efficiency in the photometric band (electron/photon)
+   #   etc_params_set naxis1 1600        ; # Number of pixels on axis1
+   #   etc_params_set naxis2 1200        ; # Number of pixels on axis2
+   #   etc_params_set photocell1 7.4e-6  ; # Pixel size (m)
+   #   etc_params_set photocell2 7.4e-6  ; # Pixel size (m)
+   #   return ""
+   #} else {
+   #   set textes ""
+   #   lappend textes "Andor DW436"
+   #   lappend textes "Andor Neo sCMOS"
+   #   lappend textes "Andor Lucas R DL-604"
+   #   lappend textes "Audine Kaf401ME"
+   #   lappend textes "SBIG STL-11000M"
+   #   lappend textes "SBIG STX-16803"
+   #   lappend textes "ST-2000XM"
+   #   return $textes
+   #}
 }
 
 # ===========================================================================================
