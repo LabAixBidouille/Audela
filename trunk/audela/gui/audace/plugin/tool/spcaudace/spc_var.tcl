@@ -13,7 +13,7 @@ global spcaudace
 
 #--- Version d'SpcAudace :
 set spcaudace(num_version) "2.14"
-set spcaudace(version) "$spcaudace(num_version) - 26/02/2012"
+set spcaudace(version) "$spcaudace(num_version) - 11/03/2012"
 # ::audace::date_sys2ut ?Date?
 #set spcaudace(version) [ file mtime $spcaudace(repspc) ]
 
@@ -125,6 +125,8 @@ set spcaudace(precision_centerpix) 0.2
 set spcaudace(degmax_cal) 4
 #-- Flag délcarant que les traitements sont pour la basse résolution (affichage modèle calibration...) :
 set spcaudace(br) 0
+#-- Valeur limite du RMS de la qualité de la calibration au delàa de laquelle la calibration est mauvaise :
+set spcaudace(rms_lim) 30
 
 #--- Valeur de paramètres des euristhiques algorithmiques :
 #-- Taux adoucissement pour l'extraction de continuum ew via piecewiselinear :
@@ -139,8 +141,10 @@ set spcaudace(cosmics_nbsigma) 2.5
 set spcaudace(ssk_kappa) 0.8
 #-- Degré du polynome pour l'extraction du continuum (5->2) :
 set spcaudace(degpoly_cont) 2
-#-- Fraction des bords ignorés dans certains calculs (spc_divri...) pour la détermination du Imax du profil :
+#-- Fraction des bords ignorés dans certains calculs (spc_divri, pwl...) pour la détermination du Imax du profil :
 set spcaudace(pourcent_bord) 0.15
+set spcaudace(pourcent_bord_br) 0.05
+set spcaudace(pourcent_bord_run) $spcaudace(pourcent_bord)
 #-- Taux de croissance de l'intensité pour considérer que l'on passe du bord (proche de 0) au continuum :
 set spcaudace(croissbord) 0.2
 #-- Tolérence sur l'écart à l'intensité maximale (spc_divri) : 50% (avant 5%)

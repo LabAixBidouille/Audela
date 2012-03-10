@@ -438,7 +438,7 @@ proc spc_passebas { args } {
       }
    set fichier [ file rootname $fichier_input ] 
       if { [ spc_testlincalib $fichier ] == -1 } {
-	 ::console::affiche_erreur " spc_passebasnew : le profil $fichier_input n'est pas calibre lineairement => calibration lineaire \n\n"
+	 ::console::affiche_resultat " spc_passebasnew : le profil $fichier_input n'est pas calibre lineairement => calibration lineaire \n\n"
 	 set fichier [ spc_linearcal $fichier ]
       }
 		

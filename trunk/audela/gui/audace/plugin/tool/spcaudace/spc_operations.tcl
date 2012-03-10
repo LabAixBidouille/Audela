@@ -3208,6 +3208,9 @@ proc spc_divri { args } {
         set denominateur_ech [ spc_calibreloifile $numerateur $denominateur ]
 
 
+        #--- Ajustement du parametre de consideration des bords :
+        if { [ spc_testbr $numerateur ] } { set spcaudace(pourcent_bord_run) $spcaudace(pourcent_bord_br) }
+
         #--- Vérification de la compatibilité des 2 profils de raies : lambda_i, lambda_f et dispersion identiques
         if { [ spc_compare $numerateur $denominateur_ech ] == 1 } {
             #--- Création des listes de valeur :
@@ -3236,8 +3239,8 @@ proc spc_divri { args } {
             #-- Détermination de Imax sur la zone découpée des bords à 15% :
             set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
             set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-            set xdeb [ expr round($naxis1*$spcaudace(pourcent_bord)) ]
-            set xfin [ expr round($naxis1*(1.-$spcaudace(pourcent_bord))) ]
+            set xdeb [ expr round($naxis1*$spcaudace(pourcent_bord_run)) ]
+            set xfin [ expr round($naxis1*(1.-$spcaudace(pourcent_bord_run))) ]
             set lresult_div_cut [ lrange $lresult_div $xdeb $xfin ]
             #-- Calcul la valeur maximale :
             set i_max [ lindex [ lsort -real -decreasing $lresult_div_cut ] 0 ]
@@ -3279,6 +3282,7 @@ proc spc_divri { args } {
 
 
             #--- Fin du script :
+            set spcaudace(pourcent_bord_run) $spcaudace(pourcent_bord)
             buf$audace(bufNo) bitpix float
             buf$audace(bufNo) save "$audace(rep_images)/${fichier}_ricorr"
             buf$audace(bufNo) bitpix short

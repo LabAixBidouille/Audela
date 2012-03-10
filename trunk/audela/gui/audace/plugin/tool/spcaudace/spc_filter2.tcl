@@ -314,9 +314,14 @@ proc spc_lowresfilterfile { args } {
 	    set nechant [ lindex $args 6 ]
 	 }
       }
+
+      #--- Ajustement du parametre de consideration des bords :
+      if { [ spc_testbr $profile ] } { set spcaudace(pourcent_bord_run) $spcaudace(pourcent_bord_br) }
+
       set resultat1 [ spc_piecewiselinearfilter $profile $ext_coef $regul_weight auto $catalog_file $nechant $regul_list $visu ]
       set filename [ spc_rmneg "$resultat1" ]
       file delete -force "$audace(rep_images)/$resultat1$conf(extension,defaut)"
+      set spcaudace(pourcent_bord_run) $spcaudace(pourcent_bord)
       return $filename
    } else { 
       ::console::affiche_erreur "Usage: spc_lowresfilterfile profile ? fichier_catalogue ? ext_coef ? regul_weight ?  options : regul_list ? visu ? nechant ?\n\n"

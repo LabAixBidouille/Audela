@@ -595,8 +595,9 @@ proc spc_findnnul { args } {
    set conti_min [ expr $frac_conti*[ spc_icontilist $intensites ] ]
    set naxis1 [ llength $intensites ]
    set dnaxis1 [ expr int(0.5*$naxis1) ]
-   set xgauche [ expr int($naxis1*.15) ]
-   set xdroite [ expr int($naxis1*.85) ]
+   set xgauche [ expr int($naxis1*$spcaudace(pourcent_bord_run)) ]
+   set xdroite [ expr int($naxis1*(1.-$spcaudace(pourcent_bord_run))) ]
+
    
    #--- Détermine lambda_min et lambda_max :
    set xlistdeb1 0
