@@ -185,6 +185,38 @@ proc spc_degauss { args } {
 #***************************************************************************#
 
 
+##########################################################
+# Test si un profil de raies est considéré comme basse résolution au sens de couvrir une large bande de longueurs d'onde
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 2012-03-09
+# Date de mise à jour : 2012-03-09
+# Arguments : fichier .fit du profil de raie calibré
+##########################################################
+
+proc spc_testbr { args } {
+
+   global audace
+   global conf spcaudace
+
+   if {[llength $args] == 1} {
+      set fichier [ lindex $args 0 ]
+
+      buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+      set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+      set dispersion [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+      set bp [ expr $dispersion*$naxis1 ]
+      if { $bp >= $spcaudace(bp_br) } {
+         return 1
+      } else {
+         return 0
+      }
+   } else {
+      ::console::affiche_erreur "Usage: spc_testbr profil_de_raies_calibré\n\n"
+   }
+}
+#***************************************************************************#
+
 
 ##########################################################
 #  Procedure de détermination des limites d'une raie a une profondeur donnee

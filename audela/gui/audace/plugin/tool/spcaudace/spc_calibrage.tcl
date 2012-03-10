@@ -1558,8 +1558,9 @@ proc spc_calibre { args } {
           } else {
              set spc_b 0.0
           }
+          set spc_rms [ lindex [buf$audace(bufNo) getkwd "SPC_RMS"] 1 ]
 
-          if { $cdelt1>0 && $crval1>=0 && $spc_b>=0.0 } {
+          if { $cdelt1>0 && $crval1>=0 && $spc_b>=0.0 && $spc_rms<$spcaudace(rms_lim) } {
              loadima $spcalibre
              return $spcalibre
           } else {
@@ -4030,7 +4031,10 @@ proc spc_rinstrum { args } {
               ## set rinstrum [ spc_pwlfilter $result_division 50 o 11 51 70 50 100 ]
               # set rinstrum [ spc_pwlfilter $result_division 24 o 3 3 50 50 50 ]
               # set rinstrum [ spc_lowresfilterfile $result_division "$spcaudace(reptelluric)/forgetlambda.dat" 1.1 10 { 1.0 2.0 } "o" 18 ]
-              set rinstrum [ spc_lowresfilterfile $result_division "$spcaudace(reptelluric)/forgetlambda.dat" 1.1 1.7 { 1. 5. 1500. } "o" 18 ]
+              # avant 20120309 :
+              # set rinstrum [ spc_lowresfilterfile $result_division "$spcaudace(reptelluric)/forgetlambda.dat" 1.1 1.7 { 1. 5. 1500. } "o" 18 ]
+              # a partir de 20120309 :
+              set rinstrum [ spc_lowresfilterfile $result_division "$spcaudace(reptelluric)/forgetlambda.dat" 1.1 3. { 1. 10. 100. 500. 500. } "o" 18 ]
            }
            file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale-br$conf(extension,defaut)"
        }
