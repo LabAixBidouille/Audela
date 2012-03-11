@@ -93,19 +93,22 @@ proc ::ascomcam::isReady { camItem } {
 proc ::ascomcam::initPlugin { } {
    variable private
 
-   #--- Initialise les variables de la camera ASCOM
-   if { ! [ info exists ::conf(ascomcam,modele) ] }   { set ::conf(ascomcam,modele)   "" }
-   if { ! [ info exists ::conf(ascomcam,mirh) ] }     { set ::conf(ascomcam,mirh)     "0" }
-   if { ! [ info exists ::conf(ascomcam,mirv) ] }     { set ::conf(ascomcam,mirv)     "0" }
-   if { ! [ info exists ::conf(ascomcam,foncobtu) ] } { set ::conf(ascomcam,foncobtu) "2" }
+   #--- Initialise les variables de la camera ASCOM pour chaque item
+   foreach camItem { A B C } {
+      if { ! [ info exists ::conf(ascomcam,$camItem,modele) ] }   { set ::conf(ascomcam,$camItem,modele)   "" }
+      if { ! [ info exists ::conf(ascomcam,$camItem,mirh) ] }     { set ::conf(ascomcam,$camItem,mirh)     "0" }
+      if { ! [ info exists ::conf(ascomcam,$camItem,mirv) ] }     { set ::conf(ascomcam,$camItem,mirv)     "0" }
+      if { ! [ info exists ::conf(ascomcam,$camItem,foncobtu) ] } { set ::conf(ascomcam,$camItem,foncobtu) "2" }
+
+      set private($camItem,modele) ""
+   }
+
+   set private(ascomDrivers) ""
 
    #--- Initialisation
    set private(A,camNo)      "0"
    set private(B,camNo)      "0"
    set private(C,camNo)      "0"
-
-   set private(ascomDrivers) ""
-   set private(modele)       ""
 }
 
 #
@@ -115,11 +118,13 @@ proc ::ascomcam::initPlugin { } {
 proc ::ascomcam::confToWidget { } {
    variable private
 
-   #--- Recupere la configuration de la camera ASCOM dans le tableau private(...)
-   set private(modele)  $::conf(ascomcam,modele)
-   set private(mirh)    $::conf(ascomcam,mirh)
-   set private(mirv)    $::conf(ascomcam,mirv)
-   set widget(foncobtu) [ lindex "$::caption(ascomcam,obtu_ouvert) $::caption(ascomcam,obtu_ferme) $::caption(ascomcam,obtu_synchro)" $::conf(ascomcam,foncobtu) ]
+   #--- Recupere la configuration de la camera ASCOM dans le tableau private($camItem,...)
+   foreach camItem { A B C } {
+      set private($camItem,modele)  $::conf(ascomcam,$camItem,modele)
+      set private($camItem,mirh)    $::conf(ascomcam,$camItem,mirh)
+      set private($camItem,mirv)    $::conf(ascomcam,$camItem,mirv)
+      set widget($camItem,foncobtu) [ lindex "$::caption(ascomcam,obtu_ouvert) $::caption(ascomcam,obtu_ferme) $::caption(ascomcam,obtu_synchro)" $::conf(ascomcam,$camItem,foncobtu) ]
+   }
 }
 
 #
@@ -130,9 +135,9 @@ proc ::ascomcam::widgetToConf { camItem } {
    variable private
 
    #--- Memorise la configuration de la camera ASCOM dans le tableau conf(ascomcam,...)
-   set ::conf(ascomcam,modele) $private(modele)
-   set ::conf(ascomcam,mirh)   $private(mirh)
-   set ::conf(ascomcam,mirv)   $private(mirv)
+   set ::conf(ascomcam,$camItem,modele) $private($camItem,modele)
+   set ::conf(ascomcam,$camItem,mirh)   $private($camItem,mirh)
+   set ::conf(ascomcam,$camItem,mirv)   $private($camItem,mirv)
 }
 
 #
@@ -182,14 +187,14 @@ proc ::ascomcam::fillConfigPage { frm camItem } {
    if { [llength $private(ascomDrivers) ] > 0 } {
       #--- si la liste n'est pas vide,
       #--- je verifie que la valeur par defaut existe dans la liste
-      if { [ lsearch -exact $private(ascomDrivers) $private(modele) ] == -1 } {
+      if { [ lsearch -exact $private(ascomDrivers) $private($camItem,modele) ] == -1 } {
          #--- si la valeur par defaut n'existe pas dans la liste,
          #--- je la remplace par le premier item de la liste
-         set private(modele) [lindex $private(ascomDrivers) 0]
+         set private($camItem,modele) [lindex $private(ascomDrivers) 0]
       }
    } else {
       #--- si la liste est vide, on continue quand meme
-      set private(modele) ""
+      set private($camItem,modele) ""
    }
 
    #--- Frame de la configuration du plugin et des miroirs en x et en y
@@ -209,7 +214,7 @@ proc ::ascomcam::fillConfigPage { frm camItem } {
             -relief sunken                \
             -borderwidth 1                \
             -editable 0                   \
-            -textvariable ::ascomcam::private(modele) \
+            -textvariable ::ascomcam::private($camItem,modele) \
             -values $private(ascomDrivers)
          pack $frm.frame1.frame3.driver -fill x -expand 1 -anchor center -side left -padx 10 -pady 10
 
@@ -225,11 +230,11 @@ proc ::ascomcam::fillConfigPage { frm camItem } {
 
          #--- Miroir en x et en y
          checkbutton $frm.frame1.frame4.mirx -text "$caption(ascomcam,miroir_x)" -highlightthickness 0 \
-            -variable ::ascomcam::private(mirh)
+            -variable ::ascomcam::private($camItem,mirh)
          pack $frm.frame1.frame4.mirx -anchor w -side top -padx 20 -pady 10
 
          checkbutton $frm.frame1.frame4.miry -text "$caption(ascomcam,miroir_y)" -highlightthickness 0 \
-            -variable ::ascomcam::private(mirv)
+            -variable ::ascomcam::private($camItem,mirv)
          pack $frm.frame1.frame4.miry -anchor w -side top -padx 20 -pady 10
 
       pack $frm.frame1.frame4 -anchor nw -side left -fill x -padx 20
@@ -261,23 +266,19 @@ proc ::ascomcam::configureCamera { camItem bufNo } {
    global caption conf
 
    set catchResult [ catch {
-      #--- je verifie que la camera n'est deja utilisee
-      if { $private(A,camNo) != 0 || $private(B,camNo) != 0 || $private(C,camNo) != 0 } {
-         error "" "CameraUnique"
-      }
       #--- Je cree la camera
-      set camNo [ cam::create ascomcam $conf(ascomcam,modele) -debug_directory $::audace(rep_log) ]
-      console::affiche_entete "$caption(ascomcam,port_camera) $caption(ascomcam,2points) $conf(ascomcam,modele)\n"
+      set camNo [ cam::create ascomcam $conf(ascomcam,$camItem,modele) -debug_directory $::audace(rep_log) ]
+      console::affiche_entete "$caption(ascomcam,port_camera) $caption(ascomcam,2points) $conf(ascomcam,$camItem,modele)\n"
       console::affiche_saut "\n"
       #--- Je change de variable
       set private($camItem,camNo) $camNo
       #--- J'associe le buffer de la visu
       cam$camNo buf $bufNo
       #--- Je configure l'oriention des miroirs par defaut
-      cam$camNo mirrorh $conf(ascomcam,mirh)
-      cam$camNo mirrorv $conf(ascomcam,mirv)
+      cam$camNo mirrorh $conf(ascomcam,$camItem,mirh)
+      cam$camNo mirrorv $conf(ascomcam,$camItem,mirv)
       #--- Je configure l'obturateur
-      switch -exact -- $conf(ascomcam,foncobtu) {
+      switch -exact -- $conf(ascomcam,$camItem,foncobtu) {
          0 {
             cam$camNo shutter "opened"
          }
@@ -288,7 +289,6 @@ proc ::ascomcam::configureCamera { camItem bufNo } {
             cam$camNo shutter "synchro"
          }
       }
-
    } ]
 
    if { $catchResult == "1" } {
@@ -404,7 +404,7 @@ proc ::ascomcam::configureDriver { } {
    } else {
       #--- le telescope n'est pas connecte
       load [file join $::audela_start_dir libascomcam.dll]
-      ascomcam setup $private(modele)
+      ascomcam setup $private($camItem,modele)
    }
 
 }
@@ -426,7 +426,7 @@ proc ::ascomcam::selectCamera { camItem } {
 proc ::ascomcam::setShutter { camItem shutterState ShutterOptionList } {
    variable private
 
-   set ::conf(ascomcam,foncobtu) $shutterState
+   set ::conf(ascomcam,$camItem,foncobtu) $shutterState
 
    #--- Gestion du mode de fonctionnement
    switch -exact -- $shutterState {
@@ -434,13 +434,13 @@ proc ::ascomcam::setShutter { camItem shutterState ShutterOptionList } {
          #--- j'envoie la commande a la camera
          cam$private($camItem,camNo) shutter "closed"
          #--- je mets a jour le widget dans la fenetre de configuration si elle est ouverte
-         set widget(foncobtu) $::caption(ascomcam,obtu_ferme)
+         set widget($camItem,foncobtu) $::caption(ascomcam,obtu_ferme)
       }
       2  {
          #--- j'envoie la commande a la camera
          cam$private($camItem,camNo) shutter "synchro"
          #--- je mets a jour le widget dans la fenetre de configuration si elle est ouverte
-         set widget(foncobtu) $::caption(ascomcam,obtu_synchro)
+         set widget($camItem,foncobtu) $::caption(ascomcam,obtu_synchro)
       }
    }
 }
