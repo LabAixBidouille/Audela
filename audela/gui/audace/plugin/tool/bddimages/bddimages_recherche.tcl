@@ -1091,6 +1091,9 @@ namespace eval bddimages_recherche {
            $popupTbl.analyse add command -label "CdL" \
               -command { ::bddimages_cdl::run}
 
+           $popupTbl.analyse add command -label "CdL avec WCS" \
+              -command { ::bddimages_recherche::creation_cdlwcs}
+
            $popupTbl.analyse add command -label $caption(bddimages_recherche,astroid) -state disabled \
               -command { ::bddimages_astroid::run_astroid}
 
@@ -1495,6 +1498,25 @@ namespace eval bddimages_recherche {
 
       ::bddimages_recherche::get_intellist $::bddimages_recherche::current_list_id
       ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id [array get action_label]
+
+   }
+
+
+   proc ::bddimages_recherche::creation_cdlwcs { } {
+
+      variable This
+      global caption
+
+      set lid [$::bddimages_recherche::This.frame6.result.tbl curselection ]
+      set lid [lsort -decreasing -integer $lid]
+
+       if { [llength $lid] == 0 } {
+          tk_messageBox -message "Veuillez selectionner des images dans la liste" -type ok
+          return
+       }
+      
+      set imglist [::bddimages_liste_gui::new_normallist $lid]
+      set z [::gui_cdl_withwcs::creation_cdlwcs $imglist]
 
    }
 
