@@ -44,6 +44,8 @@
 
 
 //pour gerer la datation par GPS: declaration des variables globales
+MBG_DEV_HANDLE dh ;
+
 HANDLE EventThreadGps;
 int ThreadGps;
 double DateGps;
@@ -433,7 +435,6 @@ ros_gps close symmetricom
    int mode,modele,i,k,devices_found;
    char ws[200];
    char year[5], month[5], day[5], hour[5], minute[5], sec[5], msec[5], p[10];
-   MBG_DEV_HANDLE dh = mbg_open_device( 0 );
    PCPS_UCAP_ENTRIES ucap_entries;
    static PCPS_DEV dev;
 #else
