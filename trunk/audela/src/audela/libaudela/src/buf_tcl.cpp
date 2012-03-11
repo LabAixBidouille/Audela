@@ -1561,16 +1561,16 @@ int cmdNew(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 		}
 		if (pixelFormat==FORMAT_BYTE) {
 	      p1=(char*)calloc(width*height*planes,sizeof(char));
-            sprintf(ligne,"%p",&p1[0]);
+            sprintf(ligne,"%ld",&p1[0]);
 		} else if (pixelFormat==FORMAT_SHORT) {
 	      p2=(short*)calloc(width*height*planes,sizeof(short));
-            sprintf(ligne,"%p",&p2[0]);
+            sprintf(ligne,"%ld",&p2[0]);
 		} else if (pixelFormat==FORMAT_USHORT) {
 	      p3=(unsigned short*)calloc(width*height*planes,sizeof(unsigned short));
-            sprintf(ligne,"%p",&p3[0]);
+            sprintf(ligne,"%ld",&p3[0]);
 		} else { //pixelFormat==FORMAT_FLOAT
 	      p4=(float*)calloc(width*height*planes,sizeof(float));
-            sprintf(ligne,"%p",&p4[0]);
+            sprintf(ligne,"%ld",&p4[0]);
 		}
 	   pixelData = atol(ligne);
       buffer = (CBuffer*)clientData;
