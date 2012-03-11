@@ -342,7 +342,7 @@ namespace eval bddimages_cdl {
       set ::bddimages_cdl::file_result_mpc [file join $bddconf(dirtmp) "${object}_${telescop}_${filter}_${dateobs}.mpc"]
 
       set ::bddimages_cdl::file_result_m3_tab ""
-      for {set i 5} {$i<25} {incr i} {
+      for {set i 5} {$i<35} {incr i} {
          lappend ::bddimages_cdl::file_result_m3_tab  [list $i [file join $bddconf(dirtmp) "${object}_${telescop}_${filter}_${dateobs}_m3_$i.csv"]]
       }
 

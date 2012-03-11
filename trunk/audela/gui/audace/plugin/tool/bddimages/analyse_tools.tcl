@@ -184,7 +184,7 @@ namespace eval analyse_tools {
    variable size_ovni
 
    variable color_img     "blue"
-   variable color_usnoa2  "red"
+   variable color_usnoa2  "green"
    variable color_ucac2
    variable color_ucac3
    variable color_nomad1
@@ -237,13 +237,13 @@ namespace eval analyse_tools {
          set file        [file join $bddconf(dirbase) $dirfilename $filename]
 
          #gren_info "idbddimg    $idbddimg\n"
-        gren_info "ra          $ra\n"
-        gren_info "dec         $dec\n"
-        gren_info "pixsize1    $pixsize1\n"
-        gren_info "pixsize2    $pixsize2\n"
-        gren_info "foclen      $foclen\n"
+        #gren_info "ra          $ra\n"
+        #gren_info "dec         $dec\n"
+        #gren_info "pixsize1    $pixsize1\n"
+        #gren_info "pixsize2    $pixsize2\n"
+        #gren_info "foclen      $foclen\n"
         #gren_info "dateobs     $dateobs \n"
-        gren_info "exposure    $exposure\n"
+        #gren_info "exposure    $exposure\n"
          #gren_info "naxis1      $naxis1  \n"
          #gren_info "naxis2      $naxis2  \n"
          #gren_info "filename    $filename\n"
@@ -259,7 +259,8 @@ namespace eval analyse_tools {
          #gren_info "param : $ra $dec $pixsize1 $pixsize2 $foclen\n"
          #gren_info "catalog_usnoa2 : $::analyse_tools::catalog_usnoa2\n"
  
-         set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2]} msg]
+         #gren_info "calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2 del_tmp_files 0\n"
+         set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 del_tmp_files 0]} msg]
          if {$erreur} { return false }
 
          #gren_info "calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2\n"
@@ -268,7 +269,7 @@ namespace eval analyse_tools {
          set dec [lindex $a 1]
          #gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"
 
-         set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2]} msg]
+         set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 del_tmp_files 0]} msg]
          if {$erreur} { return false }
          set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
          set ra  [lindex $a 0]
@@ -279,7 +280,7 @@ namespace eval analyse_tools {
          if { $::analyse_tools::keep_radec==1 && $nbstars<3 } {
              set ra  $::analyse_tools::ra_save
              set dec $::analyse_tools::dec_save
-             set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2]} msg]
+             set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 del_tmp_files 0]} msg]
              if {$erreur} { return false }
              #gren_info "calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2\n"
              set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
@@ -287,7 +288,7 @@ namespace eval analyse_tools {
              set dec [lindex $a 1]
              #gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"
 
-             set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2]} msg]
+             set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 del_tmp_files 0]} msg]
              if {$erreur} { return false }
              set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
              set ra  [lindex $a 0]

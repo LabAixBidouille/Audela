@@ -21,7 +21,7 @@ namespace eval testprocedure {
 
    proc run {  } {
 
-      test6
+      test8
    }
 
 
@@ -365,6 +365,85 @@ proc test7 { } {
    close $fxml
 
 }
+
+
+proc test8 { } {
+   
+
+          set ::tools_cdl::nbporbit 5
+          set nbpt 700
+
+
+          gren_info "nbporbit = $::tools_cdl::nbporbit\n"
+          gren_info "nbpt = $nbpt\n"
+          
+          
+          if { $nbpt < $::tools_cdl::nbporbit} { 
+             if {$nbpt == 2 } { set nbporbit 2}
+             if {$nbpt == 3 } { set nbporbit 3}
+             if {$nbpt == 4 } { set nbporbit 3}
+             if {$nbpt == 5 } { set nbporbit 5}
+             if {$nbpt == 6 } { set nbporbit 5}
+             if {$nbpt == 7 } { set nbporbit 5}
+             if {$nbpt == 8 } { set nbporbit 5}
+          } else {
+             set nbporbit $::tools_cdl::nbporbit
+          }
+          
+          
+          set c 0
+          set part [ expr ($nbpt-1.0) / ($nbporbit-1.0) ]
+          gren_info "part = $part\n"
+          set i 0
+          while { $i<$nbporbit } {
+             #gren_info "$i -> [expr int($c)] ($c)\n"
+             set id($i) [expr int($c)]
+             set c [expr ($c + $part)]
+             incr i
+          }
+          
+       
+          
+return          
+          set id(0) 0
+          set id([expr $nbporbit - 1]) [expr $nbpt - 1]
+
+          if { $nbporbit == 3 } { 
+             set idtmp [expr int($nbporbit / 2.0)]
+             gren_info "$idtmp\n"
+             set valtmp [expr int($nbpt / 2.0)]
+             set id($idtmp) $valtmp
+          }
+          if { $nbporbit == 3 } {
+              
+             set idtmp [expr int($nbporbit / 2.0)]
+             gren_info "$idtmp\n"
+             set valtmp [expr int($nbpt / 2.0)]
+             set id($idtmp) $valtmp
+          }
+
+          foreach {i c} [array get id] {
+              gren_info "$i -> $c\n"
+          } 
+          
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
 # fin du namespace

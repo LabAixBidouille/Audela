@@ -577,7 +577,7 @@ proc get_one_image { idbddimg } {
       global audace
       global bddconf
 
-         cleanmark
+         
 
          # Charge l image en memoire
          #gren_info "cur id $::analyse_tools::id_current_image: \n"
@@ -598,13 +598,28 @@ proc get_one_image { idbddimg } {
          set ::analyse_tools::pixsize2  [lindex [::bddimages_liste::lget $tabkey pixsize2   ] 1]
          set ::analyse_tools::foclen    [lindex [::bddimages_liste::lget $tabkey foclen     ] 1]
          set ::analyse_tools::exposure  [lindex [::bddimages_liste::lget $tabkey EXPOSURE   ] 1]
-         set ::analyse_tools::bddimages_wcs  [string trim [lindex [::bddimages_liste::lget $tabkey bddimages_wcs  ] 1] ]
+         set ::analyse_tools::bddimages_wcs  [string trim [lindex [::bddimages_liste::lget $tabkey bddimages_wcs ] 1] ]
+         set naxis1      [lindex [::bddimages_liste::lget $tabkey NAXIS1     ] 1]
+         set naxis2      [lindex [::bddimages_liste::lget $tabkey NAXIS2     ] 1]
+         set xcent    [expr $naxis1/2.0]
+         set ycent    [expr $naxis2/2.0]
 
-         #gren_info "$::analyse_tools::id_current_image = date : $date  idbddimg : $idbddimg  file : $filename $::bddimages_analyse::bddimages_wcs\n"
+         #gren_info "wcs : $date $::analyse_tools::bddimages_wcs\n"
+         #gren_info "\n\nTABKEY = $tabkey\n\n\n"
+         #gren_info "$::analyse_tools::id_current_image = date : $date  idbddimg : $idbddimg  file : $filename $::analyse_tools::bddimages_wcs\n"
 
          # Charge l image a l ecran
-         loadima $file
+         #gren_info "\n ** LOAD ** charge_current_image\n"
+         buf$::audace(bufNo) load $file
 
+         if { $::analyse_tools::boucle == 0 } {
+            cleanmark
+            #set cuts [buf$::audace(bufNo) autocuts]
+            #gren_info "\n ** VISU ** charge_current_image\n"
+            ::audace::autovisu $::audace(visuNo)
+            #visu$::audace(visuNo) disp [list [lindex $cuts 0] [lindex $cuts 1] ]
+         }
+         
          # Mise a jour GUI
          $::bddimages_analyse::fen.frm_creation_wcs.bouton.back configure -state disabled
          $::bddimages_analyse::fen.frm_creation_wcs.bouton.back configure -state disabled
@@ -624,7 +639,7 @@ proc get_one_image { idbddimg } {
          if {$::analyse_tools::id_current_image < $::analyse_tools::nb_img_list } {
             $::bddimages_analyse::fen.frm_creation_wcs.bouton.next configure -state normal
          }
-         if {$::bddimages_analyse::bddimages_wcs == "Y"} {
+         if {$::analyse_tools::bddimages_wcs == "Y"} {
             set ::bddimages_analyse::color_wcs $::bddimages_analyse::color_wcs_good
             set ::bddimages_analyse::state_wcs disabled
          } else {
@@ -632,9 +647,12 @@ proc get_one_image { idbddimg } {
             set ::bddimages_analyse::state_wcs normal
          }
          $::bddimages_analyse::fen.frm_creation_wcs.bouton.go configure -bg $::bddimages_analyse::color_wcs -state $::bddimages_analyse::state_wcs
-
-
+         affich_un_rond_xy $xcent $ycent red 2 2
+ 
    }
+
+
+
    proc ::bddimages_analyse::get_wcs { } {
 
          if { $::analyse_tools::boucle ==1 } {
@@ -691,6 +709,13 @@ proc get_one_image { idbddimg } {
             set ::analyse_tools::exposure  [lindex [::bddimages_liste::lget $tabkey EXPOSURE   ] 1]
 
             #affich_rond $::analyse_tools::current_listsources IMG    $::analyse_tools::color_img     4
+
+            if { $::analyse_tools::boucle == 1 } {
+               cleanmark
+               #gren_info "\n ** VISU ** get_one_wcs\n"
+               ::audace::autovisu $::audace(visuNo)
+               #visu$::audace(visuNo) disp
+            }
             affich_rond $::analyse_tools::current_listsources USNOA2 $::analyse_tools::color_usnoa2  1
             #affich_rond $::analyse_tools::current_listsources OVNI   $::analyse_tools::color_ovni    2
 
@@ -699,8 +724,14 @@ proc get_one_image { idbddimg } {
             #::analyse_tools::nb_usnoa2
             
          } else {
-            gren_info "idbddimg : $idbddimg   filename : $filename wcs : erreur \n"
-
+            # "idbddimg : $idbddimg   filename : $filename wcs : erreur \n"
+            ::console::affiche_erreur "idbddimg : $idbddimg   filename : $filename wcs : erreur \n"
+            if { $::analyse_tools::boucle == 1 } {
+               cleanmark
+               #gren_info "\n ** VISU ** get_one_wcs\n"
+               ::audace::autovisu $::audace(visuNo)
+            }
+            
          }
    }
 
@@ -718,19 +749,19 @@ proc get_one_image { idbddimg } {
          if { [ info exists $::analyse_tools::current_image_name ] } {unset ::analyse_tools::current_image_name}
       }
       
-      set ::analyse_tools::img_list [::bddimages_imgcorrection::chrono_sort_img $img_list]
-      set ::analyse_tools::nb_img_list   [llength $::analyse_tools::img_list]
-      gren_info "nb images : $::analyse_tools::nb_img_list\n"
+      set ::analyse_tools::img_list    [::bddimages_imgcorrection::chrono_sort_img $img_list]
+      set ::analyse_tools::nb_img_list [llength $::analyse_tools::img_list]
+      #gren_info "nb images : $::analyse_tools::nb_img_list\n"
 
       foreach ::analyse_tools::current_image $::analyse_tools::img_list {
          set tabkey      [::bddimages_liste::lget $::analyse_tools::current_image "tabkey"]
          set date        [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
          set idbddimg    [::bddimages_liste::lget $::analyse_tools::current_image idbddimg]
-         gren_info "date : $date  idbddimg : $idbddimg\n"
+         #gren_info "date : $date  idbddimg : $idbddimg\n"
       }
 
       # Chargement premiere image sans GUI
-      gren_info "* Premiere image :\n"
+      #gren_info "* Premiere image :\n"
       set ::analyse_tools::id_current_image 1
       set ::analyse_tools::current_image [lindex $::analyse_tools::img_list 0]
 
@@ -748,23 +779,32 @@ proc get_one_image { idbddimg } {
       set ::analyse_tools::pixsize2  [lindex [::bddimages_liste::lget $tabkey pixsize2   ] 1]
       set ::analyse_tools::foclen    [lindex [::bddimages_liste::lget $tabkey foclen     ] 1]
       set ::analyse_tools::exposure  [lindex [::bddimages_liste::lget $tabkey EXPOSURE   ] 1]
-      set ::bddimages_analyse::bddimages_wcs  [string trim [lindex [::bddimages_liste::lget $tabkey bddimages_wcs  ] 1]]
+      set ::analyse_tools::bddimages_wcs  [string trim [lindex [::bddimages_liste::lget $tabkey bddimages_wcs  ] 1]]
+      set naxis1      [lindex [::bddimages_liste::lget $tabkey NAXIS1     ] 1]
+      set naxis2      [lindex [::bddimages_liste::lget $tabkey NAXIS2     ] 1]
+      set xcent    [expr $naxis1/2.0]
+      set ycent    [expr $naxis2/2.0]
 
       set ::analyse_tools::current_image_name $filename
       set ::analyse_tools::current_image_date $date
-      gren_info "$::analyse_tools::id_current_image = date : $date  idbddimg : $idbddimg  file : $filename $::bddimages_analyse::bddimages_wcs\n"
+      #gren_info "$::analyse_tools::id_current_image = date : $date  idbddimg : $idbddimg  file : $filename $::analyse_tools::bddimages_wcs\n"
 
       # Charge l image a l ecran
-      loadima $file
+      #gren_info "\n ** LOAD ** \n"
+      buf$::audace(bufNo) load $file
+      #gren_info "\n ** VISU ** premiere image\n"
+      ::audace::autovisu $::audace(visuNo)
+      #visu$::audace(visuNo) disp
 
-      # Etat des boutons
+      # Etat des boutons et GUI
+      cleanmark
       set ::bddimages_analyse::stateback disabled
       if {$::analyse_tools::nb_img_list == 1} {
          set ::bddimages_analyse::statenext disabled
       } else {
          set ::bddimages_analyse::statenext normal
       }
-      if {$::bddimages_analyse::bddimages_wcs == "Y"} {
+      if {$::analyse_tools::bddimages_wcs == "Y"} {
          set ::bddimages_analyse::color_wcs $::bddimages_analyse::color_wcs_good
          set ::bddimages_analyse::state_wcs disabled
       } else {
@@ -774,7 +814,7 @@ proc get_one_image { idbddimg } {
       set ::analyse_tools::nb_img     0
       set ::analyse_tools::nb_ovni    0
       set ::analyse_tools::nb_usnoa2  0    
-      cleanmark
+      affich_un_rond_xy $xcent $ycent red 2 2
 
    }
 
@@ -794,9 +834,8 @@ proc get_one_image { idbddimg } {
       ::bddimages_analyse::charge_list $img_list
       ::bddimages_analyse::inittoconf
       
-      set ::bddimages_analyse::fen .new
-      
       #--- Creation de la fenetre
+      set ::bddimages_analyse::fen .new
       if { [winfo exists $::bddimages_analyse::fen] } {
          wm withdraw $::bddimages_analyse::fen
          wm deiconify $::bddimages_analyse::fen
@@ -838,7 +877,7 @@ proc get_one_image { idbddimg } {
         pack $keepradec -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
              #--- Cree un checkbutton
-             checkbutton $keepradec.check -highlightthickness 0 -text "Utiliser RADEC precedent" -variable ::analyse_tools::keep_radec
+             checkbutton $keepradec.check -highlightthickness 0 -text "Utiliser RADEC precedent en cas d'echec" -variable ::analyse_tools::keep_radec
              pack $keepradec.check -in $keepradec -side left -padx 5 -pady 0
   
         #--- Cree un frame pour afficher boucle
@@ -928,14 +967,6 @@ proc get_one_image { idbddimg } {
                 pack $foclen.name -in $foclen -side left -padx 3 -pady 3
                 entry $foclen.val -relief sunken -textvariable ::analyse_tools::foclen
                 pack $foclen.val -in $foclen -side right -pady 1 -anchor w
-
-            #--- exposure
-            set exposure [frame $keys.exposure -borderwidth 0 -cursor arrow -relief groove]
-            pack $exposure -in $keys -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-                label $exposure.name -text "EXPOSURE : "
-                pack $exposure.name -in $exposure -side left -padx 3 -pady 3
-                entry $exposure.val -relief sunken -textvariable ::analyse_tools::exposure
-                pack $exposure.val -in $exposure -side right -pady 1 -anchor w
 
         #--- Cree un frame pour afficher boucle
         set count [frame $frm.count -borderwidth 0 -cursor arrow -relief groove]
