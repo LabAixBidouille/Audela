@@ -1185,7 +1185,7 @@ proc gcn_definition_from_sock_pkt_def_doc { {fsock ""} } {
       lappend records "long  6  6 burst_sod    centi-sec       \"(int)(sssss.sss *100)\""
       lappend records "long  7  7 burst_ra     0.0001-deg      \"(int)(0.0 to 359.9999 *10000)\""
       lappend records "long  8  8 burst_dec    0.0001-deg      \"(int)(-90.0 to +90.0 *10000)\""
-      lappend records "long  9  9 burst_flue   integer         \"Number of neutrinos for this trigger\""
+      lappend records "long  9  9 burst_flue   integer         \"Type of trigger 1=single 2=double 3=directional\""
       lappend records "long 11 11 burst_error  0.0001-deg      \"(int)(0.0 to 180.0 *10000)\""
       lappend records "long 14 14 integ_time   4mSec           \"Time between two neutrinos\""
       lappend records "long 18 18 follow_up    integer         \"=1 if we must have a follow-up after prompt\""
