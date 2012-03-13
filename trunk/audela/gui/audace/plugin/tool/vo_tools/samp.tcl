@@ -477,9 +477,9 @@ proc ::Samp::build { nsp } {
    proc ${nsp}::h_coord.pointAt.sky {args} {
       global caption
       set coords [split [lindex $args 0] " "]
-      set ra [lindex $coords 1]
-      set de [lindex $coords 3]
-      ::console::affiche_resultat "$caption(samp,pointatsky) \n RA = $ra \n DEC = $de \n"
+      set ::Samp::ra [lindex $coords 1]
+      set ::Samp::de [lindex $coords 3]
+      ::console::affiche_resultat "$caption(samp,pointatsky) \n RA = $::Samp::ra \n DEC = $::Samp::de \n"
       ::votableUtil::pointAtSky [lindex $coords 1] [lindex $coords 3]
    }
 
