@@ -27,7 +27,7 @@ namespace eval ::votableUtil {
 
    # #############################################################################
    #
-   # Implementation des attributs de l'espace de nom votable
+   # Implementation des attributs de l'espace de nom votableUtil 
    #
    # #############################################################################
 
