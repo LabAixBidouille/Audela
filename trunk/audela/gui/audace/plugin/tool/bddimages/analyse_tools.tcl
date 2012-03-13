@@ -207,6 +207,9 @@ namespace eval analyse_tools {
       global audace
       global bddconf
 
+
+         set limit_nbstars_accepted 10
+
          set img $::analyse_tools::current_image
  
          set wcs_ok false
@@ -274,10 +277,10 @@ namespace eval analyse_tools {
          set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
          set ra  [lindex $a 0]
          set dec [lindex $a 1]
-         #gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"
+         gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"
 
 
-         if { $::analyse_tools::keep_radec==1 && $nbstars<3 } {
+         if { $::analyse_tools::keep_radec==1 && $nbstars<$limit_nbstars_accepted } {
              set ra  $::analyse_tools::ra_save
              set dec $::analyse_tools::dec_save
              set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 del_tmp_files 0]} msg]
@@ -293,7 +296,7 @@ namespace eval analyse_tools {
              set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
              set ra  [lindex $a 0]
              set dec [lindex $a 1]
-             #gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"
+             gren_info "RETRY nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"
          }         
 
 
@@ -318,10 +321,10 @@ namespace eval analyse_tools {
 
 
 
-         if {$nbstars>3} {
+         if {$nbstars>$limit_nbstars_accepted} {
              set wcs_ok false
          }         
-         if {$nbstars>3} {
+         if {$nbstars>$limit_nbstars_accepted} {
              set wcs_ok true
          }         
           

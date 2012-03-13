@@ -188,8 +188,34 @@ namespace eval gui_cdl_withwcs {
 
 
 
+   proc ::gui_cdl_withwcs::update_bdi { img result } {
 
 
+       #gren_info "IMG = $img \n"
+       #gren_info "RESULT = $result \n"
+
+       set idbddimg    [::bddimages_liste::lget $img idbddimg]
+       set tabname     [::bddimages_liste::lget $img tabname]
+       #gren_info "IDBDDIMG = $idbddimg \n"
+       #gren_info "TABNAME  = $tabname \n"
+
+
+
+      set sqlcmd "UPDATE $tabname
+                     SET bddimages_photometry='$result'
+                   WHERE idbddimg = $idbddimg;"
+
+      set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
+      if {$err} {
+	 ::console::affiche_erreur "Erreur maj de la table $tabname\n"
+	 ::console::affiche_erreur "	    sqlcmd = $sqlcmd\n"
+	 ::console::affiche_erreur "	    err = $err\n"
+	 ::console::affiche_erreur "	    msg = $msg\n"
+	 return
+      }
+
+      return
+   }
 
 
 
@@ -1359,7 +1385,12 @@ proc random {{range 100}} {
             set line ""
             append line "$i,"
             append line "$::tools_cdl::tabphotom($i,obj,jjdate),"
-            if { [info exists ::tools_cdl::tabphotom($i,obj,mag)] } {append line "$::tools_cdl::tabphotom($i,obj,mag)"}
+            if { [info exists ::tools_cdl::tabphotom($i,obj,mag)] } {
+	       append line "$::tools_cdl::tabphotom($i,obj,mag)"
+	       #gren_info "datejj = $::tools_cdl::tabphotom($i,obj,jjdate)\n"
+	       ::gui_cdl_withwcs::update_bdi [lindex $::tools_cdl::img_list [expr $i - 1]] "Y"
+	       #return
+	    }
             append line ","
             if { [info exists ::tools_cdl::tabphotom($i,obj,maginstru)] } {append line "$::tools_cdl::tabphotom($i,obj,maginstru)"}
 
