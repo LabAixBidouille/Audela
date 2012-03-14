@@ -509,7 +509,14 @@ int tel_date_get(struct telprop *tel,char *ligne)
 /* --- called by : tel1 date --- */
 /* ----------------------------- */
 {
-   eqmod_GetCurrentFITSDate_function(tel->interp,ligne,"::audace::date_sys2ut");
+   //eqmod_GetCurrentFITSDate_function(tel->interp,ligne,"::audace::date_sys2ut");
+   time_t ltime;
+   double jd;
+   char s[100];
+	jd=mytel_sec2jd((int)time(&ltime));
+	sprintf(s,"mc_date2iso8601 %f",jd);
+	Tcl_Eval(tel->interp,s);
+	strcpy(ligne,tel->interp->result);
    return 0;
 }
 
@@ -877,6 +884,14 @@ int eqmod_hadec_match(struct telprop *tel)
 /* ---------------------------------------------------------------*/
 /* ---------------------------------------------------------------*/
 
+/***************************************************************************/
+/* Return the julian day from seconds elapsed from Jan. 1st 1970           */
+/***************************************************************************/
+double mytel_sec2jd(time_t secs1970)
+{
+	return(2440587.5+(int)secs1970/86400.);
+}
+
 // eqmod_tsl
 //  Calcule le temps sideral local.
 //  Si non NULL, les parametres h, m, sec sont mis a jour.
@@ -886,42 +901,14 @@ double eqmod_tsl(struct telprop *tel,int *h, int *m,double *sec)
    char s[1024];
    char ss[1024];
    double tsl;
-	/*
-   int int_h, int_m;
-   double int_sec;
-	*/
+   time_t ltime;
+   double jd;
 	double dt;
 
-   /* --- temps sideral local */
-	/*
 	dt=tel->dead_delay_slew/86400;
-   eqmod_GetCurrentFITSDate_function(tel->interp,ss,"::audace::date_sys2ut");
-   sprintf(s,"mc_date2lst [mc_date2jd %s+%f] {%s}",ss,dt,tel->home);
-   mytel_tcleval(tel,s);
-   strcpy(ss,tel->interp->result);
-   sprintf(s,"lindex {%s} 0",ss);
-   mytel_tcleval(tel,s);
-   int_h=(int)atoi(tel->interp->result);
-   sprintf(s,"lindex {%s} 1",ss);
-   mytel_tcleval(tel,s);
-   int_m=(int)atoi(tel->interp->result);
-   sprintf(s,"lindex {%s} 2",ss);
-   mytel_tcleval(tel,s);
-   int_sec=(double)atof(tel->interp->result);
-   if (h) {
-      *h = int_h;
-   }
-   if (m) {
-      *m = int_m;
-   }
-   if (sec) {
-      *sec = int_sec;
-   }
-   tsl = 15. * (int_h+int_m/60.+int_sec/3600.);
-	*/
-	dt=tel->dead_delay_slew/86400;
-   eqmod_GetCurrentFITSDate_function(tel->interp,ss,"::audace::date_sys2ut");
-   sprintf(s,"mc_date2lst [expr [mc_date2jd %s] + %f] {%s}",ss,dt,tel->home);
+   //eqmod_GetCurrentFITSDate_function(tel->interp,ss,"::audace::date_sys2ut");
+	jd=mytel_sec2jd((int)time(&ltime));
+   sprintf(s,"mc_date2lst [expr %f + %f] {%s}",jd,dt,tel->home);
    mytel_tcleval(tel,s);
    strcpy(ss,tel->interp->result);
    sprintf(s,"lindex {%s} 0",ss);
