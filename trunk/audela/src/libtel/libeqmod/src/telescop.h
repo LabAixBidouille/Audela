@@ -127,6 +127,7 @@ int eqmod_positions12(struct telprop *tel,int *p1,int *p2);
 void eqmod_codeur2skypos(struct telprop *tel, int hastep, int decstep, double *ha, double *ra, double *dec);
 
 int mytel_tcleval(struct telprop *tel,char *ligne);
+double mytel_sec2jd(time_t secs1970);
 
 int eqmod_radec_coord(struct telprop *tel,char *result);
 int eqmod_hadec_match(struct telprop *tel);
