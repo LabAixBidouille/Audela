@@ -2047,7 +2047,7 @@ proc spc_multifit2pngdec { args } {
    #set coef_conv_gp 7.8
    #set yheight_graph 600
    #- Pour png :
-   set xpos 70
+   set xpos 68
    #- Pour ps :
    #set xpos 60
    set nbargs [ llength $args ]
