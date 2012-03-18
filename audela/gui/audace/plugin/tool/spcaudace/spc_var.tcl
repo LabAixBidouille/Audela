@@ -13,10 +13,10 @@ global spcaudace
 
 #--- Version d'SpcAudace :
 set spcaudace(num_version) "2.15"
-set spcaudace(version) "$spcaudace(num_version) - 14/03/2012"
+set spcaudace(version) "$spcaudace(num_version) - 16/03/2012"
 # ::audace::date_sys2ut ?Date?
 #set spcaudace(version) [ file mtime $spcaudace(repspc) ]
-
+set spcaudace(flag_verifversion) 0
 
 #--- Liste des contributeurs au développement d'SpcAudace :
 set spcaudace(author) "Benjamin MAUCLAIRE"

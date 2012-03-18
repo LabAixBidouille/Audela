@@ -18,8 +18,13 @@
 proc spc_versionsite {} {
    global spcaudace flagvs_ok audace
 
+   #--- Teste si la verification a deja ete effectuee :
+   if { $spcaudace(flag_verifversion) } { return "" }
+
    #--- Recherche la version diponible sur le site d'Spcaudace :
    set pagecontent [ spc_read_url_contents $spcaudace(webpage) ]
+   set spcaudace(flag_verifversion) 1
+
    if { $pagecontent!=0 } {
       regexp {KIT\s:\sspcaudace\-([0-9]+\.[0-9]+)} $pagecontent match version_site
 

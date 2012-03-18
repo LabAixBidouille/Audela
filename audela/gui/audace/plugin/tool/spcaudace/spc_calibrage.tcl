@@ -458,6 +458,9 @@ proc spc_delcal { args } {
          if { [ lsearch $listemotsclef "SPC_D" ] !=-1 } {
             buf$audace(bufNo) delkwd "SPC_D"
          }
+         if { [ lsearch $listemotsclef "SPC_E" ] !=-1 } {
+            buf$audace(bufNo) delkwd "SPC_E"
+         }
       }
 
       #--- Traitement du resultat :
@@ -1098,7 +1101,7 @@ proc spc_calibren { args } {
          set c [ lindex $coeffs 2 ]
          set b [ lindex $coeffs 1 ]
          set a [ lindex $coeffs 0 ]
-      } elseif { $nbraies > 4 } {
+      } elseif { $nbraies > 4 && $spcaudace(degmax_cal)<=4 } {
          #-- Calcul du polynôme de calibration a+b*x+c*x^2+d*x^3 :
          set sortie [ spc_ajustdegn $xvals $lambdas $erreur $spcaudace(degmax_cal) $crpix1 ]
          set coeffs [ lindex $sortie 0 ]
@@ -1108,6 +1111,40 @@ proc spc_calibren { args } {
          set c [ lindex $coeffs 2 ]
          set b [ lindex $coeffs 1 ]
          set a [ lindex $coeffs 0 ]
+         switch $spcaudace(degmax_cal) {
+            4 {
+               set e [ lindex $coeffs 4 ]
+               set d [ lindex $coeffs 3 ]
+               set c [ lindex $coeffs 2 ]
+               set b [ lindex $coeffs 1 ]
+               set a [ lindex $coeffs 0 ]
+            }
+            3 {
+               set e 0.0
+               set d [ lindex $coeffs 3 ]
+               set c [ lindex $coeffs 2 ]
+               set b [ lindex $coeffs 1 ]
+               set a [ lindex $coeffs 0 ]
+            }
+            2 {
+               set e 0.0
+               set d 0.0
+               set c [ lindex $coeffs 2 ]
+               set b [ lindex $coeffs 1 ]
+               set a [ lindex $coeffs 0 ]
+            }
+            1 {
+               set e 0.0
+               set d 0.0
+               set c 0.0
+               set b [ lindex $coeffs 1 ]
+               set a [ lindex $coeffs 0 ]
+            }
+            0 { 
+               ::console::affiche_erreur "Le degré du polinôme de calibration doit être supérieur à 0.\n"
+               return ""
+            }
+         }
       } else {
          ::console::affiche_erreur "Il faut au moins deux raies pour calibrer.\n"
          return ""
@@ -1613,6 +1650,11 @@ proc spc_resolution { args } {
       } else {
          set spc_d 0.
       }
+      if { [ lsearch $listemotsclef "SPC_E" ] !=-1 } {
+         set spc_e [ lindex [ buf$audace(bufNo) getkwd "SPC_E" ] 1 ]
+      } else {
+         set spc_e 0.
+      }
       if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
          set cdelt1 [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
       } else {
@@ -1650,7 +1692,7 @@ proc spc_resolution { args } {
       set frac_lambda [ expr $lambda_raie-int($lambda_raie) ]
       if { $frac_lambda == 0 } {
          if { $flag_nl } {
-            set lcenter [ spc_calpoly $xcenter $crpix1 $spc_a $spc_b $spc_c $spc_d ]
+            set lcenter [ spc_calpoly $xcenter $crpix1 $spc_a $spc_b $spc_c $spc_d $spc_e ]
             # set spc_res [ expr round($lcenter/($spc_b*$fwhm)) ]
             set spc_res [ expr round($lcenter/($cdelt1*$fwhm)) ]
          } else {
@@ -1881,8 +1923,13 @@ proc spc_caloverif { args } {
             } else {
                 set spc_d 0.
             }
-            set lmin_spectre [ spc_calpoly 1.0 $crpix1 $spc_a $spc_b $spc_c $spc_d ]
-            set lmax_spectre [ spc_calpoly $naxis1 $crpix1 $spc_a $spc_b $spc_c $spc_d ]
+            if { [ lsearch $listemotsclef "SPC_E" ] !=-1 } {
+                set spc_e [ lindex [ buf$audace(bufNo) getkwd "SPC_E" ] 1 ]
+            } else {
+                set spc_e 0.
+            }
+            set lmin_spectre [ spc_calpoly 1.0 $crpix1 $spc_a $spc_b $spc_c $spc_d $spc_e ]
+            set lmax_spectre [ spc_calpoly $naxis1 $crpix1 $spc_a $spc_b $spc_c $spc_d $spc_e ]
         } else {
             set flag_spccal 0
             #- set lmin_spectre $crval1
@@ -2053,6 +2100,11 @@ proc spc_rms { args } {
          } else {
             set spc_d 0.
          }
+         if { [ lsearch $listemotsclef "SPC_E" ] !=-1 } {
+            set spc_e [ lindex [ buf$audace(bufNo) getkwd "SPC_E" ] 1 ]
+         } else {
+            set spc_e 0.
+         }
       } else {
          #- Cas linéaire :
          set flag_spccal 0
@@ -2102,7 +2154,7 @@ proc spc_rms { args } {
             #buf$audace(bufNo) mult -1.0
             #set xcenter [ expr [ lindex [ lsort -real -increasing [ list $xc1 $xc2 ]  ] 0 ]+0.5*abs($xc2-$xc1) ]
             #::console::affiche_resultat "$xc1, $xc2, $xcenter\n"
-            set lambda_mes [ spc_calpoly $xcenter $crpix1 $spc_a $spc_b $spc_c $spc_d ]
+            set lambda_mes [ spc_calpoly $xcenter $crpix1 $spc_a $spc_b $spc_c $spc_d $spc_e ]
             set ldiff    [ expr $lambda_mes-$lambda_cat ]
             set sum_diff [ expr $sum_diff+$ldiff ]
             set sum_diffsq [ expr $sum_diffsq+pow($ldiff,2) ]
