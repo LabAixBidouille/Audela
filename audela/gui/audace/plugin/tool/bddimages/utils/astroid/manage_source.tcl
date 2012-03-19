@@ -125,11 +125,13 @@ namespace eval ::manage_source {
    #
    proc ::manage_source::imprim_all_sources { listsources } {
 
-       ::console::affiche_resultat "SOURCES = \n"
+       ::console::affiche_resultat "** SOURCES = \n"
+       ::console::affiche_resultat "FIELDS = \n"
        set fields  [lindex $listsources 0]
        foreach s $fields { 
              ::console::affiche_resultat "$s\n"
              }
+       ::console::affiche_resultat "VALUES = \n"
        set sources [lindex $listsources 1]
        foreach s $sources { 
              ::console::affiche_resultat "$s\n"
@@ -143,10 +145,12 @@ namespace eval ::manage_source {
    proc ::manage_source::imprim_3_sources { listsources } {
 
       set nb 0
+       ::console::affiche_resultat "FIELDS = \n"
       set fields  [lindex $listsources 0]
       foreach s $fields { 
          ::console::affiche_resultat "$s\n"
          }
+       ::console::affiche_resultat "VALUES = \n"
       set sources [lindex $listsources 1]
       foreach s $sources { 
          ::console::affiche_resultat "$s\n"
@@ -164,11 +168,13 @@ namespace eval ::manage_source {
    proc ::manage_source::imprim_sources { listsources catalog } {
 
        set nb 0
-       ::console::affiche_resultat "SOURCES $catalog = \n"
+       ::console::affiche_resultat "** SOURCES $catalog = \n"
+       ::console::affiche_resultat "FIELDS = \n"
        set fields  [lindex $listsources 0]
        foreach s $fields { 
           ::console::affiche_resultat "$s\n"
           }
+       ::console::affiche_resultat "VALUES = \n"
        set sources [lindex $listsources 1]
        foreach s $sources { 
           foreach cata $s {
