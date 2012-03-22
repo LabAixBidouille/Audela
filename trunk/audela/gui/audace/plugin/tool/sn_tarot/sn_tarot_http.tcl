@@ -25,7 +25,7 @@ proc ::sn_tarot::downloadFile { url0 param file } {
    upvar #0 $tok state
 
   if { [ ::http::status $tok ] != "ok" } {
-      error "pb download"
+      #error "pb download"
       return 0
    }
 
