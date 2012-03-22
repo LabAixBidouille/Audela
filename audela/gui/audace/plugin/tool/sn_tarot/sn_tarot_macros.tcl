@@ -431,22 +431,21 @@ proc ::sn_tarot::SNChecker { date ra dec } {
    set ra_cand [mc_angle2deg $ra ]
    set dec_cand [mc_angle2deg $dec 90 ]
    set url http://www.cbat.eps.harvard.edu/lists/RecentSupernovae.html
-
    if { [catch { set tok [ ::http::geturl $url ] } ErrInfo ] } {
-      error "1"
+      return "No internet connection."
    }
 
    upvar #0 $tok state
 
   if { [ ::http::status $tok ] != "ok" } {
-      error "2"
+      return "Problem while reading the html code."
    }
 
    #--   verifie le contenu
    set key [ string range [ ::http::data $tok ] 0 4 ]
 
    if { $key == "<?xml" } {
-      error "3"
+      return "Problem while decoding the html code."
    }
 
    set lignes [::http::data $tok ]
@@ -540,20 +539,20 @@ proc ::sn_tarot::MPChecker { date ra dec {obscod 500} } {
    #::console::affiche_resultat "< $query >\n"
 
    if { [catch { set tok [ ::http::geturl $url -query $query ] } ErrInfo ] } {
-      return ""
+      return "No internet connection."
    }
 
    upvar #0 $tok state
 
   if { [ ::http::status $tok ] != "ok" } {
-      return ""
+      return "Problem while reading the html code."
    }
 
    #--   verifie le contenu
    set key [ string range [ ::http::data $tok ] 0 4 ]
 
    if { $key == "<?xml" } {
-      return ""
+      return "Problem while decoding the html code."
    }
 
    set lignes [::http::data $tok ]
