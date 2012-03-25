@@ -29,6 +29,174 @@
 
 
 ####################################################################
+#  Procedure de conversion de fichier profil de raie spatial .fit en .dat
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 29-01-2005
+# Date modification : 16-05-2005/20-09-06
+# Arguments : fichier .fit du profil de raie ?fichier_sortie.dat?\
+####################################################################
+
+proc spc_buildhtml { args } {
+   global conf
+   global audace spcaudace
+   #-- Nb colonnes du tableau :
+   set nbcols 3
+
+   set nbargs [ llength $args ]
+   if { $nbargs==0 } {
+      set flagnav "n"
+   } elseif { $nbargs==1 } {
+      set flagnav [ lindex $args 0 ]
+   } elseif { $nbargs==3 } {
+      set flagnav [ lindex $args 0 ]
+      set lambda_min [ lindex $args 1 ]
+      set lambda_max [ lindex $args 2 ]
+   } else {
+      ::console::affiche_erreur "Usage: spc_buildhtml ?o/(n) affichage par navigateur? ?lambda_min lambda_max?\n\n"
+      return ""
+   }
+
+
+   #--- Informations sur les spectres :
+   ::console::affiche_prompt "\nNormalisation, et détermination de lambda_min, lambda_max, ymin, ymax...\n"
+   set listefile [ lsort -dictionary [ glob -tail -dir $audace(rep_images) *$conf(extension,defaut) ] ]
+   set listefile [ spc_ldatesort $listefile ]
+   set objname ""
+   set listefilescaled [ list ]
+   set bande_liste [ list ]
+   set intensity_liste [ list ]
+   foreach fichier $listefile {
+      buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+      #-- Recherche du nom de l'objet :
+      if { $objname == "" } {
+         set listemotsclef [ buf$audace(bufNo) getkwds ]
+         if { [ lsearch $listemotsclef "OBJNAME" ] !=-1 } {
+            set objname [ lindex [ buf$audace(bufNo) getkwd "OBJNAME" ] 1 ]
+         }
+      }
+
+      #-- Determination de lambda_min et lambda_max :
+      if { $nbargs<=1 } {
+         set resultats [ spc_info $fichier ]
+         set lmin [ lindex $resultats 3 ]
+         set lmax [ lindex $resultats 4 ]
+         lappend bande_liste [ list $fichier $lmin $lmax ]
+      }
+
+      #-- Normalisdation :
+      #set fichier_norma [ spc_autonorma "$fichier" ]
+      set fichier_norma [ spc_rescalecont "$fichier" ]
+      lappend listefilescaled "$fichier_norma"
+
+      #--  Determination de ymin et ymax :
+      buf$audace(bufNo) load "$audace(rep_images)/$fichier_norma"
+      buf$audace(bufNo) mult 1000
+      set resultats [ buf$audace(bufNo) stat ]
+      set ymin [ lindex $resultats 3 ]
+      set ymax [ lindex $resultats 2 ]
+      lappend intensity_liste [ list "$fichier_norma" $ymin $ymax ]
+   }
+
+
+   #--- Calculs ymin, ymax, lambda_min, lambda_max :
+   set ymin [ expr 0.97*[ lindex [ lindex [ lsort -real -increasing -index 1 $intensity_liste ] 0 ] 1 ]/1000. ]
+   set ymax [ expr 1.03*[ lindex [ lindex [ lsort -real -decreasing -index 2 $intensity_liste ] 0 ] 2 ]/1000. ]
+   ::console::affiche_resultat "\nYmin=$ymin et Ymax=$ymax\n"
+   #-- Lmin et Lmax :
+   if { $nbargs<=1 } {
+      set lambda_min [ lindex [ lindex [ lsort -real -decreasing -index 1 $bande_liste ] 0 ] 1 ]
+      set lambda_max [ lindex [ lindex [ lsort -real -increasing -index 2 $bande_liste ] 0 ] 2 ]
+      ::console::affiche_resultat "Lambda_min=$lambda_min et Lambda_max=$lambda_max\n"
+   }
+
+
+   #--- Conversion des profils spectraux fits en PNG :
+   #-- Conversion png :
+   ::console::affiche_prompt "\nConversion en PNG...\n"
+   if { [ file exists "$audace(rep_images)/weboutput" ] } { file delete -force "$audace(rep_images)/weboutput" }
+   file mkdir "$audace(rep_images)/weboutput"
+   set repimgdflt "$audace(rep_images)"
+   set audace(rep_images) "$audace(rep_images)/weboutput"
+   set listepng [ list ]
+   foreach spectre_rescaled $listefilescaled {
+      #-- Cropping ses profils :
+      file copy -force "$repimgdflt/$spectre_rescaled$conf(extension,defaut)" "$audace(rep_images)/$spectre_rescaled$conf(extension,defaut)"
+      set spectre_cropped [ spc_select "$spectre_rescaled" $lambda_min $lambda_max ]
+      lappend listepng [ spc_autofit2png "$spectre_cropped" "$objname" $lambda_min $lambda_max $ymin $ymax ]
+      file delete -force "$audace(rep_images)/$spectre_rescaled$conf(extension,defaut)"
+      file delete -force "$repimgdflt/$spectre_rescaled$conf(extension,defaut)"
+      file delete -force "$audace(rep_images)/$spectre_cropped$conf(extension,defaut)"
+   }
+   set audace(rep_images) "$repimgdflt"
+
+  
+   #--- Creation du repertoire et ouverture de index.html :
+   #-- Preambule HTML :
+   set dateproduct [ mc_date2ymdhms now ]
+   set year [ lindex $dateproduct 0 ]
+   set mounth [ lindex $dateproduct 1 ]
+   set day [ lindex $dateproduct 2 ]
+   set fileout "index.html"
+   set file_id [ open "$audace(rep_images)/weboutput/$fileout" w+ ]
+   #- configure le fichier de sortie avec les fin de ligne "xODx0A"
+   #- independamment du systeme LINUX ou WINDOWS
+   fconfigure $file_id -translation crlf
+   #-- Entete web :
+   puts $file_id "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/ loose.dtd\">"
+   puts $file_id "<html>"
+   puts $file_id "<head>"
+   puts $file_id "  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">"
+   puts $file_id "  <title>$objname</title>"
+   puts $file_id "  <meta name=\"generator\" content=\"SpcAudace, see http://bmauclaire.free.fr/spcaudace/\">"
+   puts $file_id "</head>"
+   puts $file_id "<body bgcolor=\"#ffffff\">"
+   puts $file_id "<br>"
+   puts $file_id "<center><h1><span style=\"color: #00008B\">Catalog journal of $objname</span></h1><p>Updated: $mounth/$day/$year</p></center><br>"
+   puts $file_id "<center>"
+   puts $file_id "<table border=\"0\" cellpadding=\"0\" cellspacing=\"10\">"
+
+   #-- Construction du tableau :
+   ::console::affiche_prompt "\nConstruction du tableau HTML...\n"
+   #- 340x260 -> 320x240
+   set nbimg [ expr [ llength $listepng ]-1 ]
+   for { set i $nbimg } { $i>=0 } { incr i -1 } {
+      puts $file_id "  <tr>"
+      for { set j 1 } { $j<=3 } { incr j } {
+         set fichier [ lindex $listepng $i ]
+         puts $file_id "    <td><a href=\"$fichier\"><img border=\"0\" src=\"$fichier\" width=\"320\" heigh=\"240\" alt=\"$fichier\" title=\"Clic to enlarge $fichier\"></a></td>"
+         set fichierfit [ file rootname "$fichier" ]
+         file delete -force "$audace(rep_images)/weboutput/$fichierfit$conf(extension,defaut)"
+         if { $j!=3 } { incr i -1 }
+      }
+      puts $file_id "  </tr>"
+      #set fichierfit [ file rootname "$fichier" ]
+      #file delete -force "$audace(rep_images)/weboutput/$fichierfit$conf(extension,defaut)"
+   }
+
+   #--- Traitement de fin de script :
+   puts $file_id "</table>"
+   puts $file_id "</center>"
+   puts $file_id "<br>"
+   puts $file_id "</body>"
+   puts $file_id "</html>"
+   close $file_id
+   if { $nbargs==1 || $nbargs==3 } {
+      if { $conf(editsite_htm)!="" && [ file exists "$audace(rep_images)/weboutput/$fileout" ] } {
+         set answer [ catch { exec $conf(editsite_htm) "$audace(rep_images)/weboutput/$fileout" & } ]
+      } else {
+         ::console::affiche_resultat "Veuillez configurer \"Editeurs/Navigateur web\" pour permettre l'affichage de la page générée.\n"
+      }
+   }
+   ::console::affiche_resultat "Page web sauvegardée sous $audace(rep_images)/weboutput/$fileout\n"
+   return $fileout
+}
+#****************************************************************#
+
+
+
+
+####################################################################
 # Procedure de mise a jour des intensites d'un profil fits
 # (cas ou les nouvelles intensites sont echantillonees lineairement) 
 #
@@ -39,8 +207,10 @@
 # exemple : spc_fileupdate nom_fich 6237.54321 0.312765 list_intensites
 # exemple : spc_fileupdate nom_fich 6237.54321 0.312765 list_intensites suffixe oui
 ####################################################################
+
 proc spc_fileupdate { args } {
    global audace spcaudace conf
+
    set nbargs [ llength $args ]
    if { $nbargs ==6 || $nbargs ==4 } { 
       set nomfich [ lindex $args 0 ]
