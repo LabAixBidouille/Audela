@@ -375,7 +375,7 @@ proc ::ascomcam::getPluginProperty { camItem propertyName } {
       hasVideo         { return 0 }
       hasWindow        { return 1 }
       longExposure     { return 1 }
-      multiCamera      { return 0 }
+      multiCamera      { return 1 }
       name             {
          if { $private($camItem,camNo) != "0" } {
             return [ cam$private($camItem,camNo) name ]
