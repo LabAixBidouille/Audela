@@ -1052,18 +1052,18 @@ proc ::confCam::removeCameraListener { camItem cmd } {
 # retourne l'etat d'activation du dark
 #
 # @param camItem : Item de la camera
-# @return 1=soustraction du dark activée 1=soustraction du dark descativée
+# @return 1=soustraction du dark activee 0=soustraction du dark descativee
 #------------------------------------------------------------
 proc ::confCam::getDarkState { camItem } {
    if { $camItem == "" } {
       return
    }
    set camName $::conf(camera,$camItem,camName)
-   if { [::confCam::getPluginProperty $camItem multiCamera] == 0 } {
-      if { ![info exists ::conf($camName,darkEnabled)]}  { set ::conf($camName,darkEnabled) "0" }
+   if { [ ::confCam::getPluginProperty $camItem multiCamera ] == 0 } {
+      if { ! [ info exists ::conf($camName,darkEnabled) ] }          { set ::conf($camName,darkEnabled)          "0" }
       return  $::conf($camName,darkEnabled)
    } else {
-      if { ! [ info exists ::conf($camName,$camItem,darkEnabled) ] }   { set ::conf($camName,$camItem,darkEnabled) "0" }
+      if { ! [ info exists ::conf($camName,$camItem,darkEnabled) ] } { set ::conf($camName,$camItem,darkEnabled) "0" }
       return  $::conf($camName,$camItem,darkEnabled)
    }
 }
@@ -1081,11 +1081,11 @@ proc ::confCam::getDarkFileName { camItem } {
    }
 
    set camName $::conf(camera,$camItem,camName)
-   if { [::confCam::getPluginProperty $camItem multiCamera] == 0 } {
-      if { ![info exists ::conf($camName,darkFileName)]} { set ::conf($camName,darkFileName) "" }
+   if { [ ::confCam::getPluginProperty $camItem multiCamera ] == 0 } {
+      if { ! [ info exists ::conf($camName,darkFileName) ] }          { set ::conf($camName,darkFileName)          "" }
       return $::conf($camName,darkFileName)
    } else {
-      if { ! [ info exists ::conf($camName,$camItem,darkFileName) ] }  { set ::conf($camName,$camItem,darkFileName) "" }
+      if { ! [ info exists ::conf($camName,$camItem,darkFileName) ] } { set ::conf($camName,$camItem,darkFileName) "" }
       return $::conf($camName,$camItem,darkFileName)
    }
 }
