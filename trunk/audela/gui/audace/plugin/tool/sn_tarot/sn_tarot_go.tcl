@@ -126,7 +126,7 @@ proc ::sn_tarot::createPanel { this } {
 
    set panneau(sn_tarot,Tarot_Calern,url)    "http://tarot6.obs-azur.fr/ros/supernovae/zip/"
    set panneau(sn_tarot,Tarot_Chili,url)     "http://tarotchili5.oamp.fr/ros/supernovae/zip/"
-   set panneau(sn_tarot,ohp,url)             "http://cador.obs-hp.fr/tarot"
+   set panneau(sn_tarot,ohp,url)             "http://cador.obs-hp.fr/tarot/"
 
    ::sn_tarot::updateFiles
    vwait panneau(sn_tarot,init)
@@ -208,7 +208,7 @@ proc ::sn_tarot::tarotBuildIF { } {
       -text "$caption(sn_tarot_go,refresh)" \
       -command "catch {unset panneau(sn_tarot,init)} ; ::sn_tarot::updateFiles ; vwait panneau(sn_tarot,init) ; ::sn_tarot::listArchives"
    pack $This.fra2.but0 -anchor center -fill none -pady 5 -ipadx 5 -ipady 5
-   
+
    #--- Bouton Telecharger
    button $This.fra2.but1 -borderwidth 2 \
       -text "$caption(sn_tarot_go,telecharger)" \
@@ -224,7 +224,7 @@ proc ::sn_tarot::tarotBuildIF { } {
    button $This.fra2.but3 -borderwidth 2 -text "$caption(sn_tarot_go,status_candidates)" \
      -command "::sn_tarot::snAnalyzeCandidateId"
    pack $This.fra2.but3 -anchor center -fill none -pady 5 -ipadx 5 -ipady 5
-   
+
    pack $This.fra2 -side top -fill x
 
    #--   pour definir le fichier courant
@@ -471,17 +471,18 @@ proc ::sn_tarot::sn_tarotStart { } {
 
    #--   si necessaire, dezippe refgaltarot.zip
    set panneau(sn_tarot,references) [ file join $dir references ]
+
    set nb [ llength [ glob -nocomplain -type f -tails -dir $panneau(sn_tarot,references) *$conf(extension,defaut) ] ]
    if { $nb == 0 } {
       #--   chemin de unzip.exe
       set tarot_unzip [ file join $audace(rep_plugin) tool sn_tarot unzip.exe ]
       #--   dezippe refgaltarot.zip
-      catch { exec $tarot_unzip -u -d $dir $file } Errinfo
-      if { [info exists ErrInfo ] } {
-         ::console::affiche_resultat "$ErrInfo\n"
-      }
+      catch { exec $tarot_unzip -u -d $dir $file } ErrInfo
+
       #--   change le nom du repertoire en reference
-      file rename -force [ file join $dir refgaltarot ] $panneau(sn_tarot,references)
+      if {![file exists $panneau(sn_tarot,references)] && [ file exists [ file join $dir refgaltarot ] ] } {
+         file rename -force [ file join $dir refgaltarot ] $panneau(sn_tarot,references)
+      }
    }
    set panneau(sn_tarot,ini_refunzip) 1
    update
