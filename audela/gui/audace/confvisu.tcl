@@ -1860,6 +1860,30 @@ namespace eval ::confVisu {
    }
 
    #------------------------------------------------------------
+   #  getToolVisuNo
+   #     retourne le numero de la visu contenant un outil
+   #  parametre :
+   #     namespace de l'outil (ex.: ::tlscp]
+   #------------------------------------------------------------
+   proc getToolVisuNo { toolName } {
+
+      set visuList [::visu::list]
+      set visuNo ""
+
+      foreach visu $visuList {
+         set toolList $::confVisu::private($visu,pluginInstanceList)
+         #--- si la liste les plugins dans la visu n'est pas vide
+         #--- cherche si le plugin est dans la liste
+          if {$toolList ne "" && [lsearch -exact $toolList "$toolName"] != -1} {
+            #--- l'outil existe dans la visu
+            set visuNo $visu
+            break
+         }
+      }
+      return $visuNo
+   }
+
+   #------------------------------------------------------------
    #  getZoom
    #     retourne  la valeur du zoom
    #  parametres :
