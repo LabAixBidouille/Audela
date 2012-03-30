@@ -29,7 +29,8 @@
 
 
 ####################################################################
-#  Procedure de conversion de fichier profil de raie spatial .fit en .dat
+# Construit une page web avec les images PNG des profils normalises en 3 colonnes
+# triés par ordre antichronologique
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 29-01-2005
@@ -152,7 +153,7 @@ proc spc_buildhtml { args } {
    puts $file_id "</head>"
    puts $file_id "<body bgcolor=\"#ffffff\">"
    puts $file_id "<br>"
-   puts $file_id "<center><h1><span style=\"color: #00008B\">Catalog journal of $objname</span></h1><p>Updated: $mounth/$day/$year</p></center><br>"
+   puts $file_id "<center><h1><span style=\"color: #00008B\">Chronological catalog of $objname spectra</span></h1><p>Updated: $mounth/$day/$year</p></center><br>"
    puts $file_id "<center>"
    puts $file_id "<table border=\"0\" cellpadding=\"0\" cellspacing=\"10\">"
 

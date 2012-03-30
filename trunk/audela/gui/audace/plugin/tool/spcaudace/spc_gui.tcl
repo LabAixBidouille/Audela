@@ -1124,10 +1124,28 @@ proc spc_postscript {} {
 proc spc_scgif {} {
    global audace conf
 
+   #-- Capture de l'ecran :
    set image [ image create photo ]
    .spc.g snap $image
-   set filename "$audace(rep_images)/screenshot.gif"
-   $image write $audace(rep_images)/screenshot.gif -format GIF
+
+   #-- Determine ne nom du fichier de sauvegarde :
+   set answer [ catch { lsort -dictionary [ glob -dir $audace(rep_images) -tail screenshot*.gif ] } ]
+   if { $answer==1 } {
+      set nbsc 0
+   } elseif { $answer==0 } {
+      set listefichiers [ lsort -dictionary [ glob -dir $audace(rep_images) -tail screenshot*.gif ] ]
+      set nbsc [ llength $listefichiers ]
+   }
+   if { $nbsc!=0 } {
+      set numerosc [ expr $nbsc+1 ]
+      set scname "screenshot-${numerosc}.gif"
+   } else {
+      set scname "screenshot-1.gif"
+   }
+
+   #-- Sauve le fichier :
+   set filename "$audace(rep_images)/$scname"
+   $image write $audace(rep_images)/$scname -format GIF
    ::console::affiche_resultat "Capture d'écran sauvée sous $filename\n"
 }
 #*********************************************************************************#
