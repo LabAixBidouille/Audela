@@ -1,12 +1,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><head>
-  
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-  <title>Fonctions de pilotage de télescopes</title>
 
   
-</head><body>
-<p class="date">Date de mise à jour : 03 mars 2012</p>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /><title>Fonctions de pilotage de télescopes</title></head><body>
+<p class="date">Date de mise à jour : 31 mars 2012</p>
 
 <h1>Fonctions de pilotage de télescopes </h1>
 
@@ -125,8 +122,8 @@ tableau ci-dessous :<br />
       </td>
       <td style="width: 211px;"><span style="font-weight: bold;"> goto</span>
       </td>
-      <td><span style="font-weight: bold;"> move</span> </td>
-      <td><span style="font-weight: bold;"> stop</span> </td>
+      <td style="width: 85px;"><span style="font-weight: bold;"> move</span> </td>
+      <td style="width: 56px;"><span style="font-weight: bold;"> stop</span> </td>
       <td><span style="font-weight: bold;"> state</span> </td>
       <td style="vertical-align: top;"><span style="font-weight: bold;">survey</span><br />
       </td>
@@ -157,14 +154,14 @@ pour terminer la commande. L'option -backlash précise si le rattrapage
 des jeux est acif (=1) ou inactif (=0 défaut). L'option -equinox
 précise la référence des coordonnées.<br />
       </td>
-      <td> n|s|e|w<br />
-?-rate value?<br />
+      <td style="width: 85px;"> n|s|e|w<br />
+?rate?<br />
 Bouge le télescope <br />
 dans une direction.<br />
-L'option -rate est un nombre <br />
+rate est un nombre optionnel <br />
 qui varie entre 0 (vitesse <br />
 la plus petite) et 1 (vitesse la plus grande). </td>
-      <td> ?n|s|e|w? <br />
+      <td style="width: 56px;"> ?n|s|e|w? <br />
 Arrête le mouvement <br />
 spécifié du télescope. </td>
       <td style="text-align: left;">Pas d'argument.<br />
@@ -198,13 +195,13 @@ la plus petite) et 1 (vitesse la plus grande). L'option
 -blocking précise s'il faut attendre la fin du pointage (=1 défaut) ou
 non (=0) pour terminer la commande.<br />
       </td>
-      <td> +|-<br />
-?-rate value? <br />
+      <td style="width: 85px;"> +|-<br />
+?rate? <br />
 Bouge la focalisation dans <br />
 le sens indiqué.<br />
-L'option -rate est un nombre qui varie entre 0 (vitesse <br />
+rate est un nombre optionnel qui varie entre 0 (vitesse <br />
 la plus petite) et 1 (vitesse la plus grande). </td>
-      <td>Arrête le mouvement <br />
+      <td style="width: 56px;">Arrête le mouvement <br />
 de focalisation. </td>
       <td><br />
       </td>
@@ -260,8 +257,7 @@ value</span></span><span style="font-weight: bold;"><span style="font-style: ita
 <em>s</em>, <em>e</em> ou <em>w</em>.</p>
 
 <p>Commande obsolète remplacée par <span style="font-weight: bold;">tel1
-radec move <span style="font-style: italic;">direction&nbsp;</span></span><span style="font-weight: bold;"><span style="font-style: italic;"> ?</span></span><span style="font-weight: bold;"><span style="font-style: italic;">-rate
-value?</span></span></p>
+radec move <span style="font-style: italic;">direction </span></span><span style="font-weight: bold;"><span style="font-style: italic;">?rate</span></span><span style="font-weight: bold;"><span style="font-style: italic;">?</span></span></p>
 
 <h3> <a name="stop" id="stop">tel1 stop <em>direction</em></a></h3>
 
@@ -311,7 +307,7 @@ commandes <span style="font-style: italic;"><span style="font-weight: bold;">tel
 <h3> <a name="date" id="date">tel1 date ?Date?</a></h3>
 
 </span>
-<p>Mise à jour de l'horloge du microcontrôleur du télescope.</p>
+</p><p>Mise à jour de l'horloge du microcontrôleur du télescope.</p>
 <span style="font-weight: bold;">
 <h3> <a name="home" id="home">tel1 home ?Home?</a></h3>
 
@@ -329,6 +325,6 @@ commandes <span style="font-style: italic;"><span style="font-weight: bold;">tel
 <p>Fixe le délais de temporisation (millisecondes) entre une
 entrée/sortie.</p>
 
-</p>
+
 
 </body></html>
