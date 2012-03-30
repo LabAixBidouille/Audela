@@ -1385,7 +1385,7 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                result = TCL_ERROR;
             }
          } else {
-            sprintf(ligne,"Usage: %s %s move n|s|e|w ?-rate value?",argv[0],argv[1]);
+            sprintf(ligne,"Usage: %s %s move n|s|e|w ?rate?",argv[0],argv[1]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             result = TCL_ERROR;
          }
@@ -1735,7 +1735,7 @@ int cmdTelFocus(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
             tel_focus_move(tel,argv[3]);
             Tcl_SetResult(interp,"",TCL_VOLATILE);
          } else {
-            sprintf(ligne,"Usage: %s %s move +|- ?-rate value?",argv[0],argv[1]);
+            sprintf(ligne,"Usage: %s %s move +|- ?rate?",argv[0],argv[1]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             result = TCL_ERROR;
          }
