@@ -870,7 +870,7 @@ namespace eval carteducielv3 {
       #--- Ramene AudeLA dans son repertoire
       cd "$pwd0"
       #--- J'attends que Cartes du Ciel soit completement demarre
-      after 2000
+      after 4000
       return "0"
    }
 
