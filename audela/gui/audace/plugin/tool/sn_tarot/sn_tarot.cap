@@ -337,7 +337,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,image_numero)        "Zu Bild Nummer ... gehen:"
 
    set caption(sn_tarot,config_title)        "Tarot SN Visu - Konfiguration"
-   set caption(sn_tarot,rafraich_images)     "Display erfrischen:"
+   set caption(sn_tarot,rafraich_images)     "Display Erfrischung:"
    set caption(sn_tarot,motion)              "Wahl 'motion'"
    set caption(sn_tarot,release)             "Wahl 'release'"
    set caption(sn_tarot,blink_delai)         "Blink   -   Zeitraum (ms):"
@@ -346,7 +346,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,image_gzip)          "Referenz Bilder speichern:"
 
    set caption(sn_tarot,attention)           "Achtung"
-   set caption(sn_tarot,alerte)              "# Le changement de configuration du rafraîchissement de la visualisation\nne prendra effet qu'au prochain démarrage de Tarot SN Visu."
+   set caption(sn_tarot,alerte)              "Die Änderung der Konfiguration der Display Erfrischung wird erst wirksam, beim nächsten Mal Tarot SN Visu gestartet wird."
 
    set caption(sn_tarot,reference)           "Bezug"
    set caption(sn_tarot,newref)              "Neue Bild 1 Bezug"
@@ -376,7 +376,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,cand_wait_sn)        "Bekannte Supernovae Präsenz Prüfung..."
    set caption(sn_tarot,cand_wait_ar)        "Prüft die Präsenz der Galaxie in den Archiven..."
 
-   set caption(sn_tarot,ancand_wait)         "# Patientez pendant l'analyse des fiches candidates..."
+   set caption(sn_tarot,ancand_wait)         "Warten Sie für die Analyse von Datensätzen Kandidaten..."
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
