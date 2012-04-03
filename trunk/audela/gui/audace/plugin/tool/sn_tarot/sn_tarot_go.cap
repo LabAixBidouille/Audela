@@ -153,7 +153,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot_go,telecharger)       "Herunterladen"
    set caption(sn_tarot_go,recherche_sn)      "Supernovae\nsuchen"
    set caption(sn_tarot_go,refresh)           "Aktualisieren"
-   set caption(sn_tarot_go,status_candidates) "# Bilan des\ncandidates"
+   set caption(sn_tarot_go,status_candidates) "Bewertung der\nKandidaten"
 
    set caption(sn_tarot_go,telecharge)        "Herunterladen %s ?"
    set caption(sn_tarot_go,yes)               "Ja"

@@ -359,7 +359,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snvisu,image_numero)    "Zu Bild Nummer ... gehen:"
 
    set caption(snvisu,config_title)    "Sn Visu - Konfiguration"
-   set caption(snvisu,rafraich_images) "Display erfrischen:"
+   set caption(snvisu,rafraich_images) "Display Erfrischung:"
    set caption(snvisu,motion)          "Wahl 'motion'"
    set caption(snvisu,release)         "Wahl 'release'"
    set caption(snvisu,blink_delai)     "Blink   -   Zeitraum (ms):"
@@ -378,7 +378,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(snvisu,attention)       "Achtung"
    set caption(snvisu,alerte1)         "Manche Setup Änderungen werden nur nach die nächste\nSN Visu Widerladung wirksam werden.\nDiese Änderungen sind:"
-   set caption(snvisu,alerte2)         "        - Display erfrischen."
+   set caption(snvisu,alerte2)         "        - Display Erfrischung."
    set caption(snvisu,alerte3)         "        - Rollleisten zeigen."
 
    set caption(snvisu,reference)       "Bezug"

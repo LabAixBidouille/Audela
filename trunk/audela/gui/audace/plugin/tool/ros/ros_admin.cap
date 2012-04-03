@@ -60,13 +60,13 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(ros_admin,msg_prevent)     "Achtung"
-   set caption(ros_admin,msg_prevent2)    "# Cette action va réinitialiser la base de données. Toutes les données seront définitivement effacées du disque. Etes-vous sûr ?"
-   set caption(ros_admin,efface)          "# Effacement de la base de données"
-   set caption(ros_admin,mdprootsql)      "# Veuillez saisir le mot de passe root du serveur SQL"
-   set caption(ros_admin,cancelRAZ)       "# RAZ annulée de la base de données"
-   set caption(ros_admin,mysqlconnecterr) "# Erreur de connexion à MySQL :"
-   set caption(ros_admin,mysqlshowerr)    "# La requête a échoué :"
-   set caption(ros_admin,mysqlok)         "# Connexion à la base de données :\nOK"
+   set caption(ros_admin,msg_prevent2)    "Diese Handlung wird die Datenbank erlöschen. Alle Daten werden für immer von der Festplatte gelöscht werden. Sind Sie sicher?"
+   set caption(ros_admin,efface)          "Datenbank Erlöschung"
+   set caption(ros_admin,mdprootsql)      "Bitte geben Sie das root-Passwort des SQL-Servers"
+   set caption(ros_admin,cancelRAZ)       "Datenbank Reset abgebrochen"
+   set caption(ros_admin,mysqlconnecterr) "Fehler beim Verbinden mit MySQL:"
+   set caption(ros_admin,mysqlshowerr)    "Die Anforderung hat nicht erfolgt:"
+   set caption(ros_admin,mysqlok)         "Verbindung mit der Datenbank:\nOK"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
