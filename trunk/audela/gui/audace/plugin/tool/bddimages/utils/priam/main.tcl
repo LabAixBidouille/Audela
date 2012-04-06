@@ -2,6 +2,7 @@
 #                     Execution du programme 
 # ******************************************************************
 # source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/priam/main.tcl
+# source /usr/local/src/audela/gui/audace/plugin/tool/bddimages/utils/priam/main.tcl
 
 # ******************************************************************
 #                     Entete Doxygen
@@ -23,7 +24,7 @@
 # retrouver l idbddimage auquel il correspond
 # modifier la valeur suivante pour le bon id :
 
-   set idbddimg 909408
+   set idbddimg 20058
 
 # puis lancer ce code en faisant un copier coller dans la console de la premiere ligne de ce fichier : source ...
 # ******************************************************************
@@ -35,21 +36,21 @@
 # Ajouter une procedure d interpretation de resultats de Priam, (accepted/rejected) pour savoir comment ca s est passé.
 # ******************************************************************
 
-   source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/get_one_image.tcl
-   source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/manage_source.tcl
-   source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/priam/priam.tcl
+   source /usr/local/src/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/get_one_image.tcl
+   source /usr/local/src/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/manage_source.tcl
+   source /usr/local/src/audela/gui/audace/plugin/tool/bddimages/utils/priam/priam.tcl
 
-   source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/get_cata.tcl
-   source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/visu.tcl
-   source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/imprimlist.tcl
-   source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/astrometry.tcl
-   source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/photometry.tcl
-   source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/identification.tcl
-   source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/analyse_source.tcl
-   source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/get_skybot.tcl
+   source /usr/local/src/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/get_cata.tcl
+   source /usr/local/src/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/visu.tcl
+   source /usr/local/src/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/imprimlist.tcl
+   source /usr/local/src/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/astrometry.tcl
+   source /usr/local/src/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/photometry.tcl
+   source /usr/local/src/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/identification.tcl
+   source /usr/local/src/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/analyse_source.tcl
+   source /usr/local/src/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/get_skybot.tcl
 
-   source /srv/develop/audela/gui/audace/vo_tools.tcl
-   source /srv/develop/audela/gui/audace/plugin/tool/av4l/av4l_photom.tcl
+   source /usr/local/src/audela/gui/audace/vo_tools.tcl
+   source /usr/local/src/audela/gui/audace/plugin/tool/av4l/av4l_photom.tcl
 
    ::bddimagesXML::load_xml_config
    ::bddimagesXML::get_config bddimages_cador
@@ -121,8 +122,8 @@
    gren_info "** Chargement d'une image \n"
    gren_info "****************************************************************** \n"
 
-
-   set r [get_one_image]
+#   set r [get_one_image]
+   set r [get_one_image_by_idbddimage $idbddimg]
    gren_info "SSP_PLUGIN: result one_ssp   : $r \n"
 
    gren_info "SSP_PLUGIN:idbddcata  = $ssp_image(idbddcata)\n"
