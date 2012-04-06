@@ -78,7 +78,8 @@ proc get_identified { sra sdec serrpos srmag srmagerr ira idec ierrpos irmag irm
     set deltapos [expr sqrt(pow(($sra-$ira)*cos($sdec*$dtr),2) + pow($sdec-$idec,2))]
     if {$log} {gren_info "deltapos=$deltapos\n"}
     if {$log} {gren_info "deltapos arcsec=[expr $deltapos*3600.0]\n"}
-    set deltaposdiv [expr ($serrpos + $ierrpos) / 3600.0]
+    if {$log} {gren_info "serrpos,ierrpos = $serrpos $ierrpos \n"}
+    set deltaposdiv [expr (abs($serrpos) + abs($ierrpos)) ]
     if {$log} {gren_info "deltaposdiv=$deltaposdiv\n"}
     set scorepos [expr (1.0 - $deltapos / $deltaposdiv) * 100.0]
     if {$log} {gren_info "scorepos=$scorepos\n"}
@@ -88,7 +89,7 @@ proc get_identified { sra sdec serrpos srmag srmagerr ira idec ierrpos irmag irm
     }
     set deltamag [expr abs($irmag - $srmag)]
     if {$log} {gren_info "deltamag=$deltamag\n"}
-    set deltamagdiv [expr $srmagerr+$irmagerr]
+    set deltamagdiv [expr abs($srmagerr) + abs($irmagerr)]
     if {$log} {gren_info "deltamagdiv=$deltamagdiv\n"}
     set scoremv [expr (1.0 - $deltamag / $deltamagdiv) * 100.0]
     if {$log} {gren_info "scoremv=$scoremv\n"}
@@ -214,8 +215,8 @@ proc identification { catalist1 catalog1 catalist2 catalog2 scoreposlimit scorem
 
    set maxa -1
    set mina 361
-   set maxd -1
-   set mind 361
+   set maxd -91
+   set mind +91
 
    foreach e1 $ralist1 {
       set i1 [lindex $e1 0]
