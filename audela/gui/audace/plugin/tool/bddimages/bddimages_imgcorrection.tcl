@@ -424,8 +424,8 @@ proc ::bddimages_imgcorrection::create_image_offset { type inforesult } {
 
    if {$methode == 1} {
       buf$bufno load "$bddconf(dirtmp)/${type}0$ext"
-      ttscript2 "IMA/STACK  $bddconf(dirtmp) offset 0  $k $ext $bddconf(dirtmp) $fileout . $ext MED"
-      ttscript2 "IMA/SERIES $bddconf(dirtmp) $fileout . . $ext $bddconf(dirtmp) $fileout . $ext STAT"
+      ttscript2 "IMA/STACK  $bddconf(dirtmp) offset 0  $k $ext $bddconf(dirtmp) $fileout . $ext MED bitpix=-32"
+      ttscript2 "IMA/SERIES $bddconf(dirtmp) $fileout . . $ext $bddconf(dirtmp) $fileout . $ext STAT bitpix=-32"
       buf$bufno load "$bddconf(dirtmp)/${fileout}${ext}"
       ::console::affiche_resultat "MEAN : [buf$bufno getkwd \"MEAN\"]\n"
    }
@@ -465,16 +465,16 @@ proc ::bddimages_imgcorrection::create_image_dark { type inforesult } {
    
    if {$methode == 1} {
       buf$bufno load "$bddconf(dirtmp)/${type}0${ext}"
-      ttscript2 "IMA/STACK  $bddconf(dirtmp) dark       0  $k $ext $bddconf(dirtmp) $fileout . $ext MED"
-      ttscript2 "IMA/SERIES $bddconf(dirtmp) $fileout .  .  $ext $bddconf(dirtmp) $fileout . $ext STAT"
+      ttscript2 "IMA/STACK  $bddconf(dirtmp) dark       0  $k $ext $bddconf(dirtmp) $fileout . $ext MED bitpix=-32"
+      ttscript2 "IMA/SERIES $bddconf(dirtmp) $fileout .  .  $ext $bddconf(dirtmp) $fileout . $ext STAT bitpix=-32"
       buf$bufno load "$bddconf(dirtmp)/${fileout}${ext}"
       ::console::affiche_resultat "MEAN : [buf$bufno getkwd MEAN]\n"
    }
    
    if {$methode == 2} {
       buf$bufno load "$bddconf(dirtmp)/${type}0${ext}"
-      ttscript2 "IMA/STACK  $bddconf(dirtmp) dark       0  $k $ext $bddconf(dirtmp) $fileout . $ext MED"
-      ttscript2 "IMA/SERIES $bddconf(dirtmp) $fileout .  .  $ext $bddconf(dirtmp) $fileout . $ext STAT"
+      ttscript2 "IMA/STACK  $bddconf(dirtmp) dark       0  $k $ext $bddconf(dirtmp) $fileout . $ext MED bitpix=-32"
+      ttscript2 "IMA/SERIES $bddconf(dirtmp) $fileout .  .  $ext $bddconf(dirtmp) $fileout . $ext STAT bitpix=-32"
       buf$bufno load "$bddconf(dirtmp)/${fileout}${ext}"
       ::console::affiche_resultat "MEAN : [buf$bufno getkwd MEAN]\n"
    }
@@ -488,7 +488,7 @@ proc ::bddimages_imgcorrection::create_image_dark { type inforesult } {
    
    if {$methode == 4} {
 
-      ttscript2 "IMA/STACK  $bddconf(dirtmp) dark 0 $k $ext $bddconf(dirtmp) $fileout . $ext MED"
+      ttscript2 "IMA/STACK  $bddconf(dirtmp) dark 0 $k $ext $bddconf(dirtmp) $fileout . $ext MED bitpix=-32"
    }
    
 
@@ -542,21 +542,21 @@ proc ::bddimages_imgcorrection::create_image_flat { type inforesult } {
       # Ni Dark Ni Offset -> on normalise les flat
       if {$nbsoffset == 0 && $nbsdark == 0 } {
          for {set x 0} {$x<$nbflat} {incr x} {
-            ttscript2 "IMA/SERIES $bddconf(dirtmp) flat $x $x $ext $bddconf(dirtmp) flatn $x $ext NORMGAIN normgain_value=30000"
+            ttscript2 "IMA/SERIES $bddconf(dirtmp) flat $x $x $ext $bddconf(dirtmp) flatn $x $ext NORMGAIN normgain_value=30000 bitpix=-32"
          }
       }
 
       # Dark + Offset -> soustraction des Dark et Offset
       if {$nbsoffset == 1 && $nbsdark == 1 } {
-         ttscript2 "IMA/SERIES $bddconf(dirtmp) flat 0 $k $ext $bddconf(dirtmp) flats 0 $ext SUBDARK dark=sdark0$ext bias=soffset0$ext exptime=EXPOSURE dexptime=EXPOSURE nullpixel=-10000"
+         ttscript2 "IMA/SERIES $bddconf(dirtmp) flat 0 $k $ext $bddconf(dirtmp) flats 0 $ext SUBDARK dark=sdark0$ext bias=soffset0$ext exptime=EXPOSURE dexptime=EXPOSURE nullpixel=-10000 bitpix=-32"
          for {set x 0} {$x<$nbflat} {incr x} {
-            ttscript2 "IMA/SERIES $bddconf(dirtmp) flats $x $x $ext $bddconf(dirtmp) flatn $x $ext NORMGAIN normgain_value=30000"
+            ttscript2 "IMA/SERIES $bddconf(dirtmp) flats $x $x $ext $bddconf(dirtmp) flatn $x $ext NORMGAIN normgain_value=30000 bitpix=-32"
          }
       }
       
       # Offset uniquement -> soustraction des Offset
       if {$nbsoffset == 1 && $nbsdark == 0 } {
-         ttscript2 "IMA/SERIES $bddconf(dirtmp) flat 0 $k $ext $bddconf(dirtmp) flatn 0 $ext SUB file=$bddconf(dirtmp)/soffset0$ext offset=0"
+         ttscript2 "IMA/SERIES $bddconf(dirtmp) flat 0 $k $ext $bddconf(dirtmp) flatn 0 $ext SUB file=$bddconf(dirtmp)/soffset0$ext offset=0 bitpix=-32"
       }
       
       # Dark uniquement -> Soustraction des Dark
@@ -592,17 +592,17 @@ proc ::bddimages_imgcorrection::create_image_flat { type inforesult } {
             #::console::affiche_resultat "STAT sdark1 av [get_stat $bufno]\n"
 
             # divise le DARK par un facteur des temps d exposition
-            ttscript2 "IMA/SERIES $bddconf(dirtmp) sdark0 . . $ext $bddconf(dirtmp) sdark1 . $ext MULT constant=$fact"
+            ttscript2 "IMA/SERIES $bddconf(dirtmp) sdark0 . . $ext $bddconf(dirtmp) sdark1 . $ext MULT constant=$fact bitpix=-32"
             #buf$bufno load "$bddconf(dirtmp)/sdark1${ext}"
             #::console::affiche_resultat "STAT sdark1 ap [get_stat $bufno]\n"
             
             # Soustraction du DARK
-            ttscript2 "IMA/SERIES $bddconf(dirtmp) flat $x $x $ext $bddconf(dirtmp) flats $x $ext SUB file=$bddconf(dirtmp)/sdark1$ext offset=0"
+            ttscript2 "IMA/SERIES $bddconf(dirtmp) flat $x $x $ext $bddconf(dirtmp) flats $x $ext SUB file=$bddconf(dirtmp)/sdark1$ext offset=0 bitpix=-32"
             #buf$bufno load "$bddconf(dirtmp)/flats${x}${ext}"
             #::console::affiche_resultat "STAT flats [get_stat $bufno]\n"
 
             # Normalisation du FLAT
-            ttscript2 "IMA/SERIES $bddconf(dirtmp) flats $x $x $ext $bddconf(dirtmp) flatn $x $ext NORMGAIN normgain_value=30000"
+            ttscript2 "IMA/SERIES $bddconf(dirtmp) flats $x $x $ext $bddconf(dirtmp) flatn $x $ext NORMGAIN normgain_value=30000 bitpix=-32"
             buf$bufno load "$bddconf(dirtmp)/flatn${x}${ext}"
             ::console::affiche_resultat "STAT flatn [get_stat $bufno]\n"
          }
@@ -613,10 +613,10 @@ proc ::bddimages_imgcorrection::create_image_flat { type inforesult } {
       #ttscript2 "IMA/STACK  $bddconf(dirtmp) flatn 0  $k $ext $bddconf(dirtmp) $fileout . $ext KS kappa=3"
 
       # Pile MEDIANE
-      ttscript2 "IMA/STACK  $bddconf(dirtmp) flatn 0  $k $ext $bddconf(dirtmp) $fileout . $ext MED"
+      ttscript2 "IMA/STACK  $bddconf(dirtmp) flatn 0  $k $ext $bddconf(dirtmp) $fileout . $ext MED bitpix=-32"
 
       # Inscrit les stat dans le header de l image
-      ttscript2 "IMA/SERIES $bddconf(dirtmp) $fileout .  .  $ext $bddconf(dirtmp) $fileout . $ext STAT"
+      ttscript2 "IMA/SERIES $bddconf(dirtmp) $fileout .  .  $ext $bddconf(dirtmp) $fileout . $ext STAT bitpix=-32"
       buf$bufno load "$bddconf(dirtmp)/${fileout}${ext}"
       set mean [buf$bufno getkwd "MEAN"]
       ::console::affiche_resultat "MEAN : $mean\n"
@@ -628,19 +628,19 @@ proc ::bddimages_imgcorrection::create_image_flat { type inforesult } {
 
       # Soustraction des Dark et Offset
       if {$nbsoffset == 1 && $nbsdark == 1 } {
-         ttscript2 "IMA/SERIES $bddconf(dirtmp) flat     0 $k $ext $bddconf(dirtmp) flat     0 $ext SUBDARK dark=sdark0$ext bias=soffset0$ext exptime=EXPOSURE dexptime=EXPOSURE nullpixel=-10000"
+         ttscript2 "IMA/SERIES $bddconf(dirtmp) flat     0 $k $ext $bddconf(dirtmp) flat     0 $ext SUBDARK dark=sdark0$ext bias=soffset0$ext exptime=EXPOSURE dexptime=EXPOSURE nullpixel=-10000 bitpix=-32"
       }
       if {$nbsoffset == 0 && $nbsdark == 1 } {
-         ttscript2 "IMA/SERIES $bddconf(dirtmp) flat     0 $k $ext $bddconf(dirtmp) flat     0 $ext SUB file=$bddconf(dirtmp)/sdark0$ext offset=0"
+         ttscript2 "IMA/SERIES $bddconf(dirtmp) flat     0 $k $ext $bddconf(dirtmp) flat     0 $ext SUB file=$bddconf(dirtmp)/sdark0$ext offset=0 bitpix=-32"
       }
       if {$nbsoffset == 1 && $nbsdark == 0 } {
-         ttscript2 "IMA/SERIES $bddconf(dirtmp) flat     0 $k $ext $bddconf(dirtmp) flat     0 $ext SUB file=$bddconf(dirtmp)/soffset0$ext offset=0"
+         ttscript2 "IMA/SERIES $bddconf(dirtmp) flat     0 $k $ext $bddconf(dirtmp) flat     0 $ext SUB file=$bddconf(dirtmp)/soffset0$ext offset=0 bitpix=-32"
       }
 
       # Pile Mediane
       buf$bufno load "$bddconf(dirtmp)/${type}0${ext}"
-      ttscript2 "IMA/STACK  $bddconf(dirtmp) flat       0  $k $ext $bddconf(dirtmp) $fileout . $ext MED"
-      ttscript2 "IMA/SERIES $bddconf(dirtmp) $fileout .  .  $ext $bddconf(dirtmp) $fileout . $ext STAT"
+      ttscript2 "IMA/STACK  $bddconf(dirtmp) flat       0  $k $ext $bddconf(dirtmp) $fileout . $ext MED bitpix=-32"
+      ttscript2 "IMA/SERIES $bddconf(dirtmp) $fileout .  .  $ext $bddconf(dirtmp) $fileout . $ext STAT bitpix=-32"
       buf$bufno load "$bddconf(dirtmp)/${fileout}${ext}"
       ::console::affiche_resultat "MEAN : [buf$bufno getkwd \"MEAN\"]\n"
    }
@@ -661,9 +661,9 @@ proc ::bddimages_imgcorrection::create_image_flat { type inforesult } {
 
       if {$nbsoffset == 0 && $nbsdark == 1 } {
       
-         ttscript2 "IMA/SERIES $bddconf(dirtmp) flat  0  $k $ext $bddconf(dirtmp) flats    0  $ext SUB file=$bddconf(dirtmp)/sdark0$ext offset=0" 
-         ttscript2 "IMA/SERIES $bddconf(dirtmp) flats 0  $k $ext $bddconf(dirtmp) flatn    0  $ext NORMGAIN normgain_value=20000"
-         ttscript2 "IMA/STACK  $bddconf(dirtmp) flatn 0  $k $ext $bddconf(dirtmp) $fileout .  $ext MED"
+         ttscript2 "IMA/SERIES $bddconf(dirtmp) flat  0  $k $ext $bddconf(dirtmp) flats    0  $ext SUB file=$bddconf(dirtmp)/sdark0$ext offset=0 bitpix=-32" 
+         ttscript2 "IMA/SERIES $bddconf(dirtmp) flats 0  $k $ext $bddconf(dirtmp) flatn    0  $ext NORMGAIN normgain_value=20000 bitpix=-32"
+         ttscript2 "IMA/STACK  $bddconf(dirtmp) flatn 0  $k $ext $bddconf(dirtmp) $fileout .  $ext MED bitpix=-32"
       }
 
 
@@ -702,15 +702,18 @@ proc ::bddimages_imgcorrection::create_image_deflat {  } {
    
    if {$methode == 1} {
 
+      buf1 load $bddconf(dirtmp)/sdark0$ext
+      set meandark [lindex [buf$bufno getkwd MEAN] 1]
+
       # Soustraction des Dark et Offset
       if {$nbsoffset == 1 && $nbsdark == 1 } {
          ::console::affiche_resultat "Soustraction des Dark et Offset\n"
-         ttscript2 "IMA/SERIES $bddconf(dirtmp) deflat 0 $k $ext $bddconf(dirtmp) deflat 0 $ext SUBDARK dark=sdark0$ext bias=soffset0$ext "
+         ttscript2 "IMA/SERIES $bddconf(dirtmp) deflat 0 $k $ext $bddconf(dirtmp) deflat 0 $ext SUBDARK dark=sdark0$ext bias=soffset0$ext  bitpix=-32"
       }
       # Soustraction des Offset (pas de Dark)
       if {$nbsoffset == 1 && $nbsdark == 0 } {
          ::console::affiche_resultat "Soustraction de l OFFSET\n"
-         ttscript2 "IMA/SERIES $bddconf(dirtmp) deflat 0 $k $ext $bddconf(dirtmp) deflat 0 $ext SUB file=$bddconf(dirtmp)/soffset0$ext offset=0"
+         ttscript2 "IMA/SERIES $bddconf(dirtmp) deflat 0 $k $ext $bddconf(dirtmp) deflat 0 $ext SUB file=$bddconf(dirtmp)/soffset0$ext offset=0 bitpix=-32"
       }
       # Soustraction des Dark (pas d'Offset)
       if {$nbsoffset == 0 && $nbsdark == 1 } {
@@ -727,11 +730,11 @@ proc ::bddimages_imgcorrection::create_image_deflat {  } {
                set expodeflat [expr [lindex [buf$bufno getkwd EXPOSURE] 1]  * 1.0]        
                set fact [expr $expodeflat / $expodark]
                ::console::affiche_resultat "FLAT - MEAN : $meandeflat - EXPOSURE : $expodeflat - FACT : $fact\n"
-               ttscript2 "IMA/SERIES $bddconf(dirtmp) sdark0 .  .  $ext $bddconf(dirtmp) sdark1 .  $ext MULT constant=$fact"
-               ttscript2 "IMA/SERIES $bddconf(dirtmp) deflat $x $x $ext $bddconf(dirtmp) deflat $x $ext SUB file=$bddconf(dirtmp)/sdark1$ext offset=0"
+               ttscript2 "IMA/SERIES $bddconf(dirtmp) sdark0 .  .  $ext $bddconf(dirtmp) sdark1 .  $ext MULT constant=$fact bitpix=-32"
+               ttscript2 "IMA/SERIES $bddconf(dirtmp) deflat $x $x $ext $bddconf(dirtmp) deflat $x $ext SUB file=$bddconf(dirtmp)/sdark1$ext offset=0 bitpix=-32"
             }
          } else {
-            ttscript2 "IMA/SERIES $bddconf(dirtmp) deflat 0 $k $ext $bddconf(dirtmp) deflat 0 $ext SUB file=$bddconf(dirtmp)/sdark0$ext offset=0"
+            ttscript2 "IMA/SERIES $bddconf(dirtmp) deflat 0 $k $ext $bddconf(dirtmp) deflat 0 $ext SUB file=$bddconf(dirtmp)/sdark0$ext offset=0 bitpix=-32"
          }
       }
 
@@ -744,7 +747,10 @@ proc ::bddimages_imgcorrection::create_image_deflat {  } {
 
          # Division par le flat
          ::console::affiche_resultat "Division par le flat\n"
-         ttscript2 "IMA/SERIES $bddconf(dirtmp) deflat 0 $k $ext $bddconf(dirtmp) deflat 0 $ext DIV file=$bddconf(dirtmp)/sflat0$ext constant=$meanflat nullpixel=-10000"
+         ttscript2 "IMA/SERIES $bddconf(dirtmp) deflat 0 $k $ext $bddconf(dirtmp) deflat 0 $ext DIV file=$bddconf(dirtmp)/sflat0$ext constant=$meanflat nullpixel=-10000 bitpix=-32"
+
+         ::console::affiche_resultat "ajout d une constante : $meandark \n"
+         ttscript2 "IMA/SERIES $bddconf(dirtmp) deflat 0 $k $ext $bddconf(dirtmp) deflat 0 $ext OFFSET offset=$meandark"
 
          # Change les mots cles
          ::console::affiche_resultat "Modif Header\n"
@@ -778,8 +784,8 @@ proc ::bddimages_imgcorrection::create_image_deflat {  } {
 
    if { $methode == 4 } {
 
-      ttscript2 "IMA/SERIES $bddconf(dirtmp) deflat 0 $k $ext $bddconf(dirtmp) deflat 0 $ext SUB file=$bddconf(dirtmp)/sdark0$ext offset=0" 
-      ttscript2 "IMA/SERIES $bddconf(dirtmp) deflat 0 $k $ext $bddconf(dirtmp) deflat 0 $ext DIV file=$bddconf(dirtmp)/sflat0$ext constant=20000 nullpixel=-10000"
+      ttscript2 "IMA/SERIES $bddconf(dirtmp) deflat 0 $k $ext $bddconf(dirtmp) deflat 0 $ext SUB file=$bddconf(dirtmp)/sdark0$ext offset=0 bitpix=-32" 
+      ttscript2 "IMA/SERIES $bddconf(dirtmp) deflat 0 $k $ext $bddconf(dirtmp) deflat 0 $ext DIV file=$bddconf(dirtmp)/sflat0$ext constant=20000 nullpixel=-10000 bitpix=-32"
       for {set x 1} {$x<$nbdeflat} {incr x} {
          buf$bufno load "$bddconf(dirtmp)/deflat${x}${ext}"
          buf$bufno setkwd [list "BDDIMAGES STATE" "CORR" "string" "RAW | CORR | CATA | ?" ""]
