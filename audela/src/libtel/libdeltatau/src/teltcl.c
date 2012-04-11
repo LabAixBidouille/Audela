@@ -679,9 +679,21 @@ int cmdTelRefracDelay(ClientData clientData, Tcl_Interp *interp, int argc, char 
    struct telprop *tel;
    tel = (struct telprop *)clientData;   
    if (argc>=3) {   
-      tel->refrac_delay=atof(argv[2]);
+		tel->refrac_delay=atof(argv[2]);
    }
-   sprintf(s,"%f",tel->refrac_delay);
+   if (argc>=4) {   
+		tel->refrac_div=atof(argv[3]);
+		if ((tel->refrac_div>0)&&(tel->refrac_div<0.1)) { 
+			tel->refrac_div=0.1;
+		}
+		if ((tel->refrac_div<0)&&(tel->refrac_div>-0.1)) { 
+			tel->refrac_div=-0.1;
+		}
+		if ((tel->refrac_div==0)) { 
+			tel->refrac_div=1;
+		}
+   }
+   sprintf(s,"%f %f",tel->refrac_delay,tel->refrac_div);
    Tcl_SetResult(interp,s,TCL_VOLATILE);
    return TCL_OK;
 }

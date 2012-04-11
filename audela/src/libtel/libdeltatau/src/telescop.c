@@ -238,6 +238,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		tel->radec_tol=10 ; /* 10 arcsec */
 		tel->dead_delay_slew=2.1; /* delai en secondes estime pour un slew sans bouger */
 		tel->refrac_delay=0;
+		tel->refrac_div=1;
 		/* --- Match --- */
 		tel->ha00=0.;
 		tel->roth00=(int)(1507500-45./60.*10000);
@@ -323,6 +324,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		tel->radec_tol=10 ; /* 10 arcsec */
 		tel->dead_delay_slew=2.4; /* delai en secondes estime pour un slew sans bouger */
 		tel->refrac_delay=0;
+		tel->refrac_div=1;
 		/* --- Home --- */
 		tel->latitude=43.75203;
 		sprintf(tel->home0,"GPS 6.92353 E %+.6f 1320.0",tel->latitude);
@@ -1456,8 +1458,8 @@ int deltatau_suivi_marche (struct telprop *tel)
 			dradif=atof(tel->interp->result)/tel->refrac_delay;
 			sprintf(s,"lindex {%s} 1",ss); mytel_tcleval(tel,s);
 			ddecdif=atof(tel->interp->result)/tel->refrac_delay;
-			speed_track_ra-=(dradif/2);
-			speed_track_dec+=(ddecdif/2);
+			speed_track_ra-=(dradif/tel->refrac_div);
+			speed_track_dec+=(ddecdif/tel->refrac_div);
 		}
 	}
    /*--- Track alpha */
