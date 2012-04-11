@@ -69,6 +69,7 @@ struct telprop {
 #endif
 	double dead_delay_slew; /* delai en secondes estime pour un slew sans bouger */
 	double refrac_delay; /* delai pour tenir compte de la refraction differentielle */
+	double refrac_div; /* coef diviseur pour tenir compte de la refraction differentielle =1 */
 };
 
 int tel_init(struct telprop *tel, int argc, char **argv);
