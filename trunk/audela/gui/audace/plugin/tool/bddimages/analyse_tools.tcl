@@ -185,11 +185,11 @@ namespace eval analyse_tools {
 
    variable color_img     "blue"
    variable color_usnoa2  "green"
-   variable color_ucac2
-   variable color_ucac3
-   variable color_nomad1
-   variable color_tycho2
-   variable color_skybot
+   variable color_ucac2   "cyan"
+   variable color_ucac3   "red"
+   variable color_nomad1  "brown"
+   variable color_tycho2  "white"
+   variable color_skybot  "magenta"
    variable color_ovni    "yellow"
 
    variable ra       
@@ -343,7 +343,7 @@ namespace eval analyse_tools {
              set filecata [lindex $ident 3]
              if {$fileimg == -1} {
                 ::console::affiche_erreur "Fichier image inexistant ($idbddimg) \n"
-                continue
+                return false
              }
 
              # Efface les cles PV1_0 et PV2_0 car pas bon
