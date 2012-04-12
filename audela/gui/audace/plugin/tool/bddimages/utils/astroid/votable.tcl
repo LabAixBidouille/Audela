@@ -155,13 +155,6 @@ proc listesource2listevotable { listsources tabkey newcatafile } {
    append listevotable "<RESSOURCE>\n"
 
 
-   foreach s $fields {
-      foreach {name commun col} $s {
-         gren_info "INSERT $name\n"
-         set nbcol [llength $col]
-         gren_info "COL $nbcol\n"
-
-
  # TABLE HEADER
          set votable "<TABLE name=\"header\" nrows=\"nbheaderkey\">\n"
          
@@ -172,7 +165,14 @@ proc listesource2listevotable { listsources tabkey newcatafile } {
          append votable "</TABLE>\n"
 
 # TABLES SOURCES
-         
+
+
+   foreach s $fields {
+      foreach {name commun col} $s {
+         gren_info "INSERT $name\n"
+         set nbcol [llength $col]
+         gren_info "COL $nbcol\n"
+
          # Cles des header
          set listevotabletmp "  <FIELD datatype=\"char\" name=\"idcataspec\" arraysize=\"30\"/>\n"
          if {$nbcol>0} {
