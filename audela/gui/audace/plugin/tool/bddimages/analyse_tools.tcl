@@ -322,6 +322,7 @@ namespace eval analyse_tools {
             set scale_x [ lindex [ buf$audace(bufNo) getkwd CD1_1 ] 1 ]
             set scale_y [ lindex [ buf$audace(bufNo) getkwd CD2_2 ] 1 ]
             set radius [::analyse_tools::get_radius $naxis1 $naxis2 $scale_x $scale_y]
+            gren_info "radius : $radius"
 
             if {$::analyse_tools::use_tycho2} {
                set tycho2 [cstycho2 $::analyse_tools::catalog_tycho2 $ra $dec $radius]
