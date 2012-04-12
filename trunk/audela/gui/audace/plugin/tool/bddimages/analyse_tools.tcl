@@ -316,9 +316,20 @@ namespace eval analyse_tools {
 
 
          if {$::analyse_tools::create_cata} {
+            
+            set listsources $::analyse_tools::current_listsources
+         
+            set radius 70
+            if {$::analyse_tools::use_tycho2} {
+               set tycho2 [cstycho2 $::analyse_tools::catalog_tycho2 $ra $dec $radius]
+               gren_info "rollup = [::manage_source::get_nb_sources_rollup $tycho2]\n"
+               set tycho2 [::manage_source::set_common_fields $tycho2 TYCHO2 { RAdeg DEdeg 5 VT e_VT }]
+               ::manage_source::imprim_3_sources $tycho2
 
-
-
+               gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
+               set log 0
+               set listsources [ identification $listsources IMG $tycho2 TYCHO2 30.0 -30.0 {} $log] 
+            }
             set catafile        [file join $bddconf(dirbase) $dirfilename $filename .xml]
             write_cata_votable $listsources $catafile
          }
