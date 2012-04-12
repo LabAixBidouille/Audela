@@ -132,11 +132,15 @@ proc get_table { name table } {
 
 
 
-proc write_cata_votable { listsources } {
+proc write_cata_votable { listsources newcatafile } {
+
  global bddconf
 
  set listevotable [listesource2listevotable $listsources]
 
+   set fxml [open $newcatafile "w"]
+   puts $fxml $listevotable
+   close $fxml
 
 }
 
