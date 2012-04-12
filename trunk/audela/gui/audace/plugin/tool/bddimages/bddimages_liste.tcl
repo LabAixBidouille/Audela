@@ -134,9 +134,9 @@ proc ::bddimages_liste::lget { tabkey inkey } {
 
    foreach keyval $tabkey {
       set key [lindex $keyval 0]
-      set val [string trim [lindex $keyval 1]]
+      set val [lindex $keyval 1]
       if { [string equal -nocase [ string trim $key ] [ string trim $inkey ]]} {
-         return $val
+         return [string trim $val]
       }
    }
    return ""
