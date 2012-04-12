@@ -134,22 +134,17 @@ proc get_table { name table } {
 
 proc write_cata_votable { listsources newcatafile } {
 
- global bddconf
+   global bddconf
 
- set listevotable [listesource2listevotable $listsources]
-
-   set fxml [open $newcatafile "w"]
-   puts $fxml $listevotable
-   close $fxml
+   set listevotable [listesource2listevotable $listsources $newcatafile]
 
 }
 
 
-proc listesource2listevotable { listsources } {
+proc listesource2listevotable { listsources newcatafile } {
 
  global bddconf
 
-   set newcatafile [file join $bddconf(astroid) .. ssp_votable cata.xml ]
    set fields  [lindex $listsources 0]
    set sources [lindex $listsources 1]
 
