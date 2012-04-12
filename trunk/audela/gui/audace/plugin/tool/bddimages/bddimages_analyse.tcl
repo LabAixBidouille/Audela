@@ -641,7 +641,7 @@ proc get_one_image { idbddimg } {
          }
          if {$::analyse_tools::bddimages_wcs == "Y"} {
             set ::bddimages_analyse::color_wcs $::bddimages_analyse::color_wcs_good
-            set ::bddimages_analyse::state_wcs disabled
+            set ::bddimages_analyse::state_wcs normal
          } else {
             set ::bddimages_analyse::color_wcs $::bddimages_analyse::color_wcs_bad
             set ::bddimages_analyse::state_wcs normal
@@ -698,7 +698,7 @@ proc get_one_image { idbddimg } {
             #gren_info "idbddimg : $idbddimg   wcs : $bddimages_wcs  \n"
 
             set ::bddimages_analyse::color_wcs $::bddimages_analyse::color_wcs_good
-            set ::bddimages_analyse::state_wcs disabled
+            set ::bddimages_analyse::state_wcs normal
             $::bddimages_analyse::fen.frm_creation_wcs.bouton.go configure -bg $::bddimages_analyse::color_wcs -state $::bddimages_analyse::state_wcs
 
             set ::analyse_tools::ra        [lindex [::bddimages_liste::lget $tabkey ra         ] 1]
@@ -806,7 +806,7 @@ proc get_one_image { idbddimg } {
       }
       if {$::analyse_tools::bddimages_wcs == "Y"} {
          set ::bddimages_analyse::color_wcs $::bddimages_analyse::color_wcs_good
-         set ::bddimages_analyse::state_wcs disabled
+         set ::bddimages_analyse::state_wcs normal
       } else {
          set ::bddimages_analyse::color_wcs $::bddimages_analyse::color_wcs_bad
          set ::bddimages_analyse::state_wcs normal
