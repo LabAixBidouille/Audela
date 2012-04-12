@@ -334,7 +334,7 @@ namespace eval analyse_tools {
                set $::analyse_tools::nb_tycho2 [::manage_source::get_nb_sources_by_cata $listsources TYCHO2]
             }
             
-            set catafile [file join $bddconf(dirtmp) $dirfilename $filename.xml]
+            set catafile [file join $bddconf(dirtmp) $filename.xml]
             gren_info "write cata file: $catafile"
             write_cata_votable $listsources $catafile
          }
