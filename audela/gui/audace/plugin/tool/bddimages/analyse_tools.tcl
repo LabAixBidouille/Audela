@@ -262,6 +262,7 @@ namespace eval analyse_tools {
 
          #gren_info "param : $ra $dec $pixsize1 $pixsize2 $foclen\n"
          #gren_info "catalog_usnoa2 : $::analyse_tools::catalog_usnoa2\n"
+         gren_info "DEBUT WCS ra dec : $ra  $dec \n"
  
          gren_info "calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2 del_tmp_files 0\n"
          set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 del_tmp_files 0]} msg]
@@ -322,7 +323,7 @@ namespace eval analyse_tools {
             set scale_x [ lindex [ buf$audace(bufNo) getkwd CD1_1 ] 1 ]
             set scale_y [ lindex [ buf$audace(bufNo) getkwd CD2_2 ] 1 ]
             set radius [::analyse_tools::get_radius $naxis1 $naxis2 $scale_x $scale_y]
-            gren_info "radius : $radius"
+            gren_info "CSTYCHO2 ra dec radius : $ra  $dec $radius \n"
 
             if {$::analyse_tools::use_tycho2} {
                set tycho2 [cstycho2 $::analyse_tools::catalog_tycho2 $ra $dec $radius]
