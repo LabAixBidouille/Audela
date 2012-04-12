@@ -187,8 +187,8 @@ namespace eval analyse_tools {
    variable color_usnoa2  "green"
    variable color_ucac2   "cyan"
    variable color_ucac3   "red"
-   variable color_nomad1  "brown"
-   variable color_tycho2  "white"
+   variable color_nomad1  "#b4b308"
+   variable color_tycho2  "orange"
    variable color_skybot  "magenta"
    variable color_ovni    "yellow"
 

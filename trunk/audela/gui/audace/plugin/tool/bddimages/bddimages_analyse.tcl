@@ -861,7 +861,11 @@ proc get_one_image { idbddimg } {
       }
       set ::analyse_tools::nb_img     0
       set ::analyse_tools::nb_ovni    0
-      set ::analyse_tools::nb_usnoa2  0    
+      set ::analyse_tools::nb_usnoa2  0
+      set ::analyse_tools::nb_tycho2  0
+      set ::analyse_tools::nb_ucac2   0
+      set ::analyse_tools::nb_ucac3   0
+      set ::analyse_tools::nb_nomad1  0
       affich_un_rond_xy $xcent $ycent red 2 2
 
    }
