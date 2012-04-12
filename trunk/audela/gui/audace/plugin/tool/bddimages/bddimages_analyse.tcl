@@ -537,6 +537,19 @@ proc get_one_image { idbddimg } {
 
       if {! [info exists ::analyse_tools::catalog_usnoa2] } {
          set ::analyse_tools::catalog_usnoa2 $conf(astrometry,catfolder)
+         set ::analyse_tools::catalog_usnoa2 $conf(astrometry,catfolder,usnoa2)
+      }
+      if {! [info exists ::analyse_tools::catalog_ucac2] } {
+         set ::analyse_tools::catalog_ucac2 $conf(astrometry,catfolder,ucac2)
+      }
+      if {! [info exists ::analyse_tools::catalog_ucac3] } {
+         set ::analyse_tools::catalog_ucac3 $conf(astrometry,catfolder,ucac3)
+      }
+      if {! [info exists ::analyse_tools::catalog_tycho2] } {
+         set ::analyse_tools::catalog_tycho2 $conf(astrometry,catfolder,tycho2)
+      }
+      if {! [info exists ::analyse_tools::catalog_nomad1] } {
+         set ::analyse_tools::catalog_nomad1 $conf(astrometry,catfolder,nomad1)
       }
       set ::analyse_tools::catalog_ucac2   "/astrodata/Catalog/UCAC2/"
       set ::analyse_tools::catalog_ucac3   "/astrodata/Catalog/UCAC3"
@@ -555,6 +568,12 @@ proc get_one_image { idbddimg } {
 
 
    proc ::bddimages_analyse::fermer { } {
+
+      set conf(astrometry,catfolder,usnoa2) $::analyse_tools::catalog_usnoa2 
+      set conf(astrometry,catfolder,ucac2)  $::analyse_tools::catalog_ucac2  
+      set conf(astrometry,catfolder,ucac3)  $::analyse_tools::catalog_ucac3  
+      set conf(astrometry,catfolder,tycho2) $::analyse_tools::catalog_tycho2 
+      set conf(astrometry,catfolder,nomad1) $::analyse_tools::catalog_nomad1 
 
       destroy $::bddimages_analyse::fen
 
@@ -1228,7 +1247,7 @@ proc get_one_image { idbddimg } {
              pack $bouton.next -side left -anchor e \
                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-             button $bouton.go -text "Create WCS" -borderwidth 2 -takefocus 1 \
+             button $bouton.go -text "Create CATA" -borderwidth 2 -takefocus 1 \
                 -command "::bddimages_analyse::get_wcs" \
                 -bg $::bddimages_analyse::color_wcs -state $::bddimages_analyse::state_wcs
              pack $bouton.go -side left -anchor e \
@@ -1361,7 +1380,7 @@ proc get_one_image { idbddimg } {
            pack $ucac3 -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                 #--- Cree un label pour le titre
-                label $ucac3.name -text "ucac3 : " -width 7
+                label $ucac3.name -text "UCAC3 : " -width 7
                 pack $ucac3.name -in $ucac3 -side left -padx 3 -pady 3 -anchor w 
                 label $ucac3.val -textvariable ::analyse_tools::nb_ucac3
                 pack $ucac3.val -in $ucac3 -side left -padx 3 -pady 3
@@ -1369,6 +1388,34 @@ proc get_one_image { idbddimg } {
                 pack $ucac3.color -side left -anchor e -expand 0 
                 spinbox $ucac3.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 5
                 pack  $ucac3.radius -in $ucac3 -side left -anchor w
+
+           #--- Cree un frame pour afficher boucle
+           set tycho2 [frame $count.tycho2 -borderwidth 0 -cursor arrow -relief groove]
+           pack $tycho2 -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                #--- Cree un label pour le titre
+                label $tycho2.name -text "TYCHO2 : " -width 7
+                pack $tycho2.name -in $tycho2 -side left -padx 3 -pady 3 -anchor w 
+                label $tycho2.val -textvariable ::analyse_tools::nb_tycho2
+                pack $tycho2.val -in $tycho2 -side left -padx 3 -pady 3
+                button $tycho2.color -borderwidth 0 -takefocus 1 -bg $::analyse_tools::color_tycho2 -command ""
+                pack $tycho2.color -side left -anchor e -expand 0 
+                spinbox $tycho2.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 5
+                pack  $tycho2.radius -in $tycho2 -side left -anchor w
+
+           #--- Cree un frame pour afficher boucle
+           set nomad1 [frame $count.nomad1 -borderwidth 0 -cursor arrow -relief groove]
+           pack $nomad1 -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                #--- Cree un label pour le titre
+                label $nomad1.name -text "NOMAD1 : " -width 7
+                pack $nomad1.name -in $nomad1 -side left -padx 3 -pady 3 -anchor w 
+                label $nomad1.val -textvariable ::analyse_tools::nb_nomad1
+                pack $nomad1.val -in $nomad1 -side left -padx 3 -pady 3
+                button $nomad1.color -borderwidth 0 -takefocus 1 -bg $::analyse_tools::color_nomad1 -command ""
+                pack $nomad1.color -side left -anchor e -expand 0 
+                spinbox $nomad1.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 5
+                pack  $nomad1.radius -in $nomad1 -side left -anchor w
 
 
 
