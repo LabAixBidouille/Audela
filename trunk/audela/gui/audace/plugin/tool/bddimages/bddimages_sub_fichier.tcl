@@ -27,10 +27,12 @@ proc bddimages_sauve_fich {texte} {
        set new "0000000$new"
        set ext [string range $new [expr [string length $new]-5] end ]
        catch {file rename $fichlog [file join $bddconf(dirlog) "log$ext.txt"]}
-       }
-     catch { set bddfileout [open $fichlog a] }
-     catch { puts $bddfileout $texte }
-     catch { close $bddfileout }
+     }
+     catch { 
+        set bddfileout [open $fichlog a]
+        puts $bddfileout $texte
+        close $bddfileout 
+     }
 
 }
 
