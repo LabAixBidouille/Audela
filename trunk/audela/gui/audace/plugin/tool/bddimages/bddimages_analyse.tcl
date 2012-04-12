@@ -6,7 +6,7 @@
 # Description    : Environnement de recherche des images
 #                  dans la base de donnees
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id: bddimages_liste.tcl 6858 2011-03-06 14:19:15Z fredvachier $
+# Mise à jour $Id: bddimages_analyse.tcl 6858 2011-03-06 14:19:15Z fredvachier $
 #
 #--------------------------------------------------
 #
@@ -142,15 +142,10 @@ namespace eval bddimages_analyse {
    variable statenext
 
 
-
    variable color_wcs_good "green"
    variable color_wcs_bad  "gray"
    variable color_wcs      
    variable bddimages_wcs 
-
-
-
-
 
 
    proc ::bddimages_analyse::charge_cata { img_list } {
@@ -190,37 +185,37 @@ namespace eval bddimages_analyse {
 
          set catafile [file join $bddconf(dirbase) $::bddimages_analyse::current_image(dir_cata_file) $::bddimages_analyse::current_image(cata_filename)]
          set ::bddimages_analyse::current_cata [get_cata $catafile] 
-         ::console::affiche_resultat "head     = [lindex $::bddimages_analyse::current_cata 0] \n"
+         ::console::affiche_resultat "head       = [lindex $::bddimages_analyse::current_cata 0] \n"
 
       }
 
    }
 
-
-
-
-
-
-
-
-
-
-
+   #--------------------------------------------------
+   # ::bddimages_analyse::creation_wcs { }
+   #--------------------------------------------------
+   # Calibration astrometrique d'une image et creation des mots cles WCS.
+   # Apres calibrarion, les images sont automatiquement re-inserees dans la bdd.
+   # @param img_list liste des images a calibrer
+   # @return void
+   #--------------------------------------------------
    proc ::bddimages_analyse::creation_wcs_1 { img_list } {
 
       global audace
       global bddconf
+      global caption
 
-      #  source /data/install/develop/audela/gui/audace/surchaud.tcl
+      # Repertoire du catalogue USNO-A2 utilise pour la calibration astrometrique
+      set catalog $bddconf(usnocat)
       set catalog "/data/astrodata/Catalog/USNOA2/"
       #set catalog "/home/t1m/astrodata/Catalog/USNOA2/"
       set catalog "/astrodata/USNOA2/"
       set catalog "/astrodata/Catalog/USNOA2/"
 
-      # copie image courante dans rep temp en .fit -> bddimages_imgcorrection.tcl 
+      # Copie de l'image courante dans rep. temp en .fit -> bddimages_imgcorrection.tcl 
       set erreur [catch {::bddimages_imgcorrection::copy_to_tmp "IMG" $img_list} tmp_file_list]
-      if {$erreur} {
-         # popup
+      if {$erreur != 0} {
+         tk_messageBox -title $caption(bddimages_analyse,error) -type ok -message $caption(bddimages_analyse,copytotmp)
          return
       }
 
@@ -229,6 +224,7 @@ namespace eval bddimages_analyse {
          # Infos sur l'image a traiter
          set tabkey [::bddimages_liste::lget $img "tabkey"]
 
+         set dateobs     [lindex [::bddimages_liste::lget $tabkey date-obs   ] 1]
          set ra          [lindex [::bddimages_liste::lget $tabkey ra         ] 1]
          set dec         [lindex [::bddimages_liste::lget $tabkey dec        ] 1]
          set pixsize1    [lindex [::bddimages_liste::lget $tabkey pixsize1   ] 1]
@@ -239,28 +235,29 @@ namespace eval bddimages_analyse {
          set idbddimg    [::bddimages_liste::lget $img idbddimg]
          set file        [file join $bddconf(dirbase) $dirfilename $filename]
 
-         ::console::affiche_resultat "ra $ra\n"
-         ::console::affiche_resultat "dec $dec\n"
-         ::console::affiche_resultat "pixsize1 $pixsize1\n"
-         ::console::affiche_resultat "pixsize2 $pixsize2\n"
-         ::console::affiche_resultat "foclen $foclen\n"
-         ::console::affiche_resultat "filename $filename\n"
-         ::console::affiche_resultat "dirfilename $dirfilename\n"
-         ::console::affiche_resultat "file $file\n"
+#         ::console::affiche_resultat "date-obs $dateobs\n"
+#         ::console::affiche_resultat "ra $ra\n"
+#         ::console::affiche_resultat "dec $dec\n"
+#         ::console::affiche_resultat "pixsize1 $pixsize1\n"
+#         ::console::affiche_resultat "pixsize2 $pixsize2\n"
+#         ::console::affiche_resultat "foclen $foclen\n"
+#         ::console::affiche_resultat "filename $filename\n"
+#         ::console::affiche_resultat "dirfilename $dirfilename\n"
+#         ::console::affiche_resultat "file $file\n"
+#         ::console::affiche_resultat "USNO-A2 $catalog\n"
 
          # Charge l'image
          buf$::audace(bufNo) load $file
          
-         ::console::affiche_resultat "calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO $catalog \n"
-         
+         # Execute la calibration astrometrique
          set result [calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO $catalog]
          if {$result < 3} {
-            ::console::affiche_erreur "Echec d identification\n"
+            ::console::affiche_erreur "Echec d'identification: la calibration astrometrique a echouee\n"
             ::console::affiche_erreur "CMD: calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO $catalog\n"
             continue
          }
          if {$result == ""} {
-            ::console::affiche_resultat "Echec d identification (verifier chemin catalogue)\n"
+            ::console::affiche_resultat "Echec d'identification (verifier chemin catalogue)\n"
             continue
          }
          ::console::affiche_resultat "Nb sources USNOA2 identifiees : $result\n"
@@ -283,21 +280,23 @@ namespace eval bddimages_analyse {
          set filefinal    [file join $::bddconf(dirinco) [file tail $fileimg]]
 
          createdir_ifnot_exist $bddconf(dirtmp)
+
+         # Sauve l'image
          buf$::audace(bufNo) save $filetmp
          set errnum [catch {exec gzip -c $filetmp > $filefinal} msg ]
 
-         # copie l image dans incoming, ainsi que le fichier cata si il existe
+         # Copie l image dans incoming, ainsi que le fichier cata si il existe
          if {$filecata != -1} {
             set errnum [catch {file rename -force -- $filecata $bddconf(dirinco)/.} msg ]
          }
   
-         # efface l image dans la base et le disque
+         # Efface l image dans la base et le disque
          bddimages_image_delete_fromsql $ident
          bddimages_image_delete_fromdisk $ident
 
-         # insere l image et le cata dans la base
+         # Insere l image et le cata dans la base
          insertion_solo $filefinal
-         if {$filecata!=-1} {
+         if {$filecata != -1} {
             set filecata [file join $bddconf(dirinco) [file tail $filecata]]
             insertion_solo $filecata
          }
@@ -526,7 +525,7 @@ proc get_one_image { idbddimg } {
    #
    proc ::bddimages_analyse::inittoconf {  } {
 
-      global bddconf
+      global bddconf, conf
 
       set ::analyse_tools::use_skybot  1
       set ::analyse_tools::use_usnoa2  1
@@ -535,7 +534,9 @@ proc get_one_image { idbddimg } {
       set ::analyse_tools::use_nomad1  0
       set ::analyse_tools::use_tycho2  1
 
-      set ::analyse_tools::catalog_usnoa2  "/astrodata/Catalog/USNOA2/"
+      if {! [info exists ::analyse_tools::catalog_usnoa2] } {
+         set ::analyse_tools::catalog_usnoa2 $conf(astrometry,catfolder)
+      }
       set ::analyse_tools::catalog_ucac2   "/astrodata/Catalog/UCAC2/"
       set ::analyse_tools::catalog_ucac3   "/astrodata/Catalog/UCAC3"
       set ::analyse_tools::catalog_nomad1  ""
@@ -543,7 +544,9 @@ proc get_one_image { idbddimg } {
       set ::analyse_tools::use_skybot      1
       set ::analyse_tools::keep_radec      1
       set ::analyse_tools::create_cata     0
+      set ::analyse_tools::delpv           1
       set ::analyse_tools::boucle          0
+      set ::analyse_tools::deuxpasses      1
 
       #--- Creation des variables de la boite de configuration si elles n'existent pas
       #if { ! [ info exists $bddconf(catalog_ucac2) ] } { set ::analyse_tools::catalog_ucac2 "" }
@@ -872,6 +875,14 @@ proc get_one_image { idbddimg } {
              entry $usnoa2.dir -relief sunken -textvariable ::analyse_tools::catalog_usnoa2
              pack $usnoa2.dir -in $usnoa2 -side right -pady 1 -anchor w
     
+        #--- Cree un frame pour afficher delkwd PV
+        set deuxpasses [frame $frm.deuxpasses -borderwidth 0 -cursor arrow -relief groove]
+        pack $deuxpasses -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             #--- Cree un checkbutton
+             checkbutton $deuxpasses.check -highlightthickness 0 -text "Faire 2 passes pour calibrer" -variable ::analyse_tools::deuxpasses
+             pack $deuxpasses.check -in $deuxpasses -side left -padx 5 -pady 0
+  
         #--- Cree un frame pour afficher "utiliser les RA/DEC precedent
         set keepradec [frame $frm.keepradec -borderwidth 0 -cursor arrow -relief groove]
         pack $keepradec -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
@@ -880,6 +891,14 @@ proc get_one_image { idbddimg } {
              checkbutton $keepradec.check -highlightthickness 0 -text "Utiliser RADEC precedent en cas d'echec" -variable ::analyse_tools::keep_radec
              pack $keepradec.check -in $keepradec -side left -padx 5 -pady 0
   
+        #--- Cree un frame pour afficher delkwd PV
+        set delpv [frame $frm.delpv -borderwidth 0 -cursor arrow -relief groove]
+        pack $delpv -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             #--- Cree un checkbutton
+             checkbutton $delpv.check -highlightthickness 0 -text "Suppression des PV(1,2)_0" -variable ::analyse_tools::delpv
+             pack $delpv.check -in $delpv -side left -padx 5 -pady 0
+  
         #--- Cree un frame pour afficher boucle
         set boucle [frame $frm.boucle -borderwidth 0 -cursor arrow -relief groove]
         pack $boucle -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
@@ -887,7 +906,7 @@ proc get_one_image { idbddimg } {
              #--- Cree un checkbutton
              checkbutton $boucle.check -highlightthickness 0 -text "Analyse continue" -variable ::analyse_tools::boucle
              pack $boucle.check -in $boucle -side left -padx 5 -pady 0
-  
+
         #--- Cree un frame pour afficher boucle
         set bouton [frame $frm.bouton -borderwidth 0 -cursor arrow -relief groove]
         pack $bouton -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5

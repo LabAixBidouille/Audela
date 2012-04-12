@@ -199,7 +199,8 @@ namespace eval analyse_tools {
    variable foclen   
    variable exposure 
 
-
+   variable delpv
+   variable deuxpasses
 
 
    proc ::analyse_tools::get_wcs {  } {
@@ -262,7 +263,7 @@ namespace eval analyse_tools {
          #gren_info "param : $ra $dec $pixsize1 $pixsize2 $foclen\n"
          #gren_info "catalog_usnoa2 : $::analyse_tools::catalog_usnoa2\n"
  
-         #gren_info "calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2 del_tmp_files 0\n"
+         gren_info "calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2 del_tmp_files 0\n"
          set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 del_tmp_files 0]} msg]
          if {$erreur} { return false }
 
@@ -272,13 +273,14 @@ namespace eval analyse_tools {
          set dec [lindex $a 1]
          #gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"
 
-         set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 del_tmp_files 0]} msg]
-         if {$erreur} { return false }
-         set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
-         set ra  [lindex $a 0]
-         set dec [lindex $a 1]
-         gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"
-
+         if {$::analyse_tools::deuxpasses} {
+            set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 del_tmp_files 0]} msg]
+            if {$erreur} { return false }
+            set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
+            set ra  [lindex $a 0]
+            set dec [lindex $a 1]
+            gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"
+         }
 
          if { $::analyse_tools::keep_radec==1 && $nbstars<$limit_nbstars_accepted } {
              set ra  $::analyse_tools::ra_save
@@ -291,12 +293,14 @@ namespace eval analyse_tools {
              set dec [lindex $a 1]
              #gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"
 
-             set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 del_tmp_files 0]} msg]
-             if {$erreur} { return false }
-             set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
-             set ra  [lindex $a 0]
-             set dec [lindex $a 1]
-             gren_info "RETRY nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"
+             if {$::analyse_tools::deuxpasses} {
+                set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 del_tmp_files 0]} msg]
+                if {$erreur} { return false }
+                set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
+                set ra  [lindex $a 0]
+                set dec [lindex $a 1]
+                gren_info "RETRY nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"
+             }
          }         
 
 
@@ -320,11 +324,7 @@ namespace eval analyse_tools {
 
 
 
-
-         if {$nbstars>$limit_nbstars_accepted} {
-             set wcs_ok false
-         }         
-         if {$nbstars>$limit_nbstars_accepted} {
+        if {$nbstars > $limit_nbstars_accepted} {
              set wcs_ok true
          }         
           
@@ -344,6 +344,12 @@ namespace eval analyse_tools {
              if {$fileimg == -1} {
                 ::console::affiche_erreur "Fichier image inexistant ($idbddimg) \n"
                 continue
+             }
+
+             # Efface les cles PV1_0 et PV2_0 car pas bon
+             if {$::analyse_tools::delpv} {
+                buf$::audace(bufNo) delkwd PV1_0
+                buf$::audace(bufNo) delkwd PV2_0
              }
 
              # Modifie le champs BDI
