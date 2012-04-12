@@ -1457,8 +1457,6 @@ proc get_one_image { idbddimg } {
    
 
 
-
-
 # Fin Classe
 }
 

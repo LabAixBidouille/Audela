@@ -318,8 +318,11 @@ namespace eval analyse_tools {
          if {$::analyse_tools::create_cata} {
             
             set listsources $::analyse_tools::current_listsources
-         
-            set radius 70
+
+            set scale_x [ lindex [ buf$audace(bufNo) getkwd CD1_1 ] 1 ]
+            set scale_y [ lindex [ buf$audace(bufNo) getkwd CD2_2 ] 1 ]
+            set radius [::analyse_tools::get_radius $naxis1 $naxis2 $scale_x $scale_y]
+
             if {$::analyse_tools::use_tycho2} {
                set tycho2 [cstycho2 $::analyse_tools::catalog_tycho2 $ra $dec $radius]
                gren_info "rollup = [::manage_source::get_nb_sources_rollup $tycho2]\n"
@@ -330,7 +333,9 @@ namespace eval analyse_tools {
                set listsources [ identification $listsources IMG $tycho2 TYCHO2 30.0 -30.0 {} $log]
                set $::analyse_tools::nb_tycho2 [::manage_source::get_nb_sources_by_cata $listsources TYCHO2]
             }
-            set catafile        [file join $bddconf(dirbase) $dirfilename $filename .xml]
+            
+            set catafile [file join $bddconf(dirtmp) $dirfilename $filename.xml]
+            gren_info "write cata file: $catafile"
             write_cata_votable $listsources $catafile
          }
 
@@ -403,6 +408,24 @@ namespace eval analyse_tools {
          } 
          
          return false
+   }
+
+   #
+   # Calcul le rayon (arcmin) du FOV de l'image
+   #
+   proc ::analyse_tools::get_radius { naxis1 naxis2 scale_x scale_y } {
+
+      #--- Coordonnees en pixels du centre de l'image
+      set xc [ expr $naxis1/2.0 ]
+      set yc [ expr $naxis2/2.0 ]
+
+      #--- Calcul de la dimension du FOV: naxis*scale
+      set taille_champ_x [expr abs($scale_x)*$naxis1*60.0]
+      set taille_champ_y [expr abs($scale_y)*$naxis2*60.0]
+
+      set radius [expr sqrt(pow($taille_champ_x,2) + pow($taille_champ_y,2)) ]
+      return $radius
+
    }
 
 
