@@ -18,7 +18,7 @@
 #--------------------------------------------------
 
 proc chg_tabkey { tabkey } {
-
+   
    # DATE-OBS
    if {! [::bddimages_liste::lexist $tabkey "date-obs"]} {
       return [list 1 "????-??-??T??:??:??"] 
@@ -53,7 +53,7 @@ proc chg_tabkey { tabkey } {
       }
 
    }
-   set l_dateiso [list "date-obs" $dateiso "string" "" ""]
+   set l_dateiso [list "date-obs" $dateiso "string" "" ""]   
    set tabkey [ ::bddimages_liste::lupdate $tabkey "date-obs" $l_dateiso ]
 
    # EXPOSURE
@@ -95,17 +95,20 @@ proc chg_tabkey { tabkey } {
 
    # FOCLEN
    if {! [::bddimages_liste::lexist $tabkey "foclen"]} {
-      set tabkey [::bddimages_liste::ladd $tabkey "foclen" [list FOCLEN 7.2 double "Focal length" "m"]]
+      set foclen 7.2
+      set tabkey [::bddimages_liste::ladd $tabkey "foclen" [list FOCLEN $foclen double "Focal length" "m"]]
    }
 
    # PIXSIZE1
    if {! [::bddimages_liste::lexist $tabkey "pixsize1"]} {
-      set tabkey [::bddimages_liste::ladd $tabkey "pixsize1" [list PIXSIZE1 24 double "Pixel dimension" "m"]]
+      set pixsize1 24
+      set tabkey [::bddimages_liste::ladd $tabkey "pixsize1" [list PIXSIZE1 $pixsize1 double "Pixel dimension" "m"]]
    }
 
    # PIXSIZE2
    if {! [::bddimages_liste::lexist $tabkey "pixsize2"]} {
-      set tabkey [::bddimages_liste::ladd $tabkey "pixsize2" [list PIXSIZE2 24 double "Pixel dimension" "m"]]
+      set pixsize2 24
+      set tabkey [::bddimages_liste::ladd $tabkey "pixsize2" [list PIXSIZE2 $pixsize2 double "Pixel dimension" "m"]]
    }
 
    
