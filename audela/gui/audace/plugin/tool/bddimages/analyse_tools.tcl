@@ -325,10 +325,10 @@ namespace eval analyse_tools {
                gren_info "rollup = [::manage_source::get_nb_sources_rollup $tycho2]\n"
                set tycho2 [::manage_source::set_common_fields $tycho2 TYCHO2 { RAdeg DEdeg 5 VT e_VT }]
                ::manage_source::imprim_3_sources $tycho2
-
                gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
                set log 0
-               set listsources [ identification $listsources IMG $tycho2 TYCHO2 30.0 -30.0 {} $log] 
+               set listsources [ identification $listsources IMG $tycho2 TYCHO2 30.0 -30.0 {} $log]
+               set $::analyse_tools::nb_tycho2 [::manage_source::get_nb_sources_by_cata $listsources TYCHO2]
             }
             set catafile        [file join $bddconf(dirbase) $dirfilename $filename .xml]
             write_cata_votable $listsources $catafile
