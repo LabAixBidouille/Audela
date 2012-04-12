@@ -537,24 +537,41 @@ proc get_one_image { idbddimg } {
 
       if {! [info exists ::analyse_tools::catalog_usnoa2] } {
          set ::analyse_tools::catalog_usnoa2 $conf(astrometry,catfolder)
-         set ::analyse_tools::catalog_usnoa2 $conf(astrometry,catfolder,usnoa2)
+         if {[info exists conf(astrometry,catfolder,usnoa2)]} {
+            set ::analyse_tools::catalog_usnoa2 $conf(astrometry,catfolder,usnoa2)
+         } else {
+            set ::analyse_tools::catalog_usnoa2 "/astrodata/Catalog/USNOA2/"
+         }
       }
       if {! [info exists ::analyse_tools::catalog_ucac2] } {
-         set ::analyse_tools::catalog_ucac2 $conf(astrometry,catfolder,ucac2)
+         if {[info exists conf(astrometry,catfolder,ucac2)]} {
+            set ::analyse_tools::catalog_ucac2 $conf(astrometry,catfolder,ucac2)
+         } else {
+            set ::analyse_tools::catalog_ucac2 "/astrodata/Catalog/UCAC2/"
+         }
       }
       if {! [info exists ::analyse_tools::catalog_ucac3] } {
-         set ::analyse_tools::catalog_ucac3 $conf(astrometry,catfolder,ucac3)
+         if {[info exists conf(astrometry,catfolder,ucac3)]} {
+            set ::analyse_tools::catalog_ucac3 $conf(astrometry,catfolder,ucac3)
+         } else {
+            set ::analyse_tools::catalog_ucac3 "/astrodata/Catalog/UCAC3/"
+         }
       }
       if {! [info exists ::analyse_tools::catalog_tycho2] } {
-         set ::analyse_tools::catalog_tycho2 $conf(astrometry,catfolder,tycho2)
+         if {[info exists conf(astrometry,catfolder,tycho2)]} {
+            set ::analyse_tools::catalog_tycho2 $conf(astrometry,catfolder,tycho2)
+         } else {
+            set ::analyse_tools::catalog_tycho2 "/astrodata/Catalog/TYCHO-2/"
+         }
       }
       if {! [info exists ::analyse_tools::catalog_nomad1] } {
-         set ::analyse_tools::catalog_nomad1 $conf(astrometry,catfolder,nomad1)
+         if {[info exists conf(astrometry,catfolder,nomad1)]} {
+            set ::analyse_tools::catalog_nomad1 $conf(astrometry,catfolder,nomad1)
+         } else {
+            set ::analyse_tools::catalog_nomad1 "/astrodata/Catalog/NOMAD1/"
+         }
       }
-      set ::analyse_tools::catalog_ucac2   "/astrodata/Catalog/UCAC2/"
-      set ::analyse_tools::catalog_ucac3   "/astrodata/Catalog/UCAC3"
-      set ::analyse_tools::catalog_nomad1  ""
-      set ::analyse_tools::catalog_tycho2  "/astrodata/Catalog/TYCHO-2"
+
       set ::analyse_tools::use_skybot      1
       set ::analyse_tools::keep_radec      1
       set ::analyse_tools::create_cata     0
