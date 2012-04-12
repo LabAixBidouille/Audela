@@ -319,9 +319,10 @@ namespace eval analyse_tools {
          if {$::analyse_tools::create_cata} {
             
             set listsources $::analyse_tools::current_listsources
+            set tabkey [::bddimages_liste::lget $img "tabkey"]
 
-            set scale_x [ lindex [ buf$audace(bufNo) getkwd CD1_1 ] 1 ]
-            set scale_y [ lindex [ buf$audace(bufNo) getkwd CD2_2 ] 1 ]
+            set scale_x [lindex [::bddimages_liste::lget $tabkey CD1_1 ] 1]
+            set scale_y [lindex [::bddimages_liste::lget $tabkey CD2_2 ] 1]
             set radius [::analyse_tools::get_radius $naxis1 $naxis2 $scale_x $scale_y]
             gren_info "CSTYCHO2 ra dec radius : $ra  $dec $radius \n"
 
@@ -339,7 +340,7 @@ namespace eval analyse_tools {
             gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $listsources]\n"
             set catafile [file join $bddconf(dirtmp) $filename.xml]
             gren_info "write cata file: $catafile"
-            write_cata_votable $listsources $catafile
+            write_cata_votable $listsources $tabkey $catafile
          }
 
 

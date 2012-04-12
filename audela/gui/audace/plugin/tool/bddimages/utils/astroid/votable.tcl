@@ -132,16 +132,16 @@ proc get_table { name table } {
 
 
 
-proc write_cata_votable { listsources newcatafile } {
+proc write_cata_votable { listsources tabkey newcatafile } {
 
    global bddconf
 
-   set listevotable [listesource2listevotable $listsources $newcatafile]
+   set listevotable [listesource2listevotable $listsources $tabkey $newcatafile]
 
 }
 
 
-proc listesource2listevotable { listsources newcatafile } {
+proc listesource2listevotable { listsources tabkey newcatafile } {
 
  global bddconf
 
@@ -160,6 +160,18 @@ proc listesource2listevotable { listsources newcatafile } {
          gren_info "INSERT $name\n"
          set nbcol [llength $col]
          gren_info "COL $nbcol\n"
+
+
+ # TABLE HEADER
+         set votable "<TABLE name=\"header\" nrows=\"nbheaderkey\">\n"
+         
+         # ecrire ici tout le header de l image depuis le $tabkey
+
+         append votable "  </TABLEDATA>\n"
+         append votable "  </DATA>\n"
+         append votable "</TABLE>\n"
+
+# TABLES SOURCES
          
          # Cles des header
          set listevotabletmp "  <FIELD datatype=\"char\" name=\"idcataspec\" arraysize=\"30\"/>\n"
