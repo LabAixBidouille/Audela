@@ -711,7 +711,7 @@ proc get_one_image { idbddimg } {
             set ::analyse_tools::foclen    [lindex [::bddimages_liste::lget $tabkey foclen     ] 1]
             set ::analyse_tools::exposure  [lindex [::bddimages_liste::lget $tabkey EXPOSURE   ] 1]
 
-            #affich_rond $::analyse_tools::current_listsources IMG    $::analyse_tools::color_img     4
+            affich_rond $::analyse_tools::current_listsources IMG    $::analyse_tools::color_img     4
 
             if { $::analyse_tools::boucle == 1 } {
                cleanmark
@@ -720,7 +720,8 @@ proc get_one_image { idbddimg } {
                #visu$::audace(visuNo) disp
             }
             affich_rond $::analyse_tools::current_listsources USNOA2 $::analyse_tools::color_usnoa2  1
-            #affich_rond $::analyse_tools::current_listsources OVNI   $::analyse_tools::color_ovni    2
+            
+            affich_rond $::analyse_tools::current_listsources OVNI   $::analyse_tools::color_ovni    2
 
             #::analyse_tools::nb_img   
             #::analyse_tools::nb_ovni  
@@ -1222,6 +1223,15 @@ proc get_one_image { idbddimg } {
                 pack $img.color -side left -anchor e -expand 0 -padx 2 -pady 2 -ipadx 2 -ipady 2 
                 spinbox $img.epaisseur -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 5
                 pack  $img.epaisseur -in $img -side left -anchor w
+
+        #--- Cree un frame pour afficher boucle
+        set boutonpied [frame $frm.boutonpied  -borderwidth 0 -cursor arrow -relief groove]
+        pack $boutonpied  -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             button $boutonpied.fermer -text "Fermer" -borderwidth 2 -takefocus 1 \
+                -command ""
+             pack $boutonpied.fermer -side left -anchor e \
+                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
 
 
