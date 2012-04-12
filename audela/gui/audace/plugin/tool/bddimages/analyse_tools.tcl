@@ -348,6 +348,17 @@ namespace eval analyse_tools {
                set $::analyse_tools::nb_ucac2 [::manage_source::get_nb_sources_by_cata $listsources UCAC2]
             }
             
+            if {$::analyse_tools::use_ucac3} {
+               set ucac3 [csucac3 $::analyse_tools::catalog_ucac3 $ra $dec $radius]
+               gren_info "rollup = [::manage_source::get_nb_sources_rollup $ucac3]\n"
+               set ucac3 [::manage_source::set_common_fields $ucac3 UCAC3 { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
+               ::manage_source::imprim_3_sources $ucac3
+               gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
+               set log 0
+               set listsources [ identification $listsources IMG $ucac3 UCAC3 30.0 -30.0 {} $log]
+               set $::analyse_tools::nb_ucac3 [::manage_source::get_nb_sources_by_cata $listsources UCAC3]
+            }
+            
             gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $listsources]\n"
             set catafile [file join $bddconf(dirtmp) $filename.xml]
             gren_info "write cata file: $catafile"
