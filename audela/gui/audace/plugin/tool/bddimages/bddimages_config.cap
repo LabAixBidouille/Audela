@@ -41,6 +41,7 @@ set caption(bddimages_config,dirlog)            " - Répertoire des logs"
 set caption(bddimages_config,dirtmp)            " - Répertoire temporaire"
 set caption(bddimages_config,variables)         "Autres paramètres"
 set caption(bddimages_config,listlimit)         " - Limite pour la liste d'insertion"
+set caption(bddimages_config,usnocat)           " - Répertoire du catalogue USNO-A2"
 
 set caption(bddimages_config,getdir)            "Choisir le répertoire"
 set caption(bddimages_config,test)              "Test"
@@ -58,6 +59,7 @@ set caption(bddimages_config,info_dircata)      "Nom du répertoire de sauvegard
 set caption(bddimages_config,info_direrr)       "Nom du répertoire de sauvegarde des erreurs"
 set caption(bddimages_config,info_dirlog)       "Nom du répertoire de sauvegarde des logs"
 set caption(bddimages_config,info_dirtmp)       "Nom du répertoire temporaire"
+set caption(bddimages_config,info_dirusnocat)   "Nom du répertoire contenant les fichiers du catalogue USNO-A2"
 set caption(bddimages_config,info_listlimit)    "Nombre d'images du traitement par lot (e.g. 10)"
 
 # *************** Version française **** **********************
@@ -92,6 +94,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bddimages_config,dirtmp)         " - Répertoire temporaire"
    set caption(bddimages_config,variables)      "Autres paramètres"
    set caption(bddimages_config,listlimit)      " - Limite pour la liste d'insertion"
+   set caption(bddimages_config,usnocat)        " - Répertoire du catalogue USNO-A2"
 
    set caption(bddimages_config,getdir)         "Choisir le répertoire"
    set caption(bddimages_config,test)           "Test"
@@ -109,6 +112,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bddimages_config,info_direrr)    "Nom du répertoire de sauvegarde des erreurs"
    set caption(bddimages_config,info_dirlog)    "Nom du répertoire de sauvegarde des logs"
    set caption(bddimages_config,info_dirtmp)    "Nom du répertoire temporaire"
+   set caption(bddimages_config,info_dirusnocat) "Nom du répertoire contenant les fichiers du catalogue USNO-A2"
    set caption(bddimages_config,info_listlimit) "Nombre d'images du traitement par lot (e.g. 10)"
 
 # *************** Version italienne ***************************
