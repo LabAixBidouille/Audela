@@ -315,7 +315,10 @@ namespace eval analyse_tools {
 
 
 
-
+         if {$::analyse_tools::create_cata} {
+            set catafile        [file join $bddconf(dirbase) $dirfilename $filename .xml]
+            write_cata_votable $listsources $catafile
+         }
 
 
 
