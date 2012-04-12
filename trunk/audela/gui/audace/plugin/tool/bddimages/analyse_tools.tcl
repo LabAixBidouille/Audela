@@ -335,6 +335,7 @@ namespace eval analyse_tools {
                set $::analyse_tools::nb_tycho2 [::manage_source::get_nb_sources_by_cata $listsources TYCHO2]
             }
             
+            gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $listsources]\n"
             set catafile [file join $bddconf(dirtmp) $filename.xml]
             gren_info "write cata file: $catafile"
             write_cata_votable $listsources $catafile
