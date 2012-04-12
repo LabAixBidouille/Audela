@@ -316,6 +316,20 @@ namespace eval analyse_tools {
 
 
          if {$::analyse_tools::create_cata} {
+
+
+               set tycho2 [cstycho2 /astrodata/Catalog/TYCHO-2 $ssp_image(ra) $ssp_image(dec) 70]
+               gren_info "rollup = [::manage_source::get_nb_sources_rollup $tycho2]\n"
+               set tycho2 [::manage_source::set_common_fields $tycho2 TYCHO2 { RAdeg DEdeg 5 VT e_VT }]
+               ::manage_source::imprim_3_sources $tycho2
+
+               gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
+               set a [buf$bddconf(bufno) xy2radec {680 1801}]
+               set b [buf$bddconf(bufno) xy2radec {713 1826}]
+               set f [list [lindex $a 0] [lindex $a 1] [lindex $b 0] [lindex $b 1] ]
+               set log 0
+               set listsources [ identification $listsources IMG $tycho2 TYCHO2 30.0 -30.0 $f $log] 
+
             set catafile        [file join $bddconf(dirbase) $dirfilename $filename .xml]
             write_cata_votable $listsources $catafile
          }
