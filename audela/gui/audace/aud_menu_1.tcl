@@ -161,7 +161,7 @@ namespace eval ::audace {
       menustate disabled
       set catchError [ catch {
          #--- Positions et tailles des fenetres
-         set conf(console,wmgeometry)      [ wm geometry $audace(Console) ]
+         set conf(console,wmgeometry) [ wm geometry $audace(Console) ]
 
          #--- tous les outils de la visu 1
          if { [ ::confVisu::stopTool 1 ] == "-1" } {
