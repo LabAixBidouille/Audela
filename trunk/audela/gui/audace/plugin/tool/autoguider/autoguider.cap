@@ -68,10 +68,10 @@ set caption(autoguider,alphaReverse)             "Reverse movement"
 set caption(autoguider,deltaReverse)             "Reverse movement"
 
 set caption(autoguider,searchTitle)              "Star Search"
-set caption(autoguider,searchThreshin)           "Min. Luminosity (1)"
+set caption(autoguider,searchThreshin)           "Min. Brightness (1)"
 set caption(autoguider,searchFwhm)               "Min. Fwhm"
 set caption(autoguider,searchRadius)             "Search Radius (pixel)"
-set caption(autoguider,searchThreshold)          "Min. Luminosity (2)"
+set caption(autoguider,searchThreshold)          "Min. Brightness (2)"
 
 set caption(autoguider,telescope)                "Telescope"
 set caption(autoguider,centerSpeed)              "Centering Speed"
@@ -484,10 +484,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,deltaReverse)          "Reverse movement"
 
    set caption(autoguider,searchTitle)           "Star Search"
-   set caption(autoguider,searchThreshin)        "Min. Luminosity (1)"
+   set caption(autoguider,searchThreshin)        "Min. Brightness (1)"
    set caption(autoguider,searchFwhm)            "Min. Fwhm"
    set caption(autoguider,searchRadius)          "Search Radius (pixel)"
-   set caption(autoguider,searchThreshold)       "Min. Luminosity (2)"
+   set caption(autoguider,searchThreshold)       "Min. Brightness (2)"
 
    set caption(autoguider,telescope)             "Telescope"
    set caption(autoguider,centerSpeed)           "Centering Speed"
@@ -553,10 +553,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,deltaReverse)          "Reverse movement"
 
    set caption(autoguider,searchTitle)           "Star Search"
-   set caption(autoguider,searchThreshin)        "Min. Luminosity (1)"
+   set caption(autoguider,searchThreshin)        "Min. Brightness (1)"
    set caption(autoguider,searchFwhm)            "Min. Fwhm"
    set caption(autoguider,searchRadius)          "Search Radius (pixel)"
-   set caption(autoguider,searchThreshold)       "Min. Luminosity (2)"
+   set caption(autoguider,searchThreshold)       "Min. Brightness (2)"
 
    set caption(autoguider,telescope)             "Telescope"
    set caption(autoguider,centerSpeed)           "Centering Speed"
@@ -622,10 +622,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,deltaReverse)          "Reverse movement"
 
    set caption(autoguider,searchTitle)           "Star Search"
-   set caption(autoguider,searchThreshin)        "Min. Luminosity (1)"
+   set caption(autoguider,searchThreshin)        "Min. Brightness (1)"
    set caption(autoguider,searchFwhm)            "Min. Fwhm"
    set caption(autoguider,searchRadius)          "Search Radius (pixel)"
-   set caption(autoguider,searchThreshold)       "Min. Luminosity (2)"
+   set caption(autoguider,searchThreshold)       "Min. Brightness (2)"
 
    set caption(autoguider,telescope)             "Telescope"
    set caption(autoguider,centerSpeed)           "Centering Speed"

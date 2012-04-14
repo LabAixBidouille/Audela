@@ -333,7 +333,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecomconfig,extra_focal)             "Extrafocale"
    set caption(audecomconfig,inversion_rot)           "Inversione del senso di rotazione del motore"
    set caption(audecomconfig,valeur_dep)              "Valore di overshoot per la correzione giochi:"
-   set caption(audecomconfig,pas)                     "steps"
+   set caption(audecomconfig,pas)                     "passi"
 
    set caption(audecomconfig,prog_pec)                "Impostazione PEC"
    set caption(audecomconfig,vit_suiv_nom)            "La velocita` di inseguimento nominale e`:"
@@ -633,7 +633,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecomconfig,extra_focal)             "Extrafokal"
    set caption(audecomconfig,inversion_rot)           "Motor Umdrehung Richtung Umkehrung (virtuell Hand Kontroller)"
    set caption(audecomconfig,valeur_dep)              "Anweisung Überschreitung Wert für den Spiel ausgleichen:"
-   set caption(audecomconfig,pas)                     "Schritt"
+   set caption(audecomconfig,pas)                     "Schritte"
 
    set caption(audecomconfig,prog_pec)                "PEC Tempo"
    set caption(audecomconfig,vit_suiv_nom)            "Das nominale Folgung Tempo ist bestimmt bei:"
@@ -717,14 +717,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecomconfig,para_foc,aide03)         "                                                   euren Fokussierung System Arbeiten."
    set caption(audecomconfig,para_foc,aide1)          "Diese Option ermöglicht die Änderung des Fokussierung Motor Tempo. '255' entspricht\
                                                        das niedrigste Tempo, während '5' das höchste mögliche Tempo entspricht (1000\
-                                                       Stritt/Sekunde) im Fall der Motor folgen kann."
+                                                       Stritte/Sekunde) im Fall der Motor folgen kann."
    set caption(audecomconfig,para_foc,aide2)          "Diese Option ermöglicht den Wahl der Bewegung Richtung des Fokussierung System\
                                                        während das letzte Teil der Bewegung. Das Ziel ist die letzte Bewegung immer in die\
                                                        selbe Richtung zu machen (Bewegung in intrafokal oder extrafokal Richtung). Sie gibt\
                                                        auch die Umkehrung des Umdrehung Richtung des Deklination Motor Zugang (nur für\
                                                        das Virtuell Hand Kontroller)."
    set caption(audecomconfig,para_foc,aide3)          "Diese Option ermöglicht die Übersteigung der Fokussierung Anweisung fest zu legen\
-                                                       so dass das letzte Teil der Bewegung immer in die selbe Richtung sei (250 Schritt\
+                                                       so dass das letzte Teil der Bewegung immer in die selbe Richtung sei (250 Schritte\
                                                        übereinstimmt mit 1/2 Drehzahl der Fokussierung Motor)."
 
    set caption(audecomconfig,para_mobile,aide0)       "Geben sie das Bewegung Tempo euren Objekt in die Gestalt eines Ganz.\
@@ -732,7 +732,7 @@ if { [ string compare $langage "french" ] == "0" } {
                                                      \nFür Sud und West Abtrift, muss das Ganz negativ gewählt sein."
 
    set caption(audecomconfig,prog_pec,aide01)         "                               Jeden Druck auf den Knopf ' ? ' anzeigt die passende Hilfe die"
-   set caption(audecomconfig,prog_pec,aide02)         "                               die verschiedene Schritten für die PEC Programmierung erklärt"
+   set caption(audecomconfig,prog_pec,aide02)         "                               die verschiedene Schritte für die PEC Programmierung erklärt"
    set caption(audecomconfig,prog_pec,aide03)         "                             so wie die Kontrollen durch zu führen auf der Werten zu erfassen."
    set caption(audecomconfig,prog_pec,aide11)         "Im Fach unserem äquatorial Montierung, das nominale Folgung Tempo isst bei ein Ganz\
                                                        festgelegt %s. Für eine nominale Folgung, muss der Rektaszension Motor inkrementiert\
@@ -873,7 +873,7 @@ if { [ string compare $langage "french" ] == "0" } {
                                                        mesmo sentido (deslocando no sentido intrafocal ou extrafocal). Ela permite igualmente o acesso\
                                                        à inversão do sentido de rotação do motor de focagem."
    set caption(audecomconfig,para_foc,aide3)          "Esta opção permite definir o valor de overshoot da instrução de focagem para\
-                                                       que a última parte do deslocamento seja sempre realizada no mesmo sentido (250 pas\
+                                                       que a última parte do deslocamento seja sempre realizada no mesmo sentido (250 passos\
                                                        correspondente a 1/2 volta do motor de focagem)."
 
    set caption(audecomconfig,para_mobile,aide0)       "Indique na forma de inteiro a velocidade de deslocamento do objecto.\
@@ -881,7 +881,7 @@ if { [ string compare $langage "french" ] == "0" } {
                                                      \nPara as derivações Sul e Oeste, o inteiro escolhido deve ser negativo."
 
    set caption(audecomconfig,prog_pec,aide01)         "                                   Pressionando um botão ' ? ' visualiza-se a ajuda associada que"
-   set caption(audecomconfig,prog_pec,aide02)         "                                 explica as diferentes étapas da programação do PEC"
+   set caption(audecomconfig,prog_pec,aide02)         "                                 explica as diferentes passos da programação do PEC"
    set caption(audecomconfig,prog_pec,aide03)         "                                   e também os controlos a efectuar sobre os valores seleccionados."
    set caption(audecomconfig,prog_pec,aide11)         "No caso da nossa montagem equatorial, a velocidade de seguimento nominal é definida pelo\
                                                        valor inteiro %s. Para assegurar um seguimento nominal é necessário incrementar o motor\
