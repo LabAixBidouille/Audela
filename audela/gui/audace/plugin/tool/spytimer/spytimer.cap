@@ -233,7 +233,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spytimer,fwhm)                          "FWHM promedio (pixel)"
    set caption(spytimer,ratio_x_y)                     "Fwhm X / Fwhm Y"
    set caption(spytimer,contrast)                      "Contraste (ADU)"
-   set caption(spytimer,init)                          "Reset"
+   set caption(spytimer,init)                          "Reajustar"
    set caption(spytimer,close)                         "Cerrar"
 
 # *************** Version allemande ***************************
@@ -290,7 +290,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spytimer,fwhm)                          "FWHM Durchschnitt (pixel)"
    set caption(spytimer,ratio_x_y)                     "Fwhm X / Fwhm Y"
    set caption(spytimer,contrast)                      "Kontrast (ADU)"
-   set caption(spytimer,init)                          "Zurückerstatten"
+   set caption(spytimer,init)                          "Zurücksetzen"
    set caption(spytimer,close)                         "Schließen"
 
 # *************** Version portugaise **************************
@@ -347,7 +347,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spytimer,fwhm)                          "Média FWHM (pixel)"
    set caption(spytimer,ratio_x_y)                     "Fwhm X / Fwhm Y"
    set caption(spytimer,contrast)                      "Contraste (ADU)"
-   set caption(spytimer,init)                          "Reiniciar"
+   set caption(spytimer,init)                          "Reinicializar"
    set caption(spytimer,close)                         "Fechar"
 
 # *************** Version danoise *****************************
