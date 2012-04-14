@@ -176,7 +176,56 @@ proc ros { args } {
       }
       set ros(audela,cam_result) $texte
       socket_client_close clientcam2
-
+      
+   } elseif {$action=="arduino"} {
+      # source ../gui/audace/ros.tcl
+      set action2 [lindex $args 1]
+      set params [lrange $args 2 end]
+      set err [catch {source [file join $::audela_start_dir ros_root.tcl]}]
+      set ros(falsenameofexecutable) majordome
+      source "$ros(root,ros)/src/common/variables_globales.tcl"
+      unset ros(falsenameofexecutable)
+      set host $ros(req,majordome,gar,host)
+      set port $ros(arduino,config,server,cgi,port)
+      set err [catch {source "$audace(rep_install)/gui/audace/socket_tools.tcl"}] ; if {$err==1} { source "$ros(root,audela)/gui/audace/socket_tools.tcl" }
+      set err [catch {socket_client_open clientard2 $host $port} msg]
+      if {$err==1} {
+         set texte $msg
+         if {($ros(withtk)==0)||([info commands ::console::affiche_resultat]!="::console::affiche_resultat")} {
+            puts "$texte"
+         } else {
+            ::console::affiche_resultat "$texte\n"
+         }
+         return
+      }
+      if {($action2=="send")} {
+         socket_client_put clientard2 "$params"
+         set t0 [clock seconds]
+         set sortie 0
+         while {$sortie==0} {
+            set msg [socket_client_get clientard2]
+            if {$msg!=""} { set sortie 1 ; break }
+            if {[expr [clock seconds]-$t0]>15} {
+               set sortie 2
+               break
+            }
+            after 1000
+         }
+         if {$sortie==2} {
+            set msg "No response after timeout."
+         }
+      } else {
+         set msg "$syntax\nERROR: Action must be amongst send"
+      }
+      set texte $msg
+      if {($ros(withtk)==0)||([info commands ::console::affiche_resultat]!="::console::affiche_resultat")} {
+         puts "$texte"
+      } else {
+         ::console::affiche_resultat "$texte\n"
+      }
+      set ros(audela,gar_result) $texte
+      socket_client_close clientard2
+      
    } elseif {$action=="majordome"} {
       # source ../gui/audace/ros.tcl
       # ros majordome send DO ...
