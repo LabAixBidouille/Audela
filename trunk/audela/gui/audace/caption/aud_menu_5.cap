@@ -232,7 +232,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(audace,menu,analysis)                  "Analyse"
-   set caption(audace,menu,histo)                     "Historische Kurve"
+   set caption(audace,menu,histo)                     "Histogramm"
    set caption(audace,menu,coupe)                     "Abschnitt"
    set caption(audace,menu,statwin)                   "Statistiken in das Fenster"
    set caption(audace,menu,fwhm)                      "Fwhm"
@@ -251,7 +251,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,sort_x)                    "Prozentrang Sortierung der Kolumnen"
    set caption(audace,menu,matrice)                   "Eine Zone"
 
-   set caption(audace,histo_titre)                    "Historische Kurve des Bild"
+   set caption(audace,histo_titre)                    "Histogramm des Bild"
    set caption(audace,histo_adu)                      "ADU"
    set caption(audace,histo_nbpix)                    "Rasterpunkten Zahl"
 
