@@ -1,0 +1,9 @@
+# Commandes a lancer dans audela
+
+load libmeinberg.so
+meinberg_gps open
+meinberg_gps reset
+meinberg_gps read
+
+meinberg_gps status
+meinberg_gps close

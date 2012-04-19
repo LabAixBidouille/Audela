@@ -1,0 +1,682 @@
+/* meinbergtcl.c
+ *
+ * This file is part of the AudeLA project : <http://software.audela.free.fr>
+ * Copyright (C) 1998-2004 The AudeLA Core Team
+ *
+ * Initial author : Alain KLOTZ <alain.klotz@free.fr>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or (at
+ * your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
+
+/***************************************************************************/
+/* Ce fichier contient du C melange avec des fonctions de l'interpreteur   */
+/* Tcl.                                                                    */
+/* Ainsi, ce fichier fait le lien entre Tcl et les fonctions en C pur qui  */
+/* sont disponibles dans les fichiers meinberg.cpp.                           */
+/***************************************************************************/
+/* Le include meinbergtcl.h ne contient des infos concernant Tcl.               */
+/***************************************************************************/
+#include "meinbergtcl.h"
+
+#include <mbgdevio.h>
+#include <mbgtime.h>
+#include <pcpslstr.h>
+#include <pcpsutil.h>
+//#include <toolutil.h>
+#include <pcpsmktm.h>
+
+
+#include <mbgutil.h>
+
+//rajout test linux
+//#include <macioctl.h>
+//#include <mbgioctl.h>
+//#include <pcpsdefs.h>
+
+LANGUAGE language;
+CTRY ctry;
+
+
+//pour gerer la datation par GPS: declaration des variables globales
+MBG_DEV_HANDLE dh ;
+double date=-1;
+double DateGps;
+char DateGpst[150];
+        
+
+static const char *ref_name[N_PCPS_REF]= PCPS_REF_NAMES_ENG;
+static const char *icode_rx_names[N_ICODE_RX] = DEFAULT_ICODE_RX_NAMES;
+static const char *osc_name[N_GPS_OSC] = DEFAULT_GPS_OSC_NAMES;
+static int year_limit = 1990;
+static unsigned int verbose;
+static int max_ref_offs_h = MBG_REF_OFFS_MAX / MINS_PER_HOUR;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+static /*HDR*/
+void print_pcps_time( const char *s, const PCPS_TIME *tp, const char *tail )
+{
+  const char *fmt = "%s";
+  char ws[256];
+
+  if ( s ) printf( fmt, s );
+
+  printf( fmt, pcps_date_time_str( ws, tp, year_limit, pcps_tz_name( tp, PCPS_TZ_NAME_FORCE_UTC_OFFS, 0 ) ) );
+
+  if ( tail )
+    printf(  fmt, tail );
+
+}  // print_pcps_time
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+static /*HDR*/
+void show_ext_stat_info( MBG_DEV_HANDLE dh, const PCPS_DEV *p_dev, const char *tail )
+{
+  const char *fmt = "%s";
+  RECEIVER_INFO ri;
+  STAT_INFO si = { 0 };
+  char ws[80];
+  char *mode_name;
+
+  mbg_setup_receiver_info( dh, p_dev, &ri );
+
+
+  if ( _pcps_has_stat_info( p_dev ) )
+  {
+    mbg_get_gps_stat_info( dh, &si );
+
+    if ( _pcps_has_stat_info_mode( p_dev ) )
+    {
+      switch ( si.mode )
+      {
+        case AUTO_166: mode_name = "Normal Operation";  break;
+        case WARM_166: mode_name = "Warm Boot";         break;
+        case COLD_166: mode_name = "Cold Boot";         break;
+
+        default:  // This should never happen!
+          sprintf( ws, "Unknown mode of operation: %02Xh", si.mode );
+          mode_name = ws;
+
+      }  // switch
+    }
+
+    if ( _pcps_has_stat_info_svs( p_dev ) )
+      printf( "%s, %i sats in view, %i sats used\n", mode_name, si.svs_in_view, si.good_svs );
+  }
+
+  if ( verbose )
+  {
+    printf( "Osc type: %s", osc_name[( ri.osc_type < N_GPS_OSC ) ? ri.osc_type : GPS_OSC_UNKNOWN] );
+
+    if ( _pcps_has_stat_info( p_dev ) )
+    {
+      printf( ", DAC cal: %+i, fine: %+i",
+              (int) ( si.dac_cal - OSC_DAC_BIAS ),
+              (int) ( si.dac_val - OSC_DAC_BIAS ) );
+    }
+
+    puts( "" );
+  }
+
+  if ( tail )
+    printf( fmt, tail );
+
+}  // show_ext_stat_info
+
+
+
+
+
+
+
+
+
+
+
+
+static /*HDR*/
+void show_signal( MBG_DEV_HANDLE dh, const PCPS_DEV *pdev, int signal )
+{
+  int ref_type;
+  int rc;
+
+  ref_type = _pcps_ref_type( pdev );
+
+  if ( ref_type >= N_PCPS_REF )
+    ref_type = PCPS_REF_NONE;
+
+  printf( "Signal: %u%%  (%s", signal * 100 / PCPS_SIG_MAX, ref_name[ref_type] );
+
+  if ( _pcps_is_irig_rx( pdev ) )
+  {
+    IRIG_INFO irig_rx_info;
+    MBG_REF_OFFS ref_offs;
+
+    rc = mbg_get_irig_rx_info( dh, &irig_rx_info );
+
+    if ( rc == MBG_SUCCESS )
+    {
+      int idx = irig_rx_info.settings.icode;
+
+      if ( idx < N_ICODE_RX )
+      {
+        printf( " %s", icode_rx_names[idx] );
+
+        if ( !( MSK_ICODE_RX_HAS_TZI & ( 1UL << idx ) ) )
+        {
+          if ( _pcps_has_ref_offs( pdev ) )
+          {
+            rc = mbg_get_ref_offs( dh, &ref_offs );
+
+            if ( rc == MBG_SUCCESS )
+            {
+              int ref_offs_h = ref_offs / MINS_PER_HOUR;
+
+              if ( abs( ref_offs_h ) > max_ref_offs_h )
+                printf( ", ** UTC offs not configured **" );
+              else
+                printf( ", UTC%+ih", ref_offs_h );
+            }
+          }
+        }
+      }
+    }
+  }
+  else
+    if ( _pcps_has_pzf( pdev ) )
+      printf( "/PZF" );
+
+  printf( ")\n" );
+
+}  // show_signal
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+static /*HDR*/
+void show_time_and_status( MBG_DEV_HANDLE dh, const PCPS_DEV *pdev, const char *tail )
+{
+  const char *status_fmt = "Status info: %s%s\n";
+  const char *status_err = "*** ";
+  const char *status_ok = "";
+  PCPS_TIME t;
+  PCPS_STATUS_STRS strs;
+  int signal;
+  int i;
+  mbg_get_time( dh, &t );
+
+
+  print_pcps_time( "Date/time:  ", &t, tail );
+
+
+  signal = t.signal - PCPS_SIG_BIAS;
+
+  if ( signal < 0 )
+    signal = 0;
+  else
+    if ( signal > PCPS_SIG_MAX )
+      signal = PCPS_SIG_MAX;
+
+  if ( _pcps_has_signal( pdev ) )
+    show_signal( dh, pdev, signal );
+
+
+  if ( _pcps_has_irig_time( pdev ) )
+  {
+    PCPS_IRIG_TIME it;
+
+    mbg_get_irig_time( dh, &it );
+
+  }
+
+  if ( _pcps_is_irig_rx( pdev ) )
+  {
+    printf( status_fmt,
+            ( signal < PCPS_SIG_ERR ) ? status_err : status_ok,
+            ( signal < PCPS_SIG_ERR ) ? "NO INPUT SIGNAL"
+                                      : "Input signal available" );
+  }
+  else
+  {
+    printf( status_fmt,
+            ( signal < PCPS_SIG_ERR ) ? status_err : status_ok,
+            ( signal < PCPS_SIG_ERR ) ? "ANTENNA IS NOT CONNECTED"
+                                      : "Antenna is connected" );
+  }
+
+  // Evaluate the status code and setup status messages.
+  pcps_status_strs( t.status, _pcps_time_is_read( &t ),
+                    _pcps_is_gps( pdev ), &strs );
+
+  // Print the status messages.
+  for ( i = 0; i < N_PCPS_STATUS_STR; i++ )
+  {
+    PCPS_STATUS_STR *pstr = &strs.s[i];
+    if ( pstr->cp )
+      printf( status_fmt,
+              pstr->is_err ? status_err : status_ok,
+              pstr->cp );
+  }
+
+}  // show_time_and_status
+
+
+
+
+
+
+
+
+static /*HDR*/
+void show_sync_time( MBG_DEV_HANDLE dh, const char *tail )
+{
+  PCPS_TIME t;
+  mbg_get_sync_time( dh, &t );
+
+  print_pcps_time( "Last sync:  ", &t, tail );
+
+}  // show_sync_time
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+static /*HDR*/
+void print_dms( const char *s, const DMS *p, const char *tail )
+{
+  const char *fmt = "%s";
+
+  printf( "%s %c %3i deg %02i min %05.2f sec",
+          s,
+          p->prefix,
+          p->deg,
+          p->min,
+          p->sec
+        );
+
+  if ( tail )
+    printf( fmt, tail );
+
+}  // print_dms
+
+
+
+static /*HDR*/
+void print_position( const char *s, const POS *p, const char *tail )
+{
+  const char *fmt = "%s";
+  double r2d = 180 / PI;
+
+
+  if ( s )
+    printf( fmt, s );
+
+  // LLA latitude and longitude are in radians, convert to degrees
+  printf( "  lat: %+.4f lon: %+.4f alt: %.0fm",
+          p->lla[LAT] * r2d, p->lla[LON] * r2d, p->lla[ALT] );
+
+  if ( tail )
+    printf( fmt, tail );
+
+  print_dms( "  latitude: ", &p->latitude, tail );
+  print_dms( "  longitude:", &p->longitude, tail );
+
+}  // print_position
+
+
+
+static /*HDR*/
+void show_gps_pos( MBG_DEV_HANDLE dh, const char *tail )
+{
+  POS pos;
+  mbg_get_gps_pos( dh, &pos );
+
+  print_position( "Receiver Position:\n", &pos, tail );
+
+}  // show_gps_pos
+
+
+
+
+
+
+
+
+       
+int Cmd_meinbergtcl_gps(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* I/O with GPS cards                                                  */
+/****************************************************************************/
+/* type of card curently read : meinberg
+meinberg_gps open 
+meinberg_gps reset 
+meinberg_gps read 
+meinberg_gps close 
+*/
+/****************************************************************************/
+{
+
+   char s[100];
+   int mode,k,i,devices_found,c;
+   static PCPS_DEV dev;
+   PCPS_UCAP_ENTRIES ucap_entries;
+   PCPS_TIME t;
+   char year[5], month[5], day[5], hour[5], minute[5], sec[5], msec[5], p[10];
+   char ws[200];
+
+
+   strcpy(s,"");
+   
+   sprintf(s,"Entre dans fonction meinberg\n");
+   c = mbgdevio_get_version();
+   sprintf(s,"%s version = %d \n",s,c);
+   
+   if(argc<2) {
+      sprintf(s,"Usage: %s open|reset|read|close", argv[0]);
+   } else {
+      
+      /* --- decodage des arguments ---*/
+      mode=0;
+      if (strcmp(argv[1],"open")==0) {
+         mode=1;
+      }
+      else if (strcmp(argv[1],"reset")==0) {
+         mode=2;
+      }
+      else if (strcmp(argv[1],"read")==0) {
+         mode=3;
+      }
+      else if (strcmp(argv[1],"close")==0) {
+         mode=4;
+      }
+      else if (strcmp(argv[1],"status")==0) {
+         mode=5;
+      }
+      if (mode==0) {
+         sprintf(s,"Usage: %s open|read|close", argv[0]);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+      }
+      
+      sprintf(s,"%s Mode = %d \n",s,mode);
+
+      /* --- open meinberg ---*/
+      if (mode==1) {
+         sprintf(s,"%s Open \n",s);
+         devices_found = mbg_find_devices();
+         if ( devices_found == 0 ) {
+            sprintf(s,"%s No GPS meinberg card found Meinberg",s);
+            Tcl_SetResult(interp,s,TCL_VOLATILE);
+            return TCL_ERROR;
+         }
+         i=devices_found-1;
+         dh = mbg_open_device( i );
+         if ( dh == MBG_INVALID_DEV_HANDLE ) {
+            sprintf(s,"%s Can't open GPS device Meinberg",s);
+            Tcl_SetResult(interp,s,TCL_VOLATILE);
+            return TCL_ERROR;
+         }
+        
+         mbg_get_device_info( dh, &dev);
+         //puts(dev);
+         //print_dev_info( dh, &dev );
+         
+         show_ext_stat_info( dh, &dev, NULL );
+         
+         show_time_and_status( dh, &dev, "\n" );
+
+         show_sync_time( dh, "\n" );
+
+         show_gps_pos( dh, "\n" );
+
+
+         mbg_get_time(dh,&t);
+         print_pcps_time( "Date/time:  ", &t, "\n" );
+         //puts(t);
+         
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+         sprintf(s,"%s Connection with Meinberg is opened ",s);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_OK;
+      }
+      /* --- reset meinberg ---*/
+      /* --- remove every event on the FIFO controler on the GPS board ---*/
+      if (mode==2) {
+        if ( dh == MBG_INVALID_DEV_HANDLE ) {
+            sprintf(s,"%s No GPS device Meinberg",s);
+            Tcl_SetResult(interp,s,TCL_VOLATILE);
+            return TCL_ERROR;
+         }
+        if ( PCPS_SUCCESS == mbg_clr_ucap_buff( dh ) ) {
+            sprintf(s,"Capture buffer cleared for meinberg");
+            Tcl_SetResult(interp,s,TCL_VOLATILE);
+            return TCL_OK;
+        } else {
+            sprintf(s,"Failed to clear capture buffer for meinberg");
+            Tcl_SetResult(interp,s,TCL_VOLATILE);
+            return TCL_ERROR;
+        }
+      }
+      /* --- read time meinberg ---*/
+      /* dans ce mode on va lire le buffer jusqu'a la derniere date et on renvoit seulement la derniere date */
+      if (mode==3) {
+        if ( dh == MBG_INVALID_DEV_HANDLE ) {
+            sprintf(s,"%s No GPS device Meinberg",s);
+            Tcl_SetResult(interp,s,TCL_VOLATILE);
+            return TCL_ERROR;
+         }
+         // on veut recuperer le dernier evenement entres si dispo
+         if ( _pcps_has_ucap( &dev ) ) {
+            PCPS_HR_TIME ucap_event;
+            // read all entries from capture buffer
+            date=0;
+            for (;;) {
+               if ( PCPS_SUCCESS != mbg_get_ucap_entries( dh, &ucap_entries )) {
+                  sprintf(s,"Failed to read user capture buffer entries for meinberg");
+                  break;
+               }
+               if ( PCPS_SUCCESS != mbg_get_ucap_event( dh, &ucap_event )) {
+                  sprintf(s,"Failed to read user capture event for meinberg");
+                  break;
+               }
+
+               // If a user capture event has been read
+               // then it it removed from the clock's buffer.
+
+               // If no new capture event is available, the ucap.tstamp structure
+               // is set to 0.
+               // Alternatively, PCPS_UCAP_ENTRIES.used can be checked for the 
+               // number of events pending in the buffer.
+               if ( ucap_event.tstamp.sec == 0 ) // no new user capture event
+                    break;
+ 
+               // Format function taken from mbgutil.h
+               mbg_str_pcps_hr_tstamp_utc( ws, sizeof( ws ), &ucap_event );
+               
+               // format iso
+               for (k=6;k<=9;k++) { p[k-6]=ws[k];    }; p[k-6]='\0';
+               strcpy(year,p); 
+               for (k=3;k<=4;k++) { p[k-3]=ws[k]; } ; p[k-3]='\0';
+               strcpy(month,p);
+               for (k=0;k<=1;k++) { p[k]=ws[k]; } ; p[k]='\0';
+               strcpy(day,p);
+               for (k=12;k<=13;k++) { p[k-12]=ws[k]; } ; p[k-12]='\0';
+               strcpy(hour,p);
+               for (k=15;k<=16;k++) { p[k-15]=ws[k]; } ; p[k-15]='\0';
+               strcpy(minute,p);
+               for (k=18;k<=19;k++) { p[k-18]=ws[k]; } ; p[k-18]='\0';
+               strcpy(sec,p);
+               for (k=21;k<=23;k++) { p[k-21]=ws[k]; } ; p[k-21]='\0';
+               strcpy(msec,p);
+               sprintf(DateGpst,"%s-%s-%sT%s:%s:%s.%s", year, month, day, hour, minute, sec, msec );
+               date=1;
+            }
+            
+            if (date==0) {
+               sprintf(s,"No GPS date available");
+               Tcl_SetResult(interp,s,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {
+               sprintf(s,"%s",DateGpst);
+               Tcl_SetResult(interp,s,TCL_VOLATILE);
+               return TCL_OK;
+            }
+         }
+      }
+      
+      /* --- close meinberg ---*/
+      if (mode==4) {
+        if ( dh == MBG_INVALID_DEV_HANDLE ) {
+            sprintf(s,"%s No GPS device Meinberg",s);
+            Tcl_SetResult(interp,s,TCL_VOLATILE);
+            return TCL_ERROR;
+         }
+         mbg_close_device( &dh );  
+         sprintf(s,"Connection with meinberg is closed");
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_OK;
+      }
+      /* --- status meinberg ---*/
+      if (mode==5) {
+         if ( dh == MBG_INVALID_DEV_HANDLE ) {
+            sprintf(s,"%s No GPS device Meinberg",s);
+            Tcl_SetResult(interp,s,TCL_VOLATILE);
+            return TCL_ERROR;
+         }
+         
+         
+         sprintf(s,"Status of meinberg reste a faire !!");
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_OK;
+      }
+      
+
+   }
+    
+   Tcl_SetResult(interp,s,TCL_VOLATILE);
+   return TCL_ERROR;
+   
+}
+
+
+/*There are 3 functions to deal with the meinberg capture events:
+
+     \li mbg_clr_ucap_buff() clears the on-board FIFO buffer
+     \li mbg_get_ucap_entries() returns the maximum number of entries
+       and the currently saved number of entries in the buffer
+     \li mbg_get_ucap_event() retrieves a capture event from the
+       on-board FIFO, or 0000.0000 if the FIFO buffer is empty.
+   
+     When using the time capture inputs the following hints might be helpful:
+   
+     \li The corresponding DIP switches on the card must be set to the "ON"
+     position in order to wire the input pins to the capture circuitry. See
+     the user manual for the correct DIP switches.
+     \li Capture events are stored in the on-board FIFO, and entries can be
+     retrieved from the FIFO in different ways. Once an entry has been
+     retrieved it is removed from the FIFO, so if several ways or
+     applications are used at the same time to retrieve capture events from
+     the FIFO then capture events may be missed by one application since they
+     have already been retrieved by another application.
+     \li The card provides 2 physical serial interfaces either of which may
+     have been configured to send a serial ASCII string automatically
+     whenever a capture event has occurred. Of course this would also remove
+     those capture events from the FIFO buffer. So the settings of both
+     serial ports should be checked to make sure none of the serial ports
+     have been configured to send the capture string automatically. This has
+     to be done only once for a card */
+
+
+
+
