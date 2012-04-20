@@ -1,5 +1,5 @@
 #!/bin/bash
-
+/bin/rm  ../../../../bin/libmeinberg.so
 /bin/rm *.o *.so
 
 gcc -fPIC -Wall -O2 -I. -I./include  -DMBGDEVIO_SIMPLE=1   -c -o mbgdevio.o ./src/mbgdevio.c
