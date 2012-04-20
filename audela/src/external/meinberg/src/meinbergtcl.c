@@ -3,7 +3,7 @@
  * This file is part of the AudeLA project : <http://software.audela.free.fr>
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
- * Initial author : Alain KLOTZ <alain.klotz@free.fr>
+ * Initial author : Myrtille Laas-Bourez <Myrtille.Laas@oca.eu>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,24 +64,6 @@ static unsigned int verbose;
 static int max_ref_offs_h = MBG_REF_OFFS_MAX / MINS_PER_HOUR;
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 static /*HDR*/
 void print_pcps_time( const char *s, const PCPS_TIME *tp, const char *tail )
 {
@@ -96,22 +78,6 @@ void print_pcps_time( const char *s, const PCPS_TIME *tp, const char *tail )
     printf(  fmt, tail );
 
 }  // print_pcps_time
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 static /*HDR*/
@@ -168,17 +134,6 @@ void show_ext_stat_info( MBG_DEV_HANDLE dh, const PCPS_DEV *p_dev, const char *t
 
 }  // show_ext_stat_info
 
-
-
-
-
-
-
-
-
-
-
-
 static /*HDR*/
 void show_signal( MBG_DEV_HANDLE dh, const PCPS_DEV *pdev, int signal )
 {
@@ -234,23 +189,6 @@ void show_signal( MBG_DEV_HANDLE dh, const PCPS_DEV *pdev, int signal )
   printf( ")\n" );
 
 }  // show_signal
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 static /*HDR*/
 void show_time_and_status( MBG_DEV_HANDLE dh, const PCPS_DEV *pdev, const char *tail )
@@ -320,12 +258,6 @@ void show_time_and_status( MBG_DEV_HANDLE dh, const PCPS_DEV *pdev, const char *
 }  // show_time_and_status
 
 
-
-
-
-
-
-
 static /*HDR*/
 void show_sync_time( MBG_DEV_HANDLE dh, const char *tail )
 {
@@ -335,22 +267,6 @@ void show_sync_time( MBG_DEV_HANDLE dh, const char *tail )
   print_pcps_time( "Last sync:  ", &t, tail );
 
 }  // show_sync_time
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 static /*HDR*/
@@ -406,12 +322,6 @@ void show_gps_pos( MBG_DEV_HANDLE dh, const char *tail )
   print_position( "Receiver Position:\n", &pos, tail );
 
 }  // show_gps_pos
-
-
-
-
-
-
 
 
        
@@ -506,26 +416,6 @@ meinberg_gps close
          print_pcps_time( "Date/time:  ", &t, "\n" );
          //puts(t);
          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
          sprintf(s,"%s Connection with Meinberg is opened ",s);
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          return TCL_OK;
