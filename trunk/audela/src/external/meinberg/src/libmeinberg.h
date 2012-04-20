@@ -3,7 +3,7 @@
  * This file is part of the AudeLA project : <http://software.audela.free.fr>
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
- * Initial author : Alain KLOTZ <alain.klotz@free.fr>
+ * Initial author : Myrtille Laas-Bourez <Myrtille.Laas@oca.eu> 
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
