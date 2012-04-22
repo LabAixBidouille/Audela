@@ -24,12 +24,6 @@
 
 ** UTILISATION :
 
-- gerer les filtres en sachant que :
-  on modifie regulierement la position des filtres dans la roue
-  maj des temps et ordre d acquisition pour la partie flat auto
-
-- utilisation du telescope avec ou sans reducteur focal
-  protocole de modification des header en consequence
 
 - protocole de gestion des images :
   images brutes

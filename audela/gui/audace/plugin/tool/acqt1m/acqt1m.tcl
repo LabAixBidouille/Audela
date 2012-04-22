@@ -16,10 +16,30 @@ namespace eval ::acqt1m {
    source [ file join [file dirname [info script]] acqt1m.cap ]
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 proc ::acqt1m::ressource { } {
    global audace caption
 
    ::console::affiche_resultat "$caption(acqt1m,rechargeScripts)"
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m acqt1m.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m acqt1m.cap ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m flat_t1m_auto.cap ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m flat_t1m_auto.tcl ]\""
@@ -27,7 +47,34 @@ proc ::acqt1m::ressource { } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m cycle.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m t1m_roue_a_filtre.cap ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m t1m_roue_a_filtre.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m acqt1mSetup.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m dlgshiftt1m.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m gps.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m flatcielplus.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m flatcielplus.cap ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m offsetdark.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m configuration.tcl ]\""
+   load libmeinberg.so
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #***** Procedure createPluginInstance***************************
 proc ::acqt1m::createPluginInstance { { in "" } { visuNo 1 } } {
@@ -35,14 +82,8 @@ proc ::acqt1m::createPluginInstance { { in "" } { visuNo 1 } } {
    global audace caption conf panneau
 
    #--- Chargement des fichiers auxiliaires
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m acqt1mSetup.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m dlgshiftt1m.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m flat_t1m_auto.cap ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m flat_t1m_auto.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m cycle.cap ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m cycle.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m t1m_roue_a_filtre.cap ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m t1m_roue_a_filtre.tcl ]\""
+   ::acqt1m::ressource
+
 
    #---
    set panneau(acqt1m,$visuNo,base) "$in"
@@ -145,6 +186,25 @@ proc ::acqt1m::createPluginInstance { { in "" } { visuNo 1 } } {
 }
 #***** Fin de la procedure createPluginInstance*****************
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #------------------------------------------------------------
 #  deletePluginInstance
 #     suppprime l'instance du plugin
@@ -176,6 +236,25 @@ proc ::acqt1m::deletePluginInstance { visuNo } {
    destroy $panneau(acqt1m,$visuNo,This).binning.but.menu
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #------------------------------------------------------------
 #  getPluginProperty
 #     retourne la valeur de la propriete
@@ -193,6 +272,25 @@ proc ::acqt1m::getPluginProperty { propertyName } {
    }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #------------------------------------------------------------
 #  getPluginTitle
 #     retourne le titre du plugin dans la langue de l'utilisateur
@@ -203,6 +301,25 @@ proc ::acqt1m::getPluginTitle { } {
    return "$caption(acqt1m,titre)"
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #------------------------------------------------------------
 #  getPluginHelp
 #     retourne le nom du fichier d'aide principal
@@ -210,6 +327,25 @@ proc ::acqt1m::getPluginTitle { } {
 proc ::acqt1m::getPluginHelp { } {
    return "acqt1m.htm"
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #------------------------------------------------------------
 #  getPluginType
@@ -219,6 +355,25 @@ proc ::acqt1m::getPluginType { } {
    return "tool"
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #------------------------------------------------------------
 #  getPluginDirectory
 #     retourne le type de plugin
@@ -226,6 +381,25 @@ proc ::acqt1m::getPluginType { } {
 proc ::acqt1m::getPluginDirectory { } {
    return "acqt1m"
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #------------------------------------------------------------
 #  getPluginOS
@@ -235,6 +409,25 @@ proc ::acqt1m::getPluginOS { } {
    return [ list Windows Linux Darwin ]
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #------------------------------------------------------------
 #  initPlugin
 #     initialise le plugin
@@ -242,6 +435,25 @@ proc ::acqt1m::getPluginOS { } {
 proc ::acqt1m::initPlugin { tkbase } {
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #***** Procedure Demarrageacqt1m ********************************
 proc ::acqt1m::Demarrageacqt1m { visuNo } {
@@ -292,6 +504,25 @@ proc ::acqt1m::Demarrageacqt1m { visuNo } {
 }
 #***** Fin de la procedure Demarrageacqt1m **********************
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #***** Procedure Arretacqt1m ************************************
 proc ::acqt1m::Arretacqt1m { visuNo } {
    global audace caption panneau
@@ -316,6 +547,25 @@ proc ::acqt1m::Arretacqt1m { visuNo } {
 }
 #***** Fin de la procedure Arretacqt1m **************************
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #***** Procedure initExtensionList ********************************
 proc ::acqt1m::initExtensionList { visuNo { a "" } { b "" } { c "" } } {
    global caption conf panneau
@@ -327,6 +577,25 @@ proc ::acqt1m::initExtensionList { visuNo { a "" } { b "" } { c "" } } {
    ::console::affiche_resultat "$caption(acqt1m,extensionFITS) $panneau(acqt1m,$visuNo,extension)\n\n"
 }
 #***** Fin de la procedure initExtensionList **********************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #***** Procedure adaptOutilAcqt1m *******************************
 proc ::acqt1m::adaptOutilAcqt1m { visuNo args } {
@@ -387,6 +656,25 @@ proc ::acqt1m::adaptOutilAcqt1m { visuNo args } {
    ::acqt1m::initExtensionList $visuNo
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #***** Procedure chargerVariable *******************************
 proc ::acqt1m::chargerVariable { visuNo } {
    variable parametres
@@ -420,6 +708,25 @@ proc ::acqt1m::chargerVariable { visuNo } {
 }
 #***** Fin de la procedure chargerVariable *********************
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #***** Procedure enregistrerVariable ***************************
 proc ::acqt1m::enregistrerVariable { visuNo } {
    variable parametres
@@ -451,6 +758,25 @@ proc ::acqt1m::enregistrerVariable { visuNo } {
 }
 #***** Fin de la procedure enregistrerVariable *****************
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #***** Procedure startTool *************************************
 proc ::acqt1m::startTool { { visuNo 1 } } {
    global panneau
@@ -469,6 +795,25 @@ proc ::acqt1m::startTool { { visuNo 1 } } {
    ::acqt1m::adaptOutilAcqt1m $visuNo
 }
 #***** Fin de la procedure startTool ***************************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #***** Procedure stopTool **************************************
 proc ::acqt1m::stopTool { { visuNo 1 } } {
@@ -497,6 +842,25 @@ proc ::acqt1m::stopTool { { visuNo 1 } } {
 }
 #***** Fin de la procedure stopTool ****************************
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #***** Procedure addinfoheader **************************************
 proc ::acqt1m::addinfoheader { { visuNo 1 } } {
    global panneau
@@ -508,6 +872,25 @@ proc ::acqt1m::addinfoheader { { visuNo 1 } } {
 
 }
 #***** Fin de la procedure stopTool ****************************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #***** Procedure de changement du mode d'acquisition ***********
 proc ::acqt1m::ChangeMode { visuNo { mode "" } } {
@@ -536,6 +919,25 @@ proc ::acqt1m::ChangeMode { visuNo { mode "" } } {
 }
 #***** Fin de la procedure de changement du mode d'acquisition *
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #--- Procedure de changement du binning
 proc ::acqt1m::changerBinningCent { { visuNo 1 } } {
    global audace caption panneau
@@ -545,9 +947,6 @@ proc ::acqt1m::changerBinningCent { { visuNo 1 } } {
          set panneau(acqt1m,$visuNo,binning) "2x2"
       }
       "2x2" {
-         set panneau(acqt1m,$visuNo,binning) "3x3"
-      }
-      "3x3" {
          set panneau(acqt1m,$visuNo,binning) "4x4"
       }
       "4x4" {
@@ -560,6 +959,25 @@ proc ::acqt1m::changerBinningCent { { visuNo 1 } } {
       ::acqt1m_flatciel::changeBin $visuNo $panneau(acqt1m,$visuNo,binning)
    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #***** Procedure de changement de l'obturateur *****************
 proc ::acqt1m::ChangeObt { visuNo } {
@@ -580,6 +998,25 @@ proc ::acqt1m::ChangeObt { visuNo } {
 }
 #***** Fin de la procedure de changement de l'obturateur *******
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #----------------------------------------------------------------------------
 # setObt
 #   force l'obturateur de la camera a l'etat donnee en parametre
@@ -597,6 +1034,27 @@ proc ::acqt1m::setShutter { visuNo state } {
       $panneau(acqt1m,$visuNo,This).obt.lab configure -text $panneau(acqt1m,$visuNo,obt,$panneau(acqt1m,$visuNo,obt))
    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #------------------------------------------------------------
 # testParametreAcquisition
@@ -899,6 +1357,24 @@ proc ::acqt1m::testParametreAcquisition { visuNo } {
    return $integre
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #------------------------------------------------------------
 # stopAcquisition
 #   arrete une acquisition en cours (procedure appelee depuis un autre outil)
@@ -916,9 +1392,30 @@ proc ::acqt1m::stopAcquisition { visuNo } {
    }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #***** Procedure Go (appui sur le bouton Go/Stop) *********
 proc ::acqt1m::Go { visuNo } {
+
    global audace caption panneau
+
 
    set camItem [::confVisu::getCamItem $visuNo]
    set camNo $panneau(acqt1m,$visuNo,camNo)
@@ -1008,6 +1505,36 @@ proc ::acqt1m::Go { visuNo } {
          }
          2  {
             #--- Mode serie
+
+            #--- Verifie que le filtre correspond
+            set sortie "no"
+            set msg    "Les filtres du boitier et celui de Audela ne correspondent pas.\n\n"
+            append msg "1. de temps en temps la connexion au boitier s'initialise mal : appuyer sur REESSAYER\n\n" 
+            append msg "2. C est une maladresse de votre part car vous avez touche le boitier : appuyer sur ANNULER et cliquez sur le bouton 'Filtre :'\n\n" 
+            append msg "3. Vous avez perdu la connexion au boitier, vous savez ce que vous faites, et vous assumez le champs "
+            append msg "   FILTER='$panneau(acqt1m,$visuNo,filtrecourant)' dans le header des images :  appuyer sur IGNORER\n" 
+
+            while {$sortie=="no"} {
+            
+               set verif [::t1m_roue_a_filtre::verifFiltre $panneau(acqt1m,$visuNo,filtrecourant)]
+               if {$verif=="yes"} {
+                  # ok on est tout bon !
+                  set sortie "yes"
+               } else {
+                  set reponse [tk_messageBox -message $msg -default retry -icon warning -title "ATTENTION - WARNING - ACHTUNG !" -type abortretryignore]
+                  if { $reponse == "abort"} {
+                     return
+                  }
+                  if { $reponse == "retry"} {
+                  }
+                  if { $reponse == "ignore"} {
+                     set sortie "yes"
+                  }
+               }
+            }
+               
+            
+ 
             #--- Verrouille les boutons du mode "serie"
             $panneau(acqt1m,$visuNo,This).mode.serie.nb.entr configure -state disabled
             $panneau(acqt1m,$visuNo,This).mode.serie.index.entr configure -state disabled
@@ -1152,6 +1679,13 @@ proc ::acqt1m::Go { visuNo } {
             after 10 ::acqt1m::loadLastImage $visuNo $camNo
          }
 
+         # Recupere la date GPS
+         if {[::gps::getdate $panneau(acqt1m,$visuNo,pose) $bufNo]} {
+            $panneau(acqt1m,$visuNo,This).gps.but configure -bg "green"
+         } else {
+            $panneau(acqt1m,$visuNo,This).gps.but configure -bg "red"
+         }
+         
          #--- Rajoute des mots cles dans l'en-tete FITS
          foreach keyword [ ::keyword::getKeywords $visuNo $::conf(acqt1m,keywordConfigName) ] {
             buf$bufNo setkwd $keyword
@@ -1169,6 +1703,7 @@ proc ::acqt1m::Go { visuNo } {
                Message $visuNo consolog $caption(acqt1m,arrprem) $dateEnd
             }
          }
+
 
          #--- j'enregistre l'image et je decale le telescope
          switch $panneau(acqt1m,$visuNo,mode) {
@@ -1203,6 +1738,16 @@ proc ::acqt1m::Go { visuNo } {
                   }
                   #--- Sauvegarde de l'image
                   if { $sauvegardeValidee == "1" && $panneau(acqt1m,$visuNo,sauve_img_interrompue) == "0" } {
+                  
+                  
+                     #--- Derniere verif de l'image
+                     set naxis1 [ lindex [ buf$bufNo getkwd NAXIS1 ] 1 ]
+                     set naxis2 [ lindex [ buf$bufNo getkwd NAXIS2 ] 1 ]
+                     if { [lsearch {2048 1024 682 512 } $naxis1] == -1 || [lsearch {2048 1024 682 512 } $naxis2] == -1 } {
+                        ::console::affiche_erreur "NAXIS1 = $naxis1 NAXIS2 = $naxis2\n"
+                     } 
+                  
+                  
                      #--- Sauvegarde de l'image
                      saveima [append nom "." $panneau(acqt1m,$visuNo,index) $panneau(acqt1m,$visuNo,extension)] $visuNo
 
@@ -1289,6 +1834,17 @@ proc ::acqt1m::Go { visuNo } {
                   }
                   #--- Sauvegarde de l'image
                   if { $sauvegardeValidee == "1" && $panneau(acqt1m,$visuNo,sauve_img_interrompue) == "0" } {
+
+
+                     #--- Derniere verif de l'image
+                     set naxis1 [ lindex [ buf$bufNo getkwd NAXIS1 ] 1 ]
+                     set naxis2 [ lindex [ buf$bufNo getkwd NAXIS2 ] 1 ]
+                     if { [lsearch {2048 1024 682 512 } $naxis1] == -1 || [lsearch {2048 1024 682 512 } $naxis2] == -1 } {
+                        ::console::affiche_erreur "NAXIS1 = $naxis1 NAXIS2 = $naxis2\n"
+                     } 
+                  
+
+
                      #--- Sauvegarde de l'image
                      saveima [append nom $panneau(acqt1m,$visuNo,index) $panneau(acqt1m,$visuNo,extension)] $visuNo
                      #--- Indique l'heure d'enregistrement dans le fichier log
@@ -1352,6 +1908,17 @@ proc ::acqt1m::Go { visuNo } {
                   }
                   #--- Sauvegarde de l'image
                   if { $sauvegardeValidee == "1" && $panneau(acqt1m,$visuNo,sauve_img_interrompue) == "0" } {
+
+
+                     #--- Derniere verif de l'image
+                     set naxis1 [ lindex [ buf$bufNo getkwd NAXIS1 ] 1 ]
+                     set naxis2 [ lindex [ buf$bufNo getkwd NAXIS2 ] 1 ]
+                     if { [lsearch {2048 1024 682 512 } $naxis1] == -1 || [lsearch {2048 1024 682 512 } $naxis2] == -1 } {
+                        ::console::affiche_erreur "NAXIS1 = $naxis1 NAXIS2 = $naxis2\n"
+                     } 
+                  
+
+
                      #--- Sauvegarde de l'image
                      saveima [append nom $panneau(acqt1m,$visuNo,index) $panneau(acqt1m,$visuNo,extension)] $visuNo
                      #--- Indique l'heure d'enregistrement dans le fichier log
@@ -1521,6 +2088,22 @@ proc ::acqt1m::Go { visuNo } {
 }
 #***** Fin de la procedure de lancement d'acquisition **********
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #------------------------------------------------------------
 # callbackAcquisition
 #     cette procedure est appelee par la thread de la camera
@@ -1553,7 +2136,32 @@ proc ::acqt1m::callbackAcquisition { visuNo message args } {
    }
 }
 
-#***** Procedure Stop (appui sur le bouton Go/Stop) *********
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#------------------------------------------------------------
+# Stop
+#     appui sur le bouton Go/Stop
+#    
+# Parameters
+#  visuNo  : numero de la visu associee a la camera
+#    
+# Return
+#    rien
+#------------------------------------------------------------
 proc ::acqt1m::Stop { visuNo } {
    global audace caption panneau
 
@@ -1617,6 +2225,22 @@ proc ::acqt1m::Stop { visuNo } {
 }
 #***** Fin de la procedure Go/Stop *****************************
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #***** Procedure arret de la serie *****************************
 proc ::acqt1m::stopSerie { visuNo } {
    global panneau
@@ -1633,6 +2257,22 @@ proc ::acqt1m::stopSerie { visuNo } {
 }
 #***** Fin de la procedure arret de la serie *******************
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #***** Procedure chargement differe d'image ****
 proc ::acqt1m::loadLastImage { visuNo camNo } {
    set result [ catch { cam$camNo loadlastimage } msg ]
@@ -1644,6 +2284,22 @@ proc ::acqt1m::loadLastImage { visuNo camNo } {
    }
 }
 #***** Fin de la procedure chargement differe d'image **********
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 proc ::acqt1m::dispTime { visuNo } {
    global caption panneau
@@ -1689,6 +2345,22 @@ proc ::acqt1m::dispTime { visuNo } {
       set panneau(acqt1m,$visuNo,dispTimeAfterId) ""
    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #***** Procedure d'affichage d'une barre de progression ********
 proc ::acqt1m::avancementPose { visuNo { t } } {
@@ -1817,6 +2489,24 @@ proc ::acqt1m::avancementPose { visuNo { t } } {
 }
 #***** Fin de la procedure d'avancement de la pose *************
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #*********** Procedure dernier fichier d'une liste *************
 proc ::acqt1m::dernierFichier { visuNo } {
    global panneau
@@ -1831,6 +2521,25 @@ proc ::acqt1m::dernierFichier { visuNo } {
    return $d
 }
 #****Fin de la procedure dernier fichier d'une liste ***********
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 proc ::acqt1m::get_filename { visuNo } {
 
@@ -1849,7 +2558,7 @@ proc ::acqt1m::get_filename { visuNo } {
    #buf$bufNo setkwd [list "FOCLEN" 12.662879 float "Focal length" "meter"]
    #buf$bufNo setkwd [list "CROTA2" 0 float "Position angle" "deg"]
    if {$panneau(acqt1m,$visuNo,ra)!=""} {
-      set ra [mc_angle2deg "$panneau(acqt1m,$visuNo,ra) h"]
+      set ra [mc_angle2deg "$panneau(acqt1m,$visuNo,ra)" h]
       buf$bufNo setkwd [list "RA" $ra float "Right Ascension" "degrees"]
    }
    if {$panneau(acqt1m,$visuNo,dec)!=""} {
@@ -1873,6 +2582,25 @@ proc ::acqt1m::get_filename { visuNo } {
    #--- Generer le nom du fichier
    return [list $bufNo "T1M_${a}${m}${j}_${h}${min}${sec}_${ms}_$panneau(acqt1m,$visuNo,object)_Filtre_$panneau(acqt1m,$visuNo,filtrecourant)_bin$panneau(acqt1m,$visuNo,binning)"]
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #***** Procedure de sauvegarde de l'image **********************
 #--- Procedure lancee par appui sur le bouton "enregistrer", uniquement dans le mode "Une image"
@@ -1942,6 +2670,15 @@ proc ::acqt1m::SauveUneImage { visuNo } {
       }
    }
 
+   #--- Derniere verif de l'image
+   set naxis1 [ lindex [ buf$bufNo getkwd NAXIS1 ] 1 ]
+   set naxis2 [ lindex [ buf$bufNo getkwd NAXIS2 ] 1 ]
+   if { [lsearch {2048 1024 682 512 } $naxis1] == -1 || [lsearch {2048 1024 682 512 } $naxis2] == -1 } {
+      ::console::affiche_erreur "NAXIS1 = $naxis1 NAXIS2 = $naxis2\n"
+   } 
+                  
+
+
    #--- Sauvegarde de l'image
    saveima [append nom $panneau(acqt1m,$visuNo,extension)] $visuNo
    #--- Indique l'heure d'enregistrement dans le fichier log
@@ -1950,6 +2687,25 @@ proc ::acqt1m::SauveUneImage { visuNo } {
    Message $visuNo consolog $caption(acqt1m,imsauvnom) $nom
 }
 #***** Fin de la procedure de sauvegarde de l'image *************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #***** Procedure d'affichage des messages ************************
 #--- Cette procedure est recopiee de methking.tcl, elle permet l'affichage de differents
@@ -1993,6 +2749,25 @@ proc ::acqt1m::Message { visuNo niveau args } {
 }
 #***** Fin de la procedure d'affichage des messages ***************
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #***** Bouton pour le decalage du telescope ***********************
 # cmdShiftConfig{}
 #    affiche la fenetre de configuration pour modifier les parametres
@@ -2005,6 +2780,25 @@ proc ::acqt1m::cmdShiftConfig { visuNo } {
    return
 }
 #***** Fin du bouton pour le decalage du telescope *****************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #***** Fenetre de configuration series d'images a intervalle regulier en continu *********
 proc ::acqt1m::Intervalle_continu_1 { visuNo } {
@@ -2068,6 +2862,25 @@ proc ::acqt1m::Intervalle_continu_1 { visuNo } {
 }
 #***** Fin fenetre de configuration series d'images a intervalle regulier en continu *****
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #***** Commande associee au bouton simulation de la fenetre Continu (1) ******************
 proc ::acqt1m::Command_continu_1 { visuNo } {
    global caption panneau
@@ -2082,6 +2895,25 @@ proc ::acqt1m::Command_continu_1 { visuNo } {
    ::acqt1m::Go $visuNo
 }
 #***** Fin de la commande associee au bouton simulation de la fenetre Continu (1) ********
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #***** Si une simulation a deja ete faite pour la fenetre Continu (1) ********************
 proc ::acqt1m::Simu_deja_faite_1 { visuNo } {
@@ -2100,6 +2932,25 @@ proc ::acqt1m::Simu_deja_faite_1 { visuNo } {
    }
 }
 #***** Fin de si une simulation a deja ete faite pour la fenetre Continu (1) *************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #***** Fenetre de configuration images a intervalle regulier en continu ******************
 proc ::acqt1m::Intervalle_continu_2 { visuNo } {
@@ -2163,6 +3014,25 @@ proc ::acqt1m::Intervalle_continu_2 { visuNo } {
 }
 #***** Fin fenetre de configuration images a intervalle regulier en continu **************
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #***** Commande associee au bouton simulation de la fenetre Continu (2) ******************
 proc ::acqt1m::Command_continu_2 { visuNo } {
    global caption panneau
@@ -2178,6 +3048,25 @@ proc ::acqt1m::Command_continu_2 { visuNo } {
    ::acqt1m::Go $visuNo
 }
 #***** Fin de la commande associee au bouton simulation de la fenetre Continu (2) ********
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #***** Si une simulation a deja ete faite pour la fenetre Continu (2) ********************
 proc ::acqt1m::Simu_deja_faite_2 { visuNo } {
@@ -2196,6 +3085,25 @@ proc ::acqt1m::Simu_deja_faite_2 { visuNo } {
    }
 }
 #***** Fin de si une simulation a deja ete faite pour la fenetre Continu (2) *************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #***** Enregistrement de la position des fenetres Continu (1) et Continu (2) *************
 proc ::acqt1m::recup_position { visuNo } {
@@ -2224,6 +3132,25 @@ proc ::acqt1m::recup_position { visuNo } {
 }
 #***** Fin enregistrement de la position des fenetres Continu (1) et Continu (2) *********
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #***** Enregistrement de la position de la fenetre Avancement ********
 proc ::acqt1m::recup_position_1 { visuNo } {
    global panneau
@@ -2238,6 +3165,25 @@ proc ::acqt1m::recup_position_1 { visuNo } {
    }
 }
 #***** Fin enregistrement de la position de la fenetre Avancement ****
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #***** Affichage de la fenetre de configuration de WebCam ************
 proc ::acqt1m::webcamConfigure { visuNo } {
@@ -2267,6 +3213,25 @@ proc ::acqt1m::webcamConfigure { visuNo } {
    }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #***** Affichage de la fenetre de configuration de WebCam ************
 proc ::acqt1m::camConfigure { visuNo } {
    global audace caption
@@ -2282,7 +3247,44 @@ proc ::acqt1m::camConfigure { visuNo } {
    ::confCam::run
 }
 
+
+proc ::acqt1m::gps_open { visuNo } {
+
+   global panneau
+
+   set err [::gps::open]
+   if {!$err} {
+          $panneau(acqt1m,$visuNo,This).gps.but configure -bg "green"
+   } else {
+          $panneau(acqt1m,$visuNo,This).gps.but configure -bg "red"
+   }
+}
+
 #***** Fin de la fenetre de configuration de WebCam ******************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 proc ::acqt1m::acqt1mBuildIF { visuNo } {
    global audace caption conf panneau
@@ -2319,10 +3321,16 @@ proc ::acqt1m::acqt1mBuildIF { visuNo } {
       pack $panneau(acqt1m,$visuNo,This).config.but -side top -fill x -in $panneau(acqt1m,$visuNo,This).config -ipadx 5 -ipady 4
    pack $panneau(acqt1m,$visuNo,This).config -side top -fill x
 
+   #--- Trame du bouton d appel a Gps
+   frame $panneau(acqt1m,$visuNo,This).gps -borderwidth 2 -relief groove
+      button $panneau(acqt1m,$visuNo,This).gps.but -borderwidth 1 -text $caption(acqt1m,gps) -command "::acqt1m::gps_open $visuNo" 
+      pack $panneau(acqt1m,$visuNo,This).gps.but -side top -fill x -in $panneau(acqt1m,$visuNo,This).gps -ipadx 5 -ipady 4
+   pack $panneau(acqt1m,$visuNo,This).gps -side top -fill x
+$panneau(acqt1m,$visuNo,This).gps.but  configure -bg "green"
    #--- Trame pour les filtres
    frame $panneau(acqt1m,$visuNo,This).filtre -borderwidth 2 -relief ridge
-      label $panneau(acqt1m,$visuNo,This).filtre.lab -text $caption(acqt1m,filtre) -pady 0
-      pack $panneau(acqt1m,$visuNo,This).filtre.lab -fill x -side left
+      button $panneau(acqt1m,$visuNo,This).filtre.but -borderwidth 1 -text $caption(acqt1m,filtre) -command "::t1m_roue_a_filtre::infoFiltre $visuNo" 
+      pack $panneau(acqt1m,$visuNo,This).filtre.but -fill x -side left
       menubutton $panneau(acqt1m,$visuNo,This).filtre.filtrecourant -textvariable panneau(acqt1m,$visuNo,filtrecourant) \
          -menu $panneau(acqt1m,$visuNo,This).filtre.filtrecourant.menu -relief raised
       pack $panneau(acqt1m,$visuNo,This).filtre.filtrecourant -side right -fill x -expand true -ipady 1
@@ -2556,24 +3564,20 @@ proc ::acqt1m::acqt1mBuildIF { visuNo } {
          pack $panneau(acqt1m,$visuNo,This).avancement_acq.check -side left -fill x
       pack $panneau(acqt1m,$visuNo,This).avancement_acq -side top -fill x
 
-      #--- Frame petit decalage
-      frame $panneau(acqt1m,$visuNo,This).shift -borderwidth 2 -relief ridge
-         #--- Checkbutton petit deplacement
-         checkbutton $panneau(acqt1m,$visuNo,This).shift.buttonShift -highlightthickness 0 \
-            -variable panneau(DlgShiftt1m,buttonShift)
-         pack $panneau(acqt1m,$visuNo,This).shift.buttonShift -side left -fill x
-         #--- Bouton configuration petit deplacement
-         button $panneau(acqt1m,$visuNo,This).shift.buttonShiftConfig -text "$caption(acqt1m,buttonShiftConfig)" \
-            -command "::acqt1m::cmdShiftConfig $visuNo"
-         pack $panneau(acqt1m,$visuNo,This).shift.buttonShiftConfig -side right -fill x -expand true
-      pack $panneau(acqt1m,$visuNo,This).shift -side top -fill x
-
       #--- Frame traitement special
       frame $panneau(acqt1m,$visuNo,This).special -borderwidth 2 -relief ridge
+         #--- Bouton OFFSET/DARK
+         button $panneau(acqt1m,$visuNo,This).special.offsetdark -text "OFFSET/DARK" \
+            -command "::acqt1m_offsetdark::run $visuNo"
+         pack $panneau(acqt1m,$visuNo,This).special.offsetdark -side top -fill x -expand true
          #--- Bouton Flat auto
          button $panneau(acqt1m,$visuNo,This).special.flatauto -text "$caption(acqt1m,flatAuto)" \
             -command "::acqt1m_flatciel::run $visuNo"
          pack $panneau(acqt1m,$visuNo,This).special.flatauto -side top -fill x -expand true
+         #--- Bouton Flat auto +
+         button $panneau(acqt1m,$visuNo,This).special.flatautoplus -text "$caption(acqt1m,flatAuto)+" \
+            -command "::acqt1m_flatcielplus::run $visuNo"
+         pack $panneau(acqt1m,$visuNo,This).special.flatautoplus -side top -fill x -expand true
          #--- Bouton Cycle
          button $panneau(acqt1m,$visuNo,This).special.cyclepose -text "$caption(acqt1m,cycle)" \
             -command "::cycle::run $visuNo"
