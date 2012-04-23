@@ -2,6 +2,7 @@
 # Fichier : gps.tcl
 # Description : Pilotage de la datation GPS
 # Auteur : Frederic Vachier
+# Mise à jour $Id$
 #
 # source audace/plugin/tool/acqt1m/gps.tcl
 #
@@ -34,7 +35,7 @@ namespace eval ::gps {
       #gren_info "r0 = [lindex $r 0]\n"
       foreach a $e {
          gren_info "O:$a\n"
-      } 
+      }
 
       set ::gps::flag 0
       set s [string first "Antenna is connected" $r]
@@ -124,7 +125,7 @@ namespace eval ::gps {
 
 
    proc ::gps::getdate { exposure bufNo } {
-   
+
       global tcl_precision
 
       set tcl_precision 17
@@ -154,7 +155,7 @@ namespace eval ::gps {
          set gpspc       -99999
       }
 
-     
+
       if {$log} {
          gren_info "** HEADER \n"
          gren_info "EXPOSURE=$exposure         \n"

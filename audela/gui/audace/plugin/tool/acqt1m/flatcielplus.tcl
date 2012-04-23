@@ -1,9 +1,9 @@
 #
-# Fichier : acqt1m_flatcielplus.tcl
+# Fichier : flatcielplus.tcl
 # Description : Acquisition de flat sur le ciel - Observation en automatique
 # Camera : Script optimise pour une Andor ikon-L
-# Auteur : Frédéric Vachier
-# Mise à jour $Id: acqt1m_flatcielplus.tcl 7548 2011-08-20 08:07:36Z robertdelmas  $
+# Auteur : FrÃ©dÃ©ric Vachier
+# Mise Ã  jour $Id$
 #
 # source audace/plugin/tool/acqt1m/acqt1m_flatcielplus.tcl
 #
@@ -591,20 +591,20 @@ proc ::acqt1m_flatcielplus::changerBinningCent { { visuNo 1 } } {
 
 
    proc ::acqt1m_flatcielplus::majBouton2 { idfiltre nbimg} {
-   
+
    variable private
-   
+
       if {$nbimg==-1} {
          ::console::affiche_resultat "\n\n ** idfiltre = $idfiltre - nbimg =$nbimg ** \n\n"
-         ::acqt1m_flatcielplus::majBouton $idfiltre 0 
+         ::acqt1m_flatcielplus::majBouton $idfiltre 0
          return
       }
       ::console::affiche_erreur "\n\n ** idfiltre = $idfiltre - nbimg =$nbimg ** \n\n"
       if {$nbimg==0} {
-         ::acqt1m_flatcielplus::majBouton $idfiltre 3 
+         ::acqt1m_flatcielplus::majBouton $idfiltre 3
       }
       if {$nbimg==$private(mynbflat)} {
-         ::acqt1m_flatcielplus::majBouton $idfiltre 2 
+         ::acqt1m_flatcielplus::majBouton $idfiltre 2
       }
       if {$nbimg>0&&$nbimg<$private(mynbflat)} {
          ::acqt1m_flatcielplus::majBouton $idfiltre 1
@@ -622,7 +622,7 @@ proc ::acqt1m_flatcielplus::changerBinningCent { { visuNo 1 } } {
 
       set private(texte_bouton,$i) [concat "($i) - $::caption(acqt1m_flatcielplus,filtre) " [lindex $::t1m_roue_a_filtre::private(filtre,$i) 1] " - $::caption(acqt1m_flatcielplus,nbre) =" [lindex $::t1m_roue_a_filtre::private(filtre,$i) 3]]
       if { [ winfo exists $::audace(base).selection_filtre ] } {
-         # debut du Flat 
+         # debut du Flat
          if {$fin == 0} {
             $::audace(base).selection_filtre.filtres.$i configure -text $private(texte_bouton,$i) -bg yellow
          }
@@ -914,7 +914,7 @@ proc ::acqt1m_flatcielplus::changerBinningCent { { visuNo 1 } } {
 
       variable private
       global panneau
-      
+
       set listeFiltreActif [ ::acqt1m_flatcielplus::listeSensFiltreActif $private(sensnuit) ]
 
       gren_info "*** listeFiltreActif  $listeFiltreActif\n"
@@ -922,7 +922,7 @@ proc ::acqt1m_flatcielplus::changerBinningCent { { visuNo 1 } } {
       set pass "no"
       set private(demande_stop) 0
       foreach y $listeFiltreActif {
-         
+
          if {$private(demande_stop)==1} {
             ::console::affiche_erreur "ARRET = private(demande_stop)=$private(demande_stop)\n"
             break
@@ -935,7 +935,7 @@ proc ::acqt1m_flatcielplus::changerBinningCent { { visuNo 1 } } {
 
          set newfiltre [lindex $::t1m_roue_a_filtre::private(filtre,$y) 2]
          gren_info "NEWFILTRE $newfiltre ($y/$idfiltre) $private(demande_stop)...\n"
-     
+
          if {$y==$idfiltre} {
 
             set filtre [lindex $::t1m_roue_a_filtre::private(filtre,$idfiltre) 2]
@@ -943,14 +943,14 @@ proc ::acqt1m_flatcielplus::changerBinningCent { { visuNo 1 } } {
 
             set private(tourne_roue) 1
             $::audace(base).selection_filtre.f.fin configure -state disabled
-            set result [::t1m_roue_a_filtre::verifFiltre $filtre]           
+            set result [::t1m_roue_a_filtre::verifFiltre $filtre]
             $::audace(base).selection_filtre.f.fin configure -state normal
             set private(tourne_roue) 0
 
             gren_info "verif : $result\n"
-            
+
             if { $result=="no" && $private(demande_stop)==0 } {
- 
+
                ::console::affiche_erreur "** c est pas le bon\n"
                set panneau(acqt1m,$visuNo,filtrecourant) $filtre
                set roue "no"
@@ -977,7 +977,7 @@ proc ::acqt1m_flatcielplus::changerBinningCent { { visuNo 1 } } {
                set private(tourne_roue) 0
             }
          }
-         
+
          if { $pass=="yes" && $private(demande_stop)==0 } {
 
            ::console::affiche_erreur "y = $y\n"
@@ -992,9 +992,9 @@ proc ::acqt1m_flatcielplus::changerBinningCent { { visuNo 1 } } {
 
            ::acqt1m_flatcielplus::acqFlat $visuNo $y
            gren_info "*** FIN  ACQ $private(demande_stop)...\n"
-           
+
          }
-         
+
       }
 
       ::console::affiche_erreur "--------------------------------\n"
@@ -1039,7 +1039,7 @@ proc ::acqt1m_flatcielplus::changerBinningCent { { visuNo 1 } } {
 
       # Comptage des flats
       ::acqt1m_flatcielplus::majBouton2 $idfiltre -1
-      
+
       set attentems [expr $private(attente) * 1000]
 
       set nbpix    [$private($visuNo,camera) nbpix]
@@ -1324,7 +1324,7 @@ proc ::acqt1m_flatcielplus::changerBinningCent { { visuNo 1 } } {
       }
 
       ::acqt1m_flatcielplus::majBouton2 $idfiltre $id
-      
+
       #--- Je positionne l'indicateur d'arret de la pose
 
       ::console::affiche_resultat "$::caption(acqt1m_flatcielplus,finAcq) [lindex $::t1m_roue_a_filtre::private(filtre,$idfiltre) 2]\n\n"

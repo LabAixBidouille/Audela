@@ -2,10 +2,11 @@
 # source audace/plugin/tool/acqt1m/acqt1m_offsetdark.tcl
 #--------------------------------------------------
 #
-# Fichier        : acqt1m_offsetdark.tcl
+# Fichier        : offsetdark.tcl
 # Description    : Acquisition des offset et des dark
+# Camera         : Script optimise pour une Andor ikon-L
 # Auteur         : Frederic Vachier
-# Mise à jour $Id: acqt1m_offsetdark.tcl 7986 2011-12-22 20:15:55Z fredvachier $
+# Mise à jour $Id$
 #
 
 namespace eval ::acqt1m_offsetdark {
@@ -35,7 +36,7 @@ namespace eval ::acqt1m_offsetdark {
       # recupere la liste des images
       set dir $audace(rep_travail)
       gren_info "DIR=$dir\n"
-      set listfile [::acqt1m_offsetdark::globr $dir]      
+      set listfile [::acqt1m_offsetdark::globr $dir]
 
       # recupere les temps d exposition
       set err 0
@@ -60,7 +61,7 @@ namespace eval ::acqt1m_offsetdark {
                }
              }
             incr nbimg
-         } 
+         }
       }
       if {$err} {::console::affiche_erreur "Nb img en Erreur : $err/$nbimg\n"}
 
@@ -83,7 +84,7 @@ namespace eval ::acqt1m_offsetdark {
          set expo [lindex $c 0]
          set n1 [lindex $c 1]
          set n2 [lindex $c 2]
-         
+
          set passbin "no"
          if { $n1 == $n2 && $n1 == 2048 }  {
             set bin 1
@@ -101,7 +102,7 @@ namespace eval ::acqt1m_offsetdark {
             set bin 4
             set passbin "yes"
          }
-         
+
          if { $passbin=="yes" && $expo>0 } {
             gren_info "bin = $bin - expo = $expo - nbimg = $nbimg \n"
             set ::acqt1m_offsetdark::series($cpt,expo)   $expo
@@ -115,10 +116,10 @@ namespace eval ::acqt1m_offsetdark {
             }
             incr cpt
          }
-         
+
       }
       set ::acqt1m_offsetdark::nbdark $cpt
-            
+
       # offset
       gren_info "Offset : \n"
       foreach { bin nb } [array get off] {
@@ -128,24 +129,24 @@ namespace eval ::acqt1m_offsetdark {
          set ::acqt1m_offsetdark::series($cpt,select) sunken
          incr cpt
       }
-      
-      
+
+
       set ::acqt1m_offsetdark::nbtotal  $cpt
       set ::acqt1m_offsetdark::nboffset [expr $::acqt1m_offsetdark::nbtotal - $::acqt1m_offsetdark::nbdark]
-      
+
       gren_info "NB Offset : $::acqt1m_offsetdark::nboffset\n"
       gren_info "NB Dark   : $::acqt1m_offsetdark::nbdark\n"
       gren_info "NB Total  : $::acqt1m_offsetdark::nbtotal\n"
-      
-      
-      set deb  [expr $::acqt1m_offsetdark::nbdark] 
+
+
+      set deb  [expr $::acqt1m_offsetdark::nbdark]
       set fin  $::acqt1m_offsetdark::nbtotal
       gren_info "deb  : $deb\n"
       gren_info "fin  : $fin\n"
       for {set x $deb} {$x<$fin} {incr x} {
           gren_info "x  : $x $::acqt1m_offsetdark::series($x,expo) $::acqt1m_offsetdark::series($x,bin)\n"
       }
-      
+
 
       set private(rep_images) [ file join $::audace(rep_images) "CALIB" ]
       if { [file exists $private(rep_images)]==0} {
@@ -153,7 +154,7 @@ namespace eval ::acqt1m_offsetdark {
              ::console::affiche_erreur "$::caption(acqt1m_flatcielplus,msgRepertoire) $private(rep_images)/n"
          }
       }
-               
+
    }
 
 
@@ -196,7 +197,7 @@ namespace eval ::acqt1m_offsetdark {
           }
       }
       # la formule sous evalue de 10% environ
-      set duree [expr $duree * 1.1] 
+      set duree [expr $duree * 1.1]
       gren_info "ESTIMATION  DUREE TOTALE : $duree\n"
       set ::acqt1m_offsetdark::duree [format "%0.0f" $duree]
 
@@ -274,12 +275,12 @@ namespace eval ::acqt1m_offsetdark {
    proc ::acqt1m_offsetdark::run { visuNo } {
 
       global panneau
-     
+
 
       ::acqt1m_offsetdark::confToWidget $visuNo
       ::acqt1m_offsetdark::init [ visu$visuNo buf ]
       #set panneau(acqt1m,$visuNo,offsetdark) $this
-      createdialog $visuNo   
+      createdialog $visuNo
 
    }
 
@@ -328,7 +329,7 @@ namespace eval ::acqt1m_offsetdark {
    proc ::acqt1m_offsetdark::closeWindow { this visuNo } {
 
       ::acqt1m_offsetdark::widgetToConf $visuNo
-      
+
       destroy $this
    }
 
@@ -414,12 +415,12 @@ namespace eval ::acqt1m_offsetdark {
                  #--- Cree une entree
                  entry $nbimg.val -fg $color(blue) -width 6 -justify right \
                      -textvariable ::acqt1m_offsetdark::nbimg
-                 pack $nbimg.val -in $nbimg -side left -pady 1 -anchor w -expand 0 
+                 pack $nbimg.val -in $nbimg -side left -pady 1 -anchor w -expand 0
 
 
            frame $::acqt1m_offsetdark::frm.pf -borderwidth 1 -relief raised -cursor arrow
            pack  $::acqt1m_offsetdark::frm.pf -in $::acqt1m_offsetdark::frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-            
+
               set pf [ ttk::progressbar $::acqt1m_offsetdark::frm.pf.p -variable ::acqt1m_offsetdark::progress -orient horizontal -length 300 -mode determinate]
               pack $pf -in $::acqt1m_offsetdark::frm.pf
 
@@ -431,46 +432,46 @@ namespace eval ::acqt1m_offsetdark {
 
               #--- Cree un frame pour les offsets
               set block [frame $::acqt1m_offsetdark::frm.choix.block -borderwidth 0]
-              pack $block -in $::acqt1m_offsetdark::frm.choix -side top -expand 1 -fill both 
+              pack $block -in $::acqt1m_offsetdark::frm.choix -side top -expand 1 -fill both
 
 
-                 set deb  [expr $::acqt1m_offsetdark::nbdark] 
+                 set deb  [expr $::acqt1m_offsetdark::nbdark]
                  set fin  $::acqt1m_offsetdark::nbtotal
                  for {set x $deb} {$x<$fin} {incr x} {
- 
+
                     #--- Cree un button
                     button $block.launch$x -text "Offset (binning $::acqt1m_offsetdark::series($x,bin))" -borderwidth 2 \
                      -command "::acqt1m_offsetdark::select $x" -relief $::acqt1m_offsetdark::series($x,select)
-                    pack $block.launch$x -in $block -side top -pady 0 -anchor w -expand 1 -fill both 
+                    pack $block.launch$x -in $block -side top -pady 0 -anchor w -expand 1 -fill both
 
-                 
+
                  }
-  
-                 set deb  0 
+
+                 set deb  0
                  set fin  $::acqt1m_offsetdark::nbdark
                  for {set x $deb} {$x<$fin} {incr x} {
 
                     #--- Cree un button
                     button $block.launch$x -text "Dark $::acqt1m_offsetdark::series($x,expo) sec. (binning $::acqt1m_offsetdark::series($x,bin) - nbimg $::acqt1m_offsetdark::series($x,nbimg))" -borderwidth 2 \
                        -command "::acqt1m_offsetdark::select $x"  -relief $::acqt1m_offsetdark::series($x,select)
-                    pack $block.launch$x -in $block -side top -pady 0 -anchor w -expand 1 -fill both 
+                    pack $block.launch$x -in $block -side top -pady 0 -anchor w -expand 1 -fill both
 
                  }
 
- 
- 
- 
+
+
+
 #           #--- Cree un frame pour le dark manuel
 #           frame $::acqt1m_offsetdark::frm.manuel -borderwidth 1 -relief raised -cursor arrow
 #           pack $::acqt1m_offsetdark::frm.manuel -in $::acqt1m_offsetdark::frm -side top -expand 0 -fill x -padx 1 -pady 1
 #
-#              #--- Cree un frame pour afficher le choix 
+#              #--- Cree un frame pour afficher le choix
 #              set mandark [frame $::acqt1m_offsetdark::frm.manuel.dark -borderwidth 0]
 #              pack $mandark -in $::acqt1m_offsetdark::frm.manuel -side left
 #
 #                 #--- Cree un button
 #                 button $mandark.launch -text "Dark" -borderwidth 2 \
-#                    -command "::acqt1m_offsetdark::select manuel" 
+#                    -command "::acqt1m_offsetdark::select manuel"
 #                 pack $mandark.launch -in $mandark -side left -pady 0 -anchor w
 #
 #                 #--- Cree un label
@@ -545,7 +546,6 @@ namespace eval ::acqt1m_offsetdark {
 
 
    }
-   
 
 
 
@@ -554,16 +554,17 @@ namespace eval ::acqt1m_offsetdark {
 
 
 
-   
+
+
    proc ::acqt1m_offsetdark::select { x } {
 
       gren_info "nbimg = $::acqt1m_offsetdark::nbimg \n"
-   
+
       set frmx $::acqt1m_offsetdark::frm.choix.block.launch$x
       set select [ $frmx cget -relief]
-   
+
       gren_info "$x select = $select \n"
- 
+
       if {$select=="sunken"}   {
          $frmx configure -relief raised
          set ::acqt1m_offsetdark::series($x,select) raised
@@ -571,11 +572,11 @@ namespace eval ::acqt1m_offsetdark {
          $frmx configure -relief sunken
          set ::acqt1m_offsetdark::series($x,select) sunken
       }
-      
+
       ::acqt1m_offsetdark::extime_dureetotale
       $::acqt1m_offsetdark::frm.info.duree.lab configure -text "Estimation duree Totale : $::acqt1m_offsetdark::duree sec."
       gren_info "duree totale : $::acqt1m_offsetdark::duree sec.\n"
-      
+
 
    }
 
@@ -620,7 +621,7 @@ namespace eval ::acqt1m_offsetdark {
    proc ::acqt1m_offsetdark::set_progress { cur max } {
 
 
-#      pack [ ttk::progressbar $this.p -variable v -orient horizontal -length 200 -mode determinate] 
+#      pack [ ttk::progressbar $this.p -variable v -orient horizontal -length 200 -mode determinate]
 #      for {set v 0} {$v<100} {incr v} { after 100; update }
 #      destroy $::acqt1m_offsetdark::frm.p
 
@@ -642,7 +643,7 @@ namespace eval ::acqt1m_offsetdark {
 
       gren_info "\n\n nbimg = $::acqt1m_offsetdark::nbimg \n"
 
-      
+
       for {set x 0} {$x<$::acqt1m_offsetdark::nbtotal} {incr x} {
 
          ::acqt1m_offsetdark::extime_dureetotale
@@ -654,19 +655,19 @@ namespace eval ::acqt1m_offsetdark {
          set frmx $::acqt1m_offsetdark::frm.choix.block.launch$x
          set select [ $frmx cget -relief]
          set state  [ $frmx cget -state ]
-         
+
          if {$select=="sunken"&&$state=="normal"}   {
             gren_info "$x , select = $select state = $state\n"
             # y a plus qu a prendre l image
             set bin $::acqt1m_offsetdark::series($x,bin)
             set bin "${bin}x${bin}"
             gren_info "Serie $x : expo = $::acqt1m_offsetdark::series($x,expo) bin = $bin nbimg = $::acqt1m_offsetdark::nbimg \n"
-            
-            $frmx configure -state disabled 
+
+            $frmx configure -state disabled
             $frmx configure -bg "yellow"
-            ::acqt1m_offsetdark::go $visuNo $::acqt1m_offsetdark::series($x,expo) $::acqt1m_offsetdark::nbimg $bin 
+            ::acqt1m_offsetdark::go $visuNo $::acqt1m_offsetdark::series($x,expo) $::acqt1m_offsetdark::nbimg $bin
             $frmx configure -bg "green"
-            
+
          }
       }
 
@@ -707,8 +708,8 @@ namespace eval ::acqt1m_offsetdark {
 
 
       set panneau(acqt1m,$visuNo,mode) 2
- 
- 
+
+
       set private($visuNo,camItem) [ ::confVisu::getCamItem $visuNo ]
       set private($visuNo,camNo)   [ ::confCam::getCamNo $private($visuNo,camItem) ]
       set private($visuNo,camera)  cam$private($visuNo,camNo)
@@ -752,8 +753,8 @@ namespace eval ::acqt1m_offsetdark {
       set panneau(acqt1m,$visuNo,pose_en_cours) "1"
       #--- Enregistrement d'une image interrompue
       set panneau(acqt1m,$visuNo,sauve_img_interrompue) "0"
-  
-  
+
+
       set panneau(acqt1m,$visuNo,mode) 2
 
 
@@ -764,7 +765,7 @@ namespace eval ::acqt1m_offsetdark {
       #--- on fixe le binning
       set panneau(acqt1m,$visuNo,binning) $bin
       set binningMessage $bin
-  
+
       #--- NbImages
       set panneau(acqt1m,$visuNo,nb_images) $nbImages
 
@@ -780,7 +781,7 @@ namespace eval ::acqt1m_offsetdark {
       set panneau(acqt1m,$visuNo,filtrecourant) "none"
       set panneau(acqt1m,$visuNo,index) 1
 
- 
+
       #--- l'obturateur reste ferme
       set saveobt $panneau(acqt1m,$visuNo,obt)
       set panneau(acqt1m,$visuNo,obt) 1
@@ -922,7 +923,7 @@ namespace eval ::acqt1m_offsetdark {
          if { $loadMode == "3" && $panneau(acqt1m,$visuNo,mode) >= "1" && $panneau(acqt1m,$visuNo,mode) <= "5" } {
             after 10 ::acqt1m::loadLastImage $visuNo $camNo
          }
-         
+
          #--- Rajoute des mots cles dans l'en-tete FITS
          foreach keyword [ ::keyword::getKeywords $visuNo $::conf(acqt1m,keywordConfigName) ] {
             buf$bufNo setkwd $keyword
@@ -952,7 +953,7 @@ namespace eval ::acqt1m_offsetdark {
                #--- Pour eviter un nom de fichier qui commence par un blanc
                set nom [ file join [lindex $nom 0] ]
 
-               
+
                if { $panneau(acqt1m,$visuNo,simulation) == "0" } {
                   #--- Verifie que le nom du fichier n'existe pas deja...
                   set nom1 "$nom"
@@ -1102,7 +1103,7 @@ namespace eval ::acqt1m_offsetdark {
                   cam$camNo shutter "synchro"
                }
             }
- 
+
 
 
 
@@ -1151,10 +1152,11 @@ namespace eval ::acqt1m_offsetdark {
 
 
 
-   
+
 
 }
 
 
 #--- Initialisation au demarrage
 #::acqt1m_offsetdark::init
+
