@@ -1,3 +1,11 @@
+#
+# Fichier : configuration.tcl
+# Description : Acquisition de flat sur le ciel - Observation en automatique
+# Camera : Script optimise pour une Andor ikon-L
+# Auteur : Frédéric Vachier
+# Mise à jour $Id$
+#
+
    proc ::t1m_roue_a_filtre::init_roue { } {
 
       # Col : 0 Actif/NonActif
@@ -20,3 +28,4 @@
       set ::t1m_roue_a_filtre::private(filtre,9) [list 0  "zp_sloan" "Zs"     0   1   0.1   0.2   0.]
 
    }
+
