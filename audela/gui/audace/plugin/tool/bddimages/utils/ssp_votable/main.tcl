@@ -10,7 +10,7 @@
 
    source [file join $bddconf(astroid) libastroid.tcl]
 
-   source /srv/develop/audela/gui/audace/vo_tools.tcl
+   source /usr/local/src/audela/gui/audace/vo_tools.tcl
 
    ::bddimagesXML::load_xml_config
    ::bddimagesXML::get_config bddimages_cador
