@@ -450,7 +450,9 @@ proc ::vo_tools::SampBroadcastPointAtSky { w x y } {
    # Converti les coordonnees canvas en coordonnees x,y dans l'image
    set imgXY [::audace::canvas2Picture [list $x $y]]
    # Converti les coordonnees x,y dans l'image en coordonnees sur le ciel
+   
    set err [catch {buf$audace(bufNo) xy2radec $imgXY} RADEC ]
+gren_info "$w \n Audela->Samp RA DEC = [lindex $RADEC 0] [lindex $RADEC 1]  (Canva: $x $y ; Img: $imgXY)\n"
    if {$err == 0} {
       # Broadcast les coordonnees
       set msg [::samp::m_coordPointAtSky $::samp::key [list samp.mtype coord.pointAt.sky samp.params [list "ra" [lindex $RADEC 0] "dec" [lindex $RADEC 1]] ]]
