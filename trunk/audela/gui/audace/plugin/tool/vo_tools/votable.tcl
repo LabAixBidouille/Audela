@@ -356,8 +356,9 @@ namespace eval ::votable {
 # @param $version string versionnage de la VOTable (default 1.1)
 # @param $prefix string prefixage de la VOTable (default vot:)
 # @param $dm string namespace du data model utilise (default null)
+# @return void
 #
-proc ::votable::init { version prefix } {
+proc ::votable::init { {version 1.1} {prefix "vot:"} {xsluri ""} {dmNS ""} } {
    # Version VOTable
    set ::votable::votableVersion $version
    # Prefixe VOTable
@@ -366,6 +367,10 @@ proc ::votable::init { version prefix } {
    set ::votable::votableSchemaNS [join [list "http://www.ivoa.net/xml/VOTable/v" $version] ""]
    # Schema VOTable
    set ::votable::votableSchemaFile [join [list "http://www.ivoa.net/xml/VOTable/VOTable-" $version ".xsd"] ""]
+   # XSL stylesheet URI
+   set ::votable::xsluri $xsluri
+   # Definition du prefixe de l'espace de nom du data model
+   set ::votable::dataModelNS $dmNS
 }
 
 #
@@ -397,7 +402,7 @@ proc ::votable::closeVOTable { } {
 # @return string entete text/xml
 #
 proc ::votable::getHeader { } {
-   return "header(\"Content-type: text/xml\")"
+   return "header(\"Content-type: application/x-votable+xml\")"
 }
 
 #
@@ -465,6 +470,18 @@ proc ::votable::openResourceElement { attributes } {
 #
 proc ::votable::closeResourceElement { } {
    return [::votable::closeElement $::votable::Element::RESOURCE]
+}
+
+#
+# Ajout d'un element INFO
+# @access public
+# @param  string  $id       valeur de l'attribut ID de l'element Info
+# @param  string  $name     valeur de l'attribut NAME de l'element Info
+# @param  string  $value    valeur de l'attribut VALUE de l'element Info
+# @return string
+#
+proc ::votable::addInfoElement { id name value } {
+   return [::votable::attributesClosedElement $::votable::Element::INFO [list "$::votable::Info::ID $id" "$::votable::Info::NAME $name" "$::votable::Info::VALUE $value"]]
 }
 
 #
@@ -579,7 +596,7 @@ proc ::votable::addGroupElement { attributes description fieldRef param paramRe 
 #
 # Ajout d'un element avec ou sans attribut et avec ou sans valeur
 # @access public
-# @param  string  $elementName  nom de l'element (e.g. Element::<$VAR>)
+# @param  string  $elementName  nom de l'element (e.g. $::votable::Element::<VAR>)
 # @param  list    $attributes   liste des attributs de l'element $elementName (e.g. [list $::votable::Element::ID "idElem"])
 # @param  string  $value        valeur a inserer dans l'element
 # @return string element ferme
@@ -596,12 +613,12 @@ proc ::votable::addElement { elementName attributes value } {
 #
 # Ouverture d'un element avec ou sans attribut (element ouvert a fermer avec la methode closeElement)
 # @access public
-# @param  string  $elementName   nom de l'element a ouvrir (e.g. Element::<$VAR>)
+# @param  string  $elementName   nom de l'element a ouvrir (e.g. $::votable::Element::<VAR>)
 # @param  list    $attributes    liste des attributs de l'element $elementName (e.g. [list $::votable::Element::ID "idElem"])
 # @return string element ouvert
 #
 proc ::votable::openElement { elementName attributes } {
-   if {[info exists $attributes]} {
+   if {[info exists attributes]} {
       set p [join [list [::votable::attributesUnclosedElement $elementName $attributes]] ""]
    } else {
       set p [join [list "<" $::votable::votablePrefix $elementName ">"] ""]
@@ -612,11 +629,11 @@ proc ::votable::openElement { elementName attributes } {
 #
 # Fermeture d'un element (ouvert avec la methode openElement)
 # @access public
-# @param  string  $elementName nom de l'element a fermer (e.g. Element::<$VAR>)
+# @param  string  $elementName nom de l'element a fermer (e.g. $::votable::Element::<VAR>)
 # @return string fermeture de l'element
 #
 proc ::votable::closeElement { elementName } {
-   return [join [list "</" $::votable::votablePrefix $elementName ">\n"] ""]
+   return [join [list "</" $::votable::votablePrefix $elementName ">"] ""]
 }
 
 #
@@ -632,7 +649,7 @@ proc ::votable::addTD { content } {
 #
 # Construction partielle d'un element avec ses attributs
 # @access private
-# @param  string  $elementName nom de l'element a affecter (e.g. Element::<$VAR>)
+# @param  string  $elementName nom de l'element a affecter (e.g. $::votable::Element::<VAR>)
 # @param  list    $attributes  liste des attributs de l'element $elementNameE (e.g. [list $::votable::Element::ID "idElem"])
 # @return string element partiel
 #
@@ -649,7 +666,7 @@ proc ::votable::attributes { elementName attributes } {
 #
 # Construction d'un element ouvert avec ses attributs
 # @access private
-# @param  string  $elementName nom de l'element a affecter (e.g. Element::<$VAR>)
+# @param  string  $elementName nom de l'element a affecter (e.g. $::votable::Element::<VAR>)
 # @param  list    $attributes  liste des attributs de l'element $elementName (e.g. [list $::votable::Element::ID "idElem"])
 # @return string element ouvert
 #
@@ -660,11 +677,10 @@ proc ::votable::attributesUnclosedElement { elementName attributes } {
 #
 # Construction d'un element ferme avec ses attributs
 # @access private
-# @param  string  $elementName nom de l'element a affecter (e.g. Element::<$VAR>)
+# @param  string  $elementName nom de l'element a affecter (e.g. $::votable::Element::<VAR>)
 # @param  list    $attributes  liste des attributs de l'element $elementName (e.g. [list $::votable::Element::ID "idElem"])
 # @return string element ferme
 #
 proc ::votable::attributesClosedElement { elementName attributes } {
-   return [join [list [::votable::attributes $elementName $attributes] "/>\n"] ""]
+   return [join [list [::votable::attributes $elementName $attributes] "/>"] ""]
 }
-

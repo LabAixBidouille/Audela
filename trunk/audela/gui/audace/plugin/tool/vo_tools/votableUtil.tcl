@@ -180,10 +180,10 @@ proc ::votableUtil::cata2astroid { catafile } {
    set linerech "123456789 123456789 123456789 123456789"
    set comfields [list ra dec poserr mag magerr]
    set allfields [list id flag xpos ypos instr_mag err_mag flux_sex \
-                        err_flux_sex ra dec calib_mag calib_mag_ss1 err_calib_mag_ss1 \
-                        calib_mag_ss2 err_calib_mag_ss2 nb_neighbours radius background_sex \
-                        x2_momentum_sex y2_momentum_sex xy_momentum_sex major_axis_sex \
-                        minor_axis_sex position_angle_sex fwhm_sex flag_sex]
+                       err_flux_sex ra dec calib_mag calib_mag_ss1 err_calib_mag_ss1 \
+                       calib_mag_ss2 err_calib_mag_ss2 nb_neighbours radius background_sex \
+                       x2_momentum_sex y2_momentum_sex xy_momentum_sex major_axis_sex \
+                       minor_axis_sex position_angle_sex fwhm_sex flag_sex]
    set list_fields [list [list "IMG" $comfields $allfields] [list "OVNI" $comfields {}] [list "USNO2" $comfields {}]]
 
    # TODO si fichier cata zippe alors dezip !
@@ -240,8 +240,96 @@ proc ::votableUtil::cata2astroid { catafile } {
 #
 # TODO
 #
-proc ::votableUtil::astroid2votable { astroIdList } {
-   set votable ""
+proc ::votableUtil::list2votable { listsources } {
+
+   # Init VOTable: defini la version et le prefix (mettre "" pour supprimer le prefixe)
+   ::votable::init "1.1" "vot:"
+   # Ouvre une VOTable
+   set votable [::votable::openVOTable]
+   # Ajoute l'element INFO pour definir le QUERY_STATUS = "OK" | "ERROR"
+   append votable [::votable::addInfoElement "status" "QUERY_STATUS" "OK"] "\n"
+   # Ouvre l'element RESOURCE
+   append votable [::votable::openResourceElement {} ] "\n"
+
+   # Extrait les entetes et les sources
+   set tables  [lindex $listsources 0]
+   set sources [lindex $listsources 1]
+
+   # Pour chaque catalogue de la liste des sources -> TABLE
+   foreach t $tables {
+      foreach {tableName commun col} $t {
+         set nbCommonFields [llength $commun]
+         set nbColumnFields [llength $col]
+         set votFields ""
+
+         # Si le catalogue n'a pas de colonne alors on passe a la table suivante
+         if {$nbColumnFields < 1} {
+            continue
+         }
+
+         # Construit la liste des champs du catalogue
+gren_info "INSERT TABLE = $tableName\n"
+gren_info "  NB FIELDS = $nbColumnFields\n"
+         # -- ajoute le champ idcataspec = index de source (0 .. n)
+         set field [::votableUtil::getFieldFromKey "idcataspec"]
+         append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
+         # -- ajoute les champs definis par le catalogue
+         foreach key $col {
+            set field [::votableUtil::getFieldFromKey $key]
+            if {[llength [lindex $field 0]] > 0} {
+               append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
+            }
+         }
+
+         # Construit la table des donnees
+         set nrows 0
+         set idcataspec 0
+         set votSources ""
+         foreach s $sources {
+            foreach ss $s {
+               if {[lindex $ss 0] == $tableName} {
+                  # Extrait la liste des valeurs correspondant aux colonnes
+                  set data [lindex $ss 2]
+                  append votSources [::votable::openElement $::votable::Element::TR {}]
+                  # On ajoute la colonne de l'index des sources
+                  append votSources [::votable::addElement $::votable::Element::TD {} $idcataspec]
+                  foreach d $data {
+                     append votSources [::votable::addElement $::votable::Element::TD {} $d]
+                  }
+                  append votSources [::votable::closeElement $::votable::Element::TR] "\n"
+                  incr nrows
+               } 
+            }
+            incr idcataspec
+#            if { $nrows >= 5 } { break }
+         }
+
+         # Ouvre l'element TABLE
+         append votable [::votable::openTableElement [list "$::votable::Table::NAME $tableName" "$::votable::Table::NROWS $nrows"]] "\n"
+         #  Ajoute un element de description de la table
+         append votable [::votable::addElement $::votable::Element::DESCRIPTION {} "Table of sources detected in the image"] "\n"
+         #  Ajoute les definitions des colonnes
+         append votable $votFields
+         #  Ouvre l'element DATA
+         append votable [::votable::openElement $::votable::Element::DATA {}] "\n"
+         #   Ouvre l'element TABLEDATA
+         append votable [::votable::openElement $::votable::Element::TABLEDATA {}] "\n"
+         #    Ajoute les sources
+         append votable $votSources
+         #   Ferme l'element TABLEDATA
+         append votable [::votable::closeElement $::votable::Element::TABLEDATA] "\n"
+         #  Ferme l'element DATA
+         append votable [::votable::closeElement $::votable::Element::DATA] "\n"
+         # Ferme l'element TABLE
+         append votable [::votable::closeTableElement] "\n"
+      }
+   }
+
+   # Ferme l'element RESOURCE
+   append votable [::votable::closeResourceElement] "\n"
+   # Ferme la VOTable
+   append votable [::votable::closeVOTable]
+
    return $votable
 }
 
@@ -471,7 +559,8 @@ proc ::votableUtil::refreshVisu { args } {
    # Efface les objets du canvas
    ::votableUtil::clearDisplay
    # Recupere la valeur courante du zoom
-   set zoom [visu$::audace(visuNo) zoom]
+#   set zoom [visu$::audace(visuNo) zoom]
+   set zoom [::confVisu::getZoom $::audace(visuNo)]
    # Calcul les limites minmax de l'image dans le canvas
                   set box [ ::confVisu::getBox 1 ]
                   set x1 [lindex  [confVisu::getBox 1 ] 0]
@@ -516,7 +605,8 @@ proc ::votableUtil::pointAtSky { RA DEC } {
    ::votableUtil::clearDisplay
    ::votableUtil::refreshVisu
    # Recupere la valeur courante du zoom
-   set zoom [visu$::audace(visuNo) zoom]
+#   set zoom [visu$::audace(visuNo) zoom]
+   set zoom [::confVisu::getZoom $::audace(visuNo)]
    # Calcul les limites minmax de l'image dans le canvas
    set xmin 0
    set xmax [expr [lindex [buf$audace(bufNo) getkwd NAXIS1] 1] * $zoom]
@@ -540,3 +630,174 @@ proc ::votableUtil::pointAtSky { RA DEC } {
    }
 }
 
+
+#
+# Construction des elements FIELDS en fonction de la cle de la colonne
+# @param key non de la colonne dont on veut construire l'element FIELD
+# @return liste contenant la definition du champ et sa description
+#
+proc ::votableUtil::getFieldFromKey { key } {
+   # Id et Nom du champ
+   set field [list "$::votable::Field::ID $key" "$::votable::Field::NAME $key"]
+   # Autres infos 
+   switch $key {
+      idcataspec {
+         set description "Source index"
+         lappend field "$::votable::Field::UCD \"meta.id;meta.number\"" \
+                       "$::votable::Field::DATATYPE \"int\"" \
+                       "$::votable::Field::WIDTH \"6\""
+      }
+      id {
+         set description "Source identifier"
+         lappend field "$::votable::Field::UCD \"meta.id;meta.number\"" \
+                       "$::votable::Field::DATATYPE \"int\"" \
+                       "$::votable::Field::WIDTH \"6\""
+      }
+      flag {
+         set description "Flag"
+         lappend field "$::votable::Field::UCD \"meta.code\"" \
+                       "$::votable::Field::DATATYPE \"char\"" \
+                       "$::votable::Field::ARRAYSIZE \"6\"" \
+                       "$::votable::Field::WIDTH \"6\""
+      }
+      xpos -
+      ypos {
+         set description "Cartesian coordinate of the source in the image"
+         lappend field "$::votable::Field::UCD \"pos.cartesian.[string index $key 0]\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"2\"" \
+                       "$::votable::Field::UNIT \"pixel\""
+      }
+      instr_mag {
+         set description "Instrumental measured magnitude"
+         lappend field "$::votable::Field::UCD \"phot.mag\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"3\""
+      }
+      err_mag {
+         set description "Uncertainty of the instrumental measured magnitude"
+         lappend field "$::votable::Field::UCD \"stat.error;phot.mag\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"3\""
+      }
+      flux_sex {
+         set description "Measured flux of the source"
+         lappend field "$::votable::Field::UCD \"phot.count\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"1\"" \
+                       "$::votable::Field::UNIT \"ADU\""
+      }
+      err_flux_sex {
+         set description "Uncertainty of the measured source flux"
+         lappend field "$::votable::Field::UCD \"stat.error;phot.count\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"1\"" \
+                       "$::votable::Field::UNIT \"ADU\""
+      }
+      ra -
+      dec {
+         if {[string equal -nocase $key "ra"]} {
+            set description "Astrometric J2000 right ascension"
+         } else {
+            set description "Astrometric J2000 declination"
+         }
+         lappend field "$::votable::Field::UCD \"pos.eq.$key;meta.main\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"9\"" \
+                       "$::votable::Field::PRECISION \"5\"" \
+                       "$::votable::Field::UNIT \"deg\""
+      }
+      calib_mag -
+      calib_mag_ss1 -
+      calib_mag_ss2 {
+         set description "Calibrated magnitude"
+         if {[string equal -nocase $key "calib_mag_ss1"]} { append description " w.r.t. source #1" }
+         if {[string equal -nocase $key "calib_mag_ss2"]} { append description " w.r.t. source #2" }
+         lappend field "$::votable::Field::UCD \"phot.mag\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"4\""
+      }
+      err_calib_mag_ss1 -
+      err_calib_mag_ss2 {
+         set description "Uncertainty of the calibrated magnitude"
+         if {[string equal -nocase $key "err_calib_mag_ss1"]} { append description " w.r.t. source #1" }
+         if {[string equal -nocase $key "err_calib_mag_ss2"]} { append description " w.r.t. source #2" }
+         lappend field "$::votable::Field::UCD \"stat.error;phot.mag\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"4\""
+      }
+      nb_neighbours {
+         set description "? todo"
+         lappend field "$::votable::Field::UCD \"\"" \
+                       "$::votable::Field::DATATYPE \"int\"" \
+                       "$::votable::Field::WIDTH \"4\""
+      }
+      radius {
+         set description "? todo"
+         lappend field "$::votable::Field::UCD \"\"" \
+                       "$::votable::Field::DATATYPE \"int\"" \
+                       "$::votable::Field::WIDTH \"4\""
+      }
+      background_sex {
+         set description "? todo"
+         lappend field "$::votable::Field::UCD \"\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"6\"" \
+                       "$::votable::Field::PRECISION \"1\""
+      }
+      x2_momentum_sex -
+      y2_momentum_sex -
+      xy_momentum_sex {
+         set description "? todo"
+         lappend field "$::votable::Field::UCD \"\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"6\"" \
+                       "$::votable::Field::PRECISION \"2\""
+      }
+      minor_axis_sex -
+      major_axis_sex {
+         set description "? todo"
+         set ucd [expr [string equal -nocase $key "minor_axis_sex"] ? {"stat.stdev;stat.min;pos.errorEllipse"} : {"stat.stdev;stat.max;pos.errorEllipse"}]
+         lappend field "$::votable::Field::UCD \"$ucd\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"6\"" \
+                       "$::votable::Field::PRECISION \"2\"" \
+                       "$::votable::Field::UNIT \"pixel\""
+      }
+      position_angle_sex {
+         set description "? todo"
+         lappend field "$::votable::Field::UCD \"pos.posAng\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"6\"" \
+                       "$::votable::Field::PRECISION \"1\"" \
+                       "$::votable::Field::UNIT \"deg\""
+      }
+      fwhm_sex {
+         set description "FWHM of the source as measured by Sextractor"
+         lappend field "$::votable::Field::UCD \"phys.angSize\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"6\"" \
+                       "$::votable::Field::PRECISION \"2\"" \
+                       "$::votable::Field::UNIT \"pixel\""
+      }
+      flag_sex {
+         set description "Flag provided by Sextractor"
+         lappend field "$::votable::Field::UCD \"meta.code\"" \
+                       "$::votable::Field::DATATYPE \"short\"" \
+                       "$::votable::Field::WIDTH \"2\""
+      }
+      default {
+         # si $key n'est pas reconnu alors on renvoie des listes vides
+         set field ""
+         set description ""
+      }
+   }
+   return [list $field [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+}
