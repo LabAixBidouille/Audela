@@ -443,16 +443,18 @@ proc ::vo_tools::SampBroadcastPointAtSky { w x y } {
    global audace
 
    # Recupere la valeur courante du zoom
-   set zoom [visu$::audace(visuNo) zoom]
+#   set zoom [visu$::audace(visuNo) zoom]
+   set zoom [::confVisu::getZoom $::audace(visuNo)]
    # Recupere les dimensions de l'image en px
    set naxis1 [expr [lindex [buf$::audace(bufNo) getkwd NAXIS1] 1] * $zoom]
    set naxis2 [expr [lindex [buf$::audace(bufNo) getkwd NAXIS2] 1] * $zoom]
+   # Converti les coord. pointees en coord. canvas
+   set coord [::audace::screen2Canvas [list $x $y]]
    # Converti les coordonnees canvas en coordonnees x,y dans l'image
-   set imgXY [::audace::canvas2Picture [list $x $y]]
+   set imgXY [::audace::canvas2Picture $coord]
    # Converti les coordonnees x,y dans l'image en coordonnees sur le ciel
-   
    set err [catch {buf$audace(bufNo) xy2radec $imgXY} RADEC ]
-gren_info "$w \n Audela->Samp RA DEC = [lindex $RADEC 0] [lindex $RADEC 1]  (Canva: $x $y ; Img: $imgXY)\n"
+gren_info "$w \n Audela->Samp RA DEC = [lindex $RADEC 0] [lindex $RADEC 1]  (Screen: $x $y ; Canva: $coord  ; Img: $imgXY)\n"
    if {$err == 0} {
       # Broadcast les coordonnees
       set msg [::samp::m_coordPointAtSky $::samp::key [list samp.mtype coord.pointAt.sky samp.params [list "ra" [lindex $RADEC 0] "dec" [lindex $RADEC 1]] ]]
