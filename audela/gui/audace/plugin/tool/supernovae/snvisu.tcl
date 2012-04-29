@@ -2277,7 +2277,7 @@ proc snBlinkImage { } {
       buf$b save [ file join $audace(rep_images) dummyb2 ]
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"dummyb\" 1 1 \"$ext\" \"$audace(rep_images)\" \"$objefile\" 1 \"$ext\" DELETE"
    } else {
-      catch { buf$b load [ file join$audace(rep_images) dummyb2 ] }
+      catch { buf$b load [ file join $audace(rep_images) dummyb2 ] }
    }
 
    #--- Gestion du bouton 'blink'
