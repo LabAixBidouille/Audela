@@ -586,6 +586,8 @@ proc get_one_image_obsolete { idbddimg } {
 
    proc ::bddimages_analyse::fermer { } {
 
+      global conf
+
       set conf(astrometry,catfolder,usnoa2) $::analyse_tools::catalog_usnoa2 
       set conf(astrometry,catfolder,ucac2)  $::analyse_tools::catalog_ucac2  
       set conf(astrometry,catfolder,ucac3)  $::analyse_tools::catalog_ucac3  
