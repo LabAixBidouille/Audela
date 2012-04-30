@@ -256,11 +256,11 @@ proc ::votableUtil::list2votable { listsources tabkey } {
    set sources [lindex $listsources 1]
 
    # Construit les champs PARAM pour lister les tables
-gren_info "TABKEY = $tabkey \n"
-   foreach keyval $tabkey {
-      set key [lindex $keyval 0]
-      set val [lindex $keyval 1]
-   }
+#gren_info "TABKEY = $tabkey \n"
+#   foreach keyval $tabkey {
+#      set key [lindex $keyval 0]
+#      set val [lindex $keyval 1]
+#   }
    
 
    # Pour chaque catalogue de la liste des sources -> TABLE

@@ -1317,7 +1317,7 @@ proc ::votable::getFieldFromKey_UCAC3 { key } {
          lappend field "$::votable::Field::UCD \"meta.code\"" \
                        "$::votable::Field::DATATYPE \"char\"" \
                        "$::votable::Field::ARRAYSIZE \"1\"" \
-                       "$::votable::Field::WIDTH \"1\""
+                       "$::votable::Field::WIDTH \"2\""
       }
       sigra_deg -
       sigdc_deg {
@@ -1344,7 +1344,7 @@ proc ::votable::getFieldFromKey_UCAC3 { key } {
          if {[string equal -nocase $key "cn1"]} { set description "Number of catalog positions" }
          lappend field "$::votable::Field::UCD \"meta.number\"" \
                        "$::votable::Field::DATATYPE \"int\"" \
-                       "$::votable::Field::WIDTH \"1\""
+                       "$::votable::Field::WIDTH \"2\""
       }
       cepra_deg -
       cepdc_deg {
@@ -1416,9 +1416,101 @@ proc ::votable::getFieldFromKey_UCAC3 { key } {
                        "$::votable::Field::PRECISION \"3\"" \
                        "$::votable::Field::UNIT \"mag\""
       }
-
-#  UCAC3 { } {    jicqflg hicqflg kicqflg je2mpho he2mpho ke2mpho smB_mag smR2_mag smI_mag clbl qfB qfR2 qfI catflg1 catflg2 catflg3 catflg4 catflg5 catflg6 catflg7 catflg8 catflg9 catflg10 g1 c1 leda x2m rn } 
-            
+      jicqflg -
+      hicqflg -
+      kicqflg {
+         if {[string equal -nocase $key "jicqflg"]} { set description "2MASS cc_flg*10 + phot.qual.flag for J magnitude (note 7)" }
+         if {[string equal -nocase $key "hicqflg"]} { set description "2MASS cc_flg*10 + phot.qual.flag for H magnitude (note 7)" }
+         if {[string equal -nocase $key "kicqflg"]} { set description "2MASS cc_flg*10 + phot.qual.flag for K magnitude (note 7)" }
+         lappend field "$::votable::Field::UCD \"meta.code.qual\"" \
+                       "$::votable::Field::DATATYPE \"int\"" \
+                       "$::votable::Field::WIDTH \"2\""
+      }
+      je2mpho -
+      he2mpho -
+      ke2mpho {
+         if {[string equal -nocase $key "je2mpho"]} { set description "2MASS error photom. (1/100 mag) for J magnitude (note 8)" }
+         if {[string equal -nocase $key "he2mpho"]} { set description "2MASS error photom. (1/100 mag) for H magnitude (note 8)" }
+         if {[string equal -nocase $key "ke2mpho"]} { set description "2MASS error photom. (1/100 mag) for K magnitude (note 8)" }
+         lappend field "$::votable::Field::UCD \"meta.code.qual\"" \
+                       "$::votable::Field::DATATYPE \"int\"" \
+                       "$::votable::Field::WIDTH \"2\""
+      }
+      smB_mag -
+      smR2_mag -
+      smI_mag {
+         if {[string equal -nocase $key "smB_mag"]} { 
+            set description "SuperCosmos Bmag" 
+            set ucd "phot.mag;em.opt.B"
+         }
+         if {[string equal -nocase $key "smR2_mag"]} { 
+            set description "SuperCosmos R2mag" 
+            set ucd "phot.mag;em.opt.R"
+         }
+         if {[string equal -nocase $key "smI_mag"]} { 
+            set description "SuperCosmos Kmag" 
+            set ucd "phot.mag;em.opt.I"
+         }
+         lappend field "$::votable::Field::UCD \"$ucd\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"3\"" \
+                       "$::votable::Field::UNIT \"mag\""
+      }
+      clbl {
+         set description "SuperCosmos star/galaxy classif./quality flag"
+         lappend field "$::votable::Field::UCD \"src.class.starGalaxy\"" \
+                       "$::votable::Field::DATATYPE \"int\"" \
+                       "$::votable::Field::WIDTH \"2\""
+      }
+      qfB -
+      qfR2 -
+      qfI {
+         if {[string equal -nocase $key "qfB"]}  { set description "B-band quality-confusion flag" }
+         if {[string equal -nocase $key "qfR2"]} { set description "R-band quality-confusion flag" }
+         if {[string equal -nocase $key "qfI"]}  { set description "I-band quality-confusion flag" }
+         lappend field "$::votable::Field::UCD \"meta.code.qual\"" \
+                       "$::votable::Field::DATATYPE \"int\"" \
+                       "$::votable::Field::WIDTH \"3\"" 
+      }
+      catflg1 -
+      catflg2 -
+      catflg3 -
+      catflg4 -
+      catflg5 -
+      catflg6 -
+      catflg7 -
+      catflg8 -
+      catflg9 -
+      catflg10 {
+         set i [string replace $key 0 5 ""]
+         set description "Matching flags for catalogue $i"
+         lappend field "$::votable::Field::UCD \"meta.code.qual\"" \
+                       "$::votable::Field::DATATYPE \"int\"" \
+                       "$::votable::Field::WIDTH \"3\"" 
+      }
+      g1 -
+      c1 {
+         if {[string equal -nocase $key "g1"]}  { set description "Yale SPM object type (g-flag)" }
+         if {[string equal -nocase $key "c1"]}  { set description "Yale SPM input cat. (c-flag) " }
+         lappend field "$::votable::Field::UCD \"meta.code.qual\"" \
+                       "$::votable::Field::DATATYPE \"int\"" \
+                       "$::votable::Field::WIDTH \"3\"" 
+      }
+      leda -
+      x2m {
+         if {[string equal -nocase $key "leda"]}  { set description "LEDA galaxy match flag" }
+         if {[string equal -nocase $key "x2m"]}  { set description "2MASS extend.source flag" }
+         lappend field "$::votable::Field::UCD \"meta.code.qual\"" \
+                       "$::votable::Field::DATATYPE \"int\"" \
+                       "$::votable::Field::WIDTH \"3\"" 
+      }
+      rn {
+         set description "mean position (MPOS) number"
+         lappend field "$::votable::Field::UCD \"meta.id\"" \
+                       "$::votable::Field::DATATYPE \"int\"" \
+                       "$::votable::Field::WIDTH \"9\"" 
+      }
       default {
          # si $key n'est pas reconnu alors on renvoie des listes vides
          set field ""
