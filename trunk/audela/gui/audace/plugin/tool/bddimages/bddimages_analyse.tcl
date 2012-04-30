@@ -144,7 +144,7 @@ namespace eval bddimages_analyse {
 
 
    variable color_button_good "green"
-   variable color_button_bad  "gray"
+   variable color_button_bad  "red"
    variable color_button      
    variable bddimages_wcs 
 
@@ -528,7 +528,6 @@ proc get_one_image_obsolete { idbddimg } {
 
       global bddconf, conf
 
-      set ::analyse_tools::use_skybot  1
       set ::analyse_tools::use_usnoa2  1
       set ::analyse_tools::use_ucac2   1
       set ::analyse_tools::use_ucac3   1
@@ -572,12 +571,13 @@ proc get_one_image_obsolete { idbddimg } {
          }
       }
 
-      set ::analyse_tools::use_skybot      1
+      set ::analyse_tools::use_skybot      0
       set ::analyse_tools::keep_radec      1
       set ::analyse_tools::create_cata     0
       set ::analyse_tools::delpv           1
       set ::analyse_tools::boucle          0
       set ::analyse_tools::deuxpasses      1
+      set ::analyse_tools::limit_nbstars_accepted      5
 
       #--- Creation des variables de la boite de configuration si elles n'existent pas
       #if { ! [ info exists $bddconf(catalog_ucac2) ] } { set ::analyse_tools::catalog_ucac2 "" }
@@ -670,23 +670,23 @@ proc get_one_image_obsolete { idbddimg } {
          }
          
          #�Mise a jour GUI
-         $::bddimages_analyse::current_appli.bouton.back configure -state disabled
-         $::bddimages_analyse::current_appli.bouton.back configure -state disabled
-         $::bddimages_analyse::current_appli.infoimage.nomimage    configure -text $::analyse_tools::current_image_name
-         $::bddimages_analyse::current_appli.infoimage.dateimage   configure -text $::analyse_tools::current_image_date
-         $::bddimages_analyse::current_appli.infoimage.stimage     configure -text "$::analyse_tools::id_current_image / $::analyse_tools::nb_img_list"
+         $::bddimages_analyse::current_appli.onglets.nb.f3.bouton.back configure -state disabled
+         $::bddimages_analyse::current_appli.onglets.nb.f3.bouton.back configure -state disabled
+         $::bddimages_analyse::current_appli.onglets.nb.f3.infoimage.nomimage    configure -text $::analyse_tools::current_image_name
+         $::bddimages_analyse::current_appli.onglets.nb.f3.infoimage.dateimage   configure -text $::analyse_tools::current_image_date
+         $::bddimages_analyse::current_appli.onglets.nb.f3.infoimage.stimage     configure -text "$::analyse_tools::id_current_image / $::analyse_tools::nb_img_list"
 
          if {$::analyse_tools::id_current_image == 1 && $::analyse_tools::nb_img_list > 1 } {
-            $::bddimages_analyse::current_appli.bouton.back configure -state disabled
+            $::bddimages_analyse::current_appli.onglets.nb.f3.bouton.back configure -state disabled
          }
          if {$::analyse_tools::id_current_image == $::analyse_tools::nb_img_list && $::analyse_tools::nb_img_list > 1 } {
-            $::bddimages_analyse::current_appli.bouton.next configure -state disabled
+            $::bddimages_analyse::current_appli.onglets.nb.f3.bouton.next configure -state disabled
          }
          if {$::analyse_tools::id_current_image > 1 } {
-            $::bddimages_analyse::current_appli.bouton.back configure -state normal
+            $::bddimages_analyse::current_appli.onglets.nb.f3.bouton.back configure -state normal
          }
          if {$::analyse_tools::id_current_image < $::analyse_tools::nb_img_list } {
-            $::bddimages_analyse::current_appli.bouton.next configure -state normal
+            $::bddimages_analyse::current_appli.onglets.nb.f3.bouton.next configure -state normal
          }
          if {$::analyse_tools::bddimages_wcs == "Y"} {
             set ::bddimages_analyse::color_button $::bddimages_analyse::color_button_good
@@ -793,12 +793,15 @@ proc get_one_image_obsolete { idbddimg } {
 
          } else {
             # "idbddimg : $idbddimg   filename : $filename wcs : erreur \n"
-            ::console::affiche_erreur "GET_WCS ERROR: $msg\n"
-            ::console::affiche_erreur "idbddimg : $idbddimg   filename : $filename wcs : erreur \n"
+            ::console::affiche_erreur "GET_WCS ERROR: $msg  idbddimg : $idbddimg   filename : $filename\n"
             if { $::analyse_tools::boucle == 1 } {
                cleanmark
                #gren_info "\n ** VISU ** get_one_wcs\n"
                ::audace::autovisu $::audace(visuNo)
+            set ::bddimages_analyse::color_button $::bddimages_analyse::color_button_bad
+            set ::bddimages_analyse::state_button normal
+            $::bddimages_analyse::current_appli.onglets.nb.f3.bouton.go configure -bg $::bddimages_analyse::color_button -state $::bddimages_analyse::state_button
+
             }
             return false
          }
@@ -1000,6 +1003,17 @@ proc get_one_image_obsolete { idbddimg } {
              #--- Cree un checkbutton
              checkbutton $boucle.check -highlightthickness 0 -text "Analyse continue" -variable ::analyse_tools::boucle
              pack $boucle.check -in $boucle -side left -padx 5 -pady 0
+
+        #--- Cree un frame pour afficher boucle
+        set limit_nbstars [frame $frm.limit_nbstars -borderwidth 0 -cursor arrow -relief groove]
+        pack $limit_nbstars -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             #--- Cree un checkbutton
+             label $limit_nbstars.lab -text "limite acceptable du nb d'etoiles identifiees : " 
+             pack $limit_nbstars.lab -in $limit_nbstars -side left -padx 5 -pady 0
+             #--- Cree un entry
+             entry $limit_nbstars.val -relief sunken -textvariable ::analyse_tools::limit_nbstars_accepted
+             pack $limit_nbstars.val -in $limit_nbstars -side right -pady 1 -anchor w
 
         #--- Cree un frame pour afficher boucle
         set bouton [frame $frm.bouton -borderwidth 0 -cursor arrow -relief groove]
@@ -1330,6 +1344,22 @@ proc get_one_image_obsolete { idbddimg } {
              checkbutton $skybot.check -highlightthickness 0 -text "Utiliser SkyBot" -variable ::analyse_tools::use_skybot
              pack $skybot.check -in $skybot -side left -padx 5 -pady 0
   
+
+        #--- Cree un frame pour afficher boucle
+        set limit_nbstars [frame $f2.limit_nbstars -borderwidth 0 -cursor arrow -relief groove]
+        pack $limit_nbstars -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             #--- Cree un checkbutton
+             label $limit_nbstars.lab -text "limite acceptable du nb d'etoiles identifiees : " 
+             pack $limit_nbstars.lab -in $limit_nbstars -side left -padx 5 -pady 0
+             #--- Cree un entry
+             entry $limit_nbstars.val -relief sunken -textvariable ::analyse_tools::limit_nbstars_accepted
+             pack $limit_nbstars.val -in $limit_nbstars -side right -pady 1 -anchor w
+
+
+
+
+
         #--- Cree un frame pour afficher boutons
         set bouton [frame $f3.bouton -borderwidth 0 -cursor arrow -relief groove]
         pack $bouton -in $f3 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
@@ -1358,9 +1388,8 @@ proc get_one_image_obsolete { idbddimg } {
             label $infoimage.nomimage -text $::analyse_tools::current_image_name
             pack $infoimage.nomimage -in $infoimage -side top -padx 3 -pady 3
 
-            #--- Cree un label pour la date de l image
-            label $infoimage.dateimage -text $::analyse_tools::current_image_date
-            pack $infoimage.dateimage -in $infoimage -side top -padx 3 -pady 3
+                entry $infoimage.dateimage -relief sunken -textvariable ::analyse_tools::current_image_date
+                pack $infoimage.dateimage -in $infoimage -side right -pady 1 -anchor w
 
             #--- Cree un label pour la date de l image
             label $infoimage.stimage -text "$::analyse_tools::id_current_image / $::analyse_tools::nb_img_list"
