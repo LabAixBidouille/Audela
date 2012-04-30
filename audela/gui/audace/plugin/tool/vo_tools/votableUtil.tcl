@@ -266,7 +266,13 @@ proc ::votableUtil::list2votable { listsources tabkey } {
          set votFields ""
 
          # Si le catalogue n'a pas de colonne alors on enregistre les common
-         set col2save [expr $nbColumnFields < 1 ? {$commun} : {$col}]
+         if {$nbColumnFields < 1} {
+            set col2save $commun
+            set catidx 1
+         } else {
+            set col2save $col
+            set catidx 2
+         }
 
          # Construit la liste des champs du catalogue
          gren_info "INSERT TABLE = $tableName with NB FIELDS = $nbColumnFields\n"
@@ -287,10 +293,10 @@ proc ::votableUtil::list2votable { listsources tabkey } {
          set idcataspec 0
          set votSources ""
          foreach s $sources {
-            foreach ss $s {
-               if {[lindex $ss 0] == $tableName} {
+            foreach catalog $s {
+               if {[lindex $catalog 0] == $tableName} {
                   # Extrait la liste des valeurs correspondant aux colonnes
-                  set data [lindex $ss 2]
+                  set data [lindex $catalog $catidx]
                   append votSources [::votable::openElement $::votable::Element::TR {}]
                   # On ajoute la colonne de l'index des sources
                   append votSources [::votable::addElement $::votable::Element::TD {} $idcataspec]
