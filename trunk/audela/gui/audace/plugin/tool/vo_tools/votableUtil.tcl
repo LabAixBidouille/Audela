@@ -240,7 +240,7 @@ proc ::votableUtil::cata2astroid { catafile } {
 #
 # TODO
 #
-proc ::votableUtil::list2votable { listsources } {
+proc ::votableUtil::list2votable { listsources tabkey } {
 
    # Init VOTable: defini la version et le prefix (mettre "" pour supprimer le prefixe)
    ::votable::init "1.1" "vot:"
