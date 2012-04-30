@@ -302,8 +302,8 @@ namespace eval analyse_tools {
          gren_info "catalog_usnoa2 : $::analyse_tools::catalog_usnoa2\n"
          gren_info "DEBUT WCS ra dec : $ra  $dec \n"
 
-         gren_info "PASS1: calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO  $::analyse_tools::catalog_usnoa2 del_tmp_files 0\n"
-         set erreur [catch {set nbstars [calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO $::analyse_tools::catalog_usnoa2 del_tmp_files 0]} msg]
+         gren_info "PASS1: calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO  $::analyse_tools::catalog_usnoa2 -del_tmp_files 0\n"
+         set erreur [catch {set nbstars [calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO $::analyse_tools::catalog_usnoa2 -del_tmp_files 0]} msg]
          if {$erreur} { return false }
 
          set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
@@ -312,8 +312,8 @@ namespace eval analyse_tools {
          gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"
 
          if {$::analyse_tools::deuxpasses} {
-            gren_info "PASS2: calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2 del_tmp_files 0\n"
-            set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 del_tmp_files 0]} msg]
+            gren_info "PASS2: calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2 -del_tmp_files 0\n"
+            set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 -del_tmp_files 0]} msg]
             if {$erreur} { return false }
             set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
             set ra  [lindex $a 0]
@@ -324,8 +324,8 @@ namespace eval analyse_tools {
          if { $::analyse_tools::keep_radec==1 && $nbstars<$limit_nbstars_accepted } {
              set ra  $::analyse_tools::ra_save
              set dec $::analyse_tools::dec_save
-             gren_info "PASS3: calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2 del_tmp_files 0\n"
-             set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 del_tmp_files 0]} msg]
+             gren_info "PASS3: calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2 -del_tmp_files 0\n"
+             set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 -del_tmp_files 0]} msg]
              if {$erreur} { return false }
              set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
              set ra  [lindex $a 0]
@@ -333,8 +333,8 @@ namespace eval analyse_tools {
              gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"
 
              if {$::analyse_tools::deuxpasses} {
-                gren_info "PASS4: calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2 del_tmp_files 0\n"
-                set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 del_tmp_files 0]} msg]
+                gren_info "PASS4: calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2 -del_tmp_files 0\n"
+                set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 -del_tmp_files 0]} msg]
                 if {$erreur} { return false }
                 set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
                 set ra  [lindex $a 0]
