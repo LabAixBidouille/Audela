@@ -693,7 +693,7 @@ proc get_one_image_obsolete { idbddimg } {
             set ::bddimages_analyse::color_button $::bddimages_analyse::color_button_bad
             set ::bddimages_analyse::state_button normal
          }
-         $::bddimages_analyse::current_appli.bouton.go configure -bg $::bddimages_analyse::color_button -state $::bddimages_analyse::state_button
+         $::bddimages_analyse::current_appli.onglets.nb.f3.bouton.go configure -bg $::bddimages_analyse::color_button -state $::bddimages_analyse::state_button
          affich_un_rond_xy $xcent $ycent red 2 2
  
    }
@@ -761,7 +761,7 @@ proc get_one_image_obsolete { idbddimg } {
 
             set ::bddimages_analyse::color_button $::bddimages_analyse::color_button_good
             set ::bddimages_analyse::state_button normal
-            $::bddimages_analyse::current_appli.bouton.go configure -bg $::bddimages_analyse::color_button -state $::bddimages_analyse::state_button
+            $::bddimages_analyse::current_appli.onglets.nb.f3.bouton.go configure -bg $::bddimages_analyse::color_button -state $::bddimages_analyse::state_button
 
             set ::analyse_tools::ra        [lindex [::bddimages_liste::lget $tabkey ra         ] 1]
             set ::analyse_tools::dec       [lindex [::bddimages_liste::lget $tabkey dec        ] 1]
