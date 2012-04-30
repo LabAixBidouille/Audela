@@ -791,7 +791,7 @@ proc get_one_image_obsolete { idbddimg } {
 
          } else {
             # "idbddimg : $idbddimg   filename : $filename wcs : erreur \n"
-            ::console::affiche_erreur "$msg\n"
+            ::console::affiche_erreur "GET_WCS ERROR: $msg\n"
             ::console::affiche_erreur "idbddimg : $idbddimg   filename : $filename wcs : erreur \n"
             if { $::analyse_tools::boucle == 1 } {
                cleanmark
