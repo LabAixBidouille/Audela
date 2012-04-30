@@ -214,6 +214,8 @@ namespace eval analyse_tools {
       # Cata charge ?
 #      set cataloaded [::bddimages_liste::lget $::analyse_tools::current_image cataloaded]
 
+      gren_info "** Create cata XML:\n"
+
       # Noms du fichier et du repertoire du cata TXT
       set imgfilename [::bddimages_liste::lget $::analyse_tools::current_image filename]
       set imgdirfilename [::bddimages_liste::lget $::analyse_tools::current_image dirfilename]
@@ -226,6 +228,50 @@ namespace eval analyse_tools {
       # Liste des sources de l'image
       set listsources $::analyse_tools::current_listsources
 
+      set ra $::analyse_tools::ra
+      set dec $::analyse_tools::dec
+      set naxis1 [lindex [::bddimages_liste::lget $tabkey NAXIS1] 1]
+      set naxis2 [lindex [::bddimages_liste::lget $tabkey NAXIS2] 1]
+      set scale_x [lindex [::bddimages_liste::lget $tabkey CD1_1] 1]
+      set scale_y [lindex [::bddimages_liste::lget $tabkey CD2_2] 1]
+      set radius [::analyse_tools::get_radius $naxis1 $naxis2 $scale_x $scale_y]
+      gren_info "  -> FOV ra dec radius : $ra  $dec $radius \n"
+
+      if {$::analyse_tools::use_tycho2} {
+         set tycho2 [cstycho2 $::analyse_tools::catalog_tycho2 $ra $dec $radius]
+         gren_info "rollup = [::manage_source::get_nb_sources_rollup $tycho2]\n"
+         set tycho2 [::manage_source::set_common_fields $tycho2 TYCHO2 { RAdeg DEdeg 5 VT e_VT }]
+         ::manage_source::imprim_3_sources $tycho2
+         gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
+         set log 0
+         set listsources [ identification $listsources IMG $tycho2 TYCHO2 30.0 -30.0 {} $log]
+         set $::analyse_tools::nb_tycho2 [::manage_source::get_nb_sources_by_cata $listsources TYCHO2]
+      }
+      
+      if {$::analyse_tools::use_ucac2} {
+         set ucac2 [csucac2 $::analyse_tools::catalog_ucac2 $ra $dec $radius]
+         gren_info "rollup = [::manage_source::get_nb_sources_rollup $ucac2]\n"
+         set ucac2 [::manage_source::set_common_fields $ucac2 UCAC2 { ra_deg dec_deg e_pos_deg U2Rmag_mag 0.5 }]
+         ::manage_source::imprim_3_sources $ucac2
+         gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
+         set log 0
+         set listsources [ identification $listsources IMG $ucac2 UCAC2 30.0 -30.0 {} $log]
+         set $::analyse_tools::nb_ucac2 [::manage_source::get_nb_sources_by_cata $listsources UCAC2]
+      }
+      
+      if {$::analyse_tools::use_ucac3} {
+         set ucac3 [csucac3 $::analyse_tools::catalog_ucac3 $ra $dec $radius]
+         gren_info "rollup = [::manage_source::get_nb_sources_rollup $ucac3]\n"
+         set ucac3 [::manage_source::set_common_fields $ucac3 UCAC3 { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
+         ::manage_source::imprim_3_sources $ucac3
+         gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
+         set log 0
+         set listsources [ identification $listsources IMG $ucac3 UCAC3 30.0 -30.0 {} $log]
+         set $::analyse_tools::nb_ucac3 [::manage_source::get_nb_sources_by_cata $listsources UCAC3]
+      }
+      
+      gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $listsources]\n"
+
       # Creation de la VOTable en memoire
       set votable [::votableUtil::list2votable $listsources $tabkey]
       
@@ -234,10 +280,6 @@ namespace eval analyse_tools {
       set fxml [open $cataxml "w"]
       puts $fxml $votable
       close $fxml
-
-      if {$::analyse_tools::create_cata} {
-         # TODO insertion solo cata.xml 
-      }
 
       return true
    }
@@ -361,57 +403,6 @@ namespace eval analyse_tools {
          set ::analyse_tools::nb_ovni   [::manage_source::get_nb_sources_by_cata $::analyse_tools::current_listsources OVNI  ]
          set ::analyse_tools::nb_usnoa2 [::manage_source::get_nb_sources_by_cata $::analyse_tools::current_listsources USNOA2]
          gren_info "rollup = [::manage_source::get_nb_sources_rollup $::analyse_tools::current_listsources]\n"
-
-
-
-         if {$::analyse_tools::create_cata} {
-            gren_info "Create CATA:\n"
-            set listsources $::analyse_tools::current_listsources
-            set tabkey [::bddimages_liste::lget $img "tabkey"]
-
-            set scale_x [lindex [::bddimages_liste::lget $tabkey CD1_1 ] 1]
-            set scale_y [lindex [::bddimages_liste::lget $tabkey CD2_2 ] 1]
-            set radius [::analyse_tools::get_radius $naxis1 $naxis2 $scale_x $scale_y]
-            gren_info "CSTYCHO2 ra dec radius : $ra  $dec $radius \n"
-
-            if {$::analyse_tools::use_tycho2} {
-               set tycho2 [cstycho2 $::analyse_tools::catalog_tycho2 $ra $dec $radius]
-               gren_info "rollup = [::manage_source::get_nb_sources_rollup $tycho2]\n"
-               set tycho2 [::manage_source::set_common_fields $tycho2 TYCHO2 { RAdeg DEdeg 5 VT e_VT }]
-               ::manage_source::imprim_3_sources $tycho2
-               gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
-               set log 0
-               set listsources [ identification $listsources IMG $tycho2 TYCHO2 30.0 -30.0 {} $log]
-               set $::analyse_tools::nb_tycho2 [::manage_source::get_nb_sources_by_cata $listsources TYCHO2]
-            }
-            
-            if {$::analyse_tools::use_ucac2} {
-               set ucac2 [csucac2 $::analyse_tools::catalog_ucac2 $ra $dec $radius]
-               gren_info "rollup = [::manage_source::get_nb_sources_rollup $ucac2]\n"
-               set ucac2 [::manage_source::set_common_fields $ucac2 UCAC2 { ra_deg dec_deg e_pos_deg U2Rmag_mag 0.5 }]
-               ::manage_source::imprim_3_sources $ucac2
-               gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
-               set log 0
-               set listsources [ identification $listsources IMG $ucac2 UCAC2 30.0 -30.0 {} $log]
-               set $::analyse_tools::nb_ucac2 [::manage_source::get_nb_sources_by_cata $listsources UCAC2]
-            }
-            
-            if {$::analyse_tools::use_ucac3} {
-               set ucac3 [csucac3 $::analyse_tools::catalog_ucac3 $ra $dec $radius]
-               gren_info "rollup = [::manage_source::get_nb_sources_rollup $ucac3]\n"
-               set ucac3 [::manage_source::set_common_fields $ucac3 UCAC3 { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
-               ::manage_source::imprim_3_sources $ucac3
-               gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
-               set log 0
-               set listsources [ identification $listsources IMG $ucac3 UCAC3 30.0 -30.0 {} $log]
-               set $::analyse_tools::nb_ucac3 [::manage_source::get_nb_sources_by_cata $listsources UCAC3]
-            }
-            
-            gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $listsources]\n"
-            set catafile [file join $bddconf(dirtmp) $filename.xml]
-            gren_info "write cata file: $catafile\n"
-            write_cata_votable $listsources $tabkey $catafile
-         }
 
          if {$nbstars > $limit_nbstars_accepted} {
              set wcs_ok true
