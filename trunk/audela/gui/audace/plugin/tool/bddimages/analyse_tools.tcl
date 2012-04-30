@@ -215,10 +215,12 @@ namespace eval analyse_tools {
 #      set cataloaded [::bddimages_liste::lget $::analyse_tools::current_image cataloaded]
 
       # Noms du fichier et du repertoire du cata TXT
-      set catafilename [::bddimages_liste::lget $::analyse_tools::current_image catafilename]
-      set catadirfilename [::bddimages_liste::lget $::analyse_tools::current_image catadirfilename]
+      set imgfilename [::bddimages_liste::lget $::analyse_tools::current_image filename]
+      set imgdirfilename [::bddimages_liste::lget $::analyse_tools::current_image dirfilename]
+gren_info "$imgfilename\n"
+gren_info "$imgdirfilename\n"
       # Definition du nom du cata XML
-      set f [file join $bddconf(dirtmp) [file rootname [file rootname $catafilename]]]
+      set f [file join $bddconf(dirtmp) [file rootname [file rootname $imgfilename]]]
       set cataxml "${f}.xml"
 
       # Liste des champs du header de l'image
