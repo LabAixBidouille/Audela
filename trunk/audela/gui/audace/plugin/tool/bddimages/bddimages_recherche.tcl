@@ -836,7 +836,7 @@ namespace eval bddimages_recherche {
 #      destroy $::acqt1m_offsetdark::frm.p
 
       set ::bddimages_recherche::progress [format "%0.0f" [expr $cur * 100. /$max ] ]
-      gren_info "Progresse = $::bddimages_recherche::progress\n"
+      #gren_info "Progresse = $::bddimages_recherche::progress\n"
    }
 
 
