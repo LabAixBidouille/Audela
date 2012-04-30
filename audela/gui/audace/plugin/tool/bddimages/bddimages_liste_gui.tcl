@@ -1577,8 +1577,13 @@ namespace eval bddimages_liste_gui {
       }
 
       set img_list ""
+      set nb_img_list [llength $resultsql]
 
+      set cpt 0
       foreach line $resultsql {
+
+         incr cpt
+         ::bddimages_recherche::set_progress $cpt $nb_img_list
 
          set idhd [lindex $line 0]
 
