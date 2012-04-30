@@ -699,6 +699,16 @@ proc get_one_image { idbddimg } {
    }
 
 
+   proc ::bddimages_analyse::get_cata { } {
+
+         if { $::analyse_tools::boucle ==1 } {
+            ::bddimages_analyse::get_all_cata
+         }  else {
+            ::bddimages_analyse::get_one_cata
+         }
+
+   }
+
 
    proc ::bddimages_analyse::get_wcs { } {
 
@@ -782,6 +792,22 @@ proc get_one_image { idbddimg } {
             
          }
    }
+
+
+   proc ::bddimages_analyse::get_one_cata { } {
+
+         set tabkey         [::bddimages_liste::lget $::analyse_tools::current_image "tabkey"]
+         set date           [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs" ] 1] ]
+         set bddimages_wcs  [string trim [lindex [::bddimages_liste::lget $tabkey bddimages_wcs] 1] ]
+         set idbddimg       [::bddimages_liste::lget $::analyse_tools::current_image idbddimg]
+         set filename       [::bddimages_liste::lget $::analyse_tools::current_image filename   ]
+         set dirfilename    [::bddimages_liste::lget $::analyse_tools::current_image dirfilename]
+         #gren_info "idbddimg : $idbddimg   wcs : $bddimages_wcs \n"
+
+         set result [::analyse_tools::get_wcs]
+
+   }
+
 
 
 
@@ -1269,7 +1295,7 @@ proc get_one_image { idbddimg } {
                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
              button $bouton.go -text "Create CATA" -borderwidth 2 -takefocus 1 \
-                -command "::bddimages_analyse::get_wcs" \
+                -command "::bddimages_analyse::get_cata" \
                 -bg $::bddimages_analyse::color_wcs -state $::bddimages_analyse::state_wcs
              pack $bouton.go -side left -anchor e \
                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0

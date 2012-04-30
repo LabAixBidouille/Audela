@@ -137,6 +137,7 @@ namespace eval bddimages_recherche {
    variable ::bddimages_recherche::current_list_id
    variable ::bddimages_recherche::action
 
+   variable progress
    #--------------------------------------------------
    # run { this }
    #--------------------------------------------------
@@ -490,6 +491,8 @@ namespace eval bddimages_recherche {
       #--- initConf
       if { ! [ info exists conf(bddimages,geometry_recherche) ] } { set conf(bddimages,geometry_recherche) "+100+100" }
       set bddconf(geometry_recherche) $conf(bddimages,geometry_recherche)
+      set ::bddimages_recherche::progress 0
+
 
       #---
       if { [ winfo exists $This ] } {
@@ -627,6 +630,23 @@ namespace eval bddimages_recherche {
            label $This.frame1.titre -font $bddconf(font,arial_10_b) \
                  -text "$caption(bddimages_recherche,titre)"
            pack $This.frame1.titre -in $This.frame1 -side top -padx 3 -pady 3
+
+
+           #--- Cree un frame pour afficher la barre de progression
+           #frame $This.frame1.pr -borderwidth 1 -cursor arrow -padx 5
+           #pack $pr_frame -in $This.frame1 -side top -expand 1 -fill x
+
+           #--- Cree un frame pour afficher la barre de progression
+           set pr_frame [frame $This.frame1.pr -borderwidth 1 -cursor arrow -padx 5]
+           pack $pr_frame -in $This.frame1 -side top -expand 1 -fill x
+
+               #----- UNKNOWN
+               button $pr_frame.charge -state active -text "Charge" -relief "raised" -command "::bddimages_recherche::charge_memory"
+               pack $pr_frame.charge -in $pr_frame -side left -anchor w -padx 0
+
+              set pf [ ttk::progressbar $pr_frame.p -variable ::bddimages_recherche::progress -orient horizontal -length 300 -mode determinate]
+              pack $pf -in $pr_frame -side left
+
 
            #--- Cree un frame pour afficher les boutons d'actions
            set action_frame [frame $This.frame1.action -borderwidth 1 -cursor arrow -padx 5]
@@ -791,6 +811,34 @@ namespace eval bddimages_recherche {
       #--- Surcharge la couleur de fond des resultats
       $This.frame6.result.tbl configure -background white
    }
+
+
+
+
+
+   proc ::bddimages_recherche::charge_memory {  } {
+
+      gren_info "Charge...\n"
+   }
+
+
+
+   proc ::bddimages_recherche::set_progress { cur max } {
+
+
+#      pack [ ttk::progressbar $this.p -variable v -orient horizontal -length 200 -mode determinate]
+#      for {set v 0} {$v<100} {incr v} { after 100; update }
+#      destroy $::acqt1m_offsetdark::frm.p
+
+      set ::bddimages_recherche::progress [format "%0.0f" [expr $cur * 100. /$max ] ]
+      gren_info "Progresse = $::bddimages_recherche::progress\n"
+   }
+
+
+
+
+
+
 
 #--------------------------------------------------
 #  Tbl2Edit { tbl }
