@@ -684,3 +684,276 @@ proc ::votable::attributesUnclosedElement { elementName attributes } {
 proc ::votable::attributesClosedElement { elementName attributes } {
    return [join [list [::votable::attributes $elementName $attributes] "/>"] ""]
 }
+
+
+#
+# Construction des elements FIELDS en fonction de la cle de la colonne
+# @access public
+# @param table nom de la table contenant la cle
+# @param key nom de la colonne dont on veut construire l'element FIELD
+# @return liste liste contenant la definition du champ et sa description
+#
+proc ::votable::getFieldFromKey { table key } {
+   switch $table {
+      IMG     { set f [::votable::getFieldFromKey_IMG $key] }      
+      USNOA2  { set f [::votable::getFieldFromKey_USNOA2 $key] }      
+      TYCHO2  { set f [::votable::getFieldFromKey_TYCHO2 $key] }      
+      UCAC2   { set f [::votable::getFieldFromKey_UCAC2 $key] }      
+      UCAC3   { set f [::votable::getFieldFromKey_UCAC3 $key] }
+      OVNI    { set f [::votable::getFieldFromKey_OVNI $key] }
+      default { set f [::votable::getFieldFromKey_DEFAULT $key] }
+   }
+}
+
+#
+# Construction des elements FIELDS en fonction de la cle de la colonne
+# @access private
+# @param key nom de la colonne dont on veut construire l'element FIELD
+# @return liste liste contenant la definition du champ et sa description
+#
+proc ::votable::getFieldFromKey_DEFAULT { key } {
+   # Id et Nom du champ
+   set field [list "$::votable::Field::ID $key" "$::votable::Field::NAME $key"]
+   # Autres infos 
+   switch $key {
+      idcataspec {
+         set description "Source index"
+         lappend field "$::votable::Field::UCD \"meta.id;meta.number\"" \
+                       "$::votable::Field::DATATYPE \"int\"" \
+                       "$::votable::Field::WIDTH \"6\""
+      }
+      default {
+         # si $key n'est pas reconnu alors on renvoie des listes vides
+         set field ""
+         set description ""
+      }
+   }
+   return [list $field [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+}
+
+#
+# Construction des elements FIELDS en fonction de la cle de la colonne pour le cataloguye IMG
+# @access private
+# @param key nom de la colonne dont on veut construire l'element FIELD
+# @return liste liste contenant la definition du champ et sa description
+#
+proc ::votable::getFieldFromKey_IMG { key } {
+   # Id et Nom du champ
+   set field [list "$::votable::Field::ID $key" "$::votable::Field::NAME $key"]
+   # Autres infos 
+   switch $key {
+      id {
+         set description "Source identifier"
+         lappend field "$::votable::Field::UCD \"meta.id;meta.number\"" \
+                       "$::votable::Field::DATATYPE \"int\"" \
+                       "$::votable::Field::WIDTH \"6\""
+      }
+      flag {
+         set description "Matching flag: 1=seen on image only, 3=seen on image+catalog, 2=seen on catalog only"
+         lappend field "$::votable::Field::UCD \"meta.code\"" \
+                       "$::votable::Field::DATATYPE \"char\"" \
+                       "$::votable::Field::ARRAYSIZE \"6\"" \
+                       "$::votable::Field::WIDTH \"6\""
+      }
+      xpos -
+      ypos {
+         set description "Cartesian coordinate of the source in the image (add 1 to be in image coordinates)"
+         lappend field "$::votable::Field::UCD \"pos.cartesian.[string index $key 0]\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"2\"" \
+                       "$::votable::Field::UNIT \"pixel\""
+      }
+      instr_mag {
+         set description "Instrumental magnitude -2.5*log(flux) by Sextractor"
+         lappend field "$::votable::Field::UCD \"phot.mag\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"3\""
+      }
+      err_mag {
+         set description "Uncertainty of the instrumental measured magnitude by Sextractor"
+         lappend field "$::votable::Field::UCD \"stat.error;phot.mag\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"3\""
+      }
+      flux_sex {
+         set description "Measured flux of the source by Sextractor"
+         lappend field "$::votable::Field::UCD \"phot.count\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"1\"" \
+                       "$::votable::Field::UNIT \"ADU\""
+      }
+      err_flux_sex {
+         set description "Uncertainty of the measured source flux by Sextractor"
+         lappend field "$::votable::Field::UCD \"stat.error;phot.count\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"1\"" \
+                       "$::votable::Field::UNIT \"ADU\""
+      }
+      ra -
+      dec {
+         if {[string equal -nocase $key "ra"]} {
+            set description "Astrometric J2000 right ascension"
+         } else {
+            set description "Astrometric J2000 declination"
+         }
+         lappend field "$::votable::Field::UCD \"pos.eq.$key;meta.main\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"9\"" \
+                       "$::votable::Field::PRECISION \"5\"" \
+                       "$::votable::Field::UNIT \"deg\""
+      }
+      calib_mag -
+      calib_mag_ss1 -
+      calib_mag_ss2 {
+         set description "Calibrated magnitude (relative to R band) with a superstar method "
+         if {[string equal -nocase $key "calib_mag"]} { set description "Calibrated magnitude (relative to R band) with a simple constant " }
+         if {[string equal -nocase $key "calib_mag_ss1"]} { append description " 1" }
+         if {[string equal -nocase $key "calib_mag_ss2"]} { append description " 2" }
+         lappend field "$::votable::Field::UCD \"phot.mag\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"4\""
+      }
+      err_calib_mag_ss1 -
+      err_calib_mag_ss2 {
+         set description "Uncertainty of the calibrated magnitude of the superstar method "
+         if {[string equal -nocase $key "err_calib_mag_ss1"]} { append description " 1" }
+         if {[string equal -nocase $key "err_calib_mag_ss2"]} { append description " 2" }
+         lappend field "$::votable::Field::UCD \"stat.error;phot.mag\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"4\""
+      }
+      nb_neighbours {
+         set description "Nb neighbours for superstar methods"
+         lappend field "$::votable::Field::UCD \"\"" \
+                       "$::votable::Field::DATATYPE \"int\"" \
+                       "$::votable::Field::WIDTH \"4\""
+      }
+      radius {
+         set description "Radius around star where superstar is computed"
+         lappend field "$::votable::Field::UCD \"\"" \
+                       "$::votable::Field::DATATYPE \"int\"" \
+                       "$::votable::Field::WIDTH \"4\"" \
+                       "$::votable::Field::UNIT \"pixel\""
+      }
+      background_sex {
+         set description "Background estimated by Sextractor"
+         lappend field "$::votable::Field::UCD \"\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"6\"" \
+                       "$::votable::Field::PRECISION \"1\"" \
+                       "$::votable::Field::UNIT \"adu\""
+      }
+      x2_momentum_sex -
+      y2_momentum_sex -
+      xy_momentum_sex {
+         if {[string equal -nocase $key "x2_momentum_sex"]} { set description "x2 momentum estimated by Sextractor" }
+         if {[string equal -nocase $key "y2_momentum_sex"]} { set description "y2 momentum estimated by Sextractor" }
+         if {[string equal -nocase $key "xy_momentum_sex"]} { set description "xy momentum estimated by Sextractor" }
+         lappend field "$::votable::Field::UCD \"\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"6\"" \
+                       "$::votable::Field::PRECISION \"2\""
+      }
+      minor_axis_sex -
+      major_axis_sex {
+         set description [expr [string equal -nocase $key "minor_axis_sex"] ? {"Minor axis of ellipse estimated by Sextractor"} : {"Major axis of ellipse estimated by Sextractor"}]
+         set ucd [expr [string equal -nocase $key "minor_axis_sex"] ? {"stat.stdev;stat.min;pos.errorEllipse"} : {"stat.stdev;stat.max;pos.errorEllipse"}]
+         lappend field "$::votable::Field::UCD \"$ucd\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"6\"" \
+                       "$::votable::Field::PRECISION \"2\"" \
+                       "$::votable::Field::UNIT \"pixel\""
+      }
+      position_angle_sex {
+         set description "Position angle of ellipse estimated by Sextractor"
+         lappend field "$::votable::Field::UCD \"pos.posAng\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"6\"" \
+                       "$::votable::Field::PRECISION \"1\"" \
+                       "$::votable::Field::UNIT \"deg\""
+      }
+      fwhm_sex {
+         set description "FWHM of the source measured by Sextractor"
+         lappend field "$::votable::Field::UCD \"phys.angSize\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"6\"" \
+                       "$::votable::Field::PRECISION \"2\"" \
+                       "$::votable::Field::UNIT \"pixel\""
+      }
+      flag_sex {
+         set description "Sextractor flag (0=no problem, +1=neighbor, +2=linked, +4=satured, +8=border, +16=badpix, >=+32=memory)"
+         lappend field "$::votable::Field::UCD \"meta.code\"" \
+                       "$::votable::Field::DATATYPE \"short\"" \
+                       "$::votable::Field::WIDTH \"2\""
+      }
+      default {
+         # si $key n'est pas reconnu alors on renvoie des listes vides
+         set field ""
+         set description ""
+      }
+   }
+   return [list $field [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+}
+
+#
+# Construction des elements FIELDS en fonction de la cle de la colonne pour le cataloguye USNO-A2
+# @access private
+# @param key nom de la colonne dont on veut construire l'element FIELD
+# @return liste liste contenant la definition du champ et sa description
+#
+proc ::votable::getFieldFromKey_USNOA2 { key } {
+   # Id et Nom du champ
+   set field [list "$::votable::Field::ID $key" "$::votable::Field::NAME $key"]
+   # Autres infos 
+   switch $key {
+      ra -
+      dec {
+         if {[string equal -nocase $key "ra"]} {
+            set description "Astrometric J2000 right ascension"
+         } else {
+            set description "Astrometric J2000 declination"
+         }
+         lappend field "$::votable::Field::UCD \"pos.eq.$key;meta.main\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"9\"" \
+                       "$::votable::Field::PRECISION \"5\"" \
+                       "$::votable::Field::UNIT \"deg\""
+      }
+      poserr {
+         set description "Uncertainty of the celestial coordinates"
+         set ucd "stat.error;pos"
+         lappend field "$::votable::Field::UCD \"$ucd\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"6\"" \
+                       "$::votable::Field::PRECISION \"2\"" \
+                       "$::votable::Field::UNIT \"arcsec\""
+      }
+      mag {
+         set description "Catalogue magnitude"
+         lappend field "$::votable::Field::UCD \"phot.mag\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"3\""
+      }
+      magerr {
+         set description "Uncertainty of the catalogue magnitude"
+         lappend field "$::votable::Field::UCD \"stat.error;phot.mag\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"3\""
+      }
+      default {
+         # si $key n'est pas reconnu alors on renvoie des listes vides
+         set field ""
+         set description ""
+      }
+   }
+   return [list $field [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+}
