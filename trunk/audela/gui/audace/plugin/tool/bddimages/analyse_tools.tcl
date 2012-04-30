@@ -217,8 +217,6 @@ namespace eval analyse_tools {
       # Noms du fichier et du repertoire du cata TXT
       set imgfilename [::bddimages_liste::lget $::analyse_tools::current_image filename]
       set imgdirfilename [::bddimages_liste::lget $::analyse_tools::current_image dirfilename]
-gren_info "$imgfilename\n"
-gren_info "$imgdirfilename\n"
       # Definition du nom du cata XML
       set f [file join $bddconf(dirtmp) [file rootname [file rootname $imgfilename]]]
       set cataxml "${f}.xml"
@@ -230,9 +228,9 @@ gren_info "$imgdirfilename\n"
 
       # Creation de la VOTable en memoire
       set votable [::votableUtil::list2votable $listsources $tabkey]
-gren_info "Enregistrement cata XML: $cataxml\n"
       
       # Sauvegarde du cata XML
+      gren_info "Enregistrement du cata XML: $cataxml\n"
       set fxml [open $cataxml "w"]
       puts $fxml $votable
       close $fxml
