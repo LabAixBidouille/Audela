@@ -299,6 +299,9 @@ proc bddimages_insertion_unfich { ligne } {
 
   uplevel #0 "source \"[ file join $bddconf(rep_plug) bddimages_sub_header.tcl ]\""
 
+  set insert_idbddimg -1
+  set msg ""
+
   set etat      [lindex $ligne 0]
   set nomfich   [lindex $ligne 1]
   set dateobs   [lindex $ligne 2]
@@ -356,7 +359,10 @@ proc bddimages_insertion_unfich { ligne } {
 
       # --- Insertion des donnees dans la base
       if {$err==0} {
-        set err [bddimages_images_datainsert $tabkey $idheader $nomfich $site $dateobs $sizefich]
+        set result [bddimages_images_datainsert $tabkey $idheader $nomfich $site $dateobs $sizefich]
+        set err [lindex $result 0]
+        set insert_idbddimg [lindex $result 1]
+        set msg [lindex $result 2]
       } else {
           set dirpb "$bddconf(direrr)"
           createdir_ifnot_exist $dirpb
@@ -398,7 +404,7 @@ proc bddimages_insertion_unfich { ligne } {
      set err [bddimages_catas_datainsert $nomfich $sizefich $form2]
      }
 
-      return [list $err $nomfich]
+      return [list $err $nomfich $insert_idbddimg $msg]
   }
   # fin de bddimages_insertion
 
@@ -411,6 +417,7 @@ proc bddimages_images_datainsert { tabkey idheader filename site dateobs sizefic
    global bddconf
 
    set etat 0
+   set insert_idbddimg -1
 
    # Detection de la date et site
 
@@ -428,7 +435,9 @@ proc bddimages_images_datainsert { tabkey idheader filename site dateobs sizefic
       # -- Execute la ligne SQL
 
     set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
+
     if {$err} {
+    
        bddimages_sauve_fich "bddimages_images_datainsert: ERREUR : <$err> <$msg>"
 
       if {[string last "images' doesn't exist" $msg]>0} {
@@ -466,6 +475,7 @@ proc bddimages_images_datainsert { tabkey idheader filename site dateobs sizefic
      }
 
      set err [catch {::bddimages_sql::sql insertid} insert_idbddimg]
+     gren_info "insert_idbddimg = $insert_idbddimg\n"
     # bddimages_sauve_fich "bddimages_images_datainsert: Insertion nouvel element dans la table images <$insert_idbddimg>"
 
    # -- Insere nouvelle image dans la table commun
@@ -654,7 +664,10 @@ proc bddimages_images_datainsert { tabkey idheader filename site dateobs sizefic
 
         }
         # Fin if {$errnum!=0} ... else ... file copy $filename $dirfilename/
-return $etat
+
+
+
+return [list $etat $insert_idbddimg ""]
 }
 
 
@@ -766,6 +779,7 @@ proc bddimages_catas_datainsert { filename sizefich form } {
 
     # Recupere la valeur de l'autoincrement
     set err [catch {::bddimages_sql::sql insertid} idbddcata]
+     gren_info "idbddcata = $idbddcata\n"
 
 
   # -- Insertion dans la table cataimage

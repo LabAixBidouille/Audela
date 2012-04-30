@@ -819,12 +819,17 @@ namespace eval bddimages_recherche {
    proc ::bddimages_recherche::charge_memory {  } {
 
       gren_info "Charge...\n"
+      for {set i 0} {$i<100} {incr i} {
+         ::bddimages_recherche::set_progress $i 100
+         after 10
+      }
+      ::bddimages_recherche::set_progress 0 100
+      
    }
 
 
 
    proc ::bddimages_recherche::set_progress { cur max } {
-
 
 #      pack [ ttk::progressbar $this.p -variable v -orient horizontal -length 200 -mode determinate]
 #      for {set v 0} {$v<100} {incr v} { after 100; update }

@@ -147,6 +147,8 @@ proc ::bddimages::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages gui_cdl_withwcs.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages tools_cdl.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages test.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_sub_insertion.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_insertion_applet.tcl ]\""
 
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_config.cap ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_status.cap ]\""
