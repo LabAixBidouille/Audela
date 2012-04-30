@@ -1320,6 +1320,14 @@ proc get_one_image_obsolete { idbddimg } {
              checkbutton $boucle.check -highlightthickness 0 -text "Analyse continue" -variable ::analyse_tools::boucle
              pack $boucle.check -in $boucle -side left -padx 5 -pady 0
   
+        #--- Cree un frame pour afficher boucle
+        set skybot [frame $f2.skybot -borderwidth 0 -cursor arrow -relief groove]
+        pack $skybot -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             #--- Cree un checkbutton
+             checkbutton $skybot.check -highlightthickness 0 -text "Utiliser SkyBot" -variable ::analyse_tools::use_skybot
+             pack $skybot.check -in $skybot -side left -padx 5 -pady 0
+  
         #--- Cree un frame pour afficher boutons
         set bouton [frame $f3.bouton -borderwidth 0 -cursor arrow -relief groove]
         pack $bouton -in $f3 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
