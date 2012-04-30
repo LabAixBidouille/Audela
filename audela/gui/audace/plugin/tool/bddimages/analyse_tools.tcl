@@ -201,7 +201,7 @@ namespace eval analyse_tools {
 
    variable delpv
    variable deuxpasses
-
+   variable limit_nbstars_accepted
    
    proc ::analyse_tools::get_cata {  } {
 
@@ -225,6 +225,7 @@ namespace eval analyse_tools {
 
       # Liste des champs du header de l'image
       set tabkey [::bddimages_liste::lget $::analyse_tools::current_image "tabkey"]
+      gren_info "** tabkey : $tabkey\n"
       # Liste des sources de l'image
       set listsources $::analyse_tools::current_listsources
 
@@ -270,6 +271,19 @@ namespace eval analyse_tools {
          set $::analyse_tools::nb_ucac3 [::manage_source::get_nb_sources_by_cata $listsources UCAC3]
       }
       
+      if {$::analyse_tools::use_skybot} {
+         set dateobs     [lindex [::bddimages_liste::lget $tabkey DATE-OBS   ] 1]
+         set exposure    [lindex [::bddimages_liste::lget $tabkey EXPOSURE   ] 1]
+         set datejd  [ mc_date2jd $dateobs ]
+         set datejd  [ expr $datejd + $exposure/86400.0/2.0 ]
+         set dateiso [ mc_date2iso8601 $datejd ]
+         set radius  [expr $radius]
+         set uaicode [lindex [::bddimages_liste::lget $tabkey UAICODE ] 1]
+         set skybot [ get_skybot $dateiso $ra $dec $radius $uaicode ]
+         set listsources [ identification $listsources "OVNI" $skybot "SKYBOT" 30.0 10.0 10.0] 
+         set $::analyse_tools::nb_skybot [::manage_source::get_nb_sources_by_cata $listsources SKYBOT]
+      }
+      
       gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $listsources]\n"
 
       # Creation de la VOTable en memoire
@@ -285,13 +299,20 @@ namespace eval analyse_tools {
    }
 
 
+
+
+
+
+
+
+
+
+
    proc ::analyse_tools::get_wcs {  } {
 
       global audace
       global bddconf
 
-
-         set limit_nbstars_accepted 10
 
          set img $::analyse_tools::current_image
  
@@ -350,7 +371,8 @@ namespace eval analyse_tools {
          gren_info "PASS1: calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO  $::analyse_tools::catalog_usnoa2 -del_tmp_files 0\n"
          set erreur [catch {set nbstars [calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO $::analyse_tools::catalog_usnoa2 -del_tmp_files 0]} msg]
          if {$erreur} {
-            return -code 1 $msg 
+            gren_info "1 ERR NBSTARS=$nbstars ($msg)"
+            return -code 1 "ERR NBSTARS=$nbstars ($msg)"
             }
 
          set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
@@ -362,7 +384,8 @@ namespace eval analyse_tools {
             gren_info "PASS2: calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2 -del_tmp_files 0\n"
             set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 -del_tmp_files 0]} msg]
             if {$erreur} {
-               return -code 1 $msg 
+                  gren_info "2 ERR NBSTARS=$nbstars ($msg)"
+               return -code 2 "ERR NBSTARS=$nbstars ($msg)"
                }
 
             set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
@@ -371,13 +394,15 @@ namespace eval analyse_tools {
             gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"
          }
 
-         if { $::analyse_tools::keep_radec==1 && $nbstars<$limit_nbstars_accepted } {
+         gren_info "nbstars/limit_nbstars_accepted  = $nbstars/$::analyse_tools::limit_nbstars_accepted \n"
+         if { $::analyse_tools::keep_radec==1 && $nbstars<$::analyse_tools::limit_nbstars_accepted } {
             set ra  $::analyse_tools::ra_save
             set dec $::analyse_tools::dec_save
             gren_info "PASS3: calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2 -del_tmp_files 0\n"
             set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 -del_tmp_files 0]} msg]
             if {$erreur} {
-               return -code 1 $msg 
+                  gren_info "3 ERR NBSTARS=$nbstars ($msg)"
+               return -code 3 "ERR NBSTARS=$nbstars ($msg)"
                }
             set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
             set ra  [lindex $a 0]
@@ -388,7 +413,8 @@ namespace eval analyse_tools {
                gren_info "PASS4: calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2 -del_tmp_files 0\n"
                set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 -del_tmp_files 0]} msg]
                if {$erreur} {
-                  return -code 1 $msg 
+                  gren_info "4 ERR NBSTARS=$nbstars ($msg)"
+                  return -code 4 "ERR NBSTARS=$nbstars ($msg)"
                   }
                set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
                set ra  [lindex $a 0]
@@ -404,7 +430,7 @@ namespace eval analyse_tools {
          set ::analyse_tools::nb_usnoa2 [::manage_source::get_nb_sources_by_cata $::analyse_tools::current_listsources USNOA2]
          gren_info "rollup = [::manage_source::get_nb_sources_rollup $::analyse_tools::current_listsources]\n"
 
-         if {$nbstars > $limit_nbstars_accepted} {
+         if {$nbstars > $::analyse_tools::limit_nbstars_accepted} {
              set wcs_ok true
          }         
           
@@ -413,26 +439,28 @@ namespace eval analyse_tools {
 #   gren_info "rollup = [::manage_source::get_nb_sources_rollup $listsources]\n"
  
          if {$wcs_ok} {
+              gren_info "WCS_OK $wcs_ok\n"
 
              set ::analyse_tools::ra_save $ra 
              set ::analyse_tools::dec_save $dec
 
              set ident [bddimages_image_identification $idbddimg]
-             #gren_info "\n\n** ident = $ident $idbddimg\n"
+             gren_info "** ident = $ident $idbddimg\n"
              set fileimg  [lindex $ident 1]
              set filecata [lindex $ident 3]
              if {$fileimg == -1} {
                 ::console::affiche_erreur "Fichier image inexistant ($idbddimg) \n"
                 if {$erreur} {
-                   return -code 1 "Fichier image inexistant ($idbddimg) \n"
+                   gren_info "5 Fichier image inexistant ($idbddimg) \n"
+                   return -code 5 "Fichier image inexistant ($idbddimg) \n"
                    }
              }
 
              # Efface les cles PV1_0 et PV2_0 car pas bon
              if {$::analyse_tools::delpv} {
-                buf$::audace(bufNo) delkwd PV1_0
-                buf$::audace(bufNo) delkwd PV2_0
-             }
+                set err [catch {buf$::audace(bufNo) delkwd PV1_0} msg]
+                set err [catch {buf$::audace(bufNo) delkwd PV2_0} msg]
+             } 
 
              # Modifie le champs BDI
              set key [buf$::audace(bufNo) getkwd "BDDIMAGES WCS"]
@@ -460,16 +488,33 @@ namespace eval analyse_tools {
              insertion_solo $filefinal
              if {$filecata!=-1} {
                 set filecata [file join $bddconf(dirinco) [file tail $filecata]]
-                insertion_solo $filecata
+                set err [catch{insertion_solo $filecata} msg ]
+                gren_info "** INSERTION_SOLO = $err $msg\n"
+             }
+             set errnum [catch {file delete -force $filetmp} msg ]
+
+             set errnum [catch {set list_keys [buf$::audace(bufNo) getkwds]} msg ]
+             set tabkey {}
+             foreach key $list_keys {
+                set garde "ok"
+                if {$key==""} {set garde "no"}
+                foreach rekey $tabkey {
+                   if {$key==$rekey} {set garde "no"}
+                }
+                if {$garde=="ok"} {
+                   lappend tabkey [list $key [buf$::audace(bufNo) getkwd $key] ]
+                }
              }
 
-             set errnum [catch {file delete -force $filetmp} msg ]
-             if {$erreur} {
-                return -code 0 "WCS OK"
-                }
-         } 
+             set result     [bddimages_entete_preminforecon $tabkey]
+             set err        [lindex $result 0]
+             set $tabkey [lindex $result 1]
+             set ::analyse_tools::current_image [::bddimages_liste::lupdate $::analyse_tools::current_image tabkey $tabkey]
+
+             return -code 0 "WCS OK"
+         }
          
-         return false
+         return -code 10 "Sources non identifiees"
    }
 
    #
