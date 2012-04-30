@@ -573,7 +573,7 @@ proc get_one_image_obsolete { idbddimg } {
 
       set ::analyse_tools::use_skybot      0
       set ::analyse_tools::keep_radec      1
-      set ::analyse_tools::create_cata     0
+      set ::analyse_tools::create_cata     1
       set ::analyse_tools::delpv           1
       set ::analyse_tools::boucle          0
       set ::analyse_tools::deuxpasses      1
@@ -1327,7 +1327,7 @@ proc get_one_image_obsolete { idbddimg } {
         pack $create_cata -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
              #--- Cree un checkbutton
-             checkbutton $create_cata.check -highlightthickness 0 -text "Creer le fichier CATA" -variable ::analyse_tools::create_cata
+             checkbutton $create_cata.check -highlightthickness 0 -text "Inserer le fichier CATA" -variable ::analyse_tools::create_cata
              pack $create_cata.check -in $create_cata -side left -padx 5 -pady 0
   
         #--- Cree un frame pour afficher boucle

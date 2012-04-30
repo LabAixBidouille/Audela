@@ -215,17 +215,18 @@ namespace eval analyse_tools {
 #      set cataloaded [::bddimages_liste::lget $::analyse_tools::current_image cataloaded]
 
       gren_info "** Create cata XML:\n"
+      gren_info "** current_image: $::analyse_tools::current_image \n"
 
       # Noms du fichier et du repertoire du cata TXT
       set imgfilename [::bddimages_liste::lget $::analyse_tools::current_image filename]
       set imgdirfilename [::bddimages_liste::lget $::analyse_tools::current_image dirfilename]
       # Definition du nom du cata XML
       set f [file join $bddconf(dirtmp) [file rootname [file rootname $imgfilename]]]
-      set cataxml "${f}.xml"
+      set cataxml "${f}_cata.xml"
 
       # Liste des champs du header de l'image
       set tabkey [::bddimages_liste::lget $::analyse_tools::current_image "tabkey"]
-      gren_info "** tabkey : $tabkey\n"
+
       # Liste des sources de l'image
       set listsources $::analyse_tools::current_listsources
 
@@ -294,6 +295,13 @@ namespace eval analyse_tools {
       set fxml [open $cataxml "w"]
       puts $fxml $votable
       close $fxml
+
+      if {$::analyse_tools::create_cata} {
+         set err [ catch { insertion_solo $cataxml } msg ]
+         gren_info "** INSERTION_SOLO = $err $msg\n"
+      }
+
+
 
       return true
    }
@@ -475,22 +483,14 @@ namespace eval analyse_tools {
              buf$::audace(bufNo) save $filetmp
              set errnum [catch {exec gzip -c $filetmp > $filefinal} msg ]
 
-             # copie l image dans incoming, ainsi que le fichier cata si il existe
-             if {$filecata != -1} {
-                set errnum [catch {file rename -force -- $filecata $bddconf(dirinco)/.} msg ]
-             }
 
              # efface l image dans la base et le disque
              bddimages_image_delete_fromsql $ident
              bddimages_image_delete_fromdisk $ident
 
-             # insere l image et le cata dans la base
+             # insere l image et le cata dans la base filecata
              insertion_solo $filefinal
-             if {$filecata!=-1} {
-                set filecata [file join $bddconf(dirinco) [file tail $filecata]]
-                set err [catch{insertion_solo $filecata} msg ]
-                gren_info "** INSERTION_SOLO = $err $msg\n"
-             }
+             
              set errnum [catch {file delete -force $filetmp} msg ]
 
              set errnum [catch {set list_keys [buf$::audace(bufNo) getkwds]} msg ]
