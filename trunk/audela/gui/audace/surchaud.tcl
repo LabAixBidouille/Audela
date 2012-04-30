@@ -1359,10 +1359,11 @@ proc calibwcs {args} {
          for {set k 7} {$k<[expr $argc-1]} {incr k} {
             set key [lindex $args $k]
             if {$key=="-del_tmp_files"} {
-               del_tmp_files [lindex $args [expr $k+1]]
+               set del_tmp_files [lindex $args [expr $k+1]]
             }
          }
       }
+
 
       set pi [expr 4*atan(1.)]
       set naxis1 [lindex [buf$::audace(bufNo) getkwd NAXIS1] 1]
