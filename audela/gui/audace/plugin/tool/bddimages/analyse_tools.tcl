@@ -202,6 +202,43 @@ namespace eval analyse_tools {
    variable delpv
    variable deuxpasses
 
+   
+   proc ::analyse_tools::get_cata {  } {
+
+      # Id du cata
+#      set idbddcata [::bddimages_liste::lget $::analyse_tools::current_image idbddcata]
+      # Cata existe ?
+#      set cataexists [::bddimages_liste::lget $::analyse_tools::current_image cataexist]
+      # Cata charge ?
+#      set cataloaded [::bddimages_liste::lget $::analyse_tools::current_image cataloaded]
+
+      # Noms du fichier et du repertoire du cata TXT
+      set catafilename [::bddimages_liste::lget $::analyse_tools::current_image catafilename]
+      set catadirfilename [::bddimages_liste::lget $::analyse_tools::current_image catadirfilename]
+      # Definition du nom du cata XML
+      set f [file join $catadirfilename [file rootname [file rootname $catafilename]]]
+      set cataxml "${f}.xml"
+
+      # Liste des champs du header de l'image
+      set tabkey [::bddimages_liste::lget $::analyse_tools::current_image "tabkey"]
+      # Liste des sources de l'image
+      set listsources $::analyse_tools::current_listsources
+
+      # Creation de la VOTable en memoire
+      set votable [::votableUtil::list2votable $listsources $tabkey]
+
+      # Sauvegarde du cata XML
+      set fxml [open $cataxml "w"]
+      puts $fxml $votable
+      close $fxml
+
+      if {$::analyse_tools::create_cata} {
+         # TODO insertion solo cata.xml 
+      }
+
+      return true
+   }
+
 
    proc ::analyse_tools::get_wcs {  } {
 
@@ -240,41 +277,42 @@ namespace eval analyse_tools {
          set idbddimg    [::bddimages_liste::lget $img idbddimg]
          set file        [file join $bddconf(dirbase) $dirfilename $filename]
 
-         #gren_info "idbddimg    $idbddimg\n"
-        #gren_info "ra          $ra\n"
-        #gren_info "dec         $dec\n"
-        #gren_info "pixsize1    $pixsize1\n"
-        #gren_info "pixsize2    $pixsize2\n"
-        #gren_info "foclen      $foclen\n"
-        #gren_info "dateobs     $dateobs \n"
-        #gren_info "exposure    $exposure\n"
-         #gren_info "naxis1      $naxis1  \n"
-         #gren_info "naxis2      $naxis2  \n"
-         #gren_info "filename    $filename\n"
-         #gren_info "dirfilename $dirfilename\n"
-         #gren_info "file        $file\n"
+         gren_info "idbddimg    $idbddimg\n"
+         gren_info "ra          $ra\n"
+         gren_info "dec         $dec\n"
+         gren_info "pixsize1    $pixsize1\n"
+         gren_info "pixsize2    $pixsize2\n"
+         gren_info "foclen      $foclen\n"
+         gren_info "dateobs     $dateobs \n"
+         gren_info "exposure    $exposure\n"
+         gren_info "naxis1      $naxis1  \n"
+         gren_info "naxis2      $naxis2  \n"
+         gren_info "filename    $filename\n"
+         gren_info "dirfilename $dirfilename\n"
+         gren_info "file        $file\n"
 
-         set xcent    [expr $naxis1/2.0]
-         set ycent    [expr $naxis2/2.0]
-         #gren_info "xcent ycent $xcent $ycent\n"
+         set xcent [expr $naxis1/2.0]
+         set ycent [expr $naxis2/2.0]
+         gren_info "xcent ycent = $xcent $ycent\n"
 
-         #gren_info "** Calibration de l image\n"
-
-         #gren_info "param : $ra $dec $pixsize1 $pixsize2 $foclen\n"
-         #gren_info "catalog_usnoa2 : $::analyse_tools::catalog_usnoa2\n"
+         gren_info "****************************************************\n"
+         gren_info "** Calibration de l image\n"
+         gren_info "****************************************************\n"
+         gren_info "param : $ra $dec $pixsize1 $pixsize2 $foclen\n"
+         gren_info "catalog_usnoa2 : $::analyse_tools::catalog_usnoa2\n"
          gren_info "DEBUT WCS ra dec : $ra  $dec \n"
- 
-         gren_info "calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2 del_tmp_files 0\n"
-         set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 del_tmp_files 0]} msg]
+
+         gren_info "PASS1: calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO  $::analyse_tools::catalog_usnoa2 del_tmp_files 0\n"
+         set erreur [catch {set nbstars [calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO $::analyse_tools::catalog_usnoa2 del_tmp_files 0]} msg]
          if {$erreur} { return false }
 
-         #gren_info "calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2\n"
          set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
          set ra  [lindex $a 0]
          set dec [lindex $a 1]
-         #gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"
+         gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"
 
          if {$::analyse_tools::deuxpasses} {
+            gren_info "PASS2: calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2 del_tmp_files 0\n"
             set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 del_tmp_files 0]} msg]
             if {$erreur} { return false }
             set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
@@ -286,15 +324,16 @@ namespace eval analyse_tools {
          if { $::analyse_tools::keep_radec==1 && $nbstars<$limit_nbstars_accepted } {
              set ra  $::analyse_tools::ra_save
              set dec $::analyse_tools::dec_save
+             gren_info "PASS3: calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2 del_tmp_files 0\n"
              set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 del_tmp_files 0]} msg]
              if {$erreur} { return false }
-             #gren_info "calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2\n"
              set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
              set ra  [lindex $a 0]
              set dec [lindex $a 1]
-             #gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"
+             gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"
 
              if {$::analyse_tools::deuxpasses} {
+                gren_info "PASS4: calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2 del_tmp_files 0\n"
                 set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 del_tmp_files 0]} msg]
                 if {$erreur} { return false }
                 set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
@@ -304,20 +343,17 @@ namespace eval analyse_tools {
              }
          }         
 
-
          set ::analyse_tools::nb_usnoa2 $nbstars
-
          set ::analyse_tools::current_listsources [get_ascii_txt]
          set ::analyse_tools::nb_img    [::manage_source::get_nb_sources_by_cata $::analyse_tools::current_listsources IMG   ]
          set ::analyse_tools::nb_ovni   [::manage_source::get_nb_sources_by_cata $::analyse_tools::current_listsources OVNI  ]
          set ::analyse_tools::nb_usnoa2 [::manage_source::get_nb_sources_by_cata $::analyse_tools::current_listsources USNOA2]
-         #gren_info "rollup = [::manage_source::get_nb_sources_rollup $::analyse_tools::current_listsources]\n"
-
+         gren_info "rollup = [::manage_source::get_nb_sources_rollup $::analyse_tools::current_listsources]\n"
 
 
 
          if {$::analyse_tools::create_cata} {
-            
+            gren_info "Create CATA:\n"
             set listsources $::analyse_tools::current_listsources
             set tabkey [::bddimages_liste::lget $img "tabkey"]
 
@@ -361,18 +397,11 @@ namespace eval analyse_tools {
             
             gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $listsources]\n"
             set catafile [file join $bddconf(dirtmp) $filename.xml]
-            gren_info "write cata file: $catafile"
+            gren_info "write cata file: $catafile\n"
             write_cata_votable $listsources $tabkey $catafile
          }
 
-
-
-
-
-
-
-
-        if {$nbstars > $limit_nbstars_accepted} {
+         if {$nbstars > $limit_nbstars_accepted} {
              set wcs_ok true
          }         
           
@@ -453,8 +482,6 @@ namespace eval analyse_tools {
       return $radius
 
    }
-
-
 
 # Fin Classe
 }
