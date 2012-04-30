@@ -200,7 +200,7 @@ namespace eval bddimages_analyse {
    # @param img_list liste des images a calibrer
    # @return void
    #--------------------------------------------------
-   proc ::bddimages_analyse::creation_wcs_1 { img_list } {
+   proc ::bddimages_analyse::creation_wcs_1_obsolete { img_list } {
 
       global audace
       global bddconf
@@ -324,7 +324,7 @@ namespace eval bddimages_analyse {
 
 
 
-proc get_cata { catafile } {
+proc get_cata_obsolete { catafile } {
 
    global bddconf
 
@@ -446,7 +446,7 @@ proc get_cata { catafile } {
 
 
 
-proc get_one_image { idbddimg } {
+proc get_one_image_obsolete { idbddimg } {
 
    # pour ne traiter qu'une seule image
    # par exemple : SSP_ID=176 ./solarsystemprocess --console --file ros.tcl
@@ -626,7 +626,7 @@ proc get_one_image { idbddimg } {
 
          
 
-         # Charge l image en memoire
+         #ï¿½Charge l image en memoire
          #gren_info "cur id $::analyse_tools::id_current_image: \n"
          set ::analyse_tools::current_image [lindex $::analyse_tools::img_list [expr $::analyse_tools::id_current_image - 1] ]
          set tabkey      [::bddimages_liste::lget $::analyse_tools::current_image "tabkey"]
@@ -655,7 +655,7 @@ proc get_one_image { idbddimg } {
          #gren_info "\n\nTABKEY = $tabkey\n\n\n"
          #gren_info "$::analyse_tools::id_current_image = date : $date  idbddimg : $idbddimg  file : $filename $::analyse_tools::bddimages_wcs\n"
 
-         # Charge l image a l ecran
+         #ï¿½Charge l image a l ecran
          #gren_info "\n ** LOAD ** charge_current_image\n"
          buf$::audace(bufNo) load $file
 
@@ -667,7 +667,7 @@ proc get_one_image { idbddimg } {
             #visu$::audace(visuNo) disp [list [lindex $cuts 0] [lindex $cuts 1] ]
          }
          
-         # Mise a jour GUI
+         #ï¿½Mise a jour GUI
          $::bddimages_analyse::current_appli.bouton.back configure -state disabled
          $::bddimages_analyse::current_appli.bouton.back configure -state disabled
          $::bddimages_analyse::current_appli.infoimage.nomimage    configure -text $::analyse_tools::current_image_name
@@ -704,7 +704,12 @@ proc get_one_image { idbddimg } {
          if { $::analyse_tools::boucle ==1 } {
             ::bddimages_analyse::get_all_cata
          }  else {
-            ::bddimages_analyse::get_one_cata
+            if {[::bddimages_analyse::get_one_wcs] == true} {
+               if {[::analyse_tools::get_cata] == false} {
+# TODO gerer l'erreur 
+                  return false
+               }
+            }
          }
 
    }
@@ -780,7 +785,9 @@ proc get_one_image { idbddimg } {
             #::analyse_tools::nb_img   
             #::analyse_tools::nb_ovni  
             #::analyse_tools::nb_usnoa2
-            
+
+            return true
+
          } else {
             # "idbddimg : $idbddimg   filename : $filename wcs : erreur \n"
             ::console::affiche_erreur "idbddimg : $idbddimg   filename : $filename wcs : erreur \n"
@@ -789,24 +796,26 @@ proc get_one_image { idbddimg } {
                #gren_info "\n ** VISU ** get_one_wcs\n"
                ::audace::autovisu $::audace(visuNo)
             }
-            
+            return false
          }
    }
 
 
-   proc ::bddimages_analyse::get_one_cata { } {
-
-         set tabkey         [::bddimages_liste::lget $::analyse_tools::current_image "tabkey"]
-         set date           [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs" ] 1] ]
-         set bddimages_wcs  [string trim [lindex [::bddimages_liste::lget $tabkey bddimages_wcs] 1] ]
-         set idbddimg       [::bddimages_liste::lget $::analyse_tools::current_image idbddimg]
-         set filename       [::bddimages_liste::lget $::analyse_tools::current_image filename   ]
-         set dirfilename    [::bddimages_liste::lget $::analyse_tools::current_image dirfilename]
-         #gren_info "idbddimg : $idbddimg   wcs : $bddimages_wcs \n"
-
-         set result [::analyse_tools::get_wcs]
-
-   }
+#   proc ::bddimages_analyse::get_one_cata { } {
+#
+#         set tabkey         [::bddimages_liste::lget $::analyse_tools::current_image "tabkey"]
+#         set date           [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs" ] 1] ]
+#         set bddimages_wcs  [string trim [lindex [::bddimages_liste::lget $tabkey bddimages_wcs] 1] ]
+#         set idbddimg       [::bddimages_liste::lget $::analyse_tools::current_image idbddimg]
+#         set filename       [::bddimages_liste::lget $::analyse_tools::current_image filename   ]
+#         set dirfilename    [::bddimages_liste::lget $::analyse_tools::current_image dirfilename]
+#         #gren_info "idbddimg : $idbddimg   wcs : $bddimages_wcs \n"
+#
+#         set result [::analyse_tools::get_wcs]
+#      
+#         set err [::analyse_tools::get_cata $result]
+#
+#   }
 
 
 
@@ -863,7 +872,7 @@ proc get_one_image { idbddimg } {
       set ::analyse_tools::current_image_date $date
       #gren_info "$::analyse_tools::id_current_image = date : $date  idbddimg : $idbddimg  file : $filename $::analyse_tools::bddimages_wcs\n"
 
-      # Charge l image a l ecran
+      #ï¿½Charge l image a l ecran
       #gren_info "\n ** LOAD ** \n"
       buf$::audace(bufNo) load $file
       #gren_info "\n ** VISU ** premiere image\n"
