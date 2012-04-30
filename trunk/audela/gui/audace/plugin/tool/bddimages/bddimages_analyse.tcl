@@ -747,9 +747,10 @@ proc get_one_image_obsolete { idbddimg } {
          set dirfilename    [::bddimages_liste::lget $::analyse_tools::current_image dirfilename]
          #gren_info "idbddimg : $idbddimg   wcs : $bddimages_wcs \n"
 
-         set result [::analyse_tools::get_wcs]
-
-         if {$result == true } {
+         set err [catch {::analyse_tools::get_wcs} msg]
+         gren_info "::analyse_tools::get_wcs $err $msg \n"
+         
+         if {$err == 0 } {
             set newimg [::bddimages_liste_gui::file_to_img $filename $dirfilename]
             
             set ::analyse_tools::img_list [lreplace $::analyse_tools::img_list [expr $::analyse_tools::id_current_image -1] [expr $::analyse_tools::id_current_image-1] $newimg]
@@ -790,6 +791,7 @@ proc get_one_image_obsolete { idbddimg } {
 
          } else {
             # "idbddimg : $idbddimg   filename : $filename wcs : erreur \n"
+            ::console::affiche_erreur 
             ::console::affiche_erreur "idbddimg : $idbddimg   filename : $filename wcs : erreur \n"
             if { $::analyse_tools::boucle == 1 } {
                cleanmark
