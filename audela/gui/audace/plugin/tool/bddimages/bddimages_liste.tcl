@@ -20,8 +20,8 @@
 #
 #   {             -- debut d une image
 #
-#     {ibddimg 1}
-#     {ibddcata 2}
+#     {idbddimg 1}
+#     {idbddcata 2}
 #     {filename toto.fits.gz}
 #     {dirfilename /.../}
 #     {filenametmp toto.fit}

@@ -940,6 +940,11 @@ proc get_one_image_obsolete { idbddimg } {
       set frm $::bddimages_analyse::fen.frm_creation_wcs
       set ::bddimages_analyse::current_appli $frm
 
+
+
+
+
+
       #--- Cree un frame general
       frame $frm -borderwidth 0 -cursor arrow -relief groove
       pack $frm -in $::bddimages_analyse::fen -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
@@ -1189,25 +1194,49 @@ proc get_one_image_obsolete { idbddimg } {
       frame $frm -borderwidth 0 -cursor arrow -relief groove
       pack $frm -in $::bddimages_analyse::fen -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-        #--- Cree un label pour le titre
-        label $frm.titre -text "Repertoire des catalogues"
-        pack $frm.titre -in $frm -side top -padx 3 -pady 3
+      #--- Cree un label pour le titre
+      label $frm.titre -text "Repertoire des catalogues"
+      pack $frm.titre -in $frm -side top -padx 3 -pady 3
+
+
+         set onglets [frame $frm.onglets -borderwidth 0 -cursor arrow -relief groove]
+         pack $onglets -in $frm -side top -expand 0 -fill x -padx 10 -pady 5
+ 
+
+            pack [ttk::notebook $onglets.nb]
+            set f1 [frame $onglets.nb.f1]
+            set f2 [frame $onglets.nb.f2]
+            set f3 [frame $onglets.nb.f3]
+            set f4 [frame $onglets.nb.f4]
+            
+            $onglets.nb add $f1 -text "Catalogues"
+            $onglets.nb add $f2 -text "Variables"
+            $onglets.nb add $f3 -text "Actions"
+            $onglets.nb add $f4 -text "Couleurs"
+            $onglets.nb select $f3
+            ttk::notebook::enableTraversal $onglets.nb
+
+
+
+
+
+
 
         #--- Cree un frame pour afficher ucac2
-        set usnoa2 [frame $frm.usnoa2 -borderwidth 0 -cursor arrow -relief groove]
-        pack $usnoa2 -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+        set usnoa2 [frame $f1.usnoa2 -borderwidth 0 -cursor arrow -relief groove]
+        pack $usnoa2 -in $f1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
              #--- Cree un checkbutton
              checkbutton $usnoa2.check -highlightthickness 0 -text "USNO-A2" \
                               -variable ::analyse_tools::use_usnoa2 -state disabled
              pack $usnoa2.check -in $usnoa2 -side left -padx 5 -pady 0
              #--- Cree un entry
-             entry $usnoa2.dir -relief sunken -textvariable ::analyse_tools::catalog_usnoa2
+             entry $usnoa2.dir -relief sunken -textvariable ::analyse_tools::catalog_usnoa2 -width 40
              pack $usnoa2.dir -in $usnoa2 -side right -pady 1 -anchor w
   
         #--- Cree un frame pour afficher ucac2
-        set tycho2 [frame $frm.tycho2 -borderwidth 0 -cursor arrow -relief groove]
-        pack $tycho2 -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+        set tycho2 [frame $f1.tycho2 -borderwidth 0 -cursor arrow -relief groove]
+        pack $tycho2 -in $f1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
              #--- Cree un checkbutton
              checkbutton $tycho2.check -highlightthickness 0 -text "tycho2" -variable ::analyse_tools::use_tycho2
@@ -1217,8 +1246,8 @@ proc get_one_image_obsolete { idbddimg } {
              pack $tycho2.dir -in $tycho2 -side right -pady 1 -anchor w
   
         #--- Cree un frame pour afficher ucac2
-        set ucac2 [frame $frm.ucac2 -borderwidth 0 -cursor arrow -relief groove]
-        pack $ucac2 -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+        set ucac2 [frame $f1.ucac2 -borderwidth 0 -cursor arrow -relief groove]
+        pack $ucac2 -in $f1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
              #--- Cree un checkbutton
              checkbutton $ucac2.check -highlightthickness 0 -text "ucac2" -variable ::analyse_tools::use_ucac2
@@ -1228,8 +1257,8 @@ proc get_one_image_obsolete { idbddimg } {
              pack $ucac2.dir -in $ucac2 -side right -pady 1 -anchor w
   
         #--- Cree un frame pour afficher ucac3
-        set ucac3 [frame $frm.ucac3 -borderwidth 0 -cursor arrow -relief groove]
-        pack $ucac3 -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+        set ucac3 [frame $f1.ucac3 -borderwidth 0 -cursor arrow -relief groove]
+        pack $ucac3 -in $f1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
              #--- Cree un checkbutton
              checkbutton $ucac3.check -highlightthickness 0 -text "ucac3" -variable ::analyse_tools::use_ucac3
@@ -1239,8 +1268,8 @@ proc get_one_image_obsolete { idbddimg } {
              pack $ucac3.dir -in $ucac3 -side right -pady 1 -anchor w
   
         #--- Cree un frame pour afficher nomad1
-        set nomad1 [frame $frm.nomad1 -borderwidth 0 -cursor arrow -relief groove]
-        pack $nomad1 -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+        set nomad1 [frame $f1.nomad1 -borderwidth 0 -cursor arrow -relief groove]
+        pack $nomad1 -in $f1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
              #--- Cree un checkbutton
              checkbutton $nomad1.check -highlightthickness 0 -text "nomad1" -variable ::analyse_tools::use_nomad1
@@ -1250,48 +1279,48 @@ proc get_one_image_obsolete { idbddimg } {
              pack $nomad1.dir -in $nomad1 -side right -pady 1 -anchor w
   
         #--- Cree un frame pour afficher delkwd PV
-        set deuxpasses [frame $frm.deuxpasses -borderwidth 0 -cursor arrow -relief groove]
-        pack $deuxpasses -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+        set deuxpasses [frame $f2.deuxpasses -borderwidth 0 -cursor arrow -relief groove]
+        pack $deuxpasses -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
              #--- Cree un checkbutton
              checkbutton $deuxpasses.check -highlightthickness 0 -text "Faire 2 passes pour calibrer" -variable ::analyse_tools::deuxpasses
              pack $deuxpasses.check -in $deuxpasses -side left -padx 5 -pady 0
   
         #--- Cree un frame pour afficher "utiliser les RA/DEC precedent
-        set keepradec [frame $frm.keepradec -borderwidth 0 -cursor arrow -relief groove]
-        pack $keepradec -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+        set keepradec [frame $f2.keepradec -borderwidth 0 -cursor arrow -relief groove]
+        pack $keepradec -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
              #--- Cree un checkbutton
              checkbutton $keepradec.check -highlightthickness 0 -text "Utiliser RADEC precedent" -variable ::analyse_tools::keep_radec
              pack $keepradec.check -in $keepradec -side left -padx 5 -pady 0
   
         #--- Cree un frame pour afficher delkwd PV
-        set delpv [frame $frm.delpv -borderwidth 0 -cursor arrow -relief groove]
-        pack $delpv -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+        set delpv [frame $f2.delpv -borderwidth 0 -cursor arrow -relief groove]
+        pack $delpv -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
              #--- Cree un checkbutton
              checkbutton $delpv.check -highlightthickness 0 -text "Suppression des PV(1,2)_0" -variable ::analyse_tools::delpv
              pack $delpv.check -in $delpv -side left -padx 5 -pady 0
   
         #--- Cree un frame pour afficher creation du cata
-        set create_cata [frame $frm.create_cata -borderwidth 0 -cursor arrow -relief groove]
-        pack $create_cata -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+        set create_cata [frame $f2.create_cata -borderwidth 0 -cursor arrow -relief groove]
+        pack $create_cata -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
              #--- Cree un checkbutton
              checkbutton $create_cata.check -highlightthickness 0 -text "Creer le fichier CATA" -variable ::analyse_tools::create_cata
              pack $create_cata.check -in $create_cata -side left -padx 5 -pady 0
   
         #--- Cree un frame pour afficher boucle
-        set boucle [frame $frm.boucle -borderwidth 0 -cursor arrow -relief groove]
-        pack $boucle -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+        set boucle [frame $f2.boucle -borderwidth 0 -cursor arrow -relief groove]
+        pack $boucle -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
              #--- Cree un checkbutton
              checkbutton $boucle.check -highlightthickness 0 -text "Analyse continue" -variable ::analyse_tools::boucle
              pack $boucle.check -in $boucle -side left -padx 5 -pady 0
   
-        #--- Cree un frame pour afficher boucle
-        set bouton [frame $frm.bouton -borderwidth 0 -cursor arrow -relief groove]
-        pack $bouton -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+        #--- Cree un frame pour afficher boutons
+        set bouton [frame $f3.bouton -borderwidth 0 -cursor arrow -relief groove]
+        pack $bouton -in $f3 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
              button $bouton.back -text "Precedent" -borderwidth 2 -takefocus 1 \
                 -command "::bddimages_analyse::back" -state $::bddimages_analyse::stateback
@@ -1310,8 +1339,8 @@ proc get_one_image_obsolete { idbddimg } {
                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
         #--- Cree un frame pour afficher info image
-        set infoimage [frame $frm.infoimage -borderwidth 0 -cursor arrow -relief groove]
-        pack $infoimage -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+        set infoimage [frame $f3.infoimage -borderwidth 0 -cursor arrow -relief groove]
+        pack $infoimage -in $f3 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
             #--- Cree un label pour le Nom de l image
             label $infoimage.nomimage -text $::analyse_tools::current_image_name
@@ -1327,8 +1356,8 @@ proc get_one_image_obsolete { idbddimg } {
 
 
         #--- Cree un frame pour afficher les champs du header
-        set keys [frame $frm.keys -borderwidth 0 -cursor arrow -relief groove]
-        pack $keys -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+        set keys [frame $f3.keys -borderwidth 0 -cursor arrow -relief groove]
+        pack $keys -in $f3 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
             #--- RA
             set ra [frame $keys.ra -borderwidth 0 -cursor arrow -relief groove]
@@ -1372,8 +1401,8 @@ proc get_one_image_obsolete { idbddimg } {
 
 
         #--- Cree un frame pour afficher boucle
-        set count [frame $frm.count -borderwidth 0 -cursor arrow -relief groove]
-        pack $count -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+        set count [frame $f4.count -borderwidth 0 -cursor arrow -relief groove]
+        pack $count -in $f4 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
            #--- Cree un frame pour afficher boucle
            set img [frame $count.img -borderwidth 0 -cursor arrow -relief groove]
