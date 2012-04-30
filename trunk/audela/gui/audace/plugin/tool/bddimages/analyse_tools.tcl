@@ -205,6 +205,8 @@ namespace eval analyse_tools {
    
    proc ::analyse_tools::get_cata {  } {
 
+      global bddconf
+
       # Id du cata
 #      set idbddcata [::bddimages_liste::lget $::analyse_tools::current_image idbddcata]
       # Cata existe ?
@@ -216,7 +218,7 @@ namespace eval analyse_tools {
       set catafilename [::bddimages_liste::lget $::analyse_tools::current_image catafilename]
       set catadirfilename [::bddimages_liste::lget $::analyse_tools::current_image catadirfilename]
       # Definition du nom du cata XML
-      set f [file join $catadirfilename [file rootname [file rootname $catafilename]]]
+      set f [file join $bddconf(dirtmp) [file rootname [file rootname $catafilename]]]
       set cataxml "${f}.xml"
 
       # Liste des champs du header de l'image
@@ -226,7 +228,8 @@ namespace eval analyse_tools {
 
       # Creation de la VOTable en memoire
       set votable [::votableUtil::list2votable $listsources $tabkey]
-
+gren_info "Enregistrement cata XML: $cataxml\n"
+      
       # Sauvegarde du cata XML
       set fxml [open $cataxml "w"]
       puts $fxml $votable
