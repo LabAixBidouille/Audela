@@ -143,9 +143,9 @@ namespace eval bddimages_analyse {
    variable current_appli
 
 
-   variable color_wcs_good "green"
-   variable color_wcs_bad  "gray"
-   variable color_wcs      
+   variable color_button_good "green"
+   variable color_button_bad  "gray"
+   variable color_button      
    variable bddimages_wcs 
 
 
@@ -687,13 +687,13 @@ proc get_one_image_obsolete { idbddimg } {
             $::bddimages_analyse::current_appli.bouton.next configure -state normal
          }
          if {$::analyse_tools::bddimages_wcs == "Y"} {
-            set ::bddimages_analyse::color_wcs $::bddimages_analyse::color_wcs_good
-            set ::bddimages_analyse::state_wcs normal
+            set ::bddimages_analyse::color_button $::bddimages_analyse::color_button_good
+            set ::bddimages_analyse::state_button normal
          } else {
-            set ::bddimages_analyse::color_wcs $::bddimages_analyse::color_wcs_bad
-            set ::bddimages_analyse::state_wcs normal
+            set ::bddimages_analyse::color_button $::bddimages_analyse::color_button_bad
+            set ::bddimages_analyse::state_button normal
          }
-         $::bddimages_analyse::current_appli.bouton.go configure -bg $::bddimages_analyse::color_wcs -state $::bddimages_analyse::state_wcs
+         $::bddimages_analyse::current_appli.bouton.go configure -bg $::bddimages_analyse::color_button -state $::bddimages_analyse::state_button
          affich_un_rond_xy $xcent $ycent red 2 2
  
    }
@@ -759,9 +759,9 @@ proc get_one_image_obsolete { idbddimg } {
             set bddimages_wcs  [string trim [lindex [::bddimages_liste::lget $tabkey bddimages_wcs] 1] ]
             #gren_info "idbddimg : $idbddimg   wcs : $bddimages_wcs  \n"
 
-            set ::bddimages_analyse::color_wcs $::bddimages_analyse::color_wcs_good
-            set ::bddimages_analyse::state_wcs normal
-            $::bddimages_analyse::current_appli.bouton.go configure -bg $::bddimages_analyse::color_wcs -state $::bddimages_analyse::state_wcs
+            set ::bddimages_analyse::color_button $::bddimages_analyse::color_button_good
+            set ::bddimages_analyse::state_button normal
+            $::bddimages_analyse::current_appli.bouton.go configure -bg $::bddimages_analyse::color_button -state $::bddimages_analyse::state_button
 
             set ::analyse_tools::ra        [lindex [::bddimages_liste::lget $tabkey ra         ] 1]
             set ::analyse_tools::dec       [lindex [::bddimages_liste::lget $tabkey dec        ] 1]
@@ -888,11 +888,11 @@ proc get_one_image_obsolete { idbddimg } {
          set ::bddimages_analyse::statenext normal
       }
       if {$::analyse_tools::bddimages_wcs == "Y"} {
-         set ::bddimages_analyse::color_wcs $::bddimages_analyse::color_wcs_good
-         set ::bddimages_analyse::state_wcs normal
+         set ::bddimages_analyse::color_button $::bddimages_analyse::color_button_good
+         set ::bddimages_analyse::state_button normal
       } else {
-         set ::bddimages_analyse::color_wcs $::bddimages_analyse::color_wcs_bad
-         set ::bddimages_analyse::state_wcs normal
+         set ::bddimages_analyse::color_button $::bddimages_analyse::color_button_bad
+         set ::bddimages_analyse::state_button normal
       }
       set ::analyse_tools::nb_img     0
       set ::analyse_tools::nb_ovni    0
@@ -1013,7 +1013,7 @@ proc get_one_image_obsolete { idbddimg } {
 
              button $bouton.go -text "Create WCS" -borderwidth 2 -takefocus 1 \
                 -command "::bddimages_analyse::get_wcs" \
-                -bg $::bddimages_analyse::color_wcs -state $::bddimages_analyse::state_wcs
+                -bg $::bddimages_analyse::color_button -state $::bddimages_analyse::state_button
              pack $bouton.go -side left -anchor e \
                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
@@ -1231,7 +1231,7 @@ proc get_one_image_obsolete { idbddimg } {
                               -variable ::analyse_tools::use_usnoa2 -state disabled
              pack $usnoa2.check -in $usnoa2 -side left -padx 5 -pady 0
              #--- Cree un entry
-             entry $usnoa2.dir -relief sunken -textvariable ::analyse_tools::catalog_usnoa2 -width 40
+             entry $usnoa2.dir -relief sunken -textvariable ::analyse_tools::catalog_usnoa2 -width 30
              pack $usnoa2.dir -in $usnoa2 -side right -pady 1 -anchor w
   
         #--- Cree un frame pour afficher ucac2
@@ -1242,7 +1242,7 @@ proc get_one_image_obsolete { idbddimg } {
              checkbutton $tycho2.check -highlightthickness 0 -text "tycho2" -variable ::analyse_tools::use_tycho2
              pack $tycho2.check -in $tycho2 -side left -padx 5 -pady 0
              #--- Cree un entry
-             entry $tycho2.dir -relief sunken -textvariable ::analyse_tools::catalog_tycho2
+             entry $tycho2.dir -relief sunken -textvariable ::analyse_tools::catalog_tycho2 -width 30
              pack $tycho2.dir -in $tycho2 -side right -pady 1 -anchor w
   
         #--- Cree un frame pour afficher ucac2
@@ -1253,7 +1253,7 @@ proc get_one_image_obsolete { idbddimg } {
              checkbutton $ucac2.check -highlightthickness 0 -text "ucac2" -variable ::analyse_tools::use_ucac2
              pack $ucac2.check -in $ucac2 -side left -padx 5 -pady 0
              #--- Cree un entry
-             entry $ucac2.dir -relief sunken -textvariable ::analyse_tools::catalog_ucac2
+             entry $ucac2.dir -relief sunken -textvariable ::analyse_tools::catalog_ucac2 -width 30
              pack $ucac2.dir -in $ucac2 -side right -pady 1 -anchor w
   
         #--- Cree un frame pour afficher ucac3
@@ -1264,7 +1264,7 @@ proc get_one_image_obsolete { idbddimg } {
              checkbutton $ucac3.check -highlightthickness 0 -text "ucac3" -variable ::analyse_tools::use_ucac3
              pack $ucac3.check -in $ucac3 -side left -padx 5 -pady 0
              #--- Cree un entry
-             entry $ucac3.dir -relief sunken -textvariable ::analyse_tools::catalog_ucac3
+             entry $ucac3.dir -relief sunken -textvariable ::analyse_tools::catalog_ucac3 -width 30
              pack $ucac3.dir -in $ucac3 -side right -pady 1 -anchor w
   
         #--- Cree un frame pour afficher nomad1
@@ -1275,7 +1275,7 @@ proc get_one_image_obsolete { idbddimg } {
              checkbutton $nomad1.check -highlightthickness 0 -text "nomad1" -variable ::analyse_tools::use_nomad1
              pack $nomad1.check -in $nomad1 -side left -padx 5 -pady 0
              #--- Cree un entry
-             entry $nomad1.dir -relief sunken -textvariable ::analyse_tools::catalog_nomad1
+             entry $nomad1.dir -relief sunken -textvariable ::analyse_tools::catalog_nomad1 -width 30
              pack $nomad1.dir -in $nomad1 -side right -pady 1 -anchor w
   
         #--- Cree un frame pour afficher delkwd PV
@@ -1334,7 +1334,7 @@ proc get_one_image_obsolete { idbddimg } {
 
              button $bouton.go -text "Create CATA" -borderwidth 2 -takefocus 1 \
                 -command "::bddimages_analyse::get_cata" \
-                -bg $::bddimages_analyse::color_wcs -state $::bddimages_analyse::state_wcs
+                -bg $::bddimages_analyse::color_button -state $::bddimages_analyse::state_button
              pack $bouton.go -side left -anchor e \
                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
