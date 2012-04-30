@@ -256,6 +256,7 @@ proc ::votableUtil::list2votable { listsources tabkey } {
    set sources [lindex $listsources 1]
 
    # Construit les champs PARAM pour lister les tables
+gren_info "TABKEY = $tabkey \n"
    foreach keyval $tabkey {
       set key [lindex $keyval 0]
       set val [lindex $keyval 1]
@@ -285,6 +286,7 @@ proc ::votableUtil::list2votable { listsources tabkey } {
          set field [::votable::getFieldFromKey "default" "idcataspec"]
          append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
          # -- ajoute les champs definis par le catalogue
+gren_info "TABLE: $tableName -> Fields = $col2save\n"
          foreach key $col2save {
             set field [::votable::getFieldFromKey $tableName $key]
             if {[llength [lindex $field 0]] > 0} {

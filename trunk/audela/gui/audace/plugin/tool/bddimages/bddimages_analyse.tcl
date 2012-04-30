@@ -711,6 +711,8 @@ proc get_one_image_obsolete { idbddimg } {
 # TODO gerer l'erreur 
                   return false
                }
+            } else {
+# TODO gerer l'erreur 
             }
          }
 
