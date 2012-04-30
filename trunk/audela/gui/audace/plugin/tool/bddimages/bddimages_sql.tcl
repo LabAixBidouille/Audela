@@ -130,6 +130,8 @@ namespace eval bddimages_sql {
 #  ::console::affiche_resultat "ERR:$err\n"
 #  ::console::affiche_resultat "MSG:$msg\n"
    }
-
+       gren_info "connexion Mysql\n"
+       gren_info "ERR:$err\n"
+       gren_info "MSG:$msg\n"
 }
 

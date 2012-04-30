@@ -354,12 +354,12 @@ proc insertion_solo { nomfich } {
    global caption
    global entetelog
 
-   ::console::affiche_resultat "Insertion Solo : $nomfich \n"
+   #::console::affiche_resultat "Insertion Solo : $nomfich \n"
 
    set fichlock "$conf(bddimages,dirinco)/lock"
 
    if {[file exists $fichlock]==1} {
-      ::console::affiche_resultat "BDI lock : inserez plus tard \n"
+      ::console::affiche_resultat "Insertion Solo : BDI lock : inserez plus tard \n"
       return
       }
 
@@ -404,7 +404,10 @@ proc insertion_solo { nomfich } {
       set liste     [bddimages_insertion_unfich $ligne]
       set err       [lindex $liste 0]
       set nomfich   [lindex $liste 1]
+      set newidbddimg [lindex $liste 2]
+      ::console::affiche_resultat "Insertion Solo : $nomfich (id->$newidbddimg)\n"
       if {$err==-1} {return}
    }
 
+   return 
 }
