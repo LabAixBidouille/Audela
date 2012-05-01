@@ -90,7 +90,7 @@ int cmd_tcl_csucac2(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 		oneStar = theFilteredStars.arrayOneD[index];
 		sprintf(outputLogChar,
 				"%.8f %+.8f %.3f %.8f %.8f %d %.8f %d %d "
-				"%.8f %.8f %.8f %.8f %.8f %.8f %.8f "
+				"%.8f %.8f %.8f %.8f %.8f %.8f "
 				"%.5f %.5f %d %.3f %.3f %.3f %d %d\n",
 
 				(double)oneStar.raInMas / DEG2MAS,
@@ -108,7 +108,6 @@ int cmd_tcl_csucac2(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 				(double)oneStar.raProperMotionInOneTenthMasPerYear / 10.,
 				(double)oneStar.decProperMotionInOneTenthMasPerYear / 10.,
 				(double)oneStar.errorOnRaProperMotionInOneTenthMasPerYear / 10.,
-				(double)oneStar.errorOnDecProperMotionInOneTenthMasPerYear / 10.,
 				(double)oneStar.errorOnDecProperMotionInOneTenthMasPerYear / 10.,
 
 				(double)oneStar.raProperMotionGoodnessOfFit * 0.05,
