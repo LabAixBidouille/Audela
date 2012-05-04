@@ -1364,7 +1364,6 @@ proc calibwcs {args} {
          }
       }
 
-
       set pi [expr 4*atan(1.)]
       set naxis1 [lindex [buf$::audace(bufNo) getkwd NAXIS1] 1]
       set naxis2 [lindex [buf$::audace(bufNo) getkwd NAXIS2] 1]
