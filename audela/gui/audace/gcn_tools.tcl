@@ -1491,16 +1491,16 @@ proc gcn_longs2textlists { longs {date ""} } {
                   set bit5 [string index $bits 5]
                   if {($bit1==0)} {
                      set prompt INFOS
-	                  set comment "0=No or 1=Yes, it is a GRB"
-	                  set bit 1
+                     set comment "0=No or 1=Yes, it is a GRB"
+                     set bit 1
                   }
                   if {($bit5==1)} {
                      set prompt REFINED
-	                  set comment "0=No or 1=Yes, it is definitely not a GRB (bad label; its really a Retraction)"
-	                  set bit 1
+                     set comment "0=No or 1=Yes, it is definitely not a GRB (bad label; its really a Retraction)"
+                     set bit 1
                   }
-	               lappend textlists "processed def_not_grb $bit \"bit\" \"$comment\""
-	               set def_not_grb $bit
+                  lappend textlists "processed def_not_grb $bit \"bit\" \"$comment\""
+                  set def_not_grb $bit
                }
             }
             if {$satellite=="ANTARES"} {
