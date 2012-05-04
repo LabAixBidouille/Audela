@@ -3032,7 +3032,7 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 			// planis[0][].jd_slew_start_without_slew=jd00;
 			//  <objectdescr[].delay_slew>
 			// planis[0][].jd_acq_start=jd1;
-			//  <objectdescr[].delay_instrum+objectdescr[].delay_exposures>
+			//  <objectdescr[].delay_exposures>
 			// planis[0][].jd_acq_end=jd2;
 			//
 			// --- switch to zero the flagobs to take account for the sequence duration (STEP_5)
@@ -3372,7 +3372,7 @@ try_a_gap:
 					}
 				}
 			} 
-			if (jd2>jdseq_next-(objectdescr[kd].delay_slew+objectdescr[kd].delay_instrum)/86400.) {
+			if (jd2>jdseq_next-(objectdescr[kd].delay_slew)/86400.) {
 				// --- This is the case corresponding to a gap between the end of the
 				//     sequence and the start of the next sequence which is too small
 				//     to insert another future sequence. We push the sequence to the
@@ -3413,7 +3413,7 @@ try_a_gap:
 			// planis[0][].jd_acq_end=jd2;
 			//
 			jd1=jd00+objectdescr[kd].delay_slew/86400.;
-			jd2=jd1+(objectdescr[kd].delay_instrum+objectdescr[kd].delay_exposures)/86400.;
+			jd2=jd1+(objectdescr[kd].delay_exposures)/86400.;
 			if (fidlog!=NULL) {
 				fprintf(fidlog,"   === PLANIFICATION-OK : jd0=%f jd00=%f jd1=%f jd2=%f\n",jd0,jd00,jd1,jd2);
 			}
