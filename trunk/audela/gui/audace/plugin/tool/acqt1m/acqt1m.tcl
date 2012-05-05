@@ -54,7 +54,10 @@ proc ::acqt1m::ressource { } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m flatcielplus.cap ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m offsetdark.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m configuration.tcl ]\""
-   load libmeinberg.so
+
+   if {$::tcl_platform(os)=="Linux"} {
+      load libmeinberg.so
+   }
 }
 
 
@@ -1509,13 +1512,13 @@ proc ::acqt1m::Go { visuNo } {
             #--- Verifie que le filtre correspond
             set sortie "no"
             set msg    "Les filtres du boitier et celui de Audela ne correspondent pas.\n\n"
-            append msg "1. de temps en temps la connexion au boitier s'initialise mal : appuyer sur REESSAYER\n\n" 
-            append msg "2. C est une maladresse de votre part car vous avez touche le boitier : appuyer sur ANNULER et cliquez sur le bouton 'Filtre :'\n\n" 
+            append msg "1. de temps en temps la connexion au boitier s'initialise mal : appuyer sur REESSAYER\n\n"
+            append msg "2. C est une maladresse de votre part car vous avez touche le boitier : appuyer sur ANNULER et cliquez sur le bouton 'Filtre :'\n\n"
             append msg "3. Vous avez perdu la connexion au boitier, vous savez ce que vous faites, et vous assumez le champs "
-            append msg "   FILTER='$panneau(acqt1m,$visuNo,filtrecourant)' dans le header des images :  appuyer sur IGNORER\n" 
+            append msg "   FILTER='$panneau(acqt1m,$visuNo,filtrecourant)' dans le header des images :  appuyer sur IGNORER\n"
 
             while {$sortie=="no"} {
-            
+
                set verif [::t1m_roue_a_filtre::verifFiltre $panneau(acqt1m,$visuNo,filtrecourant)]
                if {$verif=="yes"} {
                   # ok on est tout bon !
@@ -1532,9 +1535,9 @@ proc ::acqt1m::Go { visuNo } {
                   }
                }
             }
-               
-            
- 
+
+
+
             #--- Verrouille les boutons du mode "serie"
             $panneau(acqt1m,$visuNo,This).mode.serie.nb.entr configure -state disabled
             $panneau(acqt1m,$visuNo,This).mode.serie.index.entr configure -state disabled
@@ -1685,7 +1688,7 @@ proc ::acqt1m::Go { visuNo } {
          } else {
             $panneau(acqt1m,$visuNo,This).gps.but configure -bg "red"
          }
-         
+
          #--- Rajoute des mots cles dans l'en-tete FITS
          foreach keyword [ ::keyword::getKeywords $visuNo $::conf(acqt1m,keywordConfigName) ] {
             buf$bufNo setkwd $keyword
@@ -1738,16 +1741,16 @@ proc ::acqt1m::Go { visuNo } {
                   }
                   #--- Sauvegarde de l'image
                   if { $sauvegardeValidee == "1" && $panneau(acqt1m,$visuNo,sauve_img_interrompue) == "0" } {
-                  
-                  
+
+
                      #--- Derniere verif de l'image
                      set naxis1 [ lindex [ buf$bufNo getkwd NAXIS1 ] 1 ]
                      set naxis2 [ lindex [ buf$bufNo getkwd NAXIS2 ] 1 ]
                      if { [lsearch {2048 1024 682 512 } $naxis1] == -1 || [lsearch {2048 1024 682 512 } $naxis2] == -1 } {
                         ::console::affiche_erreur "NAXIS1 = $naxis1 NAXIS2 = $naxis2\n"
-                     } 
-                  
-                  
+                     }
+
+
                      #--- Sauvegarde de l'image
                      saveima [append nom "." $panneau(acqt1m,$visuNo,index) $panneau(acqt1m,$visuNo,extension)] $visuNo
 
@@ -1841,8 +1844,8 @@ proc ::acqt1m::Go { visuNo } {
                      set naxis2 [ lindex [ buf$bufNo getkwd NAXIS2 ] 1 ]
                      if { [lsearch {2048 1024 682 512 } $naxis1] == -1 || [lsearch {2048 1024 682 512 } $naxis2] == -1 } {
                         ::console::affiche_erreur "NAXIS1 = $naxis1 NAXIS2 = $naxis2\n"
-                     } 
-                  
+                     }
+
 
 
                      #--- Sauvegarde de l'image
@@ -1915,8 +1918,8 @@ proc ::acqt1m::Go { visuNo } {
                      set naxis2 [ lindex [ buf$bufNo getkwd NAXIS2 ] 1 ]
                      if { [lsearch {2048 1024 682 512 } $naxis1] == -1 || [lsearch {2048 1024 682 512 } $naxis2] == -1 } {
                         ::console::affiche_erreur "NAXIS1 = $naxis1 NAXIS2 = $naxis2\n"
-                     } 
-                  
+                     }
+
 
 
                      #--- Sauvegarde de l'image
@@ -2155,10 +2158,10 @@ proc ::acqt1m::callbackAcquisition { visuNo message args } {
 #------------------------------------------------------------
 # Stop
 #     appui sur le bouton Go/Stop
-#    
+#
 # Parameters
 #  visuNo  : numero de la visu associee a la camera
-#    
+#
 # Return
 #    rien
 #------------------------------------------------------------
@@ -2675,8 +2678,8 @@ proc ::acqt1m::SauveUneImage { visuNo } {
    set naxis2 [ lindex [ buf$bufNo getkwd NAXIS2 ] 1 ]
    if { [lsearch {2048 1024 682 512 } $naxis1] == -1 || [lsearch {2048 1024 682 512 } $naxis2] == -1 } {
       ::console::affiche_erreur "NAXIS1 = $naxis1 NAXIS2 = $naxis2\n"
-   } 
-                  
+   }
+
 
 
    #--- Sauvegarde de l'image
@@ -3323,13 +3326,13 @@ proc ::acqt1m::acqt1mBuildIF { visuNo } {
 
    #--- Trame du bouton d appel a Gps
    frame $panneau(acqt1m,$visuNo,This).gps -borderwidth 2 -relief groove
-      button $panneau(acqt1m,$visuNo,This).gps.but -borderwidth 1 -text $caption(acqt1m,gps) -command "::acqt1m::gps_open $visuNo" 
+      button $panneau(acqt1m,$visuNo,This).gps.but -borderwidth 1 -text $caption(acqt1m,gps) -command "::acqt1m::gps_open $visuNo"
       pack $panneau(acqt1m,$visuNo,This).gps.but -side top -fill x -in $panneau(acqt1m,$visuNo,This).gps -ipadx 5 -ipady 4
    pack $panneau(acqt1m,$visuNo,This).gps -side top -fill x
 $panneau(acqt1m,$visuNo,This).gps.but  configure -bg "green"
    #--- Trame pour les filtres
    frame $panneau(acqt1m,$visuNo,This).filtre -borderwidth 2 -relief ridge
-      button $panneau(acqt1m,$visuNo,This).filtre.but -borderwidth 1 -text $caption(acqt1m,filtre) -command "::t1m_roue_a_filtre::infoFiltre $visuNo" 
+      button $panneau(acqt1m,$visuNo,This).filtre.but -borderwidth 1 -text $caption(acqt1m,filtre) -command "::t1m_roue_a_filtre::infoFiltre $visuNo"
       pack $panneau(acqt1m,$visuNo,This).filtre.but -fill x -side left
       menubutton $panneau(acqt1m,$visuNo,This).filtre.filtrecourant -textvariable panneau(acqt1m,$visuNo,filtrecourant) \
          -menu $panneau(acqt1m,$visuNo,This).filtre.filtrecourant.menu -relief raised
