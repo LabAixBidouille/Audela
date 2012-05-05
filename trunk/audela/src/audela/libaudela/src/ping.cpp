@@ -26,6 +26,11 @@
 #if defined(OS_WIN)
 #include <windows.h>
 #include <winsock.h>
+#include <iphlpapi.h> //pour IcmpSendEcho
+#include <Icmpapi.h>  //pour IcmpSendEcho
+
+#pragma comment(lib, "iphlpapi.lib") //pour IcmpSendEcho
+#pragma comment(lib,"Ws2_32.lib")    //pour IcmpSendEcho
 #endif
 
 #if defined(OS_LIN) 
@@ -123,50 +128,125 @@ unsigned long makeTimeStamp();
 unsigned short getPid();
 
 int ping(char * hostName, int nbTry, int receivedTimeOut, char *result) {
-  int cr = false;
-  int sockRaw;                          /* Socket file descriptor */
-  struct sockaddr_in dest,from;
-  struct hostent * hp;
-  int bread,datasize;
-  int fromlen = sizeof(from);
-#if !defined(OS_LIN)
-  int timeout = 1000;
-#endif
-  char *dest_ip;
-  char *icmp_data;
-  char *recvbuf;
-  unsigned int addr=0;
-  unsigned short seq_no = 0;
-  int i ;
+   int i ;
+   struct hostent * hp;
+   int cr = false;
 
-  sprintf(result,"ping OK with %s",hostName);
 
 #if defined(OS_WIN)
-  WSADATA wsaData;
+/**
+  Cette fonction fait un ping en utilisant la methode IcmpSendEcho de Windows 7
+  car l'ancienne methode socket(AF_INET, SOCK_RAW, IPPROTO_ICMP) a ete desactivee
+  par Window7 pour des raisons de securité. Plus précisément c'est le parmaetre 
+  SOCK_RAW qui n'est plus admis.
+*/
+
+    HANDLE hIcmpFile;
+    unsigned long ipaddr = INADDR_NONE;
+    DWORD dwRetVal = 0;
+    char SendData[32] = "Data Buffer";
+    LPVOID ReplyBuffer = NULL;
+    DWORD ReplySize = 0;
+     WSADATA wsaData;
   if (WSAStartup(MAKEWORD(1,1),&wsaData) != 0){
 	  sprintf(result,"WSAStartup failed: %d\n",GetLastError());
 	  return false;
   }
+        
+    ipaddr = inet_addr(hostName);
+    if (ipaddr == INADDR_NONE) {
+       hp = gethostbyname(hostName);
+       if (hp){
+          memcpy(&ipaddr,hp->h_addr,hp->h_length);
+       } else {
+           printf("usage: %s IP address\n", hostName);
+           sprintf(result,"usage: %s IP address\n", hostName);
+           return false;
+        }       
+    }
+    
+    hIcmpFile = IcmpCreateFile();
+    if (hIcmpFile == INVALID_HANDLE_VALUE) {
+        printf("\tUnable to open handle.\n");
+        printf("IcmpCreatefile returned error: %ld\n", GetLastError() );
+        return false;
+    }    
+
+    ReplySize = sizeof(ICMP_ECHO_REPLY) + sizeof(SendData);
+    ReplyBuffer = (VOID*) malloc(ReplySize);
+    if (ReplyBuffer == NULL) {
+        printf("\tUnable to allocate memory\n");
+        return false;
+    }    
+    
+    for(i= 0; i< nbTry && cr == false; i++ )  {
+
+       dwRetVal = IcmpSendEcho(hIcmpFile, ipaddr, SendData, sizeof(SendData), 
+           NULL, ReplyBuffer, ReplySize, receivedTimeOut);
+       if (dwRetVal != 0) {
+
+          switch (dwRetVal) {
+
+             case ERROR_INSUFFICIENT_BUFFER : 
+                break;
+
+          }
+
+           PICMP_ECHO_REPLY pEchoReply = (PICMP_ECHO_REPLY)ReplyBuffer;
+           struct in_addr ReplyAddr;
+           ReplyAddr.S_un.S_addr = pEchoReply->Address;
+           printf("\tSent icmp message to \n" );
+           if (dwRetVal > 1) {
+               printf("\tReceived %ld icmp message responses\n", dwRetVal);
+               printf("\tInformation from the first response:\n"); 
+           }    
+           else {    
+               printf("\tReceived %ld icmp message response\n", dwRetVal);
+               printf("\tInformation from this response:\n"); 
+           }    
+           printf("\t  Received from %s\n", inet_ntoa( ReplyAddr ) );
+           printf("\t  Status = %ld\n", 
+               pEchoReply->Status);
+           printf("\t  Roundtrip time = %ld milliseconds\n", 
+               pEchoReply->RoundTripTime);
+           
+            sprintf(result,"ping OK with %s (%d ms)",hostName, pEchoReply->RoundTripTime);
+       }
+       else {
+           printf("\tCall to IcmpSendEcho failed.\n");        
+           printf("\tIcmpSendEcho returned error: %ld\n", GetLastError() );
+           sprintf(result,"ping failed with %s (error=%ld)",hostName, GetLastError() );
+           return false;
+       }
+
+       if (nbTry>1) {
+          Sleep(1*1000);
+       }
+    }
+
+    return true;
+
+
+
 #endif
 
+#if defined(OS_LIN)
+    char *icmp_data;
+  int sockRaw;                          /* Socket file descriptor */
+  struct sockaddr_in dest,from;
+  int fromlen = sizeof(from);
+  char *dest_ip;
+  char *recvbuf;
+  unsigned int addr=0;
+  unsigned short seq_no = 0;
+  int bread,datasize;
+  
+  
   if ((sockRaw = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)) < 0)
 	    {
 		sprintf(result,"create socket error %d", errno);
 	  return false;
   }
-
-#if !defined(OS_LIN)
-  bread = setsockopt(sockRaw,SOL_SOCKET,SO_RCVTIMEO,(char*)&timeout, sizeof(timeout));
-  if(bread == SOCKET_ERROR) {
-  	sprintf(result,"failed to set recv timeout: %d\n",errno);
-	  return false;
-  }
-  bread = setsockopt(sockRaw,SOL_SOCKET,SO_SNDTIMEO,(char*)&receivedTimeOut, sizeof(receivedTimeOut));
-  if(bread == SOCKET_ERROR) {
-  	sprintf(result,"failed to set send timeout: %d\n",errno);
-	  return false;
-  }
-#endif
 
   memset(&dest,0,sizeof(dest));
   hp = gethostbyname(hostName);
@@ -211,11 +291,7 @@ int ping(char * hostName, int nbTry, int receivedTimeOut, char *result) {
         if (bwrote < datasize ) {
 	        sprintf(result,"wrote %d bytes != %d bytes expected ",bwrote, datasize);
 	     }
-#if defined(OS_WIN)
-   	  bread = recvfrom(sockRaw,recvbuf,MAX_PACKET,0,(struct sockaddr*)&from, &fromlen);
-#else
    	  bread = recvfrom(sockRaw,recvbuf,MAX_PACKET,0,(struct sockaddr*)&from, (socklen_t*)&fromlen);
-#endif
 	     if (bread == -1){
 		     sprintf(result,"timed out for receiving");
         } else {
@@ -223,21 +299,12 @@ int ping(char * hostName, int nbTry, int receivedTimeOut, char *result) {
         }
      }
      if (nbTry>1) {
-#if defined(OS_WIN)
-	  Sleep(1000);
-#endif
-#if defined(OS_LIN)
 	  sleep(1);
-#endif
      }
   }
-#if defined(OS_WIN)
-   closesocket(sockRaw) ;
-#endif
-#if defined(OS_LIN)
    close(sockRaw);
-#endif
   return cr;
+  #endif
 }
 
 
