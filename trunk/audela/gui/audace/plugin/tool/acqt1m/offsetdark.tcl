@@ -46,7 +46,14 @@ namespace eval ::acqt1m_offsetdark {
          set ext [file extension $f]
          if {$ext==".fit"||$ext==".fits"} {
             buf$bufNo load $f
-            set expo   [ expr round([ lindex [ buf$bufNo getkwd EXPOSURE ] 1 ])]
+            set listemotsclef [ buf$bufNo getkwds ]
+            #--- Le temps de pose est dans EXPOSURE
+            if { [ lsearch $listemotsclef "EXPOSURE" ] !=-1 } {
+               set expo [ expr round([ lindex [ buf$bufNo getkwd EXPOSURE ] 1 ])]
+            #--- Le temps de pose est dans EXPTIME
+            } elseif { [ lsearch $listemotsclef "EXPTIME" ] !=-1 } {
+               set expo [ expr round([ lindex [ buf$bufNo getkwd EXPTIME ] 1 ])]
+            }
             set naxis1 [ lindex [ buf$bufNo getkwd NAXIS1 ] 1 ]
             set naxis2 [ lindex [ buf$bufNo getkwd NAXIS2 ] 1 ]
             if { [lsearch {2048 1024 682 512 } $naxis1] == -1 || [lsearch {2048 1024 682 512 } $naxis2] == -1 } {
