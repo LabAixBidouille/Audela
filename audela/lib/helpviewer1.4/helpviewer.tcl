@@ -579,7 +579,7 @@ proc HelpViewer::xml_inv { args } {
 proc HelpViewer::LoadRef { w new { enterinhistory 1 } } {
     global tcl_platform
 
-#--- Begin change AudeLA : Delete "%1" for  open file pdf
+#--- Begin change AudeLA : Delete "%1" for open file pdf
     if { [regexp {http:/localhost/cgi-bin/man/man2html\?(\w+)\+(\w+)} $new {} sec word] } {
         SearchManHelpFor $w $word $sec
         return
@@ -612,6 +612,8 @@ proc HelpViewer::LoadRef { w new { enterinhistory 1 } } {
                 catch {
                     package require registry
                     if { "$extension" != ".pdf" } {
+                       set extension ".html"
+                    } elseif { [ string range $url 0 4 ] == "http:" && "$extension" == ".pdf" } {
                        set extension ".html"
                     }
                     set key "HKEY_CLASSES_ROOT\\$extension"
