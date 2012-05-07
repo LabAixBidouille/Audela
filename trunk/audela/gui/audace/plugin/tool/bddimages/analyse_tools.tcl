@@ -207,16 +207,6 @@ namespace eval analyse_tools {
 
       global bddconf
 
-      # Id du cata
-#      set idbddcata [::bddimages_liste::lget $::analyse_tools::current_image idbddcata]
-      # Cata existe ?
-#      set cataexists [::bddimages_liste::lget $::analyse_tools::current_image cataexist]
-      # Cata charge ?
-#      set cataloaded [::bddimages_liste::lget $::analyse_tools::current_image cataloaded]
-
-      gren_info "** Create cata XML:\n"
-      gren_info "** current_image: $::analyse_tools::current_image \n"
-
       # Noms du fichier et du repertoire du cata TXT
       set imgfilename [::bddimages_liste::lget $::analyse_tools::current_image filename]
       set imgdirfilename [::bddimages_liste::lget $::analyse_tools::current_image dirfilename]
@@ -237,7 +227,6 @@ namespace eval analyse_tools {
       set scale_x [lindex [::bddimages_liste::lget $tabkey CD1_1] 1]
       set scale_y [lindex [::bddimages_liste::lget $tabkey CD2_2] 1]
       set radius [::analyse_tools::get_radius $naxis1 $naxis2 $scale_x $scale_y]
-      gren_info "  -> FOV ra dec radius : $ra  $dec $radius \n"
 
       if {$::analyse_tools::use_tycho2} {
          set tycho2 [cstycho2 $::analyse_tools::catalog_tycho2 $ra $dec $radius]
