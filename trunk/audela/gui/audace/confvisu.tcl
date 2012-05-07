@@ -36,7 +36,7 @@ namespace eval ::confVisu {
    #------------------------------------------------------------
    proc create { { base "" } } {
       variable private
-      global audace conf panneau
+      global audace caption conf panneau
 
       #--- je cherche le premier numero de visu disponible
       set visuNo 1
@@ -69,15 +69,19 @@ namespace eval ::confVisu {
       if { ! [ info exists conf(visu,crosshair,color) ] } {
          set conf(visu,crosshair,color) "#FF0000"
       }
-      if { ! [ info exists conf(visu_palette,visu$visuNo,mode) ] } {
-         set conf(visu_palette,visu$visuNo,mode) "1"
+
+      #--- definit la palette par defaut
+      set tmpPalette [file join $audace(rep_temp) fonction_transfert_$visuNo.pal]
+
+      if {![file exists $tmpPalette] || ![info exists conf(div,visu$visuNo,mode)]} {
+         set conf(div,visu$visuNo,mode) [list 0 0.0 0.0 0 0 10 1.0]
+         #--- recopie la palette gray.pal dans $audace(rep_temp) sous le nom fonction_transfert_$visuNo.pal
+         file copy -force [file join $conf(rep_userPalette) gray.pal] $tmpPalette
       }
-      if { ! [ info exists conf(fonction_transfert,visu$visuNo,position) ] } {
-         set conf(fonction_transfert,visu$visuNo,position) "+0+0"
-      }
-      if { ! [ info exists conf(fonction_transfert,visu$visuNo,mode) ] } {
-         set conf(fonction_transfert,visu$visuNo,mode) "1"
-      }
+
+      #--- dans tous les cas j'adopte la palette $audace(rep_temp)/fonction_transfert_$visuNo.pal
+      visu$visuNo paldir "$audace(rep_temp)"
+      visu$visuNo pal "fonction_transfert_$visuNo"
 
       if { $base != "" } {
          set private($visuNo,This) $base
@@ -869,6 +873,10 @@ namespace eval ::confVisu {
          set private($visuNo,currentHduNo) $hduNo
 
       }
+
+      visu$visuNo paldir "$::audace(rep_temp)"
+      visu$visuNo pal "fonction_transfert_$visuNo"
+
    }
 
    #
@@ -911,7 +919,10 @@ namespace eval ::confVisu {
       #--- appelle l'equivalent de visu$visuNo disp
       #--- Il ne faut donc pas rappeler cette fonction une deuxieme fois
       while { 1 } {
-         set catchResult [catch { ::audace::MAJ_palette $visuNo } msg ]
+         set catchResult [catch {
+            visu$visuNo paldir "$::audace(rep_temp)"
+            visu$visuNo pal "fonction_transfert_$visuNo"
+         } msg ]
          if { $catchResult == 1 && $msg == "NO MEMORY FOR DISPLAY" } {
             #--- en cas d'erreur "NO MEMORY FOR DISPLAY", j'essaie avec un zoom inferieur
             set private($visuNo,zoom) [expr double($private($visuNo,zoom)) / 2]
@@ -1861,23 +1872,72 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  getToolVisuNo
-   #     retourne le numero de la visu contenant un outil
+   #     retourne le numero de la visu contenant un plugin
+   #     de type tool
    #  parametre :
-   #     namespace de l'outil (ex.: ::tlscp]
+   #     namespace du plugin de type tool (ex.: ::tlscp]
    #------------------------------------------------------------
    proc getToolVisuNo { toolName } {
-
       set visuList [::visu::list]
       set visuNo ""
 
       foreach visu $visuList {
          set toolList $::confVisu::private($visu,pluginInstanceList)
-         #--- si la liste les plugins dans la visu n'est pas vide
+         #--- si la liste des plugins de type tool dans la visu n'est pas vide
          #--- cherche si le plugin est dans la liste
           if {$toolList ne "" && [lsearch -exact $toolList "$toolName"] != -1} {
             #--- l'outil existe dans la visu
             set visuNo $visu
             break
+         }
+      }
+      return $visuNo
+   }
+
+   #------------------------------------------------------------
+   #  getToolVisuNoOrOpenToolNewVisuNo
+   #     identifie la visu contenant un plugin de type tool
+   #.....si le plugin n'est pas ouvert, l'ouvre dans une
+   #     nouvelle visu
+   #  parametre :
+   #     namespace du plugin de type tool (ex.: ::tlscp]
+   #------------------------------------------------------------
+   proc getToolVisuNoOrOpenToolNewVisuNo { toolName } {
+      set visuList [::visu::list]
+      set len [llength $visuList]
+
+      foreach visu $visuList {
+
+         #--- liste les plugins de type tool dans la visu
+         set toolList $::confVisu::private($visu,pluginInstanceList)
+
+         if {$toolList ne ""} {
+
+            #--- la liste n'est pas vide
+            set index [lsearch -exact $toolList "$toolName"]
+
+            if {$index != -1} {
+               #--- le plugin de type tool existe dans la visu
+               set visuNo $visu
+               break
+            } else {
+               if {$visu == $len} {
+                  #--- cree une nouvelle visu
+                  ::confVisu::create
+                  #--- cree le plugin de type tool dans la nouvelle visu
+                  set visuNo [incr visu]
+                  ::confVisu::selectTool $visuNo $toolName
+               }
+            }
+
+         } elseif {$toolList eq ""} {
+
+            #--- la liste est vide
+            if {$visu == $len} {
+               #--- cree le plugin de type tool dans la derniere visu sans plugin ou dans une nouvelle visu
+               ::confVisu::selectTool $visu $toolName
+               set visuNo $visu
+            }
          }
       }
       return $visuNo
@@ -2284,27 +2344,7 @@ namespace eval ::confVisu {
          Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,efface_image)" "::confVisu::clear $visuNo"
 
          Menu_Separator $visuNo "$caption(audace,menu,display)"
-         Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette_grise)" \
-            "1" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
-         Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette_inverse)" \
-            "2" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
-         Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette_iris)" \
-            "3" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
-         Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette_arc_en_ciel)" \
-            "4" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
-
-         Menu_Separator $visuNo "$caption(audace,menu,display)"
-         Menu_Cascade   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,fcttransfert_titre)"
-         Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_lin)" \
-            "1" "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
-         Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_log)" \
-            "2" "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
-         Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_exp)" \
-            "3" "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
-         Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_arc)" \
-            "4" "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
-
-         Menu_Separator $visuNo "$caption(audace,menu,display)"
+         Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette)" "::div::initDiv $visuNo"
          Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,seuils)..." \
             "::seuilWindow::run $visuNo"
          Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,balance_rvb)..." \
@@ -2432,7 +2472,8 @@ namespace eval ::confVisu {
          Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,convoluer)"
          Menu_Command   $visuNo "$caption(audace,menu,convoluer)" "$caption(audace,menu,convolution)" \
             [list ::traiteFilters::run "$caption(audace,menu,convoluer)" "$caption(audace,menu,convolution)" ]
-
+         Menu_Command   $visuNo "$caption(audace,menu,convoluer)" "$caption(kernel,titre)" [list ::kernel::run $visuNo]
+         Menu_Command   $visuNo "$caption(audace,menu,convoluer)" "$caption(convfltr,titre)" [list ::convfltr::run $visuNo]
          Menu           $visuNo "$caption(audace,menu,analysis)"
          Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,histo)" "::audace::Histo $visuNo"
          Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,coupe)" "::sectiongraph::init $visuNo"
@@ -2613,27 +2654,7 @@ namespace eval ::confVisu {
          Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,efface_image)" "::confVisu::deleteImage $visuNo"
 
          Menu_Separator $visuNo "$caption(audace,menu,display)"
-         Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette_grise)" \
-            "1" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
-         Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette_inverse)" \
-            "2" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
-         Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette_iris)" \
-            "3" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
-         Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette_arc_en_ciel)" \
-            "4" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
-
-         Menu_Separator $visuNo "$caption(audace,menu,display)"
-         Menu_Cascade   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,fcttransfert_titre)"
-         Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_lin)" \
-            "1" "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
-         Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_log)" \
-            "2" "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
-         Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_exp)" \
-            "3" "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
-         Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_arc)" \
-            "4" "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
-
-         Menu_Separator $visuNo "$caption(audace,menu,display)"
+         Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette)" "::div::initDiv $visuNo"
          Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,seuils)..." \
             "::seuilWindow::run $visuNo"
          Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,balance_rvb)..." \
@@ -2752,25 +2773,7 @@ namespace eval ::confVisu {
       Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,pas_outil)" "::audace::pasOutil $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,efface_image)" "::confVisu::deleteImage"
       Menu_Separator $visuNo "$caption(audace,menu,display)"
-      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette_grise)" \
-         "1" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
-      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette_inverse)" \
-         "2" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
-      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette_iris)" \
-         "3" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
-      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette_arc_en_ciel)" \
-         "4" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
-      Menu_Separator $visuNo "$caption(audace,menu,display)"
-      Menu_Cascade   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,fcttransfert_titre)"
-      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_lin)" \
-         "1" "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
-      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_log)" \
-         "2" "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
-      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_exp)" \
-         "3" "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
-      Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_arc)" \
-         "4" "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
-      Menu_Separator $visuNo "$caption(audace,menu,display)"
+      Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette)" "::div::initDiv $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,seuils)..." \
          "::seuilWindow::run $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,balance_rvb)..." \
@@ -2908,6 +2911,8 @@ namespace eval ::confVisu {
       Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,convoluer)"
       Menu_Command   $visuNo "$caption(audace,menu,convoluer)" "$caption(audace,menu,convolution)" \
          [list ::traiteFilters::run "$caption(audace,menu,convoluer)" "$caption(audace,menu,convolution)" ]
+      Menu_Command   $visuNo "$caption(audace,menu,convoluer)" "$caption(kernel,titre)" [list ::kernel::run $visuNo]
+      Menu_Command   $visuNo "$caption(audace,menu,convoluer)" "$caption(convfltr,titre)" [list ::convfltr::run $visuNo]
 
       #--- Je commence par supprimer les menus cascade du menu Analyse
       Menu_Delete $visuNo "$caption(audace,menu,extract)" all
@@ -3069,25 +3074,7 @@ namespace eval ::confVisu {
                   Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,pas_outil)" "::audace::pasOutil $visuNo"
                   Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,efface_image)" "::confVisu::deleteImage"
                   Menu_Separator $visuNo "$caption(audace,menu,display)"
-                  Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette_grise)" \
-                     "1" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
-                  Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette_inverse)" \
-                     "2" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
-                  Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette_iris)" \
-                     "3" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
-                  Menu_Command_Radiobutton $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette_arc_en_ciel)" \
-                     "4" "conf(visu_palette,visu$visuNo,mode)" "::audace::MAJ_palette $visuNo"
-                  Menu_Separator $visuNo "$caption(audace,menu,display)"
-                  Menu_Cascade   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,fcttransfert_titre)"
-                  Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_lin)" \
-                     "1" "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
-                  Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_log)" \
-                     "2" "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
-                  Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_exp)" \
-                     "3" "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
-                  Menu_Command_Radiobutton $visuNo "$caption(audace,menu,fcttransfert_titre)" "$caption(audace,menu,fcttransfert_arc)" \
-                     "4" "conf(fonction_transfert,visu$visuNo,mode)" "::audace::fonction_transfert $visuNo"
-                  Menu_Separator $visuNo "$caption(audace,menu,display)"
+                  Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette)" "::div::initDiv $visuNo"
                   Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,seuils)..." \
                      "::seuilWindow::run $visuNo"
                   Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,balance_rvb)..." \

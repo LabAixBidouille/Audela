@@ -2671,3 +2671,961 @@ namespace eval ::traiteFilters {
 }
 ########################## Fin du namespace traiteFilters ##########################
 
+#
+# Description : Script pour le filtrage par convolution spatiale d'images N&B ou RGB, FITS ou non
+# Auteur : Raymond Zachantke
+
+namespace eval ::convfltr {
+
+   proc run { visuNo } {
+      variable private
+      global conf
+
+      set bufNo [visu$visuNo buf]
+      if {![buf$bufNo imageready] == "1"} {return}
+
+      if {![info exists conf(convfltr,position)]} {
+         set conf(convfltr,position) "+200+200"
+      }
+      set private(convfltr,position) $conf(convfltr,position)
+
+      #--   liste les fichiers dans $home/filter
+      set userFilters [lsort -dictionary [glob -nocomplain -type f -tails -dir $conf(rep_userFiltre) *]]
+
+      #--   identifie leur extension
+      set extension [file extension [lindex $userFilters 0]]
+
+      #--   ote l'extension a tous les noms de filtres
+      regsub -all "$extension" $userFilters "" filterNames
+
+      #--   compare l'extension a l'extension par defaut de l'utilisateur
+      if {$extension ne "$conf(extension,defaut)"} {
+         foreach name $filterNames {
+            file rename -force [file join $conf(rep_userFiltre) $name$extension] \
+                [file join $conf(rep_userFiltre) $name$conf(extension,defaut)]
+         }
+      }
+
+      set private(convfltr,filtres) $filterNames
+
+      set ::convfltr::norm "norm"
+
+      ::convfltr::createDialog $visuNo "$::audace(base).cfltr"
+   }
+
+   #---------------------------------------------------------------------------
+   #  ::convfltr::createDialog
+   #---------------------------------------------------------------------------
+   proc createDialog { visuNo this } {
+      variable private
+      global caption
+
+      if {[winfo exists $this]} {destroy $this}
+
+      toplevel $this
+      wm resizable $this 0 0
+      wm deiconify $this
+      wm title $this "$caption(convfltr,titre)"
+      wm transient $this $::audace(base)
+      wm geometry $this $private(convfltr,position)
+      wm protocol $this WM_DELETE_WINDOW "::convfltr::cmdClose $this"
+
+      #--   selection du filtre
+      frame $this.f -relief raised -borderwidth 1
+      pack $this.f -ipady 5
+      label $this.f.label -text "$caption(convfltr,selectfiltr)" -width 10
+
+      set labelwidth "0"
+      foreach label $private(convfltr,filtres) {
+         set l [string length $label]
+      if {$l > $labelwidth} {set labelwidth $l}
+      }
+      ComboBox $this.f.fltr -textvariable ::convfltr::kernel -relief sunken \
+         -height 10 -width $labelwidth -values $private(convfltr,filtres)
+      pack $this.f.label $this.f.fltr -side left -pady 5
+      $this.f.fltr setvalue @0
+
+      frame $this.opt -relief raised -borderwidth 1
+      pack $this.opt -fill x
+
+      #--   option
+      checkbutton $this.opt.norm -text "$caption(convfltr,normalise)" \
+         -variable ::convfltr::norm -indicatoron 1 -offvalue denorm -onvalue norm
+      pack $this.opt.norm -padx 10 -pady 10 -anchor w
+
+      #---  commandes habituelles
+      set w [frame $this.cmd -relief raised -borderwidth 1]
+      button $w.ok -text "$caption(convfltr,ok)" -width 7 -borderwidth 2 \
+         -relief raised -command "::convfltr::cmdOk $visuNo $this"
+      if {$::conf(ok+appliquer) eq 1} {
+         pack $w.ok -side left -padx 3 -pady 3
+      }
+      button $w.appliquer -text "$caption(convfltr,appliquer)" -width 7 \
+         -borderwidth 2 -relief raised -command "::convfltr::cmdApply $visuNo $this"
+      pack $w.appliquer -side left -padx 3 -pady 3
+      button $w.no -text "$caption(convfltr,annuler)" -width 7 -borderwidth 2 \
+         -relief raised -command "::convfltr::cmdClose $this"
+      button $w.hlp -text "$caption(convfltr,hlp)" -width 7 \
+         -command "::audace::showHelpItem $::help(dir,images) 1170kernel.htm conv_spatiale"
+      pack $w.no $w.hlp -side right -padx 3 -pady 3
+      pack $w -fill x -ipady 5
+
+      #--- Focus
+      focus $this
+
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $this
+   }
+
+   #---------------------------------------------------------------------------
+   #  ::convfltr::cmdApply
+   #  Commande du bouton 'Appliquer'
+   #---------------------------------------------------------------------------
+   proc cmdApply { visuNo this } {
+      variable private
+      global audace conf
+
+      ::convfltr::configButtons $this disabled
+
+      set bufNo [visu$visuNo buf]
+      set naxis [lindex [buf$bufNo getkwd NAXIS] 1]
+      set nom_noyau $::convfltr::kernel
+      set userExtension $conf(extension,defaut)
+
+      #--   chemin complet du filtre
+      set filtre [file join $conf(rep_userFiltre) $nom_noyau$userExtension]
+
+      #--   image d'entree
+      set fileNameIn [::confVisu::getFileName $visuNo]
+      set generiqueIn [file rootname [file tail $fileNameIn]]
+      set extIn [file extension $fileNameIn]
+
+      #--   nom generique court de l'image de sortie
+      set generiqueOut ${nom_noyau}_$generiqueIn
+      #--   chemin complet de l'image de sortie
+      set fileOut [file join [file dirname $fileNameIn] $generiqueOut$extIn]
+
+      #--   dans tous les cas on travaille dans audace(rep_temp)
+      #--   pour eviter un ecrasement de fichiers
+
+      #--   recopie une image FITS ou transforme une image non FITS en FITS
+      set baseFile [file join $audace(rep_temp) $generiqueIn]
+      buf$bufNo save $baseFile$userExtension
+
+      #--   generique de sortie provisoire
+      set tempOut [file join $audace(rep_temp) ${nom_noyau}_$generiqueIn]
+
+      #--   decompose une image FITS-RGB
+      if {$naxis == 3} {
+         #--   decompose l'image RGB en plans couleurs
+         ::conv2::Do_rgb2r+g+b $baseFile$userExtension $baseFile
+         set listIn [ list "${baseFile}r" "${baseFile}g" "${baseFile}b" ]
+         set listOut [ list "${tempOut}r" "${tempOut}g" "${tempOut}b" ]
+      } else {
+         #--   image non RGB
+         set listIn [ list "$baseFile" ]
+         set listOut [ list "$tempOut" ]
+      }
+
+      #--   applique le filtre a chaque plan couleur
+      foreach in $listIn out $listOut {
+         if {[catch {conv2d $in$userExtension $filtre $out$userExtension $::convfltr::norm} errInfo]} {
+            tk_messageBox -title "$::caption(convfltr,attention) " \
+               -icon error -message $errInfo
+         }
+      }
+
+      if {$naxis == 3} {
+        #--   verifie l'existance des plans couleurs
+         foreach file $listOut {
+            if {![file exists $file$userExtension]} {return}
+         }
+
+         #--   convertit les plans couleurs en RGB
+         ::conv2::Do_r+g+b2rgb $tempOut $tempOut
+
+         #--   efface les plans couleurs de l'image d'entree et de sortie
+         foreach  file [concat $listIn $listOut] {
+            file delete $file$userExtension
+         }
+      }
+
+      set src $tempOut$userExtension
+      buf$bufNo load $src
+      buf$bufNo save $fileOut
+
+      ::confVisu::autovisu $visuNo -dovisu $fileOut
+
+      file delete $baseFile$userExtension $src
+
+      #--   sauve la position de la fenetre
+      regsub {([0-9]+x[0-9]+)} [wm geometry $this] "" conf(convfltr,position)
+
+      ::convfltr::configButtons $this normal
+   }
+
+   #---------------------------------------------------------------------------
+   #  ::convfltr::configButtons
+   #  Configure l'etat des boutons
+   #---------------------------------------------------------------------------
+   proc configButtons { this state } {
+
+      foreach w [list ok appliquer hlp no] {
+         $this.cmd.$w configure -state $state
+      }
+      update
+   }
+
+   #---------------------------------------------------------------------------
+   #  ::convfltr::cmdOk
+   #  Commande du bouton 'OK'
+   #---------------------------------------------------------------------------
+   proc cmdOk { visuNo this } {
+
+      ::convfltr::cmdApply $visuNo $this
+       ::convfltr::cmdClose $this
+    }
+
+   #---------------------------------------------------------------------------
+   #  ::convfltr::cmdClose
+   #  Commande du bouton 'Quitter'
+   #---------------------------------------------------------------------------
+   proc cmdClose { this } {
+      destroy $this
+   }
+
+}
+########################## Fin du namespace convfltr ##########################
+
+# Description : Script pour la confection de noyaux de convolution spatiale
+# Auteur : Raymond Zachantke
+
+namespace eval ::kernel {
+
+   #--un filtre   ==> une image dans le buffer de la visu
+   #              ==> un nom "${nom}_${sum}_${drow}x${dcol}" d'extension $conf(extension,defaut)
+   #              ==> un chemin complet [file join $conf(rep_userFiltre) ${nom}$conf(extension,defaut)]
+   #              ==> une matrice : private(kernel,matrix) de dimensions drow X dcol
+   #              ==> l'image de cellules de la matrice dans le GUI : ::kernel::m_${row}_${col}
+
+   proc run { visuNo } {
+      variable private
+      global audace conf
+
+      if {![info exists conf(kernel,position)]} {
+         set conf(kernel,position) "+200+200"
+      }
+      set private(kernel,position) $conf(kernel,position)
+
+      ::kernel::createDialog $visuNo "$audace(base).k"
+   }
+
+   #--------------------------- les commandes  --------------------------------
+
+   #---------------------------------------------------------------------------
+   #  ::kernel::cmdSelectFilter
+   #  Affiche et edite le noyau selectionne
+   #  Commande de la combobox de selection du filtre
+   #---------------------------------------------------------------------------
+   proc cmdSelectFilter { visuNo } {
+      variable private
+      global caption conf
+
+      set noyau $::kernel::kernel
+
+      #--   si selection de  <nouveau>
+      if {$noyau eq "$caption(kernel,new)"} {
+         #--   cree une nouvelle matrice
+         ::kernel::cmdFormatMatrix $visuNo
+         return
+      }
+
+      #--   si selection d'un filtre existant, charge l'image du noyau
+      ::kernel::seeFiltr $visuNo [file join $conf(rep_userFiltre) $noyau$conf(extension,defaut)]
+
+      #--   lit les valeurs dans le buffer
+      ::kernel::buffer2Matrix [visu$visuNo buf]
+
+      #--   transfere la matrice vers l'affichage
+      ::kernel::configMatrix "$private(kernel,tbl).grid" $::kernel::drow $::kernel::dcol
+
+      #--   remplit les cases de la matrice affichee
+      ::kernel::formatGrid
+   }
+
+   #---------------------------------------------------------------------------
+   #  ::kernel::cmdFormatMatrix
+   #  Formate le nombre de lignes et de colonnes d'une nouvelle matrice
+   #  Commande des combobox de dimensionnement de la matrice
+   #  Invoquee par createDialog et selectFilter
+   #---------------------------------------------------------------------------
+   proc cmdFormatMatrix { visuNo } {
+      variable private
+
+      set drow $::kernel::drow
+      set dcol $::kernel::dcol
+
+      #--   en dehors des matrices 1 ligne ou 1 colonne, la matrice est carree
+      if {[info exists private(kernel,size)]} {
+         regexp {([1-9])x([1-9])} $private(kernel,size) match r c
+         lassign [list "" ""] modif stable
+         #--   identifie la variable modifiee
+         if {$drow ne "$r"} {
+            set modif drow
+            set stable dcol
+         } elseif {$dcol ne "$c"} {
+            set modif dcol
+            set stable drow
+         }
+
+         #--   egalise les deux dimensions si la dimension stable n'est pas egale a 1
+         if {$modif ne "" && [set $stable] ne "1" && [set $modif] ne "1"} {
+            set ::kernel::$stable [set $modif]
+         }
+      }
+
+      #--
+      ::kernel::clearVisu $visuNo
+      set kernel::norm 0
+
+      set drow $::kernel::drow
+      set dcol $::kernel::dcol
+      set private(kernel,size) "${drow}x${dcol}"
+
+      #--   cree une nouvelle matrice composee de 0
+      ::kernel::createNulMatrix $drow $dcol
+
+      #--   configure la grille pour la saisie
+      ::kernel::configMatrix "$private(kernel,tbl).grid" $drow $dcol
+
+      #--   formate les valeurs
+      ::kernel::formatGrid
+
+      #--   positionne la combobox sur <nouveau>
+      set ::kernel::kernel "$::caption(kernel,new)"
+   }
+
+   #---------------------------------------------------------------------------
+   #  ::kernel::cmdNormMatrix
+   #  Normalise les valeurs du noyau
+   #  Commande du checkbutton 'Normaliser'
+   #---------------------------------------------------------------------------
+   proc cmdNormMatrix { args } {
+      variable private
+
+      set sum $::kernel::sum
+
+      #--   arrete si la somme est nulle
+      if {$sum == 0} { return}
+
+      if {$::kernel::norm eq "1"} {
+         #--   arrete si deja normalise
+         if {$sum == 1} {
+            set ::kernel::norm 0
+            return
+         }
+
+         set matrice [::kernel::grid2Matrix]
+         set dim [llength $matrice]
+
+         blt::vector create temp -watchunset 1
+         for {set row 0} {$row < $dim} {incr row} {
+            temp set [lindex $matrice $row]
+            temp expr {temp/$sum}
+            set matrice [lreplace $matrice $row $row [temp range 0 end]]
+         }
+         #--   rafraichit les valeurs
+         set ::kernel::kernel "$::caption(kernel,new)"
+         set private(kernel,matrix) $matrice
+
+         ::blt::vector destroy temp
+
+         ::kernel::formatGrid
+      }
+   }
+
+   #---------------------------------------------------------------------------
+   #  ::kernel::cmdOk
+   #  Commande du bouton 'OK'
+   #---------------------------------------------------------------------------
+   proc cmdOk { visuNo this } {
+      ::kernel::cmdApply $visuNo $this
+      ::kernel::cmdClose $visuNo $this
+   }
+
+   #---------------------------------------------------------------------------
+   #  ::kernel::cmdApply
+   #  Commande du bouton 'Appliquer'
+   #---------------------------------------------------------------------------
+   proc cmdApply { visuNo this } {
+      variable private
+      global conf
+
+      set nom_noyau $::kernel::kernel
+      set err 0
+
+      #--   arrete si nom non conforme ou incorrect
+      if {$nom_noyau eq "" || $nom_noyau eq "$::caption(kernel,new)"} {
+         set err 1
+      } else {
+         regexp -all {[\w_-]+} $nom_noyau match
+         if {$nom_noyau ne "$match"} {
+            set err 1
+         }
+      }
+      if {$err eq "1" } {
+         ::kernel::avertiUser err_nom
+         return
+      }
+
+      #--   recupere les valeurs
+      set private(kernel,matrix) [::kernel::grid2Matrix]
+
+      #--   verifie que toutes les valeurs sont numeriques
+      set drow $::kernel::drow
+      set dcol $::kernel::dcol
+
+      blt::vector create essai -watchunset 1
+      #--   la creation des vecteurs produit une erreur si valeur non numerique
+      for {set i 0} {$i < $drow} {incr i} {
+         if {[catch {essai set [lindex $private(kernel,matrix) $i]}]} {
+            set err 1
+            break
+         }
+      }
+      blt::vector destroy essai
+
+      #--   arrete si erreur
+      if {$err == 1} {return}
+
+      set private(kernel,size) "${drow}x${dcol}"
+
+      #--   extrait le nom generique du noyau au cas ou l'uilisateur aurait ecrit les dim
+      regsub {_[0-9]_([0-9]+)_[0-9]x[0-9]} $nom_noyau "" noyau
+
+      set file [::kernel::createFilterInVisu $visuNo $noyau]
+
+      ::kernel::seeFiltr $visuNo $file
+
+      #--   met a jour la combobox
+      ::kernel::updateListFilters [file rootname [file tail $file]]
+
+      regsub {([0-9]+x[0-9]+)} [wm geometry $this] "" conf(kernel,position)
+   }
+
+   #---------------------------------------------------------------------------
+   #  ::kernel::cmdClose
+   #  Commande du bouton 'Fermer'
+   #---------------------------------------------------------------------------
+   proc cmdClose { visuNo this } {
+
+      ::kernel::clearVisu $visuNo
+      trace remove variable "::kernel::norm" write "::kernel::cmdNormMatrix"
+
+      destroy $this
+   }
+
+   #---------------------------------------------------------------------------
+   #  ::kernel::captureValue
+   #  Controle les saisies (numeriques)
+   #  Binding avec les cases de la matrice
+   #---------------------------------------------------------------------------
+   proc captureValue { row col } {
+      variable private
+
+      upvar ::kernel::m_${row}_${col} value
+
+      #--   controle la saisie
+      regsub {[^0-9.-]} $value "" result
+
+      if {$result eq "$value"} {
+         set private(kernel,matrix) [::kernel::grid2Matrix]
+      } else {
+         ::kernel::avertiUser err_noyau
+      }
+   }
+
+   #--------------------------- les routines  math-----------------------------
+
+   #---------------------------------------------------------------------------
+   #  ::kernel::createNulMatrix
+   #  Construit une matrice de dimension m x n avec des  0
+   #  Invoquee par cmdSelectFilter et cmdFormatMatrix
+   #---------------------------------------------------------------------------
+   proc createNulMatrix { drow dcol } {
+      variable private
+
+      set matrice ""
+
+      for {set i 0} {$i < $drow} {incr i} {
+         set liste ""
+         for {set j 0} {$j < $dcol} {incr j} {
+            lappend liste "0"
+         }
+         lappend matrice $liste
+      }
+
+      set private(kernel,matrix) $matrice
+      set ::kernel::sigma "/"
+   }
+
+   #---------------------------------------------------------------------------
+   #  ::kernel::formatGrid
+   #  Formate les valeurs (entieres ou flottantes) de la grille
+   #  Invoquee par cmdSelectFilter et cmdFormatMatrix
+   #---------------------------------------------------------------------------
+   proc formatGrid { } {
+      variable private
+
+      set drow $::kernel::drow
+      set dcol $::kernel::dcol
+      set matrice $private(kernel,matrix)
+      set sum "0"
+
+      set format [::kernel::getFormat $matrice]
+
+      #--   adapte le format des nombres affiches
+      for {set row 1} {$row <= $drow} {incr row} {
+         for {set col 1} {$col <= $dcol} {incr col} {
+            set value [gsl_mindex $matrice $row $col]
+            if {$format eq "integer"} {
+               set ::kernel::m_${row}_${col} [format %.f $value]
+            } else {
+               set ::kernel::m_${row}_${col} [format %.3f $value]
+            }
+            set sum [expr {$sum+$value}]
+         }
+      }
+      set ::kernel::sum [expr {int($sum)}]
+
+      update
+   }
+
+   #---------------------------------------------------------------------------
+   #  ::kernel::getFormat
+   #  Retourne le type de donnees (entieres ou décimales) contenues dans la matrice
+   #  Invoquee par formatGrid
+   #---------------------------------------------------------------------------
+   proc getFormat { matrice } {
+
+      set drow $::kernel::drow
+      set dcol $::kernel::dcol
+      set f 0
+
+      blt::vector create decimal entier -watchunset 1
+
+      for {set i 0} {$i < $drow} {incr i} {
+         if {![catch {decimal set [lindex $matrice $i]}]} {
+            entier expr {round(decimal)}
+            entier expr {entier == decimal}
+            #-- si toutes les colonnes de la lignes sont identiques
+            if {[llength [entier search 1]] eq "$dcol"} {
+               incr f
+            }
+         }
+      }
+
+      #-- si toutes les lignes sont identiques
+      if {$f eq "$drow"} {
+         set format "integer"
+      } else {
+         set format "float"
+      }
+      blt::vector destroy decimal entier
+
+      return $format
+   }
+
+   #---------------------------------------------------------------------------
+   #  ::kernel::grid2Matrix
+   #  Lit les valeurs affichees dans la grille
+   #  Retourne : matrice affichee (liste de listes)
+   #  Invoquee par cmdNormMatrix, cmdApply et createFilterInVisu
+   #---------------------------------------------------------------------------
+   proc grid2Matrix { } {
+
+      set drow $::kernel::drow
+      set dcol $::kernel::dcol
+
+      set matrice ""
+      set sum "0"
+
+      for {set row 1} {$row <= $drow} {incr row} {
+         set liste ""
+         for {set col 1} {$col <= $dcol} {incr col} {
+            set value [set ::kernel::m_${row}_${col}]
+            lappend liste $value
+            set sum [expr {$sum+$value}]
+         }
+         lappend matrice $liste
+      }
+      set ::kernel::sum [expr {int(round($sum))}]
+
+      ::kernel::selectElement $matrice
+
+      return $matrice
+   }
+
+   #---------------------------------------------------------------------------
+   #  ::kernel::selectElement
+   #  Selectionne les elements pour evaluer sigma
+   #  Invoquee par grid2Matrix et cmdCreateMatrix
+   #---------------------------------------------------------------------------
+   proc selectElement { matrice } {
+
+      set drow $::kernel::drow
+      set dcol $::kernel::dcol
+      lassign [list "" "" ""] sigma_x sigma_y sigma
+
+      #--   cas de la matrice 1x1 et par defaut
+      lassign [list "" ""] index_x index_y
+      if {$drow ne "1" && $dcol ne "1"} {
+         #--   cas general
+         set index_x [expr {$dcol/2}]
+         set index_y [expr {$drow/2}]
+      } elseif {$drow eq "1" && $dcol ne "1"} {
+         #--   matrice 1xn
+         set index_x [expr {$dcol/2}]
+         set index_y 0
+
+      } elseif {$drow ne "1" && $dcol eq "1"} {
+         #--   matrice nx1
+         set index_x 0
+         set index_y [expr {$dcol/2}]
+      }
+
+      if {$index_x ne "" && $index_y ne ""} {
+         #--   selectionne la ligne
+         set liste [lindex $matrice $index_y]
+         set sigma_x [::kernel::getSigma $liste]
+
+         #--   constitue la liste en colonne
+         set liste ""
+         for {set i 0} {$i < $drow} {incr i} {
+            lappend liste [lindex $matrice $i $index_x]
+         }
+         set sigma_y [::kernel::getSigma $liste]
+      }
+      set ::kernel::sigma "$sigma_x/$sigma_y"
+      update
+   }
+
+   #---------------------------------------------------------------------------
+   #  ::kernel::getSigma
+   #  Calcule la valeur de sigma
+   #  Invoquee par selectElement
+   #---------------------------------------------------------------------------
+   proc getSigma { vector } {
+
+      set sigma ""
+      ::blt::vector create temp z -watchunset 1
+      temp set $vector
+      set l [temp length]
+
+      #--   filtre le cas des vecteurs nuls
+      if {[llength [temp search 0]] == $l} {
+         return
+      }
+
+      #--   normalise
+      temp expr {temp/$temp(max)}
+
+      #--   verifie que le maximum est au centre
+      set centre [temp search $temp(max)]
+      if {$centre == "[expr {$l/2}]"} {
+         #--   expansion d'un coefficient 10
+         temp populate z 9
+         z expr {z >= 0.50}
+         set indexes [z search 1]
+         set i_min [lindex $indexes 0]
+         set i_max [lindex $indexes end]
+         set fwhm [expr {($i_max-$i_min)/10.}]
+         set sigma [format %.1f [expr {$fwhm/2.35482}]]
+      }
+
+      ::blt::vector destroy temp z
+      return $sigma
+   }
+
+   #--------------------------------GUI---------------------------------------
+
+   #---------------------------------------------------------------------------
+   #  ::kernel::createDialog
+   #---------------------------------------------------------------------------
+   proc createDialog { visuNo this } {
+      variable private
+      global caption
+
+      set ::kernel::norm 0
+      set dim_max [list 1 3 5 7 9]
+
+      if {[winfo exists $this]} {destroy $this}
+
+      toplevel $this
+      wm resizable $this 0 0
+      wm deiconify $this
+      wm title $this "$caption(kernel,titre)"
+      wm transient $this $::audace(base)
+      wm geometry $this $private(kernel,position)
+      wm protocol $this WM_DELETE_WINDOW "::kernel::cmdClose $visuNo $this"
+
+      set tbl "$this.kernel"
+      set private(kernel,tbl) $tbl
+      frame $tbl
+
+      #--   cree les frames inclus dans la table
+      foreach frame {nom taille grid data action cmd} {
+         frame $tbl.$frame
+      }
+      $tbl.grid configure -relief raised -borderwidth 1
+      $tbl.cmd configure -relief raised -borderwidth 1
+
+      label $tbl.nom.label_select -text "$caption(kernel,nom)" -width 10
+      ComboBox $tbl.nom.type -textvariable ::kernel::kernel -relief sunken -height 10 \
+         -editable 1 -modifycmd "::kernel::cmdSelectFilter $visuNo"
+      pack $tbl.nom.label_select $tbl.nom.type -side left
+
+      set w "$tbl.taille"
+      label $w.label -text "$caption(kernel,taille)"
+      pack $w.label -in $w -padx 10 -side left
+      foreach type {row col} {
+         label $w.label_$type -text "$caption(kernel,$type)"
+         ComboBox $w.$type -textvariable ::kernel::d$type -relief sunken \
+            -height 4 -width 3 -editable 1 -values $dim_max \
+            -modifycmd "::kernel::cmdFormatMatrix $visuNo"
+         pack $w.label_$type $w.$type -in $w -side left
+      }
+
+      LabelEntry $tbl.data.div -label "$caption(kernel,diviseur)" -labelanchor w \
+         -labelwidth 10 -textvariable ::kernel::sum \
+         -width 7 -justify center -editable 0
+      checkbutton $tbl.data.norm -text "$caption(kernel,normalise)" -width 10 \
+         -variable ::kernel::norm -indicatoron 1 -offvalue 0 -onvalue 1 -state normal
+      pack $tbl.data.div $tbl.data.norm -side left -padx 10 -pady 5
+      LabelEntry $tbl.sigma -label "$caption(kernel,sigma)" -labelanchor w \
+         -labelwidth 10 -textvariable ::kernel::sigma -width 7 -justify center -editable 1
+
+      #---  les commandes habituelles
+      button $tbl.cmd.ok -text "$caption(kernel,ok)" -width 7 -borderwidth 2 \
+         -relief raised -command "::kernel::cmdOk $visuNo $this"
+      if {$::conf(ok+appliquer) eq 1} {
+         pack $tbl.cmd.ok -side left -padx 3 -pady 3
+      }
+      button $tbl.cmd.appliquer -text "$caption(kernel,appliquer)" \
+         -width 7 -borderwidth 2 -relief raised \
+         -command "::kernel::cmdApply $visuNo $this"
+      pack $tbl.cmd.appliquer -side left -padx 3 -pady 3
+      button $tbl.cmd.no -text "$caption(kernel,annuler)" -width 7 -borderwidth 2 \
+      -relief raised -command "::kernel::cmdClose $visuNo $this"
+      button $tbl.cmd.hlp -text "$caption(kernel,hlp)" -width 7 \
+         -command "::audace::showHelpItem $::help(dir,images) 1170kernel.htm editeur_noyau"
+      pack $tbl.cmd.no -side right -padx 3 -pady 3
+      pack $tbl.cmd.hlp -side right -padx 3 -pady 3
+
+      #--   positionne les elements permanents dans le frame
+      ::blt::table $tbl $tbl.nom 0,0 $tbl.taille 1,0 $tbl.grid 2,0 \
+      $tbl.data 3,0 $tbl.sigma 3,1 $tbl.cmd 4,0
+      pack $tbl -in $this
+      ::blt::table configure $tbl $tbl.nom $tbl.taille $tbl.grid $tbl.cmd -columnspan 2
+      ::blt::table configure $tbl $tbl.nom $tbl.taille $tbl.cmd -fill x -height {40}
+      ::blt::table configure $tbl $tbl.grid -pady 10 -padx 10
+      ::blt::table configure $tbl $tbl.sigma -padx 10
+
+      #--   rafraichit la liste des filtres de la combobox
+      ::kernel::updateListFilters
+
+      #--   initialise les combobox
+      $w.row setvalue @1
+      $w.col setvalue @1
+
+      trace add variable "::kernel::norm" write "::kernel::cmdNormMatrix"
+
+      ::kernel::cmdFormatMatrix $visuNo
+
+      #--- Focus
+      focus $this
+
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $this
+   }
+
+   #---------------------------------------------------------------------------
+   #  ::kernel::updateListFilters
+   #  Rafraichit l'inventaire du repertoire et la combobox
+   #  si necessaire modifie l'extension
+   #  Invoquee par createDialog et cmdCreateMatrix
+   #---------------------------------------------------------------------------
+   proc updateListFilters { {nom ""} } {
+      variable private
+      global conf
+
+      set w $private(kernel,tbl).nom.type
+      set rep $conf(rep_userFiltre)
+
+      #--   liste les fichiers dans $home/filter
+      set userFilters [lsort -dictionary [glob -nocomplain -type f -tails -dir $rep *]]
+
+      #--   identifie leur extension
+      set extension [file extension [lindex $userFilters 0]]
+
+      #--   ote l'extension a tous les noms de filtres
+      regsub -all "$extension" $userFilters "" filtres
+
+      #--   modifie l'extension des fichiers
+      if {$extension ne "$conf(extension,defaut)"} {
+         foreach name $filtres {
+            file rename -force [file join $rep $name$extension] [file join $rep $name$conf(extension,defaut)]
+         }
+      }
+
+      #--   complete la liste avec <nouveau>
+      if {$nom eq ""} {
+         set filtres [linsert $filtres 0 "$::caption(kernel,new)"]
+      }
+
+      #--   calcule la largeur de la combobox
+      set labelwidth [::tkutil::lgEntryComboBox $filtres]
+
+      #--   reconfigure la combobox
+      $w configure -width $labelwidth -values $filtres
+      $w setvalue @[lsearch -exact $filtres $nom]
+      update
+   }
+
+   #---------------------------------------------------------------------------
+   #  ::kernel::configMatrix
+   #  Configure la matrice dans la fenêtre
+   #  Invoquee par cmdSelectFilter et cmdFormatMatrix
+   #---------------------------------------------------------------------------
+   proc configMatrix { w drow dcol } {
+
+      #--   tue les entry existantes
+      set children [winfo children $w]
+      if {$children ne ""} {
+         foreach child $children {
+            destroy $child
+         }
+      }
+
+      #--   reconstruit la matrice
+      for {set row 1} {$row <= $drow} {incr row} {
+        frame $w.$row
+        for {set col 1} {$col <= $dcol} {incr col} {
+            Entry $w.$row.$col -width 6 -relief raised -justify center \
+               -textvariable ::kernel:::m_${row}_${col}
+            grid $w.$row.$col -column $col -row $row -ipady 4 -in $w.$row
+            bind $w.$row.$col <Leave> [list ::kernel::captureValue $row $col]
+         }
+         grid $w.$row -in $w
+      }
+   }
+
+   #--------------------------------------------------------------------------
+   #  ::kernel::avertiUser
+   #  Affiche une fenetre d'avertissement
+   #--------------------------------------------------------------------------
+   proc avertiUser { err } {
+      global caption
+
+      tk_messageBox -title "$caption(kernel,attention)" -type ok \
+         -message "$caption(kernel,$err)"
+   }
+
+   #--------------proc concernant la visu & le buffer---------------------------
+
+   #---------------------------------------------------------------------------
+   #  ::kernel::buffer2Matrix
+   #  Recupere les valeurs de la matrice dans l'image du filtre
+   #  Invoquee par cmdSelectFilter
+   #---------------------------------------------------------------------------
+   proc buffer2Matrix { bufNo } {
+      variable private
+
+      set ::kernel::drow [lindex [buf$bufNo getkwd NAXIS2] 1]
+      set ::kernel::dcol [lindex [buf$bufNo getkwd NAXIS1] 1]
+      set drow $::kernel::drow
+      set dcol $::kernel::dcol
+      set private(kernel,size) "${drow}x${dcol}"
+      set private(kernel,matrix) ""
+
+      #--   pour tenir compte de l'inversion de l'axe des y
+      for {set row $drow} {$row >= 1} {incr row "-1"} {
+         set liste ""
+         for {set col 1} {$col <= $dcol} {incr col} {
+            set coords [list $col $row]
+            lappend liste "[lindex [buf$bufNo getpix $coords] 1]"
+         }
+         lappend private(kernel,matrix) $liste
+      }
+   }
+
+   #---------------------------------------------------------------------------
+   #  ::kernel::createFilterInVisu
+   #  Cree l'image du noyau a partir de la matrice
+   #  Invoquee par cmdApply
+   #---------------------------------------------------------------------------
+   proc createFilterInVisu { visuNo nom } {
+      variable private
+      global conf
+
+      set bufNo [visu$visuNo buf]
+      set matrice $private(kernel,matrix)
+
+      lassign [split $private(kernel,size) "x"] drow dcol
+      set sum "[expr {int($::kernel::sum)}]"
+      set file [file join $conf(rep_userFiltre) ${nom}_${sum}_${drow}x${dcol}$conf(extension,defaut)]
+
+      #--   pour eviter d'ecrire une image de dimension 0
+      if {$drow eq "0" || $dcol eq "0"} {return}
+
+      ::confVisu::setZoom $visuNo 8
+      buf$bufNo setpixels CLASS_GRAY $dcol $drow FORMAT_FLOAT COMPRESS_NONE 0
+      buf$bufNo bitpix float
+
+      for {set row 1} {$row <= $drow} {incr row} {
+         for {set col 1} {$col <= $dcol} {incr col} {
+            set coords [list $col [expr {$drow+1-$row}]]
+            buf$bufNo setpix $coords [gsl_mindex $matrice $row $col]
+         }
+      }
+      buf$bufNo stat
+      buf$bufNo save $file
+
+      return $file
+   }
+
+   #---------------------------------------------------------------------------
+   #  ::kernel::clearVisu
+   #  Rafraichit l'affichage
+   #  Invoquee par cmdClose et cmdFormatMatrix
+   #---------------------------------------------------------------------------
+   proc clearVisu { visuNo } {
+      variable private
+
+      if {[info exists private(kernel,previous_zoom)]} {
+         ::confVisu::setZoom $visuNo $private(kernel,previous_zoom)
+      }
+      ::confVisu::clear $visuNo
+   }
+
+   #---------------------------------------------------------------------------
+   #  ::kernel::seeFiltr
+   #  Rafraichit l'affichage
+   #  Invoquee par selectFilter et createFilterInVisu
+   #---------------------------------------------------------------------------
+   proc seeFiltr { visuNo file } {
+      variable private
+      global conf
+
+      if {[info exists private(kernel,previous_zoom)]} {
+         set private(kernel,previous_zoom) $conf(audace,visu$visuNo,zoom)
+      }
+      #--   memorise le zoom et passe a 8
+      ::confVisu::setZoom $visuNo 8
+      ::confVisu::autovisu $visuNo -dovisu $file
+   }
+
+}
+
+######################## Fin du namespace kernel ##########################
+
