@@ -90,5 +90,5 @@ test visu_end {raz de la visu} {AUDACE} {
    after 300
    #--- je verifie que les parametres de la visu sont remis aux valeurs par defaut
    return "[visu$visuNo zoom] [visu$visuNo pal] [visu$visuNo mirrorx] [visu$visuNo mirrory] [visu$visuNo window]"
-} "1 gray 0 0 full"
+} "1 fonction_transfert_1 0 0 full"
 
