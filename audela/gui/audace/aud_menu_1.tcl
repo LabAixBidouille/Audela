@@ -214,19 +214,6 @@ namespace eval ::audace {
          }
          array set file_conf [ini_getArrayFromFile $filename]
 
-         #--- Suppression des fichiers temporaires 'fonction_transfert.pal'
-         if { [ lindex [ decomp $tmp(fichier_palette).pal ] 2 ] != "" } {
-            #--- Cas des fichiers temporaires 'fonction_transfert.pal'
-            set index_final [ lindex [ decomp $tmp(fichier_palette).pal ] 2 ]
-            for { set index "1" } { $index <= $index_final } { incr index } {
-               file delete [ file join [ lindex [ decomp $tmp(fichier_palette).pal ] 0 ] [ lindex [ decomp $tmp(fichier_palette).pal ] 1 ]$index[ lindex [ decomp $tmp(fichier_palette).pal ] 3 ] ]
-               file delete [ file join [ lindex [ decomp $tmp(fichier_palette).pal ] 0 ] [ string trimright [ lindex [ decomp $tmp(fichier_palette).pal ] 1 ] "_" ][ lindex [ decomp $tmp(fichier_palette).pal ] 3 ] ]
-            }
-         } else {
-            #--- Cas du fichier temporaire 'fonction_transfert.pal'
-            file delete [ file join [ lindex [ decomp $tmp(fichier_palette).pal ] 0 ] [ lindex [ decomp $tmp(fichier_palette).pal ] 1 ][ lindex [ decomp $tmp(fichier_palette).pal ] 2 ][ lindex [ decomp $tmp(fichier_palette).pal ] 3 ] ]
-         }
-
          ::confVisu::close $audace(visuNo)
 
          if {[ini_fileNeedWritten file_conf conf]} {

@@ -319,6 +319,58 @@ namespace eval ::audace {
          ::console::affiche_erreur "$::errorInfo\n"
       }
 
+      #--- Creation du repertoire des palettes
+      set catchError [ catch {
+         if { ! [ info exists conf(rep_userPalette) ] } {
+            set conf(rep_userPalette) [ file join $audace(rep_home) palette ]
+         }
+
+         if { ! [ file exists $conf(rep_userPalette) ] } {
+            file mkdir $conf(rep_userPalette)
+
+            #--- Repertoire des palettes d'Aud'ACE
+            set rep_palette [ file join $audace(rep_gui) audace palette ]
+            file copy [ file join $rep_palette gray.pal ] [ file join $conf(rep_userPalette) gray.pal ]
+            file copy [ file join $rep_palette iris.pal ] [ file join $conf(rep_userPalette) iris.pal ]
+            file copy [ file join $rep_palette rainbow.pal ] [ file join $conf(rep_userPalette) rainbow.pal ]
+
+            #--   nettoyage de conf(fonction_transfert,*)
+            set param_to_destroy [list param2 param3 param4 "visu1,mode" "visu1,position" \
+               "visu2,mode" "visu2,position" "visu3,mode" "visu3,position" \
+               "visu4,mode" "visu4,position" "visu5,mode" "visu5,position"]
+            foreach param $param_to_destroy  {
+               if {[info exists conf(fonction_transfert,$param)]} {
+                  unset conf(fonction_transfert,$param)
+               }
+            }
+         }
+         set audace(rep_userPalette) $conf(rep_userPalette)
+      } ]
+      if { $catchError != "0" } {
+         ::console::affiche_erreur "$::errorInfo\n"
+      }
+
+      #--- Creation des filtres de convolution
+      set catchError [ catch {
+         if { ! [ info exists conf(rep_userFiltre) ] } {
+            set conf(rep_userFiltre) [ file join $audace(rep_home) filter ]
+         }
+
+         if { ! [ file exists $conf(rep_userFiltre) ] } {
+            file mkdir $conf(rep_userFiltre)
+            #--- Repertoire des filtres de convolution
+            set rep_filtres [ file join $audace(rep_gui) audace masterfilter ]
+            set listFiltres [ glob -nocomplain -type f -join $rep_filtres * ]
+            foreach file $listFiltres {
+               file copy $file [ file join $conf(rep_userFiltre)  [ file tail $file ] ]
+            }
+         }
+         set audace(rep_userFiltre) $conf(rep_userFiltre)
+      } ]
+      if { $catchError != "0" } {
+         ::console::affiche_erreur "$::errorInfo\n"
+      }
+
       #--- Creation du repertoire des archives
       set catchError [ catch {
          if { ! [ info exists conf(rep_archives) ] } {
@@ -665,21 +717,6 @@ namespace eval ::audace {
       ::confPosObs::initConf
       ::confTypeFenetre::initConf
 
-      #--- Initialisation de variables de configuration
-      if { ! [ info exists conf(fonction_transfert,param2) ] } { set conf(fonction_transfert,param2) "1" }
-      if { ! [ info exists conf(fonction_transfert,param3) ] } { set conf(fonction_transfert,param3) "1" }
-      if { ! [ info exists conf(fonction_transfert,param4) ] } { set conf(fonction_transfert,param4) "1" }
-
-      #--- Initialisation de variables relatives aux palettes
-      if { ! [ info exists conf(visu_palette,visu$visuNo,mode) ] } \
-         { set conf(visu_palette,visu$visuNo,mode)           "1" }
-
-      #--- Initialisation de variables relatives aux fonctions de transfert
-      if { ! [ info exists conf(fonction_transfert,visu$visuNo,position) ] } \
-         { set conf(fonction_transfert,visu$visuNo,position) "+0+0" }
-      if { ! [ info exists conf(fonction_transfert,visu$visuNo,mode) ] } \
-         { set conf(fonction_transfert,visu$visuNo,mode)     "1" }
-
       #--- Initialisation des executables
       ::audace::defaultExeUtils
    }
@@ -794,13 +831,6 @@ namespace eval ::audace {
          wm geometry $audace(Console) 360x200+220+180
       }
       update
-
-      #--- Definition d'un fichier palette temporaire, modifiable dynamiquement
-      #--- On stocke le nom de ce fichier dans tmp(fichier_palette)
-      #--- Attention : On stocke le nom du fichier sans l'extension .pal
-      if { ! [ info exist tmp(fichier_palette) ] } {
-         set tmp(fichier_palette) [ file rootname [ cree_fichier -nom_base fonction_transfert -rep $::audace(rep_temp) -ext .pal ] ]
-      }
 
       #--- Connexion au demarrage des cameras
       ::confCam::startPlugin
