@@ -238,8 +238,6 @@ proc ::votableUtil::cata2astroid { catafile } {
 # @param list liste au format AstroId
 # @return string une VOTable
 #
-# TODO
-#
 proc ::votableUtil::list2votable { listsources tabkey } {
 
    # Init VOTable: defini la version et le prefix (mettre "" pour supprimer le prefixe)
@@ -251,17 +249,19 @@ proc ::votableUtil::list2votable { listsources tabkey } {
    # Ouvre l'element RESOURCE
    append votable [::votable::openResourceElement {} ] "\n"
 
-   # Extrait les entetes et les sources
+   # Construit les champs PARAM pour lister les tables
+   set votParams ""
+   foreach keyval $tabkey {
+      set key [lindex $keyval 0]
+      set val [lindex $keyval 1]
+      set param [::votable::getParamFromTabkey $key $val]
+      append votParams [::votable::addElement $::votable::Element::PARAM [lindex $param 0] [lindex $param 1]] "\n"
+   }
+   append votable $votParams "\n" 
+
+   # Extrait les tables et les sources
    set tables  [lindex $listsources 0]
    set sources [lindex $listsources 1]
-
-   # Construit les champs PARAM pour lister les tables
-#gren_info "TABKEY = $tabkey \n"
-#   foreach keyval $tabkey {
-#      set key [lindex $keyval 0]
-#      set val [lindex $keyval 1]
-#   }
-   
 
    # Pour chaque catalogue de la liste des sources -> TABLE
    foreach t $tables {
@@ -280,13 +280,10 @@ proc ::votableUtil::list2votable { listsources tabkey } {
          }
 
          # Construit la liste des champs du catalogue
-         gren_info "INSERT TABLE = $tableName with NB FIELDS = $nbColumnFields\n"
-
          # -- ajoute le champ idcataspec = index de source (0 .. n)
-         set field [::votable::getFieldFromKey "default" "idcataspec"]
+         set field [::votable::getFieldFromKey "default" "idcataspec.$tableName"]
          append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
          # -- ajoute les champs definis par le catalogue
-gren_info "TABLE: $tableName -> Fields = $col2save\n"
          foreach key $col2save {
             set field [::votable::getFieldFromKey $tableName $key]
             if {[llength [lindex $field 0]] > 0} {
@@ -314,7 +311,6 @@ gren_info "TABLE: $tableName -> Fields = $col2save\n"
                } 
             }
             incr idcataspec
-#            if { $nrows >= 5 } { break }
          }
 
          # Ouvre l'element TABLE
