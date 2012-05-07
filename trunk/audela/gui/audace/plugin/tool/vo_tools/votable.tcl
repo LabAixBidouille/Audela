@@ -712,20 +712,19 @@ proc ::votable::getFieldFromKey { table key } {
 # @return liste liste contenant la definition du champ et sa description
 #
 proc ::votable::getFieldFromKey_DEFAULT { key } {
-   # Id et Nom du champ
-   set field [list "$::votable::Field::ID $key" "$::votable::Field::NAME $key"]
-   # Autres infos 
-   switch $key {
+   set keyval [split $key "."]
+   switch [lindex $keyval 0] {
       idcataspec {
          set description "Source index"
-         lappend field "$::votable::Field::UCD \"meta.id;meta.number\"" \
-                       "$::votable::Field::DATATYPE \"int\"" \
-                       "$::votable::Field::WIDTH \"6\""
+         set field [ list "$::votable::Field::ID $key" "$::votable::Field::NAME $key" \
+                          "$::votable::Field::UCD \"meta.id;meta.number\"" \
+                          "$::votable::Field::DATATYPE \"int\"" \
+                          "$::votable::Field::WIDTH \"6\"" ]
       }
       default {
          # si $key n'est pas reconnu alors on renvoie des listes vides
-         set field ""
          set description ""
+         set field ""
       }
    }
    return [list $field [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
@@ -739,7 +738,7 @@ proc ::votable::getFieldFromKey_DEFAULT { key } {
 #
 proc ::votable::getFieldFromKey_IMG { key } {
    # Id et Nom du champ
-   set field [list "$::votable::Field::ID $key" "$::votable::Field::NAME $key"]
+   set field [list "$::votable::Field::ID IMG.${key}" "$::votable::Field::NAME $key"]
    # Autres infos 
    switch $key {
       id {
@@ -910,7 +909,7 @@ proc ::votable::getFieldFromKey_IMG { key } {
 #
 proc ::votable::getFieldFromKey_USNOA2 { key } {
    # Id et Nom du champ
-   set field [list "$::votable::Field::ID $key" "$::votable::Field::NAME $key"]
+   set field [list "$::votable::Field::ID USNOA2.${key}" "$::votable::Field::NAME $key"]
    # Autres infos 
    switch $key {
       ra -
@@ -969,7 +968,7 @@ proc ::votable::getFieldFromKey_USNOA2 { key } {
 proc ::votable::getFieldFromKey_TYCHO2 { key } {
 
    # Id et Nom du champ
-   set field [list "$::votable::Field::ID $key" "$::votable::Field::NAME $key"]
+   set field [list "$::votable::Field::ID TYCHO2.${key}" "$::votable::Field::NAME $key"]
    # Autres infos 
    switch $key {
       ID {
@@ -1212,7 +1211,7 @@ proc ::votable::getFieldFromKey_TYCHO2 { key } {
 proc ::votable::getFieldFromKey_UCAC2 { key } {
 
    # Id et Nom du champ
-   set field [list "$::votable::Field::ID $key" "$::votable::Field::NAME $key"]
+   set field [list "$::votable::Field::ID UCAC2.${key}" "$::votable::Field::NAME $key"]
    # Autres infos 
    switch $key {
       ra_deg -
@@ -1386,7 +1385,7 @@ proc ::votable::getFieldFromKey_UCAC2 { key } {
 proc ::votable::getFieldFromKey_UCAC3 { key } {
 
    # Id et Nom du champ
-   set field [list "$::votable::Field::ID $key" "$::votable::Field::NAME $key"]
+   set field [list "$::votable::Field::ID UCAC3.${key}" "$::votable::Field::NAME $key"]
    # Autres infos 
    switch $key {
       ra_deg -
@@ -1635,4 +1634,49 @@ proc ::votable::getFieldFromKey_UCAC3 { key } {
       }
    }
    return [list $field [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+}
+
+#
+# Construction des elements FIELDS en fonction de la cle de la colonne
+# @access public
+# @param table nom de la table contenant la cle
+# @param key nom de la colonne dont on veut construire l'element FIELD
+# @return liste liste contenant la definition du champ et sa description
+#
+proc ::votable::getParamFromTabkey { key val } {
+   # Definition du tabkey a inserer
+   set cle [join [lindex $val 0] "."]
+   set data [string trim [lindex $val 1]]
+   set datatype [string trim [lindex $val 2]]
+   if {[string equal $datatype "string"]} { set datatype "char" }
+   set description [string trim [lindex $val 3]]
+   set unit [lindex $val 4]
+   # Defini l'UCD 
+   switch [string toupper $key] {
+      DATE-PC -
+      DATE-GPS -
+      DATE-OBS { set ucd "time.epoch" }
+      CD1_1 -
+      CD1_2 -
+      CD2_1 -
+      CD2_2    { set ucd "pos.wcs.cdmatrix" }
+      CRPIX1 -
+      CRPIX2   { set ucd "pos.wcs.crpix" }
+      CRVAL1 -
+      CRVAL2   { set ucd "pos.wcs.crval" }
+      CTYPE1 -
+      CTYPE2   { set ucd "pos.wcs.crtype" }
+      NAXIS    { set ucd "pos.wcs.crnaxes" }
+      NAXIS1 -
+      NAXIS2   { set ucd "pos.wcs.crnaxis" }
+      default  { set ucd "meta.note" }
+   }
+   # Id et Nom du champ
+   set param [list "$::votable::Field::ID \"${cle}\"" "$::votable::Field::NAME \"${cle}\""]
+   if {[string length ${datatype}] > 0} { lappend param "$::votable::Param::DATATYPE ${datatype}" }
+   if {[string length ${unit}] > 0}     { lappend param "$::votable::Param::UNIT ${unit}" }
+   if {[string length ${ucd}] > 0}      { lappend param "$::votable::Param::UCD ${ucd}" }
+   lappend param "$::votable::Param::VALUE ${data}"; # attribut value doit toijours etre present
+
+   return [list $param [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
 }
