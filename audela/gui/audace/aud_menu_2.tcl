@@ -36,8 +36,13 @@ namespace eval ::div {
       }
       if {[file exists [file join $::audace(rep_home) palette mypal_$visuNo.pal]]} {
          lappend private(div,$visuNo,listPalettes) "$caption(div,mypal)"
+      } else {
+         #--   si l'utilisateur a detruit mypal_$visuNo.pal
+         if {$k == 8} {
+            #--   retablit une palette lineaire
+            set k 0
+         }
       }
-
       set private(div,$visuNo,palette) "[lindex $private(div,$visuNo,listPalettes) $k]"
 
       #--   cree les vecteurs Vx=abscisse FT= fonction de transfert \
@@ -336,7 +341,12 @@ namespace eval ::div {
    #---------------------------------------------------------------------------
    proc cmdClose { visuNo } {
       variable private
-      global conf
+      global audace conf
+
+      #--   recopie la palette
+      set src [file join $audace(rep_temp) fonction_transfert_$visuNo.pal]
+      set dest [file join $conf(rep_userPalette) fonction_transfert_$visuNo.pal]
+      file copy -force $src $dest
 
       set this $private(div,$visuNo,this)
 
@@ -534,6 +544,7 @@ namespace eval ::div {
                $tbl.black 1,1 -anchor w -ipadx 2 -ipady 2 \
                $tbl.white 1,2 -anchor w -ipadx 2 -ipady 2
          }
+
          #--   affiche la luminosite et le contraste
          blt::table $tbl \
             $tbl.lab_lumen 3,0 -anchor w -ipadx 10 -height {35} \

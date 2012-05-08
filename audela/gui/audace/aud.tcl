@@ -327,13 +327,6 @@ namespace eval ::audace {
 
          if { ! [ file exists $conf(rep_userPalette) ] } {
             file mkdir $conf(rep_userPalette)
-
-            #--- Repertoire des palettes d'Aud'ACE
-            set rep_palette [ file join $audace(rep_gui) audace palette ]
-            file copy [ file join $rep_palette gray.pal ] [ file join $conf(rep_userPalette) gray.pal ]
-            file copy [ file join $rep_palette iris.pal ] [ file join $conf(rep_userPalette) iris.pal ]
-            file copy [ file join $rep_palette rainbow.pal ] [ file join $conf(rep_userPalette) rainbow.pal ]
-
             #--   nettoyage de conf(fonction_transfert,*)
             set param_to_destroy [list param2 param3 param4 "visu1,mode" "visu1,position" \
                "visu2,mode" "visu2,position" "visu3,mode" "visu3,position" \
@@ -342,6 +335,17 @@ namespace eval ::audace {
                if {[info exists conf(fonction_transfert,$param)]} {
                   unset conf(fonction_transfert,$param)
                }
+            }
+         }
+
+         #--- Repertoire des palettes d'Aud'ACE
+         set rep_palette [ file join $audace(rep_gui) audace palette ]
+
+         #--   teste l'existence de chaque palette
+         foreach palette [ list gray iris rainbow ] {
+            set file [ file join $conf(rep_userPalette) $palette.pal ]
+            if { ![file exists $file]} {
+               file copy [ file join $rep_palette $palette.pal ] $file
             }
          }
          set audace(rep_userPalette) $conf(rep_userPalette)
