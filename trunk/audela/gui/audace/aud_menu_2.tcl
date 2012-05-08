@@ -20,30 +20,9 @@ namespace eval ::div {
       if {![info exists conf(div,visu$visuNo,position)]} {
          set conf(div,visu$visuNo,position) "+40+100"
       }
-
       set private(div,visu$visuNo,position) $conf(div,visu$visuNo,position)
 
-      #--   initialise les variables avec les valeurs de configuration
-      lassign $conf(div,visu$visuNo,mode) k \
-         private(div,$visuNo,lumen) private(div,$visuNo,contrast) \
-         private(div,$visuNo,inversion) private(div,$visuNo,histo) \
-         private(div,$visuNo,step) private(div,$visuNo,gamma)
-
-      #--   liste les palettes disponibles
-      set private(div,$visuNo,listPalettes) ""
-      foreach label [list lin rampe gamma ajust sigma egal iris arc_en_ciel] {
-         lappend private(div,$visuNo,listPalettes) "$caption(div,$label)"
-      }
-      if {[file exists [file join $::audace(rep_home) palette mypal_$visuNo.pal]]} {
-         lappend private(div,$visuNo,listPalettes) "$caption(div,mypal)"
-      } else {
-         #--   si l'utilisateur a detruit mypal_$visuNo.pal
-         if {$k == 8} {
-            #--   retablit une palette lineaire
-            set k 0
-         }
-      }
-      set private(div,$visuNo,palette) "[lindex $private(div,$visuNo,listPalettes) $k]"
+      ::div::cmdReset $visuNo
 
       #--   cree les vecteurs Vx=abscisse FT= fonction de transfert \
       #--   H=Histogramme D=Distribution des intensités
@@ -219,11 +198,11 @@ namespace eval ::div {
    }
 
    #---------------------------------------------------------------------------
-   #  ::div::cmdReset
+   #  ::div::cmdLinear
    #  RAZ des reglages utilisateur
-   #  Commande du bouton 'Reinitialiser' (palettes Lineaire et Bspline)
+   #  Commande du bouton 'Lineariser' (palettes Lineaire et Bspline)
    #---------------------------------------------------------------------------
-   proc cmdReset { visuNo } {
+   proc cmdLinear { visuNo } {
       variable private
 
       #--   variable de la proc shift
@@ -332,6 +311,75 @@ namespace eval ::div {
          $private(div,$visuNo,lumen) $private(div,$visuNo,contrast) \
          $private(div,$visuNo,inversion) $private(div,$visuNo,histo) \
          $private(div,$visuNo,step) $private(div,$visuNo,gamma)]
+   }
+
+   #---------------------------------------------------------------------------
+   #  ::div::cmdSave
+   #  Sauvegarde la palette fonction_transfert_$visuNo.pal sous mypal_$visuNo.pal
+   #  et complete le menu des palettes disponibles
+   #  Commande du bouton 'Sauver ma palette'
+   #---------------------------------------------------------------------------
+   proc cmdSave { visuNo } {
+      variable private
+      global audace conf caption
+
+      #--   sauve les valeurs
+      ::div::updatePalette $visuNo
+
+      #--   recopie la palette
+      set src [file join $audace(rep_temp) fonction_transfert_$visuNo.pal]
+      set dest [file join $conf(rep_userPalette) mypal_${visuNo}.pal]
+      file copy -force $src $dest
+
+      #--   ajoute "Ma palette" a la liste des options si elle n'existe pas deja
+      set mypal "$caption(div,mypal)"
+      if {[lsearch $private(div,$visuNo,listPalettes) $mypal] eq "-1"} {
+         lappend private(div,$visuNo,listPalettes) $mypal
+         $private(div,$visuNo,this).val.palette configure -values $private(div,$visuNo,listPalettes)
+      }
+      set private(div,$visuNo,palette) $mypal
+   }
+
+   #---------------------------------------------------------------------------
+   #  ::div::cmdReset
+   #  Fermeture de le fenetre
+   #  Commande du bouton 'Reinitialiser'
+   #---------------------------------------------------------------------------
+   proc cmdReset { visuNo } {
+      variable private
+      global conf caption
+
+      lassign $conf(div,visu$visuNo,mode) k \
+         private(div,$visuNo,lumen) private(div,$visuNo,contrast) \
+         private(div,$visuNo,inversion) private(div,$visuNo,histo) \
+         private(div,$visuNo,step) private(div,$visuNo,gamma)
+
+      #--   liste les palettes disponibles
+      set private(div,$visuNo,listPalettes) ""
+      foreach label [list lin rampe gamma ajust sigma egal iris arc_en_ciel] {
+         lappend private(div,$visuNo,listPalettes) "$caption(div,$label)"
+      }
+
+      if {[file exists [file join $::audace(rep_home) palette mypal_$visuNo.pal]]} {
+         lappend private(div,$visuNo,listPalettes) "$caption(div,mypal)"
+       } else {
+         #--   si l'utilisateur a detruit mypal_$visuNo.pal
+         if {$k == 8} {
+            #--   retablit une palette lineaire
+            set k 0
+         }
+      }
+      set private(div,$visuNo,palette) "[lindex $private(div,$visuNo,listPalettes) $k]"
+   }
+
+   #---------------------------------------------------------------------------
+   #  ::div::cmdHelp
+   #  Fermeture de le fenetre
+   #  Commande du bouton 'Aide'
+   #---------------------------------------------------------------------------
+   proc cmdHelp { $visuNo } {
+
+      ::audace::showHelpItem $::help(dir,affichage) 1040palette.htm
    }
 
    #---------------------------------------------------------------------------
@@ -525,7 +573,7 @@ namespace eval ::div {
 
       #--   masque tout
       set widgetList [list lab_niveau black white lab_lumen scale_lumen lab_contrast \
-         scale_contrast lab_step scale_step lab_gamma scale_gamma reset]
+         scale_contrast lab_step scale_step lab_gamma scale_gamma linear]
       foreach child $widgetList {
          if {[blt::table search $tbl -pattern "$tbl.$child"] ne ""} {
             blt::table forget $tbl.$child
@@ -559,7 +607,7 @@ namespace eval ::div {
       #--   affiche la reglette specifique a la fonction
       switch -exact $k {
          0  {  #--   fonction de transfert lineaire
-               blt::table $tbl $tbl.reset 7,3 -padx 10 -pady 10
+               blt::table $tbl $tbl.linear 7,3 -padx 10 -pady 10
             }
          1  {  #--   fonction de transfert rampe
                blt::table $tbl \
@@ -572,7 +620,7 @@ namespace eval ::div {
                   $tbl.scale_gamma 5,1 -columnspan 3 -fill x -height {35}
             }
          3  {  #--   fonction de transfert courbe libre
-               blt::table $tbl $tbl.reset 7,3 -padx 10 -pady 10
+               blt::table $tbl $tbl.linear 7,3 -padx 10 -pady 10
             }
       }
    }
@@ -662,7 +710,7 @@ namespace eval ::div {
 
    #---------------------------------------------------------------------------
    #  ::div::updateValues
-   #  Invoquee par cmdConfigBox, cmdReset, shift, scale_lumen et scale_contrast
+   #  Invoquee par cmdConfigBox, cmdLinear, shift, scale_lumen et scale_contrast
    #---------------------------------------------------------------------------
    proc updateValues { visuNo } {
       variable private
@@ -1023,9 +1071,9 @@ namespace eval ::div {
          -relief sunken -width $labelwidth -height 9 \
          -values $private(div,$visuNo,listPalettes)
 
-      #--   bouton de reset
-      button $tbl.reset -text $caption(div,raz) -borderwidth 3 -width 15 \
-         -command "::div::cmdReset $visuNo"
+      #--   bouton de linearisation
+      button $tbl.linear -text $caption(div,lineariser) -borderwidth 3 -width 15 \
+         -command "::div::cmdLinear $visuNo"
 
       frame $tbl.spec
 
@@ -1041,30 +1089,24 @@ namespace eval ::div {
          -relief raised -command "::div::cmdSave $visuNo"
       pack $tbl.spec.save -side left -padx 10 -pady 3
 
-      #--   bouton d'exportation de l'image
+      #--   bouton d'exportation de l'image (pour Windows uniquement)
       button $tbl.spec.copy -text $caption(div,copy) -borderwidth 2 -width 15 \
          -relief raised -command "::div::cmdImg2Clipboard $visuNo"
-      pack $tbl.spec.copy -side left -padx 20 -pady 3
+      if { $::tcl_platform(platform) == "windows" } {
+         pack $tbl.spec.copy -side left -padx 20 -pady 3
+      }
 
       #---  les commandes habituelles
       frame $tbl.cmd -relief raised -borderwidth 1
-
-      button $tbl.cmd.ok -text "$caption(div,ok)" -width 10 -borderwidth 2 \
-         -relief raised -command "::div::cmdOK $visuNo"
-      if {$::conf(ok+appliquer) eq 1} {
-         pack $tbl.cmd.ok -side left -padx 5 -pady 3
+      set widgetList [list ok apply reset help close]
+      set cmdList [list OK Apply Reset Help Close]
+      foreach wid $widgetList post $cmdList {
+         button $tbl.cmd.$wid -text "$caption(div,$wid)" -width 10 -borderwidth 2 \
+            -relief raised -command "::div::cmd$post $visuNo"
+         if {$wid ne "ok" || $wid eq "ok" && $::conf(ok+appliquer) == 1} {
+            pack $tbl.cmd.$wid -side left -padx 5 -pady 3
+         }
       }
-      button $tbl.cmd.apply -text "$caption(div,apply)" -width 10 -borderwidth 2 \
-         -relief raised -command "::div::cmdApply $visuNo"
-      pack $tbl.cmd.apply -side left -padx 5 -pady 3
-
-      button $tbl.cmd.no -text $caption(div,fermer) -width 10 -borderwidth 2 \
-         -relief raised -command "::div::cmdClose $visuNo"
-      pack $tbl.cmd.no -side right -padx 5 -pady 3
-
-      button $tbl.cmd.hlp -text $caption(div,aide) -borderwidth 2 -width 8 \
-         -relief raised -command "::audace::showHelpItem \"$::help(dir,affichage)\" \"1040palette.htm\""
-      pack $tbl.cmd.hlp -side right -padx 5 -pady 3
 
       #--   positionne les elements permanents dans le frame
       blt::table $tbl \
@@ -1098,8 +1140,8 @@ namespace eval ::div {
       set k [lsearch -exact $private(div,$visuNo,listPalettes) $private(div,$visuNo,palette)]
 
       set widgetList [list histo black white plan scale_lumen scale_contrast \
-         scale_step scale_gamma reset palette "spec.inv" "spec.save" "spec.copy" \
-         "cmd.ok" "cmd.apply" "cmd.no" "cmd.hlp"]
+         scale_step scale_gamma linear palette "spec.inv" "spec.save" "spec.copy" \
+         "cmd.ok" "cmd.apply" "cmd.reset" "cmd.help" "cmd.close"]
       foreach wid $widgetList {
          $this.$wid configure -state $state
       }
