@@ -1,5 +1,7 @@
 # -- Procedure 
+# radius   = rayon du FOV en arcsec
 proc get_skybot { dateobs ra dec radius uaicode} {
+
 
  global voconf
  global skybot_list

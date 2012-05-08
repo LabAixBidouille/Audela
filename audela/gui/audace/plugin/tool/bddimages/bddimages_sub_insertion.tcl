@@ -295,121 +295,137 @@ proc info_fichier { nomfich } {
 # ---------------------------------------
 proc bddimages_insertion_unfich { ligne } {
 
-  global bddconf
+   global bddconf
 
-  uplevel #0 "source \"[ file join $bddconf(rep_plug) bddimages_sub_header.tcl ]\""
+   uplevel #0 "source \"[ file join $bddconf(rep_plug) bddimages_sub_header.tcl ]\""
 
-  set insert_idbddimg -1
-  set msg ""
+   set insert_idbddimg -1
+   set msg ""
 
-  set etat      [lindex $ligne 0]
-  set nomfich   [lindex $ligne 1]
-  set dateobs   [lindex $ligne 2]
-  set site      [lindex $ligne 3]
-  set sizefich  [lindex $ligne 4]
-  set err       [lindex $ligne 5]
-  set tabkey    [lindex $ligne 6]
+   set etat      [lindex $ligne 0]
+   set nomfich   [lindex $ligne 1]
+   set dateobs   [lindex $ligne 2]
+   set site      [lindex $ligne 3]
+   set sizefich  [lindex $ligne 4]
+   set err       [lindex $ligne 5]
+   set tabkey    [lindex $ligne 6]
 
-  # --- Recupere la taille de l'image pour verifier si elle n est pas en cours de transfert
-  set errnum [catch {set sizefichcurrent [file size $nomfich]} msg ]
-  if {$errnum!=0} {
-    bddimages_sauve_fich "bddimages_insertion_unfich: Erreur taille de l image courante <$errnum> <$sizefichcurrent> <$msg>"
-    if {$sizefichcurrent!=$sizefich} {
-      return [list -1 $nomfich]
+   # --- Recupere la taille de l'image pour verifier si elle n est pas en cours de transfert
+   set errnum [catch {set sizefichcurrent [file size $nomfich]} msg ]
+   if {$errnum!=0} {
+     bddimages_sauve_fich "bddimages_insertion_unfich: Erreur taille de l image courante <$errnum> <$sizefichcurrent> <$msg>"
+     if {$sizefichcurrent!=$sizefich} {
+       return [list -1 $nomfich]
+       }
+     }
+
+   set result      [bddimages_formatfichier $nomfich]
+   set form2       [lindex $result 0]
+   set racinefich  [lindex $result 1]
+   set form3       [lindex $result 2]
+
+   if {$form2=="fit"} {
+      set racine [string range $nomfich 0 [expr [string length  $nomfich] - 5]]
+      set nomfichdest "$racine.fits"
+      bddimages_sauve_fich "bddimages_insertion_unfich: Deplacement de $nomfich vers $nomfichdest"
+      set errnum [catch {file rename $nomfich $nomfichdest} msg]
+      set nomfich $nomfichdest
+      bddimages_sauve_fich "bddimages_insertion_unfich: Compression GZIP de $nomfich"
+      gzip $nomfich
+      set nomfich "$nomfichdest.gz"
+      set form2 "fits.gz"
       }
-    }
 
-  set result      [bddimages_formatfichier $nomfich]
-  set form2       [lindex $result 0]
-  set racinefich  [lindex $result 1]
-  set form3       [lindex $result 2]
-
-  if {$form2=="fit"} {
-     set racine [string range $nomfich 0 [expr [string length  $nomfich] - 5]]
-     set nomfichdest "$racine.fits"
-     bddimages_sauve_fich "bddimages_insertion_unfich: Deplacement de $nomfich vers $nomfichdest"
-     set errnum [catch {file rename $nomfich $nomfichdest} msg]
-     set nomfich $nomfichdest
-     bddimages_sauve_fich "bddimages_insertion_unfich: Compression GZIP de $nomfich"
-     gzip $nomfich
-     set nomfich "$nomfichdest.gz"
-     set form2 "fits.gz"
-     }
-  if {$form2=="fit.gz"} {
-     set racine [string range $nomfich 0 [expr [string length  $nomfich] - 8]]
-     set nomfichdest "$racine.fits.gz"
-     bddimages_sauve_fich "bddimages_insertion_unfich: Deplacement de $nomfich vers $nomfichdest"
-     set errnum [catch {file rename $nomfich $nomfichdest} msg]
-     set nomfich $nomfichdest
-     set form2 "fits.gz"
-     }
-  if {$form2=="fits"} {
-     bddimages_sauve_fich "bddimages_insertion_unfich: Compression GZIP de $nomfich"
-     gzip $nomfich
-     set nomfich "$nomfich.gz"
-     set form2 "fits.gz"
-     }
-  if {$form2=="fits.gz"} {
-
-      # --- Reconnaissance du header FITS dans la base
-      set liste    [bddimages_header_id $tabkey]
-      set err      [lindex $liste 0]
-      set idheader [lindex $liste 1]
-      #bddimages_sauve_fich "bddimages_insertion_unfich: type de header <IDHD=$idheader>"
-
-      # --- Insertion des donnees dans la base
-      if {$err==0} {
-        set result [bddimages_images_datainsert $tabkey $idheader $nomfich $site $dateobs $sizefich]
-        set err [lindex $result 0]
-        set insert_idbddimg [lindex $result 1]
-        set msg [lindex $result 2]
-      } else {
-          set dirpb "$bddconf(direrr)"
-          createdir_ifnot_exist $dirpb
-          set dirpb "$bddconf(direrr)/$err"
-          createdir_ifnot_exist $dirpb
-          bddimages_sauve_fich "bddimages_insertion_unfich: Deplacement du fichier $nomfich dans $dirpb"
-          set errnum [catch {file rename $nomfich $dirpb/} msg]
-          if {$errnum!=0} {
-            bddimages_sauve_fich "bddimages_insertion_unfich: ERREUR MV: Deplacement impossible"
-            bddimages_sauve_fich "bddimages_insertion_unfich:      NUM : <$errnum>"
-            bddimages_sauve_fich "bddimages_insertion_unfich:      MSG : <$msg>"
-            }
-        }
+   if {$form2=="fit.gz"} {
+      set racine [string range $nomfich 0 [expr [string length  $nomfich] - 8]]
+      set nomfichdest "$racine.fits.gz"
+      bddimages_sauve_fich "bddimages_insertion_unfich: Deplacement de $nomfich vers $nomfichdest"
+      set errnum [catch {file rename $nomfich $nomfichdest} msg]
+      set nomfich $nomfichdest
+      set form2 "fits.gz"
       }
-      # Fin condition fichier fits.gz
-     #gren_info "form2=$form2"
-     #gren_info "form3=$form3"
-     #gren_info "nomfich=$nomfich"
 
-  if {$form2=="cata.txt"} {
-     bddimages_sauve_fich "bddimages_insertion_unfich: Compression GZIP de $nomfich"
-     gzip $nomfich
-     set nomfich "$nomfich.gz"
-     set form2 "cata.txt.gz"
-     }
+   if {$form2=="fits"} {
+      bddimages_sauve_fich "bddimages_insertion_unfich: Compression GZIP de $nomfich"
+      gzip $nomfich
+      set nomfich "$nomfich.gz"
+      set form2 "fits.gz"
+      }
 
-  if {$form2=="cata.txt.gz"} {
-     set err [bddimages_catas_datainsert $nomfich $sizefich $form2]
-#        set err [lindex $result 0]
-#        set insert_idbddimg [lindex $result 1]
-#        set msg [lindex $result 2]
-     }
+   if {$form2=="fits.gz"} {
 
-  if {$form2=="cata.xml"} {
-     bddimages_sauve_fich "bddimages_insertion_unfich: Compression GZIP de $nomfich"
-     gzip $nomfich
-     set nomfich "$nomfich.gz"
-     set form2 "cata.xml.gz"
-     }
+       set typefich "img"
+       # --- Reconnaissance du header FITS dans la base
+       set liste    [bddimages_header_id $tabkey]
+       set err      [lindex $liste 0]
+       set idheader [lindex $liste 1]
+       #bddimages_sauve_fich "bddimages_insertion_unfich: type de header <IDHD=$idheader>"
 
-  if {$form2=="cata.xml.gz"} {
-     set err [bddimages_catas_datainsert $nomfich $sizefich $form2]
-     }
+       # --- Insertion des donnees dans la base
+       if {$err==0} {
+         set result    [bddimages_images_datainsert $tabkey $idheader $nomfich $site $dateobs $sizefich]
+         set err       [lindex $result 0]
+         set insert_id [lindex $result 1]
+         set msg       [lindex $result 2]
+       } else {
+           set dirpb "$bddconf(direrr)"
+           createdir_ifnot_exist $dirpb
+           set dirpb "$bddconf(direrr)/$err"
+           createdir_ifnot_exist $dirpb
+           bddimages_sauve_fich "bddimages_insertion_unfich: Deplacement du fichier $nomfich dans $dirpb"
+           set errnum [catch {file rename $nomfich $dirpb/} msg]
+           if {$errnum!=0} {
+              bddimages_sauve_fich "bddimages_insertion_unfich: ERREUR MV: Deplacement impossible"
+              bddimages_sauve_fich "bddimages_insertion_unfich:      NUM : <$errnum>"
+              bddimages_sauve_fich "bddimages_insertion_unfich:      MSG : <$msg>"
+           }
+       }
+   }
 
-      return [list $err $nomfich $insert_idbddimg $msg]
-  }
-  # fin de bddimages_insertion
+   if {$form2=="cata.txt"} {
+      bddimages_sauve_fich "bddimages_insertion_unfich: Compression GZIP de $nomfich"
+      gzip $nomfich
+      set nomfich "$nomfich.gz"
+      set form2 "cata.txt.gz"
+      set typefich "cata"
+      }
+
+   if {$form2=="cata.txt.gz"} {
+      set result    [bddimages_catas_datainsert $nomfich $sizefich $form2]
+      set err       [lindex $result 0]
+      set insert_id [lindex $result 1]
+      set msg       [lindex $result 2]
+      set typefich "cata"
+      }
+
+   if {$form2=="cata.xml"} {
+      bddimages_sauve_fich "bddimages_insertion_unfich: Compression GZIP de $nomfich"
+      gzip $nomfich
+      set nomfich "$nomfich.gz"
+      set form2 "cata.xml.gz"
+      set typefich "cata"
+      }
+
+   if {$form2=="cata.xml.gz"} {
+      set err [catch {bddimages_delete_cata_ifexist $nomfich $form2} msg]
+      if {$err} {
+         bddimages_sauve_fich "delete_cata_ifexist: $err - $smg"
+      }
+      set result    [bddimages_catas_datainsert $nomfich $sizefich $form2]
+      set err       [lindex $result 0]
+      set insert_id [lindex $result 1]
+      set msg       [lindex $result 2]
+      gren_info "ici : insert_id $err $insert_id\n"
+      set typefich "cata"
+      }
+
+   return [list $err $nomfich $insert_id $msg $typefich]
+}
+
+
+
+
+
 
 # ---------------------------------------
 # bddimages_images_datainsert
@@ -478,7 +494,7 @@ proc bddimages_images_datainsert { tabkey idheader filename site dateobs sizefic
      }
 
      set err [catch {::bddimages_sql::sql insertid} insert_idbddimg]
-     gren_info "insert_idbddimg = $insert_idbddimg\n"
+     bddimages_sauve_fich "insert_idbddimg = $insert_idbddimg\n"
     # bddimages_sauve_fich "bddimages_images_datainsert: Insertion nouvel element dans la table images <$insert_idbddimg>"
 
    # -- Insere nouvelle image dans la table commun
@@ -674,6 +690,116 @@ return [list $etat $insert_idbddimg ""]
 }
 
 
+
+
+
+
+
+
+
+
+proc bddimages_delete_cata_ifexist { filename form } {
+
+  global bddconf
+
+  set etat 0
+
+  # Detection de l'image coorespondante
+  set fic [file tail "$filename"]
+  set racinefich [string range $fic 0 [expr [string first $form $fic ] -2]]
+
+
+  # -- ligne SQL
+  set sqlcmd "SELECT idbddimg,dirfilename FROM images WHERE filename='$racinefich.fits.gz' LIMIT 1"
+
+  # -- Execute la ligne SQL
+  set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
+  if {$err} {
+     bddimages_sauve_fich "bddimages_delete_catatxt_ifexist: ERREUR 301"
+     bddimages_sauve_fich "bddimages_delete_catatxt_ifexist:        NUM : <$err>"
+     bddimages_sauve_fich "bddimages_delete_catatxt_ifexist:        MSG : <$msg>"
+     return 301
+     }
+
+  set idbddimg -1
+  foreach line $resultsql {
+     set idbddimg [lindex $line 0]
+     set dirfilename [lindex $line 1]
+  }
+
+  # -- Cas ou l image n est pas encore inseree dans la base
+  if {$idbddimg == -1} {
+     return 300
+  }
+
+  set racinecata  [file tail $bddconf(dircata)]
+  set racinecatafilename $racinecata/[string range $dirfilename 5 999]
+  set dirfilename $bddconf(dircata)/[string range $dirfilename 5 999]
+
+
+  set r  [file tail $filename]
+  set f [file join $bddconf(dirbase) $racinecatafilename $r]
+  gren_info "r = $r \n"
+
+  gren_info "filename = $filename \n"
+  gren_info "f = $f \n"
+  gren_info "dirfilename = $dirfilename \n"
+  gren_info "racinecatafilename = $racinecatafilename \n"
+  gren_info "racinecata = $racinecata \n"
+
+
+  if {[file exists $f]} {
+     bddimages_sauve_fich "fichier existe $f ?\n"
+     set err [catch {file delete $f} msg]
+     gren_info "Effacement de $f\n"
+  }
+  
+  set sqlcmd "SELECT idbddcata FROM cataimage WHERE idbddimg=$idbddimg"
+  set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
+  if {$err} {
+     bddimages_sauve_fich "bddimages_delete_catatxt_ifexist: ERREUR 302"
+     bddimages_sauve_fich "bddimages_delete_catatxt_ifexist:        NUM : <$err>"
+     bddimages_sauve_fich "bddimages_delete_catatxt_ifexist:        MSG : <$msg>"
+     return 302
+  }
+  
+  set idbddcata -1
+  foreach line $resultsql {
+     set idbddcata [lindex $line 0]
+  }
+
+  # -- Cas ou le cata n est pas encore inseree dans la base
+  if {$idbddcata == -1} {
+     return 303
+  }
+  
+  set sqlcmd "DELETE FROM catas WHERE idbddcata=$idbddcata"
+  set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
+  if {$err} {
+     bddimages_sauve_fich "bddimages_delete_catatxt_ifexist: ERREUR 304"
+     bddimages_sauve_fich "bddimages_delete_catatxt_ifexist:        NUM : <$err>"
+     bddimages_sauve_fich "bddimages_delete_catatxt_ifexist:        MSG : <$msg>"
+     return 304
+  }
+  
+  set sqlcmd "DELETE FROM cataimage WHERE idbddcata=$idbddcata"
+  set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
+  if {$err} {
+     bddimages_sauve_fich "bddimages_delete_catatxt_ifexist: ERREUR 305"
+     bddimages_sauve_fich "bddimages_delete_catatxt_ifexist:        NUM : <$err>"
+     bddimages_sauve_fich "bddimages_delete_catatxt_ifexist:        MSG : <$msg>"
+     return 305
+  }
+
+  return 0
+}
+
+
+
+
+
+
+
 # ---------------------------------------
 
 # bddimages_catas_datainsert
@@ -691,16 +817,16 @@ proc bddimages_catas_datainsert { filename sizefich form } {
   # Detection de l'image coorespondante
   set fic [file tail "$filename"]
   set racinefich [string range $fic 0 [expr [string first $form $fic ] -2]]
-  
+
   # -- ligne SQL
   set sqlcmd "SELECT idbddimg,dirfilename FROM images WHERE filename='$racinefich.fits.gz' LIMIT 1"
 
   # -- Execute la ligne SQL
   set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
   if {$err} {
-     bddimages_sauve_fich "bddimages_images_datainsert: ERREUR 301"
-     bddimages_sauve_fich "bddimages_images_datainsert:        NUM : <$err>"
-     bddimages_sauve_fich "bddimages_images_datainsert:        MSG : <$msg>"
+     bddimages_sauve_fich "bddimages_catas_datainsert: ERREUR 301"
+     bddimages_sauve_fich "bddimages_catas_datainsert:        NUM : <$err>"
+     bddimages_sauve_fich "bddimages_catas_datainsert:        MSG : <$msg>"
      return 301
      }
 
@@ -708,26 +834,26 @@ proc bddimages_catas_datainsert { filename sizefich form } {
   foreach line $resultsql {
      set idbddimg [lindex $line 0]
      set dirfilename [lindex $line 1]
-     }
+  }
 
   # -- Cas ou l image n est pas encore inseree dans la base
   if {$idbddimg == -1} {
-    set dirfilename "$bddconf(dirbase)/unlinked"
-    createdir_ifnot_exist $dirfilename
-    set errnum [catch {file rename $filename $dirfilename/} msg]
-    # -- le fichier existe dans $dirpb -> on efface $filename
-    set errcp [string first "file already exists" $msg]
-    if {$errcp>0||$errnum==0} {
-      set errnum [catch {file delete $filename} msg]
-      if {$errnum!=0} {
-        bddimages_sauve_fich "bddimages_catas_datainsert: ERREUR 302 : effacement de $filename impossible <err=$errnum> <msg=$msg>"
-        return 302
-      } else {
-        bddimages_sauve_fich "bddimages_catas_datainsert: Fichier $filename supprime"
-      }
-      # Fin if {$errnum!=0} ... file delete $filename
-    }
-    return 300
+     set dirfilename "$bddconf(dirbase)/unlinked"
+     createdir_ifnot_exist $dirfilename
+     set errnum [catch {file rename $filename $dirfilename/} msg]
+     # -- le fichier existe dans $dirpb -> on efface $filename
+     set errcp [string first "file already exists" $msg]
+     if {$errcp>0||$errnum==0} {
+        set errnum [catch {file delete $filename} msg]
+        if {$errnum!=0} {
+           bddimages_sauve_fich "bddimages_catas_datainsert: ERREUR 302 : effacement de $filename impossible <err=$errnum> <msg=$msg>"
+           return 302
+        } else {
+           bddimages_sauve_fich "bddimages_catas_datainsert: Fichier $filename supprime"
+        }
+        # Fin if {$errnum!=0} ... file delete $filename
+     }
+     return 300
   }
 
   set racinecata  [file tail $bddconf(dircata)]
@@ -782,7 +908,10 @@ proc bddimages_catas_datainsert { filename sizefich form } {
 
     # Recupere la valeur de l'autoincrement
     set err [catch {::bddimages_sql::sql insertid} idbddcata]
-     gren_info "idbddcata = $idbddcata\n"
+    gren_info "idbddcata insertid : $idbddcata\n"
+
+
+    # bddimages_sauve_fich "idbddcata = $idbddcata\n"
 
 
   # -- Insertion dans la table cataimage
@@ -827,9 +956,12 @@ proc bddimages_catas_datainsert { filename sizefich form } {
 
   createdir_ifnot_exist $dirfilename
   set errnum [catch {file rename $filename $dirfilename/} msgcp]
+  gren_info "Deplacement de $filename vers $dirfilename\n"
+
 
   if {$errnum!=0} {
 
+     gren_info "deplacement erreur : $errnum - $msgcp\n"
      bddimages_sauve_fich "bddimages_catas_datainsert: Le fichier $filename existe dans $dirfilename"
 
      # -- Le fichier existe dans $dirfilename
@@ -891,18 +1023,19 @@ proc bddimages_catas_datainsert { filename sizefich form } {
            # Fin if {$errnum!=0} ... file delete $filename
          }
        } else {
-           bddimages_sauve_fich "bddimages_images_datainsert: ERREUR 312"
-           bddimages_sauve_fich "bddimages_images_datainsert: 	NUM : <$errcp>"
-           bddimages_sauve_fich "bddimages_images_datainsert: 	MSG : <$msgcp>"
-           bddimages_sauve_fich "bddimages_images_datainsert:    Copie de $filename vers $dirfilename/ impossible"
-           bddimages_sauve_fich "bddimages_images_datainsert: 	NUM : <$errnum>"
-           bddimages_sauve_fich "bddimages_images_datainsert: 	MSG : <$msg>"
+           bddimages_sauve_fich "bddimages_catas_datainsert: ERREUR 312"
+           bddimages_sauve_fich "bddimages_catas_datainsert: 	NUM : <$errcp>"
+           bddimages_sauve_fich "bddimages_catas_datainsert: 	MSG : <$msgcp>"
+           bddimages_sauve_fich "bddimages_catas_datainsert:    Copie de $filename vers $dirfilename/ impossible"
+           bddimages_sauve_fich "bddimages_catas_datainsert: 	NUM : <$errnum>"
+           bddimages_sauve_fich "bddimages_catas_datainsert: 	MSG : <$msg>"
            return 312
          }
 
      }
 
-return $etat
+gren_info "fin idbddcata insertid : $idbddcata\n"
+return [list $etat $idbddcata ""]
 }
 
 #--------------------------------------------------

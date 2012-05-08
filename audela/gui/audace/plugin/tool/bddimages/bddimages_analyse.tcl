@@ -708,11 +708,11 @@ proc get_one_image_obsolete { idbddimg } {
          }  else {
             if {[::bddimages_analyse::get_one_wcs] == true} {
                if {[::analyse_tools::get_cata] == false} {
-# TODO gerer l'erreur 
+                  # TODO gerer l'erreur le  cata a echoué
                   return false
                }
             } else {
-# TODO gerer l'erreur 
+               # TODO gerer l'erreur le wcs a echoué
             }
          }
 
@@ -729,6 +729,25 @@ proc get_one_image_obsolete { idbddimg } {
 
    }
 
+
+   proc ::bddimages_analyse::get_all_cata { } {
+
+         
+         while {1==1} {
+            if {[::bddimages_analyse::get_one_wcs] == true} {
+               if {[::analyse_tools::get_cata] == false} {
+                  # TODO gerer l'erreur le  cata a echoué
+                  break
+               }
+            } else {
+               # TODO gerer l'erreur le wcs a echoué
+               break
+            }
+            if {$::analyse_tools::id_current_image == $::analyse_tools::nb_img_list} { break }
+            ::bddimages_analyse::next
+         }
+
+   }
 
    proc ::bddimages_analyse::get_all_wcs { } {
 
