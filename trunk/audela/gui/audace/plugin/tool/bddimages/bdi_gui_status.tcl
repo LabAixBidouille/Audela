@@ -1,14 +1,14 @@
 #--------------------------------------------------
-# source audace/plugin/tool/bddimages/bddimages_status.tcl
+# source audace/plugin/tool/bddimages/bdd_gui_status.tcl
 #--------------------------------------------------
 #
-# Fichier        : bddimages_status.tcl
+# Fichier        : bdd_gui_status.tcl
 # Description    : Affiche le status de la base de donnees
 # Auteur         : Frédéric Vachier
-# Mise à jour $Id$
+# Mise à jour $Id: bdd_gui_status.tcl 7048 2011-04-02 15:52:09Z jberthier $
 #
 
-namespace eval bddimages_status {
+namespace eval bdi_gui_status {
    
    package require bddimagesXML 1.0
    package require bddimagesAdmin 1.0
@@ -17,11 +17,11 @@ namespace eval bddimages_status {
    global bddconf
 
    #--- Chargement des captions
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_status.cap ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_sub_fichier.tcl ]\""
+   #uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_status.cap ]\""
+   #uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_sub_fichier.tcl ]\""
 
    #
-   # bddimages_status::run this
+   # ::run this
    # Cree la fenetre de tests
    # this = chemin de la fenetre
    #
@@ -34,32 +34,32 @@ namespace eval bddimages_status {
    }
 
    #
-   # bddimages_status::fermer
+   # ::fermer
    # Fonction appellee lors de l'appui sur le bouton 'Fermer'
    #
    proc fermer { } {
       variable This
 
-      ::bddimages_status::recup_position
+      ::bdi_gui_status::recup_position
       destroy $This
       return
    }
 
    #
-   # bddimages_status::fermer
+   # ::fermer
    # Fonction appellee lors de l'appui sur le bouton 'Fermer'
    #
    proc restart { } {
       variable This
 
-      ::bddimages_status::recup_position
+      ::bdi_gui_status::recup_position
       destroy $This
-      ::bddimages_status::run $This
+      ::bdi_gui_status::run $This
       return
    }
 
    #
-   # bddimages_status::recup_position
+   # ::recup_position
    # Permet de recuperer et de sauvegarder la position de la fenetre
    #
    proc recup_position { } {
@@ -75,7 +75,7 @@ namespace eval bddimages_status {
 
 
    #
-   # bddimages_status::createDialog
+   # ::createDialog
    # Creation de l'interface graphique
    #
    proc createDialog { } {
@@ -152,8 +152,8 @@ namespace eval bddimages_status {
          toplevel $This -class Toplevel
          wm geometry $This $bddconf(geometry_status)
          wm resizable $This 1 1
-         wm title $This $caption(bddimages_status,main_title)
-         wm protocol $This WM_DELETE_WINDOW { ::bddimages_status::fermer }
+         wm title $This $caption(bdi_status,main_title)
+         wm protocol $This WM_DELETE_WINDOW { ::bdi_gui_status::fermer }
 
          #--- Cree un frame pour afficher le status de la base
          frame $This.frame1 -borderwidth 0 -cursor arrow -relief groove
@@ -161,7 +161,7 @@ namespace eval bddimages_status {
 
            #--- Cree un label pour le titre
            label $This.frame1.titre -font $bddconf(font,arial_14_b) \
-                 -text "$caption(bddimages_status,titre)"
+                 -text "$caption(bdi_status,titre)"
            pack $This.frame1.titre \
                 -in $This.frame1 -side top -padx 3 -pady 3
 
@@ -173,7 +173,7 @@ namespace eval bddimages_status {
 
            #--- Cree un label pour le status
            label $This.frame1.statusbdd -font $bddconf(font,arial_12_b) \
-                -text "$caption(bddimages_status,label_bdd)"
+                -text "$caption(bdi_status,label_bdd)"
            pack $This.frame1.statusbdd -in $This.frame1.status -side top -padx 3 -pady 1 -anchor w
 
              #--- Cree un frame pour afficher les intitules
@@ -182,15 +182,15 @@ namespace eval bddimages_status {
 
                #--- Cree un label pour le status
                label $intitle.ok -font $bddconf(font,courier_10) -padx 3 \
-                     -text "$caption(bddimages_status,label_connect)"
+                     -text "$caption(bdi_status,label_connect)"
                pack $intitle.ok -in $intitle -side top -padx 3 -pady 1 -anchor w
                #--- Cree un label pour le nb d image
                label $intitle.nbimg -font $bddconf(font,courier_10) \
-                     -text "$caption(bddimages_status,label_nbimg)"
+                     -text "$caption(bdi_status,label_nbimg)"
                pack $intitle.nbimg -in $intitle -side top -padx 3 -pady 1 -anchor w
                #--- Cree un label pour le nb de header
                label $intitle.header -font $bddconf(font,courier_10) \
-                     -text "$caption(bddimages_status,label_nbheader)"
+                     -text "$caption(bdi_status,label_nbheader)"
                pack $intitle.header -in $intitle -side top -padx 3 -pady 1 -anchor w
 
              #--- Cree un frame pour afficher les valeurs
@@ -220,7 +220,7 @@ namespace eval bddimages_status {
 
            #--- Cree un label pour le status des repertoires
            label $This.frame1.statusrep -font $bddconf(font,arial_12_b) \
-                -text "$caption(bddimages_status,label_rep)"
+                -text "$caption(bdi_status,label_rep)"
            pack $This.frame1.statusrep -in $This.frame1.rep -side top -padx 3 -pady 1 -anchor w
 
              #--- Cree un frame pour afficher les intitules
@@ -229,15 +229,15 @@ namespace eval bddimages_status {
 
                #--- Cree un label pour le status
                label $intitle.nbimgrep -font $bddconf(font,courier_10) \
-                     -text "$caption(bddimages_status,label_nbimgrep)" -anchor center
+                     -text "$caption(bdi_status,label_nbimgrep)" -anchor center
                pack $intitle.nbimgrep -in $intitle -side top -padx 3 -pady 1 -anchor center
 
                label $intitle.nbimginco -font $bddconf(font,courier_10) \
-                     -text "$caption(bddimages_status,label_nbimginc)" -anchor center
+                     -text "$caption(bdi_status,label_nbimginc)" -anchor center
                pack $intitle.nbimginco -in $intitle -side top -padx 3 -pady 1 -anchor center
 
                label $intitle.nbimgerr -font $bddconf(font,courier_10) \
-                     -text "$caption(bddimages_status,label_nbimgerr)" -anchor center
+                     -text "$caption(bdi_status,label_nbimgerr)" -anchor center
                pack $intitle.nbimgerr -in $intitle -side top -padx 3 -pady 1 -anchor center
 
 
@@ -268,15 +268,15 @@ namespace eval bddimages_status {
 
            #--- Creation du bouton fermer
            button $This.frame11.but_fermer \
-              -text "$caption(bddimages_status,fermer)" -borderwidth 2 \
-              -command { ::bddimages_status::fermer }
+              -text "$caption(bdi_status,fermer)" -borderwidth 2 \
+              -command { ::bdi_gui_status::fermer }
            pack $This.frame11.but_fermer \
               -in $This.frame11 -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
            #--- Creation du bouton aide
            button $This.frame11.but_aide \
-              -text "$caption(bddimages_status,aide)" -borderwidth 2 \
+              -text "$caption(bdi_status,aide)" -borderwidth 2 \
               -command { ::audace::showHelpPlugin tool bddimages bddimages.htm }
            pack $This.frame11.but_aide \
               -in $This.frame11 -side right -anchor e \
@@ -284,18 +284,18 @@ namespace eval bddimages_status {
 
            #--- Creation du bouton Verifier
            button $This.frame11.but_connect \
-              -text "$caption(bddimages_status,verif)" -borderwidth 2 \
-              -command { ::bddimages_status::verif }
+              -text "$caption(bdi_status,verif)" -borderwidth 2 \
+              -command { ::bdi_gui_status::verif }
            pack $This.frame11.but_connect \
               -in $This.frame11 -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
            #--- Creation du bouton RAZ
            button $This.frame11.but_raz \
-              -text "$caption(bddimages_status,raz)" -borderwidth 2 \
+              -text "$caption(bdi_status,raz)" -borderwidth 2 \
               -command { 
                  ::bddimagesAdmin::RAZBdd 
-                 ::bddimages_status::restart
+                 ::bdi_gui_status::restart
               }
            pack $This.frame11.but_raz \
               -in $This.frame11 -side right -anchor e \
@@ -303,7 +303,7 @@ namespace eval bddimages_status {
 
       } else {
 
-         tk_messageBox -title $caption(bddimages_status,msg_erreur) -type ok -message $caption(bddimages_status,msg_prevent2)
+         tk_messageBox -title $caption(bdi_status,msg_erreur) -type ok -message $caption(bdi_status,msg_prevent2)
          return
 
       }
@@ -315,7 +315,12 @@ namespace eval bddimages_status {
 
    }
 
-   # bddimages_status::list_diff_shift
+
+
+
+
+
+   # ::list_diff_shift
    # Retourne la liste test epurée de l intersection des deux listes
    proc list_diff_shift { ref test }  {
       foreach elemref $ref {
@@ -328,9 +333,13 @@ namespace eval bddimages_status {
       return $test
    }
 
-   # bddimages_status::verif
+
+
+
+
+   # ** verif
    # Verification des donnees
-   proc ::bddimages_status::verif { } {
+   proc ::bdi_gui_status::verif { } {
 
       variable This
       global audace
@@ -356,72 +365,128 @@ namespace eval bddimages_status {
       pack $reportConsole.scroll -side right -fill y
       pack $reportConsole.text -expand yes -fill both
 
+      #--- Frame des boutons
+      frame $reportConsole.pied -borderwidth 1 -relief groove
+      pack $reportConsole.pied -side bottom -fill x
+
       set text $reportConsole.text
-      $text tag configure BODY -foreground black -background white
-      $text tag configure TITLE -foreground "#808080" -justify center -font [ list {Arial} 12 bold ]
-      $text tag configure H1 -justify left -font [ list {Arial} 10 normal ]
-      $text tag configure H2 -justify left -font [ list {Arial} 10 normal ] -foreground $color(blue) 
-      $text tag configure LISTE0 -foreground $color(black) -lmargin1 20
-      $text tag configure LISTE1 -foreground $color(red) -lmargin1 30 
-      $text tag configure GREEN -foreground $color(green)
-      $text tag configure RED -foreground $color(red)
-        
-      $text insert end "$caption(bddimages_status,consoleTitre) \n\n" TITLE
-      
+      $text tag configure BODY    -foreground black -background white
+      $text tag configure TITLE   -foreground "#808080" -justify center -font [ list {Arial} 12 bold ]
+      $text tag configure H1      -justify left -font [ list {Arial} 10 normal ]
+      $text tag configure H2      -justify left -font [ list {Arial} 10 normal ] -foreground $color(blue) 
+      $text tag configure LISTE0  -foreground $color(black) -lmargin1 20
+      $text tag configure LISTE1  -foreground $color(red) -lmargin1 30 
+      $text tag configure GREEN   -foreground $color(green)
+      $text tag configure RED     -foreground $color(red)
+
+      $text insert end "$caption(bdi_status,consoleTitre) \n\n" TITLE
+
       set list_file_dir ""
       set list_file_sql ""
-   
+
       set limit 0
       set maliste {}
-   
+
       # Recupere la liste des fichiers sur le disque par la globale maliste
-      $text insert end "$caption(bddimages_status,consoleAct1) \n" H1
-      globrdk $conf(bddimages,dirfits) $limit
+      $text insert end "$caption(bdi_status,consoleAct1) \n" H1
+      get_files $conf(bddimages,dirfits) $limit
 
       set err [catch {set maliste [lsort -increasing $maliste]} msg]
       set list_file_dir $maliste
       if {$err} {
-         tk_messageBox -message "$caption(bddimages_status,consoleErr1) $msg" -type ok
+         tk_messageBox -message "$caption(bdi_status,consoleErr1) $msg" -type ok
          return
       }
+      
 
       # Recupere la liste des fichiers sur le serveur sql
-      $text insert end "$caption(bddimages_status,consoleAct2) \n" H1
+      $text insert end "$caption(bdi_status,consoleAct2) \n" H1
       set sqlcmd "SELECT dirfilename,filename FROM images;"
       set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
       if {$err} {
-         tk_messageBox -message "$caption(bddimages_status,consoleErr2) $msg" -type ok
+         tk_messageBox -message "$caption(bdi_status,consoleErr2) $msg" -type ok
          return
       }
 
-      # Comparaison des liste
-      $text insert end "\n$caption(bddimages_status,consoleAct3) \n\n" H2
+      # Comparaison des listes
+      $text insert end "\n$caption(bdi_status,consoleAct3) \n\n" H2
       foreach line $resultsql {
          set dir [lindex $line 0]
          set fic [lindex $line 1]
          lappend list_file_sql "$conf(bddimages,dirbase)/$dir/$fic"
       }
+
+
+
+      set ::bdi_tools_status::err_sql    "no"
+      set ::bdi_tools_status::err_file   "no"
+      set ::bdi_tools_status::err_img    "no"
+      set ::bdi_tools_status::err_img_hd "no"
+      set ::bdi_tools_status::err_nblist "no"
+
+      set nb_list_file_dir [llength  $list_file_dir]
+      set nb_list_file_sql [llength  $list_file_sql]
+      if {$nb_list_file_dir != $nb_list_file_sql} {
+         set  ::bdi_tools_status::err_nblist "yes"
+         $text insert end "La longueur des listes differe \n" "RED" 
+      }
+
+
    
-      set new_list_sql [list_diff_shift $list_file_dir $list_file_sql]
-      set new_list_dir [list_diff_shift $list_file_sql $list_file_dir]
+      set ::bdi_tools_status::new_list_sql [list_diff_shift $list_file_dir $list_file_sql]
+
+      set res ""
+      foreach elem $::bdi_tools_status::new_list_sql {
+          set isd [file isdirectory $elem]
+          if {$isd == 1} {
+             ::console::affiche_erreur "verif repertoire : $elem \n"
+             continue
+          }
+          lappend res $elem        
+      }
+      set ::bdi_tools_status::new_list_sql $res 
+
+
+
+
+      set ::bdi_tools_status::new_list_dir [list_diff_shift $list_file_sql $list_file_dir]
+      set res ""
+      foreach elem $::bdi_tools_status::new_list_dir {
+          set isd [file isdirectory $elem]
+          if {$isd == 1} {
+             ::console::affiche_erreur "ld: [lsearch $list_file_dir $elem] [lindex $list_file_dir [lsearch $list_file_dir $elem] ] $elem\n"
+             continue
+          }
+          lappend res $elem        
+      }
+      set ::bdi_tools_status::new_list_dir $res 
+
+
    
-      $text insert end "$caption(bddimages_status,consoleErrMsg1)" LISTE0
+      $text insert end "$caption(bdi_status,consoleErrMsg1)" LISTE0
       set tag "GREEN"
-      if {[llength $new_list_sql] > 0} { set tag "RED" }
-      $text insert end "[llength $new_list_sql] \n" $tag
-      foreach elemsql $new_list_sql { bddimages_sauve_fich $elemsql }
-      $text insert end "$caption(bddimages_status,consoleErrMsg2)" LISTE0 
+      if {[llength $::bdi_tools_status::new_list_sql] > 0} { 
+         set tag "RED" 
+         set ::bdi_tools_status::err_sql "yes"
+      }
+      $text insert end "[llength $::bdi_tools_status::new_list_sql] \n" $tag
+      foreach elemsql $::bdi_tools_status::new_list_sql { bddimages_sauve_fich $elemsql }
+
+      $text insert end "$caption(bdi_status,consoleErrMsg2)" LISTE0 
       set tag "GREEN"
-      if {[llength $new_list_dir] > 0} { set tag "RED" }
-      $text insert end "[llength $new_list_dir] \n" $tag
-      foreach elemdir $new_list_sql { bddimages_sauve_fich $elemdir }
+      if {[llength $::bdi_tools_status::new_list_dir] > 0} { 
+         set tag "RED" 
+         set ::bdi_tools_status::err_file "yes"
+      }
+      $text insert end "[llength $::bdi_tools_status::new_list_dir] \n" $tag
+      foreach elemdir $::bdi_tools_status::new_list_sql { bddimages_sauve_fich $elemdir }
       $text insert end " \n" LISTE0
-      
-      # verification des donnees sur le serveur SQL
+
+      # verification autres tables de donnees sur le serveur SQL
       set sqlcmd "SELECT DISTINCT idheader FROM header;"
       set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
       if {$err} {
-         tk_messageBox -message "$caption(bddimages_status,consoleErr2) $msg" -type ok
+         tk_messageBox -message "$caption(bdi_status,consoleErr2) $msg" -type ok
          return
       }
 
@@ -436,7 +501,7 @@ namespace eval bddimages_status {
          set sqlcmd "SELECT count(*) FROM images_$idhd;"
          set err [catch {set res_images_hd [::bddimages_sql::sql query $sqlcmd]} msg]
          if {$err} {
-            tk_messageBox -message "$caption(bddimages_status,consoleErr3) $msg" -type ok
+            tk_messageBox -message "$caption(bdi_status,consoleErr3) $msg" -type ok
             return
          }
          $text insert end "- Header #$idhd " LISTE0
@@ -445,31 +510,46 @@ namespace eval bddimages_status {
             set sqlcmd "SELECT idbddimg FROM images WHERE idheader='$idhd';"
             set err [catch {set res_images [::bddimages_sql::sql query $sqlcmd]} msg]
             if {$err} {
-               tk_messageBox -message "$caption(bddimages_status,consoleErr3) $msg" -type ok
+               tk_messageBox -message "$caption(bdi_status,consoleErr3) $msg" -type ok
                return
             }
             # recupere la liste des idbddimg de images_idhd
             set sqlcmd "SELECT idbddimg FROM images_$idhd;"
             set err [catch {set res_images_hd [::bddimages_sql::sql query $sqlcmd]} msg]
             if {$err} {
-               tk_messageBox -message "$caption(bddimages_status,consoleErr3) $msg" -type ok
+               tk_messageBox -message "$caption(bdi_status,consoleErr3) $msg" -type ok
                return
             }
             # effectue les compraisons
-            set list_img [list_diff_shift $res_images_hd $res_images]
-            set list_img_hd [list_diff_shift $res_images $res_images_hd]
+            set ::bdi_tools_status::list_img    [list_diff_shift $res_images_hd $res_images]
+            set ::bdi_tools_status::list_img_hd [list_diff_shift $res_images $res_images_hd]
+
+            if {[llength $::bdi_tools_status::list_img] > 0} { 
+               set ::bdi_tools_status::err_img "yes"
+            }
+            if {[llength $::bdi_tools_status::list_img_hd] > 0} { 
+               set ::bdi_tools_status::err_img_hd "yes"
+            }
             # affiche les resultats
-            $text insert end "\n caption(bddimages_status,consoleErrMsg3)$idhd : [llength $list_img]" LISTE1
+            $text insert end "\n $caption(bdi_status,consoleErrMsg3)$idhd : [llength $::bdi_tools_status::list_img]" LISTE1
             bddimages_sauve_fich ""
-            foreach elem $list_img { bddimages_sauve_fich $elem }
-            $text insert end "\n $caption(bddimages_status,consoleErrMsg4) [llength $list_img_hd]" LISTE1
-            foreach elem $list_img_hd { bddimages_sauve_fich $elem }
+            foreach elem $::bdi_tools_status::list_img { bddimages_sauve_fich $elem }
+            $text insert end "\n $caption(bdi_status,consoleErrMsg4) [llength $::bdi_tools_status::list_img_hd]" LISTE1
+            foreach elem $::bdi_tools_status::list_img_hd { bddimages_sauve_fich $elem }
             $text insert end "\n" TEXT
          } else {
             $text insert end " -> ok \n" TEXT
          }
       }
-      $text insert end "\n $caption(bddimages_status,consoleFin) \n" TEXT
+      if { $::bdi_tools_status::err_sql == "yes" || $::bdi_tools_status::err_file == "yes" || $::bdi_tools_status::err_img == "yes" || $::bdi_tools_status::err_img_hd == "yes"  || $::bdi_tools_status::err_nblist == "yes" } { 
+        #--- Bouton d'ouverture de l'outil d'insertion des images
+        button $reportConsole.pied.repare -borderwidth 2 -text "Repare" \
+           -command "::bdi_tools_status::repare"
+        pack $reportConsole.pied.repare -in $reportConsole.pied -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
+            
+      }
+      
+      $text insert end "\n $caption(bdi_status,consoleFin) \n" TEXT
       
    }
 
