@@ -1,5 +1,5 @@
 #
-# Update $Id: audela.tcl,v 1.27 2011-02-18 03:28:26 fredvachier Exp $
+# Update $Id$
 #
 #--- Welcome to the AudeLA-Interfaces Easy Launcher
 #
