@@ -71,12 +71,14 @@ namespace eval ::confVisu {
       }
 
       #--- definit la palette par defaut
+      set srcFile [file join $conf(rep_userPalette) myconf_$visuNo.pal]
       set tmpPalette [file join $audace(rep_temp) fonction_transfert_$visuNo.pal]
-      if {![file exists $tmpPalette] || ![info exists conf(div,visu$visuNo,mode)]} {
+      if {[file exists $tmpPalette] == 0 || [file exists $srcFile] == 0 || [info exists conf(div,visu$visuNo,mode)] == 0} {
          set conf(div,visu$visuNo,mode) [list 0 0.0 0.0 0 0 10 1.0]
-         #--- recopie la palette gray.pal dans $audace(rep_temp) sous le nom fonction_transfert_$visuNo.pal
-         file copy -force [file join $conf(rep_userPalette) gray.pal] [file join $conf(rep_userPalette) fonction_transfert_$visuNo.pal]
-         file copy -force [file join $conf(rep_userPalette) fonction_transfert_$visuNo.pal] $tmpPalette
+         #--   duplique gray.pal sous myconf_$visuNo.pal
+         file copy -force [file join $conf(rep_userPalette) gray.pal] [file join $conf(rep_userPalette) myconf_$visuNo.pal]
+         #--- recopie la palette myconf_$visuNo.pal dans $audace(rep_temp) sous le nom fonction_transfert_$visuNo.pal
+         file copy -force [file join $conf(rep_userPalette) myconf_$visuNo.pal] $tmpPalette
       }
       #--- dans tous les cas j'adopte la palette $audace(rep_temp)/fonction_transfert_$visuNo.pal
       visu$visuNo paldir "$audace(rep_temp)"

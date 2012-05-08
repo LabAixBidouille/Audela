@@ -22,6 +22,8 @@ namespace eval ::div {
       }
       set private(div,visu$visuNo,position) $conf(div,visu$visuNo,position)
 
+      set private(div,$visuNo,start) 1
+
       ::div::cmdReset $visuNo
 
       #--   cree les vecteurs Vx=abscisse FT= fonction de transfert \
@@ -51,7 +53,7 @@ namespace eval ::div {
       ::div::createDialog $visuNo
 
       #--   initialise les vecteurs avec la palette courante
-      ::div::readPalette $visuNo
+      ::div::readPalette $visuNo "myconf_${visuNo}.pal"
 
       #--   force la mise a jour pour les plans couleurs et l'histogramme
       ::div::changeImg $visuNo
@@ -156,7 +158,12 @@ namespace eval ::div {
       if {[info exists private(div,$visuNo,destination)]} {unset private(div,$visuNo,destination)}
 
       set private(div,$visuNo,box) $box
-      ::div::updateValues $visuNo
+
+      if {$private(div,$visuNo,start) == 0} {
+         ::div::updateValues $visuNo
+      } else {
+         set private(div,$visuNo,start) 0
+      }
    }
 
    #---------------------------------------------------------------------------
@@ -237,12 +244,12 @@ namespace eval ::div {
    }
 
    #---------------------------------------------------------------------------
-   #  ::div::cmdSave
+   #  ::div::cmdSaveMypal
    #  Sauvegarde la palette fonction_transfert_$visuNo.pal sous mypal_$visuNo.pal
    #  et complete le menu des palettes disponibles
    #  Commande du bouton 'Sauver ma palette'
    #---------------------------------------------------------------------------
-   proc cmdSave { visuNo } {
+   proc cmdSaveMypal { visuNo } {
       variable private
       global audace conf caption
 
@@ -300,7 +307,7 @@ namespace eval ::div {
    #---------------------------------------------------------------------------
    proc cmdApply { visuNo } {
       variable private
-      global conf
+      global audace conf
 
       #--   sauve la position et le nom du reglage
       regsub {([0-9]+x[0-9]+)} [wm geometry $private(div,$visuNo,this)] "" conf(div,visu$visuNo,position)
@@ -311,19 +318,24 @@ namespace eval ::div {
          $private(div,$visuNo,lumen) $private(div,$visuNo,contrast) \
          $private(div,$visuNo,inversion) $private(div,$visuNo,histo) \
          $private(div,$visuNo,step) $private(div,$visuNo,gamma)]
+
+      #--   recopie la palette
+      set src [file join $audace(rep_temp) fonction_transfert_$visuNo.pal]
+      set dest [file join $conf(rep_userPalette) myconf_${visuNo}.pal]
+      file copy -force $src $dest
    }
 
    #---------------------------------------------------------------------------
-   #  ::div::cmdSave
+   #  ::div::cmdSaveMypal
    #  Sauvegarde la palette fonction_transfert_$visuNo.pal sous mypal_$visuNo.pal
    #  et complete le menu des palettes disponibles
    #  Commande du bouton 'Sauver ma palette'
    #---------------------------------------------------------------------------
-   proc cmdSave { visuNo } {
+   proc cmdSaveMypal { visuNo } {
       variable private
       global audace conf caption
 
-      #--   sauve les valeurs
+      #--   sauve les valeurs des vecteurs dans le fichier
       ::div::updatePalette $visuNo
 
       #--   recopie la palette
@@ -347,7 +359,7 @@ namespace eval ::div {
    #---------------------------------------------------------------------------
    proc cmdReset { visuNo } {
       variable private
-      global conf caption
+      global audace conf caption
 
       lassign $conf(div,visu$visuNo,mode) k \
          private(div,$visuNo,lumen) private(div,$visuNo,contrast) \
@@ -370,6 +382,13 @@ namespace eval ::div {
          }
       }
       set private(div,$visuNo,palette) "[lindex $private(div,$visuNo,listPalettes) $k]"
+
+      #--   retablit la palette enregistree par 'Appliquer'
+      set private(div,$visuNo,start) 1
+      if {[winfo exists $audace(base).div$visuNo]} {
+         ::div::restorePalette $visuNo
+         ::div::readPalette $visuNo "myconf_${visuNo}.pal"
+      }
    }
 
    #---------------------------------------------------------------------------
@@ -391,10 +410,7 @@ namespace eval ::div {
       variable private
       global audace conf
 
-      #--   recopie la palette
-      set src [file join $audace(rep_temp) fonction_transfert_$visuNo.pal]
-      set dest [file join $conf(rep_userPalette) fonction_transfert_$visuNo.pal]
-      file copy -force $src $dest
+      ::div::restorePalette $visuNo
 
       set this $private(div,$visuNo,this)
 
@@ -563,7 +579,7 @@ namespace eval ::div {
    #---------------------------------------------------------------------------
    #  ::div::configTable
    #  Configure le panneau en fonction de la palette
-   #  Invoquee par cmdModifyPalette, cmdSave et changeImg
+   #  Invoquee par cmdModifyPalette, cmdSaveMypal et changeImg
    #---------------------------------------------------------------------------
    proc configTable { visuNo } {
       variable private
@@ -653,7 +669,7 @@ namespace eval ::div {
    #---------------------------------------------------------------------------
    #  ::div::updatePalette
    #  Actualise le fichier fonction_transfert_$visuNo.pal
-   #  Invoquee par cmdModifyPalette, cmdInvertValues, cmdSave et updateValues
+   #  Invoquee par cmdModifyPalette, cmdInvertValues, cmdSaveMypal et updateValues
    #---------------------------------------------------------------------------
    proc updatePalette { visuNo args } {
       set rep $::audace(rep_temp)
@@ -683,7 +699,7 @@ namespace eval ::div {
       global audace conf
 
       #--   definit la source de la palette
-      if {$palette in [list gray iris rainbow "mypal_${visuNo}"]} {
+      if {$palette in [list gray iris rainbow "mypal_${visuNo}" "myconfpal_${visuNo}.pal" ]} {
          set srcFile [file join $conf(rep_userPalette) $palette.pal]
       } else {
          #--   cas du demarrage normal
@@ -704,6 +720,24 @@ namespace eval ::div {
          }
       }
       close $f
+   }
+
+   #---------------------------------------------------------------------------
+   #  ::div::restorePalette
+   #  Fermeture de le fenetre
+   #  Invoquee par cmdReset et cmdClose
+   #---------------------------------------------------------------------------
+   proc restorePalette { visuNo } {
+      global audace conf
+
+      #--   retablit la palette enregistree par 'Appliquer'
+      set src [file join $conf(rep_userPalette) myconf_$visuNo.pal]
+      set dest [file join $audace(rep_temp) fonction_transfert_$visuNo.pal]
+      file copy -force $src $dest
+
+      #--   affiche les couleurs
+      visu$visuNo paldir "$audace(rep_temp)"
+      visu$visuNo pal fonction_transfert_$visuNo
    }
 
    #-----------------------fonctions d'info et de calcul-----------------------
@@ -1086,13 +1120,13 @@ namespace eval ::div {
 
       #--   bouton de creation de ma palette
       button $tbl.spec.save -text "$caption(div,save)" -borderwidth 2 -width 15 \
-         -relief raised -command "::div::cmdSave $visuNo"
+         -relief raised -command "::div::cmdSaveMypal $visuNo"
       pack $tbl.spec.save -side left -padx 10 -pady 3
 
-      #--   bouton d'exportation de l'image (pour Windows uniquement)
-      button $tbl.spec.copy -text $caption(div,copy) -borderwidth 2 -width 15 \
-         -relief raised -command "::div::cmdImg2Clipboard $visuNo"
+      #--   bouton d'exportation de l'image (pour Windows seulement)
       if { $::tcl_platform(platform) == "windows" } {
+         button $tbl.spec.copy -text $caption(div,copy) -borderwidth 2 -width 15 \
+            -relief raised -command "::div::cmdImg2Clipboard $visuNo"
          pack $tbl.spec.copy -side left -padx 20 -pady 3
       }
 
@@ -1140,8 +1174,11 @@ namespace eval ::div {
       set k [lsearch -exact $private(div,$visuNo,listPalettes) $private(div,$visuNo,palette)]
 
       set widgetList [list histo black white plan scale_lumen scale_contrast \
-         scale_step scale_gamma linear palette "spec.inv" "spec.save" "spec.copy" \
+         scale_step scale_gamma linear palette "spec.inv" "spec.save" \
          "cmd.ok" "cmd.apply" "cmd.reset" "cmd.help" "cmd.close"]
+      if { $::tcl_platform(platform) == "windows" } {
+         lappend widgetList "spec.copy"
+      }
       foreach wid $widgetList {
          $this.$wid configure -state $state
       }
