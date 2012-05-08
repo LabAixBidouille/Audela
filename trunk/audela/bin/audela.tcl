@@ -70,12 +70,14 @@ if { [info command jm_repertoire_log ] != "" } {
    jm_repertoire_log $::audace(rep_log)
 }
 
-
 #--- Creation du repertoire des fichiers temporaires
 if { $::tcl_platform(platform) == "unix" } {
    set ::audace(rep_temp) [ file join /tmp .audace ]
 } else {
    set ::audace(rep_temp) [ file join $::env(TMP) .audace ]
+}
+if { ! [ file exists $::audace(rep_temp) ] } {
+   file mkdir $::audace(rep_temp)
 }
 
 if { [ file exists [ file join $::audace(rep_home) audace.txt ] ] == 1 } {
