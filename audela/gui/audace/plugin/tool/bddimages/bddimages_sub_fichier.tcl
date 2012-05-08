@@ -46,6 +46,30 @@ proc bddimages_sauve_fich {texte} {
 
 # ---------------------------------------
 
+proc get_files { dir limit } {
+
+      global maliste
+      globrdk $dir $limit
+      set res ""
+      #::console::affiche_resultat "NB SQL : [llength $maliste]\n"
+      foreach elem $maliste {
+          set isd [file isdirectory $elem]
+          set isf [file isfile $elem]
+          #::console::affiche_resultat "$isd $isf $elem \n"
+          if {$isd == 1} {
+             ::console::affiche_erreur "repertoire : $elem \n"
+             continue
+          }
+          if {$isf == 1} {
+             lappend res $elem
+          }
+      }
+
+
+      set maliste $res
+      #::console::affiche_resultat "NB SQL : [llength $maliste]\n"
+ }
+
 proc globrdk { {dir .} limit } {
 
    global maliste

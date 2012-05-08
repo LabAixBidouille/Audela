@@ -391,6 +391,9 @@ proc bddimages_insertion_unfich { ligne } {
 
   if {$form2=="cata.txt.gz"} {
      set err [bddimages_catas_datainsert $nomfich $sizefich $form2]
+#        set err [lindex $result 0]
+#        set insert_idbddimg [lindex $result 1]
+#        set msg [lindex $result 2]
      }
 
   if {$form2=="cata.xml"} {
