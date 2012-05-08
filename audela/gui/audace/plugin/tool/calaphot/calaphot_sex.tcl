@@ -119,7 +119,7 @@ proc FichierConfigurationSex { {filename calaphot.sex} } {
    append texte "PHOT_APERTURES  5                       # MAG_APER aperture diameter(s) in pixels\n"
    append texte "PHOT_AUTOPARAMS 2.5, 3.5                # MAG_AUTO parameters: <Kron_fact>,<min_radius>\n"
    append texte "\n"
-   append texte "SATUR_LEVEL " $parametres(saturation) " # level (in ADUs) at which arises saturation\n"
+   append texte "SATUR_LEVEL " $parametres(niveau_maximal) " # level (in ADUs) at which arises saturation\n"
    append texte "\n"
    append texte "MAG_ZEROPOINT 0.0                       # magnitude zero-point\n"
    append texte "MAG_GAMMA 4.0                           # gamma of emulsion (for photographic scans)\n"
@@ -228,29 +228,29 @@ proc CreationFichiersSextractor { } {
    FichierNeuronalSex $calaphot(sextractor,neurone)
 }
 
-proc RechercheCatalogue { image type etoile } {
+proc RechercheCatalogue { indice type etoile } {
    variable calaphot
    variable pos_reel
 
    Message debug "%s\n" [info level [info level]]
 
    set r [list]
-   set catalog [OuvertureFichier $calaphot(sextractor,catalog) r]
-   if {($catalog != "")} {
+   set catalog [ OuvertureFichier $calaphot(sextractor,catalog) r ]
+   if { ( $catalog != "" ) } {
        Message debug "catalog=%s\n" $catalog
 
-       set x [lindex $pos_reel($image,$type,$etoile) 0]
-       set y [lindex $pos_reel($image,$type,$etoile) 1]
+       set x [ lindex $pos_reel($indice,$type,$etoile) 0 ]
+       set y [ lindex $pos_reel($indice,$type,$etoile) 1 ]
 
        set min 1e9
-       foreach ligne [split [read $catalog] \n] {
-           set xc [lindex $ligne 6]
-           set yc [lindex $ligne 7]
-           set dx [expr abs($xc - $x)]
-           set dy [expr abs($yc - $y)]
-           if {($dx < 3.0) && ($dy < 3.0)} {
-               set dist [expr hypot($dx,$dy)]
-               if {($dist < $min)} {
+       foreach ligne [ split [ read $catalog ] \n ] {
+           set xc [ lindex $ligne 6 ]
+           set yc [ lindex $ligne 7 ]
+           set dx [ expr abs($xc - $x) ]
+           set dy [ expr abs($yc - $y) ]
+           if { ( $dx < 3.0 ) && ( $dy < 3.0 ) } {
+               set dist [ expr hypot($dx,$dy) ]
+               if { ( $dist < $min ) } {
                    set min $dist
                    set r $ligne
                }
