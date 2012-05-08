@@ -157,7 +157,6 @@ namespace eval analyse_tools {
    variable catalog_nomad1
    variable catalog_tycho2
 
-   variable use_skybot
    variable keep_radec
    variable create_cata
    variable boucle
@@ -267,11 +266,17 @@ namespace eval analyse_tools {
          set datejd  [ mc_date2jd $dateobs ]
          set datejd  [ expr $datejd + $exposure/86400.0/2.0 ]
          set dateiso [ mc_date2iso8601 $datejd ]
-         set radius  [expr $radius]
-         set uaicode [lindex [::bddimages_liste::lget $tabkey UAICODE ] 1]
-         set skybot [ get_skybot $dateiso $ra $dec $radius $uaicode ]
-         set listsources [ identification $listsources "OVNI" $skybot "SKYBOT" 30.0 10.0 10.0] 
-         set $::analyse_tools::nb_skybot [::manage_source::get_nb_sources_by_cata $listsources SKYBOT]
+         set radius  [format "%0.0f" [expr $radius*60.0] ]
+         set iau_code [lindex [::bddimages_liste::lget $tabkey IAU_CODE ] 1]
+
+         gren_info "get_skybot $dateiso $ra $dec $radius $iau_code\n"
+         set skybot [ get_skybot $dateiso $ra $dec $radius $iau_code ]
+         gren_info "skybot = $skybot\n"
+
+         gren_info "nb_skybot = [::manage_source::get_nb_sources_by_cata $skybot SKYBOT]\n"
+         set listsources [ identification $listsources "OVNI" $skybot "SKYBOT" 30.0 -30.0 {} 0] 
+         set ::analyse_tools::nb_skybot [::manage_source::get_nb_sources_by_cata $listsources SKYBOT]
+         gren_info "nb_skybot ident = $::analyse_tools::nb_skybot\n"
       }
       
       gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $listsources]\n"
@@ -392,7 +397,7 @@ namespace eval analyse_tools {
          }
 
          gren_info "nbstars/limit_nbstars_accepted  = $nbstars/$::analyse_tools::limit_nbstars_accepted \n"
-         if { $::analyse_tools::keep_radec==1 && $nbstars<$::analyse_tools::limit_nbstars_accepted } {
+         if { $::analyse_tools::keep_radec==1 && $nbstars<$::analyse_tools::limit_nbstars_accepted && [info exists ::analyse_tools::ra_save] && [info exists ::analyse_tools::dec_save] } {
             set ra  $::analyse_tools::ra_save
             set dec $::analyse_tools::dec_save
             gren_info "PASS3: calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2 -del_tmp_files 0\n"

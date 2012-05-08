@@ -404,8 +404,10 @@ proc insertion_solo { nomfich } {
       set liste     [bddimages_insertion_unfich $ligne]
       set err       [lindex $liste 0]
       set nomfich   [lindex $liste 1]
-      set newidbddimg [lindex $liste 2]
-      ::console::affiche_resultat "Insertion Solo : $nomfich (id->$newidbddimg)\n"
+      set newid     [lindex $liste 2]
+      set msg       [lindex $liste 3]
+      set typefich  [lindex $liste 4]
+      ::console::affiche_resultat "Insertion Solo : $nomfich ($typefich: id->$newid)\n"
       if {$err==-1} {return}
    }
 
