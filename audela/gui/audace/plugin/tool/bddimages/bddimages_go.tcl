@@ -88,8 +88,8 @@ proc ::bddimages::initPlugin { tkbase } {
    set bddconf(extension_bdd) ".fits.gz"
    set bddconf(extension_tmp) ".fit"
    
-   set  audace(rep_images)  $bddconf(dirfits)
-   set  audace(rep_travail) $bddconf(dirtmp)
+#   set  audace(rep_images)  $bddconf(dirfits)
+#   set  audace(rep_travail) $bddconf(dirtmp)
 
 }
 
