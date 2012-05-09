@@ -818,12 +818,13 @@ namespace eval bddimages_recherche {
 
    proc ::bddimages_recherche::charge_memory {  } {
 
-      gren_info "Charge...\n"
+      gren_info "Charge..."
       for {set i 0} {$i<100} {incr i} {
          ::bddimages_recherche::set_progress $i 100
          after 10
       }
       ::bddimages_recherche::set_progress 0 100
+      gren_info "Fin\n"
       
    }
 
@@ -836,6 +837,7 @@ namespace eval bddimages_recherche {
 #      destroy $::acqt1m_offsetdark::frm.p
 
       set ::bddimages_recherche::progress [format "%0.0f" [expr $cur * 100. /$max ] ]
+      update
       #gren_info "Progresse = $::bddimages_recherche::progress\n"
    }
 
@@ -1695,8 +1697,8 @@ namespace eval bddimages_recherche {
                                  [list "bddimages_state"      "S"] \
                                  [list "bddimages_type"       "T"] \
                                  [list "bddimages_wcs"        "W"] \
-                                 [list "bddimages_namecata"   "NC"] \
-                                 [list "bddimages_datecata"   "DC"] \
+                                 [list "cataexist"            "C"] \
+                                 [list "catadatemodif"        "DC"] \
                                  [list "bddimages_astroid"    "A"] \
                                  [list "bddimages_astrometry" "AS"] \
                                  [list "bddimages_cataastrom" "CA"] \
@@ -1714,6 +1716,8 @@ namespace eval bddimages_recherche {
       set affich_table ""
 
       foreach line $table {
+      
+      gren_info "img : $line\n"
 
          set lign_affich $empty
          
@@ -1801,7 +1805,7 @@ namespace eval bddimages_recherche {
             #--- Coloration bleu du nom des images
             $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,1 -fg $color(blue)
             #--- Affichage d'une icone pour les colonnes bddimages_*
-            for { set j 9 } { $j < 10 } { incr j } {
+            foreach j { 9 12 13 } {
                # Centrage colonne
                #$::bddimages_recherche::This.frame6.result.tbl columnconfigure $j -align center
                # Recupere la valeur de la cellule i,j
@@ -1815,8 +1819,18 @@ namespace eval bddimages_recherche {
                   $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -text ""
                   $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -image icon_no
                }
+               # Si valeur cellule = '-' alors icone NO
+               if {[string equal -nocase [ string trim $val ] "0"]} {
+                  $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -text ""
+                  $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -image icon_no
+               }
                # Si valeur cellule = 1 alors icone YES
                if {[string equal -nocase [ string trim $val ] "1"]} {
+                  $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -text ""
+                  $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -image icon_yes
+               }
+               # Si valeur cellule = Y alors icone YES
+               if {[string equal -nocase [ string trim $val ] "Y"]} {
                   $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -text ""
                   $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -image icon_yes
                }
@@ -1970,6 +1984,13 @@ proc ::bddimages_recherche::get_intellist { i } {
       set bddimages_cataastrom [list "bddimages_cataastrom" [lindex [::bddimages_liste::lget $tabkey "bddimages_cataastrom"] 1] ]
       set bddimages_photometry [list "bddimages_photometry" [lindex [::bddimages_liste::lget $tabkey "bddimages_photometry"] 1] ]
       set bddimages_cataphotom [list "bddimages_cataphotom" [lindex [::bddimages_liste::lget $tabkey "bddimages_cataphotom"] 1] ]
+      set bddimages_cataphotom [list "bddimages_cataphotom" [lindex [::bddimages_liste::lget $tabkey "bddimages_cataphotom"] 1] ]
+
+      set cataexist            [list "cataexist"            [::bddimages_liste::lget $img "cataexist"] ]
+      set cataloaded           [list "cataloaded"           [::bddimages_liste::lget $img "cataloaded"] ]
+      set catadatemodif        [list "catadatemodif"        [::bddimages_liste::lget $img "catadatemodif"] ]
+
+
       lappend table_result($i) [list $idbddimg             \
                                      $filename             \
                                      $telescop             \
@@ -1989,7 +2010,10 @@ proc ::bddimages_recherche::get_intellist { i } {
                                      $bddimages_astrometry \
                                      $bddimages_cataastrom \
                                      $bddimages_photometry \
-                                     $bddimages_cataphotom
+                                     $bddimages_cataphotom \
+                                     $cataexist            \
+                                     $cataloaded           \
+                                     $catadatemodif
                                 ]
    }
 

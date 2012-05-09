@@ -640,7 +640,6 @@ proc get_one_image_obsolete { idbddimg } {
          set file        [file join $bddconf(dirbase) $dirfilename $filename]
          set ::analyse_tools::current_image_name $filename
          set ::analyse_tools::current_image_date $date
-
          set ::analyse_tools::ra        [lindex [::bddimages_liste::lget $tabkey ra         ] 1]
          set ::analyse_tools::dec       [lindex [::bddimages_liste::lget $tabkey dec        ] 1]
          set ::analyse_tools::pixsize1  [lindex [::bddimages_liste::lget $tabkey pixsize1   ] 1]
@@ -669,11 +668,12 @@ proc get_one_image_obsolete { idbddimg } {
             #visu$::audace(visuNo) disp [list [lindex $cuts 0] [lindex $cuts 1] ]
          }
          
+gren_info "DATE:$::analyse_tools::current_image_date\n"
          #�Mise a jour GUI
          $::bddimages_analyse::current_appli.onglets.nb.f3.bouton.back configure -state disabled
          $::bddimages_analyse::current_appli.onglets.nb.f3.bouton.back configure -state disabled
          $::bddimages_analyse::current_appli.onglets.nb.f3.infoimage.nomimage    configure -text $::analyse_tools::current_image_name
-         $::bddimages_analyse::current_appli.onglets.nb.f3.infoimage.dateimage   configure -text $::analyse_tools::current_image_date
+         #$::bddimages_analyse::current_appli.onglets.nb.f3.infoimage.dateimage   configure -textvariable $::analyse_tools::current_image_date
          $::bddimages_analyse::current_appli.onglets.nb.f3.infoimage.stimage     configure -text "$::analyse_tools::id_current_image / $::analyse_tools::nb_img_list"
 
          if {$::analyse_tools::id_current_image == 1 && $::analyse_tools::nb_img_list > 1 } {
