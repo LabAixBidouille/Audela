@@ -286,7 +286,7 @@ namespace eval analyse_tools {
          set iau_code [lindex [::bddimages_liste::lget $tabkey IAU_CODE ] 1]
 
          gren_info "get_skybot $dateiso $ra $dec $radius $iau_code\n"
-         set skybot [ get_skybot $dateiso $ra $dec $radius $iau_code ]
+         set err [ catch {get_skybot $dateiso $ra $dec $radius $iau_code} skybot ]
          gren_info "skybot = $skybot\n"
 
          gren_info "nb_skybot = [::manage_source::get_nb_sources_by_cata $skybot SKYBOT]\n"
