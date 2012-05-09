@@ -1223,6 +1223,7 @@ namespace eval bddimages_liste_gui {
       if {$type == "intellilist"} {
          set img_list [::bddimages_liste_gui::intellilist_to_imglist_i $intellilist]
          set img_list [::bddimages_liste_gui::transform_tabkey $img_list]
+         #::console::affiche_resultat "img_list = $img_list\n"
       }
       if {$type == "normal"} {
          #::console::affiche_resultat "intellilist = $intellilist\n"
