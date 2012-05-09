@@ -285,14 +285,14 @@ namespace eval analyse_tools {
          set radius  [format "%0.0f" [expr $radius*60.0] ]
          set iau_code [lindex [::bddimages_liste::lget $tabkey IAU_CODE ] 1]
 
-         #gren_info "get_skybot $dateiso $ra $dec $radius $iau_code\n"
+         gren_info "get_skybot $dateiso $ra $dec $radius $iau_code\n"
          set skybot [ get_skybot $dateiso $ra $dec $radius $iau_code ]
-         #gren_info "skybot = $skybot\n"
+         gren_info "skybot = $skybot\n"
 
-         #gren_info "nb_skybot = [::manage_source::get_nb_sources_by_cata $skybot SKYBOT]\n"
+         gren_info "nb_skybot = [::manage_source::get_nb_sources_by_cata $skybot SKYBOT]\n"
          set listsources [ identification $listsources "OVNI" $skybot "SKYBOT" 30.0 -30.0 {} 0] 
          set ::analyse_tools::nb_skybot [::manage_source::get_nb_sources_by_cata $listsources SKYBOT]
-         #gren_info "nb_skybot ident = $::analyse_tools::nb_skybot\n"
+         gren_info "nb_skybot ident = $::analyse_tools::nb_skybot\n"
       }
       
       gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $listsources]\n"
