@@ -201,7 +201,23 @@ namespace eval analyse_tools {
    variable delpv
    variable deuxpasses
    variable limit_nbstars_accepted
-   
+   variable log
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    proc ::analyse_tools::get_cata {  } {
 
       global bddconf
@@ -229,10 +245,10 @@ namespace eval analyse_tools {
 
       if {$::analyse_tools::use_tycho2} {
          set tycho2 [cstycho2 $::analyse_tools::catalog_tycho2 $ra $dec $radius]
-         gren_info "rollup = [::manage_source::get_nb_sources_rollup $tycho2]\n"
+         #gren_info "rollup = [::manage_source::get_nb_sources_rollup $tycho2]\n"
          set tycho2 [::manage_source::set_common_fields $tycho2 TYCHO2 { RAdeg DEdeg 5 VT e_VT }]
-         ::manage_source::imprim_3_sources $tycho2
-         gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
+         #::manage_source::imprim_3_sources $tycho2
+         #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
          set log 0
          set listsources [ identification $listsources IMG $tycho2 TYCHO2 30.0 -30.0 {} $log]
          set $::analyse_tools::nb_tycho2 [::manage_source::get_nb_sources_by_cata $listsources TYCHO2]
@@ -240,10 +256,10 @@ namespace eval analyse_tools {
       
       if {$::analyse_tools::use_ucac2} {
          set ucac2 [csucac2 $::analyse_tools::catalog_ucac2 $ra $dec $radius]
-         gren_info "rollup = [::manage_source::get_nb_sources_rollup $ucac2]\n"
+         #gren_info "rollup = [::manage_source::get_nb_sources_rollup $ucac2]\n"
          set ucac2 [::manage_source::set_common_fields $ucac2 UCAC2 { ra_deg dec_deg e_pos_deg U2Rmag_mag 0.5 }]
-         ::manage_source::imprim_3_sources $ucac2
-         gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
+         #::manage_source::imprim_3_sources $ucac2
+         #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
          set log 0
          set listsources [ identification $listsources IMG $ucac2 UCAC2 30.0 -30.0 {} $log]
          set $::analyse_tools::nb_ucac2 [::manage_source::get_nb_sources_by_cata $listsources UCAC2]
@@ -251,10 +267,10 @@ namespace eval analyse_tools {
       
       if {$::analyse_tools::use_ucac3} {
          set ucac3 [csucac3 $::analyse_tools::catalog_ucac3 $ra $dec $radius]
-         gren_info "rollup = [::manage_source::get_nb_sources_rollup $ucac3]\n"
+         #gren_info "rollup = [::manage_source::get_nb_sources_rollup $ucac3]\n"
          set ucac3 [::manage_source::set_common_fields $ucac3 UCAC3 { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
-         ::manage_source::imprim_3_sources $ucac3
-         gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
+         #::manage_source::imprim_3_sources $ucac3
+         #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
          set log 0
          set listsources [ identification $listsources IMG $ucac3 UCAC3 30.0 -30.0 {} $log]
          set $::analyse_tools::nb_ucac3 [::manage_source::get_nb_sources_by_cata $listsources UCAC3]
@@ -269,14 +285,14 @@ namespace eval analyse_tools {
          set radius  [format "%0.0f" [expr $radius*60.0] ]
          set iau_code [lindex [::bddimages_liste::lget $tabkey IAU_CODE ] 1]
 
-         gren_info "get_skybot $dateiso $ra $dec $radius $iau_code\n"
+         #gren_info "get_skybot $dateiso $ra $dec $radius $iau_code\n"
          set skybot [ get_skybot $dateiso $ra $dec $radius $iau_code ]
-         gren_info "skybot = $skybot\n"
+         #gren_info "skybot = $skybot\n"
 
-         gren_info "nb_skybot = [::manage_source::get_nb_sources_by_cata $skybot SKYBOT]\n"
+         #gren_info "nb_skybot = [::manage_source::get_nb_sources_by_cata $skybot SKYBOT]\n"
          set listsources [ identification $listsources "OVNI" $skybot "SKYBOT" 30.0 -30.0 {} 0] 
          set ::analyse_tools::nb_skybot [::manage_source::get_nb_sources_by_cata $listsources SKYBOT]
-         gren_info "nb_skybot ident = $::analyse_tools::nb_skybot\n"
+         #gren_info "nb_skybot ident = $::analyse_tools::nb_skybot\n"
       }
       
       gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $listsources]\n"
@@ -285,20 +301,28 @@ namespace eval analyse_tools {
       set votable [::votableUtil::list2votable $listsources $tabkey]
       
       # Sauvegarde du cata XML
-      gren_info "Enregistrement du cata XML: $cataxml\n"
+      #gren_info "Enregistrement du cata XML: $cataxml\n"
       set fxml [open $cataxml "w"]
       puts $fxml $votable
       close $fxml
 
       if {$::analyse_tools::create_cata} {
          set err [ catch { insertion_solo $cataxml } msg ]
-         gren_info "** INSERTION_SOLO = $err $msg\n"
+         #gren_info "** INSERTION_SOLO = $err $msg\n"
       }
 
 
 
       return true
    }
+
+
+
+
+
+
+
+
 
 
 
@@ -345,83 +369,83 @@ namespace eval analyse_tools {
          set idbddimg    [::bddimages_liste::lget $img idbddimg]
          set file        [file join $bddconf(dirbase) $dirfilename $filename]
 
-         gren_info "idbddimg    $idbddimg\n"
-         gren_info "ra          $ra\n"
-         gren_info "dec         $dec\n"
-         gren_info "pixsize1    $pixsize1\n"
-         gren_info "pixsize2    $pixsize2\n"
-         gren_info "foclen      $foclen\n"
-         gren_info "dateobs     $dateobs \n"
-         gren_info "exposure    $exposure\n"
-         gren_info "naxis1      $naxis1  \n"
-         gren_info "naxis2      $naxis2  \n"
-         gren_info "filename    $filename\n"
-         gren_info "dirfilename $dirfilename\n"
-         gren_info "file        $file\n"
+         #gren_info "idbddimg    $idbddimg\n"
+         #gren_info "ra          $ra\n"
+         #gren_info "dec         $dec\n"
+         #gren_info "pixsize1    $pixsize1\n"
+         #gren_info "pixsize2    $pixsize2\n"
+         #gren_info "foclen      $foclen\n"
+         #gren_info "dateobs     $dateobs \n"
+         #gren_info "exposure    $exposure\n"
+         #gren_info "naxis1      $naxis1  \n"
+         #gren_info "naxis2      $naxis2  \n"
+         #gren_info "filename    $filename\n"
+         #gren_info "dirfilename $dirfilename\n"
+         #gren_info "file        $file\n"
 
          set xcent [expr $naxis1/2.0]
          set ycent [expr $naxis2/2.0]
-         gren_info "xcent ycent = $xcent $ycent\n"
+         #gren_info "xcent ycent = $xcent $ycent\n"
 
-         gren_info "****************************************************\n"
-         gren_info "** Calibration de l image\n"
-         gren_info "****************************************************\n"
-         gren_info "param : $ra $dec $pixsize1 $pixsize2 $foclen\n"
-         gren_info "catalog_usnoa2 : $::analyse_tools::catalog_usnoa2\n"
-         gren_info "DEBUT WCS ra dec : $ra  $dec \n"
+         #gren_info "****************************************************\n"
+         #gren_info "** Calibration de l image\n"
+         #gren_info "****************************************************\n"
+         #gren_info "param : $ra $dec $pixsize1 $pixsize2 $foclen\n"
+         #gren_info "catalog_usnoa2 : $::analyse_tools::catalog_usnoa2\n"
+         #gren_info "DEBUT WCS ra dec : $ra  $dec \n"
 
-         gren_info "PASS1: calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO  $::analyse_tools::catalog_usnoa2 -del_tmp_files 0\n"
+         if {$::analyse_tools::log} {gren_info "PASS1: calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO  $::analyse_tools::catalog_usnoa2 -del_tmp_files 0\n"}
          set erreur [catch {set nbstars [calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO $::analyse_tools::catalog_usnoa2 -del_tmp_files 0]} msg]
          if {$erreur} {
-            gren_info "1 ERR NBSTARS=$nbstars ($msg)"
+            #gren_info "1 ERR NBSTARS=$nbstars ($msg)"
             return -code 1 "ERR NBSTARS=$nbstars ($msg)"
             }
 
          set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
          set ra  [lindex $a 0]
          set dec [lindex $a 1]
-         gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"
+         if {$::analyse_tools::log} {gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"}
 
          if {$::analyse_tools::deuxpasses} {
-            gren_info "PASS2: calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2 -del_tmp_files 0\n"
+         if {$::analyse_tools::log} {gren_info "PASS2: calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2 -del_tmp_files 0\n"}
             set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 -del_tmp_files 0]} msg]
             if {$erreur} {
-                  gren_info "2 ERR NBSTARS=$nbstars ($msg)"
+                  #gren_info "2 ERR NBSTARS=$nbstars ($msg)"
                return -code 2 "ERR NBSTARS=$nbstars ($msg)"
                }
 
             set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
             set ra  [lindex $a 0]
             set dec [lindex $a 1]
-            gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"
+            if {$::analyse_tools::log} {gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"}
          }
 
          gren_info "nbstars/limit_nbstars_accepted  = $nbstars/$::analyse_tools::limit_nbstars_accepted \n"
          if { $::analyse_tools::keep_radec==1 && $nbstars<$::analyse_tools::limit_nbstars_accepted && [info exists ::analyse_tools::ra_save] && [info exists ::analyse_tools::dec_save] } {
             set ra  $::analyse_tools::ra_save
             set dec $::analyse_tools::dec_save
-            gren_info "PASS3: calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2 -del_tmp_files 0\n"
+            if {$::analyse_tools::log} {gren_info "PASS3: calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2 -del_tmp_files 0\n"}
             set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 -del_tmp_files 0]} msg]
             if {$erreur} {
-                  gren_info "3 ERR NBSTARS=$nbstars ($msg)"
+#                  gren_info "3 ERR NBSTARS=$nbstars ($msg)"
                return -code 3 "ERR NBSTARS=$nbstars ($msg)"
                }
             set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
             set ra  [lindex $a 0]
             set dec [lindex $a 1]
-            gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"
+#            gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"
 
             if {$::analyse_tools::deuxpasses} {
-               gren_info "PASS4: calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2 -del_tmp_files 0\n"
+               if {$::analyse_tools::log} {gren_info "PASS4: calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2 -del_tmp_files 0\n"}
                set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 -del_tmp_files 0]} msg]
                if {$erreur} {
-                  gren_info "4 ERR NBSTARS=$nbstars ($msg)"
+#                  gren_info "4 ERR NBSTARS=$nbstars ($msg)"
                   return -code 4 "ERR NBSTARS=$nbstars ($msg)"
                   }
                set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
                set ra  [lindex $a 0]
                set dec [lindex $a 1]
-               gren_info "RETRY nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"
+               gren_info "RETRY nbstars : $nbstars | ra : [mc_angle2hms $ra 360 zero 1 auto string] | dec : [mc_angle2dms $dec 90 zero 1 + string]\n"
             }
          }         
 
@@ -430,7 +454,7 @@ namespace eval analyse_tools {
          set ::analyse_tools::nb_img    [::manage_source::get_nb_sources_by_cata $::analyse_tools::current_listsources IMG   ]
          set ::analyse_tools::nb_ovni   [::manage_source::get_nb_sources_by_cata $::analyse_tools::current_listsources OVNI  ]
          set ::analyse_tools::nb_usnoa2 [::manage_source::get_nb_sources_by_cata $::analyse_tools::current_listsources USNOA2]
-         gren_info "rollup = [::manage_source::get_nb_sources_rollup $::analyse_tools::current_listsources]\n"
+         #gren_info "rollup = [::manage_source::get_nb_sources_rollup $::analyse_tools::current_listsources]\n"
 
          if {$nbstars > $::analyse_tools::limit_nbstars_accepted} {
              set wcs_ok true
@@ -441,19 +465,19 @@ namespace eval analyse_tools {
 #   gren_info "rollup = [::manage_source::get_nb_sources_rollup $listsources]\n"
  
          if {$wcs_ok} {
-              gren_info "WCS_OK $wcs_ok\n"
+              #gren_info "WCS_OK $wcs_ok\n"
 
              set ::analyse_tools::ra_save $ra 
              set ::analyse_tools::dec_save $dec
 
              set ident [bddimages_image_identification $idbddimg]
-             gren_info "** ident = $ident $idbddimg\n"
+             #gren_info "** ident = $ident $idbddimg\n"
              set fileimg  [lindex $ident 1]
              set filecata [lindex $ident 3]
              if {$fileimg == -1} {
                 ::console::affiche_erreur "Fichier image inexistant ($idbddimg) \n"
                 if {$erreur} {
-                   gren_info "5 Fichier image inexistant ($idbddimg) \n"
+                   #gren_info "5 Fichier image inexistant ($idbddimg) \n"
                    return -code 5 "Fichier image inexistant ($idbddimg) \n"
                    }
              }
@@ -482,8 +506,13 @@ namespace eval analyse_tools {
              bddimages_image_delete_fromsql $ident
              bddimages_image_delete_fromdisk $ident
 
+             gren_info "av idbddimg : $idbddimg \n"
              # insere l image et le cata dans la base filecata
-             insertion_solo $filefinal
+             set errnum [catch {set r [insertion_solo $filefinal]} msg ]
+             catch {gren_info "$errnum : $msg : $r"}
+             if {$errnum==0} {
+                set ::analyse_tools::current_image [::bddimages_liste::lupdate $::analyse_tools::current_image idbddimg $r]
+             }
              
              set errnum [catch {file delete -force $filetmp} msg ]
 
@@ -500,16 +529,31 @@ namespace eval analyse_tools {
                 }
              }
 
-             set result     [bddimages_entete_preminforecon $tabkey]
-             set err        [lindex $result 0]
+             set result  [bddimages_entete_preminforecon $tabkey]
+             set err     [lindex $result 0]
              set $tabkey [lindex $result 1]
              set ::analyse_tools::current_image [::bddimages_liste::lupdate $::analyse_tools::current_image tabkey $tabkey]
+             set idbddimg   [::bddimages_liste::lget $::analyse_tools::current_image "idbddimg"]
+             gren_info "fin idbddimg : $idbddimg \n"
 
              return -code 0 "WCS OK"
          }
          
          return -code 10 "Sources non identifiees"
    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
    #
    # Calcul le rayon (arcmin) du FOV de l'image

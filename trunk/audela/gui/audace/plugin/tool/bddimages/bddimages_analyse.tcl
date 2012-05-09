@@ -450,7 +450,7 @@ proc get_one_image_obsolete { idbddimg } {
 
    # pour ne traiter qu'une seule image
    # par exemple : SSP_ID=176 ./solarsystemprocess --console --file ros.tcl
-   gren_info "::::::::::DEBUG::::::: Looping with SSP_ID=$idbddimg"
+   #gren_info "::::::::::DEBUG::::::: Looping with SSP_ID=$idbddimg"
    set sqlcmd    "SELECT catas.idbddcata,catas.filename,catas.dirfilename,"
    append sqlcmd " cataimage.idbddimg,images.idheader, "
    append sqlcmd " images.filename,images.dirfilename "
@@ -578,6 +578,7 @@ proc get_one_image_obsolete { idbddimg } {
       set ::analyse_tools::boucle          0
       set ::analyse_tools::deuxpasses      1
       set ::analyse_tools::limit_nbstars_accepted      5
+      set ::analyse_tools::log             0
 
       #--- Creation des variables de la boite de configuration si elles n'existent pas
       #if { ! [ info exists $bddconf(catalog_ucac2) ] } { set ::analyse_tools::catalog_ucac2 "" }
@@ -587,6 +588,7 @@ proc get_one_image_obsolete { idbddimg } {
    proc ::bddimages_analyse::fermer { } {
 
       global conf
+      global action_label
 
       set conf(astrometry,catfolder,usnoa2) $::analyse_tools::catalog_usnoa2 
       set conf(astrometry,catfolder,ucac2)  $::analyse_tools::catalog_ucac2  
@@ -595,6 +597,33 @@ proc get_one_image_obsolete { idbddimg } {
       set conf(astrometry,catfolder,nomad1) $::analyse_tools::catalog_nomad1 
 
       destroy $::bddimages_analyse::fen
+      ::bddimages_recherche::get_intellist $::bddimages_recherche::current_list_id
+      ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id [array get action_label]
+
+   }
+
+   proc ::bddimages_analyse::setval { } {
+
+      set ::analyse_tools::ra_save  $::analyse_tools::ra
+      set ::analyse_tools::dec_save $::analyse_tools::dec
+
+      set err [ catch {set rect  [ ::confVisu::getBox $::audace(visuNo) ]} msg ]
+      if {$err>0 || $rect ==""} {
+         gren_info "SET CENTER : $::analyse_tools::ra_save $::analyse_tools::dec_save\n"
+         return
+      }
+      set xcent [format "%0.0f" [expr ([lindex $rect 0] + [lindex $rect 2])/2.]  ]   
+      set ycent [format "%0.0f" [expr ([lindex $rect 1] + [lindex $rect 1])/2.]  ]   
+      set err [ catch {set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]} msg ]
+      if {$err} {
+         ::console::affiche_erreur "$err $msg\n"
+         return
+      }
+      set ::analyse_tools::ra_save  [lindex $a 0]
+      set ::analyse_tools::dec_save [lindex $a 1]
+      gren_info "SET BOX : $::analyse_tools::ra_save $::analyse_tools::dec_save\n"
+      
+      
 
    }
 
@@ -668,12 +697,10 @@ proc get_one_image_obsolete { idbddimg } {
             #visu$::audace(visuNo) disp [list [lindex $cuts 0] [lindex $cuts 1] ]
          }
          
-gren_info "DATE:$::analyse_tools::current_image_date\n"
          #ï¿½Mise a jour GUI
          $::bddimages_analyse::current_appli.onglets.nb.f3.bouton.back configure -state disabled
          $::bddimages_analyse::current_appli.onglets.nb.f3.bouton.back configure -state disabled
          $::bddimages_analyse::current_appli.onglets.nb.f3.infoimage.nomimage    configure -text $::analyse_tools::current_image_name
-         #$::bddimages_analyse::current_appli.onglets.nb.f3.infoimage.dateimage   configure -textvariable $::analyse_tools::current_image_date
          $::bddimages_analyse::current_appli.onglets.nb.f3.infoimage.stimage     configure -text "$::analyse_tools::id_current_image / $::analyse_tools::nb_img_list"
 
          if {$::analyse_tools::id_current_image == 1 && $::analyse_tools::nb_img_list > 1 } {
@@ -734,6 +761,10 @@ gren_info "DATE:$::analyse_tools::current_image_date\n"
 
          
          while {1==1} {
+            if { $::analyse_tools::boucle == 0 } {
+               break
+            }
+
             if {[::bddimages_analyse::get_one_wcs] == true} {
                if {[::analyse_tools::get_cata] == false} {
                   # TODO gerer l'erreur le  cata a echoué
@@ -749,16 +780,32 @@ gren_info "DATE:$::analyse_tools::current_image_date\n"
 
    }
 
-   proc ::bddimages_analyse::get_all_wcs { } {
 
+
+
+
+
+
+
+
+   proc ::bddimages_analyse::get_all_wcs { } {
          
          while {1==1} {
+            if { $::analyse_tools::boucle == 0 } {
+               break
+            }
             ::bddimages_analyse::get_one_wcs
             if {$::analyse_tools::id_current_image == $::analyse_tools::nb_img_list} { break }
             ::bddimages_analyse::next
          }
 
    }
+
+
+
+
+
+
 
    proc ::bddimages_analyse::get_one_wcs { } {
 
@@ -771,7 +818,7 @@ gren_info "DATE:$::analyse_tools::current_image_date\n"
          #gren_info "idbddimg : $idbddimg   wcs : $bddimages_wcs \n"
 
          set err [catch {::analyse_tools::get_wcs} msg]
-         gren_info "::analyse_tools::get_wcs $err $msg \n"
+         #gren_info "::analyse_tools::get_wcs $err $msg \n"
          
          if {$err == 0 } {
             set newimg [::bddimages_liste_gui::file_to_img $filename $dirfilename]
@@ -794,7 +841,7 @@ gren_info "DATE:$::analyse_tools::current_image_date\n"
             set ::analyse_tools::foclen    [lindex [::bddimages_liste::lget $tabkey foclen     ] 1]
             set ::analyse_tools::exposure  [lindex [::bddimages_liste::lget $tabkey EXPOSURE   ] 1]
 
-            affich_rond $::analyse_tools::current_listsources IMG    $::analyse_tools::color_img     4
+            #affich_rond $::analyse_tools::current_listsources IMG    $::analyse_tools::color_img     4
 
             if { $::analyse_tools::boucle == 1 } {
                cleanmark
@@ -804,7 +851,7 @@ gren_info "DATE:$::analyse_tools::current_image_date\n"
             }
             affich_rond $::analyse_tools::current_listsources USNOA2 $::analyse_tools::color_usnoa2  1
             
-            affich_rond $::analyse_tools::current_listsources OVNI   $::analyse_tools::color_ovni    2
+            #affich_rond $::analyse_tools::current_listsources OVNI   $::analyse_tools::color_ovni    2
 
             #::analyse_tools::nb_img   
             #::analyse_tools::nb_ovni  
@@ -1172,6 +1219,10 @@ gren_info "DATE:$::analyse_tools::current_image_date\n"
              pack $boutonpied.fermer -side left -anchor e \
                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
+             button $boutonpied.setval -text "Set Val" -borderwidth 2 -takefocus 1 \
+                -command "::bddimages_analyse::setval"
+             pack $boutonpied.setval -side left -anchor e \
+                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
    }
    
@@ -1377,6 +1428,14 @@ gren_info "DATE:$::analyse_tools::current_image_date\n"
              entry $limit_nbstars.val -relief sunken -textvariable ::analyse_tools::limit_nbstars_accepted
              pack $limit_nbstars.val -in $limit_nbstars -side right -pady 1 -anchor w
 
+        #--- Cree un frame pour afficher boucle
+        set log [frame $f2.log -borderwidth 0 -cursor arrow -relief groove]
+        pack $log -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             #--- Cree un checkbutton
+             checkbutton $log.check -highlightthickness 0 -text "Activation du log" -variable ::analyse_tools::log
+             pack $log.check -in $log -side left -padx 5 -pady 0
+
 
 
 
@@ -1462,11 +1521,11 @@ gren_info "DATE:$::analyse_tools::current_image_date\n"
                 pack $foclen.val -in $foclen -side right -pady 1 -anchor w
 
 
-        #--- Cree un frame pour afficher boucle
+        #--- Cree un frame pour afficher 
         set count [frame $f4.count -borderwidth 0 -cursor arrow -relief groove]
         pack $count -in $f4 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-           #--- Cree un frame pour afficher boucle
+           #--- Cree un frame pour afficher 
            set img [frame $count.img -borderwidth 0 -cursor arrow -relief groove]
            pack $img -in $count -anchor w -side top -expand 0 -fill x -padx 10 -pady 5
 
@@ -1480,7 +1539,7 @@ gren_info "DATE:$::analyse_tools::current_image_date\n"
                 spinbox $img.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 5
                 pack  $img.radius -in $img -side left -anchor w
 
-           #--- Cree un frame pour afficher boucle
+           #--- Cree un frame pour afficher USNOA2
            set usnoa2 [frame $count.usnoa2 -borderwidth 0 -cursor arrow -relief groove]
            pack $usnoa2 -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
@@ -1494,7 +1553,7 @@ gren_info "DATE:$::analyse_tools::current_image_date\n"
                 spinbox $usnoa2.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 5
                 pack  $usnoa2.radius -in $usnoa2 -side left -anchor w
 
-           #--- Cree un frame pour afficher boucle
+           #--- Cree un frame pour afficher OVNI
            set ovni [frame $count.ovni -borderwidth 0 -cursor arrow -relief groove]
            pack $ovni -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
@@ -1508,7 +1567,7 @@ gren_info "DATE:$::analyse_tools::current_image_date\n"
                 spinbox $ovni.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 5
                 pack    $ovni.radius -in $ovni -side left -anchor w
 
-           #--- Cree un frame pour afficher boucle
+           #--- Cree un frame pour afficher UCAC2
            set ucac2 [frame $count.ucac2 -borderwidth 0 -cursor arrow -relief groove]
            pack $ucac2 -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
@@ -1522,7 +1581,7 @@ gren_info "DATE:$::analyse_tools::current_image_date\n"
                 spinbox $ucac2.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 5
                 pack  $ucac2.radius -in $ucac2 -side left -anchor w
 
-           #--- Cree un frame pour afficher boucle
+           #--- Cree un frame pour afficher UCAC3
            set ucac3 [frame $count.ucac3 -borderwidth 0 -cursor arrow -relief groove]
            pack $ucac3 -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
@@ -1536,7 +1595,7 @@ gren_info "DATE:$::analyse_tools::current_image_date\n"
                 spinbox $ucac3.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 5
                 pack  $ucac3.radius -in $ucac3 -side left -anchor w
 
-           #--- Cree un frame pour afficher boucle
+           #--- Cree un frame pour afficher TYCHO2
            set tycho2 [frame $count.tycho2 -borderwidth 0 -cursor arrow -relief groove]
            pack $tycho2 -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
@@ -1550,7 +1609,7 @@ gren_info "DATE:$::analyse_tools::current_image_date\n"
                 spinbox $tycho2.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 5
                 pack  $tycho2.radius -in $tycho2 -side left -anchor w
 
-           #--- Cree un frame pour afficher boucle
+           #--- Cree un frame pour afficher NOMAD1
            set nomad1 [frame $count.nomad1 -borderwidth 0 -cursor arrow -relief groove]
            pack $nomad1 -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
@@ -1568,7 +1627,7 @@ gren_info "DATE:$::analyse_tools::current_image_date\n"
 
 
 
-        #--- Cree un frame pour afficher boucle
+        #--- Cree un frame pour afficher bouton fermeture
         set boutonpied [frame $frm.boutonpied  -borderwidth 0 -cursor arrow -relief groove]
         pack $boutonpied  -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
@@ -1577,6 +1636,10 @@ gren_info "DATE:$::analyse_tools::current_image_date\n"
              pack $boutonpied.fermer -side left -anchor e \
                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
+             button $boutonpied.setval -text "Set Val" -borderwidth 2 -takefocus 1 \
+                -command "::bddimages_analyse::setval"
+             pack $boutonpied.setval -side left -anchor e \
+                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
 
    }
