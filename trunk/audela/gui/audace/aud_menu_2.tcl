@@ -244,33 +244,6 @@ namespace eval ::div {
    }
 
    #---------------------------------------------------------------------------
-   #  ::div::cmdSaveMypal
-   #  Sauvegarde la palette fonction_transfert_$visuNo.pal sous mypal_$visuNo.pal
-   #  et complete le menu des palettes disponibles
-   #  Commande du bouton 'Sauver ma palette'
-   #---------------------------------------------------------------------------
-   proc cmdSaveMypal { visuNo } {
-      variable private
-      global audace conf caption
-
-      #--   sauve les valeurs
-      ::div::updatePalette $visuNo
-
-      #--   recopie la palette
-      set src [file join $audace(rep_temp) fonction_transfert_$visuNo.pal]
-      set dest [file join $conf(rep_userPalette) mypal_${visuNo}.pal]
-      file copy -force $src $dest
-
-      #--   ajoute "Ma palette" a la liste des options si elle n'existe pas deja
-      set mypal "$caption(div,mypal)"
-      if {[lsearch $private(div,$visuNo,listPalettes) $mypal] eq "-1"} {
-         lappend private(div,$visuNo,listPalettes) $mypal
-         $private(div,$visuNo,this).val.palette configure -values $private(div,$visuNo,listPalettes)
-      }
-      set private(div,$visuNo,palette) $mypal
-   }
-
-   #---------------------------------------------------------------------------
    #  ::div::cmdImg2Clipboard
    #  Copy photo image into Windows clipboard
    #  Commande du bouton 'Exporter'
@@ -319,10 +292,8 @@ namespace eval ::div {
          $private(div,$visuNo,inversion) $private(div,$visuNo,histo) \
          $private(div,$visuNo,step) $private(div,$visuNo,gamma)]
 
-      #--   recopie la palette
-      set src [file join $audace(rep_temp) fonction_transfert_$visuNo.pal]
-      set dest [file join $conf(rep_userPalette) myconf_${visuNo}.pal]
-      file copy -force $src $dest
+      #--   recopie la palette fonction_transfert_$visuNo.pal sous myconf_$visuNo.pal
+      ::div::saveCurrentPal $visuNo myconf
    }
 
    #---------------------------------------------------------------------------
@@ -333,15 +304,10 @@ namespace eval ::div {
    #---------------------------------------------------------------------------
    proc cmdSaveMypal { visuNo } {
       variable private
-      global audace conf caption
+      global caption
 
-      #--   sauve les valeurs des vecteurs dans le fichier
       ::div::updatePalette $visuNo
-
-      #--   recopie la palette
-      set src [file join $audace(rep_temp) fonction_transfert_$visuNo.pal]
-      set dest [file join $conf(rep_userPalette) mypal_${visuNo}.pal]
-      file copy -force $src $dest
+      ::div::saveCurrentPal $visuNo mypal
 
       #--   ajoute "Ma palette" a la liste des options si elle n'existe pas deja
       set mypal "$caption(div,mypal)"
@@ -384,7 +350,7 @@ namespace eval ::div {
       set private(div,$visuNo,palette) "[lindex $private(div,$visuNo,listPalettes) $k]"
 
       #--   retablit la palette enregistree par 'Appliquer'
-      set private(div,$visuNo,start) 1
+      #set private(div,$visuNo,start) 1
       if {[winfo exists $audace(base).div$visuNo]} {
          ::div::restorePalette $visuNo
          ::div::readPalette $visuNo "myconf_${visuNo}.pal"
@@ -738,6 +704,19 @@ namespace eval ::div {
       #--   affiche les couleurs
       visu$visuNo paldir "$audace(rep_temp)"
       visu$visuNo pal fonction_transfert_$visuNo
+   }
+
+   #---------------------------------------------------------------------------
+   #  ::div::saveCurrentPal
+   #  Sauve fonction_transfert_$visuNo.pal dans $conf(rep_userPalette)
+   #  Invoquee par cmdApply et cmdSaveMypal
+   #---------------------------------------------------------------------------
+   proc saveCurrentPal { visuNo name } {
+      global audace conf
+
+      set src [file join $audace(rep_temp) fonction_transfert_$visuNo.pal]
+      set dest [file join $conf(rep_userPalette) ${name}_${visuNo}.pal]
+      file copy -force $src $dest
    }
 
    #-----------------------fonctions d'info et de calcul-----------------------
