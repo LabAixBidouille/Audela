@@ -415,7 +415,6 @@ proc bddimages_insertion_unfich { ligne } {
       set err       [lindex $result 0]
       set insert_id [lindex $result 1]
       set msg       [lindex $result 2]
-      gren_info "ici : insert_id $err $insert_id\n"
       set typefich "cata"
       }
 
@@ -739,19 +738,13 @@ proc bddimages_delete_cata_ifexist { filename form } {
 
   set r  [file tail $filename]
   set f [file join $bddconf(dirbase) $racinecatafilename $r]
-  gren_info "r = $r \n"
 
-  gren_info "filename = $filename \n"
-  gren_info "f = $f \n"
-  gren_info "dirfilename = $dirfilename \n"
-  gren_info "racinecatafilename = $racinecatafilename \n"
-  gren_info "racinecata = $racinecata \n"
 
 
   if {[file exists $f]} {
      bddimages_sauve_fich "fichier existe $f ?\n"
      set err [catch {file delete $f} msg]
-     gren_info "Effacement de $f\n"
+     bddimages_sauve_fich "Effacement de $f\n"
   }
   
   set sqlcmd "SELECT idbddcata FROM cataimage WHERE idbddimg=$idbddimg"
@@ -908,7 +901,7 @@ proc bddimages_catas_datainsert { filename sizefich form } {
 
     # Recupere la valeur de l'autoincrement
     set err [catch {::bddimages_sql::sql insertid} idbddcata]
-    gren_info "idbddcata insertid : $idbddcata\n"
+    #gren_info "idbddcata insertid : $idbddcata\n"
 
 
     # bddimages_sauve_fich "idbddcata = $idbddcata\n"
@@ -956,12 +949,12 @@ proc bddimages_catas_datainsert { filename sizefich form } {
 
   createdir_ifnot_exist $dirfilename
   set errnum [catch {file rename $filename $dirfilename/} msgcp]
-  gren_info "Deplacement de $filename vers $dirfilename\n"
+  bddimages_sauve_fich "Deplacement de $filename vers $dirfilename\n"
 
 
   if {$errnum!=0} {
 
-     gren_info "deplacement erreur : $errnum - $msgcp\n"
+     bddimages_sauve_fich "deplacement erreur : $errnum - $msgcp\n"
      bddimages_sauve_fich "bddimages_catas_datainsert: Le fichier $filename existe dans $dirfilename"
 
      # -- Le fichier existe dans $dirfilename
@@ -1034,7 +1027,6 @@ proc bddimages_catas_datainsert { filename sizefich form } {
 
      }
 
-gren_info "fin idbddcata insertid : $idbddcata\n"
 return [list $etat $idbddcata ""]
 }
 

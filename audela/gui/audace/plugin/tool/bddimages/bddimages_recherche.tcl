@@ -1532,8 +1532,8 @@ namespace eval bddimages_recherche {
 
       ::bddimages_analyse::creation_cata $imglist
 
-      ::bddimages_recherche::get_intellist $::bddimages_recherche::current_list_id
-      ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id [array get action_label]
+      #::bddimages_recherche::get_intellist $::bddimages_recherche::current_list_id
+      #::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id [array get action_label]
 
    }
 
@@ -1655,6 +1655,14 @@ namespace eval bddimages_recherche {
       tablelist::sortByColumn $tbl $col
    }
 
+
+
+
+
+
+
+
+
    #--------------------------------------------------
    #  Affiche_Results
    #--------------------------------------------------
@@ -1717,7 +1725,7 @@ namespace eval bddimages_recherche {
 
       foreach line $table {
       
-      gren_info "img : $line\n"
+         #gren_info "img : $line\n"
 
          set lign_affich $empty
          
@@ -1841,8 +1849,8 @@ namespace eval bddimages_recherche {
                }
             }
          }
-         #--- Trie par ordre alphabetique de la premiere colonne
-         ::bddimages_recherche::cmdSortColumn $::bddimages_recherche::This.frame6.result.tbl 0
+         #--- Trie par ordre alphabetique de la colonne de date
+         ::bddimages_recherche::cmdSortColumn $::bddimages_recherche::This.frame6.result.tbl 3
       }
    }
 

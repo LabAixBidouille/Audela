@@ -360,7 +360,7 @@ proc insertion_solo { nomfich } {
 
    if {[file exists $fichlock]==1} {
       ::console::affiche_resultat "Insertion Solo : BDI lock : inserez plus tard \n"
-      return
+      return -code 1
       }
 
    set result    [info_fichier $nomfich]
@@ -389,7 +389,7 @@ proc insertion_solo { nomfich } {
          set errnum [catch {file delete $nomfich} msg]
          if {$errnum!=0} {
             bddimages_sauve_fich "insertion_solo: ERREUR 111 : effacement de $nomfich impossible <err=$errnum> <msg=$msg>"
-            return 111
+            return -code 111
          } else {
             bddimages_sauve_fich "insertion_solo: Fichier $nomfich supprime"
          }
@@ -408,8 +408,8 @@ proc insertion_solo { nomfich } {
       set msg       [lindex $liste 3]
       set typefich  [lindex $liste 4]
       ::console::affiche_resultat "Insertion Solo : $nomfich ($typefich: id->$newid)\n"
-      if {$err==-1} {return}
+      if {$err==-1} {return -code 2 ""}
    }
 
-   return 
+   return -code 0 $newid
 }
