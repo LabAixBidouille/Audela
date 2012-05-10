@@ -617,8 +617,8 @@ variable list_doublon
                      set ex [file exists $dest]
                      if {$ex==1} {
                         ::console::affiche_erreur "Le fichier destination existe\n"
-                        set size1 [file size $elem]
-                        set size2 [file size $dest]
+                        catch{set size1 [file size $elem]}
+                        catch{set size2 [file size $dest]}
                         ::console::affiche_resultat "size : $size1 $size2\n"
                         if {$size1==$size2} {
                            set errdel [catch {[file delete $elem]} msg]
@@ -799,7 +799,7 @@ variable list_doublon
 
          foreach elem $::bdi_tools_status::list_doublon {
 
-            ::console::affiche_resultat "DOUBLON : $elem"
+            ::console::affiche_resultat "DOUBLON : $elem\n"
             
             set f [file tail $elem]
             set r [file rootname $elem]
@@ -817,25 +817,9 @@ variable list_doublon
             if {$errsel==1 || $data==""} {
                 set dest [file join $bddconf(dirinco) $f]
                 ::console::affiche_resultat "fits : deplacement de $elem vers $dest\n"
-                set ex [file exists $dest]
-                if {$ex==1} {
-                   ::console::affiche_erreur "Le fichier destination existe\n"
-                   set size1 [file size $elem]
-                   set size2 [file size $dest]
-                   ::console::affiche_resultat "size : $size1 $size2\n"
-                   if {$size1==$size2} {
-                      set errdel [catch {[file delete $elem]} msg]
-                      if {$errdel} {
-                         ::console::affiche_erreur "effacement de $elem : $msg\n"
-                      }
-                   } else {
-                         ::console::affiche_erreur "fichiers differents ($elem $size1) ($dest $size2)\n"
-                   }
-                } else {
-                   set errmv [catch {[file rename -force -- $elem $dest]} msg]
-                   if {$errmv} {
-                      #::console::affiche_erreur "deplacement de $elem vers $dest : $errmv $msg\n"
-                   }
+                set errmv [catch {[file rename -force -- $elem $dest]} msg]
+                if {$errmv} {
+                   #::console::affiche_erreur "deplacement de $elem vers $dest : $errmv $msg\n"
                 }
             }
 
