@@ -136,7 +136,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(div,step)                              "Pas"
    set caption(div,gamma)                             "Gamma"
    set caption(div,ajust)                             "Courbe BSpline"
-   set caption(div,reset)                             "Reinitialiser"
+   set caption(div,reset)                             "Réinitialiser"
    set caption(div,sigma)                             "Sigmoïde"
    set caption(div,egal)                              "Egalisation"
    set caption(div,iris)                              "Palette Iris"
