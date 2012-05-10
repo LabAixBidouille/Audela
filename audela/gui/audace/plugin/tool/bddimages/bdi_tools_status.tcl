@@ -19,6 +19,8 @@ variable new_list_sql
 variable new_list_dir
 variable list_img
 variable list_img_hd
+variable err_doublon
+variable list_doublon
 
 
 
@@ -587,6 +589,9 @@ variable list_img_hd
          ::console::affiche_resultat "LIST FILE : PROCEDE  \n"
          foreach elem $::bdi_tools_status::new_list_dir {
 
+
+
+
             ::console::affiche_resultat "*** SQL:($elem) is_ok ? -> \n"
             set err [catch {::bdi_tools_status::img_is_ok $elem} msg]
            ::console::affiche_resultat "*** ($elem) is_ok ! (err $err msg $msg)\n"
@@ -777,7 +782,6 @@ variable list_img_hd
 
       if { $::bdi_tools_status::err_nblist == "yes" } {
 
-
          # Un raison peut etre un champ vide dans la table image
          set sqlcmd "DELETE FROM images where filename ='';"
          set errdel [catch {::bddimages_sql::sql query $sqlcmd} msg]
@@ -787,7 +791,97 @@ variable list_img_hd
          }
 
 
+      }
+      
 
+      if { $::bdi_tools_status::err_doublon == "yes" } {
+
+
+         foreach elem $::bdi_tools_status::list_doublon {
+
+            ::console::affiche_resultat "DOUBLON : $elem"
+            
+            set f [file tail $elem]
+            set r [file rootname $elem]
+            set r [file rootname $r]
+            set r [file tail $r]
+
+            set sqlcmd "SELECT idbddimg,filename,dirfilename FROM images where filename like '%${r}%';"
+            set errsel [catch {set data [::bddimages_sql::sql query $sqlcmd]} msg]
+            if {$errsel} {
+               tk_messageBox -message "$caption(bdi_status,consoleErr2) $msg" -type ok
+               return
+            }
+
+            # Backup lorsque err == 1
+            if {$errsel==1 || $data==""} {
+                set dest [file join $bddconf(dirinco) $f]
+                ::console::affiche_resultat "fits : deplacement de $elem vers $dest\n"
+                set ex [file exists $dest]
+                if {$ex==1} {
+                   ::console::affiche_erreur "Le fichier destination existe\n"
+                   set size1 [file size $elem]
+                   set size2 [file size $dest]
+                   ::console::affiche_resultat "size : $size1 $size2\n"
+                   if {$size1==$size2} {
+                      set errdel [catch {[file delete $elem]} msg]
+                      if {$errdel} {
+                         ::console::affiche_erreur "effacement de $elem : $msg\n"
+                      }
+                   } else {
+                         ::console::affiche_erreur "fichiers differents ($elem $size1) ($dest $size2)\n"
+                   }
+                } else {
+                   set errmv [catch {[file rename -force -- $elem $dest]} msg]
+                   if {$errmv} {
+                      #::console::affiche_erreur "deplacement de $elem vers $dest : $errmv $msg\n"
+                   }
+                }
+            }
+
+            if {$data!=""} {
+
+               set pass "no"
+               set cpt 0
+               foreach line $data {
+                  set idbddimg    [lindex $line 0]
+                  set filename    [lindex $line 1]
+                  set dirfilename [lindex $line 2]
+                  set f [file join $bddconf(dirbase) $dirfilename $filename]
+                  if {$f == $elem} {
+                     incr cpt
+                     set pass "yes"
+                     set pass_idbddimg $idbddimg
+                  }
+               }
+               if {$cpt > 1 } {
+                  ::console::affiche_erreur "plusieurs occurences\n"
+                  return -code 1 "plusieurs occurences"
+               }
+
+               if {$pass == "no" } {
+                  ::console::affiche_erreur "Le nom de l'image n'est pas coherent avec celui de la table 'images'\n"
+                  return -code 1 "Le nom de l'image n'est pas coherent avec celui de la table 'images'\n"
+               }
+
+               if {$pass == "yes" } {
+                  ::console::affiche_erreur "BACKUP $pass_idbddimg\n"
+                  # Backup
+                  ::bdi_tools_status::backup_img $pass_idbddimg
+                  # Delete
+                  ::bdi_tools_status::delete_img $pass_idbddimg
+               }
+            }
+
+
+            ::console::affiche_erreur "REPARATION du doublon $elem\n"
+            set ::bdi_tools_status::list_doublon [lrange $::bdi_tools_status::list_doublon 1 end]
+            
+            
+            
+# fin foreach            
+         }
+      
       }
 
       

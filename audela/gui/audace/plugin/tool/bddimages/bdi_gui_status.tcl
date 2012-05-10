@@ -416,20 +416,45 @@ namespace eval bdi_gui_status {
          lappend list_file_sql "$conf(bddimages,dirbase)/$dir/$fic"
       }
 
-
-
-      set ::bdi_tools_status::err_sql    "no"
-      set ::bdi_tools_status::err_file   "no"
-      set ::bdi_tools_status::err_img    "no"
-      set ::bdi_tools_status::err_img_hd "no"
-      set ::bdi_tools_status::err_nblist "no"
+      set ::bdi_tools_status::err_sql     "no"
+      set ::bdi_tools_status::err_file    "no"
+      set ::bdi_tools_status::err_img     "no"
+      set ::bdi_tools_status::err_img_hd  "no"
+      set ::bdi_tools_status::err_nblist  "no"
+      set ::bdi_tools_status::err_doublon "no"
 
       set nb_list_file_dir [llength  $list_file_dir]
       set nb_list_file_sql [llength  $list_file_sql]
       if {$nb_list_file_dir != $nb_list_file_sql} {
+      
          set  ::bdi_tools_status::err_nblist "yes"
          $text insert end "La longueur des listes differe \n" "RED" 
+         
+         # traiter le cas où le fichier dirfilename/filename est en double
+         set nb [llength $list_file_sql]
+         set ::bdi_tools_status::list_doublon ""
+         for {set i 0} {$i<$nb} {incr i} {
+            set e1 [lindex $list_file_sql $i]
+            for {set j 0} {$j<$nb} {incr j} {
+               set e2 [lindex $list_file_sql $j]
+               if {$e1==$e2} {
+                   lappend ::bdi_tools_status::list_doublon $e1
+               }
+
+            }
+
+         }
+         set err [llength $::bdi_tools_status::list_doublon]
+         if {$err} {
+            $text insert end "Il y a un doublon sur le serveur SQL \n" "RED"
+            set ::bdi_tools_status::err_doublon "yes"
+         }
+
+
+         
       }
+
+
 
 
    
