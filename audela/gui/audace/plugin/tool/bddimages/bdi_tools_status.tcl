@@ -385,7 +385,7 @@ variable list_doublon
          set r [file rootname $r]
          set r [file tail $r]
          ::console::affiche_resultat "recherche $r\n"
-         set sqlcmd "SELECT idbddimg,idheader,filename,dirfilename,sizefich,datemodif FROM images where filename like '%${r}%';"
+         set sqlcmd "SELECT idbddimg,idheader,filename,dirfilename,sizefich,datemodif FROM images where filename like '${r}.fits.gz';"
          set err [catch {set data [::bddimages_sql::sql query $sqlcmd]} msg]
          if {$err} {
             return -code 1 "inexistant dans la table 'images'"
@@ -397,6 +397,8 @@ variable list_doublon
          set pass "no"
          set cpt 0
          foreach line $data {
+
+gren_info "++++ DATA = $line\n"
 
             set idbddimg    [lindex $line 0]
             set idheader    [lindex $line 1]
@@ -432,8 +434,12 @@ variable list_doublon
          }
          
          if {$pass == "no" } {
-            ::console::affiche_erreur "Le nom de l'image n'est pas coherent avec celui de la table 'images'\n"
-            return -code 1 "Le nom de l'image n'est pas coherent avec celui de la table 'images'\n"
+            ::console::affiche_erreur "1 Le nom de l'image n'est pas coherent avec celui de la table 'images'\n"
+            ::console::affiche_erreur "  filename    = $filename \n"
+            ::console::affiche_erreur "  dirfilename = $dirfilename \n"
+            ::console::affiche_erreur "  x           = $x \n"
+
+            return -code 1 "1 Le nom de l'image n'est pas coherent avec celui de la table 'images'\n"
          }
          
       }
@@ -505,7 +511,7 @@ variable list_doublon
                  set r [file rootname $r]
                  set r [file tail $r]
 
-                 set sqlcmd "SELECT idbddimg,filename,dirfilename FROM images where filename like '%${r}%';"
+                 set sqlcmd "SELECT idbddimg,filename,dirfilename FROM images where filename like '${r}.fits.gz';"
                  set errsel [catch {set data [::bddimages_sql::sql query $sqlcmd]} msg]
                  if {$errsel} {
                     tk_messageBox -message "$caption(bdi_status,consoleErr2) $msg" -type ok
@@ -540,8 +546,8 @@ variable list_doublon
                     }
 
                     if {$pass == "no" } {
-                       ::console::affiche_erreur "Le nom de l'image n'est pas coherent avec celui de la table 'images'\n"
-                       return -code 1 "Le nom de l'image n'est pas coherent avec celui de la table 'images'\n"
+                       ::console::affiche_erreur "2 Le nom de l'image n'est pas coherent avec celui de la table 'images'\n"
+                       return -code 2 "2 Le nom de l'image n'est pas coherent avec celui de la table 'images'\n"
                     }
 
                     if {$pass == "yes" } {
@@ -556,6 +562,7 @@ variable list_doublon
             }
 
             set ::bdi_tools_status::new_list_sql [lrange $::bdi_tools_status::new_list_sql 1 end]
+break
          }
       
       }
@@ -603,7 +610,7 @@ variable list_doublon
                  set r [file rootname $r]
                  set r [file tail $r]
 
-                 set sqlcmd "SELECT idbddimg,filename,dirfilename FROM images where filename like '%${r}%';"
+                 set sqlcmd "SELECT idbddimg,filename,dirfilename FROM images where filename like '${r}.fits.gz';"
                  set errsel [catch {set data [::bddimages_sql::sql query $sqlcmd]} msg]
                  if {$errsel} {
                     tk_messageBox -message "$caption(bdi_status,consoleErr2) $msg" -type ok
@@ -657,8 +664,8 @@ variable list_doublon
                     }
 
                     if {$pass == "no" } {
-                       ::console::affiche_erreur "Le nom de l'image n'est pas coherent avec celui de la table 'images'\n"
-                       return -code 1 "Le nom de l'image n'est pas coherent avec celui de la table 'images'\n"
+                       ::console::affiche_erreur "3 pLe nom de l'image n'est pas coherent avec celui de la table 'images'\n"
+                       return -code 3 "3 lLe nom de l'image n'est pas coherent avec celui de la table 'images'\n"
                     }
 
                     if {$pass == "yes" } {
@@ -673,7 +680,7 @@ variable list_doublon
             }
 
             set ::bdi_tools_status::new_list_dir [lrange $::bdi_tools_status::new_list_dir 1 end]
-            #break
+break
          }
     
       }
@@ -774,6 +781,7 @@ variable list_doublon
                }
             }
             #set ::bdi_tools_status::list_img [lrange $::bdi_tools_status::list_img 1 end]
+break
          }
       }
 
@@ -806,12 +814,13 @@ variable list_doublon
             set r [file rootname $r]
             set r [file tail $r]
 
-            set sqlcmd "SELECT idbddimg,filename,dirfilename FROM images where filename like '%${r}%';"
+            set sqlcmd "SELECT idbddimg,filename,dirfilename FROM images where filename like '${r}.fits.gz';"
             set errsel [catch {set data [::bddimages_sql::sql query $sqlcmd]} msg]
             if {$errsel} {
                tk_messageBox -message "$caption(bdi_status,consoleErr2) $msg" -type ok
                return
             }
+gren_info "Long DATA = [llength $data]\n"
 
             # Backup lorsque err == 1
             if {$errsel==1 || $data==""} {
@@ -844,8 +853,10 @@ variable list_doublon
                }
 
                if {$pass == "no" } {
-                  ::console::affiche_erreur "Le nom de l'image n'est pas coherent avec celui de la table 'images'\n"
-                  return -code 1 "Le nom de l'image n'est pas coherent avec celui de la table 'images'\n"
+                  ::console::affiche_erreur "4 Le nom de l'image n'est pas coherent avec celui de la table 'images'\n"
+                  ::console::affiche_erreur "  f    = $f\n"
+                  ::console::affiche_erreur "  elem = $elem\n"
+                 return -code 4 "4 Le nom de l'image n'est pas coherent avec celui de la table 'images' \n"
                }
 
                if {$pass == "yes" } {
@@ -861,7 +872,7 @@ variable list_doublon
             ::console::affiche_erreur "REPARATION du doublon $elem\n"
             set ::bdi_tools_status::list_doublon [lrange $::bdi_tools_status::list_doublon 1 end]
             
-            
+break
             
 # fin foreach            
          }
