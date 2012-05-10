@@ -728,6 +728,60 @@ proc get_one_image_obsolete { idbddimg } {
    }
 
 
+
+
+
+
+
+
+
+
+   proc ::bddimages_analyse::aladin { } {
+
+
+
+         set idbddimg    [::bddimages_liste::lget $::analyse_tools::current_image idbddimg]
+         set dirfilename [::bddimages_liste::lget $::analyse_tools::current_image dirfilename]
+         set filename    [::bddimages_liste::lget $::analyse_tools::current_image filename   ]
+         set file        [file join $bddconf(dirbase) $dirfilename $filename]
+
+         set ::analyse_tools::ra        [lindex [::bddimages_liste::lget $tabkey ra         ] 1]
+         set ::analyse_tools::dec       [lindex [::bddimages_liste::lget $tabkey dec        ] 1]
+
+         set ::analyse_tools::pixsize1  [lindex [::bddimages_liste::lget $tabkey pixsize1   ] 1]
+         set ::analyse_tools::pixsize2  [lindex [::bddimages_liste::lget $tabkey pixsize2   ] 1]
+         set ::analyse_tools::foclen    [lindex [::bddimages_liste::lget $tabkey foclen     ] 1]
+         set ::analyse_tools::exposure  [lindex [::bddimages_liste::lget $tabkey EXPOSURE   ] 1]
+         set ::analyse_tools::bddimages_wcs  [string trim [lindex [::bddimages_liste::lget $tabkey bddimages_wcs ] 1] ]
+         set naxis1      [lindex [::bddimages_liste::lget $tabkey NAXIS1     ] 1]
+         set naxis2      [lindex [::bddimages_liste::lget $tabkey NAXIS2     ] 1]
+         set xcent    [expr $naxis1/2.0]
+         set ycent    [expr $naxis2/2.0]
+         set naxis1 [lindex [::bddimages_liste::lget $tabkey NAXIS1] 1]
+         set naxis2 [lindex [::bddimages_liste::lget $tabkey NAXIS2] 1]
+         set scale_x [lindex [::bddimages_liste::lget $tabkey CD1_1] 1]
+         set scale_y [lindex [::bddimages_liste::lget $tabkey CD2_2] 1]
+         set radius [::analyse_tools::get_radius $naxis1 $naxis2 $scale_x $scale_y]
+
+         #envoie dans Aladin l image
+         
+         #envoi du CATA
+
+
+   }
+
+
+
+
+
+
+
+
+
+
+
+
+
    proc ::bddimages_analyse::get_cata { } {
 
          if { $::analyse_tools::boucle ==1 } {
@@ -1458,6 +1512,11 @@ proc get_one_image_obsolete { idbddimg } {
                 -command "::bddimages_analyse::get_cata" \
                 -bg $::bddimages_analyse::color_button -state $::bddimages_analyse::state_button
              pack $bouton.go -side left -anchor e \
+                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+             button $bouton.aladin -text "Aladin" -borderwidth 2 -takefocus 1 \
+                -command "::bddimages_analyse::aladin" 
+             pack $bouton.aladin -side left -anchor e \
                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
         #--- Cree un frame pour afficher info image
