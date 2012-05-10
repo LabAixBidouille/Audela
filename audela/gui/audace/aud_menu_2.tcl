@@ -1198,20 +1198,22 @@ namespace eval ::div {
 
       set private(div,$visuNo,$color) ""
       blt::vector create dred dgreen dblue -watchunset 1
+      set w $::confVisu::private($visuNo,hCanvas)
 
       #--   active le binding
-      bind $::confVisu::private($visuNo,hCanvas) <ButtonPress-1> [list ::div::getColor $visuNo $color %W %x %y]
+      bind $w <Motion> [list ::div::seePixel $visuNo %W %x %y]
+      bind $w <ButtonPress-1> [list ::div::getColor $visuNo $color %W %x %y]
 
       #--   cree une fenetre pour le message et attend une reponse
       ::div::createMsgBox $visuNo $caption(div,$color)
       vwait ::div::private(div,$visuNo,answer)
       destroy $private(div,$visuNo,this).q
 
-      #--   desactive le binding
-      bind $::confVisu::private($visuNo,hCanvas) <ButtonPress-1> {}
-
       #--   arrete si annulation
-      if {$private(div,$visuNo,answer) == 0} {return}
+      if {$private(div,$visuNo,answer) == 0} {
+         ::div::cancel $visuNo
+         return
+      }
 
       #--   arrete si pas de point designe
       if {[info exists private(div,$visuNo,intensite)] ==0} {
@@ -1258,6 +1260,36 @@ namespace eval ::div {
    }
 
    #---------------------------------------------------------------------------
+   #  ::div::seePixel
+   #  Affiche les coordonnees et l'intensite d'un pixel
+   #  Binging avec <Motion>
+   #---------------------------------------------------------------------------
+   proc seePixel { visuNo w x y } {
+      global audace color
+
+      set w [::confVisu::getCanvas $visuNo]
+      $w delete [ $w find withtag loupe ]
+
+      lassign [::confVisu::canvas2Picture $visuNo [list $x $y]] x1 y1
+
+      set bufNo [visu$visuNo buf]
+      set naxis2  [buf$bufNo getpixelsheight]
+      set naxis1  [buf$bufNo getpixelswidth]
+
+      if {$x1 >= 1 && $x1 <= $naxis1 && $y1 >= 1 && $y1 <= $naxis2} {
+         set intensite [lrange [buf$bufNo getpix [list $x1 $y1]] 1 end]
+         for {set i 0} {$i < [llength $intensite]} {incr i} {
+            set val [expr {int([lindex $intensite $i])}]
+            set intensite [lreplace $intensite $i $i $val ]
+         }
+         $w create text [expr {$x + 1}] [expr {$y - 5}] \
+            -text "($x1,$y1) : $intensite" \
+            -justify left -anchor w -fill $color(yellow) \
+            -tags [ list $intensite loupe ]\
+      }
+   }
+
+   #---------------------------------------------------------------------------
    #  ::div::getColor
    #  Capture l'intensite d'un pixel
    #  Invoquee par cmdGetValue
@@ -1265,14 +1297,26 @@ namespace eval ::div {
    proc getColor { visuNo color w x y } {
       variable private
 
-      set bufNo [visu$visuNo buf]
-      set naxis2  [buf$bufNo getpixelsheight]
-      set zoom $::confVisu::private($visuNo,zoom)
-      set x [expr {int($x/$zoom)}]
-      set y [expr {int($naxis2-$y*1./$zoom)}]
-      set private(div,$visuNo,intensite) [lrange [buf$bufNo getpix [list $x $y]] 1 end]
+      set w [::confVisu::getCanvas $visuNo]
+      lassign [ $w itemcget [ $w find withtag current ] -tags ] private(div,$visuNo,intensite)
 
+      ::div::cancel $visuNo
       raise $private(div,$visuNo,this).q
+   }
+
+   #---------------------------------------------------------------------------
+   #  ::div::cancel
+   #  Supprime les bindings et l'affichage des valeurs d'un pixel
+   #  Invoquee par cmdGetValue et getColor
+   #---------------------------------------------------------------------------
+   proc cancel { visuNo } {
+
+      set w $::confVisu::private($visuNo,hCanvas)
+      #--   supprime l'affichage
+      $w delete [ $w find withtag loupe ]
+      #--   desactive le binding
+      bind $w <Motion> {}
+      bind $w <ButtonPress-1> {}
    }
 
    #---------------------------------------------------------------------------

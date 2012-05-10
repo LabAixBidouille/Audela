@@ -41,23 +41,26 @@ r&#233;glage est ferm&#233;e.</p>
 <td>
 <p>Elle comporte (de haut en bas) :</p>
 <ul>
-<li>Une zone graphique affichant l'<a href="#histogram">histogramme</a> des intensit&#233;s et la fonction
+<li>Une zone graphique affichant l'<a href=
+"#histogram">histogramme</a> des intensit&#233;s et la fonction
 de transfert. L'&#233;chelle de droite donne le poids (% en
 &#233;chelle logarithmique) de chaque pas de l'histogramme.</li>
 <li>Une case &#224; cocher pour afficher l'histogramme de l'image
 du buffer.</li>
-<li>Une ligne de r&#233;glage de la <a href="#niveaux">Dynamique</a>.</li>
+<li>Une ligne de r&#233;glage de la <a href=
+"#niveaux">Dynamique</a>.</li>
 <li>Si l'image est RVB, les r&#233;glages peuvent s'appliquer, au
 choix, aux trois plans (RVB) ou ind&#233;pendamment &#224; chaque
-plan couleur R ou V ou B.</li>
+plan couleur R ou V ou B (CF paragraphe <a href="#plan">4. Choix
+du plan couleur)</a>.</li>
 <li>Des r&#233;glages suppl&#233;mentaires sont propos&#233;s en
 fonction de la palette choisie. L'effet des r&#233;glages est
 imm&#233;diat et &#233;vite de t&#226;tonner dans la recherche de
 coefficients adapt&#233;s.</li>
-<li>Une combobox permettant de choisir la <a href="#palette">palette</a> (fonction de transfert).</li>
-<li>Une case &#224; cocher pour <a href="#inverse">inverser</a>
-la palette.</li>
-<li>Une zone comportant une case &#224; cocher pour <a href="#inverse">inverser</a> la palette et les boutons des commandes
+<li>Une combobox permettant de choisir la <a href=
+"#palette">palette</a> (fonction de transfert).</li>
+<li>Une zone comportant une case &#224; cocher pour <a href=
+"#inverse">inverser</a> la palette et les boutons des commandes
 <a href="#mypal"><b>D&#233;finir ma palette</b></a> et
 <b><a href="#export">Exporter l'image</a></b>.</li>
 <li>Un bandeau de <a href="#cmdes">commandes</a>.</li>
@@ -66,7 +69,8 @@ la palette.</li>
 </tr>
 </tbody>
 </table>
-<h2><b>2. <a name="histogram" id="histogram">Histogramme</a></b></h2>
+<h2><b>2. <a name="histogram" id=
+"histogram">Histogramme</a></b></h2>
 <p>L'histogramme normalis&#233; est calcul&#233; sur la plage des
 seuils s&#233;lectionn&#233;s &#224; chaque chargement d'image ou
 de changement de seuils. Compte tenu du temps de calcul
@@ -111,11 +115,16 @@ point noir de l'image puis appuyer sur <b>OK</b>.</p>
 <p>Pour d&#233;finir le seuil au dessus duquel la sortie sera
 &#233;gale &#224; 255, cliquer sur la pipette blanche, cliquer
 sur un point blanc de l'image puis appuyer sur <b>OK</b>.</p>
-<p>Les r&#233;glettes de luminosit&#233; et de contraste se
-positionnent automatiquement &#224; la bonne valeur. Les niveaux
-peuvent &#234;tre ajust&#233;s manuellement &#224; l'aide de ces
-r&#233;glettes.</p>
-<h2>4. Choix du plan couleur</h2>
+<p>Pour faciliter le choix du pixel, les coordonn&#233;es du
+pixel survol&#233; et son (ses) intensit&#233;(s) sont
+affich&#233;s dans le quadrant sup&#233;rieur droit du pointeur
+de la souris :</p>
+<p><img src="images/info.gif" /></p>
+<p>Les r&#233;glettes de <a href="#lumen">luminosit&#233; et de
+contraste</a> se positionnent automatiquement &#224; la bonne
+valeur. Les niveaux peuvent &#234;tre ajust&#233;s manuellement
+&#224; l'aide de ces r&#233;glettes.</p>
+<h2><a name="plan" id="plan">4.</a> Choix du plan couleur</h2>
 <p>Pour une image en noir et blanc la fonction de transfert est
 grise.</p>
 <p>Le choix <b>RVB</b> applique la luminosit&#233;, le contraste,
@@ -133,8 +142,8 @@ cr&#233;&#233;es.</td>
 </tr>
 </tbody>
 </table>
-<h2><a name="niveaux" id="niveaux">5. Luminosit&#233; et
-contraste</a></h2>
+<h2><a name="lumen" id="lumen">5.</a> Luminosit&#233; et
+contraste</h2>
 <p>Les r&#233;glages de la luminosit&#233; et du contraste
 d&#233;finissent une bo&#238;te {x0 y0 x1 y1} de confinement de
 la fonction de transfert mat&#233;rialis&#233;e sur le graphique
@@ -399,11 +408,15 @@ les r&#233;glages courants.</li>
 </ul>
 <h2>10. Quelques r&#233;f&#233;rences</h2>
 <ul>
-<li>Alain Boucher IFI <a href="http://www2.ifi.auf.org/personnel/Alain.Boucher/cours/traitement_images/03-Convolution.pdf">
+<li>Alain Boucher IFI <a href=
+"http://www2.ifi.auf.org/personnel/Alain.Boucher/cours/traitement_images/03-Convolution.pdf">
 http://www2.ifi.auf.org/personnel/Alain.Boucher/cours/traitement_images/03-Convolution.pdf</a></li>
-<li>K. Okano <a href="http://www.asahi-net.or.jp/%7Ert6k-okn/">http://www.asahi-net.or.jp/~rt6k-okn/</a></li>
-<li>J&#233;r&#244;me Vicente IUSTI <a href="http://iusti.polytech.univ-mrs.fr/%7Evicente/supportcours/vision3-2006.pdf">
+<li>K. Okano <a href=
+"http://www.asahi-net.or.jp/%7Ert6k-okn/">http://www.asahi-net.or.jp/~rt6k-okn/</a></li>
+<li>J&#233;r&#244;me Vicente IUSTI <a href=
+"http://iusti.polytech.univ-mrs.fr/%7Evicente/supportcours/vision3-2006.pdf">
 http://iusti.polytech.univ-mrs.fr/~vicente/supportcours/vision3-2006.pdf</a></li>
 </ul>
 </div>
-</body></html>
+</body>
+</html>
