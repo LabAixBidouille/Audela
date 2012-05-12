@@ -2345,7 +2345,9 @@ namespace eval ::confVisu {
          Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,efface_image)" "::confVisu::clear $visuNo"
 
          Menu_Separator $visuNo "$caption(audace,menu,display)"
-         Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette)" "::div::initDiv $visuNo"
+         Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette)" \
+            "::div::initDiv $visuNo" \
+            -compound left -image $::icones::private(swatchTransferFunction)
          Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,seuils)..." \
             "::seuilWindow::run $visuNo"
          Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,balance_rvb)..." \
@@ -2655,7 +2657,9 @@ namespace eval ::confVisu {
          Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,efface_image)" "::confVisu::deleteImage $visuNo"
 
          Menu_Separator $visuNo "$caption(audace,menu,display)"
-         Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette)" "::div::initDiv $visuNo"
+         Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette)" \
+            "::div::initDiv $visuNo" \
+            -compound left -image $::icones::private(swatchTransferFunction)
          Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,seuils)..." \
             "::seuilWindow::run $visuNo"
          Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,balance_rvb)..." \
@@ -2774,7 +2778,9 @@ namespace eval ::confVisu {
       Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,pas_outil)" "::audace::pasOutil $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,efface_image)" "::confVisu::deleteImage"
       Menu_Separator $visuNo "$caption(audace,menu,display)"
-      Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette)" "::div::initDiv $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette)" \
+         "::div::initDiv $visuNo" \
+         -compound left -image $::icones::private(swatchTransferFunction)
       Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,seuils)..." \
          "::seuilWindow::run $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,balance_rvb)..." \
@@ -3075,7 +3081,9 @@ namespace eval ::confVisu {
                   Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,pas_outil)" "::audace::pasOutil $visuNo"
                   Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,efface_image)" "::confVisu::deleteImage"
                   Menu_Separator $visuNo "$caption(audace,menu,display)"
-                  Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette)" "::div::initDiv $visuNo"
+                  Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette)" \
+                     "::div::initDiv $visuNo" \
+                     -compound left -image $::icones::private(swatchTransferFunction)
                   Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,seuils)..." \
                      "::seuilWindow::run $visuNo"
                   Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,balance_rvb)..." \
