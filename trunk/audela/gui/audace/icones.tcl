@@ -70,6 +70,13 @@ namespace eval ::icones {
          fMFnyvCoz2kkHPoeQ2JpRqM4FQkAOw==
       }]
 
+      #--- icone pour palette et fonction de transfert
+      set private(swatchTransferFunction) [image create photo swatchTransferFunction -data {
+         R0lGODlhEAAQAMIHAAAA//8AAP8A/7fBCuS0VgD/////AP///yH5BAEAAAcA
+         LAAAAAAQABAAAANCeLrcazBKwwy5OBN6rAba1l3BBZzXgEFE4JrpoG5eGc50
+         qBUXq0WEgjD3GwV7HSDNs6qEBM2HRkAVOafWxiTi6DoSADs=
+      }]
+
       #--- icone pour plein ecran
       set private(fullScreenIcon) [image create photo fullScreenIcon -data {
          R0lGODlhEgASAKECAAAAALeurv///////yH5BAEKAAMALAAAAAASABIAAAI5
