@@ -244,8 +244,31 @@ namespace eval ::icones {
          nI8Ju6ECIXAGyCWpnVXwsTmWR4FiloBoGqbdx5JuBcyqHOMsbCMFADs=
       }]
 
+      #--- icone pour loupe 20x
+      set private(magnifier20xIcon) [image create photo magnifier20xIcon -data {
+         R0lGODlhEAAQAMZGAAAAAFlfYGpucGpvcHJ2d3V5eXt/gH+Cg3+DhIGEhYOH
+         iIWJioaKi4eLjIiLi4mMjIuOj5KVlpOWl5OXlZmdnZuenZ6in6Smp6Snp66w
+         r66xr7K0tbK1srK2srK3srS4s7e6t7i7t77AwMLDxMbHxsrMyMrNyNDRzdDS
+         z9DS0NTV1dXZ0tnc1tvd2dzd2tzd3dze2d3f2uDh3uLi4OHj3+Lj4OLj4+Lk
+         3+Lk4OPl4OTl4+Xn4+fo5ejp5urq6Ovr6Ovr6evs6ezs6u3t6+3t7u7u7P//
+         ////////////////////////////////////////////////////////////
+         ////////////////////////////////////////////////////////////
+         ////////////////////////////////////////////////////////////
+         /////////////////////////////////////////////////yH5BAEKAH8A
+         LAAAAAAQABAAAAeNgH+Cg4SFhCoRAgEFFzaGgiIGGCguJhMOL4YqBiQ+Pz03
+         LB4LRIURGD5DQ0FBNCsVG4UDKTwzMrc1MBwQhQEtJ7fBMiAJhQUlN0FFy0I7
+         GRKFGBMsOELWQDoHI4U2Dx8rMTk7OhQMjy8NFh0hGggMAASZhUQbEAoS2wTw
+         8o+DL/rx+hH6B0/gQH0GHwUCADs=
+      }]
+
+      #--- icone pour reticule
+      set private(crosshairIcon) [image create photo crosshairIcon -data {
+         R0lGODlhEAAQAIABAAAAAP///yH5BAEKAAEALAAAAAAQABAAAAIdjB+Ay8qf
+         4HMS0Wou1gf4D4YQJ5EjZqGdmrGRCxUAOw==
+      }]
+
       #--- icone pour zoom+
-      set private(openZoomPlus) [image create photo openZoomPlus -data {
+      set private(openZoomPlusIcon) [image create photo openZoomPlusIcon -data {
          R0lGODlhEAAQAMZGAAAAAFlfYGpucGpvcHJ2d3V5eXt/gH+Cg3+DhIGEhYOH
          iIWJioaKi4eLjIiLi4mMjIuOj5KVlpOWl5OXlZmdnZuenZ6in6Smp6Snp66w
          r66xr7K0tbK1srK2srK3srS4s7e6t7i7t77AwMLDxMbHxsrMyMrNyNDRzdDS
@@ -262,7 +285,7 @@ namespace eval ::icones {
       }]
 
       #--- icone pour zoom-
-      set private(openZoomMoins) [image create photo openZoomMoins -data {
+      set private(openZoomMoinsIcon) [image create photo openZoomMoinsIcon -data {
          R0lGODlhEAAQAMZGAAAAAFlfYGpucGpvcHJ2d3V5eXt/gH+Cg3+DhIGEhYOH
          iIWJioaKi4eLjIiLi4mMjIuOj5KVlpOWl5OXlZmdnZuenZ6in6Smp6Snp66w
          r66xr7K0tbK1srK2srK3srS4s7e6t7i7t77AwMLDxMbHxsrMyMrNyNDRzdDS
