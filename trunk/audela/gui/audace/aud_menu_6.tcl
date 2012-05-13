@@ -15,8 +15,14 @@ namespace eval ::audace {
       variable private
       global audace
 
-      ::confVisu::stopTool $visuNo
-      set ::confVisu::private($visuNo,currentTool) ""
+      if { $::confVisu::private($visuNo,currentTool) != "" } {
+         set private(currentTool) $::confVisu::private($visuNo,currentTool)
+         ::confVisu::stopTool $visuNo
+         set ::confVisu::private($visuNo,currentTool) ""
+      } else {
+         #--- Je relance automatiquement l'outil currentTool
+         ::confVisu::selectTool $visuNo $private(currentTool)
+      }
    }
 
 ###################################################################################
