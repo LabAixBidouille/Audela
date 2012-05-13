@@ -44,7 +44,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(magnifier,titre)                 "# Loupe x20"
+   set caption(magnifier,titre)                 "Lupa x20"
    set caption(magnifier,intens)                "I= %s"
    set caption(magnifier,coord)                 "X= %s Y= %s"
    set caption(magnifier,default_state_label)   "Mostrar al arrancar"
