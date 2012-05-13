@@ -263,8 +263,8 @@ namespace eval ::icones {
 
       #--- icone pour reticule
       set private(crosshairIcon) [image create photo crosshairIcon -data {
-         R0lGODlhEAAQAIABAAAAAP///yH5BAEKAAEALAAAAAAQABAAAAIdjB+Ay8qf
-         4HMS0Wou1gf4D4YQJ5EjZqGdmrGRCxUAOw==
+         R0lGODlhEAAQAKEBAAAAAP///////////yH5BAEKAAIALAAAAAAQABAAAAIq
+         jB+AJ2vqmoNLLooswswlrx2cIQDmiabhA3pjsH6R2071dW+gwPf+LygAADs=
       }]
 
       #--- icone pour zoom+
