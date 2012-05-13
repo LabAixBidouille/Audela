@@ -962,7 +962,7 @@ namespace eval ::div {
                            set min [expr {[lindex [buf$bufNo getkwd MIPS-LO] 1]}]
                            set max [expr {[lindex [buf$bufNo getkwd MIPS-HI] 1]}]
                         }
-           initiaux    {  #--   prend en compte les seuils de l'image
+           initiaux     {  #--   prend en compte les seuils de l'image
                            set min [expr {[lindex [buf$bufNo getkwd MIPS-LO] 1]}]
                            set max [expr {[lindex [buf$bufNo getkwd MIPS-HI] 1]}]
                         }
@@ -1051,9 +1051,9 @@ namespace eval ::div {
       #--   ligne de reglage des niveaux
       Label $tbl.lab_niveau -text $caption(div,niveaux)
       button $tbl.black  -image $private(div,$visuNo,pipette_noire) -borderwidth 3 \
-         -width 16 -command "::div::cmdGetValue black $visuNo"
+         -width 16 -command "::div::cmdGetValue $visuNo black "
       button $tbl.white -image $private(div,$visuNo,pipette_blanche) -borderwidth 3 \
-         -width 16 -command "::div::cmdGetValue white $visuNo"
+         -width 16 -command "::div::cmdGetValue $visuNo white"
 
       #--   choix des plans
       Label $tbl.lab_plan -text $caption(div,plan)
@@ -1192,50 +1192,67 @@ namespace eval ::div {
    #  Commande des boutons pipettes noire et blanche
    #  Attention : ne peut fonctionner qu'avec l'histogramme
    #---------------------------------------------------------------------------
-   proc cmdGetValue { color visuNo } {
+   proc cmdGetValue { visuNo color } {
       variable private
       global caption
 
-      set private(div,$visuNo,$color) ""
-      blt::vector create dred dgreen dblue -watchunset 1
-      set w $::confVisu::private($visuNo,hCanvas)
+      ::div::configGui $visuNo disabled
 
-      #--   active le binding
-      bind $w <Motion> [list ::div::seePixel $visuNo %W %x %y]
-      bind $w <ButtonPress-1> [list ::div::getColor $visuNo $color %W %x %y]
-
+      #--   cree le binding
+      ::confVisu::addBindDisplay $visuNo <ButtonPress-1> [list ::div::getIntensite $visuNo]
+      #--   active la loupe
+      ::div::configLoupe $visuNo
       #--   cree une fenetre pour le message et attend une reponse
-      ::div::createMsgBox $visuNo $caption(div,$color)
+      set w [::div::createMsgBox $visuNo $caption(div,$color)]
+
       vwait ::div::private(div,$visuNo,answer)
-      destroy $private(div,$visuNo,this).q
+
+      #--   supprime le binding
+      ::confVisu::removeBindDisplay $visuNo <ButtonPress-1> [list ::div::getIntensite $visuNo]
+      #--   retablit l'etat anterieur de la loupe
+      ::div::configLoupe $visuNo
+      #--   supprime la fenetre
+      destroy $w
 
       #--   arrete si annulation
-      if {$private(div,$visuNo,answer) == 0} {
-         ::div::cancel $visuNo
-         return
+      if {$private(div,$visuNo,answer) == 1} {
+         if {![info exists private(div,$visuNo,intensite)]} {
+            #--   mesage si pas de point designe
+            tk_messageBox -title "$caption(div,attention)" -icon info -type ok \
+               -message "[format $caption(div,no_selection) $caption(div,$color)]"
+         } else {
+            #--
+            ::div::calcDynamic $visuNo $color
+            ::div::updateValues $visuNo
+         }
       }
 
-      #--   arrete si pas de point designe
-      if {[info exists private(div,$visuNo,intensite)] ==0} {
-         tk_messageBox -title "$caption(div,attention)" -icon info -type ok \
-            -message "[format $caption(div,no_selection) $caption(div,$color)]"
-         return
-      }
+      ::div::configGui $visuNo normal
+   }
+
+   #---------------------------------------------------------------------------
+   #  ::div::calcDynamic
+   #  Calcule le seuil Bas/Haut dans la distribution
+   #  Invoquee par cmdGetValue
+   #--------------------------------------------------------------------------
+   proc calcDynamic { visuNo color } {
+      variable private
+
+      set private(div,$visuNo,$color) ""
+      blt::vector create t1 dred dgreen dblue -watchunset 1
 
       if {[llength $private(div,$visuNo,intensite)] eq "1"} {
          set listeVector {dred}
          set DistList [list ::D_r$visuNo]
       } else {
-         set listeVector {dred dgreen dblue}
+        set listeVector {dred dgreen dblue}
          set DistList [list ::D_r$visuNo ::D_g$visuNo ::D_b$visuNo]
       }
-
-      blt::vector create t1 -watchunset 1
       foreach val $private(div,$visuNo,intensite) vector $DistList {
          #--   cherche la valeur de l'intensite dans le vecteur de distribution
          t1 expr {$vector <= $val}
          set index [lindex [t1 search 1] end]
-         if {$index eq ""} {set index 0}
+        if {$index eq ""} {set index 0}
          lappend private(div,$visuNo,$color) $index
       }
 
@@ -1255,68 +1272,40 @@ namespace eval ::div {
       #--   la luminosite est l'ordonne a l'origine de la diagonale
       set luminosite [expr {$b/127.5+$pente-1}]
       set private(div,$visuNo,lumen) [expr {int($luminosite*100/2)}]
-
-      ::div::updateValues $visuNo
    }
 
    #---------------------------------------------------------------------------
-   #  ::div::seePixel
-   #  Affiche les coordonnees et l'intensite d'un pixel
-   #  Binging avec <Motion>
-   #---------------------------------------------------------------------------
-   proc seePixel { visuNo w x y } {
-      global audace color
+   #  ::div::configLoupe
+   #  Si necessaire active la loupe/Remet la loupe a l'etat anterieur
+   #  en tenant compte de l'état dans le menuPopupButton3
+   #  Parametres : visuNo
+   #  Invoquee par cmdGetValue
+   #--------------------------------------------------------------------------
+   proc configLoupe { visuNo} {
+      variable private
 
-      set w [::confVisu::getCanvas $visuNo]
-      $w delete [ $w find withtag loupe ]
-
-      lassign [::confVisu::canvas2Picture $visuNo [list $x $y]] x1 y1
-
-      set bufNo [visu$visuNo buf]
-      set naxis2  [buf$bufNo getpixelsheight]
-      set naxis1  [buf$bufNo getpixelswidth]
-
-      if {$x1 >= 1 && $x1 <= $naxis1 && $y1 >= 1 && $y1 <= $naxis2} {
-         set intensite [lrange [buf$bufNo getpix [list $x1 $y1]] 1 end]
-         for {set i 0} {$i < [llength $intensite]} {incr i} {
-            set val [expr {int([lindex $intensite $i])}]
-            set intensite [lreplace $intensite $i $i $val ]
-         }
-         $w create text [expr {$x + 1}] [expr {$y - 5}] \
-            -text "($x1,$y1) : $intensite" \
-            -justify left -anchor w -fill $color(yellow) \
-            -tags [ list $intensite loupe ]\
+      if {![info exists private(div,$visuNo,previousMagnifierState)]} {
+         #--   memorise l'etat
+         set private(div,$visuNo,previousMagnifierState) [::confVisu::getMagnifier $visuNo]
+      }
+      if {$private(div,$visuNo,previousMagnifierState) == 0} {
+         ::confVisu::toggleMagnifier $visuNo
+      }
+      if {[::confVisu::getMagnifier $visuNo]  == 0} {
+         #--   detruit la variable d'etat
+         unset private(div,$visuNo,previousMagnifierState)
       }
    }
 
    #---------------------------------------------------------------------------
-   #  ::div::getColor
-   #  Capture l'intensite d'un pixel
-   #  Invoquee par cmdGetValue
-   #---------------------------------------------------------------------------
-   proc getColor { visuNo color w x y } {
+   #  ::div::getIntensite
+   #  Capture l'intensite
+   #  Binding avec Button1-Press
+   #--------------------------------------------------------------------------
+   proc getIntensite { visuNo } {
       variable private
 
-      set w [::confVisu::getCanvas $visuNo]
-      lassign [ $w itemcget [ $w find withtag current ] -tags ] private(div,$visuNo,intensite)
-
-      ::div::cancel $visuNo
-      raise $private(div,$visuNo,this).q
-   }
-
-   #---------------------------------------------------------------------------
-   #  ::div::cancel
-   #  Supprime les bindings et l'affichage des valeurs d'un pixel
-   #  Invoquee par cmdGetValue et getColor
-   #---------------------------------------------------------------------------
-   proc cancel { visuNo } {
-
-      set w $::confVisu::private($visuNo,hCanvas)
-      #--   supprime l'affichage
-      $w delete [ $w find withtag loupe ]
-      #--   desactive le binding
-      bind $w <Motion> {}
-      bind $w <ButtonPress-1> {}
+      regsub "I= " $::Magnifier::intensite "" private(div,$visuNo,intensite)
    }
 
    #---------------------------------------------------------------------------
@@ -1358,6 +1347,8 @@ namespace eval ::div {
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $this.q
+
+      return $this.q
    }
 
    #---------------------------------------------------------------------------

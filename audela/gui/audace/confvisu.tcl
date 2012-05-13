@@ -64,10 +64,16 @@ namespace eval ::confVisu {
          set conf(seuils,visu$visuNo,mode) "loadima"
       }
       if { ! [ info exists conf(visu,crosshair,defaultstate) ] } {
-         set conf(visu,crosshair,defaultstate)  "0"
+         set conf(visu,crosshair,defaultstate) "0"
       }
       if { ! [ info exists conf(visu,crosshair,color) ] } {
          set conf(visu,crosshair,color) "#FF0000"
+      }
+      if { ! [ info exists conf(visu,magnifier,defaultstate) ] } {
+         set conf(visu,magnifier,defaultstate) "0"
+      }
+      if { ! [ info exists conf(visu,magnifier,color) ] } {
+         set conf(visu,magnifier,color) "#FF0000"
       }
 
       #--- definit la palette par defaut
@@ -111,6 +117,7 @@ namespace eval ::confVisu {
       set private($visuNo,hCrosshairH)     $private($visuNo,hCanvas).color_invariant_crosshairH
       set private($visuNo,hCrosshairV)     $private($visuNo,hCanvas).color_invariant_crosshairV
       set private($visuNo,crosshairstate)  $conf(visu,crosshair,defaultstate)
+      set private($visuNo,magnifierstate)  $conf(visu,magnifier,defaultstate)
       set private($visuNo,menu)            ""
       set private($visuNo,mode)            "image"
 
@@ -2766,8 +2773,6 @@ namespace eval ::confVisu {
          "::audace::quitter" \
          -compound left -image $::icones::private(exitIcon)
 
-      #--- Je commence par supprimer le menu cascade du menu Affichage
-      Menu_Delete $visuNo "$caption(audace,menu,fcttransfert_titre)" all
       #--- Je supprime toutes les entrees du menu Affichage
       Menu_Delete $visuNo "$caption(audace,menu,display)" entries
       #--- Rafraichissement du menu Affichage
@@ -3069,8 +3074,6 @@ namespace eval ::confVisu {
                      "::confVisu::close $visuNo" \
                      -compound left -image $::icones::private(closeIcon)
 
-                  #--- Je commence par supprimer le menu cascade du menu Affichage
-                  Menu_Delete $visuNo "$caption(audace,menu,fcttransfert_titre)" all
                   #--- Je supprime toutes les entrees du menu Affichage
                   Menu_Delete $visuNo "$caption(audace,menu,display)" entries
                   #--- Rafraichissement du menu Affichage
@@ -3539,12 +3542,21 @@ namespace eval ::confVisu {
             #--- Je liste les plugins a afficher
             foreach { namespace affiche_raccourci } $conf(outilsActifsInactifs) {
                #--- Je verifie que le plugin multivisu est dans la liste des plugins a afficher
-               if { $namespace == $pluginName } {
-                  #--- Affichage des plugins multivisu de type tool du menu deroulant Affichage
-                  if { [ ::$pluginName\::getPluginProperty function ] == "display" } {
-                     $menu add checkbutton -label $caption(confVisu,reticule) \
-                        -variable ::Crosshair::widget($visuNo,currentstate) \
-                        -command "::confVisu::toggleCrosshair $visuNo"
+               #--- et qu'il fait partie des menus
+               if { $namespace == $pluginName && [ ::$pluginName\::getPluginProperty function ] == "display" } {
+                  if {[lindex $affiche_raccourci 0] == 1} {
+                     switch -exact $pluginName {
+                        Crosshair { $menu add checkbutton -label $caption(confVisu,reticule) \
+                                       -variable ::Crosshair::widget($visuNo,currentstate) \
+                                       -command "::confVisu::toggleCrosshair $visuNo" \
+                                       -compound left -image $::icones::private(crosshairIcon)
+                                  }
+                        Magnifier { $menu add checkbutton -label $caption(magnifier,titre) \
+                                       -variable ::Magnifier::widget($visuNo,currentstate) \
+                                       -command "::confVisu::toggleMagnifier $visuNo" \
+                                       -compound left -image $::icones::private(magnifier20xIcon)
+                                  }
+                     }
                   }
                }
             }
@@ -3553,9 +3565,11 @@ namespace eval ::confVisu {
 
       $menu add separator
       $menu add command -label $caption(confVisu,zoom+) \
-         -command "::confVisu::incrementZoom $visuNo"
+         -command "::confVisu::incrementZoom $visuNo" \
+         -compound left -image $::icones::private(openZoomPlusIcon)
       $menu add command -label $caption(confVisu,zoom-) \
-         -command "::confVisu::decrementZoom $visuNo"
+         -command "::confVisu::decrementZoom $visuNo" \
+         -compound left -image $::icones::private(openZoomMoinsIcon)
 
       bind $private($visuNo,hCanvas) <ButtonPress-1> ""
       bind $private($visuNo,hCanvas) <ButtonPress-3> [list tk_popup $menu %X %Y]
@@ -4042,10 +4056,185 @@ namespace eval ::confVisu {
          #--- Repositionnement des poignees a leur nouvelle position
          $private($visuNo,This).fra1.sca1 set [ expr ( $sh - $private($visuNo,b) ) / $private($visuNo,a) ]
          $private($visuNo,This).fra1.sca2 set [ expr ( $sb - $private($visuNo,b) ) / $private($visuNo,a) ]
-#::console::affiche_resultat "ComputeScaleRange: sh=$sh, sb=$sb, min_index=$private($visuNo,minindex), max_index=$private($visuNo,maxindex), maxi=$maxi, mini=$mini, a=$private($visuNo,a), b=$private($visuNo,b)\n"
       } elseif { $conf(seuils,auto_manuel) == 2 } {
          $zone(sb1) configure -from $private($visuNo,mindyn) -to $private($visuNo,maxdyn)
          $zone(sh1) configure -from $private($visuNo,mindyn) -to $private($visuNo,maxdyn)
+      }
+   }
+
+   #------------------------------------------------------------
+   #  setMagnifier
+   #  set Magnifier state
+   #   state = 0 or 1
+   #------------------------------------------------------------
+   proc setMagnifier { visuNo state } {
+      variable private
+
+      set private($visuNo,magnifierstate) $state
+      redrawMagnifier $visuNo
+   }
+
+   #------------------------------------------------------------
+   #  toggleMagnifier
+   #  toggle drawing/hiding Magnifier
+   #  as check button state indicate
+   #------------------------------------------------------------
+   proc toggleMagnifier { visuNo } {
+      variable private
+
+      if { $private($visuNo,magnifierstate) =="0"} {
+         setMagnifier $visuNo 1
+      } else {
+         setMagnifier $visuNo 0
+      }
+   }
+
+   #------------------------------------------------------------
+   #  getMagnifier
+   #  returns magnifier state 1=shown 0=hidden
+   #
+   #------------------------------------------------------------
+   proc getMagnifier { visuNo } {
+      variable private
+
+      return $private($visuNo,magnifierstate)
+   }
+
+   #------------------------------------------------------------
+   #  hideMagnifier
+   #  hiding Magnifier
+   #------------------------------------------------------------
+   proc hideMagnifier { visuNo } {
+      variable private
+
+      set this $private($visuNo,hCanvas).mag
+      ::confVisu::removeBindDisplay $visuNo <Motion> "::confVisu::magnifyDisplay $visuNo $this %x %y"
+
+      if {[info exists private($visuNo,loupe)]} {
+         image delete $private($visuNo,loupe)
+      }
+
+      destroy $this
+   }
+
+   #--------------------------------------------------------------
+   #  redrawMagnifier
+   #  redraw Magnifier
+   #--------------------------------------------------------------
+   proc redrawMagnifier { visuNo } {
+      variable private
+
+      if {$private($visuNo,magnifierstate) == "1" } {
+         #--- j'affiche la loupe
+         displayMagnifier $visuNo
+      } else {
+         #--- je masque la loupe
+         hideMagnifier $visuNo
+      }
+   }
+
+   #--------------------------------------------------------------
+   #  displayMagnifier
+   #  display Magnifier
+   #--------------------------------------------------------------
+   proc displayMagnifier { visuNo } {
+      variable private
+      global conf caption
+
+      set hCanvas $private($visuNo,hCanvas)
+      set this $hCanvas.mag
+
+      if {[winfo exists $this]} {return }
+
+      set color $conf(visu,magnifier,color)
+
+      toplevel $this
+      wm transient $this $hCanvas
+      wm title $this "$caption(magnifier,titre)"
+      wm resizable $this 0 0
+      wm protocol $this WM_DELETE_WINDOW "return"
+
+      pack [frame $this.m -relief sunken]
+
+      #--   le canvas
+      canvas $this.m.can -width 100 -height 100
+      set private($visuNo,loupe) [image create photo]
+      $this.m.can create image 0 0 -anchor nw -tags [list loupe loupe]
+      grid $this.m.can -row 0 -column 0 -sticky news
+      $this.m.can itemconfigure loupe -image $private($visuNo,loupe)
+
+      #--   le reticule
+      $this.m.can create rectangle 2 2 100 100 -outline $color -tags [list reticule loupe]
+      $this.m.can create line 50 0 50 100 -fill $color -tags [list reticule loupe]
+      $this.m.can create line 0 50 100 50 -fill $color -tags [list reticule loupe]
+
+      #--   les libelles
+      label $this.m.c -textvariable ::Magnifier::coords
+      grid $this.m.c -row 1 -column 0 -sticky ew
+      #label $this.m.t -textvariable ::Magnifier::intensite -font [list Helvetica 6]
+      label $this.m.i -textvariable ::Magnifier::intensite
+      grid $this.m.i -row 2 -column 0 -sticky ew
+
+      wm withdraw $this
+
+      ::confVisu::addBindDisplay $visuNo <Motion> "::confVisu::magnifyDisplay $visuNo $this %x %y"
+
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $this
+   }
+
+   #---------------------------------------------------------------------------
+   #  magnifyDisplay
+   #  Rafraichit la loupe
+   #  Binding avec <Motion>
+   #--------------------------------------------------------------------------
+   proc magnifyDisplay { visuNo this x y } {
+       variable private
+       global audace caption
+
+      if {![winfo exists $this]} {return}
+
+      lassign [::confVisu::canvas2Picture $visuNo [list $x $y]] xpict ypict
+
+      #--   l'image Tk du buffer de la visu est la source des donnees
+      set src "imagevisu$visuNo"
+      set naxis1 [image width $src]
+      set naxis2 [image height $src]
+
+      #--   definit une boite de 6x6 pixels
+      set x0 [expr {$x-2}]
+      set y0 [expr {$y-2}]
+      set x1 [expr {$x+3}]
+      set y1 [expr {$y+3}]
+
+      if {$x0 < 1 || $y0 < 1 || $x1 > $naxis1 || $y1 > $naxis2} {
+
+         wm withdraw $this
+
+      } else {
+
+         #--   copie les valeurs dans imagevisu$visuNo vers la loupe
+         $private($visuNo,loupe) blank
+         $private($visuNo,loupe) copy $src -from $x0 $y0 $x1 $y1 -to 0 0 -zoom 20
+
+         #--   cherche les intensites du pixel central
+         set intensite [lrange [buf[visu$visuNo buf] getpix [list $xpict $ypict]] 1 end]
+
+         #--   passe en integer
+         for {set i 0} {$i < [llength $intensite]} {incr i} {
+            set val [expr {int([lindex $intensite $i])}]
+            set intensite [lreplace $intensite $i $i $val ]
+         }
+
+         #--   actualise en permanence ces variables
+         set ::Magnifier::coords "[format $caption(magnifier,coord) $xpict $ypict]"
+         set ::Magnifier::intensite "[format $caption(magnifier,intens) $intensite]"
+
+         #--   recalcule la position de la loupe et l'affiche
+         lassign [split [wm geometry $audace(base)] "+"] -> i j
+         wm geometry $this "+[expr {+$i+$x+15}]+[expr {+$j+$y-8}]"
+         wm deiconify $this
+         update
       }
    }
 
