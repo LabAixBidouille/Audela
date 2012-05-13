@@ -223,6 +223,9 @@ proc ::bddimagesXML::read_xml_config { file_config } {
       if { [catch {::dom::node stringValue [::dom::selectNode $node {descendant::log/text()}]} val] == 0 } { 
          set ::bddimagesXML::xmlConfig($id,dirlog) [::bddimagesXML::get_default_dir $val "log"]
       }
+      if { [catch {::dom::node stringValue [::dom::selectNode $node {descendant::tmp/text()}]} val] == 0 } { 
+         set ::bddimagesXML::xmlConfig($id,dirtmp) [::bddimagesXML::get_default_dir $val "tmp"]
+      }
       if { [catch {::dom::node stringValue [::dom::selectNode $node {descendant::screenlimit/text()}]} val] == 0 } {
          set ::bddimagesXML::xmlConfig($id,limit) $val
       }
@@ -276,6 +279,7 @@ proc ::bddimagesXML::get_config { name } {
    set err [catch {set bddconf(dircata) $::bddimagesXML::xmlConfig($id,dircata) }]
    set err [catch {set bddconf(direrr)  $::bddimagesXML::xmlConfig($id,direrr)  }]
    set err [catch {set bddconf(dirlog)  $::bddimagesXML::xmlConfig($id,dirlog)  }]
+   set err [catch {set bddconf(dirtmp)  $::bddimagesXML::xmlConfig($id,dirtmp)  }]
    set err [catch {set bddconf(limit)   $::bddimagesXML::xmlConfig($id,limit)   }]
    
    # Retourne le nom de la config chargee
@@ -304,16 +308,17 @@ proc ::bddimagesXML::add_config { } {
    set ::bddimagesXML::xmlConfig($new_id,default) "no"
    set ::bddimagesXML::xmlConfig($new_id,name)    $new_name
    set ::bddimagesXML::xmlConfig($new_id,dbname)  $new_name
-   set ::bddimagesXML::xmlConfig($new_id,login)   "?"  
+   set ::bddimagesXML::xmlConfig($new_id,login)   ""  
    set ::bddimagesXML::xmlConfig($new_id,pass)    ""   
    set ::bddimagesXML::xmlConfig($new_id,server)  ""   
    set ::bddimagesXML::xmlConfig($new_id,port)    ""   
-   set ::bddimagesXML::xmlConfig($new_id,dirbase) "?"  
-   set ::bddimagesXML::xmlConfig($new_id,dirinco) "?"  
-   set ::bddimagesXML::xmlConfig($new_id,dirfits) "?"  
-   set ::bddimagesXML::xmlConfig($new_id,dircata) "?"  
-   set ::bddimagesXML::xmlConfig($new_id,direrr)  "?"  
-   set ::bddimagesXML::xmlConfig($new_id,dirlog)  "?"  
+   set ::bddimagesXML::xmlConfig($new_id,dirbase) ""  
+   set ::bddimagesXML::xmlConfig($new_id,dirinco) ""  
+   set ::bddimagesXML::xmlConfig($new_id,dirfits) ""  
+   set ::bddimagesXML::xmlConfig($new_id,dircata) ""  
+   set ::bddimagesXML::xmlConfig($new_id,direrr)  ""  
+   set ::bddimagesXML::xmlConfig($new_id,dirlog)  ""  
+   set ::bddimagesXML::xmlConfig($new_id,dirtmp)  ""  
    set ::bddimagesXML::xmlConfig($new_id,limit)   "10" 
 
    # Met a jour la liste des config
@@ -527,6 +532,11 @@ proc ::bddimagesXML::write_xml_config { file_config  } {
         if {[info exists ::bddimagesXML::xmlConfig($i,dirbase)]} {
            ::dom::document createTextNode $subsubnode $::bddimagesXML::xmlConfig($i,dirlog)
         }
+        # --- /config/bddimages/files/tmp
+        set subsubnode [::dom::document createElement $subnode "tmp"]
+        if {[info exists ::bddimagesXML::xmlConfig($i,dirbase)]} {
+           ::dom::document createTextNode $subsubnode $::bddimagesXML::xmlConfig($i,dirtmp)
+        }
   
       # --- /config/bddimages/screenlimit
       set subnode [::dom::document createElement $node "screenlimit"]
@@ -570,6 +580,7 @@ proc ::bddimagesXML::set_config { name } {
    set err [catch {set ::bddimagesXML::xmlConfig($id,dircata) $bddconf(dircata) }]
    set err [catch {set ::bddimagesXML::xmlConfig($id,direrr)  $bddconf(direrr)  }]
    set err [catch {set ::bddimagesXML::xmlConfig($id,dirlog)  $bddconf(dirlog)  }]
+   set err [catch {set ::bddimagesXML::xmlConfig($id,dirtmp)  $bddconf(dirtmp)  }]
    set err [catch {set ::bddimagesXML::xmlConfig($id,limit)   $bddconf(limit)   }]
    return 0
 }
