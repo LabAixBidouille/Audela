@@ -16,7 +16,6 @@ set caption(magnifier,intens)                   "I= %s"
 set caption(magnifier,coord)                    "X= %s Y= %s"
 set caption(magnifier,default_state_label)      "Display on Start-up"
 set caption(magnifier,current_state_label)      "Display"
-set caption(magnifier,color_label)              "Color"
 set caption(magnifier,color_crosshair)          "Crosshair Color"
 
 # *************** Version française ***************************
@@ -27,7 +26,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(magnifier,coord)                 "X= %s Y= %s"
    set caption(magnifier,default_state_label)   "Afficher au démarrage"
    set caption(magnifier,current_state_label)   "Afficher"
-   set caption(magnifier,color_label)           "Couleur"
    set caption(magnifier,color_crosshair)       "Couleur du réticule"
 
 # *************** Version italienne ***************************
@@ -38,7 +36,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(magnifier,coord)                 "X= %s Y= %s"
    set caption(magnifier,default_state_label)   "Visualizza all'avvio"
    set caption(magnifier,current_state_label)   "Visualizza"
-   set caption(magnifier,color_label)           "Colore"
    set caption(magnifier,color_crosshair)       "Colore del reticolo"
 
 # *************** Version espagnole ***************************
@@ -49,7 +46,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(magnifier,coord)                 "X= %s Y= %s"
    set caption(magnifier,default_state_label)   "Mostrar al arrancar"
    set caption(magnifier,current_state_label)   "Pantalla"
-   set caption(magnifier,color_label)           "Color"
    set caption(magnifier,color_crosshair)       "Color del retículo"
 
 # *************** Version allemande ***************************
@@ -60,7 +56,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(magnifier,coord)                 "X= %s Y= %s"
    set caption(magnifier,default_state_label)   "Am starten anzeigen"
    set caption(magnifier,current_state_label)   "Anzeigen"
-   set caption(magnifier,color_label)           "Farbe"
    set caption(magnifier,color_crosshair)       "Farbe des Fadenkreuzes"
 
 # *************** Version portugaise **************************
@@ -71,7 +66,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(magnifier,coord)                 "X= %s Y= %s"
    set caption(magnifier,default_state_label)   "Mostrar ao iniciar"
    set caption(magnifier,current_state_label)   "Mostrar"
-   set caption(magnifier,color_label)           "Cor"
    set caption(magnifier,color_crosshair)       "Cor do retículo"
 
 # *************** Version danoise *****************************
@@ -82,7 +76,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(magnifier,coord)                 "X= %s Y= %s"
    set caption(magnifier,default_state_label)   "Vis ved Opstart"
    set caption(magnifier,current_state_label)   "Vis"
-   set caption(magnifier,color_label)           "Farve"
    set caption(magnifier,color_crosshair)       "Trådkors-farve"
 
 # *************** Version ukrainienne *************************
@@ -93,7 +86,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(magnifier,coord)                 "X= %s Y= %s"
    set caption(magnifier,default_state_label)   "Display on Start-up"
    set caption(magnifier,current_state_label)   "Display"
-   set caption(magnifier,color_label)           "Color"
    set caption(magnifier,color_crosshair)       "Crosshair Color"
 
 # *************** Version russe *******************************
@@ -104,7 +96,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(magnifier,coord)                 "X= %s Y= %s"
    set caption(magnifier,default_state_label)   "Display on Start-up"
    set caption(magnifier,current_state_label)   "Display"
-   set caption(magnifier,color_label)           "Color"
    set caption(magnifier,color_crosshair)       "Crosshair Color"
 
 }
