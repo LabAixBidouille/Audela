@@ -1153,8 +1153,8 @@ namespace eval bddimages_recherche {
            $popupTbl.analyse add command -label "CdL avec WCS" \
               -command { ::bddimages_recherche::creation_cdlwcs}
 
-           $popupTbl.analyse add command -label $caption(bddimages_recherche,astroid) -state disabled \
-              -command { ::bddimages_astroid::run_astroid}
+           $popupTbl.analyse add command -label $caption(bddimages_recherche,astroid) \
+              -command { ::bddimages_recherche::run_astroid}
 
            $popupTbl.analyse add command -label $caption(bddimages_recherche,photom) -state disabled \
               -command { ::bddimages_analyse::run_photom}
@@ -1375,6 +1375,37 @@ namespace eval bddimages_recherche {
          ::console::affiche_erreur "export_cata A FAIRE!\n"
          
       
+      }
+
+
+      return
+   }
+
+   #--------------------------------------------------
+   #  export_cata {  }
+   #--------------------------------------------------
+   #
+   #    fonction  : execute astroid
+   #
+   #    variables en entree :
+   #
+   #    variables en sortie : void
+   #
+   #--------------------------------------------------
+   proc ::bddimages_recherche::run_astroid {  } {
+
+      variable This
+      global bddconf
+
+      set lid [$::bddimages_recherche::This.frame6.result.tbl curselection ]
+      set lid [lsort -decreasing -integer $lid]
+      set img_list [::bddimages_liste_gui::new_normallist $lid]
+
+      foreach img $img_list {
+
+         set ::analyse_tools::id_current_image $img
+         ::tools_astroid::astroid
+         break
       }
 
 

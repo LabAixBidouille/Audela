@@ -11,7 +11,7 @@ proc get_skybot { dateobs ra dec radius uaicode } {
    set voconf(date_image)          $dateobs
    set voconf(centre_ad_image)     $ra
    set voconf(centre_dec_image)    $dec
-   set voconf(observer)            $uaicode
+   set voconf(observer)            [string trim $uaicode]
    set voconf(taille_champ_calcul) $radius
    set voconf(filter)              120
    set voconf(objfilter)           "110"
