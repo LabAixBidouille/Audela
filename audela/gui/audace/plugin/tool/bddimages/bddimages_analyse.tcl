@@ -535,7 +535,6 @@ proc get_one_image_obsolete { idbddimg } {
       set ::analyse_tools::use_tycho2  1
 
       if {! [info exists ::analyse_tools::catalog_usnoa2] } {
-         set ::analyse_tools::catalog_usnoa2 $conf(astrometry,catfolder)
          if {[info exists conf(astrometry,catfolder,usnoa2)]} {
             set ::analyse_tools::catalog_usnoa2 $conf(astrometry,catfolder,usnoa2)
          } else {

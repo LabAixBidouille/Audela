@@ -401,6 +401,7 @@ proc ::bddimagesXML::save_xml_config {  } {
    # Enregistre la config xml
    if {[catch {::bddimagesXML::write_xml_config $::bddimagesXML::xmlConfigFile} bck] != 0} {
       ::console::affiche_erreur "$::caption(bddimages_xml,errorxml)\n"
+      ::console::affiche_erreur "Fichier de conf=$::bddimagesXML::xmlConfigFile\n"
       return -code 1
    } else {
       ::console::affiche_resultat "$::caption(bddimages_xml,successxml)\n"
