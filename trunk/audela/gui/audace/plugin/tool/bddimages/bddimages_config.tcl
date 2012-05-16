@@ -130,6 +130,15 @@ namespace eval bddimages_config {
       #--- Mise en forme du resultat
       set errconn [catch {::bddimages_sql::connect} connectstatus]
 
+
+      if {[info exists bddconf(dirfits)]} {
+         set  audace(rep_images)  $bddconf(dirfits)
+      }
+      if {[info exists bddconf(dirtmp)]} {
+         set  audace(rep_travail)  $bddconf(dirtmp)
+      }
+
+
       # Fin
       ::bddimages_config::recup_position
       destroy $This

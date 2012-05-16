@@ -82,7 +82,7 @@ namespace eval bddimages_sql {
    proc connect { } {
    
       global bddconf
-      set connected "Connecté à $bddconf(dbname) sur $bddconf(server)"
+      set connected "$bddconf(dbname) @ $bddconf(server)"
 
       set err [catch {sql query "use $bddconf(dbname);"} msg]
       if {$err} {
@@ -104,7 +104,7 @@ namespace eval bddimages_sql {
             }
          }
       }
-      gren_info "$connected\n"
+      #gren_info "$connected\n"
       return -code 0 $connected
    
    }
@@ -130,8 +130,8 @@ namespace eval bddimages_sql {
 #  ::console::affiche_resultat "ERR:$err\n"
 #  ::console::affiche_resultat "MSG:$msg\n"
    }
-       gren_info "connexion Mysql\n"
-       gren_info "ERR:$err\n"
-       gren_info "MSG:$msg\n"
+       #gren_info "connexion Mysql\n"
+       #gren_info "ERR:$err\n"
+       gren_info "Connexion Mysql : $msg\n"
 }
 
