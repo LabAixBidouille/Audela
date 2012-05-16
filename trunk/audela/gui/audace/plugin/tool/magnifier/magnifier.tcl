@@ -150,6 +150,7 @@ namespace eval ::Magnifier {
 
       set conf(visu,magnifier,color) $widget(color)
       set conf(visu,magnifier,defaultstate) $widget(defaultstate)
+      set conf(visu,magnifier,nbPixels) $widget(nbPixels)
 
       ::confVisu::setMagnifier $visuNo $widget($visuNo,currentstate)
    }
@@ -182,32 +183,38 @@ namespace eval ::Magnifier {
       #--- j'initialise les valeurs
       set widget(color)                $conf(visu,magnifier,color)
       set widget(defaultstate)         $conf(visu,magnifier,defaultstate)
+      set widget(nbPixels)             $conf(visu,magnifier,nbPixels)
       set widget($visuNo,currentstate) [::confVisu::getMagnifier $visuNo]
 
-      #--- creation des differents frames
-      frame $frm.frameState -borderwidth 1 -relief raised
-      pack $frm.frameState -side top -fill both -expand 1
-
-      frame $frm.frameColor -borderwidth 1 -relief raised
-      pack $frm.frameColor -side top -fill both -expand 1
+      set tbl $widget(frm)
 
       #--- current state
-      checkbutton $frm.frameState.currentstate -text "$caption(magnifier,current_state_label)" \
+      checkbutton $tbl.currentstate -text "$caption(magnifier,current_state_label)" \
          -highlightthickness 0 -variable ::Magnifier::widget($visuNo,currentstate)
-      pack $frm.frameState.currentstate -in $frm.frameState -anchor center -side left -padx 10 -pady 5
 
       #--- default state
-      checkbutton $frm.frameState.defaultstate -text "$caption(magnifier,default_state_label)" \
-         -highlightthickness 0 -variable Magnifier::widget(defaultstate)
-      pack $frm.frameState.defaultstate -in $frm.frameState -anchor center -side left -padx 10 -pady 5
+      checkbutton $tbl.defaultstate -text "$caption(magnifier,default_state_label)" \
+         -highlightthickness 0 -variable ::Magnifier::widget(defaultstate)
 
       #--- color
-      label $frm.frameColor.labColor -text "$caption(magnifier,color_crosshair)" -relief flat
-      pack $frm.frameColor.labColor -in $frm.frameColor -anchor center -side left -padx 10 -pady 10
-
-      button $frm.frameColor.butColor_color_invariant -relief raised -width 6 -bg $widget(color) \
+      label $tbl.labColor -text "$caption(magnifier,color_crosshair)" -relief flat
+      button $tbl.butColor_color_invariant -relief raised -width 6 -bg $widget(color) \
          -activebackground $widget(color) -command "::Magnifier::changeColor $frm"
-      pack $frm.frameColor.butColor_color_invariant -in $frm.frameColor -anchor center -side left -padx 10 -pady 5 -ipady 5
+
+      #--- grossissement
+      label $tbl.labGros -text "Nb de pixels"
+      ComboBox $tbl.gros -textvariable ::Magnifier::widget(nbPixels) \
+         -relief sunken -width 4 -height 4 -values [list 5 7 9 11 13 15 20]
+
+      blt::table $tbl \
+        $tbl.currentstate 0,0 -anchor w -padx 10 \
+        $tbl.defaultstate 0,1 -anchor w -padx 10 \
+        $tbl.labColor 1,0 -anchor w -padx 10 \
+        $tbl.butColor_color_invariant 1,1 -anchor w -padx 10 -height 30\
+        $tbl.labGros 2,0 -anchor w -padx 10 \
+        $tbl.gros 2,1 -anchor w -padx 10
+      pack $tbl -side top -fill both -expand 1
+      blt::table configure $tbl r0 r1 r2 -height 40
    }
 
    #==============================================================

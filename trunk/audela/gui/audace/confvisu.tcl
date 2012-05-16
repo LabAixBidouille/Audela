@@ -75,6 +75,9 @@ namespace eval ::confVisu {
       if { ! [ info exists conf(visu,magnifier,color) ] } {
          set conf(visu,magnifier,color) "#FF0000"
       }
+      if { ! [ info exists conf(visu,magnifier,nbPixels) ] } {
+         set conf(visu,magnifier,nbPixels) 5
+      }
 
       #--- definit la palette par defaut
       set srcFile [file join $conf(rep_userPalette) myconf_$visuNo.pal]
@@ -86,6 +89,7 @@ namespace eval ::confVisu {
          #--- recopie la palette myconf_$visuNo.pal dans $audace(rep_temp) sous le nom fonction_transfert_$visuNo.pal
          file copy -force [file join $conf(rep_userPalette) myconf_$visuNo.pal] $tmpPalette
       }
+
       #--- dans tous les cas j'adopte la palette $audace(rep_temp)/fonction_transfert_$visuNo.pal
       visu$visuNo paldir "$audace(rep_temp)"
       visu$visuNo pal "fonction_transfert_$visuNo"
@@ -1299,7 +1303,7 @@ namespace eval ::confVisu {
    #------------------------------------------------------------
    #  getWindow
    #     retourne les coordonnees du rectangle de l'image visible dans la visu
-   #     (refrentiel buffer)
+   #     (referentiel buffer)
    #  parametres :
    #    visuNo: numero de la visu
    #------------------------------------------------------------
@@ -4107,8 +4111,14 @@ namespace eval ::confVisu {
    proc hideMagnifier { visuNo } {
       variable private
 
+      #--   retablit le zoom > 1
+      if {[info exists private($visuNo,oldzoom)]} {
+         setZoom $visuNo $private($visuNo,oldzoom)
+         unset private($visuNo,oldzoom)
+      }
+
       set this $private($visuNo,hCanvas).mag
-      ::confVisu::removeBindDisplay $visuNo <Motion> "::confVisu::magnifyDisplay $visuNo $this %x %y"
+      removeBindDisplay $visuNo <Motion> "::confVisu::magnifyDisplay $visuNo $this %x %y"
 
       if {[info exists private($visuNo,loupe)]} {
          image delete $private($visuNo,loupe)
@@ -4139,12 +4149,19 @@ namespace eval ::confVisu {
    #--------------------------------------------------------------
    proc displayMagnifier { visuNo } {
       variable private
-      global conf caption
+      global audace conf caption
 
       set hCanvas $private($visuNo,hCanvas)
       set this $hCanvas.mag
 
-      if {[winfo exists $this]} {return }
+      #--   passe le zoom a 1
+      set zoom [getZoom $visuNo]
+      if {$zoom > 1} {
+         set private($visuNo,oldzoom) [getZoom $visuNo]
+         setZoom $visuNo 1
+      }
+
+      if {[winfo exists $this]} {destroy $this}
 
       set color $conf(visu,magnifier,color)
 
@@ -4164,20 +4181,19 @@ namespace eval ::confVisu {
       $this.m.can itemconfigure loupe -image $private($visuNo,loupe)
 
       #--   le reticule
-      $this.m.can create rectangle 2 2 100 100 -outline $color -tags [list reticule loupe]
-      $this.m.can create line 50 0 50 100 -fill $color -tags [list reticule loupe]
-      $this.m.can create line 0 50 100 50 -fill $color -tags [list reticule loupe]
+      $this.m.can create rectangle 2 2 100 100 -outline $color -tag rectangle
+      $this.m.can create line 50 0 50 100 -fill $color -tag reticule
+      $this.m.can create line 0 50 100 50 -fill $color -tag reticule
 
       #--   les libelles
-      label $this.m.c -textvariable ::Magnifier::coords
-      grid $this.m.c -row 1 -column 0 -sticky ew
-      #label $this.m.t -textvariable ::Magnifier::intensite -font [list Helvetica 6]
-      label $this.m.i -textvariable ::Magnifier::intensite
-      grid $this.m.i -row 2 -column 0 -sticky ew
+      label $this.m.c -textvariable ::confVisu::private(visuNo,magnifierCoords)
+      grid $this.m.c -row 2 -column 0 -sticky ew
+      label $this.m.i -textvariable ::confVisu::private(visuNo,magnifierIntensite)
+      grid $this.m.i -row 3 -column 0 -sticky ew
 
       wm withdraw $this
 
-      ::confVisu::addBindDisplay $visuNo <Motion> "::confVisu::magnifyDisplay $visuNo $this %x %y"
+      addBindDisplay $visuNo <Motion> "::confVisu::magnifyDisplay $visuNo $this %x %y"
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $this
@@ -4189,53 +4205,111 @@ namespace eval ::confVisu {
    #  Binding avec <Motion>
    #--------------------------------------------------------------------------
    proc magnifyDisplay { visuNo this x y } {
-       variable private
-       global audace caption
+      variable private
+      global audace conf caption
 
-      if {![winfo exists $this]} {return}
+      #--   si necesaire, retablissement du zoom a 1
+      if {[getZoom $visuNo] > 1} {setZoom $visuNo 1}
 
-      lassign [::confVisu::canvas2Picture $visuNo [list $x $y]] xpict ypict
+      #--   coordonnes canvas
+      scan [$private($visuNo,hCanvas) canvasx $x] "%d" xcanvas
+      scan [$private($visuNo,hCanvas) canvasy $y] "%d" ycanvas
 
-      #--   l'image Tk du buffer de la visu est la source des donnees
-      set src "imagevisu$visuNo"
-      set naxis1 [image width $src]
-      set naxis2 [image height $src]
+      #--   coordonnees canvas de la zone visible de l'image
+      lassign [getImageZone $visuNo] Left Top Right Bottom
 
-      #--   definit une boite de 6x6 pixels
-      set x0 [expr {$x-2}]
-      set y0 [expr {$y-2}]
-      set x1 [expr {$x+3}]
-      set y1 [expr {$y+3}]
+      #--- corrige pour tenir compte de la Loupe
+      set nbPixels $conf(visu,magnifier,nbPixels)
 
-      if {$x0 < 1 || $y0 < 1 || $x1 > $naxis1 || $y1 > $naxis2} {
+      set delta [expr {($nbPixels+1)/2}]
+      set Left [expr {$Left+$delta}]
+      set Right [expr {$Right-$delta}]
+      set Top [expr {$Top+$delta}]
+      set Bottom [expr {$Bottom-$delta}]
 
+      #--   masque la loupe si coordonnees hors des limites
+      if {$xcanvas < $Left || $xcanvas >= $Right || $ycanvas < $Top || $ycanvas > $Bottom} {
          wm withdraw $this
+         return
+      }
 
-      } else {
+      #--   definit une boite de 6x6 pixels en coordonnees canvas
+      set x0 [expr {$xcanvas-$delta+1}]
+      set x1 [expr {$xcanvas+$delta}]
+      set y0 [expr {$ycanvas-$delta+1}]
+      set y1 [expr {$ycanvas+$delta}]
 
-         #--   copie les valeurs dans imagevisu$visuNo vers la loupe
-         $private($visuNo,loupe) blank
-         $private($visuNo,loupe) copy $src -from $x0 $y0 $x1 $y1 -to 0 0 -zoom 20
+      #--   l'image Tk du buffer de la visu est la source invariante des donnees
+      switch -exact $nbPixels {
+         5  {set zoom 20}
+         7  {set zoom 15}
+         9  {set zoom 11}
+         11 {set zoom 9}
+         13 {set zoom 8}
+         15 {set zoom 7}
+         20 {set zoom 6}
+      }
 
-         #--   cherche les intensites du pixel central
-         set intensite [lrange [buf[visu$visuNo buf] getpix [list $xpict $ypict]] 1 end]
+      if {[image inuse $private($visuNo,loupe)]} {
+           $private($visuNo,loupe) copy imagevisu$visuNo \
+               -from $x0 $y0 $x1 $y1 \
+               -to 0 0 -zoom $zoom \
+               -compositingrule set
+      }
 
-         #--   passe en integer
-         for {set i 0} {$i < [llength $intensite]} {incr i} {
-            set val [expr {int([lindex $intensite $i])}]
-            set intensite [lreplace $intensite $i $i $val ]
-         }
+      #--   identifie les coordonnees image du point
+      set pictCoords [canvas2Picture $visuNo [list $xcanvas $ycanvas] ]
 
-         #--   actualise en permanence ces variables
-         set ::Magnifier::coords "[format $caption(magnifier,coord) $xpict $ypict]"
-         set ::Magnifier::intensite "[format $caption(magnifier,intens) $intensite]"
+      #--   cherche les intensites du pixel central
+      set intensite [lrange [buf[visu$visuNo buf] getpix $pictCoords] 1 end]
 
-         #--   recalcule la position de la loupe et l'affiche
-         lassign [split [wm geometry $audace(base)] "+"] -> i j
-         wm geometry $this "+[expr {+$i+$x+15}]+[expr {+$j+$y-8}]"
+      #--   extrait les entiers
+      for {set i 0} {$i < [llength $intensite]} {incr i} {
+         set val [expr {int([lindex $intensite $i])}]
+         set intensite [lreplace $intensite $i $i $val]
+      }
+
+      #--   definit le texte a afficher sous la loupe
+      lassign $pictCoords xPict yPict
+      set private(visuNo,magnifierCoords) "[format $caption(magnifier,coord) $xPict $yPict]"
+      set private(visuNo,magnifierIntensite) "[format $caption(magnifier,intens) $intensite]"
+
+      #--   recalcule la position de la loupe et l'affiche
+      lassign [split [wm geometry $audace(base)] "+"] -> i j
+      wm geometry $this "+[expr {+$i+$x+15}]+[expr {+$j+$y-30}]"
+
+      #--   si necessaire reaffiche la loupe
+      if {[wm state $this] eq "withdrawn"} {
          wm deiconify $this
          update
       }
+   }
+
+   #---------------------------------------------------------------------------
+   #  getImageZone
+   #  Retourne les coordonnées canvas de la zone visible de l'image
+   # sous forme de liste {Gauche Haut Droite bas} ou liste vide
+   #--------------------------------------------------------------------------
+   proc getImageZone { visuNo } {
+      variable private
+
+      if {![buf[visu$visuNo buf] imageready]} {
+         return ""
+      }
+
+      #--   extrait les dimensions de l'image Tk
+      set naxis1 [image width imagevisu$visuNo]
+      set naxis2 [image height imagevisu$visuNo]
+
+      #--- identifie la position des bords accessibles de l'image Tk
+      lassign [$private($visuNo,hCanvas) xview] xleft xright
+      lassign [$private($visuNo,hCanvas) yview] ytop ybottom
+      set Left [expr { int($xleft * $naxis1)}]
+      set Right [expr { int(min($xright,1) * $naxis1)}]
+      set Top  [expr { int($ytop * $naxis2)}]
+      set Bottom  [expr { int(min($ybottom,1) * $naxis2)}]
+
+      return [list $Left $Top $Right $Bottom $Right]
    }
 
    #------------------------------------------------------------
