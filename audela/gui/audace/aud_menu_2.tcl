@@ -52,6 +52,11 @@ namespace eval ::div {
       set private(div,$visuNo,this) "$audace(base).div$visuNo"
       ::div::createDialog $visuNo
 
+      lassign $conf(div,visu$visuNo,mode) k \
+         private(div,$visuNo,lumen) private(div,$visuNo,contrast) \
+         private(div,$visuNo,inversion) private(div,$visuNo,histo) \
+         private(div,$visuNo,step) private(div,$visuNo,gamma)
+
       #--   initialise les vecteurs avec la palette courante
       ::div::readPalette $visuNo "myconf_${visuNo}.pal"
 
@@ -1068,7 +1073,6 @@ namespace eval ::div {
          Label $tbl.lab_$label -text "$caption(div,$label)"
          ::div::createScale $visuNo $label
       }
-
       $tbl.scale_lumen configure -from -99 -to 99 -resolution 1
       bind $tbl.scale_lumen <ButtonRelease> "::div::cmdConfigBox $visuNo"
       $tbl.scale_contrast configure -from -100 -to 99 -resolution 1
@@ -1078,6 +1082,7 @@ namespace eval ::div {
       $tbl.scale_gamma configure -from 0.02 -to 8 -resolution 0.01
       bind $tbl.scale_gamma <ButtonRelease> "::div::updateValues $visuNo"
 
+      #--   liste les palettes disponibles
       Label $tbl.lab_fonction -text $caption(div,fonction)
       set labelwidth [::tkutil::lgEntryComboBox $private(div,$visuNo,listPalettes)]
       ComboBox $tbl.palette -textvariable ::div::private(div,$visuNo,palette) \
@@ -1177,8 +1182,7 @@ namespace eval ::div {
    proc createScale { visuNo label } {
       variable private
 
-      set tbl "$private(div,$visuNo,this).val"
-      scale $tbl.scale_$label -orient horizontal -length 200 -width 10 -showvalue 1 \
+      scale $private(div,$visuNo,this).val.scale_$label -orient horizontal -length 200 -width 10 -showvalue 1 \
          -borderwidth 2 -sliderlength 20 -sliderrelief raised -digit 0 \
          -variable ::div::private(div,$visuNo,$label)
    }
