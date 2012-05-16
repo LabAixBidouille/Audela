@@ -88,8 +88,15 @@ proc ::bddimages::initPlugin { tkbase } {
    set bddconf(extension_bdd) ".fits.gz"
    set bddconf(extension_tmp) ".fit"
    
-#   set  audace(rep_images)  $bddconf(dirfits)
-#   set  audace(rep_travail) $bddconf(dirtmp)
+   if {[info exists bddconf(dirfits)]} {
+      #gren_info "audace(rep_images) = bddconf(dirfits) = $bddconf(dirfits)\n"
+      set  audace(rep_images)  $bddconf(dirfits)
+   }
+   if {[info exists bddconf(dirtmp)]} {
+      #gren_info "audace(rep_travail) = bddconf(dirtmp) = $bddconf(dirtmp)\n"
+      set  audace(rep_travail)  $bddconf(dirtmp)
+   }
+
 
 }
 
@@ -167,7 +174,7 @@ proc ::bddimages::ressource {  } {
 
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages utils astroid libastroid.tcl ]\""
    load libcatalog.so
-   gren_info "ressources\n"
+   #gren_info "ressources\n"
 }
 
 #------------------------------------------------------------
