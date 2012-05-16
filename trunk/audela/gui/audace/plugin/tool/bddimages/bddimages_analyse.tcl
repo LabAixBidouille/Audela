@@ -738,13 +738,14 @@ proc get_one_image_obsolete { idbddimg } {
 
    proc ::bddimages_analyse::aladin { } {
 
-
+     global bddconf
 
          set idbddimg    [::bddimages_liste::lget $::analyse_tools::current_image idbddimg]
          set dirfilename [::bddimages_liste::lget $::analyse_tools::current_image dirfilename]
          set filename    [::bddimages_liste::lget $::analyse_tools::current_image filename   ]
          set file        [file join $bddconf(dirbase) $dirfilename $filename]
 
+         set tabkey [::bddimages_liste::lget $::analyse_tools::current_image "tabkey"]
          set ::analyse_tools::ra        [lindex [::bddimages_liste::lget $tabkey ra         ] 1]
          set ::analyse_tools::dec       [lindex [::bddimages_liste::lget $tabkey dec        ] 1]
 
@@ -757,16 +758,26 @@ proc get_one_image_obsolete { idbddimg } {
          set naxis2      [lindex [::bddimages_liste::lget $tabkey NAXIS2     ] 1]
          set xcent    [expr $naxis1/2.0]
          set ycent    [expr $naxis2/2.0]
-         set naxis1 [lindex [::bddimages_liste::lget $tabkey NAXIS1] 1]
-         set naxis2 [lindex [::bddimages_liste::lget $tabkey NAXIS2] 1]
-         set scale_x [lindex [::bddimages_liste::lget $tabkey CD1_1] 1]
-         set scale_y [lindex [::bddimages_liste::lget $tabkey CD2_2] 1]
-         set radius [::analyse_tools::get_radius $naxis1 $naxis2 $scale_x $scale_y]
+         set naxis1   [lindex [::bddimages_liste::lget $tabkey NAXIS1] 1]
+         set naxis2   [lindex [::bddimages_liste::lget $tabkey NAXIS2] 1]
+         set scale_x  [lindex [::bddimages_liste::lget $tabkey CD1_1] 1]
+         set scale_y  [lindex [::bddimages_liste::lget $tabkey CD2_2] 1]
+         set radius   [::analyse_tools::get_radius $naxis1 $naxis2 $scale_x $scale_y]
 
          #envoie dans Aladin l image
-         
-         #envoi du CATA
+         ::vo_tools::SampBroadcastImage        
 
+         #envoi du CATA
+         set cataexist [::bddimages_liste::lget $::analyse_tools::current_image "cataexist"]
+         set catafilename [::bddimages_liste::lget $::analyse_tools::current_image "catafilename"]
+         set catadirfilename [::bddimages_liste::lget $::analyse_tools::current_image "catadirfilename"]
+         set catafile [file join $bddconf(dirbase) $catadirfilename $catafilename] 
+
+         gren_info "cataexist = $cataexist\n"
+         if {$cataexist} {
+             set ::votableUtil::votBuf(file) $catafile
+            ::vo_tools::SampBroadcastTable
+         }
 
    }
 
