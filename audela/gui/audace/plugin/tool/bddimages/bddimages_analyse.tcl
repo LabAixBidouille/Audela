@@ -571,7 +571,7 @@ proc get_one_image_obsolete { idbddimg } {
          }
       }
 
-      set ::analyse_tools::use_skybot      0
+      set ::analyse_tools::use_skybot      1
       set ::analyse_tools::keep_radec      1
       set ::analyse_tools::create_cata     1
       set ::analyse_tools::delpv           1
@@ -768,13 +768,18 @@ proc get_one_image_obsolete { idbddimg } {
          ::vo_tools::SampBroadcastImage        
 
          #envoi du CATA
+         gren_info "current_image = $::analyse_tools::current_image\n"
          set cataexist [::bddimages_liste::lget $::analyse_tools::current_image "cataexist"]
          set catafilename [::bddimages_liste::lget $::analyse_tools::current_image "catafilename"]
          set catadirfilename [::bddimages_liste::lget $::analyse_tools::current_image "catadirfilename"]
          set catafile [file join $bddconf(dirbase) $catadirfilename $catafilename] 
 
+         #gren_info "cataexist = $cataexist\n"
+         #set ::analyse_tools::current_image [::bddimages_liste_gui::add_info_cata $::analyse_tools::current_image]
          gren_info "cataexist = $cataexist\n"
          if {$cataexist} {
+
+
              set ::votableUtil::votBuf(file) $catafile
             ::vo_tools::SampBroadcastTable
          }
