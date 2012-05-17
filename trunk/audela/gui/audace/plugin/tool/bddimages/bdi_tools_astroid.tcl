@@ -17,6 +17,8 @@ namespace eval tools_astroid {
     
       global bddconf
     
+      cleanmark
+    
       set cataexist [::bddimages_liste::lget $::analyse_tools::current_image "cataexist"]
       if {$cataexist==0} {
         set ::analyse_tools::current_image [::bddimages_liste_gui::add_info_cata $::analyse_tools::current_image]
