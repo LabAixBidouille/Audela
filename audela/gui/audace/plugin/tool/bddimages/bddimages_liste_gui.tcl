@@ -1367,7 +1367,7 @@ namespace eval bddimages_liste_gui {
          }
       }
 
-      set img_list [::bddimages_liste_gui::add_info_cata $img_list]
+      set img_list [::bddimages_liste_gui::add_info_cata_list $img_list]
 
       #::console::affiche_erreur " img_list = $img_list\n"
       return $img_list
@@ -1543,7 +1543,7 @@ namespace eval bddimages_liste_gui {
  
          }
 
-      set img_list [::bddimages_liste_gui::add_info_cata $img_list]
+      set img_list [::bddimages_liste_gui::add_info_cata_list $img_list]
 
       return [lindex $img_list 0]
    }
@@ -1587,8 +1587,6 @@ namespace eval bddimages_liste_gui {
          ::bddimages_recherche::set_progress $cpt $nb_img_list
 
          set idhd [lindex $line 0]
-
-
 
          # lecture des valeurs de chaque champ
          set sqlcritere [::bddimages_liste_gui::get_sqlcritere $intellilist "images_$idhd"]
@@ -1655,7 +1653,7 @@ namespace eval bddimages_liste_gui {
          }
       }
 
-      set img_list [::bddimages_liste_gui::add_info_cata $img_list]
+      set img_list [::bddimages_liste_gui::add_info_cata_list $img_list]
 
       #::console::affiche_erreur " img_list = $img_list\n"
       return $img_list
@@ -1669,7 +1667,7 @@ namespace eval bddimages_liste_gui {
  
 
    #--------------------------------------------------
-   #  add_info_cata { img_list }
+   #  add_info_cata_list { img_list }
    #--------------------------------------------------
    #
    #    fonction  :
@@ -1684,9 +1682,9 @@ namespace eval bddimages_liste_gui {
    #        img_list : liste image avec les champs cata en plus
    #
    #--------------------------------------------------
-
-   proc ::bddimages_liste_gui::add_info_cata { img_list } {
-
+   proc ::bddimages_liste_gui::add_info_cata_list { img_list } {
+   
+   
       set sqlcmd "SELECT cataimage.idbddimg,
                          catas.idbddcata,
                          catas.filename as catafilename,
@@ -1710,6 +1708,7 @@ namespace eval bddimages_liste_gui {
 
       set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
 
+      ::console::affiche_erreur "SELECT $err $msg\n"
 
       if {$err} {
           # si l erreur est qu il n y a pas de table cata alors traiter ce cas special
@@ -1761,6 +1760,73 @@ namespace eval bddimages_liste_gui {
 
 
       return $result_img_list
+   }
+
+
+
+
+
+
+   proc ::bddimages_liste_gui::add_info_cata { img } {
+
+      set idbddimg [::bddimages_liste::lget $img "idbddimg"]
+      set sqlcmd "SELECT 
+                         catas.idbddcata,
+                         catas.filename as catafilename,
+                         catas.dirfilename as catadirfilename,
+                         catas.sizefich as catasizefich,
+                         catas.datemodif as catadatemodif
+                  FROM cataimage, catas 
+                  WHERE cataimage.idbddcata = catas.idbddcata 
+                  AND cataimage.idbddimg AND cataimage.idbddimg=$idbddimg"
+
+      set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
+      set nbresult [expr [llength $resultcount]-1]
+
+      ::console::affiche_erreur "RESULT $resultcount\n"
+      ::console::affiche_erreur "ERR $err\n"
+      ::console::affiche_erreur "MSG $msg\n"
+      ::console::affiche_erreur "nb $nbresult\n"
+      ::console::affiche_erreur "0=[lindex $resultcount 0]\n"
+      ::console::affiche_erreur "1=[lindex $resultcount 1]\n"
+      ::console::affiche_erreur "1=[lindex [lindex $resultcount 1] 0]\n"
+
+      if {$err} {
+          # si l erreur est qu il n y a pas de table cata alors traiter ce cas special
+          set resultcount 0
+          set err 0
+      }
+
+      if {$err} {
+         ::console::affiche_erreur "Erreur de lecture de la liste des header par SQL\n"
+         ::console::affiche_erreur "        sqlcmd = $sqlcmd\n"
+         ::console::affiche_erreur "        err = $err\n"
+         ::console::affiche_erreur "        msg = $msg\n"
+         return
+      }
+      if {$nbresult>0} {
+         set r [lindex [lindex $resultcount 1] 0]
+         set idbddcata       [lindex $r 0] 
+         set catafilename    [lindex $r 1] 
+         set catadirfilename [lindex $r 2] 
+         set catasizefich    [lindex $r 3] 
+         set catadatemodif   [lindex $r 4]
+         set img [::bddimages_liste::ladd $img cataexist 1]
+         set img [::bddimages_liste::ladd $img cataloaded 0] 
+         set img [::bddimages_liste::ladd $img idbddcata        $idbddcata] 
+         set img [::bddimages_liste::ladd $img catafilename     $catafilename] 
+         set img [::bddimages_liste::ladd $img catadirfilename  $catadirfilename] 
+         set img [::bddimages_liste::ladd $img catasizefich     $catasizefich] 
+         set img [::bddimages_liste::ladd $img catadatemodif    $catadatemodif] 
+       } else {
+
+            lappend img [list cataexist 0] 
+            lappend img [list cataloaded 0] 
+            
+         }
+
+
+      return $img
    }
 
 
