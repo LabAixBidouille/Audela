@@ -7,54 +7,6 @@ package require math::constants
 
 
 
-proc get_identifiedold { sra sdec serrpos srmag srmagerr ira idec ierrpos irmag irmagerr scoreposlimit scoremvlimit scorelimit log} {
-
-    if {$log} {gren_info "identification\n"}
-    if {$log} {gren_info "$sra $sdec $serrpos $srmag $srmagerr\n"}
-    if {$log} {gren_info "$ira $idec $ierrpos $irmag $irmagerr\n"}
-    if {$log} {
-       gren_info "l1     L2\n"
-       gren_info "$sra     $ira\n"
-       gren_info "$sdec    $idec\n"
-       gren_info "$serrpos $ierrpos  \n"
-       gren_info "$srmag   $irmag \n"
-       gren_info "$srmagerr $irmagerr\n"
-       
-       }
-    set dtr $::math::constants::degtorad
-    set score NULL
-    set deltapos [expr sqrt(pow(($sra-$ira)*cos($sdec*$dtr),2) + pow($sdec-$idec,2))]
-    if {$log} {gren_info "deltapos=$deltapos\n"}
-    if {$log} {gren_info "deltapos arcsec=[expr $deltapos*3600.0]\n"}
-    set deltaposdiv [expr ($serrpos + $ierrpos) / 3600.0]
-    if {$log} {gren_info "deltaposdiv=$deltaposdiv\n"}
-    set scorepos [expr (1.0 - $deltapos / $deltaposdiv) * 100.0]
-    if {$log} {gren_info "scorepos=$scorepos\n"}
-    if {$deltapos > $deltaposdiv } {
-       gren_info "annulation du scorepos\n"
-       set scorepos 0.0 
-    }
-    set deltamag [expr abs($irmag - $srmag)]
-    if {$log} {gren_info "deltamag=$deltamag\n"}
-    set deltamagdiv [expr $srmagerr+$irmagerr]
-    if {$log} {gren_info "deltamagdiv=$deltamagdiv\n"}
-    set scoremv [expr (1.0 - $deltamag / $deltamagdiv) * 100.0]
-    if {$log} {gren_info "scoremv=$scoremv\n"}
-    if { $deltamag > $deltamagdiv } {
-       gren_info "annulation du scoremv\n"
-       set scoremv 0.0
-    }
-    set score $scorepos
-    if {$log} {gren_info "score=$score\n"}
-    if { $scoremv < $score } { set score $scoremv }
-    if {$log} {gren_info "score=$score\n"}
-    if {$log} {gren_info "($scorepos >= $scoreposlimit && $scoremv >= $scoremvlimit && $score >= $scorelimit )\n"}
-    if { $scorepos >= $scoreposlimit && $scoremv >= $scoremvlimit && $score >= $scorelimit } {
-       if {$log} {gren_info "($scorepos >= $scoreposlimit && $scoremv >= $scoremvlimit && $score >= $scorelimit )\n"}
-       return true
-       }
-    return false
-    }
 
 
 
