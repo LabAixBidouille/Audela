@@ -574,5 +574,43 @@ namespace eval analyse_tools {
 
    }
 
+
+
+
+
+
+
+
+
+   proc ::analyse_tools::affich_catapcat {  } {
+   
+      set fxml [open catalog.cat "r"]
+      while {[gets $fxml line] >= 0} {
+         set r [split $line " "]
+         gren_info "$r\n"
+         set cpt 0
+         foreach x $r {
+            if {$x!=""} {
+               if {$cpt == 6} {set xi $x}
+               if {$cpt == 7} {set yi $x}
+               incr cpt
+            }
+         }
+         gren_info "pos image : $xi $yi\n"
+         break
+      }
+      close $fxml
+   
+   
+   }
+
+
+
+
+
+
+
+
+
 # Fin Classe
 }
