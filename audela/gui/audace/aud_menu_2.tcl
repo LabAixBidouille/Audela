@@ -1308,8 +1308,12 @@ namespace eval ::div {
    #--------------------------------------------------------------------------
    proc getIntensite { visuNo } {
       variable private
+      global caption
 
-      regsub "I= " $::Magnifier::intensite "" private(div,$visuNo,intensite)
+      #--   lit l'intensite dans la loupe
+      set result $::confVisu::private($visuNo,magnifierIntensite)
+      #--   ote le text
+      regsub -all "$caption(confVisu,I) $caption(confVisu,egale) " $result "" private(div,$visuNo,intensite)
    }
 
    #---------------------------------------------------------------------------

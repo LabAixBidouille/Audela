@@ -151,7 +151,6 @@ namespace eval ::Magnifier {
       set conf(visu,magnifier,color) $widget(color)
       set conf(visu,magnifier,defaultstate) $widget(defaultstate)
       set conf(visu,magnifier,nbPixels) $widget(nbPixels)
-
       ::confVisu::setMagnifier $visuNo $widget($visuNo,currentstate)
    }
 
@@ -199,10 +198,10 @@ namespace eval ::Magnifier {
       #--- color
       label $tbl.labColor -text "$caption(magnifier,color_crosshair)" -relief flat
       button $tbl.butColor_color_invariant -relief raised -width 6 -bg $widget(color) \
-         -activebackground $widget(color) -command "::Magnifier::changeColor $frm"
+         -activebackground $widget(color) -command "::Magnifier::changeColor $tbl"
 
       #--- grossissement
-      label $tbl.labGros -text "Nb de pixels"
+      label $tbl.labGros -text "$caption(magnifier,nbPixels)"
       ComboBox $tbl.gros -textvariable ::Magnifier::widget(nbPixels) \
          -relief sunken -width 4 -height 4 -values [list 5 7 9 11 13 15 20]
 
@@ -242,10 +241,10 @@ namespace eval ::Magnifier {
 
       set temp [tk_chooseColor -initialcolor $::Magnifier::widget(color) -parent ${Magnifier::widget(frm)} \
          -title ${caption(magnifier,color_crosshair)} ]
+
       if  { "$temp" != "" } {
          set Magnifier::widget(color) "$temp"
-         ${Magnifier::widget(frm)}.frameColor.butColor_color_invariant configure \
-            -bg $::Magnifier::widget(color) -activebackground $::Magnifier::widget(color)
+         $frm.butColor_color_invariant configure -bg $::Magnifier::widget(color) -activebackground $::Magnifier::widget(color)
       }
    }
 
