@@ -700,6 +700,7 @@ proc ::votable::getFieldFromKey { table key } {
       TYCHO2  { set f [::votable::getFieldFromKey_TYCHO2 $key] }      
       UCAC2   { set f [::votable::getFieldFromKey_UCAC2 $key] }      
       UCAC3   { set f [::votable::getFieldFromKey_UCAC3 $key] }
+      SKYBOT  { set f [::votable::getFieldFromKey_SKYBOT $key] }
       OVNI    { set f [::votable::getFieldFromKey_OVNI $key] }
       default { set f [::votable::getFieldFromKey_DEFAULT $key] }
    }
@@ -1626,6 +1627,88 @@ proc ::votable::getFieldFromKey_UCAC3 { key } {
          lappend field "$::votable::Field::UCD \"meta.id\"" \
                        "$::votable::Field::DATATYPE \"int\"" \
                        "$::votable::Field::WIDTH \"9\"" 
+      }
+      default {
+         # si $key n'est pas reconnu alors on renvoie des listes vides
+         set field ""
+         set description ""
+      }
+   }
+   return [list $field [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+}
+
+#
+# Construction des elements FIELDS en fonction de la cle de la colonne pour le catalogue SKYBOT
+# @access private
+# @param key nom de la colonne dont on veut construire l'element FIELD
+# @return liste liste contenant la definition du champ et sa description
+#
+proc ::votable::getFieldFromKey_SKYBOT { key } {
+   # Id et Nom du champ
+   set field [list "$::votable::Field::ID SKYBOT.${key}" "$::votable::Field::NAME $key"]
+   # Autres infos 
+   switch $key {
+      num {
+         set description "Solar system object number"
+         set ucd "meta.id;meta.number"
+         lappend field "$::votable::Field::UCD \"$ucd\"" \
+                       "$::votable::Field::DATATYPE \"char\"" \
+                       "$::votable::Field::ARRAYSIZE \"6\"" \
+                       "$::votable::Field::WIDTH \"6\""
+      }
+      name {
+         set description "Solar system object name or designation"
+         set ucd "meta.id;meta.main"
+         lappend field "$::votable::Field::UCD \"$ucd\"" \
+                       "$::votable::Field::DATATYPE \"char\"" \
+                       "$::votable::Field::ARRAYSIZE \"32\"" \
+                       "$::votable::Field::WIDTH \"32\""
+      }
+      ra -
+      de {
+         if {[string equal -nocase $key "ra"]} {
+            set description "Astrometric J2000 right ascension"
+         } else {
+            set description "Astrometric J2000 declination"
+         }
+         lappend field "$::votable::Field::UCD \"pos.eq.$key;meta.main\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"9\"" \
+                       "$::votable::Field::PRECISION \"5\"" \
+                       "$::votable::Field::UNIT \"deg\""
+      }
+      class {
+         set description "Object classification"
+         set ucd "meta.code.class;src.class"
+         lappend field "$::votable::Field::UCD \"$ucd\"" \
+                       "$::votable::Field::DATATYPE \"char\"" \
+                       "$::votable::Field::ARRAYSIZE \"10\"" \
+                       "$::votable::Field::WIDTH \"10\""
+      }
+      magV {
+         set description "Visual magnitude"
+         lappend field "$::votable::Field::UCD \"phot.mag;em.opt.V\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"13\"" \
+                       "$::votable::Field::PRECISION \"2\"" \
+                       "$::votable::Field::UNIT \"mag\""
+      }
+      errpos {
+         set description "Uncertainty on the (RA,DEC) coordinates"
+         set ucd "stat.error.sys"
+         lappend field "$::votable::Field::UCD \"$ucd\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"10\"" \
+                       "$::votable::Field::PRECISION \"3\"" \
+                       "$::votable::Field::UNIT \"arcsec\""
+      }
+      angdist {
+         set description "Body-to-center angular distance"
+         lappend field "$::votable::Field::UCD \"pos.ang\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"3\"" \
+                       "$::votable::Field::UNIT \"arcsec\""
       }
       default {
          # si $key n'est pas reconnu alors on renvoie des listes vides
