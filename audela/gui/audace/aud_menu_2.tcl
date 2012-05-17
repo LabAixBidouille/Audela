@@ -1020,7 +1020,7 @@ namespace eval ::div {
       #--   cree un frame pour le graphique
       blt::graph $this.g -plotbackground $color(white) -relief raised -borderwidth 1 -width 400 \
          -leftmargin 67 -rightmargin 67 -height 346 -topmargin 30 -bottommargin 50
-      pack  $this.g -in $this -anchor n -side top -expand 0
+      pack  $this.g -in $this -anchor n -side top -fill both -expand 1
 
       foreach c {r g b} {
          $this.g element create function_$c -xdata ::Vx${visuNo} -ydata ::FT_$c$visuNo \
@@ -1204,8 +1204,7 @@ namespace eval ::div {
 
       #--   cree le binding
       ::confVisu::addBindDisplay $visuNo <ButtonPress-1> [list ::div::getIntensite $visuNo]
-      #--   active la loupe
-      ::div::configLoupe $visuNo
+
       #--   cree une fenetre pour le message et attend une reponse
       set w [::div::createMsgBox $visuNo $caption(div,$color)]
 
@@ -1213,8 +1212,7 @@ namespace eval ::div {
 
       #--   supprime le binding
       ::confVisu::removeBindDisplay $visuNo <ButtonPress-1> [list ::div::getIntensite $visuNo]
-      #--   retablit l'etat anterieur de la loupe
-      ::div::configLoupe $visuNo
+
       #--   supprime la fenetre
       destroy $w
 
@@ -1279,29 +1277,6 @@ namespace eval ::div {
    }
 
    #---------------------------------------------------------------------------
-   #  ::div::configLoupe
-   #  Si necessaire active la loupe/Remet la loupe a l'etat anterieur
-   #  en tenant compte de l'état dans le menuPopupButton3
-   #  Parametres : visuNo
-   #  Invoquee par cmdGetValue
-   #--------------------------------------------------------------------------
-   proc configLoupe { visuNo} {
-      variable private
-
-      if {![info exists private(div,$visuNo,previousMagnifierState)]} {
-         #--   memorise l'etat
-         set private(div,$visuNo,previousMagnifierState) [::confVisu::getMagnifier $visuNo]
-      }
-      if {$private(div,$visuNo,previousMagnifierState) == 0} {
-         ::confVisu::toggleMagnifier $visuNo
-      }
-      if {[::confVisu::getMagnifier $visuNo]  == 0} {
-         #--   detruit la variable d'etat
-         unset private(div,$visuNo,previousMagnifierState)
-      }
-   }
-
-   #---------------------------------------------------------------------------
    #  ::div::getIntensite
    #  Capture l'intensite
    #  Binding avec Button1-Press
@@ -1310,10 +1285,21 @@ namespace eval ::div {
       variable private
       global caption
 
-      #--   lit l'intensite dans la loupe
-      set result $::confVisu::private($visuNo,magnifierIntensite)
+      #--   lit l'intensite
+      set result [$::confVisu::private($visuNo,This).fra1.labI cget -text]
+
       #--   ote le text
-      regsub -all "$caption(confVisu,I) $caption(confVisu,egale) " $result "" private(div,$visuNo,intensite)
+      regsub -all "$caption(confVisu,I) $caption(confVisu,egale) " $result "" intensite
+
+      #--   extrait les entiers
+      for {set i 0} {$i < [llength $intensite]} {incr i} {
+         set val [expr {int([lindex $intensite $i])}]
+         set intensite [lreplace $intensite $i $i $val]
+      }
+
+      set private(div,$visuNo,intensite) $intensite
+
+      ::console::affiche_resultat "$private(div,$visuNo,intensite)\n"
    }
 
    #---------------------------------------------------------------------------
