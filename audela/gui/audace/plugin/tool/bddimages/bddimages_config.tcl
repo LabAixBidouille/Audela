@@ -100,9 +100,10 @@ namespace eval bddimages_config {
       }
       if {[info exists bddconf(dirtmp)]} {
          set  audace(rep_travail)  $bddconf(dirtmp)
+         cd $bddconf(dirtmp)
          ::console::affiche_resultat "audace(rep_travail) -> $audace(rep_travail)\n"
       }
-
+      
       ::bddimages_config::recup_position
       destroy $This
    }
@@ -173,6 +174,7 @@ namespace eval bddimages_config {
       }
       if {[info exists bddconf(dirtmp)]} {
          set  audace(rep_travail)  $bddconf(dirtmp)
+         cd $bddconf(dirtmp)
          ::console::affiche_resultat "audace(rep_travail) -> $audace(rep_travail)\n"
       }
 
