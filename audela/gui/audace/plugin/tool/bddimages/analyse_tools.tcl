@@ -290,7 +290,7 @@ namespace eval analyse_tools {
          gren_info "skybot = $skybot\n"
 
          gren_info "nb_skybot = [::manage_source::get_nb_sources_by_cata $skybot SKYBOT]\n"
-         set listsources [ identification $listsources "OVNI" $skybot "SKYBOT" 30.0 -30.0 {} 1] 
+         set listsources [ identification $listsources "OVNI" $skybot "SKYBOT" -100.0 -100.0 {} 1] 
          set ::analyse_tools::nb_skybot [::manage_source::get_nb_sources_by_cata $listsources SKYBOT]
          gren_info "nb_skybot ident = $::analyse_tools::nb_skybot\n"
          affich_rond $listsources SKYBOT $::analyse_tools::color_skybot  1

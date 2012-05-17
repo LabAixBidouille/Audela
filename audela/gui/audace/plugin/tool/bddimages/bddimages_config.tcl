@@ -96,9 +96,11 @@ namespace eval bddimages_config {
 
       if {[info exists bddconf(dirfits)]} {
          set  audace(rep_images)  $bddconf(dirfits)
+         ::console::affiche_resultat "audace(rep_images) -> $audace(rep_images)\n"
       }
       if {[info exists bddconf(dirtmp)]} {
          set  audace(rep_travail)  $bddconf(dirtmp)
+         ::console::affiche_resultat "audace(rep_travail) -> $audace(rep_travail)\n"
       }
 
       ::bddimages_config::recup_position
@@ -167,9 +169,11 @@ namespace eval bddimages_config {
 
       if {[info exists bddconf(dirfits)]} {
          set  audace(rep_images)  $bddconf(dirfits)
+         ::console::affiche_resultat "audace(rep_images) -> $audace(rep_images)\n"
       }
       if {[info exists bddconf(dirtmp)]} {
          set  audace(rep_travail)  $bddconf(dirtmp)
+         ::console::affiche_resultat "audace(rep_travail) -> $audace(rep_travail)\n"
       }
 
 
