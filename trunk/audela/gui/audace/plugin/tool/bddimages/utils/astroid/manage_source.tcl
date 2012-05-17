@@ -155,7 +155,7 @@ namespace eval ::manage_source {
       foreach s $sources { 
          ::console::affiche_resultat "$s\n"
          incr nb
-         if {$nb>3} {
+         if {$nb>2} {
             return
          }
       }

@@ -284,7 +284,7 @@ namespace eval bddimages_recherche {
       set ::bddimages_recherche::current_list_name [lindex $row 0]
       set ::bddimages_recherche::current_list_id [::bddimages_liste_gui::get_intellilist_by_name $::bddimages_recherche::current_list_name]
 
-      ::console::affiche_resultat "Chargement ... "
+      ::console::affiche_resultat "Chargement ... ($::bddimages_recherche::current_list_id)"
 
       set t0 [clock clicks -milliseconds]
       ::bddimages_recherche::get_intellist $::bddimages_recherche::current_list_id

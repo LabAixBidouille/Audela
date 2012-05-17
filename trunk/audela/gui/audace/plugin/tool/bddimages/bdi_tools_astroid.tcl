@@ -18,18 +18,29 @@ namespace eval tools_astroid {
       global bddconf
     
       set cataexist [::bddimages_liste::lget $::analyse_tools::current_image "cataexist"]
-      set catafilename [::bddimages_liste::lget $::analyse_tools::current_image "catafilename"]
-      set catadirfilename [::bddimages_liste::lget $::analyse_tools::current_image "catadirfilename"]
-      set catafile [file join $bddconf(dirbase) $catadirfilename $catafilename] 
-
-      gren_info "current_image = $::analyse_tools::current_image\n"
-
-      gren_info "cataexist = $cataexist\n"
-      set ::analyse_tools::current_image [::bddimages_liste_gui::add_info_cata $::analyse_tools::current_image]
-      gren_info "cataexist = $cataexist\n"
+      if {$cataexist==0} {
+        set ::analyse_tools::current_image [::bddimages_liste_gui::add_info_cata $::analyse_tools::current_image]
+        set cataexist [::bddimages_liste::lget $::analyse_tools::current_image "cataexist"]
+      }
+#      gren_info "current_image = $::analyse_tools::current_image\n"
       if {$cataexist} {
+         set catafilename [::bddimages_liste::lget $::analyse_tools::current_image "catafilename"]
+         set catadirfilename [::bddimages_liste::lget $::analyse_tools::current_image "catadirfilename"]
+         set catafile [file join $bddconf(dirbase) $catadirfilename $catafilename] 
+         gren_info "cataexist = $cataexist\n"
+         gren_info "catafile = $catafile\n"
+         set catafile [extract_cata_xml $catafile]
+         gren_info "READ catafile = $catafile\n"
          set listsources [get_cata_xml $catafile]
          ::manage_source::imprim_3_sources $listsources
+         set listsources [::manage_source::set_common_fields $listsources USNOA2 {ra dec poserr mag magerr }]
+         affich_rond $listsources USNOA2 $::analyse_tools::color_usnoa2  1
+         set listsources [::manage_source::set_common_fields $listsources UCAC2 { ra_deg dec_deg e_pos_deg U2Rmag_mag 0.5 }]
+         affich_rond $listsources UCAC2 $::analyse_tools::color_ucac2 2
+
+         set listmesure [::manage_source::extract_sources_by_catalog $listsources UCAC2]
+         ::priam::create_file_oldformat $listsources USNOA2 $listmesure
+
       }
     
     
