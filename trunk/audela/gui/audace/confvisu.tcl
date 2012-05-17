@@ -4067,9 +4067,9 @@ namespace eval ::confVisu {
    }
 
    #------------------------------------------------------------
-   #  setMagnifier
+   #  ::confVisu::setMagnifier
    #  set Magnifier state
-   #   state = 0 or 1
+   #  state = 0 or 1
    #------------------------------------------------------------
    proc setMagnifier { visuNo state } {
       variable private
@@ -4079,7 +4079,7 @@ namespace eval ::confVisu {
    }
 
    #------------------------------------------------------------
-   #  toggleMagnifier
+   #  ::confVisu::toggleMagnifier
    #  toggle drawing/hiding Magnifier
    #  as check button state indicate
    #------------------------------------------------------------
@@ -4094,9 +4094,8 @@ namespace eval ::confVisu {
    }
 
    #------------------------------------------------------------
-   #  getMagnifier
+   #  ::confVisu::getMagnifier
    #  returns magnifier state 1=shown 0=hidden
-   #
    #------------------------------------------------------------
    proc getMagnifier { visuNo } {
       variable private
@@ -4105,7 +4104,7 @@ namespace eval ::confVisu {
    }
 
    #------------------------------------------------------------
-   #  hideMagnifier
+   #  ::confVisu::hideMagnifier
    #  hiding Magnifier
    #------------------------------------------------------------
    proc hideMagnifier { visuNo } {
@@ -4128,7 +4127,7 @@ namespace eval ::confVisu {
    }
 
    #--------------------------------------------------------------
-   #  redrawMagnifier
+   #  ::confVisu::redrawMagnifier
    #  redraw Magnifier
    #--------------------------------------------------------------
    proc redrawMagnifier { visuNo } {
@@ -4144,7 +4143,7 @@ namespace eval ::confVisu {
    }
 
    #--------------------------------------------------------------
-   #  displayMagnifier
+   #  ::confVisu::displayMagnifier
    #  display Magnifier
    #--------------------------------------------------------------
    proc displayMagnifier { visuNo } {
@@ -4174,23 +4173,26 @@ namespace eval ::confVisu {
       pack [frame $this.m -relief sunken]
 
       #--   le canvas
-      canvas $this.m.can -width 100 -height 100
-      set private($visuNo,loupe) [image create photo]
-      $this.m.can create image 0 0 -anchor nw -tags [list loupe loupe]
+      canvas $this.m.can -width 101 -height 101 -borderwidth 0 -highlightthickness 0
+      set private($visuNo,loupe) [image create photo -gamma 2]
+      $this.m.can create image 0 0 -anchor nw -tag loupe
       grid $this.m.can -row 0 -column 0 -sticky news
       $this.m.can itemconfigure loupe -image $private($visuNo,loupe)
 
       #--   le reticule
-      $this.m.can create rectangle 2 2 100 100 -outline $color -tag rectangle
+      #--   les tags sont utilises pour la mise a jou des couleurs dans magnifier.tcl
+      $this.m.can create rectangle 0 0 99 99 -outline $color -tag rectangle
+      #--   les tags sont utilises pour la mise a jou des couleurs dans magnifier.tcl
       $this.m.can create line 50 0 50 100 -fill $color -tag reticule
       $this.m.can create line 0 50 100 50 -fill $color -tag reticule
 
       #--   les libelles
-      label $this.m.c -textvariable ::confVisu::private(visuNo,magnifierCoords)
+      label $this.m.c -textvariable ::confVisu::private($visuNo,magnifierCoords)
       grid $this.m.c -row 2 -column 0 -sticky ew
-      label $this.m.i -textvariable ::confVisu::private(visuNo,magnifierIntensite)
+      label $this.m.i -textvariable ::confVisu::private($visuNo,magnifierIntensite)
       grid $this.m.i -row 3 -column 0 -sticky ew
 
+      #--   pour eviter l'apparition de Loupe dans un coin
       wm withdraw $this
 
       addBindDisplay $visuNo <Motion> "::confVisu::magnifyDisplay $visuNo $this %x %y"
@@ -4200,7 +4202,7 @@ namespace eval ::confVisu {
    }
 
    #---------------------------------------------------------------------------
-   #  magnifyDisplay
+   #  ::confVisu::magnifyDisplay
    #  Rafraichit la loupe
    #  Binding avec <Motion>
    #--------------------------------------------------------------------------
@@ -4218,9 +4220,8 @@ namespace eval ::confVisu {
       #--   coordonnees canvas de la zone visible de l'image
       lassign [getImageZone $visuNo] Left Top Right Bottom
 
-      #--- corrige pour tenir compte de la Loupe
+      #--- corrige les coordonees pour tenir compte de la Loupe
       set nbPixels $conf(visu,magnifier,nbPixels)
-
       set delta [expr {($nbPixels+1)/2}]
       set Left [expr {$Left+$delta}]
       set Right [expr {$Right-$delta}]
@@ -4239,17 +4240,12 @@ namespace eval ::confVisu {
       set y0 [expr {$ycanvas-$delta+1}]
       set y1 [expr {$ycanvas+$delta}]
 
-      #--   l'image Tk du buffer de la visu est la source invariante des donnees
-      switch -exact $nbPixels {
-         5  {set zoom 20}
-         7  {set zoom 15}
-         9  {set zoom 11}
-         11 {set zoom 9}
-         13 {set zoom 8}
-         15 {set zoom 7}
-         20 {set zoom 6}
-      }
+      #--   correle NbPixels et zoom
+      set liste [list 5 20 7 15 9 11 9 13 8 15 7 20 6]
+      set k [lsearch $liste $nbPixels]
+      set zoom [lindex $liste [incr k]]
 
+      #--   l'image Tk du buffer de la visu est la source invariante des donnees
       if {[image inuse $private($visuNo,loupe)]} {
            $private($visuNo,loupe) copy imagevisu$visuNo \
                -from $x0 $y0 $x1 $y1 \
@@ -4271,8 +4267,8 @@ namespace eval ::confVisu {
 
       #--   definit le texte a afficher sous la loupe
       lassign $pictCoords xPict yPict
-      set private(visuNo,magnifierCoords) "[format $caption(magnifier,coord) $xPict $yPict]"
-      set private(visuNo,magnifierIntensite) "[format $caption(magnifier,intens) $intensite]"
+      set private($visuNo,magnifierCoords) "[format $caption(magnifier,coord) $xPict $yPict]"
+      set private($visuNo,magnifierIntensite) "[format $caption(magnifier,intens) $intensite]"
 
       #--   recalcule la position de la loupe et l'affiche
       lassign [split [wm geometry $audace(base)] "+"] -> i j
@@ -4286,9 +4282,9 @@ namespace eval ::confVisu {
    }
 
    #---------------------------------------------------------------------------
-   #  getImageZone
+   #  ::confVisu::getImageZone
    #  Retourne les coordonnées canvas de la zone visible de l'image
-   # sous forme de liste {Gauche Haut Droite bas} ou liste vide
+   #  sous forme de liste {Gauche Haut Droite Bas} ou liste vide
    #--------------------------------------------------------------------------
    proc getImageZone { visuNo } {
       variable private
@@ -4309,7 +4305,7 @@ namespace eval ::confVisu {
       set Top  [expr { int($ytop * $naxis2)}]
       set Bottom  [expr { int(min($ybottom,1) * $naxis2)}]
 
-      return [list $Left $Top $Right $Bottom $Right]
+      return [list $Left $Top $Right $Bottom]
    }
 
    #------------------------------------------------------------
