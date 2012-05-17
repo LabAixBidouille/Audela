@@ -38,8 +38,8 @@ namespace eval tools_astroid {
          set listsources [::manage_source::set_common_fields $listsources UCAC2 { ra_deg dec_deg e_pos_deg U2Rmag_mag 0.5 }]
          affich_rond $listsources UCAC2 $::analyse_tools::color_ucac2 2
 
-         set listmesure [::manage_source::extract_sources_by_catalog $listsources UCAC2]
-         ::priam::create_file_oldformat $listsources USNOA2 $listmesure
+#         set listmesure [::manage_source::extract_sources_by_catalog $listsources UCAC2]
+#         ::priam::create_file_oldformat $listsources USNOA2 $listmesure
 
       }
     
