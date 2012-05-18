@@ -232,6 +232,8 @@ namespace eval ::select {
          } else {
             set select(nomSortie) [ lindex [ decomp $filename ] 1 ]
          }
+      } else {
+         return
       }
    }
 
