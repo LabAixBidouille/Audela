@@ -3,6 +3,7 @@
 # Description : Script dedie aux menus deroulants Images et Analyse --> Extraire
 # Auteur : Raymond ZACHANTKE
 # Mise à jour $Id$
+#
 
 #--   pour un acces plus rapide, liste des proc, hors dictionanires
    #  ::prtr::run nom_de_fonction
@@ -189,24 +190,23 @@ namespace eval ::prtr {
       pack $this.info.labURL1 -side top -padx 10 -pady 5
 
       #---  les commandes habituelles
-      button $this.cmd.ok -text "$caption(prtr,ok)" \
-         -width 7 -command "::prtr::cmdOk $tbl $visuNo"
+       button $this.cmd.ok -text "$caption(prtr,ok)" \
+         -command "::prtr::cmdOk $tbl $visuNo"
       if {$conf(ok+appliquer) eq 1} {
-         pack $this.cmd.ok -side left -padx 3 -pady 3 -ipady 5
+         pack $this.cmd.ok -side left -padx 3 -pady 3 -ipadx 5 -ipady 5
       }
       button $this.cmd.appliquer -text "$caption(prtr,appliquer)" \
-         -width 8 -command "::prtr::cmdApply $tbl $visuNo"
-      pack $this.cmd.appliquer -side left -padx 3 -pady 3 -ipady 5
-
+         -command "::prtr::cmdApply $tbl $visuNo"
+      pack $this.cmd.appliquer -side left -padx 3 -pady 3 -ipadx 5 -ipady 5
       button $this.cmd.fermer -text "$caption(prtr,fermer)" \
-         -width 7 -command "::prtr::cmdClose $visuNo"
-      pack $this.cmd.fermer -side right -padx 3 -pady 3 -ipady 5
-      button $this.cmd.aide -text "$caption(prtr,hlp_function)" \
-         -width 7 -command "::prtr::afficheAide"
-      pack $this.cmd.aide -side right -padx 3 -pady 3
-      button $this.cmd.hlp -text "$caption(prtr,hlp_gene)" -width 8 \
+         -command "::prtr::cmdClose $visuNo"
+      pack $this.cmd.fermer -side right -padx 3 -pady 3 -ipadx 5 -ipady 5
+      button $this.cmd.aide -text "$caption(prtr,hlp_function)"\
+         -command "::prtr::afficheAide"
+      pack $this.cmd.aide -side right -padx 3 -pady 3 -ipadx 5
+      button $this.cmd.hlp -text "$caption(prtr,hlp_gene)" \
          -command "::audace::showHelpItem \"$::audace(rep_doc_html)/french/05images\" \"1010images.htm\""
-      pack $this.cmd.hlp -side right -padx 3 -pady 3
+      pack $this.cmd.hlp -side right -padx 3 -pady 3 -ipadx 5
 
       #--- positionne les elements dans la table
       blt::table $this \

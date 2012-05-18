@@ -4117,13 +4117,11 @@ namespace eval ::confVisu {
       }
 
       set this $private($visuNo,hCanvas).mag
-      removeBindDisplay $visuNo <Motion> "::confVisu::magnifyDisplay $visuNo $this %x %y"
-
-      if {[info exists private($visuNo,loupe)]} {
+      if {[winfo exists $this]} {
+         removeBindDisplay $visuNo <Motion> "::confVisu::magnifyDisplay $visuNo $this %x %y"
          image delete $private($visuNo,loupe)
+         destroy $this
       }
-
-      destroy $this
    }
 
    #--------------------------------------------------------------
@@ -4180,7 +4178,7 @@ namespace eval ::confVisu {
       $this.m.can itemconfigure loupe -image $private($visuNo,loupe)
 
       #--   le reticule
-      #--   les tags sont utilises pour la mise a jou des couleurs dans magnifier.tcl
+      #--   les tags sont utilises pour la mise a jour des couleurs dans magnifier.tcl
       $this.m.can create rectangle 0 0 99 99 -outline $color -tag rectangle
       #--   les tags sont utilises pour la mise a jou des couleurs dans magnifier.tcl
       $this.m.can create line 50 0 50 100 -fill $color -tag reticule
@@ -4209,6 +4207,8 @@ namespace eval ::confVisu {
    proc magnifyDisplay { visuNo this x y } {
       variable private
       global audace conf caption
+
+      if {![winfo exists $this]} {return}
 
       #--   si necesaire, retablissement du zoom a 1
       if {[getZoom $visuNo] > 1} {setZoom $visuNo 1}
@@ -4241,17 +4241,15 @@ namespace eval ::confVisu {
       set y1 [expr {$ycanvas+$delta}]
 
       #--   correle NbPixels et zoom
-      set liste [list 5 20 7 15 9 11 9 13 8 15 7 20 6]
+      set liste [list 5 20 7 15 9 11 11 9 13 8 15 7 19 6]
       set k [lsearch $liste $nbPixels]
       set zoom [lindex $liste [incr k]]
 
       #--   l'image Tk du buffer de la visu est la source invariante des donnees
-      if {[image inuse $private($visuNo,loupe)]} {
-           $private($visuNo,loupe) copy imagevisu$visuNo \
-               -from $x0 $y0 $x1 $y1 \
-               -to 0 0 -zoom $zoom \
-               -compositingrule set
-      }
+      $private($visuNo,loupe) blank
+      $private($visuNo,loupe) copy imagevisu$visuNo \
+         -from $x0 $y0 $x1 $y1 -to 0 0 \
+         -zoom $zoom -compositingrule set
 
       #--   identifie les coordonnees image du point
       set pictCoords [canvas2Picture $visuNo [list $xcanvas $ycanvas] ]
@@ -4286,7 +4284,7 @@ namespace eval ::confVisu {
    #  Retourne les coordonnées canvas de la zone visible de l'image
    #  sous forme de liste {Gauche Haut Droite Bas} ou liste vide
    #--------------------------------------------------------------------------
-   proc getImageZone { visuNo } {
+  proc getImageZone { visuNo } {
       variable private
 
       if {![buf[visu$visuNo buf] imageready]} {

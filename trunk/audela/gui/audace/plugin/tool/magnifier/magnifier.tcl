@@ -203,7 +203,7 @@ namespace eval ::Magnifier {
       #--- grossissement
       label $tbl.labGros -text "$caption(magnifier,nbPixels)"
       ComboBox $tbl.gros -textvariable ::Magnifier::widget(nbPixels) \
-         -relief sunken -width 4 -height 4 -values [list 5 7 9 11 13 15 20]
+         -relief sunken -width 4 -height 4 -values [list 5 7 9 11 13 15 19]
 
       blt::table $tbl \
         $tbl.currentstate 0,0 -anchor w -padx 10 \
