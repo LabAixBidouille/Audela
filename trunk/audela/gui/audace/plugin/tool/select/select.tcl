@@ -226,10 +226,12 @@ namespace eval ::select {
       #--- Ouvre la fenetre de choix des images
       set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $select(buffer) "1" ]
       #--- Extraction du nom generique
-      if { $Entree_Sortie == "1" } {
-         set select(nomEntree) [ lindex [ decomp $filename ] 1 ]
-      } else {
-         set select(nomSortie) [ lindex [ decomp $filename ] 1 ]
+      if { $filename != "" } {
+         if { $Entree_Sortie == "1" } {
+            set select(nomEntree) [ lindex [ decomp $filename ] 1 ]
+         } else {
+            set select(nomSortie) [ lindex [ decomp $filename ] 1 ]
+         }
       }
    }
 
