@@ -544,9 +544,13 @@ proc ::sophie::test::simulationGenericFileName { } {
    #--- Ouvre la fenetre de choix des images
    set filename [ ::tkutil::box_load $private(frm) $::audace(rep_images) $::audace(bufNo) "1" ]
    #--- Nom generique avec le chemin
-   set private(simulationGenericFileName) [ file join [ lindex [ decomp $filename ] 0 ] [ lindex [ decomp $filename ] 1 ] ]
-   #--- Il faut un fichier
-   if { $private(simulationGenericFileName) == "" } {
+   if { $filename != "" } {
+      set private(simulationGenericFileName) [ file join [ lindex [ decomp $filename ] 0 ] [ lindex [ decomp $filename ] 1 ] ]
+      #--- Il faut un fichier
+      if { $private(simulationGenericFileName) == "" } {
+         return
+      }
+   } else {
       return
    }
 }
