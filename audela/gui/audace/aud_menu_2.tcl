@@ -1024,11 +1024,11 @@ namespace eval ::div {
 
       foreach c {r g b} {
          $this.g element create function_$c -xdata ::Vx${visuNo} -ydata ::FT_$c$visuNo \
-            -hide no -symbol "" -linewidth 2 -smooth quadratic
+            -hide no -symbol none -linewidth 2 -smooth quadratic
          $this.g element bind function_$c <ButtonPress-1> [list ::div::activateElement %W %x %y $visuNo]
          $this.g element bind function_$c <ButtonRelease-1> [list ::div::shift %W %x %y $visuNo]
          $this.g element create histogram_$c -xdata ::Vx${visuNo} -ydata ::H_$c$visuNo \
-            -hide yes -mapx x2 -mapy y2 -symbol "" -linewidth 2 -smooth quadratic
+            -hide yes -mapx x2 -mapy y2 -symbol none -linewidth 2 -smooth quadratic
       }
 
       #--   configure les axes
@@ -1298,8 +1298,6 @@ namespace eval ::div {
       }
 
       set private(div,$visuNo,intensite) $intensite
-
-      ::console::affiche_resultat "$private(div,$visuNo,intensite)\n"
    }
 
    #---------------------------------------------------------------------------
