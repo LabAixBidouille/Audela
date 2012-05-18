@@ -1045,6 +1045,7 @@ proc get_one_image_obsolete { idbddimg } {
       set ::analyse_tools::nb_ucac2   0
       set ::analyse_tools::nb_ucac3   0
       set ::analyse_tools::nb_nomad1  0
+      set ::analyse_tools::nb_skybot  0
       affich_un_rond_xy $xcent $ycent red 2 2
 
    }
@@ -1306,8 +1307,50 @@ proc get_one_image_obsolete { idbddimg } {
 
 
 
+   proc ::bddimages_analyse::get_confsex { } {
+
+      global audace
+
+         
+         set fileconf [ file join $audace(rep_plugin) tool bddimages config config.sex ]
+         
+         #$::bddimages_analyse::current_appli.onglets.nb.f5.confsex.file insert 1.0 "aaaa\nbbbb\ncccc\nbbbb\naaaa\n"
+         #$confsex.file  insert 1.0 "aaaa\nbbbb\ncccc\nbbbb\naaaa\n"
+         
+         set chan [open $fileconf r]
+         while {[gets $chan line] >= 0} {
+            $::bddimages_analyse::current_appli.onglets.nb.f5.confsex.file insert end "$line\n"
+         }
+         close $chan
+
+   }
 
 
+
+   proc ::bddimages_analyse::set_confsex { } {
+
+      global audace
+
+      set r  [$::bddimages_analyse::current_appli.onglets.nb.f5.confsex.file get 1.0 end]
+      #set r [split $r "\n"]
+      #set r [lreverse $r]
+      #::console::affiche_erreur "$r\n***\n"
+      #::console::affiche_erreur "[pwd]\n"
+      set chan [open "./config.sex" "w"]
+      #foreach l $r {
+      #   puts $chan "$l"
+      #}
+      puts $chan $r
+      close $chan
+      
+   }
+
+   proc ::bddimages_analyse::test_confsex { } {
+
+      global audace
+
+      
+   }
 
 
 
@@ -1350,9 +1393,42 @@ proc get_one_image_obsolete { idbddimg } {
       frame $frm -borderwidth 0 -cursor arrow -relief groove
       pack $frm -in $::bddimages_analyse::fen -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-      #--- Cree un label pour le titre
-      label $frm.titre -text "Repertoire des catalogues"
-      pack $frm.titre -in $frm -side top -padx 3 -pady 3
+         #--- Cree un frame general
+         set actions [frame $frm.actions -borderwidth 0 -cursor arrow -relief groove]
+         pack $actions -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+
+             button $actions.back -text "Precedent" -borderwidth 2 -takefocus 1 \
+                -command "::bddimages_analyse::back" -state $::bddimages_analyse::stateback
+             pack $actions.back -side left -anchor e \
+                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+             button $actions.next -text "Next" -borderwidth 2 -takefocus 1 \
+                -command "::bddimages_analyse::next" -state $::bddimages_analyse::statenext
+             pack $actions.next -side left -anchor e \
+                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+             button $actions.go -text "Create" -borderwidth 2 -takefocus 1 \
+                -command "::bddimages_analyse::get_cata" \
+                -state $::bddimages_analyse::state_button
+             pack $actions.go -side left -anchor e \
+                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+
+             #--- Cree un frame general
+             set lampions [frame $actions.actions -borderwidth 0 -cursor arrow -relief groove]
+             pack $lampions -in $actions -anchor s -side right -expand 0 -fill x -padx 10 -pady 5
+
+             button $actions.wcs -text "WCS" -borderwidth 1 -takefocus 0 -command "" \
+                -bg $::bddimages_analyse::color_button -relief sunken -state disabled
+             pack $actions.wcs -side top -anchor e -expand 0 -padx 0 -pady 0 -ipadx 0 -ipady 0
+
+             button $actions.cata -text "CATA" -borderwidth 1 -takefocus 0 -command "" \
+                -bg $::bddimages_analyse::color_button -relief sunken -state disabled
+             pack $actions.cata -side top -anchor e -expand 0 -padx 0 -pady 0 -ipadx 0 -ipady 0
+
+
+
 
 
          set onglets [frame $frm.onglets -borderwidth 0 -cursor arrow -relief groove]
@@ -1364,11 +1440,17 @@ proc get_one_image_obsolete { idbddimg } {
             set f2 [frame $onglets.nb.f2]
             set f3 [frame $onglets.nb.f3]
             set f4 [frame $onglets.nb.f4]
+            set f5 [frame $onglets.nb.f5]
+            set f6 [frame $onglets.nb.f6]
+            set f7 [frame $onglets.nb.f7]
             
             $onglets.nb add $f1 -text "Catalogues"
             $onglets.nb add $f2 -text "Variables"
-            $onglets.nb add $f3 -text "Actions"
+            $onglets.nb add $f3 -text "Entete"
             $onglets.nb add $f4 -text "Couleurs"
+            $onglets.nb add $f5 -text "Sextractor"
+            $onglets.nb add $f6 -text "Interop"
+            $onglets.nb add $f7 -text "Manuel"
             $onglets.nb select $f3
             ttk::notebook::enableTraversal $onglets.nb
 
@@ -1434,6 +1516,19 @@ proc get_one_image_obsolete { idbddimg } {
              entry $nomad1.dir -relief sunken -textvariable ::analyse_tools::catalog_nomad1 -width 30
              pack $nomad1.dir -in $nomad1 -side right -pady 1 -anchor w
   
+        #--- Cree un frame pour afficher boucle
+        set skybot [frame $f1.skybot -borderwidth 0 -cursor arrow -relief groove]
+        pack $skybot -in $f1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             #--- Cree un checkbutton
+             checkbutton $skybot.check -highlightthickness 0 -text "Utiliser SkyBot" -variable ::analyse_tools::use_skybot
+             pack $skybot.check -in $skybot -side left -padx 5 -pady 0
+  
+
+
+
+
+
         #--- Cree un frame pour afficher delkwd PV
         set deuxpasses [frame $f2.deuxpasses -borderwidth 0 -cursor arrow -relief groove]
         pack $deuxpasses -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
@@ -1474,14 +1569,6 @@ proc get_one_image_obsolete { idbddimg } {
              checkbutton $boucle.check -highlightthickness 0 -text "Analyse continue" -variable ::analyse_tools::boucle
              pack $boucle.check -in $boucle -side left -padx 5 -pady 0
   
-        #--- Cree un frame pour afficher boucle
-        set skybot [frame $f2.skybot -borderwidth 0 -cursor arrow -relief groove]
-        pack $skybot -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-             #--- Cree un checkbutton
-             checkbutton $skybot.check -highlightthickness 0 -text "Utiliser SkyBot" -variable ::analyse_tools::use_skybot
-             pack $skybot.check -in $skybot -side left -padx 5 -pady 0
-  
 
         #--- Cree un frame pour afficher boucle
         set limit_nbstars [frame $f2.limit_nbstars -borderwidth 0 -cursor arrow -relief groove]
@@ -1504,43 +1591,16 @@ proc get_one_image_obsolete { idbddimg } {
 
 
 
-
-
-        #--- Cree un frame pour afficher boutons
-        set bouton [frame $f3.bouton -borderwidth 0 -cursor arrow -relief groove]
-        pack $bouton -in $f3 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-             button $bouton.back -text "Precedent" -borderwidth 2 -takefocus 1 \
-                -command "::bddimages_analyse::back" -state $::bddimages_analyse::stateback
-             pack $bouton.back -side left -anchor e \
-                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-             button $bouton.next -text "Next" -borderwidth 2 -takefocus 1 \
-                -command "::bddimages_analyse::next" -state $::bddimages_analyse::statenext
-             pack $bouton.next -side left -anchor e \
-                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-             button $bouton.go -text "Create CATA" -borderwidth 2 -takefocus 1 \
-                -command "::bddimages_analyse::get_cata" \
-                -bg $::bddimages_analyse::color_button -state $::bddimages_analyse::state_button
-             pack $bouton.go -side left -anchor e \
-                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-             button $bouton.aladin -text "Aladin" -borderwidth 2 -takefocus 1 \
-                -command "::bddimages_analyse::aladin" 
-             pack $bouton.aladin -side left -anchor e \
-                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
         #--- Cree un frame pour afficher info image
         set infoimage [frame $f3.infoimage -borderwidth 0 -cursor arrow -relief groove]
-        pack $infoimage -in $f3 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+        pack $infoimage -in $f3 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5 
 
             #--- Cree un label pour le Nom de l image
             label $infoimage.nomimage -text $::analyse_tools::current_image_name
             pack $infoimage.nomimage -in $infoimage -side top -padx 3 -pady 3
 
-                entry $infoimage.dateimage -relief sunken -textvariable ::analyse_tools::current_image_date
-                pack $infoimage.dateimage -in $infoimage -side right -pady 1 -anchor w
+            label $infoimage.dateimage -text $::analyse_tools::current_image_date
+            pack $infoimage.dateimage -in $infoimage -side top -padx 3 -pady 3
 
             #--- Cree un label pour la date de l image
             label $infoimage.stimage -text "$::analyse_tools::id_current_image / $::analyse_tools::nb_img_list"
@@ -1591,6 +1651,11 @@ proc get_one_image_obsolete { idbddimg } {
                 entry $foclen.val -relief sunken -textvariable ::analyse_tools::foclen
                 pack $foclen.val -in $foclen -side right -pady 1 -anchor w
 
+            button $f3.setval -text "Set Val" -borderwidth 2 -takefocus 1 \
+              -command "::bddimages_analyse::setval"
+            pack $f3.setval -side top \
+              -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
 
         #--- Cree un frame pour afficher 
         set count [frame $f4.count -borderwidth 0 -cursor arrow -relief groove]
@@ -1601,98 +1666,264 @@ proc get_one_image_obsolete { idbddimg } {
            pack $img -in $count -anchor w -side top -expand 0 -fill x -padx 10 -pady 5
 
                 #--- Cree un label pour le titre
+                checkbutton $img.check -highlightthickness 0 \
+                      -variable 1 -state normal 
+                pack $img.check -in $img -side left -padx 3 -pady 3 -anchor w 
                 label $img.name -text "IMG : " -width 7
                 pack $img.name -in $img -side left -padx 3 -pady 3 -anchor w 
                 label $img.val -textvariable ::analyse_tools::nb_img
                 pack $img.val -in $img -side left -padx 3 -pady 3
                 button $img.color -borderwidth 0 -takefocus 1 -bg $::analyse_tools::color_img -command ""
                 pack $img.color -side left -anchor e -expand 0 
-                spinbox $img.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 5
+                spinbox $img.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 3
                 pack  $img.radius -in $img -side left -anchor w
 
            #--- Cree un frame pour afficher USNOA2
            set usnoa2 [frame $count.usnoa2 -borderwidth 0 -cursor arrow -relief groove]
            pack $usnoa2 -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-                #--- Cree un label pour le titre
+                checkbutton $usnoa2.check -highlightthickness 0 \
+                      -variable 1 -state normal 
+                pack $usnoa2.check -in $usnoa2 -side left -padx 3 -pady 3 -anchor w 
                 label $usnoa2.name -text "USNOA2 : " -width 7
                 pack $usnoa2.name -in $usnoa2 -side left -padx 3 -pady 3 -anchor w 
                 label $usnoa2.val -textvariable ::analyse_tools::nb_usnoa2
                 pack $usnoa2.val -in $usnoa2 -side left -padx 3 -pady 3
                 button $usnoa2.color -borderwidth 0 -takefocus 1 -bg $::analyse_tools::color_usnoa2 -command ""
                 pack $usnoa2.color -side left -anchor e -expand 0 
-                spinbox $usnoa2.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 5
+                spinbox $usnoa2.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 3
                 pack  $usnoa2.radius -in $usnoa2 -side left -anchor w
 
            #--- Cree un frame pour afficher OVNI
            set ovni [frame $count.ovni -borderwidth 0 -cursor arrow -relief groove]
            pack $ovni -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-                #--- Cree un label pour le titre
-                label   $ovni.name   -text "OVNI : " -width 7
-                pack    $ovni.name   -in $ovni -side left -padx 3 -pady 3 -anchor w  -fill x
+                checkbutton $ovni.check -highlightthickness 0 \
+                      -variable 1 -state normal 
+                pack    $ovni.check -in $ovni -side left -padx 3 -pady 3 -anchor w 
+                label   $ovni.name -text "OVNI : " -width 7
+                pack    $ovni.name -in $ovni -side left -padx 3 -pady 3 -anchor w 
                 label   $ovni.val    -textvariable ::analyse_tools::nb_ovni
                 pack    $ovni.val    -in $ovni -side left -padx 3 -pady 3
                 button  $ovni.color  -borderwidth 0 -takefocus 1 -bg $::analyse_tools::color_ovni -command ""
                 pack    $ovni.color  -side left -anchor e -expand 0 
-                spinbox $ovni.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 5
+                spinbox $ovni.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 3
                 pack    $ovni.radius -in $ovni -side left -anchor w
 
            #--- Cree un frame pour afficher UCAC2
            set ucac2 [frame $count.ucac2 -borderwidth 0 -cursor arrow -relief groove]
            pack $ucac2 -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-                #--- Cree un label pour le titre
+                checkbutton $ucac2.check -highlightthickness 0  \
+                      -variable 1 -state normal 
+                pack $ucac2.check -in $ucac2 -side left -padx 3 -pady 3 -anchor w 
                 label $ucac2.name -text "UCAC2 : " -width 7
                 pack $ucac2.name -in $ucac2 -side left -padx 3 -pady 3 -anchor w 
                 label $ucac2.val -textvariable ::analyse_tools::nb_ucac2
                 pack $ucac2.val -in $ucac2 -side left -padx 3 -pady 3
                 button $ucac2.color -borderwidth 0 -takefocus 1 -bg $::analyse_tools::color_ucac2 -command ""
                 pack $ucac2.color -side left -anchor e -expand 0 
-                spinbox $ucac2.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 5
+                spinbox $ucac2.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 3
                 pack  $ucac2.radius -in $ucac2 -side left -anchor w
 
            #--- Cree un frame pour afficher UCAC3
            set ucac3 [frame $count.ucac3 -borderwidth 0 -cursor arrow -relief groove]
            pack $ucac3 -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-                #--- Cree un label pour le titre
+                checkbutton $ucac3.check -highlightthickness 0 \
+                      -variable 1 -state normal
+                pack $ucac3.check -in $ucac3 -side left -padx 3 -pady 3 -anchor w 
                 label $ucac3.name -text "UCAC3 : " -width 7
                 pack $ucac3.name -in $ucac3 -side left -padx 3 -pady 3 -anchor w 
                 label $ucac3.val -textvariable ::analyse_tools::nb_ucac3
                 pack $ucac3.val -in $ucac3 -side left -padx 3 -pady 3
                 button $ucac3.color -borderwidth 0 -takefocus 1 -bg $::analyse_tools::color_ucac3 -command ""
                 pack $ucac3.color -side left -anchor e -expand 0 
-                spinbox $ucac3.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 5
+                spinbox $ucac3.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 3
                 pack  $ucac3.radius -in $ucac3 -side left -anchor w
 
            #--- Cree un frame pour afficher TYCHO2
            set tycho2 [frame $count.tycho2 -borderwidth 0 -cursor arrow -relief groove]
            pack $tycho2 -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-                #--- Cree un label pour le titre
+                checkbutton $tycho2.check -highlightthickness 0 \
+                      -variable 1 -state normal
+                pack $tycho2.check -in $tycho2 -side left -padx 3 -pady 3 -anchor w 
                 label $tycho2.name -text "TYCHO2 : " -width 7
                 pack $tycho2.name -in $tycho2 -side left -padx 3 -pady 3 -anchor w 
                 label $tycho2.val -textvariable ::analyse_tools::nb_tycho2
                 pack $tycho2.val -in $tycho2 -side left -padx 3 -pady 3
                 button $tycho2.color -borderwidth 0 -takefocus 1 -bg $::analyse_tools::color_tycho2 -command ""
                 pack $tycho2.color -side left -anchor e -expand 0 
-                spinbox $tycho2.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 5
+                spinbox $tycho2.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 3
                 pack  $tycho2.radius -in $tycho2 -side left -anchor w
 
            #--- Cree un frame pour afficher NOMAD1
            set nomad1 [frame $count.nomad1 -borderwidth 0 -cursor arrow -relief groove]
            pack $nomad1 -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-                #--- Cree un label pour le titre
+                checkbutton $nomad1.check -highlightthickness 0 \
+                      -variable 1 -state normal 
+                pack $nomad1.check -in $nomad1 -side left -padx 3 -pady 3 -anchor w 
                 label $nomad1.name -text "NOMAD1 : " -width 7
                 pack $nomad1.name -in $nomad1 -side left -padx 3 -pady 3 -anchor w 
                 label $nomad1.val -textvariable ::analyse_tools::nb_nomad1
                 pack $nomad1.val -in $nomad1 -side left -padx 3 -pady 3
                 button $nomad1.color -borderwidth 0 -takefocus 1 -bg $::analyse_tools::color_nomad1 -command ""
                 pack $nomad1.color -side left -anchor e -expand 0 
-                spinbox $nomad1.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 5
+                spinbox $nomad1.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 3
                 pack  $nomad1.radius -in $nomad1 -side left -anchor w
+
+
+           #--- Cree un frame pour afficher NOMAD1
+           set skybot [frame $count.skybot -borderwidth 0 -cursor arrow -relief groove]
+           pack $skybot -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                checkbutton $skybot.check -highlightthickness 0 \
+                      -variable 1 -state normal 
+                pack $skybot.check -in $skybot -side left -padx 3 -pady 3 -anchor w 
+                label $skybot.name -text "SKYBOT : " -width 7
+                pack $skybot.name -in $skybot -side left -padx 3 -pady 3 -anchor w 
+                label $skybot.val -textvariable ::analyse_tools::nb_skybot
+                pack $skybot.val -in $skybot -side left -padx 3 -pady 3
+                button $skybot.color -borderwidth 0 -takefocus 1 -bg $::analyse_tools::color_skybot -command ""
+                pack $skybot.color -side left -anchor e -expand 0 
+                spinbox $skybot.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 3
+                pack  $skybot.radius -in $skybot -side left -anchor w
+
+
+        #--- Cree un frame pour afficher 
+        set confsex [frame $f5.confsex -borderwidth 0 -cursor arrow -relief groove]
+        pack $confsex -in $f5 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                frame $confsex.buttons -borderwidth 0 -cursor arrow -relief groove
+                pack $confsex.buttons  -in $confsex  -side top -anchor e -expand 0 
+                
+                     button  $confsex.buttons.test  -borderwidth 1  \
+                         -command "::bddimages_analyse::test_confsex" -text "Test"
+                     pack    $confsex.buttons.test  -side left -anchor e -expand 0 
+                     button  $confsex.buttons.save  -borderwidth 1  \
+                         -command "::bddimages_analyse::set_confsex" -text "Save"
+                     pack    $confsex.buttons.save  -side left -anchor e -expand 0 
+
+                #--- Cree un label pour le titre
+                text $confsex.file 
+                pack $confsex.file -in $confsex -side top -padx 3 -pady 3 -anchor w 
+
+                ::bddimages_analyse::get_confsex
+
+
+        #--- Cree un frame pour afficher 
+        set interop [frame $f6.interop -borderwidth 0 -cursor arrow -relief groove]
+        pack $interop -in $f6 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+       
+             set plan [frame $interop.plan -borderwidth 0 -cursor arrow -relief solid -borderwidth 1]
+             pack $plan -in $interop -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  label $plan.lab -text "Envoyer le plan vers "
+                  pack $plan.lab -in $plan -side left -padx 3 -pady 3
+
+                  button $plan.aladin -text "Aladin" -borderwidth 2 -takefocus 1 \
+                     -command "::bddimages_analyse::aladin" 
+                  pack $plan.aladin -side left -anchor e \
+                     -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+
+             set dss [frame $interop.dss -borderwidth 0 -cursor arrow -relief solid -borderwidth 1]
+             pack $dss -in $interop -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+ 
+                  set l [frame $dss.l -borderwidth 0 -cursor arrow  -borderwidth 0]
+                  pack $l -in $dss -anchor s -side left -expand 0 -fill x -padx 10 -pady 5
+ 
+                       label $l.coord -text "Coordonnees : "
+                       pack $l.coord -in $l -side top -padx 3 -pady 3
+                       label $l.date -text "Date : "
+                       pack $l.date -in $l -side top -padx 3 -pady 3
+                       label $l.uaicode -text "UAI Code : "
+                       pack $l.uaicode -in $l -side top -padx 3 -pady 3
+ 
+                  set m [frame $dss.m -borderwidth 0 -cursor arrow  -borderwidth 0]
+                  pack $m -in $dss -anchor s -side left -expand 0 -fill x -padx 10 -pady 5
+
+                       entry $m.coord -relief sunken -textvariable ::analyse_tools::coord
+                       pack $m.coord -in $m -side top -padx 3 -pady 3 -anchor w
+                       entry $m.date -relief sunken -textvariable ::analyse_tools::date
+                       pack $m.date -in $m -side top -padx 3 -pady 3 -anchor w
+                       entry $m.uaicode -relief sunken -textvariable ::analyse_tools::uaicode
+                       pack $m.uaicode -in $m -side top -padx 3 -pady 3 -anchor w
+
+
+                  set r [frame $dss.r -borderwidth 0 -cursor arrow  -borderwidth 0]
+                  pack $r -in $dss -anchor s -side left -expand 0 -fill x -padx 3 -pady 3
+
+                       button $r.resolve -text "resolve" -borderwidth 0 -takefocus 1 -relief groove -borderwidth 1\
+                          -command "" 
+                       pack $r.resolve -side top -anchor e \
+                          -padx 3 -pady 3 -ipadx 3 -ipady 3 -expand 0
+                       button $r.aladin -text "Aladin" -borderwidth 0 -takefocus 1 -relief groove -borderwidth 1\
+                          -command "" 
+                       pack $r.aladin -side top -anchor e \
+                           -padx 3 -pady 3 -ipadx 3 -ipady 3 -expand 0
+
+
+        #--- Cree un frame pour afficher 
+        set manuel [frame $f7.manuel -borderwidth 0 -cursor arrow -relief groove]
+        pack $manuel -in $f7 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                frame $manuel.entr -borderwidth 0 -cursor arrow -relief groove
+                pack $manuel.entr  -in $manuel  -side top 
+                
+                     set coord [frame $manuel.entr.coord -borderwidth 0 -cursor arrow  -borderwidth 0]
+                     pack $coord -in $manuel.entr 
+
+                          set img [frame $coord.l -borderwidth 0 -cursor arrow  -borderwidth 0]
+                          pack $img -in $coord -anchor s -side left -expand 0 -fill x -padx 10 -pady 5
+
+                                entry $img.v1 -relief sunken 
+                                pack  $img.v1 -in $img -side top -padx 3 -pady 3 -anchor w
+                                entry $img.v2 -relief sunken 
+                                pack  $img.v2 -in $img -side top -padx 3 -pady 3 -anchor w
+                                entry $img.v3 -relief sunken 
+                                pack  $img.v3 -in $img -side top -padx 3 -pady 3 -anchor w
+                                entry $img.v4 -relief sunken 
+                                pack  $img.v4 -in $img -side top -padx 3 -pady 3 -anchor w
+                                entry $img.v5 -relief sunken 
+                                pack  $img.v5 -in $img -side top -padx 3 -pady 3 -anchor w
+                                entry $img.v6 -relief sunken 
+                                pack  $img.v6 -in $img -side top -padx 3 -pady 3 -anchor w
+                                entry $img.v7 -relief sunken 
+                                pack  $img.v7 -in $img -side top -padx 3 -pady 3 -anchor w
+
+                          set other [frame $coord.r -borderwidth 0 -cursor arrow  -borderwidth 0]
+                          pack $other -in $coord -anchor s -side left -expand 0 -fill x -padx 10 -pady 5
+
+                                entry $other.v1 -relief sunken 
+                                pack  $other.v1 -in $other -side top -padx 3 -pady 3 -anchor w
+                                entry $other.v2 -relief sunken 
+                                pack  $other.v2 -in $other -side top -padx 3 -pady 3 -anchor w
+                                entry $other.v3 -relief sunken 
+                                pack  $other.v3 -in $other -side top -padx 3 -pady 3 -anchor w
+                                entry $other.v4 -relief sunken 
+                                pack  $other.v4 -in $other -side top -padx 3 -pady 3 -anchor w
+                                entry $other.v5 -relief sunken 
+                                pack  $other.v5 -in $other -side top -padx 3 -pady 3 -anchor w
+                                entry $other.v6 -relief sunken 
+                                pack  $other.v6 -in $other -side top -padx 3 -pady 3 -anchor w
+                                entry $other.v7 -relief sunken 
+                                pack  $other.v7 -in $other -side top -padx 3 -pady 3 -anchor w
+
+                frame $manuel.buttons -borderwidth 0 -cursor arrow -relief groove
+                pack $manuel.buttons  -in $manuel  -side top 
+                
+                     button  $manuel.buttons.grab  -borderwidth 1  \
+                         -command "" -text "Grab"
+                     pack    $manuel.buttons.grab -in $manuel.buttons -side left -anchor e -expand 0 
+                     button  $manuel.buttons.creer  -borderwidth 1  \
+                         -command "" -text "Creer"
+                     pack    $manuel.buttons.creer -in $manuel.buttons -side left -anchor e -expand 0 
+
 
 
 
@@ -1705,11 +1936,6 @@ proc get_one_image_obsolete { idbddimg } {
              button $boutonpied.fermer -text "Fermer" -borderwidth 2 -takefocus 1 \
                 -command "::bddimages_analyse::fermer"
              pack $boutonpied.fermer -side left -anchor e \
-                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-             button $boutonpied.setval -text "Set Val" -borderwidth 2 -takefocus 1 \
-                -command "::bddimages_analyse::setval"
-             pack $boutonpied.setval -side left -anchor e \
                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
 

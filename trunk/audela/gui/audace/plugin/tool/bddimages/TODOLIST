@@ -7,6 +7,7 @@ partie 0 : Faire aparaitre la roadmap et todolist das doxygen
     si la variable est active alors apparait les id, les boutons ressources/tests etc...
 
 ** partie : Verification
+
   - Comparaison des listes
     verif:-- Nombre d'images absentes sur le disque : 1
     ne dit pas quels sont les fichiers
@@ -24,22 +25,16 @@ partie 2 : Gestion fenetre Recherche
 
 - Dans la fenetre recherche : nouvelle liste : 
    Ajouter champs date :
-      date min date max
-        ou
       depuis les X derniers jours
 
 - Dans la fenetre recherche : 
-     permettre l affichage de l image lorsqu elle est selectionnne
-     deplacement avec les fleches
 
 - Dans la fenetre recherche : 
-     ajouter dialogue oui/non avant la suppression d une image
 
 - Dans la fenetre recherche :
-     finir de faire des boutons de filtres suivant: WCS,ASTROMETRY,PHOTOM,ASTROID
+     finir de faire des boutons de filtres suivant: ASTROID
 
 - Dans la fenetre recherche
-     gestion des listes associ�es a l id de configuration.
 
 - Nouvelle fenetre liste pour exprimer le cata
      chaque clic sur une entree de la liste met un rond vert dans l image.
@@ -52,7 +47,6 @@ partie 2 : Gestion fenetre Recherche
  
 partie 3 : Gestions des images
 
- - Effacement propre d un fichier de la base
  - ajouter : modif nom du fichier en commancant par l idbddimg
  - ajouter des champs dans le header : 
       BDIIFLAT  : Idbddimg
@@ -75,22 +69,14 @@ partie 3 : Gestions des images
   6 : extraction sources cata autres (skybot, cata photom)
   7 : Crossmatching
   
-
 partie 4 : Astrometrie rapide
 
  - une idee pour faire l astrometrie a l arrache sur la premiere image
    d une serie, serait de creer une nouvelle visu audela
    avec extraction d une image du dss. cliquer sur une etoile du dss, puis 
    sur l image, pour que celle ci recoive la coordonnees d un catalogue (USNOA2 tres bien pour ca)
-
- - Autre facon de faire : extraction du bouton du chercheur electronique
+   sinon nouvelle visu avec image du dss
  
- - Autre facon de faire : Faire a la main ave aladin, mais les infos doivent revenir dans bddimages
- 
- - ecriture des champs du WCS dans le header de l image. 
- - ecriture des champs dans les images de la base. 
- - puis dans la serie d image qui suit
-
 partie 5 : get cds query
 
  - recuperer la listes des sources catalogues de l image.
