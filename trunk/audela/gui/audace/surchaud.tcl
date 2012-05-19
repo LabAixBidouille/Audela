@@ -1355,11 +1355,15 @@ proc calibwcs {args} {
          set cat_folder [lindex $args 6]
       }
       set del_tmp_files 1
+      set yes_visu 1
       if {$argc >= 9} {
          for {set k 7} {$k<[expr $argc-1]} {incr k} {
             set key [lindex $args $k]
             if {$key=="-del_tmp_files"} {
                set del_tmp_files [lindex $args [expr $k+1]]
+            }
+            if {$key=="-yes_visu"} {
+               set yes_visu [lindex $args [expr $k+1]]
             }
          }
       }
@@ -1496,7 +1500,9 @@ proc calibwcs {args} {
          #---
       }
       #---
-      ::audace::autovisu $::audace(visuNo)
+      if {$yes_visu==1} {
+         ::audace::autovisu $::audace(visuNo)
+      }
       set catastar [lindex [buf$::audace(bufNo) getkwd CATASTAR] 1]
       return $catastar
    } else {
