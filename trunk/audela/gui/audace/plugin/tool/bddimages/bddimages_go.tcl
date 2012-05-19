@@ -70,7 +70,9 @@ proc ::bddimages::initPlugin { tkbase } {
    set bddconf(font,arial_12_b) "{Arial} 12 bold"
    set bddconf(font,arial_14_b) "{Arial} 14 bold"
 
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools samp.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools votable.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools votableUtil.tcl ]\""
 
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_xml.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_admin.tcl ]\""
@@ -96,7 +98,6 @@ proc ::bddimages::initPlugin { tkbase } {
       #gren_info "audace(rep_travail) = bddconf(dirtmp) = $bddconf(dirtmp)\n"
       set  audace(rep_travail)  $bddconf(dirtmp)
    }
-
 
 }
 
@@ -127,8 +128,10 @@ proc ::bddimages::ressource {  } {
    #--- Chargement des captions
    source [ file join $audace(rep_plugin) tool bddimages bddimages_go.cap ]
    #--- Chargement des fichiers auxiliaires
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools samp.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools votable.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools votableUtil.tcl ]\""
+   
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdicalendar.tcl ]\""
 
    # Nouvelle facon de nomage des routines (separation gui et ligne de commande)
@@ -210,7 +213,8 @@ proc ::bddimages::createPanel { this } {
    set panneau(bddimages,titre6) "$caption(bddimages_go,ressource)"
    #--- Construction de l'interface
    ::bddimages::bddimagesBuildIF $This
-
+   #--- Installation du menu Interop
+   ::bddimages::InstallMenuInterop
 }
 
 #------------------------------------------------------------
@@ -332,5 +336,37 @@ proc ::bddimages::bddimagesBuildIF { This } {
       ::confColor::applyColor $This
 }
 
-proc gren_info { msg } { ::console::affiche_resultat "$msg" }
+#------------------------------------------------------------
+# ::vo_tools::InstallMenuInterop
+#    Installe le menu Interop dans la barre de menu d'Audace
+#------------------------------------------------------------
+proc ::bddimages::InstallMenuInterop { } {
+   global audace caption menu
+   set visuNo $::audace(visuNo)
+   # Deploiement du menu Interop
+   Menu $visuNo "Interop"
+   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_connect) ::vo_tools::SampConnect
+   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_disconnect) ::vo_tools::SampDisconnect
+   Menu_Separator $visuNo "Interop"
+   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_loadvotable) ::vo_tools::LoadVotable
+   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_cleardisplay) ::vo_tools::ClearDisplay
+   Menu_Separator $visuNo "Interop"
+   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_broadcastImg) ::vo_tools::SampBroadcastImage
+   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_broadcastSpe) ::vo_tools::SampBroadcastSpectrum
+   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_broadcastTab) ::vo_tools::SampBroadcastTable
+   Menu_Separator $visuNo "Interop"
+   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_help) ::vo_tools::helpInterop
+   #--- Mise a jour dynamique des couleurs et fontes
+   ::confColor::applyColor [MenuGet $visuNo "Interop"]
+   # Tentative de connexion au hub Samp
+   ::vo_tools::SampConnect
+   # Ajoute un binding sur le canvas pour broadcaster les coordonnees cliquees
+   bind $::audace(hCanvas) <ButtonPress-1> {::vo_tools::SampBroadcastPointAtSky %W %x %y}
+   # Active la mise a jour automatique de l'affichage quand on change d'image
+   ::confVisu::addFileNameListener $visuNo "::vo_tools::handleBroadcastBtnState"
+   ::confVisu::addFileNameListener $visuNo "::vo_tools::ClearDisplay"
+}
 
+proc gren_info { msg } {
+   ::console::affiche_resultat "$msg" 
+}

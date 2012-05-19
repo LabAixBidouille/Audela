@@ -523,4 +523,3 @@ proc ::vo_tools::InstallMenuInterop { frame } {
    ::confVisu::addFileNameListener $visuNo "::vo_tools::ClearDisplay"
 
 }
-

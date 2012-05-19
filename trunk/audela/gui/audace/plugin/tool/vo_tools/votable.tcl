@@ -1668,14 +1668,16 @@ proc ::votable::getFieldFromKey_SKYBOT { key } {
       de {
          if {[string equal -nocase $key "ra"]} {
             set description "Astrometric J2000 right ascension"
+            set unit "h:m:s"
          } else {
             set description "Astrometric J2000 declination"
+            set unit "d:m:s"
          }
          lappend field "$::votable::Field::UCD \"pos.eq.$key;meta.main\"" \
                        "$::votable::Field::DATATYPE \"float\"" \
                        "$::votable::Field::WIDTH \"9\"" \
                        "$::votable::Field::PRECISION \"5\"" \
-                       "$::votable::Field::UNIT \"deg\""
+                       "$::votable::Field::UNIT \"$unit\""
       }
       class {
          set description "Object classification"
