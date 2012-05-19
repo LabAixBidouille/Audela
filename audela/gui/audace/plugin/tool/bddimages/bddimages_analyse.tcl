@@ -392,13 +392,13 @@ namespace eval bddimages_analyse {
             cleanmark
             if {[::bddimages_analyse::get_one_wcs] == true} {
                if {[::analyse_tools::get_cata] == false} {
-                  # TODO gerer l'erreur le  cata a echoué
+                  # TODO gerer l'erreur le  cata a echouï¿½
                   #return false
                } else {
                   ::bddimages_analyse::affiche_cata
                }
             } else {
-               # TODO gerer l'erreur le wcs a echoué
+               # TODO gerer l'erreur le wcs a echouï¿½
             }
             
          }
@@ -452,7 +452,7 @@ namespace eval bddimages_analyse {
             if {[::bddimages_analyse::get_one_wcs] == true} {
                 
                if {[::analyse_tools::get_cata] == false} {
-                  # TODO gerer l'erreur le  cata a echoué
+                  # TODO gerer l'erreur le  cata a echouï¿½
                   break
                } else {
                   # Ok ca se passe bien
@@ -461,7 +461,7 @@ namespace eval bddimages_analyse {
                   ::bddimages_analyse::affiche_cata
                }
             } else {
-               # TODO gerer l'erreur le wcs a echoué
+               # TODO gerer l'erreur le wcs a echouï¿½
                break
             }
             if {$::analyse_tools::id_current_image == $::analyse_tools::nb_img_list} { break }
@@ -1505,57 +1505,43 @@ namespace eval bddimages_analyse {
         #--- Cree un frame pour afficher 
         set interop [frame $f6.interop -borderwidth 0 -cursor arrow -relief groove]
         pack $interop -in $f6 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+  
+           # Bouton Aladin       
+           set plan [frame $interop.plan -borderwidth 0 -cursor arrow -relief solid -borderwidth 1]
+           pack $plan -in $interop -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+              label $plan.lab -text "Envoyer le plan vers "
+              pack $plan.lab -in $plan -side left -padx 3 -pady 3
+              button $plan.aladin -text "Aladin" -borderwidth 2 -takefocus 1 -command "::bddimages_analyse::aladin" 
+              pack $plan.aladin -side left -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-       
-             set plan [frame $interop.plan -borderwidth 0 -cursor arrow -relief solid -borderwidth 1]
-             pack $plan -in $interop -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+           # 
+           set dss [frame $interop.dss -borderwidth 0 -cursor arrow -relief solid -borderwidth 1]
+           pack $dss -in $interop -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-                  label $plan.lab -text "Envoyer le plan vers "
-                  pack $plan.lab -in $plan -side left -padx 3 -pady 3
-
-                  button $plan.aladin -text "Aladin" -borderwidth 2 -takefocus 1 \
-                     -command "::bddimages_analyse::aladin" 
-                  pack $plan.aladin -side left -anchor e \
-                     -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-
-             set dss [frame $interop.dss -borderwidth 0 -cursor arrow -relief solid -borderwidth 1]
-             pack $dss -in $interop -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
+              set l [frame $dss.l -borderwidth 0 -cursor arrow  -borderwidth 0]
+              pack $l -in $dss -anchor s -side left -expand 0 -fill x -padx 10 -pady 5
+                 label $l.coord -text "Coordonnees : "
+                 pack $l.coord -in $l -side top -padx 3 -pady 3
+                 label $l.date -text "Date : "
+                 pack $l.date -in $l -side top -padx 3 -pady 3
+                 label $l.uaicode -text "UAI Code : "
+                 pack $l.uaicode -in $l -side top -padx 3 -pady 3
  
-                  set l [frame $dss.l -borderwidth 0 -cursor arrow  -borderwidth 0]
-                  pack $l -in $dss -anchor s -side left -expand 0 -fill x -padx 10 -pady 5
- 
-                       label $l.coord -text "Coordonnees : "
-                       pack $l.coord -in $l -side top -padx 3 -pady 3
-                       label $l.date -text "Date : "
-                       pack $l.date -in $l -side top -padx 3 -pady 3
-                       label $l.uaicode -text "UAI Code : "
-                       pack $l.uaicode -in $l -side top -padx 3 -pady 3
- 
-                  set m [frame $dss.m -borderwidth 0 -cursor arrow  -borderwidth 0]
-                  pack $m -in $dss -anchor s -side left -expand 0 -fill x -padx 10 -pady 5
+              set m [frame $dss.m -borderwidth 0 -cursor arrow  -borderwidth 0]
+              pack $m -in $dss -anchor s -side left -expand 0 -fill x -padx 10 -pady 5
+                 entry $m.coord -relief sunken -textvariable ::analyse_tools::coord
+                 pack $m.coord -in $m -side top -padx 3 -pady 3 -anchor w
+                 entry $m.date -relief sunken -textvariable ::analyse_tools::date
+                 pack $m.date -in $m -side top -padx 3 -pady 3 -anchor w
+                 entry $m.uaicode -relief sunken -textvariable ::analyse_tools::uaicode
+                 pack $m.uaicode -in $m -side top -padx 3 -pady 3 -anchor w
 
-                       entry $m.coord -relief sunken -textvariable ::analyse_tools::coord
-                       pack $m.coord -in $m -side top -padx 3 -pady 3 -anchor w
-                       entry $m.date -relief sunken -textvariable ::analyse_tools::date
-                       pack $m.date -in $m -side top -padx 3 -pady 3 -anchor w
-                       entry $m.uaicode -relief sunken -textvariable ::analyse_tools::uaicode
-                       pack $m.uaicode -in $m -side top -padx 3 -pady 3 -anchor w
-
-
-                  set r [frame $dss.r -borderwidth 0 -cursor arrow  -borderwidth 0]
-                  pack $r -in $dss -anchor s -side left -expand 0 -fill x -padx 3 -pady 3
-
-                       button $r.resolve -text "resolve" -borderwidth 0 -takefocus 1 -relief groove -borderwidth 1\
-                          -command "" 
-                       pack $r.resolve -side top -anchor e \
-                          -padx 3 -pady 3 -ipadx 3 -ipady 3 -expand 0
-                       button $r.aladin -text "Aladin" -borderwidth 0 -takefocus 1 -relief groove -borderwidth 1\
-                          -command "" 
-                       pack $r.aladin -side top -anchor e \
-                           -padx 3 -pady 3 -ipadx 3 -ipady 3 -expand 0
-
+              set r [frame $dss.r -borderwidth 0 -cursor arrow  -borderwidth 0]
+              pack $r -in $dss -anchor s -side left -expand 0 -fill x -padx 3 -pady 3
+                 button $r.resolve -text "resolve" -borderwidth 0 -takefocus 1 -relief groove -borderwidth 1 -command ""
+                 pack $r.resolve -side top -anchor e -padx 3 -pady 3 -ipadx 3 -ipady 3 -expand 0
+                 button $r.aladin -text "Aladin" -borderwidth 0 -takefocus 1 -relief groove -borderwidth 1 -command "" 
+                 pack $r.aladin -side top -anchor e -padx 3 -pady 3 -ipadx 3 -ipady 3 -expand 0
 
         #--- Cree un frame pour afficher 
         set manuel [frame $f7.manuel -borderwidth 0 -cursor arrow -relief groove]
