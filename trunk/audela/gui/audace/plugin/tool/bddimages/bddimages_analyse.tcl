@@ -391,14 +391,27 @@ namespace eval bddimages_analyse {
          }  else {
             cleanmark
             if {[::bddimages_analyse::get_one_wcs] == true} {
+            
+               set ::bddimages_analyse::color_wcs $::bddimages_analyse::color_button_good
+               $::bddimages_analyse::gui_wcs configure -bg $::bddimages_analyse::color_wcs
+            
                if {[::analyse_tools::get_cata] == false} {
                   # TODO gerer l'erreur le  cata a echou�
+                  set ::bddimages_analyse::color_cata $::bddimages_analyse::color_button_bad
+                  $::bddimages_analyse::gui_cata configure -bg $::bddimages_analyse::color_cata
+                  
                   #return false
                } else {
+                  set ::bddimages_analyse::color_cata $::bddimages_analyse::color_button_good
+                  $::bddimages_analyse::gui_cata configure -bg $::bddimages_analyse::color_cata
                   ::bddimages_analyse::affiche_cata
                }
             } else {
                # TODO gerer l'erreur le wcs a echou�
+               set ::bddimages_analyse::color_wcs $::bddimages_analyse::color_button_bad
+               $::bddimages_analyse::gui_wcs configure -bg $::bddimages_analyse::color_wcs
+               cleanmark
+               
             }
             
          }
@@ -451,17 +464,26 @@ namespace eval bddimages_analyse {
             }
             if {[::bddimages_analyse::get_one_wcs] == true} {
                 
+               set ::bddimages_analyse::color_wcs $::bddimages_analyse::color_button_good
+               $::bddimages_analyse::gui_wcs configure -bg $::bddimages_analyse::color_wcs
                if {[::analyse_tools::get_cata] == false} {
                   # TODO gerer l'erreur le  cata a echou�
+                  set ::bddimages_analyse::color_cata $::bddimages_analyse::color_button_bad
+                  $::bddimages_analyse::gui_cata configure -bg $::bddimages_analyse::color_cata
                   break
                } else {
                   # Ok ca se passe bien
+                  set ::bddimages_analyse::color_cata $::bddimages_analyse::color_button_good
+                  $::bddimages_analyse::gui_cata configure -bg $::bddimages_analyse::color_cata
                   cleanmark
                   ::bddimages_analyse::affiche_current_image
                   ::bddimages_analyse::affiche_cata
                }
             } else {
                # TODO gerer l'erreur le wcs a echou�
+               set ::bddimages_analyse::color_wcs $::bddimages_analyse::color_button_bad
+               $::bddimages_analyse::gui_wcs configure -bg $::bddimages_analyse::color_wcs
+               cleanmark
                break
             }
             if {$::analyse_tools::id_current_image == $::analyse_tools::nb_img_list} { break }
@@ -972,6 +994,23 @@ namespace eval bddimages_analyse {
    proc ::bddimages_analyse::test_confsex { } {
 
       global audace
+
+      set chan [open "./obs.lst" "r"]
+      while {[gets $chan line] >= 0} {
+         set r [split $line " "]
+         set cpt 0
+         foreach x $r {
+            if {$x!=""} {
+               if {$cpt == 0} {set xi $x}
+               if {$cpt == 1} {set yi $x}
+               incr cpt
+            }
+         }
+         #gren_info "pos image : $xi $yi\n"
+         affich_un_rond_xy $xi $yi "green" 3 1
+         #break
+      }
+      close $chan
 
       
    }
@@ -1488,6 +1527,9 @@ namespace eval bddimages_analyse {
                 frame $confsex.buttons -borderwidth 0 -cursor arrow -relief groove
                 pack $confsex.buttons  -in $confsex  -side top -anchor e -expand 0 
                 
+                     button  $confsex.buttons.clean  -borderwidth 1  \
+                         -command "cleanmark" -text "Clean"
+                     pack    $confsex.buttons.clean  -side left -anchor e -expand 0 
                      button  $confsex.buttons.test  -borderwidth 1  \
                          -command "::bddimages_analyse::test_confsex" -text "Test"
                      pack    $confsex.buttons.test  -side left -anchor e -expand 0 
