@@ -87,6 +87,11 @@ namespace eval Samp {
       samp.params coordPointAtSky
    } coordPointAtSkyWrapper
 
+   # Aladin
+
+
+
+
    # Internationalisation
    source [ file join [file dirname [info script]] samp.cap ]
 }

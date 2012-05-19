@@ -387,6 +387,25 @@ proc ::vo_tools::SampBroadcastImage {} {
       ::console::affiche_erreur "$caption(vo_tools_go,samp_noimgtobroadcast) \n"
    }
 }
+#------------------------------------------------------------
+# ::vo_tools::SampBroadcastImage
+#    Broadcast l'image courante
+#------------------------------------------------------------
+proc ::vo_tools::SampBroadcastAladinScript {} {
+   global audace caption
+   set script "get_dss 10:00:00 +10:00:00 15"
+
+   if { [::Samp::check] == 1 } {
+         
+   } else {
+         ::console::affiche_erreur $caption(vo_tools_go,samp_hubnotfound)
+         ::vo_tools::handleInteropBtnState "disabled"
+         ::vo_tools::handleBroadcastBtnState "disabled"
+   }
+   } else {
+      ::console::affiche_erreur "$caption(vo_tools_go,samp_noimgtobroadcast) \n"
+   }
+}
 
 #------------------------------------------------------------
 # ::vo_tools::SampBroadcastTable
