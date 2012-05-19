@@ -191,6 +191,15 @@ namespace eval analyse_tools {
    variable color_skybot  "magenta"
    variable color_ovni    "yellow"
 
+   variable size_img     
+   variable size_usnoa2  
+   variable size_ucac2   
+   variable size_ucac3   
+   variable size_nomad1  
+   variable size_tycho2  
+   variable size_skybot  
+   variable size_ovni    
+
    variable ra       
    variable dec      
    variable pixsize1 
@@ -285,15 +294,14 @@ namespace eval analyse_tools {
          set radius  [format "%0.0f" [expr $radius*60.0] ]
          set iau_code [lindex [::bddimages_liste::lget $tabkey IAU_CODE ] 1]
 
-         gren_info "get_skybot $dateiso $ra $dec $radius $iau_code\n"
+         #gren_info "get_skybot $dateiso $ra $dec $radius $iau_code\n"
          set err [ catch {get_skybot $dateiso $ra $dec $radius $iau_code} skybot ]
-         gren_info "skybot = $skybot\n"
+         #gren_info "skybot = $skybot\n"
 
-         gren_info "nb_skybot = [::manage_source::get_nb_sources_by_cata $skybot SKYBOT]\n"
+         #gren_info "nb_skybot = [::manage_source::get_nb_sources_by_cata $skybot SKYBOT]\n"
          set listsources [ identification $listsources "OVNI" $skybot "SKYBOT" -100.0 -100.0 {} 1] 
          set ::analyse_tools::nb_skybot [::manage_source::get_nb_sources_by_cata $listsources SKYBOT]
          gren_info "nb_skybot ident = $::analyse_tools::nb_skybot\n"
-         affich_rond $listsources SKYBOT $::analyse_tools::color_skybot  1
       }
       
       gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $listsources]\n"
@@ -395,8 +403,8 @@ namespace eval analyse_tools {
          #gren_info "catalog_usnoa2 : $::analyse_tools::catalog_usnoa2\n"
          #gren_info "DEBUT WCS ra dec : $ra  $dec \n"
 
-         if {$::analyse_tools::log} {gren_info "PASS1: calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO  $::analyse_tools::catalog_usnoa2 -del_tmp_files 0\n"}
-         set erreur [catch {set nbstars [calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO $::analyse_tools::catalog_usnoa2 -del_tmp_files 0]} msg]
+         if {$::analyse_tools::log} {gren_info "PASS1: calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO  $::analyse_tools::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0\n"}
+         set erreur [catch {set nbstars [calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO $::analyse_tools::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0]} msg]
          if {$erreur} {
             #gren_info "1 ERR NBSTARS=$nbstars ($msg)"
             return -code 1 "ERR NBSTARS=$nbstars ($msg)"
@@ -408,8 +416,8 @@ namespace eval analyse_tools {
          if {$::analyse_tools::log} {gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"}
 
          if {$::analyse_tools::deuxpasses} {
-         if {$::analyse_tools::log} {gren_info "PASS2: calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2 -del_tmp_files 0\n"}
-            set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 -del_tmp_files 0]} msg]
+         if {$::analyse_tools::log} {gren_info "PASS2: calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0\n"}
+            set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0]} msg]
             if {$erreur} {
                   #gren_info "2 ERR NBSTARS=$nbstars ($msg)"
                return -code 2 "ERR NBSTARS=$nbstars ($msg)"
@@ -421,12 +429,12 @@ namespace eval analyse_tools {
             if {$::analyse_tools::log} {gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"}
          }
 
-         gren_info "nbstars/limit_nbstars_accepted  = $nbstars/$::analyse_tools::limit_nbstars_accepted \n"
+         gren_info "nbstars/limit  = $nbstars / $::analyse_tools::limit_nbstars_accepted \n"
          if { $::analyse_tools::keep_radec==1 && $nbstars<$::analyse_tools::limit_nbstars_accepted && [info exists ::analyse_tools::ra_save] && [info exists ::analyse_tools::dec_save] } {
             set ra  $::analyse_tools::ra_save
             set dec $::analyse_tools::dec_save
-            if {$::analyse_tools::log} {gren_info "PASS3: calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2 -del_tmp_files 0\n"}
-            set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 -del_tmp_files 0]} msg]
+            if {$::analyse_tools::log} {gren_info "PASS3: calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0\n"}
+            set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0]} msg]
             if {$erreur} {
 #                  gren_info "3 ERR NBSTARS=$nbstars ($msg)"
                return -code 3 "ERR NBSTARS=$nbstars ($msg)"
@@ -437,8 +445,8 @@ namespace eval analyse_tools {
 #            gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"
 
             if {$::analyse_tools::deuxpasses} {
-               if {$::analyse_tools::log} {gren_info "PASS4: calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2 -del_tmp_files 0\n"}
-               set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 -del_tmp_files 0]} msg]
+               if {$::analyse_tools::log} {gren_info "PASS4: calibwcs $ra $dec * * * USNO  $::analyse_tools::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0\n"}
+               set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::analyse_tools::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0]} msg]
                if {$erreur} {
 #                  gren_info "4 ERR NBSTARS=$nbstars ($msg)"
                   return -code 4 "ERR NBSTARS=$nbstars ($msg)"
@@ -476,7 +484,6 @@ namespace eval analyse_tools {
              set fileimg  [lindex $ident 1]
              set filecata [lindex $ident 3]
              if {$fileimg == -1} {
-                ::console::affiche_erreur "Fichier image inexistant ($idbddimg) \n"
                 if {$erreur} {
                    #gren_info "5 Fichier image inexistant ($idbddimg) \n"
                    return -code 5 "Fichier image inexistant ($idbddimg) \n"
@@ -507,10 +514,10 @@ namespace eval analyse_tools {
              bddimages_image_delete_fromsql $ident
              bddimages_image_delete_fromdisk $ident
 
-             gren_info "av idbddimg : $idbddimg \n"
+             #gren_info "av idbddimg : $idbddimg \n"
              # insere l image et le cata dans la base filecata
              set errnum [catch {set r [insertion_solo $filefinal]} msg ]
-             catch {gren_info "$errnum : $msg : $r"}
+             #catch {gren_info "$errnum : $msg : $r"}
              if {$errnum==0} {
                 set ::analyse_tools::current_image [::bddimages_liste::lupdate $::analyse_tools::current_image idbddimg $r]
              }
@@ -535,7 +542,7 @@ namespace eval analyse_tools {
              set $tabkey [lindex $result 1]
              set ::analyse_tools::current_image [::bddimages_liste::lupdate $::analyse_tools::current_image tabkey $tabkey]
              set idbddimg   [::bddimages_liste::lget $::analyse_tools::current_image "idbddimg"]
-             gren_info "fin idbddimg : $idbddimg \n"
+             #gren_info "fin idbddimg : $idbddimg \n"
 
              return -code 0 "WCS OK"
          }
@@ -582,27 +589,6 @@ namespace eval analyse_tools {
 
 
 
-   proc ::analyse_tools::affich_catapcat {  } {
-   
-      set fxml [open catalog.cat "r"]
-      while {[gets $fxml line] >= 0} {
-         set r [split $line " "]
-         gren_info "$r\n"
-         set cpt 0
-         foreach x $r {
-            if {$x!=""} {
-               if {$cpt == 6} {set xi $x}
-               if {$cpt == 7} {set yi $x}
-               incr cpt
-            }
-         }
-         gren_info "pos image : $xi $yi\n"
-         break
-      }
-      close $fxml
-   
-   
-   }
 
 
 

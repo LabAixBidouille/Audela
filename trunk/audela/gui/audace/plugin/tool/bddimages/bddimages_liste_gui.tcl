@@ -1708,7 +1708,7 @@ namespace eval bddimages_liste_gui {
 
       set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
 
-      ::console::affiche_erreur "SELECT $err $msg\n"
+      #::console::affiche_erreur "SELECT $err $msg\n"
 
       if {$err} {
           # si l erreur est qu il n y a pas de table cata alors traiter ce cas special
@@ -1783,13 +1783,13 @@ namespace eval bddimages_liste_gui {
       set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
       set nbresult [expr [llength $resultcount]-1]
 
-      ::console::affiche_erreur "RESULT $resultcount\n"
-      ::console::affiche_erreur "ERR $err\n"
-      ::console::affiche_erreur "MSG $msg\n"
-      ::console::affiche_erreur "nb $nbresult\n"
-      ::console::affiche_erreur "0=[lindex $resultcount 0]\n"
-      ::console::affiche_erreur "1=[lindex $resultcount 1]\n"
-      ::console::affiche_erreur "1=[lindex [lindex $resultcount 1] 0]\n"
+      #::console::affiche_erreur "RESULT $resultcount\n"
+      #::console::affiche_erreur "ERR $err\n"
+      #::console::affiche_erreur "MSG $msg\n"
+      #::console::affiche_erreur "nb $nbresult\n"
+      #::console::affiche_erreur "0=[lindex $resultcount 0]\n"
+      #::console::affiche_erreur "1=[lindex $resultcount 1]\n"
+      #::console::affiche_erreur "1=[lindex [lindex $resultcount 1] 0]\n"
 
       if {$err} {
           # si l erreur est qu il n y a pas de table cata alors traiter ce cas special
