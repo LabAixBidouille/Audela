@@ -284,7 +284,7 @@ namespace eval bddimages_recherche {
       set ::bddimages_recherche::current_list_name [lindex $row 0]
       set ::bddimages_recherche::current_list_id [::bddimages_liste_gui::get_intellilist_by_name $::bddimages_recherche::current_list_name]
 
-      ::console::affiche_resultat "Chargement ... ($::bddimages_recherche::current_list_id)"
+      ::console::affiche_resultat "Chargement ... ($::bddimages_recherche::current_list_name)"
 
       set t0 [clock clicks -milliseconds]
       ::bddimages_recherche::get_intellist $::bddimages_recherche::current_list_id
@@ -1141,9 +1141,6 @@ namespace eval bddimages_recherche {
       menu $popupTbl.analyse -tearoff 0
       $popupTbl add cascade -label "Analyse" -menu $popupTbl.analyse
 
-           $popupTbl.analyse add command -label "Creer le WCS" \
-              -command { ::bddimages_recherche::bddimages_creation_wcs }
-
            $popupTbl.analyse add command -label "Creer le Cata" \
               -command { ::bddimages_recherche::bddimages_creation_cata }
 
@@ -1619,23 +1616,6 @@ namespace eval bddimages_recherche {
    }
 
 
-
-
-   proc ::bddimages_recherche::bddimages_creation_wcs { } {
-
-      variable This
-      global caption
-
-      set lid [$::bddimages_recherche::This.frame6.result.tbl curselection ]
-      set lid [lsort -decreasing -integer $lid]
-      set imglist [::bddimages_liste_gui::new_normallist $lid]
-
-      set z [::bddimages_analyse::creation_wcs $imglist]
-
-      ::bddimages_recherche::get_intellist $::bddimages_recherche::current_list_id
-      ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id [array get action_label]
-
-   }
 
 
    proc ::bddimages_recherche::creation_cdlwcs { } {
