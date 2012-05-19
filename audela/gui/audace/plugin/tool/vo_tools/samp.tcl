@@ -87,10 +87,15 @@ namespace eval Samp {
       samp.params coordPointAtSky
    } coordPointAtSkyWrapper
 
-   # Aladin
-
-
-
+   # Samp msg script.aladin.send
+   typedef {
+      script string
+   } aladinScript
+   
+   typedef {
+      samp.mtype string
+      samp.params aladinScript
+   } aladinScriptWrapper
 
    # Internationalisation
    source [ file join [file dirname [info script]] samp.cap ]
@@ -179,6 +184,12 @@ proc ::Samp::build { nsp } {
             -uri [set ${nsp}::params(samp.hub.xmlrpc.url)] \
             -proxy [set ${nsp}::params(samp.hub.xmlrpc.url)] \
             -params { arg1 string arg2 coordPointAtSkyWrapper } \
+            -name "samp.hub.notifyAll"
+
+   XMLRPC::create ${nsp}::m_aladinScript \
+            -uri [set ${nsp}::params(samp.hub.xmlrpc.url)] \
+            -proxy [set ${nsp}::params(samp.hub.xmlrpc.url)] \
+            -params { arg1 string arg2 aladinScriptWrapper } \
             -name "samp.hub.notifyAll"
 
    # Implementation des methodes SAMP
