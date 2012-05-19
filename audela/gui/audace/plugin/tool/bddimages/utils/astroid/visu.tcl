@@ -55,8 +55,8 @@ proc affich_un_rond_xy { x y color radius width } {
 
    global audace
     set can_xy [ ::audace::picture2Canvas [list $x $y] ]
-       set x [lindex $can_xy 0]
-       set y [lindex $can_xy 1]
+    set x [lindex $can_xy 0]
+    set y [lindex $can_xy 1]
     $audace(hCanvas) create oval [ expr $x - $radius ]  \
         [ expr $y - $radius ] [ expr $x + $radius ] [ expr $y + $radius ] \
         -outline $color -tags cadres -width $width
