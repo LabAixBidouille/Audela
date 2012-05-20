@@ -56,7 +56,7 @@ proc ::acqt1m::ressource { } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m configuration.tcl ]\""
 
    if {$::tcl_platform(os)=="Linux"} {
-      load libmeinberg.so
+      load libmeinberg[info sharedlibextension]
    }
 }
 
