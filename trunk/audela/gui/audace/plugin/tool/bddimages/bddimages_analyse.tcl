@@ -493,8 +493,8 @@ namespace eval bddimages_analyse {
           ::bddimages_analyse::load_cata
           #gren_info "current_listsources = $::analyse_tools::current_listsources \n"
        } else {
-          ::console::affiche_erreur "NO CATA\n"
-          return
+          #::console::affiche_erreur "NO CATA\n"
+          return -code 0 "NOCATA"
        }
 
        cleanmark
@@ -518,9 +518,10 @@ namespace eval bddimages_analyse {
 
        } msg ]
        if {$err} {
+          if {$msg=="NOCATA"} {return}
           ::console::affiche_erreur "ERREUR affiche_cata : $msg\n" 
-           set ::analyse_tools::current_listsources [::tools_sources::set_common_fields_skybot $::analyse_tools::current_listsources]
-          ::tools_sources::imprim_3_sources $::analyse_tools::current_listsources SKYBOT
+          #set ::analyse_tools::current_listsources [::tools_sources::set_common_fields_skybot $::analyse_tools::current_listsources]
+          #::tools_sources::imprim_3_sources $::analyse_tools::current_listsources SKYBOT
        }
    }
 
@@ -980,7 +981,9 @@ namespace eval bddimages_analyse {
 
       ::bddimages_analyse::charge_list $img_list
       ::bddimages_analyse::inittoconf
-      ::bddimages_analyse::set_aladin_script_params
+      catch { 
+         ::bddimages_analyse::set_aladin_script_params
+      }
 
       #--- Creation de la fenetre
       set ::bddimages_analyse::fen .new
