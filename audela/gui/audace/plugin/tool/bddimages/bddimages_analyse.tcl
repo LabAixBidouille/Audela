@@ -623,10 +623,10 @@ namespace eval bddimages_analyse {
       set ::analyse_tools::date [lindex [::bddimages_liste::lget $tabkey DATE-OBS] 1]
       set ::analyse_tools::uaicode [string trim [lindex [::bddimages_liste::lget $tabkey IAU_CODE] 1]]
 
-      set ra      [lindex [::bddimages_liste::lget $tabkey ra] 1]
-      set dec     [lindex [::bddimages_liste::lget $tabkey dec] 1]
-      if {$dec > 0} { set cdec "+$dec" }
-      set ::analyse_tools::coord "$ra $cdec"
+      set ra  [lindex [::bddimages_liste::lget $tabkey ra] 1]
+      set dec [lindex [::bddimages_liste::lget $tabkey dec] 1]
+      if {$dec > 0} { set dec "+$dec" }
+      set ::analyse_tools::coord "$ra $dec"
 
       set naxis1  [lindex [::bddimages_liste::lget $tabkey NAXIS1] 1]
       set naxis2  [lindex [::bddimages_liste::lget $tabkey NAXIS2] 1]
@@ -677,6 +677,7 @@ namespace eval bddimages_analyse {
             set respdata [split [lindex $resp 1] "|"]
             set ra [expr [lindex $respdata 2] * 15.0]
             set dec [lindex $respdata 3]
+            if {$dec > 0} { set dec "+$dec" }
             set ::analyse_tools::coord "$ra $dec"
          }
       } else {
