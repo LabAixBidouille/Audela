@@ -73,7 +73,7 @@ namespace eval ::prtr {
    #--------------------------------------------------------------------------
    proc run {oper} {
       variable private
-      global audace
+      global audace conf
 
       set visuNo $audace(visuNo)
       set ::prtr::operation $oper
@@ -97,10 +97,15 @@ namespace eval ::prtr {
          #--   surveille le changement de compression
          trace add variable "::conf(fichier,compres)" write "::prtr::changeExtension $visuNo"
 
+         set private(lineHeight) 40
+         set private(minWidth) 550
+         set private(minHeight) 404
+
          #--   intialise la variable si elle n'existe pas
-         if {![info exists ::conf(prtr,geometry)]} {
-            set ::conf(prtr,geometry) "410x193+350+75"
+         if {![info exists conf(prtr,geometry)]} {
+            set conf(prtr,geometry) "${private(minWidth)}x${private(minHeight)}+350+75"
          }
+
          set private(this) "$audace(base).prtr"
          ::prtr::createDialog $visuNo
       }
@@ -128,7 +133,8 @@ namespace eval ::prtr {
       toplevel $This
       wm resizable $This 1 1
       #--   pm la geometrie est fixee ::prtr::confToWidget
-      wm minsize $private(this) 410 420
+      set height $private(minHeight)
+      wm minsize $private(this) $private(minWidth) $height
       wm transient $This $audace(base)
       wm geometry $private(this) $conf(prtr,geometry)
       wm protocol $This WM_DELETE_WINDOW "::prtr::cmdClose $visuNo"
@@ -163,16 +169,6 @@ namespace eval ::prtr {
          -text "$caption(prtr,select_all)" -command "::prtr::selectAll"
       pack $this.all.select -side left -padx 10 -pady 5
 
-      #---  le check bouton pour l'affichage
-      checkbutton $this.affiche.disp -variable ::prtr::disp \
-         -text "$caption(prtr,afficher_image_fin)"
-      pack $this.affiche.disp -side left -padx 10 -pady 5
-
-      #---  le check bouton pour l'edition du script
-      checkbutton $this.affiche.script -variable ::prtr::script \
-         -text "$caption(prtr,afficher_script)"
-      pack $this.affiche.script -side left -padx 10 -pady 5
-
       #---  frame pour le fichier de sortie
       LabelEntry $this.sortie.out \
          -label "$caption(prtr,image_sortie)" -labelanchor w \
@@ -185,6 +181,17 @@ namespace eval ::prtr {
       pack $this.sortie.explore -side left -pady 5 -ipady 5 \
          -padx [$This.usr.choix.vscroll cget -width] -pady 5 -ipady 5
 
+      #---  le check bouton pour l'affichage
+      checkbutton $this.affiche.disp -variable ::prtr::disp \
+         -text "$caption(prtr,afficher_image_fin)"
+      pack $this.affiche.disp -side left -padx 10 -pady 5
+
+      #---  le check bouton pour l'edition du script
+      checkbutton $this.affiche.script -variable ::prtr::script \
+         -text "$caption(prtr,afficher_script)"
+      pack $this.affiche.script -side left -padx 10 -pady 5 -expand yes
+
+
       #---  frame pour l'affichage du deroulement du traitement
       label $this.info.labURL1 -textvariable ::prtr::avancement -fg $color(blue)
       pack $this.info.labURL1 -side top -padx 10 -pady 5
@@ -193,7 +200,7 @@ namespace eval ::prtr {
        button $this.cmd.ok -text "$caption(prtr,ok)" \
          -command "::prtr::cmdOk $tbl $visuNo"
       if {$conf(ok+appliquer) eq 1} {
-         pack $this.cmd.ok -side left -padx 3 -pady 3 -ipadx 5 -ipady 5
+         pack $this.cmd.ok -side left -padx 3 -pady 3 -ipadx 25 -ipady 5
       }
       button $this.cmd.appliquer -text "$caption(prtr,appliquer)" \
          -command "::prtr::cmdApply $tbl $visuNo"
@@ -219,7 +226,6 @@ namespace eval ::prtr {
          $this.cmd 8,0 -fill both -cspan 2 -height {50}
       pack $this -in $This.usr -side bottom -fill both -expand 0
       blt::table configure $this c1 -width 18 -resize none
-      #blt::table configure $this r5 r6 r7 r8 -resize none
 
       #--- definit la structure et les caracteristiques
       ::tablelist::tablelist $tbl -borderwidth 2 \
@@ -312,7 +318,10 @@ namespace eval ::prtr {
          $m add radiobutton -label "$form" -value "$form" \
             -variable ::prtr::operation
       }
-      pack $this.but -side right -padx 10 -pady 10
+      pack $this.but -side right -padx 18 -pady 10
+
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $private(this)
    }
 
    #--------------------------------------------------------------------------
@@ -385,7 +394,7 @@ namespace eval ::prtr {
       set private(fun_lignes) [::prtr::configZone $w obligatoire]
       grid $w.label -row 0 -column 0 -padx 10 -pady 5 -rowspan $private(fun_lignes)
       blt::table $private(table) $w 3,0 -fill both -cspan 2 \
-         -height [list [expr {$private(fun_lignes)*34}]]
+        -height [list [expr {$private(fun_lignes)*$private(lineHeight)}]]
 
       #--   modifie les variables initiales
       if {$private(inVisu) ne ""} {
@@ -400,6 +409,9 @@ namespace eval ::prtr {
             }
          }
       }
+
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $private(this)
    }
 
    #--------------------------------------------------------------------------
@@ -416,10 +428,9 @@ namespace eval ::prtr {
             -variable ::prtr::ttoptions -text "$::caption(prtr,options)" \
             -command "::prtr::dispOptions $w"
          grid $w.che -row 0 -column 0 -padx 10 -pady 5 -rowspan 1
-         blt::table $private(table) $w 4,0 -fill both -cspan 2
       }
       ::prtr::confBitPix
-      dispOptions $w
+      ::prtr::dispOptions $w
    }
 
    #--------------------------------------------------------------------------
@@ -449,7 +460,7 @@ namespace eval ::prtr {
             "labelentry"   {
                set valuewidth [expr {[string length [set ::prtr::$child]]+4}]
                if {$valuewidth < "8"} {set valuewidth 9}
-               LabelEntry $w.$child -label "$child" -labelanchor e\
+               LabelEntry $w.$child -label "$child" -labelanchor e \
                   -labelwidth $labelwidth -textvariable ::prtr::$child \
                   -padx $d -width $valuewidth -justify center
                grid $w.$child -row $row -column $col -padx $d -pady 5 -sticky e
@@ -515,6 +526,7 @@ namespace eval ::prtr {
             set col "1"
          }
       }
+
       grid columnconfigure $w 1 -minsize 120 -weight 1
       grid columnconfigure $w 2 -weight 1
       grid columnconfigure $w 3 -minsize [$private(this).usr.choix.vscroll cget -width]
@@ -571,6 +583,12 @@ namespace eval ::prtr {
          set private(tt_lignes) "1"
       }
       ::prtr::confToWidget
+
+      blt::table $private(table) $w 4,0 -fill both -cspan 2 \
+            -height [list [expr {$private(tt_lignes)*$private(lineHeight)}]]
+
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $private(this)
    }
 
    #--------------------------------------------------------------------------
@@ -743,6 +761,7 @@ namespace eval ::prtr {
             incr nb
          }
       }
+
       set private(size) $nb
       if {$private(size) == "0"} {return}
 
@@ -768,6 +787,9 @@ namespace eval ::prtr {
              }
          }
       }
+
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $private(this)
    }
 
    #--------------------------------------------------------------------------
@@ -1298,19 +1320,20 @@ namespace eval ::prtr {
       variable private
       global conf
 
+      set geometry [wm geometry $private(this)]
+
       #--   cherche la hauteur totale de la fenetre
-      regexp {.x([0-9]+)\+.} [wm geometry $private(this)] match widgetHeight
-      #--   cherche la largeur de la fenetre
+      lassign [string map -nocase [list x " " + " "] $geometry] widgetWidth widgetHeight x y
+
       if {$widgetHeight ne ""} {
-         #--   cherche la hauteur totale de la table
-         regexp {[0-9]+} [blt::table configure $private(table) -reqheight] tableHeight
-         #--   cherche la hauteur sans la table
+         #--   cherche la hauteur de la table
+         set tableHeight [lindex [string map [list \{ "" \} "" ] [blt::table configure $private(table) -reqheight]] 1]
+         #--   calcule la hauteur sans la table
          set fixeHeight [expr {$widgetHeight-$tableHeight}]
-         #--   sauve la position de la fenetre avec la hauteur fixe
-         regsub {x([0-9]+)\+} [wm geometry $private(this)] "x$fixeHeight+" conf(prtr,geometry)
+         set conf(prtr,geometry) "${widgetWidth}x${fixeHeight}+${x}+${y}"
       } else {
          #--   configuration par defaut
-         set ::conf(prtr,geometry) "410x193+350+75"
+         set ::conf(prtr,geometry) "${private(minWidth)}x${private(minHeight)}+350+75"
       }
    }
 
@@ -1320,33 +1343,36 @@ namespace eval ::prtr {
    #--------------------------------------------------------------------------
    proc confToWidget { } {
       variable private
+      global conf
 
-      #--   fixe la hauteur de la table
-      set TableHeight [expr {($private(fun_lignes)+$private(tt_lignes))*34+204}]
+      #--   geometrie actuelle
+      set geometry [wm geometry $private(this)]
+      lassign [string map -nocase [list x " " + " "] $geometry] actualWidth height x y
+
+      #--   hauteur fixe de la table = + 18 (hscroll) + 4 lignes x 40 + 50 (commandes) = 204
+      set hauteurConstante 204
+      set TableHeight [expr {($private(fun_lignes)+$private(tt_lignes))*$private(lineHeight)+$hauteurConstante}]
       blt::table configure $private(table) -reqheight $TableHeight
 
-      #--   cherche la hauteur fixe de la fenetre
-      regexp {.x([0-9]+)\+.} $::conf(prtr,geometry) match fixeHeight
+      #--   cherche la hauteur de la fenetre
+      lassign [string map -nocase [list x " " + " "] $conf(prtr,geometry)] -> fixeHeight
+
       #--   calcule la hauteur totale de la fenetre
       set totalHeight [expr {$fixeHeight+$TableHeight}]
 
-      #--   remplace la hauteur fixe par la hauteur totale
-      regsub {x([0-9]+)\+} $::conf(prtr,geometry) "x$totalHeight+" private(prtr,geometry)
-
       #--   si la position existe (pas au demarrage)
-      regsub {\+} [wm geometry $private(this)] " " data
-      set position [lindex $data 1]
-      if {$position ne "0+0"} {
-         #--   met a jour la position
-         regsub {\+([0-9]+\+[0-9]+)} $private(prtr,geometry) "+$position" private(prtr,geometry)
+      if {![info exists x] || ![info exists y]} {
+         #--   configuration par defaut
+         set x 350 ; set y 75
       }
 
-      #--   recherche la largeur
-      regexp {^([0-9]+)} [wm geometry $private(this)] match widgetWidth
-      regsub {^([0-9]+)} $private(prtr,geometry) $widgetWidth private(prtr,geometry)
-
       #--   actualise la geometrie de la fenetre
-      wm geometry $private(this) $private(prtr,geometry)
+      wm geometry $private(this) "${actualWidth}x${totalHeight}+${x}+${y}"
+
+      #--   calcule la hauteur minimale dans cette configuration
+      #--   pour que la liste des images soit toujours visible
+      set minHeight [expr {40+$TableHeight+120}]
+      wm minsize $private(this) $private(minWidth) $minHeight
       update
    }
 
