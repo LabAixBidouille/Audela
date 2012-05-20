@@ -993,7 +993,14 @@ namespace eval bddimages_analyse {
 
    proc ::bddimages_analyse::test_confsex { } {
 
-      global audace
+      cleanmark
+      ::bddimages_analyse::set_confsex 
+
+      catch {
+        calibwcs * * * * * USNO $::analyse_tools::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0
+      }
+
+
 
       set chan [open "./obs.lst" "r"]
       while {[gets $chan line] >= 0} {
