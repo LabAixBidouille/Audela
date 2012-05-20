@@ -4185,10 +4185,12 @@ namespace eval ::confVisu {
       $this.m.can create line 0 50 100 50 -fill $color -tag reticule
 
       #--   les libelles
-      label $this.m.c -textvariable ::confVisu::private($visuNo,magnifierCoords)
-      grid $this.m.c -row 2 -column 0 -sticky ew
-      label $this.m.i -textvariable ::confVisu::private($visuNo,magnifierIntensite)
-      grid $this.m.i -row 3 -column 0 -sticky ew
+      label $this.m.c_PoliceInvariant1 -textvariable ::confVisu::private($visuNo,magnifierCoords) \
+         -font {Arial 9 normal}
+      grid $this.m.c_PoliceInvariant1 -row 2 -column 0 -sticky ew
+      label $this.m.i_PoliceInvariant1 -textvariable ::confVisu::private($visuNo,magnifierIntensite) \
+         -font {Arial 9 normal}
+      grid $this.m.i_PoliceInvariant1 -row 3 -column 0 -sticky ew
 
       #--   pour eviter l'apparition de Loupe dans un coin
       wm withdraw $this
@@ -4284,7 +4286,7 @@ namespace eval ::confVisu {
    #  Retourne les coordonnées canvas de la zone visible de l'image
    #  sous forme de liste {Gauche Haut Droite Bas} ou liste vide
    #--------------------------------------------------------------------------
-  proc getImageZone { visuNo } {
+   proc getImageZone { visuNo } {
       variable private
 
       if {![buf[visu$visuNo buf] imageready]} {
