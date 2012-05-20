@@ -451,8 +451,8 @@ namespace eval confColor:: {
             #--- Je mets a jour la police des widgets
             if { [ string first PoliceInvariant $w ] == -1 } {
                $w configure -font "$audace(font,Label)"
-            } elseif { [ string first PoliceInvariant1 $w ] == -1 } {
-               #--- Je ne fais rien
+            } elseif { [ string first PoliceInvariant1 $w ] != -1 } {
+               #--- Je ne fais rien --> Label garde la definition donnee dans le script
             } else {
                set taille [ lindex $audace(font,Button) 1 ]
                set taille [ expr $taille + 4 ]
