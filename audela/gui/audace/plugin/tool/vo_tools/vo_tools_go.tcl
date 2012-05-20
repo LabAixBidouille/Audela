@@ -1,7 +1,7 @@
 #
 # Fichier : vo_tools_go.tcl
 # Description : Outil d'appel des fonctionnalites de l'observatoire virtuel
-# Auteur : Robert DELMAS
+# Auteur : Robert DELMAS & J. Berthier
 # Mise à jour $Id$
 #
 
@@ -96,6 +96,7 @@ proc ::vo_tools::createPluginInstance { { in "" } { visuNo 1 } } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools skybot_search.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools skybot_statut.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools samp.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools sampTools.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools votable.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools votableUtil.tcl ]\""
    #--- Mise en place de l'interface graphique
@@ -314,13 +315,10 @@ proc ::vo_tools::handleInteropBtnState { args } {
 #    Connection au hub Samp
 #------------------------------------------------------------
 proc ::vo_tools::SampConnect {} {
-   global caption
-   if { [::Samp::check] == 1 } {
-      ::console::affiche_resultat "$caption(vo_tools_go,samp_connected) \n"
+   if { [::SampTools::connect] } {
       ::vo_tools::handleInteropBtnState
       ::vo_tools::handleBroadcastBtnState
    } else {
-      ::console::affiche_erreur "$caption(vo_tools_go,samp_hubnotfound) \n"
       ::vo_tools::handleInteropBtnState "disabled"
       ::vo_tools::handleBroadcastBtnState "disabled"
    }
@@ -340,6 +338,9 @@ proc ::vo_tools::SampDisconnect {} {
 # ::vo_tools::LoadVotable
 #    Charge une VOTable locale et affiche les objets dans la visu
 #------------------------------------------------------------
+
+# TODO
+
 proc ::vo_tools::LoadVotable { } {
    global audace caption
 
@@ -369,41 +370,9 @@ proc ::vo_tools::ClearDisplay { args } {
 #    Broadcast l'image courante
 #------------------------------------------------------------
 proc ::vo_tools::SampBroadcastImage {} {
-   global audace caption
-   set image [::confVisu::getFileName $::audace(visuNo)]
-
-   if { [file exists $image] } {
-      if { [::Samp::check] == 1 } {
-         set imgFile [::Samp::convertEntities $image]
-         set url "file://localhost/$imgFile"
-         ::console::affiche_resultat "$caption(vo_tools_go,samp_imgtobroadcast) $image \n"
-         set msg [::samp::m_imageLoadFits $::samp::key [list samp.mtype image.load.fits samp.params [list "name" "$url" "image-id" "$url" "url" "$url"] ]]
-      } else {
-         ::console::affiche_erreur $caption(vo_tools_go,samp_hubnotfound)
-         ::vo_tools::handleInteropBtnState "disabled"
-         ::vo_tools::handleBroadcastBtnState "disabled"
-      }
-   } else {
-      ::console::affiche_erreur "$caption(vo_tools_go,samp_noimgtobroadcast) \n"
-   }
-}
-#------------------------------------------------------------
-# ::vo_tools::SampBroadcastImage
-#    Broadcast l'image courante
-#------------------------------------------------------------
-proc ::vo_tools::SampBroadcastAladinScript {} {
-   global audace caption
-   set script "get_dss 10:00:00 +10:00:00 15"
-
-   if { [::Samp::check] == 1 } {
-         
-   } else {
-         ::console::affiche_erreur $caption(vo_tools_go,samp_hubnotfound)
-         ::vo_tools::handleInteropBtnState "disabled"
-         ::vo_tools::handleBroadcastBtnState "disabled"
-   }
-   } else {
-      ::console::affiche_erreur "$caption(vo_tools_go,samp_noimgtobroadcast) \n"
+   if { ! [::SampTools::broadcastImage] } {
+      ::vo_tools::handleInteropBtnState "disabled"
+      ::vo_tools::handleBroadcastBtnState "disabled"
    }
 }
 
@@ -412,21 +381,9 @@ proc ::vo_tools::SampBroadcastAladinScript {} {
 #    Broadcast l'image courante
 #------------------------------------------------------------
 proc ::vo_tools::SampBroadcastTable {} {
-   global caption
-   if { [info exists ::votableUtil::votBuf(file)] &&
-         [file exists $::votableUtil::votBuf(file)] } {
-      if { [::Samp::check] == 1 } {
-         set imgTab [::Samp::convertEntities $::votableUtil::votBuf(file)]
-         set url "file://localhost/$imgTab"
-         ::console::affiche_resultat "$caption(vo_tools_go,samp_tabtobroadcast) $::votableUtil::votBuf(file)\n"
-         set msg [::samp::m_tableLoadVotable $::samp::key [list samp.mtype table.load.votable samp.params [list "name" "$url" "table-id" "$url" "url" "$url"] ]]
-      } else {
-         ::console::affiche_erreur "$caption(vo_tools_go,samp_hubnotfound) \n"
-         ::vo_tools::handleInteropBtnState "disabled"
-         ::vo_tools::handleBroadcastBtnState "disabled"
-      }
-   } else {
-      ::console::affiche_erreur "$caption(vo_tools_go,samp_notabtobroadcast) \n"
+   if { ! [::SampTools::broadcastTable] } {
+      ::vo_tools::handleInteropBtnState "disabled"
+      ::vo_tools::handleBroadcastBtnState "disabled"
    }
 }
 
@@ -435,50 +392,10 @@ proc ::vo_tools::SampBroadcastTable {} {
 #    Broadcast le spectre courant
 #------------------------------------------------------------
 proc ::vo_tools::SampBroadcastSpectrum {} {
-   global audace caption
-   set spectrum [::confVisu::getFileName $::audace(visuNo)]
-
-   if { [file exists $spectrum] } {
-      if { [::Samp::check] == 1 } {
-         set speFile [::Samp::convertEntities $spectrum]
-         set url "file://localhost/$speFile"
-         ::console::affiche_resultat "$caption(vo_tools_go,samp_spetobroadcast) $spectrum \n"
-         set msg [::samp::m_spectrumLoadSsaGeneric $::samp::key [list samp.mtype spectrum.load.ssa-generic samp.params [list "name" "$url" "spectrum-id" "$url" "url" "$url"] ]]
-      } else {
-         ::console::affiche_erreur $caption(vo_tools_go,samp_hubnotfound)
-         ::vo_tools::handleInteropBtnState "disabled"
-         ::vo_tools::handleBroadcastBtnState "disabled"
-      }
-   } else {
-      ::console::affiche_erreur "$caption(vo_tools_go,samp_nospetobroadcast) \n"
+   if { ! [::SampTools::broadcastSpectrum] } {
+      ::vo_tools::handleInteropBtnState "disabled"
+      ::vo_tools::handleBroadcastBtnState "disabled"
    }
-}
-
-#------------------------------------------------------------
-# ::vo_tools::SampBroadcastPointAtSky
-#    Broadcast les coordonnees du point clique dans la visu
-#------------------------------------------------------------
-proc ::vo_tools::SampBroadcastPointAtSky { w x y } {
-   global audace
-
-   # Recupere la valeur courante du zoom
-#   set zoom [visu$::audace(visuNo) zoom]
-   set zoom [::confVisu::getZoom $::audace(visuNo)]
-   # Recupere les dimensions de l'image en px
-   set naxis1 [expr [lindex [buf$::audace(bufNo) getkwd NAXIS1] 1] * $zoom]
-   set naxis2 [expr [lindex [buf$::audace(bufNo) getkwd NAXIS2] 1] * $zoom]
-   # Converti les coord. pointees en coord. canvas
-   set coord [::audace::screen2Canvas [list $x $y]]
-   # Converti les coordonnees canvas en coordonnees x,y dans l'image
-   set imgXY [::audace::canvas2Picture $coord]
-   # Converti les coordonnees x,y dans l'image en coordonnees sur le ciel
-   set err [catch {buf$audace(bufNo) xy2radec $imgXY} RADEC ]
-gren_info "$w \n Audela->Samp RA DEC = [lindex $RADEC 0] [lindex $RADEC 1]  (Screen: $x $y ; Canva: $coord  ; Img: $imgXY)\n"
-   if {$err == 0} {
-      # Broadcast les coordonnees
-      set msg [::samp::m_coordPointAtSky $::samp::key [list samp.mtype coord.pointAt.sky samp.params [list "ra" [lindex $RADEC 0] "dec" [lindex $RADEC 1]] ]]
-   }
-
 }
 
 #------------------------------------------------------------
@@ -517,7 +434,7 @@ proc ::vo_tools::InstallMenuInterop { frame } {
    # Tentative de connexion au hub Samp
    ::vo_tools::SampConnect
    # Ajoute un binding sur le canvas pour broadcaster les coordonnees cliquees
-   bind $::audace(hCanvas) <ButtonPress-1> {::vo_tools::SampBroadcastPointAtSky %W %x %y}
+   bind $::audace(hCanvas) <ButtonPress-1> {::SampTools::broadcastPointAtSky %W %x %y}
    # Active la mise a jour automatique de l'affichage quand on change d'image
    ::confVisu::addFileNameListener $visuNo "::vo_tools::handleBroadcastBtnState"
    ::confVisu::addFileNameListener $visuNo "::vo_tools::ClearDisplay"
