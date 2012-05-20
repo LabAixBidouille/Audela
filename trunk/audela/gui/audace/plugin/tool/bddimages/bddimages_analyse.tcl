@@ -334,18 +334,6 @@ namespace eval bddimages_analyse {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
    proc ::bddimages_analyse::next { } {
 
          if {$::analyse_tools::id_current_image < $::analyse_tools::nb_img_list} {
@@ -357,13 +345,6 @@ namespace eval bddimages_analyse {
 
 
 
-
-
-
-
-
-
-
    proc ::bddimages_analyse::back { } {
 
          if {$::analyse_tools::id_current_image > 1 } {
@@ -372,11 +353,6 @@ namespace eval bddimages_analyse {
             ::bddimages_analyse::charge_current_image
          }
    }
-
-
-
-
-
 
 
 
@@ -423,20 +399,6 @@ namespace eval bddimages_analyse {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
    proc ::bddimages_analyse::affiche_current_image { } {
 
       global bddconf
@@ -449,9 +411,6 @@ namespace eval bddimages_analyse {
       ::audace::autovisu $::audace(visuNo)
 
    }
-
-
-
 
 
 
@@ -495,14 +454,6 @@ namespace eval bddimages_analyse {
 
 
 
-
-
-
-
-
-
-
-
    proc ::bddimages_analyse::load_cata {  } {
 
       global bddconf
@@ -527,14 +478,6 @@ namespace eval bddimages_analyse {
       #set listsources [::tools_sources::set_common_fields $listsources TYCHO2 { RAdeg DEdeg 5 VT e_VT }]
       set ::analyse_tools::current_listsources $listsources
    }
-
-
-
-
-
-
-
-
 
 
 
@@ -584,48 +527,6 @@ namespace eval bddimages_analyse {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
    proc ::bddimages_analyse::get_one_wcs { } {
 
          set tabkey         [::bddimages_liste::lget $::analyse_tools::current_image "tabkey"]
@@ -671,83 +572,123 @@ namespace eval bddimages_analyse {
 
 
 
+   proc ::bddimages_analyse::sendImageAndTable { } {
 
+      global bddconf
 
+      set idbddimg    [::bddimages_liste::lget $::analyse_tools::current_image idbddimg]
+      set dirfilename [::bddimages_liste::lget $::analyse_tools::current_image dirfilename]
+      set filename    [::bddimages_liste::lget $::analyse_tools::current_image filename   ]
+      set file        [file join $bddconf(dirbase) $dirfilename $filename]
+      
+      set tabkey [::bddimages_liste::lget $::analyse_tools::current_image "tabkey"]
+      set ::analyse_tools::ra        [lindex [::bddimages_liste::lget $tabkey ra      ] 1]
+      set ::analyse_tools::dec       [lindex [::bddimages_liste::lget $tabkey dec     ] 1]
+      set ::analyse_tools::pixsize1  [lindex [::bddimages_liste::lget $tabkey pixsize1] 1]
+      set ::analyse_tools::pixsize2  [lindex [::bddimages_liste::lget $tabkey pixsize2] 1]
+      set ::analyse_tools::foclen    [lindex [::bddimages_liste::lget $tabkey foclen  ] 1]
+      set ::analyse_tools::exposure  [lindex [::bddimages_liste::lget $tabkey EXPOSURE] 1]
 
+      set ::analyse_tools::bddimages_wcs [string trim [lindex [::bddimages_liste::lget $tabkey bddimages_wcs ] 1] ]
 
+      set naxis1  [lindex [::bddimages_liste::lget $tabkey NAXIS1] 1]
+      set naxis2  [lindex [::bddimages_liste::lget $tabkey NAXIS2] 1]
+      set scale_x [lindex [::bddimages_liste::lget $tabkey CD1_1] 1]
+      set scale_y [lindex [::bddimages_liste::lget $tabkey CD2_2] 1]
+      set radius  [::analyse_tools::get_radius $naxis1 $naxis2 $scale_x $scale_y]
 
+      # Envoie de l'image dans Aladin via Samp
+      ::SampTools::broadcastImage
+      
+      set cataexist [::bddimages_liste::lget $::analyse_tools::current_image "cataexist"]
+      set catafilename [::bddimages_liste::lget $::analyse_tools::current_image "catafilename"]
+      set catadirfilename [::bddimages_liste::lget $::analyse_tools::current_image "catadirfilename"]
+      set catafile [file join $bddconf(dirbase) $catadirfilename $catafilename] 
+      set ::analyse_tools::current_image [::bddimages_liste_gui::add_info_cata $::analyse_tools::current_image]
 
-
-
-
-   proc ::bddimages_analyse::aladin { } {
-
-     global bddconf
-
-         set idbddimg    [::bddimages_liste::lget $::analyse_tools::current_image idbddimg]
-         set dirfilename [::bddimages_liste::lget $::analyse_tools::current_image dirfilename]
-         set filename    [::bddimages_liste::lget $::analyse_tools::current_image filename   ]
-         set file        [file join $bddconf(dirbase) $dirfilename $filename]
-
-         set tabkey [::bddimages_liste::lget $::analyse_tools::current_image "tabkey"]
-         set ::analyse_tools::ra        [lindex [::bddimages_liste::lget $tabkey ra         ] 1]
-         set ::analyse_tools::dec       [lindex [::bddimages_liste::lget $tabkey dec        ] 1]
-
-         set ::analyse_tools::pixsize1  [lindex [::bddimages_liste::lget $tabkey pixsize1   ] 1]
-         set ::analyse_tools::pixsize2  [lindex [::bddimages_liste::lget $tabkey pixsize2   ] 1]
-         set ::analyse_tools::foclen    [lindex [::bddimages_liste::lget $tabkey foclen     ] 1]
-         set ::analyse_tools::exposure  [lindex [::bddimages_liste::lget $tabkey EXPOSURE   ] 1]
-         set ::analyse_tools::bddimages_wcs  [string trim [lindex [::bddimages_liste::lget $tabkey bddimages_wcs ] 1] ]
-         set naxis1      [lindex [::bddimages_liste::lget $tabkey NAXIS1     ] 1]
-         set naxis2      [lindex [::bddimages_liste::lget $tabkey NAXIS2     ] 1]
-         set xcent    [expr $naxis1/2.0]
-         set ycent    [expr $naxis2/2.0]
-         set naxis1   [lindex [::bddimages_liste::lget $tabkey NAXIS1] 1]
-         set naxis2   [lindex [::bddimages_liste::lget $tabkey NAXIS2] 1]
-         set scale_x  [lindex [::bddimages_liste::lget $tabkey CD1_1] 1]
-         set scale_y  [lindex [::bddimages_liste::lget $tabkey CD2_2] 1]
-         set radius   [::analyse_tools::get_radius $naxis1 $naxis2 $scale_x $scale_y]
-
-         #envoie dans Aladin l image
-         ::vo_tools::SampBroadcastImage        
-
-         #envoi du CATA
-         #gren_info "current_image = $::analyse_tools::current_image\n"
-         set cataexist [::bddimages_liste::lget $::analyse_tools::current_image "cataexist"]
-         set catafilename [::bddimages_liste::lget $::analyse_tools::current_image "catafilename"]
-         set catadirfilename [::bddimages_liste::lget $::analyse_tools::current_image "catadirfilename"]
-         set catafile [file join $bddconf(dirbase) $catadirfilename $catafilename] 
-
-         gren_info "cataexist = $cataexist\n"
-         set ::analyse_tools::current_image [::bddimages_liste_gui::add_info_cata $::analyse_tools::current_image]
-         gren_info "cataexist = $cataexist\n"
-         if {$cataexist} {
-
-
-             set ::votableUtil::votBuf(file) $catafile
-            ::vo_tools::SampBroadcastTable
-         }
+      # Envoie du CATA dans Aladin via Samp
+      if {$cataexist} {
+         set ::votableUtil::votBuf(file) $catafile
+         ::SampTools::broadcastTable
+      }
 
    }
 
 
+   proc ::bddimages_analyse::set_aladin_script_params { } {
+   
+      set tabkey [::bddimages_liste::lget $::analyse_tools::current_image "tabkey"]
 
+      set ::analyse_tools::date [lindex [::bddimages_liste::lget $tabkey DATE-OBS] 1]
+      set ::analyse_tools::uaicode [string trim [lindex [::bddimages_liste::lget $tabkey IAU_CODE] 1]]
 
+      set ra      [lindex [::bddimages_liste::lget $tabkey ra] 1]
+      set dec     [lindex [::bddimages_liste::lget $tabkey dec] 1]
+      if {$dec > 0} { set cdec "+$dec" }
+      set ::analyse_tools::coord "$ra $cdec"
 
+      set naxis1  [lindex [::bddimages_liste::lget $tabkey NAXIS1] 1]
+      set naxis2  [lindex [::bddimages_liste::lget $tabkey NAXIS2] 1]
+      set scale_x [lindex [::bddimages_liste::lget $tabkey CD1_1] 1]
+      set scale_y [lindex [::bddimages_liste::lget $tabkey CD2_2] 1]
+      set radius  [::analyse_tools::get_radius $naxis1 $naxis2 $scale_x $scale_y]
+      set ::analyse_tools::radius "$radius"
 
+   }
 
+   proc ::bddimages_analyse::sendAladinScript { } {
 
+      # Get parameters
+      set coord $::analyse_tools::coord
+      set radius_arcmin "${::analyse_tools::radius}arcmin"
+      set radius_arcsec [concat [expr $::analyse_tools::radius * 60.0] "arcsec"]
+      set date $::analyse_tools::date
+      set uaicode [string trim $::analyse_tools::uaicode]
 
+      # Request Skybot cone-search
+      set skybotQuery "get SkyBoT.IMCCE($date,$uaicode,'Asteroids and Planets','$radius_arcsec')"
 
+      # Draw a circle to mark the fov center
+      set lcoord [split $coord " "]
+      set drawFovCenter "draw phot([lindex $lcoord 0],[lindex $lcoord 1],20.00arcsec)"
+      # Draw USNO stars as triangles
+      set shapeUSNO "set USNO2 shape=triangle"
 
+      # Aladin Script
+      set script "get Aladin(DSS2) ${coord} $radius_arcmin; get VizieR(USNO2); sync; $shapeUSNO; $drawFovCenter; $skybotQuery;"
+      # Broadcast script
+      ::SampTools::broadcastAladinScript $script
+   
+   }
+
+   proc ::bddimages_analyse::skybotResolver { } {
+
+      set name $::analyse_tools::coord
+      set date $::analyse_tools::date
+      set uaicode [string trim $::analyse_tools::uaicode]
+
+      set erreur [ catch { vo_skybotresolver $date $name text basic $uaicode } skybot ]
+      if { $erreur == "0" } {
+         if { [ lindex $skybot 0 ] == "no" } {
+            ::console::affiche_erreur "The solar system object '$name' was not resolved by SkyBoT"
+         } else {
+            set resp [split $skybot ";"]
+            set respdata [split [lindex $resp 1] "|"]
+            set ra [expr [lindex $respdata 2] * 15.0]
+            set dec [lindex $respdata 3]
+            set ::analyse_tools::coord "$ra $dec"
+         }
+      } else {
+         ::console::affiche_erreur "SkyBoT error: $erreur : $skybot"
+      }
+
+   }
 
 
    proc ::bddimages_analyse::charge_current_image { } {
 
       global audace
       global bddconf
-
-         
 
          #�Charge l image en memoire
          #gren_info "cur id $::analyse_tools::id_current_image: \n"
@@ -932,24 +873,6 @@ namespace eval bddimages_analyse {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
    proc ::bddimages_analyse::get_confsex { } {
 
       global audace
@@ -1050,39 +973,6 @@ namespace eval bddimages_analyse {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
    proc ::bddimages_analyse::creation_cata { img_list } {
 
       global audace
@@ -1090,7 +980,7 @@ namespace eval bddimages_analyse {
 
       ::bddimages_analyse::charge_list $img_list
       ::bddimages_analyse::inittoconf
-      
+      ::bddimages_analyse::set_aladin_script_params
 
       #--- Creation de la fenetre
       set ::bddimages_analyse::fen .new
@@ -1110,10 +1000,6 @@ namespace eval bddimages_analyse {
 
       set frm $::bddimages_analyse::fen.frm_creation_cata
       set ::bddimages_analyse::current_appli $frm
-
-
-
-      
 
       #--- Cree un frame general
       frame $frm -borderwidth 0 -cursor arrow -relief groove
@@ -1166,13 +1052,9 @@ namespace eval bddimages_analyse {
                   pack $lampions.cata -side top -anchor e -expand 0 -padx 0 -pady 0 -ipadx 0 -ipady 0
 
 
-
-
-
          set onglets [frame $frm.onglets -borderwidth 0 -cursor arrow -relief groove]
          pack $onglets -in $frm -side top -expand 0 -fill x -padx 10 -pady 5
  
-
             pack [ttk::notebook $onglets.nb]
             set f1 [frame $onglets.nb.f1]
             set f2 [frame $onglets.nb.f2]
@@ -1191,11 +1073,6 @@ namespace eval bddimages_analyse {
             $onglets.nb add $f7 -text "Manuel"
             $onglets.nb select $f3
             ttk::notebook::enableTraversal $onglets.nb
-
-
-
-
-
 
 
         #--- Cree un frame pour afficher ucac2
@@ -1264,9 +1141,6 @@ namespace eval bddimages_analyse {
   
 
 
-
-
-
         #--- Cree un frame pour afficher delkwd PV
         set deuxpasses [frame $f2.deuxpasses -borderwidth 0 -cursor arrow -relief groove]
         pack $deuxpasses -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
@@ -1321,17 +1195,6 @@ namespace eval bddimages_analyse {
              pack $log.check -in $log -side left -padx 5 -pady 0
 
 
-
-
-
-
-
-
-
-
-
-
-
         #--- Cree un frame pour afficher info image
         set infoimage [frame $f3.infoimage -borderwidth 0 -cursor arrow -relief groove]
         pack $infoimage -in $f3 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5 
@@ -1342,12 +1205,6 @@ namespace eval bddimages_analyse {
 
             set ::bddimages_analyse::gui_dateimage [label $infoimage.dateimage -text $::analyse_tools::current_image_date]
             pack $infoimage.dateimage -in $infoimage -side top -padx 3 -pady 3
-
-
-
-
-
-
 
 
         #--- Cree un frame pour afficher les champs du header
@@ -1555,12 +1412,12 @@ namespace eval bddimages_analyse {
         set interop [frame $f6.interop -borderwidth 0 -cursor arrow -relief groove]
         pack $interop -in $f6 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
   
-           # Bouton Aladin       
+           # Bouton pour envoyer les plans courants (image,table) vers Aladin
            set plan [frame $interop.plan -borderwidth 0 -cursor arrow -relief solid -borderwidth 1]
            pack $plan -in $interop -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
               label $plan.lab -text "Envoyer le plan vers "
               pack $plan.lab -in $plan -side left -padx 3 -pady 3
-              button $plan.aladin -text "Aladin" -borderwidth 2 -takefocus 1 -command "::bddimages_analyse::aladin" 
+              button $plan.aladin -text "Aladin" -borderwidth 2 -takefocus 1 -command "::bddimages_analyse::sendImageAndTable" 
               pack $plan.aladin -side left -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
            # 
@@ -1569,27 +1426,31 @@ namespace eval bddimages_analyse {
 
               set l [frame $dss.l -borderwidth 0 -cursor arrow  -borderwidth 0]
               pack $l -in $dss -anchor s -side left -expand 0 -fill x -padx 10 -pady 5
-                 label $l.coord -text "Coordonnees : "
-                 pack $l.coord -in $l -side top -padx 3 -pady 3
-                 label $l.date -text "Date : "
+                 label $l.date -justify right -text "Epoque (UTC) : "
                  pack $l.date -in $l -side top -padx 3 -pady 3
-                 label $l.uaicode -text "UAI Code : "
+                 label $l.coord -justify right -text "Coordonnees (RA DEC) : "
+                 pack $l.coord -in $l -side top -padx 3 -pady 3
+                 label $l.radius -justify right -text "Rayon (arcmin) : "
+                 pack $l.radius -in $l -side top -padx 3 -pady 3
+                 label $l.uaicode -justify right -text "UAI Code : "
                  pack $l.uaicode -in $l -side top -padx 3 -pady 3
  
               set m [frame $dss.m -borderwidth 0 -cursor arrow  -borderwidth 0]
               pack $m -in $dss -anchor s -side left -expand 0 -fill x -padx 10 -pady 5
-                 entry $m.coord -relief sunken -textvariable ::analyse_tools::coord
-                 pack $m.coord -in $m -side top -padx 3 -pady 3 -anchor w
-                 entry $m.date -relief sunken -textvariable ::analyse_tools::date
+                 entry $m.date -relief sunken -width 26 -textvariable ::analyse_tools::date
                  pack $m.date -in $m -side top -padx 3 -pady 3 -anchor w
-                 entry $m.uaicode -relief sunken -textvariable ::analyse_tools::uaicode
+                 entry $m.coord -relief sunken -width 26 -textvariable ::analyse_tools::coord
+                 pack $m.coord -in $m -side top -padx 3 -pady 3 -anchor w
+                 entry $m.radius -relief sunken -width 26 -textvariable ::analyse_tools::radius
+                 pack $m.radius -in $m -side top -padx 3 -pady 3 -anchor w
+                 entry $m.uaicode -relief sunken -width 26 -textvariable ::analyse_tools::uaicode
                  pack $m.uaicode -in $m -side top -padx 3 -pady 3 -anchor w
 
               set r [frame $dss.r -borderwidth 0 -cursor arrow  -borderwidth 0]
               pack $r -in $dss -anchor s -side left -expand 0 -fill x -padx 3 -pady 3
-                 button $r.resolve -text "resolve" -borderwidth 0 -takefocus 1 -relief groove -borderwidth 1 -command ""
+                 button $r.resolve -text "Resolve Sso" -borderwidth 0 -takefocus 1 -relief groove -borderwidth 1 -command "::bddimages_analyse::skybotResolver"
                  pack $r.resolve -side top -anchor e -padx 3 -pady 3 -ipadx 3 -ipady 3 -expand 0
-                 button $r.aladin -text "Aladin" -borderwidth 0 -takefocus 1 -relief groove -borderwidth 1 -command "" 
+                 button $r.aladin -text "Show in Aladin" -borderwidth 0 -takefocus 1 -relief groove -borderwidth 1 -command "::bddimages_analyse::sendAladinScript" 
                  pack $r.aladin -side top -anchor e -padx 3 -pady 3 -ipadx 3 -ipady 3 -expand 0
 
         #--- Cree un frame pour afficher 
@@ -1647,10 +1508,6 @@ namespace eval bddimages_analyse {
                      button  $manuel.buttons.creer  -borderwidth 1  \
                          -command "" -text "Creer"
                      pack    $manuel.buttons.creer -in $manuel.buttons -side left -anchor e -expand 0 
-
-
-
-
 
 
         #--- Cree un frame pour afficher bouton fermeture

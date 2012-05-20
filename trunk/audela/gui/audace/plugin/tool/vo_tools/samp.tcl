@@ -38,6 +38,7 @@ namespace eval Samp {
       table.highlight.row struct
       coord.pointAt.sky struct
       table.select.rowList struct
+      script.aladin.send struct
    } declareSubscriptions
 
    # Samp msg load.image.fits
@@ -90,12 +91,12 @@ namespace eval Samp {
    # Samp msg script.aladin.send
    typedef {
       script string
-   } aladinScript
+   } sendAladinScript
    
    typedef {
       samp.mtype string
-      samp.params aladinScript
-   } aladinScriptWrapper
+      samp.params sendAladinScript
+   } sendAladinScriptWrapper
 
    # Internationalisation
    source [ file join [file dirname [info script]] samp.cap ]
@@ -186,10 +187,10 @@ proc ::Samp::build { nsp } {
             -params { arg1 string arg2 coordPointAtSkyWrapper } \
             -name "samp.hub.notifyAll"
 
-   XMLRPC::create ${nsp}::m_aladinScript \
+   XMLRPC::create ${nsp}::m_sendAladinScript \
             -uri [set ${nsp}::params(samp.hub.xmlrpc.url)] \
             -proxy [set ${nsp}::params(samp.hub.xmlrpc.url)] \
-            -params { arg1 string arg2 aladinScriptWrapper } \
+            -params { arg1 string arg2 sendAladinScriptWrapper } \
             -name "samp.hub.notifyAll"
 
    # Implementation des methodes SAMP
@@ -510,17 +511,18 @@ proc ::Samp::build { nsp } {
       ::console::disp "$caption(samp,tcpport) $port \n"
       set msg [m_setXmlrpcCallback $key "http://127.0.0.1:$port/"]
       set msg [m_declareSubscriptions $key { samp.app.ping {}
-                                              samp.hub.event.register {}
-                                              samp.hub.event.shutdown {}
-                                              samp.hub.event.unregister {}
-                                              samp.hub.event.metadata {}
-                                              samp.hub.disconnect {}
-                                              coord.pointAt.sky {}
-                                              image.load.fits {}
-                                              table.load.votable {}
-                                              spectrum.load.ssa-generic {}
-                                              table.highlight.row {}
-                                              table.select.rowList {} }]
+                                             samp.hub.event.register {}
+                                             samp.hub.event.shutdown {}
+                                             samp.hub.event.unregister {}
+                                             samp.hub.event.metadata {}
+                                             samp.hub.disconnect {}
+                                             coord.pointAt.sky {}
+                                             script.aladin.send {}
+                                             image.load.fits {}
+                                             table.load.votable {}
+                                             spectrum.load.ssa-generic {}
+                                             table.highlight.row {}
+                                             table.select.rowList {} }]
       set [namespace current]::initialized 1
    }
 

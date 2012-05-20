@@ -568,7 +568,6 @@ proc ::votableUtil::refreshVisu { args } {
    # Efface les objets du canvas
    ::votableUtil::clearDisplay
    # Recupere la valeur courante du zoom
-#   set zoom [visu$::audace(visuNo) zoom]
    set zoom [::confVisu::getZoom $::audace(visuNo)]
    # Calcul les limites minmax de l'image dans le canvas
                   set box [ ::confVisu::getBox 1 ]
@@ -614,7 +613,6 @@ proc ::votableUtil::pointAtSky { RA DEC } {
    ::votableUtil::clearDisplay
    ::votableUtil::refreshVisu
    # Recupere la valeur courante du zoom
-#   set zoom [visu$::audace(visuNo) zoom]
    set zoom [::confVisu::getZoom $::audace(visuNo)]
    # Calcul les limites minmax de l'image dans le canvas
    set xmin 0

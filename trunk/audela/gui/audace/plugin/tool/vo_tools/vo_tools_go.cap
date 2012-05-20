@@ -28,15 +28,6 @@ set caption(vo_tools_go,samp_menu_broadcastTab)  "Broadcast VOTable"
 set caption(vo_tools_go,samp_menu_broadcastSpe)  "Broadcast spectrum"
 set caption(vo_tools_go,samp_menu_connect)       "Connect"
 set caption(vo_tools_go,samp_menu_disconnect)    "Disconnect"
-set caption(vo_tools_go,samp_connected)          "Samp: connected to hub"
-set caption(vo_tools_go,samp_hubnotfound)        "Samp: hub not found, could not connect"
-set caption(vo_tools_go,samp_imgtobroadcast)     "Broadcasting image "
-set caption(vo_tools_go,samp_noimgtobroadcast)   "No image to broadcast..."
-set caption(vo_tools_go,samp_tabtobroadcast)     "Broadcasting VOTable "
-set caption(vo_tools_go,samp_notabtobroadcast)   "No VOTable to broadcast..."
-set caption(vo_tools_go,samp_spetobroadcast)     "Broadcasting spectrum "
-set caption(vo_tools_go,samp_nospetobroadcast)   "No spectrum to broadcast..."
-set caption(vo_tools_go,samp_noimageloaded)      "Impossible to load a VOTable because there is no image loaded in the canvas"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -58,15 +49,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(vo_tools_go,samp_menu_broadcastSpe) "Diffuser le spectre"
    set caption(vo_tools_go,samp_menu_connect)      "Connecter"
    set caption(vo_tools_go,samp_menu_disconnect)   "Déconnecter"
-   set caption(vo_tools_go,samp_connected)         "Samp: connecté au hub"
-   set caption(vo_tools_go,samp_hubnotfound)       "Samp: hub non trouvé, connexion impossible"
-   set caption(vo_tools_go,samp_imgtobroadcast)    "Diffusion de l'image "
-   set caption(vo_tools_go,samp_noimgtobroadcast)  "Aucune image à diffuser..."
-   set caption(vo_tools_go,samp_tabtobroadcast)    "Diffusion de la VOTable "
-   set caption(vo_tools_go,samp_notabtobroadcast)  "Aucune VOTable à diffuser..."
-   set caption(vo_tools_go,samp_spetobroadcast)    "Diffusion du spectre "
-   set caption(vo_tools_go,samp_nospetobroadcast)  "Aucun spectre � diffuser..."
-   set caption(vo_tools_go,samp_noimageloaded)     "Impossible de charger une VOTable car il n'y a aucune image dans le canvas"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -88,15 +70,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(vo_tools_go,samp_menu_broadcastSpe) "Broadcast spectrum"
    set caption(vo_tools_go,samp_menu_connect)      "Connettere"
    set caption(vo_tools_go,samp_menu_disconnect)   "Sconnettere"
-   set caption(vo_tools_go,samp_connected)         "Samp: connected to hub"
-   set caption(vo_tools_go,samp_hubnotfound)       "Samp: hub not found, could not connect"
-   set caption(vo_tools_go,samp_imgtobroadcast)    "Broadcasting image "
-   set caption(vo_tools_go,samp_noimgtobroadcast)  "No image to broadcast..."
-   set caption(vo_tools_go,samp_tabtobroadcast)    "Broadcasting VOTable "
-   set caption(vo_tools_go,samp_notabtobroadcast)  "No VOTable to broadcast..."
-   set caption(vo_tools_go,samp_spetobroadcast)    "Broadcasting spectrum "
-   set caption(vo_tools_go,samp_nospetobroadcast)  "No spectrum to broadcast..."
-   set caption(vo_tools_go,samp_noimageloaded)     "Impossible to load a VOTable because there is no image loaded in the canvas"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -118,15 +91,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(vo_tools_go,samp_menu_broadcastSpe) "Broadcast spectrum"
    set caption(vo_tools_go,samp_menu_connect)      "Conectar"
    set caption(vo_tools_go,samp_menu_disconnect)   "Desconectar"
-   set caption(vo_tools_go,samp_connected)         "Samp: connected to hub"
-   set caption(vo_tools_go,samp_hubnotfound)       "Samp: hub not found, could not connect"
-   set caption(vo_tools_go,samp_imgtobroadcast)    "Broadcasting image "
-   set caption(vo_tools_go,samp_noimgtobroadcast)  "No image to broadcast..."
-   set caption(vo_tools_go,samp_tabtobroadcast)    "Broadcasting VOTable "
-   set caption(vo_tools_go,samp_notabtobroadcast)  "No VOTable to broadcast..."
-   set caption(vo_tools_go,samp_spetobroadcast)    "Broadcasting spectrum "
-   set caption(vo_tools_go,samp_nospetobroadcast)  "No spectrum to broadcast..."
-   set caption(vo_tools_go,samp_noimageloaded)     "Impossible to load a VOTable because there is no image loaded in the canvas"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -148,15 +112,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(vo_tools_go,samp_menu_broadcastSpe) "Broadcast spectrum"
    set caption(vo_tools_go,samp_menu_connect)      "Anschließen"
    set caption(vo_tools_go,samp_menu_disconnect)   "Abschließen"
-   set caption(vo_tools_go,samp_connected)         "Samp: connected to hub"
-   set caption(vo_tools_go,samp_hubnotfound)       "Samp: hub not found, could not connect"
-   set caption(vo_tools_go,samp_imgtobroadcast)    "Broadcasting image "
-   set caption(vo_tools_go,samp_noimgtobroadcast)  "No image to broadcast..."
-   set caption(vo_tools_go,samp_tabtobroadcast)    "Broadcasting VOTable "
-   set caption(vo_tools_go,samp_notabtobroadcast)  "No VOTable to broadcast..."
-   set caption(vo_tools_go,samp_spetobroadcast)    "Broadcasting spectrum "
-   set caption(vo_tools_go,samp_nospetobroadcast)  "No spectrum to broadcast..."
-   set caption(vo_tools_go,samp_noimageloaded)     "Impossible to load a VOTable because there is no image loaded in the canvas"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -178,15 +133,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(vo_tools_go,samp_menu_broadcastSpe) "Broadcast spectrum"
    set caption(vo_tools_go,samp_menu_connect)      "Conectar"
    set caption(vo_tools_go,samp_menu_disconnect)   "Desconectar"
-   set caption(vo_tools_go,samp_connected)         "Samp: connected to hub"
-   set caption(vo_tools_go,samp_hubnotfound)       "Samp: hub not found, could not connect"
-   set caption(vo_tools_go,samp_imgtobroadcast)    "Broadcasting image "
-   set caption(vo_tools_go,samp_noimgtobroadcast)  "No image to broadcast..."
-   set caption(vo_tools_go,samp_tabtobroadcast)    "Broadcasting VOTable "
-   set caption(vo_tools_go,samp_notabtobroadcast)  "No VOTable to broadcast..."
-   set caption(vo_tools_go,samp_spetobroadcast)    "Broadcasting spectrum "
-   set caption(vo_tools_go,samp_nospetobroadcast)  "No spectrum to broadcast..."
-   set caption(vo_tools_go,samp_noimageloaded)     "Impossible to load a VOTable because there is no image loaded in the canvas"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -208,15 +154,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(vo_tools_go,samp_menu_broadcastSpe) "Broadcast spectrum"
    set caption(vo_tools_go,samp_menu_connect)      "Tilslut"
    set caption(vo_tools_go,samp_menu_disconnect)   "Afbryd"
-   set caption(vo_tools_go,samp_connected)         "Samp: connected to hub"
-   set caption(vo_tools_go,samp_hubnotfound)       "Samp: hub not found, could not connect"
-   set caption(vo_tools_go,samp_imgtobroadcast)    "Broadcasting image "
-   set caption(vo_tools_go,samp_noimgtobroadcast)  "No image to broadcast..."
-   set caption(vo_tools_go,samp_tabtobroadcast)    "Broadcasting VOTable "
-   set caption(vo_tools_go,samp_notabtobroadcast)  "No VOTable to broadcast..."
-   set caption(vo_tools_go,samp_spetobroadcast)    "Broadcasting spectrum "
-   set caption(vo_tools_go,samp_nospetobroadcast)  "No spectrum to broadcast..."
-   set caption(vo_tools_go,samp_noimageloaded)     "Impossible to load a VOTable because there is no image loaded in the canvas"
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -238,15 +175,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(vo_tools_go,samp_menu_broadcastSpe) "Broadcast spectrum"
    set caption(vo_tools_go,samp_menu_connect)      "Connect"
    set caption(vo_tools_go,samp_menu_disconnect)   "Disconnect"
-   set caption(vo_tools_go,samp_connected)         "Samp: connected to hub"
-   set caption(vo_tools_go,samp_hubnotfound)       "Samp: hub not found, could not connect"
-   set caption(vo_tools_go,samp_imgtobroadcast)    "Broadcasting image "
-   set caption(vo_tools_go,samp_noimgtobroadcast)  "No image to broadcast..."
-   set caption(vo_tools_go,samp_tabtobroadcast)    "Broadcasting VOTable "
-   set caption(vo_tools_go,samp_notabtobroadcast)  "No VOTable to broadcast..."
-   set caption(vo_tools_go,samp_spetobroadcast)    "Broadcasting spectrum "
-   set caption(vo_tools_go,samp_nospetobroadcast)  "No spectrum to broadcast..."
-   set caption(vo_tools_go,samp_noimageloaded)     "Impossible to load a VOTable because there is no image loaded in the canvas"
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -268,19 +196,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(vo_tools_go,samp_menu_broadcastSpe) "Broadcast spectrum"
    set caption(vo_tools_go,samp_menu_connect)      "Connect"
    set caption(vo_tools_go,samp_menu_disconnect)   "Disconnect"
-   set caption(vo_tools_go,samp_connected)         "Samp: connected to hub"
-   set caption(vo_tools_go,samp_hubnotfound)       "Samp: hub not found, could not connect"
-   set caption(vo_tools_go,samp_imgtobroadcast)    "Broadcasting image "
-   set caption(vo_tools_go,samp_noimgtobroadcast)  "No image to broadcast..."
-   set caption(vo_tools_go,samp_tabtobroadcast)    "Broadcasting VOTable "
-   set caption(vo_tools_go,samp_notabtobroadcast)  "No VOTable to broadcast..."
-   set caption(vo_tools_go,samp_spetobroadcast)    "Broadcasting spectrum "
-   set caption(vo_tools_go,samp_nospetobroadcast)  "No spectrum to broadcast..."
-   set caption(vo_tools_go,samp_noimageloaded)     "Impossible to load a VOTable because there is no image loaded in the canvas"
 
 }
 
 #=========================================================================
 #   Fin de la déclaration des textes localisés (internationalisation)
 #=========================================================================
-
