@@ -94,10 +94,6 @@ namespace eval ::Magnifier {
    #    cree une nouvelle instance de l'outil
    #------------------------------------------------------------
    proc createPluginInstance { { in "" } { visuNo 1 } } {
-      #variable private
-
-      #--- j'initialise les parametres dans le tableau conf()
-      #set private(imageSize) " "
 
       return [namespace current]
    }
