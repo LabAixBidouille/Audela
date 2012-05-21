@@ -1289,7 +1289,9 @@ namespace eval ::div {
       set result [$::confVisu::private($visuNo,This).fra1.labI cget -text]
 
       #--   ote le text
-      regsub -all "$caption(confVisu,I) $caption(confVisu,egale) " $result "" intensite
+      set pattern [list $caption(confVisu,I) "" $caption(confVisu,egale) "" \
+         $caption(confVisu,rouge) "" $caption(confVisu,vert) "" $caption(confVisu,bleu) ""]
+      set intensite [string map -nocase $pattern $result]
 
       #--   extrait les entiers
       for {set i 0} {$i < [llength $intensite]} {incr i} {
