@@ -6,8 +6,9 @@
 
 
 
+
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><title>Liste de toutes les fonctions</title></head><body>
-<p class="date">Date de mise à jour : 08 janvier 2012</p>
+<p class="date">Date de mise à jour : 21 mai 2012</p>
 <h1>Liste de toutes les fonctions </h1>
 <p>Nous donnons la liste de toutes les fonctions disponibles dans
 AudeLA, plus quelques unes de TCL et TK qui sont très utiles. En
@@ -1096,7 +1097,7 @@ audace(camNo) : [AC] numéro de la caméra associée
 à la visu principale<br />
 audace(imageNo) : [AC] numéro de l'image TK de la visu principale<br />
 audace(telNo) : [AC] numéro du télescope<br />
-audace(visuNo) : [AC] numéro de la visu principale<br />
+audace(visuNo) : [AC] numéro de la visu principale<br /><br />
 audace(aladin) : [AC]&nbsp; répertoire dédié au
 programme Aladin<br />
 audace(rep_archives) : [AC] répertoire dédié aux archives de données<br />
@@ -1127,6 +1128,10 @@ audace(rep_travail) : [AC] répertoire dédié aux
 fichiers de travail temporaires<br />
 audace(rep_userCatalog) : [AC] répertoire dédié
 aux catalogues utilisateurs<br />
+audace(rep_userFiltre) : [AC] répertoire dédié
+aux filtres utilisateurs<br />
+audace(rep_userPalette) : [AC] répertoire dédié
+aux palettes utilisateurs<br /><br />
 audace(hl,format,hmsint) : [AC] heure locale du moment au format "HHh
 MMm SSs" (par exemple : 23h 57m 14s)<br />
 audace(hl,format,hm) : [AC] heure locale du moment au format "HH
@@ -1141,9 +1146,7 @@ audace(tsl) : [AC] heure TSL du moment au format "HH MM SS.SSSSSS" (par
 exemple : 6 9 22.310192)<br />
 audace(tsl,format,hmsint) : [AC] heure TSL du moment au format "HHh MMm
 SSs" (par exemple : 06h 09m 44s)<br />
-audace(tsl,format,zenith) : [AC] Ascension Droite du zénith<br />
-audace(endCopyright) : [AC] année en cours pour la borne
-supérieure du Copyright<br />
+audace(tsl,format,zenith) : [AC] Ascension Droite du zénith<br /><br />
 audace(focus,currentFocus) : [AC] position actuelle du dispositif
 de mise au point (focuser)<br />
 audace(focus,labelspeed) : [AC] vitesse
@@ -1179,9 +1182,11 @@ monture (1 : Vitesse la plus lente, n : Vitesse la plus rapide)<br />
 audace(telescope,targetDec) : [AC] Déclinaison de l'objet cible<br />
 audace(telescope,targetEquinox) : [AC] équinoxe de l'objet cible<br />
 audace(telescope,targetName) : [AC] nom de l'objet cible<br />
-audace(telescope,targetRa) : [AC] Ascension Droite de l'objet cible<br />
+audace(telescope,targetRa) : [AC] Ascension Droite de l'objet cible<br /><br />
 audace(base) : [AC] vaut '.audace'<br />
 audace(Console) : [AC] vaut '.console'<br />
+audace(endCopyright) : [AC] année en cours pour la borne
+supérieure du Copyright<br />
 audace(extensionList) : [AC] liste des extensions des images
 associées à la caméra en cours d'utilisation<br />
 audace(hCanvas) : [AC] nom TK du canvas de la visu principale<br />
@@ -1190,6 +1195,8 @@ audace(list_binning) : [AC] liste des binnings associées
 audace(posobs,observateur,gps) : [AC] position GPS de l'observateur
 (par exemple : GPS 1.377972 E 43.660917 142)<br />
 audace(quitterEnCours) : [AC] indicateur d'arrêt d'AudeLA<br />
+audace(satel,server) : [AC] serveur du plugin "Satellites artificiels"<br />
+audace(satel,tlefiles) : [AC] noms des fichiers TLE du plugin "Satellites artificiels"<br /><br />
 audace(color,cursor_blue) : [AC] couleur dédiée aux
 glissières (état passif) pour les images N&amp;B<br />
 audace(color,cursor_blue_actif) : [AC] couleur dédiée aux
@@ -1201,7 +1208,7 @@ glissières (état passif) pour les images couleurs (verte)<br />
 audace(color,cursor_rgb_red) : [AC] couleur dédiée aux
 glissières (état passif) pour les images couleurs (rouge)<br />
 audace(color,cursor_rgb_actif) : [AC] couleur dédiée aux
-glissières (état actif) pour les images couleurs<br />
+glissières (état actif) pour les images couleurs<br /><br />
 [AC] couleur dédiée à des widgets, utiliser le
 menu 'Configuration'
 --&gt; 'Apparence' pour identifier les widgets concernés et
