@@ -181,7 +181,7 @@ proc ::bddimages::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_imgcorrection.cap ]\""
 
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages utils astroid libastroid.tcl ]\""
-   load libcatalog.so
+   load libcatalog[info sharedlibextension]
    #gren_info "ressources\n"
 }
 
