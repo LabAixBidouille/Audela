@@ -385,6 +385,12 @@ namespace eval ::div {
 
       set this $private(div,$visuNo,this)
 
+      #--   supprime les icones
+      image delete \
+         $private(div,$visuNo,pipette_blanche) \
+         $private(div,$visuNo,pipette_noire) \
+         $private(div,$visuNo,info)
+
       #--   supprime les bindings
       foreach scale [list scale_lumen scale_contrast scale_step scale_gamma] {
          bind $this.val.$scale <ButtonRelease> ""
