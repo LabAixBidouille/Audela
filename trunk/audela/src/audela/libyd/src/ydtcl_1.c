@@ -2566,15 +2566,15 @@ int Cmd_ydtcl_filehtm2refzmgmes(ClientData clientData, Tcl_Interp *interp, int a
 }
 
 int Cmd_ydtcl_file2htm(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
-/****************************************************************************/
-/* Explose le fichier texte de catalogue d'observation en leur equivalents  */
-/* binaires rassemblés par meme HTM.                                        */
-/****************************************************************************/
-/* Input :                                                                  */
-/* ra dec jd codecam codefiltre maginst exposure airmass (ASCII)            */
-/* Output : un fichier pour chaque HTM                                      */
-/* ra dec jd codecam codefiltre maginst exposure airmass  (binaire)         */
-/****************************************************************************/
+/*********************************************************************************/
+/* Explose le fichier texte de catalogue d'observation en leur equivalents       */
+/* binaires rassemblés par meme HTM.                                             */
+/*********************************************************************************/
+/* Input :                                                                       */
+/* ra dec jd codecam codefiltre maginst exposure airmass dmag flagsext (ASCII)   */
+/* Output : un fichier pour chaque HTM                                           */
+/* ra dec jd codecam codefiltre maginst exposure airmass dmag flagsext (binaire) */
+/*********************************************************************************/
 {
    char s[100];
    char path[1024];
