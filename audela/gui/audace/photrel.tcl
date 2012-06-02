@@ -246,7 +246,9 @@ proc photrel_wcs2cat { args } {
             set jd [mc_datescomp $date_obs + [expr $exposure/2./86400.]]
             set codecam 0
             set maginst [lindex $ligne 3]
-            set texte "$ra $dec $jd $codecam $codefiltre $maginst $exposure $airmass 0 1"
+            set dmag [lindex $ligne 4]
+            set sexflag [lindex $ligne 15]
+            set texte "$ra $dec $jd $codecam $codefiltre $maginst $exposure $airmass $dmag $sexflag"
             append textes "${texte}\n"
          }
          set asciifile_in $::audace(rep_images)/catalog.txt
