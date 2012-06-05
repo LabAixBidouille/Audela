@@ -90,8 +90,6 @@ namespace eval ::prtr {
          trace add variable "::audace(rep_images)" write "::prtr::updateTbl $visuNo"
          #--   surveille le chargement d'une image
          trace add variable "::confVisu::private($visuNo,lastFileName)" write "::prtr::updateTbl $visuNo"
-         #--   surveille le dessin d'une boite de selection
-         trace add variable "::confVisu::private($visuNo,boxSize)" write "::prtr::updateBox $visuNo"
          #--   surveille le changement d'extension
          trace add variable "::conf(extension,defaut)" write "::prtr::changeExtension $visuNo"
          #--   surveille le changement de compression
@@ -375,6 +373,15 @@ namespace eval ::prtr {
                lappend private($liste) [lindex $content $i]
             }
             ::prtr::buildParam_$liste $private(table).$child $visuNo
+         }
+      }
+
+      if {$private(function) in {WINDOW MATRIX}} {
+         #--   surveille le dessin d'une boite de selection
+         trace add variable "::confVisu::private($visuNo,boxSize)" write "::prtr::updateBox $visuNo"
+      } else  {
+         if {[trace info variable "::confVisu::private($visuNo,boxSize)"] ne ""} {
+            trace remove variable "::confVisu::private($visuNo,boxSize)" write "::prtr::updateBox $visuNo"
          }
       }
    }
@@ -933,13 +940,14 @@ namespace eval ::prtr {
       variable bd
 
       #--   arrete si pas fonction avec une box
-      if {$private(function) ni {WINDOW MATRIX}} {return}
+      #if {$private(function) ni {WINDOW MATRIX}} {return}
 
       set box  [::confVisu::getBox $visuNo]
       if {$box eq ""} {
          #--   les valeurs par defaut des fonctions a la box
          regsub -all {x1|y1|x2|y2} $private(l_obligatoire) "" box
       }
+
       foreach {::prtr::x1 ::prtr::y1 ::prtr::x2 ::prtr::y2} $box {break}
    }
 
@@ -1302,9 +1310,12 @@ namespace eval ::prtr {
       trace remove variable "::prtr::operation" write "::prtr::changeOp $visuNo"
       trace remove variable "::audace(rep_images)" write "::prtr::updateTbl $visuNo"
       trace remove variable "::confVisu::private($visuNo,lastFileName)" write "::prtr::updateTbl $visuNo"
-      trace remove variable "::confVisu::private($visuNo,boxSize)" write "::prtr::updateBox $visuNo"
+      if {[trace info variable "::confVisu::private($visuNo,boxSize)"] ne ""} {
+         trace remove variable "::confVisu::private($visuNo,boxSize)" write "::prtr::updateBox $visuNo"
+      }
       trace remove variable "::conf(extension,defaut)" write "::prtr::changeExtension $visuNo"
       trace remove variable "::conf(fichier,compres)" write "::prtr::changeExtension $visuNo"
+
       ::prtr::widgetToConf
       destroy $private(this)
       array unset bd
