@@ -420,7 +420,10 @@ namespace eval ::fieldchart {
             $fieldchart(CentreDec) != "" && $fieldchart(Inclin) != "" && $fieldchart(FocLen) != "" && \
             $fieldchart(PixSize1) != "" && $fieldchart(PixSize2) != "" && $fieldchart(Crpix1) != "" &&
             $fieldchart(Crpix2) != "" } {
-
+            #--   precaution pour que les valeurs soient en degres
+            set fieldchart(CentreRA) [string trim [mc_angle2deg $fieldchart(CentreRA)]]
+            set fieldchart(CentreDec) [string trim [mc_angle2deg $fieldchart(CentreDec)]]
+            #--
             set field [ list OPTIC NAXIS1 $fieldchart(PictureWidth) NAXIS2 $fieldchart(PictureHeight) \
                FOCLEN $fieldchart(FocLen) PIXSIZE1 $fieldchart(PixSize1)$unit PIXSIZE2 $fieldchart(PixSize2)$unit \
                CROTA2 $fieldchart(Inclin) RA $fieldchart(CentreRA) DEC $fieldchart(CentreDec) \
@@ -443,11 +446,11 @@ namespace eval ::fieldchart {
       } elseif { ! [ string compare $choix $caption(fieldchart,usno) ] } {
          set objects [ list * USNO $::fieldchart::widget(fieldchart,pathCatalog) ]
       }
+
       set result [ list LIST ]
       set magmax [ $This.usr.1.magmax get ]
 
       set a_executer { mc_readcat $field $objects $result -magb< $magmax -magr< $magmax }
-
       set msg [ eval $a_executer ]
 
       if { [ llength $msg ] == "1" } {
