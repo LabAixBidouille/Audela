@@ -133,7 +133,7 @@ namespace eval ::acqt1m_flatcielplus {
       }
 
       # Attente entre les mesures du ciel si c'est trop tot
-      set private(attente) 30
+      set private(attente) 60
 
       # % de dynamique
       set private(mydynamique) 0.5
