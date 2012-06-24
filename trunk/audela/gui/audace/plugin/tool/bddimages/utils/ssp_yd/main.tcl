@@ -8,7 +8,7 @@
 #
 # @brief Traitement des archives dans bddimages a partir de la base de donnees SSP
 
-   load libcatalog.so
+   load libcatalog[info sharedlibextension]
    source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/get_cata.tcl
    source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/visu.tcl
    source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/get_one_image.tcl
@@ -65,7 +65,7 @@
    set err [catch {::bddimages_sql::sql query "use $bddconf(dbname);"} msg]
    if {$err} {
       gren_info "SSP_PLUGIN: ERREUR 1 \n"
-      gren_info "SSP_PLUGIN:        NUM : <$err> \n" 
+      gren_info "SSP_PLUGIN:        NUM : <$err> \n"
       gren_info "SSP_PLUGIN:        MSG : <$msg> \n"
       }
 
@@ -74,7 +74,7 @@
    set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
    if {$err} {
       gren_info "SSP_PLUGIN: ERREUR 2 \n"
-      gren_info "SSP_PLUGIN:        NUM : <$err> \n" 
+      gren_info "SSP_PLUGIN:        NUM : <$err> \n"
       gren_info "SSP_PLUGIN:        MSG : <$msg> \n"
       }
    gren_info "SSP_PLUGIN: NB IMAGE SUR $bddconf(dbname) =<$resultsql>\n\n"
@@ -83,7 +83,7 @@
    set err [catch {set resultsql [::bddimages_sql::sql query $sqlcmd]} msg]
    if {$err} {
       gren_info "SSP_PLUGIN: ERREUR 2 \n"
-      gren_info "SSP_PLUGIN:        NUM : <$err> \n" 
+      gren_info "SSP_PLUGIN:        NUM : <$err> \n"
       gren_info "SSP_PLUGIN:        MSG : <$msg> \n"
       }
    gren_info "SSP_PLUGIN: NB IMAGE a traiter SUR $bddconf(dbname) =<$resultsql>\n\n"
@@ -143,7 +143,7 @@
    gren_info "\n****************************************************************** \n"
    gren_info "** SkyBot \n"
    gren_info "****************************************************************** \n"
-   
+
    set datejd  [ mc_date2jd $ssp_image(dateobs) ]
    set datejd  [ expr $datejd + $ssp_image(exposure)/86400.0/2.0 ]
    set dateiso [ mc_date2iso8601 $datejd ]
@@ -164,7 +164,7 @@
    gren_info "****************************************************************** \n"
 
 #   gren_info "rollup skybot= [::manage_source::get_nb_sources_rollup $listsources]\n"
-#   set listsources [ identification $listsources "OVNI" $listskybot "SKYBOT" 30.0 10.0 10.0] 
+#   set listsources [ identification $listsources "OVNI" $listskybot "SKYBOT" 30.0 10.0 10.0]
    gren_info "rollup skybot= [::manage_source::get_nb_sources_rollup $listsources]\n"
 
    ::manage_source::imprim_sources $listsources "SKYBOT"
@@ -202,7 +202,7 @@
       set b [buf$bddconf(bufno) xy2radec {713 1826}]
       set f [list [lindex $a 0] [lindex $a 1] [lindex $b 0] [lindex $b 1] ]
       set log 0
-      set listsources [ identification $listsources IMG $tycho2 TYCHO2 30.0 -30.0 $f $log] 
+      set listsources [ identification $listsources IMG $tycho2 TYCHO2 30.0 -30.0 $f $log]
 
       affich_rond $tycho2      TYCHO2 "blue"   2
       affich_rond $listsources TYCHO2 "red"    1
@@ -225,7 +225,7 @@
       set b [buf$bddconf(bufno) xy2radec {713 1826}]
       set f [list [lindex $a 0] [lindex $a 1] [lindex $b 0] [lindex $b 1] ]
       set log 0
-      set listsources [ identification $listsources IMG $ucac2 UCAC2  30.0 -30.0 $f $log] 
+      set listsources [ identification $listsources IMG $ucac2 UCAC2  30.0 -30.0 $f $log]
 
       affich_rond $ucac2       UCAC2 "blue"   2
       affich_rond $listsources UCAC2 "red"    1
@@ -247,7 +247,7 @@
       set b [buf$bddconf(bufno) xy2radec {713 1826}]
       set f [list [lindex $a 0] [lindex $a 1] [lindex $b 0] [lindex $b 1] ]
       set log 0
-      set listsources [ identification $listsources IMG $ucac3  UCAC3  30.0 -30.0 $f $log] 
+      set listsources [ identification $listsources IMG $ucac3  UCAC3  30.0 -30.0 $f $log]
 
       affich_rond $ucac3       UCAC3 "blue"   2
       affich_rond $listsources UCAC3 "red"    1
@@ -278,11 +278,11 @@
    gren_info "****************************************************************** \n"
    gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
    gren_info "FIN de script\n"
-   
+
    set tt1 [clock clicks -milliseconds]
    set tt [expr ($tt1 - $tt0)/1000.]
    gren_info "Total duration $tt sec \n"
 
-   
+
 
 

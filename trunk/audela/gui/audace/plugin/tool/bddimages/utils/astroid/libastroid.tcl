@@ -1,4 +1,4 @@
-load libcatalog.so
+load libcatalog[info sharedlibextension]
 source [file join $audace(rep_install) gui audace plugin tool bddimages utils astroid get_cata.tcl      ]
 source [file join $audace(rep_install) gui audace plugin tool bddimages utils astroid visu.tcl          ]
 source [file join $audace(rep_install) gui audace plugin tool bddimages utils astroid get_one_image.tcl ]
