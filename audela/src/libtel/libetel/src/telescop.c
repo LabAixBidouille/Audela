@@ -76,6 +76,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 {
    char s[1024];
 	int err,k,kk,axis[3];
+	char etel_driver[50];
 #if defined(MOUCHARD)
    FILE *f;
    f=fopen("mouchard_etel.txt","wt");
@@ -85,8 +86,12 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 	axis[0]=0;
 	axis[1]=1; //4
 	axis[2]=2; //5
+	strcpy(etel_driver,"DSTEB3");
    if (argc >= 1) {
       for (kk = 0; kk < argc-1; kk++) {
+         if (strcmp(argv[kk], "-driver") == 0) {
+            strcpy(etel_driver,argv[kk + 1]);
+         }
          if (strcmp(argv[kk], "-axis0") == 0) {
             axis[0]=atoi(argv[kk + 1]);
          }
@@ -112,11 +117,11 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 			mytel_error(tel,k,err);
 			return 1;
 		}
-		sprintf(s,"etb:DSTEB3:%d",axis[k]);
+		sprintf(s,"etb:%s:%d",etel_driver,axis[k]);
 		if (err = dsa_open_u(tel->drv[k],s)) {
 			if (k==0) {
 				mytel_error(tel,k,err);
-				sprintf(s," {etb:DSTEB3:%d}",axis[k]);
+				sprintf(s," {etb:%s:%d}",etel_driver,axis[k]);
 				strcat(tel->msg,s);
 				tel_close(tel);
 				return 2;
@@ -127,18 +132,18 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 			if (k==0) { tel->axis_param[k].type=AXIS_DEC; }
 			if (k==1) { tel->axis_param[k].type=AXIS_HA; }
 			if (k==2) { tel->axis_param[k].type=AXIS_PARALLACTIC; }
-		}
-		/* Reset error */
-		if (err = dsa_reset_error_s(tel->drv[k], 1000)) {
-			mytel_error(tel,k,err);
-			tel_close(tel);
-			return 3;
-		}
-		/* power on */
-		if (err = dsa_power_on_s(tel->drv[k], 10000)) {
-			mytel_error(tel,k,err);
-			tel_close(tel);
-			return 4;
+			/* Reset error */
+			if (err = dsa_reset_error_s(tel->drv[k], 1000)) {
+				mytel_error(tel,k,err);
+				tel_close(tel);
+				return 3;
+			}
+			/* power on */
+			if (err = dsa_power_on_s(tel->drv[k], 10000)) {
+				mytel_error(tel,k,err);
+				tel_close(tel);
+				return 4;
+			}
 		}
 	}
    /* --- init home ---*/
