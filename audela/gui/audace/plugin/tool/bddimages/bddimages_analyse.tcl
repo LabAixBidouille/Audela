@@ -620,7 +620,6 @@ namespace eval bddimages_analyse {
    
       set tabkey [::bddimages_liste::lget $::analyse_tools::current_image "tabkey"]
 
-      set ::analyse_tools::date [lindex [::bddimages_liste::lget $tabkey DATE-OBS] 1]
       set ::analyse_tools::uaicode [string trim [lindex [::bddimages_liste::lget $tabkey IAU_CODE] 1]]
 
       set ra  [lindex [::bddimages_liste::lget $tabkey ra] 1]
@@ -643,7 +642,7 @@ namespace eval bddimages_analyse {
       set coord $::analyse_tools::coord
       set radius_arcmin "${::analyse_tools::radius}arcmin"
       set radius_arcsec [concat [expr $::analyse_tools::radius * 60.0] "arcsec"]
-      set date $::analyse_tools::date
+      set date $::analyse_tools::current_image_date
       set uaicode [string trim $::analyse_tools::uaicode]
 
       # Request Skybot cone-search
@@ -665,7 +664,7 @@ namespace eval bddimages_analyse {
    proc ::bddimages_analyse::skybotResolver { } {
 
       set name $::analyse_tools::coord
-      set date $::analyse_tools::date
+      set date $::analyse_tools::current_image_date
       set uaicode [string trim $::analyse_tools::uaicode]
 
       set erreur [ catch { vo_skybotresolver $date $name text basic $uaicode } skybot ]
@@ -727,7 +726,7 @@ namespace eval bddimages_analyse {
          #�Charge l image a l ecran
          #gren_info "\n ** LOAD ** charge_current_image\n"
          buf$::audace(bufNo) load $file
-
+         ::confVisu::setFileName $::audace(visuNo) $file
 
          if { $::analyse_tools::boucle == 0 } {
             #set cuts [buf$::audace(bufNo) autocuts]
@@ -922,7 +921,8 @@ namespace eval bddimages_analyse {
       ::bddimages_analyse::set_confsex 
 
       catch {
-        calibwcs * * * * * USNO $::analyse_tools::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0
+        set r [calibwcs * * * * * USNO $::analyse_tools::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0]
+        gren_info "Resulta Test -> nb stars : $r\n"
       }
 
 
@@ -1441,7 +1441,7 @@ namespace eval bddimages_analyse {
  
               set m [frame $dss.m -borderwidth 0 -cursor arrow  -borderwidth 0]
               pack $m -in $dss -anchor s -side left -expand 0 -fill x -padx 10 -pady 5
-                 entry $m.date -relief sunken -width 26 -textvariable ::analyse_tools::date
+                 entry $m.date -relief sunken -width 26 -textvariable ::analyse_tools::current_image_date
                  pack $m.date -in $m -side top -padx 3 -pady 3 -anchor w
                  entry $m.coord -relief sunken -width 26 -textvariable ::analyse_tools::coord
                  pack $m.coord -in $m -side top -padx 3 -pady 3 -anchor w
