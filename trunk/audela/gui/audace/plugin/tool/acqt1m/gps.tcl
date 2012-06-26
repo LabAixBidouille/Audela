@@ -86,13 +86,13 @@ namespace eval ::gps {
          ::console::disp "meinberg_gps read error=$msg \n"
          return ERROR
       } else {
-         ::console::disp "meinberg_gps read OK\n"
+         #::console::disp "meinberg_gps read OK\n"
       }
 
       set e [split $r ";"]
-      foreach a $e {
-         gren_info "R:$a\n"
-      }
+      #foreach a $e {
+      #   gren_info "R:$a\n"
+      #}
       set date [lindex $e 0]
 
       set ::gps::flag 0

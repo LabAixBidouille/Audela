@@ -41,8 +41,6 @@ proc ::acqt1m::ressource { } {
    ::console::affiche_resultat "$caption(acqt1m,rechargeScripts)"
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m acqt1m.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m acqt1m.cap ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m flat_t1m_auto.cap ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m flat_t1m_auto.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m cycle.cap ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m cycle.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m t1m_roue_a_filtre.cap ]\""
@@ -764,10 +762,183 @@ proc ::acqt1m::enregistrerVariable { visuNo } {
 
 
 
+#***** Procedure push_gui ***************************
+# Sauvegarde les valeurs de champs de la GUI
+# et les stoque dans une variable de classe
+# s'utilise avec la fonction pop_gui
+#
+proc ::acqt1m::push_gui { visuNo } {
+
+   variable parametres_sav
+   global panneau
+
+
+      # Mode Debug ++
+      if {1==1} {
+         ::console::affiche_resultat "Lecture des parametres de la GUI\n"
+         ::console::affiche_resultat "\n"
+         foreach {x y} [ array get panneau ] {
+            set ok [ string first "acqt1m" $x ] 
+            if {$ok>-1} {::console::affiche_resultat "$x = $y\n"}
+         }
+      }
 
 
 
+      set parametres_sav(acqt1m,$visuNo,mode)                                  [ expr [ lsearch "$panneau(acqt1m,$visuNo,list_mode)" "$panneau(acqt1m,$visuNo,mode_en_cours)" ] + 1 ]
+      set parametres_sav(acqt1m,$visuNo,mode_en_cours)                         $panneau(acqt1m,$visuNo,mode_en_cours)
+      set parametres_sav(acqt1m,$visuNo,pose)                                  $panneau(acqt1m,$visuNo,pose)
+      set parametres_sav(acqt1m,$visuNo,bin)                                   $panneau(acqt1m,$visuNo,binning)
+      set parametres_sav(acqt1m,$visuNo,format)                                $panneau(acqt1m,$visuNo,format)
+      set parametres_sav(acqt1m,$visuNo,obt)                                   $panneau(acqt1m,$visuNo,obt)
+      set parametres_sav(acqt1m,$visuNo,avancement_acq)                        $panneau(acqt1m,$visuNo,avancement_acq)
+      set parametres_sav(acqt1m,$visuNo,enregistrer)                           $panneau(acqt1m,$visuNo,enregistrer)
+      set parametres_sav(acqt1m,$visuNo,verifier_ecraser_fichier)              $panneau(acqt1m,$visuNo,verifier_ecraser_fichier)          
+      set parametres_sav(acqt1m,$visuNo,nb_images)                             $panneau(acqt1m,$visuNo,nb_images)                         
+      set parametres_sav(acqt1m,$visuNo,ra)                                    $panneau(acqt1m,$visuNo,ra)                                
+      set parametres_sav(acqt1m,$visuNo,object)                                $panneau(acqt1m,$visuNo,object)                            
+      set parametres_sav(acqt1m,$visuNo,pose_en_cours)                         $panneau(acqt1m,$visuNo,pose_en_cours)                     
+      set parametres_sav(acqt1m,$visuNo,indexer)                               $panneau(acqt1m,$visuNo,indexer)                           
+      set parametres_sav(acqt1m,$visuNo,save_file_log)                         $panneau(acqt1m,$visuNo,save_file_log)                     
+      set parametres_sav(acqt1m,$visuNo,index)                                 $panneau(acqt1m,$visuNo,index)                             
+      set parametres_sav(acqt1m,$visuNo,enregistrer_acquisiton_interrompue)    $panneau(acqt1m,$visuNo,enregistrer_acquisiton_interrompue)
+      set parametres_sav(acqt1m,$visuNo,avancement_acq)                        $panneau(acqt1m,$visuNo,avancement_acq)                    
+      set parametres_sav(acqt1m,$visuNo,indexerContinue)                       $panneau(acqt1m,$visuNo,indexerContinue)                   
+      set parametres_sav(acqt1m,$visuNo,binning)                               $panneau(acqt1m,$visuNo,binning)                           
+      set parametres_sav(acqt1m,$visuNo,pose)                                  $panneau(acqt1m,$visuNo,pose)                              
+      set parametres_sav(acqt1m,$visuNo,enregistrer)                           $panneau(acqt1m,$visuNo,enregistrer)                       
+      set parametres_sav(acqt1m,$visuNo,attente_pose)                          $panneau(acqt1m,$visuNo,attente_pose)                      
+      set parametres_sav(acqt1m,$visuNo,filtrecourant)                         $panneau(acqt1m,$visuNo,filtrecourant)                     
+      set parametres_sav(acqt1m,$visuNo,dec)                                   $panneau(acqt1m,$visuNo,dec)                               
+      set parametres_sav(acqt1m,$visuNo,session_ouverture)                     $panneau(acqt1m,$visuNo,session_ouverture)                 
+      set parametres_sav(acqt1m,$visuNo,alarme_fin_serie)                      $panneau(acqt1m,$visuNo,alarme_fin_serie)                  
 
+
+      # Mode Debug
+      if {1==1} {
+         ::console::affiche_resultat "Lecture des parametres de la GUI\n"
+         ::console::affiche_resultat "mode           = $parametres_sav(acqt1m,$visuNo,mode)\n"
+         ::console::affiche_resultat "mode_en_cours  = $parametres_sav(acqt1m,$visuNo,mode_en_cours)\n"
+         ::console::affiche_resultat "pose           = $parametres_sav(acqt1m,$visuNo,pose)\n"
+         ::console::affiche_resultat "bin            = $parametres_sav(acqt1m,$visuNo,bin)\n"
+         ::console::affiche_resultat "format         = $parametres_sav(acqt1m,$visuNo,format)\n"
+         ::console::affiche_resultat "obturateur     = $panneau(acqt1m,$visuNo,obt,$parametres_sav(acqt1m,$visuNo,obt))\n"
+         ::console::affiche_resultat "avancement_acq = $parametres_sav(acqt1m,$visuNo,avancement_acq)\n"
+         ::console::affiche_resultat "enregistrer    = $parametres_sav(acqt1m,$visuNo,enregistrer)\n"
+
+         ::console::affiche_resultat "verifier_ecraser_fichier           = $parametres_sav(acqt1m,$visuNo,verifier_ecraser_fichier)          \n"
+         ::console::affiche_resultat "nb_images                          = $parametres_sav(acqt1m,$visuNo,nb_images)                         \n"
+         ::console::affiche_resultat "ra                                 = $parametres_sav(acqt1m,$visuNo,ra)                                \n"
+         ::console::affiche_resultat "object                             = $parametres_sav(acqt1m,$visuNo,object)                            \n"
+         ::console::affiche_resultat "pose_en_cours                      = $parametres_sav(acqt1m,$visuNo,pose_en_cours)                     \n"
+         ::console::affiche_resultat "indexer                            = $parametres_sav(acqt1m,$visuNo,indexer)                           \n"
+         ::console::affiche_resultat "save_file_log                      = $parametres_sav(acqt1m,$visuNo,save_file_log)                     \n"
+         ::console::affiche_resultat "index                              = $parametres_sav(acqt1m,$visuNo,index)                             \n"
+         ::console::affiche_resultat "enregistrer_acquisiton_interrompue = $parametres_sav(acqt1m,$visuNo,enregistrer_acquisiton_interrompue)\n"
+         ::console::affiche_resultat "avancement_acq                     = $parametres_sav(acqt1m,$visuNo,avancement_acq)                    \n"
+         ::console::affiche_resultat "indexerContinue                    = $parametres_sav(acqt1m,$visuNo,indexerContinue)                   \n"
+         ::console::affiche_resultat "binning                            = $parametres_sav(acqt1m,$visuNo,binning)                           \n"
+         ::console::affiche_resultat "pose                               = $parametres_sav(acqt1m,$visuNo,pose)                              \n"
+         ::console::affiche_resultat "enregistrer                        = $parametres_sav(acqt1m,$visuNo,enregistrer)                       \n"
+         ::console::affiche_resultat "attente_pose                       = $parametres_sav(acqt1m,$visuNo,attente_pose)                      \n"
+         ::console::affiche_resultat "filtrecourant                      = $parametres_sav(acqt1m,$visuNo,filtrecourant)                     \n"
+         ::console::affiche_resultat "dec                                = $parametres_sav(acqt1m,$visuNo,dec)                               \n"
+         ::console::affiche_resultat "session_ouverture                  = $parametres_sav(acqt1m,$visuNo,session_ouverture)                 \n"
+         ::console::affiche_resultat "alarme_fin_serie                   = $parametres_sav(acqt1m,$visuNo,alarme_fin_serie)                  \n"
+      }
+
+
+      # acqt1m,1,verifier_ecraser_fichier = 1
+      # acqt1m,1,demande_arret = 0
+      # acqt1m,1,nb_images = 5
+      # acqt1m,1,sauve_img_interrompue = 0
+      # acqt1m,1,format = 
+      # acqt1m,1,ra = 
+      # acqt1m,1,object = test
+      # acqt1m,1,pose_en_cours = 0
+      # acqt1m,1,mode = 2
+      # acqt1m,1,indexer = 0
+      # acqt1m,1,save_file_log = 1
+      # acqt1m,1,index = 1
+      # acqt1m,1,enregistrer_acquisiton_interrompue = 1
+      # acqt1m,1,extension = .fit
+      # acqt1m,1,avancement_acq = 1
+      # acqt1m,1,indexerContinue = 1
+      # acqt1m,1,binning = 2x2
+      # acqt1m,1,acqImageEnd = 1
+      # acqt1m,1,pose = 3
+      # acqt1m,1,enregistrer = 0
+      # acqt1m,1,attente_pose = 0
+      # acqt1m,1,obt = 1
+      # acqt1m,1,mode_en_cours = Une série
+      # acqt1m,1,filtrecourant = Rs
+      # acqt1m,1,filtrelist = Large B V R Us Gs Rs Is Zs Large B V R Us Gs Rs Is Zs Large B V R Us Gs Rs Is Zs Large B V R Us Gs Rs Is Zs Large B V R Us Gs Rs Is Zs Large B V R Us Gs Rs Is Zs Large B V R Us Gs Rs Is Zs Large B V R Us Gs Rs Is Zs Large B V R Us Gs Rs Is Zs Large B V R Us Gs Rs Is Zs Large B V R Us Gs Rs Is Zs
+      # acqt1m,1,obt,0 = Ouvert
+      # acqt1m,1,obt,1 = Fermé
+      # acqt1m,1,obt,2 = Synchro
+      # acqt1m,1,dec = 
+      # acqt1m,1,session_ouverture = 0
+      # acqt1m,1,alarme_fin_serie = 1
+      
+      return
+}
+
+
+
+#***** Procedure pop_gui ***************************
+# Charge les valeurs de champs de la GUI
+# depuis une variable de classe
+# s'utilise avec la fonction push_gui
+#
+proc ::acqt1m::pop_gui { visuNo } {
+
+   variable parametres_sav
+   global panneau
+
+
+      set panneau(acqt1m,$visuNo,mode_en_cours) [ lindex $panneau(acqt1m,$visuNo,list_mode) [ expr $parametres_sav(acqt1m,$visuNo,mode) - 1 ] ]
+      ::console::affiche_resultat "MODE_EN_COURS=$panneau(acqt1m,$visuNo,mode_en_cours)\n"
+
+      ::acqt1m::ChangeMode $visuNo $panneau(acqt1m,$visuNo,mode_en_cours)
+
+      set panneau(acqt1m,$visuNo,mode) $parametres_sav(acqt1m,$visuNo,mode)
+      ::console::affiche_resultat "MODE=$panneau(acqt1m,$visuNo,mode)\n"
+
+
+      set panneau(acqt1m,$visuNo,mode)                               $parametres_sav(acqt1m,$visuNo,mode)    
+      set panneau(acqt1m,$visuNo,mode_en_cours)                      $parametres_sav(acqt1m,$visuNo,mode_en_cours)    
+      set panneau(acqt1m,$visuNo,pose)                               $parametres_sav(acqt1m,$visuNo,pose)                                  
+      set panneau(acqt1m,$visuNo,binning)                            $parametres_sav(acqt1m,$visuNo,bin)                                   
+      set panneau(acqt1m,$visuNo,format)                             $parametres_sav(acqt1m,$visuNo,format)                                
+      set panneau(acqt1m,$visuNo,obt)                                $parametres_sav(acqt1m,$visuNo,obt)                                   
+      set panneau(acqt1m,$visuNo,avancement_acq)                     $parametres_sav(acqt1m,$visuNo,avancement_acq)                        
+      set panneau(acqt1m,$visuNo,enregistrer)                        $parametres_sav(acqt1m,$visuNo,enregistrer)                           
+      set panneau(acqt1m,$visuNo,verifier_ecraser_fichier)           $parametres_sav(acqt1m,$visuNo,verifier_ecraser_fichier)              
+      set panneau(acqt1m,$visuNo,nb_images)                          $parametres_sav(acqt1m,$visuNo,nb_images)                             
+      set panneau(acqt1m,$visuNo,ra)                                 $parametres_sav(acqt1m,$visuNo,ra)                                    
+      set panneau(acqt1m,$visuNo,object)                             $parametres_sav(acqt1m,$visuNo,object)                                
+      set panneau(acqt1m,$visuNo,pose_en_cours)                      $parametres_sav(acqt1m,$visuNo,pose_en_cours)                         
+      set panneau(acqt1m,$visuNo,indexer)                            $parametres_sav(acqt1m,$visuNo,indexer)                               
+      set panneau(acqt1m,$visuNo,save_file_log)                      $parametres_sav(acqt1m,$visuNo,save_file_log)                         
+      set panneau(acqt1m,$visuNo,index)                              $parametres_sav(acqt1m,$visuNo,index)                                 
+      set panneau(acqt1m,$visuNo,enregistrer_acquisiton_interrompue) $parametres_sav(acqt1m,$visuNo,enregistrer_acquisiton_interrompue)    
+      set panneau(acqt1m,$visuNo,avancement_acq)                     $parametres_sav(acqt1m,$visuNo,avancement_acq)                        
+      set panneau(acqt1m,$visuNo,indexerContinue)                    $parametres_sav(acqt1m,$visuNo,indexerContinue)                       
+      set panneau(acqt1m,$visuNo,binning)                            $parametres_sav(acqt1m,$visuNo,binning)                               
+      set panneau(acqt1m,$visuNo,pose)                               $parametres_sav(acqt1m,$visuNo,pose)                                  
+      set panneau(acqt1m,$visuNo,enregistrer)                        $parametres_sav(acqt1m,$visuNo,enregistrer)                           
+      set panneau(acqt1m,$visuNo,attente_pose)                       $parametres_sav(acqt1m,$visuNo,attente_pose)                          
+      set panneau(acqt1m,$visuNo,filtrecourant)                      $parametres_sav(acqt1m,$visuNo,filtrecourant)                         
+      set panneau(acqt1m,$visuNo,dec)                                $parametres_sav(acqt1m,$visuNo,dec)                                   
+      set panneau(acqt1m,$visuNo,session_ouverture)                  $parametres_sav(acqt1m,$visuNo,session_ouverture)                     
+      set panneau(acqt1m,$visuNo,alarme_fin_serie)                   $parametres_sav(acqt1m,$visuNo,alarme_fin_serie)                      
+
+      ::acqt1m::changebinning $visuNo   
+      ::acqt1m::setShutter $visuNo $panneau(acqt1m,$visuNo,obt)
+      ::t1m_roue_a_filtre::changeFiltreInfini $visuNo
+
+      return
+}
 
 
 
@@ -828,8 +999,8 @@ proc ::acqt1m::stopTool { { visuNo 1 } } {
    }
 
    #--- Je verifie si une operation est en cours (acquisition des flats auto)
-   if { [ info exists ::acqt1m_flatciel::private(pose_en_cours) ] } {
-      if { $::acqt1m_flatciel::private(pose_en_cours) == 1 } {
+   if { [ info exists ::acqt1m_flatcielplus::private(pose_en_cours) ] } {
+      if { $::acqt1m_flatcielplus::private(pose_en_cours) == 1 } {
          return -1
       }
    }
@@ -934,6 +1105,17 @@ proc ::acqt1m::ChangeMode { visuNo { mode "" } } {
 
 
 
+#--- Procedure de changement du binning de la GUI
+# affiche le binning courant dans le panneau de la GUI
+
+proc ::acqt1m::changebinning { visuNo } {
+
+      global caption panneau
+
+      $panneau(acqt1m,$visuNo,This).binningt.but configure -text $caption(acqt1m,bin,$panneau(acqt1m,$visuNo,binning))
+      ::console::affiche_resultat "** BINNING=$panneau(acqt1m,$visuNo,binning)\n"
+
+}
 
 
 
@@ -959,7 +1141,7 @@ proc ::acqt1m::changerBinningCent { { visuNo 1 } } {
    #::console::affiche_resultat "bin = $caption(acqt1m,bin,$panneau(acqt1m,$visuNo,binning))\n"
    $panneau(acqt1m,$visuNo,This).binningt.but configure -text $caption(acqt1m,bin,$panneau(acqt1m,$visuNo,binning))
    if { [ winfo exists $audace(base).selection_filtre ] } {
-      ::acqt1m_flatciel::changeBin $visuNo $panneau(acqt1m,$visuNo,binning)
+      ::acqt1m_flatcielplus::changeBin $visuNo $panneau(acqt1m,$visuNo,binning)
    }
 }
 
@@ -1390,6 +1572,8 @@ proc ::acqt1m::testParametreAcquisition { visuNo } {
 proc ::acqt1m::stopAcquisition { visuNo } {
    global panneau
 
+   set ::cycle::stop 1
+
    if { $panneau(acqt1m,$visuNo,pose_en_cours) == 1 } {
       Stop $visuNo
    }
@@ -1418,6 +1602,7 @@ proc ::acqt1m::stopAcquisition { visuNo } {
 proc ::acqt1m::Go { visuNo } {
 
    global audace caption panneau
+
 
 
    set camItem [::confVisu::getCamItem $visuNo]
@@ -2167,6 +2352,8 @@ proc ::acqt1m::callbackAcquisition { visuNo message args } {
 #------------------------------------------------------------
 proc ::acqt1m::Stop { visuNo } {
    global audace caption panneau
+
+   set ::cycle::stop 1
 
    #--- Je desactive le bouton "STOP"
    $panneau(acqt1m,$visuNo,This).go_stop.but configure -state disabled
@@ -3573,10 +3760,6 @@ $panneau(acqt1m,$visuNo,This).gps.but  configure -bg "green"
          button $panneau(acqt1m,$visuNo,This).special.offsetdark -text "OFFSET/DARK" \
             -command "::acqt1m_offsetdark::run $visuNo"
          pack $panneau(acqt1m,$visuNo,This).special.offsetdark -side top -fill x -expand true
-         #--- Bouton Flat auto
-         button $panneau(acqt1m,$visuNo,This).special.flatauto -text "$caption(acqt1m,flatAuto)" \
-            -command "::acqt1m_flatciel::run $visuNo"
-         pack $panneau(acqt1m,$visuNo,This).special.flatauto -side top -fill x -expand true
          #--- Bouton Flat auto +
          button $panneau(acqt1m,$visuNo,This).special.flatautoplus -text "$caption(acqt1m,flatAuto)+" \
             -command "::acqt1m_flatcielplus::run $visuNo"

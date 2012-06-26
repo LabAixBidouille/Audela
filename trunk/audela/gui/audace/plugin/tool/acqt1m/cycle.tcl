@@ -12,210 +12,257 @@
 #    initialise le namespace
 #============================================================
 namespace eval ::cycle {
-   variable ::cycle::camera
 
-   proc switch_filtre { } {
+   variable camera
+   variable stop
+
+
+
+
+
+
+
+
+   proc KOI13 { } {
+
       variable private
 
-      #::console::affiche_resultat "numfav = $private(idfiltrecourant)\n"
-      set nbfiltre [llength $private(roue)]
-      #::console::affiche_resultat "nb = $nbfiltre\n"
-      if {$private(idfiltrecourant) == $nbfiltre} {
-         set private(idfiltrecourant) 1
-      } else {
-         set private(idfiltrecourant) [incr private(idfiltrecourant)]
-      }
-
-      set l [lindex $private(roue) [expr $private(idfiltrecourant) - 1] ]
-      set private(filtrecourant)   [lindex $l 0]
-      set private(exptime)         [lindex $l 1]
-
-      #::console::affiche_resultat "numfap = $private(idfiltrecourant)\n"
+      set private(object)         "KOI-13"
+      set private(bin)            "1x1"
+      set private(ra)             "19:07:53.09"
+      set private(dec)            "+46:52:6.10"
+      # Liste le mouvement de la roue, [Filtre Exposure nbimg]
+      set private(roue)           [list [list "Us" 60 1] [list "Gs" 3 5] [list "Rs" 1.5 10] [list "Is" 1.5 10] [list "Zs" 3 5] ]
+   
    }
 
-   proc idcourant_to_posfiltre { f } {
+
+
+
+   proc Comete { } {
+
       variable private
 
-      for { set i 1 } {$i <= 9} {incr i} {
-         if {[lindex $::t1m_roue_a_filtre::private(filtre,$i) 1]==$f} {
-            return $i
-         }
-      }
-
-      #::console::affiche_resultat "numfav = $private(idfiltrecourant)\n"
-      set nbfiltre [llength $private(roue)]
-      #::console::affiche_resultat "nb = $nbfiltre\n"
-      if {$private(idfiltrecourant) == $nbfiltre} {
-         set private(idfiltrecourant) 1
-      } else {
-         set private(idfiltrecourant) [incr private(idfiltrecourant)]
-      }
-
-      set l [lindex $private(roue) [expr $private(idfiltrecourant) - 1] ]
-      set private(filtrecourant)   [lindex $l 0]
-      set private(exptime)         [lindex $l 1]
-
-      #::console::affiche_resultat "numfap = $private(idfiltrecourant)\n"
+      set private(object)         "67P"      
+      set private(bin)            "2x2"
+      set private(ra)             "19:07:53.09"
+      set private(dec)            "+46:52:6.10"
+   
+      # Liste le mouvement de la roue, [Filtre Exposure nbimg]
+      set private(roue)           [list [list "Us" 60 1] [list "Gs" 3 5] [list "Rs" 1.5 10] [list "Is" 1.5 10] [list "Zs" 3 5] ]
    }
 
-   # ---------------------------------------
-   # createdir_ifnot_exist
-   # cree un nouveau repertoire s il n existe pas
-   # ---------------------------------------
-   proc createdir_ifnot_exist { dirfilename } {
-      set direxist [file exists $dirfilename]
-      if {$direxist==0} {
-         set errnum [catch {file mkdir $dirfilename} msg]
-      }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   proc init { } {
+
+      ::cycle::KOI13
+   
+      # obturateur = 0 : Ouvert, 1 : Fermer, 2 : Synchro
+      set private(obt)            2
+      # obturateur = 2 : Serie d'image
+      set private(mode)           2
    }
+
+
+
+
+   proc disable_button { visuNo } {
+
+      global panneau
+
+      $panneau(acqt1m,$visuNo,This).pose.but               configure -state disabled
+      $panneau(acqt1m,$visuNo,This).pose.entr              configure -state disabled
+      $panneau(acqt1m,$visuNo,This).binningt.but           configure -state disabled
+      $panneau(acqt1m,$visuNo,This).obt.but                configure -state disabled
+      $panneau(acqt1m,$visuNo,This).mode.but               configure -state disabled
+      $panneau(acqt1m,$visuNo,This).go_stop.but            configure -state disabled
+      $panneau(acqt1m,$visuNo,This).filtre.but             configure -state disabled
+      $panneau(acqt1m,$visuNo,This).filtre.filtrecourant   configure -state disabled
+      $panneau(acqt1m,$visuNo,This).special.offsetdark     configure -state disabled
+      $panneau(acqt1m,$visuNo,This).special.flatautoplus   configure -state disabled
+      $panneau(acqt1m,$visuNo,This).special.cyclepose      configure -state disabled
+      $panneau(acqt1m,$visuNo,This).special.offsetdark     configure -state disabled
+
+   }
+
+
+
+
+
+
+   proc enable_button { visuNo } {
+
+      global panneau
+
+      $panneau(acqt1m,$visuNo,This).pose.but               configure -state normal
+      $panneau(acqt1m,$visuNo,This).pose.entr              configure -state normal
+      $panneau(acqt1m,$visuNo,This).binningt.but           configure -state normal
+      $panneau(acqt1m,$visuNo,This).obt.but                configure -state normal
+      $panneau(acqt1m,$visuNo,This).mode.but               configure -state normal
+      $panneau(acqt1m,$visuNo,This).go_stop.but            configure -state normal
+      $panneau(acqt1m,$visuNo,This).filtre.but             configure -state normal
+      $panneau(acqt1m,$visuNo,This).filtre.filtrecourant   configure -state normal
+      $panneau(acqt1m,$visuNo,This).special.offsetdark     configure -state normal
+      $panneau(acqt1m,$visuNo,This).special.flatautoplus   configure -state normal
+      $panneau(acqt1m,$visuNo,This).special.cyclepose      configure -state normal
+      $panneau(acqt1m,$visuNo,This).special.offsetdark     configure -state normal
+
+   }
+
+
+
+
+
 
    proc run { visuNo } {
+
       variable private
+      global panneau
 
       ::console::affiche_resultat "$::caption(cycle,lancement)\n"
+      ::cycle::init
+      set ::cycle::stop 0
+      
+      # Evenement pour la GUI
+      ::cycle::disable_button $visuNo
+      
+      # Lecture des champs de la GUI -> PUSH
+      ::console::affiche_resultat "\nPUSH\n"
+      ::acqt1m::push_gui $visuNo
 
-      set private(object)         "596_Scheila"
-      set private(roue)           [list [list "R" 120] [list "V" 120] [list "B" 120]]
-      set private(affbin)         "1x1"
-      set private(nbimgparfiltre) 2
 
+      # Modification des champs de la GUI
+      ::console::affiche_resultat "\nINITIALISATION DES PARAMETRES\n"
+      set panneau(acqt1m,$visuNo,object) $private(object)
+      ::console::affiche_resultat "OBJECT=$panneau(acqt1m,$visuNo,object)\n"
+
+      set panneau(acqt1m,$visuNo,bin) $private(bin)
+      ::console::affiche_resultat "BIN=$panneau(acqt1m,$visuNo,bin)\n"
+
+      set panneau(acqt1m,$visuNo,binning) $private(bin)
+      ::console::affiche_resultat "BIN=$panneau(acqt1m,$visuNo,binning)\n"
+
+      set panneau(acqt1m,$visuNo,mode_en_cours) [ lindex $panneau(acqt1m,$visuNo,list_mode) [ expr $private(mode) - 1 ] ]
+      ::console::affiche_resultat "MODE_EN_COURS=$panneau(acqt1m,$visuNo,mode_en_cours)\n"
+
+      ::acqt1m::ChangeMode $visuNo $panneau(acqt1m,$visuNo,mode_en_cours)
+
+      set panneau(acqt1m,$visuNo,mode) $private(mode)
+      ::console::affiche_resultat "MODE=$panneau(acqt1m,$visuNo,mode)\n"
+
+      set panneau(acqt1m,$visuNo,ra) $private(ra)
+      ::console::affiche_resultat "RA=$panneau(acqt1m,$visuNo,ra)\n"
+
+      set panneau(acqt1m,$visuNo,dec) $private(dec)
+      ::console::affiche_resultat "DEC=$panneau(acqt1m,$visuNo,dec)\n"
+
+      set panneau(acqt1m,$visuNo,obt) $private(obt)
+      ::console::affiche_resultat "OBTURATEUR=$panneau(acqt1m,$visuNo,obt,$panneau(acqt1m,$visuNo,obt))\n"
+
+      ::acqt1m::changebinning $visuNo   
+      ::acqt1m::setShutter $visuNo $panneau(acqt1m,$visuNo,obt)
+
+      # Initialisation de la roue a filtre
       ::console::affiche_resultat "$::caption(cycle,initFiltres)\n"
       ::t1m_roue_a_filtre::initFiltre $visuNo
-      set num                      1
-      set private(idfiltrecourant) 2
-      set private(exptime)         1
-      set fichlock                 "/home/t1m/lockcycle"
 
-      #--------
-      set private($visuNo,camItem) [ ::confVisu::getCamItem $visuNo ]
-      set private($visuNo,camNo)   [ ::confCam::getCamNo $private($visuNo,camItem) ]
-      set private($visuNo,bufNo)   [ ::confVisu::getBufNo $visuNo ]
-      ::console::affiche_resultat "$::caption(cycle,initCamera)\n"
-      catch {set ::cycle::camera cam$private($visuNo,camNo)}
-      set err [catch {$::cycle::camera info} msg]
-      if { $err == 1 } {
-         ::console::affiche_resultat "$::caption(cycle,pasCamera)\n\n"
-         return 1
-      }
-      catch { $::cycle::camera shutter synchro }
-      set binctrl [ scan $private(affbin) "%dx%d" binx biny ]
-      $::cycle::camera bin [list $binx $biny]
-      #--------
-
-      ::console::affiche_resultat "$::caption(cycle,initBuffer)\n"
-      set buffer buf$private($visuNo,bufNo)
+     ::console::affiche_resultat "\n"
 
       while {1==1} {
 
-         if {[file exists $fichlock]==1} {
-            break
+         ::cycle::init
+
+         foreach l $private(roue) {
+
+            set panneau(acqt1m,$visuNo,filtrecourant) [lindex $l 0]
+            set panneau(acqt1m,$visuNo,pose)          [lindex $l 1]
+            set panneau(acqt1m,$visuNo,nb_images)     [lindex $l 2]
+            set panneau(acqt1m,$visuNo,index) 1
+            #::console::affiche_resultat "index=$panneau(acqt1m,$visuNo,index)\n" 
+
+            ::console::affiche_resultat "Image Nb=$panneau(acqt1m,$visuNo,nb_images) Filtre=$panneau(acqt1m,$visuNo,filtrecourant) Expo=$panneau(acqt1m,$visuNo,pose)\n"
+
+            # Changement du Filtre
+            ::t1m_roue_a_filtre::changeFiltreInfini $visuNo
+
+            # Lancement Acquisition
+            ::acqt1m::Go $visuNo             
+            # Evenement pour la GUI
+            ::cycle::disable_button $visuNo
+
+            if {$::cycle::stop == 1 } { break }
+
          }
 
-         switch_filtre
-
-         set pos [idcourant_to_posfiltre $private(filtrecourant)]
-         #::console::affiche_resultat "pos = $pos\n"
-
-         #--------
-         # Initialise la roue a filtres
-         ::console::affiche_resultat "$::caption(cycle,initCom)\n"
-         set err [ catch { set tty [open "/dev/ttyS0" r+] } ]
-         if { $err == 1 } {
-            ::console::affiche_resultat "$::caption(cycle,roueNonInitialise)\n\n"
-            return
-         }
-         fconfigure $tty -mode "19200,n,8,1" -buffering none -blocking 0
-
-         # Initialise la roue a filtres
-         ::console::affiche_resultat "$::caption(cycle,initialiseRoue)\n"
-         puts -nonewline $tty "WSMODE"
-         while {1==1} {
-            after 100
-            set char [read $tty 10]
-           #::console::affiche_resultat "$char"
-            if {[lsearch -exact $char "!"] == 0} {
-               break
-            }
-         }
-         #--------
-
-         # Changement de filtre
-         ::console::affiche_resultat "$::caption(cycle,changeFiltre)\n"
-         puts -nonewline $tty "WGOTO$pos"
-         while {1==1} {
-            after 100
-            set char [read $tty 10]
-            #::console::affiche_resultat "$char"
-            if {[lsearch -exact $char "*"] == 0} {
-               break
-            }
-         }
-
-         puts -nonewline $tty "WFILTR"
-         while {1==1} {
-            after 100
-            set char [read $tty 10]
-            #::console::affiche_resultat "$char"
-            if {[llength $char] == 1} {
-               break
-            }
-         }
-
-         if {$pos != $char} {
-            ::console::affiche_erreur "$::caption(cycle,probleme)\n"
-         }
-
-         # clos la connexion avec la roue a filtres
-         ::console::affiche_resultat "$::caption(cycle,fermeCom)\n"
-         puts -nonewline $tty "WEXITS"
-         while {1==1} {
-            after 100
-            set char [read $tty 10]
-            #::console::affiche_resultat "$char"
-            if {[lsearch -exact $char "END"] == 0} {
-               break
-            }
-         }
-         close $tty
-         #--------
-
-         ::console::affiche_resultat "$::caption(cycle,filtre) $private(filtrecourant) exptime = $private(exptime) sec\n"
-
-         for { set i 1 } {$i <= $private(nbimgparfiltre)} {incr i} {
-
-            if {[file exists $fichlock]==1} {
-               break
-            }
-
-            #--------
-            ::console::affiche_resultat "$::caption(cycle,acquisition) $private(exptime) $private(filtrecourant)\n"
-            $::cycle::camera exptime $private(exptime)
-            $::cycle::camera acq
-            vwait status_$::cycle::camera
-            ::confVisu::autovisu $visuNo
-
-            set ent      [ mc_date2ymdhms [ ::audace::date_sys2ut now] ]
-            set entete   [ format "%04d%02d%02d%02d%02d" [lindex $ent 0] [lindex $ent 1] [lindex $ent 2] [lindex $ent 3] [lindex $ent 4] ]
-            set dir      [ format "%04d%02d%02d" [lindex $ent 0] [lindex $ent 1] [lindex $ent 2] ]
-            createdir_ifnot_exist [ file join $::conf(rep_images) "$dir" ]
-            set file     [ file join $::conf(rep_images) "$dir" "T1M.$entete.$private(object).$private(filtrecourant).$private(affbin).$num" ]
-            set filelong "$file$::conf(extension,defaut)"
-            if {[file exists $filelong]==0} {
-               #--- Rajoute des mots cles dans l'en-tete FITS
-               foreach keyword [ ::keyword::getKeywords $visuNo $::conf(acqt1m,keywordConfigName) ] {
-                  $buffer setkwd $keyword
-               }
-               #--- Rajoute d'autres mots cles
-               $buffer setkwd [list "OBJECT" $private(object) string "" "" ]
-               $buffer setkwd [list "FILTER" $private(filtrecourant) string "" "" ]
-               saveima $filelong $visuNo
-               ::console::affiche_resultat "$::caption(cycle,energistre) $filelong\n"
-               set num [incr num]
-            }
-            #--------
-         }
+         if {$::cycle::stop == 1 } { break }
 
       }
+
+      ::console::affiche_resultat "\n"
+
+
+
+      ::console::affiche_resultat "POP dans 1 sec\n"
+      #after 5000
+      # Retour sur la GUI d'Origine -> POP
+      ::acqt1m::pop_gui $visuNo
+      ::console::affiche_resultat "POP effectue\n"
+
+      # Evenement pour la GUI
+      ::cycle::enable_button $visuNo
+
+      after 500
+      bell
+      after 200
+      bell
+      after 100
+      bell
+      after 100
+      bell
+      after 200
+      bell
+      after 400
+      bell
+      after 200
+      bell
+
+      return
 
    }
 

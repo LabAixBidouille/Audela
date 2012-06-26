@@ -20,6 +20,10 @@ namespace eval ::t1m_roue_a_filtre {
 
 
 
+   #--- Reboot de la roue : a faire
+   proc ::t1m_roue_a_filtre::init_roue { } {
+
+   }
 
 
 
@@ -27,7 +31,7 @@ namespace eval ::t1m_roue_a_filtre {
    proc ::t1m_roue_a_filtre::init { } {
       
       ::t1m_roue_a_filtre::init_roue
-      set ::t1m_roue_a_filtre::log 1
+      set ::t1m_roue_a_filtre::log 0
       set ::t1m_roue_a_filtre::stopcpt 50
    }
 
@@ -41,6 +45,7 @@ namespace eval ::t1m_roue_a_filtre {
 
    #--- Procedure d'initialisation de la roue a filtres
    proc ::t1m_roue_a_filtre::initFiltre { visuNo } {
+
       variable private
       global panneau
 
@@ -171,7 +176,7 @@ namespace eval ::t1m_roue_a_filtre {
          }
       }
 
-      ::console::affiche_resultat "GETFILTRE: Filtre=$filtre (init=$passinit get=$passfiltre close=$passclose) \n"
+      #::console::affiche_resultat "GETFILTRE: Filtre=$filtre (init=$passinit get=$passfiltre close=$passclose) \n"
       return $filtre
 
    }
@@ -329,7 +334,7 @@ namespace eval ::t1m_roue_a_filtre {
          }
       }
       if {$pass=="yes"} {
-         ::console::affiche_resultat "SETFILTRE: Filtre=$panneau(acqt1m,$visuNo,filtrecourant) (init=$passinit goto=$passgoto get=$passfiltre close=$passclose) \n"
+         #::console::affiche_resultat "SETFILTRE: Filtre=$panneau(acqt1m,$visuNo,filtrecourant) (init=$passinit goto=$passgoto get=$passfiltre close=$passclose) \n"
          return "ok"
       } else {
          ::console::affiche_erreur "$::caption(t1m_roue_a_filtre,probleme)\n"
@@ -421,7 +426,37 @@ namespace eval ::t1m_roue_a_filtre {
    }
 
 
+   #--- Procedure de changement du filtre effectue a l infini
+   proc ::t1m_roue_a_filtre::changeFiltreInfini { visuNo } {
 
+      global panneau
+
+      set filtre $panneau(acqt1m,$visuNo,filtrecourant)
+
+      while {1==1} {
+
+         set reschgt [::t1m_roue_a_filtre::changeFiltre $visuNo]
+
+         if {$reschgt=="no"} {
+
+            set resverif [::t1m_roue_a_filtre::verifFiltre $panneau(acqt1m,$visuNo,filtrecourant)]
+            ::console::affiche_erreur "VERIF = $resverif\n"
+
+            if {$resverif=="no"} {
+               ::t1m_roue_a_filtre::initFiltre $visuNo
+               set panneau(acqt1m,$visuNo,filtrecourant) $filtre
+
+            } else {
+               break
+            }
+
+         } else {
+            break
+         }
+         
+      }
+
+   }
 
 
    #--- Procedure de verification du filtre
@@ -434,10 +469,14 @@ namespace eval ::t1m_roue_a_filtre {
             set pass "yes"
          }
       }
-      ::console::affiche_resultat "verifFiltre: $pass ($filtre==$current)\n"
+      #::console::affiche_resultat "verifFiltre: $pass ($filtre==$current)\n"
 
       return $pass
    }
+
+
+
+
 
 
 
