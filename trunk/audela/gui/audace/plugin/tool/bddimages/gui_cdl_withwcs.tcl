@@ -26,7 +26,10 @@ namespace eval gui_cdl_withwcs {
 
    proc ::gui_cdl_withwcs::inittoconf {  } {
 
+     global bddconf
    
+      set tcl_precision 17
+
       catch { unset ::tools_cdl::tabphotom                    }
       catch { unset ::tools_cdl::id_current_image             }
       catch { unset ::tools_cdl::current_image                }
@@ -73,6 +76,14 @@ namespace eval gui_cdl_withwcs {
       set ::gui_cdl_withwcs::block 1
       set ::gui_cdl_withwcs::stoperreur 1
       set ::gui_cdl_withwcs::directaccess 1
+      
+
+      set ::tools_cdl::nomobj ""
+      if { ! [info exists bddconf(cdl_savedir)] } {
+         set ::tools_cdl::savedir $bddconf(dirtmp)
+      } else {
+         set ::tools_cdl::savedir $bddconf(cdl_savedir)
+      }
 
    }
 
@@ -100,7 +111,7 @@ namespace eval gui_cdl_withwcs {
 
 
 
-
+   # Mesure photometrique d'une source sur l image courante. 
 
    proc ::gui_cdl_withwcs::mesure_une { sources starx } {
 
@@ -118,70 +129,118 @@ namespace eval gui_cdl_withwcs {
          $sources.dec.$starx configure -bg red
          return
       } else {
+
          $sources.ra.$starx configure -bg "#ffffff"
          $sources.dec.$starx configure -bg "#ffffff"
+
+         set xsm      [lindex $valeurs 0]
+         set ysm      [lindex $valeurs 1]
+
+         set a [buf$::audace(bufNo) xy2radec [list $xsm $ysm]]
+         set ra_deg  [lindex $a 0]
+         set dec_deg [lindex $a 1]
+         set ra_hms  [mc_angle2hms $ra_deg 360 zero 1 auto string]
+         set dec_dms [mc_angle2dms $dec_deg 90 zero 1 + string]
+         set ra_hms  [string map {h : m : s .} $ra_hms]
+         set dec_dms [string map {d : m : s .} $dec_dms]
+         set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,x)           $xsm
+         set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,y)           $ysm
+         set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,ra_deg)      $ra_deg
+         set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,dec_deg)     $dec_deg
+         set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,ra_hms)      $ra_hms
+         set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,dec_dms)     $dec_dms
+
+         set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,fwhmx)       [lindex $valeurs 2]
+         set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,fwhmy)       [lindex $valeurs 3]
+         set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,fwhm)        [lindex $valeurs 4]
+         set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,fluxintegre) [lindex $valeurs 5]
+         set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,errflux)     [lindex $valeurs 6]
+         set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,pixmax)      [lindex $valeurs 7]
+         set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,intensite)   [lindex $valeurs 8]
+         set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,sigmafond)   [lindex $valeurs 9]
+         set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,snint)       [lindex $valeurs 10]
+         set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,snpx)        [lindex $valeurs 11]
+         set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,delta)       [lindex $valeurs 12]
+         set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,maginstru)   [expr -log10([lindex $valeurs 5]/20000)*2.5]
+         set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,jjdate)      $::tools_cdl::current_image_jjdate
+         set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,isodate)     $::tools_cdl::current_image_date
+
+
+         if { [lindex $valeurs 7] > $::tools_cdl::saturation} {
+
+            set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,err) true
+            set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,saturation) true
+            #if { $starx != "star1" } {$sources.mag.$starx configure -text "Sature"}
+            #$sources.mag.$starx configure -bg red
+            set mesure "bad"
+
+         } else {
+
+            set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,saturation) false
+
+            #set xsmdiff  [expr ($xsm - $::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,x))*0.44*1000.0]
+            #set ysmdiff  [expr ($ysm - $::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,y))*0.44*1000.0]
+            #gren_info "DIFF $starx (mas): $xsmdiff $ysmdiff \n"
+
+
+            $sources.ra.$starx   delete 0 end 
+            $sources.ra.$starx   insert end $ra_hms
+            $sources.dec.$starx  delete 0 end 
+            $sources.dec.$starx  insert end $dec_dms
+            $sources.mag.$starx  configure -bg "#ece9d8"
+
+         }
+
+
+
       }
 
-      set xsm      [lindex $valeurs 0]
-      set ysm      [lindex $valeurs 1]
       
-      set a [buf$::audace(bufNo) xy2radec [list $xsm $ysm]]
-      set ra_deg  [lindex $a 0]
-      set dec_deg [lindex $a 1]
-      set ra_hms  [mc_angle2hms $ra_deg 360 zero 1 auto string]
-      set dec_dms [mc_angle2dms $dec_deg 90 zero 1 + string]
-      set ra_hms  [string map {h : m : s .} $ra_hms]
-      set dec_dms [string map {d : m : s .} $dec_dms]
-      set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,x)           $xsm
-      set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,y)           $ysm
-      set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,ra_deg)      $ra_deg
-      set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,dec_deg)     $dec_deg
-      set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,ra_hms)      $ra_hms
-      set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,dec_dms)     $dec_dms
+# Recherche du Meilleur Delta
 
-      set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,fwhmx)       [lindex $valeurs 2]
-      set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,fwhmy)       [lindex $valeurs 3]
-      set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,fwhm)        [lindex $valeurs 4]
-      set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,fluxintegre) [lindex $valeurs 5]
-      set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,errflux)     [lindex $valeurs 6]
-      set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,pixmax)      [lindex $valeurs 7]
-      set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,intensite)   [lindex $valeurs 8]
-      set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,sigmafond)   [lindex $valeurs 9]
-      set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,snint)       [lindex $valeurs 10]
-      set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,snpx)        [lindex $valeurs 11]
-      set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,delta)       [lindex $valeurs 12]
-      set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,maginstru)   [expr log10([lindex $valeurs 5]/20000)*2.5]
-      set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,jjdate)      $::tools_cdl::current_image_jjdate
+         
+      if { $::tools_cdl::bestdelta == 1 } {
 
+      
+         for {set rdelta $::tools_cdl::deltamin} {$rdelta<=$::tools_cdl::deltamax} {incr rdelta} {
 
-      if { [lindex $valeurs 7] > $::tools_cdl::saturation} {
+            set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,search_delta,$rdelta,err) false
+            set err [ catch {set valeurs [::tools_cdl::mesure_obj \
+               $::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,x) \
+               $::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,y) \
+               $rdelta $::audace(bufNo)]} msg ]
 
-         set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,err) true
-         set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,saturation) true
-         #if { $starx != "star1" } {$sources.mag.$starx configure -text "Sature"}
-         #$sources.mag.$starx configure -bg red
-         set mesure "bad"
+            if { $valeurs == -1 } {
+               set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,search_delta,$rdelta,err) true
+            } else {
 
-      } else {
+               set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,search_delta,$rdelta,fwhmx)       [lindex $valeurs 2]
+               set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,search_delta,$rdelta,fwhmy)       [lindex $valeurs 3]
+               set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,search_delta,$rdelta,fwhm)        [lindex $valeurs 4]
+               set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,search_delta,$rdelta,fluxintegre) [lindex $valeurs 5]
+               set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,search_delta,$rdelta,errflux)     [lindex $valeurs 6]
+               set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,search_delta,$rdelta,pixmax)      [lindex $valeurs 7]
+               set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,search_delta,$rdelta,intensite)   [lindex $valeurs 8]
+               set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,search_delta,$rdelta,sigmafond)   [lindex $valeurs 9]
+               set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,search_delta,$rdelta,snint)       [lindex $valeurs 10]
+               set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,search_delta,$rdelta,snpx)        [lindex $valeurs 11]
+               set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,search_delta,$rdelta,delta)       [lindex $valeurs 12]
+               set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,search_delta,$rdelta,maginstru)   [expr -log10([lindex $valeurs 5]/20000)*2.5]
 
-         set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,saturation) false
+               if { [lindex $valeurs 7] > $::tools_cdl::saturation} {
+                  set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,search_delta,$rdelta,err) true
+                  set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,search_delta,$rdelta,saturation) true
+               } else {
+                  set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,search_delta,$rdelta,saturation) false
+               }
 
-         set xsmdiff  [expr ($xsm - $::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,x))*0.44*1000.0]
-         set ysmdiff  [expr ($ysm - $::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,y))*0.44*1000.0]
-         #gren_info "DIFF $starx (mas): $xsmdiff $ysmdiff \n"
-
-
-         $sources.ra.$starx   delete 0 end 
-         $sources.ra.$starx   insert end $ra_hms
-         $sources.dec.$starx  delete 0 end 
-         $sources.dec.$starx  insert end $dec_dms
-         $sources.mag.$starx  configure -bg "#ece9d8"
-
+            # Fin  if valeur mesurée est bonne ou pas
+            }
+         # fin boucle sur les delta
+         }
+      # fin if bestdelta
       }
-
-
-
-
+      
       return
    }
 
@@ -207,11 +266,11 @@ namespace eval gui_cdl_withwcs {
 
       set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
       if {$err} {
-	 ::console::affiche_erreur "Erreur maj de la table $tabname\n"
-	 ::console::affiche_erreur "	    sqlcmd = $sqlcmd\n"
-	 ::console::affiche_erreur "	    err = $err\n"
-	 ::console::affiche_erreur "	    msg = $msg\n"
-	 return
+         ::console::affiche_erreur "Erreur maj de la table $tabname\n"
+         ::console::affiche_erreur "	    sqlcmd = $sqlcmd\n"
+         ::console::affiche_erreur "	    err = $err\n"
+         ::console::affiche_erreur "	    msg = $msg\n"
+         return
       }
 
       return
@@ -341,6 +400,7 @@ namespace eval gui_cdl_withwcs {
 
    proc ::gui_cdl_withwcs::calc_mag { sources } {
 
+
       # test si l etoile de reference est encore d actualite
       set newref false
       if { ! [info exists ::tools_cdl::starref ] } {
@@ -383,13 +443,28 @@ namespace eval gui_cdl_withwcs {
 
       # Mesure photometrique des etoiles
       set fluxref $::tools_cdl::tabphotom($::tools_cdl::id_current_image,$::tools_cdl::starref,fluxintegre)
+      
       for {set x 1} {$x<=$::gui_cdl_withwcs::nbstars} {incr x} {
          if { "star$x" == "$::tools_cdl::starref" } { 
             set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,star$x,mag) $::tools_cdl::magref
+            if { $::tools_cdl::bestdelta == 1 } {
+               for {set rdelta $::tools_cdl::deltamin} {$rdelta<=$::tools_cdl::deltamax} {incr rdelta} {
+                  set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,star$x,search_delta,$rdelta,mag) $::tools_cdl::magref
+               }
+            }
          }
          if {  [::gui_cdl_withwcs::is_good "star$x"] } {
             set flux $::tools_cdl::tabphotom($::tools_cdl::id_current_image,star$x,fluxintegre)
-            set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,star$x,mag) [expr $::tools_cdl::magref - log10($flux/$fluxref)*2.5]
+            set m [expr $::tools_cdl::magref - log10($flux/$fluxref)*2.5]
+            set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,star$x,mag) $m
+            if { $::tools_cdl::bestdelta == 1 } {
+               for {set rdelta $::tools_cdl::deltamin} {$rdelta<=$::tools_cdl::deltamax} {incr rdelta} {
+                  set flux $::tools_cdl::tabphotom($::tools_cdl::id_current_image,star$x,search_delta,$rdelta,fluxintegre)
+                  set fluxrefd $::tools_cdl::tabphotom($::tools_cdl::id_current_image,$::tools_cdl::starref,search_delta,$rdelta,fluxintegre)
+                  set m [expr $::tools_cdl::magref - log10($flux/$fluxrefd)*2.5]
+                  set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,star$x,search_delta,$rdelta,mag) $m
+               }
+            }
          }
       }
 
@@ -406,7 +481,20 @@ namespace eval gui_cdl_withwcs {
       if { [::gui_cdl_withwcs::is_good obj] } {
          gren_info "obj : is GOOD !\n"
          set flux $::tools_cdl::tabphotom($::tools_cdl::id_current_image,obj,fluxintegre)
-         set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,obj,mag) [expr $::tools_cdl::magref - log10($flux/$fluxref)*2.5]
+         set m [expr $::tools_cdl::magref - log10($flux/$fluxref)*2.5]
+         set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,obj,mag) $m
+         gren_info "ref=$flux $fluxref $m\n"
+         if { $::tools_cdl::bestdelta == 1 } {
+            for {set rdelta $::tools_cdl::deltamin} {$rdelta<=$::tools_cdl::deltamax} {incr rdelta} {
+               set flux $::tools_cdl::tabphotom($::tools_cdl::id_current_image,obj,search_delta,$rdelta,fluxintegre)
+               set fluxrefd $::tools_cdl::tabphotom($::tools_cdl::id_current_image,$::tools_cdl::starref,search_delta,$rdelta,fluxintegre)
+               set m [expr $::tools_cdl::magref - log10($flux/$fluxrefd)*2.5]
+               set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,obj,search_delta,$rdelta,mag) $m
+               if {$rdelta == 15} {
+                  gren_info "d15=$flux $fluxrefd $m\n"
+               }
+            }
+         }
          set val [::gui_cdl_withwcs::get_stdev $::tools_cdl::magref $::tools_cdl::starref obj]
          $sources.mag.obj   configure -text [format "%2.3f" $::tools_cdl::tabphotom($::tools_cdl::id_current_image,obj,mag)]
          $sources.stdev.obj configure -text [format "%2.3f" [lindex $val 1]]
@@ -939,27 +1027,30 @@ proc random {{range 100}} {
 
 
 
-
-
    proc ::gui_cdl_withwcs::charge_current_image { } {
 
       global audace
       global bddconf
 
+         set tcl_precision 17
+
+
          # Charge l image en memoire
          set ::tools_cdl::current_image [lindex $::tools_cdl::img_list [expr $::tools_cdl::id_current_image - 1] ]
          set tabkey      [::bddimages_liste::lget $::tools_cdl::current_image "tabkey"]
          set date        [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
+         set exposure    [string trim [lindex [::bddimages_liste::lget $tabkey "exposure"]   1] ]
 
          set idbddimg    [::bddimages_liste::lget $::tools_cdl::current_image idbddimg]
          set dirfilename [::bddimages_liste::lget $::tools_cdl::current_image dirfilename]
          set filename    [::bddimages_liste::lget $::tools_cdl::current_image filename   ]
          set file        [file join $bddconf(dirbase) $dirfilename $filename]
          set ::tools_cdl::current_image_name $filename
-         set ::tools_cdl::current_image_date $date
-         set ::tools_cdl::current_image_jjdate [mc_date2jd $date]
+         set ::tools_cdl::current_image_jjdate [expr [mc_date2jd $date] + $exposure / 86400.0 / 2.0]
+         set ::tools_cdl::current_image_date [mc_date2iso8601 $::tools_cdl::current_image_jjdate]
 
-         gren_info "Charge Image : $date ($::tools_cdl::current_image_jjdate)\n"
+         gren_info "Charge Image cur: $date  ($exposure)\n"
+         gren_info "Charge Image cur: $::tools_cdl::current_image_date ($::tools_cdl::current_image_jjdate) \n"
          
          # Charge l image
          buf$::audace(bufNo) load $file
@@ -1001,6 +1092,7 @@ proc random {{range 100}} {
       global audace
       global bddconf
 
+         set tcl_precision 17
       
       # Chargement de la liste
       set ::tools_cdl::img_list    [::bddimages_imgcorrection::chrono_sort_img $img_list]
@@ -1022,13 +1114,15 @@ proc random {{range 100}} {
       set ::tools_cdl::current_image [lindex $::tools_cdl::img_list 0]
       set tabkey         [::bddimages_liste::lget $::tools_cdl::current_image "tabkey"]
       set date           [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
+      set exposure       [string trim [lindex [::bddimages_liste::lget $tabkey "exposure"]   1] ]
       set idbddimg       [::bddimages_liste::lget $::tools_cdl::current_image idbddimg]
       set dirfilename    [::bddimages_liste::lget $::tools_cdl::current_image dirfilename]
       set filename       [::bddimages_liste::lget $::tools_cdl::current_image filename   ]
       set file           [file join $bddconf(dirbase) $dirfilename $filename]
       set ::tools_cdl::current_image_name $filename
       set ::tools_cdl::current_image_date $date
-      set ::tools_cdl::current_image_jjdate [mc_date2jd $date]
+      set ::tools_cdl::current_image_jjdate [expr [mc_date2jd $date] + $exposure / 86400.0 / 2.0]
+      set ::tools_cdl::current_image_date [mc_date2iso8601 $::tools_cdl::current_image_jjdate]
 
       # Visualisation de l image
       cleanmark
@@ -1105,14 +1199,24 @@ proc random {{range 100}} {
       pack $frm -in $::gui_cdl_withwcs::fen -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
 
-
-
-
 #--- Setup
 
+        #--- Nom e l'Objet
+        set nomobj [frame $frm.nomobj -borderwidth 0 -cursor arrow -relief groove]
+        pack $nomobj -in $frm -anchor s -side top -expand 0 -fill x -padx 5 -pady 5
+             label $nomobj.lab -text "Nom de l'objet"
+             pack $nomobj.lab -in $nomobj -side left -padx 5 -pady 0
+             entry $nomobj.val -relief sunken -textvariable ::tools_cdl::nomobj -width 25 \
+             -validate all -validatecommand { ::tkutil::validateString %W %V %P %s wordchar1 0 100 }
+             pack $nomobj.val -in $nomobj -side left -pady 1 -anchor w
 
-
-
+        #--- Repertoire des resultats
+        set savedir [frame $frm.savedir -borderwidth 0 -cursor arrow -relief groove]
+        pack $savedir -in $frm -anchor s -side top -expand 0 -fill x -padx 5 -pady 5
+             label $savedir.lab -text "Repertoire de sauvegarde"
+             pack $savedir.lab -in $savedir -side left -padx 5 -pady 0
+             entry $savedir.val -relief sunken -textvariable ::tools_cdl::savedir -width 50
+             pack $savedir.val -in $savedir -side left -pady 1 -anchor w
 
         #--- Cree un frame pour afficher movingobject
         set move [frame $frm.move -borderwidth 0 -cursor arrow -relief groove]
@@ -1369,45 +1473,291 @@ proc random {{range 100}} {
 
       global bddconf
       
-      set file [file join $bddconf(dirtmp) "courbes.csv"]
-      set f [open $file "w"]
-
-      # entete
-      set line "i,datejj,mag_aster,mag_instru_aster"
-      for {set x 1} {$x<=$::gui_cdl_withwcs::nbstars} {incr x} {
-          append line ",mag_star$x,mag_instru_star$x"
+      # creation des nom de fichier de sortie
+      set ::tools_cdl::current_image [lindex $::tools_cdl::img_list 0 ]
+      set tabkey      [::bddimages_liste::lget $::tools_cdl::current_image "tabkey"]
+      set date        [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
+      set date [string range $date 0 9]
+      
+      if {${::tools_cdl::nomobj}==""} {
+         set ::tools_cdl::nomobj "Unknown" 
       }
-      puts $f $line
+      
+      set dirsave [file join $::tools_cdl::savedir "CDL_${date}_${::tools_cdl::nomobj}"]
+      createdir_ifnot_exist $dirsave
 
-      # data
-      for {set i 1} {$i<$::tools_cdl::nb_img_list} {incr i} {
-         if { [info exists ::tools_cdl::tabphotom($i,obj,mag)] } {
-            set line ""
-            append line "$i,"
-            append line "$::tools_cdl::tabphotom($i,obj,jjdate),"
-            if { [info exists ::tools_cdl::tabphotom($i,obj,mag)] } {
-	       append line "$::tools_cdl::tabphotom($i,obj,mag)"
-	       #gren_info "datejj = $::tools_cdl::tabphotom($i,obj,jjdate)\n"
-	       ::gui_cdl_withwcs::update_bdi [lindex $::tools_cdl::img_list [expr $i - 1]] "Y"
-	       #return
-	    }
-            append line ","
-            if { [info exists ::tools_cdl::tabphotom($i,obj,maginstru)] } {append line "$::tools_cdl::tabphotom($i,obj,maginstru)"}
-
-            for {set x 1} {$x<=$::gui_cdl_withwcs::nbstars} {incr x} {
-               append line ","
-               if { [info exists ::tools_cdl::tabphotom($i,star$x,mag)] } {append line "$::tools_cdl::tabphotom($i,star$x,mag)"}
-               append line ","
-               if { [info exists ::tools_cdl::tabphotom($i,star$x,maginstru)] } {append line "$::tools_cdl::tabphotom($i,star$x,maginstru)"}
-            }
-            puts $f $line
+      # Exploration des valeurs de delta
+      set ldelta ""
+      if { $::tools_cdl::bestdelta == 1 } {
+         for {set rdelta $::tools_cdl::deltamin} {$rdelta<=$::tools_cdl::deltamax} {incr rdelta} {
+            set ldelta [lappend ldelta $rdelta] 
          }
       }
       
-      gren_info "Courbe enregistree : nb date = $i\n"
-      close $f
+      foreach delta $ldelta {
+         gren_info "$delta "
+      }
+
+      # Definition des nom de fichier
+      set file_std [file join $dirsave "CDL_${date}_${::tools_cdl::nomobj}_std.csv"]
+      set file_cpt [file join $dirsave "CDL_${date}_${::tools_cdl::nomobj}_cpt.csv"]
+      set file_mpc [file join $dirsave "CDL_${date}_${::tools_cdl::nomobj}_mpc.csv"]
+      set file_exl [file join $dirsave "CDL_${date}_${::tools_cdl::nomobj}_excel_fr.csv"]
+      foreach delta $ldelta {
+         set file_delta($delta) [file join $dirsave "CDL_${date}_${::tools_cdl::nomobj}_delta_${delta}.csv"]
+      }
+
+      # Ouverture des fichiers
+      set f_std [open $file_std "w"]
+      set f_cpt [open $file_cpt "w"]
+      set f_exl [open $file_exl "w"]
+      foreach delta $ldelta {
+         set f_delta($delta) [open $file_delta($delta) "w"]
+      }
+
+      # Entete
+
+         # Standard
+         set line "i,dateiso,datejj"    
+         append line [header_line_std obj]
+         for {set x 1} {$x<=$::gui_cdl_withwcs::nbstars} {incr x} {
+             append line [header_line_std star$x]
+         }
+         puts $f_std $line
+
+         # Compact
+         set line "i,dateiso,datejj"    
+         append line [header_line_cpt obj]
+         for {set x 1} {$x<=$::gui_cdl_withwcs::nbstars} {incr x} {
+             append line [header_line_cpt star$x]
+         }
+         puts $f_cpt $line
+
+         # Excel Fr
+         set line "i dateiso datejj"    
+         append line [header_line_exl obj]
+         for {set x 1} {$x<=$::gui_cdl_withwcs::nbstars} {incr x} {
+             append line [header_line_exl star$x]
+         }
+         puts $f_exl $line
+
+         # Exploration du Delta
+         set line "i,dateiso,datejj"    
+         append line [header_line_std obj]
+         for {set x 1} {$x<=$::gui_cdl_withwcs::nbstars} {incr x} {
+             append line [header_line_std star$x]
+         }
+         foreach delta $ldelta {
+            puts $f_delta($delta) $line
+         }
+
+
+
+      # data
+      for {set i 1} {$i<$::tools_cdl::nb_img_list} {incr i} {
+
+         if { [info exists ::tools_cdl::tabphotom($i,obj,mag)] } {
+
+            # Connexion SQL
+            #::gui_cdl_withwcs::update_bdi [lindex $::tools_cdl::img_list [expr $i - 1]] "Y"
+
+            # Header
+            set line_std [index_line $i]
+            set line_cpt [index_line $i]
+            set line_exl [index_line_exl $i]
+            foreach delta $ldelta {
+               set line_delta($delta) [index_line $i]
+            }
+
+            # Objet
+            append line_std [insert_line_std $i obj]
+            append line_cpt [insert_line_cpt $i obj]
+            append line_exl [insert_line_exl $i obj]
+            foreach delta $ldelta {
+               append line_delta($delta) [insert_line_delta $i obj $delta]
+            }
+            
+            # Etoiles de Reference
+            for {set x 1} {$x<=$::gui_cdl_withwcs::nbstars} {incr x} {
+               append line_std [insert_line_std $i star$x]
+               append line_cpt [insert_line_cpt $i star$x]
+               append line_exl [insert_line_exl $i star$x]
+               foreach delta $ldelta {
+                  append line_delta($delta) [insert_line_delta $i star$x $delta]
+               }
+            }
+
+            # Ecrit dans le fichier
+            puts $f_std $line_std
+            puts $f_cpt $line_cpt
+            puts $f_exl $line_exl
+            foreach delta $ldelta {
+               puts $f_delta($delta) $line_delta($delta)
+            }
+         }
+
+      }
+
+      # Fermeture des fichiers
+      close $f_std
+      close $f_cpt
+      close $f_exl
+      foreach delta $ldelta {
+         close $f_delta($delta)
+      }
+
+      gren_info "Donnees enregistrees : nb date = $i\n"
+      gren_info "Repertoire : $dirsave\n"
 
    }
+
+
+   # Date et index
+   proc index_line { i } {
+      set line "$i"
+      append line ",$::tools_cdl::tabphotom($i,obj,isodate)"
+      append line ",$::tools_cdl::tabphotom($i,obj,jjdate)"
+      return $line
+   }
+
+
+
+# Donnee Standard : comprend toute l information qu on peut en tirer
+
+   # Entete
+   proc header_line_std { n } {
+      return ",${n}_mag,${n}_instru_mag,${n}_fwhmx,${n}_fwhmy,${n}_fwhm,${n}_integrated_flux,${n}_error_flux,${n}_pixel_max,${n}_intensity,${n}_sigma_deepsky,${n}_sn_int,${n}_sn_px,${n}_delta,${n}_x,${n}_y,${n}_ra_deg,${n}_dec_deg,${n}_ra_hms,${n}_dec_dms,${n}_error,${n}_saturated"
+   }
+
+   # Photom value pour la source n source a l index i
+   proc insert_line_std { i n } {
+      set line ""
+      if { [info exists ::tools_cdl::tabphotom($i,${n},mag)        ] } {append line ",$::tools_cdl::tabphotom($i,${n},mag)"        } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},maginstru)  ] } {append line ",$::tools_cdl::tabphotom($i,${n},maginstru)"  } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},fwhmx)      ] } {append line ",$::tools_cdl::tabphotom($i,${n},fwhmx)"      } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},fwhmy)      ] } {append line ",$::tools_cdl::tabphotom($i,${n},fwhmy)"      } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},fwhm)       ] } {append line ",$::tools_cdl::tabphotom($i,${n},fwhm)"       } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},fluxintegre)] } {append line ",$::tools_cdl::tabphotom($i,${n},fluxintegre)"} else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},errflux)    ] } {append line ",$::tools_cdl::tabphotom($i,${n},errflux)"    } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},pixmax)     ] } {append line ",$::tools_cdl::tabphotom($i,${n},pixmax)"     } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},intensite)  ] } {append line ",$::tools_cdl::tabphotom($i,${n},intensite)"  } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},sigmafond)  ] } {append line ",$::tools_cdl::tabphotom($i,${n},sigmafond)"  } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},snint)      ] } {append line ",$::tools_cdl::tabphotom($i,${n},snint)"      } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},snpx)       ] } {append line ",$::tools_cdl::tabphotom($i,${n},snpx)"       } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},delta)      ] } {append line ",$::tools_cdl::tabphotom($i,${n},delta)"      } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},x)          ] } {append line ",$::tools_cdl::tabphotom($i,${n},x)"          } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},y)          ] } {append line ",$::tools_cdl::tabphotom($i,${n},y)"          } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},ra_deg)     ] } {append line ",$::tools_cdl::tabphotom($i,${n},ra_deg)"     } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},dec_deg)    ] } {append line ",$::tools_cdl::tabphotom($i,${n},dec_deg)"    } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},ra_hms)     ] } {append line ",$::tools_cdl::tabphotom($i,${n},ra_hms)"     } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},dec_dms)    ] } {append line ",$::tools_cdl::tabphotom($i,${n},dec_dms)"    } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},err)        ] } {append line ",$::tools_cdl::tabphotom($i,${n},err)"        } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},saturation) ] } {append line ",$::tools_cdl::tabphotom($i,${n},saturation)" } else {append line ",-"}
+      return $line
+   }
+   
+   proc field_std { x } {
+      return ",$x"
+   }
+   
+
+# Donnee Compacte : comprend le minimum pour faire une Courbe de lumiere
+
+   # Entete
+   proc header_line_cpt { n } {
+      return ",${n}_mag,${n}_instru_mag,${n}_fwhm,${n}_integrated_flux,${n}_error_flux"
+   }
+
+   # Photom value pour la source n source a l index i
+   proc insert_line_cpt { i n } {
+      set line ""
+      if { [info exists ::tools_cdl::tabphotom($i,${n},mag)        ] } {append line ",$::tools_cdl::tabphotom($i,${n},mag)"        } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},maginstru)  ] } {append line ",$::tools_cdl::tabphotom($i,${n},maginstru)"  } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},fwhm)       ] } {append line ",$::tools_cdl::tabphotom($i,${n},fwhm)"       } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},fluxintegre)] } {append line ",$::tools_cdl::tabphotom($i,${n},fluxintegre)"} else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},errflux)    ] } {append line ",$::tools_cdl::tabphotom($i,${n},errflux)"    } else {append line ",-"}
+      return $line
+   }
+
+# Donnee Excel FR : meme champ que standard, mais lisible par tous Excel type version francaise qui ne comprend que la virgule pour les nombres decimaux
+
+   # Entete
+   proc header_line_exl { n } {
+      return " ${n}_mag ${n}_instru_mag ${n}_fwhmx ${n}_fwhmy ${n}_fwhm ${n}_integrated_flux ${n}_error_flux ${n}_pixel_max ${n}_intensity ${n}_sigma_deepsky ${n}_sn_int ${n}_sn_px ${n}_delta ${n}_x ${n}_y ${n}_ra_deg ${n}_dec_deg ${n}_ra_hms ${n}_dec_dms ${n}_error ${n}_saturated"
+   }
+
+   # Photom value pour la source n source a l index i
+   proc insert_line_exl { i n } {
+      set line ""
+      if { [info exists ::tools_cdl::tabphotom($i,${n},mag)        ] } {append line [field_exl $::tools_cdl::tabphotom($i,${n},mag)        ]} else {append line " -"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},maginstru)  ] } {append line [field_exl $::tools_cdl::tabphotom($i,${n},maginstru)  ]} else {append line " -"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},fwhmx)      ] } {append line [field_exl $::tools_cdl::tabphotom($i,${n},fwhmx)      ]} else {append line " -"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},fwhmy)      ] } {append line [field_exl $::tools_cdl::tabphotom($i,${n},fwhmy)      ]} else {append line " -"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},fwhm)       ] } {append line [field_exl $::tools_cdl::tabphotom($i,${n},fwhm)       ]} else {append line " -"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},fluxintegre)] } {append line [field_exl $::tools_cdl::tabphotom($i,${n},fluxintegre)]} else {append line " -"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},errflux)    ] } {append line [field_exl $::tools_cdl::tabphotom($i,${n},errflux)    ]} else {append line " -"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},pixmax)     ] } {append line [field_exl $::tools_cdl::tabphotom($i,${n},pixmax)     ]} else {append line " -"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},intensite)  ] } {append line [field_exl $::tools_cdl::tabphotom($i,${n},intensite)  ]} else {append line " -"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},sigmafond)  ] } {append line [field_exl $::tools_cdl::tabphotom($i,${n},sigmafond)  ]} else {append line " -"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},snint)      ] } {append line [field_exl $::tools_cdl::tabphotom($i,${n},snint)      ]} else {append line " -"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},snpx)       ] } {append line [field_exl $::tools_cdl::tabphotom($i,${n},snpx)       ]} else {append line " -"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},delta)      ] } {append line [field_exl $::tools_cdl::tabphotom($i,${n},delta)      ]} else {append line " -"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},x)          ] } {append line [field_exl $::tools_cdl::tabphotom($i,${n},x)          ]} else {append line " -"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},y)          ] } {append line [field_exl $::tools_cdl::tabphotom($i,${n},y)          ]} else {append line " -"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},ra_deg)     ] } {append line [field_exl $::tools_cdl::tabphotom($i,${n},ra_deg)     ]} else {append line " -"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},dec_deg)    ] } {append line [field_exl $::tools_cdl::tabphotom($i,${n},dec_deg)    ]} else {append line " -"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},ra_hms)     ] } {append line " $::tools_cdl::tabphotom($i,${n},ra_hms)"} else {append line " -"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},dec_dms)    ] } {append line " $::tools_cdl::tabphotom($i,${n},dec_dms)"} else {append line " -"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},err)        ] } {append line [field_exl $::tools_cdl::tabphotom($i,${n},err)        ]} else {append line " -"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},saturation) ] } {append line [field_exl $::tools_cdl::tabphotom($i,${n},saturation) ]} else {append line " -"}
+      return $line
+   }
+
+   # Date et index
+   proc index_line_exl { i } {
+      set line "$i"
+      append line " $::tools_cdl::tabphotom($i,obj,isodate)"
+      append line [field_exl $::tools_cdl::tabphotom($i,obj,jjdate)]
+      return $line
+   }
+
+   
+   proc field_exl { x } {
+      set x [regsub -all \[.\] $x ,]
+      return " $x"
+   }
+
+# Donnee Exploration du Delta
+
+   # Photom value pour la source n source a l index i
+   proc insert_line_delta { i n delta} {
+      set line ""
+      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,mag)        ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,mag)"        } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,maginstru)  ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,maginstru)"  } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,fwhmx)      ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,fwhmx)"      } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,fwhmy)      ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,fwhmy)"      } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,fwhm)       ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,fwhm)"       } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,fluxintegre)] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,fluxintegre)"} else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,errflux)    ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,errflux)"    } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,pixmax)     ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,pixmax)"     } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,intensite)  ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,intensite)"  } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,sigmafond)  ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,sigmafond)"  } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,snint)      ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,snint)"      } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,snpx)       ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,snpx)"       } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,delta)      ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,delta)"      } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},x)          ] } {append line ",$::tools_cdl::tabphotom($i,${n},x)"          } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},y)          ] } {append line ",$::tools_cdl::tabphotom($i,${n},y)"          } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},ra_deg)     ] } {append line ",$::tools_cdl::tabphotom($i,${n},ra_deg)"     } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},dec_deg)    ] } {append line ",$::tools_cdl::tabphotom($i,${n},dec_deg)"    } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},ra_hms)     ] } {append line ",$::tools_cdl::tabphotom($i,${n},ra_hms)"     } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},dec_dms)    ] } {append line ",$::tools_cdl::tabphotom($i,${n},dec_dms)"    } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},err)        ] } {append line ",$::tools_cdl::tabphotom($i,${n},err)"        } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},saturation) ] } {append line ",$::tools_cdl::tabphotom($i,${n},saturation)" } else {append line ",-"}
+      return $line
+   }
+   
+
+
 
 
 # Fin du namespace
