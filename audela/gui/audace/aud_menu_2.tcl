@@ -260,8 +260,11 @@ namespace eval ::div {
 
       ::div::configGui $visuNo disabled
 
+      #--   recupere le No de l'image TK
+      set imageNo [visu$visuNo image]
+
       # First 14 bytes are bitmapfileheader - get rid of this
-      set data [string range [base64::decode [imagevisu$visuNo data -format bmp]] 14 end]
+      set data [string range [base64::decode [imagevisu$imageNo data -format bmp]] 14 end]
       twapi::open_clipboard
       twapi::empty_clipboard
       twapi::write_clipboard 8 $data

@@ -30,6 +30,7 @@ set caption(sn_tarot,galaxy_center)          "Center of host galaxy"
 set caption(sn_tarot,star_ref)               "Position of a reference star"
 set caption(sn_tarot,star_pos)               "Position of SN candidate"
 set caption(sn_tarot,star_id)                "Creating data sheet about SN candidate"
+set caption(sn_tarot,swatch)                 "Swatch & Transfer Function"
 
 set caption(sn_tarot,save1)                  "Save"
 set caption(sn_tarot,confirm)                "Continue?"
@@ -104,6 +105,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,star_ref)            "Position d'une étoile de référence"
    set caption(sn_tarot,star_pos)            "Position de la candidate SN"
    set caption(sn_tarot,star_id)             "Création de la fiche de la candidate SN"
+   set caption(sn_tarot,swatch)              "Palette & Fonction de Transfert"
 
    set caption(sn_tarot,save1)               "Enregistrer"
    set caption(sn_tarot,confirm)             "Voulez-vous poursuivre ?"
@@ -178,6 +180,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,star_ref)            "# Position d'une étoile de référence"
    set caption(sn_tarot,star_pos)            "# Position de la candidate SN"
    set caption(sn_tarot,star_id)             "# Création de la fiche de la candidate SN"
+   set caption(sn_tarot,swatch)              "Palette & Funzione di trasferimento"
 
    set caption(sn_tarot,save1)               "Salvare"
    set caption(sn_tarot,confirm)             "Volete continuare?"
@@ -252,6 +255,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,star_ref)            "Posición de una estrella de referencia"
    set caption(sn_tarot,star_pos)            "Posición de la candidata SN"
    set caption(sn_tarot,star_id)             "Creación de la ficha de la candidata SN"
+   set caption(sn_tarot,swatch)              "Paleta & Función de transferencia"
 
    set caption(sn_tarot,save1)               "Salvar"
    set caption(sn_tarot,confirm)             "Continuar?"
@@ -326,6 +330,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,star_ref)            "Ein Referenz-Stern Position"
    set caption(sn_tarot,star_pos)            "Position der SN Kandidat"
    set caption(sn_tarot,star_id)             "Datei der SN Kandidat erstellten"
+   set caption(sn_tarot,swatch)              "Palette & Transfert Funktion"
 
    set caption(sn_tarot,save1)               "Speichern"
    set caption(sn_tarot,confirm)             "Vollen sie weiterführen ?"
@@ -400,6 +405,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,star_ref)            "Posição de uma estrela de referência"
    set caption(sn_tarot,star_pos)            "Posição da candidata SN"
    set caption(sn_tarot,star_id)             "Criação da ficha da candidate SN"
+   set caption(sn_tarot,swatch)              "Paleta & Função transferência"
 
    set caption(sn_tarot,save1)               "Guardar"
    set caption(sn_tarot,confirm)             "Deseja continuar?"
@@ -474,6 +480,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,star_ref)            "Position of a reference star"
    set caption(sn_tarot,star_pos)            "Position of SN candidate"
    set caption(sn_tarot,star_id)             "Creating data sheet about SN candidate"
+   set caption(sn_tarot,swatch)              "Swatch & Transfer Function"
 
    set caption(sn_tarot,save1)               "Save"
    set caption(sn_tarot,confirm)             "Continue?"
@@ -548,6 +555,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,star_ref)            "Position of a reference star"
    set caption(sn_tarot,star_pos)            "Position of SN candidate"
    set caption(sn_tarot,star_id)             "Creating data sheet about SN candidate"
+   set caption(sn_tarot,swatch)              "Swatch & Transfer Function"
 
    set caption(sn_tarot,save1)               "Save"
    set caption(sn_tarot,confirm)             "Continue?"
@@ -622,6 +630,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,star_ref)            "Position of a reference star"
    set caption(sn_tarot,star_pos)            "Position of SN candidate"
    set caption(sn_tarot,star_id)             "Creating data sheet about SN candidate"
+   set caption(sn_tarot,swatch)              "Swatch & Transfer Function"
 
    set caption(sn_tarot,save1)               "Save"
    set caption(sn_tarot,confirm)             "Continue?"
