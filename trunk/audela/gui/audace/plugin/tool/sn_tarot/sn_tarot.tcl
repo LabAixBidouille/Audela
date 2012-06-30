@@ -268,6 +268,8 @@ proc ::sn_tarot::confTarotVisu { } {
          -command "::sn_tarot::snCandidate"
       $menu add command -label "$caption(sn_tarot,star_id) " \
          -command "::sn_tarot::snCreateCandidateId"
+      $menu add command -label "$caption(sn_tarot,swatch) " \
+         -command "::div::initDiv $num(visu1)"
    $zone(image1) bind display <ButtonPress-3> { set snvisu(candidate,xy) [list %x [expr [$zone(image1) cget -height]-%y]] ; tk_popup [ winfo toplevel $zone(image1) ].menuButton3 %X %Y}
 
    #--   liste les fichiers presents dans night, references et dss
