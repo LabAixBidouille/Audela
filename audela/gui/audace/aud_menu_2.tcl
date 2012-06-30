@@ -102,7 +102,7 @@ namespace eval ::div {
          #--   demasque l'axe y2
          $graph axis configure y2 -hide no
 
-         if {$k < "5"} {
+         if {$k < "5" && [visu$visuNo image] != 100} {
             #--   demasque la dynamique
             blt::table $tbl \
             $tbl.lab_niveau 1,0 -anchor w -ipadx 10 -pady 10\
@@ -1114,13 +1114,13 @@ namespace eval ::div {
       #--   bouton de creation de ma palette
       button $tbl.spec.save -text "$caption(div,save)" -borderwidth 2 -width 15 \
          -relief raised -command "::div::cmdSaveMypal $visuNo"
-      pack $tbl.spec.save -side left -padx 10 -pady 3
+      pack $tbl.spec.save -side left -pady 3
 
       #--   bouton d'exportation de l'image (pour Windows seulement)
       if { $::tcl_platform(platform) == "windows" } {
-         button $tbl.spec.copy -text $caption(div,copy) -borderwidth 2 -width 15 \
+         button $tbl.spec.copy -text $caption(div,copy) -borderwidth 2 -width 30 \
             -relief raised -command "::div::cmdImg2Clipboard $visuNo"
-         pack $tbl.spec.copy -side left -padx 20 -pady 3
+         pack $tbl.spec.copy -side left -padx 5 -pady 3
       }
 
       #---  les commandes habituelles
