@@ -102,7 +102,7 @@ namespace eval ::div {
          #--   demasque l'axe y2
          $graph axis configure y2 -hide no
 
-         if {$k < "5" && [visu$visuNo image] != 100} {
+         if {$k < "6" && [visu$visuNo image] != 100} {
             #--   demasque la dynamique
             blt::table $tbl \
             $tbl.lab_niveau 1,0 -anchor w -ipadx 10 -pady 10\
@@ -126,12 +126,12 @@ namespace eval ::div {
       ::div::selectGraph $visuNo function
 
       set k [lsearch -exact $private(div,$visuNo,listPalettes) $private(div,$visuNo,palette)]
-      if {$k < 5} {
+      if {$k < 6} {
          set box $private(div,$visuNo,box)
-      } elseif {$k in [list 5 6 7]} {
+      } elseif {$k in [list 6 7 8]} {
          #--   cas des palettes etirement,iris, rainbow
          set box [list 0 0 255 255]
-      } elseif {$k == 8} {
+      } elseif {$k == 9} {
          #--   cas de la palette mypal
          set box [::div::getBox $visuNo]
       }
@@ -182,22 +182,22 @@ namespace eval ::div {
       set k [lsearch -exact $private(div,$visuNo,listPalettes) $private(div,$visuNo,palette)]
 
       #--   actualise les palettes
-      if {$k < "5"} {
+      if {$k < "6"} {
          ::div::cmdConfigBox $visuNo
       }  else {
          #--   Affecte les valeurs lues en mémoire ou dans un fichier
          switch -exact $k {
-            5  {  set private(div,$visuNo,histo) 1
+            6  {  set private(div,$visuNo,histo) 1
                   ::div::etireHisto $visuNo }
-            6  {  ::div::readPalette $visuNo iris }
-            7  {  ::div::readPalette $visuNo rainbow }
-            8  {  ::div::readPalette $visuNo mypal_$visuNo }
+            7  {  ::div::readPalette $visuNo iris }
+            8  {  ::div::readPalette $visuNo rainbow }
+            9  {  ::div::readPalette $visuNo mypal_$visuNo }
          }
 
          #--   inverse la palette
          if {$private(div,$visuNo,inversion) == "1"} {
             ::div::cmdInvertValues $visuNo
-            if {$k == 8} {
+            if {$k == 9} {
                ::div::cmdInvertValues $visuNo
             }
          }
@@ -342,7 +342,7 @@ namespace eval ::div {
 
       #--   liste les palettes disponibles
       set private(div,$visuNo,listPalettes) ""
-      foreach label [list lin rampe gamma ajust sigma egal iris arc_en_ciel] {
+      foreach label [list lin log rampe gamma ajust sigma egal iris arc_en_ciel] {
          lappend private(div,$visuNo,listPalettes) "$caption(div,$label)"
       }
 
@@ -350,7 +350,7 @@ namespace eval ::div {
          lappend private(div,$visuNo,listPalettes) "$caption(div,mypal)"
        } else {
          #--   si l'utilisateur a detruit mypal_$visuNo.pal
-         if {$k == 8} {
+         if {$k == 9} {
             #--   retablit une palette lineaire
             set k 0
          }
@@ -487,7 +487,7 @@ namespace eval ::div {
       variable private
 
       set k [lsearch -exact $private(div,$visuNo,listPalettes) $private(div,$visuNo,palette)]
-      if {$k == "0" || $k == "3"} {
+      if {$k == "0" || $k == "4"} {
          set element [$W element get current]
          if {[$W element closest $x $y MyInfo $element]} {
             $W element configure $element -linewidth 3 -symbol none
@@ -506,7 +506,7 @@ namespace eval ::div {
 
       set k [lsearch -exact $private(div,$visuNo,listPalettes) $private(div,$visuNo,palette)]
       #--   arrete si fonction non deformable
-      if {$k ni [list 0 3]} {return}
+      if {$k ni [list 0 4]} {return}
 
       set coord_x [expr {int([$W axis invtransform x $x])}]
       set coord_y [expr {int([$W axis invtransform y $y])}]
@@ -543,7 +543,7 @@ namespace eval ::div {
       #---  demasque la courbe appropriee
       if {$plan eq "gray"} {
          $graph element configure ${element}_r -color $color(gray_pad) -hide no
-      } elseif {$plan eq  "$caption(div,RGB)" || $k in [list 6 7]} {
+      } elseif {$plan eq  "$caption(div,RGB)" || $k in [list 7 8]} {
          $graph element configure ${element}_r -color red -hide no
          $graph element configure ${element}_g -color green -hide no
          $graph element configure ${element}_b -color blue -hide no
@@ -579,7 +579,7 @@ namespace eval ::div {
       #--   desinhibe la fonction histogramme
       $tbl.histo configure -state normal
 
-      if {$k < 5} {
+      if {$k < 6} {
 
          #--   affiche la dynamique
          if {$private(div,$visuNo,histo) == 1} {
@@ -596,7 +596,7 @@ namespace eval ::div {
             $tbl.lab_contrast 4,0 -anchor w -ipadx 10 -height {35} \
             $tbl.scale_contrast 4,1 -columnspan 3 -fill x -height {35}
 
-      } elseif {$k == 5} {
+      } elseif {$k == 6} {
          $tbl.histo configure -state disabled
       }
 
@@ -605,17 +605,18 @@ namespace eval ::div {
          0  {  #--   fonction de transfert lineaire
                blt::table $tbl $tbl.linear 7,3 -padx 10 -pady 10
             }
-         1  {  #--   fonction de transfert rampe
+         1  {  #--   fonction de transfert log }
+         2  {  #--   fonction de transfert rampe
                blt::table $tbl \
                   $tbl.lab_step 5,0 -anchor w -ipadx 10 -height {35} \
                   $tbl.scale_step 5,1 -columnspan 3 -fill x -height {35}
             }
-         2  {  #--   fonction de transfert gamma
+         3  {  #--   fonction de transfert gamma
                blt::table $tbl \
                   $tbl.lab_gamma 5,0 -anchor w -ipadx 10 -height {35} \
                   $tbl.scale_gamma 5,1 -columnspan 3 -fill x -height {35}
             }
-         3  {  #--   fonction de transfert courbe libre
+         4  {  #--   fonction de transfert courbe libre
                blt::table $tbl $tbl.linear 7,3 -padx 10 -pady 10
             }
       }
@@ -777,16 +778,29 @@ namespace eval ::div {
                   }
                }
             }
-         1  {  #--   fonction rampe
+         1  {  #--   fonction log
+               for {set x 0} {$x <= 255} {incr x} {
+                  if {$x <= $x0} {
+                     set vy($x) 0
+                  } elseif {$x >= $x1} {
+                     set vy($x) 255
+                  } else {
+                     set vy($x) [expr { log($vy($x) * 255. ) * 43.954 + 10.257 }]
+                     set vy($x) [expr { $vy($x) * $plage_y / 255. + $y0 }]
+                  }
+               }
+
+            }
+         2  {  #--   fonction rampe
                set n $private(div,$visuNo,step)
                vy expr {round(vy*$n)}
                vy expr {vy*$plage_y*1./$n+$y0}
             }
-         2  {  #--   fonction gamma
+         3  {  #--   fonction gamma
                vy expr {vy*(vy > 0)}
                vy expr {$plage_y*vy^$private(div,$visuNo,gamma)+$y0}
             }
-         3  {  #--   fonction courbe
+         4  {  #--   fonction courbe
                if {![info exists private(div,$visuNo,destination)]} {
                   #--   ligne droite par defaut
                   vy expr {$plage_y*vy+$y0}
@@ -808,7 +822,7 @@ namespace eval ::div {
                   }
                }
             }
-         4  {  #--   fonction sigmoîde ou tangente hyperbolique
+         5  {  #--   fonction sigmoîde ou tangente hyperbolique
                vy expr {(vx-($x0+$x1)/2.)*5.2/$plage_x}
                vy expr {$plage_y/2.*(1+tanh(vy))+$y0}
             }
