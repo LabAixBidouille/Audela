@@ -1425,8 +1425,8 @@ proc calibwcs {args} {
          buf$::audace(bufNo) setkwd [list $kwd $value $type $unit $comment]
       }
 
-      buf$::audace(bufNo) setkwd [list EQUINOX 2000 int "" "System of equatorial coordinates"]
-      buf$::audace(bufNo) setkwd [list RADESYS FK5 string ""  "Mean Place IAU 1984 system"]
+      buf$::audace(bufNo) setkwd [list EQUINOX J2000.0 float "" "System of equatorial coordinates"]
+      buf$::audace(bufNo) setkwd [list RADECSYS FK5 string ""  "Mean Place IAU 1984 system"]
       buf$::audace(bufNo) setkwd [list LONPOLE 180 float "" "Long. of the celest.NP in native coor.sys" ]
       buf$::audace(bufNo) setkwd [list CTYPE1 RA---TAN string "" "Gnomonic projection" ]
       buf$::audace(bufNo) setkwd [list CTYPE2 DEC--TAN string "" "Gnomonic projection" ]
@@ -1649,8 +1649,8 @@ proc simulimage {args} {
             buf$::audace(bufNo) setkwd [list $kwd $value $type $unit $comment]
          }
       }
-      buf$::audace(bufNo) setkwd [list EQUINOX 2000 int "" "System of equatorial coordinates"]
-      buf$::audace(bufNo) setkwd [list RADESYS FK5 string "" "Mean Place IAU 1984 system"]
+      buf$::audace(bufNo) setkwd [list EQUINOX J2000.0 float "" "System of equatorial coordinates"]
+      buf$::audace(bufNo) setkwd [list RADECSYS FK5 string "" "Mean Place IAU 1984 system"]
       buf$::audace(bufNo) setkwd [list LONPOLE 180 float "" "Long. of the celest.NP in native coor.sys"]
       buf$::audace(bufNo) setkwd [list CTYPE1 RA---TAN string "" "Gnomonic projection"]
       buf$::audace(bufNo) setkwd [list CTYPE2 DEC--TAN string "" "Gnomonic projection"]
