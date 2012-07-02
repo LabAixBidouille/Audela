@@ -812,7 +812,7 @@ namespace eval cataGoto {
       ::cataGoto::recupPosition
       #--- Recopie les donnees
       set catalogue($visuNo,list_radec) "$catalogue(asteroide_ad) $catalogue(asteroide_dec)"
-      set catalogue($visuNo,nom_objet)  "$catalogue(asteroide_choisie)"
+      set catalogue($visuNo,nom_objet)  [ string trimleft [ lindex [ split $catalogue(asteroide_choisie) ")" ] 1 ] " " ]
       set catalogue($visuNo,equinoxe)   "J2000.0"
       set catalogue($visuNo,magnitude)  ""
       #--- Mise a jour des coordonnees pour les outils Telescope et Controle a distance
