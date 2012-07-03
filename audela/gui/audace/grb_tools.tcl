@@ -47,7 +47,7 @@ proc grb_swift { args } {
 
    set methode [lindex $args 0]
    set grbpath [ file join $::audace(rep_userCatalog) grb swift]
-   
+
    if {$methode=="update"} {
 
       file mkdir "$grbpath"
@@ -59,57 +59,57 @@ proc grb_swift { args } {
       set f [open ${grbpath}/raw.txt r]
       set lignes [read $f]
       close $f
-      set lignes [split $lignes \n]      
+      set lignes [split $lignes \n]
       set nl [llength $lignes]
       set k 0
-      catch {unset grbs}      
+      catch {unset grbs}
       for {set kl 1} {$kl<$nl} {incr kl} {
          set ligne [split [lindex $lignes $kl] \t]
          set grbname [lindex $ligne 0]
-			if {[catch {expr [string trimleft [string range $grbname 0 5] 0]}]==1} {
-				continue
-			}
+         if {[catch {expr [string trimleft [string range $grbname 0 5] 0]}]==1} {
+            continue
+         }
          lappend grbs(name) $grbname
-         set ra [lindex $ligne 3]         
+         set ra [lindex $ligne 3]
          lappend grbs(ra) [string trim [mc_angle2deg $ra]]
-         set dec [lindex $ligne 4]         
+         set dec [lindex $ligne 4]
          lappend grbs(dec) [string trim [mc_angle2deg $dec 90]]
          set res [lindex $ligne 2]
-			if {[catch {expr [string range $res 0 0]}]==0} {
-	         set res Swift
+         if {[catch {expr [string range $res 0 0]}]==0} {
+            set res Swift
          }
          if {[string range $res 0 5]=="Ground"} {
-	         set res Swift
+            set res Swift
          }
          lappend grbs(satellite) $res
 
-         set ra [lindex $ligne 22]         
-         set dec [lindex $ligne 23]         
+         set ra [lindex $ligne 22]
+         set dec [lindex $ligne 23]
          set redshift -1
          set obsoptic  0
          if {($ra!="n/a")} {
-		      set obsoptic 1
-	         set res [lindex [lindex $ligne 29] 0] ; # redshift
-				if {[catch {expr [string trimleft $res 0]}]==0} {
-		         set redshift $res
-				}         
+            set obsoptic 1
+            set res [lindex [lindex $ligne 29] 0] ; # redshift
+            if {[catch {expr [string trimleft $res 0]}]==0} {
+               set redshift $res
+            }
          }
-	      lappend grbs(obsoptic) $obsoptic
+         lappend grbs(obsoptic) $obsoptic
          lappend grbs(redshift) $redshift
-         
+
          set a [string range $grbname 0 1]
          set m [string range $grbname 2 3]
          set d [string range $grbname 4 5]
-         if {$a>70} { 
-	         set a [expr 1900+[string trimleft $a 0]] 
-	      } else { 
-		      set a [expr 2000+[string trimleft $a 0]] 
-		   }
+         if {$a>70} {
+            set a [expr 1900+[string trimleft $a 0]]
+         } else {
+            set a [expr 2000+[string trimleft $a 0]]
+         }
          set grbtime [lindex $ligne 1]
          if {$grbtime=="n/a"} {
-	         set grbdateiso 1800-01-01T00:00:00.000
+            set grbdateiso 1800-01-01T00:00:00.000
          } else {
-	         set grbdateiso [mc_date2iso8601 ${a}-${m}-${d}T${grbtime}]
+            set grbdateiso [mc_date2iso8601 ${a}-${m}-${d}T${grbtime}]
          }
          lappend grbs(date) [mc_date2iso8601 ${grbdateiso}]
          #
@@ -122,7 +122,7 @@ proc grb_swift { args } {
          set redshift [lindex $grbs(redshift) $k]
          #::console::affiche_resultat "<$name><$satellite><$date> <$ra> <$dec> <$obsoptic> >>>>$redshift>>>>>\n"
          incr k
-         
+
       }
       set lignes ""
       set n [llength $grbs(name)]
@@ -159,7 +159,7 @@ proc grb_swift { args } {
       puts -nonewline $f $lignes
       close $f
       ::console::affiche_resultat "GRB Swift file ${grbpath}/grboptic.txt\n"
-   
+
    } elseif {$methode=="prompt_map"} {
 
       set err [catch {open ${grbpath}/grboptic.txt r} f]
@@ -624,7 +624,7 @@ proc grb_gcnc { args } {
    {"WIND" "KONUS-Wind"} \
    {"XMM" "XMM-Newton"} \
    {"XRT" "Swift-XRT"} \
-   {"XRTE" "XRTE"} \   
+   {"XRTE" "XRTE"} \
    }
 
    set miscs {\
@@ -714,7 +714,7 @@ proc grb_gcnc { args } {
    {"MITSUME" "MITSuME"} \
    {"MIYAZAKI" "Miyazaki"} \
    {"MONDY" "SAYAN-1.5m"} \
-   {" MOA " "MOA_61"} \   
+   {" MOA " "MOA_61"} \
    {"NAYUTA" "NAYUTA"} \
    {" NOT " "NOT"} \
    {"NTT" "NTT"} \
