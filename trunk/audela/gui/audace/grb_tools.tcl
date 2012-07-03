@@ -15,6 +15,10 @@
 # grb_greiner update
 # grb_greiner prompt_map ?
 #
+# --- Pour telecharger les GRB de Swift seul
+# grb_swift update
+# grb_swift prompt_map ?
+#
 # --- Pour analyser les alertes Antares
 # grb_antares update
 # grb_antares html
@@ -37,6 +41,228 @@ proc grb_read_url_contents { url {fullfile_out ""} } {
    }
    return $res
 }
+
+proc grb_swift { args } {
+   global audace
+
+   set methode [lindex $args 0]
+   set grbpath [ file join $::audace(rep_userCatalog) grb swift]
+   
+   if {$methode=="update"} {
+
+      file mkdir "$grbpath"
+      set url0 "http://heasarc.nasa.gov/docs/swift/archive/grb_table/tmp/grb_table_1341341521.txt"
+      set lignes [grb_read_url_contents "$url0"]
+      set f [open ${grbpath}/raw.txt w]
+      puts -nonewline $f $lignes
+      close $f
+      set f [open ${grbpath}/raw.txt r]
+      set lignes [read $f]
+      close $f
+      set lignes [split $lignes \n]      
+      set nl [llength $lignes]
+      set k 0
+      catch {unset grbs}      
+      for {set kl 1} {$kl<$nl} {incr kl} {
+         set ligne [split [lindex $lignes $kl] \t]
+         set grbname [lindex $ligne 0]
+			if {[catch {expr [string trimleft [string range $grbname 0 5] 0]}]==1} {
+				continue
+			}
+         lappend grbs(name) $grbname
+         set ra [lindex $ligne 3]         
+         lappend grbs(ra) [string trim [mc_angle2deg $ra]]
+         set dec [lindex $ligne 4]         
+         lappend grbs(dec) [string trim [mc_angle2deg $dec 90]]
+         set res [lindex $ligne 2]
+			if {[catch {expr [string range $res 0 0]}]==0} {
+	         set res Swift
+         }
+         if {[string range $res 0 5]=="Ground"} {
+	         set res Swift
+         }
+         lappend grbs(satellite) $res
+
+         set ra [lindex $ligne 22]         
+         set dec [lindex $ligne 23]         
+         set redshift -1
+         set obsoptic  0
+         if {($ra!="n/a")} {
+		      set obsoptic 1
+	         set res [lindex [lindex $ligne 29] 0] ; # redshift
+				if {[catch {expr [string trimleft $res 0]}]==0} {
+		         set redshift $res
+				}         
+         }
+	      lappend grbs(obsoptic) $obsoptic
+         lappend grbs(redshift) $redshift
+         
+         set a [string range $grbname 0 1]
+         set m [string range $grbname 2 3]
+         set d [string range $grbname 4 5]
+         if {$a>70} { 
+	         set a [expr 1900+[string trimleft $a 0]] 
+	      } else { 
+		      set a [expr 2000+[string trimleft $a 0]] 
+		   }
+         set grbtime [lindex $ligne 1]
+         if {$grbtime=="n/a"} {
+	         set grbdateiso 1800-01-01T00:00:00.000
+         } else {
+	         set grbdateiso [mc_date2iso8601 ${a}-${m}-${d}T${grbtime}]
+         }
+         lappend grbs(date) [mc_date2iso8601 ${grbdateiso}]
+         #
+         set name [lindex $grbs(name) $k]
+         set ra [lindex $grbs(ra) $k]
+         set dec [lindex $grbs(dec) $k]
+         set satellite [lindex $grbs(satellite) $k]
+         set date [lindex $grbs(date) $k]
+         set obsoptic [lindex $grbs(obsoptic) $k]
+         set redshift [lindex $grbs(redshift) $k]
+         #::console::affiche_resultat "<$name><$satellite><$date> <$ra> <$dec> <$obsoptic> >>>>$redshift>>>>>\n"
+         incr k
+         
+      }
+      set lignes ""
+      set n [llength $grbs(name)]
+      for {set k 0} {$k<$n} {incr k} {
+         set name [lindex $grbs(name) $k]
+         set ra [lindex $grbs(ra) $k]
+         set dec [lindex $grbs(dec) $k]
+         set satellite [lindex $grbs(satellite) $k]
+         set date [lindex $grbs(date) $k]
+         set obsoptic [lindex $grbs(obsoptic) $k]
+         set redshift [lindex $grbs(redshift) $k]
+         set err [catch {format %f $redshift} msg]
+         if {$err==1} {
+            set nr [string length $redshift]
+            set redshift2 ""
+            for {set kr 0} {$kr<$nr} {incr kr} {
+               set car [string index $redshift $kr]
+               if {($car=="0")||($car=="1")||($car=="2")||($car=="3")||($car=="4")||($car=="5")||($car=="6")||($car=="7")||($car=="8")||($car=="9")||($car==".")} {
+                  append redshift2 $car
+               }
+            }
+            set redshift -1
+            set err [catch {format %f $redshift2} msg]
+            if {$err==1} {
+               set redshift2 $redshift
+            }
+         } else {
+            set redshift2 $redshift
+         }
+         set ligne [format "%9s %12s %20s %08.4f %+08.4f %1d %+07.3f %+07.3f" $name $satellite $date $ra $dec $obsoptic $redshift $redshift2]
+         append lignes "${ligne}\n"
+      }
+      set f [open ${grbpath}/grboptic.txt w]
+      puts -nonewline $f $lignes
+      close $f
+      ::console::affiche_resultat "GRB Swift file ${grbpath}/grboptic.txt\n"
+   
+   } elseif {$methode=="prompt_map"} {
+
+      set err [catch {open ${grbpath}/grboptic.txt r} f]
+      if {$err==1} {
+         error "File ${grbpath}/grboptic.txt not found. Please use the function \"grb_greiner update\" before"
+      }
+      set lignes [split [read $f] \n]
+      close $f
+      set satellites ""
+      set tsatellites ""
+      set grbs ""
+      set tgrbs ""
+      foreach ligne $lignes {
+         set grb [lindex $ligne 0]
+         if {$grb==""} { continue }
+         lappend grbs $grb
+         append tgrbs "$grb "
+         set satellite [lindex $ligne 1]
+         set k [lsearch -exact $satellites $satellite]
+         if {$k==-1} {
+            lappend satellites $satellite
+            append tsatellites "$satellite "
+         }
+      }
+
+      set onesatellite [lindex $args 1]
+      if {$onesatellite==""} {
+         set onesatellite Swift
+      } elseif {$onesatellite=="?"} {
+         ::console::affiche_resultat "Available satellites are: $tsatellites.\n\nAvailable GRBs are: $tgrbs\n"
+         return
+      }
+      set onegrb ""
+      set onegrb [lindex $args 2]
+      set k [lsearch -exact $satellites $onesatellite]
+      if {$k==-1} {
+         # - l'argument est un numero de GRB
+         set onegrb $onesatellite
+         set k [lsearch -exact $grbs $onegrb]
+         if {$k==-1} {
+            set onegrb [string range $onesatellite 3 end]
+            set k [lsearch -exact $grbs $onegrb]
+            if {$k==-1} {
+               ::console::affiche_resultat "$onesatellite not found. Available satellites are: $tsatellites\n\nAvailable GRBs are: $tgrbs\n"
+               return
+            }
+         }
+      }
+
+      #::console::affiche_resultat "onesatellite=$onesatellite\n"
+      #::console::affiche_resultat "onegrb=$onegrb\n"
+      set n 0
+      set tgrbs ""
+      set jdlim [mc_date2jd 1900-01-01T00:00:00]
+      foreach ligne $lignes {
+         set grb [lindex $ligne 0]
+         set satellite [lindex $ligne 1]
+         if {$onegrb!=""} {
+            if {$onegrb!=$grb} {
+               continue
+            }
+         } else {
+            if {$satellite!=$onesatellite} {
+               continue
+            }
+         }
+         set jd [mc_date2jd [lindex $ligne 2]]
+         if {$jd<$jdlim} {
+            continue
+         }
+         set optic [lindex $ligne 5]
+         append tgrbs "$grb "
+         lappend jds $jd
+         lappend ras [lindex $ligne 3]
+         lappend decs [lindex $ligne 4]
+         lappend equinoxs J2000
+         incr n
+      }
+      ::console::affiche_resultat "$n GRB found: $tgrbs\n"
+      if {$n==0} {
+         return
+      }
+      set t0 [clock seconds]
+
+      set fname "$audace(rep_images)/tmp[buf$audace(bufNo) extension]"
+      set method 0
+      set minobjelev 10
+      set maxsunelev -10
+      set minmoondist 5
+      #::console::affiche_resultat "mc_lightmap $jds $ras $decs $equinoxs $fname 1 1 $method $minobjelev $maxsunelev $minmoondist\n"
+      mc_lightmap $jds $ras $decs $equinoxs $fname 1 1 $method $minobjelev $maxsunelev $minmoondist
+      loadima $fname
+
+      set t [expr [clock seconds]-$t0]
+      ::console::affiche_resultat "Map computed in $t seconds for $n GRBs.\n"
+
+   } else {
+
+      error "Error: First element must be a method amongst update, prompt_map"
+
+   }
+}
+
 
 proc grb_greiner { args } {
    global audace
