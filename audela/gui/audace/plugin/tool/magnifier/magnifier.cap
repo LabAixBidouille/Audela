@@ -66,7 +66,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(magnifier,titre)                 "# Loupe"
+   set caption(magnifier,titre)                 "Ampliar"
    set caption(magnifier,intens)                "I= %s"
    set caption(magnifier,coord)                 "X= %s Y= %s"
    set caption(magnifier,default_state_label)   "Mostrar ao iniciar"
