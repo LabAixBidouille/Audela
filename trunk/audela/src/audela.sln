@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_andor", "external\andor\vc90\external_andor.vcproj", "{37B665F3-8846-4702-9A95-450112EF4268}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_cfitsio", "external\cfitsio\vc90\external_cfitsio.vcproj", "{55983A0B-C057-416C-9AB2-C8B9D01D7D2C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2402B30E-01AD-4F43-B42F-55C9D699880A} = {2402B30E-01AD-4F43-B42F-55C9D699880A}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_fitstcl", "external\fitstcl\vc90\external_fitstcl.vcproj", "{2E31F74D-753C-471C-90BB-1C70C6CEED08}"
 EndProject
@@ -246,9 +249,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_libvantage", "external\libvantage\vc90\external_libvantage.vcproj", "{4734BFE3-EBE4-4FAB-B810-ECBF54769212}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libascomcam", "libcam\libascomcam\vc90\libascomcam.vcproj", "{66ADD21C-621A-499C-BF64-93D2729A2A5F}"
-	ProjectSection(ProjectDependencies) = postProject
-		{581968FB-5133-44E0-B991-2055AAE359CB} = {581968FB-5133-44E0-B991-2055AAE359CB}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libqsi", "libcam\libqsi\vc90\libqsi.vcproj", "{76478489-9E93-46FC-A31C-633B59030C00}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -278,6 +278,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libmcmt", "libtel\libmcmt\vc90\libmcmt.vcproj", "{A915ACA1-C9A4-4965-A52C-0EA3E890737D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_fly", "external\fly\vc90\external_fly.vcproj", "{077BFDED-F9EA-43AF-B34C-C7A2C7D46455}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libcatalog", "audela\libcatalog\vc90\libcatalog.vcproj", "{9E277693-17F5-409C-B3E4-CE08E700A48E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -637,6 +639,10 @@ Global
 		{077BFDED-F9EA-43AF-B34C-C7A2C7D46455}.Debug|Win32.Build.0 = Debug|Win32
 		{077BFDED-F9EA-43AF-B34C-C7A2C7D46455}.Release|Win32.ActiveCfg = Release|Win32
 		{077BFDED-F9EA-43AF-B34C-C7A2C7D46455}.Release|Win32.Build.0 = Release|Win32
+		{9E277693-17F5-409C-B3E4-CE08E700A48E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9E277693-17F5-409C-B3E4-CE08E700A48E}.Debug|Win32.Build.0 = Debug|Win32
+		{9E277693-17F5-409C-B3E4-CE08E700A48E}.Release|Win32.ActiveCfg = Release|Win32
+		{9E277693-17F5-409C-B3E4-CE08E700A48E}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
