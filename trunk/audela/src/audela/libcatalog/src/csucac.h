@@ -20,22 +20,22 @@
 /* 1 deg = 60 arcmin */
 #define DEG2ARCMIN 60.
 /* 0 deg = 0 mas */
-#define START_RA_MAS    0.
+#define START_RA_MAS    0
 /* 360 deg = 1296000000. mas */
-#define COMPLETE_RA_MAS 1296000000.
+#define COMPLETE_RA_MAS 1296000000
 
 /* dec at the south pole in deg */
 #define DEC_SOUTH_POLE_DEG -90.
 /* dec at the north pole in deg */
 #define DEC_NORTH_POLE_DEG 90.
 /* dec at the south pole in mas : -90 deg = -324000000. mas */
-#define DEC_SOUTH_POLE_MAS -324000000.
+#define DEC_SOUTH_POLE_MAS -324000000
 /* dec at the north pole in mas : +90 deg = +324000000. mas */
-#define DEC_NORTH_POLE_MAS 324000000.
+#define DEC_NORTH_POLE_MAS 324000000
 /* distance to south pole at at the south pole in mas : 0 deg = 0. mas */
 #define DISTANCE_TO_SOUTH_POLE_AT_SOUTH_POLE_MAS 0.
 /* distance to south pole at at the north pole in mas : +180 deg = 648000000. mas */
-#define DISTANCE_TO_SOUTH_POLE_AT_NORTH_POLE_MAS 648000000.
+#define DISTANCE_TO_SOUTH_POLE_AT_NORTH_POLE_MAS 648000000
 /* 1 deg = pi / 180. rad = 0.01745329251994329547 rad */
 #define DEC2RAD 0.01745329251994329547
 /* The index file name*/
@@ -207,3 +207,4 @@ int filterStarsUcac2(arrayTwoDOfStarUcac2* theUnFilteredStars,arrayOneDOfStarUca
 int filterStarsUcac3(arrayTwoDOfStarUcac3* theUnFilteredStars,arrayOneDOfStarUcac3* theFilteredStars,searchZoneUcac3* mySearchZone);
 
 #endif /* CSUCAC_H_ */
+

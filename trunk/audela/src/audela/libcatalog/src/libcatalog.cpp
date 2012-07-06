@@ -47,7 +47,7 @@
    int __cdecl Catalog_Init(Tcl_Interp *interp)
 #endif
 #if defined(LIBRARY_SO)
-   int Catalog_Init(Tcl_Interp *interp)
+   extern "C" int Catalog_Init(Tcl_Interp *interp)
 #endif
 
 {
