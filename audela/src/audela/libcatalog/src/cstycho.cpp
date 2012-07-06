@@ -86,8 +86,7 @@ char** tycho2_search(const char*pathName, double ra0, double dec0, double range,
 
     // Create an implicit ID = line number in the catalog
     int id = 0;
-
-    while((fgets(buf,sizeof(buf)-1,fp)) != NULL) {
+    while((fgets(buf,sizeof(buf),fp)) != NULL) {
     	id++;
         buf[206] = '\0';
         if(buf[14-1] == 'X') continue; // no mean position
