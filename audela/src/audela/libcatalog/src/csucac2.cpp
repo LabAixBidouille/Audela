@@ -6,7 +6,7 @@
  *      Author: Y. Damerdji
  */
 
-char outputLogChar[1024];
+static char outputLogChar[1024];
 
 int cmd_tcl_csucac2(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 
