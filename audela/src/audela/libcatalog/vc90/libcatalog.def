@@ -1,0 +1,6 @@
+LIBRARY libcatalog
+EXPORTS Catalog_Init
+      
+
+
+
