@@ -635,7 +635,7 @@ const searchZoneUcac3 findSearchZoneUcac3(const double raInDeg,const double decI
 
 	} else if(mysearchZoneUcac3.distanceToPoleStartInMas <= DISTANCE_TO_SOUTH_POLE_AT_SOUTH_POLE_MAS) {
 
-		mysearchZoneUcac3.distanceToPoleStartInMas        = 0.;
+		mysearchZoneUcac3.distanceToPoleStartInMas        = 0;
 		mysearchZoneUcac3.raStartInMas                    = START_RA_MAS;
 		mysearchZoneUcac3.raEndInMas                      = COMPLETE_RA_MAS;
 		mysearchZoneUcac3.isArroundZeroRa                 = 0;
