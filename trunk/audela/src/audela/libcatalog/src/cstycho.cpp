@@ -47,8 +47,7 @@ char** tycho2_search(const char*pathName, double ra0, double dec0, double range,
     double ra,dec,mag;
     FILE *fp;
     char buf[206+2+1]; // field length + cr + lf + null
-    size_t sz;
-
+    
     range /= DEG2ARCMIN; // convert range from minutes to degrees
 
     dec_min = dec0 - range;
@@ -88,7 +87,7 @@ char** tycho2_search(const char*pathName, double ra0, double dec0, double range,
     // Create an implicit ID = line number in the catalog
     int id = 0;
 
-    while((sz=fread(buf,sizeof(buf)-1,1,fp)) == 1) {
+    while((fgets(buf,sizeof(buf)-1,fp)) != NULL) {
     	id++;
         buf[206] = '\0';
         if(buf[14-1] == 'X') continue; // no mean position
