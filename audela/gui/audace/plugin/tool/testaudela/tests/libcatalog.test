@@ -1,0 +1,125 @@
+
+#-------------------------------------------------------------------------------
+test libcatalog_load { load } -constraints {
+   AUDACE
+} -setup {
+
+
+} -body {
+   set catchError [ catch {
+      #--- je charge la librairie libcatalog
+      load [file join $::audela_start_dir libcatalog[info sharedlibextension]]
+   }]
+   return $catchError
+} -cleanup {
+
+} -result 0
+
+
+#-------------------------------------------------------------------------------
+test libcatalog_cstycho2_sansparam { cstycho2 sans parametre } -constraints {
+   AUDACE
+} -setup {
+
+} -body {
+   set catchError [ catch {
+      #--- je recupere le message d'erreur "usage ..."
+      set result [cstycho2]
+   } msg]
+   return $msg
+} -cleanup {
+
+} -result "usage : cstycho2 pathToCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMax(mag)? magnitudeMin(mag)?\n"
+
+
+#-------------------------------------------------------------------------------
+test libcatalog_cstycho2_catalog_existe { trouve 1 etoile } -constraints {
+   AUDACE
+} -setup {
+
+} -body {
+   set catchError [ catch {
+      set result [cstycho2 $::audace(rep_userCatalog)/TYCHO-2 10 5 5]
+   } msg]
+
+   if { $catchError==0 }  {
+      return [ llength [ lindex $result 1 ] ]
+   } else {
+      return $msg
+   }
+} -cleanup {
+
+} -result "1"
+
+
+#-------------------------------------------------------------------------------
+test libcatalog_csucac2_sansparam { csucac2 sans parametre } -constraints {
+   AUDACE
+} -setup {
+
+} -body {
+   set catchError [ catch {
+      #--- je recupere le message d'erreur "usage ..."
+      set result [csucac2]
+   } msg]
+   return $msg
+} -cleanup {
+
+} -result "usage : csucac2 pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMax(mag)? magnitudeMin(mag)?\n"
+
+
+#-------------------------------------------------------------------------------
+test libcatalog_csucac2_catalog_existe { trouve 7 etoiles } -constraints {
+   AUDACE
+} -setup {
+
+} -body {
+   set catchError [ catch {
+      set result [csucac2 $::audace(rep_userCatalog)/UCAC2 10 5 5]
+   } msg]
+
+   if { $catchError==0 }  {
+      return [ llength [ lindex $result 1 ] ]
+   } else {
+      return $msg
+   }
+} -cleanup {
+
+} -result "7"
+
+
+#-------------------------------------------------------------------------------
+test libcatalog_csucac3_sansparam { csucac3 sans parametre } -constraints {
+   AUDACE
+} -setup {
+
+} -body {
+   set catchError [ catch {
+      #--- je recupere le message d'erreur "usage ..."
+      set result [csucac3]
+   } msg]
+   return $msg
+} -cleanup {
+
+} -result "usage : csucac3 pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMax(mag)? magnitudeMin(mag)?\n"
+
+
+#-------------------------------------------------------------------------------
+test libcatalog_csucac3_catalog_existe { trouve 15 etoiles } -constraints {
+   AUDACE
+} -setup {
+
+} -body {
+   set catchError [ catch {
+      set result [csucac3 $::audace(rep_userCatalog)/UCAC3 10 5 5]
+   } msg]
+
+   if { $catchError==0 }  {
+      return [ llength [ lindex $result 1 ] ]
+   } else {
+      return $msg
+   }
+} -cleanup {
+
+} -result "15"
+
