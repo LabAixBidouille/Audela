@@ -1425,14 +1425,15 @@ proc calibwcs {args} {
          buf$::audace(bufNo) setkwd [list $kwd $value $type $unit $comment]
       }
 
-      buf$::audace(bufNo) setkwd [list EQUINOX J2000.0 float "" "System of equatorial coordinates"]
-      buf$::audace(bufNo) setkwd [list RADECSYS FK5 string ""  "Mean Place IAU 1984 system"]
-      buf$::audace(bufNo) setkwd [list LONPOLE 180 float "" "Long. of the celest.NP in native coor.sys" ]
-      buf$::audace(bufNo) setkwd [list CTYPE1 RA---TAN string "" "Gnomonic projection" ]
-      buf$::audace(bufNo) setkwd [list CTYPE2 DEC--TAN string "" "Gnomonic projection" ]
-      buf$::audace(bufNo) setkwd [list CUNIT1 deg string  ""    "Angles are degrees always"   ]
-      buf$::audace(bufNo) setkwd [list CUNIT2 deg string  ""    "Angles are degrees always"   ]
-      buf$::audace(bufNo) setkwd [list CATASTAR 0 int ""    "Nb stars matched"   ]
+      buf$::audace(bufNo) setkwd [list EQUINOX J2000.0 string "System of equatorial coordinates" ""]
+      buf$::audace(bufNo) delkwd RADESYS
+      buf$::audace(bufNo) setkwd [list RADECSYS FK5 string "Mean Place IAU 1984 system" ""]
+      buf$::audace(bufNo) setkwd [list LONPOLE 180 float "Long. of the celest.NP in native coor.sys" "degres"]
+      buf$::audace(bufNo) setkwd [list CTYPE1 RA---TAN string "Gnomonic projection" ""]
+      buf$::audace(bufNo) setkwd [list CTYPE2 DEC--TAN string "Gnomonic projection" ""]
+      buf$::audace(bufNo) setkwd [list CUNIT1 deg string "Angles are degrees always" ""]
+      buf$::audace(bufNo) setkwd [list CUNIT2 deg string "Angles are degrees always" ""]
+      buf$::audace(bufNo) setkwd [list CATASTAR 0 int "Nb stars matched" ""]
 
       #--- check les catalogues
       if {[string toupper $cat_format] ni [list USNO MICROCAT]} {
@@ -1649,14 +1650,15 @@ proc simulimage {args} {
             buf$::audace(bufNo) setkwd [list $kwd $value $type $unit $comment]
          }
       }
-      buf$::audace(bufNo) setkwd [list EQUINOX J2000.0 float "" "System of equatorial coordinates"]
-      buf$::audace(bufNo) setkwd [list RADECSYS FK5 string "" "Mean Place IAU 1984 system"]
-      buf$::audace(bufNo) setkwd [list LONPOLE 180 float "" "Long. of the celest.NP in native coor.sys"]
-      buf$::audace(bufNo) setkwd [list CTYPE1 RA---TAN string "" "Gnomonic projection"]
-      buf$::audace(bufNo) setkwd [list CTYPE2 DEC--TAN string "" "Gnomonic projection"]
-      buf$::audace(bufNo) setkwd [list CUNIT1 deg string "" "Angles are degrees always"]
-      buf$::audace(bufNo) setkwd [list CUNIT2 deg string "" "Angles are degrees always"]
-      buf$::audace(bufNo) setkwd [list CATASTAR 0 int "" "Nb stars matched"]
+      buf$::audace(bufNo) setkwd [list EQUINOX J2000.0 string "System of equatorial coordinates" ""]
+      buf$::audace(bufNo) delkwd RADESYS
+      buf$::audace(bufNo) setkwd [list RADECSYS FK5 string "Mean Place IAU 1984 system" ""]
+      buf$::audace(bufNo) setkwd [list LONPOLE 180 float "Long. of the celest.NP in native coor.sys" "degres"]
+      buf$::audace(bufNo) setkwd [list CTYPE1 RA---TAN string "Gnomonic projection" ""]
+      buf$::audace(bufNo) setkwd [list CTYPE2 DEC--TAN string "Gnomonic projection" ""]
+      buf$::audace(bufNo) setkwd [list CUNIT1 deg string "Angles are degrees always" ""]
+      buf$::audace(bufNo) setkwd [list CUNIT2 deg string "Angles are degrees always" ""]
+      buf$::audace(bufNo) setkwd [list CATASTAR 0 int "Nb stars matched" ""]
       #---
       if {($cat_format!="")} {
          set mypath "."
@@ -1669,6 +1671,11 @@ proc simulimage {args} {
          buf$::audace(bufNo) imaseries "CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/cata.fit\" simulimage exposure=$exposure fwhmx=$fwhm  fwhmy=$fwhm teldiam=$teldiam colfilter=$colfilter sky_brightness=$sky_brightness qe=$quantum_efficiency gain=$gain readout_noise=$readout_noise shutter_mode=$shutter_mode bias_level=$bias_level thermic_response=$thermic_response tatm=$tatm topt=$topt elecmult=$elecmult flat_type=$flat_type newstar=$newstar_type ra=$newstar_ra dec=$newstar_dec mag=$newstar_mag"
          file delete [ file join ${mypath} cata.fit ]
       }
+      #---
+      buf$::audace(bufNo) setkwd [list EQUINOX J2000.0 string "System of equatorial coordinates" ""]
+      buf$::audace(bufNo) delkwd RADESYS
+      buf$::audace(bufNo) setkwd [list RADECSYS FK5 string "Mean Place IAU 1984 system" ""]
+      #---
       ::audace::autovisu $::audace(visuNo)
       #set catastar [lindex [buf$::audace(bufNo) getkwd CATASTAR] 1]
       return ""
