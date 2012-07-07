@@ -139,15 +139,18 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				IgnoreImportLibrary="false"
+				LinkLibraryDependencies="true"
 				AdditionalDependencies="tclstub85.lib "
 				OutputFile="..\..\..\..\bin\libcatalog.dll "
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\..\external\lib"
 				ModuleDefinitionFile=".\libcatalog.def"
-				GenerateDebugInformation="true"
+				GenerateDebugInformation="false"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				ImportLibrary=""
 				TargetMachine="1"
 			/>
 			<Tool
@@ -170,6 +173,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="del ..\..\..\..\bin\libcatalog.exp&#x0D;&#x0A;del ..\..\..\..\bin\libcatalog.lib"
 			/>
 		</Configuration>
 	</Configurations>
