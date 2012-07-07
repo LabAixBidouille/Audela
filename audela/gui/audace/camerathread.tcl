@@ -765,7 +765,6 @@ proc ::camerathread::calibre { bufNo tempPath fileName detection catalogueName c
    set foclen [format "%f" $foclen]
 
 ##::camerathread::disp "crval1=$crval1  crval2=$crval2 pixsize1=$pixsize1 pixsize2=$pixsize2 crpix1=$crpix1 crpix2=$crpix2 foclen=$foclen crota2=$crota2\n"
-#::camerathread::disp "crval1=$crval1  crval2=$crval2 pixsize1=$pixsize1 pixsize2=$pixsize2 crpix1=$crpix1 crpix2=$crpix2 foclen=$foclen crota2=$crota2\n"
    #--- je cree les mots cles necessaires a la calibration
    buf$bufNo setkwd [list "PIXSIZE1"   $pixsize1   float {[um] Pixel size along naxis1} "um" ]
    buf$bufNo setkwd [list "PIXSIZE2"   $pixsize2   float {[um] Pixel size along naxis2} "um" ]
@@ -779,8 +778,7 @@ proc ::camerathread::calibre { bufNo tempPath fileName detection catalogueName c
    buf$bufNo setkwd [list "CTYPE2"     "DEC--TAN"  string "Gnomonic projection" "" ]
    buf$bufNo setkwd [list "CUNIT1"     "deg"       string "Angles are degrees always" "" ]
    buf$bufNo setkwd [list "CUNIT2"     "deg"       string "Angles are degrees always" "" ]
-   ###buf$bufNo setkwd [list "EQUINOX"    "2000.0"    float  "System of equatorial coordinates" "" ]
-   buf$bufNo setkwd [list "EQUINOX"    "2000" string "System of equatorial coordinates" "" ]
+   buf$bufNo setkwd [list "EQUINOX"    "J2000.0" string "System of equatorial coordinates" "" ]
 
    #---- recherche des etoiles dans l'image
    #  input :
