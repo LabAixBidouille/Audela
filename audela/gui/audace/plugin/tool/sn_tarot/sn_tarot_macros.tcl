@@ -323,7 +323,7 @@ proc ::sn_tarot::snCreateCandidateId { } {
    append textes "$texte\n"
    set texte "SN is located at about R.A. = $ra_sn, Decl. = $dec_sn"
    append textes "$texte\n"
-   set texte "(equinox 2000.0), which is [format %.0f $dratan]\" $sensew and [format %.0f $ddec]\" $sensns from the nucleus of"
+   set texte "(equinox J2000.0), which is [format %.0f $dratan]\" $sensew and [format %.0f $ddec]\" $sensns from the nucleus of"
    append textes "$texte\n"
    set texte "[file rootname $snvisu(name)] ($ra_host $dec_host)."
    append textes "$texte\n"
