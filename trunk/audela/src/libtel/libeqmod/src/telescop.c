@@ -110,6 +110,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    char s[1024],ssres[1024];
    char ss[256],ssusb[256];
    double ha, dec;
+	int mode_debug = 0;
    FILE *f;
 
    tel->state               = EQMOD_STATE_NOT_INITIALIZED;
@@ -236,6 +237,10 @@ int tel_init(struct telprop *tel, int argc, char **argv)
          PRINTF("  Demarrage du suivi\n");
          start_motor = 1;
       }
+      if ( ! strcmp(argv[i],"-debug") ) {
+         PRINTF("  Debug mode\n");
+         mode_debug = 1;
+      }
    }
 
    // Initialisation du fichier mouchard
@@ -261,21 +266,25 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    tel->param_e1=num;
    PRINTF("  :e1(=%6X,%d)\n",num,num);
 
-   if ( strlen(ss) == 0 ) {
-      sprintf(s,"close %s",tel->channel); mytel_tcleval(tel,s);
-      return 1;
-   }
+	if (mode_debug == 0 ) {
+		if ( strlen(ss) == 0 ) {
+			sprintf(s,"close %s",tel->channel); mytel_tcleval(tel,s);
+			return 1;
+		}
+	}
 
    sprintf(s,":e2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
    tel->param_e2=num;
    PRINTF("  :e2(=%6X,%d)\n",num,num);
 
    sprintf(s,":a1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
+	if (num==0) { num=1 ; } ; // avoid division by zero
    if (num<0) { num= num + (1<<24); }
    tel->param_a1=num; // Microsteps per axis Revolution
    PRINTF("  :a1(=%6X,%d)\n",num,num);
 
    sprintf(s,":a2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
+	if (num==0) { num=1 ; } ; // avoid division by zero
    if (num<0) { num = num + (1<<24); }
    tel->param_a2=num; // Microsteps per axis Revolution
    PRINTF("  :a2(=%6X,%d)\n",num,num);
