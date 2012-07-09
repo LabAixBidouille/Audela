@@ -358,8 +358,8 @@ proc photcal_fit { file_calibration {mag_inf ""} {mag_sup ""} {K1 ""} {K2 ""} } 
    set y1 ""
    set y2 ""
    set n $k
-   if {$n<1} {   
-	   error "Pas assez d'etoiles pour l'ajustement ($n etoiles)"
+   if {$n<1} {
+      error "Pas assez d'etoiles pour l'ajustement ($n etoiles)"
    }
    for {set k 0} {$k<$n} {incr k} {
       set airmass1 [lindex $airmass1s $k]
@@ -1892,12 +1892,12 @@ proc photcal_extract { file_image_1 file_image_2 color1 color2 file_common {vign
       set flux1 [lindex $star1 4]
       set fluxerr1 [lindex $star1 5]
       set kmatch -1
-		#::console::affiche_resultat ">>>>>>>>> k1=$k1 flux1 = $flux1\n"
+      #::console::affiche_resultat ">>>>>>>>> k1=$k1 flux1 = $flux1\n"
       set n [llength $star2s]
       for {set k 0} {$k<$n} {incr k} {
          set star2 [lindex $star2s $k]
          if {$star2==""} {
-	         continue
+            continue
          }
          set x2 [lindex $star2 0]
          set y2 [lindex $star2 1]
@@ -1907,16 +1907,16 @@ proc photcal_extract { file_image_1 file_image_2 color1 color2 file_common {vign
          set fluxerr2 [lindex $star2 5]
          set ddec [expr ($dec2-$dec1)*3600.]
          if {$ddec<-$sepmax} {
-			   #::console::affiche_resultat "k=$k ddec = $ddec<-$sepmax\n"
+            #::console::affiche_resultat "k=$k ddec = $ddec<-$sepmax\n"
             continue
          }
          if {$ddec>$sepmax} {
-			   #::console::affiche_resultat "star2 = $star2\n"
-			   #::console::affiche_resultat "x1=$x1 y1=$y1 ra1=$ra1 dec1=$dec1\n"
-			   #::console::affiche_resultat "x2=$x2 y2=$y2 ra2=$ra2 dec2=$dec2\n"
-			   #::console::affiche_resultat "ddec = ($dec2-$dec1) = $ddec\n"
-			   #::console::affiche_resultat "sepmax=$sepmax\n"
-			   #::console::affiche_resultat "PAS DE MATCH pour k1=$k1 ddec = $ddec>$sepmax\n"
+            #::console::affiche_resultat "star2 = $star2\n"
+            #::console::affiche_resultat "x1=$x1 y1=$y1 ra1=$ra1 dec1=$dec1\n"
+            #::console::affiche_resultat "x2=$x2 y2=$y2 ra2=$ra2 dec2=$dec2\n"
+            #::console::affiche_resultat "ddec = ($dec2-$dec1) = $ddec\n"
+            #::console::affiche_resultat "sepmax=$sepmax\n"
+            #::console::affiche_resultat "PAS DE MATCH pour k1=$k1 ddec = $ddec>$sepmax\n"
             break
          }
          set dra [expr abs($ra2-$ra1)]
@@ -2553,3 +2553,4 @@ proc abell_selectfiles { {numero ""} {dateref ""} {datenight ""} } {
       }
    }
 }
+
