@@ -23,7 +23,7 @@
 #
 # photcal_plotcom comVR : Pour visualiser les mesures extraites.
 #
-# photcal_plotfit comVR : Pour ajuster les parametres photometriques
+# photcal_fit comVR : Pour ajuster les parametres photometriques
 #
 # photcal_calibrate comVR 1
 #
@@ -358,6 +358,9 @@ proc photcal_fit { file_calibration {mag_inf ""} {mag_sup ""} {K1 ""} {K2 ""} } 
    set y1 ""
    set y2 ""
    set n $k
+   if {$n<1} {   
+	   error "Pas assez d'etoiles pour l'ajustement ($n etoiles)"
+   }
    for {set k 0} {$k<$n} {incr k} {
       set airmass1 [lindex $airmass1s $k]
       set airmass2 [lindex $airmass2s $k]
@@ -1652,6 +1655,7 @@ proc photcal_match { catalog_format file_loneos generic_file_common nb_file_comm
          set n [llength $star2s]
          for {set k 0} {$k<$n} {incr k} {
             set star2 [lindex $star2s $k]
+            if {$star2==""} { continue }
             set ra2 [lindex $star2 0]
             set dec2 [lindex $star2 1]
             set ddec [expr ($dec2-$dec1)*3600.]
@@ -1808,6 +1812,7 @@ proc photcal_extract { file_image_1 file_image_2 color1 color2 file_common {vign
    set f [open "$pathsex/catalog1.txt" r]
    set lignes [split [read $f] \n]
    close $f
+   set t ""
    set stars ""
    set exposure $exposure1
    set vignetting2 [expr $vignetting*$vignetting]
@@ -1830,14 +1835,9 @@ proc photcal_extract { file_image_1 file_image_2 color1 color2 file_common {vign
       set dec [lindex $radec 1]
       set flux [expr [lindex $ligne $kflux]/$exposure]
       set fluxerr [expr [lindex $ligne $kfluxerr]/$exposure]
-      lappend stars [list [format %+08.5f $dec] [list $x $y $ra $dec $flux $fluxerr]]
+      lappend stars [list $x $y $ra $dec $flux $fluxerr]
    }
-   set res [lsort $stars]
-   set stars ""
-   foreach re $res {
-      lappend stars [lindex $re 1]
-   }
-   set star1s $stars
+   set star1s [lsort -increasing -real -index 3 $stars]
    ::console::affiche_resultat "[llength $star1s] stars found in the list 1\n"
    # ---
    ::console::affiche_resultat "analyze star list 2\n"
@@ -1847,6 +1847,7 @@ proc photcal_extract { file_image_1 file_image_2 color1 color2 file_common {vign
    set f [open "$pathsex/catalog2.txt" r]
    set lignes [split [read $f] \n]
    close $f
+   set t ""
    set stars ""
    set exposure $exposure2
    foreach ligne $lignes {
@@ -1868,14 +1869,9 @@ proc photcal_extract { file_image_1 file_image_2 color1 color2 file_common {vign
       set dec [lindex $radec 1]
       set flux [expr [lindex $ligne $kflux]/$exposure]
       set fluxerr [expr [lindex $ligne $kfluxerr]/$exposure]
-      lappend stars [list [format %+08.5f $dec] [list $x $y $ra $dec $flux $fluxerr]]
+      lappend stars [list $x $y $ra $dec $flux $fluxerr]
    }
-   set res [lsort $stars]
-   set stars ""
-   foreach re $res {
-      lappend stars [lindex $re 1]
-   }
-   set star2s $stars
+   set star2s [lsort -increasing -real -index 3 $stars]
    ::console::affiche_resultat "[llength $star2s] stars found in the list 2\n"
    # --- appariement
    ::console::affiche_resultat "match stars in the two lists\n"
@@ -1887,6 +1883,7 @@ proc photcal_extract { file_image_1 file_image_2 color1 color2 file_common {vign
    }
    set stars ""
    set nstar 0
+   set k1 0
    foreach star1 $star1s {
       set x1 [lindex $star1 0]
       set y1 [lindex $star1 1]
@@ -1895,9 +1892,13 @@ proc photcal_extract { file_image_1 file_image_2 color1 color2 file_common {vign
       set flux1 [lindex $star1 4]
       set fluxerr1 [lindex $star1 5]
       set kmatch -1
+		#::console::affiche_resultat ">>>>>>>>> k1=$k1 flux1 = $flux1\n"
       set n [llength $star2s]
       for {set k 0} {$k<$n} {incr k} {
          set star2 [lindex $star2s $k]
+         if {$star2==""} {
+	         continue
+         }
          set x2 [lindex $star2 0]
          set y2 [lindex $star2 1]
          set ra2 [lindex $star2 2]
@@ -1906,9 +1907,16 @@ proc photcal_extract { file_image_1 file_image_2 color1 color2 file_common {vign
          set fluxerr2 [lindex $star2 5]
          set ddec [expr ($dec2-$dec1)*3600.]
          if {$ddec<-$sepmax} {
+			   #::console::affiche_resultat "k=$k ddec = $ddec<-$sepmax\n"
             continue
          }
          if {$ddec>$sepmax} {
+			   #::console::affiche_resultat "star2 = $star2\n"
+			   #::console::affiche_resultat "x1=$x1 y1=$y1 ra1=$ra1 dec1=$dec1\n"
+			   #::console::affiche_resultat "x2=$x2 y2=$y2 ra2=$ra2 dec2=$dec2\n"
+			   #::console::affiche_resultat "ddec = ($dec2-$dec1) = $ddec\n"
+			   #::console::affiche_resultat "sepmax=$sepmax\n"
+			   #::console::affiche_resultat "PAS DE MATCH pour k1=$k1 ddec = $ddec>$sepmax\n"
             break
          }
          set dra [expr abs($ra2-$ra1)]
@@ -1930,13 +1938,14 @@ proc photcal_extract { file_image_1 file_image_2 color1 color2 file_common {vign
          append stars "$texte\n"
          incr nstar
          #::console::affiche_resultat "[format %5d $nstar] : [lrange $texte 0 1]\n"
-         #::console::affiche_resultat "[format %5d $nstar] : $x1 $y1   $x2 $y2\n"
+         #::console::affiche_resultat "=== [format %5d $nstar] : $x1 $y1   $x2 $y2\n"
          set kmatch $k
          break
       }
       if {$kmatch>=0} {
          set star2s [lreplace $star2s $kmatch $kmatch ""]
       }
+      incr k1
    }
    ::console::affiche_resultat "$nstar stars matched in the two lists\n"
    # --- sauve le fichier resultat
