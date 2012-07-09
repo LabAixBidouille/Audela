@@ -35,7 +35,7 @@
 #include <libtel/util.h>
 
 /*
- *   structure pour les fonctions ï¿½tendues
+ *   structure pour les fonctions ?tendues
  */
 
 
@@ -322,14 +322,14 @@ int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                   }
                }
             }
-            tel->ha_pointing = 1;
             // Conversion de l'AH (dans tel->ra0) en vrai RA
-	    // le goto fera l'operation inverse: ca permet d'utiliser la meme fonction
+				// le goto fera l'operation inverse: ca permet d'utiliser la meme fonction
             lst=eqmod_tsl(tel,&h,&m,&sec);
-            lst=lst+4./86400*360.; // ajout empirique de 4 secondes pour tenir compte du temps mort de reponse de la monture
+            lst=lst+0./86400*360.; // ajout empirique de 4 secondes pour tenir compte du temps mort de reponse de la monture
             tel->ra0=lst-tel->ra0+360*5;
             tel->ra0=fmod(tel->ra0,360.);
             if (tel->ra0>180) tel->ra0 -= 360.;
+            tel->ha_pointing = 1;
             eqmod2_action_goto(tel);
             Tcl_SetResult(interp,"",TCL_VOLATILE);
          } else {
@@ -384,17 +384,17 @@ int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 /*
  *   Limites pour retournements (deg)
  Exemple :
-#init avec tube à l'ouest et pole nord => hadec = {18h 90d}
+#init avec tube ? l'ouest et pole nord => hadec = {18h 90d}
 tel1 limits 23h20m 00h40 ; # default
-tel1 hadec goto {02h30m 40d} -blocking 1 ; # tube à l'est (à l'endroit)
-#Si le tube est à l'est et que le HA à pointer (22h30) est < à la limite East alors on retourne le tube à l'ouest
-tel1 hadec goto {22h30m 40d} -blocking 1 ; # tube à l'ouest (à l'endroit)
-#Si le tube est à l'ouest et que le HA à pointer (02h30m) est > à la limite West alors on retourne le tube à l'est
-tel1 hadec goto {02h30m 40d} -blocking 1 ; # tube à l'est (à l'endroit)
+tel1 hadec goto {02h30m 40d} -blocking 1 ; # tube ? l'est (? l'endroit)
+#Si le tube est ? l'est et que le HA ? pointer (22h30) est < ? la limite East alors on retourne le tube ? l'ouest
+tel1 hadec goto {22h30m 40d} -blocking 1 ; # tube ? l'ouest (? l'endroit)
+#Si le tube est ? l'ouest et que le HA ? pointer (02h30m) est > ? la limite West alors on retourne le tube ? l'est
+tel1 hadec goto {02h30m 40d} -blocking 1 ; # tube ? l'est (? l'endroit)
 #
 tel1 limits 18h 00h40 ; Eastern limit=18h Western limit=0h40m
-tel1 hadec goto {02h30m 40d} -blocking 1 ; # tube à l'est (à l'endroit)
-tel1 hadec goto {22h30m 40d} -blocking 1 ; # tube à l'est (à l'envers)
+tel1 hadec goto {02h30m 40d} -blocking 1 ; # tube ? l'est (? l'endroit)
+tel1 hadec goto {22h30m 40d} -blocking 1 ; # tube ? l'est (? l'envers)
  */
 int cmdTelLimits(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
    char ligne[2048],s[2048],le[30],lw[30];
@@ -475,14 +475,11 @@ int cmdTelTempo(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 		return TCL_ERROR;
 	}
 	tel = (struct telprop*)clientData;
-	if (argc == 2) {
-		sprintf(s,"%d",tel->tempo);
-		return TCL_OK;
+	if (argc == 3) {
+		tel->tempo=atoi(argv[2]);
 	}
-	if ( ! Tcl_GetInt(interp,argv[2],&(tel->tempo)) ) {
-		return TCL_ERROR;
-	}
-	Tcl_ResetResult(interp);
+	sprintf(s,"%d",tel->tempo);
+	Tcl_SetResult(interp,s,TCL_VOLATILE);
 	return TCL_OK;
 }
 
@@ -536,4 +533,70 @@ int cmdTelState(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
    return TCL_OK;
 }
 
+/*
+ *   retourne les parametres de la monture
+ */
+int cmdTelReadparams(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   char ss[2048];
+   char sss[248];
+   char s[12048];
+	int res,num;
+   struct telprop *tel;
+   tel = (struct telprop *)clientData;
+	strcpy(s,"");
+	sprintf(ss,"{a1 %d {ADU/360deg} {microsteps/360deg}} {a2 %d {ADU/360deg} {microsteps/360deg}} ",tel->param_a1,tel->param_a2); strcat(s,ss);
+	sprintf(ss,"{b1 %d {ADU/sec} {velocity parameter}} {b2 %d {ADU/sec} {velocity_parameter}} ",tel->param_b1,tel->param_b2); strcat(s,ss);
+	sprintf(ss,"{e1 %d {ADU} {unknown parameter (67585)}} {e2 %d {ADU} {unknown parameter (67585)}} ",tel->param_e1,tel->param_e2); strcat(s,ss);
+   sprintf(sss,":f1"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+   tel->param_f1=num;
+   sprintf(sss,":f2"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+   tel->param_f2=num;
+	sprintf(ss,"{f1 %d {binary} {motorRA state 0|1= 0|1= 0|1=}} {f2 %d {binary} {motorDEC state 0|1= 0|1= 0|1=}} ",tel->param_f1,tel->param_f2); strcat(s,ss);		
+	sprintf(ss,"{g1 %d {binary} {0|1=hemis(S|N) 0|1=track(+|-)}} {g2 %d {binary} {0|1=hemis(S|N) 0|1=track(+|-)}} ",tel->param_g1,tel->param_g2); strcat(s,ss);
+	sprintf(ss,"{s1 %d {ADU/turn} {microsteps to a complete turnover of worm}} {s2 %d {ADU/turn} {microsteps to a complete turnover of worm}} ",tel->param_s1,tel->param_s2); strcat(s,ss);
+	sprintf(ss,"{speed_track_ra %f {deg/s} {motorRA track speed}} {speed_track_dec %f {deg/s} {motorDEC track speed}} ",tel->speed_track_ra,tel->speed_track_dec); strcat(s,ss);
+	sprintf(ss,"{speed_slew_ra %f {deg/s} {motorRA slew speed}} {speed_slew_dec %f {deg/s} {motorDEC slew speed}} ",tel->speed_slew_ra,tel->speed_slew_dec); strcat(s,ss);
+	sprintf(ss,"{radec_position_conversion %f {ADU/deg} {motorRA and motorDEC position conversion}} ",tel->radec_position_conversion); strcat(s,ss);
+	sprintf(ss,"{track_diurnal %f {deg/s} {motorRA theoretical diurnal track}} ",tel->track_diurnal); strcat(s,ss);
+	sprintf(ss,"{stop_w_uc %d {ADU} {motorRA western stop}} {stop_e_uc %d {ADU} {motorRA eastern stop}} ",tel->stop_w_uc,tel->stop_e_uc); strcat(s,ss);
+	sprintf(ss,"{radec_move_rate_max %f {deg/s} {motorRA and motorDEC maximum authorized move speed}} ",tel->radec_move_rate_max); strcat(s,ss);
+	sprintf(ss,"{slew_axis %d {integer} {motorRA and motorDEC motion states. 0: none, 1: RA, 2: DEC, 3: RA+DEC}} ",tel->slew_axis); strcat(s,ss);
+	sprintf(ss,"{tubepos %d {binary} {0|1=tube_position(W|E)}} ",tel->tubepos); strcat(s,ss);
+	sprintf(ss,"{gotodead_ms %d {ms} {waiting delay for a complete slew}} ",tel->gotodead_ms); strcat(s,ss);
+	sprintf(ss,"{gotoread_ms %d {ms} {waiting delay for a answer}} ",tel->gotoread_ms); strcat(s,ss);
+	sprintf(ss,"{dead_delay_slew %f {s} {delay for a GOTO at the same place}} ",tel->dead_delay_slew); strcat(s,ss);
+	sprintf(ss,"{tempo %d {ms} {delay before to read a command}} ",tel->tempo); strcat(s,ss);
+	sprintf(ss,"{ha_park %f {deg} {motorRA Parking hour angle}} {dec_park %f {deg} {motorDEC Parking declination}} ",tel->ha_park,tel->dec_park); strcat(s,ss);
+	sprintf(ss,"{gotoblocking %d {binary} {default GOTO blocking 0|1=non_blocking|blocking}} ",tel->gotoblocking); strcat(s,ss);
+   Tcl_SetResult(interp,s,TCL_VOLATILE);
+   return TCL_OK;
+}
 
+/*
+ *   Goto parking
+ */
+int cmdTelGotoparking(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   char s[1024];
+   struct telprop *tel;
+   tel = (struct telprop *)clientData;   
+	sprintf(s,"tel%d hadec goto {%f %f} -blocking 0",tel->telno,tel->ha_park,tel->dec_park);
+   Tcl_Eval(interp,s);
+   strcpy(s,interp->result);
+   Tcl_SetResult(interp,s,TCL_VOLATILE);
+   return TCL_OK;
+}
+
+/*
+ *   GotoBlocking
+ */
+int cmdTelGotoblocking(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   char s[1024];
+   struct telprop *tel;
+   tel = (struct telprop *)clientData;   
+   if (argc>=3) {
+      tel->gotoblocking=atoi(argv[2]);
+   }
+   sprintf(s,"%d",tel->gotoblocking);
+   Tcl_SetResult(interp,s,TCL_VOLATILE);
+   return TCL_OK;
+}

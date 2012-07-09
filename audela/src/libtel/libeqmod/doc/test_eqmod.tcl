@@ -5,7 +5,7 @@ proc envoi { f msg } {
    ::console::affiche_resultat "ENVOIE <$msg>\n"
    after 200
    set msg [read $f]
-   ::console::affiche_resultat "RECOI <$msg>\n"
+   ::console::affiche_resultat "RECOIT <$msg>\n"
    return $msg
 }
 
@@ -38,6 +38,66 @@ proc encode { integ } {
       #::console::affiche_resultat "integ=$integ base=$base => b=$b h=$h\n"
       set integ [expr $integ-$base*$b]
       set bb "$h${bb}"
+   }
+   return $bb
+}
+
+proc convert_base { nombre basein baseout } {
+   set symbols {0 1 2 3 4 5 6 7 8 9 A B C D E F}
+   # --- conversion vers la base decimale
+   if {$basein=="ascii"} {
+      set nombre [string index $nombre 0]
+      if {$nombre==""} {
+         set nombre " "
+      }
+      for {set k 0} {$k<256} {incr k} {
+         set car [format %c $k]
+         if {$car==$nombre} {
+            set integ_decimal $k
+         }
+      }
+   } else {
+      set symbins [lrange $symbols 0 [expr $basein-1]]
+      set n [expr [string length $nombre]-1]
+      set integ_decimal 0
+      for {set k $n} {$k>=0} {incr k -1} {
+         set mult [expr pow($basein,$n-$k)]
+         set digit [string index $nombre $k]
+         set kk [lsearch -exact $symbins $digit]
+         if {$kk==-1} {
+            break
+         } else {
+            set digit $kk
+         }
+         #::console::affiche_resultat "nombre=$nombre k=$k n-k=$n-$k digit=$digit mult=$mult\n"
+         set integ_decimal [expr $integ_decimal+$digit*$mult]
+      }
+   }
+   # --- conversion vers la base de sortie
+   set symbols {0 1 2 3 4 5 6 7 8 9 A B C D E F}
+   set integ [expr abs(int($integ_decimal))]
+   if {$baseout=="ascii"} {
+      if {$integ>255} {
+         set integ 255
+      }
+      set bb [format %c $integ]
+   } else {
+      set sortie 0
+      set bb ""
+      set k 0
+      while {$sortie==0} {
+         set b [expr int(floor($integ/$baseout))]
+         set reste [lindex $symbols [expr $integ-$baseout*$b]]
+         #::console::affiche_resultat "bb=$bb\n"
+         set bb "${reste}${bb}"
+         #::console::affiche_resultat "integ=$integ base=$base => b=$b reste=$reste bb=$bb\n"
+         set integ $b
+         if {$b<1} {
+            set sortie 1
+            break
+         }
+         incr k
+      }
    }
    return $bb
 }

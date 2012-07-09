@@ -78,7 +78,6 @@ struct telprop {
    double speed_track_dec;            // (deg/s)
    double speed_slew_ra;              // (deg/s)
    double speed_slew_dec;             // (deg/s)
-   double radec_speed_dec_conversion; // (UC)/(deg/s) */
    double radec_position_conversion;  // (UC)/(deg) */
    double track_diurnal;              // (deg/s)
    int stop_e_uc;                     // butee mecanique est (en pas codeurs)
@@ -92,6 +91,9 @@ struct telprop {
 	int gotodead_ms;
 	int gotoread_ms;
 	double dead_delay_slew; /* delai en secondes estime pour un slew sans bouger */
+	double ha_park;
+	double dec_park;
+	int gotoblocking;
 };
 
 int tel_init(struct telprop *tel, int argc, char **argv);
