@@ -702,9 +702,18 @@ proc ::bddimages_imgcorrection::create_image_deflat {  } {
    
    if {$methode == 1} {
 
-      buf1 load $bddconf(dirtmp)/sdark0$ext
-      set meandark [lindex [buf$bufno getkwd MEAN] 1]
-
+      if {$nbsdark == 1 } {
+         buf1 load $bddconf(dirtmp)/sdark0$ext
+         set meandark [lindex [buf$bufno getkwd MEAN] 1]
+      } else {
+         if {$nbsoffset == 1 } {
+            buf1 load $bddconf(dirtmp)/soffset0$ext
+            set meandark [lindex [buf$bufno getkwd MEAN] 1]
+         } else {
+            set meandark 0
+         }
+      }
+      
       # Soustraction des Dark et Offset
       if {$nbsoffset == 1 && $nbsdark == 1 } {
          ::console::affiche_resultat "Soustraction des Dark et Offset\n"
@@ -1663,4 +1672,139 @@ proc ::bddimages_imgcorrection::run_create { this type } {
 
    grab set $This
    tkwait window $This
+}
+
+
+
+#--------------------------------------------------
+# run_auto { this }
+#--------------------------------------------------
+#
+#    fonction  :
+#        Recherche automatiquement le travail a faire
+#        Puis l execute
+#
+#    procedure externe :
+#
+#    variables en entree :
+#        this = chemin de la fenetre
+#
+#    variables en sortie :
+#
+#--------------------------------------------------
+proc ::bddimages_imgcorrection::run_auto { this } {
+
+   variable This
+   global audace bddconf caption
+   global entetelog
+
+   # Recuperation des informations des images selectionnees
+   set selection_list [::bddimages_imgcorrection::get_info_img]
+
+   # Initialisations
+   set ::bddimages_imgcorrection::offset_img_list  ""
+   set ::bddimages_imgcorrection::soffset_img_list ""
+   set ::bddimages_imgcorrection::dark_img_list    ""
+   set ::bddimages_imgcorrection::sdark_img_list   ""
+   set ::bddimages_imgcorrection::flat_img_list    ""
+   set ::bddimages_imgcorrection::sflat_img_list   ""
+   set ::bddimages_imgcorrection::deflat_img_list  ""
+   set ::bddimages_imgcorrection::erreur_selection 0
+
+   set reportMessage ""
+   set reportFilename ""
+
+   # Definition des vignettes
+   image create photo icon_ok
+   icon_ok configure -file [file join $audace(rep_plugin) tool bddimages icons ok.gif]
+   image create photo icon_no
+   icon_no configure -file [file join $audace(rep_plugin) tool bddimages icons no.gif]
+   image create photo icon_warn
+   icon_warn configure -file [file join $audace(rep_plugin) tool bddimages icons warn.gif]
+   image create photo icon_report
+   icon_report configure -file [file join $audace(rep_plugin) tool bddimages icons report.gif]
+
+   # Affichage de la fenetre
+   set entetelog "$caption(bddimages_imgcorrection,main_title)"
+   set This $this
+
+   if { [ winfo exists $This ] } {
+      wm withdraw $This
+      wm deiconify $This
+      return
+   }
+
+   toplevel $This -class Toplevel
+   wm title $This $entetelog
+   wm positionfrom $This user
+   wm sizefrom $This user
+   wm resizable $This 0 0
+
+   set framecurrent $This.framename
+   frame $framecurrent
+   pack configure $framecurrent -side top -fill both -expand 1 -padx 10 -pady 10
+
+   # Frame de titre
+   frame $framecurrent.title
+   pack configure $framecurrent.title -side top -fill x
+   set title [concat $caption(bddimages_imgcorrection,creation) $caption(bddimages_imgcorrection,inauto)] 
+   label $framecurrent.title.e -font $bddconf(font,arial_10_b) -text $title
+   pack configure $framecurrent.title.e -side top -anchor c -padx 3 -pady 3 -fill x 
+
+   # Images d'entree
+   frame $framecurrent.input -borderwidth 1 -relief raised -cursor arrow
+   pack configure $framecurrent.input -side top -padx 5 -pady 5 -fill x
+      frame $framecurrent.input.title
+      pack configure $framecurrent.input.title -side top -fill x
+         label $framecurrent.input.title.t -relief groove -text "$caption(bddimages_imgcorrection,input)" 
+         pack $framecurrent.input.title.t -in $framecurrent.input.title -side top -padx 3 -pady 3 -anchor w -fill x -expand 1
+      set inputFrame $framecurrent.input.tab
+      frame $inputFrame
+      pack configure $inputFrame -side top -expand 0
+         frame $inputFrame.filetype
+         pack configure $inputFrame.filetype -side left -fill x -padx 2 -pady 1
+         frame $inputFrame.filenb
+         pack configure $inputFrame.filenb -side left -fill x -padx 2 -pady 1
+         frame $inputFrame.filestatus
+         pack configure $inputFrame.filestatus -side left -fill x -padx 2 -pady 1
+         frame $inputFrame.filereport
+         pack configure $inputFrame.filereport -side left -fill x -padx 2 -pady 1
+
+    # Chargement de la liste SOFFSET
+      gren_info "Les Offset \n"
+      set img_list [::bddimages_imgcorrection::select_img_list_by_type OFFSET CORR $selection_list]
+      set nbi [llength $img_list]
+      if {$nbi>0} {
+         gren_info "Super Offset existe. On prend le premier de la liste \n"
+      } else {
+         set img_list [::bddimages_imgcorrection::select_img_list_by_type OFFSET RAW $selection_list]
+         set nbi [llength $img_list]
+         if {$nbi>0} {
+            gren_info "Offset existe. On cree le super offset \n"
+         } else {
+            gren_info "Pas d Offset \n"
+         }
+      }
+
+    # Chargement de la liste DARK
+      gren_info "Les Dark \n"
+      set img_list [::bddimages_imgcorrection::select_img_list_by_type DARK CORR $selection_list]
+      set nbi [llength $img_list]
+      if {$nbi>0} {
+         gren_info "Super DARK existe. On prend le premier de la liste \n"
+      } else {
+         set img_list [::bddimages_imgcorrection::select_img_list_by_type DARK RAW $selection_list]
+         set nbi [llength $img_list]
+         if {$nbi>0} {
+            gren_info "DARK existe. On cree le super DARK \n"
+         } else {
+            gren_info "Pas de DARK \n"
+         }
+      }
+
+    # Chargement de la liste FLAT
+
+
+
+
 }
