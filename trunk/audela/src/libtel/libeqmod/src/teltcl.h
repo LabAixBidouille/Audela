@@ -43,6 +43,9 @@ int cmdTelTempo(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 int cmdTelTempoGoto(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelDeadDelaySlew(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelState(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelReadparams(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelGotoparking(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelGotoblocking(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 #ifdef __cplusplus
 }

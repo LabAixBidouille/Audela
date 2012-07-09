@@ -110,6 +110,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    char s[1024],ssres[1024];
    char ss[256],ssusb[256];
    double ha, dec;
+	int HA,DEC;
 	int mode_debug = 0;
    FILE *f;
 
@@ -122,13 +123,14 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    tel->speed_slew_ra       = 3.;  // (deg/s)  temps mort=4s
    tel->speed_slew_dec      = 3.;  // (deg/s)  temps mort=4s
    tel->radec_move_rate_max = 1.0; // deg/s
-   tel->tempo=50;
-   tel->ha_pointing=0; // Le mettre a 1 avant action_goto pour ne pas re-enclencher le suivi.
+   tel->tempo=100;
+   tel->ha_pointing=0; // type de pointage, RADEC=0 HADEC=1
    tel->mouchard=0; // 0=pas de fichier log
    tel->latitude=43.75203;
    sprintf(tel->home,"GPS 6.92353 E %+.6f 1320.0",tel->latitude);
+	tel->gotoblocking=0;
 
-   start_motor = 0;
+   start_motor = 0; // On ne demarre pas le moteur par défaut
    ha = 0.0;
    dec = 0.0;
    
@@ -190,7 +192,6 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    strcpy(s,"proc eqmod_encode {int} {set s [ string range [ format %08X $int ] 2 end ];return [ string range $s 4 5 ][ string range $s 2 3 ][ string range $s 0 1 ]}");
    mytel_tcleval(tel,s);
 
-
    PRINTF("Options:\n");
    for (i=0;i<argc;i++) {
       if ( ! strcmp(argv[i],"-mouchard") ) {
@@ -201,12 +202,17 @@ int tel_init(struct telprop *tel, int argc, char **argv)
          PRINTF("  Tube a l'est\n");
          tel->tubepos = TUBE_EST;
       }
-      if ( ! strcmp(argv[i],"-gps") ) {
+      if ( (strcmp(argv[i],"-gps")==0)&&(i<=(argc-2)) ) {
          PRINTF("  Localisation de la monture: %s\n",argv[i+1]);
-         sprintf(tel->home,"%s %s %s %s %s",argv[i+1],argv[i+2],argv[i+3],argv[i+4],argv[i+5]);
-         tel->latitude = atof(argv[i+4]);
+         sprintf(tel->home,"%s",argv[i+1]);
+			sprintf(s,"lindex {%s} 3",tel->home);
+			if (mytel_tcleval(tel,s)==TCL_OK) {
+				tel->latitude = atof(tel->interp->result);
+			} else {
+				tel->latitude = 48;
+			}
       }
-      if ( ! strcmp(argv[i],"-point") ) {
+      if ( (strcmp(argv[i],"-point")==0)&&(i<=(argc-2)) ) {
          if ( ! strcmp(argv[i+1],"east") ) {
             PRINTF("  Tube pointe a l'est\n");
             ha = ( tel->tubepos == TUBE_EST ) ? -90.0 : 90.0 ;
@@ -226,11 +232,11 @@ int tel_init(struct telprop *tel, int argc, char **argv)
          } else if ( ! strcmp(argv[i+1],"north_pole") ) {
             PRINTF("  Tube pointe au pole N\n");
             ha = ( tel->tubepos == TUBE_EST ) ? 90.0 : -90.0;
-            dec = ( tel->tubepos == TUBE_EST ) ? 90.01 : 89.99; // 90° est un point appartenant a la zone 'non retournee', donc tube a l'ouest.
+            dec = ( tel->tubepos == TUBE_EST ) ? 90.00001 : 89.99999; // 90° est un point appartenant a la zone 'non retournee', donc tube a l'ouest.
          } else if ( ! strcmp(argv[i+1],"south_pole") ) {
             PRINTF("  Tube pointe au pole N\n");
             ha = ( tel->tubepos == TUBE_EST ) ? 90.0 : -90.0;
-            dec = ( tel->tubepos == TUBE_EST ) ? -90.01 : 89.99; // 90° est un point appartenant a la zone 'non retournee', donc tube a l'ouest.
+            dec = ( tel->tubepos == TUBE_EST ) ? -90.00001 : 89.99999; // 90° est un point appartenant a la zone 'non retournee', donc tube a l'ouest.
          }
       }
       if ( ! strcmp(argv[i],"-startmotor") ) {
@@ -242,6 +248,8 @@ int tel_init(struct telprop *tel, int argc, char **argv)
          mode_debug = 1;
       }
    }
+	tel->ha_park=ha;
+	tel->dec_park=dec;
 
    // Initialisation du fichier mouchard
    if (tel->mouchard==1) {
@@ -268,6 +276,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 
 	if (mode_debug == 0 ) {
 		if ( strlen(ss) == 0 ) {
+			sprintf(tel->msg,"EQMOD protocol error (:e1=%d). Verify your cable connection or the power supply of the mount.",num);
 			sprintf(s,"close %s",tel->channel); mytel_tcleval(tel,s);
 			return 1;
 		}
@@ -337,10 +346,12 @@ int tel_init(struct telprop *tel, int argc, char **argv)
       //    DEC: commande + (les codeurs incrementent) = CCW.
       //    DEC: commande - (les codeurs decrementent) = CW
       // Codeurs initialises en HA=0, DEC=0
-      eqmod_encode(tel,(int)(ha * tel->radec_position_conversion),ss);
+		HA=(int)(ha * tel->radec_position_conversion);
+      eqmod_encode(tel,HA,ss);
       sprintf(s,":E1%s",ss); eqmod_putread(tel,s,ss);
       PRINTF("  %s\n",s);
-      eqmod_encode(tel,(int)(dec * tel->radec_position_conversion),ss);
+		DEC=(int)(dec * tel->radec_position_conversion);
+      eqmod_encode(tel,DEC,ss);
       sprintf(s,":E2%s",ss); eqmod_putread(tel,s,ss);
       PRINTF("  %s\n",s);
    } else {
@@ -359,7 +370,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    eqmod_putread(tel,":K2",NULL);
    PRINTF("\n");
 
-   // Limites de pointage
+   // Limites de pointage en angle horaire exprimé en UC
    //tel->stop_e_uc=-tel->param_a1/2;
    //tel->stop_w_uc=tel->param_a1/2;
    tel->stop_e_uc = (int)(-10.0 * tel->radec_position_conversion);
@@ -375,9 +386,12 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    tel->old_state = tel->state;
    tel->state = EQMOD_STATE_STOPPED;
 
-   if ( start_motor )
+	if ( start_motor==1 ) {
 		tel->radec_motor=0;
-      eqmod2_action_motor(tel);
+	} else {
+		tel->radec_motor=1;
+	}
+	eqmod2_action_motor(tel);
 
 	tel->dead_delay_slew=1.8; /* delai en secondes estime pour un slew sans bouger */
 	tel->gotodead_ms=900;
@@ -438,6 +452,7 @@ int tel_radec_goto(struct telprop *tel)
 /* --- called by : tel1 radec goto --- */
 /* ----------------------------------- */
 {
+	tel->ha_pointing=0;
    return eqmod2_action_goto(tel);
 }
 
@@ -1136,14 +1151,16 @@ int eqmod2_move(struct telprop *tel, char direction)
 int eqmod2_goto(struct telprop *tel)
 {
    char s[1024],ss[1024],axe,sens;
-   int res;
+   int res, k, nbcalc;
    double ha,lst,sec,dec;
    int h,m;
    int HA0, DEC0;
+   int HA, DEC;
    double ha0, dec0, dha, ddec;
    int retournement;
+	double slewing_delay_ha,slewing_delay_dec,slewing_delay;
    const int DEG90 = (int)(90.0 * tel->radec_position_conversion);
-   
+
    printf("GOTO:\n");
    	
    // Etape1: savoir ou on est
@@ -1154,38 +1171,56 @@ int eqmod2_goto(struct telprop *tel)
    eqmod_codeur2skypos(tel, HA0, DEC0, &ha0, NULL, &dec0);
    printf("  position initiale: (%d,%d) / (%f,%f)\n",HA0,DEC0,ha0,dec0);
 
-   // Etape2: Calculer le pointage a effectuer
-   lst = eqmod_tsl(tel,&h,&m,&sec) + 4./86164*360.;  // ajout empirique de 4 secondes pour tenir compte du temps mort de reponse de la monture
-   ha = fmod( lst-tel->ra0+360*5 , 360.0 );
-   dec = tel->dec0;
-   if ( ha > 180.0 ) ha -= 360.;
-   printf("  destination: (%f,%f)\n",ha,dec);
-   
-   // Etape3: evaluer le besoin de retournement
-   if ( DEC0 > 90.0 * tel->radec_position_conversion ) {
-      printf("     retournement cas 1\n");
-      retournement = ha < ( tel->stop_e_uc / tel->radec_position_conversion ) ? 1 : 0;
-   } else {
-      printf("     retournement cas 2\n");
-      retournement = ha > ( tel->stop_w_uc / tel->radec_position_conversion ) ? 1 : 0;
-   }
-   printf("  retournement = %d\n",retournement);
+	slewing_delay=0;
+	if (tel->ha_pointing==0) {
+		nbcalc=2; // pointage en RADEC
+	} else {
+		nbcalc=1; // pointage en HADEC
+	}
 
-   // Etape 4: calcul du trajet a parcourir
-   dha = ha - ha0;
-   ddec = dec - dec0;
-   if ( retournement ) {
-      if ( DEC0 > DEG90 ) {
-         dha = ha - ha0 + 180.0;
-      } else {
-         dha = ha - ha0 - 180.0;
-      }
-      if (tel->latitude >= 0.0 ) {
-         ddec = 180.0 - ( dec + dec0 );
-      } else {
-         ddec = dec + dec0 - 180.0;
-      }
-   }
+	// Boucle de calcul en tenant compte du delay de pointage
+	for (k=0;k<nbcalc;k++) {
+
+		// Etape2: Calculer le pointage a effectuer
+		lst = eqmod_tsl(tel,&h,&m,&sec) + slewing_delay/86164*360.;  // ajout empirique de slewing_delay secondes pour tenir compte du temps mort de reponse de la monture
+		ha = fmod( lst-tel->ra0+360*5 , 360.0 );
+		dec = tel->dec0;
+		if ( ha > 180.0 ) ha -= 360.;
+		printf("  destination: (%f,%f)\n",ha,dec);
+	   
+		// Etape3: evaluer le besoin de retournement
+		if ( DEC0 > 90.0 * tel->radec_position_conversion ) {
+			printf("     retournement cas 1\n");
+			retournement = ha < ( tel->stop_e_uc / tel->radec_position_conversion ) ? 1 : 0;
+		} else {
+			printf("     retournement cas 2\n");
+			retournement = ha > ( tel->stop_w_uc / tel->radec_position_conversion ) ? 1 : 0;
+		}
+		printf("  retournement = %d\n",retournement);
+
+		// Etape 4: calcul du trajet a parcourir
+		dha = ha - ha0;
+		ddec = dec - dec0;
+
+		// Etape 4bis: correction de retournement
+		if ( retournement ) {
+			if ( DEC0 > DEG90 ) {
+				dha = ha - ha0 + 180.0;
+			} else {
+				dha = ha - ha0 - 180.0;
+			}
+			if (tel->latitude >= 0.0 ) {
+				ddec = 180.0 - ( dec + dec0 );
+			} else {
+				ddec = dec + dec0 - 180.0;
+			}
+		}
+
+		slewing_delay_ha  = tel->dead_delay_slew + fabs(dha /tel->speed_slew_ra );
+		slewing_delay_dec = tel->dead_delay_slew + fabs(ddec/tel->speed_slew_dec);
+		slewing_delay = (slewing_delay_ha>slewing_delay_dec) ? slewing_delay_ha : slewing_delay_dec ;
+	}
+
    printf("  destination recalculee: (%f,%f) soit un delta (%f,%f)\n",ha,dec,dha,ddec);
 
    // Etape 5: Pointage de la monture
@@ -1194,16 +1229,19 @@ int eqmod2_goto(struct telprop *tel)
    } else {
       sens = '0';
    }
+
+	HA=(int)(dha * tel->radec_position_conversion);
+	DEC=(int)(ddec * tel->radec_position_conversion);
    
    axe='1';
    sprintf(s,":G%c0%c",axe,'0'); res=eqmod_putread(tel,s,NULL); printf("%s ",s);
-   eqmod_encode(tel,(int)(dha * tel->radec_position_conversion),ss);
+   eqmod_encode(tel,HA,ss);
    sprintf(s,":H%c%s",axe,ss); res=eqmod_putread(tel,s,NULL); printf("%s ",s);
    sprintf(s,":J%c",axe); res=eqmod_putread(tel,s,NULL); printf("%s \n",s);
 
    axe='2';
    sprintf(s,":G%c0%c",axe,sens); res=eqmod_putread(tel,s,NULL); printf("%s ",s);
-   eqmod_encode(tel,(int)(ddec * tel->radec_position_conversion),ss);
+   eqmod_encode(tel,DEC,ss);
    sprintf(s,":H%c%s",axe,ss); res=eqmod_putread(tel,s,NULL); printf("%s ",s);
    sprintf(s,":J%c",axe); res=eqmod_putread(tel,s,NULL); printf("%s \n",s);
 
@@ -1432,28 +1470,6 @@ int eqmod2_action_motor(struct telprop *tel)
       tel->old_state = tel->state;
       tel->state = EQMOD_STATE_STOPPED;
 	}
-	/*
-   switch ( tel->state ) {
-      case EQMOD_STATE_NOT_INITIALIZED:
-         return -1;
-      case EQMOD_STATE_HALT:
-         return -1;
-      case EQMOD_STATE_GOTO:
-         return -1;
-      case EQMOD_STATE_STOPPED: // On passe en TRACK.
-         eqmod2_track(tel);
-         tel->old_state = tel->state;
-         tel->state = EQMOD_STATE_TRACK;
-         break;
-      case EQMOD_STATE_TRACK: // On arrete les deux moteurs, on passe en STOPPED.
-         eqmod2_stopmotor(tel, AXE_RA | AXE_DEC);
-         tel->old_state = tel->state;
-         tel->state = EQMOD_STATE_STOPPED;
-         break;
-      case EQMOD_STATE_SLEW:
-         return -1;
-   }
-	*/
    printf("CMD_MOTOR: state=%s, old_state=%s\n",state2string(tel->state),state2string(tel->old_state));
 
    return 0;
@@ -1465,48 +1481,78 @@ int eqmod2_action_goto(struct telprop *tel)
 	char ligne[300];
    // On impose toujours un goto bloquant sinon le moteur 
 	// ne fait pas le suivi apres pointage.
-   tel->radec_goto_blocking = 1;
-   switch ( tel->state ) {
-      case EQMOD_STATE_NOT_INITIALIZED:
-         return -1;
-      case EQMOD_STATE_HALT:
-         return -1;
-      case EQMOD_STATE_STOPPED:
-         // Monture deja arretee
-         tel->old_state = tel->state;
-         tel->state = EQMOD_STATE_GOTO;
-         eqmod2_goto(tel);
-			if (tel->radec_goto_blocking == 1) {
-				eqmod2_waitgoto(tel);
-			}
-         tel->old_state = tel->state;
-         tel->state = EQMOD_STATE_STOPPED;
-         break;
-      case EQMOD_STATE_GOTO:
-         return -1; // Ne devrait jamais arriver
-      case EQMOD_STATE_TRACK:
-         tel->old_state = tel->state;
-         tel->state = EQMOD_STATE_GOTO;
-         eqmod2_stopmotor(tel, AXE_RA | AXE_DEC);
-         eqmod2_goto(tel);
-			if (tel->radec_goto_blocking == 1) {
-				eqmod2_waitgoto(tel);
-			}
-         if ( tel->ha_pointing == 1 ) {
-            // En cas de pointage hadec, on ne re-enclenche pas le moteur de suivi.
-            tel->old_state = tel->state;
-            tel->state = EQMOD_STATE_STOPPED;
-            tel->ha_pointing = 0;
-         } else {
-            eqmod2_track(tel);
-            tel->old_state = tel->state;
-            tel->state = EQMOD_STATE_TRACK;
-         }
-         break;
-      case EQMOD_STATE_SLEW:
-         return -1;
-   }
+   // tel->radec_goto_blocking = 1;
 
+	// --- Ne fait rien si le système n'est pas initialisé
+	if ( tel->state == EQMOD_STATE_NOT_INITIALIZED ) {
+		return -1;
+	}
+	// --- Ne fait rien si le système est éteind
+	if ( tel->state == EQMOD_STATE_HALT ) {
+		return -1;
+	}
+	// --- Ne fait rien si le système est déjà en train de pointer (Ne devrait jamais arriver)
+	if ( tel->state == EQMOD_STATE_GOTO ) {
+		return -1;
+	}
+	// --- Ne fait rien si le système est déjà en train de pointer
+	if ( tel->state == EQMOD_STATE_SLEW ) {
+		return -1;
+	}
+	// --- Avant n'importe quel GOTO il faut arreter les moteurs
+	eqmod2_stopmotor(tel, AXE_RA | AXE_DEC);
+	// --- Traite les 4 cas de pointages
+	if ( ( tel->state == EQMOD_STATE_STOPPED ) && ( tel->ha_pointing == 1 ) ) {
+		// --- Cas où les moteurs sont déjà sur OFF et pointage HADEC
+		tel->old_state = tel->state;
+      tel->state = EQMOD_STATE_GOTO;
+      eqmod2_goto(tel);
+		if (tel->radec_goto_blocking == 1) {
+			eqmod2_waitgoto(tel);
+		}
+      tel->old_state = tel->state;
+      tel->state = EQMOD_STATE_STOPPED;
+	} else if ( ( tel->state == EQMOD_STATE_STOPPED ) && ( tel->ha_pointing == 0 ) ) {
+		// --- Cas où les moteurs sont déjà sur OFF et pointage RADEC
+		if (tel->gotoblocking==1) {
+			tel->radec_goto_blocking = 1; // on force les goto RADEC en  bloquant
+		}
+		tel->old_state = tel->state;
+      tel->state = EQMOD_STATE_GOTO;
+      eqmod2_goto(tel);
+		if (tel->radec_goto_blocking == 1) {
+			eqmod2_waitgoto(tel);
+		}
+      tel->old_state = tel->state;
+      tel->state = EQMOD_STATE_TRACK;
+		eqmod2_track(tel);
+	} else if ( ( tel->state == EQMOD_STATE_TRACK ) && ( tel->ha_pointing == 1 ) ) {
+		// --- Cas où les moteurs sont déjà sur ON et pointage HADEC
+		tel->old_state = tel->state;
+		tel->state = EQMOD_STATE_STOPPED;
+		eqmod2_stopmotor(tel, AXE_RA | AXE_DEC);
+      tel->state = EQMOD_STATE_GOTO;
+      eqmod2_goto(tel);
+		if (tel->radec_goto_blocking == 1) {
+			eqmod2_waitgoto(tel);
+		}
+		tel->old_state = tel->state;
+      tel->state = EQMOD_STATE_STOPPED;
+	} else if ( ( tel->state == EQMOD_STATE_TRACK ) && ( tel->ha_pointing == 0 ) ) {
+		// --- Cas où les moteurs sont déjà sur ON et pointage RADEC
+		if (tel->gotoblocking==1) {
+			tel->radec_goto_blocking = 1; // on force les goto RADEC en  bloquant
+		}
+      tel->old_state = tel->state;
+      tel->state = EQMOD_STATE_GOTO;
+      eqmod2_goto(tel);
+		if (tel->radec_goto_blocking == 1) {
+			eqmod2_waitgoto(tel);
+		}
+		tel->old_state = tel->state;
+		tel->state = EQMOD_STATE_TRACK;
+		eqmod2_track(tel);
+	}
    sprintf(ligne,"CMD_GOTO: state=%s, old_state=%s\n",state2string(tel->state),state2string(tel->old_state));
 	printf("%s",ligne);
 
