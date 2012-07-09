@@ -309,7 +309,7 @@ namespace eval carteducielv3 {
    #------------------------------------------------------------
    proc gotoObject { nom_objet ad dec zoom_objet avant_plan } {
       set result "0"
-     # console::disp "::carteducielv3::gotoObject $nom_objet, $ad, $dec, $zoom_objet, $avant_plan, \n"
+     # ::console::disp "::carteducielv3::gotoObject $nom_objet, $ad, $dec, $zoom_objet, $avant_plan, \n"
       if { $nom_objet != "#etoile#" && $nom_objet != "" } {
          selectObject $nom_objet
       } else {
@@ -534,12 +534,12 @@ namespace eval carteducielv3 {
          set dec [ string range $dec 3 end ]
       }
 
-     # console::disp "CDC ----------------\n"
-     # console::disp "CDC entry cr=$cr\n"
-     # console::disp "CDC entry ra=$ra\n"
-     # console::disp "CDC entry dec=$dec\n"
-     # console::disp "CDC entry objType=$objType\n"
-     # console::disp "CDC entry detail=$detail \n"
+     # ::console::disp "CDC ----------------\n"
+     # ::console::disp "CDC entry cr=$cr\n"
+     # ::console::disp "CDC entry ra=$ra\n"
+     # ::console::disp "CDC entry dec=$dec\n"
+     # ::console::disp "CDC entry objType=$objType\n"
+     # ::console::disp "CDC entry detail=$detail \n"
 
       #--- Mise en forme de ra
       set ra [lindex [split $ra "."] 0]
@@ -567,12 +567,12 @@ namespace eval carteducielv3 {
             set magnitude [lindex [split [string range $detail $index end ]] 1]
             set magnitude [string map {"m:" ""} $magnitude ]
          }
-     }
+      }
 
       #--- Mise en forme de objName
       if { $objType=="" || $objType=="port:" } {
          if { $private(premierLancement) == 1 } {
-            console::affiche_erreur "$caption(carteducielv3,no_object_select)\n\n"
+            ::console::affiche_erreur "$caption(carteducielv3,no_object_select)\n\n"
             return ""
          }
          return ""
@@ -826,9 +826,9 @@ namespace eval carteducielv3 {
          }
       }
 
-     # console::disp "CDC result ra=$ra\n"
-     # console::disp "CDC result dec=$dec\n"
-     # console::disp "CDC result objName=$objName\n"
+     # ::console::disp "CDC result ra=$ra\n"
+     # ::console::disp "CDC result dec=$dec\n"
+     # ::console::disp "CDC result objName=$objName\n"
 
       return [list $ra $dec "now" $objName $magnitude]
    }
@@ -902,7 +902,7 @@ namespace eval carteducielv3 {
             }
             #--- nouvelle tentative apres le lancement
             if { [ openConnection ] == 1 } {
-               console::affiche_erreur "$caption(carteducielv3,no_connect)\n\n"
+               ::console::affiche_erreur "$caption(carteducielv3,no_connect)\n\n"
                tk_messageBox -message "$caption(carteducielv3,no_connect)" -icon info
                return ""
             }
@@ -918,12 +918,12 @@ namespace eval carteducielv3 {
 
       set result ""
       catch {
-        # console::disp "sendRequest socket=$private(socket)\n"
-        # console::disp "sendRequest REQ= $req\n"
+        # ::console::disp "sendRequest socket=$private(socket)\n"
+        # ::console::disp "sendRequest REQ= $req\n"
          puts  $private(socket) $req
          flush $private(socket)
          set result [gets $private(socket)]
-        # console::disp "sendRequest REP= $result\n"
+        # ::console::disp "sendRequest REP= $result\n"
       }
 
       #--- je ferme la connexion
@@ -943,15 +943,15 @@ namespace eval carteducielv3 {
 
       set result 1
       catch {
-        # console::disp "openConnection host=$conf(carteducielv3,host) port=$conf(carteducielv3,port)\n"
+        # ::console::disp "openConnection host=$conf(carteducielv3,host) port=$conf(carteducielv3,port)\n"
 
          set private(socket) [socket $conf(carteducielv3,host) $conf(carteducielv3,port)]
-        # console::disp "openConnection private(socket)=$private(socket)\n"
+        # ::console::disp "openConnection private(socket)=$private(socket)\n"
          if { [string compare -length 7 $private(socket) "Failed!"] == 0 } {
             set result 1
          } else {
             set response [gets $private(socket)]
-           # console::disp "CONNECT= $response\n"
+           # ::console::disp "CONNECT= $response\n"
             set result 0
          }
 
@@ -971,7 +971,7 @@ namespace eval carteducielv3 {
 
       puts  $private(socket) "QUIT"
       close $private(socket)
-     # console::disp "closeConnection socket=$private(socket)\n"
+     # ::console::disp "closeConnection socket=$private(socket)\n"
    }
 
 }
