@@ -299,13 +299,13 @@ proc ::telescope::surveille_goto { radec0 radecEquinox } {
          after 1100 ::telescope::surveille_goto [ list $radec1 ] $radecEquinox
          #--- je retourne 1 pour signaler que ce n'est pas pas la derniere boucle
          return 1
-      } else {	      
-         #--- on relance enventuellement le suivi car le GOTO est termine
-   		if { $conf(telescope) == "eqmod" } {
-				after 500
-				tel$audace(telNo) radec motor off
-				tel$audace(telNo) radec motor on
-   		}
+      } else {
+         #--- on relance eventuellement le suivi car le GOTO est termine
+         if { $conf(telescope) == "eqmod" } {
+            after 500
+            tel$audace(telNo) radec motor off
+            tel$audace(telNo) radec motor on
+         }
          #--- j'arrete la surveillance car le GOTO est termine
          set ::audace(telescope,goto) "0"
          update
@@ -342,7 +342,7 @@ proc ::telescope::stopGoto { { But_Stop "" } } {
          update
       }
       set audace(telescope,goto) "0"
-	} elseif { ( $conf(telescope) == "eqmod" ) } {
+   } elseif { ( $conf(telescope) == "eqmod" ) } {
       #--- Arret d'urgence du pointage
       tel$audace(telNo) radec stop
       tel$audace(telNo) radec motor off
@@ -652,7 +652,7 @@ proc ::telescope::incrementSpeed { } {
             setSpeed "1"
          }
       } elseif { $conf(telescope) == "eqmod" } {
-         #--- Pour l'eqmod, l'increment peut prendre 4 valeurs ( 1 2 3 4 )
+         #--- Pour l'eqmod, l'increment peut prendre 7 valeurs ( 1 2 3 4 5 6 7 )
          switch $audace(telescope,speed) {
             "1" { setSpeed "2" }
             "2" { setSpeed "3" }
