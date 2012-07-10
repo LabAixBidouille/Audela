@@ -280,7 +280,7 @@ proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { 
 #    1 si nouvelle boucle est lancee
 #------------------------------------------------------------
 proc ::telescope::surveille_goto { radec0 radecEquinox } {
-   global audace
+   global audace conf
 
    if { $audace(telNo) != 0 } {
       set radec1 [::telescope::afficheCoord]
@@ -299,7 +299,13 @@ proc ::telescope::surveille_goto { radec0 radecEquinox } {
          after 1100 ::telescope::surveille_goto [ list $radec1 ] $radecEquinox
          #--- je retourne 1 pour signaler que ce n'est pas pas la derniere boucle
          return 1
-      } else {
+      } else {	      
+         #--- on relance enventuellement le suivi car le GOTO est termine
+   		if { $conf(telescope) == "eqmod" } {
+				after 500
+				tel$audace(telNo) radec motor off
+				tel$audace(telNo) radec motor on
+   		}
          #--- j'arrete la surveillance car le GOTO est termine
          set ::audace(telescope,goto) "0"
          update
@@ -329,6 +335,17 @@ proc ::telescope::stopGoto { { But_Stop "" } } {
    if { ( $conf(telescope) == "audecom" ) && ( [ ::confTel::isReady ] == 1 ) } {
       #--- Arret d'urgence du pointage et retour a la position au moment de l'action
       tel$audace(telNo) radec stop
+      if { $audace(telescope,goto) == "0" } {
+         if { $But_Stop != "" } {
+            $But_Stop configure -relief raised -state normal
+         }
+         update
+      }
+      set audace(telescope,goto) "0"
+	} elseif { ( $conf(telescope) == "eqmod" ) } {
+      #--- Arret d'urgence du pointage
+      tel$audace(telNo) radec stop
+      tel$audace(telNo) radec motor off
       if { $audace(telescope,goto) == "0" } {
          if { $But_Stop != "" } {
             $But_Stop configure -relief raised -state normal
