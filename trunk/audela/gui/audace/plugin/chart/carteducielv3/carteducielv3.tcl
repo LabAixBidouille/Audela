@@ -385,12 +385,12 @@ namespace eval carteducielv3 {
    #  getSelectedObject {}
    #     recupere les coordonnees et le nom de l'objet selectionne dans CarteDuCiel
    #
-   #  return [list $ra $dec $objName $magnitude]
-   #     $ra : right ascension  (ex : "16h41m42")
-   #     $dec : declinaison     (ex : "+36d28m00")
-   #     $equinox: equinoxe     (ex: "J2000.0"  ou "now" )
-   #     $objName : object name (ex : "M 13")
-   #     $magnitude: object magnitude  (ex: "5.6")
+   #  return [list $ra $dec $equinox $objName $magnitude]
+   #     $ra : right ascension        (ex : "16h41m42")
+   #     $dec : declinaison           (ex : "+36d28m00")
+   #     $equinox: equinoxe           (ex: "J2000.0" ou "now" )
+   #     $objName : object name       (ex : "M 13")
+   #     $magnitude: object magnitude (ex: "5.6")
    #
    #     ou "" si erreur
    #
@@ -540,6 +540,7 @@ namespace eval carteducielv3 {
      # ::console::disp "CDC entry dec=$dec\n"
      # ::console::disp "CDC entry objType=$objType\n"
      # ::console::disp "CDC entry detail=$detail \n"
+     # ::console::disp "CDC ----------------\n"
 
       #--- Mise en forme de ra
       set ra [lindex [split $ra "."] 0]
@@ -568,6 +569,24 @@ namespace eval carteducielv3 {
             set magnitude [string map {"m:" ""} $magnitude ]
          }
       }
+      set index [string first "visuelle:" $detail]
+      if { $index >= 0 } {
+         #--- j'extrais la chaine Magnitude visuelle: xxxx
+         if { [lindex [split [string range $detail $index end ]] 1] != "" } {
+            set magnitude [lindex [split [string range $detail $index end ]] 1]
+         } else {
+            set magnitude [lindex [split [string range $detail $index end ]] 2]
+         }
+      } else {
+         set index [string first " Magnitude:" $detail]
+         if { $index >= 0 } {
+            if { [lindex [split [string range $detail $index end ]] 3] != "" } {
+               set magnitude [lindex [split [string range $detail $index end ]] 3]
+            } else {
+               set magnitude [lindex [split [string range $detail $index end ]] 2]
+            }
+         }
+      }
 
       #--- Mise en forme de objName
       if { $objType=="" || $objType=="port:" } {
@@ -591,6 +610,8 @@ namespace eval carteducielv3 {
          set wds       ""
          set gcvs      ""
          set tyc       ""
+         set hip       ""
+         set ucac3     ""
          set ngc       ""
          set pgc       ""
          set ugc       ""
@@ -670,6 +691,18 @@ namespace eval carteducielv3 {
             set tyc [string trim [lindex [split [string range $detail $index end ]] 1]]
             set tyc "TYC$tyc"
          }
+         set index [string first "HIP" $detail]
+         if { $index >= 0 } {
+            #--- j'extrais la chaine apres HIP
+            set hip [string trim [lindex [split [string range $detail $index end ]] 1]]
+            set hip "HIP$hip"
+         }
+         set index [string first "3UC" $detail]
+         if { $index >= 0 } {
+            #--- j'extrais la chaine apres 3UC
+            set ucac3 [string trim [lindex [split [string range $detail $index end ]] 1]]
+            set ucac3 "UCAC3-$ucac3"
+         }
          set index [string first "HD:" $detail]
          if { $index >= 0 } {
             #--- j'extrais la chaine HD:xxxx
@@ -710,7 +743,7 @@ namespace eval carteducielv3 {
          set index [string first "PGC" $detail]
          if { $index >= 0 } {
             set pgc [string range $detail $index [expr [string first " " $detail $index] -1] ]
-            set pgc [string range $detail $index [expr $index + 8 ] ]
+            set pgc [string range $detail $index [expr $index + 10 ] ]
          }
          set index [string first "PNG" $detail]
          if { $index >= 0 } {
@@ -767,6 +800,10 @@ namespace eval carteducielv3 {
             set objName "$hr"
          } elseif { $tyc != "" } {
             set objName "$tyc"
+         } elseif { $hip != "" } {
+            set objName "$hip"
+         } elseif { $ucac3 != "" } {
+            set objName "$ucac3"
          } elseif { $bd != "" } {
             set objName "$bd"
          } elseif { $wds != "" } {
@@ -826,9 +863,11 @@ namespace eval carteducielv3 {
          }
       }
 
-     # ::console::disp "CDC result ra=$ra\n"
-     # ::console::disp "CDC result dec=$dec\n"
-     # ::console::disp "CDC result objName=$objName\n"
+      ::console::disp "CDC result objName=$objName\n"
+      ::console::disp "CDC result ra=$ra\n"
+      ::console::disp "CDC result dec=$dec\n"
+      ::console::disp "CDC result magnitude=$magnitude\n\n"
+     # ::console::disp "CDC ----------------\n"
 
       return [list $ra $dec "now" $objName $magnitude]
    }
