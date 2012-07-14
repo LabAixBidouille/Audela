@@ -1,5 +1,3 @@
-
-
 /* telescop.c
  *
  * This file is part of the AudeLA project : <http://software.audela.free.fr>
@@ -108,10 +106,11 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 {
    int k,num,res, i, j, start_motor;
    char s[1024],ssres[1024];
-   char ss[256],ssusb[256];
+   char ss[1024],ssusb[1024];
+	char portnum[128];
    double ha, dec;
 	int HA,DEC;
-	int mode_debug = 0;
+	int mode_debug = 0,tempo;
    FILE *f;
 
    tel->state               = EQMOD_STATE_NOT_INITIALIZED;
@@ -123,7 +122,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    tel->speed_slew_ra       = 3.;  // (deg/s)  temps mort=4s
    tel->speed_slew_dec      = 3.;  // (deg/s)  temps mort=4s
    tel->radec_move_rate_max = 1.0; // deg/s
-   tel->tempo=100;
+   tel->tempo=50;
    tel->ha_pointing=0; // type de pointage, RADEC=0 HADEC=1
    tel->mouchard=0; // 0=pas de fichier log
    tel->latitude=43.75203;
@@ -134,15 +133,6 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    ha = 0.0;
    dec = 0.0;
    
-   printf("*** tel_init(");
-   for(i=0;i<argc;i++) {
-      if (i>0) {
-         printf(",");
-      }
-      printf("%s",argv[i]);
-   }
-   printf(")\n");
-
    // transcode a port argument into comX or into /dev...
    strcpy(ss,argv[2]);
    sprintf(s,"string range [string toupper %s] 0 2",ss);
@@ -162,21 +152,23 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    }
 
    // Open the port and record the channel name
+	strcpy(portnum,ss);
    sprintf(s,"open \"%s\" r+",ss);
    if (Tcl_Eval(tel->interp,s)!=TCL_OK) {
       strcpy(ssres,tel->interp->result);
       Tcl_Eval(tel->interp,"set ::tcl_platform(os)");
-      strcpy(ss,tel->interp->result);
-      if (strcmp(ss,"Linux")==0) {
+      strcpy(s,tel->interp->result);
+      if (strcmp(s,"Linux")==0) {
          // if ttyS not found, we test ttyUSB
-         sprintf(ss,"open \"%s\" r+",ssusb);
-         if (Tcl_Eval(tel->interp,ss)!=TCL_OK) {
-            strcpy(tel->msg,tel->interp->result);
+			strcpy(portnum,ssusb);
+         sprintf(s,"open \"%s\" r+",ssusb);
+         if (Tcl_Eval(tel->interp,s)!=TCL_OK) {
+				sprintf(tel->msg,"Problem to opening the COM ports %s and %s. %s",ss,ssusb,tel->interp->result);
             return 1;
          }
          strcpy(ss,ssusb);
       } else {
-         strcpy(tel->msg,ssres);
+			sprintf(tel->msg,"Problem to opening the COM port %s. %s",ss,ssres);
          return 1;
       }
    }
@@ -192,18 +184,14 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    strcpy(s,"proc eqmod_encode {int} {set s [ string range [ format %08X $int ] 2 end ];return [ string range $s 4 5 ][ string range $s 2 3 ][ string range $s 0 1 ]}");
    mytel_tcleval(tel,s);
 
-   PRINTF("Options:\n");
    for (i=0;i<argc;i++) {
       if ( ! strcmp(argv[i],"-mouchard") ) {
-         PRINTF("  Mouchard active\n");
          tel->mouchard = 1;
       }
       if ( ! strcmp(argv[i],"-east") ) {
-         PRINTF("  Tube a l'est\n");
          tel->tubepos = TUBE_EST;
       }
       if ( (strcmp(argv[i],"-gps")==0)&&(i<=(argc-2)) ) {
-         PRINTF("  Localisation de la monture: %s\n",argv[i+1]);
          sprintf(tel->home,"%s",argv[i+1]);
 			sprintf(s,"lindex {%s} 3",tel->home);
 			if (mytel_tcleval(tel,s)==TCL_OK) {
@@ -214,37 +202,29 @@ int tel_init(struct telprop *tel, int argc, char **argv)
       }
       if ( (strcmp(argv[i],"-point")==0)&&(i<=(argc-2)) ) {
          if ( ! strcmp(argv[i+1],"east") ) {
-            PRINTF("  Tube pointe a l'est\n");
             ha = ( tel->tubepos == TUBE_EST ) ? -90.0 : 90.0 ;
             dec = ( tel->tubepos == TUBE_EST ) ? 180.0 : 0.0;
          } else if ( ! strcmp(argv[i+1],"west") ) {
-            PRINTF("  Tube pointe a l'ouest\n");
             ha = ( tel->tubepos == TUBE_EST ) ? 90.0 : -90.0;
             dec = ( tel->tubepos == TUBE_EST ) ? 180.0 : 0.0;
          } else if ( ! strcmp(argv[i+1],"south") ) {
-            PRINTF("  Tube pointe au sud\n");
             ha = 0.0;
             dec = ( tel->tubepos == TUBE_EST ) ? 180.0 : 0.0;
          } else if ( ! strcmp(argv[i+1],"north") ) {
-            PRINTF("  Tube pointe au nord\n");
             ha = ( tel->tubepos == TUBE_EST ) ? 90.0 : -90.0;
             dec = 90.0;
          } else if ( ! strcmp(argv[i+1],"north_pole") ) {
-            PRINTF("  Tube pointe au pole N\n");
             ha = ( tel->tubepos == TUBE_EST ) ? 90.0 : -90.0;
             dec = ( tel->tubepos == TUBE_EST ) ? 90.00001 : 89.99999; // 90° est un point appartenant a la zone 'non retournee', donc tube a l'ouest.
          } else if ( ! strcmp(argv[i+1],"south_pole") ) {
-            PRINTF("  Tube pointe au pole N\n");
             ha = ( tel->tubepos == TUBE_EST ) ? 90.0 : -90.0;
             dec = ( tel->tubepos == TUBE_EST ) ? -90.00001 : 89.99999; // 90° est un point appartenant a la zone 'non retournee', donc tube a l'ouest.
          }
       }
       if ( ! strcmp(argv[i],"-startmotor") ) {
-         PRINTF("  Demarrage du suivi\n");
          start_motor = 1;
       }
       if ( ! strcmp(argv[i],"-debug") ) {
-         PRINTF("  Debug mode\n");
          mode_debug = 1;
       }
    }
@@ -255,89 +235,80 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    if (tel->mouchard==1) {
       f=fopen("mouchard_eqmod.txt","wt");
       fclose(f);
-         sprintf(s,"puts %d",argc);
-         mytel_tcleval(tel,s);
-	 for (j=0;j<argc;j++) {
-            sprintf(s,"puts \"%s\"",argv[j]);
-            mytel_tcleval(tel,s);
-         }
+		sprintf(s,"puts %d",argc);
+		mytel_tcleval(tel,s);
+		for (j=0;j<argc;j++) {
+			sprintf(s,"puts \"%s\"",argv[j]);
+			mytel_tcleval(tel,s);
+		}
    }
 
-   // Initialisation de la communication avec la monture
-   PRINTF("Init:\n");
-   sprintf(s,":f1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
-   PRINTF("  :f1(=%3s)\n",ss);
-   sprintf(s,":f2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
-   PRINTF("  :f2(=%3s)\n",ss);
-   
-   sprintf(s,":e1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
-   tel->param_e1=num;
-   PRINTF("  :e1(=%6X,%d)\n",num,num);
-
+	// Test de la connexion
+	for (tempo=30;tempo<=300;tempo+=10) {
+		tel->tempo=tempo;
+		sprintf(s,":e1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
+		if (num>0) {
+			tel->param_e1=num;
+			break;
+		}
+	}
 	if (mode_debug == 0 ) {
 		if ( strlen(ss) == 0 ) {
-			sprintf(tel->msg,"EQMOD protocol error (:e1=%d). Verify your cable connection or the power supply of the mount.",num);
+			sprintf(tel->msg,"EQMOD protocol error (:e1=%d). Verify: (1) cable connection, (2) serial port %s is not the good one, (3) the power supply of the mount.",num,portnum);
 			sprintf(s,"close %s",tel->channel); mytel_tcleval(tel,s);
 			return 1;
 		}
 	}
+	tempo+=10;
 
    sprintf(s,":e2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
    tel->param_e2=num;
-   PRINTF("  :e2(=%6X,%d)\n",num,num);
+
+   // Initialisation de la communication avec la monture
+   sprintf(s,":f1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
+   sprintf(s,":f2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
+   
 
    sprintf(s,":a1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
 	if (num==0) { num=1 ; } ; // avoid division by zero
    if (num<0) { num= num + (1<<24); }
    tel->param_a1=num; // Microsteps per axis Revolution
-   PRINTF("  :a1(=%6X,%d)\n",num,num);
 
    sprintf(s,":a2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
 	if (num==0) { num=1 ; } ; // avoid division by zero
    if (num<0) { num = num + (1<<24); }
    tel->param_a2=num; // Microsteps per axis Revolution
-   PRINTF("  :a2(=%6X,%d)\n",num,num);
 
    sprintf(s,":b1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
    tel->param_b1=num;
-   PRINTF("  :b1(=%6X,%d)\n",num,num);
 
    sprintf(s,":b2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
    tel->param_b2=num;
-   PRINTF("  :b2(=%6X,%d)\n",num,num);
 
    sprintf(s,":g1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
    tel->param_g1=num;
-   PRINTF("  :g1(=%6X,%d)\n",num,num);
 
    sprintf(s,":g2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
    tel->param_g2=num;
-   PRINTF("  :g2(=%6X,%d)\n",num,num);
-
-   sprintf(s,":f1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
-   tel->param_f1=num;
-   PRINTF("  :f1(=%6X,%d)\n",num,num);
-
-   sprintf(s,":f2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
-   tel->param_f2=num;
-   PRINTF("  :f2(=%6X,%d)\n",num,num);
 
    sprintf(s,":s1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
    tel->param_s1=num; // Microsteps per Worm Revolution
-   PRINTF("  :s1(=%6X,%d)\n",num,num);
 
    sprintf(s,":s2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
    tel->param_s2=num; // Microsteps per Worm Revolution
-   PRINTF("  :s2(=%6X,%d)\n",num,num);
+
+   sprintf(s,":f1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
+   tel->param_f1=num;
+
+   sprintf(s,":f2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
+   tel->param_f2=num;
 
    // Facteur de conversion deg vers step: step = deg * tel->radec_position_conversion
    tel->radec_position_conversion = 1.0 * tel->param_a1 / 360.;
 
    // Init des positions moteurs
    sprintf(s,":j1"); eqmod_putread(tel,s,ss);
-   PRINTF("  :j1 --> '%6s'\n",ss);
    sprintf(s,":j2"); eqmod_putread(tel,s,ss);
-   PRINTF("  :j2 --> '%6s'\n",ss);
    if ( ! strncmp(ss,"000080",6) ) {
       // On vient d'allumer la monture. Les deux positions sont sur 800000.
       // Le sens de rotation des moteurs est le suivant:
@@ -349,26 +320,20 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		HA=(int)(ha * tel->radec_position_conversion);
       eqmod_encode(tel,HA,ss);
       sprintf(s,":E1%s",ss); eqmod_putread(tel,s,ss);
-      PRINTF("  %s\n",s);
 		DEC=(int)(dec * tel->radec_position_conversion);
       eqmod_encode(tel,DEC,ss);
       sprintf(s,":E2%s",ss); eqmod_putread(tel,s,ss);
-      PRINTF("  %s\n",s);
    } else {
       // La monture etait deja allumee ; mais si on a retourne le tube,
       // il faut reactualiser le codeur dec.
-      PRINTF("  Monture deja initialisee, recherche de l'orientation du tube\n");
       eqmod_decode(tel,ss,&res);
 
    }
    sprintf(s,":j1"); eqmod_putread(tel,s,ss);
-   PRINTF("  :j1 --> '%6s'\n",ss);
    sprintf(s,":j2"); eqmod_putread(tel,s,ss);
-   PRINTF("  :j2 --> '%6s'\n",ss);
 
    eqmod_putread(tel,":K1",NULL);
    eqmod_putread(tel,":K2",NULL);
-   PRINTF("\n");
 
    // Limites de pointage en angle horaire exprimé en UC
    //tel->stop_e_uc=-tel->param_a1/2;
@@ -382,6 +347,10 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    // Mise en route de l'alimentation des moteurs
    sprintf(s,":F1"); res=eqmod_putread(tel,s,ss);
    sprintf(s,":F2"); res=eqmod_putread(tel,s,ss);
+
+   // On ne sait pas a quoi ça sert
+   sprintf(s,":P13"); res=eqmod_putread(tel,s,ss);
+   sprintf(s,":P23"); res=eqmod_putread(tel,s,ss);
 
    tel->old_state = tel->state;
    tel->state = EQMOD_STATE_STOPPED;
@@ -754,15 +723,11 @@ void eqmod_codeur2skypos(struct telprop *tel, int hastep, int decstep, double *h
    double lst, int_ha, int_dec, int_ra;
    const int deg90 = (int)(90.0 * tel->radec_position_conversion);
 
-   PRINTF("  Conversion codeur->radec (PosTube=%s , k=%f steps/°, 90°=%d)\n",TubePos2string(tel->tubepos),tel->radec_position_conversion,deg90);
-
    // Conversion de l'axe horaire
    int_ha = hastep / tel->radec_position_conversion;
-   PRINTF("  ha_step=%d (90°=%d) ha_initial=%f\n",hastep, deg90, int_ha);
 
    // Conversion de l'axe declinaison, et traitement du retournement
    int_dec = decstep / tel->radec_position_conversion;
-   PRINTF("  dec_step=%d (90°=%d) dec_initial=%f\n",decstep, deg90, int_dec);
 
    // Traitement du retournement:
    // 1.  Si le codeur dec est dans la zone etendue (<-90° ou >90°), il faut ramener la declinaison dans -90°,+90°
@@ -774,7 +739,6 @@ void eqmod_codeur2skypos(struct telprop *tel, int hastep, int decstep, double *h
       } else {
          int_dec = -180.0 - int_dec;
       }
-      PRINTF("    -> dec retourne.\n");
       if ( tel->tubepos == TUBE_OUEST ) {
          // Cette configuration correspond a un tube initialise a l'ouest, mais qui est passe a l'est.
          int_ha -= 180.0;
@@ -789,17 +753,14 @@ void eqmod_codeur2skypos(struct telprop *tel, int hastep, int decstep, double *h
    // Recadrage de l'angle horaire entre -180°,180°.
    if ( int_ha < -180.0 ) {
       int_ha += 360.0;
-      PRINTF("    -> ha retourne.\n");
    }
    if ( int_ha > 180.0 ) {
       int_ha -= 360.0;
-      PRINTF("    -> ha retourne.\n");
    }
 
    lst = eqmod_tsl(tel,NULL,NULL,NULL);
    int_ra = lst - int_ha + 360 * 5; // Remember: H=TSL-alpha => alpha=TSL-H
    int_ra = fmod(int_ra,360.);
-   PRINTF("  valeurs finales: ha=%f, ra=%f, dec=%f\n",int_ha,int_ra,int_dec);
 
    if (ha) {
       *ha = int_ha;
@@ -819,7 +780,6 @@ int eqmod_radec_coord(struct telprop *tel,char *result)
    int hastep, decstep;
    double ra, dec;
 
-   PRINTF("*** eqmod_radec_coord\n");
    eqmod_positions12(tel, &hastep, &decstep);
    eqmod_codeur2skypos(tel, hastep, decstep, NULL, &ra, &dec);
 
@@ -841,7 +801,6 @@ int eqmod_hadec_coord(struct telprop *tel,char *result)
    int hastep, decstep;
    double ha, dec;
 
-   PRINTF("*** eqmod_hadec_coord\n");
    eqmod_positions12(tel, &hastep, &decstep);
    eqmod_codeur2skypos(tel, hastep, decstep, &ha, NULL, &dec);
 
@@ -977,131 +936,91 @@ int eqmod2_stopmotor(struct telprop *tel, int axe)
 {
    int res;
 
-   PRINTF("Stop motor, axe=%d ",axe);
    if ( axe & AXE_RA ) {
       res = eqmod_putread(tel,":K1",NULL);
    }
    if ( axe & AXE_DEC ) {
       res = eqmod_putread(tel,":K2",NULL);
    }
-   printf("\n");
    eqmod_radec_coord(tel,NULL); // Permet de verifier le retournement
 
    return 0;
 }
 
-int eqmod2_stopmotor_old(struct telprop *tel, int axes)
-{
-   char s[1024],ss[1024],axe;
-   int res;
-   double v;
-	double speed_track_ra=0,speed_track_dec=0;
-
-   PRINTF("Track motor to zero\n");
-
-   if ( axes & AXE_RA ) {
-		// Track Hour Axis
-		PRINTF("  ra: ");
-		axe='1';
-		if (speed_track_ra>0) {
-			PRINTF("dir>0 ");
-			sprintf(s,":G%c10",axe);
-			res=eqmod_putread(tel,s,NULL);
-		} else if (speed_track_ra<0) {
-			PRINTF("dir<0 ");
-			sprintf(s,":G%c11",axe);
-			res=eqmod_putread(tel,s,NULL);
-		}
-			v = fabs(((float)tel->param_b1) * 360.0 / ((float)speed_track_ra) / ((float)tel->param_a1));
-			PRINTF("speed=%d ",(int)v);
-			eqmod_encode(tel,(int)v,ss);
-			sprintf(s,":I%c%s",axe,ss);
-			res=eqmod_putread(tel,s,NULL);
-			sprintf(s,":J%c",axe);
-			res=eqmod_putread(tel,s,NULL);
-		PRINTF("\n");
-	}
-
-   // Track Declination Axis
-   if ( axes & AXE_DEC ) {
-		PRINTF("  dec: ");
-		axe='2';
-		if (speed_track_dec>0) {
-			PRINTF("dir>0 ");
-			sprintf(s,":G%c10",axe);
-			res=eqmod_putread(tel,s,NULL);
-		} else if (speed_track_dec<0) {
-			PRINTF("dir<0 ");
-			sprintf(s,":G%c11",axe);
-			res=eqmod_putread(tel,s,NULL);
-		}
-			v = fabs(((float)tel->param_b2) * 360.0 / ((float)speed_track_dec) / ((float)tel->param_a2));
-			PRINTF("speed=%d ",(int)v);
-			eqmod_encode(tel,(int)(v),ss);
-			sprintf(s,":I%c%s",axe,ss);
-			res=eqmod_putread(tel,s,NULL);
-			sprintf(s,":J%c",axe);
-			res=eqmod_putread(tel,s,NULL);
-		PRINTF("\n");
-	}
-
-   return 0;
-}
-
+/******
+:Gabc
+a (axe number)
+  1 = ra
+  2 = dec
+b (motion_type)
+  0 = offset
+  1 = mouvement infini lent (I1 > 9)
+  2 = offset (=0)
+  3 = mouvement infini rapide = lent * 16 (50 > I1 > 10)
+c (sense)
+  0 = ADU + (diurnal and toward pole for N hemisphere)
+  1 = ADU -
+******/
 int eqmod2_track(struct telprop *tel)
 {
    char s[1024],ss[1024],axe;
-   int res;
+   int res,motion_type;
    double v;
 
-   PRINTF("Track motor\n");
 
    // Track Hour Axis
-   PRINTF("  ra: ");
    axe='1';
-   if (tel->speed_track_ra>0) {
-      PRINTF("dir>0 ");
-      sprintf(s,":G%c10",axe);
-      res=eqmod_putread(tel,s,NULL);
-   } else if (tel->speed_track_ra<0) {
-      PRINTF("dir<0 ");
-      sprintf(s,":G%c11",axe);
-      res=eqmod_putread(tel,s,NULL);
-   }
    if (tel->speed_track_ra != 0) {
       v = fabs(((float)tel->param_b1) * 360.0 / ((float)tel->speed_track_ra) / ((float)tel->param_a1));
-      PRINTF("speed=%d ",(int)v);
+		motion_type=1;
+		if (v<9) {
+			motion_type=3;
+			v=v*tel->param_g1; // g1=16
+			if (v<10) { v=10; }
+		}
+		if (tel->speed_track_ra>0) {
+			sprintf(s,":G%c%d0",axe,motion_type);
+			res=eqmod_putread(tel,s,NULL);
+		} else if (tel->speed_track_ra<0) {
+			sprintf(s,":G%c%d1",axe,motion_type);
+			res=eqmod_putread(tel,s,NULL);
+		}
       eqmod_encode(tel,(int)v,ss);
       sprintf(s,":I%c%s",axe,ss);
       res=eqmod_putread(tel,s,NULL);
       sprintf(s,":J%c",axe);
       res=eqmod_putread(tel,s,NULL);
-   }
-   printf("\n");
+	} else {
+      sprintf(s,":K%c",axe);
+      res=eqmod_putread(tel,s,NULL);
+	}
 
    // Track Declination Axis
-   PRINTF("  dec: ");
    axe='2';
-   if (tel->speed_track_dec>0) {
-      PRINTF("dir>0 ");
-      sprintf(s,":G%c10",axe);
-      res=eqmod_putread(tel,s,NULL);
-   } else if (tel->speed_track_dec<0) {
-      PRINTF("dir<0 ");
-      sprintf(s,":G%c11",axe);
-      res=eqmod_putread(tel,s,NULL);
-   }
    if (tel->speed_track_dec != 0) {
       v = fabs(((float)tel->param_b2) * 360.0 / ((float)tel->speed_track_dec) / ((float)tel->param_a2));
-      PRINTF("speed=%d ",(int)v);
-      eqmod_encode(tel,(int)(v),ss);
+		motion_type=1;
+		if (v<9) {
+			motion_type=3;
+			v=v*tel->param_g2;
+			if (v<10) { v=10; }
+		}
+		if (tel->speed_track_dec>0) {
+			sprintf(s,":G%c%d0",axe,motion_type);
+			res=eqmod_putread(tel,s,NULL);
+		} else if (tel->speed_track_dec<0) {
+			sprintf(s,":G%c%d1",axe,motion_type);
+			res=eqmod_putread(tel,s,NULL);
+		}
+      eqmod_encode(tel,(int)v,ss);
       sprintf(s,":I%c%s",axe,ss);
       res=eqmod_putread(tel,s,NULL);
       sprintf(s,":J%c",axe);
       res=eqmod_putread(tel,s,NULL);
-   }
-   PRINTF("\n");
-
+	} else {
+      sprintf(s,":K%c",axe);
+      res=eqmod_putread(tel,s,NULL);
+	}
    return 0;
 }
 
@@ -1111,8 +1030,6 @@ int eqmod2_move(struct telprop *tel, char direction)
    int res;
    double v;
    char vit;
-
-   printf("Move %c, speed=%f, speedmax=%f", direction, tel->radec_move_rate, tel->radec_move_rate_max);
 
    if (tel->radec_move_rate > tel->radec_move_rate_max) {
       tel->radec_move_rate = tel->radec_move_rate_max;
@@ -1127,8 +1044,6 @@ int eqmod2_move(struct telprop *tel, char direction)
       v = ((float)tel->param_b1) * 360.0 / ((float)tel->radec_move_rate) / ((float)tel->param_a1);
    }
 
-   printf(", dir=%c, speed=%f, param=%06X ", direction, tel->radec_move_rate, (int)v);
-
    if ( ( axe(direction) == AXE_DEC ) && ( tel->tubepos == TUBE_EST ) ) {
       // Mouvement axe delta et tube a l'est
       sprintf(s,":G%d%c%d",axe(direction),vit,1-dir(direction));
@@ -1136,12 +1051,12 @@ int eqmod2_move(struct telprop *tel, char direction)
       // Mouvement axe alpha, ou delta tube a l'ouest
       sprintf(s,":G%d%c%d",axe(direction),vit,dir(direction));
    }
-   res=eqmod_putread(tel,s,NULL); printf("%s ",s);
+   res=eqmod_putread(tel,s,NULL); 
    eqmod_encode(tel,(int)v,vc);
    sprintf(s,":I%d%s",axe(direction),vc);
-   res=eqmod_putread(tel,s,NULL); printf("%s ",s);
+   res=eqmod_putread(tel,s,NULL); 
    sprintf(s,":J%d",axe(direction));
-   res=eqmod_putread(tel,s,NULL); printf("%s\n",s);
+   res=eqmod_putread(tel,s,NULL); 
 
    return 0;
 }
@@ -1160,16 +1075,12 @@ int eqmod2_goto(struct telprop *tel)
    int retournement;
 	double slewing_delay_ha,slewing_delay_dec,slewing_delay;
    const int DEG90 = (int)(90.0 * tel->radec_position_conversion);
-
-   printf("GOTO:\n");
    	
    // Etape1: savoir ou on est
    eqmod_positions12(tel,&HA0,&DEC0);
 
-   PRINTF("*** eqmod_radec_coord\n");
    eqmod_positions12(tel, &HA0, &DEC0);
    eqmod_codeur2skypos(tel, HA0, DEC0, &ha0, NULL, &dec0);
-   printf("  position initiale: (%d,%d) / (%f,%f)\n",HA0,DEC0,ha0,dec0);
 
 	slewing_delay=0;
 	if (tel->ha_pointing==0) {
@@ -1186,17 +1097,13 @@ int eqmod2_goto(struct telprop *tel)
 		ha = fmod( lst-tel->ra0+360*5 , 360.0 );
 		dec = tel->dec0;
 		if ( ha > 180.0 ) ha -= 360.;
-		printf("  destination: (%f,%f)\n",ha,dec);
 	   
 		// Etape3: evaluer le besoin de retournement
 		if ( DEC0 > 90.0 * tel->radec_position_conversion ) {
-			printf("     retournement cas 1\n");
 			retournement = ha < ( tel->stop_e_uc / tel->radec_position_conversion ) ? 1 : 0;
 		} else {
-			printf("     retournement cas 2\n");
 			retournement = ha > ( tel->stop_w_uc / tel->radec_position_conversion ) ? 1 : 0;
 		}
-		printf("  retournement = %d\n",retournement);
 
 		// Etape 4: calcul du trajet a parcourir
 		dha = ha - ha0;
@@ -1221,8 +1128,6 @@ int eqmod2_goto(struct telprop *tel)
 		slewing_delay = (slewing_delay_ha>slewing_delay_dec) ? slewing_delay_ha : slewing_delay_dec ;
 	}
 
-   printf("  destination recalculee: (%f,%f) soit un delta (%f,%f)\n",ha,dec,dha,ddec);
-
    // Etape 5: Pointage de la monture
    if ( DEC0 > DEG90 ) {
       sens = '1';
@@ -1234,16 +1139,16 @@ int eqmod2_goto(struct telprop *tel)
 	DEC=(int)(ddec * tel->radec_position_conversion);
    
    axe='1';
-   sprintf(s,":G%c0%c",axe,'0'); res=eqmod_putread(tel,s,NULL); printf("%s ",s);
+   sprintf(s,":G%c0%c",axe,'0'); res=eqmod_putread(tel,s,NULL);
    eqmod_encode(tel,HA,ss);
-   sprintf(s,":H%c%s",axe,ss); res=eqmod_putread(tel,s,NULL); printf("%s ",s);
-   sprintf(s,":J%c",axe); res=eqmod_putread(tel,s,NULL); printf("%s \n",s);
+   sprintf(s,":H%c%s",axe,ss); res=eqmod_putread(tel,s,NULL); 
+   sprintf(s,":J%c",axe); res=eqmod_putread(tel,s,NULL);
 
    axe='2';
-   sprintf(s,":G%c0%c",axe,sens); res=eqmod_putread(tel,s,NULL); printf("%s ",s);
+   sprintf(s,":G%c0%c",axe,sens); res=eqmod_putread(tel,s,NULL); 
    eqmod_encode(tel,DEC,ss);
-   sprintf(s,":H%c%s",axe,ss); res=eqmod_putread(tel,s,NULL); printf("%s ",s);
-   sprintf(s,":J%c",axe); res=eqmod_putread(tel,s,NULL); printf("%s \n",s);
+   sprintf(s,":H%c%s",axe,ss); res=eqmod_putread(tel,s,NULL); 
+   sprintf(s,":J%c",axe); res=eqmod_putread(tel,s,NULL);
 
    return 0;
    
@@ -1264,14 +1169,12 @@ int eqmod2_waitgoto(struct telprop *tel)
    if (tel->radec_goto_blocking==1) {
       // A loop is actived until the telescope is stopped
       eqmod_positions12(tel,&p10,&p20);
-      PRINTF("  wait: %d %d\n",p10,p20);
       tol=(tel->radec_position_conversion)/3600.*10; // tolerance +/- 10 arcsec
 		clock00 = clock();
       while (1==1) {
          time_in++;
          sprintf(s,"after %d",tel->gotodead_ms); mytel_tcleval(tel,s);
          eqmod_positions12(tel,&p1,&p2);
-         PRINTF("  wait: %d %d\n",p10,p20);
 			dp1=p1-p10;
 			dp2=p2-p20;
 			f=fopen("mouchard_eqmod.txt","at");
@@ -1288,12 +1191,10 @@ int eqmod2_waitgoto(struct telprop *tel)
          eqmod2_goto(tel);
          // A loop is actived until the telescope is stopped
          eqmod_positions12(tel,&p10,&p20);
-         PRINTF("  wait: %d %d\n",p10,p20);
          while (1==1) {
             time_in++;
             sprintf(s,"after %d",tel->gotoread_ms); mytel_tcleval(tel,s);
             eqmod_positions12(tel,&p1,&p2);
-            PRINTF("  wait: %d %d\n",p10,p20);
 				dp1=p1-p10;
 				dp2=p2-p20;
 				f=fopen("mouchard_eqmod.txt","at");
@@ -1345,9 +1246,6 @@ int eqmod2_match(struct telprop *tel, char dir)
    } else if ( DEC0 < ( -90.0 * tel->radec_position_conversion ) ) {
       dec = -180.0 + dec;
    }
-
-   PRINTF("Match: ha=%f dec=%f pos_tube=%s\n",ha,dec,TubePos2string(tel->tubepos));
-
    if ( tel->state == EQMOD_STATE_TRACK ) {
       eqmod2_stopmotor(tel,AXE_RA | AXE_DEC);
    }
@@ -1356,7 +1254,7 @@ int eqmod2_match(struct telprop *tel, char dir)
    //   angle horaire entre -180 et 180
    //   codeur entre -a1/2 et a1/2
    axe='1';
-   p = (int)(ha * tel->radec_position_conversion); PRINTF("  AH Souhaite: [[ha=%d]] ",p);
+   p = (int)(ha * tel->radec_position_conversion); 
    eqmod_encode(tel,p,ss);
    sprintf(s,":E%c%s",axe,ss); res=eqmod_putread(tel,s,NULL);
 
@@ -1365,7 +1263,7 @@ int eqmod2_match(struct telprop *tel, char dir)
    //   angle entre -90 et -270 pour tube a l'est dans l'hemisphere sud
    //   angle entre +90 et +270 pour tube a l'est dans l'hemisphere nord
    axe='2';
-   p = (int)(dec * tel->radec_position_conversion); PRINTF("  Dec souhaitee: [[%d]] ",p);
+   p = (int)(dec * tel->radec_position_conversion);
    eqmod_encode(tel,p,ss);
    sprintf(s,":E%c%s",axe,ss); res=eqmod_putread(tel,s,NULL);
 
@@ -1420,7 +1318,6 @@ int eqmod2_action_move(struct telprop *tel, char *direction)
 
    tel->slew_axis = tel->slew_axis | axe(direction[0]);
 
-   printf("CMD_MOVE: state=%s, old_state=%s\n",state2string(tel->state),state2string(tel->old_state));
    return 0;
 }
 
@@ -1454,7 +1351,6 @@ int eqmod2_action_stop(struct telprop *tel, char *direction)
          break;
    }
 
-   printf("CMD_STOP: state=%s, old_state=%s\n",state2string(tel->state),state2string(tel->old_state));
 
    return 0;
 }
@@ -1470,7 +1366,6 @@ int eqmod2_action_motor(struct telprop *tel)
       tel->old_state = tel->state;
       tel->state = EQMOD_STATE_STOPPED;
 	}
-   printf("CMD_MOTOR: state=%s, old_state=%s\n",state2string(tel->state),state2string(tel->old_state));
 
    return 0;
 }
@@ -1478,7 +1373,6 @@ int eqmod2_action_motor(struct telprop *tel)
 
 int eqmod2_action_goto(struct telprop *tel)
 {
-	char ligne[300];
    // On impose toujours un goto bloquant sinon le moteur 
 	// ne fait pas le suivi apres pointage.
    // tel->radec_goto_blocking = 1;
@@ -1553,8 +1447,6 @@ int eqmod2_action_goto(struct telprop *tel)
 		tel->state = EQMOD_STATE_TRACK;
 		eqmod2_track(tel);
 	}
-   sprintf(ligne,"CMD_GOTO: state=%s, old_state=%s\n",state2string(tel->state),state2string(tel->old_state));
-	printf("%s",ligne);
 
    return 0;
 }

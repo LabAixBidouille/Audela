@@ -112,11 +112,17 @@ int cmdTelDecode(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
    struct telprop *tel;
    tel = (struct telprop *)clientData;
    if (argc<3) {
-      sprintf(ligne,"Usage: %s %s hexa",argv[0],argv[1]);
+      sprintf(ligne,"Usage: %s %s hexa ?-|+?",argv[0],argv[1]);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       result = TCL_ERROR;
    } else {
       res=eqmod_decode(tel,argv[2],&num);
+		if (argc>=4) {
+			if (strcmp(argv[3],"+")==0) {
+				// --- force un resultat positif
+			   if (num<0) { num= num + (1<<24); }
+			}
+		}
 		sprintf(ligne,"%d",num);
       if (res==1) {
          result = TCL_ERROR;
@@ -540,19 +546,102 @@ int cmdTelReadparams(ClientData clientData, Tcl_Interp *interp, int argc, char *
    char ss[2048];
    char sss[248];
    char s[12048];
-	int res,num;
+	int res,num,num2;
+	double v;
    struct telprop *tel;
    tel = (struct telprop *)clientData;
 	strcpy(s,"");
 	sprintf(ss,"{a1 %d {ADU/360deg} {microsteps/360deg}} {a2 %d {ADU/360deg} {microsteps/360deg}} ",tel->param_a1,tel->param_a2); strcat(s,ss);
-	sprintf(ss,"{b1 %d {ADU/sec} {velocity parameter}} {b2 %d {ADU/sec} {velocity_parameter}} ",tel->param_b1,tel->param_b2); strcat(s,ss);
-	sprintf(ss,"{e1 %d {ADU} {unknown parameter (67585)}} {e2 %d {ADU} {unknown parameter (67585)}} ",tel->param_e1,tel->param_e2); strcat(s,ss);
-   sprintf(sss,":f1"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
-   tel->param_f1=num;
-   sprintf(sss,":f2"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
-   tel->param_f2=num;
-	sprintf(ss,"{f1 %d {binary} {motorRA state 0|1= 0|1= 0|1=}} {f2 %d {binary} {motorDEC state 0|1= 0|1= 0|1=}} ",tel->param_f1,tel->param_f2); strcat(s,ss);		
-	sprintf(ss,"{g1 %d {binary} {0|1=hemis(S|N) 0|1=track(+|-)}} {g2 %d {binary} {0|1=hemis(S|N) 0|1=track(+|-)}} ",tel->param_g1,tel->param_g2); strcat(s,ss);
+	sprintf(ss,"{b1 %d {ADU^2/sec} {velocity parameter i1 = b1 / speedtrackHA(deg/s) / (a1/360)}} {b2 %d {ADU^2/sec} {velocity_parameter i2 = b2 / speedtrackDEC(deg/s) / (a2/360)}} ",tel->param_b1,tel->param_b2); strcat(s,ss);
+	//
+   sprintf(sss,":c1"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+	sprintf(ss,"{c1 %d {ADU} {motorRA unidentified parameter}} ",num); strcat(s,ss);
+   sprintf(sss,":c2"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+	sprintf(ss,"{c2 %d {ADU} {motorDEC unidentified parameter}} ",num); strcat(s,ss);
+	//
+   sprintf(sss,":d1"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+	sprintf(ss,"{d1 %d {ADU} {motorRA unidentified position parameter}} ",num); strcat(s,ss);
+   sprintf(sss,":d2"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+	sprintf(ss,"{d2 %d {ADU} {motorDEC unidentified position parameter}} ",num); strcat(s,ss);
+	//
+   sprintf(sss,":e1"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+	sprintf(ss,"{e1 %d {ADU} {motorRA unidentified parameter}} ",num); strcat(s,ss);
+   sprintf(sss,":e2"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+	sprintf(ss,"{e2 %d {ADU} {motorDEC unidentified parameter}} ",num); strcat(s,ss);
+	//
+   sprintf(sss,":f1"); res=eqmod_putread(tel,sss,ss); num=atoi(ss) ;tel->param_f1=num;
+	sprintf(ss,"{f1 %d {integers} {motorRA slewing state 0|1|2|3|5|7=jog_slow+|stop+|jog_slow-|stop-|jog_fast+|jog_fast- 0|1=Stoped|Jogging 0|1=PB?|OK?}} ",tel->param_f1); strcat(s,ss);
+   sprintf(sss,":f2"); res=eqmod_putread(tel,sss,ss); num=atoi(ss) ;tel->param_f2=num;
+	sprintf(ss,"{f2 %d {integers} {motorDEC slewing state 0|1|2|3|5|7=jog_slow+|stop+|jog_slow-|stop-|jog_fast+|jog_fast- 0|1=Stoped|Jogging 0|1=PB?|OK?}} ",tel->param_f1); strcat(s,ss);
+	//
+   sprintf(sss,":g1"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+	sprintf(ss,"{g1 %d {integers} {motorRA speed multiplier (set with :G13x)} } ",num); strcat(s,ss);
+   sprintf(sss,":g2"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+	sprintf(ss,"{g2 %d {integers} {motorDEC speed multiplier (set with :G13x)} } ",num); strcat(s,ss);
+	//
+   sprintf(sss,":h1"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+	sprintf(ss,"{h1 %d {ADU} {motorRA Next position to reach = %f degs (set with :H1)}} ",num,360.*num/tel->param_a1); strcat(s,ss);
+   sprintf(sss,":h2"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+	sprintf(ss,"{h2 %d {ADU} {motorDEC Next position to reach = %f degs (set with :H2)}} ",num,360.*num/tel->param_a2); strcat(s,ss);
+	//
+   sprintf(sss,":i1"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+	num2=(num==0)?1:num;
+	v=tel->param_b1*360./num2/tel->param_a1;
+	sprintf(ss,"{i1 %d {ADU} {motorRA Next tracking speed = %f deg/s or %f deg/s (set with :I1, start with :J1)}} ",num,v,tel->param_g1*v); strcat(s,ss);
+   sprintf(sss,":i2"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+	num2=(num==0)?1:num;
+	v=tel->param_b2*360./num2/tel->param_a2;
+	sprintf(ss,"{i2 %d {ADU} {motorDEC Next tracking speed = %f deg/s or %f deg/s (set with :I2, start with :J2)}} ",num,v,tel->param_g2*v); strcat(s,ss);
+	//
+   sprintf(sss,":j1"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+	sprintf(sss,"{j1 %d {ADU} {motorRA Current encoder position = %s Hex = %f degs}} ",num,ss,360.*num/tel->param_a1); strcat(s,sss);
+   sprintf(sss,":j2"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+	sprintf(sss,"{j2 %d {ADU} {motorDEC Current encoder position = %s Hex = %f degs}} ",num,ss,360.*num/tel->param_a2); strcat(s,sss);
+	//
+	/*
+   sprintf(sss,":k1"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+	sprintf(ss,"{k1 %d {string} {motorRA unidentified parameter}} ",num); strcat(s,ss);
+   sprintf(sss,":k2"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+	sprintf(ss,"{k2 %d {string} {motorDEC unidentified parameter}} ",num); strcat(s,ss);
+	//
+   sprintf(sss,":l1"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+	sprintf(ss,"{l1 %d {string} {motorRA unidentified parameter}} ",num); strcat(s,ss);
+   sprintf(sss,":l2"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+	sprintf(ss,"{l2 %d {string} {motorDEC unidentified parameter}} ",num); strcat(s,ss);
+	//
+	*/
+   sprintf(sss,":m1"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+	sprintf(ss,"{m1 %d {ADU} {motorRA start braking position with GOTO = %f degs (set with :M1)}} ",num,360.*num/tel->param_a1); strcat(s,ss);
+   sprintf(sss,":m2"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+	sprintf(ss,"{m2 %d {ADU} {motorDEC start braking position with GOTO = %f degs (set with :M2)}} ",num,360.*num/tel->param_a2); strcat(s,ss);
+	//
+	/*
+   sprintf(sss,":n1"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+	sprintf(ss,"{n1 %d {string} {motorRA unidentified parameter}} ",num); strcat(s,ss);
+   sprintf(sss,":n2"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+	sprintf(ss,"{n2 %d {string} {motorDEC unidentified parameter}} ",num); strcat(s,ss);
+	//
+   sprintf(sss,":o1"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+	sprintf(ss,"{o1 %d {string} {motorRA unidentified parameter}} ",num); strcat(s,ss);
+   sprintf(sss,":o2"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+	sprintf(ss,"{o2 %d {string} {motorDEC unidentified parameter}} ",num); strcat(s,ss);
+	//
+   sprintf(sss,":p1"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+	sprintf(ss,"{p1 %d {string} {motorRA unidentified parameter}} ",num); strcat(s,ss);
+   sprintf(sss,":p2"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+	sprintf(ss,"{p2 %d {string} {motorDEC unidentified parameter}} ",num); strcat(s,ss);
+	//
+   sprintf(sss,":q1"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+	sprintf(ss,"{q1 %d {string} {motorRA unidentified parameter}} ",num); strcat(s,ss);
+   sprintf(sss,":q2"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+	sprintf(ss,"{q2 %d {string} {motorDEC unidentified parameter}} ",num); strcat(s,ss);
+	//
+   sprintf(sss,":r1"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+	sprintf(ss,"{r1 %d {string} {motorRA unidentified parameter}} ",num); strcat(s,ss);
+   sprintf(sss,":r2"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+	sprintf(ss,"{r2 %d {string} {motorDEC unidentified parameter}} ",num); strcat(s,ss);
+	//
+	*/
 	sprintf(ss,"{s1 %d {ADU/turn} {microsteps to a complete turnover of worm}} {s2 %d {ADU/turn} {microsteps to a complete turnover of worm}} ",tel->param_s1,tel->param_s2); strcat(s,ss);
 	sprintf(ss,"{speed_track_ra %f {deg/s} {motorRA track speed}} {speed_track_dec %f {deg/s} {motorDEC track speed}} ",tel->speed_track_ra,tel->speed_track_dec); strcat(s,ss);
 	sprintf(ss,"{speed_slew_ra %f {deg/s} {motorRA slew speed}} {speed_slew_dec %f {deg/s} {motorDEC slew speed}} ",tel->speed_slew_ra,tel->speed_slew_dec); strcat(s,ss);
