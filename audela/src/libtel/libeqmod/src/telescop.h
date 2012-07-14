@@ -68,6 +68,8 @@ struct telprop {
    int param_a2;
    int param_b1;
    int param_b2;
+   int param_d1;
+   int param_d2;
    int param_g1;
    int param_g2;
    int param_f1;
@@ -94,6 +96,7 @@ struct telprop {
 	double ha_park;
 	double dec_park;
 	int gotoblocking;
+	double ha0;
 };
 
 int tel_init(struct telprop *tel, int argc, char **argv);
@@ -140,7 +143,7 @@ int eqmod_settsl(struct telprop *tel);
 double eqmod_tsl(struct telprop *tel,int *h, int *m,double *sec);
 void eqmod_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function);
 
-int eqmod2_match(struct telprop *tel, char dir);
+int eqmod2_match(struct telprop *tel);
 
 int eqmod2_action_move(struct telprop *tel, char *direction);
 int eqmod2_action_stop(struct telprop *tel, char *direction);

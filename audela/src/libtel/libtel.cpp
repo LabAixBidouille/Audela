@@ -1003,28 +1003,140 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
       tel = (struct telprop*)clientData;
       if (strcmp(argv[2],"init")==0) {
          /* --- init ---*/
+         char inputEquinox[20];
+         strcpy(inputEquinox,"J2000.0");
+         char mountside[20];
+         strcpy(mountside,"auto");
          if (argc>=4) {
-            /* - call the pointing model if exists -*/
-            sprintf(ligne,"set libtel(radec) {%s}",argv[3]);
-            Tcl_Eval(interp,ligne);
-            if (strcmp(tel->model_cat2tel,"")!=0) {
-               sprintf(ligne,"catch {set libtel(radec) [%s {%s}]}",tel->model_cat2tel,argv[3]);
-               Tcl_Eval(interp,ligne);
+            for (k=4;k<=argc-1;k++) {
+               if (strcmp(argv[k],"-equinox")==0) {
+                  strncpy(inputEquinox,argv[k+1], sizeof(inputEquinox));
+               }
+               if (strcmp(argv[k],"-mountside")==0) {
+                  strncpy(mountside,argv[k+1], sizeof(mountside));
+               }
             }
-            Tcl_Eval(interp,"set libtel(radec) $libtel(radec)");
-            strcpy(ligne,interp->result);
-            /* - end of pointing model-*/
-            libtel_Getradec(interp,ligne,&tel->ra0,&tel->dec0);
-            if ( tel_radec_init(tel) == 0 ) {
-               Tcl_SetResult(interp,"",TCL_VOLATILE);
-               result = TCL_OK;
+				strcpy(tel->mountside,mountside);
+				/* - call the pointing model if exists -*/
+            if (strcmp(tel->model_cat2tel,"")==0) {
+               // je convertis les coordonnes en double
+               libtel_Getradec(interp,argv[3],&tel->ra0,&tel->dec0);
+               if ( result == TCL_OK) {
+                  // je recupere la date courante TU
+                  result =  mytel_tcleval(tel,"clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC");
+                  if ( result == TCL_OK) {
+                     char utDate[20];
+                     char refractionOption[15];
+                     strncpy(utDate, interp->result,sizeof(utDate)); 
+                     if ( tel->refractionCorrection == 1 ) {
+                        // mc_tel2cat doit pas corriger la refraction si la monture corrige la refraction.
+                        strcpy(refractionOption, "-refraction 0");
+                     } else {
+                        strcpy(refractionOption,"");
+                     }
+
+                     // usage mc_hip2tel $hiprecord $date $home $pressure $temperature $modpoi_symbols $modpoi_coefs
+                     // avec hipRecord = 
+                     //   0 id   : identifiant hyparcos de l'etoile (nombre entier), si non utilisé =0  
+                     //   1 mag  : magnitude , si non utilisé = 0.0  (nombre décimal)
+                     //   2 ra   : ascension droite (en degrés décimaux)
+                     //   3 dec  : declinaison (en degrés décimaux)
+                     //   4 equinox : date de l'equinoxe , date du jour=now, ou foramt ISO8601
+                     //   5 epoch   : date de l'epoque d'origine des mouvements propres , inutilise si mura et mudec sont nuls
+                     //   6 mura : mouvement propre ra (en degré par an) 
+                     //   7 mudec : mouvement propre dec (en degré par an)
+                     //   8 plx   : parallaxe , =0 si inconnu (en mas=milliseconde d'arc)s
+
+                     // ATTENTION: changement non documenté de hip2tel depuis le 08/06/2010 
+                     // si identifiant hyparcos = 0 , alors 
+                     //   0 id = indicateur type_liste 1
+                     //   1 ha : angle horaire ?
+                     //   2 dec : declinaison ?
+                     //   3 ??  : parametre obligatoire non utilisé
+                     //   4 ??  : parametre obligatoire non utilisé
+                     //   5 ??  : parametre obligatoire non utilisé
+                     //   6 ??  : parametre obligatoire non utilisé
+                     //   7 ??  : parametre obligatoire non utilisé
+                     //   8 ??  : parametre obligatoire non utilisé
+
+                     if (tel->radec_model_enabled == 1 ) {
+                        // correction avec le modele de pointage 
+                        sprintf(ligne, "mc_hip2tel { 1 0 %f %f %s 0 0 0 0 } {%s} {%s} %d %d {%s} {%s} %s", 
+                           tel->ra0, tel->dec0, inputEquinox,
+                           utDate, tel->homePosition, 
+                           tel->radec_model_pressure, tel->radec_model_temperature, 
+                           tel->radec_model_symbols, tel->radec_model_coefficients,
+                           refractionOption);
+                     } else {
+                        // je convertis les coordonnees a la date du jour, sans appliquer de modele de pointage
+                        //  mc_hip2tel {id mag ra dec equinox epoch mura mudec plx } dateTu home pressure temperature
+                        // ATTENTION : il ne faut pas utiliser "now" pour la date (ou bien mettre l'ordinateur a l'heure TU)
+                        sprintf(ligne, "mc_hip2tel { 1 0 %f %f %s 0 0 0 0 } { %s } { %s } %d %d %s", 
+                           tel->ra0, tel->dec0, inputEquinox, 
+                           utDate, tel->homePosition, 
+                           tel->radec_model_pressure, tel->radec_model_temperature,
+                           refractionOption);
+                     }
+                     if ( tel->consoleLog >= 1 ) {
+                        logConsole(tel, "radec goto: %s\n", ligne);
+                     }
+                     result =  mytel_tcleval(tel,ligne);
+
+                     if (result == TCL_OK) {
+                        char **listArgv;
+                        int listArgc;
+
+                        // je recupere les coordonnees corrigees a partir des index 10 et 11 de la liste retournee par mc_hip2tel
+                        result = Tcl_SplitList(tel->interp,tel->interp->result,&listArgc,&listArgv) ;
+                        if(result == TCL_OK) {
+                           if ( listArgc >= 11 ) {
+                              tel->ra0 = atof ( listArgv[10] ); 
+                              tel->dec0 = atof ( listArgv[11] ); 
+                           } else { 
+                              sprintf(ligne,"radec goto error : mc_hip2tel doesn't return { ra0 dec0 } , returned value=%s",tel->interp->result);
+                              Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+                              result = TCL_ERROR;
+                           }
+                        } else {
+                           // rien a faire car la fonction Tcl_SplitList a deja renseigne les message d'erreur
+                           result = TCL_ERROR;
+                        } 
+                        Tcl_Free((char*)listArgv);
+                     }
+                  } else {
+                     // erreur de la commande clock format ...
+                     strcpy(ligne,interp->result);
+                  }
+               } else {
+                  // erreur de libtel_Getradec()
+                  // rien a faire car la fonction libtel_Getradec a deja renseigne les message d'erreur
+               }
             } else {
-               Tcl_SetResult(interp,tel->msg,TCL_VOLATILE);
-               result = TCL_ERROR;
+               // j'applique le modele de pointage avec la procedure modpoi_cat2tel du TCL
+               // ========================================================================
+               sprintf(ligne,"set libtel(radec) {%s}",argv[3]);
+               mytel_tcleval(tel,ligne);
+               sprintf(ligne,"set libtel(radec) [%s {%s}]",tel->model_cat2tel,argv[3]);
+               mytel_tcleval(tel,ligne);
+               mytel_tcleval(tel,"set libtel(radec) $libtel(radec)");
+               strcpy(ligne,interp->result);
+               libtel_Getradec(interp,ligne,&tel->ra0,&tel->dec0);
+               result = TCL_OK;
+               /* - end of pointing model-*/
             }
 
+            if ( result == TCL_OK)  {
+					if ( tel_radec_init(tel) == 0 ) {
+						Tcl_SetResult(interp,"",TCL_VOLATILE);
+						result = TCL_OK;
+					} else {
+						Tcl_SetResult(interp,tel->msg,TCL_VOLATILE);
+						result = TCL_ERROR;
+					}
+				}
+
          } else {
-            sprintf(ligne,"Usage: %s %s init {angle_ra angle_dec}",argv[0],argv[1]);
+            sprintf(ligne,"Usage: %s %s init {angle_ra angle_dec} ?-equinox Date? ?-mountside auto|W|E?",argv[0],argv[1]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             result = TCL_ERROR;
          }
@@ -1348,6 +1460,7 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                mytel_tcleval(tel,"set libtel(radec) $libtel(radec)");
                strcpy(ligne,interp->result);
                libtel_Getradec(interp,ligne,&tel->ra0,&tel->dec0);
+               result = TCL_OK;
                /* - end of pointing model-*/
             }
 

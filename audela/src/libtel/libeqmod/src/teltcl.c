@@ -307,17 +307,9 @@ int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
       } else if (strcmp(argv[2],"goto")==0) {
          // --- goto --- //
          if (argc>=4) {
-            // - call the pointing model if exists - //
-            sprintf(ligne,"set libtel(radec) {%s}",argv[3]);
-            Tcl_Eval(interp,ligne);
-            if (strcmp(tel->model_cat2tel,"")!=0) {
-               sprintf(ligne,"catch {set libtel(radec) [%s {%s}]}",tel->model_cat2tel,argv[3]);
-               Tcl_Eval(interp,ligne);
-            }
-            Tcl_Eval(interp,"set libtel(radec) $libtel(radec)");
-            strcpy(ligne,interp->result);
+            strcpy(ligne,argv[3]);
             // - end of pointing model - //
-            libtel_Getradec(interp,ligne,&tel->ra0,&tel->dec0);
+            libtel_Getradec(interp,ligne,&tel->ha0,&tel->dec0);
             if (argc>=5) {
                for (k=4;k<=argc-1;k++) {
                   if (strcmp(argv[k],"-rate")==0) {
@@ -332,7 +324,7 @@ int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 				// le goto fera l'operation inverse: ca permet d'utiliser la meme fonction
             lst=eqmod_tsl(tel,&h,&m,&sec);
             lst=lst+0./86400*360.; // ajout empirique de 4 secondes pour tenir compte du temps mort de reponse de la monture
-            tel->ra0=lst-tel->ra0+360*5;
+            tel->ra0=lst-tel->ha0+360*5;
             tel->ra0=fmod(tel->ra0,360.);
             if (tel->ra0>180) tel->ra0 -= 360.;
             tel->ha_pointing = 1;
@@ -552,7 +544,7 @@ int cmdTelReadparams(ClientData clientData, Tcl_Interp *interp, int argc, char *
    tel = (struct telprop *)clientData;
 	strcpy(s,"");
 	sprintf(ss,"{a1 %d {ADU/360deg} {microsteps/360deg}} {a2 %d {ADU/360deg} {microsteps/360deg}} ",tel->param_a1,tel->param_a2); strcat(s,ss);
-	sprintf(ss,"{b1 %d {ADU^2/sec} {velocity parameter i1 = b1 / speedtrackHA(deg/s) / (a1/360)}} {b2 %d {ADU^2/sec} {velocity_parameter i2 = b2 / speedtrackDEC(deg/s) / (a2/360)}} ",tel->param_b1,tel->param_b2); strcat(s,ss);
+	sprintf(ss,"{b1 %d {ADU^2/sec} {velocity parameter i1 = (1|g1) * b1 / speedtrackHA(deg/s) / (a1/360)}} {b2 %d {ADU^2/sec} {velocity_parameter i2 = (1|g2) * b2 / speedtrackDEC(deg/s) / (a2/360)}} ",tel->param_b1,tel->param_b2); strcat(s,ss);
 	//
    sprintf(sss,":c1"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
 	sprintf(ss,"{c1 %d {ADU} {motorRA unidentified parameter}} ",num); strcat(s,ss);
@@ -560,9 +552,9 @@ int cmdTelReadparams(ClientData clientData, Tcl_Interp *interp, int argc, char *
 	sprintf(ss,"{c2 %d {ADU} {motorDEC unidentified parameter}} ",num); strcat(s,ss);
 	//
    sprintf(sss,":d1"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
-	sprintf(ss,"{d1 %d {ADU} {motorRA unidentified position parameter}} ",num); strcat(s,ss);
+	sprintf(ss,"{d1 %d {ADU} {motorRA initial position j1 when the mount is just switched on}} ",num); strcat(s,ss);
    sprintf(sss,":d2"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
-	sprintf(ss,"{d2 %d {ADU} {motorDEC unidentified position parameter}} ",num); strcat(s,ss);
+	sprintf(ss,"{d2 %d {ADU} {motorDEC initial position j2 when the mount is just switched on}} ",num); strcat(s,ss);
 	//
    sprintf(sss,":e1"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
 	sprintf(ss,"{e1 %d {ADU} {motorRA unidentified parameter}} ",num); strcat(s,ss);
@@ -575,9 +567,9 @@ int cmdTelReadparams(ClientData clientData, Tcl_Interp *interp, int argc, char *
 	sprintf(ss,"{f2 %d {integers} {motorDEC slewing state 0|1|2|3|5|7=jog_slow+|stop+|jog_slow-|stop-|jog_fast+|jog_fast- 0|1=Stoped|Jogging 0|1=PB?|OK?}} ",tel->param_f1); strcat(s,ss);
 	//
    sprintf(sss,":g1"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
-	sprintf(ss,"{g1 %d {integers} {motorRA speed multiplier (set with :G13x)} } ",num); strcat(s,ss);
+	sprintf(ss,"{g1 %d {integers} {motorRA fast tracking speed multiplier (set with :G13x)} } ",num); strcat(s,ss);
    sprintf(sss,":g2"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
-	sprintf(ss,"{g2 %d {integers} {motorDEC speed multiplier (set with :G13x)} } ",num); strcat(s,ss);
+	sprintf(ss,"{g2 %d {integers} {motorDEC fast tracking speed multiplier (set with :G13x)} } ",num); strcat(s,ss);
 	//
    sprintf(sss,":h1"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
 	sprintf(ss,"{h1 %d {ADU} {motorRA Next position to reach = %f degs (set with :H1)}} ",num,360.*num/tel->param_a1); strcat(s,ss);
@@ -594,9 +586,9 @@ int cmdTelReadparams(ClientData clientData, Tcl_Interp *interp, int argc, char *
 	sprintf(ss,"{i2 %d {ADU} {motorDEC Next tracking speed = %f deg/s or %f deg/s (set with :I2, start with :J2)}} ",num,v,tel->param_g2*v); strcat(s,ss);
 	//
    sprintf(sss,":j1"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
-	sprintf(sss,"{j1 %d {ADU} {motorRA Current encoder position = %s Hex = %f degs}} ",num,ss,360.*num/tel->param_a1); strcat(s,sss);
+	sprintf(sss,"{j1 %d {ADU} {motorRA Current encoder position = %s Hex = %f degs (set with :E1)}} ",num,ss,360.*num/tel->param_a1); strcat(s,sss);
    sprintf(sss,":j2"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
-	sprintf(sss,"{j2 %d {ADU} {motorDEC Current encoder position = %s Hex = %f degs}} ",num,ss,360.*num/tel->param_a2); strcat(s,sss);
+	sprintf(sss,"{j2 %d {ADU} {motorDEC Current encoder position = %s Hex = %f degs (set with :E2)}} ",num,ss,360.*num/tel->param_a2); strcat(s,sss);
 	//
 	/*
    sprintf(sss,":k1"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
