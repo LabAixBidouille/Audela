@@ -83,6 +83,7 @@ extern "C" {            /* Assume C declarations for C++ */
    char alignmentMode[10]; \
    int refractionCorrection; \
    int coordSurveyState;\
+   char mountside[20]; \
    struct telprop *next;
 
 /*Tcl_TimerToken timerToken; \ */
