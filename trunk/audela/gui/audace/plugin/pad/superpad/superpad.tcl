@@ -590,7 +590,7 @@ namespace eval ::AlignManager {
       variable private
 
       set catchError [ catch {
-         ::telescope::match [list $private(targetRa) $private(targetDec)]
+         ::telescope::match [list $private(targetRa) $private(targetDec)] J2000.0 $private(mountSide)
       } ]
       if { $catchError != 0 } {
          ::tkutil::displayErrorInfoTelescope "MATCH Error"
