@@ -115,7 +115,7 @@ proc ::telescope::initTel { this visuNo } {
 # Return :
 #    Rien
 #------------------------------------------------------------
-proc ::telescope::match { radec { radecEquinox "J2000.0" } } {
+proc ::telescope::match { radec { radecEquinox "J2000.0" } {mountSide ?} } {
    variable private
    global audace caption conf
 
@@ -133,7 +133,11 @@ proc ::telescope::match { radec { radecEquinox "J2000.0" } } {
             ]
          if { $choix == "0" } {
             #--- alignement normal
-            tel$audace(telNo) radec init $radec
+            if {$mountSide=="?"} {
+	            tel$audace(telNo) radec init $radec
+            } else {
+	            tel$audace(telNo) radec init $radec -mountside $mountSide
+            }
          } elseif { $choix == "1" } {
             #--- alignement additionel pour modele gemini
              tel$audace(telNo) radec init -option additional $radec
@@ -147,7 +151,11 @@ proc ::telescope::match { radec { radecEquinox "J2000.0" } } {
          set private(choix) $choix
          if { $choix == "yes" } {
             #--- Cas de la monture principale
-            tel$audace(telNo) radec init $radec
+            if {$mountSide=="?"} {
+	            tel$audace(telNo) radec init $radec
+            } else {
+	            tel$audace(telNo) radec init $radec -mountside $mountSide
+            }
             #--- Si Ouranos est une monture secondaire, envoie egalement le Match a l'interface Ouranos
             set secondaryTelNo [ getSecondaryTelNo ]
             if { $secondaryTelNo != "0" } {
@@ -342,7 +350,7 @@ proc ::telescope::stopGoto { { But_Stop "" } } {
          update
       }
       set audace(telescope,goto) "0"
-   } elseif { ( $conf(telescope) == "eqmod" ) } {
+	} elseif { ( $conf(telescope) == "eqmod" ) } {
       #--- Arret d'urgence du pointage
       tel$audace(telNo) radec stop
       tel$audace(telNo) radec motor off
