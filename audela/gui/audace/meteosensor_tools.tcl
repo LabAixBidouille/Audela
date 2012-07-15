@@ -599,12 +599,12 @@ proc wxt520_decode { reponse } {
 
 proc wxt520_read { channel } {
    set commande "?"
-   set res [wxt520_envoi $commande]
+   set res [wxt520_envoi $channel $commande]
    if {$res!="0"} {
       error "Pb connection\n"
    }
    set commande "0R1"
-   set res0 [wxt520_envoi $commande]
+   set res0 [wxt520_envoi $channel $commande]
    set res [wxt520_decode $res0]
    set k [lsearch -regexp $res Wind_dir_mean]
    if {$k>=0} { set dirvent [lindex [lindex $res $k] 1] }
@@ -614,7 +614,7 @@ proc wxt520_read { channel } {
    set k [lsearch -regexp $res Wind_vel_mean]
    if {$k>=0} { set vitvent [lindex [lindex $res $k] 1] }
    set commande "0R2"
-   set res0 [wxt520_envoi $commande]
+   set res0 [wxt520_envoi $channel $commande]
    set res [wxt520_decode $res0]
    set k [lsearch -regexp $res Temperature_ext]
    if {$k>=0} { set tempext [lindex [lindex $res $k] 1] ; set tempint [lindex [lindex $res $k] 1] }
@@ -625,7 +625,7 @@ proc wxt520_read { channel } {
    set k [lsearch -regexp $res Pressure]
    if {$k>=0} { set pression [lindex [lindex $res $k] 1] }
    set commande "0R3"
-   set res0 [wxt520_envoi $commande]
+   set res0 [wxt520_envoi $channel $commande]
    set res [wxt520_decode $res0]
    set k [lsearch -regexp $res Rate_rain]
    if {$k>=0} { set rainrate [lindex [lindex $res $k] 1] }
