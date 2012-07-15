@@ -112,10 +112,11 @@ proc ::telescope::initTel { this visuNo } {
 # Parametres :
 #    radec        : Liste des coordonnees AD et Dec a pointer
 #    radecEquinox : Equinoxe des coordonnees de l'objet (optionnel)
+#    mountSide    : Position du tube par rapport a la monture (valeurs : auto,W,E) (optionnel)
 # Return :
 #    Rien
 #------------------------------------------------------------
-proc ::telescope::match { radec { radecEquinox "J2000.0" } {mountSide ?} } {
+proc ::telescope::match { radec { radecEquinox "J2000.0" } { mountSide ? } } {
    variable private
    global audace caption conf
 
@@ -133,10 +134,10 @@ proc ::telescope::match { radec { radecEquinox "J2000.0" } {mountSide ?} } {
             ]
          if { $choix == "0" } {
             #--- alignement normal
-            if {$mountSide=="?"} {
-	            tel$audace(telNo) radec init $radec
+            if { $mountSide == "?" } {
+               tel$audace(telNo) radec init $radec
             } else {
-	            tel$audace(telNo) radec init $radec -mountside $mountSide
+               tel$audace(telNo) radec init $radec -mountside $mountSide
             }
          } elseif { $choix == "1" } {
             #--- alignement additionel pour modele gemini
@@ -151,10 +152,10 @@ proc ::telescope::match { radec { radecEquinox "J2000.0" } {mountSide ?} } {
          set private(choix) $choix
          if { $choix == "yes" } {
             #--- Cas de la monture principale
-            if {$mountSide=="?"} {
-	            tel$audace(telNo) radec init $radec
+            if { $mountSide == "?" } {
+               tel$audace(telNo) radec init $radec
             } else {
-	            tel$audace(telNo) radec init $radec -mountside $mountSide
+               tel$audace(telNo) radec init $radec -mountside $mountSide
             }
             #--- Si Ouranos est une monture secondaire, envoie egalement le Match a l'interface Ouranos
             set secondaryTelNo [ getSecondaryTelNo ]
@@ -350,7 +351,7 @@ proc ::telescope::stopGoto { { But_Stop "" } } {
          update
       }
       set audace(telescope,goto) "0"
-	} elseif { ( $conf(telescope) == "eqmod" ) } {
+   } elseif { ( $conf(telescope) == "eqmod" ) } {
       #--- Arret d'urgence du pointage
       tel$audace(telNo) radec stop
       tel$audace(telNo) radec motor off
