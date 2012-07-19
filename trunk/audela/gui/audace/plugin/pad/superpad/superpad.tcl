@@ -560,6 +560,17 @@ namespace eval ::telescopePad {
       bind $This.card.ns.n <ButtonPress-1>   { ::telescopePad::moveRadec n }
       bind $This.card.ns.n <ButtonRelease-1> { ::telescopePad::stopRadec n }
 
+      #--- bind Cardinal sur les 4 fleches du clavier
+      #--- ne fonctionne que si la raquette SuperPad a le focus
+      bind .superpad <KeyPress-Left>    { ::telescopePad::moveRadec e }
+      bind .superpad <KeyRelease-Left>  { ::telescopePad::stopRadec e }
+      bind .superpad <KeyPress-Right>   { ::telescopePad::moveRadec w }
+      bind .superpad <KeyRelease-Right> { ::telescopePad::stopRadec w }
+      bind .superpad <KeyPress-Down>    { ::telescopePad::moveRadec s }
+      bind .superpad <KeyRelease-Down>  { ::telescopePad::stopRadec s }
+      bind .superpad <KeyPress-Up>      { ::telescopePad::moveRadec n }
+      bind .superpad <KeyRelease-Up>    { ::telescopePad::stopRadec n }
+
       #--- bind display zone
       bind $This.frameCoord <ButtonPress-1>          { ::telescope::afficheCoord }
       bind $This.frameCoord.labelRa <ButtonPress-1>  { ::telescope::afficheCoord }
@@ -575,11 +586,12 @@ namespace eval ::telescopePad {
 
 namespace eval ::AlignManager {
    array set private {
-      This        ""
-      targetRa    ""
-      targetDec   ""
-      targetName  ""
-      mountSide   "e"
+      This         ""
+      targetRa     ""
+      targetDec    ""
+      targetName   ""
+      mountSide    "e"
+      nameResolver ""
    }
 
    #------------------------------------------------------------
@@ -595,150 +607,6 @@ namespace eval ::AlignManager {
       if { $catchError != 0 } {
          ::tkutil::displayErrorInfoTelescope "MATCH Error"
       }
-   }
-
-   #------------------------------------------------------------
-   #  cmdCenterStar
-   #
-   #------------------------------------------------------------
-   proc cmdCenterStar { } {
-      centerStar
-      ::telescopePad::displayCoord
-   }
-
-   #------------------------------------------------------------
-   #  centerStar
-   #     deplace le telescope pour centre l'etoile selectionnee au milieu de l'image
-   #     s'il n'existe pas de fenetre de selection, c'est l'etoile la plus brillante
-   #     de l'image qui est ramenee au centre
-   #------------------------------------------------------------
-   proc centerStar { } {
-      variable private
-      global audace caption conf
-
-      if {[info exists audace(picture,w)]!=1} {
-         tk_messageBox -type ok -icon warning -title $caption(superpad,ErrorMessageTitle) \
-            -message "$caption(superpad,CenterStarErrMsg)"
-         return
-      }
-
-      #--- get selected box
-      if { [ ::confVisu::getBox 1 ] != "" } {
-         #--- use selected box
-         set box [ ::confVisu::getBox 1 ]
-      } else {
-         #--- else, use all picture
-         tk_messageBox -type ok -icon warning -title $caption(superpad,ErrorMessageTitle) \
-            -message "$caption(superpad,CenterStarErrMsg)"
-         return
-      }
-
-      #--- abort if black picture
-      set average [lindex [stat] 5]
-      if { $average == 0 } {
-         return
-      }
-
-      #--- disable center button
-      $private(This).fraAlign.butCenter configure -state disabled
-
-      #--- get coordinates of the brigtest point of the box
-      set buffer buf$audace(bufNo)
-      set starCoord [$buffer centro $box 3]
-      set x [expr round([lindex $starCoord 0])]
-      set y [expr round([lindex $starCoord 1])]
-
-      #--- get distance from center
-      set deltax [expr $x - $audace(picture,w)/2 ]
-      set deltay [expr $y - $audace(picture,h)/2 ]
-
-      set binning [lindex [buf$audace(bufNo) getkwd "BIN1"] 1]
-
-      #--- evalate moving time in milliseconds for RA
-      if { [expr $deltax ]>0 } {
-         set moveTime [expr int($deltax * $conf(superpad,centerspeed) ) ]
-      } else {
-         set moveTime [expr int($deltax * $conf(superpad,centerspeed) * -1) ]
-      }
-      set moveTime [expr int($moveTime * $binning / 4 ) ]
-      set camNo [::confCam::getCamNo "A"]
-      set mirx [cam$camNo mirrorx]
-      set miry [cam$camNo mirrory]
-
-      if {    (([expr $deltax] >0 ) && ($mirx==0) && ($private(mountSide)=="e" ))
-           || (([expr $deltax] <0 ) && ($mirx==1) && ($private(mountSide)=="e" ))
-           || (([expr $deltax] <0 ) && ($mirx==0) && ($private(mountSide)=="w" ))
-           || (([expr $deltax] >0 ) && ($mirx==1) && ($private(mountSide)=="w" ))} {
-          ::console::disp "move $moveTime ms\nto est \n"
-          set direction "e"
-      } else {
-         ::console::disp "move $moveTime ms\nto west \n"
-         set direction "w"
-      }
-
-      #--- if necessary use medium speed
-      if { [expr $moveTime] > 3000 } {
-         ::telescope::setSpeed "3"
-         #logInfo "telss2k.centerStar moveTime=[expr ($moveTime -2)/4 ] ms to $direction \n "
-         ::telescope::move $direction
-         after [expr ($moveTime -2500)/16 ]
-         ::telescope::stop $direction
-         set moveTime 2000
-      }
-
-      #--- use low speed
-      if { [expr $moveTime] > 100 } {
-         ::telescope::setSpeed "2"
-         ::telescope::move $direction
-         #logInfo "telss2k.centerStar moveTime=$moveTime ms to $direction \n "
-         after $moveTime
-         ::telescope::stop $direction
-      }
-
-      set binning [lindex [buf$audace(bufNo) getkwd "BIN2"] 1]
-
-      #--- evalate moving time in milliseconds for DEC
-      if { [expr $deltay ]>0 } {
-         set moveTime [expr int($deltay * $conf(superpad,centerspeed) ) ]
-      } else {
-        set moveTime [expr int($deltay * $conf(superpad,centerspeed) * -1) ]
-      }
-      set moveTime [expr int($moveTime * $binning / 4 ) ]
-
-      if {    (([expr $deltay ]>0) && ($miry==0) && ($private(mountSide)=="e" ))
-           || (([expr $deltay ]<0) && ($miry==1) && ($private(mountSide)=="e" ))
-           || (([expr $deltay ]<0) && ($miry==0) && ($private(mountSide)=="w" ))
-           || (([expr $deltay ]>0) && ($miry==1) && ($private(mountSide)=="w" )) } {
-          ::console::disp "move $moveTime ms\nto north \n"
-          set direction "n"
-      } else {
-          ::console::disp "move $moveTime ms\nto south \n"
-          set direction "s"
-      }
-
-      #--- if necessary use medium speed
-      if { [expr $moveTime] > 3000 } {
-         ::telescope::setSpeed "3"
-         ::telescope::move $direction
-         #logInfo "telss2k.centerStar moveTime=[expr ($moveTime -2)/4 ] ms to $direction \n "
-         after [expr ($moveTime -2500)/16 ]
-         ::telescope::stop $direction
-         set moveTime  2000
-      }
-
-      #--- use low speed
-      if { [expr $moveTime] > 100 } {
-         ::telescope::setSpeed "2"
-         ::telescope::move $direction
-         after $moveTime
-         ::telescope::stop $direction
-      }
-
-      #--- restore speed=Low
-      ::telescope::setSpeed "2"
-
-      #-- enable center button
-      $private(This).fraAlign.butCenter configure -state normal
    }
 
    #------------------------------------------------------------
@@ -831,6 +699,29 @@ namespace eval ::AlignManager {
                ::tlscp::cmdSkyMap $visuNo
             }
          }
+      }
+   }
+
+   #------------------------------------------------------------
+   #  cmdResolver
+   #     resolveur de noms et retourne les coordonnees J2000.0
+   #------------------------------------------------------------
+   proc cmdResolver { name } {
+      variable private
+
+      set erreur [ catch { name2coord $name } radec ]
+      if { $erreur == 0 } {
+         set type "name2coord"
+         set private(targetName) $::AlignManager::private(nameResolver)
+         set private(targetRa)   [ mc_angle2hms [ lindex $radec 0 ] 360 zero 0 auto string ]
+         set private(targetDec)  [ mc_angle2dms [ lindex $radec 1 ] 90 zero 0 + string ]
+         set equinox             J2000.0
+      } else {
+         bell
+         set ::AlignManager::private(nameResolver) ""
+         set private(targetName)                   $::AlignManager::private(nameResolver)
+         set private(targetRa)                     ""
+         set private(targetDec)                    ""
       }
    }
 
@@ -952,7 +843,7 @@ namespace eval ::AlignManager {
          -command { ::telescope::stopGoto }
       pack   $This.frameGoto.buttonStopGoto -in $This.frameGoto -anchor center -fill x
 
-      pack $This.frameGoto -in $This  -fill x
+      pack $This.frameGoto -in $This -fill x
 
       #--- Frame du pointage
       frame $This.fraAlign -borderwidth 1 -relief groove -bg $colorpad(backpad)
@@ -961,17 +852,9 @@ namespace eval ::AlignManager {
       button  $This.fraAlign.butMountSide -borderwidth 1 -bg $colorpad(backkey) \
          -font [ list {Arial} $geompad(fontsize20) $geompad(textthick) ] \
          -textvariable  ::AlignManager::private(mountSide) \
-         -relief ridge \
+         -relief ridge -width 4 \
          -command { ::AlignManager::cmdChangeMountSide }
-      pack $This.fraAlign.butMountSide -in $This.fraAlign -fill x -side left
-
-      #--- button CENTER
-      button  $This.fraAlign.butCenter -borderwidth 1 -bg $colorpad(backkey)  \
-         -font [ list {Arial} $geompad(fontsize20) $geompad(textthick) ] \
-         -text $caption(superpad,buttonCenter) \
-         -relief ridge \
-         -command { ::AlignManager::cmdCenterStar }
-      pack   $This.fraAlign.butCenter -in $This.fraAlign -fill x -side left
+      pack $This.fraAlign.butMountSide -in $This.fraAlign -fill both -side left
 
       #--- button ALIGN
       button  $This.fraAlign.butAlign -borderwidth 1 -bg $colorpad(backkey) \
@@ -982,6 +865,24 @@ namespace eval ::AlignManager {
       pack   $This.fraAlign.butAlign -in $This.fraAlign -fill x
 
       pack $This.fraAlign -in $This -fill x
+
+      #--- Frame du Resolver
+      frame $This.fraResolver -borderwidth 1 -relief groove -bg $colorpad(backpad)
+
+      #--- Label Resolver
+      button  $This.fraResolver.labResolver -bg $colorpad(backkey) -relief groove -width 11 \
+         -font [ list {Arial} $geompad(fontsize20) $geompad(textthick) ] \
+         -text $caption(superpad,labResolver) \
+         -command { ::AlignManager::cmdResolver $::AlignManager::private(nameResolver) }
+      pack   $This.fraResolver.labResolver -in $This.fraResolver -anchor center -fill y -side left
+
+      #--- Entry Resolver
+      entry  $This.fraResolver.entResolver -bg $colorpad(backdisp) -relief groove -width 11 \
+         -font [ list {Arial} $geompad(fontsize20) $geompad(textthick) ] \
+         -textvariable ::AlignManager::private(nameResolver)
+      pack   $This.fraResolver.entResolver -in $This.fraResolver -anchor center -fill both -expand 1
+
+      pack $This.fraResolver -in $This -fill x
 
       pack $This -in $parentFrame -fill x
 
