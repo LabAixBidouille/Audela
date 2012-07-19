@@ -1969,7 +1969,7 @@ proc electronic_chip { args } {
 	   return [list $mean_gain $mean_read_noise $std_gain $std_read_noise];
    } elseif { ($method == "lintherm") } {
    	if { ($argc < 3) } {
-	      error "Usage: electronic_chip $method generic_filename_dark nb_files ?gain_e/ADU?"
+	      error "Usage: electronic_chip $method generic_filename_dark nb_files ?gain_e/ADU? ?readout_noise_e?"
 	      return $error;
       }
 	   set darkname [lindex $args 1]
@@ -1978,7 +1978,10 @@ proc electronic_chip { args } {
 	   if {$argc>=4} {
 		   set gain [lindex $args 3]
 	   }
-	   
+	   readout_noise_e ""
+	   if {$argc>=5} {
+		   set readout_noise_e [lindex $args 4]
+	   }	   
 	   # --- define the five boxes where to measure
       buf$::audace(bufNo) load "${path}/${darkname}1${ext}"
       set naxis1 [buf$::audace(bufNo) getpixelswidth]
@@ -2058,6 +2061,18 @@ proc electronic_chip { args } {
 		   ::console::affiche_resultat "thermic signal = [format "%.2f" [expr $gain*$mean_therm]] e/sec (+/- [format "%.2f" [expr $gain*$std_therm]])\n"
 	   }
 	   ::console::affiche_resultat "bias signal = [format "%.2f" $mean_bias] ADU (+/- [format "%.2f" $std_bias])\n"
+	   if {$readout_noise_e!=""} {		   
+		   set mean_therm_e_sec [expr $gain*$mean_therm]
+		   # signal_therm_e = mean_therm_e/sec * exposure
+		   # noise_therm_e = sqrt(signal_therm_e)
+		   # Compare readout_noise_e and noise_therm_e
+		   # --- We compute the exposure corresponding to readout_noise_e = noise_therm_e
+		   set noise_therm_e $readout_noise_e 
+		   set signal_therm_e [expr $noise_therm_e*$noise_therm_e]
+		   set exposure [expr $signal_therm_e/$mean_therm_e_sec]
+		   ::console::affiche_resultat "exposures < [format %.1f $exposure] sec are dominated by readout noise\n"
+		   ::console::affiche_resultat "exposures > [format %.1f $exposure] sec are dominated by thermic noise (you must cool stronger the chip)\n"
+	   }	   
 	}
    error "$method found amongst: gainnoise, lintherm"
    return $error;	
