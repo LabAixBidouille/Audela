@@ -21,9 +21,9 @@ set caption(superpad,CenterStarErrMsg)       "Centering impossible if no image i
 set caption(superpad,buttonSkyMap)           "Chart"
 set caption(superpad,buttonGoto)             "GOTO"
 set caption(superpad,buttonStopGoto)         "STOP"
-set caption(superpad,buttonCenter)           "Center"
 set caption(superpad,buttonAlign)            "Alignment"
 set caption(superpad,StarWindowTitle)        "Select one star"
+set caption(superpad,labResolver)            "Object Name"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -38,9 +38,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(superpad,buttonSkyMap)        "Carte"
    set caption(superpad,buttonGoto)          "GOTO"
    set caption(superpad,buttonStopGoto)      "STOP"
-   set caption(superpad,buttonCenter)        "Centrer"
    set caption(superpad,buttonAlign)         "Alignement"
    set caption(superpad,StarWindowTitle)     "Sélectionner une étoile"
+   set caption(superpad,labResolver)         "Nom de l'objet"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -55,9 +55,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(superpad,buttonSkyMap)        "Mappa"
    set caption(superpad,buttonGoto)          "GOTO"
    set caption(superpad,buttonStopGoto)      "STOP"
-   set caption(superpad,buttonCenter)        "Centrare"
    set caption(superpad,buttonAlign)         "Allineamento"
    set caption(superpad,StarWindowTitle)     "Selezionare una stella"
+   set caption(superpad,labResolver)         "Nome oggetto"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -72,9 +72,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(superpad,buttonSkyMap)        "Mapa"
    set caption(superpad,buttonGoto)          "GOTO"
    set caption(superpad,buttonStopGoto)      "STOP"
-   set caption(superpad,buttonCenter)        "Centro"
    set caption(superpad,buttonAlign)         "Alineamiento"
    set caption(superpad,StarWindowTitle)     "Seleccionar una estrella"
+   set caption(superpad,labResolver)         "Nombre del objecto"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -89,9 +89,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(superpad,buttonSkyMap)        "Karte"
    set caption(superpad,buttonGoto)          "GOTO"
    set caption(superpad,buttonStopGoto)      "STOP"
-   set caption(superpad,buttonCenter)        "Zentrum"
    set caption(superpad,buttonAlign)         "Ausrichtung"
    set caption(superpad,StarWindowTitle)     "Ein Stern wählen"
+   set caption(superpad,labResolver)         "Objekt Namen"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -106,9 +106,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(superpad,buttonSkyMap)        "Carta"
    set caption(superpad,buttonGoto)          "GOTO"
    set caption(superpad,buttonStopGoto)      "STOP"
-   set caption(superpad,buttonCenter)        "Centrar"
    set caption(superpad,buttonAlign)         "Alinhamento"
    set caption(superpad,StarWindowTitle)     "Seleccionar uma estrela"
+   set caption(superpad,labResolver)         "Nome do objecto"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -123,9 +123,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(superpad,buttonSkyMap)        "Kort"
    set caption(superpad,buttonGoto)          "GOTO"
    set caption(superpad,buttonStopGoto)      "STOP"
-   set caption(superpad,buttonCenter)        "Centrere"
    set caption(superpad,buttonAlign)         "Justering"
    set caption(superpad,StarWindowTitle)     "Vælg en stjerne"
+   set caption(superpad,labResolver)         "Object Name"
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -140,9 +140,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(superpad,buttonSkyMap)        "Chart"
    set caption(superpad,buttonGoto)          "GOTO"
    set caption(superpad,buttonStopGoto)      "STOP"
-   set caption(superpad,buttonCenter)        "Center"
    set caption(superpad,buttonAlign)         "Alignment"
    set caption(superpad,StarWindowTitle)     "Select one star"
+   set caption(superpad,labResolver)         "Object Name"
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -157,9 +157,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(superpad,buttonSkyMap)        "Chart"
    set caption(superpad,buttonGoto)          "GOTO"
    set caption(superpad,buttonStopGoto)      "STOP"
-   set caption(superpad,buttonCenter)        "Center"
    set caption(superpad,buttonAlign)         "Alignment"
    set caption(superpad,StarWindowTitle)     "Select one star"
+   set caption(superpad,labResolver)         "Object Name"
 
 }
 
