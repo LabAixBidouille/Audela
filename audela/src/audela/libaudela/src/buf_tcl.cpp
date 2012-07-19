@@ -478,9 +478,13 @@ int cmdDelKwd(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
    }
 
    res = keywords->Delete(argv[2]);
-   if(res) {
+   if((res!=0)&&(res!=EFITSKW_NO_SUCH_KWD)) {
         Tcl_SetResult(interp,CError::message(res),TCL_VOLATILE);
       return TCL_ERROR;
+    }
+   if(res==EFITSKW_NO_SUCH_KWD) {
+        Tcl_SetResult(interp,CError::message(res),TCL_VOLATILE);
+      return TCL_OK;
     }
    return TCL_OK;
 }

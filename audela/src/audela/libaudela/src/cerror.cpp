@@ -156,7 +156,8 @@ char* CError::message(int error)
 	   	return (char*)"can't open file";
       case ELIBSTD_NOT_IMPLEMENTED:
 	   	return (char*)"not implemented";
-
+      case EFITSKW_NO_SUCH_KWD:
+	   	return (char*)"no such keyword";
       default :
          return (char*)"unknown error code";
    }
