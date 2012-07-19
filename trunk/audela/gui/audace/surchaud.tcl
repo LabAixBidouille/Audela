@@ -1387,7 +1387,6 @@ proc calibwcs {args} {
       if {$valfoclen=="*"} {
          set valfoclen [lindex [buf$::audace(bufNo) getkwd FOCLEN] 1]
       }
-
       #--- Construction des parametres WCS
       set val(CRPIX1) [expr $naxis1/2]
       set val(CRPIX2) [expr $naxis2/2]
@@ -1424,9 +1423,8 @@ proc calibwcs {args} {
          set comment [lindex $astrom(comments) $k]
          buf$::audace(bufNo) setkwd [list $kwd $value $type $unit $comment]
       }
-
       buf$::audace(bufNo) setkwd [list EQUINOX J2000.0 string "System of equatorial coordinates" ""]
-      buf$::audace(bufNo) delkwd RADESYS
+      catch {buf$::audace(bufNo) delkwd RADESYS}
       buf$::audace(bufNo) setkwd [list RADECSYS FK5 string "Mean Place IAU 1984 system" ""]
       buf$::audace(bufNo) setkwd [list LONPOLE 180 float "Long. of the celest.NP in native coor.sys" "degres"]
       buf$::audace(bufNo) setkwd [list CTYPE1 RA---TAN string "Gnomonic projection" ""]
@@ -1434,6 +1432,7 @@ proc calibwcs {args} {
       buf$::audace(bufNo) setkwd [list CUNIT1 deg string "Angles are degrees always" ""]
       buf$::audace(bufNo) setkwd [list CUNIT2 deg string "Angles are degrees always" ""]
       buf$::audace(bufNo) setkwd [list CATASTAR 0 int "Nb stars matched" ""]
+
 
       #--- check les catalogues
       if {[string toupper $cat_format] ni [list USNO MICROCAT]} {
