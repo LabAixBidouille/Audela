@@ -463,6 +463,17 @@ namespace eval telpad {
       bind $zone(n) <ButtonPress-1>   { ::telpad::moveRadec n }
       bind $zone(n) <ButtonRelease-1> { ::telpad::stopRadec n }
 
+      #--- bind Cardinal sur les 4 fleches du clavier
+      #--- ne fonctionne que si la raquette SuperPad a le focus
+      bind .telpad <KeyPress-Left>    { ::telpad::moveRadec e }
+      bind .telpad <KeyRelease-Left>  { ::telpad::stopRadec e }
+      bind .telpad <KeyPress-Right>   { ::telpad::moveRadec w }
+      bind .telpad <KeyRelease-Right> { ::telpad::stopRadec w }
+      bind .telpad <KeyPress-Down>    { ::telpad::moveRadec s }
+      bind .telpad <KeyRelease-Down>  { ::telpad::stopRadec s }
+      bind .telpad <KeyPress-Up>      { ::telpad::moveRadec n }
+      bind .telpad <KeyRelease-Up>    { ::telpad::stopRadec n }
+
       #--- Label pour moteur focus
       label $This.frame3.lab1 -text $caption(telpad,moteur_foc) -relief flat \
          -fg $color(white) -bg $color(blue_pad) -font [ list {Arial} 10 bold ]
