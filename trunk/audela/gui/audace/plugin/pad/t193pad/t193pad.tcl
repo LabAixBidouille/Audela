@@ -599,6 +599,17 @@ proc ::t193pad::setRadecPulseEnabled { } {
       bind $This.frame2.nord <ButtonPress-1>    { ::t193pad::moveRadec n }
       bind $This.frame2.nord <ButtonRelease-1>  { ::t193pad::stopRadec n }
 
+      #--- bind Cardinal sur les 4 fleches du clavier
+      #--- ne fonctionne que si la raquette SuperPad a le focus
+      bind .t193pad <KeyPress-Left>    { ::t193pad::moveRadec e }
+      bind .t193pad <KeyRelease-Left>  { ::t193pad::stopRadec e }
+      bind .t193pad <KeyPress-Right>   { ::t193pad::moveRadec w }
+      bind .t193pad <KeyRelease-Right> { ::t193pad::stopRadec w }
+      bind .t193pad <KeyPress-Down>    { ::t193pad::moveRadec s }
+      bind .t193pad <KeyRelease-Down>  { ::t193pad::stopRadec s }
+      bind .t193pad <KeyPress-Up>      { ::t193pad::moveRadec n }
+      bind .t193pad <KeyRelease-Up>    { ::t193pad::stopRadec n }
+
       $This.frame2.est   configure -command ""
       $This.frame2.ouest configure -command ""
       $This.frame2.sud   configure -command ""
