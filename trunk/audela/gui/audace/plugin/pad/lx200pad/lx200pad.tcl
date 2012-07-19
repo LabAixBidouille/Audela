@@ -1092,6 +1092,20 @@ namespace eval ::lx200pad {
       bind $zonelx200(n) <ButtonRelease-1>     { ::lx200pad::stopRadec n }
       bind $zonelx200(n).lab <ButtonRelease-1> { ::lx200pad::stopRadec n }
 
+      #--- bind Cardinal sur les 4 fleches du clavier
+      #--- ne fonctionne que si la raquette LX200 a le focus
+      bind .lx200pad <KeyPress-Right>   { ::lx200pad::moveRadec e }
+      bind .lx200pad <KeyRelease-Right> { ::lx200pad::stopRadec e }
+
+      bind .lx200pad <KeyPress-Left>    { ::lx200pad::moveRadec w }
+      bind .lx200pad <KeyRelease-Left>  { ::lx200pad::stopRadec w }
+
+      bind .lx200pad <KeyPress-Down>    { ::lx200pad::moveRadec s }
+      bind .lx200pad <KeyRelease-Down>  { ::lx200pad::stopRadec s }
+
+      bind .lx200pad <KeyPress-Up>      { ::lx200pad::moveRadec n }
+      bind .lx200pad <KeyRelease-Up>    { ::lx200pad::stopRadec n }
+
       #--- Focus moves
       bind $zonelx200(next) <ButtonPress-1>        { ::lx200pad::moveFocus + }
       bind $zonelx200(next).lab1 <ButtonPress-1>   { ::lx200pad::moveFocus + }
