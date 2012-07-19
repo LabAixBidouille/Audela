@@ -93,16 +93,36 @@ namespace eval ::console {
       bind $This.ent1 <Key-Up>     {console::onEnt1KeyUp %W; break;}
       bind $This.ent1 <Key-Down>   {console::onEnt1KeyDown %W; break;}
       bind $This.txt1 <Key-F1>     {console::onTxt1KeyF1 %W; break;}
+
+      #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
+      bind $This <Key-F1> { ::console::GiveFocus }
    }
 
    proc GiveFocus {} {
       variable This
 
+      #--- Donne le focus a la Console et positionne le curseur dans la ligne de commande
       switch -- [wm state $This] {
          normal {raise $This}
          iconic {wm deiconify $This}
       }
       focus $This.ent1
+      #--- Si la raquette LX200 est utilisee, elle vient au premier plan
+      if { [ winfo exists .lx200pad ] } {
+         raise .lx200pad
+      }
+      #--- Si la raquette SuperPad est utilisee, elle vient au premier plan
+      if { [ winfo exists .superpad ] } {
+         raise .superpad
+      }
+      #--- Si la raquette T193Pad est utilisee, elle vient au premier plan
+      if { [ winfo exists .t193pad ] } {
+         raise .t193pad
+      }
+      #--- Si la raquette TelPad est utilisee, elle vient au premier plan
+      if { [ winfo exists .telpad ] } {
+         raise .telpad
+      }
    }
 
    proc affiche_erreur {ligne} {
