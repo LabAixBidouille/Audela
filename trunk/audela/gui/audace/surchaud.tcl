@@ -1863,7 +1863,8 @@ proc simulimage2 {args} {
 # --- determine gain, read_noise, thermic_signal of a given chip
 # source "$audace(rep_install)/gui/audace/surchaud.tcl"
 proc electronic_chip { args } {
-	global audace
+
+   global audace
    set ext $::conf(extension,defaut)
    set path "$::audace(rep_images)"
    set argc [llength $args]
@@ -1873,16 +1874,16 @@ proc electronic_chip { args } {
    }
    set method [lindex $args 0]
    if { ($method == "gainnoise") } { 
-   	if { ($argc < 5) } {
-	      error "Usage: electronic_chip $method filename_bias1 filename_bias2 filename_flat1 filename_flat2"
-	      return $error;
+      if { ($argc < 5) } {
+         error "Usage: electronic_chip $method filename_bias1 filename_bias2 filename_flat1 filename_flat2"
+         return $error;
       }
-	   set bias1 [lindex $args 1]
-	   set bias2 [lindex $args 2]
-	   set flat1 [lindex $args 3]
-	   set flat2 [lindex $args 4]
-	   
-	   # --- define the five boxes where to measure
+      set bias1 [lindex $args 1]
+      set bias2 [lindex $args 2]
+      set flat1 [lindex $args 3]
+      set flat2 [lindex $args 4]
+      
+      # --- define the five boxes where to measure
       buf$::audace(bufNo) load "${path}/${bias1}${ext}"
       set naxis1 [buf$::audace(bufNo) getpixelswidth]
       set naxis2 [buf$::audace(bufNo) getpixelsheight]
@@ -1920,69 +1921,69 @@ proc electronic_chip { args } {
       set box(5) [list $x1 $y1 $x2 $y2]
 
       set gains ""
-      set read_noises ""	   
+      set read_noises ""      
       for {set kbox 1} {$kbox<=5} {incr kbox} {
-			# mesure des signaux (adu)
-	      buf$::audace(bufNo) load "${path}/${flat1}${ext}"
-	      buf$::audace(bufNo) window $box($kbox)
-			set f1 [lindex [buf$::audace(bufNo) stat] 4]
-			# mesure des signaux (adu)
-	      buf$::audace(bufNo) load "${path}/${flat2}${ext}"
-	      buf$::audace(bufNo) window $box($kbox)
-			set f2 [lindex [buf$::audace(bufNo) stat] 4]
-			# mesure des signaux (adu)
-	      buf$::audace(bufNo) load "${path}/${bias1}${ext}"
-	      buf$::audace(bufNo) window $box($kbox)
-			set b1 [lindex [buf$::audace(bufNo) stat] 4]
-			# mesure des signaux (adu)
-	      buf$::audace(bufNo) load "${path}/${bias2}${ext}"
-	      buf$::audace(bufNo) window $box($kbox)
-			set b2 [lindex [buf$::audace(bufNo) stat] 4]
-			# mesure des bruits (adu)
-	      buf$::audace(bufNo) load "${path}/${flat1}${ext}"
-	      buf$::audace(bufNo) sub "${path}/${flat2}${ext}" 0
-	      buf$::audace(bufNo) window $box($kbox)
-			set sf [expr [lindex [buf$::audace(bufNo) stat] 5]/sqrt(2)]
-			# mesure des bruits (adu)
-	      buf$::audace(bufNo) load "${path}/${bias1}${ext}"
-	      buf$::audace(bufNo) sub "${path}/${bias2}${ext}" 0
-	      buf$::audace(bufNo) window $box($kbox)
-			set sb [expr [lindex [buf$::audace(bufNo) stat] 5]/sqrt(2)]
-		   # --- calcul du gain (e/adu)
-		   set gain [expr ($f1+$f2-$b1-$b2)/($sf*$sf-$sb*$sb)]
-		   # --- calcul du bruit (e)
-		   set read_noise [expr $gain*$sb]
-		   ::console::affiche_resultat "----- window $box($kbox)\n"
-		   ::console::affiche_resultat "gain = [format "%.2f" $gain] e/ADU  readout noise = [format "%.2f" $read_noise] e\n"
-		   ::console::affiche_resultat "flat variation = [format "%.2f" [expr 100.*2*($f1-$f2)/($f+$f2)]] %\n"
-		   lappend gains $gain
-		   lappend read_noises $read_noise
-	   }
-	   package require math::statistics
-	   set mean_gain ::math::statistics::mean $gains
-	   set std_gain ::math::statistics::stdev $gains
-	   set mean_read_noise ::math::statistics::mean $read_noises
-	   set std_read_noise ::math::statistics::stdev $read_noises
-	   ::console::affiche_resultat "----- Final result\n"
-	   ::console::affiche_resultat "gain = [format "%.2f" $mean_gain] e/ADU (+/- [format "%.2f" $std_gain])\n"
-	   ::console::affiche_resultat "readout noise = [format "%.2f" $mean_read_noise] e (+/- [format "%.2f" $std_read_noise])\n"
-	   return [list $mean_gain $mean_read_noise $std_gain $std_read_noise];
-   } elseif { ($method == "lintherm") } {
-   	if { ($argc < 3) } {
-	      error "Usage: electronic_chip $method generic_filename_dark nb_files ?gain_e/ADU? ?readout_noise_e?"
-	      return $error;
+         # mesure des signaux (adu)
+         buf$::audace(bufNo) load "${path}/${flat1}${ext}"
+         buf$::audace(bufNo) window $box($kbox)
+         set f1 [lindex [buf$::audace(bufNo) stat] 4]
+         # mesure des signaux (adu)
+         buf$::audace(bufNo) load "${path}/${flat2}${ext}"
+         buf$::audace(bufNo) window $box($kbox)
+         set f2 [lindex [buf$::audace(bufNo) stat] 4]
+         # mesure des signaux (adu)
+         buf$::audace(bufNo) load "${path}/${bias1}${ext}"
+         buf$::audace(bufNo) window $box($kbox)
+         set b1 [lindex [buf$::audace(bufNo) stat] 4]
+         # mesure des signaux (adu)
+         buf$::audace(bufNo) load "${path}/${bias2}${ext}"
+         buf$::audace(bufNo) window $box($kbox)
+         set b2 [lindex [buf$::audace(bufNo) stat] 4]
+         # mesure des bruits (adu)
+         buf$::audace(bufNo) load "${path}/${flat1}${ext}"
+         buf$::audace(bufNo) sub "${path}/${flat2}${ext}" 0
+         buf$::audace(bufNo) window $box($kbox)
+         set sf [expr [lindex [buf$::audace(bufNo) stat] 5]/sqrt(2)]
+         # mesure des bruits (adu)
+         buf$::audace(bufNo) load "${path}/${bias1}${ext}"
+         buf$::audace(bufNo) sub "${path}/${bias2}${ext}" 0
+         buf$::audace(bufNo) window $box($kbox)
+         set sb [expr [lindex [buf$::audace(bufNo) stat] 5]/sqrt(2)]
+         # --- calcul du gain (e/adu)
+         set gain [expr ($f1+$f2-$b1-$b2)/($sf*$sf-$sb*$sb)]
+         # --- calcul du bruit (e)
+         set read_noise [expr $gain*$sb]
+         ::console::affiche_resultat "----- window $box($kbox)\n"
+         ::console::affiche_resultat "gain = [format %.2f $gain] e/ADU  readout noise = [format %.2f $read_noise] e\n"
+         ::console::affiche_resultat "flat variation = [format %.2f [expr 100.*2*($f1-$f2)/($f1+$f2)]] %\n"
+         lappend gains $gain
+         lappend read_noises $read_noise
       }
-	   set darkname [lindex $args 1]
-	   set nbdark [lindex $args 2]
-	   set gain ""
-	   if {$argc>=4} {
-		   set gain [lindex $args 3]
-	   }
-	   readout_noise_e ""
-	   if {$argc>=5} {
-		   set readout_noise_e [lindex $args 4]
-	   }	   
-	   # --- define the five boxes where to measure
+      package require math::statistics
+      set mean_gain [::math::statistics::mean $gains]
+      set std_gain [::math::statistics::stdev $gains]
+      set mean_read_noise [::math::statistics::mean $read_noises]
+      set std_read_noise [::math::statistics::stdev $read_noises]
+      ::console::affiche_resultat "----- Final result\n"
+      ::console::affiche_resultat "gain = [format %.2f $mean_gain] e/ADU (+/- [format %.2f $std_gain])\n"
+      ::console::affiche_resultat "readout noise = [format %.2f $mean_read_noise] e (+/- [format %.2f $std_read_noise])\n"
+      return [list $mean_gain $mean_read_noise $std_gain $std_read_noise]
+   } elseif { ($method == "lintherm") } {
+      if { ($argc < 3) } {
+         error "Usage: electronic_chip $method generic_filename_dark nb_files ?gain_e/ADU? ?readout_noise_e?"
+         return $error;
+      }
+      set darkname [lindex $args 1]
+      set nbdark [lindex $args 2]
+      set gain ""
+      if {$argc>=4} {
+         set gain [lindex $args 3]
+      }
+      set readout_noise_e ""
+      if {$argc>=5} {
+         set readout_noise_e [lindex $args 4]
+      }      
+      # --- define the five boxes where to measure
       buf$::audace(bufNo) load "${path}/${darkname}1${ext}"
       set naxis1 [buf$::audace(bufNo) getpixelswidth]
       set naxis2 [buf$::audace(bufNo) getpixelsheight]
@@ -2019,61 +2020,62 @@ proc electronic_chip { args } {
       set y2 [expr int($naxis2*.25+$side2/2)]
       set box(5) [list $x1 $y1 $x2 $y2]
 
-	   set biass ""
-	   set therms ""
+      set biass ""
+      set therms ""
       for {set kbox 1} {$kbox<=5} {incr kbox} {
-	      set fs ""
-	      set exposures ""
-	      for {set kd 1} {$kd<=$nbdark} {incr kd} {
-				# mesure des signaux (adu)
-		      buf$::audace(bufNo) load "${path}/${darkname}${kd}${ext}"
-		      buf$::audace(bufNo) window $box($kbox)
-				set f [lindex [buf$::audace(bufNo) stat] 4]
-				set exposure ""
-		      if {$exposure==""} {
-		         set exposure [lindex [buf$::audace(bufNo) getkwd EXPOSURE] 1]
-		      }
-		      if {$exposure==""} {
-		         set exposure [lindex [buf$::audace(bufNo) getkwd EXPTIME] 1]
-		      }
-		      if {$exposure==""} {
-		         set exposure 1
-		      }
-		      lappend exposures $exposure
-		      lappend fs $f
-	      }
-		   package require math::statistics
-	      set res [::math::statistics::linear-model $exposures $fs]
-	      set bias [lindex $res 0] ; # ADU
-	      set therm [lindex $res 1] ; # ADU/sec
-		   ::console::affiche_resultat "----- window $box($kbox)\n"
-		   ::console::affiche_resultat "bias = [format "%.2f" $bias] ADU  thermic = [format "%.2f" $therm] ADU/sec\n"
-		   lappend biass $bias
-		   lappend therms $therm
-	   }
-	   set mean_therm ::math::statistics::mean $therms
-	   set std_therm ::math::statistics::stdev $therms
-	   set mean_bias ::math::statistics::mean $biass
-	   set std_bias ::math::statistics::stdev $biass
-	   ::console::affiche_resultat "----- Final result\n"
-	   ::console::affiche_resultat "thermic signal = [format "%.2f" $mean_therm] ADU/sec (+/- [format "%.2f" $std_therm])\n"
-	   if {$gain!=""} {
-		   ::console::affiche_resultat "thermic signal = [format "%.2f" [expr $gain*$mean_therm]] e/sec (+/- [format "%.2f" [expr $gain*$std_therm]])\n"
-	   }
-	   ::console::affiche_resultat "bias signal = [format "%.2f" $mean_bias] ADU (+/- [format "%.2f" $std_bias])\n"
-	   if {$readout_noise_e!=""} {		   
-		   set mean_therm_e_sec [expr $gain*$mean_therm]
-		   # signal_therm_e = mean_therm_e/sec * exposure
-		   # noise_therm_e = sqrt(signal_therm_e)
-		   # Compare readout_noise_e and noise_therm_e
-		   # --- We compute the exposure corresponding to readout_noise_e = noise_therm_e
-		   set noise_therm_e $readout_noise_e 
-		   set signal_therm_e [expr $noise_therm_e*$noise_therm_e]
-		   set exposure [expr $signal_therm_e/$mean_therm_e_sec]
-		   ::console::affiche_resultat "exposures < [format %.1f $exposure] sec are dominated by readout noise\n"
-		   ::console::affiche_resultat "exposures > [format %.1f $exposure] sec are dominated by thermic noise (you must cool stronger the chip)\n"
-	   }	   
-	}
+         set fs ""
+         set exposures ""
+         for {set kd 1} {$kd<=$nbdark} {incr kd} {
+            # mesure des signaux (adu)
+            buf$::audace(bufNo) load "${path}/${darkname}${kd}${ext}"
+            buf$::audace(bufNo) window $box($kbox)
+            set f [lindex [buf$::audace(bufNo) stat] 4]
+            set exposure ""
+            if {$exposure==""} {
+               set exposure [lindex [buf$::audace(bufNo) getkwd EXPOSURE] 1]
+            }
+            if {$exposure==""} {
+               set exposure [lindex [buf$::audace(bufNo) getkwd EXPTIME] 1]
+            }
+            if {$exposure==""} {
+               set exposure 1
+            }
+            lappend exposures $exposure
+            lappend fs $f
+         }
+         package require math::statistics
+         set res [::math::statistics::linear-model $exposures $fs]
+         set bias [lindex $res 0] ; # ADU
+         set therm [lindex $res 1] ; # ADU/sec
+         ::console::affiche_resultat "----- window $box($kbox)\n"
+         ::console::affiche_resultat "bias = [format "%.2f" $bias] ADU  thermic = [format "%.2f" $therm] ADU/sec\n"
+         lappend biass $bias
+         lappend therms $therm
+      }
+      set mean_therm [::math::statistics::mean $therms]
+      set std_therm [::math::statistics::stdev $therms]
+      set mean_bias [::math::statistics::mean $biass]
+      set std_bias [::math::statistics::stdev $biass]
+      ::console::affiche_resultat "----- Final result\n"
+      ::console::affiche_resultat "thermic signal = [format "%.4f" $mean_therm] ADU/sec (+/- [format "%.4f" $std_therm])\n"
+      if {$gain!=""} {
+         ::console::affiche_resultat "thermic signal = [format "%.4f" [expr $gain*$mean_therm]] e/sec (+/- [format "%.4f" [expr $gain*$std_therm]])\n"
+      }
+      ::console::affiche_resultat "bias signal = [format "%.2f" $mean_bias] ADU (+/- [format "%.2f" $std_bias])\n"
+      if {$readout_noise_e!=""} {         
+         set mean_therm_e_sec [expr $gain*$mean_therm]
+         # signal_therm_e = mean_therm_e/sec * exposure
+         # noise_therm_e = sqrt(signal_therm_e)
+         # Compare readout_noise_e and noise_therm_e
+         # --- We compute the exposure corresponding to readout_noise_e = noise_therm_e
+         set noise_therm_e $readout_noise_e 
+         set signal_therm_e [expr $noise_therm_e*$noise_therm_e]
+         set exposure [expr $signal_therm_e/$mean_therm_e_sec]
+         ::console::affiche_resultat "exposures < [format %.1f $exposure] sec are dominated by readout noise (therm is negligeable against readout noise)\n"
+         ::console::affiche_resultat "exposures > [format %.1f $exposure] sec are dominated by thermic noise (you must cool stronger the chip)\n"
+      }      
+      return [list $mean_therm $mean_bias $std_therm $std_bias]
+   }
    error "$method found amongst: gainnoise, lintherm"
-   return $error;	
+   return $error;   
 }
