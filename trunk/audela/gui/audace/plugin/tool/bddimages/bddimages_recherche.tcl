@@ -1154,13 +1154,13 @@ namespace eval bddimages_recherche {
               -command { ::bddimages_recherche::run_astroid}
 
            $popupTbl.analyse add command -label $caption(bddimages_recherche,photom) -state disabled \
-              -command { ::bddimages_analyse::run_photom}
+              -command { ::gui_cata::run_photom}
 
            $popupTbl.analyse add command -label $caption(bddimages_recherche,astrom) -state disabled \
-              -command { ::bddimages_analyse::run_astrom}
+              -command { ::gui_cata::run_astrom}
 
            $popupTbl.analyse add command -label $caption(bddimages_recherche,cata) -state disabled \
-              -command { ::bddimages_analyse::run_cata}
+              -command { ::gui_cata::run_cata}
 
       menu $popupTbl.developpement -tearoff 0
       $popupTbl add cascade -label "Developpement" -menu $popupTbl.developpement
@@ -1400,7 +1400,7 @@ namespace eval bddimages_recherche {
 
       foreach img $img_list {
 
-         set ::analyse_tools::id_current_image $img
+         set ::tools_cata::id_current_image $img
          ::tools_astroid::astroid
          break
       }
@@ -1591,7 +1591,7 @@ namespace eval bddimages_recherche {
          set lid [lsort -decreasing -integer $lid]
          set imglist [::bddimages_liste_gui::new_normallist $lid]
 
-         ::bddimages_analyse::charge_cata $imglist
+         ::gui_cata::charge_cata $imglist
 
       }
 
@@ -1608,7 +1608,7 @@ namespace eval bddimages_recherche {
       set lid [lsort -decreasing -integer $lid]
       set imglist [::bddimages_liste_gui::new_normallist $lid]
 
-      ::bddimages_analyse::creation_cata $imglist
+      ::gui_cata::creation_cata $imglist
 
       #::bddimages_recherche::get_intellist $::bddimages_recherche::current_list_id
       #::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id [array get action_label]
