@@ -644,8 +644,8 @@ namespace eval bddimages_recherche {
                button $pr_frame.charge -state active -text "Charge" -relief "raised" -command "::bddimages_recherche::charge_memory"
                pack $pr_frame.charge -in $pr_frame -side left -anchor w -padx 0
 
-              set pf [ ttk::progressbar $pr_frame.p -variable ::bddimages_recherche::progress -orient horizontal -length 300 -mode determinate]
-              pack $pf -in $pr_frame -side left
+               set pf [ ttk::progressbar $pr_frame.p -variable ::bddimages_recherche::progress -orient horizontal -length 300 -mode determinate]
+               pack $pf -in $pr_frame -side left
 
 
            #--- Cree un frame pour afficher les boutons d'actions

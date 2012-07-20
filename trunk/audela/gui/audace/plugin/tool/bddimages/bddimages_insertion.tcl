@@ -201,6 +201,11 @@ namespace eval bddimages_insertion {
    global audace
    global bddconf
 
+
+   variable askstop
+   variable stop_insertion
+
+
    #--- Chargement des captions
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_sub_insertion.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_insertion.cap ]\""
@@ -246,13 +251,68 @@ namespace eval bddimages_insertion {
    #    variables en sortie :
    #
    #--------------------------------------------------
-   proc fermer { } {
+   proc ::bddimages_insertion::stop { } {
+
+      variable This
+
+      set ::bddimages_insertion::askstop 1
+      gren_info "askstop=$::bddimages_insertion::askstop\n"
+      gren_info "stop_insertion=$::bddimages_insertion::stop_insertion\n"
+      ::bddimages_insertion::stop_to_fermer
+
+      return
+   }
+
+   #--------------------------------------------------
+   #
+   #    fonction  :
+   #        Fonction appellee lors de l'appui
+   #        sur le bouton 'Fermer'
+   #
+   #    procedure externe :
+   #
+   #    variables en entree :
+   #
+   #    variables en sortie :
+   #
+   #--------------------------------------------------
+   proc ::bddimages_insertion::fermer { } {
       variable This
 
       ::bddimages_insertion::recup_position
       destroy $This
       return
    }
+
+
+   proc ::bddimages_insertion::fermer_to_stop { } {
+
+      variable This
+
+     pack forget $::bddimages_insertion::mybutfermer
+
+     pack $::bddimages_insertion::mybutstop \
+        -in $::bddimages_insertion::mybut -side right -anchor e \
+        -padx 5 -pady 3 -ipadx 2 -ipady 2 -expand 0
+
+     wm protocol $This WM_DELETE_WINDOW { ::bddimages_insertion::stop }
+   }
+
+   proc ::bddimages_insertion::stop_to_fermer { } {
+
+      variable This
+
+     pack forget $::bddimages_insertion::mybutstop
+
+     pack $::bddimages_insertion::mybutfermer \
+        -in $::bddimages_insertion::mybut -side right -anchor e \
+        -padx 5 -pady 3 -ipadx 2 -ipady 2 -expand 0
+
+     wm protocol $This WM_DELETE_WINDOW { ::bddimages_insertion::fermer }
+   }
+
+
+
 
    #--------------------------------------------------
    #  recup_position { }
@@ -430,12 +490,22 @@ namespace eval bddimages_insertion {
             -in $This -anchor s -side bottom -expand 0 -fill x
 
            #--- Creation du bouton fermer
-           button $This.frame11.but_fermer \
-              -text "$caption(bddimages_insertion,fermer)" -borderwidth 2 \
-              -command { ::bddimages_insertion::fermer }
-           pack $This.frame11.but_fermer \
-              -in $This.frame11 -side right -anchor e \
-              -padx 5 -pady 3 -ipadx 2 -ipady 2 -expand 0
+           frame $This.frame11.frfermer -borderwidth 0 -cursor arrow
+           pack $This.frame11.frfermer -in $This.frame11 -anchor s -side right -expand 0 -fill x
+
+                set ::bddimages_insertion::mybut $This.frame11.frfermer
+                set ::bddimages_insertion::mybutfermer $This.frame11.frfermer.but_fermer
+                button $::bddimages_insertion::mybutfermer \
+                   -text "$caption(bddimages_insertion,fermer)" -borderwidth 2 \
+                   -command { ::bddimages_insertion::fermer }
+ 
+                set ::bddimages_insertion::mybutstop $This.frame11.frfermer.but_stop
+                button $::bddimages_insertion::mybutstop \
+                   -text "$caption(bddimages_insertion,stop)" -borderwidth 2 \
+                   -command { ::bddimages_insertion::stop }
+                pack $::bddimages_insertion::mybutfermer \
+                   -in $::bddimages_insertion::mybut -side right -anchor e \
+                   -padx 5 -pady 3 -ipadx 2 -ipady 2 -expand 0
 
            #--- Creation du bouton aide
            button $This.frame11.but_aide \

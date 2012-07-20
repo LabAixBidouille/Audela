@@ -409,6 +409,7 @@ namespace eval bddimages_liste_gui {
      ::console::affiche_resultat "-- affich_form_req"
      ::console::affiche_resultat "datemin             = $::bddimages_liste_gui::form_req(datemin)\n"
      ::console::affiche_resultat "datemax             = $::bddimages_liste_gui::form_req(datemax)\n"
+     ::console::affiche_resultat "midi                = $::bddimages_liste_gui::form_req(midi)\n"
      ::console::affiche_resultat "jjdatemin           = $jjdatemin\n"
      ::console::affiche_resultat "jjdatemax           = $jjdatemax\n"
      ::console::affiche_resultat "type_req_check      = $::bddimages_liste_gui::form_req(type_req_check)\n"
@@ -822,6 +823,7 @@ namespace eval bddimages_liste_gui {
       lappend intellilist [list "name"               $name]              
       lappend intellilist [list "datemin"            $::bddimages_liste_gui::form_req(datemin)]              
       lappend intellilist [list "datemax"            $::bddimages_liste_gui::form_req(datemax)]              
+      lappend intellilist [list "midi"               $::bddimages_liste_gui::form_req(midi)]              
       lappend intellilist [list "type_req_check"     $form_req(type_req_check)]       
       lappend intellilist [list "type_requ"          $form_req(type_requ)]            
       lappend intellilist [list "choix_limit_result" $form_req(choix_limit_result)]
@@ -879,6 +881,7 @@ namespace eval bddimages_liste_gui {
       set ::bddimages_liste_gui::form_req(name)               [get_val_intellilist $intellilist "name"]
       set ::bddimages_liste_gui::form_req(datemin)            [get_val_intellilist $intellilist "datemin"]
       set ::bddimages_liste_gui::form_req(datemax)            [get_val_intellilist $intellilist "datemax"]
+      set ::bddimages_liste_gui::form_req(midi)               [get_val_intellilist $intellilist "midi"]
       set ::bddimages_liste_gui::form_req(type_req_check)     [get_val_intellilist $intellilist "type_req_check"]
       set ::bddimages_liste_gui::form_req(type_requ)          [get_val_intellilist $intellilist "type_requ"]
       set ::bddimages_liste_gui::form_req(choix_limit_result) [get_val_intellilist $intellilist "choix_limit_result"]
@@ -1097,6 +1100,7 @@ namespace eval bddimages_liste_gui {
       set ilist(name)               [get_val_intellilist $intellilist "name"]
       set ilist(datemin)            [get_val_intellilist $intellilist "datemin"]
       set ilist(datemax)            [get_val_intellilist $intellilist "datemax"]
+      set ilist(midi)               [get_val_intellilist $intellilist "midi"]
       set ilist(type_req_check)     [get_val_intellilist $intellilist "type_req_check"]
       set ilist(type_requ)          [get_val_intellilist $intellilist "type_requ"]
       set ilist(choix_limit_result) [get_val_intellilist $intellilist "choix_limit_result"]
@@ -1131,8 +1135,8 @@ namespace eval bddimages_liste_gui {
    
       set cond "AND"
    
-      set jjdatemin [ mc_date2jd "$ilist(datemin)T12:00:00" ]
-      set jjdatemax [ mc_date2jd "$ilist(datemax)T12:00:00" ]
+      set jjdatemin [ mc_date2jd "$ilist(datemin)T$ilist(midi):00:00" ]
+      set jjdatemax [ mc_date2jd "$ilist(datemax)T$ilist(midi):00:00" ]
    
       if { $ilist(datemin)!=""} {
          if { $ilist(datemax)!=""} {
@@ -2168,6 +2172,7 @@ namespace eval bddimages_liste_gui {
       set ::bddimages_liste_gui::form_req(type_req_check) ""
       set ::bddimages_liste_gui::form_req(datemin) ""
       set ::bddimages_liste_gui::form_req(datemax) ""
+      set ::bddimages_liste_gui::form_req(midi) "12"
       set ::bddimages_liste_gui::form_req(type_req_check) 1
       set ::bddimages_liste_gui::form_req(type_requ) [lindex $list_comb1 0]
       set ::bddimages_liste_gui::form_req(choix_limit_result) 0
@@ -2278,7 +2283,7 @@ namespace eval bddimages_liste_gui {
                -command { set ::bddimages_liste_gui::form_req(datemin) "" }
             pack $framecurrent.datemin.cleanstart -in $framecurrent.datemin -side left -anchor e -padx 2 -pady 2 -expand 0
 
-         # Date START
+         # Date STOP
          frame $framecurrent.datemax -borderwidth 0 -cursor arrow
          pack $framecurrent.datemax -in $framecurrent -anchor w -side top -expand 0 -fill both -padx 3 -pady 3
             #--- Cree un label
@@ -2295,6 +2300,16 @@ namespace eval bddimages_liste_gui {
             button $framecurrent.datemax.cleanstart -image icon_clean -borderwidth 1 \
                -command { set ::bddimages_liste_gui::form_req(datemax) "" }
             pack $framecurrent.datemax.cleanstart -in $framecurrent.datemax -side left -anchor e -padx 2 -pady 2 -expand 0
+
+         # Midi
+         frame $framecurrent.midi -borderwidth 0 -cursor arrow
+         pack $framecurrent.midi -in $framecurrent -anchor w -side top -expand 0 -fill both -padx 3 -pady 3
+            #--- Cree un label
+            label $framecurrent.midi.lab -text "Midi UTC (h)" -width 20
+            pack $framecurrent.midi.lab -in $framecurrent.midi -side left -anchor w -padx 1
+            #--- Cree une ligne d'entree pour la variable ::bddimages_liste_gui::form_req(datemax)
+            entry $framecurrent.midi.h -textvariable ::bddimages_liste_gui::form_req(midi) -borderwidth 1 -relief groove -justify left
+            pack $framecurrent.midi.h -in $framecurrent.midi -side left -anchor w -padx 1
 
       #--- Cree un frame pour afficher le type de logique AND / OR
       set framecurrent $This.frame1
