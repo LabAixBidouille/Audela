@@ -187,9 +187,11 @@ namespace eval gui_cata {
    variable color_skybot  "magenta"
    variable color_ovni    "yellow"
 
+   variable dssvisu
+   variable dssbuf 
 
-
-
+   variable man_xy_star
+   variable man_ad_star
 
 
 
@@ -1239,35 +1241,94 @@ namespace eval gui_cata {
    
    proc ::gui_cata::getDSS { } {
 
-         gren_info "RA (deg): $::tools_cata::ra\n"
-         gren_info "DEC (deg): $::tools_cata::dec\n"
-         gren_info "RADIUS (arcmin): $::tools_cata::radius\n"
-         set fov_x_deg [expr expr $::tools_cata::radius/60.]
-         set fov_y_deg [expr expr $::tools_cata::radius/60.]
-         set naxis1 300
-         set naxis2 300
-         set crota2 0
-        ::gui_cata::loadDSS dss.fit $::tools_cata::ra $::tools_cata::dec $fov_x_deg $fov_y_deg $naxis1 $naxis2 $crota2 
+      #gren_info "RA (deg): $::tools_cata::ra\n"
+      #gren_info "DEC (deg): $::tools_cata::dec\n"
+      #gren_info "RADIUS (arcmin): $::tools_cata::radius\n"
+      set fov_x_deg [expr $::tools_cata::radius/60.]
+      set fov_y_deg [expr $::tools_cata::radius/60.]
+      set naxis1 600
+      set naxis2 600
+      set crota2 $::tools_cata::crota
+      ::gui_cata::loadDSS dss.fit $::tools_cata::ra $::tools_cata::dec $fov_x_deg $fov_y_deg $naxis1 $naxis2 $crota2 
+
+      set ::gui_cata::dssvisu [ ::confVisu::create ]
+      set ::gui_cata::dssbuf  [ visu$::gui_cata::dssvisu buf   ]
+      buf$::gui_cata::dssbuf load dss.fit
+      buf$::gui_cata::dssbuf setkwd {CROTA2 $crota2 double "" ""}
+      ::audace::autovisu $::gui_cata::dssvisu
 
    }
 
-	proc ::gui_cata::downloadURL { url query fichier } {
-			package require http
-			set tok [ ::http::geturl "$url" -query "$query" ]
-			upvar #0 $tok state   
-			set f [ open $fichier w ]
-			fconfigure $f -translation binary
-			puts -nonewline $f [ ::http::data $tok ]
-			close $f
-			::http::cleanup $tok
-	}
-	
-	proc ::gui_cata::loadDSS { fichier_fits_dss ra dec fov_x_deg fov_y_deg naxis1 naxis2 crota2} {
-	    set url "http://skyview.gsfc.nasa.gov/cgi-bin/images?"
-	    set sentence "Position=%s,%s&Size=%s,%s&Pixels=%s,%s&Rotation=%s&Survey=DSS&Scaling=Linear&Projection=Tan&Coordinates=J2000&Return=FITS"
-	    set query [ format $sentence [mc_angle2deg $ra] [mc_angle2deg $dec 90] $fov_x_deg $fov_y_deg $naxis1 $naxis2 $crota2 ]
-	    ::gui_cata::downloadURL "$url" "$query" $fichier_fits_dss
-	}
+   proc ::gui_cata::downloadURL { url query fichier } {
+      package require http
+      set tok [ ::http::geturl "$url" -query "$query" ]
+      upvar #0 $tok state   
+      set f [ open $fichier w ]
+      fconfigure $f -translation binary
+      puts -nonewline $f [ ::http::data $tok ]
+      close $f
+      ::http::cleanup $tok
+   }
+   
+   proc ::gui_cata::loadDSS { fichier_fits_dss ra dec fov_x_deg fov_y_deg naxis1 naxis2 crota2} {
+      set url "http://skyview.gsfc.nasa.gov/cgi-bin/images?"
+      set sentence "Position=%s,%s&Size=%s,%s&Pixels=%s,%s&Rotation=%s&Survey=DSS&Scaling=Linear&Projection=Tan&Coordinates=J2000&Return=FITS"
+      set query [ format $sentence [mc_angle2deg $ra] [mc_angle2deg $dec 90] $fov_x_deg $fov_y_deg $naxis1 $naxis2 $crota2 ]
+      ::gui_cata::downloadURL "$url" "$query" $fichier_fits_dss
+   }
+
+   proc ::gui_cata::grab { i } {
+
+      #gren_info "Etoile num $i\n"
+
+      set err [ catch {set rect  [ ::confVisu::getBox $::audace(visuNo) ]} msg ]
+      if {$err>0 || $rect ==""} {
+         tk_messageBox -message "Veuillez selectionner une etoile en dessinant un carre dans l'image a reduire" -type ok
+         return
+      }
+      set err [ catch {set cent [::tools_cdl::select_obj $rect $::audace(bufNo)]} msg ]
+      #gren_info "IMG XY: $err : $cent : $msg \n"
+      set ::gui_cata::man_xy_star($i) "[format "%2.2f" [lindex $cent 0]] [format "%2.2f" [lindex $cent 1]]"
+      
+      set err [ catch {set rect  [ ::confVisu::getBox $::gui_cata::dssvisu ]} msg ]
+      if {$err>0 || $rect ==""} {
+         tk_messageBox -message "Veuillez selectionner une etoile en dessinant un carre dans l'image DSS" -type ok
+         return
+      }
+      set err [ catch {set cent [::tools_cdl::select_obj $rect $::gui_cata::dssbuf]} msg ]
+      #gren_info "DSS XY: $err : $rect : $msg\n"
+      set err [ catch {set a [buf$::audace(bufNo) xy2radec $cent]} msg ]
+      if {$err} {
+         ::console::affiche_erreur "$err $msg\n"
+         return
+      }
+      #gren_info "AD: $err : $a : $msg\n"
+      set ::gui_cata::man_ad_star($i) "[lindex $a 0] [lindex $a 1]"
+
+      return
+      
+   }
+   proc ::gui_cata::manual_clean {  } {
+
+      for {set i 1} {$i<=7} {incr i} {
+         set ::gui_cata::man_xy_star($i) ""
+         set ::gui_cata::man_ad_star($i) ""      
+      }
+
+   }
+
+   proc ::gui_cata::manual_create {  } {
+
+      for {set i 1} {$i<=7} {incr i} {
+         if {$::gui_cata::man_xy_star($i) != "" && $::gui_cata::man_ad_star($i) != ""} {
+            gren_info "Etoile num $i : $::gui_cata::man_xy_star($i) $::gui_cata::man_ad_star($i)\n"
+         }
+      }
+
+   }
+
+
+
 
    proc ::gui_cata::creation_cata { img_list } {
 
@@ -1772,22 +1833,29 @@ namespace eval gui_cata {
                                pack   $basic.alpha  -in $basic  -side left 
                                       label  $basic.alpha.lab   -text "Alpha (deg)" -borderwidth 1
                                       pack   $basic.alpha.lab   -in $basic.alpha -side top -padx 3 -pady 3 -anchor c
-                                      entry  $basic.alpha.val -relief sunken -textvariable ::tools_cata::ra
+                                      entry  $basic.alpha.val -relief sunken -textvariable ::tools_cata::ra -width 10
                                       pack   $basic.alpha.val -in $basic.alpha -side top -padx 3 -pady 3 -anchor w
 
                                frame  $basic.delta -borderwidth 0 -cursor arrow -relief groove
                                pack   $basic.delta  -in $basic  -side left 
                                       label  $basic.delta.lab   -text "Delta (deg)" -borderwidth 1
                                       pack   $basic.delta.lab   -in $basic.delta -side top -padx 3 -pady 3 -anchor c
-                                      entry  $basic.delta.val -relief sunken -textvariable ::tools_cata::dec
+                                      entry  $basic.delta.val -relief sunken -textvariable ::tools_cata::dec -width 10
                                       pack   $basic.delta.val -in $basic.delta -side top -padx 3 -pady 3 -anchor w
 
                                frame  $basic.fov -borderwidth 0 -cursor arrow -relief groove
                                pack   $basic.fov  -in $basic  -side left 
                                       label  $basic.fov.lab   -text "Fov (arcmin)" -borderwidth 1
                                       pack   $basic.fov.lab   -in $basic.fov -side top -padx 3 -pady 3 -anchor c
-                                      entry  $basic.fov.val -relief sunken -textvariable ::tools_cata::radius
+                                      entry  $basic.fov.val -relief sunken -textvariable ::tools_cata::radius -width 10
                                       pack   $basic.fov.val -in $basic.fov -side top -padx 3 -pady 3 -anchor w
+
+                               frame  $basic.crota -borderwidth 0 -cursor arrow -relief groove
+                               pack   $basic.crota  -in $basic  -side left 
+                                      label  $basic.crota.lab   -text "Orientation (deg)" -borderwidth 1
+                                      pack   $basic.crota.lab   -in $basic.crota -side top -padx 3 -pady 3 -anchor c
+                                      entry  $basic.crota.val -relief sunken -textvariable ::tools_cata::crota -width 10
+                                      pack   $basic.crota.val -in $basic.crota -side top -padx 3 -pady 3 -anchor w
 
 
 
@@ -1797,118 +1865,85 @@ namespace eval gui_cata {
                           set img [frame $coord.l -borderwidth 0 -cursor arrow  -borderwidth 0]
                           pack $img -in $coord -anchor s -side left -expand 0 -fill x -padx 10 -pady 5
 
-                                label $img.lab  -text "X Y" -borderwidth 1
-                                pack  $img.lab -in $img -side top -padx 3 -pady 3 -anchor c
+                                frame $img.title -borderwidth 0 -cursor arrow -relief groove
+                                pack $img.title  -in $img  -side top  -anchor c
+                                   label $img.title.xy  -text "X Y (pixel)" -borderwidth 0 -relief groove  -width 25
+                                   pack  $img.title.xy -in $img.title -side left -padx 3 -pady 3 -anchor w
+                                   label $img.title.ad  -text "Alpha Delta (deg)" -borderwidth 0  -relief groove  -width 25
+                                   pack  $img.title.ad -in $img.title -side right -padx 3 -pady 3 -anchor e
 
                                 frame $img.v1 -borderwidth 1 -cursor arrow -relief groove
                                 pack $img.v1  -in $img  -side top 
-                                   button  $img.v1.grab  -borderwidth 1 -command "" -text "Grab"
+                                   entry $img.v1.xy -relief sunken -textvariable ::gui_cata::man_xy_star(1)
+                                   pack  $img.v1.xy -in $img.v1 -side left -padx 3 -pady 3 -anchor w
+                                   button  $img.v1.grab  -borderwidth 1 -command "::gui_cata::grab 1" -text "Grab"
                                    pack    $img.v1.grab -in $img.v1 -side left -anchor e -expand 0 
-                                   entry $img.v1.val -relief sunken 
-                                   pack  $img.v1.val -in $img.v1 -side left -padx 3 -pady 3 -anchor w
+                                   entry $img.v1.ad -relief sunken  -textvariable ::gui_cata::man_ad_star(1)
+                                   pack  $img.v1.ad -in $img.v1 -side left -padx 3 -pady 3 -anchor w
 
                                 frame $img.v2 -borderwidth 1 -cursor arrow -relief groove
                                 pack $img.v2  -in $img  -side top 
-                                   button  $img.v2.grab  -borderwidth 1 -command "" -text "Grab"
+                                   entry $img.v2.xy -relief sunken -textvariable ::gui_cata::man_xy_star(2)
+                                   pack  $img.v2.xy -in $img.v2 -side left -padx 3 -pady 3 -anchor w
+                                   button  $img.v2.grab  -borderwidth 1 -command "::gui_cata::grab 2" -text "Grab"
                                    pack    $img.v2.grab -in $img.v2 -side left -anchor e -expand 0 
-                                   entry $img.v2.val -relief sunken 
-                                   pack  $img.v2.val -in $img.v2 -side left -padx 3 -pady 3 -anchor w
+                                   entry $img.v2.ad -relief sunken  -textvariable ::gui_cata::man_ad_star(2)
+                                   pack  $img.v2.ad -in $img.v2 -side left -padx 3 -pady 3 -anchor w
 
                                 frame $img.v3 -borderwidth 1 -cursor arrow -relief groove
                                 pack $img.v3  -in $img  -side top 
-                                   button  $img.v3.grab  -borderwidth 1 -command "" -text "Grab"
+                                   entry $img.v3.xy -relief sunken -textvariable ::gui_cata::man_xy_star(3)
+                                   pack  $img.v3.xy -in $img.v3 -side left -padx 3 -pady 3 -anchor w
+                                   button  $img.v3.grab  -borderwidth 1 -command "::gui_cata::grab 3" -text "Grab"
                                    pack    $img.v3.grab -in $img.v3 -side left -anchor e -expand 0 
-                                   entry $img.v3.val -relief sunken 
-                                   pack  $img.v3.val -in $img.v3 -side left -padx 3 -pady 3 -anchor w
+                                   entry $img.v3.ad -relief sunken  -textvariable ::gui_cata::man_ad_star(3)
+                                   pack  $img.v3.ad -in $img.v3 -side left -padx 3 -pady 3 -anchor w
 
                                 frame $img.v4 -borderwidth 1 -cursor arrow -relief groove
                                 pack $img.v4  -in $img  -side top 
-                                   button  $img.v4.grab  -borderwidth 1 -command "" -text "Grab"
+                                   entry $img.v4.xy -relief sunken -textvariable ::gui_cata::man_xy_star(4)
+                                   pack  $img.v4.xy -in $img.v4 -side left -padx 3 -pady 3 -anchor w
+                                   button  $img.v4.grab  -borderwidth 1 -command "::gui_cata::grab 4" -text "Grab"
                                    pack    $img.v4.grab -in $img.v4 -side left -anchor e -expand 0 
-                                   entry $img.v4.val -relief sunken 
-                                   pack  $img.v4.val -in $img.v4 -side left -padx 3 -pady 3 -anchor w
+                                   entry $img.v4.ad -relief sunken  -textvariable ::gui_cata::man_ad_star(4)
+                                   pack  $img.v4.ad -in $img.v4 -side left -padx 3 -pady 3 -anchor w
 
                                 frame $img.v5 -borderwidth 1 -cursor arrow -relief groove
                                 pack $img.v5  -in $img  -side top 
-                                   button  $img.v5.grab  -borderwidth 1 -command "" -text "Grab"
+                                   entry $img.v5.xy -relief sunken -textvariable ::gui_cata::man_xy_star(5)
+                                   pack  $img.v5.xy -in $img.v5 -side left -padx 3 -pady 3 -anchor w
+                                   button  $img.v5.grab  -borderwidth 1 -command "::gui_cata::grab 5" -text "Grab"
                                    pack    $img.v5.grab -in $img.v5 -side left -anchor e -expand 0 
-                                   entry $img.v5.val -relief sunken 
-                                   pack  $img.v5.val -in $img.v5 -side left -padx 3 -pady 3 -anchor w
+                                   entry $img.v5.ad -relief sunken  -textvariable ::gui_cata::man_ad_star(5)
+                                   pack  $img.v5.ad -in $img.v5 -side left -padx 3 -pady 3 -anchor w
 
                                 frame $img.v6 -borderwidth 1 -cursor arrow -relief groove
                                 pack $img.v6  -in $img  -side top 
-                                   button  $img.v6.grab  -borderwidth 1 -command "" -text "Grab"
+                                   entry $img.v6.xy -relief sunken -textvariable ::gui_cata::man_xy_star(6)
+                                   pack  $img.v6.xy -in $img.v6 -side left -padx 3 -pady 3 -anchor w
+                                   button  $img.v6.grab  -borderwidth 1 -command "::gui_cata::grab 6" -text "Grab"
                                    pack    $img.v6.grab -in $img.v6 -side left -anchor e -expand 0 
-                                   entry $img.v6.val -relief sunken 
-                                   pack  $img.v6.val -in $img.v6 -side left -padx 3 -pady 3 -anchor w
+                                   entry $img.v6.ad -relief sunken  -textvariable ::gui_cata::man_ad_star(6)
+                                   pack  $img.v6.ad -in $img.v6 -side left -padx 3 -pady 3 -anchor w
 
                                 frame $img.v7 -borderwidth 1 -cursor arrow -relief groove
                                 pack $img.v7  -in $img  -side top 
-                                   button  $img.v7.grab  -borderwidth 1 -command "" -text "Grab"
+                                   entry $img.v7.xy -relief sunken -textvariable ::gui_cata::man_xy_star(7)
+                                   pack  $img.v7.xy -in $img.v7 -side left -padx 3 -pady 3 -anchor w
+                                   button  $img.v7.grab  -borderwidth 1 -command "::gui_cata::grab 7" -text "Grab"
                                    pack    $img.v7.grab -in $img.v7 -side left -anchor e -expand 0 
-                                   entry $img.v7.val -relief sunken 
-                                   pack  $img.v7.val -in $img.v7 -side left -padx 3 -pady 3 -anchor w
+                                   entry $img.v7.ad -relief sunken  -textvariable ::gui_cata::man_ad_star(7)
+                                   pack  $img.v7.ad -in $img.v7 -side left -padx 3 -pady 3 -anchor w
 
-                          set other [frame $coord.r -borderwidth 0 -cursor arrow  -borderwidth 0]
-                          pack $other -in $coord -anchor s -side left -expand 0 -fill x -padx 10 -pady 5
-
-                                label $other.lab -justify right -text "Alpha Delta"
-                                pack  $other.lab -in $other -side top -padx 3 -pady 3 -anchor c
-
-                                frame $other.v1 -borderwidth 1 -cursor arrow -relief groove
-                                pack $other.v1  -in $other  -side top 
-                                   button  $other.v1.grab  -borderwidth 1 -command "" -text "Grab"
-                                   pack    $other.v1.grab -in $other.v1 -side left -anchor e -expand 0 
-                                   entry $other.v1.val -relief sunken 
-                                   pack  $other.v1.val -in $other.v1 -side left -padx 3 -pady 3 -anchor w
-
-                                frame $other.v2 -borderwidth 1 -cursor arrow -relief groove
-                                pack $other.v2  -in $other  -side top 
-                                   button  $other.v2.grab  -borderwidth 1 -command "" -text "Grab"
-                                   pack    $other.v2.grab -in $other.v2 -side left -anchor e -expand 0 
-                                   entry $other.v2.val -relief sunken 
-                                   pack  $other.v2.val -in $other.v2 -side left -padx 3 -pady 3 -anchor w
-
-                                frame $other.v3 -borderwidth 1 -cursor arrow -relief groove
-                                pack $other.v3  -in $other  -side top 
-                                   button  $other.v3.grab  -borderwidth 1 -command "" -text "Grab"
-                                   pack    $other.v3.grab -in $other.v3 -side left -anchor e -expand 0 
-                                   entry $other.v3.val -relief sunken 
-                                   pack  $other.v3.val -in $other.v3 -side left -padx 3 -pady 3 -anchor w
-
-                                frame $other.v4 -borderwidth 1 -cursor arrow -relief groove
-                                pack $other.v4  -in $other  -side top 
-                                   button  $other.v4.grab  -borderwidth 1 -command "" -text "Grab"
-                                   pack    $other.v4.grab -in $other.v4 -side left -anchor e -expand 0 
-                                   entry $other.v4.val -relief sunken 
-                                   pack  $other.v4.val -in $other.v4 -side left -padx 3 -pady 3 -anchor w
-
-                                frame $other.v5 -borderwidth 1 -cursor arrow -relief groove
-                                pack $other.v5  -in $other  -side top 
-                                   button  $other.v5.grab  -borderwidth 1 -command "" -text "Grab"
-                                   pack    $other.v5.grab -in $other.v5 -side left -anchor e -expand 0 
-                                   entry $other.v5.val -relief sunken 
-                                   pack  $other.v5.val -in $other.v5 -side left -padx 3 -pady 3 -anchor w
-
-                                frame $other.v6 -borderwidth 1 -cursor arrow -relief groove
-                                pack $other.v6  -in $other  -side top 
-                                   button  $other.v6.grab  -borderwidth 1 -command "" -text "Grab"
-                                   pack    $other.v6.grab -in $other.v6 -side left -anchor e -expand 0 
-                                   entry $other.v6.val -relief sunken 
-                                   pack  $other.v6.val -in $other.v6 -side left -padx 3 -pady 3 -anchor w
-
-                                frame $other.v7 -borderwidth 1 -cursor arrow -relief groove
-                                pack $other.v7  -in $other  -side top 
-                                   button  $other.v7.grab  -borderwidth 1 -command "" -text "Grab"
-                                   pack    $other.v7.grab -in $other.v7 -side left -anchor e -expand 0 
-                                   entry $other.v7.val -relief sunken 
-                                   pack  $other.v7.val -in $other.v7 -side left -padx 3 -pady 3 -anchor w
 
                 frame $manuel.entr.buttons -borderwidth 0 -cursor arrow -relief groove
                 pack $manuel.entr.buttons  -in $manuel.entr  -side top 
                 
+                     button  $manuel.entr.buttons.efface  -borderwidth 1  \
+                         -command "::gui_cata::manual_clean" -text "Efface"
+                     pack    $manuel.entr.buttons.efface -in $manuel.entr.buttons -side left -anchor e -expand 0 
                      button  $manuel.entr.buttons.creer  -borderwidth 1  \
-                         -command "" -text "Creer"
+                         -command "::gui_cata::manual_create" -text "Creer"
                      pack    $manuel.entr.buttons.creer -in $manuel.entr.buttons -side left -anchor e -expand 0 
 
 

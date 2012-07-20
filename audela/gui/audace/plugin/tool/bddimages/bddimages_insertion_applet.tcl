@@ -88,6 +88,9 @@ proc lecture_info { This } {
 }
 
 
+
+
+
 #--------------------------------------------------
 #  insertion { This }
 #--------------------------------------------------
@@ -116,9 +119,15 @@ proc insertion { This } {
 
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_sub_insertion.tcl ]\""
 
+   ::bddimages_insertion::fermer_to_stop
+   set ::bddimages_insertion::askstop 0
+   set ::bddimages_insertion::stop_insertion 0
+
    # Mode d insertion automatique
    if {$bddconf(inserauto) == 1} {
       insertion_auto
+      gren_info "INSERTION FINI\n"
+      set ::bddimages_insertion::stop_insertion 1
       return
    }
 
@@ -128,6 +137,7 @@ proc insertion { This } {
    # Verifie que des fichiers a inserer ont ete selectionnes
    if { ! [ info exists bddconf(listetotale) ] } {
       tk_messageBox -message "$caption(bddimages_insertion,nofileselected)" -type ok
+      set ::bddimages_insertion::stop_insertion 1
       return
    }
 
@@ -180,6 +190,8 @@ proc insertion { This } {
        }
      }
 
+      set ::bddimages_insertion::stop_insertion 1
+      return
    }
 
 #--------------------------------------------------
@@ -333,6 +345,11 @@ proc insertion_auto { } {
               }
               # Fin: if {$erreur==0}
               update
+              if {$::bddimages_insertion::askstop == 1} {
+                 gren_info "INSERTION AUTO FINI\n"
+                 set ::bddimages_insertion::stop_insertion 1
+                 return
+              }
            }
            # Fin: boucle for
         }

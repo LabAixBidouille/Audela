@@ -185,6 +185,9 @@ namespace eval bddimages_define {
    global audace
    global bddconf
 
+   variable progress
+
+
    #--- Chargement des captions
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_define.cap ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_insertion_applet.tcl ]\""
@@ -310,6 +313,14 @@ namespace eval bddimages_define {
       destroy $framereq.$i
 
    }
+
+
+   proc ::bddimages_define::set_progress { cur max } {
+
+      set ::bddimages_define::progress [format "%0.0f" [expr $cur * 100. /$max ] ]
+      update
+   }
+
 
    #--------------------------------------------------
    #  get_list_box_champs { }
@@ -561,6 +572,7 @@ namespace eval bddimages_define {
             ::console::affiche_resultat "$cpt/$nbtotal \n"
 
          }
+         ::bddimages_define::set_progress $cpt $nbtotal
 
          buf$bufno clear
       }
@@ -677,6 +689,8 @@ namespace eval bddimages_define {
       global def_cles_bdi
 
       # Initialisations
+      set ::bddimages_define::progress 0
+
       set indicereq 0
       set list_comb1 [list $caption(bddimages_define,toutes) $caption(bddimages_define,nimporte)]
       set list_comb2 [list $caption(bddimages_define,elem)]
@@ -829,6 +843,13 @@ namespace eval bddimages_define {
             for { set x 0 } { $x < $indicereqinit } { incr x } {
                ::bddimages_define::add_requete $framereqcurrent.framereq
             }
+
+         #--- Cree un frame pour y mettre la barre de progression
+         frame $This.frameprogress -borderwidth 0 -cursor arrow
+         pack $This.frameprogress -in $This -anchor s -side top -expand 0 -fill x
+
+               set pf [ ttk::progressbar $This.frameprogress.p -variable ::bddimages_define::progress -orient horizontal -length 350 -mode determinate]
+               pack $pf -in $This.frameprogress -side top -anchor c
 
          #--- Cree un frame pour y mettre les boutons
          frame $This.frame11 -borderwidth 0 -cursor arrow
