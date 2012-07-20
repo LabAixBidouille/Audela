@@ -1650,7 +1650,6 @@ proc simulimage {args} {
          }
       }
       buf$::audace(bufNo) setkwd [list EQUINOX J2000.0 string "System of equatorial coordinates" ""]
-      buf$::audace(bufNo) delkwd RADESYS
       buf$::audace(bufNo) setkwd [list RADECSYS FK5 string "Mean Place IAU 1984 system" ""]
       buf$::audace(bufNo) setkwd [list LONPOLE 180 float "Long. of the celest.NP in native coor.sys" "degres"]
       buf$::audace(bufNo) setkwd [list CTYPE1 RA---TAN string "Gnomonic projection" ""]
@@ -1672,7 +1671,6 @@ proc simulimage {args} {
       }
       #---
       buf$::audace(bufNo) setkwd [list EQUINOX J2000.0 string "System of equatorial coordinates" ""]
-      buf$::audace(bufNo) delkwd RADESYS
       buf$::audace(bufNo) setkwd [list RADECSYS FK5 string "Mean Place IAU 1984 system" ""]
       #---
       ::audace::autovisu $::audace(visuNo)
@@ -1684,9 +1682,9 @@ proc simulimage {args} {
 }
 
 #--- Example 1 : from an images ever loaded
-# source "$audace(rep_install)/gui/audace/surchaud.tcl" ; simulimage2 test [mc_date2listdates 2011-11-11T00:00:00 0.021 100] {FOURIER 164.630566 67.529504 2011-11-08T00:00:00 0.28 12.5 -0.86 -0.53 -0.45 0.32 0.039 0.021} * * * * * * * USNO c:/d/usno/ 90 2.5 0.25 R 20.0 0.07 1.8 8.5  1 1000 0.5 0.6 0.85 1 0
+# source "$::audace(rep_install)/gui/audace/surchaud.tcl" ; simulimage2 test [mc_date2listdates 2011-11-11T00:00:00 0.021 100] {FOURIER 164.630566 67.529504 2011-11-08T00:00:00 0.28 12.5 -0.86 -0.53 -0.45 0.32 0.039 0.021} * * * * * * * USNO c:/d/usno/ 90 2.5 0.25 R 20.0 0.07 1.8 8.5  1 1000 0.5 0.6 0.85 1 0
 #--- Example 2 :  from scratch
-# source "$audace(rep_install)/gui/audace/surchaud.tcl"
+# source "$::audace(rep_install)/gui/audace/surchaud.tcl"
 # simulimage2 test [mc_date2listdates 2011-11-11T00:00:00 0.021 100] {FOURIER 164.630566 67.529504 2011-11-08T00:00:00 0.28 12.5 -0.86 -0.53 -0.45 0.32 0.039 0.021} 200 200 164.589733 67.515479 13.5 13.5 0.84587 USNO c:/d/usno/ 90 2.5 0.25 R 20.0 0.07 1.8 8.5  1 1000 0.5 0.6 0.85 1 0
 # photrel_wcs2cat test 100 new ; photrel_cat2var test ; photrel_cat2per test test 164.630637 67.529499 C 0
 proc simulimage2 {args} {
@@ -1775,7 +1773,7 @@ proc simulimage2 {args} {
          }
       } elseif {$key=="SN"} {
          # From http://supernova.lbl.gov/~nugent/nugent_templates.html
-         # template $audace(rep_catalogues)/cataphotom/sn1a_lc.v1.2.dat
+         # template $::audace(rep_catalogues)/cataphotom/sn1a_lc.v1.2.dat
          set fic sn1a_lc.v1.2.dat ; set ffs [list U B V R I J H K]
          if {$sntype=="IA"} { set fic sn1a_lc.v1.2.dat ; set ffs [list U B V R I J H K] }
          if {$sntype=="IBC"} { set fic sn1bc_lc.v1.1.dat ; set ffs [list U B V R I] }
@@ -1861,10 +1859,8 @@ proc simulimage2 {args} {
 }
 
 # --- determine gain, read_noise, thermic_signal of a given chip
-# source "$audace(rep_install)/gui/audace/surchaud.tcl"
+# source "$::audace(rep_install)/gui/audace/surchaud.tcl"
 proc electronic_chip { args } {
-
-   global audace
    set ext $::conf(extension,defaut)
    set path "$::audace(rep_images)"
    set argc [llength $args]
@@ -1873,7 +1869,7 @@ proc electronic_chip { args } {
       return $error;
    }
    set method [lindex $args 0]
-   if { ($method == "gainnoise") } { 
+   if { ($method == "gainnoise") } {
       if { ($argc < 5) } {
          error "Usage: electronic_chip $method filename_bias1 filename_bias2 filename_flat1 filename_flat2"
          return $error;
@@ -1882,7 +1878,7 @@ proc electronic_chip { args } {
       set bias2 [lindex $args 2]
       set flat1 [lindex $args 3]
       set flat2 [lindex $args 4]
-      
+
       # --- define the five boxes where to measure
       buf$::audace(bufNo) load "${path}/${bias1}${ext}"
       set naxis1 [buf$::audace(bufNo) getpixelswidth]
@@ -1921,7 +1917,7 @@ proc electronic_chip { args } {
       set box(5) [list $x1 $y1 $x2 $y2]
 
       set gains ""
-      set read_noises ""      
+      set read_noises ""
       for {set kbox 1} {$kbox<=5} {incr kbox} {
          # mesure des signaux (adu)
          buf$::audace(bufNo) load "${path}/${flat1}${ext}"
@@ -1982,7 +1978,7 @@ proc electronic_chip { args } {
       set readout_noise_e ""
       if {$argc>=5} {
          set readout_noise_e [lindex $args 4]
-      }      
+      }
       # --- define the five boxes where to measure
       buf$::audace(bufNo) load "${path}/${darkname}1${ext}"
       set naxis1 [buf$::audace(bufNo) getpixelswidth]
@@ -2062,20 +2058,21 @@ proc electronic_chip { args } {
          ::console::affiche_resultat "thermic signal = [format "%.4f" [expr $gain*$mean_therm]] e/sec (+/- [format "%.4f" [expr $gain*$std_therm]])\n"
       }
       ::console::affiche_resultat "bias signal = [format "%.2f" $mean_bias] ADU (+/- [format "%.2f" $std_bias])\n"
-      if {$readout_noise_e!=""} {         
+      if {$readout_noise_e!=""} {
          set mean_therm_e_sec [expr $gain*$mean_therm]
          # signal_therm_e = mean_therm_e/sec * exposure
          # noise_therm_e = sqrt(signal_therm_e)
          # Compare readout_noise_e and noise_therm_e
          # --- We compute the exposure corresponding to readout_noise_e = noise_therm_e
-         set noise_therm_e $readout_noise_e 
+         set noise_therm_e $readout_noise_e
          set signal_therm_e [expr $noise_therm_e*$noise_therm_e]
          set exposure [expr $signal_therm_e/$mean_therm_e_sec]
          ::console::affiche_resultat "exposures < [format %.1f $exposure] sec are dominated by readout noise (therm is negligeable against readout noise)\n"
          ::console::affiche_resultat "exposures > [format %.1f $exposure] sec are dominated by thermic noise (you must cool stronger the chip)\n"
-      }      
+      }
       return [list $mean_therm $mean_bias $std_therm $std_bias]
    }
    error "$method found amongst: gainnoise, lintherm"
-   return $error;   
+   return $error;
 }
+
