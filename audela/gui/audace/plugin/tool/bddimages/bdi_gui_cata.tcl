@@ -611,7 +611,7 @@ namespace eval gui_cata {
                $::gui_cata::gui_wcs configure -bg $::gui_cata::color_wcs
             
                if {[::tools_cata::get_cata] == false} {
-                  # TODO gerer l'erreur le  cata a echou�
+                  # TODO gerer l'erreur le  cata a echou?
                   set ::gui_cata::color_cata $::gui_cata::color_button_bad
                   $::gui_cata::gui_cata configure -bg $::gui_cata::color_cata
                   
@@ -622,7 +622,7 @@ namespace eval gui_cata {
                   ::gui_cata::affiche_cata
                }
             } else {
-               # TODO gerer l'erreur le wcs a echou�
+               # TODO gerer l'erreur le wcs a echou?
                set ::gui_cata::color_wcs $::gui_cata::color_button_bad
                $::gui_cata::gui_wcs configure -bg $::gui_cata::color_wcs
                cleanmark
@@ -665,7 +665,7 @@ namespace eval gui_cata {
                set ::gui_cata::color_wcs $::gui_cata::color_button_good
                $::gui_cata::gui_wcs configure -bg $::gui_cata::color_wcs
                if {[::tools_cata::get_cata] == false} {
-                  # TODO gerer l'erreur le  cata a echou�
+                  # TODO gerer l'erreur le  cata a echou?
                   set ::gui_cata::color_cata $::gui_cata::color_button_bad
                   $::gui_cata::gui_cata configure -bg $::gui_cata::color_cata
                   break
@@ -679,7 +679,7 @@ namespace eval gui_cata {
                   ::gui_cata::affiche_cata
                }
             } else {
-               # TODO gerer l'erreur le wcs a echou�
+               # TODO gerer l'erreur le wcs a echou?
                set ::gui_cata::color_wcs $::gui_cata::color_button_bad
                $::gui_cata::gui_wcs configure -bg $::gui_cata::color_wcs
                cleanmark
@@ -959,7 +959,7 @@ namespace eval gui_cata {
       global audace
       global bddconf
 
-         #�Charge l image en memoire
+         #?Charge l image en memoire
          #gren_info "cur id $::tools_cata::id_current_image: \n"
          set ::tools_cata::current_image [lindex $::tools_cata::img_list [expr $::tools_cata::id_current_image - 1] ]
          set ::tools_cata::current_image [::bddimages_liste_gui::add_info_cata $::tools_cata::current_image]
@@ -991,7 +991,7 @@ namespace eval gui_cata {
          #gren_info "\n\nTABKEY = $tabkey"
          #gren_info "$::tools_cata::id_current_image = date : $date  idbddimg : $idbddimg  file : $filename $::tools_cata::bddimages_wcs\n"
 
-         #�Charge l image a l ecran
+         #?Charge l image a l ecran
          #gren_info "\n ** LOAD ** charge_current_image\n"
          buf$::audace(bufNo) load $file
          ::confVisu::setFileName $::audace(visuNo) $file
@@ -1005,7 +1005,7 @@ namespace eval gui_cata {
             #visu$::audace(visuNo) disp [list [lindex $cuts 0] [lindex $cuts 1] ]
          }
          
-         #�Mise a jour GUI
+         #?Mise a jour GUI
          
          $::gui_cata::gui_back configure -state disabled
          
@@ -1101,7 +1101,7 @@ namespace eval gui_cata {
       set ::tools_cata::current_image_date $date
       #gren_info "$::tools_cata::id_current_image = date : $date  idbddimg : $idbddimg  file : $filename $::tools_cata::bddimages_wcs\n"
 
-      #�Charge l image a l ecran
+      #?Charge l image a l ecran
       #gren_info "\n ** LOAD ** \n"
       buf$::audace(bufNo) load $file
       #gren_info "\n ** VISU ** premiere image\n"
@@ -1236,16 +1236,38 @@ namespace eval gui_cata {
       }
       close $fxml
    }
-
-
-   proc ::gui_cata::getDSS {  } {
+   
+   proc ::gui_cata::getDSS { } {
 
          gren_info "RA (deg): $::tools_cata::ra\n"
          gren_info "DEC (deg): $::tools_cata::dec\n"
          gren_info "RADIUS (arcmin): $::tools_cata::radius\n"
+         set fov_x_deg [expr expr $::tools_cata::radius/60.]
+         set fov_y_deg [expr expr $::tools_cata::radius/60.]
+         set naxis1 300
+         set naxis2 300
+         set crota2 0
+        ::gui_cata::loadDSS dss.fit $::tools_cata::ra $::tools_cata::dec $fov_x_deg $fov_y_deg $naxis1 $naxis2 $crota2 
 
    }
 
+	proc ::gui_cata::downloadURL { url query fichier } {
+			package require http
+			set tok [ ::http::geturl "$url" -query "$query" ]
+			upvar #0 $tok state   
+			set f [ open $fichier w ]
+			fconfigure $f -translation binary
+			puts -nonewline $f [ ::http::data $tok ]
+			close $f
+			::http::cleanup $tok
+	}
+	
+	proc ::gui_cata::loadDSS { fichier_fits_dss ra dec fov_x_deg fov_y_deg naxis1 naxis2 crota2} {
+	    set url "http://skyview.gsfc.nasa.gov/cgi-bin/images?"
+	    set sentence "Position=%s,%s&Size=%s,%s&Pixels=%s,%s&Rotation=%s&Survey=DSS&Scaling=Linear&Projection=Tan&Coordinates=J2000&Return=FITS"
+	    set query [ format $sentence [mc_angle2deg $ra] [mc_angle2deg $dec 90] $fov_x_deg $fov_y_deg $naxis1 $naxis2 $crota2 ]
+	    ::gui_cata::downloadURL "$url" "$query" $fichier_fits_dss
+	}
 
    proc ::gui_cata::creation_cata { img_list } {
 
