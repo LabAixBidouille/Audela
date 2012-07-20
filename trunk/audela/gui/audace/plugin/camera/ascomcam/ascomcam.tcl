@@ -99,6 +99,9 @@ proc ::ascomcam::initPlugin { } {
       if { ! [ info exists ::conf(ascomcam,$camItem,mirh) ] }     { set ::conf(ascomcam,$camItem,mirh)     "0" }
       if { ! [ info exists ::conf(ascomcam,$camItem,mirv) ] }     { set ::conf(ascomcam,$camItem,mirv)     "0" }
       if { ! [ info exists ::conf(ascomcam,$camItem,foncobtu) ] } { set ::conf(ascomcam,$camItem,foncobtu) "2" }
+      if { ! [ info exists ::conf(ascomcam,$camItem,dimPixX) ] }  { set ::conf(ascomcam,$camItem,dimPixX)  "5.2" }
+      if { ! [ info exists ::conf(ascomcam,$camItem,dimPixY) ] }  { set ::conf(ascomcam,$camItem,dimPixY)  "5.2" }
+      if { ! [ info exists ::conf(ascomcam,$camItem,mode) ] }     { set ::conf(ascomcam,$camItem,mode)     "1" }
 
       set private($camItem,modele) ""
    }
@@ -124,6 +127,9 @@ proc ::ascomcam::confToWidget { } {
       set private($camItem,mirh)    $::conf(ascomcam,$camItem,mirh)
       set private($camItem,mirv)    $::conf(ascomcam,$camItem,mirv)
       set widget($camItem,foncobtu) [ lindex "$::caption(ascomcam,obtu_ouvert) $::caption(ascomcam,obtu_ferme) $::caption(ascomcam,obtu_synchro)" $::conf(ascomcam,$camItem,foncobtu) ]
+      set private($camItem,dimPixX) $::conf(ascomcam,$camItem,dimPixX)
+      set private($camItem,dimPixY) $::conf(ascomcam,$camItem,dimPixY)
+      set private($camItem,mode)    $::conf(ascomcam,$camItem,mode)
    }
 }
 
@@ -135,9 +141,12 @@ proc ::ascomcam::widgetToConf { camItem } {
    variable private
 
    #--- Memorise la configuration de la camera ASCOM dans le tableau conf(ascomcam,...)
-   set ::conf(ascomcam,$camItem,modele) $private($camItem,modele)
-   set ::conf(ascomcam,$camItem,mirh)   $private($camItem,mirh)
-   set ::conf(ascomcam,$camItem,mirv)   $private($camItem,mirv)
+   set ::conf(ascomcam,$camItem,modele)  $private($camItem,modele)
+   set ::conf(ascomcam,$camItem,mirh)    $private($camItem,mirh)
+   set ::conf(ascomcam,$camItem,mirv)    $private($camItem,mirv)
+   set ::conf(ascomcam,$camItem,dimPixX) $private($camItem,dimPixX)
+   set ::conf(ascomcam,$camItem,dimPixY) $private($camItem,dimPixY)
+   set ::conf(ascomcam,$camItem,mode)    $private($camItem,mode)
 }
 
 #
@@ -147,6 +156,9 @@ proc ::ascomcam::widgetToConf { camItem } {
 proc ::ascomcam::fillConfigPage { frm camItem } {
    variable private
    global caption
+
+   #--- Initialise une variable locale
+   set private(frm) $frm
 
    #--- confToWidget
    ::ascomcam::confToWidget
@@ -200,44 +212,113 @@ proc ::ascomcam::fillConfigPage { frm camItem } {
    #--- Frame de la configuration du plugin et des miroirs en x et en y
    frame $frm.frame1 -borderwidth 0 -relief raised
 
-      #--- Frame de la configuration du plugin
       frame $frm.frame1.frame3 -borderwidth 0 -relief raised
 
-         #--- Definition du plugin
-         label $frm.frame1.frame3.lab1 -text "$caption(ascomcam,modele)"
-         pack $frm.frame1.frame3.lab1 -anchor center -side left -padx 10 -pady 30
+         #--- Frame de la configuration du plugin
+         frame $frm.frame1.frame3.frame4 -borderwidth 0 -relief raised
 
-         #--- Choix du plugin
-         ComboBox $frm.frame1.frame3.driver \
-            -width [ ::tkutil::lgEntryComboBox $private(ascomDrivers) ] \
-            -height [ llength $private(ascomDrivers) ] \
-            -relief sunken                \
-            -borderwidth 1                \
-            -editable 0                   \
-            -textvariable ::ascomcam::private($camItem,modele) \
-            -values $private(ascomDrivers)
-         pack $frm.frame1.frame3.driver -fill x -expand 1 -anchor center -side left -padx 10 -pady 10
+            #--- Definition du plugin
+            label $frm.frame1.frame3.frame4.lab1 -text "$caption(ascomcam,modele)"
+            pack $frm.frame1.frame3.frame4.lab1 -anchor center -side left -padx 10 -pady 30
 
-         #--- Bouton de configuration du plugin
-         button $frm.frame1.frame3.configure -text "$caption(ascomcam,configurer)" -relief raised \
-            -command "::ascomcam::configureDriver "
-         pack $frm.frame1.frame3.configure -anchor center -side left -pady 28 -ipadx 10 -ipady 1 -expand 0
+            #--- Choix du plugin
+            ComboBox $frm.frame1.frame3.frame4.driver \
+               -width [ ::tkutil::lgEntryComboBox $private(ascomDrivers) ] \
+               -height [ llength $private(ascomDrivers) ] \
+               -relief sunken                \
+               -borderwidth 1                \
+               -editable 0                   \
+               -textvariable ::ascomcam::private($camItem,modele) \
+               -values $private(ascomDrivers)
+            pack $frm.frame1.frame3.frame4.driver -fill x -expand 1 -anchor center -side left -padx 10 -pady 10
 
-      pack $frm.frame1.frame3 -anchor nw -side left -fill x
+            #--- Bouton de configuration du plugin
+            button $frm.frame1.frame3.frame4.configure -text "$caption(ascomcam,configurer)" -relief raised \
+               -command "::ascomcam::configureDriver "
+            pack $frm.frame1.frame3.frame4.configure -anchor center -side left -pady 28 -ipadx 10 -ipady 1 -expand 0
 
-      #--- Frame des miroirs en x et en y
-      frame $frm.frame1.frame4 -borderwidth 0 -relief raised
+         pack $frm.frame1.frame3.frame4 -anchor nw -side left -fill x
 
-         #--- Miroir en x et en y
-         checkbutton $frm.frame1.frame4.mirx -text "$caption(ascomcam,miroir_x)" -highlightthickness 0 \
-            -variable ::ascomcam::private($camItem,mirh)
-         pack $frm.frame1.frame4.mirx -anchor w -side top -padx 20 -pady 10
+         #--- Frame des miroirs en x et en y
+         frame $frm.frame1.frame3.frame5 -borderwidth 0 -relief raised
 
-         checkbutton $frm.frame1.frame4.miry -text "$caption(ascomcam,miroir_y)" -highlightthickness 0 \
-            -variable ::ascomcam::private($camItem,mirv)
-         pack $frm.frame1.frame4.miry -anchor w -side top -padx 20 -pady 10
+            #--- Miroir en x et en y
+            checkbutton $frm.frame1.frame3.frame5.mirx -text "$caption(ascomcam,miroir_x)" -highlightthickness 0 \
+               -variable ::ascomcam::private($camItem,mirh)
+            pack $frm.frame1.frame3.frame5.mirx -anchor w -side top -padx 20 -pady 10
 
-      pack $frm.frame1.frame4 -anchor nw -side left -fill x -padx 20
+            checkbutton $frm.frame1.frame3.frame5.miry -text "$caption(ascomcam,miroir_y)" -highlightthickness 0 \
+               -variable ::ascomcam::private($camItem,mirv)
+            pack $frm.frame1.frame3.frame5.miry -anchor w -side top -padx 20 -pady 10
+
+         pack $frm.frame1.frame3.frame5 -anchor nw -side top -fill x -padx 20
+
+      pack $frm.frame1.frame3 -anchor nw -side top -fill x
+
+      frame $frm.frame1.frame6 -borderwidth 0 -relief raised
+
+         frame $frm.frame1.frame6.frame7 -borderwidth 0 -relief raised
+
+            frame $frm.frame1.frame6.frame7.frame8 -borderwidth 0 -relief raised
+
+               #--- Dimension des pixels sur l'axe X
+               label $frm.frame1.frame6.frame7.frame8.labelDimPixX -text "$caption(ascomcam,dimPixelX)"
+               pack $frm.frame1.frame6.frame7.frame8.labelDimPixX -anchor w -side left -padx 10 -pady 10
+
+               entry $frm.frame1.frame6.frame7.frame8.entryDimPixX -textvariable ::ascomcam::private($camItem,dimPixX) \
+                  -width 7 -justify center
+               pack $frm.frame1.frame6.frame7.frame8.entryDimPixX -anchor w -side left -pady 10
+
+            pack $frm.frame1.frame6.frame7.frame8 -anchor nw -side top -fill x
+
+            frame $frm.frame1.frame6.frame7.frame9 -borderwidth 0 -relief raised
+
+               #--- Dimension des pixels sur l'axe Y
+               label $frm.frame1.frame6.frame7.frame9.labelDimPixY -text "$caption(ascomcam,dimPixelY)"
+               pack $frm.frame1.frame6.frame7.frame9.labelDimPixY -anchor w -side left -padx 10 -pady 10
+
+               entry $frm.frame1.frame6.frame7.frame9.entryDimPixY -textvariable ::ascomcam::private($camItem,dimPixY) \
+                  -width 7 -justify center
+               pack $frm.frame1.frame6.frame7.frame9.entryDimPixY -anchor w -side left -pady 10
+
+            pack $frm.frame1.frame6.frame7.frame9 -anchor nw -side top -fill x
+
+         pack $frm.frame1.frame6.frame7 -anchor nw -side left -fill x
+
+         frame $frm.frame1.frame6.frame9 -borderwidth 0 -relief raised
+
+            frame $frm.frame1.frame6.frame9.frame10 -borderwidth 0 -relief raised
+
+               #--- Selection mode manuel
+               radiobutton $frm.frame1.frame6.frame9.frame10.radioManuel -anchor w -highlightthickness 0 \
+                  -text "$caption(ascomcam,manuel)" -value 0 \
+                  -variable ::ascomcam::private($camItem,mode) -command "::ascomcam::selectMode $camItem"
+               pack $frm.frame1.frame6.frame9.frame10.radioManuel -anchor nw -side top -padx 20 -pady 10
+
+            pack $frm.frame1.frame6.frame9.frame10 -anchor nw -side top -fill x
+
+            frame $frm.frame1.frame6.frame9.frame11 -borderwidth 0 -relief raised
+
+               #--- Selection mode automatique
+               radiobutton $frm.frame1.frame6.frame9.frame11.radioAuto -anchor w -highlightthickness 0 \
+                  -text "$caption(ascomcam,auto)" -value 1 \
+                  -variable ::ascomcam::private($camItem,mode) -command "::ascomcam::selectMode $camItem"
+               pack $frm.frame1.frame6.frame9.frame11.radioAuto -anchor nw -side top -padx 20 -pady 10
+
+            pack $frm.frame1.frame6.frame9.frame11 -anchor nw -side top -fill x
+
+         pack $frm.frame1.frame6.frame9 -anchor nw -side left -fill x
+
+         frame $frm.frame1.frame6.frame12 -borderwidth 0 -relief raised
+
+            #--- Bouton de rafraichissement
+            Button $frm.frame1.frame6.frame12.refresh -highlightthickness 0 -padx 10 -pady 3 -state normal \
+               -text "$caption(ascomcam,rafraichir)" -command "::ascomcam::refreshCellDim $camItem"
+            pack $frm.frame1.frame6.frame12.refresh -side left
+
+         pack $frm.frame1.frame6.frame12 -anchor nw -side left -fill both
+
+      pack $frm.frame1.frame6 -anchor center -side left -fill x
 
    pack $frm.frame1 -side top -fill both -expand 1
 
@@ -252,6 +333,9 @@ proc ::ascomcam::fillConfigPage { frm camItem } {
       pack $labelName -side top -fill x -pady 2
 
    pack $frm.frame2 -side bottom -fill x -pady 2
+
+   #--- Gestion des widgets actifs/inactifs
+   ::ascomcam::selectMode $camItem
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm
@@ -268,10 +352,13 @@ proc ::ascomcam::configureCamera { camItem bufNo } {
    set catchResult [ catch {
       #--- Je cree la camera
       set camNo [ cam::create ascomcam $conf(ascomcam,$camItem,modele) -debug_directory $::audace(rep_log) ]
+      #--- J'affiche dans la Console
       console::affiche_entete "$caption(ascomcam,port_camera) $caption(ascomcam,2points) $conf(ascomcam,$camItem,modele)\n"
       console::affiche_saut "\n"
       #--- Je change de variable
       set private($camItem,camNo) $camNo
+      #--- Je rafraichit les dimensions des pixels
+      ::ascomcam::refreshCellDim $camItem
       #--- J'associe le buffer de la visu
       cam$camNo buf $bufNo
       #--- Je configure l'oriention des miroirs par defaut
@@ -310,6 +397,44 @@ proc ::ascomcam::stop { camItem } {
    if { $private($camItem,camNo) != 0 } {
       cam::delete $private($camItem,camNo)
       set private($camItem,camNo) 0
+   }
+}
+
+#
+# selectMode
+#    Configure les widgets de configuration du choix du CCD
+#
+proc ::ascomcam::selectMode { camItem } {
+   variable private
+
+   set frm $private(frm)
+   if { $::ascomcam::private($camItem,mode) == "0" } {
+      #--- Cas du mode manuel
+      $frm.frame1.frame6.frame7.frame8.entryDimPixX configure -state normal
+      $frm.frame1.frame6.frame7.frame9.entryDimPixY configure -state normal
+   } else {
+      #--- Cas du mode automatique
+      $frm.frame1.frame6.frame7.frame8.entryDimPixX configure -state disabled
+      $frm.frame1.frame6.frame7.frame9.entryDimPixY configure -state disabled
+   }
+}
+
+#
+# refreshCellDim
+#    Rafraichit les dimensions des pixels
+#
+proc ::ascomcam::refreshCellDim { camItem } {
+   variable private
+
+   #--- Si une camera est connectee
+   if { $private($camItem,camNo) != 0 } {
+      #--- J'envoie les dimensions des pixels a la librairie
+      if { $private($camItem,mode) == 0 } {
+         cam$private($camItem,camNo) celldim [ expr $private($camItem,dimPixX) / 1000000 ] [ expr $private($camItem,dimPixY) / 1000000 ]
+      } else {
+      #--- Je lis les dimensions des pixels de la librairie
+         cam$private($camItem,camNo) celldim
+      }
    }
 }
 
