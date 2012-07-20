@@ -64,6 +64,33 @@ proc name2coord { args } {
          }
       }
    }
+   # --- Be star names
+   if {$found==0} {
+      set f [open [file join $audace(rep_gui) audace catalogues catagoto etoiles_Be.txt] r]
+      set lignes [split [read $f] \n]
+      close $f
+      set name0 [string tolower $name0]
+      set ra ""
+      set dec ""
+      foreach ligne $lignes {
+         set found 0
+         set name [string tolower [string trim [string range $ligne 0 14]]]
+         if {$name0==$name} {
+            set found 1
+         }
+         if {$found==0} {
+            set name [string tolower [string trim [string range $ligne 15 22]]]
+            if {$name0==$name} {
+               set found 1
+            }
+         }
+         if {$found==1} {
+            set ra  [string trim [mc_angle2hms "[string tolower [string trim [string range $ligne 23 33]]] h" 360 zero 2 auto string]]
+            set dec [string trim [mc_angle2dms [string tolower [string trim [string range $ligne 37 47]]] 90 zero 1 + string]]
+            break
+         }
+      }
+   }
    # --- Messier
    if {$found==0} {
       set f [open [file join $audace(rep_gui) audace catalogues catagoto cat_messier.txt] r]
@@ -457,3 +484,4 @@ proc meteore_streams { {year ""} } {
    }
    return $meteores(streams)
 }
+
