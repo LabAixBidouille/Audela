@@ -143,6 +143,8 @@ proc ::bddimages::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_astroid.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_cata.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_sources.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_cata.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_cata.cap ]\""
 
    # Ancienne facon de nomage des routines
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_go.tcl ]\""
@@ -161,12 +163,10 @@ proc ::bddimages::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_admin.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_define.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_imgcorrection.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_analyse.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_astroid.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_admin_image.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_admin_cata.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_cdl.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages analyse_tools.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages gui_cdl_withwcs.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages tools_cdl.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages test.tcl ]\""

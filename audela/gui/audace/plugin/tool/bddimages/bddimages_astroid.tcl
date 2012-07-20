@@ -1,5 +1,5 @@
 #--------------------------------------------------
-# source audace/plugin/tool/bddimages/bddimages_analyse.tcl
+# source audace/plugin/tool/bddimages/bddimages_astroid.tcl
 #--------------------------------------------------
 #
 # Fichier        : bddimages_astroid.tcl
@@ -145,19 +145,19 @@ namespace eval bddimages_astroid {
       ::confVisu::addMirrorListener $::audace(visuNo) "efface_rond"
       ::confVisu::addFileNameListener $::audace(visuNo) "efface_rond"
 
-      ::console::affiche_resultat "cata head = [lindex $::bddimages_analyse::current_cata 0] \n"
-      ::console::affiche_resultat "cata s1   = [lindex [lindex $::bddimages_analyse::current_cata 1] 0]\n"
-      set med  [expr [llength [lindex $::bddimages_analyse::current_cata 1] ] / 2]
-      ::console::affiche_resultat "cata s2  $med = [lindex [lindex $::bddimages_analyse::current_cata 1] $med]\n"
+      ::console::affiche_resultat "cata head = [lindex $::gui_cata::current_cata 0] \n"
+      ::console::affiche_resultat "cata s1   = [lindex [lindex $::gui_cata::current_cata 1] 0]\n"
+      set med  [expr [llength [lindex $::gui_cata::current_cata 1] ] / 2]
+      ::console::affiche_resultat "cata s2  $med = [lindex [lindex $::gui_cata::current_cata 1] $med]\n"
 
       # Affichage centre champ de l image
-      set centre [list [list "CENTRE" {ra dec} {}] [list [list [list "CENTRE" [list $::bddimages_analyse::current_image(ra) $::bddimages_analyse::current_image(dec)] {}]]]]
+      set centre [list [list "CENTRE" {ra dec} {}] [list [list [list "CENTRE" [list $::gui_cata::current_image(ra) $::gui_cata::current_image(dec)] {}]]]]
       ::console::affiche_resultat "centre = $centre\n"
       ::bddimages_astroid::affich_rond $centre "CENTRE" "red" 7
       ::console::affiche_resultat "ROND ROUGE: centre du champ provenant du header fits\n"
 
       # Recupere le catalog astrometrique
-       set astrometric_list [get_astrometric_catalog $::bddimages_analyse::current_image(ra) $::bddimages_analyse::current_image(dec) $::bddimages_analyse::current_image(radius)]
+       set astrometric_list [get_astrometric_catalog $::gui_cata::current_image(ra) $::gui_cata::current_image(dec) $::gui_cata::current_image(radius)]
        ::console::affiche_resultat "astroid astrometric nbsource =  [llength [lindex $astrometric_list 1]]\n"
       ::console::affiche_resultat "astrometric head = [lindex $astrometric_list 0] \n"
       ::console::affiche_resultat "astrometric s1   = [lindex [lindex $astrometric_list 1] 0]\n"
@@ -167,7 +167,7 @@ namespace eval bddimages_astroid {
       ::bddimages_astroid::affich_rond $astrometric_list "UCAC2" "blue" 2
       ::console::affiche_resultat "ROND BLEU: Etoiles astrometric\n"
 
-      set star_ident [ identification $::bddimages_analyse::current_cata "USNOA2" $astrometric_list "UCAC2" 30.0 10.0 10.0 ]
+      set star_ident [ identification $::gui_cata::current_cata "USNOA2" $astrometric_list "UCAC2" 30.0 10.0 10.0 ]
       # Affichage des sources identifiees
       ::bddimages_astroid::affich_rond $star_ident "UCAC2" "green" 2
 
