@@ -681,7 +681,7 @@ proc ::astrocomputer::astrocomputer_convert_base { nombre basein baseout } {
    }
    # --- conversion vers la base de sortie
    set symbols {0 1 2 3 4 5 6 7 8 9 A B C D E F}
-   set integ [expr abs(int($integ_decimal))]
+   set integ [expr abs(round($integ_decimal))]
    if {$baseout=="ascii"} {
       if {$integ>255} {
          set integ 255
@@ -692,7 +692,7 @@ proc ::astrocomputer::astrocomputer_convert_base { nombre basein baseout } {
       set bb ""
       set k 0
       while {$sortie==0} {
-         set b [expr int(floor($integ/$baseout))]
+         set b [expr round(floor($integ/$baseout))]
          set reste [lindex $symbols [expr $integ-$baseout*$b]]
          #::console::affiche_resultat "bb=$bb\n"
          set bb "${reste}${bb}"
