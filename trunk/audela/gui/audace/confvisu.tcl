@@ -923,13 +923,7 @@ namespace eval ::confVisu {
       ::confVisu::ComputeScaleRange $visuNo
       ::confVisu::ChangeCutsDisplay $visuNo
 
-      #--- prise en compte de la palette prealablement choisie
-      #::audace::MAJ_palette $visuNo
-
       #--- rafraichissement de l'affichage
-      #--- La fonction audace::MAJ_palette appelle la fonction visu$visuNo pal, qui elle-meme
-      #--- appelle l'equivalent de visu$visuNo disp
-      #--- Il ne faut donc pas rappeler cette fonction une deuxieme fois
       while { 1 } {
          set catchResult [catch {
             visu$visuNo paldir "$::audace(rep_temp)"
