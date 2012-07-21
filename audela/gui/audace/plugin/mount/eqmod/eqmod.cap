@@ -17,8 +17,24 @@ set caption(eqmod,configurer)                "Set up"
 set caption(eqmod,controle)                  "Control"
 set caption(eqmod,raquette_tel)              "Hand controller on screen"
 
+set caption(eqmod,config_tube)               "# Configuration du tube :"
 set caption(eqmod,tube_ouest)                "Tube to West"
 set caption(eqmod,tube_est)                  "Tube to East"
+
+set caption(eqmod,pos_tube)                  "# Position actuelle du tube :"
+set caption(eqmod,ouest)                     "# Ouest"
+set caption(eqmod,est)                       "# Est"
+set caption(eqmod,nord)                      "# Nord"
+set caption(eqmod,sud)                       "# Sud"
+set caption(eqmod,pole_nord)                 "# Pôle Nord"
+set caption(eqmod,pole_sud)                  "# Pôle Sud"
+
+set caption(eqmod,retournement)              "# Limites de retournement pour un GOTO :"
+set caption(eqmod,reference)                 "# Ecarts par rapport au méridien :"
+set caption(eqmod,limite_est)                "# Vers l'est (en h)"
+set caption(eqmod,limite_ouest)              "# Vers l'ouest (en h)"
+
+
 set caption(eqmod,moteur_on)                 "Motor On"
 set caption(eqmod,N/A)                       "------"
 set caption(eqmod,angle_horaire)             "Hour Angle:"
@@ -28,6 +44,7 @@ set caption(eqmod,position_AD)               "RA Position:"
 set caption(eqmod,position_DEC)              "Dec. Position:"
 set caption(eqmod,valeurDefaut)              "Default Value:"
 
+set caption(eqmod,positionMonture)           "# Localisation de la monture :"
 set caption(eqmod,port_eqmod)                "EQMOD Port"
 set caption(eqmod,2points)                   ":"
 
@@ -43,8 +60,23 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,controle)               "Contrôle"
    set caption(eqmod,raquette_tel)           "Raquette à l'écran"
 
+   set caption(eqmod,config_tube)            "Configuration du tube :"
    set caption(eqmod,tube_ouest)             "Tube à l'ouest"
    set caption(eqmod,tube_est)               "Tube à l'est"
+
+   set caption(eqmod,pos_tube)               "Position actuelle du tube :"
+   set caption(eqmod,ouest)                  "Ouest"
+   set caption(eqmod,est)                    "Est"
+   set caption(eqmod,nord)                   "Nord"
+   set caption(eqmod,sud)                    "Sud"
+   set caption(eqmod,pole_nord)              "Pôle Nord"
+   set caption(eqmod,pole_sud)               "Pôle Sud"
+
+   set caption(eqmod,retournement)           "Limites de retournement pour un GOTO :"
+   set caption(eqmod,reference)              "Ecarts par rapport au méridien :"
+   set caption(eqmod,limite_est)             "Vers l'est (en h)"
+   set caption(eqmod,limite_ouest)           "Vers l'ouest (en h)"
+
    set caption(eqmod,moteur_on)              "Moteur On"
    set caption(eqmod,N/A)                    "------"
    set caption(eqmod,angle_horaire)          "Angle horaire :"
@@ -54,6 +86,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,position_DEC)           "Position Déc. :"
    set caption(eqmod,valeurDefaut)           "Valeur par défaut :"
 
+   set caption(eqmod,positionMonture)        "Localisation de la monture :"
    set caption(eqmod,port_eqmod)             "Port EQMOD"
    set caption(eqmod,2points)                ":"
 
@@ -69,8 +102,23 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,controle)               "Controllo"
    set caption(eqmod,raquette_tel)           "Pulsantiera a schermo"
 
+   set caption(eqmod,config_tube)            "# Configuration du tube :"
    set caption(eqmod,tube_ouest)             "Tubo a ovest"
    set caption(eqmod,tube_est)               "Tubo a est"
+
+   set caption(eqmod,pos_tube)               "# Position actuelle du tube :"
+   set caption(eqmod,ouest)                  "# Ouest"
+   set caption(eqmod,est)                    "# Est"
+   set caption(eqmod,nord)                   "# Nord"
+   set caption(eqmod,sud)                    "# Sud"
+   set caption(eqmod,pole_nord)              "# Pôle Nord"
+   set caption(eqmod,pole_sud)               "# Pôle Sud"
+
+   set caption(eqmod,retournement)           "# Limites de retournement pour un GOTO :"
+   set caption(eqmod,reference)              "# Ecarts par rapport au méridien :"
+   set caption(eqmod,limite_est)             "# Vers l'est (en h)"
+   set caption(eqmod,limite_ouest)           "# Vers l'ouest (en h)"
+
    set caption(eqmod,moteur_on)              "Motore On"
    set caption(eqmod,N/A)                    "------"
    set caption(eqmod,angle_horaire)          "Angolo orario:"
@@ -80,6 +128,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,position_DEC)           "Posizione Dec.:"
    set caption(eqmod,valeurDefaut)           "Valore di default:"
 
+   set caption(eqmod,positionMonture)        "# Localisation de la monture :"
    set caption(eqmod,port_eqmod)             "Porta EQMOD"
    set caption(eqmod,2points)                ":"
 
@@ -95,8 +144,23 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,controle)               "Control"
    set caption(eqmod,raquette_tel)           "Controlador virtual"
 
+   set caption(eqmod,config_tube)            "# Configuration du tube :"
    set caption(eqmod,tube_ouest)             "Tubo al oeste"
    set caption(eqmod,tube_est)               "Tubo al este"
+
+   set caption(eqmod,pos_tube)               "# Position actuelle du tube :"
+   set caption(eqmod,ouest)                  "# Ouest"
+   set caption(eqmod,est)                    "# Est"
+   set caption(eqmod,nord)                   "# Nord"
+   set caption(eqmod,sud)                    "# Sud"
+   set caption(eqmod,pole_nord)              "# Pôle Nord (en h)"
+   set caption(eqmod,pole_sud)               "# Pôle Sud (en h)"
+
+   set caption(eqmod,retournement)           "# Limites de retournement pour un GOTO :"
+   set caption(eqmod,reference)              "# Ecarts par rapport au méridien :"
+   set caption(eqmod,limite_est)             "# Vers l'est"
+   set caption(eqmod,limite_ouest)           "# Vers l'ouest"
+
    set caption(eqmod,moteur_on)              "Motor On"
    set caption(eqmod,N/A)                    "------"
    set caption(eqmod,angle_horaire)          "Angulo horario:"
@@ -106,6 +170,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,position_DEC)           "Posición Dec.:"
    set caption(eqmod,valeurDefaut)           "Valor por defecto:"
 
+   set caption(eqmod,positionMonture)        "# Localisation de la monture :"
    set caption(eqmod,port_eqmod)             "Puerto EQMOD"
    set caption(eqmod,2points)                ":"
 
@@ -121,8 +186,23 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,controle)               "Kontroll"
    set caption(eqmod,raquette_tel)           "Hand Kontroller am Bildschirm"
 
+   set caption(eqmod,config_tube)            "# Configuration du tube :"
    set caption(eqmod,tube_ouest)             "Rohr nach West"
    set caption(eqmod,tube_est)               "Rohr nach Ost"
+
+   set caption(eqmod,pos_tube)               "# Position actuelle du tube :"
+   set caption(eqmod,ouest)                  "# Ouest"
+   set caption(eqmod,est)                    "# Est"
+   set caption(eqmod,nord)                   "# Nord"
+   set caption(eqmod,sud)                    "# Sud"
+   set caption(eqmod,pole_nord)              "# Pôle Nord (en h)"
+   set caption(eqmod,pole_sud)               "# Pôle Sud (en h)"
+
+   set caption(eqmod,retournement)           "# Limites de retournement pour un GOTO :"
+   set caption(eqmod,reference)              "# Ecarts par rapport au méridien :"
+   set caption(eqmod,limite_est)             "# Vers l'est"
+   set caption(eqmod,limite_ouest)           "# Vers l'ouest"
+
    set caption(eqmod,moteur_on)              "Motor On"
    set caption(eqmod,N/A)                    "------"
    set caption(eqmod,angle_horaire)          "Zeit Winkel:"
@@ -132,6 +212,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,position_DEC)           "Dek. Position:"
    set caption(eqmod,valeurDefaut)           "Standardwert:"
 
+   set caption(eqmod,positionMonture)        "# Localisation de la monture :"
    set caption(eqmod,port_eqmod)             "EQMOD Port"
    set caption(eqmod,2points)                ":"
 
@@ -147,8 +228,23 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,controle)               "Controlo"
    set caption(eqmod,raquette_tel)           "Controlador de mão no ecrã"
 
+   set caption(eqmod,config_tube)            "# Configuration du tube :"
    set caption(eqmod,tube_ouest)             "Tubo a oeste"
    set caption(eqmod,tube_est)               "Tubo a este"
+
+   set caption(eqmod,pos_tube)               "# Position actuelle du tube :"
+   set caption(eqmod,ouest)                  "# Ouest"
+   set caption(eqmod,est)                    "# Est"
+   set caption(eqmod,nord)                   "# Nord"
+   set caption(eqmod,sud)                    "# Sud"
+   set caption(eqmod,pole_nord)              "# Pôle Nord (en h)"
+   set caption(eqmod,pole_sud)               "# Pôle Sud (en h)"
+
+   set caption(eqmod,retournement)           "# Limites de retournement pour un GOTO :"
+   set caption(eqmod,reference)              "# Ecarts par rapport au méridien :"
+   set caption(eqmod,limite_est)             "# Vers l'est"
+   set caption(eqmod,limite_ouest)           "# Vers l'ouest"
+
    set caption(eqmod,moteur_on)              "Motor On"
    set caption(eqmod,N/A)                    "------"
    set caption(eqmod,angle_horaire)          "Ângulo horário:"
@@ -158,6 +254,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,position_DEC)           "Posição Dec.:"
    set caption(eqmod,valeurDefaut)           "Valor por defeito:"
 
+   set caption(eqmod,positionMonture)        "# Localisation de la monture :"
    set caption(eqmod,port_eqmod)             "Porta EQMOD"
    set caption(eqmod,2points)                ":"
 
@@ -173,8 +270,23 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,controle)               "Control"
    set caption(eqmod,raquette_tel)           "Hand controller on screen"
 
+   set caption(eqmod,config_tube)            "# Configuration du tube :"
    set caption(eqmod,tube_ouest)             "Tube to West"
    set caption(eqmod,tube_est)               "Tube to East"
+
+   set caption(eqmod,pos_tube)               "# Position actuelle du tube :"
+   set caption(eqmod,ouest)                  "# Ouest"
+   set caption(eqmod,est)                    "# Est"
+   set caption(eqmod,nord)                   "# Nord"
+   set caption(eqmod,sud)                    "# Sud"
+   set caption(eqmod,pole_nord)              "# Pôle Nord"
+   set caption(eqmod,pole_sud)               "# Pôle Sud"
+
+   set caption(eqmod,retournement)           "# Limites de retournement pour un GOTO :"
+   set caption(eqmod,reference)              "# Ecarts par rapport au méridien :"
+   set caption(eqmod,limite_est)             "# Vers l'est (en h)"
+   set caption(eqmod,limite_ouest)           "# Vers l'ouest (en h)"
+
    set caption(eqmod,moteur_on)              "Motor On"
    set caption(eqmod,N/A)                    "------"
    set caption(eqmod,angle_horaire)          "Hour Angle:"
@@ -184,6 +296,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,position_DEC)           "Dec. Position:"
    set caption(eqmod,valeurDefaut)           "Default Value:"
 
+   set caption(eqmod,positionMonture)        "# Localisation de la monture :"
    set caption(eqmod,port_eqmod)             "EQMOD Port"
    set caption(eqmod,2points)                ":"
 
@@ -199,8 +312,23 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,controle)               "Control"
    set caption(eqmod,raquette_tel)           "Hand controller on screen"
 
+   set caption(eqmod,config_tube)            "# Configuration du tube :"
    set caption(eqmod,tube_ouest)             "Tube to West"
    set caption(eqmod,tube_est)               "Tube to East"
+
+   set caption(eqmod,pos_tube)               "# Position actuelle du tube :"
+   set caption(eqmod,ouest)                  "# Ouest"
+   set caption(eqmod,est)                    "# Est"
+   set caption(eqmod,nord)                   "# Nord"
+   set caption(eqmod,sud)                    "# Sud"
+   set caption(eqmod,pole_nord)              "# Pôle Nord"
+   set caption(eqmod,pole_sud)               "# Pôle Sud"
+
+   set caption(eqmod,retournement)           "# Limites de retournement pour un GOTO :"
+   set caption(eqmod,reference)              "# Ecarts par rapport au méridien :"
+   set caption(eqmod,limite_est)             "# Vers l'est (en h)"
+   set caption(eqmod,limite_ouest)           "# Vers l'ouest (en h)"
+
    set caption(eqmod,moteur_on)              "Motor On"
    set caption(eqmod,N/A)                    "------"
    set caption(eqmod,angle_horaire)          "Hour Angle:"
@@ -210,6 +338,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,position_DEC)           "Dec. Position:"
    set caption(eqmod,valeurDefaut)           "Default Value:"
 
+   set caption(eqmod,positionMonture)        "# Localisation de la monture :"
    set caption(eqmod,port_eqmod)             "EQMOD Port"
    set caption(eqmod,2points)                ":"
 
@@ -225,8 +354,23 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,controle)               "Control"
    set caption(eqmod,raquette_tel)           "Hand controller on screen"
 
+   set caption(eqmod,config_tube)            "# Configuration du tube :"
    set caption(eqmod,tube_ouest)             "Tube to West"
    set caption(eqmod,tube_est)               "Tube to East"
+
+   set caption(eqmod,pos_tube)               "# Position actuelle du tube :"
+   set caption(eqmod,ouest)                  "# Ouest"
+   set caption(eqmod,est)                    "# Est"
+   set caption(eqmod,nord)                   "# Nord"
+   set caption(eqmod,sud)                    "# Sud"
+   set caption(eqmod,pole_nord)              "# Pôle Nord"
+   set caption(eqmod,pole_sud)               "# Pôle Sud"
+
+   set caption(eqmod,retournement)           "# Limites de retournement pour un GOTO :"
+   set caption(eqmod,reference)              "# Ecarts par rapport au méridien :"
+   set caption(eqmod,limite_est)             "# Vers l'est (en h)"
+   set caption(eqmod,limite_ouest)           "# Vers l'ouest (en h)"
+
    set caption(eqmod,moteur_on)              "Motor On"
    set caption(eqmod,N/A)                    "------"
    set caption(eqmod,angle_horaire)          "Hour Angle:"
@@ -236,6 +380,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,position_DEC)           "Dec. Position:"
    set caption(eqmod,valeurDefaut)           "Default Value:"
 
+   set caption(eqmod,positionMonture)        "# Localisation de la monture :"
    set caption(eqmod,port_eqmod)             "EQMOD Port"
    set caption(eqmod,2points)                ":"
 
