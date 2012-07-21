@@ -433,7 +433,9 @@ proc ::ascomcam::refreshCellDim { camItem } {
          cam$private($camItem,camNo) celldim [ expr $private($camItem,dimPixX) / 1000000 ] [ expr $private($camItem,dimPixY) / 1000000 ]
       } else {
       #--- Je lis les dimensions des pixels de la librairie
-         cam$private($camItem,camNo) celldim
+         set celldim [ cam$private($camItem,camNo) celldim ]
+         set private($camItem,dimPixX) [ expr [ lindex $celldim 0 ] * 1000000 ]
+         set private($camItem,dimPixY) [ expr [ lindex $celldim 1 ] * 1000000 ]
       }
    }
 }
