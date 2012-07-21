@@ -31,9 +31,13 @@ extern "C" {
 int cmdTelAllCoord(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelAllCoordJd(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelLoopEval(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelLoopResult(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelHexaEval(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelHexaResult(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelAction(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelAdu(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelEeprom(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 #ifdef __cplusplus
 }

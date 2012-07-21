@@ -100,7 +100,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 	fclose(f);
 #endif
 	/* - ce clock format permet de debloquer les prochains acces a cette fonction - */
-   Tcl_Eval(tel->interp,"clock format 1318667930");
+   //Tcl_Eval(tel->interp,"clock format 1318667930");
 
 	/* - creates mutex -*/
    pthread_mutexattr_init(&mutexAttr);
@@ -519,9 +519,11 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 	}
 
 	telthread->tempo = 50;
-	telthread->sideral_sep_per_day=86164;
-	// init home (important ici pour le calcul des positions initiales)
+	telthread->sideral_sec_per_day=86164;
+	telthread->sideral_deg_per_sec=360./86164;
+// init home (important ici pour le calcul des positions initiales)
 	strcpy(telthread->home,"GPS 1.7187 E 43.8740 220");
+	strcpy(telthread->home,"GPS 55.41 E -21.1995 991.9");
 	strcpy(telthread->home0,telthread->home);
 	strcpy(telthread->homePosition,telthread->home);
 
@@ -558,7 +560,7 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 					return 1;
 				}
 			} else {
-				strcpy(telthread->msg,ssres);
+				sprintf(telthread->msg,"Verify the COM connection: %s",ssres);
 				return 1;
 			}
 		}
@@ -602,7 +604,12 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 
 		// N = micropas/360°
 		sprintf(s,"set envoi \"E0 4B\" ; set res [envoi $envoi] ; set clair [mcmthexa_decode $envoi $res]"); mytel_tcleval(telthread,s);
-		telthread->N0=-1*atoi(telthread->interp->result);
+		strcpy(ssres,telthread->interp->result);
+		for (k=0;k<=40;k++) {
+			sprintf(s,"lindex {%s} %d",ssres,k); mytel_tcleval(telthread,s);
+			telthread->eeprom[0][k]=atof(telthread->interp->result);
+		}
+		telthread->N0=(long)(+1*25600*telthread->eeprom[0][MCMT_NbTeeth]);
 		if (telthread->N0==0) {
 			// probleme car le moteur ne repond pas !
 			strcpy(telthread->msg,"Bad number of microsteps per 360 deg (E0 4B -> 00)");
@@ -611,7 +618,12 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 
 		// N = micropas/360°
 		sprintf(s,"set envoi \"E1 4B\" ; set res [envoi $envoi] ; set clair [mcmthexa_decode $envoi $res]"); mytel_tcleval(telthread,s);
-		telthread->N1=-1*atoi(telthread->interp->result);
+		strcpy(ssres,telthread->interp->result);
+		for (k=0;k<=40;k++) {
+			sprintf(s,"lindex {%s} %d",ssres,k); mytel_tcleval(telthread,s);
+			telthread->eeprom[1][k]=atof(telthread->interp->result);
+		}
+		telthread->N1=(long)(+1*25600*telthread->eeprom[1][MCMT_NbTeeth]);
 		if (telthread->N1==0) {
 			// probleme car le moteur ne repond pas !
 			strcpy(telthread->msg,"Bad number of microsteps per 360 deg (E1 4B -> 00)");
@@ -619,11 +631,17 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 		}
 
 		// initial position from coders
-		telthread->coord_app_cod_deg_ha=0;
-		telthread->coord_app_cod_deg_dec=0;
-		mytel_app_cod_setadu0(telthread);
-		mytel_app2cat_cod_deg0(telthread);
 		mytel_app_cod_getadu(telthread);
+		mytel_app_cod_setadu0(telthread);
+
+		// initial position from the tube
+		telthread->coord_app_cod_deg_ha0=0;
+		telthread->coord_app_cod_deg_dec0=0;
+
+		// convert hadec->radec of the initial position
+		mytel_app2cat_cod_deg0(telthread);
+
+		// convert hadec->radec of the current position (which is the same since the motor is off)
 		mytel_app_cod_adu2deg(telthread);
 		mytel_app2cat_cod_deg(telthread);
 
@@ -638,6 +656,9 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 		telthread->coord_app_sim_adu_cumdelev=0; // cumulative gotos ADU from/to coder
 		telthread->coord_app_sim_adu_cumdrot=0; // cumulative gotos ADU from/to coder
 
+		// motor off
+		mytel_motor_stop(telthread);
+
 		// import useful Tcl procs
 		strcpy(telthread->channel,"stdout");
 		mytel_tcl_procs(telthread);	
@@ -645,10 +666,19 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 	}
 
 	// initial position from coders for simulation
+	telthread->speed_app_sim_adu_ha=0;
+	telthread->speed_app_sim_adu_dec=0;
+	telthread->speed_app_sim_adu_ra=telthread->sideral_deg_per_sec;
+	telthread->speed_app_sim_adu_az=0;
+	telthread->speed_app_sim_adu_elev=0;
+	telthread->speed_app_sim_adu_rot=0;
+	//
 	telthread->coord_app_sim_deg_ha0=0;
 	telthread->coord_app_sim_deg_dec0=0;
-	telthread->coord_app_sim_adu_ha=1073485824;
-	telthread->coord_app_sim_adu_dec=1073485824;
+	telthread->coord_app_sim_adu_ha=1073485824; // FARO
+	telthread->coord_app_sim_adu_dec=1073485824; // FARO
+	telthread->coord_app_sim_adu_ha=1074057335; // T60Makes
+	telthread->coord_app_sim_adu_dec=1073741824; // T60Makes
 	telthread->coord_app_sim_adu_hapec=0;
 	telthread->coord_app_sim_adu_az=0;
 	telthread->coord_app_sim_adu_elev=0;
@@ -674,249 +704,10 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 	telthread->compteur = 0;
 
 #endif
-#if defined CONTROLLER_T940
-	// initialise les valeurs par default
-	telthread->mode = MODE_REEL;
-   telthread->type_mount=MOUNT_ALTAZ;
-	strcpy(telthread->alignmentMode,"ALTAZ");
-	telthread->tempo = 50;
-	telthread->sideral_sep_per_day=86164;
-	// init home (important ici pour le calcul des positions initiales)
-	strcpy(telthread->home,"GPS 1.7187 E 43.8740 220");
-	strcpy(telthread->home0,telthread->home);
-	strcpy(telthread->homePosition,telthread->home);
-
-	// inhibe les corrections de "tel1 radec goto" par libtel
-	mytel_tcleval(telthread, "proc tel_cat2tel { radec } { return $radec }");
-	strcpy(telthread->model_cat2tel,"tel_cat2tel");
-	mytel_tcleval(telthread, "proc tel_tel2cat { radec } { return $radec }");
-	strcpy(telthread->model_tel2cat,"tel_tel2cat");
-
-	// initialise les valeurs par default de la boucle
-	strcpy(telthread->action_prev, "");
-	strcpy(telthread->action_next, "motor_off");
-	strcpy(telthread->action_cur, "undefined");
-	telthread->status = STATUS_MOTOR_OFF;
-	telthread->compteur = 0;
-
-	// decode les arguments
-	// =*= specific for this telescope
-	axis[0]=0;
-	axis[1]=1; //4
-	axis[2]=2; //5
-	if (argc >= 1) {
-		for (kk = 0; kk < argc-1; kk++) {
-			// mode : 0=simulation 1=reel 2=simuEtel
-			if (strcmp(argv[kk], "-mode") == 0) {
-				telthread->mode = atoi(argv[kk + 1]);
-			}
-			// mount : altaz|equatorial
-			if (strcmp(argv[kk], "-mount") == 0) {
-				if (strcmp(argv[kk + 1],"equatorial")==0) {
-					telthread->type_mount = MOUNT_EQUATORIAL;
-					strcpy(telthread->alignmentMode,"HADEC");
-				}
-			}
-         if (strcmp(argv[kk], "-axis0") == 0) {
-            axis[0]=atoi(argv[kk + 1]);
-         }
-         if (strcmp(argv[kk], "-axis1") == 0) {
-            axis[1]=atoi(argv[kk + 1]);
-         }
-         if (strcmp(argv[kk], "-axis2") == 0) {
-            axis[2]=atoi(argv[kk + 1]);
-         }
-		}
-	}
-
-	// type des axes
-	// =*= specific for this telescope
-	if (telthread->type_mount==MOUNT_EQUATORIAL) {
-		telthread->nb_axis=2;
-		telthread->axes[0]=AXIS_HA;
-		telthread->axes[1]=AXIS_DEC;
-	} else {
-		telthread->nb_axis=3;
-		telthread->axes[0]=AXIS_AZ;
-		telthread->axes[1]=AXIS_ELEV;
-		telthread->axes[2]=AXIS_PARALLACTIC;
-	}
-	for (axisno=0;axisno<5;axisno++) {
-	   telthread->axis_param[axisno].type=AXIS_NOTDEFINED;
-		telthread->drv[axisno]=NULL;
-	}
-
-	// boucle de creation des axes
-	// =*= specific for this telescope
-	if (telthread->mode == MODE_REEL) {
-		for (kaxisno=0;kaxisno<telthread->nb_axis;kaxisno++) {
-			axisno=telthread->axes[kaxisno];
-			// create drive
-			if (err = dsa_create_drive(&telthread->drv[axisno])) {
-				mytel_error(telthread,axisno,err);
-				return 1;
-			}
-			//sprintf(s,"etb:dummy:7:6:19366144:4:0",axis[kaxisno]);
-			sprintf(s,"etb:DSTEB3:%d",axis[kaxisno]);
-			if (err = dsa_open_u(telthread->drv[axisno],s)) {
-				if (kaxisno==0) {
-					mytel_error(telthread,axisno,err);
-					sprintf(s," {etb:DSTEB3:%d}",axis[kaxisno]);
-					strcat(telthread->msg,s);
-					tel_close(telthread);
-					return 2;
-				} else {
-					break;
-				}
-			} else {
-				if (telthread->type_mount == MOUNT_EQUATORIAL) {
-					if (kaxisno==0) { telthread->axis_param[axisno].type = telthread->axes[0]; }
-					if (kaxisno==1) { telthread->axis_param[axisno].type = telthread->axes[1]; }
-				} else {
-					if (kaxisno==0) { telthread->axis_param[axisno].type = telthread->axes[0]; }
-					if (kaxisno==1) { telthread->axis_param[axisno].type = telthread->axes[1]; }
-					if (kaxisno==2) { telthread->axis_param[axisno].type = telthread->axes[2]; }
-				}
-			}
-			// Reset error
-			if (err = dsa_reset_error_s(telthread->drv[axisno], 1000)) {
-				mytel_error(telthread,axisno,err);
-				tel_close(telthread);
-				return 3;
-			}
-			// power on
-			if (err = dsa_power_on_s(telthread->drv[axisno], 10000)) {
-				mytel_error(telthread,axisno,err);
-				tel_close(telthread);
-				return 4;
-			}
-		}
-	} else if (telthread->mode == MODE_SIMULATION_ETEL) {
-		for (kaxisno=0;kaxisno<telthread->nb_axis;kaxisno++) {
-			axisno=telthread->axes[kaxisno];
-			// create drive
-			if (err = dsa_create_drive(&telthread->drv[axisno])) {
-				mytel_error(telthread,axisno,err);
-				return 1;
-			}
-			sprintf(s,"etb:dummy:1:6:19366144:4:0");
-			if (err = dsa_open_u(telthread->drv[axisno],s)) {
-				if (kaxisno==0) {
-					mytel_error(telthread,axisno,err);
-					sprintf(s," {etb:dummy axisno=%d}",axisno);
-					strcat(telthread->msg,s);
-					tel_close(telthread);
-					return 2;
-				} else {
-					break;
-				}
-			} else {
-				if (telthread->type_mount == MOUNT_EQUATORIAL) {
-					if (kaxisno==0) { telthread->axis_param[axisno].type = telthread->axes[0]; }
-					if (kaxisno==1) { telthread->axis_param[axisno].type = telthread->axes[1]; }
-				} else {
-					if (kaxisno==0) { telthread->axis_param[axisno].type = telthread->axes[0]; }
-					if (kaxisno==1) { telthread->axis_param[axisno].type = telthread->axes[1]; }
-					if (kaxisno==2) { telthread->axis_param[axisno].type = telthread->axes[2]; }
-				}
-			}
-			// Reset error
-			if (err = dsa_reset_error_s(telthread->drv[axisno], 1000)) {
-				mytel_error(telthread,axisno,err);
-				tel_close(telthread);
-				return 3;
-			}
-			// power on
-			if (err = dsa_power_on_s(telthread->drv[axisno], 10000)) {
-				mytel_error(telthread,axisno,err);
-				tel_close(telthread);
-				return 4;
-			}
-		}
-	} else {
-		if (telthread->type_mount == MOUNT_EQUATORIAL) {
-			telthread->axis_param[0].type = telthread->axes[0];
-			telthread->axis_param[1].type = telthread->axes[1];
-		} else {
-			telthread->axis_param[0].type = telthread->axes[0];
-			telthread->axis_param[1].type = telthread->axes[1];
-			telthread->axis_param[2].type = telthread->axes[2];
-		}
-	}
-
-	if (telthread->mode == MODE_SIMULATION_ETEL) {
-		telthread->mode = MODE_REEL;
-	}
-		
-	// extradrift = rattrapage additionnel (arcsec/sec) au suivi diurne
-	// =*= specific for this telescope
-	strcpy(telthread->extradrift_type,"altaz");
-	telthread->extradrift_axis0=0;
-	telthread->extradrift_axis1=0;
-
-	// init home
-	// =*= specific for this telescope
-	strcpy(telthread->home,"GPS 1.7187 E 43.8740 220");
-	strcpy(telthread->home0,telthread->home);
-	strcpy(telthread->homePosition,telthread->home);
-	if (mytel_loadparams(telthread,-1) == 1) {
-		return 1;
-	}
-	
-	// load parameters
-	// =*= specific for this telescope
-	if (telthread->mode == MODE_REEL) {
-
-		telthread->N0=(long)telthread->axis_param[AXIS_AZ].coef_xs*360;
-		telthread->N1=(long)telthread->axis_param[AXIS_ELEV].coef_xs*360;
-		telthread->N2=(long)telthread->axis_param[AXIS_PARALLACTIC].coef_xs*360;
-		
-		// initial position from coders
-		telthread->coord_app_cod_deg_ha=0;
-		telthread->coord_app_cod_deg_dec=0;
-		mytel_app_cod_setadu0(telthread);
-		mytel_app2cat_cod_deg0(telthread);
-		mytel_app_cod_getadu(telthread);
-		mytel_app_cod_adu2deg(telthread);
-		mytel_app2cat_cod_deg(telthread);
-		mytel_tcl_procs(telthread);
-
-	} else {
-
-		telthread->N0=(long)telthread->axis_param[AXIS_AZ].coef_xs*360;
-		telthread->N1=(long)telthread->axis_param[AXIS_ELEV].coef_xs*360;
-		telthread->N2=(long)telthread->axis_param[AXIS_PARALLACTIC].coef_xs*360;
-		telthread->coord_app_sim_adu_cumdha=0; // cumulative gotos ADU from/to coder
-		telthread->coord_app_sim_adu_cumddec=0; // cumulative gotos ADU from/to coder
-		telthread->coord_app_sim_adu_cumdaz=0; // cumulative gotos ADU from/to coder
-		telthread->coord_app_sim_adu_cumdelev=0; // cumulative gotos ADU from/to coder
-		telthread->coord_app_sim_adu_cumdrot=0; // cumulative gotos ADU from/to coder
-		mytel_tcl_procs(telthread);
-
-	}
-
-	// initial position from coders for simulation
-	// It corresponds to the parking position of the telescope
-	// =*= specific for this telescope
-	telthread->coord_app_sim_deg_ha0=0;
-	telthread->coord_app_sim_deg_dec0=-40;
-	telthread->coord_app_sim_adu_ha=telthread->coord_app_sim_deg_ha0;
-	telthread->coord_app_sim_adu_dec=telthread->coord_app_sim_deg_dec0;
-	telthread->coord_app_sim_adu_hapec=0;
-	telthread->coord_app_sim_adu_az=(int)pow(2,30);
-	telthread->coord_app_sim_adu_elev=(int)pow(2,30);
-	telthread->coord_app_sim_adu_rot=(int)pow(2,30);
-	telthread->coord_app_sim_adu_hapec=0;
-	mytel_app_setutcjd0_now(telthread);
-	mytel_app_setutcjd_now(telthread);
-	mytel_app_sim_setadu0(telthread);
-	mytel_app_sim_adu2deg(telthread);
-	mytel_app2cat_sim_deg(telthread);
-
-#endif
 
 	// Creation des commandes effectuees a la fin d'une action de la grande boucle
 	Tcl_CreateCommand(telthread->interp,"CmdThreadTel_loopeval", (Tcl_CmdProc *)CmdThreadTel_loopeval, (ClientData)telthread, NULL);
+	strcpy(telthread->mcmt_hexa_command_line,"");
 
 	// initialisation des commandes tcl necessaires au fonctionnement en boucle.
 	Tcl_CreateCommand(telthread->interp,"ThreadTel_loop", (Tcl_CmdProc *)ThreadTel_loop, (ClientData)telthread, NULL);
@@ -931,6 +722,338 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 /*** Boucle du thread ***/
 /************************/
 int ThreadTel_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+	int action_ok=0,arrived;
+	int axisno, seqno, err;
+	char action_locale[80],s[1024],ss[1024];
+	time_t ltime;
+
+   my_pthread_mutex_lock(&mutex);
+	strcpy(action_locale,telthread->action_next);
+
+	telthread->compteur++;
+	telthread->error=0;
+	action_ok=1;
+
+	if (strcmp(telthread->action_next,"")!=0) {
+		action_ok=action_ok;
+	}
+
+	/*****************************/
+   /*** check lecture codeurs ***/
+	/*****************************/
+	// mise a jour des coordonnées (app_ha,app_dec)
+	if (telthread->mode==MODE_REEL) {
+		// --- get the current real adus
+		mytel_app_cod_getadu(telthread);
+		// --- convert adu to deg
+		mytel_app_cod_adu2deg(telthread);
+		// --- convert apparent to catalog degs
+		mytel_app2cat_cod_deg(telthread);
+	}
+	// --- compute the current simulated adus
+	mytel_app_sim_getadu(telthread);
+	// --- convert adu to deg
+	mytel_app_sim_adu2deg(telthread);
+	// --- convert apparent to catalog degs
+	mytel_app2cat_sim_deg(telthread);
+
+	/******************************/
+   /*** check limites securite ***/
+	/******************************/
+	// --- on arrete les moteurs en cas de depassement des limites ---
+	mytel_limites();
+
+	/*************************/
+   /*** check fin de slew ***/
+	/*************************/
+	/*
+	if ((telthread->status==STATUS_HADEC_SLEWING)||(telthread->status==STATUS_RADEC_SLEWING)) {
+		telthread->status=STATUS_MOTOR_OFF;
+	}
+	*/
+	if ((telthread->status==STATUS_HADEC_SLEWING)||(telthread->status==STATUS_RADEC_SLEWING)) {
+		if (telthread->mode==MODE_REEL) {
+			sprintf(s,"lindex [mc_sepangle %f %f %f %f]",telthread->coord_app_cod_deg_ha,telthread->coord_app_cod_deg_dec,telthread->ha0,telthread->dec0); mytel_tcleval(telthread,s);
+		} else {
+			sprintf(s,"lindex [mc_sepangle %f %f %f %f]",telthread->coord_app_sim_deg_ha,telthread->coord_app_sim_deg_dec,telthread->ha0,telthread->dec0); mytel_tcleval(telthread,s);
+		}
+		telthread->sepangle_cur=atof(telthread->interp->result);
+		arrived=0;
+		if (telthread->mode==MODE_REEL) {
+#if defined CONTROLLER_MCMT
+			arrived=1;
+			strcpy(s,"set envoi \"E0 FF\" ; set res [envoi $envoi]"); mytel_tcleval(telthread,s);
+			strcpy(ss,telthread->interp->result);
+			if (strcmp(ss,"00")==0) { arrived=0; }
+			strcpy(s,"set envoi \"E1 FF\" ; set res [envoi $envoi]"); mytel_tcleval(telthread,s);
+			strcpy(ss,telthread->interp->result);
+			if (strcmp(ss,"00")==0) { arrived=0; }
+#else
+			if (telthread->sepangle_cur<0.001) {
+				arrived=1;
+			}
+#endif
+		} else {
+			if (telthread->sepangle_cur>telthread->sepangle_prev) {
+				arrived=1;
+			}
+		}
+		if (arrived==1) {
+			// on est arrive: motor off -> radec|hadec init -> (motor on)
+			// motor off
+			if (telthread->mode==MODE_REEL) {
+				if (telthread->status==STATUS_HADEC_SLEWING) {
+					// --- stop motors
+					mytel_motor_stop(telthread);
+				}
+			}
+			telthread->speed_app_sim_adu_ha=0;
+			telthread->speed_app_sim_adu_dec=0;
+			telthread->speed_app_sim_adu_ra=telthread->sideral_deg_per_sec;
+			telthread->speed_app_sim_adu_az=0; // a calculer
+			telthread->speed_app_sim_adu_elev=0; // a calculer
+			telthread->speed_app_sim_adu_rot=0; // a calculer
+			// radec init for simu
+			if (telthread->status==STATUS_RADEC_SLEWING) {
+				telthread->coord_cat_sim_deg_ra0=telthread->ra0;
+				telthread->coord_cat_sim_deg_dec0=telthread->dec0;
+				// --- update coordinates for simulator
+				mytel_app_sim_getadu(telthread);
+				telthread->utcjd_cat_sim_deg_ra0=mytel_sec2jd(time(&ltime));
+				mytel_cat2app_sim_deg0(telthread);
+				mytel_app_sim_setadu0(telthread);
+			}
+			// hadec init for simu
+			if (telthread->status==STATUS_HADEC_SLEWING) {
+				telthread->coord_app_sim_deg_ha0=telthread->ha0;
+				telthread->coord_app_sim_deg_dec0=telthread->dec0;
+				// --- update coordinates for simulator
+				mytel_app_sim_getadu(telthread);
+				mytel_app_sim_setadu0(telthread);
+				telthread->utcjd_cat_sim_deg_ra0=mytel_sec2jd(time(&ltime));
+				mytel_app2cat_sim_deg0(telthread);
+			}
+			if (telthread->status==STATUS_RADEC_SLEWING) {
+				// motor on
+				/*
+				if (telthread->mode==MODE_REEL) {
+					// --- start motors
+					mytel_motor_on(telthread);
+				}
+				*/
+				telthread->status=STATUS_MOTOR_ON;
+				telthread->speed_app_sim_adu_ha=telthread->sideral_deg_per_sec;
+				telthread->speed_app_sim_adu_dec=0;
+				telthread->speed_app_sim_adu_ra=0;
+				telthread->speed_app_sim_adu_az=0; // a calculer
+				telthread->speed_app_sim_adu_elev=0; // a calculer
+				telthread->speed_app_sim_adu_rot=0; // a calculer
+			} else {
+				telthread->status=STATUS_MOTOR_OFF;
+			}
+		} else {
+			telthread->sepangle_prev=telthread->sepangle_cur;
+		}
+	}
+
+	/*****************************/
+   /*** check PEC corrections ***/
+	/*****************************/
+	// --- corrections de vitesse (Pec, altaz, etc.)
+	// uniquement en mode motor on, pas de move et pas de slew
+	mytel_speed_corrections(telthread);
+
+	/****************************************/
+   /*** check and execute a command line ***/
+	/****************************************/
+	// --- eval une ligne au protocole MCMT hexa
+	if (strcmp(telthread->mcmt_hexa_command_line,"")!=0) {
+		sprintf(s,"%s",telthread->mcmt_hexa_command_line);
+		strcpy(ss,s);
+		sprintf(s,"set envoi \"%s\" ; set res [envoi $envoi]",ss); mytel_tcleval(telthread,s);
+		strcpy(telthread->mcmt_hexa_result,telthread->interp->result);
+		strcpy(telthread->mcmt_hexa_command_line,"");
+	}
+	// --- eval une ligne Tcl
+	if (strcmp(telthread->eval_command_line,"")!=0) {
+		mytel_tcleval(telthread,telthread->eval_command_line);
+		strcpy(telthread->eval_result,telthread->interp->result);
+		strcpy(telthread->eval_command_line,"");
+	}
+
+	/***************/
+   /*** actions ***/
+	/***************/
+
+   if (strcmp(action_locale,"motor_off")==0) {
+		/*****************/
+	   /*** motor_off ***/
+		/*****************/
+		if (telthread->mode==MODE_REEL) {
+			// --- stop motors
+			mytel_motor_stop(telthread);
+		}
+		telthread->status=STATUS_MOTOR_OFF;
+		telthread->speed_app_sim_adu_ha=0;
+		telthread->speed_app_sim_adu_dec=0;
+		telthread->speed_app_sim_adu_ra=telthread->sideral_deg_per_sec;
+		telthread->speed_app_sim_adu_az=0; // a calculer
+		telthread->speed_app_sim_adu_elev=0; // a calculer
+		telthread->speed_app_sim_adu_rot=0; // a calculer
+	} else if (strcmp(action_locale,"motor_on")==0) {
+		/****************/
+	   /*** motor_on ***/
+		/****************/
+		if (telthread->mode==MODE_REEL) {
+			// --- start motors
+			mytel_motor_on(telthread);
+		}
+		telthread->status=STATUS_MOTOR_ON;
+		telthread->speed_app_sim_adu_ha=telthread->sideral_deg_per_sec;
+		telthread->speed_app_sim_adu_dec=0;
+		telthread->speed_app_sim_adu_ra=0;
+		telthread->speed_app_sim_adu_az=0; // a calculer
+		telthread->speed_app_sim_adu_elev=0; // a calculer
+		telthread->speed_app_sim_adu_rot=0; // a calculer
+	} else if (strcmp(action_locale,"hadec_init")==0) {
+		/******************/
+	   /*** hadec_init ***/
+		/******************/
+		telthread->coord_app_cod_deg_ha0=telthread->ha0;
+		telthread->coord_app_cod_deg_dec0=telthread->dec0;
+		telthread->coord_app_sim_deg_ha0=telthread->ha0;
+		telthread->coord_app_sim_deg_dec0=telthread->dec0;
+		if (telthread->mode==MODE_REEL) {
+			// --- update coordinates from coders
+			mytel_app_cod_getadu(telthread);
+			mytel_app_cod_setadu0(telthread);
+			telthread->utcjd_cat_cod_deg_ra0=mytel_sec2jd(time(&ltime));
+			mytel_app2cat_cod_deg0(telthread);
+		}
+		// --- update coordinates for simulator
+		mytel_app_sim_getadu(telthread);
+		mytel_app_sim_setadu0(telthread);
+		telthread->utcjd_cat_sim_deg_ra0=mytel_sec2jd(time(&ltime));
+		mytel_app2cat_sim_deg0(telthread);
+	} else if (strcmp(action_locale,"radec_init")==0) {
+		/******************/
+	   /*** radec_init ***/
+		/******************/
+		telthread->coord_cat_cod_deg_ra0=telthread->ra0;
+		telthread->coord_cat_cod_deg_dec0=telthread->dec0;
+		telthread->coord_cat_sim_deg_ra0=telthread->ra0;
+		telthread->coord_cat_sim_deg_dec0=telthread->dec0;
+		if (telthread->mode==MODE_REEL) {
+			// --- update coordinates from coders
+			mytel_app_cod_getadu(telthread);
+			telthread->utcjd_cat_cod_deg_ra0=mytel_sec2jd(time(&ltime));
+			mytel_cat2app_cod_deg0(telthread);
+			mytel_app_cod_setadu0(telthread);
+		}
+		// --- update coordinates for simulator
+		mytel_app_sim_getadu(telthread);
+		telthread->utcjd_cat_sim_deg_ra0=mytel_sec2jd(time(&ltime));
+		mytel_cat2app_sim_deg0(telthread);
+		mytel_app_sim_setadu0(telthread);
+	} else if (strcmp(action_locale,"hadec_goto")==0) {
+		/******************/
+	   /*** hadec_goto ***/
+		/******************/
+		telthread->status=STATUS_MOTOR_OFF;
+		if (telthread->mode==MODE_REEL) {
+			// --- stop motors
+			mytel_motor_stop(telthread);
+		}
+		telthread->speed_app_sim_adu_ha=0;
+		telthread->speed_app_sim_adu_dec=0;
+		telthread->speed_app_sim_adu_ra=telthread->sideral_deg_per_sec;
+		telthread->speed_app_sim_adu_az=0; // a calculer
+		telthread->speed_app_sim_adu_elev=0; // a calculer
+		telthread->speed_app_sim_adu_rot=0; // a calculer
+		// --- goto
+		telthread->status=STATUS_HADEC_SLEWING;
+		if (telthread->mode==MODE_REEL) {
+			mytel_app_cod_setdadu(telthread);
+			// --- send goto
+			mytel_app_cod_setadu(telthread);
+		}
+		// --- update coordinates for simulator
+		mytel_app_sim_setdadu(telthread);
+		mytel_app_sim_setadu(telthread);
+		telthread->sepangle_prev=360;
+	} else if (strcmp(action_locale,"radec_goto")==0) {
+		/******************/
+	   /*** radec_goto ***/
+		/******************/
+		// --- stop
+		if (telthread->mode==MODE_REEL) {
+			// --- stop motors
+			mytel_motor_stop(telthread);
+		}
+		telthread->status=STATUS_MOTOR_OFF;
+		telthread->speed_app_sim_adu_ha=0;
+		telthread->speed_app_sim_adu_dec=0;
+		telthread->speed_app_sim_adu_ra=telthread->sideral_deg_per_sec;
+		telthread->speed_app_sim_adu_az=0; // a calculer
+		telthread->speed_app_sim_adu_elev=0; // a calculer
+		telthread->speed_app_sim_adu_rot=0; // a calculer
+		// --- goto
+		telthread->status=STATUS_RADEC_SLEWING;
+		if (telthread->mode==MODE_REEL) {
+			telthread->coord_cat_cod_deg_ra0=telthread->ra0;
+			telthread->coord_cat_cod_deg_dec0=telthread->dec0;
+			telthread->utcjd_cat_cod_deg_ra0=mytel_sec2jd(time(&ltime));
+			mytel_cat2app_cod_deg0(telthread);
+			mytel_app_cod_setdadu(telthread);
+			// --- send goto
+			mytel_app_cod_setadu(telthread);
+		}
+		// --- update coordinates for simulator
+		telthread->coord_cat_sim_deg_ra0=telthread->ra0;
+		telthread->coord_cat_sim_deg_dec0=telthread->dec0;
+		telthread->utcjd_cat_sim_deg_ra0=mytel_sec2jd(time(&ltime));
+		mytel_cat2app_sim_deg0(telthread);
+		mytel_app_sim_setdadu(telthread);
+		mytel_app_sim_setadu(telthread);
+		telthread->sepangle_prev=360;
+	} else if (strcmp(telthread->action_next,"move_n")==0) {
+		/**************/
+	   /*** move_n ***/
+		/**************/
+		if (strcmp(telthread->action_cur,telthread->action_next)!=0) {
+			// actionne la fonction que si elle n'a pas encore été lancée
+			strcpy(telthread->action_cur,telthread->action_next);
+		}
+	} else if (strcmp(telthread->action_next,"move_s")==0) {
+		/**************/
+	   /*** move_s ***/
+		/**************/
+		if (strcmp(telthread->action_cur,telthread->action_next)!=0) {
+			// actionne la fonction que si elle n'a pas encore été lancée
+			strcpy(telthread->action_cur,telthread->action_next);
+		}
+	} else if ((strcmp(telthread->action_next,"move_n_stop")==0)||(strcmp(telthread->action_next,"move_s_stop")==0)) {
+		/**********************************/
+	   /*** move_n_stop OR move_s_stop ***/
+		/**********************************/
+		strcpy(telthread->action_cur,telthread->action_next);
+	} else {
+		action_ok=0;
+	}
+	if (action_ok==1) {
+		strcpy(telthread->action_prev,action_locale);
+		strcpy(telthread->action_cur,action_locale);
+		strcpy(telthread->action_next,"");
+	}
+	my_pthread_mutex_unlock(&mutex);
+
+	return TCL_OK;
+}
+
+/****************************/
+/*** Boucle du thread OLD ***/
+/****************************/
+int ThreadTel_loopold(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 	int action_ok=0;
 	int axisno, seqno, err;
 	char action_locale[80];
@@ -960,8 +1083,8 @@ int ThreadTel_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 				telthread->coord_cat_cod_deg_ra0=telthread->coord_cat_cod_deg_ra;
 				telthread->coord_cat_cod_deg_dec0=telthread->coord_cat_cod_deg_dec;
 			}
-			telthread->status=STATUS_MOTOR_OFF;
 			// --- stop simulation motors
+			telthread->status=STATUS_MOTOR_OFF;
 			// --- compute adu as from coders
 			mytel_app_sim_getadu(telthread);
 			// --- convert adu to deg
@@ -1031,48 +1154,40 @@ int ThreadTel_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 		/******************/
 	   /*** hadec_init ***/
 		/******************/
-		if (strcmp(telthread->action_cur,action_locale)!=0) {
-			// actionne la fonction que si elle n'a pas encore été lancée
-			telthread->coord_app_cod_deg_ha0=telthread->ha0;
-			telthread->coord_app_cod_deg_dec0=telthread->dec0;
-			telthread->coord_app_sim_deg_ha0=telthread->ha0;
-			telthread->coord_app_sim_deg_dec0=telthread->dec0;
-			if (telthread->mode==MODE_REEL) {
-				// --- update coordinates from coders
-				mytel_app_cod_getadu(telthread);
-				mytel_app_cod_setadu0(telthread);
-				mytel_app2cat_cod_deg0(telthread);
-			}
-			// --- update coordinates for simulator
-			mytel_app_sim_getadu(telthread);
-			mytel_app_sim_setadu0(telthread);
-			mytel_app2cat_sim_deg0(telthread);
+		// actionne la fonction que si elle n'a pas encore été lancée
+		telthread->coord_app_cod_deg_ha0=telthread->ha0;
+		telthread->coord_app_cod_deg_dec0=telthread->dec0;
+		telthread->coord_app_sim_deg_ha0=telthread->ha0;
+		telthread->coord_app_sim_deg_dec0=telthread->dec0;
+		if (telthread->mode==MODE_REEL) {
+			// --- update coordinates from coders
+			mytel_app_cod_getadu(telthread);
+			mytel_app_cod_setadu0(telthread);
+			mytel_app2cat_cod_deg0(telthread);
 		}
-		// on remet l'action precedente pour la prochain tour de boucle
-		strcpy(telthread->action_next,telthread->action_prev);
+		// --- update coordinates for simulator
+		mytel_app_sim_getadu(telthread);
+		mytel_app_sim_setadu0(telthread);
+		mytel_app2cat_sim_deg0(telthread);
 	} else if (strcmp(action_locale,"radec_init")==0) {
 		/******************/
 	   /*** radec_init ***/
 		/******************/
-		if (strcmp(telthread->action_cur,action_locale)!=0) {
-			// actionne la fonction que si elle n'a pas encore été lancée
-			telthread->coord_app_cod_deg_ra0=telthread->ra0;
-			telthread->coord_app_cod_deg_dec0=telthread->dec0;
-			telthread->coord_app_sim_deg_ra0=telthread->ra0;
-			telthread->coord_app_sim_deg_dec0=telthread->dec0;
-			if (telthread->mode==MODE_REEL) {
-				// --- update coordinates from coders
-				mytel_app_cod_getadu(telthread);
-				mytel_app_cod_setadu0(telthread);
-				mytel_cat2app_cod_deg0(telthread);
-			}
-			// --- update coordinates for simulator
-			mytel_app_sim_getadu(telthread);
-			mytel_app_sim_setadu0(telthread);
-			mytel_cat2app_sim_deg0(telthread);
+		// actionne la fonction que si elle n'a pas encore été lancée
+		telthread->coord_app_cod_deg_ra0=telthread->ra0;
+		telthread->coord_app_cod_deg_dec0=telthread->dec0;
+		telthread->coord_app_sim_deg_ra0=telthread->ra0;
+		telthread->coord_app_sim_deg_dec0=telthread->dec0;
+		if (telthread->mode==MODE_REEL) {
+			// --- update coordinates from coders
+			mytel_app_cod_getadu(telthread);
+			mytel_app_cod_setadu0(telthread);
+			mytel_cat2app_cod_deg0(telthread);
 		}
-		// on remet l'action precedente pour la prochain tour de boucle
-		strcpy(telthread->action_next,telthread->action_prev);
+		// --- update coordinates for simulator
+		mytel_app_sim_getadu(telthread);
+		mytel_app_sim_setadu0(telthread);
+		mytel_cat2app_sim_deg0(telthread);
 	} else if (strcmp(action_locale,"hadec_goto")==0) {
 		/******************/
 	   /*** hadec_goto ***/
@@ -1426,18 +1541,18 @@ int mytel_app_cod_setadu(struct telprop *tel) {
 	/* --- */
 	dadu=(int)tel->coord_app_cod_adu_dha;
 	signe='0';
+	strcpy(serial6,"00000000");
 	if (dadu<0) {
 		dadu=-dadu;
 		signe='1';
 	}
 	sprintf(s,"set binar [convert_base \"%d\" 10 2] ; set binar [string repeat 0 [expr 32-[string length $binar]]]$binar",(int)dadu); mytel_tcleval(tel,s);
 	strcpy(ss,tel->interp->result);
-	strcpy(serial6,"00000000");
+	ss[0]=signe;
 	if (ss[0] =='1') { serial6[4]='1'; ss[0] ='0'; }
 	if (ss[8] =='1') { serial6[5]='1'; ss[8] ='0'; }
 	if (ss[16]=='1') { serial6[6]='1'; ss[16]='0'; }
 	if (ss[24]=='1') { serial6[7]='1'; ss[24]='0'; }
-	serial6[4]=signe;
 	sprintf(s,"set hexa [convert_base \"%s%s\" 2 16] ; set hexa [string repeat 0 [expr 10-[string length $hexa]]]$hexa",ss,serial6); mytel_tcleval(tel,s);
 	strcpy(ss,tel->interp->result);
 	sprintf(s,"E0 70 %c%c %c%c %c%c %c%c %c%c",ss[0],ss[1],ss[2],ss[3],ss[4],ss[5],ss[6],ss[7],ss[8],ss[9]);
@@ -1448,21 +1563,21 @@ int mytel_app_cod_setadu(struct telprop *tel) {
 	/* --- */
 	dadu=(int)tel->coord_app_cod_adu_ddec;
 	signe='0';
+	strcpy(serial6,"00000000");
 	if (dadu<0) {
 		dadu=-dadu;
 		signe='1';
 	}
 	sprintf(s,"set binar [convert_base \"%d\" 10 2] ; set binar [string repeat 0 [expr 32-[string length $binar]]]$binar",(int)dadu); mytel_tcleval(tel,s);
 	strcpy(ss,tel->interp->result);
-	strcpy(serial6,"00000000");
+	ss[0]=signe;
 	if (ss[0] =='1') { serial6[4]='1'; ss[0] ='0'; }
 	if (ss[8] =='1') { serial6[5]='1'; ss[8] ='0'; }
 	if (ss[16]=='1') { serial6[6]='1'; ss[16]='0'; }
 	if (ss[24]=='1') { serial6[7]='1'; ss[24]='0'; }
-	serial6[4]=signe;
 	sprintf(s,"set hexa [convert_base \"%s%s\" 2 16] ; set hexa [string repeat 0 [expr 10-[string length $hexa]]]$hexa",ss,serial6); mytel_tcleval(tel,s);
 	strcpy(ss,tel->interp->result);
-	sprintf(s,"E0 71 %c%c %c%c %c%c %c%c %c%c",ss[0],ss[1],ss[2],ss[3],ss[4],ss[5],ss[6],ss[7],ss[8],ss[9]);
+	sprintf(s,"E1 70 %c%c %c%c %c%c %c%c %c%c",ss[0],ss[1],ss[2],ss[3],ss[4],ss[5],ss[6],ss[7],ss[8],ss[9]);
 	strcpy(ss,s);
 	sprintf(s,"set envoi \"%s\" ; set res [envoi $envoi]",ss); mytel_tcleval(tel,s);
 	strcat(ss,tel->interp->result);
@@ -1595,7 +1710,7 @@ void mytel_app2cat_cod_deg(struct telprop *tel) {
 void mytel_cat2app_cod_deg(struct telprop *tel, double jd) {
    char s[1024],ss[1024];
    double raJ2000,decJ2000;
-	double coef=15.0410686;
+	double coef=tel->sideral_deg_per_sec;
 	raJ2000=tel->coord_cat_cod_deg_ra;
 	tel->utcjd_cat_cod_deg_ra=jd;
 	decJ2000=tel->coord_cat_cod_deg_dec;
@@ -1624,7 +1739,7 @@ void mytel_cat2app_cod_deg(struct telprop *tel, double jd) {
 
 	// --- speed (arcsec/sec)
 	if (tel->status==STATUS_MOTOR_OFF) {
-		tel->speed_app_cod_deg_ra=coef;
+		tel->speed_app_cod_deg_ra=tel->sideral_deg_per_sec;
 		tel->speed_app_cod_deg_dec=0;
 		tel->speed_app_cod_deg_ha=0;
 		tel->speed_app_cod_deg_az=0;
@@ -1691,6 +1806,7 @@ void mytel_cat2app_cod_deg0(struct telprop *tel) {
 	tel->utcjd_cat_cod_deg_dec0=jd;
    sprintf(s, "mc_hip2tel { 1 1 %f %f J2000 J2000 0 0 0 } %f {%s} %d %d {%s} {%s}",raJ2000, decJ2000,jd, tel->homePosition, tel->radec_model_pressure, tel->radec_model_temperature,tel->radec_model_symbols, tel->radec_model_coefficients);
 	mytel_tcleval(tel,s);
+	strcpy(ss,tel->interp->result);
 	// --- deg
 	sprintf(s,"string trim [lindex {%s} 10]",ss); mytel_tcleval(tel,s);
 	tel->coord_app_cod_deg_ra0=atof(tel->interp->result);
@@ -1730,27 +1846,26 @@ int mytel_app_sim_getadu(struct telprop *tel) {
 		/* --- a remplacer par un calcul theorique hip2tel
 		tel->utcjd_app_sim_adu_az=jd;	
 		dsec=(jd-tel->utcjd_app_sim_adu_az0)*86400.;
-		tel->coord_app_sim_adu_az=(int)(tel->coord_app_sim_adu_az0+dsec/tel->sideral_sep_per_day*tel->N0+telthread->coord_app_sim_adu_cumdaz);
+		tel->coord_app_sim_adu_az=(int)(tel->coord_app_sim_adu_az0+dsec/tel->sideral_sec_per_day*tel->N0+telthread->coord_app_sim_adu_cumdaz);
 		tel->utcjd_app_sim_adu_elev=jd;	
 		dsec=(jd-tel->utcjd_app_sim_adu_elev0)*86400.;
-		tel->coord_app_sim_adu_elev=(int)(tel->coord_app_sim_adu_elev0+dsec/tel->sideral_sep_per_day*tel->N1+telthread->coord_app_sim_adu_cumdelev);
+		tel->coord_app_sim_adu_elev=(int)(tel->coord_app_sim_adu_elev0+dsec/tel->sideral_sec_per_day*tel->N1+telthread->coord_app_sim_adu_cumdelev);
 		tel->utcjd_app_sim_adu_rot=jd;	
 		dsec=(jd-tel->utcjd_app_sim_adu_rot0)*86400.;
-		tel->coord_app_sim_adu_rot=(int)(tel->coord_app_sim_adu_rot0+dsec/tel->sideral_sep_per_day*tel->N2+telthread->coord_app_sim_adu_cumdrot);
+		tel->coord_app_sim_adu_rot=(int)(tel->coord_app_sim_adu_rot0+dsec/tel->sideral_sec_per_day*tel->N2+telthread->coord_app_sim_adu_cumdrot);
 		*/
 		tel->coord_app_sim_adu_ha=0;
 		tel->coord_app_sim_adu_dec=0;
 		tel->utcjd_app_sim_adu_ha=jd;			
 		tel->utcjd_app_sim_adu_dec=jd;	
 	} else {
-		dsec=(jd-tel->utcjd_app_sim_adu_ha0)*86400.;
-		tel->coord_app_sim_adu_ha=(int)(tel->coord_app_sim_adu_ha0+dsec/tel->sideral_sep_per_day*tel->N0+telthread->coord_app_sim_adu_cumdha);
-		tel->utcjd_app_sim_adu_ha=jd;	
-		dsec=(jd-tel->utcjd_app_sim_adu_dec0)*86400.;
-		tel->coord_app_sim_adu_dec=tel->coord_app_sim_adu_dec0+telthread->coord_app_sim_adu_cumddec;
+		dsec=(jd-tel->utcjd_app_sim_adu_ha)*86400.;
+		tel->coord_app_sim_adu_ha=tel->coord_app_sim_adu_ha+tel->speed_app_sim_adu_ha*dsec*tel->N0/360.;
+		tel->coord_app_sim_adu_dec=tel->coord_app_sim_adu_dec+tel->speed_app_sim_adu_dec*dsec*tel->N1/360.;
+		tel->utcjd_app_sim_adu_ha=jd;
 		tel->utcjd_app_sim_adu_dec=jd;	
-		dsec=(jd-tel->utcjd_app_sim_adu_hapec0)*86400.;	
-		tel->coord_app_sim_adu_hapec=(int)(fmod(telthread->coord_app_sim_adu_hapec0+25600*dsec/480.,25600));
+		//
+		tel->coord_app_sim_adu_hapec=(int)(fmod(telthread->coord_app_sim_adu_hapec+25600*dsec/480.,25600));
 		tel->utcjd_app_sim_adu_hapec=jd;
 		tel->coord_app_sim_adu_az=0;
 		tel->coord_app_sim_adu_elev=0;
@@ -1895,6 +2010,7 @@ void mytel_cat2app_sim_deg(struct telprop *tel, double jd) {
 	tel->utcjd_cat_sim_deg_dec=jd;
    sprintf(s, "mc_hip2tel { 1 1 %f %f J2000 J2000 0 0 0 } %f {%s} %d %d {%s} {%s}",raJ2000, decJ2000,jd, tel->homePosition, tel->radec_model_pressure, tel->radec_model_temperature,tel->radec_model_symbols, tel->radec_model_coefficients);
 	mytel_tcleval(tel,s);
+	strcpy(ss,tel->interp->result);
 	// --- deg
 	sprintf(s,"string trim [lindex {%s} 10]",ss); mytel_tcleval(tel,s);
 	tel->coord_app_sim_deg_ra=atof(tel->interp->result);
@@ -1916,7 +2032,7 @@ void mytel_cat2app_sim_deg(struct telprop *tel, double jd) {
 	tel->utcjd_app_sim_deg_rot=jd;
 	// --- arcsec/sec
 	if (tel->status==STATUS_MOTOR_OFF) {
-		tel->speed_app_sim_deg_ra=coef;
+		tel->speed_app_sim_deg_ra=tel->sideral_deg_per_sec;
 		tel->speed_app_sim_deg_dec=0;
 		tel->speed_app_sim_deg_ha=0;
 		tel->speed_app_sim_deg_az=0;
@@ -1943,7 +2059,7 @@ void mytel_cat2app_sim_deg(struct telprop *tel, double jd) {
 /***************************************************************************/
 void mytel_app_sim_deg2adu(struct telprop *tel) {
 	double dadu,ddeg;
-	double coef=15.0410686;
+	double coef=tel->sideral_deg_per_sec;
 	if (tel->type_mount==MOUNT_ALTAZ) {
 		// coords
 		// tel->N0; // number of ADU for 360 deg
@@ -2028,6 +2144,7 @@ void mytel_cat2app_sim_deg0(struct telprop *tel) {
 	tel->utcjd_cat_sim_deg_dec0=jd;
    sprintf(s, "mc_hip2tel { 1 1 %f %f J2000 J2000 0 0 0 } %f {%s} %d %d {%s} {%s}",raJ2000, decJ2000,jd, tel->homePosition, tel->radec_model_pressure, tel->radec_model_temperature,tel->radec_model_symbols, tel->radec_model_coefficients);
 	mytel_tcleval(tel,s);
+	strcpy(ss,tel->interp->result);
 	// --- deg
 	sprintf(s,"string trim [lindex {%s} 10]",ss); mytel_tcleval(tel,s);
 	tel->coord_app_sim_deg_ra0=atof(tel->interp->result);
@@ -2057,57 +2174,12 @@ int mytel_app_sim_setadu(struct telprop *tel) {
 	char s[1024],ss[1024],serial6[9],signe;
 	int dadu;
    time_t ltime;
-	/*
-	set binar [convert_base 128000 10 2]
-	set binar [string repeat 0 [expr 32-[string length $binar]]]$binar
-	# 0000 0000 0000 0001 1111 0100 0000 0000 0000 1010
-	# *         *         *         *         serial6
-	set hexa [convert_base "0000 0000 0000 0001 0111 0100 0000 0000 0000 0010" 2 16]
-	*/
 	/* --- */
 	dadu=(int)tel->coord_app_sim_adu_dha;
-	signe='0';
-	if (dadu<0) {
-		dadu=-dadu;
-		signe='1';
-	}
-	sprintf(s,"set binar [convert_base \"%d\" 10 2] ; set binar [string repeat 0 [expr 32-[string length $binar]]]$binar",(int)dadu); mytel_tcleval(tel,s);
-	strcpy(ss,tel->interp->result);
-	strcpy(serial6,"00000000");
-	if (ss[0] =='1') { serial6[4]='1'; ss[0] ='0'; }
-	if (ss[8] =='1') { serial6[5]='1'; ss[8] ='0'; }
-	if (ss[16]=='1') { serial6[6]='1'; ss[16]='0'; }
-	if (ss[24]=='1') { serial6[7]='1'; ss[24]='0'; }
-	serial6[4]=signe;
-	sprintf(s,"set hexa [convert_base \"%s%s\" 2 16] ; set hexa [string repeat 0 [expr 10-[string length $hexa]]]$hexa",ss,serial6); mytel_tcleval(tel,s);
-	strcpy(ss,tel->interp->result);
-	sprintf(s,"E0 70 %c%c %c%c %c%c %c%c %c%c",ss[0],ss[1],ss[2],ss[3],ss[4],ss[5],ss[6],ss[7],ss[8],ss[9]);
-	strcpy(ss,s);
-	//sprintf(s,"set envoi \"%s\" ; set res [envoi $envoi]",ss); mytel_tcleval(tel,s);
-	//strcat(ss,tel->interp->result);
 	tel->coord_app_sim_adu_cumdha+=tel->coord_app_sim_adu_dha;
 	tel->utcjd_app_sim_adu_ha=mytel_sec2jd((int)time(&ltime));	
 	/* --- */
 	dadu=(int)tel->coord_app_sim_adu_ddec;
-	signe='0';
-	if (dadu<0) {
-		dadu=-dadu;
-		signe='1';
-	}
-	sprintf(s,"set binar [convert_base \"%d\" 10 2] ; set binar [string repeat 0 [expr 32-[string length $binar]]]$binar",(int)dadu); mytel_tcleval(tel,s);
-	strcpy(ss,tel->interp->result);
-	strcpy(serial6,"00000000");
-	if (ss[0] =='1') { serial6[4]='1'; ss[0] ='0'; }
-	if (ss[8] =='1') { serial6[5]='1'; ss[8] ='0'; }
-	if (ss[16]=='1') { serial6[6]='1'; ss[16]='0'; }
-	if (ss[24]=='1') { serial6[7]='1'; ss[24]='0'; }
-	serial6[4]=signe;
-	sprintf(s,"set hexa [convert_base \"%s%s\" 2 16] ; set hexa [string repeat 0 [expr 10-[string length $hexa]]]$hexa",ss,serial6); mytel_tcleval(tel,s);
-	strcpy(ss,tel->interp->result);
-	sprintf(s,"E0 71 %c%c %c%c %c%c %c%c %c%c",ss[0],ss[1],ss[2],ss[3],ss[4],ss[5],ss[6],ss[7],ss[8],ss[9]);
-	strcpy(ss,s);
-	//sprintf(s,"set envoi \"%s\" ; set res [envoi $envoi]",ss); mytel_tcleval(tel,s);
-	//strcat(ss,tel->interp->result);
 	tel->coord_app_sim_adu_cumddec+=tel->coord_app_sim_adu_ddec;
 	tel->utcjd_app_sim_adu_dec=mytel_sec2jd((int)time(&ltime));	
 #endif
@@ -2269,6 +2341,19 @@ void mytel_app_sim_setdadu(struct telprop *tel) {
 	tel->coord_app_sim_adu_daz=0;
 	tel->coord_app_sim_adu_delev=0;
 	tel->coord_app_sim_adu_drot=0;
+	//
+	tel->speed_app_sim_adu_ha=2;
+	if (tel->coord_app_sim_adu_dha>0) {
+		tel->speed_app_sim_adu_ha*=-1;
+	}
+	tel->speed_app_sim_adu_dec=2;
+	if (tel->coord_app_sim_adu_ddec>0) {
+		tel->speed_app_sim_adu_dec*=-1;
+	}
+	tel->speed_app_sim_adu_ra=0;
+	tel->speed_app_sim_adu_az=0; // a calculer
+	tel->speed_app_sim_adu_elev=0; // a calculer
+	tel->speed_app_sim_adu_rot=0; // a calculer
 }
 
 /******************************************************************************/
@@ -2646,7 +2731,15 @@ int mytel_limites(void) {
 
 int mytel_motor_stop(struct telprop *tel) {
 	char s[1024];
-	// No Park Mode => motor off (= trois lignes suivantes)
+	// motor off
+	sprintf(s,"set envoi \"E0 50\" ; set res [envoi $envoi] ; set clair [mcmthexa_decode $envoi $res]"); mytel_tcleval(tel,s);
+	sprintf(s,"set envoi \"E1 52\" ; set res [envoi $envoi] ; set clair [mcmthexa_decode $envoi $res]"); mytel_tcleval(tel,s);
+	return 0;
+}
+
+int mytel_motor_on(struct telprop *tel) {
+	char s[1024];
+	// No Park Mode => motor on (= trois lignes suivantes)
 	sprintf(s,"set envoi \"E0 4E\" ; set res [envoi $envoi] ; set clair [mcmthexa_decode $envoi $res]"); mytel_tcleval(tel,s);
 	// Sidérale - 25600 micro-pas
 	sprintf(s,"set envoi \"E0 53\" ; set res [envoi $envoi] ; set clair [mcmthexa_decode $envoi $res]"); mytel_tcleval(tel,s);
@@ -2693,7 +2786,7 @@ int mytel_tcl_procs(struct telprop *tel) {
 	sprintf(s,"}\n");Tcl_DStringAppend(&dsptr,s,-1);
 	sprintf(s,"# --- conversion vers la base de sortie\n");Tcl_DStringAppend(&dsptr,s,-1);
 	sprintf(s,"set symbols {0 1 2 3 4 5 6 7 8 9 A B C D E F}\n");Tcl_DStringAppend(&dsptr,s,-1);
-	sprintf(s,"set integ [expr abs(int($integ_decimal))]\n");Tcl_DStringAppend(&dsptr,s,-1);
+	sprintf(s,"set integ [expr abs(round($integ_decimal))]\n");Tcl_DStringAppend(&dsptr,s,-1);
 	sprintf(s,"if {$baseout==\"ascii\"} {\n");Tcl_DStringAppend(&dsptr,s,-1);
 	sprintf(s,"   if {$integ>255} {\n");Tcl_DStringAppend(&dsptr,s,-1);
 	sprintf(s,"      set integ 255\n");Tcl_DStringAppend(&dsptr,s,-1);
@@ -2704,7 +2797,7 @@ int mytel_tcl_procs(struct telprop *tel) {
 	sprintf(s,"   set bb \"\"\n");Tcl_DStringAppend(&dsptr,s,-1);
 	sprintf(s,"   set k 0\n");Tcl_DStringAppend(&dsptr,s,-1);
 	sprintf(s,"   while {$sortie==0} {\n");Tcl_DStringAppend(&dsptr,s,-1);
-	sprintf(s,"      set b [expr int(floor($integ/$baseout))]\n");Tcl_DStringAppend(&dsptr,s,-1);
+	sprintf(s,"      set b [expr round(floor($integ/$baseout))]\n");Tcl_DStringAppend(&dsptr,s,-1);
 	sprintf(s,"      set reste [lindex $symbols [expr $integ-$baseout*$b]]\n");Tcl_DStringAppend(&dsptr,s,-1);
 	sprintf(s,"      set bb \"${reste}${bb}\"\n");Tcl_DStringAppend(&dsptr,s,-1);
 	sprintf(s,"      set integ $b\n");Tcl_DStringAppend(&dsptr,s,-1);
@@ -2746,7 +2839,7 @@ int mytel_tcl_procs(struct telprop *tel) {
 	sprintf(s,"	set total [expr $total+[convert_base $param4 16 10]]\n");Tcl_DStringAppend(&dsptr,s,-1);
 	sprintf(s,"	set total [expr $total+[convert_base $param5 16 10]]\n");Tcl_DStringAppend(&dsptr,s,-1);
 	sprintf(s,"	set total [expr $total+[convert_base $param6 16 10]]\n");Tcl_DStringAppend(&dsptr,s,-1);
-	sprintf(s,"	set checksum [expr $total%%256]\n");Tcl_DStringAppend(&dsptr,s,-1);
+	sprintf(s,"	set checksum [expr $total%%128]\n");Tcl_DStringAppend(&dsptr,s,-1);
 	sprintf(s,"	set hexa \"$carte $cmd $param2 $param3 $param4 $param5 $param6 [convert_base $checksum 10 16]\"\n");Tcl_DStringAppend(&dsptr,s,-1);
 	sprintf(s,"	append msg [convert_base $carte  16 ascii]\n");Tcl_DStringAppend(&dsptr,s,-1);
 	sprintf(s,"	append msg [convert_base $cmd    16 ascii]\n");Tcl_DStringAppend(&dsptr,s,-1);
@@ -2791,8 +2884,23 @@ int mytel_tcl_procs(struct telprop *tel) {
 	sprintf(s,"		if {[convert_base [lindex $mcmthexa_out 0] 16 10]!=6} {\n");Tcl_DStringAppend(&dsptr,s,-1);
 	sprintf(s,"			return \"\"\n");Tcl_DStringAppend(&dsptr,s,-1);
 	sprintf(s,"		}\n");Tcl_DStringAppend(&dsptr,s,-1);
-	sprintf(s,"		# nb de micropas pour 360 deg\n");Tcl_DStringAppend(&dsptr,s,-1);
-	sprintf(s,"		set res [expr 100*[convert_base \"[lindex $mcmthexa_out 30][lindex $mcmthexa_out 29]\" 16 10]]\n");Tcl_DStringAppend(&dsptr,s,-1);
+	sprintf(s,"		set res \"\"\n");Tcl_DStringAppend(&dsptr,s,-1);
+	sprintf(s,"		# VM_Guidage\n");Tcl_DStringAppend(&dsptr,s,-1);
+	sprintf(s,"		lappend res [expr 625000. / (([convert_base [lindex $mcmthexa_out 3] 16 10]/10) + [convert_base \"[lindex $mcmthexa_out 2]\" 16 10]*256. + [convert_base \"[lindex $mcmthexa_out 1]\" 16 10]) ]\n");Tcl_DStringAppend(&dsptr,s,-1);
+	sprintf(s,"		# VM_Corec_Plus\n");Tcl_DStringAppend(&dsptr,s,-1);
+	sprintf(s,"		lappend res [expr 625000. / ([convert_base \"[lindex $mcmthexa_out 5]\" 16 10]*256. + [convert_base \"[lindex $mcmthexa_out 4]\" 16 10]) ]\n");Tcl_DStringAppend(&dsptr,s,-1);
+	sprintf(s,"		# VM_Corec_Moins\n");Tcl_DStringAppend(&dsptr,s,-1);
+	sprintf(s,"		lappend res [expr 625000. / ([convert_base \"[lindex $mcmthexa_out 7]\" 16 10]*256. + [convert_base \"[lindex $mcmthexa_out 6]\" 16 10]) ]\n");Tcl_DStringAppend(&dsptr,s,-1);
+	sprintf(s,"		# VM_Lent\n");Tcl_DStringAppend(&dsptr,s,-1);
+	sprintf(s,"		lappend res [expr 8. * 625000. / ([convert_base \"[lindex $mcmthexa_out 9]\" 16 10]*256. + [convert_base \"[lindex $mcmthexa_out 8]\" 16 10]) ]\n");Tcl_DStringAppend(&dsptr,s,-1);
+	sprintf(s,"		# VM_Rapide\n");Tcl_DStringAppend(&dsptr,s,-1);
+	sprintf(s,"		lappend res [expr 32. * 625000. / ([convert_base \"[lindex $mcmthexa_out 11]\" 16 10]*256. + [convert_base \"[lindex $mcmthexa_out 10]\" 16 10]) ]\n");Tcl_DStringAppend(&dsptr,s,-1);
+	sprintf(s,"		# VM_Acce -> Sens_Raq_Led\n");Tcl_DStringAppend(&dsptr,s,-1);
+	sprintf(s,"		for {set k 12 } {$k<=28} {incr k} {lappend res [expr [convert_base \"[lindex $mcmthexa_out $k]\" 16 10]] }\n");Tcl_DStringAppend(&dsptr,s,-1);
+	sprintf(s,"		# Nb_teeth: Number of teeth of the worm wheel\n");Tcl_DStringAppend(&dsptr,s,-1);
+	sprintf(s,"		lappend res [expr [convert_base \"[lindex $mcmthexa_out 29][lindex $mcmthexa_out 30]\" 16 10]]\n");Tcl_DStringAppend(&dsptr,s,-1);
+	sprintf(s,"		# ParkMode -> Raq_type_can_address\n");Tcl_DStringAppend(&dsptr,s,-1);
+	sprintf(s,"		for {set k 31 } {$k<=48} {incr k} {lappend res [expr [convert_base \"[lindex $mcmthexa_out $k]\" 16 10]] }\n");Tcl_DStringAppend(&dsptr,s,-1);
 	sprintf(s,"		return $res\n");Tcl_DStringAppend(&dsptr,s,-1);
 	sprintf(s,"	}\n");Tcl_DStringAppend(&dsptr,s,-1);
 	sprintf(s,"	if {$cmd==\"72\"} {\n");Tcl_DStringAppend(&dsptr,s,-1);
@@ -2824,7 +2932,7 @@ int mytel_tcl_procs(struct telprop *tel) {
 	sprintf(s,"proc envoi { mcmthexa } {\n");Tcl_DStringAppend(&dsptr,s,-1);
 	sprintf(s,"   puts -nonewline %s [lindex [mcmthexa2ascii $mcmthexa] 0] ; flush %s\n",telthread->channel,telthread->channel);Tcl_DStringAppend(&dsptr,s,-1);
 	sprintf(s,"   after %d\n",telthread->tempo);Tcl_DStringAppend(&dsptr,s,-1);
-	sprintf(s,"   set res [ascii2mcmthexa [read %s]]\n",telthread->channel);Tcl_DStringAppend(&dsptr,s,-1);
+	sprintf(s,"   set res [string trim [ascii2mcmthexa [read %s]]]\n",telthread->channel);Tcl_DStringAppend(&dsptr,s,-1);
 	sprintf(s,"   return $res\n");Tcl_DStringAppend(&dsptr,s,-1);
 	sprintf(s,"}\n");Tcl_DStringAppend(&dsptr,s,-1);
 	mytel_tcleval(tel,Tcl_DStringValue(&dsptr));

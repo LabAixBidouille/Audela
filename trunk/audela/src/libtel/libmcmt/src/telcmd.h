@@ -31,10 +31,14 @@ static struct cmditem cmdlist[] = {
    /* === Specific commands for that telescope ===*/
    {"action", (Tcl_CmdProc *)cmdTelAction},\
    {"loopeval", (Tcl_CmdProc *)cmdTelLoopEval},\
+   {"loopresult", (Tcl_CmdProc *)cmdTelLoopResult},\
+   {"hexaeval", (Tcl_CmdProc *)cmdTelHexaEval},\
+   {"hexaresult", (Tcl_CmdProc *)cmdTelHexaResult},\
    {"allcoord", (Tcl_CmdProc *)cmdTelAllCoord},\
    {"allcoordjd", (Tcl_CmdProc *)cmdTelAllCoordJd},\
    {"hadec", (Tcl_CmdProc *)cmdTelHaDec},\
    {"adu", (Tcl_CmdProc *)cmdTelAdu},\
+   {"eeprom", (Tcl_CmdProc *)cmdTelEeprom},\
    /* === Last function terminated by NULL pointers ===*/
    {NULL, NULL}
 };

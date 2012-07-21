@@ -40,23 +40,6 @@
  */
 
 
-int cmdTelLoopEval(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
-	char s[2048];
-   struct telprop *tel;
-   tel = (struct telprop*)clientData;
-   if (argc<3) {
-   	sprintf(s,"usage: %s %s tcl_command_line",argv[0],argv[1]);
-      Tcl_SetResult(interp,s,TCL_VOLATILE);
-		return TCL_ERROR;
-	} else {
-		my_pthread_mutex_lock(&mutex);
-		// --- The CmdThreadMcmt_loopeval will start a Tcl_Eval just after the current loop action
-		sprintf(s,"::thread::send %s { CmdThreadMcmt_loopeval \"%s\"}",tel->loopThreadId,argv[2]);
-		mytel_tcleval(tel,s);
-		my_pthread_mutex_unlock(&mutex);
-	}
-	return TCL_OK;
-}
 
 int cmdTelAllCoord(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 	char list[2048],elem[1024];
@@ -109,7 +92,7 @@ for {set k $k1} {$k<$n} {incr k} {
 		::console::affiche_resultat "$re\n"
 	}
 	*/
-	char list[12048],elem[1024];
+	char list[50048],elem[1024];
    my_pthread_mutex_lock(&mutex);
 	strcpy(list,"");
 	/* --- beginning of automatically generated C code ---*/
@@ -436,6 +419,72 @@ int cmdTelAction(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
 	return TCL_OK;
 }
 
+int cmdTelLoopEval(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   char ligne[256];
+   if (argc<3) {
+   	sprintf(ligne,"usage: %s %s command_line",argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+		return TCL_ERROR;
+	}
+   my_pthread_mutex_lock(&mutex);
+	strcpy(telthread->eval_command_line,argv[2]);
+	sprintf(ligne,"Result stored in %s loopresult",argv[0]);
+	Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+	my_pthread_mutex_unlock(&mutex);
+	return TCL_OK;
+}
+
+int cmdTelLoopResult(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   char ligne[256];
+   my_pthread_mutex_lock(&mutex);
+	Tcl_SetResult(interp,telthread->eval_result,TCL_VOLATILE);
+	my_pthread_mutex_unlock(&mutex);
+	return TCL_OK;
+}
+
+int cmdTelHexaEval(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   char ligne[256];
+   if (argc<3) {
+   	sprintf(ligne,"usage: %s %s command_line",argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+		return TCL_ERROR;
+	}
+   my_pthread_mutex_lock(&mutex);
+	strcpy(telthread->mcmt_hexa_command_line,argv[2]);
+	sprintf(ligne,"Result stored in %s hexaresult",argv[0]);
+	Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+	my_pthread_mutex_unlock(&mutex);
+	return TCL_OK;
+}
+
+int cmdTelHexaResult(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   char ligne[256];
+   my_pthread_mutex_lock(&mutex);
+	Tcl_SetResult(interp,telthread->mcmt_hexa_result,TCL_VOLATILE);
+	my_pthread_mutex_unlock(&mutex);
+	return TCL_OK;
+}
+
+/*
+int cmdTelLoopEval(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+	char s[2048];
+   struct telprop *tel;
+   tel = (struct telprop*)clientData;
+   if (argc<3) {
+   	sprintf(s,"usage: %s %s tcl_command_line",argv[0],argv[1]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+		return TCL_ERROR;
+	} else {
+		my_pthread_mutex_lock(&mutex);
+		// --- The CmdThreadMcmt_loopeval will start a Tcl_Eval just after the current loop action
+		sprintf(s,"::thread::send %s { CmdThreadMcmt_loopeval \"%s\"}",tel->loopThreadId,argv[2]);
+		mytel_tcleval(tel,s);
+		my_pthread_mutex_unlock(&mutex);
+	}
+	return TCL_OK;
+}
+*/
+
 int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
    char ligne[2256],ligne2[2256],texte[256];
    int result = TCL_OK,k;
@@ -534,4 +583,70 @@ int cmdTelAdu(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       }
    }
    return result;
+}
+
+int cmdTelEeprom(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+	char list[12048],elem[1024];
+	int k;
+   my_pthread_mutex_lock(&mutex);
+	strcpy(list,"");
+	for (k=0;k<=1;k++) {
+		sprintf(elem,"{%d VM_Guidage %f {diurnal drift (microstep/sec)}} ",k,telthread->eeprom[k][MCMT_VM_Guidage]);
+		strcat(list,elem);
+		sprintf(elem,"{%d VM_Corec_Plus %f {guiding correction + (microstep/sec)}} ",k,telthread->eeprom[k][MCMT_VM_Corec_Plus]);
+		strcat(list,elem);
+		sprintf(elem,"{%d VM_Corec_Moins %f {guiding correction - (microstep/sec)}} ",k,telthread->eeprom[k][MCMT_VM_Corec_Moins]);
+		strcat(list,elem);
+		sprintf(elem,"{%d VM_Lent %f {centering correction (microstep/sec)}} ",k,telthread->eeprom[k][MCMT_VM_Lent]);
+		strcat(list,elem);
+		sprintf(elem,"{%d VM_Rapide %f {slewing speed (microstep/sec)}} ",k,telthread->eeprom[k][MCMT_VM_Rapide]);
+		strcat(list,elem);
+		sprintf(elem,"{%d VM_Acce %d {0=smooth 1=moderate 2=strong 3=brusque}} ",k,(int)telthread->eeprom[k][MCMT_VM_Acce]);
+		strcat(list,elem);
+		sprintf(elem,"{%d Dir_Guidage %d {255=clocking 1=anticlocking}} ",k,(int)telthread->eeprom[k][MCMT_Dir_Guidage]);
+		strcat(list,elem);
+		sprintf(elem,"{%d Dir_Corec_Plus %d {255=True 1=False}} ",k,(int)telthread->eeprom[k][MCMT_Dir_Corec_Plus]);
+		strcat(list,elem);
+		sprintf(elem,"{%d Dir_Corec_Moins %d {255=True 1=False}} ",k,(int)telthread->eeprom[k][MCMT_Dir_Corec_Moins]);
+		strcat(list,elem);
+		sprintf(elem,"{%d Dir_Lent_Plus %d {255=True 1=False}} ",k,(int)telthread->eeprom[k][MCMT_Dir_Lent_Plus]);
+		strcat(list,elem);
+		sprintf(elem,"{%d Dir_Lent_Moins %d {255=True 1=False}} ",k,(int)telthread->eeprom[k][MCMT_Dir_Lent_Moins]);
+		strcat(list,elem);
+		sprintf(elem,"{%d Dir_Rapide_Plus %d {255=True 1=False}} ",k,(int)telthread->eeprom[k][MCMT_Dir_Rapide_Plus]);
+		strcat(list,elem);
+		sprintf(elem,"{%d Dir_Rapide_Moins %d {255=True 1=False}} ",k,(int)telthread->eeprom[k][MCMT_Dir_Rapide_Moins]);
+		strcat(list,elem);
+		sprintf(elem,"{%d Resol_Guidage %d {255=True 1=False}} ",k,(int)telthread->eeprom[k][MCMT_Resol_Guidage]);
+		strcat(list,elem);
+		sprintf(elem,"{%d Resol_Corec_Plus %d {255=True 1=False}} ",k,(int)telthread->eeprom[k][MCMT_Resol_Corec_Plus]);
+		strcat(list,elem);
+		sprintf(elem,"{%d Resol_Corec_Moins %d {255=True 1=False}} ",k,(int)telthread->eeprom[k][MCMT_Resol_Corec_Moins]);
+		strcat(list,elem);
+		sprintf(elem,"{%d Resol_Lent %d {255=True 1=False}} ",k,(int)telthread->eeprom[k][MCMT_Resol_Lent]);
+		strcat(list,elem);
+		sprintf(elem,"{%d Resol_Rapide %d {255=True 1=False}} ",k,(int)telthread->eeprom[k][MCMT_Resol_Rapide]);
+		strcat(list,elem);
+		sprintf(elem,"{%d Courant_Guidage %d {0=25%% 1=50%% 2=75%% 3=100%%}} ",k,(int)telthread->eeprom[k][MCMT_Courant_Guidage]);
+		strcat(list,elem);
+		sprintf(elem,"{%d Courant_Lent %d {0=25%% 1=50%% 2=75%% 3=100%%}} ",k,(int)telthread->eeprom[k][MCMT_Courant_Lent]);
+		strcat(list,elem);
+		sprintf(elem,"{%d Courant_Rapide %d {0=25%% 1=50%% 2=75%% 3=100%%}} ",k,(int)telthread->eeprom[k][MCMT_Courant_Rapide]);
+		strcat(list,elem);
+		sprintf(elem,"{%d Sens_Raq_Led %d {255=True 1=False}} ",k,(int)telthread->eeprom[k][MCMT_Sens_Raq_Led]);
+		strcat(list,elem);
+		sprintf(elem,"{%d NbTeeth %d {Number of teeth of the worm wheel}} ",k,(int)telthread->eeprom[k][MCMT_NbTeeth]);
+		strcat(list,elem);
+		sprintf(elem,"{%d PasCodeur %d {microsteps per 360 deg}} ",k,25600*(int)telthread->eeprom[k][MCMT_NbTeeth]);
+		strcat(list,elem);
+		sprintf(elem,"{%d ParkMode %d {0=No 1=Yes}} ",k,(int)telthread->eeprom[k][MCMT_ParkMode]);
+		strcat(list,elem);
+		sprintf(elem,"{%d Raq_type_can_address %d {0=Valmeca 1=Canadian}} ",k,(int)telthread->eeprom[k][MCMT_Raq_type_can_address]);
+		strcat(list,elem);
+		sprintf(elem,"{%d MCMT_PEC_ENABLED %d {0=No 1=Yes}} ",k,(int)telthread->eeprom[k][MCMT_PEC_ENABLED]);
+		strcat(list,elem);
+	}
+	Tcl_SetResult(interp,list,TCL_VOLATILE);
+	my_pthread_mutex_unlock(&mutex);
+	return TCL_OK;
 }
