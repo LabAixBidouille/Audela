@@ -1,6 +1,6 @@
 #
 # Fichier : mcmt.cap
-# Mise a jour $Id: mcmt.cap 6795 2011-02-26 16:05:27Z michelpujol $
+# Mise a jour $Id$
 #
 
 #=========================================================================
@@ -18,7 +18,7 @@ set caption(mcmt,port_liaison)                  "Port / Link"
 set caption(mcmt,configurer)                    "Set up"
 set caption(mcmt,controle)                      "Control"
 set caption(mcmt,modele)                        "Model"
-set caption(mcmt,modele_mcmt)                  "mcmt"
+set caption(mcmt,modele_mcmt)                   "mcmt"
 set caption(mcmt,modele_audecom)                "AudeCom"
 set caption(mcmt,modele_skysensor)              "SkySensor 2000 PC"
 set caption(mcmt,modele_gemini)                 "Losmandy Gemini"
@@ -27,7 +27,7 @@ set caption(mcmt,modele_mel_bartels)            "Mel BARTELS"
 set caption(mcmt,modele_astro_physics)          "Astro-Physics"
 set caption(mcmt,modele_fs2)                    "FS2"
 set caption(mcmt,format)                        "Format"
-set caption(mcmt,maj_mcmt)                     "Update time, longitude, latitude and altitude of mcmt"
+set caption(mcmt,maj_mcmt)                      "Update time, longitude, latitude and altitude of mcmt"
 set caption(mcmt,rappelAD)                      "R.A. Guide Speed (arcsec/sec.)"
 set caption(mcmt,rappelDec)                     "Dec. Guide Speed (arcsec/sec.)"
 set caption(mcmt,vitesseSiderale)               "(Sidereal Speed = 15 arcsec/sec.)"
@@ -46,7 +46,7 @@ set caption(mcmt,install_1)                     "End of mcmt plug-in installatio
 set caption(mcmt,install_2)                     "libmcmt.dll library updated."
 
 set caption(mcmt,host_audinet)                  "Host AudiNet/LXnet"
-set caption(mcmt,port_mcmt)                    "mcmt Port"
+set caption(mcmt,port_mcmt)                     "mcmt Port"
 set caption(mcmt,2points)                       ":"
 
 set caption(mcmt,titre_site_web)                "Reference Web Site:"
@@ -62,7 +62,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(mcmt,configurer)                 "Configurer"
    set caption(mcmt,controle)                   "Contrôle"
    set caption(mcmt,modele)                     "Modèle"
-   set caption(mcmt,modele_mcmt)               "mcmt"
+   set caption(mcmt,modele_mcmt)                "mcmt"
    set caption(mcmt,modele_audecom)             "AudeCom"
    set caption(mcmt,modele_skysensor)           "SkySensor 2000 PC"
    set caption(mcmt,modele_gemini)              "Losmandy Gemini"
@@ -71,7 +71,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(mcmt,modele_astro_physics)       "Astro-Physics"
    set caption(mcmt,modele_fs2)                 "FS2"
    set caption(mcmt,format)                     "Format"
-   set caption(mcmt,maj_mcmt)                  "Mise à jour heure, longitude, latitude et altitude du mcmt"
+   set caption(mcmt,maj_mcmt)                   "Mise à jour heure, longitude, latitude et altitude du mcmt"
    set caption(mcmt,rappelAD)                   "Vitesse de rappel en A.D. (arcsec/sec.)"
    set caption(mcmt,rappelDec)                  "Vitesse de rappel en Déc. (arcsec/sec.)"
    set caption(mcmt,vitesseSiderale)            "(vitesse sidérale = 15 arcsec/sec.)"
@@ -90,7 +90,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(mcmt,install_2)                  "La librairie libmcmt.dll a été mise à jour."
 
    set caption(mcmt,host_audinet)               "Host AudiNet/LXnet"
-   set caption(mcmt,port_mcmt)                 "Port mcmt"
+   set caption(mcmt,port_mcmt)                  "Port mcmt"
    set caption(mcmt,2points)                    ":"
 
    set caption(mcmt,titre_site_web)             "Site Web de référence :"
@@ -106,7 +106,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(mcmt,configurer)                 "Configurare"
    set caption(mcmt,controle)                   "Controllo"
    set caption(mcmt,modele)                     "Modello"
-   set caption(mcmt,modele_mcmt)               "mcmt"
+   set caption(mcmt,modele_mcmt)                "mcmt"
    set caption(mcmt,modele_audecom)             "AudeCom"
    set caption(mcmt,modele_skysensor)           "SkySensor 2000 PC"
    set caption(mcmt,modele_gemini)              "Losmandy Gemini"
@@ -115,7 +115,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(mcmt,modele_astro_physics)       "Astro-Physics"
    set caption(mcmt,modele_fs2)                 "FS2"
    set caption(mcmt,format)                     "Formato"
-   set caption(mcmt,maj_mcmt)                  "Aggiornamento di ora, longitudine, latitudine ed altitudine dell' mcmt"
+   set caption(mcmt,maj_mcmt)                   "Aggiornamento di ora, longitudine, latitudine ed altitudine dell' mcmt"
    set caption(mcmt,rappelAD)                   "Velocità guida in A.R. (arcsec/sec.)"
    set caption(mcmt,rappelDec)                  "Velocità guida in Dec. (arcsec/sec.)"
    set caption(mcmt,vitesseSiderale)            "(velocità siderale = 15 arcsec/sec.)"
@@ -134,7 +134,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(mcmt,install_2)                  "La libreria libmcmt.dll è stata aggiornata."
 
    set caption(mcmt,host_audinet)               "Host AudiNet/LXnet"
-   set caption(mcmt,port_mcmt)                 "Porta mcmt"
+   set caption(mcmt,port_mcmt)                  "Porta mcmt"
    set caption(mcmt,2points)                    ":"
 
    set caption(mcmt,titre_site_web)             "Sito Web di riferimento:"
@@ -150,7 +150,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(mcmt,configurer)                 "Configurar"
    set caption(mcmt,controle)                   "Control"
    set caption(mcmt,modele)                     "Modelo"
-   set caption(mcmt,modele_mcmt)               "mcmt"
+   set caption(mcmt,modele_mcmt)                "mcmt"
    set caption(mcmt,modele_audecom)             "AudeCom"
    set caption(mcmt,modele_skysensor)           "SkySensor 2000 PC"
    set caption(mcmt,modele_gemini)              "Losmandy Gemini"
@@ -159,7 +159,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(mcmt,modele_astro_physics)       "Astro-Physics"
    set caption(mcmt,modele_fs2)                 "FS2"
    set caption(mcmt,format)                     "Formato"
-   set caption(mcmt,maj_mcmt)                  "Actualizar hora, longitud, latitud y altitud del mcmt"
+   set caption(mcmt,maj_mcmt)                   "Actualizar hora, longitud, latitud y altitud del mcmt"
    set caption(mcmt,rappelAD)                   "Velocidad de guiado A.R. (arcsec/sec.)"
    set caption(mcmt,rappelDec)                  "Velocidad de guiado Dec. (arcsec/sec.)"
    set caption(mcmt,vitesseSiderale)            "(velocidad sideral = 15 arcsec/sec.)"
@@ -178,7 +178,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(mcmt,install_2)                  "Libreria libmcmt.dll actualizada."
 
    set caption(mcmt,host_audinet)               "Host AudiNet/LXnet"
-   set caption(mcmt,port_mcmt)                 "Puerto mcmt"
+   set caption(mcmt,port_mcmt)                  "Puerto mcmt"
    set caption(mcmt,2points)                    ":"
 
    set caption(mcmt,titre_site_web)             "Sitio Web de referencia:"
@@ -194,7 +194,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(mcmt,configurer)                 "Konfigurieren"
    set caption(mcmt,controle)                   "Kontroll"
    set caption(mcmt,modele)                     "Modell"
-   set caption(mcmt,modele_mcmt)               "mcmt"
+   set caption(mcmt,modele_mcmt)                "mcmt"
    set caption(mcmt,modele_audecom)             "AudeCom"
    set caption(mcmt,modele_skysensor)           "SkySensor 2000 PC"
    set caption(mcmt,modele_gemini)              "Losmandy Gemini"
@@ -203,7 +203,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(mcmt,modele_astro_physics)       "Astro-Physics"
    set caption(mcmt,modele_fs2)                 "FS2"
    set caption(mcmt,format)                     "Format"
-   set caption(mcmt,maj_mcmt)                  "Zeit, Länge, Breite, Höhe des mcmt Aktualisierung"
+   set caption(mcmt,maj_mcmt)                   "Zeit, Länge, Breite, Höhe des mcmt Aktualisierung"
    set caption(mcmt,rappelAD)                   "R.A. Rückruf Geschwindigkeit (arcsek/Sek.)"
    set caption(mcmt,rappelDec)                  "Dek. Rückruf Geschwindigkeit (arcsek/Sek.)"
    set caption(mcmt,vitesseSiderale)            "(Siderische Geschwindigkeit = 15 arcsek/Sek.)"
@@ -222,7 +222,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(mcmt,install_2)                  "Die libmcmt.dll Bibliothek ist aktualisiert."
 
    set caption(mcmt,host_audinet)               "Host AudiNet/LXnet"
-   set caption(mcmt,port_mcmt)                 "mcmt Port"
+   set caption(mcmt,port_mcmt)                  "mcmt Port"
    set caption(mcmt,2points)                    ":"
 
    set caption(mcmt,titre_site_web)             "Referenz Webseite:"
@@ -238,7 +238,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(mcmt,configurer)                 "Configuração"
    set caption(mcmt,controle)                   "Controlo"
    set caption(mcmt,modele)                     "Modelo"
-   set caption(mcmt,modele_mcmt)               "mcmt"
+   set caption(mcmt,modele_mcmt)                "mcmt"
    set caption(mcmt,modele_audecom)             "AudeCom"
    set caption(mcmt,modele_skysensor)           "SkySensor 2000 PC"
    set caption(mcmt,modele_gemini)              "Losmandy Gemini"
@@ -247,7 +247,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(mcmt,modele_astro_physics)       "Astro-Physics"
    set caption(mcmt,modele_fs2)                 "FS2"
    set caption(mcmt,format)                     "Formato"
-   set caption(mcmt,maj_mcmt)                  "Actualizar tempo, longitude, latitude e altitude do mcmt"
+   set caption(mcmt,maj_mcmt)                   "Actualizar tempo, longitude, latitude e altitude do mcmt"
    set caption(mcmt,rappelAD)                   "Velocidade de guia A.R. (arcsec/sec.)"
    set caption(mcmt,rappelDec)                  "Velocidade de guia Dec. (arcsec/sec.)"
    set caption(mcmt,vitesseSiderale)            "(velocidade sideral = 15 arcsec/sec.)"
@@ -266,7 +266,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(mcmt,install_2)                  "A livraria libmcmt.dll foi actualizada."
 
    set caption(mcmt,host_audinet)               "Servidor AudiNet/LXnet"
-   set caption(mcmt,port_mcmt)                 "Porta mcmt"
+   set caption(mcmt,port_mcmt)                  "Porta mcmt"
    set caption(mcmt,2points)                    ":"
 
    set caption(mcmt,titre_site_web)             "Site Web de referência:"
@@ -282,7 +282,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(mcmt,configurer)                 "Set up"
    set caption(mcmt,controle)                   "Control"
    set caption(mcmt,modele)                     "Model"
-   set caption(mcmt,modele_mcmt)               "mcmt"
+   set caption(mcmt,modele_mcmt)                "mcmt"
    set caption(mcmt,modele_audecom)             "AudeCom"
    set caption(mcmt,modele_skysensor)           "SkySensor 2000 PC"
    set caption(mcmt,modele_gemini)              "Losmandy Gemini"
@@ -291,7 +291,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(mcmt,modele_astro_physics)       "Astro-Physics"
    set caption(mcmt,modele_fs2)                 "FS2"
    set caption(mcmt,format)                     "Format"
-   set caption(mcmt,maj_mcmt)                  "Update time, longitude, latitude and altitude of mcmt"
+   set caption(mcmt,maj_mcmt)                   "Update time, longitude, latitude and altitude of mcmt"
    set caption(mcmt,rappelAD)                   "R.A. Guide Speed (arcsec/sec.)"
    set caption(mcmt,rappelDec)                  "Dec. Guide Speed (arcsec/sec.)"
    set caption(mcmt,vitesseSiderale)            "(Sidereal Speed = 15 arcsec/sec.)"
@@ -310,7 +310,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(mcmt,install_2)                  "libmcmt.dll library updated."
 
    set caption(mcmt,host_audinet)               "Host AudiNet/LXnet"
-   set caption(mcmt,port_mcmt)                 "mcmt Port"
+   set caption(mcmt,port_mcmt)                  "mcmt Port"
    set caption(mcmt,2points)                    ":"
 
    set caption(mcmt,titre_site_web)             "Reference Web Site:"
@@ -326,7 +326,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(mcmt,configurer)                 "Set up"
    set caption(mcmt,controle)                   "Control"
    set caption(mcmt,modele)                     "Model"
-   set caption(mcmt,modele_mcmt)               "mcmt"
+   set caption(mcmt,modele_mcmt)                "mcmt"
    set caption(mcmt,modele_audecom)             "AudeCom"
    set caption(mcmt,modele_skysensor)           "SkySensor 2000 PC"
    set caption(mcmt,modele_gemini)              "Losmandy Gemini"
@@ -335,7 +335,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(mcmt,modele_astro_physics)       "Astro-Physics"
    set caption(mcmt,modele_fs2)                 "FS2"
    set caption(mcmt,format)                     "Format"
-   set caption(mcmt,maj_mcmt)                  "Update time, longitude, latitude and altitude of mcmt"
+   set caption(mcmt,maj_mcmt)                   "Update time, longitude, latitude and altitude of mcmt"
    set caption(mcmt,rappelAD)                   "R.A. Guide Speed (arcsec/sec.)"
    set caption(mcmt,rappelDec)                  "Dec. Guide Speed (arcsec/sec.)"
    set caption(mcmt,vitesseSiderale)            "(Sidereal Speed = 15 arcsec/sec.)"
@@ -354,7 +354,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(mcmt,install_2)                  "libmcmt.dll library updated."
 
    set caption(mcmt,host_audinet)               "Host AudiNet/LXnet"
-   set caption(mcmt,port_mcmt)                 "mcmt Port"
+   set caption(mcmt,port_mcmt)                  "mcmt Port"
    set caption(mcmt,2points)                    ":"
 
    set caption(mcmt,titre_site_web)             "Reference Web Site:"
@@ -370,7 +370,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(mcmt,configurer)                 "Set up"
    set caption(mcmt,controle)                   "Control"
    set caption(mcmt,modele)                     "Model"
-   set caption(mcmt,modele_mcmt)               "mcmt"
+   set caption(mcmt,modele_mcmt)                "mcmt"
    set caption(mcmt,modele_audecom)             "AudeCom"
    set caption(mcmt,modele_skysensor)           "SkySensor 2000 PC"
    set caption(mcmt,modele_gemini)              "Losmandy Gemini"
@@ -379,7 +379,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(mcmt,modele_astro_physics)       "Astro-Physics"
    set caption(mcmt,modele_fs2)                 "FS2"
    set caption(mcmt,format)                     "Format"
-   set caption(mcmt,maj_mcmt)                  "Update time, longitude, latitude and altitude of mcmt"
+   set caption(mcmt,maj_mcmt)                   "Update time, longitude, latitude and altitude of mcmt"
    set caption(mcmt,rappelAD)                   "R.A. Guide Speed (arcsec/sec.)"
    set caption(mcmt,rappelDec)                  "Dec. Guide Speed (arcsec/sec.)"
    set caption(mcmt,vitesseSiderale)            "(Sidereal Speed = 15 arcsec/sec.)"
@@ -398,7 +398,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(mcmt,install_2)                  "libmcmt.dll library updated."
 
    set caption(mcmt,host_audinet)               "Host AudiNet/LXnet"
-   set caption(mcmt,port_mcmt)                 "mcmt Port"
+   set caption(mcmt,port_mcmt)                  "mcmt Port"
    set caption(mcmt,2points)                    ":"
 
    set caption(mcmt,titre_site_web)             "Reference Web Site:"

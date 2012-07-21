@@ -1,8 +1,8 @@
 #
 # Fichier : mcmt.tcl
 # Description : Configuration de la monture mcmt
-# Auteur : Robert DELMAS
-# Mise à jour $Id: mcmt.tcl 8160 2012-03-03 09:22:46Z robertdelmas  $
+# Auteur : Alain KLOTZ
+# Mise à jour $Id$
 #
 
 namespace eval ::mcmt {
