@@ -1295,8 +1295,6 @@ namespace eval ::confVisu {
    #    visuNo: numero de la visu
    #------------------------------------------------------------
    proc getBufNo { visuNo } {
-      variable private
-
       return [visu$visuNo buf]
    }
 
