@@ -40,6 +40,8 @@ extern "C" {
 
 #define STATUS_MOTOR_OFF 0
 #define STATUS_MOTOR_ON 1
+#define STATUS_HADEC_SLEWING 2
+#define STATUS_RADEC_SLEWING 3
 
 #define MOUNT_UNKNOWN 0
 #define MOUNT_EQUATORIAL 1
@@ -64,6 +66,33 @@ typedef struct {
 	int sens;
 	double jdinit;
 } axis_params;
+
+#define MCMT_VM_Guidage 0
+#define MCMT_VM_Corec_Plus 1
+#define MCMT_VM_Corec_Moins 2
+#define MCMT_VM_Lent 3
+#define MCMT_VM_Rapide 4
+#define MCMT_VM_Acce 5
+#define MCMT_Dir_Guidage 6
+#define MCMT_Dir_Corec_Plus 7
+#define MCMT_Dir_Corec_Moins 8
+#define MCMT_Dir_Lent_Plus 9
+#define MCMT_Dir_Lent_Moins 10
+#define MCMT_Dir_Rapide_Plus 11
+#define MCMT_Dir_Rapide_Moins 12
+#define MCMT_Resol_Guidage 13
+#define MCMT_Resol_Corec_Plus 14
+#define MCMT_Resol_Corec_Moins 15
+#define MCMT_Resol_Lent 16
+#define MCMT_Resol_Rapide 17
+#define MCMT_Courant_Guidage 18
+#define MCMT_Courant_Lent 19
+#define MCMT_Courant_Rapide 20
+#define MCMT_Sens_Raq_Led 21
+#define MCMT_NbTeeth 22
+#define MCMT_ParkMode 23
+#define MCMT_Raq_type_can_address 24
+#define MCMT_PEC_ENABLED 40
 
 /***************************************************************************************/
 /* There are five fields to define coordinates:                                        */
@@ -139,7 +168,9 @@ struct telprop {
 	long N0;
 	long N1;
 	long N2;
-	double sideral_sep_per_day;
+	double sideral_sec_per_day;
+	double sideral_deg_per_sec;
+	double eeprom[2][41];
 
    int type_mount;
 	int nb_axis;
@@ -148,6 +179,14 @@ struct telprop {
 	char extradrift_type[20];
 	double extradrift_axis0;
 	double extradrift_axis1;
+
+	char mcmt_hexa_command_line[2048];
+	char mcmt_hexa_result[2048];
+	char eval_command_line[2048];
+	char eval_result[2048];
+
+	double sepangle_prev;
+	double sepangle_cur;
 
 	// START OF COORDSYS (do not delete this comment)
 	double coord_cat_cod_deg_ra; // current catalog coordinates computed from coders
@@ -398,6 +437,7 @@ int mytel_loadparams(struct telprop *tel,int naxisno);
 int mytel_limites(void);
 
 // --- MCMT
+int mytel_motor_on(struct telprop *tel);
 int mytel_mcmt_stop(struct telprop *tel);
 int mytel_mcmt_tcl_procs(struct telprop *tel);
 
