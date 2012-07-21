@@ -42,6 +42,9 @@ extern "C" {
 #define STATUS_MOTOR_ON 1
 #define STATUS_HADEC_SLEWING 2
 #define STATUS_RADEC_SLEWING 3
+#define STATUS_MOVE_SLOW 4
+#define STATUS_MOVE_MEDIUM 5
+#define STATUS_MOVE_FAST 6
 
 #define MOUNT_UNKNOWN 0
 #define MOUNT_EQUATORIAL 1
@@ -187,6 +190,8 @@ struct telprop {
 
 	double sepangle_prev;
 	double sepangle_cur;
+
+	char move_direction[5];
 
 	// START OF COORDSYS (do not delete this comment)
 	double coord_cat_cod_deg_ra; // current catalog coordinates computed from coders
