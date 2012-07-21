@@ -1,6 +1,6 @@
 #
 # Fichier : mcmt.tcl
-# Description : Configuration de la monture mcmt
+# Description : Configuration de la monture MCMT
 # Auteur : Alain KLOTZ
 # Mise à jour $Id$
 #
@@ -87,15 +87,6 @@ proc ::mcmt::isReady { } {
 }
 
 #
-# getSecondaryTelNo
-#    Retourne le numero de la monture secondaire, sinon retourne "0"
-#
-proc ::mcmt::getSecondaryTelNo { } {
-   set result [ ::ouranos::getTelNo ]
-   return $result
-}
-
-#
 # initPlugin
 #    Initialise les variables conf(mcmt,...)
 #
@@ -108,13 +99,7 @@ proc ::mcmt::initPlugin { } {
    set private(tracesConsole) "0"
 
    #--- Initialise les variables de la monture mcmt
-   if { ! [ info exists conf(mcmt,port) ] }              { set conf(mcmt,port)              "" }
-   if { ! [ info exists conf(mcmt,ouranos) ] }           { set conf(mcmt,ouranos)           "0" }
-   if { ! [ info exists conf(mcmt,modele) ] }            { set conf(mcmt,modele)            "mcmt" }
-   if { ! [ info exists conf(mcmt,format) ] }            { set conf(mcmt,format)            "1" }
-   if { ! [ info exists conf(mcmt,ite-lente_tempo) ] }   { set conf(mcmt,ite-lente_tempo)   "10" }
-   if { ! [ info exists conf(mcmt,alphaGuidingSpeed) ] } { set conf(mcmt,alphaGuidingSpeed) "3.0" }
-   if { ! [ info exists conf(mcmt,deltaGuidingSpeed) ] } { set conf(mcmt,deltaGuidingSpeed) "3.0" }
+   if { ! [ info exists conf(mcmt,port) ] } { set conf(mcmt,port) "" }
 }
 
 #
@@ -126,14 +111,8 @@ proc ::mcmt::confToWidget { } {
    global caption conf
 
    #--- Recupere la configuration de la monture mcmt dans le tableau private(...)
-   set private(port)              $conf(mcmt,port)
-   set private(ouranos)           $conf(mcmt,ouranos)
-   set private(modele)            $conf(mcmt,modele)
-   set private(format)            [ lindex "$caption(mcmt,format_court_long)" $conf(mcmt,format) ]
-   set private(ite-lente_tempo)   $conf(mcmt,ite-lente_tempo)
-   set private(raquette)          $conf(raquette)
-   set private(alphaGuidingSpeed) $conf(mcmt,alphaGuidingSpeed)
-   set private(deltaGuidingSpeed) $conf(mcmt,deltaGuidingSpeed)
+   set private(port)     $conf(mcmt,port)
+   set private(raquette) $conf(raquette)
 }
 
 #
@@ -145,14 +124,8 @@ proc ::mcmt::widgetToConf { } {
    global caption conf
 
    #--- Memorise la configuration de la monture mcmt dans le tableau conf(mcmt,...)
-   set conf(mcmt,port)              $private(port)
-   set conf(mcmt,ouranos)           $private(ouranos)
-   set conf(mcmt,format)            [ lsearch "$caption(mcmt,format_court_long)" "$private(format)" ]
-   set conf(mcmt,modele)            $private(modele)
-   set conf(mcmt,ite-lente_tempo)   $private(ite-lente_tempo)
-   set conf(raquette)                $private(raquette)
-   set conf(mcmt,alphaGuidingSpeed) $private(alphaGuidingSpeed)
-   set conf(mcmt,deltaGuidingSpeed) $private(deltaGuidingSpeed)
+   set conf(mcmt,port) $private(port)
+   set conf(raquette)  $private(raquette)
 }
 
 #
@@ -165,11 +138,9 @@ proc ::mcmt::fillConfigPage { frm } {
 
    #--- Initialise les variables locales
    set private(frm)          $frm
-   set private(ite-lente_A0) "0"
-   set private(ite-lente_A1) "0"
 
    #--- Prise en compte des liaisons
-   set list_connexion [ ::confLink::getLinkLabels { "serialport" "audinet" } ]
+   set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
    if { $conf(mcmt,port) == "" } {
       set conf(mcmt,port) [ lindex $list_connexion 0 ]
    }
@@ -239,15 +210,15 @@ proc ::mcmt::fillConfigPage { frm } {
       #--- Si la liste est vide, on continue quand meme
    }
 
-   #--- Bouton de configuration des ports et liaisons
+   #--- Bouton de configuration des ports
    button $frm.configure -text "$caption(mcmt,configurer)" -relief raised \
       -command {
-         ::confLink::run ::mcmt::private(port) { serialport audinet } \
+         ::confLink::run ::mcmt::private(port) { serialport } \
             "- $caption(mcmt,controle) - $caption(mcmt,monture)"
       }
    pack $frm.configure -in $frm.frame8 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
 
-   #--- Choix du port ou de la liaison
+   #--- Choix du port
    ComboBox $frm.port \
       -width [ ::tkutil::lgEntryComboBox $list_connexion ] \
       -height [ llength $list_connexion ] \
@@ -258,52 +229,6 @@ proc ::mcmt::fillConfigPage { frm } {
       -values $list_connexion
    pack $frm.port -in $frm.frame8 -anchor n -side left -padx 10 -pady 10
 
-   #--- Le checkbutton du fonctionnement coordonne mcmt (modele AudeCom) + Ouranos
-   if { [glob -nocomplain -type f -join "$audace(rep_plugin)" mount ouranos pkgIndex.tcl ] == "" } {
-      set private(ouranos) "0"
-      checkbutton $frm.ouranos -text "$caption(mcmt,ouranos)" -highlightthickness 0 \
-         -variable ::mcmt::private(ouranos) -state disabled
-      pack $frm.ouranos -in $frm.frame9 -anchor center -side left -padx 10 -pady 8
-   } else {
-      checkbutton $frm.ouranos -text "$caption(mcmt,ouranos)" -highlightthickness 0 \
-         -variable ::mcmt::private(ouranos) -state normal
-      pack $frm.ouranos -in $frm.frame9 -anchor center -side left -padx 10 -pady 8
-   }
-
-   #--- Definition du mcmt ou du clone
-   label $frm.lab3 -text "$caption(mcmt,modele)"
-   pack $frm.lab3 -in $frm.frame10 -anchor center -side left -padx 10 -pady 10
-
-   set list_combobox [ list $caption(mcmt,modele_mcmt) $caption(mcmt,modele_astro_physics) \
-      $caption(mcmt,modele_audecom) $caption(mcmt,modele_skysensor) \
-      $caption(mcmt,modele_gemini) $caption(mcmt,modele_ite-lente) \
-      $caption(mcmt,modele_mel_bartels) $caption(mcmt,modele_fs2) ]
-   ComboBox $frm.modele \
-      -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
-      -height [ llength $list_combobox ] \
-      -relief sunken    \
-      -borderwidth 1    \
-      -textvariable ::mcmt::private(modele) \
-      -modifycmd { ::mcmt::confModele } \
-      -editable 0       \
-      -values $list_combobox
-   pack $frm.modele -in $frm.frame10 -anchor center -side right -padx 10 -pady 10
-
-   #--- Definition du format des donnees transmises au mcmt
-   label $frm.lab2 -text "$caption(mcmt,format)"
-   pack $frm.lab2 -in $frm.frame11 -anchor center -side left -padx 10 -pady 10
-
-   set list_combobox "$caption(mcmt,format_court_long)"
-   ComboBox $frm.formatradec \
-      -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
-      -height [ llength $list_combobox ] \
-      -relief sunken    \
-      -borderwidth 1    \
-      -textvariable ::mcmt::private(format) \
-      -editable 0       \
-      -values $list_combobox
-   pack $frm.formatradec -in $frm.frame11 -anchor center -side right -padx 10 -pady 10
-
    #--- Le bouton de commande maj heure et position du mcmt
    button $frm.majpara -text "$caption(mcmt,maj_mcmt)" -relief raised -command {
       tel$::mcmt::private(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
@@ -312,63 +237,11 @@ proc ::mcmt::fillConfigPage { frm } {
    pack $frm.majpara -in $frm.frame2 -anchor center -side top -padx 10 -pady 5 -ipadx 10 -ipady 5 \
       -expand true
 
-   #--- Frame des vitesses de guidage
-   frame $frm.frame2.frameSpeed -borderwidth 0
-
-      #--- Vitesse de rappel alpha
-      label $frm.frame2.frameSpeed.labelAlpha -text "$caption(mcmt,rappelAD)"
-      entry $frm.frame2.frameSpeed.entryAlpha -textvariable ::mcmt::private(alphaGuidingSpeed) -width 5 -justify right
-      grid $frm.frame2.frameSpeed.labelAlpha  -row 0 -column 0 -sticky nw -ipadx 3
-      grid $frm.frame2.frameSpeed.entryAlpha  -row 0 -column 1 -sticky nw -ipadx 3
-
-      #--- Vitesse de rappel delta
-      label $frm.frame2.frameSpeed.labelDelta -text "$caption(mcmt,rappelDec)"
-      entry $frm.frame2.frameSpeed.entryDelta -textvariable ::mcmt::private(deltaGuidingSpeed) -width 5 -justify right
-      grid $frm.frame2.frameSpeed.labelDelta  -row 1 -column 0 -sticky nw -ipadx 3
-      grid $frm.frame2.frameSpeed.entryDelta  -row 1 -column 1 -sticky nw -ipadx 3
-
-      #--- Information
-      label $frm.frame2.frameSpeed.labelInformation -text "$caption(mcmt,vitesseSiderale)"
-      grid $frm.frame2.frameSpeed.labelInformation  -row 0 -column 2 -rowspan 2 -sticky ns -ipadx 3
-
-      grid rowconfigure $frm.frame2.frameSpeed 0 -weight 0
-      grid rowconfigure $frm.frame2.frameSpeed 1 -weight 0
-
-      grid columnconfigure $frm.frame2.frameSpeed 0 -weight 0
-      grid columnconfigure $frm.frame2.frameSpeed 1 -weight 0
-      grid columnconfigure $frm.frame2.frameSpeed 2 -weight 1
-
-   pack $frm.frame2.frameSpeed -in $frm.frame2 -anchor n -side left -padx 10 -pady 10 -ipadx 10 -ipady 1 -expand 0
-
    #--- Le checkbutton pour obtenir des traces dans la Console
    checkbutton $frm.tracesConsole -text "$caption(mcmt,tracesConsole)" \
       -highlightthickness 0 -variable ::mcmt::private(tracesConsole) \
       -command "::mcmt::tracesConsole"
    pack $frm.tracesConsole -in $frm.frame2a -anchor w -side left -padx 10 -pady 10
-
-   #--- Entree de la tempo Ite-lente
-   label $frm.lab4 -text "$caption(mcmt,ite-lente_tempo)"
-   pack $frm.lab4 -in $frm.frame4a -anchor center -side left -padx 10 -pady 10
-
-   entry $frm.tempo -textvariable ::mcmt::private(ite-lente_tempo) -justify center -width 5
-   pack $frm.tempo -in $frm.frame4a -anchor center -side left -padx 10 -pady 10
-
-   #--- Bouton GO/Stop A0
-   checkbutton $frm.ite-lente_A0 -text "$caption(mcmt,ite-lente_A0,go)" -relief raised -indicatoron 0 \
-      -variable ::mcmt::private(ite-lente_A0) -state disabled \
-      -command "::mcmt::testIteLente ite-lente_A0"
-   pack $frm.ite-lente_A0 -in $frm.frame4a -anchor center -side left -padx 10 -pady 10 -ipadx 10
-
-   #--- Bouton GO/Stop A1
-   checkbutton $frm.ite-lente_A1 -text "$caption(mcmt,ite-lente_A1,go)" -relief raised -indicatoron 0 \
-      -variable ::mcmt::private(ite-lente_A1) -state disabled \
-      -command "::mcmt::testIteLente ite-lente_A1"
-   pack $frm.ite-lente_A1 -in $frm.frame4a -anchor center -side left -padx 10 -pady 10 -ipadx 10
-
-   #--- Bouton ACK
-   button $frm.ite-lente_ack -text "$caption(mcmt,ite-lente_ack)" -relief raised \
-      -state disabled -command "::mcmt::testIteLente ite-lente_ack"
-   pack $frm.ite-lente_ack -in $frm.frame4a -anchor center -side left -padx 10 -pady 10 -ipadx 10
 
    #--- Le checkbutton pour la visibilite de la raquette a l'ecran
    checkbutton $frm.raquette -text "$caption(mcmt,raquette_tel)" \
@@ -399,9 +272,6 @@ proc ::mcmt::fillConfigPage { frm } {
 
    #--- Gestion du bouton actif/inactif
    ::mcmt::confmcmt
-
-   #--- Gestion de la tempo pour Ite-lente
-   ::mcmt::confModele
 }
 
 #
@@ -413,48 +283,15 @@ proc ::mcmt::configureMonture { } {
    global caption conf
 
    set catchResult [ catch {
-      switch [::confLink::getLinkNamespace $conf(mcmt,port)] {
-         audinet {
-            #--- Je cree la monture
-            set telNo [ tel::create lxnet $conf(mcmt,port) -name lxnet \
-               -host $conf(audinet,host) \
-               -ipsetting $conf(audinet,ipsetting) \
-               -macaddress $conf(audinet,mac_address) \
-               -autoflush $conf(audinet,autoflush) \
-               -focusertype $conf(audinet,focuser_type) \
-               -focuseraddr $conf(audinet,focuser_addr) \
-               -focuserbit $conf(audinet,focuser_bit) \
-            ]
-            #--- J'affiche un message d'information dans la Console
-            ::console::affiche_entete "$caption(mcmt,host_audinet) $caption(mcmt,2points)\
-               $conf(audinet,host)\n"
-            ::console::affiche_saut "\n"
-            if { $conf(mcmt,format) == "0" } {
-               tel$telNo longformat off
-            } else {
-               tel$telNo longformat on
-            }
-            #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
-            set linkNo [ ::confLink::create $conf(mcmt,port) "tel$telNo" "control" [ tel$telNo product ] -noopen ]
-            #--- Je change de variable
-            set private(telNo) $telNo
-         }
-         serialport {
-            #--- Je cree la monture
-            set telNo [ tel::create mcmt $conf(mcmt,port) -name $conf(mcmt,modele) ]
-            #--- J'affiche un message d'information dans la Console
-            ::console::affiche_entete "$caption(mcmt,port_mcmt) ($conf(mcmt,modele))\
-               $caption(mcmt,2points) $conf(mcmt,port)\n"
-            ::console::affiche_saut "\n"
-            if { $conf(mcmt,modele) == "Ite-lente" } {
-               tel$telNo tempo $conf(mcmt,ite-lente_tempo)
-            }
-            #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
-            set linkNo [ ::confLink::create $conf(mcmt,port) "tel$telNo" "control" [ tel$telNo product ] -noopen ]
-            #--- Je change de variable
-            set private(telNo) $telNo
-         }
-      }
+      #--- Je cree la monture
+      set telNo [ tel::create mcmt $conf(mcmt,port) -name mcmt ]
+      #--- J'affiche un message d'information dans la Console
+      ::console::affiche_entete "$caption(mcmt,port_mcmt) $caption(mcmt,2points) $conf(mcmt,port)\n"
+      ::console::affiche_saut "\n"
+      #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
+      set linkNo [ ::confLink::create $conf(mcmt,port) "tel$telNo" "control" [ tel$telNo product ] -noopen ]
+      #--- Je change de variable
+      set private(telNo) $telNo
       #--- Je configure la position geographique et le nom de la monture
       #--- (la position geographique est utilisee pour calculer le temps sideral)
       tel$telNo home $::audace(posobs,observateur,gps)
@@ -465,22 +302,11 @@ proc ::mcmt::configureMonture { } {
       ::mcmt::confmcmt
       #--- Traces dans la Console
       ::mcmt::tracesConsole
-
-      #--- Si connexion des codeurs Ouranos demandee en tant que monture secondaire
-      if { $conf(mcmt,ouranos) == "1" } {
-         #--- Je copie les parametres Ouranos dans conf()
-         ::ouranos::widgetToConf
-         #--- Je configure la monture secondaire Ouranos
-         ::ouranos::configureMonture
-      }
    } ]
 
    if { $catchResult == "1" } {
       #--- En cas d'erreur, je libere toutes les ressources allouees
       ::mcmt::stop
-      if { $conf(mcmt,ouranos) == "1" } {
-         ::ouranos::stop
-      }
       #--- Je transmets l'erreur a la procedure appelante
       return -code error -errorcode $::errorCode -errorinfo $::errorInfo
    }
@@ -511,11 +337,6 @@ proc ::mcmt::stop { } {
    #--- J'arrete le link
     ::confLink::delete $telPort "tel$private(telNo)" "control"
    set private(telNo) "0"
-
-   #--- Deconnexion des codeurs Ouranos si la monture secondaire existe
-   if { $conf(mcmt,ouranos) == "1" } {
-      ::ouranos::stop
-   }
 }
 
 #
@@ -544,12 +365,6 @@ proc ::mcmt::confmcmt { } {
                #--- Bouton unpark actif
                $frm.unpark configure -state normal
             }
-            #--- Cas du modele Ite-Lente
-            if { $private(modele) == "$caption(mcmt,modele_ite-lente)" } {
-               $frm.ite-lente_A0 configure -state normal
-               $frm.ite-lente_A1 configure -state normal
-               $frm.ite-lente_ack configure -state normal
-            }
          } else {
             #--- Bouton Mise a jour de la date et du lieu inactif
             $frm.majpara configure -state disabled
@@ -557,10 +372,6 @@ proc ::mcmt::confmcmt { } {
             $frm.park configure -state disabled
             #--- Bouton unpark inactif
             $frm.unpark configure -state disabled
-            #--- Boutons du modele Ite-Lente
-            $frm.ite-lente_A0 configure -state disabled
-            $frm.ite-lente_A1 configure -state disabled
-            $frm.ite-lente_ack configure -state disabled
          }
       }
    }
@@ -582,103 +393,6 @@ proc ::mcmt::confmcmtInactif { } {
          $frm.park configure -state disabled
          #--- Bouton unpark inactif
          $frm.unpark configure -state disabled
-         #--- Boutons du modele Ite-Lente
-         if { [ winfo exists $frm.ite-lente_A0 ] } {
-            $frm.ite-lente_A0 configure -state disabled
-            $frm.ite-lente_A1 configure -state disabled
-            $frm.ite-lente_ack configure -state disabled
-         }
-      }
-   }
-}
-
-#
-# confModele
-# Permet d'activer ou de desactiver les champs lies au modele
-#
-proc ::mcmt::confModele { } {
-   variable private
-   global audace caption
-
-   if { [ info exists private(frm) ] } {
-      set frm $private(frm)
-      if { [ winfo exists $frm ] } {
-         #--- Cas du modele IteLente
-         if { $private(modele) == "$caption(mcmt,modele_ite-lente)" } {
-            if { ! [ winfo exists $frm.lab4 ] } {
-               #--- Label de la tempo Ite-lente
-               label $frm.lab4 -text "$caption(mcmt,ite-lente_tempo)"
-               pack $frm.lab4 -in $frm.frame4a -anchor center -side left -padx 10 -pady 10
-            }
-            if { ! [ winfo exists $frm.tempo ] } {
-               #--- Entree de la tempo Ite-lente
-               entry $frm.tempo -textvariable ::mcmt::private(ite-lente_tempo) -justify center -width 5
-               pack $frm.tempo -in $frm.frame4a -anchor center -side left -padx 10 -pady 10
-               #--- Bouton GO/Stop A0
-               checkbutton $frm.ite-lente_A0 -text "$caption(mcmt,ite-lente_A0,go)" -relief raised -indicatoron 0 \
-                  -variable ::mcmt::private(ite-lente_A0) -state disabled \
-                  -command "::mcmt::testIteLente ite-lente_A0"
-               pack $frm.ite-lente_A0 -in $frm.frame4a -anchor center -side left -padx 10 -pady 10 -ipadx 10
-               #--- Bouton GO/Stop A1
-               checkbutton $frm.ite-lente_A1 -text "$caption(mcmt,ite-lente_A1,go)" -relief raised -indicatoron 0 \
-                  -variable ::mcmt::private(ite-lente_A1) -state disabled \
-                  -command "::mcmt::testIteLente ite-lente_A1"
-               pack $frm.ite-lente_A1 -in $frm.frame4a -anchor center -side left -padx 10 -pady 10 -ipadx 10
-               #--- Bouton ACK
-               button $frm.ite-lente_ack -text "$caption(mcmt,ite-lente_ack)" -relief raised \
-                  -state disabled -command "::mcmt::testIteLente ite-lente_ack"
-               pack $frm.ite-lente_ack -in $frm.frame4a -anchor center -side left -padx 10 -pady 10 -ipadx 10
-            }
-         } else {
-            destroy $frm.lab4 ; destroy $frm.tempo
-            destroy $frm.ite-lente_A0 ; destroy $frm.ite-lente_A1 ; destroy $frm.ite-lente_ack
-         }
-         #--- Cas du modele AudeCom
-         if { $private(modele) == "$caption(mcmt,modele_audecom)" } {
-            if { [glob -nocomplain -type f -join "$audace(rep_plugin)" mount ouranos pkgIndex.tcl ] == "" } {
-               set private(ouranos) "0"
-               $frm.ouranos configure -state disabled
-               pack $frm.ouranos -in $frm.frame9 -anchor center -side left -padx 10 -pady 8
-            } else {
-               $frm.ouranos configure -state normal
-            }
-         } else {
-            set private(ouranos) "0"
-            $frm.ouranos configure -state disabled
-         }
-      }
-   }
-}
-
-#
-# testIteLente
-#    Envoie les commandes A0, A1 et ACK
-#
-proc ::mcmt::testIteLente { buttonName } {
-   variable private
-   global caption
-
-   switch $buttonName {
-      ite-lente_A0 {
-         if { $private($buttonName) == "1" } {
-            tel$private(telNo) command "#:Xa+#" none
-            $private(frm).$buttonName configure -text $caption(mcmt,$buttonName,stop)
-         } else {
-            tel$private(telNo) command "#:Xa-#" none
-            $private(frm).$buttonName configure -text $caption(mcmt,$buttonName,go)
-         }
-      }
-      ite-lente_A1 {
-         if { $private($buttonName) == "1" } {
-            tel$private(telNo) command "#:Xb+#" none
-            $private(frm).$buttonName configure -text $caption(mcmt,$buttonName,stop)
-         } else {
-            tel$private(telNo) command "#:Xb-#" none
-            $private(frm).$buttonName configure -text $caption(mcmt,$buttonName,go)
-         }
-      }
-      ite-lente_ack {
-         tel$private(telNo) command "\x06" ok
       }
    }
 }
@@ -714,7 +428,6 @@ proc ::mcmt::tracesConsole { } {
 # hasManualMotion         Retourne la possibilite de faire des deplacement Nord, Sud, Est ou Ouest
 # hasControlSuivi         Retourne la possibilite d'arreter le suivi sideral
 # hasModel                Retourne la possibilite d'avoir plusieurs modeles pour le meme product
-# hasMotionWhile          Retourne la possibilite d'avoir des deplacements cardinaux pendant une duree
 # hasPark                 Retourne la possibilite de parquer la monture
 # hasUnpark               Retourne la possibilite de de-parquer la monture
 # hasUpdateDate           Retourne la possibilite de mettre a jour la date et le lieu
@@ -724,13 +437,7 @@ proc ::mcmt::getPluginProperty { propertyName } {
    variable private
 
    switch $propertyName {
-      multiMount              {
-         if { $::conf(mcmt,modele) == "$::caption(mcmt,modele_audecom)" } {
-            return 1
-         } else {
-            return 0
-         }
-      }
+      multiMount              { return 0 }
       name                    {
          if { $private(telNo) != "0" } {
             return [ tel$private(telNo) name ]
@@ -750,114 +457,32 @@ proc ::mcmt::getPluginProperty { propertyName } {
       hasMatch                { return 1 }
       hasManualMotion         { return 1 }
       hasControlSuivi         { return 1 }
-      hasModel                { return 1 }
-      hasMotionWhile          {
-         if { $::conf(mcmt,modele) == "$::caption(mcmt,modele_ite-lente)" } {
-            return 1
-         } else {
-            return 0
-         }
-      }
-      hasPark                 {
-         if {  $::conf(mcmt,modele) == $::caption(mcmt,modele_mcmt)
-            || $::conf(mcmt,modele) == $::caption(mcmt,modele_astro_physics)} {
-            return 1
-         } else {
-            return 0
-         }
-      }
-      hasUnpark               {
-         if { $::conf(mcmt,modele) == $::caption(mcmt,modele_astro_physics)} {
-            return 1
-         } else {
-            return 0
-         }
-      }
-      hasUpdateDate           {
-         if {  $::conf(mcmt,modele) == $::caption(mcmt,modele_mcmt)
-            || $::conf(mcmt,modele) == $::caption(mcmt,modele_skysensor)
-            || $::conf(mcmt,modele) == $::caption(mcmt,modele_gemini)
-            || $::conf(mcmt,modele) == $::caption(mcmt,modele_astro_physics)} {
-            return 1
-         } else {
-            return 0
-         }
-      }
+      hasModel                { return 0 }
+      hasPark                 { return 1 }
+      hasUnpark               { return 1 }
+      hasUpdateDate           { return 1 }
       backlash                { return 0 }
-      guidingSpeed            { return [list $::conf(mcmt,alphaGuidingSpeed) $::conf(mcmt,deltaGuidingSpeed) ] }
    }
 }
 
 #------------------------------------------------------------
 # park
-#    parque la monture
+#    parque/deparque la monture
 #
 # Parametres :
-#    state : 1= park , 0=un-park
+#    state : 1 = park , 0 = unpark
 # Return :
 #    rien
 #------------------------------------------------------------
 proc ::mcmt::park { state } {
    variable private
 
-   if {  $::conf(mcmt,modele) == $::caption(mcmt,modele_mcmt) } {
-      if { $state == 1 } {
-         #--- je parque la monture
-         tel$private(telNo) command ":hP#" none
-      } elseif { $state == 0 } {
-         #--- je ne fais rien car Meade n'a pas la fonction un-park
-      }
-   } elseif { $::conf(mcmt,modele) == $::caption(mcmt,modele_astro_physics)} {
-      if { $state == 1 } {
-         #--- je parque la monture
-         tel$private(telNo) command ":KA#" none
-      } elseif { $state == 0 } {
-         #--- j'envoie l'heure courante
-         tel$::mcmt::private(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
-         #--- je de-parque la monture
-         tel$private(telNo) command ":PO#" none
-      }
+   if { $state == 1 } {
+      #--- je parque la monture
+
+   } elseif { $state == 0 } {
+      #--- je deparque la monture
+
    }
-}
-
-proc ::mcmt::move { direction rate } {
-   global conf caption
-   variable private
-
-   if {$conf(mcmt,modele) != $caption(mcmt,modele_astro_physics)} {
-      # Cas normal, le driver va faire le necessaire */
-      tel$private(telNo) radec move $direction $rate
-   } else {
-      # Cas Astrophysics (a base de GTOCP3)
-      # Commande de vitesse
-      if {$rate < 0.33} {
-         # x1
-         tel$private(telNo) command ":RG2#" none
-      } elseif {$rate < 0.66} {
-         # x12
-         tel$private(telNo) command ":RC0#" none
-      } elseif {$rate < 1} {
-         # x64
-         tel$private(telNo) command ":RC1#" none
-      } else {
-         # x600
-         tel$private(telNo) command ":RC2#" none
-      }
-
-      # Commande de mouvement NEWS
-      set d [lindex [string toupper $direction] 0]
-      if { $d == "N" } {
-         tel$private(telNo) command ":Mn#" none
-      } elseif { $d == "S" } {
-         tel$private(telNo) command ":Ms#" none
-      } elseif { $d == "E" } {
-         tel$private(telNo) command ":Me#" none
-      } elseif { $d == "W" } {
-         tel$private(telNo) command ":Mw#" none
-      } else {
-         ::console::affiche_entete "AP command set : unknow direction"
-      }
-   }
-
 }
 
