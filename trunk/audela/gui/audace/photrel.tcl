@@ -551,7 +551,6 @@ proc photrel_cat2per { args } {
       set res [yd_moy_bars_comp $mags $bars $moyenne $sigma]
       if {$res} {
          error "Star non variable"
-         continue
       }
       unset x
       #
