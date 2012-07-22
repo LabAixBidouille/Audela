@@ -362,7 +362,7 @@ int libtt_main(int service, ...);
 /* ======================================================================== */
 
 /* --- Switch pour compiler avec ou sans la distorsion pour l'astrometrie ---*/
-#define TT_DISTORASTROM
+/*#define TT_DISTORASTROM*/
 
 /* --- Mouchard de pointeurs pour le debug ---*/
 //#define TT_MOUCHARDPTR
