@@ -396,6 +396,8 @@ proc ::telescope::getSpeedLabelList { } {
       set speedList "$caption(telescope,NS) $caption(telescope,HS)"
    } elseif { $conf(telescope) == "eqmod" } {
       set speedList "1 2 3 4 5 6 7"
+   } elseif { $conf(telescope) == "mcmt" } {
+      set speedList "1 2 3"
    } else {
       set speedList "1 2 3 4"
    }
@@ -420,6 +422,8 @@ proc ::telescope::getSpeedValueList { } {
       set speedList "1 2"
    } elseif { $conf(telescope) == "eqmod" } {
       set speedList "1 2 3 4 5 6 7"
+   } elseif { $conf(telescope) == "mcmt" } {
+      set speedList "1 2 3"
    } else {
       set speedList "1 2 3 4"
    }
@@ -472,6 +476,14 @@ proc ::telescope::decodeSpeedDlgShift { } {
             "5" { setSpeed "5" }
             "6" { setSpeed "6" }
             "7" { setSpeed "7" }
+         }
+      } elseif { $conf(telescope) == "mcmt" } {
+         if { $panneau(DlgShift,shiftSpeed) == "1" } {
+            setSpeed "1"
+         } elseif { $panneau(DlgShift,shiftSpeed) == "2" } {
+            setSpeed "2"
+         } elseif { $panneau(DlgShift,shiftSpeed) == "3" } {
+            setSpeed "3"
          }
       } else {
          #--- Inactif pour autres telescopes
@@ -531,6 +543,14 @@ proc ::telescope::decodeSpeedDlgShiftVideo { } {
             "6" { setSpeed "6" }
             "7" { setSpeed "7" }
          }
+      } elseif { $conf(telescope) == "mcmt" } {
+         if { $panneau(DlgShiftVideo,shiftSpeed) == "1" } {
+            setSpeed "1"
+         } elseif { $panneau(DlgShiftVideo,shiftSpeed) == "2" } {
+            setSpeed "2"
+         } elseif { $panneau(DlgShiftVideo,shiftSpeed) == "3" } {
+            setSpeed "3"
+         }
       } else {
          #--- Inactif pour autres telescopes
          setSpeed "0"
@@ -589,6 +609,14 @@ proc ::telescope::decodeSpeedDlgShiftZadko { } {
             "6" { setSpeed "6" }
             "7" { setSpeed "7" }
          }
+      } elseif { $conf(telescope) == "mcmt" } {
+         if { $panneau(DlgShiftZadko,shiftSpeed) == "1" } {
+            setSpeed "1"
+         } elseif { $panneau(DlgShiftZadko,shiftSpeed) == "2" } {
+            setSpeed "2"
+         } elseif { $panneau(DlgShiftZadko,shiftSpeed) == "3" } {
+            setSpeed "3"
+        }
       } else {
          #--- Inactif pour autres telescopes
          setSpeed "0"
@@ -670,6 +698,17 @@ proc ::telescope::incrementSpeed { } {
             "5" { setSpeed "6" }
             "6" { setSpeed "7" }
             default { setSpeed "1" }
+         }
+      } elseif { $conf(telescope) == "mcmt" } {
+         #--- Pour mcmt, l'increment peut prendre 3 valeurs ( 1 2 3 )
+         if { $audace(telescope,speed) == "1" } {
+            setSpeed "2"
+         } elseif { $audace(telescope,speed) == "2" } {
+            setSpeed "3"
+         } elseif { $audace(telescope,speed) == "3" } {
+            setSpeed "1"
+         } else {
+            setSpeed "1"
          }
       } elseif { $conf(telescope) == "t193" } {
          #--- Pour t193, l'increment peut prendre 2 valeurs ( 1 2 )
@@ -821,6 +860,24 @@ proc ::telescope::setSpeed { { value "2" } } {
                set audace(telescope,labelspeed) "7"
                set audace(telescope,rate) "10"
             }
+         }
+      } elseif { $conf(telescope) == "mcmt" } {
+         if { $value == "1" } {
+            set audace(telescope,speed) "1"
+            set audace(telescope,labelspeed) "1"
+            set audace(telescope,rate) "0.1"
+         } elseif { $value == "2" } {
+            set audace(telescope,speed) "2"
+            set audace(telescope,labelspeed) "2"
+            set audace(telescope,rate) "0.5"
+         } elseif { $value == "3" } {
+            set audace(telescope,speed) "3"
+            set audace(telescope,labelspeed) "3"
+            set audace(telescope,rate) "1"
+         } else {
+            set audace(telescope,speed) "1"
+            set audace(telescope,labelspeed) "1"
+            set audace(telescope,rate) "0.1"
          }
       } elseif { $conf(telescope) == "t193" } {
          if { $value == "1" } {
