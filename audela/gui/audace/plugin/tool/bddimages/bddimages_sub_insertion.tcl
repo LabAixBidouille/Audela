@@ -230,7 +230,11 @@ proc info_fichier { nomfich } {
    # --- zip/rezip le fichier
    if {$fileformat == "unzipped"} {
       set nomfich "$nomfichfits.gz"
-      set errnum [catch {exec gzip -c $nomfichdata > $nomfich} msg ]
+      if { $::tcl_platform(os) == "Linux" } {
+         set errnum [catch {exec gzip -c $nomfichdata > $nomfich} msg ]
+      } else {
+         set errnum [catch {gzip "$nomfichfits" } msgzip ]
+      }
       if {$errnum != 0} {
          file delete -force -- $nomfich
          bddimages_sauve_fich "info_fichier: ERREUR 2 : Erreur lors de la recompression de l'image $nomfichfits  <err:$errnum> <msg:$msg>"

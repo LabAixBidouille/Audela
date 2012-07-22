@@ -145,6 +145,8 @@ namespace eval bddimages_imgcorrection {
    variable sflat_img_list
    variable deflat_img_list
 
+   variable progress
+
 }
 
 
@@ -508,6 +510,14 @@ proc ::bddimages_imgcorrection::create_image_dark { type inforesult } {
 
 
 
+proc ::bddimages_imgcorrection::set_progress { cur max } {
+
+   set ::bddimages_imgcorrection::progress [format "%0.0f" [expr $cur * 100. /$max ] ]
+   update
+}
+
+
+
 proc ::bddimages_imgcorrection::get_stat { bufno } {
 
    set stat [buf$bufno stat]
@@ -854,6 +864,7 @@ proc ::bddimages_imgcorrection::copy_to_tmp { type img_list } {
 
    set k 0
    set new_list ""
+   set nb [llength $img_list] 
 
    foreach img $img_list {   
    
@@ -1201,6 +1212,8 @@ proc ::bddimages_imgcorrection::run_create { this type } {
    global audace bddconf caption
    global entetelog
 
+
+
    # Type de correction (e.g. flat)
    set ::bddimages_imgcorrection::type $type
 
@@ -1216,6 +1229,7 @@ proc ::bddimages_imgcorrection::run_create { this type } {
    set ::bddimages_imgcorrection::sflat_img_list   ""
    set ::bddimages_imgcorrection::deflat_img_list  ""
    set ::bddimages_imgcorrection::erreur_selection 0
+   set ::bddimages_imgcorrection::progress 0
 
    set reportMessage ""
    set reportFilename ""
@@ -1648,6 +1662,13 @@ proc ::bddimages_imgcorrection::run_create { this type } {
       pack configure $outputFrame.helpme -side left
    }
    
+   #--- Cree un frame pour y mettre la barre de progression
+   frame $framecurrent.frameprogress -borderwidth 0 -cursor arrow
+   pack $framecurrent.frameprogress -in $framecurrent -anchor s -side top -expand 0 -fill x
+
+         set pf [ ttk::progressbar $framecurrent.frameprogress.p -variable ::bddimages_imgcorrection::progress -orient horizontal -length 350 -mode determinate]
+         pack $pf -in $framecurrent.frameprogress -side top -anchor c
+
    # Frame boutons Cancel et Ok
    frame $framecurrent.buttons
    pack configure $framecurrent.buttons -side top -fill x -padx 3 -pady 3
