@@ -747,6 +747,24 @@ void cam_cooler_check(struct camprop *cam)
 
 void cam_set_binning(int binx, int biny, struct camprop *cam)
 {
+	int camstetc=0;
+	if ((cam->cameraType == ST7_CAMERA)
+	    || (cam->cameraType == ST8_CAMERA)
+		|| (cam->cameraType == ST5C_CAMERA)
+		|| (cam->cameraType == ST237_CAMERA)
+		|| (cam->cameraType == STK_CAMERA)
+		|| (cam->cameraType == ST9_CAMERA)
+		|| (cam->cameraType == STV_CAMERA)
+		|| (cam->cameraType == ST10_CAMERA)
+		|| (cam->cameraType == ST1K_CAMERA)
+		|| (cam->cameraType == ST2K_CAMERA)
+		|| (cam->cameraType == STL_CAMERA)
+		|| (cam->cameraType == ST402_CAMERA)
+		|| (cam->cameraType == STX_CAMERA)
+	    || (cam->cameraType == ST4K_CAMERA)) {
+			camstetc=1;
+	}
+
     if (binx < 1) {
         binx = 1;
     }
@@ -773,9 +791,7 @@ void cam_set_binning(int binx, int biny, struct camprop *cam)
     }
     /* readout Mode = 2 */
     if ((binx == 3) && (biny == 3)) {
-	if ((cam->cameraType == ST7_CAMERA)
-	    || (cam->cameraType == ST8_CAMERA)
-	    || (cam->cameraType == ST237_CAMERA)) {
+	if (camstetc==1) {
 	    cam->readoutMode = 2;
 	    cam->binx = cam->biny = 3;
 	    return;
@@ -783,8 +799,7 @@ void cam_set_binning(int binx, int biny, struct camprop *cam)
     }
     /* readout Mode = 0xNN03 0xNN04 0xNN05 */
     if (binx <= 3) {
-	if ((cam->cameraType == ST7_CAMERA)
-	    || (cam->cameraType == ST8_CAMERA)) {
+	if (camstetc==1) {
 	    cam->readoutMode = biny * 256 + binx;
 	    cam->binx = binx;
 	    cam->biny = biny;
@@ -793,10 +808,9 @@ void cam_set_binning(int binx, int biny, struct camprop *cam)
     }
     /* readout Mode = 9 */
     if ((binx == 9) && (biny == 9)) {
-	if ((cam->cameraType == ST7_CAMERA)
-	    || (cam->cameraType == ST8_CAMERA)) {
+	if (camstetc==1) {
 	    cam->readoutMode = 9;
-	    cam->binx = cam->biny = 9;
+	    cam->binx = cam->biny = 3; // deduit d'une STL 11K
 	    return;
 	}
     }
@@ -804,9 +818,7 @@ void cam_set_binning(int binx, int biny, struct camprop *cam)
     cam->readoutMode = 0;
     cam->binx = cam->biny = 1;
     if ((binx > 3) || (biny > 3)) {
-	if ((cam->cameraType == ST7_CAMERA)
-	    || (cam->cameraType == ST8_CAMERA)
-	    || (cam->cameraType == ST237_CAMERA)) {
+	if (camstetc==1) {
 	    cam->readoutMode = 2;
 	    cam->binx = cam->biny = 3;
 	} else {
