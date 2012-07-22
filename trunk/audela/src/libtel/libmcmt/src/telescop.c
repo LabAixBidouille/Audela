@@ -129,7 +129,17 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		}
 		strcat(s,"}");
       if ( Tcl_Eval(tel->interp, s) == TCL_ERROR ) {
+#if defined(MOUCHARD)
+   f=fopen("mouchard_tel.txt","at");
+   fprintf(f,"Fin de l'init PB=4a. tel->msg=%s\n",tel->msg);
+	fclose(f);
+#endif
 			strcpy(tel->msg,tel->interp->result);
+#if defined(MOUCHARD)
+   f=fopen("mouchard_tel.txt","at");
+   fprintf(f,"Fin de l'init PB=4b. tel->msg=%s\n",tel->msg);
+	fclose(f);
+#endif
 			threadpb=4;
       }
 	} else {
@@ -138,7 +148,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 	}
 #if defined(MOUCHARD)
    f=fopen("mouchard_tel.txt","at");
-   fprintf(f,"Fin de l'init\n");
+   fprintf(f,"Fin de l'init. threadpb=%d\n",threadpb);
 	fclose(f);
 #endif
 	return threadpb;
@@ -508,8 +518,14 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 	int kk,k;
 	int threadpb=0,resint;
    char s[1024],ssres[1024];
-   char ss[256],ssusb[256];
+   char ss[256],ssusb[256],portnum[256];
    time_t ltime;
+#endif
+#if defined(MOUCHARD)
+   FILE *f;
+   f=fopen("mouchard_tel.txt","at");
+   fprintf(f,"Debut de ThreadTel_Init\n",threadpb);
+	fclose(f);
 #endif
 
 	telthread = (struct telprop*) calloc( 1, sizeof(struct telprop) );
@@ -534,45 +550,59 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 	strcpy(telthread->home,"GPS 55.41 E -21.1995 991.9");
 	strcpy(telthread->home0,telthread->home);
 	strcpy(telthread->homePosition,telthread->home);
+#if defined(MOUCHARD)
+   f=fopen("mouchard_tel.txt","at");
+   fprintf(f,"Debut d'ouverture du port %s\n",argv[3]);
+	fclose(f);
+#endif
 
 	// open connections
 	if (telthread->mode == MODE_REEL) {
-		/* --- transcode a port argument into comX or into /dev... */
-		strcpy(ss,argv[3]);
-		sprintf(s,"string range [string toupper %s] 0 2",ss);
-		mytel_tcleval(telthread,s);
-		strcpy(s,telthread->interp->result);
-		if (strcmp(s,"COM")==0) {
-			sprintf(s,"string range [string toupper %s] 3 end",ss);
-			mytel_tcleval(telthread,s);
-			strcpy(s,telthread->interp->result);
-			k=(int)atoi(s);
-			mytel_tcleval(telthread,"set ::tcl_platform(os)");
-			strcpy(s,telthread->interp->result);
-			if (strcmp(s,"Linux")==0) {
-				sprintf(ss,"/dev/ttyS%d",k-1);
-				sprintf(ssusb,"/dev/ttyUSB%d",k-1);
-			}
-		}
-		/* --- open the port and record the channel name ---*/
-		sprintf(s,"open \"%s\" r+",ss);
-		if (mytel_tcleval(telthread,s)!=TCL_OK) {
-			strcpy(ssres,telthread->interp->result);
-			mytel_tcleval(telthread,"set ::tcl_platform(os)");
-			strcpy(ss,telthread->interp->result);
-			if (strcmp(ss,"Linux")==0) {
-				/* if ttyS not found, we test ttyUSB */
-				sprintf(ss,"open \"%s\" r+",ssusb);
-				if (mytel_tcleval(telthread,ss)!=TCL_OK) {
-					strcpy(telthread->msg,telthread->interp->result);
-					return 1;
-				}
-			} else {
-				sprintf(telthread->msg,"Verify the COM connection: %s",ssres);
+   // transcode a port argument into comX or into /dev...
+	   strcpy(ss,argv[3]);
+	   sprintf(s,"string range [string toupper %s] 0 2",ss);
+	   Tcl_Eval(telthread->interp,s);
+	   strcpy(s,telthread->interp->result);
+	   if (strcmp(s,"COM")==0) {
+		  sprintf(s,"string range [string toupper %s] 3 end",ss);
+		  Tcl_Eval(telthread->interp,s);
+		  strcpy(s,telthread->interp->result);
+		  k=(int)atoi(s);
+		  Tcl_Eval(telthread->interp,"set ::tcl_platform(os)");
+		  strcpy(s,telthread->interp->result);
+		  if (strcmp(s,"Linux")==0) {
+			 sprintf(ss,"/dev/ttyS%d",k-1);
+			 sprintf(ssusb,"/dev/ttyUSB%d",k-1);
+		  }
+	   }
+
+	   // Open the port and record the channel name
+		strcpy(portnum,ss);
+	   sprintf(s,"open \"%s\" r+",ss);
+	   if (Tcl_Eval(telthread->interp,s)!=TCL_OK) {
+		  strcpy(ssres,telthread->interp->result);
+		  Tcl_Eval(telthread->interp,"set ::tcl_platform(os)");
+		  strcpy(s,telthread->interp->result);
+		  if (strcmp(s,"Linux")==0) {
+			 // if ttyS not found, we test ttyUSB
+				strcpy(portnum,ssusb);
+			 sprintf(s,"open \"%s\" r+",ssusb);
+			 if (Tcl_Eval(telthread->interp,s)!=TCL_OK) {
+					sprintf(telthread->msg,"Problem to opening the COM ports %s and %s. %s",ss,ssusb,telthread->interp->result);
 				return 1;
-			}
-		}
+			 }
+			 strcpy(ss,ssusb);
+		  } else {
+				sprintf(telthread->msg,"Problem to opening the COM port %s. %s",ss,ssres);
+			 return 1;
+		  }
+	   }
 		strcpy(telthread->channel,telthread->interp->result);
+#if defined(MOUCHARD)
+   f=fopen("mouchard_tel.txt","at");
+   fprintf(f,"Fin d'ouverture du port %s. telthread->channel=%\n",argv[3],telthread->channel);
+	fclose(f);
+#endif
 	   
 		// j'ouvre le port serie 
 		//  # 19200 : vitesse de transmission (bauds)
@@ -585,12 +615,20 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 		// import useful Tcl procs
 		mytel_tcl_procs(telthread);	
 
+		// wait for the controler inits
+		sprintf(s,"after 1000"); mytel_tcleval(telthread,s);
+
 		// check connection
 		sprintf(s,"set envoi \"E0 FF\" ; set res [envoi $envoi] ; set clair [mcmthexa_decode $envoi $res]"); mytel_tcleval(telthread,s);
 		resint=atoi(telthread->interp->result);
 		if (resint==0) {
 			// probleme car le moteur ne repond pas !
 			strcpy(telthread->msg,"Motor not ready (E0 FF -> 00 instead 01)");
+#if defined(MOUCHARD)
+   f=fopen("mouchard_tel.txt","at");
+   fprintf(f,"Etape 10 telthread->msg=%s\n",telthread->msg);
+	fclose(f);
+#endif
 			return 1;
 		}
 
@@ -721,7 +759,18 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 	Tcl_CreateCommand(telthread->interp,"ThreadTel_loop", (Tcl_CmdProc *)ThreadTel_loop, (ClientData)telthread, NULL);
 	mytel_tcleval(telthread,"proc TTel_Loop {} { ThreadTel_loop ; after 250 TTel_Loop }");
 	// Lance le fonctionnement en boucle.
+#if defined(MOUCHARD)
+   f=fopen("mouchard_tel.txt","at");
+   fprintf(f,"Appel de TTel_Loop dans ThreadTel_Init\n",threadpb);
+	fclose(f);
+#endif
+
 	mytel_tcleval(telthread,"TTel_Loop");
+#if defined(MOUCHARD)
+   f=fopen("mouchard_tel.txt","at");
+   fprintf(f,"Fin de ThreadTel_Init\n",threadpb);
+	fclose(f);
+#endif
 
 	return 0;
 }
@@ -739,6 +788,7 @@ int ThreadTel_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 	double coord_app_cod_deg_ha0;
 	double coord_app_cod_deg_dec0;
 	time_t ltime;
+	FILE *f;
 
    my_pthread_mutex_lock(&mutex);
 	strcpy(action_locale,telthread->action_next);
@@ -813,6 +863,7 @@ int ThreadTel_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 				if (telthread->status==STATUS_HADEC_SLEWING) {
 					// --- stop motors
 					mytel_motor_stop(telthread);
+					mytel_motor_off(telthread);
 				}
 			}
 			telthread->speed_app_sim_adu_ha=0;
