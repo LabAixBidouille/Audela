@@ -40,7 +40,7 @@
 Definition of multitelescope supported by the open loop code
 Please use only one of these define before compiling
 */
-//#define CONTROLLER_T940
+
 #define CONTROLLER_MCMT
 
  /*
@@ -49,13 +49,6 @@ Please use only one of these define before compiling
  */
 
 struct telini tel_ini[] = {
-#if defined CONTROLLER_T940
-   {"T940",    /* telescope name */
-    "Etel-T940",    /* protocol name */
-    "t940",    /* product */
-     1.         /* default focal lenght of optic system */
-   },
-#endif
 #if defined CONTROLLER_MCMT
    {"MCMT II",    /* telescope name */
     "MCMT II",    /* protocol name */
@@ -507,13 +500,6 @@ int mytel_home_set(struct telprop *tel,double longitude,char *ew,double latitude
 // ::tel::create mcmt com1 -mode 0
 int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 
-#if defined CONTROLLER_T940
-	char s[1024];
-	int err,kk;
-	int axisno,kaxisno;
-	int threadpb=0;
-	int axis[3];
-#endif	
 #if defined CONTROLLER_MCMT
 	int kk,k;
 	int threadpb=0,resint;
@@ -748,6 +734,7 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 	strcpy(telthread->action_cur, "undefined");
 	telthread->status = STATUS_MOTOR_OFF;
 	telthread->compteur = 0;
+	telthread->exit=0;
 
 #endif
 
@@ -766,9 +753,10 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 #endif
 
 	mytel_tcleval(telthread,"TTel_Loop");
+
 #if defined(MOUCHARD)
    f=fopen("mouchard_tel.txt","at");
-   fprintf(f,"Fin de ThreadTel_Init\n",threadpb);
+   fprintf(f,"Fin de ThreadTel_Init. On est sorti de la boucle.\n",threadpb);
 	fclose(f);
 #endif
 
@@ -790,6 +778,11 @@ int ThreadTel_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 	time_t ltime;
 	FILE *f;
 
+	if (telthread->exit==1) {
+		free(telthread);
+		telthread=NULL;
+		return TCL_ERROR;
+	}
    my_pthread_mutex_lock(&mutex);
 	strcpy(action_locale,telthread->action_next);
 
@@ -1156,13 +1149,6 @@ int tel_testcom(struct telprop *tel)
 {
 	/* Is the drive pointer valid ? */
 	if (tel->mode==MODE_REEL) {
-#if defined CONTROLLER_T940
-		if(dsa_is_valid_drive(tel->drv)) {
-			return 1;
-		} else {
-			return 0;
-		}
-#endif
 #if defined CONTROLLER_MCMT
 		return 1;
 #endif
@@ -1178,41 +1164,29 @@ int tel_close(struct telprop *tel)
 {
 	char s[1024];
 	int k,err;
+#if defined(MOUCHARD)
+	FILE *f;
+   f=fopen("mouchard_tel.txt","at");
+   fprintf(f,"Debut de tel_close\n");
+	fclose(f);
+#endif
 	if (tel->mode==MODE_REEL) {
 #if defined CONTROLLER_MCMT
 		if (tel->mode==MODE_REEL) {
 			sprintf(s,"close %s",telthread->channel); mytel_tcleval(telthread,s);
 		}
-#endif				
-#if defined CONTROLLER_T940
-		/* --- boucle sur les axes ---*/
-		for (k=0;k<tel->nb_axis;k++) {
-			if (tel->axis_param[k].type==AXIS_NOTDEFINED) {
-				continue;
-			}
-			/* power off */
-			if (err = dsa_power_off_s(tel->drv[k], 10000)) {
-				//mytel_error(tel,k,err);
-				//return 1;
-			}
-			/* close and destroy */
-			if (err = dsa_close(tel->drv[k])) {
-				//mytel_error(tel,k,err);
-				//return 2;
-			}
-			if (err = dsa_destroy(&tel->drv[k])) {
-				//mytel_error(tel,k,err);
-				//return 3;
-			}
-		}
 #endif
 	}
-	free(telthread);
-   sprintf(s,"thread::release %s ",tel->loopThreadId);
-   Tcl_Eval(tel->interp, s);
+	telthread->exit=1; // envoie un signal de sortie
 	my_pthread_mutex_unlock(&mutex);
    pthread_mutexattr_destroy(&mutexAttr);
    pthread_mutex_destroy(&mutex);
+
+#if defined(MOUCHARD)
+   f=fopen("mouchard_tel.txt","at");
+   fprintf(f,"Fin de tel_close\n");
+	fclose(f);
+#endif
    return 0;
 }
 
@@ -1863,24 +1837,6 @@ void mytel_app_sim_deg2adu(struct telprop *tel) {
 		tel->speed_app_sim_adu_ra=0;
 		tel->speed_app_sim_adu_ha=0;
 		tel->speed_app_sim_adu_dec=0;
-#if defined CONTROLLER_T940
-		// a changer
-		if (tel->speed_app_sim_deg_az>0) {
-			tel->speed_app_sim_adu_az=-tel->speed_app_sim_deg_az/coef*tel->axis_param[AXIS_AZ].coef_vsp/1000;
-		} else {
-			tel->speed_app_sim_adu_az=-tel->speed_app_sim_deg_az/coef*tel->axis_param[AXIS_AZ].coef_vsm/1000;
-		}
-		if (tel->app_drift_elev>0) {
-			tel->speed_app_sim_adu_elev=-tel->speed_app_sim_deg_elev/coef*tel->axis_param[AXIS_ELEV].coef_vsp/1000;
-		} else {
-			tel->speed_app_sim_adu_elev=-tel->speed_app_sim_deg_elev/coef*tel->axis_param[AXIS_ELEV].coef_vsm/1000;
-		}
-		if (tel->app_drift_rot>0) {
-			tel->speed_app_sim_adu_rot=-tel->speed_app_sim_deg_rot/coef*tel->axis_param[AXIS_PARALLACTIC].coef_vsp/1000;
-		} else {
-			tel->speed_app_sim_adu_rot=-tel->speed_app_sim_deg_rot/coef*tel->axis_param[AXIS_PARALLACTIC].coef_vsm/1000;
-		}
-#endif
 	} else {
 		// coords
 		// tel->N0; // number of ADU for 360 deg
@@ -1894,19 +1850,6 @@ void mytel_app_sim_deg2adu(struct telprop *tel) {
 		tel->utcjd_app_sim_adu_dec=tel->utcjd_app_sim_deg_dec;
 		// speeds
 		tel->speed_app_sim_deg_ra=0;
-#if defined CONTROLLER_T940
-		// a changer
-		if (tel->speed_app_sim_deg_ha>0) {
-			tel->speed_app_sim_adu_ha=-tel->speed_app_sim_deg_ha/coef*tel->axis_param[AXIS_HA].coef_vsp/1000;
-		} else {
-			tel->speed_app_sim_adu_ha=-tel->speed_app_sim_deg_ha/coef*tel->axis_param[AXIS_HA].coef_vsm/1000;
-		}
-		if (tel->speed_app_sim_deg_dec>0) {
-			tel->speed_app_sim_adu_dec=-tel->speed_app_sim_deg_dec/coef*tel->axis_param[AXIS_DEC].coef_vsp/1000;
-		} else {
-			tel->speed_app_sim_adu_dec=-tel->speed_app_sim_deg_dec/coef*tel->axis_param[AXIS_DEC].coef_vsm/1000;
-		}
-#endif
 		tel->speed_app_sim_deg_az=0;
 		tel->speed_app_sim_deg_elev=0;
 		tel->speed_app_sim_deg_rot=0;
@@ -2143,34 +2086,6 @@ void mytel_app_sim_setdadu(struct telprop *tel) {
 /******************************************************************************/
 void mytel_speed_corrections(struct telprop *tel) {
 	int val, axisno, err, seqno, valplus;
-#if defined CONTROLLER_T940
-	if (tel->mode==MODE_REEL) {
-		if (tel->type_mount==MOUNT_ALTAZ) {
-			val=(int)tel->speed_app_cod_adu_az; axisno=AXIS_AZ;
-			valplus=(int)fabs(val);
-			if (err=mytel_set_register(telthread,axisno,ETEL_X,13,0,valplus)) { mytel_error(telthread,axisno,err); }
-			if (val>=0) { seqno = 72; } else { seqno = 71; }
-			if (err=mytel_execute_command(telthread,axisno,26,1,0,0,seqno)) { mytel_error(telthread,axisno,err); }
-			val=(int)telthread->speed_app_cod_adu_elev; axisno=AXIS_ELEV;
-			if (err=mytel_set_register(telthread,axisno,ETEL_X,13,0,(int)fabs(val))) { mytel_error(telthread,axisno,err); }
-			if (val>=0) { seqno = 72; } else { seqno = 71; }
-			if (err=mytel_execute_command(telthread,axisno,26,1,0,0,seqno)) { mytel_error(telthread,axisno,err); }
-			val=(int)telthread->speed_app_cod_adu_rot; axisno=AXIS_PARALLACTIC;
-			if (err=mytel_set_register(telthread,axisno,ETEL_X,13,0,(int)fabs(val))) { mytel_error(telthread,axisno,err); }
-			if (val>=0) { seqno = 72; } else { seqno = 71; }
-			if (err=mytel_execute_command(telthread,axisno,26,1,0,0,seqno)) { mytel_error(telthread,axisno,err); }
-		} else {
-			val=(int)telthread->speed_app_cod_adu_ha; axisno=AXIS_HA;
-			if (err=mytel_set_register(telthread,axisno,ETEL_X,13,0,(int)fabs(val))) { mytel_error(telthread,axisno,err); }
-			if (val>=0) { seqno = 72; } else { seqno = 71; }
-			if (err=mytel_execute_command(telthread,axisno,26,1,0,0,seqno)) { mytel_error(telthread,axisno,err); }
-			val=(int)telthread->speed_app_cod_adu_dec; axisno=AXIS_DEC;
-			if (err=mytel_set_register(telthread,axisno,ETEL_X,13,0,(int)fabs(val))) { mytel_error(telthread,axisno,err); }
-			if (val>=0) { seqno = 72; } else { seqno = 71; }
-			if (err=mytel_execute_command(telthread,axisno,26,1,0,0,seqno)) { mytel_error(telthread,axisno,err); }
-		}
-	}
-#endif
 }
 
 /* ================================================================ */

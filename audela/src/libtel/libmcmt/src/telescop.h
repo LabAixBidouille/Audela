@@ -133,6 +133,7 @@ struct telprop {
    /* Ajoutez ici les variables necessaires a votre telescope */
 	double ha0;
 	int compteur;
+	int exit;
    char home[50];
    char home0[50];
 	int mode;
