@@ -361,7 +361,7 @@ proc ::eqmod::configureMonture { } {
       #--- Je configure la monture pour les retournements
       set limiteEst   [ expr 24. - $conf(eqmod,limiteEst) ]h
       set limiteOuest $conf(eqmod,limiteOuest)h
-      tel$telNo $limiteEst $limiteOuest
+      tel$telNo limits $limiteEst $limiteOuest
       #--- J'affiche un message d'information dans la Console
       ::console::affiche_entete "$caption(eqmod,port_eqmod) $caption(eqmod,2points) $conf(eqmod,port)\n"
       ::console::affiche_saut "\n"
