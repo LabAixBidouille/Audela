@@ -131,7 +131,7 @@ namespace eval ::DlgShiftZadko {
          }
 
          ::console::affiche_prompt "::telescope::setSpeed $panneau(DlgShiftZadko,shiftSpeed) \n"
-         ::telescope::decodeSpeedDlgShiftZadko
+         ::telescope::decodeSpeedDlgShift DlgShiftZadko
 
          #--- Sur l'axe est/ouest
          if { $panneau(DlgShiftZadko,xShiftDirection) != "" } {
