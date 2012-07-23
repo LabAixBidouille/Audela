@@ -432,43 +432,38 @@ proc ::telescope::getSpeedValueList { } {
 
 #------------------------------------------------------------
 # decodeSpeedDlgShift
-#    Decode la vitesse de la monture pour les decalages de l'outil Acquisition
+#    Decode la vitesse de la monture pour les decalages des outils d'acquisition
+#    concernes (Acquisition, Acquisition T1M, Acquisition video, Aquisition Zadko)
 #
 # Parametres :
-#    Aucun
+#    namespace : Pour initialiser la variable panneau
 # Return :
 #    Rien
 #------------------------------------------------------------
-proc ::telescope::decodeSpeedDlgShift { } {
+proc ::telescope::decodeSpeedDlgShift { namespace } {
    global audace caption conf panneau
 
    if { [ ::tel::list ] != "" } {
       if { $conf(telescope) == "audecom" } {
-         if { $panneau(DlgShift,shiftSpeed) == "$caption(telescope,x1)" } {
-            setSpeed "1"
-         } elseif { $panneau(DlgShift,shiftSpeed) == "$caption(telescope,x5)" } {
-            setSpeed "2"
-         } elseif { $panneau(DlgShift,shiftSpeed) == "$caption(telescope,200)" } {
-            setSpeed "3"
+         switch $panneau($namespace,shiftSpeed) {
+            "$caption(telescope,x1)"  { setSpeed "1" }
+            "$caption(telescope,x5)"  { setSpeed "2" }
+            "$caption(telescope,200)" { setSpeed "3" }
          }
       } elseif { $conf(telescope) == "lx200" } {
-         if { $panneau(DlgShift,shiftSpeed) == "1" } {
-            setSpeed "1"
-         } elseif { $panneau(DlgShift,shiftSpeed) == "2" } {
-            setSpeed "2"
-         } elseif { $panneau(DlgShift,shiftSpeed) == "3" } {
-            setSpeed "3"
-         } elseif { $panneau(DlgShift,shiftSpeed) == "4" } {
-            setSpeed "4"
+         switch $panneau($namespace,shiftSpeed) {
+            "1" { setSpeed "1" }
+            "2" { setSpeed "2" }
+            "3" { setSpeed "3" }
+            "4" { setSpeed "4" }
          }
       } elseif { $conf(telescope) == "temma" } {
-         if { $panneau(DlgShift,shiftSpeed) == "$caption(telescope,NS)" } {
-            setSpeed "1"
-         } elseif { $panneau(DlgShift,shiftSpeed) == "$caption(telescope,HS)" } {
-            setSpeed "2"
+         switch $panneau($namespace,shiftSpeed) {
+            "$caption(telescope,NS)" { setSpeed "1" }
+            "$caption(telescope,HS)" { setSpeed "2" }
          }
       } elseif { $conf(telescope) == "eqmod" } {
-         switch $panneau(DlgShift,shiftSpeed) {
+         switch $panneau($namespace,shiftSpeed) {
             "1" { setSpeed "1" }
             "2" { setSpeed "2" }
             "3" { setSpeed "3" }
@@ -478,147 +473,13 @@ proc ::telescope::decodeSpeedDlgShift { } {
             "7" { setSpeed "7" }
          }
       } elseif { $conf(telescope) == "mcmt" } {
-         if { $panneau(DlgShift,shiftSpeed) == "1" } {
-            setSpeed "1"
-         } elseif { $panneau(DlgShift,shiftSpeed) == "2" } {
-            setSpeed "2"
-         } elseif { $panneau(DlgShift,shiftSpeed) == "3" } {
-            setSpeed "3"
-         }
-      } else {
-         #--- Inactif pour autres telescopes
-         setSpeed "0"
-      }
-   } else {
-      ::confTel::run
-      tkwait window $audace(base).confTel
-      set audace(telescope,rate) "0"
-   }
-}
-
-#------------------------------------------------------------
-# decodeSpeedDlgShiftVideo
-#    Decode la vitesse de la monture pour les decalages de l'outil Acquisition Video
-#
-# Parametres :
-#    Aucun
-# Return :
-#    Rien
-#------------------------------------------------------------
-proc ::telescope::decodeSpeedDlgShiftVideo { } {
-   global audace caption conf panneau
-
-   if { [ ::tel::list ] != "" } {
-      if { $conf(telescope) == "audecom" } {
-         if { $panneau(DlgShiftVideo,shiftSpeed) == "$caption(telescope,x1)" } {
-            setSpeed "1"
-         } elseif { $panneau(DlgShiftVideo,shiftSpeed) == "$caption(telescope,x5)" } {
-            setSpeed "2"
-         } elseif { $panneau(DlgShiftVideo,shiftSpeed) == "$caption(telescope,200)" } {
-            setSpeed "3"
-         }
-      } elseif { $conf(telescope) == "lx200" } {
-         if { $panneau(DlgShiftVideo,shiftSpeed) == "1" } {
-            setSpeed "1"
-         } elseif { $panneau(DlgShiftVideo,shiftSpeed) == "2" } {
-            setSpeed "2"
-         } elseif { $panneau(DlgShiftVideo,shiftSpeed) == "3" } {
-            setSpeed "3"
-         } elseif { $panneau(DlgShiftVideo,shiftSpeed) == "4" } {
-            setSpeed "4"
-         }
-      } elseif { $conf(telescope) == "temma" } {
-         if { $panneau(DlgShiftVideo,shiftSpeed) == "$caption(telescope,NS)" } {
-            setSpeed "1"
-         } elseif { $panneau(DlgShiftVideo,shiftSpeed) == "$caption(telescope,HS)" } {
-            setSpeed "2"
-         }
-      } elseif { $conf(telescope) == "eqmod" } {
-         switch $panneau(DlgShiftVideo,shiftSpeed) {
+         switch $panneau($namespace,shiftSpeed) {
             "1" { setSpeed "1" }
             "2" { setSpeed "2" }
             "3" { setSpeed "3" }
-            "4" { setSpeed "4" }
-            "5" { setSpeed "5" }
-            "6" { setSpeed "6" }
-            "7" { setSpeed "7" }
-         }
-      } elseif { $conf(telescope) == "mcmt" } {
-         if { $panneau(DlgShiftVideo,shiftSpeed) == "1" } {
-            setSpeed "1"
-         } elseif { $panneau(DlgShiftVideo,shiftSpeed) == "2" } {
-            setSpeed "2"
-         } elseif { $panneau(DlgShiftVideo,shiftSpeed) == "3" } {
-            setSpeed "3"
          }
       } else {
-         #--- Inactif pour autres telescopes
-         setSpeed "0"
-      }
-   } else {
-      ::confTel::run
-      tkwait window $audace(base).confTel
-      set audace(telescope,rate) "0"
-   }
-}
-
-#------------------------------------------------------------
-# decodeSpeedDlgShiftZadko
-#    Decode la vitesse de la monture pour les decalages de l'outil Acquisition ZADKO
-#
-# Parametres :
-#    Aucun
-# Return :
-#    Rien
-#------------------------------------------------------------
-proc ::telescope::decodeSpeedDlgShiftZadko { } {
-   global audace caption conf panneau
-
-   if { [ ::tel::list ] != "" } {
-      if { $conf(telescope) == "audecom" } {
-         if { $panneau(DlgShiftZadko,shiftSpeed) == "$caption(telescope,x1)" } {
-            setSpeed "1"
-         } elseif { $panneau(DlgShiftZadko,shiftSpeed) == "$caption(telescope,x5)" } {
-            setSpeed "2"
-         } elseif { $panneau(DlgShiftZadko,shiftSpeed) == "$caption(telescope,200)" } {
-            setSpeed "3"
-         }
-      } elseif { $conf(telescope) == "lx200" } {
-         if { $panneau(DlgShiftZadko,shiftSpeed) == "1" } {
-            setSpeed "1"
-         } elseif { $panneau(DlgShiftZadko,shiftSpeed) == "2" } {
-            setSpeed "2"
-         } elseif { $panneau(DlgShiftZadko,shiftSpeed) == "3" } {
-            setSpeed "3"
-         } elseif { $panneau(DlgShiftZadko,shiftSpeed) == "4" } {
-            setSpeed "4"
-        }
-      } elseif { $conf(telescope) == "temma" } {
-         if { $panneau(DlgShiftZadko,shiftSpeed) == "$caption(telescope,NS)" } {
-            setSpeed "1"
-         } elseif { $panneau(DlgShiftZadko,shiftSpeed) == "$caption(telescope,HS)" } {
-            setSpeed "2"
-         }
-      } elseif { $conf(telescope) == "eqmod" } {
-         switch $panneau(DlgShiftZadko,shiftSpeed) {
-            "1" { setSpeed "1" }
-            "2" { setSpeed "2" }
-            "3" { setSpeed "3" }
-            "4" { setSpeed "4" }
-            "5" { setSpeed "5" }
-            "6" { setSpeed "6" }
-            "7" { setSpeed "7" }
-         }
-      } elseif { $conf(telescope) == "mcmt" } {
-         if { $panneau(DlgShiftZadko,shiftSpeed) == "1" } {
-            setSpeed "1"
-         } elseif { $panneau(DlgShiftZadko,shiftSpeed) == "2" } {
-            setSpeed "2"
-         } elseif { $panneau(DlgShiftZadko,shiftSpeed) == "3" } {
-            setSpeed "3"
-        }
-      } else {
-         #--- Inactif pour autres telescopes
+         #--- Inactif pour les autres telescopes
          setSpeed "0"
       }
    } else {
@@ -644,82 +505,57 @@ proc ::telescope::incrementSpeed { } {
    if { [ ::tel::list ] != "" } {
       if { $conf(telescope) == "audecom" } {
          #--- Pour audecom, l'increment peut prendre 3 valeurs ( 1 2 3 )
-         if { $audace(telescope,speed) == "1" } {
-            setSpeed "2"
-         } elseif { $audace(telescope,speed) == "2" } {
-            setSpeed "3"
-         } elseif { $audace(telescope,speed) == "3" } {
-            setSpeed "1"
-         } else {
-            setSpeed "1"
+         switch $audace(telescope,speed) {
+            "1"     { setSpeed "2" }
+            "2"     { setSpeed "3" }
+            default { setSpeed "1" }
          }
       } elseif { $conf(telescope) == "lx200" } {
          #--- Pour lx200, l'increment peut prendre 4 valeurs ( 1 2 3 4 )
-         if { $audace(telescope,speed) == "1" } {
-            setSpeed "2"
-         } elseif { $audace(telescope,speed) == "2" } {
-            setSpeed "3"
-         } elseif { $audace(telescope,speed) == "3" } {
-            setSpeed "4"
-         } elseif { $audace(telescope,speed) == "4" } {
-            setSpeed "1"
-         } else {
-            setSpeed "1"
+         switch $audace(telescope,speed) {
+            "1"     { setSpeed "2" }
+            "2"     { setSpeed "3" }
+            "3"     { setSpeed "4" }
+            default { setSpeed "1" }
          }
       } elseif { $conf(telescope) == "temma" } {
          #--- Pour temma, l'increment peut prendre 2 valeurs ( 1 2 )
-         if { $audace(telescope,speed) == "1" } {
-            setSpeed "2"
-         } elseif { $audace(telescope,speed) == "2" } {
-            setSpeed "1"
-         } else {
-            setSpeed "1"
-         }
-      } elseif { $conf(telescope) == "ascom" } {
-         #--- Pour lx200, l'increment peut prendre 4 valeurs ( 1 2 3 4 )
-         if { $audace(telescope,speed) == "1" } {
-            setSpeed "2"
-         } elseif { $audace(telescope,speed) == "2" } {
-            setSpeed "3"
-         } elseif { $audace(telescope,speed) == "3" } {
-            setSpeed "4"
-         } elseif { $audace(telescope,speed) == "4" } {
-            setSpeed "1"
-         } else {
-            setSpeed "1"
+         switch $audace(telescope,speed) {
+            "1"     { setSpeed "2" }
+            default { setSpeed "1" }
          }
       } elseif { $conf(telescope) == "eqmod" } {
-         #--- Pour l'eqmod, l'increment peut prendre 7 valeurs ( 1 2 3 4 5 6 7 )
+         #--- Pour eqmod, l'increment peut prendre 7 valeurs ( 1 2 3 4 5 6 7 )
          switch $audace(telescope,speed) {
-            "1" { setSpeed "2" }
-            "2" { setSpeed "3" }
-            "3" { setSpeed "4" }
-            "4" { setSpeed "5" }
-            "5" { setSpeed "6" }
-            "6" { setSpeed "7" }
+            "1"     { setSpeed "2" }
+            "2"     { setSpeed "3" }
+            "3"     { setSpeed "4" }
+            "4"     { setSpeed "5" }
+            "5"     { setSpeed "6" }
+            "6"     { setSpeed "7" }
             default { setSpeed "1" }
          }
       } elseif { $conf(telescope) == "mcmt" } {
          #--- Pour mcmt, l'increment peut prendre 3 valeurs ( 1 2 3 )
-         if { $audace(telescope,speed) == "1" } {
-            setSpeed "2"
-         } elseif { $audace(telescope,speed) == "2" } {
-            setSpeed "3"
-         } elseif { $audace(telescope,speed) == "3" } {
-            setSpeed "1"
-         } else {
-            setSpeed "1"
+         switch $audace(telescope,speed) {
+            "1"     { setSpeed "2" }
+            "2"     { setSpeed "3" }
+            default { setSpeed "1" }
+         }
+      } elseif { $conf(telescope) == "ascom" } {
+         #--- Pour ascom, l'increment peut prendre 4 valeurs ( 1 2 3 4 )
+         switch $audace(telescope,speed) {
+            "1"     { setSpeed "2" }
+            "2"     { setSpeed "3" }
+            "3"     { setSpeed "4" }
+            default { setSpeed "1" }
          }
       } elseif { $conf(telescope) == "t193" } {
-         #--- Pour t193, l'increment peut prendre 2 valeurs ( 1 2 )
-         if { $audace(telescope,speed) == "1" } {
-            setSpeed "2"
-         } elseif { $audace(telescope,speed) == "2" } {
-            setSpeed "3"
-         } elseif { $audace(telescope,speed) == "3" } {
-            setSpeed "1"
-         } else {
-            setSpeed "1"
+         #--- Pour t193, l'increment peut prendre 3 valeurs ( 1 2 3 )
+         switch $audace(telescope,speed) {
+            "1"     { setSpeed "2" }
+            "2"     { setSpeed "3" }
+            default { setSpeed "1" }
          }
       } else {
          #--- Inactif pour les autres montures
@@ -748,80 +584,58 @@ proc ::telescope::setSpeed { { value "2" } } {
 
    if { [ ::tel::list ] != "" } {
       if { $conf(telescope) == "audecom" } {
-         if { $value == "1" } {
-            set audace(telescope,speed) "1"
-            set audace(telescope,labelspeed) "$caption(telescope,x1)"
-            set audace(telescope,rate) "0"
-         } elseif { $value == "2" } {
-            set audace(telescope,speed) "2"
-            set audace(telescope,labelspeed) "$caption(telescope,x5)"
-            set audace(telescope,rate) "0.5"
-         } elseif { $value == "3" } {
-            set audace(telescope,speed) "3"
-            set audace(telescope,labelspeed) "$caption(telescope,200)"
-            set audace(telescope,rate) "1"
-         } else {
-            set audace(telescope,speed) "3"
-            set audace(telescope,labelspeed) "$caption(telescope,200)"
-            set audace(telescope,rate) "1"
+         switch $value {
+            "1" {
+               set audace(telescope,speed) "1"
+               set audace(telescope,labelspeed) "$caption(telescope,x1)"
+               set audace(telescope,rate) "0"
+            }
+            "2" {
+               set audace(telescope,speed) "2"
+               set audace(telescope,labelspeed) "$caption(telescope,x5)"
+               set audace(telescope,rate) "0.5"
+            }
+            "3" {
+               set audace(telescope,speed) "3"
+               set audace(telescope,labelspeed) "$caption(telescope,200)"
+               set audace(telescope,rate) "1"
+            }
          }
       } elseif { $conf(telescope) == "lx200" } {
-         if { $value == "1" } {
-            set audace(telescope,speed) "1"
-            set audace(telescope,labelspeed) "1"
-            set audace(telescope,rate) "0"
-         } elseif { $value == "2" } {
-            set audace(telescope,speed) "2"
-            set audace(telescope,labelspeed) "2"
-            set audace(telescope,rate) "0.33"
-         } elseif { $value == "3" } {
-            set audace(telescope,speed) "3"
-            set audace(telescope,labelspeed) "3"
-            set audace(telescope,rate) "0.66"
-         } elseif { $value == "4" } {
-            set audace(telescope,speed) "4"
-            set audace(telescope,labelspeed) "4"
-            set audace(telescope,rate) "1"
-         } else {
-            set audace(telescope,speed) "1"
-            set audace(telescope,labelspeed) "1"
-            set audace(telescope,rate) "0"
+         switch $value {
+            "1" {
+               set audace(telescope,speed) "1"
+               set audace(telescope,labelspeed) "1"
+               set audace(telescope,rate) "0"
+            }
+            "2" {
+               set audace(telescope,speed) "2"
+               set audace(telescope,labelspeed) "2"
+               set audace(telescope,rate) "0.33"
+            }
+            "3" {
+               set audace(telescope,speed) "3"
+               set audace(telescope,labelspeed) "3"
+               set audace(telescope,rate) "0.66"
+            }
+            "4" {
+               set audace(telescope,speed) "4"
+               set audace(telescope,labelspeed) "4"
+               set audace(telescope,rate) "1"
+            }
          }
       } elseif { $conf(telescope) == "temma" } {
-         if { $value == "1" } {
-            set audace(telescope,speed) "1"
-            set audace(telescope,labelspeed) "$caption(telescope,NS)"
-            set audace(telescope,rate) "0"
-         } elseif { $value == "2" } {
-            set audace(telescope,speed) "2"
-            set audace(telescope,labelspeed) "$caption(telescope,HS)"
-            set audace(telescope,rate) "1"
-         } else {
-            set audace(telescope,speed) "1"
-            set audace(telescope,labelspeed) "$caption(telescope,NS)"
-            set audace(telescope,rate) "0"
-         }
-      } elseif { $conf(telescope) == "ascom" } {
-         if { $value == "1" } {
-            set audace(telescope,speed) "1"
-            set audace(telescope,labelspeed) "1"
-            set audace(telescope,rate) "0.01"
-         } elseif { $value == "2" } {
-            set audace(telescope,speed) "2"
-            set audace(telescope,labelspeed) "2"
-            set audace(telescope,rate) "0.1"
-         } elseif { $value == "3" } {
-            set audace(telescope,speed) "3"
-            set audace(telescope,labelspeed) "3"
-            set audace(telescope,rate) "0.25"
-         } elseif { $value == "4" } {
-            set audace(telescope,speed) "4"
-            set audace(telescope,labelspeed) "4"
-            set audace(telescope,rate) "1"
-         } else {
-            set audace(telescope,speed) "1"
-            set audace(telescope,labelspeed) "1"
-            set audace(telescope,rate) "1"
+         switch $value {
+            "1" {
+               set audace(telescope,speed) "1"
+               set audace(telescope,labelspeed) "$caption(telescope,NS)"
+               set audace(telescope,rate) "0"
+            }
+            "2" {
+               set audace(telescope,speed) "2"
+               set audace(telescope,labelspeed) "$caption(telescope,HS)"
+               set audace(telescope,rate) "1"
+            }
          }
       } elseif { $conf(telescope) == "eqmod" } {
          switch $value {
@@ -862,40 +676,63 @@ proc ::telescope::setSpeed { { value "2" } } {
             }
          }
       } elseif { $conf(telescope) == "mcmt" } {
-         if { $value == "1" } {
-            set audace(telescope,speed) "1"
-            set audace(telescope,labelspeed) "1"
-            set audace(telescope,rate) "0.1"
-         } elseif { $value == "2" } {
-            set audace(telescope,speed) "2"
-            set audace(telescope,labelspeed) "2"
-            set audace(telescope,rate) "0.5"
-         } elseif { $value == "3" } {
-            set audace(telescope,speed) "3"
-            set audace(telescope,labelspeed) "3"
-            set audace(telescope,rate) "1"
-         } else {
-            set audace(telescope,speed) "1"
-            set audace(telescope,labelspeed) "1"
-            set audace(telescope,rate) "0.1"
+         switch $value {
+            "1" {
+               set audace(telescope,speed) "1"
+               set audace(telescope,labelspeed) "1"
+               set audace(telescope,rate) "0.1"
+            }
+            "2" {
+               set audace(telescope,speed) "2"
+               set audace(telescope,labelspeed) "2"
+               set audace(telescope,rate) "0.5"
+            }
+            "3" {
+               set audace(telescope,speed) "3"
+               set audace(telescope,labelspeed) "3"
+               set audace(telescope,rate) "1"
+            }
+         }
+      } elseif { $conf(telescope) == "ascom" } {
+         switch $value {
+            "1" {
+               set audace(telescope,speed) "1"
+               set audace(telescope,labelspeed) "1"
+               set audace(telescope,rate) "0.01"
+            }
+            "2" {
+               set audace(telescope,speed) "2"
+               set audace(telescope,labelspeed) "2"
+               set audace(telescope,rate) "0.1"
+            }
+            "3" {
+               set audace(telescope,speed) "3"
+               set audace(telescope,labelspeed) "3"
+               set audace(telescope,rate) "0.25"
+            }
+            "4" {
+               set audace(telescope,speed) "4"
+               set audace(telescope,labelspeed) "4"
+               set audace(telescope,rate) "1"
+            }
          }
       } elseif { $conf(telescope) == "t193" } {
-         if { $value == "1" } {
-            set audace(telescope,speed) "1"
-            set audace(telescope,labelspeed) "1"
-            set audace(telescope,rate) "0"
-         } elseif { $value == "2" } {
-            set audace(telescope,speed) "2"
-            set audace(telescope,labelspeed) "2"
-            set audace(telescope,rate) "0.33"
-         } elseif { $value == "3" } {
-            set audace(telescope,speed) "3"
-            set audace(telescope,labelspeed) "3"
-            set audace(telescope,rate) "0.66"
-         } else {
-            set audace(telescope,speed) "1"
-            set audace(telescope,labelspeed) "1"
-            set audace(telescope,rate) "0"
+         switch $value {
+            "1" {
+               set audace(telescope,speed) "1"
+               set audace(telescope,labelspeed) "1"
+               set audace(telescope,rate) "0"
+            }
+            "2" {
+               set audace(telescope,speed) "2"
+               set audace(telescope,labelspeed) "2"
+               set audace(telescope,rate) "0.33"
+            }
+            "3" {
+               set audace(telescope,speed) "3"
+               set audace(telescope,labelspeed) "3"
+               set audace(telescope,rate) "0.66"
+            }
          }
       } else {
          set audace(telescope,speed) "1"
