@@ -461,7 +461,7 @@ int tt_ima_series_astrometry_1(TT_IMA_SERIES *pseries)
 #ifdef TT_DISTORASTROM
       tt_util_set_pv(p_out,a,a2,&p_ast);
 #else
-      tt_util_set_pv(p_out,a,a2,NULL);
+      /*tt_util_set_pv(p_out,a,a2,NULL);*/
 #endif
    }
    /* --- cas ou l'on demande d'ecrire un fichier ASCII en sortie ---*/

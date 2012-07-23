@@ -429,6 +429,7 @@ int tt_util_getkey0_astrometry(TT_IMA *p_ima,TT_ASTROM *p_ast,int *valid)
       p_ast->foclen/=2.;
    }
 
+#ifdef TT_DISTORASTROM
    valid_pv=0;
    for (k1=1;k1<=2;k1++) {
       for (k2=0;k2<=10;k2++) {
@@ -455,7 +456,7 @@ int tt_util_getkey0_astrometry(TT_IMA *p_ima,TT_ASTROM *p_ast,int *valid)
       }
       p_ast->pv_valid=TT_YES;
    }
-
+#endif
 
    return(OK_DLL);
 }
