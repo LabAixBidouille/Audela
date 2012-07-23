@@ -676,17 +676,17 @@ namespace eval ::AlignManager {
          set name      [lindex $result 3]
          set magnitude [lindex $result 4]
 
-         if { $equinox != "now" } {
-            set listv [modpoi_catalogmean2apparent $ra $dec $equinox [ ::audace::date_sys2ut now ] ]
-            set ra [lindex $listv 0]
-            set ra [mc_angle2hms $ra 360 nozero 1 auto string]
-            set ra [string range $ra 0 [string first "s" "$ra" ] ]
+         # if { $equinox != "now" } {
+            # set listv [modpoi_catalogmean2apparent $ra $dec $equinox [ ::audace::date_sys2ut now ] ]
+            # set ra [lindex $listv 0]
+            # set ra [mc_angle2hms $ra 360 nozero 1 auto string]
+            # set ra [string range $ra 0 [string first "s" "$ra" ] ]
 
-            set dec [lindex $listv 1]
-            set dec [mc_angle2dms $dec 90 nozero 0 + string]
-            set dec [string range $dec 0 [string first "s" "$dec" ] ]
-            set equinox   "now"
-         }
+            # set dec [lindex $listv 1]
+            # set dec [mc_angle2dms $dec 90 nozero 0 + string]
+            # set dec [string range $dec 0 [string first "s" "$dec" ] ]
+            # set equinox   "now"
+         # }
          set private(targetRa)   $ra
          set private(targetDec)  $dec
          set private(targetName) $name
