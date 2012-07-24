@@ -208,7 +208,23 @@ namespace eval telpad {
    #  direction : direction du deplacement e w n s
    #------------------------------------------------------------
    proc moveRadec { direction } {
+      variable This
+      variable private
+      global color
+
       set catchError [ catch {
+         #--- Gestion des boutons
+         if { $private(active) == 1 } {
+            if { $direction == "n" } {
+               $This.frame2.n.canv1 configure -bg $color(white) -fg $color(black)
+            } elseif { $direction == "s" } {
+               $This.frame2.s.canv1 configure -bg $color(white) -fg $color(black)
+            } elseif { $direction == "w" } {
+               $This.frame2.we.canv2 configure -bg $color(white) -fg $color(black)
+            } elseif { $direction == "e" } {
+               $This.frame2.we.canv1 configure -bg $color(white) -fg $color(black)
+            }
+         }
          #--- Debut du mouvement
          ::telescope::move $direction
       } ]
@@ -227,8 +243,24 @@ namespace eval telpad {
    #  direction : direction du deplacement e w n s
    #------------------------------------------------------------
    proc stopRadec { direction } {
+      variable This
+      variable private
+      global color
+
       #--- Fin de mouvement
       ::telescope::stop $direction
+      #--- Gestion des boutons
+      if { $private(active) == 1 } {
+         if { $direction == "n" } {
+            $This.frame2.n.canv1 configure -bg $color(gray_pad) -fg $color(white)
+         } elseif { $direction == "s" } {
+            $This.frame2.s.canv1 configure -bg $color(gray_pad) -fg $color(white)
+         } elseif { $direction == "w" } {
+            $This.frame2.we.canv2 configure -bg $color(gray_pad) -fg $color(white)
+         } elseif { $direction == "e" } {
+            $This.frame2.we.canv1 configure -bg $color(gray_pad) -fg $color(white)
+         }
+      }
    }
 
    #------------------------------------------------------------
@@ -333,7 +365,10 @@ namespace eval telpad {
    #------------------------------------------------------------
    proc createDialog { } {
       variable This
+      variable private
       global audace caption color conf
+
+      set private(active) 0
 
       if { [ winfo exists $This ] } {
          destroy $This
@@ -345,7 +380,7 @@ namespace eval telpad {
       if { [ info exists conf(telpad,wmgeometry) ] == "1" } {
          wm geometry $This $conf(telpad,wmgeometry)
       } else {
-         wm geometry $This 170x260+647+240
+         wm geometry $This 170x320+647+240
       }
       wm resizable $This 1 1
       wm protocol $This WM_DELETE_WINDOW ::telpad::deletePluginInstance
@@ -386,7 +421,7 @@ namespace eval telpad {
          -fg $color(white) \
          -bg $color(gray_pad) \
          -text "$caption(telpad,nord)" \
-         -width 2  \
+         -width 2 \
          -anchor center \
          -relief ridge
       pack $This.frame2.n.canv1 -expand 0 -side top -padx 10 -pady 4
@@ -401,7 +436,7 @@ namespace eval telpad {
          -fg $color(white) \
          -bg $color(gray_pad) \
          -text "$caption(telpad,est)" \
-         -width 2  \
+         -width 2 \
          -anchor center \
          -relief ridge
       pack $This.frame2.we.canv1 -expand 0 -side left -padx 10 -pady 4
@@ -417,7 +452,7 @@ namespace eval telpad {
          -fg $color(white) \
          -bg $color(gray_pad) \
          -text "$caption(telpad,ouest)" \
-         -width 2  \
+         -width 2 \
          -anchor center \
          -relief ridge
       pack $This.frame2.we.canv2 -expand 0 -side right -padx 10 -pady 4
@@ -432,7 +467,7 @@ namespace eval telpad {
          -fg $color(white) \
          -bg $color(gray_pad) \
          -text "$caption(telpad,sud)" \
-         -width 2  \
+         -width 2 \
          -anchor center \
          -relief ridge
       pack $This.frame2.s.canv1 -expand 0 -side top -padx 10 -pady 4
@@ -441,6 +476,20 @@ namespace eval telpad {
       set zone(e) $This.frame2.we.canv1
       set zone(w) $This.frame2.we.canv2
       set zone(s) $This.frame2.s.canv1
+
+      #--- Frame du checkbutton pour activer / desactiver les fleches du clavier
+      frame $This.frame2.frameCheck -borderwidth 0 -relief raise -bg $color(blue_pad)
+      pack $This.frame2.frameCheck -expand 0 -side bottom -padx 10 -pady 4
+
+      checkbutton $This.frame2.frameCheck.active -borderwidth 1 \
+         -variable ::telpad::private(active) \
+         -bg $color(blue_pad) -fg $color(white) \
+         -activebackground $color(blue_pad) -activeforeground $color(white) \
+         -selectcolor $color(blue_pad) -highlightbackground $color(blue_pad) \
+         -font [ list {Arial} 10 bold ] \
+         -text $caption(telpad,activeFleches) \
+         -command "::telpad::activeFlechesClavier"
+      pack $This.frame2.frameCheck.active -anchor center -fill none -pady 2
 
       #--- Ecrit l'etiquette du controle du suivi : Suivi on ou off
       if { [ ::confTel::getPluginProperty hasControlSuivi ] == "1" } {
@@ -463,17 +512,6 @@ namespace eval telpad {
       bind $zone(n) <ButtonPress-1>   { ::telpad::moveRadec n }
       bind $zone(n) <ButtonRelease-1> { ::telpad::stopRadec n }
 
-      #--- bind Cardinal sur les 4 fleches du clavier
-      #--- ne fonctionne que si la raquette SuperPad a le focus
-      bind .telpad <KeyPress-Left>    { ::telpad::moveRadec e }
-      bind .telpad <KeyRelease-Left>  { ::telpad::stopRadec e }
-      bind .telpad <KeyPress-Right>   { ::telpad::moveRadec w }
-      bind .telpad <KeyRelease-Right> { ::telpad::stopRadec w }
-      bind .telpad <KeyPress-Down>    { ::telpad::moveRadec s }
-      bind .telpad <KeyRelease-Down>  { ::telpad::stopRadec s }
-      bind .telpad <KeyPress-Up>      { ::telpad::moveRadec n }
-      bind .telpad <KeyRelease-Up>    { ::telpad::stopRadec n }
-
       #--- Label pour moteur focus
       label $This.frame3.lab1 -text $caption(telpad,moteur_foc) -relief flat \
          -fg $color(white) -bg $color(blue_pad) -font [ list {Arial} 10 bold ]
@@ -489,7 +527,7 @@ namespace eval telpad {
          -fg $color(white) \
          -bg $color(gray_pad) \
          -text "-" \
-         -width 2  \
+         -width 2 \
          -anchor center \
          -relief ridge
       pack $This.frame3.we.canv1 -expand 0 -side left -padx 10 -pady 4
@@ -505,7 +543,7 @@ namespace eval telpad {
          -fg $color(white) \
          -bg $color(gray_pad) \
          -text "+" \
-         -width 2  \
+         -width 2 \
          -anchor center \
          -relief ridge
       pack $This.frame3.we.canv2 -expand 0 -side right -padx 10 -pady 4
@@ -532,5 +570,34 @@ namespace eval telpad {
       bind $This <Key-F1> { ::console::GiveFocus }
    }
 
+   #------------------------------------------------------------
+   #  activeFlechesClavier
+   #     active les fleches du clavier
+   #------------------------------------------------------------
+   proc activeFlechesClavier { } {
+      variable private
+
+      if { $private(active) == 1 } {
+         #--- bind Cardinal sur les 4 fleches du clavier
+         #--- ne fonctionne que si la raquette TelPad a le focus
+         bind .telpad <KeyPress-Left>    { ::telpad::moveRadec e }
+         bind .telpad <KeyRelease-Left>  { ::telpad::stopRadec e }
+         bind .telpad <KeyPress-Right>   { ::telpad::moveRadec w }
+         bind .telpad <KeyRelease-Right> { ::telpad::stopRadec w }
+         bind .telpad <KeyPress-Down>    { ::telpad::moveRadec s }
+         bind .telpad <KeyRelease-Down>  { ::telpad::stopRadec s }
+         bind .telpad <KeyPress-Up>      { ::telpad::moveRadec n }
+         bind .telpad <KeyRelease-Up>    { ::telpad::stopRadec n }
+      } else {
+         bind .telpad <KeyPress-Left>    { }
+         bind .telpad <KeyRelease-Left>  { }
+         bind .telpad <KeyPress-Right>   { }
+         bind .telpad <KeyRelease-Right> { }
+         bind .telpad <KeyPress-Down>    { }
+         bind .telpad <KeyRelease-Down>  { }
+         bind .telpad <KeyPress-Up>      { }
+         bind .telpad <KeyRelease-Up>    { }
+      }
+   }
 }
 

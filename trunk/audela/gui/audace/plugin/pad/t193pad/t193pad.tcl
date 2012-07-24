@@ -218,6 +218,8 @@ proc ::t193pad::createDialog { } {
    variable private
    global audace caption color conf
 
+   set private(active) 0
+
    if { [ winfo exists $This ] } {
       destroy $This
    }
@@ -228,7 +230,7 @@ proc ::t193pad::createDialog { } {
    if { [ info exists conf(t193pad,wmgeometry) ] == "1" } {
       wm geometry $This $conf(t193pad,wmgeometry)
    } else {
-      wm geometry $This 240x520+643+180
+      wm geometry $This 240x582+647+150
    }
    wm resizable $This 1 1
    wm minsize $This 235 310
@@ -305,7 +307,7 @@ proc ::t193pad::createDialog { } {
    grid $This.frame2.sud -row 2 -column 1 -padx 10 -pady 0
 
    #--- activation / desactivation mode impulsion des deplacements radec (monocoup)
-   frame $This.frame2.pulseMode  -borderwidth 0 -bg $color(blue_pad)
+   frame $This.frame2.pulseMode -borderwidth 0 -bg $color(blue_pad)
       checkbutton $This.frame2.pulseMode.enabled \
          -font [ list {Arial} 12 bold ] \
          -bg $color(blue_pad) -fg $color(white) \
@@ -324,7 +326,20 @@ proc ::t193pad::createDialog { } {
          -font [ list {Arial} 12 bold ] \
          -text "arcsec"
       pack $This.frame2.pulseMode.unit -side left -padx 2
-   grid $This.frame2.pulseMode  -row 3 -column 0 -columnspan 3 -padx 10 -pady 4
+   grid $This.frame2.pulseMode -row 3 -column 0 -columnspan 3 -padx 10 -pady 4
+
+   #--- checkbutton pour activer / desactiver les fleches du clavier
+   frame $This.frame2.frameCheck -borderwidth 0 -relief raise -bg $color(blue_pad)
+      checkbutton $This.frame2.frameCheck.active -borderwidth 1 \
+         -variable ::t193pad::private(active) \
+         -bg $color(blue_pad) -fg $color(white) \
+         -activebackground $color(blue_pad) -activeforeground $color(white) \
+         -selectcolor $color(blue_pad) -highlightbackground $color(blue_pad) \
+         -font [ list {Arial} 12 bold ] \
+         -text $caption(t193pad,activeFleches) \
+         -command "::t193pad::activeFlechesClavier"
+      pack $This.frame2.frameCheck.active -anchor center -fill none -pady 2
+   grid $This.frame2.frameCheck -row 4 -column 0 -columnspan 3 -padx 10 -pady 4
 
    grid columnconfigure $This.frame2 0 -weight 1
    grid columnconfigure $This.frame2 1 -weight 1
@@ -501,7 +516,7 @@ proc ::t193pad::createDialog { } {
    #--- Initialise et affiche la vitesse du focuser
    ::focus::setSpeed $conf(t193pad,focuserLabel) "0"
 
-   #--- active ou descative le choix de l'impulsion
+   #--- active ou desactive le choix de l'impulsion
    setRadecPulseEnabled
 
    #--- La fenetre est active
@@ -522,7 +537,23 @@ proc ::t193pad::createDialog { } {
 # @return void
 #------------------------------------------------------------
 proc ::t193pad::moveRadec { direction } {
+   variable This
+   variable private
+   global color
+
    set catchError [catch {
+      #--- Gestion des boutons
+      if { $private(active) == 1 } {
+         if { $direction == "n" } {
+            $This.frame2.nord configure -bg $color(white) -fg $color(black)
+         } elseif { $direction == "s" } {
+            $This.frame2.sud configure -bg $color(white) -fg $color(black)
+         } elseif { $direction == "w" } {
+            $This.frame2.ouest configure -bg $color(white) -fg $color(black)
+         } elseif { $direction == "e" } {
+            $This.frame2.est configure -bg $color(white) -fg $color(black)
+         }
+      }
       #--- debut de mouvement
       ::telescope::move $direction
    }]
@@ -542,8 +573,24 @@ proc ::t193pad::moveRadec { direction } {
 # @return void
 #------------------------------------------------------------
 proc ::t193pad::stopRadec { direction } {
+   variable This
+   variable private
+   global color
+
    #--- fin de mouvement
    ::telescope::stop $direction
+   #--- Gestion des boutons
+   if { $private(active) == 1 } {
+      if { $direction == "n" } {
+         $This.frame2.nord configure -bg $color(gray_pad) -fg $color(white)
+      } elseif { $direction == "s" } {
+         $This.frame2.sud configure -bg $color(gray_pad) -fg $color(white)
+      } elseif { $direction == "w" } {
+         $This.frame2.ouest configure -bg $color(gray_pad) -fg $color(white)
+      } elseif { $direction == "e" } {
+         $This.frame2.est configure -bg $color(gray_pad) -fg $color(white)
+      }
+   }
 }
 
 #------------------------------------------------------------
@@ -582,12 +629,16 @@ proc ::t193pad::moveRadecPulse { direction } {
 #------------------------------------------------------------
 proc ::t193pad::setRadecPulseEnabled { } {
    variable This
+   variable private
 
    if { $::conf(t193pad,radecPulse,enabled) == 0 } {
 
-      #--- je descative acces au choix de la duree de l'impulsion
+      #--- je desactive acces au choix de la duree de l'impulsion
       $This.frame2.pulseMode.value configure -state disabled
       $This.frame2.pulseMode.unit  configure -state disabled
+
+      #--- j'active l'acces aux fleches du clavier
+      $This.frame2.frameCheck.active configure -state normal
 
       #--- Bind des boutons 'N', 'E', 'O' et 'S'
       bind $This.frame2.est <ButtonPress-1>     { ::t193pad::moveRadec e }
@@ -599,17 +650,6 @@ proc ::t193pad::setRadecPulseEnabled { } {
       bind $This.frame2.nord <ButtonPress-1>    { ::t193pad::moveRadec n }
       bind $This.frame2.nord <ButtonRelease-1>  { ::t193pad::stopRadec n }
 
-      #--- bind Cardinal sur les 4 fleches du clavier
-      #--- ne fonctionne que si la raquette SuperPad a le focus
-      bind .t193pad <KeyPress-Left>    { ::t193pad::moveRadec e }
-      bind .t193pad <KeyRelease-Left>  { ::t193pad::stopRadec e }
-      bind .t193pad <KeyPress-Right>   { ::t193pad::moveRadec w }
-      bind .t193pad <KeyRelease-Right> { ::t193pad::stopRadec w }
-      bind .t193pad <KeyPress-Down>    { ::t193pad::moveRadec s }
-      bind .t193pad <KeyRelease-Down>  { ::t193pad::stopRadec s }
-      bind .t193pad <KeyPress-Up>      { ::t193pad::moveRadec n }
-      bind .t193pad <KeyRelease-Up>    { ::t193pad::stopRadec n }
-
       $This.frame2.est   configure -command ""
       $This.frame2.ouest configure -command ""
       $This.frame2.sud   configure -command ""
@@ -620,6 +660,10 @@ proc ::t193pad::setRadecPulseEnabled { } {
       #--- je donne acces au choix de la duree de l'impulsion
       $This.frame2.pulseMode.value configure -state normal
       $This.frame2.pulseMode.unit  configure -state normal
+
+      #--- je desactive l'acces aux fleches du clavier
+      $This.frame2.frameCheck.active configure -state disabled
+      set private(active) 0
 
       #--- Bind des boutons 'N', 'E', 'O' et 'S'
       #--- Il ne faut pas utiliser les evenements ButtonPress-1 et ButtonRelease-1
@@ -641,6 +685,38 @@ proc ::t193pad::setRadecPulseEnabled { } {
       $This.frame2.sud   configure -command "::t193pad::moveRadecPulse s"
       $This.frame2.nord  configure -command "::t193pad::moveRadecPulse n"
 
+   }
+}
+
+#------------------------------------------------------------
+#  activeFlechesClavier
+#     active les fleches du clavier
+#------------------------------------------------------------
+proc ::t193pad::activeFlechesClavier { } {
+   variable private
+
+   if { $::conf(t193pad,radecPulse,enabled) == 0 } {
+      if { $private(active) == 1 } {
+         #--- bind Cardinal sur les 4 fleches du clavier
+         #--- ne fonctionne que si la raquette T193Pad a le focus
+         bind .t193pad <KeyPress-Left>    { ::t193pad::moveRadec e }
+         bind .t193pad <KeyRelease-Left>  { ::t193pad::stopRadec e }
+         bind .t193pad <KeyPress-Right>   { ::t193pad::moveRadec w }
+         bind .t193pad <KeyRelease-Right> { ::t193pad::stopRadec w }
+         bind .t193pad <KeyPress-Down>    { ::t193pad::moveRadec s }
+         bind .t193pad <KeyRelease-Down>  { ::t193pad::stopRadec s }
+         bind .t193pad <KeyPress-Up>      { ::t193pad::moveRadec n }
+         bind .t193pad <KeyRelease-Up>    { ::t193pad::stopRadec n }
+      } else {
+         bind .t193pad <KeyPress-Left>    { }
+         bind .t193pad <KeyRelease-Left>  { }
+         bind .t193pad <KeyPress-Right>   { }
+         bind .t193pad <KeyRelease-Right> { }
+         bind .t193pad <KeyPress-Down>    { }
+         bind .t193pad <KeyRelease-Down>  { }
+         bind .t193pad <KeyPress-Up>      { }
+         bind .t193pad <KeyRelease-Up>    { }
+      }
    }
 }
 
