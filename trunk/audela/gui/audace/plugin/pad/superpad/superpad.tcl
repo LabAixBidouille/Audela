@@ -735,6 +735,9 @@ namespace eval ::AlignManager {
    proc cmdSkyMap { } {
       variable private
 
+      #--- Je nettoye le nom du resolveur
+      set ::AlignManager::private(nameResolver) ""
+
       set result [::carte::getSelectedObject]
       if { [llength $result] == 5 } {
          set ra        [mc_angle2hms [lindex $result 0] 360 nozero 0 auto string]
