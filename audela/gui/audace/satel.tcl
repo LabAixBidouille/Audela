@@ -60,6 +60,9 @@ proc satel_nearest_radec { ra dec {date now} {home ""} } {
       if {[info exists resmin]==0} {
          set resmin $res
       }
+      if {[string compare [lindex $res 1] -nan]==0} {
+         continue
+      }
       set name [string trim [lindex [lindex $res 0] 0]]
       set rasat [lindex $res 1]
       set decsat [lindex $res 2]
@@ -79,7 +82,7 @@ proc satel_nearest_radec { ra dec {date now} {home ""} } {
       if {$sepangle<$sepanglemin} {
          set resmin $res
          set sepanglemin $sepangle
-      }
+      } 
    }
    set name [string trim [lindex [lindex $resmin 0] 0]]
    set rasat [mc_angle2hms [lindex $resmin 1] 360 zero 2 auto string]
@@ -606,6 +609,58 @@ proc satel_update { { server "" } {param1 ""} {param2 ""} } {
    catch {::console::affiche_resultat "Done in $dt seconds.\n\n"}
    satel_server $server0
    return $ntot
+}
+
+# liste les sat dans une zone limitée par ra1 ra2 dec1 dec2
+#satel_zone_radec 0 120 +30d00m00s0 +60d00m00s 2012-07-24T20:12:31 $home
+proc satel_zone_radec { ra1 ra2 dec1 dec2 {date now} {home ""} } {
+
+   set satelnames [satel_names]
+   set ra1 [string trim [mc_angle2deg $ra1]]
+   set dec1 [string trim [mc_angle2deg $dec1 90]]
+   set ra2 [string trim [mc_angle2deg $ra2]]
+   set dec2 [string trim [mc_angle2deg $dec2 90]]
+   set nsat [llength $satelnames]
+   set ksat 0
+   set k 0
+
+   ::console::affiche_resultat "nsat : $nsat , zone de recherche : $ra1 $dec1 $ra2 $dec2\n"
+   foreach satelname $satelnames {
+      incr ksat
+      set satname [lindex $satelname 0]
+      set ficname [lindex $satelname 1]
+      #::console::affiche_resultat "$ksat, satel_ephem \"$satname\" $date $home\n"
+      set err [catch {satel_ephem \"$satname\" $date $home} res]
+      #::console::affiche_resultat "$ksat, err=$err res=$res\n"
+      if {$err==1} {
+         continue
+      }
+      if {$res==""} {
+         continue
+      }
+      set res [lindex $res 0]
+      if {[string compare [lindex $res 1] -nan]==0} {
+         continue
+      }
+      set name [string trim [lindex [lindex $res 0] 0]]
+      set rasat [string trim [lindex $res 1]]
+      set decsat [string trim [lindex $res 2]]
+      set ill [lindex $res 6]
+      set azim [lindex $res 8]
+      set gise [expr $azim+180]
+      if {$gise>360} {
+         set gise [expr $gise-360]
+      }
+      set elev [lindex $res 9]
+      # test si le sat est dans la zone defini par ra1 dec1 ra2 dec2
+      #catch {::console::affiche_resultat "---: $ksat / $nsat [string trim [lindex [lindex $res 0] 0]] $rasat $decsat [expr $rasat>$ra1] [expr $rasat<$ra2] [expr $decsat>$dec1] [expr $decsat<$dec2]\n"}
+      if {($rasat>$ra1)&&($rasat<$ra2)&&($decsat>$dec1)&&($decsat<$dec2)} {
+         incr k
+         catch {::console::affiche_resultat "$k: $ksat / $nsat [string trim [lindex [lindex $res 0] 0]] $rasat $decsat\n"}
+      }
+
+   }
+   return
 }
 
 # Download one TLE file and return the contents
