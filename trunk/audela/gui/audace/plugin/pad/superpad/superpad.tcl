@@ -262,7 +262,7 @@ namespace eval ::superpad {
 
       #--- Definition des geompadetries
       #--- Definition of geometry
-      set geompad(larg)       [ expr int(340*$zoom+10) ]
+      set geompad(larg)       [ expr int(370*$zoom+10) ]
       set geompad(long)       [ expr int(600*$zoom+40) ]
       set geompad(fontsize50) [ expr int(36*$zoom) ]
       set geompad(fontsize25) [ expr int(25*$zoom) ]
@@ -292,7 +292,7 @@ namespace eval ::superpad {
       if { [ winfo exists .superpad ] } {
          destroy .superpad
       }
-      toplevel .superpad -class Toplevel -bg $colorpad(backpad)
+      toplevel .superpad -class toplevel -bg $colorpad(backpad)
       wm geometry .superpad $geompad(larg)x$geompad(long)+$positionxy
       wm resizable .superpad 0 0
       wm title .superpad $caption(superpad,titre)
@@ -381,7 +381,23 @@ namespace eval ::telescopePad {
    #  direction : direction du deplacement e w n s
    #------------------------------------------------------------
    proc moveRadec { direction } {
+      variable This
+      variable private
+      global colorpad
+
       set catchError [ catch {
+         #--- Gestion des boutons
+         if { $private(active) == 1 } {
+            if { $direction == "n" } {
+               $This.card.ns.n configure -bg $colorpad(textkey) -fg black
+            } elseif { $direction == "s" } {
+               $This.card.ns.s configure -bg $colorpad(textkey) -fg black
+            } elseif { $direction == "w" } {
+               $This.card.w configure -bg $colorpad(textkey) -fg black
+            } elseif { $direction == "e" } {
+               $This.card.e configure -bg $colorpad(textkey) -fg black
+            }
+         }
          #--- Debut du mouvement
          ::telescope::move $direction
       } ]
@@ -400,8 +416,24 @@ namespace eval ::telescopePad {
    #  direction : direction du deplacement e w n s
    #------------------------------------------------------------
    proc stopRadec { direction } {
+      variable This
+      variable private
+      global colorpad
+
       #--- Fin de mouvement
       ::telescope::stop $direction
+      #--- Gestion des boutons
+      if { $private(active) == 1 } {
+         if { $direction == "n" } {
+            $This.card.ns.n configure -bg $colorpad(backkey) -fg $colorpad(textkey)
+         } elseif { $direction == "s" } {
+            $This.card.ns.s configure -bg $colorpad(backkey) -fg $colorpad(textkey)
+         } elseif { $direction == "w" } {
+            $This.card.w configure -bg $colorpad(backkey) -fg $colorpad(textkey)
+         } elseif { $direction == "e" } {
+            $This.card.e configure -bg $colorpad(backkey) -fg $colorpad(textkey)
+         }
+      }
    }
 
    #------------------------------------------------------------
@@ -427,9 +459,11 @@ namespace eval ::telescopePad {
    #------------------------------------------------------------
    proc addFrame { parentFrame zoom } {
       variable This
-      global audace colorpad geompad
+      global audace caption colorpad geompad
 
       set This $parentFrame.movepad
+
+      set private(active) 0
 
       frame $This -borderwidth 0 -bg $colorpad(backpad) -borderwidth 2 -relief groove
 
@@ -527,28 +561,43 @@ namespace eval ::telescopePad {
       pack $This.card.ns -in $This.card -side left -expand 1 -fill x
       pack $This.card.ns.n -in $This.card.ns -side top  -padx 2 -pady 2
       pack $This.card.ns.s -in $This.card.ns -side bottom  -padx 2 -pady 2
-      pack $This.card.w  -in $This.card -side right -expand 1 -padx 2 -pady 2
+      pack $This.card.w -in $This.card -side right -expand 1 -padx 2 -pady 2
 
       pack $This.card -in $This -fill both -expand 1
 
+      #--- Frame du checkbutton pour activer les fleches du clavier
+      frame $This.frameCheck -borderwidth 0 -relief raise -bg $colorpad(backpad)
+
+      checkbutton $This.frameCheck.active -borderwidth 1 \
+         -variable ::telescopePad::private(active) \
+         -bg $colorpad(backpad) -fg $colorpad(textkey) \
+         -activebackground $colorpad(backpad) -activeforeground $colorpad(textkey) \
+         -selectcolor $colorpad(backpad) -highlightbackground $colorpad(backpad) \
+         -font [ list {Arial} $geompad(fontsize20) $geompad(textthick) ] \
+         -text $caption(superpad,activeFleches) \
+         -command "::telescopePad::activeFlechesClavier"
+      pack $This.frameCheck.active -anchor center -fill none -pady 2
+
+      pack $This.frameCheck -in $This -fill x
+
       #--- Frame des coordonnees
-      frame $This.frameCoord -borderwidth 1  -relief groove -bg $colorpad(backpad)
+      frame $This.frameCoord -borderwidth 1 -relief groove -bg $colorpad(backpad)
 
       #--- Label pour RA
       label  $This.frameCoord.labelRa \
          -font [ list {Arial} $geompad(fontsize20) $geompad(textthick) ] \
-         -textvariable audace(telescope,getra) -bg $colorpad(backpad) -fg $colorpad(textkey) -relief groove -width 10
+         -textvariable audace(telescope,getra) -bg $colorpad(backpad) -fg $colorpad(textkey) -relief groove -width 11
       pack   $This.frameCoord.labelRa -in $This.frameCoord -anchor center -fill x  -side left
 
       #--- Label pour DEC
       label  $This.frameCoord.labelDec \
          -font [ list {Arial} $geompad(fontsize20) $geompad(textthick) ] \
-         -textvariable audace(telescope,getdec) -bg $colorpad(backpad) -fg $colorpad(textkey) -relief groove -width 10
+         -textvariable audace(telescope,getdec) -bg $colorpad(backpad) -fg $colorpad(textkey) -relief groove -width 11
       pack   $This.frameCoord.labelDec -in $This.frameCoord -anchor center -fill x
 
-      pack $This.frameCoord -in $This  -fill x
+      pack $This.frameCoord -in $This -fill x
 
-      pack $This -in $parentFrame  -fill both -expand 1
+      pack $This -in $parentFrame -fill both -expand 1
 
       #--- bind Cardinal move button
       bind $This.card.e <ButtonPress-1>      { ::telescopePad::moveRadec e }
@@ -560,22 +609,40 @@ namespace eval ::telescopePad {
       bind $This.card.ns.n <ButtonPress-1>   { ::telescopePad::moveRadec n }
       bind $This.card.ns.n <ButtonRelease-1> { ::telescopePad::stopRadec n }
 
-      #--- bind Cardinal sur les 4 fleches du clavier
-      #--- ne fonctionne que si la raquette SuperPad a le focus
-      bind .superpad <KeyPress-Left>    { ::telescopePad::moveRadec e }
-      bind .superpad <KeyRelease-Left>  { ::telescopePad::stopRadec e }
-      bind .superpad <KeyPress-Right>   { ::telescopePad::moveRadec w }
-      bind .superpad <KeyRelease-Right> { ::telescopePad::stopRadec w }
-      bind .superpad <KeyPress-Down>    { ::telescopePad::moveRadec s }
-      bind .superpad <KeyRelease-Down>  { ::telescopePad::stopRadec s }
-      bind .superpad <KeyPress-Up>      { ::telescopePad::moveRadec n }
-      bind .superpad <KeyRelease-Up>    { ::telescopePad::stopRadec n }
-
       #--- bind display zone
       bind $This.frameCoord <ButtonPress-1>          { ::telescope::afficheCoord }
       bind $This.frameCoord.labelRa <ButtonPress-1>  { ::telescope::afficheCoord }
       bind $This.frameCoord.labelDec <ButtonPress-1> { ::telescope::afficheCoord }
+   }
 
+   #------------------------------------------------------------
+   #  activeFlechesClavier
+   #     active les fleches du clavier
+   #------------------------------------------------------------
+   proc activeFlechesClavier { } {
+      variable private
+
+      if { $private(active) == 1 } {
+         #--- bind Cardinal sur les 4 fleches du clavier
+         #--- ne fonctionne que si la raquette SuperPad a le focus
+         bind .superpad <KeyPress-Left>    { ::telescopePad::moveRadec e }
+         bind .superpad <KeyRelease-Left>  { ::telescopePad::stopRadec e }
+         bind .superpad <KeyPress-Right>   { ::telescopePad::moveRadec w }
+         bind .superpad <KeyRelease-Right> { ::telescopePad::stopRadec w }
+         bind .superpad <KeyPress-Down>    { ::telescopePad::moveRadec s }
+         bind .superpad <KeyRelease-Down>  { ::telescopePad::stopRadec s }
+         bind .superpad <KeyPress-Up>      { ::telescopePad::moveRadec n }
+         bind .superpad <KeyRelease-Up>    { ::telescopePad::stopRadec n }
+      } else {
+         bind .superpad <KeyPress-Left>    { }
+         bind .superpad <KeyRelease-Left>  { }
+         bind .superpad <KeyPress-Right>   { }
+         bind .superpad <KeyRelease-Right> { }
+         bind .superpad <KeyPress-Down>    { }
+         bind .superpad <KeyRelease-Down>  { }
+         bind .superpad <KeyPress-Up>      { }
+         bind .superpad <KeyRelease-Up>    { }
+      }
    }
 
 }
@@ -634,7 +701,7 @@ namespace eval ::AlignManager {
       variable private
 
       set catchError [ catch {
-         ::telescope::goto [list $private(targetRa) $private(targetDec)] 0 $This.frameGoto.buttonStartGoto
+         ::telescope::goto [list $private(targetRa) $private(targetDec)] 0 $This.frameGoto.buttonStartGoto "" $::AlignManager::private(targetName)
       } ]
       if { $catchError != 0 } {
          ::tkutil::displayErrorInfoTelescope "GOTO Error"
@@ -711,11 +778,18 @@ namespace eval ::AlignManager {
 
       set erreur [ catch { name2coord $name } radec ]
       if { $erreur == 0 } {
-         set type "name2coord"
-         set private(targetName) $::AlignManager::private(nameResolver)
-         set private(targetRa)   [ mc_angle2hms [ lindex $radec 0 ] 360 zero 0 auto string ]
-         set private(targetDec)  [ mc_angle2dms [ lindex $radec 1 ] 90 zero 0 + string ]
-         set equinox             J2000.0
+         if { $name == "" } {
+            bell
+            set ::AlignManager::private(nameResolver) ""
+            set private(targetName)                   $::AlignManager::private(nameResolver)
+            set private(targetRa)                     ""
+            set private(targetDec)                    ""
+         } else {
+            set private(targetName) $::AlignManager::private(nameResolver)
+            set private(targetRa)   [ mc_angle2hms [ lindex $radec 0 ] 360 zero 0 auto string ]
+            set private(targetDec)  [ mc_angle2dms [ lindex $radec 1 ] 90 zero 0 + string ]
+            set equinox             J2000.0
+         }
       } else {
          bell
          set ::AlignManager::private(nameResolver) ""
@@ -810,16 +884,16 @@ namespace eval ::AlignManager {
       pack $This.frameGoto.frameSelect -in $This.frameGoto -fill x
 
       #--- Frame des coordonnees
-      frame $This.frameTargetCoord -borderwidth 1  -relief groove -bg $colorpad(backpad)
+      frame $This.frameTargetCoord -borderwidth 1 -relief groove -bg $colorpad(backpad)
 
       #--- Entry Ascension droite
-      entry  $This.frameTargetCoord.targetRa -bg $colorpad(backdisp) -relief groove -width 11 \
+      entry  $This.frameTargetCoord.targetRa -bg $colorpad(backdisp) -relief groove -width 13 \
          -font [ list {Arial} $geompad(fontsize20) $geompad(textthick) ] \
          -textvariable ::AlignManager::private(targetRa)
       pack   $This.frameTargetCoord.targetRa -in $This.frameTargetCoord -anchor center -fill x -side left
 
       #--- Entry Declinaison
-      entry  $This.frameTargetCoord.targetDec -bg $colorpad(backdisp) -relief groove -width 11 \
+      entry  $This.frameTargetCoord.targetDec -bg $colorpad(backdisp) -relief groove -width 13 \
          -font [ list {Arial} $geompad(fontsize20) $geompad(textthick) ] \
          -textvariable ::AlignManager::private(targetDec)
       pack   $This.frameTargetCoord.targetDec -in $This.frameTargetCoord -anchor center -fill x
