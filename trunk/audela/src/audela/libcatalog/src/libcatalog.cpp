@@ -62,5 +62,6 @@
    Tcl_CreateCommand(interp,"cstycho2",(Tcl_CmdProc *)cmd_tcl_cstycho2,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"csucac2",(Tcl_CmdProc *)cmd_tcl_csucac2,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"csucac3",(Tcl_CmdProc *)cmd_tcl_csucac3,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"csusnoa2",(Tcl_CmdProc *)cmd_tcl_csusnoa2,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    return (TCL_OK);
 }

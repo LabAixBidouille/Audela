@@ -173,7 +173,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="del ..\..\..\..\bin\libcatalog.exp&#x0D;&#x0A;del ..\..\..\..\bin\libcatalog.lib"
+				CommandLine="del ..\..\..\..\bin\libcatalog.exp&#x0D;&#x0A;del ..\..\..\..\bin\libcatalog.lib&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -195,6 +195,10 @@
 			</File>
 			<File
 				RelativePath="..\src\csucac3.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\csusnoa2.cpp"
 				>
 			</File>
 			<File
