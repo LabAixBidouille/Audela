@@ -100,6 +100,7 @@
 int cmd_tcl_cstycho2(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmd_tcl_csucac2(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmd_tcl_csucac3(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 #endif /* __LIBCATALOGH__ */
 
