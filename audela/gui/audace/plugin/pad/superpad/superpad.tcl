@@ -259,6 +259,7 @@ namespace eval ::superpad {
       set colorpad(backdisp) $color(red_pad)
       set colorpad(textkey)  $color(white)
       set colorpad(green)    $color(green)
+      set colorpad(black)    $color(black)
 
       #--- Definition des geompadetries
       #--- Definition of geometry
@@ -389,13 +390,13 @@ namespace eval ::telescopePad {
          #--- Gestion des boutons
          if { $private(active) == 1 } {
             if { $direction == "n" } {
-               $This.card.ns.n configure -bg $colorpad(textkey) -fg black
+               $This.card.ns.n configure -bg $colorpad(textkey) -fg $colorpad(black)
             } elseif { $direction == "s" } {
-               $This.card.ns.s configure -bg $colorpad(textkey) -fg black
+               $This.card.ns.s configure -bg $colorpad(textkey) -fg $colorpad(black)
             } elseif { $direction == "w" } {
-               $This.card.w configure -bg $colorpad(textkey) -fg black
+               $This.card.w configure -bg $colorpad(textkey) -fg $colorpad(black)
             } elseif { $direction == "e" } {
-               $This.card.e configure -bg $colorpad(textkey) -fg black
+               $This.card.e configure -bg $colorpad(textkey) -fg $colorpad(black)
             }
          }
          #--- Debut du mouvement
@@ -565,7 +566,7 @@ namespace eval ::telescopePad {
 
       pack $This.card -in $This -fill both -expand 1
 
-      #--- Frame du checkbutton pour activer les fleches du clavier
+      #--- Frame du checkbutton pour activer / desactiver les fleches du clavier
       frame $This.frameCheck -borderwidth 0 -relief raise -bg $colorpad(backpad)
 
       checkbutton $This.frameCheck.active -borderwidth 1 \

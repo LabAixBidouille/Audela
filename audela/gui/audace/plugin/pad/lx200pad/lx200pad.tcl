@@ -223,7 +223,10 @@ namespace eval ::lx200pad {
    #------------------------------------------------------------
    proc run { {zoom .5} {positionxy 0+0} } {
       variable widget
-      global audace caption color geomlx200 zonelx200
+      variable private
+      global audace caption color colorlx200 geomlx200 zonelx200
+
+      set private(active) 0
 
       if { [ string length [ info commands .lx200pad.display* ] ] != "0" } {
          destroy .lx200pad
@@ -250,7 +253,7 @@ namespace eval ::lx200pad {
       #--- Definition des geomlx200etries
       #--- Definition of geometry
       set geomlx200(larg)       [ expr int(300*$zoom) ]
-      set geomlx200(long)       [ expr int(610*$zoom+40) ]
+      set geomlx200(long)       [ expr int(680*$zoom+40) ]
       set geomlx200(fontsize25) [ expr int(25*$zoom) ]
       set geomlx200(fontsize20) [ expr int(20*$zoom) ]
       set geomlx200(fontsize16) [ expr int(16*$zoom) ]
@@ -1056,6 +1059,20 @@ namespace eval ::lx200pad {
          -in .lx200pad.000.prev.canv1 -x [ expr int(15*$zoom) ] -y [ expr int(10*$zoom) ]
       set zonelx200(prev) .lx200pad.000.prev.canv1
 
+      #--- Frame du checkbutton pour activer / desactiver les fleches du clavier
+      frame .lx200pad.frameCheck -borderwidth 0 -relief raise -bg $colorlx200(backpad)
+      pack .lx200pad.frameCheck -expand 0 -side bottom -padx 10 -pady 4
+
+      checkbutton .lx200pad.frameCheck.active -borderwidth 1 \
+         -variable ::lx200pad::private(active) \
+         -bg $colorlx200(backpad) -fg $color(white) \
+         -activebackground $colorlx200(backpad) -activeforeground $colorlx200(textkey) \
+         -selectcolor $colorlx200(backpad) -highlightbackground $colorlx200(backpad) \
+         -font [ list {Arial} $geomlx200(fontsize14) $geomlx200(textthick) ] \
+         -text $caption(lx200pad,activeFleches) \
+         -command "::lx200pad::activeFlechesClavier"
+      pack .lx200pad.frameCheck.active -anchor center -fill none -pady 2
+
       #--- La fenetre est active
       focus .lx200pad
 
@@ -1091,20 +1108,6 @@ namespace eval ::lx200pad {
       bind $zonelx200(n).lab <ButtonPress-1>   { ::lx200pad::moveRadec n }
       bind $zonelx200(n) <ButtonRelease-1>     { ::lx200pad::stopRadec n }
       bind $zonelx200(n).lab <ButtonRelease-1> { ::lx200pad::stopRadec n }
-
-      #--- bind Cardinal sur les 4 fleches du clavier
-      #--- ne fonctionne que si la raquette LX200 a le focus
-      bind .lx200pad <KeyPress-Right>   { ::lx200pad::moveRadec e }
-      bind .lx200pad <KeyRelease-Right> { ::lx200pad::stopRadec e }
-
-      bind .lx200pad <KeyPress-Left>    { ::lx200pad::moveRadec w }
-      bind .lx200pad <KeyRelease-Left>  { ::lx200pad::stopRadec w }
-
-      bind .lx200pad <KeyPress-Down>    { ::lx200pad::moveRadec s }
-      bind .lx200pad <KeyRelease-Down>  { ::lx200pad::stopRadec s }
-
-      bind .lx200pad <KeyPress-Up>      { ::lx200pad::moveRadec n }
-      bind .lx200pad <KeyRelease-Up>    { ::lx200pad::stopRadec n }
 
       #--- Focus moves
       bind $zonelx200(next) <ButtonPress-1>        { ::lx200pad::moveFocus + }
@@ -1248,6 +1251,35 @@ namespace eval ::lx200pad {
       ::telescope::stop $direction
    }
 
+   #------------------------------------------------------------
+   #  activeFlechesClavier
+   #     active les fleches du clavier
+   #------------------------------------------------------------
+   proc activeFlechesClavier { } {
+      variable private
+
+      if { $private(active) == 1 } {
+         #--- bind Cardinal sur les 4 fleches du clavier
+         #--- ne fonctionne que si la raquette LX200 a le focus
+         bind .lx200pad <KeyPress-Right>   { ::lx200pad::moveRadec e }
+         bind .lx200pad <KeyRelease-Right> { ::lx200pad::stopRadec e }
+         bind .lx200pad <KeyPress-Left>    { ::lx200pad::moveRadec w }
+         bind .lx200pad <KeyRelease-Left>  { ::lx200pad::stopRadec w }
+         bind .lx200pad <KeyPress-Down>    { ::lx200pad::moveRadec s }
+         bind .lx200pad <KeyRelease-Down>  { ::lx200pad::stopRadec s }
+         bind .lx200pad <KeyPress-Up>      { ::lx200pad::moveRadec n }
+         bind .lx200pad <KeyRelease-Up>    { ::lx200pad::stopRadec n }
+      } else {
+         bind .lx200pad <KeyPress-Left>    { }
+         bind .lx200pad <KeyRelease-Left>  { }
+         bind .lx200pad <KeyPress-Right>   { }
+         bind .lx200pad <KeyRelease-Right> { }
+         bind .lx200pad <KeyPress-Down>    { }
+         bind .lx200pad <KeyRelease-Down>  { }
+         bind .lx200pad <KeyPress-Up>      { }
+         bind .lx200pad <KeyRelease-Up>    { }
+      }
+   }
    #------------------------------------------------------------
    #  setSpeedRadec
    #     envoie le numero de la vitesse selectionnee

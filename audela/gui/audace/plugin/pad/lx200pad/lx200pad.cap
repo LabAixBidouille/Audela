@@ -13,54 +13,63 @@ global caption langage
 
 set caption(lx200pad,titre)            "LX200"
 set caption(lx200pad,pad_size)         "Its size"
+set caption(lx200pad,activeFleches)    "# Activer les flèches\ndu clavier"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(lx200pad,titre)         "LX200"
    set caption(lx200pad,pad_size)      "Sa taille"
+   set caption(lx200pad,activeFleches) "Activer les flèches\ndu clavier"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(lx200pad,titre)         "LX200"
    set caption(lx200pad,pad_size)      "Dimensioni"
+   set caption(lx200pad,activeFleches) "# Activer les flèches\ndu clavier"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(lx200pad,titre)         "LX200"
    set caption(lx200pad,pad_size)      "Su tamaño"
+   set caption(lx200pad,activeFleches) "# Activer les flèches\ndu clavier"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(lx200pad,titre)         "LX200"
    set caption(lx200pad,pad_size)      "Ihre Größe"
+   set caption(lx200pad,activeFleches) "# Activer les flèches\ndu clavier"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(lx200pad,titre)         "LX200"
    set caption(lx200pad,pad_size)      "Seu tamanho"
+   set caption(lx200pad,activeFleches) "# Activer les flèches\ndu clavier"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(lx200pad,titre)         "LX200"
    set caption(lx200pad,pad_size)      "Dens størrelse"
+   set caption(lx200pad,activeFleches) "# Activer les flèches\ndu clavier"
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
    set caption(lx200pad,titre)         "LX200"
    set caption(lx200pad,pad_size)      "Its size"
+   set caption(lx200pad,activeFleches) "# Activer les flèches\ndu clavier"
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
    set caption(lx200pad,titre)         "LX200"
    set caption(lx200pad,pad_size)      "Its size"
+   set caption(lx200pad,activeFleches) "# Activer les flèches\ndu clavier"
 
 }
 
