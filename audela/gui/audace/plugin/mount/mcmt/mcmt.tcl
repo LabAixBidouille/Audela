@@ -13,19 +13,6 @@ namespace eval ::mcmt {
 }
 
 #
-# install
-#    installe le plugin
-#
-proc ::mcmt::install { } {
-   if { $::tcl_platform(platform) == "windows" } {
-      #--- je deplace libmcmt.dll dans le repertoire audela/bin
-      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [getPluginType]] "mcmt" "libmcmt.dll"]
-      ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
-      ::audace::appendUpdateMessage "$::caption(mcmt,install_1) v[package version mcmt]. $::caption(mcmt,install_2)"
-   }
-}
-
-#
 # getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
@@ -137,7 +124,7 @@ proc ::mcmt::fillConfigPage { frm } {
    global audace caption conf
 
    #--- Initialise les variables locales
-   set private(frm)          $frm
+   set private(frm) $frm
 
    #--- Prise en compte des liaisons
    set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
@@ -229,9 +216,8 @@ proc ::mcmt::fillConfigPage { frm } {
       -values $list_connexion
    pack $frm.port -in $frm.frame8 -anchor n -side left -padx 10 -pady 10
 
-   #--- Le bouton de commande maj heure et position du mcmt
+   #--- Le bouton pour la mise a jour de la position du mcmt
    button $frm.majpara -text "$caption(mcmt,maj_mcmt)" -relief raised -command {
-      tel$::mcmt::private(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
       tel$::mcmt::private(telNo) home $audace(posobs,observateur,gps)
    }
    pack $frm.majpara -in $frm.frame2 -anchor center -side top -padx 10 -pady 5 -ipadx 10 -ipady 5 \
@@ -341,7 +327,7 @@ proc ::mcmt::stop { } {
 
 #
 # confmcmt
-# Permet d'activer ou de desactiver le bouton
+# Permet d'activer ou de desactiver les boutons
 #
 proc ::mcmt::confmcmt { } {
    variable private
@@ -351,22 +337,14 @@ proc ::mcmt::confmcmt { } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
          if { [ ::mcmt::isReady ] == 1 } {
-            if { [ ::confTel::getPluginProperty hasUpdateDate ] == "1" } {
-               #--- Bouton Mise a jour de la date et du lieu actif
-               $frm.majpara configure -state normal
-            }
-            #--- Cas des modeles qui ont la fonction "park"
-            if { [ ::confTel::getPluginProperty hasPark ] == "1" } {
-               #--- Bouton park actif
-               $frm.park configure -state normal
-            }
-            #--- Cas des modeles qui ont la fonction "unpark"
-            if { [ ::confTel::getPluginProperty hasUnpark ] == "1" } {
-               #--- Bouton unpark actif
-               $frm.unpark configure -state normal
-            }
+            #--- Bouton mise a jour du lieu actif
+            $frm.majpara configure -state normal
+            #--- Bouton park actif
+            $frm.park configure -state normal
+            #--- Bouton unpark actif
+            $frm.unpark configure -state normal
          } else {
-            #--- Bouton Mise a jour de la date et du lieu inactif
+            #--- Bouton mise a jour du lieu inactif
             $frm.majpara configure -state disabled
             #--- Bouton park inactif
             $frm.park configure -state disabled
@@ -379,7 +357,7 @@ proc ::mcmt::confmcmt { } {
 
 #
 # confmcmtInactif
-#    Permet de desactiver le bouton a l'arret de la monture
+#    Permet de desactiver les boutons a l'arret de la monture
 #
 proc ::mcmt::confmcmtInactif { } {
    variable private
@@ -387,7 +365,7 @@ proc ::mcmt::confmcmtInactif { } {
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
-         #--- Bouton Mise a jour de la date et du lieu inactif
+         #--- Bouton mise a jour du lieu inactif
          $frm.majpara configure -state disabled
          #--- Bouton park inactif
          $frm.park configure -state disabled
@@ -460,7 +438,7 @@ proc ::mcmt::getPluginProperty { propertyName } {
       hasModel                { return 0 }
       hasPark                 { return 1 }
       hasUnpark               { return 1 }
-      hasUpdateDate           { return 1 }
+      hasUpdateDate           { return 0 }
       backlash                { return 0 }
    }
 }
