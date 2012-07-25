@@ -376,7 +376,6 @@ proc ::tools_cata::get_table { name table } {
          #gren_info "$idcataspec : $ls\n"
          lappend lls [list $idcataspec $ls]
          incr cpt
-         if { $cpt > 1000 } { break }
       }
       
       #gren_info "lls = $lls \n"
@@ -494,6 +493,7 @@ proc ::tools_cata::get_table { name table } {
 
       }
 
+      set ::tools_cata::current_listsources $listsources
 
 
       return true

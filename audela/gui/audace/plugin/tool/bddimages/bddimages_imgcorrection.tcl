@@ -1825,7 +1825,285 @@ proc ::bddimages_imgcorrection::run_auto { this } {
 
     # Chargement de la liste FLAT
 
+}
+
+#--------------------------------------------------
+# Fonction d utilitaires pour le CROP
+#--------------------------------------------------
+
+   proc ::bddimages_imgcorrection::init_crop {  } {
+
+      set ::bddimages_imgcorrection::progress 0
+      set cpt  0
+      foreach img $::bddimages_imgcorrection::crop_list {
+
+         set tabkey    [::bddimages_liste::lget $img "tabkey"]
+         set naxis  [string trim [lindex [::bddimages_liste::lget $tabkey "naxis" ] 1]]
+         set naxis1 [string trim [lindex [::bddimages_liste::lget $tabkey "naxis1"] 1]]
+         set naxis2 [string trim [lindex [::bddimages_liste::lget $tabkey "naxis2"] 1]]
+         set bdditype  [string trim [lindex [::bddimages_liste::lget $tabkey "bddimages_type"] 1]]
+         set bddistate [string trim [lindex [::bddimages_liste::lget $tabkey "bddimages_state"] 1]]
+
+         if {$cpt == 0} {
+            set naxissav $naxis
+            set naxis1sav $naxis1
+            set naxis2sav $naxis2
+         }
+         
+         if {$naxis != $naxissav || $naxis1 != $naxis1sav || $naxis2 != $naxis2sav || $bdditype != "IMG" || $bddistate != "CORR"} {
+            return "no"
+         }
+         
+      }
+      set ::bddimages_imgcorrection::xbg 1
+      set ::bddimages_imgcorrection::ybg 1
+      set ::bddimages_imgcorrection::xhd $naxis1
+      set ::bddimages_imgcorrection::yhd $naxis2
+
+      set ::bddimages_imgcorrection::naxis1 $naxis1
+      set ::bddimages_imgcorrection::naxis2 $naxis2
+
+      return "yes"      
+
+   }
+   
+   proc ::bddimages_imgcorrection::gocrop {  } {
+
+      global bddconf
 
 
+      gren_info "xbg =$::bddimages_imgcorrection::xbg\n"
+      gren_info "ybg =$::bddimages_imgcorrection::ybg\n"
+      gren_info "xhd =$::bddimages_imgcorrection::xhd\n"
+      gren_info "yhd =$::bddimages_imgcorrection::yhd\n"
+      gren_info "naxis1 $::bddimages_imgcorrection::naxis1\n"
+      gren_info "naxis2 $::bddimages_imgcorrection::naxis2\n"
 
+      set invalid "Les coordonnees ne sont pas valides."
+      if {$::bddimages_imgcorrection::xbg < 1} {return $invalid}
+      if {$::bddimages_imgcorrection::ybg < 1} {return $invalid}
+      if {$::bddimages_imgcorrection::xhd > $::bddimages_imgcorrection::naxis1} {return $invalid}
+      if {$::bddimages_imgcorrection::yhd > $::bddimages_imgcorrection::naxis2} {return $invalid}
+      if {$::bddimages_imgcorrection::xbg >= $::bddimages_imgcorrection::xhd} {return $invalid}
+      if {$::bddimages_imgcorrection::ybg >= $::bddimages_imgcorrection::yhd} {return $invalid}
+      
+      if {$::bddimages_imgcorrection::xbg==1 && $::bddimages_imgcorrection::ybg == 1 && $::bddimages_imgcorrection::xhd == $::bddimages_imgcorrection::naxis1 && $::bddimages_imgcorrection::yhd == $::bddimages_imgcorrection::naxis2} {
+         return "Il n'y a aucun changement a faire"
+      }
+
+      set bufno [::buf::create]
+      set nbtotal [llength $::bddimages_imgcorrection::crop_list]
+      set cpt  0
+      
+      foreach img $::bddimages_imgcorrection::crop_list {
+
+         set idbddimg    [::bddimages_liste::lget $img "idbddimg"]
+         gren_info "id=$idbddimg\n"
+         set change "no"
+
+         # charge l'image
+         set ident [bddimages_image_identification $idbddimg]
+         set fileimg  [lindex $ident 1]
+         set filecata [lindex $ident 3]
+         #::console::affiche_resultat "Chargement de $ident -> $fileimg \n"
+         if {$fileimg == -1} {
+            ::console::affiche_resultat "Fichier image inexistant ($idbddimg) \n"
+            ::bddimages_define::fermer
+            return
+         }
+
+         gren_info "fileimg=$fileimg\n"
+         gren_info "filecata=$filecata\n"
+
+         buf$bufno load $fileimg
+         
+         buf$bufno window [list $::bddimages_imgcorrection::xbg $::bddimages_imgcorrection::ybg $::bddimages_imgcorrection::xhd $::bddimages_imgcorrection::yhd ]     
+         
+         # enregistre les modif dans l image
+         set fichtmpunzip [unzipedfilename $fileimg]
+         set filetmp   [file join $::bddconf(dirtmp)  [file tail $fichtmpunzip]]
+         set filefinal [file join $::bddconf(dirinco) [file tail $fileimg]]
+
+         createdir_ifnot_exist $bddconf(dirtmp)
+         buf$bufno save $filetmp
+         set errnum [catch {exec gzip -c $filetmp > $filefinal} msg ]
+
+         # copie l image dans incoming, ainsi que le fichier cata si il existe
+         if {$filecata != -1} {
+            set errnum [catch {file rename -force -- $filecata $bddconf(dirinco)/.} msg ]
+         }
+  
+         # efface l image dans la base et le disque
+         bddimages_image_delete_fromsql $ident
+         bddimages_image_delete_fromdisk $ident
+
+         # insere l image et le cata dans la base
+         insertion_solo $filefinal
+         if {$filecata!=-1} {
+            set filecata [file join $bddconf(dirinco) [file tail $filecata]]
+            insertion_solo $filecata
+         }
+
+         set errnum [catch {file delete -force $filetmp} msg ]
+         incr cpt
+
+         ::bddimages_imgcorrection::set_progress $cpt $nbtotal
+
+      }
+
+      buf$bufno clear
+      return "Le fenetrage a ete effectue avec succes"
+
+   }
+   
+   proc ::bddimages_imgcorrection::set_progress { cur max } {
+
+#      pack [ ttk::progressbar $this.p -variable v -orient horizontal -length 200 -mode determinate]
+#      for {set v 0} {$v<100} {incr v} { after 100; update }
+#      destroy $::acqt1m_offsetdark::frm.p
+
+      set ::bddimages_imgcorrection::progress [format "%0.0f" [expr $cur * 100. /$max ] ]
+      update
+      #gren_info "Progresse = $::bddimages_recherche::progress\n"
+   }
+
+   
+   
+#--------------------------------------------------
+# crop { this }
+#--------------------------------------------------
+#
+#    fonction  :
+#        Retaille les images selectionnees
+#
+#    procedure externe :
+#
+#    variables en entree :
+#        this = chemin de la fenetre
+#
+#    variables en sortie :
+#
+#--------------------------------------------------
+proc ::bddimages_imgcorrection::crop { this } {
+   
+   variable This
+   global audace bddconf caption
+   global entetelog
+
+   
+   # Initialisation
+      set ::bddimages_imgcorrection::crop_list [::bddimages_imgcorrection::get_info_img]
+
+      if {[::bddimages_imgcorrection::init_crop] == "no"} {
+         tk_messageBox -message "Veuillez selectionner des images corrigees BDISTATE=IMG et BDITYPE=CORR dont les NAXIS, NAXIS1 et NAXIS2 sont equivalents" -type ok
+         return
+      }
+
+   # Affichage de la fenetre
+   set This $this
+
+   if { [ winfo exists $This ] } {
+      wm withdraw $This
+      wm deiconify $This
+      return
+   }
+
+   toplevel $This -class Toplevel
+   wm title $This "Crop"
+   wm positionfrom $This user
+   wm sizefrom $This user
+   wm resizable $This 0 0
+
+   set framecurrent $This.framename
+   frame $framecurrent
+   pack configure $framecurrent -side top -fill both -expand 1 -padx 10 -pady 10
+
+
+   # Images d'entree
+   frame $framecurrent.input -borderwidth 1 -relief raised -cursor arrow
+   pack configure $framecurrent.input -side top -padx 5 -pady 5 -fill x
+
+      frame $framecurrent.input.title
+      pack configure $framecurrent.input.title -side top -fill x
+
+         label $framecurrent.input.title.t -relief groove -text "Forme une nouvelle image a partir du rectangle dont les coordonnees sont :" 
+         pack $framecurrent.input.title.t -in $framecurrent.input.title -side top -ipadx 15 -ipady 15 -anchor w -fill x -expand 1
+
+      frame $framecurrent.input.basgauche
+      pack configure $framecurrent.input.basgauche -side top -fill x -expand 1
+
+         label $framecurrent.input.basgauche.l -text "Position du coin en bas a gauche :"  -borderwidth 0 
+         pack $framecurrent.input.basgauche.l -in $framecurrent.input.basgauche -side top -padx 3 -pady 3 -anchor w
+
+         frame $framecurrent.input.basgauche.t -borderwidth 0
+         pack configure $framecurrent.input.basgauche.t -side top -fill x
+
+            label $framecurrent.input.basgauche.t.xl -relief groove -text "Xmin :"  -borderwidth 0
+            pack $framecurrent.input.basgauche.t.xl -in $framecurrent.input.basgauche.t -side left -padx 3 -pady 3 -anchor w 
+
+            entry $framecurrent.input.basgauche.t.xv -relief sunken -textvariable ::bddimages_imgcorrection::xbg -width 5 \
+            -validate all -validatecommand { ::tkutil::validateString %W %V %P %s wordchar1 0 100 }
+            pack $framecurrent.input.basgauche.t.xv -in $framecurrent.input.basgauche.t -side left -padx 3 -pady 3 -anchor w
+
+            label $framecurrent.input.basgauche.t.yl -relief groove -text "Ymin :"  -borderwidth 0
+            pack $framecurrent.input.basgauche.t.yl -in $framecurrent.input.basgauche.t -side left -padx 3 -pady 3 -anchor w 
+
+            entry $framecurrent.input.basgauche.t.yv -relief sunken -textvariable ::bddimages_imgcorrection::ybg -width 5 \
+            -validate all -validatecommand { ::tkutil::validateString %W %V %P %s wordchar1 0 100 }
+            pack $framecurrent.input.basgauche.t.yv -in $framecurrent.input.basgauche.t -side left -padx 3 -pady 3 -anchor w
+
+      frame $framecurrent.input.hautdroit -borderwidth 0
+      pack configure $framecurrent.input.hautdroit -side top -fill x
+
+         label $framecurrent.input.hautdroit.l -text "Position du coin en haut a droite :"  -borderwidth 0 -font $bddconf(font,arial_10_b)
+         pack $framecurrent.input.hautdroit.l -in $framecurrent.input.hautdroit -side top -padx 3 -pady 3 -anchor w
+
+         frame $framecurrent.input.hautdroit.t
+         pack configure $framecurrent.input.hautdroit.t -side top -fill x
+
+            label $framecurrent.input.hautdroit.t.xl -relief groove -text "Xmax :"  -borderwidth 0
+            pack $framecurrent.input.hautdroit.t.xl -in $framecurrent.input.hautdroit.t -side left -padx 3 -pady 3 -anchor w
+
+            entry $framecurrent.input.hautdroit.t.xv -relief sunken -textvariable ::bddimages_imgcorrection::xhd -width 5 \
+            -validate all -validatecommand { ::tkutil::validateString %W %V %P %s wordchar1 0 100 }
+            pack $framecurrent.input.hautdroit.t.xv -in $framecurrent.input.hautdroit.t -side left -padx 3 -pady 3 -anchor w
+
+            label $framecurrent.input.hautdroit.t.yl -relief groove -text "Ymax :"  -borderwidth 0
+            pack $framecurrent.input.hautdroit.t.yl -in $framecurrent.input.hautdroit.t -side left -padx 3 -pady 3 -anchor w
+
+            entry $framecurrent.input.hautdroit.t.yv -relief sunken -textvariable ::bddimages_imgcorrection::yhd -width 5 \
+            -validate all -validatecommand { ::tkutil::validateString %W %V %P %s wordchar1 0 100 }
+            pack $framecurrent.input.hautdroit.t.yv -in $framecurrent.input.hautdroit.t -side left -padx 3 -pady 3 -anchor w
+   
+   #--- Cree un frame pour y mettre la barre de progression
+   frame $framecurrent.frameprogress -borderwidth 0 -cursor arrow
+   pack $framecurrent.frameprogress -in $framecurrent -anchor s -side top -expand 0 -fill x
+
+         set pf [ ttk::progressbar $framecurrent.frameprogress.p -variable ::bddimages_imgcorrection::progress -orient horizontal -length 350 -mode determinate]
+         pack $pf -in $framecurrent.frameprogress -side top -anchor c
+
+   # Frame boutons Cancel et Ok
+   frame $framecurrent.buttons
+   pack configure $framecurrent.buttons -side top -fill x -padx 3 -pady 3
+      # --- ok
+      button $framecurrent.buttons.ok -text Crop \
+         -command {
+            set result [::bddimages_imgcorrection::gocrop]
+            tk_messageBox -message $result -type ok
+            destroy $::bddimages_imgcorrection::This
+         }
+      pack configure $framecurrent.buttons.ok -side right
+      # --- cancel
+      button $framecurrent.buttons.cancel -text Cancel \
+         -command {destroy $::bddimages_imgcorrection::This}
+      pack configure $framecurrent.buttons.cancel -side right
+
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $This
+   #--- Surcharge la couleur de fond des resultats
+   $framecurrent.input.basgauche.l configure -font $bddconf(font,arial_10_b)
+   $framecurrent.input.hautdroit.l configure -font $bddconf(font,arial_10_b)
+
+   grab set $This
+   tkwait window $This
 }

@@ -30,6 +30,9 @@ namespace eval tools_cdl {
    variable starref 
    variable firstrefstar 
 
+   variable uncosm
+   variable uncosm_param1
+   variable uncosm_param2
 
 
 
@@ -137,10 +140,90 @@ namespace eval tools_cdl {
 
 
 
+   proc ::tools_cdl::myuncosmic { bufNo } {
+
+      ::tools_cdl::myuncosmic_2 $bufNo
+
+   }
 
 
 
+   proc ::tools_cdl::myuncosmic_2 { bufNo } {
 
+      buf$bufNo save a
+      set bf    [buf::create]
+      buf$bf load a
+      buf$bf imaseries "FILTER kernel_width=3 kernel_type=med kernel_coef=[lindex $::tools_cdl::uncosm_param1 0]"
+      buf$bf save b
+      buf$bf load a
+      buf$bf sub b 0
+      buf$bf clipmin $::tools_cdl::uncosm_param2
+      buf$bf clipmax [expr $::tools_cdl::uncosm_param2+1]
+      buf$bf offset [expr -$::tools_cdl::uncosm_param2]
+      buf$bf save dirac
+      buf$bf load b
+      buf$bf imaseries "PROD \"file=dirac\" constant=1"
+      buf$bf save bb
+
+      buf$bf load a
+      buf$bf imaseries "PROD \"file=dirac\" constant=1"
+      buf$bf save aa
+
+      buf$bf load a
+      buf$bf sub aa 0
+      buf$bf add bb 0
+      buf$bf copyto $bufNo
+      buf::delete $bf 
+
+   }
+
+   proc ::tools_cdl::myuncosmic_1 { bufNo } {
+
+      gren_info "uncosm        = $::tools_cdl::uncosm        \n"
+      gren_info "uncosm_param1 = $::tools_cdl::uncosm_param1 \n"
+      gren_info "uncosm_param2 = $::tools_cdl::uncosm_param2 \n"
+
+      set bf    [buf::create]
+      set b     [buf::create]
+      set dirac [buf::create]
+
+      buf$bufNo copyto $a
+      buf$bufNo copyto $b
+      buf$bufNo copyto $dirac
+
+      buf$a save a
+
+      set seuil_cosmic $::tools_cdl::uncosm_param1
+      set seuil_bin $::tools_cdl::uncosm_param2
+
+      # uncosmic standard sur le buffer b
+      buf$b imaseries "FILTER kernel_width=3 kernel_type=med kernel_coef=[lindex $::tools_cdl::uncosm_param1 0]"
+      buf$b save b
+
+      # soustrait : A - B
+      buf$dirac sub b 0
+
+      buf$dirac clipmin $seuil_bin
+      buf$dirac clipmax [expr $seuil_bin+1]
+      set sb [expr $seuil_bin+0]
+      set sh [expr $seuil_bin+1]
+      #visu [list $sh $sb]
+      buf$dirac offset [expr -$seuil_bin]
+      buf$dirac save dirac
+
+      buf$b imaseries "PROD \"file=dirac\" constant=1"
+      saveima bb
+ 
+      buf$a imaseries "PROD \"file=dirac\" constant=1"
+      saveima aa
+
+
+      loadima a
+      sub aa 0
+      add bb 0
+      saveima final
+
+   }
 
 
 

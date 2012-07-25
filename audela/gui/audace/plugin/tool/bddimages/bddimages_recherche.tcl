@@ -1138,6 +1138,9 @@ namespace eval bddimages_recherche {
            $popupTbl.geometrie add command -label "Somme" \
               -command { ::bddimages_imgcorrection::somme }
 
+           $popupTbl.geometrie add command -label "Crop" \
+              -command { ::bddimages_imgcorrection::crop $audace(base).bddimages_imgcorrection }
+
       menu $popupTbl.analyse -tearoff 0
       $popupTbl add cascade -label "Analyse" -menu $popupTbl.analyse
 
@@ -1151,7 +1154,7 @@ namespace eval bddimages_recherche {
               -command { ::bddimages_recherche::creation_cdlwcs}
 
            $popupTbl.analyse add command -label $caption(bddimages_recherche,astroid) \
-              -command { ::bddimages_recherche::run_astroid}
+              -command { ::bddimages_recherche::run_astroid} -state disabled
 
            $popupTbl.analyse add command -label $caption(bddimages_recherche,photom) -state disabled \
               -command { ::gui_cata::run_photom}
@@ -1165,7 +1168,7 @@ namespace eval bddimages_recherche {
       menu $popupTbl.developpement -tearoff 0
       $popupTbl add cascade -label "Developpement" -menu $popupTbl.developpement
 
-           $popupTbl.developpement add command -label "charge_cata" \
+           $popupTbl.developpement add command -label "charge_cata"  -state disabled \
               -command { ::bddimages_recherche::bddimages_charge_cata }
 
       # Separateur

@@ -304,7 +304,7 @@ proc ::bddimages::bddimagesBuildIF { This } {
 
         #--- Bouton d'ouverture de l'outil de recherche d images
         button $This.fra6.but1 -borderwidth 2 -text $panneau(bddimages,titre5) \
-           -command "::testprocedure::run"
+           -command "::testprocedure::run" -state disabled
         pack $This.fra6.but1 -in $This.fra6 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
 
      pack $This.fra6 -side top -fill x

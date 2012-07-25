@@ -569,7 +569,7 @@ namespace eval bdi_gui_status {
       if { $::bdi_tools_status::err_sql == "yes" || $::bdi_tools_status::err_file == "yes" || $::bdi_tools_status::err_img == "yes" || $::bdi_tools_status::err_img_hd == "yes"  || $::bdi_tools_status::err_nblist == "yes" } { 
         #--- Bouton d'ouverture de l'outil d'insertion des images
         button $reportConsole.pied.repare -borderwidth 2 -text "Repare" \
-           -command "::bdi_tools_status::repare"
+           -command "::bdi_tools_status::repare" -state disabled
         pack $reportConsole.pied.repare -in $reportConsole.pied -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
             
       }

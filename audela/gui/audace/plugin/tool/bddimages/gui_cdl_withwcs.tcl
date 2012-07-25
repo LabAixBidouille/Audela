@@ -59,13 +59,13 @@ namespace eval gui_cdl_withwcs {
       catch { unset ::gui_cdl_withwcs::directaccess           }
 
 
-      set ::tools_cdl::saturation 40000
+      set ::tools_cdl::saturation 50000
       set ::tools_cdl::tabsource(star1,delta) 15
       set ::tools_cdl::tabsource(obj,delta) 15
       set ::tools_cdl::movingobject 1
       set ::tools_cdl::bestdelta 1
       set ::tools_cdl::deltamin 5
-      set ::tools_cdl::deltamax 40
+      set ::tools_cdl::deltamax 30
       set ::tools_cdl::nbporbit 5
       set ::tools_cdl::firstmagref 12.000
 
@@ -85,6 +85,10 @@ namespace eval gui_cdl_withwcs {
          set ::tools_cdl::savedir $bddconf(cdl_savedir)
       }
 
+      set ::tools_cdl::uncosm_param1 0.8
+      set ::tools_cdl::uncosm_param2 100
+      set ::tools_cdl::uncosm        0
+
    }
 
 
@@ -102,6 +106,22 @@ namespace eval gui_cdl_withwcs {
 
 
 
+
+   proc ::gui_cdl_withwcs::change_uncosm {  } {
+
+   global audace
+
+      gren_info "UNCOSMIC = $::tools_cdl::uncosm : "
+      if {$::tools_cdl::uncosm == 1} {
+         gren_info "EFFECTUE UNCOSMIC\n"
+         ::tools_cdl::myuncosmic $::audace(bufNo)
+         ::audace::autovisu $::audace(visuNo)
+      } else {
+         gren_info "CHARGEMENT IMAGE DEPART\n"
+         ::gui_cdl_withwcs::charge_current_image
+         
+      }
+   }
 
 
 
@@ -121,7 +141,7 @@ namespace eval gui_cdl_withwcs {
                $::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,y) \
                $::tools_cdl::tabsource($starx,delta) $::audace(bufNo)]} msg ]
 
-      gren_info "PHOTOM: $valeurs \n "
+      gren_info "PHOTOM $starx : $valeurs \n "
       
       if { $valeurs == -1 } {
          set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,err) true
@@ -161,7 +181,10 @@ namespace eval gui_cdl_withwcs {
          set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,snint)       [lindex $valeurs 10]
          set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,snpx)        [lindex $valeurs 11]
          set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,delta)       [lindex $valeurs 12]
-         set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,maginstru)   [expr -log10([lindex $valeurs 5]/20000)*2.5]
+         
+         set err [ catch {set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,maginstru)   [expr -log10([lindex $valeurs 5]/20000.)*2.5] } msg ]
+         if {$err} {::console::affiche_erreur "Calcul mag_instru $err $msg $starx : $valeurs\n"}
+         
          set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,jjdate)      $::tools_cdl::current_image_jjdate
          set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,isodate)     $::tools_cdl::current_image_date
 
@@ -210,7 +233,7 @@ namespace eval gui_cdl_withwcs {
                $::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,y) \
                $rdelta $::audace(bufNo)]} msg ]
 
-            if { $valeurs == -1 } {
+            if { $valeurs == -1 || [lindex $valeurs 5]<0} {
                set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,search_delta,$rdelta,err) true
             } else {
 
@@ -225,7 +248,13 @@ namespace eval gui_cdl_withwcs {
                set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,search_delta,$rdelta,snint)       [lindex $valeurs 10]
                set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,search_delta,$rdelta,snpx)        [lindex $valeurs 11]
                set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,search_delta,$rdelta,delta)       [lindex $valeurs 12]
-               set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,search_delta,$rdelta,maginstru)   [expr -log10([lindex $valeurs 5]/20000)*2.5]
+
+               set err [ catch {set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,search_delta,$rdelta,maginstru) [expr -log10([lindex $valeurs 5]/20000.)*2.5] } msg ]
+               if {$err} {
+                  ::console::affiche_erreur "calcul mag_instru  $err $msg OBJ=$starx DELTA=[lindex $valeurs 12] FLUX=[lindex $valeurs 5] : $valeurs\n"
+               }
+
+               
 
                if { [lindex $valeurs 7] > $::tools_cdl::saturation} {
                   set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,search_delta,$rdelta,err) true
@@ -286,7 +315,6 @@ namespace eval gui_cdl_withwcs {
 
    proc ::gui_cdl_withwcs::mesure_tout { sources } {
 
-      cleanmark
 
       #gren_info "ZOOM: [::confVisu::getZoom $::audace(visuNo)] \n "
 
@@ -335,7 +363,10 @@ namespace eval gui_cdl_withwcs {
          if {  [info exists ::tools_cdl::tabphotom($i,$starref,fluxintegre) ] } {
             set fluxref $::tools_cdl::tabphotom($i,$starref,fluxintegre)
             if {  [info exists ::tools_cdl::tabphotom($i,$star,fluxintegre) ] } {
-               lappend mag [expr $magref - log10($::tools_cdl::tabphotom($i,$star,fluxintegre)/$fluxref)*2.5]
+               #gren_info "get_stdev : $magref $::tools_cdl::tabphotom($i,$star,fluxintegre) $fluxref\n"
+               if {$::tools_cdl::tabphotom($i,$star,fluxintegre)>0 && $fluxref>0} {
+                  lappend mag [expr $magref - log10($::tools_cdl::tabphotom($i,$star,fluxintegre)/$fluxref)*2.5]
+               }
             }
          }
       }
@@ -455,10 +486,15 @@ namespace eval gui_cdl_withwcs {
          }
          if {  [::gui_cdl_withwcs::is_good "star$x"] } {
             set flux $::tools_cdl::tabphotom($::tools_cdl::id_current_image,star$x,fluxintegre)
+            #gren_info "calc_mag : $::tools_cdl::magref $flux $fluxref\n"
             set m [expr $::tools_cdl::magref - log10($flux/$fluxref)*2.5]
             set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,star$x,mag) $m
             if { $::tools_cdl::bestdelta == 1 } {
                for {set rdelta $::tools_cdl::deltamin} {$rdelta<=$::tools_cdl::deltamax} {incr rdelta} {
+                  if {! [info exists ::tools_cdl::tabphotom($::tools_cdl::id_current_image,star$x,search_delta,$rdelta,fluxintegre) ] } {
+                     set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,star$x,search_delta,$rdelta,mag) 9999999
+                     continue
+                  }
                   set flux $::tools_cdl::tabphotom($::tools_cdl::id_current_image,star$x,search_delta,$rdelta,fluxintegre)
                   set fluxrefd $::tools_cdl::tabphotom($::tools_cdl::id_current_image,$::tools_cdl::starref,search_delta,$rdelta,fluxintegre)
                   set m [expr $::tools_cdl::magref - log10($flux/$fluxrefd)*2.5]
@@ -481,17 +517,20 @@ namespace eval gui_cdl_withwcs {
       if { [::gui_cdl_withwcs::is_good obj] } {
          gren_info "obj : is GOOD !\n"
          set flux $::tools_cdl::tabphotom($::tools_cdl::id_current_image,obj,fluxintegre)
+         #gren_info "calc_mag : $::tools_cdl::magref $flux $fluxref\n"
+         if {$flux < 0} {set flux 0}
          set m [expr $::tools_cdl::magref - log10($flux/$fluxref)*2.5]
          set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,obj,mag) $m
-         gren_info "ref=$flux $fluxref $m\n"
+         #gren_info "ref=$flux $fluxref $m\n"
          if { $::tools_cdl::bestdelta == 1 } {
             for {set rdelta $::tools_cdl::deltamin} {$rdelta<=$::tools_cdl::deltamax} {incr rdelta} {
+               if {$::tools_cdl::tabphotom($::tools_cdl::id_current_image,obj,search_delta,$rdelta,err)==true} {continue}
                set flux $::tools_cdl::tabphotom($::tools_cdl::id_current_image,obj,search_delta,$rdelta,fluxintegre)
                set fluxrefd $::tools_cdl::tabphotom($::tools_cdl::id_current_image,$::tools_cdl::starref,search_delta,$rdelta,fluxintegre)
                set m [expr $::tools_cdl::magref - log10($flux/$fluxrefd)*2.5]
                set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,obj,search_delta,$rdelta,mag) $m
                if {$rdelta == 15} {
-                  gren_info "d15=$flux $fluxrefd $m\n"
+                  #gren_info "d15=$flux $fluxrefd $m\n"
                }
             }
          }
@@ -776,8 +815,9 @@ proc random {{range 100}} {
    proc ::gui_cdl_withwcs::mobile {  } {
 
 
-
+      set log 0
  
+      if {$log} {gren_info "\nExtrapolation d orbite\n"}
 
      set nbpt 0
       
@@ -788,13 +828,13 @@ proc random {{range 100}} {
             set tab($nbpt,date) $::tools_cdl::tabphotom($i,obj,jjdate)
             set tab($nbpt,ra)   $::tools_cdl::tabphotom($i,obj,ra_deg)
             set tab($nbpt,dec)  $::tools_cdl::tabphotom($i,obj,dec_deg)
-            #gren_info "param = $nbpt $tab($nbpt,date) $tab($nbpt,ra) $tab($nbpt,dec)  \n"
+            if {$log} {gren_info "param = $nbpt $tab($nbpt,date) $tab($nbpt,ra) $tab($nbpt,dec)  \n"}
             incr nbpt
          }
 
       }
       
-      gren_info "nb points : $nbpt \n"
+      if {$log} {gren_info "nb points : $nbpt \n"}
 
       if { $nbpt == 0 } {
           # Avec zero point on peut rien faire
@@ -880,13 +920,13 @@ proc random {{range 100}} {
        }
        
        # Transformation en coordonnees XY
-       #gren_info "coord =  $ra $dec\n"
+       if {$log} {gren_info "coord =  $ra $dec\n"}
 
        set xy [ buf$::audace(bufNo) radec2xy [ list $ra $dec ] ]
        set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,obj,x) [lindex $xy 0]
        set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,obj,y) [lindex $xy 1]
 
-       gren_info "MOVING OBJ X Y =  [lindex $xy 0] [lindex $xy 1]\n"
+       if {$log} {gren_info "MOVING OBJ X Y =  [lindex $xy 0] [lindex $xy 1]\n"}
 
        return
    }
@@ -1049,12 +1089,19 @@ proc random {{range 100}} {
          set ::tools_cdl::current_image_jjdate [expr [mc_date2jd $date] + $exposure / 86400.0 / 2.0]
          set ::tools_cdl::current_image_date [mc_date2iso8601 $::tools_cdl::current_image_jjdate]
 
-         gren_info "Charge Image cur: $date  ($exposure)\n"
-         gren_info "Charge Image cur: $::tools_cdl::current_image_date ($::tools_cdl::current_image_jjdate) \n"
+         gren_info "\nCharge Image cur: $date  ($exposure)\n"
+         #gren_info "Charge Image cur: $::tools_cdl::current_image_date ($::tools_cdl::current_image_jjdate) \n"
          
          # Charge l image
          buf$::audace(bufNo) load $file
          cleanmark
+       
+         # EFFECTUE UNCOSMIC
+         if {$::tools_cdl::uncosm == 1} {
+            ::tools_cdl::myuncosmic $::audace(bufNo)
+         }
+         
+         # VIsualisation par Sseuil automatique
          ::audace::autovisu $::audace(visuNo)
           
          # Mise a jour GUI
@@ -1078,6 +1125,20 @@ proc random {{range 100}} {
          if {$::tools_cdl::id_current_image < $::tools_cdl::nb_img_list } {
             $::gui_cdl_withwcs::fen.frm_cdlwcs.bouton.next configure -state normal
          }
+         
+                  
+      # Affichage des asteroides dans l image
+      set catafilenameexist [::bddimages_liste::lexist $::tools_cdl::current_image "catafilename"]
+      if {$catafilenameexist==0} {return}
+      set catafilename [::bddimages_liste::lget $::tools_cdl::current_image "catafilename"]
+      set catadirfilename [::bddimages_liste::lget $::tools_cdl::current_image "catadirfilename"]
+      set catafile [file join $bddconf(dirbase) $catadirfilename $catafilename]
+      set errnum [catch {set catafile [::tools_cata::extract_cata_xml $catafile]} msg ]
+      if {$errnum} { return -code $errnum $msg }
+      set listsources [::tools_cata::get_cata_xml $catafile]
+      set listsources [::tools_sources::set_common_fields $listsources IMG    { ra dec 5.0 calib_mag calib_mag_ss1}]
+      set listsources [::tools_sources::set_common_fields_skybot $listsources]
+      affich_rond $listsources SKYBOT $::gui_cata::color_skybot 1
  
    }
 
@@ -1137,6 +1198,18 @@ proc random {{range 100}} {
          set ::gui_cdl_withwcs::statenext normal
       }
 
+      # Affichage des asteroides dans l image
+      set catafilenameexist [::bddimages_liste::lexist $::tools_cdl::current_image "catafilename"]
+      if {$catafilenameexist==0} {return}
+      set catafilename [::bddimages_liste::lget $::tools_cdl::current_image "catafilename"]
+      set catadirfilename [::bddimages_liste::lget $::tools_cdl::current_image "catadirfilename"]
+      set catafile [file join $bddconf(dirbase) $catadirfilename $catafilename]
+      set errnum [catch {set catafile [::tools_cata::extract_cata_xml $catafile]} msg ]
+      if {$errnum} { return -code $errnum $msg }
+      set listsources [::tools_cata::get_cata_xml $catafile]
+      set listsources [::tools_sources::set_common_fields $listsources IMG    { ra dec 5.0 calib_mag calib_mag_ss1}]
+      set listsources [::tools_sources::set_common_fields_skybot $listsources]
+      affich_rond $listsources SKYBOT $::gui_cata::color_skybot $::gui_cata::size_skybot
 
    }
 
@@ -1273,8 +1346,22 @@ proc random {{range 100}} {
 
              #--- Cree un checkbutton
              checkbutton $stoperreur.check -highlightthickness 0 -text "Arret en cas d'erreur" \
-                                           -variable ::gui_cdl_withwcs::stoperreur
+                      -variable ::gui_cdl_withwcs::stoperreur
              pack $stoperreur.check -in $stoperreur -side left -padx 5 -pady 0
+
+        #--- Cree un frame pour afficher movingobject
+        set uncosm [frame $frm.uncosm -borderwidth 0 -cursor arrow -relief groove]
+        pack $uncosm -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             #--- Cree un checkbutton
+             checkbutton $uncosm.check -highlightthickness 0 -text "Uncosmic" \
+                      -command "::gui_cdl_withwcs::change_uncosm " \
+                      -variable ::tools_cdl::uncosm
+             pack $uncosm.check -in $uncosm -side left -padx 5 -pady 0
+             entry $uncosm.p1 -relief sunken -textvariable ::tools_cdl::uncosm_param1 -width 6
+             pack $uncosm.p1 -in $uncosm -side left -pady 1 -anchor w
+             entry $uncosm.p2 -relief sunken -textvariable ::tools_cdl::uncosm_param2 -width 6
+             pack $uncosm.p2 -in $uncosm -side left -pady 1 -anchor w
 
 
         #--- Cree un frame pour afficher la mag de la premiere etoile de reference

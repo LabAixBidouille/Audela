@@ -2305,10 +2305,10 @@ namespace eval bddimages_liste_gui {
          frame $framecurrent.midi -borderwidth 0 -cursor arrow
          pack $framecurrent.midi -in $framecurrent -anchor w -side top -expand 0 -fill both -padx 3 -pady 3
             #--- Cree un label
-            label $framecurrent.midi.lab -text "Midi UTC (h)" -width 20
+            label $framecurrent.midi.lab -text "Heure UT du Midi local (h)" -width 20
             pack $framecurrent.midi.lab -in $framecurrent.midi -side left -anchor w -padx 1
             #--- Cree une ligne d'entree pour la variable ::bddimages_liste_gui::form_req(datemax)
-            entry $framecurrent.midi.h -textvariable ::bddimages_liste_gui::form_req(midi) -borderwidth 1 -relief groove -justify left
+            entry $framecurrent.midi.h -textvariable ::bddimages_liste_gui::form_req(midi) -borderwidth 1 -relief groove -justify left -width 4
             pack $framecurrent.midi.h -in $framecurrent.midi -side left -anchor w -padx 1
 
       #--- Cree un frame pour afficher le type de logique AND / OR
