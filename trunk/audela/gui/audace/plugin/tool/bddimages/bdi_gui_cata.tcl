@@ -670,11 +670,14 @@ namespace eval gui_cata {
                   # TODO gerer l'erreur le  cata a echou?
                   set ::gui_cata::color_cata $::gui_cata::color_button_bad
                   $::gui_cata::gui_cata configure -bg $::gui_cata::color_cata
+                  set ::tools_cata::boucle 0
                   break
                } else {
                   # Ok ca se passe bien
                   set ::gui_cata::color_cata $::gui_cata::color_button_good
                   $::gui_cata::gui_cata configure -bg $::gui_cata::color_cata
+                  update
+                  
                   cleanmark
                   
                   ::gui_cata::affiche_current_image
@@ -836,6 +839,7 @@ namespace eval gui_cata {
             # "idbddimg : $idbddimg   filename : $filename wcs : erreur \n"
             ::console::affiche_erreur "GET_WCS ERROR: $msg  idbddimg : $idbddimg   filename : $filename\n"
             set ::gui_cata::color_wcs $::gui_cata::color_button_bad
+            set ::tools_cata::boucle 0
             return false
          }
    }
@@ -1328,6 +1332,17 @@ namespace eval gui_cata {
    }
 
 
+   proc ::gui_cata::getsource {  } {
+
+      set err [ catch {set rect  [ ::confVisu::getBox $::audace(visuNo) ]} msg ]
+      if {$err>0 || $rect ==""} {
+         tk_messageBox -message "Veuillez selectionner un carre dans l'image" -type ok
+         return
+      }
+      set l [::manage_source::extract_sources_by_array $rect $::tools_cata::current_listsources]
+      ::manage_source::imprim_3_sources $l
+   }
+
 
 
    proc ::gui_cata::creation_cata { img_list } {
@@ -1422,6 +1437,7 @@ namespace eval gui_cata {
             set f5 [frame $onglets.nb.f5]
             set f6 [frame $onglets.nb.f6]
             set f7 [frame $onglets.nb.f7]
+            set f8 [frame $onglets.nb.f8]
             
             $onglets.nb add $f1 -text "Catalogues"
             $onglets.nb add $f2 -text "Variables"
@@ -1430,6 +1446,7 @@ namespace eval gui_cata {
             $onglets.nb add $f5 -text "Sextractor"
             $onglets.nb add $f6 -text "Interop"
             $onglets.nb add $f7 -text "Manuel"
+            $onglets.nb add $f8 -text "Develop"
             $onglets.nb select $f3
             ttk::notebook::enableTraversal $onglets.nb
 
@@ -1480,7 +1497,7 @@ namespace eval gui_cata {
              pack $ucac3.dir -in $ucac3 -side right -pady 1 -anchor w
   
         #--- Cree un frame pour afficher nomad1
-        set nomad1 [frame $f1.nomad1 -borderwidth 0 -cursor arrow -relief groove]
+        set nomad1 [frame $f1.nomad1 -borderwidth 0 -cursor arrow -relief groove] -state disabled
         pack $nomad1 -in $f1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
              #--- Cree un checkbutton
@@ -1943,8 +1960,27 @@ namespace eval gui_cata {
                          -command "::gui_cata::manual_clean" -text "Efface"
                      pack    $manuel.entr.buttons.efface -in $manuel.entr.buttons -side left -anchor e -expand 0 
                      button  $manuel.entr.buttons.creer  -borderwidth 1  \
-                         -command "::gui_cata::manual_create" -text "Creer"
+                         -command "::gui_cata::manual_create" -text "Creer"  -state disabled
                      pack    $manuel.entr.buttons.creer -in $manuel.entr.buttons -side left -anchor e -expand 0 
+
+
+        #--- Cree un frame pour afficher l onglet develop
+        set develop [frame $f8.develop -borderwidth 0 -cursor arrow -relief groove]
+        pack $develop -in $f8 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                frame $develop.entr -borderwidth 0 -cursor arrow -relief groove
+                pack $develop.entr  -in $develop  -side top 
+                
+
+                     set affsource [frame $develop.entr.affsource -borderwidth 0 -cursor arrow  -borderwidth 0]
+                     pack $affsource -in $develop.entr -side top 
+
+                          button  $affsource.lab  -borderwidth 1 -command "::gui_cata::getsource" -text "Obtenir les sources d'une fenetre"
+                          pack   $affsource.lab   -in $affsource -side top -padx 3 -pady 3 -anchor c
+
+
+
+
 
 
         #--- Cree un frame pour afficher bouton fermeture
