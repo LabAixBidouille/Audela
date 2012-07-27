@@ -120,6 +120,11 @@ proc ::telescope::match { radec { radecEquinox "J2000.0" } { mountSide ? } } {
    variable private
    global audace caption conf
 
+   #--- Il n'y a pas de coordonnees, on sort immediatement
+   if { $radec == "{} {}" } {
+      return
+   }
+
    if { [ ::tel::list ] != "" } {
       if { $conf(telescope) == "lx200" && $conf(lx200,modele) == "$caption(telescope,modele_gemini)" } {
          #--- cas du modele Losmandy Gemini
@@ -190,6 +195,11 @@ proc ::telescope::match { radec { radecEquinox "J2000.0" } { mountSide ? } } {
 #------------------------------------------------------------
 proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { objectName "" } { radecEquinox "J2000.0" } } {
    global audace caption cataGoto conf
+
+   #--- Il n'y a pas de coordonnees, on sort immediatement
+   if { $list_radec == "{} {}" } {
+      return
+   }
 
    if { [ ::tel::list ] != "" } {
       set audace(telescope,targetRa)      [lindex $list_radec 0]
