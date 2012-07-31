@@ -1073,6 +1073,7 @@ int eqmod2_move(struct telprop *tel, char direction)
       v = ((float)tel->param_b1) * 360.0 / ((float)tel->radec_move_rate) / ((float)tel->param_a1);
    }
 
+	if (direction>91) { direction-=32; } // Majuscules -> minuscules
    if ( ( axe(direction) == AXE_DEC ) && ( tel->tubepos == TUBE_EST ) ) {
       // Mouvement axe delta et tube a l'est
       sprintf(s,":G%d%c%d",axe(direction),vit,1-dir(direction));
@@ -1376,7 +1377,7 @@ int eqmod2_action_move(struct telprop *tel, char *direction)
       case EQMOD_STATE_TRACK:
          tel->old_state = tel->state;
          tel->state = EQMOD_STATE_SLEW;
-         eqmod2_stopmotor(tel,AXE_RA|AXE_DEC);
+         //eqmod2_stopmotor(tel,AXE_RA|AXE_DEC);
          eqmod2_move(tel,direction[0]);
          break;
       case EQMOD_STATE_SLEW:
