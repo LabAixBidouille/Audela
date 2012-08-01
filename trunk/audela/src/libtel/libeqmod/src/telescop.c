@@ -233,27 +233,29 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    }
 	tel->ha_park=ha;
 	tel->dec_park=dec;
+//tel->mouchard=2; // 0=pas de fichier log
+//mode_debug = 1;
 
    // Initialisation du fichier mouchard
-   if (tel->mouchard==1) {
+   if (tel->mouchard>=1) {
       f=fopen("mouchard_eqmod.txt","wt");
 		fprintf(f,"argc = %d",argc);
 		for (j=0;j<argc;j++) {
-			fprintf(f,"argv[%d] = %s",j,argv[j]);
+			fprintf(f,"argv[%d] = %s\n",j,argv[j]);
 		}
       fclose(f);
    }
 
 	// Test de la connexion et optimisation de la temporisation de la reponse
-	for (tempo=30;tempo<=300;tempo+=10) {
-		tel->tempo=tempo;
-		sprintf(s,":e1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
-		if (num>0) {
-			tel->param_e1=num;
-			break;
-		}
-	}
 	if (mode_debug == 0 ) {
+		for (tempo=30;tempo<=300;tempo+=10) {
+			tel->tempo=tempo;
+			sprintf(s,":e1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
+			if (num>0) {
+				tel->param_e1=num;
+				break;
+			}
+		}
 		if ( strlen(ss) == 0 ) {
 			sprintf(tel->msg,"EQMOD protocol error (:e1=%d). Verify: (1) cable connection, (2) serial port %s is not the good one, (3) the power supply of the mount.",num,portnum);
 			sprintf(s,"close %s",tel->channel); mytel_tcleval(tel,s);
@@ -264,56 +266,68 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		} else {
 			tempo=(int)(tempo*1.2);
 		}
+		sprintf(s,":e2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
+		tel->param_e2=num;
+
+		// Initialisation de la communication avec la monture
+		sprintf(s,":f1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
+		sprintf(s,":f2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);   
+
+		sprintf(s,":a1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
+		if (num==0) { num=1 ; } ; // avoid division by zero
+		if (num<0) { num= num + (1<<24); }
+		tel->param_a1=num; // Microsteps per axis Revolution
+
+		sprintf(s,":a2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
+		if (num==0) { num=1 ; } ; // avoid division by zero
+		if (num<0) { num = num + (1<<24); }
+		tel->param_a2=num; // Microsteps per axis Revolution
+
+		sprintf(s,":b1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
+		tel->param_b1=num;
+
+		sprintf(s,":b2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
+		tel->param_b2=num;
+
+		sprintf(s,":g1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
+		tel->param_g1=num;
+
+		sprintf(s,":g2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
+		tel->param_g2=num;
+
+		sprintf(s,":s1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
+		tel->param_s1=num; // Microsteps per Worm Revolution
+
+		sprintf(s,":s2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
+		tel->param_s2=num; // Microsteps per Worm Revolution
+
+		sprintf(s,":f1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
+		tel->param_f1=num;
+
+		sprintf(s,":f2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
+		tel->param_f2=num;
+
+		sprintf(s,":d1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
+		tel->param_d1=num;
+
+		sprintf(s,":d2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
+		tel->param_d2=num;
 	} else {
 		tempo=30;
+		// --- EQ6
+		tel->param_a1=9024000;
+		tel->param_a2=9024000;
+		tel->param_b1=64935;
+		tel->param_b2=64935;
+		tel->param_e1=1026;
+		tel->param_e2=1026;
+		tel->param_g1=16;
+		tel->param_g2=16;
+		tel->param_s1=50133;
+		tel->param_s2=50133;
+		tel->param_d1=8388608;
+		tel->param_d2=8388608;
 	}
-
-   sprintf(s,":e2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
-   tel->param_e2=num;
-
-   // Initialisation de la communication avec la monture
-   sprintf(s,":f1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
-   sprintf(s,":f2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);   
-
-   sprintf(s,":a1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
-	if (num==0) { num=1 ; } ; // avoid division by zero
-   if (num<0) { num= num + (1<<24); }
-   tel->param_a1=num; // Microsteps per axis Revolution
-
-   sprintf(s,":a2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
-	if (num==0) { num=1 ; } ; // avoid division by zero
-   if (num<0) { num = num + (1<<24); }
-   tel->param_a2=num; // Microsteps per axis Revolution
-
-   sprintf(s,":b1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
-   tel->param_b1=num;
-
-   sprintf(s,":b2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
-   tel->param_b2=num;
-
-   sprintf(s,":g1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
-   tel->param_g1=num;
-
-   sprintf(s,":g2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
-   tel->param_g2=num;
-
-   sprintf(s,":s1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
-   tel->param_s1=num; // Microsteps per Worm Revolution
-
-   sprintf(s,":s2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
-   tel->param_s2=num; // Microsteps per Worm Revolution
-
-   sprintf(s,":f1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
-   tel->param_f1=num;
-
-   sprintf(s,":f2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
-   tel->param_f2=num;
-
-   sprintf(s,":d1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
-   tel->param_d1=num;
-
-   sprintf(s,":d2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
-   tel->param_d2=num;
 
    // Facteur de conversion deg vers step: step = deg * tel->radec_position_conversion
    tel->radec_position_conversion = 1.0 * tel->param_a1 / 360.;
@@ -996,7 +1010,6 @@ int eqmod2_track(struct telprop *tel)
    int res,motion_type;
    double v;
 
-
    // Track Hour Axis
    axe='1';
    if (tel->speed_track_ra != 0) {
@@ -1057,23 +1070,40 @@ int eqmod2_move(struct telprop *tel, char direction)
 {
    char s[1024],vc[20];
    int res;
-   double v;
+   double v,radec_move_rate;
    char vit;
-
-   if (tel->radec_move_rate > tel->radec_move_rate_max) {
-      tel->radec_move_rate = tel->radec_move_rate_max;
-   } else if (tel->radec_move_rate < 0.) {
-      tel->radec_move_rate = 0.;
-   }
-   if (tel->radec_move_rate>0.7) {
-      vit='3';
-      v = ((float)tel->param_b1) * 360.0 / ((float)tel->radec_move_rate) / ((float)tel->param_a1) * 16.0;
-   } else {
-      vit='1';
-      v = ((float)tel->param_b1) * 360.0 / ((float)tel->radec_move_rate) / ((float)tel->param_a1);
-   }
+	FILE *f;
 
 	if (direction>91) { direction-=32; } // Majuscules -> minuscules
+	radec_move_rate=tel->radec_move_rate;
+	if (tel->state == EQMOD_STATE_TRACK) {
+		if (direction=='E') {
+			radec_move_rate=tel->radec_move_rate - tel->track_diurnal;
+			if (radec_move_rate<0) {
+				radec_move_rate*=-1;
+				direction='W';
+			}
+		} else if (direction=='W') {
+			radec_move_rate=tel->radec_move_rate + tel->track_diurnal;
+		}
+	}
+
+   if (radec_move_rate > tel->radec_move_rate_max) {
+      radec_move_rate = tel->radec_move_rate_max;
+   } else if (radec_move_rate < 0.) {
+      radec_move_rate = 0.;
+   }
+	if (fabs(radec_move_rate) < 1e-10) {
+		radec_move_rate = tel->track_diurnal/1000;
+	}
+   if (radec_move_rate>0.7) {
+      vit='3';
+      v = ((float)tel->param_b1) * 360.0 / ((float)radec_move_rate) / ((float)tel->param_a1) * 16.0;
+   } else {
+      vit='1';
+      v = ((float)tel->param_b1) * 360.0 / ((float)radec_move_rate) / ((float)tel->param_a1);
+   }
+
    if ( ( axe(direction) == AXE_DEC ) && ( tel->tubepos == TUBE_EST ) ) {
       // Mouvement axe delta et tube a l'est
       sprintf(s,":G%d%c%d",axe(direction),vit,1-dir(direction));
@@ -1081,12 +1111,40 @@ int eqmod2_move(struct telprop *tel, char direction)
       // Mouvement axe alpha, ou delta tube a l'ouest
       sprintf(s,":G%d%c%d",axe(direction),vit,dir(direction));
    }
+	if (tel->mouchard==2) {
+		f=fopen("mouchard_eqmod.txt","at");
+		fprintf(f,"========== ENTER in RADEC MOVE\n");
+		fprintf(f,"tel->state=%d\n",tel->state);
+		fprintf(f,"tel->radec_move_rate=%f\n",tel->radec_move_rate);
+		fprintf(f,"radec_move_rate=%f\n",radec_move_rate);
+		fprintf(f,"v=%f\n",v);
+		fprintf(f,"direction=%c %d\n",direction,direction);
+		fprintf(f,"axe(direction)=%d\n",axe(direction));
+		fprintf(f,"dir(direction)=%d\n",dir(direction));
+		fprintf(f,"s=%s\n",s);
+		fclose(f);
+	}
    res=eqmod_putread(tel,s,NULL); 
    eqmod_encode(tel,(int)v,vc);
    sprintf(s,":I%d%s",axe(direction),vc);
+	if (tel->mouchard==2) {
+		f=fopen("mouchard_eqmod.txt","at");
+		fprintf(f,"s=%s\n",s);
+		fclose(f);
+	}
    res=eqmod_putread(tel,s,NULL); 
    sprintf(s,":J%d",axe(direction));
+	if (tel->mouchard==2) {
+		f=fopen("mouchard_eqmod.txt","at");
+		fprintf(f,"s=%s\n",s);
+		fclose(f);
+	}
    res=eqmod_putread(tel,s,NULL); 
+	if (tel->mouchard==2) {
+		f=fopen("mouchard_eqmod.txt","at");
+		fprintf(f,"------------ EXIT from RADEC MOVE\n");
+		fclose(f);
+	}
 
    return 0;
 }
@@ -1215,9 +1273,11 @@ int eqmod2_waitgoto(struct telprop *tel)
          eqmod_positions12(tel,&p1,&p2);
 			dp1=p1-p10;
 			dp2=p2-p20;
-			f=fopen("mouchard_eqmod.txt","at");
-			fprintf(f,"DP A dp1=%d dp2=%d tol=%f\n",dp1,dp2,tol);
-			fclose(f);
+		   if (tel->mouchard==1) {
+				f=fopen("mouchard_eqmod.txt","at");
+				fprintf(f,"DP A dp1=%d dp2=%d tol=%f\n",dp1,dp2,tol);
+				fclose(f);
+			}
 			if ((fabs(dp1)<tol)&&(fabs(dp2)<tol)) {break;}
          p10=p1;
          p20=p2;
@@ -1235,9 +1295,11 @@ int eqmod2_waitgoto(struct telprop *tel)
             eqmod_positions12(tel,&p1,&p2);
 				dp1=p1-p10;
 				dp2=p2-p20;
-				f=fopen("mouchard_eqmod.txt","at");
-				fprintf(f,"DP B dp1=%d dp2=%d tol=%f\n",dp1,dp2,tol);
-				fclose(f);
+			   if (tel->mouchard==1) {
+					f=fopen("mouchard_eqmod.txt","at");
+					fprintf(f,"DP B dp1=%d dp2=%d tol=%f\n",dp1,dp2,tol);
+					fclose(f);
+				}
 				if ((fabs(dp1)<tol)&&(fabs(dp2)<tol)) {break;}
             p10=p1;
             p20=p2;
@@ -1246,10 +1308,12 @@ int eqmod2_waitgoto(struct telprop *tel)
          sprintf(s,"after %d",tel->gotoread_ms); mytel_tcleval(tel,s);
       }
 		dt2=(double)(clock()-clock0)/(double)clk_tck;
-		f=fopen("mouchard_eqmod.txt","at");
-		fprintf(f,"dt1=%f (%d) dt2=%f\n",dt1,nbgoto,dt2);
-		fprintf(f,"\n");
-		fclose(f);
+		if (tel->mouchard==1) {
+			f=fopen("mouchard_eqmod.txt","at");
+			fprintf(f,"dt1=%f (%d) dt2=%f\n",dt1,nbgoto,dt2);
+			fprintf(f,"\n");
+			fclose(f);
+		}
    }
    return 0;
 }
@@ -1371,14 +1435,14 @@ int eqmod2_action_move(struct telprop *tel, char *direction)
          return -1;
       case EQMOD_STATE_STOPPED:
          tel->old_state = tel->state;
-         tel->state = EQMOD_STATE_SLEW;
          eqmod2_move(tel,direction[0]);
+         tel->state = EQMOD_STATE_SLEW;
          break;
       case EQMOD_STATE_TRACK:
          tel->old_state = tel->state;
-         tel->state = EQMOD_STATE_SLEW;
          //eqmod2_stopmotor(tel,AXE_RA|AXE_DEC);
          eqmod2_move(tel,direction[0]);
+         tel->state = EQMOD_STATE_SLEW;
          break;
       case EQMOD_STATE_SLEW:
          if ( ( tel->slew_axis & AXE_RA ) == axe(direction[0]) ) {
