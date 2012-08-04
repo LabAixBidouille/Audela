@@ -415,6 +415,15 @@ int mytel_date_set(struct telprop *tel,int y,int m,int d,int h, int min,double s
 int mytel_home_get(struct telprop *tel,char *ligne);
 int mytel_home_set(struct telprop *tel,double longitude,char *ew,double latitude,double altitude);
 int mytel_init_mount_default(struct telprop *tel,int mountno);
+int mytel_tcl_procs(struct telprop *tel);
+int mytel_motor_off(struct telprop *tel);
+int mytel_motor_stop(struct telprop *tel);
+int mytel_motor_move_stop(struct telprop *tel);
+int mytel_app_cod_setadu(struct telprop *tel);
+int mytel_app_sim_setadu(struct telprop *tel);
+int mytel_motor_move_start(struct telprop *tel);
+
+
 
 int mytel_adu_coord(struct telprop *tel,char *result);
 

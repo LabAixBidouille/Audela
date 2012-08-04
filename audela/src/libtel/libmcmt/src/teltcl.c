@@ -435,7 +435,6 @@ int cmdTelLoopEval(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 }
 
 int cmdTelLoopResult(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
-   char ligne[256];
    my_pthread_mutex_lock(&mutex);
 	Tcl_SetResult(interp,telthread->eval_result,TCL_VOLATILE);
 	my_pthread_mutex_unlock(&mutex);
@@ -458,7 +457,6 @@ int cmdTelHexaEval(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 }
 
 int cmdTelHexaResult(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
-   char ligne[256];
    my_pthread_mutex_lock(&mutex);
 	Tcl_SetResult(interp,telthread->mcmt_hexa_result,TCL_VOLATILE);
 	my_pthread_mutex_unlock(&mutex);
@@ -486,8 +484,8 @@ int cmdTelLoopEval(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 */
 
 int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
-   char ligne[2256],ligne2[2256],texte[256];
-   int result = TCL_OK,k;
+   char ligne[2256],ligne2[2256];
+   int result = TCL_OK;
    struct telprop *tel;
    char comment[]="Usage: %s %s ?goto|stop|move|coord|motor|init|state|?";
    if (argc<3) {
@@ -549,8 +547,8 @@ int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 }
 
 int cmdTelAdu(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
-   char ligne[2256],ligne2[2256],texte[256];
-   int result = TCL_OK,k;
+   char ligne[2256];
+   int result = TCL_OK;
    struct telprop *tel;
    char comment[]="Usage: %s %s ?goto|stop|move|coord|motor|init|state|?";
    if (argc<3) {
