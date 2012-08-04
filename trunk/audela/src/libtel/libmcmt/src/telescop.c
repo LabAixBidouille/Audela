@@ -122,17 +122,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		}
 		strcat(s,"}");
       if ( Tcl_Eval(tel->interp, s) == TCL_ERROR ) {
-#if defined(MOUCHARD)
-   f=fopen("mouchard_tel.txt","at");
-   fprintf(f,"Fin de l'init PB=4a. tel->msg=%s\n",tel->msg);
-	fclose(f);
-#endif
 			strcpy(tel->msg,tel->interp->result);
-#if defined(MOUCHARD)
-   f=fopen("mouchard_tel.txt","at");
-   fprintf(f,"Fin de l'init PB=4b. tel->msg=%s\n",tel->msg);
-	fclose(f);
-#endif
 			threadpb=4;
       }
 	} else {
@@ -314,7 +304,6 @@ int mytel_radec_state(struct telprop *tel,char *result)
 
 int mytel_radec_goto(struct telprop *tel)
 {
-	//char s[1024];
 	int sortie,t0,dt,time_out=300;
 	time_t ltime;
    my_pthread_mutex_lock(&mutex);
@@ -324,7 +313,7 @@ int mytel_radec_goto(struct telprop *tel)
    my_pthread_mutex_unlock(&mutex);
    if (tel->radec_goto_blocking==1) {
 		sortie=0;
-		t0=time(&ltime);
+		t0=(int)time(&ltime);
 		while (sortie=0) {
 			libtel_sleep(500);
 			my_pthread_mutex_lock(&mutex);
@@ -332,7 +321,7 @@ int mytel_radec_goto(struct telprop *tel)
 				sortie=1;
 			}
 		   my_pthread_mutex_unlock(&mutex);
-			dt=time(&ltime);
+			dt=(int)time(&ltime);
 			if (dt>time_out) {
 				sortie=2;
 			}
@@ -505,7 +494,6 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 	int threadpb=0,resint;
    char s[1024],ssres[1024];
    char ss[256],ssusb[256],portnum[256];
-   time_t ltime;
 #endif
 #if defined(MOUCHARD)
    FILE *f;
@@ -745,20 +733,9 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 	// initialisation des commandes tcl necessaires au fonctionnement en boucle.
 	Tcl_CreateCommand(telthread->interp,"ThreadTel_loop", (Tcl_CmdProc *)ThreadTel_loop, (ClientData)telthread, NULL);
 	mytel_tcleval(telthread,"proc TTel_Loop {} { ThreadTel_loop ; after 250 TTel_Loop }");
+
 	// Lance le fonctionnement en boucle.
-#if defined(MOUCHARD)
-   f=fopen("mouchard_tel.txt","at");
-   fprintf(f,"Appel de TTel_Loop dans ThreadTel_Init\n",threadpb);
-	fclose(f);
-#endif
-
 	mytel_tcleval(telthread,"TTel_Loop");
-
-#if defined(MOUCHARD)
-   f=fopen("mouchard_tel.txt","at");
-   fprintf(f,"Fin de ThreadTel_Init. On est sorti de la boucle.\n",threadpb);
-	fclose(f);
-#endif
 
 	return 0;
 }
@@ -768,7 +745,6 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 /************************/
 int ThreadTel_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 	int action_ok=0,arrived;
-	int axisno, seqno, err;
 	char action_locale[80],s[1024],ss[1024];
 	double coord_cat_cod_deg_ra0;
 	double coord_cat_cod_deg_dec0;
@@ -776,7 +752,6 @@ int ThreadTel_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 	double coord_app_cod_deg_ha0;
 	double coord_app_cod_deg_dec0;
 	time_t ltime;
-	FILE *f;
 
 	if (telthread->exit==1) {
 		free(telthread);
@@ -1163,13 +1138,6 @@ int tel_close(struct telprop *tel)
 /* ------------------------------ */
 {
 	char s[1024];
-	int k,err;
-#if defined(MOUCHARD)
-	FILE *f;
-   f=fopen("mouchard_tel.txt","at");
-   fprintf(f,"Debut de tel_close\n");
-	fclose(f);
-#endif
 	if (tel->mode==MODE_REEL) {
 #if defined CONTROLLER_MCMT
 		if (tel->mode==MODE_REEL) {
@@ -1181,12 +1149,6 @@ int tel_close(struct telprop *tel)
 	my_pthread_mutex_unlock(&mutex);
    pthread_mutexattr_destroy(&mutexAttr);
    pthread_mutex_destroy(&mutex);
-
-#if defined(MOUCHARD)
-   f=fopen("mouchard_tel.txt","at");
-   fprintf(f,"Fin de tel_close\n");
-	fclose(f);
-#endif
    return 0;
 }
 
@@ -1896,7 +1858,6 @@ void mytel_cat2app_sim_deg0(struct telprop *tel) {
 /***************************************************************************/
 int mytel_app_sim_setadu(struct telprop *tel) {
 #if defined CONTROLLER_MCMT
-	char s[1024],ss[1024],serial6[9],signe;
 	int dadu;
    time_t ltime;
 	/* --- */
@@ -2085,7 +2046,6 @@ void mytel_app_sim_setdadu(struct telprop *tel) {
 /* Set speeds to the motors for take count for corrections (Pec, altaz, etc.) */
 /******************************************************************************/
 void mytel_speed_corrections(struct telprop *tel) {
-	int val, axisno, err, seqno, valplus;
 }
 
 /* ================================================================ */
