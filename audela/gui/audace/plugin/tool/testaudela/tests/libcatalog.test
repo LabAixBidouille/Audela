@@ -123,3 +123,39 @@ test libcatalog_csucac3_catalog_existe { trouve 15 etoiles } -constraints {
 
 } -result "15"
 
+
+#-------------------------------------------------------------------------------
+test libcatalog_csusnoa2_sansparam { csusnoa2 sans parametre } -constraints {
+   AUDACE
+} -setup {
+
+} -body {
+   set catchError [ catch {
+      #--- je recupere le message d'erreur "usage ..."
+      set result [csusnoa2]
+   } msg]
+   return $msg
+} -cleanup {
+
+} -result "usage : csusnoa2 pathOfCatalog ra(deg) dec(deg) radius(arcmin) ?magnitudeMax(mag) magnitudeMin(mag)?\n"
+
+
+#-------------------------------------------------------------------------------
+test libcatalog_csusnoa2_catalog_existe { trouve 47 etoiles } -constraints {
+   AUDACE
+} -setup {
+
+} -body {
+   set catchError [ catch {
+      set result [csusnoa2 $::audace(rep_userCatalog)/USNOA2.0 10 5 5]
+   } msg]
+
+   if { $catchError==0 }  {
+      return [ llength [ lindex $result 1 ] ]
+   } else {
+      return $msg
+   }
+} -cleanup {
+
+} -result "47"
+
