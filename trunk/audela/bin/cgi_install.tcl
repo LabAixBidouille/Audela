@@ -1,7 +1,11 @@
 #
+# Fichier : cgi_install.tcl
+# Description : Please use this TCL script with AudeLA to install CGI files
+# Auteur : Alain KLOTZ
+# Mise à jour $Id$
+#
 # source $audace(rep_install)/bin/cgi_install.tcl ; ::cgi_install::run
 #
-# Please use this TCL script with AudeLA to install CGI files
 
 namespace eval ::cgi_install {
 
@@ -21,7 +25,6 @@ namespace eval ::cgi_install {
       return -code $err $msg
    }
 
-
 #--------------------------------------------------
 #  ::cgi_install::get_root { }
 #--------------------------------------------------
@@ -38,12 +41,11 @@ namespace eval ::cgi_install {
 
    proc ::cgi_install::withtk { } {
       if {[info commands tkwait]==""} {
-	      return 0
+         return 0
       } else {
-	      return 1
+         return 1
       }
    }
-
 
 #--------------------------------------------------
 #  ::cgi_install::run { positionxy}
@@ -51,7 +53,6 @@ namespace eval ::cgi_install {
 # Demarrage de l interface d installation (fenetree ou ligne de commande)
 # @param positionxy position de la fenetre (par defaut : 20+20)
 # @return
-#
 #--------------------------------------------------
    proc ::cgi_install::run { { positionxy 20+20 } } {
 
@@ -76,7 +77,7 @@ namespace eval ::cgi_install {
       #--- Initialisation of the variables
       puts "Initialisation..."
       set base $::audela_start_dir
-      
+
       # --- Search for the httpd.conf file
       if { $::tcl_platform(os) == "Linux" } {
          set fichiers [glob -nocomplain "/etc/apache2/default-server.conf"] 0]
@@ -85,48 +86,48 @@ namespace eval ::cgi_install {
       }
       set fichier [lindex $fichiers 0]
       if {$fichier!=""} {
-	      # --- Read the httpd.conf
-	      set f [open $fichier r]
-	      set lignes [split [read $f] \n]
-	      close $f
-	      foreach ligne $lignes {
-		      set k [string first # [string trim $ligne]]
-		      if {$k==0} {
-			      continue
-		      }
-		      set key "DocumentRoot"
-		      set k [string first $key $ligne]
-		      if {$k>=0} {
-			      set ligne [string range $ligne $k end]
-			      set dirhtdocs [lindex $ligne 1]
-		      }
-		      set key "ScriptAlias /cgi-bin/ "
-		      set k [string first $key $ligne]
-		      if {$k>=0} {
-			      set ligne [string range $ligne $k end]
-			      set dircgibin [lindex $ligne 2]
-		      }
-	      }
+         # --- Read the httpd.conf
+         set f [open $fichier r]
+         set lignes [split [read $f] \n]
+         close $f
+         foreach ligne $lignes {
+            set k [string first # [string trim $ligne]]
+            if {$k==0} {
+               continue
+            }
+            set key "DocumentRoot"
+            set k [string first $key $ligne]
+            if {$k>=0} {
+               set ligne [string range $ligne $k end]
+               set dirhtdocs [lindex $ligne 1]
+            }
+            set key "ScriptAlias /cgi-bin/ "
+            set k [string first $key $ligne]
+            if {$k>=0} {
+               set ligne [string range $ligne $k end]
+               set dircgibin [lindex $ligne 2]
+            }
+         }
       } else {
-			set dircgibin $audace(rep_install)
-			set dirhtdocs $audace(rep_install)
+         set dircgibin $audace(rep_install)
+         set dirhtdocs $audace(rep_install)
       }
-      
+
       set audace(cgi_install,base) $base
 
       set audace(cgi_install,variables) {htdocs cgi-bin}
       set audace(cgi_install,variables,descr) $audace(cgi_install,variables)
       set audace(cgi_install,print) ""
-      
-		set droits ""
+
+      set droits ""
       if { $::tcl_platform(os) == "Linux" } {
-			set user [exec whoami]
-			append droits "Verify you can write in the web directories."
-			append droits "\nFor example:"
-			append droits "\nchown -R ${user}:users $dircgibin"
-			append droits "\nchown -R ${user}:users $dirhtdocs"
+         set user [exec whoami]
+         append droits "Verify you can write in the web directories."
+         append droits "\nFor example:"
+         append droits "\nchown -R ${user}:users $dircgibin"
+         append droits "\nchown -R ${user}:users $dirhtdocs"
       } else {
-			append droits "Verify you can write in the web directories."
+         append droits "Verify you can write in the web directories."
       }
 
       set k 0
@@ -250,7 +251,6 @@ namespace eval ::cgi_install {
          puts "fonction quit"
          wm protocol .cgi_install WM_DELETE_WINDOW "::cgi_install::quit"
 
-
          puts "exist: [ info commands .cgi_install ]"
          if { [ string length [ info commands .cgi_install ] ] != "0" } {
             puts "La fenetre est creee [ info commands .cgi_install.* ] -"
@@ -314,7 +314,7 @@ namespace eval ::cgi_install {
             pack .cgi_install.$name -in .cgi_install -fill x -pady 1 -padx 12
             incr k
          }
-         
+
          label .cgi_install.droits \
             -font [ list {Arial} 10 bold ] -text "$droits" \
             -borderwidth 0 -relief flat -bg $audace(cgi_install,configure,color,backpad) \
@@ -394,7 +394,6 @@ namespace eval ::cgi_install {
       return $result
    }
 
-
 #--------------------------------------------------
 #  ::cgi_install::quit { }
 #--------------------------------------------------
@@ -420,10 +419,6 @@ namespace eval ::cgi_install {
       return
    }
 
-
-
-
-
 #--------------------------------------------------
 #  ::cgi_install::print { }
 #--------------------------------------------------
@@ -444,12 +439,11 @@ namespace eval ::cgi_install {
       return
    }
 
-
 #--------------------------------------------------
 #  ::cgi_install::go { }
 #--------------------------------------------------
 #
-# @param 
+# @param
 # @return
 #--------------------------------------------------
    proc ::cgi_install::go { } {
@@ -552,14 +546,6 @@ namespace eval ::cgi_install {
       ::cgi_install::quit
    }
 
-
-
-
-
-
-
-
-
 #--------------------------------------------------
 #  ::cgi_install::compact { }
 #--------------------------------------------------
@@ -623,10 +609,6 @@ namespace eval ::cgi_install {
         }
    }
 
-
-
-
-
 #--------------------------------------------------
 #  ::cgi_install::button1 { }
 #--------------------------------------------------
@@ -651,9 +633,6 @@ namespace eval ::cgi_install {
       update
    }
 
-
-
-
 #--------------------------------------------------
 #  ::cgi_install::button2 { }
 #--------------------------------------------------
@@ -663,9 +642,6 @@ namespace eval ::cgi_install {
 #--------------------------------------------------
    proc button2 { name } {
    }
-
-
-
 
 }
 
