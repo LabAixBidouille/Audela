@@ -38,6 +38,9 @@ extern "C" {
 #define MODE_REEL 1
 #define MODE_SIMULATION_ETEL 2
 
+#define MOTOR_OFF 0
+#define MOTOR_ON 1
+
 #define STATUS_MOTOR_OFF 0
 #define STATUS_MOTOR_ON 1
 #define STATUS_HADEC_SLEWING 2
@@ -138,6 +141,7 @@ struct telprop {
    char home0[50];
 	int mode;
 	int status;
+	int motor;
 	int error;
 	char action_next[80];
 	char action_cur[80];

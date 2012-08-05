@@ -18,6 +18,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ * ----------------------------
+ * Tester le non redemarrage des moteurs apres une correction en tel1 motor off
+ * ----------------------------
  */
 
 #include "sysexp.h"
@@ -524,11 +528,6 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 	strcpy(telthread->home,"GPS 55.41 E -21.1995 991.9");
 	strcpy(telthread->home0,telthread->home);
 	strcpy(telthread->homePosition,telthread->home);
-#if defined(MOUCHARD)
-   f=fopen("mouchard_tel.txt","at");
-   fprintf(f,"Debut d'ouverture du port %s\n",argv[3]);
-	fclose(f);
-#endif
 
 	// open connections
 	if (telthread->mode == MODE_REEL) {
@@ -572,11 +571,6 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 		  }
 	   }
 		strcpy(telthread->channel,telthread->interp->result);
-#if defined(MOUCHARD)
-   f=fopen("mouchard_tel.txt","at");
-   fprintf(f,"Fin d'ouverture du port %s. telthread->channel=%\n",argv[3],telthread->channel);
-	fclose(f);
-#endif
 	   
 		// j'ouvre le port serie 
 		//  # 19200 : vitesse de transmission (bauds)
@@ -598,11 +592,6 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 		if (resint==0) {
 			// probleme car le moteur ne repond pas !
 			strcpy(telthread->msg,"Motor not ready (E0 FF -> 00 instead 01)");
-#if defined(MOUCHARD)
-   f=fopen("mouchard_tel.txt","at");
-   fprintf(f,"Etape 10 telthread->msg=%s\n",telthread->msg);
-	fclose(f);
-#endif
 			return 1;
 		}
 
@@ -721,6 +710,7 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 	strcpy(telthread->action_next, "motor_off");
 	strcpy(telthread->action_cur, "undefined");
 	telthread->status = STATUS_MOTOR_OFF;
+	telthread->motor=MOTOR_OFF;
 	telthread->compteur = 0;
 	telthread->exit=0;
 
@@ -921,6 +911,7 @@ int ThreadTel_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 			mytel_motor_stop(telthread);
 			mytel_motor_off(telthread);
 		}
+		telthread->motor=MOTOR_OFF;
 		telthread->status=STATUS_MOTOR_OFF;
 		telthread->speed_app_sim_adu_ha=0;
 		telthread->speed_app_sim_adu_dec=0;
@@ -959,6 +950,7 @@ int ThreadTel_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 			// --- start motors
 			mytel_motor_on(telthread);
 		}
+		telthread->motor=MOTOR_ON;
 		telthread->status=STATUS_MOTOR_ON;
 		telthread->speed_app_sim_adu_ha=telthread->sideral_deg_per_sec;
 		telthread->speed_app_sim_adu_dec=0;
@@ -2101,19 +2093,19 @@ int mytel_motor_move_start(struct telprop *tel) {
 int mytel_motor_move_stop(struct telprop *tel) {
 	char s[1024];
 	if ((tel->move_direction[0]=='n')||(tel->move_direction[0]=='N')||(tel->move_direction[0]=='s')||(tel->move_direction[0]=='S')) {
-		if (tel->status==STATUS_MOVE_SLOW) {
+		if ((tel->status==STATUS_MOVE_SLOW)&&(telthread->motor==MOTOR_ON)) {
 			sprintf(s,"set envoi \"E1 53\" ; set res [envoi $envoi] ; set clair [mcmthexa_decode $envoi $res]"); mytel_tcleval(tel,s);
 		} else {
 			sprintf(s,"set envoi \"E1 F0\" ; set res [envoi $envoi] ; set clair [mcmthexa_decode $envoi $res]"); mytel_tcleval(tel,s);
 		}
 	} else if ((tel->move_direction[0]=='e')||(tel->move_direction[0]=='E')||(tel->move_direction[0]=='w')||(tel->move_direction[0]=='W')) {
-		if (tel->status==STATUS_MOVE_SLOW) {
+		if ((tel->status==STATUS_MOVE_SLOW)&&(telthread->motor==MOTOR_ON)) {
 			sprintf(s,"set envoi \"E0 53\" ; set res [envoi $envoi] ; set clair [mcmthexa_decode $envoi $res]"); mytel_tcleval(tel,s);
 		} else {
 			sprintf(s,"set envoi \"E0 F0\" ; set res [envoi $envoi] ; set clair [mcmthexa_decode $envoi $res]"); mytel_tcleval(tel,s);
 		}
 	} else {
-		if (tel->status==STATUS_MOVE_SLOW) {
+		if ((tel->status==STATUS_MOVE_SLOW)&&(telthread->motor==MOTOR_ON)) {
 			sprintf(s,"set envoi \"E1 53\" ; set res [envoi $envoi] ; set clair [mcmthexa_decode $envoi $res]"); mytel_tcleval(tel,s);
 			sprintf(s,"set envoi \"E0 53\" ; set res [envoi $envoi] ; set clair [mcmthexa_decode $envoi $res]"); mytel_tcleval(tel,s);
 		} else {
