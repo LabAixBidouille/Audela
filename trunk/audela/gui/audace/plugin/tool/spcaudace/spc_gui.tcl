@@ -117,6 +117,9 @@ proc spc_winini { } {
       .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_spcs2fits_w) -command "spc_spcs2fits" -underline 0
       .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_file_space)
       .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_bessmodule_w) -command "spc_bessmodule" -underline 0
+      .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_pipelines_space)
+      .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_anim_w) -command "spc_anim_w" -underline 0
+      .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_buildhtml_w) -command "spc_buildhtml_w" -underline 0
 
 
       #--- Menu Géométrie ---#
@@ -227,23 +230,23 @@ proc spc_winini { } {
       .spc.menuBar add cascade -menu .spc.menuBar.pipelines -label $caption(spcaudace,gui,spc_pipelines) -underline 0 -background $colorspc(backmenu)
       menu .spc.menuBar.pipelines -tearoff 0 -background $colorspc(backmenu)
       # .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_geom2calibre_w) -command "spc_geom2calibre_w" -underline 0 -accelerator "Ctrl-1"
-      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_traite2rinstrum_w) -command "::param_spc_audace_traite2rinstrum::run" -underline 0 -accelerator "Ctrl-i"
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_traite2rinstrum_w) -command "::param_spc_audace_traite2rinstrum::run" -underline 0 -accelerator "Ctrl-r"
       .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_traitestellaire) -command "::param_spc_audace_traitestellaire::run" -underline 0 -accelerator "Ctrl-s"
       .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_traitenebula) -command "::param_spc_audace_traitenebula::run" -underline 0 -accelerator "Ctrl-n"
-      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_pipelines_space)
-      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_lampe2calibre_w) -command "::param_spc_audace_lampe2calibre::run" -underline 0 -accelerator "Ctrl-c"
-      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_traite2srinstrum_w) -command "::param_spc_audace_traite2srinstrum::run" -underline 0 -accelerator "Ctrl-a"
-      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_pipelines_space)
-      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_traite2scalibre_w) -command "::param_spc_audace_traite2scalibre::run" -underline 0 -accelerator "Ctrl-t-c"
-      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_pipelines_space)
-      # .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_traitesimple2calibre_w) -command "::param_spc_audace_traitesimple2calibre::run" -underline 0 -accelerator "Ctrl-0"
-      # .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_traitesimple2rinstrum_w) -command "::param_spc_audace_traitesimple2rinstrum::run" -underline 0 -accelerator "Ctrl-1"
-      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_geom2calibre_w) -command "::param_spc_audace_geom2calibre::run" -underline 0 -accelerator "Ctrl-g-c"
-      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_geom2rinstrum_w) -command "::param_spc_audace_geom2rinstrum::run" -underline 0 -accelerator "Ctrl-g-a"
+      #.spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_pipelines_space)
+      #.spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_lampe2calibre_w) -command "::param_spc_audace_lampe2calibre::run" -underline 0 -accelerator "Ctrl-c"
+      #.spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_traite2srinstrum_w) -command "::param_spc_audace_traite2srinstrum::run" -underline 0 -accelerator "Ctrl-a"
+      #.spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_pipelines_space)
+      #.spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_traite2scalibre_w) -command "::param_spc_audace_traite2scalibre::run" -underline 0 -accelerator "Ctrl-t-c"
+      #.spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_pipelines_space)
+      ## .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_traitesimple2calibre_w) -command "::param_spc_audace_traitesimple2calibre::run" -underline 0 -accelerator "Ctrl-0"
+      ## .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_traitesimple2rinstrum_w) -command "::param_spc_audace_traitesimple2rinstrum::run" -underline 0 -accelerator "Ctrl-1"
+      #.spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_geom2calibre_w) -command "::param_spc_audace_geom2calibre::run" -underline 0 -accelerator "Ctrl-g-c"
+      #.spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_geom2rinstrum_w) -command "::param_spc_audace_geom2rinstrum::run" -underline 0 -accelerator "Ctrl-g-a"
       #.spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_pipelines_space)
       #.spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_specLhIII_w) -command "::spbmfc::fenetreSpData" -underline 0 -accelerator "Ctrl-8"
       .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_pipelines_space)
-      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_anim_w) -command "spc_anim_w" -underline 0
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_cmd) -command "bm_cmd" -underline 0
       .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_pipelines_space)
       .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_sommeadd_w) -command "spc_sommeadd_w" -underline 0
       .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_sommekappa_w) -command "spc_sommekappa_w" -underline 0
@@ -252,9 +255,9 @@ proc spc_winini { } {
 
       .spc configure -menu .spc.menuBar
       #-- Raccourcis calviers :
-      #bind .spc <Control-i> ::param_spc_audace_traite2rinstrum::run
+      #bind .spc <Control-i> ::param_spc_audace_traite2srinstrum::run
       #bind .spc <Control-v> ::param_spc_audace_lampe2calibre::run
-      bind .spc <Control-a> ::param_spc_audace_traite2srinstrum::run
+      bind .spc <Control-r> ::param_spc_audace_traite2rinstrum::run
       bind .spc <Control-s> ::param_spc_audace_traitestellaire::run
       bind .spc <Control-n> ::param_spc_audace_traitenebula::run
       #bind .spc <Control-t-c> ::param_spc_audace_traite2scalibre::run

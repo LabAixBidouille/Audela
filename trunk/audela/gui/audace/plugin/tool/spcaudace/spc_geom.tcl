@@ -630,7 +630,9 @@ proc spc_tiltauto { args } {
 
        #-- Effectue la rotation d'angle "angle" et de centre=centre moyen de l'epaisseur du spectre :
        #- Angles>0 vers le haut de l'image
-       set pente [ expr -($y2-$y1)/($x2-$x1) ]
+       # set pente [ expr -($y2-$y1)/($x2-$x1) ]
+       # Le 2012-04-15 : - -> +
+       set pente [ expr ($y2-$y1)/($x2-$x1) ]
        set angle [ expr 180/$pi*atan($pente) ]
        ## Si l'angle est supérieur a 6°, l'angle calculé ne correspond pas à la réalité de l'inclinaison du spectre
        if { [ expr abs($angle) ] < $spcaudace(tilt_limit) } {
@@ -922,6 +924,7 @@ proc spc_smilex { args } {
 		    ##set wincoords [ list $xdeb 1 $xfin $naxis2 ]
 		    #set wincoords [ list $xdeb $ydeb $xfin $yfin ]
 		    buf$audace(bufNo) window $wincoords
+                    #buf$audace(bufNo) save "$audace(rep_images)/${filenamespc}_zonegeom$conf(extension,defaut)"
                     set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
                     set naxis2 [ lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1 ]
 		    #-- Suppression de la zone selectionnee avec la souris
@@ -929,7 +932,7 @@ proc spc_smilex { args } {
 		} else {
 		    ::console::affiche_erreur "Usage: Select zone with mouse\n\n"
 		}
-	    } elseif { $flagmanuel == "n"} {
+	    } elseif { $flagmanuel=="n" } {
                #------------------------------------------------------------------------#
                #-- Détermination de la largeur pour l'encadrement de la raie centrale :
                set linemesure [ spc_linewidth $filenamespc ]
@@ -1000,9 +1003,16 @@ proc spc_smilex { args } {
 	    }
 	} else {
 	    ::console::affiche_resultat "La seule déformation horizontale est du slant...\n"
-	    set results [ spc_autoslant $filenamespc ]
+           if { $flagmanuel=="o" } {
+              #set results [ spc_autoslant "${filenamespc}_zonegeom" ]
+              #set results [ spc_slant2img "${filenamespc}_zonegeom" "$filenamespc" ]
+              set results [ spc_slant "$filenamespc" e ]
+           } else {
+              set results [ spc_autoslant "$filenamespc" ]
+           }
 	    return $results
 	}
+       #file delete -force "$audace(rep_images)/${filenamespc}_zonegeom$conf(extension,defaut)"
     } else {
 	# ::console::affiche_erreur "Usage: spc_smilex spectre_lampe_calibration xdeb ydeb xfin yfin\n\n"
 	::console::affiche_erreur "Usage: spc_smilex spectre_lampe_calibration ?sélection_manuelle (o/n)?\n\n"

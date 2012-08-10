@@ -10,6 +10,23 @@
 
 
 ########################################################################
+# Interface pour l'appel de la fonction spc_buildhtml
+#
+# Auteurs : Benjamin Mauclaire
+# Date de création : 07-08-2012
+# Date de modification : 07-08-2012
+########################################################################
+
+proc spc_buildhtml_w {} {
+
+   global audace
+
+   spc_buildhtml
+}
+#**********************************************************************#
+
+
+########################################################################
 # PAsser en basse resolution
 #
 # Auteurs : Benjamin Mauclaire

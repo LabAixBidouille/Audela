@@ -58,6 +58,8 @@ set caption(spcaudace,gui,spc_dat2fits_w)                   "Export DAT profil t
 set caption(spcaudace,gui,spc_spc2fits_w)                   "Export SPC profil to FITS"
 set caption(spcaudace,gui,spc_spcs2fits_w)                  "Export an entire directory of SPC profils to FITS"
 set caption(spcaudace,gui,spc_bessmodule_w)                 "Export a profil to BeSS's format"
+set caption(spcaudace,gui,spc_anim_w)                       "Make an animation of a whole of spectra"
+set caption(spcaudace,gui,spc_buildhtml_w)                  "Make a webpage with spectra thumbnails"
 
 #--- Menu Géométrie ---#
 set caption(spcaudace,gui,spc_geometrie)                    "Geometry"
@@ -144,9 +146,9 @@ set caption(spcaudace,gui,spc_geom2rinstrum_w)              "Geometrics correcti
 set caption(spcaudace,gui,spc_specLhIII_w)                  "LhiresIII spectral preprocessing (empty)"
 set caption(spcaudace,gui,spc_sommeadd_w)                   "Set summ to simple summ"
 set caption(spcaudace,gui,spc_sommekappa_w)                 "Set summ to sigma-kappa summ"
-set caption(spcaudace,gui,spc_anim_w)                       "Make an animation of a whole of spectra"
 set caption(spcaudace,gui,spc_br_w)                         "Activate low resolution mode"
 set caption(spcaudace,gui,spc_hr_w)                         "Activate high resolution mode"
+set caption(spcaudace,gui,spc_cmd)                          "Apply a command to all files present in working directory"
 
 #--- Menu Astrophysique ---#
 set caption(spcaudace,gui,spc_analyse)                      "Astrophysic"
@@ -179,6 +181,8 @@ set caption(spcaudace,gui,spc_help)                         "SpcAudACE's funtion
 set caption(spcaudace,gui,spc_site)                         "SpcAudACE's webpage"
 set caption(spcaudace,gui,spc_about_w)                      "Author: Benjamin MAUCLAIRE"
 set caption(spcaudace,gui,spc_contrib_w)                    "Contributors: $spcaudace(contribs)."
+
+
 
 # *************** Version française ***************************
 if { [string compare $langage "french"] == "0" } {
@@ -230,6 +234,8 @@ if { [string compare $langage "french"] == "0" } {
    set caption(spcaudace,gui,spc_spc2fits_w)                "Conversion de profil SPC vers FITS"
    set caption(spcaudace,gui,spc_spcs2fits_w)               "Conversion d'un répertoire de profils SPC vers FITS"
    set caption(spcaudace,gui,spc_bessmodule_w)              "Export de fichier au format base BeSS"
+   set caption(spcaudace,gui,spc_anim_w)                    "Fabrique une animation d'une série de spectres"
+   set caption(spcaudace,gui,spc_buildhtml_w)               "Fabrique une page web avec les imagettes des spectres"
 
    #--- Menu Géométrie ---#
    set caption(spcaudace,gui,spc_geometrie)                 "Géométrie"
@@ -317,9 +323,9 @@ if { [string compare $langage "french"] == "0" } {
    set caption(spcaudace,gui,spc_specLhIII_w)               "Réduction des spectres Lhires III (vide)"
    set caption(spcaudace,gui,spc_sommeadd_w)                "Paramètre l'addition de spectres en somme simple"
    set caption(spcaudace,gui,spc_sommekappa_w)              "Paramètre l'addition de spectres en somme kappa-sigma"
-   set caption(spcaudace,gui,spc_anim_w)                    "Fabrique une animation d'une série de spectres"
    set caption(spcaudace,gui,spc_br_w)                      "Activer le mode basse résolution"
    set caption(spcaudace,gui,spc_hr_w)                      "Activer le mode haute résolution"
+   set caption(spcaudace,gui,spc_cmd)                       "Applique une commande à l'ensemble des fichiers du répertoire de travail"
 
    #--- Menu Astrophysique ---#
    set caption(spcaudace,gui,spc_analyse)                   "Astrophysique"

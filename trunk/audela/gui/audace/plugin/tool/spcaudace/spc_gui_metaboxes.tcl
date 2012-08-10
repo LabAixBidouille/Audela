@@ -3249,6 +3249,8 @@ namespace eval ::param_spc_audace_traite2rinstrum {
       set liste_smooth [ list "o" "n" ]
       set liste_on [ list "o" "n" ]
 
+      set liste_noms_generiques [ spc_nomsgeneriques ]
+
       if { [ string length [ info commands .param_spc_audace_traite2rinstrum.* ] ] != "0" } {
          destroy .param_spc_audace_traite2rinstrum
       }
@@ -3258,7 +3260,7 @@ namespace eval ::param_spc_audace_traite2rinstrum {
       set audace(param_spc_audace,traite2rinstrum,config,methreg) "spc"
       set audace(param_spc_audace,traite2rinstrum,config,methsel) "serre"
       set audace(param_spc_audace,traite2rinstrum,config,methsky) "med"
-      set audace(param_spc_audace,traite2rinstrum,config,methbin) "rober"
+      set audace(param_spc_audace,traite2rinstrum,config,methbin) "horne"
       set audace(param_spc_audace,traite2rinstrum,config,methinv) "n"
       set audace(param_spc_audace,traite2rinstrum,config,methcos) "n"
       set audace(param_spc_audace,traite2rinstrum,config,smooth) "n"
@@ -3326,12 +3328,26 @@ namespace eval ::param_spc_audace_traite2rinstrum {
 	      -text "$caption(spcaudace,metaboxes,traite2rinstrum,config,brut) " -bg $audace(param_spc_audace,traite2rinstrum,color,backpad) \
 	      -fg $audace(param_spc_audace,traite2rinstrum,color,textkey) -relief flat
       pack  .param_spc_audace_traite2rinstrum.brut.label -in .param_spc_audace_traite2rinstrum.brut -side left -fill none
+      if { 1==0 } {
       entry  .param_spc_audace_traite2rinstrum.brut.entry  \
 	      -font $audace(param_spc_audace,traite2rinstrum,font,c12b) \
 	      -textvariable audace(param_spc_audace,traite2rinstrum,config,brut) -bg $audace(param_spc_audace,traite2rinstrum,color,backdisp) \
 	      -fg $audace(param_spc_audace,traite2rinstrum,color,textdisp) -relief flat -width 70
       pack  .param_spc_audace_traite2rinstrum.brut.entry -in .param_spc_audace_traite2rinstrum.brut -side left -fill none
       pack .param_spc_audace_traite2rinstrum.brut -in .param_spc_audace_traite2rinstrum -fill none -pady 1 -padx 12
+      }
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_traite2rinstrum.brut.combobox \
+         -width 25         \
+         -height [ llength $liste_noms_generiques ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,traite2rinstrum,config,brut) \
+         -font $audace(param_spc_audace,traite2rinstrum,font,c12b) \
+         -values $liste_noms_generiques
+      pack  .param_spc_audace_traite2rinstrum.brut.combobox -in .param_spc_audace_traite2rinstrum.brut -side right -fill none
+      pack .param_spc_audace_traite2rinstrum.brut -in .param_spc_audace_traite2rinstrum -fill x -pady 1 -padx 12
 
       #--- Label + Entry pour noir
       frame .param_spc_audace_traite2rinstrum.noir -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traite2rinstrum,color,backpad)
@@ -3340,12 +3356,26 @@ namespace eval ::param_spc_audace_traite2rinstrum {
 	      -text "$caption(spcaudace,metaboxes,traite2rinstrum,config,noir) " -bg $audace(param_spc_audace,traite2rinstrum,color,backpad) \
 	      -fg $audace(param_spc_audace,traite2rinstrum,color,textkey) -relief flat
       pack  .param_spc_audace_traite2rinstrum.noir.label -in .param_spc_audace_traite2rinstrum.noir -side left -fill none
+      if { 1==0 } {
       entry  .param_spc_audace_traite2rinstrum.noir.entry  \
 	      -font $audace(param_spc_audace,traite2rinstrum,font,c12b) \
 	      -textvariable audace(param_spc_audace,traite2rinstrum,config,noir) -bg $audace(param_spc_audace,traite2rinstrum,color,backdisp) \
 	      -fg $audace(param_spc_audace,traite2rinstrum,color,textdisp) -relief flat -width 70
       pack  .param_spc_audace_traite2rinstrum.noir.entry -in .param_spc_audace_traite2rinstrum.noir -side left -fill none
       pack .param_spc_audace_traite2rinstrum.noir -in .param_spc_audace_traite2rinstrum -fill none -pady 1 -padx 12
+      }
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_traite2rinstrum.noir.combobox \
+         -width 25         \
+         -height [ llength $liste_noms_generiques ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,traite2rinstrum,config,noir) \
+         -font $audace(param_spc_audace,traite2rinstrum,font,c12b) \
+         -values $liste_noms_generiques
+      pack  .param_spc_audace_traite2rinstrum.noir.combobox -in .param_spc_audace_traite2rinstrum.noir -side right -fill none
+      pack .param_spc_audace_traite2rinstrum.noir -in .param_spc_audace_traite2rinstrum -fill x -pady 1 -padx 12
 
 
       #--- Label + Entry pour plu
@@ -3355,12 +3385,26 @@ namespace eval ::param_spc_audace_traite2rinstrum {
 	      -text "$caption(spcaudace,metaboxes,traite2rinstrum,config,plu) " -bg $audace(param_spc_audace,traite2rinstrum,color,backpad) \
 	      -fg $audace(param_spc_audace,traite2rinstrum,color,textkey) -relief flat
       pack  .param_spc_audace_traite2rinstrum.plu.label -in .param_spc_audace_traite2rinstrum.plu -side left -fill none
+      if { 1==0 } {
       entry  .param_spc_audace_traite2rinstrum.plu.entry  \
 	      -font $audace(param_spc_audace,traite2rinstrum,font,c12b) \
 	      -textvariable audace(param_spc_audace,traite2rinstrum,config,plu) -bg $audace(param_spc_audace,traite2rinstrum,color,backdisp) \
 	      -fg $audace(param_spc_audace,traite2rinstrum,color,textdisp) -relief flat -width 70
       pack  .param_spc_audace_traite2rinstrum.plu.entry -in .param_spc_audace_traite2rinstrum.plu -side left -fill none
       pack .param_spc_audace_traite2rinstrum.plu -in .param_spc_audace_traite2rinstrum -fill none -pady 1 -padx 12
+      }
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_traite2rinstrum.plu.combobox \
+         -width 25         \
+         -height [ llength $liste_noms_generiques ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,traite2rinstrum,config,plu) \
+         -font $audace(param_spc_audace,traite2rinstrum,font,c12b) \
+         -values $liste_noms_generiques
+      pack  .param_spc_audace_traite2rinstrum.plu.combobox -in .param_spc_audace_traite2rinstrum.plu -side right -fill none
+      pack .param_spc_audace_traite2rinstrum.plu -in .param_spc_audace_traite2rinstrum -fill x -pady 1 -padx 12
 
 
       #--- Label + Entry pour noirplu
@@ -3370,12 +3414,26 @@ namespace eval ::param_spc_audace_traite2rinstrum {
 	      -text "$caption(spcaudace,metaboxes,traite2rinstrum,config,noirplu) " -bg $audace(param_spc_audace,traite2rinstrum,color,backpad) \
 	      -fg $audace(param_spc_audace,traite2rinstrum,color,textkey) -relief flat
       pack  .param_spc_audace_traite2rinstrum.noirplu.label -in .param_spc_audace_traite2rinstrum.noirplu -side left -fill none
+      if { 1==0 } {
       entry  .param_spc_audace_traite2rinstrum.noirplu.entry  \
 	      -font $audace(param_spc_audace,traite2rinstrum,font,c12b) \
 	      -textvariable audace(param_spc_audace,traite2rinstrum,config,noirplu) -bg $audace(param_spc_audace,traite2rinstrum,color,backdisp) \
 	      -fg $audace(param_spc_audace,traite2rinstrum,color,textdisp) -relief flat -width 70
       pack  .param_spc_audace_traite2rinstrum.noirplu.entry -in .param_spc_audace_traite2rinstrum.noirplu -side left -fill none
       pack .param_spc_audace_traite2rinstrum.noirplu -in .param_spc_audace_traite2rinstrum -fill none -pady 1 -padx 12
+      }
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_traite2rinstrum.noirplu.combobox \
+         -width 25         \
+         -height [ llength $liste_noms_generiques ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,traite2rinstrum,config,noirplu) \
+         -font $audace(param_spc_audace,traite2rinstrum,font,c12b) \
+         -values $liste_noms_generiques
+      pack  .param_spc_audace_traite2rinstrum.noirplu.combobox -in .param_spc_audace_traite2rinstrum.noirplu -side right -fill none
+      pack .param_spc_audace_traite2rinstrum.noirplu -in .param_spc_audace_traite2rinstrum -fill x -pady 1 -padx 12
 
 
       #--- Label + Entry pour offset
@@ -3385,12 +3443,26 @@ namespace eval ::param_spc_audace_traite2rinstrum {
 	      -text "$caption(spcaudace,metaboxes,traite2rinstrum,config,offset) " -bg $audace(param_spc_audace,traite2rinstrum,color,backpad) \
 	      -fg $audace(param_spc_audace,traite2rinstrum,color,textkey) -relief flat
       pack  .param_spc_audace_traite2rinstrum.offset.label -in .param_spc_audace_traite2rinstrum.offset -side left -fill none
+      if { 1==0 } {
       entry  .param_spc_audace_traite2rinstrum.offset.entry  \
 	      -font $audace(param_spc_audace,traite2rinstrum,font,c12b) \
 	      -textvariable audace(param_spc_audace,traite2rinstrum,config,offset) -bg $audace(param_spc_audace,traite2rinstrum,color,backdisp) \
 	      -fg $audace(param_spc_audace,traite2rinstrum,color,textdisp) -relief flat -width 70
       pack  .param_spc_audace_traite2rinstrum.offset.entry -in .param_spc_audace_traite2rinstrum.offset -side left -fill none
       pack .param_spc_audace_traite2rinstrum.offset -in .param_spc_audace_traite2rinstrum -fill none -pady 1 -padx 12
+      }
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_traite2rinstrum.offset.combobox \
+         -width 25         \
+         -height [ llength $liste_noms_generiques ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,traite2rinstrum,config,offset) \
+         -font $audace(param_spc_audace,traite2rinstrum,font,c12b) \
+         -values $liste_noms_generiques
+      pack  .param_spc_audace_traite2rinstrum.offset.combobox -in .param_spc_audace_traite2rinstrum.offset -side right -fill none
+      pack .param_spc_audace_traite2rinstrum.offset -in .param_spc_audace_traite2rinstrum -fill x -pady 1 -padx 12
 
 
       #--- Label + Entry pour lampe
@@ -4376,6 +4448,8 @@ namespace eval ::param_spc_audace_traitestellaire {
       set liste_norma [ list "o" "e" "a" "r" "n" ]
       set liste_on [ list "o" "n" ]
 
+      set liste_noms_generiques [ spc_nomsgeneriques ]
+
       if { [ string length [ info commands .param_spc_audace_traitestellaire.* ] ] != "0" } {
          destroy .param_spc_audace_traitestellaire
       }
@@ -4394,7 +4468,7 @@ namespace eval ::param_spc_audace_traitestellaire {
       # === Initialisation des variables qui seront changées
       #- set audace(param_spc_audace,traitestellaire,config,rinstrum) "none"
       set audace(param_spc_audace,traitestellaire,config,methinv) "n"
-      set audace(param_spc_audace,traitestellaire,config,methraie) "n"
+      set audace(param_spc_audace,traitestellaire,config,methraie) "o"
       set audace(param_spc_audace,traitestellaire,config,methcos) "n"
       # n
       set audace(param_spc_audace,traitestellaire,config,norma) "r"
@@ -4482,12 +4556,32 @@ namespace eval ::param_spc_audace_traitestellaire {
 	      -text "$caption(spcaudace,metaboxes,traitestellaire,config,brut) " -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
 	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief flat
       pack  .param_spc_audace_traitestellaire.brut.label -in .param_spc_audace_traitestellaire.brut -side left -fill none
+      if { 1==0 } {
+      button .param_spc_audace_traitestellaire.brut.explore -text "$caption(spcaudace,gui,parcourir)" -width 1 \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief raised \
+	      -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
+	      -command { set audace(param_spc_audace,traitestellaire,config,brut) [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] }
+      pack .param_spc_audace_traitestellaire.brut.explore -side left -padx 7 -pady 3 -ipady 0
       entry  .param_spc_audace_traitestellaire.brut.entry  \
 	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
 	      -textvariable audace(param_spc_audace,traitestellaire,config,brut) -bg $audace(param_spc_audace,traitestellaire,color,backdisp) \
 	      -fg $audace(param_spc_audace,traitestellaire,color,textdisp) -relief flat -width 70
       pack  .param_spc_audace_traitestellaire.brut.entry -in .param_spc_audace_traitestellaire.brut -side left -fill none
-      pack .param_spc_audace_traitestellaire.brut -in .param_spc_audace_traitestellaire -fill none -pady 1 -padx 12
+      }
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_traitestellaire.brut.combobox \
+         -width 25         \
+         -height [ llength $liste_noms_generiques ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,traitestellaire,config,brut) \
+         -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+         -values $liste_noms_generiques
+      pack  .param_spc_audace_traitestellaire.brut.combobox -in .param_spc_audace_traitestellaire.brut -side right -fill none
+      pack .param_spc_audace_traitestellaire.brut -in .param_spc_audace_traitestellaire -fill x -pady 1 -padx 12
+
 
       #--- Label + Entry pour noir
       frame .param_spc_audace_traitestellaire.noir -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitestellaire,color,backpad)
@@ -4496,12 +4590,33 @@ namespace eval ::param_spc_audace_traitestellaire {
 	      -text "$caption(spcaudace,metaboxes,traitestellaire,config,noir) " -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
 	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief flat
       pack  .param_spc_audace_traitestellaire.noir.label -in .param_spc_audace_traitestellaire.noir -side left -fill none
+      if { 1==0 } {
+      button .param_spc_audace_traitestellaire.noir.explore -text "$caption(spcaudace,gui,parcourir)" -width 1 \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief raised \
+	      -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
+	      -command { set audace(param_spc_audace,traitestellaire,config,noir) [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] }
+      pack .param_spc_audace_traitestellaire.noir.explore -side left -padx 7 -pady 3 -ipady 0
+
       entry  .param_spc_audace_traitestellaire.noir.entry  \
 	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
 	      -textvariable audace(param_spc_audace,traitestellaire,config,noir) -bg $audace(param_spc_audace,traitestellaire,color,backdisp) \
 	      -fg $audace(param_spc_audace,traitestellaire,color,textdisp) -relief flat -width 70
       pack  .param_spc_audace_traitestellaire.noir.entry -in .param_spc_audace_traitestellaire.noir -side left -fill none
-      pack .param_spc_audace_traitestellaire.noir -in .param_spc_audace_traitestellaire -fill none -pady 1 -padx 12
+      }
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_traitestellaire.noir.combobox \
+         -width 25         \
+         -height [ llength $liste_noms_generiques ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,traitestellaire,config,noir) \
+         -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+         -values $liste_noms_generiques
+      pack  .param_spc_audace_traitestellaire.noir.combobox -in .param_spc_audace_traitestellaire.noir -side right -fill none
+
+      pack .param_spc_audace_traitestellaire.noir -in .param_spc_audace_traitestellaire -fill x -pady 1 -padx 12
 
 
       #--- Label + Entry pour plu
@@ -4511,12 +4626,33 @@ namespace eval ::param_spc_audace_traitestellaire {
 	      -text "$caption(spcaudace,metaboxes,traitestellaire,config,plu) " -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
 	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief flat
       pack  .param_spc_audace_traitestellaire.plu.label -in .param_spc_audace_traitestellaire.plu -side left -fill none
+      if { 1==0 } {
+      button .param_spc_audace_traitestellaire.plu.explore -text "$caption(spcaudace,gui,parcourir)" -width 1 \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief raised \
+	      -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
+	      -command { set audace(param_spc_audace,traitestellaire,config,plu) [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] }
+      pack .param_spc_audace_traitestellaire.plu.explore -side left -padx 7 -pady 3 -ipady 0
+
       entry  .param_spc_audace_traitestellaire.plu.entry  \
 	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
 	      -textvariable audace(param_spc_audace,traitestellaire,config,plu) -bg $audace(param_spc_audace,traitestellaire,color,backdisp) \
 	      -fg $audace(param_spc_audace,traitestellaire,color,textdisp) -relief flat -width 70
       pack  .param_spc_audace_traitestellaire.plu.entry -in .param_spc_audace_traitestellaire.plu -side left -fill none
-      pack .param_spc_audace_traitestellaire.plu -in .param_spc_audace_traitestellaire -fill none -pady 1 -padx 12
+      }
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_traitestellaire.plu.combobox \
+         -width 25         \
+         -height [ llength $liste_noms_generiques ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,traitestellaire,config,plu) \
+         -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+         -values $liste_noms_generiques
+      pack  .param_spc_audace_traitestellaire.plu.combobox -in .param_spc_audace_traitestellaire.plu -side right -fill none
+
+      pack .param_spc_audace_traitestellaire.plu -in .param_spc_audace_traitestellaire -fill x -pady 1 -padx 12
 
 
       #--- Label + Entry pour noirplu
@@ -4526,12 +4662,31 @@ namespace eval ::param_spc_audace_traitestellaire {
 	      -text "$caption(spcaudace,metaboxes,traitestellaire,config,noirplu) " -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
 	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief flat
       pack  .param_spc_audace_traitestellaire.noirplu.label -in .param_spc_audace_traitestellaire.noirplu -side left -fill none
+      if { 1==0 } {
+      button .param_spc_audace_traitestellaire.noirplu.explore -text "$caption(spcaudace,gui,parcourir)" -width 1 \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief raised \
+	      -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
+	      -command { set audace(param_spc_audace,traitestellaire,config,noirplu) [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] }
+      pack .param_spc_audace_traitestellaire.noirplu.explore -side left -padx 7 -pady 3 -ipady 0
       entry  .param_spc_audace_traitestellaire.noirplu.entry  \
 	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
 	      -textvariable audace(param_spc_audace,traitestellaire,config,noirplu) -bg $audace(param_spc_audace,traitestellaire,color,backdisp) \
 	      -fg $audace(param_spc_audace,traitestellaire,color,textdisp) -relief flat -width 70
       pack  .param_spc_audace_traitestellaire.noirplu.entry -in .param_spc_audace_traitestellaire.noirplu -side left -fill none
-      pack .param_spc_audace_traitestellaire.noirplu -in .param_spc_audace_traitestellaire -fill none -pady 1 -padx 12
+      }
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_traitestellaire.noirplu.combobox \
+         -width 25         \
+         -height [ llength $liste_noms_generiques ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,traitestellaire,config,noirplu) \
+         -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+         -values $liste_noms_generiques
+      pack  .param_spc_audace_traitestellaire.noirplu.combobox -in .param_spc_audace_traitestellaire.noirplu -side right -fill none
+      pack .param_spc_audace_traitestellaire.noirplu -in .param_spc_audace_traitestellaire -fill x -pady 1 -padx 12
 
 
       #--- Label + Entry pour offset
@@ -4541,14 +4696,33 @@ namespace eval ::param_spc_audace_traitestellaire {
 	      -text "$caption(spcaudace,metaboxes,traitestellaire,config,offset) " -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
 	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief flat
       pack  .param_spc_audace_traitestellaire.offset.label -in .param_spc_audace_traitestellaire.offset -side left -fill none
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_traitestellaire.offset.combobox \
+         -width 25         \
+         -height [ llength $liste_noms_generiques ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,traitestellaire,config,offset) \
+         -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+         -values $liste_noms_generiques
+      pack  .param_spc_audace_traitestellaire.offset.combobox -in .param_spc_audace_traitestellaire.offset -side right -fill none
+      if { 1==0 } {
+      button .param_spc_audace_traitestellaire.offset.explore -text "$caption(spcaudace,gui,parcourir)" -width 1 \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief raised \
+	      -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
+	      -command { set audace(param_spc_audace,traitestellaire,config,offset) [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] }
+      pack .param_spc_audace_traitestellaire.offset.explore -side left -padx 7 -pady 3 -ipady 0
+
       entry  .param_spc_audace_traitestellaire.offset.entry  \
 	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
 	      -textvariable audace(param_spc_audace,traitestellaire,config,offset) -bg $audace(param_spc_audace,traitestellaire,color,backdisp) \
 	      -fg $audace(param_spc_audace,traitestellaire,color,textdisp) -relief flat -width 70
       pack  .param_spc_audace_traitestellaire.offset.entry -in .param_spc_audace_traitestellaire.offset -side left -fill none
-      pack .param_spc_audace_traitestellaire.offset -in .param_spc_audace_traitestellaire -fill none -pady 1 -padx 12
-
-
+      }
+      #pack .param_spc_audace_traitestellaire.offset -in .param_spc_audace_traitestellaire -fill none -pady 1 -padx 12
+      pack .param_spc_audace_traitestellaire.offset -in .param_spc_audace_traitestellaire -fill x -pady 1 -padx 12
 
       #--- Label + Entry pour rinstrum
       frame .param_spc_audace_traitestellaire.rinstrum -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitestellaire,color,backpad)
@@ -4855,6 +5029,8 @@ namespace eval ::param_spc_audace_traitenebula {
       set liste_smooth [ list "o" "n" ]
       set liste_on [ list "o" "n" ]
 
+      set liste_noms_generiques [ spc_nomsgeneriques ]
+
       if { [ string length [ info commands .param_spc_audace_traitenebula.* ] ] != "0" } {
          destroy .param_spc_audace_traitenebula
       }
@@ -4867,14 +5043,14 @@ namespace eval ::param_spc_audace_traitenebula {
       # === Initialisation des variables qui seront changées
       #- set audace(param_spc_audace,traitenebula,config,rinstrum) "none"
       set audace(param_spc_audace,traitenebula,config,methinv) "n"
-      set audace(param_spc_audace,traitenebula,config,methraie) "n"
+      set audace(param_spc_audace,traitenebula,config,methraie) "o"
       set audace(param_spc_audace,traitenebula,config,methcos) "n"
       set audace(param_spc_audace,traitenebula,config,norma) "n"
       set audace(param_spc_audace,traitenebula,config,offset) "none"
       set audace(param_spc_audace,traitenebula,config,export_png) "n"
       set audace(param_spc_audace,traitenebula,config,methreg) "n"
       set audace(param_spc_audace,traitenebula,config,methsky) "med"
-      set audace(param_spc_audace,traitenebula,config,methbin) "rober"
+      set audace(param_spc_audace,traitenebula,config,methbin) "horne"
       set audace(param_spc_audace,traitenebula,config,smooth) "n"
       set audace(param_spc_audace,traitenebula,config,methmasters) "o"
       set audace(param_spc_audace,traitenebula,config,2lamps) "n"
@@ -4955,12 +5131,27 @@ namespace eval ::param_spc_audace_traitenebula {
 	      -text "$caption(spcaudace,metaboxes,traitenebula,config,brut) " -bg $audace(param_spc_audace,traitenebula,color,backpad) \
 	      -fg $audace(param_spc_audace,traitenebula,color,textkey) -relief flat
       pack  .param_spc_audace_traitenebula.brut.label -in .param_spc_audace_traitenebula.brut -side left -fill none
+      if { 1==0 } {
       entry  .param_spc_audace_traitenebula.brut.entry  \
 	      -font $audace(param_spc_audace,traitenebula,font,c12b) \
 	      -textvariable audace(param_spc_audace,traitenebula,config,brut) -bg $audace(param_spc_audace,traitenebula,color,backdisp) \
 	      -fg $audace(param_spc_audace,traitenebula,color,textdisp) -relief flat -width 70
       pack  .param_spc_audace_traitenebula.brut.entry -in .param_spc_audace_traitenebula.brut -side left -fill none
       pack .param_spc_audace_traitenebula.brut -in .param_spc_audace_traitenebula -fill none -pady 1 -padx 12
+      }
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_traitenebula.brut.combobox \
+         -width 25         \
+         -height [ llength $liste_noms_generiques ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,traitenebula,config,brut) \
+         -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+         -values $liste_noms_generiques
+      pack  .param_spc_audace_traitenebula.brut.combobox -in .param_spc_audace_traitenebula.brut -side right -fill none
+
+      pack .param_spc_audace_traitenebula.brut -in .param_spc_audace_traitenebula -fill x -pady 1 -padx 12
 
       #--- Label + Entry pour noir
       frame .param_spc_audace_traitenebula.noir -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitenebula,color,backpad)
@@ -4969,12 +5160,27 @@ namespace eval ::param_spc_audace_traitenebula {
 	      -text "$caption(spcaudace,metaboxes,traitenebula,config,noir) " -bg $audace(param_spc_audace,traitenebula,color,backpad) \
 	      -fg $audace(param_spc_audace,traitenebula,color,textkey) -relief flat
       pack  .param_spc_audace_traitenebula.noir.label -in .param_spc_audace_traitenebula.noir -side left -fill none
+      if { 1==0 } {
       entry  .param_spc_audace_traitenebula.noir.entry  \
 	      -font $audace(param_spc_audace,traitenebula,font,c12b) \
 	      -textvariable audace(param_spc_audace,traitenebula,config,noir) -bg $audace(param_spc_audace,traitenebula,color,backdisp) \
 	      -fg $audace(param_spc_audace,traitenebula,color,textdisp) -relief flat -width 70
       pack  .param_spc_audace_traitenebula.noir.entry -in .param_spc_audace_traitenebula.noir -side left -fill none
       pack .param_spc_audace_traitenebula.noir -in .param_spc_audace_traitenebula -fill none -pady 1 -padx 12
+      }
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_traitenebula.noir.combobox \
+         -width 25         \
+         -height [ llength $liste_noms_generiques ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,traitenebula,config,noir) \
+         -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+         -values $liste_noms_generiques
+      pack  .param_spc_audace_traitenebula.noir.combobox -in .param_spc_audace_traitenebula.noir -side right -fill none
+
+      pack .param_spc_audace_traitenebula.noir -in .param_spc_audace_traitenebula -fill x -pady 1 -padx 12
 
 
       #--- Label + Entry pour plu
@@ -4984,12 +5190,27 @@ namespace eval ::param_spc_audace_traitenebula {
 	      -text "$caption(spcaudace,metaboxes,traitenebula,config,plu) " -bg $audace(param_spc_audace,traitenebula,color,backpad) \
 	      -fg $audace(param_spc_audace,traitenebula,color,textkey) -relief flat
       pack  .param_spc_audace_traitenebula.plu.label -in .param_spc_audace_traitenebula.plu -side left -fill none
+      if { 1==0 } {
       entry  .param_spc_audace_traitenebula.plu.entry  \
 	      -font $audace(param_spc_audace,traitenebula,font,c12b) \
 	      -textvariable audace(param_spc_audace,traitenebula,config,plu) -bg $audace(param_spc_audace,traitenebula,color,backdisp) \
 	      -fg $audace(param_spc_audace,traitenebula,color,textdisp) -relief flat -width 70
       pack  .param_spc_audace_traitenebula.plu.entry -in .param_spc_audace_traitenebula.plu -side left -fill none
       pack .param_spc_audace_traitenebula.plu -in .param_spc_audace_traitenebula -fill none -pady 1 -padx 12
+      }
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_traitenebula.plu.combobox \
+         -width 25         \
+         -height [ llength $liste_noms_generiques ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,traitenebula,config,plu) \
+         -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+         -values $liste_noms_generiques
+      pack  .param_spc_audace_traitenebula.plu.combobox -in .param_spc_audace_traitenebula.plu -side right -fill none
+
+      pack .param_spc_audace_traitenebula.plu -in .param_spc_audace_traitenebula -fill x -pady 1 -padx 12
 
 
       #--- Label + Entry pour noirplu
@@ -4999,12 +5220,27 @@ namespace eval ::param_spc_audace_traitenebula {
 	      -text "$caption(spcaudace,metaboxes,traitenebula,config,noirplu) " -bg $audace(param_spc_audace,traitenebula,color,backpad) \
 	      -fg $audace(param_spc_audace,traitenebula,color,textkey) -relief flat
       pack  .param_spc_audace_traitenebula.noirplu.label -in .param_spc_audace_traitenebula.noirplu -side left -fill none
+      if { 1==0 } {
       entry  .param_spc_audace_traitenebula.noirplu.entry  \
 	      -font $audace(param_spc_audace,traitenebula,font,c12b) \
 	      -textvariable audace(param_spc_audace,traitenebula,config,noirplu) -bg $audace(param_spc_audace,traitenebula,color,backdisp) \
 	      -fg $audace(param_spc_audace,traitenebula,color,textdisp) -relief flat -width 70
       pack  .param_spc_audace_traitenebula.noirplu.entry -in .param_spc_audace_traitenebula.noirplu -side left -fill none
       pack .param_spc_audace_traitenebula.noirplu -in .param_spc_audace_traitenebula -fill none -pady 1 -padx 12
+      }
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_traitenebula.noirplu.combobox \
+         -width 25         \
+         -height [ llength $liste_noms_generiques ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,traitenebula,config,noirplu) \
+         -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+         -values $liste_noms_generiques
+      pack  .param_spc_audace_traitenebula.noirplu.combobox -in .param_spc_audace_traitenebula.noirplu -side right -fill none
+
+      pack .param_spc_audace_traitenebula.noirplu -in .param_spc_audace_traitenebula -fill x -pady 1 -padx 12
 
 
       #--- Label + Entry pour offset
@@ -5014,12 +5250,27 @@ namespace eval ::param_spc_audace_traitenebula {
 	      -text "$caption(spcaudace,metaboxes,traitenebula,config,offset) " -bg $audace(param_spc_audace,traitenebula,color,backpad) \
 	      -fg $audace(param_spc_audace,traitenebula,color,textkey) -relief flat
       pack  .param_spc_audace_traitenebula.offset.label -in .param_spc_audace_traitenebula.offset -side left -fill none
+      if { 1==0 } {
       entry  .param_spc_audace_traitenebula.offset.entry  \
 	      -font $audace(param_spc_audace,traitenebula,font,c12b) \
 	      -textvariable audace(param_spc_audace,traitenebula,config,offset) -bg $audace(param_spc_audace,traitenebula,color,backdisp) \
 	      -fg $audace(param_spc_audace,traitenebula,color,textdisp) -relief flat -width 70
       pack  .param_spc_audace_traitenebula.offset.entry -in .param_spc_audace_traitenebula.offset -side left -fill none
       pack .param_spc_audace_traitenebula.offset -in .param_spc_audace_traitenebula -fill none -pady 1 -padx 12
+      }
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_traitenebula.offset.combobox \
+         -width 25         \
+         -height [ llength $liste_noms_generiques ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,traitenebula,config,offset) \
+         -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+         -values $liste_noms_generiques
+      pack  .param_spc_audace_traitenebula.offset.combobox -in .param_spc_audace_traitenebula.offset -side right -fill none
+
+      pack .param_spc_audace_traitenebula.offset -in .param_spc_audace_traitenebula -fill x -pady 1 -padx 12
 
 
 

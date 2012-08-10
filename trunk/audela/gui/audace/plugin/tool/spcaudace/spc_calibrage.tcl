@@ -1538,6 +1538,7 @@ proc spc_calibre { args } {
       spc_loadfit $profiletalon
 
        #--- Détection des raies dans le profil de raies de la lampe :
+       # set raies [ spc_findbiglines_pat $profiletalon e ]
        set raies [ spc_findbiglines $profiletalon e ]
        #foreach raie $raies {
         #   lappend listeabscisses [ lindex $raie 0 ]
