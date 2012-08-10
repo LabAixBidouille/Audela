@@ -51,7 +51,48 @@ proc grb_swift { args } {
    if {$methode=="update"} {
 
       file mkdir "$grbpath"
-      set url0 "http://heasarc.nasa.gov/docs/swift/archive/grb_table/tmp/grb_table_1341341521.txt"
+      set url0 "http://heasarc.nasa.gov/docs/swift/archive/grb_table/tmp/"
+      set lignes [grb_read_url_contents "$url0"]
+      set f [open ${grbpath}/files.txt w]
+      puts -nonewline $f $lignes
+      close $f
+      set f [open ${grbpath}/files.txt r]
+      set lignes [read $f]
+      close $f
+      set lignes [split $lignes \n]
+      set nl [llength $lignes]
+	   set fsizemax 0
+      for {set kl 8} {$kl<$nl} {incr kl} {
+         set ligne [lindex $lignes $kl]
+         set keyligne [lindex $ligne 4]
+	      set key "href=\""
+	      set k [string first $key $keyligne]
+	      if {$k>=0} {
+		      set keyligne [regsub -all \" $keyligne " "]
+		      set fname [lindex $keyligne 1]
+		      set fsize [lindex $ligne 7]		      
+		      set fsize [string trim [regsub -all K $fsize "000"]]
+		      if {$fsize>$fsizemax} { set fsizemax $fsize }
+				#::console::affiche_resultat "$fname $fsize $fsizemax\n"
+			}
+		}
+      for {set kl 8} {$kl<$nl} {incr kl} {
+         set ligne [lindex $lignes $kl]
+         set keyligne [lindex $ligne 4]
+	      set key "href=\""
+	      set k [string first $key $keyligne]
+	      if {$k>=0} {
+		      set keyligne [regsub -all \" $keyligne " "]
+		      set fname [lindex $keyligne 1]
+		      set fsize [lindex $ligne 7]		      
+		      set fsize [string trim [regsub -all K $fsize "000"]]
+		      if {$fsize==$fsizemax} { 
+					::console::affiche_resultat "$fname $fsize\n"
+					break
+		      }
+			}
+		}
+      set url0 "http://heasarc.nasa.gov/docs/swift/archive/grb_table/tmp/$fname"
       set lignes [grb_read_url_contents "$url0"]
       set f [open ${grbpath}/raw.txt w]
       puts -nonewline $f $lignes
@@ -595,190 +636,198 @@ proc grb_gcnc { args } {
    set t0 [clock seconds]
 
    set sats {\
-   {"ASM" "Beppo-SAX"} \
-   {"BAT" "Swift-BAT"} \
-   {"BATSE" "BATSE"} \
-   {"BEPPO" "Beppo-SAX"} \
-   {"CHANDRA" "Chandra"} \
-   {"FERMI" "Fermi"} \
-   {"FREGATE" "HETE-Fregate"} \
-   {"GRBM" "GRBM"} \
-   {"HERSCHEL" "Herschel"} \
-   {"HETE" "HETE"} \
-   {"IBAS" "Integral-IBAS"} \
-   {"INTEGRAL" "Integral"} \
-   {"IPN" "IPN"} \
-   {"KONUS" "KONUS-Wind"} \
-   {"KONUS-WIND" "KONUS-Wind"} \
-   {"MAXI" "MAXI-GSC"} \
-   {"NFI" "Beppo-SAX"} \
-   {"ROSAT" "ROSAT"} \
-   {"SAX" "Beppo-SAX"} \
-   {"SPITZER" "Spitzer"} \
-   {"SuperAGILE" "AGILE"} \
-   {"SUZAKU" "Suzaku"} \
-   {"SWIFT" "Swift"} \
-   {"TEST " ""} \
-   {"UVOT" "Swift-UVOT"} \
-   {"WAM" "Suzaku-WAM"} \
-   {"WIND" "KONUS-Wind"} \
-   {"XMM" "XMM-Newton"} \
-   {"XRT" "Swift-XRT"} \
-   {"XRTE" "XRTE"} \
+   {"ASM" "Beppo-SAX" 0} \
+   {"BAT" "Swift-BAT" 0} \
+   {"BATSE" "BATSE" 0} \
+   {"BEPPO" "Beppo-SAX" 0} \
+   {"CHANDRA" "Chandra" 0} \
+   {"FERMI" "Fermi" 0} \
+   {"FREGATE" "HETE-Fregate" 0} \
+   {"GRBM" "GRBM" 0} \
+   {"HERSCHEL" "Herschel" 0} \
+   {"HETE" "HETE" 0} \
+   {"IBAS" "Integral-IBAS" 0} \
+   {"INTEGRAL" "Integral" 0} \
+   {"IPN" "IPN" 0} \
+   {"KONUS" "KONUS-Wind" 0} \
+   {"KONUS-WIND" "KONUS-Wind" 0} \
+   {"MAXI" "MAXI-GSC" 0} \
+   {"NFI" "Beppo-SAX" 0} \
+   {"ROSAT" "ROSAT" 0} \
+   {"SAX" "Beppo-SAX" 0} \
+   {"SPITZER" "Spitzer" 0} \
+   {"SuperAGILE" "AGILE" 0} \
+   {"SUZAKU" "Suzaku" 0} \
+   {"SWIFT" "Swift" 0} \
+   {"TEST " "" 0} \
+   {"WAM" "Suzaku-WAM" 0} \
+   {"WIND" "KONUS-Wind" 0} \
+   {"XMM" "XMM-Newton" 0} \
+   {"XRT" "Swift-XRT" 0} \
+   {"XRTE" "XRTE" 0} \
    }
 
    set miscs {\
-   {"APEX" "APEX"} \
-   {"ATCA" "ATCA"} \
-   {"CORRECTION" ""} \
-   {"EVLA" "VLA"} \
-   {"IRAM" "IRAM"} \
-   {"MAMBO" "MAMBO"} \
-   {"MILAGRO" "MILAGRO"} \
-   {"PSEUDO" "Pseudo-redshift"} \
-   {"RHESSI" "RHESSI"} \
-   {"SDSS" "SDSS"} \
-   {"SMA" "SMA"} \
-   {"VLA" "VLA"} \
-   {"WSRT" "WSRT"} \
+   {"APEX" "APEX" -1} \
+   {"ATCA" "ATCA" -1} \
+   {"CARMA" "CARMA" -1} \
+   {"CORRECTION" "" -1} \
+   {"EVLA" "VLA" -1} \
+   {"IRAM" "IRAM" -1} \
+   {"JCMT" "JCMT" -1} \
+   {"MAMBO" "MAMBO" -1} \
+   {"MILAGRO" "MILAGRO" -1} \
+   {"RHESSI" "RHESSI" -1} \
+   {"SDSS" "SDSS" -1} \
+   {"SMA" "SMA" -1} \
+   {"VLA" "VLA" -1} \
+   {"WSRT" "WSRT" -1} \
    }
 
    set tels {\
-   {"ANU " "ANU_2.3m"} \
-   {"APO " "ARC_3.5m"} \
-   {" ARC " "ARC_3.5m"} \
-   {"AROMA" "AROMA"} \
-   {"ART-" "ART-3"} \
-   {"AZT-33IK" "AZT-33IK"} \
-   {"BART " "BART"} \
-   {"BOOTES" "BOOTES*"} \
-   {"BOOTES1A" "BOOTES1A"} \
-   {"BOOTES1B" "BOOTES1B"} \
-   {"BOOTES2" "BOOTES2"} \
-   {"BOOTES3" "BOOTES3"} \
-   {"BOOTES-3" "BOOTES3"} \
-   {"BTA" "BTA"} \
-   {"CASSINI" "CASSINI"} \
-   {"CAHA" "CAHA-1.23m"} \
-   {"CFHT" "CFHT"} \
-   {"CONCAM" "CONCAM"} \
-   {"CQUEAN" "McDonald-2.1m"} \
-   {"CRAO" "Shajn"} \
-   {"CRNI VRH" "PIKA"} \
-   {"D50" "D50"} \
-   {"DANISH" "ESO/Danish"} \
-   {"DANISH/DFOSC" "ESO/Danish"} \
-   {"DFOSC" "ESO/Danish"} \
-   {" EST " "EST"} \
-   {"FAULKES" "FT*"} \
-   {"FRAM " "FRAM"} \
-   {"FTN" "FTN"} \
-   {"FTS" "FTS"} \
-   {"GAO" "GAO"} \
-   {"GEMINI" "Gemini-*"} \
-   {"GETS " "GETS"} \
-   {"GMOS" "Gemini-*"} \
-   {"GMG" "GMG_240"} \
-   {"GORT " "GORT"} \
-   {"GROND" "GROND"} \
-   {"GTC" "GTC"} \
-   {"IAC " "IAC-80"} \
-   {"IAC80" "IAC-80"} \
-   {" INT " "INT"} \
-   {"ISAS " "ISAS"} \
-   {"K-380" "K-380"} \
-   {"KAIT" "KAIT"} \
-   {"KANAZAWA" "Kanazawa"} \
-   {"KECK" "Keck"} \
-   {"KISO" "Kiso"} \
-   {"KONKOLY" "Konkoly"} \
-   {"LCO" "LCO_40"} \
-   {"LICK OBSERV" "Lick_Shane"} \
-   {"LICK 3m" "Lick_Shane"} \
-   {"LIVERPOOL" "Liverpool"} \
-   {" LT " "Liverpool"} \
-   {"LNA" "LNA_60"} \
-   {" LOT " "LOT"} \
-   {"LOTIS" "*LOTIS"} \
-   {"LULIN" "LOT"} \
-   {"MAGELLAN" "Magellan"} \
-   {"MAGIC" "Magellan"} \
-   {"MAIDANAK" "Maidanak"} \
-   {"MARGE" "MARGE_AEOS"} \
-   {"MASCOT" "MASCOT"} \
-   {"MASTER" "MASTER"} \
-   {"MDM" "MDM_*"} \
-   {"MIKE " "Gemini-*"} \
-   {"MINITAO" "MiniTAO"} \
-   {"MIRO" "MIRO"} \
-   {"MITSUME" "MITSuME"} \
-   {"MIYAZAKI" "Miyazaki"} \
-   {"MONDY" "SAYAN-1.5m"} \
-   {" MOA " "MOA_61"} \
-   {"NAYUTA" "NAYUTA"} \
-   {" NOT " "NOT"} \
-   {"NTT" "NTT"} \
-   {"OHP" "OHP"} \
-   {"OPTIMA" "OPTIMA"} \
-   {" OSN " "OSN_150"} \
-   {"PAIRITEL" "PAIRITEL"} \
-   {"P200" "P200"} \
-   {"P60" "P60"} \
-   {"PIKA" "PIKA"} \
-   {"PI OF THE SKY" "PI-OF-THE-SKY"} \
-   {"PI-OF-THE-SKY" "PI-OF-THE-SKY"} \
-   {" PROMPT " "PROMPT"} \
-   {"RAPTOR" "RAPTOR"} \
-   {" REM " "REM"} \
-   {"ROTSE" "ROTSE"} \
-   {"RTT150" "RTT150"} \
-   {"SALT" "SALT"} \
-   {"SAO RAS" "SAO-1m"} \
-   {" SARA " "SARA"} \
-   {"SHAJN" "Shajn"} \
-   {"SHANE " "Lick_Shane"} \
-   {"SMARTS" "SMARTS_130"} \
-   {" SOAR " "SOAR"} \
-   {" SSO " "SSO_1m"} \
-   {"SUBARU" "Subaru"} \
-   {"TAROT" "TAROT"} \
-   {"TAUTENBURG" "Tautenburg"} \
-   {"TERSKOL" "Terskol_200"} \
-   {" THO " "THO"} \
-   {"TNG" "TNG"} \
-   {"TNT" "TNT"} \
-   {"TORTORA" "TORTORA"} \
-   {"TTT" "TTT"} \
-   {"UKIRT" "UKIRT"} \
-   {"VATICAN" "VATT"} \
-   {" VATT " "VATT"} \
-   {"VERY LARGE TELESCOPE" "VLT"} \
-   {"VLT" "VLT"} \
-   {"WATCHER" "Watcher"} \
-   {"WHT" "WHT"} \
-   {"WIDGET" "WIDGET"} \
-   {"WIYN" "WIYN"} \
-   {"XINGLONG" "TNT"} \
-   {"ZADKO" "Zadko"} \
+   {"ANU " "ANU_2.3m" 230} \
+   {"APO " "ARC_3.5m" 350} \
+   {" ARC " "ARC_3.5m" 350 } \
+   {"AROMA" "AROMA" 30} \
+   {"ART-" "ART-3" 35} \
+   {"AZT-33IK" "AZT-33IK" 150} \
+   {"BART " "BART" 25.4} \
+   {"BOOTES" "BOOTES*" 30} \
+   {"BOOTES1A" "BOOTES1A" 5} \
+   {"BOOTES1B" "BOOTES1B" 30} \
+   {"BOOTES2" "BOOTES2" 30} \
+   {"BOOTES3" "BOOTES3" 60} \
+   {"BOOTES-3" "BOOTES3" 60} \
+   {" BTA " "BTA" 600} \
+   {"CASSINI" "CASSINI" 152} \
+   {"CAHA" "CAHA-1.23m" 123} \
+   {"CFHT" "CFHT" 360} \
+   {"CONCAM" "CONCAM" 0.16} \
+   {"CQUEAN" "McDonald-2.1m" 210} \
+   {"CRAO" "Shajn" 260} \
+   {"CRNI VRH" "PIKA" 60} \
+   {"D50" "D50" 50} \
+   {"DANISH" "ESO/Danish" 154} \
+   {"DANISH/DFOSC" "ESO/Danish" 154} \
+   {"DFOSC" "ESO/Danish" 154} \
+   {" EST " "EST" 80} \
+   {"FAULKES" "FT*" 200} \
+   {"FRAM " "FRAM" 20} \
+   {"FTN" "FTN" 200} \
+   {"FTS" "FTS" 200} \
+   {"GAO" "GAO" 150} \
+   {"GEMINI" "Gemini-*" 810} \
+   {"GETS " "GETS" 25} \
+   {"GMOS" "Gemini-*" 810} \
+   {"GMG" "GMG_240" 240} \
+   {"GORT " "GORT" 35} \
+   {"GROND" "GROND" 220} \
+   {"GTC" "GTC" 1040} \
+   {"IAC " "IAC-80" 80} \
+   {"IAC80" "IAC-80" 80} \
+   {" INT " "INT" 250} \
+   {"ISAS " "ISAS" 130} \
+   {"K-380" "K-380" 380} \
+   {"KAIT" "KAIT" 76} \
+   {"KANAZAWA" "Kanazawa" 30} \
+   {"KECK" "Keck" 1000} \
+   {"KISO" "Kiso" 105} \
+   {"KONKOLY" "Konkoly" 90} \
+   {"LCO" "LCO_40" 100} \
+   {"LICK OBSERV" "Lick_Shane" 300} \
+   {"LICK 3m" "Lick_Shane" 300} \
+   {"LIVERPOOL" "Liverpool" 200} \
+   {" LT " "Liverpool" 200} \
+   {"LNA" "LNA_60" 60} \
+   {"LOAO" "LOAO" 100} \
+   {" LOT " "LOT" 100} \
+   {"LOTIS" "*LOTIS" 60} \
+   {"LULIN" "LOT" 100} \
+   {"MAGELLAN" "Magellan" 650} \
+   {"MAGIC" "Magellan" 650} \
+   {"MAIDANAK" "Maidanak" 150} \
+   {"MARGE" "MARGE_AEOS" 367} \
+   {"MASCOT" "MASCOT" 0.16} \
+   {"MASTER" "MASTER" 40} \
+   {"MDM" "MDM_*" 130} \
+   {"MIKE " "Gemini-*" 810} \
+   {"MINITAO" "MiniTAO" 100} \
+   {"MIRO" "MIRO" 120} \
+   {"MITSUME" "MITSuME" 50} \
+   {"MIYAZAKI" "Miyazaki" 30} \
+   {"MONDY" "SAYAN-1.5m" 150} \
+   {" MOA " "MOA_61" 61} \
+   {"NAYUTA" "NAYUTA" 200} \
+   {"NORDIC" "NOT" 256} \
+   {"NTT" "NTT" 358} \
+   {"OHP" "OHP" 80} \
+   {"OPTIMA" "OPTIMA" 130} \
+   {" OSN " "OSN_150" 150} \
+   {"PAIRITEL" "PAIRITEL" 130} \
+   {"P200" "P200" 510} \
+   {"P60" "P60" 150} \
+   {"PIKA" "PIKA" 60} \
+   {"PI OF THE SKY" "PI-OF-THE-SKY" 8.5} \
+   {"PI-OF-THE-SKY" "PI-OF-THE-SKY" 8.5} \
+   {"RAPTOR" "RAPTOR" 40} \
+   {" REM " "REM" 60} \
+   {"ROTSE" "ROTSE" 45} \
+   {"RTT150" "RTT150" 150} \
+   {"SALT" "SALT" 920} \
+   {"SAO RAS" "SAO-1m" 102} \
+   {" SARA " "SARA" 90} \
+   {"SHAJN" "Shajn" 260} \
+   {"SHANE " "Lick_Shane" 300} \
+   {"SMARTS" "SMARTS_130" 130} \
+   {" SOAR " "SOAR" 410} \
+   {" SSO " "SSO_1m" 100} \
+   {"SUBARU" "Subaru" 820} \
+   {"SKYNET/PROMPT " "PROMPT" 41} \
+   {"TAROT" "TAROT" 25} \
+   {"TAUTENBURG" "Tautenburg" 134} \
+   {"TERSKOL" "Terskol_200" 200} \
+   {" THO " "THO" 35} \
+   {"TNG" "TNG" 358} \
+   {"TNT" "TNT" 80} \
+   {"TORTORA" "TORTORA" 12} \
+   {"TTT" "TTT" 37} \
+   {"UKIRT" "UKIRT" 380} \
+   {"UVOT" "Swift-UVOT" 30} \
+   {"VATICAN" "VATT" 180} \
+   {" VATT " "VATT" 180} \
+   {"VERY LARGE TELESCOPE" "VLT" 820} \
+   {"VLT" "VLT" 820} \
+   {"WATCHER" "Watcher" 40} \
+   {"WHT" "WHT" 420} \
+   {"WIDGET" "WIDGET" 5} \
+   {"WIYN" "WIYN" 350} \
+   {"XINGLONG" "TNT" 80} \
+   {"ZADKO" "Zadko" 100} \
    }
 
    set sat0s ""
    set sat1s ""
+   set sat2s ""
    foreach sat $sats {
       lappend sat0s [lindex $sat 0]
       lappend sat1s [lindex $sat 1]
+      lappend sat2s [lindex $sat 2]
    }
    set misc0s ""
    set misc1s ""
+   set misc2s ""
    foreach misc $miscs {
       lappend misc0s [lindex $misc 0]
       lappend misc1s [lindex $misc 1]
+      lappend misc2s [lindex $misc 2]
    }
    set tel0s ""
    set tel1s ""
+   set tel2s ""
    foreach tel $tels {
       lappend tel0s [lindex $tel 0]
       lappend tel1s [lindex $tel 1]
+      lappend tel2s [lindex $tel 2] ; # diameter
    }
 
    if {$methode=="update"} {
@@ -905,7 +954,7 @@ proc grb_gcnc { args } {
             set ligne [regsub -all \{ "$ligne" " "]
             set ligne [regsub -all \} "$ligne" " "]
             set ligne [regsub -all / "$ligne" " "]
-            set ligne [regsub -all , "$ligne" " "]
+            set ligne [regsub -all , "$ligne" " "]            
             set ligneup [string toupper $ligne]
             set keyword [lindex $ligneup 0]
             if {($keyword=="SUBJECT:")} {
@@ -931,11 +980,18 @@ proc grb_gcnc { args } {
                set ls $misc0s
                set ls1 $misc1s
                set k1 -1 ; foreach l $ls { incr k1 ; set k [string first " $l " $ligneup]; if {$k>=0} { incr kk ; append texte "[lindex $ls1 $k1] : " } }
-               set ls $tel0s
-               set ls1 $tel1s
-               #::console::affiche_resultat "ligneup=$ligneup\n"
-               set k1 -1 ; foreach l $ls { incr k1 ; set k [string first "$l" $ligneup]; if {$k>=0} { incr kk ; append texte "[lindex $ls1 $k1] : " } }
-               #::console::affiche_resultat "texte=$texte\n"
+               set ls { PROMPT }
+               set ls1 $ls
+               set k1 -1 ; foreach l $ls { incr k1 ; set k [string first "$l" $ligne]; if {$k>=0} { incr kk ; append texte "[lindex $ls1 $k1] : " } }
+               if {$k<0} {
+	               set ls $tel0s
+	               set ls1 $tel1s
+	               #::console::affiche_resultat "ligneup=$ligneup\n"
+	               set k1 -1 ; foreach l $ls { incr k1 ; set k [string first "$l" $ligneup]; if {$k>=0} { incr kk ; append texte "[lindex $ls1 $k1] : " } }
+	               #::console::affiche_resultat "texte=$texte\n"
+               } else {
+	               #::console::affiche_resultat "texte=$texte\n"
+               }
             }
             if {($keyword=="SUBJECT:")&&($kk>0)} {
                break
@@ -949,7 +1005,7 @@ proc grb_gcnc { args } {
             #::console::affiche_resultat " ligne=$ligne\n"
          }
          append texte "\n"
-         ::console::affiche_resultat "$kl / $gcncfin : $texte"
+         #::console::affiche_resultat "$kl / $gcncfin : $texte"
          append textes "$texte"
       }
       set f [open "${gcncpath}/../gcncs.txt" w]
@@ -958,6 +1014,7 @@ proc grb_gcnc { args } {
 
    } elseif {$methode=="list_telescopes"} {
 
+		lappend tels {" PROMPT " "PROMPT" 41}
       set gcncpath [ file join $::audace(rep_userCatalog) grb gcnc]
       file mkdir "$gcncpath"
       #
@@ -967,7 +1024,7 @@ proc grb_gcnc { args } {
       set f [open "${gcncpath}/../gcncs.txt" r]
       set lignes [split [read $f] \n]
       close $f
-      #set lignes [lrange $lignes 12088 12088]
+      #set lignes [lrange $lignes 1 2865]
       foreach ligne $lignes {
          set gcnc [lindex $ligne 1]
          set k1 [string first : $ligne]
@@ -994,26 +1051,45 @@ proc grb_gcnc { args } {
          }
          set obs [string trim [string range $ligne [expr $k3+1] [expr $k4-1]]]
          lappend obss($obs) [list $gcnc $grb]
-         ::console::affiche_resultat "$gcnc $grb $obs >>>>> $ligne\n"
       }
       set names [array names obss]
       set ordres ""
       set k 0
       foreach name $names {
          set n [llength $obss($name)]
-         lappend ordres [list [format %06d $n] $k]
+	      #::console::affiche_resultat "name=$name $n $k\n"
+         lappend ordres [list $n $k]
          incr k
       }
-      set ordres [lsort -decreasing $ordres]
+      set ordres [lsort -index 0 -real -decreasing $ordres]
       set nn [llength $names]
       for {set kk 0} {$kk<$nn} {incr kk} {
          set kkk [lindex [lindex $ordres $kk] 1]
          set name [lindex $names $kkk]
+         set kn [lsearch -exact $sat1s $name]
+         set ls $sat2s
+         if {$kn<0} {
+	         set kn [lsearch -exact $misc1s $name]
+	         set ls $misc2s
+	         if {$kn<0} {
+		         set kn [lsearch -exact $tel1s $name]
+		         set ls $tel2s
+	         }
+         }
+         if {$kn>=0} {
+	         set diameter [lindex $ls $kn]
+         } else {
+	         set diameter 0
+         }
          set texte "[format %15s $name] : "
          set n [llength $obss($name)]
          append texte "[format %4d $n] : "
+         append texte "[format %6.1f $diameter] : "
          set telname [regsub -all \[*/\] "$name" "_"]
-         catch {file delete ${path}/tel_${telname}.txt}
+         set fichier ${gcncpath}/../tel_${telname}.txt
+         if {[file exists $fichier]==1} {
+         	file delete $fichier
+      	}
          for {set k 0} {$k<$n} {incr k} {
             set res [lindex $obss($name) $k]
             set gcnc [lindex $res 0]
@@ -1047,10 +1123,13 @@ proc grb_gcnc { args } {
          set telno [string range $ligne $k1 $k2]
          set k1 [expr $k2+1]
          set k2 [string first : $ligne $k1]
+         set diam [string range $ligne $k1 $k2]
+         set k1 [expr $k2+1]
+         set k2 [string first : $ligne $k1]
          set telgcn1 [string range $ligne $k1 $k2]
          set k1 [string last GCNC $ligne]
          set telgcn2 [string range $ligne $k1 end]
-         set texte "${telname}${telno}${telgcn1} ${telgcn2}"
+         set texte "${telname}${telno}${diam}${telgcn1} ${telgcn2}"
          append textes "$texte\n"
       }
       set f [open "${gcncpath}/../observatories_short.txt" w]
