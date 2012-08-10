@@ -2370,28 +2370,28 @@ proc spc_ew4 { args } {
 
    set nbargs [ llength $args ]
    if { $nbargs==3 } {
-      set filename [ lindex $args 0 ]
+      set filename [ file rootname [ lindex $args 0 ] ]
       set xdeb [ lindex $args 1 ]
       set xfin [ lindex $args 2 ]
       set taux_doucissage $spcaudace(taux_doucissage)
       set degpoly $spcaudace(degpoly_cont)
       set rmconti "o"
    } elseif { $nbargs==4 } {
-      set filename [ lindex $args 0 ]
+      set filename [ file rootname [ lindex $args 0 ] ]
       set xdeb [ lindex $args 1 ]
       set xfin [ lindex $args 2 ]
       set taux_doucissage [ lindex $args 3 ]
       set degpoly $spcaudace(degpoly_cont)
       set rmconti "o"
    } elseif { $nbargs==5 } {
-      set filename [ lindex $args 0 ]
+      set filename [ file rootname [ lindex $args 0 ] ]
       set xdeb [ lindex $args 1 ]
       set xfin [ lindex $args 2 ]
       set taux_doucissage [ lindex $args 3 ]
       set rmconti [ lindex $args 4 ]
       set degpoly $spcaudace(degpoly_cont)
    } elseif { $nbargs==6 } {
-      set filename [ lindex $args 0 ]
+      set filename [ file rootname [ lindex $args 0 ] ]
       set xdeb [ lindex $args 1 ]
       set xfin [ lindex $args 2 ]
       set taux_doucissage [ lindex $args 3 ]
@@ -2420,11 +2420,14 @@ proc spc_ew4 { args } {
    # set lmax [ lindex $xvals [ expr [ llength $xvals ] -1 ] ]
    # set nbech [ llength $xvals ]
    #-- Spectre continuum :
+   if { [ expr $degpoly-int($degpoly) ] != 0 } { set flag_nonint 1 } else { set flag_nonint 0 }
    if { $nbargs==6 } {
-      if { $degpoly!=0 } {
+      if { $degpoly!=0 && $flag_nonint==0 } {
          set spectre_conti [ spc_extractcont $filename $degpoly ]
-      } elseif { $degpoly==0 } {
+      } elseif { $degpoly==0 && $flag_nonint==0 } {
          set spectre_conti [ spc_syntherule $filename 1. ]
+      } elseif { $flag_nonint } {
+         set spectre_conti [ spc_syntherule $filename $degpoly ]
       }
    } else {
       set spectre_conti [ spc_extractcontew $filename $taux_doucissage ]
@@ -3667,21 +3670,32 @@ proc spc_dynagraph { args } {
    #set coef_conv_gp 7.8
    #set yheight_graph 600
    set xpos 70
+   #- pas d'echantillonnage horizontal
    set pas_echant 0.1
-   set nbargs [ llength $args ]
-   
-   if { $nbargs==9 } {
+   #- obs less than one_day : 10 mins
+   set pas_date_oneday 0.007
+   set pas_date_manyday 1
+   set pas_date 1
+   set pas_vitesse 1
+   #-- Longueur de la marque des mesures (%naxis1)
+   set dashlength 2
+   #-- Interpolation : Oui par defaut
+   set flag_interpol "o"
+
+   set nbargs [ llength $args ]   
+   if { $nbargs==10 } {
       set xsdeb [ lindex $args 0 ]
       set xsfin [ lindex $args 1 ]
       set lambda_ref [ lindex $args 2 ]
-      set ra_h [ lindex $args 3 ]
-      set ra_m [ lindex $args 4 ]
-      set ra_s [ lindex $args 5 ]
-      set dec_d [ lindex $args 6 ]
-      set dec_m [ lindex $args 7 ]
-      set dec_s [ lindex $args 8 ]
+      set flag_interpol [ lindex $args 3 ]
+      set ra_h [ lindex $args 4 ]
+      set ra_m [ lindex $args 5 ]
+      set ra_s [ lindex $args 6 ]
+      set dec_d [ lindex $args 7 ]
+      set dec_m [ lindex $args 8 ]
+      set dec_s [ lindex $args 9 ]
    } else {
-      ::console::affiche_erreur "Usage: spc_dynagraph lambda_deb lambda_fin lambda_reference RA_d RA_m RA_s DEC_h DEC_m DEC_s\n"
+      ::console::affiche_erreur "Usage: spc_dynagraph lambda_deb lambda_fin lambda_reference interpolation(o/n) RA_d RA_m RA_s DEC_h DEC_m DEC_s\n"
       return ""
    }
 
@@ -3690,16 +3704,30 @@ proc spc_dynagraph { args } {
    set listefile [ spc_ldatesort $listefile ]
    set nb_spectres [ llength $listefile ]
 
-
    #--- Nombre de jours couverts par l'observation :
    set fichier [ lindex $listefile 0 ]
    buf$audace(bufNo) load "$audace(rep_images)/$fichier"
    set date_deb [ mc_date2jd [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ] ]
+   set listemotsclef [ buf$audace(bufNo) getkwds ]
+   if { [ lsearch $listemotsclef "EXPOSURE" ] !=-1 } {
+      set pas_date_oneday [ expr 1/24./3600/10*[ lindex [ buf$audace(bufNo) getkwd "EXPOSURE" ] 1 ] ]
+   }
    set fichier [ lindex $listefile [ expr $nb_spectres-1 ] ]
    buf$audace(bufNo) load "$audace(rep_images)/$fichier"
    set date_fin [ mc_date2jd [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ] ]
    set nb_jours [ expr int($date_fin)-int($date_deb)+1 ]
 
+   #--- Determine si la periode couverte est inferieure au jour :
+   set duree_obs [ expr $date_fin-$date_deb ]
+   if { $duree_obs<=1 } {
+      set flag_oneday 1
+      set nb_jours [ expr int(($date_fin-$date_deb)/$pas_date_oneday)+1 ]
+      set pas_date $pas_date_oneday
+   } else {
+      set flag_oneday 0
+      set pas_date $pas_date_manyday
+   }
+   ::console::affiche_prompt "Pas d'échantillonnage temporel du graph=$pas_date\n"
 
    #--- Boucle chaque spectre :
    set listejd [ list ]
@@ -3725,17 +3753,23 @@ proc spc_dynagraph { args } {
       }
 
       #--- Correction de la vitesse heliocentrique :
-      ::console::affiche_prompt "Correction de la vitesse héliocentrique du spectre...\n"
-      set raf [ list "${ra_h}h${ra_m}m${ra_s}s" ]
-      set decf [ list "${dec_d}d${dec_m}m${dec_s}s" ]
-      set vhelio [ lindex [ mc_baryvel $ladate $raf $decf J2000.0 ] 0 ]
-      set delta_lambda [ expr $lambda_ref*$vhelio/$spcaudace(vlum) ]
-      set fichier_helio [ spc_calibredecal $fichier $delta_lambda ]
+      if { $flag_oneday==0 } {
+         ::console::affiche_prompt "Correction de la vitesse héliocentrique du spectre...\n"
+         set raf [ list "${ra_h}h${ra_m}m${ra_s}s" ]
+         set decf [ list "${dec_d}d${dec_m}m${dec_s}s" ]
+         set vhelio [ lindex [ mc_baryvel $ladate $raf $decf J2000.0 ] 0 ]
+         set delta_lambda [ expr $lambda_ref*$vhelio/$spcaudace(vlum) ]
+         set fichier_helio [ spc_calibredecal $fichier $delta_lambda ]
+      } else {
+         set fichier_helio $fichier
+      }
 
       #--- Reechantillonne les profils :
       ::console::affiche_prompt "Rééchantillonnage du spectre...\n"
       set fichier_echant [ spc_echantdelt $fichier_helio $pas_echant ]
-      file delete -force "$audace(rep_images)/$fichier_helio$conf(extension,defaut)"
+      if { $flag_oneday==0 } {
+         file delete -force "$audace(rep_images)/$fichier_helio$conf(extension,defaut)"
+      }
 
       #--- Selection de la zone si des longueurs d'ondes sont données :
       ::console::affiche_prompt "Découpage du spectre...\n"
@@ -3761,13 +3795,15 @@ proc spc_dynagraph { args } {
    set spectre1 [ lindex $listefiles_norma 0 ]
    buf$audace(bufNo) load "$audace(rep_images)/$spectre1"
    set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+   set naxis2 $nb_jours
+   set crpix1 [ expr int($naxis1/2) ]
    set newBufNo [ buf::create ]
    #buf$newBufNo bitpix float
    buf$newBufNo setpixels CLASS_GRAY $naxis1 $nb_jours FORMAT_FLOAT COMPRESS_NONE 0
    buf$newBufNo copykwd $audace(bufNo)
    buf$newBufNo setkwd [ list "NAXIS" 2 int "" "" ]
    buf$newBufNo setkwd [ list "NAXIS1" $naxis1 int "" "" ]
-   buf$newBufNo setkwd [ list "CRPIX1" 1 int "" "" ]
+   buf$newBufNo setkwd [ list "CRPIX1" $crpix1 int "" "" ]
    buf$newBufNo setkwd [ list "NAXIS2" $nb_jours int "" "" ]
    #-- Echelle en vitesse radiale :
    set crval1 [ expr ($xsdeb-$lambda_ref)*$spcaudace(vlum)/$lambda_ref ]
@@ -3775,70 +3811,91 @@ proc spc_dynagraph { args } {
    buf$newBufNo setkwd [ list "CRVAL1" $crval1 double "Reference value for radial velocity" "km/s" ]
    buf$newBufNo setkwd [ list "CDELT1" $cdelt1 double "Increment for each pixel in km/s" "km/s" ]
    buf$newBufNo setkwd [ list "CRVAL2" $date_deb double "Reference date for serie" "julian days" ]
-   buf$newBufNo setkwd [ list "CDELT2" 1 double "Increment for each day" "julian day" ]
+   buf$newBufNo setkwd [ list "CDELT2" $pas_date double "Increment for each row" "julian day" ]
 
+   #--- Nombre de pixels de repere des mesures :
+   set nbpixdash [ expr round($dashlength*$naxis1/100.) ]
+   set naxis1spc [ expr $naxis1-$nbpixdash ]
 
    #--- Remplissage de chaque ligne :
+if { $flag_oneday==0 } {
    #-- La regle : pas plus d'un spectre par jour !
    set num_spectre 1
    set index_listspectres 0
    foreach spectre $listefiles_norma jdate $listejd {
       #--- Remplissage de chaque ligne :
       if { $num_spectre<=$nb_jours } {
-      set yvals [ lindex [ spc_fits2data "$spectre" ] 1 ]
-      for { set x_coord 1 } { $x_coord<=$naxis1 } { incr x_coord } {
-         buf$newBufNo setpix [ list $x_coord $num_spectre ] [ lindex $yvals [ expr $x_coord-1 ] ]
-      }
+         set yvals [ lindex [ spc_fits2data "$spectre" ] 1 ]
+         for { set x_coord 1 } { $x_coord<=$naxis1spc } { incr x_coord } {
+            buf$newBufNo setpix [ list $x_coord $num_spectre ] [ lindex $yvals [ expr $x_coord-1 ] ]
+         }
+         #-- **** Marque de repérage noire des mesures à droite par un tics trait noir **** :
+         for { set x_coord [ expr $naxis1spc+1 ] } { $x_coord<=$naxis1 } { incr x_coord } {
+            buf$newBufNo setpix [ list $x_coord $num_spectre ] 0.0
+         }
       }
       incr num_spectre
 
-      #--- Interpolation eventuelle :
+      #--- Entre 2 dates éloignées d'au moins 2 jours : noir ou interpolation eventuelle :
       set next_num [ expr $index_listspectres+1 ]
       if { $next_num<$nb_spectres } {
          set jd_next [ lindex $listejd $next_num ]
          set diff_jd [ expr $jd_next-$jdate ]
-         if { [ expr int($diff_jd) ]>1 } {
+         if { [ expr int($diff_jd) ]>$pas_date_manyday } {
             #-- Securite :
             #if { [ expr int($diff_jd)+$num_spectre ]>=$nb_jours } {
             #   set diff_jd [ expr $diff_jd-($nb_jours-($diff_jd+$num_spectre+1)) ]
             #}
-            set nb_inter [ expr int($jd_next)-int($jdate)-1 ]
+            set nb_inter [ expr int($jd_next)-int($jdate)-int($pas_date_manyday) ]
             #-- ::console::affiche_prompt "Interpolation de $nb_inter spectres depuis le n°[ expr $num_spectre-1 ]...\n"
-            ##::console::affiche_prompt "diff_jd=$diff_jd...\njdeb=$jdate ; jfin=$jd_next\n"
-            set BufNo_initial [ buf::create ]
-            buf$BufNo_initial load "$audace(rep_images)/$spectre"
-            set spectre_next [ lindex $listefiles_norma $next_num ]
-            set BufNo_next [ buf::create ]
-            buf$BufNo_next load "$audace(rep_images)/$spectre_next"
-            set BufNo_spa [ buf::create ]
-            set BufNo_spb [ buf::create ]
-            set jtime [ expr $jdate+1 ]
-            #- Boucle aux limites :
-            #- for { set jtime [ expr int($jdate+1) ] } { $jtime<$jd_next } { incr jtime }
-            #- for { set k [ expr int($jdate+1) ] } { $k<[ expr int($jd_next)+1 ] } { incr k } 
-            for { set k 1 } { $k<=$nb_inter } { incr k } {
-               #set jtime $k
-               #-- Calcul des intensites la date jtime :
-               set a [ expr ($jd_next-$jtime)/$diff_jd ]
-               set b [ expr ($jtime-$jdate)/$diff_jd ]
-               buf$BufNo_initial copyto $BufNo_spa
-               buf$BufNo_spa mult $a
-               buf$BufNo_next copyto $BufNo_spb
-               buf$BufNo_spb mult $b
-               bm_ajoute $BufNo_spa $BufNo_spb
-               #-- Ecrit les intensites dans le fichier 2D :
-               for { set x_coord 1 } { $x_coord<=$naxis1 && $num_spectre<=$nb_jours } { incr x_coord } {
-                  buf$newBufNo setpix [ list $x_coord $num_spectre ] [ lindex [ buf$BufNo_spa getpix [ list $x_coord 1 ] ] 1 ]
-                  #- Test lieux interpol : buf$newBufNo setpix [ list $x_coord $num_spectre ] 0.0
+            if { $flag_interpol=="n" } {
+               set jtime [ expr $jdate+$pas_date_manyday ]
+               for { set k 1 } { $k<=$nb_inter } { incr k } {
+                  #-- Ecrit les intensites dans le fichier 2D :
+                  for { set x_coord 1 } { $x_coord<=$naxis1 && $num_spectre<=$nb_jours } { incr x_coord } {
+                     buf$newBufNo setpix [ list $x_coord $num_spectre ] 0.0
+                     #- Test lieux interpol : buf$newBufNo setpix [ list $x_coord $num_spectre ] 0.0
+                  }
+                  incr num_spectre
+                  set jtime [ expr $jtime+$pas_date_manyday ]
                }
-               incr num_spectre
-               set jtime [ expr $jtime+1 ]
+            } elseif { $flag_interpol=="o" } {
+               ##::console::affiche_prompt "diff_jd=$diff_jd...\njdeb=$jdate ; jfin=$jd_next\n"
+               set BufNo_initial [ buf::create ]
+               buf$BufNo_initial load "$audace(rep_images)/$spectre"
+               set spectre_next [ lindex $listefiles_norma $next_num ]
+               set BufNo_next [ buf::create ]
+               buf$BufNo_next load "$audace(rep_images)/$spectre_next"
+               set BufNo_spa [ buf::create ]
+               set BufNo_spb [ buf::create ]
+               set jtime [ expr $jdate+$pas_date_manyday ]
+               #- Boucle aux limites :
+               #- for { set jtime [ expr int($jdate+1) ] } { $jtime<$jd_next } { incr jtime }
+               #- for { set k [ expr int($jdate+1) ] } { $k<[ expr int($jd_next)+1 ] } { incr k } 
+               for { set k 1 } { $k<=$nb_inter } { incr k } {
+                  #set jtime $k
+                  #-- Calcul des intensites la date jtime :
+                  set a [ expr ($jd_next-$jtime)/$diff_jd ]
+                  set b [ expr ($jtime-$jdate)/$diff_jd ]
+                  buf$BufNo_initial copyto $BufNo_spa
+                  buf$BufNo_spa mult $a
+                  buf$BufNo_next copyto $BufNo_spb
+                  buf$BufNo_spb mult $b
+                  bm_ajoute $BufNo_spa $BufNo_spb
+                  #-- Ecrit les intensites dans le fichier 2D :
+                  for { set x_coord 1 } { $x_coord<=$naxis1 && $num_spectre<=$nb_jours } { incr x_coord } {
+                     buf$newBufNo setpix [ list $x_coord $num_spectre ] [ lindex [ buf$BufNo_spa getpix [ list $x_coord 1 ] ] 1 ]
+                     #- Test lieux interpol : buf$newBufNo setpix [ list $x_coord $num_spectre ] 0.0
+                  }
+                  incr num_spectre
+                  set jtime [ expr $jtime+$pas_date_manyday ]
+               }
+               buf::delete $BufNo_initial
+               buf::delete $BufNo_next
+               buf::delete $BufNo_spa
+               buf::delete $BufNo_spb
             }
-            buf::delete $BufNo_initial
-            buf::delete $BufNo_next
-            buf::delete $BufNo_spa
-            buf::delete $BufNo_spb
-         } elseif { $diff_jd<=1 } {
+         } elseif { $diff_jd<=$pas_date_manyday } {
             #-- Moyenne des spectres du meme jour :
             # Ne fait rien pour l'instant mais passe au spectre suivant
             incr index_listspectres
@@ -3849,6 +3906,95 @@ proc spc_dynagraph { args } {
       #--- Incremention du n° de spectre :
       incr index_listspectres
    }
+} elseif { $flag_oneday==1 } {
+   #-- La regle : pas plus d'un spectre par jour !
+   set num_spectre 1
+   set index_listspectres 0
+   foreach spectre $listefiles_norma jdate $listejd {
+      #--- Remplissage de chaque ligne :
+      if { $num_spectre<=$nb_jours } {
+         set yvals [ lindex [ spc_fits2data "$spectre" ] 1 ]
+         for { set x_coord 1 } { $x_coord<=$naxis1spc } { incr x_coord } {
+            buf$newBufNo setpix [ list $x_coord $num_spectre ] [ lindex $yvals [ expr $x_coord-1 ] ]
+         }
+         #-- **** Marque de repérage noire des mesures à droite par un tics trait noir **** :
+         for { set x_coord [ expr $naxis1spc+1 ] } { $x_coord<=$naxis1 } { incr x_coord } {
+            buf$newBufNo setpix [ list $x_coord $num_spectre ] 0.0
+         }
+      }
+      incr num_spectre
+
+      #--- Entre 2 dates éloignées d'au moins 2 jours : noir ou interpolation eventuelle :
+      set next_num [ expr $index_listspectres+1 ]
+      if { $next_num<$nb_spectres } {
+         set jd_next [ lindex $listejd $next_num ]
+         set diff_jd [ expr $jd_next-$jdate ]
+         if { $diff_jd>$pas_date_oneday } {
+            #-- Securite :
+            #if { [ expr int($diff_jd)+$num_spectre ]>=$nb_jours } {
+            #   set diff_jd [ expr $diff_jd-($nb_jours-($diff_jd+$num_spectre+1)) ]
+            #}
+            set nb_inter [ expr int(($jd_next-$jdate)/$pas_date_oneday)-1 ]
+            #-- ::console::affiche_prompt "Interpolation de $nb_inter spectres depuis le n°[ expr $num_spectre-1 ]...\n"
+            if { $flag_interpol=="n" } {
+               set jtime [ expr $jdate+$pas_date_oneday ]
+               for { set k 1 } { $k<=$nb_inter } { incr k } {
+                  #-- Ecrit les intensites dans le fichier 2D :
+                  for { set x_coord 1 } { $x_coord<=$naxis1 && $num_spectre<=$nb_jours } { incr x_coord } {
+                     buf$newBufNo setpix [ list $x_coord $num_spectre ] 0.0
+                     #- Test lieux interpol : buf$newBufNo setpix [ list $x_coord $num_spectre ] 0.0
+                  }
+                  incr num_spectre
+                  set jtime [ expr $jtime+$pas_date_oneday ]
+               }
+            } elseif { $flag_interpol=="o" } {
+               ##::console::affiche_prompt "diff_jd=$diff_jd...\njdeb=$jdate ; jfin=$jd_next\n"
+               set BufNo_initial [ buf::create ]
+               buf$BufNo_initial load "$audace(rep_images)/$spectre"
+               set spectre_next [ lindex $listefiles_norma $next_num ]
+               set BufNo_next [ buf::create ]
+               buf$BufNo_next load "$audace(rep_images)/$spectre_next"
+               set BufNo_spa [ buf::create ]
+               set BufNo_spb [ buf::create ]
+               set jtime [ expr $jdate+$pas_date_oneday ]
+               #- Boucle aux limites :
+               #- for { set jtime [ expr int($jdate+1) ] } { $jtime<$jd_next } { incr jtime }
+               #- for { set k [ expr int($jdate+1) ] } { $k<[ expr int($jd_next)+1 ] } { incr k } 
+               for { set k 1 } { $k<=$nb_inter } { incr k } {
+                  #set jtime $k
+                  #-- Calcul des intensites la date jtime :
+                  set a [ expr ($jd_next-$jtime)/$diff_jd ]
+                  set b [ expr ($jtime-$jdate)/$diff_jd ]
+                  buf$BufNo_initial copyto $BufNo_spa
+                  buf$BufNo_spa mult $a
+                  buf$BufNo_next copyto $BufNo_spb
+                  buf$BufNo_spb mult $b
+                  bm_ajoute $BufNo_spa $BufNo_spb
+                  #-- Ecrit les intensites dans le fichier 2D :
+                  for { set x_coord 1 } { $x_coord<=$naxis1 && $num_spectre<=$nb_jours } { incr x_coord } {
+                     buf$newBufNo setpix [ list $x_coord $num_spectre ] [ lindex [ buf$BufNo_spa getpix [ list $x_coord 1 ] ] 1 ]
+                     #- Test lieux interpol : buf$newBufNo setpix [ list $x_coord $num_spectre ] 0.0
+                  }
+                  incr num_spectre
+                  set jtime [ expr $jtime+$pas_date_oneday ]
+               }
+               buf::delete $BufNo_initial
+               buf::delete $BufNo_next
+               buf::delete $BufNo_spa
+               buf::delete $BufNo_spb
+            }
+         } elseif { $diff_jd<=$pas_date_oneday } {
+            #-- Moyenne des spectres du meme jour :
+            # Ne fait rien pour l'instant mais passe au spectre suivant
+            incr index_listspectres
+            continue
+         }
+      }
+         
+      #--- Incremention du n° de spectre :
+      incr index_listspectres
+   }
+}
 
 
    #--- Sauvegarde finale du fichier fits-image 2D :
@@ -3863,82 +4009,161 @@ proc spc_dynagraph { args } {
    visu1 cut [ lrange [ buf1 stat ] 0 1 ]
    visu1 disp
    savejpeg "${objname}_dynaspectrum"
-
-
-if { 1==0} {
-   #--- Modification du fichier de config :
-   #-- Modification de dla position des legendes dans le fichier de config de gnuplot :
-   #set ypos1 [ expr $y1_legende+$offset/10. ]
-   set ypos1 [ expr $y1_legende*(1+$offset/10.) ]
-   set file_idin [ open "$spcaudace(repgp)/gp_multiover.cfg" r+ ]
-   set file_id [ open "$audace(rep_images)/gp_multiover.cfg" w+ ]
-   fconfigure $file_id -translation crlf
-   set contents [ split [ read $file_idin ] \n ]
-   foreach ligne $contents {
-      if { [ regexp "set key invert" $ligne match ligne_modif ]  } {
-         # regsub -all "set key invert" $ligne "set key invert bottom samplen 0 height -13 spacing $moffset at $xfin, first $ypremier" ligne_modif
-         regsub -all "set key invert" $ligne "set key off" ligne_modif
-         puts $file_id "$ligne_modif"
-         set nofile 0
-         foreach jd $listejd {
-            set ypos [ expr $ypos1+$offset*$nofile ]
-            puts $file_id "set label \"MJD $jd\" right at character $xpos, first $ypos"
-            incr nofile
-         }
+   #-- Conversion en PNG :
+   if { $tcl_platform(platform)=="unix" } {
+      if { [ file exists /usr/bin/convert ] } {
+         set answer [ catch { exec convert "$audace(rep_images)/${objname}_dynaspectrum.jpg" "$audace(rep_images)/${objname}_dynaspectrum.png" } ]
+         ::console::affiche_resultat "$answer\n"
       } else {
-         puts $file_id "$ligne"
+         ::console::affiche_erreur "Vous devez installer le paquet d'ImageMagick !\n"
+         return ""
+      }
+   } elseif { $tcl_platform(platform)=="windows" } {
+      if { [ file exists $spcaudace(rep_spc)/plugins/imwin/convert.exe ] } {
+         set answer [ catch { exec $spcaudace(rep_spc)/plugins/imwin/convert.exe "$audace(rep_images)/${objname}_dynaspectrum.jpg" "$audace(rep_images)/${objname}_dynaspectrum.png" } ]
+         ::console::affiche_resultat "$answer\n"
+      } else {
+         ::console::affiche_erreur "Vous devez installer l'archive d'ImageMagick Mini disponible sur le site SpcAudace !\n"
+         return ""
       }
    }
-   close $file_id
-   close $file_idin
 
-   #--- Construction du fichier btach de Gnuplot :
-   #set file_id [open "$audace(rep_images)/multiplot.gp" w+]
-   # set xdeb "*"
-   # set xfin "*"
-   ## puts $file_id "call \"$spcaudace(repgp)/gp_multi.cfg\" \"$plotcmd\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/multiplot.png\" \"$legendex\" \"$legendey\" "
-   #puts $file_id "call \"$spcaudace(repgp)/gp_multi.cfg\" \"$plotcmd\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/multiplot.png\" \"$legendex\" "
-   #close $file_id
-   set file_id [ open "$audace(rep_images)/multiplot.gp" w+ ]
-   fconfigure $file_id -translation crlf
-   set largeur [ expr $xfin-$xdeb ]
-   if { $naxis1<=3500 } {
-      if { $largeur<=2000 && $flag_cal==1 } {
-         #puts $file_id "call \"$spcaudace(repgp)/gp_multiover.cfg\" \"$plotcmd\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/multiplot.png\" \"$legendex\" \"$legendey\" "
-         puts $file_id "call \"$audace(rep_images)/gp_multiover.cfg\" \"$plotcmd\" \"$titre\" * * '$xdeb' '$xfin' * \"$audace(rep_images)/multiplot.png\" \"$legendex\" \"$legendey\" "
-      } elseif { $largeur>2000 && $flag_cal==1 } {
-         puts $file_id "call \"$spcaudace(repgp)/gp_multilarge.cfg\" \"$plotcmd\" \"$titre\" * * '$xdeb' '$xfin' * \"$audace(rep_images)/multiplot.png\" \"$legendex\" \"$legendey\" "
-      } elseif { $flag_cal==0 } {
-         puts $file_id "call \"$audace(rep_images)/gp_multiover.cfg\" \"$plotcmd\" \"$titre\" * * '$xdeb' '$xfin' * \"$audace(rep_images)/multiplot.png\" \"$legendex\" \"$legendey\" "
-      }
+   #--- Construction du graphique avec axes a l'aide Gnuplot et export en PNG puis Postscript :
+   #-- Creation des parametres du graph :
+   if { $tcl_platform(platform)=="unix" } {
+      set font_png "/usr/share/fonts/truetype/ttf-liberation/LiberationSans-Regular.ttf"
    } else {
-      puts $file_id "call \"$spcaudace(repgp)/gp_multilarge.cfg\" \"$plotcmd\" \"$titre\" * * '$xdeb' '$xfin' * \"$audace(rep_images)/multiplot.png\" \"$legendex\" "
+      set font_png "Helvetica"
    }
-   close $file_id
+   set size_minimum 365
+   set xsize [ expr $naxis1+113 ]
+   set ysize [ expr $naxis2+50 ]
+   if { $xsize<$size_minimum } { set xsize $size_minimum }
+   if { $ysize<$size_minimum } { set ysize $size_minimum }
+   set xsizeps [ expr $xsize/100. ]
+   set ysizeps [ expr $ysize/100. ]
+   set vmin $crval1
+   #set vmax [ expr $crval1+$cdelt1*$naxis1 ]
+   set vmax [ expr ($xsfin-$lambda_ref)*$spcaudace(vlum)/$lambda_ref ]
+   set date_begin [ format "%5.4f" [ expr $date_deb-2400000.0 ] ]
+   # set date_begin [ expr $date_deb ]
+   #set date_end [ expr $date_deb+$nb_jours*$pas_date+1-2400000 ]
+   set date_end [ format "%5.4f" [ expr $date_fin-2400000.0 ] ]
+   #set date_end [ expr $date_deb+$nb_jours*$pas_date+1 ]
+   # set date_end [ expr $date_fin ]
+   if { $flag_oneday==0 } {
+      set date_deb_graph [ expr $date_begin+$pas_date ]
+   } elseif { $flag_oneday==1 } {
+      set date_deb_graph [ expr $date_begin+$pas_date/3. ]
+      #set date_begin [ format "%1.4f" $date_begin ]
+      #set date_end [ format "%1.4f" $date_end ]
+   }
+   #set dx [ expr abs($vmin)*2./$naxis1 ]
+   set dx [ expr abs($vmax-$vmin)/$naxis1 ]
+   if { $flag_oneday==0 } {
+      set dy [ expr (($date_end-$date_begin)*$pas_date)/$naxis2 ]
+      set formaty ""
+   } elseif { $flag_oneday==1 } {
+      set dy $pas_date_oneday
+      set formaty "set format y '%1.4f'"
+   }
+   set name_output "${objname}_dynagraph"
+   #set text_offset_png [ expr -(0.5*74/719*$naxis2-32/2.) ]
+   set text_offset_png 0
+   #set text_offset_ps [ expr -(0.5*80/719*$naxis2-32/2.) ]
+   set text_offset_ps 0
+   #::console::affiche_resultat "txtoffset=$text_offset_png\n"
 
-   #--- Détermine le chemin de l'executable Gnuplot selon le système d'exploitation :
+   #-- Creation des scripts Gnuplot :
+   set file_idpng [ open "$audace(rep_images)/dynagraphpng.gp" w+ ]
+   fconfigure $file_idpng -translation crlf
+   set file_idps [ open "$audace(rep_images)/dynagraphps.gp" w+ ]
+   fconfigure $file_idps -translation crlf
+
+   set text_png "# Texte : x_utilise=113 ; y_utilise=50 ; Image=252x719
+set terminal png transparent nocrop enhanced font \"$font_png,8\" linewidth 2.0 size $xsize,$ysize
+set output '${name_output}.png'
+set tics out
+set rrange \[ * : * \] noreverse nowriteback  # (currently \[8.98847e+307:-8.98847e+307\] )
+set trange \[ * : * \] noreverse nowriteback  # (currently \[-5.00000:5.00000\] )
+set xrange \[ $vmin : $vmax \]
+set yrange \[ $date_begin : $date_end \] noreverse nowriteback
+$formaty
+set cbrange \[ * : * \] noreverse nowriteback  # (currently \[0.00000:255.000\] )
+set tmargin 1
+set xtics scale 1.0
+set ytics scale 1.0
+#set border linewidth 0.7500
+set border linewidth 1.0
+set ylabel \"JD-2400000\"
+set xlabel \"Radial velocity (km/s)\"
+#set y2label \"SpcAudACE: spectroscopy software\" -1,-21
+#set y2label \"SpcAudACE: spectroscopy software\" offset -0.5,$text_offset_png
+set y2label \"SpcAudACE: spectroscopy software\" font \"$font_png,5\" offset -1,0
+# 585.58*2/252=4.647460
+plot '${objname}_dynaspectrum.png' binary filetype=png origin=($vmin,$date_deb_graph) dx=$dx dy=$dy with rgbimage notitle"
+   puts $file_idpng "$text_png"
+   close $file_idpng
+
+   set text_ps "# Texte : x_utilise=113 ; y_utilise=50 ; Image=252x719
+set terminal postscript enhanced font \"Helvetica,8\" linewidth 2.0 size $xsizeps,$ysizeps
+set output '${name_output}.ps'
+set tics out
+set rrange \[ * : * \] noreverse nowriteback  # (currently \[8.98847e+307:-8.98847e+307\] )
+set trange \[ * : * \] noreverse nowriteback  # (currently \[-5.00000:5.00000\] )
+set xrange \[ $vmin : $vmax \]
+set yrange \[ $date_begin : $date_end \] noreverse nowriteback
+set cbrange \[ * : * \] noreverse nowriteback  # (currently \[0.00000:255.000\] )
+$formaty
+set tmargin 1
+set xtics scale 0.5
+set ytics scale 0.5
+set border linewidth 0.5
+set ylabel \"JD-2400000\"
+set xlabel \"Radial velocity (km/s)\"
+#set y2label \"SpcAudACE: spectroscopy software\" -1,-24
+#set y2label \"SpcAudACE: spectroscopy software\" offset -1,$text_offset_ps
+set y2label \"SpcAudACE: spectroscopy software\" font \"Helvetica,5\" offset -1.5,0
+# 585.58*2/252=4.647460
+plot '${objname}_dynaspectrum.png' binary filetype=png origin=($vmin,$date_deb_graph) dx=$dx dy=$dy with rgbimage notitle"
+   puts $file_idps "$text_ps"
+   close $file_idps
+
+   #-- Execution de Gnuplot :
    set repdflt [ bm_goodrep ]
    if { $tcl_platform(platform)=="unix" } {
-      set answer [ catch { exec gnuplot $audace(rep_images)/multiplot.gp } ]
-      ::console::affiche_resultat "gnuplot résultat (0=OK) : $answer\n"
+      set answer [ catch { exec gnuplot $audace(rep_images)/dynagraphpng.gp } ]
+      ::console::affiche_resultat "Gnuplot résultat (0=OK) pour PNG : $answer\n"
+      set answer [ catch { exec gnuplot $audace(rep_images)/dynagraphps.gp } ]
+      ::console::affiche_resultat "Gnuplot résultat (0=OK) pour PS : $answer\n"
    } else {
-      set answer [ catch { exec $spcaudace(repgp)/gpwin32/pgnuplot.exe $audace(rep_images)/multiplot.gp } ]
-      ::console::affiche_resultat "gnuplot résultat (0=OK) : $answer\n"
+      set answer [ catch { exec $spcaudace(repgp)/gpwin32/pgnuplot.exe $audace(rep_images)/dynagraphpng.gp } ]
+      ::console::affiche_resultat "Gnuplot résultat (0=OK) pour PNG : $answer\n"
+      set answer [ catch { exec $spcaudace(repgp)/gpwin32/pgnuplot.exe $audace(rep_images)/dynagraphps.gp } ]
+      ::console::affiche_resultat "Gnuplot résultat (0=OK) pour PS : $answer\n"
    }
-   cd $repdflt
-}
+
+
+   #--- Messages de fin de script :
+   ::console::affiche_prompt "Spectre dynamique sauvé sous : ${objname}_dynaspectrum$conf(extension,defaut), ${objname}_dynaspectrum.jpg\n"
+   ::console::affiche_prompt "Graph final du dynamique sauvé sous : ${name_output}.png, ${name_output}.ps\n"
 
    #--- Effacement des fichiers de batch :
-   #if { 1==0 } {
+   #--  Affichage du graph png :
+   if { [ file exists "$audace(rep_images)/${objname}_dynagraph.png" ] } {
+      loadima "${objname}_dynagraph.png"
+      visu1 zoom 1
+      visu1 disp {251 -15}
+   }
 
-   #file delete -force "$audace(rep_images)/multiplot.gp"
-   #file delete -force "$audace(rep_images)/gp_multiover.cfg"
+
+   #-- Efface :
+   file delete -force "$audace(rep_images)/dynagraphpng.gp"
+   file delete -force "$audace(rep_images)/dynagraphps.gp"
    foreach fichier $listefiles_norma {
       file delete -force "$audace(rep_images)/$fichier$conf(extension,defaut)"
    }
-   #}
-   #::console::affiche_resultat "\nSpectre dynamique sauvé sous ${objname}_dynaspectrum$conf(extension,defaut)\n"
-   return "${objname}_dynaspectrum"
+   return "${objname}_dynagraph.png"
 }
 ####################################################################
 

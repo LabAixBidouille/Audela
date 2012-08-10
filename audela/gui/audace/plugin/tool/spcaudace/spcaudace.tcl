@@ -14,7 +14,7 @@
 # /* SpcAudACE plugin for AudeLA:
 # *
 # * This file is part of the AudeLA project: <http://www.audela.org>
-# * Copyright (C) 2004-2009 B. Mauclaire
+# * Copyright (C) 2004-2012 B. Mauclaire
 # *
 # * Initial author : Benjamin MAUCLAIRE <bma.ova@gmail.com>
 # *
@@ -49,7 +49,7 @@
 #============================================================
 namespace eval ::spcaudace {
    global caption
-   package provide spcaudace 2.15
+   package provide spcaudace 2.16
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [ file dirname [info script] ] spcaudace.cap ]

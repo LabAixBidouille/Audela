@@ -8,6 +8,27 @@
 
 
 ####################################################################
+# Construit la liste des noms generiques des series dans le repertoire de travail
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 20120808
+# Date modification : 20120808
+####################################################################
+
+proc spc_nomsgeneriques {} {
+   global audace
+   set liste_noms_generiques [ liste_series ]
+   if { [ glob -nocomplain -tail -dir $audace(rep_images) *smd* ]!="" } {
+      set liste_additif [ glob *smd* ]
+      foreach newfile $liste_additif { lappend liste_noms_generiques $newfile }
+   }
+   set liste_noms_generiques [ lsort -dictionary $liste_noms_generiques ]
+   return $liste_noms_generiques
+}
+
+
+
+####################################################################
 # Compare la version d'SpcAduace en cours d'execution et averti de la maj
 #
 # Auteur : Benjamin MAUCLAIRE

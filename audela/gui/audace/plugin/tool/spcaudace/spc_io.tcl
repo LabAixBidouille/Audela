@@ -45,16 +45,19 @@ proc spc_buildhtml { args } {
    set nbcols 3
 
    set nbargs [ llength $args ]
-   if { $nbargs==0 } {
-      set flagnav "n"
-   } elseif { $nbargs==1 } {
+   if { $nbargs==1 } {
       set flagnav [ lindex $args 0 ]
-   } elseif { $nbargs==3 } {
+      set nb_cols $nbcols
+   } elseif { $nbargs==2 } {
       set flagnav [ lindex $args 0 ]
-      set lambda_min [ lindex $args 1 ]
-      set lambda_max [ lindex $args 2 ]
+      set nb_cols [ lindex $args 1 ]
+   } elseif { $nbargs==4 } {
+      set flagnav [ lindex $args 0 ]
+      set nb_cols [ lindex $args 1 ]
+      set lambda_min [ lindex $args 2 ]
+      set lambda_max [ lindex $args 3 ]
    } else {
-      ::console::affiche_erreur "Usage: spc_buildhtml ?o/(n) affichage par navigateur? ?lambda_min lambda_max?\n\n"
+      ::console::affiche_erreur "Usage: spc_buildhtml affichage par navigateur (o/n) ?nb_colonnes (3)? ?lambda_min lambda_max?\n\n"
       return ""
    }
 
@@ -78,7 +81,7 @@ proc spc_buildhtml { args } {
       }
 
       #-- Determination de lambda_min et lambda_max :
-      if { $nbargs<=1 } {
+      if { $nbargs<=2 } {
          set resultats [ spc_info $fichier ]
          set lmin [ lindex $resultats 3 ]
          set lmax [ lindex $resultats 4 ]
@@ -105,7 +108,7 @@ proc spc_buildhtml { args } {
    set ymax [ expr 1.03*[ lindex [ lindex [ lsort -real -decreasing -index 2 $intensity_liste ] 0 ] 2 ]/1000. ]
    ::console::affiche_resultat "\nYmin=$ymin et Ymax=$ymax\n"
    #-- Lmin et Lmax :
-   if { $nbargs<=1 } {
+   if { $nbargs<=2 } {
       set lambda_min [ lindex [ lindex [ lsort -real -decreasing -index 1 $bande_liste ] 0 ] 1 ]
       set lambda_max [ lindex [ lindex [ lsort -real -increasing -index 2 $bande_liste ] 0 ] 2 ]
       ::console::affiche_resultat "Lambda_min=$lambda_min et Lambda_max=$lambda_max\n"
@@ -163,12 +166,12 @@ proc spc_buildhtml { args } {
    set nbimg [ expr [ llength $listepng ]-1 ]
    for { set i $nbimg } { $i>=0 } { incr i -1 } {
       puts $file_id "  <tr>"
-      for { set j 1 } { $j<=3 } { incr j } {
+      for { set j 1 } { $j<=$nb_cols } { incr j } {
          set fichier [ lindex $listepng $i ]
          puts $file_id "    <td><a href=\"$fichier\"><img border=\"0\" src=\"$fichier\" width=\"320\" heigh=\"240\" alt=\"$fichier\" title=\"Clic to enlarge $fichier\"></a></td>"
          set fichierfit [ file rootname "$fichier" ]
          file delete -force "$audace(rep_images)/weboutput/$fichierfit$conf(extension,defaut)"
-         if { $j!=3 } { incr i -1 }
+         if { $j!=$nb_cols } { incr i -1 }
       }
       puts $file_id "  </tr>"
       #set fichierfit [ file rootname "$fichier" ]
@@ -182,7 +185,7 @@ proc spc_buildhtml { args } {
    puts $file_id "</body>"
    puts $file_id "</html>"
    close $file_id
-   if { $nbargs==1 || $nbargs==3 } {
+   if { $nbargs==1 || $nbargs==2 || $nbargs==4 } {
       if { $conf(editsite_htm)!="" && [ file exists "$audace(rep_images)/weboutput/$fileout" ] } {
          set answer [ catch { exec $conf(editsite_htm) "$audace(rep_images)/weboutput/$fileout" & } ]
       } else {
@@ -2255,7 +2258,8 @@ proc spc_multifit2pngdec { args } {
 
       #-- Calcul le JD reduit du spectre :
       # set dateobs [ mc_date2jd [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ] ]
-      lappend listejd [ format "%4.4f" [ expr 0.0001*round(10000*([ mc_date2jd [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ] ]-2450000.)) ] ]
+      # lappend listejd [ format "%4.4f" [ expr 0.0001*round(10000*([ mc_date2jd [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ] ]-2450000.)) ] ]
+      lappend listejd [ format "%5.4f" [ expr 0.0001*round(10000*([ mc_date2jd [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ] ]-2400000.)) ] ]
 
       #-- Recherche du nom de l'objet :
       if { $objname == "" } {
@@ -2321,15 +2325,21 @@ proc spc_multifit2pngdec { args } {
       }
    }
    #-- Determination du continuum a l'extreme droite du premier spectre :
-   set x1_legende [ expr $xfin*0.87 ]
+   if { $flag_cal==0 } {
+      set x1_legende [ expr $xfin*0.87 ]
+   } else {
+      set lfin [ expr round($naxis1*.87) ]
+      set x1_legende [ spc_calpoly $lfin $crpix1 $xdeb $disp 0 0 ]
+   }
    set y1_legende 0
    set y1_legende [ spc_icontinuum $fichier1 $x1_legende ]
+   set y1_legende [ expr $y1_legende+$offset*0.3 ]
    if { $y1_legende==0 } { set y1_legende 1.3 }
 
    #--- Initialisation des legendes :
    set nbfiles [ llength $listefiledec ]
-   set jd_deb [ expr [ lindex $listejd 0 ]+2450000. ]
-   set jd_fin [ expr [ lindex $listejd [ expr $nbfiles-1 ] ]+2450000. ]
+   set jd_deb [ expr [ lindex $listejd 0 ]+2400000. ]
+   set jd_fin [ expr [ lindex $listejd [ expr $nbfiles-1 ] ]+2400000. ]
    #regsub " " "$objname" "" objname
    if { $objname == "" } {
       set titre "Time evolution from $jd_deb to $jd_fin"
@@ -2380,7 +2390,7 @@ proc spc_multifit2pngdec { args } {
          set nofile 0
          foreach jd $listejd {
             set ypos [ expr $ypos1+$offset*$nofile ]
-            puts $file_id "set label \"MJD $jd\" right at character $xpos, first $ypos"
+            puts $file_id "set label \"MJD $jd\" right at character $xpos, first $ypos front"
             incr nofile
          }
       } else {
@@ -3499,7 +3509,11 @@ proc spc_autofit2png { args } {
              set fileout [ spc_fit2pngopt "$spectre" "$titre_graphique" "$labelx" "$labely" $xdeb $xfin $ydeb $yfin ]
           }
        } else {
-          set fileout [ spc_fit2pnglarge "$spectre" "$titre_graphique" "$labelx" "$labely" $xdeb $xfin $ydeb $yfin ]
+	  if { $dispersion>=2 } {
+	     set fileout [ spc_fit2pnglarge "$spectre" "$titre_graphique" "$labelx" "$labely" $xdeb $xfin $ydeb $yfin ]
+	  } else {
+             set fileout [ spc_fit2pngopt "$spectre" "$titre_graphique" "$labelx" "$labely" $xdeb $xfin $ydeb $yfin ]
+	  }
        }
 
         #--- Fabrication de la date du fichier :

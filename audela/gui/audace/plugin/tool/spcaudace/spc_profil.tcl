@@ -2436,16 +2436,22 @@ proc spc_profillampe { args } {
        #--- Détermine les paramètres de binning :
        set linecoords [ spc_detectasym "$spectre_objet" ]
        set ycenter [ lindex $linecoords 0 ]
+       buf$audace(bufNo) load "$audace(rep_images)/$spectre_lampe"
        if { $methraie=="n" } {
-	   set y1 [ expr round($ycenter+0.5*[ lindex $linecoords 1 ]) ]
-	   set y2 [ expr round($ycenter-0.5*[ lindex $linecoords 1 ]) ]
+          set y1 [ expr round($ycenter+0.5*[ lindex $linecoords 1 ]) ]
+          set y2 [ expr round($ycenter-0.5*[ lindex $linecoords 1 ]) ]
        } elseif { $methraie=="o" } {
-	   set y1 [ expr round($ycenter+0.5*$spcaudace(epaisseur_bin)) ]
-	   set y2 [ expr round($ycenter-0.5*$spcaudace(epaisseur_bin)) ]
+          set naxis2 [ lindex [ buf$audace(bufNo) getkwd "NAXIS2" ] 1 ]
+          if { $spcaudace(epaisseur_bin)>$naxis2 } {
+             set epaisseur [ expr $naxis2/3. ]
+          } else {
+             set epaisseur $spcaudace(epaisseur_bin)
+          }
+          set y1 [ expr round($ycenter+0.5*$epaisseur) ]
+          set y2 [ expr round($ycenter-0.5*$epaisseur) ]
        }
 
        #--- Crée le profil de raie du spectre de la lampe de étalon :
-       buf$audace(bufNo) load "$audace(rep_images)/$spectre_lampe"
        buf$audace(bufNo) imaseries "BINY y1=$y1 y2=$y2 height=1"
        buf$audace(bufNo) setkwd [ list NAXIS 1 int "" "" ]
        buf$audace(bufNo) delkwd "NAXIS2"
