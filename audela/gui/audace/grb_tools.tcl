@@ -61,37 +61,37 @@ proc grb_swift { args } {
       close $f
       set lignes [split $lignes \n]
       set nl [llength $lignes]
-	   set fsizemax 0
+      set fsizemax 0
       for {set kl 8} {$kl<$nl} {incr kl} {
          set ligne [lindex $lignes $kl]
          set keyligne [lindex $ligne 4]
-	      set key "href=\""
-	      set k [string first $key $keyligne]
-	      if {$k>=0} {
-		      set keyligne [regsub -all \" $keyligne " "]
-		      set fname [lindex $keyligne 1]
-		      set fsize [lindex $ligne 7]		      
-		      set fsize [string trim [regsub -all K $fsize "000"]]
-		      if {$fsize>$fsizemax} { set fsizemax $fsize }
-				#::console::affiche_resultat "$fname $fsize $fsizemax\n"
-			}
-		}
+         set key "href=\""
+         set k [string first $key $keyligne]
+         if {$k>=0} {
+            set keyligne [regsub -all \" $keyligne " "]
+            set fname [lindex $keyligne 1]
+            set fsize [lindex $ligne 7]
+            set fsize [string trim [regsub -all K $fsize "000"]]
+            if {$fsize>$fsizemax} { set fsizemax $fsize }
+            #::console::affiche_resultat "$fname $fsize $fsizemax\n"
+         }
+      }
       for {set kl 8} {$kl<$nl} {incr kl} {
          set ligne [lindex $lignes $kl]
          set keyligne [lindex $ligne 4]
-	      set key "href=\""
-	      set k [string first $key $keyligne]
-	      if {$k>=0} {
-		      set keyligne [regsub -all \" $keyligne " "]
-		      set fname [lindex $keyligne 1]
-		      set fsize [lindex $ligne 7]		      
-		      set fsize [string trim [regsub -all K $fsize "000"]]
-		      if {$fsize==$fsizemax} { 
-					::console::affiche_resultat "$fname $fsize\n"
-					break
-		      }
-			}
-		}
+         set key "href=\""
+         set k [string first $key $keyligne]
+         if {$k>=0} {
+            set keyligne [regsub -all \" $keyligne " "]
+            set fname [lindex $keyligne 1]
+            set fsize [lindex $ligne 7]
+            set fsize [string trim [regsub -all K $fsize "000"]]
+            if {$fsize==$fsizemax} {
+               ::console::affiche_resultat "$fname $fsize\n"
+               break
+            }
+         }
+      }
       set url0 "http://heasarc.nasa.gov/docs/swift/archive/grb_table/tmp/$fname"
       set lignes [grb_read_url_contents "$url0"]
       set f [open ${grbpath}/raw.txt w]
@@ -954,7 +954,7 @@ proc grb_gcnc { args } {
             set ligne [regsub -all \{ "$ligne" " "]
             set ligne [regsub -all \} "$ligne" " "]
             set ligne [regsub -all / "$ligne" " "]
-            set ligne [regsub -all , "$ligne" " "]            
+            set ligne [regsub -all , "$ligne" " "]
             set ligneup [string toupper $ligne]
             set keyword [lindex $ligneup 0]
             if {($keyword=="SUBJECT:")} {
@@ -984,13 +984,13 @@ proc grb_gcnc { args } {
                set ls1 $ls
                set k1 -1 ; foreach l $ls { incr k1 ; set k [string first "$l" $ligne]; if {$k>=0} { incr kk ; append texte "[lindex $ls1 $k1] : " } }
                if {$k<0} {
-	               set ls $tel0s
-	               set ls1 $tel1s
-	               #::console::affiche_resultat "ligneup=$ligneup\n"
-	               set k1 -1 ; foreach l $ls { incr k1 ; set k [string first "$l" $ligneup]; if {$k>=0} { incr kk ; append texte "[lindex $ls1 $k1] : " } }
-	               #::console::affiche_resultat "texte=$texte\n"
+                  set ls $tel0s
+                  set ls1 $tel1s
+                  #::console::affiche_resultat "ligneup=$ligneup\n"
+                  set k1 -1 ; foreach l $ls { incr k1 ; set k [string first "$l" $ligneup]; if {$k>=0} { incr kk ; append texte "[lindex $ls1 $k1] : " } }
+                  #::console::affiche_resultat "texte=$texte\n"
                } else {
-	               #::console::affiche_resultat "texte=$texte\n"
+                  #::console::affiche_resultat "texte=$texte\n"
                }
             }
             if {($keyword=="SUBJECT:")&&($kk>0)} {
@@ -1014,7 +1014,7 @@ proc grb_gcnc { args } {
 
    } elseif {$methode=="list_telescopes"} {
 
-		lappend tels {" PROMPT " "PROMPT" 41}
+      lappend tels {" PROMPT " "PROMPT" 41}
       set gcncpath [ file join $::audace(rep_userCatalog) grb gcnc]
       file mkdir "$gcncpath"
       #
@@ -1057,7 +1057,7 @@ proc grb_gcnc { args } {
       set k 0
       foreach name $names {
          set n [llength $obss($name)]
-	      #::console::affiche_resultat "name=$name $n $k\n"
+         #::console::affiche_resultat "name=$name $n $k\n"
          lappend ordres [list $n $k]
          incr k
       }
@@ -1069,17 +1069,17 @@ proc grb_gcnc { args } {
          set kn [lsearch -exact $sat1s $name]
          set ls $sat2s
          if {$kn<0} {
-	         set kn [lsearch -exact $misc1s $name]
-	         set ls $misc2s
-	         if {$kn<0} {
-		         set kn [lsearch -exact $tel1s $name]
-		         set ls $tel2s
-	         }
+            set kn [lsearch -exact $misc1s $name]
+            set ls $misc2s
+            if {$kn<0} {
+               set kn [lsearch -exact $tel1s $name]
+               set ls $tel2s
+            }
          }
          if {$kn>=0} {
-	         set diameter [lindex $ls $kn]
+            set diameter [lindex $ls $kn]
          } else {
-	         set diameter 0
+            set diameter 0
          }
          set texte "[format %15s $name] : "
          set n [llength $obss($name)]
@@ -1088,8 +1088,8 @@ proc grb_gcnc { args } {
          set telname [regsub -all \[*/\] "$name" "_"]
          set fichier ${gcncpath}/../tel_${telname}.txt
          if {[file exists $fichier]==1} {
-         	file delete $fichier
-      	}
+            file delete $fichier
+         }
          for {set k 0} {$k<$n} {incr k} {
             set res [lindex $obss($name) $k]
             set gcnc [lindex $res 0]
