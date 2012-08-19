@@ -17,6 +17,7 @@
 # ::sn_tarot::snVerifWCS
 # ::sn_tarot::snCenterRaDec
 # ::sn_tarot::getImgCenterRaDec
+# ::sn_tarot::getImgCenterRaDec
 
 
 proc ::sn_tarot::snGalaxyCenter { } {
@@ -879,3 +880,332 @@ proc ::sn_tarot::snAnalyzeCandidateId { } {
    update
 }
 
+# -------------------------------------------------------------------------------------------------
+# proc ::sn_tarot::subopt pour soustraire les objets d'une image a partir d'une image de reference
+# Utile pour effectuer la photométrie de supernovae
+#
+# source $audace(rep_install)/gui/audace/plugin/tool/sn_tarot/sn_tarot_macros.tcl
+#
+# Entrees :
+# * file_image : Fichier FITS de l'image numero 1
+# * file_image_reference : Fichier FITS de l'image numero 2 (reference)
+# * clear_stars : =0 n'efface pas les etoiles
+#                 =1 efface toutes les etoiles sauf celle du centre
+#                 =2 efface toutes les etoiles et rayon de 2 autour de celle du centre
+#                 =3 efface toutes les etoiles
+# kappa : Dans les cas clear_stars>0 c'est le coef de la FWHM pour supprimer les etoiles
+#
+# List :
+# col0  : RA (deg)
+# col1  : DEC (deg)
+# col2  : DATE-OBS image 1 (JD)
+# col3  : EXPOSURE image 1 (s)
+# col4  : X 1 (pixel)
+# col5  : Y 1 (pixel)
+# col6  : FLUX image 1 (ADU)
+# col7  : FLUXERR image 1 (ADU)
+# col8  : FWHM image 1 (pixel)
+# col9  : BACKGROUND image 1 (pixel)
+# col10 : DIST_CENTER image 1 (pixel)
+# col11 : DATE-OBS image 2 (JD)
+# col12 : EXPOSURE image 2 (s)
+# col13 : X 2 (pixel)
+# col14 : Y 2 (pixel)
+# col15 : FLUX image 2 (ADU)
+# col16 : FLUXERR image 2 (ADU)
+# col17 : FWHM image 2 (pixel)
+# col18 : BACKGROUND image 2 (pixel)
+# col19 : DIST_CENTER image 2 (pixel)
+# -------------------------------------------------------------------------------------------------
+proc ::sn_tarot::subopt { file_image file_image_reference clear_stars {kappa 1.8} } {
+   global audace
+
+   set radius_over 5.
+   set bufno $audace(bufNo)
+   # --- Verif images
+   set pathim $audace(rep_images)
+   set res [file split ${file_image}]
+   if {[llength $res]==1} {
+	   set fic1 "${pathim}/${file_image}"
+   } else {
+	   set fic1 "${file_image}"
+   }
+   if {[string length [file extension $fic1]]==0} {
+	   append fic1 [buf$bufno extension]
+   }
+   loadima $fic1
+   set exposure1 [lindex [buf$bufno getkwd EXPOSURE] 1]
+   set dateobsjd1 [mc_date2jd [lindex [buf$bufno getkwd DATE-OBS] 1]]
+   set naxis1 [lindex [buf$bufno getkwd NAXIS1] 1]
+   set naxis2 [lindex [buf$bufno getkwd NAXIS2] 1]
+   set res [file split ${file_image_reference}]
+   if {[llength $res]==1} {
+	   set fic2 "${pathim}/${file_image_reference}"
+   } else {
+	   set fic2 "${file_image}"
+   }
+   if {[string length [file extension $fic2]]==0} {
+	   append fic2 [buf$bufno extension]
+   }   
+   loadima $fic2
+   set exposure2 [lindex [buf$bufno getkwd EXPOSURE] 1]
+   set dateobsjd2 [mc_date2jd [lindex [buf$bufno getkwd DATE-OBS] 1]]
+   # --- Sextractor
+   set pathsex [pwd]
+   #::console::affiche_resultat "sextractor $fic1\n"
+   sextractor $fic1
+   file copy -force -- "$pathsex/catalog.cat" "$pathsex/catalog1.txt"
+   #::console::affiche_resultat "sextractor $fic2\n"
+   sextractor $fic2
+   file copy -force -- "$pathsex/catalog.cat" "$pathsex/catalog2.txt"
+   # --- params
+   #::console::affiche_resultat "analyze $pathsex/config.param\n"
+   set f [open "$pathsex/config.param" r]
+   set lignes [split [read $f] \n]
+   close $f
+   set params ""
+   foreach ligne $lignes {
+      set ligne [lindex $ligne 0]
+      if {$ligne==""} {
+         continue
+      }
+      set diese [string index $ligne 0]
+      if {$diese=="#"} {
+         continue
+      }
+      lappend params $ligne
+   }
+   set k [lsearch $params X_IMAGE]
+   set kx $k
+   set k [lsearch $params Y_IMAGE]
+   set ky $k
+   set k [lsearch $params FLUX_BEST]
+   set kflux $k
+   set k [lsearch $params FLUXERR_BEST]
+   set kfluxerr $k
+	set k [lsearch $params FWHM_IMAGE]
+	set kfwhm $k
+	set k [lsearch $params BACKGROUND]
+	set kbackground $k
+   #::console::affiche_resultat "indexes x=$kx y=$ky flux=$kflux fluxerr=$kfluxerr\n"
+   # ---
+   set vignetting 1
+   #::console::affiche_resultat "vignetting=$vignetting\n"
+   #::console::affiche_resultat "analyze star list 1\n"
+   loadima $fic1
+   set err [catch {set radec [buf$bufno xy2radec [list 1 1]]} msg ]
+   if {$err==0} {
+      set wcs 1
+      #::console::affiche_resultat "wcs keywords found\n"
+   } else {
+      set wcs 0
+      error "wcs keywords not found"
+   }
+   set f [open "$pathsex/catalog1.txt" r]
+   set lignes [split [read $f] \n]
+   close $f
+   set t ""
+   set stars ""
+   set exposure $exposure1
+   set vignetting2 [expr $vignetting*$vignetting]
+   foreach ligne $lignes {
+      if {[lindex $ligne 0]==""} {
+         continue
+      }
+      set x [lindex $ligne $kx]
+      set y [lindex $ligne $ky]
+      if {$vignetting<1} {
+         set dx [expr 1.*($x-$naxis1/2)/($naxis1/2)]
+         set dy [expr 1.*($y-$naxis2/2)/($naxis2/2)]
+         set r2 [expr $dx*$dx+$dy*$dy]
+         if {$r2>$vignetting2} {
+            continue
+         }
+      }
+	   set dx [expr $x-$naxis1/2.]
+	   set dy [expr $y-$naxis2/2.]
+	   set distc [expr sqrt($dx*$dx+$dy*$dy)]
+      set radec [buf$bufno xy2radec [list $x $y]]
+      set ra [lindex $radec 0]
+      set dec [lindex $radec 1]
+      set flux [expr [lindex $ligne $kflux]/1.]
+      set fluxerr [expr [lindex $ligne $kfluxerr]/1.]
+	   set fwhm [lindex $ligne $kfwhm]
+	   set background [lindex $ligne $kbackground]   
+	   lappend stars [list $x $y $ra $dec $flux $fluxerr $fwhm $background $distc]
+   }
+   set star1s [lsort -increasing -real -index 3 $stars]
+   #::console::affiche_resultat "[llength $star1s] stars found in the list 1\n"
+   # ---
+   #::console::affiche_resultat "analyze star list 2\n"
+   loadima $fic2
+   set naxis1 [lindex [buf$bufno getkwd NAXIS1] 1]
+   set naxis2 [lindex [buf$bufno getkwd NAXIS2] 1]
+   set f [open "$pathsex/catalog2.txt" r]
+   set lignes [split [read $f] \n]
+   close $f
+   set t ""
+   set stars ""
+   set exposure $exposure2
+   foreach ligne $lignes {
+      if {[lindex $ligne 0]==""} {
+         continue
+      }
+      set x [lindex $ligne $kx]
+      set y [lindex $ligne $ky]
+      if {$vignetting<1} {
+         set dx [expr 1.*($x-$naxis1/2)/($naxis1/2)]
+         set dy [expr 1.*($y-$naxis2/2)/($naxis2/2)]
+         set r2 [expr $dx*$dx+$dy*$dy]
+         if {$r2>$vignetting2} {
+            continue
+         }
+      }
+	   set dx [expr $x-$naxis1/2.]
+	   set dy [expr $y-$naxis2/2.]
+	   set distc [expr sqrt($dx*$dx+$dy*$dy)]
+      set radec [buf$bufno xy2radec [list $x $y]]
+      set ra [lindex $radec 0]
+      set dec [lindex $radec 1]
+      set flux [expr [lindex $ligne $kflux]/1.]
+      set fluxerr [expr [lindex $ligne $kfluxerr]/1.]
+	   set fwhm [lindex $ligne $kfwhm]
+	   set background [lindex $ligne $kbackground]   
+	   lappend stars [list $x $y $ra $dec $flux $fluxerr $fwhm $background $distc]
+   }
+   set star2s [lsort -increasing -real -index 3 $stars]
+   #::console::affiche_resultat "[llength $star2s] stars found in the list 2\n"
+   # --- appariement
+   #::console::affiche_resultat "match stars in the two lists\n"
+   if {$wcs==1} {
+      set res [lindex [buf$bufno getkwd CDELT1] 1]
+      set sepmax [expr abs($res*3600)*$radius_over] ; # 1 pixel en arcsec
+   } else {
+      set sepmax [expr 1.*$radius_over] ; # 1 pixel
+   }
+   set stars ""
+   set nstar 0
+   set k1 0
+   foreach star1 $star1s {
+      set x1 [lindex $star1 0]
+      set y1 [lindex $star1 1]
+      set ra1 [lindex $star1 2]
+      set dec1 [lindex $star1 3]
+      set flux1 [lindex $star1 4]
+      set fluxerr1 [lindex $star1 5]
+      set fwhm1 [lindex $star1 6]
+      set background1 [lindex $star1 7]
+      set distc1 [lindex $star1 8]
+      set kmatch -1
+      set n [llength $star2s]
+      for {set k 0} {$k<$n} {incr k} {
+         set star2 [lindex $star2s $k]
+         if {$star2==""} {
+            continue
+         }
+         set x2 [lindex $star2 0]
+         set y2 [lindex $star2 1]
+         set ra2 [lindex $star2 2]
+         set dec2 [lindex $star2 3]
+         set flux2 [lindex $star2 4]
+         set fluxerr2 [lindex $star2 5]
+	      set fwhm2 [lindex $star2 6]
+	      set background2 [lindex $star2 7]
+	      set distc2 [lindex $star2 8]
+         set ddec [expr ($dec2-$dec1)*3600.]
+         if {$ddec<-$sepmax} {
+            continue
+         }
+         if {$ddec>$sepmax} {
+            break
+         }
+         set dra [expr abs($ra2-$ra1)]
+         if {$dra>180} {
+            set dra [expr 360.-$dra]
+         }
+         set dra [expr $dra*3600.]
+         if {$dra>$sepmax} {
+            continue
+         }
+         set flux1 [lindex $star1 4]
+         set flux2 [lindex $star2 4]
+         set texte ""
+         append texte "[format %9.5f $ra1] [format %+9.5f $dec1]"
+         append texte "   "
+         append texte "[format %15.6f $dateobsjd1] [format %e $exposure1] [format %7.2f $x1] [format %7.2f $y1] [format %e $flux1] [format %e $fluxerr1] [format %5.2f $fwhm1] [format %8.1f $background1] [format %5.1f $distc1]"
+         append texte "   "
+         append texte "[format %15.6f $dateobsjd2] [format %e $exposure2] [format %7.2f $x2] [format %7.2f $y2] [format %e $flux2] [format %e $fluxerr2] [format %5.2f $fwhm2] [format %8.1f $background2] [format %5.1f $distc2]"
+         append stars "$texte\n"
+         incr nstar
+         #::console::affiche_resultat "[format %5d $nstar] : [lrange $texte 0 1]\n"
+         #::console::affiche_resultat "=== [format %5d $nstar] : $x1 $y1   $x2 $y2\n"
+         set kmatch $k
+         break
+      }
+      if {$kmatch>=0} {
+         set star2s [lreplace $star2s $kmatch $kmatch ""]
+      }
+      incr k1
+   }
+   #::console::affiche_resultat "$nstar stars matched in the two lists\n"
+   # --- sauve le fichier resultat
+#    set fic "$pathim/${file_common}.txt"
+#    ::console::affiche_resultat "save common star list in file $fic\n"
+#    set f [open $fic w]
+#    puts -nonewline $f $stars
+#    close $f
+   set stars [lrange [split $stars \n] 0 end-1]
+   # --- Calcule le coefficient multiplicateur
+   set mults ""
+	foreach star $stars {
+		set flux1 [lindex $star  6]
+		set flux2 [lindex $star 15]
+		set mult [expr $flux1/$flux2]
+		lappend mults $mult
+	}
+	set mults [lsort -real $mults]
+	set nm [llength $mults]
+	set mult [lindex $mults [expr int($nm/2)]]
+   #::console::affiche_resultat "mult=$mult ($mults)\n"
+   # --- efface les etoiles de la premiere image
+   loadima $fic2
+   mult $mult
+   saveima mask
+   buf$bufno imaseries "REGISTERFINE delta=3 oversampling=10 file=${fic1}"
+   saveima mask2
+   loadima $fic1
+   sub mask2 0
+   if {$clear_stars>=1} {
+		foreach star $stars {
+			set xc [lindex $star 4]
+			set yc [lindex $star 5]
+			set fwhm1 [lindex $star 8]
+			set background1 [lindex $star 9]
+			set distc1 [lindex $star 10]
+			set background2 [lindex $star 18]
+			if {($distc1<3)&&($clear_stars==1)} {
+				continue
+			} elseif {($distc1<3)&&($clear_stars==2)} {
+				set rayon 2
+			} else {
+				set rayon [expr ${kappa}*$fwhm1]
+			}
+			set rayon2 [expr $rayon*$rayon]
+			set x1 [expr int($xc-$rayon)] ; if {$x1<1} {set x1 1}
+			set x2 [expr int($xc+$rayon)] ; if {$x2>$naxis1} {set x2 $naxis1}
+			set y1 [expr int($yc-$rayon)] ; if {$y1<1} {set y1 1}
+			set y2 [expr int($yc+$rayon)] ; if {$y2>$naxis2} {set y2 $naxis2}
+			set val [expr $background1-$background2*$mult]
+			for {set x $x1} {$x<=$x2} {incr x} {
+				set dx [expr $x-$xc]
+				for {set y $y1} {$y<=$y2} {incr y} {
+					set dy [expr $y-$yc]
+					set dist2 [expr $dx*$dx+$dy*$dy]
+					if {$dist2>$rayon2} { continue }
+					buf$bufno setpix [list $x $y] $val
+				}
+			}
+		}   
+	}
+	return $stars
+}
