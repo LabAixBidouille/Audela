@@ -844,7 +844,7 @@ proc ::sn_tarot::snSelect { } {
    if { $file_to_load ne "" } {
       set answer [tk_messageBox -title $caption(sn_tarot_go,attention) \
                      -icon info -type yesno \
-                     -message [format $caption(sn_tarot_go,dss_download) $file_to_load ]]
+                     -message [format $caption(sn_tarot,dss_manq) $file_to_load ]]
       if { $answer eq "yes" } {
          #--  bascule vers 'Personnel'
          if { $snconfvisu(pers_or_dss) == 1 } {
@@ -873,7 +873,7 @@ proc ::sn_tarot::snSelect { } {
       #--   si pas de fichiers manquants
       tk_messageBox -title $caption(sn_tarot_go,attention) \
          -icon info  -type ok \
-         -message "$caption(sn_tarot_go,no_dss_download)"
+         -message "$caption(sn_tarot,dss_all)"
    }
 
    #--   affiche le nom de l'archive dans le titre
