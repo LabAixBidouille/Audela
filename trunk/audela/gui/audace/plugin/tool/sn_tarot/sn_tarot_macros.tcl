@@ -893,7 +893,7 @@ proc ::sn_tarot::snAnalyzeCandidateId { } {
 #                 =1 efface toutes les etoiles sauf celle du centre
 #                 =2 efface toutes les etoiles et rayon de 2 autour de celle du centre
 #                 =3 efface toutes les etoiles
-# kappa : Dans les cas clear_stars>0 c'est le coef de la FWHM pour supprimer les etoiles
+# * kappa : Dans les cas clear_stars>0 c'est le coef de la FWHM pour supprimer les etoiles
 #
 # List :
 # col0  : RA (deg)
@@ -942,7 +942,7 @@ proc ::sn_tarot::subopt { file_image file_image_reference clear_stars {kappa 1.8
    if {[llength $res]==1} {
 	   set fic2 "${pathim}/${file_image_reference}"
    } else {
-	   set fic2 "${file_image}"
+	   set fic2 "${file_image_reference}"
    }
    if {[string length [file extension $fic2]]==0} {
 	   append fic2 [buf$bufno extension]
