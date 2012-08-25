@@ -204,19 +204,29 @@ proc ::sn_tarot::confTarotVisu { } {
    # === Met en place les liaisons
    # =========================================
 
-   bind $audace(base).snvisu <Key-space> { ::sn_tarot::::sn_tarot::incrImage }
+   bind $audace(base).snvisu <Key-space> { ::sn_tarot::incrImage }
    bind $audace(base).snvisu <Key-F1> { ::sn_tarot::incrImage }
+   bind $audace(base).snvisu <Key-Right> { ::sn_tarot::incrImage }
+   bind $audace(base).snvisu <Key-Left> { ::sn_tarot::incrImage -1}
    bind $audace(base).snvisu <Key-F2> { ::sn_tarot::snSubSky }
+   bind $audace(base).snvisu <Key-Up> {
+      set snvisu(exit_blink) "1"
+      if { $snvisu(blink_go) == "0" } {
+         ::sn_tarot::snBlinkImage
+      }
+   }
    bind $audace(base).snvisu <Key-F3> {
       set snvisu(exit_blink) "1"
       if { $snvisu(blink_go) == "0" } {
          ::sn_tarot::snBlinkImage
       }
    }
+   bind $audace(base).snvisu <Key-Down> { ::sn_tarot::noStar }
    bind $audace(base).snvisu <Key-F4> { ::sn_tarot::confirmSave }
    bind $audace(base).snvisu <Key-F5> { ::sn_tarot::snHeader $num(buffer1) }
    bind $audace(base).snvisu <Key-F6> { ::sn_tarot::snHeader $num(buffer2) }
    bind $audace(base).snvisu <Key-F7> { ::sn_tarot::noCosmic }
+   bind $audace(base).snvisu <Key-F8> { ::sn_tarot::noStar }
 
    if { [ string tolower "$snconfvisu(cuts_change)" ] == "motion" } {
       set cmd Motion
@@ -358,12 +368,13 @@ proc ::sn_tarot::incrImage { { incr 1 } } {
 #  displayImages
 #  proc lancee par nextImage et prevImage
 #-----------------------------------------------------
-proc ::sn_tarot::displayImages { {subsky 0} } {
+proc ::sn_tarot::displayImages { {subsky 0} {fname_img1 ""} } {
    variable console_msg
    global caption rep zone num snvisu snconfvisu
 
    #--- Initialisation
-   set afflog  "$snvisu(afflog)"
+   set afflog1  "$snvisu(afflog)"
+   set afflog2  "$snvisu(afflog)"
 
    #--- Nettoyage des 2 canvas avant affichage
    catch {
@@ -376,19 +387,31 @@ proc ::sn_tarot::displayImages { {subsky 0} } {
       buf$num(buffer2)  clear
       buf$num(buffer2b) clear
    }
+   
+   #---
+   set side1 4
+   set side2 4
+   set affspecial 0
+   if {$fname_img1==""} {
+	   set filename [ lindex $rep(x1) $rep(index1) ]
+   } else {
+	   set filename $fname_img1
+	   set affspecial 1
+	   set afflog1 0
+   }
+   set snvisu(name) [ file tail $filename ]
 
    #---
-   if { $afflog==0 } {
+   if { $afflog1==0 } {
       visu$num(visu1) buf $num(buffer1)
-      visu$num(visu2) buf $num(buffer2)
    } else {
       visu$num(visu1) buf $num(buffer1b)
+   }
+   if { $afflog2==0 } {
+      visu$num(visu2) buf $num(buffer2)
+   } else {
       visu$num(visu2) buf $num(buffer2b)
    }
-
-   #---
-   set filename [ lindex $rep(x1) $rep(index1) ]
-   set snvisu(name) [ file tail $filename ]
 
    set a [catch {buf$num(buffer1) load $filename} result]
    if {$a==1} {
@@ -407,18 +430,25 @@ proc ::sn_tarot::displayImages { {subsky 0} } {
    $zone(label1) configure -text "$snvisu(name)    [expr $rep(index1)+1]/$rep(sum1)"
 
    #---  regle la glissiere du buffer1
-   lassign  [ buf$num(buffer1) stat ] sh sb scalemax scalemin
+   lassign  [ buf$num(buffer1) stat ] sh sb scalemax scalemin mean std backmean backstd
    visu$num(visu1) cut [ list $sh $sb ]
 
    #--- Affichage en mode logarithme
-   if { $afflog==1 } {
-      visu$num(visu1) cut [ ::sn_tarot::snBufLog $num(buffer1) $num(buffer1b) ]
+   if { $afflog1==1 } {
+      visu$num(visu1) cut [ ::sn_tarot::snBufLog $num(buffer1) $num(buffer1b) $side1 ]
+   }
+   
+   # --- Affichage en mode nostar
+   if { $affspecial==1 } {
+	   set sb [expr $backmean-3*$backstd]
+	   set sh [expr $backmean+30*$backstd]
+      visu$num(visu1) cut [list $sh $sb]
    }
 
    visu$num(visu1) disp
 
    #--   configure la reglette de la visu1 selon le mode log/pas log
-   ::sn_tarot::configScale 1
+	::sn_tarot::configScale 1 $afflog1
 
    set user [lindex [buf$num(buffer1) getkwd USER] 1]
    if {$user!=""} {
@@ -491,17 +521,17 @@ proc ::sn_tarot::displayImages { {subsky 0} } {
    }
 
    #--- Affichage en mode logarithme
-   if {$afflog==1} {
-      visu$num(visu2) cut [ ::sn_tarot::snBufLog $num(buffer2) $num(buffer2b) ]
+   if {$afflog2==1} {
+      visu$num(visu2) cut [ ::sn_tarot::snBufLog $num(buffer2) $num(buffer2b) $side2 ]
    }
 
    visu$num(visu2) disp
 
    if {$result==""} {
       #--   configure la reglette de la visu2 selon le mode log/pas log
-      ::sn_tarot::configScale 2
+      ::sn_tarot::configScale 2 $afflog2
    } else {
-      if {$afflog==0} {
+      if {$afflog2==0} {
          set seuil [lindex [::sn_tarot::getSeuils $num(buffer2)] 0]
       } else {
          set seuil [lindex [::sn_tarot::getSeuils $num(buffer2b)] 0]
@@ -1024,6 +1054,32 @@ proc ::sn_tarot::noCosmic { } {
    }
 }
 
+#-----------------------------------------------------
+#  noStar
+#  Applique un filtre pour eliminer les etoiles déjà presentes sur l'image de reference
+#  Commande de binding associe a <Key-F8>
+#-----------------------------------------------------
+proc ::sn_tarot::noStar { } {
+   global conf rep audace
+
+   if { $rep(index1) != "-1" } {
+      set ext $conf(extension,defaut)
+      set src [ lindex $rep(x1) $rep(index1) ]
+      set name [ file rootname [ file tail $src ] ]
+      set file_image ${src}
+      set file_image_out [file dirname $src]/filter${ext}
+      set ext $conf(extension,defaut)
+      set src [ lindex $rep(x2) $rep(index2) ]
+      set name [ file rootname [ file tail $src ] ]
+      set file_image_reference ${src}
+      ::sn_tarot::subopt $file_image $file_image_reference 0 1
+      buf$audace(bufNo) bitpix float
+      buf$audace(bufNo) save $file_image_out
+      ::sn_tarot::displayImages 0 $file_image_out
+      
+   }
+}
+
 #-----------------sous-proc --------------------------
 
 #-----------------------------------------------------
@@ -1032,7 +1088,7 @@ proc ::sn_tarot::noCosmic { } {
 #  sous-proc de displayImages et snBlinkImage
 #  Parametres :
 #-----------------------------------------------------
-proc ::sn_tarot::snBufLog { numbuf bufno } {
+proc ::sn_tarot::snBufLog { numbuf bufno {side 4} } {
 
    set n1 [buf$numbuf getpixelswidth]
    if {$n1==0} {
@@ -1048,11 +1104,11 @@ proc ::sn_tarot::snBufLog { numbuf bufno } {
    set sb    [expr $fond-5.*$sigma]
    set n1    [buf$bufno getpixelswidth]
    set n2    [buf$bufno getpixelsheight]
-   set d     4
-   set x1    [expr $n1/2-$d]
-   set x2    [expr $n1/2+$d]
-   set y1    [expr $n2/2-$d]
-   set y2    [expr $n2/2+$d]
+   set d     $side
+   set x1    [expr $n1/2-$d] ; if {$x1<1} {set x1 1}
+   set x2    [expr $n1/2+$d] ; if {$x1>$n1} {set x1 $n1}
+   set y1    [expr $n2/2-$d] ; if {$y1<1} {set y1 1}
+   set y2    [expr $n2/2+$d] ; if {$y2>$n2} {set y2 $n2}
    set box   [list $x1 $y1 $x2 $y2]
    set res   [buf$bufno stat $box]
    set maxi  [lindex $res 2]
@@ -1116,10 +1172,8 @@ proc ::sn_tarot::setSeuils { numbuf } {
 #  sous-proc de displayImages
 #  Paremtre :  1 ou 2 selon le cote
 #-----------------------------------------------------
-proc ::sn_tarot::configScale { visu } {
+proc ::sn_tarot::configScale { visu {afflog 0} } {
    global snvisu zone num
-
-   set afflog $snvisu(afflog)
 
    if {$afflog==0} {
       set nume $num(buffer${visu})
