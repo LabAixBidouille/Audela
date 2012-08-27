@@ -97,7 +97,7 @@ variable current_listsources
 
       #set cmdpriam "priam -lang en -format priam -m 1 -fc cnd.obs -fm science.mes -r ./ -fcat local.cat -rcat ./ -s fichier:priam -te 1"
       #set err [catch {exec export LD_LIBRARY_PATH=/usr/local/lib:/opt/intel/lib/intel64 |& $cmdpriam} msg ]
-      set err [catch {exec ./cmd.priam} msg]
+      set err [catch {exec sh ./cmd.priam} msg]
       
       if {$err} {
          gren_info "launch_priam ERREUR d\n"
