@@ -71,7 +71,7 @@ proc ::priam::create_file_oldformat { listsources science stars } {
    set humidity 35.0
    set bandwith 0.57000
 
-   # creation du fichier de conditions initiales
+   # creation du fichier de conditions initiales (cnd.obs)
    set filecnd [ file join $audace(rep_travail) cnd.obs ]
    set chan0 [open $filecnd w]
    puts $chan0 "#? Centroid measures formatted for Priam"
@@ -93,6 +93,15 @@ proc ::priam::create_file_oldformat { listsources science stars } {
    puts $chan0 "echelle        : 0.44"
    puts $chan0 "orientation    : 0.00"
    puts $chan0 "taille CCD     : 1024 1024"
+   close $chan0
+
+   # creation du fichier d'exec de priam (cmd.priam)
+   set filepriam [ file join $audace(rep_travail) cmd.priam ]
+   set chan0 [open $filepriam w]
+   puts $chan0 "#!/bin/sh"
+   puts $chan0 "LD_LIBRARY_PATH=/usr/local/lib:/opt/intel/lib/intel64"
+   puts $chan0 "export LD_LIBRARY_PATH"
+   puts $chan0 "priam -lang en -format priam -m 1 -fc cnd.obs -fm science.mes -r ./ -fcat local.cat -rcat ./ -s fichier:priam -te 1"
    close $chan0
 
    set filenametmp [ file join $audace(rep_travail) science.mes ]
