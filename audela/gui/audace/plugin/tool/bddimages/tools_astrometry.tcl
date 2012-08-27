@@ -94,6 +94,14 @@ variable current_listsources
        set ::tools_astrometry::current_listsources [::analyse_source::psf $tools_astrometry::current_listsources 10]
        ::priam::create_file_oldformat $::tools_astrometry::current_listsources $::tools_astrometry::science $::tools_astrometry::reference 
        gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $::tools_astrometry::current_listsources ]\n"
+
+       set err [catch {exec priam ... } msg ]
+       if {$err} {
+          gren_info "launch_priam ERREUR d\n"
+          gren_info "launch_priam:  NUM : <$err>\n" 
+          gren_info "launch_priam:  MSG : <$msg>\n"
+          }   
+
        
    }
 
