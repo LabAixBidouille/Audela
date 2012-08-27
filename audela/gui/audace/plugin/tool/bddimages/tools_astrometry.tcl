@@ -27,7 +27,7 @@ variable current_listsources
          return -code $errnum $msg
       }
       
-      #gren_info "READ catafile = $catafile\n"
+      gren_info "READ catafile = $catafile\n"
       set listsources [::tools_cata::get_cata_xml $catafile]
       
       set listsources [::tools_sources::set_common_fields $listsources IMG    { ra dec 5.0 calib_mag calib_mag_ss1}]
@@ -66,7 +66,6 @@ variable current_listsources
             set ::tools_astrometry::current_image_name $filename
             set ::tools_astrometry::current_image_date $date
 
-
             set ra             [lindex [::bddimages_liste::lget $tabkey ra         ] 1]
             set dec            [lindex [::bddimages_liste::lget $tabkey dec        ] 1]
             set pixsize1       [lindex [::bddimages_liste::lget $tabkey pixsize1   ] 1]
@@ -80,10 +79,20 @@ variable current_listsources
             ::tools_astrometry::load_cata
 
             gren_info "current_listsources $tools_astrometry::current_listsources\n"
+            
+            ::tools_astrometry::launch_priam
+            
+           # break
          }
          
       }
 
+   }
+
+   proc ::tools_astrometry::launch_priam {  } {
+       
+       ::priam::create_file_oldformat $tools_astrometry::current_listsources $::tools_astrometry::science $::tools_astrometry::reference 
+       
    }
 
 }
