@@ -95,14 +95,28 @@ variable current_listsources
        ::priam::create_file_oldformat $::tools_astrometry::current_listsources $::tools_astrometry::science $::tools_astrometry::reference 
        gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $::tools_astrometry::current_listsources ]\n"
 
-       set err [catch {exec priam ... } msg ]
-       if {$err} {
-          gren_info "launch_priam ERREUR d\n"
-          gren_info "launch_priam:  NUM : <$err>\n" 
-          gren_info "launch_priam:  MSG : <$msg>\n"
-          }   
+      #set cmdpriam "priam -lang en -format priam -m 1 -fc cnd.obs -fm science.mes -r ./ -fcat local.cat -rcat ./ -s fichier:priam -te 1"
+      #set err [catch {exec export LD_LIBRARY_PATH=/usr/local/lib:/opt/intel/lib/intel64 |& $cmdpriam} msg ]
+      set err [catch {exec ./cmd.priam} msg]
+      
+      if {$err} {
+         gren_info "launch_priam ERREUR d\n"
+         gren_info "launch_priam:  NUM : <$err>\n" 
+      }   
+      gren_info "launch_priam:  MSG : <$msg>\n"
 
-       
+      
    }
 
 }
+
+# Sortie de Priam:
+
+#SUCCESS
+#CRVAL1=...
+#CATA_FIELDS=ASTROM { ra dec dra ddec}
+#CATA_VALUES=SKYBOT_1 { 12.59423872 +01.75000 0.0769  0.0382 }
+#CATA_VALUES=SKYBOT_2 { 12.59423872 +01.19500 0.0769  0.0382 }
+#...
+#CATA_REF=UCAC3_1 { 12.59423872 +01.75000 0.11748 0.05313 }
+#...
