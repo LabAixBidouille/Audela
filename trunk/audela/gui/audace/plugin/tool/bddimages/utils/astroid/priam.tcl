@@ -11,7 +11,7 @@
 namespace eval ::priam {
 
 
-# FIC.MES
+# ** Exemple du fichier science.mes
 
 # #? Centroid measures formatted for Priam
 # #?   Source: Tasp/idl - mai 2004
@@ -24,8 +24,33 @@ namespace eval ::priam {
 # S 2.618036E+02 6.804010E-02 6.224708E+02 8.501132E-02 4.471942E+00 3.288280E+00 1.769230E+01 NewObj
 # R 6.797814E+02 3.830099E-03 8.745620E+02 4.537117E-03 3.725335E+00 4.525925E+00 1.185362E+01 Star_1
 
-# LOCAL.CAT
+# ** Exemple fichier local.cat
+
 # 2MASS_12585626+0052218    12 58 56.261520 +00 52 21.87840 0.00 0.00 2451545.50  100.0 100.0  0.00  0.00  16.083 ?    0.00 0.0
+
+# ** Exemple fichier cnd.obs
+
+# #
+# # Conditions observationnelles
+# # 
+# # objet : astrometrie de 2008 FU6 au T1m Pic du midi
+# # date  : 11 avril 2011
+# #
+#   code           : 586
+# lieu           : Pic du midi
+# station        : 0.0 0.0 0.0
+# observateurs   : F. Vachier
+# reduction      : F. Vachier & J. Berthier
+# #
+# # Instrumentation
+# #
+#   type           : T1m
+# focale         : 12.5
+# diametre       : 1.0
+# echelle        : 0.44
+# orientation    : 0.00 
+# taille CCD     : 1024 1024
+# #
 
 # {IMG {105.94394 4.34557 5 +14.0326 0.036} 
 #      {4133 3 1455.26 1236.98 +12.432 0.036 2483.4 81.3 105.94394 4.34557 +14.0326 +13.8275 0.3848 +13.8527 0.3839 221 150 994.2 +0.63 -0.08 -0.16 +1.29 +0.94 -12.1 3.26 0}} 
@@ -45,6 +70,30 @@ proc ::priam::create_file_oldformat { listsources science stars } {
    set pression 1013.500
    set humidity 35.0
    set bandwith 0.57000
+
+   # creation du fichier de conditions initiales
+   set filecnd [ file join $audace(rep_travail) cnd.obs ]
+   set chan0 [open $filecnd w]
+   puts $chan0 "#? Centroid measures formatted for Priam"
+   puts $chan0 "# Conditions observationnelles"
+   puts $chan0 "# objet : astrometrie de 2008 FU6 au T1m Pic du midi"
+   puts $chan0 "# date  : 11 avril 2011"
+   puts $chan0 "#"
+   puts $chan0 "code           : 586"
+   puts $chan0 "lieu           : Pic du midi"
+   puts $chan0 "station        : 0.0 0.0 0.0"
+   puts $chan0 "observateurs   : F. Vachier"
+   puts $chan0 "reduction      : F. Vachier & J. Berthier"
+   puts $chan0 "#"
+   puts $chan0 "# Instrumentation"
+   puts $chan0 "#"
+   puts $chan0 "type           : T1m"
+   puts $chan0 "focale         : 12.5"
+   puts $chan0 "diametre       : 1.0"
+   puts $chan0 "echelle        : 0.44"
+   puts $chan0 "orientation    : 0.00"
+   puts $chan0 "taille CCD     : 1024 1024"
+   close $chan0
 
    set filenametmp [ file join $audace(rep_travail) science.mes ]
    # creation du fichier de mesures
