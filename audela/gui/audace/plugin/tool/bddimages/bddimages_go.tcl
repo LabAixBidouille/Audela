@@ -137,6 +137,10 @@ proc ::bddimages::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdicalendar.tcl ]\""
 
    # Nouvelle facon de nomage des routines (separation gui et ligne de commande)
+
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages gui_astrometry.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages tools_astrometry.tcl ]\""
+
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_status.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_status.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_status.cap ]\""
