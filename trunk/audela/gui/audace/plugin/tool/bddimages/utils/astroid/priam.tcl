@@ -33,12 +33,11 @@ namespace eval ::priam {
 #      {PHOTOM {} {1455.214748 1237.066546 2.946869 2.521896 2.7343825 1467.000000 0 1239.000000 227.0 38.759163 37.8491145436 5.85667961922 3.26 0.0976624473377}}
    
 
-proc ::priam::create_file_oldformat { listsources science } {
+proc ::priam::create_file_oldformat { listsources science stars } {
 
    global bddconf audace
 
    # constantes provisoires
-   set nameofcata "SKYBOT"
    set axes "wn"
    set imagefilename "toto.gif"
    set dateobsjd 2454908.5137460064
@@ -53,7 +52,7 @@ proc ::priam::create_file_oldformat { listsources science } {
    set chan0 [open $filemes w]
    puts $chan0 "#? Centroid measures formatted for Priam"
    puts $chan0 "#?   Source: Astroid - jan. 2012"
-   puts $chan0 "#? Object: $nameofcata"
+   puts $chan0 "#? Object: $science"
    puts $chan0 "#"
    puts $chan0 "#> orientation: $axes"
    puts $chan0 "#"
@@ -64,17 +63,16 @@ proc ::priam::create_file_oldformat { listsources science } {
    set filelocal [ file join $audace(rep_travail) local.cat ]
    set chan1 [open $filelocal w]
 
-
-   set stars "UCAC3"
-   
    set index 0
    set indexsc 0
    set newsources {}
    set sources [lindex $listsources 1]
    foreach s $sources {
       foreach cata $s {
+         gren_info "CATA = [lindex $cata 0]\n"
          if {[lindex $cata 0] == $stars} {
             foreach u $s {
+               gren_info "PHOTOM ? = $u\n"
                if {[lindex $u 0] == "PHOTOM"} {
                   set odata [lindex $u 2]
                   incr index
