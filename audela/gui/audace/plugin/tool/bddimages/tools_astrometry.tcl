@@ -91,7 +91,9 @@ variable current_listsources
 
    proc ::tools_astrometry::launch_priam {  } {
        
-       ::priam::create_file_oldformat $tools_astrometry::current_listsources $::tools_astrometry::science $::tools_astrometry::reference 
+       set ::tools_astrometry::current_listsources [::analyse_source::psf $tools_astrometry::current_listsources 10]
+       ::priam::create_file_oldformat $::tools_astrometry::current_listsources $::tools_astrometry::science $::tools_astrometry::reference 
+       gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $::tools_astrometry::current_listsources ]\n"
        
    }
 
