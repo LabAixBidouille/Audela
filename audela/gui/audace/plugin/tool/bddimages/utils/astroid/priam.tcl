@@ -96,8 +96,7 @@ proc ::priam::create_file_oldformat { listsources science stars } {
    close $chan0
 
    # creation du fichier d'exec de priam (cmd.priam)
-   set formatfile priam
-   #set formatfile bddimages
+   set formatfile bddimages
    
    set filepriam [ file join $audace(rep_travail) cmd.priam ]
    set chan0 [open $filepriam w]

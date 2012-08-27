@@ -123,7 +123,6 @@ variable current_listsources
    
    proc ::tools_astrometry::extract_priam_result { file } {
    
-      set file "science.mes.bdi1"
       gren_info "extract_priam_result:  file : <$file>\n"
    
       set chan [open $file r]
