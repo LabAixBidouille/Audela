@@ -96,12 +96,15 @@ proc ::priam::create_file_oldformat { listsources science stars } {
    close $chan0
 
    # creation du fichier d'exec de priam (cmd.priam)
+   set formatfile priam
+   #set formatfile bddimages
+   
    set filepriam [ file join $audace(rep_travail) cmd.priam ]
    set chan0 [open $filepriam w]
    puts $chan0 "#!/bin/sh"
-   puts $chan0 "LD_LIBRARY_PATH=/usr/local/lib:/opt/intel/lib/intel64"
+   puts $chan0 "LD_LIBRARY_PATH=/usr/local/lib:$::tools_astrometry::ifortlib"
    puts $chan0 "export LD_LIBRARY_PATH"
-   puts $chan0 "priam -lang en -format priam -m 1 -fc cnd.obs -fm science.mes -r ./ -fcat local.cat -rcat ./ -s fichier:priam -te 1"
+   puts $chan0 "priam -lang en -format priam -m 1 -fc cnd.obs -fm science.mes -r ./ -fcat local.cat -rcat ./ -s fichier:$formatfile -te 1"
    close $chan0
 
    set filenametmp [ file join $audace(rep_travail) science.mes ]

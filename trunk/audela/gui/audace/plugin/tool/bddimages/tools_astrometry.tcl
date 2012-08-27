@@ -80,12 +80,13 @@ variable current_listsources
 
             gren_info "current_listsources $tools_astrometry::current_listsources\n"
             
-            ::tools_astrometry::launch_priam
-            
            # break
          }
          
       }
+
+      ::tools_astrometry::extract_priam_result [::tools_astrometry::launch_priam]
+      
 
    }
 
@@ -97,16 +98,85 @@ variable current_listsources
 
       #set cmdpriam "priam -lang en -format priam -m 1 -fc cnd.obs -fm science.mes -r ./ -fcat local.cat -rcat ./ -s fichier:priam -te 1"
       #set err [catch {exec export LD_LIBRARY_PATH=/usr/local/lib:/opt/intel/lib/intel64 |& $cmdpriam} msg ]
+      
+      #set err [catch {exec pwd} msg]
+      #gren_info "launch_priam:  PWD : <$msg>\n"
       set err [catch {exec sh ./cmd.priam} msg]
       
       if {$err} {
          gren_info "launch_priam ERREUR d\n"
          gren_info "launch_priam:  NUM : <$err>\n" 
       }   
-      gren_info "launch_priam:  MSG : <$msg>\n"
-
+      #gren_info "launch_priam:  MSG : <$msg>\n"
       
+    set tab [split $msg "\0"]
+    foreach l $tab {
+       #gren_info "ligne=$l n"
+       set r [string last "writing results in the file:" $l ]
+       #gren_info "r=$r ***\n"
+       set file [string trim [string range $l [expr 29+$r] end] ]
+       #gren_info "file=$file\n"
+       
+    }
+      return $file
    }
+   
+   proc ::tools_astrometry::extract_priam_result { file } {
+   
+      set file "science.mes.bdi1"
+      gren_info "extract_priam_result:  file : <$file>\n"
+   
+      set chan [open $file r]
+      gets $chan success
+      #gren_info "$success\n"
+      if {$success!="SUCCESS"} {
+         return
+      }
+      set astrom(kwds)     {RA                       DEC                       CRPIX1        CRPIX2        CRVAL1          CRVAL2           CDELT1    CDELT2    CROTA2                    CD1_1         CD1_2         CD2_1         CD2_2         FOCLEN         PIXSIZE1                        PIXSIZE2}
+      set astrom(units)    {deg                      deg                       pixel         pixel         deg             deg              deg/pixel deg/pixel deg                       deg/pixel     deg/pixel     deg/pixel     deg/pixel     m              um                              um}
+      set astrom(types)    {double                   double                    double        double        double          double           double    double    double                    double        double        double        double        double         double                          double}
+      set astrom(comments) {"RA expected for CRPIX1" "DEC expected for CRPIX2" "X ref pixel" "Y ref pixel" "RA for CRPIX1" "DEC for CRPIX2" "X scale" "Y scale" "Position angle of North" "Matrix CD11" "Matrix CD12" "Matrix CD21" "Matrix CD22" "Focal length" "X pixel size binning included" "Y pixel size binning included"}
+      set n [llength $astrom(kwds)]
+      
+      set cpt 0
+      while {[gets $chan line] >= 0} {
+         set a [split $line "="]
+         set key [lindex $a 0]
+         set val [lindex $a 1]
+         gren_info "$key=$val\n"
+
+         for {set k 0 } { $k<$n } {incr k} {
+            set kwd [lindex $astrom(kwds) $k]
+            if {$kwd==$key} {
+               set type [lindex $astrom(types) $k]
+               set unit [lindex $astrom(units) $k]
+               set comment [lindex $astrom(comments) $k]
+               buf$::audace(bufNo) setkwd [list $kwd $val $type $unit $comment]
+            }
+         }
+         
+         if {$key=="CATA_FIELDS"} {
+            set catafields $val
+         }
+         if {$key=="CATA_VALUES"} {
+            set name  [lindex $val 0]
+            set sour  [lindex $val 1]
+            set catasource($name) $sour
+         }
+         if {$key=="CATA_REF"} {
+            set name  [lindex $val 0]
+            set sour  [lindex $val 1]
+            set catasource($name) $sour
+         }
+         
+      }
+      close $chan
+   
+      gren_info "[::manage_source::get_fields_from_sources $tools_astrometry::current_listsources] \n"
+   
+   
+   }
+   
 
 }
 
