@@ -58,7 +58,7 @@ variable current_listsources
          gren_info "date : $date  idbddimg : $idbddimg\n"
          # gren_info "CURRENT_IMAGE :  $::tools_astrometry::current_image\n"
 
-         if {[::bddimages_liste::lget $::tools_cata::current_image "cataexist"]=="1"} {
+         if {[::bddimages_liste::lget $::tools_astrometry::current_image "cataexist"]=="1"} {
 
             set dirfilename [::bddimages_liste::lget $::tools_astrometry::current_image dirfilename]
             set filename    [::bddimages_liste::lget $::tools_astrometry::current_image filename]
