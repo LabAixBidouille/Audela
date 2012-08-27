@@ -1497,11 +1497,11 @@ namespace eval gui_cata {
              pack $ucac3.dir -in $ucac3 -side right -pady 1 -anchor w
   
         #--- Cree un frame pour afficher nomad1
-        set nomad1 [frame $f1.nomad1 -borderwidth 0 -cursor arrow -relief groove] -state disabled
+        set nomad1 [frame $f1.nomad1 -borderwidth 0 -cursor arrow -relief groove]
         pack $nomad1 -in $f1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
              #--- Cree un checkbutton
-             checkbutton $nomad1.check -highlightthickness 0 -text "nomad1" -variable ::tools_cata::use_nomad1
+             checkbutton $nomad1.check -highlightthickness 0 -text "nomad1" -variable ::tools_cata::use_nomad1 -state disabled
              pack $nomad1.check -in $nomad1 -side left -padx 5 -pady 0
              #--- Cree un entry
              entry $nomad1.dir -relief sunken -textvariable ::tools_cata::catalog_nomad1 -width 30
