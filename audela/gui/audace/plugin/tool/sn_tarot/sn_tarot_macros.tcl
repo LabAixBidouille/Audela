@@ -425,93 +425,167 @@ proc ::sn_tarot::searchinArchives { name } {
 #    Appel au Cheker SN des supernovae
 #------------------------------------------------------------
 # source $audace(rep_install)/gui/audace/plugin/tool/sn_tarot/sn_tarot_macros.tcl ; package require http
-# set lignes [::sn_tarot::SNChecker {2012 01 06.96} 03h38m51.5s -35d35'33"]
-proc ::sn_tarot::SNChecker { date ra dec } {
+# set lignes [::sn_tarot::SNChecker {2012 01 06.96} 21h12m08.86s -47d03'13.4  rochester_snlocations]
+proc ::sn_tarot::SNChecker { date ra dec {urlsource rochester_snlocations} } {
    global panneau caption
 
    set ra_cand [mc_angle2deg $ra ]
    set dec_cand [mc_angle2deg $dec 90 ]
-   set url http://www.cbat.eps.harvard.edu/lists/RecentSupernovae.html
-   if { [catch { set tok [ ::http::geturl $url ] } ErrInfo ] } {
-      return "No internet connection."
-   }
-
-   upvar #0 $tok state
-
-  if { [ ::http::status $tok ] != "ok" } {
-      return "Problem while reading the html code."
-   }
-
-   #--   verifie le contenu
-   set key [ string range [ ::http::data $tok ] 0 4 ]
-
-   if { $key == "<?xml" } {
-      return "Problem while decoding the html code."
-   }
-
-   set lignes [::http::data $tok ]
-   ::http::cleanup $tok
-
-   set np 0
-   set planets ""
-   append planets "SN      Host Galaxy      Date         R.A.    Decl.    Offset   Mag.   Disc. Ref.            SN Position         Posn. Ref.       Type  SN      Discoverer(s)\n"
-   set lignes [regsub -all \" $lignes " "]
-   set lignes [regsub -all \{ $lignes " "]
-   set lignes [regsub -all \} $lignes " "]
-   set lignes [split $lignes \n]
-   set n [llength $lignes]
-   set valid 0
-   for {set k 0} {$k<$n} {incr k} {
-      set ligne [lindex $lignes $k]
-      #::console::affiche_resultat "A <$ligne>\n"
-      if {$ligne==""} { continue }
-      set key1 [lindex $ligne 0]
-      set key2 [lindex $ligne 1]
-      if {($key1=="SN")&&($key2=="Host")} {
-         set valid 1
-         incr k 1
-         continue
-      }
-      if {($key1=="</pre>")} {
-         break
-      }
-      if {$valid>=1} {
+   
+   if {$urlsource=="rochester_snlocations"} {
+	   set url http://www.rochesterastronomy.org/snimages/snlocations.html
+	   if { [catch { set tok [ ::http::geturl $url ] } ErrInfo ] } {
+	      return "No internet connection."
+	   }
+	
+	   upvar #0 $tok state
+	
+	  if { [ ::http::status $tok ] != "ok" } {
+	      return "Problem while reading the html code."
+	   }
+	
+	   #--   verifie le contenu
+	   set key [ string range [ ::http::data $tok ] 0 4 ]
+	
+	   if { $key == "<?xml" } {
+	      return "Problem while decoding the html code."
+	   }
+	
+	   set lignes [::http::data $tok ]
+	   ::http::cleanup $tok
+	
+	   set np 0
+	   set planets ""
+	   append planets "R.A.         Decl.        R.A.(hour) Decl.      Date           Type   Mag     Ref.\n"
+	   set lignes [regsub -all \" $lignes " "]
+	   set lignes [regsub -all \{ $lignes " "]
+	   set lignes [regsub -all \} $lignes " "]
+	   set lignes [regsub -all \< $lignes " "]
+	   set lignes [regsub -all \> $lignes " "]
+	   set lignes [regsub -all "target= _self" $lignes ""]
+	   set lignes [split $lignes \n]
+	   set n [llength $lignes]
+	   for {set k 0} {$k<$n} {incr k} {
+	      set ligne [lindex $lignes $k]
+	      #::console::affiche_resultat "A <$ligne>\n"
+	      if {$ligne==""} { continue }
+	      set key1 [lindex $ligne 0]
+	      if {($key1=="pre")} {
+	         set valid 0
+	         continue
+	      }
+	      if {($key1=="/pre")} {
+	         break
+	      }
          #          1         2         3         4         5         6         7         8         9        10
          # 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789
-         #2011jx  Anon.            2011 12 29  10 29.1 +46 05
-         #SN      Host Galaxy      Date         R.A.    Decl.    Offset   Mag.   Disc. Ref.            SN Position         Posn. Ref.       Type  SN      Discoverer(s)
-         #2011iv  NGC 1404         2011 12 02  03 38.9 -35 36    7W   8N  12.8   CBET 2940       03 38 51.35 -35 35 32.0   CBET 2940        Ia    2011iv  Parker
-
+         #23:46:09.37  +03:17:34.1  23.7692699 +03.292806 2012/01/05.10  Ia     18.3** <a href="../sn2012/index.html#ptf12b20" target="_self">PTF12jb</a>
+         #23:46:14.37  -28:05:50.6  23.7706585 -28.097389 2011/08/19.340 Ia     19.6** <a href="../sn2011/index.html#PTF11klo" target="_self">PTF11klo</a>	
          # --- on enleve les balises <>
-         set k2 [string first < $ligne]
-         set reste [string range $ligne [expr $k2+1] end]
-         set newligne ""
-         for {set kk 0} {$kk<20} {incr kk } {
-            set k1 [string first > $reste]
-            set k2 [string first < $reste]
-            if {$k2==-1} {
-               set isole [string range $reste [expr $k1+1] end]
-            } else {
-               set isole [string range $reste [expr $k1+1] [expr $k2-1]]
-            }
-            append newligne "$isole"
-            if {$k2==-1} { break }
-            set reste [string range $reste [expr $k2+1] end]
-         }
-         set ligne $newligne
-         set ra  [mc_angle2deg [string range $ligne 87  88]h[string range $ligne  90  91]m[string range $ligne  93  97]s ]
-         set dec [mc_angle2deg [string range $ligne 99 101]d[string range $ligne 103 104]m[string range $ligne 106 109]s 90 ]
+         set ra  [mc_angle2deg [string range $ligne  0   1]h[string range $ligne   3   4]m[string trim [string range $ligne   6  10]]s ]
+         set dec [mc_angle2deg [string range $ligne 13  15]d[string range $ligne  17  18]m[string trim [string range $ligne  20  23]]s 90]
          set sep_arcmin [expr 60*[lindex [mc_sepangle $ra $dec $ra_cand $dec_cand] 0]]
          #::console::affiche_resultat "[lindex $ligne 0] sep_arcmin=$sep_arcmin    ($ra $dec $ra_cand $dec_cand)\n"
          if {$sep_arcmin<3} {
+	         set kk [string first "a href=" $ligne]
+	         #::console::affiche_resultat "A ligne=<$ligne>\n"
+	         #::console::affiche_resultat "kk=$kk\n"
+	         set ligne2 [string range $ligne 0 [expr $kk-1]]
+	         set ligne3 [string range $ligne [expr $kk+10] end-3]
+	         #::console::affiche_resultat "A ligne2=<$ligne2>\n"
+	         #::console::affiche_resultat "A ligne3=<$ligne3>\n"
+	         set ligne "${ligne2}http://www.rochesterastronomy.org${ligne3}"
             append planets "$ligne\n"
             incr np
          }
-         incr valid
-      }
+	   }
+	   if {$np==0} {
+	      set planets "No recent supernova found from Rochester snlocations."
+	   }
    }
-   if {$np==0} {
-      set planets "No recent supernova found from CBAT."
+   if {$urlsource=="cbat_recent"} {
+	   set url http://www.cbat.eps.harvard.edu/lists/RecentSupernovae.html
+	   if { [catch { set tok [ ::http::geturl $url ] } ErrInfo ] } {
+	      return "No internet connection."
+	   }
+	
+	   upvar #0 $tok state
+	
+	  if { [ ::http::status $tok ] != "ok" } {
+	      return "Problem while reading the html code."
+	   }
+	
+	   #--   verifie le contenu
+	   set key [ string range [ ::http::data $tok ] 0 4 ]
+	
+	   if { $key == "<?xml" } {
+	      return "Problem while decoding the html code."
+	   }
+	
+	   set lignes [::http::data $tok ]
+	   ::http::cleanup $tok
+	
+	   set np 0
+	   set planets ""
+	   append planets "SN      Host Galaxy      Date         R.A.    Decl.    Offset   Mag.   Disc. Ref.            SN Position         Posn. Ref.       Type  SN      Discoverer(s)\n"
+	   set lignes [regsub -all \" $lignes " "]
+	   set lignes [regsub -all \{ $lignes " "]
+	   set lignes [regsub -all \} $lignes " "]
+	   set lignes [split $lignes \n]
+	   set n [llength $lignes]
+	   set valid 0
+	   for {set k 0} {$k<$n} {incr k} {
+	      set ligne [lindex $lignes $k]
+	      #::console::affiche_resultat "A <$ligne>\n"
+	      if {$ligne==""} { continue }
+	      set key1 [lindex $ligne 0]
+	      set key2 [lindex $ligne 1]
+	      if {($key1=="SN")&&($key2=="Host")} {
+	         set valid 1
+	         incr k 1
+	         continue
+	      }
+	      if {($key1=="</pre>")} {
+	         break
+	      }
+	      if {$valid>=1} {
+	         #          1         2         3         4         5         6         7         8         9        10
+	         # 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789
+	         #2011jx  Anon.            2011 12 29  10 29.1 +46 05
+	         #SN      Host Galaxy      Date         R.A.    Decl.    Offset   Mag.   Disc. Ref.            SN Position         Posn. Ref.       Type  SN      Discoverer(s)
+	         #2011iv  NGC 1404         2011 12 02  03 38.9 -35 36    7W   8N  12.8   CBET 2940       03 38 51.35 -35 35 32.0   CBET 2940        Ia    2011iv  Parker
+	
+	         # --- on enleve les balises <>
+	         set k2 [string first < $ligne]
+	         set reste [string range $ligne [expr $k2+1] end]
+	         set newligne ""
+	         for {set kk 0} {$kk<20} {incr kk } {
+	            set k1 [string first > $reste]
+	            set k2 [string first < $reste]
+	            if {$k2==-1} {
+	               set isole [string range $reste [expr $k1+1] end]
+	            } else {
+	               set isole [string range $reste [expr $k1+1] [expr $k2-1]]
+	            }
+	            append newligne "$isole"
+	            if {$k2==-1} { break }
+	            set reste [string range $reste [expr $k2+1] end]
+	         }
+	         set ligne $newligne
+	         set ra  [mc_angle2deg [string range $ligne 87  88]h[string range $ligne  90  91]m[string range $ligne  93  97]s ]
+	         set dec [mc_angle2deg [string range $ligne 99 101]d[string range $ligne 103 104]m[string range $ligne 106 109]s 90 ]
+	         set sep_arcmin [expr 60*[lindex [mc_sepangle $ra $dec $ra_cand $dec_cand] 0]]
+	         #::console::affiche_resultat "[lindex $ligne 0] sep_arcmin=$sep_arcmin    ($ra $dec $ra_cand $dec_cand)\n"
+	         if {$sep_arcmin<3} {
+	            append planets "$ligne\n"
+	            incr np
+	         }
+	         incr valid
+	      }
+	   }
+	   if {$np==0} {
+	      set planets "No recent supernova found from CBAT."
+	   }
    }
    return $planets
 }
