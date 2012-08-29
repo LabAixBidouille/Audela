@@ -4,7 +4,7 @@
 
 typedef int PIC_TYPE;
 
-typedef struct
+typedef struct INFOIMAGE
    {int		imax;
     int		jmax;
     PIC_TYPE     *pic;

@@ -49,14 +49,16 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				InlineFunctionExpansion="2"
+				InlineFunctionExpansion="0"
 				EnableIntrinsicFunctions="false"
-				FavorSizeOrSpeed="0"
+				FavorSizeOrSpeed="1"
 				AdditionalIncludeDirectories="../src;../;../../../external/include/win;../../../external/include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;LIBESHEL_EXPORTS;USE_TCL_STUBS;_USE_MATH_DEFINES;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS"
-				StringPooling="true"
+				StringPooling="false"
+				MinimalRebuild="false"
+				ExceptionHandling="1"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="true"
+				EnableFunctionLevelLinking="false"
 				FloatingPointExceptions="true"
 				PrecompiledHeaderFile=".\Release/libeshel.pch"
 				AssemblerListingLocation=".\Release/"
@@ -156,9 +158,9 @@
 				Optimization="0"
 				AdditionalIncludeDirectories="../src;../;../../../external/include/win;../../../external/include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;_USE_MATH_DEFINES;LIBESHEL_EXPORTS;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;USE_TCL_STUBS;_CRTDBG_MAP_ALLOC"
-				MinimalRebuild="false"
+				MinimalRebuild="true"
 				ExceptionHandling="1"
-				BasicRuntimeChecks="0"
+				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				PrecompiledHeaderFile=".\Debug/libeshel.pch"
 				AssemblerListingLocation=".\Debug/"
@@ -237,7 +239,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\fitsfile2.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\focas.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\src\infoimage.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\InstrumentalResponse.cpp"
 				>
 			</File>
 			<File
@@ -274,7 +288,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\fitsfile2.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\focas.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\infoimage.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\InstrumentalResponse.h"
 				>
 			</File>
 			<File

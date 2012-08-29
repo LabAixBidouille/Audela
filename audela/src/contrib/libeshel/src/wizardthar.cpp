@@ -12,8 +12,12 @@
 
 #include "processing.h"
 #include "wizardthar.h"
+#include "focas.h"
 
-// indluce libtt definitions
+#define USE_LIBTT 1
+
+#ifdef USE_LIBTT
+// include libtt definitions
 #ifdef __cplusplus
 extern "C" {            /// Assume C declarations for C++ 
 #endif                  // __cplusplus 
@@ -26,6 +30,8 @@ int __stdcall _libtt_main(int,...);
 #ifdef __cplusplus
 }                       // End of extern "C"
 #endif                  // __cplusplus 
+#endif
+
 
 bool compareLineGapByLambda(LINE_GAP &first, LINE_GAP &second);
 bool compareLineGapByPosx(LINE_GAP &first, LINE_GAP &second);
@@ -47,10 +53,16 @@ int createCatalogFile ( char * cDummyfilename, int orderNo, INFOSPECTRO &spectro
                        double dx, ::std::list<double> &lineList, 
                        int cropHeight, int minx , int maxx,
                        ::std::list<REFERENCE_LINE> &catalogLineList);
-
+#ifdef USE_LIBTT
 int  createMatchFile ( char * outputFileName, double referenceLamba, double &refPosX, 
                       ::std::list<REFERENCE_LINE> &matchLineList,double &d0, double &d1);
-
+#else
+int matchLine ( ::std::list<REFERENCE_LINE> &imageLineList,  
+                ::std::list<REFERENCE_LINE> &catalogLineList,
+                double referenceLamba, double &refPosX, 
+                ::std::list<REFERENCE_LINE> &matchLineList, 
+                double &d0, double &d1);
+#endif
 void splitFilename(char *fileName, ::std::string &dir, ::std::string &root, ::std::string &ext);
 
 
@@ -164,7 +176,9 @@ void Eshel_findReferenceLine(
                ::std::list<REFERENCE_LINE> catalogLineList;
                int nbCatalogLine = createCatalogFile ( cDummyfilename, ordre_ref_num, spectro, 0, lineList, cropHeight, ordre[orderNo].min_x, ordre[orderNo].max_x, catalogLineList);
                if ( nbCatalogLine > 5 ) {
+#ifdef USE_LIBTT                  
                   // je cree le fichier de sortie
+                  
                   CCfits::PFitsFile pDummyFits = Fits_createFits(dummyfilename, straightLineImage[orderNo], spectro.imax, cropHeight);
                   Fits_setKeyword(pDummyFits, "PRIMARY", "OBJEFILE",iDummyfilename,"");
                   Fits_setKeyword(pDummyFits, "PRIMARY", "CATAFILE",cDummyfilename,"");
@@ -172,6 +186,7 @@ void Eshel_findReferenceLine(
                   // je ferme le fichier de sortie
                   Fits_closeFits( pDummyFits);
                   pDummyFits = NULL;
+#endif
 
                   // je cree le fichier avec le points detectes dans l'image
                   int radius = 5;
@@ -191,11 +206,15 @@ void Eshel_findReferenceLine(
                   double d0, d1;                     
                   if ( nbImageLine > 5 ) {
                      // j'apparie les deux fichiers
-                     nbMatchedLine = createMatchFile(dummyfilename, ordre_ref_lambda, refPosX, matchLineList, d0, d1); 
+#ifdef USE_LIBTT 
+                     nbMatchedLine = createMatchFile(dummyfilename, ordre_ref_lambda, refPosX, matchLineList, d0, d1);
+#else
+                     nbMatchedLine = matchLine(imageLineList, catalogLineList, ordre_ref_lambda, refPosX, matchLineList, d0, d1); 
+#endif
                   }
 
                   // je verifie si c'est le meilleur ajustement
-                  if ( nbMatchedLine >= approxMatchedLineNb ) {
+                  if ( nbMatchedLine > 3  && nbMatchedLine >= approxMatchedLineNb -2 ) {
                      if ( d1 != 1 && fabs(d1 -1) < fabs(approxD1 -1) ) {
                         approxMatchedLineNb = nbMatchedLine;
                         approxAlpha = alpha;
@@ -236,6 +255,7 @@ void Eshel_findReferenceLine(
                ::std::list<REFERENCE_LINE> catalogLineList;
                int nbCatalogLine = createCatalogFile ( cDummyfilename, ordre_ref_num, spectro, 0, lineList, cropHeight, ordre[orderNo].min_x, ordre[orderNo].max_x, catalogLineList);
                if ( nbCatalogLine > 5 ) {
+#ifdef USE_LIBTT 
                   // je cree le fichier de sortie
                   CCfits::PFitsFile pDummyFits = Fits_createFits(dummyfilename, straightLineImage[orderNo], spectro.imax, cropHeight);
                   Fits_setKeyword(pDummyFits, "PRIMARY", "OBJEFILE",iDummyfilename,"");
@@ -244,7 +264,7 @@ void Eshel_findReferenceLine(
                   // je ferme le fichier de sortie
                   Fits_closeFits( pDummyFits);
                   pDummyFits = NULL;
-
+#endif
                   // je cree le fichier avec le points detectes dans l'image
                   int radius = 5;
                   PIC_TYPE threshold =(int) ( ordre[orderNo].backgroundLevel+ ordre[orderNo].backgroundSigma * threshin);;
@@ -263,11 +283,15 @@ void Eshel_findReferenceLine(
                   double d0, d1;                     
                   if ( nbImageLine > 5 ) {
                      // j'apparie les deux fichiers
+#ifdef USE_LIBTT 
                      nbMatchedLine = createMatchFile(dummyfilename, ordre_ref_lambda, refPosX, matchLineList, d0, d1); 
+#else
+                     nbMatchedLine = matchLine(catalogLineList, imageLineList, ordre_ref_lambda, refPosX, matchLineList, d0, d1); 
+#endif
                   }
 
                   // je verifie si c'est le meilleur ajustement
-                  if ( nbMatchedLine >= bestMatchedLineNb ) {
+                  if ( nbMatchedLine >= bestMatchedLineNb -2 ) {
                      if ( d1 != 1 && fabs(d1 -1) < fabs(bestD1 -1) ) {
                         bestMatchedLineNb = nbMatchedLine;
                         bestImageLineNb = nbImageLine;
@@ -386,7 +410,12 @@ void Eshel_findReferenceLine(
                   // j'apparie les deux fichiers
                   ::std::list<REFERENCE_LINE> matchLineList;
                   double refPosX = 0;
-                  nbMatchedLine = createMatchFile(dummyfilename, ordre_ref_lambda, refPosX, matchLineList, d0, d1); 
+#ifdef USE_LIBTT 
+                     nbMatchedLine = createMatchFile(dummyfilename, ordre_ref_lambda, refPosX, matchLineList, d0, d1); 
+#else
+                     nbMatchedLine = matchLine(imageLineList, catalogLineList, ordre_ref_lambda, refPosX, matchLineList, d0, d1); 
+#endif
+
                   // je memorise la liste des raies de  l'ordre de reference
                   if (orderNo == ordre_ref_num) {
                      bestImageLineList = imageLineList;
@@ -433,8 +462,7 @@ void Eshel_findReferenceLine(
             newOrder[orderNo].central_lambda=get_central_wave(spectro.imax,(double)spectro.imax/2.0,dx_ref,orderNo,spectro);
          }
       }      
-      
-      
+            
       pOutFits = Fits_createFits(tharfileName, outputFileName);
       // j'ajoute les infos du spectro, les parametres de traitement et la table des ordres dans le fichier de sortie
       Fits_setOrders(pOutFits, &spectro, &processInfo, newOrder, dx_ref);
@@ -786,8 +814,8 @@ void computeBackground(std::valarray<PIC_TYPE> &p2, int imax2, int jmax2, ORDRE 
    ordre[n].backgroundSigma = (prev_sigma + next_sigma)/2;
 }
 
-bool compareReferenceLine(REFERENCE_LINE &first, REFERENCE_LINE &second) {
-   // lmabda contient l'intensité du point
+bool compareReferenceLineByLambda(REFERENCE_LINE &first, REFERENCE_LINE &second) {
+   // lambda contient l'intensité du point
    if (first.lambda > second.lambda) {
       return true;
    } else {
@@ -795,6 +823,33 @@ bool compareReferenceLine(REFERENCE_LINE &first, REFERENCE_LINE &second) {
    }
 }
 
+bool compareReferenceLineByLambdaDescending(REFERENCE_LINE &first, REFERENCE_LINE &second) {
+   // lambda contient l'intensité du point
+   if (first.lambda < second.lambda) {
+      return true;
+   } else {
+      return false;
+   }
+}
+
+
+bool compareReferenceLineByPosx (REFERENCE_LINE &first, REFERENCE_LINE &second) {
+   // lambda contient l'intensité du point
+   if (first.posx > second.posx) {
+      return true;
+   } else {
+      return false;
+   }
+}
+
+
+bool uniqueReferenceLine (REFERENCE_LINE &first, REFERENCE_LINE &second) {
+   if (int(first.posx) == int(second.posx)) {
+      return true;
+   } else {
+      return false;
+   }
+}
 
 int createImageFile (PIC_TYPE fwhm, int radius, PIC_TYPE threshin,
 						   PIC_TYPE threshold, char *filename,
@@ -917,11 +972,15 @@ int createImageFile (PIC_TYPE fwhm, int radius, PIC_TYPE threshin,
    }
 
    if ( imageLineList.size() > 0 ) {
-      imageLineList.sort(compareReferenceLine);
+      imageLineList.sort(compareReferenceLineByLambdaDescending);
       if ( imageLineList.size() > maxLineNb) {
          imageLineList.resize(maxLineNb);
       }
+      imageLineList.sort(compareReferenceLineByPosx);
+      imageLineList.unique(uniqueReferenceLine);
+      imageLineList.sort(compareReferenceLineByLambda);
 
+#ifdef USE_LIBTT 
       INFOIMAGE * pinfoImage = createImage(1,1);
       CCfits::PFitsFile pImageLineFits = Fits_createFits(filename,pinfoImage);
       freeImage(pinfoImage);
@@ -930,6 +989,7 @@ int createImageFile (PIC_TYPE fwhm, int radius, PIC_TYPE threshin,
       Fits_setKeyword(pImageLineFits, "PRIMARY", "TTNAME","OBJELIST","");
       Fits_closeFits( pImageLineFits);
       pImageLineFits = NULL;
+#endif
    }  
 
    free(temp_pic);
@@ -972,8 +1032,9 @@ int  createCatalogFile ( char * cDummyfilename, int orderNo, INFOSPECTRO &spectr
       catalogLine.order = orderNo;
       catalogLineList.push_back(catalogLine);
    } // for lambdaIter
+   catalogLineList.sort(compareReferenceLineByLambda);
 
-
+#ifdef USE_LIBTT 
    if ( catalogLineList.size() > 0 ) {
       INFOIMAGE * pinfoImage = createImage(1,1);
       CCfits::PFitsFile pCatalogLineFits = Fits_createFits(cDummyfilename,pinfoImage);
@@ -984,10 +1045,11 @@ int  createCatalogFile ( char * cDummyfilename, int orderNo, INFOSPECTRO &spectr
       Fits_closeFits( pCatalogLineFits);
       pCatalogLineFits = NULL;
    }
-
+#endif
    return catalogLineList.size();
 }
 
+#ifdef USE_LIBTT 
 int  createMatchFile ( char * outputFileName, double referenceLamba, double &refPosX, ::std::list<REFERENCE_LINE> &matchLineList, double &d0, double &d1) {
    ::std::string directory;
    ::std::string root;
@@ -1045,8 +1107,11 @@ int  createMatchFile ( char * outputFileName, double referenceLamba, double &ref
       ymean /= nbLine;
    } 
 
-   // je lis le resultat dans le fichier com.lst
+   // je lis le resultat dans le fichier matrix.txt
    FILE * hmatrix = fopen ("matrix.txt", "rt");
+   if ( hmatrix == NULL ) {
+      throw std::exception("matrix.txt not found in function createMatchFile");
+   }
    if (!feof(hmatrix)) {
       char ligne[1024];
       if (fgets(ligne,1024,hCom)!=NULL) {
@@ -1062,10 +1127,116 @@ int  createMatchFile ( char * outputFileName, double referenceLamba, double &ref
          }
       }
    }
-   fclose(hCom);
+   fclose(hmatrix);
    
    return nbLine;
 }
+#endif
+
+#ifndef USE_LIBTT 
+int matchLine ( ::std::list<REFERENCE_LINE> &imageLineList,  ::std::list<REFERENCE_LINE> &catalogLineList, 
+                double referenceLamba, double &refPosX, 
+                ::std::list<REFERENCE_LINE> &matchLineList, double &d0, double &d1) {
+
+   ::std::vector<focas_tableau_entree> data_tab10;
+   ::std::vector<focas_tableau_entree> data_tab20;
+   int flag_focas = 0;
+   int flag_sature1 = 1;
+   int flag_sature2 = 0;
+   ::std::valarray<focas_tableau_corresp> corresp;
+   ::std::valarray<focas_tableau_corresp> differe;
+   int nbcom = 0;
+   double *transf_1vers2 = new double[20];
+   double *transf_2vers1 = new double[20];
+   int nbcom2 = 0;
+   double *transf2_1vers2 = new double[40];
+   double *transf2_2vers1 = new double[40];
+   double epsilon = 0.0002;
+   double delta = 5;
+   double seuil_poids = 0; 
+
+   data_tab10.resize( imageLineList.size());
+
+   int nbRow = 0;
+   ::std::list<REFERENCE_LINE>::iterator iter;
+   for (iter=imageLineList.begin(); iter != imageLineList.end(); ++iter) {
+      REFERENCE_LINE line = *iter;
+      data_tab10[nbRow].x = line.posx;
+      data_tab10[nbRow].y = line.posy;
+      data_tab10[nbRow].ad = line.lambda;
+      data_tab10[nbRow].dec = line.posy;
+      data_tab10[nbRow].mag = line.lambda;
+      data_tab10[nbRow].mag_gsc = 1;
+      data_tab10[nbRow].qualite = 1;
+      data_tab10[nbRow].type = 0;
+      nbRow++;
+   }
+
+   data_tab20.resize( catalogLineList.size());
+   nbRow = 0;
+   for (iter=catalogLineList.begin(); iter != catalogLineList.end(); ++iter) {
+      REFERENCE_LINE line = *iter;
+      data_tab20[nbRow].x = line.posx;
+      data_tab20[nbRow].y = line.posy;
+      data_tab20[nbRow].ad = line.lambda;
+      data_tab20[nbRow].dec = line.posy;
+      data_tab20[nbRow].mag = line.lambda;
+      data_tab20[nbRow].mag_gsc = 1;
+      data_tab20[nbRow].qualite = 1;
+      data_tab20[nbRow].type = 0;
+      nbRow++;
+   }
+
+   focas_main(data_tab10, data_tab20,
+               flag_focas,
+               flag_sature1,
+               flag_sature2,
+               corresp, 
+               differe,
+               &nbcom,
+               transf_1vers2,
+               transf_2vers1,
+               &nbcom2,
+               transf2_1vers2,
+               transf2_2vers1,
+               epsilon, delta, seuil_poids);
+
+   // get result
+   double ymean = 0;
+   matchLineList.clear();
+   for (int lineNo =0  ; lineNo <nbcom; lineNo++) {
+      REFERENCE_LINE line;
+      line.posx = corresp[lineNo].x1; // abscisse dans l'image
+      line.posy = corresp[lineNo].y2; // abacisse dans le catalogue
+      line.lambda = corresp[lineNo].mag2;
+      if ( fabs(line.lambda - referenceLamba) < 0.01 ) {
+         refPosX = line.posx;
+      }
+      // moyenne des y du catalogue
+      ymean+=corresp[lineNo].y2;
+      matchLineList.push_back(line);
+   }
+
+   if ( nbcom != 0 ) {
+      ymean /= nbcom;
+   } 
+
+   //x2 = a0* x1 + a11 * y1 + a0
+   int nb_coef_a = 3;
+   double a1  = transf_2vers1[1*nb_coef_a+1];
+   double a11 = transf_2vers1[1*nb_coef_a+2];
+   double a0  = transf_2vers1[1*nb_coef_a+3];
+   d0 = a0 + ymean * a11;
+   d1 = a1;
+   
+   delete [] transf_1vers2;
+   delete [] transf_2vers1;
+   delete [] transf2_1vers2;
+   delete [] transf2_2vers1;
+
+   return nbcom;
+}
+#endif
 
 void splitFilename(char *fileName, ::std::string &dir, ::std::string &root, ::std::string &ext) {
    // je cherche le dernier slash dans le nom du fichier

@@ -68,15 +68,30 @@ int find_max(INFOIMAGE *buffer, int *x,int *y);
 int spec_gauss(int pos,int wide,std::valarray<double> &buf,double &pos_x,double &fwhm,double &ecartType);
 int find_continuum(char *n_spectre,char *n_continuum);
 double get_central_wave(int imax,double posx,double dx,int k,INFOSPECTRO spectro);
-void divideResponse(std::valarray<double> &profile1b, double lambda1b, 
-                    std::valarray<double> &responseProfile, double responseLambda, 
-                    double step, 
-                    std::valarray<double> &profile1c, double &lambda1c);
+
+void divideResponse(std::valarray<double> &profile1b, double lambda1b, double step, 
+                    std::valarray<double> &responseProfile, double responseLambda, double responseStep);
+
+void divideResponsePerOrder(std::valarray<double> &profile1b, double lambda1b, double step, 
+                    std::valarray<double> &responseProfile, double responseLambda, double responseStep);
+
+double getNorme (::std::valarray<::std::valarray<double>> &profile, double *lambda1, 
+                    double lambdaBegin, double lambdaEnd,ORDRE *ordre, double step);
+
+void nomalise_all_spec(::std::valarray<::std::valarray<double>> &profile, double *lambda1, 
+                        double lambdaBegin, double lambdaEnd, 
+                        ORDRE *ordre, double step, int minOrder,int maxOrder);
+void crop_lambda(::std::valarray<CROP_LAMBDA> &cropLambda, ::std::valarray<::std::valarray<double>> &profile, double *lambda1, 
+                   ORDRE *ordre, double step, int minOrder,int maxOrder);
+
 void abut1bOrder(::std::valarray<::std::valarray<double>> &object1BProfile, double *lambda1, 
                  int min_ordre, int max_ordre, double step,
                  ::std::valarray<double> &full1BProfile, double &fullLambda1);
+
 void planck_correct(std::valarray<double> &profile1b, double lambda1, double step, double temperature);
+
 void spectre_gauss(::std::valarray<double> &profile, double sigma, int n);
+
 void translate_col(INFOIMAGE * buffer,
                           int colonne, double delta_y, ORDRE *ordre, int n,
                           std::valarray<PIC_TYPE> &buf_result, int imax_result, int jmax_result,

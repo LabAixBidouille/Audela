@@ -112,7 +112,7 @@ FILE * openLog(char *fileName) {
 // ---------------------------------------------------
 // divise un profil par la reponse instrumenale          
 // ---------------------------------------------------
-void divideResponse(std::valarray<double> &profile1b, double lambda1b, std::valarray<double> &responseProfile, double responseLambda, double step,std::valarray<double> &profile1c, double &lambda1c) {
+void divideResponse(std::valarray<double> &profile1b, double lambda1b, double step, std::valarray<double> &responseProfile, double responseLambda, double responseStep) {
    unsigned int taille_num = profile1b.size();
    unsigned int taille_den = responseProfile.size();
    double * rx = new double[taille_den];
@@ -124,31 +124,30 @@ void divideResponse(std::valarray<double> &profile1b, double lambda1b, std::vala
    // Calcul des coefficients de spline (sur le dénominateur)
    for (unsigned int i = 0; i < taille_den; i++)
    {
-      rx[i] = responseLambda + step * i;
+      rx[i] = responseLambda + responseStep * i;
       ry[i] = responseProfile[i];
    }
    spline(taille_den, rx, ry, a, b, c);
 
    // Division 
-   double responseLambdaMax = responseLambda + step * (taille_den -1); 
+   double responseLambdaMax = responseLambda + responseStep * (taille_den -1); 
    for (unsigned int i = 0; i < taille_num; i++)
    {
       double x = lambda1b + step * i;;
       if (x < responseLambda || x > responseLambdaMax )
       {
-         profile1c[i] = 0.0;
+         profile1b[i] = 0.0;
       }
       else
       {
          double y = seval(taille_den, x, rx, ry, a, b, c);
          if (y != 0.0)
-            profile1c[i] = profile1b[i] / y;
+            profile1b[i] = profile1b[i] / y;
          else
-            profile1c[i] = 0.0;
+            profile1b[i] = 0.0;
       }
    }
 
-   lambda1c = lambda1b;
    delete [] rx;
    delete [] ry;
    delete [] a;
@@ -156,6 +155,128 @@ void divideResponse(std::valarray<double> &profile1b, double lambda1b, std::vala
    delete [] c;
 }
 
+// ---------------------------------------------------
+// divise un profil par la reponse instrumenale          
+// ---------------------------------------------------
+void divideResponsePerOrder(std::valarray<double> &profile1b, double lambda1b, double step, std::valarray<double> &responseProfile, double responseLambda, double responseStep) {
+   unsigned int taille_num = profile1b.size();
+   unsigned int taille_den = responseProfile.size();
+   double * rx = new double[taille_den];
+   double * ry = new double[taille_den];
+   double * a = new double[taille_den];
+   double * b = new double[taille_den];
+   double * c = new double[taille_den];
+
+   // On calcule la norme moyenne (au cas ou le fichier réponse est plus petit que l'ordre à traiter
+   double norme = 0.0;
+   norme = responseProfile.sum() / (double)taille_den;
+   if (norme == 0.0) norme = 1.0;
+
+   // Calcul des coefficients de spline (sur le dénominateur)
+   for (unsigned int i = 0; i < taille_den; i++)
+   {
+      rx[i] = responseLambda + responseStep * i;
+      ry[i] = responseProfile[i];
+   }
+   spline(taille_den, rx, ry, a, b, c);
+
+   // Division 
+   double responseLambdaMax = responseLambda + responseStep * (taille_den -1); 
+   for (unsigned int i = 0; i < taille_num; i++)
+   {
+      double x = lambda1b + step * i;;
+      if (x < responseLambda || x > responseLambdaMax )
+      {
+         // on divise 1B par la norme moyenne
+         profile1b[i] = profile1b[i] / norme;
+      }
+      else
+      {
+         double y = seval(taille_den, x, rx, ry, a, b, c);
+         if (y != 0.0)
+            profile1b[i] = profile1b[i] / y;
+         else
+            profile1b[i] = profile1b[i] / norme;
+      }
+   }
+
+   delete [] rx;
+   delete [] ry;
+   delete [] a;
+   delete [] b;
+   delete [] c;
+}
+
+// --------------------------------------------------------------------
+// Normalisation de tous les ordres à la valeur de l'intensité moyenne
+// trouvée entre les longueurs d'onde b1 et b2 A (compatibles avec l'ordre 34)   
+// --------------------------------------------------------------------
+void nomalise_all_spec (::std::valarray<::std::valarray<double>> &profile, double *lambda1, 
+                        double lambdaBegin, double lambdaEnd, 
+                        ORDRE *ordre, double step, int minOrder,int maxOrder) 
+{
+   double norme = getNorme(profile,lambda1,lambdaBegin, lambdaEnd, ordre, step);
+   // j'applique la norme a tous les profils
+   for (int n=minOrder; n<=maxOrder; n++) {
+      if (ordre[n].flag==1) {
+         profile[n] /=norme;
+      }
+   }
+}
+
+// --------------------------------------------------------------------
+// retourne l'intensité moyenne 
+// trouvée entre les longueurs d'onde b1 et b2 A (compatibles avec l'ordre 34)   
+// --------------------------------------------------------------------
+double getNorme(::std::valarray<::std::valarray<double>> &profile, double *lambda1,
+                        double lambdaBegin, double lambdaEnd, ORDRE *ordre, double step) 
+{
+   int posBegin = (int)((lambdaBegin -lambda1[34])/step +0.5);
+   int posEnd   = (int)((lambdaEnd   -lambda1[34])/step +0.5);
+   double norme = 0.0;
+   if (ordre[34].flag==1) {
+      for(int pos=posBegin ; pos<=posEnd ; pos++) {
+         norme += profile[34][pos];
+      }
+      if ( posEnd != posBegin) {
+         // je calcule la norme
+         norme = norme / (posEnd - posBegin +1);      
+      } else {
+         norme = 1;
+      }
+   } else {
+      norme = 1;
+   }
+   return norme;
+}
+
+
+
+// Détourage des ordres 
+void crop_lambda(::std::valarray<CROP_LAMBDA> &cropLambda, ::std::valarray<::std::valarray<double>> &profile, double *lambda1, 
+                   ORDRE *ordre, double step, int minOrder,int maxOrder) 
+{
+   for (int n=minOrder; n<=maxOrder; n++) {
+      if (ordre[n].flag==1) {
+         if ( cropLambda[n].minLambda < cropLambda[n].maxLambda ) {
+            int posBegin = (int)((cropLambda[n].minLambda -lambda1[n])/step +0.5);
+            int posEnd   = (int)((cropLambda[n].maxLambda -lambda1[n])/step +0.5);
+            if (posBegin < 0) {
+               posBegin = 0;
+            }
+            if (posEnd >= (int) profile[n].size()) {
+               posEnd = profile[n].size() -1;
+            }
+            ::std::valarray<double> cropProfile(posEnd- posBegin+1);
+            for(int pos = posBegin ; pos <= posEnd; pos++ ) {
+               cropProfile[pos-posBegin] = profile[n][pos];
+            }
+            profile[n] = cropProfile;
+            lambda1[n] =  (posBegin * step) + lambda1[n];
+         }
+      }
+   }
+}
 
 /*************************** FIND_Y_POS ****************************/
 /* Recherche de la coordonnée Y de tous les ordres dont le         */
