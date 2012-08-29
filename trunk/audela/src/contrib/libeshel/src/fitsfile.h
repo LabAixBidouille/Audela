@@ -33,20 +33,20 @@ void Fits_getProcessInfo (CCfits::PFitsFile pFits, PROCESS_INFO * processInfo);
 void Fits_setLineGap (CCfits::PFitsFile pFit, ::std::list<LINE_GAP> &lineGapList);
 void Fits_getLineGap(CCfits::PFitsFile pFits, ::std::list<LINE_GAP> &lineGapListe);
 
-void Fits_setRawProfile(CCfits::PFitsFile pOutFits, char * prefix, int numOrder, ::std::valarray<double> &rawProfile, int min_x);
-void Fits_getRawProfile(CCfits::PFitsFile pFits, char * prefix, int numOrder, ::std::valarray<double> &rawProfile, int &min_x);
+void Fits_setRawProfile(CCfits::PFitsFile pOutFits, const char * prefix, int numOrder, ::std::valarray<double> &rawProfile, int min_x);
+void Fits_getRawProfile(CCfits::PFitsFile pFits, const char * prefix, int numOrder, ::std::valarray<double> &rawProfile, int &min_x);
 
-void Fits_setLinearProfile(CCfits::PFitsFile pFits, char * prefix, int numOrder, ::std::valarray<double> &linearProfile, double lambda1, double step) ;
-void Fits_getLinearProfile(CCfits::PFitsFile pFits, char * prefix, int numOrder, ::std::valarray<double> &linearProfile, double *lambda1, double *step);
-void Fits_getLinearProfile(CCfits::PFitsFile pFits, char * hduName, ::std::valarray<double> &linearProfile, double *lambda1, double *step);
+void Fits_setLinearProfile(CCfits::PFitsFile pFits, const char * prefix, int numOrder, ::std::valarray<double> &linearProfile, double lambda1, double step) ;
+void Fits_getLinearProfile(CCfits::PFitsFile pFits, const char * prefix, int numOrder, ::std::valarray<double> &linearProfile, double *lambda1, double *step);
+void Fits_getLinearProfile(CCfits::PFitsFile pFits, const char * hduName, ::std::valarray<double> &linearProfile, double *lambda1, double *step);
 
-void Fits_setFullProfile(CCfits::PFitsFile pFits, char * hduName, ::std::valarray<double> &profile, double lambda1, double step);
-void Fits_getFullProfile(CCfits::PFitsFile pFits, char * hduName, ::std::valarray<double> &linearProfile, double *lambda1, double *step); 
+void Fits_setFullProfile(CCfits::PFitsFile pFits, const char * hduName, ::std::valarray<double> &profile, double lambda1, double step);
+void Fits_getFullProfile(CCfits::PFitsFile pFits, const char * hduName, ::std::valarray<double> &linearProfile, double *lambda1, double *step); 
 
 void Fits_setStraightLineImage(CCfits::PFitsFile pFits, int numOrder, ::std::valarray<int> &rawProfile, int width, int height);
 
-void Fits_setKeyword(CCfits::PFitsFile pFits, char * hduName, char* name, char *stringValue, char *comment);
-void Fits_getKeyword(CCfits::PFitsFile pFits, char * hduName, char* name, ::std::string &value);
+void Fits_setKeyword(CCfits::PFitsFile pFits, const char * hduName, const char* name, char *stringValue, char *comment);
+void Fits_getKeyword(CCfits::PFitsFile pFits, const char * hduName, const char* name, ::std::string &value);
 void Fits_setKeyword(CCfits::PFitsFile pOutFits, CCfits::PFitsFile pInFits);
 
 void Fits_setCatalogLine(CCfits::PFitsFile pFits, ::std::list<REFERENCE_LINE> &catalogLine );

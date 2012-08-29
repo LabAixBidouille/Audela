@@ -10,7 +10,7 @@
 #define MAX_LINES 400 
 #define POLY_ORDER_DEGREE 5
 
-typedef struct
+typedef struct ORDRE
    {
    int flag;
    int min_x;
@@ -37,7 +37,7 @@ typedef struct
    double backgroundSigma;
 } ORDRE;
 
-typedef struct {
+typedef struct INFOSPECTRO {
    double alpha;  // angle d'incidence (en degrès)
    double beta;   // angle de difraction (en degrès)
    double gamma;  // angle d'échappement (en degrès)
@@ -54,7 +54,7 @@ typedef struct {
 
 
 
-typedef struct {
+typedef struct PROCESS_INFO {
     int referenceOrderNum;    // reference order num
     int referenceOrderX;      // reference order x
     int referenceOrderY;      // reference order y
@@ -65,12 +65,12 @@ typedef struct {
     double version;           // version du header
 } PROCESS_INFO;
 
-typedef struct {
+typedef struct CROP_LAMBDA {
     double minLambda;    // min wave length
     double maxLambda;      //  max wave length
 } CROP_LAMBDA;
 
-typedef struct {
+typedef struct REFERENCE_LINE {
     int    order;     
     double lambda;    
     double posx;      

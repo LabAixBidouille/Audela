@@ -29,7 +29,7 @@ void Eshel_processCalib(char *lampNameIn, char *lampNameOut,char *flatName,
                 char *logFileName, short * check, ::std::list<double> &lineList);
 
 void Eshel_processObject(char *nom_objet_fits, char *nom_objet_out_fits, char *nom_calib, 
-                char *responseFileName, 
+                char *responseFileName, int responsePerOrder, 
                 int minOrder, int maxorder, int  recordObjectImage, 
                 ::std::valarray<CROP_LAMBDA> &cropLambda,
                 char *logFileName, short *check);

@@ -272,6 +272,8 @@ _CrtMemCheckpoint(&startState);
                //  j'extrait le profil (en enlevant les bordures)
                extract_order(buffer, processInfo, n,ordre,spectro.imax,cropHeight,blazeProfile, straightLineImage,0);
                
+               Fits_setRawProfile(pOutFits, "PTUNG_1A_", n, blazeProfile, ordre[n].min_x+processInfo.bordure);
+               
                // j'ajoute l'image 2D des raies redressées dans le fichier de sortie
                //Fits_setStraightLineImage(pOutFits, n, straightLineImage , spectro.imax, cropHeight);
                
@@ -350,7 +352,6 @@ _CrtMemCheckpoint(&startStateThar);
    INFOSPECTRO spectro;
    PROCESS_INFO processInfo;
    CCfits::PFitsFile pOutFits = NULL;
-   double step=0.1;
    double dx_ref= 0.0;
 
    try {
@@ -440,11 +441,11 @@ _CrtMemCheckpoint(&startStateThar);
             // au pas de 0,1 A/pixel (interpollation spline)
             // --------------------------------------------------------------------
             // je calcule le profil 1B du flat
-            //std::valarray<double> object1BProfile;
+            //std::valarray<double> objectProfile;
             //double lambda1;
-            //make_interpol(calibRawProfile,ordre[n].a3,ordre[n].a2,ordre[n].a1,ordre[n].a0, step, object1BProfile, &lambda1);   
+            //make_interpol(calibRawProfile,ordre[n].a3,ordre[n].a2,ordre[n].a1,ordre[n].a0, step, objectProfile, &lambda1);   
             //// j'enregistre le profil 1B de la calibration dans le fichier de calibration
-            //Fits_setLinearProfile(pOutFits, "P_1B_", n, object1BProfile, lambda1, step) ;
+            //Fits_setLinearProfile(pOutFits, "P_1B_", n, objectProfile, lambda1, step) ;
 
             //// je calcule le profil 1B du flat
             //if ( DEVIDE_FLAT ) {
@@ -482,7 +483,7 @@ _CrtMemCheckpoint(&startStateThar);
       // j'enregistre les profils calibrés dans le fichier de calibration
       //for (int n=spectro.min_order;n<=spectro.max_order;n++) {
       //   if (ordre[n].flag==1) {
-      //      Fits_setLinearProfile(pOutFits, n, object1BProfile[n], lambda1[n], step);
+      //      Fits_setLinearProfile(pOutFits, n, objectProfile[n], lambda1[n], step);
       //   }
       //}
       Fits_closeFits(pOutFits);
@@ -536,6 +537,7 @@ _CrtMemDumpAllObjectsSince(&startStateThar);
 void Eshel_processObject(char *objectFileNameIn, char *objectFileNameOut, 
                 char *calibName,      // nom du fichier de calibration
                 char *responseFileName,   // nom du fichier de reponse instrumentale
+                int responsePerOrder,     // application de la réponse instrumentale O= partir du profil FULL 1= a partir des ordres inviduels de la RI
                 int minOrder, int maxOrder, 
                 int  recordObjectImage,   //  option d'enregistrament de l'image 2D de l'objet
                 ::std::valarray<CROP_LAMBDA> &cropLambda,
@@ -559,9 +561,9 @@ _CrtMemCheckpoint(&startStateObject);
 
       INFOSPECTRO spectro;
       PROCESS_INFO processInfo;
-      ::std::valarray<::std::valarray<double>> object1BProfile(MAX_ORDRE) ;
+      ::std::valarray<::std::valarray<double>> objectProfile(MAX_ORDRE);
       double lambda1[MAX_ORDRE]; 
-      double step= 0.1;
+      double step= 0.05;
       double dx_ref = 0.0;
 
       startTimer(); 
@@ -650,7 +652,6 @@ _CrtMemCheckpoint(&startStateObject);
       }
       stopTimer("Object load file ");
 
-      startTimer(); 
       for (int n=minOrder; n<=maxOrder; n++) {
          if (ordre[n].flag==1) {
             int width = ordre[n].max_x - ordre[n].min_x +1;
@@ -659,6 +660,7 @@ _CrtMemCheckpoint(&startStateObject);
             // -----------------------------------------------------------
             // Extraction des ordres de l'image de l'objet
             // -----------------------------------------------------------  
+            startTimer(); 
             std::valarray<PIC_TYPE> straightLineImage(spectro.imax * cropHeight);
             extract_order(objectBuffer, processInfo, n, ordre, spectro.imax, cropHeight, object1AProfile, 
                straightLineImage, 1);
@@ -666,10 +668,12 @@ _CrtMemCheckpoint(&startStateObject);
             // j'ajoute le profil 1A dans le fichier de sortie
             int min_x = ordre[n].min_x+processInfo.bordure;
             Fits_setRawProfile(pOutFits, "P_1A_", n, object1AProfile, min_x);
+            stopTimer("Object extract_order %d",n);
 
             // -------------------------------------------
             // Divise le profil 1A par la fonction de blaze extraite du Flat 
             // -------------------------------------------
+            startTimer(); 
             std::valarray<double> flatRawProfile;
             if ( DEVIDE_FLAT) {
                int blaze_min_x;
@@ -684,174 +688,196 @@ _CrtMemCheckpoint(&startStateObject);
                   }
                }
             }
+            stopTimer("Object dive by blaze %d",n);
 
             // --------------------------------------------------------------------
             // Etalonnage spectral du spectre de l'objet et re-échantillonnage 
             // au pas de step=0,1 A/pixel (interpollation spline)
             // --------------------------------------------------------------------
-            make_interpol(object1AProfile, spectro, processInfo, ordre, n, dx_ref, step, object1BProfile[n], lambda1[n]); 
+            startTimer(); 
+            make_interpol(object1AProfile, spectro, processInfo, ordre, n, dx_ref, step, objectProfile[n], lambda1[n]); 
 
             if ( _isnan(lambda1[n]) ) {
                char message[1024];
                sprintf(message,"make_interpol lambda1[%d]=%f", n, lambda1[n]);
                throw std::exception(message);
             }
+            stopTimer("Object make_interpol %d",n);
+
+            // ---------------------------------------------------------------
+            // Division éventuelle par la réponse individuelle de chaque ordre
+            // ---------------------------------------------------------------
+            if ( responseFileName != NULL && responsePerOrder == 1) {
+               startTimer(); 
+               ::std::valarray<double> responseProfile;
+               double responseLambda1; 
+               double responseStep; 
+
+               // j'ouvre le fichier la réponse instrumentale a l'iteration du premier ordre
+               if ( pResponseFits == NULL ) {
+                  pResponseFits = Fits_openFits(responseFileName, false);
+               }
+
+               Fits_getLinearProfile(pResponseFits,(char *) "P_RESPONSE_", n, responseProfile,&responseLambda1,&responseStep);
+
+               if ( responseProfile.size() > 0 ) {
+                  divideResponsePerOrder(objectProfile[n], lambda1[n], step, responseProfile, responseLambda1, responseStep);                       
+               }      
+               stopTimer("Object divideResponsePerOrder %d",n);
+            }
 
             // ----------------------------------------------------------------------------
             // Filtrage gaussien éventuel de chacun des profils spectraux (à xxx sigma)
             // ----------------------------------------------------------------------------
-
-            double sigma = 0;
-            if ( sigma != 0 ) {
-               spectre_gauss(object1BProfile[n], sigma, n);
-            }  
+            //double sigma = 0;
+            //if ( sigma != 0 ) {
+            //   spectre_gauss(objectProfile[n], sigma, n);
+            //}  
 
          }
       }
-      stopTimer("Object extract order ");
+      
 
-      startTimer();
+      if ( pResponseFits != NULL) {
+         Fits_closeFits(pResponseFits);
+         pResponseFits = NULL;
+      }
+
       // --------------------------------------------------------------------
       // Normalisation de tous les ordres à la valeur de l'intensité moyenne
       // trouvée entre les longueurs d'onde b1 et b2 A (compatibles avec l'ordre 34)   
       // --------------------------------------------------------------------
-      if ( object1BProfile[34].size() != 0 ) {
-         double lambdaBegin = 6620.0;
-         double lambdaEnd   = 6635.0;
-
-         int posBegin = (int)((lambdaBegin -lambda1[34])/step +0.5);
-         int posEnd   = (int)((lambdaEnd   -lambda1[34])/step +0.5);
-         double norme = 0.0;
-         for(int pos=posBegin ; pos<=posEnd ; pos++) {
-            norme += object1BProfile[34][pos];
-         }
-         if ( posEnd != posBegin) {
-            // je calcule la norme
-            norme = norme / (posEnd - posBegin +1);
-            // j'applique la norme a tous les profils
-            for (int n=minOrder; n<=maxOrder; n++) {
-               if (ordre[n].flag==1) {
-                  object1BProfile[n] /=norme;
-               }
+      startTimer();
+      double norme = getNorme(objectProfile, lambda1, 6620.0, 6635.0, ordre, step);
+      for (int n=minOrder; n<=maxOrder; n++) {
+         if (ordre[n].flag==1) {
+            if ( objectProfile.size() > 0 ) {
+               objectProfile[n] /=norme;
             }
          }
       }
-
-      stopTimer("Object normalize objet ");
+      stopTimer("Normalisation 1B_n 6620.0, 6635.0"); 
 
       // ----------------------------------------------------------------------------
       // Détourage des ordres (si le fichier def_lambda.lst existe)
       // ----------------------------------------------------------------------------
       if ( cropLambda.size() != 0  ) {
          startTimer();
-         for (int n=minOrder; n<=maxOrder; n++) {
-            if (ordre[n].flag==1) {
-               if ( cropLambda[n].minLambda < cropLambda[n].maxLambda ) {
-                  int posBegin = (int)((cropLambda[n].minLambda -lambda1[n])/step +0.5);
-                  int posEnd   = (int)((cropLambda[n].maxLambda -lambda1[n])/step +0.5);
-                  if (posBegin < 0) {
-                     posBegin = 0;
-                  }
-                  if (posEnd >= (int) object1BProfile[n].size()) {
-                     posEnd = object1BProfile[n].size() -1;
-                  }
-                  ::std::valarray<double> cropProfile(posEnd- posBegin+1);
-                  for(int pos = posBegin ; pos <= posEnd; pos++ ) {
-                     cropProfile[pos-posBegin] = object1BProfile[n][pos];
-                  }
-                  object1BProfile[n] = cropProfile;
-                  lambda1[n] =  (posBegin * step) + lambda1[n];
-               }
-            }
-         }
-         stopTimer("Object Détourage objet ");
+         crop_lambda(cropLambda, objectProfile, lambda1, ordre, step, minOrder, maxOrder);
+         stopTimer("Object Détourage objet ");         
       }
 
       // --------------------------------------------------------------------
-      // j'enregistre le profil 1B normalisé
+      // j'enregistre les profils 1B 
       // --------------------------------------------------------------------
       for (int n=minOrder; n<=maxOrder;n++) {
          if (ordre[n].flag==1) {
              if ( _isnan(lambda1[n]) ) {
                char message[1024];
-               sprintf(message,"Fits_setLinearProfile lambda1[%d]=%f", 
-                  n, lambda1[n]);
+               sprintf(message,"Fits_setLinearProfile lambda1[%d]=%f", n, lambda1[n]);
                throw std::exception(message);
             }
-            Fits_setLinearProfile(pOutFits, "P_1B_", n, object1BProfile[n], lambda1[n], step);
+            Fits_setLinearProfile(pOutFits, "P_1B_", n, objectProfile[n], lambda1[n], step);
          }
       }
       
-      startTimer();
       // --------------------------------------------------------------------
       // j'aboute les profils 1B 
       // --------------------------------------------------------------------
-      std::valarray<double>  full1BProfile;
-      double full1BLambda1;
-      abut1bOrder(object1BProfile, lambda1, minOrder, maxOrder,step, full1BProfile, full1BLambda1);
+      startTimer();
+      std::valarray<double>  fullProfile;
+      double fullLambda1;
+      abut1bOrder(objectProfile, lambda1, minOrder, maxOrder,step, fullProfile, fullLambda1);
       stopTimer("Object abut1bOrder ");
 
-      startTimer();
+      // j'enregistre le resultat dans le fichier de sortie
+      Fits_setFullProfile(pOutFits, "P_1B_FULL0", fullProfile, fullLambda1, step); 
+      
       // --------------------------------------------------------------------
       // Correction de la fonction de Planck
+      //  On corrige Planck sur le spectre global si la réponse est aussi globale
       // --------------------------------------------------------------------
-      planck_correct(full1BProfile, full1BLambda1, step, 2750.0);
-      stopTimer("Object planck correct ");
-      //j'enregistre le resultat dans le fichier d'entree
-      //Fits_setFullProfile(objectFits,hduName,full1BProfile,full1BLambda1, step1);
-      Fits_setFullProfile(pOutFits, "P_1B_FULL", full1BProfile, full1BLambda1, step); 
-      
-      
-      // --------------------------------------------------------------------
-      // je divise le profil 1B par la reponse instrumentale
-      // --------------------------------------------------------------------
-      startTimer();
+      if ( responseFileName == NULL  ) {
+         startTimer();
+         planck_correct(fullProfile, fullLambda1, step, 2750.0);
+         Fits_setFullProfile(pOutFits, "P_1B_FULL", fullProfile, fullLambda1, step);
+         stopTimer("Object planck correct ");
+      }
 
-      // je lis la reponse instrumentale 
-      if ( responseFileName != NULL ) {
+      // je divise par la reponse instrumentale 
+      if ( responseFileName != NULL ) {           
+         startTimer();
          ::std::valarray<double> responseProfile;
          double responseLambda1; 
          double responseStep; 
-
          pResponseFits = Fits_openFits(responseFileName, false);
-         Fits_getLinearProfile(pResponseFits,(char *) "PRIMARY", responseProfile,&responseLambda1,&responseStep);
-         Fits_closeFits(pResponseFits);
-         pResponseFits = NULL;
-         if ( spectro.alpha > SEUIL_ALPHA ) {
-            ////if ( responseStep != step ) {
-            ////   sprintf(message,"Eshel_processObject: Instrumental response dispersion = %f . Must be %f", responseStep, step);
-            ////   throw std::exception(message);
-            ////}
-            //step =responseStep;
-         } else {
-            //step =responseStep;
-         }
-         for (int n=minOrder; n<=maxOrder; n++) {
-            if (ordre[n].flag==1) {
-               if ( responseProfile.size() > 0 ) {
-                  ::std::valarray<double> object1CProfile(object1BProfile[n].size());
-                  double lambda1C;
-
-                  divideResponse(object1BProfile[n], lambda1[n], responseProfile, responseLambda1, step, object1CProfile, lambda1C);     
-                  if ( object1CProfile.size() > 0 ) {
-                     Fits_setLinearProfile(pOutFits, "P_1C_", n, object1CProfile, lambda1C, step);
-                  }
-               } 
+         
+         if ( responsePerOrder == 0 ) {            
+            // --------------------------------------------------------------------
+            // je divise les profils P_1B_n par la reponse instrumentale
+            // --------------------------------------------------------------------
+            for (int n=minOrder; n<=maxOrder; n++) {
+               if (ordre[n].flag==1) {
+                  Fits_getLinearProfile(pResponseFits,"P_RESPONSE_", n, responseProfile,&responseLambda1,&responseStep);
+                  if ( responseProfile.size() > 0 ) {
+                     divideResponse(objectProfile[n], lambda1[n], step, responseProfile, responseLambda1, responseStep);     
+                  } 
+               }
             }
          }
-         stopTimer("Object division par la reponse instrumentale");
+         
+         // --------------------------------------------------------------------
+         // Normalisation de tous les ordres à la valeur de l'intensité moyenne
+         // trouvée entre les longueurs d'onde b1 et b2 A (compatibles avec l'ordre 34)   
+         //
+         // et j'enregistre les profils P_1C_
+         // --------------------------------------------------------------------
+         double norme = getNorme(objectProfile, lambda1, 6620.0, 6635.0, ordre, step);
+         for (int n=minOrder; n<=maxOrder; n++) {
+            if (ordre[n].flag==1) {
+               if ( objectProfile.size() > 0 ) {
+                  objectProfile[n] /=norme;
+                  Fits_setLinearProfile(pOutFits, "P_1C_", n, objectProfile[n], lambda1[n], step);
+               }
+            }
+         }
+          stopTimer("Object division 1B_nn par RI");   
 
          // --------------------------------------------------------------------
          // je divise le profile P_1B_FULL par la réponse instrumentale  
          // --------------------------------------------------------------------
-         std::valarray<double>  full1CProfile(full1BProfile.size());
-         double full1CLambda1;
-         divideResponse(full1BProfile, full1BLambda1, responseProfile, responseLambda1, step, full1CProfile, full1CLambda1); 
-         if ( full1CProfile.size() > 0 ) {
-            Fits_setFullProfile(pOutFits, "P_1C_FULL", full1CProfile, full1CLambda1, step);
+         startTimer();
+         if ( responsePerOrder == 0 ) {            
+            Fits_getLinearProfile(pResponseFits,"PRIMARY", responseProfile, &responseLambda1, &responseStep);
+            divideResponse(fullProfile, fullLambda1, step, responseProfile, responseLambda1, responseStep); 
          }
+
+         //je ferme de fichier de la réponse instrumentale
+         Fits_closeFits(pResponseFits);
+         pResponseFits = NULL;       
+         
+         // --------------------------------------------------------------------
+         // je normalise le profil full1C et j'enregistre le profil full1C
+         // --------------------------------------------------------------------
+         int posBegin = (int)((6620.0 -fullLambda1)/step +0.5);
+         int posEnd   = (int)((6635.0 -fullLambda1)/step +0.5);
+         norme = 0.0;
+            for(int pos=posBegin ; pos<=posEnd ; pos++) {
+               norme += fullProfile[pos];
+            }
+            if ( posEnd != posBegin) {
+               // je calcule la norme
+               norme = norme / (posEnd - posBegin +1);      
+            } else {
+               norme = 1;
+            }
+         
+         fullProfile /=norme;
+         Fits_setFullProfile(pOutFits, "P_1C_FULL", fullProfile, fullLambda1, step);
+         stopTimer("Object division 1B_full par RI");            
+
       } 
-            
+
       // j'enregistre la table des ordres dans le fichier de sortie
       Fits_setOrders(pOutFits,&spectro, &processInfo, ordre, dx_ref);
 
@@ -1076,6 +1102,18 @@ void Eshel_getInfoSpectro(char *fileName, INFOSPECTRO *pInfoSpectro)
    }
 }
 
+void log(const char *fmt, ...)
+{
+   FILE *f;   
+   va_list mkr;
+   va_start(mkr, fmt);
+
+   f = fopen("reduc.log","at+");
+   vfprintf(f,fmt, mkr);
+   va_end(mkr);
+   fclose(f);
+
+}
 
 #include <time.h>
 #include <sys/timeb.h>		// pour timer 
@@ -1112,10 +1150,11 @@ double stopTimer(LPTSTR lpFormat, ...)
     va_start( marker, lpFormat );
     vsprintf( szBuf, lpFormat, marker );
     OutputDebugString( szBuf );
-    printf(szBuf);
+    log("%f s : %s \n", delay, szBuf);
+    /*printf(szBuf);
     sprintf(szBuf," %f s\n",delay);
     OutputDebugString( szBuf );
-    printf(szBuf);
+    printf(szBuf);*/
     va_end( marker );
     return delay;
 }

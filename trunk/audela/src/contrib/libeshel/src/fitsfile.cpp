@@ -930,7 +930,7 @@ void Fits_getLineGap(CCfits::PFitsFile pFits, ::std::list<LINE_GAP> &lineGapList
 // return:
 //   retourne une std::exception en cas d'erreur
 // ---------------------------------------------------------------------------
-void Fits_setRawProfile(FITS * pFits, char * prefix, int numOrder, ::std::valarray<double> &rawProfile, int min_x) {
+void Fits_setRawProfile(FITS * pFits, const char * prefix, int numOrder, ::std::valarray<double> &rawProfile, int min_x) {
    try {
       char hduName[256];
       sprintf(hduName,"%s%02d",prefix, numOrder);
@@ -969,7 +969,7 @@ void Fits_setRawProfile(FITS * pFits, char * prefix, int numOrder, ::std::valarr
 // @param rawProfile  liste des valeurs
 //   retourne une std::exception en cas d'erreur
 // ---------------------------------------------------------------------------
-void Fits_getRawProfile(CCfits::PFitsFile pFits, char * prefix, int numOrder, ::std::valarray<double> &rawProfile, int &min_x)  {
+void Fits_getRawProfile(CCfits::PFitsFile pFits, const char * prefix, int numOrder, ::std::valarray<double> &rawProfile, int &min_x)  {
    try {  
       char hduName[256];
       sprintf(hduName,"%s%02d", prefix, numOrder);
@@ -993,7 +993,7 @@ void Fits_getRawProfile(CCfits::PFitsFile pFits, char * prefix, int numOrder, ::
 // return:
 //   retourne une std::exception en cas d'erreur
 // ---------------------------------------------------------------------------
-void Fits_setLinearProfile(CCfits::PFitsFile pFits, char * prefix, int numOrder, ::std::valarray<double> &linearProfile, double lambda1, double step) 
+void Fits_setLinearProfile(CCfits::PFitsFile pFits, const char * prefix, int numOrder, ::std::valarray<double> &linearProfile, double lambda1, double step) 
 {
    try {
       char hduName[256];
@@ -1057,7 +1057,7 @@ void Fits_setLinearProfile(CCfits::PFitsFile pFits, char * prefix, int numOrder,
 // return:
 //   retourne une std::exception en cas d'erreur
 // ---------------------------------------------------------------------------
-void Fits_getLinearProfile(CCfits::PFitsFile pFits, char * prefix, int numOrder, ::std::valarray<double> &linearProfile, double *lambda1, double *step) 
+void Fits_getLinearProfile(CCfits::PFitsFile pFits, const char * prefix, int numOrder, ::std::valarray<double> &linearProfile, double *lambda1, double *step) 
 {
    try {  
       char hduName[256];
@@ -1082,7 +1082,7 @@ void Fits_getLinearProfile(CCfits::PFitsFile pFits, char * prefix, int numOrder,
 // return:
 //   retourne une std::exception en cas d'erreur
 // ---------------------------------------------------------------------------
-void Fits_getLinearProfile(CCfits::PFitsFile pFits, char * hduName, ::std::valarray<double> &linearProfile, double *lambda1, double *step) 
+void Fits_getLinearProfile(CCfits::PFitsFile pFits, const char * hduName, ::std::valarray<double> &linearProfile, double *lambda1, double *step) 
 {
    try {  
       if ( strcmp(hduName,"PRIMARY") ==0 ) {
@@ -1139,7 +1139,7 @@ void Fits_getFullProfile(CCfits::PFitsFile pFits, ::std::valarray<double> &linea
 // return:
 //   retourne une std::exception en cas d'erreur
 // ---------------------------------------------------------------------------
-void Fits_setFullProfile(CCfits::PFitsFile pFits, char * hduName, ::std::valarray<double> &linearProfile, double lambda1, double step) 
+void Fits_setFullProfile(CCfits::PFitsFile pFits, const char * hduName, ::std::valarray<double> &linearProfile, double lambda1, double step) 
 {
    try {  
       try {
@@ -1204,7 +1204,7 @@ void Fits_setFullProfile(CCfits::PFitsFile pFits, char * hduName, ::std::valarra
 // return:
 //   retourne une std::exception en cas d'erreur
 // ---------------------------------------------------------------------------
-void Fits_getFullProfile(CCfits::PFitsFile pFits, char * hduName, ::std::valarray<double> &linearProfile, double *lambda1, double *step) 
+void Fits_getFullProfile(CCfits::PFitsFile pFits, const char * hduName, ::std::valarray<double> &linearProfile, double *lambda1, double *step) 
 {
    try {
       
@@ -1267,9 +1267,6 @@ void Fits_setStraightLineImage(FITS * pFits, int numOrder, ::std::valarray<int> 
    }
 }
 
-
-
-
 // ---------------------------------------------------------------------------
 // Fits_getImage
 //      retourne l'image du premier header
@@ -1304,7 +1301,7 @@ void Fits_getImage(FITS *pFits, INFOIMAGE **pinfoImage ) {
    }
 }
 
-void Fits_setKeyword(FITS *pFits, char * hduName, char* name, char *stringValue, char *comment) {
+void Fits_setKeyword(FITS *pFits, const char * hduName, const char* name, char *stringValue, char *comment) {
    try {
       
       if ( hduName == NULL || strcmp(hduName,"")==0 || strcmp(hduName,"PRIMARY")==0) {
@@ -1325,7 +1322,7 @@ void Fits_setKeyword(FITS *pFits, char * hduName, char* name, char *stringValue,
    }
 }
 
-void Fits_getKeyword(FITS *pFits, char * hduName, char* name, ::std::string &value) {
+void Fits_getKeyword(FITS *pFits, const char * hduName, const char* name, ::std::string &value) {
    try {
       
       if ( hduName == NULL || strcmp(hduName,"")==0 || strcmp(hduName,"PRIMARY")==0) {
@@ -1468,7 +1465,7 @@ void Fits_setImageLine (FITS *pFits, ::std::list<REFERENCE_LINE> &imageLine ) {
       y[nbRow] = line.posy;
       identification[nbRow] = 1;
       flux[nbRow] = line.lambda;
-      ra[nbRow] = line.posx;
+      ra[nbRow] = line.lambda;
       dec[nbRow] = line.posy;
       mag1[nbRow] = 1.0;
       background[nbRow] = 1.0;
@@ -1604,7 +1601,7 @@ void Fits_setCatalogLine (FITS *pFits, ::std::list<REFERENCE_LINE> &catalogLine 
       x[nbRow] = line.posx;
       y[nbRow] = line.posy;
       identification[nbRow] = 1;
-      ra[nbRow] = line.posx;
+      ra[nbRow] = line.lambda;
       dec[nbRow] = line.posy;
       magb[nbRow] = 1.0;
       magv[nbRow] = 1.0;

@@ -29,23 +29,12 @@
 #include "libeshel.h"
 #include "wizard.h"
 #include "wizardthar.h"
+#include "InstrumentalResponse.h"
 
 // fonctions locales
 void makeCheck(char *fileName,::std::list<double> &lineList);
 
-void log(const char *fmt, ...)
-{
-   FILE *f;   
-   va_list mkr;
-   va_start(mkr, fmt);
 
-   f = fopen("reduc.log","at+");
-   vfprintf(f,fmt, mkr);
-   fprintf(f,"\n");
-   va_end(mkr);
-   fclose(f);
-
-}
 int cmdEshelInit(ClientData clientData, Tcl_Interp *interp,int argc, char *argv[]) {
    char s[200];
 
@@ -60,6 +49,112 @@ int cmdEshelInit(ClientData clientData, Tcl_Interp *interp,int argc, char *argv[
    return TCL_OK;
 }
 
+int cmdEshel(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   int result;
+   char *usage = "Usage: eshel makerinull | makeri ";
+   if(argc < 2) {
+      Tcl_SetResult(interp,usage,TCL_VOLATILE);
+      return TCL_ERROR;
+   } 
+ 
+   try {
+      char * command = argv[1];
+      if ( strcmp(command, "makerinull") == 0) {
+         if(argc != 4) {
+            Tcl_SetResult(interp,usage,TCL_VOLATILE);
+            result = TCL_ERROR;
+         } else {
+            char * objectFileName = argv[2];
+            char * reponseFileName = argv[3];
+            CInstrumentalResponse::makeNullResponse(objectFileName, reponseFileName);
+            Tcl_SetResult(interp,"",TCL_VOLATILE);
+            result = TCL_OK;
+         }
+      } else if ( strcmp(command, "response") == 0) {
+         if(argc < 6) {
+            char usage[1024]; 
+            sprintf(usage,"%s %s genericDatName responseFileName minOrder maxOrder {keywordList}", argv[0], argv[1]);
+            Tcl_SetResult(interp, usage ,TCL_VOLATILE);
+            result = TCL_ERROR;
+         } else {
+            char * objectFileName = argv[2];
+            char * reponseFileName = argv[3];
+            int minOrder; 
+            int maxOrder; 
+            ::std::list<CKeyword> keywordList;
+
+            if(Tcl_GetInt(interp,argv[4],&minOrder)!=TCL_OK) {
+               char s[1024];
+               sprintf(s,"%s %s\n Invalid minOrder=%s", argv[0], argv[1],  argv[4]);
+               Tcl_SetResult(interp,s,TCL_VOLATILE);
+               return TCL_ERROR;
+            }     
+
+            if(Tcl_GetInt(interp,argv[5],&maxOrder)!=TCL_OK) {
+               char s[1024];
+               sprintf(s,"%s %s\n Invalid maxOrder=%s", argv[0], argv[1], argv[5]);
+               Tcl_SetResult(interp,s,TCL_VOLATILE);
+               return TCL_ERROR;
+            }     
+
+            if ( argc== 7) {
+               int keywordArgc;
+               char **keywordArgv;
+      
+               if(Tcl_SplitList(interp,argv[6],&keywordArgc,(const char***) &keywordArgv)!=TCL_OK) {
+                  char s[1024];
+                  sprintf(s,"%s\n keyword list=%s", usage, argv[6]);
+                  Tcl_SetResult(interp,s,TCL_VOLATILE);
+                  return TCL_ERROR;
+               } else {
+                  result = TCL_OK;
+                  for (int i=0 ; i< keywordArgc && result!= TCL_ERROR; i++) {
+                     int paramArgc;
+                     char **paramArgv;
+                     if(Tcl_SplitList(interp,keywordArgv[i],&paramArgc,(const char***) &paramArgv)!=TCL_OK) {
+                        char s[1024];
+                        sprintf(s,"%s\n Invalid ordre line %d value=%s", usage, i, keywordArgv[i]);
+                        Tcl_SetResult(interp,s,TCL_VOLATILE);
+                        result = TCL_ERROR;     
+                        break;
+                     } else if (paramArgc != 3 ){
+                        char s[1024];
+                        sprintf(s,"%s\n Invalid keyword %d value=%s .\nMust contain {name , value, comment}", usage, i, keywordArgv[i]);
+                        Tcl_SetResult(interp,s,TCL_VOLATILE);
+                        result = TCL_ERROR;       
+                        break;
+                     } else {
+                        CKeyword keyword; 
+                        keyword.name.assign(paramArgv[0]);
+                        keyword.value.assign(paramArgv[1]);
+                        keyword.comment.assign(paramArgv[2]);
+                        keywordList.push_back(keyword);
+                        Tcl_Free((char*)paramArgv);
+                     }                     
+                  } 
+                  Tcl_Free((char*)keywordArgv);
+               }
+
+            }
+            if ( result == TCL_ERROR) {
+               return TCL_ERROR;
+            }
+
+            CInstrumentalResponse::makeResponse(objectFileName, minOrder, maxOrder, reponseFileName, keywordList);
+            Tcl_SetResult(interp,"",TCL_VOLATILE);
+            result = TCL_OK;
+         }
+
+      } else {
+         Tcl_SetResult(interp,usage,TCL_VOLATILE);
+         result = TCL_ERROR;
+      }
+   } catch(std::exception e ) {
+      Tcl_SetResult(interp,(char*)e.what(),TCL_VOLATILE);
+      result = TCL_ERROR;
+   }
+   return result;
+}
 
 // ---------------------------------------------------------------------------
 // cmdEshelFlat
@@ -423,7 +518,7 @@ int cmdEshelProcessCalib(ClientData clientData, Tcl_Interp *interp, int argc, ch
 int cmdEshelProcessObject(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
    char s[1024];
    int result;
-   char *usage = "Usage: eshel_processObject fileIn fileOut calibFileName minOrder maxOrder {-merge 0|1} {-response responseFileName} {-exportfull0 fullFileName} {-exportfull fullFileName} {-objectimage 0|1}";
+   char *usage = "Usage: eshel_processObject fileIn fileOut calibFileName minOrder maxOrder {-merge 0|1} {-responseFileName responseFileName} {-responsePerOrder 0|1 } {-exportfull0 fullFileName} {-exportfull fullFileName} {-objectimage 0|1}";
    if(argc<5) {
       Tcl_SetResult(interp,usage,TCL_VOLATILE);
       return TCL_ERROR;
@@ -432,6 +527,7 @@ int cmdEshelProcessObject(ClientData clientData, Tcl_Interp *interp, int argc, c
       char * objectFileNameOut = NULL;
       char * calibFileName = NULL;
       char * responseFileName = NULL;
+      int responsePerOrder = 0;
       int minOrder = 0;
       int maxOrder = 0;
       char * fullFileName0 = NULL;
@@ -470,9 +566,17 @@ int cmdEshelProcessObject(ClientData clientData, Tcl_Interp *interp, int argc, c
          if (strcmp(argv[kk], "-exportfull0") == 0 && kk+1 < argc ) {
             fullFileName0 = argv[kk + 1];
          }
-         if (strcmp(argv[kk], "-response") == 0 && kk+1 < argc ) {
+         if (strcmp(argv[kk], "-responseFileName") == 0 && kk+1 < argc ) {
             responseFileName = argv[kk + 1];
          }
+         if (strcmp(argv[kk], "-responsePerOrder") == 0 && kk+1 < argc ) {
+            if(Tcl_GetInt(interp,argv[kk + 1],&responsePerOrder)!=TCL_OK) {
+               sprintf(s,"%s\n Invalid -responsePerOrder=%s", usage, argv[kk]);
+               Tcl_SetResult(interp,s,TCL_VOLATILE);
+               return TCL_ERROR;
+            }
+         }
+
          if (strcmp(argv[kk], "-objectimage") == 0 && kk+1 < argc ) {
             if(Tcl_GetInt(interp,argv[kk + 1],&recordObjectImage)!=TCL_OK) {
                sprintf(s,"%s\n Invalid -objectimage=%s", usage, argv[kk]);
@@ -505,22 +609,22 @@ int cmdEshelProcessObject(ClientData clientData, Tcl_Interp *interp, int argc, c
                         Tcl_SetResult(interp,s,TCL_VOLATILE);
                         result = TCL_ERROR;            
                      } else if (paramArgc != 3 ){
-                        sprintf(s,"%s\n Invalid crop lambda %d value=%s .\nMust contain {orderNum minLmanda maxLmabda}", usage, i, cropArgv[i]);
+                        sprintf(s,"%s\n Invalid crop lambda %d value=%s .\nMust contain {orderNum minLambda minLambda}", usage, i, cropArgv[i]);
                         Tcl_SetResult(interp,s,TCL_VOLATILE);
                         result = TCL_ERROR;            
                      } else {
-                        int n;
-                        if(Tcl_GetInt(interp,paramArgv[0],&n)!=TCL_OK) {
+                        int numOrder;
+                        if(Tcl_GetInt(interp,paramArgv[0],&numOrder)!=TCL_OK) {
                            sprintf(s,"%s\n Invalid crop lambda %d num_order=%s is not an integer", usage, i, paramArgv[0]);
                            Tcl_SetResult(interp,s,TCL_VOLATILE);
                            result = TCL_ERROR;
                         }
-                        if(Tcl_GetDouble(interp,paramArgv[1],&cropLambda[n].minLambda)!=TCL_OK) {
+                        if(Tcl_GetDouble(interp,paramArgv[1],&cropLambda[numOrder].minLambda)!=TCL_OK) {
                            sprintf(s,"%s\n Invalid crop lambda %d min lambda=%s is not a float", usage, i, paramArgv[1]);
                            Tcl_SetResult(interp,s,TCL_VOLATILE);
                            result = TCL_ERROR;
                         }
-                        if(Tcl_GetDouble(interp,paramArgv[2],&cropLambda[n].maxLambda)!=TCL_OK) {
+                        if(Tcl_GetDouble(interp,paramArgv[2],&cropLambda[numOrder].maxLambda)!=TCL_OK) {
                            sprintf(s,"%s\n Invalid crop lambda %d max lambda=%s is not a float", usage, i, paramArgv[2]);
                            Tcl_SetResult(interp,s,TCL_VOLATILE);
                            result = TCL_ERROR;
@@ -538,7 +642,8 @@ int cmdEshelProcessObject(ClientData clientData, Tcl_Interp *interp, int argc, c
       }
     
       try {
-         Eshel_processObject(objectFileNameIn, objectFileNameOut, calibFileName, responseFileName,
+         Eshel_processObject(objectFileNameIn, objectFileNameOut, calibFileName, 
+            responseFileName, responsePerOrder, 
             minOrder, maxOrder, recordObjectImage,
             cropLambda,
             "reduc.log",(short*)NULL);
@@ -560,8 +665,8 @@ int cmdEshelProcessObject(ClientData clientData, Tcl_Interp *interp, int argc, c
 
 
 // ---------------------------------------------------------------------------
-// cmdEshelFlat
-//    traite un flat
+// cmdEshelFindMargin
+//    recherche les marges 
 // return:
 //   retourne TCL_OK ou TCL_ERROR 
 // ---------------------------------------------------------------------------
@@ -658,9 +763,9 @@ int cmdEshelFindMargin(ClientData clientData, Tcl_Interp *interp, int argc, char
 int cmdEshelFindReferenceLine(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
    char s[1024];
    int result;
-   char *usage = "Usage: eshel_findReferenceLine ledfileName tharFileName outputFileName" \
-                  "alpha beta gamma focale grating pixelSize width height" \
-                  "refNum refLambda "\
+   char *usage = "Usage: eshel_findReferenceLine ledfileName tharFileName outputFileName " \
+                  "alpha beta gamma focale grating pixelSize width height " \
+                  "refNum refLambda " \
                   "lineList threshin fwhm ";
    if(argc!=17) {
       Tcl_SetResult(interp,usage,TCL_VOLATILE);
@@ -812,6 +917,7 @@ int cmdEshelFindReferenceLine(ClientData clientData, Tcl_Interp *interp, int arg
    }
 
    /* ajouter ici les autres fonctions d'extension que vous allez creer */
+   Tcl_CreateCommand(interp,"eshel",(Tcl_CmdProc *)cmdEshel,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"eshel_processFlat",(Tcl_CmdProc *)cmdEshelProcessFlat,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"eshel_processCalib",(Tcl_CmdProc *)cmdEshelProcessCalib,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"eshel_processObject",(Tcl_CmdProc *)cmdEshelProcessObject,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
