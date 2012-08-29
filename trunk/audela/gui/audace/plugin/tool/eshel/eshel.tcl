@@ -136,6 +136,7 @@ proc ::eshel::createPluginInstance { {tkbase "" } { visuNo 1 } } {
       source [ file join $dir wizard.tcl ]
       source [ file join $dir eshelfile.tcl]
       source [ file join $dir visu.tcl]
+      source [ file join $dir response.tcl]
       if { [file exists [ file join $dir libeshel.dll]]  } {
          set catchResult [ catch {
             load [ file join $dir libeshel.dll]
@@ -220,7 +221,8 @@ proc ::eshel::createPluginInstance { {tkbase "" } { visuNo 1 } } {
    if { ! [ info exists conf($prefix,flatFieldEnabled)] } { set conf($prefix,flatFieldEnabled) 0 }
    if { ! [ info exists conf($prefix,responseOption)] }   { set conf($prefix,responseOption)   "NONE" }  ;# MANUAL , AUTO, NONE
    if { ! [ info exists conf($prefix,responseFileName)] } { set conf($prefix,responseFileName) "" }
-   if { ! [ info exists conf($prefix,saveObjectImage)] }  { set conf($prefix,saveObjectImage)  1 }      ;# enregistre l'image 2
+   if { ! [ info exists conf($prefix,responsePerOrder)] } { set conf($prefix,responsePerOrder) 1 }      ; # 0=FULL spectrum 1=per order
+   if { ! [ info exists conf($prefix,saveObjectImage)] }  { set conf($prefix,saveObjectImage)  1 }      ;# enregistre l'image 2D de l'OBJET dans le fichier de sortie
    #--- liste des mots clefs a mettre dans les acquisitions
    set conf(keyword,visu1,check) "1,check,IMAGETYP 1,check,SERIESID 1,check,DETNAM 1,check,TELESCOP 1,check,OBSERVER 1,check,OBJNAME 1,check,EXPOSURE 1,check,INSTRUME 1,check,SWCREATE 1,check,SITENAME 1,check,SITELONG 1,check,SITELAT 1,check,SITEELEV"
 

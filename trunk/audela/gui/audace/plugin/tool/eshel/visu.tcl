@@ -504,6 +504,46 @@ proc ::eshel::visu::hideMargin { visuNo } {
    return 1
 }
 
+#------------------------------------------------------------
+#  getOrderDefinition
+#    retourne les marges et le slant des ordres
+# @param visuNo :
+# @return orderDefintion list [ order min_x max_x slant ]
+#------------------------------------------------------------
+proc ::eshel::visu::getOrderDefinition { visuNo } {
+   variable private
+
+   set fileName [::confVisu::getFileName $visuNo]
+   set orderHduNum [::confVisu::getHduNo $visuNo "ORDERS"]
+   set hFile ""
+   set catchResult [catch {
+      set hFile [fits open $fileName 0]
+      #--- je recupere les parametres du spectre dans la table des ordres
+      $hFile move $orderHduNum
+
+      set min_order  [::eshel::file::getKeyword $hFile MIN_ORDER]
+      set max_order  [::eshel::file::getKeyword $hFile MAX_ORDER]
+
+      set orderDefinition {}
+      #--- je recupere les marges et le slant des ordres
+      for {set orderNum $min_order } { $orderNum <= $max_order } { incr orderNum } {
+         set n [expr $orderNum - $min_order +1 ]
+         set min_x [string trim [lindex [lindex [$hFile get table "min_x" $n ] 0] 0]]
+         set max_x [string trim [lindex [lindex [$hFile get table "max_x" $n ] 0] 0]]
+         set slant [string trim [lindex [lindex [$hFile get table "slant" $n ] 0] 0]]
+         lappend orderDefinition [list $orderNum $min_x $max_x $slant]
+      }
+   }]
+   if { $hFile != "" } {
+      $hFile close
+   }
+
+   if { $catchResult == 1 } {
+      error $::errorInfo
+   }
+   return $orderDefinition
+}
+
 
 #------------------------------------------------------------
 #  moveLeftMargin
@@ -928,7 +968,9 @@ proc ::eshel::visu::hideCalibrationLine { visuNo } {
 #  showJoinMargin
 #    affiche les mages d'aboutement
 #  Parameters
-#     visuNo : numero de la fenetre de profil
+#  @param visuNo numero de la fenetre de profil
+#  @param joinMarginWidth largeur de la marge d'aboutement (en angstrom)
+#  @return joinMarginList liste des limites { { orderNUm previousJoinMinLambda nextJoinMaxLambda } {...} }
 #------------------------------------------------------------
 proc ::eshel::visu::showJoinMargin { visuNo joinMarginWidth} {
    variable private
@@ -971,6 +1013,8 @@ proc ::eshel::visu::showJoinMargin { visuNo joinMarginWidth} {
       set nextJoinMinMargin { }
       set nextJoinMaxMargin { }
 
+      set cropLamba [list]
+
       for {set orderNum $min_order } { $orderNum <= $max_order } { incr orderNum } {
          set lineNo [expr $orderNum - $min_order +1 ]
          set flag [string trim [lindex [lindex [$hFile get table "flag" $lineNo ] 0 ] 0]]
@@ -985,7 +1029,7 @@ proc ::eshel::visu::showJoinMargin { visuNo joinMarginWidth} {
          set p2 [string trim [lindex [lindex [$hFile get table "P2" $lineNo ] 0 ] 0]]
          set p3 [string trim [lindex [lindex [$hFile get table "P3" $lineNo ] 0 ] 0]]
          set p4 [string trim [lindex [lindex [$hFile get table "P4" $lineNo ] 0 ] 0]]
-         #--- je calcule le polynome d'ordre 5 (ou d'ordre 4 pour l'ancienne version
+         #--- je calcule le polynome d'ordre 5 (ou d'ordre 4 pour l'ancienne version)
          set p5NotFound [catch {
             set p5 [string trim [lindex [lindex [$hFile get table "P5" $lineNo ] 0 ] 0]]
          }]
@@ -993,8 +1037,8 @@ proc ::eshel::visu::showJoinMargin { visuNo joinMarginWidth} {
             set p5 0
          }
 
-         #--- je calcule le recouvrement avec l'ordre precedent
-         if { $orderNum != $min_order } {
+         #--- je calcule le recouvrement avec l'ordre precedent (vers le rouge)
+         if { $orderNum > $min_order } {
             #--- je calcule l'abcisse previousMinX de l'ordre précédent
             set beta [expr asin(($orderNum*$m*$previousMinLambda/10000000.0 - cos($gamma) * sin($alpha))/cos($gamma))]
             set beta2 [expr $beta - $alpha]
@@ -1014,7 +1058,7 @@ proc ::eshel::visu::showJoinMargin { visuNo joinMarginWidth} {
                   set previousJoinMaxLambda $maxLambda
                }
 
-               #--- je calcule les deux marges d'aboutement avec l'odre precedent
+               #--- je calcule les abscisses des deux marges d'aboutement avec l'ordre precedent
                set beta [expr asin(($orderNum*$m*$previousJoinMinLambda/10000000.0 - cos($gamma) * sin($alpha))/cos($gamma))]
                set beta2 [expr $beta - $alpha]
                set x [expr $foclen * $beta2 / $pixel + $xc + $dx_ref]
@@ -1028,14 +1072,34 @@ proc ::eshel::visu::showJoinMargin { visuNo joinMarginWidth} {
                set y [expr (((($p5 * $x + $p4) * $x + $p3) * $x + $p2) *$x + $p1) * $x + $p0 ]
                set coord [::confVisu::picture2Canvas $visuNo [list $x $y ]]
                lappend previousJoinMaxMargin [lindex $coord 0] [lindex $coord 1]
+            } else {
+               #--- je selectionne la marge droite maxi
+               set previousMinX $width
+
+               #--- je calcule les marges d'aboutement egales au à la limite max de l'ordre
+               set beta2 [expr ( $maxX - $xc - $dx_ref) * $pixel / $foclen]
+               set beta  [expr $beta2 + $alpha]
+               set previousJoinMinLambda  [expr 10000000.0 * cos($gamma) * (sin($alpha) + sin($beta))/ $orderNum / $m ]
+               set previousJoinMaxLambda $previousJoinMinLambda
+
+               #lappend nextJoinMaxMargin $maxX $maxX
             }
+
          } else {
             #--- je selectionne la marge droite maxi
             set previousMinX $width
+
+            #--- je calcule les marges d'aboutement egales au à la limite max de l'ordre
+            set beta2 [expr ( $maxX - $xc - $dx_ref) * $pixel / $foclen]
+            set beta  [expr $beta2 + $alpha]
+            set previousJoinMinLambda  [expr 10000000.0 * cos($gamma) * (sin($alpha) + sin($beta))/ $orderNum / $m ]
+            set previousJoinMaxLambda $previousJoinMinLambda
+
+            #lappend nextJoinMaxMargin $maxX $maxX
          }
 
          #--- je calcule l'abcisse de l'ordre suivant
-         if { $orderNum != $max_order } {
+         if { $orderNum < $max_order } {
             #--- je calcule l'abcisse nextMaxX de l'ordre suivant sur l'ordre courant
             set nextMaxX [string trim [lindex [lindex [$hFile get table "max_x" [expr $lineNo +1] ] 0 ] 0]]
             set beta2 [expr ( $nextMaxX - $xc - $dx_ref) * $pixel / $foclen]
@@ -1073,10 +1137,28 @@ proc ::eshel::visu::showJoinMargin { visuNo joinMarginWidth} {
                set y [expr (((($p5 * $x + $p4) * $x + $p3) * $x + $p2) *$x + $p1) * $x + $p0 ]
                set coord [::confVisu::picture2Canvas $visuNo [list $x $y ]]
                lappend nextJoinMaxMargin [lindex $coord 0] [lindex $coord 1]
+            } else {
+               set nextMaxX 0
+
+               #--- je calcule les marges d'aboutement egales au à la limite min de l'ordre
+               set beta2 [expr ( $minX - $xc - $dx_ref) * $pixel / $foclen]
+               set beta  [expr $beta2 + $alpha]
+               set nextJoinMinLambda  [expr 10000000.0 * cos($gamma) * (sin($alpha) + sin($beta))/ $orderNum / $m ]
+               set nextJoinMaxLambda $nextJoinMinLambda
+
+               #lappend nextJoinMaxMargin $minX $minX
             }
 
          } else {
             set nextMaxX 0
+
+            #--- je calcule les marges d'aboutement egales au à la limite min de l'ordre
+            set beta2 [expr ( $minX - $xc - $dx_ref) * $pixel / $foclen]
+            set beta  [expr $beta2 + $alpha]
+            set nextJoinMinLambda  [expr 10000000.0 * cos($gamma) * (sin($alpha) + sin($beta))/ $orderNum / $m ]
+            set nextJoinMaxLambda $nextJoinMinLambda
+
+            #lappend nextJoinMaxMargin $minX $minX
          }
 
          ###set coordlist {}
@@ -1119,7 +1201,12 @@ proc ::eshel::visu::showJoinMargin { visuNo joinMarginWidth} {
          set beta2 [expr ( $minX -$xc - $dx_ref) * $pixel / $foclen]
          set beta  [expr $beta2 + $alpha]
          set previousMinLambda [expr 10000000.0 * cos($gamma) * (sin($alpha) + sin($beta))/ $orderNum / $m ]
-      }
+
+
+         #--- j'ajoute les limites d'aboutement de cet ordre dans la liste
+         lappend cropLamba [list $orderNum $nextJoinMinLambda $previousJoinMaxLambda ]
+
+      } ; # for orderNum
 
       if { [llength $previousJoinMinMargin ] > 0 } {
          $hCanvas create line $previousJoinMinMargin -fill yellow -width 2 -dash "2 4" -offset center -tag joinmargin
@@ -1140,6 +1227,8 @@ proc ::eshel::visu::showJoinMargin { visuNo joinMarginWidth} {
    if { $catchResult == 1 } {
       error $::errorInfo
    }
+
+   return $cropLamba
 }
 
 #------------------------------------------------------------

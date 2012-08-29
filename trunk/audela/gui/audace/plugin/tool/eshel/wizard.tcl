@@ -8,6 +8,14 @@
 ################################################################
 # namespace ::eshel::wizard
 #
+# Etapes :
+#       selectLed
+#   selectMargin
+#    selectThar
+#   selectRefLine
+#   selectJoinMargin
+#    done
+#
 ################################################################
 
 namespace eval ::eshel::wizard {
@@ -183,21 +191,23 @@ proc ::eshel::wizard::run { tkbase visuNo } {
 
    #--- je recupere les parametres de la configuration courante
    set configId [::eshel::instrument::getCurrentConfigId]
-   ::eshel::instrument::setCurrentConfig $configId
+   ###::eshel::instrument::setCurrentConfig $configId
+
    #--- traitement de LED
    set private($visuNo,threshold)  $::conf(eshel,instrument,config,$configId,threshold)
    set private($visuNo,width)      $::conf(eshel,instrument,config,$configId,width)
    set private($visuNo,height)     $::conf(eshel,instrument,config,$configId,height)
    #--- traitement de THAR
-   set private($visuNo,alpha)     $::conf(eshel,instrument,config,$configId,alpha)
-   set private($visuNo,beta)     $::conf(eshel,instrument,config,$configId,beta)
-   set private($visuNo,gamma)     $::conf(eshel,instrument,config,$configId,gamma)
-   set private($visuNo,focale)     $::conf(eshel,instrument,config,$configId,focale)
+   set private($visuNo,alpha)       $::conf(eshel,instrument,config,$configId,alpha)
+   set private($visuNo,beta)        $::conf(eshel,instrument,config,$configId,beta)
+   set private($visuNo,gamma)       $::conf(eshel,instrument,config,$configId,gamma)
+   set private($visuNo,focale)      $::conf(eshel,instrument,config,$configId,focale)
    set private($visuNo,grating)     $::conf(eshel,instrument,config,$configId,grating)
-   set private($visuNo,pixelSize)     $::conf(eshel,instrument,config,$configId,pixelSize)
-   set private($visuNo,refNum)     $::conf(eshel,instrument,config,$configId,refNum)
-   set private($visuNo,refLambda)     $::conf(eshel,instrument,config,$configId,refLambda)
-   set private($visuNo,lineList)     $::conf(eshel,instrument,config,$configId,lineList)
+   set private($visuNo,pixelSize)   $::conf(eshel,instrument,config,$configId,pixelSize)
+   set private($visuNo,refNum)      $::conf(eshel,instrument,config,$configId,refNum)
+   set private($visuNo,refLambda)   $::conf(eshel,instrument,config,$configId,refLambda)
+   set private($visuNo,lineList)    $::conf(eshel,instrument,config,$configId,lineList)
+   set private($visuNo,cropLambda)  $::conf(eshel,instrument,config,$configId,cropLambda)
 
 
    #--- parametres acquisition de LED
@@ -220,8 +230,9 @@ proc ::eshel::wizard::run { tkbase visuNo } {
    set private($visuNo,threshin)   3
    set private($visuNo,fwhm)       3
 
-   #--- parametre des marges d'aboutement
-   set private($visuNo,joinMarginWidth) 10
+   #--- parametre des marges d'aboutement (en angstrom)
+   set private($visuNo,joinMarginWidth) 20
+
 
    #--- options d'affichage
    set private($visuNo,showLineLabel) 0
@@ -604,7 +615,14 @@ proc ::eshel::wizard::selectLedCheck { visuNo fileName} {
                } else {
                   set result "error"
                   set text4 [format $::caption(eshel,wizard,errorLedFile) [file tail $fileName] \"$imageType\" ]
-                  tk_messageBox -icon error -title $title -message $text4
+                  ####tk_messageBox -icon error -title $title -message $text4
+                  set choice [tk_messageBox -type yesno -icon error -title $title -message "$text4. Voulez vous continuer quand même ?"]
+                  if { $choice == "yes" } {
+                     #--- l'utilisateur veut continuer quand meme
+                     set result "ok"
+                  } else {
+                    set result "error"
+                  }
                }
             } else {
                set result "error"
@@ -741,7 +759,8 @@ proc ::eshel::wizard::goAcquisitionLed { visuNo } {
    }]
    if { $catchResult == 1 } {
       ::console::affiche_erreur "$::errorInfo\n"
-      tk_messageBox -icon error -title $title -message $errorMessage
+      set title "LED acquisition"
+      tk_messageBox -icon error -title $title -message $::errorInfo
       setResult $visuNo selectLed "error" $::errorInfo
    }
    $private($visuNo,This) configure -cursor arrow
@@ -1297,7 +1316,7 @@ proc ::eshel::wizard::goAcquisitionThar { visuNo } {
    $private($visuNo,This) configure -cursor watch
    set catchResult [catch {
      #--- acquisition
-     ::eshel::acquisition::startSequence $visuNo [list [list tharSerie [list expNb 2 expTime 30]]]
+     ::eshel::acquisition::startSequence $visuNo [list [list tharSerie [list expNb $private(tharExposureNb) expTime $private(tharExposureTime)]]]
 
      #--- traitement
      ::eshel::checkDirectory
@@ -1404,13 +1423,13 @@ proc ::eshel::wizard::selectRefLineCreate { visuNo } {
       -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 100 }
    grid $frm.param.fwhm -in [$frm.param getframe] -row 3 -column 1 -sticky nsew
 
-   ####---- entry threshin
-   ###Label $frm.param.threshinLabel -text $::caption(eshel,wizard,threshin)
-   ###grid $frm.param.threshinLabel -in [$frm.param getframe] -row 4 -column 0 -sticky ns
-   ###Entry $frm.param.threshin  -width 6 -justify right \
-   ###   -textvariable ::eshel::wizard::private($visuNo,threshin) \
-   ###   -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 100000 }
-   ###grid $frm.param.threshin -in [$frm.param getframe] -row 4 -column 1 -sticky nsew
+   #---- entry threshin
+   Label $frm.param.threshinLabel -text $::caption(eshel,wizard,threshin)
+   grid $frm.param.threshinLabel -in [$frm.param getframe] -row 4 -column 0 -sticky ns
+   Entry $frm.param.threshin  -width 6 -justify right \
+      -textvariable ::eshel::wizard::private($visuNo,threshin) \
+      -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 100000 }
+   grid $frm.param.threshin -in [$frm.param getframe] -row 4 -column 1 -sticky nsew
 
    #--- Bouton Refresh
    button $frm.param.refresh -text $::caption(eshel,wizard,refresh) \
@@ -1436,10 +1455,21 @@ proc ::eshel::wizard::selectRefLineRaise { visuNo } {
   setResult $visuNo "selectRefLine" "running" "recherche en cours ..."
   update
 
-   set catchResult [catch {
+  set catchResult [catch {
       if { [file exists $private($visuNo,selectRefLineFileName)]==0 } {
          set tid [thread::create]
          thread::copycommand $tid eshel_findReferenceLine
+console::disp "eshel_findReferenceLine  \
+                     $private($visuNo,ledWizardName)  \
+                     $private($visuNo,tharFileName)  \
+                     $private($visuNo,selectRefLineFileName) \
+                     $private($visuNo,alpha) $private($visuNo,beta) $private($visuNo,gamma) \
+                     $private($visuNo,focale) $private($visuNo,grating) \
+                     $private($visuNo,pixelSize) $private($visuNo,width) $private($visuNo,height) \
+                     $private($visuNo,refNum) $private($visuNo,refLambda) \
+                     $private($visuNo,lineList) \
+                     $private($visuNo,threshin) \
+                     $private($visuNo,fwhm)\n "
          thread::send -async $tid [list eshel_findReferenceLine  \
                      $private($visuNo,ledWizardName)  \
                      $private($visuNo,tharFileName)  \
@@ -1618,7 +1648,8 @@ proc ::eshel::wizard::selectJoinMarginRaise { visuNo } {
    variable private
 console::disp "selectJoinMarginRaise \n"
 
-   ::eshel::visu::showJoinMargin $visuNo $private($visuNo,joinMarginWidth)
+   set private($visuNo,cropLambda) [::eshel::visu::showJoinMargin $visuNo $private($visuNo,joinMarginWidth)]
+   console::disp "joinMarginList=$private($visuNo,cropLambda)\n"
    set message "Vous pouvez passer à l'étape suivante."
    setResult $visuNo "selectJoinMargin" "ok" $message
 }
@@ -1785,8 +1816,16 @@ proc ::eshel::wizard::doneFinish { visuNo } {
    ::eshel::visu::hideOrderLabel $visuNo
    ::eshel::visu::hideMargin $visuNo
 
+   set configId [::eshel::instrument::getCurrentConfigId]
+   set ::conf(eshel,instrument,config,$configId,cropLambda) $private($visuNo,cropLambda)
+
+   set ::conf(eshel,instrument,config,$configId,orderDefinition) [::eshel::visu::getOrderDefinition $visuNo]
+
+   ::eshel::instrumentgui::onSelectConfig $visuNo
+
    set title [$private($visuNo,This) itemcget done -text1]
-   set message "Cet assistant est expérimental.\nLes données ne sont pas sauvegardées."
+   ###set message "Cet assistant est expérimental.\nLes données ne sont pas sauvegardées."
+   set message "Les données ont été copiées dans les paramères de la configuration $::conf(eshel,instrument,config,$configId,configName)"
    tk_messageBox -icon info -title $title -message $message
 
    set result 1

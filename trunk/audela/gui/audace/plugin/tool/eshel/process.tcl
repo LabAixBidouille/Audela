@@ -1036,10 +1036,22 @@ proc ::eshel::process::generateProcess { } {
          }
          NONE -
          default {
-            #--- pas de fichier de r�ponse instrumentale
+            #--- pas de fichier de réponse instrumentale
             set responseNode ""
          }
       }
+
+      #--- je verifie que la reponse contient le profil FULL ou les profils par order
+      if { $responseNode != "" } {
+         if { [::eshel::instrument::getConfigurationProperty responsePerOrder ] == 0 } {
+            #--- je verifie qu'un profil FULL est present
+
+         } else {
+            #--- je verifie que les profils par ordre sont presents
+
+         }
+      }
+
 
       #--- je cree un traitement a faire
       set processNode [::dom::document createElement $roadmapNode "OBJECT-PROCESS" ]
@@ -1463,8 +1475,13 @@ proc ::eshel::process::generateScript { } {
                   putImaSeries $hScriptFile $::conf(eshel,tempDirectory) $tempNames $::conf(eshel,tempDirectory) "temp-" "DIV \\\"file=$fullFlatfieldName\\\" constant=\$flatFieldMean"
                }
 
+               #--- je somme les images pretraitees
                putImaStack  $hScriptFile $::conf(eshel,tempDirectory) $tempNames $::conf(eshel,tempDirectory) $fileNameOut  "ADD bitpix=32"
-               putProcessObject $hScriptFile [file join $::conf(eshel,tempDirectory) $fileNameOut] [file join $::conf(eshel,processedDirectory) $fileNameOut] $calibFileName $responseFileName
+
+               #--- j'extrait les profils
+               putProcessObject $hScriptFile [file join $::conf(eshel,tempDirectory) $fileNameOut] \
+                  [file join $::conf(eshel,processedDirectory) $fileNameOut] \
+                  $calibFileName $responseFileName $::conf(eshel,instrument,config,$name,responsePerOrder)
             } else {
                set tempFileList ""
                foreach objectFile $objectsNames {
@@ -1863,7 +1880,7 @@ proc ::eshel::process::putProcessCalib { hfile dirIn fileIn dirOut fileOut dirFl
    puts $hfile $command
 }
 
-proc ::eshel::process::putProcessObject { hfile objectFileNameIn objectFileNameOut calibFileName responseFileName } {
+proc ::eshel::process::putProcessObject { hfile objectFileNameIn objectFileNameOut calibFileName responseFileName responsePerOrder } {
    set fileExtension ""
    set command    "      eshel_processObject "
    append command "\"$objectFileNameIn\" "
@@ -1874,7 +1891,8 @@ proc ::eshel::process::putProcessObject { hfile objectFileNameIn objectFileNameO
 
    #--- option pour diviser par la reponse instrumentale
    if { $responseFileName != "" } {
-      append command "-response \"$responseFileName\""
+      append command "-responseFileName \"$responseFileName\" "
+      append command "-responsePerOrder \"$responsePerOrder\""
    }
 
    #--- option pour exporter le profil FULL seul dans un autre fichier
