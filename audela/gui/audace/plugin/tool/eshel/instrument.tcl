@@ -75,11 +75,11 @@ proc ::eshel::instrument::setCurrentConfig { configId } {
    }
    #--- je verifie qu'il n'y a pas d'acquisition en cours
    if { [::eshel::acquisition::getCurrentSeriesID] != "" } {
-      error $caption(eshel,instrument,errorBusyConfig)
+      error $::caption(eshel,instrument,errorBusyConfig)
    }
 
    #--- je verifie qu'il n'y a pas de traitement en cours
-   #--- TODO  (est ce bien n�cessaire ?)
+   #--- TODO  (est ce bien nécessaire ?)
 
    #--- j'ajoute les parametres manquants (en cas d'evolution de eShel)
    if { $configId != "default" } {
@@ -170,6 +170,7 @@ proc ::eshel::instrument::setCurrentConfig { configId } {
 #  flatfieldEnabled
 #  responseOption
 #  responseFileName
+#  responsePerOrder
 #
 #
 # @param propertyName nom de la propriete

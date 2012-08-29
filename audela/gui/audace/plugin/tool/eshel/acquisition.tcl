@@ -21,10 +21,15 @@ proc ::eshel::acquisition::validateFitsData { value valueLabel } {
 ## startSequence ------------------------------------------------------------
 # lance une sequence d'acquisition
 # <br>exemple :
-# <br>::eshel::acquisition::startSequence 1 [list [list flatSerie [list expNb 3 expTime 10]] [list wait [list expTime 12]] [list tharSerie [list expNb 4 expTime 60]]] 1x1 "reference debut"
+# <br>::eshel::acquisition::startSequence 1 [list [list flatSerie [list expNb 3 expTime 10]] [list wait [list expTime 12]] [list tharSerie [list expNb 4 expTime 60]]] "reference debut"
 #       -  une serie de 3 flats de 10 secondes
 #       -  une attente de 12 secondes
 #       - une serie de 4 thar de 60 secondes
+#
+#<br>exemple :
+#<br>::eshel::acquisition::startSequence 1 [list [list objectSerie [list objectName vega binning 1x1 expNb 3 expTime 60]] ]  "vega"
+#       -  une serie de 5 images de vega de 60 secondes, binning 1x1
+#
 # @param visuNo numero de la visu
 # @param actionList liste des actions d'acquisitions a faire. C'est une liste de couples de valeurs :
 #          -  actionType  : type de l'action
@@ -365,7 +370,9 @@ proc ::eshel::acquisition::startSequence { visuNo actionList { sequenceName "" }
 
                   if { $actionParams(saveFile) == 1} {
                      set dateObs  [mc_date2ymdhms [lindex [buf$bufNo getkwd "DATE-OBS" ] 1]]
-                     set fileDate [format "%04d%02d%02d-%02d%02d%02d" [lindex $dateObs 0] [lindex $dateObs 1] [lindex $dateObs 2] [lindex $dateObs 3] [lindex $dateObs 4] [expr int([lindex $dateObs 5])] ]
+                     set dateObs  [split $private(currentSeriesId) {-T:.} ]
+
+                     set fileDate [format "%04d%02d%02d-%02d%02d%02d" [lindex $dateObs 0] [lindex $dateObs 1] [lindex $dateObs 2] [lindex $dateObs 3] [lindex $dateObs 4] [expr [lindex $dateObs 5]] ]
                      #--- j'ajoute le repertoire et la date a l'avant du nom
                      set shortName "$fileDate-$fileName"
                      set fileName [file join $::conf(eshel,rawDirectory) $shortName]

@@ -741,12 +741,42 @@ proc ::eshel::instrumentgui::fillProcessPage { frm visuNo } {
 
    grid $frm.definition -in $frm -row 0 -column 2 -rowspan 3 -sticky ewns
 
+   #--- Limite lambda des ordres
+   TitleFrame $frm.cropLambda -borderwidth 2 -relief ridge -text $::caption(eshel,instrument,process,cropLambda)
+      scrollbar $frm.cropLambda.ysb -command "$frm.cropLambda.table yview"
+      set columnList [list]
+      lappend columnList 0 $::caption(eshel,instrument,process,orderNum)    center
+      lappend columnList 0 $::caption(eshel,instrument,process,minLambda)  center
+      lappend columnList 0 $::caption(eshel,instrument,process,maxLambda) center
+
+      ::tablelist::tablelist $frm.cropLambda.table \
+         -columns $columnList \
+         -yscrollcommand [list $frm.cropLambda.ysb set] \
+         -exportselection 0 \
+         -setfocus 1 \
+         -forceeditendcommand  0 \
+         -activestyle none
+
+      $frm.cropLambda.table columnconfigure 0 -editable no
+      $frm.cropLambda.table columnconfigure 1 -editable yes
+      $frm.cropLambda.table columnconfigure 2 -editable yes
+
+      grid $frm.cropLambda.table -in [$frm.cropLambda getframe] -row 0 -column 0 -sticky nsew
+      grid $frm.cropLambda.ysb   -in [$frm.cropLambda getframe] -row 0 -column 1 -sticky wns
+
+      grid rowconfig    [$frm.cropLambda getframe] 0 -weight 1
+      grid columnconfig [$frm.cropLambda getframe] 0 -weight 1
+      grid columnconfig [$frm.cropLambda getframe] 1 -weight 0
+
+   grid $frm.cropLambda -in $frm -row 0 -column 3 -rowspan 3 -sticky ewns
+
    grid rowconfig    $frm 0 -weight 0
    grid rowconfig    $frm 1 -weight 0
    grid rowconfig    $frm 2 -weight 1
    grid columnconfig $frm 0 -weight 0
    grid columnconfig $frm 1 -weight 0
    grid columnconfig $frm 2 -weight 1
+   grid columnconfig $frm 3 -weight 1
 
 
 }
@@ -817,43 +847,7 @@ proc ::eshel::instrumentgui::onSelectConfig { visuNo } {
    set configId [::eshel::instrument::getConfigIdentifiant [$tkCombo get]]
 
    #--- je copie les parametres dans les variables de widgets
-   setConfig $visuNo $configId
-
-   #--- j'affiche la liste des pixels chauds
-   set tkHotPixelList [$private($visuNo,frm).notebook getframe "camera"].hotpixel.text
-   $tkHotPixelList delete 1.0 end
-   foreach hotpixel $::conf(eshel,instrument,config,$configId,hotPixelList) {
-      #--- j'affiche une raie par ligne
-      $tkHotPixelList insert end "$hotpixel\n"
-   }
-
-   #--- j'affiche la liste des raies
-   set tkLineList [$private($visuNo,frm).notebook getframe "process"].lineList.text
-   $tkLineList delete 1.0 end
-   foreach line $::conf(eshel,instrument,config,$configId,lineList) {
-      #--- j'affiche une raie par ligne
-      $tkLineList insert end "$line\n"
-   }
-
-   #--- j'affiche la definition des ordres
-   set tkOrderDefinition [$private($visuNo,frm).notebook getframe "process"].definition.table
-   $tkOrderDefinition delete 0 end
-   foreach definition $::conf(eshel,instrument,config,$configId,orderDefinition) {
-      $tkOrderDefinition insert end $definition
-   }
-
-}
-
-#----------------------------------------------------------------------------
-# setConfig
-#    met a jour les variables et les widgets avec les parametres de la configuration
-#    donne en parametre
-# @param $visuNo  identifiant de la visu
-# @param $visuNo  identifiant de la configuration
-#----------------------------------------------------------------------------
-proc ::eshel::instrumentgui::setConfig { visuNo configId } {
-   variable private
-
+   ###setConfig $visuNo $configId
    set catchResult [ catch {
       ::eshel::instrument::setCurrentConfig $configId
    }]
@@ -861,7 +855,6 @@ proc ::eshel::instrumentgui::setConfig { visuNo configId } {
      ::tkutil::displayErrorInfo $::caption(eshel,instrument,importConfigTitle)
      return
    }
-
 
    #--- je copie les parametres dans les variables des widgets
 
@@ -908,10 +901,110 @@ proc ::eshel::instrumentgui::setConfig { visuNo configId } {
    ###set private(responseOption)    $::conf(eshel,instrument,config,$configId,responseOption)
    ###set private(responseFileName)  [file nativename $::conf(eshel,instrument,config,$configId,responseFileName)]
 
+   #--- j'affiche la liste des pixels chauds
+   set tkHotPixelList [$private($visuNo,frm).notebook getframe "camera"].hotpixel.text
+   $tkHotPixelList delete 1.0 end
+   foreach hotpixel $::conf(eshel,instrument,config,$configId,hotPixelList) {
+      #--- j'affiche une raie par ligne
+      $tkHotPixelList insert end "$hotpixel\n"
+   }
+
+   #--- j'affiche la liste des raies
+   set tkLineList [$private($visuNo,frm).notebook getframe "process"].lineList.text
+   $tkLineList delete 1.0 end
+   foreach line $::conf(eshel,instrument,config,$configId,lineList) {
+      #--- j'affiche une raie par ligne
+      $tkLineList insert end "$line\n"
+   }
+
+   #--- j'affiche la definition des ordres
+   set tkOrderDefinition [$private($visuNo,frm).notebook getframe "process"].definition.table
+   $tkOrderDefinition delete 0 end
+   foreach definition $::conf(eshel,instrument,config,$configId,orderDefinition) {
+      $tkOrderDefinition insert end $definition
+   }
+
+   #--- j'affiche la limite  des ordres
+   set tkCropLambda [$private($visuNo,frm).notebook getframe "process"].cropLambda.table
+   $tkCropLambda delete 0 end
+   foreach cropLambda $::conf(eshel,instrument,config,$configId,cropLambda) {
+      $tkCropLambda insert end $cropLambda
+   }
+
    #--- je memorise l'identifant de la nouvelle configuration
    #--- attention : cette variable est surveillee par listener
    set ::conf(eshel,currentInstrument) $configId
+
 }
+
+#----------------------------------------------------------------------------
+# setConfig
+#    met a jour les variables et les widgets avec les parametres de la configuration
+#    donne en parametre
+# @param $visuNo  identifiant de la visu
+# @param $visuNo  identifiant de la configuration
+#----------------------------------------------------------------------------
+###proc ::eshel::instrumentgui::setConfig { visuNo configId } {
+###   variable private
+###
+###   set catchResult [ catch {
+###      ::eshel::instrument::setCurrentConfig $configId
+###   }]
+###   if { $catchResult !=0 } {
+###     ::tkutil::displayErrorInfo $::caption(eshel,instrument,importConfigTitle)
+###     return
+###   }
+###
+###
+###   #--- je copie les parametres dans les variables des widgets
+###
+###   #--- widgets spectrographe
+###   set private(spectroName) $::conf(eshel,instrument,config,$configId,spectroName)
+###   set private(grating)    $::conf(eshel,instrument,config,$configId,grating)
+###   set private(alpha)      $::conf(eshel,instrument,config,$configId,alpha)
+###   set private(beta)      $::conf(eshel,instrument,config,$configId,beta)
+###   set private(gamma)      $::conf(eshel,instrument,config,$configId,gamma)
+###   set private(focale)     $::conf(eshel,instrument,config,$configId,focale)
+###   set private(spectrograhLink)   $::conf(eshel,instrument,config,$configId,spectrograhLink)
+###   set private(mirrorBit)  $::conf(eshel,instrument,config,$configId,mirror,bit)
+###   set private(tharBit)    $::conf(eshel,instrument,config,$configId,thar,bit)
+###   set private(flatBit)    $::conf(eshel,instrument,config,$configId,flat,bit)
+###   set private(tungstenBit)   $::conf(eshel,instrument,config,$configId,tungsten,bit)
+###   #--- widgets telescope
+###   set private(telescopeName) $::conf(eshel,instrument,config,$configId,telescopeName)
+###   #--- widgets camera
+###   set private(cameraName) $::conf(eshel,instrument,config,$configId,cameraName)
+###   set private(cameraLabel) $::conf(eshel,instrument,config,$configId,cameraLabel)
+###   set private(binning)    "[lindex $::conf(eshel,instrument,config,$configId,binning) 0]x[lindex $::conf(eshel,instrument,config,$configId,binning) 1]"
+###   set private(pixelSize)  $::conf(eshel,instrument,config,$configId,pixelSize)
+###   set private(width)      $::conf(eshel,instrument,config,$configId,width)
+###   set private(height)     $::conf(eshel,instrument,config,$configId,height)
+###   set private(x1)         $::conf(eshel,instrument,config,$configId,x1)
+###   set private(y1)         $::conf(eshel,instrument,config,$configId,y1)
+###   set private(x2)         $::conf(eshel,instrument,config,$configId,x2)
+###   set private(y2)         $::conf(eshel,instrument,config,$configId,y2)
+###   #--- widgets traitement
+###   set private(refNum)     $::conf(eshel,instrument,config,$configId,refNum)
+###   set private(refX)       $::conf(eshel,instrument,config,$configId,refX)
+###   set private(refY)       $::conf(eshel,instrument,config,$configId,refY)
+###   set private(refLambda)  $::conf(eshel,instrument,config,$configId,refLambda)
+###   set private(wideOrder)  $::conf(eshel,instrument,config,$configId,wideOrder)
+###   set private(threshold)  $::conf(eshel,instrument,config,$configId,threshold)
+###   set private(boxWide)    $::conf(eshel,instrument,config,$configId,boxWide)
+###   set private(minOrder)   $::conf(eshel,instrument,config,$configId,minOrder)
+###   set private(maxOrder)   $::conf(eshel,instrument,config,$configId,maxOrder)
+###
+###   set private(hotPixelEnabled)   $::conf(eshel,instrument,config,$configId,hotPixelEnabled)
+###   set private(cosmicEnabled)     $::conf(eshel,instrument,config,$configId,cosmicEnabled)
+###   set private(cosmicThreshold)   $::conf(eshel,instrument,config,$configId,cosmicThreshold)
+###   ###set private(flatFieldEnabled)  $::conf(eshel,instrument,config,$configId,flatFieldEnabled)
+###   ###set private(responseOption)    $::conf(eshel,instrument,config,$configId,responseOption)
+###   ###set private(responseFileName)  [file nativename $::conf(eshel,instrument,config,$configId,responseFileName)]
+###
+###   #--- je memorise l'identifant de la nouvelle configuration
+###   #--- attention : cette variable est surveillee par listener
+###   set ::conf(eshel,currentInstrument) $configId
+###}
 
 
 #----------------------------------------------------------------------------
@@ -1113,6 +1206,13 @@ proc ::eshel::instrumentgui::apply { visuNo } {
       lappend ::conf(eshel,instrument,config,$configId,orderDefinition) [$tkOrderDefinition  get $rowIndex]
    }
 
+   #--- je recupere la definition des ordres
+   set tkCropLambda [$private($visuNo,frm).notebook getframe "process"].cropLambda.table
+   set ::conf(eshel,instrument,config,$configId,cropLambda) [list]
+   for { set rowIndex 0 } { $rowIndex < [$tkCropLambda size] } { incr rowIndex } {
+      lappend ::conf(eshel,instrument,config,$configId,cropLambda) [$tkCropLambda  get $rowIndex]
+   }
+
    #--- je recupere les series de reference
    modifyReferenceActionList $visuNo
 
@@ -1280,7 +1380,7 @@ proc ::eshel::instrumentgui::copyConfig { visuNo } {
 
 #------------------------------------------------------------
 # deleteConfig
-#   supprime une configuration
+#   supprime la configuration courante
 #------------------------------------------------------------
 proc ::eshel::instrumentgui::deleteConfig { visuNo } {
    variable private
