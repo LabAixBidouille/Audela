@@ -205,6 +205,12 @@ AC_ARG_WITH([tls],
             [],
             [with_tls=no])
 AS_IF([test "x$with_tls" != xno], [EXTERNAL="$EXTERNAL tls"])
+AC_ARG_WITH([ffmpeg],
+            [AS_HELP_STRING([--with-ffmpeg],
+              [compile external/ffmpeg @<:@default=no@:>@])],
+            [],
+            [with_ffmpeg=no])
+AS_IF([test "x$with_ffmpeg" != xno], [EXTERNAL="$EXTERNAL ffmpeg"])
 
 CONTRIB="ethernaude libgs av4l"
 if test x"$GSL_FOUND" = x"1" ; then
