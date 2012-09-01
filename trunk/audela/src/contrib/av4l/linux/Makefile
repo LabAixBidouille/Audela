@@ -1,9 +1,9 @@
-.PHONY: all clean cleanall distclean install uninstall 
-.PHONY: ffmpeg-clean ffmpeg-config ffmpeg ffmpeg-uninstall ffmpeg-install
+.PHONY: all build clean cleanall distclean install uninstall 
+.PHONY: check_ffmpeg_build check_ffmpeg_install
 
 include ../../../Makefile.defs
 
-FFMPEG=../ffmpeg-0.8.5
+FFMPEG=../../../external/ffmpeg/ffmpeg-0.8.5
 SRC=../src
 VPATH = ../src
 
@@ -19,16 +19,16 @@ LDFLAGS_FFMPEG += -L$(FFMPEG)/libavformat -L$(FFMPEG)/libavcodec
 LDFLAGS_FFMPEG += -L$(FFMPEG)/libavutil -L$(FFMPEG)/libavdevice -L$(FFMPEG)/libswscale
 
 
-all:
+all: build install
 
-all: ffmpeg-install libavi.so grab install
+build: check_ffmpeg_build check_ffmpeg_install libavi.so grab
 
 
 cleanall: clean
 
 distclean: clean uninstall
 
-clean: ffmpeg-clean
+clean:
 	rm -f libavi.so avi.o
 	rm -f grab grab.o proto_filex.o proto_null.o 
 	rm -rf dox
@@ -53,58 +53,32 @@ doc: Doxyfile $(SRC)/grab.c $(SRC)/proto_filex.c $(SRC)/proto_null.c
 	doxygen
 
 
-ffmpeg-clean:
-	$(MAKE) -C $(FFMPEG) clean
-
-ifeq ($(TARGET_ARCH),-m32)
- ffmpeg_config_extra = --extra-cflags=-m32 --extra-ldflags=-m32
-else
- ffmpeg_config_extra =
-endif
-
-ffmpeg-config: $(FFMPEG)/config.mak
-
-$(FFMPEG)/config.mak: Makefile
-	cd $(FFMPEG) && \
-	./configure --enable-pic --enable-shared --enable-static $(ffmpeg_config_extra) \
-	--disable-doc --disable-pthreads --disable-network \
-	--disable-outdevs \
-	--disable-indevs --enable-indev=v4l2 \
-	--disable-protocols --enable-protocol=file \
-	--disable-encoders --enable-encoder=ffvhuff --enable-encoder=huffyuv --enable-encoder=rawvideo \
-	--disable-decoders --enable-decoder=ffvhuff --enable-decoder=huffyuv --enable-decoder=rawvideo \
-	--disable-muxers --enable-muxer=avi \
-	--disable-demuxers --enable-demuxer=avi \
-	--disable-bsfs \
-	--disable-parsers \
-	--disable-yasm
-
-ffmpeg: ffmpeg-config
-	$(MAKE) -C $(FFMPEG)
-
-ffmpeg-install: ffmpeg
-	cp -vf $(FFMPEG)/libavcodec/libavcodec.so.53 ../../../../bin/
-	cp -avf $(FFMPEG)/libavcodec/libavcodec.so ../../../../bin/
-	cp -vf $(FFMPEG)/libavfilter/libavfilter.so.2 ../../../../bin/
-	cp -avf $(FFMPEG)/libavfilter/libavfilter.so ../../../../bin/
-	cp -vf $(FFMPEG)/libavformat/libavformat.so.53 ../../../../bin/
-	cp -avf $(FFMPEG)/libavformat/libavformat.so ../../../../bin/
-	cp -vf $(FFMPEG)/libavutil/libavutil.so.51 ../../../../bin/
-	cp -avf $(FFMPEG)/libavutil/libavutil.so ../../../../bin/
-	cp -vf $(FFMPEG)/libswscale/libswscale.so.2 ../../../../bin/
-	cp -avf $(FFMPEG)/libswscale/libswscale.so ../../../../bin/
-	cp -avf $(FFMPEG)/libavdevice/libavdevice.so ../../../../bin/
-	cp -vf $(FFMPEG)/libavdevice/libavdevice.so.53 ../../../../bin/
-
-ffmpeg-uninstall:
-	rm -f ../../../../bin/{libavcodec.*,libavfilter.*,libavformat.*,libavutil.*,libswscale.*,libavdevice.*}
-
-uninstall: ffmpeg-uninstall clean
+uninstall: clean
 	rm -f ../../../../bin/libavi.so
 	rm -f ../../../../bin/av4l-grab
 
-install: libavi.so grab ffmpeg-install
+install: check_ffmpeg_install libavi.so grab
 	cp -vf libavi.so ../../../../bin/
 	cp -vf grab ../../../../bin/av4l-grab
 
+
+check_ffmpeg_build:
+	@test -e $(FFMPEG)/libavcodec/libavcodec.so.53 && \
+	test -e $(FFMPEG)/libavfilter/libavfilter.so.2 && \
+	test -e $(FFMPEG)/libavformat/libavformat.so.53 && \
+	test -e $(FFMPEG)/libavutil/libavutil.so.51 && \
+	test -e $(FFMPEG)/libswscale/libswscale.so.2 && \
+	test -e $(FFMPEG)/libavdevice/libavdevice.so.53 || \
+	{ echo "CONTRIB/AV4L: ERREUR: external/ffmpeg n'a pas ete compile"; exit 1; }
+
+check_ffmpeg_install:
+	@test -e $(ROOT)/../bin/libavcodec.so.53 && \
+	test -e $(ROOT)/../bin/libavfilter.so.2 && \
+	test -e $(ROOT)/../bin/libavformat.so.53 && \
+	test -e $(ROOT)/../bin/libavutil.so.51 && \
+	test -e $(ROOT)/../bin/libswscale.so.2 && \
+	test -e $(ROOT)/../bin/libavdevice.so.53 || \
+	{ echo "CONTRIB/AV4L: WARNING: external/ffmpeg n'a pas ete installe." ; \
+	  echo " Le module av4l ne fonctionnera pas correctement" ; \
+	  exit 0 ; }
 
