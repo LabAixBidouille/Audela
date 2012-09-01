@@ -19,7 +19,24 @@ LDFLAGS_FFMPEG += -L$(FFMPEG)/libavformat -L$(FFMPEG)/libavcodec
 LDFLAGS_FFMPEG += -L$(FFMPEG)/libavutil -L$(FFMPEG)/libavdevice -L$(FFMPEG)/libswscale
 
 
-all: build install
+all:
+	@-test -e $(FFMPEG)/libavcodec/libavcodec.so.53 && \
+	test -e $(FFMPEG)/libavfilter/libavfilter.so.2 && \
+	test -e $(FFMPEG)/libavformat/libavformat.so.53 && \
+	test -e $(FFMPEG)/libavutil/libavutil.so.51 && \
+	test -e $(FFMPEG)/libswscale/libswscale.so.2 && \
+	test -e $(FFMPEG)/libavdevice/libavdevice.so.53 || \
+	{ echo "CONTRIB/AV4L: ERREUR: external/ffmpeg n'a pas ete compile"; exit 1; } && $(MAKE) build
+	@-test -e $(ROOT)/../bin/libavcodec.so.53 && \
+	test -e $(ROOT)/../bin/libavfilter.so.2 && \
+	test -e $(ROOT)/../bin/libavformat.so.53 && \
+	test -e $(ROOT)/../bin/libavutil.so.51 && \
+	test -e $(ROOT)/../bin/libswscale.so.2 && \
+	test -e $(ROOT)/../bin/libavdevice.so.53 || \
+	{ echo "CONTRIB/AV4L: WARNING: external/ffmpeg n'a pas ete installe." ; \
+	  echo " Le module av4l ne fonctionnera pas correctement" ; \
+	  exit 0 ; } && $(MAKE) install
+
 
 build: check_ffmpeg_build check_ffmpeg_install libavi.so grab
 
