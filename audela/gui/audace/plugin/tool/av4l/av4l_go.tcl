@@ -44,7 +44,7 @@ proc ::av4l::getPluginType { } {
 #     retourne le ou les OS de fonctionnement du plugin
 #------------------------------------------------------------
 proc ::av4l::getPluginOS { } {
-   return [ list Linux ]
+   return [ list Linux Windows]
 }
 
 #------------------------------------------------------------
