@@ -4,6 +4,14 @@
 #define _GNU_SOURCE
 #endif
 
+#ifdef WIN32
+// ffmpeg utilise la directive inline
+// Mais sous windows, inline n'existe plus car il a ete redefini en _inline
+// je cree la definition de inline pour etre compatible avec linux
+#define inline _inline
+#else
+#endif
+
 #define _FILE_OFFSET_BITS 64
 #define _LARGEFILE64_SOURCE
 
