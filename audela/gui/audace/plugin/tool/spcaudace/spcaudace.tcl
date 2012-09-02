@@ -105,6 +105,7 @@ proc ::spcaudace::initPlugin { tkbase } {
    uplevel #0 "source \"[ file join $spcaudace(rep_spc) spc_metaf.tcl ]\""
    uplevel #0 "source \"[ file join $spcaudace(rep_spc) spc_external.tcl ]\""
    uplevel #0 "source \"[ file join $spcaudace(rep_spc) spc_echelle.tcl ]\""
+   uplevel #0 "source \"[ file join $spcaudace(rep_spc) spc_tools.tcl ]\""
    #-- Chargement des plugins de Spcaudace :
    #source [ file join $spcaudace(rep_spc) plugins specLhIII specLhIII.tcl ]
 }
