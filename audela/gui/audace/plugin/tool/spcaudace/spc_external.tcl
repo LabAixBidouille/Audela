@@ -18,8 +18,8 @@
 proc spc_nomsgeneriques {} {
    global audace
    set liste_noms_generiques [ liste_series ]
-   if { [ glob -nocomplain -tail -dir $audace(rep_images) *smd* ]!="" } {
-      set liste_additif [ glob *smd* ]
+   set liste_additif [ glob -nocomplain -tail -dir $audace(rep_images) *smd* ]
+   if { [ llength $liste_additif ]!=0 } {
       foreach newfile $liste_additif { lappend liste_noms_generiques $newfile }
    }
    set liste_noms_generiques [ lsort -dictionary $liste_noms_generiques ]
