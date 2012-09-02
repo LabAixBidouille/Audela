@@ -281,6 +281,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_fly", "external\fl
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libcatalog", "audela\libcatalog\vc90\libcatalog.vcproj", "{9E277693-17F5-409C-B3E4-CE08E700A48E}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_ffmpeg", "external\ffmpeg\vc90\external_ffmpeg.vcproj", "{7202F949-E8C5-427C-A7BD-FA2D31564E73}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "contrib_av4l", "contrib\av4l\vc90\contrib_av4l.vcproj", "{3B9EC563-83A1-4223-B382-A6ACC67B07B6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7202F949-E8C5-427C-A7BD-FA2D31564E73} = {7202F949-E8C5-427C-A7BD-FA2D31564E73}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -643,6 +650,14 @@ Global
 		{9E277693-17F5-409C-B3E4-CE08E700A48E}.Debug|Win32.Build.0 = Debug|Win32
 		{9E277693-17F5-409C-B3E4-CE08E700A48E}.Release|Win32.ActiveCfg = Release|Win32
 		{9E277693-17F5-409C-B3E4-CE08E700A48E}.Release|Win32.Build.0 = Release|Win32
+		{7202F949-E8C5-427C-A7BD-FA2D31564E73}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7202F949-E8C5-427C-A7BD-FA2D31564E73}.Debug|Win32.Build.0 = Debug|Win32
+		{7202F949-E8C5-427C-A7BD-FA2D31564E73}.Release|Win32.ActiveCfg = Release|Win32
+		{7202F949-E8C5-427C-A7BD-FA2D31564E73}.Release|Win32.Build.0 = Release|Win32
+		{3B9EC563-83A1-4223-B382-A6ACC67B07B6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3B9EC563-83A1-4223-B382-A6ACC67B07B6}.Debug|Win32.Build.0 = Debug|Win32
+		{3B9EC563-83A1-4223-B382-A6ACC67B07B6}.Release|Win32.ActiveCfg = Release|Win32
+		{3B9EC563-83A1-4223-B382-A6ACC67B07B6}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
