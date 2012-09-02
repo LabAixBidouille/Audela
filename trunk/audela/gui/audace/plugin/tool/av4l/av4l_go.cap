@@ -11,37 +11,37 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(av4l_go,titre)                 "Acquisition Video Linux"
-set caption(av4l_go,acqvideolinux)         "Acquisition Video Linux"
-set caption(av4l_go,help_titre)            "Aide de cet outil"
-set caption(av4l_go,help_titre1)           "Aide de l'outil :"
+set caption(av4l_go,titre)                 "Video Acquisition 2"
+set caption(av4l_go,acqvideolinux)         "Video Acquisition 2"
+set caption(av4l_go,help_titre)            "Help for this Tool"
+set caption(av4l_go,help_titre1)           "Help for the Tool:"
 
-set caption(av4l_go,setup)                 "Setup du plugin av4l"
-set caption(av4l_go,acquisition)           "Acquisition d'une video"
-set caption(av4l_go,extraction)            "Extraction en image fits"
-set caption(av4l_go,test)                  "Test mode debug"
-set caption(av4l_go,ressource)             "Re-source"
-set caption(av4l_go,verif)                 "Verification de l'avi"
-set caption(av4l_go,time)                  "Time extraction"
-set caption(av4l_go,cdl)                   "Courbe de lumiere"
+set caption(av4l_go,setup)                 "Plugin Setup"
+set caption(av4l_go,acquisition)           "Acquisition of a video"
+set caption(av4l_go,extraction)            "Extraction in fits images"
+set caption(av4l_go,test)                  "Test debug mode"
+set caption(av4l_go,ressource)             "Reload Scripts"
+set caption(av4l_go,verif)                 "Checking avi"
+set caption(av4l_go,time)                  "Time Extraction"
+set caption(av4l_go,cdl)                   "Ligth Curve"
 set caption(av4l_go,analysis)              "Analysis"
 
 # *************** Version française **** **********************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(av4l_go,titre)              "Acquisition Video Linux"
-   set caption(av4l_go,acqvideolinux)      "Acquisition Video Linux"
+   set caption(av4l_go,titre)              "Acquisition vidéo bis"
+   set caption(av4l_go,acqvideolinux)      "Acquisition vidéo bis"
    set caption(av4l_go,help_titre)         "Aide de cet outil"
    set caption(av4l_go,help_titre1)        "Aide de l'outil :"
 
-   set caption(av4l_go,setup)              "Configuration du plugin av4l"
-   set caption(av4l_go,acquisition)        "Acquisition d'une video"
-   set caption(av4l_go,extraction)         "Extraction en image fits"
+   set caption(av4l_go,setup)              "Configuration du plugin"
+   set caption(av4l_go,acquisition)        "Acquisition d'une vidéo"
+   set caption(av4l_go,extraction)         "Extraction en images fits"
    set caption(av4l_go,test)               "Test mode debug"
-   set caption(av4l_go,ressource)          "Re-source"
-   set caption(av4l_go,verif)              "Verification de l'avi"
+   set caption(av4l_go,ressource)          "Re-charge les scripts"
+   set caption(av4l_go,verif)              "Vérification de l'avi"
    set caption(av4l_go,time)               "Extraction de l'heure"
-   set caption(av4l_go,cdl)                "Courbe de lumiere"
+   set caption(av4l_go,cdl)                "Courbe de lumière"
    set caption(av4l_go,analysis)           "Analyse"
 
 # *************** Version italienne ***************************
