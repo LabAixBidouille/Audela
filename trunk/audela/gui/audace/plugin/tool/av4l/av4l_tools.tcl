@@ -25,7 +25,7 @@ namespace eval ::av4l_tools {
    variable fits_dir
    variable fits_genericname
 
-
+   set nb_frames 0
 
    #
    # av4l_tools::open_flux
@@ -47,8 +47,11 @@ namespace eval ::av4l_tools {
       }
 
       set bufNo [ visu$visuNo buf ]
-      set autocuts [buf$bufNo autocuts]
-      visu$visuNo disp [list [lindex $autocuts 0] [lindex $autocuts 1]]
+      if { [buf$bufNo imageready] == 1 } {
+            set autocuts [buf$bufNo autocuts]
+            visu$visuNo disp [list [lindex $autocuts 0] [lindex $autocuts 1]]
+      }
+
       set ::av4l_tools::scrollbar 1
       $frm.scrollbar configure -from 1
       $frm.scrollbar configure -to $::av4l_tools::nb_frames
