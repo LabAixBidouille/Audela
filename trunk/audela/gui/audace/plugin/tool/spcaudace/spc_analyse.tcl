@@ -1092,6 +1092,132 @@ proc spc_compare { args } {
 #*********************************************************************#
 
 
+################################################################################################
+proc spc_findbiglines2 { args } {
+# Date de création : 22-07-12
+# Date de modification : 24-07-12
+# Arguments : nom_profil_raies largeur_raie
+# amelioration de spc_findbiglines faite par Benji : 
+# on recherche les raies par intercorrelation avec une gaussienne de meme largeur que les raies du neon
+# on effectuer ainsi un lissage qui ameliore le rapport S/B
+# le nombre maximum de raies detectees est defini via la variable d'environnement nb_pics (cf. spc_var)
+# cette proc ne fait que gerer des fichiers : la detection des raies etant geree par spc_maxcorr
+###############################################################################################
+   global conf
+   global audace spcaudace
+   #set ecart 4.0
+
+   set nbargs [ llength $args ]
+   if { $nbargs <= 2 } {
+		if { $nbargs == 1 } {
+	    	set filename [ lindex $args 0 ]
+	    	set largeur $spcaudace(largeur_raie_detect)
+		} elseif { $nbargs == 2 } {
+	   	set filename [ lindex $args 0 ]
+	    	set largeur [ expr int([ lindex $args 1 ]) ]
+		}
+		set nom_fich [ file rootname $filename ]
+		::console::affiche_resultat " nom fichier entree $filename largeur= $largeur \n"
+		#set nom_fich [ spc_linearcal $nom_fich ]
+		set suff .fit  
+		#set typeraies e
+		# lecture du profil a analyser
+		buf$audace(bufNo) load "$audace(rep_images)/$nom_fich"
+		set listemotsclef [ buf$audace(bufNo) getkwds ]
+		#-- Renseigne sur les parametres de l'image :
+		set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
+      if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
+			set cdelt1 [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
+		} else {
+			set cdelt1 1
+		}
+		if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
+			set crval1 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+		} else {
+			set crval1 1
+		}
+		# modification eventuelle de l'image pour avoir un nombre d'echantillons impair
+		if { [ expr $naxis1 % 2 ] == 0 } {
+			set naxis1 [ expr $naxis1 + 1 ]
+			::console::affiche_resultat "nom_fich= $nom_fich\n\n"
+			spc_extend $nom_fich $naxis1
+			set ext _extend
+			set nom_fich $nom_fich$ext
+		}
+		#transformation du fichier fits en fichier 2D
+		buf$audace(bufNo) load $nom_fich
+		buf$audace(bufNo) setkwd [ list CDELT1 $cdelt1 int "" "" ]
+		buf$audace(bufNo) setkwd [ list CRVAL1 $crval1 float "" "" ]
+		buf$audace(bufNo) setkwd [ list NAXIS 2 int "number of data axes" "" ]
+		buf$audace(bufNo) setkwd [ list NAXIS2 1 int "length of data axis 2" "" ]
+		
+		# sauvegarde des modifications
+		#set nom_fich $filename
+		buf$audace(bufNo) bitpix float
+		set ext1 _pl2D
+		buf$audace(bufNo) save $nom_fich$ext1$suff
+		#creation d'un profil de meme parametres que le profil a analyser et constitue d'une gaussienne de largeur $largeur centree sur le pixel N° 1
+		# remplacer les lignes ci-dessous par une ecriture vectorielle
+		set lgauss [ list ]
+		set icentre [ expr $naxis1 / 2 +1 ]
+		set sigma [ expr $largeur / 2.3548 ]
+		for { set i 1 } { $i <= $naxis1 } { incr i } {
+			set absc [ expr ($i - $icentre) ]
+			lappend lgauss [ expr (1 / $sigma ) * exp (-.5 * ( $absc / $sigma ) * ( $absc / $sigma )) ] 
+		}
+		
+		# sauvegarde du profil gaussien
+		set nbunit "float"
+   	set nbunit1 "double"
+   	buf$audace(bufNo) setpixels CLASS_GRAY $naxis1 1 FORMAT_FLOAT COMPRESS_NONE 0
+   	buf$audace(bufNo) setkwd [ list "NAXIS" 2 int "" "" ]
+   	buf$audace(bufNo) setkwd [list "NAXIS1" $naxis1 int "" ""]
+   	buf$audace(bufNo) setkwd [list "NAXIS2" 1 int "" ""]
+   	buf$audace(bufNo) setkwd [list "CRVAL1" $crval1 $nbunit1 "" "Angstrom"]
+   	#-- Dispersion
+   	buf$audace(bufNo) setkwd [list "CDELT1" $cdelt1 $nbunit1 "" "Angstrom/pixel"]
+   	buf$audace(bufNo) setkwd [list "CRPIX1" 1 int "" "Pixel"]
+   	for {set k 0} { $k < $naxis1 } {incr k} {
+			buf$audace(bufNo) setpix [list [expr $k+1] 1] [lindex $lgauss $k ]
+   	}
+   	buf$audace(bufNo) bitpix float
+   	set nom_fich_output "pl_gauss.fit"
+   	#buf$audace(bufNo) save "$audace(rep_images)/$nom_fich_output"
+   	buf$audace(bufNo) save $nom_fich_output
+   	::console::affiche_resultat " nom fichier sortie $nom_fich_output \n"
+   	buf$audace(bufNo) bitpix short
+		#calcul de l'intercorrélation entre les deux profil
+		::console::affiche_resultat " calcul de l'intercorrelation entre $nom_fich$suff et pl_gauss.fit \n"
+		icorr2d $nom_fich$ext1$suff pl_gauss.fit pl_crosscorr.fit
+		pl_changekeywd pl_crosscorr.fit NAXIS 1
+		pl_changekeywd pl_crosscorr.fit CRPIX1 1
+		#analyse du profil
+		set conti [ spc_icontinuum pl_crosscorr.fit ]
+		set snr [ spc_snr pl_crosscorr.fit ]
+		#recherche des maximas
+		set pl_crosscorr.dat [ spc_fits2dat pl_crosscorr.fit ]
+		set listmax [ spc_maxcorr pl_crosscorr.dat $conti $snr ]
+		#bm_mv pl_crosscorr.fit pl_crosscorr
+		::console::affiche_resultat " liste des max $listmax \n"
+		# suppression des fichiers temporaires
+		::console::affiche_resultat " suppression des fichiers temporaires pl_gauss.fit, pl_crosscorr.dat, pl_crosscorr.fit, $nom_fich$ext et $nom_fich$ext1 \n"
+		file delete -force "$audace(rep_images)/pl_gauss.fit"
+		file delete -force "$audace(rep_images)/$nom_fich$ext1"
+		set nom_fich [ file rootname $filename ]
+		file delete -force "$audace(rep_images)/$nom_fich$ext"
+		file delete -force "$audace(rep_images)/pl_crosscorr.fit"
+		file delete -force "$audace(rep_images)/pl_crosscorr.dat"
+		return $listmax			
+	} else {
+	   ::console::affiche_erreur "Usage: spc_findbiglines2 nom_profil_de_raies type_raies ?largeur_raie_pixels ($spcaudace(largeur_raie_detect))?\n"
+	   	
+	   	return ""
+	}	
+}
+
+#***************************************************************************#
+
+
 ####################################################################
 # Procédure de recherche des raies dans un profil
 #
