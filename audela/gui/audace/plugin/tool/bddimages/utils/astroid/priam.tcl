@@ -58,7 +58,7 @@ namespace eval ::priam {
 #      {ASTROID {} {1455.214748 1237.066546 2.946869 2.521896 2.7343825 1467.000000 0 1239.000000 227.0 38.759163 37.8491145436 5.85667961922 3.26 0.0976624473377}}
    
 
-proc ::priam::create_file_oldformat { tag listsources science stars } {
+proc ::priam::create_file_oldformat { tag nb listsources science stars } {
 
    global bddconf audace
 
@@ -104,25 +104,30 @@ proc ::priam::create_file_oldformat { tag listsources science stars } {
       puts $chan0 "#!/bin/sh"
       puts $chan0 "LD_LIBRARY_PATH=/usr/local/lib:$::tools_astrometry::ifortlib"
       puts $chan0 "export LD_LIBRARY_PATH"
-      puts $chan0 "priam -lang en -format priam -m 1 -fc cnd.obs -fm science.mes -r ./ -fcat local.cat -rcat ./ -s fichier:bddimages -te 1"
+      puts $chan0 "priam -lang en -format priam -m $nb -fc cnd.obs -fm science.mes -r ./ -fcat local.cat -rcat ./ -s fichier:bddimages -te 1"
       close $chan0
    }
 
    # creation du fichier de mesures
    set filemes [ file join $audace(rep_travail) science.mes ]
    
-   if {$tag=="new"} { set chan0 [open $filemes w] }
-   if {$tag=="add"} { set chan0 [open $filemes a+] }
+   if {$tag=="new"} { 
+      set chan0 [open $filemes w] 
+      puts $chan0 "#? Centroid measures formatted for Priam"
+      puts $chan0 "#?   Source: Astroid - jan. 2012"
+      puts $chan0 "#? Object: $science"
+      puts $chan0 "#"
+      puts $chan0 "#> orientation: $axes"
+      puts $chan0 "#"
+      puts $chan0 "#! Frame: $imagefilename"
+      puts $chan0 "$dateobsjd $temperature $pression  $humidity $bandwith"
+   }
+   if {$tag=="add"} { 
+      set chan0 [open $filemes a+] 
+      puts $chan0 "#! Frame: $imagefilename"
+      puts $chan0 "$dateobsjd $temperature $pression  $humidity $bandwith"
+   }
     
-   puts $chan0 "#? Centroid measures formatted for Priam"
-   puts $chan0 "#?   Source: Astroid - jan. 2012"
-   puts $chan0 "#? Object: $science"
-   puts $chan0 "#"
-   puts $chan0 "#> orientation: $axes"
-   puts $chan0 "#"
-   puts $chan0 "#! Frame: $imagefilename"
-   puts $chan0 "$dateobsjd $temperature $pression  $humidity $bandwith"
-
    # creation du fichier stellaire
    set filelocal [ file join $audace(rep_travail) local.cat ]
 
