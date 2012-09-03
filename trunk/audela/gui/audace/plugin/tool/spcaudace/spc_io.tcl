@@ -197,6 +197,118 @@ proc spc_buildhtml { args } {
 }
 #****************************************************************#
 
+################################################################################################
+# Procedure pour mise en conformite de deux profiis spectraux
+# Auteur : Patrick LAILLY
+# Date de creation : 25-08-12
+# Date de modification : 25-08-12
+# Cette procedure retourne la liste de deux fichiers apres leur mise en conformite en vue de leur
+# division via spc_divbrut. La mise en conformite consiste decire les profils suivant les memes mots cles
+# NAXIS1, CDELT1, CRPIX1 et CRVAL1. Plus precisement les 2 CRPIX1 vaudront 1, CDELT1 sera celui du 
+# premier profil (fichier modele), CRVAL1 sera la longueur de depart du 2eme profil apres elimination d'eventuels
+# zeros. Quant a NAXIS1 il correspondra a l'intervalle effectif (apres elimination d'eventuels
+# zeros) de longueurs d'ondes commun aux 2 profils.
+# La procedure retourne la liste des 2 fichiers (dans l'ordre d'entree) contenant les profils ainsi modifies.
+# Les deux fichiers d'entree sont cense etre calibres
+# lineairement. Les fichiers de sortie seront reperes le suffixe _conform.
+# Exemple spc_conform profile_model.fit profile_data.fit
+#################################################################################################
+proc spc_conform { args } {
+   global audace spcaudace
+   set nbargs [ llength $args ]
+   if { $nbargs == 2 } {
+      set nom_fich_input [ lindex $args 1 ]
+      set nom_fich_input [ file rootname $nom_fich_input ]
+      set nom_fich_model [ lindex $args 0 ]
+      set nom_fich_model [ file rootname $nom_fich_model ]
+      set nbunit "double"
+      if { [ spc_testlincalib $nom_fich_input ] == -1 } {
+      	::console::affiche_resultat "spc_echantmodel1 : ATTENTION le profil a reechantilloner n'est pas calibré linéairement on tente cependant d'executer la procedure apres avoir linearise la loi de calibration \n\n"
+			set nom_fich_input [ spc_linearcal $nom_fich_input ]
+	 	}
+		if { [ spc_testlincalib $nom_fich_model ] == -1 } {
+			::console::affiche_erreur "spc_echantmodel1 : le profil modele n'est pas calibré linéairement et la mise en oeuvre de la procedure n'a pas de sens \n\n"
+			return ""
+	 	}
+
+		#--- Elimination d'eventuels zeros dans le profil modele
+		set nom_fich_model [ spc_rmedges $nom_fich_model 0. ]
+		#--- Caracteristiques du profil modele:
+      buf$audace(bufNo) load "$audace(rep_images)/$nom_fich_model"
+   	#-- Renseigne sur les parametres de l'image :
+      set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+      set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+      set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+      set crpix1 [ lindex [ buf$audace(bufNo) getkwd "CRPIX1" ] 1 ]
+      #::console::affiche_resultat "caractÃ©ristiques fichier modÃ¨le cdelt1= $cdelt1 naxis1= $naxis1 crval1= $crval1 \n"
+      buf$audace(bufNo) delkwds
+      buf$audace(bufNo) clear
+      #--- Elimination d'eventuels zeros dans le 2eme profil
+      set nom_fich_input [ spc_rmedges $nom_fich_input 0. ]
+      #--- Renseigne sur les parametres du 2 eme profil
+      buf$audace(bufNo) load "$audace(rep_images)/$nom_fich_input"
+		set naxis2 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+      set crval2 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+      set cdelt2 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+      set crpix2 [ lindex [ buf$audace(bufNo) getkwd "CRPIX1" ] 1 ]
+      #--- Calcul de l'intervalle de longueurs d'ondes commun aux 2 profils
+      set lambdamin1 [ expr $crval1 + (1 - $crpix1) * $cdelt1 ]
+      set lambdamin2 [ expr $crval2 + (1 - $crpix2) * $cdelt2 ]
+      set lambdamax2 [ expr $crval2 + ($naxis2 - $crpix2) * $cdelt2 ]
+      set lambdamax1 [ expr $crval1 + ($naxis1 - $crpix1) * $cdelt1 ]
+      set lambdamin [ expr max($lambdamin1, $lambdamin2) ]
+      set lambdamax [ expr min($lambdamax1, $lambdamax2) ]
+      #::console::affiche_resultat "$lambdamin1 $lambdamin2 $lambdamin $lambdamax1 $lambdamax2 $lambdamax\n"
+      # calcul de la longueur d'onde de depart des 2 profils mis en conformite
+      set nn 0
+     	if { $lambdamin > $lambdamin1 } {
+  			# alors il faut caler la d'onde de depart de facon a ce qu'elle tombe sur un echantillon du 1er profil
+     		set nn [ expr int ( ($lambdamin - $lambdamin1) / $cdelt1 ) +1 ]
+     		# si, par hasard, la division ci dessus tombait juste, le degat consisterait a perdre un echantillon => pas grave 
+      	set lambdamin [ expr $lambdamin1 + $nn * $cdelt1 ]
+      }
+      if { $lambdamin >= $lambdamax } {
+      	::console::affiche_erreur "spc_conform : l' intervalle de longueurs d'onde commun aux 2 profils est vide, on ne peut donner suite...\n\n"
+      	return ""	
+      } else {
+      	set crvalnew $lambdamin
+      	set cdeltnew $cdelt1
+      	set naxisnew [ expr int ( ($lambdamax - $lambdamin )  / $cdelt1 ) +1 ]
+      	set naxisnew [ expr $naxisnew -1 ]
+      	# l'instruction ci dessus est une precaution au cas ou la division ci-dessus tomberait juste 
+      	
+      	if { [ expr $lambdamin + $naxisnew * $cdelt1 ] == $lambdamax } {
+      		set naxisnew [ expr $naxisnew - 1 ]
+      	if { [ expr $lambdamin + $naxisnew * $cdelt1 ] > $lambdamax1 } {
+      		# dans ce cas il n'aurait pas fallu arrondir a l'echantillon superieur pour le calcul de nn
+      		set nn [ expr $nn - 1 ]
+      	}
+      	}
+      	#::console::affiche_resultat " cracteristiques des profils conformes : crvalnew= $crvalnew  cdelt= $cdeltnew naxis= $naxisnew $nn\n"
+      	set fich2 [ spc_echantdelt $nom_fich_input $cdeltnew $crvalnew ]
+      	set fich2new [spc_selectpixels $fich2 1 $naxisnew ]
+      	set fich1new [spc_selectpixels $nom_fich_model [ expr $nn + 1 ] [ expr $naxisnew +$nn ] ]
+      	set suff _conform
+      	set ext .fit
+      	file rename -force "$audace(rep_images)/$fich1new$ext" "$audace(rep_images)/$nom_fich_model$suff$ext"
+      	file rename -force "$audace(rep_images)/$fich2new$ext" "$audace(rep_images)/$nom_fich_input$suff$ext"
+	 		::console::affiche_resultat " les 2 profils ont ete, apres mise en conformite, sauvegardes sous $nom_fich_model$suff et $nom_fich_input$suff\n"
+      	set lresult [list ]
+      	lappend lresult $nom_fich_model$suff
+      	lappend lresult $nom_fich_input$suff
+      	# effacement des fichiers temporaires
+      	file delete -force "$audace(rep_images)/$fich2"
+      	::console::affiche_resultat " effacement du fichier $fich2 \n"
+      	return $lresult
+      }
+
+   } else {
+      ::console::affiche_erreur "Usage: spc_conform profile_model.fits(calibre lineairement)  autre_profil.fits\n\n"
+      return ""
+   }
+}
+#*****************************************************************#
+
 
 
 
