@@ -99,10 +99,24 @@ variable current_listsources
 
    proc ::tools_astrometry::launch_priam {  } {
        
-       set ::tools_astrometry::current_listsources [::analyse_source::psf $tools_astrometry::current_listsources $::tools_astrometry::treshhold $::tools_astrometry::delta]
-       ::priam::create_file_oldformat $::tools_astrometry::current_listsources $::tools_astrometry::science $::tools_astrometry::reference 
-       gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $::tools_astrometry::current_listsources ]\n"
 
+      set cpt 0
+      foreach ::tools_astrometry::current_image $::tools_astrometry::img_list {
+ 
+         if {$cpt==0} {
+            set tag "new"
+         } else {
+            set tag "add"
+         }
+
+         set tabkey      [::bddimages_liste::lget $::tools_astrometry::current_image "tabkey"]
+         set ::tools_astrometry::current_listsources [::bddimages_liste::lget $::tools_astrometry::current_image "listsources"]
+         set ::tools_astrometry::current_listsources [::analyse_source::psf $tools_astrometry::current_listsources $::tools_astrometry::treshold $::tools_astrometry::delta]
+         ::priam::create_file_oldformat $tag $::tools_astrometry::current_listsources $::tools_astrometry::science $::tools_astrometry::reference 
+         gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $::tools_astrometry::current_listsources ]\n"
+         incr cpt
+      }
+      
       #set cmdpriam "priam -lang en -format priam -m 1 -fc cnd.obs -fm science.mes -r ./ -fcat local.cat -rcat ./ -s fichier:priam -te 1"
       #set err [catch {exec export LD_LIBRARY_PATH=/usr/local/lib:/opt/intel/lib/intel64 |& $cmdpriam} msg ]
       
@@ -173,11 +187,32 @@ variable current_listsources
          set val [lindex $a 1]
          gren_info "$key=$val\n"
           
-         if {$key=="CDELT1"} {
+         if {$key=="RA"} {
             # Debut image
             incr cpt
          }
-
+         if {$key=="DEC"} {
+         }
+         if {$key=="CRVAL1"} {
+         }
+         if {$key=="CRVAL2"} {
+         }
+         if {$key=="CDELT1"} {
+         }
+         if {$key=="CDELT2"} {
+         }
+         if {$key=="CROTA2"} {
+         }
+         if {$key=="CD1_1"} {
+         }
+         if {$key=="CD1_2"} {
+         }
+         if {$key=="CD2_1"} {
+         }
+         if {$key=="CD2_2"} {
+         }
+         if {$key=="CATA_PVALUE"} {
+         }
 
          for {set k 0 } { $k<$n } {incr k} {
             set kwd [lindex $astrom(kwds) $k]
@@ -236,7 +271,7 @@ variable current_listsources
                   set name [::manage_source::naming $s $::tools_astrometry::science]
                   if {$n==$name} {
                      #gren_info "NAME=$name\n"
-                     set ra      [expr [lindex $val 0] *15.]
+                     set ra      [expr [lindex $val 0] ]
                      set dec     [lindex $val 1]
                      set res_ra  [lindex $val 2]
                      set res_dec [lindex $val 3]
