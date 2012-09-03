@@ -67,7 +67,7 @@ namespace eval ::analyse_source {
    # xsm         ysm        fwhmx    fwhmy    fwhm     fluxintegre errflux  pixmax  intensite sigmafond snint         snpx          delta
    # 1936.447981 844.076965 3.510291 1.861599 2.685945 799.000000  0        1310    246.0     33.616402 23.7681593646 7.31785632502 3.21
 
-   proc ::analyse_source::psf { listsources radius_threshold } {
+   proc ::analyse_source::psf { listsources radius_threshold delta } {
 
       global bddconf
 
@@ -81,7 +81,12 @@ namespace eval ::analyse_source {
       set nbs [::manage_source::get_nb_sources_by_cata $listsources "IMG"]
       if {$log} {gren_info "nb sources to work : $nbs \n"}
 
-      lappend fields [list "PHOTOM" {} [list "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff"] ]
+      set fieldsastroid [list "ASTROID" {} [list "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" \
+                                           "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" \
+                                           "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "flagastrom" \
+                                           "mag" "err_mag" ] ]
+
+      lappend fields $fieldsastroid
       set newsources {}
 
       set cpts 0
@@ -107,7 +112,7 @@ namespace eval ::analyse_source {
 
                #set results [::tools_cdl::photom_methode $x $y $fwhm $bddconf(bufno) ]
 
-               set err [catch {set results [::tools_cdl::photom_methode $x $y $fwhm $bddconf(bufno) ]} msg]
+               set err [catch {set results [::tools_cdl::photom_methode $x $y $delta $bddconf(bufno) ]} msg]
                if {$err} { 
                   gren_info "photom error ($err) ($msg)\n" 
                   set results -1
@@ -128,8 +133,11 @@ namespace eval ::analyse_source {
                   } else {
                      affich_un_rond $ra $dec green 5
                      lappend results $rdiff
+                     for {set i 0} {$i<9} {incr i} { lappend results 0 }
                      set ns $s
-                     lappend ns [list "PHOTOM" {} $results]
+                     gren_info "ASTROIDR [llength $results]\n"
+
+                     lappend ns [list "ASTROID" {} $results]
                      lappend newsources $ns
                   }
 

@@ -55,7 +55,7 @@ namespace eval ::priam {
 # {IMG {105.94394 4.34557 5 +14.0326 0.036} 
 #      {4133 3 1455.26 1236.98 +12.432 0.036 2483.4 81.3 105.94394 4.34557 +14.0326 +13.8275 0.3848 +13.8527 0.3839 221 150 994.2 +0.63 -0.08 -0.16 +1.29 +0.94 -12.1 3.26 0}} 
 #      {USNOA2 {105.94394 4.34557 5.0 +14.0326 0.3848} {}} 
-#      {PHOTOM {} {1455.214748 1237.066546 2.946869 2.521896 2.7343825 1467.000000 0 1239.000000 227.0 38.759163 37.8491145436 5.85667961922 3.26 0.0976624473377}}
+#      {ASTROID {} {1455.214748 1237.066546 2.946869 2.521896 2.7343825 1467.000000 0 1239.000000 227.0 38.759163 37.8491145436 5.85667961922 3.26 0.0976624473377}}
    
 
 proc ::priam::create_file_oldformat { listsources science stars } {
@@ -133,8 +133,8 @@ proc ::priam::create_file_oldformat { listsources science stars } {
          if {[lindex $cata 0] == $stars} {
             set name [::manage_source::naming $s ${stars}]
             foreach u $s {
-               #gren_info "PHOTOM ? = $u\n"
-               if {[lindex $u 0] == "PHOTOM"} {
+               #gren_info "ASTROID ? = $u\n"
+               if {[lindex $u 0] == "ASTROID"} {
                   set odata [lindex $u 2]
                   incr index
                   set xsm [lindex $odata 0]
@@ -157,7 +157,7 @@ proc ::priam::create_file_oldformat { listsources science stars } {
          if {[lindex $cata 0] == $science} {
             set name [::manage_source::naming $s ${science}]
             foreach u $s {
-               if {[lindex $u 0] == "PHOTOM"} {
+               if {[lindex $u 0] == "ASTROID"} {
                   set odata [lindex $u 2]
                   incr indexsc
                   set xsm [lindex $odata 0]
