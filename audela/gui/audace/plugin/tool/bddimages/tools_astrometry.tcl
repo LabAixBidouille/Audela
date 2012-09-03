@@ -340,6 +340,44 @@ variable current_listsources
 
       # Fichier au format CATA 
       if {$form=="CATA"} {
+
+##############
+         set fileres [ file join $audace(rep_travail) priam.txt ]
+         set chan0 [open $fileres w]
+         foreach ::tools_astrometry::current_image $::tools_astrometry::img_list {
+            set tabkey      [::bddimages_liste::lget $::tools_astrometry::current_image "tabkey"]
+            set ::tools_astrometry::current_listsources [::bddimages_liste::lget $::tools_astrometry::current_image "listsources"]
+
+            set cataxml [::tools_cata::get_catafilename $::tools_astrometry::current_image "TMP" ]
+            
+            gren_info "cataxml = $cataxml\n"
+
+            set votable [::votableUtil::list2votable $::tools_astrometry::current_listsources $tabkey]
+
+            gren_info "votable = $votable\n"
+
+            # Sauvegarde du cata XML
+            #gren_info "Enregistrement du cata XML: $cataxml\n"
+            
+            set fxml [open $cataxml "w"]
+            puts $fxml $votable
+            close $fxml
+
+            return
+
+            set err [ catch { insertion_solo $cataxml } msg ]
+            gren_info "** INSERTION_SOLO = $err $msg\n"
+
+            set cataexist [::bddimages_liste::lexist $::tools_cata::current_image "cataexist"]
+            if {$cataexist==0} {
+               set ::tools_cata::current_image [::bddimages_liste::ladd $::tools_cata::current_image "cataexist" 1]
+            } else {
+               set ::tools_cata::current_image [::bddimages_liste::lupdate $::tools_cata::current_image "cataexist" 1]
+            }
+         }
+##############
+
+
       }
    
    }
