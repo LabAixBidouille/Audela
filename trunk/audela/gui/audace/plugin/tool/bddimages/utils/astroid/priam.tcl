@@ -64,7 +64,7 @@ proc ::priam::create_file_oldformat { tag nb listsources science stars } {
 
    # constantes provisoires
    set axes "wn"
-   set imagefilename "toto.gif"
+   set imagefilename "toto.fits"
    set dateobsjd 2454908.5137460064
    set temperature 20.00
    set pression 1013.500
@@ -119,12 +119,12 @@ proc ::priam::create_file_oldformat { tag nb listsources science stars } {
       puts $chan0 "#"
       puts $chan0 "#> orientation: $axes"
       puts $chan0 "#"
-      puts $chan0 "#! Frame: $imagefilename"
+      puts $chan0 "!$imagefilename"
       puts $chan0 "$dateobsjd $temperature $pression  $humidity $bandwith"
    }
    if {$tag=="add"} { 
       set chan0 [open $filemes a+] 
-      puts $chan0 "#! Frame: $imagefilename"
+      puts $chan0 "!$imagefilename"
       puts $chan0 "$dateobsjd $temperature $pression  $humidity $bandwith"
    }
     
