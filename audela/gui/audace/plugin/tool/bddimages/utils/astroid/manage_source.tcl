@@ -193,6 +193,33 @@ namespace eval ::manage_source {
 
       ::console::affiche_resultat "$listsources\n"
    }
+   
+   #
+   # manage_source::naming
+   # Fournit une denomination selon le type de catalogue
+   #
+   proc ::manage_source::naming { mysource mycata} {
+
+      foreach cata $mysource {
+      
+         if {[lindex $cata 0] == $mycata} {
+
+            if {$mycata=="SKYBOT"} {
+               set name [lindex [lindex $cata 2] 1] 
+               set i [regsub -all {\W} $name "_" name] 
+               set name "SKYBOT_[lindex [lindex $cata 2] 0]_$name"
+               return $name
+            }
+            if {$mycata=="UCAC3"} {
+               return "UCAC3_[lindex [lindex $cata 2] 0][lindex [lindex $cata 2] 1]"
+            }
+            if {$mycata=="UCAC2"} {
+               return "UCAC2_[lindex [lindex $cata 2] 0][lindex [lindex $cata 2] 1]"
+            }
+
+         }
+      }
+   }
 
    #
    # manage_source::set_common_fields

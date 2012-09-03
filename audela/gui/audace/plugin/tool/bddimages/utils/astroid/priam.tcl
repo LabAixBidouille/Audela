@@ -129,10 +129,11 @@ proc ::priam::create_file_oldformat { listsources science stars } {
    set sources [lindex $listsources 1]
    foreach s $sources {
       foreach cata $s {
-         gren_info "CATA = [lindex $cata 0]\n"
+         #gren_info "CATA = [lindex $cata 0]\n"
          if {[lindex $cata 0] == $stars} {
+            set name [::manage_source::naming $s ${stars}]
             foreach u $s {
-               gren_info "PHOTOM ? = $u\n"
+               #gren_info "PHOTOM ? = $u\n"
                if {[lindex $u 0] == "PHOTOM"} {
                   set odata [lindex $u 2]
                   incr index
@@ -143,17 +144,18 @@ proc ::priam::create_file_oldformat { listsources science stars } {
                   set fwhmx [lindex $odata 2]
                   set fwhmy [lindex $odata 3]
                   set fluxintegre [lindex $odata 5]
-                  puts $chan0 "R $xsm $xsmerr $ysm $ysmerr $fwhmx $fwhmy $fluxintegre ${stars}_${index}"
+                  puts $chan0 "R $xsm $xsmerr $ysm $ysmerr $fwhmx $fwhmy $fluxintegre $name"
 
                   set data [lindex $cata 2]
                   set ra  [mc_angle2hms [lindex $data 0]] 
                   set dec [mc_angle2dms [lindex $data 1]]
                   set mag [lindex $data 3]
-                  puts $chan1 "${stars}_${index} $ra $dec 0.00 0.00 2451545.50  100.0 100.0  0.00  0.00  $mag ?    0.00 0.0"
+                  puts $chan1 "$name $ra $dec 0.00 0.00 2451545.50  100.0 100.0  0.00  0.00  $mag ?    0.00 0.0"
                }
             }
          }
          if {[lindex $cata 0] == $science} {
+            set name [::manage_source::naming $s ${science}]
             foreach u $s {
                if {[lindex $u 0] == "PHOTOM"} {
                   set odata [lindex $u 2]
@@ -165,7 +167,7 @@ proc ::priam::create_file_oldformat { listsources science stars } {
                   set fwhmx [lindex $odata 2]
                   set fwhmy [lindex $odata 3]
                   set fluxintegre [lindex $odata 5]
-                  puts $chan0 "S $xsm $xsmerr $ysm $ysmerr $fwhmx $fwhmy $fluxintegre ${science}_${indexsc}"
+                  puts $chan0 "S $xsm $xsmerr $ysm $ysmerr $fwhmx $fwhmy $fluxintegre $name"
                }
             }
          }

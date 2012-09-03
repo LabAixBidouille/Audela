@@ -7,7 +7,7 @@ namespace eval gui_astrometry {
       global bddconf, conf
       set ::tools_astrometry::science   "SKYBOT"
       set ::tools_astrometry::reference "UCAC3"
-
+      set ::tools_astrometry::delta 15
 
       if {! [info exists ::tools_astrometry::ifortlib] } {
          if {[info exists conf(bddimages,cata,ifortlib)]} {
@@ -74,7 +74,7 @@ namespace eval gui_astrometry {
       wm geometry $::gui_astrometry::fen +[ expr $posx_config + 165 ]+[ expr $posy_config + 55 ]
       wm resizable $::gui_astrometry::fen 1 1
       wm title $::gui_astrometry::fen "Creation du CATA"
-      wm protocol $::gui_astrometry::fen WM_DELETE_WINDOW "destroy $::gui_cata::fen"
+      wm protocol $::gui_astrometry::fen WM_DELETE_WINDOW "destroy $::gui_astrometry::fen"
 
       set frm $::gui_astrometry::fen.frm_creation_cata
       set ::gui_astrometry::current_appli $frm
@@ -111,6 +111,30 @@ namespace eval gui_astrometry {
               entry  $ifortlib.val -relief sunken -textvariable ::tools_astrometry::ifortlib -width 30
               pack   $ifortlib.val -in $ifortlib -side left -padx 3 -pady 3 -anchor w
 
+         #--- Cree un frame ifort
+         set delta [frame $frm.delta -borderwidth 0 -cursor arrow -relief groove]
+         pack $delta -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+ 
+              label  $delta.lab -text "Rayon de la fenetre pour la psf :" -borderwidth 1
+              pack   $delta.lab -in $delta -side left -padx 3 -pady 3 -anchor c
+              entry  $delta.val -relief sunken -textvariable ::tools_astrometry::delta -width 5
+              pack   $delta.val -in $delta -side left -padx 3 -pady 3 -anchor w
+
+         #--- Cree un frame pour afficher bouton fermeture
+         set enregistrer [frame $frm.enregistrer  -borderwidth 0 -cursor arrow -relief groove]
+         pack $enregistrer  -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+              label  $enregistrer.lab -text "Enregistrer : " -borderwidth 1
+              pack   $enregistrer.lab -in $enregistrer -side left -padx 3 -pady 3 -anchor c
+
+              button $enregistrer.txt -text "TXT" -borderwidth 2 -takefocus 1 \
+                      -command "::tools_astrometry::save TXT"
+              pack   $enregistrer.txt -side left -anchor e -expand 0
+
+              button $enregistrer.mpc -text "MPC" -borderwidth 2 -takefocus 1 \
+                      -command "::tools_astrometry::save MPC"
+              pack   $enregistrer.mpc -side left -anchor e -expand 0
+
          #--- Cree un frame pour afficher bouton fermeture
          set boutonpied [frame $frm.boutonpied  -borderwidth 0 -cursor arrow -relief groove]
          pack $boutonpied  -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
@@ -124,7 +148,6 @@ namespace eval gui_astrometry {
                  -command "::gui_astrometry::go"]
               pack $boutonpied.go -side left -anchor e \
                  -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
    }
    
    
