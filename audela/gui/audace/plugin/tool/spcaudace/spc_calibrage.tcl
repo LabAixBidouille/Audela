@@ -145,6 +145,102 @@ proc spc_calriintrins { args } {
 #********************************************************************
 
 
+####################################################################
+# Procedure de corrrection d'un profil par la réponse instrumentale intrinseque c'est a dire en prenant en compte 
+# l'effet de la transmission atmospherique
+#
+# Auteur : Patrick LAILLY
+# Date creation : 2009-10-10
+# Date modification : 2012-09-01
+# Arguments : fichier .fit du profil 1b mesure (calibré linéairement), fichier .fit donnant la ri intrinseque, liste
+# donnant les parametres requis pour le calcul de la transmission atmospherique ?
+# Cette liste comprend : altitude observatoire (en km), hauteur (en °) de l'astre, le temps 
+# qu'il fait a choiisr entre sec ou normal ou lourd ou orageux ou valeur numerique qui sera 
+# la valeur de AOD specifiee par l'utilisateur, en option : desert ?
+# Sortie : la procedure cree le fichier 1c associe au profil mesure : ce fichier contient le meme nombre d'echantillons
+# que le fichier 1b
+# Exemples d'utilisation : spc_corrriintrins zeta_tau.fit reponse_instrumentale-br.fit liste_atmosph
+# Exemple de liste_atmosph { 0.8 45.0 lourd }
+# Exemple de liste_atmosph { 3.842 45.0 normal desert }
+# Exemple de liste_atmosph { 0.8 45.0 0.15 }
+####################################################################
+
+proc spc_corrriintrins { args } {
+   global audace spcaudace
+   #set spcaudace(imax_tolerence) 1.2
+   #--- lecture arguments
+   if { [ llength $args ] == 3 } {
+      set fich_profile [ lindex $args 0 ]
+      set ri_intrins [ lindex $args 1 ]
+      set liste_atmosph [ lindex $args 2 ]
+      #--- calcul de la transmission atmospherique
+      if { [ llength $liste_atmosph ] > 4 } {
+	 ::console::affiche_erreur "Usage : spc_calriintrins la liste $liste_atmosph decrivant les parametres pour la correction atmospherique est trop longue \n\n" 
+	 return 0
+      } else {
+	 set altitude [ lindex $liste_atmosph 0 ]
+	 set haut [ lindex $liste_atmosph 1 ]
+	 set weather [ lindex $liste_atmosph 2 ]
+	 if { [ llength $liste_atmosph ] ==4 } {
+	    set location [ lindex $liste_atmosph 3 ]
+	 }
+	 if { [ spc_testlincalib  $fich_profile ] == -1 } {
+	    ::console::affiche_resultat "le profil entre n'est pas calibre lineairement => on linearise la loi de calibration \n"
+	    set fich_profile [ spc_linearcal $fich_profile ]
+	 }
+	 #set profile [ spc_fits2data $fich_profile ]
+	 buf$audace(bufNo) load "$audace(rep_images)/$fich_profile"
+	 #--- Renseigne sur les parametres de l'image fich_profile:
+	 set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+	 set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+	 set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+	 ::console::affiche_resultat "caractéristiques prfil mesure $fich_profile cdelt1= $cdelt1 naxis1= $naxis1 crval1= $crval1 \n"
+	 set caract_lambda [ list ]
+	 lappend caract_lambda $naxis1
+	 lappend caract_lambda $crval1
+	 lappend caract_lambda $cdelt1
+	 #::console::affiche_resultat "caractéristiques prfil mesure cdelt1= $cdelt1 naxis1= $naxis1 crval1= $crval1 \n"
+	 set ecart_lambda [ expr ($naxis1 -1) * $cdelt1 ]
+	 #--- test si plage longueurs d'ondes assez large
+	 if { $ecart_lambda < 500. } {
+	    ::console::affiche_resultat " spc_corrriintrins : avertissement : la plage de longueurs d'ondes explorees ($ecart_lambda) est petite : le calcul peut etre non significatif mais sera quand meme effectue \n"
+	 }
+	 
+	 #--- calcul de la transmission atmospherique
+	 if { [ llength $liste_atmosph ] ==4 } {
+	    set transm_atmosph [ spc_atmosph $haut $altitude $caract_lambda $weather $location ]
+	 } else {
+	    set transm_atmosph [ spc_atmosph $haut $altitude $caract_lambda $weather ]
+	 }
+	 #--- division profil mesure par transmission atmospherique
+	 set fich_profile_corr_transm [ spc_divri $fich_profile $transm_atmosph ]
+	 
+	 
+	 #--- division de ce resultat par la riintrins et sauvegarde du resultat (profil 1c)
+	 set nom_fich [ spc_divri $fich_profile_corr_transm $ri_intrins ]
+	 set nom_fich [ file rootname $nom_fich ]
+	 set suff1 -1c
+	 set suff .fit
+	 # la gestion des noms de fichiers sera a revoir !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	 set fich_profile [ file rootname $fich_profile ]
+	 file rename -force "$audace(rep_images)/$nom_fich$suff" "$audace(rep_images)/$fich_profile$suff1$suff"
+	 ::console::affiche_resultat " le profil corrige de la reponse instrumentale intrinseque a ete sauvegarde sous le nom $fich_profile$suff1$suff \n"
+	 #--- nettoyage des fichiers temporaires
+	 file delete -force "$audace(rep_images)/$fich_profile_corr_transm$suff"
+	 file delete -force "$audace(rep_images)/$transm_atmosph$suff"
+	 file delete -force "$audace(rep_images)/$nom_fich$suff"
+      }
+      set nom_fich "$fich_profile$suff1"
+      return $nom_fich 
+   }  else  {
+      ::console::affiche_erreur "Usage : spc_corrriintrins profil mesure ? ri intrinseque ? liste atmosph \n\n" 
+   }
+}
+#************************************************************************
+
+
+
+
  
 ####################################################################
 # Procedure de corrrection d'un profil par la réponse instrumentale intrinseque c'est a dire en prenant en compte 
@@ -166,7 +262,7 @@ proc spc_calriintrins { args } {
 # Exemple de liste_atmosph { 0.8 45.0 0.15 }
 ####################################################################
 
-proc spc_corrriintrins { args } {
+proc spc_corrriintrins_old { args } {
    global audace spcaudace
    #set spcaudace(imax_tolerence) 1.2
    #--- lecture arguments
@@ -392,6 +488,7 @@ proc spc_atmosph { args } {
       buf$audace(bufNo) setkwd [list "CRVAL1" $crval1 $nbunit1 "" "Angstrom"]
       #-- Dispersion
       buf$audace(bufNo) setkwd [list "CDELT1" $cdelt1 $nbunit1 "" "Angstrom/pixel"]
+      buf$audace(bufNo) setkwd [list "CRPIX1" 1 int "" ""]
       #-- Rempli la matrice 1D du fichier fits avec les valeurs du profil de raie ---
       # Une liste commence à 0 ; Un vecteur fits commence à 1
       #set intensite [ list ]
@@ -1539,7 +1636,7 @@ proc spc_calibre { args } {
 
        #--- Détection des raies dans le profil de raies de la lampe :
        # set raies [ spc_findbiglines_pat $profiletalon e ]
-       set raies [ spc_findbiglines $profiletalon e ]
+       set raies [ spc_findbiglines2 $profiletalon ]
        #foreach raie $raies {
         #   lappend listeabscisses [ lindex $raie 0 ]
        #}
@@ -3964,12 +4061,176 @@ proc spc_testcalibre { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 02-09-2005
+# Nouvelle version : 25-08-12 (Patrick LAILLY)
 # Date de mise à jour : 20-03-06/26-08-06/23-07-2007/24-04-2011
 # Arguments : fichier .fit du profil de raie, profil de raie de référence
 # Remarque : effectue le découpage, rééchantillonnage puis la division
 ##########################################################
-
 proc spc_rinstrum { args } {
+
+   global audace spcaudace
+   global conf
+   set precision 0.0001
+   #-- basse résolution si bande spectrale couverte >800A
+
+   set nbargs [ llength $args ]
+   if { $nbargs==2 } {
+       set fichier_mes [ file tail [ file rootname [ lindex $args 0 ] ] ]
+       set fichier_ref [ file rootname [ lindex $args 1 ] ]
+
+
+       #--- Rééchanetillonnage du profil du catalogue :
+       #set fref_sortie $fichier_ref
+       set fmes_sortie $fichier_mes
+       ::console::affiche_resultat "\nRééchantillonnage du spectre de référence...\n"
+       set fref_sortie [ spc_echant $fichier_ref $fichier_mes ]
+
+       #--- Divison des deux profils de raies pour obtention de la réponse intrumentale :
+       ::console::affiche_resultat "\nDivison des deux profils de raies pour obtention de la réponse intrumentale...\n"
+       #set rinstrum0 [ spc_div $fmes_sortie $fref_sortie ]
+       #set result_division [ spc_div $fmes_sortie $fref_sortie ]
+       #set result_division [ spc_divri $fmes_sortie $fref_sortie ]
+       set result_division [ spc_divbrut $fmes_sortie $fref_sortie ]
+       set result_division [ spc_linearcal $result_division ]
+
+       #--- Lissage de la reponse instrumentale :
+       ::console::affiche_resultat "\nLissage de la réponse instrumentale...\n"
+       #-- Meth 1 :
+       #set rinstrum1 [ spc_smooth2 $rinstrum0 ]
+       #set rinstrum2 [ spc_passebas $rinstrum1 ]
+       #set rinstrum3 [ spc_passebas $rinstrum2 ]
+       #set rinstrum [ spc_passebas $rinstrum3 ]
+
+       #-- Meth2 pour 2400 t/mm : 3 passebas (110, 35, 10) + spc_smooth2.
+       #set rinstrum1 [ spc_passebas $rinstrum0 110 ]
+       #set rinstrum2 [ spc_passebas $rinstrum1 35 ]
+       #set rinstrum3 [ spc_passebas $rinstrum2 10 ]
+       #set rinstrum [ spc_smooth2 $rinstrum3 ]
+
+       #-- Meth 6 : filtrage linéaire par morçeaux -> RI 0 spéciale basse résulution
+       #set rinstrum0 [ spc_ajust_piecewiselinear $result_division 60 30 ]
+       #set rinstrum [ spc_passebas $rinstrum0 31 ]
+       # file delete "$audace(rep_images)/$rinstrum0$conf(extension,defaut)"
+       #file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale_br$conf(extension,defaut)"
+
+       #--- Test si c'est un cas de basse réolution () :
+       #-- Meth 1 :
+       # buf$audace(bufNo) load "$audace(rep_images)/$result_division"
+       # set dispersion [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+       #if { $dispersion>=$spcaudace(dmax) } {
+       #    set flag_br 1
+       #} else {
+       #    set flag_br 0
+       #}
+       #-- Meth 2 : (071009) gère le cas où CDELT1 n'est pas cohérent avec SPC_B (spectre initalialement non-linéaires issus de spc_calibren $a1)
+       buf$audace(bufNo) load "$audace(rep_images)/$result_division"
+       set listemotsclef [ buf$audace(bufNo) getkwds ]
+       set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+       if { [ lsearch $listemotsclef "SPC_B" ] !=-1 } {
+           set dispersion [ lindex [ buf$audace(bufNo) getkwd "SPC_B" ] 1 ]
+           set bp [ expr $dispersion*$naxis1 ]
+           if { $bp >= $spcaudace(bp_br) } {
+               set flag_br 1
+           } else {
+               set flag_br 0
+           }
+       } elseif { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
+           set dispersion [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+           set bp [ expr $dispersion*$naxis1 ]
+           if { $bp >= $spcaudace(bp_br) } {
+               set flag_br 1
+           } else {
+               set flag_br 0
+           }
+       }
+
+
+       #--- Lissage du résultat de la division :
+       if { $flag_br==0 } {
+           #-- Meth 3 : interpolation polynomiale de degré 1 -> RI 1
+           set rinstrum [ spc_ajustrid1 $result_division "o" ]
+           file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale-1$conf(extension,defaut)"
+           #-- Meth 5 : filtrage passe bas (largeur de 25 pixls par defaut) -> RI 3
+           #set rinstrum [ spc_ajustripbas $result_division ]
+           #file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale-3$conf(extension,defaut)"
+           #-- Meth 6 : filtrage passe bas fort -> RI 2
+           set rinstrum [ spc_ajustripbasfort $result_division "o" ]
+           file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale-2$conf(extension,defaut)"
+           #-- Meth 4 : interpolation polynomiale de 4 -> RI 3
+           #- set rinstrum [ spc_polynomefilter $result_division 3 150 o ]
+           set rinstrum [ spc_polynomefilter $result_division 3 150 "o" ]
+           file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale-3$conf(extension,defaut)"
+       } elseif { $flag_br==1 } {
+           if { $dispersion<=1. && $dispersion>0.2 } {
+               #-- Lhires3+résos 600 t/mm et 1200 t/mm-kaf1600 :
+               ## set rinstrum [ spc_pwlfilter $result_division 280 o 51 201 10 2 50 ]
+               # set rinstrum [  spc_lowresfilterfile $result_division "$spcaudace(reptelluric)/forgetlambda.dat" 1.3 10000 { 1.0 2.0 } "o" 18 ]
+	      # La version lissee du resultat division etant, dans un premier temps, representee par une fonction lineaire par morceaux, la valeur 50 apparaissant ci-dessous est la largeur des morceaux exprimee en nombre d'echantillons
+               set rinstrum [  spc_lowresfilterfile $result_division "$spcaudace(reptelluric)/forgetlambda.dat" 1.0 6. { 1.0 1.0 10000000. 1. } "o" 50 ]
+           } elseif { $dispersion<=0.2 } {
+           #-- Spectres eShell :
+              ::console::affiche_resultat "\n~~~ Calcul de la RI pour un spectre eShell... ~~~\n"
+              # set rinstrum [  spc_lowresfilterfile $result_division "$spcaudace(reptelluric)/forgetlambda_eshell.dat" 1. 8. { 1.0 1.0 } "o" 200 ]
+              set rinstrum [  spc_lowresfilterfile $result_division "$spcaudace(reptelluric)/forgetlambda_eshell.dat" 1. 9. { 1.0 1.0 } "o" 800 ]
+           } else {
+           #-- Lhires3+résos 300 et 150 t/mm :
+              ## set rinstrum [ spc_pwlfilter $result_division 50 o 11 51 70 50 100 ]
+              # set rinstrum [ spc_pwlfilter $result_division 24 o 3 3 50 50 50 ]
+              # set rinstrum [ spc_lowresfilterfile $result_division "$spcaudace(reptelluric)/forgetlambda.dat" 1.1 10 { 1.0 2.0 } "o" 18 ]
+              # avant 20120309 :
+              # set rinstrum [ spc_lowresfilterfile $result_division "$spcaudace(reptelluric)/forgetlambda.dat" 1.1 1.7 { 1. 5. 1500. } "o" 18 ]
+              # a partir de 20120309 :
+              set rinstrum [ spc_lowresfilterfile $result_division "$spcaudace(reptelluric)/forgetlambda.dat" 1.1 3. { 1. 10. 100. 500. 500. } "o" 18 ]
+           }
+           file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale-br$conf(extension,defaut)"
+       }
+
+
+       #--- Nettoyage des fichiers temporaires :
+       file rename -force "$audace(rep_images)/$result_division$conf(extension,defaut)" "$audace(rep_images)/resultat_division$conf(extension,defaut)"
+       #file delete -force "$audace(rep_images)/${fref_sortie}$conf(extension,defaut)"
+
+       if { $fmes_sortie != $fichier_mes } {
+           file delete -force "$audace(rep_images)/${fmes_sortie}$conf(extension,defaut)"
+       }
+       if { $fref_sortie != $fichier_ref } {
+           #- A decommenter :
+           #file delete -force "$audace(rep_images)/${fref_sortie}$conf(extension,defaut)"
+       }
+       if { $rinstrum == 0 } {
+           ::console::affiche_resultat "\nLa réponse intrumentale ne peut être calculée.\n"
+           return 0
+       } else {
+          if { $flag_br == 1 } {
+             ::console::affiche_erreur "Réponse instrumentale sauvée sous reponse_instrumentale-br$conf(extension,defaut)\n"
+             #return reponse_instrumentale-br
+             return reponse_instrumentale-
+          } else {
+             #-- Résultat de la division :
+             ##file delete -force "$audace(rep_images)/$rinstrum0$conf(extension,defaut)"
+             ::console::affiche_erreur "Réponse instrumentale sauvée sous reponse_instrumentale-3$conf(extension,defaut)\n"
+             #-- Le postfix sera soit 1, 2, 3 :
+             return reponse_instrumentale-
+          }
+       }
+   } else {
+       ::console::affiche_erreur "Usage: spc_rinstrum profil_de_raies_mesuré profil_de_raies_de_référence\n\n"
+   }
+}
+#****************************************************************#
+
+
+
+##########################################################
+# Calcul la réponse intrumentale et l'enregistre
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 02-09-2005
+# Date de mise à jour : 20-03-06/26-08-06/23-07-2007/24-04-2011
+# Arguments : fichier .fit du profil de raie, profil de raie de référence
+# Remarque : effectue le découpage, rééchantillonnage puis la division
+##########################################################
+proc spc_rinstrum_old { args } {
 
    global audace spcaudace
    global conf
