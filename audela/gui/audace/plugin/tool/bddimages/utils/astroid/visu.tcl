@@ -76,13 +76,14 @@ proc efface_rond { args } {
 #
 proc affich_vecteur { ra dec dra ddec factor color } {
 
+   global audace 
    #--- coordonnees du centre du vecteur a tracer
    set img0_radec [ list $ra $dec ]
    set img0_xy [ buf$audace(bufNo) radec2xy $img0_radec ]
    set can0_xy [ ::audace::picture2Canvas $img0_xy ]
             
    #--- coordonnees du point final du vecteur
-   set img1_radec [ list [expr [lindex $img0_radec 0]+$dra*$factor/3600.0)] [lindex $img0_radec 1]+$ddec*$factor/3600.0) ]
+   set img1_radec [ list [expr [lindex $img0_radec 0]+$dra*$factor/3600.0] [expr [lindex $img0_radec 1]+$ddec*$factor/3600.0 ]]
    set img1_xy [ buf$audace(bufNo) radec2xy $img1_radec ]
    set can1_xy [ ::audace::picture2Canvas $img1_xy ]
    

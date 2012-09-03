@@ -217,7 +217,7 @@ namespace eval gui_astrometry {
                   set color "red"
                   if {$flagastrom=="S"} { set color "green"}
                   if {$flagastrom=="R"} { set color "yellow"}
-                  #affich_vecteur $ra $dec $res_ra $res_dec $::gui_astrometry::factor $color
+                  affich_vecteur $ra $dec $res_ra $res_dec $::gui_astrometry::factor $color
                   gren_info "vect! $ra $dec $res_ra $res_dec $::gui_astrometry::factor $color\n"
                }
             }
