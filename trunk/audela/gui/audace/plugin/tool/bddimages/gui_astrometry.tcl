@@ -158,7 +158,7 @@ namespace eval gui_astrometry {
               pack   $voir.lab -in $voir -side left -padx 3 -pady 3 -anchor c
 
               button $voir.clean -text "Clean" -borderwidth 2 -takefocus 1 \
-                      -command "::gui_astrometry::see_clean"
+                      -command "cleanmark"
               pack   $voir.clean -side left -anchor e -expand 0
 
               button $voir.residus -text "Residus" -borderwidth 2 -takefocus 1 \
@@ -188,10 +188,43 @@ namespace eval gui_astrometry {
    
    
    
-   proc ::gui_astrometry::see_clean {  } {
-   
-   }
+
+# "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" 
+# "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" 
+# "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "flagastrom" 
+# "mag" "err_mag" 
    proc ::gui_astrometry::see_residus {  } {
+
+      foreach ::tools_astrometry::current_image $::tools_astrometry::img_list {
+         set tabkey      [::bddimages_liste::lget $::tools_astrometry::current_image "tabkey"]
+
+         set ::tools_astrometry::current_listsources [::bddimages_liste::lget $::tools_astrometry::current_image "listsources"]
+         set ::tools_astrometry::current_listsources [::manage_source::extract_sources_by_catalog $::tools_astrometry::current_listsources "ASTROID"]
+         gren_info "Rolextr=[ ::manage_source::get_nb_sources_rollup $::tools_astrometry::current_listsources]\n"
+
+         foreach s [lindex $::tools_astrometry::current_listsources 1] {
+            foreach cata $s {
+               if {[lindex $cata 0] == "ASTROID"} {
+                  set astroid [lindex $cata 2]
+                  
+                  set flagastrom  [lindex $astroid 20]  
+                  set ra      [lindex $astroid 14]  
+                  set dec     [lindex $astroid 15]   
+                  set res_ra  [lindex $astroid 16]  
+                  set res_dec [lindex $astroid 17]  
+                  set omc_ra  [lindex $astroid 18]   
+                  set omc_dec [lindex $astroid 19]  
+                  set color "red"
+                  if {$flagastrom=="S"} { set color "green"}
+                  if {$flagastrom=="R"} { set color "yellow"}
+                  #affich_vecteur $ra $dec $res_ra $res_dec $::gui_astrometry::factor $color
+                  gren_info "vect! $ra $dec $res_ra $res_dec $::gui_astrometry::factor $color\n"
+               }
+            }
+         }
+         
+      }
+
    
    }
    
