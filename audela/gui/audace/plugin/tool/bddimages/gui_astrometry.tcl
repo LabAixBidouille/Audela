@@ -9,7 +9,8 @@ namespace eval gui_astrometry {
       set ::tools_astrometry::reference "UCAC3"
       set ::tools_astrometry::delta 15
       set ::tools_astrometry::treshold 5
-      set ::gui_astrometry::factor 100
+      set ::gui_astrometry::factor 1000
+      set ::tools_astrometry::id_img 0
       
       if {! [info exists ::tools_astrometry::ifortlib] } {
          if {[info exists conf(bddimages,cata,ifortlib)]} {
@@ -33,7 +34,7 @@ namespace eval gui_astrometry {
       
       set ::tools_astrometry::img_list    [::bddimages_imgcorrection::chrono_sort_img $img_list]
       set ::tools_astrometry::img_list    [::bddimages_liste_gui::add_info_cata_list $::tools_astrometry::img_list]
-      set ::tools_astrometry::nb_img_list [llength $::tools_astrometry::img_list]
+      set ::tools_astrometry::nb_img [llength $::tools_astrometry::img_list]
 
    }
 
@@ -176,8 +177,14 @@ namespace eval gui_astrometry {
          set info [frame $frm.info  -borderwidth 0 -cursor arrow -relief groove]
          pack $info  -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-              label  $info.listimg -text "Image  1 / [llength $::tools_astrometry::img_list] : " -borderwidth 1
-              pack   $info.listimg -in $info -side left -padx 3 -pady 3 -anchor c
+              label  $info.lab1 -text "Image " -borderwidth 1
+              pack   $info.lab1 -in $info -side left -padx 3 -pady 3 -anchor c
+              label  $info.id -textvariable ::tools_astrometry::id_img -borderwidth 1
+              pack   $info.id -in $info -side left -padx 3 -pady 3 -anchor c
+              label  $info.lab2 -text " / " -borderwidth 1
+              pack   $info.lab2 -in $info -side left -padx 3 -pady 3 -anchor c
+              label  $info.nb -textvariable ::tools_astrometry::nb_img -borderwidth 1
+              pack   $info.nb -in $info -side left -padx 3 -pady 3 -anchor c
 
 
 

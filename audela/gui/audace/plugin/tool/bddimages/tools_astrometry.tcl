@@ -4,11 +4,12 @@ namespace eval tools_astrometry {
 variable science
 variable reference
 variable imglist
-variable nbimg
+variable nb_img
 variable current_image
 variable current_image_name
 variable current_image_date
 variable current_listsources
+variable id_img
 
 
    proc ::tools_astrometry::load_cata {  } {
@@ -49,11 +50,11 @@ variable current_listsources
 
       gren_info "Science = $::tools_astrometry::science\n"
       gren_info "Reference = $::tools_astrometry::reference\n"
-      set ::tools_astrometry::nbimg [llength $::tools_astrometry::img_list]
-      gren_info "nb img = $::tools_astrometry::nbimg\n"
+      set ::tools_astrometry::nb_img [llength $::tools_astrometry::img_list]
+      gren_info "nb img = $::tools_astrometry::nb_img\n"
       
       set imgtmp {}
-
+      set ::tools_astrometry::id_img 0
       foreach ::tools_astrometry::current_image $::tools_astrometry::img_list {
 
          set tabkey      [::bddimages_liste::lget $::tools_astrometry::current_image "tabkey"]
@@ -82,20 +83,22 @@ variable current_listsources
 
             ::tools_astrometry::load_cata
 
-            lappend imgtmp [::bddimages_liste::ladd $::tools_astrometry::current_image listsources $tools_astrometry::current_listsources ]
+            lappend imgtmp [::bddimages_liste::ladd $::tools_astrometry::current_image listsources $::tools_astrometry::current_listsources ]
             #tabkey inkey inval
-            #set ::tools_astrometry::listsources(idbddimg) $tools_astrometry::current_listsources
-            #gren_info "current_listsources $tools_astrometry::current_listsources\n"
+            #set ::tools_astrometry::listsources(idbddimg) $::tools_astrometry::current_listsources
+            #gren_info "current_listsources $::tools_astrometry::current_listsources\n"
             
             # ne fait qu une seule image: la premiere de a liste
             #break
+            incr ::tools_astrometry::id_img
+            if {$::tools_astrometry::id_img>=100} {break}
          }
          
       }
 
       set ::tools_astrometry::img_list $imgtmp
-      set ::tools_astrometry::nbimg [llength $::tools_astrometry::img_list]
-      gren_info "nb img = $::tools_astrometry::nbimg\n"
+      set ::tools_astrometry::nb_img [llength $::tools_astrometry::img_list]
+      gren_info "nb img = $::tools_astrometry::nb_img\n"
 
       ::tools_astrometry::extract_priam_result [::tools_astrometry::launch_priam]
       
@@ -106,10 +109,10 @@ variable current_listsources
        
       global bddconf
 
-      set cpt 0
+      set ::tools_astrometry::id_img 0
       foreach ::tools_astrometry::current_image $::tools_astrometry::img_list {
  
-         if {$cpt==0} {
+         if {$::tools_astrometry::id_img==0} {
             set tag "new"
          } else {
             set tag "add"
@@ -125,13 +128,26 @@ variable current_listsources
 
          set tabkey      [::bddimages_liste::lget $::tools_astrometry::current_image "tabkey"]
          set ::tools_astrometry::current_listsources [::bddimages_liste::lget $::tools_astrometry::current_image "listsources"]
-         set ::tools_astrometry::current_listsources [::analyse_source::psf $tools_astrometry::current_listsources $::tools_astrometry::treshold $::tools_astrometry::delta]
-         ::priam::create_file_oldformat $tag $::tools_astrometry::nbimg $::tools_astrometry::current_listsources $::tools_astrometry::science $::tools_astrometry::reference 
+         set ::tools_astrometry::current_listsources [::analyse_source::psf $::tools_astrometry::current_listsources $::tools_astrometry::treshold $::tools_astrometry::delta]
+
+
+         ::priam::create_file_oldformat $tag $::tools_astrometry::nb_img $::tools_astrometry::current_listsources $::tools_astrometry::science $::tools_astrometry::reference 
          gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $::tools_astrometry::current_listsources ]\n"
-         incr cpt
+
+         if {[::bddimages_liste::lexist $::tools_astrometry::current_image "listsources" ]==0} {
+            gren_info "Listesource n existe pas\n"
+            set ::tools_astrometry::current_image [::bddimages_liste::ladd $::tools_astrometry::current_image "listsources" $::tools_astrometry::current_listsources ]
+         } else {
+            gren_info "Listesource existe\n"
+            set ::tools_astrometry::current_image [::bddimages_liste::lupdate $::tools_astrometry::current_image "listsources" $::tools_astrometry::current_listsources ]
+         }
+         
+         set ::tools_astrometry::img_list [lreplace $::tools_astrometry::img_list $::tools_astrometry::id_img $::tools_astrometry::id_img $::tools_astrometry::current_image]
+
+         incr ::tools_astrometry::id_img
       }
 
-      gren_info "nb img = [llength $::tools_astrometry::img_list] $cpt\n"
+      gren_info "nb img = [llength $::tools_astrometry::img_list] $::tools_astrometry::id_img\n"
 
       #set cmdpriam "priam -lang en -format priam -m 1 -fc cnd.obs -fm science.mes -r ./ -fcat local.cat -rcat ./ -s fichier:priam -te 1"
       #set err [catch {exec export LD_LIBRARY_PATH=/usr/local/lib:/opt/intel/lib/intel64 |& $cmdpriam} msg ]
@@ -196,7 +212,7 @@ variable current_listsources
       set astrom(comments) {"RA expected for CRPIX1" "DEC expected for CRPIX2" "X ref pixel" "Y ref pixel" "RA for CRPIX1" "DEC for CRPIX2" "X scale" "Y scale" "Position angle of North" "Matrix CD11" "Matrix CD12" "Matrix CD21" "Matrix CD22" "Focal length" "X pixel size binning included" "Y pixel size binning included"}
       set n [llength $astrom(kwds)]
       
-      set id_img -1
+      set ::tools_astrometry::id_img -1
 
       # faire une boule sur un mot clés ! CDELT1
 
@@ -209,9 +225,9 @@ variable current_listsources
           
          if {$key=="RA"} {
             # Debut image
-            incr id_img
-            set catascience($id_img) {}
-            set cataref($id_img) {}
+            incr ::tools_astrometry::id_img
+            set catascience($::tools_astrometry::id_img) {}
+            set cataref($::tools_astrometry::id_img) {}
          }
          
          for {set k 0 } { $k<$n } {incr k} {
@@ -229,12 +245,12 @@ variable current_listsources
          if {$key=="CATA_VALUES"} {
             set name  [lindex $val 0]
             set sour  [lindex $val 1]
-            lappend catascience($id_img) [list $name $sour]
+            lappend catascience($::tools_astrometry::id_img) [list $name $sour]
          }
          if {$key=="CATA_REF"} {
             set name  [lindex $val 0]
             set sour  [lindex $val 1]
-            lappend cataref($id_img) [list $name $sour]
+            lappend cataref($::tools_astrometry::id_img) [list $name $sour]
          }
          
       }
@@ -243,7 +259,7 @@ variable current_listsources
 
    # sur une seule image -> current_listsources
 
-      gren_info "[::manage_source::get_fields_from_sources $tools_astrometry::current_listsources] \n"
+      #gren_info "[::manage_source::get_fields_from_sources $::tools_astrometry::current_listsources] \n"
 
    # A FAIRE  : nettoyage des astrometrie de current_listsources
       ::tools_astrometry::clean_astrom 
@@ -255,7 +271,7 @@ variable current_listsources
                                            "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "flagastrom" \
                                            "mag" "err_mag" ] ]
                                            
-      set id_img 0
+      set ::tools_astrometry::id_img 0
       foreach ::tools_astrometry::current_image $::tools_astrometry::img_list {
          
          set ::tools_astrometry::current_listsources [::bddimages_liste::lget $::tools_astrometry::current_image "listsources"]
@@ -264,8 +280,10 @@ variable current_listsources
          set fields [lindex $::tools_astrometry::current_listsources 0]
          lappend fields $fieldsastroid
 
-         foreach {n val} $catascience($id_img) {
-
+         foreach l $catascience($::tools_astrometry::id_img) {
+            gren_info "catascience l : $l\n"
+            set n [lindex $l 0]
+            set val [lindex $l 1]
             gren_info "catascience : $n $val\n"
             set cpt 0
             set sources [lindex $::tools_astrometry::current_listsources 1]
@@ -284,8 +302,9 @@ variable current_listsources
                         set omc_dec [expr $dec - [lindex [lindex $cata 1] 1]]
                         set flag    "S"
 
-                        #gren_info "NAME=$name $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag\n"
+                        gren_info "NAME=$name $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag\n"
                         set s [::tools_astrometry::set_astrom_to_source $s $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag]
+                        gren_info "s=$s\n"
                         set sources [lreplace $sources $cpt $cpt $s]
                         set ::tools_astrometry::current_listsources [list $fields $sources]
 
@@ -298,11 +317,14 @@ variable current_listsources
                incr cpt
             }
 
-
          }
+         gren_info "SRolref=[ ::manage_source::get_nb_sources_rollup $::tools_astrometry::current_listsources]\n"
 
-         foreach {n val} $cataref($id_img) {
-
+         foreach l $cataref($::tools_astrometry::id_img) {
+            gren_info "cataref l : $l\n"
+            set n [lindex $l 0]
+            set val [lindex $l 1]
+            gren_info "cataref : $n $val\n"
             set cpt 0
             set sources [lindex $::tools_astrometry::current_listsources 1]
             foreach s $sources {
@@ -310,6 +332,7 @@ variable current_listsources
                   #gren_info "CATA = [lindex $cata 0]\n"
                   if {[lindex $cata 0] == $::tools_astrometry::reference} {
                      set name [::manage_source::naming $s $::tools_astrometry::reference]
+                     gren_info "NAME=$name\n"                     
                      if {$n==$name} {
                         #gren_info "NAME=$name\n"                     
                         set ra      [lindex [lindex $cata 1] 0]
@@ -320,7 +343,7 @@ variable current_listsources
                         set omc_dec [expr $dec - [lindex [lindex $cata 1] 1]]
                         set flag    "R"
 
-                        #gren_info "NAME=$name $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag\n"                     
+                        gren_info "NAME=$name $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag\n"                     
                         set s [::tools_astrometry::set_astrom_to_source $s $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag]
                         set sources [lreplace $sources $cpt $cpt $s]
                         set ::tools_astrometry::current_listsources [list $fields $sources]
@@ -341,8 +364,8 @@ variable current_listsources
             set ::tools_astrometry::current_image [::bddimages_liste::lupdate $::tools_astrometry::current_image "listsources" $::tools_astrometry::current_listsources ]
          }
          
-         set ::tools_astrometry::img_list [lreplace $::tools_astrometry::img_list $id_img $id_img $::tools_astrometry::current_image]
-         incr id_img
+         set ::tools_astrometry::img_list [lreplace $::tools_astrometry::img_list $::tools_astrometry::id_img $::tools_astrometry::id_img $::tools_astrometry::current_image]
+         incr ::tools_astrometry::id_img
 
 
 
