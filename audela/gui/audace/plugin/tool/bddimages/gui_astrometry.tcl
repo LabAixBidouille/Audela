@@ -8,8 +8,9 @@ namespace eval gui_astrometry {
       set ::tools_astrometry::science   "SKYBOT"
       set ::tools_astrometry::reference "UCAC3"
       set ::tools_astrometry::delta 15
-      set ::tools_astrometry::treshhold 5
-
+      set ::tools_astrometry::treshold 5
+      set ::gui_astrometry::factor 10
+      
       if {! [info exists ::tools_astrometry::ifortlib] } {
          if {[info exists conf(bddimages,cata,ifortlib)]} {
             set ::tools_astrometry::ifortlib $conf(bddimages,cata,ifortlib)
@@ -121,6 +122,15 @@ namespace eval gui_astrometry {
               entry  $delta.val -relief sunken -textvariable ::tools_astrometry::delta -width 5
               pack   $delta.val -in $delta -side left -padx 3 -pady 3 -anchor w
 
+         #--- Cree un frame ifort
+         set treshold [frame $frm.treshold -borderwidth 0 -cursor arrow -relief groove]
+         pack $treshold -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+ 
+              label  $treshold.lab -text "threshold rdiff :" -borderwidth 1
+              pack   $treshold.lab -in $treshold -side left -padx 3 -pady 3 -anchor c
+              entry  $treshold.val -relief sunken -textvariable ::tools_astrometry::treshold -width 5
+              pack   $treshold.val -in $treshold -side left -padx 3 -pady 3 -anchor w
+
          #--- Cree un frame pour afficher bouton fermeture
          set enregistrer [frame $frm.enregistrer  -borderwidth 0 -cursor arrow -relief groove]
          pack $enregistrer  -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
@@ -141,6 +151,27 @@ namespace eval gui_astrometry {
               pack   $enregistrer.cata -side left -anchor e -expand 0
 
          #--- Cree un frame pour afficher bouton fermeture
+         set voir [frame $frm.voir  -borderwidth 0 -cursor arrow -relief groove]
+         pack $voir  -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+              label  $voir.lab -text "Voir : " -borderwidth 1
+              pack   $voir.lab -in $voir -side left -padx 3 -pady 3 -anchor c
+
+              button $voir.clean -text "Clean" -borderwidth 2 -takefocus 1 \
+                      -command "::gui_astrometry::see_clean"
+              pack   $voir.clean -side left -anchor e -expand 0
+
+              button $voir.residus -text "Residus" -borderwidth 2 -takefocus 1 \
+                      -command "::gui_astrometry::see_residus"
+              pack   $voir.residus -side left -anchor e -expand 0
+
+              label  $voir.lab2 -text "facteur : " -borderwidth 1
+              pack   $voir.lab2 -in $voir -side left -padx 3 -pady 3 -anchor c
+
+              entry  $voir.factor -relief sunken -textvariable ::gui_astrometry::factor -width 5
+              pack   $voir.factor -in $voir -side left -padx 3 -pady 3 -anchor w
+
+         #--- Cree un frame pour afficher bouton fermeture
          set boutonpied [frame $frm.boutonpied  -borderwidth 0 -cursor arrow -relief groove]
          pack $boutonpied  -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
@@ -157,7 +188,12 @@ namespace eval gui_astrometry {
    
    
    
+   proc ::gui_astrometry::see_clean {  } {
    
+   }
+   proc ::gui_astrometry::see_residus {  } {
+   
+   }
    
    
 }
