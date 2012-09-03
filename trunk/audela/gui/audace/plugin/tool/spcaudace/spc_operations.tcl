@@ -9,6 +9,79 @@
 
 # Mise a jour $Id$
 
+
+################################################################################################
+# Procedure pour prolonger un profil spectral de facon a se conformer a un nombre d'echantillons : la valeur de prolongement est celle du dernier echantillon
+# Auteur : Patrick LAILLY
+# Date de création : 20-08-12
+# Date de modification : 20-08-12
+# Le profil d'entree est censé être calibré linéairement 
+# Le fichier de sortie est créé avec le suffixe _extend.
+# La numerotation des echantillons est celle des fichiers fits ( depart a 1)
+# Exemple spc_extend profile_data.fit samplelast
+#################################################################################################
+
+proc spc_extend { args } {
+   global audace
+   set nbargs [ llength $args ]
+   if { $nbargs == 2 } {
+      set nom_fich_input [ lindex $args 0 ]
+      #set nom_fich_input [ file rootname $nom_fich_input ]
+      set lastsampl [ lindex $args 1 ]
+      if { [ spc_testlincalib $nom_fich_input ] == -1 } {
+	 		::console::affiche_erreur " spc_extend : le profil entre n'est pas calibre lineairement : l'application de la procedure n'a pas de sens \n\n"
+	 		return ""
+      }
+      buf$audace(bufNo) load "$audace(rep_images)/$nom_fich_input"
+      set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+      set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+      set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+      set contenu [ spc_fits2data $nom_fich_input ]
+      #set abscisses [ lindex $contenu 0 ]
+      set ordonnees [ lindex $contenu 1 ]
+      set value [ lindex $ordonnees [ expr $naxis1 - 1 ] ]
+      for { set i $naxis1 } { $i <= $lastsampl } { incr i } {
+	 		lappend ordonnees $value
+      }
+      set newnaxis1 $lastsampl		
+      ::console::affiche_resultat "spc_extend : longueur nouveau fichier : $newnaxis1 echantilllons \n"
+      #--- Creation du nouveau fichier :
+      set nbunit "float"
+      set nbunit1 "double"
+      buf$audace(bufNo) setpixels CLASS_GRAY $newnaxis1 1 FORMAT_FLOAT COMPRESS_NONE 0
+      buf$audace(bufNo) setkwd [ list "NAXIS" 1 int "" "" ]
+      buf$audace(bufNo) setkwd [ list "NAXIS1" $newnaxis1 int "" "" ]
+      buf$audace(bufNo) setkwd [ list "CRPIX1" 1 int "Reference pixel" "pixel" ]
+      #-- Valeur minimale de l'abscisse (xdepart) : =0 si profil non étalonné :
+      #- set xdepart [ expr 1.0*[lindex $lambda 0]]
+      buf$audace(bufNo) setkwd [ list "CRVAL1" $crval1 double "" "angstrom"]
+      #-- Dispersion :
+      buf$audace(bufNo) setkwd [ list "CDELT1" $cdelt1 double "" "angstrom/pixel"]
+      #--- Rempli la matrice 1D du fichier fits avec les valeurs du profil de raie :
+      for {set k 0} { $k < $newnaxis1 } {incr k} {
+         #- append intensite [lindex $profileref $k]
+         #- ::console::affiche_resultat "$intensite\n"
+         #- if { [regexp {([0-9]+\.*[0-9]*)} $intensite match mintensite] } {}
+         buf$audace(bufNo) setpix [list [expr $k+1] 1] [lindex $ordonnees $k ]
+         #- set intensite 0
+      }
+      #--- Sauvegarde du fichier fits ainsi créé :
+      buf$audace(bufNo) bitpix float
+      set suff _extend
+      set nom_fich_output "$nom_fich_input$suff"
+      buf$audace(bufNo) save "$audace(rep_images)/$nom_fich_output"
+      ::console::affiche_resultat "Profil sauvé sous $nom_fich_output\n"
+      buf$audace(bufNo) bitpix short
+      return $nom_fich_output     
+      #return $file_out 
+   } else {
+      ::console::affiche_erreur "Usage: spc_zeropad profile_data.fits lastsample\n\n"
+      return ""
+   }
+}
+#**************************************************************************
+
+
 ################################################################################################
 # Procedure pour rajouter des zeros en fin d'un profil spectral de facon a se conformer a un nombre d'echantillons
 # Auteur : Patrick LAILLY
@@ -106,8 +179,8 @@ proc spc_selectpixels { args } {
       set sample1 [ lindex $args 1 ]
       set lastsampl [ lindex $args 2 ]
       if { [ spc_testlincalib $nom_fich_input ] == -1 } {
-	 ::console::affiche_erreur " spc_selectpixels : le profil entre n'est pas calibre lineairement=> on le linearise \n\n"
-	 set nom_fich_input [ spc_linearcal $nom_fich_input ]
+	 		::console::affiche_erreur " spc_selectpixels : le profil entre n'est pas calibre lineairement et l'operation n'a pas de sens \n\n"
+	 		return""
       }
       buf$audace(bufNo) load "$audace(rep_images)/$nom_fich_input"
       set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
@@ -1107,6 +1180,9 @@ proc spc_echantdelt { args } {
       set newsamplingrate [ lindex $args 1 ]	
       #set nbunit "float"
       set nbunit "double"
+      if { [ spc_testlincalib $nom_fich_input ] == -1 } {
+			set nom_fich_input [ spc_linearcal $nom_fich_input ]
+	 	}
 
       #--- Accès au fichier data :
       buf$audace(bufNo) load "$audace(rep_images)/$nom_fich_input"
@@ -1128,7 +1204,7 @@ proc spc_echantdelt { args } {
       set abscisses [ lindex $contenu 0 ]
       set ordonnees [ lindex $contenu 1 ]
       
-      ::console::affiche_resultat "Caractéristiques fichier data cdelt1= $cdelt1 naxis1= $naxis1 crval1= $crval1 \n"
+      ::console::affiche_resultat "spc_echantdelt : Caractéristiques fichier data cdelt1= $cdelt1 naxis1= $naxis1 crval1= $crval1 \n"
 
       #--- Rééchantillonnage :
       set result [ spc_resample $abscisses $ordonnees $newsamplingrate $crvalnew ]
@@ -3183,6 +3259,64 @@ proc spc_divbrut { args } {
 
 
 
+################################################################################################
+# Procedure pour diviser deux profils spectraux facon calcul de la ri
+# Auteur : Patrick LAILLY
+# Date de création : 9-11-2009
+# Date de modification : 21-08-2012
+# Cette procédure cree un profil de raies (fichier fits) en divisant un profil par l'autre sur l'intervalle
+# de longueurs d'ondes qu'ils ont en commun après elimination des echantillons du denominateur nuls au bord
+# Avant la division ils seront reechantillones de facon a se conformer a l'echantillonage du numerateur. 
+# Le fichier de sortie est créé avec le suffixe _divripat. Il aura le meme nombre d'echantillons que le numerateur et
+# commencera a une longueur d'onde proche de la longueur d'onde de depart du numrateur (definie par le mot cle CRVAL1
+# Exemple spc_divripat profil_numerateur profil_denominateur
+#################################################################################################
+proc spc_divri { args } {
+	global audace
+	set nbargs [ llength $args ]
+	if { $nbargs == 2 } {
+		set nom_fich_num [ lindex $args 0 ]
+      set nom_fich_num [ file rootname $nom_fich_num ]
+      set nom_fich_den [ lindex $args 1 ]
+      if { [ spc_testlincalib $nom_fich_num ] == -1 } {
+			#::console::affiche_resultat " spc_divri : on linearise la loi de calibration du profil $nom_fich_num \n\n"
+	 		#return ""
+	 		set nom_fich_num [ spc_linearcal $nom_fich_num ]
+	 	}
+	 	if { [ spc_testlincalib $nom_fich_den ] == -1 } {
+			#::console::affiche_resultat " spc_divri : on linearise la loi de calibration du profil $nom_fich_den \n\n"
+	 		#return ""
+	 		set nom_fich_den [ spc_linearcal $nom_fich_den ]
+	 	}
+	 	#mise en conformite des 2 profils 
+	 	set newdata [ spc_conform $nom_fich_num $nom_fich_den ]
+	 	set newnum [ lindex $newdata 0 ]
+	 	set newden [ lindex $newdata 1 ]
+	 	#--- Vérification de la compatibilité des 2 profils de raies : lambda_i, lambda_f et dispersion identiques
+    	if { [ spc_compare $newnum $newden ] == 1 } {
+	 		set suff _ricorr
+	 		set ext .fit
+	 		set result $nom_fich_num$suff
+	 		set toto [ spc_divbrut $newnum $newden ]
+	 		::console::affiche_resultat " le profil apres application de spc_divbrut a ete sauvegarde sous $toto \n"
+	 		file rename -force "$audace(rep_images)/$toto$ext" "$audace(rep_images)/$nom_fich_num$suff$ext"
+	 		::console::affiche_resultat " le profil apres application de spc_divri a ete sauvegarde sous $nom_fich_num$suff \n"
+	 		#effacement des fichiers temporaires§§§§§§§§§§§§§§§§§§§§§§§§§
+	 		return $result
+	 	} else {
+      	::console::affiche_erreur "spc_divri : les profils ne sont pas divisibles\n\n"
+      	return ""
+   	}  
+	} else {
+      ::console::affiche_erreur "Usage: spc_divri numerateur.fits? denominateur.fits\n\n"
+      return ""
+   }  
+}
+
+
+
+
+
 ##########################################################
 # Procedure de division de 2 profils de raies et les effets de bords (intensités anormalement importantes par rapport à 1.0).
 #
@@ -3192,7 +3326,7 @@ proc spc_divbrut { args } {
 # Arguments : profil de raies 1, profil de raies 2
 ##########################################################
 
-proc spc_divri { args } {
+proc spc_divribenji { args } {
 
     global audace spcaudace
     global conf
