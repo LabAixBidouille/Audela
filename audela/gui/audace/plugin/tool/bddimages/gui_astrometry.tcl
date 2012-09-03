@@ -135,6 +135,10 @@ namespace eval gui_astrometry {
                       -command "::tools_astrometry::save MPC"
               pack   $enregistrer.mpc -side left -anchor e -expand 0
 
+              button $enregistrer.cata -text "CATA" -borderwidth 2 -takefocus 1 \
+                      -command "::tools_astrometry::save CATA"
+              pack   $enregistrer.cata -side left -anchor e -expand 0
+
          #--- Cree un frame pour afficher bouton fermeture
          set boutonpied [frame $frm.boutonpied  -borderwidth 0 -cursor arrow -relief groove]
          pack $boutonpied  -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5

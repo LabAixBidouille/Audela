@@ -337,6 +337,10 @@ variable current_listsources
       # Fichier au format MPC 
       if {$form=="MPC"} {
       }
+
+      # Fichier au format CATA 
+      if {$form=="CATA"} {
+      }
    
    }
 
