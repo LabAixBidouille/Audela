@@ -127,6 +127,10 @@ set spcaudace(degmax_cal) 4
 set spcaudace(br) 0
 #-- Valeur limite du RMS de la qualité de la calibration au delàa de laquelle la calibration est mauvaise :
 set spcaudace(rms_lim) 30
+#-- Nombre maximum de pics a rechercher dans la lampe de calibration (spc_findbiglines2)
+set spcaudace(nb_pics) 50
+#-- seuil minimum d'un pic (exprime en centaines de % du snr) pour qu'il soit condidéré comme une raie de la lampe de calibration (spc_findbiglines2)
+set spcaudace(coef_snr) 5.
 
 #--- Valeur de paramètres des euristhiques algorithmiques :
 #-- Taux adoucissement pour l'extraction de continuum ew via piecewiselinear :
