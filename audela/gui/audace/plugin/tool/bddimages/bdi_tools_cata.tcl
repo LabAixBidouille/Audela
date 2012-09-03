@@ -220,10 +220,8 @@ namespace eval tools_cata {
          if {$catafilenameexist==0} {return -code 1 "catafilename n existe pas dans l image"}
          set catafilename [::bddimages_liste::lget $img "catafilename"]
 
-         set catadirfilename [::bddimages_liste::lexist $img "catadirfilename"]
-         if {$catafilenameexist==0} {return -code 2 "catadirfilename n existe pas dans l image"}
-         set catadirfilename [::bddimages_liste::lget $img "catadirfilename"]
-      
+         set catafilename [string range $catafilename 0 [expr [string last .gz $catafilename] -1]]
+
          return -code 0 [file join $bddconf(dirtmp) $catafilename]
       }
 

@@ -99,7 +99,7 @@ variable current_listsources
 
    proc ::tools_astrometry::launch_priam {  } {
        
-       set ::tools_astrometry::current_listsources [::analyse_source::psf $tools_astrometry::current_listsources 10]
+       set ::tools_astrometry::current_listsources [::analyse_source::psf $tools_astrometry::current_listsources $::tools_astrometry::treshhold $::tools_astrometry::delta]
        ::priam::create_file_oldformat $::tools_astrometry::current_listsources $::tools_astrometry::science $::tools_astrometry::reference 
        gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $::tools_astrometry::current_listsources ]\n"
 
@@ -114,18 +114,29 @@ variable current_listsources
          gren_info "launch_priam ERREUR d\n"
          gren_info "launch_priam:  NUM : <$err>\n" 
       }   
-      #gren_info "launch_priam:  MSG : <$msg>\n"
+      gren_info "launch_priam:  MSG : <$msg>\n"
       
     set tab [split $msg "\0"]
+    set pass "no"
     foreach l $tab {
        #gren_info "ligne=$l n"
-       set r [string last "writing results in the file:" $l ]
-       #gren_info "r=$r ***\n"
-       set file [string trim [string range $l [expr 29+$r] end] ]
-       #gren_info "file=$file\n"
+       set exs [string first "writing results in the file:" $l]
+       if {$exs>=0} {
+          set r [string last "writing results in the file:" $l ]
+          #gren_info "r=$r ***\n"
+          set file [string trim [string range $l [expr 29+$r] end] ]
+          #gren_info "file=$file\n"
+          set pass "yes"
+       }
        
     }
-      return $file
+    
+    if {$pass=="yes"} {
+      gren_info "PRIAMRESULT: =$file\n"
+      return -code 0 $file
+    } else {
+      return -code -1 $msg
+    }
    }
    
 
@@ -194,12 +205,7 @@ variable current_listsources
          
       }
       close $chan
-      set fieldsastroid [list "ASTROID" {} [list "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" \
-                                           "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" \
-                                           "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "flagastrom" \
-                                           "mag" "err_mag" ] ]
 
-      set fieldsastrom [list "ASTROM" {} [list "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "flag"] ]
 
    # sur une seule image -> current_listsources
 
@@ -210,8 +216,14 @@ variable current_listsources
       
    # Insertion des resultats dans current_listsources
 
+      set fieldsastroid [list "ASTROID" {} [list "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" \
+                                           "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" \
+                                           "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "flagastrom" \
+                                           "mag" "err_mag" ] ]
+                                           
       set fields [lindex $::tools_astrometry::current_listsources 0]
-      lappend fields $fieldsastrom
+      lappend fields $fieldsastroid
+      
       
       foreach {n val} [array get catascience] {
 
@@ -232,8 +244,8 @@ variable current_listsources
                      set omc_dec [expr $dec - [lindex [lindex $cata 1] 1]]
                      set flag    "S"
                      
-                     gren_info "NAME=$name $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag\n"                     
-                     lappend s [list "ASTROM" {} [list $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag] ]
+                     gren_info "NAME=$name $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag\n"
+                     set s [::tools_astrometry::set_astrom_to_source $s $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag]
                      set sources [lreplace $sources $cpt $cpt $s]
                      set ::tools_astrometry::current_listsources [list $fields $sources]
                   
@@ -269,10 +281,9 @@ variable current_listsources
                      set flag    "R"
                      
                      gren_info "NAME=$name $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag\n"                     
-                     lappend s [list "ASTROM" {} [list $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag] ]
+                     set s [::tools_astrometry::set_astrom_to_source $s $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag]
                      set sources [lreplace $sources $cpt $cpt $s]
                      set ::tools_astrometry::current_listsources [list $fields $sources]
-                     
                   }
                }
             }
@@ -281,15 +292,44 @@ variable current_listsources
       }
 
 
+
    gren_info "SRol=[ ::manage_source::get_nb_sources_rollup $::tools_astrometry::current_listsources]\n"
-   #gren_info "ASTROM=[::manage_source::extract_sources_by_catalog $::tools_astrometry::current_listsources ASTROM]\n"
+   #gren_info "ASTROIDS=[::manage_source::extract_sources_by_catalog $::tools_astrometry::current_listsources ASTROID]\n"
    #gren_info "LISTSOURCES=$::tools_astrometry::current_listsources\n"
 
    # Ecriture des resultats dans un fichier 
+      set ::tools_astrometry::current_image [lindex $::tools_astrometry::img_list 0]
+      set ::tools_astrometry::current_image [::bddimages_liste::ladd $::tools_astrometry::current_image "listsources" $tools_astrometry::current_listsources ]
+      set id_img_list 0
+      
+      set ::tools_astrometry::img_list [lreplace ::tools_astrometry::img_list $id_img_list $id_img_list $::tools_astrometry::current_image]
 
-   
+        
+        
    }
    
+   
+# "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" 
+# "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" 
+# "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "flagastrom" 
+# "mag" "err_mag" 
+   proc ::tools_astrometry::set_astrom_to_source { s ra dec res_ra res_dec omc_ra omc_dec flag } {
+   
+      set pass "no"
+      
+      set stmp {}
+      foreach cata $s {
+         if {[lindex $cata 0] == "ASTROID"} {
+            set pass "yes"
+            set astroid [lindex $cata 2]
+            set astroid [lreplace $astroid 14 20 $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag]
+            lappend stmp [list "ASTROID" {} $astroid]
+         } else {
+            lappend stmp $cata
+         }
+      }
+      return $stmp
+   }
    
    proc ::tools_astrometry::clean_astrom {  } {
    
@@ -306,6 +346,8 @@ variable current_listsources
          set fileres [ file join $audace(rep_travail) priam.txt ]
          set chan0 [open $fileres w]
          foreach ::tools_astrometry::current_image $::tools_astrometry::img_list {
+
+            gren_info "IMG: $::tools_astrometry::current_image\n"
 
             set tabkey      [::bddimages_liste::lget $::tools_astrometry::current_image "tabkey"]
             set date        [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
@@ -352,9 +394,10 @@ variable current_listsources
             
             gren_info "cataxml = $cataxml\n"
 
+            gren_info "Rol=[ ::manage_source::get_nb_sources_rollup $::tools_astrometry::current_listsources]\n"
             set votable [::votableUtil::list2votable $::tools_astrometry::current_listsources $tabkey]
 
-            gren_info "votable = $votable\n"
+#            gren_info "votable = $votable\n"
 
             # Sauvegarde du cata XML
             #gren_info "Enregistrement du cata XML: $cataxml\n"

@@ -8,6 +8,7 @@ namespace eval gui_astrometry {
       set ::tools_astrometry::science   "SKYBOT"
       set ::tools_astrometry::reference "UCAC3"
       set ::tools_astrometry::delta 15
+      set ::tools_astrometry::treshhold 5
 
       if {! [info exists ::tools_astrometry::ifortlib] } {
          if {[info exists conf(bddimages,cata,ifortlib)]} {
