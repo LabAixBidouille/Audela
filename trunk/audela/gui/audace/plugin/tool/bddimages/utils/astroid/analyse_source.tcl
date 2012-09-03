@@ -61,7 +61,7 @@ namespace eval ::analyse_source {
 
 
    #
-   # ::analyse_source::test
+   # ::analyse_source::psf
    #
    # photom_methode
    # xsm         ysm        fwhmx    fwhmy    fwhm     fluxintegre errflux  pixmax  intensite sigmafond snint         snpx          delta
@@ -105,9 +105,9 @@ namespace eval ::analyse_source {
                if {$log} {gren_info "source : $ra $dec $x $y\n"}
                affich_un_rond $ra $dec red 5
 
-               set results [::av4l_photom::photom_methode $x $y $fwhm $bddconf(bufno) ]
+               #set results [::tools_cdl::photom_methode $x $y $fwhm $bddconf(bufno) ]
 
-               set err [catch {set results [::av4l_photom::photom_methode $x $y $fwhm $bddconf(bufno) ]} msg]
+               set err [catch {set results [::tools_cdl::photom_methode $x $y $fwhm $bddconf(bufno) ]} msg]
                if {$err} { 
                   gren_info "photom error ($err) ($msg)\n" 
                   set results -1

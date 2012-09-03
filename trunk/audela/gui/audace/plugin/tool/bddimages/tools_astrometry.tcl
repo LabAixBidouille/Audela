@@ -10,7 +10,6 @@ variable current_image_date
 variable current_listsources
 
 
-
    proc ::tools_astrometry::load_cata {  } {
 
       global bddconf
@@ -49,6 +48,8 @@ variable current_listsources
 
       gren_info "Science = $::tools_astrometry::science\n"
       gren_info "Reference = $::tools_astrometry::reference\n"
+      
+      set imgtmp {}
 
       foreach ::tools_astrometry::current_image $::tools_astrometry::img_list {
 
@@ -78,13 +79,19 @@ variable current_listsources
 
             ::tools_astrometry::load_cata
 
-            gren_info "current_listsources $tools_astrometry::current_listsources\n"
+            lappend imgtmp [::bddimages_liste::ladd $::tools_astrometry::current_image listsources $tools_astrometry::current_listsources ]
+            #tabkey inkey inval
+            #set ::tools_astrometry::listsources(idbddimg) $tools_astrometry::current_listsources
+            #gren_info "current_listsources $tools_astrometry::current_listsources\n"
             
-           # break
+            # ne fait qu une seule image: la premiere de a liste
+            break
          }
          
       }
 
+      set ::tools_astrometry::img_list $imgtmp
+      
       ::tools_astrometry::extract_priam_result [::tools_astrometry::launch_priam]
       
 
@@ -121,8 +128,14 @@ variable current_listsources
       return $file
    }
    
+
+
+
+
+
    proc ::tools_astrometry::extract_priam_result { file } {
    
+
       gren_info "extract_priam_result:  file : <$file>\n"
    
       set chan [open $file r]
@@ -138,11 +151,22 @@ variable current_listsources
       set n [llength $astrom(kwds)]
       
       set cpt 0
+
+      # faire une boule sur un mot clés ! CDELT1
+
+
+
       while {[gets $chan line] >= 0} {
          set a [split $line "="]
          set key [lindex $a 0]
          set val [lindex $a 1]
          gren_info "$key=$val\n"
+          
+         if {$key=="CDELT1"} {
+            # Debut image
+            incr cpt
+         }
+
 
          for {set k 0 } { $k<$n } {incr k} {
             set kwd [lindex $astrom(kwds) $k]
@@ -160,32 +184,162 @@ variable current_listsources
          if {$key=="CATA_VALUES"} {
             set name  [lindex $val 0]
             set sour  [lindex $val 1]
-            set catasource($name) $sour
+            set catascience($name) $sour
          }
          if {$key=="CATA_REF"} {
             set name  [lindex $val 0]
             set sour  [lindex $val 1]
-            set catasource($name) $sour
+            set cataref($name) $sour
          }
          
       }
       close $chan
-   
+      set fieldsastroid [list "ASTROID" {} [list "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" \
+                                           "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" \
+                                           "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "flagastrom" \
+                                           "mag" "err_mag" ] ]
+
+      set fieldsastrom [list "ASTROM" {} [list "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "flag"] ]
+
+   # sur une seule image -> current_listsources
+
       gren_info "[::manage_source::get_fields_from_sources $tools_astrometry::current_listsources] \n"
-   
+
+   # A FAIRE  : nettoyage des astrometrie de current_listsources
+      ::tools_astrometry::clean_astrom 
+      
+   # Insertion des resultats dans current_listsources
+
+      set fields [lindex $::tools_astrometry::current_listsources 0]
+      lappend fields $fieldsastrom
+      
+      foreach {n val} [array get catascience] {
+
+         set cpt 0
+         set sources [lindex $::tools_astrometry::current_listsources 1]
+         foreach s $sources {
+         
+            foreach cata $s {
+               if {[lindex $cata 0] == $::tools_astrometry::science} {
+                  set name [::manage_source::naming $s $::tools_astrometry::science]
+                  if {$n==$name} {
+                     #gren_info "NAME=$name\n"
+                     set ra      [expr [lindex $val 0] *15.]
+                     set dec     [lindex $val 1]
+                     set res_ra  [lindex $val 2]
+                     set res_dec [lindex $val 3]
+                     set omc_ra  [expr $ra - [lindex [lindex $cata 1] 0]]
+                     set omc_dec [expr $dec - [lindex [lindex $cata 1] 1]]
+                     set flag    "S"
+                     
+                     gren_info "NAME=$name $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag\n"                     
+                     lappend s [list "ASTROM" {} [list $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag] ]
+                     set sources [lreplace $sources $cpt $cpt $s]
+                     set ::tools_astrometry::current_listsources [list $fields $sources]
+                  
+                  }
+                                   
+               }
+
+            }
+            
+            incr cpt
+         }
+
+
+      }
+
+      foreach {n val} [array get cataref] {
+
+         set cpt 0
+         set sources [lindex $::tools_astrometry::current_listsources 1]
+         foreach s $sources {
+            foreach cata $s {
+               #gren_info "CATA = [lindex $cata 0]\n"
+               if {[lindex $cata 0] == $::tools_astrometry::reference} {
+                  set name [::manage_source::naming $s $::tools_astrometry::reference]
+                  if {$n==$name} {
+                     #gren_info "NAME=$name\n"                     
+                     set ra      [lindex [lindex $cata 1] 0]
+                     set dec     [lindex [lindex $cata 1] 1]
+                     set res_ra  [lindex $val 0]
+                     set res_dec [lindex $val 1]
+                     set omc_ra  [expr $ra - [lindex [lindex $cata 1] 0]]
+                     set omc_dec [expr $dec - [lindex [lindex $cata 1] 1]]
+                     set flag    "R"
+                     
+                     gren_info "NAME=$name $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag\n"                     
+                     lappend s [list "ASTROM" {} [list $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag] ]
+                     set sources [lreplace $sources $cpt $cpt $s]
+                     set ::tools_astrometry::current_listsources [list $fields $sources]
+                     
+                  }
+               }
+            }
+            incr cpt
+         }
+      }
+
+
+   gren_info "SRol=[ ::manage_source::get_nb_sources_rollup $::tools_astrometry::current_listsources]\n"
+   #gren_info "ASTROM=[::manage_source::extract_sources_by_catalog $::tools_astrometry::current_listsources ASTROM]\n"
+   #gren_info "LISTSOURCES=$::tools_astrometry::current_listsources\n"
+
+   # Ecriture des resultats dans un fichier 
+
    
    }
    
+   
+   proc ::tools_astrometry::clean_astrom {  } {
+   
+   }
+   
+   proc ::tools_astrometry::save { form } {
 
+      global bddconf audace
+  
+      gren_info "FORMAT:$form\n"
+      
+      # Fichier au format TXT 
+      if {$form=="TXT"} {
+         set fileres [ file join $audace(rep_travail) priam.txt ]
+         set chan0 [open $fileres w]
+         foreach ::tools_astrometry::current_image $::tools_astrometry::img_list {
+
+            set tabkey      [::bddimages_liste::lget $::tools_astrometry::current_image "tabkey"]
+            set date        [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
+            set exposure    [lindex [::bddimages_liste::lget $tabkey EXPOSURE ] 1]
+            set ::tools_astrometry::current_listsources [::bddimages_liste::lget $::tools_astrometry::current_image "listsources"]
+            set datem $date
+
+            foreach s [lindex $::tools_astrometry::current_listsources 1] {
+               foreach cata $s {
+                  if {[lindex $cata 0] == "ASTROID"} {
+                     set name [::manage_source::naming $s $::tools_astrometry::science]
+                     set flagastrom [string trim [lindex [::bddimages_liste::lget [lindex $cata 0] "flagastrom"]   1] ]
+                     if {$flagastrom=="S"} {
+                        set ra      [string trim [lindex [::bddimages_liste::lget [lindex $cata 0] "ra"]   1] ]
+                        set dec     [string trim [lindex [::bddimages_liste::lget [lindex $cata 0] "dec"]   1] ]
+                        set res_ra  [string trim [lindex [::bddimages_liste::lget [lindex $cata 0] "res_ra"]   1] ]
+                        set res_dec [string trim [lindex [::bddimages_liste::lget [lindex $cata 0] "res_dec"]   1] ]
+                        set omc_ra  [string trim [lindex [::bddimages_liste::lget [lindex $cata 0] "omc_ra"]   1] ]
+                        set omc_dec [string trim [lindex [::bddimages_liste::lget [lindex $cata 0] "omc_dec"]   1] ]
+                        puts $chan0 "$name $datem $ra $dec $res_ra $res_dec $omc_ra $omc_dec"
+                     }
+                  }
+               }
+            }
+         }
+         close $chan0
+      }
+
+      # Fichier au format MPC 
+      if {$form=="MPC"} {
+      }
+   
+   }
+
+# Fin de Classe
 }
 
-# Sortie de Priam:
-
-#SUCCESS
-#CRVAL1=...
-#CATA_FIELDS=ASTROM { ra dec dra ddec}
-#CATA_VALUES=SKYBOT_1 { 12.59423872 +01.75000 0.0769  0.0382 }
-#CATA_VALUES=SKYBOT_2 { 12.59423872 +01.19500 0.0769  0.0382 }
-#...
-#CATA_REF=UCAC3_1 { 12.59423872 +01.75000 0.11748 0.05313 }
-#...
