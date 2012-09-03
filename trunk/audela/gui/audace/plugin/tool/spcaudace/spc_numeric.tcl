@@ -111,6 +111,131 @@ proc spc_gausslist { args } {
 
 #############################################################################
 # Auteur : Patrick LAILLY
+# Date de création : 22-07-12
+# Date de modification : 22-07-12
+# cette procédure recherche les maxima d'un profil represente par un fichier .dat
+# 3 arguments  d'entree obligatoires : le nom du fichier dat contenant les donnees mesurees, valeur_continuum, valeur_snr
+# Les maxima detectes sont censes etre marques c-a-d que leur amplitude est au moins egale a $continuum * (1. + $coef_snr / $snr ) 
+# Le nombre de maxima recherches est borne par la varible d'environnement nb_pics
+# la procedure retourne une liste de listes donnant les abscisses des echantillons correspondant aux maxima ainsi que les ordonnees correspondantes. Cette liste est ordonnee par valeur decroissante de l'intensite des maximas.
+# algo : adaptation de spc_maxsearch
+# Exemple : spc_maxcorr fichier_dat valeur_continuum valeur_snr
+#
+#############################################################################
+proc spc_maxcorr { args } {
+   global audace spcaudace
+   set nb_args [ llength $args ]
+   if { $nb_args ==3 } {
+      set nom_dat [ lindex $args 0 ]
+      set continuum [ lindex $args 1 ]
+      set snr [ lindex $args 2 ]
+      set coef_snr $spcaudace(coef_snr)
+      set nb_pics $spcaudace(nb_pics)
+      #set nb_pics 50
+      #set coef_snr 5.
+      ::console::affiche_resultat " nb_pics $nb_pics \n"
+      # lecture du fichier dat
+      set input [open "$audace(rep_images)/$nom_dat" r]
+      set contents [split [read $input] \n]
+      close $input
+      set nb_echant [llength $contents]
+      set nb_echant_1 [ expr $nb_echant - 1 ] 
+      set periods [ list ]
+      set density [ list ]
+      for {set k 0} { $k < $nb_echant } {incr k} {
+	 		set ligne [lindex $contents $k]
+	 		set x [lindex $ligne 0]
+	 		set y [lindex $ligne 1]
+	 		lappend periods [lindex $ligne 0] 
+	 		lappend density [lindex $ligne 1] 
+      }
+      set cdelt1 [ expr [ lindex $periods 1] - [ lindex $periods 0 ] ]
+      set crval1 [ lindex $periods 0 ]
+      set nb_echant_periodo [ llength $density ]
+      set nb_echant_periodo [ expr $nb_echant_periodo -1 ]
+      set detected_max 0
+      set liste_max [ list ]
+      for {set k 1} { $k < $nb_echant_periodo } {incr k} {
+	 		set kk [ expr $nb_echant_periodo - $k ]
+	 		set kk_1 [ expr $kk - 1 ]
+	 		set deriv [ expr [ lindex $density $kk ] - [ lindex $density $kk_1 ] ]
+	 		set deriv_sign 1
+	 		if { $deriv < 0. } {
+	    		set deriv_sign -1
+	 		}
+	 		if { $k != 1 } {
+	    		if { $prev_sign == -1 && $deriv_sign == 1 } {
+	       		# recherche de la parabole passant par les 3 points encadrant le max
+	       		set lx [ list ]
+	       		set ly [ list ]
+	       		lappend lx [ lindex $periods $kk_1 ]
+	       		lappend lx [ lindex $periods $kk ]
+	       		lappend lx [ lindex $periods [ expr $kk +1 ] ]
+	       		lappend ly [ lindex $density $kk_1 ]
+	       		lappend ly [ lindex $density $kk ]
+	       		lappend ly [ lindex $density [ expr $kk +1 ] ]  
+	       		# construction du systeme lineaire pour la recherche du maximum
+	       		set A [ list ]
+	       		for { set ii 0 } { $ii < 3 } { incr ii } {
+	       			set ligne [ list ]
+	       			for { set jj 0 } { $jj < 3 } { incr jj } {
+	       				lappend ligne [ expr pow([ lindex $lx $ii ],$jj) ]
+	       			}
+	       			lappend A $ligne
+	       		}
+	       		set lcoef [ gsl_msolvelin $A $ly ]
+	       		# max d ela parabole
+	       		lappend liste_max [ expr -.5 * [ lindex $lcoef 1 ] / [ lindex $lcoef 2 ] ]
+	       		set detected_max [ expr $detected_max +1 ]
+	    		}	
+	 		} 
+	 		set prev_sign $deriv_sign
+	 	}
+	 		
+      	# calcule de l'amplitude mininum des amximas
+      set amplit_min [ expr $continuum * (1. + $coef_snr / $snr) ]
+      # selection et mise en forme des maxima detectes
+      set ldens [ list ]
+      set lperiod [ list ]
+	 	set nb_max [ llength $liste_max ]
+      for {set k 0} { $k < $nb_max } {incr k} {
+	 		set kk [ expr $k + 1 ]
+	 		set period [ lindex $liste_max $k ] 
+	 		# interpolationd ela  densite...............
+	 		set ikl  [ expr int( ( $period - $crval1 )/$cdelt1) ] 
+	 		set densm [ lindex $density $ikl ]
+	 		set densp [ lindex $density [ expr $ikl +1 ] ]
+	 		set dens [ expr $densm + ($densp-$densm)*($period-$ikl) ]
+	 		if { $dens < $amplit_min } {
+	 			continue
+	 		} 
+	 		lappend lperiod $period
+	 		lappend ldens $dens
+      }
+      set ord_dens [ lsort -decreasing -real $ldens ]
+      set result [ list ]
+      set nb_max [ llength $ord_dens ]
+      for {set k 0} { $k < $nb_max } {incr k} {
+      	set ligne [ list ]
+	 		set dens [ lindex $ord_dens $k ]
+	 		set kk [ lsearch -exact $ldens $dens ]
+	 		lappend ligne [ lindex $lperiod $kk ]
+	 		lappend ligne $dens
+	 		lappend result $ligne
+      }
+   	set result [ lrange $result 0 [ expr $nb_pics -1 ] ]
+      return $result
+   } else {
+      ::console::affiche_erreur "Usage: spc_maxcorr data_filename.dat fichier_dat valeur_continuum valeur_snr \n\n"
+      return ""
+   }
+}
+
+
+
+
+#############################################################################
+# Auteur : Patrick LAILLY
 # Date de création : 1-09-10
 # Date de modification : 1-09-10
 # cette procédure recherche les maxima les plus a droite d'une fonction representee par un fichier .dat 
@@ -697,7 +822,7 @@ proc spc_findnnul { args } {
 # Procedure de reechantillonage d'unn profil spectral decrit sous forme de listes
 # Auteur : Patrick LAILLY
 # Date de crÃ©ation : 12-12-08
-# Date de modification : 17-07-09
+# Date de modification : 25-08-12
 # Cette procÃ©dure rÃ©Ã©chantillone, selon un pas d'echantillonage spÃ©cifiÃ© en Angstroems et 
 # commencant Ã  une longueur d'onde (variable crvalnew) spÃ©cifiÃ©ee en angstroems, un 
 # profil de raies (censÃ© Ãªtre calibrÃ© linÃ©airement) decrit via une liste de lambdas et une 
@@ -727,15 +852,15 @@ proc spc_resample { args } {
       set dlambda_glob [ expr  $ecartlambda / $naxis1_1  ]
       set dlambda_first [ expr ( [ lindex $abscisses  1] -$crval1 ) ]
       if { [ expr abs ( $dlambda_glob - $dlambda_first ) ] > .0000001 } {
-         ::console::affiche_erreur "spc_resample : le profil entré n'est pas calibré linéairement\n\n"
-         return 0
+         ::console::affiche_erreur "spc_resample : le profil entré n'est pas calibré linéairement et la mise en oeuvre de la procedure n'a pas de sens \n\n"
+         return ""
       }
 
 
       #--- Test sur validite de crvalnew :
       if { [ lindex $abscisses  $naxis1_1] < $crvalnew || $crval1 > $crvalnew } {
-         ::console::affiche_erreur "Le parametre crvalnew n'est pas compris dans l'intervalle des lambdas donnees en argument \n\n"
-         return 0
+         ::console::affiche_erreur " spc_resample : Le parametre crvalnew = $crvalnew n'est pas compris dans l'intervalle des lambdas donnees en argument \n\n"
+         return ""
       }
       set cdelt1 $dlambda_glob
       set precision 0.05
