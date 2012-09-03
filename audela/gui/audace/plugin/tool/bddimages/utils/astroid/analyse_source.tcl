@@ -108,7 +108,7 @@ namespace eval ::analyse_source {
                set fwhm [lindex [lindex [lindex $s 0] 2] 24]
 
                if {$log} {gren_info "source : $ra $dec $x $y\n"}
-               affich_un_rond $ra $dec red 5
+               #affich_un_rond $ra $dec red 5
 
                #set results [::tools_cdl::photom_methode $x $y $fwhm $bddconf(bufno) ]
 
@@ -131,11 +131,10 @@ namespace eval ::analyse_source {
                      lappend newsources $s
                      incr doute
                   } else {
-                     affich_un_rond $ra $dec green 5
+                     #affich_un_rond $ra $dec green 5
                      lappend results $rdiff
                      for {set i 0} {$i<9} {incr i} { lappend results 0 }
                      set ns $s
-                     gren_info "ASTROIDR [llength $results]\n"
 
                      lappend ns [list "ASTROID" {} $results]
                      lappend newsources $ns

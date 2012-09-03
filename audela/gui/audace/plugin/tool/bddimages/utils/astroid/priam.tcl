@@ -58,7 +58,7 @@ namespace eval ::priam {
 #      {ASTROID {} {1455.214748 1237.066546 2.946869 2.521896 2.7343825 1467.000000 0 1239.000000 227.0 38.759163 37.8491145436 5.85667961922 3.26 0.0976624473377}}
    
 
-proc ::priam::create_file_oldformat { listsources science stars } {
+proc ::priam::create_file_oldformat { tag listsources science stars } {
 
    global bddconf audace
 
@@ -71,45 +71,49 @@ proc ::priam::create_file_oldformat { listsources science stars } {
    set humidity 35.0
    set bandwith 0.57000
 
-   # creation du fichier de conditions initiales (cnd.obs)
-   set filecnd [ file join $audace(rep_travail) cnd.obs ]
-   set chan0 [open $filecnd w]
-   puts $chan0 "#? Centroid measures formatted for Priam"
-   puts $chan0 "# Conditions observationnelles"
-   puts $chan0 "# objet : astrometrie de 2008 FU6 au T1m Pic du midi"
-   puts $chan0 "# date  : 11 avril 2011"
-   puts $chan0 "#"
-   puts $chan0 "code           : 586"
-   puts $chan0 "lieu           : Pic du midi"
-   puts $chan0 "station        : 0.0 0.0 0.0"
-   puts $chan0 "observateurs   : F. Vachier"
-   puts $chan0 "reduction      : F. Vachier & J. Berthier"
-   puts $chan0 "#"
-   puts $chan0 "# Instrumentation"
-   puts $chan0 "#"
-   puts $chan0 "type           : T1m"
-   puts $chan0 "focale         : 12.5"
-   puts $chan0 "diametre       : 1.0"
-   puts $chan0 "echelle        : 0.44"
-   puts $chan0 "orientation    : 0.00"
-   puts $chan0 "taille CCD     : 1024 1024"
-   close $chan0
+   if {$tag=="new"} {
+      # creation du fichier de conditions initiales (cnd.obs)
+      set filecnd [ file join $audace(rep_travail) cnd.obs ]
+      set chan0 [open $filecnd w]
+      puts $chan0 "#? Centroid measures formatted for Priam"
+      puts $chan0 "# Conditions observationnelles"
+      puts $chan0 "# objet : astrometrie de 2008 FU6 au T1m Pic du midi"
+      puts $chan0 "# date  : 11 avril 2011"
+      puts $chan0 "#"
+      puts $chan0 "code           : 586"
+      puts $chan0 "lieu           : Pic du midi"
+      puts $chan0 "station        : 0.0 0.0 0.0"
+      puts $chan0 "observateurs   : F. Vachier"
+      puts $chan0 "reduction      : F. Vachier & J. Berthier"
+      puts $chan0 "#"
+      puts $chan0 "# Instrumentation"
+      puts $chan0 "#"
+      puts $chan0 "type           : T1m"
+      puts $chan0 "focale         : 12.5"
+      puts $chan0 "diametre       : 1.0"
+      puts $chan0 "echelle        : 0.44"
+      puts $chan0 "orientation    : 0.00"
+      puts $chan0 "taille CCD     : 1024 1024"
+      close $chan0
+   }
 
-   # creation du fichier d'exec de priam (cmd.priam)
-   set formatfile bddimages
-   
-   set filepriam [ file join $audace(rep_travail) cmd.priam ]
-   set chan0 [open $filepriam w]
-   puts $chan0 "#!/bin/sh"
-   puts $chan0 "LD_LIBRARY_PATH=/usr/local/lib:$::tools_astrometry::ifortlib"
-   puts $chan0 "export LD_LIBRARY_PATH"
-   puts $chan0 "priam -lang en -format priam -m 1 -fc cnd.obs -fm science.mes -r ./ -fcat local.cat -rcat ./ -s fichier:$formatfile -te 1"
-   close $chan0
+   if {$tag=="new"} {
+      # creation du fichier d'exec de priam (cmd.priam)
+      set filepriam [ file join $audace(rep_travail) cmd.priam ]
+      set chan0 [open $filepriam w]
+      puts $chan0 "#!/bin/sh"
+      puts $chan0 "LD_LIBRARY_PATH=/usr/local/lib:$::tools_astrometry::ifortlib"
+      puts $chan0 "export LD_LIBRARY_PATH"
+      puts $chan0 "priam -lang en -format priam -m 1 -fc cnd.obs -fm science.mes -r ./ -fcat local.cat -rcat ./ -s fichier:bddimages -te 1"
+      close $chan0
+   }
 
-   set filenametmp [ file join $audace(rep_travail) science.mes ]
    # creation du fichier de mesures
    set filemes [ file join $audace(rep_travail) science.mes ]
-   set chan0 [open $filemes w]
+   
+   if {$tag=="new"} { set chan0 [open $filemes w] }
+   if {$tag=="add"} { set chan0 [open $filemes a+] }
+    
    puts $chan0 "#? Centroid measures formatted for Priam"
    puts $chan0 "#?   Source: Astroid - jan. 2012"
    puts $chan0 "#? Object: $science"
@@ -121,7 +125,9 @@ proc ::priam::create_file_oldformat { listsources science stars } {
 
    # creation du fichier stellaire
    set filelocal [ file join $audace(rep_travail) local.cat ]
-   set chan1 [open $filelocal w]
+
+   if {$tag=="new"} { set chan1 [open $filelocal w] }
+   if {$tag=="add"} { set chan1 [open $filelocal a+] }
 
    set index 0
    set indexsc 0

@@ -9,7 +9,7 @@ namespace eval gui_astrometry {
       set ::tools_astrometry::reference "UCAC3"
       set ::tools_astrometry::delta 15
       set ::tools_astrometry::treshold 5
-      set ::gui_astrometry::factor 10
+      set ::gui_astrometry::factor 100
       
       if {! [info exists ::tools_astrometry::ifortlib] } {
          if {[info exists conf(bddimages,cata,ifortlib)]} {
@@ -204,6 +204,20 @@ namespace eval gui_astrometry {
 
          foreach s [lindex $::tools_astrometry::current_listsources 1] {
             foreach cata $s {
+            
+               if {[lindex $cata 0] == $::tools_astrometry::science} {
+                  set comm [lindex $cata 1]
+                  set ra      [lindex $comm 0]  
+                  set dec     [lindex $comm 1]
+                  affich_un_rond $ra $dec "green" 1
+               }
+               if {[lindex $cata 0] == $::tools_astrometry::reference} {
+                  set comm [lindex $cata 1]
+                  set ra      [lindex $comm 0]  
+                  set dec     [lindex $comm 1]
+                  affich_un_rond $ra $dec "yellow" 1
+               }
+            
                if {[lindex $cata 0] == "ASTROID"} {
                   set astroid [lindex $cata 2]
                   
