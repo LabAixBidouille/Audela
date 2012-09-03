@@ -320,14 +320,14 @@ proc bddimages_insertion_unfich { ligne } {
      bddimages_sauve_fich "bddimages_insertion_unfich: Erreur taille de l image courante <$errnum> <$sizefichcurrent> <$msg>"
      if {$sizefichcurrent!=$sizefich} {
        return [list -1 $nomfich]
-       }
      }
+   }
 
    set result      [bddimages_formatfichier $nomfich]
    set form2       [lindex $result 0]
    set racinefich  [lindex $result 1]
    set form3       [lindex $result 2]
-
+   
    if {$form2=="fit"} {
       set racine [string range $nomfich 0 [expr [string length  $nomfich] - 5]]
       set nomfichdest "$racine.fits"
@@ -338,7 +338,7 @@ proc bddimages_insertion_unfich { ligne } {
       gzip $nomfich
       set nomfich "$nomfichdest.gz"
       set form2 "fits.gz"
-      }
+   }
 
    if {$form2=="fit.gz"} {
       set racine [string range $nomfich 0 [expr [string length  $nomfich] - 8]]
@@ -347,14 +347,14 @@ proc bddimages_insertion_unfich { ligne } {
       set errnum [catch {file rename $nomfich $nomfichdest} msg]
       set nomfich $nomfichdest
       set form2 "fits.gz"
-      }
+   }
 
    if {$form2=="fits"} {
       bddimages_sauve_fich "bddimages_insertion_unfich: Compression GZIP de $nomfich"
       gzip $nomfich
       set nomfich "$nomfich.gz"
       set form2 "fits.gz"
-      }
+   }
 
    if {$form2=="fits.gz"} {
 
@@ -383,6 +383,7 @@ proc bddimages_insertion_unfich { ligne } {
               bddimages_sauve_fich "bddimages_insertion_unfich:      NUM : <$errnum>"
               bddimages_sauve_fich "bddimages_insertion_unfich:      MSG : <$msg>"
            }
+           return [list $err $nomfich]
        }
    }
 
