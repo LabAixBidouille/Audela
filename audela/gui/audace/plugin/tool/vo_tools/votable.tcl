@@ -697,11 +697,13 @@ proc ::votable::getFieldFromKey { table key } {
    switch $table {
       IMG     { set f [::votable::getFieldFromKey_IMG $key] }      
       USNOA2  { set f [::votable::getFieldFromKey_USNOA2 $key] }      
+      NOMAD1  { set f [::votable::getFieldFromKey_NOMAD1 $key] }      
       TYCHO2  { set f [::votable::getFieldFromKey_TYCHO2 $key] }      
       UCAC2   { set f [::votable::getFieldFromKey_UCAC2 $key] }      
       UCAC3   { set f [::votable::getFieldFromKey_UCAC3 $key] }
       SKYBOT  { set f [::votable::getFieldFromKey_SKYBOT $key] }
       OVNI    { set f [::votable::getFieldFromKey_OVNI $key] }
+      ASTROID { set f [::votable::getFieldFromKey_ASTROID $key] }
       default { set f [::votable::getFieldFromKey_DEFAULT $key] }
    }
 }
@@ -911,6 +913,64 @@ proc ::votable::getFieldFromKey_IMG { key } {
 proc ::votable::getFieldFromKey_USNOA2 { key } {
    # Id et Nom du champ
    set field [list "$::votable::Field::ID USNOA2.${key}" "$::votable::Field::NAME $key"]
+   # Autres infos 
+   switch $key {
+      ra -
+      dec {
+         if {[string equal -nocase $key "ra"]} {
+            set description "Astrometric J2000 right ascension"
+         } else {
+            set description "Astrometric J2000 declination"
+         }
+         lappend field "$::votable::Field::UCD \"pos.eq.$key;meta.main\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"9\"" \
+                       "$::votable::Field::PRECISION \"5\"" \
+                       "$::votable::Field::UNIT \"deg\""
+      }
+      poserr {
+         set description "Uncertainty of the celestial coordinates"
+         set ucd "stat.error;pos"
+         lappend field "$::votable::Field::UCD \"$ucd\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"6\"" \
+                       "$::votable::Field::PRECISION \"2\"" \
+                       "$::votable::Field::UNIT \"arcsec\""
+      }
+      mag {
+         set description "Catalogue magnitude"
+         lappend field "$::votable::Field::UCD \"phot.mag\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"3\"" \
+                       "$::votable::Field::UNIT \"mag\""
+      }
+      magerr {
+         set description "Uncertainty of the catalogue magnitude"
+         lappend field "$::votable::Field::UCD \"stat.error;phot.mag\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"3\"" \
+                       "$::votable::Field::UNIT \"mag\""
+      }
+      default {
+         # si $key n'est pas reconnu alors on renvoie des listes vides
+         set field ""
+         set description ""
+      }
+   }
+   return [list $field [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+}
+
+#
+# Construction des elements FIELDS en fonction de la cle de la colonne pour le cataloguye NOMAD1
+# @access private
+# @param key nom de la colonne dont on veut construire l'element FIELD
+# @return liste liste contenant la definition du champ et sa description
+# @TODO
+proc ::votable::getFieldFromKey_NOMAD1 { key } {
+   # Id et Nom du champ
+   set field [list "$::votable::Field::ID NOMAD1.${key}" "$::votable::Field::NAME $key"]
    # Autres infos 
    switch $key {
       ra -
@@ -1711,6 +1771,164 @@ proc ::votable::getFieldFromKey_SKYBOT { key } {
                        "$::votable::Field::WIDTH \"8\"" \
                        "$::votable::Field::PRECISION \"3\"" \
                        "$::votable::Field::UNIT \"arcsec\""
+      }
+      default {
+         # si $key n'est pas reconnu alors on renvoie des listes vides
+         set field ""
+         set description ""
+      }
+   }
+   return [list $field [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+}
+
+#
+# Construction des elements FIELDS en fonction de la cle de la colonne pour le catalogue ASTROID
+# @access private
+# @param key nom de la colonne dont on veut construire l'element FIELD
+# @return liste liste contenant la definition du champ et sa description
+#
+proc ::votable::getFieldFromKey_ASTROID { key } {
+   # Id et Nom du champ
+   set field [list "$::votable::Field::ID ASTROID.${key}" "$::votable::Field::NAME $key"]
+   # Autres infos 
+   switch $key {
+      xsm -
+      ysm {
+         set description "Cartesian coordinate of the source in the image (add 1 to be in image coordinates)"
+         lappend field "$::votable::Field::UCD \"pos.cartesian.[string index $key 0]\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"2\"" \
+                       "$::votable::Field::UNIT \"pixel\""
+      }
+      fwhmx -
+      fwhmy -
+      fwhm {
+         if {[string equal -nocase $key "fwhmx"]} {
+            set description "X component of the FWHM of the source measured by Bddimages"
+         } elseif {[string equal -nocase $key "fwhmy"]} {
+            set description "Y component of the FWHM of the source measured by Bddimages"
+         } else {
+            set description "FWHM of the source measured by Bddimages"
+         }
+         lappend field "$::votable::Field::UCD \"phys.angSize\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"6\"" \
+                       "$::votable::Field::PRECISION \"2\"" \
+                       "$::votable::Field::UNIT \"pixel\""
+      }
+      fluxintegre {
+         set description "Measured flux of the source by Bddimages"
+         lappend field "$::votable::Field::UCD \"phot.count\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"1\"" \
+                       "$::votable::Field::UNIT \"ADU\""
+      }
+      errflux {
+         set description "Uncertainty of the measured source flux by Bddimages"
+         lappend field "$::votable::Field::UCD \"stat.error;phot.count\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"1\"" \
+                       "$::votable::Field::UNIT \"ADU\""
+      }
+      pixmax {
+         set description "Flux of the pixel of maximum intensity"
+         lappend field "$::votable::Field::UCD \"phot.count\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"1\"" \
+                       "$::votable::Field::UNIT \"ADU\""
+      }
+      intensite {
+         set description "Flux of the pixel of maximum intensity minus the background intensity"
+         lappend field "$::votable::Field::UCD \"phot.count\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"1\"" \
+                       "$::votable::Field::UNIT \"ADU\""
+      }
+      sigmafond {
+         set description "Standard deviation of the background intensity"
+         lappend field "$::votable::Field::UCD \"phot.count\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"1\"" \
+                       "$::votable::Field::UNIT \"ADU\""
+      }
+      snint {
+      }
+      snpx {
+      }
+      delta {
+      }
+      rdiff {
+      }
+      ra -
+      dec {
+         if {[string equal -nocase $key "ra"]} {
+            set description "Astrometric J2000 right ascension"
+            set unit "h:m:s"
+         } else {
+            set description "Astrometric J2000 declination"
+            set unit "d:m:s"
+         }
+         lappend field "$::votable::Field::UCD \"pos.eq.$key;meta.main\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"9\"" \
+                       "$::votable::Field::PRECISION \"5\"" \
+                       "$::votable::Field::UNIT \"$unit\""
+      }
+      res_ra -
+      res_dec {
+         if {[string equal -nocase $key "res_ra"]} {
+            set description "Uncertainty on the right ascension"
+         } else {
+            set description "Uncertainty on the declination"
+         }
+         set ucd "stat.error.sys"
+         lappend field "$::votable::Field::UCD \"$ucd\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"10\"" \
+                       "$::votable::Field::PRECISION \"3\"" \
+                       "$::votable::Field::UNIT \"arcsec\""
+      }
+      omc_ra -
+      omc_dec {
+         if {[string equal -nocase $key "omc_ra"]} {
+            set description "O-C on the right ascension"
+         } else {
+            set description "O-C on the declination"
+         }
+         lappend field "$::votable::Field::UCD \"pos.ang\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"3\"" \
+                       "$::votable::Field::UNIT \"arcsec\""
+      }
+      flagastrom {
+         set description "Astrometric flag: R for reference, S for science"
+         lappend field "$::votable::Field::UCD \"meta.code\"" \
+                       "$::votable::Field::DATATYPE \"char\"" \
+                       "$::votable::Field::ARRAYSIZE \"2\"" \
+                       "$::votable::Field::WIDTH \"2\""
+      }
+      mag {
+         set description "Apparent magnitude measured by Bddimages"
+         lappend field "$::votable::Field::UCD \"phot.mag\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"13\"" \
+                       "$::votable::Field::PRECISION \"2\"" \
+                       "$::votable::Field::UNIT \"mag\""
+      }
+      err_mag {
+         set description "Uncertainty of the apparent magnitude measured by Bddimages"
+         lappend field "$::votable::Field::UCD \"stat.error;phot.mag\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"3\"" \
+                       "$::votable::Field::UNIT \"mag\""
       }
       default {
          # si $key n'est pas reconnu alors on renvoie des listes vides
