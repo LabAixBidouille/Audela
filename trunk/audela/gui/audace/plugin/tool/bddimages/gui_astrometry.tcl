@@ -25,10 +25,10 @@ namespace eval gui_astrometry {
    proc ::gui_astrometry::charge_list { img_list } {
 
      catch {
-         if { [ info exists $::tools_cata::img_list ] }           {unset ::tools_cata::img_list}
-         if { [ info exists $::tools_cata::nb_img_list ] }        {unset ::tools_cata::nb_img_list}
-         if { [ info exists $::tools_cata::current_image ] }      {unset ::tools_cata::current_image}
-         if { [ info exists $::tools_cata::current_image_name ] } {unset ::tools_cata::current_image_name}
+         if { [ info exists $::tools_astrometry::img_list ] }           {unset ::tools_astrometry::img_list}
+         if { [ info exists $::tools_astrometry::nb_img_list ] }        {unset ::tools_astrometry::nb_img_list}
+         if { [ info exists $::tools_astrometry::current_image ] }      {unset ::tools_astrometry::current_image}
+         if { [ info exists $::tools_astrometry::current_image_name ] } {unset ::tools_astrometry::current_image_name}
       }
       
       set ::tools_astrometry::img_list    [::bddimages_imgcorrection::chrono_sort_img $img_list]
@@ -171,6 +171,16 @@ namespace eval gui_astrometry {
               entry  $voir.factor -relief sunken -textvariable ::gui_astrometry::factor -width 5
               pack   $voir.factor -in $voir -side left -padx 3 -pady 3 -anchor w
 
+
+         #--- Cree un frame pour afficher bouton fermeture
+         set info [frame $frm.info  -borderwidth 0 -cursor arrow -relief groove]
+         pack $info  -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+              label  $info.listimg -text "Image  1 / [llength $::tools_astrometry::img_list] : " -borderwidth 1
+              pack   $info.listimg -in $info -side left -padx 3 -pady 3 -anchor c
+
+
+
          #--- Cree un frame pour afficher bouton fermeture
          set boutonpied [frame $frm.boutonpied  -borderwidth 0 -cursor arrow -relief groove]
          pack $boutonpied  -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
@@ -201,6 +211,8 @@ namespace eval gui_astrometry {
          set ::tools_astrometry::current_listsources [::bddimages_liste::lget $::tools_astrometry::current_image "listsources"]
          set ::tools_astrometry::current_listsources [::manage_source::extract_sources_by_catalog $::tools_astrometry::current_listsources "ASTROID"]
          gren_info "Rolextr=[ ::manage_source::get_nb_sources_rollup $::tools_astrometry::current_listsources]\n"
+
+         #::manage_source::imprim_sources  $::tools_astrometry::current_listsources "ASTROID"
 
          foreach s [lindex $::tools_astrometry::current_listsources 1] {
             foreach cata $s {
