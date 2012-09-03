@@ -6,7 +6,7 @@ proc affich_image { fitsfile } {
    ::console::affiche_resultat "ZOOM=$bddconf(zoom)\n"
 
 
-   }
+}
 
 
 
@@ -24,10 +24,10 @@ proc affich_rond { listsources catalog color width } {
             set cm [lindex $cata 1]
             #gren_info "cm =  $cm \n"
             affich_un_rond [lindex $cm 0] [lindex $cm 1] $color $width
-            }
          }
       }
    }
+}
 
 
 proc affich_un_rond { ra dec color width } {
@@ -49,7 +49,7 @@ proc affich_un_rond { ra dec color width } {
        $audace(hCanvas) create oval [ expr $x - $radius ] [ expr $y - $radius ] [ expr $x + $radius ] [ expr $y + $radius ] \
            -outline $color -tags cadres -width $width
 
-   }
+}
 
 proc affich_un_rond_xy { x y color radius width } {
 
@@ -61,12 +61,31 @@ proc affich_un_rond_xy { x y color radius width } {
         [ expr $y - $radius ] [ expr $x + $radius ] [ expr $y + $radius ] \
         -outline $color -tags cadres -width $width
 
-   }
+}
 
 
- proc efface_rond { args } {
-      global audace conf bddconf
- 
-         #--- Efface les reperes des objets
-         $audace(hCanvas) delete cadres
-      }
+proc efface_rond { args } {
+   global audace conf bddconf
+   #--- Efface les reperes des objets
+   $audace(hCanvas) delete cadres
+}
+
+#
+# affich_vecteur
+# Trace un vecteur
+#
+proc affich_vecteur { ra dec dra ddec factor color } {
+
+   #--- coordonnees du centre du vecteur a tracer
+   set img0_radec [ list $ra $dec ]
+   set img0_xy [ buf$audace(bufNo) radec2xy $img0_radec ]
+   set can0_xy [ ::audace::picture2Canvas $img0_xy ]
+            
+   #--- coordonnees du point final du vecteur
+   set img1_radec [ list [expr [lindex $img0_radec 0]+$dra*$factor/3600.0)] [lindex $img0_radec 1]+$ddec*$factor/3600.0) ]
+   set img1_xy [ buf$audace(bufNo) radec2xy $img1_radec ]
+   set can1_xy [ ::audace::picture2Canvas $img1_xy ]
+   
+   #--- trace du repere
+   $audace(hCanvas) create line [lindex $can0_xy 0] [lindex $can0_xy 1] [lindex $can1_xy 0] [lindex $can1_xy 1] -fill "$color" -tags cadres -width 1.0 -arrow last
+}
