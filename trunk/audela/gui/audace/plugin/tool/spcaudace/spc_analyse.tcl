@@ -1137,11 +1137,11 @@ proc spc_findbiglines2 { args } {
 			set crval1 1
 		}
 		# modification eventuelle de l'image pour avoir un nombre d'echantillons impair
+		set ext _extend
 		if { [ expr $naxis1 % 2 ] == 0 } {
 			set naxis1 [ expr $naxis1 + 1 ]
 			::console::affiche_resultat "nom_fich= $nom_fich\n\n"
 			spc_extend $nom_fich $naxis1
-			set ext _extend
 			set nom_fich $nom_fich$ext
 		}
 		#transformation du fichier fits en fichier 2D
