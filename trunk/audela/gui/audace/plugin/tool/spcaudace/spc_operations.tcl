@@ -471,7 +471,7 @@ proc spc_anim { args } {
          set answer [ catch { exec $spcaudace(rep_spc)/plugins/imwin/convert.exe -delay $delay_images -loop 0 $audace(rep_images)/*.png $audace(rep_images)/${nom_astre}_anim.gif } ]
          ::console::affiche_resultat "$answer\n"
       } else {
-         ::console::affiche_erreur "Vous devez installer l'archive d'ImageMagick Mini et executer la commande DOS :\n $spcaudace(rep_spc)\plugins\imwin\convert.exe -delay $delay_images -loop 0 $audace(rep_images)/*.png $audace(rep_images)/${nom_astre}_anim.gif\n"
+         ::console::affiche_erreur "Vous devez installer l'archive d'ImageMagick Mini et executer la commande DOS :\n $spcaudace(rep_spc)/plugins/imwin/convert.exe -delay $delay_images -loop 0 $audace(rep_images)/*.png $audace(rep_images)/${nom_astre}_anim.gif\n"
          return ""
       }
    }
@@ -2653,7 +2653,7 @@ proc spc_select { args } {
 
        #--- Initialisation à blanc d'un fichier fits :
        set bufn2 [ buf::create ]
-       buf$bufn2 load "$audace(rep_images)/$spectre_lin"
+       buf$bufn2 load "$audace(rep_images)/$spectre_lin$conf(extension,defaut)"
        buf$audace(bufNo) setpixels CLASS_GRAY $len 1 FORMAT_FLOAT COMPRESS_NONE 0
        buf$audace(bufNo) copykwd $bufn2
        buf::delete $bufn2
@@ -2742,7 +2742,7 @@ proc spc_select2 { args } {
        ##buf$audace(bufNo) setpixels CLASS_GRAY $len 1 FORMAT_USHORT COMPRESS_NONE 0
 
        set bufn2 [ buf::create ]
-       buf$bufn2 load "$audace(rep_images)/$fichier"
+       buf$bufn2 load "$audace(rep_images)/$fichier$conf(extension,defaut)"
        buf$audace(bufNo) setpixels CLASS_GRAY $len 1 FORMAT_FLOAT COMPRESS_NONE 0
        buf$audace(bufNo) copykwd $bufn2
        buf$audace(bufNo) setkwd [ list "NAXIS" 1 int "" "" ]
@@ -2971,7 +2971,7 @@ proc spc_echant { args } {
 
 
        #--- Crée le fichier FITS :
-       buf$audace(bufNo) load "$audace(rep_images)/$fichier_modele"
+       buf$audace(bufNo) load "$audace(rep_images)/$fichier_modele$conf(extension,defaut)"
        set newBufNo [ buf::create ]
        buf$newBufNo setpixels CLASS_GRAY $naxis1 1 FORMAT_FLOAT COMPRESS_NONE 0
        buf$newBufNo copykwd $audace(bufNo)
