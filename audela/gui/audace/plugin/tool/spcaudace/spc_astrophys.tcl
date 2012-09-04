@@ -3862,10 +3862,10 @@ if { $flag_oneday==0 } {
             } elseif { $flag_interpol=="o" } {
                ##::console::affiche_prompt "diff_jd=$diff_jd...\njdeb=$jdate ; jfin=$jd_next\n"
                set BufNo_initial [ buf::create ]
-               buf$BufNo_initial load "$audace(rep_images)/$spectre"
+               buf$BufNo_initial load "$audace(rep_images)/$spectre$conf(extension,defaut)"
                set spectre_next [ lindex $listefiles_norma $next_num ]
                set BufNo_next [ buf::create ]
-               buf$BufNo_next load "$audace(rep_images)/$spectre_next"
+               buf$BufNo_next load "$audace(rep_images)/$spectre_next$conf(extension,defaut)"
                set BufNo_spa [ buf::create ]
                set BufNo_spb [ buf::create ]
                set jtime [ expr $jdate+$pas_date_manyday ]
@@ -3950,10 +3950,10 @@ if { $flag_oneday==0 } {
             } elseif { $flag_interpol=="o" } {
                ##::console::affiche_prompt "diff_jd=$diff_jd...\njdeb=$jdate ; jfin=$jd_next\n"
                set BufNo_initial [ buf::create ]
-               buf$BufNo_initial load "$audace(rep_images)/$spectre"
+               buf$BufNo_initial load "$audace(rep_images)/$spectre$conf(extension,defaut)"
                set spectre_next [ lindex $listefiles_norma $next_num ]
                set BufNo_next [ buf::create ]
-               buf$BufNo_next load "$audace(rep_images)/$spectre_next"
+               buf$BufNo_next load "$audace(rep_images)/$spectre_next$conf(extension,defaut)"
                set BufNo_spa [ buf::create ]
                set BufNo_spb [ buf::create ]
                set jtime [ expr $jdate+$pas_date_oneday ]
