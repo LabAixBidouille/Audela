@@ -80,15 +80,16 @@ namespace eval gui_astrometry {
 # "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" 
 # "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" 
 # "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "flagastrom" 
-# "mag" "err_mag" 
+# "mag" "err_mag" "name"
    proc ::gui_astrometry::see_residus {  } {
 
+      set ::tools_astrometry::id_img 0
       foreach ::tools_astrometry::current_image $::tools_astrometry::img_list {
          set tabkey      [::bddimages_liste::lget $::tools_astrometry::current_image "tabkey"]
 
          set ::tools_astrometry::current_listsources [::bddimages_liste::lget $::tools_astrometry::current_image "listsources"]
          set ::tools_astrometry::current_listsources [::manage_source::extract_sources_by_catalog $::tools_astrometry::current_listsources "ASTROID"]
-         gren_info "Rolextr=[ ::manage_source::get_nb_sources_rollup $::tools_astrometry::current_listsources]\n"
+         #gren_info "Rolextr=[ ::manage_source::get_nb_sources_rollup $::tools_astrometry::current_listsources]\n"
 
          #::manage_source::imprim_sources  $::tools_astrometry::current_listsources "ASTROID"
 
@@ -122,11 +123,12 @@ namespace eval gui_astrometry {
                   if {$flagastrom=="S"} { set color "green"}
                   if {$flagastrom=="R"} { set color "yellow"}
                   affich_vecteur $ra $dec $res_ra $res_dec $::gui_astrometry::factor $color
-                  gren_info "vect! $ra $dec $res_ra $res_dec $::gui_astrometry::factor $color\n"
+                  #gren_info "vect! $ra $dec $res_ra $res_dec $::gui_astrometry::factor $color\n"
                }
             }
          }
          
+         incr ::tools_astrometry::id_img
       }
 
    

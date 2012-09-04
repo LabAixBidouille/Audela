@@ -84,7 +84,7 @@ namespace eval ::analyse_source {
       set fieldsastroid [list "ASTROID" {} [list "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" \
                                            "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" \
                                            "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "flagastrom" \
-                                           "mag" "err_mag" ] ]
+                                           "mag" "err_mag" "name"] ]
 
       lappend fields $fieldsastroid
       set newsources {}
@@ -98,6 +98,7 @@ namespace eval ::analyse_source {
          foreach cata $s {
             incr cptc
             if {$log} {gren_info "cata : $cptc [lindex $cata 0]\n"}
+            if { [lindex $cata 0]=="ASTROID" } { continue }
 
             if { [lindex $cata 0]=="IMG" } {
 
@@ -134,6 +135,7 @@ namespace eval ::analyse_source {
                      #affich_un_rond $ra $dec green 5
                      lappend results $rdiff
                      for {set i 0} {$i<9} {incr i} { lappend results 0 }
+                     lappend results ""
                      set ns $s
 
                      lappend ns [list "ASTROID" {} $results]
