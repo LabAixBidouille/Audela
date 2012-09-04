@@ -129,8 +129,6 @@ variable id_img
          set ::tools_astrometry::current_listsources [::analyse_source::psf $::tools_astrometry::current_listsources $::tools_astrometry::treshold $::tools_astrometry::delta]
          gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $::tools_astrometry::current_listsources ]\n"
 
-         ::priam::create_file_oldformat $tag $::tools_astrometry::nb_img $::tools_astrometry::current_listsources $::tools_astrometry::science $::tools_astrometry::reference 
-
          # On reinsere dans img_list les resultats qui se trouvent dans list_source
          if {[::bddimages_liste::lexist $::tools_astrometry::current_image "listsources" ]==0} {
             gren_info "Listesource n existe pas\n"
@@ -139,6 +137,9 @@ variable id_img
             gren_info "Listesource existe\n"
             set ::tools_astrometry::current_image [::bddimages_liste::lupdate $::tools_astrometry::current_image "listsources" $::tools_astrometry::current_listsources ]
          }
+
+         ::priam::create_file_oldformat $tag $::tools_astrometry::nb_img $::tools_astrometry::current_image $::tools_astrometry::science $::tools_astrometry::reference 
+
          set ::tools_astrometry::img_list [lreplace $::tools_astrometry::img_list $::tools_astrometry::id_img $::tools_astrometry::id_img $::tools_astrometry::current_image]
 
          incr ::tools_astrometry::id_img
@@ -455,39 +456,50 @@ variable id_img
       gren_info "FORMAT:$form\n"
       
       # Fichier au format TXT 
+      
       if {$form=="TXT"} {
-         set fileres [ file join $audace(rep_travail) priam.txt ]
-         set chan0 [open $fileres w]
+
+         if {[info exists tag]} {unset tag}
          foreach ::tools_astrometry::current_image $::tools_astrometry::img_list {
 
-            gren_info "IMG: $::tools_astrometry::current_image\n"
-
-            set tabkey      [::bddimages_liste::lget $::tools_astrometry::current_image "tabkey"]
-            set date        [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
-            set exposure    [lindex [::bddimages_liste::lget $tabkey EXPOSURE ] 1]
+            set idbddimg [::bddimages_liste::lget $::tools_astrometry::current_image "idbddimg"]
+            set commundatejj [::bddimages_liste::lget $::tools_astrometry::current_image "commundatejj"]
             set ::tools_astrometry::current_listsources [::bddimages_liste::lget $::tools_astrometry::current_image "listsources"]
-            set datem $date
 
             foreach s [lindex $::tools_astrometry::current_listsources 1] {
                foreach cata $s {
-                  if {[lindex $cata 0] == "ASTROID"} {
+                  set astroid [lindex $cata 0]
+                  if {$astroid == "ASTROID"} {
+                     set flagastrom [string trim [lindex [::bddimages_liste::lget $astroid "flagastrom"] 1] ]
                      set name [::manage_source::naming $s $::tools_astrometry::science]
-                     set flagastrom [string trim [lindex [::bddimages_liste::lget [lindex $cata 0] "flagastrom"]   1] ]
-                     if {$flagastrom=="S"} {
-                        set ra      [string trim [lindex [::bddimages_liste::lget [lindex $cata 0] "ra"]   1] ]
-                        set dec     [string trim [lindex [::bddimages_liste::lget [lindex $cata 0] "dec"]   1] ]
-                        set res_ra  [string trim [lindex [::bddimages_liste::lget [lindex $cata 0] "res_ra"]   1] ]
-                        set res_dec [string trim [lindex [::bddimages_liste::lget [lindex $cata 0] "res_dec"]   1] ]
-                        set omc_ra  [string trim [lindex [::bddimages_liste::lget [lindex $cata 0] "omc_ra"]   1] ]
-                        set omc_dec [string trim [lindex [::bddimages_liste::lget [lindex $cata 0] "omc_dec"]   1] ]
-                        puts $chan0 "$name $datem $ra $dec $res_ra $res_dec $omc_ra $omc_dec"
+                     set fileres "PRIAM_$name.csv"
+                     set fileres [ file join $audace(rep_travail) $fileres ]
+                     if {[info exists tag($name)]} {
+                        set chan0 [open $fileres a+]
+                     } else {
+                        set tag($name) "ok"
+                        set chan0 [open $fileres w]
                      }
+                     set ra      [string trim [lindex [::bddimages_liste::lget $astroid "ra"]      1] ]
+                     set dec     [string trim [lindex [::bddimages_liste::lget $astroid "dec"]     1] ]
+                     set res_ra  [string trim [lindex [::bddimages_liste::lget $astroid "res_ra"]  1] ]
+                     set res_dec [string trim [lindex [::bddimages_liste::lget $astroid "res_dec"] 1] ]
+                     set omc_ra  [string trim [lindex [::bddimages_liste::lget $astroid "omc_ra"]  1] ]
+                     set omc_dec [string trim [lindex [::bddimages_liste::lget $astroid "omc_dec"] 1] ]
+                     set pvalue  [string trim [lindex [::bddimages_liste::lget $astroid "pvalue"]  1] ]
+                     puts $chan0 "$idbddimg $commundatejj $ra $dec $res_ra $res_dec $omc_ra $omc_dec"
+                     close $chan0
                   }
                }
             }
+
          }
-         close $chan0
+
       }
+
+
+
+
 
       # Fichier au format MPC 
       if {$form=="MPC"} {
@@ -496,7 +508,6 @@ variable id_img
       # Fichier au format CATA 
       if {$form=="CATA"} {
 
-##############
          set fileres [ file join $audace(rep_travail) priam.txt ]
          set chan0 [open $fileres w]
          foreach ::tools_astrometry::current_image $::tools_astrometry::img_list {
@@ -531,8 +542,6 @@ variable id_img
                set ::tools_astrometry::current_image [::bddimages_liste::lupdate $::tools_astrometry::current_image "cataexist" 1]
             }
          }
-##############
-
 
       }
    
