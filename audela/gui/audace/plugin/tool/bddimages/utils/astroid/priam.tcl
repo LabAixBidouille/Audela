@@ -119,12 +119,12 @@ proc ::priam::create_file_oldformat { tag nb listsources science stars } {
       puts $chan0 "#"
       puts $chan0 "#> orientation: $axes"
       puts $chan0 "#"
-      puts $chan0 "!$imagefilename"
+      #puts $chan0 "!$imagefilename"
       puts $chan0 "$dateobsjd $temperature $pression  $humidity $bandwith"
    }
    if {$tag=="add"} { 
       set chan0 [open $filemes a+] 
-      puts $chan0 "!$imagefilename"
+      #puts $chan0 "!$imagefilename"
       puts $chan0 "$dateobsjd $temperature $pression  $humidity $bandwith"
    }
     
