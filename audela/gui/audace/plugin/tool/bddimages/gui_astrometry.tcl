@@ -280,11 +280,6 @@ namespace eval gui_astrometry {
          set boutonpied [frame $frm.boutonpied  -borderwidth 0 -cursor arrow -relief groove]
          pack $boutonpied  -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-              set ::gui_astrometry::gui_fermer [button $boutonpied.fermer -text "Fermer" -borderwidth 2 -takefocus 1 \
-                 -command "::gui_astrometry::fermer"]
-              pack $boutonpied.fermer -side left -anchor e \
-                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
               set ::gui_astrometry::gui_init_priam [button $boutonpied.init_priam -text "Init" -borderwidth 2 -takefocus 1 \
                  -command "::gui_astrometry::init_priam"]
               pack $boutonpied.init_priam -side left -anchor e \
@@ -299,6 +294,15 @@ namespace eval gui_astrometry {
                  -command "::gui_astrometry::xtrip"]
               pack $boutonpied.xtrip -side left -anchor e \
                  -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+              set ::gui_astrometry::gui_fermer [button $boutonpied.fermer -text "Fermer" -borderwidth 2 -takefocus 1 \
+                 -command "::gui_astrometry::fermer"]
+              pack $boutonpied.fermer -side left -anchor e \
+                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+
+      ::tools_astrometry::load_all_cata
+
    }
    
 

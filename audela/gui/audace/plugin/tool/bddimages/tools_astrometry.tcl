@@ -46,9 +46,7 @@ variable id_img
 
 
 
-
-
-   proc ::tools_astrometry::init_priam {  } {
+   proc ::tools_astrometry::load_all_cata {  } {
 
       global bddconf
 
@@ -104,9 +102,50 @@ variable id_img
       set ::tools_astrometry::nb_img [llength $::tools_astrometry::img_list]
       gren_info "nb img = $::tools_astrometry::nb_img\n"
 
-
    }
 
+
+
+   proc ::tools_astrometry::init_priam {  } {
+
+     global bddconf
+
+      set ::tools_astrometry::id_img 0
+      foreach ::tools_astrometry::current_image $::tools_astrometry::img_list {
+ 
+         if {$::tools_astrometry::id_img==0} {
+            set tag "new"
+         } else {
+            set tag "add"
+         }
+
+         set dirfilename [::bddimages_liste::lget $::tools_astrometry::current_image dirfilename]
+         set filename    [::bddimages_liste::lget $::tools_astrometry::current_image filename]
+         set file        [file join $bddconf(dirbase) $dirfilename $filename]
+         buf$bddconf(bufno) load $file
+         #::confVisu::setFileName $::audace(visuNo) $file
+         #::audace::autovisu $::audace(visuNo)
+         set ::tools_astrometry::current_listsources [::bddimages_liste::lget $::tools_astrometry::current_image "listsources"]
+         set ::tools_astrometry::current_listsources [::analyse_source::psf $::tools_astrometry::current_listsources $::tools_astrometry::treshold $::tools_astrometry::delta]
+         gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $::tools_astrometry::current_listsources ]\n"
+
+         ::priam::create_file_oldformat $tag $::tools_astrometry::nb_img $::tools_astrometry::current_listsources $::tools_astrometry::science $::tools_astrometry::reference 
+
+         # On reinsere dans img_list les resultats qui se trouvent dans list_source
+         if {[::bddimages_liste::lexist $::tools_astrometry::current_image "listsources" ]==0} {
+            gren_info "Listesource n existe pas\n"
+            set ::tools_astrometry::current_image [::bddimages_liste::ladd $::tools_astrometry::current_image "listsources" $::tools_astrometry::current_listsources ]
+         } else {
+            gren_info "Listesource existe\n"
+            set ::tools_astrometry::current_image [::bddimages_liste::lupdate $::tools_astrometry::current_image "listsources" $::tools_astrometry::current_listsources ]
+         }
+         set ::tools_astrometry::img_list [lreplace $::tools_astrometry::img_list $::tools_astrometry::id_img $::tools_astrometry::id_img $::tools_astrometry::current_image]
+
+         incr ::tools_astrometry::id_img
+
+      }
+
+   }
 
 
 
@@ -136,47 +175,6 @@ variable id_img
    proc ::tools_astrometry::launch_priam {  } {
        
       global bddconf
-
-      set ::tools_astrometry::id_img 0
-      foreach ::tools_astrometry::current_image $::tools_astrometry::img_list {
- 
-         if {$::tools_astrometry::id_img==0} {
-            set tag "new"
-         } else {
-            set tag "add"
-         }
-
-         set dirfilename [::bddimages_liste::lget $::tools_astrometry::current_image dirfilename]
-         set filename    [::bddimages_liste::lget $::tools_astrometry::current_image filename]
-         set file        [file join $bddconf(dirbase) $dirfilename $filename]
-         buf$bddconf(bufno) load $file
-         #::confVisu::setFileName $::audace(visuNo) $file
-         #::audace::autovisu $::audace(visuNo)
-         
-         set tabkey      [::bddimages_liste::lget $::tools_astrometry::current_image "tabkey"]
-         set ::tools_astrometry::current_listsources [::bddimages_liste::lget $::tools_astrometry::current_image "listsources"]
-         set ::tools_astrometry::current_listsources [::analyse_source::psf $::tools_astrometry::current_listsources $::tools_astrometry::treshold $::tools_astrometry::delta]
-
-         ::priam::create_file_oldformat $tag $::tools_astrometry::nb_img $::tools_astrometry::current_listsources $::tools_astrometry::science $::tools_astrometry::reference 
-         gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $::tools_astrometry::current_listsources ]\n"
-
-         if {[::bddimages_liste::lexist $::tools_astrometry::current_image "listsources" ]==0} {
-            gren_info "Listesource n existe pas\n"
-            set ::tools_astrometry::current_image [::bddimages_liste::ladd $::tools_astrometry::current_image "listsources" $::tools_astrometry::current_listsources ]
-         } else {
-            gren_info "Listesource existe\n"
-            set ::tools_astrometry::current_image [::bddimages_liste::lupdate $::tools_astrometry::current_image "listsources" $::tools_astrometry::current_listsources ]
-         }
-         
-         set ::tools_astrometry::img_list [lreplace $::tools_astrometry::img_list $::tools_astrometry::id_img $::tools_astrometry::id_img $::tools_astrometry::current_image]
-
-         incr ::tools_astrometry::id_img
-      }
-
-      gren_info "nb img = [llength $::tools_astrometry::img_list] $::tools_astrometry::id_img\n"
-
-      #set cmdpriam "priam -lang en -format priam -m 1 -fc cnd.obs -fm science.mes -r ./ -fcat local.cat -rcat ./ -s fichier:priam -te 1"
-      #set err [catch {exec export LD_LIBRARY_PATH=/usr/local/lib:/opt/intel/lib/intel64 |& $cmdpriam} msg ]
       
       #set err [catch {exec pwd} msg]
       #gren_info "launch_priam:  PWD : <$msg>\n"
@@ -188,27 +186,28 @@ variable id_img
       }   
       gren_info "launch_priam:  MSG : <$msg>\n"
       
-    set tab [split $msg "\0"]
-    set pass "no"
-    foreach l $tab {
-       #gren_info "ligne=$l n"
-       set exs [string first "writing results in the file:" $l]
-       if {$exs>=0} {
-          set r [string last "writing results in the file:" $l ]
-          #gren_info "r=$r ***\n"
-          set file [string trim [string range $l [expr 29+$r] end] ]
-          #gren_info "file=$file\n"
-          set pass "yes"
-       }
-       
-    }
+      set tab [split $msg "\0"]
+      set pass "no"
+      foreach l $tab {
+         #gren_info "ligne=$l n"
+         set exs [string first "writing results in the file:" $l]
+         if {$exs>=0} {
+            set r [string last "writing results in the file:" $l ]
+            #gren_info "r=$r ***\n"
+            set file [string trim [string range $l [expr 29+$r] end] ]
+            #gren_info "file=$file\n"
+            set pass "yes"
+         }
+
+      }
     
-    if {$pass=="yes"} {
-      gren_info "PRIAMRESULT: =$file\n"
-      return -code 0 $file
-    } else {
-      return -code -1 $msg
-    }
+      if {$pass=="yes"} {
+        gren_info "PRIAMRESULT: =$file\n"
+        return -code 0 $file
+      } else {
+        return -code -1 $msg
+      }
+
    }
    
 
@@ -320,7 +319,6 @@ variable id_img
          
          set ::tools_astrometry::current_listsources [::bddimages_liste::lget $::tools_astrometry::current_image "listsources"]
 
-
          set fields [lindex $::tools_astrometry::current_listsources 0]
          lappend fields $fieldsastroid
 
@@ -411,8 +409,6 @@ variable id_img
          set ::tools_astrometry::img_list [lreplace $::tools_astrometry::img_list $::tools_astrometry::id_img $::tools_astrometry::id_img $::tools_astrometry::current_image]
          incr ::tools_astrometry::id_img
 
-
-
       }
 
 
@@ -423,8 +419,6 @@ variable id_img
    # Ecriture des resultats dans un fichier 
       
 
-       
-        
    }
    
    
