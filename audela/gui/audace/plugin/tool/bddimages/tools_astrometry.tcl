@@ -126,15 +126,37 @@ variable id_img
          #::confVisu::setFileName $::audace(visuNo) $file
          #::audace::autovisu $::audace(visuNo)
          set ::tools_astrometry::current_listsources [::bddimages_liste::lget $::tools_astrometry::current_image "listsources"]
+
+            set sources [lindex $::tools_astrometry::current_listsources 1]
+            foreach s $sources {
+
+               foreach cata $s {
+                  if {[lindex $cata 0] == "ASTROID"} {
+                     gren_info "s1=[lindex $cata 2]\n"
+                  }
+               }
+            }
+
+
          set ::tools_astrometry::current_listsources [::analyse_source::psf $::tools_astrometry::current_listsources $::tools_astrometry::treshold $::tools_astrometry::delta]
          gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $::tools_astrometry::current_listsources ]\n"
 
+            set sources [lindex $::tools_astrometry::current_listsources 1]
+            foreach s $sources {
+
+               foreach cata $s {
+                  if {[lindex $cata 0] == "ASTROID"} {
+                     gren_info "s2=[lindex $cata 2]\n"
+                  }
+               }
+            }
+
          # On reinsere dans img_list les resultats qui se trouvent dans list_source
          if {[::bddimages_liste::lexist $::tools_astrometry::current_image "listsources" ]==0} {
-            gren_info "Listesource n existe pas\n"
+            #gren_info "Listesource n existe pas\n"
             set ::tools_astrometry::current_image [::bddimages_liste::ladd $::tools_astrometry::current_image "listsources" $::tools_astrometry::current_listsources ]
          } else {
-            gren_info "Listesource existe\n"
+            #gren_info "Listesource existe\n"
             set ::tools_astrometry::current_image [::bddimages_liste::lupdate $::tools_astrometry::current_image "listsources" $::tools_astrometry::current_listsources ]
          }
 
@@ -241,10 +263,10 @@ variable id_img
    
       set chan [open $file r]
 
-      set astrom(kwds)     {RA                       DEC                       CRPIX1        CRPIX2        CRVAL1          CRVAL2           CDELT1    CDELT2    CROTA2                    CD1_1         CD1_2         CD2_1         CD2_2         FOCLEN         PIXSIZE1                        PIXSIZE2}
-      set astrom(units)    {deg                      deg                       pixel         pixel         deg             deg              deg/pixel deg/pixel deg                       deg/pixel     deg/pixel     deg/pixel     deg/pixel     m              um                              um}
-      set astrom(types)    {double                   double                    double        double        double          double           double    double    double                    double        double        double        double        double         double                          double}
-      set astrom(comments) {"RA expected for CRPIX1" "DEC expected for CRPIX2" "X ref pixel" "Y ref pixel" "RA for CRPIX1" "DEC for CRPIX2" "X scale" "Y scale" "Position angle of North" "Matrix CD11" "Matrix CD12" "Matrix CD21" "Matrix CD22" "Focal length" "X pixel size binning included" "Y pixel size binning included"}
+      set astrom(kwds)     {RA                       DEC                       CRPIX1        CRPIX2        CRVAL1          CRVAL2           CDELT1    CDELT2    CROTA2                    CD1_1         CD1_2         CD2_1         CD2_2         FOCLEN         PIXSIZE1                        PIXSIZE2                        CATA_PVALUE}
+      set astrom(units)    {deg                      deg                       pixel         pixel         deg             deg              deg/pixel deg/pixel deg                       deg/pixel     deg/pixel     deg/pixel     deg/pixel     m              um                              um                              percent}
+      set astrom(types)    {double                   double                    double        double        double          double           double    double    double                    double        double        double        double        double         double                          double                          double}
+      set astrom(comments) {"RA expected for CRPIX1" "DEC expected for CRPIX2" "X ref pixel" "Y ref pixel" "RA for CRPIX1" "DEC for CRPIX2" "X scale" "Y scale" "Position angle of North" "Matrix CD11" "Matrix CD12" "Matrix CD21" "Matrix CD22" "Focal length" "X pixel size binning included" "Y pixel size binning included" "Pvalue of astrometric reduction"}
       set n [llength $astrom(kwds)]
       
       set ::tools_astrometry::id_img -1
@@ -258,7 +280,7 @@ variable id_img
          set val [lindex $a 1]
          #gren_info "$key=$val\n"
           
-         if {$key=="FILENAME"} {
+         if {$key=="BEGIN"} {
             # Debut image
             set filename $val
             incr ::tools_astrometry::id_img
@@ -272,6 +294,10 @@ variable id_img
             }
 
          }
+
+         if {$key=="END"} {
+               #buf$::audace(bufNo) setkwd [list $kwd $val $type $unit $comment]
+         }
          
          for {set k 0 } { $k<$n } {incr k} {
             set kwd [lindex $astrom(kwds) $k]
@@ -281,7 +307,6 @@ variable id_img
                
                set comment [lindex $astrom(comments) $k]
                #gren_info "KWD: [lindex [buf$::audace(bufNo) getkwd  $kwd] 1] == $val \n"
-               #buf$::audace(bufNo) setkwd [list $kwd $val $type $unit $comment]
             }
          }
          
@@ -295,7 +320,7 @@ variable id_img
             set sour  [lindex $val 1]
             lappend cataref($::tools_astrometry::id_img) [list $name $sour]
          }
-         
+                  
       }
       close $chan
 
@@ -313,7 +338,7 @@ variable id_img
       set fieldsastroid [list "ASTROID" {} [list "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" \
                                            "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" \
                                            "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "flagastrom" \
-                                           "mag" "err_mag" ] ]
+                                           "mag" "err_mag" "name"] ]
                                            
       set ::tools_astrometry::id_img 0
       foreach ::tools_astrometry::current_image $::tools_astrometry::img_list {
@@ -341,13 +366,14 @@ variable id_img
                         set dec     [lindex $val 1]
                         set res_ra  [lindex $val 2]
                         set res_dec [lindex $val 3]
-                        set omc_ra  [expr $ra - [lindex [lindex $cata 1] 0]]
-                        set omc_dec [expr $dec - [lindex [lindex $cata 1] 1]]
+                        set omc_ra  [expr ($ra - [lindex [lindex $cata 1] 0])*3600.0]
+                        set omc_dec [expr ($dec - [lindex [lindex $cata 1] 1])*3600.0]
                         set flag    "S"
 
-                        gren_info "NAME=$name $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag\n"
-                        set s [::tools_astrometry::set_astrom_to_source $s $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag]
-                        gren_info "s=$s\n"
+                        #gren_info "NAME=$name $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag\n"
+                        gren_info "s1=$s\n"
+                        set s [::tools_astrometry::set_astrom_to_source $s $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag $name]
+                        gren_info "s2=$s\n"
                         set sources [lreplace $sources $cpt $cpt $s]
                         set ::tools_astrometry::current_listsources [list $fields $sources]
 
@@ -361,13 +387,11 @@ variable id_img
             }
 
          }
-         gren_info "SRolref=[ ::manage_source::get_nb_sources_rollup $::tools_astrometry::current_listsources]\n"
+         #gren_info "SRolref=[ ::manage_source::get_nb_sources_rollup $::tools_astrometry::current_listsources]\n"
 
          foreach l $cataref($::tools_astrometry::id_img) {
-            gren_info "cataref l : $l\n"
             set n [lindex $l 0]
             set val [lindex $l 1]
-            gren_info "cataref : $n $val\n"
             set cpt 0
             set sources [lindex $::tools_astrometry::current_listsources 1]
             foreach s $sources {
@@ -375,19 +399,19 @@ variable id_img
                   #gren_info "CATA = [lindex $cata 0]\n"
                   if {[lindex $cata 0] == $::tools_astrometry::reference} {
                      set name [::manage_source::naming $s $::tools_astrometry::reference]
-                     gren_info "NAME=$name\n"                     
+                     #gren_info "NAME=$name\n"                     
                      if {$n==$name} {
                         #gren_info "NAME=$name\n"                     
                         set ra      [lindex [lindex $cata 1] 0]
                         set dec     [lindex [lindex $cata 1] 1]
                         set res_ra  [lindex $val 0]
                         set res_dec [lindex $val 1]
-                        set omc_ra  [expr $ra - [lindex [lindex $cata 1] 0]]
-                        set omc_dec [expr $dec - [lindex [lindex $cata 1] 1]]
+                        set omc_ra  [expr ($ra - [lindex [lindex $cata 1] 0])*3600.0]
+                        set omc_dec [expr ($dec - [lindex [lindex $cata 1] 1])*3600.0]
                         set flag    "R"
 
-                        gren_info "NAME=$name $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag\n"                     
-                        set s [::tools_astrometry::set_astrom_to_source $s $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag]
+                        #gren_info "NAME=$name $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag\n"                     
+                        set s [::tools_astrometry::set_astrom_to_source $s $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag $name]
                         set sources [lreplace $sources $cpt $cpt $s]
                         set ::tools_astrometry::current_listsources [list $fields $sources]
                      }
@@ -422,12 +446,12 @@ variable id_img
 
    }
    
-   
+# ASTROID --   
 # "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" 
 # "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" 
 # "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "flagastrom" 
-# "mag" "err_mag" 
-   proc ::tools_astrometry::set_astrom_to_source { s ra dec res_ra res_dec omc_ra omc_dec flag } {
+# "mag" "err_mag" "name"
+   proc ::tools_astrometry::set_astrom_to_source { s ra dec res_ra res_dec omc_ra omc_dec flag name} {
    
       set pass "no"
       
@@ -437,6 +461,8 @@ variable id_img
             set pass "yes"
             set astroid [lindex $cata 2]
             set astroid [lreplace $astroid 14 20 $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag]
+            set astroid [lreplace $astroid 23 23 $name]
+            
             lappend stmp [list "ASTROID" {} $astroid]
          } else {
             lappend stmp $cata
@@ -449,6 +475,17 @@ variable id_img
    
    }
    
+
+
+
+
+
+# ASTROID --   
+# "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" 
+# "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" 
+# "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "flagastrom" 
+# "mag" "err_mag" "name" 
+
    proc ::tools_astrometry::save { form } {
 
       global bddconf audace
@@ -460,18 +497,56 @@ variable id_img
       if {$form=="TXT"} {
 
          if {[info exists tag]} {unset tag}
+         set ::tools_astrometry::id_img 0
          foreach ::tools_astrometry::current_image $::tools_astrometry::img_list {
 
             set idbddimg [::bddimages_liste::lget $::tools_astrometry::current_image "idbddimg"]
             set commundatejj [::bddimages_liste::lget $::tools_astrometry::current_image "commundatejj"]
             set ::tools_astrometry::current_listsources [::bddimages_liste::lget $::tools_astrometry::current_image "listsources"]
+            set tabkey      [::bddimages_liste::lget $::tools_astrometry::current_image "tabkey"]
+            set pvalue [string trim [lindex [::bddimages_liste::lget $tabkey "CATA_PVALUE"] 1] ]
+            set pvalue 0
 
             foreach s [lindex $::tools_astrometry::current_listsources 1] {
                foreach cata $s {
-                  set astroid [lindex $cata 0]
-                  if {$astroid == "ASTROID"} {
-                     set flagastrom [string trim [lindex [::bddimages_liste::lget $astroid "flagastrom"] 1] ]
-                     set name [::manage_source::naming $s $::tools_astrometry::science]
+
+                  if {[lindex $cata 0] == "ASTROID"} {
+                     set astroid [lindex $cata 2]
+
+# ASTROID --   
+# ASTROID --   
+# "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" 
+# "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" 
+# "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "flagastrom" 
+# "mag" "err_mag" "name" 
+
+                     set xsm         [lindex $astroid  0]  
+                     set ysm         [lindex $astroid  1]  
+                     set fwhmx       [lindex $astroid  2]  
+                     set fwhmy       [lindex $astroid  3]  
+                     set fwhm        [lindex $astroid  4]  
+                     set fluxintegre [lindex $astroid  5]  
+                     set errflux     [lindex $astroid  6]  
+                     set pixmax      [lindex $astroid  7]  
+                     set intensite   [lindex $astroid  8]  
+                     set sigmafond   [lindex $astroid  9]  
+                     set snint       [lindex $astroid 10]  
+                     set snpx        [lindex $astroid 11]  
+                     set delta       [lindex $astroid 12]  
+                     set rdiff       [lindex $astroid 13]  
+                     set ra          [lindex $astroid 14]  
+                     set dec         [lindex $astroid 15]   
+                     set res_ra      [lindex $astroid 16]  
+                     set res_dec     [lindex $astroid 17]  
+                     set omc_ra      [lindex $astroid 18]   
+                     set omc_dec     [lindex $astroid 19]  
+                     set flagastrom  [lindex $astroid 20]  
+                     set mag         [lindex $astroid 21]  
+                     set err_mag     [lindex $astroid 22]  
+                     set name        [lindex $astroid 23]  
+
+                     if {$flagastrom!="S"&&$flagastrom!="R"} {break}
+                     gren_info "$idbddimg name:$name $ra $dec\n"
                      set fileres "PRIAM_$name.csv"
                      set fileres [ file join $audace(rep_travail) $fileres ]
                      if {[info exists tag($name)]} {
@@ -479,21 +554,21 @@ variable id_img
                      } else {
                         set tag($name) "ok"
                         set chan0 [open $fileres w]
+                        puts $chan0 "idbddimg,commundatejj,ra,dec,res_ra,res_dec,omc_ra,omc_dec,name,pvalue,xsm,ysm,fwhmx,fwhmy,fwhm,fluxintegre,errflux,pixmax,intensite,sigmafond,snint,snpx,delta,rdiff"
                      }
-                     set ra      [string trim [lindex [::bddimages_liste::lget $astroid "ra"]      1] ]
-                     set dec     [string trim [lindex [::bddimages_liste::lget $astroid "dec"]     1] ]
-                     set res_ra  [string trim [lindex [::bddimages_liste::lget $astroid "res_ra"]  1] ]
-                     set res_dec [string trim [lindex [::bddimages_liste::lget $astroid "res_dec"] 1] ]
-                     set omc_ra  [string trim [lindex [::bddimages_liste::lget $astroid "omc_ra"]  1] ]
-                     set omc_dec [string trim [lindex [::bddimages_liste::lget $astroid "omc_dec"] 1] ]
-                     set pvalue  [string trim [lindex [::bddimages_liste::lget $astroid "pvalue"]  1] ]
-                     puts $chan0 "$idbddimg $commundatejj $ra $dec $res_ra $res_dec $omc_ra $omc_dec"
+                     puts $chan0 "$idbddimg,$commundatejj,$ra,$dec,$res_ra,$res_dec,$omc_ra,$omc_dec,$name,$pvalue,$xsm,$ysm,$fwhmx,$fwhmy,$fwhm,$fluxintegre,$errflux,$pixmax,$intensite,$sigmafond,$snint,$snpx,$delta,$rdiff"
                      close $chan0
+                     break
                   }
+                  
                }
+               
             }
 
+            incr ::tools_astrometry::id_img
          }
+         
+         gren_info "s $s\n"
 
       }
 

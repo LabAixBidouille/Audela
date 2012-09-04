@@ -102,9 +102,9 @@ namespace eval ::manage_source {
    proc ::manage_source::extract_sources_by_catalog { listsources catadem } {
 
        set fields  [lindex $listsources 0]
-       foreach s $fields { 
-             ::console::affiche_resultat "$s\n"
-             }
+       #foreach s $fields { 
+       #      ::console::affiche_resultat "$s\n"
+       #}
        set newsources {}
        set sources [lindex $listsources 1]
        foreach s $sources {
