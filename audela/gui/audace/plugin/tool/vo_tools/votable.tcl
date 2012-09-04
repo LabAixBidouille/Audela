@@ -1858,12 +1858,36 @@ proc ::votable::getFieldFromKey_ASTROID { key } {
                        "$::votable::Field::UNIT \"ADU\""
       }
       snint {
+         set description "TBD"
+         lappend field "$::votable::Field::UCD \"phot.count\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"1\"" \
+                       "$::votable::Field::UNIT \"ADU\""
       }
       snpx {
+         set description "TBD"
+         lappend field "$::votable::Field::UCD \"phot.count\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"1\"" \
+                       "$::votable::Field::UNIT \"ADU\""
       }
       delta {
+         set description "TBD"
+         lappend field "$::votable::Field::UCD \"phot.count\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"1\"" \
+                       "$::votable::Field::UNIT \"ADU\""
       }
       rdiff {
+         set description "TBD"
+         lappend field "$::votable::Field::UCD \"phot.count\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"1\"" \
+                       "$::votable::Field::UNIT \"ADU\""
       }
       ra -
       dec {
@@ -1929,6 +1953,14 @@ proc ::votable::getFieldFromKey_ASTROID { key } {
                        "$::votable::Field::WIDTH \"8\"" \
                        "$::votable::Field::PRECISION \"3\"" \
                        "$::votable::Field::UNIT \"mag\""
+      }
+      name {
+         set description "Source name or designation"
+         set ucd "meta.id;meta.main"
+         lappend field "$::votable::Field::UCD \"$ucd\"" \
+                       "$::votable::Field::DATATYPE \"char\"" \
+                       "$::votable::Field::ARRAYSIZE \"32\"" \
+                       "$::votable::Field::WIDTH \"32\""
       }
       default {
          # si $key n'est pas reconnu alors on renvoie des listes vides
