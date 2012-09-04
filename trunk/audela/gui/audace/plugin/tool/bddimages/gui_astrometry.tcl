@@ -38,6 +38,12 @@ namespace eval gui_astrometry {
 
    }
 
+
+
+
+
+
+
    proc ::gui_astrometry::fermer {  } {
 
       set conf(bddimages,cata,ifortlib) $::tools_astrometry::ifortlib
@@ -49,11 +55,93 @@ namespace eval gui_astrometry {
 
    }
 
-   proc ::gui_astrometry::go {  } {
 
-      ::tools_astrometry::go
+
+
+   proc ::gui_astrometry::go_priam {  } {
+
+      ::tools_astrometry::go_priam
 
    }
+
+
+
+   proc ::gui_astrometry::init_priam {  } {
+
+      ::tools_astrometry::init_priam
+
+   }
+
+
+
+
+
+
+# "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" 
+# "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" 
+# "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "flagastrom" 
+# "mag" "err_mag" 
+   proc ::gui_astrometry::see_residus {  } {
+
+      foreach ::tools_astrometry::current_image $::tools_astrometry::img_list {
+         set tabkey      [::bddimages_liste::lget $::tools_astrometry::current_image "tabkey"]
+
+         set ::tools_astrometry::current_listsources [::bddimages_liste::lget $::tools_astrometry::current_image "listsources"]
+         set ::tools_astrometry::current_listsources [::manage_source::extract_sources_by_catalog $::tools_astrometry::current_listsources "ASTROID"]
+         gren_info "Rolextr=[ ::manage_source::get_nb_sources_rollup $::tools_astrometry::current_listsources]\n"
+
+         #::manage_source::imprim_sources  $::tools_astrometry::current_listsources "ASTROID"
+
+         foreach s [lindex $::tools_astrometry::current_listsources 1] {
+            foreach cata $s {
+            
+               if {[lindex $cata 0] == $::tools_astrometry::science} {
+                  set comm [lindex $cata 1]
+                  set ra      [lindex $comm 0]  
+                  set dec     [lindex $comm 1]
+                  affich_un_rond $ra $dec "green" 1
+               }
+               if {[lindex $cata 0] == $::tools_astrometry::reference} {
+                  set comm [lindex $cata 1]
+                  set ra      [lindex $comm 0]  
+                  set dec     [lindex $comm 1]
+                  affich_un_rond $ra $dec "yellow" 1
+               }
+            
+               if {[lindex $cata 0] == "ASTROID"} {
+                  set astroid [lindex $cata 2]
+                  
+                  set flagastrom  [lindex $astroid 20]  
+                  set ra      [lindex $astroid 14]  
+                  set dec     [lindex $astroid 15]   
+                  set res_ra  [lindex $astroid 16]  
+                  set res_dec [lindex $astroid 17]  
+                  set omc_ra  [lindex $astroid 18]   
+                  set omc_dec [lindex $astroid 19]  
+                  set color "red"
+                  if {$flagastrom=="S"} { set color "green"}
+                  if {$flagastrom=="R"} { set color "yellow"}
+                  affich_vecteur $ra $dec $res_ra $res_dec $::gui_astrometry::factor $color
+                  gren_info "vect! $ra $dec $res_ra $res_dec $::gui_astrometry::factor $color\n"
+               }
+            }
+         }
+         
+      }
+
+   
+   }
+
+
+
+
+
+
+
+
+
+
+
 
    proc ::gui_astrometry::setup { img_list } {
 
@@ -192,74 +280,35 @@ namespace eval gui_astrometry {
          set boutonpied [frame $frm.boutonpied  -borderwidth 0 -cursor arrow -relief groove]
          pack $boutonpied  -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-              set ::gui_cata::gui_fermer [button $boutonpied.fermer -text "Fermer" -borderwidth 2 -takefocus 1 \
+              set ::gui_astrometry::gui_fermer [button $boutonpied.fermer -text "Fermer" -borderwidth 2 -takefocus 1 \
                  -command "::gui_astrometry::fermer"]
               pack $boutonpied.fermer -side left -anchor e \
                  -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-              set ::gui_cata::gui_go [button $boutonpied.go -text "Go" -borderwidth 2 -takefocus 1 \
-                 -command "::gui_astrometry::go"]
-              pack $boutonpied.go -side left -anchor e \
+              set ::gui_astrometry::gui_init_priam [button $boutonpied.init_priam -text "Init" -borderwidth 2 -takefocus 1 \
+                 -command "::gui_astrometry::init_priam"]
+              pack $boutonpied.init_priam -side left -anchor e \
+                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+              set ::gui_astrometry::gui_go_priam [button $boutonpied.go_priam -text "Priam" -borderwidth 2 -takefocus 1 \
+                 -command "::gui_astrometry::go_priam"]
+              pack $boutonpied.go_priam -side left -anchor e \
+                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+              set ::gui_astrometry::gui_xtrip [button $boutonpied.xtrip -text "Xtrip" -borderwidth 2 -takefocus 1 \
+                 -command "::gui_astrometry::xtrip"]
+              pack $boutonpied.xtrip -side left -anchor e \
                  -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
    }
    
+
    
-   
 
-# "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" 
-# "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" 
-# "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "flagastrom" 
-# "mag" "err_mag" 
-   proc ::gui_astrometry::see_residus {  } {
-
-      foreach ::tools_astrometry::current_image $::tools_astrometry::img_list {
-         set tabkey      [::bddimages_liste::lget $::tools_astrometry::current_image "tabkey"]
-
-         set ::tools_astrometry::current_listsources [::bddimages_liste::lget $::tools_astrometry::current_image "listsources"]
-         set ::tools_astrometry::current_listsources [::manage_source::extract_sources_by_catalog $::tools_astrometry::current_listsources "ASTROID"]
-         gren_info "Rolextr=[ ::manage_source::get_nb_sources_rollup $::tools_astrometry::current_listsources]\n"
-
-         #::manage_source::imprim_sources  $::tools_astrometry::current_listsources "ASTROID"
-
-         foreach s [lindex $::tools_astrometry::current_listsources 1] {
-            foreach cata $s {
-            
-               if {[lindex $cata 0] == $::tools_astrometry::science} {
-                  set comm [lindex $cata 1]
-                  set ra      [lindex $comm 0]  
-                  set dec     [lindex $comm 1]
-                  affich_un_rond $ra $dec "green" 1
-               }
-               if {[lindex $cata 0] == $::tools_astrometry::reference} {
-                  set comm [lindex $cata 1]
-                  set ra      [lindex $comm 0]  
-                  set dec     [lindex $comm 1]
-                  affich_un_rond $ra $dec "yellow" 1
-               }
-            
-               if {[lindex $cata 0] == "ASTROID"} {
-                  set astroid [lindex $cata 2]
-                  
-                  set flagastrom  [lindex $astroid 20]  
-                  set ra      [lindex $astroid 14]  
-                  set dec     [lindex $astroid 15]   
-                  set res_ra  [lindex $astroid 16]  
-                  set res_dec [lindex $astroid 17]  
-                  set omc_ra  [lindex $astroid 18]   
-                  set omc_dec [lindex $astroid 19]  
-                  set color "red"
-                  if {$flagastrom=="S"} { set color "green"}
-                  if {$flagastrom=="R"} { set color "yellow"}
-                  affich_vecteur $ra $dec $res_ra $res_dec $::gui_astrometry::factor $color
-                  gren_info "vect! $ra $dec $res_ra $res_dec $::gui_astrometry::factor $color\n"
-               }
-            }
-         }
-         
-      }
-
+   proc ::gui_astrometry::xtrip {  } {
    
    }
    
+
+
    
 }

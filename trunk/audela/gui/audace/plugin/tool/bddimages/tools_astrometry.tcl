@@ -44,7 +44,11 @@ variable id_img
 
    }
 
-   proc ::tools_astrometry::go {  } {
+
+
+
+
+   proc ::tools_astrometry::init_priam {  } {
 
       global bddconf
 
@@ -100,11 +104,35 @@ variable id_img
       set ::tools_astrometry::nb_img [llength $::tools_astrometry::img_list]
       gren_info "nb img = $::tools_astrometry::nb_img\n"
 
-      ::tools_astrometry::extract_priam_result [::tools_astrometry::launch_priam]
-      
 
    }
 
+
+
+
+
+
+
+
+
+
+   proc ::tools_astrometry::go_priam {  } {
+
+      ::tools_astrometry::extract_priam_result [::tools_astrometry::launch_priam]
+      
+   }
+
+
+
+
+
+
+
+
+
+# Mesure les PSF
+# Cree les fichiers d entree de priam
+# Lance le programme Priam
    proc ::tools_astrometry::launch_priam {  } {
        
       global bddconf
@@ -121,15 +149,13 @@ variable id_img
          set dirfilename [::bddimages_liste::lget $::tools_astrometry::current_image dirfilename]
          set filename    [::bddimages_liste::lget $::tools_astrometry::current_image filename]
          set file        [file join $bddconf(dirbase) $dirfilename $filename]
-         buf$::audace(bufNo) load $file
-         ::confVisu::setFileName $::audace(visuNo) $file
-         ::audace::autovisu $::audace(visuNo)
+         buf$bddconf(bufno) load $file
+         #::confVisu::setFileName $::audace(visuNo) $file
+         #::audace::autovisu $::audace(visuNo)
          
-
          set tabkey      [::bddimages_liste::lget $::tools_astrometry::current_image "tabkey"]
          set ::tools_astrometry::current_listsources [::bddimages_liste::lget $::tools_astrometry::current_image "listsources"]
          set ::tools_astrometry::current_listsources [::analyse_source::psf $::tools_astrometry::current_listsources $::tools_astrometry::treshold $::tools_astrometry::delta]
-
 
          ::priam::create_file_oldformat $tag $::tools_astrometry::nb_img $::tools_astrometry::current_listsources $::tools_astrometry::science $::tools_astrometry::reference 
          gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $::tools_astrometry::current_listsources ]\n"
@@ -187,6 +213,12 @@ variable id_img
    
 
 
+
+
+
+
+ # Obsolete ?
+
    proc ::tools_astrometry::test {  } {
 
       set r [buf1 fitgauss [list 222 193 269 234 ]]
@@ -196,16 +228,19 @@ variable id_img
   }
   
   
+
+
+
+  
+ # Extraction des resultats de Priam
+
+  
    proc ::tools_astrometry::extract_priam_result { file } {
    
       gren_info "extract_priam_result:  file : <$file>\n"
    
       set chan [open $file r]
-      gets $chan success
-      #gren_info "$success\n"
-      if {$success!="SUCCESS"} {
-         return
-      }
+
       set astrom(kwds)     {RA                       DEC                       CRPIX1        CRPIX2        CRVAL1          CRVAL2           CDELT1    CDELT2    CROTA2                    CD1_1         CD1_2         CD2_1         CD2_2         FOCLEN         PIXSIZE1                        PIXSIZE2}
       set astrom(units)    {deg                      deg                       pixel         pixel         deg             deg              deg/pixel deg/pixel deg                       deg/pixel     deg/pixel     deg/pixel     deg/pixel     m              um                              um}
       set astrom(types)    {double                   double                    double        double        double          double           double    double    double                    double        double        double        double        double         double                          double}
@@ -214,7 +249,7 @@ variable id_img
       
       set ::tools_astrometry::id_img -1
 
-      # faire une boule sur un mot clés ! CDELT1
+      # Lecture du fichier en continue
 
       while {[gets $chan line] >= 0} {
 
@@ -223,11 +258,19 @@ variable id_img
          set val [lindex $a 1]
          #gren_info "$key=$val\n"
           
-         if {$key=="RA"} {
+         if {$key=="FILENAME"} {
             # Debut image
+            set filename $val
             incr ::tools_astrometry::id_img
             set catascience($::tools_astrometry::id_img) {}
             set cataref($::tools_astrometry::id_img) {}
+
+            gets $chan success
+            #gren_info "$success\n"
+            if {$success!="SUCCESS"} {
+               continue
+            }
+
          }
          
          for {set k 0 } { $k<$n } {incr k} {
@@ -262,8 +305,9 @@ variable id_img
       #gren_info "[::manage_source::get_fields_from_sources $::tools_astrometry::current_listsources] \n"
 
    # A FAIRE  : nettoyage des astrometrie de current_listsources
+
       ::tools_astrometry::clean_astrom 
-      
+
    # Insertion des resultats dans current_listsources
 
       set fieldsastroid [list "ASTROID" {} [list "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" \
