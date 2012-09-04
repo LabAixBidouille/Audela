@@ -216,7 +216,9 @@ namespace eval ::manage_source {
             if {$mycata=="UCAC2"} {
                return "UCAC2_[lindex [lindex $cata 2] 0][lindex [lindex $cata 2] 1]"
             }
-
+            if {$mycata=="IMG"} {
+               return "IMG_[lindex [lindex $cata 2] 0][lindex [lindex $cata 2] 1]"
+            }
          }
       }
    }

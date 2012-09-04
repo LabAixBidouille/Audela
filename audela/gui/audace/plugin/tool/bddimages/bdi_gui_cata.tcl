@@ -1286,7 +1286,7 @@ namespace eval gui_cata {
       #gren_info "Etoile num $i\n"
 
       set err [ catch {set rect  [ ::confVisu::getBox $::audace(visuNo) ]} msg ]
-      if {$err>0 || $rect ==""} {
+      if {$err>0 || $rect==""} {
          tk_messageBox -message "Veuillez selectionner une etoile en dessinant un carre dans l'image a reduire" -type ok
          return
       }
@@ -1295,7 +1295,7 @@ namespace eval gui_cata {
       set ::gui_cata::man_xy_star($i) "[format "%2.2f" [lindex $cent 0]] [format "%2.2f" [lindex $cent 1]]"
       
       set err [ catch {set rect  [ ::confVisu::getBox $::gui_cata::dssvisu ]} msg ]
-      if {$err>0 || $rect ==""} {
+      if {$err>0 || $rect==""} {
          tk_messageBox -message "Veuillez selectionner une etoile en dessinant un carre dans l'image DSS" -type ok
          return
       }
@@ -1323,11 +1323,35 @@ namespace eval gui_cata {
 
    proc ::gui_cata::manual_create {  } {
 
+      set sources {}
+      set fieldsastroid [list "IMG" [list "ra" "dec" "err_pos" "mag" "err_mag"] [list "x1" "y2" "xsm" "ysm"] ]
+
+      # Coordonnees x,y du centre du champ comme objet Science
+      set tabkey [::bddimages_liste::lget $::tools_astrometry::current_image "tabkey"]
+      set ra  [lindex [::bddimages_liste::lget $tabkey ra] 1]
+      set dec [lindex [::bddimages_liste::lget $tabkey dec] 1]
+      set xsc [expr [lindex [::bddimages_liste::lget $tabkey NAXIS1] 1] / 2.0]
+      set ysc [expr [lindex [::bddimages_liste::lget $tabkey NAXIS2] 1] / 2.0]
+      lappend sources [list [list "IMG" [list $ra $dec 0 0 0] [list $ra $dec $xsc $ysc]] [list "SCIENCE" {} {}]] 
+
+      # Liste des etoiles pointees a la mano
       for {set i 1} {$i<=7} {incr i} {
          if {$::gui_cata::man_xy_star($i) != "" && $::gui_cata::man_ad_star($i) != ""} {
-            gren_info "Etoile num $i : $::gui_cata::man_xy_star($i) $::gui_cata::man_ad_star($i)\n"
+            set x [split $::gui_cata::man_xy_star($i) " "]
+            set xsm [lindex $x 0]
+            set ysm [lindex $x 1]
+            set x [split $::gui_cata::man_ad_star($i) " "]
+            set ra [lindex $x 0]
+            set dec [lindex $x 1]
+            lappend sources [list [list "IMG" [list $ra $dec 0 0 0] [list $ra $dec $xsm $ysm]] ]
          }
       }
+      set listsources [list [list $fieldsastroid] $sources ]
+      set listsources [::analyse_source::psf $listsources $::tools_astrometry::treshold $::tools_astrometry::delta]
+      set ::tools_astrometry::current_image [::bddimages_liste::ladd $::tools_astrometry::current_image "listsources" $listsources]
+      
+      # Creation des fichiers Priam
+      ::priam::create_file_oldformat "new" 1 $::tools_astrometry::current_image "SCIENCE" "IMG"
 
    }
 
@@ -1837,7 +1861,7 @@ namespace eval gui_cata {
                 pack $manuel.entr  -in $manuel  -side top 
                 
 
-                     set dss [frame $manuel.entr.dss -borderwidth 0 -cursor arrow  -borderwidth 0]
+                     set dss [frame $manuel.entr.dss -borderwidth 0 -cursor arrow]
                      pack $dss -in $manuel.entr -side top 
 
                           button  $dss.lab  -borderwidth 1 -command "::gui_cata::getDSS" -text "Obtenir une image DSS"
@@ -1874,11 +1898,20 @@ namespace eval gui_cata {
                                       entry  $basic.crota.val -relief sunken -textvariable ::tools_cata::crota -width 10
                                       pack   $basic.crota.val -in $basic.crota -side top -padx 3 -pady 3 -anchor w
 
+                     set minfo [frame $manuel.entr.info -borderwidth 1 -cursor arrow]
+                     pack $minfo -in $manuel.entr -side top -pady 5
+                     
+                          set mode_manuel "Selectionner une source en dessinant un carre dans l'image a reduire, et selectionner de meme l'etoile correspondante dans l'image DSS, puis cliquer sur le bouton GRAB.\n"
+                          text $minfo.txt -wrap word -width 50 -height 4 -relief groove
+                          $minfo.txt insert 1.0 $mode_manuel
+                          pack  $minfo.txt -in $minfo -side left -expand 0 -fill both -padx 10
 
-
-                     set coord [frame $manuel.entr.coord -borderwidth 0 -cursor arrow  -borderwidth 0]
+                     set coord [frame $manuel.entr.coord -borderwidth 0 -cursor arrow]
                      pack $coord -in $manuel.entr 
 
+                          image create photo icon_clean
+                          icon_clean configure -file [file join $audace(rep_plugin) tool bddimages icons no.gif]
+            
                           set img [frame $coord.l -borderwidth 0 -cursor arrow  -borderwidth 0]
                           pack $img -in $coord -anchor s -side left -expand 0 -fill x -padx 10 -pady 5
 
@@ -1897,6 +1930,11 @@ namespace eval gui_cata {
                                    pack    $img.v1.grab -in $img.v1 -side left -anchor e -expand 0 
                                    entry $img.v1.ad -relief sunken  -textvariable ::gui_cata::man_ad_star(1)
                                    pack  $img.v1.ad -in $img.v1 -side left -padx 3 -pady 3 -anchor w
+                                   button $img.v1.clean  -borderwidth 1 -image icon_clean -command {
+                                      set ::gui_cata::man_xy_star(1) ""
+                                      set ::gui_cata::man_ad_star(1) ""
+                                   }
+                                   pack   $img.v1.clean -in $img.v1 -side left -anchor e -expand 0 
 
                                 frame $img.v2 -borderwidth 1 -cursor arrow -relief groove
                                 pack $img.v2  -in $img  -side top 
@@ -1906,15 +1944,25 @@ namespace eval gui_cata {
                                    pack    $img.v2.grab -in $img.v2 -side left -anchor e -expand 0 
                                    entry $img.v2.ad -relief sunken  -textvariable ::gui_cata::man_ad_star(2)
                                    pack  $img.v2.ad -in $img.v2 -side left -padx 3 -pady 3 -anchor w
+                                   button $img.v2.clean  -borderwidth 1 -image icon_clean -command {
+                                     set ::gui_cata::man_xy_star(2) ""
+                                     set ::gui_cata::man_ad_star(2) ""
+                                   }
+                                   pack   $img.v2.clean -in $img.v2 -side left -anchor e -expand 0 
 
                                 frame $img.v3 -borderwidth 1 -cursor arrow -relief groove
                                 pack $img.v3  -in $img  -side top 
                                    entry $img.v3.xy -relief sunken -textvariable ::gui_cata::man_xy_star(3)
                                    pack  $img.v3.xy -in $img.v3 -side left -padx 3 -pady 3 -anchor w
-                                   button  $img.v3.grab  -borderwidth 1 -command "::gui_cata::grab 3" -text "Grab"
-                                   pack    $img.v3.grab -in $img.v3 -side left -anchor e -expand 0 
+                                   button $img.v3.grab  -borderwidth 1 -command "::gui_cata::grab 3" -text "Grab"
+                                   pack   $img.v3.grab -in $img.v3 -side left -anchor e -expand 0 
                                    entry $img.v3.ad -relief sunken  -textvariable ::gui_cata::man_ad_star(3)
                                    pack  $img.v3.ad -in $img.v3 -side left -padx 3 -pady 3 -anchor w
+                                   button $img.v3.clean  -borderwidth 1 -image icon_clean -command {
+                                      set ::gui_cata::man_xy_star(3) ""
+                                      set ::gui_cata::man_ad_star(3) ""
+                                   }
+                                   pack   $img.v3.clean -in $img.v3 -side left -anchor e -expand 0 
 
                                 frame $img.v4 -borderwidth 1 -cursor arrow -relief groove
                                 pack $img.v4  -in $img  -side top 
@@ -1924,6 +1972,11 @@ namespace eval gui_cata {
                                    pack    $img.v4.grab -in $img.v4 -side left -anchor e -expand 0 
                                    entry $img.v4.ad -relief sunken  -textvariable ::gui_cata::man_ad_star(4)
                                    pack  $img.v4.ad -in $img.v4 -side left -padx 3 -pady 3 -anchor w
+                                    button $img.v4.clean  -borderwidth 1 -image icon_clean -command {
+                                       set ::gui_cata::man_xy_star(4) ""
+                                       set ::gui_cata::man_ad_star(4) ""
+                                    }
+                                    pack   $img.v4.clean -in $img.v4 -side left -anchor e -expand 0 
 
                                 frame $img.v5 -borderwidth 1 -cursor arrow -relief groove
                                 pack $img.v5  -in $img  -side top 
@@ -1933,6 +1986,11 @@ namespace eval gui_cata {
                                    pack    $img.v5.grab -in $img.v5 -side left -anchor e -expand 0 
                                    entry $img.v5.ad -relief sunken  -textvariable ::gui_cata::man_ad_star(5)
                                    pack  $img.v5.ad -in $img.v5 -side left -padx 3 -pady 3 -anchor w
+                                    button $img.v5.clean  -borderwidth 1 -image icon_clean -command {
+                                       set ::gui_cata::man_xy_star(5) ""
+                                       set ::gui_cata::man_ad_star(5) ""
+                                    }
+                                    pack   $img.v5.clean -in $img.v5 -side left -anchor e -expand 0 
 
                                 frame $img.v6 -borderwidth 1 -cursor arrow -relief groove
                                 pack $img.v6  -in $img  -side top 
@@ -1942,6 +2000,11 @@ namespace eval gui_cata {
                                    pack    $img.v6.grab -in $img.v6 -side left -anchor e -expand 0 
                                    entry $img.v6.ad -relief sunken  -textvariable ::gui_cata::man_ad_star(6)
                                    pack  $img.v6.ad -in $img.v6 -side left -padx 3 -pady 3 -anchor w
+                                    button $img.v6.clean  -borderwidth 1 -image icon_clean -command {
+                                       set ::gui_cata::man_xy_star(6) ""
+                                       set ::gui_cata::man_ad_star(6) ""
+                                    }
+                                    pack   $img.v6.clean -in $img.v6 -side left -anchor e -expand 0 
 
                                 frame $img.v7 -borderwidth 1 -cursor arrow -relief groove
                                 pack $img.v7  -in $img  -side top 
@@ -1951,16 +2014,21 @@ namespace eval gui_cata {
                                    pack    $img.v7.grab -in $img.v7 -side left -anchor e -expand 0 
                                    entry $img.v7.ad -relief sunken  -textvariable ::gui_cata::man_ad_star(7)
                                    pack  $img.v7.ad -in $img.v7 -side left -padx 3 -pady 3 -anchor w
+                                    button $img.v7.clean  -borderwidth 1 -image icon_clean -command {
+                                       set ::gui_cata::man_xy_star(7) ""
+                                       set ::gui_cata::man_ad_star(7) ""
+                                    }
+                                    pack   $img.v7.clean -in $img.v7 -side left -anchor e -expand 0 
 
 
                 frame $manuel.entr.buttons -borderwidth 0 -cursor arrow -relief groove
                 pack $manuel.entr.buttons  -in $manuel.entr  -side top 
                 
                      button  $manuel.entr.buttons.efface  -borderwidth 1  \
-                         -command "::gui_cata::manual_clean" -text "Efface"
+                         -command "::gui_cata::manual_clean" -text "Effacer tout"
                      pack    $manuel.entr.buttons.efface -in $manuel.entr.buttons -side left -anchor e -expand 0 
                      button  $manuel.entr.buttons.creer  -borderwidth 1  \
-                         -command "::gui_cata::manual_create" -text "Creer"  -state disabled
+                         -command "::gui_cata::manual_create" -text "Creer"
                      pack    $manuel.entr.buttons.creer -in $manuel.entr.buttons -side left -anchor e -expand 0 
 
 

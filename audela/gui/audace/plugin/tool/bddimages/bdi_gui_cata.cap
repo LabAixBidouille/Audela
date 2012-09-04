@@ -32,7 +32,7 @@ set caption(bddimages_imgcorrection,voirimg)        "Voir l'image"
 set caption(bddimages_imgcorrection,voirheader)     "Voir le header"
 set caption(bddimages_imgcorrection,msg_erreur)     "Erreur"
 set caption(bddimages_imgcorrection,msg_internet)   "Erreur connexion"
-
+   
 # -- Colonnes de la table --
 set caption(bddimages_imgcorrection,etat)           "Etat"
 set caption(bddimages_imgcorrection,nom)            "Nom"
