@@ -58,42 +58,175 @@ namespace eval ::priam {
 #      {ASTROID {} {1455.214748 1237.066546 2.946869 2.521896 2.7343825 1467.000000 0 1239.000000 227.0 38.759163 37.8491145436 5.85667961922 3.26 0.0976624473377}}
    
 
-proc ::priam::create_file_oldformat { tag nb listsources science stars } {
+# nb = Nombre d image pour analyse
+# tag = new ou add pour savoir si c est la premiere image ou pas. 
+# listsources = la liste des sources
+# science = le nom du catalogue scientifique (a mesurer)
+# stars = le nom du catalogue de reference
+
+
+# Constante a modifier dans le futur bandwith 0.57000
+
+proc ::priam::create_file_oldformat { tag nb img science stars } {
 
    global bddconf audace
 
-   # constantes provisoires
-   set axes "wn"
-   set imagefilename "toto.fits"
-   set dateobsjd 2454908.5137460064
-   set temperature 20.00
-   set pression 1013.500
-   set humidity 35.0
+
+   set listsources [::bddimages_liste::lget $img "listsources"]
+   set imagefilename [::bddimages_liste::lget $img "filename"]
+
+   set tabkey [::bddimages_liste::lget $img "tabkey"]
+   foreach l $tabkey {
+      set k [lindex $l 0]
+      set v [lindex $l 1]
+      #gren_info "p $k = $v\n"
+      #gren_info "$k = [lindex $v 1 ]\n"
+      
+   }
+
+   # Constantes provisoires
    set bandwith 0.57000
 
+   # Conditions d observation
+   set axes "wn"
+
+   set imagefilename [::bddimages_liste::lget $img "filename"]
+   set dateobsjd [::bddimages_liste::lget $img "commundatejj"]
+
+   if {[::bddimages_liste::lexist $tabkey "TEMPAIR" ]==0} {
+      set temperature 20.00
+   } else {
+      set temperature [lindex [::bddimages_liste::lget $tabkey "TEMPAIR"] 1] 
+   }
+
+   if {[::bddimages_liste::lexist $tabkey "HYDRO" ]==0} {
+      set humidity 35.0
+   } else {
+      set humidity [lindex [::bddimages_liste::lget $tabkey "HYDRO"] 1 ]
+   }
+
+   if {[::bddimages_liste::lexist $tabkey "AIRPRESS" ]==0} {
+      set pression 1013.500
+   } else {
+      set pression [lindex [::bddimages_liste::lget $tabkey "AIRPRESS"] 1 ]
+   }
+
+   if {[::bddimages_liste::lexist $tabkey "OBS-LAT" ]==0} {
+      set obslat 0.0
+   } else {
+      set obslat [lindex [::bddimages_liste::lget $tabkey "OBS-LAT"] 1 ]
+   }
+
+   if {[::bddimages_liste::lexist $tabkey "OBS-LONG" ]==0} {
+      set obslong 0.0
+   } else {
+      set obslong [lindex [::bddimages_liste::lget $tabkey "OBS-LONG"] 1 ]
+   }
+
+   if {[::bddimages_liste::lexist $tabkey "OBS-ELEV" ]==0} {
+      set obselev 0.0
+   } else {
+      set obselev [lindex [::bddimages_liste::lget $tabkey "OBS-ELEV"] 1 ]
+   }
+
+   if {[::bddimages_liste::lexist $tabkey "TELESCOP" ]==0} {
+      set telescop 0.0
+   } else {
+      set telescop [lindex [::bddimages_liste::lget $tabkey "TELESCOP"] 1 ]
+   }
+
+   if {[::bddimages_liste::lexist $tabkey "FOCLEN" ]==0} {
+      set foclen 1.0
+   } else {
+      set foclen [lindex [::bddimages_liste::lget $tabkey "FOCLEN"] 1 ]
+   }
+
+   if {[::bddimages_liste::lexist $tabkey "NAXIS1" ]==0} {
+      set naxis1 1024
+   } else {
+      set naxis1 [lindex [::bddimages_liste::lget $tabkey "NAXIS1"] 1 ]
+   }
+
+   if {[::bddimages_liste::lexist $tabkey "NAXIS2" ]==0} {
+      set naxis2 1024
+   } else {
+      set naxis2 [lindex [::bddimages_liste::lget $tabkey "NAXIS2"] 1 ]
+   }
+
+   if {[::bddimages_liste::lexist $tabkey "CROTA2" ]==0} {
+      set crota2 1024
+   } else {
+      set crota2 [lindex [::bddimages_liste::lget $tabkey "CROTA2"] 1 ]
+   }
+
+   if {[::bddimages_liste::lexist $tabkey "CDELT1" ]==0} {
+      set cdelt1 1.0
+   } else {
+      set cdelt1 [lindex [::bddimages_liste::lget $tabkey "CDELT1"] 1 ]
+   }
+
+   if {[::bddimages_liste::lexist $tabkey "CDELT2" ]==0} {
+      set cdelt2 1.0
+   } else {
+      set cdelt2 [lindex [::bddimages_liste::lget $tabkey "CDELT2"] 1 ]
+   }
+
+   set echelle [expr sqrt((pow($cdelt1,2)+pow($cdelt2,2))/2.0)*3600.0]
+
+   if {[::bddimages_liste::lexist $tabkey "SITENAME" ]==0} {
+      set sitename ""
+   } else {
+      set sitename [lindex [::bddimages_liste::lget $tabkey "SITENAME"] 1 ]
+   }
+
+   if {[::bddimages_liste::lexist $tabkey "OBSERVER" ]==0} {
+      set observer ""
+   } else {
+      set observer [lindex [::bddimages_liste::lget $tabkey "OBSERVER"] 1 ]
+   }
+
+   if {[::bddimages_liste::lexist $tabkey "IAU_CODE" ]==0} {
+      set iau_code ""
+   } else {
+      set iau_code [lindex [::bddimages_liste::lget $tabkey "IAU_CODE"] 1 ]
+   }
+
+   if {[::bddimages_liste::lexist $tabkey "OBJECT" ]==0} {
+      set object ""
+   } else {
+      set object [lindex [::bddimages_liste::lget $tabkey "OBJECT"] 1 ]
+   }
+   if {[::bddimages_liste::lexist $tabkey "DATE-OBS" ]==0} {
+      set dateobs ""
+   } else {
+      set dateobs [lindex [::bddimages_liste::lget $tabkey "DATE-OBS"] 1 ]
+   }
+   # Creation des fichiers
+
    if {$tag=="new"} {
+
       # creation du fichier de conditions initiales (cnd.obs)
       set filecnd [ file join $audace(rep_travail) cnd.obs ]
       set chan0 [open $filecnd w]
       puts $chan0 "#? Centroid measures formatted for Priam"
       puts $chan0 "# Conditions observationnelles"
-      puts $chan0 "# objet : astrometrie de 2008 FU6 au T1m Pic du midi"
-      puts $chan0 "# date  : 11 avril 2011"
+      puts $chan0 "# objet : astrometrie de $object au $telescop $sitename"
+      puts $chan0 "# date  : $dateobs"
       puts $chan0 "#"
-      puts $chan0 "code           : 586"
-      puts $chan0 "lieu           : Pic du midi"
-      puts $chan0 "station        : 0.0 0.0 0.0"
-      puts $chan0 "observateurs   : F. Vachier"
+      puts $chan0 "code           : $iau_code"
+      puts $chan0 "lieu           : $sitename"
+      puts $chan0 "station        : $obslat $obslong $obselev"
+      puts $chan0 "observateurs   : $observer"
       puts $chan0 "reduction      : F. Vachier & J. Berthier"
       puts $chan0 "#"
       puts $chan0 "# Instrumentation"
       puts $chan0 "#"
-      puts $chan0 "type           : T1m"
-      puts $chan0 "focale         : 12.5"
+      puts $chan0 "type           : $telescop"
+      puts $chan0 "focale         : $foclen"
       puts $chan0 "diametre       : 1.0"
-      puts $chan0 "echelle        : 0.44"
-      puts $chan0 "orientation    : 0.00"
-      puts $chan0 "taille CCD     : 1024 1024"
+      puts $chan0 "echelle        : $echelle"
+      puts $chan0 "orientation    : $crota2"
+      puts $chan0 "taille CCD     : $naxis1 $naxis2"
       close $chan0
    }
 
@@ -119,12 +252,12 @@ proc ::priam::create_file_oldformat { tag nb listsources science stars } {
       puts $chan0 "#"
       puts $chan0 "#> orientation: $axes"
       puts $chan0 "#"
-      #puts $chan0 "!$imagefilename"
+      puts $chan0 "!$imagefilename"
       puts $chan0 "$dateobsjd $temperature $pression  $humidity $bandwith"
    }
    if {$tag=="add"} { 
       set chan0 [open $filemes a+] 
-      #puts $chan0 "!$imagefilename"
+      puts $chan0 "!$imagefilename"
       puts $chan0 "$dateobsjd $temperature $pression  $humidity $bandwith"
    }
     
