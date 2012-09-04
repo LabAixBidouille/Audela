@@ -1858,36 +1858,36 @@ proc ::votable::getFieldFromKey_ASTROID { key } {
                        "$::votable::Field::UNIT \"ADU\""
       }
       snint {
-         set description "TBD"
-         lappend field "$::votable::Field::UCD \"phot.count\"" \
+         set description "Integrated flux divided by the background sigma"
+         lappend field "$::votable::Field::UCD \"stat.value\"" \
                        "$::votable::Field::DATATYPE \"float\"" \
                        "$::votable::Field::WIDTH \"8\"" \
                        "$::votable::Field::PRECISION \"1\"" \
-                       "$::votable::Field::UNIT \"ADU\""
+                       "$::votable::Field::UNIT \"-\""
       }
       snpx {
-         set description "TBD"
-         lappend field "$::votable::Field::UCD \"phot.count\"" \
+         set description "Intensity of maximum pixel divided by the background sigma"
+         lappend field "$::votable::Field::UCD \"stat.value\"" \
                        "$::votable::Field::DATATYPE \"float\"" \
                        "$::votable::Field::WIDTH \"8\"" \
                        "$::votable::Field::PRECISION \"1\"" \
-                       "$::votable::Field::UNIT \"ADU\""
+                       "$::votable::Field::UNIT \"-\""
       }
       delta {
-         set description "TBD"
-         lappend field "$::votable::Field::UCD \"phot.count\"" \
+         set description "Radius of the window used to measure the photocenter"
+         lappend field "$::votable::Field::UCD \"stat.value\"" \
                        "$::votable::Field::DATATYPE \"float\"" \
                        "$::votable::Field::WIDTH \"8\"" \
                        "$::votable::Field::PRECISION \"1\"" \
-                       "$::votable::Field::UNIT \"ADU\""
+                       "$::votable::Field::UNIT \"px\""
       }
       rdiff {
-         set description "TBD"
-         lappend field "$::votable::Field::UCD \"phot.count\"" \
+         set description "Distance between the requested and the measured photocenter"
+         lappend field "$::votable::Field::UCD \"stat.value\"" \
                        "$::votable::Field::DATATYPE \"float\"" \
                        "$::votable::Field::WIDTH \"8\"" \
                        "$::votable::Field::PRECISION \"1\"" \
-                       "$::votable::Field::UNIT \"ADU\""
+                       "$::votable::Field::UNIT \"px\""
       }
       ra -
       dec {
