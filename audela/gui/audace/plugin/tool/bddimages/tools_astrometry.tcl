@@ -110,6 +110,7 @@ variable id_img
 
      global bddconf
 
+      gren_info "\nMesure PSF et Creation des Fichiers Priam\n"
       set ::tools_astrometry::id_img 0
       foreach ::tools_astrometry::current_image $::tools_astrometry::img_list {
  
@@ -128,28 +129,26 @@ variable id_img
          set ::tools_astrometry::current_listsources [::bddimages_liste::lget $::tools_astrometry::current_image "listsources"]
 
             set sources [lindex $::tools_astrometry::current_listsources 1]
-            foreach s $sources {
-
-               foreach cata $s {
-                  if {[lindex $cata 0] == "ASTROID"} {
-                     gren_info "s1=[lindex $cata 2]\n"
-                  }
-               }
-            }
+            #foreach s $sources {
+            #   foreach cata $s {
+            #      if {[lindex $cata 0] == "ASTROID"} {
+            #         #gren_info "s1=[lindex $cata 2]\n"
+            #      }
+            #   }
+            #}
 
 
          set ::tools_astrometry::current_listsources [::analyse_source::psf $::tools_astrometry::current_listsources $::tools_astrometry::treshold $::tools_astrometry::delta]
-         gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $::tools_astrometry::current_listsources ]\n"
+         gren_info "rollup = [::manage_source::get_nb_sources_rollup $::tools_astrometry::current_listsources ]\n"
 
             set sources [lindex $::tools_astrometry::current_listsources 1]
-            foreach s $sources {
-
-               foreach cata $s {
-                  if {[lindex $cata 0] == "ASTROID"} {
-                     gren_info "s2=[lindex $cata 2]\n"
-                  }
-               }
-            }
+            #foreach s $sources {
+            #   foreach cata $s {
+            #      if {[lindex $cata 0] == "ASTROID"} {
+            #         #gren_info "s2=[lindex $cata 2]\n"
+            #      }
+            #   }
+            #}
 
          # On reinsere dans img_list les resultats qui se trouvent dans list_source
          if {[::bddimages_liste::lexist $::tools_astrometry::current_image "listsources" ]==0} {
@@ -207,7 +206,7 @@ variable id_img
          gren_info "launch_priam ERREUR d\n"
          gren_info "launch_priam:  NUM : <$err>\n" 
       }   
-      gren_info "launch_priam:  MSG : <$msg>\n"
+      #gren_info "launch_priam:  MSG : <$msg>\n"
       
       set tab [split $msg "\0"]
       set pass "no"
@@ -225,7 +224,7 @@ variable id_img
       }
     
       if {$pass=="yes"} {
-        gren_info "PRIAMRESULT: =$file\n"
+        #gren_info "PRIAMRESULT: =$file\n"
         return -code 0 $file
       } else {
         return -code -1 $msg
@@ -254,6 +253,47 @@ variable id_img
 
 
   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
  # Extraction des resultats de Priam
 
   
@@ -296,7 +336,6 @@ variable id_img
          }
 
          if {$key=="END"} {
-               #buf$::audace(bufNo) setkwd [list $kwd $val $type $unit $comment]
          }
          
          for {set k 0 } { $k<$n } {incr k} {
@@ -304,9 +343,9 @@ variable id_img
             if {$kwd==$key} {
                set type [lindex $astrom(types) $k]
                set unit [lindex $astrom(units) $k]
-               
                set comment [lindex $astrom(comments) $k]
-               #gren_info "KWD: [lindex [buf$::audace(bufNo) getkwd  $kwd] 1] == $val \n"
+               gren_info "KWD: [lindex [buf$::audace(bufNo) getkwd  $kwd] 1] == $val \n"
+               buf$::audace(bufNo) setkwd [list $kwd $val $type $unit $comment]
             }
          }
          
@@ -324,6 +363,8 @@ variable id_img
       }
       close $chan
 
+      gren_info "NB IMG EXTRACTED FROM PRIAM RESULTS: [expr $::tools_astrometry::id_img +1 ] \n"
+      gren_info "NB IMG LIST: [llength $::tools_astrometry::img_list] \n"
 
    # sur une seule image -> current_listsources
 
@@ -348,44 +389,44 @@ variable id_img
          set fields [lindex $::tools_astrometry::current_listsources 0]
          lappend fields $fieldsastroid
 
-         foreach l $catascience($::tools_astrometry::id_img) {
-            gren_info "catascience l : $l\n"
-            set n [lindex $l 0]
-            set val [lindex $l 1]
-            gren_info "catascience : $n $val\n"
-            set cpt 0
-            set sources [lindex $::tools_astrometry::current_listsources 1]
-            foreach s $sources {
+         gren_info "IDIMG: ($::tools_astrometry::id_img) \n"
+         set ex [info exists catascience($::tools_astrometry::id_img)]
+         gren_info "SCIENCE EXIST: ($ex) \n"
+         set n [llength $catascience($::tools_astrometry::id_img)]
+         gren_info "NB SCIENCE: ($n) \n"
+         
+         if {$n>0} {
+            gren_info "NB SCIENCE2:$n $::tools_astrometry::id_img\n"
+            foreach l $catascience($::tools_astrometry::id_img) {
+               set n [lindex $l 0]
+               set val [lindex $l 1]
+               set cpt 0
+               set sources [lindex $::tools_astrometry::current_listsources 1]
+               foreach s $sources {
 
-               foreach cata $s {
-                  if {[lindex $cata 0] == $::tools_astrometry::science} {
-                     set name [::manage_source::naming $s $::tools_astrometry::science]
-                     if {$n==$name} {
-                        #gren_info "NAME=$name\n"
-                        set ra      [expr [lindex $val 0] ]
-                        set dec     [lindex $val 1]
-                        set res_ra  [lindex $val 2]
-                        set res_dec [lindex $val 3]
-                        set omc_ra  [expr ($ra - [lindex [lindex $cata 1] 0])*3600.0]
-                        set omc_dec [expr ($dec - [lindex [lindex $cata 1] 1])*3600.0]
-                        set flag    "S"
+                  foreach cata $s {
+                     if {[lindex $cata 0] == $::tools_astrometry::science} {
+                        set name [::manage_source::naming $s $::tools_astrometry::science]
+                        if {$n==$name} {
+                           #gren_info "NAME=$name\n"
+                           set ra      [expr [lindex $val 0] ]
+                           set dec     [lindex $val 1]
+                           set res_ra  [lindex $val 2]
+                           set res_dec [lindex $val 3]
+                           set omc_ra  [expr ($ra - [lindex [lindex $cata 1] 0])*3600.0]
+                           set omc_dec [expr ($dec - [lindex [lindex $cata 1] 1])*3600.0]
+                           set flag    "S"
 
-                        #gren_info "NAME=$name $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag\n"
-                        gren_info "s1=$s\n"
-                        set s [::tools_astrometry::set_astrom_to_source $s $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag $name]
-                        gren_info "s2=$s\n"
-                        set sources [lreplace $sources $cpt $cpt $s]
-                        set ::tools_astrometry::current_listsources [list $fields $sources]
-
+                           #gren_info "NAME=$name $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag\n"
+                           set s [::tools_astrometry::set_astrom_to_source $s $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag $name]
+                           set sources [lreplace $sources $cpt $cpt $s]
+                           set ::tools_astrometry::current_listsources [list $fields $sources]
+                        }
                      }
-
                   }
-
+                  incr cpt
                }
-
-               incr cpt
             }
-
          }
          #gren_info "SRolref=[ ::manage_source::get_nb_sources_rollup $::tools_astrometry::current_listsources]\n"
 
@@ -422,12 +463,10 @@ variable id_img
          }
 
 
-         gren_info "SRol=[ ::manage_source::get_nb_sources_rollup $::tools_astrometry::current_listsources]\n"
+         #gren_info "SRol=[ ::manage_source::get_nb_sources_rollup $::tools_astrometry::current_listsources]\n"
          if {[::bddimages_liste::lexist $::tools_astrometry::current_image "listsources" ]==0} {
-            gren_info "Listesource n existe pas\n"
             set ::tools_astrometry::current_image [::bddimages_liste::ladd $::tools_astrometry::current_image "listsources" $::tools_astrometry::current_listsources ]
          } else {
-            gren_info "Listesource existe\n"
             set ::tools_astrometry::current_image [::bddimages_liste::lupdate $::tools_astrometry::current_image "listsources" $::tools_astrometry::current_listsources ]
          }
          
@@ -437,7 +476,7 @@ variable id_img
       }
 
 
-   gren_info "SRol=[ ::manage_source::get_nb_sources_rollup $::tools_astrometry::current_listsources]\n"
+   #gren_info "SRol=[ ::manage_source::get_nb_sources_rollup $::tools_astrometry::current_listsources]\n"
    #gren_info "ASTROIDS=[::manage_source::extract_sources_by_catalog $::tools_astrometry::current_listsources ASTROID]\n"
    #gren_info "LISTSOURCES=$::tools_astrometry::current_listsources\n"
 

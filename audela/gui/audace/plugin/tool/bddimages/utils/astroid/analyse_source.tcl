@@ -98,7 +98,7 @@ namespace eval ::analyse_source {
          foreach cata $s {
             incr cptc
             if {$log} {gren_info "cata : $cptc [lindex $cata 0]\n"}
-            if { [lindex $cata 0]=="ASTROID" } { continue }
+            if { [lindex $cata 0]=="ASTROID" } { break }
 
             if { [lindex $cata 0]=="IMG" } {
 
@@ -136,8 +136,12 @@ namespace eval ::analyse_source {
                      lappend results $rdiff
                      for {set i 0} {$i<9} {incr i} { lappend results 0 }
                      lappend results ""
-                     set ns $s
-
+                     set ns {}
+                     foreach cata $s {
+                        if { [lindex $cata 0]!="ASTROID" } {
+                           lappend ns $cata
+                        }
+                     }
                      lappend ns [list "ASTROID" {} $results]
                      lappend newsources $ns
                   }
