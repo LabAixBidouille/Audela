@@ -1,0 +1,2 @@
+LIBRARY libtelsimu
+EXPORTS Telsimu_Init @1
