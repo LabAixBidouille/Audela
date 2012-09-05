@@ -288,6 +288,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "contrib_av4l", "contrib\av4
 		{7202F949-E8C5-427C-A7BD-FA2D31564E73} = {7202F949-E8C5-427C-A7BD-FA2D31564E73}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libtelsimu", "libtel\libtelsimu\vc90\libtelsimu.vcproj", "{3ACAC348-D28D-4855-A842-8ECDB000BF2F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -658,6 +660,10 @@ Global
 		{3B9EC563-83A1-4223-B382-A6ACC67B07B6}.Debug|Win32.Build.0 = Debug|Win32
 		{3B9EC563-83A1-4223-B382-A6ACC67B07B6}.Release|Win32.ActiveCfg = Release|Win32
 		{3B9EC563-83A1-4223-B382-A6ACC67B07B6}.Release|Win32.Build.0 = Release|Win32
+		{3ACAC348-D28D-4855-A842-8ECDB000BF2F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3ACAC348-D28D-4855-A842-8ECDB000BF2F}.Debug|Win32.Build.0 = Debug|Win32
+		{3ACAC348-D28D-4855-A842-8ECDB000BF2F}.Release|Win32.ActiveCfg = Release|Win32
+		{3ACAC348-D28D-4855-A842-8ECDB000BF2F}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
