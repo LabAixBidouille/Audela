@@ -1352,6 +1352,10 @@ namespace eval gui_cata {
       
       # Creation des fichiers Priam
       ::priam::create_file_oldformat "new" 1 $::tools_astrometry::current_image "SCIENCE" "IMG"
+      
+      set ::tools_astrometry::img_list [list $::tools_astrometry::current_image]
+      ::tools_astrometry::extract_priam_result [::tools_astrometry::launch_priam]
+      
 
    }
 

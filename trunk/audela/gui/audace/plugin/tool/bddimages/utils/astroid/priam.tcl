@@ -272,18 +272,18 @@ proc ::priam::create_file_oldformat { tag nb img science stars } {
    set newsources {}
    set sources [lindex $listsources 1]
    
-   foreach s $sources {
-        gren_info "***** s=$s\n"
-   }
+   #foreach s $sources {
+   #     gren_info "***** s=$s\n"
+   #}
    
    
    foreach s $sources {
       foreach cata $s {
-         gren_info "CATA = [lindex $cata 0]\n"
+         #gren_info "CATA = [lindex $cata 0]\n"
          if {[lindex $cata 0] == $stars} {
             set name [::manage_source::naming $s ${stars}]
             foreach u $s {
-               gren_info "ASTROID ? = $u\n"
+               #gren_info "ASTROID ? = $u\n"
                if {[lindex $u 0] == "ASTROID"} {
                   set odata [lindex $u 2]
                   incr index

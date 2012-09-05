@@ -252,6 +252,11 @@ namespace eval tools_cata {
       return $tmpfile
    }
 
+
+
+
+
+
 proc ::tools_cata::extract_cata_xml_old { catafile } {
 
   global bddconf
