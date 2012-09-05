@@ -1078,17 +1078,17 @@ proc bm_renameext2 { args } {
       set old_extension [ lindex $args 0 ]
       set new_extension [ lindex $args 1 ]
 
-      set repertoire $audace(rep_images)
-      set liste_fichiers [ lsort -dictionary [ glob -dir $repertoire *$old_extension ] ]
+      set liste_fichiers [ lsort -dictionary [ glob -nocomplain -dir $audace(rep_images) *$old_extension ] ]
       set nbimg [ llength $liste_fichiers ]
-      ::console::affiche_resultat "$nbimg fichiers à renomer.\n"
-
-      foreach fichier $liste_fichiers {
-         #regexp {(.+)\.$old_extension} $fichier match prefixe_nom
-         set prefixe_nom [ file rootname $fichier ]
-         ::console::affiche_resultat "Fichier renomé en ${prefixe_nom}.$new_extension\n"
-         file copy -force $fichier ${prefixe_nom}.$new_extension
-         file delete -force $fichier
+      if { $nbimg!=0 } {
+         ::console::affiche_resultat "$nbimg fichiers à renomer.\n"
+         foreach fichier $liste_fichiers {
+            #regexp {(.+)\.$old_extension} $fichier match prefixe_nom
+            set prefixe_nom [ file rootname $fichier ]
+            ::console::affiche_resultat "Fichier renomé en ${prefixe_nom}.$new_extension\n"
+            file copy -force $fichier ${prefixe_nom}.$new_extension
+            file delete -force $fichier
+         }
       }
    } else {
       ::console::affiche_erreur "Usage: bm_renameext2 extension_actuelle(fts) nouvelle_extension(fit).\n"
