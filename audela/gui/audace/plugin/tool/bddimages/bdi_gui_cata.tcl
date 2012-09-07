@@ -129,6 +129,34 @@
 # }
 #
 #--------------------------------------------------
+# IMG CATALOG
+# 0   id 
+# 1   flag 
+# 2   xpos 
+# 3   ypos 
+# 4   instr_mag 
+# 5   err_mag 
+# 6   flux_sex 
+# 7   err_flux_sex 
+# 8   ra 
+# 9   dec 
+# 10  calib_mag 
+# 11  calib_mag_ss1 
+# 12  err_calib_mag_ss1 
+# 13  calib_mag_ss2 
+# 14  err_calib_mag_ss2 
+# 15  nb_neighbours 
+# 16  radius 
+# 17  background_sex 
+# 18  x2_momentum_sex 
+# 19  y2_momentum_sex 
+# 20  xy_momentum_sex 
+# 21  major_axis_sex 
+# 22  minor_axis_sex 
+# 23  position_angle_sex 
+# 24  fwhm_sex 
+# 25  flag_sex
+
 
 namespace eval gui_cata {
 
@@ -740,6 +768,13 @@ namespace eval gui_cata {
 
 
 
+
+
+
+
+
+
+
    proc ::gui_cata::affiche_cata { } {
 
 
@@ -1243,6 +1278,11 @@ namespace eval gui_cata {
       close $fxml
    }
    
+   
+   
+   
+   
+   
    proc ::gui_cata::getDSS { } {
 
       #gren_info "RA (deg): $::tools_cata::ra\n"
@@ -1263,6 +1303,11 @@ namespace eval gui_cata {
 
    }
 
+
+
+
+
+
    proc ::gui_cata::downloadURL { url query fichier } {
       package require http
       set tok [ ::http::geturl "$url" -query "$query" ]
@@ -1274,12 +1319,22 @@ namespace eval gui_cata {
       ::http::cleanup $tok
    }
    
+   
+   
+   
+   
+   
    proc ::gui_cata::loadDSS { fichier_fits_dss ra dec fov_x_deg fov_y_deg naxis1 naxis2 crota2} {
       set url "http://skyview.gsfc.nasa.gov/cgi-bin/images?"
       set sentence "Position=%s,%s&Size=%s,%s&Pixels=%s,%s&Rotation=%s&Survey=DSS&Scaling=Linear&Projection=Tan&Coordinates=J2000&Return=FITS"
       set query [ format $sentence [mc_angle2deg $ra] [mc_angle2deg $dec 90] $fov_x_deg $fov_y_deg $naxis1 $naxis2 $crota2 ]
       ::gui_cata::downloadURL "$url" "$query" $fichier_fits_dss
    }
+
+
+
+
+
 
    proc ::gui_cata::grab { i } {
 
@@ -1312,6 +1367,12 @@ namespace eval gui_cata {
       return
       
    }
+   
+   
+   
+   
+   
+   
    proc ::gui_cata::manual_clean {  } {
 
       for {set i 1} {$i<=7} {incr i} {
@@ -1321,13 +1382,55 @@ namespace eval gui_cata {
 
    }
 
+
+
+   proc ::gui_cata::test_manual_create {  } {
+
+      set ::gui_cata::man_xy_star(1) [list 508.68 513.06]
+      set ::gui_cata::man_ad_star(1) [list 194.210677 -0.025712]
+      set ::gui_cata::man_xy_star(2) [list 431.43 733.88]
+      set ::gui_cata::man_ad_star(2) [list 194.214458 -0.014126]
+      set ::gui_cata::man_xy_star(3) [list 191.52 555.30]
+      set ::gui_cata::man_ad_star(3) [list 194.226828 -0.022938]
+
+      for {set i 4} {$i<=7} {incr i} {
+         set ::gui_cata::man_xy_star($i) ""
+         set ::gui_cata::man_ad_star($i) ""
+      }
+
+   }
+
+
+
+
    proc ::gui_cata::manual_create {  } {
+
+      ::gui_cata::test_manual_create
+      
+      gren_info "Creation Manuelle du WCS\n"
+      set ::tools_astrometry::treshold 10
+      set ::tools_astrometry::delta   15
+      set ::tools_astrometry::ifortlib "/opt/intel/lib/ia32"
+      set ::tools_astrometry::science ""
+      set ::tools_astrometry::reference ""
 
       set sources {}
       set fieldsastroid [list "IMG" [list "ra" "dec" "err_pos" "mag" "err_mag"] [list "x1" "y2" "xsm" "ysm"] ]
 
+      # Lecture du Tabkkey depuis le buffer
+      gren_info "Lecture du Tabkkey depuis le buffer\n"
+      set listtab [buf$::audace(bufNo) getkwds]
+      set tabkey {}
+      foreach key $listtab {
+         lappend tabkey [list $key [buf$::audace(bufNo) getkwd $key] ]
+      }
+      set result  [bddimages_entete_preminforecon $tabkey]
+      set $tabkey [lindex $result 1]
+
+      set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
+      gren_info "tabkey : $tabkey\n"
+
       # Coordonnees x,y du centre du champ comme objet Science
-      set tabkey [::bddimages_liste::lget $::tools_astrometry::current_image "tabkey"]
       set ra  [lindex [::bddimages_liste::lget $tabkey ra] 1]
       set dec [lindex [::bddimages_liste::lget $tabkey dec] 1]
       set xsc [expr [lindex [::bddimages_liste::lget $tabkey NAXIS1] 1] / 2.0]
@@ -1335,6 +1438,7 @@ namespace eval gui_cata {
       lappend sources [list [list "IMG" [list $ra $dec 0 0 0] [list $ra $dec $xsc $ysc]] [list "SCIENCE" {} {}]] 
 
       # Liste des etoiles pointees a la mano
+      gren_info "Preparation des sources\n"
       for {set i 1} {$i<=7} {incr i} {
          if {$::gui_cata::man_xy_star($i) != "" && $::gui_cata::man_ad_star($i) != ""} {
             set x [split $::gui_cata::man_xy_star($i) " "]
@@ -1348,16 +1452,328 @@ namespace eval gui_cata {
       }
       set listsources [list [list $fieldsastroid] $sources ]
       set listsources [::analyse_source::psf $listsources $::tools_astrometry::treshold $::tools_astrometry::delta]
-      set ::tools_astrometry::current_image [::bddimages_liste::ladd $::tools_astrometry::current_image "listsources" $listsources]
+      set ::tools_astrometry::current_image [::bddimages_liste::ladd $::tools_cata::current_image "listsources" $listsources]
       
       # Creation des fichiers Priam
+      gren_info "Creation des fichiers Priam\n"
       ::priam::create_file_oldformat "new" 1 $::tools_astrometry::current_image "SCIENCE" "IMG"
       
       set ::tools_astrometry::img_list [list $::tools_astrometry::current_image]
       ::tools_astrometry::extract_priam_result [::tools_astrometry::launch_priam]
+
+
+# WCS dans l image
+
+      gren_info "WCS dans l image\n"
+      saveima i
+      loadima i
+
+# Obtention du nouvel header
+
+      set listtab [buf$::audace(bufNo) getkwds]
+      set tabkey {}
+      foreach key $listtab {
+         lappend tabkey [list $key [buf$::audace(bufNo) getkwd $key] ]
+      }
+      set result  [bddimages_entete_preminforecon $tabkey]
+      set $tabkey [lindex $result 1]
+      set ::tools_cata::current_image [::bddimages_liste::lupdate $::tools_cata::current_image tabkey $tabkey]
+      #gren_info "current_image : $::tools_cata::current_image\n"
       
+# Lancement Sextractor
+         gren_info "Lancement Sextractor\n"
+
+         set ext $::conf(extension,defaut)
+         set mypath "."
+         set sky0 dummy0
+         set sky dummy
+         catch {buf$::audace(bufNo) delkwd CATASTAR}
+         buf$::audace(bufNo) save [ file join ${mypath} ${sky0}$ext ]
+         createFileConfigSextractor
+         buf$::audace(bufNo) save [ file join ${mypath} ${sky}$ext ]
+         ::gui_cata::set_confsex
+         sextractor [ file join $mypath $sky0$ext ] -c "[ file join $mypath config.sex ]"
+         
+
+# Extraction Resultat Sextractor
+# et Creation de la liste
+         gren_info "Extraction Resultat\n"
+
+      set fields [list [list IMG [list ra dec poserr mag magerr] \
+                 [list id flag xpos ypos instr_mag err_mag flux_sex \
+                 err_flux_sex ra dec calib_mag calib_mag_ss1 err_calib_mag_ss1 \
+                 calib_mag_ss2 err_calib_mag_ss2 nb_neighbours radius \
+                 background_sex x2_momentum_sex y2_momentum_sex \
+                 xy_momentum_sex major_axis_sex minor_axis_sex \
+                 position_angle_sex fwhm_sex flag_sex]]]
+      set sources {}
+      set chan [open "catalog.cat" r]
+      while {[gets $chan line] >= 0} {
+         set a [split $line "="]
+         set a [lindex $a 0]
+         set a [split $a " "]
+         set c {}
+         foreach b $a {
+            if {$b==""} {continue}
+            lappend c $b
+         }
+         #gren_info "C=$c\n"
+         set id                 [lindex $c 0]
+         set flux_sex           [lindex $c 1]
+         set err_flux_sex       [lindex $c 2]
+         set instr_mag          [lindex $c 3]
+         set err_mag            [lindex $c 4]
+         set background_sex     [lindex $c 5]
+         set xpos               [lindex $c 6]
+         set ypos               [lindex $c 7]
+         set major_axis_sex     [lindex $c 11]
+         set minor_axis_sex     [lindex $c 12]
+         set position_angle_sex [lindex $c 13]
+         set fwhm_sex           [lindex $c 14]
+         set flag_sex           [lindex $c 15]
+         set radec  [buf$::audace(bufNo) xy2radec [list $xpos $ypos]]
+         set ra  [lindex $radec 0]
+         set dec [lindex $radec 1]
+         
+         set l [list $id 1 $xpos $ypos $instr_mag $err_mag $flux_sex $err_flux_sex $ra $dec \
+                     0.0 0.0 0.0 0.0 0.0 0 0 \
+                     $background_sex 0.0 0.0 0.0 $major_axis_sex $minor_axis_sex $position_angle_sex \
+                     $fwhm_sex $flag_sex]
+         lappend sources [list [list "IMG" {} $l]]
+         
+      }
+      set ::tools_cata::current_listsources [list $fields $sources]
+      set ::tools_cata::current_listsources [::tools_sources::set_common_fields $::tools_cata::current_listsources IMG    { ra dec 5.0 calib_mag calib_mag_ss1}]
+      ::manage_source::imprim_3_sources $::tools_cata::current_listsources
+
+# Modification de la liste
+
+      set naxis1      [lindex [::bddimages_liste::lget $tabkey NAXIS1 ] 1]
+      set naxis2      [lindex [::bddimages_liste::lget $tabkey NAXIS2 ] 1]
+      set xcent       [expr $naxis1/2.0]
+      set ycent       [expr $naxis2/2.0]
+      set scale_x     [lindex [::bddimages_liste::lget $tabkey CD1_1 ] 1]
+      set scale_y     [lindex [::bddimages_liste::lget $tabkey CD2_2 ] 1]
+
+      set a      [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
+      set ra     [lindex $a 0]
+      set dec    [lindex $a 1]
+      set radius [::tools_cata::get_radius $naxis1 $naxis2 $scale_x $scale_y]
+
+      #set listsources [::tools_sources::set_common_fields $listsources USNOA2 { ra dec poserr mag magerr }]
+      #set ::tools_cata::current_listsources [::tools_sources::set_common_fields $::tools_cata::current_listsources USNOA2 { ra dec poserr mag magerr }]
+
+      # 1ere identification sur l USNOA2
+
+      #   gren_info "csusnoa2 $::tools_cata::catalog_usnoa2 $ra $dec $radius\n"
+      #   return
+      #   set usnoa2 [csusnoa2 $::tools_cata::catalog_usnoa2 $ra $dec $radius]
+      #   set usnoa2 [::tools_sources::set_common_fields $usnoa2 USNOA2 { ra dec poserr mag magerr }]
+      #   set log 0
+      #   set ::tools_cata::current_listsources [ identification $::tools_cata::current_listsources IMG $usnoa2 USNOA2 30.0 -30.0 {} $log]
+      #   gren_info "rollup = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
+
+      # 1ere identification sur l UCAC3
+
+      gren_info "csucac3 $::tools_cata::catalog_ucac3 $ra $dec $radius\n"
+      set ucac3 [csucac3 $::tools_cata::catalog_ucac3 $ra $dec $radius]
+      set ucac3 [::tools_sources::set_common_fields $ucac3 UCAC3 { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
+      ::manage_source::imprim_3_sources $ucac3
+      set log 0
+      set ::tools_cata::current_listsources [ identification $::tools_cata::current_listsources IMG $ucac3 UCAC3 30.0 -30.0 {} $log]
+      gren_info "rollup = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
+
+
+      # Calcul des magnitudes 
+
+
+
+
+# methode 1
+
+      set mag {}
+      set errmag ""
+      set flux ""
+      set sources [lindex $::tools_cata::current_listsources 1]
+      foreach s $sources {
+         foreach cata $s {
+            if {[lindex $cata 0] == "UCAC3"} {
+               set l [lindex $cata 1]
+               lappend mag [lindex $l 3]
+               lappend errmag [lindex $l 4]
+
+               foreach cata2 $s {
+                  if {[lindex $cata2 0] == "IMG"} {
+                     set l2 [lindex $cata2 2]
+                     lappend flux [lindex $l2 6]
+                  }
+               }
+               gren_info "UCAC3 $flux $mag $errmag\n"
+            }
+         }
+         break
+      }
+
+      package require math::statistics
+      gren_info "mag = $mag\n"
+      gren_info "flux = $flux\n"
+      set magref [::math::statistics::mean $mag]
+      set fluxref [::math::statistics::mean $flux]
+      set errmag [::math::statistics::stdev $mag]
+
+
+# methode 2
+
+      set fields [lindex $::tools_cata::current_listsources 0]
+      set sources [lindex $::tools_cata::current_listsources 1]
+      set newsources "" 
+      foreach s $sources {
+         set news ""
+         foreach cata $s {
+            if {[lindex $cata 0] == "IMG"} {
+               set c [lindex $cata 1]
+               gren_info "c=$c\n"
+               set l [lindex $cata 2]
+               set flux [lindex $l 6]
+
+               set tabmagref ""
+               set tabfluxref ""
+               set tabmag ""
+               foreach s2 $sources {
+                  foreach cata2 $s2 {
+                     if {[lindex $cata2 0] == "UCAC3"} {
+                        set magref [lindex [lindex $cata2 1] 3]
+                        lappend tabmagref $magref
+
+                        foreach cata3 $s2 {
+                           if {[lindex $cata3 0] == "IMG"} {
+                              set fluxref  [lindex [lindex $cata3 2] 6]
+                              lappend tabfluxref $fluxref
+                              set magobjcalc [expr $magref - log10(($flux*1.0)/($fluxref*1.0))*2.5]
+                              gren_info "calc = $magref  $flux $fluxref $magobjcalc\n"
+                              lappend tabmag $magobjcalc
+                           }
+                        }
+                     }
+                  }
+               }
+               gren_info "tabmag=$tabmag \n"
+               
+               set mag [::math::statistics::median $tabmag]
+
+               #set errmag [::math::statistics::mean $errmag]
+               #set errmag [::math::statistics::stdev $mag]
+               set c [ lreplace $c 3 3 $mag]
+               gren_info "cfinal=$c \n"
+
+               lappend news [list "IMG" $c $l]
+            } else {
+              lappend news $cata
+            }
+         }
+         lappend newsources $news
+      }
+      set ::tools_cata::current_listsources [list $fields $newsources]
+
+
+      # calcule l erreur en mag
+      set tabdmag ""
+      set sources [lindex $::tools_cata::current_listsources 1]
+      foreach s $sources {
+         foreach cata $s {
+            if {[lindex $cata 0] == "IMG"} {
+               set mag [lindex [lindex $cata 1] 3]
+               foreach cata2 $s {
+                  if {[lindex $cata2 0] == "UCAC3"} {
+                     set magcata [lindex [lindex $cata2 1] 3]
+                     lappend tabdmag [expr abs($magcata - $mag)]
+                  }
+               }
+            } 
+         }
+      }
+      set dmag [::math::statistics::median $tabdmag]
+      set stdmag [::math::statistics::stdev $tabdmag]
+      set dmag [expr $dmag + $stdmag]
+
+      # mise a jour de l erreur en mag
+      set fields [lindex $::tools_cata::current_listsources 0]
+      set sources [lindex $::tools_cata::current_listsources 1]
+      set newsources "" 
+      foreach s $sources {
+         set news ""
+         foreach cata $s {
+            if {[lindex $cata 0] == "IMG"} {
+               set c [lindex $cata 1]
+               set l [lindex $cata 2]
+               gren_info "c1=$c\n"
+               set c [lreplace $c 4 4 $dmag]
+               gren_info "c2=$c $dmag \n"
+               lappend news [list "IMG" $c $l]
+            } else {
+              lappend news $cata
+            }
+         }
+         lappend newsources $news
+      }
+      set ::tools_cata::current_listsources [list $fields $newsources]
+
+
+
+
+
+      # Resultats des magnitudes 
+      ::manage_source::get_fields_from_sources $::tools_cata::current_listsources
+
+      set sources [lindex $::tools_cata::current_listsources 1]
+      foreach s $sources {
+         foreach cata $s {
+            if {[lindex $cata 0] == "IMG"} {
+              set l [lindex $cata 2]
+              set flux [lindex $l 6]
+              set mag [lindex [lindex $cata 1] 3]
+              set errmag [lindex [lindex $cata 1] 4]
+              gren_info "IMG $flux $mag $errmag "
+              foreach cata2 $s {
+                 if {[lindex $cata2 0] == "UCAC3"} {
+                    gren_info "(UCAC3) "
+                    set dmag [expr [lindex [lindex $cata2 1] 3] - $mag ]
+                    set emag [lindex [lindex $cata2 1] 4]
+                    gren_info " $dmag $emag "
+                 }
+              }
+              gren_info "\n"
+            } 
+         }
+      }
+
+
+      #set ::tools_cata::current_listsources [::tools_sources::set_common_fields $::tools_cata::current_listsources IMG { ra dec 5.0 calib_mag calib_mag_ss1}]
+      ::manage_source::imprim_3_sources $::tools_cata::current_listsources
+
+
+
+# Obtention du CATA
+
+      if {[::tools_cata::get_cata] == false} {
+         set ::gui_cata::color_cata $::gui_cata::color_button_bad
+         $::gui_cata::gui_cata configure -bg $::gui_cata::color_cata
+      } else {
+         set ::gui_cata::color_cata $::gui_cata::color_button_good
+         $::gui_cata::gui_cata configure -bg $::gui_cata::color_cata
+         ::gui_cata::affiche_cata
+      }
+
+
 
    }
+
+
+
+
+
+
+
 
 
    proc ::gui_cata::getsource {  } {
