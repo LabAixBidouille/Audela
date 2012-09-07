@@ -1773,6 +1773,11 @@ namespace eval bddimages_liste_gui {
 
    proc ::bddimages_liste_gui::add_info_cata { img } {
 
+      if {[::bddimages_liste::lexist $img "idbddimg" ]==0} {
+         return -code 1 "Champs idbddimg inexistant dans l image\n"
+      } 
+
+      
       set idbddimg [::bddimages_liste::lget $img "idbddimg"]
       set sqlcmd "SELECT 
                          catas.idbddcata,
@@ -1785,6 +1790,15 @@ namespace eval bddimages_liste_gui {
                   AND cataimage.idbddimg AND cataimage.idbddimg=$idbddimg"
 
       set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
+      if {$err} {
+         ::console::affiche_erreur "Erreur de lecture des infos du cata \n"
+         ::console::affiche_erreur "        sqlcmd = $sqlcmd\n"
+         ::console::affiche_erreur "        err = $err\n"
+         ::console::affiche_erreur "        msg = $msg\n"
+         ::console::affiche_erreur "        idbddimg = $idbddimg\n"
+         return
+      }      
+      
       set nbresult [expr [llength $resultcount]-1]
 
       #::console::affiche_erreur "RESULT $resultcount\n"

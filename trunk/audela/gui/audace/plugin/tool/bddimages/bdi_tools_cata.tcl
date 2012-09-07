@@ -141,6 +141,7 @@ namespace eval tools_cata {
    variable current_image_name
    variable current_image_date
    variable img_list
+   variable img_list_sav
    variable nb_img_list
    variable current_listsources
 
@@ -247,7 +248,7 @@ namespace eval tools_cata {
       }
       if {$errnum} {
          file delete -force -- $tmpfile
-         return -code 1 "Err extraction"
+         return -code 1 "Err extraction $xml $tmpfile"
       }
       return $tmpfile
    }
@@ -503,10 +504,10 @@ proc ::tools_cata::get_table { name table } {
 
          #gren_info "get_skybot $dateiso $ra $dec $radius $iau_code\n"
          set err [ catch {get_skybot $dateiso $ra $dec $radius $iau_code} skybot ]
-         #gren_info "skybot = $skybot\n"
+         gren_info "skybot = $skybot\n"
 
          #gren_info "nb_skybot = [::manage_source::get_nb_sources_by_cata $skybot SKYBOT]\n"
-         set listsources [ identification $listsources "OVNI" $skybot "SKYBOT" -100.0 -100.0 {} 1] 
+         set listsources [ identification $listsources "IMG" $skybot "SKYBOT" -100.0 -100.0 {} 1] 
          set ::tools_cata::nb_skybot [::manage_source::get_nb_sources_by_cata $listsources SKYBOT]
          gren_info "nb_skybot ident = $::tools_cata::nb_skybot\n"
       }
@@ -517,7 +518,7 @@ proc ::tools_cata::get_table { name table } {
       set votable [::votableUtil::list2votable $listsources $tabkey]
       
       # Sauvegarde du cata XML
-      #gren_info "Enregistrement du cata XML: $cataxml\n"
+      gren_info "Enregistrement du cata XML: $cataxml\n"
       set fxml [open $cataxml "w"]
       puts $fxml $votable
       close $fxml
