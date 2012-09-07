@@ -261,43 +261,43 @@ namespace eval gui_cata {
 
       # Check button Use
       if {! [info exists ::tools_cata::use_usnoa2] } {
-         if {[info exists conf(bddimages,cata,use_usnoa2)]} {
-            set ::tools_cata::use_usnoa2 $conf(bddimages,cata,use_usnoa2)
+         if {[info exists conf(astrometry,cata,use_usnoa2)]} {
+            set ::tools_cata::use_usnoa2 $conf(astrometry,cata,use_usnoa2)
          } else {
             set ::tools_cata::use_usnoa2 1
          }
       }
       if {! [info exists ::tools_cata::use_ucac2] } {
-         if {[info exists conf(bddimages,cata,use_ucac2)]} {
-            set ::tools_cata::use_ucac2 $conf(bddimages,cata,use_ucac2)
+         if {[info exists conf(astrometry,cata,use_ucac2)]} {
+            set ::tools_cata::use_ucac2 $conf(astrometry,cata,use_ucac2)
          } else {
             set ::tools_cata::use_ucac2 0
          }
       }
       if {! [info exists ::tools_cata::use_ucac3] } {
-         if {[info exists conf(bddimages,cata,use_ucac3)]} {
-            set ::tools_cata::use_ucac3 $conf(bddimages,cata,use_ucac3)
+         if {[info exists conf(astrometry,cata,use_ucac3)]} {
+            set ::tools_cata::use_ucac3 $conf(astrometry,cata,use_ucac3)
          } else {
             set ::tools_cata::use_ucac3 0
          }
       }
       if {! [info exists ::tools_cata::use_tycho2] } {
-         if {[info exists conf(bddimages,cata,use_tycho2)]} {
-            set ::tools_cata::use_tycho2 $conf(bddimages,cata,use_tycho2)
+         if {[info exists conf(astrometry,cata,use_tycho2)]} {
+            set ::tools_cata::use_tycho2 $conf(astrometry,cata,use_tycho2)
          } else {
             set ::tools_cata::use_tycho2 0
          }
       }
       if {! [info exists ::tools_cata::use_nomad1] } {
-         if {[info exists conf(bddimages,cata,use_nomad1)]} {
-            set ::tools_cata::use_nomad1 $conf(bddimages,cata,use_nomad1)
+         if {[info exists conf(astrometry,cata,use_nomad1)]} {
+            set ::tools_cata::use_nomad1 $conf(astrometry,cata,use_nomad1)
          } else {
             set ::tools_cata::use_nomad1 0
          }
       }
       if {! [info exists ::tools_cata::use_skybot] } {
-         if {[info exists conf(bddimages,cata,use_skybot)]} {
-            set ::tools_cata::use_skybot $conf(bddimages,cata,use_skybot)
+         if {[info exists conf(astrometry,cata,use_skybot)]} {
+            set ::tools_cata::use_skybot $conf(astrometry,cata,use_skybot)
          } else {
             set ::tools_cata::use_skybot 0
          }
@@ -306,50 +306,50 @@ namespace eval gui_cata {
       # Check button GUI
 
       if {! [info exists ::gui_cata::gui_img] } {
-         if {[info exists conf(bddimages,cata,gui_img)]} {
-            set ::gui_cata::gui_img $conf(bddimages,cata,gui_img)
+         if {[info exists conf(astrometry,cata,gui_img)]} {
+            set ::gui_cata::gui_img $conf(astrometry,cata,gui_img)
          } else {
             set ::gui_cata::gui_img 1
          }
       }
       if {! [info exists ::gui_cata::gui_usnoa2] } {
-         if {[info exists conf(bddimages,cata,gui_usnoa2)]} {
-            set ::gui_cata::gui_usnoa2 $conf(bddimages,cata,gui_usnoa2)
+         if {[info exists conf(astrometry,cata,gui_usnoa2)]} {
+            set ::gui_cata::gui_usnoa2 $conf(astrometry,cata,gui_usnoa2)
          } else {
             set ::gui_cata::gui_usnoa2 1
          }
       }
       if {! [info exists ::gui_cata::gui_ucac2] } {
-         if {[info exists conf(bddimages,cata,gui_ucac2)]} {
-            set ::gui_cata::gui_ucac2 $conf(bddimages,cata,gui_ucac2)
+         if {[info exists conf(astrometry,cata,gui_ucac2)]} {
+            set ::gui_cata::gui_ucac2 $conf(astrometry,cata,gui_ucac2)
          } else {
             set ::gui_cata::gui_ucac2 0
          }
       }
       if {! [info exists ::gui_cata::gui_ucac3] } {
-         if {[info exists conf(bddimages,cata,gui_ucac3)]} {
-            set ::gui_cata::gui_ucac3 $conf(bddimages,cata,gui_ucac3)
+         if {[info exists conf(astrometry,cata,gui_ucac3)]} {
+            set ::gui_cata::gui_ucac3 $conf(astrometry,cata,gui_ucac3)
          } else {
             set ::gui_cata::gui_ucac3 0
          }
       }
       if {! [info exists ::gui_cata::gui_tycho2] } {
-         if {[info exists conf(bddimages,cata,gui_tycho2)]} {
-            set ::gui_cata::gui_tycho2 $conf(bddimages,cata,gui_tycho2)
+         if {[info exists conf(astrometry,cata,gui_tycho2)]} {
+            set ::gui_cata::gui_tycho2 $conf(astrometry,cata,gui_tycho2)
          } else {
             set ::gui_cata::gui_tycho2 0
          }
       }
       if {! [info exists ::gui_cata::gui_nomad1] } {
-         if {[info exists conf(bddimages,cata,gui_nomad1)]} {
-            set ::gui_cata::gui_nomad1 $conf(bddimages,cata,gui_nomad1)
+         if {[info exists conf(astrometry,cata,gui_nomad1)]} {
+            set ::gui_cata::gui_nomad1 $conf(astrometry,cata,gui_nomad1)
          } else {
             set ::gui_cata::gui_nomad1 0
          }
       }
       if {! [info exists ::gui_cata::gui_skybot] } {
-         if {[info exists conf(bddimages,cata,gui_skybot)]} {
-            set ::gui_cata::gui_skybot $conf(bddimages,cata,gui_skybot)
+         if {[info exists conf(astrometry,cata,gui_skybot)]} {
+            set ::gui_cata::gui_skybot $conf(astrometry,cata,gui_skybot)
          } else {
             set ::gui_cata::gui_skybot 0
          }
@@ -394,57 +394,57 @@ namespace eval gui_cata {
 
       # Taille des ronds
       if {! [info exists ::gui_cata::size_img] } {
-         if {[info exists conf(bddimages,cata,size_img)]} {
-            set ::gui_cata::size_img $conf(bddimages,cata,size_img)
+         if {[info exists conf(astrometry,cata,size_img)]} {
+            set ::gui_cata::size_img $conf(astrometry,cata,size_img)
          } else {
             set ::gui_cata::size_img 1
          }
       }
       if {! [info exists ::gui_cata::size_usnoa2] } {
-         if {[info exists conf(bddimages,cata,size_usnoa2)]} {
-            set ::gui_cata::size_usnoa2 $conf(bddimages,cata,size_usnoa2)
+         if {[info exists conf(astrometry,cata,size_usnoa2)]} {
+            set ::gui_cata::size_usnoa2 $conf(astrometry,cata,size_usnoa2)
          } else {
             set ::gui_cata::size_usnoa2 1
          }
       }
       if {! [info exists ::gui_cata::size_ucac2] } {
-         if {[info exists conf(bddimages,cata,size_ucac2)]} {
-            set ::gui_cata::size_ucac2 $conf(bddimages,cata,size_ucac2)
+         if {[info exists conf(astrometry,cata,size_ucac2)]} {
+            set ::gui_cata::size_ucac2 $conf(astrometry,cata,size_ucac2)
          } else {
             set ::gui_cata::size_ucac2 1
          }
       }
       if {! [info exists ::gui_cata::size_ucac3] } {
-         if {[info exists conf(bddimages,cata,size_ucac3)]} {
-            set ::gui_cata::size_ucac3 $conf(bddimages,cata,size_ucac3)
+         if {[info exists conf(astrometry,cata,size_ucac3)]} {
+            set ::gui_cata::size_ucac3 $conf(astrometry,cata,size_ucac3)
          } else {
             set ::gui_cata::size_ucac3 1
          }
       }
       if {! [info exists ::gui_cata::size_nomad1] } {
-         if {[info exists conf(bddimages,cata,size_nomad1)]} {
-            set ::gui_cata::size_nomad1 $conf(bddimages,cata,size_nomad1)
+         if {[info exists conf(astrometry,cata,size_nomad1)]} {
+            set ::gui_cata::size_nomad1 $conf(astrometry,cata,size_nomad1)
          } else {
             set ::gui_cata::size_nomad1 1
          }
       }
       if {! [info exists ::gui_cata::size_tycho2] } {
-         if {[info exists conf(bddimages,cata,size_tycho2)]} {
-            set ::gui_cata::size_tycho2 $conf(bddimages,cata,size_tycho2)
+         if {[info exists conf(astrometry,cata,size_tycho2)]} {
+            set ::gui_cata::size_tycho2 $conf(astrometry,cata,size_tycho2)
          } else {
             set ::gui_cata::size_tycho2 1
          }
       }
       if {! [info exists ::gui_cata::size_skybot] } {
-         if {[info exists conf(bddimages,cata,size_skybot)]} {
-            set ::gui_cata::size_skybot $conf(bddimages,cata,size_skybot)
+         if {[info exists conf(astrometry,cata,size_skybot)]} {
+            set ::gui_cata::size_skybot $conf(astrometry,cata,size_skybot)
          } else {
             set ::gui_cata::size_skybot 1
          }
       }
       if {! [info exists ::gui_cata::size_ovni] } {
-         if {[info exists conf(bddimages,cata,size_ovni)]} {
-            set ::gui_cata::size_ovni $conf(bddimages,cata,size_ovni)
+         if {[info exists conf(astrometry,cata,size_ovni)]} {
+            set ::gui_cata::size_ovni $conf(astrometry,cata,size_ovni)
          } else {
             set ::gui_cata::size_ovni 1
          }
@@ -452,56 +452,63 @@ namespace eval gui_cata {
 
       # Autres utilitaires
       if {! [info exists ::tools_cata::keep_radec] } {
-         if {[info exists conf(bddimages,cata,keep_radec)]} {
-            set ::tools_cata::keep_radec $conf(bddimages,cata,keep_radec)
+         if {[info exists conf(astrometry,cata,keep_radec)]} {
+            set ::tools_cata::keep_radec $conf(astrometry,cata,keep_radec)
          } else {
             set ::tools_cata::keep_radec 1
          }
       }
       if {! [info exists ::tools_cata::create_cata] } {
-         if {[info exists conf(bddimages,cata,create_cata)]} {
-            set ::tools_cata::create_cata $conf(bddimages,cata,create_cata)
+         if {[info exists conf(astrometry,cata,create_cata)]} {
+            set ::tools_cata::create_cata $conf(astrometry,cata,create_cata)
          } else {
             set ::tools_cata::create_cata 1
          }
       }
       if {! [info exists ::tools_cata::delpv] } {
-         if {[info exists conf(bddimages,cata,delpv)]} {
-            set ::tools_cata::delpv $conf(bddimages,cata,delpv)
+         if {[info exists conf(astrometry,cata,delpv)]} {
+            set ::tools_cata::delpv $conf(astrometry,cata,delpv)
          } else {
             set ::tools_cata::delpv 1
          }
       }
       if {! [info exists ::tools_cata::boucle] } {
-         if {[info exists conf(bddimages,cata,boucle)]} {
-            set ::tools_cata::boucle $conf(bddimages,cata,boucle)
+         if {[info exists conf(astrometry,cata,boucle)]} {
+            set ::tools_cata::boucle $conf(astrometry,cata,boucle)
          } else {
             set ::tools_cata::boucle 0
          }
       }
       if {! [info exists ::tools_cata::deuxpasses] } {
-         if {[info exists conf(bddimages,cata,deuxpasses)]} {
-            set ::tools_cata::deuxpasses $conf(bddimages,cata,deuxpasses)
+         if {[info exists conf(astrometry,cata,deuxpasses)]} {
+            set ::tools_cata::deuxpasses $conf(astrometry,cata,deuxpasses)
          } else {
             set ::tools_cata::deuxpasses 1
          }
       }
       if {! [info exists ::tools_cata::limit_nbstars_accepted] } {
-         if {[info exists conf(bddimages,cata,limit_nbstars_accepted)]} {
-            set ::tools_cata::limit_nbstars_accepted $conf(bddimages,cata,limit_nbstars_accepted)
+         if {[info exists conf(astrometry,cata,limit_nbstars_accepted)]} {
+            set ::tools_cata::limit_nbstars_accepted $conf(astrometry,cata,limit_nbstars_accepted)
          } else {
             set ::tools_cata::limit_nbstars_accepted 5
          }
       }
       if {! [info exists ::tools_cata::log] } {
-         if {[info exists conf(bddimages,cata,log)]} {
-            set ::tools_cata::log $conf(bddimages,cata,log)
+         if {[info exists conf(astrometry,cata,log)]} {
+            set ::tools_cata::log $conf(astrometry,cata,log)
          } else {
             set ::tools_cata::log 0
          }
       }
 
-
+      # Lib du compilateur Fortran pour executer Priam
+      if {! [info exists ::tools_astrometry::ifortlib] } {
+         if {[info exists conf(bddimages,cata,ifortlib)]} {
+            set ::tools_astrometry::ifortlib $conf(bddimages,cata,ifortlib)
+         } else {
+            set ::tools_astrometry::ifortlib "/opt/intel/lib/ia32"
+         }
+      }
 
    }
 
@@ -551,6 +558,13 @@ namespace eval gui_cata {
       global conf
       global action_label
 
+      # Repertoires 
+      set conf(astrometry,catfolder,usnoa2) $::tools_cata::catalog_usnoa2 
+      set conf(astrometry,catfolder,ucac2)  $::tools_cata::catalog_ucac2  
+      set conf(astrometry,catfolder,ucac3)  $::tools_cata::catalog_ucac3  
+      set conf(astrometry,catfolder,tycho2) $::tools_cata::catalog_tycho2 
+      set conf(astrometry,catfolder,nomad1) $::tools_cata::catalog_nomad1 
+
       # Check button Use
       set conf(astrometry,cata,use_usnoa2) $::tools_cata::use_usnoa2
       set conf(astrometry,cata,use_ucac2)  $::tools_cata::use_ucac2
@@ -568,13 +582,6 @@ namespace eval gui_cata {
       set conf(astrometry,cata,gui_nomad1) $::gui_cata::gui_nomad1
       set conf(astrometry,cata,gui_skybot) $::gui_cata::gui_skybot
        
-      # Repertoires 
-      set conf(astrometry,catfolder,usnoa2) $::tools_cata::catalog_usnoa2 
-      set conf(astrometry,catfolder,ucac2)  $::tools_cata::catalog_ucac2  
-      set conf(astrometry,catfolder,ucac3)  $::tools_cata::catalog_ucac3  
-      set conf(astrometry,catfolder,tycho2) $::tools_cata::catalog_tycho2 
-      set conf(astrometry,catfolder,nomad1) $::tools_cata::catalog_nomad1 
-
       # Taille des ronds
       set conf(astrometry,cata,size_img)    $::gui_cata::size_img
       set conf(astrometry,cata,size_usnoa2) $::gui_cata::size_usnoa2
@@ -1530,9 +1537,11 @@ namespace eval gui_cata {
       gren_info "Creation Manuelle du WCS\n"
       set ::tools_astrometry::treshold 10
       set ::tools_astrometry::delta   15
-      set ::tools_astrometry::ifortlib "/opt/intel/lib/ia32"
+#      set ::tools_astrometry::ifortlib "/opt/intel/lib/ia32"
       set ::tools_astrometry::science ""
       set ::tools_astrometry::reference ""
+
+      gren_info " Compilo: $::tools_astrometry::ifortlib \n"
 
       set sources {}
       set fieldimgshort [list "IMG" [list "ra" "dec" "err_pos" "mag" "err_mag"] [list "x1" "y2" "xsm" "ysm"] ]
@@ -2415,7 +2424,7 @@ namespace eval gui_cata {
                  button $r.aladin -text "Show in Aladin" -borderwidth 0 -takefocus 1 -relief groove -borderwidth 1 -command "::gui_cata::sendAladinScript" 
                  pack $r.aladin -side top -anchor e -padx 3 -pady 3 -ipadx 3 -ipady 3 -expand 0
 
-        #--- Cree un frame pour afficher 
+        #--- Cree un frame pour afficher la GUI du Mode Manuel
         set manuel [frame $f7.manuel -borderwidth 0 -cursor arrow -relief groove]
         pack $manuel -in $f7 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
