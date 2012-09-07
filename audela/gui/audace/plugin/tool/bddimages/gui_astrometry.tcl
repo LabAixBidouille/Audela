@@ -11,7 +11,7 @@ namespace eval gui_astrometry {
       set ::tools_astrometry::treshold 5
       set ::gui_astrometry::factor 1000
       set ::tools_cata::id_current_image 0
-      
+
       if {! [info exists ::tools_astrometry::ifortlib] } {
          if {[info exists conf(bddimages,cata,ifortlib)]} {
             set ::tools_astrometry::ifortlib $conf(bddimages,cata,ifortlib)
@@ -45,6 +45,7 @@ namespace eval gui_astrometry {
 
    proc ::gui_astrometry::fermer {  } {
 
+      global conf
       set conf(bddimages,cata,ifortlib) $::tools_astrometry::ifortlib
 
       destroy $::gui_astrometry::fen

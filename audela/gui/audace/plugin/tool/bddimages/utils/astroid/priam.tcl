@@ -93,7 +93,7 @@ proc ::priam::create_file_oldformat { tag nb img science stars } {
    set bandwith 0.57000
 
    # Conditions d observation
-   set axes "wn"
+   set axes "en"
 
    set imagefilename [::bddimages_liste::lget $img "filename"]
    set dateobsjd [::bddimages_liste::lget $img "commundatejj"]
