@@ -344,7 +344,7 @@ variable id_img
                set type [lindex $astrom(types) $k]
                set unit [lindex $astrom(units) $k]
                set comment [lindex $astrom(comments) $k]
-               gren_info "KWD: [lindex [buf$::audace(bufNo) getkwd  $kwd] 1] == $val \n"
+               gren_info "KWD: $key \n"
                buf$::audace(bufNo) setkwd [list $kwd $val $type $unit $comment]
             }
          }
