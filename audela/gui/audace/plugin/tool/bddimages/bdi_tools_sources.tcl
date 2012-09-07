@@ -231,10 +231,14 @@ namespace eval tools_sources {
          }
       }
 
+
       set idlist ""
       set fields [lindex $listsources 0]
+      set exist "no"
       foreach cata $fields {
          if { [lindex $cata 0]==$catalog } {
+            if {$exist=="yes"} {break}
+            set exist "yes"
             set cols [lindex $cata 2]
             foreach f $fieldlist {
                #gren_info "f = $f \n"
@@ -254,6 +258,9 @@ namespace eval tools_sources {
             }
          }
       }
+      if {$exist=="no"} {
+         return $listsources
+      }
 
       #gren_info "idlist $catalog= $idlist \n"
       if {[llength $idlist]!=5} {
@@ -261,7 +268,10 @@ namespace eval tools_sources {
           gren_info "IDLIST $idlist\n"
           gren_info "CATALOG $catalog\n"
           gren_info "FIELDLIST demande = $fieldlist\n"
+          gren_info "cst = $cst\n"
           gren_info "FIELDLIST existe = $cols\n"
+          gren_info "FIELDLIST existe = $cols\n"
+          gren_info "CATA = $cata\n"
           
           return $listsources
       }

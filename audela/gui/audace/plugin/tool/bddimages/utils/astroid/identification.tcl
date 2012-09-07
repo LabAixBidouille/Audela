@@ -421,7 +421,7 @@ proc identification { catalist1 catalog1 catalist2 catalog2 scoreposlimit scorem
    set tt [expr ($tt3 - $tt2)/1000.]
    if {$ulog} {gren_info "duration $tt sec \n"}
    set tt [expr ($tt3 - $tt0)/1000.]
-   gren_info "** CrossMatch $catalog1 VS $catalog2 in $tt secondes for $nbralist1 x $nbralist2 sources ...\n"
+   gren_info "** CrossMatch $catalog1 VS $catalog2 in $tt secondes for $nbralist1 x $nbralist2 sources ... Matched : [llength $ident]\n"
  
   return $result
 

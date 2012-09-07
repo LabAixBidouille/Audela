@@ -71,8 +71,13 @@ proc ::priam::create_file_oldformat { tag nb img science stars } {
 
    global bddconf audace
 
+   if {[::bddimages_liste::lexist $img "listsources" ]==0} {
+      return -code 1 "Pas de Listesources" 
+   } 
 
    set listsources [::bddimages_liste::lget $img "listsources"]
+   #gren_info "listsources : $listsources\n"
+
    set imagefilename [::bddimages_liste::lget $img "filename"]
 
    set tabkey [::bddimages_liste::lget $img "tabkey"]

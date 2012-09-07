@@ -1001,9 +1001,24 @@ namespace eval gui_cata {
       global bddconf
 
          #?Charge l image en memoire
-         #gren_info "cur id $::tools_cata::id_current_image: \n"
+         #gren_info "cur id $::tools_cata::id_current_image \n"
          set ::tools_cata::current_image [lindex $::tools_cata::img_list [expr $::tools_cata::id_current_image - 1] ]
-         set ::tools_cata::current_image [::bddimages_liste_gui::add_info_cata $::tools_cata::current_image]
+         
+         #gren_info "CURRENT_IMAGE $::tools_cata::current_image \n"
+         #gren_info "IMG_LIST [lindex $::tools_cata::img_list 0 ] \n"
+         #gren_info "IMG_LIST $::tools_cata::img_list \n"
+         #gren_info " idbddimg = \n"
+         #set idbddimg [::bddimages_liste::lget $::tools_cata::current_image "idbddimg"]
+         #gren_info " idbddimg = $idbddimg\n"
+
+         set err [catch {set ::tools_cata::current_image [::bddimages_liste_gui::add_info_cata $::tools_cata::current_image]} msg]
+         if {$err} {
+            ::console::affiche_erreur "Erreur de lecture des infos du cata de l image \n"
+            ::console::affiche_erreur "        err = $err\n"
+            ::console::affiche_erreur "        msg = $msg\n"
+            ::console::affiche_erreur "        idbddimg = $idbddimg\n"
+            return
+         }
          
          set cataexist   [::bddimages_liste::lget $::tools_cata::current_image "cataexist"]
          set tabkey      [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
@@ -1383,15 +1398,16 @@ namespace eval gui_cata {
    }
 
 
-
    proc ::gui_cata::test_manual_create {  } {
 
-      set ::gui_cata::man_xy_star(1) [list 508.68 513.06]
-      set ::gui_cata::man_ad_star(1) [list 194.210677 -0.025712]
-      set ::gui_cata::man_xy_star(2) [list 431.43 733.88]
-      set ::gui_cata::man_ad_star(2) [list 194.214458 -0.014126]
-      set ::gui_cata::man_xy_star(3) [list 191.52 555.30]
-      set ::gui_cata::man_ad_star(3) [list 194.226828 -0.022938]
+# pour l image = 2011-04-12T20:44:40.700
+
+      set ::gui_cata::man_xy_star(1) [list 529.95 742.96]
+      set ::gui_cata::man_ad_star(1) [list 194.135475 2.233502]
+      set ::gui_cata::man_xy_star(2) [list 518.08 468.76]
+      set ::gui_cata::man_ad_star(2) [list 194.136795 2.219577]
+      set ::gui_cata::man_xy_star(3) [list 906.97 528.94]
+      set ::gui_cata::man_ad_star(3) [list 194.116930 2.221854]
 
       for {set i 4} {$i<=7} {incr i} {
          set ::gui_cata::man_xy_star($i) ""
@@ -1401,11 +1417,115 @@ namespace eval gui_cata {
    }
 
 
+   proc ::gui_cata::manual_view {  } {
+
+      for {set i 1} {$i<=7} {incr i} {
+         if {$::gui_cata::man_xy_star($i) != "" && $::gui_cata::man_ad_star($i) != ""} {
+            set x [split $::gui_cata::man_xy_star($i) " "]
+            set xsm [lindex $x 0]
+            set ysm [lindex $x 1]
+            affich_un_rond_xy  $xsm $ysm "blue" 5 2
+         }
+      }
+       
+
+   }
+
+
+   proc ::gui_cata::manual_fit {  } {
+
+      set err [ catch {set rect  [ ::confVisu::getBox $::audace(visuNo) ]} msg ]
+      if {$err>0 || $rect==""} {
+         tk_messageBox -message "Veuillez selectionner une etoile et une reference XY en dessinant un carre dans l'image a reduire" -type ok
+         return
+      }
+      set x1 [lindex $rect 0]
+      set y1 [lindex $rect 1]
+      set x2 [lindex $rect 2]
+      set y2 [lindex $rect 3]
+      set xradius [expr $x2 - $x1]
+      set yradius [expr $y2 - $y1]
+      
+      
+      set id 0
+      for {set i 1} {$i<=7} {incr i} {
+         if {$::gui_cata::man_xy_star($i) != "" && $::gui_cata::man_ad_star($i) != ""} {
+            set x [split $::gui_cata::man_xy_star($i) " "]
+            set xsm [lindex $x 0]
+            set ysm [lindex $x 1]
+            if {$xsm>$x1 && $xsm<$x2 && $ysm > $y1 && $ysm < $y2 } {
+               set id $i
+               break
+            }
+         }
+      }
+      if {$id == 0} {
+         tk_messageBox -message "Veuillez selectionner une etoile + une reference XY en dessinant un carre dans l'image a reduire" -type ok
+         return
+      }
+
+      set err [ catch {set cent [::tools_cdl::select_obj $rect $::audace(bufNo)]} msg ]
+      #gren_info "IMG XY: $err : $cent : $msg \n"
+      set xdiff [expr [lindex $cent 0] - $xsm]
+      set ydiff [expr [lindex $cent 1] - $ysm]
+      set rdiff [expr sqrt((pow($xdiff,2)+pow($ydiff,2))/2.0)]
+      gren_info "RDIFF: $rdiff \n"
+      
+      set ::gui_cata::man_xy_star($id) "[format "%2.2f" [lindex $cent 0]] [format "%2.2f" [lindex $cent 1]]"
+
+
+      set rdiff ""
+      for {set i 1} {$i<=7} {incr i} {
+         if {$::gui_cata::man_xy_star($i) != "" && $::gui_cata::man_ad_star($i) != ""} {
+            set x [split $::gui_cata::man_xy_star($i) " "]
+            set xsm [expr [lindex $x 0] + $xdiff]
+            set ysm [expr [lindex $x 1] + $ydiff]
+            set x1 [expr $xsm - $xradius ]
+            set y1 [expr $ysm - $yradius ]
+            set x2 [expr $xsm + $xradius ]
+            set y2 [expr $ysm + $yradius ]
+            set rect [list $x1 $y1 $x2 $y2]
+            set err [ catch {set cent [::tools_cdl::select_obj $rect $::audace(bufNo)]} msg ]
+            #gren_info "IMG XY: $err : $cent : $msg \n"
+            set xdiff [expr [lindex $cent 0] - $xsm]
+            set ydiff [expr [lindex $cent 1] - $ysm]
+            lappend rdiff [expr sqrt((pow($xdiff,2)+pow($ydiff,2))/2.0)]
+            set ::gui_cata::man_xy_star($i) "[format "%2.2f" [lindex $cent 0]] [format "%2.2f" [lindex $cent 1]]"           
+         }
+      }
+      set rdiff [::math::statistics::max $rdiff]
+      gren_info "RDIFFMAX: $rdiff \n"
+      cleanmark
+      ::gui_cata::manual_view
+   }
+
+   proc ::gui_cata::push_img_list {  } {
+      set ::tools_cata::img_list_sav $::tools_cata::img_list
+      set ::tools_cata::current_image_sav $::tools_cata::img_list
+      set ::tools_cata::id_current_image_sav $::tools_cata::id_current_image
+   }
+
+   proc ::gui_cata::pop_img_list {  } {
+      set ::tools_cata::img_list $::tools_cata::img_list_sav
+      set ::tools_cata::current_image $::tools_cata::current_image_sav
+      set ::tools_cata::id_current_image $::tools_cata::id_current_image_sav
+   }
+
+
+
+
+
+
+
 
 
    proc ::gui_cata::manual_create {  } {
 
-      ::gui_cata::test_manual_create
+      package require math::statistics
+      #::gui_cata::test_manual_create
+
+      ::gui_cata::push_img_list
+
       
       gren_info "Creation Manuelle du WCS\n"
       set ::tools_astrometry::treshold 10
@@ -1415,10 +1535,10 @@ namespace eval gui_cata {
       set ::tools_astrometry::reference ""
 
       set sources {}
-      set fieldsastroid [list "IMG" [list "ra" "dec" "err_pos" "mag" "err_mag"] [list "x1" "y2" "xsm" "ysm"] ]
+      set fieldimgshort [list "IMG" [list "ra" "dec" "err_pos" "mag" "err_mag"] [list "x1" "y2" "xsm" "ysm"] ]
 
       # Lecture du Tabkkey depuis le buffer
-      gren_info "Lecture du Tabkkey depuis le buffer\n"
+      gren_info "     Lecture du Tabkkey depuis le buffer\n"
       set listtab [buf$::audace(bufNo) getkwds]
       set tabkey {}
       foreach key $listtab {
@@ -1428,17 +1548,17 @@ namespace eval gui_cata {
       set $tabkey [lindex $result 1]
 
       set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
-      gren_info "tabkey : $tabkey\n"
+      #gren_info "tabkey : $tabkey\n"
 
       # Coordonnees x,y du centre du champ comme objet Science
-      set ra  [lindex [::bddimages_liste::lget $tabkey ra] 1]
-      set dec [lindex [::bddimages_liste::lget $tabkey dec] 1]
-      set xsc [expr [lindex [::bddimages_liste::lget $tabkey NAXIS1] 1] / 2.0]
-      set ysc [expr [lindex [::bddimages_liste::lget $tabkey NAXIS2] 1] / 2.0]
-      lappend sources [list [list "IMG" [list $ra $dec 0 0 0] [list $ra $dec $xsc $ysc]] [list "SCIENCE" {} {}]] 
+      #set ra  [lindex [::bddimages_liste::lget $tabkey ra] 1]
+      #set dec [lindex [::bddimages_liste::lget $tabkey dec] 1]
+      #set xsc [expr [lindex [::bddimages_liste::lget $tabkey NAXIS1] 1] / 2.0]
+      #set ysc [expr [lindex [::bddimages_liste::lget $tabkey NAXIS2] 1] / 2.0]
+      #lappend sources [list [list "IMG" [list $ra $dec 0 0 0] [list $ra $dec $xsc $ysc]] [list "SCIENCE" {} {}]] 
 
       # Liste des etoiles pointees a la mano
-      gren_info "Preparation des sources\n"
+      gren_info "     Preparation des sources\n"
       for {set i 1} {$i<=7} {incr i} {
          if {$::gui_cata::man_xy_star($i) != "" && $::gui_cata::man_ad_star($i) != ""} {
             set x [split $::gui_cata::man_xy_star($i) " "]
@@ -1450,21 +1570,68 @@ namespace eval gui_cata {
             lappend sources [list [list "IMG" [list $ra $dec 0 0 0] [list $ra $dec $xsm $ysm]] ]
          }
       }
-      set listsources [list [list $fieldsastroid] $sources ]
-      set listsources [::analyse_source::psf $listsources $::tools_astrometry::treshold $::tools_astrometry::delta]
-      set ::tools_astrometry::current_image [::bddimages_liste::ladd $::tools_cata::current_image "listsources" $listsources]
+      set listsources [list [list $fieldimgshort] $sources ]
+      #gren_info "listsources : $listsources\n"
       
-      # Creation des fichiers Priam
-      gren_info "Creation des fichiers Priam\n"
-      ::priam::create_file_oldformat "new" 1 $::tools_astrometry::current_image "SCIENCE" "IMG"
-      
-      set ::tools_astrometry::img_list [list $::tools_astrometry::current_image]
-      ::tools_astrometry::extract_priam_result [::tools_astrometry::launch_priam]
+      set fields  [lindex $listsources 0]
+      set sources [lindex $listsources 1]
+      #gren_info "fields : $fields\n"
+      #gren_info "sources : $sources\n"
 
+      
+      
+      set listsources [::analyse_source::psf $listsources $::tools_astrometry::treshold $::tools_astrometry::delta]
+      #gren_info "rollup = [::manage_source::get_nb_sources_rollup $listsources]\n"
+      set ::tools_cata::current_image [::bddimages_liste::ladd $::tools_cata::current_image "listsources" $listsources]
+      
+      #set listsources [::bddimages_liste::lget $::tools_cata::current_image "listsources"]
+      #gren_info "listsources : $listsources\n"
+      #gren_info "rollup = [::manage_source::get_nb_sources_rollup $listsources]\n"
+  
+  
+      # Creation des fichiers et lancement de Priam
+      gren_info "     Creation des fichiers et lancement de Priam\n"
+      set ::tools_astrometry::reference ""
+
+      set err [catch {::priam::create_file_oldformat "new" 1 \
+                 $::tools_cata::current_image "" "IMG" } msg ]
+      if {$err} {
+         ::console::affiche_erreur "WCS Impossible :($err) $msg \n"
+         ::gui_cata::pop_img_list
+         return
+      }
+      
+      #gren_info "current_image : $::tools_cata::current_image\n"
+
+      set ::tools_cata::img_list [list $::tools_cata::current_image]
+
+      set err [catch {::tools_astrometry::extract_priam_result [::tools_astrometry::launch_priam] } msg ]
+      if {$err} {
+         ::console::affiche_erreur "WCS Impossible :($err)  $msg \n"
+         ::gui_cata::pop_img_list
+         return
+      }
+
+      foreach ::tools_cata::current_image $::tools_cata::img_list {
+         #gren_info "current_image : $::tools_cata::current_image\n"
+
+         if {[::bddimages_liste::lexist $::tools_cata::current_image "listsources" ]==0} {
+            ::console::affiche_erreur "WCS Impossible :(4) listesources n existe pas dans l image courante \n"
+            ::gui_cata::pop_img_list
+            return
+         } 
+
+         set ::tools_cata::current_listsources [::bddimages_liste::lget $::tools_cata::current_image "listsources"]
+         #::manage_source::imprim_3_sources $::tools_cata::current_listsources
+      }
+
+      #gren_info "current_image : $::tools_cata::current_image\n"
+      #::manage_source::imprim_3_sources $::tools_cata::current_listsources
+      gren_info "rollup = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
 
 # WCS dans l image
 
-      gren_info "WCS dans l image\n"
+      gren_info "     WCS dans l image\n"
       saveima i
       loadima i
 
@@ -1481,7 +1648,7 @@ namespace eval gui_cata {
       #gren_info "current_image : $::tools_cata::current_image\n"
       
 # Lancement Sextractor
-         gren_info "Lancement Sextractor\n"
+         gren_info "     Lancement Sextractor\n"
 
          set ext $::conf(extension,defaut)
          set mypath "."
@@ -1497,7 +1664,7 @@ namespace eval gui_cata {
 
 # Extraction Resultat Sextractor
 # et Creation de la liste
-         gren_info "Extraction Resultat\n"
+         gren_info "     Extraction Resultat\n"
 
       set fields [list [list IMG [list ra dec poserr mag magerr] \
                  [list id flag xpos ypos instr_mag err_mag flux_sex \
@@ -1544,7 +1711,7 @@ namespace eval gui_cata {
       }
       set ::tools_cata::current_listsources [list $fields $sources]
       set ::tools_cata::current_listsources [::tools_sources::set_common_fields $::tools_cata::current_listsources IMG    { ra dec 5.0 calib_mag calib_mag_ss1}]
-      ::manage_source::imprim_3_sources $::tools_cata::current_listsources
+      #::manage_source::imprim_3_sources $::tools_cata::current_listsources
 
 # Modification de la liste
 
@@ -1575,54 +1742,24 @@ namespace eval gui_cata {
 
       # 1ere identification sur l UCAC3
 
-      gren_info "csucac3 $::tools_cata::catalog_ucac3 $ra $dec $radius\n"
+      #gren_info "csucac3 $::tools_cata::catalog_ucac3 $ra $dec $radius\n"
       set ucac3 [csucac3 $::tools_cata::catalog_ucac3 $ra $dec $radius]
       set ucac3 [::tools_sources::set_common_fields $ucac3 UCAC3 { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
-      ::manage_source::imprim_3_sources $ucac3
+
+      affich_rond $ucac3 UCAC3  $::gui_cata::color_ucac3  $::gui_cata::size_ucac3
+      #::manage_source::imprim_3_sources $ucac3
       set log 0
       set ::tools_cata::current_listsources [ identification $::tools_cata::current_listsources IMG $ucac3 UCAC3 30.0 -30.0 {} $log]
-      gren_info "rollup = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
+      set nbs [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources "UCAC3"]
+      gren_info "     $nbs Sources identifiees -> ROLLUP = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
 
-
-      # Calcul des magnitudes 
-
-
-
-
-# methode 1
-
-      set mag {}
-      set errmag ""
-      set flux ""
-      set sources [lindex $::tools_cata::current_listsources 1]
-      foreach s $sources {
-         foreach cata $s {
-            if {[lindex $cata 0] == "UCAC3"} {
-               set l [lindex $cata 1]
-               lappend mag [lindex $l 3]
-               lappend errmag [lindex $l 4]
-
-               foreach cata2 $s {
-                  if {[lindex $cata2 0] == "IMG"} {
-                     set l2 [lindex $cata2 2]
-                     lappend flux [lindex $l2 6]
-                  }
-               }
-               gren_info "UCAC3 $flux $mag $errmag\n"
-            }
-         }
-         break
+      if {[::manage_source::get_nb_sources_by_cata  $::tools_cata::current_listsources UCAC3]<=2 } {
+         ::console::affiche_erreur "WCS Impossible\n"
+         ::gui_cata::pop_img_list
+         return
       }
 
-      package require math::statistics
-      gren_info "mag = $mag\n"
-      gren_info "flux = $flux\n"
-      set magref [::math::statistics::mean $mag]
-      set fluxref [::math::statistics::mean $flux]
-      set errmag [::math::statistics::stdev $mag]
-
-
-# methode 2
+      # Calcul des magnitudes 
 
       set fields [lindex $::tools_cata::current_listsources 0]
       set sources [lindex $::tools_cata::current_listsources 1]
@@ -1632,7 +1769,7 @@ namespace eval gui_cata {
          foreach cata $s {
             if {[lindex $cata 0] == "IMG"} {
                set c [lindex $cata 1]
-               gren_info "c=$c\n"
+               #gren_info "c=$c\n"
                set l [lindex $cata 2]
                set flux [lindex $l 6]
 
@@ -1650,21 +1787,21 @@ namespace eval gui_cata {
                               set fluxref  [lindex [lindex $cata3 2] 6]
                               lappend tabfluxref $fluxref
                               set magobjcalc [expr $magref - log10(($flux*1.0)/($fluxref*1.0))*2.5]
-                              gren_info "calc = $magref  $flux $fluxref $magobjcalc\n"
+                              #gren_info "calc = $magref  $flux $fluxref $magobjcalc\n"
                               lappend tabmag $magobjcalc
                            }
                         }
                      }
                   }
                }
-               gren_info "tabmag=$tabmag \n"
+               #gren_info "tabmag=$tabmag \n"
                
                set mag [::math::statistics::median $tabmag]
 
                #set errmag [::math::statistics::mean $errmag]
                #set errmag [::math::statistics::stdev $mag]
                set c [ lreplace $c 3 3 $mag]
-               gren_info "cfinal=$c \n"
+               #gren_info "cfinal=$c \n"
 
                lappend news [list "IMG" $c $l]
             } else {
@@ -1706,9 +1843,9 @@ namespace eval gui_cata {
             if {[lindex $cata 0] == "IMG"} {
                set c [lindex $cata 1]
                set l [lindex $cata 2]
-               gren_info "c1=$c\n"
+               #gren_info "c1=$c\n"
                set c [lreplace $c 4 4 $dmag]
-               gren_info "c2=$c $dmag \n"
+               #gren_info "c2=$c $dmag \n"
                lappend news [list "IMG" $c $l]
             } else {
               lappend news $cata
@@ -1725,36 +1862,41 @@ namespace eval gui_cata {
       # Resultats des magnitudes 
       ::manage_source::get_fields_from_sources $::tools_cata::current_listsources
 
-      set sources [lindex $::tools_cata::current_listsources 1]
-      foreach s $sources {
-         foreach cata $s {
-            if {[lindex $cata 0] == "IMG"} {
-              set l [lindex $cata 2]
-              set flux [lindex $l 6]
-              set mag [lindex [lindex $cata 1] 3]
-              set errmag [lindex [lindex $cata 1] 4]
-              gren_info "IMG $flux $mag $errmag "
-              foreach cata2 $s {
-                 if {[lindex $cata2 0] == "UCAC3"} {
-                    gren_info "(UCAC3) "
-                    set dmag [expr [lindex [lindex $cata2 1] 3] - $mag ]
-                    set emag [lindex [lindex $cata2 1] 4]
-                    gren_info " $dmag $emag "
+      set log 1
+
+      if {$log} {
+         set sources [lindex $::tools_cata::current_listsources 1]
+         foreach s $sources {
+            foreach cata $s {
+               if {[lindex $cata 0] == "IMG"} {
+                 set l [lindex $cata 2]
+                 set flux [lindex $l 6]
+                 set mag [lindex [lindex $cata 1] 3]
+                 set errmag [lindex [lindex $cata 1] 4]
+                 gren_info "IMG $flux $mag $errmag "
+                 foreach cata2 $s {
+                    if {[lindex $cata2 0] == "UCAC3"} {
+                       gren_info "(UCAC3) "
+                       set dmag [expr [lindex [lindex $cata2 1] 3] - $mag ]
+                       set emag [lindex [lindex $cata2 1] 4]
+                       gren_info " $dmag $emag "
+                    }
                  }
-              }
-              gren_info "\n"
-            } 
+                 gren_info "\n"
+               } 
+            }
          }
       }
 
 
       #set ::tools_cata::current_listsources [::tools_sources::set_common_fields $::tools_cata::current_listsources IMG { ra dec 5.0 calib_mag calib_mag_ss1}]
-      ::manage_source::imprim_3_sources $::tools_cata::current_listsources
+      #::manage_source::imprim_3_sources $::tools_cata::current_listsources
+      set ::tools_cata::current_listsources [::manage_source::extract_catalog $::tools_cata::current_listsources "IMG"]
+      gren_info "rollupE = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
 
 
 
 # Obtention du CATA
-
       if {[::tools_cata::get_cata] == false} {
          set ::gui_cata::color_cata $::gui_cata::color_button_bad
          $::gui_cata::gui_cata configure -bg $::gui_cata::color_cata
@@ -2441,6 +2583,19 @@ namespace eval gui_cata {
                                     pack   $img.v7.clean -in $img.v7 -side left -anchor e -expand 0 
 
 
+                frame $manuel.entr.buttonsvisu -borderwidth 0 -cursor arrow -relief groove
+                pack $manuel.entr.buttonsvisu  -in $manuel.entr  -side top 
+                
+                     button  $manuel.entr.buttonsvisu.clean  -borderwidth 1  \
+                         -command "cleanmark" -text "Clean"
+                     pack    $manuel.entr.buttonsvisu.clean -in $manuel.entr.buttonsvisu -side left -anchor e -expand 0 
+                     button  $manuel.entr.buttonsvisu.voir  -borderwidth 1  \
+                         -command "::gui_cata::manual_view" -text "Voir XY"
+                     pack    $manuel.entr.buttonsvisu.voir -in $manuel.entr.buttonsvisu -side left -anchor e -expand 0 
+                     button  $manuel.entr.buttonsvisu.fit  -borderwidth 1  \
+                         -command "::gui_cata::manual_fit" -text "Fit XY"
+                     pack    $manuel.entr.buttonsvisu.fit -in $manuel.entr.buttonsvisu -side left -anchor e -expand 0 
+
                 frame $manuel.entr.buttons -borderwidth 0 -cursor arrow -relief groove
                 pack $manuel.entr.buttons  -in $manuel.entr  -side top 
                 
@@ -2450,7 +2605,6 @@ namespace eval gui_cata {
                      button  $manuel.entr.buttons.creer  -borderwidth 1  \
                          -command "::gui_cata::manual_create" -text "Creer"
                      pack    $manuel.entr.buttons.creer -in $manuel.entr.buttons -side left -anchor e -expand 0 
-
 
         #--- Cree un frame pour afficher l onglet develop
         set develop [frame $f8.develop -borderwidth 0 -cursor arrow -relief groove]

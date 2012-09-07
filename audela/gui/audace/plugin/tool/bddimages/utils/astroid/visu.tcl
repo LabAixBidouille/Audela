@@ -23,7 +23,11 @@ proc affich_rond { listsources catalog color width } {
          if { [lindex $cata 0]==$catalog } {
             set cm [lindex $cata 1]
             #gren_info "cm =  $cm \n"
-            affich_un_rond [lindex $cm 0] [lindex $cm 1] $color $width
+            set ra [lindex $cm 0]
+            set dec [lindex $cm 1]
+            if {$ra!=""&&$dec!=""} {
+               affich_un_rond $ra $dec $color $width
+            }
          }
       }
    }
@@ -35,10 +39,10 @@ proc affich_un_rond { ra dec color width } {
    global audace
    global bddconf
    set bufno $::bddconf(bufno)
-        #gren_info "DD =  $ra $dec \n"
+       #gren_info "DD =  $ra $dec \n"
        # Affiche un rond vert
        set img_xy [ buf$bufno radec2xy [ list $ra $dec ] ]
-       # gren_info "img_xy =  $img_xy \n"
+       gren_info "img_xy =  $img_xy \n"
        #--- Transformation des coordonnees image en coordonnees canvas
        set can_xy [ ::audace::picture2Canvas $img_xy ]
        set x [lindex $can_xy 0]

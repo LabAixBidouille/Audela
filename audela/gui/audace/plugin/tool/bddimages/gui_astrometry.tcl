@@ -10,7 +10,7 @@ namespace eval gui_astrometry {
       set ::tools_astrometry::delta 15
       set ::tools_astrometry::treshold 5
       set ::gui_astrometry::factor 1000
-      set ::tools_astrometry::id_img 0
+      set ::tools_cata::id_current_image 0
       
       if {! [info exists ::tools_astrometry::ifortlib] } {
          if {[info exists conf(bddimages,cata,ifortlib)]} {
@@ -26,15 +26,14 @@ namespace eval gui_astrometry {
    proc ::gui_astrometry::charge_list { img_list } {
 
      catch {
-         if { [ info exists $::tools_astrometry::img_list ] }           {unset ::tools_astrometry::img_list}
-         if { [ info exists $::tools_astrometry::nb_img_list ] }        {unset ::tools_astrometry::nb_img_list}
-         if { [ info exists $::tools_astrometry::current_image ] }      {unset ::tools_astrometry::current_image}
-         if { [ info exists $::tools_astrometry::current_image_name ] } {unset ::tools_astrometry::current_image_name}
+         if { [ info exists $::tools_cata::img_list ] }           {unset ::tools_cata::img_list}
+         if { [ info exists $::tools_cata::current_image ] }      {unset ::tools_cata::current_image}
+         if { [ info exists $::tools_cata::current_image_name ] } {unset ::tools_cata::current_image_name}
       }
       
-      set ::tools_astrometry::img_list    [::bddimages_imgcorrection::chrono_sort_img $img_list]
-      set ::tools_astrometry::img_list    [::bddimages_liste_gui::add_info_cata_list $::tools_astrometry::img_list]
-      set ::tools_astrometry::nb_img [llength $::tools_astrometry::img_list]
+      set ::tools_cata::img_list    [::bddimages_imgcorrection::chrono_sort_img $img_list]
+      set ::tools_cata::img_list    [::bddimages_liste_gui::add_info_cata_list $::tools_cata::img_list]
+      set ::tools_cata::nb_img_list [llength $::tools_cata::img_list]
 
    }
 
@@ -83,17 +82,17 @@ namespace eval gui_astrometry {
 # "mag" "err_mag" "name"
    proc ::gui_astrometry::see_residus {  } {
 
-      set ::tools_astrometry::id_img 0
-      foreach ::tools_astrometry::current_image $::tools_astrometry::img_list {
-         set tabkey      [::bddimages_liste::lget $::tools_astrometry::current_image "tabkey"]
+      set ::tools_cata::id_current_image 0
+      foreach ::tools_cata::current_image $::tools_cata::img_list {
+         set tabkey      [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
 
-         set ::tools_astrometry::current_listsources [::bddimages_liste::lget $::tools_astrometry::current_image "listsources"]
-         set ::tools_astrometry::current_listsources [::manage_source::extract_sources_by_catalog $::tools_astrometry::current_listsources "ASTROID"]
-         #gren_info "Rolextr=[ ::manage_source::get_nb_sources_rollup $::tools_astrometry::current_listsources]\n"
+         set ::tools_cata::current_listsources [::bddimages_liste::lget $::tools_cata::current_image "listsources"]
+         set ::tools_cata::current_listsources [::manage_source::extract_sources_by_catalog $::tools_cata::current_listsources "ASTROID"]
+         #gren_info "Rolextr=[ ::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
 
-         #::manage_source::imprim_sources  $::tools_astrometry::current_listsources "ASTROID"
+         #::manage_source::imprim_sources  $::tools_cata::current_listsources "ASTROID"
 
-         foreach s [lindex $::tools_astrometry::current_listsources 1] {
+         foreach s [lindex $::tools_cata::current_listsources 1] {
             foreach cata $s {
             
                if {[lindex $cata 0] == $::tools_astrometry::science} {
@@ -128,7 +127,7 @@ namespace eval gui_astrometry {
             }
          }
          
-         incr ::tools_astrometry::id_img
+         incr ::tools_cata::id_current_image
       }
 
    
@@ -269,11 +268,11 @@ namespace eval gui_astrometry {
 
               label  $info.lab1 -text "Image " -borderwidth 1
               pack   $info.lab1 -in $info -side left -padx 3 -pady 3 -anchor c
-              label  $info.id -textvariable ::tools_astrometry::id_img -borderwidth 1
+              label  $info.id -textvariable ::tools_cata::id_current_image -borderwidth 1
               pack   $info.id -in $info -side left -padx 3 -pady 3 -anchor c
               label  $info.lab2 -text " / " -borderwidth 1
               pack   $info.lab2 -in $info -side left -padx 3 -pady 3 -anchor c
-              label  $info.nb -textvariable ::tools_astrometry::nb_img -borderwidth 1
+              label  $info.nb -textvariable ::tools_cata::nb_img_list -borderwidth 1
               pack   $info.nb -in $info -side left -padx 3 -pady 3 -anchor c
 
 

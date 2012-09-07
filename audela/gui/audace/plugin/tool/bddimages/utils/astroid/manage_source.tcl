@@ -118,6 +118,32 @@ namespace eval ::manage_source {
    }
 
 
+   #
+   # manage_source::extract_sources_by_catalog
+   # Fournit le nombre de source
+   #
+   proc ::manage_source::extract_catalog { listsources catadem } {
+
+       set fields  [lindex $listsources 0]
+       set newfields {}
+       foreach f $fields { 
+             if { [lindex $f 0] == $catadem } {
+               lappend newfields $f 
+             }
+       }
+       set newsources {}
+       set sources [lindex $listsources 1]
+       foreach s $sources {
+          foreach cata $s {
+             if {[lindex $cata 0] == $catadem} {
+               lappend newsources [list $cata ]
+             }
+          }
+       }
+   return [list $newfields $newsources]
+   }
+
+
 
    #
    # manage_source::extract_sources_by_catalog
