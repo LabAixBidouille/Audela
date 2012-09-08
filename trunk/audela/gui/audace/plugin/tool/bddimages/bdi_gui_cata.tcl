@@ -509,6 +509,22 @@ namespace eval gui_cata {
             set ::tools_astrometry::ifortlib "/opt/intel/lib/ia32"
          }
       }
+      # 
+      if {! [info exists ::tools_astrometry::treshold] } {
+         if {[info exists conf(bddimages,cata,treshold)]} {
+            set ::tools_astrometry::treshold $conf(bddimages,cata,treshold)
+         } else {
+            set ::tools_astrometry::treshold 10
+         }
+      }
+      # 
+      if {! [info exists ::tools_astrometry::delta] } {
+         if {[info exists conf(bddimages,cata,delta)]} {
+            set ::tools_astrometry::delta $conf(bddimages,cata,delta)
+         } else {
+            set ::tools_astrometry::delta 15
+         }
+      }
 
    }
 
@@ -1007,6 +1023,9 @@ namespace eval gui_cata {
       global audace
       global bddconf
 
+         set log 1
+
+
          #?Charge l image en memoire
          #gren_info "cur id $::tools_cata::id_current_image \n"
          set ::tools_cata::current_image [lindex $::tools_cata::img_list [expr $::tools_cata::id_current_image - 1] ]
@@ -1030,6 +1049,14 @@ namespace eval gui_cata {
          set cataexist   [::bddimages_liste::lget $::tools_cata::current_image "cataexist"]
          set tabkey      [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
 
+         foreach v $tabkey {
+            gren_info "v = $v\n"
+         }
+         set wcs  [string trim [lindex [::bddimages_liste::lget $tabkey "bddimages_wcs" ] 1] ]
+         gren_info "WCS ? $wcs\n"
+
+
+
          set date        [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
          set idbddimg    [::bddimages_liste::lget $::tools_cata::current_image idbddimg]
          set dirfilename [::bddimages_liste::lget $::tools_cata::current_image dirfilename]
@@ -1048,6 +1075,19 @@ namespace eval gui_cata {
          set naxis2      [lindex [::bddimages_liste::lget $tabkey NAXIS2     ] 1]
          set xcent    [expr $naxis1/2.0]
          set ycent    [expr $naxis2/2.0]
+
+
+         if {$log} {
+            gren_info "---------------------------\n"
+            gren_info "IDBDDIMG = $idbddimg\n"
+            gren_info "FILENAME = $filename\n"
+            gren_info "DATE = $date\n"
+            gren_info "WCS = $::tools_cata::bddimages_wcs\n"
+            gren_info "CATAEXIST = $cataexist\n"
+            gren_info "ID_CURRENT_IMAGE = $::tools_cata::id_current_image\n"
+            gren_info "---------------------------\n"
+         }
+
 
          $::gui_cata::gui_dateimage configure -text $::tools_cata::current_image_date
          #gren_info "wcs : $date $::tools_cata::bddimages_wcs\n"
@@ -1409,14 +1449,16 @@ namespace eval gui_cata {
 
 # pour l image = 2011-04-12T20:44:40.700
 
-      set ::gui_cata::man_xy_star(1) [list 529.95 742.96]
-      set ::gui_cata::man_ad_star(1) [list 194.135475 2.233502]
-      set ::gui_cata::man_xy_star(2) [list 518.08 468.76]
-      set ::gui_cata::man_ad_star(2) [list 194.136795 2.219577]
-      set ::gui_cata::man_xy_star(3) [list 906.97 528.94]
-      set ::gui_cata::man_ad_star(3) [list 194.116930 2.221854]
+      set ::gui_cata::man_xy_star(1) [list 516.91 722.89]
+      set ::gui_cata::man_ad_star(1) [list 194.10746 +02.27564]
+      set ::gui_cata::man_xy_star(2) [list 505.11 448.60]
+      set ::gui_cata::man_ad_star(2) [list 194.10942 +02.24207]
+      set ::gui_cata::man_xy_star(3) [list 894.25 508.29]
+      set ::gui_cata::man_ad_star(3) [list 194.06204 +02.24825]
+      set ::gui_cata::man_xy_star(4) [list 372.61 116.50]
+      set ::gui_cata::man_ad_star(4) [list 194.12675 +02.20196]
 
-      for {set i 4} {$i<=7} {incr i} {
+      for {set i 5} {$i<=7} {incr i} {
          set ::gui_cata::man_xy_star($i) ""
          set ::gui_cata::man_ad_star($i) ""
       }
@@ -1476,7 +1518,7 @@ namespace eval gui_cata {
       set xdiff [expr [lindex $cent 0] - $xsm]
       set ydiff [expr [lindex $cent 1] - $ysm]
       set rdiff [expr sqrt((pow($xdiff,2)+pow($ydiff,2))/2.0)]
-      gren_info "RDIFF: $rdiff \n"
+      #gren_info "RDIFF: $rdiff \n"
       
       set ::gui_cata::man_xy_star($id) "[format "%2.2f" [lindex $cent 0]] [format "%2.2f" [lindex $cent 1]]"
 
@@ -1501,14 +1543,14 @@ namespace eval gui_cata {
          }
       }
       set rdiff [::math::statistics::max $rdiff]
-      gren_info "RDIFFMAX: $rdiff \n"
+      #gren_info "RDIFFMAX: $rdiff \n"
       cleanmark
       ::gui_cata::manual_view
    }
 
    proc ::gui_cata::push_img_list {  } {
       set ::tools_cata::img_list_sav $::tools_cata::img_list
-      set ::tools_cata::current_image_sav $::tools_cata::img_list
+      set ::tools_cata::current_image_sav $::tools_cata::current_image
       set ::tools_cata::id_current_image_sav $::tools_cata::id_current_image
    }
 
@@ -1526,45 +1568,28 @@ namespace eval gui_cata {
 
 
 
-   proc ::gui_cata::manual_create {  } {
+   proc ::gui_cata::manual_create_wcs {  } {
 
-      package require math::statistics
+      global bddconf
+
       #::gui_cata::test_manual_create
 
       ::gui_cata::push_img_list
 
       
       gren_info "Creation Manuelle du WCS\n"
+
+      #gren_info " tools_astrometry::treshold: $::tools_astrometry::treshold \n"
+      #gren_info " tools_astrometry::delta:    $::tools_astrometry::delta \n"
+      #gren_info " Compilo: $::tools_astrometry::ifortlib \n"
+
       set ::tools_astrometry::treshold 10
       set ::tools_astrometry::delta   15
-#      set ::tools_astrometry::ifortlib "/opt/intel/lib/ia32"
       set ::tools_astrometry::science ""
       set ::tools_astrometry::reference ""
 
-      gren_info " Compilo: $::tools_astrometry::ifortlib \n"
-
       set sources {}
       set fieldimgshort [list "IMG" [list "ra" "dec" "err_pos" "mag" "err_mag"] [list "x1" "y2" "xsm" "ysm"] ]
-
-      # Lecture du Tabkkey depuis le buffer
-      gren_info "     Lecture du Tabkkey depuis le buffer\n"
-      set listtab [buf$::audace(bufNo) getkwds]
-      set tabkey {}
-      foreach key $listtab {
-         lappend tabkey [list $key [buf$::audace(bufNo) getkwd $key] ]
-      }
-      set result  [bddimages_entete_preminforecon $tabkey]
-      set $tabkey [lindex $result 1]
-
-      set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
-      #gren_info "tabkey : $tabkey\n"
-
-      # Coordonnees x,y du centre du champ comme objet Science
-      #set ra  [lindex [::bddimages_liste::lget $tabkey ra] 1]
-      #set dec [lindex [::bddimages_liste::lget $tabkey dec] 1]
-      #set xsc [expr [lindex [::bddimages_liste::lget $tabkey NAXIS1] 1] / 2.0]
-      #set ysc [expr [lindex [::bddimages_liste::lget $tabkey NAXIS2] 1] / 2.0]
-      #lappend sources [list [list "IMG" [list $ra $dec 0 0 0] [list $ra $dec $xsc $ysc]] [list "SCIENCE" {} {}]] 
 
       # Liste des etoiles pointees a la mano
       gren_info "     Preparation des sources\n"
@@ -1586,16 +1611,21 @@ namespace eval gui_cata {
       set sources [lindex $listsources 1]
       #gren_info "fields : $fields\n"
       #gren_info "sources : $sources\n"
-
       
-      
+      gren_info "     Mesure des PSF\n"
       set listsources [::analyse_source::psf $listsources $::tools_astrometry::treshold $::tools_astrometry::delta]
       #gren_info "rollup = [::manage_source::get_nb_sources_rollup $listsources]\n"
-      set ::tools_cata::current_image [::bddimages_liste::ladd $::tools_cata::current_image "listsources" $listsources]
+
+      if {[::bddimages_liste::lexist $::tools_cata::current_image "listsources" ]==0} {
+         set ::tools_cata::current_image [::bddimages_liste::ladd $::tools_cata::current_image "listsources" $listsources]
+      } else {
+         set ::tools_cata::current_image [::bddimages_liste::lupdate $::tools_cata::current_image "listsources" $listsources]
+      }
       
       #set listsources [::bddimages_liste::lget $::tools_cata::current_image "listsources"]
       #gren_info "listsources : $listsources\n"
       #gren_info "rollup = [::manage_source::get_nb_sources_rollup $listsources]\n"
+      #gren_info "current_image : $::tools_cata::current_image\n"
   
   
       # Creation des fichiers et lancement de Priam
@@ -1606,6 +1636,8 @@ namespace eval gui_cata {
                  $::tools_cata::current_image "" "IMG" } msg ]
       if {$err} {
          ::console::affiche_erreur "WCS Impossible :($err) $msg \n"
+         set ::gui_cata::color_wcs $::gui_cata::color_button_bad
+         $::gui_cata::gui_wcs configure -bg $::gui_cata::color_wcs
          ::gui_cata::pop_img_list
          return
       }
@@ -1617,6 +1649,8 @@ namespace eval gui_cata {
       set err [catch {::tools_astrometry::extract_priam_result [::tools_astrometry::launch_priam] } msg ]
       if {$err} {
          ::console::affiche_erreur "WCS Impossible :($err)  $msg \n"
+         set ::gui_cata::color_wcs $::gui_cata::color_button_bad
+         $::gui_cata::gui_wcs configure -bg $::gui_cata::color_wcs
          ::gui_cata::pop_img_list
          return
       }
@@ -1636,26 +1670,50 @@ namespace eval gui_cata {
 
       #gren_info "current_image : $::tools_cata::current_image\n"
       #::manage_source::imprim_3_sources $::tools_cata::current_listsources
-      gren_info "rollup = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
+      #gren_info "rollup = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
 
 # WCS dans l image
 
-      gren_info "     WCS dans l image\n"
-      saveima i
-      loadima i
+      set filename    [::bddimages_liste::lget $::tools_cata::current_image filename]
+      set filename    [string range $filename 0 [expr [string last .gz $filename] -1]]
+      set file        [file join $bddconf(dirtmp) $filename]
+
+      set key [list "BDDIMAGES WCS" "Y" "string" "Y | N | ? (WCS performed)" ""]
+      buf$::audace(bufNo) setkwd $key
+
+      saveima $file
+      loadima $file
+
+      gren_info "     WCS dans l image $file\n"
 
 # Obtention du nouvel header
 
-      set listtab [buf$::audace(bufNo) getkwds]
-      set tabkey {}
-      foreach key $listtab {
-         lappend tabkey [list $key [buf$::audace(bufNo) getkwd $key] ]
+      set err [catch {set tabkey [::bdi_tools_image::get_tabkey_from_buffer] } msg ]
+      if {$err} {
+         ::console::affiche_erreur "WCS Impossible :($err) $msg \n"
+         set ::gui_cata::color_wcs $::gui_cata::color_button_bad
+         $::gui_cata::gui_wcs configure -bg $::gui_cata::color_wcs
+         ::gui_cata::pop_img_list
+         return
       }
-      set result  [bddimages_entete_preminforecon $tabkey]
-      set $tabkey [lindex $result 1]
-      set ::tools_cata::current_image [::bddimages_liste::lupdate $::tools_cata::current_image tabkey $tabkey]
+
+      ::gui_cata::pop_img_list
+      set ::tools_cata::current_image [::bddimages_liste::lupdate $::tools_cata::current_image "tabkey" $tabkey]
       #gren_info "current_image : $::tools_cata::current_image\n"
+
+      set ::gui_cata::color_wcs $::gui_cata::color_button_good
+      $::gui_cata::gui_wcs configure -bg $::gui_cata::color_wcs
       
+   }
+
+
+
+
+
+   proc ::gui_cata::manual_create_cata {  } {
+
+         ::gui_cata::push_img_list
+
 # Lancement Sextractor
          gren_info "     Lancement Sextractor\n"
 
@@ -1751,7 +1809,7 @@ namespace eval gui_cata {
 
       # 1ere identification sur l UCAC3
 
-      #gren_info "csucac3 $::tools_cata::catalog_ucac3 $ra $dec $radius\n"
+      gren_info "csucac3 $::tools_cata::catalog_ucac3 $ra $dec $radius\n"
       set ucac3 [csucac3 $::tools_cata::catalog_ucac3 $ra $dec $radius]
       set ucac3 [::tools_sources::set_common_fields $ucac3 UCAC3 { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
 
@@ -1871,7 +1929,7 @@ namespace eval gui_cata {
       # Resultats des magnitudes 
       ::manage_source::get_fields_from_sources $::tools_cata::current_listsources
 
-      set log 1
+      set log 0
 
       if {$log} {
          set sources [lindex $::tools_cata::current_listsources 1]
@@ -1901,7 +1959,7 @@ namespace eval gui_cata {
       #set ::tools_cata::current_listsources [::tools_sources::set_common_fields $::tools_cata::current_listsources IMG { ra dec 5.0 calib_mag calib_mag_ss1}]
       #::manage_source::imprim_3_sources $::tools_cata::current_listsources
       set ::tools_cata::current_listsources [::manage_source::extract_catalog $::tools_cata::current_listsources "IMG"]
-      gren_info "rollupE = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
+      #gren_info "rollupE = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
 
 
 
@@ -1916,9 +1974,109 @@ namespace eval gui_cata {
       }
 
 
+   ::gui_cata::pop_img_list
+   }
+
+
+
+
+
+   proc ::gui_cata::manual_insert_img {  } {
+   
+      global bddconf
+   
+      set idbddimg    [::bddimages_liste::lget $::tools_cata::current_image "idbddimg"]
+      set filename    [::bddimages_liste::lget $::tools_cata::current_image "filename"]
+      set dirfilename [::bddimages_liste::lget $::tools_cata::current_image "dirfilename"]
+      set filebase    [file join $bddconf(dirbase) $dirfilename $filename]
+
+      set filename    [unzipedfilename $filename]
+      set filetmp     [file join $bddconf(dirtmp) $filename]
+   
+      gren_info "Verification image $idbddimg\n"
+
+      set ident [bddimages_image_identification $idbddimg]
+      #gren_info "** ident = $ident\n"
+      set fileimg  [lindex $ident 1]
+      set filecata [lindex $ident 3]
+      if {$fileimg == -1} {
+         ::console::affiche_erreur "Fichier image inexistant ($idbddimg) \n"
+         ::console::affiche_erreur "Fichier image inexistant ($idbddimg) \n"
+         return
+      }
+      
+      if {$filebase!=$fileimg} {
+         ::console::affiche_erreur "Insertion de l image impossible\n"
+         ::console::affiche_erreur "Le fichiers sont different.\n"
+         ::console::affiche_erreur "Fichier MEMORY $filebase\n"
+         ::console::affiche_erreur "Fichier SQL $fileimg\n"
+         return
+      }
+
+      if {![file exists $filetmp]} {
+         ::console::affiche_erreur "Le fichier n existe pas\n"
+         ::console::affiche_erreur "Creez le WCS\n"
+         return
+      }
+             
+             
+      
+      gren_info "Effacement de l image dans la base\n"
+
+      # efface l image dans la base et le disque
+      bddimages_image_delete_fromsql $ident
+      bddimages_image_delete_fromdisk $ident
+
+      gren_info "Insertion de l image dans la base\n"
+      gren_info "idlist : $::tools_cata::id_current_image\n"
+      set i [::bddimages_liste::lget [lindex $::tools_cata::img_list [expr $::tools_cata::id_current_image -1]] "idbddimg"]
+      gren_info "idlist2 : $i\n"
+      set filename2    [::bddimages_liste::lget [lindex $::tools_cata::img_list [expr $::tools_cata::id_current_image -1]] "filename"]
+      gren_info "file : $filename2\n"
+         
+         
+
+      set errnum [catch {set r [insertion_solo $filetmp]} msg ]
+      catch {gren_info "$errnum : $msg : $r"}
+      if {$errnum==0} {
+         # Modification de l idbddimg
+         gren_info "Insertion reussie\n"
+         gren_info "Old Idbddimg = $i\n"
+         gren_info "New Idbddimg = $r\n"
+         set ::tools_cata::current_image [::bddimages_liste::lupdate $::tools_cata::current_image "idbddimg" $r]
+         # Modification du tabkey
+         gren_info "Chargement du TABKEY depuis le buffer\n"
+         set err [catch {set tabkey [::bdi_tools_image::get_tabkey_from_buffer] } msg ]
+         if {$err} {
+            ::console::affiche_erreur "Insertion Impossible :($err) $msg \n"
+            return
+         }
+
+         set wcs  [string trim [lindex [::bddimages_liste::lget $tabkey "bddimages_wcs" ] 1] ]
+         gren_info "WCS ? $wcs\n"
+
+         # Modification du tabkey
+         gren_info "Modification du TABKEY\n"
+         set ::tools_cata::current_image [::bddimages_liste::lupdate $::tools_cata::current_image "tabkey" $tabkey]
+         
+         # Modification img_list
+         gren_info "Modification de img_list\n"
+         set i [expr $::tools_cata::id_current_image -1]
+         gren_info "idlist : $::tools_cata::id_current_image\n"
+         set ::tools_cata::img_list [lreplace $::tools_cata::img_list $i $i $::tools_cata::current_image]
+       }
+      
+
+
+
 
    }
 
+
+
+   proc ::gui_cata::manual_insert_cata {  } {
+
+   }
 
 
 
@@ -2469,13 +2627,13 @@ namespace eval gui_cata {
                                       entry  $basic.crota.val -relief sunken -textvariable ::tools_cata::crota -width 10
                                       pack   $basic.crota.val -in $basic.crota -side top -padx 3 -pady 3 -anchor w
 
-                     set minfo [frame $manuel.entr.info -borderwidth 1 -cursor arrow]
-                     pack $minfo -in $manuel.entr -side top -pady 5
+                     #set minfo [frame $manuel.entr.info -borderwidth 1 -cursor arrow]
+                     #pack $minfo -in $manuel.entr -side top -pady 5
                      
-                          set mode_manuel "Selectionner une source en dessinant un carre dans l'image a reduire, et selectionner de meme l'etoile correspondante dans l'image DSS, puis cliquer sur le bouton GRAB.\n"
-                          text $minfo.txt -wrap word -width 50 -height 4 -relief groove
-                          $minfo.txt insert 1.0 $mode_manuel
-                          pack  $minfo.txt -in $minfo -side left -expand 0 -fill both -padx 10
+                          #set mode_manuel "Selectionner une source en dessinant un carre dans l'image a reduire, et selectionner de meme l'etoile correspondante dans l'image DSS, puis cliquer sur le bouton GRAB.\n"
+                          #text $minfo.txt -wrap word -width 70 -height 4 -relief groove
+                          #$minfo.txt insert 1.0 $mode_manuel
+                          #pack  $minfo.txt -in $minfo -side left -expand 0 -fill both -padx 10
 
                      set coord [frame $manuel.entr.coord -borderwidth 0 -cursor arrow]
                      pack $coord -in $manuel.entr 
@@ -2611,9 +2769,22 @@ namespace eval gui_cata {
                      button  $manuel.entr.buttons.efface  -borderwidth 1  \
                          -command "::gui_cata::manual_clean" -text "Effacer tout"
                      pack    $manuel.entr.buttons.efface -in $manuel.entr.buttons -side left -anchor e -expand 0 
-                     button  $manuel.entr.buttons.creer  -borderwidth 1  \
-                         -command "::gui_cata::manual_create" -text "Creer"
-                     pack    $manuel.entr.buttons.creer -in $manuel.entr.buttons -side left -anchor e -expand 0 
+                     button  $manuel.entr.buttons.creerwcs  -borderwidth 1  \
+                         -command "::gui_cata::manual_create_wcs" -text "Creer WCS"
+                     pack    $manuel.entr.buttons.creerwcs -in $manuel.entr.buttons -side left -anchor e -expand 0 
+                     button  $manuel.entr.buttons.enrimg  -borderwidth 1  \
+                         -command "::gui_cata::manual_insert_img" -text "Ins. Img"
+                     pack    $manuel.entr.buttons.enrimg -in $manuel.entr.buttons -side left -anchor e -expand 0 
+
+                frame $manuel.entr.buttonscata -borderwidth 0 -cursor arrow -relief groove
+                pack $manuel.entr.buttonscata  -in $manuel.entr  -side top 
+                
+                     button  $manuel.entr.buttonscata.creercata -borderwidth 1  \
+                         -command "::gui_cata::manual_create_cata" -text "Creer Cata"
+                     pack    $manuel.entr.buttonscata.creercata -in $manuel.entr.buttonscata -side left -anchor e -expand 0 
+                     button  $manuel.entr.buttonscata.enrcata  -borderwidth 1  \
+                         -command "::gui_cata::manual_insert_cata" -text "Ins. Cata"
+                     pack    $manuel.entr.buttonscata.enrcata -in $manuel.entr.buttonscata -side left -anchor e -expand 0 
 
         #--- Cree un frame pour afficher l onglet develop
         set develop [frame $f8.develop -borderwidth 0 -cursor arrow -relief groove]
