@@ -504,12 +504,12 @@ proc ::tools_cata::get_table { name table } {
 
          #gren_info "get_skybot $dateiso $ra $dec $radius $iau_code\n"
          set err [ catch {get_skybot $dateiso $ra $dec $radius $iau_code} skybot ]
-         gren_info "skybot = $skybot\n"
+         #gren_info "skybot = $skybot\n"
 
          #gren_info "nb_skybot = [::manage_source::get_nb_sources_by_cata $skybot SKYBOT]\n"
          set listsources [ identification $listsources "IMG" $skybot "SKYBOT" -100.0 -100.0 {} 1] 
          set ::tools_cata::nb_skybot [::manage_source::get_nb_sources_by_cata $listsources SKYBOT]
-         gren_info "nb_skybot ident = $::tools_cata::nb_skybot\n"
+         #gren_info "nb_skybot ident = $::tools_cata::nb_skybot\n"
       }
       
       gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $listsources]\n"
@@ -751,7 +751,7 @@ proc ::tools_cata::get_table { name table } {
              if {$errnum==0} {
                 set ::tools_cata::current_image [::bddimages_liste::lupdate $::tools_cata::current_image idbddimg $r]
              }
-             
+
              set errnum [catch {file delete -force $filetmp} msg ]
 
              set errnum [catch {set list_keys [buf$::audace(bufNo) getkwds]} msg ]

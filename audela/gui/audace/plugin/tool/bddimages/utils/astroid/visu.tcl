@@ -42,7 +42,7 @@ proc affich_un_rond { ra dec color width } {
        #gren_info "DD =  $ra $dec \n"
        # Affiche un rond vert
        set img_xy [ buf$bufno radec2xy [ list $ra $dec ] ]
-       gren_info "img_xy =  $img_xy \n"
+       #gren_info "img_xy =  $img_xy \n"
        #--- Transformation des coordonnees image en coordonnees canvas
        set can_xy [ ::audace::picture2Canvas $img_xy ]
        set x [lindex $can_xy 0]

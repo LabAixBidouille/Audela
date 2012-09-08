@@ -48,7 +48,7 @@ namespace eval bddimages_config {
    #
    #    variables en sortie :
    #
-   proc run { this } {
+   proc ::bddimages_config::run { this } {
       variable This
 
       set This $this
@@ -70,7 +70,7 @@ namespace eval bddimages_config {
    #    variables en sortie :
    #
    #--------------------------------------------------
-   proc fermer { } {
+   proc ::bddimages_config::fermer { } {
       variable This
       global audace
       global bddconf
@@ -95,7 +95,7 @@ namespace eval bddimages_config {
       }
 
       if {[info exists bddconf(dirfits)]} {
-         set  audace(rep_images)  $bddconf(dirfits)
+         set  audace(rep_images)  $bddconf(dirtmp)
          ::console::affiche_resultat "audace(rep_images) -> $audace(rep_images)\n"
       }
       if {[info exists bddconf(dirtmp)]} {
@@ -123,7 +123,7 @@ namespace eval bddimages_config {
    #    variables en sortie :
    #
    #--------------------------------------------------
-   proc save { } {
+   proc ::bddimages_config::save { } {
       variable This
       global audace
       global conf
@@ -169,7 +169,7 @@ namespace eval bddimages_config {
 
 
       if {[info exists bddconf(dirfits)]} {
-         set  audace(rep_images)  $bddconf(dirfits)
+         set  audace(rep_images)  $bddconf(dirtmp)
          ::console::affiche_resultat "audace(rep_images) -> $audace(rep_images)\n"
       }
       if {[info exists bddconf(dirtmp)]} {
@@ -199,7 +199,7 @@ namespace eval bddimages_config {
    #    variables en sortie :
    #
    #--------------------------------------------------
-   proc recup_position { } {
+   proc ::bddimages_config::recup_position { } {
       variable This
       global audace
       global conf
@@ -218,7 +218,7 @@ namespace eval bddimages_config {
    # @param title titre a donner a la fenetre
    # @return nom du repertoire selectionne ou une erreur (code 1)
    #--------------------------------------------------
-   proc getDir { {path ""} {title ""} } {
+   proc ::bddimages_config::getDir { {path ""} {title ""} } {
 
       variable This
       global audace
@@ -248,7 +248,8 @@ namespace eval bddimages_config {
    # @param base le repertoire de base
    # @return void
    #--------------------------------------------------
-   proc checkOtherDir { base } {
+   proc ::bddimages_config::checkOtherDir { base } {
+
       global bddconf
       
       # Liste des repertoires a chercher
@@ -312,7 +313,7 @@ namespace eval bddimages_config {
    #    variables en sortie :
    #
    #--------------------------------------------------
-   proc createDialog { } {
+   proc ::bddimages_config::createDialog { } {
       variable This
       global audace
       global caption

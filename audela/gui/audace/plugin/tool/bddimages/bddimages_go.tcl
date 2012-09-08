@@ -109,8 +109,9 @@ proc ::bddimages::initPlugin { tkbase } {
 proc ::bddimages::createPluginInstance { { in "" } { visuNo 1 } } {
    global audace
 
-   #--- Chargement du package Tablelist
+   #--- Chargement des packages 
    package require tablelist
+   package require math::statistics
 
    #--- Chargement des procedures
    ::bddimages::ressource
@@ -149,6 +150,7 @@ proc ::bddimages::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_sources.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_cata.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_cata.cap ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_image.tcl ]\""
 
    # Ancienne facon de nomage des routines
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_go.tcl ]\""
