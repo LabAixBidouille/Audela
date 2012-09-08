@@ -158,8 +158,6 @@ namespace eval bdi_tools_image {
 
    }
 
-   }
-
 
 
 
