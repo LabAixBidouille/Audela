@@ -144,7 +144,6 @@ proc spc_calriintrins { args } {
 }
 #********************************************************************
 
-
 ####################################################################
 # Procedure de corrrection d'un profil par la réponse instrumentale intrinseque c'est a dire en prenant en compte 
 # l'effet de la transmission atmospherique
@@ -237,8 +236,6 @@ proc spc_corrriintrins { args } {
    }
 }
 #************************************************************************
-
-
 
 
  
@@ -1636,7 +1633,7 @@ proc spc_calibre { args } {
 
        #--- Détection des raies dans le profil de raies de la lampe :
        # set raies [ spc_findbiglines_pat $profiletalon e ]
-       set raies [ spc_findbiglines2 $profiletalon ]
+       set raies [ spc_findbiglineslamp $profiletalon ]
        #foreach raie $raies {
         #   lappend listeabscisses [ lindex $raie 0 ]
        #}
@@ -4066,6 +4063,7 @@ proc spc_testcalibre { args } {
 # Arguments : fichier .fit du profil de raie, profil de raie de référence
 # Remarque : effectue le découpage, rééchantillonnage puis la division
 ##########################################################
+
 proc spc_rinstrum { args } {
 
    global audace spcaudace
@@ -4219,8 +4217,6 @@ proc spc_rinstrum { args } {
 }
 #****************************************************************#
 
-
-
 ##########################################################
 # Calcul la réponse intrumentale et l'enregistre
 #
@@ -4230,6 +4226,7 @@ proc spc_rinstrum { args } {
 # Arguments : fichier .fit du profil de raie, profil de raie de référence
 # Remarque : effectue le découpage, rééchantillonnage puis la division
 ##########################################################
+
 proc spc_rinstrum_old { args } {
 
    global audace spcaudace
