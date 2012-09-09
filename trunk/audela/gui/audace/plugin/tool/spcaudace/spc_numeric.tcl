@@ -122,6 +122,7 @@ proc spc_gausslist { args } {
 # Exemple : spc_maxcorr fichier_dat valeur_continuum valeur_snr
 #
 #############################################################################
+
 proc spc_maxcorr { args } {
    global audace spcaudace
    set nb_args [ llength $args ]
@@ -143,11 +144,11 @@ proc spc_maxcorr { args } {
       set periods [ list ]
       set density [ list ]
       for {set k 0} { $k < $nb_echant } {incr k} {
-	 		set ligne [lindex $contents $k]
-	 		set x [lindex $ligne 0]
-	 		set y [lindex $ligne 1]
-	 		lappend periods [lindex $ligne 0] 
-	 		lappend density [lindex $ligne 1] 
+	 set ligne [lindex $contents $k]
+	 set x [lindex $ligne 0]
+	 set y [lindex $ligne 1]
+	 lappend periods [lindex $ligne 0] 
+	 lappend density [lindex $ligne 1] 
       }
       set cdelt1 [ expr [ lindex $periods 1] - [ lindex $periods 0 ] ]
       set crval1 [ lindex $periods 0 ]
@@ -156,74 +157,74 @@ proc spc_maxcorr { args } {
       set detected_max 0
       set liste_max [ list ]
       for {set k 1} { $k < $nb_echant_periodo } {incr k} {
-	 		set kk [ expr $nb_echant_periodo - $k ]
-	 		set kk_1 [ expr $kk - 1 ]
-	 		set deriv [ expr [ lindex $density $kk ] - [ lindex $density $kk_1 ] ]
-	 		set deriv_sign 1
-	 		if { $deriv < 0. } {
-	    		set deriv_sign -1
-	 		}
-	 		if { $k != 1 } {
-	    		if { $prev_sign == -1 && $deriv_sign == 1 } {
-	       		# recherche de la parabole passant par les 3 points encadrant le max
-	       		set lx [ list ]
-	       		set ly [ list ]
-	       		lappend lx [ lindex $periods $kk_1 ]
-	       		lappend lx [ lindex $periods $kk ]
-	       		lappend lx [ lindex $periods [ expr $kk +1 ] ]
-	       		lappend ly [ lindex $density $kk_1 ]
-	       		lappend ly [ lindex $density $kk ]
-	       		lappend ly [ lindex $density [ expr $kk +1 ] ]  
-	       		# construction du systeme lineaire pour la recherche du maximum
-	       		set A [ list ]
-	       		for { set ii 0 } { $ii < 3 } { incr ii } {
-	       			set ligne [ list ]
-	       			for { set jj 0 } { $jj < 3 } { incr jj } {
-	       				lappend ligne [ expr pow([ lindex $lx $ii ],$jj) ]
-	       			}
-	       			lappend A $ligne
-	       		}
-	       		set lcoef [ gsl_msolvelin $A $ly ]
-	       		# max d ela parabole
-	       		lappend liste_max [ expr -.5 * [ lindex $lcoef 1 ] / [ lindex $lcoef 2 ] ]
-	       		set detected_max [ expr $detected_max +1 ]
-	    		}	
-	 		} 
-	 		set prev_sign $deriv_sign
-	 	}
-	 		
-      	# calcule de l'amplitude mininum des amximas
+	 set kk [ expr $nb_echant_periodo - $k ]
+	 set kk_1 [ expr $kk - 1 ]
+	 set deriv [ expr [ lindex $density $kk ] - [ lindex $density $kk_1 ] ]
+	 set deriv_sign 1
+	 if { $deriv < 0. } {
+	    set deriv_sign -1
+	 }
+	 if { $k != 1 } {
+	    if { $prev_sign == -1 && $deriv_sign == 1 } {
+	       # recherche de la parabole passant par les 3 points encadrant le max
+	       set lx [ list ]
+	       set ly [ list ]
+	       lappend lx [ lindex $periods $kk_1 ]
+	       lappend lx [ lindex $periods $kk ]
+	       lappend lx [ lindex $periods [ expr $kk +1 ] ]
+	       lappend ly [ lindex $density $kk_1 ]
+	       lappend ly [ lindex $density $kk ]
+	       lappend ly [ lindex $density [ expr $kk +1 ] ]  
+	       # construction du systeme lineaire pour la recherche du maximum
+	       set A [ list ]
+	       for { set ii 0 } { $ii < 3 } { incr ii } {
+		  set ligne [ list ]
+		  for { set jj 0 } { $jj < 3 } { incr jj } {
+		     lappend ligne [ expr pow([ lindex $lx $ii ],$jj) ]
+		  }
+		  lappend A $ligne
+	       }
+	       set lcoef [ gsl_msolvelin $A $ly ]
+	       # max d ela parabole
+	       lappend liste_max [ expr -.5 * [ lindex $lcoef 1 ] / [ lindex $lcoef 2 ] ]
+	       set detected_max [ expr $detected_max +1 ]
+	    }	
+	 } 
+	 set prev_sign $deriv_sign
+      }
+      
+      # calcule de l'amplitude mininum des amximas
       set amplit_min [ expr $continuum * (1. + $coef_snr / $snr) ]
       # selection et mise en forme des maxima detectes
       set ldens [ list ]
       set lperiod [ list ]
-	 	set nb_max [ llength $liste_max ]
+      set nb_max [ llength $liste_max ]
       for {set k 0} { $k < $nb_max } {incr k} {
-	 		set kk [ expr $k + 1 ]
-	 		set period [ lindex $liste_max $k ] 
-	 		# interpolationd ela  densite...............
-	 		set ikl  [ expr int( ( $period - $crval1 )/$cdelt1) ] 
-	 		set densm [ lindex $density $ikl ]
-	 		set densp [ lindex $density [ expr $ikl +1 ] ]
-	 		set dens [ expr $densm + ($densp-$densm)*($period-$ikl) ]
-	 		if { $dens < $amplit_min } {
-	 			continue
-	 		} 
-	 		lappend lperiod $period
-	 		lappend ldens $dens
+	 set kk [ expr $k + 1 ]
+	 set period [ lindex $liste_max $k ] 
+	 # interpolationd ela  densite...............
+	 set ikl  [ expr int( ( $period - $crval1 )/$cdelt1) ] 
+	 set densm [ lindex $density $ikl ]
+	 set densp [ lindex $density [ expr $ikl +1 ] ]
+	 set dens [ expr $densm + ($densp-$densm)*($period-$ikl) ]
+	 if { $dens < $amplit_min } {
+	    continue
+	 } 
+	 lappend lperiod $period
+	 lappend ldens $dens
       }
       set ord_dens [ lsort -decreasing -real $ldens ]
       set result [ list ]
       set nb_max [ llength $ord_dens ]
       for {set k 0} { $k < $nb_max } {incr k} {
-      	set ligne [ list ]
-	 		set dens [ lindex $ord_dens $k ]
-	 		set kk [ lsearch -exact $ldens $dens ]
-	 		lappend ligne [ lindex $lperiod $kk ]
-	 		lappend ligne $dens
-	 		lappend result $ligne
+	 set ligne [ list ]
+	 set dens [ lindex $ord_dens $k ]
+	 set kk [ lsearch -exact $ldens $dens ]
+	 lappend ligne [ lindex $lperiod $kk ]
+	 lappend ligne $dens
+	 lappend result $ligne
       }
-   	set result [ lrange $result 0 [ expr $nb_pics -1 ] ]
+      set result [ lrange $result 0 [ expr $nb_pics -1 ] ]
       return $result
    } else {
       ::console::affiche_erreur "Usage: spc_maxcorr data_filename.dat fichier_dat valeur_continuum valeur_snr \n\n"
@@ -245,6 +246,7 @@ proc spc_maxcorr { args } {
 # Exemple : spc_maxsearch periodogramme.dat 3
 #
 #############################################################################
+
 proc spc_maxsearch { args } {
    global audace
    set nb_args [ llength $args ]
