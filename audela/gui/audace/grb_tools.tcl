@@ -621,8 +621,8 @@ proc grb_greiner { args } {
       set t [expr [clock seconds]-$t0]
       ::console::affiche_resultat "Map computed in $t seconds for $n GRBs.\n"
 
-	} elseif {$methode=="redshifts"} {
-		
+   } elseif {$methode=="redshifts"} {
+
       set err [catch {open ${grbpath}/grboptic.txt r} f]
       if {$err==1} {
          error "File ${grbpath}/grboptic.txt not found. Please use the function \"grb_greiner update\" before"
@@ -666,158 +666,158 @@ proc grb_greiner { args } {
          set grb [lindex $ligne 0]
          set satellite [lindex $ligne 1]
          if {$satellite!=""} {
-	         if {$satellite!=$onesatellite} {
-	            continue
-	         }
+            if {$satellite!=$onesatellite} {
+               continue
+            }
          }
          set optic [lindex $ligne 5]
          set redshift [lindex $ligne 6]
          if {$redshift=="-01.000"} {
-	         continue
+            continue
          }
          append tgrbs "$grb "
          lappend redshifts $redshift
          # --- start of analysis
          set fname "${grbpath}/grb${grb}.html"
-	      set err [catch {open $fname r} f]
-	      if {$err==1} {
-	         error "File $fname not found. Please use the function \"grb_greiner update\" before"
-	      }
-	      set lignes [split [read $f] \n]
-	      close $f
-	      set nl [llength $lignes]
-	      # --- Date: 110731A, 100418A, 100724A, 091208B, 090715B, 080604, 080603B, 080413, 080319C, 071122
-	      # --- Ref to previous: 100302A
-	      # --- autres problemes: 090423 (exposure), 090407 (pas de redshift), 081203 (photom), 080430 (photom+date), 080207 (photom), 080129 (article)
-			::console::affiche_resultat "===== GRB $grb =====\n"
-			if {($grb=="080430")||($grb=="080207")||($grb=="080129")} {
-				continue
-			}
-	      for {set kl 0} {$kl<$nl} {incr kl} {
-		      set ligne [string tolower [lindex $lignes $kl]]
-		      set kkey [string first "redshift smaller" $ligne]
-		      if {$kkey>=0} { continue}
-		      set kkey [string first "redshift of the afterglow is at least" $ligne]
-		      if {$kkey>=0} { continue}
-		      set kkey [string first "redshift of less than" $ligne]
-		      if {$kkey>=0} { continue}
-		      set kkey [string first "redshift event." $ligne]
-		      if {$kkey>=0} { continue}
-		      set kkey [string first "redshift of about 6." $ligne]
-		      if {$kkey>=0} { continue}
-		      set kkey [string first "redshift greater than" $ligne]
-		      if {$kkey>=0} { continue}
-		      set kkey [string first "the redshift using spectroscopy and the relation from grupe et al" $ligne]
-		      if {$kkey>=0} { continue}		      
-		      set kkey [string first "the object is detected in all seven bands, implying a redshift" $ligne]
-		      if {$kkey>=0} { continue}		      
-		      set kkey [string first "redshift constraints using x-ray spectroscopy" $ligne]
-		      if {$kkey>=0} { continue}
-		      set kkey [string first "in addition to the redshift and 1-sigma error" $ligne]
-		      if {$kkey>=0} { continue}	
-		      set kkey [string first "in the three ultraviolet filters may indicate that the redshift is" $ligne]
-		      if {$kkey>=0} { continue}			      	      
-		      set kkey [string first redshift $ligne]
-		      set delay 0
-		      if {$kkey>=0} {
-			      set yy [string range $grb 0 1]
-			      if {$yy<90} {
-				      set year 20${yy}
-			      } else {
-				      set year 19${yy}
-			      }			      
-			      set kl2 $kl
-			      set kl1 [expr $kl-250]
-			      set unit ""
-			      for {set kkl $kl2} {$kkl>=$kl1} {incr kkl -1} {
-				      set ligne [string tolower [lindex $lignes $kkl]]
-				      set ligne [regsub -all \[()\] $ligne ""]
-						set ligne [regsub -all \~ $ligne ""]
-						set ligne [regsub -all "h after" $ligne " hr after"]
-						set ligne [regsub -all "6s after" $ligne "6 sec after"]
-						append ligne " $unit"
-						#::console::affiche_resultat "ETAPE  5: $ligne\n"
-				      set kkey [string first "<li> gcn circular" $ligne]
-				      if {$kkey>=0} { 
-					      if {$delay>0} {
-						      set ligne [regsub -all # $ligne ""]
-						      set ligne [split $ligne]
-						      set gcnc [lindex $ligne 3]
-						      ::console::affiche_resultat "<<valid=$valid hour=$delay z=$redshift GCNC=$gcnc\n"					      
-						      append textes "$gcnc $redshift $delay\n"
-					      }
-					      break 
-				      }
-				      if {$delay>0} {
-					      continue
-				      }
-				      set ligne [split $ligne]
-						#::console::affiche_resultat "ETAPE 10: $ligne\n"
-				      set valid 0
-				      set kkey [lsearch -ascii $ligne $year]
-				      if {$kkey>=0} { set valid 1 ; set kkey0 $kkey ; set unit date }
-				      set kkey [lsearch -ascii $ligne UT]
-				      if {$kkey>=0} { set valid 2 ; set kkey0 $kkey ; set unit date }
-				      set kkey [lsearch -ascii $ligne hr]
-				      if {$kkey>=0} { set valid 3 ; set kkey0 $kkey ; set unit hours }
-				      set kkey [lsearch -ascii $ligne hour]
-				      if {$kkey>=0} { set valid 4 ; set kkey0 $kkey ; set unit hours }
-				      set kkey [lsearch -ascii $ligne day]
-				      if {$kkey>=0} { set valid 5 ; set kkey0 $kkey ; set unit days }
-				      set kkey [lsearch -ascii $ligne mins]
-				      if {$kkey>=0} { set valid 6 ; set kkey0 $kkey ; set unit minutes }
-				      set kkey [lsearch -ascii $ligne hours]
-				      if {$kkey>=0} { set valid 7 ; set kkey0 $kkey ; set unit hours }
-				      set kkey [lsearch -ascii $ligne days]
-				      if {$kkey>=0} { set valid 8 ; set kkey0 $kkey ; set unit days }
-				      set kkey [lsearch -ascii $ligne minutes]
-				      if {$kkey>=0} { set valid 9 ; set kkey0 $kkey ; set unit minutes }
-				      set kkey [lsearch -ascii $ligne hrs]
-				      if {$kkey>=0} { set valid 10 ; set kkey0 $kkey ; set unit hours }
-				      set kkey [lsearch -ascii $ligne sec]
-				      if {$kkey>=0} { set valid 11 ; set kkey0 $kkey ; set unit seconds }
-				      set kkey [lsearch -ascii $ligne min]
-				      if {$kkey>=0} { set valid 12 ; set kkey0 $kkey ; set unit minutes }
-				      if {$valid>0} {					      
-					      if {$kkey0==0} { continue }				      
-					      set delay 0
-					      set mult 1.
-					      if {$unit=="hours"} {
-						      set delay [string trim [lindex $ligne [expr $kkey0-1]]]
-						      set delay [regsub -all : $delay "."]
-						      if {$delay=="one"} { set delay 1 }
-					      }
-					      if {$unit=="days"} {
-						      set delay [string trim [lindex $ligne [expr $kkey0-1]]]						      
-						      set delay [regsub -all : $delay "."]
-						      if {$delay=="one"} { set delay 1 }
-						      set mult 24.
-					      }
-					      if {$unit=="minutes"} {
-						      set delay [string trim [lindex $ligne [expr $kkey0-1]]]						      
-						      set delay [regsub -all : $delay "."]
-						      if {$delay=="one"} { set delay 1 }
-						      set mult [expr 1./60]
-					      }
-					      if {$unit=="seconds"} {
-						      set delay [string trim [lindex $ligne [expr $kkey0-1]]]						      
-						      set delay [regsub -all : $delay "."]
-						      if {$delay=="one"} { set delay 1 }
-						      set mult [expr 1./3600]
-					      }
-					      ::console::affiche_resultat "<$valid ($kkey0)=$delay ($mult)> $ligne\n"
-					      if {[catch {expr $delay} ]==1} {
-						      set delay 0
-					      }
-						   set delay [expr $delay*$mult]
-					      if {$delay>0} { continue }
-				      }
-				      set unit ""
-			      }
-		      }
-		      if {$delay>0} { break }
-	      }         
-			::console::affiche_resultat "-----------\n"
+         set err [catch {open $fname r} f]
+         if {$err==1} {
+            error "File $fname not found. Please use the function \"grb_greiner update\" before"
+         }
+         set lignes [split [read $f] \n]
+         close $f
+         set nl [llength $lignes]
+         # --- Date: 110731A, 100418A, 100724A, 091208B, 090715B, 080604, 080603B, 080413, 080319C, 071122
+         # --- Ref to previous: 100302A
+         # --- autres problemes: 090423 (exposure), 090407 (pas de redshift), 081203 (photom), 080430 (photom+date), 080207 (photom), 080129 (article)
+         ::console::affiche_resultat "===== GRB $grb =====\n"
+         if {($grb=="080430")||($grb=="080207")||($grb=="080129")} {
+            continue
+         }
+         for {set kl 0} {$kl<$nl} {incr kl} {
+            set ligne [string tolower [lindex $lignes $kl]]
+            set kkey [string first "redshift smaller" $ligne]
+            if {$kkey>=0} { continue}
+            set kkey [string first "redshift of the afterglow is at least" $ligne]
+            if {$kkey>=0} { continue}
+            set kkey [string first "redshift of less than" $ligne]
+            if {$kkey>=0} { continue}
+            set kkey [string first "redshift event." $ligne]
+            if {$kkey>=0} { continue}
+            set kkey [string first "redshift of about 6." $ligne]
+            if {$kkey>=0} { continue}
+            set kkey [string first "redshift greater than" $ligne]
+            if {$kkey>=0} { continue}
+            set kkey [string first "the redshift using spectroscopy and the relation from grupe et al" $ligne]
+            if {$kkey>=0} { continue}
+            set kkey [string first "the object is detected in all seven bands, implying a redshift" $ligne]
+            if {$kkey>=0} { continue}
+            set kkey [string first "redshift constraints using x-ray spectroscopy" $ligne]
+            if {$kkey>=0} { continue}
+            set kkey [string first "in addition to the redshift and 1-sigma error" $ligne]
+            if {$kkey>=0} { continue}
+            set kkey [string first "in the three ultraviolet filters may indicate that the redshift is" $ligne]
+            if {$kkey>=0} { continue}
+            set kkey [string first redshift $ligne]
+            set delay 0
+            if {$kkey>=0} {
+               set yy [string range $grb 0 1]
+               if {$yy<90} {
+                  set year 20${yy}
+               } else {
+                  set year 19${yy}
+               }
+               set kl2 $kl
+               set kl1 [expr $kl-250]
+               set unit ""
+               for {set kkl $kl2} {$kkl>=$kl1} {incr kkl -1} {
+                  set ligne [string tolower [lindex $lignes $kkl]]
+                  set ligne [regsub -all \[()\] $ligne ""]
+                  set ligne [regsub -all \~ $ligne ""]
+                  set ligne [regsub -all "h after" $ligne " hr after"]
+                  set ligne [regsub -all "6s after" $ligne "6 sec after"]
+                  append ligne " $unit"
+                  #::console::affiche_resultat "ETAPE  5: $ligne\n"
+                  set kkey [string first "<li> gcn circular" $ligne]
+                  if {$kkey>=0} {
+                     if {$delay>0} {
+                        set ligne [regsub -all # $ligne ""]
+                        set ligne [split $ligne]
+                        set gcnc [lindex $ligne 3]
+                        ::console::affiche_resultat "<<valid=$valid hour=$delay z=$redshift GCNC=$gcnc\n"
+                        append textes "$gcnc $redshift $delay\n"
+                     }
+                     break
+                  }
+                  if {$delay>0} {
+                     continue
+                  }
+                  set ligne [split $ligne]
+                  #::console::affiche_resultat "ETAPE 10: $ligne\n"
+                  set valid 0
+                  set kkey [lsearch -ascii $ligne $year]
+                  if {$kkey>=0} { set valid 1 ; set kkey0 $kkey ; set unit date }
+                  set kkey [lsearch -ascii $ligne UT]
+                  if {$kkey>=0} { set valid 2 ; set kkey0 $kkey ; set unit date }
+                  set kkey [lsearch -ascii $ligne hr]
+                  if {$kkey>=0} { set valid 3 ; set kkey0 $kkey ; set unit hours }
+                  set kkey [lsearch -ascii $ligne hour]
+                  if {$kkey>=0} { set valid 4 ; set kkey0 $kkey ; set unit hours }
+                  set kkey [lsearch -ascii $ligne day]
+                  if {$kkey>=0} { set valid 5 ; set kkey0 $kkey ; set unit days }
+                  set kkey [lsearch -ascii $ligne mins]
+                  if {$kkey>=0} { set valid 6 ; set kkey0 $kkey ; set unit minutes }
+                  set kkey [lsearch -ascii $ligne hours]
+                  if {$kkey>=0} { set valid 7 ; set kkey0 $kkey ; set unit hours }
+                  set kkey [lsearch -ascii $ligne days]
+                  if {$kkey>=0} { set valid 8 ; set kkey0 $kkey ; set unit days }
+                  set kkey [lsearch -ascii $ligne minutes]
+                  if {$kkey>=0} { set valid 9 ; set kkey0 $kkey ; set unit minutes }
+                  set kkey [lsearch -ascii $ligne hrs]
+                  if {$kkey>=0} { set valid 10 ; set kkey0 $kkey ; set unit hours }
+                  set kkey [lsearch -ascii $ligne sec]
+                  if {$kkey>=0} { set valid 11 ; set kkey0 $kkey ; set unit seconds }
+                  set kkey [lsearch -ascii $ligne min]
+                  if {$kkey>=0} { set valid 12 ; set kkey0 $kkey ; set unit minutes }
+                  if {$valid>0} {
+                     if {$kkey0==0} { continue }
+                     set delay 0
+                     set mult 1.
+                     if {$unit=="hours"} {
+                        set delay [string trim [lindex $ligne [expr $kkey0-1]]]
+                        set delay [regsub -all : $delay "."]
+                        if {$delay=="one"} { set delay 1 }
+                     }
+                     if {$unit=="days"} {
+                        set delay [string trim [lindex $ligne [expr $kkey0-1]]]
+                        set delay [regsub -all : $delay "."]
+                        if {$delay=="one"} { set delay 1 }
+                        set mult 24.
+                     }
+                     if {$unit=="minutes"} {
+                        set delay [string trim [lindex $ligne [expr $kkey0-1]]]
+                        set delay [regsub -all : $delay "."]
+                        if {$delay=="one"} { set delay 1 }
+                        set mult [expr 1./60]
+                     }
+                     if {$unit=="seconds"} {
+                        set delay [string trim [lindex $ligne [expr $kkey0-1]]]
+                        set delay [regsub -all : $delay "."]
+                        if {$delay=="one"} { set delay 1 }
+                        set mult [expr 1./3600]
+                     }
+                     ::console::affiche_resultat "<$valid ($kkey0)=$delay ($mult)> $ligne\n"
+                     if {[catch {expr $delay} ]==1} {
+                        set delay 0
+                     }
+                     set delay [expr $delay*$mult]
+                     if {$delay>0} { continue }
+                  }
+                  set unit ""
+               }
+            }
+            if {$delay>0} { break }
+         }
+         ::console::affiche_resultat "-----------\n"
          # --- end of analysis
          incr n
          if {$n>110} { break }
@@ -831,7 +831,7 @@ proc grb_greiner { args } {
       puts -nonewline $f $textes
       close $f
       ::console::affiche_resultat "Redshift analysis computed in $t seconds for $n GRBs.\n"
-      
+
    } else {
 
       error "Error: First element must be a method amongst update, prompt_map"
