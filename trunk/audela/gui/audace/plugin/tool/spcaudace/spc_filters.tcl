@@ -557,7 +557,7 @@ proc spc_passebas { args } {
       set nordonnees3 [ lrange $ordonnees_ini $i_sup end ]
       set newordonnees [ concat $nordonnees1 $nordonnees $nordonnees3 ]
       set crval1 [ lindex $abscisses_ini 0 ]
-      set file_out [ spc_fileupdate $fichier $crval1 $dx $newordonnees pbas non ]
+      set file_out [ spc_fileupdate $fichier $crval1 $dx $newordonnees ""]
       return $file_out
    } else {
       ::console::affiche_erreur "Usage: spc_passebas profil_de_raies.fit ? demi-largeur motif à gommer(25)?\n\n"
