@@ -13,59 +13,60 @@
 # Algo : reprod. des formules donnees dans "Digital Signal Processing" par Oppenheim et Schafer
 # La reponse impulsionnelle du filtre aura un nombre impair d'echantillons (2 * demilargeur + 1)
 ####################################################################
+
 proc fonc_apod  { demilargeur nlen type_apod } {
 
-	set nlarg [ expr 2*$demilargeur+1 ]
-	set apod [ list ]
-	for {set i 0} {$i<$nlen} {incr i} {
-		lappend apod 0.
-	}
+   set nlarg [ expr 2*$demilargeur+1 ]
+   set apod [ list ]
+   for {set i 0} {$i<$nlen} {incr i} {
+      lappend apod 0.
+   }
+   
+   switch $type_apod {
+      #set amplit [ expr 1./$nlarg ]
+      #::console::affiche_resultat "nlen= $nlen\n"
+      #::console::affiche_resultat "longueur filtre= [llength $filtr ]\n"
+      
+      rectangle {
+	 for {set i 0} {$i<=$demilargeur} {incr i} {
+	    set apod [ lreplace $apod $i $i 1 ]
+	 }
+	 #::console::affiche_resultat "longueur filtre= [llength $filtr ]\n"
+	 set redemar [ expr $nlen-$demilargeur ]
+	 #::console::affiche_resultat "redemar=$redemar\n"
+	 for {set i $redemar} {$i<$nlen} {incr i} {
+	    set apod [ lreplace $apod $i $i 1 ]
+	 }
+      }
 
-	switch $type_apod {
-	#set amplit [ expr 1./$nlarg ]
-	#::console::affiche_resultat "nlen= $nlen\n"
-	#::console::affiche_resultat "longueur filtre= [llength $filtr ]\n"
-
-		rectangle {
-		for {set i 0} {$i<=$demilargeur} {incr i} {
-			set apod [ lreplace $apod $i $i 1 ]
-		}
-		#::console::affiche_resultat "longueur filtre= [llength $filtr ]\n"
-		set redemar [ expr $nlen-$demilargeur ]
-		#::console::affiche_resultat "redemar=$redemar\n"
-		for {set i $redemar} {$i<$nlen} {incr i} {
-			set apod [ lreplace $apod $i $i 1 ]
-		}
-		}
-
-		blackman {
-		set pi [ expr 2.*asin(1.) ]
-		for {set i 0} {$i<=$demilargeur} {incr i} {
-			set amplit [ expr 0.42-0.5*cos($pi*($i+$demilargeur)/$demilargeur)+0.08*cos(2.*$pi*($i+$demilargeur)/$demilargeur) ]
-			set apod [ lreplace $apod $i $i $amplit ]
-		}
-		set redemar [ expr $nlen-$demilargeur ]
-		for {set i $redemar} {$i<$nlen} {incr i} {
-			set amplit [ expr 0.42-0.5*cos($pi*($i-$redemar)/$demilargeur)+0.08*cos(2.*$pi*($i-$redemar)/$demilargeur) ]
-			set apod [ lreplace $apod $i $i $amplit ]
-		}
-		}
-		
-		hanning {
-		set pi [ expr 2.*asin(1.) ]
-		for {set i 0} {$i<=$demilargeur} {incr i} {
-			set amplit [ expr 0.5-0.5*cos($pi*($i+$demilargeur)/$demilargeur) ]
-			set apod [ lreplace $apod $i $i $amplit ]
-		}
-		set redemar [ expr $nlen-$demilargeur ]
-		for {set i $redemar} {$i<$nlen} {incr i} {
-			set amplit [ expr 0.5-0.5*cos($pi*($i-$redemar)/$demilargeur) ]
-			set apod [ lreplace $apod $i $i $amplit ]
-		}
-		}
-	}
-	return $apod
-
+      blackman {
+	 set pi [ expr 2.*asin(1.) ]
+	 for {set i 0} {$i<=$demilargeur} {incr i} {
+	    set amplit [ expr 0.42-0.5*cos($pi*($i+$demilargeur)/$demilargeur)+0.08*cos(2.*$pi*($i+$demilargeur)/$demilargeur) ]
+	    set apod [ lreplace $apod $i $i $amplit ]
+	 }
+	 set redemar [ expr $nlen-$demilargeur ]
+	 for {set i $redemar} {$i<$nlen} {incr i} {
+	    set amplit [ expr 0.42-0.5*cos($pi*($i-$redemar)/$demilargeur)+0.08*cos(2.*$pi*($i-$redemar)/$demilargeur) ]
+	    set apod [ lreplace $apod $i $i $amplit ]
+	 }
+      }
+      
+      hanning {
+	 set pi [ expr 2.*asin(1.) ]
+	 for {set i 0} {$i<=$demilargeur} {incr i} {
+	    set amplit [ expr 0.5-0.5*cos($pi*($i+$demilargeur)/$demilargeur) ]
+	    set apod [ lreplace $apod $i $i $amplit ]
+	 }
+	 set redemar [ expr $nlen-$demilargeur ]
+	 for {set i $redemar} {$i<$nlen} {incr i} {
+	    set amplit [ expr 0.5-0.5*cos($pi*($i-$redemar)/$demilargeur) ]
+	    set apod [ lreplace $apod $i $i $amplit ]
+	 }
+      }
+   }
+   return $apod
+   
 }
 #****************************************************************#
 
@@ -234,6 +235,8 @@ proc spc_passebas_pat { args } {
 }
 #****************************************************************#
 
+
+#########################################################################################################
 # Procedure de lissage d'un profil basse resolution typiquement un résultat de division, 
 # supposé calibré linéairement, via une fonction linéaire par morceaux en considerant comme 
 # donnee aberrante les echantillons situes a proximite de raies bien connues (raies
@@ -284,6 +287,7 @@ proc spc_passebas_pat { args } {
 # spc_lowresfilterfile resultat_division_150t "$audace(rep_images)/forgetlambda.dat" 1.1 2.5 {1. 2.} o 18
 # La version tunée Benji pour le lissage de la RI ne demande que le nom du fichier de cette RI
 ####################################################################
+
 proc spc_lowresfilterfile { args } {
    global conf
    global audace spcaudace
@@ -374,6 +378,7 @@ proc spc_lowresfilterfile { args } {
 # 
 # Exemple: spc_lowresfilterlist resultat_division_150t_linear.fit {3660. 3688. 3847. 3909. 3989. 4158. 4246. 4415. 4583. 4743. 4965. 5346. 5745. 5807. 6300. 6640. 7013. 7386. 7538. 7740. } 2.5 {1. 1. 10000. 1000000. 500000. 10000. 1000.} o 18
 ####################################################################
+
 proc spc_lowresfilterlist {args } {
    global conf
    global audace
@@ -407,6 +412,7 @@ proc spc_lowresfilterlist {args } {
 # Arguments : longueur liste intensite non nulle, valeur approx nechant
 # cette derniere est supposee superieure ou egale a 18
 ####################################################################
+
 proc ajust_interv {args } {
    global conf
    global audace
@@ -451,6 +457,7 @@ proc ajust_interv {args } {
 # l'appel de cette procedure meriterait d'etre sortie de la partie algo
 # on s'epargnerait ainsi plusieurs calculs de la matrice B dans spc_pwlri
 ####################################################################
+
 proc spc_calcmatB {args} {
    global conf
    global audace
@@ -1131,13 +1138,12 @@ proc spc_extractcont { args } {
     global audace spcaudace
     #global spc_audace(nul_pcent_intens)
     set nul_pcent_intens .65
-
-
    # ndeg est le degré choisi pour le polynome (ce nombre doit etre inferieur a 5)   
     
    # visu_RMS (=o ou n) indique si l'on veut ou non une visualisation du resultat 
    # tauxRMS specifie l'amplitude des residus (en % de la moyenne RMS) a partir de laquelle 
-   # les echantillons sont consirérés comme associés à des résidus de raies (cas ou 		# l'utilisateur ne veut pas faire appel a la procedure automatique et specifier lui meme
+   # les echantillons sont consirérés comme associés à des résidus de raies (cas ou 		
+   # l'utilisateur ne veut pas faire appel a la procedure automatique et specifier lui meme
    # le seuil de tri des données aberrantes)
    # Exemples :
    # spc_polynfilter resultat_division.fit 4 n 15 20 200
@@ -1214,14 +1220,14 @@ proc spc_extractcont { args } {
 	#set poids [ list ]
 	set intens_moy 0.
 	for { set i $i_inf } { $i<=$i_sup } { incr i } {
-  		set xi [ lindex $abscissesorig $i ]
-		set xxi [ expr ($xi-$lambdamin)/$ecartlambda ]
-  		set yi [ lindex $ordonneesorig $i ]
-  		lappend abscisses $xi
-		lappend xx $xxi
-  		lappend ordonnees $yi
-		#lappend poids 1.
-  		set intens_moy [ expr $intens_moy +$yi ]
+	   set xi [ lindex $abscissesorig $i ]
+	   set xxi [ expr ($xi-$lambdamin)/$ecartlambda ]
+	   set yi [ lindex $ordonneesorig $i ]
+	   lappend abscisses $xi
+	   lappend xx $xxi
+	   lappend ordonnees $yi
+	   #lappend poids 1.
+	   set intens_moy [ expr $intens_moy +$yi ]
         }
 	set intens_moy [ expr $intens_moy/($nmilieu0*1.) ]
 	set intens_moy_2 [ expr $intens_moy*.5 ]
@@ -1231,246 +1237,245 @@ proc spc_extractcont { args } {
 	#calcul matrice B
 	set B [ list ]
 	for { set i 0 } { $i<$nmilieu0 } { incr i } {
-		set Bi [ list ]
-		for { set j 0 } { $j<=1 } { incr j } {
-			lappend Bi [ expr pow([ lindex $xx $i ],$j) ]
-                }
-		lappend B $Bi
+	   set Bi [ list ]
+	   for { set j 0 } { $j<=1 } { incr j } {
+	      lappend Bi [ expr pow([ lindex $xx $i ],$j) ]
+	   }
+	   lappend B $Bi
         }
-	# initialisation des poids
-	set poids [ list ]
-	for { set i $i_inf } { $i<=$i_sup } { incr i } {
-		lappend poids 1.
-        }
+       # initialisation des poids
+       set poids [ list ]
+       for { set i $i_inf } { $i<=$i_sup } { incr i } {
+	  lappend poids 1.
+       }
 	
 
-	#-- calcul du 1er ajustement
-	set result [ gsl_mfitmultilin $ordonnees $B $poids ]
-        #-- extrait le resultat
-        set coeffs [ lindex $result 0 ]
-        set chi2 [ lindex $result 1 ]
-        set covar [ lindex $result 2 ]
-        set riliss1 [ gsl_mmult $B $coeffs ]
-	set resid [ gsl_msub $ordonnees $riliss1 ]
-	
-	#-- evaluation et analyse des residus
-	# ::console::affiche_resultat "longueur B : [llength $B]\n"
-        # ::console::affiche_resultat "longueur riliss : [llength $riliss1]\n"
-	set residtransp [ gsl_mtranspose $resid ]
-	set rms_pat1  [ gsl_mmult $residtransp $resid ]
-	set rms_pat [ lindex $rms_pat1 0 ]
-	set rms_pat [ expr ($rms_pat/($nmilieu0*1.)) ]
-	set rms_pat [expr sqrt($rms_pat)]
+       #-- calcul du 1er ajustement
+       set result [ gsl_mfitmultilin $ordonnees $B $poids ]
+       #-- extrait le resultat
+       set coeffs [ lindex $result 0 ]
+       set chi2 [ lindex $result 1 ]
+       set covar [ lindex $result 2 ]
+       set riliss1 [ gsl_mmult $B $coeffs ]
+       set resid [ gsl_msub $ordonnees $riliss1 ]
+       
+       #-- evaluation et analyse des residus
+       # ::console::affiche_resultat "longueur B : [llength $B]\n"
+       # ::console::affiche_resultat "longueur riliss : [llength $riliss1]\n"
+       set residtransp [ gsl_mtranspose $resid ]
+       set rms_pat1  [ gsl_mmult $residtransp $resid ]
+       set rms_pat [ lindex $rms_pat1 0 ]
+       set rms_pat [ expr ($rms_pat/($nmilieu0*1.)) ]
+       set rms_pat [expr sqrt($rms_pat)]
 	set chi2init $chi2
-	set constinit [ lindex $coeffs 0 ]
+       set constinit [ lindex $coeffs 0 ]
 	set penteinit [ lindex $coeffs 1 ]
-	set RMSinit $rms_pat
-	set som_poids 0.
-	set RMS_iter [ list ]
-	set chi2_iter [ list ]
-	set const_iter [ list ]
-	set pente_iter [ list ]
-	set num_iter [ list ]
-	lappend RMS_iter 1.
-	lappend chi2_iter 1.
-	lappend const_iter 1.
-	lappend pente_iter 1.
-	lappend num_iter 0
-	for {set i 0} {$i<$nmilieu0} {incr i} {
-		set som_poids [ expr $som_poids + [ lindex $poids $i ] ]  
-        }
-	# ::console::affiche_resultat " $som_poids\n"
+       set RMSinit $rms_pat
+       set som_poids 0.
+       set RMS_iter [ list ]
+       set chi2_iter [ list ]
+       set const_iter [ list ]
+       set pente_iter [ list ]
+       set num_iter [ list ]
+       lappend RMS_iter 1.
+       lappend chi2_iter 1.
+       lappend const_iter 1.
+       lappend pente_iter 1.
+       lappend num_iter 0
+       for {set i 0} {$i<$nmilieu0} {incr i} {
+	  set som_poids [ expr $som_poids + [ lindex $poids $i ] ]  
+       }
+       # ::console::affiche_resultat " $som_poids\n"
 	# ::console::affiche_resultat "residu moyen (RMS) apres premiere etape : $rms_pat\n"
 	
-	if { $nb_args<=6 } {
-		for { set niter 1 } { $niter<=$nbiter } { incr niter } {
-			set resid_pond [ list ]
-			for {set i 0} {$i<$nmilieu0} {incr i} {
-				set residi [ expr abs([ lindex $poids $i ]*[ lindex $resid $i ]) ]
-				lappend resid_pond $residi
-                        }
-		 
-			set residtri [ lsort -decreasing -real $resid_pond ]
-			set R [ list ]
-			set nnn [ list ]
-			#calcul fonction R(n)
-			#doit pouvoir etre simplifie : on ne veut que le dernier terme de R
-			for {set nn 0} {$nn<=$elim} {incr nn} {
-				set n1 [ expr int($nn*$nmilieu0*.001)]
-				# ::console::affiche_resultat " $n1\n"
-				lappend nnn $nn
-				lappend R [ expr [ lindex $residtri $n1 ]*100./$rms_pat ]	
-                        }
-
-			
-        		#selection du seuil de troncature
-        		
-                   if { $nb_args < 6 } {
-			set tauxRMS [ lindex $R $elim ]
-                   }
-			# ::console::affiche_resultat " $tauxRMS\n"
-			#--calcul des nouveaux poids censes eliminer les residus de raies
-			set seuilres [ expr $rms_pat*$tauxRMS*.01 ]
-			#set poids [ list ]
-			set som_poids 0.
-			for {set i 0} {$i<$nmilieu0} {incr i} {
-				#set poidsi [ expr $intens_moy*.5 ]
-				set residi [ lindex $resid $i ]
-				if { [ expr abs($residi) ]>=$seuilres } {
-					set poids [ lreplace $poids $i $i 0. ] 
-					#::console::affiche_resultat " $som_poids\n"
-                                }
-				set som_poids [ expr $som_poids + [ lindex $poids $i ] ]  
-                        }
-			# ::console::affiche_resultat " $som_poids\n"
-			set result [ gsl_mfitmultilin $ordonnees $B $poids ]
-        		#-- extrait le resultat
-        		set coeffs [ lindex $result 0 ]
-        		set chi2 [ lindex $result 1 ]
-        		set covar [ lindex $result 2 ]
-        		set riliss1 [ gsl_mmult $B $coeffs ]
-			set resid [ gsl_msub $ordonnees $riliss1 ]
-			lappend chi2_iter [ expr $chi2/$chi2init ]
-			#lappend RMS_iter [ expr $chi2/$chi2init ]
-			lappend const_iter [ expr [ lindex $coeffs 0 ]/$constinit ]
-			lappend pente_iter [ expr [ lindex $coeffs 1 ]/$penteinit ]
-			lappend num_iter $niter
-			}
-		}
-		
-		
-	if { $visus == "o" } {
-	# graphique des QC		
-			::plotxy::clf
-			::plotxy::figure 1
-        		::plotxy::plot $num_iter $chi2_iter r 0
-        		::plotxy::hold on
-        		::plotxy::plot $num_iter $const_iter b 0
-        		::plotxy::hold on
-        		::plotxy::plot $num_iter $pente_iter g 0
-        		::plotxy::xlabel " iterations "
-       			::plotxy::ylabel "evolution normalisee"
-        		::plotxy::title "QC : chi2 (r), constante (b), pente (v)"	
-        }
-
-	
-	#-- derniere etape du lissage
-	for {set i 0} {$i<$nmilieu0} {incr i} {
+       if { $nb_args<=6 } {
+	  for { set niter 1 } { $niter<=$nbiter } { incr niter } {
+	     set resid_pond [ list ]
+	     for {set i 0} {$i<$nmilieu0} {incr i} {
+		set residi [ expr abs([ lindex $poids $i ]*[ lindex $resid $i ]) ]
+		lappend resid_pond $residi
+	     }
+	     
+	     set residtri [ lsort -decreasing -real $resid_pond ]
+	     set R [ list ]
+	     set nnn [ list ]
+	     #calcul fonction R(n)
+	     #doit pouvoir etre simplifie : on ne veut que le dernier terme de R
+	     for {set nn 0} {$nn<=$elim} {incr nn} {
+		set n1 [ expr int($nn*$nmilieu0*.001)]
+		# ::console::affiche_resultat " $n1\n"
+		lappend nnn $nn
+		lappend R [ expr [ lindex $residtri $n1 ]*100./$rms_pat ]	
+	     }
+	     
+	     
+	     #selection du seuil de troncature
+	     
+	     if { $nb_args < 6 } {
+		set tauxRMS [ lindex $R $elim ]
+	     }
+	     # ::console::affiche_resultat " $tauxRMS\n"
+	     #--calcul des nouveaux poids censes eliminer les residus de raies
+	     set seuilres [ expr $rms_pat*$tauxRMS*.01 ]
+	     #set poids [ list ]
+	     set som_poids 0.
+	     for {set i 0} {$i<$nmilieu0} {incr i} {
 		#set poidsi [ expr $intens_moy*.5 ]
 		set residi [ lindex $resid $i ]
 		if { [ expr abs($residi) ]>=$seuilres } {
-			set poids [ lreplace $poids $i $i 0. ] 
-                }
-        }
-	#calcul matrice B
-	set B [ list ]
-	# ::console::affiche_resultat "\n"
-		
-	for { set i 0 } { $i<$nmilieu0 } { incr i } {
-		set Bi [ list ]
-		for { set j 0 } { $j<=$ndeg } { incr j } {
-			lappend Bi [ expr pow([ lindex $xx $i ],$j) ]
-                }
-		lappend B $Bi
-        }
-        set riliss [ list ]
-	set result [ gsl_mfitmultilin $ordonnees $B $poids ]
-        #-- extrait le resultat
-        set coeffs [ lindex $result 0 ]
-        set chi2 [ lindex $result 1 ]
-        set covar [ lindex $result 2 ]
-	set riliss [ gsl_mmult $B $coeffs ]
-		
-	#-- evaluation et analyse des residus
-	set resid [ gsl_msub $ordonnees $riliss ]
-	# ::console::affiche_resultat "longueur B : [llength $B]\n"
-        # ::console::affiche_resultat "longueur riliss : [llength $riliss]\n"
-	set residtransp [ gsl_mtranspose $resid]
-	
-	for { set i 0 } { $i<$nmilieu0 } { incr i } {
-		set residi [ expr [ lindex $resid $i ]*[ lindex $poids $i ] ]
-		set resid [ lreplace $resid $i $i $residi ]		
-        }
-		
-	#il serait peut etre judicieux de faire intervenir le chi2
-
-	set rms_pat1  [ gsl_mmult $residtransp $resid ]
-	set rms_pat [ lindex $rms_pat1 0 ]
-	set rms_pat [ expr ($rms_pat/($som_poids)) ]
-	set rms_pat [expr sqrt($rms_pat)]
-	# ::console::affiche_resultat "Residu moyen (RMS) apres deuxieme etape : $rms_pat\n"
-	
-	#normalisation des poids pour la visu
-	for { set i 0 } { $i<$nmilieu0 } { incr i } {
-		set poidsi [ expr [ lindex $poids $i ]*$intens_moy ]
-		set poids [ lreplace $poids $i $i $poidsi ]		
-		
-        }
+		   set poids [ lreplace $poids $i $i 0. ] 
+		   #::console::affiche_resultat " $som_poids\n"
+		}
+		set som_poids [ expr $som_poids + [ lindex $poids $i ] ]  
+	     }
+	     # ::console::affiche_resultat " $som_poids\n"
+	     set result [ gsl_mfitmultilin $ordonnees $B $poids ]
+	     #-- extrait le resultat
+	     set coeffs [ lindex $result 0 ]
+	     set chi2 [ lindex $result 1 ]
+	     set covar [ lindex $result 2 ]
+	     set riliss1 [ gsl_mmult $B $coeffs ]
+	     set resid [ gsl_msub $ordonnees $riliss1 ]
+	     lappend chi2_iter [ expr $chi2/$chi2init ]
+	     #lappend RMS_iter [ expr $chi2/$chi2init ]
+	     lappend const_iter [ expr [ lindex $coeffs 0 ]/$constinit ]
+	     lappend pente_iter [ expr [ lindex $coeffs 1 ]/$penteinit ]
+	     lappend num_iter $niter
+	  }
+       }
+       
+       
+       if { $visus == "o" } {
+	  # graphique des QC		
+	  ::plotxy::clf
+	  ::plotxy::figure 1
+	  ::plotxy::plot $num_iter $chi2_iter r 0
+	  ::plotxy::hold on
+	  ::plotxy::plot $num_iter $const_iter b 0
+	  ::plotxy::hold on
+	  ::plotxy::plot $num_iter $pente_iter g 0
+	  ::plotxy::xlabel " iterations "
+	  ::plotxy::ylabel "evolution normalisee"
+	  ::plotxy::title "QC : chi2 (r), constante (b), pente (v)"	
+       }
+       
+       
+       #-- derniere etape du lissage
+       for {set i 0} {$i<$nmilieu0} {incr i} {
+	  #set poidsi [ expr $intens_moy*.5 ]
+	  set residi [ lindex $resid $i ]
+	  if { [ expr abs($residi) ]>=$seuilres } {
+	     set poids [ lreplace $poids $i $i 0. ] 
+	  }
+       }
+       #calcul matrice B
+       set B [ list ]
+       # ::console::affiche_resultat "\n"
+       
+       for { set i 0 } { $i<$nmilieu0 } { incr i } {
+	  set Bi [ list ]
+	  for { set j 0 } { $j<=$ndeg } { incr j } {
+	     lappend Bi [ expr pow([ lindex $xx $i ],$j) ]
+	  }
+	  lappend B $Bi
+       }
+       set riliss [ list ]
+       set result [ gsl_mfitmultilin $ordonnees $B $poids ]
+       #-- extrait le resultat
+       set coeffs [ lindex $result 0 ]
+       set chi2 [ lindex $result 1 ]
+       set covar [ lindex $result 2 ]
+       set riliss [ gsl_mmult $B $coeffs ]
+       
+       #-- evaluation et analyse des residus
+       set resid [ gsl_msub $ordonnees $riliss ]
+       # ::console::affiche_resultat "longueur B : [llength $B]\n"
+       # ::console::affiche_resultat "longueur riliss : [llength $riliss]\n"
+       set residtransp [ gsl_mtranspose $resid]
+       
+       for { set i 0 } { $i<$nmilieu0 } { incr i } {
+	  set residi [ expr [ lindex $resid $i ]*[ lindex $poids $i ] ]
+	  set resid [ lreplace $resid $i $i $residi ]		
+       }
+       
+       #il serait peut etre judicieux de faire intervenir le chi2
+       
+       set rms_pat1  [ gsl_mmult $residtransp $resid ]
+       set rms_pat [ lindex $rms_pat1 0 ]
+       set rms_pat [ expr ($rms_pat/($som_poids)) ]
+       set rms_pat [expr sqrt($rms_pat)]
+       # ::console::affiche_resultat "Residu moyen (RMS) apres deuxieme etape : $rms_pat\n"
+       
+       #normalisation des poids pour la visu
+       for { set i 0 } { $i<$nmilieu0 } { incr i } {
+	  set poidsi [ expr [ lindex $poids $i ]*$intens_moy ]
+	  set poids [ lreplace $poids $i $i $poidsi ]		
+       }
 	
 	#-- mise a zero d'eventuels echantillons tres petits
 	set zero 0.
 	set seuil_min [ expr $intens_moy*$nul_pcent_intens/100. ]
 	for { set i 0 } {$i<$nmilieu0} {incr i} {
-		if { [ lindex $riliss $i ] < $seuil_min } { 
-			set riliss [ lreplace $riliss $i $i $zero ] 
-                }
+	   if { [ lindex $riliss $i ] < $seuil_min } { 
+	      set riliss [ lreplace $riliss $i $i $zero ] 
+	   }
         }
        
-
-	#--- Rajout des valeurs nulles en début et en fin pour retrouver la dimension initiale du fichier de départ :
-	set len_ini $lenorig
-	set len_cut $nmilieu0
-	set nb_insert_sup [ expr $lenorig-$i_inf-$nmilieu0 ]
-	for { set i 1 } { $i<=$nb_insert_sup } { incr i } {
-	    	set riliss [ linsert $riliss [ expr $len_cut+$i ] 0.0 ]
-	    	#set nouvpoids1 [ linsert $nouvpoids1 [ expr $len_cut+$i ] 0.0 ]    
-        }
-	for { set i 0 } { $i<$i_inf } { incr i } {
-	    	set riliss [ linsert $riliss 0 0.0 ]
-	    	#set nouvpoids1 [ linsert $nouvpoids1 0 0.0 ]
-        }
-	
-	# ::console::affiche_resultat "Nombre d'éléments traités : [ llength $riliss ]\n"
-	
-	
-
+       
+       #--- Rajout des valeurs nulles en début et en fin pour retrouver la dimension initiale du fichier de départ :
+       set len_ini $lenorig
+       set len_cut $nmilieu0
+       set nb_insert_sup [ expr $lenorig-$i_inf-$nmilieu0 ]
+       for { set i 1 } { $i<=$nb_insert_sup } { incr i } {
+	  set riliss [ linsert $riliss [ expr $len_cut+$i ] 0.0 ]
+	  #set nouvpoids1 [ linsert $nouvpoids1 [ expr $len_cut+$i ] 0.0 ]    
+       }
+       for { set i 0 } { $i<$i_inf } { incr i } {
+	  set riliss [ linsert $riliss 0 0.0 ]
+	  #set nouvpoids1 [ linsert $nouvpoids1 0 0.0 ]
+       }
+       
+       # ::console::affiche_resultat "Nombre d'éléments traités : [ llength $riliss ]\n"
+       
+       
+       
        #--- CrÃ©e le fichier fits de sortie
-	set abscisses $abscissesorig 
-        set filename [ file rootname $filenamespc ]
-        
-        buf$audace(bufNo) load "$audace(rep_images)/$filename"
-	set k 1
-        foreach x $abscisses {
-           buf$audace(bufNo) setpix [list $k 1] [ lindex $riliss [ expr $k-1 ] ]
-           incr k
-        }
-        #-- Sauvegarde du rÃ©sultat :
-        buf$audace(bufNo) bitpix float
-        buf$audace(bufNo) save "$audace(rep_images)/${filename}_conti$conf(extension,defaut)"
-        buf$audace(bufNo) bitpix short
-        ::console::affiche_resultat "Fichier fits sauvé sous ${filename}_conti$conf(extension,defaut)\n"
-
+       set abscisses $abscissesorig 
+       set filename [ file rootname $filenamespc ]
+       
+       buf$audace(bufNo) load "$audace(rep_images)/$filename"
+       set k 1
+       foreach x $abscisses {
+	  buf$audace(bufNo) setpix [list $k 1] [ lindex $riliss [ expr $k-1 ] ]
+	  incr k
+       }
+       #-- Sauvegarde du rÃ©sultat :
+       buf$audace(bufNo) bitpix float
+       buf$audace(bufNo) save "$audace(rep_images)/${filename}_conti$conf(extension,defaut)"
+       buf$audace(bufNo) bitpix short
+       ::console::affiche_resultat "Fichier fits sauvé sous ${filename}_conti$conf(extension,defaut)\n"
+       
 	
-      #--- Affichage du resultat :
-	if { $visus == "o" } {
-		#::plotxy::clf
-        	::plotxy::figure 2
-        	::plotxy::plot $abscissesorig $riliss r 1
-		#::plotxy::plot $abscissesorig $riliss1 o 1
-        	::plotxy::hold on
-        	::plotxy::plot $abscissesorig $ordonneesorig ob 0
-		::plotxy::hold on
-		::plotxy::plot $abscissesorig $poids g 0
-        	::plotxy::plotbackground #FFFFFF
-        	##::plotxy::xlabel "x"
-       		##::plotxy::ylabel "y"
-        	::plotxy::title "bleu : original ; rouge : lissage par polynome de degre $ndeg"
-        }
-
+       #--- Affichage du resultat :
+       if { $visus == "o" } {
+	  #::plotxy::clf
+	  ::plotxy::figure 2
+	  ::plotxy::plot $abscissesorig $riliss r 1
+	  #::plotxy::plot $abscissesorig $riliss1 o 1
+	  ::plotxy::hold on
+	  ::plotxy::plot $abscissesorig $ordonneesorig ob 0
+	  ::plotxy::hold on
+	  ::plotxy::plot $abscissesorig $poids g 0
+	  ::plotxy::plotbackground #FFFFFF
+	  ##::plotxy::xlabel "x"
+	  ##::plotxy::ylabel "y"
+	  ::plotxy::title "bleu : original ; rouge : lissage par polynome de degre $ndeg"
+       }
+       
        #--- Traitement des resultats :
        return ${filename}_conti
     } else {
-        ::console::affiche_erreur "Usage: spc_extractcont fichier_profil.fit ?degre polynome? ?visualisation (o/n)? ?tauxRMS?\n\n"
+       ::console::affiche_erreur "Usage: spc_extractcont fichier_profil.fit ?degre polynome? ?visualisation (o/n)? ?tauxRMS?\n\n"
     }
 }
 #****************************************************************#
