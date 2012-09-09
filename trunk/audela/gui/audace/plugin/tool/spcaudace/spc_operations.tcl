@@ -29,8 +29,8 @@ proc spc_extend { args } {
       #set nom_fich_input [ file rootname $nom_fich_input ]
       set lastsampl [ lindex $args 1 ]
       if { [ spc_testlincalib $nom_fich_input ] == -1 } {
-	 		::console::affiche_erreur " spc_extend : le profil entre n'est pas calibre lineairement : l'application de la procedure n'a pas de sens \n\n"
-	 		return ""
+	 ::console::affiche_erreur " spc_extend : le profil entre n'est pas calibre lineairement : l'application de la procedure n'a pas de sens \n\n"
+	 return ""
       }
       buf$audace(bufNo) load "$audace(rep_images)/$nom_fich_input"
       set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
@@ -41,41 +41,17 @@ proc spc_extend { args } {
       set ordonnees [ lindex $contenu 1 ]
       set value [ lindex $ordonnees [ expr $naxis1 - 1 ] ]
       for { set i $naxis1 } { $i <= $lastsampl } { incr i } {
-	 		lappend ordonnees $value
+	 lappend ordonnees $value
       }
       set newnaxis1 $lastsampl		
       ::console::affiche_resultat "spc_extend : longueur nouveau fichier : $newnaxis1 echantilllons \n"
       #--- Creation du nouveau fichier :
-      set nbunit "float"
-      set nbunit1 "double"
-      buf$audace(bufNo) setpixels CLASS_GRAY $newnaxis1 1 FORMAT_FLOAT COMPRESS_NONE 0
-      buf$audace(bufNo) setkwd [ list "NAXIS" 1 int "" "" ]
-      buf$audace(bufNo) setkwd [ list "NAXIS1" $newnaxis1 int "" "" ]
-      buf$audace(bufNo) setkwd [ list "CRPIX1" 1 int "Reference pixel" "pixel" ]
-      #-- Valeur minimale de l'abscisse (xdepart) : =0 si profil non étalonné :
-      #- set xdepart [ expr 1.0*[lindex $lambda 0]]
-      buf$audace(bufNo) setkwd [ list "CRVAL1" $crval1 double "" "angstrom"]
-      #-- Dispersion :
-      buf$audace(bufNo) setkwd [ list "CDELT1" $cdelt1 double "" "angstrom/pixel"]
-      #--- Rempli la matrice 1D du fichier fits avec les valeurs du profil de raie :
-      for {set k 0} { $k < $newnaxis1 } {incr k} {
-         #- append intensite [lindex $profileref $k]
-         #- ::console::affiche_resultat "$intensite\n"
-         #- if { [regexp {([0-9]+\.*[0-9]*)} $intensite match mintensite] } {}
-         buf$audace(bufNo) setpix [list [expr $k+1] 1] [lindex $ordonnees $k ]
-         #- set intensite 0
-      }
-      #--- Sauvegarde du fichier fits ainsi créé :
-      buf$audace(bufNo) bitpix float
       set suff _extend
-      set nom_fich_output "$nom_fich_input$suff"
-      buf$audace(bufNo) save "$audace(rep_images)/$nom_fich_output"
-      ::console::affiche_resultat "Profil sauvé sous $nom_fich_output\n"
-      buf$audace(bufNo) bitpix short
+      set nom_fich_output [ spc_fileupdate $nom_fich_input $crval1 $cdelt1 $ordonnees $suff ]
       return $nom_fich_output     
       #return $file_out 
    } else {
-      ::console::affiche_erreur "Usage: spc_zeropad profile_data.fits lastsample\n\n"
+      ::console::affiche_erreur "Usage: spc_extend profile_data.fits lastsample\n\n"
       return ""
    }
 }
@@ -103,7 +79,7 @@ proc spc_zeropad { args } {
       #set nom_fich_input [ file rootname $nom_fich_input ]
       set lastsampl [ lindex $args 1 ]
       if { [ spc_testlincalib $nom_fich_input ] == -1 } {
-	 ::console::affiche_erreur " spc_selectgpixels : le profil entre n'est pas calibre lineairement : l'application de la procedure n'a pas de sens \n\n"
+	 ::console::affiche_erreur " spc_zeropad : le profil entre n'est pas calibre lineairement : l'application de la procedure n'a pas de sens \n\n"
 	 return ""
       }
       buf$audace(bufNo) load "$audace(rep_images)/$nom_fich_input"
@@ -114,40 +90,13 @@ proc spc_zeropad { args } {
       #set abscisses [ lindex $contenu 0 ]
       set ordonnees [ lindex $contenu 1 ]
       for { set i $naxis1 } { $i <= $lastsampl } { incr i } {
-	 lappend ordonnees 0.
+	 		lappend ordonnees 0.
       }
       set newnaxis1 $lastsampl		
       ::console::affiche_resultat "spc_zeropad : longueur nouveau fichier : $newnaxis1 echantilllons \n"
       #--- Creation du nouveau fichier :
-      set nbunit "float"
-      set nbunit1 "double"
-      buf$audace(bufNo) setpixels CLASS_GRAY $newnaxis1 1 FORMAT_FLOAT COMPRESS_NONE 0
-      buf$audace(bufNo) setkwd [ list "NAXIS" 1 int "" "" ]
-      buf$audace(bufNo) setkwd [ list "NAXIS1" $newnaxis1 int "" "" ]
-      buf$audace(bufNo) setkwd [ list "CRPIX1" 1 int "Reference pixel" "pixel" ]
-      #-- Valeur minimale de l'abscisse (xdepart) : =0 si profil non étalonné :
-      #- set xdepart [ expr 1.0*[lindex $lambda 0]]
-      buf$audace(bufNo) setkwd [ list "CRVAL1" $crval1 double "" "angstrom"]
-      #-- Dispersion :
-      buf$audace(bufNo) setkwd [ list "CDELT1" $cdelt1 double "" "angstrom/pixel"]
-      #--- Rempli la matrice 1D du fichier fits avec les valeurs du profil de raie :
-      #- Une liste commence à  0 ; Un vecteur fits commence à  1
-      #- set intensite [ list ]
-      #::console::affiche_resultat "lambdamin=$lambdamin ; lambdamax=$lambdamax \n"
-      for {set k 0} { $k < $newnaxis1 } {incr k} {
-         #- append intensite [lindex $profileref $k]
-         #- ::console::affiche_resultat "$intensite\n"
-         #- if { [regexp {([0-9]+\.*[0-9]*)} $intensite match mintensite] } {}
-         buf$audace(bufNo) setpix [list [expr $k+1] 1] [lindex $ordonnees $k ]
-         #- set intensite 0
-      }
-      #--- Sauvegarde du fichier fits ainsi créé :
-      buf$audace(bufNo) bitpix float
       set suff _zeropad
-      set nom_fich_output "$nom_fich_input$suff"
-      buf$audace(bufNo) save "$audace(rep_images)/$nom_fich_output"
-      ::console::affiche_resultat "Profil sauvé sous $nom_fich_output\n"
-      buf$audace(bufNo) bitpix short
+      set nom_fich_output [ spc_fileupdate $nom_fich_input $crval1 $cdelt1 $ordonnees $suff ]
       return $nom_fich_output     
       #return $file_out 
    } else {
@@ -179,8 +128,8 @@ proc spc_selectpixels { args } {
       set sample1 [ lindex $args 1 ]
       set lastsampl [ lindex $args 2 ]
       if { [ spc_testlincalib $nom_fich_input ] == -1 } {
-	 		::console::affiche_erreur " spc_selectpixels : le profil entre n'est pas calibre lineairement et l'operation n'a pas de sens \n\n"
-	 		return""
+	 ::console::affiche_erreur " spc_selectpixels : le profil entre n'est pas calibre lineairement et l'operation n'a pas de sens \n\n"
+	 return""
       }
       buf$audace(bufNo) load "$audace(rep_images)/$nom_fich_input"
       set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
@@ -201,38 +150,11 @@ proc spc_selectpixels { args } {
 	 #set file_out [ spc_fileupdate $nom_fich_input $crval1 $cdelt1 $newordonn $suff non ]
 	 #return $file_out
 	 #--- Creation du nouveau fichier :
-	 set nbunit "float"
-	 set nbunit1 "double"
-	 buf$audace(bufNo) setpixels CLASS_GRAY $newnaxis1 1 FORMAT_FLOAT COMPRESS_NONE 0
-	 buf$audace(bufNo) setkwd [ list "NAXIS" 1 int "" "" ]
-	 buf$audace(bufNo) setkwd [ list "NAXIS1" $newnaxis1 int "" "" ]
-	 buf$audace(bufNo) setkwd [ list "CRPIX1" 1 int "Reference pixel" "pixel" ]
-	 #-- Valeur minimale de l'abscisse (xdepart) : =0 si profil non étalonné :
-	 #- set xdepart [ expr 1.0*[lindex $lambda 0]]
-	 buf$audace(bufNo) setkwd [ list "CRVAL1" $crval1 double "" "angstrom"]
-	 #-- Dispersion :
-	 buf$audace(bufNo) setkwd [ list "CDELT1" $cdelt1 double "" "angstrom/pixel"]
-      
-	 for {set k 0} { $k < $newnaxis1 } {incr k} {
-         #- append intensite [lindex $profileref $k]
-         #- ::console::affiche_resultat "$intensite\n"
-         #- if { [regexp {([0-9]+\.*[0-9]*)} $intensite match mintensite] } {}
-	    buf$audace(bufNo) setpix [list [expr $k+1] 1] [lindex $newordonn $k ]
-         #- set intensite 0
-	 }
-	 # creation du nouveau fichier
-	 set suff sel
-	 #set suff1 _sel
-	 #set nom_fich_output "$nom_fich_input$suff1"
-	 set crval1 [ lindex $abscisses 0 ]
-	 		
-	 #--- Sauvegarde du fichier fits ainsi créé :
-	 buf$audace(bufNo) bitpix float
-      	
-	 set nom_fich_output "$nom_fich_input$suff"
-	 buf$audace(bufNo) save "$audace(rep_images)/$nom_fich_output"
-	 ::console::affiche_resultat "Profil sauvé sous $nom_fich_output\n"
-	 buf$audace(bufNo) bitpix short
+	 set suff _sel
+	 set nom_fich_output [ spc_fileupdate $nom_fich_input $crval1 $cdelt1 $newordonn $suff ]
+	 
+	 ::console::affiche_resultat "spc_selectpixels : Profil sauvé sous $nom_fich_output\n"
+	 #buf$audace(bufNo) bitpix short
 	 return $nom_fich_output     
 	 #return $file_out 
       } else {
@@ -471,7 +393,7 @@ proc spc_anim { args } {
          set answer [ catch { exec $spcaudace(rep_spc)/plugins/imwin/convert.exe -delay $delay_images -loop 0 $audace(rep_images)/*.png $audace(rep_images)/${nom_astre}_anim.gif } ]
          ::console::affiche_resultat "$answer\n"
       } else {
-         ::console::affiche_erreur "Vous devez installer l'archive d'ImageMagick Mini et executer la commande DOS :\n $spcaudace(rep_spc)/plugins/imwin/convert.exe -delay $delay_images -loop 0 $audace(rep_images)/*.png $audace(rep_images)/${nom_astre}_anim.gif\n"
+         ::console::affiche_erreur "Vous devez installer l'archive d'ImageMagick Mini et executer la commande DOS :\n $spcaudace(rep_spc)\plugins\imwin\convert.exe -delay $delay_images -loop 0 $audace(rep_images)/*.png $audace(rep_images)/${nom_astre}_anim.gif\n"
          return ""
       }
    }
@@ -1171,8 +1093,8 @@ proc spc_echantmodel { args } {
 # spc_echantdelt profile_data.fit 10. 6563.
 ##############################################################################################
 proc spc_echantdelt { args } {
-   #global conf
-   global audace
+   global conf 
+   global audace 
 
    set nbargs [ llength $args ]
    if { $nbargs == 2 || $nbargs == 3} {
@@ -1221,38 +1143,40 @@ proc spc_echantdelt { args } {
       set lambdamax [ expr $crval1 + $newsamplingrate* ($newnaxis1 - $crpix1) ]
 
       #--- Creation du nouveau fichier :
-      set nbunit "float"
-      set nbunit1 "double"
-      buf$audace(bufNo) setpixels CLASS_GRAY $newnaxis1 1 FORMAT_FLOAT COMPRESS_NONE 0
-      buf$audace(bufNo) setkwd [ list "NAXIS" 1 int "" "" ]
-      buf$audace(bufNo) setkwd [ list "NAXIS1" $newnaxis1 int "" "" ]
-
-      #-- Valeur minimale de l'abscisse (xdepart) : =0 si profil non Ã©talonnÃ© :
-      #- set xdepart [ expr 1.0*[lindex $lambda 0]]
-      buf$audace(bufNo) setkwd [ list "CRVAL1" $crval1 double "" "angstrom"]
+      #--- Creation du nouveau profil de raies :
+       #buf$audace(bufNo) load "$audace(rep_images)/$spectre"
+       set newBufNo [ buf::create ]
+       buf$newBufNo copykwd $audace(bufNo)
+       buf$newBufNo setkwd [ list "NAXIS" 1 int "" "" ]
+       buf$newBufNo setkwd [ list "NAXIS1" $newnaxis1 int "" "" ]
+       
+       buf$newBufNo setpixels CLASS_GRAY $newnaxis1 1 FORMAT_FLOAT COMPRESS_NONE 0
+       #set nbunit "float"
+        #set nbunit1 "double"
+      #buf$audace(bufNo) load "$audace(rep_images)/$nom_fich_input"
+      #buf$audace(bufNo) setpixels CLASS_GRAY $newnaxis1 1 FORMAT_FLOAT COMPRESS_NONE 0
+      buf$newBufNo setkwd [ list "CRVAL1" $crval1 double "" "angstrom"]
       #-- Dispersion :
-      buf$audace(bufNo) setkwd [ list "CDELT1" $newsamplingrate double "" "angstrom/pixel"]
+      buf$newBufNo setkwd [ list "CDELT1" $newsamplingrate double "" "angstrom/pixel"]
 
       #--- Rempli la matrice 1D du fichier fits avec les valeurs du profil de raie :
       #- Une liste commence Ã  0 ; Un vecteur fits commence Ã  1
       #- set intensite [ list ]
       ::console::affiche_resultat "lambdamin=$lambdamin ; lambdamax=$lambdamax \n"
-      buf$audace(bufNo) bitpix float
+      buf$newBufNo bitpix float
       for {set k 0} { $k < $newnaxis1 } {incr k} {
-         #- append intensite [lindex $profileref $k]
-         #- ::console::affiche_resultat "$intensite\n"
-         #- if { [regexp {([0-9]+\.*[0-9]*)} $intensite match mintensite] } {}
-         buf$audace(bufNo) setpix [list [expr $k+1] 1] [lindex $profile $k ]
+         
+         buf$newBufNo setpix [list [expr $k+1] 1] [lindex $profile $k ]
          #- set intensite 0
       }
-
+      
       #--- Sauvegarde du fichier fits ainsi créé :
-      #buf$audace(bufNo) bitpix float
+
       set suff _newsampl
       set nom_fich_output "$nom_fich_input$suff"
-      buf$audace(bufNo) save "$audace(rep_images)/$nom_fich_output"
+      buf$newBufNo save "$audace(rep_images)/$nom_fich_output"
       ::console::affiche_resultat "Profil rééchantillonné sauvé sous $nom_fich_output\n"
-      buf$audace(bufNo) bitpix short
+      buf::delete $newBufNo
       return $nom_fich_output     
    } else {
       ::console::affiche_erreur "Usage: spc_echantdelt profil_lineaire_a_reechantillonner.fits?  newsampl?\n\n"
@@ -2653,7 +2577,7 @@ proc spc_select { args } {
 
        #--- Initialisation à blanc d'un fichier fits :
        set bufn2 [ buf::create ]
-       buf$bufn2 load "$audace(rep_images)/$spectre_lin$conf(extension,defaut)"
+       buf$bufn2 load "$audace(rep_images)/$spectre_lin"
        buf$audace(bufNo) setpixels CLASS_GRAY $len 1 FORMAT_FLOAT COMPRESS_NONE 0
        buf$audace(bufNo) copykwd $bufn2
        buf::delete $bufn2
@@ -2742,7 +2666,7 @@ proc spc_select2 { args } {
        ##buf$audace(bufNo) setpixels CLASS_GRAY $len 1 FORMAT_USHORT COMPRESS_NONE 0
 
        set bufn2 [ buf::create ]
-       buf$bufn2 load "$audace(rep_images)/$fichier$conf(extension,defaut)"
+       buf$bufn2 load "$audace(rep_images)/$fichier"
        buf$audace(bufNo) setpixels CLASS_GRAY $len 1 FORMAT_FLOAT COMPRESS_NONE 0
        buf$audace(bufNo) copykwd $bufn2
        buf$audace(bufNo) setkwd [ list "NAXIS" 1 int "" "" ]
@@ -2971,7 +2895,7 @@ proc spc_echant { args } {
 
 
        #--- Crée le fichier FITS :
-       buf$audace(bufNo) load "$audace(rep_images)/$fichier_modele$conf(extension,defaut)"
+       buf$audace(bufNo) load "$audace(rep_images)/$fichier_modele"
        set newBufNo [ buf::create ]
        buf$newBufNo setpixels CLASS_GRAY $naxis1 1 FORMAT_FLOAT COMPRESS_NONE 0
        buf$newBufNo copykwd $audace(bufNo)
@@ -3269,7 +3193,7 @@ proc spc_divbrut { args } {
 # Avant la division ils seront reechantillones de facon a se conformer a l'echantillonage du numerateur. 
 # Le fichier de sortie est créé avec le suffixe _divripat. Il aura le meme nombre d'echantillons que le numerateur et
 # commencera a une longueur d'onde proche de la longueur d'onde de depart du numrateur (definie par le mot cle CRVAL1
-# Exemple spc_divripat profil_numerateur profil_denominateur
+# Exemple spc_divri profil_numerateur profil_denominateur
 #################################################################################################
 proc spc_divri { args } {
 	global audace
@@ -3303,6 +3227,7 @@ proc spc_divri { args } {
 	 		::console::affiche_resultat " le profil apres application de spc_divri a ete sauvegarde sous $nom_fich_num$suff \n"
 	 		#effacement des fichiers temporaires§§§§§§§§§§§§§§§§§§§§§§§§§
 	 		return $result
+	 		
 	 	} else {
       	::console::affiche_erreur "spc_divri : les profils ne sont pas divisibles\n\n"
       	return ""
