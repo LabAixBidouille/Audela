@@ -213,6 +213,7 @@ proc spc_buildhtml { args } {
 # lineairement. Les fichiers de sortie seront reperes le suffixe _conform.
 # Exemple spc_conform profile_model.fit profile_data.fit
 #################################################################################################
+
 proc spc_conform { args } {
    global audace spcaudace
    set nbargs [ llength $args ]
@@ -224,16 +225,16 @@ proc spc_conform { args } {
       set nbunit "double"
       if { [ spc_testlincalib $nom_fich_input ] == -1 } {
       	::console::affiche_resultat "spc_echantmodel1 : ATTENTION le profil a reechantilloner n'est pas calibré linéairement on tente cependant d'executer la procedure apres avoir linearise la loi de calibration \n\n"
-			set nom_fich_input [ spc_linearcal $nom_fich_input ]
-	 	}
-		if { [ spc_testlincalib $nom_fich_model ] == -1 } {
-			::console::affiche_erreur "spc_echantmodel1 : le profil modele n'est pas calibré linéairement et la mise en oeuvre de la procedure n'a pas de sens \n\n"
-			return ""
-	 	}
+	 set nom_fich_input [ spc_linearcal $nom_fich_input ]
+      }
+      if { [ spc_testlincalib $nom_fich_model ] == -1 } {
+	 ::console::affiche_erreur "spc_echantmodel1 : le profil modele n'est pas calibré linéairement et la mise en oeuvre de la procedure n'a pas de sens \n\n"
+	 return ""
+      }
 
-		#--- Elimination d'eventuels zeros dans le profil modele
-		set nom_fich_model [ spc_rmedges $nom_fich_model 0. ]
-		#--- Caracteristiques du profil modele:
+      #--- Elimination d'eventuels zeros dans le profil modele
+      set nom_fich_model [ spc_rmedges $nom_fich_model 0. ]
+      #--- Caracteristiques du profil modele:
       buf$audace(bufNo) load "$audace(rep_images)/$nom_fich_model"
    	#-- Renseigne sur les parametres de l'image :
       set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
@@ -241,13 +242,13 @@ proc spc_conform { args } {
       set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
       set crpix1 [ lindex [ buf$audace(bufNo) getkwd "CRPIX1" ] 1 ]
       #::console::affiche_resultat "caractÃ©ristiques fichier modÃ¨le cdelt1= $cdelt1 naxis1= $naxis1 crval1= $crval1 \n"
-      buf$audace(bufNo) delkwds
-      buf$audace(bufNo) clear
+      #buf$audace(bufNo) delkwds
+      #buf$audace(bufNo) clear
       #--- Elimination d'eventuels zeros dans le 2eme profil
       set nom_fich_input [ spc_rmedges $nom_fich_input 0. ]
       #--- Renseigne sur les parametres du 2 eme profil
       buf$audace(bufNo) load "$audace(rep_images)/$nom_fich_input"
-		set naxis2 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+      set naxis2 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
       set crval2 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
       set cdelt2 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
       set crpix2 [ lindex [ buf$audace(bufNo) getkwd "CRPIX1" ] 1 ]
@@ -258,56 +259,131 @@ proc spc_conform { args } {
       set lambdamax1 [ expr $crval1 + ($naxis1 - $crpix1) * $cdelt1 ]
       set lambdamin [ expr max($lambdamin1, $lambdamin2) ]
       set lambdamax [ expr min($lambdamax1, $lambdamax2) ]
-      #::console::affiche_resultat "$lambdamin1 $lambdamin2 $lambdamin $lambdamax1 $lambdamax2 $lambdamax\n"
+      ::console::affiche_resultat "$lambdamin1 $lambdamin2 $lambdamin $lambdamax1 $lambdamax2 $lambdamax\n"
       # calcul de la longueur d'onde de depart des 2 profils mis en conformite
       set nn 0
-     	if { $lambdamin > $lambdamin1 } {
-  			# alors il faut caler la d'onde de depart de facon a ce qu'elle tombe sur un echantillon du 1er profil
-     		set nn [ expr int ( ($lambdamin - $lambdamin1) / $cdelt1 ) +1 ]
-     		# si, par hasard, la division ci dessus tombait juste, le degat consisterait a perdre un echantillon => pas grave 
-      	set lambdamin [ expr $lambdamin1 + $nn * $cdelt1 ]
+      if { $lambdamin > $lambdamin1 } {
+	 # alors il faut caler la d'onde de depart de facon a ce qu'elle tombe sur un echantillon du 1er profil
+	 set nn [ expr int ( ($lambdamin - $lambdamin1) / $cdelt1 ) +1 ]
+	 # si, par hasard, la division ci dessus tombait juste, le degat consisterait a perdre un echantillon => pas grave 
+	 set lambdamin [ expr $lambdamin1 + $nn * $cdelt1 ]
       }
       if { $lambdamin >= $lambdamax } {
-      	::console::affiche_erreur "spc_conform : l' intervalle de longueurs d'onde commun aux 2 profils est vide, on ne peut donner suite...\n\n"
-      	return ""	
+	 ::console::affiche_erreur "spc_conform : l' intervalle de longueurs d'onde commun aux 2 profils est vide, on ne peut donner suite...\n\n"
+	 return ""	
       } else {
-      	set crvalnew $lambdamin
-      	set cdeltnew $cdelt1
-      	set naxisnew [ expr int ( ($lambdamax - $lambdamin )  / $cdelt1 ) +1 ]
-      	set naxisnew [ expr $naxisnew -1 ]
-      	# l'instruction ci dessus est une precaution au cas ou la division ci-dessus tomberait juste 
-      	
-      	if { [ expr $lambdamin + $naxisnew * $cdelt1 ] == $lambdamax } {
-      		set naxisnew [ expr $naxisnew - 1 ]
-      	if { [ expr $lambdamin + $naxisnew * $cdelt1 ] > $lambdamax1 } {
-      		# dans ce cas il n'aurait pas fallu arrondir a l'echantillon superieur pour le calcul de nn
-      		set nn [ expr $nn - 1 ]
-      	}
-      	}
-      	#::console::affiche_resultat " cracteristiques des profils conformes : crvalnew= $crvalnew  cdelt= $cdeltnew naxis= $naxisnew $nn\n"
-      	set fich2 [ spc_echantdelt $nom_fich_input $cdeltnew $crvalnew ]
-      	set fich2new [spc_selectpixels $fich2 1 $naxisnew ]
-      	set fich1new [spc_selectpixels $nom_fich_model [ expr $nn + 1 ] [ expr $naxisnew +$nn ] ]
-      	set suff _conform
-      	set ext .fit
-      	file rename -force "$audace(rep_images)/$fich1new$ext" "$audace(rep_images)/$nom_fich_model$suff$ext"
-      	file rename -force "$audace(rep_images)/$fich2new$ext" "$audace(rep_images)/$nom_fich_input$suff$ext"
-	 		::console::affiche_resultat " les 2 profils ont ete, apres mise en conformite, sauvegardes sous $nom_fich_model$suff et $nom_fich_input$suff\n"
-      	set lresult [list ]
-      	lappend lresult $nom_fich_model$suff
-      	lappend lresult $nom_fich_input$suff
-      	# effacement des fichiers temporaires
-      	file delete -force "$audace(rep_images)/$fich2"
-      	::console::affiche_resultat " effacement du fichier $fich2 \n"
-      	return $lresult
+	 set crvalnew $lambdamin
+	 set cdeltnew $cdelt1
+	 set naxisnew [ expr int ( ($lambdamax - $lambdamin )  / $cdelt1 ) +1 ]
+	 set naxisnew [ expr $naxisnew -1 ]
+	 # l'instruction ci dessus est une precaution au cas ou la division ci-dessus tomberait juste 
+	 
+	 if { [ expr $lambdamin + $naxisnew * $cdelt1 ] == $lambdamax } {
+	    set naxisnew [ expr $naxisnew - 1 ]
+	    if { [ expr $lambdamin + $naxisnew * $cdelt1 ] > $lambdamax1 } {
+	       # dans ce cas il n'aurait pas fallu arrondir a l'echantillon superieur pour le calcul de nn
+	       set nn [ expr $nn - 1 ]
+	    }
+	 }
+	 #::console::affiche_resultat " cracteristiques des profils conformes : crvalnew= $crvalnew  cdelt= $cdeltnew naxis= $naxisnew $nn\n"
+	 set fich2 [ spc_echantdelt $nom_fich_input $cdeltnew $crvalnew ]
+	 set fich2new [spc_selectpixels $fich2 1 $naxisnew ]
+	 set fich1new [spc_selectpixels $nom_fich_model [ expr $nn + 1 ] [ expr $naxisnew +$nn ] ]
+	 set suff _conform
+	 set ext .fit
+	 file rename -force "$audace(rep_images)/$fich1new$ext" "$audace(rep_images)/$nom_fich_model$suff$ext"
+	 file rename -force "$audace(rep_images)/$fich2new$ext" "$audace(rep_images)/$nom_fich_input$suff$ext"
+	 ::console::affiche_resultat " les 2 profils ont ete, apres mise en conformite, sauvegardes sous $nom_fich_model$suff et $nom_fich_input$suff\n"
+	 set lresult [list ]
+	 lappend lresult $nom_fich_model$suff
+	 lappend lresult $nom_fich_input$suff
+	 # effacement des fichiers temporaires
+	 file delete -force "$audace(rep_images)/$fich2"
+	 ::console::affiche_resultat " effacement du fichier $fich2 \n"
+	 return $lresult
       }
-
+      
    } else {
       ::console::affiche_erreur "Usage: spc_conform profile_model.fits(calibre lineairement)  autre_profil.fits\n\n"
       return ""
    }
 }
 #*****************************************************************#
+
+####################################################################
+# Procedure de mise a jour des intensites d'un profil fits
+# (cas ou les nouvelles intensites sont echantillonees lineairement) 
+#
+# Auteur : Patrick LAILLY
+# Date creation : 09-09-12
+# Date modification : 09-09-12
+# Contrairement a l'ancienne version, on cree ici un nouveau fichier, avec le suffixe donne en argument, qui herite 
+# des mots cles inchanges du fichier d'origine 
+# Arguments : nom fichier fits, CRVAL1, CDELT1, liste nouvelles intensites, suffixe
+# exemple : spc_fileupdate nom_fich 6237.54321 0.312765 list_intensites suffixe
+####################################################################
+
+proc spc_fileupdate { args } {
+   global audace spcaudace conf
+
+   set nbargs [ llength $args ]
+   if { $nbargs == 5 } { 
+      set nomfich [ lindex $args 0 ]
+      set crval1 [ lindex $args 1 ]
+      set cdelt1 [ lindex $args 2 ]
+      set listeintens [ lindex $args 3 ]
+      set suffixe [ lindex $args 4 ]
+      if { [ spc_testlincalib $nomfich ] != 1 } {
+	 ::console::affiche_erreur "spc_fileupdate : le profil $nomfich n'est pas calibre lineairement et la mise en oeuvre de la procedure n'a pas de sens\n\n"
+         return ""
+      }	
+      buf$audace(bufNo) load "$audace(rep_images)/$nomfich"	
+      set listemotsclef [ buf$audace(bufNo) getkwds ]
+      if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
+	 buf$audace(bufNo) delkwd "SPC_A"
+      }
+      if { [ lsearch $listemotsclef "SPC_B" ] !=-1 } {
+	 buf$audace(bufNo) delkwd "SPC_B"
+      }
+      if { [ lsearch $listemotsclef "SPC_C" ] !=-1 } {
+	 buf$audace(bufNo) delkwd "SPC_C"
+      }
+      if { [ lsearch $listemotsclef "SPC_D" ] !=-1 } {
+	 buf$audace(bufNo) delkwd "SPC_D"
+      } 
+      if { [ lsearch $listemotsclef "SPC_DESC" ] !=-1 } {
+	 buf$audace(bufNo) delkwd "SPC_DESC"
+      }
+      set lintens [ llength $listeintens ]
+      set naxis1 $lintens
+      #--- Creation du nouveau profil de raies :
+      set newBufNo [ buf::create ]
+      buf$newBufNo setpixels CLASS_GRAY $naxis1 1 FORMAT_FLOAT COMPRESS_NONE 0
+      buf$newBufNo copykwd $audace(bufNo)
+      buf$newBufNo setkwd [list "NAXIS1" $naxis1 int "" ""]
+      buf$newBufNo setkwd [list "CRVAL1" $crval1 double "" "Angstrom"]
+      #-- Dispersion
+      buf$newBufNo setkwd [list "CDELT1" $cdelt1 double "" "Angstrom/pixel"]
+      #--- Rempli la matrice 1D du fichier fits avec les valeurs du profil de raie ---
+      for {set k 0} { $k < $naxis1 } {incr k} {
+	 buf$newBufNo setpix [list [expr $k+1] 1] [lindex $listeintens $k ]
+      }
+      #--- Sauvegarde du fichier fits ainsi cree
+      buf$newBufNo bitpix float
+      set suff "_$suffixe"
+      set nom_fich_output "$nomfich$suff"
+      buf$newBufNo save "$audace(rep_images)/$nom_fich_output"
+      ::console::affiche_resultat " spc_fileupdate sauvegarde du fichier $nom_fich_output \n"
+      #buf$audace(bufNo) bitpix short
+      
+       buf::delete $newBufNo
+      return $nom_fich_output
+   } else {
+      ::console::affiche_erreur "Usage: spc_fileupdate nom_fich crval1 cdelt1 liste_intensites suffixe \n\n"
+      return 0
+   }
+}
+#*************************************************************************
 
 
 
@@ -324,7 +400,7 @@ proc spc_conform { args } {
 # exemple : spc_fileupdate nom_fich 6237.54321 0.312765 list_intensites suffixe oui
 ####################################################################
 
-proc spc_fileupdate { args } {
+proc spc_fileupdate_old { args } {
    global audace spcaudace conf
 
    set nbargs [ llength $args ]
