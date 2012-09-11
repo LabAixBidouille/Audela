@@ -9,7 +9,7 @@
 #
 
 namespace eval ::CalaPhot {
-    package provide calaphot 7.0
+    package provide calaphot 7.1
     #   package require BLT
     source [ file join [ file dirname [ info script ] ] calaphot_cap.tcl ]
     source [ file join [ file dirname [ info script ] ] calaphot_graph.tcl ]

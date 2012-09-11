@@ -1498,7 +1498,10 @@ namespace eval ::CalaPhot {
         Message debug "%s\n" [ info level  [info level ] ]
 
         # Recherche de la taille de boite en fonction du fwhm de l'image
-        set boite [ TailleBoite $::audace(bufNo) ]
+        if { ![ info exists data_script(fwhm_selection_etoile) ] } {
+            set data_script(fwhm_selection_etoile) [ TailleBoite $::audace(bufNo) ]
+        }
+        set boite $data_script(fwhm_selection_etoile)
 
         set mag 0.0
 
