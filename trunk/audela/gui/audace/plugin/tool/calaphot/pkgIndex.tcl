@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded calaphot 7.0 [ list source [ file join $dir calaphot.tcl ] ]
+package ifneeded calaphot 7.1 [ list source [ file join $dir calaphot.tcl ] ]
 

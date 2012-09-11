@@ -73,8 +73,8 @@ namespace eval ::CalaPhot {
         # set pas_a_pas 1
 
         set version_majeure 7
-        set version_mineure 0
-        set version_indice "20120508"
+        set version_mineure 1
+        set version_indice "20120911"
         set numero_version_abrege [ format "v%d.%d" $version_majeure $version_mineure ]
         set numero_version_complet [ format "v%d.%d.%s" $version_majeure $version_mineure $version_indice ]
 
@@ -745,8 +745,10 @@ namespace eval ::CalaPhot {
 
         set image [ lindex $liste_image $indice ]
         ChargementImageParNom $image $visu $bandeau
-        set data_image($indice,fwhm) [ FWHMImage $::audace(bufNo) ]
-        set data_image($indice,taille_boite) [ TailleBoite $::audace(bufNo) $data_image($indice,fwhm) ]
+        if { ![info exists data_image($indice,fwhm)] } {
+            set data_image($indice,fwhm) [ FWHMImage $::audace(bufNo) ]
+            set data_image($indice,taille_boite) [ TailleBoite $::audace(bufNo) $data_image($indice,fwhm) ]
+        }
 
         Message debug "Image %s indice %d fwhm=%f taille_boite=%d\n" $image $indice $data_image($indice,fwhm) $data_image($indice,taille_boite)
     }
@@ -1426,47 +1428,49 @@ namespace eval ::CalaPhot {
         set data_script(astrometrie) 0
         set data_script(internet) 0
 
-        # Fonctionnalité de photométrie absolue et de catalogue automatique
-        # Dévalidée pour cette version de Calaphot
-        return
 
         # if { $parametres(operateur) != "Etchepare" } {
             # return
         # }
 
         # # Recherche si cette image est recalée par astrométrie et si on peut calculer la masse d'air
-        # set data_script(astrometrie) 0
-        # if { [ catch { buf$::audace(bufNo) xy2radec [ list [ expr $data_script(naxis1) / 2.0 ]  [ expr $data_script(naxis2) / 2.0 ] ] } radec_centre ] } {
-            # Message debug "Série non recalée astrométriquement\n"
-        # } else {
-            # set data_script(radec_centre) $radec_centre
-            # set data_script(param_astrometrie) [ mc_buf2field $::audace(bufNo) ]
-            # Message debug "Série recalée astrométriquement : field = %s\n" $data_script(param_astrometrie)
-            # set latitude_site [ lindex [ buf$::audace(bufNo) getkwd "SITELAT" ] 1 ]
-            # set longitude_site [ lindex [ buf$::audace(bufNo) getkwd "SITELONG" ] 1 ]
-            # Message debug "lat = %s / long = %s \n" $latitude_site $longitude_site
-            # if { ( [ string length (data_script(latitude_site) ] != 0 ) && ( [ string length (data_script(longitude_site) ] != 0 ) } {
-                # set lat [ mc_angle2deg $latitude_site ]
-                # set long [ mc_angle2deg $longitude_site ]
-                # Message debug "lat = %f / long = %f \n" $lat $long
-                # if { $long > 0 } {
-                    # set est_ouest W
-                # } else {
-                    # set est_ouest E
-                # }
-                # set data_script(site) [ list "GPS" [ format %f $long ] $est_ouest [ format %f $lat ] 0 ]
-                # Message debug "site = %s\n" $data_script(site)
-                # set data_script(ascension_droite) [ format %f [ mc_angle2deg [ lindex $data_script(param_astrometrie) 9 ] ] ]
-                # set data_script(declinaison) [ format %f [ mc_angle2deg [ lindex $data_script(param_astrometrie) 11 ] ] ]
-                # Message debug "alpha = %f / delta = %f\n" $data_script(ascension_droite) $data_script(declinaison)
-                # set data_script(astrometrie) 1
-                # set radec [ buf$::audace(bufNo) xy2radec [ list [ expr $data_script(naxis1) / 2 ] [ expr $data_script(naxis2) / 2 ] ] ]
-                # set ad [ mc_angle2hms [ lindex $radec 0 ] limit=360 zero 0 auto string ]
-                # set dec [ mc_angle2dms [ lindex $radec 1 ]  limit=90 zero 0 + string ]
-                # Message notice "Coordonnées du centre de l'image : %s / %s\n" $ad $dec
-                # TraceFichier "Coordonnées du centre de l'image : %s / %s\n" $ad $dec
-            # }
-        # }
+        set data_script(astrometrie) 0
+        if { [ catch { buf$::audace(bufNo) xy2radec [ list [ expr $data_script(naxis1) / 2.0 ]  [ expr $data_script(naxis2) / 2.0 ] ] } radec_centre ] } {
+            Message debug "Série non recalée astrométriquement\n"
+        } else {
+            set data_script(radec_centre) $radec_centre
+            set data_script(param_astrometrie) [ mc_buf2field $::audace(bufNo) ]
+            Message debug "Série recalée astrométriquement : field = %s\n" $data_script(param_astrometrie)
+            set latitude_site [ lindex [ buf$::audace(bufNo) getkwd "SITELAT" ] 1 ]
+            set longitude_site [ lindex [ buf$::audace(bufNo) getkwd "SITELONG" ] 1 ]
+            Message debug "lat = %s / long = %s \n" $latitude_site $longitude_site
+            if { ( [ string length (data_script(latitude_site) ] != 0 ) && ( [ string length (data_script(longitude_site) ] != 0 ) } {
+                set lat [ mc_angle2deg $latitude_site ]
+                set long [ mc_angle2deg $longitude_site ]
+                Message debug "lat = %f / long = %f \n" $lat $long
+                if { $long > 0 } {
+                    set est_ouest W
+                } else {
+                    set est_ouest E
+                }
+                set data_script(site) [ list "GPS" [ format %f $long ] $est_ouest [ format %f $lat ] 0 ]
+                Message debug "site = %s\n" $data_script(site)
+                set data_script(ascension_droite) [ format %f [ mc_angle2deg [ lindex $data_script(param_astrometrie) 9 ] ] ]
+                set data_script(declinaison) [ format %f [ mc_angle2deg [ lindex $data_script(param_astrometrie) 11 ] ] ]
+                Message debug "alpha = %f / delta = %f\n" $data_script(ascension_droite) $data_script(declinaison)
+                set data_script(astrometrie) 1
+                set radec [ buf$::audace(bufNo) xy2radec [ list [ expr $data_script(naxis1) / 2 ] [ expr $data_script(naxis2) / 2 ] ] ]
+                set ad [ mc_angle2hms [ lindex $radec 0 ] limit=360 zero 0 auto string ]
+                set dec [ mc_angle2dms [ lindex $radec 1 ]  limit=90 zero 0 + string ]
+                Message notice "Coordonnées du centre de l'image : %s / %s\n" $ad $dec
+                TraceFichier "Coordonnées du centre de l'image : %s / %s\n" $ad $dec
+            }
+        }
+
+        # Fonctionnalité de photométrie absolue et de catalogue automatique
+        # dévalidée pour cette version de Calaphot
+        # return
+
         # if { $data_script(astrometrie) == 1 } {
             # set data_script(champ) [ CalculChampImage ]
             # Message debug "Champ image = %d'\n" $data_script(champ)
@@ -2246,9 +2250,45 @@ namespace eval ::CalaPhot {
 
         set largeur [ LargeurImage $mem ]
         set hauteur [ HauteurImage $mem ]
-        set f [ buf$mem fwhm [ list 1 1 $largeur $hauteur ] ]
-        set fwhm [ expr max( [ lindex $f 0 ], [ lindex $f 1 ] ) ]
-        Message debug "FWHM : %f\n" $fwhm
+        set dl [ expr $largeur / 20 ]
+        set dh [ expr $hauteur / 20 ]
+        set fwhm_valide 0
+        set k 100.0
+        while { $fwhm_valide == 0 } {
+            set sf 0
+            set sfd 0
+            Message debug "k=%f\n" $k
+            for { set h 0 } { $h < 10 } { incr h } {
+                for { set l 0 } { $l < 10 } { incr l } {
+                    set r [ list [ expr $l * $dl + 1 ] [ expr $h * $dh + 1 ] [ expr ( $l + 1 ) * $dl ] [ expr ( $h + 1 ) * $dh ] ]
+                    set stats [ buf$mem stat $r ]
+                    set max [ lindex $stats 2 ]
+                    set moy [ lindex $stats 4 ]
+                    if { $max > [ expr $moy * $k ] } {
+                        set f [ buf$mem fwhm $r ]
+                        set fm [ expr max( [ lindex $f 0 ], [ lindex $f 1 ] ) ]
+                        set sf [ expr $sf + $fm ]
+                        incr sfd
+                        # Message debug "h=%d l=%d n=%d max=%f moy=%f fwhm=%f\n" $h $l $sfd $max $moy $fm
+                    }
+                }
+            }
+            Message debug "sfd=%d\n" $sfd
+            if { $sfd < 10 } {
+                set k [ expr $k * 0.5 ]
+                if { $k < 2 } {
+                    set fwhm_valide -1
+                    set fwhm 0
+                    Message probleme "k=%f sfd=%d FWHM=%f\n" $k $sfd $fwhm
+                }
+            } else {
+                set fwhm [ expr $sf / $sfd ]
+                Message debug "k=%f sfd=%d FWHM=%f\n" $k $sfd $fwhm
+                set fwhm_valide 1
+            }
+        }
+#        set f [ buf$mem fwhm [ list 1 1 $largeur $hauteur ] ]
+#        set fwhm [ expr max( [ lindex $f 0 ], [ lindex $f 1 ] ) ]
         return $fwhm
     }
 
