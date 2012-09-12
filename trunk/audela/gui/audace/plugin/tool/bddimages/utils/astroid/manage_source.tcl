@@ -236,15 +236,30 @@ namespace eval ::manage_source {
                set name "SKYBOT_[lindex [lindex $cata 2] 0]_$name"
                return $name
             }
+            
+            
             if {$mycata=="UCAC3"} {
-               return "UCAC3_[lindex [lindex $cata 2] 0][lindex [lindex $cata 2] 1]"
+               set dec [lindex [lindex $cata 2] 1]
+               set dec [regsub {\-} $dec "m"]
+               set dec [regsub {\+} $dec "p"]
+               return "UCAC3_[lindex [lindex $cata 2] 0]$dec"
             }
+
             if {$mycata=="UCAC2"} {
-               return "UCAC2_[lindex [lindex $cata 2] 0][lindex [lindex $cata 2] 1]"
+               set dec [lindex [lindex $cata 2] 1]
+               set dec [regsub {\-} $dec "m"]
+               set dec [regsub {\+} $dec "p"]
+               return "UCAC2_[lindex [lindex $cata 2] 0]$dec"
             }
+
             if {$mycata=="IMG"} {
-               return "IMG_[lindex [lindex $cata 2] 0][lindex [lindex $cata 2] 1]"
+               set dec [lindex [lindex $cata 2] 1]
+               set dec [regsub {\-} $dec "m"]
+               set dec [regsub {\+} $dec "p"]
+               return "IMG_[lindex [lindex $cata 2] 0]$dec"
             }
+
+
          }
       }
    }

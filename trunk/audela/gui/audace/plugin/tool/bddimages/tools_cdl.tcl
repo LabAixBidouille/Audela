@@ -135,6 +135,17 @@ namespace eval tools_cdl {
          set snpx        [expr $intensite / $sigmafond]
 
          return [ list $xsm $ysm $fwhmx $fwhmy $fwhm $fluxintegre $errflux $pixmax $intensite $sigmafond $snint $snpx $delta] 
+
+
+         # Calcul du signal sur bruit : 
+         # S/N = fluxintegre / sqrt (fluxintegre + npix ( sky + offset + readnoise^2) )
+         # avec
+         # npix = nombre de pixel dans la fenetre de calcul du flux
+         # sky  = (par pixel) valeur mediane du fond du ciel r2<r<r3
+         # offset = (par pixel) valeur mediane de l'offset
+         # readnoise = single pixel noise (electron RMS)
+
+
    }
 
 
