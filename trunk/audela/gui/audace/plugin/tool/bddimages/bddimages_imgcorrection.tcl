@@ -1119,7 +1119,7 @@ proc ::bddimages_imgcorrection::chrono_sort_img { img_list } {
 
 
 
-proc ::bddimages_imgcorrection::bddimages_mirroirx { img_list } {
+proc ::bddimages_imgcorrection::mirroirx { img_list } {
 
    global bddconf
 
@@ -1141,6 +1141,76 @@ proc ::bddimages_imgcorrection::bddimages_mirroirx { img_list } {
    }
 
 }
+
+proc ::bddimages_imgcorrection::mirroiry { img_list } {
+
+   global bddconf
+
+   #? set ::bddimages_imgcorrection::imgtmplist $imglist
+   set filename_list [::bddimages_imgcorrection::img_list_to_filename_list $img_list long]
+   set bufno 1
+   set ext [buf$bufno extension]
+   set gz [buf$bufno compress]
+   if {[buf$bufno compress] == "gzip"} {set gz ".gz"} else {set gz ""}
+
+   foreach fc $filename_list {
+
+     ::console::affiche_resultat "file $fc\n"
+     buf$bufno load $fc
+     buf$bufno mirrory
+     set fileout [file tail $fc ]
+     buf$bufno save "$bddconf(dirtmp)/${fileout}${ext}"
+
+   }
+
+}
+
+proc ::bddimages_imgcorrection::rot_plus90 { img_list } {
+
+   global bddconf
+
+   #? set ::bddimages_imgcorrection::imgtmplist $imglist
+   set filename_list [::bddimages_imgcorrection::img_list_to_filename_list $img_list long]
+   set bufno 1
+   set ext [buf$bufno extension]
+   set gz [buf$bufno compress]
+   if {[buf$bufno compress] == "gzip"} {set gz ".gz"} else {set gz ""}
+
+   foreach fc $filename_list {
+
+     ::console::affiche_resultat "file $fc\n"
+     buf$bufno load $fc
+     buf$bufno rot $xcent $ycent 90.0
+     set fileout [file tail $fc ]
+     buf$bufno save "$bddconf(dirtmp)/${fileout}${ext}"
+
+   }
+
+}
+
+proc ::bddimages_imgcorrection::rot_moins90 { img_list } {
+
+   global bddconf
+
+   #? set ::bddimages_imgcorrection::imgtmplist $imglist
+   set filename_list [::bddimages_imgcorrection::img_list_to_filename_list $img_list long]
+   set bufno 1
+   set ext [buf$bufno extension]
+   set gz [buf$bufno compress]
+   if {[buf$bufno compress] == "gzip"} {set gz ".gz"} else {set gz ""}
+
+   foreach fc $filename_list {
+
+     ::console::affiche_resultat "file $fc\n"
+     buf$bufno load $fc
+     buf$bufno rot $xcent $ycent 90.0
+     set fileout [file tail $fc ]
+     buf$bufno save "$bddconf(dirtmp)/${fileout}${ext}"
+
+   }
+
+}
+
 
 
 
