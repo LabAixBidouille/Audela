@@ -1132,8 +1132,14 @@ namespace eval bddimages_recherche {
            $popupTbl.geometrie add command -label "Mirroir X" \
               -command { ::bddimages_recherche::bddimages_geometrie "mirroirx" }
 
-           $popupTbl.geometrie add command -label "Mirroir Y" -state disabled \
-              -command {  }
+           $popupTbl.geometrie add command -label "Mirroir Y"  \
+              -command { ::bddimages_recherche::bddimages_geometrie "mirroiry" }
+
+           $popupTbl.geometrie add command -label "Rot. +90°" \
+              -command { ::bddimages_recherche::bddimages_geometrie "rot_plus90" }
+
+           $popupTbl.geometrie add command -label "Rot. -90°" \
+              -command { ::bddimages_recherche::bddimages_geometrie "rot_moins90" }
 
            $popupTbl.geometrie add command -label "Somme" \
               -command { ::bddimages_imgcorrection::somme }
@@ -1566,13 +1572,13 @@ namespace eval bddimages_recherche {
                ::bddimages_imgcorrection::bddimages_mirroirx $imglist
             }
             if {$type=="mirroiry"} {
-               #::bddimages_imgcorrection::mirroiry $idbddimg
+               ::bddimages_imgcorrection::mirroiry $idbddimg
             }
             if {$type=="rot_plus90"} {
-               #::bddimages_imgcorrection::rot_plus90 $idbddimg
+               ::bddimages_imgcorrection::rot_plus90 $idbddimg
             }
             if {$type=="rot_moins90"} {
-               #::bddimages_imgcorrection::rot_moins90 $idbddimg
+               ::bddimages_imgcorrection::rot_moins90 $idbddimg
             }
 
       }

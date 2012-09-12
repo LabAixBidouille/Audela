@@ -135,7 +135,7 @@ namespace eval bdi_tools_image {
       set listtab [buf$::audace(bufNo) getkwds]
       set tabkey {}
       foreach key $listtab {
-         lappend tabkey [list $key [buf$::audace(bufNo) getkwd $key] ]
+         lappend tabkey [list [bddimages_keywd_to_variable $key] [buf$::audace(bufNo) getkwd $key] ]
       }
       set result  [bddimages_entete_preminforecon $tabkey]
       set err     [lindex $result 0]
