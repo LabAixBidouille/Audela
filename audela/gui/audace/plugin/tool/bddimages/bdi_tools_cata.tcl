@@ -452,7 +452,7 @@ proc ::tools_cata::get_table { name table } {
       # Liste des sources de l'image
       set listsources $::tools_cata::current_listsources
 
-      set ra $::tools_cata::ra
+      set ra  $::tools_cata::ra
       set dec $::tools_cata::dec
       set naxis1 [lindex [::bddimages_liste::lget $tabkey NAXIS1] 1]
       set naxis2 [lindex [::bddimages_liste::lget $tabkey NAXIS2] 1]
@@ -461,6 +461,7 @@ proc ::tools_cata::get_table { name table } {
       set radius [::tools_cata::get_radius $naxis1 $naxis2 $scale_x $scale_y]
 
       if {$::tools_cata::use_tycho2} {
+         #gren_info "CMD: cstycho2 $::tools_cata::catalog_tycho2 $ra $dec $radius\n"
          set tycho2 [cstycho2 $::tools_cata::catalog_tycho2 $ra $dec $radius]
          #gren_info "rollup = [::manage_source::get_nb_sources_rollup $tycho2]\n"
          set tycho2 [::manage_source::set_common_fields $tycho2 TYCHO2 { RAdeg DEdeg 5 VT e_VT }]
@@ -472,6 +473,7 @@ proc ::tools_cata::get_table { name table } {
       }
       
       if {$::tools_cata::use_ucac2} {
+         #gren_info "CMD: csucac2 $::tools_cata::catalog_ucac2 $ra $dec $radius\n"
          set ucac2 [csucac2 $::tools_cata::catalog_ucac2 $ra $dec $radius]
          #gren_info "rollup = [::manage_source::get_nb_sources_rollup $ucac2]\n"
          set ucac2 [::manage_source::set_common_fields $ucac2 UCAC2 { ra_deg dec_deg e_pos_deg U2Rmag_mag 0.5 }]
@@ -483,6 +485,7 @@ proc ::tools_cata::get_table { name table } {
       }
       
       if {$::tools_cata::use_ucac3} {
+         #gren_info "CMD: csucac3 $::tools_cata::catalog_ucac3 $ra $dec $radius\n"
          set ucac3 [csucac3 $::tools_cata::catalog_ucac3 $ra $dec $radius]
          #gren_info "rollup = [::manage_source::get_nb_sources_rollup $ucac3]\n"
          set ucac3 [::manage_source::set_common_fields $ucac3 UCAC3 { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
@@ -620,6 +623,7 @@ proc ::tools_cata::get_table { name table } {
          #gren_info "param : $ra $dec $pixsize1 $pixsize2 $foclen\n"
          #gren_info "catalog_usnoa2 : $::tools_cata::catalog_usnoa2\n"
          #gren_info "DEBUT WCS ra dec : $ra  $dec \n"
+         #gren_info "CMD: calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0\n"
 
          if {$::tools_cata::log} {gren_info "PASS1: calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO  $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0\n"}
          set erreur [catch {set nbstars [calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0]} msg]

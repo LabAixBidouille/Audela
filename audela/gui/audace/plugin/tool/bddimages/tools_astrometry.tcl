@@ -6,6 +6,7 @@ variable reference
 variable treshold
 variable delta
 variable ifortlib
+variable imagelimit
 
 
    proc ::tools_astrometry::load_cata {  } {
@@ -46,6 +47,8 @@ variable ifortlib
 
       global bddconf
 
+      set ::tools_astrometry::imagelimit 250
+
       gren_info "Science = $::tools_astrometry::science\n"
       gren_info "Reference = $::tools_astrometry::reference\n"
       set ::tools_cata::nb_img_list [llength $::tools_cata::img_list]
@@ -84,7 +87,7 @@ variable ifortlib
             lappend imgtmp [::bddimages_liste::ladd $::tools_cata::current_image listsources $::tools_cata::current_listsources ]
             
             incr ::tools_cata::id_current_image
-            if {$::tools_cata::id_current_image>=100} {break}
+            if {$::tools_cata::id_current_image>=$::tools_astrometry::imagelimit} {break}
          }
          
       }

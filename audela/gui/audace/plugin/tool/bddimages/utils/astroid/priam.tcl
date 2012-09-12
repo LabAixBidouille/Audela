@@ -303,7 +303,7 @@ proc ::priam::create_file_oldformat { tag nb img science stars } {
 
                   set data [lindex $cata 2]
                   set ra  [mc_angle2hms [lindex $data 0]] 
-                  set dec [mc_angle2dms [lindex $data 1]]
+                  set dec [mc_angle2dms [lindex $data 1] 90]
                   set mag [lindex $data 3]
                   puts $chan1 "$name $ra $dec 0.00 0.00 2451545.50  100.0 100.0  0.00  0.00  $mag ?    0.00 0.0"
                }

@@ -1719,27 +1719,27 @@ proc random {{range 100}} {
    # Photom value pour la source n source a l index i
    proc insert_line_std { i n } {
       set line ""
-      if { [info exists ::tools_cdl::tabphotom($i,${n},mag)        ] } {append line ",$::tools_cdl::tabphotom($i,${n},mag)"        } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},maginstru)  ] } {append line ",$::tools_cdl::tabphotom($i,${n},maginstru)"  } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},fwhmx)      ] } {append line ",$::tools_cdl::tabphotom($i,${n},fwhmx)"      } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},fwhmy)      ] } {append line ",$::tools_cdl::tabphotom($i,${n},fwhmy)"      } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},fwhm)       ] } {append line ",$::tools_cdl::tabphotom($i,${n},fwhm)"       } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},fluxintegre)] } {append line ",$::tools_cdl::tabphotom($i,${n},fluxintegre)"} else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},errflux)    ] } {append line ",$::tools_cdl::tabphotom($i,${n},errflux)"    } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},pixmax)     ] } {append line ",$::tools_cdl::tabphotom($i,${n},pixmax)"     } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},intensite)  ] } {append line ",$::tools_cdl::tabphotom($i,${n},intensite)"  } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},sigmafond)  ] } {append line ",$::tools_cdl::tabphotom($i,${n},sigmafond)"  } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},snint)      ] } {append line ",$::tools_cdl::tabphotom($i,${n},snint)"      } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},snpx)       ] } {append line ",$::tools_cdl::tabphotom($i,${n},snpx)"       } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},delta)      ] } {append line ",$::tools_cdl::tabphotom($i,${n},delta)"      } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},x)          ] } {append line ",$::tools_cdl::tabphotom($i,${n},x)"          } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},y)          ] } {append line ",$::tools_cdl::tabphotom($i,${n},y)"          } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},ra_deg)     ] } {append line ",$::tools_cdl::tabphotom($i,${n},ra_deg)"     } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},dec_deg)    ] } {append line ",$::tools_cdl::tabphotom($i,${n},dec_deg)"    } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},ra_hms)     ] } {append line ",$::tools_cdl::tabphotom($i,${n},ra_hms)"     } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},dec_dms)    ] } {append line ",$::tools_cdl::tabphotom($i,${n},dec_dms)"    } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},err)        ] } {append line ",$::tools_cdl::tabphotom($i,${n},err)"        } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},saturation) ] } {append line ",$::tools_cdl::tabphotom($i,${n},saturation)" } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},mag)        ] } {append line ",$::tools_cdl::tabphotom($i,${n},mag)"        } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},maginstru)  ] } {append line ",$::tools_cdl::tabphotom($i,${n},maginstru)"  } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},fwhmx)      ] } {append line ",$::tools_cdl::tabphotom($i,${n},fwhmx)"      } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},fwhmy)      ] } {append line ",$::tools_cdl::tabphotom($i,${n},fwhmy)"      } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},fwhm)       ] } {append line ",$::tools_cdl::tabphotom($i,${n},fwhm)"       } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},fluxintegre)] } {append line ",$::tools_cdl::tabphotom($i,${n},fluxintegre)"} else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},errflux)    ] } {append line ",$::tools_cdl::tabphotom($i,${n},errflux)"    } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},pixmax)     ] } {append line ",$::tools_cdl::tabphotom($i,${n},pixmax)"     } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},intensite)  ] } {append line ",$::tools_cdl::tabphotom($i,${n},intensite)"  } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},sigmafond)  ] } {append line ",$::tools_cdl::tabphotom($i,${n},sigmafond)"  } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},snint)      ] } {append line ",$::tools_cdl::tabphotom($i,${n},snint)"      } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},snpx)       ] } {append line ",$::tools_cdl::tabphotom($i,${n},snpx)"       } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},delta)      ] } {append line ",$::tools_cdl::tabphotom($i,${n},delta)"      } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},x)          ] } {append line ",$::tools_cdl::tabphotom($i,${n},x)"          } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},y)          ] } {append line ",$::tools_cdl::tabphotom($i,${n},y)"          } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},ra_deg)     ] } {append line ",$::tools_cdl::tabphotom($i,${n},ra_deg)"     } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},dec_deg)    ] } {append line ",$::tools_cdl::tabphotom($i,${n},dec_deg)"    } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},ra_hms)     ] } {append line ",$::tools_cdl::tabphotom($i,${n},ra_hms)"     } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},dec_dms)    ] } {append line ",$::tools_cdl::tabphotom($i,${n},dec_dms)"    } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},err)        ] } {append line ",$::tools_cdl::tabphotom($i,${n},err)"        } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},saturation) ] } {append line ",$::tools_cdl::tabphotom($i,${n},saturation)" } else {append line ","}
       return $line
    }
    
@@ -1758,11 +1758,11 @@ proc random {{range 100}} {
    # Photom value pour la source n source a l index i
    proc insert_line_cpt { i n } {
       set line ""
-      if { [info exists ::tools_cdl::tabphotom($i,${n},mag)        ] } {append line ",$::tools_cdl::tabphotom($i,${n},mag)"        } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},maginstru)  ] } {append line ",$::tools_cdl::tabphotom($i,${n},maginstru)"  } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},fwhm)       ] } {append line ",$::tools_cdl::tabphotom($i,${n},fwhm)"       } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},fluxintegre)] } {append line ",$::tools_cdl::tabphotom($i,${n},fluxintegre)"} else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},errflux)    ] } {append line ",$::tools_cdl::tabphotom($i,${n},errflux)"    } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},mag)        ] } {append line ",$::tools_cdl::tabphotom($i,${n},mag)"        } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},maginstru)  ] } {append line ",$::tools_cdl::tabphotom($i,${n},maginstru)"  } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},fwhm)       ] } {append line ",$::tools_cdl::tabphotom($i,${n},fwhm)"       } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},fluxintegre)] } {append line ",$::tools_cdl::tabphotom($i,${n},fluxintegre)"} else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},errflux)    ] } {append line ",$::tools_cdl::tabphotom($i,${n},errflux)"    } else {append line ","}
       return $line
    }
 
@@ -1819,27 +1819,27 @@ proc random {{range 100}} {
    # Photom value pour la source n source a l index i
    proc insert_line_delta { i n delta} {
       set line ""
-      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,mag)        ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,mag)"        } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,maginstru)  ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,maginstru)"  } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,fwhmx)      ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,fwhmx)"      } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,fwhmy)      ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,fwhmy)"      } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,fwhm)       ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,fwhm)"       } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,fluxintegre)] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,fluxintegre)"} else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,errflux)    ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,errflux)"    } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,pixmax)     ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,pixmax)"     } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,intensite)  ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,intensite)"  } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,sigmafond)  ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,sigmafond)"  } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,snint)      ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,snint)"      } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,snpx)       ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,snpx)"       } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,delta)      ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,delta)"      } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},x)          ] } {append line ",$::tools_cdl::tabphotom($i,${n},x)"          } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},y)          ] } {append line ",$::tools_cdl::tabphotom($i,${n},y)"          } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},ra_deg)     ] } {append line ",$::tools_cdl::tabphotom($i,${n},ra_deg)"     } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},dec_deg)    ] } {append line ",$::tools_cdl::tabphotom($i,${n},dec_deg)"    } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},ra_hms)     ] } {append line ",$::tools_cdl::tabphotom($i,${n},ra_hms)"     } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},dec_dms)    ] } {append line ",$::tools_cdl::tabphotom($i,${n},dec_dms)"    } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},err)        ] } {append line ",$::tools_cdl::tabphotom($i,${n},err)"        } else {append line ",-"}
-      if { [info exists ::tools_cdl::tabphotom($i,${n},saturation) ] } {append line ",$::tools_cdl::tabphotom($i,${n},saturation)" } else {append line ",-"}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,mag)        ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,mag)"        } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,maginstru)  ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,maginstru)"  } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,fwhmx)      ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,fwhmx)"      } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,fwhmy)      ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,fwhmy)"      } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,fwhm)       ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,fwhm)"       } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,fluxintegre)] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,fluxintegre)"} else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,errflux)    ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,errflux)"    } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,pixmax)     ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,pixmax)"     } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,intensite)  ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,intensite)"  } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,sigmafond)  ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,sigmafond)"  } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,snint)      ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,snint)"      } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,snpx)       ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,snpx)"       } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},search_delta,$delta,delta)      ] } {append line ",$::tools_cdl::tabphotom($i,${n},search_delta,$delta,delta)"      } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},x)          ] } {append line ",$::tools_cdl::tabphotom($i,${n},x)"          } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},y)          ] } {append line ",$::tools_cdl::tabphotom($i,${n},y)"          } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},ra_deg)     ] } {append line ",$::tools_cdl::tabphotom($i,${n},ra_deg)"     } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},dec_deg)    ] } {append line ",$::tools_cdl::tabphotom($i,${n},dec_deg)"    } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},ra_hms)     ] } {append line ",$::tools_cdl::tabphotom($i,${n},ra_hms)"     } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},dec_dms)    ] } {append line ",$::tools_cdl::tabphotom($i,${n},dec_dms)"    } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},err)        ] } {append line ",$::tools_cdl::tabphotom($i,${n},err)"        } else {append line ","}
+      if { [info exists ::tools_cdl::tabphotom($i,${n},saturation) ] } {append line ",$::tools_cdl::tabphotom($i,${n},saturation)" } else {append line ","}
       return $line
    }
    

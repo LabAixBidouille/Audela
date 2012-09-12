@@ -1464,11 +1464,21 @@ namespace eval bddimages_liste_gui {
       }
 
       set img_list ""
-
+     
+      set pass "no"
       foreach line $resultsql {
          set idbddimg [lindex $line 0]
          set idhd     [lindex $line 1]
+         set pass "ok"
          break 
+      }
+      
+      if {$pass=="no"} {
+         gren_info "	sqlcmd = $sqlcmd \n"
+         gren_info "	err = $err \n"
+         gren_info "	msg = $msg \n"
+         gren_info "	idbddimg = $idbddimg \n"
+         gren_info "	idhd = $idhd \n"
       }
 
          set sqlcmd "SELECT images.idbddimg,

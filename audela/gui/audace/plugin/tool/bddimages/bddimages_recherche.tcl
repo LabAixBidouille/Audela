@@ -1141,6 +1141,9 @@ namespace eval bddimages_recherche {
            $popupTbl.geometrie add command -label "Rot. -90°" \
               -command { ::bddimages_recherche::bddimages_geometrie "rot_moins90" }
 
+           $popupTbl.geometrie add command -label "Rot. 180°" \
+              -command { ::bddimages_recherche::bddimages_geometrie "rot_180" }
+
            $popupTbl.geometrie add command -label "Somme" \
               -command { ::bddimages_imgcorrection::somme }
 
@@ -1560,7 +1563,7 @@ namespace eval bddimages_recherche {
    
       variable This
       global caption
-      set reply [tk_dialog $This.confirmDialog "BddImages" "$caption(bddimages_recherche,confirmQuest)" \
+      set reply [tk_dialog $This.confirmDialog "BddImages" "Attention les images vont etre modifiées dans la base" \
                     questhead 1 "$caption(bddimages_recherche,confirmNo)" "$caption(bddimages_recherche,confirmYes)"]
       if {$reply} {
 
@@ -1569,19 +1572,26 @@ namespace eval bddimages_recherche {
          set imglist [::bddimages_liste_gui::new_normallist $lid]
 
             if {$type=="mirroirx"} {
-               ::bddimages_imgcorrection::bddimages_mirroirx $imglist
+               ::bddimages_imgcorrection::mirroirx $imglist
             }
             if {$type=="mirroiry"} {
-               ::bddimages_imgcorrection::mirroiry $idbddimg
+               ::bddimages_imgcorrection::mirroiry $imglist
             }
             if {$type=="rot_plus90"} {
-               ::bddimages_imgcorrection::rot_plus90 $idbddimg
+               ::bddimages_imgcorrection::rot_plus90 $imglist
             }
             if {$type=="rot_moins90"} {
-               ::bddimages_imgcorrection::rot_moins90 $idbddimg
+               ::bddimages_imgcorrection::rot_moins90 $imglist
+            }
+            if {$type=="rot_180"} {
+               ::bddimages_imgcorrection::rot_180 $imglist
             }
 
       }
+      
+      
+      ::bddimages_recherche::get_intellist $::bddimages_recherche::current_list_id
+      ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id [array get action_label]
       
    }
 

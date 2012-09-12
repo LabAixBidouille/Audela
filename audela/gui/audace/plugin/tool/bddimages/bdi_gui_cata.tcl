@@ -1074,6 +1074,7 @@ namespace eval gui_cata {
 
          set log 0
 
+         gren_info "--------\n"
 
          #?Charge l image en memoire
          #gren_info "cur id $::tools_cata::id_current_image \n"
@@ -1459,13 +1460,13 @@ namespace eval gui_cata {
          return
       }
       set err [ catch {set cent [::tools_cdl::select_obj $rect $::gui_cata::dssbuf]} msg ]
-      #gren_info "DSS XY: $err : $rect : $msg\n"
-      set err [ catch {set a [buf$::audace(bufNo) xy2radec $cent]} msg ]
+      gren_info "DSS XY: $err : $rect : $msg\n"
+      set err [ catch {set a [buf$::gui_cata::dssbuf xy2radec $cent]} msg ]
       if {$err} {
          ::console::affiche_erreur "$err $msg\n"
          return
       }
-      #gren_info "AD: $err : $a : $msg\n"
+      gren_info "AD: $err : $a : $msg\n"
       set ::gui_cata::man_ad_star($i) "[lindex $a 0] [lindex $a 1]"
 
       return
@@ -1910,6 +1911,9 @@ namespace eval gui_cata {
          return
       }
 
+      set ::tools_cata::ra  $ra
+      set ::tools_cata::dec $dec
+      
       # Calcul des magnitudes 
 
       set fields [lindex $::tools_cata::current_listsources 0]
@@ -2054,9 +2058,9 @@ namespace eval gui_cata {
       } else {
          set ::gui_cata::color_cata $::gui_cata::color_button_good
          $::gui_cata::gui_cata configure -bg $::gui_cata::color_cata
-         ::gui_cata::affiche_cata
       }
 
+   #gren_info "rollupE = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
 
    $::gui_cata::gui_enrimg configure -state normal
    ::gui_cata::pop_img_list

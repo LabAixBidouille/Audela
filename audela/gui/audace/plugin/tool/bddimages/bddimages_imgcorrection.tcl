@@ -682,7 +682,6 @@ proc ::bddimages_imgcorrection::create_image_flat { type inforesult } {
    buf$bufno load "$bddconf(dirtmp)/${fileout}${ext}"
    buf$bufno setkwd [list "BDDIMAGES STATE" "CORR" "string" "RAW | CORR | CATA | ?" ""]
    buf$bufno setkwd [list "DATE-OBS" "$dateobs" "string" "DATEISO" ""]
-  # buf$bufno mirrorx
    buf$bufno save "$bddconf(dirtmp)/${fileout}${ext}"
    buf$bufno clear
 
@@ -1119,98 +1118,191 @@ proc ::bddimages_imgcorrection::chrono_sort_img { img_list } {
 
 
 
-proc ::bddimages_imgcorrection::mirroirx { img_list } {
+   proc ::bddimages_imgcorrection::mirroirx { img_list } {
 
-   global bddconf
+      global bddconf
+      
+      set log 0
 
-   #? set ::bddimages_imgcorrection::imgtmplist $imglist
-   set filename_list [::bddimages_imgcorrection::img_list_to_filename_list $img_list long]
-   set bufno 1
-   set ext [buf$bufno extension]
-   set gz [buf$bufno compress]
-   if {[buf$bufno compress] == "gzip"} {set gz ".gz"} else {set gz ""}
+      foreach img $img_list {
+         set idbddimg    [::bddimages_liste::lget $img "idbddimg"]
+         set imgfilename    [::bddimages_liste::lget $img "filename"]
+         set dirimgfilename [::bddimages_liste::lget $img "dirfilename"]
+         set imgfilebase    [file join $bddconf(dirbase) $dirimgfilename $imgfilename]
+        
+         set imgfiletmp [string range [file tail $imgfilebase] 0 [expr [string last .gz [file tail $imgfilebase]] -1]]
+         set imgfiletmp [file join $bddconf(dirtmp) $imgfiletmp]
+         if {$log} {::console::affiche_resultat "imgfilebase = $imgfilebase \n"}
+         if {$log} {::console::affiche_resultat "imgfiletmp = $imgfiletmp \n"}
 
-   foreach fc $filename_list {
+         buf$::audace(bufNo) load $imgfilebase
+         buf$::audace(bufNo) mirrorx
+         buf$::audace(bufNo) save $imgfiletmp
 
-     ::console::affiche_resultat "file $fc\n"
-     buf$bufno load $fc
-     buf$bufno mirrorx
-     set fileout [file tail $fc ]
-     buf$bufno save "$bddconf(dirtmp)/${fileout}${ext}"
+         set ident [bddimages_image_identification $idbddimg]
+         bddimages_image_delete_fromsql $ident
+         bddimages_image_delete_fromdisk $ident
 
-   }
+         set errnum [catch {set r [insertion_solo $imgfiletmp]} msg ]
+         if {$log} {catch {gren_info "$errnum : $msg : $r"}}
+         if {$errnum==0} {}
 
-}
-
-proc ::bddimages_imgcorrection::mirroiry { img_list } {
-
-   global bddconf
-
-   #? set ::bddimages_imgcorrection::imgtmplist $imglist
-   set filename_list [::bddimages_imgcorrection::img_list_to_filename_list $img_list long]
-   set bufno 1
-   set ext [buf$bufno extension]
-   set gz [buf$bufno compress]
-   if {[buf$bufno compress] == "gzip"} {set gz ".gz"} else {set gz ""}
-
-   foreach fc $filename_list {
-
-     ::console::affiche_resultat "file $fc\n"
-     buf$bufno load $fc
-     buf$bufno mirrory
-     set fileout [file tail $fc ]
-     buf$bufno save "$bddconf(dirtmp)/${fileout}${ext}"
+      }
 
    }
 
-}
 
-proc ::bddimages_imgcorrection::rot_plus90 { img_list } {
+   proc ::bddimages_imgcorrection::mirroiry { img_list } {
 
-   global bddconf
+      global bddconf
+      
+      set log 0
 
-   #? set ::bddimages_imgcorrection::imgtmplist $imglist
-   set filename_list [::bddimages_imgcorrection::img_list_to_filename_list $img_list long]
-   set bufno 1
-   set ext [buf$bufno extension]
-   set gz [buf$bufno compress]
-   if {[buf$bufno compress] == "gzip"} {set gz ".gz"} else {set gz ""}
+      foreach img $img_list {
+         set idbddimg    [::bddimages_liste::lget $img "idbddimg"]
+         set imgfilename    [::bddimages_liste::lget $img "filename"]
+         set dirimgfilename [::bddimages_liste::lget $img "dirfilename"]
+         set imgfilebase    [file join $bddconf(dirbase) $dirimgfilename $imgfilename]
+        
+         set imgfiletmp [string range [file tail $imgfilebase] 0 [expr [string last .gz [file tail $imgfilebase]] -1]]
+         set imgfiletmp [file join $bddconf(dirtmp) $imgfiletmp]
+         if {$log} {::console::affiche_resultat "imgfilebase = $imgfilebase \n"}
+         if {$log} {::console::affiche_resultat "imgfiletmp = $imgfiletmp \n"}
 
-   foreach fc $filename_list {
+         buf$::audace(bufNo) load $imgfilebase
+         buf$::audace(bufNo) mirrory
+         buf$::audace(bufNo) save $imgfiletmp
 
-     ::console::affiche_resultat "file $fc\n"
-     buf$bufno load $fc
-     buf$bufno rot $xcent $ycent 90.0
-     set fileout [file tail $fc ]
-     buf$bufno save "$bddconf(dirtmp)/${fileout}${ext}"
+         set ident [bddimages_image_identification $idbddimg]
+         bddimages_image_delete_fromsql $ident
+         bddimages_image_delete_fromdisk $ident
 
-   }
+         set errnum [catch {set r [insertion_solo $imgfiletmp]} msg ]
+         if {$log} {catch {gren_info "$errnum : $msg : $r"}}
+         if {$errnum==0} {}
 
-}
-
-proc ::bddimages_imgcorrection::rot_moins90 { img_list } {
-
-   global bddconf
-
-   #? set ::bddimages_imgcorrection::imgtmplist $imglist
-   set filename_list [::bddimages_imgcorrection::img_list_to_filename_list $img_list long]
-   set bufno 1
-   set ext [buf$bufno extension]
-   set gz [buf$bufno compress]
-   if {[buf$bufno compress] == "gzip"} {set gz ".gz"} else {set gz ""}
-
-   foreach fc $filename_list {
-
-     ::console::affiche_resultat "file $fc\n"
-     buf$bufno load $fc
-     buf$bufno rot $xcent $ycent 90.0
-     set fileout [file tail $fc ]
-     buf$bufno save "$bddconf(dirtmp)/${fileout}${ext}"
+      }
 
    }
 
-}
+   proc ::bddimages_imgcorrection::rot_plus90 { img_list } {
 
+      global bddconf
+      
+      set log 0
+
+      foreach img $img_list {
+         set idbddimg    [::bddimages_liste::lget $img "idbddimg"]
+         set imgfilename    [::bddimages_liste::lget $img "filename"]
+         set dirimgfilename [::bddimages_liste::lget $img "dirfilename"]
+         set imgfilebase    [file join $bddconf(dirbase) $dirimgfilename $imgfilename]
+
+         set tabkey    [::bddimages_liste::lget $img "tabkey"]
+         set naxis1      [lindex [::bddimages_liste::lget $tabkey NAXIS1 ] 1]
+         set naxis2      [lindex [::bddimages_liste::lget $tabkey NAXIS2 ] 1]
+         set xcent       [expr $naxis1/2.0]
+         set ycent       [expr $naxis2/2.0]
+
+         set imgfiletmp [string range [file tail $imgfilebase] 0 [expr [string last .gz [file tail $imgfilebase]] -1]]
+         set imgfiletmp [file join $bddconf(dirtmp) $imgfiletmp]
+         if {$log} {::console::affiche_resultat "imgfilebase = $imgfilebase \n"}
+         if {$log} {::console::affiche_resultat "imgfiletmp = $imgfiletmp \n"}
+
+         buf$::audace(bufNo) load $imgfilebase
+         buf$::audace(bufNo) rot $xcent $ycent 90.0
+         buf$::audace(bufNo) save $imgfiletmp
+
+         set ident [bddimages_image_identification $idbddimg]
+         bddimages_image_delete_fromsql $ident
+         bddimages_image_delete_fromdisk $ident
+
+         set errnum [catch {set r [insertion_solo $imgfiletmp]} msg ]
+         if {$log} {catch {gren_info "$errnum : $msg : $r"}}
+         if {$errnum==0} {}
+
+      }
+
+   }
+
+
+   proc ::bddimages_imgcorrection::rot_moins90 { img_list } {
+
+      global bddconf
+      
+      set log 0
+
+      foreach img $img_list {
+         set idbddimg    [::bddimages_liste::lget $img "idbddimg"]
+         set imgfilename    [::bddimages_liste::lget $img "filename"]
+         set dirimgfilename [::bddimages_liste::lget $img "dirfilename"]
+         set imgfilebase    [file join $bddconf(dirbase) $dirimgfilename $imgfilename]
+
+         set tabkey    [::bddimages_liste::lget $img "tabkey"]
+         set naxis1      [lindex [::bddimages_liste::lget $tabkey NAXIS1 ] 1]
+         set naxis2      [lindex [::bddimages_liste::lget $tabkey NAXIS2 ] 1]
+         set xcent       [expr $naxis1/2.0]
+         set ycent       [expr $naxis2/2.0]
+
+         set imgfiletmp [string range [file tail $imgfilebase] 0 [expr [string last .gz [file tail $imgfilebase]] -1]]
+         set imgfiletmp [file join $bddconf(dirtmp) $imgfiletmp]
+         if {$log} {::console::affiche_resultat "imgfilebase = $imgfilebase \n"}
+         if {$log} {::console::affiche_resultat "imgfiletmp = $imgfiletmp \n"}
+
+         buf$::audace(bufNo) load $imgfilebase
+         buf$::audace(bufNo) rot $xcent $ycent -90.0
+         buf$::audace(bufNo) save $imgfiletmp
+
+         set ident [bddimages_image_identification $idbddimg]
+         bddimages_image_delete_fromsql $ident
+         bddimages_image_delete_fromdisk $ident
+
+         set errnum [catch {set r [insertion_solo $imgfiletmp]} msg ]
+         if {$log} {catch {gren_info "$errnum : $msg : $r"}}
+         if {$errnum==0} {}
+
+      }
+
+   }
+
+
+   proc ::bddimages_imgcorrection::rot_180 { img_list } {
+
+      global bddconf
+      
+      set log 0
+
+      foreach img $img_list {
+         set idbddimg    [::bddimages_liste::lget $img "idbddimg"]
+         set imgfilename    [::bddimages_liste::lget $img "filename"]
+         set dirimgfilename [::bddimages_liste::lget $img "dirfilename"]
+         set imgfilebase    [file join $bddconf(dirbase) $dirimgfilename $imgfilename]
+
+         set tabkey    [::bddimages_liste::lget $img "tabkey"]
+         set naxis1    [lindex [::bddimages_liste::lget $tabkey NAXIS1 ] 1]
+         set naxis2    [lindex [::bddimages_liste::lget $tabkey NAXIS2 ] 1]
+         set xcent     [expr $naxis1/2.0]
+         set ycent     [expr $naxis2/2.0]
+
+         set imgfiletmp [string range [file tail $imgfilebase] 0 [expr [string last .gz [file tail $imgfilebase]] -1]]
+         set imgfiletmp [file join $bddconf(dirtmp) $imgfiletmp]
+         if {$log} {::console::affiche_resultat "imgfilebase = $imgfilebase \n"}
+         if {$log} {::console::affiche_resultat "imgfiletmp = $imgfiletmp \n"}
+
+         buf$::audace(bufNo) load $imgfilebase
+         buf$::audace(bufNo) rot $xcent $ycent 180.0
+         buf$::audace(bufNo) save $imgfiletmp
+
+         set ident [bddimages_image_identification $idbddimg]
+         bddimages_image_delete_fromsql $ident
+         bddimages_image_delete_fromdisk $ident
+
+         set errnum [catch {set r [insertion_solo $imgfiletmp]} msg ]
+         if {$log} {catch {gren_info "$errnum : $msg : $r"}}
+         if {$errnum==0} {}
+
+      }
+
+   }
 
 
 
