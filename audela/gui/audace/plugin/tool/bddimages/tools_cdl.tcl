@@ -98,8 +98,8 @@ namespace eval tools_cdl {
          set ys1         [expr int($ysm + $delta)]
 
          set r1          [expr int(1*$delta)]
-         set r2          [expr int(1.25*$delta)]
-         set r3          [expr int(1.75*$delta)]
+         set r2          [expr int(2*$delta)]
+         set r3          [expr int(2.6*$delta)]
 
          if {0} {
             if {$r1<1} {set r1 1}

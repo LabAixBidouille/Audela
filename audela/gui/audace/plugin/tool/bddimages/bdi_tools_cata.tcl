@@ -456,9 +456,29 @@ proc ::tools_cata::get_table { name table } {
       set dec $::tools_cata::dec
       set naxis1 [lindex [::bddimages_liste::lget $tabkey NAXIS1] 1]
       set naxis2 [lindex [::bddimages_liste::lget $tabkey NAXIS2] 1]
+
+      set lcd ""
+      lappend lcd [lindex [::bddimages_liste::lget $tabkey CD1_1] 1]
+      lappend lcd [lindex [::bddimages_liste::lget $tabkey CD1_2] 1]
+      lappend lcd [lindex [::bddimages_liste::lget $tabkey CD2_1] 1]
+      lappend lcd [lindex [::bddimages_liste::lget $tabkey CD2_2] 1]
+      set mscale [::math::statistics::max $lcd]
+      
       set scale_x [lindex [::bddimages_liste::lget $tabkey CD1_1] 1]
       set scale_y [lindex [::bddimages_liste::lget $tabkey CD2_2] 1]
-      set radius [::tools_cata::get_radius $naxis1 $naxis2 $scale_x $scale_y]
+
+      set radius [::tools_cata::get_radius $naxis1 $naxis2 $mscale $mscale]
+
+      if {1==0} {
+         gren_info "naxis1  = $naxis1\n"
+         gren_info "naxis2  = $naxis2\n"
+         gren_info "mscale  = $mscale\n"
+         gren_info "scale_x = $scale_x\n"
+         gren_info "scale_y = $scale_y\n"
+         gren_info "ra      = $ra\n"
+         gren_info "dec     = $dec\n"
+         gren_info "radius  = $radius\n"
+      }
 
       if {$::tools_cata::use_tycho2} {
          #gren_info "CMD: cstycho2 $::tools_cata::catalog_tycho2 $ra $dec $radius\n"
@@ -637,7 +657,7 @@ proc ::tools_cata::get_table { name table } {
                   return -code 1 "ERR = $erreur ($msg)"
                }
             } else {
-               gren_info "existe pas"
+               gren_info "Erreur interne de calibwcs, voir l erreur de la libtt"
                return -code 1 "ERR = $erreur ($msg)"
             }
          }

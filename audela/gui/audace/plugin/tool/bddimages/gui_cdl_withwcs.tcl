@@ -429,6 +429,75 @@ namespace eval gui_cdl_withwcs {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    proc ::gui_cdl_withwcs::calc_mag { sources } {
 
 
@@ -496,6 +565,10 @@ namespace eval gui_cdl_withwcs {
                      continue
                   }
                   set flux $::tools_cdl::tabphotom($::tools_cdl::id_current_image,star$x,search_delta,$rdelta,fluxintegre)
+                  if {! [info exists ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$::tools_cdl::starref,search_delta,$rdelta,fluxintegre) ] } {
+                     set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,star$x,search_delta,$rdelta,mag) 9999999
+                     continue
+                  }
                   set fluxrefd $::tools_cdl::tabphotom($::tools_cdl::id_current_image,$::tools_cdl::starref,search_delta,$rdelta,fluxintegre)
                   set m [expr $::tools_cdl::magref - log10($flux/$fluxrefd)*2.5]
                   set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,star$x,search_delta,$rdelta,mag) $m
@@ -526,6 +599,9 @@ namespace eval gui_cdl_withwcs {
             for {set rdelta $::tools_cdl::deltamin} {$rdelta<=$::tools_cdl::deltamax} {incr rdelta} {
                if {$::tools_cdl::tabphotom($::tools_cdl::id_current_image,obj,search_delta,$rdelta,err)==true} {continue}
                set flux $::tools_cdl::tabphotom($::tools_cdl::id_current_image,obj,search_delta,$rdelta,fluxintegre)
+               if {! [info exists ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$::tools_cdl::starref,search_delta,$rdelta,fluxintegre) ] } {
+                  continue
+               }
                set fluxrefd $::tools_cdl::tabphotom($::tools_cdl::id_current_image,$::tools_cdl::starref,search_delta,$rdelta,fluxintegre)
                set m [expr $::tools_cdl::magref - log10($flux/$fluxrefd)*2.5]
                set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,obj,search_delta,$rdelta,mag) $m

@@ -1045,7 +1045,7 @@ namespace eval gui_cata {
       foreach v $tabkey {
          gren_info "v = $v\n"
          incr cpt
-         if {$cpt > 12 } {break}
+         #if {$cpt > 12 } {break}
       }
 
    }
@@ -1058,7 +1058,7 @@ namespace eval gui_cata {
          if {$key==""} {continue}
          gren_info "$key = [buf$::audace(bufNo) getkwd $key]\n" 
          incr cpt
-         if {$cpt > 12 } {break}
+         #if {$cpt > 12 } {break}
       }
     }
 
