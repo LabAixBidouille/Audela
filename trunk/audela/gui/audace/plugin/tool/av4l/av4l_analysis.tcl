@@ -300,27 +300,43 @@ package require math::statistics
    proc ::av4l_analysis::partie2 {  } {
 
 
+      #-----------------------------------------------------------------------------
       #Constantes
       set nmax 10000
+      #-----------------------------------------------------------------------------
 
+      #-----------------------------------------------------------------------------
       # Fichiers de sortie
-      set file [file join $::av4l_analysis::dirwork "21_modele_flux_avant_convol.csv"]
-      set chan21 [open $file w]
-      set file [file join $::av4l_analysis::dirwork "22_modele_flux_apres_convol.csv"]
-      set chan22 [open $file w]
-      set file [file join $::av4l_analysis::dirwork "23_.csv"]
-      set chan23 [open $file w]
-      set file [file join $::av4l_analysis::dirwork "24_.csv"]
-      set chan24 [open $file w]
-      set file [file join $::av4l_analysis::dirwork "26_.csv"]
-      set chan26 [open $file w]
+      # sorties:
+      # fort.20: ombre geometrique
+      # fort.21: ombre avec diffraction (convolee par la bande passante et
+      #          par le diametre stellaire)
+      # fort.22: ombre lissee par la reponse instrumentale
+      # fort.23: ombre (fort.22) interpolee sur les points d'observation 
+      # fort.24: t0, chi2, nombre de points ajustes
+      # fort.25: rayon de l'etoile, chi2_min, npt fittes (NB. "append")
+      # fort.26: dans le cas ou la bande a une largeur finie (ex. duree finie de l'occn) 
+      #          chi2 - nfit (NB. "append"), voir par ex. donnees Hakos/Varuna 19 fev 2010
+      set file21 [file join $::av4l_analysis::dirwork "21_modele_flux_avant_convol.csv"]
+      set chan21 [open $file21 w]
+      set file22 [file join $::av4l_analysis::dirwork "22_modele_flux_apres_convol.csv"]
+      set chan22 [open $file22 w]
+      set file23 [file join $::av4l_analysis::dirwork "23_.csv"]
+      set chan23 [open $file23 w]
+      set file24 [file join $::av4l_analysis::dirwork "24_.csv"]
+      set chan24 [open $file24 w]
+      set file26 [file join $::av4l_analysis::dirwork "26_.csv"]
+      set chan26 [open $file26 w]
+      #-----------------------------------------------------------------------------
       
+      #-----------------------------------------------------------------------------
       # Observations :
       #TODO
       
       #Sigma des observations
       #TODO
       set sigma 
+      #-----------------------------------------------------------------------------
 
 
       while { $::av4l_analysis::t0<=$::av4l_analysis::t0_max} {
@@ -455,6 +471,52 @@ package require math::statistics
       close $chan23
       close $chan24
       close $chan26
+
+
+
+
+
+
+
+      #-----------------------------------------------------------------------------
+      #
+      # on cherche le temps correspondant au minimum de chi2:
+      #
+      set chan24 [open $file24 r]
+      set chi2_min 1.e50
+      do i= 1, nmax
+       read (24,*,err=103,end=103) t0, chi2, nfit
+         if {chi2.le.chi2_min} {
+           chi2_min     = chi2
+           t0_chi2_min  = t0
+           nfit_chi2_min= nfit
+         }
+      enddo
+
+   close (24)
+   open (unit=24,file='fort.24',status='old',form='formatted',position='rewind')
+   dchi2=  1.d00
+   t_inf=  1.d50
+   t_sup= -1.d50
+   do i= 1, nmax
+    read (24,*,err=104,end=104) t0, chi2, nfit
+    if (chi2.le.(chi2_min+dchi2)) then
+     if (t0.le.t_inf) t_inf= t0
+     if (t0.ge.t_sup) t_sup= t0
+    endif
+   enddo
+104   continue
+
+   write (*,*) 
+   write (*,'(A,f9.3,3x,f6.3,3x,I3)') 't0, chi2 et nfit au minimum: ', t0_chi2_min, chi2_min, nfit_chi2_min
+   write (*,'(A,f5.2,2x,f9.3,2x,f9.3)')  
+     *   'Dchi2, intervalle ou chi2 < chi2_min + dchi2: ', sngl(dchi2), sngl(t_inf), sngl(t_sup)
+
+   open (unit=25,file='fort.25',status='unknown',form='formatted',position='append')
+c   write (25,*) sngl(width), sngl(chi2_min), nfit_chi2_min
+   write (25,*) sngl(width/vn), sngl(chi2_min), nfit_chi2_min
+
+
 
    }
 
