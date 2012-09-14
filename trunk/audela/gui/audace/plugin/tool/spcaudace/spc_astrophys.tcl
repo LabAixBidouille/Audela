@@ -3998,7 +3998,7 @@ if { $flag_oneday==0 } {
 
 
    #--- Sauvegarde finale du fichier fits-image 2D :
-   ::console::affiche_prompt "\nNombres de jours couverts entre [ expr int($date_deb) ] et [ expr int($date_fin) ] : $nb_jours jours.\n"
+   ::console::affiche_prompt "\nNombres d'échantillons couverts entre [ format "%7.4f" $date_deb ] et [ format "%7.4f" $date_fin ] : $nb_jours échantillons.\n"
    ::console::affiche_prompt "Enregistrement du spectre dynamique sous ${objname}_dynaspectrum.jpg+fit\n"
    regsub -all {(\s)} "$objname" "_" objname
    buf$newBufNo setkwd [ list "OBJNAME" "$objname" string "" "" ]
