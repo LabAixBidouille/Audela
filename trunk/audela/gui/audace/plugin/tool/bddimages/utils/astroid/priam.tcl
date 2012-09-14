@@ -176,6 +176,18 @@ proc ::priam::create_file_oldformat { tag nb img science stars } {
       set cdelt2 [lindex [::bddimages_liste::lget $tabkey "CDELT2"] 1 ]
    }
 
+   if {[::bddimages_liste::lexist $tabkey "PIXSIZE1" ]==0} {
+      set pixsize1 0.0
+   } else {
+      set pixsize1 [lindex [::bddimages_liste::lget $tabkey "PIXSIZE1"] 1 ]
+   }
+
+   if {[::bddimages_liste::lexist $tabkey "PIXSIZE2" ]==0} {
+      set pixsize2 0.0
+   } else {
+      set pixsize2 [lindex [::bddimages_liste::lget $tabkey "PIXSIZE2"] 1 ]
+   }
+
    set echelle [expr sqrt((pow($cdelt1,2)+pow($cdelt2,2))/2.0)*3600.0]
 
    if {[::bddimages_liste::lexist $tabkey "SITENAME" ]==0} {
@@ -232,6 +244,7 @@ proc ::priam::create_file_oldformat { tag nb img science stars } {
       puts $chan0 "echelle        : $echelle"
       puts $chan0 "orientation    : $crota2"
       puts $chan0 "taille CCD     : $naxis1 $naxis2"
+      puts $chan0 "pixsize        : $pixsize1 $pixsize2"
       close $chan0
    }
 
