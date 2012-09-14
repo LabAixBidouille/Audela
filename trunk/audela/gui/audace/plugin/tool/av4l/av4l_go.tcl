@@ -140,23 +140,23 @@ proc ::av4l::ressource {  } {
    #--- Chargement des captions
    source [ file join $audace(rep_plugin) tool av4l av4l_go.cap ]
    #--- Chargement des fichiers auxiliaires
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_acq.tcl           ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_cdl_gui.tcl       ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_cdl.tcl           ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_cdl_tools.tcl     ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_extraction.tcl    ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_go.tcl            ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_ocr_gui.tcl       ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_ocr_tools.tcl     ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_ocr.tcl           ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_photom.tcl        ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_setup.tcl         ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_tools.tcl         ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_tools_avi.tcl     ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_tools_fits.tcl    ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_verif.tcl         ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_analysis.tcl      ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l test.tcl               ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_acq.tcl            ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_cdl_gui.tcl        ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_cdl.tcl            ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_cdl_tools.tcl      ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_extraction.tcl     ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_go.tcl             ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_ocr_gui.tcl        ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_ocr_tools.tcl      ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_ocr.tcl            ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_photom.tcl         ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_setup.tcl          ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_tools.tcl          ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_tools_avi.tcl      ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_tools_fits.tcl     ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_verif.tcl          ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_analysis_tools.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l test.tcl                ]\""
 
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_cdl.tcl ]\""
 
@@ -328,7 +328,7 @@ proc ::av4l::BuildIF { visuNo } {
          image create photo .analysis -format PNG -file [ file join $audace(rep_plugin) tool av4l img brain_mini.png ]
          button $This.fradev.analysis -image .analysis\
             -borderwidth 2 -width 10 -height 10 -compound center \
-            -command "::av4l_analysis::run"
+            -command "::av4l_gui_analysis::run"
          pack $This.fradev.analysis \
             -in $This.fradev \
             -side left -anchor w \
