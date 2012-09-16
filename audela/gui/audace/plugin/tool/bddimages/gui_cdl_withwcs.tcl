@@ -649,7 +649,7 @@ namespace eval gui_cdl_withwcs {
          if { "star$x" == "$::tools_cdl::starref"} {
             if { [::gui_cdl_withwcs::is_good "star$x"] } {
                $sources.name.$::tools_cdl::starref configure -foreground blue 
-               set radius [expr floor ([::confVisu::getZoom $::audace(visuNo)] * $::tools_cdl::tabsource(star$x,delta)) ]
+               set radius [expr floor ([::confVisu::getZoom $::audace(visuNo)] * $::tools_cdl::tabsource(star$x,delta)) / 2.0 ]
                affich_un_rond_xy $::tools_cdl::tabphotom($::tools_cdl::id_current_image,star$x,x) \
                                  $::tools_cdl::tabphotom($::tools_cdl::id_current_image,star$x,y) \
                                  blue $radius 2
@@ -657,14 +657,14 @@ namespace eval gui_cdl_withwcs {
          } else {
             if { [::gui_cdl_withwcs::is_good "star$x"] } {
                $sources.name.star$x configure -foreground darkgreen 
-               set radius [expr floor ([::confVisu::getZoom $::audace(visuNo)] * $::tools_cdl::tabsource(star$x,delta)) ]
+               set radius [expr floor ([::confVisu::getZoom $::audace(visuNo)] * $::tools_cdl::tabsource(star$x,delta)) / 2.0 ]
                affich_un_rond_xy $::tools_cdl::tabphotom($::tools_cdl::id_current_image,star$x,x) \
                                  $::tools_cdl::tabphotom($::tools_cdl::id_current_image,star$x,y) \
                                  green $radius 1
             } else {
                if { [::gui_cdl_withwcs::is_selected "star$x"] } {
                   $sources.name.star$x configure -foreground red 
-                  set radius [expr floor ([::confVisu::getZoom $::audace(visuNo)] * $::tools_cdl::tabsource(star$x,delta)) ]
+                  set radius [expr floor ([::confVisu::getZoom $::audace(visuNo)] * $::tools_cdl::tabsource(star$x,delta)) / 2.0]
                   affich_un_rond_xy $::tools_cdl::tabphotom($::tools_cdl::id_current_image,star$x,x) \
                                     $::tools_cdl::tabphotom($::tools_cdl::id_current_image,star$x,y) \
                                     red $radius 1
@@ -678,14 +678,14 @@ namespace eval gui_cdl_withwcs {
       
       if { [::gui_cdl_withwcs::is_good "obj"] } {
          $sources.name.obj configure -foreground darkgreen 
-         set radius [expr floor ([::confVisu::getZoom $::audace(visuNo)] * $::tools_cdl::tabsource(obj,delta)) ]
+         set radius [expr floor ([::confVisu::getZoom $::audace(visuNo)] * $::tools_cdl::tabsource(obj,delta)) / 2.0 ]
          affich_un_rond_xy $::tools_cdl::tabphotom($::tools_cdl::id_current_image,obj,x) \
                            $::tools_cdl::tabphotom($::tools_cdl::id_current_image,obj,y) \
                            yellow $radius 1
       } else {
          if { [::gui_cdl_withwcs::is_selected "obj"] } {
             $sources.name.obj configure -foreground red 
-            set radius [expr floor ([::confVisu::getZoom $::audace(visuNo)] * $::tools_cdl::tabsource(obj,delta)) ]
+            set radius [expr floor ([::confVisu::getZoom $::audace(visuNo)] * $::tools_cdl::tabsource(obj,delta)) / 2.0 ]
             affich_un_rond_xy $::tools_cdl::tabphotom($::tools_cdl::id_current_image,obj,x) \
                               $::tools_cdl::tabphotom($::tools_cdl::id_current_image,obj,y) \
                               red $radius 1
