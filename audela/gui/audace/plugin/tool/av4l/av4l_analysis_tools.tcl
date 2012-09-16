@@ -1,13 +1,13 @@
-# source /srv/develop/audela/gui/audace/plugin/tool/av4l/av4l_tools_analysis.tcl
+# source /srv/develop/audela/gui/audace/plugin/tool/av4l/av4l_analysis_tools.tcl
 
 #--------------------------------------------------
-# source audace/plugin/tool/av4l/av4l_tools_analysis.tcl
+# source audace/plugin/tool/av4l/av4l_analysis_tools.tcl
 #--------------------------------------------------
 #
-# Fichier        : av4l_tools_analysis.tcl
+# Fichier        : av4l_analysis_tools.tcl
 # Description    : Outil Courbe de lumiere
 # Auteur         : Frederic Vachier
-# Mise Ã  jour $Id: av4l_tools_analysis.tcl 7986 2011-12-22 20:15:55Z svaillant $
+# Mise Ã  jour $Id: av4l_analysis_tools.tcl 7986 2011-12-22 20:15:55Z svaillant $
 #
 
 #idframe,
@@ -42,10 +42,11 @@
 #img_xsize,
 #img_ysize
 
-namespace eval ::av4l_tools_analysis {
+namespace eval ::av4l_analysis_tools {
 
 package require math::statistics
 package require math::special
+set tcl_precision 17
 
       variable cols
       variable cdl
@@ -57,159 +58,153 @@ package require math::special
 
 
 
-   proc ::av4l_tools_analysis::init {  } {
 
-      set ::av4l_tools_analysis::diravi "/data/Occultations/20100605_80SAPPHO"
-      set ::av4l_tools_analysis::dirwork "/data/Occultations/20100605_80SAPPHO/work"
-      set ::av4l_tools_analysis::filecsv "sapphoseg.00.avi.00001.csv"
 
-      if {[info exists ::av4l_tools_analysis::cols]} {unset ::av4l_tools_analysis::cols}
-      if {[info exists ::av4l_tools_analysis::cdl]} {unset ::av4l_tools_analysis::cdl}
-      if {[info exists ::av4l_tools_analysis::nb]} {unset ::av4l_tools_analysis::nb}
 
-      set file [file join $::av4l_tools_analysis::dirwork "ombre_geometrique.csv"]
-      set changeo [open $file w]
-      puts $changeo "# OMBRE GEOMETRIQUE"
-      close $changeo
-      
-   }
+
+
+   proc ::av4l_analysis_tools::charge_csv { file } {
+
+
+      if  {![file exists $file]} {return}
  
-   proc ::av4l_tools_analysis::charge_cdl { file } {
-
-
-      ::console::affiche_resultat "Chargement de la courbe : $file\n"
-
-
       set cpt 0
       
       set chan [open $file r]
+
       while {[gets $chan line] >= 0} {
+
          set line [string trim $line]
          set c [string index $line 0]
          if {$c=="#"} {continue}
 
          # description des colonnes
          if {$cpt==0} {
-         
             set cols [split $line ","]
-            set ::av4l_tools_analysis::cols ""
+            set ::av4l_analysis_tools::cols ""
             foreach col $cols {
-               ::console::affiche_resultat  "col:$col\n"
-               lappend ::av4l_tools_analysis::cols [string trim $col]
+               lappend ::av4l_analysis_tools::cols [string trim $col]
             }
-            ::console::affiche_resultat  "cols:$::av4l_tools_analysis::cols\n"
             incr cpt
             continue
          }
          
-         #::console::affiche_resultat  "$cpt:$line\n"
          set a [split $line ","]
-         set idframe [lindex $a 0]
-
          set idcol 0
-         foreach col $::av4l_tools_analysis::cols {
-            set ::av4l_tools_analysis::cdl($cpt,$col) [string trim [lindex $a $idcol]]
+         catch {unset csvraw}
+         foreach col $::av4l_analysis_tools::cols {
+            set ::av4l_analysis_tools::csv($cpt,$col) [string trim [lindex $a $idcol]]
             incr idcol
          }
+        
+         incr cpt
+         #if {$cpt > 5} {break}
+      }
+      close $chan
+
+      return -code 0 [expr $cpt - 1]
+   }
+
+
+
+
+
+
+   proc ::av4l_analysis_tools::filtre_raw_data { nb } {
+
+
+      if {[info exists ::av4l_analysis_tools::cols]} {unset ::av4l_analysis_tools::cols}
+      if {[info exists ::av4l_analysis_tools::cdl]} {unset ::av4l_analysis_tools::cdl}
+      if {[info exists ::av4l_analysis_tools::raw_nbframe]} {unset ::av4l_analysis_tools::raw_nbframe}
+
+
+      set ::av4l_analysis_tools::nb_pt_ref 0
+      set cpt 1
+      set cptref 0
+
+      ::console::affiche_resultat "nb=$nb\n"
+      
+      for {set i 1} {$i<=$nb} {incr i} {
          
-         #if {$cpt > 32} {break}
+         if { $::av4l_analysis_tools::csv($i,idframe)==""}  {continue}
+         if { $::av4l_analysis_tools::csv($i,jd)==""}       {continue}
+         if { $::av4l_analysis_tools::csv($i,dateiso)==""}  {continue}
+         if { $::av4l_analysis_tools::csv($i,obj_fint)==""} {continue}
+                
+         set ::av4l_analysis_tools::cdl($cpt,idframe)  $::av4l_analysis_tools::csv($i,idframe)
+         set ::av4l_analysis_tools::cdl($cpt,jd)       $::av4l_analysis_tools::csv($i,jd)
+         set ::av4l_analysis_tools::cdl($cpt,dateiso)  $::av4l_analysis_tools::csv($i,dateiso)
+         set ::av4l_analysis_tools::cdl($cpt,obj_fint) $::av4l_analysis_tools::csv($i,obj_fint)
+
+         if { $::av4l_analysis_tools::csv($i,ref_fint)!=""} {
+            set ::av4l_analysis_tools::cdl($cpt,ref_fint) $::av4l_analysis_tools::csv($i,ref_fint)
+            incr ::av4l_analysis_tools::nb_pt_ref 
+         }
+         
          incr cpt
       }
-      close $chan
-      set ::av4l_tools_analysis::nbframe [expr $cpt - 1]
-      ::console::affiche_resultat  "nbframe=$::av4l_tools_analysis::nbframe\n"
-   }
-
-
-
-   proc ::av4l_tools_analysis::affiche_cdl {  } {
-
-      ::console::affiche_resultat "Afichage de la courbe\n"
-
-      for {set i 1} {$i<=$::av4l_tools_analysis::nbframe} {incr i} {
-         foreach col $::av4l_tools_analysis::cols {
-            ::console::affiche_resultat  "$::av4l_tools_analysis::cdl($i,$col) "
-         }
-            ::console::affiche_resultat  "\n"
+      if {$cpt==1} {
+         return -code 1 "Aucune donnée"
       }
 
+      set ::av4l_analysis_tools::raw_nbframe [expr $cpt - 1]
+      set ::av4l_analysis_tools::raw_status_file "Chargé"
+      set ::av4l_analysis_tools::raw_date_begin  $::av4l_analysis_tools::cdl(1,dateiso)
+      set ::av4l_analysis_tools::raw_date_end  $::av4l_analysis_tools::cdl($::av4l_analysis_tools::raw_nbframe,dateiso)
+      set ::av4l_analysis_tools::raw_duree  [format "%.3f" [expr ($::av4l_analysis_tools::cdl($::av4l_analysis_tools::raw_nbframe,jd) \
+            - $::av4l_analysis_tools::cdl(1,jd) ) * 86400.0 ]]
+      set ::av4l_analysis_tools::raw_fps  [format "%.3f" [expr ($::av4l_analysis_tools::raw_nbframe /$::av4l_analysis_tools::raw_duree )]]
+      set ::av4l_analysis_tools::orig $::av4l_analysis_tools::cdl(1,jd)
+
+      return -code 0 
    }
 
 
 
-   proc ::av4l_tools_analysis::sauve_brut {  } {
-      
-      set file [file join $::av4l_tools_analysis::dirwork "brut.csv"]
-      set chan [open $file w]
-      puts $chan "idframe,jd,obj_fint"
-      for {set i 1} {$i<=$::av4l_tools_analysis::nbframe} {incr i} {
-         #if {$::av4l_tools_analysis::cdl($i,jd)==""} {continue}
-         #if {$::av4l_tools_analysis::cdl($i,obj_fint)==""} {continue}
-         puts $chan "$::av4l_tools_analysis::cdl($i,idframe),$::av4l_tools_analysis::cdl($i,jd),$::av4l_tools_analysis::cdl($i,obj_fint)"
-      }
-      close $chan
 
-   }
-   proc ::av4l_tools_analysis::sauve_bmediane {  } {
-      
-      set file [file join $::av4l_tools_analysis::dirwork "bmediane.csv"]
-      set chan [open $file w]
-      puts $chan "idframe,jd,obj_fint,mediane"
-      for {set i 1} {$i<=$::av4l_tools_analysis::nbframe} {incr i} {
-         #if {$::av4l_tools_analysis::cdl($i,jd)==""} {continue}
-         #if {$::av4l_tools_analysis::cdl($i,obj_fint)==""} {continue}
-         if {![info exists ::av4l_tools_analysis::cdl($i,mediane)]} {
-            set ::av4l_tools_analysis::cdl($i,mediane) ""
-         }
-         puts $chan "$::av4l_tools_analysis::cdl($i,idframe),$::av4l_tools_analysis::cdl($i,jd),$::av4l_tools_analysis::cdl($i,obj_fint),$::av4l_tools_analysis::cdl($i,mediane)"
-      }
-      close $chan
 
-   }
-   proc ::av4l_tools_analysis::sauve_mediane {  } {
-      
-      set file [file join $::av4l_tools_analysis::dirwork "mediane.csv"]
-      set chan [open $file w]
-      puts $chan "idframe,jd,flux"
-      foreach v $::av4l_tools_analysis::newcdl {
-         #puts $chan [format "%5s, %.3f, %.2f" [lindex $v 0] [lindex $v 1] [lindex $v 2]]
-         puts $chan [format "%.3f  %.2f" [lindex $v 1] [lindex $v 2]]
-      }
-      close $chan
 
-   }
 
-   proc ::av4l_tools_analysis::compacte {  } {
 
-      set offset 4
-      set bloc 8
-      
-      set ::av4l_tools_analysis::newcdl ""
+
+
+   proc ::av4l_analysis_tools::correction_integration { offset bloc } {
+
+      if {[info exists ::av4l_analysis_tools::medianecdl]} {unset ::av4l_analysis_tools::medianecdl}
+      if {[info exists ::av4l_analysis_tools::finalcdl]} {unset ::av4l_analysis_tools::finalcdl}
+
       set fin "no"
       set i 1
       while {$fin=="no"} {
+
+         # on evite un nb d image de debut = offset
          if { $i<$offset} {
             incr i
             continue
          }
+
+         # on calcule la mediane
          set med ""
          set k $i
          for {set j 1} {$j<=$bloc} {incr j} {
             incr k
-            lappend med $::av4l_tools_analysis::cdl($k,obj_fint)
+            lappend med $::av4l_analysis_tools::cdl($k,obj_fint)
          }
-         ::console::affiche_resultat "MED=$med\n"
          set med [::math::statistics::median $med]
          ::console::affiche_resultat "MED=$med\n"
+
+         # on cree 2 nouvelles courbes
          for {set j 1} {$j<=$bloc} {incr j} {
             incr i
             if {$j==1} {
-               set jj [expr ($::av4l_tools_analysis::cdl($i,jd)-2455928.)*86400.0]
-               lappend ::av4l_tools_analysis::newcdl [list $i $jj $med]
+               set ::av4l_analysis_tools::finalcdl($i,idframe)  $::av4l_analysis_tools::cdl($i,idframe)
+               set ::av4l_analysis_tools::finalcdl($i,jd)       $::av4l_analysis_tools::cdl($i,jd)
+               set ::av4l_analysis_tools::finalcdl($i,obj_fint) $med
             }
-            set ::av4l_tools_analysis::cdl($i,mediane) $med
+            set ::av4l_analysis_tools::medianecdl($i,jd) $::av4l_analysis_tools::cdl($i,jd)
+            set ::av4l_analysis_tools::medianecdl($i,obj_fint) $med
          }
-         set reste [expr $::av4l_tools_analysis::nbframe - $i]
+         set reste [expr $::av4l_analysis_tools::raw_nbframe - $i]
          if {$reste<$bloc} {break}
          
       }
@@ -218,21 +213,186 @@ package require math::special
    }
 
 
-   proc ::av4l_tools_analysis::genere_mediane {  } {
 
-      ::av4l_tools_analysis::init
-      ::av4l_tools_analysis::charge_cdl [file join $::av4l_tools_analysis::diravi $::av4l_tools_analysis::filecsv]
-      #::av4l_tools_analysis::affiche_cdl 
-      ::av4l_tools_analysis::sauve_brut
-      ::av4l_tools_analysis::compacte
-      ::av4l_tools_analysis::sauve_bmediane
-      ::av4l_tools_analysis::sauve_mediane
+
+
+
+
+
+
+   proc ::av4l_analysis_tools::save_corrected_curve { file } {
+      
+      set chan [open $file w]
+      puts $chan "idframe,jd,flux"
+
+      for {set i 1} {$i<=$::av4l_analysis_tools::raw_nbframe} {incr i} {
+         if {![info exists ::av4l_analysis_tools::finalcdl($i,jd)]} {continue}
+            puts $chan "$::av4l_analysis_tools::finalcdl($i,idframe),$::av4l_analysis_tools::finalcdl($i,jd),$::av4l_analysis_tools::finalcdl($i,obj_fint)"
+      }
+
+      close $chan
 
    }
 
 
 
-   proc ::av4l_tools_analysis::partie1 {  } {
+
+
+   proc ::av4l_analysis_tools::filtre_corr_data { nb } {
+
+      if {[info exists ::av4l_analysis_tools::cols]} {unset ::av4l_analysis_tools::cols}
+      if {[info exists ::av4l_analysis_tools::cdl]} {unset ::av4l_analysis_tools::cdl}
+      if {[info exists ::av4l_analysis_tools::corr_nbframe]} {unset ::av4l_analysis_tools::corr_nbframe}
+      
+      set cpt 1
+      for {set i 1} {$i<=$nb} {incr i} {
+         if { $::av4l_analysis_tools::csv($i,idframe)==""}  {continue}
+         if { $::av4l_analysis_tools::csv($i,jd)==""}       {continue}
+         if { $::av4l_analysis_tools::csv($i,flux)==""}     {continue}
+         set ::av4l_analysis_tools::cdl($cpt,idframe)  $::av4l_analysis_tools::csv($i,idframe)
+         set ::av4l_analysis_tools::cdl($cpt,jd)       $::av4l_analysis_tools::csv($i,jd)
+         set ::av4l_analysis_tools::cdl($cpt,flux)  $::av4l_analysis_tools::csv($i,flux)
+         incr cpt
+      }
+      if {$cpt==1} {
+         return -code 1 "Aucune donnée"
+      }
+
+      set ::av4l_analysis_tools::corr_nbframe [expr $cpt - 1]
+      set ::av4l_analysis_tools::corr_status_file "Chargé"
+      set ::av4l_analysis_tools::corr_date_begin  [ mc_date2iso8601 $::av4l_analysis_tools::cdl(1,jd) ]
+ 
+      set ::av4l_analysis_tools::corr_date_end  [ mc_date2iso8601 $::av4l_analysis_tools::cdl($::av4l_analysis_tools::corr_nbframe,jd) ]
+      set ::av4l_analysis_tools::corr_duree  [format "%.3f" [expr ($::av4l_analysis_tools::cdl($::av4l_analysis_tools::corr_nbframe,jd) \
+            - $::av4l_analysis_tools::cdl(1,jd) ) * 86400.0 ]]
+      set ::av4l_analysis_tools::corr_fps  [format "%.3f" [expr ($::av4l_analysis_tools::corr_nbframe /$::av4l_analysis_tools::corr_duree )]]
+      set ::av4l_analysis_tools::orig $::av4l_analysis_tools::cdl(1,jd)
+
+      return -code 0 
+   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Obsolete a venir
+
+   proc ::av4l_analysis_tools::init {  } {
+
+      set ::av4l_analysis_tools::diravi "/data/Occultations/20100605_80SAPPHO"
+      set ::av4l_analysis_tools::dirwork "/data/Occultations/20100605_80SAPPHO/work"
+      set ::av4l_analysis_tools::filecsv "sapphoseg.00.avi.00001.csv"
+
+      if {[info exists ::av4l_analysis_tools::cols]} {unset ::av4l_analysis_tools::cols}
+      if {[info exists ::av4l_analysis_tools::cdl]} {unset ::av4l_analysis_tools::cdl}
+      if {[info exists ::av4l_analysis_tools::nb]} {unset ::av4l_analysis_tools::nb}
+
+      set file [file join $::av4l_analysis_tools::dirwork "ombre_geometrique.csv"]
+      set changeo [open $file w]
+      puts $changeo "# OMBRE GEOMETRIQUE"
+      close $changeo
+      
+   }
+
+
+
+
+
+
+ 
+
+
+   proc ::av4l_analysis_tools::affiche_cdl {  } {
+
+      ::console::affiche_resultat "Afichage de la courbe\n"
+
+      for {set i 1} {$i<=$::av4l_analysis_tools::nbframe} {incr i} {
+         foreach col $::av4l_analysis_tools::cols {
+            ::console::affiche_resultat  "$::av4l_analysis_tools::cdl($i,$col) "
+         }
+            ::console::affiche_resultat  "\n"
+      }
+
+   }
+
+
+
+   proc ::av4l_analysis_tools::sauve_brut {  } {
+      
+      set file [file join $::av4l_analysis_tools::dirwork "brut.csv"]
+      set chan [open $file w]
+      puts $chan "idframe,jd,obj_fint"
+      for {set i 1} {$i<=$::av4l_analysis_tools::nbframe} {incr i} {
+         #if {$::av4l_analysis_tools::cdl($i,jd)==""} {continue}
+         #if {$::av4l_analysis_tools::cdl($i,obj_fint)==""} {continue}
+         puts $chan "$::av4l_analysis_tools::cdl($i,idframe),$::av4l_analysis_tools::cdl($i,jd),$::av4l_analysis_tools::cdl($i,obj_fint)"
+      }
+      close $chan
+
+   }
+   
+   
+   
+   proc ::av4l_analysis_tools::sauve_bmediane {  } {
+      
+      set file [file join $::av4l_analysis_tools::dirwork "bmediane.csv"]
+      set chan [open $file w]
+      puts $chan "idframe,jd,obj_fint,mediane"
+      for {set i 1} {$i<=$::av4l_analysis_tools::nbframe} {incr i} {
+         #if {$::av4l_analysis_tools::cdl($i,jd)==""} {continue}
+         #if {$::av4l_analysis_tools::cdl($i,obj_fint)==""} {continue}
+         if {![info exists ::av4l_analysis_tools::cdl($i,mediane)]} {
+            set ::av4l_analysis_tools::cdl($i,mediane) ""
+         }
+         puts $chan "$::av4l_analysis_tools::cdl($i,idframe),$::av4l_analysis_tools::cdl($i,jd),$::av4l_analysis_tools::cdl($i,obj_fint),$::av4l_analysis_tools::cdl($i,mediane)"
+      }
+      close $chan
+
+   }
+   
+   
+   
+   
+   proc ::av4l_analysis_tools::sauve_mediane {  } {
+      
+      set file [file join $::av4l_analysis_tools::dirwork "mediane.csv"]
+      set chan [open $file w]
+      puts $chan "idframe,jd,flux"
+      foreach v $::av4l_analysis_tools::newcdl {
+         #puts $chan [format "%5s, %.3f, %.2f" [lindex $v 0] [lindex $v 1] [lindex $v 2]]
+         puts $chan [format "%.3f  %.2f" [lindex $v 1] [lindex $v 2]]
+      }
+      close $chan
+
+   }
+
+
+
+
+   proc ::av4l_analysis_tools::genere_mediane {  } {
+
+      ::av4l_analysis_tools::init
+      ::av4l_analysis_tools::charge_cdl [file join $::av4l_analysis_tools::diravi $::av4l_analysis_tools::filecsv]
+      #::av4l_analysis_tools::affiche_cdl 
+      ::av4l_analysis_tools::sauve_brut
+      ::av4l_analysis_tools::compacte
+      ::av4l_analysis_tools::sauve_bmediane
+      ::av4l_analysis_tools::sauve_mediane
+
+   }
+
+
+
+   proc ::av4l_analysis_tools::partie1 {  } {
 
       # Mode:
       # -1= t0 centre sur l''immersion
@@ -240,7 +400,7 @@ package require math::special
       # 0 = t0 centre sur le millieu de la bande
 
       # FORMULAIRE
-      set ::av4l_tools_analysis::mode -1
+      set ::av4l_analysis_tools::mode -1
 
       # idon :
       # Faut-il comparer a des donnees
@@ -249,37 +409,37 @@ package require math::special
 
       # Longueur d''onde (microns)
       # FORMULAIRE
-      set ::av4l_tools_analysis::wvlngth 0.75
-      set ::av4l_tools_analysis::wvlngth [expr $::av4l_tools_analysis::wvlngth * 1.e-09]
+      set ::av4l_analysis_tools::wvlngth 0.75
+      set ::av4l_analysis_tools::wvlngth [expr $::av4l_analysis_tools::wvlngth * 1.e-09]
 
       # Bande passante (microns)
       # FORMULAIRE
-      set ::av4l_tools_analysis::dlambda 0.4
-      set ::av4l_tools_analysis::dlambda [expr $::av4l_tools_analysis::dlambda * 1.e-09]
+      set ::av4l_analysis_tools::dlambda 0.4
+      set ::av4l_analysis_tools::dlambda [expr $::av4l_analysis_tools::dlambda * 1.e-09]
 
       #  Distance a l'anneau (km): distance geocentrique de l objet occulteur
       # FORMULAIRE
-      set ::av4l_tools_analysis::dist  234000000.0
+      set ::av4l_analysis_tools::dist  234000000.0
 
       #  Rayon de l'etoile (km)
       # FORMULAIRE
-      set ::av4l_tools_analysis::re 2.04
+      set ::av4l_analysis_tools::re 2.04
 
       # Vitesse normale de l'etoile (dans plan du ciel, km/s) ???
       # Vitesse relative de l'objet par rapport a la terre (km/s)
       # FORMULAIRE
-      set ::av4l_tools_analysis::vn 27.8
+      set ::av4l_analysis_tools::vn 27.8
 
       # Largeur de la bande (km)
       # Taille estimée de l'objet (km)
       # si occultation rasante c est la taille de la corde (km)
       # FORMULAIRE
-      set ::av4l_tools_analysis::width 150.0
+      set ::av4l_analysis_tools::width 150.0
 
       # transmission
       # opaque = 0, sinon demander bruno
       # FORMULAIRE
-      set ::av4l_tools_analysis::trans 0.0
+      set ::av4l_analysis_tools::trans 0.0
 
       # 
       # on a 5 secondes dans lesquelles on va mesurer l instant
@@ -292,24 +452,24 @@ package require math::special
       # attention de ne pas choisir trop large pour englober
       # l'autre evenement.
       # FORMULAIRE
-      set ::av4l_tools_analysis::duree 37
+      set ::av4l_analysis_tools::duree 37
 
       # pas en temps (sec)
       # FORMULAIRE
-      set ::av4l_tools_analysis::pas 0.3
+      set ::av4l_analysis_tools::pas 0.3
 
       # Flux hors occultation (normalisé)
       # FORMULAIRE
-      set ::av4l_tools_analysis::phi1 1
+      set ::av4l_analysis_tools::phi1 1
 
       # flux stellaire zero (normalisé)
       # FORMULAIRE
-      set ::av4l_tools_analysis::phi0 0.29
+      set ::av4l_analysis_tools::phi0 0.29
       
       # Heure de reference (sec TU)
       # FORMULAIRE
-      set ::av4l_tools_analysis::t0_ref 42082.185
-      set ::av4l_tools_analysis::t_milieu [expr $::av4l_tools_analysis::t0_ref  + $::av4l_tools_analysis::width/(2.0*$::av4l_tools_analysis::vn)]
+      set ::av4l_analysis_tools::t0_ref 42082.185
+      set ::av4l_analysis_tools::t_milieu [expr $::av4l_analysis_tools::t0_ref  + $::av4l_analysis_tools::width/(2.0*$::av4l_analysis_tools::vn)]
 
       # on essai 100 points autour du T0 
       # en considerant un ecart entre les points de 0.02 sec
@@ -320,15 +480,15 @@ package require math::special
       #
       # Nombre d'instant a explorer autour de la reference (points)
       # FORMULAIRE
-      set ::av4l_tools_analysis::nheure 200
+      set ::av4l_analysis_tools::nheure 200
       
       # pas (sec)
       # FORMULAIRE
-      set ::av4l_tools_analysis::pas_heure 0.02
+      set ::av4l_analysis_tools::pas_heure 0.02
       
-      set ::av4l_tools_analysis::t0_min [expr $::av4l_tools_analysis::t0_ref - $::av4l_tools_analysis::pas_heure * $::av4l_tools_analysis::nheure / 2.0]
-      set ::av4l_tools_analysis::t0_max [expr $::av4l_tools_analysis::t0_ref + $::av4l_tools_analysis::pas_heure * $::av4l_tools_analysis::nheure / 2.0]
-      set ::av4l_tools_analysis::t0     $::av4l_tools_analysis::t0_min
+      set ::av4l_analysis_tools::t0_min [expr $::av4l_analysis_tools::t0_ref - $::av4l_analysis_tools::pas_heure * $::av4l_analysis_tools::nheure / 2.0]
+      set ::av4l_analysis_tools::t0_max [expr $::av4l_analysis_tools::t0_ref + $::av4l_analysis_tools::pas_heure * $::av4l_analysis_tools::nheure / 2.0]
+      set ::av4l_analysis_tools::t0     $::av4l_analysis_tools::t0_min
       
    }
 
@@ -338,7 +498,7 @@ package require math::special
 
 
 
-   proc ::av4l_tools_analysis::partie2 {  } {
+   proc ::av4l_analysis_tools::partie2 {  } {
 
 
       #-----------------------------------------------------------------------------
@@ -355,59 +515,59 @@ package require math::special
       # fort.25: rayon de l'etoile, chi2_min, npt fittes (NB. "append")
       # fort.26: dans le cas ou la bande a une largeur finie (ex. duree finie de l'occn) 
       #          chi2 - nfit (NB. "append"), voir par ex. donnees Hakos/Varuna 19 fev 2010
-      set file21 [file join $::av4l_tools_analysis::dirwork "21_modele_flux_avant_convolution.csv"]
+      set file21 [file join $::av4l_analysis_tools::dirwork "21_modele_flux_avant_convolution.csv"]
       set chan21 [open $file21 w]
-      set file22 [file join $::av4l_tools_analysis::dirwork "22_modele_flux_apres_convolution.csv"]
+      set file22 [file join $::av4l_analysis_tools::dirwork "22_modele_flux_apres_convolution.csv"]
       set chan22 [open $file22 w]
-      set file23 [file join $::av4l_tools_analysis::dirwork "23_.csv"]
+      set file23 [file join $::av4l_analysis_tools::dirwork "23_.csv"]
       set chan23 [open $file23 w]
-      set file24 [file join $::av4l_tools_analysis::dirwork "24_.csv"]
+      set file24 [file join $::av4l_analysis_tools::dirwork "24_.csv"]
       set chan24 [open $file24 w]
-      set file25 [file join $::av4l_tools_analysis::dirwork "25_.csv"]
+      set file25 [file join $::av4l_analysis_tools::dirwork "25_.csv"]
       set chan25 [open $file25 w]
-      set file26 [file join $::av4l_tools_analysis::dirwork "26_.csv"]
+      set file26 [file join $::av4l_analysis_tools::dirwork "26_.csv"]
       set chan26 [open $file26 w]
       #-----------------------------------------------------------------------------
       
       #-----------------------------------------------------------------------------
       # Observations :
-      for {set i 1} {$i<=$::av4l_tools_analysis::nbframe} {incr i} {
-         set tobs($i) $::av4l_tools_analysis::cdl($i,jd)
-         set fobs($i) $::av4l_tools_analysis::cdl($i,flux)
+      for {set i 1} {$i<=$::av4l_analysis_tools::nbframe} {incr i} {
+         set tobs($i) $::av4l_analysis_tools::cdl($i,jd)
+         set fobs($i) $::av4l_analysis_tools::cdl($i,flux)
       }
       
       # Sigma des observations
       # TODO : ajustement d un polynome sur le signal.
-      set sigma [::av4l_tools_analysis::calcul_sigma ]
+      set sigma [::av4l_analysis_tools::calcul_sigma ]
       #-----------------------------------------------------------------------------
 
 
-      while { $::av4l_tools_analysis::t0<=$::av4l_tools_analysis::t0_max} {
+      while { $::av4l_analysis_tools::t0<=$::av4l_analysis_tools::t0_max} {
       
-         set npt [expr int ($::av4l_tools_analysis::duree/(2.0 * $::av4l_tools_analysis::pas) )]
-         if {$::av4l_tools_analysis::mode==-1} {
+         set npt [expr int ($::av4l_analysis_tools::duree/(2.0 * $::av4l_analysis_tools::pas) )]
+         if {$::av4l_analysis_tools::mode==-1} {
             # bord gauche de l'ombre cale
             # sur l'origine (ie t0 en temps)
             set x1 0.0
-            set x2 $::av4l_tools_analysis::width
+            set x2 $::av4l_analysis_tools::width
          }
-         if {$::av4l_tools_analysis::mode==0} {
+         if {$::av4l_analysis_tools::mode==0} {
             # ombre centree sur le milieu
             # de la bande
-            set x1 [expr -$::av4l_tools_analysis::width / 2.0 ]
-            set x2 [expr  $::av4l_tools_analysis::width / 2.0 ]
+            set x1 [expr -$::av4l_analysis_tools::width / 2.0 ]
+            set x2 [expr  $::av4l_analysis_tools::width / 2.0 ]
          }
-         if {$::av4l_tools_analysis::mode==1} {
+         if {$::av4l_analysis_tools::mode==1} {
             # bord droit de l'ombre cale
             # sur l'origine (ie t0 en temps)
-            set x1 [expr -$::av4l_tools_analysis::width ]
+            set x1 [expr -$::av4l_analysis_tools::width ]
             set x2 0.0
          }
 
-         set opa_ampli [expr  1.0 - sqrt($::av4l_tools_analysis::trans)]
+         set opa_ampli [expr  1.0 - sqrt($::av4l_analysis_tools::trans)]
       
          # Trace de l'ombre geometrique
-         ::av4l_tools_analysis::ombre_geometrique  $::av4l_tools_analysis::mode $::av4l_tools_analysis::t0 $::av4l_tools_analysis::duree $::av4l_tools_analysis::width $::av4l_tools_analysis::vn $::av4l_tools_analysis::phi1 $::av4l_tools_analysis::phi0
+         ::av4l_analysis_tools::ombre_geometrique  $::av4l_analysis_tools::mode $::av4l_analysis_tools::t0 $::av4l_analysis_tools::duree $::av4l_analysis_tools::width $::av4l_analysis_tools::vn $::av4l_analysis_tools::phi1 $::av4l_analysis_tools::phi0
 
       
       
@@ -422,16 +582,16 @@ package require math::special
          set som 0.0
          
          for {set i [expr -$npt]} {$i<=$npt} {incr i} {
-            set x [expr $::av4l_tools_analysis::vn * $::av4l_tools_analysis::pas * $i]
-            set wvlngth1 [expr $::av4l_tools_analysis::wvlngth - $::av4l_tools_analysis::dlambda / 2.0]
-            set wvlngth2 [expr $::av4l_tools_analysis::wvlngth + $::av4l_tools_analysis::dlambda / 2.0]
-            set flux1 [::av4l_tools_analysis::etoile $::av4l_tools_analysis::re $x1 $x2 $opa_ampli $wvlngth1 $::av4l_tools_analysis::dist $x]
-            set flux2 [::av4l_tools_analysis::etoile $::av4l_tools_analysis::re $x1 $x2 $opa_ampli $wvlngth2 $::av4l_tools_analysis::dist $x]
+            set x [expr $::av4l_analysis_tools::vn * $::av4l_analysis_tools::pas * $i]
+            set wvlngth1 [expr $::av4l_analysis_tools::wvlngth - $::av4l_analysis_tools::dlambda / 2.0]
+            set wvlngth2 [expr $::av4l_analysis_tools::wvlngth + $::av4l_analysis_tools::dlambda / 2.0]
+            set flux1 [::av4l_analysis_tools::etoile $::av4l_analysis_tools::re $x1 $x2 $opa_ampli $wvlngth1 $::av4l_analysis_tools::dist $x]
+            set flux2 [::av4l_analysis_tools::etoile $::av4l_analysis_tools::re $x1 $x2 $opa_ampli $wvlngth2 $::av4l_analysis_tools::dist $x]
             set flu [expr  ( $flux1 + $flux2 )/2.0]
-            set flux($i) [expr $flu*($::av4l_tools_analysis::phi1-$::av4l_tools_analysis::phi0) + $::av4l_tools_analysis::phi0]
-            set t($i) [expr $::av4l_tools_analysis::t0 + $i * $::av4l_tools_analysis::pas]
+            set flux($i) [expr $flu*($::av4l_analysis_tools::phi1-$::av4l_analysis_tools::phi0) + $::av4l_analysis_tools::phi0]
+            set t($i) [expr $::av4l_analysis_tools::t0 + $i * $::av4l_analysis_tools::pas]
             puts $chan21 "$t($i) , $flux($i)"
-            set som [expr $som + $::av4l_tools_analysis::pas * $::av4l_tools_analysis::vn * (1.0-$flux($i))]
+            set som [expr $som + $::av4l_analysis_tools::pas * $::av4l_analysis_tools::vn * (1.0-$flux($i))]
          }
 
          ::console::affiche_resultat "Integrale du flux avant convolution(km): $som\n"      
@@ -446,9 +606,13 @@ package require math::special
          set nptl 0
          for {set i [expr -$npt]} {$i<=$npt} {incr i} {
             incr nptl
-            set ::av4l_tools_analysis::tl($nptl)    $t($i)
-            set ::av4l_tools_analysis::fluxl($nptl) $flux($i)
+            set ::av4l_analysis_tools::tl($nptl)    $t($i)
+            set ::av4l_analysis_tools::fluxl($nptl) $flux($i)
          }
+         #::console::affiche_resultat "FLUX 41: $::av4l_analysis_tools::fluxl(41)\n"      
+         #close $chan21
+         #return 
+
          #-----------------------------------------------------------------------------
       
       
@@ -460,10 +624,10 @@ package require math::special
          set tl_min  1.e50
          set tl_max  -1.d50   
          for {set i 1} {$i<=$nptl} {incr i} {
-            puts $chan22 "$::av4l_tools_analysis::tl($i),$::av4l_tools_analysis::fluxl($i)"
-            if {$::av4l_tools_analysis::tl($i)>=$tl_max} {set tl_max $::av4l_tools_analysis::tl($i)}
-            if {$::av4l_tools_analysis::tl($i)<=$tl_min} {set tl_min $::av4l_tools_analysis::tl($i)}
-            set som [expr $som + $::av4l_tools_analysis::pas * $::av4l_tools_analysis::vn * (1.0 - $::av4l_tools_analysis::fluxl($i))]
+            puts $chan22 "$::av4l_analysis_tools::tl($i),$::av4l_analysis_tools::fluxl($i)"
+            if {$::av4l_analysis_tools::tl($i)>=$tl_max} {set tl_max $::av4l_analysis_tools::tl($i)}
+            if {$::av4l_analysis_tools::tl($i)<=$tl_min} {set tl_min $::av4l_analysis_tools::tl($i)}
+            set som [expr $som + $::av4l_analysis_tools::pas * $::av4l_analysis_tools::vn * (1.0 - $::av4l_analysis_tools::fluxl($i))]
          }
          ::console::affiche_resultat "Integrale du flux apres convolution (km): $som\n"      
          #-----------------------------------------------------------------------------
@@ -478,10 +642,11 @@ package require math::special
          set chi2 0.0
          set tobs_min 1.e50
          set tobs_max -1.e50
-         for {set i 1} {$i<=$::av4l_tools_analysis::nbframe} {incr i} {
+         for {set i 1} {$i<=$::av4l_analysis_tools::nbframe} {incr i} {
+         
             set fac [expr ($tobs($i)-$tl_min)*($tobs($i)-$tl_max)]
             if {$fac<=0.0} {
-               set fmod_inter [::av4l_tools_analysis::interpol $nptl $tobs($i)]
+               set fmod_inter [::av4l_analysis_tools::interpol $nptl $tobs($i)]
                puts $chan23 "$tobs($i),$fmod_inter"
                # fmod_inter ! attention !
                set sigma_local $sigma
@@ -491,20 +656,20 @@ package require math::special
                if {$tobs($i)>$tobs_max} {set tobs_max $tobs($i)}
             }
          }
-         ::console::affiche_resultat "t0: $::av4l_tools_analysis::t0\n"      
+         ::console::affiche_resultat "t0: $::av4l_analysis_tools::t0\n"      
          ::console::affiche_resultat "chi2: $chi2\n"      
          ::console::affiche_resultat "nfit: $nfit\n"      
-         ::console::affiche_resultat "temps milieu de la bande: $::av4l_tools_analysis::t_milieu\n"      
-         ::console::affiche_resultat "duree de la bande: [expr $::av4l_tools_analysis::width/$::av4l_tools_analysis::vn]\n"      
+         ::console::affiche_resultat "temps milieu de la bande: $::av4l_analysis_tools::t_milieu\n"      
+         ::console::affiche_resultat "duree de la bande: [expr $::av4l_analysis_tools::width/$::av4l_analysis_tools::vn]\n"      
          ::console::affiche_resultat "$nfit points fittes entre: $tobs_min et $tobs_max  \n"      
-         puts $chan24 "$::av4l_tools_analysis::t0,$chi2,$nfit"
+         puts $chan24 "$::av4l_analysis_tools::t0,$chi2,$nfit"
          puts $chan26 "[expr $chi2 - $nfit*1.0]"
          #-----------------------------------------------------------------------------
 
          #  on incremente t0
-         set ::av4l_tools_analysis::t0 [expr $::av4l_tools_analysis::t0 + $::av4l_tools_analysis::pas_heure] 
+         set ::av4l_analysis_tools::t0 [expr $::av4l_analysis_tools::t0 + $::av4l_analysis_tools::pas_heure] 
          ::console::affiche_resultat "---------------------------------------------------\n"      
-      
+#return      
       # Fin While
       }
       
@@ -560,13 +725,14 @@ package require math::special
 
       ::console::affiche_resultat  "t0 = $t0\n"
       ::console::affiche_resultat  "t0_chi2_min = $t0_chi2_min\n"
+      ::console::affiche_resultat  "chi2_min = $chi2_min\n"
       ::console::affiche_resultat  "nfit_chi2_min = $nfit_chi2_min\n"
       ::console::affiche_resultat  "Dchi2 = $dchi2\n"
       ::console::affiche_resultat  "intervalle ou chi2 < chi2_min + dchi2 = $t_inf $t_sup\n"
 
 
-      puts $chan25 "$::av4l_tools_analysis::width,$chi2_min,$nfit_chi2_min"
-      puts $chan25 "[expr $::av4l_tools_analysis::width/$::av4l_tools_analysis::vn],$chi2_min,$nfit_chi2_min"
+      puts $chan25 "$::av4l_analysis_tools::width,$chi2_min,$nfit_chi2_min"
+      puts $chan25 "[expr $::av4l_analysis_tools::width/$::av4l_analysis_tools::vn],$chi2_min,$nfit_chi2_min"
       close $chan25
    }
 
@@ -610,7 +776,7 @@ package require math::special
    # in the subroutine !
    #
    #-----------------------------------------------------------------------------
-   proc ::av4l_tools_analysis::bar { x1 x2 opa_ampli wvlngth dist x } {
+   proc ::av4l_analysis_tools::bar { x1 x2 opa_ampli wvlngth dist x } {
 
       # Required accuracy on the amplitude:
       set eps 1.0e-16
@@ -675,7 +841,7 @@ package require math::special
 
 
 
-   proc ::av4l_tools_analysis::etoile { re x1 x2 opa_ampli wvlngth dist x } {
+   proc ::av4l_analysis_tools::etoile { re x1 x2 opa_ampli wvlngth dist x } {
 
       # etoile ponctuelle
       set zero 0.0
@@ -692,7 +858,7 @@ package require math::special
       
       # etoile ponctuelle
       if {$re==$zero} {
-         set flux [::av4l_tools_analysis::bar $x1 $x2 $opa_ampli $wvlngth $dist $x]
+         set flux [::av4l_analysis_tools::bar $x1 $x2 $opa_ampli $wvlngth $dist $x]
       }
       
       for {set i [expr -$npt]} {$i<=$npt} {incr i} {
@@ -718,7 +884,7 @@ package require math::special
          #---------------------------------------------------------------------------
          
          set xx    [expr $x + $p]
-         set fluxi [::av4l_tools_analysis::bar $x1 $x2 $opa_ampli $wvlngth $dist $xx]
+         set fluxi [::av4l_analysis_tools::bar $x1 $x2 $opa_ampli $wvlngth $dist $xx]
          set flux  [expr $flux + $coeff*$fluxi]
          set som   [expr $som + $coeff]
       }
@@ -728,7 +894,7 @@ package require math::special
 
 
 
-   proc ::av4l_tools_analysis::instrument { } {
+   proc ::av4l_analysis_tools::instrument { } {
 
    # subroutine instrument (nmax, t, flux, npt, trep, rep ,nrep, tl, fluxl, nptl)
 
@@ -740,9 +906,9 @@ package require math::special
 
 
    # Trace de l'ombre geometrique
-   proc ::av4l_tools_analysis::ombre_geometrique { imod t0 duree width vn phi1 phi0 } {
+   proc ::av4l_analysis_tools::ombre_geometrique { imod t0 duree width vn phi1 phi0 } {
 
-      set file [file join $::av4l_tools_analysis::dirwork "ombre_geometrique.csv"]
+      set file [file join $::av4l_analysis_tools::dirwork "ombre_geometrique.csv"]
       set changeo [open $file a+]
 
       if {$imod==0} {
@@ -792,14 +958,18 @@ package require math::special
 
    #-----------------------------------------------------------------
 
-   proc ::av4l_tools_analysis::interpol { nmod t } {
+   proc ::av4l_analysis_tools::interpol { nmod t } {
 
       set zero 0.0
       for {set i 1} {$i<$nmod} {incr i} {
-         set fac [expr ( $t - $::av4l_tools_analysis::tl($i) ) * ($t - $::av4l_tools_analysis::tl([expr $i + 1]) ) ]
+         set fac [expr ( $t - $::av4l_analysis_tools::tl($i) ) * ($t - $::av4l_analysis_tools::tl([expr $i + 1]) ) ]
          if {$fac<=$zero} {
-            set fmod_inter [expr ($::av4l_tools_analysis::fluxl([expr $i + 1])- $::av4l_tools_analysis::fluxl($i)) / ($::av4l_tools_analysis::tl([expr $i + 1])- $::av4l_tools_analysis::tl($i)) ]
-            set fmod_inter [expr $fmod_inter*( $t - $::av4l_tools_analysis::tl($i) ) + $::av4l_tools_analysis::fluxl($i)]
+            set fmod_inter [expr ($::av4l_analysis_tools::fluxl([expr $i + 1])- $::av4l_analysis_tools::fluxl($i)) / ($::av4l_analysis_tools::tl([expr $i + 1])- $::av4l_analysis_tools::tl($i)) ]
+            #::console::affiche_resultat "tmod : $::av4l_analysis_tools::tl($i) $::av4l_analysis_tools::tl([expr $i + 1])\n" 
+            #::console::affiche_resultat "fmod : $::av4l_analysis_tools::fluxl($i) $::av4l_analysis_tools::fluxl([expr $i + 1])\n" 
+            #::console::affiche_resultat "fmod_inter : $i $fmod_inter\n" 
+            set fmod_inter [expr $fmod_inter*( $t - $::av4l_analysis_tools::tl($i) ) + $::av4l_analysis_tools::fluxl($i)]
+            #::console::affiche_resultat "fmod_inter : $i $fmod_inter\n" 
             return $fmod_inter
          }
       } 
@@ -819,7 +989,7 @@ package require math::special
    # 
    # 
    # 
-   proc ::av4l_tools_analysis::sommation { a b x npt } {
+   proc ::av4l_analysis_tools::sommation { a b x npt } {
 
       set h [expr ($b-$a)/($npt*1.0)]
       
@@ -827,7 +997,7 @@ package require math::special
       set somi 0.0
       for {set i 1} {$i<$npt} {incr i 2} {
          set y [expr $a + $i * $h]
-         set somi  [expr $somi + ::av4l_tools_analysis::func($x,$y)]
+         set somi  [expr $somi + ::av4l_analysis_tools::func($x,$y)]
       }
       set somi [expr 4.0 * $somi]
       
@@ -835,12 +1005,12 @@ package require math::special
       set somi 0.0
       for {set i 2} {$i<=[expr $npt - 2]} {incr i 2} {
          set y [expr $a + $i * $h]
-         set somp  [expr $somp + ::av4l_tools_analysis::func($x,$y)]
+         set somp  [expr $somp + ::av4l_analysis_tools::func($x,$y)]
       }
       set somp [expr 4.0 * $somp]
       
       # addition des bornes
-      set somme [expr ::av4l_tools_analysis::func($x,$a) + $somi + $somp + ::av4l_tools_analysis::func($x,$b)]
+      set somme [expr ::av4l_analysis_tools::func($x,$a) + $somi + $somp + ::av4l_analysis_tools::func($x,$b)]
       set somme [expr ( $h * $somme ) / 3.0]
       return $somme
    }
@@ -860,7 +1030,7 @@ package require math::special
    #
    # Sources: Claret Astron. Astrophys. 363, 1081Ð1190 (2000) et
    #-----------------------------------------------------------------
-   proc ::av4l_tools_analysis::func { x y } {
+   proc ::av4l_analysis_tools::func { x y } {
 
       set tol  -1.e-15
 
@@ -897,7 +1067,7 @@ package require math::special
    # afin d'endeterminer la dispersion. 
    # -> estimation du sigma
 
-   proc ::av4l_tools_analysis::calcul_sigma {  } {
+   proc ::av4l_analysis_tools::calcul_sigma {  } {
 
 
       return 0.7
@@ -912,15 +1082,14 @@ package require math::special
 
 
    #
-   proc ::av4l_tools_analysis::run {  } {
+   proc ::av4l_analysis_tools::run {  } {
       
-      source /srv/develop/audela/gui/audace/plugin/tool/av4l/av4l_analysis_tools.tcl
 
-      ::av4l_tools_analysis::init
-      ::av4l_tools_analysis::charge_cdl [file join $::av4l_tools_analysis::dirwork "immersion.dat"]
-      #::av4l_tools_analysis::affiche_cdl
-      ::av4l_tools_analysis::partie1
-      ::av4l_tools_analysis::partie2
+      ::av4l_analysis_tools::init
+      ::av4l_analysis_tools::charge_cdl [file join $::av4l_analysis_tools::dirwork "immersion.dat"]
+      #::av4l_analysis_tools::affiche_cdl
+      ::av4l_analysis_tools::partie1
+      ::av4l_analysis_tools::partie2
       
    }
 

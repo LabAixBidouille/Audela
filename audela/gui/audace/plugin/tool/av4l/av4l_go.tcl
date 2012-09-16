@@ -156,6 +156,7 @@ proc ::av4l::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_tools_fits.tcl     ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_verif.tcl          ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_analysis_tools.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_analysis_gui.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l test.tcl                ]\""
 
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_cdl.tcl ]\""
@@ -328,7 +329,7 @@ proc ::av4l::BuildIF { visuNo } {
          image create photo .analysis -format PNG -file [ file join $audace(rep_plugin) tool av4l img brain_mini.png ]
          button $This.fradev.analysis -image .analysis\
             -borderwidth 2 -width 10 -height 10 -compound center \
-            -command "::av4l_gui_analysis::run"
+            -command "::av4l_analysis_gui::run  $visuNo $base.av4l_analysis"
          pack $This.fradev.analysis \
             -in $This.fradev \
             -side left -anchor w \
