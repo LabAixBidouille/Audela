@@ -60,6 +60,7 @@
 # calibwcs2  Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder number ?first_index?
 # simulimage Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder ?exposure_s? ?fwhm_pix? ?teldiam_m? ?colfilter? ?sky_brightness_mag/arcsec2? ?quantum_efficiency? ?gain_e/ADU? ?readout_noise_e? ?shutter_mode? ?bias_level_ADU? ?thermic_response_e/pix/sec? ?Tatm? ?Topt? ?EMCCD_mult? ?flat_type? ?newstar_type? ?newstar_ra? ?newstar_dec? ?newstar_mag?
 # simulimage2 out ListDatesObsUTC variable_type Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder ?exposure_s? ?fwhm_pix? ?teldiam_m? ?colfilter? ?sky_brightness_mag/arcsec2? ?quantum_efficiency? ?gain_e/ADU? ?readout_noise_e? ?shutter_mode? ?bias_level_ADU? ?thermic_response_e/pix/sec? ?Tatm? ?Topt? ?EMCCD_mult? ?flat_type?
+# electronic_chip args
 #
 
 proc add {args} {
@@ -1865,7 +1866,7 @@ proc electronic_chip { args } {
    set path "$::audace(rep_images)"
    set argc [llength $args]
    if { $argc == 0} {
-      error "Usage: electronic_chip gainnoise|lintherm ?params?"
+      error "Usage: electronic_chip gainnoise|lintherm|shutter ?params?"
       return $error;
    }
    set method [lindex $args 0]
@@ -2071,8 +2072,17 @@ proc electronic_chip { args } {
          ::console::affiche_resultat "exposures > [format %.1f $exposure] sec are dominated by thermic noise (you must cool stronger the chip)\n"
       }
       return [list $mean_therm $mean_bias $std_therm $std_bias]
+   } elseif { ($method == "shutter") } {
+      if { ($argc < 3) } {
+         error "Usage: electronic_chip $method generic_filename_flat nb_files"
+         return $error;
+      }
+      set flatname [lindex $args 1]
+      set nbflat [lindex $args 2]
+      ttscrit2 "IMA/STACK $path 1 $nbflat $ext $path shutter . $ext SHUTTER bitpix=-32"
+      loadima shutter
    }
-   error "$method found amongst: gainnoise, lintherm"
+   error "$method found amongst: gainnoise, lintherm, shutter"
    return $error;
 }
 
