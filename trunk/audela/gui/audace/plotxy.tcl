@@ -44,7 +44,9 @@ if {[info commands ::console::affiche_resultat]!="::console::affiche_resultat"} 
 
 namespace eval ::plotxy {
    global plotxy
-
+   variable selected_region
+   
+   
    #=== select a figure index to display a graphic
    proc figure { {num ""} {parentframe ""} } {
       global audace
@@ -176,6 +178,8 @@ namespace eval ::plotxy {
       }
       set num [lindex $nums end]
       set plotxy(currentfigure) $num
+      ::plotxy::unset_selected_region
+
    }
 
    #=== get properties of the figure index
@@ -441,6 +445,7 @@ namespace eval ::plotxy {
 
       #--   gestion du zoom
       createBindingsZoom $baseplotxy
+      ::plotxy::unset_selected_region
    }
 
    proc fileread { filename {linestoskip 0} } {
@@ -605,6 +610,17 @@ namespace eval ::plotxy {
       bind $graph <Double-ButtonRelease-1> {
          ::plotxy::zoomOut %W
       }
+      bind $graph <ButtonPress-2> {
+         ::plotxy::regionStart %W %x %y
+      }
+      bind $graph <B2-Motion> {
+         ::plotxy::regionMotion %W %x %y
+      }
+      bind $graph <ButtonRelease-2> {
+         ::plotxy::regionEndSelect %W %x %y
+      }
+      
+      
    }
 
    #########################################################################
@@ -666,6 +682,58 @@ namespace eval ::plotxy {
 
       #--   modifie les bornes de la visualisation
       zoomIn $graph $x0 $y0 $x1 $y1
+   }
+
+   #########################################################################
+   #--   Selectionner dans le graphe                                       #
+   #--   Entree : nom de la fenetre, coordonnees finales                   #
+   #########################################################################
+   proc ::plotxy::regionEndSelect { graph x y } {
+      global plotxy
+
+      set x0 $plotxy(zoomstart,x)
+      set y0 $plotxy(zoomstart,y)
+
+      #--   transforme les coordonnees ecran en coordonnees graphique
+      set x1 [ $graph axis invtransform x $x ]
+      set y1 [ $graph axis invtransform y $y ]
+
+      #--   efface le rectangle de selection
+      $graph marker delete myLine
+
+      #--   intercepte un clic simple dans la fenetre
+      if { $x0 == $x1 || $y0 == $y1 } {
+         return
+      }
+
+      #--   modifie les bornes de la visualisation
+      set ::plotxy::selected_region [list $x0 $y0 $x1 $y1]
+   }
+   
+   
+   #########################################################################
+   #--   Recuperation de la Selection                                      #
+   #--   Entree :                                                          #
+   #########################################################################
+   proc ::plotxy::get_selected_region {  } {
+   
+      set err [ catch {set x $::plotxy::selected_region} msg]
+      if {$err} {
+         return -code 1 $msg
+      }
+      return $x
+   }
+   
+   
+   #########################################################################
+   #--   Libere la variable  unset_selected_region                         #
+   #--   Entree :                                                          #
+   #########################################################################
+   proc ::plotxy::unset_selected_region {  } {
+
+      set err [catch {unset ::plotxy::selected_region} ]
+      return $err
+
    }
 
    #########################################################################
