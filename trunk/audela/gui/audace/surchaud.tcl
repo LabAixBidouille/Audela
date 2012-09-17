@@ -1947,7 +1947,7 @@ proc electronic_chip { args } {
          buf$::audace(bufNo) window $box($kbox)
          set sb [expr [lindex [buf$::audace(bufNo) stat] 5]/sqrt(2)]
          # --- calcul du gain (e/adu)
-         set gain [expr ($f1+$f2-$b1-$b2)/($sf*$sf-$sb*$sb)]
+         set gain [expr ($f1+$f2-$b1-$b2)/2./($sf*$sf-$sb*$sb)]
          # --- calcul du bruit (e)
          set read_noise [expr $gain*$sb]
          ::console::affiche_resultat "----- window $box($kbox)\n"
