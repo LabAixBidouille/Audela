@@ -77,6 +77,7 @@ namespace eval gui_cdl_withwcs {
       set ::gui_cdl_withwcs::stoperreur 1
       set ::gui_cdl_withwcs::directaccess 1
       
+      ::gui_cata::inittoconf
 
       set ::tools_cdl::nomobj ""
       if { ! [info exists bddconf(cdl_savedir)] } {
@@ -263,7 +264,7 @@ namespace eval gui_cdl_withwcs {
                   set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,search_delta,$rdelta,saturation) false
                }
 
-            # Fin  if valeur mesurée est bonne ou pas
+            # Fin  if valeur mesurï¿½e est bonne ou pas
             }
          # fin boucle sur les delta
          }
@@ -1151,7 +1152,7 @@ proc random {{range 100}} {
          set tcl_precision 17
 
 
-         # Charge l image en memoire
+         #ï¿½Charge l image en memoire
          set ::tools_cdl::current_image [lindex $::tools_cdl::img_list [expr $::tools_cdl::id_current_image - 1] ]
          set tabkey      [::bddimages_liste::lget $::tools_cdl::current_image "tabkey"]
          set date        [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
@@ -1168,7 +1169,7 @@ proc random {{range 100}} {
          gren_info "\nCharge Image cur: $date  ($exposure)\n"
          #gren_info "Charge Image cur: $::tools_cdl::current_image_date ($::tools_cdl::current_image_jjdate) \n"
          
-         # Charge l image
+         #ï¿½Charge l image
          buf$::audace(bufNo) load $file
          cleanmark
        
@@ -1180,7 +1181,7 @@ proc random {{range 100}} {
          # VIsualisation par Sseuil automatique
          ::audace::autovisu $::audace(visuNo)
           
-         # Mise a jour GUI
+         #ï¿½Mise a jour GUI
          $::gui_cdl_withwcs::fen.frm_cdlwcs.bouton.back configure -state disabled
          $::gui_cdl_withwcs::fen.frm_cdlwcs.bouton.back configure -state disabled
          $::gui_cdl_withwcs::fen.frm_cdlwcs.infoimage.nomimage    configure -text $::tools_cdl::current_image_name
@@ -1568,7 +1569,7 @@ proc random {{range 100}} {
             label $name.star1    -text "Star1 :"
             entry $ra.star1      -relief sunken -width 11
             entry $dec.star1     -relief sunken -width 11
-            label $mag.star1     -width 9 -text $::tools_cdl::firstmagref
+            label $mag.star1     -width 9 -textvariable ::tools_cdl::firstmagref
             label $stdev.star1   -width 9 
             spinbox $delta.star1 -from 1 -to 100 -increment 1 -width 3 \
                    -command "::gui_cdl_withwcs::mesure_tout $sources" \
