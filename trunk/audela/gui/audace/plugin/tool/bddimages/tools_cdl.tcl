@@ -185,6 +185,9 @@ namespace eval tools_cdl {
       buf$bf add bb 0
       buf$bf copyto $bufNo
       buf::delete $bf 
+      
+      catch { file delete -force  aa.fit a.fit bb.fit b.fit dirac.fit }
+      
 
    }
 

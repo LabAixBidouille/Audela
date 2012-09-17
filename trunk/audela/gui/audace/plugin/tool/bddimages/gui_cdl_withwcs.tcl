@@ -1215,7 +1215,8 @@ proc random {{range 100}} {
       set listsources [::tools_sources::set_common_fields $listsources IMG    { ra dec 5.0 calib_mag calib_mag_ss1}]
       set listsources [::tools_sources::set_common_fields_skybot $listsources]
       affich_rond $listsources SKYBOT $::gui_cata::color_skybot 1
- 
+      catch { file delete -force  $catafile}
+      
    }
 
 
@@ -1411,7 +1412,7 @@ proc random {{range 100}} {
         pack $nbstars -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
              label $nbstars.lab -text "Nb d etoiles de reference"
              pack $nbstars.lab -in $nbstars -side left -padx 5 -pady 0
-             spinbox $nbstars.val -from 1 -to 10 -increment 1 \
+             spinbox $nbstars.val -from 1 -to 100 -increment 1 \
                       -command "::gui_cdl_withwcs::change_refstars $sources " \
                       -width 3 -textvariable ::gui_cdl_withwcs::nbstars
              pack  $nbstars.val -in $nbstars -side left -anchor w

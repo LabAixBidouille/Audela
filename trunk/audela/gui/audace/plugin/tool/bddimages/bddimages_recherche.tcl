@@ -284,6 +284,10 @@ namespace eval bddimages_recherche {
       set ::bddimages_recherche::current_list_name [lindex $row 0]
       set ::bddimages_recherche::current_list_id [::bddimages_liste_gui::get_intellilist_by_name $::bddimages_recherche::current_list_name]
 
+
+      set r [tk_messageBox -message "Charger ?" -type yesno]
+      if {$r=="no"} {return}
+
       ::console::affiche_resultat "Chargement ... ($::bddimages_recherche::current_list_name)"
 
       set t0 [clock clicks -milliseconds]
@@ -295,9 +299,9 @@ namespace eval bddimages_recherche {
       ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id      
 
       set t2 [clock clicks -milliseconds]
-      set sec [expr ($t1-$t0)/1000.]
+      set sec [format "%.2f" [expr ($t1-$t0)/1000.]]
       set bddconf(chrgtlist) "Charge $sec sec"
-      set sec [expr ($t2-$t1)/1000.]
+      set sec [format "%.2f" [expr ($t2-$t1)/1000.]]
       set bddconf(affichlist) "Affiche $sec sec"
       ::console::affiche_resultat "Fin...\n"
 

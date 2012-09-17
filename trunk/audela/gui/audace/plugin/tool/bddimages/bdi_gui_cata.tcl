@@ -2556,7 +2556,7 @@ namespace eval gui_cata {
                 pack $usnoa2.val -in $usnoa2 -side left -padx 3 -pady 3
                 button $usnoa2.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_usnoa2 -command ""
                 pack $usnoa2.color -side left -anchor e -expand 0 
-                spinbox $usnoa2.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 3
+                spinbox $usnoa2.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_usnoa2 -command "::gui_cata::affiche_cata" -width 3
                 pack  $usnoa2.radius -in $usnoa2 -side left -anchor w
 
            #--- Cree un frame pour afficher UCAC2
@@ -2573,7 +2573,7 @@ namespace eval gui_cata {
                 pack $ucac2.val -in $ucac2 -side left -padx 3 -pady 3
                 button $ucac2.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_ucac2 -command ""
                 pack $ucac2.color -side left -anchor e -expand 0 
-                spinbox $ucac2.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 3
+                spinbox $ucac2.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_ucac2 -command "::gui_cata::affiche_cata" -width 3
                 pack  $ucac2.radius -in $ucac2 -side left -anchor w
 
            #--- Cree un frame pour afficher UCAC3
@@ -2590,7 +2590,7 @@ namespace eval gui_cata {
                 pack $ucac3.val -in $ucac3 -side left -padx 3 -pady 3
                 button $ucac3.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_ucac3 -command ""
                 pack $ucac3.color -side left -anchor e -expand 0 
-                spinbox $ucac3.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 3
+                spinbox $ucac3.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_ucac3 -command "::gui_cata::affiche_cata" -width 3
                 pack  $ucac3.radius -in $ucac3 -side left -anchor w
 
            #--- Cree un frame pour afficher TYCHO2
@@ -2607,7 +2607,7 @@ namespace eval gui_cata {
                 pack $tycho2.val -in $tycho2 -side left -padx 3 -pady 3
                 button $tycho2.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_tycho2 -command ""
                 pack $tycho2.color -side left -anchor e -expand 0 
-                spinbox $tycho2.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 3
+                spinbox $tycho2.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_tycho2 -command "::gui_cata::affiche_cata" -width 3
                 pack  $tycho2.radius -in $tycho2 -side left -anchor w
 
            #--- Cree un frame pour afficher NOMAD1
@@ -2624,11 +2624,11 @@ namespace eval gui_cata {
                 pack $nomad1.val -in $nomad1 -side left -padx 3 -pady 3
                 button $nomad1.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_nomad1 -command ""
                 pack $nomad1.color -side left -anchor e -expand 0 
-                spinbox $nomad1.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 3
+                spinbox $nomad1.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_nomad1 -command "::gui_cata::affiche_cata" -width 3
                 pack  $nomad1.radius -in $nomad1 -side left -anchor w
 
 
-           #--- Cree un frame pour afficher NOMAD1
+           #--- Cree un frame pour afficher SKYBOT
            set skybot [frame $count.skybot -borderwidth 0 -cursor arrow -relief groove]
            pack $skybot -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
@@ -2642,7 +2642,7 @@ namespace eval gui_cata {
                 pack $skybot.val -in $skybot -side left -padx 3 -pady 3
                 button $skybot.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_skybot -command ""
                 pack $skybot.color -side left -anchor e -expand 0 
-                spinbox $skybot.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "" -width 3
+                spinbox $skybot.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_skybot -command "::gui_cata::affiche_cata" -width 3
                 pack  $skybot.radius -in $skybot -side left -anchor w
 
 
