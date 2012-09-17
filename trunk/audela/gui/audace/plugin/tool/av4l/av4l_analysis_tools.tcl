@@ -497,10 +497,8 @@ set tcl_precision 17
 
 
 
-
    proc ::av4l_analysis_tools::partie2 {  } {
-
-
+      
       #-----------------------------------------------------------------------------
 
       #-----------------------------------------------------------------------------
@@ -527,21 +525,19 @@ set tcl_precision 17
       set chan25 [open $file25 w]
       set file26 [file join $::av4l_analysis_tools::dirwork "26_.csv"]
       set chan26 [open $file26 w]
+      set file27 [file join $::av4l_analysis_tools::dirwork "obs.dat"]
+      set chan27 [open $file27 w]
       #-----------------------------------------------------------------------------
-      
-      #-----------------------------------------------------------------------------
-      # Observations :
-      for {set i 1} {$i<=$::av4l_analysis_tools::nbframe} {incr i} {
-         set tobs($i) $::av4l_analysis_tools::cdl($i,jd)
-         set fobs($i) $::av4l_analysis_tools::cdl($i,flux)
+
+      # controle des observations
+      for {set i 1} {$i<=$::av4l_analysis_tools::duree} {incr i} {
+         puts $chan27 [format "%5.5f %5.5f" $::av4l_analysis_tools::tobs($i) $::av4l_analysis_tools::fobs($i)]
       }
+      close $chan27
+
       
-      # Sigma des observations
-      # TODO : ajustement d un polynome sur le signal.
-      set sigma [::av4l_analysis_tools::calcul_sigma ]
       #-----------------------------------------------------------------------------
-
-
+      
       while { $::av4l_analysis_tools::t0<=$::av4l_analysis_tools::t0_max} {
       
          set npt [expr int ($::av4l_analysis_tools::duree/(2.0 * $::av4l_analysis_tools::pas) )]
@@ -642,18 +638,18 @@ set tcl_precision 17
          set chi2 0.0
          set tobs_min 1.e50
          set tobs_max -1.e50
-         for {set i 1} {$i<=$::av4l_analysis_tools::nbframe} {incr i} {
+         for {set i 1} {$i<=$::av4l_analysis_tools::duree} {incr i} {
          
-            set fac [expr ($tobs($i)-$tl_min)*($tobs($i)-$tl_max)]
+            set fac [expr ($::av4l_analysis_tools::tobs($i)-$tl_min)*($::av4l_analysis_tools::tobs($i)-$tl_max)]
             if {$fac<=0.0} {
-               set fmod_inter [::av4l_analysis_tools::interpol $nptl $tobs($i)]
-               puts $chan23 "$tobs($i),$fmod_inter"
+               set fmod_inter [::av4l_analysis_tools::interpol $nptl $::av4l_analysis_tools::tobs($i)]
+               puts $chan23 "$::av4l_analysis_tools::tobs($i),$fmod_inter"
                # fmod_inter ! attention !
-               set sigma_local $sigma
-               set chi2 [expr $chi2 + pow(($fmod_inter - $fobs($i))/$sigma_local,2)]
+               set sigma_local $::av4l_analysis_tools::sigma
+               set chi2 [expr $chi2 + pow(($fmod_inter - $::av4l_analysis_tools::fobs($i))/$sigma_local,2)]
                incr nfit
-               if {$tobs($i)<$tobs_min} {set tobs_min $tobs($i)}
-               if {$tobs($i)>$tobs_max} {set tobs_max $tobs($i)}
+               if {$::av4l_analysis_tools::tobs($i)<$tobs_min} {set tobs_min $::av4l_analysis_tools::tobs($i)}
+               if {$::av4l_analysis_tools::tobs($i)>$tobs_max} {set tobs_max $::av4l_analysis_tools::tobs($i)}
             }
          }
          ::console::affiche_resultat "t0: $::av4l_analysis_tools::t0\n"      
@@ -668,8 +664,10 @@ set tcl_precision 17
 
          #  on incremente t0
          set ::av4l_analysis_tools::t0 [expr $::av4l_analysis_tools::t0 + $::av4l_analysis_tools::pas_heure] 
-         ::console::affiche_resultat "---------------------------------------------------\n"      
-#return      
+
+         set ::av4l_analysis_tools::percent [format "%.2f" [expr ($::av4l_analysis_tools::t0-$::av4l_analysis_tools::t0_min)/($::av4l_analysis_tools::t0_max-$::av4l_analysis_tools::t0_min)*100.0]]
+         ::console::affiche_resultat "$::av4l_analysis_tools::percent ---------------------------------------------------\n"      
+
       # Fin While
       }
       
@@ -730,6 +728,12 @@ set tcl_precision 17
       ::console::affiche_resultat  "Dchi2 = $dchi2\n"
       ::console::affiche_resultat  "intervalle ou chi2 < chi2_min + dchi2 = $t_inf $t_sup\n"
 
+      set ::av4l_analysis_tools::t0_chi2_min   [format "%.4f" $t0_chi2_min]
+      set ::av4l_analysis_tools::chi2_min      [format "%.4f" $chi2_min]
+      set ::av4l_analysis_tools::nfit_chi2_min $nfit_chi2_min
+      set ::av4l_analysis_tools::dchi2         [format "%.4f" $dchi2]
+      set ::av4l_analysis_tools::t_inf         [format "%.4f" $t_inf]
+      set ::av4l_analysis_tools::t_sup         [format "%.4f" $t_sup]
 
       puts $chan25 "$::av4l_analysis_tools::width,$chi2_min,$nfit_chi2_min"
       puts $chan25 "[expr $::av4l_analysis_tools::width/$::av4l_analysis_tools::vn],$chi2_min,$nfit_chi2_min"
@@ -908,7 +912,7 @@ set tcl_precision 17
    # Trace de l'ombre geometrique
    proc ::av4l_analysis_tools::ombre_geometrique { imod t0 duree width vn phi1 phi0 } {
 
-      set file [file join $::av4l_analysis_tools::dirwork "ombre_geometrique.csv"]
+      set file [file join $::av4l_analysis_tools::dirwork "20_ombre_geometrique.csv"]
       set changeo [open $file a+]
 
       if {$imod==0} {
