@@ -489,7 +489,7 @@ proc ::tools_cata::get_table { name table } {
          #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
          set log 0
          set listsources [ identification $listsources IMG $tycho2 TYCHO2 30.0 -30.0 {} $log]
-         set $::tools_cata::nb_tycho2 [::manage_source::get_nb_sources_by_cata $listsources TYCHO2]
+         set ::tools_cata::nb_tycho2 [::manage_source::get_nb_sources_by_cata $listsources TYCHO2]
       }
       
       if {$::tools_cata::use_ucac2} {
@@ -501,7 +501,7 @@ proc ::tools_cata::get_table { name table } {
          #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
          set log 0
          set listsources [ identification $listsources IMG $ucac2 UCAC2 30.0 -30.0 {} $log]
-         set $::tools_cata::nb_ucac2 [::manage_source::get_nb_sources_by_cata $listsources UCAC2]
+         set ::tools_cata::nb_ucac2 [::manage_source::get_nb_sources_by_cata $listsources UCAC2]
       }
       
       if {$::tools_cata::use_ucac3} {
@@ -513,7 +513,7 @@ proc ::tools_cata::get_table { name table } {
          #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
          set log 0
          set listsources [ identification $listsources IMG $ucac3 UCAC3 30.0 -30.0 {} $log]
-         set $::tools_cata::nb_ucac3 [::manage_source::get_nb_sources_by_cata $listsources UCAC3]
+         set ::tools_cata::nb_ucac3 [::manage_source::get_nb_sources_by_cata $listsources UCAC3]
       }
       
       if {$::tools_cata::use_skybot} {
@@ -668,7 +668,7 @@ proc ::tools_cata::get_table { name table } {
          if {$::tools_cata::log} {gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"}
 
          if {$::tools_cata::deuxpasses} {
-         if {$::tools_cata::log} {gren_info "PASS2: calibwcs $ra $dec * * * USNO  $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0\n"}
+            if {$::tools_cata::log} {gren_info "PASS2: calibwcs $ra $dec * * * USNO  $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0\n"}
             set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0]} msg]
             if {$erreur} {
                   #gren_info "2 ERR NBSTARS=$nbstars ($msg)"
@@ -710,18 +710,17 @@ proc ::tools_cata::get_table { name table } {
             if {$::tools_cata::log} {gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"}
                gren_info "RETRY nbstars : $nbstars | ra : [mc_angle2hms $ra 360 zero 1 auto string] | dec : [mc_angle2dms $dec 90 zero 1 + string]\n"
             }
-         }         
+         }
 
          set ::tools_cata::nb_usnoa2 $nbstars
          set ::tools_cata::current_listsources [get_ascii_txt]
          set ::tools_cata::nb_img    [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources IMG   ]
          set ::tools_cata::nb_ovni   [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources OVNI  ]
-         set ::tools_cata::nb_usnoa2 [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources USNOA2]
          #gren_info "rollup = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
 
          if {$nbstars > $::tools_cata::limit_nbstars_accepted} {
              set wcs_ok true
-         }         
+         }
           
 #   gren_info "Chargement de la liste des sources\n"
 #   set listsources [get_ascii_txt]
@@ -748,7 +747,7 @@ proc ::tools_cata::get_table { name table } {
              if {$::tools_cata::delpv} {
                 set err [catch {buf$::audace(bufNo) delkwd PV1_0} msg]
                 set err [catch {buf$::audace(bufNo) delkwd PV2_0} msg]
-             } 
+             }
 
              # Modifie le champs BDI
              set key [buf$::audace(bufNo) getkwd "BDDIMAGES WCS"]

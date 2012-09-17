@@ -722,6 +722,7 @@ namespace eval gui_cata {
                   set ::gui_cata::color_cata $::gui_cata::color_button_bad
                   $::gui_cata::gui_cata configure -bg $::gui_cata::color_cata
                   set ::tools_cata::boucle 0
+                  ::gui_cata::affiche_current_image
                   break
                } else {
                   # Ok ca se passe bien
@@ -840,6 +841,7 @@ namespace eval gui_cata {
          #gren_info "nb = [::tools_sources::get_nb_sources_by_cata $::tools_cata::current_listsources IMG ]\n"
          #::tools_sources::imprim_3_sources $::tools_cata::current_listsources USNOA2
          affich_rond $::tools_cata::current_listsources IMG $::gui_cata::color_img $::gui_cata::size_img }
+         
       if { $::gui_cata::gui_usnoa2 } { affich_rond $::tools_cata::current_listsources USNOA2 $::gui_cata::color_usnoa2 $::gui_cata::size_usnoa2 }
       if { $::gui_cata::gui_ucac2  } { affich_rond $::tools_cata::current_listsources UCAC2  $::gui_cata::color_ucac2  $::gui_cata::size_ucac2  }
       if { $::gui_cata::gui_ucac3  } { affich_rond $::tools_cata::current_listsources UCAC3  $::gui_cata::color_ucac3  $::gui_cata::size_ucac3  }
