@@ -1967,7 +1967,7 @@ proc electronic_chip { args } {
       return [list $mean_gain $mean_read_noise $std_gain $std_read_noise]
    } elseif { ($method == "lintherm") } {
       if { ($argc < 3) } {
-         error "Usage: electronic_chip $method generic_filename_dark nb_files ?gain_e/ADU? ?readout_noise_e?"
+         error "Usage: electronic_chip $method generic_filename_dark nb_files ?gain_e/ADU? ?readout_noise_e? ?saturation_ADU?"
          return $error;
       }
       set darkname [lindex $args 1]
@@ -1979,6 +1979,10 @@ proc electronic_chip { args } {
       set readout_noise_e ""
       if {$argc>=5} {
          set readout_noise_e [lindex $args 4]
+      }
+      set saturation_adu ""
+      if {$argc>=6} {
+         set saturation_adu [lindex $args 5]
       }
       # --- define the five boxes where to measure
       buf$::audace(bufNo) load "${path}/${darkname}1${ext}"
@@ -2029,10 +2033,10 @@ proc electronic_chip { args } {
             set f [lindex [buf$::audace(bufNo) stat] 4]
             set exposure ""
             if {$exposure==""} {
-               set exposure [lindex [buf$::audace(bufNo) getkwd EXPOSURE] 1]
+               set exposure [string trim [lindex [buf$::audace(bufNo) getkwd EXPOSURE] 1] ]
             }
             if {$exposure==""} {
-               set exposure [lindex [buf$::audace(bufNo) getkwd EXPTIME] 1]
+               set exposure [string trim [lindex [buf$::audace(bufNo) getkwd EXPTIME] 1] ]
             }
             if {$exposure==""} {
                set exposure 1
@@ -2041,9 +2045,14 @@ proc electronic_chip { args } {
             lappend fs $f
          }
          package require math::statistics
-         set res [::math::statistics::linear-model $exposures $fs]
-         set bias [lindex $res 0] ; # ADU
-         set therm [lindex $res 1] ; # ADU/sec
+         if {[llength $exposures]==2} {
+	         set therm [expr ([lindex $fs 1]-[lindex $fs 0])/([lindex $exposures 1]-[lindex $exposures 0])] ; # ADU/sec
+	         set bias [expr [lindex $fs 0]+(0-[lindex $exposures 0])*$therm] ; # ADU
+         } else {
+	         set res [::math::statistics::linear-model $exposures $fs]
+	         set bias [lindex $res 0] ; # ADU
+	         set therm [lindex $res 1] ; # ADU/sec
+         }
          ::console::affiche_resultat "----- window $box($kbox)\n"
          ::console::affiche_resultat "bias = [format "%.2f" $bias] ADU  thermic = [format "%.2f" $therm] ADU/sec\n"
          lappend biass $bias
@@ -2071,7 +2080,12 @@ proc electronic_chip { args } {
          ::console::affiche_resultat "exposures < [format %.1f $exposure] sec are dominated by readout noise (therm is negligeable against readout noise)\n"
          ::console::affiche_resultat "exposures > [format %.1f $exposure] sec are dominated by thermic noise (you must cool stronger the chip)\n"
       }
-      return [list $mean_therm $mean_bias $std_therm $std_bias]
+      if {$saturation_adu!=""} {
+	      set exposure_max [expr ($saturation_adu-$mean_bias)/$mean_therm]
+         ::console::affiche_resultat "($saturation_adu-$mean_bias)/$mean_therm\n"	      
+         ::console::affiche_resultat "exposure max = [format %.1f $exposure_max] seconds to saturate with dark\n"	      
+      }
+      return [list $mean_therm $mean_bias $std_therm $std_bias $exposure]
    } elseif { ($method == "shutter") } {
       if { ($argc < 3) } {
          error "Usage: electronic_chip $method generic_filename_flat nb_files"
@@ -2079,10 +2093,12 @@ proc electronic_chip { args } {
       }
       set flatname [lindex $args 1]
       set nbflat [lindex $args 2]
-      ttscrit2 "IMA/STACK $path 1 $nbflat $ext $path shutter . $ext SHUTTER bitpix=-32"
+      ttscript2 "IMA/STACK \"$path\" \"$flatname\" 1 $nbflat $ext \"$path\" shutter . $ext SHUTTER bitpix=-32"
       loadima shutter
+      ::console::affiche_resultat "The displayed image gives directly the delays in seconds.\n"
+   } else {
+      error "$method found amongst: gainnoise, lintherm, shutter"
+      return $error;
    }
-   error "$method found amongst: gainnoise, lintherm, shutter"
-   return $error;
 }
 
