@@ -540,6 +540,13 @@ const searchZoneUsnoa2 findSearchZoneUsnoa2(const double raInDeg,const double de
 	mySearchZoneUsnoa2.indexOfFirstDistanceToPoleZone    = (int) (mySearchZoneUsnoa2.distanceToPoleStartInCas / (CATLOG_DISTANCE_TO_POLE_WIDTH_IN_DEGREE * DEG2CAS));
 	mySearchZoneUsnoa2.indexOfLastDistanceToPoleZone     = (int) (mySearchZoneUsnoa2.distanceToPoleEndInCas / (CATLOG_DISTANCE_TO_POLE_WIDTH_IN_DEGREE * DEG2CAS));
 
+	if(mySearchZoneUsnoa2.indexOfFirstDistanceToPoleZone >= NUMBER_OF_CATALOG_FILES) {
+		mySearchZoneUsnoa2.indexOfFirstDistanceToPoleZone = NUMBER_OF_CATALOG_FILES - 1;
+	}
+	if(mySearchZoneUsnoa2.indexOfLastDistanceToPoleZone  >= NUMBER_OF_CATALOG_FILES) {
+		mySearchZoneUsnoa2.indexOfLastDistanceToPoleZone  = NUMBER_OF_CATALOG_FILES - 1;
+	}
+
 	mySearchZoneUsnoa2.indexOfFirstRightAscensionZone    = (int) (mySearchZoneUsnoa2.raStartInCas / (ACC_FILE_RA_ZONE_WIDTH_IN_DEGREE * DEG2CAS));
 	mySearchZoneUsnoa2.indexOfLastRightAscensionZone     = (int) (mySearchZoneUsnoa2.raEndInCas / (ACC_FILE_RA_ZONE_WIDTH_IN_DEGREE * DEG2CAS));
 
