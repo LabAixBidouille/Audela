@@ -2,7 +2,7 @@
 # Fichier : echip.tcl
 # Description : GUI de la proc electronic_chip (surchaud.tcl)
 # Auteur : Raymond Zachantke
-# Mise à jour $Id: $
+# Mise à jour $Id: echip.tcl
 #
 
 #============================================================
@@ -151,24 +151,24 @@ namespace eval ::echip {
       foreach child [list offset dark flat] {
          label $this.fr.lab_$child -text "$caption(echip,$child)" -justify left
          grid $this.fr.lab_$child -row $row -column 0 -sticky w -padx 3 -pady 3
-         ttk::entry $this.fr.$child -textvariable $child -justify left -width 15
+         ttk::entry $this.fr.$child -textvariable ::echip::private(${child}name) -justify left -width 15
          grid $this.fr.$child -row $row -column 1 -sticky w -padx 3 -pady 3
          ttk::button $this.fr.search$child -text "$caption(echip,search)" -width 4 \
             -command "::::echip::getFileName $this.fr.search$child $child"
          grid $this.fr.search$child -row $row -column 2 -padx 3 -pady 3
          label $this.fr.lab_nb$child -text "$caption(echip,nombre)" -justify left
          grid $this.fr.lab_nb$child -row $row -column 3 -sticky w -padx 3 -pady 3
-         label $this.fr.nb$child -textvariable nb$child -justify center -width 4
+         label $this.fr.nb$child -textvariable ::echip::private(${child}nb) -justify center -width 4
          grid $this.fr.nb$child -row $row -column 4 -sticky w -padx 3 -pady 3
          incr row
       }
 
       label $this.fr.lab_saturation -text "$caption(echip,saturation)" -justify left
       grid $this.fr.lab_saturation -row $row -column 0 -sticky w -padx 3 -pady 3
-      ttk::entry $this.fr.saturation -textvariable saturation -justify center -width 8
+      ttk::entry $this.fr.saturation -textvariable ::echip::private(saturation) -justify center -width 8
       grid $this.fr.saturation -row $row -column 1 -sticky w -padx 3 -pady 3
       incr row
-      checkbutton $this.fr.obt -text "$caption(echip,obt)" -variable obt \
+      checkbutton $this.fr.obt -text "$caption(echip,obt)" -variable ::echip::private(obt) \
          -offvalue 0 -onvalue 1
       grid $this.fr.obt -row $row -column 0 -padx 3 -pady 3 -sticky w
       incr row
@@ -181,18 +181,18 @@ namespace eval ::echip {
       foreach child [list gain noise bias thermic_signal] {
          label $this.fr.lab_mean_$child -text "$caption(echip,$child)" -justify left
          grid $this.fr.lab_mean_$child -row $row -column 0 -sticky w -padx 3 -pady 3
-         label $this.fr.mean_$child -textvariable mean_$child -justify center -width 8
+         label $this.fr.mean_$child -textvariable ::echip::private(mean_$child) -justify center -width 8
          grid $this.fr.mean_$child -row $row -column 1 -sticky w -padx 3 -pady 3
          label $this.fr.lab_std_$child -text "$caption(echip,sigma)" -justify left
          grid $this.fr.lab_std_$child -row $row -column 2 -sticky w -padx 3 -pady 3
-         label $this.fr.std_$child -textvariable std_$child -justify center -width 8
+         label $this.fr.std_$child -textvariable ::echip::private(std_$child) -justify center -width 8
          grid $this.fr.std_$child -row $row -column 3 -sticky w -padx 3 -pady 3
          incr row
       }
       foreach child [list exp_critique exp_max] {
          label $this.fr.lab_$child -text "$caption(echip,$child)" -justify left
          grid $this.fr.lab_$child -row $row -column 0 -sticky w -padx 3 -pady 3
-         label $this.fr.$child -textvariable $child -justify center -width 8
+         label $this.fr.$child -textvariable ::echip::private($child) -justify center -width 8
          grid $this.fr.$child -row $row -column 1 -padx 3 -pady 3 -sticky w
          incr row
       }
@@ -221,7 +221,7 @@ namespace eval ::echip {
       }
 
       #--   initialise les variables
-      lassign [list offset dark flat 0] offset dark flat obt
+      lassign [list offset dark flat 0] private(offsetname) private(darkname) private(flatname) private(obt)
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $this
@@ -249,16 +249,12 @@ namespace eval ::echip {
          return
       }
 
-      upvar #0 nb$var nb
-      upvar #0 $var nom_generique
-
       #--   actualise les donnees
-      lassign [::tkutil::afficherNomGenerique $file] nom_generique nb -> private($var)
+      lassign [::tkutil::afficherNomGenerique $file] private(${var}name) private(${var}nb) -> private(${var}indexes)
 
       #--   filtre les resultats
-      if {$nb < 2} {
-         lassign [list 0 ""] nb nom_generique
-         return
+      if {$private(${var}nb) < 2} {
+         lassign [list 0 ""] private(${var}nb) private(${var}name)
       }
    }
 
@@ -272,56 +268,40 @@ namespace eval ::echip {
 
       configButtons $this disabled
 
-      #--   lecture des parametres
-      upvar #0 offset generic_filename_offset dark generic_filename_dark \
-         nbdark nb_dark flat generic_filename_flat nbflat nb_flat \
-         saturation sat obt iris
-
       #--   determine le gain et le bruit
       set cmd [list electronic_chip gainnoise]
-      foreach k $private(offset) {
-         lappend cmd $generic_filename_offset$k
+      foreach k $private(offsetindexes) {
+         lappend cmd $private(offsetname)$k
       }
-      foreach k $private(flat) {
-         lappend cmd $generic_filename_flat$k
+      foreach k $private(flatindexes) {
+         lappend cmd $private(flatname)$k
       }
       lassign [eval $cmd] mean_gain mean_noise std_gain std_noise
 
-      #--  resultats a mettre a jour
-      upvar #0 mean_gain gain std_gain stdgain mean_noise ron std_noise stdron
-
       #--   formate les resultats
-      set gain [format %.2f $mean_gain]
-      set stdgain [format %.2f $std_gain]
-      set ron [format %.2f $mean_noise]
-      set stdron [format %.2f $std_noise]
+      foreach var [list mean_gain std_gain mean_noise std_noise] {
+         set private($var) [format %.2f [set $var]]
+      }
 
       #--   determine le bias et le bruit thermique
       set cmd [list electronic_chip lintherm]
-      lappend cmd $generic_filename_dark $nb_dark $mean_gain $mean_noise
-      if {$sat ne ""} {
-         lappend cmd $sat
+      lappend cmd $private(darkname) $private(darknb) $mean_gain $mean_noise
+      if {$private(saturation) ne ""} {
+         lappend cmd $private(saturation)
       }
-      set result [eval $cmd]
-      ::console::affiche_resultat "$result\n"
-      lassign $result mean_thermic_signal mean_bias std_thermic_signal std_bias \
-         exposure exposure_max
-
-      upvar #0 mean_thermic_signal therm std_thermic_signal stdtherm \
-         mean_bias bias std_bias stdbias \
-         exp_critique critique exp_max max
+      lassign [eval $cmd] mean_thermic_signal mean_bias \
+         std_thermic_signal std_bias exp_critique exp_max
 
       #--   formate les resultats
-      set therm [format %.2f $mean_thermic_signal]
-      set stdtherm [format %.2f $std_thermic_signal]
-      set bias [format %.2f $mean_bias]
-      set stdbias [format %.2f $std_bias]
-      set critique [format %.1f $exposure]
-      set max [format %.1f $exposure_max]
+      foreach var [list mean_thermic_signal std_thermic_signal mean_bias std_bias ] {
+         set private($var) [format %.2f [set $var]]
+      }
+      set private(exp_critique) [format %.1f $exp_critique]
+      set private(exp_max) [format %.1f $exp_max]
 
       #--   cree une image de l'oburateur mecanique
-      if {$iris == 1} {
-         electronic_chip shutter $generic_filename_flat $nb_flat
+      if {$private(obt) == 1} {
+         electronic_chip shutter $private(flatname) $private(flatnb)
       }
 
       configButtons $this !disabled
