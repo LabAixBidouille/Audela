@@ -2082,10 +2082,10 @@ proc electronic_chip { args } {
       }
       if {$saturation_adu!=""} {
 	      set exposure_max [expr ($saturation_adu-$mean_bias)/$mean_therm]
-         ::console::affiche_resultat "($saturation_adu-$mean_bias)/$mean_therm\n"	      
-         ::console::affiche_resultat "exposure max = [format %.1f $exposure_max] seconds to saturate with dark\n"	      
+         ::console::affiche_resultat "($saturation_adu-$mean_bias)/$mean_therm\n"
+         ::console::affiche_resultat "exposure max = [format %.1f $exposure_max] seconds to saturate with dark\n"
       }
-      return [list $mean_therm $mean_bias $std_therm $std_bias $exposure]
+      return [list $mean_therm $mean_bias $std_therm $std_bias $exposure $exposure_max]
    } elseif { ($method == "shutter") } {
       if { ($argc < 3) } {
          error "Usage: electronic_chip $method generic_filename_flat nb_files"
