@@ -42,10 +42,10 @@ int cmd_tcl_csucac2(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 				//ra,dec,radius,magMin,magMax);
 
 	/* Define search zone */
-	searchZoneUcac2 mysearchZoneUcac2 = findSearchZoneUcac2(ra,dec,radius,magMin,magMax);
+	searchZoneUcac2 mySearchZoneUcac2 = findSearchZoneUcac2(ra,dec,radius,magMin,magMax);
 
 	/* Read the index file */
-	int** indexTable = readIndexFileUcac2(pathOfCatalog);
+	const int* const * const indexTable = readIndexFileUcac2(pathOfCatalog);
 	if(indexTable == NULL) {
 		Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
 		return (TCL_ERROR);
@@ -54,7 +54,7 @@ int cmd_tcl_csucac2(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 	/* Now read the catalog and retrieve stars */
 	int resultOfFunction;
 	arrayTwoDOfStarUcac2 theUnFilteredStars;
-	resultOfFunction = retrieveUnFilteredStarsUcac2(pathOfCatalog,&mysearchZoneUcac2,indexTable,&theUnFilteredStars);
+	resultOfFunction = retrieveUnfilteredStarsUcac2(pathOfCatalog,&mySearchZoneUcac2,indexTable,&theUnFilteredStars);
 	if(resultOfFunction) {
 		releaseDoubleArray((void**)indexTable, INDEX_TABLE_DEC_DIMENSION);
 		Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
@@ -62,7 +62,7 @@ int cmd_tcl_csucac2(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 	}
 
 	arrayOneDOfStarUcac2 theFilteredStars;
-	resultOfFunction = filterStarsUcac2(&theUnFilteredStars,&theFilteredStars,&mysearchZoneUcac2);
+	resultOfFunction = filterStarsUcac2(&theUnFilteredStars,&theFilteredStars,&mySearchZoneUcac2);
 	if(resultOfFunction) {
 		releaseDoubleArray((void**)indexTable, INDEX_TABLE_DEC_DIMENSION);
 		releaseMemoryArrayTwoDOfStarUcac2(&theUnFilteredStars);
@@ -113,9 +113,9 @@ int cmd_tcl_csucac2(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 				(double)oneStar.raProperMotionGoodnessOfFit * 0.05,
 				(double)oneStar.decProperMotionGoodnessOfFit * 0.05,
 				oneStar.idFrom2Mass,
-				(double)oneStar.jMagnitude2MassInMiliMag / MAG2MILIMAG,
-				(double)oneStar.hMagnitude2MassInMiliMag / MAG2MILIMAG,
-				(double)oneStar.kMagnitude2MassInMiliMag / MAG2MILIMAG,
+				(double)oneStar.jMagnitude2MassInMilliMag / MAG2MILLIMAG,
+				(double)oneStar.hMagnitude2MassInMilliMag / MAG2MILLIMAG,
+				(double)oneStar.kMagnitude2MassInMilliMag / MAG2MILLIMAG,
 				oneStar.qualityFlag2Mass,
 				oneStar.ccFlag2Mass);
 
@@ -136,7 +136,7 @@ int cmd_tcl_csucac2(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 /**
  * Filter the un-filtered stars with respect to restrictions
  */
-int filterStarsUcac2(arrayTwoDOfStarUcac2* theUnFilteredStars,arrayOneDOfStarUcac2* theFilteredStars,searchZoneUcac2* mysearchZoneUcac2) {
+int filterStarsUcac2(const arrayTwoDOfStarUcac2* theUnFilteredStars,arrayOneDOfStarUcac2* theFilteredStars,const searchZoneUcac2* mySearchZoneUcac2) {
 
 	/* Count the stars which satisfies the criteria in mysearchZoneUcac2 */
 	int numberOfStars              = 0;
@@ -160,12 +160,12 @@ int filterStarsUcac2(arrayTwoDOfStarUcac2* theUnFilteredStars,arrayOneDOfStarUca
 
 		for(counterRa     = 0; counterRa < lengthOfOneDArray; counterRa++) {
 			oneStar       = allStars[counterRa];
-			if((oneStar.raInMas >= mysearchZoneUcac2->raStartInMas) &&
-					(oneStar.raInMas <= mysearchZoneUcac2->raEndInMas) &&
-					(oneStar.decInMas >= mysearchZoneUcac2->decStartInMas) &&
-					(oneStar.decInMas <= mysearchZoneUcac2->decEndInMas) &&
-					(oneStar.ucacMagInCentiMag >= mysearchZoneUcac2->magnitudeStartInCentiMag) &&
-					(oneStar.ucacMagInCentiMag <= mysearchZoneUcac2->magnitudeEndInCentiMag)) {
+			if((oneStar.raInMas >= mySearchZoneUcac2->raStartInMas) &&
+					(oneStar.raInMas <= mySearchZoneUcac2->raEndInMas) &&
+					(oneStar.decInMas >= mySearchZoneUcac2->decStartInMas) &&
+					(oneStar.decInMas <= mySearchZoneUcac2->decEndInMas) &&
+					(oneStar.ucacMagInCentiMag >= mySearchZoneUcac2->magnitudeStartInCentiMag) &&
+					(oneStar.ucacMagInCentiMag <= mySearchZoneUcac2->magnitudeEndInCentiMag)) {
 				numberOfStars++;
 			}
 		}
@@ -192,12 +192,12 @@ int filterStarsUcac2(arrayTwoDOfStarUcac2* theUnFilteredStars,arrayOneDOfStarUca
 
 		for(counterRa = 0; counterRa < lengthOfOneDArray; counterRa++) {
 			oneStar       = allStars[counterRa];
-			if((oneStar.raInMas >= mysearchZoneUcac2->raStartInMas) &&
-					(oneStar.raInMas <= mysearchZoneUcac2->raEndInMas) &&
-					(oneStar.decInMas >= mysearchZoneUcac2->decStartInMas) &&
-					(oneStar.decInMas <= mysearchZoneUcac2->decEndInMas) &&
-					(oneStar.ucacMagInCentiMag >= mysearchZoneUcac2->magnitudeStartInCentiMag) &&
-					(oneStar.ucacMagInCentiMag <= mysearchZoneUcac2->magnitudeEndInCentiMag)) {
+			if((oneStar.raInMas >= mySearchZoneUcac2->raStartInMas) &&
+					(oneStar.raInMas <= mySearchZoneUcac2->raEndInMas) &&
+					(oneStar.decInMas >= mySearchZoneUcac2->decStartInMas) &&
+					(oneStar.decInMas <= mySearchZoneUcac2->decEndInMas) &&
+					(oneStar.ucacMagInCentiMag >= mySearchZoneUcac2->magnitudeStartInCentiMag) &&
+					(oneStar.ucacMagInCentiMag <= mySearchZoneUcac2->magnitudeEndInCentiMag)) {
 
 				theFilteredStars->arrayOneD[numberOfStars] = oneStar;
 				numberOfStars++;
@@ -211,15 +211,16 @@ int filterStarsUcac2(arrayTwoDOfStarUcac2* theUnFilteredStars,arrayOneDOfStarUca
 /**
  * Retrieve list of stars
  */
-int retrieveUnFilteredStarsUcac2(const char* pathOfCatalog, searchZoneUcac2* mysearchZoneUcac2, int** indexTable, arrayTwoDOfStarUcac2* theUnFilteredStars) {
+int retrieveUnfilteredStarsUcac2(const char* const pathOfCatalog, const searchZoneUcac2* mySearchZoneUcac2,
+		const int* const * const indexTable, arrayTwoDOfStarUcac2* theUnFilteredStars) {
 
 	/* We retrive the index of all used file zones */
 	int indexZoneDecStart,indexZoneDecEnd,indexZoneRaStart,indexZoneRaEnd,resultOfFunction;
-	retrieveIndexesUcac2(mysearchZoneUcac2,&indexZoneDecStart,&indexZoneDecEnd,&indexZoneRaStart,&indexZoneRaEnd);
+	retrieveIndexesUcac2(mySearchZoneUcac2,&indexZoneDecStart,&indexZoneDecEnd,&indexZoneRaStart,&indexZoneRaEnd);
 
 	int numberOfDecZones        = indexZoneDecEnd - indexZoneDecStart + 1;
 	/* If ra is around 0, we double the size of the array */
-	if((*mysearchZoneUcac2).isArroundZeroRa) {
+	if(mySearchZoneUcac2->isArroundZeroRa) {
 		numberOfDecZones       *= 2;
 	}
 
@@ -237,14 +238,14 @@ int retrieveUnFilteredStarsUcac2(const char* pathOfCatalog, searchZoneUcac2* mys
 	//printf("numberOfDecZones = %d\n",numberOfDecZones);
 	/* Now we allocate the memory for each zone */
 	resultOfFunction = allocateUnfiltredStarUcac2(theUnFilteredStars, indexTable, indexZoneDecStart, indexZoneDecEnd,
-			indexZoneRaStart, indexZoneRaEnd, mysearchZoneUcac2->isArroundZeroRa);
+			indexZoneRaStart, indexZoneRaEnd, mySearchZoneUcac2->isArroundZeroRa);
 	if(resultOfFunction) {
 		return (1);
 	}
 
 	/* Now we read the un-filtered stars from the catalog */
 	resultOfFunction = readUnfiltredStarUcac2(pathOfCatalog, theUnFilteredStars, indexTable, indexZoneDecStart, indexZoneDecEnd,
-			indexZoneRaStart, indexZoneRaEnd, mysearchZoneUcac2->isArroundZeroRa);
+			indexZoneRaStart, indexZoneRaEnd, mySearchZoneUcac2->isArroundZeroRa);
 	if(resultOfFunction) {
 		releaseMemoryArrayTwoDOfStarUcac2(theUnFilteredStars);
 		return (1);
@@ -260,7 +261,7 @@ int retrieveUnFilteredStarsUcac2(const char* pathOfCatalog, searchZoneUcac2* mys
 /**
  * Release memory from one arrayTwoDOfucacStarUcac2
  */
-void releaseMemoryArrayTwoDOfStarUcac2(arrayTwoDOfStarUcac2* theTwoDArray) {
+void releaseMemoryArrayTwoDOfStarUcac2(const arrayTwoDOfStarUcac2* theTwoDArray) {
 
 	const int lengthOfTwoDArray    = theTwoDArray->length;
 	/* UCAC2 stop at dec = +42 deg*/
@@ -287,7 +288,7 @@ void releaseMemoryArrayTwoDOfStarUcac2(arrayTwoDOfStarUcac2* theTwoDArray) {
 /**
  * Read the stars from the catalog
  */
-int readUnfiltredStarUcac2(const char* pathOfCatalog, arrayTwoDOfStarUcac2* theUnFilteredStars, int** indexTable,
+int readUnfiltredStarUcac2(const char* const pathOfCatalog, const arrayTwoDOfStarUcac2* theUnFilteredStars, const int* const * const indexTable,
 		const int indexZoneDecStart,const int indexZoneDecEnd, const int indexZoneRaStart,const int indexZoneRaEnd, const char isArroundZeroRa) {
 
 	int counterDec = 0;
@@ -341,7 +342,7 @@ int readUnfiltredStarUcac2(const char* pathOfCatalog, arrayTwoDOfStarUcac2* theU
 /**
  * read stars from the catalog for one Dec zone for the un-filtered stars : case of ra not around 0
  */
-int readUnfiltredStarForOneDecZoneUcac2(const char* pathOfCatalog, arrayOneDOfStarUcac2* notFilteredStarsForOneDec, int* indexTableForOneDec,
+int readUnfiltredStarForOneDecZoneUcac2(const char* const pathOfCatalog, const arrayOneDOfStarUcac2* notFilteredStarsForOneDec, const int* const indexTableForOneDec,
 		int indexDec, const int indexZoneRaStart,const int indexZoneRaEnd) {
 
 	//printf("notFilteredStarsForOneDec->length = %d\n",notFilteredStarsForOneDec->length);
@@ -396,7 +397,7 @@ int readUnfiltredStarForOneDecZoneUcac2(const char* pathOfCatalog, arrayOneDOfSt
 /**
  * Allocate memory for one Dec zone for the un-filtered stars : case of ra not around 0
  */
-int allocateUnfiltredStarUcac2(arrayTwoDOfStarUcac2* theUnilteredStars, int** indexTable,
+int allocateUnfiltredStarUcac2(const arrayTwoDOfStarUcac2* theUnilteredStars, const int* const * const indexTable,
 		const int indexZoneDecStart,const int indexZoneDecEnd, const int indexZoneRaStart,const int indexZoneRaEnd, const char isArroundZeroRa) {
 
 	int counterDec = 0;
@@ -411,7 +412,7 @@ int allocateUnfiltredStarUcac2(arrayTwoDOfStarUcac2* theUnilteredStars, int** in
 		for(indexDec = indexZoneDecStart; indexDec <= indexZoneDecEnd; indexDec++) {
 
 			/* From indexZoneRaStart to lastZoneRa*/
-			resultOfFunction = allocateUnfiltredStarForOneDecZoneUcac2(&((*theUnilteredStars).arrayTwoD[counterDec]),
+			resultOfFunction = allocateUnfiltredStarForOneDecZoneUcac2(&(theUnilteredStars->arrayTwoD[counterDec]),
 					indexTable[indexDec], indexZoneRaStart, lastZoneRa);
 			if(resultOfFunction) {
 				return (1);
@@ -420,7 +421,7 @@ int allocateUnfiltredStarUcac2(arrayTwoDOfStarUcac2* theUnilteredStars, int** in
 			counterDec++;
 
 			/* From 0 to indexZoneRaEnd*/
-			resultOfFunction = allocateUnfiltredStarForOneDecZoneUcac2(&((*theUnilteredStars).arrayTwoD[counterDec]),
+			resultOfFunction = allocateUnfiltredStarForOneDecZoneUcac2(&(theUnilteredStars->arrayTwoD[counterDec]),
 					indexTable[indexDec], 0, indexZoneRaEnd);
 
 			if(resultOfFunction) {
@@ -437,7 +438,7 @@ int allocateUnfiltredStarUcac2(arrayTwoDOfStarUcac2* theUnilteredStars, int** in
 		for(indexDec = indexZoneDecStart; indexDec <= indexZoneDecEnd; indexDec++) {
 
 			/* From indexZoneRaStart to indexZoneRaEnd*/
-			resultOfFunction = allocateUnfiltredStarForOneDecZoneUcac2(&((*theUnilteredStars).arrayTwoD[counterDec]),
+			resultOfFunction = allocateUnfiltredStarForOneDecZoneUcac2(&(theUnilteredStars->arrayTwoD[counterDec]),
 					indexTable[indexDec], indexZoneRaStart,indexZoneRaEnd);
 			if(resultOfFunction) {
 				return (1);
@@ -453,7 +454,7 @@ int allocateUnfiltredStarUcac2(arrayTwoDOfStarUcac2* theUnilteredStars, int** in
 /**
  * Allocate memory for one Dec zone for the un-filtered stars
  */
-int allocateUnfiltredStarForOneDecZoneUcac2(arrayOneDOfStarUcac2* notFilteredStarsForOneDec, int* indexTableForOneDec,
+int allocateUnfiltredStarForOneDecZoneUcac2(arrayOneDOfStarUcac2* notFilteredStarsForOneDec, const int* const indexTableForOneDec,
 		const int indexZoneRaStart,const int indexZoneRaEnd) {
 
 	int indexRa;
@@ -480,28 +481,28 @@ int allocateUnfiltredStarForOneDecZoneUcac2(arrayOneDOfStarUcac2* notFilteredSta
 /**
  * We retrive the index of all used file zones
  */
-void retrieveIndexesUcac2(searchZoneUcac2* mysearchZoneUcac2,int* indexZoneDecStart,int* indexZoneDecEnd,int* indexZoneRaStart,int* indexZoneRaEnd) {
+void retrieveIndexesUcac2(const searchZoneUcac2* mySearchZoneUcac2,int* indexZoneDecStart,int* indexZoneDecEnd,int* indexZoneRaStart,int* indexZoneRaEnd) {
 
 	/* dec start */
-	*indexZoneDecStart     = (int)((mysearchZoneUcac2->decStartInMas - DEC_SOUTH_POLE_MAS) / DEC_WIDTH_ZONE_MAS);
+	*indexZoneDecStart     = (int)((mySearchZoneUcac2->decStartInMas - DEC_SOUTH_POLE_MAS) / DEC_WIDTH_ZONE_MAS);
 	if(*indexZoneDecStart  < 0) {
 		*indexZoneDecStart = 0;
 	}
 
 	/* dec end */
-	*indexZoneDecEnd       = (int)((mysearchZoneUcac2->decEndInMas - DEC_SOUTH_POLE_MAS) / DEC_WIDTH_ZONE_MAS);
+	*indexZoneDecEnd       = (int)((mySearchZoneUcac2->decEndInMas - DEC_SOUTH_POLE_MAS) / DEC_WIDTH_ZONE_MAS);
 	if(*indexZoneDecEnd   >= INDEX_TABLE_DEC_DIMENSION) {
 		*indexZoneDecEnd   = INDEX_TABLE_DEC_DIMENSION - 1;
 	}
 
 	/* ra start */
-	*indexZoneRaStart     = (int)((mysearchZoneUcac2->raStartInMas - START_RA_MAS) / RA_WIDTH_ZONE_MAS);
+	*indexZoneRaStart     = (int)((mySearchZoneUcac2->raStartInMas - START_RA_MAS) / RA_WIDTH_ZONE_MAS);
 	if(*indexZoneDecStart < 0) {
 		*indexZoneRaStart = 0;
 	}
 
 	/* ra end */
-	*indexZoneRaEnd     = (int)((mysearchZoneUcac2->raEndInMas - START_RA_MAS) / RA_WIDTH_ZONE_MAS);
+	*indexZoneRaEnd     = (int)((mySearchZoneUcac2->raEndInMas - START_RA_MAS) / RA_WIDTH_ZONE_MAS);
 	if(*indexZoneRaEnd >= INDEX_TABLE_RA_DIMENSION) {
 		*indexZoneRaEnd = INDEX_TABLE_RA_DIMENSION - 1;
 	}
@@ -510,7 +511,7 @@ void retrieveIndexesUcac2(searchZoneUcac2* mysearchZoneUcac2,int* indexZoneDecSt
 /**
  * Read the index file
  */
-int** readIndexFileUcac2(const char* pathOfCatalog) {
+const int* const * const readIndexFileUcac2(const char* pathOfCatalog) {
 
 	int index;
 	int numberOfStars;
@@ -582,34 +583,34 @@ int** readIndexFileUcac2(const char* pathOfCatalog) {
  */
 const searchZoneUcac2 findSearchZoneUcac2(const double raInDeg,const double decInDeg,const double radiusInArcMin,const double magMin, const double magMax) {
 
-	searchZoneUcac2 mysearchZoneUcac2;
+	searchZoneUcac2 mySearchZoneUcac2;
 	const double radiusInDeg              = radiusInArcMin / DEG2ARCMIN;
-	mysearchZoneUcac2.decStartInMas            = (int)(DEG2MAS * (decInDeg - radiusInDeg));
-	mysearchZoneUcac2.decEndInMas              = (int)(DEG2MAS * (decInDeg + radiusInDeg));
-	mysearchZoneUcac2.magnitudeStartInCentiMag = (short)(MAG2CENTIMAG * magMin);
-	mysearchZoneUcac2.magnitudeEndInCentiMag   = (short)(MAG2CENTIMAG * magMax);
+	mySearchZoneUcac2.decStartInMas            = (int)(DEG2MAS * (decInDeg - radiusInDeg));
+	mySearchZoneUcac2.decEndInMas              = (int)(DEG2MAS * (decInDeg + radiusInDeg));
+	mySearchZoneUcac2.magnitudeStartInCentiMag = (short)(MAG2CENTIMAG * magMin);
+	mySearchZoneUcac2.magnitudeEndInCentiMag   = (short)(MAG2CENTIMAG * magMax);
 
-	if((mysearchZoneUcac2.decStartInMas  <= DEC_SOUTH_POLE_MAS) && (mysearchZoneUcac2.decEndInMas >= DEC_NORTH_POLE_MAS)) {
+	if((mySearchZoneUcac2.decStartInMas  <= DEC_SOUTH_POLE_MAS) && (mySearchZoneUcac2.decEndInMas >= DEC_NORTH_POLE_MAS)) {
 
-		mysearchZoneUcac2.decStartInMas   = DEC_SOUTH_POLE_MAS;
-		mysearchZoneUcac2.decEndInMas     = DEC_NORTH_POLE_MAS;
-		mysearchZoneUcac2.raStartInMas    = START_RA_MAS;
-		mysearchZoneUcac2.raEndInMas      = COMPLETE_RA_MAS;
-		mysearchZoneUcac2.isArroundZeroRa = 0;
+		mySearchZoneUcac2.decStartInMas   = DEC_SOUTH_POLE_MAS;
+		mySearchZoneUcac2.decEndInMas     = DEC_NORTH_POLE_MAS;
+		mySearchZoneUcac2.raStartInMas    = START_RA_MAS;
+		mySearchZoneUcac2.raEndInMas      = COMPLETE_RA_MAS;
+		mySearchZoneUcac2.isArroundZeroRa = 0;
 
-	} else if(mysearchZoneUcac2.decStartInMas <= DEC_SOUTH_POLE_MAS) {
+	} else if(mySearchZoneUcac2.decStartInMas <= DEC_SOUTH_POLE_MAS) {
 
-		mysearchZoneUcac2.decStartInMas   = DEC_SOUTH_POLE_MAS;
-		mysearchZoneUcac2.raStartInMas    = START_RA_MAS;
-		mysearchZoneUcac2.raEndInMas      = COMPLETE_RA_MAS;
-		mysearchZoneUcac2.isArroundZeroRa = 0;
+		mySearchZoneUcac2.decStartInMas   = DEC_SOUTH_POLE_MAS;
+		mySearchZoneUcac2.raStartInMas    = START_RA_MAS;
+		mySearchZoneUcac2.raEndInMas      = COMPLETE_RA_MAS;
+		mySearchZoneUcac2.isArroundZeroRa = 0;
 
-	} else if(mysearchZoneUcac2.decEndInMas >= DEC_NORTH_POLE_MAS) {
+	} else if(mySearchZoneUcac2.decEndInMas >= DEC_NORTH_POLE_MAS) {
 
-		mysearchZoneUcac2.decEndInMas     = DEC_NORTH_POLE_MAS;
-		mysearchZoneUcac2.raStartInMas    = START_RA_MAS;
-		mysearchZoneUcac2.raEndInMas      = COMPLETE_RA_MAS;
-		mysearchZoneUcac2.isArroundZeroRa = 0;
+		mySearchZoneUcac2.decEndInMas     = DEC_NORTH_POLE_MAS;
+		mySearchZoneUcac2.raStartInMas    = START_RA_MAS;
+		mySearchZoneUcac2.raEndInMas      = COMPLETE_RA_MAS;
+		mySearchZoneUcac2.isArroundZeroRa = 0;
 
 	} else {
 
@@ -621,38 +622,38 @@ const searchZoneUcac2 findSearchZoneUcac2(const double raInDeg,const double decI
 		ratio                        = tmpValue / COMPLETE_RA_MAS;
 		ratio                        = floor(ratio) * COMPLETE_RA_MAS;
 		tmpValue                    -= ratio;
-		mysearchZoneUcac2.raStartInMas    = (int)tmpValue;
+		mySearchZoneUcac2.raStartInMas    = (int)tmpValue;
 
 		tmpValue                     = DEG2MAS * (raInDeg  + radiusRa);
 		ratio                        = tmpValue / COMPLETE_RA_MAS;
 		ratio                        = floor(ratio) * COMPLETE_RA_MAS;
 		tmpValue                    -= ratio;
-		mysearchZoneUcac2.raEndInMas      = (int)tmpValue;
+		mySearchZoneUcac2.raEndInMas      = (int)tmpValue;
 
-		mysearchZoneUcac2.isArroundZeroRa      = 0;
+		mySearchZoneUcac2.isArroundZeroRa      = 0;
 
-		if(mysearchZoneUcac2.raStartInMas      >  mysearchZoneUcac2.raEndInMas) {
-			mysearchZoneUcac2.isArroundZeroRa  = 1;
+		if(mySearchZoneUcac2.raStartInMas      >  mySearchZoneUcac2.raEndInMas) {
+			mySearchZoneUcac2.isArroundZeroRa  = 1;
 		}
 	}
 
 	if(DEBUG) {
-		printf("mysearchZoneUcac2.decStart        = %d\n",mysearchZoneUcac2.decStartInMas);
-		printf("mysearchZoneUcac2.decEnd          = %d\n",mysearchZoneUcac2.decEndInMas);
-		printf("mysearchZoneUcac2.raStart         = %d\n",mysearchZoneUcac2.raStartInMas);
-		printf("mysearchZoneUcac2.raEnd           = %d\n",mysearchZoneUcac2.raEndInMas);
-		printf("mysearchZoneUcac2.isArroundZeroRa = %d\n",mysearchZoneUcac2.isArroundZeroRa);
-		printf("mysearchZoneUcac2.magnitudeStart  = %d\n",mysearchZoneUcac2.magnitudeStartInCentiMag);
-		printf("mysearchZoneUcac2.magnitudeEnd    = %d\n",mysearchZoneUcac2.magnitudeEndInCentiMag);
+		printf("mySearchZoneUcac2.decStart        = %d\n",mySearchZoneUcac2.decStartInMas);
+		printf("mySearchZoneUcac2.decEnd          = %d\n",mySearchZoneUcac2.decEndInMas);
+		printf("mySearchZoneUcac2.raStart         = %d\n",mySearchZoneUcac2.raStartInMas);
+		printf("mySearchZoneUcac2.raEnd           = %d\n",mySearchZoneUcac2.raEndInMas);
+		printf("mySearchZoneUcac2.isArroundZeroRa = %d\n",mySearchZoneUcac2.isArroundZeroRa);
+		printf("mySearchZoneUcac2.magnitudeStart  = %d\n",mySearchZoneUcac2.magnitudeStartInCentiMag);
+		printf("mySearchZoneUcac2.magnitudeEnd    = %d\n",mySearchZoneUcac2.magnitudeEndInCentiMag);
 	}
 
-	return (mysearchZoneUcac2);
+	return (mySearchZoneUcac2);
 }
 
 /**
  * Print the un filtered stars
  */
-void printUnfilteredStarUcac2(arrayTwoDOfStarUcac2* theUnilteredStars) {
+void printUnfilteredStarUcac2(const arrayTwoDOfStarUcac2* theUnilteredStars) {
 
 	printf("The un-filtered stars are :\n");
 	arrayOneDOfStarUcac2* arrayTwoD = theUnilteredStars->arrayTwoD;
