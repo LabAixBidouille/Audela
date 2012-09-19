@@ -52,7 +52,7 @@ namespace eval ::plotxy {
       global audace
       global caption
       global plotxy
-
+      
       if {$num!=""} {
          set plotxy(currentfigure) $num
          if {([info exists plotxy(fig$num,ydir)]==0)&&($num>0)} {
@@ -287,6 +287,35 @@ namespace eval ::plotxy {
       update
    }
 
+   # --- proc importante pour modifier les attributs d'un plot   
+   proc sethandler { handler {list_options ""} } {
+      global audace
+      global plotxy
+      #--- extract the current index of the figure
+      set num $plotxy(currentfigure)
+      set baseplotxy $plotxy(fig$num,parent)
+      set lastline $plotxy(fig$num,lastline)
+      set n [llength $list_options]
+      if {$n<=1} {
+	      set texte "$baseplotxy.xy element configure $handler"
+	      set ress ""
+	      set res [eval $texte]
+	      foreach re $res {
+		      if {$n==1} {
+			      if {[lindex $re 0]!=[lindex $list_options 0]} {
+				      continue
+			      }
+		      }
+		      lappend ress "[lindex $re 0]"
+		      lappend ress "[lindex $re 3]"
+	      }
+	      return $ress
+      } else {
+	      set texte "$baseplotxy.xy element configure $handler $list_options"
+	      eval $texte
+      }
+   }
+
    #=== Matlab equivalents pour colorsymbol
    #       y     yellow        .     point
    #       m     magenta       o     circle
@@ -301,6 +330,7 @@ namespace eval ::plotxy {
       global audace
       global plotxy
 
+      set handler ""
       #--- choice figure 1 for the first entrance un plot
       if {$plotxy(currentfigure)==0} {
          ::plotxy::figure 1
@@ -379,7 +409,8 @@ namespace eval ::plotxy {
       vy_fig${num}_${lastline} set $y
       set isybar [lsearch $options -ybars]
       set isxbar [lsearch $options -xbars]
-      set texte "$baseplotxy.xy element create line_fig${num}_${lastline} -xdata vx_fig${num}_${lastline} \
+      set handler line_fig${num}_${lastline}
+      set texte "$baseplotxy.xy element create $handler -xdata vx_fig${num}_${lastline} \
                -ydata vy_fig${num}_${lastline} -symbol $mysymbol -color $mycolor -pixel $sizesymbol"
       #--- bar option
       foreach mylin $myline {
@@ -446,6 +477,7 @@ namespace eval ::plotxy {
       #--   gestion du zoom
       createBindingsZoom $baseplotxy
       ::plotxy::unset_selected_region
+      return $handler
    }
 
    proc fileread { filename {linestoskip 0} } {
