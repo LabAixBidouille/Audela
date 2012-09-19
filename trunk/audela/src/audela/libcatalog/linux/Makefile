@@ -1,10 +1,10 @@
 
 OUTPUT   = libcatalog.so
 
-SRC = $(SRCDIR)/libcatalog.cpp $(SRCDIR)/cstycho.cpp $(SRCDIR)/csucac2.cpp $(SRCDIR)/csucac3.cpp $(SRCDIR)/csusnoa2.cpp
-SRC += $(SRCDIR)/useful.cpp
+SRC = $(SRCDIR)/libcatalog.c $(SRCDIR)/cstycho.c $(SRCDIR)/csucac2.c $(SRCDIR)/csucac3.c $(SRCDIR)/csusnoa2.c
+SRC += $(SRCDIR)/useful.c
 
-OBJ = $(patsubst $(SRCDIR)/%.cpp, %.o, $(filter $(SRCDIR)/%.cpp, $(SRC)))
+OBJ = $(patsubst $(SRCDIR)/%.c, %.o, $(filter $(SRCDIR)/%.c, $(SRC)))
 
 include ../../../Makefile1
 

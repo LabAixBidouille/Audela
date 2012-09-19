@@ -3,7 +3,7 @@
  * This file is part of the AudeLA project : <http://software.audela.free.fr>
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
- * Initial author : Yassine DAMERDJI <damerdji@obs-hp.fr>
+ * Initial author : Yassine DAMERDJI <yassine.damerdji@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,34 +20,18 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-/***************************************************************************/
-/* Ce fichier contient                                                     */
-/* - le fichier d'include libyd.h specifique pour l'interfacage C/Tcl      */
-/* - le point d'entree de la librairie                                     */
-/* - l'initialisation la librairie                                         */
-/***************************************************************************/
-/* Note : Sous Windows, il faut specifier la facon de faire pour charger   */
-/*        les fichiers tcl.dll et tk.dll de facon dynamique.               */
-/*        Sous Linux, on suppose que Tcl/Tk a ete installe sur le systeme  */
-/*        et le lien avec tcl.so et tk.so est simplement indique dans      */
-/*        le link des objets de la librairie yd (-ltcl -ltk).              */
-/***************************************************************************/
-
-/***************************************************************************/
-/*               includes specifiques a l'interfacage C/Tcl                */
-/***************************************************************************/
 #define XTERN
 
 #include "libcatalog.h"
 
 /***************************************************************************/
-/*                      Point d'entree de la librairie                     */
+/*                      Access point to the library                        */
 /***************************************************************************/
 #if defined(LIBRARY_DLL)
    int __cdecl Catalog_Init(Tcl_Interp *interp)
 #endif
 #if defined(LIBRARY_SO)
-   extern "C" int Catalog_Init(Tcl_Interp *interp)
+   int Catalog_Init(Tcl_Interp *interp)
 #endif
 
 {
