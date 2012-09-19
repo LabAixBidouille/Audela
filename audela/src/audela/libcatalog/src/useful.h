@@ -44,7 +44,7 @@
 /* 1 deg = pi / 180. rad = 0.01745329251994329547 rad */
 #define DEC2RAD 0.01745329251994329547
 
-#define DEBUG 1
+#define DEBUG 0
 
 
 void releaseSimpleArray(void* theOneDArray);
