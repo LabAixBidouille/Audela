@@ -360,7 +360,7 @@ double usnoa2GetUsnoBleueMagnitudeInDeciMag(int magL)
 
 	sprintf(buf,"%010ld",labs(magL));
 	strncpy(buf2,buf+4,3); *(buf2+3)='\0';
-	mag = (double)atof(buf2)/10.0;
+	mag = (double)atof(buf2);
 	if (mag<=TT_EPS_DOUBLE)
 	{
 		strncpy(buf2,buf+1,3);
@@ -389,7 +389,7 @@ double usnoa2GetUsnoRedMagnitudeInDeciMag(int magL)
 
 	sprintf(buf,"%010ld",labs(magL));
 	strncpy(buf2,buf+7,3); *(buf2+3) = '\0';
-	mag=(double)atof(buf2)/10.0;
+	mag=(double)atof(buf2);
 	if (mag==999.0)
 	{
 		strncpy(buf2,buf+4,3); *(buf2+3) = '\0';
