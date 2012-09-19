@@ -95,7 +95,6 @@ int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 		/* Open the CAT file */
 		sprintf(shortName,CATALOG_NAME_FORMAT,indexOfCatalog * CATLOG_DISTANCE_TO_POLE_WIDTH_IN_DECI_DEGREE);
 		sprintf(fileName,"%s%s%s",pathOfCatalog,shortName,DOT_CAT_EXTENSION);
-		printf("open %s ....\n",fileName);
 
 		inputStream = fopen(fileName,"rb");
 		if(inputStream == NULL) {
@@ -205,7 +204,6 @@ int processOneZone(Tcl_DString* dsptr, FILE* inputStream,accFiles oneAccFile,sta
 		field              = usnoa2GetUsnoField(magnitudes);
 
 		sprintf(tclString,"{ { USNOA2 { } {%d %f %f %d %d %d %.2f %.2f} } } ",theId,raInDeg,decInDeg,theSign,qflag,field,blueMagnitudeInMag,redMagnitudeInMag);
-		printf("%s\n",tclString);
 		Tcl_DStringAppend(dsptr,tclString,-1);
 		theId++;
 	}
