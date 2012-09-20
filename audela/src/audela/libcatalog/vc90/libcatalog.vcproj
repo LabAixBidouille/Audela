@@ -186,23 +186,23 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\src\cstycho.cpp"
+				RelativePath="..\src\cstycho.c"
 				>
 			</File>
 			<File
-				RelativePath="..\src\csucac2.cpp"
+				RelativePath="..\src\csucac2.c"
 				>
 			</File>
 			<File
-				RelativePath="..\src\csucac3.cpp"
+				RelativePath="..\src\csucac3.c"
 				>
 			</File>
 			<File
-				RelativePath="..\src\csusnoa2.cpp"
+				RelativePath="..\src\csusnoa2.c"
 				>
 			</File>
 			<File
-				RelativePath="..\src\libcatalog.cpp"
+				RelativePath="..\src\libcatalog.c"
 				>
 			</File>
 			<File
@@ -210,7 +210,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\src\useful.cpp"
+				RelativePath="..\src\useful.c"
 				>
 			</File>
 		</Filter>
