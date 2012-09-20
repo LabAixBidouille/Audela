@@ -74,7 +74,10 @@ double usnoa2GetUsnoRedMagnitudeInDeciMag(int magL);
 int usnoa2GetUsnoSign(int magL);
 int usnoa2GetUsnoQflag(int magL);
 int usnoa2GetUsnoField(int magL);
-int processOneZone(Tcl_DString* dsptr, FILE* inputStream,accFiles oneAccFile,starUsno* const arrayOfStars,const searchZoneUsnoa2* mySearchZoneUsnoa2,const int indexOfRA);
+int processOneZoneNotCentredOnZeroRA(Tcl_DString* dsptr, FILE* inputStream,accFiles oneAccFile,
+		starUsno* const arrayOfStars,const searchZoneUsnoa2* mySearchZoneUsnoa2, const int indexOfRA);
+int processOneZoneCentredOnZeroRA(Tcl_DString* dsptr, FILE* inputStream,accFiles oneAccFile,
+		starUsno* const arrayOfStars,const searchZoneUsnoa2* mySearchZoneUsnoa2, const int indexOfRA);
 
 #endif /* CSUSNO_H_ */
 
