@@ -101,7 +101,7 @@ int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 
 		if(mySearchZoneUsnoa2.isArroundZeroRa) {
 
-			for(indexOfRA = mySearchZoneUsnoa2.indexOfLastRightAscensionZone; indexOfRA < ACC_FILE_NUMBER_OF_LINES; indexOfRA++) {
+			for(indexOfRA = mySearchZoneUsnoa2.indexOfFirstRightAscensionZone; indexOfRA < ACC_FILE_NUMBER_OF_LINES; indexOfRA++) {
 
 				if(processOneZone(&dsptr,inputStream,allAccFiles[indexOfCatalog],arrayOfStars,&mySearchZoneUsnoa2,indexOfRA)) {
 					Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
@@ -109,7 +109,7 @@ int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 				}
 			}
 
-			for(indexOfRA = 0; indexOfRA <= mySearchZoneUsnoa2.indexOfFirstRightAscensionZone; indexOfRA++) {
+			for(indexOfRA = 0; indexOfRA <= mySearchZoneUsnoa2.indexOfLastRightAscensionZone; indexOfRA++) {
 
 				if(processOneZone(&dsptr,inputStream,allAccFiles[indexOfCatalog],arrayOfStars,&mySearchZoneUsnoa2,indexOfRA)) {
 					Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
