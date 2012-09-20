@@ -377,8 +377,6 @@ const accFiles* readAllCatalogFiles(const char* const pathOfCatalog, int* maximu
 		fclose(inputStream);
 	}
 
-	printf("theTotalId = %d\n",theTotalId);
-
 	return (allAccFiles);
 }
 
@@ -567,7 +565,6 @@ const searchZoneUsnoa2 findSearchZoneUsnoa2(const double raInDeg,const double de
 	} else {
 
 		radiusRa                               = radiusInDeg / cos(decInDeg * DEC2RAD);
-		printf("radiusInDeg = %f - radiusRa = %f\n",radiusInDeg,radiusRa);
 		tmpValue                               = DEG2CAS * (raInDeg  - radiusRa);
 		ratio                                  = tmpValue / COMPLETE_RA_CAS;
 		ratio                                  = floor(ratio) * COMPLETE_RA_CAS;
