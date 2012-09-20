@@ -149,6 +149,54 @@ namespace eval ::manage_source {
    # manage_source::extract_sources_by_catalog
    # Fournit le nombre de source
    #
+   proc ::manage_source::delete_catalog { listsources catadem } {
+
+       set fields  [lindex $listsources 0]
+       set sources [lindex $listsources 1]
+
+       set newsources {}
+       foreach s $sources {
+          set news {}
+          foreach cata $s {
+             if {[lindex $cata 0] != $catadem} {
+               lappend news $cata
+             }
+          }
+          lappend newsources $news
+       }
+
+       set cpt 0
+       foreach s $newsources {
+          foreach cata $s {
+             if {[lindex $cata 0] != $catadem} {
+                incr cpt
+             }   
+          }
+       }
+
+       if {$cpt==0} {
+          set newfields {}
+          foreach f $fields { 
+             if { [lindex $f 0] != $catadem } {
+               lappend newfields $f 
+             }
+          }
+       } else {
+          set newfields $fields
+       }
+
+
+
+
+   return [list $newfields $newsources]
+   }
+
+
+
+   #
+   # manage_source::extract_sources_by_catalog
+   # Fournit le nombre de source
+   #
    proc ::manage_source::imprim_all_sources { listsources } {
 
        ::console::affiche_resultat "** SOURCES = \n"
