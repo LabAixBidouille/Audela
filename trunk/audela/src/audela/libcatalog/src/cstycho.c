@@ -40,13 +40,16 @@ char** tycho2_search(const char*pathName, double ra0, double dec0, double range,
     double dec_min, dec_max;
     double ra_min1, ra_max1;
     double ra_min2, ra_max2;
-
     char catalogCompleteName[1024];
-    sprintf(catalogCompleteName,"%s/%s",pathName,CATALOG_FILE_NAME);
-
     double ra,dec,mag;
     FILE *fp;
     char buf[206+2+1]; // field length + cr + lf + null
+    int lengthOfLine;
+    int numberOfSupposedOutputs;
+    char** outputs;
+    int id;
+
+    sprintf(catalogCompleteName,"%s/%s",pathName,CATALOG_FILE_NAME);
     
     range /= DEG2ARCMIN; // convert range from minutes to degrees
 
@@ -57,10 +60,10 @@ char** tycho2_search(const char*pathName, double ra0, double dec0, double range,
         ra_min1 = 0.0; ra_max1 = 360.0;
         ra_min2 = 0.0; ra_max2 = 360.0;
     } else {
-        range /= cos(dec0 * DEC2RAD);
-        ra_min1 = ra_min2 = ra0 - range;
-        ra_max1 = ra_max2 = ra0 + range;
-        if(ra_min1 < 0.0) {
+        range      /= cos(dec0 * DEC2RAD);
+        ra_min1     = ra_min2 = ra0 - range;
+        ra_max1     = ra_max2 = ra0 + range;
+        if(ra_min1  < 0.0) {
             ra_min2 = ra_min1 + 360.0;
             ra_max2 = 360.0;
         } else if (ra_max1 > 360.0) {
@@ -75,17 +78,17 @@ char** tycho2_search(const char*pathName, double ra0, double dec0, double range,
         return (NULL);
     }
 
-    *numberOfOutputs            = 0;
-    int lengthOfLine            = 1000;
-    int numberOfSupposedOutputs = 10000000;
-    char** outputs = (char**)malloc(numberOfSupposedOutputs * sizeof(char*));
+    *numberOfOutputs        = 0;
+    lengthOfLine            = 1000;
+    numberOfSupposedOutputs = 10000000;
+    outputs                 = (char**)malloc(numberOfSupposedOutputs * sizeof(char*));
     if(outputs == NULL) {
     	sprintf(outputLine,"outputs out of memory\n");
     	return (NULL);
     }
 
     // Create an implicit ID = line number in the catalog
-    int id = 0;
+    id = 0;
     while((fgets(buf,sizeof(buf),fp)) != NULL) {
     	id++;
         buf[206] = '\0';
@@ -124,8 +127,20 @@ char** tycho2_search(const char*pathName, double ra0, double dec0, double range,
  * Extract stars from Tycho catalog
  */
 int cmd_tcl_cstycho2(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+
 	int i;
 	char c;
+	char* pathToCatalog;
+	double ra;
+	double dec;
+	double radius;
+	double magMin;
+	double magMax;
+	int index;
+	int numberOfOutputs;
+	char *line;
+	char** outputs;
+	Tcl_DString dsptr;
 
 	if((argc == 2) && (strcmp(argv[1],"-h") == 0)) {
 		sprintf(outputLine,"Help usage : %s pathToCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMin(mag)? magnitudeMax(mag)?\n",argv[0]);
@@ -140,32 +155,28 @@ int cmd_tcl_cstycho2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 	}
 
 	/* Read inputs */
-	const char* pathToCatalog = argv[1];
-	const double ra           = atof(argv[2]);
-	const double dec          = atof(argv[3]);
-	const double radius       = atof(argv[4]);
-	double magMin;
-	double magMax;
+	pathToCatalog = argv[1];
+	ra            = atof(argv[2]);
+	dec           = atof(argv[3]);
+	radius        = atof(argv[4]);
 	if(argc == 7) {
-		magMin                = atof(argv[5]);
-		magMax                = atof(argv[6]);
+		magMin    = atof(argv[5]);
+		magMax    = atof(argv[6]);
 	} else {
-		magMin                = -99.99;
-		magMax                = 99.99;
+		magMin    = -99.99;
+		magMax    = 99.99;
 	}
-	//printf(outputLine,"Search stars in Tycho around : ra = %f(deg) - dec = %f(deg) - radius = %f(arcmin) - magnitude in [%f,%f](mag)\n",
-			//ra,dec,radius,magMin,magMax);
 
+	/* Add slash to the end of the path if not exist*/
+	addLastSlashToPath(pathToCatalog);
 
-	int index;
-	int numberOfOutputs = 0;
-	char** outputs = tycho2_search(pathToCatalog,ra,dec,radius,magMin,magMax,&numberOfOutputs);
+	numberOfOutputs = 0;
+	outputs         = tycho2_search(pathToCatalog,ra,dec,radius,magMin,magMax,&numberOfOutputs);
 	if(outputs == NULL) {
 		Tcl_SetResult(interp,outputLine,TCL_VOLATILE);
 		return (TCL_ERROR);
 	}
 
-	Tcl_DString dsptr;
 	Tcl_DStringInit(&dsptr);
 	Tcl_DStringAppend(&dsptr,"{ { TYCHO2 { } "
 		"{ ID TYC1 TYC2 TYC3 pflag mRAdeg mDEdeg pmRA pmDE e_mRA e_mDE "
@@ -174,7 +185,7 @@ int cmd_tcl_cstycho2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 		"e_DE posflg corr } } } ",-1);
 	Tcl_DStringAppend(&dsptr,"{",-1); // start of sources list
 	for(index = 0; index < numberOfOutputs; index++) {
-		char *line = strchr(outputs[index],'|') + 1;
+		line = strchr(outputs[index],'|') + 1;
 		Tcl_DStringAppend(&dsptr,"{ { TYCHO2 { } ",-1);
 		Tcl_DStringAppend(&dsptr,"{ ",-1); // start of source fields list
 		*(line-1) = '\0';

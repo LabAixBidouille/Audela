@@ -67,7 +67,6 @@ typedef struct {
 
 const searchZoneUsnoa2 findSearchZoneUsnoa2(const double ra,const double dec,const double radius,const double magMin, const double magMax);
 int usnoa2Big2LittleEndianLong(int l);
-double* computeAreasOfRightAscension();
 const accFiles* readAllCatalogFiles(const char* const pathOfCatalog, int* maximumNumberOfStars);
 void freeAllCatalogFiles(const accFiles* allAccFiles);
 double usnoa2GetUsnoBleueMagnitudeInDeciMag(int magL);

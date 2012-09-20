@@ -10,55 +10,58 @@ static char outputLogChar[1024];
 
 int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 
+	char* pathToCatalog;
+	double ra;
+	double dec;
+	double radius;
+	double magMin;
+	double magMax;
+	int maximumNumberOfStars = 0;
+	int indexOfRA;
+	int indexOfCatalog;
+	char shortName[1024];
+	char fileName[1024];
+	FILE* inputStream;
+	searchZoneUsnoa2 mySearchZoneUsnoa2;
+	starUsno* arrayOfStars;
+	const accFiles* allAccFiles;
+	Tcl_DString dsptr;
+
 	if((argc == 2) && (strcmp(argv[1],"-h") == 0)) {
-		sprintf(outputLogChar,"Help usage : %s pathOfCatalog ra(deg) dec(deg) radius(arcmin) ?magnitudeMin(mag) magnitudeMax(mag)?\n",argv[0]);
+		sprintf(outputLogChar,"Help usage : %s pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMin(mag)? magnitudeMax(mag)?\n",
+				argv[0]);
 		Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
 		return (TCL_ERROR);
 	}
 
 	if((argc != 5) && (argc != 7)) {
-		sprintf(outputLogChar,"usage : %s pathOfCatalog ra(deg) dec(deg) radius(arcmin) ?magnitudeMax(mag) magnitudeMin(mag)?\n",argv[0]);
+		sprintf(outputLogChar,"usage : %s pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMax(mag)? magnitudeMin(mag)?\n",
+				argv[0]);
 		Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
 		return (TCL_ERROR);
 	}
 
 	/* Read inputs */
-	char pathOfCatalog[1024];
-	strcpy(pathOfCatalog,argv[1]);
-	const double ra     = atof(argv[2]);
-	const double dec    = atof(argv[3]);
-	const double radius = atof(argv[4]);
-	double magMin;
-	double magMax;
+	pathToCatalog = argv[1];
+	ra            = atof(argv[2]);
+	dec           = atof(argv[3]);
+	radius        = atof(argv[4]);
 	if(argc == 7) {
-		magMin          = atof(argv[5]);
-		magMax          = atof(argv[6]);
+		magMin    = atof(argv[5]);
+		magMax    = atof(argv[6]);
 	} else {
-		magMin          = -99.99;
-		magMax          = 99.99;
+		magMin    = -99.99;
+		magMax    = 99.99;
 	}
 
 	/* Add slash to the end of the path if not exist*/
-	const char slash[2] = "/";
-	if (strlen(pathOfCatalog) > 0) {
-		if (pathOfCatalog[strlen(pathOfCatalog)-1] != slash[0] ) {
-			strcat(pathOfCatalog,slash);
-		}
-	}
+	addLastSlashToPath(pathToCatalog);
 
 	/* Define search zone */
-	searchZoneUsnoa2 mySearchZoneUsnoa2 = findSearchZoneUsnoa2(ra,dec,radius,magMin,magMax);
-
-	/* Put in a array the areas of right ascension : unit is CAS */
-	double* rightAscensionAreas = computeAreasOfRightAscension();
-	if(rightAscensionAreas == NULL) {
-		Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
-		return (TCL_ERROR);
-	}
+	mySearchZoneUsnoa2 = findSearchZoneUsnoa2(ra,dec,radius,magMin,magMax);
 
 	/* Read all catalog files to be able to deliver an ID for each star */
-	int maximumNumberOfStars = 0;
-	const accFiles* allAccFiles = readAllCatalogFiles(pathOfCatalog,&maximumNumberOfStars);
+	allAccFiles        = readAllCatalogFiles(pathToCatalog,&maximumNumberOfStars);
 	if(allAccFiles == NULL) {
 		Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
 		return (TCL_ERROR);
@@ -70,7 +73,7 @@ int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 	}
 
 	/* Allocate memory for an array in which we put the read stars */
-	starUsno* arrayOfStars = (starUsno*)malloc(maximumNumberOfStars * sizeof(starUsno));
+	arrayOfStars     = (starUsno*)malloc(maximumNumberOfStars * sizeof(starUsno));
 	if(arrayOfStars == NULL) {
 		sprintf(outputLogChar,"arrayOfStars = %d (starUsno) out of memory\n",maximumNumberOfStars);
 		Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
@@ -78,23 +81,16 @@ int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 	}
 
 	/* Now we loop over the concerned catalog and send to TCL the results */
-	Tcl_DString dsptr;
 	Tcl_DStringInit(&dsptr);
 	Tcl_DStringAppend(&dsptr,"{ { USNOA2 { } { ID ra_deg dec_deg sign qflag field magB magR } } } ",-1);
 	/* start of main list */
 	Tcl_DStringAppend(&dsptr,"{ ",-1);
 
-	int indexOfRA;
-	int indexOfCatalog;
-	char shortName[1024];
-	char fileName[1024];
-	FILE* inputStream;
-
 	for(indexOfCatalog = mySearchZoneUsnoa2.indexOfFirstDistanceToPoleZone; indexOfCatalog <= mySearchZoneUsnoa2.indexOfLastDistanceToPoleZone; indexOfCatalog++) {
 
 		/* Open the CAT file */
 		sprintf(shortName,CATALOG_NAME_FORMAT,indexOfCatalog * CATLOG_DISTANCE_TO_POLE_WIDTH_IN_DECI_DEGREE);
-		sprintf(fileName,"%s%s%s",pathOfCatalog,shortName,DOT_CAT_EXTENSION);
+		sprintf(fileName,"%s%s%s",pathToCatalog,shortName,DOT_CAT_EXTENSION);
 
 		inputStream = fopen(fileName,"rb");
 		if(inputStream == NULL) {
@@ -142,7 +138,6 @@ int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 
 	/* Release memory */
 	freeAllCatalogFiles(allAccFiles);
-	releaseSimpleArray(rightAscensionAreas);
 	releaseSimpleArray(arrayOfStars);
 
 	return (TCL_OK);
@@ -175,11 +170,12 @@ int processOneZone(Tcl_DString* dsptr, FILE* inputStream,accFiles oneAccFile,sta
 		return (1);
 	}
 
-	theId = oneAccFile.arrayOfIds[indexOfRA];
+	theId = oneAccFile.arrayOfIds[indexOfRA] - 1;
 
 	/* Loop over stars and filter them */
 	for(indexOfStar = 0; indexOfStar < oneAccFile.numberOfStars[indexOfRA]; indexOfStar++) {
 
+		theId++;
 		theStar  = arrayOfStars[indexOfStar];
 		raInCas  = usnoa2Big2LittleEndianLong(theStar.ra);
 		if ((raInCas < mySearchZoneUsnoa2->raStartInCas) || (raInCas > mySearchZoneUsnoa2->raEndInCas)) {
@@ -205,33 +201,9 @@ int processOneZone(Tcl_DString* dsptr, FILE* inputStream,accFiles oneAccFile,sta
 
 		sprintf(tclString,"{ { USNOA2 { } {%d %f %f %d %d %d %.2f %.2f} } } ",theId,raInDeg,decInDeg,theSign,qflag,field,blueMagnitudeInMag,redMagnitudeInMag);
 		Tcl_DStringAppend(dsptr,tclString,-1);
-		theId++;
 	}
 
 	return (0);
-}
-
-/****************************************************************************/
-/* Put in an array the areas of right ascension : unit is CentiArcSecond    */
-/***************************************************************************/
-double* computeAreasOfRightAscension() {
-
-	double* rightAscensionAreas = (double*)malloc(ACC_FILE_NUMBER_OF_LINES * sizeof(double));
-	if(rightAscensionAreas == NULL) {
-		sprintf(outputLogChar,"rightAscensionAreas = %d (double) out of memory\n",ACC_FILE_NUMBER_OF_LINES);
-		return (NULL);
-	}
-
-	const double AccFileRaZoneWidthInCas = ACC_FILE_RA_ZONE_WIDTH_IN_DEGREE * DEG2CAS;
-
-	int index                            = 0;
-	while(index < ACC_FILE_NUMBER_OF_LINES) {
-
-		rightAscensionAreas[index]       = index * AccFileRaZoneWidthInCas;
-		index++;
-	}
-
-	return (rightAscensionAreas);
 }
 
 /****************************************************************************/
@@ -259,12 +231,6 @@ void freeAllCatalogFiles(const accFiles* allAccFiles) {
 /****************************************************************************/
 const accFiles* readAllCatalogFiles(const char* const pathOfCatalog, int* maximumNumberOfStars) {
 
-	accFiles* allAccFiles = (accFiles*)malloc(NUMBER_OF_CATALOG_FILES* sizeof(accFiles));
-	if(allAccFiles == NULL) {
-		sprintf(outputLogChar,"allAccFiles = %d (accFiles) out of memory\n",NUMBER_OF_CATALOG_FILES);
-		return (NULL);
-	}
-
 	int indexOfFile;
 	int indexOfLine;
 	char fileName[1024];
@@ -274,7 +240,16 @@ const accFiles* readAllCatalogFiles(const char* const pathOfCatalog, int* maximu
 	double zoneRa;
 	int indexInFile;
 	int numberOfStars;
-	int theTotalId = 1;
+	int theTotalId;
+	accFiles* allAccFiles;
+
+	allAccFiles = (accFiles*)malloc(NUMBER_OF_CATALOG_FILES* sizeof(accFiles));
+	if(allAccFiles == NULL) {
+		sprintf(outputLogChar,"allAccFiles = %d (accFiles) out of memory\n",NUMBER_OF_CATALOG_FILES);
+		return (NULL);
+	}
+
+	theTotalId = 1;
 
 	for(indexOfFile = 0; indexOfFile < NUMBER_OF_CATALOG_FILES; indexOfFile++) {
 
@@ -356,16 +331,16 @@ double usnoa2GetUsnoBleueMagnitudeInDeciMag(int magL)
 	double mag;
 	char buf[11];
 	char buf2[4];
-	double TT_EPS_DOUBLE=2.225073858507203e-308;
+	double TT_EPS_DOUBLE = 2.225073858507203e-308;
 
 	sprintf(buf,"%010ld",labs(magL));
 	strncpy(buf2,buf+4,3); *(buf2+3)='\0';
 	mag = (double)atof(buf2);
-	if (mag<=TT_EPS_DOUBLE)
+	if (mag <= TT_EPS_DOUBLE)
 	{
 		strncpy(buf2,buf+1,3);
 		*(buf2+3)='\0';
-		if ((double)atof(buf2)<=TT_EPS_DOUBLE)
+		if ((double)atof(buf2) <= TT_EPS_DOUBLE)
 		{
 			strncpy(buf2,buf+7,3); *(buf2+3) = '\0';
 			mag = (double)atof(buf2);
@@ -389,7 +364,7 @@ double usnoa2GetUsnoRedMagnitudeInDeciMag(int magL)
 
 	sprintf(buf,"%010ld",labs(magL));
 	strncpy(buf2,buf+7,3); *(buf2+3) = '\0';
-	mag=(double)atof(buf2);
+	mag = (double)atof(buf2);
 	if (mag==999.0)
 	{
 		strncpy(buf2,buf+4,3); *(buf2+3) = '\0';
@@ -484,7 +459,11 @@ int usnoa2GetUsnoField(int magL)
 const searchZoneUsnoa2 findSearchZoneUsnoa2(const double raInDeg,const double decInDeg,const double radiusInArcMin,const double magMin, const double magMax) {
 
 	searchZoneUsnoa2 mySearchZoneUsnoa2;
+	double ratio;
+	double tmpValue;
+	double radiusRa;
 	const double radiusInDeg                    = radiusInArcMin / DEG2ARCMIN;
+
 	mySearchZoneUsnoa2.distanceToPoleStartInCas = (int)(DEG2CAS * (decInDeg - DEC_SOUTH_POLE_DEG - radiusInDeg));
 	mySearchZoneUsnoa2.distanceToPoleEndInCas   = (int)(DEG2CAS * (decInDeg - DEC_SOUTH_POLE_DEG + radiusInDeg));
 	mySearchZoneUsnoa2.magnitudeStartInDeciMag  = (int)(MAG2DECIMAG * magMin);
@@ -514,10 +493,7 @@ const searchZoneUsnoa2 findSearchZoneUsnoa2(const double raInDeg,const double de
 
 	} else {
 
-		double ratio;
-		double tmpValue;
-
-		const double radiusRa                  = radiusInDeg / cos(decInDeg * DEC2RAD);
+		radiusRa                               = radiusInDeg / cos(decInDeg * DEC2RAD);
 		tmpValue                               = DEG2CAS * (raInDeg  - radiusRa);
 		ratio                                  = tmpValue / COMPLETE_RA_CAS;
 		ratio                                  = floor(ratio) * COMPLETE_RA_CAS;
