@@ -103,7 +103,7 @@ int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 
 			for(indexOfRA = mySearchZoneUsnoa2.indexOfFirstRightAscensionZone; indexOfRA < ACC_FILE_NUMBER_OF_LINES; indexOfRA++) {
 
-				if(processOneZone(&dsptr,inputStream,allAccFiles[indexOfCatalog],arrayOfStars,&mySearchZoneUsnoa2,indexOfRA)) {
+				if(processOneZoneCentredOnZeroRA(&dsptr,inputStream,allAccFiles[indexOfCatalog],arrayOfStars,&mySearchZoneUsnoa2,indexOfRA)) {
 					Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
 					return (TCL_ERROR);
 				}
@@ -111,7 +111,7 @@ int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 
 			for(indexOfRA = 0; indexOfRA <= mySearchZoneUsnoa2.indexOfLastRightAscensionZone; indexOfRA++) {
 
-				if(processOneZone(&dsptr,inputStream,allAccFiles[indexOfCatalog],arrayOfStars,&mySearchZoneUsnoa2,indexOfRA)) {
+				if(processOneZoneCentredOnZeroRA(&dsptr,inputStream,allAccFiles[indexOfCatalog],arrayOfStars,&mySearchZoneUsnoa2,indexOfRA)) {
 					Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
 					return (TCL_ERROR);
 				}
@@ -121,7 +121,7 @@ int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 
 			for(indexOfRA = mySearchZoneUsnoa2.indexOfFirstRightAscensionZone; indexOfRA <= mySearchZoneUsnoa2.indexOfLastRightAscensionZone; indexOfRA++) {
 
-				if(processOneZone(&dsptr,inputStream,allAccFiles[indexOfCatalog],arrayOfStars,&mySearchZoneUsnoa2,indexOfRA)) {
+				if(processOneZoneNotCentredOnZeroRA(&dsptr,inputStream,allAccFiles[indexOfCatalog],arrayOfStars,&mySearchZoneUsnoa2,indexOfRA)) {
 					Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
 					return (TCL_ERROR);
 				}
@@ -144,9 +144,10 @@ int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 }
 
 /****************************************************************************/
-/* Process one RA-DEC zone                                                  */
+/* Process one RA-DEC zone centered on zero ra                              */
 /****************************************************************************/
-int processOneZone(Tcl_DString* dsptr, FILE* inputStream,accFiles oneAccFile,starUsno* const arrayOfStars,const searchZoneUsnoa2* mySearchZoneUsnoa2, const int indexOfRA) {
+int processOneZoneCentredOnZeroRA(Tcl_DString* dsptr, FILE* inputStream,accFiles oneAccFile,
+		starUsno* const arrayOfStars,const searchZoneUsnoa2* mySearchZoneUsnoa2, const int indexOfRA) {
 
 	int theId;
 	int theSign,qflag,field;
@@ -178,10 +179,80 @@ int processOneZone(Tcl_DString* dsptr, FILE* inputStream,accFiles oneAccFile,sta
 		theId++;
 		theStar  = arrayOfStars[indexOfStar];
 		raInCas  = usnoa2Big2LittleEndianLong(theStar.ra);
+
+		if ((raInCas < mySearchZoneUsnoa2->raStartInCas) && (raInCas > mySearchZoneUsnoa2->raEndInCas)) {
+			continue;
+		}
+
+		spdInCas   = usnoa2Big2LittleEndianLong(theStar.spd);
+
+		if ((spdInCas < mySearchZoneUsnoa2->distanceToPoleStartInCas) || (spdInCas > mySearchZoneUsnoa2->distanceToPoleEndInCas)) {
+			continue;
+		}
+		magnitudes             = usnoa2Big2LittleEndianLong(theStar.mags);
+		redMagnitudeInDeciMag  = usnoa2GetUsnoRedMagnitudeInDeciMag(magnitudes);
+		if((redMagnitudeInDeciMag < mySearchZoneUsnoa2->magnitudeStartInDeciMag) || (redMagnitudeInDeciMag > mySearchZoneUsnoa2->magnitudeEndInDeciMag)) {
+			continue;
+		}
+
+		raInDeg            = (double)raInCas / DEG2CAS;
+		decInDeg           = (double)spdInCas / DEG2CAS + DEC_SOUTH_POLE_DEG;
+		redMagnitudeInMag  = (double)redMagnitudeInDeciMag / MAG2DECIMAG;
+		blueMagnitudeInMag = (double)usnoa2GetUsnoBleueMagnitudeInDeciMag(magnitudes) / MAG2DECIMAG;
+		theSign            = usnoa2GetUsnoSign(magnitudes);
+		qflag              = usnoa2GetUsnoQflag(magnitudes);
+		field              = usnoa2GetUsnoField(magnitudes);
+
+		sprintf(tclString,"{ { USNOA2 { } {%d %f %f %d %d %d %.2f %.2f} } } ",theId,raInDeg,decInDeg,theSign,qflag,field,blueMagnitudeInMag,redMagnitudeInMag);
+		Tcl_DStringAppend(dsptr,tclString,-1);
+	}
+
+	return (0);
+}
+
+/****************************************************************************/
+/* Process one RA-DEC zone not centered on zero ra                           */
+/****************************************************************************/
+int processOneZoneNotCentredOnZeroRA(Tcl_DString* dsptr, FILE* inputStream,accFiles oneAccFile,
+		starUsno* const arrayOfStars,const searchZoneUsnoa2* mySearchZoneUsnoa2, const int indexOfRA) {
+
+	int theId;
+	int theSign,qflag,field;
+	int raInCas;
+	unsigned int indexOfStar;
+	double raInDeg;
+	double decInDeg;
+	int spdInCas;
+	int magnitudes;
+	double redMagnitudeInDeciMag;
+	double redMagnitudeInMag;
+	double blueMagnitudeInMag;
+	starUsno theStar;
+	char tclString[1024];
+
+	/* Move to this position */
+	fseek(inputStream,oneAccFile.arrayOfPosition[indexOfRA] * sizeof(starUsno),SEEK_SET);
+	/* Read the amount of stars */
+	if(fread(arrayOfStars,sizeof(starUsno),oneAccFile.numberOfStars[indexOfRA],inputStream) !=  oneAccFile.numberOfStars[indexOfRA]) {
+		sprintf(outputLogChar,"can not read %d (starUsno)\n",oneAccFile.numberOfStars[indexOfRA]);
+		return (1);
+	}
+
+	theId = oneAccFile.arrayOfIds[indexOfRA] - 1;
+
+	/* Loop over stars and filter them */
+	for(indexOfStar = 0; indexOfStar < oneAccFile.numberOfStars[indexOfRA]; indexOfStar++) {
+
+		theId++;
+		theStar  = arrayOfStars[indexOfStar];
+		raInCas  = usnoa2Big2LittleEndianLong(theStar.ra);
+
 		if ((raInCas < mySearchZoneUsnoa2->raStartInCas) || (raInCas > mySearchZoneUsnoa2->raEndInCas)) {
 			continue;
 		}
+
 		spdInCas   = usnoa2Big2LittleEndianLong(theStar.spd);
+
 		if ((spdInCas < mySearchZoneUsnoa2->distanceToPoleStartInCas) || (spdInCas > mySearchZoneUsnoa2->distanceToPoleEndInCas)) {
 			continue;
 		}
@@ -306,6 +377,8 @@ const accFiles* readAllCatalogFiles(const char* const pathOfCatalog, int* maximu
 		fclose(inputStream);
 	}
 
+	printf("theTotalId = %d\n",theTotalId);
+
 	return (allAccFiles);
 }
 
@@ -315,8 +388,8 @@ const accFiles* readAllCatalogFiles(const char* const pathOfCatalog, int* maximu
 /* en DCBA.                                                */
 /*=========================================================*/
 int usnoa2Big2LittleEndianLong(int l) {
-	return ((l << 24) | ((l << 8) & 0x00FF0000) |
-			((l >> 8) & 0x0000FF00) | ((l >> 24) & 0x000000FF));
+
+	return ((l << 24) | ((l << 8) & 0x00FF0000) | ((l >> 8) & 0x0000FF00) | ((l >> 24) & 0x000000FF));
 }
 
 /*===========================================================*/
@@ -494,6 +567,7 @@ const searchZoneUsnoa2 findSearchZoneUsnoa2(const double raInDeg,const double de
 	} else {
 
 		radiusRa                               = radiusInDeg / cos(decInDeg * DEC2RAD);
+		printf("radiusInDeg = %f - radiusRa = %f\n",radiusInDeg,radiusRa);
 		tmpValue                               = DEG2CAS * (raInDeg  - radiusRa);
 		ratio                                  = tmpValue / COMPLETE_RA_CAS;
 		ratio                                  = floor(ratio) * COMPLETE_RA_CAS;
