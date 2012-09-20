@@ -266,7 +266,7 @@ set tcl_precision 17
       set ::av4l_analysis_tools::corr_duree  [format "%.3f" [expr ($::av4l_analysis_tools::cdl($::av4l_analysis_tools::corr_nbframe,jd) \
             - $::av4l_analysis_tools::cdl(1,jd) ) * 86400.0 ]]
       set ::av4l_analysis_tools::corr_fps  [format "%.3f" [expr ($::av4l_analysis_tools::corr_nbframe /$::av4l_analysis_tools::corr_duree )]]
-      set ::av4l_analysis_tools::orig $::av4l_analysis_tools::cdl(1,jd)
+      set ::av4l_analysis_tools::orig  $::av4l_analysis_tools::cdl(1,jd)
 
       return -code 0 
    }
@@ -497,10 +497,18 @@ set tcl_precision 17
 
 
 
-   proc ::av4l_analysis_tools::partie2 {  } {
+   proc ::av4l_analysis_tools::partie2 { passe } {
+
+      set ::av4l_analysis_tools::but_calcul "Calcul"
       
       #-----------------------------------------------------------------------------
-
+      if {$passe == 1} {
+         set ::av4l_analysis_tools::24_chi2_x ""
+         set ::av4l_analysis_tools::24_chi2_y ""
+      }
+      if {$passe == 2} {
+      }
+      
       #-----------------------------------------------------------------------------
       # Fichiers de sortie
       # sorties:
@@ -513,17 +521,14 @@ set tcl_precision 17
       # fort.25: rayon de l'etoile, chi2_min, npt fittes (NB. "append")
       # fort.26: dans le cas ou la bande a une largeur finie (ex. duree finie de l'occn) 
       #          chi2 - nfit (NB. "append"), voir par ex. donnees Hakos/Varuna 19 fev 2010
-      set file21 [file join $::av4l_analysis_tools::dirwork "21_modele_flux_avant_convolution.csv"]
-      set chan21 [open $file21 w]
-      set file22 [file join $::av4l_analysis_tools::dirwork "22_modele_flux_apres_convolution.csv"]
-      set chan22 [open $file22 w]
-      set file23 [file join $::av4l_analysis_tools::dirwork "23_.csv"]
-      set chan23 [open $file23 w]
-      set file24 [file join $::av4l_analysis_tools::dirwork "24_.csv"]
+      set file21 [file join $::av4l_analysis_tools::dirwork "21_${passe}_modele_flux_avant_convolution.csv"]
+      set file22 [file join $::av4l_analysis_tools::dirwork "22_${passe}_modele_flux_apres_convolution.csv"]
+      set file23 [file join $::av4l_analysis_tools::dirwork "23_${passe}_.csv"]
+      set file24 [file join $::av4l_analysis_tools::dirwork "24_${passe}_.csv"]
       set chan24 [open $file24 w]
-      set file25 [file join $::av4l_analysis_tools::dirwork "25_.csv"]
+      set file25 [file join $::av4l_analysis_tools::dirwork "25_${passe}_.csv"]
       set chan25 [open $file25 w]
-      set file26 [file join $::av4l_analysis_tools::dirwork "26_.csv"]
+      set file26 [file join $::av4l_analysis_tools::dirwork "26_${passe}_.csv"]
       set chan26 [open $file26 w]
       set file27 [file join $::av4l_analysis_tools::dirwork "obs.dat"]
       set chan27 [open $file27 w]
@@ -535,6 +540,23 @@ set tcl_precision 17
       }
       close $chan27
 
+      # bar.ini
+      set file28 [file join $::av4l_analysis_tools::dirwork "bar$passe.ini"]
+      set chan28 [open $file28 w]
+      puts $chan28 "$::av4l_analysis_tools::mode"
+      puts $chan28 "0"
+      puts $chan28 "1"
+      puts $chan28 "obs.dat"
+      puts $chan28 "$::av4l_analysis_tools::sigma"
+      puts $chan28 "$::av4l_analysis_gui::wvlngth $::av4l_analysis_gui::dlambda"
+      puts $chan28 "$::av4l_analysis_tools::dist $::av4l_analysis_tools::re"
+      puts $chan28 "$::av4l_analysis_tools::vn"
+      puts $chan28 "$::av4l_analysis_tools::width $::av4l_analysis_tools::trans"
+      puts $chan28 "$::av4l_analysis_tools::duree $::av4l_analysis_tools::pas"
+      puts $chan28 "$::av4l_analysis_tools::phi1 $::av4l_analysis_tools::phi0"
+      puts $chan28 "$::av4l_analysis_tools::t0_ref"
+      puts $chan28 "$::av4l_analysis_tools::nheure $::av4l_analysis_tools::pas_heure"
+      close $chan28
       
       #-----------------------------------------------------------------------------
       
@@ -562,12 +584,12 @@ set tcl_precision 17
 
          set opa_ampli [expr  1.0 - sqrt($::av4l_analysis_tools::trans)]
       
+         #-----------------------------------------------------------------------------
+         #
          # Trace de l'ombre geometrique
-         ::av4l_analysis_tools::ombre_geometrique  $::av4l_analysis_tools::mode $::av4l_analysis_tools::t0 $::av4l_analysis_tools::duree $::av4l_analysis_tools::width $::av4l_analysis_tools::vn $::av4l_analysis_tools::phi1 $::av4l_analysis_tools::phi0
+         #
+         ::av4l_analysis_tools::ombre_geometrique  $::av4l_analysis_tools::mode $::av4l_analysis_tools::t0 $::av4l_analysis_tools::duree $::av4l_analysis_tools::width $::av4l_analysis_tools::vn $::av4l_analysis_tools::phi1 $::av4l_analysis_tools::phi0 
 
-      
-      
-      
          #-----------------------------------------------------------------------------
          #      etoile: sous-programme de convolution par le diametre
          #         stellaire.
@@ -576,7 +598,10 @@ set tcl_precision 17
          #         bande passante.
          #
          set som 0.0
-         
+         set chan21 [open $file21 w]
+         set ::av4l_analysis_tools::21_ombre_avec_diffraction_x ""
+         set ::av4l_analysis_tools::21_ombre_avec_diffraction_y ""
+
          for {set i [expr -$npt]} {$i<=$npt} {incr i} {
             set x [expr $::av4l_analysis_tools::vn * $::av4l_analysis_tools::pas * $i]
             set wvlngth1 [expr $::av4l_analysis_tools::wvlngth - $::av4l_analysis_tools::dlambda / 2.0]
@@ -587,8 +612,16 @@ set tcl_precision 17
             set flux($i) [expr $flu*($::av4l_analysis_tools::phi1-$::av4l_analysis_tools::phi0) + $::av4l_analysis_tools::phi0]
             set t($i) [expr $::av4l_analysis_tools::t0 + $i * $::av4l_analysis_tools::pas]
             puts $chan21 "$t($i) , $flux($i)"
+
+            if {$passe == 2} {
+               lappend ::av4l_analysis_tools::21_ombre_avec_diffraction_x $t($i)
+               lappend ::av4l_analysis_tools::21_ombre_avec_diffraction_y [normal2flux $flux($i)]
+            }
+            
             set som [expr $som + $::av4l_analysis_tools::pas * $::av4l_analysis_tools::vn * (1.0-$flux($i))]
          }
+         
+         close $chan21
 
          ::console::affiche_resultat "Integrale du flux avant convolution(km): $som\n"      
          #-----------------------------------------------------------------------------
@@ -616,15 +649,23 @@ set tcl_precision 17
          #
          # Ecriture du modele final (apres convolution par etoile et instrument)
          #
+         set chan22 [open $file22 w]
+         set ::av4l_analysis_tools::22_ombre_instru_x ""
+         set ::av4l_analysis_tools::22_ombre_instru_y ""
          set som 0.0
          set tl_min  1.e50
          set tl_max  -1.d50   
          for {set i 1} {$i<=$nptl} {incr i} {
             puts $chan22 "$::av4l_analysis_tools::tl($i),$::av4l_analysis_tools::fluxl($i)"
+            if {$passe == 2} {
+               lappend ::av4l_analysis_tools::22_ombre_instru_x $::av4l_analysis_tools::tl($i)
+               lappend ::av4l_analysis_tools::22_ombre_instru_y [normal2flux $::av4l_analysis_tools::fluxl($i)]
+            }
             if {$::av4l_analysis_tools::tl($i)>=$tl_max} {set tl_max $::av4l_analysis_tools::tl($i)}
             if {$::av4l_analysis_tools::tl($i)<=$tl_min} {set tl_min $::av4l_analysis_tools::tl($i)}
             set som [expr $som + $::av4l_analysis_tools::pas * $::av4l_analysis_tools::vn * (1.0 - $::av4l_analysis_tools::fluxl($i))]
          }
+         close $chan22
          ::console::affiche_resultat "Integrale du flux apres convolution (km): $som\n"      
          #-----------------------------------------------------------------------------
       
@@ -638,12 +679,21 @@ set tcl_precision 17
          set chi2 0.0
          set tobs_min 1.e50
          set tobs_max -1.e50
+
+         set chan23 [open $file23 w]
+         set ::av4l_analysis_tools::23_ombre_interpol_x  ""
+         set ::av4l_analysis_tools::23_ombre_interpol_y  ""
+
          for {set i 1} {$i<=$::av4l_analysis_tools::duree} {incr i} {
          
             set fac [expr ($::av4l_analysis_tools::tobs($i)-$tl_min)*($::av4l_analysis_tools::tobs($i)-$tl_max)]
             if {$fac<=0.0} {
                set fmod_inter [::av4l_analysis_tools::interpol $nptl $::av4l_analysis_tools::tobs($i)]
                puts $chan23 "$::av4l_analysis_tools::tobs($i),$fmod_inter"
+               if {$passe == 2} {
+                   lappend  ::av4l_analysis_tools::23_ombre_interpol_x $::av4l_analysis_tools::tobs($i)
+                   lappend  ::av4l_analysis_tools::23_ombre_interpol_y [normal2flux $fmod_inter]
+               }
                # fmod_inter ! attention !
                set sigma_local $::av4l_analysis_tools::sigma
                set chi2 [expr $chi2 + pow(($fmod_inter - $::av4l_analysis_tools::fobs($i))/$sigma_local,2)]
@@ -652,14 +702,26 @@ set tcl_precision 17
                if {$::av4l_analysis_tools::tobs($i)>$tobs_max} {set tobs_max $::av4l_analysis_tools::tobs($i)}
             }
          }
+         close $chan23
+
          ::console::affiche_resultat "t0: $::av4l_analysis_tools::t0\n"      
          ::console::affiche_resultat "chi2: $chi2\n"      
          ::console::affiche_resultat "nfit: $nfit\n"      
          ::console::affiche_resultat "temps milieu de la bande: $::av4l_analysis_tools::t_milieu\n"      
          ::console::affiche_resultat "duree de la bande: [expr $::av4l_analysis_tools::width/$::av4l_analysis_tools::vn]\n"      
          ::console::affiche_resultat "$nfit points fittes entre: $tobs_min et $tobs_max  \n"      
+
+          
          puts $chan24 "$::av4l_analysis_tools::t0,$chi2,$nfit"
          puts $chan26 "[expr $chi2 - $nfit*1.0]"
+
+         if {$passe == 1} {
+            lappend ::av4l_analysis_tools::24_chi2_x $::av4l_analysis_tools::t0
+            lappend ::av4l_analysis_tools::24_chi2_y $chi2
+         }
+         
+         lappend ::av4l_analysis_tools::chi2_search [list $::av4l_analysis_tools::t0 $chi2 $nfit]
+
          #-----------------------------------------------------------------------------
 
          #  on incremente t0
@@ -668,12 +730,12 @@ set tcl_precision 17
          set ::av4l_analysis_tools::percent [format "%.2f" [expr ($::av4l_analysis_tools::t0-$::av4l_analysis_tools::t0_min)/($::av4l_analysis_tools::t0_max-$::av4l_analysis_tools::t0_min)*100.0]]
          ::console::affiche_resultat "$::av4l_analysis_tools::percent ---------------------------------------------------\n"      
 
+         if {$::av4l_analysis_tools::but_calcul=="Stop"} {return}
+
+
       # Fin While
       }
-      
-      close $chan21
-      close $chan22
-      close $chan23
+      set ::av4l_analysis_tools::percent 100.0
       close $chan24
       close $chan26
 
@@ -687,11 +749,9 @@ set tcl_precision 17
       #
       # on cherche le temps correspondant au minimum de chi2:
       #
-      set chan24 [open $file24 r]
+
       set chi2_min 1.e50
-      while {[gets $chan24 line] >= 0} {
-         set line [string trim $line]
-         set cols [split $line ","]
+      foreach cols $::av4l_analysis_tools::chi2_search {
          set t0   [lindex $cols 0]
          set chi2 [lindex $cols 1]
          set nfit [lindex $cols 2]
@@ -701,15 +761,11 @@ set tcl_precision 17
             set nfit_chi2_min $nfit
          }
       }
-      close $chan24
 
-      set chan24 [open $file24 r]
       set dchi2  1.0
       set t_inf  1.e50
       set t_sup -1.e50
-      while {[gets $chan24 line] >= 0} {
-         set line [string trim $line]
-         set cols [split $line ","]
+      foreach cols $::av4l_analysis_tools::chi2_search {
          set t0   [lindex $cols 0]
          set chi2 [lindex $cols 1]
          set nfit [lindex $cols 2]
@@ -717,23 +773,82 @@ set tcl_precision 17
             if {$t0 <= $t_inf} { set t_inf $t0}
             if {$t0 >= $t_sup} { set t_sup $t0}
          }
-
       }
-      close $chan24
+      set ::av4l_analysis_tools::t_inf         [format "%.4f" $t_inf]
+      set ::av4l_analysis_tools::t_sup         [format "%.4f" $t_sup]
+      set ::av4l_analysis_tools::t_diff        [format "%.3f" [expr $t_sup-$t_inf] ]
+      
+      set dchi2  9.0
+      set t_inf  1.e50
+      set t_sup -1.e50
+      foreach cols $::av4l_analysis_tools::chi2_search {
+         set t0   [lindex $cols 0]
+         set chi2 [lindex $cols 1]
+         set nfit [lindex $cols 2]
+         if {$chi2 <= [expr $chi2_min+$dchi2]} {
+            if {$t0 <= $t_inf} { set t_inf $t0}
+            if {$t0 >= $t_sup} { set t_sup $t0}
+         }
+      }
+      set ::av4l_analysis_tools::t_inf_3s      [format "%.4f" $t_inf]
+      set ::av4l_analysis_tools::t_sup_3s      [format "%.4f" $t_sup]
+      set ::av4l_analysis_tools::t_diff_3s     [format "%.3f" [expr $t_sup-$t_inf] ]
+      
+#      set chan24 [open $file24 r]
+#      set chi2_min 1.e50
+#      while {[gets $chan24 line] >= 0} {
+#         set line [string trim $line]
+#         set cols [split $line ","]
+#         set t0   [lindex $cols 0]
+#         set chi2 [lindex $cols 1]
+#         set nfit [lindex $cols 2]
+#         if {$chi2 <= $chi2_min} {
+#            set chi2_min      $chi2
+#            set t0_chi2_min   $t0
+#            set nfit_chi2_min $nfit
+#         }
+#      }
+#      close $chan24
 
-      ::console::affiche_resultat  "t0 = $t0\n"
-      ::console::affiche_resultat  "t0_chi2_min = $t0_chi2_min\n"
-      ::console::affiche_resultat  "chi2_min = $chi2_min\n"
-      ::console::affiche_resultat  "nfit_chi2_min = $nfit_chi2_min\n"
-      ::console::affiche_resultat  "Dchi2 = $dchi2\n"
-      ::console::affiche_resultat  "intervalle ou chi2 < chi2_min + dchi2 = $t_inf $t_sup\n"
+#      set chan24 [open $file24 r]
+#      set dchi2  1.0
+#      set t_inf  1.e50
+#      set t_sup -1.e50
+#      while {[gets $chan24 line] >= 0} {
+#         set line [string trim $line]
+#         set cols [split $line ","]
+#         set t0   [lindex $cols 0]
+#         set chi2 [lindex $cols 1]
+#         set nfit [lindex $cols 2]
+#         if {$chi2 <= [expr $chi2_min+$dchi2]} {
+#            if {$t0 <= $t_inf} { set t_inf $t0}
+#            if {$t0 >= $t_sup} { set t_sup $t0}
+#         }
+#
+#      }
+#      close $chan24
+#      ::console::affiche_resultat  "t0 = $t0\n"
+#      ::console::affiche_resultat  "t0_chi2_min = $t0_chi2_min\n"
+#      ::console::affiche_resultat  "chi2_min = $chi2_min\n"
+#      ::console::affiche_resultat  "nfit_chi2_min = $nfit_chi2_min\n"
+#      ::console::affiche_resultat  "Dchi2 = $dchi2\n"
+#      ::console::affiche_resultat  "intervalle ou chi2 < chi2_min + dchi2 = $t_inf $t_sup\n"
+
+     ::console::affiche_resultat  "----------------------------------------\n"
+     ::console::affiche_resultat  "nheure = $::av4l_analysis_tools::nheure\n"
+     ::console::affiche_resultat  "t0 = $t0\n"
+     ::console::affiche_resultat  "t0_chi2_min = $t0_chi2_min\n"
+     ::console::affiche_resultat  "chi2_min = $chi2_min\n"
+     ::console::affiche_resultat  "nfit_chi2_min = $nfit_chi2_min\n"
+     ::console::affiche_resultat  "Dchi2 = $dchi2\n"
+     ::console::affiche_resultat  "intervalle ou chi2 < chi2_min + dchi2 = $t_inf $t_sup\n"
+     ::console::affiche_resultat  "-$passe-----------------------------\n"
+     ::console::affiche_resultat  "----------------------------------------\n"
 
       set ::av4l_analysis_tools::t0_chi2_min   [format "%.4f" $t0_chi2_min]
       set ::av4l_analysis_tools::chi2_min      [format "%.4f" $chi2_min]
       set ::av4l_analysis_tools::nfit_chi2_min $nfit_chi2_min
       set ::av4l_analysis_tools::dchi2         [format "%.4f" $dchi2]
-      set ::av4l_analysis_tools::t_inf         [format "%.4f" $t_inf]
-      set ::av4l_analysis_tools::t_sup         [format "%.4f" $t_sup]
 
       puts $chan25 "$::av4l_analysis_tools::width,$chi2_min,$nfit_chi2_min"
       puts $chan25 "[expr $::av4l_analysis_tools::width/$::av4l_analysis_tools::vn],$chi2_min,$nfit_chi2_min"
@@ -905,16 +1020,19 @@ set tcl_precision 17
 
    }
 
-
-
+   proc ::av4l_analysis_tools::normal2flux { fn } {
+      return [expr  $::av4l_analysis_tools::med1 * $fn]
+   }
 
 
    # Trace de l'ombre geometrique
    proc ::av4l_analysis_tools::ombre_geometrique { imod t0 duree width vn phi1 phi0 } {
 
-      set file [file join $::av4l_analysis_tools::dirwork "20_ombre_geometrique.csv"]
-      set changeo [open $file a+]
-
+      set file [file join $::av4l_analysis_tools::dirwork "20_2_ombre_geometrique.csv"]
+      set changeo [open $file w]
+      set ::av4l_analysis_tools::20_ombre_geometrique_x ""
+      set ::av4l_analysis_tools::20_ombre_geometrique_y ""
+      
       if {$imod==0} {
          # milieu de la bande centre sur t0
          set t1 [expr $t0 - $duree / 2.0 ]
@@ -922,7 +1040,6 @@ set tcl_precision 17
          set t3 [expr $t0 + $width / ( 2.0 * $vn ) ]
          set t4 [expr $t0 + $duree / 2.0 ]
       }
-      
       
       if {$imod==-1} {
          # bord droit de la bande centre sur t0
@@ -945,15 +1062,31 @@ set tcl_precision 17
          puts $changeo "$t1,$phi1"
          puts $changeo "$t2,$phi1"
          puts $changeo "$t2,$phi0"
+         lappend ::av4l_analysis_tools::20_ombre_geometrique_x $t1 
+         lappend ::av4l_analysis_tools::20_ombre_geometrique_y [normal2flux $phi1]
+         lappend ::av4l_analysis_tools::20_ombre_geometrique_x $t2 
+         lappend ::av4l_analysis_tools::20_ombre_geometrique_y [normal2flux $phi1]
+         lappend ::av4l_analysis_tools::20_ombre_geometrique_x $t2 
+         lappend ::av4l_analysis_tools::20_ombre_geometrique_y [normal2flux $phi0]
       } else {
          puts $changeo "$t1,$phi0"
+         lappend ::av4l_analysis_tools::20_ombre_geometrique_x $t1 
+         lappend ::av4l_analysis_tools::20_ombre_geometrique_y [normal2flux $phi0]
       }
       if {$t3<$t4} {
          puts $changeo "$t3,$phi0"
          puts $changeo "$t3,$phi1"
          puts $changeo "$t4,$phi1"
+         lappend ::av4l_analysis_tools::20_ombre_geometrique_x $t3 
+         lappend ::av4l_analysis_tools::20_ombre_geometrique_y [normal2flux $phi0]
+         lappend ::av4l_analysis_tools::20_ombre_geometrique_x $t3 
+         lappend ::av4l_analysis_tools::20_ombre_geometrique_y [normal2flux $phi1]
+         lappend ::av4l_analysis_tools::20_ombre_geometrique_x $t4 
+         lappend ::av4l_analysis_tools::20_ombre_geometrique_y [normal2flux $phi1]
       } else {
          puts $changeo "$t4,$phi0"
+         lappend ::av4l_analysis_tools::20_ombre_geometrique_x $t4 
+         lappend ::av4l_analysis_tools::20_ombre_geometrique_y [normal2flux $phi0]
       }
 
       close $changeo

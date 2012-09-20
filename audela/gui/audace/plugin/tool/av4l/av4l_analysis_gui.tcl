@@ -241,9 +241,21 @@ namespace eval ::av4l_analysis_gui {
 
 
 
+  proc ::av4l_analysis_gui::test_sappho {  } {
 
+     set ::av4l_analysis_gui::wvlngth 0.7500
+     set ::av4l_analysis_gui::dlambda 0.4000
 
+     set ::av4l_analysis_gui::dist    1.56
+     set ::av4l_analysis_gui::re      2.04
+     set ::av4l_analysis_gui::vn      27.800
 
+     set ::av4l_analysis_gui::width   150.0
+     set ::av4l_analysis_gui::trans   0.00
+     
+     set ::av4l_analysis_gui::nheure  200  
+     set ::av4l_analysis_gui::pas_heure  0.2
+  }
 
 
 
@@ -537,7 +549,7 @@ namespace eval ::av4l_analysis_gui {
 
 
 
-   proc ::av4l_analysis_gui::open_corr_file { visuNo frm  } {
+   proc ::av4l_analysis_gui::open_corr_file { visuNo f5  } {
 
       global color
 
@@ -565,19 +577,17 @@ namespace eval ::av4l_analysis_gui {
       $::av4l_analysis_tools::corr_status_file_gui configure -fg $color(blue)
 
       # cree la courbe
-      set ::av4l_analysis_gui::x ""
-      set ::av4l_analysis_gui::y ""
+      set ::av4l_analysis_gui::cdl_x ""
+      set ::av4l_analysis_gui::cdl_y ""
 
       for {set i 1} {$i<=$::av4l_analysis_tools::corr_nbframe} {incr i} {
-         lappend ::av4l_analysis_gui::x [expr ($::av4l_analysis_tools::cdl($i,jd) - $::av4l_analysis_tools::orig) * 86400.0 ]
-         lappend ::av4l_analysis_gui::y $::av4l_analysis_tools::cdl($i,flux)
+         lappend ::av4l_analysis_gui::cdl_x [expr ($::av4l_analysis_tools::cdl($i,jd) - $::av4l_analysis_tools::orig) * 86400.0 ]
+         lappend ::av4l_analysis_gui::cdl_y $::av4l_analysis_tools::cdl($i,flux)
       }
       
-      # affiche la courbe
-      ::plotxy::clf 1
-      ::plotxy::figure 1 
-      ::plotxy::hold on 
-      ::plotxy::plot $::av4l_analysis_gui::x $::av4l_analysis_gui::y b+
+      
+      ::av4l_analysis_gui::active_graphe $f5.frm.graphe l 1
+      
    }
 
 
@@ -670,12 +680,19 @@ namespace eval ::av4l_analysis_gui {
 
 
 
-   proc ::av4l_analysis_gui::calcul_evenement { e } {
-
-         set ::av4l_analysis_tools::dirwork "/data/Occultations/20100605_80SAPPHO/work2"
+   proc ::av4l_analysis_gui::calcul_evenement { frm e } {
 
       
-      if {$e==0} {
+      if {$::av4l_analysis_gui::but_calcul=="Stop"} {
+         set ::av4l_analysis_tools::but_calcul "Stop"
+         return
+      }
+      $frm configure -image .stop
+      set ::av4l_analysis_gui::but_calcul "Stop"
+
+      set ::av4l_analysis_tools::dirwork "/data/Occultations/20100605_80SAPPHO/work2"
+
+      if {$e==-1} {
       
          # Mode immersion
          set ::av4l_analysis_tools::mode -1
@@ -721,7 +738,7 @@ namespace eval ::av4l_analysis_gui {
          set ::av4l_analysis_tools::pas [expr 1.0/$::av4l_analysis_tools::corr_fps]
 
          # Heure de reference (sec TU)
-         set t  [ mc_date2jd $::av4l_analysis_gui::date_immersion ]
+         set t  [ mc_date2jd $::av4l_analysis_gui::date_immersion]
          set ::av4l_analysis_tools::t0_ref [expr ( $t - $::av4l_analysis_tools::orig ) * 86400.0]
          set ::av4l_analysis_tools::t_milieu [expr $::av4l_analysis_tools::t0_ref  + $::av4l_analysis_tools::width/(2.0*$::av4l_analysis_tools::vn)]
 
@@ -752,8 +769,8 @@ namespace eval ::av4l_analysis_gui {
             set j [expr $i + $::av4l_analysis_tools::id_p5 - 1]
             lappend tab $::av4l_analysis_tools::cdl($j,flux)
          }
-         set med1 [::math::statistics::median $tab]
-         set ::av4l_analysis_tools::sigma [expr [::math::statistics::stdev $tab]/ $med1]
+         set ::av4l_analysis_tools::med1 [::math::statistics::median $tab]
+         set ::av4l_analysis_tools::sigma [expr [::math::statistics::stdev $tab]/ $::av4l_analysis_tools::med1]
 
          # mediane plateau bas
          set tab ""
@@ -764,11 +781,11 @@ namespace eval ::av4l_analysis_gui {
          }
          set med0 [::math::statistics::median $tab]
          ::console::affiche_resultat "med0: $med0\n"      
-         ::console::affiche_resultat "med1: $med1\n"      
+         ::console::affiche_resultat "med1: $::av4l_analysis_tools::med1\n"      
 
          # normalisation du flux
          set ::av4l_analysis_tools::phi1 1
-         set ::av4l_analysis_tools::phi0 [expr $med0 / $med1]
+         set ::av4l_analysis_tools::phi0 [expr $med0 / $::av4l_analysis_tools::med1]
          ::console::affiche_resultat "phi0: $::av4l_analysis_tools::phi0\n"      
          ::console::affiche_resultat "phi1: $::av4l_analysis_tools::phi1\n"      
          
@@ -776,53 +793,62 @@ namespace eval ::av4l_analysis_gui {
          for {set i 1} {$i<=$::av4l_analysis_tools::nb_p2} {incr i} {
             set j [expr $i + $::av4l_analysis_tools::id_p2 - 1]
             set ::av4l_analysis_tools::tobs($i) [expr ($::av4l_analysis_tools::cdl($j,jd)-$::av4l_analysis_tools::orig) * 86400.0]
-            set ::av4l_analysis_tools::fobs($i) [expr $::av4l_analysis_tools::cdl($j,flux)/$med1]
+            set ::av4l_analysis_tools::fobs($i) [expr $::av4l_analysis_tools::cdl($j,flux)/$::av4l_analysis_tools::med1]
          }
 
-      # bar.ini
-      set file28 [file join $::av4l_analysis_tools::dirwork "bar.ini"]
-      set chan28 [open $file28 w]
-      if {1==1} {
-         puts $chan28 "$::av4l_analysis_tools::mode"
-         puts $chan28 "0"
-         puts $chan28 "1"
-         puts $chan28 "obs.dat"
-         puts $chan28 "$::av4l_analysis_tools::sigma"
-         puts $chan28 "$::av4l_analysis_gui::wvlngth $::av4l_analysis_gui::dlambda"
-         puts $chan28 "$::av4l_analysis_tools::dist $::av4l_analysis_tools::re"
-         puts $chan28 "$::av4l_analysis_tools::vn"
-         puts $chan28 "$::av4l_analysis_tools::width $::av4l_analysis_tools::trans"
-         puts $chan28 "$::av4l_analysis_tools::duree $::av4l_analysis_tools::pas"
-         puts $chan28 "$::av4l_analysis_tools::phi1 $::av4l_analysis_tools::phi0"
-         puts $chan28 "$::av4l_analysis_tools::t0_ref"
-         puts $chan28 "$::av4l_analysis_tools::nheure $::av4l_analysis_tools::pas_heure"
-      } else {
-         puts $chan28 "$::av4l_analysis_tools::mode"
-         puts $chan28 "0"
-         puts $chan28 "1"
-         puts $chan28 "obs.dat"
-         puts $chan28 [format "%.4f" $::av4l_analysis_tools::sigma]
-         puts $chan28 [format "%.4f %.4f" $::av4l_analysis_gui::wvlngth $::av4l_analysis_gui::dlambda]
-         puts $chan28 [format "%.0f %.2f" $::av4l_analysis_tools::dist $::av4l_analysis_tools::re]
-         puts $chan28 [format "%.3f" $::av4l_analysis_tools::vn]
-         puts $chan28 [format "%.1f %.2f" $::av4l_analysis_tools::width $::av4l_analysis_tools::trans]
-         puts $chan28 [format "%d %.2f" $::av4l_analysis_tools::duree $::av4l_analysis_tools::pas]
-         puts $chan28 [format "%.2f %.2f" $::av4l_analysis_tools::phi1 $::av4l_analysis_tools::phi0]
-         puts $chan28 [format "%.4f" $::av4l_analysis_tools::t0_ref]
-         puts $chan28 [format "%d %.2f" $::av4l_analysis_tools::nheure $::av4l_analysis_tools::pas_heure]
-      }
-      close $chan28
 
 
-         ::av4l_analysis_tools::partie2 
+         set ::av4l_analysis_tools::chi2_search ""
+
+
+         # Premier passage recherche du meilleur temps
+         set err [ catch {::av4l_analysis_tools::partie2 1} msg ]
+         if {$err} {
+            ::console::affiche_erreur "Erreur durant le calcul\n"
+            ::console::affiche_erreur "Err = $err\n"
+            ::console::affiche_erreur "Msg = $msg\n"
+            $frm configure -image .calc
+            set ::av4l_analysis_gui::but_calcul "Calcul"
+            return
+         }
          
+         
+         
+         if {1==1} {
+         
+            set nheuresav $::av4l_analysis_tools::nheure
+            set ::av4l_analysis_tools::nheure   1
+            set ::av4l_analysis_tools::t0_ref   $::av4l_analysis_tools::t0_chi2_min
+            set ::av4l_analysis_tools::t_milieu [expr $::av4l_analysis_tools::t0_ref  + $::av4l_analysis_tools::width/(2.0*$::av4l_analysis_tools::vn)]
+            set ::av4l_analysis_tools::t0_min   [expr $::av4l_analysis_tools::t0_ref - $::av4l_analysis_tools::pas_heure * $::av4l_analysis_tools::nheure / 2.0]
+            set ::av4l_analysis_tools::t0_max   [expr $::av4l_analysis_tools::t0_ref + $::av4l_analysis_tools::pas_heure * $::av4l_analysis_tools::nheure / 2.0]
+            set ::av4l_analysis_tools::t0       $::av4l_analysis_tools::t0_min
+
+
+
+            # Deuxieme passage initialisation des resultats
+            set err [ catch {::av4l_analysis_tools::partie2 2} msg ]
+            if {$err} {
+               ::console::affiche_erreur "Erreur durant le calcul\n"
+               ::console::affiche_erreur "Err = $err\n"
+               ::console::affiche_erreur "Msg = $msg\n"
+               $frm configure -image .calc
+               set ::av4l_analysis_gui::but_calcul "Calcul"
+               return
+            }
+            set ::av4l_analysis_tools::nheure $nheuresav
+
+         }
+         
+         ::console::affiche_resultat "orig: $::av4l_analysis_tools::orig\n"      
+         ::console::affiche_resultat "t0_chi2_min: $::av4l_analysis_tools::t0_chi2_min\n"      
+         ::console::affiche_resultat "t0_norm: [expr $::av4l_analysis_tools::t0_chi2_min / 86400.0 + $::av4l_analysis_tools::orig]\n"      
          
          set ::av4l_analysis_gui::date_immersion_sol [ mc_date2iso8601 [expr $::av4l_analysis_tools::t0_chi2_min / 86400.0 + $::av4l_analysis_tools::orig] ]
 
          set t $::av4l_analysis_tools::t0_chi2_min
-         set x [list $t $t]
-         set y [list 0 $med1]
-         ::plotxy::plot $x $y ro 
+         set ::av4l_analysis_tools::evenement_x [list $t $t]
+         set ::av4l_analysis_tools::evenement_y [list 0 $::av4l_analysis_tools::med1]
 
 #     2012-01-01T23:41:22.345
 #bar  2012-01-01T23:41:22.345
@@ -839,11 +865,89 @@ namespace eval ::av4l_analysis_gui {
 
       }
       
-
+      $frm configure -image .calc
+      set ::av4l_analysis_gui::but_calcul "Calcul"
+      ::av4l_analysis_gui::affiche_graphe
+      
    }
       
 
-   proc ::av4l_analysis_gui::active_graphe { } {
+   proc ::av4l_analysis_gui::affiche_graphe { } {
+      
+      # recupere les axes d un graphe 
+      #  set ax [::plotxy::axis]
+      
+      # defninit les axes d un graphe 
+      #  ::plotxy::axis $ax
+      
+      # Faire une trainée plus epaisse
+      # [list -linewidth 4]
+      
+      # cacher un plot
+      # plotxy::sethandler $::av4l_analysis_gui::h1 [list -hide yes]
+      
+      # montrer un plot
+      # plotxy::sethandler $::av4l_analysis_gui::h1 [list -hide no]
+      # ::plotxy::axis $ax
+
+      # affiche la courbe
+      set err [catch {set ax [::plotxy::getzoom]} msg ]
+      if {!$err} {
+         ::console::affiche_resultat "ZOOM: $ax\n"      
+      } else {
+      
+    
+      }
+      
+      ::plotxy::clf 1
+      ::plotxy::figure 1 
+      ::plotxy::hold on 
+      ::plotxy::position {40 40 600 400}
+      
+      if {!$err&&$::av4l_analysis_gui::state_but_graph(24)!=1} {
+         ::plotxy::setzoom $ax
+      }
+
+      # Signal photométrique (noir)
+      if {$::av4l_analysis_gui::state_but_graph(1)==1} {
+         set h1 [::plotxy::plot $::av4l_analysis_gui::cdl_x $::::av4l_analysis_gui::cdl_y .]
+         plotxy::sethandler $h1 [list -color #000000 -linewidth 1]
+      }
+      # Polynome (noir)
+      if {$::av4l_analysis_gui::state_but_graph(2)==1} {
+         set h2 [::plotxy::plot $::av4l_analysis_tools::poly_x $::av4l_analysis_tools::poly_y o]
+         plotxy::sethandler $h2 [list -color #18ad86 -linewidth 1]
+      }
+      # Evenements
+      if {$::av4l_analysis_gui::state_but_graph(3)==1} {
+         set h3 [::plotxy::plot $::av4l_analysis_tools::evenement_x $::av4l_analysis_tools::evenement_y o]
+         plotxy::sethandler $h3 [list -color #00fffc -linewidth 1]
+      }
+      # Ombre géométrique (jaune fff500)
+      if {$::av4l_analysis_gui::state_but_graph(20)==1} {
+         set h20 [::plotxy::plot $::av4l_analysis_tools::20_ombre_geometrique_x $::av4l_analysis_tools::20_ombre_geometrique_y o]
+         plotxy::sethandler $h20 [list -color #fff500 -linewidth 1]
+      }
+      # Ombre avec diffraction (Fresnel) (bleue 002aff)
+      if {$::av4l_analysis_gui::state_but_graph(21)==1} {
+         set h21 [::plotxy::plot $::av4l_analysis_tools::21_ombre_avec_diffraction_x $::av4l_analysis_tools::21_ombre_avec_diffraction_y o]
+         plotxy::sethandler $h21 [list -color #002aff -linewidth 1]
+      }
+      # Ombre lissee par la reponse instrumentale (donne par le modele) (magenta=ff00fc)
+      if {$::av4l_analysis_gui::state_but_graph(22)==1} {
+         set h22 [::plotxy::plot $::av4l_analysis_tools::22_ombre_instru_x $::av4l_analysis_tools::22_ombre_instru_y o]
+         plotxy::sethandler $h22 [list -color #ff00fc -linewidth 1]
+      }
+      # Ombre interpolée sur les points d'observation (rouge=ff0000)
+      if {$::av4l_analysis_gui::state_but_graph(23)==1} {
+         set h23 [::plotxy::plot $::av4l_analysis_tools::23_ombre_interpol_x $::av4l_analysis_tools::23_ombre_interpol_y o]
+         plotxy::sethandler $h23 [list -color #ff0000 -linewidth 0]
+      }
+      # Chi2 (vert foncé 18ad00)
+      if {$::av4l_analysis_gui::state_but_graph(24)==1} {
+         set h24 [::plotxy::plot $::av4l_analysis_tools::24_chi2_x $::av4l_analysis_tools::24_chi2_y o]
+         plotxy::sethandler $h24 [list -color #18ad00 -linewidth 1]
+      }
       
       
 
@@ -852,15 +956,39 @@ namespace eval ::av4l_analysis_gui {
 
 
 
-   proc ::av4l_analysis_gui::active_graphe { frm button } {
+   proc ::av4l_analysis_gui::active_graphe { frame c b } {
    
-      if {::av4l_analysis_gui::state_but_graph($b) == 1} {
+   
+      if {$::av4l_analysis_gui::state_but_graph($b) == 1} {
          set ::av4l_analysis_gui::state_but_graph($b) 0
-         $frame.$button configure -relief "raised"
+         $frame.$c.$b.view configure -relief "raised"
       } else {
          set ::av4l_analysis_gui::state_but_graph($b) 1 
-         $frame.$button configure -relief "sunken"
+         $frame.$c.$b.view configure -relief "sunken"
       }
+      
+      if {$b==24} {
+         set lb [list 1 2 3 20 21 22 23]
+         if {$::av4l_analysis_gui::state_but_graph($b)==1 } {
+            foreach bp $lb {
+               set ::av4l_analysis_gui::state_but_graph($bp) 0
+            }
+            $frame.l.1.view configure -relief "raised"
+            $frame.l.3.view configure -relief "raised"
+            $frame.l.2.view configure -relief "raised"
+            $frame.r.21.view configure -relief "raised"
+            $frame.r.22.view configure -relief "raised"
+            $frame.r.23.view configure -relief "raised"
+            $frame.r.20.view configure -relief "raised"
+         } else {
+            set ::av4l_analysis_gui::state_but_graph(1) 1 
+            $frame.l.1.view configure -relief "sunken"
+         }
+      } else {
+         set ::av4l_analysis_gui::state_but_graph(24) 0 
+         $frame.l.24.view configure -relief "raised"
+      }
+      
       ::av4l_analysis_gui::affiche_graphe
    
    }
@@ -874,6 +1002,18 @@ namespace eval ::av4l_analysis_gui {
       package require Img
 
       global caption panneau av4lconf color audace
+
+
+
+      set ::av4l_analysis_gui::but_calcul "Calcul"
+      set ::av4l_analysis_gui::state_but_graph(1) 0
+      set ::av4l_analysis_gui::state_but_graph(2) 0
+      set ::av4l_analysis_gui::state_but_graph(3) 0
+      set ::av4l_analysis_gui::state_but_graph(20) 0
+      set ::av4l_analysis_gui::state_but_graph(21) 0
+      set ::av4l_analysis_gui::state_but_graph(22) 0
+      set ::av4l_analysis_gui::state_but_graph(23) 0
+      set ::av4l_analysis_gui::state_but_graph(24) 0
 
       #--- Determination de la fenetre parente
       if { $visuNo == "1" } {
@@ -1140,7 +1280,7 @@ namespace eval ::av4l_analysis_gui {
                   #--- Creation du bouton open
                   button $charge.but_open \
                      -text "ouvrir" -borderwidth 2 \
-                     -command "::av4l_analysis_gui::open_corr_file $visuNo $f1"
+                     -command "::av4l_analysis_gui::open_corr_file $visuNo $f5"
                   pack $charge.but_open \
                      -side left -anchor e \
                      -padx 3 -pady 3 -ipadx 3 -ipady 3 -expand 0
@@ -1556,60 +1696,12 @@ namespace eval ::av4l_analysis_gui {
                   pack $trans -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                        #--- Cree un label
-                       label $trans.l -text "transmission : opaque = 0: "
+                       label $trans.l -text "transmission : 0=opaque à 1=transparent  : "
                        pack  $trans.l -side left -anchor e  
 
                        #--- Cree un label pour le chemin de l'AVI
                        entry $trans.v -textvariable ::av4l_analysis_gui::trans -width 10
                        pack $trans.v -side left -padx 3 -pady 1 -fill x
-
-                  #--- Cree un frame pour le chargement d'un fichier
-                  set pas [frame $frmgauche.pas -borderwidth 0 -cursor arrow -relief groove]
-                  pack $pas -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-                       #--- Cree un label
-                       label $pas.l -text "Pas en temps entre 2 images (sec) : "
-                       pack  $pas.l -side left -anchor e 
-
-                       #--- Cree un label pour le chemin de l'AVI
-                       entry $pas.v -textvariable ::av4l_analysis_gui::pas -width 10
-                       pack $pas.v -side left -padx 3 -pady 1 -fill x
-
-                  #--- Cree un frame pour le chargement d'un fichier
-                  set phi1 [frame $frmgauche.phi1 -borderwidth 0 -cursor arrow -relief groove]
-                  pack $phi1 -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-                       #--- Cree un label
-                       label $phi1.l -text "Flux hors occultation (normalisé) : "
-                       pack  $phi1.l -side left -anchor e 
-
-                       #--- Cree un label pour le chemin de l'AVI
-                       entry $phi1.v -textvariable ::av4l_analysis_gui::phi1 -width 10
-                       pack $phi1.v -side left -padx 3 -pady 1 -fill x
-
-                  #--- Cree un frame pour le chargement d'un fichier
-                  set phi0 [frame $frmgauche.phi0 -borderwidth 0 -cursor arrow -relief groove]
-                  pack $phi0 -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-                       #--- Cree un label
-                       label $phi0.l -text "Flux stellaire zero (normalisé) : "
-                       pack  $phi0.l -side left -anchor e 
-
-                       #--- Cree un label pour le chemin de l'AVI
-                       entry $phi0.v -textvariable ::av4l_analysis_gui::phi0 -width 10
-                       pack $phi0.v -side left -padx 3 -pady 1 -fill x
-
-                  #--- Cree un frame pour le chargement d'un fichier
-                  set sigma [frame $frmgauche.sigma -borderwidth 0 -cursor arrow -relief groove]
-                  pack $sigma -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-                       #--- Cree un label
-                       label $sigma.l -text "Sigma des observations (stdev) : "
-                       pack  $sigma.l -side left -anchor e 
-
-                       #--- Cree un label pour le chemin de l'AVI
-                       entry $sigma.v -textvariable ::av4l_analysis_gui::sigma -width 10
-                       pack $sigma.v -side left -padx 3 -pady 1 -fill x
 
 
 
@@ -1686,9 +1778,11 @@ namespace eval ::av4l_analysis_gui {
              set calcul [frame $immersion.calcul -borderwidth 0 -cursor arrow -relief groove]
              pack $calcul -in $immersion -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
+                  image create photo .calc -format PNG -file [ file join $audace(rep_plugin) tool av4l img calcul.png ]
+                  image create photo .stop -format PNG -file [ file join $audace(rep_plugin) tool av4l img stop2.png ]
                   #--- Creation du bouton open
-                  button $calcul.but_calc -text "Calcul" -borderwidth 2 \
-                        -command "::av4l_analysis_gui::calcul_evenement 0"
+                  button $calcul.but_calc -image .calc -borderwidth 2 \
+                        -command "::av4l_analysis_gui::calcul_evenement $calcul.but_calc -1"
                   pack $calcul.but_calc -side top -anchor c 
 
              #--- Cree un frame pour le chargement d'un fichier
@@ -1748,18 +1842,6 @@ namespace eval ::av4l_analysis_gui {
                             pack  $nfit_chi2_min.v -side left -anchor e 
 
                        #--- Cree un frame pour le chargement d'un fichier
-                       set dchi2 [frame $frmgauche.dchi2 -borderwidth 0 -cursor arrow -relief groove]
-                       pack $dchi2 -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 0
-
-                            #--- Cree un label
-                            label $dchi2.l -text "DChi2 : "
-                            pack  $dchi2.l -side left -anchor e 
-
-                            #--- Cree un label
-                            label $dchi2.v -textvariable ::av4l_analysis_tools::dchi2
-                            pack  $dchi2.v -side left -anchor e 
-
-                       #--- Cree un frame pour le chargement d'un fichier
                        set t0_chi2_min [frame $frmgauche.t0_chi2_min -borderwidth 0 -cursor arrow -relief groove]
                        pack $t0_chi2_min -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 0
 
@@ -1776,8 +1858,8 @@ namespace eval ::av4l_analysis_gui {
                        pack $tps_dchi2 -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 0
 
                             #--- Cree un label
-                            label $tps_dchi2.l -text "Intervalle ou chi2 < tps_dchi2 + dchi2 : "
-                            pack  $tps_dchi2.l -side left -anchor e 
+                            label $tps_dchi2.l1 -text "Intervalle 1 \u03C3 : "
+                            pack  $tps_dchi2.l1 -side left -anchor e 
 
                             #--- Cree un label
                             label $tps_dchi2.v1 -textvariable ::av4l_analysis_tools::t_inf
@@ -1791,18 +1873,171 @@ namespace eval ::av4l_analysis_gui {
                             label $tps_dchi2.v2 -textvariable ::av4l_analysis_tools::t_sup
                             pack  $tps_dchi2.v2 -side left -anchor e 
 
+                            #--- Cree un label
+                            label $tps_dchi2.l3 -text "  ("
+                            pack  $tps_dchi2.l3 -side left -anchor e 
+
+                            #--- Cree un label
+                            label $tps_dchi2.v3 -textvariable ::av4l_analysis_tools::t_diff
+                            pack  $tps_dchi2.v3 -side left -anchor e 
+
+                            #--- Cree un label
+                            label $tps_dchi2.l4 -text " sec)"
+                            pack  $tps_dchi2.l4 -side left -anchor e 
+
+
+                       #--- Cree un frame pour le chargement d'un fichier
+                       set tps_dchi2 [frame $frmgauche.tps_dchi2_3s -borderwidth 0 -cursor arrow -relief groove]
+                       pack $tps_dchi2 -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 0
+
+                            #--- Cree un label
+                            label $tps_dchi2.l1 -text "Intervalle 3 \u03C3 : "
+                            pack  $tps_dchi2.l1 -side left -anchor e 
+
+                            #--- Cree un label
+                            label $tps_dchi2.v1 -textvariable ::av4l_analysis_tools::t_inf_3s
+                            pack  $tps_dchi2.v1 -side left -anchor e 
+
+                            #--- Cree un label
+                            label $tps_dchi2.l2 -text "<=>"
+                            pack  $tps_dchi2.l2 -side left -anchor e 
+
+                            #--- Cree un label
+                            label $tps_dchi2.v2 -textvariable ::av4l_analysis_tools::t_sup_3s
+                            pack  $tps_dchi2.v2 -side left -anchor e 
+
+                            #--- Cree un label
+                            label $tps_dchi2.l3 -text "  ("
+                            pack  $tps_dchi2.l3 -side left -anchor e 
+
+                            #--- Cree un label
+                            label $tps_dchi2.v3 -textvariable ::av4l_analysis_tools::t_diff_3s
+                            pack  $tps_dchi2.v3 -side left -anchor e 
+
+                            #--- Cree un label
+                            label $tps_dchi2.l4 -text " sec)"
+                            pack  $tps_dchi2.l4 -side left -anchor e 
+
 
              #--- Cree un frame pour le chargement d'un fichier
              set graphe [frame $immersion.graphe -borderwidth 0 -cursor arrow -relief groove]
              pack $graphe -in $immersion -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-                  #--- Creation du bouton open
-                  button $graphe.20 -text "Ombre géométrique" -borderwidth 2 \
-                        -command "::av4l_analysis_gui::active_graphe $graphe 20"
-                  pack $graphe.20 -side top -anchor w
 
+                  image create photo .view -format PNG -file [ file join $audace(rep_plugin) tool av4l img view.png ]
 
+                  
+                  #--- Cree un frame pour le chargement d'un fichier
+                  set graphel [frame $graphe.l -borderwidth 0 -cursor arrow -relief groove]
+                  pack $graphel -in $graphe -anchor s -side left -expand 0 -fill x -padx 10 -pady 5
 
+                       #--- Cree un frame pour le chargement d'un fichier
+                       set graphe1 [frame $graphel.1 -borderwidth 0 -cursor arrow -relief groove]
+                       pack $graphe1 -in $graphel -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                      #--- Creation du bouton select
+                            button $graphe1.view -image .view -compound center \
+                               -borderwidth 2 -takefocus 1 -command "::av4l_analysis_gui::active_graphe $graphe l 1"
+                            pack $graphe1.view -side left -anchor e -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
+
+                            #--- Cree un label
+                            label $graphe1.lab -text "Signal photométrique" -font $av4lconf(font,courier_10_b)
+                            pack  $graphe1.lab -side left -anchor e 
+
+                       #--- Cree un frame pour le chargement d'un fichier
+                       set graphe3 [frame $graphel.3 -borderwidth 0 -cursor arrow -relief groove]
+                       pack $graphe3 -in $graphel -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                            #--- Creation du bouton select
+                            button $graphe3.view -image .view -compound center \
+                               -borderwidth 2 -takefocus 1 -command "::av4l_analysis_gui::active_graphe $graphe l 3"
+                            pack $graphe3.view -side left -anchor e -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
+
+                            #--- Cree un label
+                            label $graphe3.lab -text "Evenements"
+                            pack  $graphe3.lab -side left -anchor e 
+
+                       #--- Cree un frame pour le chargement d'un fichier
+                       set graphe2 [frame $graphel.2 -borderwidth 0 -cursor arrow -relief groove]
+                       pack $graphe2 -in $graphel -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                            #--- Creation du bouton select
+                            button $graphe2.view -image .view -compound center \
+                               -borderwidth 2 -takefocus 1 -command "::av4l_analysis_gui::active_graphe $graphe l 2"
+                            pack $graphe2.view -side left -anchor e -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
+
+                            #--- Cree un label
+                            label $graphe2.lab -text "Polynome"
+                            pack  $graphe2.lab -side left -anchor e 
+
+                       #--- Cree un frame pour le chargement d'un fichier
+                       set graphe24 [frame $graphel.24 -borderwidth 0 -cursor arrow -relief groove]
+                       pack $graphe24 -in $graphel -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                            #--- Creation du bouton select
+                            button $graphe24.view -image .view -compound center \
+                               -borderwidth 2 -takefocus 1 -command "::av4l_analysis_gui::active_graphe $graphe l 24"
+                            pack $graphe24.view -side left -anchor e -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
+
+                            #--- Cree un label
+                            label $graphe24.lab -text "Chi2" -font $av4lconf(font,courier_10_b)
+                            pack  $graphe24.lab -side left -anchor e 
+
+                  #--- Cree un frame pour le chargement d'un fichier
+                  set grapher [frame $graphe.r -borderwidth 0 -cursor arrow -relief groove]
+                  pack $grapher -in $graphe -anchor s -side right -expand 0 -fill x -padx 10 -pady 5
+
+                       #--- Cree un frame pour le chargement d'un fichier
+                       set graphe23 [frame $grapher.23 -borderwidth 0 -cursor arrow -relief groove]
+                       pack $graphe23 -in $grapher -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                            #--- Creation du bouton select
+                            button $graphe23.view -image .view -compound center \
+                               -borderwidth 2 -takefocus 1 -command "::av4l_analysis_gui::active_graphe $graphe r 23"
+                            pack $graphe23.view -side left -anchor e -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
+
+                            #--- Cree un label
+                            label $graphe23.lab -text "Ombre interpolée sur les points d'observation" -font $av4lconf(font,courier_10_b)
+                            pack  $graphe23.lab -side left -anchor e 
+
+                       #--- Cree un frame pour le chargement d'un fichier
+                       set graphe20 [frame $grapher.20 -borderwidth 0 -cursor arrow -relief groove]
+                       pack $graphe20 -in $grapher -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                            #--- Creation du bouton select
+                            button $graphe20.view -image .view -compound center \
+                               -borderwidth 2 -takefocus 1 -command "::av4l_analysis_gui::active_graphe $graphe r 20"
+                            pack $graphe20.view -side left -anchor e -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
+
+                            #--- Cree un label
+                            label $graphe20.lab -text "Ombre géométrique"
+                            pack  $graphe20.lab -side left -anchor e 
+
+                       #--- Cree un frame pour le chargement d'un fichier
+                       set graphe21 [frame $grapher.21 -borderwidth 0 -cursor arrow -relief groove]
+                       pack $graphe21 -in $grapher -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                            #--- Creation du bouton select
+                            button $graphe21.view -image .view -compound center \
+                               -borderwidth 2 -takefocus 1 -command "::av4l_analysis_gui::active_graphe $graphe r 21"
+                            pack $graphe21.view -side left -anchor e -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
+
+                            #--- Cree un label
+                            label $graphe21.lab -text "Ombre avec diffraction"
+                            pack  $graphe21.lab -side left -anchor e 
+
+                       #--- Cree un frame pour le chargement d'un fichier
+                       set graphe22 [frame $grapher.22 -borderwidth 0 -cursor arrow -relief groove]
+                       pack $graphe22 -in $grapher -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                            #--- Creation du bouton select
+                            button $graphe22.view -image .view -compound center \
+                               -borderwidth 2 -takefocus 1 -command "::av4l_analysis_gui::active_graphe $graphe r 22"
+                            pack $graphe22.view -side left -anchor e -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
+
+                            #--- Cree un label
+                            label $graphe22.lab -text "Ombre lissee par la reponse instrumentale"
+                            pack  $graphe22.lab -side left -anchor e 
 
 
 

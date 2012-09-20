@@ -306,7 +306,7 @@ proc ::av4l::BuildIF { visuNo } {
          DynamicHelp::add $This.fra1.time -text $caption(av4l_go,time)
 
          #--- Creation du bouton
-         image create photo .cdl -format PNG -file [ file join $audace(rep_plugin) tool av4l img cdl.png ]
+         image create photo .cdl -format PNG -file [ file join $audace(rep_plugin) tool av4l img photom.png ]
          button $This.fra1.cdl -image .cdl\
             -borderwidth 2 -width 48 -height 48 -compound center \
             -command "::av4l_cdl::run  $visuNo $base.av4l_cdl"
@@ -317,24 +317,26 @@ proc ::av4l::BuildIF { visuNo } {
          DynamicHelp::add $This.fra1.cdl -text $caption(av4l_go,cdl)
 
 
+
+
      if { $::av4l::parametres(av4l,$visuNo,mode_debug)==1 } {
+
+         #--- Creation du bouton
+         image create photo .analysis -format PNG -file [ file join $audace(rep_plugin) tool av4l img cdl.png ]
+         button $This.fra1.analysis -image .analysis\
+            -borderwidth 2 -width 48 -height 48 -compound center \
+            -command "::av4l_analysis_gui::run  $visuNo $base.av4l_analysis"
+         pack $This.fra1.analysis \
+            -in $This.fra1 \
+            -side left -anchor w \
+            -expand 0
+         DynamicHelp::add $This.fra1.analysis -text $caption(av4l_go,analysis)
+
+
 
       #--- Frame du titre
       frame $This.fradev -borderwidth 2 -relief groove
       pack $This.fradev -side top -fill x
-
-
-
-         #--- Creation du bouton
-         image create photo .analysis -format PNG -file [ file join $audace(rep_plugin) tool av4l img brain_mini.png ]
-         button $This.fradev.analysis -image .analysis\
-            -borderwidth 2 -width 10 -height 10 -compound center \
-            -command "::av4l_analysis_gui::run  $visuNo $base.av4l_analysis"
-         pack $This.fradev.analysis \
-            -in $This.fradev \
-            -side left -anchor w \
-            -expand 0
-         DynamicHelp::add $This.fradev.analysis -text $caption(av4l_go,analysis)
 
 
          #--- Creation du bouton
@@ -361,21 +363,16 @@ proc ::av4l::BuildIF { visuNo } {
          DynamicHelp::add $This.fradev.ressource -text $caption(av4l_go,ressource)
 
 
-      #--- Frame du titre
-      frame $This.fradev2 -borderwidth 2 -relief groove
-      pack $This.fradev2 -side top -fill x
-
-
          #--- Creation du bouton
          image create photo .verif -format PNG -file [ file join $audace(rep_plugin) tool av4l img verif.png ]
-         button $This.fradev2.verif -image .verif\
+         button $This.fradev.verif -image .verif\
             -borderwidth 2 -width 10 -height 10 -compound center \
             -command "::av4l_verif::run  $visuNo $base.av4l_verif"
-         pack $This.fradev2.verif \
-            -in $This.fradev2 \
+         pack $This.fradev.verif \
+            -in $This.fradev \
             -side top -anchor w \
             -expand 0
-         DynamicHelp::add $This.fradev2.verif -text $caption(av4l_go,verif)
+         DynamicHelp::add $This.fradev.verif -text $caption(av4l_go,verif)
 
 
      }
