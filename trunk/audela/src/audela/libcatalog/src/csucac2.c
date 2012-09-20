@@ -18,7 +18,7 @@ int cmd_tcl_csucac2(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 	double radius;
 	double magMin;
 	double magMax;
-	const int* const * indexTable;
+	int** indexTable;
 	starUcac2 oneStar;
 	searchZoneUcac2 mySearchZoneUcac2;
 	arrayOneDOfStarUcac2 theFilteredStars;
@@ -224,7 +224,7 @@ int filterStarsUcac2(const arrayTwoDOfStarUcac2* theUnFilteredStars,arrayOneDOfS
  * Retrieve list of stars
  */
 int retrieveUnfilteredStarsUcac2(const char* const pathOfCatalog, const searchZoneUcac2* mySearchZoneUcac2,
-		const int* const * indexTable, arrayTwoDOfStarUcac2* theUnFilteredStars) {
+		int** indexTable, arrayTwoDOfStarUcac2* theUnFilteredStars) {
 
 	/* We retrieve the index of all used file zones */
 	int indexZoneDecStart,indexZoneDecEnd,indexZoneRaStart,indexZoneRaEnd,resultOfFunction;
@@ -412,7 +412,7 @@ int readUnfiltredStarForOneDecZoneUcac2(const char* const pathOfCatalog, const a
 /**
  * Allocate memory for one Dec zone for the un-filtered stars : case of ra not around 0
  */
-int allocateUnfiltredStarUcac2(const arrayTwoDOfStarUcac2* theUnilteredStars, const int* const * indexTable,
+int allocateUnfiltredStarUcac2(const arrayTwoDOfStarUcac2* theUnilteredStars, int** indexTable,
 		const int indexZoneDecStart,const int indexZoneDecEnd, const int indexZoneRaStart,const int indexZoneRaEnd, const char isArroundZeroRa) {
 
 	int indexDec;

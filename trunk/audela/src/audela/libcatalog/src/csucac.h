@@ -164,12 +164,12 @@ typedef struct {
 const searchZoneUcac2 findSearchZoneUcac2(const double ra,const double dec,const double radius,const double magMin, const double magMax);
 int** readIndexFileUcac2(const char* const pathOfCatalog);
 void retrieveIndexesUcac2(const searchZoneUcac2* mySearchZone,int* indexZoneDecStart,int* indexZoneDecEnd,int* indexZoneRaStart,int* indexZoneRaEnd);
-int retrieveUnfilteredStarsUcac2(const char* const pathOfCatalog, const searchZoneUcac2* mySearchZone, const int* const * indexTable, arrayTwoDOfStarUcac2* theUnfilteredStars);
-int allocateUnfiltredStarUcac2(const arrayTwoDOfStarUcac2* theUnilteredStars, const int* const * indexTable,const int indexZoneDecStart,const int indexZoneDecEnd,
+int retrieveUnfilteredStarsUcac2(const char* const pathOfCatalog, const searchZoneUcac2* mySearchZone, int** indexTable, arrayTwoDOfStarUcac2* theUnfilteredStars);
+int allocateUnfiltredStarUcac2(const arrayTwoDOfStarUcac2* theUnilteredStars, int** indexTable,const int indexZoneDecStart,const int indexZoneDecEnd,
 		const int indexZoneRaStart,const int indexZoneRaEnd, const char isArroundZeroRa);
 int allocateUnfiltredStarForOneDecZoneUcac2(arrayOneDOfStarUcac2* unFilteredStarsForOneDec, const int* const indexTableForOneDec,
 		const int indexZoneRaStart,const int indexZoneRaEnd);
-int readUnfiltredStarUcac2(const char* const pathOfCatalog, const arrayTwoDOfStarUcac2* theUnilteredStars, const int* const * indexTable,
+int readUnfiltredStarUcac2(const char* const pathOfCatalog, const arrayTwoDOfStarUcac2* theUnilteredStars, int** indexTable,
 		const int indexZoneDecStart,const int indexZoneDecEnd, const int indexZoneRaStart,const int indexZoneRaEnd, const char isArroundZeroRa);
 int readUnfiltredStarForOneDecZoneUcac2(const char* const pathOfCatalog, const arrayOneDOfStarUcac2* notFilteredStarsForOneDec, const int* const indexTableForOneDec,
 		int indexDec, const int indexZoneRaStart,const int indexZoneRaEnd);
