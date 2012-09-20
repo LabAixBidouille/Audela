@@ -76,8 +76,10 @@ namespace eval gui_cdl_withwcs {
       set ::gui_cdl_withwcs::block 1
       set ::gui_cdl_withwcs::stoperreur 1
       set ::gui_cdl_withwcs::directaccess 1
-      
+
+# Penser a retirer d ici lorsque modif createcata      
       ::gui_cata::inittoconf
+# -----------------------------------------------
 
       set ::tools_cdl::nomobj ""
       if { ! [info exists bddconf(cdl_savedir)] } {

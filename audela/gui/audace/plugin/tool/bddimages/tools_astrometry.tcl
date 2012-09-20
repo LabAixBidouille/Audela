@@ -39,6 +39,8 @@ variable imagelimit
       #set listsources [::tools_sources::set_common_fields $listsources TYCHO2 { RAdeg DEdeg 5 VT e_VT }]
       set ::tools_cata::current_listsources $listsources
 
+      set errnum [catch {file delete -force $catafile} msg ]
+
    }
 
 
@@ -122,27 +124,30 @@ variable imagelimit
          #::audace::autovisu $::audace(visuNo)
          set ::tools_cata::current_listsources [::bddimages_liste::lget $::tools_cata::current_image "listsources"]
 
-            set sources [lindex $::tools_cata::current_listsources 1]
-            #foreach s $sources {
-            #   foreach cata $s {
-            #      if {[lindex $cata 0] == "ASTROID"} {
-            #         #gren_info "s1=[lindex $cata 2]\n"
-            #      }
-            #   }
-            #}
-
-
          set ::tools_cata::current_listsources [::analyse_source::psf $::tools_cata::current_listsources $::tools_astrometry::treshold $::tools_astrometry::delta]
-         gren_info "rollup = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources ]\n"
 
-            set sources [lindex $::tools_cata::current_listsources 1]
-            #foreach s $sources {
-            #   foreach cata $s {
-            #      if {[lindex $cata 0] == "ASTROID"} {
-            #         #gren_info "s2=[lindex $cata 2]\n"
-            #      }
-            #   }
-            #}
+         #gren_info "rollup = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources ]\n"
+
+
+         set sources [lindex $::tools_cata::current_listsources 1]
+         foreach s $sources {
+            foreach cata $s {
+               if {[lindex $cata 0] == "SKYBOT"} {
+                  #gren_info "s1=[lindex $cata 2]\n"
+                        #gren_info "C=$cata\n"
+                  foreach u $s {
+                     if {[lindex $u 0] == "ASTROID"} {
+                        #gren_info "U=$u\n"
+                        gren_info "Found : ([lindex [lindex $cata 2] 0]) [lindex [lindex $cata 2] 1]\n"
+                        
+                     }
+                  }
+               }
+            }
+         }
+
+
+
 
          # On reinsere dans img_list les resultats qui se trouvent dans list_source
          if {[::bddimages_liste::lexist $::tools_cata::current_image "listsources" ]==0} {
@@ -473,8 +478,8 @@ variable imagelimit
 
 
          #gren_info "SRol=[ ::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
-         set ::tools_cata::current_image [::bddimages_liste::lupdate $::tools_cata::current_image "listsources" $::tools_cata::current_listsources ]
-         set ::tools_cata::img_list [lreplace $::tools_cata::img_list $::tools_cata::id_current_image $::tools_cata::id_current_image $::tools_cata::current_image]
+         set  ::tools_cata::current_image [::bddimages_liste::lupdate $::tools_cata::current_image "listsources" $::tools_cata::current_listsources ]
+         set  ::tools_cata::img_list [lreplace $::tools_cata::img_list $::tools_cata::id_current_image $::tools_cata::id_current_image $::tools_cata::current_image]
          incr ::tools_cata::id_current_image
 
       }

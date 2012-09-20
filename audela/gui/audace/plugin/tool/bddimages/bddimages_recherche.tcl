@@ -1179,10 +1179,17 @@ namespace eval bddimages_recherche {
               -command { ::gui_cata::run_cata}
 
       menu $popupTbl.developpement -tearoff 0
-      $popupTbl add cascade -label "Developpement" -menu $popupTbl.developpement
+      $popupTbl add cascade -label "Divers" -menu $popupTbl.developpement
 
            $popupTbl.developpement add command -label "charge_cata"  -state disabled \
               -command { ::bddimages_recherche::bddimages_charge_cata }
+
+           $popupTbl.developpement add command -label "Gain et bruit de lecture" \
+              -command { ::bddimages_infocam::run_create $audace(base).bddimages_infocam "gain" }
+
+           $popupTbl.developpement add command -label "Limite du Dark" \
+              -command { ::bddimages_infocam::run_create $audace(base).bddimages_infocam "darklimit" }
+
 
       # Separateur
       $popupTbl add separator

@@ -488,7 +488,7 @@ proc ::tools_cata::get_table { name table } {
          #::manage_source::imprim_3_sources $tycho2
          #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
          set log 0
-         set listsources [ identification $listsources IMG $tycho2 TYCHO2 30.0 -30.0 {} $log]
+         set listsources [ identification $listsources IMG $tycho2 TYCHO2 $::tools_cata::treshold_ident_pos_star $::tools_cata::treshold_ident_mag_star {} $log]
          set ::tools_cata::nb_tycho2 [::manage_source::get_nb_sources_by_cata $listsources TYCHO2]
       }
       
@@ -500,7 +500,7 @@ proc ::tools_cata::get_table { name table } {
          #::manage_source::imprim_3_sources $ucac2
          #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
          set log 0
-         set listsources [ identification $listsources IMG $ucac2 UCAC2 30.0 -30.0 {} $log]
+         set listsources [ identification $listsources IMG $ucac2 UCAC2 $::tools_cata::treshold_ident_pos_star $::tools_cata::treshold_ident_mag_star {} $log]
          set ::tools_cata::nb_ucac2 [::manage_source::get_nb_sources_by_cata $listsources UCAC2]
       }
       
@@ -512,7 +512,7 @@ proc ::tools_cata::get_table { name table } {
          #::manage_source::imprim_3_sources $ucac3
          #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
          set log 0
-         set listsources [ identification $listsources IMG $ucac3 UCAC3 30.0 -30.0 {} $log]
+         set listsources [ identification $listsources IMG $ucac3 UCAC3 $::tools_cata::treshold_ident_pos_star $::tools_cata::treshold_ident_mag_star {} $log]
          set ::tools_cata::nb_ucac3 [::manage_source::get_nb_sources_by_cata $listsources UCAC3]
       }
       
@@ -528,10 +528,18 @@ proc ::tools_cata::get_table { name table } {
          #gren_info "get_skybot $dateiso $ra $dec $radius $iau_code\n"
          set err [ catch {get_skybot $dateiso $ra $dec $radius $iau_code} skybot ]
          #gren_info "skybot = $skybot\n"
+         #set listsources [::tools_sources::set_common_fields_skybot $listsources]
+
+#         ::manage_source::imprim_3_sources $listsources
+#         gren_info "DELrollup listsources = [::manage_source::get_nb_sources_rollup $listsources]\n"
+         set listsources [ ::manage_source::delete_catalog $listsources "SKYBOT"]
+#         gren_info "DELrollup listsources = [::manage_source::get_nb_sources_rollup $listsources]\n"
 
          #gren_info "nb_skybot = [::manage_source::get_nb_sources_by_cata $skybot SKYBOT]\n"
-         set listsources [ identification $listsources "IMG" $skybot "SKYBOT" -100.0 -100.0 {} 1] 
+         set listsources [ identification $listsources "IMG" $skybot "SKYBOT" $::tools_cata::treshold_ident_pos_ast $::tools_cata::treshold_ident_mag_ast {} 0] 
          set ::tools_cata::nb_skybot [::manage_source::get_nb_sources_by_cata $listsources SKYBOT]
+         #affich_rond $listsources "SKYBOT" "magenta" 4
+         #after 1000
          #gren_info "nb_skybot ident = $::tools_cata::nb_skybot\n"
       }
       
@@ -562,19 +570,75 @@ proc ::tools_cata::get_table { name table } {
 
       set ::tools_cata::current_listsources $listsources
 
-
       return true
+
+::manage_source::imprim_3_sources $::tools_cata::current_listsources
+gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
+set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
+set votable [::votableUtil::list2votable $::tools_cata::current_listsources $tabkey]
+set fxml [open $cataxml "w"]
+puts $fxml $votable
+close $fxml
+
+
    }
 
 
 
 
+#::tools_cata::test_ident_skybot 50 50 2
+
+   proc ::tools_cata::test_ident_skybot { x y l } {
+
+      cleanmark
+
+      set ra  $::tools_cata::ra
+      set dec $::tools_cata::dec
+      set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
+      set listsources $::tools_cata::current_listsources
+
+     gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $listsources]\n"
+     set listsources [ ::manage_source::delete_catalog $listsources "SKYBOT" ]
+     gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $listsources]\n"
 
 
 
+      
+      set dateobs     [lindex [::bddimages_liste::lget $tabkey DATE-OBS   ] 1]
+      set exposure    [lindex [::bddimages_liste::lget $tabkey EXPOSURE   ] 1]
+      set datejd  [ mc_date2jd $dateobs ]
+      set datejd  [ expr $datejd + $exposure/86400.0/2.0 ]
+      set dateiso [ mc_date2iso8601 $datejd ]
+      set radius  [format "%0.0f" [expr 10.*60.0] ]
+      set iau_code [lindex [::bddimages_liste::lget $tabkey IAU_CODE ] 1]
 
+      gren_info "get_skybot $dateiso $ra $dec $radius $iau_code\n"
+      if {![info exists ::tools_cata::skybot]} {
+         set err [ catch {get_skybot $dateiso $ra $dec $radius $iau_code} ::tools_cata::skybot ]
+         if {$err} {
+            gren_info "err = $err\n"
+            gren_info "msg = $::tools_cata::skybot\n"
+            return
+         }
+      }
+      gren_info "skybot = $::tools_cata::skybot\n"
 
+      #set listsources [::tools_sources::set_common_fields_skybot $listsources]
+      set listsources [ identification $listsources "IMG" $::tools_cata::skybot "SKYBOT" $x $y {} $l] 
+      set ::tools_cata::nb_skybot [::manage_source::get_nb_sources_by_cata $listsources SKYBOT]
+      gren_info "nb_skybot = $::tools_cata::nb_skybot\n"
+      #gren_info "[::manage_source::extract_sources_by_catalog $listsources SKYBOT]\n"
+      #cleanmark
+      affich_rond $listsources "SKYBOT" "magenta" 4
 
+# {1647 0} {1689 0} {1700 0} {1712 0} {3058 0} {3069 0} {3073 0}
+
+# {1678 0} {1738 0} {1752 0} {3420 0} {3463 0} {3465 0} {3488 0} 
+# {1678 0} {1738 0} {1752 0} {3420 0} {3463 0} {3465 0} {3488 0} 
+
+#{1299 0} {1334 0} {1342 0} {2737 0} {2779 0} {2781 0} {2802 0} 
+#{1299 0} {1334 0} {1342 0} {2737 0} {2779 0} {2781 0} {2802 0} 
+   }
 
 
 

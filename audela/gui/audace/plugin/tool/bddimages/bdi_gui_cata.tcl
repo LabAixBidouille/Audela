@@ -500,6 +500,34 @@ namespace eval gui_cata {
             set ::tools_cata::log 0
          }
       }
+      if {! [info exists ::tools_cata::treshold_ident_pos_star] } {
+         if {[info exists conf(astrometry,cata,treshold_ident_pos_star)]} {
+            set ::tools_cata::log $conf(astrometry,cata,treshold_ident_pos_star)
+         } else {
+            set ::tools_cata::treshold_ident_pos_star 30.0
+         }
+      }
+      if {! [info exists ::tools_cata::treshold_ident_mag_star] } {
+         if {[info exists conf(astrometry,cata,treshold_ident_mag_star)]} {
+            set ::tools_cata::log $conf(astrometry,cata,treshold_ident_mag_star)
+         } else {
+            set ::tools_cata::treshold_ident_mag_star -30.0
+         }
+      }
+      if {! [info exists ::tools_cata::treshold_ident_pos_ast] } {
+         if {[info exists conf(astrometry,cata,treshold_ident_pos_ast)]} {
+            set ::tools_cata::log $conf(astrometry,cata,treshold_ident_pos_ast)
+         } else {
+            set ::tools_cata::treshold_ident_pos_ast -100.0
+         }
+      }
+      if {! [info exists ::tools_cata::treshold_ident_mag_ast] } {
+         if {[info exists conf(astrometry,cata,treshold_ident_mag_ast)]} {
+            set ::tools_cata::log $conf(astrometry,cata,treshold_ident_mag_ast)
+         } else {
+            set ::tools_cata::treshold_ident_mag_ast -100.0
+         }
+      }
 
       # Lib du compilateur Fortran pour executer Priam
       if {! [info exists ::tools_astrometry::ifortlib] } {
@@ -609,13 +637,17 @@ namespace eval gui_cata {
       set conf(astrometry,cata,size_ovni)   $::gui_cata::size_ovni
 
       # Autres utilitaires
-      set conf(astrometry,cata,keep_radec)             $::tools_cata::keep_radec
-      set conf(astrometry,cata,create_cata)            $::tools_cata::create_cata
-      set conf(astrometry,cata,delpv)                  $::tools_cata::delpv
-      set conf(astrometry,cata,boucle)                 $::tools_cata::boucle
-      set conf(astrometry,cata,deuxpasses)             $::tools_cata::deuxpasses
-      set conf(astrometry,cata,limit_nbstars_accepted) $::tools_cata::limit_nbstars_accepted
-      set conf(astrometry,cata,log)                    $::tools_cata::log
+      set conf(astrometry,cata,keep_radec)              $::tools_cata::keep_radec
+      set conf(astrometry,cata,create_cata)             $::tools_cata::create_cata
+      set conf(astrometry,cata,delpv)                   $::tools_cata::delpv
+      set conf(astrometry,cata,boucle)                  $::tools_cata::boucle
+      set conf(astrometry,cata,deuxpasses)              $::tools_cata::deuxpasses
+      set conf(astrometry,cata,limit_nbstars_accepted)  $::tools_cata::limit_nbstars_accepted
+      set conf(astrometry,cata,log)                     $::tools_cata::log
+      set conf(astrometry,cata,treshold_ident_pos_star) $::tools_cata::treshold_ident_pos_star
+      set conf(astrometry,cata,treshold_ident_mag_star) $::tools_cata::treshold_ident_mag_star
+      set conf(astrometry,cata,treshold_ident_pos_ast)  $::tools_cata::treshold_ident_pos_ast
+      set conf(astrometry,cata,treshold_ident_mag_ast)  $::tools_cata::treshold_ident_mag_ast
 
 
       destroy $::gui_cata::fen
@@ -2236,8 +2268,8 @@ namespace eval gui_cata {
       global audace
       global bddconf
 
-      ::gui_cata::charge_list $img_list
       ::gui_cata::inittoconf
+      ::gui_cata::charge_list $img_list
       catch { 
          ::gui_cata::set_aladin_script_params
       }
@@ -2455,6 +2487,54 @@ namespace eval gui_cata {
              #--- Cree un checkbutton
              checkbutton $log.check -highlightthickness 0 -text "Activation du log" -variable ::tools_cata::log
              pack $log.check -in $log -side left -padx 5 -pady 0
+
+        #--- Cree un frame pour afficher boucle
+        set treshold_ident [frame $f2.treshold_ident_star -borderwidth 0 -cursor arrow -relief groove]
+        pack $treshold_ident -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             #--- Cree un checkbutton
+             label $treshold_ident.lab1 -text "Seuil d'indentification stellaire : En position :" 
+             pack $treshold_ident.lab1 -in $treshold_ident -side left -padx 5 -pady 0
+             #--- Cree un entry
+             entry $treshold_ident.val1 -relief sunken -textvariable ::tools_cata::treshold_ident_pos_star -width 5
+             pack $treshold_ident.val1 -in $treshold_ident -side left -pady 1 -anchor w
+             #--- Cree un checkbutton
+             label $treshold_ident.lab2 -text "En magnitude :"
+             pack $treshold_ident.lab2 -in $treshold_ident -side left -padx 5 -pady 0
+             #--- Cree un entry
+             entry $treshold_ident.val2 -relief sunken -textvariable ::tools_cata::treshold_ident_mag_star -width 5
+             pack $treshold_ident.val2 -in $treshold_ident -side left -pady 1 -anchor w
+
+        #--- Cree un frame pour afficher boucle
+        set treshold_ident [frame $f2.treshold_ident_ast -borderwidth 0 -cursor arrow -relief groove]
+        pack $treshold_ident -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             #--- Cree un checkbutton
+             label $treshold_ident.lab1 -text "Seuil d'indentification d'astéroïde : En position :" 
+             pack $treshold_ident.lab1 -in $treshold_ident -side left -padx 5 -pady 0
+             #--- Cree un entry
+             entry $treshold_ident.val1 -relief sunken -textvariable ::tools_cata::treshold_ident_pos_ast -width 5
+             pack $treshold_ident.val1 -in $treshold_ident -side left -pady 1 -anchor w
+             #--- Cree un checkbutton
+             label $treshold_ident.lab2 -text "En magnitude :" 
+             pack $treshold_ident.lab2 -in $treshold_ident -side left -padx 5 -pady 0
+             #--- Cree un entry
+             entry $treshold_ident.val2 -relief sunken -textvariable ::tools_cata::treshold_ident_mag_ast -width 5
+             pack $treshold_ident.val2 -in $treshold_ident -side left -pady 1 -anchor w
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         #--- Cree un frame pour afficher info image

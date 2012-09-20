@@ -49,6 +49,7 @@ proc get_identified { sra sdec serrpos srmag srmagerr ira idec ierrpos irmag irm
        if {$log} {gren_info "annulation du scoremv\n"}
        set scoremv 0.0
     }
+    #gren_info "score $scorepos $scoremv "
     if {$log} {gren_info "( $scorepos >= $scoreposlimit && $scoremv >= $scoremvlimit )\n"}
     if { $scorepos >= $scoreposlimit && $scoremv >= $scoremvlimit } {
        if {$log} {gren_info "yep\n"}
@@ -70,8 +71,8 @@ proc identification { catalist1 catalog1 catalist2 catalog2 scoreposlimit scorem
 
    set tt0 [clock clicks -milliseconds]
  
- 
    set ulog 0
+   if {$log==2} {set ulog 1} 
 
    set decoupe 16
    set delta [expr 10./3600.]
@@ -201,7 +202,7 @@ proc identification { catalist1 catalog1 catalist2 catalog2 scoreposlimit scorem
          set fd0 [expr $sized / $decoupe * $j + $mind - $delta]
          set fd1 [expr $sized / $decoupe * ($j+1) + $mind + $delta]
 
-         if {$ulog} {gren_info "fen $i,$j : $fa0 $fa1 $fd0 $fd1 \n"}
+     #    if {$ulog} {gren_info "fen $i,$j : $fa0 $fa1 $fd0 $fd1 \n"}
 
          set fen($i,$j) [list $fa0 $fa1 $fd0 $fd1]
          set arr1($i,$j) ""
@@ -227,7 +228,7 @@ proc identification { catalist1 catalog1 catalist2 catalog2 scoreposlimit scorem
    set sum 0
    for {set i 0} {$i<$decoupe} {incr i} {
       for {set j 0} {$j<$decoupe} {incr j} {
-          if {$ulog} {gren_info "fen $i,$j : [llength $arr1($i,$j)] \n"}
+       #    if {$ulog} {gren_info "fen $i,$j : [llength $arr1($i,$j)] \n"}
           set sum [expr $sum + [llength $arr1($i,$j)]]
       }
    }
@@ -252,7 +253,7 @@ proc identification { catalist1 catalog1 catalist2 catalog2 scoreposlimit scorem
    set sum 0
    for {set i 0} {$i<$decoupe} {incr i} {
       for {set j 0} {$j<$decoupe} {incr j} {
-          if {$ulog} {gren_info "fen $i,$j : [llength $arr2($i,$j)] \n"}
+  #        if {$ulog} {gren_info "fen $i,$j : [llength $arr2($i,$j)] \n"}
           set sum [expr $sum + [llength $arr2($i,$j)]]
       }
    }
@@ -294,7 +295,7 @@ proc identification { catalist1 catalog1 catalist2 catalog2 scoreposlimit scorem
       }
    }
 
-
+   set couple [lsort -unique $couple]
    if {$ulog} {gren_info "couple : [lrange $couple 0 5] \n"}
    if {$ulog} {gren_info "nb couple : [llength $couple] \n"}
 
@@ -303,11 +304,15 @@ proc identification { catalist1 catalog1 catalist2 catalog2 scoreposlimit scorem
    set tt [expr ($tt3 - $tt2)/1000.]
    if {$ulog} {gren_info "Cross RA duration $tt sec \n"}
 
-
-
-
-
-
+   if {$log >= 2} {
+      gren_info "COUPLE : $couple \n"
+      foreach c  $couple {
+         set i1 [lindex $c 0]
+         set i2 [lindex $c 1]
+         affich_un_rond $tabs1($i1,ra) $tabs1($i1,dec) blue 2
+         affich_un_rond $tabs2($i2,ra) $tabs2($i2,dec) green 3
+      }
+   }
 
    set ident ""
    set llog 0
@@ -316,7 +321,7 @@ proc identification { catalist1 catalog1 catalist2 catalog2 scoreposlimit scorem
       set i1 [lindex $c 0]
       set i2 [lindex $c 1]
 
-         if {$log == 1 && $fa0l < $tabs2($i2,ra) && $tabs2($i2,ra) < $fa1l && $fd0l < $tabs2($i2,dec) && $tabs2($i2,dec) < $fd1l } {
+         if {$log >= 1 && $fa0l < $tabs2($i2,ra) && $tabs2($i2,ra) < $fa1l && $fd0l < $tabs2($i2,dec) && $tabs2($i2,dec) < $fd1l } {
             gren_info "** LOG : $i1   $i2\n"
             set llog 1
          } else {
@@ -324,6 +329,7 @@ proc identification { catalist1 catalog1 catalist2 catalog2 scoreposlimit scorem
          }
       
          if {$tabs1($i1,accepted)==0 && $tabs2($i2,accepted)==0} {
+            #gren_info "$i1 $i2 : "
             set accepted [get_identified \
                              $tabs1($i1,ra)           \
                              $tabs1($i1,dec)          \
@@ -336,13 +342,14 @@ proc identification { catalist1 catalog1 catalist2 catalog2 scoreposlimit scorem
                              $tabs2($i2,mag)          \
                              $tabs2($i2,magerr)       \
                              $scoreposlimit $scoremvlimit $llog]
-            #gren_info "$accepted $id1 $id2 $tabs1($id1,ra)\n"
+            #gren_info "\n  "
+
+            if {$log>=2} {gren_info "ACCEPTED=$accepted i1=$i1 i2=$i2 \n"}
             if { $accepted } {
                if {$llog} {gren_info "+"}
                lappend ident [list $i1 $i2]
                set tabs2($i2,accepted) 1
                set tabs1($i1,accepted) 1
-               #gren_info "[list $tabs1($id1,id) $tabs2($id2,id)]\n"
             }
 
             #set a 106.253805
@@ -373,6 +380,18 @@ proc identification { catalist1 catalog1 catalist2 catalog2 scoreposlimit scorem
       #gren_info "i = $i\n"
       set id1 [lindex $i 0]
       set id2 [lindex $i 1]
+
+      if {$log>=2} {
+         gren_info "IDENT : [list $id1 $id2 ]\n"
+         affich_un_rond $tabs1($id1,ra) $tabs1($id1,dec) green 5
+         gren_info "S1 : [mc_angle2hms $tabs1($id1,ra) h] [mc_angle2dms $tabs1($id1,dec) 90]\n"
+         gren_info "S2 : [mc_angle2hms $tabs2($id2,ra) h] [mc_angle2dms $tabs2($id2,dec) 90]\n"
+         gren_info "S1 : $tabs1($id1,ra) $tabs1($id1,dec)\n"
+         gren_info "S2 : $tabs2($id2,ra) $tabs2($id2,dec)\n"
+         after 1000
+      }
+
+
       set s1 [lindex $sources1 $id1]
       set news1 ""
       foreach cata $s1 {
@@ -420,10 +439,9 @@ proc identification { catalist1 catalog1 catalist2 catalog2 scoreposlimit scorem
    set tt3 [clock clicks -milliseconds]
    set tt [expr ($tt3 - $tt2)/1000.]
    if {$ulog} {gren_info "duration $tt sec \n"}
-   set tt [expr ($tt3 - $tt0)/1000.]
-   gren_info "** CrossMatch $catalog1 VS $catalog2 in $tt secondes for $nbralist1 x $nbralist2 sources ... Matched : [llength $ident]\n"
+   set tt [format "%.3f" [expr ($tt3 - $tt0)/1000.]]
+   gren_info "** CrossMatch $catalog1 VS $catalog2 in $tt secondes for $nbralist1 x $nbralist2 sources ...(P$scoreposlimit|M$scoremvlimit) Matched : [llength $ident]\n"
  
   return $result
 
 }
-
