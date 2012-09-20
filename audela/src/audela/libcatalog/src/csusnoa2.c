@@ -156,7 +156,7 @@ int processOneZone(Tcl_DString* dsptr, FILE* inputStream,accFiles oneAccFile,sta
 	double decInDeg;
 	int spdInCas;
 	int magnitudes;
-	int redMagnitudeInDeciMag;
+	double redMagnitudeInDeciMag;
 	double redMagnitudeInMag;
 	double blueMagnitudeInMag;
 	starUsno theStar;

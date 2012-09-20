@@ -22,6 +22,7 @@ int cmd_tcl_csucac3(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 	starUcac3 oneStar;
 	searchZoneUcac3 mySearchZoneUcac3;
 	arrayOneDOfStarUcac3 theFilteredStars;
+	arrayTwoDOfStarUcac3 theUnfilteredStars;
 	Tcl_DString dsptr;
 
 	if((argc == 2) && (strcmp(argv[1],"-h") == 0)) {
@@ -65,7 +66,6 @@ int cmd_tcl_csucac3(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 	}
 
 	/* Now read the catalog and retrieve stars */
-	arrayTwoDOfStarUcac3 theUnfilteredStars;
 	resultOfFunction = retrieveUnfilteredStarsUcac3(pathToCatalog,&mySearchZoneUcac3,indexTable,&theUnfilteredStars);
 	if(resultOfFunction) {
 		releaseDoubleArray((void**)indexTable, INDEX_TABLE_DEC_DIMENSION);

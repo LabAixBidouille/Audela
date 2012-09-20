@@ -362,6 +362,7 @@ int readUnfiltredStarForOneDecZoneUcac2(const char* const pathOfCatalog, const a
 	int resultOfRead;
 	int indexRa;
 	int sumOfStarBefore;
+	int sumOfStarToRead;
 	FILE* myStream;
 
 
@@ -374,7 +375,7 @@ int readUnfiltredStarForOneDecZoneUcac2(const char* const pathOfCatalog, const a
 		sumOfStarBefore  += indexTableForOneDec[indexRa];
 	}
 
-	int sumOfStarToRead   = 0;
+	sumOfStarToRead       = 0;
 	for(indexRa           = indexZoneRaStart; indexRa <= indexZoneRaEnd; indexRa++) {
 		sumOfStarToRead  += indexTableForOneDec[indexRa];
 	}
