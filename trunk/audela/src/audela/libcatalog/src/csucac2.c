@@ -172,12 +172,13 @@ int filterStarsUcac2(const arrayTwoDOfStarUcac2* theUnFilteredStars,arrayOneDOfS
 
 		for(counterRa     = 0; counterRa < lengthOfOneDArray; counterRa++) {
 			oneStar       = allStars[counterRa];
-			if((oneStar.raInMas >= mySearchZoneUcac2->raStartInMas) &&
-					(oneStar.raInMas <= mySearchZoneUcac2->raEndInMas) &&
-					(oneStar.decInMas >= mySearchZoneUcac2->decStartInMas) &&
-					(oneStar.decInMas <= mySearchZoneUcac2->decEndInMas) &&
-					(oneStar.ucacMagInCentiMag >= mySearchZoneUcac2->magnitudeStartInCentiMag) &&
-					(oneStar.ucacMagInCentiMag <= mySearchZoneUcac2->magnitudeEndInCentiMag)) {
+			if(
+					((mySearchZoneUcac2->isArroundZeroRa && ((oneStar.raInMas >= mySearchZoneUcac2->raStartInMas) || (oneStar.raInMas <= mySearchZoneUcac2->raEndInMas))) ||
+							(!mySearchZoneUcac2->isArroundZeroRa && ((oneStar.raInMas >= mySearchZoneUcac2->raStartInMas) && (oneStar.raInMas <= mySearchZoneUcac2->raEndInMas)))) &&
+							(oneStar.decInMas >= mySearchZoneUcac2->decStartInMas) &&
+							(oneStar.decInMas <= mySearchZoneUcac2->decEndInMas) &&
+							(oneStar.ucacMagInCentiMag >= mySearchZoneUcac2->magnitudeStartInCentiMag) &&
+							(oneStar.ucacMagInCentiMag <= mySearchZoneUcac2->magnitudeEndInCentiMag)) {
 				numberOfStars++;
 			}
 		}
@@ -204,12 +205,13 @@ int filterStarsUcac2(const arrayTwoDOfStarUcac2* theUnFilteredStars,arrayOneDOfS
 
 		for(counterRa = 0; counterRa < lengthOfOneDArray; counterRa++) {
 			oneStar       = allStars[counterRa];
-			if((oneStar.raInMas >= mySearchZoneUcac2->raStartInMas) &&
-					(oneStar.raInMas <= mySearchZoneUcac2->raEndInMas) &&
-					(oneStar.decInMas >= mySearchZoneUcac2->decStartInMas) &&
-					(oneStar.decInMas <= mySearchZoneUcac2->decEndInMas) &&
-					(oneStar.ucacMagInCentiMag >= mySearchZoneUcac2->magnitudeStartInCentiMag) &&
-					(oneStar.ucacMagInCentiMag <= mySearchZoneUcac2->magnitudeEndInCentiMag)) {
+			if(
+					((mySearchZoneUcac2->isArroundZeroRa && ((oneStar.raInMas >= mySearchZoneUcac2->raStartInMas) || (oneStar.raInMas <= mySearchZoneUcac2->raEndInMas))) ||
+							(!mySearchZoneUcac2->isArroundZeroRa && ((oneStar.raInMas >= mySearchZoneUcac2->raStartInMas) && (oneStar.raInMas <= mySearchZoneUcac2->raEndInMas)))) &&
+							(oneStar.decInMas >= mySearchZoneUcac2->decStartInMas) &&
+							(oneStar.decInMas <= mySearchZoneUcac2->decEndInMas) &&
+							(oneStar.ucacMagInCentiMag >= mySearchZoneUcac2->magnitudeStartInCentiMag) &&
+							(oneStar.ucacMagInCentiMag <= mySearchZoneUcac2->magnitudeEndInCentiMag)) {
 
 				theFilteredStars->arrayOneD[numberOfStars] = oneStar;
 				numberOfStars++;
