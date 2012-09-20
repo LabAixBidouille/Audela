@@ -203,12 +203,13 @@ int filterStarsUcac3(const arrayTwoDOfStarUcac3* theUnFilteredStars, arrayOneDOf
 		for(counterRa = 0; counterRa < lengthOfOneDArray; counterRa++) {
 			oneStar       = allStars[counterRa];
 
-			if((oneStar.raInMas >= mySearchZoneUcac3->raStartInMas) &&
-					(oneStar.raInMas <= mySearchZoneUcac3->raEndInMas) &&
-					(oneStar.distanceToSouthPoleInMas  >= mySearchZoneUcac3->distanceToPoleStartInMas) &&
-					(oneStar.distanceToSouthPoleInMas  <= mySearchZoneUcac3->distanceToPoleEndInMas) &&
-					(oneStar.ucacApertureMagInMilliMag >= mySearchZoneUcac3->magnitudeStartInMilliMag) &&
-					(oneStar.ucacApertureMagInMilliMag <= mySearchZoneUcac3->magnitudeEndInMilliMag)) {
+			if(
+					((mySearchZoneUcac3->isArroundZeroRa && ((oneStar.raInMas >= mySearchZoneUcac3->raStartInMas) || (oneStar.raInMas <= mySearchZoneUcac3->raEndInMas))) ||
+							(!mySearchZoneUcac3->isArroundZeroRa && ((oneStar.raInMas >= mySearchZoneUcac3->raStartInMas) && (oneStar.raInMas <= mySearchZoneUcac3->raEndInMas)))) &&
+							(oneStar.distanceToSouthPoleInMas  >= mySearchZoneUcac3->distanceToPoleStartInMas) &&
+							(oneStar.distanceToSouthPoleInMas  <= mySearchZoneUcac3->distanceToPoleEndInMas) &&
+							(oneStar.ucacApertureMagInMilliMag >= mySearchZoneUcac3->magnitudeStartInMilliMag) &&
+							(oneStar.ucacApertureMagInMilliMag <= mySearchZoneUcac3->magnitudeEndInMilliMag)) {
 				numberOfStars++;
 			}
 		}
@@ -235,12 +236,13 @@ int filterStarsUcac3(const arrayTwoDOfStarUcac3* theUnFilteredStars, arrayOneDOf
 
 		for(counterRa = 0; counterRa < lengthOfOneDArray; counterRa++) {
 			oneStar       = allStars[counterRa];
-			if((oneStar.raInMas >= mySearchZoneUcac3->raStartInMas) &&
-					(oneStar.raInMas <= mySearchZoneUcac3->raEndInMas) &&
-					(oneStar.distanceToSouthPoleInMas  >= mySearchZoneUcac3->distanceToPoleStartInMas) &&
-					(oneStar.distanceToSouthPoleInMas  <= mySearchZoneUcac3->distanceToPoleEndInMas) &&
-					(oneStar.ucacApertureMagInMilliMag >= mySearchZoneUcac3->magnitudeStartInMilliMag) &&
-					(oneStar.ucacApertureMagInMilliMag <= mySearchZoneUcac3->magnitudeEndInMilliMag)) {
+			if(
+					((mySearchZoneUcac3->isArroundZeroRa && ((oneStar.raInMas >= mySearchZoneUcac3->raStartInMas) || (oneStar.raInMas <= mySearchZoneUcac3->raEndInMas))) ||
+							(!mySearchZoneUcac3->isArroundZeroRa && ((oneStar.raInMas >= mySearchZoneUcac3->raStartInMas) && (oneStar.raInMas <= mySearchZoneUcac3->raEndInMas)))) &&
+							(oneStar.distanceToSouthPoleInMas  >= mySearchZoneUcac3->distanceToPoleStartInMas) &&
+							(oneStar.distanceToSouthPoleInMas  <= mySearchZoneUcac3->distanceToPoleEndInMas) &&
+							(oneStar.ucacApertureMagInMilliMag >= mySearchZoneUcac3->magnitudeStartInMilliMag) &&
+							(oneStar.ucacApertureMagInMilliMag <= mySearchZoneUcac3->magnitudeEndInMilliMag)) {
 
 				theFilteredStars->arrayOneD[numberOfStars] = oneStar;
 				numberOfStars++;
