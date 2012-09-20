@@ -316,6 +316,40 @@ namespace eval ::plotxy {
       }
    }
 
+   proc setzoom { ax } {
+      global plotxy
+      set num $plotxy(currentfigure)
+      set plotxy(fig$num,axis) [::plotxy::axis]
+      set baseplotxy $plotxy(fig$num,parent)
+      # zoomIn { graph x0 y0 x1 y1 }
+      zoomIn $baseplotxy.xy [lindex $ax 0] [lindex $ax 2] [lindex $ax 1] [lindex $ax 3]
+   }
+
+
+   proc getzoom {  } {
+
+      global plotxy
+
+      set num $plotxy(currentfigure)
+      
+      set plotxy(fig$num,axis) [::plotxy::axis]
+      set baseplotxy $plotxy(fig$num,parent)
+      
+      set x1 [ $baseplotxy.xy axis cget x -min ]
+      set x2 [ $baseplotxy.xy axis cget x -max ]
+      set y1 [ $baseplotxy.xy axis cget y -min ]
+      set y2 [ $baseplotxy.xy axis cget y -max ]
+ 
+      if {$x1==""} {
+         return [::plotxy::axis]
+      } else {
+         return [list $x1 $x2 $y1 $y2]
+      }
+   }
+   
+   
+   
+   
    #=== Matlab equivalents pour colorsymbol
    #       y     yellow        .     point
    #       m     magenta       o     circle
@@ -788,6 +822,7 @@ namespace eval ::plotxy {
       } else {
          $graph axis configure y -min $y0 -max $y1
       }
+
    }
 
    #########################################################################
@@ -823,12 +858,15 @@ namespace eval ::plotxy {
    #--   Entree : nom de la fenetre                                        #
    #########################################################################
    proc zoomOut { graph } {
+
       global plotxy
+
 
       #--   si le stack du zoomIn n'est pas vide
       if [ info exists plotxy(zoomstack,$graph) ] {
          eval [ popZoom $graph ]
       }
+
    }
 
    #########################################################################
