@@ -49,6 +49,7 @@
 
 void releaseSimpleArray(void* theOneDArray);
 void releaseDoubleArray(void** theTwoDArray, const int firstDimension);
+void addLastSlashToPath(char* onePath);
 
 
 #endif /* USEFUL_H_ */

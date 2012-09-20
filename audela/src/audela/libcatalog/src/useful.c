@@ -7,11 +7,16 @@
 
 #include "useful.h"
 
+/*
+ * Free memory of a double pointer array
+ */
 void releaseDoubleArray(void** theTwoDArray, const int firstDimension) {
+
+	int index;
 
 	if(theTwoDArray != NULL) {
 
-		int index = 0;
+		index = 0;
 
 		while(index < firstDimension) {
 
@@ -27,11 +32,34 @@ void releaseDoubleArray(void** theTwoDArray, const int firstDimension) {
 	}
 }
 
+/*
+ * Free memory of a simple array
+ */
 void releaseSimpleArray(void* theOneDArray) {
 
 	if(theOneDArray != NULL) {
 		free(theOneDArray);
 		theOneDArray = NULL;
+	}
+}
+
+/*
+ * Add a slash to the end of a path if not exist
+ */
+void addLastSlashToPath(char* onePath) {
+
+	char slash[3];
+
+#if defined(LIBRARY_DLL)
+	sprintf(slash,"\\");
+#else
+	sprintf(slash,"/");
+#endif
+
+	if (strlen(onePath) > 0) {
+		if (onePath[strlen(onePath)-1] != slash[0] ) {
+			strcat(onePath,slash);
+		}
 	}
 }
 

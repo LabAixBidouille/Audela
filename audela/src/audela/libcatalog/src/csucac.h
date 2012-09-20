@@ -162,14 +162,14 @@ typedef struct {
 
 /* Function prototypes for UCAC2 */
 const searchZoneUcac2 findSearchZoneUcac2(const double ra,const double dec,const double radius,const double magMin, const double magMax);
-const int* const * const readIndexFileUcac2(const char* const pathOfCatalog);
+int** readIndexFileUcac2(const char* const pathOfCatalog);
 void retrieveIndexesUcac2(const searchZoneUcac2* mySearchZone,int* indexZoneDecStart,int* indexZoneDecEnd,int* indexZoneRaStart,int* indexZoneRaEnd);
-int retrieveUnfilteredStarsUcac2(const char* const pathOfCatalog, const searchZoneUcac2* mySearchZone, const int* const * const indexTable, arrayTwoDOfStarUcac2* theUnfilteredStars);
-int allocateUnfiltredStarUcac2(const arrayTwoDOfStarUcac2* theUnilteredStars, const int* const * const indexTable,const int indexZoneDecStart,const int indexZoneDecEnd,
+int retrieveUnfilteredStarsUcac2(const char* const pathOfCatalog, const searchZoneUcac2* mySearchZone, const int* const * indexTable, arrayTwoDOfStarUcac2* theUnfilteredStars);
+int allocateUnfiltredStarUcac2(const arrayTwoDOfStarUcac2* theUnilteredStars, const int* const * indexTable,const int indexZoneDecStart,const int indexZoneDecEnd,
 		const int indexZoneRaStart,const int indexZoneRaEnd, const char isArroundZeroRa);
 int allocateUnfiltredStarForOneDecZoneUcac2(arrayOneDOfStarUcac2* unFilteredStarsForOneDec, const int* const indexTableForOneDec,
 		const int indexZoneRaStart,const int indexZoneRaEnd);
-int readUnfiltredStarUcac2(const char* const pathOfCatalog, const arrayTwoDOfStarUcac2* theUnilteredStars, const int* const * const indexTable,
+int readUnfiltredStarUcac2(const char* const pathOfCatalog, const arrayTwoDOfStarUcac2* theUnilteredStars, const int* const * indexTable,
 		const int indexZoneDecStart,const int indexZoneDecEnd, const int indexZoneRaStart,const int indexZoneRaEnd, const char isArroundZeroRa);
 int readUnfiltredStarForOneDecZoneUcac2(const char* const pathOfCatalog, const arrayOneDOfStarUcac2* notFilteredStarsForOneDec, const int* const indexTableForOneDec,
 		int indexDec, const int indexZoneRaStart,const int indexZoneRaEnd);
@@ -179,15 +179,15 @@ void printUnfilteredStarUcac2(const arrayTwoDOfStarUcac2* theUnilteredStars);
 
 /* Function prototypes for UCAC3 */
 const searchZoneUcac3 findSearchZoneUcac3(const double ra,const double dec,const double radius,const double magMin, const double magMax);
-const int* const * const readIndexFileUcac3(const char* const pathOfCatalog);
+int** readIndexFileUcac3(const char* const pathOfCatalog);
 void retrieveIndexesUcac3(const searchZoneUcac3* mySearchZone,int* indexZoneDecStart,int* indexZoneDecEnd,int* indexZoneRaStart,int* indexZoneRaEnd);
-int retrieveUnfilteredStarsUcac3(const char* const pathOfCatalog, const searchZoneUcac3* mySearchZone, const int* const * const indexTable,
+int retrieveUnfilteredStarsUcac3(const char* const pathOfCatalog, const searchZoneUcac3* mySearchZone, int* const* indexTable,
 		arrayTwoDOfStarUcac3* theUnfilteredStars);
-int allocateUnfiltredStarUcac3(const arrayTwoDOfStarUcac3* theUnilteredStars, const int* const * const indexTable,const int indexZoneDecStart,
+int allocateUnfiltredStarUcac3(const arrayTwoDOfStarUcac3* theUnilteredStars, int* const* indexTable,const int indexZoneDecStart,
 		const int indexZoneDecEnd,const int indexZoneRaStart,const int indexZoneRaEnd, const char isArroundZeroRa);
 int allocateUnfiltredStarForOneDecZoneUcac3(arrayOneDOfStarUcac3* unFilteredStarsForOneDec, const int* const indexTableForOneDec,
 		const int indexZoneRaStart,const int indexZoneRaEnd);
-int readUnfiltredStarUcac3(const char* const pathOfCatalog, const arrayTwoDOfStarUcac3* theUnfilteredStars, const int* const * const indexTable,
+int readUnfiltredStarUcac3(const char* const pathOfCatalog, const arrayTwoDOfStarUcac3* theUnfilteredStars, int* const* indexTable,
 		const int indexZoneDecStart,const int indexZoneDecEnd, const int indexZoneRaStart,const int indexZoneRaEnd, const char isArroundZeroRa);
 int readUnfiltredStarForOneDecZoneUcac3(const char* const pathOfCatalog, const arrayOneDOfStarUcac3* notFilteredStarsForOneDec,
 		const int* const indexTableForOneDec,int indexDec, const int indexZoneRaStart,const int indexZoneRaEnd);
