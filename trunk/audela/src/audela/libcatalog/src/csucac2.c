@@ -365,7 +365,6 @@ int readUnfiltredStarForOneDecZoneUcac2(const char* const pathOfCatalog, const a
 	int sumOfStarToRead;
 	FILE* myStream;
 
-
 	if(notFilteredStarsForOneDec->length == 0) {
 		return (0);
 	}
