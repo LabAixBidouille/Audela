@@ -46,6 +46,8 @@ namespace eval ::av4l_analysis_tools {
 
 package require math::statistics
 package require math::special
+package require math::linearalgebra
+
 set tcl_precision 17
 
       variable cols
@@ -265,7 +267,9 @@ set tcl_precision 17
       set ::av4l_analysis_tools::corr_date_end  [ mc_date2iso8601 $::av4l_analysis_tools::cdl($::av4l_analysis_tools::corr_nbframe,jd) ]
       set ::av4l_analysis_tools::corr_duree  [format "%.3f" [expr ($::av4l_analysis_tools::cdl($::av4l_analysis_tools::corr_nbframe,jd) \
             - $::av4l_analysis_tools::cdl(1,jd) ) * 86400.0 ]]
-      set ::av4l_analysis_tools::corr_fps  [format "%.3f" [expr ($::av4l_analysis_tools::corr_nbframe /$::av4l_analysis_tools::corr_duree )]]
+      set ::av4l_analysis_tools::corr_fps  [format "%.3f" [expr ($::av4l_analysis_tools::corr_nbframe / $::av4l_analysis_tools::corr_duree )]]
+      set ::av4l_analysis_tools::corr_exposure [format "%.3f" [expr 1.0 / $::av4l_analysis_tools::corr_fps ] ]
+
       set ::av4l_analysis_tools::orig  $::av4l_analysis_tools::cdl(1,jd)
 
       return -code 0 
@@ -625,22 +629,32 @@ set tcl_precision 17
 
          ::console::affiche_resultat "Integrale du flux avant convolution(km): $som\n"      
          #-----------------------------------------------------------------------------
-      
+
       
          #-----------------------------------------------------------------------------
          #
          # Convolution par la reponse instrumentale
          # Considerer ici comme lineaire
          #
-         set nptl 0
-         for {set i [expr -$npt]} {$i<=$npt} {incr i} {
-            incr nptl
-            set ::av4l_analysis_tools::tl($nptl)    $t($i)
-            set ::av4l_analysis_tools::fluxl($nptl) $flux($i)
+         
+         if {$::av4l_analysis_tools::irep == 1 } {
+
+            # si reponse instrumentale
+            set serial_t    [array get t]
+            set serial_flux [array get flux]
+            set nptl        [::av4l_analysis_tools::instrument $serial_t $serial_flux $npt]
+            
+         } else {
+ 
+            # si pas de reponse instrumentale
+            set nptl 0
+            for {set i [expr -$npt]} {$i<=$npt} {incr i} {
+               incr nptl
+               set ::av4l_analysis_tools::tl($nptl)    $t($i)
+               set ::av4l_analysis_tools::fluxl($nptl) $flux($i)
+            }
+ 
          }
-         #::console::affiche_resultat "FLUX 41: $::av4l_analysis_tools::fluxl(41)\n"      
-         #close $chan21
-         #return 
 
          #-----------------------------------------------------------------------------
       
@@ -710,6 +724,11 @@ set tcl_precision 17
          ::console::affiche_resultat "temps milieu de la bande: $::av4l_analysis_tools::t_milieu\n"      
          ::console::affiche_resultat "duree de la bande: [expr $::av4l_analysis_tools::width/$::av4l_analysis_tools::vn]\n"      
          ::console::affiche_resultat "$nfit points fittes entre: $tobs_min et $tobs_max  \n"      
+         if {$::av4l_analysis_tools::irep == 1 } {
+            ::console::affiche_resultat "Reponse instrumentale utilisee. expo : $::av4l_analysis_tools::corr_exposure\n"      
+         } else {
+            ::console::affiche_resultat "Reponse instrumentale uniforme \n"      
+         }
 
           
          puts $chan24 "$::av4l_analysis_tools::t0,$chi2,$nfit"
@@ -1013,16 +1032,96 @@ set tcl_precision 17
 
 
 
-   proc ::av4l_analysis_tools::instrument { } {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   proc ::av4l_analysis_tools::instrument { serial_t serial_flux npt } {
 
    # subroutine instrument (nmax, t, flux, npt, trep, rep ,nrep, tl, fluxl, nptl)
 
+      # som= somme pour construire le flux lisse
+      # aire= integrale de la fonction instrumentale
+      # dtmax= longueur en temps de la fonction instrumentale.
 
+      array set t    $serial_t
+      array set flux $serial_flux
+
+      set trep(1) [expr -$::av4l_analysis_tools::corr_exposure / 2. ]
+      set trep(2) [expr +$::av4l_analysis_tools::corr_exposure / 2. ]
+      set rep(1)  1 
+      set rep(2)  1
+      set nrep 2
+
+      set nptl 0
+      set dtmax   [expr $trep($nrep) - $trep(1)]
+
+      # On boucle d'abord sur le fux original
+      for {set i [expr - $npt]} {$i <= $npt} {incr i} {
+      
+         set tmin [expr $t($i) - $dtmax]
+         if { $tmin < $t([expr -$npt]) } {continue}
+         set som 0
+         set aire 0
+         
+         # On boucle ensuite sur la reponse instrumentale
+         
+         for {set j [expr $i+1-$npt]} {$j<=[expr $i+1+$npt]} {incr j} {
+         
+            set dt [expr $t($i) - $t([expr $i-$j+1])]
+            set discri [expr ($dt - $trep(1))*($dt - $trep($nrep))]
+            if {$discri <= 0.0 } {
+              
+               set coeff 0.0
+               
+               for {set k 1} {$k<=[expr $nrep-1]} {incr k} {
+               
+                  set discri [expr ($dt - $trep($k))*($dt - $trep([expr $k+1]))]
+                  if {$discri <= 0.0 } {
+                     set coeff [expr $rep([expr $k+1]) - $rep($k)]
+                     set coeff [expr ($dt-$trep($k))/($trep([expr $k+1])-$trep($k))*$coeff]
+                     set coeff [expr $coeff + $rep($k)]
+                     break
+                  }
+
+               }
+               
+               set som [expr $som + $coeff * $flux([expr $i - $j +1])]
+               set aire [expr $aire + $coeff]
+
+            }
+         
+         }
+         incr nptl
+         set ::av4l_analysis_tools::tl($nptl) $t($i)
+         set ::av4l_analysis_tools::fluxl($nptl) [expr $som/$aire]
+      }
+      return $nptl
    }
 
-   proc ::av4l_analysis_tools::normal2flux { fn } {
-      return [expr  $::av4l_analysis_tools::med1 * $fn]
-   }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
    # Trace de l'ombre geometrique
@@ -1093,6 +1192,18 @@ set tcl_precision 17
 
    }
 
+
+
+
+
+
+
+
+
+
+
+
+
    #-----------------------------------------------------------------
 
    proc ::av4l_analysis_tools::interpol { nmod t } {
@@ -1112,6 +1223,20 @@ set tcl_precision 17
       } 
       return -code 1 "Pas d''interpolation possible!!!\n"
    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
    #-----------------------------------------------------------------
    # 
@@ -1212,6 +1337,10 @@ set tcl_precision 17
    }
 
 
+   proc ::av4l_analysis_tools::normal2flux { fn } {
+      return [expr  $::av4l_analysis_tools::med1 * $fn]
+   }
+
 
 
 
@@ -1231,9 +1360,124 @@ set tcl_precision 17
    }
 
 
+ 
+   proc ::av4l_analysis_tools::build.matrix {xvec degree} {
+       set sums [llength $xvec]
+       for {set i 1} {$i <= 2*$degree} {incr i} {
+           set sum 0
+           foreach x $xvec {
+               set sum [expr {$sum + pow($x,$i)}] 
+           }
+           lappend sums $sum
+       }
+
+       set order [expr {$degree + 1}]
+       set A [math::linearalgebra::mkMatrix $order $order 0]
+       for {set i 0} {$i <= $degree} {incr i} {
+           set A [math::linearalgebra::setrow A $i [lrange $sums $i $i+$degree]]
+       }
+       return $A
+   }
+
+   proc ::av4l_analysis_tools::build.vector {xvec yvec degree} {
+       set sums [list]
+       for {set i 0} {$i <= $degree} {incr i} {
+           set sum 0
+           foreach x $xvec y $yvec {
+               set sum [expr {$sum + $y * pow($x,$i)}] 
+           }
+           lappend sums $sum
+       }
+
+       set x [math::linearalgebra::mkVector [expr {$degree + 1}] 0]
+       for {set i 0} {$i <= $degree} {incr i} {
+           set x [math::linearalgebra::setelem x $i [lindex $sums $i]]
+       }
+       return $x
+   }
 
 
+
+   proc ::av4l_analysis_tools::testpoly {} {
+      
+      # Now, to solve the example from the top of this page
+      set x {0   1   2   3   4   5   6   7   8   9  10}
+      set y {1   6  17  34  57  86 121 162 209 262 321}
+
+      # build the system A.x=b
+      set degree 2
+      set A [build.matrix $x $degree]
+      set b [build.vector $x $y $degree]
+      # solve it
+      set coeffs [math::linearalgebra::solveGauss $A $b]
+      # show results
+      ::console::affiche_resultat "coeffs=$coeffs\n"
+      
+      #3 x2 + 2 x + 1      
+      #1.0000000000000207 1.9999999999999958 3.0
+      
+   }
+
+
+
+   proc pi {} {return 3.1415926535897931}
+   proc ua {} {return 149598000.0}
+
+
+
+# Estime le diametre angulaire (mas) d'une etoile geante ou supergeante
+# a partir de ses magnitudes V (ou B) et K. Precision typique de 10 a 20 %
+
+   proc ::av4l_analysis_tools::diametre_stellaire { B V K D } {
+
+# Source: G.R. van Belle (1999), Predicting stellar angular size,
+# Publi. Astron. Soc. Pacific 111, 1515-1523.
+      set D [expr $D * [ua] ]
+
+      set arcsec [expr [pi]/(3600.0*180.0)]
+
+      set A_V 0.6690
+      set B_V 0.2230
+      set A_B 0.6480
+      set B_B 0.2200
+
+      set diam_V [expr $A_V + $B_V*($V-$K) -0.2*$V]
+      set diam_V [expr 10**($diam_V)]
+
+      set diam_B [expr $A_B + $B_B*($B-$K) -0.2*$B]
+      set diam_B [expr 10**($diam_B)]
+
+      set diam_km_B [expr ($diam_B*$arcsec*$D)/1000.]
+      set diam_km_V [expr ($diam_V*$arcsec*$D)/1000.]
+
+      ::console::affiche_resultat  "Diametres deduits de B = $diam_B (mas) \n"
+      ::console::affiche_resultat  "Diametres deduits de V = $diam_V (mas) \n"
+      ::console::affiche_resultat  "Diametres deduits de B = $diam_km_B (km) \n"
+      ::console::affiche_resultat  "Diametres deduits de V = $diam_km_V (km) \n"
+
+   }
+
+   proc ::av4l_analysis_tools::test_diametre_stellaire {  } {
+      
+      set B 11.120
+      set V 10.687
+      set K 9.478
+      set D 1.564791718
+      ::av4l_analysis_tools::diametre_stellaire $B $V $K $D
+   }
 
 }
 
+# 2010-06-05T23:41:22.205
+#http://vo.imcce.fr/webservices/miriade/ephemcc_query.php?-name=a:sappho&-type=&-ep=2455928.4870625581&-nbd=5&-step=1d&-tscale=UTC&-observer=@007&-theory=INPOP&-teph=1&-tcoor=1&-mime=text&-output=--jd,--rv&-extrap=0&-from=MiriadeDoc
+#O+ | F. Vachier et al     | 23:25:00 | 23:55:00 | M300  | VID | FR | E  02 05 02   | N 48 29 43   |  100 | W  | 6.21 | 23:41:22.02 | 0.08 | 23:41:28.23 | 0.08 | GPS++ |      |      |   |Observation with S. Vaillant/J. Berthier.|;
+#O+ | Jean Lecacheux       | 23:33:31 | 23:49:00 | M212  | VID | FR | E  01 29 34.1 | N 48 19 03.5 |  148 | WS | 1.24 | 23:41:27.54 | 0.08 | 23:41:28.78 | 0.04 | GPS++ |      |      |   |;
 
+# arcsec/h
+# set dradec -24.7807
+# set ddec 14.06
+# set dr [expr sqrt($dradec*$dradec+$ddec*$ddec)]
+# set arcsec [expr [pi]/(3600.0*180.0)]
+# set D [expr 1.564791718 * [ua] ]
+# set drkm [expr ($dr*$arcsec*$D)/3600.]
+#  

@@ -644,6 +644,7 @@ namespace eval ::av4l_analysis_gui {
          set ::av4l_analysis_tools::nb_p1 $cpt
       }
       if {$e==2} {
+         set ::av4l_analysis_gui::duree_max_immersion_search  [format "%.3f" [expr $cpt / $::av4l_analysis_tools::corr_fps] ]
          set ::av4l_analysis_tools::id_p2           $id
          set ::av4l_analysis_tools::corr_duree_e2   [format "%.3f"  [expr $p($cpt,x) - $p(1,x)] ]
          set ::av4l_analysis_tools::nb_p2 $cpt
@@ -664,6 +665,7 @@ namespace eval ::av4l_analysis_gui {
          set ::av4l_analysis_tools::nb_p5 $cpt
       }
       if {$e==6} {
+         set ::av4l_analysis_gui::duree_max_immersion_evnmt  [format "%.3f" [expr $cpt / $::av4l_analysis_tools::corr_fps] ]
          set i [expr int($cpt/2.0)]
          set ::av4l_analysis_tools::id_p6         [expr $id+ $i]
          set ::av4l_analysis_gui::date_immersion  [ mc_date2iso8601 [expr $p($i,x) / 86400.0 + $::av4l_analysis_tools::orig ] ]
@@ -735,7 +737,7 @@ namespace eval ::av4l_analysis_gui {
          set ::av4l_analysis_tools::duree $::av4l_analysis_tools::nb_p2
 
          # pas en temps (sec)
-         set ::av4l_analysis_tools::pas [expr 1.0/$::av4l_analysis_tools::corr_fps]
+         set ::av4l_analysis_tools::pas [expr 1.0 * $::av4l_analysis_tools::corr_exposure]
 
          # Heure de reference (sec TU)
          set t  [ mc_date2jd $::av4l_analysis_gui::date_immersion]
@@ -992,6 +994,43 @@ namespace eval ::av4l_analysis_gui {
       ::av4l_analysis_gui::affiche_graphe
    
    }
+
+
+
+
+
+
+
+   proc ::av4l_analysis_gui::calcul_dureesearch { frm } {
+
+
+      
+      if {$::av4l_analysis_gui::pas_heure==""} {
+         set ::av4l_analysis_gui::dureesearch "?"
+         return
+      }
+      
+      if {$::av4l_analysis_gui::nheure==""} {
+         set ::av4l_analysis_gui::dureesearch "?"
+         return
+      }
+      
+      if {![string is double $::av4l_analysis_gui::pas_heure]} {
+         set ::av4l_analysis_gui::dureesearch "?"
+         return
+      }
+      
+      if {![string is double $::av4l_analysis_gui::nheure]} {
+         set ::av4l_analysis_gui::dureesearch "?"
+         return
+      }
+      
+      set ::av4l_analysis_gui::dureesearch [expr $::av4l_analysis_gui::pas_heure * $::av4l_analysis_gui::nheure]
+      
+   }   
+
+
+
 
 
    #
@@ -1660,7 +1699,7 @@ namespace eval ::av4l_analysis_gui {
                   pack $re -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                        #--- Cree un label
-                       label $re.l -text "Rayon de l'etoile (km) : "
+                       label $re.l -text "Rayon projeté de l'etoile (km) : "
                        pack  $re.l -side left -anchor e 
 
                        #--- Cree un label pour le chemin de l'AVI
@@ -1703,6 +1742,13 @@ namespace eval ::av4l_analysis_gui {
                        entry $trans.v -textvariable ::av4l_analysis_gui::trans -width 10
                        pack $trans.v -side left -padx 3 -pady 1 -fill x
 
+                  #--- Cree un frame pour le chargement d'un fichier
+                  set irep [frame $frmgauche.irep -borderwidth 0 -cursor arrow -relief groove]
+                  pack $irep -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                       #--- Cree un label pour le chemin de l'AVI
+                       checkbutton $irep.v -variable ::av4l_analysis_tools::irep -text "Réponse instrumentale"
+                       pack $irep.v -side left -padx 3 -pady 1 -fill x
 
 
 
@@ -1725,21 +1771,57 @@ namespace eval ::av4l_analysis_gui {
 
 
                   #--- Cree un frame pour le chargement d'un fichier
-                  set duree [frame $frmgauche.duree -borderwidth 0 -cursor arrow -relief groove]
-                  pack $duree -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+                  set exposure [frame $frmgauche.exposure -borderwidth 0 -cursor arrow -relief groove]
+                  pack $exposure -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 0
 
                        #--- Cree un label
+                       label $exposure.l -text "Temps de pose (sans temps morts) (sec) : "
+                       pack  $exposure.l -side left -anchor e 
+                       #--- Cree un entry ( == ::av4l_analysis_tools::duree)
+                       entry $exposure.v -textvariable ::av4l_analysis_tools::corr_exposure -width 10
+                       pack $exposure.v -side left -padx 3 -pady 0 -fill x
+
+                  #--- Cree un frame pour le chargement d'un fichier
+                  set duree [frame $frmgauche.duree -borderwidth 0 -cursor arrow -relief groove]
+                  pack $duree -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 0
+
+                       #--- 
                        label $duree.l -text "Nombre de points mesurés autour l'évenement : "
                        pack  $duree.l -side left -anchor e 
+                       #---  
+                       label $duree.v -textvariable ::av4l_analysis_tools::nb_p2
+                       pack $duree.v -side left -padx 3 -pady 0 -fill x
+                       #--- 
+                       label $duree.l2 -text "("
+                       pack  $duree.l2 -side left -anchor e 
+                       #--- 
+                       label $duree.v2 -textvariable ::av4l_analysis_gui::duree_max_immersion_search 
+                       pack $duree.v2 -side left -padx 3 -pady 0 -fill x
+                       #--- 
+                       label $duree.l3 -text "sec)"
+                       pack  $duree.l3 -side left -anchor e 
 
-                       #--- Cree un entry ( == ::av4l_analysis_tools::duree)
-                       entry $duree.v -textvariable ::av4l_analysis_tools::nb_p2 -width 10
-                       pack $duree.v -side left -padx 3 -pady 1 -fill x
 
 
                   #--- Cree un frame pour le chargement d'un fichier
+                  set dureemax [frame $frmgauche.dureemax -borderwidth 0 -cursor arrow -relief groove]
+                  pack $dureemax -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 0
+
+                       #--- Cree un label
+                       label $dureemax.l -text "Durée maxi estimée de l'évenement : "
+                       pack  $dureemax.l -side left -anchor e 
+
+                       #--- Cree un entry ( == ::av4l_analysis_tools::duree)
+                       label $dureemax.v -textvariable ::av4l_analysis_gui::duree_max_immersion_evnmt 
+                       pack $dureemax.v -side left -padx 3 -pady 0 -fill x
+
+                       #--- Cree un label
+                       label $dureemax.l2 -text " sec"
+                       pack  $dureemax.l2 -side left -anchor e 
+
+                  #--- Cree un frame pour le chargement d'un fichier
                   set t0_ref [frame $frmgauche.t0_ref -borderwidth 0 -cursor arrow -relief groove]
-                  pack $t0_ref -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+                  pack $t0_ref -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 0
 
                        #--- Cree un label
                        label $t0_ref.l -text "Heure de reference (sec TU) : "
@@ -1747,7 +1829,7 @@ namespace eval ::av4l_analysis_gui {
 
                        #--- Cree un label pour le chemin de l'AVI
                        entry $t0_ref.v -textvariable ::av4l_analysis_gui::date_immersion -width 30
-                       pack $t0_ref.v -side left -padx 3 -pady 1 -fill x
+                       pack $t0_ref.v -side left -padx 3 -pady 0 -fill x
 
 
                   #--- Cree un frame pour le chargement d'un fichier
@@ -1760,11 +1842,11 @@ namespace eval ::av4l_analysis_gui {
 
                        #--- Cree un label pour le chemin de l'AVI
                        entry $nheure.v -textvariable ::av4l_analysis_gui::nheure -width 10
-                       pack $nheure.v -side left -padx 3 -pady 1 -fill x
+                       pack $nheure.v -side left -padx 0 -pady 0 -fill x
 
                   #--- Cree un frame pour le chargement d'un fichier
                   set pas_heure [frame $frmgauche.pas_heure -borderwidth 0 -cursor arrow -relief groove]
-                  pack $pas_heure -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+                  pack $pas_heure -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 0
 
                        #--- Cree un label
                        label $pas_heure.l -text "Pas de recherche de l'instant de l'evenement (sec): "
@@ -1772,7 +1854,30 @@ namespace eval ::av4l_analysis_gui {
 
                        #--- Cree un label pour le chemin de l'AVI
                        entry $pas_heure.v -textvariable ::av4l_analysis_gui::pas_heure -width 10
-                       pack $pas_heure.v -side left -padx 3 -pady 1 -fill x
+                       pack $pas_heure.v -side left -padx 0 -pady 0 -fill x
+
+                  #--- Cree un frame pour le chargement d'un fichier
+                  set dureesearch [frame $frmgauche.dureesearch -borderwidth 0 -cursor arrow -relief groove]
+                  pack $dureesearch -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                       #--- Cree un label
+                       label $dureesearch.l -text "Durée de recherche autour de l'evenement : "
+                       pack  $dureesearch.l -side left -anchor e 
+
+                       #--- Creation du bouton calcul
+                       image create photo .reload -format PNG -file [ file join $audace(rep_plugin) tool av4l img reload.png ]
+                       button $dureesearch.but_reload -image .reload -borderwidth 2 \
+                             -command "::av4l_analysis_gui::calcul_dureesearch $dureesearch"
+                       pack $dureesearch.but_reload -side left -anchor c 
+
+                       #--- Cree un label pour le chemin de l'AVI
+                       label $dureesearch.v -textvariable ::av4l_analysis_gui::dureesearch
+                       pack $dureesearch.v -side left -padx 0 -pady 0 -fill x
+
+                       #--- Cree un label
+                       label $dureesearch.l2 -text "sec"
+                       pack  $dureesearch.l2 -side left -anchor e 
+
 
              #--- Cree un frame pour le chargement d'un fichier
              set calcul [frame $immersion.calcul -borderwidth 0 -cursor arrow -relief groove]
