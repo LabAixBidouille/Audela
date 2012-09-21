@@ -692,7 +692,7 @@ namespace eval ::av4l_analysis_gui {
       $frm configure -image .stop
       set ::av4l_analysis_gui::but_calcul "Stop"
 
-      set ::av4l_analysis_tools::dirwork "/data/Occultations/20100605_80SAPPHO/work2"
+      set ::av4l_analysis_tools::dirwork "."
 
       if {$e==-1} {
       
