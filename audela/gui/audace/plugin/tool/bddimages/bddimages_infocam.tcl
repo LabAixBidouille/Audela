@@ -136,8 +136,15 @@ proc ::bddimages_infocam::run_create { this type } {
    set selection_list [::bddimages_imgcorrection::get_info_img]
 
    # Initialisations
+   # Initialisations
+   set ::bddimages_imgcorrection::offset_img_list  ""
+   set ::bddimages_imgcorrection::soffset_img_list ""
    set ::bddimages_imgcorrection::dark_img_list    ""
+   set ::bddimages_imgcorrection::sdark_img_list   ""
    set ::bddimages_imgcorrection::flat_img_list    ""
+   set ::bddimages_imgcorrection::sflat_img_list   ""
+   set ::bddimages_imgcorrection::deflat_img_list  ""
+   set ::bddimages_imgcorrection::erreur_selection 0
    set ::bddimages_infocam::erreur_selection 0
 
    set reportMessage ""
@@ -271,7 +278,7 @@ proc ::bddimages_infocam::run_create { this type } {
 
       # Bouton affiche liste fichiers
       button $inputFrame.filereport.dark -image icon_report \
-          -command [list ::bddimages_imgcorrection::showReport $caption(bddimages_infocam,consoleF) $reportFilename LISTE0]
+          -command [list ::bddimages_infocam::showReport $caption(bddimages_infocam,consoleF) $reportFilename LISTE0]
       pack configure $inputFrame.filereport.dark -side top -ipadx 2 -ipady 3 -padx 2 -anchor c
 
 
@@ -321,7 +328,11 @@ proc ::bddimages_infocam::run_create { this type } {
    # Concatenation des listes et verifications
    if {$::bddimages_infocam::erreur_selection == 0} {
       # 
-      if {[catch {::bddimages_imgcorrection::verif_all_img} msg]}  {
+      set err [catch {::bddimages_imgcorrection::verif_all_img} msg]
+      if {$err}  {
+         ::console::affiche_erreur "Verif Erreur : $err\n"
+         ::console::affiche_erreur "msg=$msg\n"
+         
          set ::bddimages_infocam::erreur_selection 1
          lappend reportMessage [list $::bddimages_infocam::type $msg]
       }

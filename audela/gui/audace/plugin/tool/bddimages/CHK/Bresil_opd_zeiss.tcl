@@ -20,7 +20,7 @@
 
    source [ file join $audace(rep_plugin) tool bddimages CHK modif_img_header.tcl]
 
-   set path "/media/BLACK/astrodata/Observations/bddimages_black/tmp/12set17"
+   set path "/media/BLACK/astrodata/Observations/bddimages_black/tmp/12set18"
    set dest "/media/BLACK/astrodata/Observations/bddimages_black/tmp/CHK"
 
    ::console::affiche_resultat "Rep travail = $path\n"
@@ -29,8 +29,7 @@
    modif_img_header   "dark"          "DARK"            $path $dest
    modif_img_header   "bias"          "OFFSET"          $path $dest
    modif_img_header   "atroclus"      "617_Patroclus"   $path $dest
-   modif_img_header   "Feronia_00"    "72_Feronia"      $path $dest
-   modif_img_header   "star_Feronia"  "star_Feronia"    $path $dest
+   modif_img_header   "2001QD94"      "2001QD94"      $path $dest
 
    return
 
