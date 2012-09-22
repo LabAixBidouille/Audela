@@ -43,16 +43,15 @@ if {[info commands ::console::affiche_resultat]!="::console::affiche_resultat"} 
 }
 
 namespace eval ::plotxy {
-   global plotxy
    variable selected_region
-   
-   
+   global plotxy
+
    #=== select a figure index to display a graphic
    proc figure { {num ""} {parentframe ""} } {
       global audace
       global caption
       global plotxy
-      
+
       if {$num!=""} {
          set plotxy(currentfigure) $num
          if {([info exists plotxy(fig$num,ydir)]==0)&&($num>0)} {
@@ -287,69 +286,65 @@ namespace eval ::plotxy {
       update
    }
 
-   # --- proc importante pour modifier les attributs d'un plot   
+   # --- proc importante pour modifier les attributs d'un plot
    proc sethandler { handler {list_options ""} } {
       global audace
       global plotxy
+
       #--- extract the current index of the figure
       set num $plotxy(currentfigure)
       set baseplotxy $plotxy(fig$num,parent)
       set lastline $plotxy(fig$num,lastline)
       set n [llength $list_options]
       if {$n<=1} {
-	      set texte "$baseplotxy.xy element configure $handler"
-	      set ress ""
-	      set res [eval $texte]
-	      foreach re $res {
-		      if {$n==1} {
-			      if {[lindex $re 0]!=[lindex $list_options 0]} {
-				      continue
-			      }
-		      }
-		      lappend ress "[lindex $re 0]"
-		      lappend ress "[lindex $re 3]"
-	      }
-	      return $ress
+         set texte "$baseplotxy.xy element configure $handler"
+         set ress ""
+         set res [eval $texte]
+         foreach re $res {
+            if {$n==1} {
+               if {[lindex $re 0]!=[lindex $list_options 0]} {
+                  continue
+               }
+            }
+            lappend ress "[lindex $re 0]"
+            lappend ress "[lindex $re 3]"
+         }
+         return $ress
       } else {
-	      set texte "$baseplotxy.xy element configure $handler $list_options"
-	      eval $texte
+         set texte "$baseplotxy.xy element configure $handler $list_options"
+         eval $texte
       }
    }
 
    proc setzoom { ax } {
       global plotxy
+
       set num $plotxy(currentfigure)
       set plotxy(fig$num,axis) [::plotxy::axis]
       set baseplotxy $plotxy(fig$num,parent)
-      # zoomIn { graph x0 y0 x1 y1 }
       zoomIn $baseplotxy.xy [lindex $ax 0] [lindex $ax 2] [lindex $ax 1] [lindex $ax 3]
    }
 
-
    proc getzoom {  } {
-
       global plotxy
 
       set num $plotxy(currentfigure)
-      
+
       set plotxy(fig$num,axis) [::plotxy::axis]
       set baseplotxy $plotxy(fig$num,parent)
-      
+
       set x1 [ $baseplotxy.xy axis cget x -min ]
       set x2 [ $baseplotxy.xy axis cget x -max ]
       set y1 [ $baseplotxy.xy axis cget y -min ]
       set y2 [ $baseplotxy.xy axis cget y -max ]
- 
+
       if {$x1==""} {
          return [::plotxy::axis]
       } else {
          return [list $x1 $x2 $y1 $y2]
       }
    }
-   
-   
-   
-   
+
    #=== Matlab equivalents pour colorsymbol
    #       y     yellow        .     point
    #       m     magenta       o     circle
@@ -685,8 +680,7 @@ namespace eval ::plotxy {
       bind $graph <ButtonRelease-2> {
          ::plotxy::regionEndSelect %W %x %y
       }
-      
-      
+
    }
 
    #########################################################################
@@ -775,22 +769,20 @@ namespace eval ::plotxy {
       #--   modifie les bornes de la visualisation
       set ::plotxy::selected_region [list $x0 $y0 $x1 $y1]
    }
-   
-   
+
    #########################################################################
    #--   Recuperation de la Selection                                      #
    #--   Entree :                                                          #
    #########################################################################
    proc ::plotxy::get_selected_region {  } {
-   
+
       set err [ catch {set x $::plotxy::selected_region} msg]
       if {$err} {
          return -code 1 $msg
       }
       return $x
    }
-   
-   
+
    #########################################################################
    #--   Libere la variable  unset_selected_region                         #
    #--   Entree :                                                          #
@@ -860,7 +852,6 @@ namespace eval ::plotxy {
    proc zoomOut { graph } {
 
       global plotxy
-
 
       #--   si le stack du zoomIn n'est pas vide
       if [ info exists plotxy(zoomstack,$graph) ] {
