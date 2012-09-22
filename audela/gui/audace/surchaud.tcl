@@ -2046,12 +2046,12 @@ proc electronic_chip { args } {
          }
          package require math::statistics
          if {[llength $exposures]==2} {
-	         set therm [expr ([lindex $fs 1]-[lindex $fs 0])/([lindex $exposures 1]-[lindex $exposures 0])] ; # ADU/sec
-	         set bias [expr [lindex $fs 0]+(0-[lindex $exposures 0])*$therm] ; # ADU
+            set therm [expr ([lindex $fs 1]-[lindex $fs 0])/([lindex $exposures 1]-[lindex $exposures 0])] ; # ADU/sec
+            set bias [expr [lindex $fs 0]+(0-[lindex $exposures 0])*$therm] ; # ADU
          } else {
-	         set res [::math::statistics::linear-model $exposures $fs]
-	         set bias [lindex $res 0] ; # ADU
-	         set therm [lindex $res 1] ; # ADU/sec
+            set res [::math::statistics::linear-model $exposures $fs]
+            set bias [lindex $res 0] ; # ADU
+            set therm [lindex $res 1] ; # ADU/sec
          }
          ::console::affiche_resultat "----- window $box($kbox)\n"
          ::console::affiche_resultat "bias = [format "%.2f" $bias] ADU  thermic = [format "%.2f" $therm] ADU/sec\n"
@@ -2081,7 +2081,7 @@ proc electronic_chip { args } {
          ::console::affiche_resultat "exposures > [format %.1f $exposure] sec are dominated by thermic noise (you must cool stronger the chip)\n"
       }
       if {$saturation_adu!=""} {
-	      set exposure_max [expr ($saturation_adu-$mean_bias)/$mean_therm]
+         set exposure_max [expr ($saturation_adu-$mean_bias)/$mean_therm]
          ::console::affiche_resultat "($saturation_adu-$mean_bias)/$mean_therm\n"
          ::console::affiche_resultat "exposure max = [format %.1f $exposure_max] seconds to saturate with dark\n"
       }
