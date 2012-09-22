@@ -4,8 +4,9 @@
 
 
 
+
 <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" /><title>Param&#232;tres &#233;lectroniques</title></head><body>
-<p class="date">Date de mise &#224; jour : 20 septembre 2012</p>
+<p class="date">Date de mise &#224; jour : 23 septembre 2012</p>
 <h1>Param&#232;tres &#233;lectroniques</h1>
 <h2>1. Fonctions</h2>
 <p>Cet outil constitue l'interface de la fonction electronic_chip
@@ -13,10 +14,9 @@ qui permet de d&#233;finir les param&#232;tres
 &#233;lectroniques, notamment le gain, le bruit de lecture et le
 coefficient thermique d'une cam&#233;ra.</p>
 <h2>2. Interface</h2>
-<table align="center" summary="">
-<tr>
-<td><img style="width: 424px; height: 416px;" alt="" src=
-"images/echip0.gif" /></td>
+<table summary="" align="center">
+<tbody><tr>
+<td><img style="width: 424px; height: 416px;" alt="" src="images/echip0.gif" /></td>
 <td>
 <p>L'interface comprend une ligne pour indiquer le nom
 g&#233;n&#233;rique des images de pr&#233;charge (offset), de
@@ -43,8 +43,8 @@ l'extension des images.</li>
 images de P.L.U. une quinzaine de noir.</p>
 <p>Pour d&#233;finir le temps de pose maximum, il faut renseigner
 la <b>Capacit&#233; maxi d'un photosite</b>. Si elle est
-exprim&#233;e en electrons il faut la diviser par le gain pour
-l'ontenir en ADU.</p>
+exprim&#233;e en &#233;lectrons il faut la diviser par le gain pour
+l'obtenir en ADU.</p>
 <p>Si la cam&#233;ra dispose d'un obturateur m&#233;canique et si
 l'on veut visualiser son effet, il faut cocher la case
 correspondante. Dans ce cas il est pr&#233;f&#233;rable d'avoir
@@ -52,8 +52,7 @@ une quinzaine d'images de P.L.U.</p>
 </td>
 </tr>
 <tr>
-<td><img style="width: 424px; height: 416px;" alt="" src=
-"images/echip1.gif" /></td>
+<td><img style="width: 424px; height: 416px;" alt="" src="images/echip1.gif" /></td>
 <td>Les r&#233;sultats sont affich&#233;s automatiquement et le
 d&#233;tail des calculs est indiqu&#233; dans la Console.
 <p>Le <b>Temps de pose critique</b> est celui en-dessous duquel
@@ -67,41 +66,38 @@ pour de l'information.</p>
 distinguer les nuances.</p>
 </td>
 </tr>
-</table>
+</tbody></table>
 <h2>3. Quelques r&#233;sultats</h2>
 <h3>Canon EOS 60D d&#233;filtr&#233;</h3>
 <ul>
-<li>conditions de prises de vue : temp&#233;rature ambiante
-(18&#176;C), ISO 100, r&#233;glage sur <b>M</b>anuel,</li>
-<li>offset : temps de pose 1/8000,</li>
-<li>dark : temps de pose : 0.5 - 1 - 2 - 2.5 - 4 - 5 - 6 - 8 - 10
-- 12 - 16 - 20 - 25 - 30 secondes,</li>
-<li>flat : temps de pose 0.6 sec ave &#233;cran
-electro-luminescent,</li>
-<li>conversion RAW vers FITS avec AudeLA (menu
-<b>Images/Convertir/Convertir RAW--&gt;FITS...</b>)</li>
-<li>(CF illustration ci-dessus) le niveau de noir est conforme
-aux observations et aux indications de Canon ; le temps de pose
+<li>Conditions de prises de vue : Temp&#233;rature ambiante
+(18&#176;C), ISO 100, r&#233;glage sur <b>M</b>anuel.</li>
+<li>Offset : Temps de pose de 1/8000.</li>
+<li>Dark : Temps de pose : 0.5 - 1 - 2 - 2.5 - 4 - 5 - 6 - 8 - 10
+- 12 - 16 - 20 - 25 - 30 secondes.</li>
+<li>Flat : Temps de pose de 0.6 seconde avec un &#233;cran &#233;lectro-luminescent.</li>
+<li>Conversion RAW vers FITS avec Aud'ACE (menu
+<b>Images/Convertir/Convertir RAW--&gt;FITS...</b>).</li>
+<li>(cf. illustration ci-dessus) Le niveau de noir est conforme
+aux observations et aux indications de Canon. Le temps de pose
 critique calcul&#233; est un peu sup&#233;rieur au temps de pose
-maximum (30 sec) accessible en mode manuel ; le temps de pose
+maximum (30 sec) accessible en mode manuel. Le temps de pose
 maximum ressort &#224; environ 75 min &#224; temp&#233;rature
 ambiante.</li>
 </ul>
 <h3>Cam&#233;ra Basler ACA 1300-306M</h3>
 <ul>
-<li>conditions de prises de vue : temp&#233;rature ambiante
-(18&#176;C), gain au minimum, conversion sur 12 bits,</li>
-<li>offset : temps de pose 16 microsec,</li>
-<li>dark : temps de pose : 0.5 - 1 - 2 - 3 - 4 - 5 - 6 - 7- 8 - 9
-- 10 secondes,</li>
-<li>flat : temps de pose 0.2 sec ave &#233;cran
-electro-luminescent,</li>
-<li>conversion SER vers FITS,</li>
-<li>gain : 0.22 e/ADU , bruit de lecture 4.89 e (contre 8.8
-AiryLab), Noir 12.35 ADU, Coefficient thermique : 3.10
-ADU/sec,</li>
-<li>le niveau de noir permet de fonctionner en mode 8 bits sans
+<li>Conditions de prises de vue : Temp&#233;rature ambiante
+(18&#176;C), gain au minimum, conversion sur 12 bits.</li>
+<li>Offset : Temps de pose de 16 microsecondes.</li>
+<li>Dark : Temps de pose : 0.5 - 1 - 2 - 3 - 4 - 5 - 6 - 7- 8 - 9
+- 10 secondes.</li>
+<li>Flat : Temps de pose de 0.2 seconde avec un &#233;cran &#233;lectro-luminescent.</li>
+<li>Conversion SER vers FITS.</li>
+<li>Gain : 0.22 e/ADU - Bruit de lecture : 4.89 e (contre 8.8
+AiryLab) - Noir : 12.35 ADU - Coefficient thermique : 3.10
+ADU/sec.</li>
+<li>Le niveau de noir permet de fonctionner en mode 8 bits sans
 grande perte d'information.</li>
 </ul>
-</body>
-</html>
+</body></html>
