@@ -11,28 +11,28 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(echip,title)               "# Paramètres électroniques"
+set caption(echip,title)                  "# Paramètres électroniques"
 
-set caption(echip,offset)              "# Nom générique de la Précharge"
-set caption(echip,dark)                "# Nom générique du Noir"
-set caption(echip,flat)                "# Nom générique de la P.L.U."
-set caption(echip,nombre)              "# Nombre"
-set caption(echip,obt)                 "# Obturateur mécanique"
-set caption(echip,gain)                "Gain \[e\/ADU\]"
-set caption(echip,noise)               "Read Noise \[e\]"
-set caption(echip,bias)                "Bias \[ADU\]"
-set caption(echip,thermic_signal)      "Thermic signal\[ADU\/sec\]"
-set caption(echip,sigma)               "Sigma"
-set caption(echip,saturation)          "# Capacité à la saturation \[ADU\]"
-set caption(echip,exp_critique)        "# Temps de pose critique \[sec\]"
-set caption(echip,exp_max)             "# Temps de pose maximum \[sec\]"
+set caption(echip,offset)                 "# Nom générique de la Précharge"
+set caption(echip,dark)                   "# Nom générique du Noir"
+set caption(echip,flat)                   "# Nom générique de la P.L.U."
+set caption(echip,nombre)                 "# Nombre"
+set caption(echip,obt)                    "# Obturateur mécanique"
+set caption(echip,gain)                   "Gain \[e\/ADU\]"
+set caption(echip,noise)                  "Read Noise \[e\]"
+set caption(echip,bias)                   "Bias \[ADU\]"
+set caption(echip,thermic_signal)         "Thermic signal\[ADU\/sec\]"
+set caption(echip,sigma)                  "Sigma"
+set caption(echip,saturation)             "# Capacité à la saturation \[ADU\]"
+set caption(echip,exp_critique)           "# Temps de pose critique \[sec\]"
+set caption(echip,exp_max)                "# Temps de pose maximum \[sec\]"
 
-set caption(echip,search)              "..."
-set caption(echip,ok)                  "OK"
-set caption(echip,apply)               "Apply"
-set caption(echip,hlpTool)             "General Tool"
-set caption(echip,hlpFunction)         "# Tutoriel"
-set caption(echip,close)               "Close"
+set caption(echip,search)                 "..."
+set caption(echip,ok)                     "OK"
+set caption(echip,apply)                  "Apply"
+set caption(echip,hlpTool)                "General Tool"
+set caption(echip,hlpFunction)            "# Tutoriel"
+set caption(echip,close)                  "Close"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
