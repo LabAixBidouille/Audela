@@ -26,6 +26,7 @@ set caption(echip,sigma)                  "Sigma"
 set caption(echip,saturation)             "# Capacité maxi d'un photosite \[ADU\]"
 set caption(echip,exp_critique)           "# Temps de pose critique \[sec\]"
 set caption(echip,exp_max)                "# Temps de pose maximum \[sec\]"
+set caption(echip,dynamic)                "# Dynamique \[niveaux\]"
 
 set caption(echip,search)                 "..."
 set caption(echip,ok)                     "OK"
@@ -40,7 +41,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(echip,title)               "Paramètres électroniques"
 
    set caption(echip,offset)              "Nom générique de la Précharge"
-  set caption(echip,dark)                "Nom générique du Noir"
+   set caption(echip,dark)                "Nom générique du Noir"
    set caption(echip,flat)                "Nom générique de la P.L.U."
    set caption(echip,nombre)              "Nombre"
    set caption(echip,obt)                 "Obturateur mécanique"
@@ -52,6 +53,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(echip,saturation)          "Capacité maxi d'un photosite \[ADU\]"
    set caption(echip,exp_critique)        "Temps de pose critique \[sec\]"
    set caption(echip,exp_max)             "Temps de pose maximum \[sec\]"
+   set caption(echip,dynamic)             "Dynamique \[niveaux\]"
 
    set caption(echip,search)              "..."
    set caption(echip,ok)                  "OK"
@@ -78,6 +80,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(echip,saturation)          "# Capacité maxi d'un photosite \[ADU\]"
    set caption(echip,exp_critique)        "# Temps de pose critique \[sec\]"
    set caption(echip,exp_max)             "# Temps de pose maximum \[sec\]"
+   set caption(echip,dynamic)             "# Dynamique \[niveaux\]"
 
    set caption(echip,search)              "..."
    set caption(echip,ok)                  "OK"
@@ -104,6 +107,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(echip,saturation)          "# Capacité maxi d'un photosite \[ADU\]"
    set caption(echip,exp_critique)        "# Temps de pose critique \[sec\]"
    set caption(echip,exp_max)             "# Temps de pose maximum \[sec\]"
+   set caption(echip,dynamic)             "# Dynamique \[niveaux\]"
 
    set caption(echip,search)              "..."
    set caption(echip,ok)                  "OK"
@@ -130,6 +134,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(echip,saturation)          "# Capacité maxi d'un photosite \[ADU\]"
    set caption(echip,exp_critique)        "# Temps de pose critique \[sec\]"
    set caption(echip,exp_max)             "# Temps de pose maximum \[sec\]"
+   set caption(echip,dynamic)             "# Dynamique \[niveaux\]"
 
    set caption(echip,search)              "..."
    set caption(echip,ok)                  "OK"
@@ -157,6 +162,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(echip,saturation)          "# Capacité maxi d'un photosite \[ADU\]"
    set caption(echip,exp_critique)        "# Temps de pose critique \[sec\]"
    set caption(echip,exp_max)             "# Temps de pose maximum \[sec\]"
+   set caption(echip,dynamic)             "# Dynamique \[niveaux\]"
 
    set caption(echip,search)              "..."
    set caption(echip,ok)                  "OK"
@@ -183,6 +189,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(echip,saturation)          "# Capacité maxi d'un photosite \[ADU\]"
    set caption(echip,exp_critique)        "# Temps de pose critique \[sec\]"
    set caption(echip,exp_max)             "# Temps de pose maximum \[sec\]"
+   set caption(echip,dynamic)             "# Dynamique \[niveaux\]"
 
    set caption(echip,search)              "..."
    set caption(echip,ok)                  "OK"
@@ -209,6 +216,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(echip,saturation)          "# Capacité maxi d'un photosite \[ADU\]"
    set caption(echip,exp_critique)        "# Temps de pose critique \[sec\]"
    set caption(echip,exp_max)             "# Temps de pose maximum \[sec\]"
+   set caption(echip,dynamic)             "# Dynamique \[niveaux\]"
 
    set caption(echip,search)              "..."
    set caption(echip,ok)                  "OK"
@@ -235,6 +243,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(echip,saturation)          "# Capacité maxi d'un photosite \[ADU\]"
    set caption(echip,exp_critique)        "# Temps de pose critique \[sec\]"
    set caption(echip,exp_max)             "# Temps de pose maximum \[sec\]"
+   set caption(echip,dynamic)             "# Dynamique \[niveaux\]"
 
    set caption(echip,search)              "..."
    set caption(echip,ok)                  "OK"
