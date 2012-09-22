@@ -2,7 +2,7 @@
 # Fichier : echip.tcl
 # Description : GUI de la proc electronic_chip (surchaud.tcl)
 # Auteur : Raymond Zachantke
-# Mise Ã  jour $Id$
+# Mise à jour $Id$
 #
 
 #============================================================
@@ -189,7 +189,7 @@ namespace eval ::echip {
          grid $this.fr.std_$child -row $row -column 3 -sticky w -padx 3 -pady 3
          incr row
       }
-      foreach child [list exp_critique exp_max] {
+      foreach child [list exp_critique exp_max dynamic] {
          label $this.fr.lab_$child -text "$caption(echip,$child)" -justify left
          grid $this.fr.lab_$child -row $row -column 0 -sticky w -padx 3 -pady 3
          label $this.fr.$child -textvariable ::echip::private($child) -justify center -width 8
@@ -221,7 +221,8 @@ namespace eval ::echip {
       }
 
       #--   initialise les variables
-      lassign [list offset dark flat 0] private(offsetname) private(darkname) private(flatname) private(obt)
+      lassign [list offset dark flat 0 ""] private(offsetname) private(darkname) \
+         private(flatname) private(obt) private(saturation)
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $this
@@ -282,6 +283,7 @@ namespace eval ::echip {
       foreach var [list mean_gain std_gain mean_noise std_noise] {
          set private($var) [format %.2f [set $var]]
       }
+      update
 
       #--   determine le bias et le bruit thermique
       set cmd [list electronic_chip lintherm]
@@ -298,6 +300,10 @@ namespace eval ::echip {
       }
       set private(exp_critique) [format %.1f $exp_critique]
       set private(exp_max) [format %.1f $exp_max]
+      if {$private(saturation) ne ""} {
+         set private(dynamic) [expr { int(($private(saturation)-$mean_bias)*$mean_gain/$mean_noise) }]
+      }
+      update
 
       #--   cree une image de l'oburateur mecanique
       if {$private(obt) == 1} {
