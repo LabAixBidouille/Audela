@@ -267,6 +267,10 @@ namespace eval ::echip {
       variable private
       global audace
 
+      if {![info exists private(offsetindexes)] || ![info exists private(darknb)] \
+         || ![info exists private(flatindexes)] } {
+         return
+      }
       configButtons $this disabled
 
       #--   determine le gain et le bruit
