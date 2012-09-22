@@ -137,11 +137,11 @@ test libcatalog_csusnoa2_sansparam { csusnoa2 sans parametre } -constraints {
    return $msg
 } -cleanup {
 
-} -result "usage : csusnoa2 pathOfCatalog ra(deg) dec(deg) radius(arcmin) ?magnitudeMax(mag) magnitudeMin(mag)?\n"
+} -result "usage : csusnoa2 pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMax(mag)? magnitudeMin(mag)?\n"
 
 
 #-------------------------------------------------------------------------------
-test libcatalog_csusnoa2_catalog_existe { trouve 47 etoiles } -constraints {
+test libcatalog_csusnoa2_catalog_existe { trouve 59 etoiles } -constraints {
    AUDACE
 } -setup {
 
@@ -157,5 +157,5 @@ test libcatalog_csusnoa2_catalog_existe { trouve 47 etoiles } -constraints {
    }
 } -cleanup {
 
-} -result "47"
+} -result "59"
 
