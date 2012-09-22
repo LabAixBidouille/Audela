@@ -1,29 +1,29 @@
 #
 # Fichier : echip.cap
-# Mise a jour $Id: echip.cap
+# Mise √† jour $Id$
 #
 
 #=========================================================================
-#   DÈbut de la dÈclaration des textes localisÈs (internationalisation)
+#   D√©but de la d√©claration des textes localis√©s (internationalisation)
 #=========================================================================
 
 global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(echip,title)                  "# ParamËtres Èlectroniques"
+set caption(echip,title)                  "# Param√®tres √©lectroniques"
 
-set caption(echip,offset)                 "# Nom gÈnÈrique de la PrÈcharge"
-set caption(echip,dark)                   "# Nom gÈnÈrique du Noir"
-set caption(echip,flat)                   "# Nom gÈnÈrique de la P.L.U."
+set caption(echip,offset)                 "# Nom g√©n√©rique de la Pr√©charge"
+set caption(echip,dark)                   "# Nom g√©n√©rique du Noir"
+set caption(echip,flat)                   "# Nom g√©n√©rique de la P.L.U."
 set caption(echip,nombre)                 "# Nombre"
-set caption(echip,obt)                    "# Obturateur mÈcanique"
+set caption(echip,obt)                    "# Obturateur m√©canique"
 set caption(echip,gain)                   "Gain \[e\/ADU\]"
 set caption(echip,noise)                  "Read Noise \[e\]"
 set caption(echip,bias)                   "Bias \[ADU\]"
 set caption(echip,thermic_signal)         "Thermic signal\[ADU\/sec\]"
 set caption(echip,sigma)                  "Sigma"
-set caption(echip,saturation)             "# CapacitÈ ‡ la saturation \[ADU\]"
+set caption(echip,saturation)             "# Capacit√© √† la saturation \[ADU\]"
 set caption(echip,exp_critique)           "# Temps de pose critique \[sec\]"
 set caption(echip,exp_max)                "# Temps de pose maximum \[sec\]"
 
@@ -34,22 +34,22 @@ set caption(echip,hlpTool)                "General Tool"
 set caption(echip,hlpFunction)            "# Tutoriel"
 set caption(echip,close)                  "Close"
 
-# *************** Version franÁaise ***************************
+# *************** Version fran√ßaise ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(echip,title)               "ParamËtres Èlectroniques"
+   set caption(echip,title)               "Param√®tres √©lectroniques"
 
-   set caption(echip,offset)              "Nom gÈnÈrique de la PrÈcharge"
-   set caption(echip,dark)                "Nom gÈnÈrique du Noir"
-   set caption(echip,flat)                "Nom gÈnÈrique de la P.L.U."
+   set caption(echip,offset)              "Nom g√©n√©rique de la Pr√©charge"
+   set caption(echip,dark)                "Nom g√©n√©rique du Noir"
+   set caption(echip,flat)                "Nom g√©n√©rique de la P.L.U."
    set caption(echip,nombre)              "Nombre"
-   set caption(echip,obt)                 "Obturateur mÈcanique"
+   set caption(echip,obt)                 "Obturateur m√©canique"
    set caption(echip,gain)                "Gain \[e\/ADU\]"
    set caption(echip,noise)               "Bruit de lecture \[e\]"
-   set caption(echip,bias)                "DÈcalage \[ADU\]"
+   set caption(echip,bias)                "D√©calage \[ADU\]"
    set caption(echip,thermic_signal)      "Coefficient thermique \[ADU\/sec\]"
    set caption(echip,sigma)               "Sigma"
-   set caption(echip,saturation)          "CapacitÈ ‡ la saturation \[ADU\]"
+   set caption(echip,saturation)          "Capacit√© √† la saturation \[ADU\]"
    set caption(echip,exp_critique)        "Temps de pose critique \[sec\]"
    set caption(echip,exp_max)             "Temps de pose maximum \[sec\]"
 
@@ -63,19 +63,19 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(echip,title)               "# ParamËtres Èlectroniques"
+   set caption(echip,title)               "# Param√®tres √©lectroniques"
 
-   set caption(echip,offset)              "# Nom gÈnÈrique de la PrÈcharge"
-   set caption(echip,dark)                "# Nom gÈnÈrique du Noir"
-   set caption(echip,flat)                "# Nom gÈnÈrique de la P.L.U."
+   set caption(echip,offset)              "# Nom g√©n√©rique de la Pr√©charge"
+   set caption(echip,dark)                "# Nom g√©n√©rique du Noir"
+   set caption(echip,flat)                "# Nom g√©n√©rique de la P.L.U."
    set caption(echip,nombre)              "# Nombre"
-   set caption(echip,obt)                 "# Obturateur mÈcanique"
+   set caption(echip,obt)                 "# Obturateur m√©canique"
    set caption(echip,gain)                "# Gain \[e\/ADU\]"
    set caption(echip,noise)               "# Bruit de lecture \[e\]"
-   set caption(echip,bias)                "# DÈcalage \[ADU\]"
+   set caption(echip,bias)                "# D√©calage \[ADU\]"
    set caption(echip,thermic_signal)      "# Coefficient thermique \[ADU\/sec\]"
    set caption(echip,sigma)               "# Sigma"
-   set caption(echip,saturation)          "# CapacitÈ ‡ la saturation \[ADU\]"
+   set caption(echip,saturation)          "# Capacit√© √† la saturation \[ADU\]"
    set caption(echip,exp_critique)        "# Temps de pose critique \[sec\]"
    set caption(echip,exp_max)             "# Temps de pose maximum \[sec\]"
 
@@ -89,19 +89,19 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(echip,title)               "# ParamËtres Èlectroniques"
+   set caption(echip,title)               "# Param√®tres √©lectroniques"
 
-   set caption(echip,offset)              "# Nom gÈnÈrique de la PrÈcharge"
-   set caption(echip,dark)                "# Nom gÈnÈrique du Noir"
-   set caption(echip,flat)                "# Nom gÈnÈrique de la P.L.U."
+   set caption(echip,offset)              "# Nom g√©n√©rique de la Pr√©charge"
+   set caption(echip,dark)                "# Nom g√©n√©rique du Noir"
+   set caption(echip,flat)                "# Nom g√©n√©rique de la P.L.U."
    set caption(echip,nombre)              "# Nombre"
-   set caption(echip,obt)                 "# Obturateur mÈcanique"
+   set caption(echip,obt)                 "# Obturateur m√©canique"
    set caption(echip,gain)                "# Gain \[e\/ADU\]"
    set caption(echip,noise)               "# Bruit de lecture \[e\]"
-   set caption(echip,bias)                "# DÈcalage \[ADU\]"
+   set caption(echip,bias)                "# D√©calage \[ADU\]"
    set caption(echip,thermic_signal)      "# Coefficient thermique \[ADU\/sec\]"
    set caption(echip,sigma)               "# Sigma"
-   set caption(echip,saturation)          "# CapacitÈ ‡ la saturation \[ADU\]"
+   set caption(echip,saturation)          "# Capacit√© √† la saturation \[ADU\]"
    set caption(echip,exp_critique)        "# Temps de pose critique \[sec\]"
    set caption(echip,exp_max)             "# Temps de pose maximum \[sec\]"
 
@@ -115,19 +115,19 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(echip,title)               "# ParamËtres Èlectroniques"
+   set caption(echip,title)               "# Param√®tres √©lectroniques"
 
-   set caption(echip,offset)              "# Nom gÈnÈrique de la PrÈcharge"
-   set caption(echip,dark)                "# Nom gÈnÈrique du Noir"
-   set caption(echip,flat)                "# Nom gÈnÈrique de la P.L.U."
+   set caption(echip,offset)              "# Nom g√©n√©rique de la Pr√©charge"
+   set caption(echip,dark)                "# Nom g√©n√©rique du Noir"
+   set caption(echip,flat)                "# Nom g√©n√©rique de la P.L.U."
    set caption(echip,nombre)              "# Nombre"
-   set caption(echip,obt)                 "# Obturateur mÈcanique"
+   set caption(echip,obt)                 "# Obturateur m√©canique"
    set caption(echip,gain)                "# Gain \[e\/ADU\]"
    set caption(echip,noise)               "# Bruit de lecture \[e\]"
-   set caption(echip,bias)                "# DÈcalage \[ADU\]"
+   set caption(echip,bias)                "# D√©calage \[ADU\]"
    set caption(echip,thermic_signal)      "# Coefficient thermique \[ADU\/sec\]"
    set caption(echip,sigma)               "# Sigma"
-   set caption(echip,saturation)          "# CapacitÈ ‡ la saturation \[ADU\]"
+   set caption(echip,saturation)          "# Capacit√© √† la saturation \[ADU\]"
    set caption(echip,exp_critique)        "# Temps de pose critique \[sec\]"
    set caption(echip,exp_max)             "# Temps de pose maximum \[sec\]"
 
@@ -136,25 +136,25 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(echip,apply)               "Anwenden"
    set caption(echip,hlpTool)             "# Aide Outil"
    set caption(echip,hlpFunction)         "# Tutoriel"
-   set caption(echip,close)               "Schlieﬂen"
+   set caption(echip,close)               "Schlie√üen"
 
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(echip,title)               "# ParamËtres Èlectroniques"
+   set caption(echip,title)               "# Param√®tres √©lectroniques"
 
-   set caption(echip,offset)              "# Nom gÈnÈrique de la PrÈcharge"
-   set caption(echip,dark)                "# Nom gÈnÈrique du Noir"
-   set caption(echip,flat)                "# Nom gÈnÈrique de la P.L.U."
+   set caption(echip,offset)              "# Nom g√©n√©rique de la Pr√©charge"
+   set caption(echip,dark)                "# Nom g√©n√©rique du Noir"
+   set caption(echip,flat)                "# Nom g√©n√©rique de la P.L.U."
    set caption(echip,nombre)              "# Nombre"
-   set caption(echip,obt)                 "# Obturateur mÈcanique"
+   set caption(echip,obt)                 "# Obturateur m√©canique"
    set caption(echip,gain)                "# Gain \[e\/ADU\]"
    set caption(echip,noise)               "# Bruit de lecture \[e\]"
-   set caption(echip,bias)                "# DÈcalage \[ADU\]"
+   set caption(echip,bias)                "# D√©calage \[ADU\]"
    set caption(echip,thermic_signal)      "# Coefficient thermique \[ADU\/sec\]"
    set caption(echip,sigma)               "# Sigma"
-   set caption(echip,saturation)          "# CapacitÈ ‡ la saturation \[ADU\]"
+   set caption(echip,saturation)          "# Capacit√© √† la saturation \[ADU\]"
    set caption(echip,exp_critique)        "# Temps de pose critique \[sec\]"
    set caption(echip,exp_max)             "# Temps de pose maximum \[sec\]"
 
@@ -168,19 +168,19 @@ if { [ string compare $langage "french" ] == "0" } {
 # **************** Version danoise ****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(echip,title)               "# ParamËtres Èlectroniques"
+   set caption(echip,title)               "# Param√®tres √©lectroniques"
 
-   set caption(echip,offset)              "# Nom gÈnÈrique de la PrÈcharge"
-   set caption(echip,dark)                "# Nom gÈnÈrique du Noir"
-   set caption(echip,flat)                "# Nom gÈnÈrique de la P.L.U."
+   set caption(echip,offset)              "# Nom g√©n√©rique de la Pr√©charge"
+   set caption(echip,dark)                "# Nom g√©n√©rique du Noir"
+   set caption(echip,flat)                "# Nom g√©n√©rique de la P.L.U."
    set caption(echip,nombre)              "# Nombre"
-   set caption(echip,obt)                 "# Obturateur mÈcanique"
+   set caption(echip,obt)                 "# Obturateur m√©canique"
    set caption(echip,gain)                "Gain \[e\/ADU\]"
    set caption(echip,noise)               "Read Noise \[e\]"
    set caption(echip,bias)                "Bias \[ADU\]"
    set caption(echip,thermic_signal)      "Thermic signal \[ADU\/sec\]"
    set caption(echip,sigma)               "Sigma"
-   set caption(echip,saturation)          "# CapacitÈ ‡ la saturation \[ADU\]"
+   set caption(echip,saturation)          "# Capacit√© √† la saturation \[ADU\]"
    set caption(echip,exp_critique)        "# Temps de pose critique \[sec\]"
    set caption(echip,exp_max)             "# Temps de pose maximum \[sec\]"
 
@@ -194,19 +194,19 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
-   set caption(echip,title)               "# ParamËtres Èlectroniques"
+   set caption(echip,title)               "# Param√®tres √©lectroniques"
 
-   set caption(echip,offset)              "# Nom gÈnÈrique de la PrÈcharge"
-   set caption(echip,dark)                "# Nom gÈnÈrique du Noir"
-   set caption(echip,flat)                "# Nom gÈnÈrique de la P.L.U."
+   set caption(echip,offset)              "# Nom g√©n√©rique de la Pr√©charge"
+   set caption(echip,dark)                "# Nom g√©n√©rique du Noir"
+   set caption(echip,flat)                "# Nom g√©n√©rique de la P.L.U."
    set caption(echip,nombre)              "# Nombre"
-   set caption(echip,obt)                 "# Obturateur mÈcanique"
+   set caption(echip,obt)                 "# Obturateur m√©canique"
    set caption(echip,gain)                "Gain \[e\/ADU\]"
    set caption(echip,noise)               "Read Noise \[e\]"
    set caption(echip,bias)                "Bias \[ADU\]"
    set caption(echip,thermic_signal)      "Thermic signal \[ADU\/sec\]"
    set caption(echip,sigma)               "Sigma"
-   set caption(echip,saturation)          "# CapacitÈ ‡ la saturation \[ADU\]"
+   set caption(echip,saturation)          "# Capacit√© √† la saturation \[ADU\]"
    set caption(echip,exp_critique)        "# Temps de pose critique \[sec\]"
    set caption(echip,exp_max)             "# Temps de pose maximum \[sec\]"
 
@@ -220,19 +220,19 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
-   set caption(echip,title)               "# ParamËtres Èlectroniques"
+   set caption(echip,title)               "# Param√®tres √©lectroniques"
 
-   set caption(echip,offset)              "# Nom gÈnÈrique de la PrÈcharge"
-   set caption(echip,dark)                "# Nom gÈnÈrique du Noir"
-   set caption(echip,flat)                "# Nom gÈnÈrique de la P.L.U."
+   set caption(echip,offset)              "# Nom g√©n√©rique de la Pr√©charge"
+   set caption(echip,dark)                "# Nom g√©n√©rique du Noir"
+   set caption(echip,flat)                "# Nom g√©n√©rique de la P.L.U."
    set caption(echip,nombre)              "# Nombre"
-   set caption(echip,obt)                 "# Obturateur mÈcanique"
+   set caption(echip,obt)                 "# Obturateur m√©canique"
    set caption(echip,gain)                "Gain \[e\/ADU\]"
    set caption(echip,noise)               "Read Noise \[en\]"
    set caption(echip,bias)                "Bias \[ADU\]"
    set caption(echip,thermic_signal)      "Thermic signal \[ADU\/sec\]"
    set caption(echip,sigma)               "Sigma"
-   set caption(echip,saturation)          "# CapacitÈ ‡ la saturation \[ADU\]"
+   set caption(echip,saturation)          "# Capacit√© √† la saturation \[ADU\]"
    set caption(echip,exp_critique)        "# Temps de pose critique \[sec\]"
    set caption(echip,exp_max)             "# Temps de pose maximum \[sec\]"
 
@@ -246,6 +246,6 @@ if { [ string compare $langage "french" ] == "0" } {
 }
 
 #=========================================================================
-#   Fin de la dÈclaration des textes localisÈs (internationalisation)
+#   Fin de la d√©claration des textes localis√©s (internationalisation)
 #=========================================================================
 
