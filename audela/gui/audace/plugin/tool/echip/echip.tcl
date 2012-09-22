@@ -2,7 +2,7 @@
 # Fichier : echip.tcl
 # Description : GUI de la proc electronic_chip (surchaud.tcl)
 # Auteur : Raymond Zachantke
-# Mise à jour $Id: echip.tcl
+# Mise Ã  jour $Id$
 #
 
 #============================================================
@@ -93,7 +93,7 @@ namespace eval ::echip {
 
    #------------------------------------------------------------
    # startTool : affiche la fenetre de l'outil
-   #  Parametres : N° de la visu
+   #  Parametres : NÂ° de la visu
    #------------------------------------------------------------
    proc startTool { visuNo } {
       variable private
@@ -105,7 +105,7 @@ namespace eval ::echip {
 
    #------------------------------------------------------------
    # stopTool : masque la fenetre de l'outil
-   #  Parametres : N° de la visu
+   #  Parametres : NÂ° de la visu
    #------------------------------------------------------------
    proc stopTool { visuNo } {
 
