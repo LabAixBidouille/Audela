@@ -976,7 +976,7 @@ proc vo_xml_decode { xml tags {kdeb 0} } {
 }
 
 # ------------------------------------------------------------------------------------
-proc miriade_ephemcc { args } {
+proc vo_miriade_ephemcc { args } {
 
    global audace
    global conf
@@ -987,10 +987,10 @@ proc miriade_ephemcc { args } {
    if {$argc >= 4} {
 
       # reception des arguments
-      # name  type  ep  nbd  step  tscale  observer  theory  teph  tcoor  rplane  mime  output  extrap  from
+      # name  type  epoch  nbd  step  tscale  observer  theory  teph  tcoor  rplane  mime  output  extrap
       set name     [lindex $args 0]
       set type     [lindex $args 1]
-      set ep       [lindex $args 2]
+      set epoch    [lindex $args 2]
       set nbd      [lindex $args 3]
       set step     [lindex $args 4]
       set tscale   [lindex $args 5]
@@ -1002,15 +1002,14 @@ proc miriade_ephemcc { args } {
       set mime     [lindex $args 11]
       set output   [lindex $args 12]
       set extrap   [lindex $args 13]
-      set from     [lindex $args 14]
 
       # The XML below is ripped straight from the generated request
       variable miriade_xml
       array set miriade_xml {
-        miriade {<?xml version="1.0" encoding="UTF-8"?>
+        ephemcc {<?xml version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope
     xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
-    xmlns:ns1="http://vo.imcce.fr/webservices/miriade/ephemcc_query"
+    xmlns:ns1="http://vo.imcce.fr/webservices/miriade"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
@@ -1019,11 +1018,11 @@ proc miriade_ephemcc { args } {
     <ns1:clientID><ns1:from>AudeLA</ns1:from><ns1:hostip></ns1:hostip></ns1:clientID>
   </SOAP-ENV:Header>
   <SOAP-ENV:Body>
-    <ns1:miriade>
-      <inputArray xsi:type="ns1:miriade">
+    <ns1:ephemcc>
+      <inputArray xsi:type="ns1:ephemccRequest">
         <name xsi:type="xsd:string" >${name}</name>
         <type xsi:type="xsd:string" >${type}</type>
-        <ep xsi:type="xsd:string" >${ep}</ep>
+        <epoch xsi:type="xsd:double" >${epoch}</epoch>
         <nbd xsi:type="xsd:integer">${nbd}</nbd>
         <step xsi:type="xsd:string" >${step}</step>
         <tscale xsi:type="xsd:string" >${tscale}</tscale>
@@ -1035,23 +1034,22 @@ proc miriade_ephemcc { args } {
         <mime xsi:type="xsd:string" >${mime}</mime>
         <output xsi:type="xsd:string" >${output}</output>
         <extrap xsi:type="xsd:integer" >${extrap}</extrap>
-        <from xsi:type="xsd:string" >${from}</from>
       </inputArray>
-    </ns1:miriade>
+    </ns1:ephemcc>
   </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>}
-}
+      }
 
       # instance du client soap
-      SOAP::create miriade \
-         -uri "http://vo.imcce.fr/webservices/miriade/ephemcc_query" \
+      SOAP::create ephemcc \
+         -uri "http://vo.imcce.fr/webservices/miriade" \
          -proxy "http://vo.imcce.fr/webservices/miriade/miriade.php" \
-         -name "miriade" \
+         -name "ephemcc" \
          -wrapProc vo_miriadeXML \
-         -params { name string type string ep string nbd integer step string tscale string observer string theory string teph integer tcoor integer rplane integer mime string output string extrap integer from string}
+         -params { name string type string epoch double nbd integer step string tscale string observer string theory string teph integer tcoor integer rplane integer mime string output string extrap integer}
 
       # invocation du web service
-      set erreur [ catch { miriade name $name type $type ep $ep nbd $nbd step $step tscale $tscale observer $observer theory $theory teph $teph tcoor $tcoor rplane $rplane mime $mime output $output extrap $extrap from $from } response ]
+      set erreur [ catch { ephemcc name $name type $type epoch $epoch nbd $nbd step $step tscale $tscale observer $observer theory $theory teph $teph tcoor $tcoor rplane $rplane mime $mime output $output extrap $extrap} response ]
 
       # recuperation des resultats
       set flag [lindex $response 1]
@@ -1084,7 +1082,7 @@ proc miriade_ephemcc { args } {
    } else {
 
      # error "Usage:skyb miriade Epoch RA_J2000 DEC_J2000 Radius(arcsec) ?text|votable|html? ?object|basic|all? Observer Filter(arcsec) objFilter(bitmask e.g. 110)"
-      error "Usage: miriade_ephemcc name  type  ep  nbd  step  tscale  observer  theory  teph  tcoor  rplane  mime  output  extrap  from "
+      error "Usage: vo_miriade_ephemcc name  type  epoch(JD)  nbd  step  tscale  observer  theory  teph  tcoor  rplane  mime  output  extrap  from "
 
    }
 }
