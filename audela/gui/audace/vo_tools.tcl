@@ -1,7 +1,7 @@
 #
 # Fichier : vo_tools.tcl
 # Description : Outils pour l'Observatoire Virtuel
-# Auteur : Alain KLOTZ et Jerome BERTHIER
+# Auteur : Alain KLOTZ, Jerome BERTHIER et Frederic Vachier
 # Mise à jour $Id$
 #
 
@@ -254,6 +254,15 @@ proc vo_skybotXML {procVarName args} {
       set $key [vo_entityEncode $val]
    }
    return [subst $skybot_xml($procName)]
+}
+
+proc vo_miriadeXML {procVarName args} {
+   variable miriade_xml
+   set procName [lindex [split $procVarName {_}] end]
+   foreach {key val} $args {
+      set $key [vo_entityEncode $val]
+   }
+   return [subst $miriade_xml($procName)]
 }
 
 # ------------------------------------------------------------------------------------
@@ -964,5 +973,119 @@ proc vo_xml_decode { xml tags {kdeb 0} } {
       return ""
    }
    return ""
+}
+
+# ------------------------------------------------------------------------------------
+proc miriade_ephemcc { args } {
+
+   global audace
+   global conf
+
+   package require SOAP
+
+   set argc [llength $args]
+   if {$argc >= 4} {
+
+      # reception des arguments
+      # name  type  ep  nbd  step  tscale  observer  theory  teph  tcoor  rplane  mime  output  extrap  from
+      set name     [lindex $args 0]
+      set type     [lindex $args 1]
+      set ep       [lindex $args 2]
+      set nbd      [lindex $args 3]
+      set step     [lindex $args 4]
+      set tscale   [lindex $args 5]
+      set observer [lindex $args 6]
+      set theory   [lindex $args 7]
+      set teph     [lindex $args 8]
+      set tcoor    [lindex $args 9]
+      set rplane   [lindex $args 10]
+      set mime     [lindex $args 11]
+      set output   [lindex $args 12]
+      set extrap   [lindex $args 13]
+      set from     [lindex $args 14]
+
+      # The XML below is ripped straight from the generated request
+      variable miriade_xml
+      array set miriade_xml {
+        miriade {<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope
+    xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:ns1="http://vo.imcce.fr/webservices/miriade/ephemcc_query"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
+    SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+  <SOAP-ENV:Header>
+    <ns1:clientID><ns1:from>AudeLA</ns1:from><ns1:hostip></ns1:hostip></ns1:clientID>
+  </SOAP-ENV:Header>
+  <SOAP-ENV:Body>
+    <ns1:miriade>
+      <inputArray xsi:type="ns1:miriade">
+        <name xsi:type="xsd:string" >${name}</name>
+        <type xsi:type="xsd:string" >${type}</type>
+        <ep xsi:type="xsd:string" >${ep}</ep>
+        <nbd xsi:type="xsd:integer">${nbd}</nbd>
+        <step xsi:type="xsd:string" >${step}</step>
+        <tscale xsi:type="xsd:string" >${tscale}</tscale>
+        <observer xsi:type="xsd:string" >${observer}</observer>
+        <theory xsi:type="xsd:string" >${theory}</theory>
+        <teph xsi:type="xsd:integer" >${teph}</teph>
+        <tcoor xsi:type="xsd:integer" >${tcoor}</tcoor>
+        <rplane xsi:type="xsd:integer" >${rplane}</rplane>
+        <mime xsi:type="xsd:string" >${mime}</mime>
+        <output xsi:type="xsd:string" >${output}</output>
+        <extrap xsi:type="xsd:integer" >${extrap}</extrap>
+        <from xsi:type="xsd:string" >${from}</from>
+      </inputArray>
+    </ns1:miriade>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>}
+}
+
+      # instance du client soap
+      SOAP::create miriade \
+         -uri "http://vo.imcce.fr/webservices/miriade/ephemcc_query" \
+         -proxy "http://vo.imcce.fr/webservices/miriade/miriade.php" \
+         -name "miriade" \
+         -wrapProc vo_miriadeXML \
+         -params { name string type string ep string nbd integer step string tscale string observer string theory string teph integer tcoor integer rplane integer mime string output string extrap integer from string}
+
+      # invocation du web service
+      set erreur [ catch { miriade name $name type $type ep $ep nbd $nbd step $step tscale $tscale observer $observer theory $theory teph $teph tcoor $tcoor rplane $rplane mime $mime output $output extrap $extrap from $from } response ]
+
+      # recuperation des resultats
+      set flag [lindex $response 1]
+      set result [lindex $response 5]
+
+      # On traite 3 cas de figure :
+      # 1- une erreur s'est produite
+      # 2- pas d'erreur mais la liste des corps est vide
+      # 3- pas d'erreur et la liste contient au moins un corps
+      #
+      # Ces trois cas sont traites differemment suivant le type de table demande
+      #  - type text : lorsque la liste est vide on renvoit "no"
+      #  - type mime : si la liste est vide pas de traitement particulier
+      #
+      # Valeur de $flag : 0 == liste vide , > 0 sinon
+      #
+      if { $erreur == 0 } {
+         if { $flag > 0 || $mime eq "votable" } {
+            return $result
+         } else {
+            return "no"
+         }
+      } else {
+         if {[set nameofexecutable [file tail [file rootname [info nameofexecutable]]]]=="audela"} {
+            tk_messageBox -title "error" -type ok -message [concat "miriade: error: " $response]
+         }
+         return "failed"
+      }
+
+   } else {
+
+     # error "Usage:skyb miriade Epoch RA_J2000 DEC_J2000 Radius(arcsec) ?text|votable|html? ?object|basic|all? Observer Filter(arcsec) objFilter(bitmask e.g. 110)"
+      error "Usage: miriade_ephemcc name  type  ep  nbd  step  tscale  observer  theory  teph  tcoor  rplane  mime  output  extrap  from "
+
+   }
 }
 
