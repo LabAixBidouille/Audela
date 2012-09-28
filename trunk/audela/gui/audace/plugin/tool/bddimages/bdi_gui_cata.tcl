@@ -732,6 +732,12 @@ namespace eval gui_cata {
       set file        [file join $bddconf(dirbase) $dirfilename $filename]
       
       buf$::audace(bufNo) load $file
+
+         if {$::gui_cata::use_uncosmic} {
+            gren_info "\n ** MYUNCOSMIC\n"
+            ::tools_cdl::myuncosmic $::audace(bufNo)
+         }
+
       ::audace::autovisu $::audace(visuNo)
 
    }
@@ -1176,9 +1182,6 @@ namespace eval gui_cata {
 
          buf$::audace(bufNo) load $file
 
-         if {$::gui_cata::use_uncosmic} {
-            ::tools_cdl::myuncosmic $::audace(bufNo)
-         }
 
          ::confVisu::setFileName $::audace(visuNo) $file
 
