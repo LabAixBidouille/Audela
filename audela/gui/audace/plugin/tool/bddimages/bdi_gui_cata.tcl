@@ -221,20 +221,7 @@ namespace eval gui_cata {
    variable man_xy_star
    variable man_ad_star
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+   variable use_uncosmic
 
 
 
@@ -352,6 +339,29 @@ namespace eval gui_cata {
             set ::gui_cata::gui_skybot $conf(astrometry,cata,gui_skybot)
          } else {
             set ::gui_cata::gui_skybot 0
+         }
+      }
+
+      # Uncosmic or not
+      if {! [info exists ::gui_cata::use_uncosmic] } {
+         if {[info exists conf(astrometry,cata,use_uncosmic)]} {
+            set ::gui_cata::use_uncosmic $conf(astrometry,cata,use_uncosmic)
+         } else {
+            set ::gui_cata::use_uncosmic 1
+         }
+      }
+      if {! [info exists ::tools_cdl::uncosm_param1] } {
+         if {[info exists conf(astrometry,cata,uncosm_param1)]} {
+            set ::tools_cdl::uncosm_param1 $conf(astrometry,cata,uncosm_param1)
+         } else {
+            set ::tools_cdl::uncosm_param1 0.8
+         }
+      }
+      if {! [info exists ::tools_cdl::uncosm_param2] } {
+         if {[info exists conf(astrometry,cata,uncosm_param2)]} {
+            set ::tools_cdl::uncosm_param2 $conf(astrometry,cata,uncosm_param2)
+         } else {
+            set ::tools_cdl::uncosm_param2 100
          }
       }
 
@@ -616,7 +626,7 @@ namespace eval gui_cata {
       set conf(astrometry,cata,use_tycho2) $::tools_cata::use_tycho2
       set conf(astrometry,cata,use_nomad1) $::tools_cata::use_nomad1
       set conf(astrometry,cata,use_skybot) $::tools_cata::use_skybot
-      
+            
       # Check button GUI
       set conf(astrometry,cata,gui_img)    $::gui_cata::gui_img
       set conf(astrometry,cata,gui_usnoa2) $::gui_cata::gui_usnoa2
@@ -625,7 +635,12 @@ namespace eval gui_cata {
       set conf(astrometry,cata,gui_tycho2) $::gui_cata::gui_tycho2
       set conf(astrometry,cata,gui_nomad1) $::gui_cata::gui_nomad1
       set conf(astrometry,cata,gui_skybot) $::gui_cata::gui_skybot
-       
+      
+      # Uncosmic or not!
+      set conf(astrometry,cata,use_uncosmic) $::gui_cata::use_uncosmic
+      set conf(astrometry,cata,uncosm_param1) $::tools_cdl::uncosm_param1
+      set conf(astrometry,cata,uncosm_param2) $::tools_cdl::uncosm_param2
+
       # Taille des ronds
       set conf(astrometry,cata,size_img)    $::gui_cata::size_img
       set conf(astrometry,cata,size_usnoa2) $::gui_cata::size_usnoa2
@@ -732,12 +747,9 @@ namespace eval gui_cata {
       set file        [file join $bddconf(dirbase) $dirfilename $filename]
       
       buf$::audace(bufNo) load $file
-
-         if {$::gui_cata::use_uncosmic} {
-            gren_info "\n ** MYUNCOSMIC\n"
-            ::tools_cdl::myuncosmic $::audace(bufNo)
-         }
-
+      if {$::gui_cata::use_uncosmic} {
+         ::tools_cdl::myuncosmic $::audace(bufNo)
+      }
       ::audace::autovisu $::audace(visuNo)
 
    }
@@ -2520,7 +2532,7 @@ namespace eval gui_cata {
         pack $treshold_ident -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
              #--- Cree un checkbutton
-             label $treshold_ident.lab1 -text "Seuil d'indentification d'astéroïde : En position :" 
+             label $treshold_ident.lab1 -text "Seuil d'indentification d'astï¿½roï¿½de : En position :" 
              pack $treshold_ident.lab1 -in $treshold_ident -side left -padx 5 -pady 0
              #--- Cree un entry
              entry $treshold_ident.val1 -relief sunken -textvariable ::tools_cata::treshold_ident_pos_ast -width 5
