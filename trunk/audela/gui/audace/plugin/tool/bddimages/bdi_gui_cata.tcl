@@ -1172,7 +1172,14 @@ namespace eval gui_cata {
 
          #?Charge l image a l ecran
          #gren_info "\n ** LOAD ** charge_current_image\n"
+
+
          buf$::audace(bufNo) load $file
+
+         if {$::gui_cata::use_uncosmic} {
+            ::tools_cdl::myuncosmic $::audace(bufNo)
+         }
+
          ::confVisu::setFileName $::audace(visuNo) $file
 
          if { $::tools_cata::boucle == 0 } {
@@ -2521,6 +2528,27 @@ namespace eval gui_cata {
              #--- Cree un entry
              entry $treshold_ident.val2 -relief sunken -textvariable ::tools_cata::treshold_ident_mag_ast -width 5
              pack $treshold_ident.val2 -in $treshold_ident -side left -pady 1 -anchor w
+
+        #--- Cree un frame pour afficher boucle
+        set myuncosm [frame $f2.myuncosm -borderwidth 0 -cursor arrow -relief groove]
+        pack $myuncosm -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             #--- Cree un checkbutton
+             checkbutton $myuncosm.check -highlightthickness 0 -text "Supprimer les cosmiques :" -variable ::gui_cata::use_uncosmic
+             pack $myuncosm.check -in $myuncosm -side left -padx 5 -pady 0
+  
+             #--- Cree un checkbutton
+             label $myuncosm.lab1 -text "coef :" 
+             pack $myuncosm.lab1 -in $myuncosm -side left -padx 5 -pady 0
+             #--- Cree un entry
+             entry $myuncosm.val1 -relief sunken -textvariable ::tools_cdl::uncosm_param1 -width 5
+             pack $myuncosm.val1 -in $myuncosm -side left -pady 1 -anchor w
+             #--- Cree un checkbutton
+             label $myuncosm.lab2 -text "clipmax :" 
+             pack $myuncosm.lab2 -in $myuncosm -side left -padx 5 -pady 0
+             #--- Cree un entry
+             entry $myuncosm.val2 -relief sunken -textvariable ::tools_cdl::uncosm_param2 -width 5
+             pack $myuncosm.val2 -in $myuncosm -side left -pady 1 -anchor w
 
 
 
