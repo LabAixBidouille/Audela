@@ -74,7 +74,7 @@ set caption(search,code_uai)                    "Codes UAI"
 set caption(bddimages_recherche,new_list_i)     "Nouvelle Liste intelligente"
 set caption(bddimages_recherche,new_list_n)     "Nouvelle Liste normale"
 set caption(bddimages_recherche,edit)           "Editer la liste"
-set caption(bddimages_recherche,delete_list)    "Effacer la liste"
+set caption(bddimages_recherche,delete_list)    "Supprimer la liste"
 
 set caption(bddimages_recherche,nointelist)     "Please create at least one list"
 
@@ -163,7 +163,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bddimages_recherche,new_list_i)     "Nouvelle Liste intelligente"
    set caption(bddimages_recherche,new_list_n)     "Nouvelle Liste normale"
    set caption(bddimages_recherche,edit)           "Editer la liste"
-   set caption(bddimages_recherche,delete_list)    "Effacer la liste"
+   set caption(bddimages_recherche,delete_list)    "Supprimer la liste"
 
 
    set caption(bddimages_recherche,nointelist)     "Veuillez créer au moins une liste"

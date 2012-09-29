@@ -512,28 +512,28 @@ namespace eval gui_cata {
       }
       if {! [info exists ::tools_cata::treshold_ident_pos_star] } {
          if {[info exists conf(astrometry,cata,treshold_ident_pos_star)]} {
-            set ::tools_cata::log $conf(astrometry,cata,treshold_ident_pos_star)
+            set ::tools_cata::treshold_ident_pos_star $conf(astrometry,cata,treshold_ident_pos_star)
          } else {
             set ::tools_cata::treshold_ident_pos_star 30.0
          }
       }
       if {! [info exists ::tools_cata::treshold_ident_mag_star] } {
          if {[info exists conf(astrometry,cata,treshold_ident_mag_star)]} {
-            set ::tools_cata::log $conf(astrometry,cata,treshold_ident_mag_star)
+            set ::tools_cata::treshold_ident_mag_star $conf(astrometry,cata,treshold_ident_mag_star)
          } else {
             set ::tools_cata::treshold_ident_mag_star -30.0
          }
       }
       if {! [info exists ::tools_cata::treshold_ident_pos_ast] } {
          if {[info exists conf(astrometry,cata,treshold_ident_pos_ast)]} {
-            set ::tools_cata::log $conf(astrometry,cata,treshold_ident_pos_ast)
+            set ::tools_cata::treshold_ident_pos_ast $conf(astrometry,cata,treshold_ident_pos_ast)
          } else {
-            set ::tools_cata::treshold_ident_pos_ast -100.0
+            set ::tools_cata::treshold_ident_pos_ast 10.0
          }
       }
       if {! [info exists ::tools_cata::treshold_ident_mag_ast] } {
          if {[info exists conf(astrometry,cata,treshold_ident_mag_ast)]} {
-            set ::tools_cata::log $conf(astrometry,cata,treshold_ident_mag_ast)
+            set ::tools_cata::treshold_ident_mag_ast $conf(astrometry,cata,treshold_ident_mag_ast)
          } else {
             set ::tools_cata::treshold_ident_mag_ast -100.0
          }
@@ -569,9 +569,6 @@ namespace eval gui_cata {
 
 
 
-
-
-
    proc ::gui_cata::setval { } {
 
       set ::tools_cata::ra_save  $::tools_cata::ra
@@ -592,16 +589,16 @@ namespace eval gui_cata {
       set ::tools_cata::ra_save  [lindex $a 0]
       set ::tools_cata::dec_save [lindex $a 1]
       gren_info "SET BOX : $::tools_cata::ra_save $::tools_cata::dec_save\n"
-      
-      
 
    }
 
-
-
-
-
-
+   proc ::gui_cata::resetcenter { } {
+   
+      set ::tools_cata::ra  $::tools_cata::ra_save
+      set ::tools_cata::dec $::tools_cata::dec_save
+      gren_info "RESET CENTER : $::tools_cata::ra $::tools_cata::dec\n"
+   
+   }
 
 
 
@@ -805,28 +802,19 @@ namespace eval gui_cata {
 
       global bddconf
 
-
       set catafilenameexist [::bddimages_liste::lexist $::tools_cata::current_image "catafilename"]
-      #gren_info "catafilenameexist = $catafilenameexist\n"
       if {$catafilenameexist==0} {return}
 
       set catafilename [::bddimages_liste::lget $::tools_cata::current_image "catafilename"]
       set catadirfilename [::bddimages_liste::lget $::tools_cata::current_image "catadirfilename"]
-      #set catadirfilename [::bddimages_liste::lget $::tools_cata::current_image "catadirfilename"]
-      #gren_info "catafilename = $catafilename\n"
-      #gren_info "catadirfilename = $catadirfilename\n"
          
       set catafile [file join $bddconf(dirbase) $catadirfilename $catafilename]
-      #gren_info "catafile = $catafile\n"
       set errnum [catch {set catafile [::tools_cata::extract_cata_xml $catafile]} msg ]
       if {$errnum} {
          return -code $errnum $msg
       }
       
-      #gren_info "READ catafile = $catafile\n"
       set listsources [::tools_cata::get_cata_xml $catafile]
-      
-      
       
       set listsources [::tools_sources::set_common_fields $listsources IMG    { ra dec 5.0 calib_mag calib_mag_ss1}]
       #set listsources [::tools_sources::set_common_fields $listsources USNOA2 { ra dec poserr mag magerr }]
@@ -838,11 +826,8 @@ namespace eval gui_cata {
       set listsources [::tools_sources::set_common_fields_skybot $listsources]
       #set listsources [::tools_sources::set_common_fields $listsources TYCHO2 { RAdeg DEdeg 5 VT e_VT }]
       set ::tools_cata::current_listsources $listsources
+
    }
-
-
-
-
 
 
 
@@ -855,42 +840,23 @@ namespace eval gui_cata {
       cleanmark
       set err [catch {
 
-      #gren_info "\nAFFICHE_CATA\n"
-
       set cataexist [::bddimages_liste::lexist $::tools_cata::current_image "cataexist"]
-      #gren_info "cataexist = $cataexist\n"
       if {$cataexist==0} {return}
-      #gren_info "current_image = $::tools_cata::current_image\n"
 
       set cataexist [::bddimages_liste::lget $::tools_cata::current_image "cataexist"]
-      #gren_info "cataexist = $cataexist\n"
       if {$cataexist!=1} {
-         #gren_info "RETURN\n"
          return -code 0 "NOCATA"
       }
        
       if {[::bddimages_liste::lget $::tools_cata::current_image "cataexist"]=="1"} {
-         
-         #gren_info "LOAD CATA\n"
          ::gui_cata::load_cata
-         
-         #gren_info "current_listsources = $::tools_cata::current_listsources \n"
       } else {
-         #::console::affiche_erreur "NO CATA\n"
          return -code 0 "NOCATA"
       }
 
-      #gren_info "current_listsources = $::tools_cata::current_listsources \n"
-      #::tools_sources::imprim_3_sources $::tools_cata::current_listsources USNOA2
-
       if { $::gui_cata::gui_img    } {
-         #gren_info "OK\n"
-         #gren_info "size_img = $::tools_cata::size_img\n"
-         #gren_info "gui_img = $::gui_cata::gui_img\n"
-         #gren_info "color_img = $::gui_cata::color_img\n"
-         #gren_info "nb = [::tools_sources::get_nb_sources_by_cata $::tools_cata::current_listsources IMG ]\n"
-         #::tools_sources::imprim_3_sources $::tools_cata::current_listsources USNOA2
-         affich_rond $::tools_cata::current_listsources IMG $::gui_cata::color_img $::gui_cata::size_img }
+         affich_rond $::tools_cata::current_listsources IMG $::gui_cata::color_img $::gui_cata::size_img 
+      }
          
       if { $::gui_cata::gui_usnoa2 } { affich_rond $::tools_cata::current_listsources USNOA2 $::gui_cata::color_usnoa2 $::gui_cata::size_usnoa2 }
       if { $::gui_cata::gui_ucac2  } { affich_rond $::tools_cata::current_listsources UCAC2  $::gui_cata::color_ucac2  $::gui_cata::size_ucac2  }
@@ -919,10 +885,8 @@ namespace eval gui_cata {
          set idbddimg       [::bddimages_liste::lget $::tools_cata::current_image idbddimg]
          set filename       [::bddimages_liste::lget $::tools_cata::current_image filename   ]
          set dirfilename    [::bddimages_liste::lget $::tools_cata::current_image dirfilename]
-         #gren_info "idbddimg : $idbddimg   wcs : $bddimages_wcs \n"
 
          set err [catch {::tools_cata::get_wcs} msg]
-         #gren_info "::tools_cata::get_wcs $err $msg \n"
          
          if {$err == 0 } {
             set newimg [::bddimages_liste_gui::file_to_img $filename $dirfilename]
@@ -932,7 +896,6 @@ namespace eval gui_cata {
             set idbddimg    [::bddimages_liste::lget $newimg idbddimg]
             set tabkey      [::bddimages_liste::lget $newimg "tabkey"]
             set bddimages_wcs  [string trim [lindex [::bddimages_liste::lget $tabkey bddimages_wcs] 1] ]
-            #gren_info "idbddimg : $idbddimg   wcs : $bddimages_wcs  \n"
 
             set ::gui_cata::color_wcs $::gui_cata::color_button_good
 
@@ -946,7 +909,6 @@ namespace eval gui_cata {
             return true
 
          } else {
-            # "idbddimg : $idbddimg   filename : $filename wcs : erreur \n"
             ::console::affiche_erreur "GET_WCS ERROR: $msg  idbddimg : $idbddimg   filename : $filename\n"
             set ::gui_cata::color_wcs $::gui_cata::color_button_bad
             set ::tools_cata::boucle 0
@@ -1128,17 +1090,8 @@ namespace eval gui_cata {
 
          gren_info "--------\n"
 
-         #?Charge l image en memoire
-         #gren_info "cur id $::tools_cata::id_current_image \n"
          set ::tools_cata::current_image [lindex $::tools_cata::img_list [expr $::tools_cata::id_current_image - 1] ]
          
-         #gren_info "CURRENT_IMAGE $::tools_cata::current_image \n"
-         #gren_info "IMG_LIST [lindex $::tools_cata::img_list 0 ] \n"
-         #gren_info "IMG_LIST $::tools_cata::img_list \n"
-         #gren_info " idbddimg = \n"
-         #set idbddimg [::bddimages_liste::lget $::tools_cata::current_image "idbddimg"]
-         #gren_info " idbddimg = $idbddimg\n"
-
          set err [catch {set ::tools_cata::current_image [::bddimages_liste_gui::add_info_cata $::tools_cata::current_image]} msg]
          if {$err} {
             ::console::affiche_erreur "Erreur de lecture des infos du cata de l image \n"
@@ -1182,28 +1135,15 @@ namespace eval gui_cata {
             gren_info "---------------------------\n"
          }
 
-
          $::gui_cata::gui_dateimage configure -text $::tools_cata::current_image_date
-         #gren_info "wcs : $date $::tools_cata::bddimages_wcs\n"
-         #gren_info "\n\nTABKEY = $tabkey"
-         #gren_info "$::tools_cata::id_current_image = date : $date  idbddimg : $idbddimg  file : $filename $::tools_cata::bddimages_wcs\n"
-
-         #?Charge l image a l ecran
-         #gren_info "\n ** LOAD ** charge_current_image\n"
-
 
          buf$::audace(bufNo) load $file
-
 
          ::confVisu::setFileName $::audace(visuNo) $file
 
          if { $::tools_cata::boucle == 0 } {
-            #set cuts [buf$::audace(bufNo) autocuts]
-            #gren_info "\n ** VISU ** charge_current_image\n"
-            #::audace::autovisu $::audace(visuNo)
             ::gui_cata::affiche_current_image
             ::gui_cata::affiche_cata
-            #visu$::audace(visuNo) disp [list [lindex $cuts 0] [lindex $cuts 1] ]
          }
          
          #?Mise a jour GUI
@@ -1264,17 +1204,14 @@ namespace eval gui_cata {
       set ::tools_cata::img_list    [::bddimages_imgcorrection::chrono_sort_img $img_list]
       set ::tools_cata::img_list    [::bddimages_liste_gui::add_info_cata_list $::tools_cata::img_list]
       set ::tools_cata::nb_img_list [llength $::tools_cata::img_list]
-      #gren_info "nb images : $::tools_cata::nb_img_list\n"
 
       foreach ::tools_cata::current_image $::tools_cata::img_list {
          set tabkey      [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
          set date        [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
          set idbddimg    [::bddimages_liste::lget $::tools_cata::current_image idbddimg]
-         #gren_info "date : $date  idbddimg : $idbddimg\n"
       }
 
       # Chargement premiere image sans GUI
-      #gren_info "* Premiere image :\n"
       set ::tools_cata::id_current_image 1
       set ::tools_cata::current_image [lindex $::tools_cata::img_list 0]
 
@@ -1301,14 +1238,9 @@ namespace eval gui_cata {
 
       set ::tools_cata::current_image_name $filename
       set ::tools_cata::current_image_date $date
-      #gren_info "$::tools_cata::id_current_image = date : $date  idbddimg : $idbddimg  file : $filename $::tools_cata::bddimages_wcs\n"
 
       #?Charge l image a l ecran
-      #gren_info "\n ** LOAD ** \n"
       buf$::audace(bufNo) load $file
-      #gren_info "\n ** VISU ** premiere image\n"
-      #::audace::autovisu $::audace(visuNo)
-      #visu$::audace(visuNo) disp
 
       # Etat des boutons et GUI
       cleanmark
@@ -2408,7 +2340,7 @@ namespace eval gui_cata {
         pack $tycho2 -in $f1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
              #--- Cree un checkbutton
-             checkbutton $tycho2.check -highlightthickness 0 -text "tycho2" -variable ::tools_cata::use_tycho2
+             checkbutton $tycho2.check -highlightthickness 0 -text "TYCHO-2" -variable ::tools_cata::use_tycho2
              pack $tycho2.check -in $tycho2 -side left -padx 5 -pady 0
              #--- Cree un entry
              entry $tycho2.dir -relief sunken -textvariable ::tools_cata::catalog_tycho2 -width 30
@@ -2419,7 +2351,7 @@ namespace eval gui_cata {
         pack $ucac2 -in $f1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
              #--- Cree un checkbutton
-             checkbutton $ucac2.check -highlightthickness 0 -text "ucac2" -variable ::tools_cata::use_ucac2
+             checkbutton $ucac2.check -highlightthickness 0 -text "UCAC2" -variable ::tools_cata::use_ucac2
              pack $ucac2.check -in $ucac2 -side left -padx 5 -pady 0
              #--- Cree un entry
              entry $ucac2.dir -relief sunken -textvariable ::tools_cata::catalog_ucac2 -width 30
@@ -2430,7 +2362,7 @@ namespace eval gui_cata {
         pack $ucac3 -in $f1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
              #--- Cree un checkbutton
-             checkbutton $ucac3.check -highlightthickness 0 -text "ucac3" -variable ::tools_cata::use_ucac3
+             checkbutton $ucac3.check -highlightthickness 0 -text "UCAC3" -variable ::tools_cata::use_ucac3
              pack $ucac3.check -in $ucac3 -side left -padx 5 -pady 0
              #--- Cree un entry
              entry $ucac3.dir -relief sunken -textvariable ::tools_cata::catalog_ucac3 -width 30
@@ -2441,7 +2373,7 @@ namespace eval gui_cata {
         pack $nomad1 -in $f1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
              #--- Cree un checkbutton
-             checkbutton $nomad1.check -highlightthickness 0 -text "nomad1" -variable ::tools_cata::use_nomad1 -state disabled
+             checkbutton $nomad1.check -highlightthickness 0 -text "NOMAD1" -variable ::tools_cata::use_nomad1 -state disabled
              pack $nomad1.check -in $nomad1 -side left -padx 5 -pady 0
              #--- Cree un entry
              entry $nomad1.dir -relief sunken -textvariable ::tools_cata::catalog_nomad1 -width 30
@@ -2452,7 +2384,7 @@ namespace eval gui_cata {
         pack $skybot -in $f1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
              #--- Cree un checkbutton
-             checkbutton $skybot.check -highlightthickness 0 -text "Utiliser SkyBot" -variable ::tools_cata::use_skybot
+             checkbutton $skybot.check -highlightthickness 0 -text "Utiliser SkyBoT" -variable ::tools_cata::use_skybot
              pack $skybot.check -in $skybot -side left -padx 5 -pady 0
   
 
@@ -2496,7 +2428,7 @@ namespace eval gui_cata {
         pack $limit_nbstars -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
              #--- Cree un checkbutton
-             label $limit_nbstars.lab -text "limite acceptable du nb d'etoiles identifiees : " 
+             label $limit_nbstars.lab -text "Limite acceptable du nb d'etoiles identifiees : " 
              pack $limit_nbstars.lab -in $limit_nbstars -side left -padx 5 -pady 0
              #--- Cree un entry
              entry $limit_nbstars.val -relief sunken -textvariable ::tools_cata::limit_nbstars_accepted
@@ -2532,7 +2464,7 @@ namespace eval gui_cata {
         pack $treshold_ident -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
              #--- Cree un checkbutton
-             label $treshold_ident.lab1 -text "Seuil d'indentification d'ast�ro�de : En position :" 
+             label $treshold_ident.lab1 -text "Seuil d'indentification planetaire : En position :" 
              pack $treshold_ident.lab1 -in $treshold_ident -side left -padx 5 -pady 0
              #--- Cree un entry
              entry $treshold_ident.val1 -relief sunken -textvariable ::tools_cata::treshold_ident_pos_ast -width 5
@@ -2564,20 +2496,6 @@ namespace eval gui_cata {
              #--- Cree un entry
              entry $myuncosm.val2 -relief sunken -textvariable ::tools_cdl::uncosm_param2 -width 5
              pack $myuncosm.val2 -in $myuncosm -side left -pady 1 -anchor w
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         #--- Cree un frame pour afficher info image
@@ -2636,11 +2554,15 @@ namespace eval gui_cata {
                 entry $foclen.val -relief sunken -textvariable ::tools_cata::foclen
                 pack $foclen.val -in $foclen -side right -pady 1 -anchor w
 
-            button $f3.setval -text "Set Val" -borderwidth 2 -takefocus 1 \
-              -command "::gui_cata::setval"
-            pack $f3.setval -side top \
-              -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
+            #--- set and reset center
+            set setbut [frame $f3.setbut -borderwidth 0 -cursor arrow -relief groove]
+            pack $setbut -in $f3 -anchor s -side top -expand 0 -padx 5 -pady 5
+               #--- set val
+               button $setbut.setval -text "Set Center" -borderwidth 2 -takefocus 1 -command "::gui_cata::setval"
+               pack $setbut.setval -side left -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+               #--- reset center
+               button $setbut.resetval -text "Reset Center" -borderwidth 2 -takefocus 1 -command "::gui_cata::resetcenter"
+               pack $setbut.resetval -side left -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
         #--- Cree un frame pour afficher 
         set count [frame $f4.count -borderwidth 0 -cursor arrow -relief groove]
