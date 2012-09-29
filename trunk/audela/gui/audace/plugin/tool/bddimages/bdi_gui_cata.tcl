@@ -593,7 +593,7 @@ namespace eval gui_cata {
    }
 
    proc ::gui_cata::resetcenter { } {
-   
+
       set ::tools_cata::ra  $::tools_cata::ra_save
       set ::tools_cata::dec $::tools_cata::dec_save
       gren_info "RESET CENTER : $::tools_cata::ra $::tools_cata::dec\n"
@@ -1031,6 +1031,19 @@ namespace eval gui_cata {
 
    }
 
+   
+   proc ::gui_cata::setCenterFromRADEC { } {
+
+      set rd [regexp -inline -all -- {\S+} $::tools_cata::coord]
+      set ra [lindex $rd 0]
+      set dec [lindex $rd 1]
+      set ::tools_cata::ra  $ra
+      set ::tools_cata::dec $dec
+      gren_info "SET CENTER FROM RA,DEC: $::tools_cata::ra $::tools_cata::dec\n"
+
+   }
+
+   
    proc ::gui_cata::watch_info { }  {
 
       set tabkey      [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
@@ -1324,7 +1337,7 @@ namespace eval gui_cata {
 
       catch {
         set r [calibwcs * * * * * USNO $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0]
-        gren_info "Resulta Test -> nb stars : $r\n"
+        gren_info "Resultat test -> nb stars = $r\n"
       }
 
 
@@ -1768,21 +1781,10 @@ namespace eval gui_cata {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
    proc ::gui_cata::manual_create_cata {  } {
 
-         ::gui_cata::push_img_list
-         set ::tools_cata::create_cata 0
+      ::gui_cata::push_img_list
+      set ::tools_cata::create_cata 0
 
       $::gui_cata::gui_enrimg configure -state disabled
 
@@ -1998,10 +2000,6 @@ namespace eval gui_cata {
       }
       set ::tools_cata::current_listsources [list $fields $newsources]
 
-
-
-
-
       # Resultats des magnitudes 
       ::manage_source::get_fields_from_sources $::tools_cata::current_listsources
 
@@ -2031,13 +2029,10 @@ namespace eval gui_cata {
          }
       }
 
-
       #set ::tools_cata::current_listsources [::tools_sources::set_common_fields $::tools_cata::current_listsources IMG { ra dec 5.0 calib_mag calib_mag_ss1}]
       #::manage_source::imprim_3_sources $::tools_cata::current_listsources
       set ::tools_cata::current_listsources [::manage_source::extract_catalog $::tools_cata::current_listsources "IMG"]
       #gren_info "rollupE = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
-
-
 
 # Obtention du CATA
       if {[::tools_cata::get_cata] == false} {
@@ -2048,12 +2043,11 @@ namespace eval gui_cata {
          $::gui_cata::gui_cata configure -bg $::gui_cata::color_cata
       }
 
-   #gren_info "rollupE = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
+      #gren_info "rollupE = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
 
-   $::gui_cata::gui_enrimg configure -state normal
-   ::gui_cata::pop_img_list
+      $::gui_cata::gui_enrimg configure -state normal
+      ::gui_cata::pop_img_list
    }
-
 
 
 
@@ -2177,10 +2171,6 @@ namespace eval gui_cata {
             }
          }
 
-
-
-
-
          # Modification img_list
          gren_info "Modification de img_list\n"
          set i [expr $::tools_cata::id_current_image -1]
@@ -2188,17 +2178,7 @@ namespace eval gui_cata {
 
        }
 
-
-
-
-
    }
-
-
-
-
-
-
 
 
 
@@ -2672,7 +2652,6 @@ namespace eval gui_cata {
                 spinbox $nomad1.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_nomad1 -command "::gui_cata::affiche_cata" -width 3
                 pack  $nomad1.radius -in $nomad1 -side left -anchor w
 
-
            #--- Cree un frame pour afficher SKYBOT
            set skybot [frame $count.skybot -borderwidth 0 -cursor arrow -relief groove]
            pack $skybot -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
@@ -2689,7 +2668,6 @@ namespace eval gui_cata {
                 pack $skybot.color -side left -anchor e -expand 0 
                 spinbox $skybot.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_skybot -command "::gui_cata::affiche_cata" -width 3
                 pack  $skybot.radius -in $skybot -side left -anchor w
-
 
         #--- Cree un frame pour afficher 
         set confsex [frame $f5.confsex -borderwidth 0 -cursor arrow -relief groove]
@@ -2714,8 +2692,7 @@ namespace eval gui_cata {
 
                 ::gui_cata::get_confsex
 
-
-        #--- Cree un frame pour afficher 
+        #--- Cree un frame pour afficher les actions Interop
         set interop [frame $f6.interop -borderwidth 0 -cursor arrow -relief groove]
         pack $interop -in $f6 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
   
@@ -2755,18 +2732,22 @@ namespace eval gui_cata {
 
               set r [frame $dss.r -borderwidth 0 -cursor arrow  -borderwidth 0]
               pack $r -in $dss -anchor s -side left -expand 0 -fill x -padx 3 -pady 3
-                 button $r.resolve -text "Resolve Sso" -borderwidth 0 -takefocus 1 -relief groove -borderwidth 1 -command "::gui_cata::skybotResolver"
-                 pack $r.resolve -side top -anchor e -padx 3 -pady 3 -ipadx 3 -ipady 3 -expand 0
-                 button $r.aladin -text "Show in Aladin" -borderwidth 0 -takefocus 1 -relief groove -borderwidth 1 -command "::gui_cata::sendAladinScript" 
-                 pack $r.aladin -side top -anchor e -padx 3 -pady 3 -ipadx 3 -ipady 3 -expand 0
+                 button $r.resolve -text "Resolve Sso" -borderwidth 0 -takefocus 1 -relief groove -borderwidth 1 \
+                        -command "::gui_cata::skybotResolver"
+                 pack $r.resolve -side top -anchor e -padx 3 -pady 1 -ipadx 2 -ipady 2 -expand 0
+                 button $r.setcenter -text "Set Center" -borderwidth 0 -takefocus 1 -relief groove -borderwidth 1 \
+                        -command "::gui_cata::setCenterFromRADEC"
+                 pack $r.setcenter -side top -anchor e -padx 3 -pady 1 -ipadx 2 -ipady 2 -expand 0
+                 button $r.aladin -text "Show in Aladin" -borderwidth 0 -takefocus 1 -relief groove -borderwidth 1 \
+                        -command "::gui_cata::sendAladinScript" 
+                 pack $r.aladin -side top -anchor e -padx 3 -pady 1 -ipadx 2 -ipady 2 -expand 0
 
-        #--- Cree un frame pour afficher la GUI du Mode Manuel
-        set manuel [frame $f7.manuel -borderwidth 0 -cursor arrow -relief groove]
-        pack $manuel -in $f7 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+              #--- Cree un frame pour afficher la GUI du Mode Manuel
+              set manuel [frame $f7.manuel -borderwidth 0 -cursor arrow -relief groove]
+              pack $manuel -in $f7 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-                frame $manuel.entr -borderwidth 0 -cursor arrow -relief groove
-                pack $manuel.entr  -in $manuel  -side top 
-                
+                 frame $manuel.entr -borderwidth 0 -cursor arrow -relief groove
+                 pack $manuel.entr  -in $manuel  -side top 
 
                      set dss [frame $manuel.entr.dss -borderwidth 0 -cursor arrow]
                      pack $dss -in $manuel.entr -side top 
