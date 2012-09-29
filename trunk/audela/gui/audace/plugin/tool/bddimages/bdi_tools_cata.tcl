@@ -186,6 +186,10 @@ namespace eval tools_cata {
    variable limit_nbstars_accepted
    variable log
 
+   variable treshold_ident_pos_star
+   variable treshold_ident_mag_star
+   variable treshold_ident_pos_ast
+   variable treshold_ident_mag_ast
 
 
 
