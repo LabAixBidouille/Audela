@@ -157,6 +157,7 @@ proc ::av4l::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_verif.tcl          ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_analysis_tools.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_analysis_gui.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l av4l_analysis_gui_ihm.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool av4l test.tcl                ]\""
 
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_cdl.tcl ]\""

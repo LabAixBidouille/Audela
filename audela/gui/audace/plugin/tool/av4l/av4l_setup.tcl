@@ -34,6 +34,7 @@ namespace eval ::av4l_setup {
       if { ! [ info exists ::av4l::parametres(av4l,$visuNo,screen_refresh) ] }             { set ::av4l::parametres(av4l,$visuNo,screen_refresh)            "1000" }
       if { ! [ info exists ::av4l::parametres(av4l,$visuNo,exec_ocr) ] }                   { set ::av4l::parametres(av4l,$visuNo,exec_ocr)                  "jpegtopnm ocr.jpg | gocr -C 0-9 -f UTF8" }
       if { ! [ info exists ::av4l::parametres(av4l,$visuNo,free_space) ] }                 { set ::av4l::parametres(av4l,$visuNo,free_space)                "500" }
+      if { ! [ info exists ::av4l::parametres(av4l,$visuNo,dir_prj) ] }                    { set ::av4l::parametres(av4l,$visuNo,dir_prj)                   "" }
    }
 
 
@@ -128,6 +129,39 @@ namespace eval ::av4l_setup {
       }
    }
 
+   #
+   # av4l_acq::chgdir
+   # Ouvre une boite de dialogue pour choisir un nom  de repertoire
+   #
+   proc ::av4l_setup::chgdir { This } {
+      global caption
+      global cwdWindow
+      global audace
+
+      #--- Initialisation des variables a 2 (0 et 1 reservees a Configuration --> Repertoires)
+      set cwdWindow(rep_images)      "2"
+      set cwdWindow(rep_travail)     "2"
+      set cwdWindow(rep_scripts)     "2"
+      set cwdWindow(rep_catalogues)  "2"
+      set cwdWindow(rep_userCatalog) "2"
+      set cwdWindow(rep_archives)    "2"
+
+      set parent "$audace(base)"
+      set title "Choisir un repertoire des projets"
+      set rep "$audace(rep_images)"
+
+      set numerror [ catch { set filename "[ ::cwdWindow::tkplus_chooseDir "$rep" $title $This ]" } msg ]
+      if { $numerror == "1" } {
+         set filename "[ ::cwdWindow::tkplus_chooseDir "[pwd]" $title $This ]"
+      }
+
+
+      ::console::affiche_resultat $audace(rep_images)
+
+      $This delete 0 end
+      $This insert 0 $filename
+
+   }
 
    #
    # av4l_setup::fillConfigPage
@@ -265,6 +299,21 @@ namespace eval ::av4l_setup {
             pack $frms.frame3.free_space.frm -side left
 
          pack $frms.frame3.free_space -side top -fill both -expand 1
+
+         #--- Frame pour le : repertoire projet
+         frame $frms.frame3.dir_prj -borderwidth 0
+
+            frame $frms.frame3.dir_prj.frm -borderwidth 0
+               entry $frms.frame3.dir_prj.frm.value -width 40 -textvariable ::av4l::parametres(av4l,$visuNo,dir_prj)
+               pack $frms.frame3.dir_prj.frm.value -side right -padx 5 -pady 0
+               button $frms.frame3.dir_prj.frm.but -text "..." -borderwidth 0 -command "::av4l_setup::chgdir $frms.frame3.dir_prj.frm.value" 
+               pack $frms.frame3.dir_prj.frm.but -side right -padx 2 -pady 0
+               label $frms.frame3.dir_prj.frm.lab -text "$caption(av4l_setup,dir_prj)"
+               pack $frms.frame3.dir_prj.frm.lab -side right -padx 5 -pady 0 
+
+            pack $frms.frame3.dir_prj.frm -side left
+
+         pack $frms.frame3.dir_prj -side top -fill both -expand 1
 
 
       # --

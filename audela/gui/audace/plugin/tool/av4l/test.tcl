@@ -22,7 +22,7 @@ namespace eval testprocedure {
 
    proc run {  } {
 
-      test1
+      test2
    }
 
 
@@ -81,6 +81,24 @@ global audace
  ::console::affiche_resultat " Test n° 2\n"
  ::console::affiche_resultat "---------------------------\n"
 
+# source [ file join $audace(rep_plugin) .. vo_tools.tcl ]
+ miriade_ephemcc "ceres" "" 2453002.24128009239 5 "1d" "UTC" "@500" "INPOP" 1 1 "html" "--iso,--rv" 0 "Audela"
+
+# http://vo.imcce.fr/webservices/miriade/ephemcc_query.php?
+# -name=a:ceres&
+# -type=&
+# -ep=2453002.24128009239&
+# -nbd=5&
+# -step=1d&
+# -tscale=UTC&
+# -observer=@500&
+# -theory=INPOP&
+# -teph=1&
+# -tcoor=1&
+# -mime=html&
+# -output=--iso,--rv&
+# -extrap=0&
+# -from=MiriadeDoc
 
 }
 
