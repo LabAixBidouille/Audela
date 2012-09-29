@@ -1420,8 +1420,8 @@ set tcl_precision 17
 
 
 
-   proc pi {} {return 3.1415926535897931}
-   proc ua {} {return 149598000.0}
+   proc ::av4l_analysis_tools::pi {} {return 3.1415926535897931}
+   proc ::av4l_analysis_tools::ua {} {return 149598000.0}
 
 
 
@@ -1455,6 +1455,7 @@ set tcl_precision 17
       ::console::affiche_resultat  "Diametres deduits de B = $diam_km_B (km) \n"
       ::console::affiche_resultat  "Diametres deduits de V = $diam_km_V (km) \n"
 
+      return [list $diam_V $diam_km_V]
    }
 
    proc ::av4l_analysis_tools::test_diametre_stellaire {  } {
