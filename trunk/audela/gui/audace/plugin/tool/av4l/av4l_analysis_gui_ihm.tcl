@@ -66,15 +66,17 @@
          pack $onglets -in $frm -side top -expand 0 -fill x -padx 10 -pady 5
 
             pack [ttk::notebook $onglets.nb]
-            set f0 [frame $onglets.nb.f0]
-            set f1 [frame $onglets.nb.f1]
-            set f2 [frame $onglets.nb.f2]
-            set f3 [frame $onglets.nb.f3]
-            set f4 [frame $onglets.nb.f4]
-            set f5 [frame $onglets.nb.f5]
-            set f6 [frame $onglets.nb.f6]
-            set f7 [frame $onglets.nb.f7]
-            set f8 [frame $onglets.nb.f8]
+            set f0  [frame $onglets.nb.f0]
+            set f1  [frame $onglets.nb.f1]
+            set f2  [frame $onglets.nb.f2]
+            set f3  [frame $onglets.nb.f3]
+            set f4  [frame $onglets.nb.f4]
+            set f5  [frame $onglets.nb.f5]
+            set f6  [frame $onglets.nb.f6]
+            set f7  [frame $onglets.nb.f7]
+            set f8  [frame $onglets.nb.f8]
+            set f9  [frame $onglets.nb.f9]
+            set f10 [frame $onglets.nb.f10]
             
             $onglets.nb add $f0 -text "Projet"
             $onglets.nb add $f1 -text "Ephemerides"
@@ -83,7 +85,9 @@
             $onglets.nb add $f4 -text "Parametres"
             $onglets.nb add $f6 -text "Immersion"
             $onglets.nb add $f7 -text "Emersion"
-            $onglets.nb add $f8 -text "Rapport"
+            $onglets.nb add $f8 -text "Info 1/2"
+            $onglets.nb add $f9 -text "Info 2/2"
+            $onglets.nb add $f10 -text "Rapport"
             $onglets.nb select $f0
             ttk::notebook::enableTraversal $onglets.nb
         
@@ -103,7 +107,6 @@
         pack $projet -in $f0 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
 
-
              #--- Cree un frame pour le chargement d'un fichier
              set titrecontxt [frame $projet.titrecontxt -borderwidth 1 -cursor arrow -relief raised]
              pack $titrecontxt -in $projet -anchor s -side top -expand 0 -fill x -padx 10 -pady 5 -ipady 5
@@ -121,7 +124,7 @@
                   pack  $object.l -side left -anchor e 
 
                   #--- Cree un label pour le chemin de l'AVI
-                  entry $object.v -textvariable ::av4l_analysis_gui::occ_obj -width 30
+                  entry $object.v -textvariable ::av4l_analysis_gui::occ_obj_name -width 30
                   pack $object.v -side left -padx 3 -pady 1 -fill x -expand 1
 
              #--- Cree un frame pour le chargement d'un fichier
@@ -714,51 +717,136 @@
 
 
              #--- Cree un frame pour le chargement d'un fichier
+             set corrtitre [frame $courbe.corrtitre -borderwidth 1 -cursor arrow -relief raised]
+             pack $corrtitre -in $courbe -anchor s -side top -expand 0 -fill x -padx 10 -pady 5 -ipady 5
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  checkbutton $corrtitre.v -variable ::av4l_analysis_gui::int_corr 
+                  pack $corrtitre.v -side left -padx 3 -pady 1 -fill x
+
+                  #--- Cree un label
+                  label $corrtitre.l -text "Correction des paquets d'images : " -font $av4lconf(font,courier_10_b)
+                  pack  $corrtitre.l -side left -anchor e 
+ 
+
+             #--- Cree un frame pour le chargement d'un fichier
              set corr_integ [frame $courbe.corr_integ -borderwidth 0 -cursor arrow -relief groove]
              pack $corr_integ -in $courbe -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-                  #--- Cree un label
-                  label $corr_integ.label -text "Correction de l intégration : "
-                  pack  $corr_integ.label -side left -anchor w
+                  #--- Cree un frame pour le chargement d'un fichier
+                  set offset [frame $corr_integ.offset -borderwidth 0 -cursor arrow -relief groove]
+                  pack $offset -in $corr_integ -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-                  #--- Creation du bouton open
-                  button $corr_integ.but_offset -text "offset" -borderwidth 2 \
-                        -command "::av4l_analysis_gui::corr_integ_get_offset $visuNo $corr_integ"
-                  pack $corr_integ.but_offset -side left -anchor e 
+                       #--- Cree un label
+                       label $offset.label -text "Nb d'images à supprimer en debut de courbe : "
+                       pack  $offset.label -side left -anchor w
 
-                  #--- Cree un label pour le chemin de l'AVI
-                  entry $corr_integ.offset -textvariable ::av4l_analysis_gui::raw_integ_offset -width 4
-                  pack $corr_integ.offset -side left -padx 3 -pady 1 
+                       #--- Creation du bouton open
+                       button $offset.but_offset -text "offset" -borderwidth 2 \
+                             -command "::av4l_analysis_gui::corr_integ_get_offset $visuNo $corr_integ"
+                       pack $offset.but_offset -side left -anchor e 
 
-                  #--- Creation du bouton open
-                  button $corr_integ.but_nb_img -text "nb img" -borderwidth 2 \
-                        -command "::av4l_analysis_gui::corr_integ_get_nb_img $visuNo $corr_integ"
-                  pack $corr_integ.but_nb_img -side left -anchor e 
+                       #--- Cree un label pour le chemin de l'AVI
+                       entry $offset.offset -textvariable ::av4l_analysis_gui::raw_integ_offset -width 4
+                       pack $offset.offset -side left -padx 3 -pady 1 
 
-                  #--- Cree un label pour le chemin de l'AVI
-                  entry $corr_integ.nb_img -textvariable ::av4l_analysis_gui::raw_integ_nb_img -width 4
-                  pack  $corr_integ.nb_img -side left -padx 3 -pady 1 
+                  #--- Cree un frame pour le chargement d'un fichier
+                  set bloc [frame $corr_integ.bloc -borderwidth 0 -cursor arrow -relief groove]
+                  pack $bloc -in $corr_integ -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-                  #--- Creation du bouton open
-                  button $corr_integ.but_view -text "view" -borderwidth 2 \
-                        -command "::av4l_analysis_gui::corr_integ_view"
-                  pack $corr_integ.but_view -side left -anchor e 
+                       #--- Cree un label
+                       label $bloc.label -text "Regroupe les images par bloc de : "
+                       pack  $bloc.label -side left -anchor w
 
-                  #--- Creation du bouton open
-                  button $corr_integ.but_apply -text "Appliquer" -borderwidth 2 \
-                        -command "::av4l_analysis_gui::corr_integ_apply"
-                  pack $corr_integ.but_apply -side left -anchor e 
+                       #--- Creation du bouton open
+                       button $bloc.but_nb_img -text "Paquet" -borderwidth 2 \
+                             -command "::av4l_analysis_gui::corr_integ_get_nb_img $visuNo $corr_integ"
+                       pack $bloc.but_nb_img -side left -anchor e 
+
+                       #--- Cree un label pour le chemin de l'AVI
+                       entry $bloc.nb_img -textvariable ::av4l_analysis_gui::raw_integ_nb_img -width 4
+                       pack  $bloc.nb_img -side left -padx 3 -pady 1 
 
 
              #--- Cree un frame pour le chargement d'un fichier
+             set corrtemptitre [frame $courbe.corrtemptitre -borderwidth 1 -cursor arrow -relief raised]
+             pack $corrtemptitre -in $courbe -anchor s -side top -expand 0 -fill x -padx 10 -pady 5 -ipady 5
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  checkbutton $corrtemptitre.v -variable ::av4l_analysis_gui::tps_corr 
+                  pack $corrtemptitre.v -side left -padx 3 -pady 1 -fill x
+
+                  #--- Cree un label
+                  label $corrtemptitre.l -text "Correction temporelle : " -font $av4lconf(font,courier_10_b)
+                  pack  $corrtemptitre.l -side left -anchor e 
+ 
+             #--- Cree un frame pour le chargement d'un fichier
+             set corrtemp [frame $courbe.corrtemp]
+             pack $corrtemp -in $courbe -anchor s -side top -expand 0 -fill x -padx 10 -pady 5 -ipady 5
+
+                  #--- Cree un frame pour le chargement d'un fichier
+                  set expo [frame $corrtemp.expo]
+                  pack $expo -in $corrtemp -anchor s -side top -expand 0 -fill x -padx 10 -pady 5 -ipady 5
+
+                       #--- Cree un label
+                       label $expo.l -text "Temps d'exposition théorique : " 
+                       pack  $expo.l -side left -anchor e 
+
+                       #--- Cree un label pour le chemin de l'AVI
+                       entry $expo.v -textvariable ::av4l_analysis_gui::theo_expo -width 5
+                       pack  $expo.v -side left -padx 3 -pady 1 
+
+                  #--- Cree un frame pour le chargement d'un fichier
+                  set offsettime [frame $corrtemp.offsettime]
+                  pack $offsettime -in $corrtemp -anchor s -side top -expand 0 -fill x -padx 10 -pady 5 -ipady 5
+
+                       #--- Cree un label
+                       label $offsettime.l -text "Saut d'intégration d'une image : "
+                       pack  $offsettime.l -side left -anchor e 
+
+                       #--- Cree un label pour le chemin de l'AVI
+                       entry $offsettime.v -textvariable ::av4l_analysis_gui::time_offset -width 5
+                       pack  $offsettime.v -side left -padx 3 -pady 1 
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set corr_ref_titre [frame $courbe.corr_ref_titre -borderwidth 1 -cursor arrow -relief raised]
+             pack $corr_ref_titre -in $courbe -anchor s -side top -expand 0 -fill x -padx 10 -pady 5 -ipady 5
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  checkbutton $corr_ref_titre.v -variable ::av4l_analysis_gui::ref_corr 
+                  pack $corr_ref_titre.v -side left -padx 3 -pady 1 -fill x
+
+                  #--- Cree un label
+                  label $corr_ref_titre.l -text "Correction par une étoile de référence : " -font $av4lconf(font,courier_10_b)
+                  pack  $corr_ref_titre.l -side left -anchor e 
+ 
+             #--- Cree un frame pour le chargement d'un fichier
              set sauver [frame $courbe.sauver -borderwidth 0 -cursor arrow -relief groove]
-             pack $sauver -in $courbe -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+             pack $sauver -in $courbe -anchor e -side top -expand 0 -fill x -padx 10 -pady 5
 
+                  #--- Cree un frame pour le chargement d'un fichier
+                  set block [frame $sauver.block -borderwidth 0 -cursor arrow -relief groove]
+                  pack $block -in $sauver -side left -anchor c -side right 
 
-                  #--- Creation du bouton open
-                  button $sauver.but_save -text "Sauver" -borderwidth 2 \
-                        -command "::av4l_analysis_gui::save_corrected_curve"
-                  pack $sauver.but_save -side left -anchor e 
+                       #--- Creation du bouton open
+                       button $block.but_reset -text "reset" -borderwidth 2 \
+                             -command "::av4l_analysis_gui::corr_integ_reset"
+                       pack $block.but_reset  -side left -anchor c
+
+                       #--- Creation du bouton open
+                       button $block.but_view -text "view" -borderwidth 2 \
+                             -command "::av4l_analysis_gui::corr_integ_view"
+                       pack $block.but_view  -side left -anchor c
+
+                       #--- Creation du bouton open
+                       button $block.but_apply -text "Appliquer" -borderwidth 2 \
+                             -command "::av4l_analysis_gui::corr_integ_apply"
+                       pack $block.but_apply -side left -anchor c
+
+                       #--- Creation du bouton open
+                       button $block.but_save -text "Sauver" -borderwidth 2 \
+                             -command "::av4l_analysis_gui::save_corrected_curve"
+                       pack $block.but_save -side left -anchor c
 
 
 
@@ -1159,6 +1247,18 @@
                   pack $titreetoile.but_aladin -side right -anchor c 
 
              #--- Cree un frame pour le chargement d'un fichier
+             set nometoile [frame $parametres.nometoile -borderwidth 0 -cursor arrow -relief groove]
+             pack $nometoile -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $nometoile.l1 -text "Désignation : "
+                  pack  $nometoile.l1 -side left -anchor e 
+
+                  #--- Cree un entry
+                  entry $nometoile.v1 -textvariable ::av4l_analysis_gui::occ_star_name -width 10
+                  pack $nometoile.v1 -side left -padx 3 -pady 1 -fill x
+
+             #--- Cree un frame pour le chargement d'un fichier
              set couleuretoile [frame $parametres.couleuretoile -borderwidth 0 -cursor arrow -relief groove]
              pack $couleuretoile -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
@@ -1359,25 +1459,25 @@
                        pack $pas_heure.v -side left -padx 0 -pady 0 -fill x
 
                   #--- Cree un frame pour le chargement d'un fichier
-                  set dureesearch [frame $frmgauche.dureesearch -borderwidth 0 -cursor arrow -relief groove]
-                  pack $dureesearch -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+                  set frmdureesearch [frame $frmgauche.frmdureesearch -borderwidth 0 -cursor arrow -relief groove]
+                  pack $frmdureesearch -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                        #--- Cree un label
-                       label $dureesearch.l -text "Durée de recherche autour de l'evenement : "
-                       pack  $dureesearch.l -side left -anchor e 
+                       label $frmdureesearch.l -text "Durée de recherche autour de l'evenement : "
+                       pack  $frmdureesearch.l -side left -anchor e 
 
                        #--- Creation du bouton calcul
-                       button $dureesearch.but_reload -image .reload -borderwidth 2 \
-                             -command "::av4l_analysis_gui::calcul_dureesearch $dureesearch $::av4l_analysis_gui::duree_max_immersion_search $::av4l_analysis_gui::duree_max_immersion_evnmt"
-                       pack $dureesearch.but_reload -side left -anchor c 
+                       button $frmdureesearch.but_reload -image .reload -borderwidth 2 \
+                             -command "::av4l_analysis_gui::calcul_dureesearch $frmdureesearch $::av4l_analysis_gui::duree_max_immersion_search $::av4l_analysis_gui::duree_max_immersion_evnmt"
+                       pack $frmdureesearch.but_reload -side left -anchor c 
 
                        #--- Cree un label pour le chemin de l'AVI
-                       label $dureesearch.v -textvariable ::av4l_analysis_gui::dureesearch
-                       pack $dureesearch.v -side left -padx 0 -pady 0 -fill x
+                       label $frmdureesearch.v -textvariable ::av4l_analysis_gui::dureesearch
+                       pack $frmdureesearch.v -side left -padx 0 -pady 0 -fill x
 
                        #--- Cree un label
-                       label $dureesearch.l2 -text "sec"
-                       pack  $dureesearch.l2 -side left -anchor e 
+                       label $frmdureesearch.l2 -text "sec"
+                       pack  $frmdureesearch.l2 -side left -anchor e 
 
 
              #--- Cree un frame pour le chargement d'un fichier
@@ -2036,6 +2136,53 @@
                             label $graphe22.lab -text "Ombre lissee par la reponse instrumentale"
                             pack  $graphe22.lab -side left -anchor e 
 
+
+#---
+
+
+#--- ONGLET : Info 1/2
+
+
+#---
+
+
+        #--- Cree un frame pour afficher le contenu de l onglet
+        set info1 [frame $f8.frm -borderwidth 0 -cursor arrow -relief groove]
+        pack $info1 -in $f8 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+        
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set titreobserver [frame $info1.titreobserver -borderwidth 1 -cursor arrow -relief raised]
+             pack $titreobserver -in $info1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $titreobserver.l -text "Observateurs : " -font $av4lconf(font,courier_10_b)
+                  pack  $titreobserver.l -side left -anchor e 
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set observer [frame $info1.observer -borderwidth 0 -cursor arrow -relief groove]
+             pack $observer -in $info1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+
+#---
+
+
+#--- ONGLET : Info 2/2
+
+
+#---
+
+
+
+
+
+#---
+
+
+#--- ONGLET : Rapport
+
+
+#---
 
 
 
