@@ -166,9 +166,15 @@ set tcl_precision 17
 
 
 
+   proc ::av4l_analysis_tools::correction_temporelle { } {
+
+      for {set i 1} {$i<=$::av4l_analysis_tools::raw_nbframe} {incr i} {
+         if {![info exists ::av4l_analysis_tools::finalcdl($i,jd)]} {continue}
+         set ::av4l_analysis_tools::finalcdl($i,jd) [expr $::av4l_analysis_tools::finalcdl($i,jd) - ($::av4l_analysis_gui::time_correction/86400.0)]
+      }
 
 
-
+   }
 
    proc ::av4l_analysis_tools::correction_integration { offset bloc } {
 

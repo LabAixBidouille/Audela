@@ -400,6 +400,7 @@ namespace eval ::av4l_analysis_gui {
       ::plotxy::clf 1
       ::plotxy::figure 1 
       ::plotxy::hold on 
+      ::plotxy::position {40 40 600 400}
       ::plotxy::plot $::av4l_analysis_gui::x $::av4l_analysis_gui::y b+
    }
 
@@ -554,22 +555,66 @@ namespace eval ::av4l_analysis_gui {
 
 
 
+   proc ::av4l_analysis_gui::corr_integ_reset { } {
 
-
-   proc ::av4l_analysis_gui::corr_integ_view { } {
-     
-      if {![info exists ::av4l_analysis_gui::raw_integ_offset]} {return}
-      if {![info exists ::av4l_analysis_gui::raw_integ_nb_img]} {return}
-      
-      ::av4l_analysis_tools::correction_integration $::av4l_analysis_gui::raw_integ_offset $::av4l_analysis_gui::raw_integ_nb_img
-      
       # cree la courbe
       set ::av4l_analysis_gui::x ""
       set ::av4l_analysis_gui::y ""
 
       for {set i 1} {$i<=$::av4l_analysis_tools::raw_nbframe} {incr i} {
+         lappend ::av4l_analysis_gui::x [expr ($::av4l_analysis_tools::cdl($i,jd) - $::av4l_analysis_tools::orig) * 86400.0 ]
+         lappend ::av4l_analysis_gui::y $::av4l_analysis_tools::cdl($i,obj_fint)
+      }
+      
+      # affiche la courbe
+      ::plotxy::clf 1
+      ::plotxy::figure 1 
+      ::plotxy::hold on 
+      ::plotxy::position {40 40 600 400}
+      ::plotxy::plot $::av4l_analysis_gui::x $::av4l_analysis_gui::y b+
+
+   }
+   
+   
+
+
+
+
+
+   proc ::av4l_analysis_gui::corr_integ_view { } {
+     
+      ::console::affiche_resultat "Sauvegarde de la courbe : $::av4l_analysis_gui::corr_filename\n"
+     
+      ::console::affiche_resultat " int_corr         = $::av4l_analysis_gui::int_corr\n"
+      ::console::affiche_resultat " raw_integ_offset = $::av4l_analysis_gui::raw_integ_offset\n"
+      ::console::affiche_resultat " raw_integ_nb_img = $::av4l_analysis_gui::raw_integ_nb_img\n"
+      ::console::affiche_resultat " tps_corr         = $::av4l_analysis_gui::tps_corr\n"
+      ::console::affiche_resultat " theo_expo        = $::av4l_analysis_gui::theo_expo\n"
+      ::console::affiche_resultat " time_offset      = $::av4l_analysis_gui::time_offset\n"
+      ::console::affiche_resultat " ref_corr         = $::av4l_analysis_gui::ref_corr\n"
+          
+      if {![info exists ::av4l_analysis_gui::raw_integ_offset]} {return}
+      if {![info exists ::av4l_analysis_gui::raw_integ_nb_img]} {return}
+      
+      
+      if {$::av4l_analysis_gui::int_corr==1} {
+         ::av4l_analysis_tools::correction_integration $::av4l_analysis_gui::raw_integ_offset $::av4l_analysis_gui::raw_integ_nb_img
+      }
+      if {$::av4l_analysis_gui::tps_corr==1} {
+         set ::av4l_analysis_gui::time_correction [expr ($::av4l_analysis_gui::theo_expo/2.0 + $::av4l_analysis_gui::time_offset)]
+         ::av4l_analysis_tools::correction_temporelle
+      } else {
+         set ::av4l_analysis_gui::time_correction 0.0
+      }
+      
+      
+      # cree la courbe Rouges pour retrouver les paquets 
+      set ::av4l_analysis_gui::x ""
+      set ::av4l_analysis_gui::y ""
+
+      for {set i 1} {$i<=$::av4l_analysis_tools::raw_nbframe} {incr i} {
          if {![info exists ::av4l_analysis_tools::medianecdl($i,jd)]} {continue}
-         lappend ::av4l_analysis_gui::x [expr ($::av4l_analysis_tools::medianecdl($i,jd) - $::av4l_analysis_tools::orig) * 86400.0 ]
+         lappend ::av4l_analysis_gui::x [expr ($::av4l_analysis_tools::medianecdl($i,jd) - $::av4l_analysis_tools::orig) * 86400.0]
          lappend ::av4l_analysis_gui::y $::av4l_analysis_tools::medianecdl($i,obj_fint)
       }
 
@@ -577,7 +622,7 @@ namespace eval ::av4l_analysis_gui {
       ::plotxy::plot $::av4l_analysis_gui::x $::av4l_analysis_gui::y rx 
       #  http://www-hermes.desy.de/pink/blt.html#Sect6_4
 
-      # cree la courbe
+      # cree la courbe finale, mediane des paquets, correction d offset et correction du flux de reference
       set ::av4l_analysis_gui::x ""
       set ::av4l_analysis_gui::y ""
 
@@ -590,9 +635,6 @@ namespace eval ::av4l_analysis_gui {
       # affiche la courbe  couleur: rgbk   symbol: +xo*
       ::plotxy::plot $::av4l_analysis_gui::x $::av4l_analysis_gui::y go 4
 
-
-
-      
    }
 
 
@@ -627,6 +669,7 @@ namespace eval ::av4l_analysis_gui {
       ::plotxy::clf 1
       ::plotxy::figure 1 
       ::plotxy::hold on 
+      ::plotxy::position {40 40 600 400}
 
       # affiche la courbe  couleur: rgbk   symbol: +xo*
       ::plotxy::plot $::av4l_analysis_gui::x $::av4l_analysis_gui::y bo 1
@@ -1068,6 +1111,8 @@ namespace eval ::av4l_analysis_gui {
       
       if {$e==1} {
       
+         # Mode immersion
+         set ::av4l_analysis_tools::mode 1
 
          # 
          # on a 5 secondes dans lesquelles on va mesurer l instant
@@ -1686,11 +1731,11 @@ catch {
       puts $chan "# Contexte"
       puts $chan "# "
       puts $chan "set ::av4l_analysis_gui::occ_obj        \"$::av4l_analysis_gui::occ_obj\""
+      puts $chan "set ::av4l_analysis_gui::occ_date       \"$::av4l_analysis_gui::occ_date\""
+      puts $chan "set ::av4l_analysis_gui::occ_pos        \"$::av4l_analysis_gui::occ_pos\""
+      puts $chan "set ::av4l_analysis_gui::occ_pos_type   \"$::av4l_analysis_gui::occ_pos_type\""
       puts $chan "set ::av4l_analysis_gui::occ_obj_name   \"$::av4l_analysis_gui::occ_obj_name\""
       puts $chan "set ::av4l_analysis_gui::occ_obj_id     \"$::av4l_analysis_gui::occ_obj_id\""
-      puts $chan "set ::av4l_analysis_gui::occ_date       \"$::av4l_analysis_gui::occ_date\""
-      puts $chan "set ::av4l_analysis_gui::occ_pos_type   \"$::av4l_analysis_gui::occ_pos_type\""
-      puts $chan "set ::av4l_analysis_gui::occ_pos        \"$::av4l_analysis_gui::occ_pos\""
 
       puts $chan "# "
       puts $chan "# Contacts"
@@ -1728,12 +1773,21 @@ catch {
       puts $chan "set ::av4l_analysis_gui::hauteur    \"$::av4l_analysis_gui::hauteur\""
       puts $chan "set ::av4l_analysis_gui::airmass    \"$::av4l_analysis_gui::airmass\""
       puts $chan "set ::av4l_analysis_gui::dhelio     \"$::av4l_analysis_gui::dhelio\""
+
       puts $chan "# "
       puts $chan "# Corrections courbe"
       puts $chan "# "
       puts $chan "set ::av4l_analysis_gui::raw_filename_short \"$::av4l_analysis_gui::raw_filename_short\""
       puts $chan "set ::av4l_analysis_gui::raw_integ_offset   \"$::av4l_analysis_gui::raw_integ_offset\""
       puts $chan "set ::av4l_analysis_gui::raw_integ_nb_img   \"$::av4l_analysis_gui::raw_integ_nb_img\""
+      puts $chan "set ::av4l_analysis_gui::int_corr           \"$::av4l_analysis_gui::int_corr\""
+      puts $chan "set ::av4l_analysis_gui::raw_integ_offset   \"$::av4l_analysis_gui::raw_integ_offset\""
+      puts $chan "set ::av4l_analysis_gui::raw_integ_nb_img   \"$::av4l_analysis_gui::raw_integ_nb_img\""
+      puts $chan "set ::av4l_analysis_gui::tps_corr           \"$::av4l_analysis_gui::tps_corr\""
+      puts $chan "set ::av4l_analysis_gui::theo_expo          \"$::av4l_analysis_gui::theo_expo\""
+      puts $chan "set ::av4l_analysis_gui::time_offset        \"$::av4l_analysis_gui::time_offset\""
+      puts $chan "set ::av4l_analysis_gui::ref_corr           \"$::av4l_analysis_gui::ref_corr\""
+
       puts $chan "# "
       puts $chan "# Evenements"
       puts $chan "# "
@@ -1760,24 +1814,23 @@ catch {
       puts $chan "set ::av4l_analysis_gui::duree_max_emersion_evnmt \"$::av4l_analysis_gui::duree_max_emersion_evnmt\""
       puts $chan "set ::av4l_analysis_tools::id_p7         \"$::av4l_analysis_tools::id_p7\""
       puts $chan "set ::av4l_analysis_gui::date_emersion  \"$::av4l_analysis_gui::date_emersion\""
+
       puts $chan "# "
       puts $chan "# Parametres"
       puts $chan "# "
-      puts $chan "set ::av4l_analysis_gui::width      \"$::av4l_analysis_gui::width\""
-      puts $chan "set ::av4l_analysis_gui::occ_star_B \"$::av4l_analysis_gui::occ_star_B\""
-      puts $chan "set ::av4l_analysis_gui::occ_star_V \"$::av4l_analysis_gui::occ_star_V\""
-      puts $chan "set ::av4l_analysis_gui::occ_star_K \"$::av4l_analysis_gui::occ_star_K\""
+      puts $chan "set ::av4l_analysis_gui::width             \"$::av4l_analysis_gui::width\""
+      puts $chan "set ::av4l_analysis_gui::occ_star_name     \"$::av4l_analysis_gui::occ_star_name\""
+      puts $chan "set ::av4l_analysis_gui::occ_star_B        \"$::av4l_analysis_gui::occ_star_B\""
+      puts $chan "set ::av4l_analysis_gui::occ_star_V        \"$::av4l_analysis_gui::occ_star_V\""
+      puts $chan "set ::av4l_analysis_gui::occ_star_K        \"$::av4l_analysis_gui::occ_star_K\""
       puts $chan "set ::av4l_analysis_gui::occ_star_size_mas \"$::av4l_analysis_gui::occ_star_size_mas\""
       puts $chan "set ::av4l_analysis_gui::occ_star_size_km  \"$::av4l_analysis_gui::occ_star_size_km\""
-      puts $chan "set ::av4l_analysis_gui::wvlngth    \"$::av4l_analysis_gui::wvlngth\""
-      puts $chan "set ::av4l_analysis_gui::dlambda    \"$::av4l_analysis_gui::dlambda\""
-      puts $chan "set ::av4l_analysis_tools::irep     \"$::av4l_analysis_tools::irep\""
-      puts $chan "# "
-      puts $chan "# Parametres"
-      puts $chan "# "
-      puts $chan "set ::av4l_analysis_gui::nheure    \"$::av4l_analysis_gui::nheure\""
-      puts $chan "set ::av4l_analysis_gui::pas_heure \"$::av4l_analysis_gui::pas_heure\""
-      
+      puts $chan "set ::av4l_analysis_gui::wvlngth           \"$::av4l_analysis_gui::wvlngth\""
+      puts $chan "set ::av4l_analysis_gui::dlambda           \"$::av4l_analysis_gui::dlambda\""
+      puts $chan "set ::av4l_analysis_tools::irep            \"$::av4l_analysis_tools::irep\""
+      puts $chan "set ::av4l_analysis_gui::nheure            \"$::av4l_analysis_gui::nheure\""
+      puts $chan "set ::av4l_analysis_gui::pas_heure         \"$::av4l_analysis_gui::pas_heure\""
+
 }
       
       close $chan
@@ -1813,20 +1866,25 @@ catch {
       }
 
       set chan [open $file w]
-set ::av4l_analysis_gui::occ_obj_name    "Sappho"
-set ::av4l_analysis_gui::occ_obj_id      "80"
-set ::av4l_analysis_gui::occ_date_short  "2010-06-04"
-set ::av4l_analysis_gui::occ_star_name   "TYC 5573-00543-1"
+
+# Personnal      
 set ::av4l_analysis_gui::prj_phone       "+331 4051 2261"
 set ::av4l_analysis_gui::prj_address     "77 av. Denfert Rochereau, 75014, Paris, France"
 set ::av4l_analysis_gui::nearest_city    "Le Rotoir (91, France)"
+
+# Station
 set ::av4l_analysis_gui::type1_station   "mobile"
 set ::av4l_analysis_gui::latitude        "N 48 29 43.0"
 set ::av4l_analysis_gui::longitude       "E 02 05 02.0"
 set ::av4l_analysis_gui::altitude        "100m"
 set ::av4l_analysis_gui::datum           "WGS84"
 set ::av4l_analysis_gui::type2_station   "Single"
+
+# Resultat
 set ::av4l_analysis_gui::result          "POSITIVE"
+
+# se calcule
+set ::av4l_analysis_gui::occ_date_short  "2010-06-04"
 # debut obs
 set hs  23
 set ms  25
@@ -1854,6 +1912,30 @@ set int 0.32
 set duree 6.24
 # mid evenement
 set midevent  "23:41:25.41"
+
+set reaction_time "YES"
+set telescop_type "LX200"
+set telescop_aper "300mm"
+set telescop_magn "Prime focus F/10"
+set telescop_moun "AltAz"
+set telescop_moto "YES"
+
+set record_time "GPS"
+set record_sens "WATEC 120N"
+set record_prod "Grabber Dazzle DVC100 + MiniPC + Hard Drive"
+set record_tiin "KIWI-OSD"
+set record_evin ""
+set record_comp "NO"
+
+set obscond_tran "Good"
+set obscond_wind "0"
+set obscond_temp "+16 C"
+set obscond_stab "Good"
+set obscond_alti "+22"
+set obscond_visi "YES"
+
+
+
 
 
 catch {
@@ -1907,22 +1989,30 @@ catch {
       puts $chan [format "                          Duration : %.3f" $duree]
       puts $chan [format "                         Mid-event : %s UTC" $midevent]
       puts $chan ""
-      puts $chan "  Was your reaction time applied to the above timings? Yes"
+      puts $chan "  Was your reaction time applied to the above timings? $reaction_time"
       puts $chan ""
-      puts $chan "5 TELESCOPE: Type:  LX200     Aperture:  300mm   Magnification: Prime focus"
-      puts $chan "F/10"
-      puts $chan "             Mount: altaz     Motor drive: Yes"
+      puts $chan "5 TELESCOPE:"
+      puts $chan "    Type:          $telescop_type"
+      puts $chan "    Aperture:      $telescop_aper"
+      puts $chan "    Magnification: $telescop_magn"
+      puts $chan "    Mount:         $telescop_moun"
+      puts $chan "    Motor drive:   $telescop_moto"
       puts $chan ""
       puts $chan "6 TIMING & RECORDING:"
-      puts $chan "  Time source:                  GPS"
-      puts $chan "  Sensor:                       WATEC 120N"
-      puts $chan "  Recording:                    Grabber Dazzle DVC100 + MiniPC + Hard Drive "
-      puts $chan "  Time  insertion (specify):    KIWI-OSD"
-      puts $chan "  Event insertion (specify):"
+      puts $chan "    Time source:               $record_time"
+      puts $chan "    Sensor:                    $record_sens"
+      puts $chan "    Recording:                 $record_prod"
+      puts $chan "    Time  insertion (specify): $record_tiin"
+      puts $chan "    Event insertion (specify): $record_evin"
+      puts $chan "    Compression:               $record_comp"
       puts $chan ""
       puts $chan "7 OBSERVING CONDITIONS:"
-      puts $chan "  Atmospheric transparency: Good             Wind: 0   Temperature: +16 C"
-      puts $chan "  Star image stability: Good, altitude +22   Minor planet visible:  Yes"
+      puts $chan "    Atmospheric transparency: $obscond_tran"
+      puts $chan "    Wind:                     $obscond_wind"
+      puts $chan "    Temperature:              $obscond_temp"
+      puts $chan "    Star image stability:     $obscond_stab"
+      puts $chan "    Altitude:                 $obscond_alti"
+      puts $chan "    Minor planet visible:     $obscond_visi"
       puts $chan ""
       puts $chan "8 ADDITIONAL COMMENTS: 8 frame integration used (Watec setting 4 Slow)"
       puts $chan "  Codec use for grab : No recompression YUY2"
@@ -1970,14 +2060,45 @@ gren_info "$msg"
 
 
 
+   proc ::av4l_analysis_gui::good_sexa { d m s prec } {
+
+      set d [expr int($d)]
+      set m [expr int($m)]
+      set sa [expr int($s)]
+      if {$prec==0} {
+         return [format "%02d:%02d:%02d" $d $m $sa]
+      }
+      set ms [expr int(($s - $sa) * pow(10,$prec))]
+      return [format "%02d:%02d:%02d.%0${prec}d" $d $m $sa $ms]
+   }   
 
 
 
+# ::av4l_analysis_gui::set_object_name "# Asteroide     80 Sappho"
 
+   proc ::av4l_analysis_gui::set_object_name { line } {
 
+      regsub -all -- {[[:space:]]+} $line " " line
+      set line [split $line]
+      set cpt 0
+      set name ""
+      foreach s_el $line {
+         if {$cpt>2} {append name $s_el}
+         incr cpt
+      }
+      regsub -all { }  $name {_} name
 
+      set ::av4l_analysis_gui::occ_obj "[lindex $line 2]_$name"
+      set ::av4l_analysis_gui::occ_obj_name $name
+      set ::av4l_analysis_gui::occ_obj_type [lindex $line 1]     
+      set ::av4l_analysis_gui::occ_obj_id   [lindex $line 2]     
 
+      ::console::affiche_resultat  "obj = $::av4l_analysis_gui::occ_obj \n"
+      ::console::affiche_resultat  "name = $::av4l_analysis_gui::occ_obj_name \n"
+      ::console::affiche_resultat  "type = $::av4l_analysis_gui::occ_obj_type \n"
+      ::console::affiche_resultat  "id = $::av4l_analysis_gui::occ_obj_id \n"
 
+   }
 
 
    #
@@ -1989,12 +2110,12 @@ gren_info "$msg"
       set ::av4l_analysis_gui::occ_date [mc_date2iso8601 $jd]
       set ::av4l_analysis_gui::jd $jd
      
-      set cmd1 "vo_miriade_ephemcc \"$::av4l_analysis_gui::occ_obj\" \"\" $jd 1 \"1d\" \"UTC\" \"$::av4l_analysis_gui::occ_pos\" \"INPOP\" 2 1 1 \"text\" \"--jd\" 0"
-      set cmd5 "vo_miriade_ephemcc \"$::av4l_analysis_gui::occ_obj\" \"\" $jd 1 \"1d\" \"UTC\" \"$::av4l_analysis_gui::occ_pos\" \"INPOP\" 2 5 1 \"text\" \"--jd,--rv\" 0"
+      set cmd1 "vo_miriade_ephemcc \"$::av4l_analysis_gui::occ_obj_name\" \"\" $jd 1 \"1d\" \"UTC\" \"$::av4l_analysis_gui::occ_pos\" \"INPOP\" 2 1 1 \"text\" \"--jd\" 0"
+      set cmd5 "vo_miriade_ephemcc \"$::av4l_analysis_gui::occ_obj_name\" \"\" $jd 1 \"1d\" \"UTC\" \"$::av4l_analysis_gui::occ_pos\" \"INPOP\" 2 5 1 \"text\" \"--jd,--rv\" 0"
       ::console::affiche_resultat "CMD MIRIADE=$cmd1\n"
       ::console::affiche_resultat "CMD MIRIADE=$cmd5\n"
-      set textraw1 [vo_miriade_ephemcc "$::av4l_analysis_gui::occ_obj" "" $jd 1 "1d" "UTC" "$::av4l_analysis_gui::occ_pos" "INPOP" 2 1 1 "text" "--jd" 0]
-      set textraw5 [vo_miriade_ephemcc "$::av4l_analysis_gui::occ_obj" "" $jd 1 "1d" "UTC" "$::av4l_analysis_gui::occ_pos" "INPOP" 2 5 1 "text" "--jd" 0]
+      set textraw1 [vo_miriade_ephemcc "$::av4l_analysis_gui::occ_obj_name" "" $jd 1 "1d" "UTC" "$::av4l_analysis_gui::occ_pos" "INPOP" 2 1 1 "text" "--jd" 0]
+      set textraw5 [vo_miriade_ephemcc "$::av4l_analysis_gui::occ_obj_name" "" $jd 1 "1d" "UTC" "$::av4l_analysis_gui::occ_pos" "INPOP" 2 5 1 "text" "--jd" 0]
       set text1 [split $textraw1 ";"]
       set text5 [split $textraw5 ";"]
       
@@ -2010,19 +2131,11 @@ gren_info "$msg"
          ::console::affiche_erreur "CMD MIRIADE=$cmd5\n"
          return      
       }
-      
+
       # Maj du nom de l asteroide      
       set ast [lindex $text1 2]
       if {$ast != ""} {
-         regsub -all {#}  $ast {} ast
-         set nba [regsub -all {Asteroide}  $ast {} ast]
-         if {$nba>0} {
-            set ast [string trim $ast]
-            gren_info "CHAMPS AST:$ast\n"
-            regsub -all { }  $ast {_} ast
-            set ::av4l_analysis_gui::occ_obj $ast
-            set ::av4l_analysis_gui::occ_obj_type "a:"
-         }   
+         ::av4l_analysis_gui::set_object_name $ast
       } else {
          set res [tk_messageBox -message "Le nom de l'objet n'est pas reconnu par Miriade.\nLe resultat de la commande s'affiche dans la console" -type ok]
          ::console::affiche_erreur "CMD MIRIADE=$cmd1\n"
@@ -2036,13 +2149,16 @@ gren_info "$msg"
 
 
       # Interpretation appel format num 1
-
       set cpt 0
       foreach line $text1 {
-         ::console::affiche_resultat "ephemcc 1 ($cpt)=$line\n"
+         set char [string index [string trim $line] 0]
+         ::console::affiche_resultat "ephemcc 1 ($cpt) ($char)=$line\n"
+         if {$char!="#"} { break }
          incr cpt
       }
-      set line [lindex $text1 12]
+      ::console::affiche_resultat "cptdata = $cpt\n"
+      # on split la la ligne pour retrouver les valeurs
+      set line [lindex $text1 $cpt]
       regsub -all -- {[[:space:]]+} $line " " line
       set line [split $line]
       set cpt 0
@@ -2050,9 +2166,9 @@ gren_info "$msg"
          ::console::affiche_resultat  "($cpt) $s_el\n"
          incr cpt
       }
-
-      set ::av4l_analysis_gui::rajapp   "[lindex $line 2]:[lindex $line 3]:[lindex $line 4]"
-      set ::av4l_analysis_gui::decapp   "[lindex $line 5]:[lindex $line 6]:[lindex $line 7]"
+      # on affecte les varaibles
+      set ::av4l_analysis_gui::rajapp   [::av4l_analysis_gui::good_sexa [lindex $line  2] [lindex $line  3] [lindex $line  4] 2]
+      set ::av4l_analysis_gui::decapp   [::av4l_analysis_gui::good_sexa [lindex $line  5] [lindex $line  6] [lindex $line  7] 2]
       set ::av4l_analysis_gui::dist     [format "%.5f" [lindex $line 8]]
       set ::av4l_analysis_gui::magv     [lindex $line 9]
       set ::av4l_analysis_gui::phase    [lindex $line 10]
@@ -2062,15 +2178,17 @@ gren_info "$msg"
       set ::av4l_analysis_gui::vn       [lindex $line 14]
 
       # Interpretation appel format num 5
-
       set cpt 0
       foreach line $text5 {
-         ::console::affiche_resultat "ephemcc 5 ($cpt)=$line\n"
+         set char [string index [string trim $line] 0]
+         ::console::affiche_resultat "ephemcc 5 ($cpt) ($char)=$line\n"
+         if {$char!="#"} { break }
          incr cpt
       }
+      ::console::affiche_resultat "cptdata = $cpt\n"
       
-      # Maj du nom de l asteroide      
-      set line [lindex $text5 12]
+      # on split la la ligne pour retrouver les valeurs
+      set line [lindex $text5 $cpt]
       regsub -all -- {[[:space:]]+} $line " " line
       set line [split $line]
       set cpt 0
@@ -2080,13 +2198,14 @@ gren_info "$msg"
       }
       
       set tsl [mc_angle2hms [expr [lindex $line 2] * 15.] ]
-      set ::av4l_analysis_gui::tsl [format "%0.2d:%0.2d:%02.3f" [lindex $tsl 0] [lindex $tsl 1] [lindex $tsl 2] ]
-      set ::av4l_analysis_gui::raj2000   "[lindex $line 3]:[lindex $line 4]:[lindex $line 5]"
-      set ::av4l_analysis_gui::decj2000  "[lindex $line 6]:[lindex $line 7]:[lindex $line 8]"
-      set ::av4l_analysis_gui::hourangle "[lindex $line 9]:[lindex $line 10]:[lindex $line 11]"
-      set ::av4l_analysis_gui::decapp    "[lindex $line 12]:[lindex $line 13]:[lindex $line 14]"
-      set ::av4l_analysis_gui::azimuth   "[lindex $line 15]:[lindex $line 16]:[lindex $line 17]"
-      set ::av4l_analysis_gui::hauteur   "[lindex $line 18]:[lindex $line 19]:[lindex $line 20]"
+      set ::av4l_analysis_gui::tsl       [::av4l_analysis_gui::good_sexa [lindex $tsl   0] [lindex $tsl   1] [lindex $tsl   2] 2]
+      set ::av4l_analysis_gui::raj2000   [::av4l_analysis_gui::good_sexa [lindex $line  3] [lindex $line  4] [lindex $line  5] 2]
+      set ::av4l_analysis_gui::decj2000  [::av4l_analysis_gui::good_sexa [lindex $line  6] [lindex $line  7] [lindex $line  8] 2]
+      set ::av4l_analysis_gui::hourangle [::av4l_analysis_gui::good_sexa [lindex $line  9] [lindex $line 10] [lindex $line 11] 2]
+      set ::av4l_analysis_gui::decapp    [::av4l_analysis_gui::good_sexa [lindex $line 12] [lindex $line 13] [lindex $line 14] 2]
+      set ::av4l_analysis_gui::azimuth   [::av4l_analysis_gui::good_sexa [lindex $line 15] [lindex $line 16] [lindex $line 17] 2]
+      set ::av4l_analysis_gui::hauteur   [::av4l_analysis_gui::good_sexa [lindex $line 18] [lindex $line 19] [lindex $line 20] 2]
+
       set ::av4l_analysis_gui::airmass   [lindex $line 21]
       set ::av4l_analysis_gui::dhelio    [lindex $line 23]
       
