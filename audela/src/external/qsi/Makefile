@@ -3,14 +3,14 @@
 
 include ../../Makefile.defs
 
-DIR = qsiapi-6.0.3
+DIR = qsiapi-6.4.1
 BINDIR = $(EXTDIR)/qsi/$(DIR)/bin
 
 build:
 	@if test ! -e $(DIR)/Makefile || test ../../Makefile.defs -nt $(DIR)/Makefile; then \
 		cd $(DIR) && \
 		chmod +x configure ; \
-		./configure --quiet --enable-shared --enable-static=no --bindir=$(BINDIR) --libdir=$(EXTLIB) --includedir=$(EXTINC) LDFLAGS="-L$(EXTLIB) -Wl,-rpath,$(OUTPUTDIR)" ; \
+		./configure --quiet --enable-shared --enable-static=no --enable-libftd2xx --bindir=$(BINDIR) --libdir=$(EXTLIB) --includedir=$(EXTINC) LDFLAGS="-L$(EXTLIB) -Wl,-rpath,$(OUTPUTDIR)" ; \
 		 \
 	fi;
 	$(MAKE) -C $(DIR)
