@@ -205,13 +205,14 @@ Fourier::Parametres::~Parametres() {
 
     if ( _keywords )
     {
-        _keywords->Unreference();
+        //_keywords->Unreference();
         if ( _keywords->GetReference() == 0 )
         {
             fourier_debug( "Fourier::Parametre no " << _numero << " : destruction de keywords = " << _keywords );
             delete _keywords;
             _keywords = 0;
         }
+        _keywords->Unreference();
     }
 
     if ( _pixels )
@@ -237,9 +238,9 @@ void Fourier::Parametres::keywords ( CFitsKeywords * k )
 {
     if (_keywords ) {
         fourier_debug( "Fourier::Parametre no " << _numero << " : suppression de la ref sur keywords = " << _keywords << " ref = " << _keywords->GetReference() );
-        _keywords->Unreference();
         if ( _keywords->GetReference() == 0 )
             delete _keywords;
+        _keywords->Unreference();
     }
     _keywords = k;
     if ( _keywords )
