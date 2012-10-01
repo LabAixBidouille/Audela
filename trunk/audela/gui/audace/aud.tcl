@@ -52,6 +52,7 @@ source meteosensor_tools.tcl
 source photrel.tcl
 source fly.tcl
 source grb_tools.tcl
+source speckle_tools.tcl
 
 namespace eval ::audace {
 
