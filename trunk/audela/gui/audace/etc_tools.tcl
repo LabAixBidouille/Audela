@@ -96,6 +96,7 @@ proc etc_set_array_cameras { } {
    array set cameras [list {Andor Lucas R DL-604} {1004 1002 8e-6 8e-6 0.07 3. 18 0.65 1}]
    array set cameras [list {Audine Kaf401ME} {768 512 9e-6 9e-6 0.2 2.1 12 0.5 1}]
    array set cameras [list {SBIG STL-11000M} {4008 2672 9e-6 9e-6 0.2 0.8 13 0.5 1}]
+   array set cameras [list {SBIG STXL-6303} {3072 2048 9e-6 9e-6 0.1 1.47 12 0.65 1}]
    array set cameras [list {SBIG STX-16803} {4096 4096 9e-6 9e-6 0.2 1.27 13 0.6 1}]
    array set cameras [list {ST-2000XM} {1600 1200 7.4e-6 7.4e-6 0.1 0.6 7.9 0.35 1}]
 }
