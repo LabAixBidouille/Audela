@@ -13,22 +13,22 @@
 proc ::sn_tarot::bindjoystick { } {
    global audace conf snvisu snconfvisu num caption color rep panneau
    set err [catch {
-	   set res [joystick event peek]
-	   if {$res=="joystick 0 button 1 value 1"} { 
-		   ::sn_tarot::incrImage 
-   	} elseif {$res=="joystick 0 button 2 value 1"} { 
-		   ::sn_tarot::incrImage -1
-   	} elseif {$res=="joystick 0 button 3 value 1"} { 
-	      set snvisu(exit_blink) "1"
-	      if { $snvisu(blink_go) == "0" } {
-	         ::sn_tarot::snBlinkImage
-	      }
-   	} elseif {$res=="joystick 0 button 0 value 1"} { 
-		   ::sn_tarot::noStar
-	   } 
+      set res [joystick event peek]
+      if {$res=="joystick 0 button 1 value 1"} {
+         ::sn_tarot::incrImage
+      } elseif {$res=="joystick 0 button 2 value 1"} {
+         ::sn_tarot::incrImage -1
+      } elseif {$res=="joystick 0 button 3 value 1"} {
+         set snvisu(exit_blink) "1"
+         if { $snvisu(blink_go) == "0" } {
+            ::sn_tarot::snBlinkImage
+         }
+      } elseif {$res=="joystick 0 button 0 value 1"} {
+         ::sn_tarot::noStar
+      }
    } msg]
    if {$err==1} {
-	   #::console::affiche_resultat "::sn_tarot::bindjoystick error: $msg\n"
+      #::console::affiche_resultat "::sn_tarot::bindjoystick error: $msg\n"
    }
 }
 
@@ -229,12 +229,12 @@ proc ::sn_tarot::confTarotVisu { } {
 
    set have_joystick 0
    set err [catch {
-	   package require mkLibsdl
-	   set count [joystick count]
-	   if {$count>0} {
-		   joystick event eval ::sn_tarot::bindjoystick
-		   set have_joystick 1
-	   }
+      package require mkLibsdl
+      set count [joystick count]
+      if {$count>0} {
+         joystick event eval ::sn_tarot::bindjoystick
+         set have_joystick 1
+      }
    } msg]
    #::console::affiche_resultat "bindings: $err = $msg\n"
 
@@ -421,17 +421,17 @@ proc ::sn_tarot::displayImages { {subsky 0} {fname_img1 ""} } {
       buf$num(buffer2)  clear
       buf$num(buffer2b) clear
    }
-   
+
    #---
    set side1 4
    set side2 4
    set affspecial 0
    if {$fname_img1==""} {
-	   set filename [ lindex $rep(x1) $rep(index1) ]
+      set filename [ lindex $rep(x1) $rep(index1) ]
    } else {
-	   set filename $fname_img1
-	   set affspecial 1
-	   set afflog1 0
+      set filename $fname_img1
+      set affspecial 1
+      set afflog1 0
    }
    set snvisu(name) [ file tail $filename ]
 
@@ -471,18 +471,18 @@ proc ::sn_tarot::displayImages { {subsky 0} {fname_img1 ""} } {
    if { $afflog1==1 } {
       visu$num(visu1) cut [ ::sn_tarot::snBufLog $num(buffer1) $num(buffer1b) $side1 ]
    }
-   
+
    # --- Affichage en mode nostar
    if { $affspecial==1 } {
-	   set sb [expr $backmean-3*$backstd]
-	   set sh [expr $backmean+30*$backstd]
+      set sb [expr $backmean-3*$backstd]
+      set sh [expr $backmean+30*$backstd]
       visu$num(visu1) cut [list $sh $sb]
    }
 
    visu$num(visu1) disp
 
    #--   configure la reglette de la visu1 selon le mode log/pas log
-	::sn_tarot::configScale 1 $afflog1
+   ::sn_tarot::configScale 1 $afflog1
 
    set user [lindex [buf$num(buffer1) getkwd USER] 1]
    if {$user!=""} {
@@ -1110,7 +1110,7 @@ proc ::sn_tarot::noStar { } {
       buf$audace(bufNo) bitpix float
       buf$audace(bufNo) save $file_image_out
       ::sn_tarot::displayImages 0 $file_image_out
-      
+
    }
 }
 
