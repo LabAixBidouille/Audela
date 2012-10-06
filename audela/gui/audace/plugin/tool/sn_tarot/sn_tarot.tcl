@@ -4,10 +4,33 @@
 # Auteur : Alain KLOTZ et Raymond ZACHANTKE
 # Mise à jour $Id$
 #
+# source $audace(rep_install)/gui/audace/plugin/tool/sn_tarot/sn_tarot.tcl
 
 #--- Conventions pour ce script :
 #--- Les indices 1 se rapportent a l'image de gauche
 #--- Les indices 2 se rapportent a l'image de droite
+
+proc ::sn_tarot::bindjoystick { } {
+   global audace conf snvisu snconfvisu num caption color rep panneau
+   set err [catch {
+	   set res [joystick event peek]
+	   if {$res=="joystick 0 button 1 value 1"} { 
+		   ::sn_tarot::incrImage 
+   	} elseif {$res=="joystick 0 button 2 value 1"} { 
+		   ::sn_tarot::incrImage -1
+   	} elseif {$res=="joystick 0 button 3 value 1"} { 
+	      set snvisu(exit_blink) "1"
+	      if { $snvisu(blink_go) == "0" } {
+	         ::sn_tarot::snBlinkImage
+	      }
+   	} elseif {$res=="joystick 0 button 0 value 1"} { 
+		   ::sn_tarot::noStar
+	   } 
+   } msg]
+   if {$err==1} {
+	   #::console::affiche_resultat "::sn_tarot::bindjoystick error: $msg\n"
+   }
+}
 
 proc ::sn_tarot::confTarotVisu { } {
    # =======================================
@@ -203,6 +226,17 @@ proc ::sn_tarot::confTarotVisu { } {
    # === Setting the binding
    # === Met en place les liaisons
    # =========================================
+
+   set have_joystick 0
+   set err [catch {
+	   package require mkLibsdl
+	   set count [joystick count]
+	   if {$count>0} {
+		   joystick event eval ::sn_tarot::bindjoystick
+		   set have_joystick 1
+	   }
+   } msg]
+   #::console::affiche_resultat "bindings: $err = $msg\n"
 
    bind $audace(base).snvisu <Key-space> { ::sn_tarot::incrImage }
    bind $audace(base).snvisu <Key-F1> { ::sn_tarot::incrImage }
