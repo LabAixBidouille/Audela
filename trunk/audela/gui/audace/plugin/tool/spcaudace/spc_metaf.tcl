@@ -1633,7 +1633,8 @@ proc spc_traite2srinstrum { args } {
 	       }
 	   } else {
               if { $largeur_spectrale >= $spcaudace(bande_br) } {
-                 set fricorr [ spc_divbrut "$fcal" "$rinstrum" ]
+                 # set fricorr [ spc_divbrut "$fcal" "$rinstrum" ]
+                 set fricorr [ spc_divri "$fcal" "$rinstrum" ]
               } else {
                  set fricorr [ spc_divri "$fcal" "$rinstrum" ]
               }
@@ -2112,4 +2113,454 @@ proc spc_traitenebula { args } {
        ::console::affiche_erreur "Usage: spc_traitenebula nom_lampe nom_générique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu nom_offset spectre_réponse_instrumentale sélection_manuelle_raies uncosmic (o/n) mirrorx (o/n) normalisation (o/n) calibration_raies_telluriques (o/n) export_png (o/n) export_bess (o/n) méthode_appariement (reg, spc, n) méthode_détection_spectre (large, serre) méthode_sub_sky (moy, moy2, med, inf, sup, back, none)méthode_binning (add, rober, horne) adoucissement (o/n) rejet_mauvais_spectres (o/n) rejet_rotation_importante (o/n) efface_pretraitements (o/n) 2_lampes_calibration (o/n) lampe_calibrée (1/0)\n\n"
    }
 }
- #**********************************************************************************#
+#**********************************************************************************#
+
+
+
+###############################################################################
+# Procédure de traitement de spectres 2D pour des series : prétraitement, correction géométriques, régistration, sadd, spc_profil, calibration en longeur d'onde, correction réponse instrumentale, normalisation.
+# Auteur : Benjamin MAUCLAIRE
+# Date création :  28-08-2006
+# Date de mise à jour : 16-09-2012
+# Méthode : utilise spc_pretrait pour le prétraitement
+# Arguments : nom_générique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu nom_offset spectre_2D_lampe spectre_réponse_instrumentale méthode_appariement (reg, spc) uncosmic (o/n) méthode_détection_spectre (large, serre) méthode_sub_sky (moy, moy2, med, inf, sup, back, none) mirrorx (o/n) méthode_binning (add, rober, horne) normalisation (o/n) adoucissement (o/n) efface_pretraitement (o/n) export_png (o/n)
+###############################################################################
+
+proc spc_traiteseries { args } {
+
+   global audace spcaudace
+   global conf
+
+   set nbargs [ llength $args ]
+   if { $nbargs<=21 } {
+       if { $nbargs == 20 } {
+          set img [ lindex $args 0 ]
+          set dark [ file rootname [ lindex $args 1 ] ]
+          set flat [ lindex $args 2 ]
+          set dflat [ file rootname [ lindex $args 3 ] ]
+          set offset [ file rootname [ lindex $args 4 ] ]
+          set lampe [ file tail [ file rootname [ lindex $args 5 ] ] ]
+          set rinstrum [ file tail [ file rootname [ lindex $args 6 ] ] ]
+          set methreg [ lindex $args 7 ]
+          set methcos [ lindex $args 8 ]
+          set methsel [ lindex $args 9 ]
+          set methsky [ lindex $args 10 ]
+          set methinv [ lindex $args 11 ]
+          set methbin [ lindex $args 12 ]
+          set methnorma [ lindex $args 13 ]
+          set methsmo [ lindex $args 14 ]
+          set methejbad [ lindex $args 15 ]
+          set methejtilt [ lindex $args 16 ]
+          set rmfpretrait [ lindex $args 17 ]
+          set export_png [ lindex $args 18 ]
+          set flag_2lamps [ lindex $args 19 ]
+          set flag_nonstellaire 0
+       } elseif { $nbargs==21 } {
+          set img [ lindex $args 0 ]
+          set dark [ lindex $args 1 ]
+          set flat [ lindex $args 2 ]
+          set dflat [ lindex $args 3 ]
+          set offset [ lindex $args 4 ]
+          set lampe [ file tail [ file rootname [ lindex $args 5 ] ] ]
+          set rinstrum [ file tail [ file rootname [ lindex $args 6 ] ] ]
+          set methreg [ lindex $args 7 ]
+          set methcos [ lindex $args 8 ]
+          set methsel [ lindex $args 9 ]
+          set methsky [ lindex $args 10 ]
+          set methinv [ lindex $args 11 ]
+          set methbin [ lindex $args 12 ]
+          set methnorma [ lindex $args 13 ]
+          set methsmo [ lindex $args 14 ]
+          set methejbad [ lindex $args 15 ]
+          set methejtilt [ lindex $args 16 ]
+          set rmfpretrait [ lindex $args 17 ]
+          set export_png [ lindex $args 18 ]
+          set flag_2lamps [ lindex $args 19 ]
+          set windowcoords [ lindex $args 20 ]
+          set flag_nonstellaire 1
+       } else {
+          ::console::affiche_erreur "Usage: spc_traiteseries nom_générique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu nom_offset spectre_2D_lampe spectre_réponse_instrumentale méthode_appariement (reg, spc, n) uncosmic (o/n) méthode_détection_spectre (large, serre) méthode_sub_sky (moy, moy2, med, inf, sup, back, none) mirrorx (o/n) méthode_binning (add, rober, horne) normalisation (o/n) adoucissement (o/n) rejet_mauvais_spectres (o/n) rejet_rotation_importante (o/n) effacer_masters (o/n) export_PNG (o/n) ?2 spectres de calibration (o/n)? ?fenêtre_binning {x1 y1 x2 y2}?\n\n"
+	   return ""
+       }
+
+
+       #--- Elimination des mauvaises images :
+       if { $methejbad == "o" } {
+	   ::console::affiche_prompt "\n**** Éliminations des mauvaises images ****\n\n"
+	   spc_reject $img
+       }
+       if { [ file exists "$audace(rep_images)/$img$conf(extension,defaut)" ] } {
+          set nbimg 1
+          set nbimg_ini 1
+       } else {
+          set nbimg [ llength [ glob -dir $audace(rep_images) ${img}\[0-9\]$conf(extension,defaut) ${img}\[0-9\]\[0-9\]$conf(extension,defaut) ${img}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+          set nbimg_ini $nbimg
+       }
+
+       #--- Prétraitement de $nbimg images :
+       ::console::affiche_prompt "\n\n**** Prétraitement de $nbimg images ****\n\n"
+       if { $flag_nonstellaire==1 } {
+	   set fpretrait [ spc_pretrait $img $dark $flat $dflat $offset $rmfpretrait $windowcoords ]
+       } else {
+	   set fpretrait [ spc_pretrait $img $dark $flat $dflat $offset $rmfpretrait ]
+       }
+
+
+
+       #--- Correction du l'inclinaison (tilt) :
+       buf$audace(bufNo) load "$audace(rep_images)/$lampe"
+       set listemotsclef [ buf$audace(bufNo) getkwds ]
+       #-- Memorise le nom initial du spectre de la lampe de calibration :
+       if { [ lsearch $listemotsclef "SPC_LNM" ]!=-1 } {
+          set lampe_name [ lindex [ buf$audace(bufNo) getkwd "SPC_LNM" ] 1 ]
+       } else {
+          set lampe_name "$lampe"
+          set flag_2lamps "n"
+       }
+
+       #-- Effectue la correction de tilt :
+       if { $flag_nonstellaire==1 } {
+          #-- Temporaire : si le spectre de lampe donné est deja corrige geometriquement, utilise ses parametres :
+          ::console::affiche_prompt "\n\n**** Correction du l'inclinaison (tilt) ****\n\n"
+          buf$audace(bufNo) load "$audace(rep_images)/$lampe"
+          set listemotsclef [ buf$audace(bufNo) getkwds ]
+          if { [ lsearch $listemotsclef "SPC_TILT" ]!=-1 && [ lsearch $listemotsclef "SPC_TILX" ]!=-1 } {
+             set spc_angletilt [ lindex [ buf$audace(bufNo) getkwd "SPC_TILT" ] 1 ]
+             set spc_tiltx [ lindex [ buf$audace(bufNo) getkwd "SPC_TILX" ] 1 ]
+             set spc_tilty [ lindex [ buf$audace(bufNo) getkwd "SPC_TILY" ] 1 ]
+             set ftilt [ spc_tilt2imgs $fpretrait $spc_angletilt $spc_tiltx $spc_tilty ]
+          } else {
+             #-- Pas de correction de l'inclinaison pour les spectres non stellaires :
+             ::console::affiche_erreur "\n\nPAS DE CORRECTION DE L'INCLINAISON POUR LES SPECTRES NON STELLAIRES\n\n"
+             set ftilt "$fpretrait"
+          }
+       } else {
+          ::console::affiche_prompt "\n\n**** Correction du l'inclinaison (tilt) ****\n\n"
+          if { $methejtilt == "o" } {
+             set ftilt [ spc_tiltautoimgs $fpretrait o ]
+          } else {
+             set ftilt [ spc_tiltautoimgs $fpretrait n ]
+          }
+       }
+
+       #--- Corrections géométriques des raies (smile selon l'axe x ou slant) :
+       ::console::affiche_prompt "\n\n**** Corrections géométriques du spectre 2D ****\n\n"
+       buf$audace(bufNo) load "$audace(rep_images)/$lampe"
+       set listemotsclef [ buf$audace(bufNo) getkwds ]
+       if { [ lsearch $listemotsclef "SPC_SLX1" ] !=-1 } {
+	   set spc_ycenter [ lindex [ buf$audace(bufNo) getkwd "SPC_SLX1" ] 1 ]
+	   set spc_cdeg2 [ lindex [ buf$audace(bufNo) getkwd "SPC_SLX2" ] 1 ]
+	   ::console::affiche_prompt "\n*** Correction de la courbure des raies (smile selon l'axe x)... ***\n\n"
+	   set fgeom [ spc_smileximgs $ftilt $spc_ycenter $spc_cdeg2 ]
+       } elseif { [ lsearch $listemotsclef "SPC_SLA" ] !=-1 } {
+	   set pente [ lindex [ buf$audace(bufNo) getkwd "SPC_SLA" ] 1 ]
+	   ::console::affiche_prompt "\n** Correction de l'inclinaison des raies (slant)... **\n"
+	   set fgeom [ spc_slant2imgs $ftilt $pente ]
+       } else {
+	   ::console::affiche_resultat "\n** Aucune correction géométrique nécessaire. **\n"
+	   set fgeom "$ftilt"
+       }
+
+
+
+       #if { $rmfpretrait=="o" && [ file exists $audace(rep_images)/${fgeom}-1$conf(extension,defaut) ] }
+       #--- Appariement horizontal :
+       if { $flag_2lamps == "o" } {
+          set result_grep [ regexp {(.+\-?)[0-9]+} "$lampe_name" match prefixe_lampe ]
+          if { $result_grep==0 } {
+             set fhreg "$fgeom"
+          } elseif { [ file exists "$audace(rep_images)/${prefixe_lampe}2$conf(extension,defaut)" ]==1 } {
+             ::console::affiche_prompt "\n\n******* Appariement horizontal de $nbimg images *******\n\n"
+             set fhreg [ spc_registerh "$lampe" "$fgeom" ]
+          } else {
+             set fhreg "$fgeom"
+          }
+       } else {
+          set fhreg "$fgeom"
+       }
+
+      #--- Extraction du profil de raies de chque spectre :
+      set listefichiers [ glob -dir $audace(rep_images) ${fhreg}\[0-9\]$conf(extension,defaut) ${fhreg}\[0-9\]\[0-9\]$conf(extension,defaut) ${fhreg}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ]
+
+
+      if { 1==0 } {
+       #--- Effacement des images prétraitées :
+       set nbimg [ llength [ glob -dir $audace(rep_images) ${ftilt}\[0-9\]$conf(extension,defaut) ${ftilt}\[0-9\]\[0-9\]$conf(extension,defaut) ${ftilt}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+       if { $rmfpretrait=="o" } {
+	   delete2 $fpretrait $nbimg
+       }
+
+
+       #--- Appariement vertical de $nbimg images :
+       ::console::affiche_prompt "\n\n**** Appariement vertical de $nbimg images ****\n\n"
+       if { $flag_nonstellaire==1 || $nbimg_ini==1 } {
+	   ::console::affiche_resultat "\n Pas d'appariement vertical pour les spectres non stellaires ou solitaires\n"
+	   set freg "$fhreg"
+       } else {
+	   if { $methreg == "spc" } {
+	       set freg [ spc_register "$fhreg" ]
+	   } elseif { $methreg == "reg" } {
+	       set freg [ bm_register "$fhreg" ]
+	   } elseif { $methreg == "n"} {
+	       set freg "$fhreg"
+	   } else {
+	       ::console::affiche_resultat "\nOption d'appariement incorrecte\n"
+	   }
+       }
+
+
+       #--- Addition de $nbimg images :
+       ::console::affiche_prompt "\n\n**** Addition de $nbimg images ****\n\n"
+       if { $flag_nonstellaire==1 } {
+          #-- Somme des images pour les spectres non-stellaires car faibles :
+          set fsadd [ spc_somme "$freg" addi ]
+       } elseif { $nbimg_ini==1 } {
+          file copy -force "$audace(rep_images)/$freg$conf(extension,defaut)" "$audace(rep_images)/${freg}-s$conf(extension,defaut)"
+          set fsadd "${freg}-s"
+       } else {
+          #-- Somme moyenne des images pour les spectres stellaires car brillants :
+          #- set fsadd [ spc_somme "$freg" moy ] par defaut
+          set fsadd [ spc_somme "$freg" ]
+       }
+
+       if { $rmfpretrait=="o" } {
+          if { $nbimg_ini==1 } {
+             file delete -force "$audace(rep_images)/$fgeom$conf(extension,defaut)"
+          } else {
+             delete2 "$fgeom" $nbimg
+          }
+       }
+
+
+       #--- Effacement des images prétraitées :
+       if { $rmfpretrait=="o" } {
+	   delete2 "$ftilt" $nbimg
+       }
+       if { $rmfpretrait=="o" } {
+	   delete2 "$fhreg" $nbimg
+       }
+       if { $rmfpretrait=="o" } {
+	   delete2 "$freg" $nbimg
+       }
+
+
+       #--- Retrait des cosmics
+       if { $methcos == "o" } {
+	   buf$audace(bufNo) load "$audace(rep_images)/$fsadd"
+	   uncosmic $spcaudace(uncosmic)
+	   #uncosmic $spcaudace(uncosmic)
+	   buf$audace(bufNo) setkwd [ list BSS_COSM "Weighted median filter" string "Technic used for erasing cosmics" "" ]
+           buf$audace(bufNo) bitpix ulong
+	   buf$audace(bufNo) save "$audace(rep_images)/$fsadd"
+           buf$audace(bufNo) bitpix short
+       } else {
+	   buf$audace(bufNo) load "$audace(rep_images)/$fsadd"
+	   buf$audace(bufNo) setkwd [ list BSS_COSM "None" string "Technic used for erasing cosmics" "" ]
+           buf$audace(bufNo) bitpix ulong
+	   buf$audace(bufNo) save "$audace(rep_images)/$fsadd"
+           buf$audace(bufNo) bitpix short
+       }
+    }
+
+       #--- Inversion gauche-droite du spectre 2D (mirrorx)
+       if { $methinv == "o" } {
+	   set fflip [ spc_flip $fsadd ]
+	   file delete -force "$audace(rep_images)/$fsadd$conf(extension,defaut)"
+       } else {
+	   set fflip "$fsadd"
+       }
+       file copy -force "$audace(rep_images)/$fflip$conf(extension,defaut)" "$audace(rep_images)/${img}-spectre2D-traite$conf(extension,defaut)"
+
+
+       #--- Soustraction du fond de ciel et binning :
+       ::console::affiche_prompt "\n\n**** Extraction du profil de raies ****\n\n"
+       if { $flag_nonstellaire==1 } {
+	   set fprofil [ spc_profilzone $fflip $windowcoords $methsky $methbin ]
+       } else {
+	   set fprofil [ spc_profil $fflip $methsky $methsel $methbin ]
+       }
+       file delete -force "$audace(rep_images)/$fflip$conf(extension,defaut)"
+
+
+       #--- Calibration en longueur d'onde du spectre de l'objet (niveau 1b) :
+       ::console::affiche_prompt "\n\n**** Calibration en longueur d'onde du spectre de l'objet $img ****\n\n"
+       #- Pour les spectre d'objets non-stellaire, la calibration est faite a partir de la zone decoupée de lampe.
+       set fcal [ spc_calibreloifile "$lampe" "$fprofil" ]
+       file copy -force "$audace(rep_images)/$fprofil$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1a$conf(extension,defaut)"
+       file delete -force "$audace(rep_images)/$fprofil$conf(extension,defaut)"
+       file copy -force "$audace(rep_images)/$fcal$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1b$conf(extension,defaut)"
+
+
+       #--- Correction de la réponse intrumentale :
+      buf$audace(bufNo) load "$audace(rep_images)/${img}-profil-1b"
+      set naxis1 [  lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+      set cdelt1 [  lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+      set largeur_spectrale [ expr $cdelt1*$naxis1 ]
+      if { $largeur_spectrale >= $spcaudace(bande_br) } {
+         set spcaudace(rm_edges) "n"
+      }
+       if { $rinstrum=="none" } {
+          set fricorr "$fcal"
+          #-- Linearisation de la calibration a partir du niveau 1b_lin :
+          set fricorrlin1 [ spc_linearcal "$fricorr" ]             
+          #-- Elimination des bords "nuls" :
+          if { $spcaudace(rm_edges)=="o" } {
+             set fricorrlin [ spc_rmedges "$fricorrlin1" ]
+             file delete -force "$audace(rep_images)/$fricorrlin1$conf(extension,defaut)"
+          } else {
+             set fricorrlin "$fricorrlin1"
+          }
+          file copy -force "$audace(rep_images)/$fricorrlin$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1b$conf(extension,defaut)"
+          file copy -force "$audace(rep_images)/$fricorr$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1b_nonlin$conf(extension,defaut)"
+          file delete -force "$audace(rep_images)/$fricorr$conf(extension,defaut)"
+       } else {
+          ::console::affiche_prompt "\n\n**** Correction de la réponse intrumentale ****\n\n"
+          if { $largeur_spectrale >= $spcaudace(bande_br) } {
+             set imaxtol $spcaudace(imax_tolerence)
+             set spcaudace(imax_tolerence) 1.10
+          }
+	   #-- Messge d'erreur en cas d'une sélection de plage de longueur d'onde :
+	   if { $flag_nonstellaire==1 } {
+	       set xdeb [ lindex $windowcoords 0 ]
+	       set xfin [ lindex $windowcoords 2 ]
+	       if { $xdeb>1 || $xfin<$naxis1 } {
+		   ::console::affiche_erreur "\nPAS DE CORRECTION DE LA RÉPONSE INSTRUMENTALE LORS D'UNE SÉLECTION DE LARGEUR SPÉCIFIQUE DU SPECTRE.\n"
+		   set fricorr "$fcal"
+	       } else {
+                  set fricorr [ spc_divri "$fcal" "$rinstrum" ]
+	       }
+	   } else {
+              if { $largeur_spectrale >= $spcaudace(bande_br) } {
+                 # set fricorr [ spc_divbrut "$fcal" "$rinstrum" ]
+                 set fricorr [ spc_divri "$fcal" "$rinstrum" ]
+              } else {
+                 set fricorr [ spc_divri "$fcal" "$rinstrum" ]
+              }
+	   }
+          if { $largeur_spectrale >= $spcaudace(bande_br) } {
+             set spcaudace(imax_tolerence) $imaxtol
+          }
+
+
+	   #-- Division du profil par la RI :
+	   ## set rinstrum_ech [ spc_echant $rinstrum $fcal ]
+	   ## set fricorr [ spc_div $fcal $rinstrum_ech ]
+	   #- Beaucoup de mise a 0 si methode avec reechant avant. Methode courante est calibreloifile :
+	   # set fricorr [ spc_divri $fcal $rinstrum ]
+	   #- 040107 :
+	   ## set fricorr [ spc_div $fcal $rinstrum ]
+
+	   #-- Message d'erreur en cas d'échec de la division et linéarisation de la calibration :
+	   if { $fricorr == 0 } {
+	       ::console::affiche_erreur "\nLa division par la réponse intrumentale n'a pas pu peut être calculée.\n"
+	       return 0
+	   } else {
+              #-- Linearisation de la calibration a partir du niveau 1c :
+              set fricorrlin1 [ spc_linearcal "$fricorr" ]             
+              #-- Elimination des bords "nuls" :
+              if { $spcaudace(rm_edges)=="o" } {
+                 set fricorrlin [ spc_rmedges "$fricorrlin1" ]
+                 file delete -force "$audace(rep_images)/$fricorrlin1$conf(extension,defaut)"
+              } else {
+                 set fricorrlin "$fricorrlin1"
+              }
+              file copy -force "$audace(rep_images)/$fricorrlin$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1c$conf(extension,defaut)"
+              file copy -force "$audace(rep_images)/$fricorr$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1c_nonlin$conf(extension,defaut)"
+              file delete -force "$audace(rep_images)/$fricorr$conf(extension,defaut)"
+	   }
+       }
+       set spcaudace(rm_edges) "o"
+
+
+       #--- Normalisation du profil de raies :
+       if { $methnorma == "e" } {
+	   ::console::affiche_prompt "\n\n**** Normalisation du profil de raies ****\n\n"
+	   set fnorma [ spc_autonormaraie "$fricorrlin" e ]
+	   file delete -force "$audace(rep_images)/$fricorrlin$conf(extension,defaut)"
+	   file copy -force "$audace(rep_images)/$fnorma$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-2b$conf(extension,defaut)"
+           file delete -force "$audace(rep_images)/$fnorma$conf(extension,defaut)"
+           set fnorma "${img}-profil-2b"
+       } elseif { $methnorma == "a" } {
+	   ::console::affiche_prompt "\n\n**** Normalisation du profil de raies ****\n\n"
+	   set fnorma [ spc_autonormaraie "$fricorrlin" a ]
+	   file delete -force "$audace(rep_images)/$fricorrlin$conf(extension,defaut)"
+	   file copy -force "$audace(rep_images)/$fnorma$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-2b$conf(extension,defaut)"
+           file delete -force "$audace(rep_images)/$fnorma$conf(extension,defaut)"
+           set fnorma "${img}-profil-2b"
+       } elseif { $methnorma == "r" } {
+	   ::console::affiche_prompt "\n\n**** Normalisation du profil de raies ****\n\n"
+	   set fnorma [ spc_rescalecont "$fricorrlin" ]
+	   file delete -force "$audace(rep_images)/$fricorrlin$conf(extension,defaut)"
+	   file copy -force "$audace(rep_images)/$fnorma$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-2b$conf(extension,defaut)"
+           file delete -force "$audace(rep_images)/$fnorma$conf(extension,defaut)"
+           set fnorma "${img}-profil-2b"
+       } elseif { $methnorma == "o" } {
+	   ::console::affiche_prompt "\n\n**** Normalisation du profil de raies ****\n\n"
+	   set fnorma [ spc_autonorma "$fricorrlin" ]
+	   file delete -force "$audace(rep_images)/$fricorrlin$conf(extension,defaut)"
+	   file copy -force "$audace(rep_images)/$fnorma$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-2b$conf(extension,defaut)"
+           file delete -force "$audace(rep_images)/$fnorma$conf(extension,defaut)"
+           set fnorma "${img}-profil-2b"
+       } elseif { $methsmo == "n" } {
+	   set fnorma "$fricorrlin"
+       }
+
+
+
+       #--- Doucissage du profil de raies :
+       if { $methsmo == "o" } {
+          ::console::affiche_prompt "\n\n**** Adoucissement du profil de raies ****\n\n"
+          set fsmooth [ spc_smooth "$fnorma" ]
+          if { $methnorma != "n" } {
+             file delete -force "$audace(rep_images)/$fnorma$conf(extension,defaut)"  
+          }
+       } elseif { $methsmo == "n" } {
+          set fsmooth "$fnorma"
+       }
+
+
+       #--- Linéarisation de la calibration en longueur d'onde :
+       if { $spcaudace(linear_cal)=="o" } {
+	   set flinearcal [ spc_linearcal "$fsmooth" ]
+       } else {
+	   set flinearcal "$fsmooth"
+       }
+
+
+       #--- Export au format PNG :
+       if { $export_png=="o" } {
+	   set fichier_png [ spc_export2png "$flinearcal" ]
+       }
+
+
+       #--- Message de fin du script :
+       file copy -force "$audace(rep_images)/$flinearcal$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-final$conf(extension,defaut)"
+       # file delete -force "$audace(rep_images)/$fsmooth$conf(extension,defaut)"
+       ::console::affiche_resultat "\n\nSpectre traité, corrigé et calibré sauvé sous ${img}-profil-final\n\n"
+       file delete -force "$audace(rep_images)/$fcal$conf(extension,defaut)"
+       if { "$flinearcal" != "${img}-profil-final" } {
+	   file delete -force "$audace(rep_images)/$flinearcal$conf(extension,defaut)"
+       }
+       if { "$fsmooth" != "${img}-profil-final" && $methsmo != "n" } {
+	   file delete -force "$audace(rep_images)/$fsmooth$conf(extension,defaut)"
+       }
+       if { $methsmo == "n" } {
+         file delete -force "$audace(rep_images)/$fricorrlin$conf(extension,defaut)"
+       }
+       #if { "$fnorma" != "${img}-profil-final" } {
+       #   file delete -force "$audace(rep_images)/$fnorma$conf(extension,defaut)"
+       #}
+       # tk.message "Affichage du spectre traité, corrigé et calibré $fsmooth"
+       #spc_loadfit $fsmooth
+       #return $fsmooth
+
+       #--- Traitement du résultat :
+       spc_loadfit "${img}-profil-final"
+       loadima "$audace(rep_images)/${img}-spectre2D-traite"
+       ::console::affiche_prompt "\n\n**** Spectre traité, corrigé et calibré sauvé sous ****\n${img}-profil-final\n\n"
+       return "${img}-profil-final"
+   } else {
+       ::console::affiche_erreur "Usage: spc_traiteseries nom_générique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu nom_offset spectre_2D_lampe spectre_réponse_instrumentale méthode_appariement (reg, spc, n) uncosmic (o/n) méthode_détection_spectre (large, serre, moy) méthode_sub_sky (moy, moy2, med, inf, sup, back, none) mirrorx (o/n) méthode_binning (add, rober, horne) normalisation (o/n) adoucissement (o/n) rejet_mauvais_spectres (o/n) rejet_rotation_importante (o/n) effacer_masters (o/n)  export_PNG (o/n) 2_lampes_calibration (o/n) ?fenêtre_binning {x1 y1 x2 y2}?\n\n"
+   }
+}
+#**********************************************************************************#

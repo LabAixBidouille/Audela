@@ -10,6 +10,34 @@
 # Mise a jour $Id$
 
 
+###############################################################################
+# Description : Effectue la somme kappa-sigma d'une serie en vue d'eliminer les cosmics (spc_tiltiautoimgs
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 2007-02-14
+# Date de mise a jour : 2012-09-30
+# Argument : nom_generique_fichier (sans extension)
+###############################################################################
+
+proc spc_ssk { args } {
+   global audace
+   global conf
+
+   if {[llength $args] == 1} {
+      set nom_generique [ file rootname [ lindex $args 0 ] ]
+      set nb_file [ llength [ glob -dir $audace(rep_images) ${nom_generique}\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+
+      ::console::affiche_resultat "Somme kappa-sigma de $nb_file images...\n"
+      renumerote "$nom_generique"
+      ssk "$nom_generique" "${nom_generique}-ssk$nb_file" $nb_file 0.5
+      ::console::affiche_resultat "Somme kappa-sigma sauvée sous ${nom_generique}-ssk$nb_file\n"
+      return "${nom_generique}-ssk$nb_file"
+   } else {
+      ::console::affiche_erreur "Usage: bm_ssk nom_generique_fichier\n\n"
+   }
+}
+#-----------------------------------------------------------------------------#
+
+
 ################################################################################################
 # Procedure pour prolonger un profil spectral de facon a se conformer a un nombre d'echantillons : la valeur de prolongement est celle du dernier echantillon
 # Auteur : Patrick LAILLY
@@ -2109,9 +2137,10 @@ proc spc_uncosmic { args } {
             set coefcos $spcaudace(uncosmic)
         } elseif { $nbargs == 2 } {
             set filename [ file rootname [ lindex $args 0 ] ]
-            set coefcos [ lindex ârgs 1 ]
+            set coefcos [ lindex args 1 ]
         } else {
             ::console::affiche_erreur "Usage: spc_uncosmic image_fits_2D ?coef (0.85)?\n\n"
+            return ""
         }
 
         #--- Effectue uncosmic :
