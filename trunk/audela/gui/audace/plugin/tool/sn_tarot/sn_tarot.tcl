@@ -11,7 +11,8 @@
 #--- Les indices 2 se rapportent a l'image de droite
 
 proc ::sn_tarot::bindjoystick { } {
-   global audace conf snvisu snconfvisu num caption color rep panneau
+   global snvisu
+
    set err [catch {
       set res [joystick event peek]
       if {$res=="joystick 0 button 1 value 1"} {
@@ -955,7 +956,7 @@ proc ::sn_tarot::snSelect { } {
 #  Commande du bouton 'Quitter'
 #-----------------------------------------------------
 proc ::sn_tarot::snDelete { } {
-   global num audace conf snvisu snconfvisu rep panneau
+   global num audace conf snvisu snconfvisu rep
 
    #--- On ne ferme SnVisu que s'il n'y a pas de blink en cours
    if { $snvisu(blink_go) == "1" || $snvisu(dss) == "1" } {
