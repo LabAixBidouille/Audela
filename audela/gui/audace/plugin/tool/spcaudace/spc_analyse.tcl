@@ -1185,10 +1185,10 @@ proc spc_findbiglineslamp { args } {
       set nom_fich_output "pl_gauss.fit"
       #buf$audace(bufNo) save "$audace(rep_images)/$nom_fich_output"
       buf$audace(bufNo) save $nom_fich_output
-      ::console::affiche_resultat " nom fichier sortie $nom_fich_output \n"
+      ::console::affiche_resultat "Nom fichier sortie $nom_fich_output \n"
       buf$audace(bufNo) bitpix short
       #calcul de l'intercorrélation entre les deux profil
-      ::console::affiche_resultat " calcul de l'intercorrelation entre $nom_fich$suff et pl_gauss.fit \n"
+      ::console::affiche_resultat "Calcul de l'intercorrelation entre $nom_fich$suff et pl_gauss.fit \n"
       icorr2d $nom_fich$ext1$suff pl_gauss.fit pl_crosscorr.fit
       pl_changekeywd pl_crosscorr.fit NAXIS 1
       pl_changekeywd pl_crosscorr.fit CRPIX1 1
