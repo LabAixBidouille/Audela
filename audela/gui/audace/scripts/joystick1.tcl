@@ -1,11 +1,11 @@
 #
-# source $audace(rep_install)/gui/audace/scripts/joystick1.tcl
-# see functions in the folder audela/lib/mkLibsdl1.0
-#
 # Fichier : joystick1.tcl
 # Description : Utilisation d'un joystick pour commander une monture
 # Auteur : Alain KLOTZ
 # Mise à jour $Id$
+#
+# source $audace(rep_install)/gui/audace/scripts/joystick1.tcl
+# see functions in the folder audela/lib/mkLibsdl1.0
 #
 
 package require mkLibsdl
@@ -18,22 +18,24 @@ proc joy_event {} {
 }
 
 proc joy_infos {} {
-   global base
-
    set count [joystick count]
-   console::affiche_resultat "There are $count joysticks connected\n"
+   if { $count > 1 } {
+      ::console::affiche_resultat "There are $count joysticks connected.\n"
+   } else {
+      ::console::affiche_resultat "There is $count joystick connected.\n"
+   }
    for {set joyindex 0} {$joyindex<$count} {incr joyindex} {
-      console::affiche_resultat "=========================\n"
-      console::affiche_resultat "joystick index = $joyindex\n"
+      ::console::affiche_resultat "=========================\n"
+      ::console::affiche_resultat "joystick index = $joyindex\n"
       set name [joystick name $joyindex]
-      console::affiche_resultat "joystick name $joyindex = $name\n"
+      ::console::affiche_resultat "joystick name $joyindex = $name\n"
       set opts {axe ball hat button}
-      console::affiche_resultat "-----------------------\n"
+      ::console::affiche_resultat "-----------------------\n"
       foreach opt $opts {
          set joy($opt) [joystick info $joyindex ${opt}s]
-         console::affiche_resultat "joystick info $joyindex $opt = $joy($opt)\n"
+         ::console::affiche_resultat "joystick info $joyindex $opt = $joy($opt)\n"
       }
-      console::affiche_resultat "-----------------------\n"
+      ::console::affiche_resultat "-----------------------\n"
       foreach opt $opts {
          for {set control 0} {$control<$joy($opt)} {incr control} {
             if {$opt!="axe"} {
@@ -42,13 +44,15 @@ proc joy_infos {} {
                set opt2 axis
             }
             set value [joystick get $joyindex $opt2 $control]
-            console::affiche_resultat "joystick get $joyindex $opt2 $control = $value\n"
+            ::console::affiche_resultat "joystick get $joyindex $opt2 $control = $value\n"
          }
       }
    }
 }
 
 #--- Create the toplevel window
+global base
+
 set base .joystick1
 catch {destroy .joystick1}
 toplevel $base -class Toplevel
