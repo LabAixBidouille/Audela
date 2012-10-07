@@ -74,7 +74,7 @@ proc spc_extend { args } {
       set newnaxis1 $lastsampl		
       ::console::affiche_resultat "spc_extend : longueur nouveau fichier : $newnaxis1 echantilllons \n"
       #--- Creation du nouveau fichier :
-      set suff _extend
+      set suff "extend"
       set nom_fich_output [ spc_fileupdate $nom_fich_input $crval1 $cdelt1 $ordonnees $suff ]
       return $nom_fich_output     
       #return $file_out 
