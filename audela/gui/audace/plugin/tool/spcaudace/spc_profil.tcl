@@ -455,7 +455,8 @@ proc spc_detect { args } {
 
 	#- Meth1 :
 	# buf$audace(bufNo) binx 1 $naxis1 1
-	buf$audace(bufNo) imaseries "binx x1=$x1 x2=$x2 width=1"
+	#buf$audace(bufNo) imaseries "binx x1=$x1 x2=$x2 width=1"
+	buf$audace(bufNo) imaseries "medianx x1=$x1 x2=$x2 width=1"
 	set gparams [ buf$audace(bufNo) fitgauss $windowcoords ]
 	set ycenter [ lindex $gparams 5 ]
 	# Choix : la largeur de la gaussienne est de 3*FWHM
@@ -505,7 +506,8 @@ proc spc_detectmoy { args } {
 
 	#- Meth1 :
 	# buf$audace(bufNo) binx 1 $naxis1 1
-	buf$audace(bufNo) imaseries "binx x1=$x1 x2=$x2 width=1"
+	#buf$audace(bufNo) imaseries "binx x1=$x1 x2=$x2 width=1"
+	buf$audace(bufNo) imaseries "medianx x1=$x1 x2=$x2 width=1"
 	set gparams [ buf$audace(bufNo) fitgauss $windowcoords ]
 	set ycenter [ lindex $gparams 5 ]
 	# Choix : la largeur de la gaussienne est de 1.7*FWHM
@@ -598,7 +600,8 @@ proc spc_detectasym { args } {
        set naxis2 [ lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1 ]
        set xfin [ expr (1-$spcaudace(epaisseur_detect))*$naxis1 ]
        set xdeb [ expr int($naxis1/$spcaudace(nb_coupes)) ]
-       buf$audace(bufNo) imaseries "binx x1=$xdeb x2=$xfin height=1"
+       #buf$audace(bufNo) imaseries "binx x1=$xdeb x2=$xfin height=1"
+       buf$audace(bufNo) imaseries "medianx x1=$xdeb x2=$xfin height=1"
        buf$audace(bufNo) bitpix float
        buf$audace(bufNo) save "$audace(rep_images)/${filenamespc}_spcx"
        set icont [ lindex [ buf$audace(bufNo) stat ] 4 ]
@@ -2437,22 +2440,24 @@ proc spc_profillampe { args } {
        set linecoords [ spc_detectasym "$spectre_objet" ]
        set ycenter [ lindex $linecoords 0 ]
        buf$audace(bufNo) load "$audace(rep_images)/$spectre_lampe"
+       set naxis2 [ lindex [ buf$audace(bufNo) getkwd "NAXIS2" ] 1 ]
        if { $methraie=="n" } {
-          set y1 [ expr round($ycenter+0.5*[ lindex $linecoords 1 ]) ]
-          set y2 [ expr round($ycenter-0.5*[ lindex $linecoords 1 ]) ]
+          set ysup [ expr round($ycenter+0.5*[ lindex $linecoords 1 ]) ]
+          set yinf [ expr round($ycenter-0.5*[ lindex $linecoords 1 ]) ]
        } elseif { $methraie=="o" } {
-          set naxis2 [ lindex [ buf$audace(bufNo) getkwd "NAXIS2" ] 1 ]
           if { $spcaudace(epaisseur_bin)>$naxis2 } {
-             set epaisseur [ expr $naxis2/3. ]
+             set epaisseur [ expr $naxis2/4. ]
           } else {
              set epaisseur $spcaudace(epaisseur_bin)
           }
-          set y1 [ expr round($ycenter+0.5*$epaisseur) ]
-          set y2 [ expr round($ycenter-0.5*$epaisseur) ]
+          set ysup [ expr round($ycenter+0.5*$epaisseur) ]
+          set yinf [ expr round($ycenter-0.5*$epaisseur) ]
        }
+      if { $yinf<=0} { set yinf [ expr int($ycenter-($ycenter-1)/3.) ] }
+      if { $ysup>$naxis2 } { set ysup [ expr int(($naxis2-$ycenter)/3.+$ycenter) }
 
        #--- Crée le profil de raie du spectre de la lampe de étalon :
-       buf$audace(bufNo) imaseries "BINY y1=$y1 y2=$y2 height=1"
+       buf$audace(bufNo) imaseries "BINY y1=$yinf y2=$ysup height=1"
        buf$audace(bufNo) setkwd [ list NAXIS 1 int "" "" ]
        buf$audace(bufNo) delkwd "NAXIS2"
        buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 float "" ""]
