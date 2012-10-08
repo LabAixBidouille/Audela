@@ -1,69 +1,78 @@
+#
+# Fichier : joystick2.tcl
+# Description : Utilisation d'un joystick pour simuler une souris
+# Auteur : Alain KLOTZ
+# Mise à jour $Id$
+#
 # source $audace(rep_install)/gui/audace/scripts/joystick2.tcl
 # see functions in the folder audela/lib/mkLibsdl1.0
+#
 
 package require mkLibsdl
 package require twapi
 
 proc joy_event {} {
    global base
-	set res [joystick event peek]
-	catch {$base.f.lab_value configure -text "$res"}
-	set k [lsearch -ascii $res joystick ]
-	if {$k>=0} { 
-		set joystick [lindex $res [expr $k+1]] 
-		set opt      [lrange $res [expr $k+2] [expr $k+3]] 
-	}
-	set k [lsearch -ascii $res value]
-	if {$k>=0} { set value [lindex $res [expr $k+1]] }
-	set opts "joystick $joystick $opt"
-	set val 0
-	if {$opts=="joystick 0 axis 0"} {
-		set val  [expr round($value/5000.0)]
-		twapi::move_mouse $val 0 -relative
-	}
-	if {$opts=="joystick 0 axis 1"} {
-		set val  [expr round($value/5000.0)]
-		twapi::move_mouse 0 $val -relative
-	}
-	if {($opts=="joystick 0 button 4")&&($value==1)} {
-		set val [twapi::get_mouse_location]
-		twapi::click_mouse_button left
-	}
-	if {($opts=="joystick 0 button 5")&&($value==1)} {
-		set val [twapi::get_mouse_location]
-		twapi::click_mouse_button right
-	}
-	catch {$base.f.lab_value2 configure -text "$opts => $value ==> $val"}
+
+   set res [joystick event peek]
+   catch {$base.f.lab_value configure -text "$res"}
+   set k [lsearch -ascii $res joystick ]
+   if {$k>=0} {
+      set joystick [lindex $res [expr $k+1]]
+      set opt      [lrange $res [expr $k+2] [expr $k+3]]
+   }
+   set k [lsearch -ascii $res value]
+   if {$k>=0} { set value [lindex $res [expr $k+1]] }
+   set opts "joystick $joystick $opt"
+   set val 0
+   if {$opts=="joystick 0 axis 0"} {
+      set val  [expr round($value/5000.0)]
+      twapi::move_mouse $val 0 -relative
+   }
+   if {$opts=="joystick 0 axis 1"} {
+      set val  [expr round($value/5000.0)]
+      twapi::move_mouse 0 $val -relative
+   }
+   if {($opts=="joystick 0 button 4")&&($value==1)} {
+      set val [twapi::get_mouse_location]
+      twapi::click_mouse_button left
+   }
+   if {($opts=="joystick 0 button 5")&&($value==1)} {
+      set val [twapi::get_mouse_location]
+      twapi::click_mouse_button right
+   }
+   catch {$base.f.lab_value2 configure -text "$opts => $value ==> $val"}
 }
 
 proc joy_infos {} {
    global base
-	set count [joystick count]
-	console::affiche_resultat "There are $count joysticks connected\n"
-	for {set joyindex 0} {$joyindex<$count} {incr joyindex} {
-		console::affiche_resultat "=========================\n"
-		console::affiche_resultat "joystick index = $joyindex\n"
-		set name [joystick name $joyindex]
-		console::affiche_resultat "joystick name $joyindex = $name\n"
-		set opts {axe ball hat button}
-		console::affiche_resultat "-----------------------\n"
-		foreach opt $opts {
-			set joy($opt) [joystick info $joyindex ${opt}s]
-			console::affiche_resultat "joystick info $joyindex $opt = $joy($opt)\n"
-		}
-		console::affiche_resultat "-----------------------\n"
-		foreach opt $opts {
-			for {set control 0} {$control<$joy($opt)} {incr control} {
-				if {$opt!="axe"} { 
-					set opt2 $opt 
-				} else { 
-					set opt2 axis 
-				}
-				set value [joystick get $joyindex $opt2 $control]
-				console::affiche_resultat "joystick get $joyindex $opt2 $control = $value\n"
-			}				
-		}		
-	}
+
+   set count [joystick count]
+   console::affiche_resultat "There are $count joysticks connected\n"
+   for {set joyindex 0} {$joyindex<$count} {incr joyindex} {
+      console::affiche_resultat "=========================\n"
+      console::affiche_resultat "joystick index = $joyindex\n"
+      set name [joystick name $joyindex]
+      console::affiche_resultat "joystick name $joyindex = $name\n"
+      set opts {axe ball hat button}
+      console::affiche_resultat "-----------------------\n"
+      foreach opt $opts {
+         set joy($opt) [joystick info $joyindex ${opt}s]
+         console::affiche_resultat "joystick info $joyindex $opt = $joy($opt)\n"
+      }
+      console::affiche_resultat "-----------------------\n"
+      foreach opt $opts {
+         for {set control 0} {$control<$joy($opt)} {incr control} {
+            if {$opt!="axe"} {
+               set opt2 $opt
+            } else {
+               set opt2 axis
+            }
+            set value [joystick get $joyindex $opt2 $control]
+            console::affiche_resultat "joystick get $joyindex $opt2 $control = $value\n"
+         }
+      }
+   }
 }
 
 #--- Create the toplevel window
@@ -104,3 +113,4 @@ proc joysitck1_fermer { } {
 
 joystick event eval joy_event
 joy_infos
+
