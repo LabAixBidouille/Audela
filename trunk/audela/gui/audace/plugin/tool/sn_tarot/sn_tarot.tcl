@@ -26,32 +26,32 @@ proc ::sn_tarot::bindjoystick { } {
          }
       } elseif {$res=="joystick 0 button 0 value 1"} {
          ::sn_tarot::noStar
-	   } else {
-			set k [lsearch -ascii $res joystick ]
-			if {$k>=0} { 
-				set joystick [lindex $res [expr $k+1]] 
-				set opt      [lrange $res [expr $k+2] [expr $k+3]] 
-			}
-			set k [lsearch -ascii $res value]
-			if {$k>=0} { set value [lindex $res [expr $k+1]] }
-			set opts "joystick $joystick $opt"
-			set val 0
-			if {$opts=="joystick 0 axis 0"} {
-				set val  [expr round($value/5000.0)]
-				catch {twapi::move_mouse $val 0 -relative}
-			}
-			if {$opts=="joystick 0 axis 1"} {
-				set val  [expr round($value/5000.0)]
-				catch {twapi::move_mouse 0 $val -relative}
-			}
-			if {($opts=="joystick 0 button 4")&&($value==1)} {
-				set val [twapi::get_mouse_location]
-				catch {twapi::click_mouse_button left}
-			}
-			if {($opts=="joystick 0 button 5")&&($value==1)} {
-				set val [twapi::get_mouse_location]
-				catch {twapi::click_mouse_button right}
-			}
+      } else {
+         set k [lsearch -ascii $res joystick ]
+         if {$k>=0} {
+            set joystick [lindex $res [expr $k+1]]
+            set opt      [lrange $res [expr $k+2] [expr $k+3]]
+         }
+         set k [lsearch -ascii $res value]
+         if {$k>=0} { set value [lindex $res [expr $k+1]] }
+         set opts "joystick $joystick $opt"
+         set val 0
+         if {$opts=="joystick 0 axis 0"} {
+            set val  [expr round($value/5000.0)]
+            catch {twapi::move_mouse $val 0 -relative}
+         }
+         if {$opts=="joystick 0 axis 1"} {
+            set val  [expr round($value/5000.0)]
+            catch {twapi::move_mouse 0 $val -relative}
+         }
+         if {($opts=="joystick 0 button 4")&&($value==1)} {
+            set val [twapi::get_mouse_location]
+            catch {twapi::click_mouse_button left}
+         }
+         if {($opts=="joystick 0 button 5")&&($value==1)} {
+            set val [twapi::get_mouse_location]
+            catch {twapi::click_mouse_button right}
+         }
       }
    } msg]
    if {$err==1} {
@@ -262,7 +262,7 @@ proc ::sn_tarot::confTarotVisu { } {
          joystick event eval ::sn_tarot::bindjoystick
          set have_joystick 1
       }
-	   package require twapi
+      package require twapi
    } msg]
    #::console::affiche_resultat "bindings: $err = $msg\n"
 
