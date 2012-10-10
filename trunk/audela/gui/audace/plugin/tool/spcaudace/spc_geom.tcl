@@ -606,6 +606,48 @@ proc spc_tiltauto { args } {
 	   return 0
        }
 
+      set results [ spc_findtilt "$filename" ]
+      set fileout [ spc_tilt2 "$filename" [ lindex $results 0 ] [ lindex $results 1 ] [ lindex $results 2 ] ]
+      ::console::affiche_resultat "Spectre pivoté de [ lindex $results 0 ]° sauvé sous $fileout\n"
+   } else {
+       ::console::affiche_erreur "Usage: spc_tiltauto fichier\n\n"
+   }
+}
+####################################################################
+
+
+####################################################################
+#  Procedure de rotation automatique de spectres 2D
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 26-08-2005
+# Date modification : 29-10-2005/27-12-2005/15-08-2006/13-02-07
+# Arguments : fichier .fit
+# Heuristique : si l'angle est supérieur a 6°, l'angle calculé ne correspond pas à la réalité de l'inclinaison du spectre.
+####################################################################
+
+proc spc_tiltauto_old { args } {
+   global audace caption spcaudace
+   global conf
+
+   set pi [expr acos(-1.0)]
+
+   if {[llength $args] <= 1} {
+       if {[llength $args] == 1} {
+	   set filename [ file tail [ file rootname [ lindex $args 0 ] ] ]
+       } elseif { [llength $args]==0 } {
+	   set spctrouve [ file rootname [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] ]
+	   if { [ file exists "$audace(rep_images)/$spctrouve$conf(extension,defaut)" ] == 1 } {
+	       set filename $spctrouve
+	   } else {
+	       ::console::affiche_erreur "Usage: spc_tiltauto fichier\n\n"
+	       return 0
+	   }
+       } else {
+	   ::console::affiche_erreur "Usage: spc_tiltauto fichier\n\n"
+	   return 0
+       }
+
        #--- Traitement :
        buf$audace(bufNo) load "$audace(rep_images)/$filename"
        set naxis2 [lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1]
@@ -618,7 +660,8 @@ proc spc_tiltauto { args } {
        #--- Algo : determine le centre des taches du bord gauche et droit et calcul l'angle.
        #- Methode un peu fragile : trouve parfois un angle important (4 ou 15°) alors que ce n'est pas le cas.
        #-- Binning des colonnes à l'extrême gauche de l'image
-       buf$audace(bufNo) binx [expr $largeur+1] [expr 2*$largeur] 3
+       # buf$audace(bufNo) binx [expr $largeur+1] [expr 2*$largeur] 3
+       buf$audace(bufNo) imaseries "medianx x1=[expr $largeur+1] x2=[expr 2*$largeur] width=3"
        set x1 [ expr int(1.5*$largeur) ]
        set y1 [lindex [buf$audace(bufNo) centro $windowcoords] 1]
 
