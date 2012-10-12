@@ -11,10 +11,8 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(av4l_go,titre)                 "Video Acquisition 2"
-set caption(av4l_go,acqvideolinux)         "Video Acquisition 2"
+set caption(av4l_go,titre)                 "A.T.O.S."
 set caption(av4l_go,help_titre)            "Help for this Tool"
-set caption(av4l_go,help_titre1)           "Help for the Tool:"
 
 set caption(av4l_go,setup)                 "Plugin Setup"
 set caption(av4l_go,acquisition)           "Acquisition of a video"
@@ -29,10 +27,8 @@ set caption(av4l_go,analysis)              "Analysis"
 # *************** Version française **** **********************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(av4l_go,titre)              "Acquisition vidéo bis"
-   set caption(av4l_go,acqvideolinux)      "Acquisition vidéo bis"
+   set caption(av4l_go,titre)              "A.T.O.S."
    set caption(av4l_go,help_titre)         "Aide de cet outil"
-   set caption(av4l_go,help_titre1)        "Aide de l'outil :"
 
    set caption(av4l_go,setup)              "Configuration du plugin"
    set caption(av4l_go,acquisition)        "Acquisition d'une vidéo"
