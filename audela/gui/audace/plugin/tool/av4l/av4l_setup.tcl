@@ -210,30 +210,6 @@ namespace eval ::av4l_setup {
 
          pack $frms.frame3.frame4 -side top -fill both -expand 1
 
-         #--- Frame pour le commentaire 2
-         frame $frms.frame3.frame5 -borderwidth 0
-
-            #--- Cree le checkbutton pour le commentaire 2
-            frame $frms.frame3.frame5.frame10 -borderwidth 0
-               checkbutton $frms.frame3.frame5.frame10.check2 -highlightthickness 0 \
-                  -text "$caption(av4l_setup,texte2)" -variable ::av4l::parametres(av4l,$visuNo,save_file_log)
-               pack $frms.frame3.frame5.frame10.check2 -side right -padx 5 -pady 0
-            pack $frms.frame3.frame5.frame10 -side left
-
-         pack $frms.frame3.frame5 -side top -fill both -expand 1
-
-         #--- Frame pour le commentaire 3
-         frame $frms.frame3.frame6 -borderwidth 0
-
-            #--- Cree le checkbutton pour le commentaire 3
-            frame $frms.frame3.frame6.frame12 -borderwidth 0
-               checkbutton $frms.frame3.frame6.frame12.check3 -highlightthickness 0 \
-                  -text "$caption(av4l_setup,texte3)" -variable ::av4l::parametres(av4l,$visuNo,alarme_fin_serie)
-               pack $frms.frame3.frame6.frame12.check3 -side right -padx 5 -pady 0
-            pack $frms.frame3.frame6.frame12 -side left
-
-         pack $frms.frame3.frame6 -side top -fill both -expand 1
-
          #--- Frame pour le commentaire 4 : verifier_ecraser_fichier
          frame $frms.frame3.frame7 -borderwidth 0
 
@@ -245,7 +221,6 @@ namespace eval ::av4l_setup {
             pack $frms.frame3.frame7.frame12 -side left
 
          pack $frms.frame3.frame7 -side top -fill both -expand 1
-
 
          #--- Frame pour le commentaire 5 : mode_debug
          frame $frms.frame3.frame9 -borderwidth 0

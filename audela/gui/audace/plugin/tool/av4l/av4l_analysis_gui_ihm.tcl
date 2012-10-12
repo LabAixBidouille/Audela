@@ -1,6 +1,13 @@
-   #
-   # Creation de l'interface graphique
-   #
+#--------------------------------------------------
+# source av4l_analysis_gui.tcl
+#--------------------------------------------------
+#
+# Fichier        : av4l_analysis_gui.tcl
+# Description    : Creation de l'interface graphique pour l'analyse de la courbe 
+# Auteur         : Frederic Vachier
+# Mise Ã  jour $Id: av4l_analysis_gui.tcl 7986 2011-12-22 20:15:55Z svaillant $
+#
+
    proc ::av4l_analysis_gui::createdialog { visuNo this } {
 
       package require Img
@@ -77,17 +84,19 @@
             set f8  [frame $onglets.nb.f8]
             set f9  [frame $onglets.nb.f9]
             set f10 [frame $onglets.nb.f10]
+            set f11 [frame $onglets.nb.f11]
             
-            $onglets.nb add $f0 -text "Projet"
-            $onglets.nb add $f1 -text "Ephemerides"
-            $onglets.nb add $f2 -text "Corrections"
-            $onglets.nb add $f3 -text "Evenements"
-            $onglets.nb add $f4 -text "Parametres"
-            $onglets.nb add $f6 -text "Immersion"
-            $onglets.nb add $f7 -text "Emersion"
-            $onglets.nb add $f8 -text "Info 1/2"
-            $onglets.nb add $f9 -text "Info 2/2"
-            $onglets.nb add $f10 -text "Rapport"
+            $onglets.nb add $f0  -text "Projet"
+            $onglets.nb add $f1  -text "Ephemerides"
+            $onglets.nb add $f2  -text "Corrections"
+            $onglets.nb add $f3  -text "Evenements"
+            $onglets.nb add $f4  -text "Parametres"
+            $onglets.nb add $f6  -text "Immersion"
+            $onglets.nb add $f7  -text "Emersion"
+            $onglets.nb add $f8  -text "Info 1/3"
+            $onglets.nb add $f9  -text "Info 2/3"
+            $onglets.nb add $f10 -text "Info 3/3"
+            $onglets.nb add $f11 -text "Rapport"
             $onglets.nb select $f0
             ttk::notebook::enableTraversal $onglets.nb
         
@@ -189,50 +198,6 @@
 
 
              #--- Cree un frame pour le chargement d'un fichier
-             set titrecontact [frame $projet.titrecontact -borderwidth 1 -cursor arrow -relief raised]
-             pack $titrecontact -in $projet -anchor s -side top -expand 0 -fill x -padx 10 -pady 5 -ipady 5
-
-                  #--- Cree un label
-                  label $titrecontact.l -text "Contacts : " -font $av4lconf(font,courier_10_b)
-                  pack  $titrecontact.l -side left -anchor e 
- 
-             #--- Cree un frame pour le chargement d'un fichier
-             set observers [frame $projet.observers -borderwidth 0 -cursor arrow -relief groove]
-             pack $observers -in $projet -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-                  #--- Cree un label
-                  label $observers.l -text "Observateurs : "
-                  pack  $observers.l -side left -anchor e 
-
-                  #--- Cree un label pour le chemin de l'AVI
-                  entry $observers.v -textvariable ::av4l_analysis_gui::occ_observers -width 30
-                  pack $observers.v -side left -padx 3 -pady 1 -fill x
-
-             #--- Cree un frame pour le chargement d'un fichier
-             set reduction [frame $projet.reduction -borderwidth 0 -cursor arrow -relief groove]
-             pack $reduction -in $projet -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-                  #--- Cree un label
-                  label $reduction.l -text "Reduction : "
-                  pack  $reduction.l -side left -anchor e 
-
-                  #--- Cree un label pour le chemin de l'AVI
-                  entry $reduction.v -textvariable ::av4l_analysis_gui::prj_reduc -width 30
-                  pack $reduction.v -side left -padx 3 -pady 1 -fill x
-
-             #--- Cree un frame pour le chargement d'un fichier
-             set mail [frame $projet.mail -borderwidth 0 -cursor arrow -relief groove]
-             pack $mail -in $projet -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-                  #--- Cree un label
-                  label $mail.l -text "Mail : "
-                  pack  $mail.l -side left -anchor e 
-
-                  #--- Cree un label pour le chemin de l'AVI
-                  entry $mail.v -textvariable ::av4l_analysis_gui::prj_mail -width 30
-                  pack $mail.v -side left -padx 3 -pady 1 -fill x
-
-             #--- Cree un frame pour le chargement d'un fichier
              set titrefich [frame $projet.titrefich -borderwidth 1 -cursor arrow -relief raised]
              pack $titrefich -in $projet -anchor s -side top -expand 0 -fill x -padx 10 -pady 5 -ipady 5
 
@@ -265,6 +230,14 @@
                      -text "Parcourir" -borderwidth 2 \
                      -command "::av4l_analysis_gui::select_atos_file $visuNo $f0"
                   pack $buttons.but_open \
+                     -side right -anchor e \
+                     -padx 3 -pady 3 -ipadx 3 -ipady 3 -expand 0
+
+                  #--- Creation du bouton open
+                  button $buttons.but_new \
+                     -text "Nouveau" -borderwidth 2 \
+                     -command "::av4l_analysis_gui::reinitialise"
+                  pack $buttons.but_new \
                      -side right -anchor e \
                      -padx 3 -pady 3 -ipadx 3 -ipady 3 -expand 0
 
@@ -1207,32 +1180,40 @@
                   pack  $titreobj.l -side left -anchor e 
 
              #--- Cree un frame pour le chargement d'un fichier
-             set distvit [frame $parametres.distvit -borderwidth 0 -cursor arrow -relief groove]
-             pack $distvit -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+             set distance [frame $parametres.distance -borderwidth 0 -cursor arrow -relief groove]
+             pack $distance -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                   #--- Cree un label
-                  label $distvit.l1 -text "Distance (UA) : "
-                  pack  $distvit.l1 -side left -anchor e 
+                  label $distance.l1 -text "Distance (UA) : " -width 25
+                  pack  $distance.l1 -side left -anchor e 
 
                   #--- Cree un label pour le chemin de l'AVI
-                  entry $distvit.v1 -textvariable ::av4l_analysis_gui::dist -width 10
-                  pack $distvit.v1 -side left -padx 3 -pady 1 -fill x
+                  entry $distance.v1 -textvariable ::av4l_analysis_gui::dist -width 10
+                  pack $distance.v1 -side left -padx 3 -pady 1 -fill x
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set vitesse [frame $parametres.vitesse -borderwidth 0 -cursor arrow -relief groove]
+             pack $vitesse -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                   #--- Cree un label
-                  label $distvit.l2 -text "Vitesse tangentielle (km/s) : "
-                  pack  $distvit.l2 -side left -anchor e 
+                  label $vitesse.l2 -text "Vitesse tangentielle (km/s) : " -width 25
+                  pack  $vitesse.l2 -side left -anchor e 
 
                   #--- Cree un label pour le chemin de l'AVI
-                  entry $distvit.v2 -textvariable ::av4l_analysis_gui::vn -width 10
-                  pack $distvit.v2 -side left -padx 3 -pady 1 -fill x
+                  entry $vitesse.v2 -textvariable ::av4l_analysis_gui::vn -width 10
+                  pack $vitesse.v2 -side left -padx 3 -pady 1 -fill x
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set diam [frame $parametres.diam -borderwidth 0 -cursor arrow -relief groove]
+             pack $diam -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                   #--- Cree un label
-                  label $distvit.l3 -text "Diametre de la bande (km) : "
-                  pack  $distvit.l3 -side left -anchor e 
+                  label $diam.l3 -text "Diametre de la bande (km) : " -width 25
+                  pack  $diam.l3 -side left -anchor e 
 
                   #--- Cree un label pour le chemin de l'AVI
-                  entry $distvit.v3 -textvariable ::av4l_analysis_gui::width -width 10
-                  pack $distvit.v3 -side left -padx 3 -pady 1 -fill x
+                  entry $diam.v3 -textvariable ::av4l_analysis_gui::width -width 10
+                  pack $diam.v3 -side left -padx 3 -pady 1 -fill x
 
              #--- Cree un frame pour le chargement d'un fichier
              set titreetoile [frame $parametres.titreetoile -borderwidth 1 -cursor arrow -relief raised]
@@ -1255,7 +1236,7 @@
                   pack  $nometoile.l1 -side left -anchor e 
 
                   #--- Cree un entry
-                  entry $nometoile.v1 -textvariable ::av4l_analysis_gui::occ_star_name -width 10
+                  entry $nometoile.v1 -textvariable ::av4l_analysis_gui::occ_star_name -width 30
                   pack $nometoile.v1 -side left -padx 3 -pady 1 -fill x
 
              #--- Cree un frame pour le chargement d'un fichier
@@ -1324,7 +1305,7 @@
              pack $wvlngth -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                   #--- Cree un label
-                  label $wvlngth.l -text "Longueur d'onde (microns) : "
+                  label $wvlngth.l -text "Longueur d'onde (microns) : " -width 25
                   pack  $wvlngth.l -side left -anchor e 
 
                   #--- Cree un label pour le chemin de l'AVI
@@ -1336,7 +1317,7 @@
              pack $dlambda -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                   #--- Cree un label
-                  label $dlambda.l -text "Bande passante (microns) : "
+                  label $dlambda.l -text "Bande passante (microns) : " -width 25
                   pack  $dlambda.l -side left -anchor e 
 
                   #--- Cree un label pour le chemin de l'AVI
@@ -1459,25 +1440,25 @@
                        pack $pas_heure.v -side left -padx 0 -pady 0 -fill x
 
                   #--- Cree un frame pour le chargement d'un fichier
-                  set frmdureesearch [frame $frmgauche.frmdureesearch -borderwidth 0 -cursor arrow -relief groove]
-                  pack $frmdureesearch -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+                  set frmdureesearchi [frame $frmgauche.frmdureesearchi -borderwidth 0 -cursor arrow -relief groove]
+                  pack $frmdureesearchi -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                        #--- Cree un label
-                       label $frmdureesearch.l -text "Durée de recherche autour de l'evenement : "
-                       pack  $frmdureesearch.l -side left -anchor e 
+                       label $frmdureesearchi.l -text "Durée de recherche autour de l'evenement : "
+                       pack  $frmdureesearchi.l -side left -anchor e 
 
                        #--- Creation du bouton calcul
-                       button $frmdureesearch.but_reload -image .reload -borderwidth 2 \
-                             -command "::av4l_analysis_gui::calcul_dureesearch $frmdureesearch $::av4l_analysis_gui::duree_max_immersion_search $::av4l_analysis_gui::duree_max_immersion_evnmt"
-                       pack $frmdureesearch.but_reload -side left -anchor c 
+                       button $frmdureesearchi.but_reload -image .reload -borderwidth 2 \
+                             -command "::av4l_analysis_gui::calcul_dureesearch $frmdureesearchi -1"
+                       pack $frmdureesearchi.but_reload -side left -anchor c 
 
                        #--- Cree un label pour le chemin de l'AVI
-                       label $frmdureesearch.v -textvariable ::av4l_analysis_gui::dureesearch
-                       pack $frmdureesearch.v -side left -padx 0 -pady 0 -fill x
+                       label $frmdureesearchi.v -textvariable ::av4l_analysis_gui::dureesearch
+                       pack $frmdureesearchi.v -side left -padx 0 -pady 0 -fill x
 
                        #--- Cree un label
-                       label $frmdureesearch.l2 -text "sec"
-                       pack  $frmdureesearch.l2 -side left -anchor e 
+                       label $frmdureesearchi.l2 -text "sec"
+                       pack  $frmdureesearchi.l2 -side left -anchor e 
 
 
              #--- Cree un frame pour le chargement d'un fichier
@@ -1858,7 +1839,7 @@
 
                        #--- Creation du bouton calcul
                        button $dureesearch.but_reload -image .reload -borderwidth 2 \
-                             -command "::av4l_analysis_gui::calcul_dureesearch $dureesearch $::av4l_analysis_gui::duree_max_emersion_search $::av4l_analysis_gui::duree_max_emersion_evnmt"
+                             -command "::av4l_analysis_gui::calcul_dureesearch $dureesearch 1"
                        pack $dureesearch.but_reload -side left -anchor c 
 
                        #--- Cree un label pour le chemin de l'AVI
@@ -2140,7 +2121,7 @@
 #---
 
 
-#--- ONGLET : Info 1/2
+#--- ONGLET : Info 1/3
 
 
 #---
@@ -2150,31 +2131,423 @@
         set info1 [frame $f8.frm -borderwidth 0 -cursor arrow -relief groove]
         pack $info1 -in $f8 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
         
-
              #--- Cree un frame pour le chargement d'un fichier
-             set titreobserver [frame $info1.titreobserver -borderwidth 1 -cursor arrow -relief raised]
-             pack $titreobserver -in $info1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+             set titrecontact [frame $info1.titrecontact -borderwidth 1 -cursor arrow -relief raised]
+             pack $titrecontact -in $info1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5 -ipady 5
 
                   #--- Cree un label
-                  label $titreobserver.l -text "Observateurs : " -font $av4lconf(font,courier_10_b)
-                  pack  $titreobserver.l -side left -anchor e 
+                  label $titrecontact.l -text "Contacts : " -font $av4lconf(font,courier_10_b)
+                  pack  $titrecontact.l -side left -anchor e 
+ 
+             set sizecol 12
 
              #--- Cree un frame pour le chargement d'un fichier
-             set observer [frame $info1.observer -borderwidth 0 -cursor arrow -relief groove]
-             pack $observer -in $info1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+             set observers [frame $info1.observers -borderwidth 0 -cursor arrow -relief groove]
+             pack $observers -in $info1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $observers.l -text "Observateurs : " -width $sizecol
+                  pack  $observers.l -side left -anchor e 
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  entry $observers.v -textvariable ::av4l_analysis_gui::occ_observers -width 30
+                  pack $observers.v -side left -padx 3 -pady 1 -fill x
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set reduction [frame $info1.reduction -borderwidth 0 -cursor arrow -relief groove]
+             pack $reduction -in $info1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $reduction.l -text "Reduction : " -width $sizecol
+                  pack  $reduction.l -side left -anchor e 
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  entry $reduction.v -textvariable ::av4l_analysis_gui::prj_reduc -width 30
+                  pack $reduction.v -side left -padx 3 -pady 1 -fill x
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set blck [frame $info1.address -borderwidth 0 -cursor arrow -relief groove]
+             pack $blck -in $info1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $blck.l -text "Adresse : "  -width $sizecol
+                  pack  $blck.l -side left -anchor e 
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  entry $blck.v -textvariable ::av4l_analysis_gui::prj_address -width 60
+                  pack $blck.v -side left -padx 3 -pady 1 -fill x
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set blck [frame $info1.phone -borderwidth 0 -cursor arrow -relief groove]
+             pack $blck -in $info1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $blck.l -text "Téléphone : " -width $sizecol
+                  pack  $blck.l -side left -anchor e 
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  entry $blck.v -textvariable ::av4l_analysis_gui::prj_phone -width 30
+                  pack $blck.v -side left -padx 3 -pady 1 -fill x
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set blck [frame $info1.mail -borderwidth 0 -cursor arrow -relief groove]
+             pack $blck -in $info1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $blck.l -text "Mail : " -width $sizecol
+                  pack  $blck.l -side left -anchor e 
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  entry $blck.v -textvariable ::av4l_analysis_gui::prj_mail -width 30
+                  pack $blck.v -side left -padx 3 -pady 1 -fill x
+
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set titrestation [frame $info1.titrestation -borderwidth 1 -cursor arrow -relief raised]
+             pack $titrestation -in $info1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5 -ipady 5
+
+                  #--- Cree un label
+                  label $titrestation.l -text "Station : " -font $av4lconf(font,courier_10_b)
+                  pack  $titrestation.l -side left -anchor e 
+ 
+             set sizecol 12
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set blck [frame $info1.type1_station -borderwidth 0 -cursor arrow -relief groove]
+             pack $blck -in $info1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $blck.l -text "Station : " -width $sizecol
+                  pack  $blck.l -side left -anchor e 
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  entry $blck.v -textvariable ::av4l_analysis_gui::type1_station -width 30
+                  pack $blck.v -side left -padx 3 -pady 1 -fill x
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set blck [frame $info1.latitude -borderwidth 0 -cursor arrow -relief groove]
+             pack $blck -in $info1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $blck.l -text "Latitude : " -width $sizecol
+                  pack  $blck.l -side left -anchor e 
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  entry $blck.v -textvariable ::av4l_analysis_gui::latitude -width 30
+                  pack $blck.v -side left -padx 3 -pady 1 -fill x
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set blck [frame $info1.longitude -borderwidth 0 -cursor arrow -relief groove]
+             pack $blck -in $info1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $blck.l -text "Longitude : " -width $sizecol
+                  pack  $blck.l -side left -anchor e 
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  entry $blck.v -textvariable ::av4l_analysis_gui::longitude -width 30
+                  pack $blck.v -side left -padx 3 -pady 1 -fill x
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set blck [frame $info1.altitude -borderwidth 0 -cursor arrow -relief groove]
+             pack $blck -in $info1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $blck.l -text "Altitude : " -width $sizecol
+                  pack  $blck.l -side left -anchor e 
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  entry $blck.v -textvariable ::av4l_analysis_gui::altitude -width 30
+                  pack $blck.v -side left -padx 3 -pady 1 -fill x
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set blck [frame $info1.datum -borderwidth 0 -cursor arrow -relief groove]
+             pack $blck -in $info1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $blck.l -text "datum : " -width $sizecol
+                  pack  $blck.l -side left -anchor e 
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  entry $blck.v -textvariable ::av4l_analysis_gui::datum -width 30
+                  pack $blck.v -side left -padx 3 -pady 1 -fill x
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set blck [frame $info1.nearest_city -borderwidth 0 -cursor arrow -relief groove]
+             pack $blck -in $info1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $blck.l -text "nearest_city : " -width $sizecol
+                  pack  $blck.l -side left -anchor e 
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  entry $blck.v -textvariable ::av4l_analysis_gui::nearest_city -width 30
+                  pack $blck.v -side left -padx 3 -pady 1 -fill x
+
 
 
 #---
 
 
-#--- ONGLET : Info 2/2
+#--- ONGLET : Info 2/3
 
 
 #---
 
 
 
+        #--- Cree un frame pour afficher le contenu de l onglet
+        set info2 [frame $f9.frm -borderwidth 0 -cursor arrow -relief groove]
+        pack $info2 -in $f9 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+        
+             #--- Cree un frame pour le chargement d'un fichier
+             set titretelescop [frame $info2.titretelescop -borderwidth 1 -cursor arrow -relief raised]
+             pack $titretelescop -in $info2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5 -ipady 5
 
+                  #--- Cree un label
+                  label $titretelescop.l -text "Telescope : " -font $av4lconf(font,courier_10_b)
+                  pack  $titretelescop.l -side left -anchor e 
+ 
+             set sizecol 12
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set blck [frame $info2.telescop_type -borderwidth 0 -cursor arrow -relief groove]
+             pack $blck -in $info2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $blck.l -text "Type : " -width $sizecol
+                  pack  $blck.l -side left -anchor e 
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  entry $blck.v -textvariable ::av4l_analysis_gui::telescop_type -width 60
+                  pack $blck.v -side left -padx 3 -pady 1 -fill x
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set blck [frame $info2.telescop_aper -borderwidth 0 -cursor arrow -relief groove]
+             pack $blck -in $info2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $blck.l -text "Ouverture : " -width $sizecol
+                  pack  $blck.l -side left -anchor e 
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  entry $blck.v -textvariable ::av4l_analysis_gui::telescop_aper -width 60
+                  pack $blck.v -side left -padx 3 -pady 1 -fill x
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set blck [frame $info2.telescop_magn -borderwidth 0 -cursor arrow -relief groove]
+             pack $blck -in $info2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $blck.l -text "Ouverture : " -width $sizecol
+                  pack  $blck.l -side left -anchor e 
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  entry $blck.v -textvariable ::av4l_analysis_gui::telescop_magn -width 60
+                  pack $blck.v -side left -padx 3 -pady 1 -fill x
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set blck [frame $info2.telescop_moun -borderwidth 0 -cursor arrow -relief groove]
+             pack $blck -in $info2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $blck.l -text "Monture : " -width $sizecol
+                  pack  $blck.l -side left -anchor e 
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  entry $blck.v -textvariable ::av4l_analysis_gui::telescop_moun -width 60
+                  pack $blck.v -side left -padx 3 -pady 1 -fill x
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set blck [frame $info2.telescop_moto -borderwidth 0 -cursor arrow -relief groove]
+             pack $blck -in $info2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $blck.l -text "Motorisation : " -width $sizecol
+                  pack  $blck.l -side left -anchor e 
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  entry $blck.v -textvariable ::av4l_analysis_gui::telescop_moto -width 60
+                  pack $blck.v -side left -padx 3 -pady 1 -fill x
+
+
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set titreacqui [frame $info2.titreacqui -borderwidth 1 -cursor arrow -relief raised]
+             pack $titreacqui -in $info2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5 -ipady 5
+
+                  #--- Cree un label
+                  label $titreacqui.l -text "Acquisition : " -font $av4lconf(font,courier_10_b)
+                  pack  $titreacqui.l -side left -anchor e 
+ 
+             set sizecol 16
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set blck [frame $info2.record_time -borderwidth 0 -cursor arrow -relief groove]
+             pack $blck -in $info2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $blck.l -text "Source : " -width $sizecol
+                  pack  $blck.l -side left -anchor e 
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  entry $blck.v -textvariable ::av4l_analysis_gui::record_time -width 60
+                  pack $blck.v -side left -padx 3 -pady 1 -fill x
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set blck [frame $info2.record_sens -borderwidth 0 -cursor arrow -relief groove]
+             pack $blck -in $info2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $blck.l -text "Capteur : " -width $sizecol
+                  pack  $blck.l -side left -anchor e 
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  entry $blck.v -textvariable ::av4l_analysis_gui::record_sens -width 60
+                  pack $blck.v -side left -padx 3 -pady 1 -fill x
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set blck [frame $info2.record_prod -borderwidth 0 -cursor arrow -relief groove]
+             pack $blck -in $info2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $blck.l -text "Enregistrement : " -width $sizecol
+                  pack  $blck.l -side left -anchor e 
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  entry $blck.v -textvariable ::av4l_analysis_gui::record_prod -width 60
+                  pack $blck.v -side left -padx 3 -pady 1 -fill x
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set blck [frame $info2.record_tiin -borderwidth 0 -cursor arrow -relief groove]
+             pack $blck -in $info2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $blck.l -text "Insertion du temps : " -width $sizecol
+                  pack  $blck.l -side left -anchor e 
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  entry $blck.v -textvariable ::av4l_analysis_gui::record_tiin -width 60
+                  pack $blck.v -side left -padx 3 -pady 1 -fill x
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set blck [frame $info2.record_comp -borderwidth 0 -cursor arrow -relief groove]
+             pack $blck -in $info2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $blck.l -text "Compression : " -width $sizecol
+                  pack  $blck.l -side left -anchor e 
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  entry $blck.v -textvariable ::av4l_analysis_gui::record_comp -width 5
+                  pack $blck.v -side left -padx 3 -pady 1 -fill x
+
+
+
+
+#---
+
+
+#--- ONGLET : Info 3/3
+
+
+#---
+
+
+        #--- Cree un frame pour afficher le contenu de l onglet
+        set info3 [frame $f10.frm -borderwidth 0 -cursor arrow -relief groove]
+        pack $info3 -in $f10 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+        
+             #--- Cree un frame pour le chargement d'un fichier
+             set titrecond [frame $info3.titrecond -borderwidth 1 -cursor arrow -relief raised]
+             pack $titrecond -in $info3 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5 -ipady 5
+
+                  #--- Cree un label
+                  label $titrecond.l -text "Conditions : " -font $av4lconf(font,courier_10_b)
+                  pack  $titrecond.l -side left -anchor e 
+ 
+             set sizecol 25
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set blck [frame $info3.obscond_tran -borderwidth 0 -cursor arrow -relief groove]
+             pack $blck -in $info3 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $blck.l -text "Transparence athmosphérique : " -width $sizecol
+                  pack  $blck.l -side left -anchor e 
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  entry $blck.v -textvariable ::av4l_analysis_gui::obscond_tran -width 60
+                  pack $blck.v -side left -padx 3 -pady 1 -fill x
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set blck [frame $info3.obscond_wind -borderwidth 0 -cursor arrow -relief groove]
+             pack $blck -in $info3 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $blck.l -text "Vent : " -width $sizecol
+                  pack  $blck.l -side left -anchor e 
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  entry $blck.v -textvariable ::av4l_analysis_gui::obscond_wind -width 60
+                  pack $blck.v -side left -padx 3 -pady 1 -fill x
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set blck [frame $info3.obscond_temp -borderwidth 0 -cursor arrow -relief groove]
+             pack $blck -in $info3 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $blck.l -text "Température : " -width $sizecol
+                  pack  $blck.l -side left -anchor e 
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  entry $blck.v -textvariable ::av4l_analysis_gui::obscond_temp -width 60
+                  pack $blck.v -side left -padx 3 -pady 1 -fill x
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set blck [frame $info3.obscond_stab -borderwidth 0 -cursor arrow -relief groove]
+             pack $blck -in $info3 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $blck.l -text "Stabilité de l'image : " -width $sizecol
+                  pack  $blck.l -side left -anchor e 
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  entry $blck.v -textvariable ::av4l_analysis_gui::obscond_stab -width 60
+                  pack $blck.v -side left -padx 3 -pady 1 -fill x
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set blck [frame $info3.obscond_visi -borderwidth 0 -cursor arrow -relief groove]
+             pack $blck -in $info3 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $blck.l -text "Visibilité de la planete : " -width $sizecol
+                  pack  $blck.l -side left -anchor e 
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  entry $blck.v -textvariable ::av4l_analysis_gui::obscond_visi -width 60
+                  pack $blck.v -side left -padx 3 -pady 1 -fill x
+
+
+
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set titrecomment [frame $info3.titrecomment -borderwidth 1 -cursor arrow -relief raised]
+             pack $titrecomment -in $info3 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5 -ipady 5
+
+                  #--- Cree un label
+                  label $titrecomment.l -text "Commentaires : " -font $av4lconf(font,courier_10_b)
+                  pack  $titrecomment.l -side left -anchor e 
+ 
+             set sizecol 25
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set ::av4l_analysis_gui::gui_comment [frame $info3.comments -borderwidth 0 -cursor arrow -relief groove]
+             pack $::av4l_analysis_gui::gui_comment -in $info3 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  text $::av4l_analysis_gui::gui_comment.v  -width 70 -height 5
+                  pack $::av4l_analysis_gui::gui_comment.v -side top -padx 3 -pady 1 -fill x
 
 #---
 
@@ -2184,6 +2557,142 @@
 
 #---
 
+        #--- Cree un frame pour afficher le contenu de l onglet
+        set rapport [frame $f11.frm -borderwidth 0 -cursor arrow -relief groove]
+        pack $rapport -in $f11 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+        
+             #--- Cree un frame pour le chargement d'un fichier
+             set titrerecap [frame $rapport.titrerecap -borderwidth 1 -cursor arrow -relief raised]
+             pack $titrerecap -in $rapport -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $titrerecap.l -text "Récapitulatif : " -font $av4lconf(font,courier_10_b)
+                  pack  $titrerecap.l -side left -anchor e 
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set recap [frame $rapport.recap -borderwidth 0 -cursor arrow -relief groove]
+             pack $recap -in $rapport -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                       #--- Cree un frame pour le chargement d'un fichier
+                       set date_immersion_sol [frame $recap.date_immersion_sol -borderwidth 0 -cursor arrow -relief groove]
+                       pack $date_immersion_sol -in $recap -anchor s -side top -expand 0 -fill x -padx 10 -pady 0
+
+                            #--- Cree un label
+                            label $date_immersion_sol.l1 -text "Date de l'immersion : " -width 30
+                            pack  $date_immersion_sol.l1 -side left -anchor e 
+
+                            #--- Cree un label
+                            label $date_immersion_sol.v1 -textvariable ::av4l_analysis_gui::date_immersion_sol  -fg $color(blue)
+                            pack  $date_immersion_sol.v1 -side left -anchor e 
+
+                            #--- Cree un label
+                            label $date_immersion_sol.l2 -text "\u00B1"
+                            pack  $date_immersion_sol.l2 -side left -anchor e 
+
+                            #--- Cree un label
+                            label $date_immersion_sol.v2 -textvariable ::av4l_analysis_gui::im_t_diff -fg $color(blue)
+                            pack  $date_immersion_sol.v2 -side left -anchor e 
+
+                            #--- Cree un label
+                            label $date_immersion_sol.l3 -text "sec"
+                            pack  $date_immersion_sol.l3 -side left -anchor e 
+
+                       #--- Cree un frame pour le chargement d'un fichier
+                       set date_emersion_sol [frame $recap.date_emersion_sol -borderwidth 0 -cursor arrow -relief groove]
+                       pack $date_emersion_sol -in $recap -anchor s -side top -expand 0 -fill x -padx 10 -pady 0
+
+                            #--- Cree un label
+                            label $date_emersion_sol.l1 -text "Date de l'emersion : " -width 30
+                            pack  $date_emersion_sol.l1 -side left -anchor e 
+
+                            #--- Cree un label
+                            label $date_emersion_sol.v1 -textvariable ::av4l_analysis_gui::date_emersion_sol -fg $color(blue)
+                            pack  $date_emersion_sol.v1 -side left -anchor e 
+
+                            #--- Cree un label
+                            label $date_emersion_sol.l2 -text "\u00B1"
+                            pack  $date_emersion_sol.l2 -side left -anchor e 
+
+                            #--- Cree un label
+                            label $date_emersion_sol.v2 -textvariable ::av4l_analysis_gui::em_t_diff -fg $color(blue)
+                            pack  $date_emersion_sol.v2 -side left -anchor e 
+
+                            #--- Cree un label
+                            label $date_emersion_sol.l3 -text "sec"
+                            pack  $date_emersion_sol.l3 -side left -anchor e 
+
+                       #--- Cree un frame pour le chargement d'un fichier
+                       set duree [frame $recap.duree -borderwidth 0 -cursor arrow -relief groove]
+                       pack $duree -in $recap -anchor s -side top -expand 0 -fill x -padx 10 -pady 0
+
+                            #--- Cree un label
+                            label $duree.l1 -text "Durée de l'évenement : " -width 30
+                            pack  $duree.l1 -side left -anchor e 
+
+                            #--- Cree un label
+                            label $duree.v1 -textvariable ::av4l_analysis_gui::duree -fg $color(blue)
+                            pack  $duree.v1 -side left -anchor e 
+
+                            #--- Cree un label
+                            label $duree.l2 -text "sec" 
+                            pack  $duree.l2 -side left 
+
+                       #--- Cree un frame pour le chargement d'un fichier
+                       set bande [frame $recap.bande -borderwidth 0 -cursor arrow -relief groove]
+                       pack $bande -in $recap -anchor s -side top -expand 0 -fill x -padx 10 -pady 0
+
+                            #--- Cree un label
+                            label $bande.l1 -text "Taille de la bande : " -width 30
+                            pack  $bande.l1 -side left
+
+                            #--- Cree un label
+                            label $bande.v1 -textvariable ::av4l_analysis_gui::bande -fg $color(blue)
+                            pack  $bande.v1 -side left 
+
+                            #--- Cree un label
+                            label $bande.l2 -text "km" 
+                            pack  $bande.l2 -side left
+
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set titreresult [frame $rapport.titreresult -borderwidth 1 -cursor arrow -relief raised]
+             pack $titreresult -in $rapport -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $titreresult.l -text "Résultat : " -font $av4lconf(font,courier_10_b)
+                  pack  $titreresult.l -side left -anchor e 
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set result [frame $rapport.result -borderwidth 0 -cursor arrow -relief groove]
+             pack $result -in $rapport -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $result.l -text "L'occultation est " -font $av4lconf(font,courier_10_b)
+                  pack  $result.l -side left -anchor e 
+
+                  #--- Cree un label
+                  ComboBox $result.v -values [list "POSITIVE" "NEGATIVE"] -width 10 -font $av4lconf(font,courier_10_b) -textvariable ::av4l_analysis_gui::result
+                  pack  $result.v -side left -anchor e 
+
+
+
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set titreplanoccult [frame $rapport.titreplanoccult -borderwidth 1 -cursor arrow -relief raised]
+             pack $titreplanoccult -in $rapport -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $titreplanoccult.l -text "Rapport PLANOCCULT : " -font $av4lconf(font,courier_10_b)
+                  pack  $titreplanoccult.l -side left -anchor e 
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set planoccult [frame $rapport.planoccult -borderwidth 0 -cursor arrow -relief groove]
+             pack $planoccult -in $rapport -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Creation du bouton open
+                  button $planoccult.but_create -text "Creation du Rapport" -borderwidth 2 \
+                        -command "::av4l_analysis_gui::save_planoccult"
+                  pack $planoccult.but_create -side left -anchor e 
 
 
 

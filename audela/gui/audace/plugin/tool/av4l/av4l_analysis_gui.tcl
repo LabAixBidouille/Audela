@@ -1,5 +1,5 @@
 #--------------------------------------------------
-# source audace/plugin/tool/av4l/av4l_analysis_gui.tcl
+# source av4l_analysis_gui.tcl
 #--------------------------------------------------
 #
 # Fichier        : av4l_analysis_gui.tcl
@@ -29,39 +29,176 @@ namespace eval ::av4l_analysis_gui {
 
    proc ::av4l_analysis_gui::reinitialise { } {
 
-      set ::av4l_analysis_gui::raw_filename        ""
-      set ::av4l_analysis_gui::raw_filename_short  ""
-      set ::av4l_analysis_gui::corr_filename       ""
-      set ::av4l_analysis_gui::corr_filename_short ""
+      # 
+      # Contexte
+      # 
+      set ::av4l_analysis_gui::occ_obj        ""
+      set ::av4l_analysis_gui::occ_date       ""
+      set ::av4l_analysis_gui::occ_pos        ""
+      set ::av4l_analysis_gui::occ_pos_type   ""
+      set ::av4l_analysis_gui::occ_obj_name   ""
+      set ::av4l_analysis_gui::occ_obj_id     ""
+      # 
+      # Fichiers & Repertoires
+      # 
+      set ::av4l_analysis_gui::prj_file_short ""
+      set ::av4l_analysis_gui::prj_file       ""
+      set ::av4l_analysis_gui::prj_dir        ""
+      # 
+      # Ephemerides
+      # 
+      set ::av4l_analysis_gui::jd         ""
+      set ::av4l_analysis_gui::rajapp     ""
+      set ::av4l_analysis_gui::decapp     ""
+      set ::av4l_analysis_gui::dist       ""
+      set ::av4l_analysis_gui::magv       ""
+      set ::av4l_analysis_gui::phase      ""
+      set ::av4l_analysis_gui::elong      ""
+      set ::av4l_analysis_gui::dracosd    ""
+      set ::av4l_analysis_gui::ddec       ""
+      set ::av4l_analysis_gui::vn         ""
+      set ::av4l_analysis_gui::tsl        ""
+      set ::av4l_analysis_gui::raj2000    ""
+      set ::av4l_analysis_gui::decj2000   ""
+      set ::av4l_analysis_gui::hourangle  ""
+      set ::av4l_analysis_gui::decapp     ""
+      set ::av4l_analysis_gui::azimuth    ""
+      set ::av4l_analysis_gui::hauteur    ""
+      set ::av4l_analysis_gui::airmass    ""
+      set ::av4l_analysis_gui::dhelio     ""
+      # 
+      # Corrections courbe
+      # 
+      set ::av4l_analysis_gui::raw_filename_short ""
+      set ::av4l_analysis_gui::raw_filename       ""
+      set ::av4l_analysis_gui::raw_integ_offset   ""
+      set ::av4l_analysis_gui::raw_integ_nb_img   ""
+      set ::av4l_analysis_gui::int_corr           ""
+      set ::av4l_analysis_gui::tps_corr           ""
+      set ::av4l_analysis_gui::theo_expo          ""
+      set ::av4l_analysis_gui::time_offset        ""
+      set ::av4l_analysis_gui::ref_corr           ""
+      # 
+      # Evenements
+      # 
+      set ::av4l_analysis_gui::corr_filename_short        ""
+      set ::av4l_analysis_gui::corr_filename              ""
+      set ::av4l_analysis_tools::id_p1                    ""
+      set ::av4l_analysis_tools::corr_duree_e1            ""
+      set ::av4l_analysis_tools::nb_p1                    ""
+      set ::av4l_analysis_gui::duree_max_immersion_search ""
+      set ::av4l_analysis_tools::id_p2                    ""
+      set ::av4l_analysis_tools::corr_duree_e2            ""
+      set ::av4l_analysis_tools::nb_p2                    ""
+      set ::av4l_analysis_tools::id_p3                    ""
+      set ::av4l_analysis_tools::corr_duree_e3            ""
+      set ::av4l_analysis_tools::nb_p3                    ""
+      set ::av4l_analysis_gui::duree_max_emersion_search  ""
+      set ::av4l_analysis_tools::id_p4                    ""
+      set ::av4l_analysis_tools::corr_duree_e4            ""
+      set ::av4l_analysis_tools::nb_p4                    ""
+      set ::av4l_analysis_tools::id_p5                    ""
+      set ::av4l_analysis_tools::corr_duree_e5            ""
+      set ::av4l_analysis_tools::nb_p5                    ""
+      set ::av4l_analysis_gui::duree_max_immersion_evnmt  ""
+      set ::av4l_analysis_tools::id_p6                    ""
+      set ::av4l_analysis_gui::date_immersion             ""
+      set ::av4l_analysis_gui::duree_max_emersion_evnmt   ""
+      set ::av4l_analysis_tools::id_p7                    ""
+      set ::av4l_analysis_gui::date_emersion              ""
 
-
-      set ::av4l_analysis_tools::raw_status_file   ""
-      set ::av4l_analysis_tools::raw_nbframe       ""
-      set ::av4l_analysis_tools::raw_duree         ""
-      set ::av4l_analysis_tools::raw_fps           ""
-      set ::av4l_analysis_tools::raw_date_begin    ""
-      set ::av4l_analysis_tools::raw_date_end      ""
-      set ::av4l_analysis_gui::raw_integ_offset    ""
-      set ::av4l_analysis_gui::raw_integ_nb_img    ""
-
-
-      set ::av4l_analysis_gui::corr_filename_short   ""
-      set ::av4l_analysis_tools::corr_status_file    ""
-      set ::av4l_analysis_tools::corr_nbframe        ""
-      set ::av4l_analysis_tools::corr_duree          ""
-      set ::av4l_analysis_tools::corr_fps            ""
-      set ::av4l_analysis_tools::corr_date_begin     ""
-      set ::av4l_analysis_tools::corr_date_end       ""
-      set ::av4l_analysis_tools::nb_p1  ""
-      set ::av4l_analysis_tools::corr_duree_e1    ""
-      set ::av4l_analysis_tools::nb_p2  ""
-      set ::av4l_analysis_tools::corr_duree_e2    ""
-      set ::av4l_analysis_tools::nb_p3  ""
-      set ::av4l_analysis_tools::corr_duree_e3    ""
-      set ::av4l_analysis_tools::nb_p4  ""
-      set ::av4l_analysis_tools::corr_duree_e4    ""
-      set ::av4l_analysis_tools::nb_p5  ""
-      set ::av4l_analysis_tools::corr_duree_e5    ""
+      # 
+      # Parametres
+      # 
+      set ::av4l_analysis_gui::width             ""
+      set ::av4l_analysis_gui::occ_star_name     ""
+      set ::av4l_analysis_gui::occ_star_B        ""
+      set ::av4l_analysis_gui::occ_star_V        ""
+      set ::av4l_analysis_gui::occ_star_K        ""
+      set ::av4l_analysis_gui::occ_star_size_mas ""
+      set ::av4l_analysis_gui::occ_star_size_km  ""
+      set ::av4l_analysis_gui::wvlngth           ""
+      set ::av4l_analysis_gui::dlambda           ""
+      set ::av4l_analysis_tools::irep            ""
+      set ::av4l_analysis_gui::nheure            ""
+      set ::av4l_analysis_gui::pas_heure         ""
+      set ::av4l_analysis_tools::corr_exposure   ""
+      set ::av4l_analysis_gui::date_begin_obs    ""
+      set ::av4l_analysis_gui::date_end_obs      ""
+      # 
+      # Immersion & Emersion
+      # 
+      set ::av4l_analysis_gui::date_immersion_sol ""
+      set ::av4l_analysis_gui::im_chi2_min        ""
+      set ::av4l_analysis_gui::im_nfit_chi2_min   ""
+      set ::av4l_analysis_gui::im_t0_chi2_min     ""
+      set ::av4l_analysis_gui::im_t_inf           ""
+      set ::av4l_analysis_gui::im_t_sup           ""
+      set ::av4l_analysis_gui::im_t_diff          ""
+      set ::av4l_analysis_gui::im_t_inf_3s        ""
+      set ::av4l_analysis_gui::im_t_sup_3s        ""
+      set ::av4l_analysis_gui::im_t_diff_3s       ""
+      set ::av4l_analysis_gui::date_emersion_sol  ""
+      set ::av4l_analysis_gui::em_chi2_min        ""
+      set ::av4l_analysis_gui::em_nfit_chi2_min   ""
+      set ::av4l_analysis_gui::em_t0_chi2_min     ""
+      set ::av4l_analysis_gui::em_t_inf           ""
+      set ::av4l_analysis_gui::em_t_sup           ""
+      set ::av4l_analysis_gui::em_t_diff          ""
+      set ::av4l_analysis_gui::em_t_inf_3s        ""
+      set ::av4l_analysis_gui::em_t_sup_3s        ""
+      set ::av4l_analysis_gui::em_t_diff_3s       ""
+      set ::av4l_analysis_gui::bande              ""
+      set ::av4l_analysis_gui::duree              ""
+      set ::av4l_analysis_gui::result             ""
+      # 
+      # Contacts
+      # 
+      set ::av4l_analysis_gui::occ_observers  ""
+      set ::av4l_analysis_gui::prj_reduc      ""
+      set ::av4l_analysis_gui::prj_mail       ""
+      set ::av4l_analysis_gui::prj_phone      ""
+      set ::av4l_analysis_gui::prj_address    ""
+      # 
+      # Station
+      # 
+      set ::av4l_analysis_gui::type1_station  ""
+      set ::av4l_analysis_gui::latitude       ""
+      set ::av4l_analysis_gui::longitude      ""
+      set ::av4l_analysis_gui::altitude       ""
+      set ::av4l_analysis_gui::datum          ""
+      set ::av4l_analysis_gui::nearest_city   ""
+      set ::av4l_analysis_gui::type2_station  ""
+      # 
+      # Telescope
+      # 
+      set ::av4l_analysis_gui::telescop_type  ""
+      set ::av4l_analysis_gui::telescop_aper  ""
+      set ::av4l_analysis_gui::telescop_magn  ""
+      set ::av4l_analysis_gui::telescop_moun  ""
+      set ::av4l_analysis_gui::telescop_moto  ""
+      # 
+      # Acquisition
+      # 
+      set ::av4l_analysis_gui::record_evin    ""
+      set ::av4l_analysis_gui::record_time    ""
+      set ::av4l_analysis_gui::record_sens    ""
+      set ::av4l_analysis_gui::record_prod    ""
+      set ::av4l_analysis_gui::record_tiin    ""
+      set ::av4l_analysis_gui::record_comp    ""
+      # 
+      # Conditions
+      # 
+      set ::av4l_analysis_gui::obscond_tran   ""
+      set ::av4l_analysis_gui::obscond_wind   ""
+      set ::av4l_analysis_gui::obscond_temp   ""
+      set ::av4l_analysis_gui::obscond_stab   ""
+      set ::av4l_analysis_gui::obscond_visi   ""
+      # 
+      # Comments
+      # 
+      .audace.av4l_analysis.frm_av4l_analysis_gui.onglets.nb.f10.frm.comments.v delete 1.0 end 
+      .audace.av4l_analysis.frm_av4l_analysis_gui.onglets.nb.f10.frm.comments.v insert end ""
 
    }
 
@@ -583,7 +720,6 @@ namespace eval ::av4l_analysis_gui {
 
    proc ::av4l_analysis_gui::corr_integ_view { } {
      
-      ::console::affiche_resultat "Sauvegarde de la courbe : $::av4l_analysis_gui::corr_filename\n"
      
       ::console::affiche_resultat " int_corr         = $::av4l_analysis_gui::int_corr\n"
       ::console::affiche_resultat " raw_integ_offset = $::av4l_analysis_gui::raw_integ_offset\n"
@@ -764,7 +900,8 @@ namespace eval ::av4l_analysis_gui {
          lappend ::av4l_analysis_gui::cdl_x [expr ($::av4l_analysis_tools::cdl($i,jd) - $::av4l_analysis_tools::orig) * 86400.0 ]
          lappend ::av4l_analysis_gui::cdl_y $::av4l_analysis_tools::cdl($i,flux)
       }
-      
+      set ::av4l_analysis_gui::date_begin_obs [mc_date2iso8601 $::av4l_analysis_tools::cdl(1,jd)]
+      set ::av4l_analysis_gui::date_end_obs   [mc_date2iso8601 $::av4l_analysis_tools::cdl($::av4l_analysis_tools::corr_nbframe,jd)]
       
       ::av4l_analysis_gui::active_graphe $frm.frm.graphe l 1
       
@@ -1211,6 +1348,17 @@ namespace eval ::av4l_analysis_gui {
 
       }
       
+      # Si l immersion et l emersion ont ete calculé alors on calcule la duree et la taille de la bande
+      if {[info exists ::av4l_analysis_gui::date_emersion_sol]} {
+         if {$::av4l_analysis_gui::date_emersion_sol!=""} {
+            if {[info exists ::av4l_analysis_gui::date_immersion_sol]} {
+               if {$::av4l_analysis_gui::date_immersion_sol!=""} {
+                  set ::av4l_analysis_gui::duree [format "%.3f" [expr ([mc_date2jd $::av4l_analysis_gui::date_emersion_sol]-[mc_date2jd $::av4l_analysis_gui::date_immersion_sol])*86400.0] ]
+                  set ::av4l_analysis_gui::bande [format "%.3f" [expr $::av4l_analysis_gui::duree * $::av4l_analysis_gui::vn] ]
+               }
+            }
+         }
+      }
       
       # BOUTTONS CALCUL -> mode Ok
       .audace.av4l_analysis.frm_av4l_analysis_gui.onglets.nb.f6.frm.calcul.blockcentre.but_calc configure -image .calc
@@ -1391,9 +1539,43 @@ namespace eval ::av4l_analysis_gui {
 
 
 
-   proc ::av4l_analysis_gui::calcul_dureesearch { frm duree_max_search duree_max_evnmt } {
+   proc ::av4l_analysis_gui::calcul_dureesearch { frm e } {
 
       global color
+
+      if {$e==-1} {
+         if {![info exists ::av4l_analysis_gui::duree_max_immersion_search]} {
+            return
+         }
+         if {$::av4l_analysis_gui::duree_max_immersion_search==""} {
+            return
+         }
+         if {![info exists ::av4l_analysis_gui::duree_max_immersion_evnmt]} {
+            return
+         }
+         if {$::av4l_analysis_gui::duree_max_immersion_evnmt==""} {
+            return
+         }
+         set duree_max_search $::av4l_analysis_gui::duree_max_immersion_search 
+         set duree_max_evnmt  $::av4l_analysis_gui::duree_max_immersion_evnmt
+      }
+      if {$e==1} {
+         if {![info exists ::av4l_analysis_gui::duree_max_emersion_search]} {
+            return
+         }
+         if {$::av4l_analysis_gui::duree_max_emersion_search==""} {
+            return
+         }
+         if {![info exists ::av4l_analysis_gui::duree_max_emersion_evnmt]} {
+            return
+         }
+         if {$::av4l_analysis_gui::duree_max_emersion_evnmt==""} {
+            return
+         }
+         set duree_max_search $::av4l_analysis_gui::duree_max_emersion_search 
+         set duree_max_evnmt  $::av4l_analysis_gui::duree_max_emersion_evnmt
+      }
+
       
       if {$::av4l_analysis_gui::pas_heure==""} {
          set ::av4l_analysis_gui::dureesearch "?"
@@ -1605,6 +1787,23 @@ namespace eval ::av4l_analysis_gui {
    #
    proc ::av4l_analysis_gui::load_atos_file { } {
 
+
+      set pass "yes"
+      if {![info exists ::av4l_analysis_gui::prj_file]} {
+         set pass "no"
+      } else {
+         if  {$::av4l_analysis_gui::prj_file==""} {
+            set pass "no"
+         }
+      }
+      if {$pass=="no"} {
+         tk_messageBox -message "Veuillez selectionner un fichier" -type ok
+         return
+      }
+
+
+
+
       set a1 [file exists $::av4l_analysis_gui::prj_file]
       if {$a1 == 0} {
          set res [tk_messageBox -message "Le fichier n'existe pas !" -type yes]
@@ -1738,13 +1937,6 @@ catch {
       puts $chan "set ::av4l_analysis_gui::occ_obj_id     \"$::av4l_analysis_gui::occ_obj_id\""
 
       puts $chan "# "
-      puts $chan "# Contacts"
-      puts $chan "# "
-      puts $chan "set ::av4l_analysis_gui::occ_observers  \"$::av4l_analysis_gui::occ_observers\""
-      puts $chan "set ::av4l_analysis_gui::prj_reduc      \"$::av4l_analysis_gui::prj_reduc\""
-      puts $chan "set ::av4l_analysis_gui::prj_mail       \"$::av4l_analysis_gui::prj_mail\""
-
-      puts $chan "# "
       puts $chan "# Fichiers & Repertoires"
       puts $chan "# "
       puts $chan "set ::av4l_analysis_gui::prj_file_short \"$::av4l_analysis_gui::prj_file_short\""
@@ -1778,11 +1970,10 @@ catch {
       puts $chan "# Corrections courbe"
       puts $chan "# "
       puts $chan "set ::av4l_analysis_gui::raw_filename_short \"$::av4l_analysis_gui::raw_filename_short\""
+      puts $chan "set ::av4l_analysis_gui::raw_filename       \"$::av4l_analysis_gui::raw_filename\""
       puts $chan "set ::av4l_analysis_gui::raw_integ_offset   \"$::av4l_analysis_gui::raw_integ_offset\""
       puts $chan "set ::av4l_analysis_gui::raw_integ_nb_img   \"$::av4l_analysis_gui::raw_integ_nb_img\""
       puts $chan "set ::av4l_analysis_gui::int_corr           \"$::av4l_analysis_gui::int_corr\""
-      puts $chan "set ::av4l_analysis_gui::raw_integ_offset   \"$::av4l_analysis_gui::raw_integ_offset\""
-      puts $chan "set ::av4l_analysis_gui::raw_integ_nb_img   \"$::av4l_analysis_gui::raw_integ_nb_img\""
       puts $chan "set ::av4l_analysis_gui::tps_corr           \"$::av4l_analysis_gui::tps_corr\""
       puts $chan "set ::av4l_analysis_gui::theo_expo          \"$::av4l_analysis_gui::theo_expo\""
       puts $chan "set ::av4l_analysis_gui::time_offset        \"$::av4l_analysis_gui::time_offset\""
@@ -1791,29 +1982,31 @@ catch {
       puts $chan "# "
       puts $chan "# Evenements"
       puts $chan "# "
-      puts $chan "set ::av4l_analysis_tools::id_p1         \"$::av4l_analysis_tools::id_p1\""
-      puts $chan "set ::av4l_analysis_tools::corr_duree_e1 \"$::av4l_analysis_tools::corr_duree_e1\""
-      puts $chan "set ::av4l_analysis_tools::nb_p1         \"$::av4l_analysis_tools::nb_p1\""
+      puts $chan "set ::av4l_analysis_gui::corr_filename_short        \"$::av4l_analysis_gui::corr_filename_short\""
+      puts $chan "set ::av4l_analysis_gui::corr_filename              \"$::av4l_analysis_gui::corr_filename\""
+      puts $chan "set ::av4l_analysis_tools::id_p1                    \"$::av4l_analysis_tools::id_p1\""
+      puts $chan "set ::av4l_analysis_tools::corr_duree_e1            \"$::av4l_analysis_tools::corr_duree_e1\""
+      puts $chan "set ::av4l_analysis_tools::nb_p1                    \"$::av4l_analysis_tools::nb_p1\""
       puts $chan "set ::av4l_analysis_gui::duree_max_immersion_search \"$::av4l_analysis_gui::duree_max_immersion_search\""
-      puts $chan "set ::av4l_analysis_tools::id_p2         \"$::av4l_analysis_tools::id_p2\""
-      puts $chan "set ::av4l_analysis_tools::corr_duree_e2 \"$::av4l_analysis_tools::corr_duree_e2\""
-      puts $chan "set ::av4l_analysis_tools::nb_p2         \"$::av4l_analysis_tools::nb_p2\""
-      puts $chan "set ::av4l_analysis_tools::id_p3         \"$::av4l_analysis_tools::id_p3\""
-      puts $chan "set ::av4l_analysis_tools::corr_duree_e3 \"$::av4l_analysis_tools::corr_duree_e3\""
-      puts $chan "set ::av4l_analysis_tools::nb_p3         \"$::av4l_analysis_tools::nb_p3\""
-      puts $chan "set ::av4l_analysis_gui::duree_max_emersion_search \"$::av4l_analysis_gui::duree_max_emersion_search\""
-      puts $chan "set ::av4l_analysis_tools::id_p4         \"$::av4l_analysis_tools::id_p4\""
-      puts $chan "set ::av4l_analysis_tools::corr_duree_e4 \"$::av4l_analysis_tools::corr_duree_e4\""
-      puts $chan "set ::av4l_analysis_tools::nb_p4         \"$::av4l_analysis_tools::nb_p4\""
-      puts $chan "set ::av4l_analysis_tools::id_p5         \"$::av4l_analysis_tools::id_p5\""
-      puts $chan "set ::av4l_analysis_tools::corr_duree_e5 \"$::av4l_analysis_tools::corr_duree_e5\""
-      puts $chan "set ::av4l_analysis_tools::nb_p5         \"$::av4l_analysis_tools::nb_p5\""
-      puts $chan "set ::av4l_analysis_gui::duree_max_immersion_evnmt \"$::av4l_analysis_gui::duree_max_immersion_evnmt\""
-      puts $chan "set ::av4l_analysis_tools::id_p6         \"$::av4l_analysis_tools::id_p6\""
-      puts $chan "set ::av4l_analysis_gui::date_immersion  \"$::av4l_analysis_gui::date_immersion\""
-      puts $chan "set ::av4l_analysis_gui::duree_max_emersion_evnmt \"$::av4l_analysis_gui::duree_max_emersion_evnmt\""
-      puts $chan "set ::av4l_analysis_tools::id_p7         \"$::av4l_analysis_tools::id_p7\""
-      puts $chan "set ::av4l_analysis_gui::date_emersion  \"$::av4l_analysis_gui::date_emersion\""
+      puts $chan "set ::av4l_analysis_tools::id_p2                    \"$::av4l_analysis_tools::id_p2\""
+      puts $chan "set ::av4l_analysis_tools::corr_duree_e2            \"$::av4l_analysis_tools::corr_duree_e2\""
+      puts $chan "set ::av4l_analysis_tools::nb_p2                    \"$::av4l_analysis_tools::nb_p2\""
+      puts $chan "set ::av4l_analysis_tools::id_p3                    \"$::av4l_analysis_tools::id_p3\""
+      puts $chan "set ::av4l_analysis_tools::corr_duree_e3            \"$::av4l_analysis_tools::corr_duree_e3\""
+      puts $chan "set ::av4l_analysis_tools::nb_p3                    \"$::av4l_analysis_tools::nb_p3\""
+      puts $chan "set ::av4l_analysis_gui::duree_max_emersion_search  \"$::av4l_analysis_gui::duree_max_emersion_search\""
+      puts $chan "set ::av4l_analysis_tools::id_p4                    \"$::av4l_analysis_tools::id_p4\""
+      puts $chan "set ::av4l_analysis_tools::corr_duree_e4            \"$::av4l_analysis_tools::corr_duree_e4\""
+      puts $chan "set ::av4l_analysis_tools::nb_p4                    \"$::av4l_analysis_tools::nb_p4\""
+      puts $chan "set ::av4l_analysis_tools::id_p5                    \"$::av4l_analysis_tools::id_p5\""
+      puts $chan "set ::av4l_analysis_tools::corr_duree_e5            \"$::av4l_analysis_tools::corr_duree_e5\""
+      puts $chan "set ::av4l_analysis_tools::nb_p5                    \"$::av4l_analysis_tools::nb_p5\""
+      puts $chan "set ::av4l_analysis_gui::duree_max_immersion_evnmt  \"$::av4l_analysis_gui::duree_max_immersion_evnmt\""
+      puts $chan "set ::av4l_analysis_tools::id_p6                    \"$::av4l_analysis_tools::id_p6\""
+      puts $chan "set ::av4l_analysis_gui::date_immersion             \"$::av4l_analysis_gui::date_immersion\""
+      puts $chan "set ::av4l_analysis_gui::duree_max_emersion_evnmt   \"$::av4l_analysis_gui::duree_max_emersion_evnmt\""
+      puts $chan "set ::av4l_analysis_tools::id_p7                    \"$::av4l_analysis_tools::id_p7\""       
+      puts $chan "set ::av4l_analysis_gui::date_emersion              \"$::av4l_analysis_gui::date_emersion\"" 
 
       puts $chan "# "
       puts $chan "# Parametres"
@@ -1830,6 +2023,100 @@ catch {
       puts $chan "set ::av4l_analysis_tools::irep            \"$::av4l_analysis_tools::irep\""
       puts $chan "set ::av4l_analysis_gui::nheure            \"$::av4l_analysis_gui::nheure\""
       puts $chan "set ::av4l_analysis_gui::pas_heure         \"$::av4l_analysis_gui::pas_heure\""
+      puts $chan "set ::av4l_analysis_tools::corr_exposure   \"$::av4l_analysis_tools::corr_exposure\""
+      puts $chan "set ::av4l_analysis_gui::date_begin_obs    \"$::av4l_analysis_gui::date_begin_obs\""
+      puts $chan "set ::av4l_analysis_gui::date_end_obs      \"$::av4l_analysis_gui::date_end_obs\""
+
+      puts $chan "# "
+      puts $chan "# Immersion & Emersion"
+      puts $chan "# "
+      puts $chan "set ::av4l_analysis_gui::date_immersion_sol \"$::av4l_analysis_gui::date_immersion_sol\""
+      puts $chan "set ::av4l_analysis_gui::im_chi2_min        \"$::av4l_analysis_gui::im_chi2_min\""
+      puts $chan "set ::av4l_analysis_gui::im_nfit_chi2_min   \"$::av4l_analysis_gui::im_nfit_chi2_min\""
+      puts $chan "set ::av4l_analysis_gui::im_t0_chi2_min     \"$::av4l_analysis_gui::im_t0_chi2_min\""
+      puts $chan "set ::av4l_analysis_gui::im_t_inf           \"$::av4l_analysis_gui::im_t_inf\""
+      puts $chan "set ::av4l_analysis_gui::im_t_sup           \"$::av4l_analysis_gui::im_t_sup\""
+      puts $chan "set ::av4l_analysis_gui::im_t_diff          \"$::av4l_analysis_gui::im_t_diff\""
+      puts $chan "set ::av4l_analysis_gui::im_t_inf_3s        \"$::av4l_analysis_gui::im_t_inf_3s\""
+      puts $chan "set ::av4l_analysis_gui::im_t_sup_3s        \"$::av4l_analysis_gui::im_t_sup_3s\""
+      puts $chan "set ::av4l_analysis_gui::im_t_diff_3s       \"$::av4l_analysis_gui::im_t_diff_3s\""
+      puts $chan "set ::av4l_analysis_gui::date_emersion_sol  \"$::av4l_analysis_gui::date_emersion_sol\""
+      puts $chan "set ::av4l_analysis_gui::em_chi2_min        \"$::av4l_analysis_gui::em_chi2_min\""
+      puts $chan "set ::av4l_analysis_gui::em_nfit_chi2_min   \"$::av4l_analysis_gui::em_nfit_chi2_min\""
+      puts $chan "set ::av4l_analysis_gui::em_t0_chi2_min     \"$::av4l_analysis_gui::em_t0_chi2_min\""
+      puts $chan "set ::av4l_analysis_gui::em_t_inf           \"$::av4l_analysis_gui::em_t_inf\""
+      puts $chan "set ::av4l_analysis_gui::em_t_sup           \"$::av4l_analysis_gui::em_t_sup\""
+      puts $chan "set ::av4l_analysis_gui::em_t_diff          \"$::av4l_analysis_gui::em_t_diff\""
+      puts $chan "set ::av4l_analysis_gui::em_t_inf_3s        \"$::av4l_analysis_gui::em_t_inf_3s\""
+      puts $chan "set ::av4l_analysis_gui::em_t_sup_3s        \"$::av4l_analysis_gui::em_t_sup_3s\""
+      puts $chan "set ::av4l_analysis_gui::em_t_diff_3s       \"$::av4l_analysis_gui::em_t_diff_3s\""
+
+      puts $chan "set ::av4l_analysis_gui::bande       \"$::av4l_analysis_gui::bande\""
+      puts $chan "set ::av4l_analysis_gui::duree       \"$::av4l_analysis_gui::duree\""
+      puts $chan "set ::av4l_analysis_gui::result      \"$::av4l_analysis_gui::result\""
+
+      puts $chan "# "
+      puts $chan "# Contacts"
+      puts $chan "# "
+      puts $chan "set ::av4l_analysis_gui::occ_observers  \"$::av4l_analysis_gui::occ_observers\""
+      puts $chan "set ::av4l_analysis_gui::prj_reduc      \"$::av4l_analysis_gui::prj_reduc\""
+      puts $chan "set ::av4l_analysis_gui::prj_mail       \"$::av4l_analysis_gui::prj_mail\""
+      puts $chan "set ::av4l_analysis_gui::prj_phone      \"$::av4l_analysis_gui::prj_phone\""
+      puts $chan "set ::av4l_analysis_gui::prj_address    \"$::av4l_analysis_gui::prj_address\""
+
+      puts $chan "# "
+      puts $chan "# Station"
+      puts $chan "# "
+      puts $chan "set ::av4l_analysis_gui::type1_station  \"$::av4l_analysis_gui::type1_station\""
+      puts $chan "set ::av4l_analysis_gui::latitude       \"$::av4l_analysis_gui::latitude\""
+      puts $chan "set ::av4l_analysis_gui::longitude      \"$::av4l_analysis_gui::longitude\""
+      puts $chan "set ::av4l_analysis_gui::altitude       \"$::av4l_analysis_gui::altitude\""
+      puts $chan "set ::av4l_analysis_gui::datum          \"$::av4l_analysis_gui::datum\""
+      puts $chan "set ::av4l_analysis_gui::nearest_city   \"$::av4l_analysis_gui::nearest_city\""
+      puts $chan "set ::av4l_analysis_gui::type2_station  \"$::av4l_analysis_gui::type2_station\""
+
+      puts $chan "# "
+      puts $chan "# Telescope"
+      puts $chan "# "
+      puts $chan "set ::av4l_analysis_gui::telescop_type  \"$::av4l_analysis_gui::telescop_type\""
+      puts $chan "set ::av4l_analysis_gui::telescop_aper  \"$::av4l_analysis_gui::telescop_aper\""
+      puts $chan "set ::av4l_analysis_gui::telescop_magn  \"$::av4l_analysis_gui::telescop_magn\""
+      puts $chan "set ::av4l_analysis_gui::telescop_moun  \"$::av4l_analysis_gui::telescop_moun\""
+      puts $chan "set ::av4l_analysis_gui::telescop_moto  \"$::av4l_analysis_gui::telescop_moto\""
+
+      puts $chan "# "
+      puts $chan "# Acquisition"
+      puts $chan "# "
+      puts $chan "set ::av4l_analysis_gui::record_evin    \"$::av4l_analysis_gui::record_evin\""
+      puts $chan "set ::av4l_analysis_gui::record_time    \"$::av4l_analysis_gui::record_time\""
+      puts $chan "set ::av4l_analysis_gui::record_sens    \"$::av4l_analysis_gui::record_sens\""
+      puts $chan "set ::av4l_analysis_gui::record_prod    \"$::av4l_analysis_gui::record_prod\""
+      puts $chan "set ::av4l_analysis_gui::record_tiin    \"$::av4l_analysis_gui::record_tiin\""
+      puts $chan "set ::av4l_analysis_gui::record_comp    \"$::av4l_analysis_gui::record_comp\""
+
+      puts $chan "# "
+      puts $chan "# Conditions"
+      puts $chan "# "
+      puts $chan "set ::av4l_analysis_gui::obscond_tran   \"$::av4l_analysis_gui::obscond_tran\""
+      puts $chan "set ::av4l_analysis_gui::obscond_wind   \"$::av4l_analysis_gui::obscond_wind\""
+      puts $chan "set ::av4l_analysis_gui::obscond_temp   \"$::av4l_analysis_gui::obscond_temp\""
+      puts $chan "set ::av4l_analysis_gui::obscond_stab   \"$::av4l_analysis_gui::obscond_stab\""
+      puts $chan "set ::av4l_analysis_gui::obscond_visi   \"$::av4l_analysis_gui::obscond_visi\""
+
+      puts $chan "# "
+      puts $chan "# Comments"
+      puts $chan "# "
+      #puts $chan "set ::av4l_analysis_gui::comments   \"$::av4l_analysis_gui::comments\""
+      #puts $chan "$::av4l_analysis_gui::gui_comment.v insert 0 end \"$::av4l_analysis_gui::comments\""
+      set a [split [$::av4l_analysis_gui::gui_comment.v get 1.0 end] "\n" ]
+      set newl "$::av4l_analysis_gui::gui_comment.v insert end \""
+      foreach line $a {
+         gren_info "$line\n"
+         if {[string bytelength [string trim $line]]==0} {continue}
+         append newl "[string trim $line]\\n"
+      }
+      puts $chan "$::av4l_analysis_gui::gui_comment.v delete 1.0 end "
+      puts $chan "$newl\""
 
 }
       
@@ -1865,80 +2152,66 @@ catch {
          if {$res == "no"} {return -code 0 "no"}
       }
 
+
+      # Was your reaction time applied to the above timings ?
+      if {$::av4l_analysis_gui::tps_corr} {
+         set reaction_time "YES"
+      } else {
+         set reaction_time "NO"
+      }
+
+      # Constantes 
+      set ::av4l_analysis_gui::type2_station   "Single"
+      set ::av4l_analysis_gui::record_evin ""
+
+      # A Calculer  
+      set obscond_alti [format "%+d deg" [lindex [split $::av4l_analysis_gui::hauteur ":"] 0] ]
+      set occ_date_short [lindex [split $::av4l_analysis_gui::date_immersion_sol "T"] 0]
+
+      # debut obs
+      set datetmp [lindex [split $::av4l_analysis_gui::date_begin_obs "T"] 1]
+      set datetmp [split $datetmp ":"]
+      set hs  [lindex $datetmp 0]
+      set ms  [lindex $datetmp 1]
+      set ss  [lindex $datetmp 2]
+
+      # immersion
+      set datetmp [lindex [split $::av4l_analysis_gui::date_immersion_sol "T"] 1]
+      set datetmp [split $datetmp ":"]
+      set hd  [lindex $datetmp 0]
+      set md  [lindex $datetmp 1]
+      set sd  [lindex $datetmp 2]
+
+      # emersion
+      set datetmp [lindex [split $::av4l_analysis_gui::date_emersion_sol "T"] 1]
+      set datetmp [split $datetmp ":"]
+      set hr  [lindex $datetmp 0]
+      set mr  [lindex $datetmp 1]
+      set sr  [lindex $datetmp 2]
+
+      # fin obs
+      set datetmp [lindex [split $::av4l_analysis_gui::date_end_obs "T"] 1]
+      set datetmp [split $datetmp ":"]
+      set he  [lindex $datetmp 0]
+      set me  [lindex $datetmp 1]
+      set se  [lindex $datetmp 2]
+
+      # incertitude imm et em
+      set ad  $::av4l_analysis_gui::im_t_diff
+      set ar  $::av4l_analysis_gui::em_t_diff
+      # duree integration
+      set int $::av4l_analysis_tools::corr_exposure
+      # mid evenement
+      set midevent  [mc_date2iso8601 [expr ([mc_date2jd $::av4l_analysis_gui::date_emersion_sol]+[mc_date2jd $::av4l_analysis_gui::date_immersion_sol])/2.0] ]
+      # Commentaires
+      set comments "8 frame integration used (Watec setting 4 Slow) Codec use for grab : No recompression YUY2"
+      set comments [$::av4l_analysis_gui::gui_comment.v get 1.0 end]
+
+
+# Ecriture du rapport
+
       set chan [open $file w]
 
-# Personnal      
-set ::av4l_analysis_gui::prj_phone       "+331 4051 2261"
-set ::av4l_analysis_gui::prj_address     "77 av. Denfert Rochereau, 75014, Paris, France"
-set ::av4l_analysis_gui::nearest_city    "Le Rotoir (91, France)"
-
-# Station
-set ::av4l_analysis_gui::type1_station   "mobile"
-set ::av4l_analysis_gui::latitude        "N 48 29 43.0"
-set ::av4l_analysis_gui::longitude       "E 02 05 02.0"
-set ::av4l_analysis_gui::altitude        "100m"
-set ::av4l_analysis_gui::datum           "WGS84"
-set ::av4l_analysis_gui::type2_station   "Single"
-
-# Resultat
-set ::av4l_analysis_gui::result          "POSITIVE"
-
-# se calcule
-set ::av4l_analysis_gui::occ_date_short  "2010-06-04"
-# debut obs
-set hs  23
-set ms  25
-set ss  00
-# immersion
-set hd  23
-set md  41
-set sd  22
-set msd 290
-# emersion
-set hr  23
-set mr  41
-set sr  28
-set msr 530
-# fin obs
-set he  23
-set me  55
-set se  00
-# incertitude imm et em
-set ad  0.2
-set ar  0.2
-# duree integration
-set int 0.32
-# duree evenement
-set duree 6.24
-# mid evenement
-set midevent  "23:41:25.41"
-
-set reaction_time "YES"
-set telescop_type "LX200"
-set telescop_aper "300mm"
-set telescop_magn "Prime focus F/10"
-set telescop_moun "AltAz"
-set telescop_moto "YES"
-
-set record_time "GPS"
-set record_sens "WATEC 120N"
-set record_prod "Grabber Dazzle DVC100 + MiniPC + Hard Drive"
-set record_tiin "KIWI-OSD"
-set record_evin ""
-set record_comp "NO"
-
-set obscond_tran "Good"
-set obscond_wind "0"
-set obscond_temp "+16 C"
-set obscond_stab "Good"
-set obscond_alti "+22"
-set obscond_visi "YES"
-
-
-
-
-
-catch {
       puts $chan "                   ASTEROIDAL OCCULTATION - REPORT FORM               "
       puts $chan "                                                                      "
       puts $chan "    +------------------------------+  +------------------------------+"
@@ -1949,7 +2222,7 @@ catch {
       puts $chan "    +------------------------------+  +------------------------------+"
       puts $chan ""
 
-      puts $chan [format "1 DATE: %s                   STAR: %s" $::av4l_analysis_gui::occ_date_short $::av4l_analysis_gui::occ_star_name]
+      puts $chan [format "1 DATE: %s                   STAR: %s" $occ_date_short $::av4l_analysis_gui::occ_star_name]
       puts $chan [format "  ASTEROID: %-25s  No: %s" $::av4l_analysis_gui::occ_obj_name $::av4l_analysis_gui::occ_obj_id]
       puts $chan ""
       puts $chan [format "2 OBSERVER: Name: %s"    $::av4l_analysis_gui::occ_observers]
@@ -1979,46 +2252,49 @@ catch {
       puts $chan "  Event   Time (UT)    P.E.   Acc."
       puts $chan "  Code   HH MM SS.ss   S.ss   S.ss"
       puts $chan ""
-      puts $chan [format "    S  - %2d %2d %2d       -      -         :" $hs $ms $ss] 
+      puts $chan [format "    S  - %2d %2d %s   -      -         :" $hs $ms $ss] 
       puts $chan "       -                -      -         :"
-      puts $chan [format "    D  - %2d %2d %2d.%3d   -     %.3f      :  Video integration %.3f s" $hd $md $sd $msd $ad $int]
-      puts $chan [format "    R  - %2d %2d %2d.%3d   -     %.3f      :  Video integration %.3f s" $hr $mr $sr $msr $ar $int]
+      puts $chan [format "    D  - %2d %2d %s   -     %.3f      :  Video integration %.3f s" $hd $md $sd $ad $int]
+      puts $chan [format "    R  - %2d %2d %s   -     %.3f      :  Video integration %.3f s" $hr $mr $sr $ar $int]
       puts $chan "       -                -      -         :"
-      puts $chan [format "    E  - %2d %2d %2d       -      -         :" $he $me $se]
+      puts $chan [format "    E  - %2d %2d %s   -      -         :" $he $me $se]
       puts $chan ""
-      puts $chan [format "                          Duration : %.3f" $duree]
+      puts $chan [format "                          Duration : %.3f s" $::av4l_analysis_gui::duree]
       puts $chan [format "                         Mid-event : %s UTC" $midevent]
+      puts $chan [format "                             Width : %s km" $::av4l_analysis_gui::bande]
       puts $chan ""
       puts $chan "  Was your reaction time applied to the above timings? $reaction_time"
       puts $chan ""
       puts $chan "5 TELESCOPE:"
-      puts $chan "    Type:          $telescop_type"
-      puts $chan "    Aperture:      $telescop_aper"
-      puts $chan "    Magnification: $telescop_magn"
-      puts $chan "    Mount:         $telescop_moun"
-      puts $chan "    Motor drive:   $telescop_moto"
+      puts $chan "    Type:          $::av4l_analysis_gui::telescop_type"
+      puts $chan "    Aperture:      $::av4l_analysis_gui::telescop_aper"
+      puts $chan "    Magnification: $::av4l_analysis_gui::telescop_magn"
+      puts $chan "    Mount:         $::av4l_analysis_gui::telescop_moun"
+      puts $chan "    Motor drive:   $::av4l_analysis_gui::telescop_moto"
       puts $chan ""
       puts $chan "6 TIMING & RECORDING:"
-      puts $chan "    Time source:               $record_time"
-      puts $chan "    Sensor:                    $record_sens"
-      puts $chan "    Recording:                 $record_prod"
-      puts $chan "    Time  insertion (specify): $record_tiin"
-      puts $chan "    Event insertion (specify): $record_evin"
-      puts $chan "    Compression:               $record_comp"
+      puts $chan "    Time source:               $::av4l_analysis_gui::record_time"
+      puts $chan "    Sensor:                    $::av4l_analysis_gui::record_sens"
+      puts $chan "    Recording:                 $::av4l_analysis_gui::record_prod"
+      puts $chan "    Time  insertion (specify): $::av4l_analysis_gui::record_tiin"
+      puts $chan "    Event insertion (specify): $::av4l_analysis_gui::record_evin"
+      puts $chan "    Compression:               $::av4l_analysis_gui::record_comp"
+      puts $chan "    Software Reduction:        Audela/ATOS"
       puts $chan ""
       puts $chan "7 OBSERVING CONDITIONS:"
-      puts $chan "    Atmospheric transparency: $obscond_tran"
-      puts $chan "    Wind:                     $obscond_wind"
-      puts $chan "    Temperature:              $obscond_temp"
-      puts $chan "    Star image stability:     $obscond_stab"
+      puts $chan "    Atmospheric transparency: $::av4l_analysis_gui::obscond_tran"
+      puts $chan "    Wind:                     $::av4l_analysis_gui::obscond_wind"
+      puts $chan "    Temperature:              $::av4l_analysis_gui::obscond_temp"
+      puts $chan "    Star image stability:     $::av4l_analysis_gui::obscond_stab"
       puts $chan "    Altitude:                 $obscond_alti"
-      puts $chan "    Minor planet visible:     $obscond_visi"
+      puts $chan "    Minor planet visible:     $::av4l_analysis_gui::obscond_visi"
       puts $chan ""
-      puts $chan "8 ADDITIONAL COMMENTS: 8 frame integration used (Watec setting 4 Slow)"
-      puts $chan "  Codec use for grab : No recompression YUY2"
+      puts $chan "8 ADDITIONAL COMMENTS: "
+      set a [split $comments "\n" ]
+      foreach line $a {
+         puts $chan "     $line"
+      }
       
-} msg
-gren_info "$msg"      
       close $chan
       
       return -code 0 "ok"
@@ -2093,10 +2369,11 @@ gren_info "$msg"
       set ::av4l_analysis_gui::occ_obj_type [lindex $line 1]     
       set ::av4l_analysis_gui::occ_obj_id   [lindex $line 2]     
 
-      ::console::affiche_resultat  "obj = $::av4l_analysis_gui::occ_obj \n"
-      ::console::affiche_resultat  "name = $::av4l_analysis_gui::occ_obj_name \n"
-      ::console::affiche_resultat  "type = $::av4l_analysis_gui::occ_obj_type \n"
-      ::console::affiche_resultat  "id = $::av4l_analysis_gui::occ_obj_id \n"
+      #::console::affiche_resultat  "obj = $::av4l_analysis_gui::occ_obj \n"
+      #::console::affiche_resultat  "name = $::av4l_analysis_gui::occ_obj_name \n"
+      #::console::affiche_resultat  "type = $::av4l_analysis_gui::occ_obj_type \n"
+      #::console::affiche_resultat  "id = $::av4l_analysis_gui::occ_obj_id \n"
+      ::console::affiche_resultat  "$::av4l_analysis_gui::occ_obj_type $::av4l_analysis_gui::occ_obj_id $::av4l_analysis_gui::occ_obj_name \n"
 
    }
 
@@ -2106,14 +2383,44 @@ gren_info "$msg"
    #
    proc ::av4l_analysis_gui::miriade { } {
 
+
+      # Verif
+      set pass "yes"
+      if {![info exists ::av4l_analysis_gui::occ_date]} {
+         set pass "no"
+      } else {
+         if  {$::av4l_analysis_gui::occ_date==""} {
+            set pass "no"
+         }
+      }
+      if {![info exists ::av4l_analysis_gui::occ_obj_name]} {
+         set pass "no"
+      } else {
+         if  {$::av4l_analysis_gui::occ_obj_name==""} {
+            set pass "no"
+         }
+      }
+      if {![info exists ::av4l_analysis_gui::occ_pos]} {
+         set pass "no"
+      } else {
+         if  {$::av4l_analysis_gui::occ_pos==""} {
+            set pass "no"
+         }
+      }
+      if {$pass=="no"} {
+         tk_messageBox -message "Veuillez entrer des valeurs valides pour les champs objet, date et localisation" -type ok
+         return
+      }
+
+      #
       set jd [mc_date2jd $::av4l_analysis_gui::occ_date]
-      set ::av4l_analysis_gui::occ_date [mc_date2iso8601 $jd]
+      #set ::av4l_analysis_gui::occ_date [mc_date2iso8601 $jd]
       set ::av4l_analysis_gui::jd $jd
      
       set cmd1 "vo_miriade_ephemcc \"$::av4l_analysis_gui::occ_obj_name\" \"\" $jd 1 \"1d\" \"UTC\" \"$::av4l_analysis_gui::occ_pos\" \"INPOP\" 2 1 1 \"text\" \"--jd\" 0"
       set cmd5 "vo_miriade_ephemcc \"$::av4l_analysis_gui::occ_obj_name\" \"\" $jd 1 \"1d\" \"UTC\" \"$::av4l_analysis_gui::occ_pos\" \"INPOP\" 2 5 1 \"text\" \"--jd,--rv\" 0"
-      ::console::affiche_resultat "CMD MIRIADE=$cmd1\n"
-      ::console::affiche_resultat "CMD MIRIADE=$cmd5\n"
+      #::console::affiche_resultat "CMD MIRIADE=$cmd1\n"
+      #::console::affiche_resultat "CMD MIRIADE=$cmd5\n"
       set textraw1 [vo_miriade_ephemcc "$::av4l_analysis_gui::occ_obj_name" "" $jd 1 "1d" "UTC" "$::av4l_analysis_gui::occ_pos" "INPOP" 2 1 1 "text" "--jd" 0]
       set textraw5 [vo_miriade_ephemcc "$::av4l_analysis_gui::occ_obj_name" "" $jd 1 "1d" "UTC" "$::av4l_analysis_gui::occ_pos" "INPOP" 2 5 1 "text" "--jd" 0]
       set text1 [split $textraw1 ";"]
@@ -2132,6 +2439,30 @@ gren_info "$msg"
          return      
       }
 
+      # Sauvegarde des fichiers intermediaires
+      set file [file join $::av4l_analysis_gui::prj_dir "miriade.1"]
+      set chan [open $file w]
+      foreach line $text1 {
+         puts $chan $line
+      }
+      close $chan
+      set file [file join $::av4l_analysis_gui::prj_dir "miriade.5"]
+      set chan [open $file w]
+      foreach line $text5 {
+         puts $chan $line
+      }
+      close $chan
+
+      # Recupere la position de l'observateur
+      foreach t $text1 {
+         if { [regexp {.*(\d+) h +(\d+) m +(\d+)\.(\d+) s (.+?).* (\d+) d +(\d+) ' +(\d+)\.(\d+) " +(.+?).* ([-+]?\d*\.?\d*) m.*} $t str loh lom los loms lowe lad lam las lams lans alt] } {
+            # "
+            set ::av4l_analysis_gui::longitude [format "%s %02d %02d %02d.%03d" $lowe $loh $lom $los $loms ]
+            set ::av4l_analysis_gui::latitude  [format "%s %02d %02d %02d.%03d" $lans $lad $lam $las $lams ]
+            set ::av4l_analysis_gui::altitude  $alt
+         }      
+      }
+
       # Maj du nom de l asteroide      
       set ast [lindex $text1 2]
       if {$ast != ""} {
@@ -2147,25 +2478,24 @@ gren_info "$msg"
          return               
       }
 
-
       # Interpretation appel format num 1
       set cpt 0
       foreach line $text1 {
          set char [string index [string trim $line] 0]
-         ::console::affiche_resultat "ephemcc 1 ($cpt) ($char)=$line\n"
+         #::console::affiche_resultat "ephemcc 1 ($cpt) ($char)=$line\n"
          if {$char!="#"} { break }
          incr cpt
       }
-      ::console::affiche_resultat "cptdata = $cpt\n"
+      #::console::affiche_resultat "cptdata = $cpt\n"
       # on split la la ligne pour retrouver les valeurs
       set line [lindex $text1 $cpt]
       regsub -all -- {[[:space:]]+} $line " " line
       set line [split $line]
       set cpt 0
-      foreach s_el $line {
-         ::console::affiche_resultat  "($cpt) $s_el\n"
-         incr cpt
-      }
+      #foreach s_el $line {
+      #   ::console::affiche_resultat  "($cpt) $s_el\n"
+      #   incr cpt
+      #}
       # on affecte les varaibles
       set ::av4l_analysis_gui::rajapp   [::av4l_analysis_gui::good_sexa [lindex $line  2] [lindex $line  3] [lindex $line  4] 2]
       set ::av4l_analysis_gui::decapp   [::av4l_analysis_gui::good_sexa [lindex $line  5] [lindex $line  6] [lindex $line  7] 2]
@@ -2181,21 +2511,21 @@ gren_info "$msg"
       set cpt 0
       foreach line $text5 {
          set char [string index [string trim $line] 0]
-         ::console::affiche_resultat "ephemcc 5 ($cpt) ($char)=$line\n"
+         #::console::affiche_resultat "ephemcc 5 ($cpt) ($char)=$line\n"
          if {$char!="#"} { break }
          incr cpt
       }
-      ::console::affiche_resultat "cptdata = $cpt\n"
+      #::console::affiche_resultat "cptdata = $cpt\n"
       
       # on split la la ligne pour retrouver les valeurs
       set line [lindex $text5 $cpt]
       regsub -all -- {[[:space:]]+} $line " " line
       set line [split $line]
       set cpt 0
-      foreach s_el $line {
-         ::console::affiche_resultat  "($cpt) $s_el\n"
-         incr cpt
-      }
+      #foreach s_el $line {
+      #   ::console::affiche_resultat  "($cpt) $s_el\n"
+      #   incr cpt
+      #}
       
       set tsl [mc_angle2hms [expr [lindex $line 2] * 15.] ]
       set ::av4l_analysis_gui::tsl       [::av4l_analysis_gui::good_sexa [lindex $tsl   0] [lindex $tsl   1] [lindex $tsl   2] 2]
@@ -2223,6 +2553,36 @@ gren_info "$msg"
 
 
    proc ::av4l_analysis_gui::sendAladinScript { } {
+
+      # Verif
+      set pass "yes"
+      if {![info exists ::av4l_analysis_gui::raj2000]} {
+         set pass "no"
+      } else {
+         if  {$::av4l_analysis_gui::raj2000==""} {
+            set pass "no"
+         }
+      }
+      if {![info exists ::av4l_analysis_gui::decj2000]} {
+         set pass "no"
+      } else {
+         if  {$::av4l_analysis_gui::decj2000==""} {
+            set pass "no"
+         }
+      }
+      if {![info exists ::av4l_analysis_gui::jd]} {
+         set pass "no"
+      } else {
+         if  {$::av4l_analysis_gui::jd==""} {
+            set pass "no"
+         }
+      }
+      if {$pass=="no"} {
+         tk_messageBox -message "Veuillez entrer des valeurs valides pour les champs RA,Dec,date et localisation" -type ok
+         return
+      }
+
+
 
       # Get parameters
       
