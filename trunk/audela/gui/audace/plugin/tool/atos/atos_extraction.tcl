@@ -5,7 +5,7 @@
 # Fichier        : atos_extraction.tcl
 # Description    : Utilitaires d'extraction des images fits a partir de la video
 # Auteur         : Frederic Vachier
-# Mise à jour $Id: atos_extraction.tcl 8110 2012-02-16 21:20:04Z fredvachier $
+# Mise à jour $Id$
 #
 
 namespace eval ::atos_extraction {

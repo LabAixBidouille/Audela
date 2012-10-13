@@ -5,7 +5,7 @@
 # Fichier        : atos_cdl_gui.tcl
 # Description    : GUI de l'outil de mesure photometrique
 # Auteur         : Frederic Vachier
-# Mise à jour $Id: atos_cdl_gui.tcl 8110 2012-02-16 21:20:04Z fredvachier $
+# Mise à jour $Id$
 #
 
 

@@ -5,7 +5,7 @@
 # Fichier        : atos_tools_avi.tcl
 # Description    : Utilitaires pour la manipulation des AVI
 # Auteur         : Frederic Vachier
-# Mise à jour $Id: atos_tools_avi.tcl 8110 2012-02-16 21:20:04Z fredvachier $
+# Mise à jour $Id$
 #
 
 namespace eval ::atos_tools_avi {

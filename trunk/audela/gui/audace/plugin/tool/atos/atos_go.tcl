@@ -5,7 +5,7 @@
 # Fichier        : atos_go.tcl
 # Description    : Demarrage du plugin ATOS
 # Auteur         : Frederic Vachier
-# Mise à jour $Id: atos_go.tcl 8110 2012-02-16 21:20:04Z fredvachier $
+# Mise à jour $Id$
 #
 
 #============================================================

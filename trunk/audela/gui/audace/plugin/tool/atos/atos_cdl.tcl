@@ -5,7 +5,7 @@
 # Fichier        : atos_cdl.tcl
 # Description    : outil de mesure photometrique sans GUI
 # Auteur         : Frederic Vachier
-# Mise à jour $Id: atos_cdl.tcl 8110 2012-02-16 21:20:04Z fredvachier $
+# Mise à jour $Id$
 #
 
 

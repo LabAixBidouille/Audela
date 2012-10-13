@@ -5,7 +5,7 @@
 # Fichier        : atos_analysis_gui_ihm.tcl
 # Description    : Creation de l'interface graphique pour l'analyse de la courbe 
 # Auteur         : Frederic Vachier
-# Mise à jour $Id: atos_analysis_gui_ihm.tcl 8110 2012-02-16 21:20:04Z fredvachier $
+# Mise à jour $Id$
 #
 
    proc ::atos_analysis_gui::createdialog { visuNo this } {

@@ -5,7 +5,7 @@
 # Fichier        : atos_tools_fits.tcl
 # Description    : Utilitaires pour la manipulation des images fits
 # Auteur         : Frederic Vachier
-# Mise à jour $Id: atos_tools_fits.tcl 8110 2012-02-16 21:20:04Z fredvachier $
+# Mise à jour $Id$
 #
 
 

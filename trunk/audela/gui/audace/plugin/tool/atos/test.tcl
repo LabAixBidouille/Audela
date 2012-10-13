@@ -5,7 +5,7 @@
 # Fichier        : test.tcl
 # Description    : Procedure de test pour le developpement en cours
 # Auteur         : Frederic Vachier
-# Mise à jour $Id: test.tcl 8110 2012-02-16 21:20:04Z fredvachier $
+# Mise à jour $Id$
 #
 
 

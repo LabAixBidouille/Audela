@@ -5,7 +5,7 @@
 # Fichier        : atos_ocr_tools.tcl
 # Description    : Utilitaires pour la reconnaissance de caracteres
 # Auteur         : Frederic Vachier
-# Mise à jour $Id: atos_ocr_tools.tcl 8110 2012-02-16 21:20:04Z fredvachier $
+# Mise à jour $Id$
 #
 
 
