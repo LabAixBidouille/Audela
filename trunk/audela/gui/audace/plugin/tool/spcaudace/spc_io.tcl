@@ -370,7 +370,7 @@ proc spc_fileupdate { args } {
       }
       #--- Sauvegarde du fichier fits ainsi cree
       buf$newBufNo bitpix float
-      set suff "_$suffixe"
+      set suff "$suffixe"
       set nom_fich_output "$nomfich$suff"
       buf$newBufNo save "$audace(rep_images)/$nom_fich_output"
       ::console::affiche_resultat " spc_fileupdate sauvegarde du fichier $nom_fich_output \n"
