@@ -1,0 +1,481 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title>A.T.O.S.</title>
+<title>Acquisition et Traitement pour les Occultations Stellaire</title>
+</head>
+
+<body>
+<p class="date">Date de modification : 10 octobre 2012</p>
+<h1>A.T.O.S.</BR>Acquisition et Traitement pour les Occultations Stellaire</h1>
+<p>
+Auteur : Frédéric Vachier (fv at imcce.fr)
+<p>
+Ce plugin va vous permettre de manipuler des vidéos, d'en extraire l'information photométrique,
+et calculer les dates des occultations stellaires et de rédiger le rapport final.
+<p>
+A ma connaissance, c'est le seul programme complet qui permet de réaliser une occultation, de l'acquisition au rapport final.
+Le but de ce projet est d'homogénéiser les résultats dans le monde amateur comme professionnel.
+C est aussi le seul programme d'acquisition vidéo qui permette d'avoir une idée de la photométrie avant de lancer
+l'acquisition. C'est fondamental pour choisir les paramètres optimaux d'intégration et de gain, afin d'obtenir
+la meilleure courbe possible.
+<p>
+Quelques petits outils supplémentaires, vont vous aider
+à extraire des images FITS de vos vidéos, et de récupérer la date de chaque image
+grâce a l'outil de reconnaissance de caractères.
+<p>
+
+
+
+
+<h2><img src="../img/help.png" alt="" width="48" height="48" align="middle">Aide</img></h2>
+A chaque fois la bouée fera référence a cette page.
+
+
+
+
+
+<h2><img src="../img/setup.png" alt="" width="48" height="48" align="middle">Configuration</img></h2>
+
+<p>
+<img src="../img/capture-atos-setup.png" alt="" width="532" height="289" />
+<p>
+- Le mode debug sert aux développeur cela permet d'ajouter quelques fonctionnalités comme ressourcer
+l'ensemble du plugin. Pour l'activer il suffit de cliquer, répondre OK, quitter Audela, sauvegarder
+la configuration d'Audela, et relancer Audela.  
+<p>
+- Le Délai d'affichage permet de visualiser la vidéo lors de l'acquisition. Le nombre représente
+la cadence d'affichage.
+<p>
+- L'OCR, est la reconnaissance de caractères. Il permet de récupérer la date
+inscrit dans les images. Il nécessite d'installer les outils sous linux par défaut :
+jpegtopnm et gocr. La ligne de commande telle qu'elle est écrite, fournit une chaine
+de caractère. Il est donc possible d'utiliser d'autres outils, il suffira de remplacer
+la commande.
+<p>
+- La gestion de la taille du disque évite de saturer un filesystem.
+<p>
+- Le répertoire projet est l'endroit où vous stockerez  vos résultats d'occultations.
+
+<h2><img src="../img/acquisition.png" alt="" width="48" height="48" align="middle"> Acquisition</img></h2>
+
+<p>Il faut choisir un répertoire de destination et un nom de fichier pour que l'appui sur le petit drapeau
+permette de démarrer l acquisition.
+<p>Avant cela, le bouton "Prendre 1 image" affiche une image dans la visu.
+<p>Les info vidéo ne sont pas encore renseignées.
+<p>Le cadre photométrie récupère certaines statistiques sur l image, l'objet qui nous intéresse et éventuellement
+un objet de référence. Pour cela dessiner un cadre dans l image, et cliquez sur SELECT.
+ 
+
+<p>
+<h2><img src="../img/extraction.png" alt="" width="48" height="48" align="middle"> Extraction</img></h2>
+<p>
+L'extraction va convertir un AVI en une multitude d'images FITS. Cette étape n'est pas nécessaire si
+vous utilisez les outils que propose ATOS, puisqu'ils traitent aussi bien un AVI qu'un liste d'images.
+
+<p>On commence par l ouverture d'une vidéo en cliquant sur les ...
+<p>ce qui a l'effet d'ouvrir une fenêtre de sélection de fichier *.avi
+<p>l'appui sur ouvrir a pour effet de charger la vidéo. il n est donc pas nécessaire d'appuyer sur "open".
+<p> le bouton "open" ne sert que si on fait du copier/coller directement du chemin du fichier AVI.
+<p>Une fois la vidéo chargée, vous avez a disposition une barre de défilement
+qui accède directement a n'importe quelle image.
+<p>les boutons avance et retour font de l'image par image. les boutons rapides change par bloc de 100 images.
+<p>Les boutons  setmin/setmax/crop vont permettre de s'intéresser qu'a une partie de la vidéo.
+ 
+<p>Le répertoire de destination est l'endroit où vont se retrouver toutes les images FITS.
+<p>le préfixe est le nom du fichier qui précèdera la numérotation.
+Il peut être par exemple "i". ce qui aura pour conséquence de fournir les images: i1.fits, i2.fits, etc...
+<p>Le bouton extraction démarre le processus et rempli le répertoire d'images FITS, jusqu'à la fin de la vidéo.
+
+
+<h2><img src="../img/time.png" alt="" width="48" height="48" align="middle">Datation</img></h2>
+
+On utilise dans cette partie la possibilité de récupérer la date incrustée dans une image.
+a partir de maintenant on peut choisir d'utiliser une vidéo AVI, ou bien une liste d'image.
+On retrouve la partie chargement de la vidéo, la barre de défilement, les bouton de navigation ainsi
+que le crop pour se restreindre a une partie de la vidéo.
+La datation peut se faire avec ou sans OCR (Reconnaissance optique de caractères).
+
+<p>Sans OCR, il suffit de rentrer à la main quelques dates et de cliquer sur "Vérifié",
+pour que le traitement en appuyant sur le bouton START en bas a gauche, interpole toutes les dates.
+
+<p>Avec OCR, il faut cocher la case OCR. choisir le type d'incrustateur puis sélectionner
+un cadre dans la "visu" autour de la date puis cliquer sur "SELECT"
+comme on peut le voir sur cette image :
+<p>
+<img src="../img/capture-atos-visu.png" alt="" width="821" height="634" />
+<p>
+<img src="../img/capture-atos-time-avi.png" alt="" width="735" height="599" />
+<p>
+On peut voir a cette étape que le bouton OCR s'inscrit en vert. cela veut dire que la reconnaissance
+de caractère a fonctionné et qu'elle a retourné une chaine de caractère sensée représenter
+une date.
+
+<p>
+avant de commencer le processus en cliquant sur "START", il faut impérativement
+choisir 2 dates et les vérifier visuellement et manuellement. (une en début de vidéo et une en fin)
+puis il faut se mettre en début de vidéo sur une image qui a été vérifiée.
+si tout est OK vous pouvez cliquer sur START. ce qui démarre l'extraction de la date.
+si l'OCR ne fonctionne pas il apparaitra en rouge. dans ce cas le bouton "interpolé" vas apparaitre
+en vert.
+<p>parfois le bouton "OCR" et "interpolé" apparaitront en vert. Dans ce cas l'algorithme a ramené une date
+valide, mais la date a un problème car elle présente un écart trop grand.
+la valeur interpolé est donc choisie.
+
+<p>A la fin du processus, vous pouvez vérifier ce que l'algorithme a retenu.
+éventuellement ajoutez des points de vérification en cas de problèmes, puis relancer.
+
+<p> Cet outil se termine en enregistrant la datation dans un fichier *.time dans le même
+répertoire que la vidéo, ou des images FITS.
+ce fichier sera réutilisé par la suite.
+ 
+
+<h2><img src="../img/photom.png" alt="" width="48" height="48" align="middle"> Courbe de lumière</img></h2>
+
+toujours le même principe de chargement de la vidéo et de sa navigation.
+l'espace photométrie permet de récupérer l'information de la vidéo.
+Pour l'image, faire un cadre bien large en évitant de prendre des zones a problème comme la date.
+pour les sources, il faut faire des petits cadres comme vous le feriez pour ajuster une gaussienne.
+
+l'appui sur le bouton START va analyser la vidéo et fournir un fichier de relevé photométrique.
+en ayant auparavant généré le fichier .time, la photométrie sera en plus, datée a quelques millisecondes prés.
+
+
+<h2><img src="../img/cdl.png" alt="" width="48" height="48" align="middle">Analyse</img></h2>
+
+
+
+
+
+
+
+<p>
+<img src="../img/capture-analyse-projet.png" alt="" width="817" height="649" />
+<p>
+<h3>Contexte</h3>
+- Avant toute chose, il faut se mettre dans le "contexte". Pour ce faire, il suffit
+d'entrer le nom de l'objet occulteur, au sens de Skybot. c'est à dire ceres, jupiter,
+mais aussi a:ceres, ou bien p:jupiter. Ceci afin de distinguer a:io et p:io.
+la recherche est insensible à la casse. pour plus d'information sur Skybot, Miriade
+et tous les outils développés par l'équipe OV de l'IMCCE, consultez la page :
+<a href="http://vo.imcce.fr">http://vo.imcce.fr</a>
+
+<p>
+- La Date doit être sous la forme ISO.
+<p>
+- La position de l'observateur peut être définie de deux manières, soit vous êtes
+sur un site UAI, dont la référence existe soit il faut entrer les coordonnées sous
+la forme : longitude (positif vers l'ouest), latitude (positif vers le nord), et
+altitude.
+<p>
+- Puis 1-clic sur Miriade permet d'obtenir l'éphéméride de l'objet à la date.
+il est nécessaire d'être connecté à internet pour cette action.
+<p>
+- Sur la droite se trouve le bouton Aladin, on le retrouvera plus tard dans l'onglet
+"Paramètres". Le bouton permet d'envoyer des requêtes par SAMP.
+Il faut au préalable lancer Aladin. A l'appuie du bouton "Aladin" vous trouverez
+dans l'application Aladin, les plans du DSS et les catalogues stellaires sur la zone
+d'intérêt.
+<p>
+<h3>Fichiers et Répertoires</h3>
+- Le bouton "Parcourir" permet de naviguer dans les répertoires et de sélectionner
+un fichier dont l'extension est .atos
+<p>
+- le bouton "Charger" recharge toutes les données d'un projet. Un projet concerne
+une seule courbe faite a partir d'une seule station. il faut donc faire autant
+de fichier projet que de télescope.
+<p>
+- le bouton "Générer" va créer un répertoire et un fichier projet à partir de la
+date, du nom de l'objet occulteur et de la position. Il sera donc unique pour
+une station d'observation.
+
+
+
+
+
+
+<h3>Éphémérides</h3>
+<p>
+<img src="../img/capture-analyse-epheme.png" alt="" width="817" height="649" />
+<p>
+Dans cet onglet se trouve toutes les éphémérides de l'objet occulteur a la date
+de l'occultation.
+<p>
+<h3>Corrections de la courbe</h3>
+<p>
+<img src="../img/capture-analyse-correct.png" alt="" width="817" height="649" />
+<p>
+La première étape de traitement de la courbe est de la corriger de tout ses
+artéfacts. Généralement, lorsque l'on utilise une camera vidéo un système d'insertion
+de la date dans les images et un grabber numériques pour numériser la courbe dans
+un fichier vidéo, des actions sont nécessaires avant de se dire qu'a une date donnée
+nous avons obtenu telle mesure. Un grabber enregistre à 25 images par secondes, alors
+que l'on peut intégrer sur plusieurs secondes.
+<p>
+Au chargement de la courbe par le bouton "Ouvrir" apparait une nouvelle fenêtre
+qui est la courbe des mesures en fonction du temps. Le temps s'exprime en seconde
+et l'origine est le premier point de la courbe.
+<p>
+ 
+<img src="../img/capture-analyse-corrections1.png" alt="" width="600" height="400" />
+<p>
+Dans l'exemple suivant, on peut voir sur cette courbe des "paquets" de données.
+Comme on a utilisé une watec 120N avec un grabber, nous avons nos 25 images par
+secondes, qui sont représentés par les points bleus. Chaque paquets montrent que
+nous avons utilisé le boitier d'intégration de la watec en intégrant sur 8 images.
+Nous pouvons voir donc sur ce graphe que le grabber ne nous revoit pas le même flux
+alors qu'il le devrait.
+<p>
+<h3>Correction des paquets d'images</h3>
+La première correction a faire est de réunir ces paquets de 8 images en 1 seule mesure.
+La seconde chose a faire est de déterminer le nombre d'images que nous devons éviter
+en début de courbe pour pouvoir réunir ces paquets de 8 images.
+<p>
+Dans la fenêtre de la courbe, le bouton gauche de la souris permet de définir le zoom.
+Choisir le zoom adéquate pour visualiser les paquets d'images a réunir et a supprimer.
+avec le bouton du milieu de la souris, vous pouvez sélectionner les paquets.
+<p>
+Sélectionner les premiers bloc de points a supprimer puis aller dans la fenêtre d'analyse
+et cliquer sur le bouton "offset". Alors s'affiche le nombre de point qui seront supprimés.
+<p>
+Sélectionner les blocs d'images à réunir et cliquer sur "paquet".  Alors s'affiche
+le nombre de point qui seront réunis.
+<p>
+Cliquer sur le bouton "view" pour visualiser l'effet sur la courbe.
+<p>
+<img src="../img/capture-analyse-corrections2.png" alt="" width="600" height="400" />
+<p>
+les points rouges montre le résultat de la médiane pour chaque point de chaque paquet.
+la courbe verte montre un seul point de mesure qui sera le résultat final que
+nous utiliserons ensuite. On voit que la datation de ce point correspond au premier
+point de chaque paquet. ce qui ne représente pas forcement la réalité dans le cas
+de notre matériel, et il faudra procéder a la correction en temporelle.
+<p>
+<h3>Correction temporelle</h3>
+Il faut inscrire 2 champs qui le premier représente le temps d'exposition théorique.
+<p>
+- Dans notre exemple, nous avons une intégration de 8 images a 25 images par seconde.
+25 images par seconde donnent des images séparées entre elles de 0.04 secondes.
+Intégrer sur 8 images correspond a un temps d'exposition de 0.32 secondes.
+<p>
+- le second champ est le saut en temps qui permet de dater une image. la raison est
+que le système d'intégration de la date dans l'image fournit la date de l'image
+suivante.
+imaginez que à l'instant où la camera intègre, l image n'existe pas sur le disque ,
+ni a travers le boitier d'incrustation GPS. il faut donc corriger de cet offset.
+Pour tout ceux qui utilisent des watec + boitier gps + grabber, inscrivez 0.03.
+<p>
+La correction à appliquer est de -(I/2 + 0.03) secondes, I étant le
+temps d'intégration. Les 0.03s viennent du fait que chaque trame est
+exposée pendant un temps I mais avec un décalage de 0.02s (donc il y a
+un 0.01s qui traine pour récupérer le temps central de cette double
+exposition décalée + les 0.02s pour le temps central de l'image en sortie).
+<p>
+Cette correction de -(I/2 + 0.03)s est à appliquer au temps central de
+la première image de chaque paquet (ici de 8 images pour 0.32s
+d'intégration, la caméra continuant avant la fin de la pose suivante à
+sortir des images à la cadence vidéo).
+<p>
+Pour toute information concernant ce sujet, je vous conseille les forums, et évidemment
+<a href="http://www.euraster.net">http://www.euraster.net</a> et plus d'info auprès d'Eric Frappa ou auprès de Gerard Dangl.
+<p>
+Le résultat obtenu (en cliquant sur "view" pour le visualiser, on peut voir
+la courbe verte décalée du bon timing. Nous avons donc une courbe parfaitement datée.
+<p>
+<img src="../img/capture-analyse-corrections3.png" alt="" width="600" height="400" />
+<p>
+<h3>Correction par une étoile de référence</h3>
+Dans le cas où une étoile est visible dans l'image et qu'elle a été mesurée par
+l'outil de mesure photométrique, il est possible ici de corriger le flux de l'étoile
+occultée.
+<h3>Appliquer les corrections</h3>
+Il suffit de cliquer sur le bouton "appliquer" pour sauvegarder la courbe. Le
+nouveau fichier aura comme extension _CORR.csv et on le retrouve dans l'onglet suivant.
+
+
+
+
+
+
+<p>
+<h3>Sélection des évènements</h3>
+<p>
+<img src="../img/capture-analyse-evenmts.png" alt="" width="817" height="649" />
+<p>
+Avant de continuer il est impératif de charger la nouvelle courbe corrigées
+en cliquant sur le bouton "ouvrir".
+A ce stade nous allons sélectionner chaque évènement de la courbe tel que
+dessiné en vert sur chaque bouton. En passant la souris sur les boutons un petit
+descriptif de l'action à appliquer, s'affiche.
+Pour les deux évènements finaux de la liste, il suffit de sélectionner au moins
+2 points autour de l'évènement (d'immersion ou émersion)
+
+
+
+
+
+
+
+<p>
+<h3>Derniers paramètres</h3>
+<p>
+<img src="../img/capture-analyse-paramet.png" alt="" width="817" height="649" />
+<p>
+Dans cet onglet se situe la liste des derniers paramètres nécessaires avant le
+calcul des évènements.
+<p>
+- la distance en unité astronomique de l'objet occulteur est calculé a partir
+des éphémérides, tout comme la vitesse tangentielle.
+<p>
+- Le diamètre de la bande n'est pas connu a ce stade, vous pourriez être sur le
+diamètre de l'astéroïde comme sur un bord très décentré. Ce paramètre sera recalculé
+a la fin des calculs et le résultat visible sur le dernier onglet "Rapport".
+commencer avec une valeur large, comme 100 km, puis recommencer le calcul en ayant
+déterminé la bonne valeur. Ce paramètre ne sert qu'a l'affichage des courbes car les
+évènements sont calculés de manière dissociée, immersion puis émersion.
+<p>
+- Renseigner la désignation de l'étoile telle qu'elle a été présentée dans le
+descriptif d'occultation. Un étoile peut avoir bien des désignations. Dans le rapport
+final, dans notre cas sous la forme des rapports PLANOCCULT, on doit pouvoir
+retrouvé le même nom de l'étoile qui est diffusé sur les listes.
+<p>
+- Le diamètre de l'étoile peut être estimé en fonction de sa magnitude suivant trois
+bandes : B,V et K. Vous trouverez généralement cette information grâce au catalogue
+NOMAD1 qui présente de nombreuses longueur d'onde. Pour ce faire, si vous ne l'avez
+pas déjà fait dans le premier onglet "projet" cliquer sur le bouton "Aladin".
+Dans l'application Aladin, en sélectionnant l'étoile vous trouverez toute l'information.
+<p>
+- La longueur d'onde de sensibilité du capteur et sa bande passante sont renseignés
+par défaut. Les utilisateurs de filtres, doivent modifier ces valeurs en conséquence.
+<p>
+- La réponse instrumentale doit être coché si le système d'acquisition présente
+des temps mort. 
+
+
+
+
+
+
+<p>
+<h3>Immersion</h3>
+<p>
+<img src="../img/capture-analyse-immersi.png" alt="" width="817" height="649" />
+<p>
+L'immersion est la disparition de l'étoile occultée. Les paramètres inscrits
+dans les zones blanches sont modifiables, même s'ils sont calculés au préalable.
+<p>
+- Le temps de pose par exemple est obtenu par la datation des images et peut ne pas
+correspondre avec le temps de pose théorique. 
+<p>
+- La date de référence a été obtenue par sélection sur la courbe. Il est conseillé
+de faire le le calcul une deuxième fois après avoir obtenu une première solution.
+<p>
+- Le nombre d'instant  et le pas de recherche exprime comment la solution va être
+explorée. Le bouton <img src="../img/reload.png" alt="" width="16" height="16" />
+permet de calculer la durée totale d'exploration autour de l'évènement.
+<p>
+- Une fois que tout est en place, c'est le moment de cliquer sur le bouton de calcul.
+
+<h3>Tout est dans le Chi2</h3>
+La solution s'exprime par la valeur du Chi2 minimale. C'est pourquoi
+un bon Chi2 et un Chi2 qui ne présente pas de doute sur la solution. Ou encore, il faut obtenir
+une jolie courbe qui présente un minimum global dont la forme est une parabole,
+comme dans l'exemple présenté dans l'image suivante.
+<p>
+<img src="../img/capture-analyse-chi2-bon.png" alt="" width="644" height="492" />
+<p>
+Il peut arriver où le résultat du chi2 montre un ou des plateaux. A ce moment il faut
+essayer de bouger le système en changeant les valeurs de recherche, reprendre d'autres valeurs
+pour les plateaux, modifier le temps de référence, etc...
+Si rien n'y fait, et que vous obtenez un plateau minimal il ne reste plus qu'à choisir le temps
+milieu du plateau.
+<p>
+
+
+
+
+<p>
+<h3>Émersion</h3>
+<p>
+<img src="../img/capture-analyse-emersio.png" alt="" width="817" height="649" />
+C'est la même chose que pour l'immersion, ici on va calculer l'instant de réapparition de
+l'étoile.
+
+
+
+
+
+<p>
+<h3>Informations</h3>
+<p>
+Les résultats étant obtenu, il ne reste plus qu'a écrire le rapport.
+Les 3 onglets suivant sont a remplir pour un rapport complet.
+Remplissez le maximum d'information, c est aussi pour vous et pour retrouver votre
+méthodologie au fil du temps.
+<p>
+<img src="../img/capture-analyse-info1.png"   alt="" width="817" height="649" />
+<p>
+
+<p>
+<img src="../img/capture-analyse-info2.png"   alt="" width="817" height="649" />
+<p>
+
+<p>
+<img src="../img/capture-analyse-info3.png"   alt="" width="817" height="649" />
+<p>
+
+
+
+
+<p>
+<h3>Rapport</h3>
+<p>
+<img src="../img/capture-analyse-rapport.png" alt="" width="817" height="649" />
+<p>
+Le récapitulatif vous présente les principaux résultats obtenus.
+Vous obtenez la durée de l'évènement observé mais aussi une estimation de la taille
+de la partie de l'astéroïde qui a occulté l'étoile. Cet ensemble de valeur formera
+les cordes des observateurs et c'est grâce a vous que l'on pourra déterminer la taille
+mais aussi la forme des astéroïdes.
+<p>
+Vous devez choisir manuellement si votre résultat est Positif ou Négatif.
+<p>
+Le dernier bouton permet de créer le fichier PLANOCCULT que vous trouverez dans le répertoire
+projet avec l'extension .PLANOCCULT.
+
+
+
+<p>
+<h2><img src="../img/dark.png" alt="" width="48" height="48" align="middle"> Pour s'entrainer</img></h2>
+<p>
+Vous pouvez télécharger la video de l'occultation qui a permis d'exposer le fonctionnement de cet outil,
+à cette adresse :
+<p>
+<a href="http://www.imcce.fr/~vachier/occultation/demo/sapphoseg.00.avi">http://www.imcce.fr/~vachier/occultation/demo/sapphoseg.00.avi</a>
+<p>
+Entrainez vous et essayez de retrouver les résultats présentés.
+
+
+<p>
+<h2><img src="../img/dark.png" alt="" width="48" height="48" align="middle"> La suite ...</img></h2>
+<p>
+
+<ul type="none">
+<li>Traitement des Dark et Offset</li>
+<li>Mesure photométrique si l'astéroïde n'est pas visible</li>
+<li>Robustesse de la sélection du périphérique de capture sous Linux</li>
+</ul>
+
+
+<ul type="none">
+<li></li>
+<li></li>
+</ul>
+
+
+
+
+
+</p></body></html>

@@ -1,0 +1,108 @@
+#------------------------------------------------------------------
+# source [ file join $audace(rep_plugin) tool atos atos_cdl.cap
+#------------------------------------------------------------------
+#
+# Fichier        : atos_cdl.cap
+# Description    : Caption pour l'outil mesure photometrique
+# Auteur         : Frederic Vachier
+# Mise à jour $Id: atos_cdl.cap 8110 2012-02-16 21:20:04Z fredvachier $
+#
+
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(atos_cdl,bar_title)           "atos - cdl"
+set caption(atos_cdl,main_title)          "acqvideolinux - Statut"
+set caption(atos_cdl,titre)               "Courbe de lumiere"
+
+set caption(atos_cdl,label_bdd)           "Information du Serveur MySQL Local"
+set caption(atos_cdl,label_connect)       "Connexion Serveur................"
+set caption(atos_cdl,label_nbimg)         "Nb requêtes......................"
+set caption(atos_cdl,label_nbheader)      "Nb scènes........................"
+
+set caption(atos_cdl,label_rep)           "Information du Télescope"
+set caption(atos_cdl,label_tconnect)      "Webservice......................"
+
+set caption(atos_cdl,raz)                 "RAZ de la base de données"
+set caption(atos_cdl,verif)               "Vérification"
+set caption(atos_cdl,aide)                "Aide"
+set caption(atos_cdl,fermer)              "Fermer"
+set caption(atos_cdl,cancelRAZ)           "RAZ BDD annulée"
+
+set caption(atos_cdl,msg_erreur)          "Erreur"
+set caption(atos_cdl,msg_internet)        "Reconnexion à la base"
+
+set caption(atos_cdl,msg_prevent)         "Attention !"
+set caption(atos_cdl,msg_prevent2)        "Cette action va réinitialiser la base de données. Toutes les données seront définitivement effacées du disque. Etes-vous sûr ?"
+set caption(atos_cdl,efface)              "Effacement de la base de données"
+set caption(atos_cdl,mdprootsql)          "Veuillez saisir le mot de passe root du serveur SQL"
+
+# *************** Version française **** **********************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(atos_cdl,bar_title)        "atos - cdl"
+   set caption(atos_cdl,main_title)       "acqvideolinux - Statut"
+   set caption(atos_cdl,titre)            "Extraction des Courbes de lumiere"
+
+   set caption(atos_cdl,label_bdd)        "Information du Serveur MySQL Local"
+   set caption(atos_cdl,label_connect)    "Connexion Serveur................"
+   set caption(atos_cdl,label_nbrequetes) "Nb requêtes......................"
+   set caption(atos_cdl,label_nbscenes)   "Nb scènes........................"
+
+   set caption(atos_cdl,label_rep)        "Information du Télescope"
+   set caption(atos_cdl,label_tconnect)   "Webservice......................."
+
+   set caption(atos_cdl,raz)              "RAZ de la base de données"
+   set caption(atos_cdl,verif)            "Vérification"
+   set caption(atos_cdl,aide)             "Aide"
+   set caption(atos_cdl,fermer)           "Fermer"
+   set caption(atos_cdl,cancelRAZ)        "RAZ BDD annulée"
+
+   set caption(atos_cdl,msg_erreur)       "Erreur"
+   set caption(atos_cdl,msg_internet)     "Reconnexion à la base"
+
+   set caption(atos_cdl,msg_prevent)      "Attention !"
+   set caption(atos_cdl,msg_prevent2)     "Cette action va réinitialiser la base de données. Toutes les données seront définitivement effacées du disque. Etes-vous sûr ?"
+   set caption(atos_cdl,efface)           "Effacement de la base de données"
+   set caption(atos_cdl,mdprootsql)       "Veuillez saisir le mot de passe root du serveur SQL"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
