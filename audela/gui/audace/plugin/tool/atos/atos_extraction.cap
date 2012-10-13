@@ -1,0 +1,76 @@
+#------------------------------------------------------------------
+# source [ file join $audace(rep_plugin) tool atos atos_extraction.cap
+#------------------------------------------------------------------
+#
+# Fichier        : atos_extraction.cap
+# Description    : Caption pour l'outil d'extraction des images fits
+# Auteur         : Frederic Vachier
+# Mise à jour $Id: atos_extraction.cap 8110 2012-02-16 21:20:04Z fredvachier $
+#
+
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+   set caption(atos_extraction,titre)               "Extraction Video AVI"
+
+   set caption(atos_extraction,aide)                "Aide"
+   set caption(atos_extraction,fermer)              "Fermer"
+   set caption(atos_extraction,ouvrir)              "Ouvrir"
+   
+   set caption(atos_extraction,setmin)              "Marq. debut"
+   set caption(atos_extraction,setmax)              "Marq. fin"
+   set caption(atos_extraction,nbimg)               "Nombre d'images a extraire : "
+   set caption(atos_extraction,calcul)              "Calcul"
+   
+   set caption(atos_extraction,statut)              "Statut"
+   set caption(atos_extraction,nbtotal)             "Nb total d'images"
+   
+   set caption(atos_extraction,destdir)             "Repertoire destination"
+   set caption(atos_extraction,prefix)              "Prefixe des fichiers"
+   set caption(atos_extraction,extract)             "Extraction"
+   set caption(atos_extraction,extractfin)          "Extraction Terminee"
+
+# *************** Version française **** **********************
+if { [ string compare $langage "french" ] == "0" } {
+
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
