@@ -5,7 +5,7 @@
 # Fichier        : atos_ocr.tcl
 # Description    : Reconnaissance de caractere 
 # Auteur         : Frederic Vachier
-# Mise à jour $Id: atos_ocr.tcl 8110 2012-02-16 21:20:04Z fredvachier $
+# Mise à jour $Id$
 #
 
 

@@ -5,7 +5,7 @@
 # Fichier        : atos_analysis_gui.tcl
 # Description    : Outils pour la GUI pour l'analyse de la courbe de lumiere
 # Auteur         : Frederic Vachier
-# Mise à jour $Id: atos_analysis_gui.tcl 8110 2012-02-16 21:20:04Z fredvachier $
+# Mise à jour $Id$
 #
 
 namespace eval ::atos_analysis_gui {

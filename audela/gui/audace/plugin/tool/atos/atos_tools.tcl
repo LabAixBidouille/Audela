@@ -5,7 +5,7 @@
 # Fichier        : atos_tools.tcl
 # Description    : Utilitaires de communcation avec un flux (video ou lot d'image)
 # Auteur         : Frederic Vachier
-# Mise à jour $Id: atos_tools.tcl 8110 2012-02-16 21:20:04Z fredvachier $
+# Mise à jour $Id$
 #
 
 

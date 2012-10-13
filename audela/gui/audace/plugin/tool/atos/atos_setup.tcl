@@ -5,7 +5,7 @@
 # Fichier        : atos_setup.tcl
 # Description    : Configuration de certains parametres de l'outil Acquisition
 # Auteur         : Robert DELMAS et Frederic Vachier
-# Mise à jour $Id: atos_setup.tcl 8110 2012-02-16 21:20:04Z fredvachier $
+# Mise à jour $Id$
 #
 
 namespace eval ::atos_setup {

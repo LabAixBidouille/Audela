@@ -5,7 +5,7 @@
 # Fichier        : atos_acq.tcl
 # Description    : Outil Acquisition video
 # Auteur         : Frederic Vachier
-# Mise à jour $Id: atos_acq.tcl 8110 2012-02-16 21:20:04Z fredvachier $
+# Mise à jour $Id$
 #
 
 namespace eval ::atos_acq {
