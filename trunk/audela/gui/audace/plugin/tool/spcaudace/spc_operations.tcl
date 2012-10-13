@@ -68,13 +68,18 @@ proc spc_extend { args } {
       #set abscisses [ lindex $contenu 0 ]
       set ordonnees [ lindex $contenu 1 ]
       set value [ lindex $ordonnees [ expr $naxis1 - 1 ] ]
-      for { set i $naxis1 } { $i <= $lastsampl } { incr i } {
+      # test sur la compatibilite entre $naxis1 et $lastsampl
+      if { $lastsampl <= $naxis1 } {
+	 ::console::affiche_erreur " spc_extend : le dernier echantillon specifie $lastsampl est inferieur a naxis1 $naxis1 : l'application de la procedure n'a pas de sens \n\n"
+      	return ""
+      } 
+      for { set i $naxis1 } { $i < $lastsampl } { incr i } {
 	 lappend ordonnees $value
       }
       set newnaxis1 $lastsampl		
       ::console::affiche_resultat "spc_extend : longueur nouveau fichier : $newnaxis1 echantilllons \n"
       #--- Creation du nouveau fichier :
-      set suff "extend"
+      set suff _extend
       set nom_fich_output [ spc_fileupdate $nom_fich_input $crval1 $cdelt1 $ordonnees $suff ]
       return $nom_fich_output     
       #return $file_out 
