@@ -1900,7 +1900,7 @@ proc spc_ajustdegn { args } {
       ::console::affiche_erreur "Usage: spc_ajustdegn liste_abscisses liste_ordonnees erreur (ex. 1) degre_polyn ?crpix1?\n"
       return ""
    }
-	set abscisses_new $abscisses_orig
+   set abscisses_new $abscisses_orig
    #--- Prise en compte de crpix1 :
    if { $nbargs==5 } {
       set abscisses_new [ list ]
@@ -1911,67 +1911,88 @@ proc spc_ajustdegn { args } {
    }
    
 
-      #--- Initialisation de variables :
-      set n [llength $abscisses_orig]
-      set len [llength $ordonnees]
-      set abscisses_rangees [ lsort -real -increasing $abscisses_new ]
-      set abs_min [ lindex $abscisses_rangees 0 ]
-      set abs_max [ lindex $abscisses_rangees [ expr $n -1 ] ]
-      ::console::affiche_resultat "$abs_min $abs_max\n"
+   #--- Initialisation de variables :
+   set n [llength $abscisses_orig]
+   set len [llength $ordonnees]
+   set abscisses_rangees [ lsort -real -increasing $abscisses_new ]
+   set abs_min [ lindex $abscisses_rangees 0 ]
+   set abs_max [ lindex $abscisses_rangees [ expr $n -1 ] ]
+   ::console::affiche_resultat "$abs_min $abs_max\n"
 
-      #--- Changement de variable ( autre preconditionnement du systeme lineaire) :
-      set aa [ expr 1./ ($abs_max - $abs_min) ]
-		set bb [ expr -$aa ]
-      #::console::affiche_resultat "aa= $aa\n"
-      #::console::affiche_resultat "bb= $bb\n"
-      set abscisses [ list ]
-      for { set i 0 } { $i<$n } {incr i} {
-	 		set xi [ expr $aa * ([ lindex $abscisses_new $i ]-$abs_min) ]
-	 		lappend abscisses $xi
+   #--- Changement de variable ( autre preconditionnement du systeme lineaire) :
+   set aa [ expr 1./ ($abs_max - $abs_min) ]
+   set bb [ expr -$aa ]
+   #::console::affiche_resultat "aa= $aa\n"
+   #::console::affiche_resultat "bb= $bb\n"
+   set abscisses [ list ]
+   for { set i 0 } { $i<$n } {incr i} {
+      set xi [ expr $aa * ([ lindex $abscisses_new $i ]-$abs_min) ]
+      lappend abscisses $xi
+   }
+
+   #--- Calcul des coefficients du polynôme d'ajustement :
+   #-- Calcul de la matrice X : calcul les monônes correspondant aux différents degrés à l'abscisse xi
+   set x ""
+   set X "" 
+   for {set i 0} {$i<$n} {incr i} { 
+      set xi [lindex $abscisses $i] 
+      set ligne_i 1
+      lappend erreurs $erreur
+      for {set k 1} {$k<=$Ndeg} {incr k} {
+	 lappend ligne_i [ expr pow($xi,$k) ]
       }
-
-      #--- Calcul des coefficients du polynôme d'ajustement :
-      #-- Calcul de la matrice X : calcul les monônes correspondant aux différents degrés à l'abscisse xi
-      set x ""
-      set X "" 
-      for {set i 0} {$i<$n} {incr i} { 
-	 		set xi [lindex $abscisses $i] 
-         set ligne_i 1
-	 		lappend erreurs $erreur
-	 		for {set k 1} {$k<=$Ndeg} {incr k} {
-	 			lappend ligne_i [ expr pow($xi,$k) ]
-	 		}
-	 		lappend X $ligne_i 
-      } 
-      #-- Calcul de l'ajustement :
-      set result [gsl_mfitmultilin $ordonnees $X $erreurs] 
-      #-- Extrait le resultat :
-      set coeffs [lindex $result 0] 
-      set chi2 [lindex $result 1] 
-      set covar [lindex $result 2]
-      ::console::affiche_resultat "Chi2=$chi2, Covar=$covar\n"
-
-      #--- Determination des coefficients associes aux abscisses d'origine :
-      set coefs [ list ]
-      for { set k 0 } {$k<=$Ndeg} {incr k} {
-      	set coef 0.
-      	set ak [ expr pow($aa,$k) ]
-      	for { set kk $k } {$kk<=$Ndeg} {incr kk} {
-      		#::console::affiche_resultat "kk= $kk\n"
-      		set k_kk [expr $kk-$k]
-      		#ci dessous interviennent les combinaisons comme dans la formule du binome
-      		set Ck_kk [ expr [ spc_fac $kk ]/([ spc_fac $k ] * [ spc_fac $k_kk ]) ]
-      		set coef [ expr $coef + $ak * pow($bb,$k_kk) * $Ck_kk * pow($abs_min,$k_kk) * [lindex $coeffs $kk] ]
-      	}
+      lappend X $ligne_i 
+   } 
+   #-- Calcul de l'ajustement :
+   set result [gsl_mfitmultilin $ordonnees $X $erreurs] 
+   #-- Extrait le resultat :
+   set coeffs [lindex $result 0] 
+   set chi2 [lindex $result 1] 
+   set covar [lindex $result 2]
+   #::console::affiche_resultat "Chi2=$chi2, Covar=$covar\n"
+   #analyse des residus
+   set calc [ gsl_mmult $X $coeffs ]
+   set res [ gsl_msub $ordonnees $calc ]
+   set RMS 0.
+   for { set k 0 } {$k< $n} {incr k} {
+      set r [ lindex [ lindex $res $k ] 0 ]
+      set RMS [ expr $RMS + $r * $r ]
+      ::console::affiche_resultat "pour l'abscisse [ lindex $abscisses_rangees $k ] le residu (en ordonnee) vaut $r \n"
+   }
+   set RMS [ expr sqrt($RMS)/$n ]
+   ::console::affiche_resultat " spc_ajustdegn : RMS des residus $RMS \n"
+   #--- Determination des coefficients associes aux abscisses d'origine :
+   set coefs [ list ]
+   for { set k 0 } {$k<=$Ndeg} {incr k} {
+      set coef 0.
+      set ak [ expr pow($aa,$k) ]
+      for { set kk $k } {$kk<=$Ndeg} {incr kk} {
+	 #::console::affiche_resultat "kk= $kk\n"
+	 set k_kk [expr $kk-$k]
+	 #ci dessous interviennent les combinaisons comme dans la formule du binome
+	 set Ck_kk [ expr [ spc_fac $kk ]/([ spc_fac $k ] * [ spc_fac $k_kk ]) ]
+	 set coef [ expr $coef + $ak * pow($bb,$k_kk) * $Ck_kk * pow($abs_min,$k_kk) * [lindex $coeffs $kk] ]
+      }
       lappend coefs $coef
-      }
+   }
       
 	
-      ::console::affiche_resultat "Coefficients de polynome: $coefs\n"
-      # set adj_vals [list $coefs $abscisses $yadj]
-      set adj_vals [ list $coefs $chi2 $covar ]
-      #set adj_vals [ list $coefs ]
-      return $adj_vals
+   ::console::affiche_resultat "Coefficients de polynome: $coefs\n"
+   # set adj_vals [list $coefs $abscisses $yadj]
+   set adj_vals [ list $coefs $chi2 $covar ]
+   #set adj_vals [ list $coefs ]
+   set a [ lindex $coefs 0 ]
+   set b [ lindex $coefs 1 ]
+   set c [ lindex $coefs 2 ]
+   set d [ lindex $coefs 3 ]
+   if { $Ndeg <= 4 } {
+      set rms [ spc_calibrms $crpix1 $a $b $c $d $abscisses_orig $ordonnees ]
+   } else {
+      set e [ lindex $coefs 4 ]
+      set rms [ spc_calibrms $crpix1 $a $b $c $d $e $abscisses_orig $ordonnees ]
+   }
+   ::console::affiche_resultat "RMS=$rms angstrom\n"
+   return $adj_vals
 }
 #****************************************************************#
 
