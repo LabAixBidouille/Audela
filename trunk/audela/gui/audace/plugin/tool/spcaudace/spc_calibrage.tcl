@@ -8,6 +8,62 @@
 
 
 ###################################################################
+# Procedure de test de calibration BR d'un spectre cible via le spectre calibre mesure d'une etoile de reference et les neons des 2 astres
+#
+# Auteur : Patrick LAILLY
+# Date creation : 14-09-12
+# Date modification : 14-09-12
+# Arguments : profil-1a cible, profil calibre (approx) neon cible, profil mesure calibre etoile reference, profil calibre (approx) neon etoile de reference
+# exemple : spc_exportcalibbr prof1acible profneoncible prof1bref profneonref
+####################################################################
+
+proc spc_exportcalibbr { args } {
+   global audace conf
+   if { [ llength $args ] == 4 } {
+      set prof1acible [ lindex $args 0 ]
+      set neoncible [ lindex $args 1 ]
+      set neonref [ lindex $args 3]
+      set prof1bref [ lindex $args 2 ]
+      if { [ spc_testlincalib $neoncible ] != 1 } {
+	 set neoncible [ spc_linearcal $neoncible ]
+      }
+      set profil1acible [ file rootname $prof1acible ]
+      buf$audace(bufNo) load "$audace(rep_images)/$neoncible"
+      set crvalneonc [ lindex [ buf$audace(bufNo) getkwd CRVAL1 ] 1 ]
+      set cdeltneonc [ lindex [ buf$audace(bufNo) getkwd CDELT1 ] 1 ]
+      set naxisneonc [ lindex [ buf$audace(bufNo) getkwd NAXIS1 ] 1 ]
+      if { [ spc_testlincalib $neonref ] != 1 } {
+	 set neonref [ spc_linearcal $neonref ]
+      }
+      buf$audace(bufNo) load "$audace(rep_images)/$neonref"
+      set crvalneonr [ lindex [ buf$audace(bufNo) getkwd CRVAL1 ] 1 ]
+      set cdeltneonr [ lindex [ buf$audace(bufNo) getkwd CDELT1 ] 1 ]
+      # analyse des lois de calibration neon
+      set dcdelt [ expr abs ($cdeltneonc - $cdeltneonr) ]
+      set incertit [ expr $dcdelt * $naxisneonc ]
+      ::console::affiche_prompt "WARNING : la procedure spc_exportcalibbr suppose que la calibration des 2 profils neon a aboutit a la meme dispersion ce qui ne semble pas etre le cas. La difference de dispersion conduit a des intervalles de longueurs d'ondes de longueurs differentes en l'occurence de $incertit Angstroems  \n"
+      # calcul du numero d'echantillon de le raie a 585 nm. sur chacun des deux profils du neon
+      set nech585r [ expr ( 5852.48 - $crvalneonr ) / $cdeltneonr ]
+      set nech585c [ expr ( 5852.48 - $crvalneonc ) / $cdeltneonc ]
+      set decalech [ expr $nech585r - $nech585c ]
+      set decallambda [ expr $decalech * $cdeltneonr ]
+      ::console::affiche_resultat "les profils neon $neoncible et $neonref apparaissent decales de $decalech echantillons soit $decallambda Angstroems suivant la loi de dispersion du neon de l'etoile de reference \n"
+      
+      #calibration de spectre de la cible suivant la loi de dispersion du neon de l'etoile de reference
+      set suff _exportbr
+      set newfile [ spc_calibreloifile $prof1bref $prof1acible ]
+      #prise en compte du decalage des neons
+      set newfile [ spc_calibredecal $newfile $decallambda ]
+      file rename -force "$audace(rep_images)/$newfile" "$audace(rep_images)/$prof1acible$suff"
+      ::console::affiche_resultat " le profil $prof1acible a ete calibre et sauvegarde sous $prof1acible$suff \n"
+   } else {
+      ::console::affiche_erreur "Usage: spc_exporttcalibbr prof1acible profneoncible prof1bref profneonref\n\n"
+   }
+}
+#********************************************************************
+
+
+###################################################################
 # Procedure de test de calibration lineaire d'un profil fits 
 #
 # Auteur : Patrick LAILLY
