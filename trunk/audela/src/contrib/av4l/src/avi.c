@@ -48,6 +48,37 @@ struct aviprop {
     off_t previous_offset;
 };
 
+static void
+p_avi_close(struct aviprop * avi)
+{
+
+    if(avi == NULL) return;
+
+    if(avi->pFrameRGB) {
+        avpicture_free((AVPicture*)avi->pFrameRGB);
+        av_freep(&(avi->pFrameRGB));
+    }
+
+    if(avi->pFrame) {
+        av_freep(&(avi->pFrame));
+    }
+
+    if(avi->pSwsCtx) {
+        sws_freeContext(avi->pSwsCtx);
+        avi->pSwsCtx = NULL;
+    }
+
+    if(avi->pCodecCtx) {
+        avcodec_close(avi->pCodecCtx);
+        avi->pCodecCtx = NULL;
+    }
+
+    if(avi->pFormatCtx) {
+	av_close_input_file(avi->pFormatCtx);
+        avi->pFormatCtx = NULL;
+    }
+
+}
 
 static int
 avi_load(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
@@ -67,6 +98,7 @@ avi_load(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
 
     //fprintf(stderr,"file size = %ld\n", avi->filesize);
 
+    p_avi_close(avi);
 
     if(avformat_open_input(&avi->pFormatCtx, path, NULL, NULL)!=0) {
         Tcl_SetResult(interp, "File open failed in " LIBNAME ".", TCL_VOLATILE);
@@ -381,7 +413,8 @@ avi_get_previous_offset(struct aviprop * avi, Tcl_Interp *interp, int argc, char
 static int
 avi_close(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
 {
-    // TODO
+	p_avi_close(avi);
+	free(avi);
 	return TCL_OK;
 }
 
