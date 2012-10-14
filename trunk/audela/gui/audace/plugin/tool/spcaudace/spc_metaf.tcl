@@ -2117,6 +2117,7 @@ proc spc_traitenebula { args } {
 
 
 
+
 ###############################################################################
 # Procédure de traitement de spectres 2D pour des series : prétraitement, correction géométriques, régistration, sadd, spc_profil, calibration en longeur d'onde, correction réponse instrumentale, normalisation.
 # Auteur : Benjamin MAUCLAIRE
@@ -2279,119 +2280,42 @@ proc spc_traiteseries { args } {
           set fhreg "$fgeom"
        }
 
-      #--- Extraction du profil de raies de chque spectre :
-      set listefichiers [ glob -dir $audace(rep_images) ${fhreg}\[0-9\]$conf(extension,defaut) ${fhreg}\[0-9\]\[0-9\]$conf(extension,defaut) ${fhreg}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ]
-
-
-      if { 1==0 } {
        #--- Effacement des images prétraitées :
        set nbimg [ llength [ glob -dir $audace(rep_images) ${ftilt}\[0-9\]$conf(extension,defaut) ${ftilt}\[0-9\]\[0-9\]$conf(extension,defaut) ${ftilt}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
        if { $rmfpretrait=="o" } {
 	   delete2 $fpretrait $nbimg
        }
 
+      #=========================================================================================#
+      #---- Pour chaque spectre unitaire, extraction du profil de raies de chaque spectre :
+      set listefichiers [ glob -dir $audace(rep_images) ${fhreg}\[0-9\]$conf(extension,defaut) ${fhreg}\[0-9\]\[0-9\]$conf(extension,defaut) ${fhreg}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ]
+      foreach spectre in $listefichiers {
+         #--- Inversion gauche-droite du spectre 2D (mirrorx) :
+         if { $methinv == "o" } {
+            set fflip [ spc_flip $fichier ]
+            file delete -force "$audace(rep_images)/$fichier$conf(extension,defaut)"
+         } else {
+            set fflip "$fichier"
+         }
+         
+         #--- Soustraction du fond de ciel et binning :
+         ::console::affiche_prompt "\n\n**** Extraction du profil de raies ****\n\n"
+         if { $flag_nonstellaire==1 } {
+            set fprofil [ spc_profilzone $fflip $windowcoords $methsky $methbin ]
+         } else {
+            set fprofil [ spc_profil $fflip $methsky $methsel $methbin ]
+         }
+         file delete -force "$audace(rep_images)/$fflip$conf(extension,defaut)"
 
-       #--- Appariement vertical de $nbimg images :
-       ::console::affiche_prompt "\n\n**** Appariement vertical de $nbimg images ****\n\n"
-       if { $flag_nonstellaire==1 || $nbimg_ini==1 } {
-	   ::console::affiche_resultat "\n Pas d'appariement vertical pour les spectres non stellaires ou solitaires\n"
-	   set freg "$fhreg"
-       } else {
-	   if { $methreg == "spc" } {
-	       set freg [ spc_register "$fhreg" ]
-	   } elseif { $methreg == "reg" } {
-	       set freg [ bm_register "$fhreg" ]
-	   } elseif { $methreg == "n"} {
-	       set freg "$fhreg"
-	   } else {
-	       ::console::affiche_resultat "\nOption d'appariement incorrecte\n"
-	   }
-       }
+         #--- Calibration en longueur d'onde du spectre de l'objet (niveau 1b) :
+         ::console::affiche_prompt "\n\n**** Calibration en longueur d'onde du spectre de l'objet $img ****\n\n"
+         #- Pour les spectre d'objets non-stellaire, la calibration est faite a partir de la zone decoupée de lampe.
+         set fcal [ spc_calibreloifile "$lampe" "$fprofil" ]
+         file copy -force "$audace(rep_images)/$fprofil$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1a$conf(extension,defaut)"
+         file delete -force "$audace(rep_images)/$fprofil$conf(extension,defaut)"
+         file copy -force "$audace(rep_images)/$fcal$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1b$conf(extension,defaut)"
 
-
-       #--- Addition de $nbimg images :
-       ::console::affiche_prompt "\n\n**** Addition de $nbimg images ****\n\n"
-       if { $flag_nonstellaire==1 } {
-          #-- Somme des images pour les spectres non-stellaires car faibles :
-          set fsadd [ spc_somme "$freg" addi ]
-       } elseif { $nbimg_ini==1 } {
-          file copy -force "$audace(rep_images)/$freg$conf(extension,defaut)" "$audace(rep_images)/${freg}-s$conf(extension,defaut)"
-          set fsadd "${freg}-s"
-       } else {
-          #-- Somme moyenne des images pour les spectres stellaires car brillants :
-          #- set fsadd [ spc_somme "$freg" moy ] par defaut
-          set fsadd [ spc_somme "$freg" ]
-       }
-
-       if { $rmfpretrait=="o" } {
-          if { $nbimg_ini==1 } {
-             file delete -force "$audace(rep_images)/$fgeom$conf(extension,defaut)"
-          } else {
-             delete2 "$fgeom" $nbimg
-          }
-       }
-
-
-       #--- Effacement des images prétraitées :
-       if { $rmfpretrait=="o" } {
-	   delete2 "$ftilt" $nbimg
-       }
-       if { $rmfpretrait=="o" } {
-	   delete2 "$fhreg" $nbimg
-       }
-       if { $rmfpretrait=="o" } {
-	   delete2 "$freg" $nbimg
-       }
-
-
-       #--- Retrait des cosmics
-       if { $methcos == "o" } {
-	   buf$audace(bufNo) load "$audace(rep_images)/$fsadd"
-	   uncosmic $spcaudace(uncosmic)
-	   #uncosmic $spcaudace(uncosmic)
-	   buf$audace(bufNo) setkwd [ list BSS_COSM "Weighted median filter" string "Technic used for erasing cosmics" "" ]
-           buf$audace(bufNo) bitpix ulong
-	   buf$audace(bufNo) save "$audace(rep_images)/$fsadd"
-           buf$audace(bufNo) bitpix short
-       } else {
-	   buf$audace(bufNo) load "$audace(rep_images)/$fsadd"
-	   buf$audace(bufNo) setkwd [ list BSS_COSM "None" string "Technic used for erasing cosmics" "" ]
-           buf$audace(bufNo) bitpix ulong
-	   buf$audace(bufNo) save "$audace(rep_images)/$fsadd"
-           buf$audace(bufNo) bitpix short
-       }
-    }
-
-       #--- Inversion gauche-droite du spectre 2D (mirrorx)
-       if { $methinv == "o" } {
-	   set fflip [ spc_flip $fsadd ]
-	   file delete -force "$audace(rep_images)/$fsadd$conf(extension,defaut)"
-       } else {
-	   set fflip "$fsadd"
-       }
-       file copy -force "$audace(rep_images)/$fflip$conf(extension,defaut)" "$audace(rep_images)/${img}-spectre2D-traite$conf(extension,defaut)"
-
-
-       #--- Soustraction du fond de ciel et binning :
-       ::console::affiche_prompt "\n\n**** Extraction du profil de raies ****\n\n"
-       if { $flag_nonstellaire==1 } {
-	   set fprofil [ spc_profilzone $fflip $windowcoords $methsky $methbin ]
-       } else {
-	   set fprofil [ spc_profil $fflip $methsky $methsel $methbin ]
-       }
-       file delete -force "$audace(rep_images)/$fflip$conf(extension,defaut)"
-
-
-       #--- Calibration en longueur d'onde du spectre de l'objet (niveau 1b) :
-       ::console::affiche_prompt "\n\n**** Calibration en longueur d'onde du spectre de l'objet $img ****\n\n"
-       #- Pour les spectre d'objets non-stellaire, la calibration est faite a partir de la zone decoupée de lampe.
-       set fcal [ spc_calibreloifile "$lampe" "$fprofil" ]
-       file copy -force "$audace(rep_images)/$fprofil$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1a$conf(extension,defaut)"
-       file delete -force "$audace(rep_images)/$fprofil$conf(extension,defaut)"
-       file copy -force "$audace(rep_images)/$fcal$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1b$conf(extension,defaut)"
-
-
-       #--- Correction de la réponse intrumentale :
+         #--- Correction de la réponse intrumentale :
       buf$audace(bufNo) load "$audace(rep_images)/${img}-profil-1b"
       set naxis1 [  lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
       set cdelt1 [  lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
@@ -2531,6 +2455,88 @@ proc spc_traiteseries { args } {
        if { $export_png=="o" } {
 	   set fichier_png [ spc_export2png "$flinearcal" ]
        }
+
+      }
+
+#-------------------
+      if { 1==0 } {
+
+       #--- Appariement vertical de $nbimg images :
+       ::console::affiche_prompt "\n\n**** Appariement vertical de $nbimg images ****\n\n"
+       if { $flag_nonstellaire==1 || $nbimg_ini==1 } {
+	   ::console::affiche_resultat "\n Pas d'appariement vertical pour les spectres non stellaires ou solitaires\n"
+	   set freg "$fhreg"
+       } else {
+	   if { $methreg == "spc" } {
+	       set freg [ spc_register "$fhreg" ]
+	   } elseif { $methreg == "reg" } {
+	       set freg [ bm_register "$fhreg" ]
+	   } elseif { $methreg == "n"} {
+	       set freg "$fhreg"
+	   } else {
+	       ::console::affiche_resultat "\nOption d'appariement incorrecte\n"
+	   }
+       }
+
+
+       #--- Addition de $nbimg images :
+       ::console::affiche_prompt "\n\n**** Addition de $nbimg images ****\n\n"
+       if { $flag_nonstellaire==1 } {
+          #-- Somme des images pour les spectres non-stellaires car faibles :
+          set fsadd [ spc_somme "$freg" addi ]
+       } elseif { $nbimg_ini==1 } {
+          file copy -force "$audace(rep_images)/$freg$conf(extension,defaut)" "$audace(rep_images)/${freg}-s$conf(extension,defaut)"
+          set fsadd "${freg}-s"
+       } else {
+          #-- Somme moyenne des images pour les spectres stellaires car brillants :
+          #- set fsadd [ spc_somme "$freg" moy ] par defaut
+          set fsadd [ spc_somme "$freg" ]
+       }
+
+       if { $rmfpretrait=="o" } {
+          if { $nbimg_ini==1 } {
+             file delete -force "$audace(rep_images)/$fgeom$conf(extension,defaut)"
+          } else {
+             delete2 "$fgeom" $nbimg
+          }
+       }
+
+
+       #--- Effacement des images prétraitées :
+       if { $rmfpretrait=="o" } {
+	   delete2 "$ftilt" $nbimg
+       }
+       if { $rmfpretrait=="o" } {
+	   delete2 "$fhreg" $nbimg
+       }
+       if { $rmfpretrait=="o" } {
+	   delete2 "$freg" $nbimg
+       }
+
+
+       #--- Retrait des cosmics
+       if { $methcos == "o" } {
+	   buf$audace(bufNo) load "$audace(rep_images)/$fsadd"
+	   uncosmic $spcaudace(uncosmic)
+	   #uncosmic $spcaudace(uncosmic)
+	   buf$audace(bufNo) setkwd [ list BSS_COSM "Weighted median filter" string "Technic used for erasing cosmics" "" ]
+           buf$audace(bufNo) bitpix ulong
+	   buf$audace(bufNo) save "$audace(rep_images)/$fsadd"
+           buf$audace(bufNo) bitpix short
+       } else {
+	   buf$audace(bufNo) load "$audace(rep_images)/$fsadd"
+	   buf$audace(bufNo) setkwd [ list BSS_COSM "None" string "Technic used for erasing cosmics" "" ]
+           buf$audace(bufNo) bitpix ulong
+	   buf$audace(bufNo) save "$audace(rep_images)/$fsadd"
+           buf$audace(bufNo) bitpix short
+       }
+    }
+
+       file copy -force "$audace(rep_images)/$fflip$conf(extension,defaut)" "$audace(rep_images)/${img}-spectre2D-traite$conf(extension,defaut)"
+
+
+
+
 
 
        #--- Message de fin du script :
