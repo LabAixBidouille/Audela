@@ -46,7 +46,7 @@ namespace eval ::atos_tools_avi {
    proc ::atos_tools_avi::exist {  } {
 
       catch {
-         set exist [info exists ::atos_tools_avi::avi1]
+         set exist [ expr [ llength [info commands ::atos_tools_avi::avi1] ]  == 1 ]
          ::console::affiche_resultat "exists  : $exist\n"
          ::console::affiche_resultat "exists  : [info exists avi1]\n"
          ::console::affiche_resultat "globals : [info globals]\n"
@@ -65,7 +65,7 @@ namespace eval ::atos_tools_avi {
 
       catch {
          ::atos_tools_avi::avi1 close
-         unset ::atos_tools_avi::avi1
+         rename ::atos_tools_avi::avi1 {}
       }
 
    }
@@ -100,6 +100,7 @@ namespace eval ::atos_tools_avi {
       global audace panneau
 
       set bufNo [ visu$visuNo buf ]
+      ::atos_tools_avi::close_flux
       ::avi::create ::atos_tools_avi::avi1
       catch { ::atos_tools_avi::avi1 load $::atos_tools::avi_filename }
       if {[::atos_tools_avi::avi1 status] != 0} {
