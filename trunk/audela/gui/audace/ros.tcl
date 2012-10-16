@@ -317,7 +317,7 @@ proc ros { args } {
          set textes ""
          foreach fichier $ros(audela,var,fichiers) {
             set ext [file extension $fichier]
-            if {$ext!=".tcl"} {
+            if {($ext!=".tcl")&&($ext!=".ini")} {
                continue
             }
             set err [catch {set f [open $fichier r]}]
