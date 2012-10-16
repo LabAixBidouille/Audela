@@ -354,7 +354,7 @@ proc ros { args } {
          set thearrays ""
          foreach fichier $ros(audela,var,fichiers) {
             set ext [file extension $fichier]
-            if {$ext!=".tcl"} {
+            if {($ext!=".tcl")&&($ext!=".ini")} {
                continue
             }
             set err [catch {set f [open $fichier r]}]
@@ -500,7 +500,7 @@ proc ros { args } {
          set thearrays ""
          foreach fichier $ros(audela,var,fichiers) {
             set ext [file extension $fichier]
-            if {$ext!=".tcl"} {
+            if {($ext!=".tcl")&&($ext!=".ini")} {
                continue
             }
             set err [catch {set f [open $fichier r]}]
@@ -542,7 +542,7 @@ proc ros { args } {
          set thearrays ""
          foreach fichier $ros(audela,var,fichiers) {
             set ext [file extension $fichier]
-            if {$ext!=".tcl"} {
+            if {($ext!=".tcl")&&($ext!=".ini")} {
                continue
             }
             set err [catch {set f [open $fichier r]}]
