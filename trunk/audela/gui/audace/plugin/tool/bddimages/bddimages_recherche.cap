@@ -125,6 +125,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bddimages_recherche,astroid)        "Executer Astroid"
    set caption(bddimages_recherche,photom)         "Photometrie"
    set caption(bddimages_recherche,astrom)         "Astrometrie"
+   set caption(bddimages_recherche,binast)         "Binast"
    set caption(bddimages_recherche,cata)           "Gestion des sources"
    set caption(bddimages_recherche,msg_erreur)     "Erreur"
    set caption(bddimages_recherche,msg_internet)   "Erreur connexion"
