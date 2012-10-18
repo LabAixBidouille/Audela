@@ -271,7 +271,7 @@
 
 
              button $boutonfinal.enregistrer -text "Enregistrer" -borderwidth 2 -takefocus 1 \
-                -command "" -state $::bdi_binast_gui::enregistrer
+                -command "::bdi_binast_gui::enregistre $sources" -state normal
              pack $boutonfinal.enregistrer -side right -anchor e \
                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
