@@ -243,10 +243,28 @@ namespace eval bdi_binast_gui {
             set miriade_obj [$sources.id.$obj get ]
             gren_info "miriade_obj=$miriade_obj\n"
 
+      # teph 1 = astromJ2000
+      # teph 2 = apparent
+      # teph 3 = moyen date
+      # teph 3 = moyen J2000
+      set teph  1
+
+      # tcoor 
+      # 1: spheriques, 2: rectangulaires,                   !
+      # 3: locales,    4: horaires,                         !
+      # 5: dediees a l'observation,                         !
+      # 6: dediees a l'observation AO,                      !
+      # 7: dediees au calcul (rep. helio. moyen J2000)      !
+      set tcoor  1
+      
+      # rplane
+      # 1: equateur, 2:ecliptique  
+      set rplane 1
+
  
-      set cmd1 "vo_miriade_ephemcc \"$miriade_obj\" \"\" $jd 1 \"1d\" \"UTC\" \"$::bdi_binast_tools::observer_pos\" \"INPOP\" 2 1 1 \"text\" \"--jd\" 0"
+      set cmd1 "vo_miriade_ephemcc \"$miriade_obj\" \"\" $jd 1 \"1d\" \"UTC\" \"$::bdi_binast_tools::observer_pos\" \"INPOP\" $teph $tcoor $rplane \"text\" \"--jd\" 0"
       #::console::affiche_resultat "CMD MIRIADE=$cmd1\n"
-      set textraw1 [vo_miriade_ephemcc "$miriade_obj" "" $jd 1 "1d" "UTC" "$::bdi_binast_tools::observer_pos" "INPOP" 2 1 1 "text" "--jd" 0]
+      set textraw1 [vo_miriade_ephemcc "$miriade_obj" "" $jd 1 "1d" "UTC" "$::bdi_binast_tools::observer_pos" "INPOP" $teph $tcoor $rplane "text" "--jd" 0]
       set text1 [split $textraw1 ";"]
       set nbl [llength $text1]
       if {$nbl == 1} {
@@ -309,41 +327,56 @@ namespace eval bdi_binast_gui {
       }
 
       # on affecte les varaibles
-      set ::atos_analysis_gui::rajapp   [::bdi_binast_gui::good_sexa [lindex $line  2] [lindex $line  3] [lindex $line  4] 2]
-      set ::atos_analysis_gui::decapp   [::bdi_binast_gui::good_sexa [lindex $line  5] [lindex $line  6] [lindex $line  7] 2]
-      set ::atos_analysis_gui::dist     [format "%.5f" [lindex $line 8]]
-      set ::atos_analysis_gui::magv     [lindex $line 9]
-      set ::atos_analysis_gui::phase    [lindex $line 10]
-      set ::atos_analysis_gui::elong    [lindex $line 11]
-      set ::atos_analysis_gui::dracosd  [format "%.5f" [expr [lindex $line 12] * 60. ] ]
-      set ::atos_analysis_gui::ddec     [format "%.5f" [expr [lindex $line 13] * 60. ] ]
-      set ::atos_analysis_gui::vn       [lindex $line 14]
-      set ::atos_analysis_gui::dx       0
-      set ::atos_analysis_gui::dy       0
+      set ::bdi_binast_tools::rajapp   [::bdi_binast_gui::good_sexa [lindex $line  2] [lindex $line  3] [lindex $line  4] 2]
+      set ::bdi_binast_tools::decapp   [::bdi_binast_gui::good_sexa [lindex $line  5] [lindex $line  6] [lindex $line  7] 2]
+      set ::bdi_binast_tools::dist     [format "%.5f" [lindex $line 8]]
+      set ::bdi_binast_tools::magv     [lindex $line 9]
+      set ::bdi_binast_tools::phase    [lindex $line 10]
+      set ::bdi_binast_tools::elong    [lindex $line 11]
+      set ::bdi_binast_tools::dracosd  [format "%.5f" [expr [lindex $line 12] * 60. ] ]
+      set ::bdi_binast_tools::ddec     [format "%.5f" [expr [lindex $line 13] * 60. ] ]
+      set ::bdi_binast_tools::vn       [lindex $line 14]
+      set ::bdi_binast_tools::dx       0
+      set ::bdi_binast_tools::dy       0
+
+      set ra  [ expr  [mc_angle2deg $::bdi_binast_tools::rajapp ] * 15.0 ]
+      set dec [ expr  [mc_angle2deg $::bdi_binast_tools::decapp ] ]
+      affich_un_rond  $ra $dec green 3
+      gren_info "affich_un_rond  $ra $dec green 3"
+
+
 catch {
-      set ::atos_analysis_gui::dx       [lindex $line 15]
-      set ::atos_analysis_gui::dy       [lindex $line 16]
+      set ::bdi_binast_tools::dx       [lindex $line 15]
+      set ::bdi_binast_tools::dy       [lindex $line 16]
+      
+      set ra  [ expr $ra  + $::bdi_binast_tools::dx / 3600.0 ]
+      set dec [ expr $dec + $::bdi_binast_tools::dy / 3600.0 ]
+      affich_un_rond  $ra $dec yellow 3
+      gren_info "affich_un_rond  $ra $dec yellow 2"
+
 }
 
+#affich_un_rond  204.953273 19.237446 green 3 
+#affich_un_rond  205.08516  19.184583 green 3 
 
 #      $sources.ra.obj1 configure 
 #      $sources.ra.obj1   delete 0 end 
-#      $sources.ra.obj1   insert end $::atos_analysis_gui::rajapp
+#      $sources.ra.obj1   insert end $::bdi_binast_tools::rajapp
 #      $sources.dec.obj1 configure 
 #      $sources.dec.obj1   delete 0 end 
-#      $sources.dec.obj1   insert end $::atos_analysis_gui::decapp
+#      $sources.dec.obj1   insert end $::bdi_binast_tools::decapp
       $sources.xcalc.$obj configure 
       $sources.xcalc.$obj delete 0 end 
-      $sources.xcalc.$obj insert end [format "%.4f" [expr $::atos_analysis_gui::dx] ]
+      $sources.xcalc.$obj insert end [format "%.4f" [expr $::bdi_binast_tools::dx] ]
       $sources.ycalc.$obj configure 
       $sources.ycalc.$obj delete 0 end 
-      $sources.ycalc.$obj insert end [format "%.4f" [expr $::atos_analysis_gui::dy] ]
+      $sources.ycalc.$obj insert end [format "%.4f" [expr $::bdi_binast_tools::dy] ]
 #      $sources.ra.$obj configure 
 #      $sources.ra.$obj   delete 0 end 
-#      $sources.ra.$obj   insert end [mc_angle2hms [ expr  [mc_angle2deg $::atos_analysis_gui::rajapp ] * 15.0 + $::atos_analysis_gui::dx / 3600.0 ] ]
+#      $sources.ra.$obj   insert end [mc_angle2hms [ expr  [mc_angle2deg $::bdi_binast_tools::rajapp ] * 15.0 + $::bdi_binast_tools::dx / 3600.0 ] ]
 #      $sources.dec.$obj configure 
 #      $sources.dec.$obj   delete 0 end 
-#      $sources.dec.$obj   insert end [mc_angle2dms [ expr  [mc_angle2deg $::atos_analysis_gui::decapp ] + $::atos_analysis_gui::dy / 3600.0 ] ]
+#      $sources.dec.$obj   insert end [mc_angle2dms [ expr  [mc_angle2deg $::bdi_binast_tools::decapp ] + $::bdi_binast_tools::dy / 3600.0 ] ]
 
        set xcalc  [$sources.xcalc.$obj get]
        set ycalc  [$sources.ycalc.$obj get]
@@ -382,6 +415,15 @@ catch {
       return ::bdi_binast_tools::nb_obj
    
    }
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
  
  
  
@@ -457,6 +499,91 @@ catch {
 
 
    }
+   
+   
+   
+   
+   
+   
+   proc ::bdi_binast_gui::enregistre { sources } {
+      
+      set id_obj 2
+
+      set fileres "obs-$id_obj.xml"
+      set chan0 [open $fileres a+]
+      
+      set jjdate  $::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,obj$id_obj,jjdate)
+      set isodate $::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,obj$id_obj,isodate)
+      set system      [ $sources.id.obj1 get ]
+      set xobs        [ $sources.xobs.obj$id_obj get ]
+      set yobs        [ $sources.yobs.obj$id_obj get ]
+      set xcalc       [ $sources.xcalc.obj$id_obj get ]
+      set ycalc       [ $sources.ycalc.obj$id_obj get ]
+      set xomc        [ $sources.xomc.obj$id_obj get ]
+      set yomc        [ $sources.yomc.obj$id_obj get ]
+      set timescale   "UTC"
+      
+      # centerframe 1 = helio
+      # centerframe 2 = geo
+      # centerframe 3 = topo
+      # centerframe 4 = sonde
+      set centerframe 4
+
+
+      # typeframe 1 = astromj2000
+      # typeframe 2 = apparent
+      # typeframe 3 = moyen date
+      # typeframe 4 = moyen J2000
+      set typeframe   1
+
+      # coordtype 1 = 
+      # coordtype 2 = 
+      # coordtype 3 = 
+      # coordtype 4 = 
+      set coordtype   1
+
+      # refframe 1 = 
+      # refframe 2 = 
+      # refframe 3 = 
+      # refframe 4 = 
+      set refframe    1
+
+      set obsuai      "@HST"
+
+
+      puts $chan0 "<vot:TR>"
+      puts $chan0 "<vot:TD>$jjdate</vot:TD>"
+      puts $chan0 "<vot:TD>$isodate</vot:TD>"
+      puts $chan0 "<vot:TD>$system</vot:TD>"
+      puts $chan0 "<vot:TD>$xobs</vot:TD>"
+      puts $chan0 "<vot:TD>$yobs</vot:TD>"
+      puts $chan0 "<vot:TD>$xcalc</vot:TD>"
+      puts $chan0 "<vot:TD>$ycalc</vot:TD>"
+      puts $chan0 "<vot:TD>$xomc</vot:TD>"
+      puts $chan0 "<vot:TD>$yomc</vot:TD>"
+      puts $chan0 "<vot:TD>$timescale</vot:TD>"
+      puts $chan0 "<vot:TD>$centerframe</vot:TD>"
+      puts $chan0 "<vot:TD>$typeframe</vot:TD>"
+      puts $chan0 "<vot:TD>$coordtype</vot:TD>"
+      puts $chan0 "<vot:TD>$refframe</vot:TD>"
+      puts $chan0 "<vot:TD>$obsuai</vot:TD>"
+      puts $chan0 "</vot:TR>"
+      puts $chan0 ""
+      
+      close $chan0
+
+
+   }
+
+
+
+
+
+
+
+
+
+
 
  
    proc ::bdi_binast_gui::mesure_tout { sources } {
@@ -482,6 +609,12 @@ catch {
    
    
    
+
+
+
+
+
+
    
       proc ::bdi_binast_gui::mesure_une { sources obj } {
 
@@ -562,5 +695,59 @@ catch {
  
    }
  
+
+
+
+
+   proc ::bdi_binast_gui::next { sources } {
+
+         set cpt 0
+         
+         while {$cpt<$::gui_cdl_withwcs::block} {
+         
+            if {$::tools_cdl::id_current_image < $::tools_cdl::nb_img_list} {
+               incr ::tools_cdl::id_current_image
+               ::gui_cdl_withwcs::charge_current_image
+               ::gui_cdl_withwcs::extrapole
+               set err [::gui_cdl_withwcs::mesure_tout $sources]
+               if {$err==1 && $::gui_cdl_withwcs::stoperreur==1} {
+                  break
+               }
+            }
+            incr cpt
+         }
+   }
+
+   proc ::bdi_binast_gui::back { sources } {
+
+         if {$::tools_cdl::id_current_image > 1 } {
+            incr ::tools_cdl::id_current_image -1
+            ::gui_cdl_withwcs::charge_current_image
+            ::gui_cdl_withwcs::extrapole
+            ::gui_cdl_withwcs::mesure_tout $sources
+         }
+   }
+
+   proc ::bdi_binast_gui::go { sources } {
+
+         set ::tools_cdl::id_current_image $::gui_cdl_withwcs::directaccess
+         if {$::tools_cdl::id_current_image > $::tools_cdl::nb_img_list} {
+            set ::tools_cdl::id_current_image $::tools_cdl::nb_img_list
+         }
+         if {$::tools_cdl::id_current_image < 1} {
+            set ::tools_cdl::id_current_image 1
+            set ::gui_cdl_withwcs::directaccess 1
+         }
+         set ::gui_cdl_withwcs::directaccess $::tools_cdl::id_current_image
+         
+         ::gui_cdl_withwcs::charge_current_image
+         ::gui_cdl_withwcs::extrapole
+         set err [::gui_cdl_withwcs::mesure_tout $sources]
+   }
+
+
+
+
+
    
 }
