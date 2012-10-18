@@ -24,6 +24,7 @@ namespace eval bdi_binast_gui {
       catch { unset ::bdi_binast_tools::nb_img_list        }
       catch { unset ::bdi_binast_tools::tabsource          }
       catch { unset ::bdi_binast_tools::firstmagref        }
+      catch { unset ::bdi_binast_tools::tabphotom          }
 
       catch { unset ::bdi_binast_tools::nb_obj        }
       catch { unset ::bdi_binast_tools::nb_obj_sav        }
@@ -34,7 +35,9 @@ namespace eval bdi_binast_gui {
 
       set ::bdi_binast_tools::nb_obj 1
       set ::bdi_binast_tools::nb_obj_sav $::bdi_binast_tools::nb_obj
-      set ::tools_cdl::saturation 50000
+      set ::bdi_binast_tools::saturation 50000
+      set ::bdi_binast_tools::uncosm 50000
+      set ::bdi_binast_gui::block 1
 
       set ::bdi_binast_tools::tabsource(obj1,delta) 15
 
@@ -78,8 +81,24 @@ namespace eval bdi_binast_gui {
          gren_info " idbddimg : $idbddimg  - date : $date - WCS : bddimages_wcs\n"
       }
 
+      # Initialisation des boutons
+      set ::bdi_binast_gui::stateback disabled
+      if {$::bdi_binast_tools::nb_img_list == 1} {
+         set ::bdi_binast_gui::statenext disabled
+      } else {
+         set ::bdi_binast_gui::statenext normal
+      }
+
+
       # Chargement des variables
       set ::bdi_binast_tools::id_current_image 1
+      ::bdi_binast_gui::charge_current_image
+      
+
+      return
+
+
+
 
       set ::bdi_binast_tools::current_image [lindex $::bdi_binast_tools::img_list 0]
       set tabkey         [::bddimages_liste::lget $::bdi_binast_tools::current_image "tabkey"]
@@ -99,16 +118,15 @@ namespace eval bdi_binast_gui {
       buf$::audace(bufNo) load $file
       ::audace::autovisu $::audace(visuNo)
 
-      # Initialisation des boutons
-      set ::bdi_binast_gui::stateback disabled
-      if {$::bdi_binast_tools::nb_img_list == 1} {
-         set ::bdi_binast_gui::statenext disabled
-      } else {
-         set ::bdi_binast_gui::statenext normal
-      }
-
 
    }
+
+
+
+
+
+
+
 
 
 
@@ -367,10 +385,12 @@ catch {
 #      $sources.dec.obj1   insert end $::bdi_binast_tools::decapp
       $sources.xcalc.$obj configure 
       $sources.xcalc.$obj delete 0 end 
-      $sources.xcalc.$obj insert end [format "%.4f" [expr $::bdi_binast_tools::dx] ]
+      $sources.xcalc.$obj insert end [format "%.4f" $::bdi_binast_tools::dx ]
+      set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,$obj,xcalc) [format "%.4f" $::bdi_binast_tools::dx ]
       $sources.ycalc.$obj configure 
       $sources.ycalc.$obj delete 0 end 
-      $sources.ycalc.$obj insert end [format "%.4f" [expr $::bdi_binast_tools::dy] ]
+      $sources.ycalc.$obj insert end [format "%.4f" $::bdi_binast_tools::dy ]
+      set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,$obj,ycalc) [format "%.4f" $::bdi_binast_tools::dy ]
 #      $sources.ra.$obj configure 
 #      $sources.ra.$obj   delete 0 end 
 #      $sources.ra.$obj   insert end [mc_angle2hms [ expr  [mc_angle2deg $::bdi_binast_tools::rajapp ] * 15.0 + $::bdi_binast_tools::dx / 3600.0 ] ]
@@ -395,10 +415,12 @@ catch {
              $sources.xomc.$obj configure 
              $sources.xomc.$obj delete 0 end 
              $sources.xomc.$obj insert end [format "%.4f" $xomc ]
+             set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,$obj,xomc) [format "%.4f" $xomc ]
              set yomc [expr $yobs - $ycalc ]
              $sources.yomc.$obj configure 
              $sources.yomc.$obj delete 0 end 
              $sources.yomc.$obj insert end [format "%.4f" $yomc ]
+             set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,$obj,yomc) [format "%.4f" $yomc ]
   
       }
 
@@ -487,10 +509,12 @@ catch {
              $sources.xobs.$obj configure 
              $sources.xobs.$obj delete 0 end 
              $sources.xobs.$obj insert end [format "%.4f" $dra ]
+             set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,$obj,xobs) [format "%.4f" $dra ]
              set ddec [expr ([mc_angle2deg $decs ] - [mc_angle2deg $decp ]) * 3600.0]
              $sources.yobs.$obj configure 
              $sources.yobs.$obj delete 0 end 
              $sources.yobs.$obj insert end [format "%.4f" $ddec ]
+             set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,$obj,yobs) [format "%.4f" $ddec ]
          
       
       }
@@ -588,7 +612,7 @@ catch {
  
    proc ::bdi_binast_gui::mesure_tout { sources } {
 
-
+cleanmark
       gren_info "ZOOM: [::confVisu::getZoom $::audace(visuNo)] \n "
 
       for {set x 1} {$x<=$::bdi_binast_tools::nb_obj} {incr x} {
@@ -623,8 +647,12 @@ catch {
                $::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,$obj,x) \
                $::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,$obj,y) \
                $::bdi_binast_tools::tabsource($obj,delta) $::audace(bufNo)]} msg ]
-
-      gren_info "PHOTOM $obj : $valeurs \n "
+      if {$err} {
+         gren_info "PHOTOM ERR $err : $msg \n "
+         return
+      } else {
+         gren_info "PHOTOM $obj : $valeurs \n "
+      }
       
       if { $valeurs == -1 } {
          set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,$obj,err) true
@@ -648,6 +676,9 @@ catch {
          set dec_dms [string map {d : m : s .} $dec_dms]
          set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,$obj,x)           $xsm
          set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,$obj,y)           $ysm
+         
+         affich_un_rond_xy  $xsm $ysm blue [expr int($::bdi_binast_tools::tabsource($obj,delta) / 2.0)] 1
+         
          set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,$obj,ra_deg)      $ra_deg
          set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,$obj,dec_deg)     $dec_deg
          set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,$obj,ra_hms)      $ra_hms
@@ -672,7 +703,7 @@ catch {
          set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,$obj,isodate)     $::bdi_binast_tools::current_image_date
 
 
-         if { [lindex $valeurs 7] > $::tools_cdl::saturation} {
+         if { [lindex $valeurs 7] > $::bdi_binast_tools::saturation} {
 
             set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,$obj,err) true
             set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,$obj,saturation) true
@@ -703,47 +734,163 @@ catch {
 
          set cpt 0
          
-         while {$cpt<$::gui_cdl_withwcs::block} {
+         while {$cpt<$::bdi_binast_gui::block} {
          
-            if {$::tools_cdl::id_current_image < $::tools_cdl::nb_img_list} {
-               incr ::tools_cdl::id_current_image
-               ::gui_cdl_withwcs::charge_current_image
-               ::gui_cdl_withwcs::extrapole
-               set err [::gui_cdl_withwcs::mesure_tout $sources]
-               if {$err==1 && $::gui_cdl_withwcs::stoperreur==1} {
+            if {$::bdi_binast_tools::id_current_image < $::bdi_binast_tools::nb_img_list} {
+               incr ::bdi_binast_tools::id_current_image
+               ::bdi_binast_gui::charge_current_image
+               set err [::bdi_binast_gui::mesure_tout $sources]
+               if {$err==1 && $::bdi_binast_tools::stoperreur==1} {
                   break
                }
             }
             incr cpt
          }
    }
+   
 
    proc ::bdi_binast_gui::back { sources } {
 
-         if {$::tools_cdl::id_current_image > 1 } {
-            incr ::tools_cdl::id_current_image -1
-            ::gui_cdl_withwcs::charge_current_image
-            ::gui_cdl_withwcs::extrapole
-            ::gui_cdl_withwcs::mesure_tout $sources
+         if {$::bdi_binast_tools::id_current_image > 1 } {
+            incr ::bdi_binast_tools::id_current_image -1
+            ::bdi_binast_gui::charge_current_image
+            ::bdi_binast_gui::mesure_tout $sources
          }
    }
 
-   proc ::bdi_binast_gui::go { sources } {
 
-         set ::tools_cdl::id_current_image $::gui_cdl_withwcs::directaccess
-         if {$::tools_cdl::id_current_image > $::tools_cdl::nb_img_list} {
-            set ::tools_cdl::id_current_image $::tools_cdl::nb_img_list
-         }
-         if {$::tools_cdl::id_current_image < 1} {
-            set ::tools_cdl::id_current_image 1
-            set ::gui_cdl_withwcs::directaccess 1
-         }
-         set ::gui_cdl_withwcs::directaccess $::tools_cdl::id_current_image
+
+
+
+
+
+
+
+
+   proc ::bdi_binast_gui::charge_current_image { } {
+
+      global audace
+      global bddconf
+
+         gren_info "Charge Image id: $::bdi_binast_tools::id_current_image  \n"
+
+         #�Charge l image en memoire
+         set ::bdi_binast_tools::current_image [lindex $::bdi_binast_tools::img_list [expr $::bdi_binast_tools::id_current_image - 1] ]
+         set tabkey      [::bddimages_liste::lget $::bdi_binast_tools::current_image "tabkey"]
+         set date        [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
+         set exposure    [string trim [lindex [::bddimages_liste::lget $tabkey "exposure"]   1] ]
+
+         set idbddimg    [::bddimages_liste::lget $::bdi_binast_tools::current_image idbddimg]
+         set dirfilename [::bddimages_liste::lget $::bdi_binast_tools::current_image dirfilename]
+         set filename    [::bddimages_liste::lget $::bdi_binast_tools::current_image filename   ]
+         set file        [file join $bddconf(dirbase) $dirfilename $filename]
+         set ::bdi_binast_tools::current_image_name $filename
+         set ::bdi_binast_tools::current_image_jjdate [expr [mc_date2jd $date] + $exposure / 86400.0 / 2.0]
+         set ::bdi_binast_tools::current_image_date [mc_date2iso8601 $::bdi_binast_tools::current_image_jjdate]
+
+         gren_info "\nCharge Image cur: $date  ($exposure)\n"
+         #gren_info "Charge Image cur: $::tools_cdl::current_image_date ($::tools_cdl::current_image_jjdate) \n"
          
-         ::gui_cdl_withwcs::charge_current_image
-         ::gui_cdl_withwcs::extrapole
-         set err [::gui_cdl_withwcs::mesure_tout $sources]
+         #�Charge l image
+         buf$::audace(bufNo) load $file
+         cleanmark
+       
+         # EFFECTUE UNCOSMIC
+         if {$::bdi_binast_tools::uncosm == 1} {
+            ::tools_cdl::myuncosmic $::audace(bufNo)
+         }
+         
+         # VIsualisation par Sseuil automatique
+         ::audace::autovisu $::audace(visuNo)
+          
+         catch {
+          
+            #�Mise a jour GUI
+            $::bdi_binast_gui::fen.frm_cdlwcs.bouton.back configure -state disabled
+            $::bdi_binast_gui::fen.frm_cdlwcs.bouton.back configure -state disabled
+            $::bdi_binast_gui::fen.frm_cdlwcs.infoimage.nomimage    configure -text $::bdi_binast_tools::current_image_name
+            $::bdi_binast_gui::fen.frm_cdlwcs.infoimage.dateimage   configure -text $::bdi_binast_tools::current_image_date
+            $::bdi_binast_gui::fen.frm_cdlwcs.infoimage.stimage     configure -text "$::bdi_binast_tools::id_current_image / $::bdi_binast_tools::nb_img_list"
+
+            gren_info " $::bdi_binast_tools::current_image_name \n"
+
+            if {$::bdi_binast_tools::id_current_image == 1 && $::bdi_binast_tools::nb_img_list > 1 } {
+               $::bdi_binast_gui::fen.frm_cdlwcs.bouton.back configure -state disabled
+            }
+            if {$::bdi_binast_tools::id_current_image == $::bdi_binast_tools::nb_img_list && $::bdi_binast_tools::nb_img_list > 1 } {
+               $::bdi_binast_gui::fen.frm_cdlwcs.bouton.next configure -state disabled
+            }
+            if {$::bdi_binast_tools::id_current_image > 1 } {
+               $::bdi_binast_gui::fen.frm_cdlwcs.bouton.back configure -state normal
+            }
+            if {$::bdi_binast_tools::id_current_image < $::bdi_binast_tools::nb_img_list } {
+               $::bdi_binast_gui::fen.frm_cdlwcs.bouton.next configure -state normal
+            }
+         
+            set sources $::bdi_binast_gui::fen.frm_cdlwcs.sources
+            for {set x 1} {$x<=$::bdi_binast_tools::nb_obj} {incr x} {
+
+               $sources.ra.obj$x delete 0 end 
+               $sources.dec.obj$x delete 0 end 
+               $sources.xobs.obj$x delete 0 end 
+               $sources.yobs.obj$x delete 0 end 
+               $sources.xcalc.obj$x delete 0 end 
+               $sources.ycalc.obj$x delete 0 end 
+               $sources.xomc.obj$x delete 0 end 
+               $sources.yomc.obj$x delete 0 end 
+
+               if {[info exists ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,obj$x,ra_hms)]} {
+                  $sources.ra.obj$x configure 
+                  $sources.ra.obj$x   delete 0 end 
+                  $sources.ra.obj$x   insert end $::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,obj$x,ra_hms)
+               }
+               if {[info exists ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,obj$x,dec_hms)]} {
+                  $sources.dec.obj$x configure 
+                  $sources.dec.obj$x   delete 0 end 
+                  $sources.dec.obj$x   insert end $::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,obj$x,dec_hms)
+               }
+               if {[info exists ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,obj$x,xobs)]} {
+                  $sources.xobs.obj$x configure 
+                  $sources.xobs.obj$x   delete 0 end 
+                  $sources.xobs.obj$x   insert end $::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,obj$x,xobs)
+               }
+               if {[info exists ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,obj$x,yobs)]} {
+                  $sources.yobs.obj$x configure 
+                  $sources.yobs.obj$x   delete 0 end 
+                  $sources.yobs.obj$x   insert end $::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,obj$x,yobs)
+               }
+               if {[info exists ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,obj$x,xomc)]} {
+                  $sources.xomc.obj$x configure 
+                  $sources.xomc.obj$x   delete 0 end 
+                  $sources.xomc.obj$x   insert end $::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,obj$x,xomc)
+               }
+               if {[info exists ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,obj$x,yomc)]} {
+                  $sources.yomc.obj$x configure 
+                  $sources.yomc.obj$x   delete 0 end 
+                  $sources.yomc.obj$x   insert end $::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,obj$x,yomc)
+               }
+               if {[info exists ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,obj$x,xcalc)]} {
+                  $sources.xcalc.obj$x configure 
+                  $sources.xcalc.obj$x   delete 0 end 
+                  $sources.xcalc.obj$x   insert end $::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,obj$x,xcalc)
+               }
+               if {[info exists ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,obj$x,ycalc)]} {
+                  $sources.ycalc.obj$x configure 
+                  $sources.ycalc.obj$x   delete 0 end 
+                  $sources.ycalc.obj$x   insert end $::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,obj$x,ycalc)
+               }
+
+            }
+         }
+         
+         
+      
    }
+
+
+
+
+
 
 
 

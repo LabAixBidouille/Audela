@@ -73,6 +73,15 @@
              pack  $nbstars.val -in $nbstars -side left -anchor w
 
         #--- Cree un frame pour afficher movingobject
+        set stoperreur [frame $frm.stoperreur -borderwidth 0 -cursor arrow -relief groove]
+        pack $stoperreur -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             #--- Cree un checkbutton
+             checkbutton $stoperreur.check -highlightthickness 0 -text "Arret en cas d'erreur" \
+                      -variable ::bdi_binast_tools::stoperreur
+             pack $stoperreur.check -in $stoperreur -side left -padx 5 -pady 0
+
+        #--- Cree un frame pour afficher movingobject
         set uncosm [frame $frm.uncosm -borderwidth 0 -cursor arrow -relief groove]
         pack $uncosm -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
@@ -207,7 +216,31 @@
            pack $miriade -in $sources -anchor s -side left 
 
 
-        #--- Objet
+      # Label des champs
+
+            label $name.label -text ""
+            pack $name.label -in $name -side top -padx 2 -pady 2
+            label $id.label -text "Name"
+            pack $id.label -in $id -side top -padx 2 -pady 2
+            label $ra.label -text "RA obs"
+            pack $ra.label -in $ra -side top -padx 2 -pady 2
+            label $dec.label -text "DEC obs"
+            pack $dec.label -in $dec -side top -padx 2 -pady 2
+            label $xobs.label -text "DX obs"
+            pack $xobs.label -in $xobs -side top -padx 2 -pady 2
+            label $yobs.label -text "DY obs"
+            pack $yobs.label -in $yobs -side top -padx 2 -pady 2
+            label $xcalc.label -text "DX calc"
+            pack $xcalc.label -in $xcalc -side top -padx 2 -pady 2
+            label $ycalc.label -text "DY calc"
+            pack $ycalc.label -in $ycalc -side top -padx 2 -pady 2
+            label $xomc.label -text "O-C(x)"
+            pack $xomc.label -in $xomc -side top -padx 2 -pady 2
+            label $yomc.label -text "O-C(y)"
+            pack $yomc.label -in $yomc -side top -padx 2 -pady 2
+
+    
+    #--- Objet
 
             for {set x 1} {$x<=$::bdi_binast_tools::nb_obj} {incr x} {
             
