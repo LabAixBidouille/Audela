@@ -3,8 +3,8 @@
       global audace
       global bddconf
 
-      ::bdi_binast_tools::charge_list $img_list
       ::bdi_binast_gui::inittoconf
+      ::bdi_binast_gui::charge_list $img_list
 
 
       #--- Creation de la fenetre
@@ -20,7 +20,7 @@
       set posy_config [ lindex [ split [ wm geometry $::bdi_binast_gui::fen ] "+" ] 2 ]
       wm geometry $::bdi_binast_gui::fen +[ expr $posx_config + 165 ]+[ expr $posy_config + 55 ]
       wm resizable $::bdi_binast_gui::fen 1 1
-      wm title $::bdi_binast_gui::fen "Creation du WCS"
+      wm title $::bdi_binast_gui::fen "Binast Box"
       wm protocol $::bdi_binast_gui::fen WM_DELETE_WINDOW "destroy $::bdi_binast_gui::fen"
       set frm $::bdi_binast_gui::fen.frm_cdlwcs
 
@@ -52,6 +52,21 @@
              entry $savedir.val -relief sunken -textvariable ::bdi_binast_tools::savedir -width 50
              pack $savedir.val -in $savedir -side left -pady 1 -anchor w
 
+        #--- Nom e l'Objet
+        set nomobj [frame $frm.nomobj -borderwidth 0 -cursor arrow -relief groove]
+        pack $nomobj -in $frm -anchor s -side top -expand 0 -fill x -padx 5 -pady 5
+             label $nomobj.lab -text "Nom de l'objet"
+             pack $nomobj.lab -in $nomobj -side left -padx 5 -pady 0
+             entry $nomobj.val -relief sunken -textvariable ::bdi_binast_tools::nomobj -width 25 \
+             -validate all -validatecommand { ::tkutil::validateString %W %V %P %s wordchar1 0 100 }
+             pack $nomobj.val -in $nomobj -side left -pady 1 -anchor w
+
+             button $bouton.back -text "Miriade" -borderwidth 2 -takefocus 1 \
+                -command "::bdi_binast_gui::miriade_system $sources" -state $::bdi_binast_gui::stateback
+             pack $bouton.back -side left -anchor e \
+                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+             label $nomobj.lab -textvariable $::bdi_binast_gui::check_system
+             pack $nomobj.lab -in $nomobj -side left -padx 5 -pady 0
 
   
 
