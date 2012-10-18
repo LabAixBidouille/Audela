@@ -901,7 +901,100 @@ cleanmark
 
 
 
+   proc ::bdi_binast_gui::stat_mag2 { sources } {
 
+
+      
+      set id_obj 2
+
+      set fileres "obs-moy-$id_obj.xml"
+      set chan0 [open $fileres w]
+
+         set jjdate    ""
+         set xobs    ""
+         set yobs    ""
+
+      for {set i 1} {$i <= $::bdi_binast_tools::nb_img_list} {incr i} {
+
+         if {![info exists ::bdi_binast_tools::tabphotom($i,obj$id_obj,jjdate)]} {
+            continue
+         }
+
+         lappend jjdate  $::bdi_binast_tools::tabphotom($i,obj$id_obj,jjdate)
+         lappend xobs    $::bdi_binast_tools::tabphotom($i,obj$id_obj,xobs)
+         lappend yobs    $::bdi_binast_tools::tabphotom($i,obj$id_obj,yobs)
+      }
+
+         set jjdate  [::math::statistics::mean $jjdate]
+         set xobs    [::math::statistics::mean $xobs]
+         set yobs    [::math::statistics::mean $yobs]
+
+         set system      [ $sources.id.obj1 get ]
+         set isodate [mc_date2iso8601 $jjdate]
+         set xcalc   0
+         set ycalc   0
+         set xomc    0
+         set yomc    0
+         set timescale "UTC"
+
+         # centerframe = icent dans genoide/eproc
+         # centerframe 1 = helio
+         # centerframe 2 = geo
+         # centerframe 3 = topo
+         # centerframe 4 = sonde
+         set centerframe 4
+
+
+         # typeframe = iteph dans genoide/eproc
+         # typeframe 1 = astromj2000
+         # typeframe 2 = apparent
+         # typeframe 3 = moyen date
+         # typeframe 4 = moyen J2000
+         set typeframe   1
+
+         # coordtype = itrep dans genoide/eproc
+         # 1: spheriques, 2: rectangulaires,                   !
+         # 3: locales,    4: horaires,                         !
+         # 5: dediees a l'observation,                         !
+         # 6: dediees a l'observation AO,                      !
+         # 7: dediees au calcul (rep. helio. moyen J2000)      !
+         set coordtype   1
+
+         # refframe =  ipref dans genoide/eproc
+         # 1: equateur, 2:ecliptique  
+         set refframe    1
+
+         set obsuai      "@HST"
+
+
+         puts $chan0 "<vot:TR>"
+         puts $chan0 "<vot:TD>$jjdate</vot:TD>"
+         puts $chan0 "<vot:TD>$isodate</vot:TD>"
+         puts $chan0 "<vot:TD>$system</vot:TD>"
+         puts $chan0 "<vot:TD>$xobs</vot:TD>"
+         puts $chan0 "<vot:TD>$yobs</vot:TD>"
+         puts $chan0 "<vot:TD>$xcalc</vot:TD>"
+         puts $chan0 "<vot:TD>$ycalc</vot:TD>"
+         puts $chan0 "<vot:TD>$xomc</vot:TD>"
+         puts $chan0 "<vot:TD>$yomc</vot:TD>"
+         puts $chan0 "<vot:TD>$timescale</vot:TD>"
+         puts $chan0 "<vot:TD>$centerframe</vot:TD>"
+         puts $chan0 "<vot:TD>$typeframe</vot:TD>"
+         puts $chan0 "<vot:TD>$coordtype</vot:TD>"
+         puts $chan0 "<vot:TD>$refframe</vot:TD>"
+         puts $chan0 "<vot:TD>$obsuai</vot:TD>"
+         puts $chan0 "</vot:TR>"
+         puts $chan0 ""
+
+
+
+      
+      close $chan0
+
+
+
+
+   }
 
 
 
