@@ -73,11 +73,14 @@
 # ----------------------------------------------------------------------------------------------------
 
 # --
+#  >  source [ file join $audace(rep_plugin) tool bddimages CHK Space_HST_WFC3.tcl]
 
 # ----------------------------------------------------------------------------------------------------
 
-   set path "/work/AsterOA/136108_Haumea/Observations/HST/science/drz"
-   set dest "/work/Observations/bddimages/incoming"
+#  set path "/work/AsterOA/136108_Haumea/Observations/HST/science/drz"
+#  set dest "/work/Observations/bddimages/incoming"
+   set path "/data/astrodata/Observations/Images/bddimages/bddimages_local/tmp/img"
+   set dest "/data/astrodata/Observations/Images/bddimages/bddimages_local/tmp/CHK"
 
    ::console::affiche_resultat "Rep travail = $path\n"
 
