@@ -183,6 +183,18 @@
            pack $ra -in $sources -anchor s -side left 
            set dec [frame $sources.dec -borderwidth 0 -cursor arrow -relief groove]
            pack $dec -in $sources -anchor s -side left 
+           set xobs [frame $sources.xobs -borderwidth 0 -cursor arrow -relief groove]
+           pack $xobs -in $sources -anchor s -side left 
+           set yobs [frame $sources.yobs -borderwidth 0 -cursor arrow -relief groove]
+           pack $yobs -in $sources -anchor s -side left 
+           set xcalc [frame $sources.xcalc -borderwidth 0 -cursor arrow -relief groove]
+           pack $xcalc -in $sources -anchor s -side left 
+           set ycalc [frame $sources.ycalc -borderwidth 0 -cursor arrow -relief groove]
+           pack $ycalc -in $sources -anchor s -side left 
+           set xomc [frame $sources.xomc -borderwidth 0 -cursor arrow -relief groove]
+           pack $xomc -in $sources -anchor s -side left 
+           set yomc [frame $sources.yomc -borderwidth 0 -cursor arrow -relief groove]
+           pack $yomc -in $sources -anchor s -side left 
            set mag [frame $sources.mag -borderwidth 0 -cursor arrow -relief groove]
            pack $mag -in $sources -anchor s -side left 
            set stdev [frame $sources.stdev -borderwidth 0 -cursor arrow -relief groove]
@@ -197,51 +209,45 @@
 
         #--- Objet
 
-            label $name.obj1    -text "Obj1 :"
-            entry $id.obj1      -relief sunken -width 11
-            entry $ra.obj1      -relief sunken -width 11
-            entry $dec.obj1     -relief sunken -width 11
-            label $mag.obj1     -width 9 -textvariable ::bdi_binast_tools::firstmagref
-            label $stdev.obj1   -width 9 
-            spinbox $delta.obj1 -from 1 -to 100 -increment 1 -width 3 \
-                   -command "::bdi_binast_gui::mesure_tout $sources" \
-                   -textvariable ::bdi_binast_tools::tabsource(star1,delta)
-            button $select.obj1 -text "Select" -command "::bdi_binast_gui::select_source $sources obj1"
-            button $miriade.obj1 -text "Miriade" -command "::bdi_binast_gui::miriade_obj $sources obj1"
+            for {set x 1} {$x<=$::bdi_binast_tools::nb_obj} {incr x} {
+            
 
-            pack $name.obj1   -in $name   -side top -pady 2 -ipady 2
-            pack $id.obj1     -in $id     -side top -pady 2 -ipady 2
-            pack $ra.obj1     -in $ra     -side top -pady 2 -ipady 2
-            pack $dec.obj1    -in $dec    -side top -pady 2 -ipady 2
-            pack $mag.obj1    -in $mag    -side top -pady 2 -ipady 2
-            pack $stdev.obj1  -in $stdev  -side top -pady 2 -ipady 2
-            pack $delta.obj1  -in $delta  -side top -pady 2 -ipady 2
-            pack $select.obj1 -in $select -side top    
-            pack $miriade.obj1 -in $miriade -side top    
+               label $name.obj$x    -text "obj$x :"
+               entry $id.obj$x      -relief sunken -width 11
+               entry $ra.obj$x      -relief sunken -width 11
+               entry $dec.obj$x     -relief sunken -width 11
+               entry $xobs.obj$x     -relief sunken -width 11
+               entry $yobs.obj$x     -relief sunken -width 11
+               entry $xcalc.obj$x     -relief sunken -width 11
+               entry $ycalc.obj$x     -relief sunken -width 11
+               entry $xomc.obj$x     -relief sunken -width 11
+               entry $yomc.obj$x     -relief sunken -width 11
+               label $mag.obj$x     -width 9 -textvariable ::bdi_binast_tools::firstmagref
+               label $stdev.obj$x   -width 9 
+               spinbox $delta.obj$x -from 1 -to 100 -increment 1 -width 3 \
+                      -command "::bdi_binast_gui::mesure_tout $sources" \
+                      -textvariable ::bdi_binast_tools::tabsource(obj$x,delta)
+               button $select.obj$x -text "Select" -command "::bdi_binast_gui::select_source $sources obj$x"
+               button $miriade.obj$x -text "Miriade" -command "::bdi_binast_gui::miriade_obj $sources obj$x"
 
-            label $name.obj2    -text "Obj2 :"
-            entry $id.obj2      -relief sunken -width 11
-            entry $ra.obj2      -relief sunken -width 11
-            entry $dec.obj2     -relief sunken -width 11
-            label $mag.obj2     -width 9 -textvariable ::bdi_binast_tools::firstmagref
-            label $stdev.obj2   -width 9 
-            spinbox $delta.obj2 -from 1 -to 100 -increment 1 -width 3 \
-                   -command "::bdi_binast_gui::mesure_tout $sources" \
-                   -textvariable ::bdi_binast_tools::tabsource(star1,delta)
-            button $select.obj2 -text "Select" -command "::bdi_binast_gui::select_source $sources obj2"
-            button $miriade.obj2 -text "Miriade" -command "::bdi_binast_gui::miriade_obj $sources obj2"
-
-            pack $name.obj2   -in $name   -side top -pady 2 -ipady 2
-            pack $id.obj2     -in $id     -side top -pady 2 -ipady 2
-            pack $ra.obj2     -in $ra     -side top -pady 2 -ipady 2
-            pack $dec.obj2    -in $dec    -side top -pady 2 -ipady 2
-            pack $mag.obj2    -in $mag    -side top -pady 2 -ipady 2
-            pack $stdev.obj2  -in $stdev  -side top -pady 2 -ipady 2
-            pack $delta.obj2  -in $delta  -side top -pady 2 -ipady 2
-            pack $select.obj2 -in $select -side top    
-            pack $miriade.obj2 -in $miriade -side top    
+               pack $name.obj$x   -in $name   -side top -pady 2 -ipady 2
+               pack $id.obj$x     -in $id     -side top -pady 2 -ipady 2
+               pack $ra.obj$x     -in $ra     -side top -pady 2 -ipady 2
+               pack $dec.obj$x    -in $dec    -side top -pady 2 -ipady 2
+               pack $xobs.obj$x    -in $xobs    -side top -pady 2 -ipady 2
+               pack $yobs.obj$x    -in $yobs    -side top -pady 2 -ipady 2
+               pack $xcalc.obj$x    -in $xcalc    -side top -pady 2 -ipady 2
+               pack $ycalc.obj$x    -in $ycalc    -side top -pady 2 -ipady 2
+               pack $xomc.obj$x    -in $xomc    -side top -pady 2 -ipady 2
+               pack $yomc.obj$x    -in $yomc    -side top -pady 2 -ipady 2
+               pack $mag.obj$x    -in $mag    -side top -pady 2 -ipady 2
+               pack $stdev.obj$x  -in $stdev  -side top -pady 2 -ipady 2
+               pack $delta.obj$x  -in $delta  -side top -pady 2 -ipady 2
+               pack $select.obj$x -in $select -side top    
+               pack $miriade.obj$x -in $miriade -side top    
 
 
+            }
 
 
 
