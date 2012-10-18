@@ -750,10 +750,18 @@ cleanmark
             if {$::bdi_binast_tools::id_current_image < $::bdi_binast_tools::nb_img_list} {
                incr ::bdi_binast_tools::id_current_image
                ::bdi_binast_gui::charge_current_image
+               
+               for {set x 1} {$x<=$::bdi_binast_tools::nb_obj} {incr x} {
+                  set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,obj$x,x) $::bdi_binast_tools::tabphotom([expr $::bdi_binast_tools::id_current_image -1],obj$x,x)
+                  set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,obj$x,y) $::bdi_binast_tools::tabphotom([expr $::bdi_binast_tools::id_current_image -1],obj$x,y)
+               }
+               
                set err [::bdi_binast_gui::mesure_tout $sources]
                if {$err==1 && $::bdi_binast_tools::stoperreur==1} {
                   break
                }
+               
+               
             }
             incr cpt
          }
