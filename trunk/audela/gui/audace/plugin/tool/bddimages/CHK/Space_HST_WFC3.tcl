@@ -1,12 +1,12 @@
 ##################################################################################################
-# Telelescope du l ' Observatoire du Pico dos Dias Itajuba Brésil pour la 
+# Telelescope du l ' Observatoire du Pico dos Dias Itajuba Brï¿½sil pour la 
 # Camera IKON-L
 ##################################################################################################
 
 
 ##################################################################################################
 # procedure de la derniere Chance !
-# Elle permet de modifier les clés des headers en se basant sur le nom de l image.
+# Elle permet de modifier les clï¿½s des headers en se basant sur le nom de l image.
 # tres dangeureuse car modifie les images brutes
 # cela est contraire a la philo de bddimages qui cherche a conserver les images brutes
 #
@@ -15,12 +15,6 @@
 #  >  source [ file join $audace(rep_plugin) tool bddimages CHK Space_HST_WFC3.tcl]
 #
 ##################################################################################################
-
-
-
-
-
-
 
     proc modif_img_header_hst { name path dest} {
 
@@ -35,12 +29,10 @@
          ::console::affiche_resultat "FILE= $fichier\n"
          set cmd "gunzip -cd $fichier > i.fits"
          ::console::affiche_resultat "CMD= $cmd\n"
-
          set errnum [catch {exec gunzip -cd $fichier > i.fits} msg ]
          ::console::affiche_resultat "ERR= $errnum\n"
          ::console::affiche_resultat "MSG= $msg\n"
-        
-         set errnum [catch {exec gethead i.fits TELESCOP DATE-OBS TIME-OBS INSTRUME} msg ]
+         set errnum [catch {exec gethead i.fits TELESCOP DATE-OBS TIME-OBS INSTRUME EXPTIME} msg ]
          ::console::affiche_resultat "ERR= $errnum\n"
          ::console::affiche_resultat "MSG= $msg\n"
 
@@ -49,19 +41,14 @@
          set date [lindex $tab 1]
          set ti [lindex $tab 2]
          set instrum [lindex $tab 3]
+         set exposure [lindex $tab 4]
 
-         loadima i.fits
-
-         
          # modifi les header
-         
          set date "${date}T${ti}"
          buf1 setkwd [list "DATE-OBS"  $date "string" "UT date of start of observation" ""]
-         ::console::affiche_resultat "$date\n"
-
+         buf1 setkwd [list "EXPOSURE" $exposure  "double" "exposure duration (seconds)--calculated" ""]
          buf1 setkwd [list "TELESCOP" $tel  "string" "Object name inside field" ""]
          buf1 setkwd [list "INSTRUME" $instrum  "string" "identifier for instrument used to acquire data" ""]
-
          buf1 setkwd [list "OBJECT" "136108_Haumea" "string" "Object name inside field" ""]
 
          ::bddimagesAdmin::bdi_setcompat 1
@@ -89,12 +76,12 @@
 
 # ----------------------------------------------------------------------------------------------------
 
-   set path "/data/astrodata/Observations/Images/bddimages/bddimages_local/tmp/img"
-   set dest "/data/astrodata/Observations/Images/bddimages/bddimages_local/tmp/CHK"
+   set path "/work/AsterOA/136108_Haumea/Observations/HST/science/drz"
+   set dest "/work/Observations/bddimages/incoming"
 
    ::console::affiche_resultat "Rep travail = $path\n"
 
-   modif_img_header_hst   "drz"  $path $dest
+   modif_img_header_hst "drz"  $path $dest
 
    return
 
