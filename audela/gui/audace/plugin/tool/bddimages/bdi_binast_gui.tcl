@@ -482,7 +482,7 @@ catch {
          set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,$obj,x) [lindex $valeurs 0]
          set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,$obj,y) [lindex $valeurs 1]
          set ::bdi_binast_tools::tabsource($obj,select) true
-         $sources.select.$obj  configure -relief sunken
+         #$sources.select.$obj  configure -relief sunken
 
       } else {
          $sources.select.$obj  configure -relief raised
@@ -554,6 +554,7 @@ catch {
          set yomc    $::bdi_binast_tools::tabphotom($i,obj$id_obj,yomc)
          set timescale   "UTC"
 
+         # centerframe = icent dans genoide/eproc
          # centerframe 1 = helio
          # centerframe 2 = geo
          # centerframe 3 = topo
@@ -561,22 +562,23 @@ catch {
          set centerframe 4
 
 
+         # typeframe = iteph dans genoide/eproc
          # typeframe 1 = astromj2000
          # typeframe 2 = apparent
          # typeframe 3 = moyen date
          # typeframe 4 = moyen J2000
          set typeframe   1
 
-         # coordtype 1 = 
-         # coordtype 2 = 
-         # coordtype 3 = 
-         # coordtype 4 = 
+         # coordtype = itrep dans genoide/eproc
+         # 1: spheriques, 2: rectangulaires,                   !
+         # 3: locales,    4: horaires,                         !
+         # 5: dediees a l'observation,                         !
+         # 6: dediees a l'observation AO,                      !
+         # 7: dediees au calcul (rep. helio. moyen J2000)      !
          set coordtype   1
 
-         # refframe 1 = 
-         # refframe 2 = 
-         # refframe 3 = 
-         # refframe 4 = 
+         # refframe =  ipref dans genoide/eproc
+         # 1: equateur, 2:ecliptique  
          set refframe    1
 
          set obsuai      "@HST"
@@ -627,9 +629,7 @@ cleanmark
       gren_info "ZOOM: [::confVisu::getZoom $::audace(visuNo)] \n "
 
       for {set x 1} {$x<=$::bdi_binast_tools::nb_obj} {incr x} {
-         if { [ $sources.select.obj$x cget -relief] == "sunken" } {
             ::bdi_binast_gui::mesure_une $sources obj$x
-         }
       }
 
 
