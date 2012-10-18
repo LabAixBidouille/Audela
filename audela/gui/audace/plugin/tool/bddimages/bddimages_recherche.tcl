@@ -1175,6 +1175,9 @@ namespace eval bddimages_recherche {
            $popupTbl.analyse add command -label $caption(bddimages_recherche,astrom) \
               -command { ::bddimages_recherche::bddimages_astrometrie}
 
+           $popupTbl.analyse add command -label $caption(bddimages_recherche,binast) \
+              -command { ::bddimages_recherche::bddimages_binast}
+
            $popupTbl.analyse add command -label $caption(bddimages_recherche,cata) -state disabled \
               -command { ::gui_cata::run_cata}
 
@@ -1663,6 +1666,22 @@ namespace eval bddimages_recherche {
 
    }
 
+
+   proc ::bddimages_recherche::bddimages_binast { } {
+
+      variable This
+      global caption
+
+      set lid [$::bddimages_recherche::This.frame6.result.tbl curselection ]
+      set lid [lsort -decreasing -integer $lid]
+      set imglist [::bddimages_liste_gui::new_normallist $lid]
+
+      ::bdi_binast_gui::box $imglist
+
+      #::bddimages_recherche::get_intellist $::bddimages_recherche::current_list_id
+      #::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id [array get action_label]
+
+   }
 
 
    proc ::bddimages_recherche::creation_cdlwcs { } {
