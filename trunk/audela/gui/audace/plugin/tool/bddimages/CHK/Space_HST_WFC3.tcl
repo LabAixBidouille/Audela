@@ -65,6 +65,7 @@
          # take a look
          # set lh [buf1 getkwds]
          #::console::affiche_resultat "$lh\n"
+         break
       }
 
       return
