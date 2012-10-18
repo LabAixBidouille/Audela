@@ -314,7 +314,7 @@
                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
              button $boutonfinal.stat_mag -text "Stat Mag" -borderwidth 2 -takefocus 1 \
-                -command ::bdi_binast_gui::stat_mag2
+                -command "::bdi_binast_gui::stat_mag2 $sources"
              pack $boutonfinal.stat_mag -side right -anchor e \
                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
