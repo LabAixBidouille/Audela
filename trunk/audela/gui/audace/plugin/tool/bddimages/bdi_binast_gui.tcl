@@ -534,65 +534,76 @@ catch {
       set id_obj 2
 
       set fileres "obs-$id_obj.xml"
-      set chan0 [open $fileres a+]
-      
-      set jjdate  $::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,obj$id_obj,jjdate)
-      set isodate $::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,obj$id_obj,isodate)
-      set system      [ $sources.id.obj1 get ]
-      set xobs        [ $sources.xobs.obj$id_obj get ]
-      set yobs        [ $sources.yobs.obj$id_obj get ]
-      set xcalc       [ $sources.xcalc.obj$id_obj get ]
-      set ycalc       [ $sources.ycalc.obj$id_obj get ]
-      set xomc        [ $sources.xomc.obj$id_obj get ]
-      set yomc        [ $sources.yomc.obj$id_obj get ]
-      set timescale   "UTC"
-      
-      # centerframe 1 = helio
-      # centerframe 2 = geo
-      # centerframe 3 = topo
-      # centerframe 4 = sonde
-      set centerframe 4
+      set chan0 [open $fileres w]
 
 
-      # typeframe 1 = astromj2000
-      # typeframe 2 = apparent
-      # typeframe 3 = moyen date
-      # typeframe 4 = moyen J2000
-      set typeframe   1
+      for {set i 1} {$i <= $::bdi_binast_tools::nb_img_list} {incr i} {
 
-      # coordtype 1 = 
-      # coordtype 2 = 
-      # coordtype 3 = 
-      # coordtype 4 = 
-      set coordtype   1
+         if {![info exists ::bdi_binast_tools::tabphotom($i,obj$id_obj,jjdate)]} {
+            continue
+         }
 
-      # refframe 1 = 
-      # refframe 2 = 
-      # refframe 3 = 
-      # refframe 4 = 
-      set refframe    1
+         set jjdate  $::bdi_binast_tools::tabphotom($i,obj$id_obj,jjdate)
+         set isodate $::bdi_binast_tools::tabphotom($i,obj$id_obj,isodate)
+         set system      [ $sources.id.obj1 get ]
+         set xobs    $::bdi_binast_tools::tabphotom($i,obj$id_obj,xobs)
+         set yobs    $::bdi_binast_tools::tabphotom($i,obj$id_obj,yobs)
+         set xcalc   $::bdi_binast_tools::tabphotom($i,obj$id_obj,xcalc)
+         set ycalc   $::bdi_binast_tools::tabphotom($i,obj$id_obj,ycalc)
+         set xomc    $::bdi_binast_tools::tabphotom($i,obj$id_obj,xomc)
+         set yomc    $::bdi_binast_tools::tabphotom($i,obj$id_obj,yomc)
+         set timescale   "UTC"
 
-      set obsuai      "@HST"
+         # centerframe 1 = helio
+         # centerframe 2 = geo
+         # centerframe 3 = topo
+         # centerframe 4 = sonde
+         set centerframe 4
 
 
-      puts $chan0 "<vot:TR>"
-      puts $chan0 "<vot:TD>$jjdate</vot:TD>"
-      puts $chan0 "<vot:TD>$isodate</vot:TD>"
-      puts $chan0 "<vot:TD>$system</vot:TD>"
-      puts $chan0 "<vot:TD>$xobs</vot:TD>"
-      puts $chan0 "<vot:TD>$yobs</vot:TD>"
-      puts $chan0 "<vot:TD>$xcalc</vot:TD>"
-      puts $chan0 "<vot:TD>$ycalc</vot:TD>"
-      puts $chan0 "<vot:TD>$xomc</vot:TD>"
-      puts $chan0 "<vot:TD>$yomc</vot:TD>"
-      puts $chan0 "<vot:TD>$timescale</vot:TD>"
-      puts $chan0 "<vot:TD>$centerframe</vot:TD>"
-      puts $chan0 "<vot:TD>$typeframe</vot:TD>"
-      puts $chan0 "<vot:TD>$coordtype</vot:TD>"
-      puts $chan0 "<vot:TD>$refframe</vot:TD>"
-      puts $chan0 "<vot:TD>$obsuai</vot:TD>"
-      puts $chan0 "</vot:TR>"
-      puts $chan0 ""
+         # typeframe 1 = astromj2000
+         # typeframe 2 = apparent
+         # typeframe 3 = moyen date
+         # typeframe 4 = moyen J2000
+         set typeframe   1
+
+         # coordtype 1 = 
+         # coordtype 2 = 
+         # coordtype 3 = 
+         # coordtype 4 = 
+         set coordtype   1
+
+         # refframe 1 = 
+         # refframe 2 = 
+         # refframe 3 = 
+         # refframe 4 = 
+         set refframe    1
+
+         set obsuai      "@HST"
+
+
+         puts $chan0 "<vot:TR>"
+         puts $chan0 "<vot:TD>$jjdate</vot:TD>"
+         puts $chan0 "<vot:TD>$isodate</vot:TD>"
+         puts $chan0 "<vot:TD>$system</vot:TD>"
+         puts $chan0 "<vot:TD>$xobs</vot:TD>"
+         puts $chan0 "<vot:TD>$yobs</vot:TD>"
+         puts $chan0 "<vot:TD>$xcalc</vot:TD>"
+         puts $chan0 "<vot:TD>$ycalc</vot:TD>"
+         puts $chan0 "<vot:TD>$xomc</vot:TD>"
+         puts $chan0 "<vot:TD>$yomc</vot:TD>"
+         puts $chan0 "<vot:TD>$timescale</vot:TD>"
+         puts $chan0 "<vot:TD>$centerframe</vot:TD>"
+         puts $chan0 "<vot:TD>$typeframe</vot:TD>"
+         puts $chan0 "<vot:TD>$coordtype</vot:TD>"
+         puts $chan0 "<vot:TD>$refframe</vot:TD>"
+         puts $chan0 "<vot:TD>$obsuai</vot:TD>"
+         puts $chan0 "</vot:TR>"
+         puts $chan0 ""
+
+
+
+      }
       
       close $chan0
 
