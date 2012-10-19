@@ -492,10 +492,12 @@ int mytel_home_set(struct telprop *tel,double longitude,char *ew,double latitude
 int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 
 #if defined CONTROLLER_TELSIMU
-	int kk,k;
-	int threadpb=0,resint;
+	int kk; //,k;
+	int threadpb=0; //,resint;
+	/*
    char s[1024],ssres[1024];
    char ss[256],ssusb[256],portnum[256];
+	*/
 #endif
 #if defined(MOUCHARD)
    FILE *f;
@@ -609,13 +611,14 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 /*** Boucle du thread ***/
 /************************/
 int ThreadTel_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
-	int action_ok=0,arrived;
+	int action_ok=0,arrivedha,arriveddec;
 	char action_locale[80],s[1024],ss[1024];
 	double coord_cat_cod_deg_ra0;
 	double coord_cat_cod_deg_dec0;
 	double utcjd_cat_cod_deg_ra0;
 	double coord_app_cod_deg_ha0;
 	double coord_app_cod_deg_dec0;
+	double ang1,ang0,dang,dangtotal;
 	time_t ltime;
 
 	if (telthread->exit==1) {
@@ -665,23 +668,66 @@ int ThreadTel_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 	if ((telthread->status==STATUS_HADEC_SLEWING)||(telthread->status==STATUS_RADEC_SLEWING)) {
 		if (telthread->mode==MODE_REEL) {
 			sprintf(s,"lindex [mc_sepangle %f %f %f %f]",telthread->coord_app_cod_deg_ha,telthread->coord_app_cod_deg_dec,telthread->ha0,telthread->dec0); mytel_tcleval(telthread,s);
-		} else {
-			sprintf(s,"lindex [mc_sepangle %f %f %f %f]",telthread->coord_app_sim_deg_ha,telthread->coord_app_sim_deg_dec,telthread->ha0,telthread->dec0); mytel_tcleval(telthread,s);
-		}
-		telthread->sepangle_cur=atof(telthread->interp->result);
-		arrived=0;
-		if (telthread->mode==MODE_REEL) {
-#if defined CONTROLLER_TELSIMU
-			if (telthread->sepangle_cur<0.001) {
-				arrived=1;
+			telthread->sepangle_curdec=atof(telthread->interp->result);
+			arrivedha=0;
+			if (telthread->sepangle_curha<0.001) {
+				arrivedha=1;
 			}
-#endif
+			if (telthread->sepangle_curdec<0.001) {
+				arriveddec=1;
+			}
 		} else {
-			if (telthread->sepangle_cur>telthread->sepangle_prev) {
-				arrived=1;
+			dangtotal=telthread->coord_app_sim_adu_dha*360./telthread->N0;
+			// --- les ha sont comprises entre 0 et 360 deg
+			// start angle = ang0
+			ang0=fmod(720+telthread->coord_app_sim_deg_ha,360);
+			// arrive angle = ang1
+			ang1=fmod(720+telthread->ha0,360);
+			if ((ang1<180)&&(ang0>180)) {
+				// start before meridian, arrive after meridian
+				dang=ang1+360-ang0;
+			} else if ((ang1>180)&&(ang0>180)) {
+				// start before meridian, arrive before meridian
+				dang=ang1-ang0;
+			} else if ((ang1<180)&&(ang0<180)) {
+				// start after meridian, arrive after meridian
+				dang=ang1-ang0;
+			} else if ((ang1>180)&&(ang0<180)) {
+				// start after meridian, arrive before meridian
+				dang=ang1-360-ang0;
+			}
+			if (dang*dangtotal<0) {
+				arrivedha=1;
+			}
+			if (dangtotal==0) {
+				arrivedha=1;
+			}
+			dangtotal=telthread->coord_app_sim_adu_ddec*360./telthread->N1;
+			// --- les dec sont comprises entre -90 et +90 deg
+			// start angle = ang0
+			ang0=telthread->coord_app_sim_deg_dec;
+			if (ang0>90) { ang0=90; }
+			if (ang0<-90) { ang0=-90; }
+			// arrive angle = ang1
+			ang1=telthread->dec0;
+			if (ang1>90) { ang1=90; }
+			if (ang1<-90) { ang1=-90; }
+			dang=ang1-ang0;
+			if (dang*dangtotal<0) {
+				arriveddec=1;
+			}
+			if (dangtotal==0) {
+				arriveddec=1;
 			}
 		}
-		if (arrived==1) {
+		if (arrivedha==1) {
+			telthread->speed_app_sim_adu_ha=0;
+			telthread->speed_app_sim_adu_ra=telthread->sideral_deg_per_sec;
+		}
+		if (arriveddec==1) {
+			telthread->speed_app_sim_adu_dec=0;
+		}
+		if ((arrivedha==1)&&(arriveddec==1)) {
 			// on est arrive: motor off -> radec|hadec init -> (motor on)
 			// motor off
 			if (telthread->mode==MODE_REEL) {
@@ -736,7 +782,8 @@ int ThreadTel_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 				telthread->status=STATUS_MOTOR_OFF;
 			}
 		} else {
-			telthread->sepangle_prev=telthread->sepangle_cur;
+			//telthread->sepangle_prevha=telthread->sepangle_curha;
+			//telthread->sepangle_prevdec=telthread->sepangle_curdec;
 		}
 	}
 
@@ -891,7 +938,8 @@ int ThreadTel_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 		// --- update coordinates for simulator
 		mytel_app_sim_setdadu(telthread);
 		mytel_app_sim_setadu(telthread);
-		telthread->sepangle_prev=360;
+		//telthread->sepangle_prevha=360;
+		//telthread->sepangle_prevdec=360;
 	} else if (strcmp(action_locale,"radec_goto")==0) {
 		/******************/
 	   /*** radec_goto ***/
@@ -939,7 +987,8 @@ int ThreadTel_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 		mytel_cat2app_sim_deg0(telthread);
 		mytel_app_sim_setdadu(telthread);
 		mytel_app_sim_setadu(telthread);
-		telthread->sepangle_prev=360;
+		//telthread->sepangle_prevha=360;
+		//telthread->sepangle_prevdec=360;
 	} else if (strcmp(telthread->action_next,"move_start")==0) {
 		/******************/
 	   /*** move_start ***/
@@ -996,7 +1045,7 @@ int tel_close(struct telprop *tel)
 /* --- called by : tel1 close --- */
 /* ------------------------------ */
 {
-	char s[1024];
+	//char s[1024];
 	if (tel->mode==MODE_REEL) {
 #if defined CONTROLLER_TELSIMU
 		if (tel->mode==MODE_REEL) {
@@ -1661,11 +1710,11 @@ int mytel_app_sim_setadu(struct telprop *tel) {
    time_t ltime;
 	/* --- */
 	dadu=(int)tel->coord_app_sim_adu_dha;
-	tel->coord_app_sim_adu_cumdha+=tel->coord_app_sim_adu_dha;
+//	tel->coord_app_sim_adu_cumdha+=tel->coord_app_sim_adu_dha;
 	tel->utcjd_app_sim_adu_ha=mytel_sec2jd((int)time(&ltime));	
 	/* --- */
 	dadu=(int)tel->coord_app_sim_adu_ddec;
-	tel->coord_app_sim_adu_cumddec+=tel->coord_app_sim_adu_ddec;
+//	tel->coord_app_sim_adu_cumddec+=tel->coord_app_sim_adu_ddec;
 	tel->utcjd_app_sim_adu_dec=mytel_sec2jd((int)time(&ltime));	
 #endif
 	return 0;
@@ -1857,7 +1906,7 @@ int mytel_limites(void) {
 }
 
 int mytel_motor_move_start(struct telprop *tel) {
-	char s[1024];
+	//char s[1024];
 	if ((tel->move_direction[0]=='n')||(tel->move_direction[0]=='N')) {
 		if (tel->status==STATUS_MOVE_SLOW) {
 		} else if (tel->status==STATUS_MOVE_MEDIUM) {
@@ -1886,7 +1935,7 @@ int mytel_motor_move_start(struct telprop *tel) {
 }
 
 int mytel_motor_move_stop(struct telprop *tel) {
-	char s[1024];
+	//char s[1024];
 	if ((tel->move_direction[0]=='n')||(tel->move_direction[0]=='N')||(tel->move_direction[0]=='s')||(tel->move_direction[0]=='S')) {
 		if ((tel->status==STATUS_MOVE_SLOW)&&(telthread->motor==MOTOR_ON)) {
 		} else {
@@ -1904,19 +1953,19 @@ int mytel_motor_move_stop(struct telprop *tel) {
 }
 
 int mytel_motor_stop(struct telprop *tel) {
-	char s[1024];
+	//char s[1024];
 	// stop slewing
 	return 0;
 }
 
 int mytel_motor_off(struct telprop *tel) {
-	char s[1024];
+	//char s[1024];
 	// stop sideral drift
 	return 0;
 }
 
 int mytel_motor_on(struct telprop *tel) {
-	char s[1024];
+	//char s[1024];
 	// start sideral drift
 	return 0;
 }
