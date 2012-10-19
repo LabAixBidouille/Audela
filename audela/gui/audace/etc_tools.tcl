@@ -574,10 +574,10 @@ proc etc_preliminary_computations { } {
    set audace(etc,comp1,W) [expr $audace(etc,comp1,cdelt1) * $audace(etc,comp1,cdelt2)]
 
    set audace(etc,comp1,FoV1,comment) "Field of view of the CCD image on axis1 (deg)"
-   set audace(etc,comp1,FoV1) [expr 2 * atan ( $audace(etc,param,ccd,naxis1) * $audace(etc,comp1,pixsize1) / $audace(etc,comp1,Foclen) / 2.) * 180. / $pi]
+   set audace(etc,comp1,FoV1) [expr 2 * atan ( $audace(etc,param,ccd,naxis1) * $audace(etc,param,ccd,photocell1) / $audace(etc,comp1,Foclen) / 2.) * 180. / $pi]
 
    set audace(etc,comp1,FoV2,comment) "Field of view of the CCD image on axis2 (deg)"
-   set audace(etc,comp1,FoV2) [expr 2 * atan ( $audace(etc,param,ccd,naxis2) * $audace(etc,comp1,pixsize2) / $audace(etc,comp1,Foclen) / 2.) * 180. / $pi]
+   set audace(etc,comp1,FoV2) [expr 2 * atan ( $audace(etc,param,ccd,naxis2) * $audace(etc,param,ccd,photocell2) / $audace(etc,comp1,Foclen) / 2.) * 180. / $pi]
 
    set audace(etc,comp1,Fwhm_psf_seeing,comment) "Fwhm of the seeing in the image plane (m)"
    set audace(etc,comp1,Fwhm_psf_seeing) [expr $audace(etc,param,local,seeing) / 3600. * $pi / 180 * $audace(etc,comp1,Foclen)]

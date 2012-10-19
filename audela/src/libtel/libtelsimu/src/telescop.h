@@ -166,8 +166,10 @@ struct telprop {
 	char eval_command_line[2048];
 	char eval_result[2048];
 
-	double sepangle_prev;
-	double sepangle_cur;
+	double sepangle_prevha;
+	double sepangle_prevdec;
+	double sepangle_curha;
+	double sepangle_curdec;
 
 	char move_direction[5];
 

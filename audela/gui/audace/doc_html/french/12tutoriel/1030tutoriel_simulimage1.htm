@@ -603,8 +603,7 @@ view of the axis1 CCD
 image
 (deg) :</font></font></p>
 <p style="margin-bottom: 0cm;"><font face=""><font face="">FoV1 = 2 *
-atan ( naxis1 *
-pixsize1 /
+atan ( naxis1 * cellsize1 /
 foclen / 2) * 180 / pi<font face=""> * 3600</font></font></font></p>
 <p style="margin-bottom: 0cm;"><font face=""><font face=""><font face=""><br />
 </font></font></font></p>
@@ -613,8 +612,7 @@ of view of the axis2 CCD
 image
 (deg) :</font></font></font></p>
 <p style="margin-bottom: 0cm;"><font face=""><font face=""><font face="">FoV2
-= 2 * atan ( naxis2 *
-pixsize2 /
+= 2 * atan ( naxis2 * cellsize2 /
 foclen / 2) * 180 / pi<font face=""> * 3600</font></font></font></font></p>
 <p style="margin-bottom: 0cm;"><font face=""><font face=""><font face=""><font
  face=""><br />
@@ -849,23 +847,23 @@ the t value
 knowing the
 SNR_obj (and knowing the magnitude of the object). We start with the
 SNR formula :</font></font></font></font><br />
-<font face=""><font face=""><font face=""><font face=""></font></font></font></font><br />
+<font face=""><font face=""><font face=""><font face="" /></font></font></font><br />
 <font face=""><font face=""><font face=""><font face="">(SNR_obj)^2 *
 N_tot^2 = S_ph^2</font></font></font></font><br />
-<font face=""><font face=""><font face=""><font face=""></font></font></font></font><br />
+<font face=""><font face=""><font face=""><font face="" /></font></font></font><br />
 <font face=""><font face=""><font face=""><font face="">We express all
 noise sources :</font></font></font></font><br />
-<font face=""><font face=""><font face=""><font face=""></font></font></font></font><br />
+<font face=""><font face=""><font face=""><font face="" /></font></font></font><br />
 <font face=""><font face=""><font face=""><font face="">(SNR_obj)^2 * (
 N_ro^2 + N_th^2
 +
 N_sk^2 + N_ph^2 ) = S_ph^2</font></font></font></font><br />
-<font face=""><font face=""><font face=""><font face=""></font></font></font></font><br />
+<font face=""><font face=""><font face=""><font face="" /></font></font></font><br />
 <font face=""><font face=""><font face=""><font face="">We develop all
 parameters
 extracting
 time :</font></font></font></font><br />
-<font face=""><font face=""><font face=""><font face=""></font></font></font></font><br />
+<font face=""><font face=""><font face=""><font face="" /></font></font></font><br />
 <font face=""><font face=""><font face=""><font face="">N_th^2 = C_th *
 Bin1 * Bin2 *
 fex *
@@ -895,17 +893,17 @@ Skypix_el * fex * Em^2
 * fpix
 * Em)^2 * t^2</font></font></font></font>
 <br />
-<font face=""><font face=""><font face=""><font face=""></font></font></font></font><br />
+<font face=""><font face=""><font face=""><font face="" /></font></font></font><br />
 <font face=""><font face=""><font face=""><font face="">We obtain the
 equation C + B*t =
 -A*t^2
 where we see :</font></font></font></font>
 <br />
-<font face=""><font face=""><font face=""><font face=""></font></font></font></font><br />
+<font face=""><font face=""><font face=""><font face="" /></font></font></font><br />
 <font face=""><font face=""><font face=""><font face="">C = (SNR_obj)^2
 * ( N_ro^2)</font></font></font></font>
 <br />
-<font face=""><font face=""><font face=""><font face=""></font></font></font></font><br />
+<font face=""><font face=""><font face=""><font face="" /></font></font></font><br />
 <font face=""><font face=""><font face=""><font face="">B = (SNR_obj)^2
 * [ (C_th * Bin1
 * Bin2
@@ -919,24 +917,24 @@ D^2 / 4 * Tatm * Topt * <font face="">h</font>
 * fpix *
 fex * Em^2) ]</font></font></font></font>
 <br />
-<font face=""><font face=""><font face=""><font face=""></font></font></font></font><br />
+<font face=""><font face=""><font face=""><font face="" /></font></font></font><br />
 <font face=""><font face=""><font face=""><font face="">A = - (F_ph * <font
  face="">p</font>
 * D^2 / 4 * Tatm * Topt * <font face="">h</font>
 * fpix
 * Em)^2</font></font></font></font>
 <br />
-<font face=""><font face=""><font face=""><font face=""></font></font></font></font><br />
+<font face=""><font face=""><font face=""><font face="" /></font></font></font><br />
 <font face=""><font face=""><font face=""><font face="">We have A&lt;0,
 B&gt;0
 and C &gt;0.
 From the equation A*t^2 + B*t + C = 0, we can find the t value :</font></font></font></font>
 <br />
-<font face=""><font face=""><font face=""><font face=""></font></font></font></font><br />
+<font face=""><font face=""><font face=""><font face="" /></font></font></font><br />
 <font face=""><font face=""><font face=""><font face="">D = B*B - 4*A*C
 (always positive)</font></font></font></font>
 <br />
-<font face=""><font face=""><font face=""><font face=""></font></font></font></font><br />
+<font face=""><font face=""><font face=""><font face="" /></font></font></font><br />
 <font face=""><font face=""><font face=""><font face="">t = ( -B -
 sqrt(D) ) / (2*A)</font></font></font></font>
 <h2><font face=""><font face=""><font face=""><font face="">1.5.
@@ -949,27 +947,27 @@ knowing the
 SNR_obj (and knowing the exposure time of the object). We start with
 the SNR formula :</font></font></font></font>
 <br />
-<font face=""><font face=""><font face=""><font face=""></font></font></font></font><br />
+<font face=""><font face=""><font face=""><font face="" /></font></font></font><br />
 <font face=""><font face=""><font face=""><font face="">(SNR_obj)^2 *
 N_tot^2 = S_ph^2</font></font></font></font>
 <br />
-<font face=""><font face=""><font face=""><font face=""></font></font></font></font><br />
+<font face=""><font face=""><font face=""><font face="" /></font></font></font><br />
 <font face=""><font face=""><font face=""><font face="">We express all
 noise sources :</font></font></font></font>
 <br />
-<font face=""><font face=""><font face=""><font face=""></font></font></font></font><br />
+<font face=""><font face=""><font face=""><font face="" /></font></font></font><br />
 <font face=""><font face=""><font face=""><font face="">(SNR_obj)^2 * (
 N_ro^2 + N_th^2
 +
 N_sk^2 + N_ph^2 ) = S_ph^2</font></font></font></font>
 <br />
-<font face=""><font face=""><font face=""><font face=""></font></font></font></font><br />
+<font face=""><font face=""><font face=""><font face="" /></font></font></font><br />
 <font face=""><font face=""><font face=""><font face="">We develop all
 parameters
 extracting
 time :</font></font></font></font>
 <br />
-<font face=""><font face=""><font face=""><font face=""></font></font></font></font><br />
+<font face=""><font face=""><font face=""><font face="" /></font></font></font><br />
 <font face=""><font face=""><font face=""><font face="">N_th^2 = C_th *
 Bin1 * Bin2 *
 fex *
@@ -1000,13 +998,13 @@ F_ph^2 * (<font face="">p</font>
 * fpix
 * Em * t)^2</font></font></font></font>
 <br />
-<font face=""><font face=""><font face=""><font face=""></font></font></font></font><br />
+<font face=""><font face=""><font face=""><font face="" /></font></font></font><br />
 <font face=""><font face=""><font face=""><font face="">We obtain the
 equation C +
 B*F_ph =
 -A*F_ph^2 where we see :</font></font></font></font>
 <br />
-<font face=""><font face=""><font face=""><font face=""></font></font></font></font><br />
+<font face=""><font face=""><font face=""><font face="" /></font></font></font><br />
 <font face=""><font face=""><font face=""><font face="">C = (SNR_obj)^2
 * [( N_ro^2) +
 (C_th *
@@ -1015,31 +1013,31 @@ Bin1 * Bin2 * fex * Em^2 * t) + (Sky_ph * <font face="">p</font>
 * Topt * <font face="">h</font><font face="Times New Roman, serif">
 * fex * Em^2 * t</font>)]</font></font></font></font>
 <br />
-<font face=""><font face=""><font face=""><font face=""></font></font></font></font><br />
+<font face=""><font face=""><font face=""><font face="" /></font></font></font><br />
 <font face=""><font face=""><font face=""><font face="">B = (SNR_obj)^2
 * (<font face="">p</font>
 * D^2 / 4 * Tatm * Topt * <font face="">h</font>
 * fpix
 * fex * Em^2 *t)</font></font></font></font>
 <br />
-<font face=""><font face=""><font face=""><font face=""></font></font></font></font><br />
+<font face=""><font face=""><font face=""><font face="" /></font></font></font><br />
 <font face=""><font face=""><font face=""><font face="">A = - (<font
  face="">p</font>
 * D^2 / 4 * Tatm * Topt * <font face="">h</font>
 * fpix
 * Em * t)^2</font></font></font></font>
 <br />
-<font face=""><font face=""><font face=""><font face=""></font></font></font></font><br />
+<font face=""><font face=""><font face=""><font face="" /></font></font></font><br />
 <font face=""><font face=""><font face=""><font face="">We have A&lt;0,
 B&gt;0
 and C &gt;0.
 From the equation A*t^2 + B*t + C = 0, we can find the t value :</font></font></font></font>
 <br />
-<font face=""><font face=""><font face=""><font face=""></font></font></font></font><br />
+<font face=""><font face=""><font face=""><font face="" /></font></font></font><br />
 <font face=""><font face=""><font face=""><font face="">D = B*B - 4*A*C
 (always positive)</font></font></font></font>
 <br />
-<font face=""><font face=""><font face=""><font face=""></font></font></font></font><br />
+<font face=""><font face=""><font face=""><font face="" /></font></font></font><br />
 <font face=""><font face=""><font face=""><font face="">Total flux of
 the object outside
 atmosphere (photons / sec /m2) :<br />
@@ -1048,7 +1046,7 @@ atmosphere (photons / sec /m2) :<br />
 <font face=""><font face=""><font face=""><font face="">F_ph = ( -B -
 sqrt(D) ) / (2*A)</font></font></font></font>
 <br />
-<font face=""><font face=""><font face=""><font face=""></font></font></font></font><br />
+<font face=""><font face=""><font face=""><font face="" /></font></font></font><br />
 <font face=""><font face=""><font face=""><font face="">Total flux of
 the object outside
 atmosphere (Jy) :<br />
@@ -1057,7 +1055,7 @@ atmosphere (Jy) :<br />
 <font face=""><font face=""><font face=""><font face="">F_Jy = F_ph /
 (1.51e7 * <font face="">Dl/l)</font></font></font></font></font>
 <br />
-<font face=""><font face=""><font face=""><font face=""></font></font></font></font><br />
+<font face=""><font face=""><font face=""><font face="" /></font></font></font><br />
 <font face=""><font face=""><font face=""><font face="">The magnitude :<br />
 </font></font></font></font>
 <br />
