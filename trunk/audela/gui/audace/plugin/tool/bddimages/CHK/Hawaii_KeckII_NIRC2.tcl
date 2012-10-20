@@ -37,7 +37,7 @@
 
          # modifi les header
          buf1 setkwd [list "DATE-OBS"  $date "string" "UT date of start of observation" ""]
-         buf1 setkwd [list "EXPOSURE" $exposure  "double" "exposure duration (seconds)--calculated" ""]
+         buf1 setkwd [list "EXPOSURE" $exposure  "double" "exposure duration (seconds)" ""]
          buf1 setkwd [list "OBJECT" "136108_Haumea" "string" "Object name inside field" ""]
          buf1 setkwd [list "IAU_CODE" "568" "string" "Observatory IAU Code" ""]
 

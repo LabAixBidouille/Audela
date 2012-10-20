@@ -2,6 +2,19 @@ namespace eval bdi_binast_gui {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
    proc ::bdi_binast_gui::inittoconf {  } {
 
       catch { unset ::bdi_binast_gui::fen                  }
@@ -46,6 +59,20 @@ namespace eval bdi_binast_gui {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    proc ::bdi_binast_gui::fermer {  } {
 
       cleanmark
@@ -53,6 +80,21 @@ namespace eval bdi_binast_gui {
    }
 
    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -96,29 +138,6 @@ namespace eval bdi_binast_gui {
       
 
       return
-
-
-
-
-      set ::bdi_binast_tools::current_image [lindex $::bdi_binast_tools::img_list 0]
-      set tabkey         [::bddimages_liste::lget $::bdi_binast_tools::current_image "tabkey"]
-      set date           [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
-      set exposure       [string trim [lindex [::bddimages_liste::lget $tabkey "exposure"]   1] ]
-      set idbddimg       [::bddimages_liste::lget $::bdi_binast_tools::current_image idbddimg]
-      set dirfilename    [::bddimages_liste::lget $::bdi_binast_tools::current_image dirfilename]
-      set filename       [::bddimages_liste::lget $::bdi_binast_tools::current_image filename   ]
-      set file           [file join $bddconf(dirbase) $dirfilename $filename]
-      set ::bdi_binast_tools::current_image_name $filename
-      set ::bdi_binast_tools::current_image_date $date
-      set ::bdi_binast_tools::current_image_jjdate [expr [mc_date2jd $date] + $exposure / 86400.0 / 2.0]
-      set ::bdi_binast_tools::current_image_date [mc_date2iso8601 $::bdi_binast_tools::current_image_jjdate]
-#
-      # Visualisation de l image
-      cleanmark
-      buf$::audace(bufNo) load $file
-      ::audace::autovisu $::audace(visuNo)
-
-
    }
 
 
@@ -134,8 +153,22 @@ namespace eval bdi_binast_gui {
    proc ::bdi_binast_gui::set_nb_system {  } {
 
       set ::bdi_binast_tools::nb_obj 2
-      
    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -229,6 +262,11 @@ namespace eval bdi_binast_gui {
 
 
 
+
+
+
+
+
    proc ::bdi_binast_gui::good_sexa { d m s prec } {
 
       set d [expr int($d)]
@@ -247,19 +285,22 @@ namespace eval bdi_binast_gui {
 
 
 
+
+
+
+
+
+
    proc ::bdi_binast_gui::miriade_obj { sources obj  } {
 
+      set jd $::bdi_binast_tools::current_image_jjdate
+      set ::bdi_binast_tools::observer_pos "@-48"
+      set ::bdi_binast_tools::observer_pos "@HST"
+      #set ::bdi_binast_tools::observer_pos "500"
+      #gren_info "observer_pos=$::bdi_binast_tools::observer_pos\n"
 
-           
-
-
-            set jd $::bdi_binast_tools::current_image_jjdate
-            set ::bdi_binast_tools::observer_pos "@-48"
-            set ::bdi_binast_tools::observer_pos "500"
-            gren_info "observer_pos=$::bdi_binast_tools::observer_pos\n"
-
-            set miriade_obj [$sources.id.$obj get ]
-            gren_info "miriade_obj=$miriade_obj\n"
+      set miriade_obj [$sources.id.$obj get ]
+      #gren_info "miriade_obj=$miriade_obj\n"
 
       # teph 1 = astromJ2000
       # teph 2 = apparent
@@ -360,29 +401,19 @@ namespace eval bdi_binast_gui {
       set ra  [ expr  [mc_angle2deg $::bdi_binast_tools::rajapp ] * 15.0 ]
       set dec [ expr  [mc_angle2deg $::bdi_binast_tools::decapp ] ]
       affich_un_rond  $ra $dec green 3
-      gren_info "affich_un_rond  $ra $dec green 3"
+      #gren_info "affich_un_rond  $ra $dec green 2"
 
 
-catch {
-      set ::bdi_binast_tools::dx       [lindex $line 15]
-      set ::bdi_binast_tools::dy       [lindex $line 16]
-      
-      set ra  [ expr $ra  + $::bdi_binast_tools::dx / 3600.0 ]
-      set dec [ expr $dec + $::bdi_binast_tools::dy / 3600.0 ]
-      affich_un_rond  $ra $dec yellow 3
-      gren_info "affich_un_rond  $ra $dec yellow 2"
+      catch {
+         set ::bdi_binast_tools::dx       [lindex $line 15]
+         set ::bdi_binast_tools::dy       [lindex $line 16]
 
-}
+         set ra  [ expr $ra  + $::bdi_binast_tools::dx / 3600.0 ]
+         set dec [ expr $dec + $::bdi_binast_tools::dy / 3600.0 ]
+         affich_un_rond  $ra $dec yellow 2
+         #gren_info "affich_un_rond  $ra $dec yellow 2"
+      }
 
-#affich_un_rond  204.953273 19.237446 green 3 
-#affich_un_rond  205.08516  19.184583 green 3 
-
-#      $sources.ra.obj1 configure 
-#      $sources.ra.obj1   delete 0 end 
-#      $sources.ra.obj1   insert end $::bdi_binast_tools::rajapp
-#      $sources.dec.obj1 configure 
-#      $sources.dec.obj1   delete 0 end 
-#      $sources.dec.obj1   insert end $::bdi_binast_tools::decapp
       $sources.xcalc.$obj configure 
       $sources.xcalc.$obj delete 0 end 
       $sources.xcalc.$obj insert end [format "%.4f" $::bdi_binast_tools::dx ]
@@ -391,37 +422,28 @@ catch {
       $sources.ycalc.$obj delete 0 end 
       $sources.ycalc.$obj insert end [format "%.4f" $::bdi_binast_tools::dy ]
       set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,$obj,ycalc) [format "%.4f" $::bdi_binast_tools::dy ]
-#      $sources.ra.$obj configure 
-#      $sources.ra.$obj   delete 0 end 
-#      $sources.ra.$obj   insert end [mc_angle2hms [ expr  [mc_angle2deg $::bdi_binast_tools::rajapp ] * 15.0 + $::bdi_binast_tools::dx / 3600.0 ] ]
-#      $sources.dec.$obj configure 
-#      $sources.dec.$obj   delete 0 end 
-#      $sources.dec.$obj   insert end [mc_angle2dms [ expr  [mc_angle2deg $::bdi_binast_tools::decapp ] + $::bdi_binast_tools::dy / 3600.0 ] ]
 
-       set xcalc  [$sources.xcalc.$obj get]
-       set ycalc  [$sources.ycalc.$obj get]
-       set xobs   [$sources.xobs.$obj get]
-       set yobs   [$sources.yobs.$obj get]
-       gren_info "set  xcalc  $xcalc\n"
-       gren_info "set  ycalc  $ycalc\n"
-       gren_info "set  xobs   $xobs \n"
-       gren_info "set  yobs   $yobs \n"
+      set xcalc  [$sources.xcalc.$obj get]
+      set ycalc  [$sources.ycalc.$obj get]
+      set xobs   [$sources.xobs.$obj get]
+      set yobs   [$sources.yobs.$obj get]
+      gren_info "set  xcalc  $xcalc\n"
+      gren_info "set  ycalc  $ycalc\n"
+      gren_info "set  xobs   $xobs \n"
+      gren_info "set  yobs   $yobs \n"
 
       if {$xcalc!="" && $ycalc!="" && $xobs!="" && $yobs!="" } {
-      
          gren_info "OK\n"
-
-             set xomc [expr $xobs - $xcalc ]
-             $sources.xomc.$obj configure 
-             $sources.xomc.$obj delete 0 end 
-             $sources.xomc.$obj insert end [format "%.4f" $xomc ]
-             set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,$obj,xomc) [format "%.4f" $xomc ]
-             set yomc [expr $yobs - $ycalc ]
-             $sources.yomc.$obj configure 
-             $sources.yomc.$obj delete 0 end 
-             $sources.yomc.$obj insert end [format "%.4f" $yomc ]
-             set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,$obj,yomc) [format "%.4f" $yomc ]
-  
+         set xomc [expr $xobs - $xcalc ]
+         $sources.xomc.$obj configure 
+         $sources.xomc.$obj delete 0 end 
+         $sources.xomc.$obj insert end [format "%.4f" $xomc ]
+         set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,$obj,xomc) [format "%.4f" $xomc ]
+         set yomc [expr $yobs - $ycalc ]
+         $sources.yomc.$obj configure 
+         $sources.yomc.$obj delete 0 end 
+         $sources.yomc.$obj insert end [format "%.4f" $yomc ]
+         set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,$obj,yomc) [format "%.4f" $yomc ]
       }
 
       # si tout c est bien passé
@@ -492,54 +514,89 @@ catch {
       ::bdi_binast_gui::mesure_tout $sources
      
 
-       set rap [$sources.ra.obj1 get]
-       set decp [$sources.dec.obj1 get]
-       set ras [$sources.ra.$obj get]
-       set decs [$sources.dec.$obj get]
-       gren_info "set rap   $rap\n"
-       gren_info "set decp   $decp\n"
-       gren_info "set ras   $ras\n"
-       gren_info "set decs   $decs\n"
-      
-
-      if {$rap!="" && $decp!="" && $ras!="" && $decs!="" } {
-      
-         gren_info "OK\n"
-             set dra [expr ([mc_angle2deg $ras ] * 15.0 - [mc_angle2deg $rap ] * 15.0 ) * 3600.0 * cos ( [mc_angle2rad $decp ] )]
-             $sources.xobs.$obj configure 
-             $sources.xobs.$obj delete 0 end 
-             $sources.xobs.$obj insert end [format "%.4f" $dra ]
-             set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,$obj,xobs) [format "%.4f" $dra ]
-             set ddec [expr ([mc_angle2deg $decs ] - [mc_angle2deg $decp ]) * 3600.0]
-             $sources.yobs.$obj configure 
-             $sources.yobs.$obj delete 0 end 
-             $sources.yobs.$obj insert end [format "%.4f" $ddec ]
-             set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,$obj,yobs) [format "%.4f" $ddec ]
-         
-      
-      }
-
-
+      ::bdi_binast_gui::calcul_obs $sources $obj
 
 
    }
-   
-   
-   
-   
-   
-   
+
+
+
+
+
+
+
+
+
+
+
+
+
+   proc ::bdi_binast_gui::calcul_obs { sources obj } {
+  
+      set rap  [$sources.ra.obj1 get]
+      set decp [$sources.dec.obj1 get]
+      set ras  [$sources.ra.$obj get]
+      set decs [$sources.dec.$obj get]
+      #gren_info "set rap    $rap\n"
+      #gren_info "set decp   $decp\n"
+      #gren_info "set ras    $ras\n"
+      #gren_info "set decs   $decs\n"
+
+      if {$rap!="" && $decp!="" && $ras!="" && $decs!="" } {
+         #gren_info "OK\n"
+         set dra [expr ([mc_angle2deg $ras ] * 15.0 - [mc_angle2deg $rap ] * 15.0 ) * 3600.0 * cos ( [mc_angle2rad $decp ] )]
+         $sources.xobs.$obj configure 
+         $sources.xobs.$obj delete 0 end 
+         $sources.xobs.$obj insert end [format "%.4f" $dra ]
+         set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,$obj,xobs) [format "%.4f" $dra ]
+         set ddec [expr ([mc_angle2deg $decs ] - [mc_angle2deg $decp ]) * 3600.0]
+         $sources.yobs.$obj configure 
+         $sources.yobs.$obj delete 0 end 
+         $sources.yobs.$obj insert end [format "%.4f" $ddec ]
+         set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,$obj,yobs) [format "%.4f" $ddec ]
+      }
+      
+      return
+   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    proc ::bdi_binast_gui::enregistre { sources } {
       
       set id_obj 2
+      set miriade_obj [$sources.id.obj$id_obj get ]
 
       set fileres "obs-$id_obj.xml"
-      set chan0 [open $fileres w]
+      set filecsv "obs-$id_obj.csv"
 
+      set chan0 [open $fileres w]
+      set chan1 [open $filecsv w]
+
+      puts $chan0 "# MIRIADE NAME = $miriade_obj"
+      puts $chan1 "# MIRIADE NAME = $miriade_obj"
+      
+      puts $chan1 "isodate,jjdate,system,xobs,yobs,xcalc,ycalc,xomc,yomc,obsuai"
 
       for {set i 1} {$i <= $::bdi_binast_tools::nb_img_list} {incr i} {
 
          if {![info exists ::bdi_binast_tools::tabphotom($i,obj$id_obj,jjdate)]} {
+            continue
+         }
+         if {![info exists ::bdi_binast_tools::tabphotom($i,obj$id_obj,xobs)]} {
             continue
          }
 
@@ -603,11 +660,13 @@ catch {
          puts $chan0 "</vot:TR>"
          puts $chan0 ""
 
+         puts $chan1 "$isodate,$jjdate,$system,$xobs,$yobs,$xcalc,$ycalc,$xomc,$yomc,$obsuai"
 
 
       }
       
       close $chan0
+      close $chan1
 
 
    }
@@ -688,7 +747,7 @@ cleanmark
          set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,$obj,x)           $xsm
          set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,$obj,y)           $ysm
          
-         affich_un_rond_xy  $xsm $ysm blue [expr int($::bdi_binast_tools::tabsource($obj,delta) / 2.0)] 1
+         affich_un_rond_xy  $xsm $ysm blue [expr int($::bdi_binast_tools::tabsource($obj,delta))] 1
          
          set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,$obj,ra_deg)      $ra_deg
          set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,$obj,dec_deg)     $dec_deg
@@ -741,6 +800,10 @@ cleanmark
 
 
 
+
+
+
+
    proc ::bdi_binast_gui::next { sources } {
 
          set cpt 0
@@ -752,14 +815,24 @@ cleanmark
                ::bdi_binast_gui::charge_current_image
                
                for {set x 1} {$x<=$::bdi_binast_tools::nb_obj} {incr x} {
-                  set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,obj$x,x) $::bdi_binast_tools::tabphotom([expr $::bdi_binast_tools::id_current_image -1],obj$x,x)
-                  set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,obj$x,y) $::bdi_binast_tools::tabphotom([expr $::bdi_binast_tools::id_current_image -1],obj$x,y)
+                  if {![info exists ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,obj$x,x)]} {
+                     set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,obj$x,x) $::bdi_binast_tools::tabphotom([expr $::bdi_binast_tools::id_current_image -1],obj$x,x)
+                     set ::bdi_binast_tools::tabphotom($::bdi_binast_tools::id_current_image,obj$x,y) $::bdi_binast_tools::tabphotom([expr $::bdi_binast_tools::id_current_image -1],obj$x,y)
+                  }
                }
                
+               # Mesures des photocentres
                set err [::bdi_binast_gui::mesure_tout $sources]
                if {$err==1 && $::bdi_binast_tools::stoperreur==1} {
                   break
                }
+               
+               # Calcul des Obs differentielles
+               for {set x 2} {$x<=$::bdi_binast_tools::nb_obj} {incr x} {
+                  ::bdi_binast_gui::calcul_obs $sources obj$x
+                  ::bdi_binast_gui::miriade_obj $sources obj$x
+               }
+               
                
                
             }
@@ -767,6 +840,13 @@ cleanmark
          }
    }
    
+
+
+
+
+
+
+
 
    proc ::bdi_binast_gui::back { sources } {
 
@@ -916,22 +996,26 @@ cleanmark
       set id_obj 2
 
       set fileres "obs-moy-$id_obj.xml"
+      
       set chan0 [open $fileres w]
 
          set jjdate    ""
          set xobs    ""
          set yobs    ""
 
-      for {set i 1} {$i <= $::bdi_binast_tools::nb_img_list} {incr i} {
+         for {set i 1} {$i <= $::bdi_binast_tools::nb_img_list} {incr i} {
 
-         if {![info exists ::bdi_binast_tools::tabphotom($i,obj$id_obj,jjdate)]} {
-            continue
+            if {![info exists ::bdi_binast_tools::tabphotom($i,obj$id_obj,jjdate)]} {
+               continue
+            }
+            if {![info exists ::bdi_binast_tools::tabphotom($i,obj$id_obj,xobs)]} {
+               continue
+            }
+
+            lappend jjdate  $::bdi_binast_tools::tabphotom($i,obj$id_obj,jjdate)
+            lappend xobs    $::bdi_binast_tools::tabphotom($i,obj$id_obj,xobs)
+            lappend yobs    $::bdi_binast_tools::tabphotom($i,obj$id_obj,yobs)
          }
-
-         lappend jjdate  $::bdi_binast_tools::tabphotom($i,obj$id_obj,jjdate)
-         lappend xobs    $::bdi_binast_tools::tabphotom($i,obj$id_obj,xobs)
-         lappend yobs    $::bdi_binast_tools::tabphotom($i,obj$id_obj,yobs)
-      }
 
          set jjdate  [::math::statistics::mean $jjdate]
          set xobs    [::math::statistics::mean $xobs]
