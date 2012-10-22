@@ -215,7 +215,7 @@ proc spc_buildhtml { args } {
 #################################################################################################
 
 proc spc_conform { args } {
-   global audace spcaudace
+   global audace spcaudace conf
    set nbargs [ llength $args ]
    if { $nbargs == 2 } {
       set nom_fich_input [ lindex $args 1 ]
@@ -287,10 +287,10 @@ proc spc_conform { args } {
 	 }
 	 #::console::affiche_resultat " cracteristiques des profils conformes : crvalnew= $crvalnew  cdelt= $cdeltnew naxis= $naxisnew $nn\n"
 	 set fich2 [ spc_echantdelt $nom_fich_input $cdeltnew $crvalnew ]
-	 set fich2new [spc_selectpixels $fich2 1 $naxisnew ]
-	 set fich1new [spc_selectpixels $nom_fich_model [ expr $nn + 1 ] [ expr $naxisnew +$nn ] ]
+	 set fich2new [ spc_selectpixels $fich2 1 $naxisnew ]
+	 set fich1new [ spc_selectpixels $nom_fich_model [ expr $nn + 1 ] [ expr $naxisnew +$nn ] ]
 	 set suff _conform
-	 set ext .fit
+	 set ext $conf(extension,defaut)
 	 file rename -force "$audace(rep_images)/$fich1new$ext" "$audace(rep_images)/$nom_fich_model$suff$ext"
 	 file rename -force "$audace(rep_images)/$fich2new$ext" "$audace(rep_images)/$nom_fich_input$suff$ext"
 	 ::console::affiche_resultat " les 2 profils ont ete, apres mise en conformite, sauvegardes sous $nom_fich_model$suff et $nom_fich_input$suff\n"
@@ -298,8 +298,8 @@ proc spc_conform { args } {
 	 lappend lresult $nom_fich_model$suff
 	 lappend lresult $nom_fich_input$suff
 	 # effacement des fichiers temporaires
-	 file delete -force "$audace(rep_images)/$fich2"
-	 ::console::affiche_resultat " effacement du fichier $fich2 \n"
+	 file delete -force "$audace(rep_images)/$fich2$conf(extension,defaut)"
+	 # ::console::affiche_resultat " effacement du fichier $fich2 \n"
 	 return $lresult
       }
       

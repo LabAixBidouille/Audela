@@ -3229,49 +3229,73 @@ proc spc_divbrut { args } {
 # commencera a une longueur d'onde proche de la longueur d'onde de depart du numrateur (definie par le mot cle CRVAL1
 # Exemple spc_divri profil_numerateur profil_denominateur
 #################################################################################################
+
 proc spc_divri { args } {
-	global audace
+	global audace conf
 	set nbargs [ llength $args ]
 	if { $nbargs == 2 } {
-		set nom_fich_num [ lindex $args 0 ]
-      set nom_fich_num [ file rootname $nom_fich_num ]
-      set nom_fich_den [ lindex $args 1 ]
-      if { [ spc_testlincalib $nom_fich_num ] == -1 } {
+           set nom_fich_num [ file rootname [ lindex $args 0 ] ]
+           set nom_fich_den [ file rootname [ lindex $args 1 ] ]
+           set flag_num 0
+           set flag_den 0
+           if { [ spc_testlincalib $nom_fich_num ] == -1 } {
 			#::console::affiche_resultat " spc_divri : on linearise la loi de calibration du profil $nom_fich_num \n\n"
 	 		#return ""
-	 		set nom_fich_num [ spc_linearcal $nom_fich_num ]
-	 	}
-	 	if { [ spc_testlincalib $nom_fich_den ] == -1 } {
+	 		set nom_fich_num_lin [ spc_linearcal $nom_fich_num ]
+                        set flag_num 1
+           }
+           if { [ spc_testlincalib $nom_fich_den ] == -1 } {
 			#::console::affiche_resultat " spc_divri : on linearise la loi de calibration du profil $nom_fich_den \n\n"
 	 		#return ""
-	 		set nom_fich_den [ spc_linearcal $nom_fich_den ]
-	 	}
-	 	#mise en conformite des 2 profils 
-	 	set newdata [ spc_conform $nom_fich_num $nom_fich_den ]
-	 	set newnum [ lindex $newdata 0 ]
-	 	set newden [ lindex $newdata 1 ]
-	 	#--- Vérification de la compatibilité des 2 profils de raies : lambda_i, lambda_f et dispersion identiques
-    	if { [ spc_compare $newnum $newden ] == 1 } {
-	 		set suff _ricorr
-	 		set ext .fit
-	 		set result $nom_fich_num$suff
-	 		set toto [ spc_divbrut $newnum $newden ]
-	 		::console::affiche_resultat " le profil apres application de spc_divbrut a ete sauvegarde sous $toto \n"
-	 		file rename -force "$audace(rep_images)/$toto$ext" "$audace(rep_images)/$nom_fich_num$suff$ext"
-	 		::console::affiche_resultat " le profil apres application de spc_divri a ete sauvegarde sous $nom_fich_num$suff \n"
-	 		#effacement des fichiers temporaires§§§§§§§§§§§§§§§§§§§§§§§§§
-	 		return $result
-	 		
-	 	} else {
-      	::console::affiche_erreur "spc_divri : les profils ne sont pas divisibles\n\n"
-      	return ""
-   	}  
-	} else {
-      ::console::affiche_erreur "Usage: spc_divri numerateur.fits? denominateur.fits\n\n"
+	 		set nom_fich_den_lin [ spc_linearcal $nom_fich_den ]
+                        set flag_den 1
+           }
+           #mise en conformite des 2 profils :
+           if { $flag_num==0 && $flag_den==0 } { set newdata [ spc_conform $nom_fich_num $nom_fich_den ] }
+           if { $flag_num==1 && $flag_den==0 } {
+              set newdata [ spc_conform $nom_fich_num_lin $nom_fich_den ]
+              file delete -force "$audace(rep_images)/$nom_fich_num_lin$conf(extension,defaut)"
+           }
+           if { $flag_num==0 && $flag_den==1 } {
+              set newdata [ spc_conform $nom_fich_num $nom_fich_den_lin ]
+              file delete -force "$audace(rep_images)/$nom_fich_den_lin$conf(extension,defaut)"
+           }
+           if { $flag_num==1 && $flag_den==1 } {
+              set newdata [ spc_conform $nom_fich_num_lin $nom_fich_den_lin ]
+              file delete -force "$audace(rep_images)/$nom_fich_num_lin$conf(extension,defaut)"
+              file delete -force "$audace(rep_images)/$nom_fich_den_lin$conf(extension,defaut)"
+           }
+           set newnum [ lindex $newdata 0 ]
+           set newden [ lindex $newdata 1 ]
+           #--- Vérification de la compatibilité des 2 profils de raies : lambda_i, lambda_f et dispersion identiques   
+           if { [ spc_compare $newnum $newden ] == 1 } {
+              set suff _ricorr
+              set ext $conf(extension,defaut)
+              set result $nom_fich_num$suff
+              set toto [ spc_divbrut $newnum $newden ]
+              #::console::affiche_resultat " le profil apres application de spc_divbrut a ete sauvegarde sous $toto \n" 
+              file rename -force "$audace(rep_images)/$toto$ext" "$audace(rep_images)/$nom_fich_num$suff$ext"
+              ::console::affiche_resultat " le profil apres application de spc_divri a ete sauvegarde sous $nom_fich_num$suff \n"
+              #effacement des fichiers temporaires
+              file delete -force "$audace(rep_images)/$newnum$conf(extension,defaut)"
+              file delete -force "$audace(rep_images)/$newden$conf(extension,defaut)"
+              if { [ file exists "$audace(rep_images)/${nom_fich_num}_sel$conf(extension,defaut)" ] } { file delete -force "$audace(rep_images)/${nom_fich_num}_sel$conf(extension,defaut)" }
+              if { [ file exists "$audace(rep_images)/${nom_fich_num}_linear_sel$conf(extension,defaut)" ] } { file delete -force "$audace(rep_images)/${nom_fich_num}_linear_sel$conf(extension,defaut)" }
+              if { [ file exists "$audace(rep_images)/${nom_fich_den}_sel$conf(extension,defaut)" ] } { file delete -force "$audace(rep_images)/${nom_fich_den}_sel$conf(extension,defaut)" }
+              return $result
+           } else {
+              if { [ file exists "$audace(rep_images)/${nom_fich_num}_sel$conf(extension,defaut)" ] } { file delete -force "$audace(rep_images)/${nom_fich_num}_sel$conf(extension,defaut)" }
+              if { [ file exists "$audace(rep_images)/${nom_fich_num}_linear_sel$conf(extension,defaut)" ] } { file delete -force "$audace(rep_images)/${nom_fich_num}_linear_sel$conf(extension,defaut)" }
+              if { [ file exists "$audace(rep_images)/${nom_fich_den}_sel$conf(extension,defaut)" ] } { file delete -force "$audace(rep_images)/${nom_fich_den}_sel$conf(extension,defaut)" }
+              ::console::affiche_erreur "spc_divri : les profils ne sont pas divisibles\n\n"
+              return ""
+           }
+   } else {
+      ::console::affiche_erreur "Usage: spc_divri profil_numerateur profil_denominateur\n\n"
       return ""
    }  
 }
-
+#*********************************************************************#
 
 
 

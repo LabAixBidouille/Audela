@@ -3896,6 +3896,7 @@ namespace eval ::param_spc_audace_traite2srinstrum {
       set audace(param_spc_audace,traite2srinstrum,config,methmasters) "o"
       set audace(param_spc_audace,traite2srinstrum,config,export_png) "n"
 
+
       # === Variables d'environnement
       # backpad : #F0F0FF
       set audace(param_spc_audace,traite2srinstrum,color,textkey) $color(blue_pad)
@@ -4388,9 +4389,9 @@ namespace eval ::param_spc_audace_traite2srinstrum {
       #--- Lancement de la fonction spcaudace :
       #-- Si tous les champs sont /= "" on execute le calcul :
       if { [ spc_testguiargs $listeargs ] == 1 } {
-	  set fileout [ spc_traite2srinstrum $brut $noir $plu $noirplu $offset $lampe $rinstrum $methreg $methcos $methsel $methsky $methinv $methbin $methnorma $methsmo $ejbad $ejtilt $methmasters $export_png ]
-	  destroy .param_spc_audace_traite2srinstrum
-	  return $fileout
+         set fileout [ spc_traite2srinstrum $brut $noir $plu $noirplu $offset $lampe $rinstrum $methreg $methcos $methsel $methsky $methinv $methbin $methnorma $methsmo $ejbad $ejtilt $methmasters $export_png ]
+         destroy .param_spc_audace_traite2srinstrum
+         return $fileout
       }
   }
 
@@ -4479,6 +4480,7 @@ namespace eval ::param_spc_audace_traitestellaire {
       set audace(param_spc_audace,traitestellaire,config,export_bess) "n"
       # n
       set audace(param_spc_audace,traitestellaire,config,2lamps) "o"
+      set audace(param_spc_audace,traitestellaire,config,traiteseries) "n"
 
 
       # === Variables d'environnement
@@ -4495,7 +4497,8 @@ namespace eval ::param_spc_audace_traitestellaire {
       #--- Cree la fenetre .param_spc_audace_traitestellaire de niveau le plus haut
       toplevel .param_spc_audace_traitestellaire -class Toplevel -bg $audace(param_spc_audace,traitestellaire,color,backpad)
       #wm geometry .param_spc_audace_traitestellaire 450x558+10+10
-      wm geometry .param_spc_audace_traitestellaire 486x506+146-25
+      #wm geometry .param_spc_audace_traitestellaire 486x506+146-25
+      wm geometry .param_spc_audace_traitestellaire 486x516+146-25
       wm resizable .param_spc_audace_traitestellaire 1 1
       wm title .param_spc_audace_traitestellaire $caption(spcaudace,metaboxes,traitestellaire,titre)
       wm protocol .param_spc_audace_traitestellaire WM_DELETE_WINDOW "::param_spc_audace_traitestellaire::annuler"
@@ -4917,6 +4920,26 @@ namespace eval ::param_spc_audace_traitestellaire {
       pack  .param_spc_audace_traitestellaire.export_png.combobox -in .param_spc_audace_traitestellaire.export_png -side right -fill none
       pack .param_spc_audace_traitestellaire.export_png -in .param_spc_audace_traitestellaire -fill x -pady 1 -padx 12
 
+      #--- Label + Entry pour traiteseries
+      #-- Partie Label
+      frame .param_spc_audace_traitestellaire.traiteseries -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitestellaire,color,backpad)
+      label .param_spc_audace_traitestellaire.traiteseries.label  \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+	      -text "$caption(spcaudace,metaboxes,traitestellaire,config,traiteseries) " -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief flat
+      pack  .param_spc_audace_traitestellaire.traiteseries.label -in .param_spc_audace_traitestellaire.traiteseries -side left -fill none
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_traitestellaire.traiteseries.combobox \
+         -width 7          \
+         -height [ llength $liste_on ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 0       \
+         -textvariable audace(param_spc_audace,traitestellaire,config,traiteseries) \
+         -values $liste_on
+      pack  .param_spc_audace_traitestellaire.traiteseries.combobox -in .param_spc_audace_traitestellaire.traiteseries -side right -fill none
+      pack .param_spc_audace_traitestellaire.traiteseries -in .param_spc_audace_traitestellaire -fill x -pady 1 -padx 12
+
   }
 
 
@@ -4966,9 +4989,16 @@ namespace eval ::param_spc_audace_traitestellaire {
 	  #-- Test si le fichier "lampe" est bien calibré :
 	  set flag_calibration [ spc_testcalibre "$lampe" ]
 	  if { $flag_calibration != -1 } {
-	      set fileout [ spc_traitestellaire $lampe $brut $noir $plu $noirplu $offset $rinstrum $methraie $methcos $methinv $methnorma $cal_eau $export_png $export_bess $methreg $methsel $methsky $methbin $methsmo $ejbad $ejtilt $rmfpretrait $flag_2lamps $flag_calibration ]
-	      destroy .param_spc_audace_traitestellaire
-	      return $fileout
+             if { $audace(param_spc_audace,traitestellaire,config,traiteseries)=="n" } {
+                set fileout [ spc_traitestellaire $lampe $brut $noir $plu $noirplu $offset $rinstrum $methraie $methcos $methinv $methnorma $cal_eau $export_png $export_bess $methreg $methsel $methsky $methbin $methsmo $ejbad $ejtilt $rmfpretrait $flag_2lamps $flag_calibration ]
+             } else {
+                ## set fileout [ spc_traiteseries $lampe $brut $noir $plu $noirplu $offset $rinstrum $methraie $methcos $methinv $methnorma $cal_eau $export_png $export_bess $methreg $methsel $methsky $methbin $methsmo $ejbad $ejtilt $rmfpretrait $flag_2lamps $flag_calibration ]
+
+                #spc_traiteseries nom_générique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu nom_offset spectre_2D_lampe spectre_réponse_instrumentale méthode_appariement (reg, spc, n) uncosmic (o/n) méthode_détection_spectre (large, serre) méthode_sub_sky (moy, moy2, med, inf, sup, back, none) mirrorx (o/n) méthode_binning (add, rober, horne) normalisation (o/n) adoucissement (o/n) rejet_mauvais_spectres (o/n) rejet_rotation_importante (o/n) effacer_masters (o/n) export_PNG (o/n) ?2 spectres de calibration (o/n)? ?fenêtre_binning {x1 y1 x2 y2}?
+                set fileout [ spc_traiteseries $brut $noir $plu $noirplu $offset $lampe $rinstrum $methraie $methcos $methsel $methsky $methinv $methbin $methnorma $methsmo $ejbad $ejtilt "n" "n" $flag_2lamps ]
+             }
+             destroy .param_spc_audace_traitestellaire
+             return $fileout
 	  }
       }
   }

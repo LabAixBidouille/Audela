@@ -54,10 +54,11 @@ proc spc_exportcalibbr { args } {
       set newfile [ spc_calibreloifile $prof1bref $prof1acible ]
       #prise en compte du decalage des neons
       set newfile [ spc_calibredecal $newfile $decallambda ]
-      file rename -force "$audace(rep_images)/$newfile" "$audace(rep_images)/$prof1acible$suff"
+      file rename -force "$audace(rep_images)/$newfile$conf(extension,defaut)" "$audace(rep_images)/$prof1acible$suff$conf(extension,defaut)"
       ::console::affiche_resultat " le profil $prof1acible a ete calibre et sauvegarde sous $prof1acible$suff \n"
+      return "$prof1acible$suff"
    } else {
-      ::console::affiche_erreur "Usage: spc_exporttcalibbr prof1acible profneoncible prof1bref profneonref\n\n"
+      ::console::affiche_erreur "Usage: spc_exporttcalibbr spectre_1a_cible spectre_neon_cible spectre_1b_etoile_reference spctre_neon_etoile_reference\n\n"
    }
 }
 #********************************************************************
@@ -1316,7 +1317,7 @@ proc spc_calibren { args } {
       } else {
          set rms [ spc_calibrms $crpix1 $a $b $c $d $e $xvals $lambdas ]
       }
-      ::console::affiche_resultat "RMS=$rms angstrom\n"
+      ::console::affiche_resultat "RMS=$rms Angstrom\n"
 
       #--- Calcul des coéfficients de linéarisation provisoire de la calibration a1+b1*x (régression linéaire sur les abscisses choisies et leur lambda issues du polynome) :
       if { $nbraies<=4 } {
@@ -1688,7 +1689,7 @@ proc spc_calibre { args } {
       spc_loadfit $profiletalon
 
        #--- Détection des raies dans le profil de raies de la lampe :
-       # set raies [ spc_findbiglines_pat $profiletalon e ]
+       # set raies [ spc_findbiglines $profiletalon e ]
        set raies [ spc_findbiglineslamp $profiletalon ]
        #foreach raie $raies {
         #   lappend listeabscisses [ lindex $raie 0 ]
@@ -4144,8 +4145,9 @@ proc spc_rinstrum { args } {
        #set rinstrum0 [ spc_div $fmes_sortie $fref_sortie ]
        #set result_division [ spc_div $fmes_sortie $fref_sortie ]
        #set result_division [ spc_divri $fmes_sortie $fref_sortie ]
-       set result_division [ spc_divbrut $fmes_sortie $fref_sortie ]
-       set result_division [ spc_linearcal $result_division ]
+       set result_division_nl [ spc_divbrut $fmes_sortie $fref_sortie ]
+       set result_division [ spc_linearcal $result_division_nl ]
+       file delete -force "$audace(rep_images)/$result_division_nl$conf(extension,defaut)"
 
        #--- Lissage de la reponse instrumentale :
        ::console::affiche_resultat "\nLissage de la réponse instrumentale...\n"

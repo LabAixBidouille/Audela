@@ -110,6 +110,8 @@ proc spc_winini { } {
       .spc.menuBar.conv add command -label $caption(spcaudace,gui,writegif) -command "spc_scgif" -underline 0
       .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_fit2colors) -command "spc_fit2colors" -underline 0
       .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_file_space)
+      .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_maximext) -command "bm_maximext" -underline 0
+      .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_cleanfit) -command "bm_cleanfit" -underline 0
       .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_fits2dat_w) -command "spc_fits2dat" -underline 0
       .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_file_space)
       .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_dat2fits_w) -command "spc_dat2fits" -underline 0
@@ -247,11 +249,15 @@ proc spc_winini { } {
       #.spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_specLhIII_w) -command "::spbmfc::fenetreSpData" -underline 0 -accelerator "Ctrl-8"
       .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_pipelines_space)
       .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_cmd) -command "bm_cmd" -underline 0
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_maximext) -command "bm_maximext" -underline 0
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_cleanfit) -command "bm_cleanfit" -underline 0
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_pipelines_space)
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_exportcalibbr) -command "spc_exportcalibbr" -underline 0
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_br_w) -command "spc_br_w" -underline 0
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_hr_w) -command "spc_hr_w" -underline 0
       .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_pipelines_space)
       .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_sommeadd_w) -command "spc_sommeadd_w" -underline 0
       .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_sommekappa_w) -command "spc_sommekappa_w" -underline 0
-      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_br_w) -command "spc_br_w" -underline 0
-      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_hr_w) -command "spc_hr_w" -underline 0
 
       .spc configure -menu .spc.menuBar
       #-- Raccourcis calviers :

@@ -1203,9 +1203,10 @@ proc spc_findbiglineslamp { args } {
       # suppression des fichiers temporaires
       ::console::affiche_resultat " suppression des fichiers temporaires pl_gauss.fit, pl_crosscorr.dat, pl_crosscorr.fit, $nom_fich$ext et $nom_fich$ext1 \n"
       file delete -force "$audace(rep_images)/pl_gauss.fit"
-      file delete -force "$audace(rep_images)/$nom_fich$ext1"
+      file delete -force "$audace(rep_images)/$nom_fich$ext1$conf(extension,defaut)"
+      file delete -force "$audace(rep_images)/$nom_fich$ext1$suff$conf(extension,defaut)"
       set nom_fich [ file rootname $filename ]
-      file delete -force "$audace(rep_images)/$nom_fich$ext"
+      file delete -force "$audace(rep_images)/$nom_fich$ext$conf(extension,defaut)"
       file delete -force "$audace(rep_images)/pl_crosscorr.fit"
       file delete -force "$audace(rep_images)/pl_crosscorr.dat"
       return $listmax			
