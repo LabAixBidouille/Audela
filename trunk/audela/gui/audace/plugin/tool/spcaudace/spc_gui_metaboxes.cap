@@ -211,6 +211,7 @@ set caption(spcaudace,metaboxes,traitestellaire,config,cal_eau)         "Extra c
 set caption(spcaudace,metaboxes,traitestellaire,config,2lamps)          "Calibration with several lampe spectra (y/n)"
 set caption(spcaudace,metaboxes,traitestellaire,config,export_png)      "PNG graph export (y/n)"
 set caption(spcaudace,metaboxes,traitestellaire,config,export_bess)     "BeSS's format export (y/n)"
+set caption(spcaudace,metaboxes,traitestellaire,config,traiteseries)    "Process each spectra separately (o/n)"
 
 set caption(spcaudace,metaboxes,traitenebula,titre2)                    "Non stellar spectrum processing"
 set caption(spcaudace,metaboxes,traitenebula,titre)                     "Non stellar spectrum processing"
@@ -456,6 +457,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spcaudace,metaboxes,traitestellaire,config,2lamps)       "Calibration avec plusieurs spectres de lampe (o/n)"
    set caption(spcaudace,metaboxes,traitestellaire,config,export_png)   "Export vers un graphique au format PNG (o/n)"
    set caption(spcaudace,metaboxes,traitestellaire,config,export_bess)  "Export au format de la base Bess (o/n)"
+   set caption(spcaudace,metaboxes,traitestellaire,config,traiteseries) "Traite chaque spectre individuellement (o/n)"
 
    set caption(spcaudace,metaboxes,traitenebula,titre2)                 "Réduction de spectres non stellaires"
    set caption(spcaudace,metaboxes,traitenebula,titre)                  "Réduction de spectres non stellaires"
