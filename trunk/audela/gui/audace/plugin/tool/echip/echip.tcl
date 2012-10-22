@@ -299,13 +299,18 @@ namespace eval ::echip {
          std_thermic_signal std_bias exp_critique exp_max
 
       #--   formate les resultats
-      foreach var [list mean_thermic_signal std_thermic_signal mean_bias std_bias ] {
+      foreach var [list std_thermic_signal mean_bias std_bias] {
          set private($var) [format %.2f [set $var]]
       }
-      set private(exp_critique) [format %.1f $exp_critique]
-      set private(exp_max) [format %.1f $exp_max]
+      set private(mean_thermic_signal) [format %.4f $mean_thermic_signal]
+      if {$exp_critique != ""} {
+         set private(exp_critique) [format %.1f $exp_critique]
+      }
+      if {$exp_max != ""} {
+         set private(exp_max) [format %.1f $exp_max]
+      }
       if {$private(saturation) ne ""} {
-         set private(dynamic) [expr { int(($private(saturation)-$mean_bias)*$mean_gain/$mean_noise) }]
+         set private(dynamic) [expr { int(($private(saturation)-$mean_bias)*$mean_gain/(2*$mean_noise)) }]
       }
       update
 
