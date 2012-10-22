@@ -2062,6 +2062,8 @@ proc electronic_chip { args } {
       set std_therm [::math::statistics::stdev $therms]
       set mean_bias [::math::statistics::mean $biass]
       set std_bias [::math::statistics::stdev $biass]
+      set exposure     ""
+      set exposure_max ""
       ::console::affiche_resultat "----- Final result\n"
       ::console::affiche_resultat "thermic signal = [format "%.4f" $mean_therm] ADU/sec (+/- [format "%.4f" $std_therm])\n"
       if {$gain!=""} {
