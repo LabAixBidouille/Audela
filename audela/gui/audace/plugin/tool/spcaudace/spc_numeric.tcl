@@ -1914,6 +1914,7 @@ proc spc_ajustdegn { args } {
    #--- Initialisation de variables :
    set n [llength $abscisses_orig]
    set len [llength $ordonnees]
+   set ordonnees_rangees [ lsort -real -increasing $ordonnees ]
    set abscisses_rangees [ lsort -real -increasing $abscisses_new ]
    set abs_min [ lindex $abscisses_rangees 0 ]
    set abs_max [ lindex $abscisses_rangees [ expr $n -1 ] ]
@@ -1954,13 +1955,15 @@ proc spc_ajustdegn { args } {
    set calc [ gsl_mmult $X $coeffs ]
    set res [ gsl_msub $ordonnees $calc ]
    set RMS 0.
+   ::console::affiche_resultat "\nLambda (A) : RMS (A)\n"
    for { set k 0 } {$k< $n} {incr k} {
       set r [ lindex [ lindex $res $k ] 0 ]
       set RMS [ expr $RMS + $r * $r ]
-      ::console::affiche_resultat "pour l'abscisse [ lindex $abscisses_rangees $k ] le residu (en ordonnee) vaut $r \n"
+      # ::console::affiche_resultat "pour l'abscisse [ lindex $abscisses_rangees $k ] le residu (en ordonnee) vaut $r \n"
+      ::console::affiche_resultat "[ lindex $ordonnees_rangees $k ] : $r \n"
    }
    set RMS [ expr sqrt($RMS)/$n ]
-   ::console::affiche_resultat " spc_ajustdegn : RMS des residus $RMS \n"
+   ::console::affiche_resultat "RMS des residus : $RMS\n"
    #--- Determination des coefficients associes aux abscisses d'origine :
    set coefs [ list ]
    for { set k 0 } {$k<=$Ndeg} {incr k} {
