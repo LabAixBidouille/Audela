@@ -4995,7 +4995,7 @@ namespace eval ::param_spc_audace_traitestellaire {
                 ## set fileout [ spc_traiteseries $lampe $brut $noir $plu $noirplu $offset $rinstrum $methraie $methcos $methinv $methnorma $cal_eau $export_png $export_bess $methreg $methsel $methsky $methbin $methsmo $ejbad $ejtilt $rmfpretrait $flag_2lamps $flag_calibration ]
 
                 #spc_traiteseries nom_générique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu nom_offset spectre_2D_lampe spectre_réponse_instrumentale méthode_appariement (reg, spc, n) uncosmic (o/n) méthode_détection_spectre (large, serre) méthode_sub_sky (moy, moy2, med, inf, sup, back, none) mirrorx (o/n) méthode_binning (add, rober, horne) normalisation (o/n) adoucissement (o/n) rejet_mauvais_spectres (o/n) rejet_rotation_importante (o/n) effacer_masters (o/n) export_PNG (o/n) ?2 spectres de calibration (o/n)? ?fenêtre_binning {x1 y1 x2 y2}?
-                set fileout [ spc_traiteseries $brut $noir $plu $noirplu $offset $lampe $rinstrum $methraie $methcos $methsel $methsky $methinv $methbin $methnorma $methsmo $ejbad $ejtilt "n" "n" $flag_2lamps ]
+                set fileout [ spc_traiteseries $brut $noir $plu $noirplu $offset $lampe $rinstrum $methraie $methcos $methsel $methsky $methinv $methbin $methnorma $methsmo $ejbad $ejtilt "n" "n" $flag_2lamps $cal_eau ]
              }
              destroy .param_spc_audace_traitestellaire
              return $fileout
