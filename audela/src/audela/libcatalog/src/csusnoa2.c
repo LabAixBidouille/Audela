@@ -61,7 +61,7 @@ int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 	mySearchZoneUsnoa2 = findSearchZoneUsnoa2(ra,dec,radius,magMin,magMax);
 
 	/* Read all catalog files to be able to deliver an ID for each star */
-	allAccFiles        = readAllCatalogFiles(pathToCatalog,&maximumNumberOfStars);
+	allAccFiles        = readCatalogFiles(pathToCatalog,&mySearchZoneUsnoa2,&maximumNumberOfStars);
 	if(allAccFiles == NULL) {
 		Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
 		return (TCL_ERROR);
@@ -103,7 +103,8 @@ int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 
 			for(indexOfRA = mySearchZoneUsnoa2.indexOfFirstRightAscensionZone; indexOfRA < ACC_FILE_NUMBER_OF_LINES; indexOfRA++) {
 
-				if(processOneZoneCentredOnZeroRA(&dsptr,inputStream,allAccFiles[indexOfCatalog],arrayOfStars,&mySearchZoneUsnoa2,indexOfRA)) {
+				if(processOneZoneCentredOnZeroRA(&dsptr,inputStream,allAccFiles[indexOfCatalog],
+						arrayOfStars,&mySearchZoneUsnoa2,indexOfCatalog,indexOfRA)) {
 					Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
 					return (TCL_ERROR);
 				}
@@ -111,7 +112,8 @@ int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 
 			for(indexOfRA = 0; indexOfRA <= mySearchZoneUsnoa2.indexOfLastRightAscensionZone; indexOfRA++) {
 
-				if(processOneZoneCentredOnZeroRA(&dsptr,inputStream,allAccFiles[indexOfCatalog],arrayOfStars,&mySearchZoneUsnoa2,indexOfRA)) {
+				if(processOneZoneCentredOnZeroRA(&dsptr,inputStream,allAccFiles[indexOfCatalog],
+						arrayOfStars,&mySearchZoneUsnoa2,indexOfCatalog,indexOfRA)) {
 					Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
 					return (TCL_ERROR);
 				}
@@ -121,7 +123,8 @@ int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 
 			for(indexOfRA = mySearchZoneUsnoa2.indexOfFirstRightAscensionZone; indexOfRA <= mySearchZoneUsnoa2.indexOfLastRightAscensionZone; indexOfRA++) {
 
-				if(processOneZoneNotCentredOnZeroRA(&dsptr,inputStream,allAccFiles[indexOfCatalog],arrayOfStars,&mySearchZoneUsnoa2,indexOfRA)) {
+				if(processOneZoneNotCentredOnZeroRA(&dsptr,inputStream,allAccFiles[indexOfCatalog],
+						arrayOfStars,&mySearchZoneUsnoa2,indexOfCatalog,indexOfRA)) {
 					Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
 					return (TCL_ERROR);
 				}
@@ -137,7 +140,7 @@ int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 	Tcl_DStringFree(&dsptr);
 
 	/* Release memory */
-	freeAllCatalogFiles(allAccFiles);
+	freeAllCatalogFiles(allAccFiles,&mySearchZoneUsnoa2);
 	releaseSimpleArray(arrayOfStars);
 
 	return (TCL_OK);
@@ -147,9 +150,11 @@ int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 /* Process one RA-DEC zone centered on zero ra                              */
 /****************************************************************************/
 int processOneZoneCentredOnZeroRA(Tcl_DString* dsptr, FILE* inputStream,accFiles oneAccFile,
-		starUsno* const arrayOfStars,const searchZoneUsnoa2* mySearchZoneUsnoa2, const int indexOfRA) {
+		starUsno* const arrayOfStars,const searchZoneUsnoa2* mySearchZoneUsnoa2, const int indexOfCatalog, const int indexOfRA) {
 
-	int theId;
+	int position;
+	int zoneId;
+	char theId[14];
 	int theSign,qflag,field;
 	int raInCas;
 	unsigned int indexOfStar;
@@ -171,14 +176,15 @@ int processOneZoneCentredOnZeroRA(Tcl_DString* dsptr, FILE* inputStream,accFiles
 		return (1);
 	}
 
-	theId = oneAccFile.arrayOfIds[indexOfRA] - 1;
+	position = oneAccFile.arrayOfPosition[indexOfRA];
+	zoneId   = indexOfCatalog * CATLOG_DISTANCE_TO_POLE_WIDTH_IN_DECI_DEGREE;
 
 	/* Loop over stars and filter them */
 	for(indexOfStar = 0; indexOfStar < oneAccFile.numberOfStars[indexOfRA]; indexOfStar++) {
 
-		theId++;
 		theStar  = arrayOfStars[indexOfStar];
 		raInCas  = usnoa2Big2LittleEndianLong(theStar.ra);
+		position++;
 
 		if ((raInCas < mySearchZoneUsnoa2->raStartInCas) && (raInCas > mySearchZoneUsnoa2->raEndInCas)) {
 			continue;
@@ -202,8 +208,9 @@ int processOneZoneCentredOnZeroRA(Tcl_DString* dsptr, FILE* inputStream,accFiles
 		theSign            = usnoa2GetUsnoSign(magnitudes);
 		qflag              = usnoa2GetUsnoQflag(magnitudes);
 		field              = usnoa2GetUsnoField(magnitudes);
+		sprintf(theId,OUTPUT_ID_FORMAT,zoneId,position);
 
-		sprintf(tclString,"{ { USNOA2 { } {%d %f %f %d %d %d %.2f %.2f} } } ",theId,raInDeg,decInDeg,theSign,qflag,field,blueMagnitudeInMag,redMagnitudeInMag);
+		sprintf(tclString,"{ { USNOA2 { } {%s %f %f %d %d %d %.2f %.2f} } } ",theId,raInDeg,decInDeg,theSign,qflag,field,blueMagnitudeInMag,redMagnitudeInMag);
 		Tcl_DStringAppend(dsptr,tclString,-1);
 	}
 
@@ -214,9 +221,11 @@ int processOneZoneCentredOnZeroRA(Tcl_DString* dsptr, FILE* inputStream,accFiles
 /* Process one RA-DEC zone not centered on zero ra                           */
 /****************************************************************************/
 int processOneZoneNotCentredOnZeroRA(Tcl_DString* dsptr, FILE* inputStream,accFiles oneAccFile,
-		starUsno* const arrayOfStars,const searchZoneUsnoa2* mySearchZoneUsnoa2, const int indexOfRA) {
+		starUsno* const arrayOfStars,const searchZoneUsnoa2* mySearchZoneUsnoa2, const int indexOfCatalog, const int indexOfRA) {
 
-	int theId;
+	int position;
+	int zoneId;
+	char theId[14];
 	int theSign,qflag,field;
 	int raInCas;
 	unsigned int indexOfStar;
@@ -238,20 +247,21 @@ int processOneZoneNotCentredOnZeroRA(Tcl_DString* dsptr, FILE* inputStream,accFi
 		return (1);
 	}
 
-	theId = oneAccFile.arrayOfIds[indexOfRA] - 1;
+	position = oneAccFile.arrayOfPosition[indexOfRA];
+	zoneId   = indexOfCatalog * CATLOG_DISTANCE_TO_POLE_WIDTH_IN_DECI_DEGREE;
 
 	/* Loop over stars and filter them */
 	for(indexOfStar = 0; indexOfStar < oneAccFile.numberOfStars[indexOfRA]; indexOfStar++) {
 
-		theId++;
 		theStar  = arrayOfStars[indexOfStar];
 		raInCas  = usnoa2Big2LittleEndianLong(theStar.ra);
+		position++;
 
 		if ((raInCas < mySearchZoneUsnoa2->raStartInCas) || (raInCas > mySearchZoneUsnoa2->raEndInCas)) {
 			continue;
 		}
 
-		spdInCas   = usnoa2Big2LittleEndianLong(theStar.spd);
+		spdInCas = usnoa2Big2LittleEndianLong(theStar.spd);
 
 		if ((spdInCas < mySearchZoneUsnoa2->distanceToPoleStartInCas) || (spdInCas > mySearchZoneUsnoa2->distanceToPoleEndInCas)) {
 			continue;
@@ -269,8 +279,10 @@ int processOneZoneNotCentredOnZeroRA(Tcl_DString* dsptr, FILE* inputStream,accFi
 		theSign            = usnoa2GetUsnoSign(magnitudes);
 		qflag              = usnoa2GetUsnoQflag(magnitudes);
 		field              = usnoa2GetUsnoField(magnitudes);
+		sprintf(theId,OUTPUT_ID_FORMAT,zoneId,position);
 
-		sprintf(tclString,"{ { USNOA2 { } {%d %f %f %d %d %d %.2f %.2f} } } ",theId,raInDeg,decInDeg,theSign,qflag,field,blueMagnitudeInMag,redMagnitudeInMag);
+		sprintf(tclString,"{ { USNOA2 { } {%s %f %f %d %d %d %.2f %.2f} } } ",
+				theId,raInDeg,decInDeg,theSign,qflag,field,blueMagnitudeInMag,redMagnitudeInMag);
 		Tcl_DStringAppend(dsptr,tclString,-1);
 	}
 
@@ -280,15 +292,15 @@ int processOneZoneNotCentredOnZeroRA(Tcl_DString* dsptr, FILE* inputStream,accFi
 /****************************************************************************/
 /* Free the all ACC files array */
 /****************************************************************************/
-void freeAllCatalogFiles(const accFiles* allAccFiles) {
+void freeAllCatalogFiles(const accFiles* allAccFiles, const searchZoneUsnoa2* mySearchZoneUsnoa2) {
 
 	int indexOfFile;
 
 	if(allAccFiles != NULL) {
 
-		for(indexOfFile = 0; indexOfFile < NUMBER_OF_CATALOG_FILES; indexOfFile++) {
+		for(indexOfFile = mySearchZoneUsnoa2->indexOfFirstDistanceToPoleZone;
+					indexOfFile <= mySearchZoneUsnoa2->indexOfLastDistanceToPoleZone;indexOfFile++) {
 
-			releaseSimpleArray((void*)(allAccFiles[indexOfFile].arrayOfIds));
 			releaseSimpleArray((void*)(allAccFiles[indexOfFile].arrayOfPosition));
 			releaseSimpleArray((void*)(allAccFiles[indexOfFile].numberOfStars));
 		}
@@ -298,9 +310,10 @@ void freeAllCatalogFiles(const accFiles* allAccFiles) {
 }
 
 /****************************************************************************/
-/* Read all catalog files to be able to deliver an ID for each star */
+/* Read the catalog files which contain the search zones                    */
 /****************************************************************************/
-const accFiles* readAllCatalogFiles(const char* const pathOfCatalog, int* maximumNumberOfStars) {
+const accFiles* readCatalogFiles(const char* const pathOfCatalog,
+		const searchZoneUsnoa2* mySearchZoneUsnoa2, int* maximumNumberOfStars) {
 
 	int indexOfFile;
 	int indexOfLine;
@@ -311,7 +324,6 @@ const accFiles* readAllCatalogFiles(const char* const pathOfCatalog, int* maximu
 	double zoneRa;
 	int indexInFile;
 	int numberOfStars;
-	int theTotalId;
 	accFiles* allAccFiles;
 
 	allAccFiles = (accFiles*)malloc(NUMBER_OF_CATALOG_FILES* sizeof(accFiles));
@@ -320,16 +332,10 @@ const accFiles* readAllCatalogFiles(const char* const pathOfCatalog, int* maximu
 		return (NULL);
 	}
 
-	theTotalId = 1;
-
-	for(indexOfFile = 0; indexOfFile < NUMBER_OF_CATALOG_FILES; indexOfFile++) {
+	for(indexOfFile = mySearchZoneUsnoa2->indexOfFirstDistanceToPoleZone;
+			indexOfFile <= mySearchZoneUsnoa2->indexOfLastDistanceToPoleZone;indexOfFile++) {
 
 		/* Allocate memory for internal tables */
-		allAccFiles[indexOfFile].arrayOfIds = (int*)malloc(ACC_FILE_NUMBER_OF_LINES* sizeof(int));
-		if(allAccFiles[indexOfFile].arrayOfIds == NULL) {
-			sprintf(outputLogChar,"allAccFiles[%d].arrayOfIds = %d (int) out of memory\n",indexOfFile,ACC_FILE_NUMBER_OF_LINES);
-			return (NULL);
-		}
 		allAccFiles[indexOfFile].arrayOfPosition = (int*)malloc(ACC_FILE_NUMBER_OF_LINES* sizeof(int));
 		if(allAccFiles[indexOfFile].arrayOfPosition == NULL) {
 			sprintf(outputLogChar,"allAccFiles[%d].arrayOfPosition = %d (int) out of memory\n",indexOfFile,ACC_FILE_NUMBER_OF_LINES);
@@ -352,7 +358,7 @@ const accFiles* readAllCatalogFiles(const char* const pathOfCatalog, int* maximu
 
 		/* Read the catalog ACC files */
 		for(indexOfLine = 0; indexOfLine < ACC_FILE_NUMBER_OF_LINES; indexOfLine++) {
-			if ( fgets (oneLine , 128 , inputStream) == NULL ) {
+			if ( fgets (oneLine, 128, inputStream) == NULL ) {
 				sprintf(outputLogChar,"%s : can not read the %d th line\n",fileName,indexOfLine);
 				return (NULL);
 			} else {
@@ -363,10 +369,8 @@ const accFiles* readAllCatalogFiles(const char* const pathOfCatalog, int* maximu
 					return (NULL);
 				}
 
-				allAccFiles[indexOfFile].arrayOfIds[indexOfLine]      = theTotalId;
 				allAccFiles[indexOfFile].arrayOfPosition[indexOfLine] = indexInFile - 1;
 				allAccFiles[indexOfFile].numberOfStars[indexOfLine]   = numberOfStars;
-				theTotalId                                           += numberOfStars;
 
 				if(*maximumNumberOfStars  < numberOfStars) {
 					*maximumNumberOfStars = numberOfStars;
