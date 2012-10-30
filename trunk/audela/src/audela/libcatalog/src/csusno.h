@@ -26,6 +26,7 @@
 #define DOT_ACC_EXTENSION                       ".ACC"
 #define DOT_CAT_EXTENSION                       ".CAT"
 #define CATALOG_NAME_FORMAT                     "ZONE%04d"
+#define OUTPUT_ID_FORMAT                        "%04d-%08d"
 #define CATLOG_DISTANCE_TO_POLE_WIDTH_IN_DEGREE      7.5
 #define CATLOG_DISTANCE_TO_POLE_WIDTH_IN_DECI_DEGREE 75
 #define ACC_FILE_NUMBER_OF_LINES                96
@@ -40,7 +41,6 @@
 
 /* USNO2A ACC files */
 typedef struct {
-	int* arrayOfIds;
 	int* arrayOfPosition;
 	unsigned int* numberOfStars;
 } accFiles;
@@ -67,17 +67,17 @@ typedef struct {
 
 const searchZoneUsnoa2 findSearchZoneUsnoa2(const double ra,const double dec,const double radius,const double magMin, const double magMax);
 int usnoa2Big2LittleEndianLong(int l);
-const accFiles* readAllCatalogFiles(const char* const pathOfCatalog, int* maximumNumberOfStars);
-void freeAllCatalogFiles(const accFiles* allAccFiles);
+const accFiles* readCatalogFiles(const char* const pathOfCatalog, const searchZoneUsnoa2* mySearchZoneUsnoa2, int* maximumNumberOfStars);
+void freeAllCatalogFiles(const accFiles* allAccFiles,const searchZoneUsnoa2* mySearchZoneUsnoa2);
 double usnoa2GetUsnoBleueMagnitudeInDeciMag(int magL);
 double usnoa2GetUsnoRedMagnitudeInDeciMag(int magL);
 int usnoa2GetUsnoSign(int magL);
 int usnoa2GetUsnoQflag(int magL);
 int usnoa2GetUsnoField(int magL);
 int processOneZoneNotCentredOnZeroRA(Tcl_DString* dsptr, FILE* inputStream,accFiles oneAccFile,
-		starUsno* const arrayOfStars,const searchZoneUsnoa2* mySearchZoneUsnoa2, const int indexOfRA);
+		starUsno* const arrayOfStars,const searchZoneUsnoa2* mySearchZoneUsnoa2, const int indexOfCatalog, const int indexOfRA);
 int processOneZoneCentredOnZeroRA(Tcl_DString* dsptr, FILE* inputStream,accFiles oneAccFile,
-		starUsno* const arrayOfStars,const searchZoneUsnoa2* mySearchZoneUsnoa2, const int indexOfRA);
+		starUsno* const arrayOfStars,const searchZoneUsnoa2* mySearchZoneUsnoa2, const int indexOfCatalog, const int indexOfRA);
 
 #endif /* CSUSNO_H_ */
 
