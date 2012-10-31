@@ -12,17 +12,20 @@ int cmd_tcl_csucac2(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 
 	char* pathToCatalog;
 	int resultOfFunction;
-	int index;
+	int counterDec;
+	int counterRa;
+	int idOfStar;
 	double ra;
 	double dec;
 	double radius;
 	double magMin;
 	double magMax;
-	int** indexTable;
+	indexTableUcac2** indexTable;
 	starUcac2 oneStar;
 	searchZoneUcac2 mySearchZoneUcac2;
-	arrayOneDOfStarUcac2 theFilteredStars;
 	arrayTwoDOfStarUcac2 theUnFilteredStars;
+	arrayOneDOfStarUcac2 oneSetOfStar;
+	starUcac2* allStars;
 	Tcl_DString dsptr;
 
 	if((argc == 2) && (strcmp(argv[1],"-h") == 0)) {
@@ -73,62 +76,65 @@ int cmd_tcl_csucac2(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 		return (TCL_ERROR);
 	}
 
-	resultOfFunction = filterStarsUcac2(&theUnFilteredStars,&theFilteredStars,&mySearchZoneUcac2);
-	if(resultOfFunction) {
-		releaseDoubleArray((void**)indexTable, INDEX_TABLE_DEC_DIMENSION);
-		releaseMemoryArrayTwoDOfStarUcac2(&theUnFilteredStars);
-		Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
-		return (TCL_ERROR);
-	}
-
 	/* Print the filtered stars */
 	Tcl_DStringInit(&dsptr);
 	Tcl_DStringAppend(&dsptr,"{ { UCAC2 { } "
-			"{ ra_deg dec_deg U2Rmag_mag e_RAm_deg e_DEm_deg nobs e_pos_deg ncat cflg "
+			"{ ID ra_deg dec_deg U2Rmag_mag e_RAm_deg e_DEm_deg nobs e_pos_deg ncat cflg "
 			"EpRAm_deg EpDEm_deg pmRA_masperyear pmDEC_masperyear e_pmRA_masperyear e_pmDE_masperyear "
 			"q_pmRA q_pmDE 2m_id 2m_J 2m_H 2m_Ks 2m_ph 2m_cc} } } ",-1);
 	Tcl_DStringAppend(&dsptr,"{",-1); // start of sources list
 
-	//printf("theFilteredStars.length = %d\n",theFilteredStars.length);
+	for(counterDec = 0; counterDec < theUnFilteredStars.length; counterDec++) {
 
-	for(index = 0; index < theFilteredStars.length; index++) {
+		oneSetOfStar  = theUnFilteredStars.arrayTwoD[counterDec];
+		allStars      = oneSetOfStar.arrayOneD;
+		idOfStar      = oneSetOfStar.idOfFirstStarInArray;
 
-		Tcl_DStringAppend(&dsptr,"{ { UCAC2 { } {",-1);
+		for(counterRa = 0; counterRa < oneSetOfStar.length; counterRa++) {
 
-		oneStar = theFilteredStars.arrayOneD[index];
-		sprintf(outputLogChar,
-				"%.8f %+.8f %.3f %.8f %.8f %d %.8f %d %d "
-				"%.8f %.8f %.8f %.8f %.8f %.8f "
-				"%.5f %.5f %d %.3f %.3f %.3f %d %d\n",
+			idOfStar++;
+			oneStar   = allStars[counterRa];
 
-				(double)oneStar.raInMas / DEG2MAS,
-				(double)oneStar.decInMas / DEG2MAS,
-				(double)oneStar.ucacMagInCentiMag / MAG2CENTIMAG,
-				(double)oneStar.errorRaInMas / DEG2MAS,
-				(double)oneStar.errorDecInMas / DEG2MAS,
-				oneStar.numberOfObservations,
-				(double)oneStar.errorOnUcacPositionInMas / DEG2MAS,
-				oneStar.numberOfCatalogsForPosition,
-				oneStar.majorCatalogIdForPosition,
+			if(isGoodStar(&oneStar,&mySearchZoneUcac2)) {
 
-				(double)oneStar.centralEpochForMeanRaInMas / DEG2MAS,
-				(double)oneStar.centralEpochForMeanDecInMas / DEG2MAS,
-				(double)oneStar.raProperMotionInOneTenthMasPerYear / 10.,
-				(double)oneStar.decProperMotionInOneTenthMasPerYear / 10.,
-				(double)oneStar.errorOnRaProperMotionInOneTenthMasPerYear / 10.,
-				(double)oneStar.errorOnDecProperMotionInOneTenthMasPerYear / 10.,
+				Tcl_DStringAppend(&dsptr,"{ { UCAC2 { } {",-1);
 
-				(double)oneStar.raProperMotionGoodnessOfFit * 0.05,
-				(double)oneStar.decProperMotionGoodnessOfFit * 0.05,
-				oneStar.idFrom2Mass,
-				(double)oneStar.jMagnitude2MassInMilliMag / MAG2MILLIMAG,
-				(double)oneStar.hMagnitude2MassInMilliMag / MAG2MILLIMAG,
-				(double)oneStar.kMagnitude2MassInMilliMag / MAG2MILLIMAG,
-				oneStar.qualityFlag2Mass,
-				oneStar.ccFlag2Mass);
+				sprintf(outputLogChar,
+						"%d %.8f %+.8f %.3f %.8f %.8f %d %.8f %d %d "
+						"%.8f %.8f %.8f %.8f %.8f %.8f "
+						"%.5f %.5f %d %.3f %.3f %.3f %d %d\n",
 
-		Tcl_DStringAppend(&dsptr,outputLogChar,-1);
-		Tcl_DStringAppend(&dsptr,"} } } ",-1);
+						idOfStar,
+						(double)oneStar.raInMas / DEG2MAS,
+						(double)oneStar.decInMas / DEG2MAS,
+						(double)oneStar.ucacMagInCentiMag / MAG2CENTIMAG,
+						(double)oneStar.errorRaInMas / DEG2MAS,
+						(double)oneStar.errorDecInMas / DEG2MAS,
+						oneStar.numberOfObservations,
+						(double)oneStar.errorOnUcacPositionInMas / DEG2MAS,
+						oneStar.numberOfCatalogsForPosition,
+						oneStar.majorCatalogIdForPosition,
+
+						(double)oneStar.centralEpochForMeanRaInMas / DEG2MAS,
+						(double)oneStar.centralEpochForMeanDecInMas / DEG2MAS,
+						(double)oneStar.raProperMotionInOneTenthMasPerYear / 10.,
+						(double)oneStar.decProperMotionInOneTenthMasPerYear / 10.,
+						(double)oneStar.errorOnRaProperMotionInOneTenthMasPerYear / 10.,
+						(double)oneStar.errorOnDecProperMotionInOneTenthMasPerYear / 10.,
+
+						(double)oneStar.raProperMotionGoodnessOfFit * 0.05,
+						(double)oneStar.decProperMotionGoodnessOfFit * 0.05,
+						oneStar.idFrom2Mass,
+						(double)oneStar.jMagnitude2MassInMilliMag / MAG2MILLIMAG,
+						(double)oneStar.hMagnitude2MassInMilliMag / MAG2MILLIMAG,
+						(double)oneStar.kMagnitude2MassInMilliMag / MAG2MILLIMAG,
+						oneStar.qualityFlag2Mass,
+						oneStar.ccFlag2Mass);
+
+				Tcl_DStringAppend(&dsptr,outputLogChar,-1);
+				Tcl_DStringAppend(&dsptr,"} } } ",-1);
+			}
+		}
 	}
 
 	Tcl_DStringAppend(&dsptr,"}",-1); // end of main list
@@ -145,78 +151,17 @@ int cmd_tcl_csucac2(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 /**
  * Filter the un-filtered stars with respect to restrictions
  */
-int filterStarsUcac2(const arrayTwoDOfStarUcac2* theUnFilteredStars,arrayOneDOfStarUcac2* theFilteredStars,const searchZoneUcac2* mySearchZoneUcac2) {
+int isGoodStar(const starUcac2* oneStar,const searchZoneUcac2* mySearchZoneUcac2) {
 
-	int numberOfStars;
-	arrayOneDOfStarUcac2* arrayTwoD;
-	arrayOneDOfStarUcac2 oneSetOfStar;
-	starUcac2* allStars;
-	starUcac2 oneStar;
-	int lengthOfOneDArray;
-	int counterDec,counterRa;
+	if(
+			((mySearchZoneUcac2->isArroundZeroRa && ((oneStar->raInMas >= mySearchZoneUcac2->raStartInMas) || (oneStar->raInMas <= mySearchZoneUcac2->raEndInMas))) ||
+					(!mySearchZoneUcac2->isArroundZeroRa && ((oneStar->raInMas >= mySearchZoneUcac2->raStartInMas) && (oneStar->raInMas <= mySearchZoneUcac2->raEndInMas)))) &&
+					(oneStar->decInMas >= mySearchZoneUcac2->decStartInMas) &&
+					(oneStar->decInMas <= mySearchZoneUcac2->decEndInMas) &&
+					(oneStar->ucacMagInCentiMag >= mySearchZoneUcac2->magnitudeStartInCentiMag) &&
+					(oneStar->ucacMagInCentiMag <= mySearchZoneUcac2->magnitudeEndInCentiMag)) {
 
-	/* UCAC2 stop at dec = +42 deg*/
-	if(theUnFilteredStars->length == 0) {
-		return (0);
-	}
-
-	/* Count the stars which satisfies the criteria in mysearchZoneUcac2 */
-	numberOfStars  = 0;
-	arrayTwoD      = theUnFilteredStars->arrayTwoD;
-
-	for(counterDec = 0; counterDec < theUnFilteredStars->length; counterDec++) {
-
-		oneSetOfStar      = arrayTwoD[counterDec];
-		lengthOfOneDArray = oneSetOfStar.length;
-		allStars          = oneSetOfStar.arrayOneD;
-
-		for(counterRa     = 0; counterRa < lengthOfOneDArray; counterRa++) {
-			oneStar       = allStars[counterRa];
-			if(
-					((mySearchZoneUcac2->isArroundZeroRa && ((oneStar.raInMas >= mySearchZoneUcac2->raStartInMas) || (oneStar.raInMas <= mySearchZoneUcac2->raEndInMas))) ||
-							(!mySearchZoneUcac2->isArroundZeroRa && ((oneStar.raInMas >= mySearchZoneUcac2->raStartInMas) && (oneStar.raInMas <= mySearchZoneUcac2->raEndInMas)))) &&
-							(oneStar.decInMas >= mySearchZoneUcac2->decStartInMas) &&
-							(oneStar.decInMas <= mySearchZoneUcac2->decEndInMas) &&
-							(oneStar.ucacMagInCentiMag >= mySearchZoneUcac2->magnitudeStartInCentiMag) &&
-							(oneStar.ucacMagInCentiMag <= mySearchZoneUcac2->magnitudeEndInCentiMag)) {
-				numberOfStars++;
-			}
-		}
-	}
-
-	theFilteredStars->length    = numberOfStars;
-	if(numberOfStars == 0) {
-		return (0);
-	}
-	theFilteredStars->arrayOneD = (starUcac2*)malloc(numberOfStars * sizeof(starUcac2));
-
-	if((*theFilteredStars).arrayOneD == NULL) {
-		sprintf(outputLogChar,"Error : theFilteredStars.arrayOneD out of memory %d starUcac2",numberOfStars);
-		return (1);
-	}
-
-	/* Fill the array */
-	numberOfStars = 0;
-	for(counterDec = 0; counterDec < theUnFilteredStars->length; counterDec++) {
-
-		oneSetOfStar      = arrayTwoD[counterDec];
-		lengthOfOneDArray = oneSetOfStar.length;
-		allStars          = oneSetOfStar.arrayOneD;
-
-		for(counterRa = 0; counterRa < lengthOfOneDArray; counterRa++) {
-			oneStar       = allStars[counterRa];
-			if(
-					((mySearchZoneUcac2->isArroundZeroRa && ((oneStar.raInMas >= mySearchZoneUcac2->raStartInMas) || (oneStar.raInMas <= mySearchZoneUcac2->raEndInMas))) ||
-							(!mySearchZoneUcac2->isArroundZeroRa && ((oneStar.raInMas >= mySearchZoneUcac2->raStartInMas) && (oneStar.raInMas <= mySearchZoneUcac2->raEndInMas)))) &&
-							(oneStar.decInMas >= mySearchZoneUcac2->decStartInMas) &&
-							(oneStar.decInMas <= mySearchZoneUcac2->decEndInMas) &&
-							(oneStar.ucacMagInCentiMag >= mySearchZoneUcac2->magnitudeStartInCentiMag) &&
-							(oneStar.ucacMagInCentiMag <= mySearchZoneUcac2->magnitudeEndInCentiMag)) {
-
-				theFilteredStars->arrayOneD[numberOfStars] = oneStar;
-				numberOfStars++;
-			}
-		}
+		return(1);
 	}
 
 	return (0);
@@ -226,7 +171,7 @@ int filterStarsUcac2(const arrayTwoDOfStarUcac2* theUnFilteredStars,arrayOneDOfS
  * Retrieve list of stars
  */
 int retrieveUnfilteredStarsUcac2(const char* const pathOfCatalog, const searchZoneUcac2* mySearchZoneUcac2,
-		int** indexTable, arrayTwoDOfStarUcac2* theUnFilteredStars) {
+		indexTableUcac2** indexTable, arrayTwoDOfStarUcac2* theUnFilteredStars) {
 
 	/* We retrieve the index of all used file zones */
 	int indexZoneDecStart,indexZoneDecEnd,indexZoneRaStart,indexZoneRaEnd,resultOfFunction;
@@ -235,7 +180,8 @@ int retrieveUnfilteredStarsUcac2(const char* const pathOfCatalog, const searchZo
 	retrieveIndexesUcac2(mySearchZoneUcac2,&indexZoneDecStart,&indexZoneDecEnd,&indexZoneRaStart,&indexZoneRaEnd);
 
 	numberOfDecZones      = indexZoneDecEnd - indexZoneDecStart + 1;
-	/* If ra is around 0, we double the size of the array */
+
+	/* If RA is around 0, we double the size of the array */
 	if(mySearchZoneUcac2->isArroundZeroRa) {
 		numberOfDecZones *= 2;
 	}
@@ -305,7 +251,7 @@ void releaseMemoryArrayTwoDOfStarUcac2(const arrayTwoDOfStarUcac2* theTwoDArray)
 /**
  * Read the stars from the catalog
  */
-int readUnfiltredStarUcac2(const char* const pathOfCatalog, const arrayTwoDOfStarUcac2* theUnFilteredStars, int** indexTable,
+int readUnfiltredStarUcac2(const char* const pathOfCatalog, const arrayTwoDOfStarUcac2* const theUnFilteredStars, indexTableUcac2** indexTable,
 		const int indexZoneDecStart,const int indexZoneDecEnd, const int indexZoneRaStart,const int indexZoneRaEnd, const char isArroundZeroRa) {
 
 	int indexDec;
@@ -318,7 +264,7 @@ int readUnfiltredStarUcac2(const char* const pathOfCatalog, const arrayTwoDOfSta
 		for(indexDec = indexZoneDecStart; indexDec <= indexZoneDecEnd; indexDec++) {
 
 			/* From indexZoneRaStart to lastZoneRa*/
-			resultOfFunction = readUnfiltredStarForOneDecZoneUcac2(pathOfCatalog, &(*theUnFilteredStars).arrayTwoD[counterDec],
+			resultOfFunction = readUnfiltredStarForOneDecZoneUcac2(pathOfCatalog, &(theUnFilteredStars->arrayTwoD[counterDec]),
 					indexTable[indexDec], indexDec, indexZoneRaStart, lastZoneRa);
 			if(resultOfFunction) {
 				return (1);
@@ -327,7 +273,7 @@ int readUnfiltredStarUcac2(const char* const pathOfCatalog, const arrayTwoDOfSta
 			counterDec++;
 
 			/* From 0 to indexZoneRaEnd*/
-			resultOfFunction = readUnfiltredStarForOneDecZoneUcac2(pathOfCatalog, &(*theUnFilteredStars).arrayTwoD[counterDec],
+			resultOfFunction = readUnfiltredStarForOneDecZoneUcac2(pathOfCatalog, &(theUnFilteredStars->arrayTwoD[counterDec]),
 					indexTable[indexDec], indexDec, 0, indexZoneRaEnd);
 
 			if(resultOfFunction) {
@@ -342,7 +288,7 @@ int readUnfiltredStarUcac2(const char* const pathOfCatalog, const arrayTwoDOfSta
 		for(indexDec = indexZoneDecStart; indexDec <= indexZoneDecEnd; indexDec++) {
 
 			/* From indexZoneRaStart to indexZoneRaEnd*/
-			resultOfFunction = readUnfiltredStarForOneDecZoneUcac2(pathOfCatalog, &(*theUnFilteredStars).arrayTwoD[counterDec],
+			resultOfFunction = readUnfiltredStarForOneDecZoneUcac2(pathOfCatalog, &(theUnFilteredStars->arrayTwoD[counterDec]),
 					indexTable[indexDec], indexDec, indexZoneRaStart,indexZoneRaEnd);
 			if(resultOfFunction) {
 				return (1);
@@ -357,35 +303,29 @@ int readUnfiltredStarUcac2(const char* const pathOfCatalog, const arrayTwoDOfSta
 /**
  * read stars from the catalog for one Dec zone for the un-filtered stars : case of ra not around 0
  */
-int readUnfiltredStarForOneDecZoneUcac2(const char* const pathOfCatalog, const arrayOneDOfStarUcac2* notFilteredStarsForOneDec,
-		const int* const indexTableForOneDec, int indexDec, const int indexZoneRaStart,const int indexZoneRaEnd) {
+int readUnfiltredStarForOneDecZoneUcac2(const char* const pathOfCatalog, arrayOneDOfStarUcac2* const unFilteredStarsForOneDec,
+		const indexTableUcac2* const indexTableForOneDec, int indexDec, const int indexZoneRaStart,const int indexZoneRaEnd) {
 
 	char completeFileName[1024];
 	int resultOfRead;
 	int indexRa;
 	int sumOfStarBefore;
-	int sumOfStarToRead;
 	FILE* myStream;
 
-	if(notFilteredStarsForOneDec->length == 0) {
+	if(unFilteredStarsForOneDec->length == 0) {
 		return (0);
 	}
 
-	sumOfStarBefore       = 0;
-	for(indexRa           = 0; indexRa < indexZoneRaStart; indexRa++) {
-		sumOfStarBefore  += indexTableForOneDec[indexRa];
-	}
-
-	sumOfStarToRead       = 0;
-	for(indexRa           = indexZoneRaStart; indexRa <= indexZoneRaEnd; indexRa++) {
-		sumOfStarToRead  += indexTableForOneDec[indexRa];
+	sumOfStarBefore      = 0;
+	for(indexRa          = 0; indexRa < indexZoneRaStart; indexRa++) {
+		sumOfStarBefore += indexTableForOneDec[indexRa].numberOfStarsInZone;
 	}
 
 	/* Open the file */
 	indexDec++; //Names start with 1 not 0
 	sprintf(completeFileName,ZONE_FILE_FORMAT_NAME,pathOfCatalog,indexDec);
-	myStream = fopen(completeFileName,"rb");
 
+	myStream = fopen(completeFileName,"rb");
 	if(myStream == NULL) {
 		sprintf(outputLogChar,"Error : unable to open file %s\n",completeFileName);
 		return (1);
@@ -398,12 +338,14 @@ int readUnfiltredStarForOneDecZoneUcac2(const char* const pathOfCatalog, const a
 		return (1);
 	}
 
-	resultOfRead = (int)fread(notFilteredStarsForOneDec->arrayOneD,sizeof(starUcac2),sumOfStarToRead,myStream);
+	resultOfRead = (int)fread(unFilteredStarsForOneDec->arrayOneD,sizeof(starUcac2),unFilteredStarsForOneDec->length,myStream);
+
+	unFilteredStarsForOneDec->idOfFirstStarInArray = indexTableForOneDec[indexZoneRaStart].idOfFirstStarInZone;
 
 	fclose(myStream);
 
-	if(resultOfRead != sumOfStarToRead) {
-		sprintf(outputLogChar,"Error : resultOfRead = %d != sumOfStarToRead = %d\n",resultOfRead,sumOfStarToRead);
+	if(resultOfRead != unFilteredStarsForOneDec->length) {
+		sprintf(outputLogChar,"Error : resultOfRead = %d != sumOfStarToRead = %d\n",resultOfRead,unFilteredStarsForOneDec->length);
 		return (1);
 	}
 
@@ -414,7 +356,7 @@ int readUnfiltredStarForOneDecZoneUcac2(const char* const pathOfCatalog, const a
 /**
  * Allocate memory for one Dec zone for the un-filtered stars : case of ra not around 0
  */
-int allocateUnfiltredStarUcac2(const arrayTwoDOfStarUcac2* theUnilteredStars, int** indexTable,
+int allocateUnfiltredStarUcac2(const arrayTwoDOfStarUcac2* theUnFilteredStars, indexTableUcac2** indexTable,
 		const int indexZoneDecStart,const int indexZoneDecEnd, const int indexZoneRaStart,const int indexZoneRaEnd, const char isArroundZeroRa) {
 
 	int indexDec;
@@ -427,7 +369,7 @@ int allocateUnfiltredStarUcac2(const arrayTwoDOfStarUcac2* theUnilteredStars, in
 		for(indexDec = indexZoneDecStart; indexDec <= indexZoneDecEnd; indexDec++) {
 
 			/* From indexZoneRaStart to lastZoneRa*/
-			resultOfFunction = allocateUnfiltredStarForOneDecZoneUcac2(&(theUnilteredStars->arrayTwoD[counterDec]),
+			resultOfFunction = allocateUnfiltredStarForOneDecZoneUcac2(&(theUnFilteredStars->arrayTwoD[counterDec]),
 					indexTable[indexDec], indexZoneRaStart, lastZoneRa);
 			if(resultOfFunction) {
 				return (1);
@@ -436,7 +378,7 @@ int allocateUnfiltredStarUcac2(const arrayTwoDOfStarUcac2* theUnilteredStars, in
 			counterDec++;
 
 			/* From 0 to indexZoneRaEnd*/
-			resultOfFunction = allocateUnfiltredStarForOneDecZoneUcac2(&(theUnilteredStars->arrayTwoD[counterDec]),
+			resultOfFunction = allocateUnfiltredStarForOneDecZoneUcac2(&(theUnFilteredStars->arrayTwoD[counterDec]),
 					indexTable[indexDec], 0, indexZoneRaEnd);
 
 			if(resultOfFunction) {
@@ -453,7 +395,7 @@ int allocateUnfiltredStarUcac2(const arrayTwoDOfStarUcac2* theUnilteredStars, in
 		for(indexDec = indexZoneDecStart; indexDec <= indexZoneDecEnd; indexDec++) {
 
 			/* From indexZoneRaStart to indexZoneRaEnd*/
-			resultOfFunction = allocateUnfiltredStarForOneDecZoneUcac2(&(theUnilteredStars->arrayTwoD[counterDec]),
+			resultOfFunction = allocateUnfiltredStarForOneDecZoneUcac2(&(theUnFilteredStars->arrayTwoD[counterDec]),
 					indexTable[indexDec], indexZoneRaStart,indexZoneRaEnd);
 			if(resultOfFunction) {
 				return (1);
@@ -469,23 +411,22 @@ int allocateUnfiltredStarUcac2(const arrayTwoDOfStarUcac2* theUnilteredStars, in
 /**
  * Allocate memory for one Dec zone for the un-filtered stars
  */
-int allocateUnfiltredStarForOneDecZoneUcac2(arrayOneDOfStarUcac2* notFilteredStarsForOneDec, const int* const indexTableForOneDec,
+int allocateUnfiltredStarForOneDecZoneUcac2(arrayOneDOfStarUcac2* const unFilteredStarsForOneDec, const indexTableUcac2* const indexTableForOneDec,
 		const int indexZoneRaStart,const int indexZoneRaEnd) {
 
 	int indexRa;
-	int sumOfStar   = 0;
-	for(indexRa     = indexZoneRaStart; indexRa <= indexZoneRaEnd; indexRa++) {
-		sumOfStar  += indexTableForOneDec[indexRa];
+	int sumOfStar  = 0;
+	for(indexRa    = indexZoneRaStart; indexRa <= indexZoneRaEnd; indexRa++) {
+		sumOfStar += indexTableForOneDec[indexRa].numberOfStarsInZone;
 	}
-	//printf("sumOfStar = %d\n",sumOfStar);
-	notFilteredStarsForOneDec->length = 0;
+
+	unFilteredStarsForOneDec->length = sumOfStar;
 
 	if(sumOfStar > 0) {
 		/* Allocate memory */
-		notFilteredStarsForOneDec->length        = sumOfStar;
-		notFilteredStarsForOneDec->arrayOneD     = (starUcac2*)malloc(sumOfStar * sizeof(starUcac2));
-		if(notFilteredStarsForOneDec->arrayOneD == NULL) {
-			sprintf(outputLogChar,"Error : notFilteredStarsForOneDec->arrayOneD out of memory %d starUcac2\n",sumOfStar);
+		unFilteredStarsForOneDec->arrayOneD     = (starUcac2*)malloc(sumOfStar * sizeof(starUcac2));
+		if(unFilteredStarsForOneDec->arrayOneD == NULL) {
+			sprintf(outputLogChar,"Error : unFilteredStarsForOneDec->arrayOneD out of memory %d starUcac2\n",sumOfStar);
 			return (1);
 		}
 	}
@@ -496,7 +437,7 @@ int allocateUnfiltredStarForOneDecZoneUcac2(arrayOneDOfStarUcac2* notFilteredSta
 /**
  * We retrive the index of all used file zones
  */
-void retrieveIndexesUcac2(const searchZoneUcac2* mySearchZoneUcac2,int* indexZoneDecStart,int* indexZoneDecEnd,int* indexZoneRaStart,int* indexZoneRaEnd) {
+void retrieveIndexesUcac2(const searchZoneUcac2* const mySearchZoneUcac2,int* indexZoneDecStart,int* indexZoneDecEnd,int* indexZoneRaStart,int* indexZoneRaEnd) {
 
 	/* dec start */
 	*indexZoneDecStart     = (int)((mySearchZoneUcac2->decStartInMas - DEC_SOUTH_POLE_MAS) / DEC_WIDTH_ZONE_MAS);
@@ -526,19 +467,20 @@ void retrieveIndexesUcac2(const searchZoneUcac2* mySearchZoneUcac2,int* indexZon
 /**
  * Read the index file
  */
-int** readIndexFileUcac2(const char* pathOfCatalog) {
+indexTableUcac2** readIndexFileUcac2(const char* pathOfCatalog) {
 
 	int index;
-	int numberOfStars;
+	int numberOfStarsInZone;
+	int numberOfStarsInPreviousZones;
+	int numberOfAccumulatedStars;
 	int decZoneNumber;
 	int raZoneNumber;
-	int tempInt;
 	int index2;
 	double tempDouble;
 	char completeFileName[STRING_COMMON_LENGTH];
 	char temporaryString[STRING_COMMON_LENGTH];
 	char* temporaryPointer;
-	int** indexTable;
+	indexTableUcac2** indexTable;
 	FILE* tableStream;
 
 	sprintf(completeFileName,"%s/%s",pathOfCatalog,INDEX_FILE_NAME_UCAC2);
@@ -550,13 +492,13 @@ int** readIndexFileUcac2(const char* pathOfCatalog) {
 	}
 
 	/* Allocate memory */
-	indexTable = (int**)malloc(INDEX_TABLE_DEC_DIMENSION * sizeof(int*));
+	indexTable = (indexTableUcac2**)malloc(INDEX_TABLE_DEC_DIMENSION * sizeof(indexTableUcac2*));
 	if(indexTable == NULL) {
 		sprintf(outputLogChar,"Error : indexTable out of memory\n");
 		return (NULL);
 	}
 	for(index = 0; index < INDEX_TABLE_DEC_DIMENSION;index++) {
-		indexTable[index] = (int*)malloc(INDEX_TABLE_RA_DIMENSION * sizeof(int));
+		indexTable[index] = (indexTableUcac2*)malloc(INDEX_TABLE_RA_DIMENSION * sizeof(indexTableUcac2));
 		if(indexTable[index] == NULL) {
 			sprintf(outputLogChar,"Error : indexTable[%d] out of memory\n",index);
 			return (NULL);
@@ -578,8 +520,10 @@ int** readIndexFileUcac2(const char* pathOfCatalog) {
 		if(temporaryPointer == NULL) {
 			break;
 		}
-		sscanf(temporaryString,FORMAT_INDEX_FILE_UCAC2,&numberOfStars,&tempInt,&tempInt,&decZoneNumber,&raZoneNumber,&tempDouble,&tempDouble);
-		indexTable[decZoneNumber - 1][raZoneNumber - 1] = numberOfStars;
+		sscanf(temporaryString,FORMAT_INDEX_FILE_UCAC2,&numberOfStarsInZone,&numberOfStarsInPreviousZones,
+				&numberOfAccumulatedStars,&decZoneNumber,&raZoneNumber,&tempDouble,&tempDouble);
+		indexTable[decZoneNumber - 1][raZoneNumber - 1].numberOfStarsInZone = numberOfStarsInZone;
+		indexTable[decZoneNumber - 1][raZoneNumber - 1].idOfFirstStarInZone = numberOfAccumulatedStars - numberOfStarsInZone;
 	}
 
 	fclose(tableStream);
@@ -587,7 +531,7 @@ int** readIndexFileUcac2(const char* pathOfCatalog) {
 	if(DEBUG) {
 		for(index = 0; index < INDEX_TABLE_DEC_DIMENSION;index++) {
 			for(index2 = 0; index2 < INDEX_TABLE_RA_DIMENSION;index2++) {
-				printf("indexTable[%3d][%3d] = %d\n",index,index2,indexTable[index][index2]);
+				printf("indexTable[%3d][%3d] = %d\n",index,index2,indexTable[index][index2].numberOfStarsInZone);
 			}
 		}
 	}
@@ -644,13 +588,13 @@ const searchZoneUcac2 findSearchZoneUcac2(const double raInDeg,const double decI
 		ratio                        = tmpValue / COMPLETE_RA_MAS;
 		ratio                        = floor(ratio) * COMPLETE_RA_MAS;
 		tmpValue                    -= ratio;
-		mySearchZoneUcac2.raStartInMas    = (int)tmpValue;
+		mySearchZoneUcac2.raStartInMas          = (int)tmpValue;
 
 		tmpValue                     = DEG2MAS * (raInDeg  + radiusRa);
 		ratio                        = tmpValue / COMPLETE_RA_MAS;
 		ratio                        = floor(ratio) * COMPLETE_RA_MAS;
 		tmpValue                    -= ratio;
-		mySearchZoneUcac2.raEndInMas      = (int)tmpValue;
+		mySearchZoneUcac2.raEndInMas           = (int)tmpValue;
 
 		mySearchZoneUcac2.isArroundZeroRa      = 0;
 
