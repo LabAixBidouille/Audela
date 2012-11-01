@@ -102,7 +102,7 @@ int cmd_tcl_csucac2(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 				sprintf(outputLogChar,
 						"%d %.8f %+.8f %.3f %.8f %.8f %d %.8f %d %d "
 						"%.8f %.8f %.8f %.8f %.8f %.8f "
-						"%.5f %.5f %d %.3f %.3f %.3f %d %d\n",
+						"%.5f %.5f %d %.3f %.3f %.3f %d %d",
 
 						idOfStar,
 						(double)oneStar.raInMas / DEG2MAS,
