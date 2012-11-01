@@ -68,7 +68,7 @@ namespace eval ::echip {
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
       switch $propertyName {
-         function     { return "acquisition" }
+         function     { return "analysis" }
          subfunction1 { return "echip" }
          display      { return "window" }
          multivisu    { return 0 }
