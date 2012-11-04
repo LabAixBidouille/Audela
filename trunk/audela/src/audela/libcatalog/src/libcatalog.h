@@ -31,7 +31,6 @@
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
-#include <stdint.h>
 
 /***************************************************************************/
 /**    Detect the exploitation system and add the relevant includes       **/
