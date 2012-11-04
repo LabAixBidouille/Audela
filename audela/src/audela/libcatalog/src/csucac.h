@@ -30,7 +30,7 @@
 /* 0.1 hour = 1.5 deg = 5400000 mas */
 #define RA_WIDTH_ZONE_MAS_UCAC2AND3             5400000.
 /* 0.25 deg = 90000 mas */
-#define RA_WIDTH_ZONE_MAS_UCAC4                 90000.
+#define RA_WIDTH_ZONE_MAS_UCAC4                 900000.
 #define STRING_COMMON_LENGTH 1024
 
 typedef struct {
@@ -145,39 +145,39 @@ typedef struct {
 #pragma pack( 1)
 
 typedef struct {
-	int32_t  raInMas;
-	int32_t  distanceToSouthPoleInMas;
-	uint16_t ucacFitMagInMilliMag;
-	uint16_t ucacApertureMagInMilliMag;
-	uint8_t  ucacErrorMagInCentiMag;
-	uint8_t  objectType;
-	uint8_t  doubleStarFlag;
-	int8_t   errorOnUcacRaInMas;
-	int8_t   errorOnUcacDecInMas;
-	uint8_t  numberOfCcdObservation;
-	uint8_t  numberOfUsedCcdObservation;
-	uint8_t  numberOfUsedCatalogsForProperMotion;
-	uint16_t centralEpochForMeanRaInCentiMas;
-	uint16_t centralEpochForMeanDecInCentiMas;
-	int16_t  raProperMotionInOneTenthMasPerYear;
-	int16_t  decProperMotionInOneTenthMasPerYear;
-	int8_t   errorOnRaProperMotionInOneTenthMasPerYear;
-	int8_t   errorOnDecProperMotionInOneTenthMasPerYear;
-	uint32_t idFrom2Mass;
-	uint16_t jMagnitude2MassInMilliMag;
-	uint16_t hMagnitude2MassInMilliMag;
-	uint16_t kMagnitude2MassInMilliMag;
-	uint8_t  qualityFlag2Mass[3];
-	uint8_t  errorMagnitude2MassInCentiMag[3];
-	uint16_t magnitudeAPASSInMilliMag[5];
-	uint8_t  magnitudeErrorAPASSInCentiMag[5];
-	uint8_t  gFlagYale;
-	uint32_t fk6HipparcosTychoSourceFlag;
-	uint8_t  legaGalaxyMatchFlag;
-	uint8_t  extendedSource2MassFlag;
-	uint32_t starIdentifier;
-	uint16_t zoneNumberUcac2;
-	uint32_t recordNumberUcac2;
+	int            raInMas;
+	int            distanceToSouthPoleInMas;
+	unsigned short ucacFitMagInMilliMag;
+	unsigned short ucacApertureMagInMilliMag;
+	unsigned char  ucacErrorMagInCentiMag;
+	unsigned char  objectType;
+	unsigned char  doubleStarFlag;
+	char           errorOnUcacRaInMas;
+	char           errorOnUcacDecInMas;
+	unsigned char  numberOfCcdObservation;
+	unsigned char  numberOfUsedCcdObservation;
+	unsigned char  numberOfUsedCatalogsForProperMotion;
+	unsigned short centralEpochForMeanRaInCentiMas;
+	unsigned short centralEpochForMeanDecInCentiMas;
+	short          raProperMotionInOneTenthMasPerYear;
+	short          decProperMotionInOneTenthMasPerYear;
+	char           errorOnRaProperMotionInOneTenthMasPerYear;
+	char           errorOnDecProperMotionInOneTenthMasPerYear;
+	unsigned int   idFrom2Mass;
+	unsigned short jMagnitude2MassInMilliMag;
+	unsigned short hMagnitude2MassInMilliMag;
+	unsigned short kMagnitude2MassInMilliMag;
+	unsigned char  qualityFlag2Mass[3];
+	unsigned char  errorMagnitude2MassInCentiMag[3];
+	unsigned short magnitudeAPASSInMilliMag[5];
+	unsigned char  magnitudeErrorAPASSInCentiMag[5];
+	unsigned char  gFlagYale;
+	unsigned int   fk6HipparcosTychoSourceFlag;
+	unsigned char  legaGalaxyMatchFlag;
+	unsigned char  extendedSource2MassFlag;
+	unsigned int   starIdentifier;
+	unsigned short zoneNumberUcac2;
+	unsigned int   recordNumberUcac2;
 } starUcac4;
 #pragma pack( )
 
