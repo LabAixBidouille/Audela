@@ -10,34 +10,27 @@
 
 #include "useful.h"
 
-/* 1 deg = 3600000 mas (= milli arc second) */
-#define DEG2MAS         3600000.
-/* 0 deg = 0 mas */
-#define START_RA_MAS    0
-/* 360 deg = 1296000000. mas */
-#define COMPLETE_RA_MAS 1296000000
-
 /* The index file name*/
-#define INDEX_FILE_NAME_UCAC2 "u2index.txt"
-#define INDEX_FILE_NAME_UCAC3 "u3index.asc"
-#define ZONE_FILE_FORMAT_NAME "%sz%03d"
-#define INDEX_TABLE_DEC_DIMENSION 360
-#define INDEX_TABLE_RA_DIMENSION 240
-#define INDEX_FILE_HEADER_NUMBER_OF_LINES 10
-#define FORMAT_INDEX_FILE_UCAC2 "%d %d %d %d %d %lf %lf"
-#define FORMAT_INDEX_FILE_UCAC3 "%d %d %d %d %lf"
+#define INDEX_FILE_NAME_UCAC2                   "u2index.txt"
+#define INDEX_FILE_NAME_UCAC3                   "u3index.asc"
+#define INDEX_FILE_NAME_UCAC4                   "u4i/u4index.asc"
+#define ZONE_FILE_FORMAT_NAME_UCAC2AND3         "%sz%03d"
+#define ZONE_FILE_FORMAT_NAME_UCAC4             "%su4b/z%03d"
+#define INDEX_TABLE_DEC_DIMENSION_UCAC2AND3     360
+#define INDEX_TABLE_DEC_DIMENSION_UCAC4         900
+#define INDEX_TABLE_RA_DIMENSION_UCAC2AND3      240
+#define INDEX_TABLE_RA_DIMENSION_UCAC4          1440
+#define INDEX_FILE_HEADER_NUMBER_OF_LINES_UCAC2 10
+#define FORMAT_INDEX_FILE_UCAC2                 "%d %d %d %d %d %lf %lf"
+#define FORMAT_INDEX_FILE_UCAC3AND4             "%d %d %d %d %lf"
 /* 0.5 deg = 1800000 mas */
-#define DEC_WIDTH_ZONE_MAS 1800000.
-/* dec at the south pole in mas : -90 deg = -324000000. mas */
-#define DEC_SOUTH_POLE_MAS -324000000
-/* dec at the north pole in mas : +90 deg = +324000000. mas */
-#define DEC_NORTH_POLE_MAS  324000000
-/* distance to south pole at at the south pole in Mas : 0 deg = 0. mas */
-#define DISTANCE_TO_SOUTH_POLE_AT_SOUTH_POLE_MAS 0.
-/* distance to south pole at at the north pole in mas : +180 deg = 648000000. mas */
-#define DISTANCE_TO_SOUTH_POLE_AT_NORTH_POLE_MAS 648000000
+#define DEC_WIDTH_ZONE_MAS_UCAC2AND3            1800000.
+/* 0.2 deg = 720000 mas */
+#define DEC_WIDTH_ZONE_MAS_UCAC4                720000.
 /* 0.1 hour = 1.5 deg = 5400000 mas */
-#define RA_WIDTH_ZONE_MAS 5400000.
+#define RA_WIDTH_ZONE_MAS_UCAC2AND3             5400000.
+/* 0.25 deg = 90000 mas */
+#define RA_WIDTH_ZONE_MAS_UCAC4                 90000.
 #define STRING_COMMON_LENGTH 1024
 
 typedef struct {
@@ -67,16 +60,6 @@ typedef struct {
 } starUcac2;
 
 typedef struct {
-	int   raStartInMas;
-	int   raEndInMas;
-	char  isArroundZeroRa;
-	int   decStartInMas;
-	int   decEndInMas;
-	short magnitudeStartInCentiMag;
-	short magnitudeEndInCentiMag;
-} searchZoneUcac2;
-
-typedef struct {
 	starUcac2* arrayOneD;
 	int idOfFirstStarInArray;
 	int length;
@@ -87,74 +70,63 @@ typedef struct {
 	int length;
 } arrayTwoDOfStarUcac2;
 
-typedef struct {
-	int numberOfStarsInZone;
-	int idOfFirstStarInZone;
-} indexTableUcac;
+/* "Raw binary" means the data is written out in the same 78 byte */
+/* per star format in which it was read: no reformatting is done. */
+#define UCAC4_RAW_BINARY 0x8
 
 typedef struct {
-	int raInMas;
-	int distanceToSouthPoleInMas;
+	int   raInMas;
+	int   distanceToSouthPoleInMas;
 	short ucacFitMagInMilliMag;
 	short ucacApertureMagInMilliMag;
 	short ucacErrorMagInMilliMag;
-	char objectType;
-	char doubleStarFlag;
+	char  objectType;
+	char  doubleStarFlag;
 	short errorOnUcacRaInMas;
 	short errorOnUcacDecInMas;
-	char numberOfCcdObservation;
-	char numberOfUsedCcdObservation;
-	char numberOfUsedCatalogsForProperMotion;
-	char numberOfMatchingCatalogs;
+	char  numberOfCcdObservation;
+	char  numberOfUsedCcdObservation;
+	char  numberOfUsedCatalogsForProperMotion;
+	char  numberOfMatchingCatalogs;
 	short centralEpochForMeanRaInMas;
 	short centralEpochForMeanDecInMas;
-	int raProperMotionInOneTenthMasPerYear;
-	int decProperMotionInOneTenthMasPerYear;
+	int   raProperMotionInOneTenthMasPerYear;
+	int   decProperMotionInOneTenthMasPerYear;
 	short errorOnRaProperMotionInOneTenthMasPerYear;
 	short errorOnDecProperMotionInOneTenthMasPerYear;
-	int idFrom2Mass;
+	int   idFrom2Mass;
 	short jMagnitude2MassInMilliMag;
 	short hMagnitude2MassInMilliMag;
 	short kMagnitude2MassInMilliMag;
-	char jQualityFlag2Mass;
-	char hQualityFlag2Mass;
-	char kQualityFlag2Mass;
-	char jErrorMagnitude2MassInCentiMag;
-	char hErrorMagnitude2MassInCentiMag;
-	char kErrorMagnitude2MassInCentiMag;
+	char  jQualityFlag2Mass;
+	char  hQualityFlag2Mass;
+	char  kQualityFlag2Mass;
+	char  jErrorMagnitude2MassInCentiMag;
+	char  hErrorMagnitude2MassInCentiMag;
+	char  kErrorMagnitude2MassInCentiMag;
 	short bMagnitudeSCInMilliMag;
 	short r2MagnitudeSCInMilliMag;
 	short iMagnitudeSCInMilliMag;
-	char scStarGalaxieClass;
-	char bQualityFlagSC;
-	char r2QualityFlagSC;
-	char iQualityFlag2SC;
-	char hipparcosMatchFlag;
-	char tychoMatchFlag;
-	char ac2000MatchFlag;
-	char agk2bMatchFlag;
-	char agk2hMatchFlag;
-	char zaMatchFlag;
-	char byMatchFlag;
-	char lickMatchFlag;
-	char scMatchFlag;
-	char spmMatchFlag;
-	char yaleSpmObjectType;
-	char yaleSpmInputCatalog;
-	char ledaGalaxyMatchFlag;
-	char extendedSourceFlag2Mass;
-	char mposStarNumber;
+	char  scStarGalaxieClass;
+	char  bQualityFlagSC;
+	char  r2QualityFlagSC;
+	char  iQualityFlag2SC;
+	char  hipparcosMatchFlag;
+	char  tychoMatchFlag;
+	char  ac2000MatchFlag;
+	char  agk2bMatchFlag;
+	char  agk2hMatchFlag;
+	char  zaMatchFlag;
+	char  byMatchFlag;
+	char  lickMatchFlag;
+	char  scMatchFlag;
+	char  spmMatchFlag;
+	char  yaleSpmObjectType;
+	char  yaleSpmInputCatalog;
+	char  ledaGalaxyMatchFlag;
+	char  extendedSourceFlag2Mass;
+	char  mposStarNumber;
 } starUcac3;
-
-typedef struct {
-	int  raStartInMas;
-	int  raEndInMas;
-	char isArroundZeroRa;
-	int  distanceToPoleStartInMas;
-	int  distanceToPoleEndInMas;
-	int  magnitudeStartInMilliMag;
-	int  magnitudeEndInMilliMag;
-} searchZoneUcac3;
 
 typedef struct {
 	starUcac3* arrayOneD;
@@ -167,6 +139,84 @@ typedef struct {
 	arrayOneDOfStarUcac3* arrayTwoD;
 	int length;
 } arrayTwoDOfStarUcac3;
+
+/* Raw structures are read herein,  so the following structure  */
+/* must be packed on byte boundaries:                           */
+#pragma pack( 1)
+
+typedef struct {
+	int32_t  raInMas;
+	int32_t  distanceToSouthPoleInMas;
+	uint16_t ucacFitMagInMilliMag;
+	uint16_t ucacApertureMagInMilliMag;
+	uint8_t  ucacErrorMagInCentiMag;
+	uint8_t  objectType;
+	uint8_t  doubleStarFlag;
+	int8_t   errorOnUcacRaInMas;
+	int8_t   errorOnUcacDecInMas;
+	uint8_t  numberOfCcdObservation;
+	uint8_t  numberOfUsedCcdObservation;
+	uint8_t  numberOfUsedCatalogsForProperMotion;
+	uint16_t centralEpochForMeanRaInCentiMas;
+	uint16_t centralEpochForMeanDecInCentiMas;
+	int16_t  raProperMotionInOneTenthMasPerYear;
+	int16_t  decProperMotionInOneTenthMasPerYear;
+	int8_t   errorOnRaProperMotionInOneTenthMasPerYear;
+	int8_t   errorOnDecProperMotionInOneTenthMasPerYear;
+	uint32_t idFrom2Mass;
+	uint16_t jMagnitude2MassInMilliMag;
+	uint16_t hMagnitude2MassInMilliMag;
+	uint16_t kMagnitude2MassInMilliMag;
+	uint8_t  qualityFlag2Mass[3];
+	uint8_t  errorMagnitude2MassInCentiMag[3];
+	uint16_t magnitudeAPASSInMilliMag[5];
+	uint8_t  magnitudeErrorAPASSInCentiMag[5];
+	uint8_t  gFlagYale;
+	uint32_t fk6HipparcosTychoSourceFlag;
+	uint8_t  legaGalaxyMatchFlag;
+	uint8_t  extendedSource2MassFlag;
+	uint32_t starIdentifier;
+	uint16_t zoneNumberUcac2;
+	uint32_t recordNumberUcac2;
+} starUcac4;
+#pragma pack( )
+
+typedef struct {
+	starUcac4* arrayOneD;
+	int idOfFirstStarInArray;
+	int indexDec;
+	int length;
+} arrayOneDOfStarUcac4;
+
+typedef struct {
+	arrayOneDOfStarUcac4* arrayTwoD;
+	int length;
+} arrayTwoDOfStarUcac4;
+
+typedef struct {
+	int numberOfStarsInZone;
+	int idOfFirstStarInZone;
+} indexTableUcac;
+
+typedef struct {
+	int   raStartInMas;
+	int   raEndInMas;
+	char  isArroundZeroRa;
+	int   decStartInMas;
+	int   decEndInMas;
+	short magnitudeStartInCentiMag;
+	short magnitudeEndInCentiMag;
+} searchZoneUcac2;
+
+typedef struct {
+	int  raStartInMas;
+	int  raEndInMas;
+	char isArroundZeroRa;
+	int  distanceToPoleStartInMas;
+	int  distanceToPoleEndInMas;
+	int  magnitudeStartInMilliMag;
+	int  magnitudeEndInMilliMag;
+} searchZoneUcac3And4;
 
 /* Function prototypes for UCAC2 */
 const searchZoneUcac2 findSearchZoneUcac2(const double ra,const double dec,const double radius,const double magMin, const double magMax);
@@ -187,24 +237,43 @@ int isGoodStarUcac2(const starUcac2* const oneStar,const searchZoneUcac2* const 
 void releaseMemoryArrayTwoDOfStarUcac2(const arrayTwoDOfStarUcac2* const theTwoDArray);
 void printUnfilteredStarUcac2(const arrayTwoDOfStarUcac2* const unFilteredStars);
 
-/* Function prototypes for UCAC3 */
-const searchZoneUcac3 findSearchZoneUcac3(const double ra,const double dec,const double radius,const double magMin, const double magMax);
+/* Function prototypes for UCAC3 (some functions are common with UCAC4)*/
+const searchZoneUcac3And4 findSearchZoneUcac3And4(const double ra,const double dec,const double radius,const double magMin, const double magMax);
 indexTableUcac** readIndexFileUcac3(const char* const pathOfCatalog);
-void retrieveIndexesUcac3(const searchZoneUcac3* const mySearchZone,int* const indexZoneDecStart,int* const indexZoneDecEnd,int* const indexZoneRaStart,int* const indexZoneRaEnd);
-int retrieveUnfilteredStarsUcac3(const char* const pathOfCatalog, const searchZoneUcac3* const mySearchZone, indexTableUcac* const * const indexTable,
-		arrayTwoDOfStarUcac3* const theUnfilteredStars);
-int allocateUnfiltredStarUcac3(const arrayTwoDOfStarUcac3* const unFilteredStars, indexTableUcac* const * const indexTable,const int indexZoneDecStart,
-		const int indexZoneDecEnd,const int indexZoneRaStart,const int indexZoneRaEnd, const char isArroundZeroRa);
+void retrieveIndexesUcac3(const searchZoneUcac3And4* const mySearchZone,int* const indexZoneDecStart,int* const indexZoneDecEnd,
+		int* const indexZoneRaStart,int* const indexZoneRaEnd);
+int retrieveUnfilteredStarsUcac3(const char* const pathOfCatalog, const searchZoneUcac3And4* const mySearchZone,
+		indexTableUcac* const * const indexTable,arrayTwoDOfStarUcac3* const unFilteredStars);
+int allocateUnfiltredStarUcac3(const arrayTwoDOfStarUcac3* const unFilteredStars, indexTableUcac* const * const indexTable,
+		const int indexZoneDecStart,const int indexZoneDecEnd,const int indexZoneRaStart,const int indexZoneRaEnd, const char isArroundZeroRa);
 int allocateUnfiltredStarForOneDecZoneUcac3(arrayOneDOfStarUcac3* const unFilteredStarsForOneDec, const indexTableUcac* const indexTableForOneDec,
 		const int indexZoneRaStart,const int indexZoneRaEnd);
 int readUnfiltredStarUcac3(const char* const pathOfCatalog, const arrayTwoDOfStarUcac3* const unFilteredStars, indexTableUcac* const * const indexTable,
 		const int indexZoneDecStart,const int indexZoneDecEnd, const int indexZoneRaStart,const int indexZoneRaEnd, const char isArroundZeroRa);
-int readUnfiltredStarForOneDecZoneUcac3(const char* const pathOfCatalog, arrayOneDOfStarUcac3* const notFilteredStarsForOneDec,
+int readUnfiltredStarForOneDecZoneUcac3(const char* const pathOfCatalog, arrayOneDOfStarUcac3* const unFilteredStarsForOneDec,
 		const indexTableUcac* const indexTableForOneDec,int indexDec, const int indexZoneRaStart,const int indexZoneRaEnd);
-int isGoodStarUcac3(const starUcac3* const oneStar,const searchZoneUcac3* const mySearchZoneUcac2);
-int filterStarsUcac3(const arrayTwoDOfStarUcac3* theUnFilteredStars, arrayOneDOfStarUcac3* theFilteredStars,const searchZoneUcac3* mySearchZone);
+int isGoodStarUcac3(const starUcac3* const oneStar,const searchZoneUcac3And4* const mySearchZoneUcac3);
+int filterStarsUcac3(const arrayTwoDOfStarUcac3* theUnFilteredStars, arrayOneDOfStarUcac3* theFilteredStars,const searchZoneUcac3And4* mySearchZoneUcac3);
 void releaseMemoryArrayTwoDOfStarUcac3(const arrayTwoDOfStarUcac3* const theTwoDArray);
 void printUnfilteredStarUcac3(const arrayTwoDOfStarUcac3* const unFilteredStars);
+
+/* Function prototypes for UCAC3 */
+void retrieveIndexesUcac4(const searchZoneUcac3And4* const mySearchZone,int* const indexZoneDecStart,int* const indexZoneDecEnd,int* const indexZoneRaStart,int* const indexZoneRaEnd);
+indexTableUcac** readIndexFileUcac4(const char* const pathOfCatalog);
+int retrieveUnfilteredStarsUcac4(const char* const pathOfCatalog, const searchZoneUcac3And4* const mySearchZone,
+		indexTableUcac* const * const indexTable,arrayTwoDOfStarUcac4* const unFilteredStars);
+int allocateUnfiltredStarUcac4(const arrayTwoDOfStarUcac4* const unFilteredStars, indexTableUcac* const * const indexTable,
+		const int indexZoneDecStart,const int indexZoneDecEnd,const int indexZoneRaStart,const int indexZoneRaEnd, const char isArroundZeroRa);
+int allocateUnfiltredStarForOneDecZoneUcac4(arrayOneDOfStarUcac4* const unFilteredStarsForOneDec, const indexTableUcac* const indexTableForOneDec,
+		const int indexZoneRaStart,const int indexZoneRaEnd);
+int readUnfiltredStarUcac4(const char* const pathOfCatalog, const arrayTwoDOfStarUcac4* const unFilteredStars, indexTableUcac* const * const indexTable,
+		const int indexZoneDecStart,const int indexZoneDecEnd, const int indexZoneRaStart,const int indexZoneRaEnd, const char isArroundZeroRa);
+int readUnfiltredStarForOneDecZoneUcac4(const char* const pathOfCatalog, arrayOneDOfStarUcac4* const unFilteredStarsForOneDec,
+		const indexTableUcac* const indexTableForOneDec,int indexDec, const int indexZoneRaStart,const int indexZoneRaEnd);
+int isGoodStarUcac4(const starUcac4* const oneStar,const searchZoneUcac3And4* const mySearchZoneUcac3);
+int filterStarsUcac4(const arrayTwoDOfStarUcac4* theUnFilteredStars, arrayOneDOfStarUcac4* theFilteredStars,const searchZoneUcac3And4* mySearchZoneUcac4);
+void releaseMemoryArrayTwoDOfStarUcac4(const arrayTwoDOfStarUcac4* const theTwoDArray);
+void printUnfilteredStarUcac4(const arrayTwoDOfStarUcac4* const unFilteredStars);
 
 #endif /* CSUCAC_H_ */
 
