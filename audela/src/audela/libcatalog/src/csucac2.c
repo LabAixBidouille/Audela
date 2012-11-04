@@ -71,7 +71,7 @@ int cmd_tcl_csucac2(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 	/* Now read the catalog and retrieve stars */
 	resultOfFunction = retrieveUnfilteredStarsUcac2(pathToCatalog,&mySearchZoneUcac2,indexTable,&unFilteredStars);
 	if(resultOfFunction) {
-		releaseDoubleArray((void**)indexTable, INDEX_TABLE_DEC_DIMENSION);
+		releaseDoubleArray((void**)indexTable, INDEX_TABLE_DEC_DIMENSION_UCAC2AND3);
 		Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
 		return (TCL_ERROR);
 	}
@@ -142,7 +142,7 @@ int cmd_tcl_csucac2(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 	Tcl_DStringFree(&dsptr);
 
 	/* Release the memory */
-	releaseDoubleArray((void**)indexTable, INDEX_TABLE_DEC_DIMENSION);
+	releaseDoubleArray((void**)indexTable, INDEX_TABLE_DEC_DIMENSION_UCAC2AND3);
 	releaseMemoryArrayTwoDOfStarUcac2(&unFilteredStars);
 
 	return (TCL_OK);
@@ -257,7 +257,7 @@ int readUnfiltredStarUcac2(const char* const pathOfCatalog, const arrayTwoDOfSta
 
 	int indexDec;
 	int resultOfFunction;
-	const int lastZoneRa = INDEX_TABLE_RA_DIMENSION - 1;
+	const int lastZoneRa = INDEX_TABLE_RA_DIMENSION_UCAC2AND3 - 1;
 	int counterDec       = 0;
 
 	if(isArroundZeroRa) {
@@ -324,7 +324,7 @@ int readUnfiltredStarForOneDecZoneUcac2(const char* const pathOfCatalog, arrayOn
 
 	/* Open the file */
 	indexDec++; //Names start with 1 not 0
-	sprintf(completeFileName,ZONE_FILE_FORMAT_NAME,pathOfCatalog,indexDec);
+	sprintf(completeFileName,ZONE_FILE_FORMAT_NAME_UCAC2AND3,pathOfCatalog,indexDec);
 
 	myStream = fopen(completeFileName,"rb");
 	if(myStream == NULL) {
@@ -362,7 +362,7 @@ int allocateUnfiltredStarUcac2(const arrayTwoDOfStarUcac2* const unFilteredStars
 
 	int indexDec;
 	int resultOfFunction;
-	const int lastZoneRa = INDEX_TABLE_RA_DIMENSION - 1;
+	const int lastZoneRa = INDEX_TABLE_RA_DIMENSION_UCAC2AND3 - 1;
 	int counterDec       = 0;
 
 	if(isArroundZeroRa) {
@@ -442,27 +442,27 @@ void retrieveIndexesUcac2(const searchZoneUcac2* const mySearchZoneUcac2,int* co
 		int* const indexZoneRaStart,int* const indexZoneRaEnd) {
 
 	/* dec start */
-	*indexZoneDecStart     = (int)((mySearchZoneUcac2->decStartInMas - DEC_SOUTH_POLE_MAS) / DEC_WIDTH_ZONE_MAS);
+	*indexZoneDecStart     = (int)((mySearchZoneUcac2->decStartInMas - DEC_SOUTH_POLE_MAS) / DEC_WIDTH_ZONE_MAS_UCAC2AND3);
 	if(*indexZoneDecStart  < 0) {
 		*indexZoneDecStart = 0;
 	}
 
 	/* dec end */
-	*indexZoneDecEnd       = (int)((mySearchZoneUcac2->decEndInMas - DEC_SOUTH_POLE_MAS) / DEC_WIDTH_ZONE_MAS);
-	if(*indexZoneDecEnd   >= INDEX_TABLE_DEC_DIMENSION) {
-		*indexZoneDecEnd   = INDEX_TABLE_DEC_DIMENSION - 1;
+	*indexZoneDecEnd       = (int)((mySearchZoneUcac2->decEndInMas - DEC_SOUTH_POLE_MAS) / DEC_WIDTH_ZONE_MAS_UCAC2AND3);
+	if(*indexZoneDecEnd   >= INDEX_TABLE_DEC_DIMENSION_UCAC2AND3) {
+		*indexZoneDecEnd   = INDEX_TABLE_DEC_DIMENSION_UCAC2AND3 - 1;
 	}
 
 	/* ra start */
-	*indexZoneRaStart     = (int)((mySearchZoneUcac2->raStartInMas - START_RA_MAS) / RA_WIDTH_ZONE_MAS);
+	*indexZoneRaStart     = (int)((mySearchZoneUcac2->raStartInMas - START_RA_MAS) / RA_WIDTH_ZONE_MAS_UCAC2AND3);
 	if(*indexZoneDecStart < 0) {
 		*indexZoneRaStart = 0;
 	}
 
 	/* ra end */
-	*indexZoneRaEnd     = (int)((mySearchZoneUcac2->raEndInMas - START_RA_MAS) / RA_WIDTH_ZONE_MAS);
-	if(*indexZoneRaEnd >= INDEX_TABLE_RA_DIMENSION) {
-		*indexZoneRaEnd = INDEX_TABLE_RA_DIMENSION - 1;
+	*indexZoneRaEnd     = (int)((mySearchZoneUcac2->raEndInMas - START_RA_MAS) / RA_WIDTH_ZONE_MAS_UCAC2AND3);
+	if(*indexZoneRaEnd >= INDEX_TABLE_RA_DIMENSION_UCAC2AND3) {
+		*indexZoneRaEnd = INDEX_TABLE_RA_DIMENSION_UCAC2AND3 - 1;
 	}
 }
 
@@ -494,13 +494,13 @@ indexTableUcac** readIndexFileUcac2(const char* pathOfCatalog) {
 	}
 
 	/* Allocate memory */
-	indexTable = (indexTableUcac**)malloc(INDEX_TABLE_DEC_DIMENSION * sizeof(indexTableUcac*));
+	indexTable = (indexTableUcac**)malloc(INDEX_TABLE_DEC_DIMENSION_UCAC2AND3 * sizeof(indexTableUcac*));
 	if(indexTable == NULL) {
 		sprintf(outputLogChar,"Error : indexTable out of memory\n");
 		return (NULL);
 	}
-	for(index = 0; index < INDEX_TABLE_DEC_DIMENSION;index++) {
-		indexTable[index] = (indexTableUcac*)malloc(INDEX_TABLE_RA_DIMENSION * sizeof(indexTableUcac));
+	for(index = 0; index < INDEX_TABLE_DEC_DIMENSION_UCAC2AND3;index++) {
+		indexTable[index] = (indexTableUcac*)malloc(INDEX_TABLE_RA_DIMENSION_UCAC2AND3 * sizeof(indexTableUcac));
 		if(indexTable[index] == NULL) {
 			sprintf(outputLogChar,"Error : indexTable[%d] out of memory\n",index);
 			return (NULL);
@@ -508,7 +508,7 @@ indexTableUcac** readIndexFileUcac2(const char* pathOfCatalog) {
 	}
 
 	/* Read the header file */
-	for(index = 0; index < INDEX_FILE_HEADER_NUMBER_OF_LINES; index++) {
+	for(index = 0; index < INDEX_FILE_HEADER_NUMBER_OF_LINES_UCAC2; index++) {
 		if (fgets(temporaryString , STRING_COMMON_LENGTH , tableStream) == NULL) {
 			sprintf(outputLogChar,"Error : Can not read line from %s\n",completeFileName);
 			return (NULL);
@@ -531,8 +531,8 @@ indexTableUcac** readIndexFileUcac2(const char* pathOfCatalog) {
 	fclose(tableStream);
 
 	if(DEBUG) {
-		for(index = 0; index < INDEX_TABLE_DEC_DIMENSION;index++) {
-			for(index2 = 0; index2 < INDEX_TABLE_RA_DIMENSION;index2++) {
+		for(index = 0; index < INDEX_TABLE_DEC_DIMENSION_UCAC2AND3;index++) {
+			for(index2 = 0; index2 < INDEX_TABLE_RA_DIMENSION_UCAC2AND3;index2++) {
 				printf("indexTable[%3d][%3d] = %d\n",index,index2,indexTable[index][index2].numberOfStarsInZone);
 			}
 		}

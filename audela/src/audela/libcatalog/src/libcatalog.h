@@ -31,6 +31,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
+#include <stdint.h>
 
 /***************************************************************************/
 /**    Detect the exploitation system and add the relevant includes       **/
@@ -58,14 +59,16 @@
 #endif
 
 /***************************************************************************/
-/*                  Prototypes of C++ functions called by TCL              */
+/*                  Prototypes of C functions called by TCL              */
 /***************************************************************************/
 
 /* Yassine : extraction of stars from catalogs : function for Frederic Vachier */
 int cmd_tcl_cstycho2(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-int cmd_tcl_csucac2(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-int cmd_tcl_csucac3(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmd_tcl_csucac2 (ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmd_tcl_csucac3 (ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmd_tcl_csucac4 (ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmd_tcl_cs2mass (ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 #endif /* __LIBCATALOGH__ */
 
