@@ -29,7 +29,7 @@
 #define DEC_WIDTH_ZONE_MAS_UCAC4                720000.
 /* 0.1 hour = 1.5 deg = 5400000 mas */
 #define RA_WIDTH_ZONE_MAS_UCAC2AND3             5400000.
-/* 0.25 deg = 90000 mas */
+/* 0.25 deg = 900000 mas */
 #define RA_WIDTH_ZONE_MAS_UCAC4                 900000.
 #define STRING_COMMON_LENGTH 1024
 
