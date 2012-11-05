@@ -198,6 +198,10 @@
 				>
 			</File>
 			<File
+                RelativePath="..\src\csucac4.c"
+                >
+            </File>
+			<File
 				RelativePath="..\src\csusnoa2.c"
 				>
 			</File>
