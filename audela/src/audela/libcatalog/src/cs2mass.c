@@ -82,7 +82,7 @@ int cmd_tcl_cs2mass(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 
 	/* Now we loop over the concerned catalog and send to TCL the results */
 	Tcl_DStringInit(&dsptr);
-	Tcl_DStringAppend(&dsptr,"{ { 2Mass { } { ID ra_deg dec_deg sign qflag field magB magR } } } ",-1);
+	Tcl_DStringAppend(&dsptr,"{ { 2Mass { } { ID ra_deg dec_deg jMag jMagError hMag hMagError kMag kMagError jd } } } ",-1);
 	/* start of main list */
 	Tcl_DStringAppend(&dsptr,"{ ",-1);
 
@@ -103,7 +103,7 @@ int cmd_tcl_cs2mass(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 
 			for(indexOfRA = mySearchZone2Mass.indexOfFirstRightAscensionZone; indexOfRA < ACC_FILE_NUMBER_OF_LINES; indexOfRA++) {
 
-				if(processOneZoneCentredOnZeroRA(&dsptr,inputStream,&(allAccFiles[indexOfCatalog]),
+				if(processOneZone2MassCentredOnZeroRA(&dsptr,inputStream,&(allAccFiles[indexOfCatalog]),
 						arrayOfStars,&mySearchZone2Mass,indexOfCatalog,indexOfRA)) {
 					Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
 					return (TCL_ERROR);
@@ -112,7 +112,7 @@ int cmd_tcl_cs2mass(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 
 			for(indexOfRA = 0; indexOfRA <= mySearchZone2Mass.indexOfLastRightAscensionZone; indexOfRA++) {
 
-				if(processOneZoneCentredOnZeroRA(&dsptr,inputStream,&(allAccFiles[indexOfCatalog]),
+				if(processOneZone2MassCentredOnZeroRA(&dsptr,inputStream,&(allAccFiles[indexOfCatalog]),
 						arrayOfStars,&mySearchZone2Mass,indexOfCatalog,indexOfRA)) {
 					Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
 					return (TCL_ERROR);
@@ -123,7 +123,7 @@ int cmd_tcl_cs2mass(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 
 			for(indexOfRA = mySearchZone2Mass.indexOfFirstRightAscensionZone; indexOfRA <= mySearchZone2Mass.indexOfLastRightAscensionZone; indexOfRA++) {
 
-				if(processOneZoneNotCentredOnZeroRA(&dsptr,inputStream,&(allAccFiles[indexOfCatalog]),
+				if(processOneZone2MassNotCentredOnZeroRA(&dsptr,inputStream,&(allAccFiles[indexOfCatalog]),
 						arrayOfStars,&mySearchZone2Mass,indexOfCatalog,indexOfRA)) {
 					Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
 					return (TCL_ERROR);
@@ -140,7 +140,7 @@ int cmd_tcl_cs2mass(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 	Tcl_DStringFree(&dsptr);
 
 	/* Release memory */
-	freeAllCatalogFiles(allAccFiles,&mySearchZone2Mass);
+	freeAll2MassCatalogFiles(allAccFiles,&mySearchZone2Mass);
 	releaseSimpleArray(arrayOfStars);
 
 	return (TCL_OK);
@@ -149,68 +149,74 @@ int cmd_tcl_cs2mass(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 /****************************************************************************/
 /* Process one RA-DEC zone centered on zero ra                              */
 /****************************************************************************/
-int processOneZoneCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const inputStream,const indexTable2Mass* const oneAccFile,
+int processOneZone2MassCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const inputStream,const indexTable2Mass* const oneAccFile,
 		star2Mass* const arrayOfStars,const searchZone2Mass* const mySearchZone2Mass, const int indexOfCatalog, const int indexOfRA) {
 
-	int position;
-	int zoneId;
-	char theId[14];
-	int theSign,qflag,field;
-	int raInCas;
+	char theId[17];
 	unsigned int indexOfStar;
-	double raInDeg;
-	double decInDeg;
-	int spdInCas;
-	int magnitudes;
-	double redMagnitudeInDeciMag;
-	double redMagnitudeInMag;
-	double blueMagnitudeInMag;
+	int raHour,raMinute,raSeconds;
+	double raInDegDouble,raHourDouble,raMinuteDouble,raSecondsDouble;
+	int decDegree,decMinute,decSeconds;
+	double decInDegDouble,decMinuteDouble,decSecondsDouble;
+	double jMagnitude,hMagnitude,kMagnitude;
+	double jMagnitudeError,hMagnitudeError,kMagnitudeError;
+	double jd;
 	star2Mass theStar;
-	char tclString[1024];
+	char tclString[STRING_COMMON_LENGTH];
 
 	/* Move to this position */
-	fseek(inputStream,oneAccFile->arrayOfPosition[indexOfRA] * sizeof(star2Mass),SEEK_SET);
+	fseek(inputStream,oneAccFile->idOfFirstStarInZone[indexOfRA] * sizeof(star2Mass),SEEK_SET);
 	/* Read the amount of stars */
-	if(fread(arrayOfStars,sizeof(star2Mass),oneAccFile->numberOfStars[indexOfRA],inputStream) !=  oneAccFile->numberOfStars[indexOfRA]) {
-		sprintf(outputLogChar,"can not read %d (star2Mass)\n",oneAccFile->numberOfStars[indexOfRA]);
+	if(fread(arrayOfStars,sizeof(star2Mass),oneAccFile->numberOfStarsInZone[indexOfRA],inputStream) !=  oneAccFile->numberOfStarsInZone[indexOfRA]) {
+		sprintf(outputLogChar,"can not read %d (star2Mass)\n",oneAccFile->numberOfStarsInZone[indexOfRA]);
 		return (1);
 	}
 
-	position = oneAccFile->arrayOfPosition[indexOfRA];
-	zoneId   = indexOfCatalog * CATLOG_DISTANCE_TO_POLE_WIDTH_IN_DECI_DEGREE;
-
 	/* Loop over stars and filter them */
-	for(indexOfStar = 0; indexOfStar < oneAccFile->numberOfStars[indexOfRA]; indexOfStar++) {
+	for(indexOfStar = 0; indexOfStar < oneAccFile->numberOfStarsInZone[indexOfRA]; indexOfStar++) {
 
 		theStar  = arrayOfStars[indexOfStar];
-		raInCas  = 2MassBig2LittleEndianLong(theStar.ra);
-		position++;
 
-		if ((raInCas < mySearchZone2Mass->raStartInCas) && (raInCas > mySearchZone2Mass->raEndInCas)) {
+		if ((theStar.raInMicroDegree < mySearchZone2Mass->raStartInMicroDegree) && (theStar.raInMicroDegree > mySearchZone2Mass->raEndInMicroDegree)) {
 			continue;
 		}
 
-		spdInCas   = 2MassBig2LittleEndianLong(theStar.spd);
-
-		if ((spdInCas < mySearchZone2Mass->distanceToPoleStartInCas) || (spdInCas > mySearchZone2Mass->distanceToPoleEndInCas)) {
-			continue;
-		}
-		magnitudes             = 2MassBig2LittleEndianLong(theStar.mags);
-		redMagnitudeInDeciMag  = 2MassGet2MassRedMagnitudeInDeciMag(magnitudes);
-		if((redMagnitudeInDeciMag < mySearchZone2Mass->magnitudeStartInDeciMag) || (redMagnitudeInDeciMag > mySearchZone2Mass->magnitudeEndInDeciMag)) {
+		if ((theStar.decInMicroDegree < mySearchZone2Mass->decStartInMicroDegree) || (theStar.decInMicroDegree > mySearchZone2Mass->decEndInMicroDegree)) {
 			continue;
 		}
 
-		raInDeg            = (double)raInCas / DEG2CAS;
-		decInDeg           = (double)spdInCas / DEG2CAS + DEC_SOUTH_POLE_DEG;
-		redMagnitudeInMag  = (double)redMagnitudeInDeciMag / MAG2DECIMAG;
-		blueMagnitudeInMag = (double)2MassGet2MassBleueMagnitudeInDeciMag(magnitudes) / MAG2DECIMAG;
-		theSign            = 2MassGet2MassSign(magnitudes);
-		qflag              = 2MassGet2MassQflag(magnitudes);
-		field              = 2MassGet2MassField(magnitudes);
-		sprintf(theId,OUTPUT_ID_FORMAT,zoneId,position);
+		if((theStar.jMagInMilliMag < mySearchZone2Mass->magnitudeStartInMilliMag) || (theStar.jMagInMilliMag > mySearchZone2Mass->magnitudeEndInMilliMag)) {
+			continue;
+		}
 
-		sprintf(tclString,"{ { 2Mass { } {%s %f %f %d %d %d %.2f %.2f} } } ",theId,raInDeg,decInDeg,theSign,qflag,field,blueMagnitudeInMag,redMagnitudeInMag);
+		raInDegDouble      = (double)theStar.raInMicroDegree  / DEG2MICRODEG;
+		decInDegDouble     = (double)theStar.decInMicroDegree / DEG2MICRODEG;
+		jMagnitude         = (double)theStar.jMagInMilliMag / MAG2MILLIMAG;
+		hMagnitude         = (double)theStar.hMagInMilliMag / MAG2MILLIMAG;
+		kMagnitude         = (double)theStar.kMagInMilliMag / MAG2MILLIMAG;
+		jMagnitudeError    = (double)theStar.jErrorMagInCentiMag / MAG2CENTIMAG;
+		hMagnitudeError    = (double)theStar.hErrorMagInCentiMag / MAG2CENTIMAG;
+		kMagnitudeError    = (double)theStar.kErrorMagInCentiMag / MAG2CENTIMAG;
+		jd                 = (double)theStar.jd / 1.e4 + 2451.0e3;
+
+		raHourDouble       = raInDegDouble / HOUR2DEG;
+		raHour             = (int) raHourDouble;
+		raMinuteDouble     = (raHourDouble - raHour) * DEG2ARCMIN;
+		raMinute           = (int) raMinuteDouble;
+		raSecondsDouble    = (raMinuteDouble - raMinute) * DEG2ARCMIN;
+		raSeconds          = (int) (100. * raSecondsDouble);
+
+		decDegree          = (int) decInDegDouble;
+		decMinuteDouble    = (decInDegDouble - decDegree) * DEG2ARCMIN;
+		decMinute          = (int) decMinuteDouble;
+		decSecondsDouble   = (decMinuteDouble - decMinute) * DEG2ARCMIN;
+		decSeconds         = (int) (10. * decSecondsDouble);
+
+		sprintf(theId,OUTPUT_ID_FORMAT,raHour,raMinute,raSeconds,decDegree,decMinute,decSeconds);
+
+		sprintf(tclString,"{ { 2Mass { } {%s %.8f %.8f %.2f %.2f %.2f %.2f %.2f %.2f %.6f} } } ",
+				theId,raInDegDouble,decInDegDouble,jMagnitude,jMagnitudeError,hMagnitude,hMagnitudeError,
+				kMagnitude,kMagnitudeError,jd);
 		Tcl_DStringAppend(dsptr,tclString,-1);
 	}
 
@@ -220,69 +226,74 @@ int processOneZoneCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const inputStr
 /****************************************************************************/
 /* Process one RA-DEC zone not centered on zero ra                           */
 /****************************************************************************/
-int processOneZoneNotCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const inputStream,const indexTable2Mass* const oneAccFile,
+int processOneZone2MassNotCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const inputStream,const indexTable2Mass* const oneAccFile,
 		star2Mass* const arrayOfStars,const searchZone2Mass* const mySearchZone2Mass, const int indexOfCatalog, const int indexOfRA) {
 
-	int position;
-	int zoneId;
-	char theId[14];
-	int theSign,qflag,field;
-	int raInCas;
+	char theId[17];
 	unsigned int indexOfStar;
-	double raInDeg;
-	double decInDeg;
-	int spdInCas;
-	int magnitudes;
-	double redMagnitudeInDeciMag;
-	double redMagnitudeInMag;
-	double blueMagnitudeInMag;
+	int raHour,raMinute,raSeconds;
+	double raInDegDouble,raHourDouble,raMinuteDouble,raSecondsDouble;
+	int decDegree,decMinute,decSeconds;
+	double decInDegDouble,decMinuteDouble,decSecondsDouble;
+	double jMagnitude,hMagnitude,kMagnitude;
+	double jMagnitudeError,hMagnitudeError,kMagnitudeError;
+	double jd;
 	star2Mass theStar;
-	char tclString[1024];
+	char tclString[STRING_COMMON_LENGTH];
 
 	/* Move to this position */
-	fseek(inputStream,oneAccFile->arrayOfPosition[indexOfRA] * sizeof(star2Mass),SEEK_SET);
+	fseek(inputStream,oneAccFile->idOfFirstStarInZone[indexOfRA] * sizeof(star2Mass),SEEK_SET);
 	/* Read the amount of stars */
-	if(fread(arrayOfStars,sizeof(star2Mass),oneAccFile->numberOfStars[indexOfRA],inputStream) !=  oneAccFile->numberOfStars[indexOfRA]) {
-		sprintf(outputLogChar,"can not read %d (star2Mass)\n",oneAccFile->numberOfStars[indexOfRA]);
+	if(fread(arrayOfStars,sizeof(star2Mass),oneAccFile->numberOfStarsInZone[indexOfRA],inputStream) !=  oneAccFile->numberOfStarsInZone[indexOfRA]) {
+		sprintf(outputLogChar,"can not read %d (star2Mass)\n",oneAccFile->numberOfStarsInZone[indexOfRA]);
 		return (1);
 	}
 
-	position = oneAccFile->arrayOfPosition[indexOfRA];
-	zoneId   = indexOfCatalog * CATLOG_DISTANCE_TO_POLE_WIDTH_IN_DECI_DEGREE;
-
 	/* Loop over stars and filter them */
-	for(indexOfStar = 0; indexOfStar < oneAccFile->numberOfStars[indexOfRA]; indexOfStar++) {
+	for(indexOfStar = 0; indexOfStar < oneAccFile->numberOfStarsInZone[indexOfRA]; indexOfStar++) {
 
 		theStar  = arrayOfStars[indexOfStar];
-		raInCas  = 2MassBig2LittleEndianLong(theStar.ra);
-		position++;
 
-		if ((raInCas < mySearchZone2Mass->raStartInCas) || (raInCas > mySearchZone2Mass->raEndInCas)) {
+		if ((theStar.raInMicroDegree < mySearchZone2Mass->raStartInMicroDegree) || (theStar.raInMicroDegree > mySearchZone2Mass->raEndInMicroDegree)) {
 			continue;
 		}
 
-		spdInCas = 2MassBig2LittleEndianLong(theStar.spd);
-
-		if ((spdInCas < mySearchZone2Mass->distanceToPoleStartInCas) || (spdInCas > mySearchZone2Mass->distanceToPoleEndInCas)) {
-			continue;
-		}
-		magnitudes             = 2MassBig2LittleEndianLong(theStar.mags);
-		redMagnitudeInDeciMag  = 2MassGet2MassRedMagnitudeInDeciMag(magnitudes);
-		if((redMagnitudeInDeciMag < mySearchZone2Mass->magnitudeStartInDeciMag) || (redMagnitudeInDeciMag > mySearchZone2Mass->magnitudeEndInDeciMag)) {
+		if ((theStar.decInMicroDegree < mySearchZone2Mass->decStartInMicroDegree) || (theStar.decInMicroDegree > mySearchZone2Mass->decEndInMicroDegree)) {
 			continue;
 		}
 
-		raInDeg            = (double)raInCas / DEG2CAS;
-		decInDeg           = (double)spdInCas / DEG2CAS + DEC_SOUTH_POLE_DEG;
-		redMagnitudeInMag  = (double)redMagnitudeInDeciMag / MAG2DECIMAG;
-		blueMagnitudeInMag = (double)2MassGet2MassBleueMagnitudeInDeciMag(magnitudes) / MAG2DECIMAG;
-		theSign            = 2MassGet2MassSign(magnitudes);
-		qflag              = 2MassGet2MassQflag(magnitudes);
-		field              = 2MassGet2MassField(magnitudes);
-		sprintf(theId,OUTPUT_ID_FORMAT,zoneId,position);
+		if((theStar.jMagInMilliMag < mySearchZone2Mass->magnitudeStartInMilliMag) || (theStar.jMagInMilliMag > mySearchZone2Mass->magnitudeEndInMilliMag)) {
+			continue;
+		}
 
-		sprintf(tclString,"{ { 2Mass { } {%s %f %f %d %d %d %.2f %.2f} } } ",
-				theId,raInDeg,decInDeg,theSign,qflag,field,blueMagnitudeInMag,redMagnitudeInMag);
+		raInDegDouble      = (double)theStar.raInMicroDegree  / DEG2MICRODEG;
+		decInDegDouble     = (double)theStar.decInMicroDegree / DEG2MICRODEG;
+		jMagnitude         = (double)theStar.jMagInMilliMag / MAG2MILLIMAG;
+		hMagnitude         = (double)theStar.hMagInMilliMag / MAG2MILLIMAG;
+		kMagnitude         = (double)theStar.kMagInMilliMag / MAG2MILLIMAG;
+		jMagnitudeError    = (double)theStar.jErrorMagInCentiMag / MAG2CENTIMAG;
+		hMagnitudeError    = (double)theStar.hErrorMagInCentiMag / MAG2CENTIMAG;
+		kMagnitudeError    = (double)theStar.kErrorMagInCentiMag / MAG2CENTIMAG;
+		jd                 = (double)theStar.jd / 1.e4 + 2451.0e3;
+
+		raHourDouble       = raInDegDouble / HOUR2DEG;
+		raHour             = (int) raHourDouble;
+		raMinuteDouble     = (raHourDouble - raHour) * DEG2ARCMIN;
+		raMinute           = (int) raMinuteDouble;
+		raSecondsDouble    = (raMinuteDouble - raMinute) * DEG2ARCMIN;
+		raSeconds          = (int) (100. * raSecondsDouble);
+
+		decDegree          = (int) decInDegDouble;
+		decMinuteDouble    = (decInDegDouble - decDegree) * DEG2ARCMIN;
+		decMinute          = (int) decMinuteDouble;
+		decSecondsDouble   = (decMinuteDouble - decMinute) * DEG2ARCMIN;
+		decSeconds         = (int) (10. * decSecondsDouble);
+
+		sprintf(theId,OUTPUT_ID_FORMAT,raHour,raMinute,raSeconds,decDegree,decMinute,decSeconds);
+
+		sprintf(tclString,"{ { 2Mass { } {%s %.8f %.8f %.2f %.2f %.2f %.2f %.2f %.2f %.6f} } } ",
+				theId,raInDegDouble,decInDegDouble,jMagnitude,jMagnitudeError,hMagnitude,hMagnitudeError,
+				kMagnitude,kMagnitudeError,jd);
 		Tcl_DStringAppend(dsptr,tclString,-1);
 	}
 
@@ -292,17 +303,17 @@ int processOneZoneNotCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const input
 /****************************************************************************/
 /* Free the all ACC files array */
 /****************************************************************************/
-void freeAllCatalogFiles(const indexTable2Mass* const allAccFiles, const searchZone2Mass* const mySearchZone) {
+void freeAll2MassCatalogFiles(const indexTable2Mass* const allAccFiles, const searchZone2Mass* const mySearchZone) {
 
 	int indexOfFile;
 
 	if(allAccFiles != NULL) {
 
-		for(indexOfFile = mySearchZone->indexOfFirstDistanceToPoleZone;
-					indexOfFile <= mySearchZone->indexOfLastDistanceToPoleZone;indexOfFile++) {
+		for(indexOfFile = mySearchZone->indexOfFirstDecZone;
+				indexOfFile <= mySearchZone->indexOfLastDecZone;indexOfFile++) {
 
-			releaseSimpleArray((void*)(allAccFiles[indexOfFile]->arrayOfPosition));
-			releaseSimpleArray((void*)(allAccFiles[indexOfFile]->numberOfStars));
+			releaseSimpleArray((void*)(allAccFiles[indexOfFile].idOfFirstStarInZone));
+			releaseSimpleArray((void*)(allAccFiles[indexOfFile].numberOfStarsInZone));
 		}
 	}
 
