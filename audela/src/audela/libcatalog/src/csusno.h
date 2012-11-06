@@ -31,9 +31,9 @@
 
 /* USNO2A ACC files */
 typedef struct {
-	int* arrayOfPosition;
+	unsigned int* arrayOfPosition;
 	unsigned int* numberOfStars;
-} accFiles;
+} indexTableUsno;
 
 typedef struct {
 	int    raStartInCas;
@@ -57,17 +57,17 @@ typedef struct {
 
 const searchZoneUsnoa2 findSearchZoneUsnoa2(const double ra,const double dec,const double radius,const double magMin, const double magMax);
 int usnoa2Big2LittleEndianLong(int l);
-const accFiles* readCatalogFiles(const char* const pathOfCatalog, const searchZoneUsnoa2* mySearchZoneUsnoa2, int* maximumNumberOfStars);
-void freeAllCatalogFiles(const accFiles* allAccFiles,const searchZoneUsnoa2* mySearchZoneUsnoa2);
-double usnoa2GetUsnoBleueMagnitudeInDeciMag(int magL);
-double usnoa2GetUsnoRedMagnitudeInDeciMag(int magL);
-int usnoa2GetUsnoSign(int magL);
-int usnoa2GetUsnoQflag(int magL);
-int usnoa2GetUsnoField(int magL);
-int processOneZoneNotCentredOnZeroRA(Tcl_DString* dsptr, FILE* inputStream,accFiles oneAccFile,
-		starUsno* const arrayOfStars,const searchZoneUsnoa2* mySearchZoneUsnoa2, const int indexOfCatalog, const int indexOfRA);
-int processOneZoneCentredOnZeroRA(Tcl_DString* dsptr, FILE* inputStream,accFiles oneAccFile,
-		starUsno* const arrayOfStars,const searchZoneUsnoa2* mySearchZoneUsnoa2, const int indexOfCatalog, const int indexOfRA);
+const indexTableUsno* readIndexFile2Mass(const char* const pathOfCatalog, const searchZoneUsnoa2* const mySearchZoneUsnoa2, int* const maximumNumberOfStars);
+void freeAllCatalogFiles(const indexTableUsno* const allAccFiles,const searchZoneUsnoa2* const mySearchZoneUsnoa2);
+double usnoa2GetUsnoBleueMagnitudeInDeciMag(const int magL);
+double usnoa2GetUsnoRedMagnitudeInDeciMag(const int magL);
+int usnoa2GetUsnoSign(const int magL);
+int usnoa2GetUsnoQflag(const int magL);
+int usnoa2GetUsnoField(const int magL);
+int processOneZoneNotCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const inputStream,const indexTableUsno* const oneAccFile,
+		starUsno* const arrayOfStars,const searchZoneUsnoa2* const mySearchZoneUsnoa2, const int indexOfCatalog, const int indexOfRA);
+int processOneZoneCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const inputStream,const indexTableUsno* const oneAccFile,
+		starUsno* const arrayOfStars,const searchZoneUsnoa2* const mySearchZoneUsnoa2, const int indexOfCatalog, const int indexOfRA);
 
 #endif /* CSUSNO_H_ */
 

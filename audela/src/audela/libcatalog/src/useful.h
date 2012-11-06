@@ -46,10 +46,15 @@
 
 /* 1 deg = 3600000 mas (= milli arc second) */
 #define DEG2MAS         3600000.
+#define DEG2MICRODEG    1.e6
 /* 0 deg = 0 mas */
 #define START_RA_MAS    0
 /* 360 deg = 1296000000. mas */
 #define COMPLETE_RA_MAS 1296000000
+/* 0 deg */
+#define START_RA_DEG    0
+/* 360 deg */
+#define COMPLETE_RA_DEG 360.
 
 /* 1 deg = 360000 cas (= centi arc second)*/
 #define DEG2CAS         360000.
@@ -69,6 +74,8 @@
 #define DISTANCE_TO_SOUTH_POLE_AT_SOUTH_POLE_MAS 0.
 /* distance to south pole at at the north pole in mas : +180 deg = 648000000. mas */
 #define DISTANCE_TO_SOUTH_POLE_AT_NORTH_POLE_MAS 648000000
+
+#define STRING_COMMON_LENGTH 1024
 
 #define DEBUG 0
 
