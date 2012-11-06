@@ -31,7 +31,6 @@
 #define RA_WIDTH_ZONE_MAS_UCAC2AND3             5400000.
 /* 0.25 deg = 900000 mas */
 #define RA_WIDTH_ZONE_MAS_UCAC4                 900000.
-#define STRING_COMMON_LENGTH 1024
 
 typedef struct {
 	int   raInMas;
@@ -69,10 +68,6 @@ typedef struct {
 	arrayOneDOfStarUcac2* arrayTwoD;
 	int length;
 } arrayTwoDOfStarUcac2;
-
-/* "Raw binary" means the data is written out in the same 78 byte */
-/* per star format in which it was read: no reformatting is done. */
-#define UCAC4_RAW_BINARY 0x8
 
 typedef struct {
 	int   raInMas;
@@ -199,13 +194,13 @@ typedef struct {
 } indexTableUcac;
 
 typedef struct {
-	int   raStartInMas;
-	int   raEndInMas;
-	char  isArroundZeroRa;
-	int   decStartInMas;
-	int   decEndInMas;
-	short magnitudeStartInCentiMag;
-	short magnitudeEndInCentiMag;
+	int  raStartInMas;
+	int  raEndInMas;
+	char isArroundZeroRa;
+	int  decStartInMas;
+	int  decEndInMas;
+	int  magnitudeStartInCentiMag;
+	int  magnitudeEndInCentiMag;
 } searchZoneUcac2;
 
 typedef struct {
