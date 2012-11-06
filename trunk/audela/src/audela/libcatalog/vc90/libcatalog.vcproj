@@ -206,6 +206,10 @@
 				>
 			</File>
 			<File
+                RelativePath="..\src\cs2mass.c"
+                >
+            </File>
+			<File
 				RelativePath="..\src\libcatalog.c"
 				>
 			</File>

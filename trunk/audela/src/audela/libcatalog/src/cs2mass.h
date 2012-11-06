@@ -16,7 +16,7 @@
 #define DOT_ACC_EXTENSION                       ".acc"
 #define DOT_CAT_EXTENSION                       ".ast"
 #define CATALOG_NAME_FORMAT                     "p%03dTMASS"
-#define OUTPUT_ID_FORMAT                        "%02d%02d%04d%+02d%02d%03d"
+#define OUTPUT_ID_FORMAT                        "%02d%02d%04d%+03d%02d%03d"
 #define CATLOG_DISTANCE_TO_POLE_WIDTH_IN_DEGREE 0.2
 #define ACC_FILE_NUMBER_OF_LINES                360
 #define ACC_FILE_RA_ZONE_WIDTH_IN_DEGREE        1.
@@ -74,10 +74,10 @@ typedef struct {
 /* Function prototypes for 2MASS */
 const searchZone2Mass findSearchZone2Mass(const double ra,const double dec,const double radius,const double magMin, const double magMax);
 const indexTable2Mass* readIndexFile2Mass(const char* const pathOfCatalog, const searchZone2Mass* const mySearchZone2Mass, int* const maximumNumberOfStars);
-void freeAllCatalogFiles(const indexTable2Mass* allAccFiles,const searchZone2Mass* mySearchZone2Mass);
-int processOneZoneNotCentredOnZeroRA(Tcl_DString* dsptr, FILE* inputStream,indexTable2Mass oneAccFile,
-		star2Mass* const arrayOfStars,const searchZone2Mass* mySearchZone2Mass, const int indexOfCatalog, const int indexOfRA);
-int processOneZoneCentredOnZeroRA(Tcl_DString* dsptr, FILE* inputStream,indexTable2Mass oneAccFile,
-		star2Mass* const arrayOfStars,const searchZone2Mass* mySearchZone2Mass, const int indexOfCatalog, const int indexOfRA);
+void freeAll2MassCatalogFiles(const indexTable2Mass* allAccFiles,const searchZone2Mass* mySearchZone2Mass);
+int processOneZone2MassNotCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const inputStream,const indexTable2Mass* const oneAccFile,
+		star2Mass* const arrayOfStars,const searchZone2Mass* const mySearchZone2Mass, const int indexOfCatalog, const int indexOfRA);
+int processOneZone2MassCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const inputStream,const indexTable2Mass* const oneAccFile,
+		star2Mass* const arrayOfStars,const searchZone2Mass* const mySearchZone2Mass, const int indexOfCatalog, const int indexOfRA);
 #endif /* CS2MASS_H_ */
 

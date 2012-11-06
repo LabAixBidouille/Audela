@@ -61,7 +61,7 @@ int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 	mySearchZoneUsnoa2 = findSearchZoneUsnoa2(ra,dec,radius,magMin,magMax);
 
 	/* Read all catalog files to be able to deliver an ID for each star */
-	allAccFiles        = readIndexFile2Mass(pathToCatalog,&mySearchZoneUsnoa2,&maximumNumberOfStars);
+	allAccFiles        = readIndexFileUsno(pathToCatalog,&mySearchZoneUsnoa2,&maximumNumberOfStars);
 	if(allAccFiles == NULL) {
 		Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
 		return (TCL_ERROR);
@@ -103,7 +103,7 @@ int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 
 			for(indexOfRA = mySearchZoneUsnoa2.indexOfFirstRightAscensionZone; indexOfRA < ACC_FILE_NUMBER_OF_LINES; indexOfRA++) {
 
-				if(processOneZoneCentredOnZeroRA(&dsptr,inputStream,&(allAccFiles[indexOfCatalog]),
+				if(processOneZoneUsnoCentredOnZeroRA(&dsptr,inputStream,&(allAccFiles[indexOfCatalog]),
 						arrayOfStars,&mySearchZoneUsnoa2,indexOfCatalog,indexOfRA)) {
 					Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
 					return (TCL_ERROR);
@@ -112,7 +112,7 @@ int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 
 			for(indexOfRA = 0; indexOfRA <= mySearchZoneUsnoa2.indexOfLastRightAscensionZone; indexOfRA++) {
 
-				if(processOneZoneCentredOnZeroRA(&dsptr,inputStream,&(allAccFiles[indexOfCatalog]),
+				if(processOneZoneUsnoCentredOnZeroRA(&dsptr,inputStream,&(allAccFiles[indexOfCatalog]),
 						arrayOfStars,&mySearchZoneUsnoa2,indexOfCatalog,indexOfRA)) {
 					Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
 					return (TCL_ERROR);
@@ -123,7 +123,7 @@ int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 
 			for(indexOfRA = mySearchZoneUsnoa2.indexOfFirstRightAscensionZone; indexOfRA <= mySearchZoneUsnoa2.indexOfLastRightAscensionZone; indexOfRA++) {
 
-				if(processOneZoneNotCentredOnZeroRA(&dsptr,inputStream,&(allAccFiles[indexOfCatalog]),
+				if(processOneZoneUsnoNotCentredOnZeroRA(&dsptr,inputStream,&(allAccFiles[indexOfCatalog]),
 						arrayOfStars,&mySearchZoneUsnoa2,indexOfCatalog,indexOfRA)) {
 					Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
 					return (TCL_ERROR);
@@ -140,7 +140,7 @@ int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 	Tcl_DStringFree(&dsptr);
 
 	/* Release memory */
-	freeAllCatalogFiles(allAccFiles,&mySearchZoneUsnoa2);
+	freeAllUsnoCatalogFiles(allAccFiles,&mySearchZoneUsnoa2);
 	releaseSimpleArray(arrayOfStars);
 
 	return (TCL_OK);
@@ -149,7 +149,7 @@ int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 /****************************************************************************/
 /* Process one RA-DEC zone centered on zero ra                              */
 /****************************************************************************/
-int processOneZoneCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const inputStream,const indexTableUsno* const oneAccFile,
+int processOneZoneUsnoCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const inputStream,const indexTableUsno* const oneAccFile,
 		starUsno* const arrayOfStars,const searchZoneUsnoa2* const mySearchZoneUsnoa2, const int indexOfCatalog, const int indexOfRA) {
 
 	int position;
@@ -220,7 +220,7 @@ int processOneZoneCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const inputStr
 /****************************************************************************/
 /* Process one RA-DEC zone not centered on zero ra                           */
 /****************************************************************************/
-int processOneZoneNotCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const inputStream,const indexTableUsno* const oneAccFile,
+int processOneZoneUsnoNotCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const inputStream,const indexTableUsno* const oneAccFile,
 		starUsno* const arrayOfStars,const searchZoneUsnoa2* const mySearchZoneUsnoa2, const int indexOfCatalog, const int indexOfRA) {
 
 	int position;
@@ -292,7 +292,7 @@ int processOneZoneNotCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const input
 /****************************************************************************/
 /* Free the all ACC files array */
 /****************************************************************************/
-void freeAllCatalogFiles(const indexTableUsno* const allAccFiles, const searchZoneUsnoa2* const mySearchZoneUsnoa2) {
+void freeAllUsnoCatalogFiles(const indexTableUsno* const allAccFiles, const searchZoneUsnoa2* const mySearchZoneUsnoa2) {
 
 	int indexOfFile;
 
@@ -312,7 +312,7 @@ void freeAllCatalogFiles(const indexTableUsno* const allAccFiles, const searchZo
 /****************************************************************************/
 /* Read the catalog files which contain the search zones                    */
 /****************************************************************************/
-const indexTableUsno* readIndexFile2Mass(const char* const pathOfCatalog,
+const indexTableUsno* readIndexFileUsno(const char* const pathOfCatalog,
 		const searchZoneUsnoa2* const mySearchZoneUsnoa2, int* const maximumNumberOfStars) {
 
 	int indexOfFile;
