@@ -469,7 +469,7 @@ void retrieveIndexesUcac2(const searchZoneUcac2* const mySearchZoneUcac2,int* co
 /**
  * Read the index file
  */
-indexTableUcac** readIndexFileUcac2(const char* pathOfCatalog) {
+indexTableUcac** readIndexFileUcac2(const char* const pathOfCatalog) {
 
 	int index;
 	int numberOfStarsInZone;
