@@ -81,7 +81,7 @@ typedef struct {
 /* Function prototypes for 2MASS */
 const searchZone2Mass findSearchZone2Mass(const double ra,const double dec,const double radius,const double magMin, const double magMax);
 const indexTable2Mass* readIndexFile2Mass(const char* const pathOfCatalog, const searchZone2Mass* const mySearchZone2Mass, int* const maximumNumberOfStars);
-void freeAll2MassCatalogFiles(const indexTable2Mass* allAccFiles,const searchZone2Mass* mySearchZone2Mass);
+void freeAll2MassCatalogFiles(const indexTable2Mass* const allAccFiles, const searchZone2Mass* const mySearchZone);
 int processOneZone2MassNotCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const inputStream,const indexTable2Mass* const oneAccFile,
 		star2Mass* const arrayOfStars,const searchZone2Mass* const mySearchZone2Mass, const int indexOfCatalog, const int indexOfRA);
 int processOneZone2MassCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const inputStream,const indexTable2Mass* const oneAccFile,

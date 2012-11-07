@@ -450,8 +450,8 @@ const searchZone2Mass findSearchZone2Mass(const double raInDeg,const double decI
 	double tmpValue;
 	double radiusRa;
 	const double catalogDistanceToPoleWidthInMicroDegree = DEG2MICRODEG * CATLOG_DISTANCE_TO_POLE_WIDTH_IN_DEGREE;
-	const double decNorthPoleInMicroDegree               = DEG2MICRODEG * DEC_NORTH_POLE_DEG;
-	const double decSouthPoleInMicroDegree               = DEG2MICRODEG * DEC_SOUTH_POLE_DEG;
+	const int decNorthPoleInMicroDegree                  = (int) (DEG2MICRODEG * DEC_NORTH_POLE_DEG);
+	const int decSouthPoleInMicroDegree                  = (int) (DEG2MICRODEG * DEC_SOUTH_POLE_DEG);
 	const double accFileRaZoneWidthInMicroDegree         = DEG2MICRODEG * ACC_FILE_RA_ZONE_WIDTH_IN_DEGREE;
 
 	mySearchZone2Mass.decStartInMicroDegree    = (int)(DEG2MICRODEG * (decInDeg - radiusInDeg));
@@ -464,22 +464,22 @@ const searchZone2Mass findSearchZone2Mass(const double raInDeg,const double decI
 
 		mySearchZone2Mass.decStartInMicroDegree      = decSouthPoleInMicroDegree;
 		mySearchZone2Mass.decEndInMicroDegree        = decNorthPoleInMicroDegree;
-		mySearchZone2Mass.raStartInMicroDegree       = DEG2MICRODEG * START_RA_DEG;
-		mySearchZone2Mass.raEndInMicroDegree         = DEG2MICRODEG * COMPLETE_RA_DEG;
+		mySearchZone2Mass.raStartInMicroDegree       = (int) (DEG2MICRODEG * START_RA_DEG);
+		mySearchZone2Mass.raEndInMicroDegree         = (int) (DEG2MICRODEG * COMPLETE_RA_DEG);
 		mySearchZone2Mass.isArroundZeroRa            = 0;
 
 	} else if(mySearchZone2Mass.decStartInMicroDegree <= decSouthPoleInMicroDegree) {
 
 		mySearchZone2Mass.decStartInMicroDegree      = decSouthPoleInMicroDegree;
-		mySearchZone2Mass.raStartInMicroDegree       = DEG2MICRODEG * START_RA_DEG;
-		mySearchZone2Mass.raEndInMicroDegree         = DEG2MICRODEG * COMPLETE_RA_DEG;
+		mySearchZone2Mass.raStartInMicroDegree       = (int) (DEG2MICRODEG * START_RA_DEG);
+		mySearchZone2Mass.raEndInMicroDegree         = (int) (DEG2MICRODEG * COMPLETE_RA_DEG);
 		mySearchZone2Mass.isArroundZeroRa            = 0;
 
 	} else if(mySearchZone2Mass.decEndInMicroDegree >= decNorthPoleInMicroDegree) {
 
 		mySearchZone2Mass.decEndInMicroDegree        = decNorthPoleInMicroDegree;
-		mySearchZone2Mass.raStartInMicroDegree       = DEG2MICRODEG * START_RA_DEG;
-		mySearchZone2Mass.raEndInMicroDegree         = DEG2MICRODEG * COMPLETE_RA_DEG;
+		mySearchZone2Mass.raStartInMicroDegree       = (int) (DEG2MICRODEG * START_RA_DEG);
+		mySearchZone2Mass.raEndInMicroDegree         = (int) (DEG2MICRODEG * COMPLETE_RA_DEG);
 		mySearchZone2Mass.isArroundZeroRa            = 0;
 
 	} else {
