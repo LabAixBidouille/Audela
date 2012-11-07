@@ -263,14 +263,16 @@ void printStar(const star2Mass* const theStar, char* const tclString) {
 	raMinuteDouble     = (raHourDouble - raHour) * DEG2ARCMIN;
 	raMinute           = (int) raMinuteDouble;
 	raSecondsDouble    = (raMinuteDouble - raMinute) * DEG2ARCMIN;
-	raSeconds          = (int) round(100. * raSecondsDouble);
+	/* round does not exist under windows, replace round(x) by floor(x + 0.5)*/
+	raSeconds          = (int) floor(100. * raSecondsDouble + 0.5);
 
 	absDecInDegDouble  = fabs(decInDegDouble);
 	decDegree          = (int) absDecInDegDouble;
 	decMinuteDouble    = (absDecInDegDouble - decDegree) * DEG2ARCMIN;
 	decMinute          = (int) decMinuteDouble;
 	decSecondsDouble   = (decMinuteDouble - decMinute) * DEG2ARCMIN;
-	decSeconds         = (int) round(10. * decSecondsDouble);
+	/* round does not exist under windows, replace round(x) by floor(x + 0.5)*/
+	decSeconds         = (int) floor(10. * decSecondsDouble + 0.5);
 
 	sign               = '+';
 	if(decInDegDouble  < 0.) {
@@ -340,7 +342,7 @@ const indexTable2Mass* readIndexFile2Mass(const char* const pathOfCatalog, const
 	for(indexOfFile = mySearchZone2Mass->indexOfFirstDecZone;
 			indexOfFile <= mySearchZone2Mass->indexOfLastDecZone;indexOfFile++) {
 
-		if(indexOfFile         >= HALF_NUMBER_OF_CATALOG_FILES_2MASS) {
+		if(indexOfFile                            >= HALF_NUMBER_OF_CATALOG_FILES_2MASS) {
 			/* North hemisphere */
 			indexTable[indexOfFile].indexOfCatalog = indexOfFile - HALF_NUMBER_OF_CATALOG_FILES_2MASS;
 			indexTable[indexOfFile].prefix         = NORTH_HEMISPHERE_PREFIX;
