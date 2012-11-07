@@ -82,14 +82,14 @@ int cmd_tcl_cs2mass(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 
 	/* Now we loop over the concerned catalog and send to TCL the results */
 	Tcl_DStringInit(&dsptr);
-	Tcl_DStringAppend(&dsptr,"{ { 2Mass { } { ID ra_deg dec_deg jMag jMagError hMag hMagError kMag kMagError jd } } } ",-1);
+	Tcl_DStringAppend(&dsptr,"{ { 2Mass { } { ID ra_deg dec_deg err_ra err_dec jMag jMagError hMag hMagError kMag kMagError jd } } } ",-1);
 	/* start of main list */
 	Tcl_DStringAppend(&dsptr,"{ ",-1);
 
 	for(indexOfCatalog = mySearchZone2Mass.indexOfFirstDecZone; indexOfCatalog <= mySearchZone2Mass.indexOfLastDecZone; indexOfCatalog++) {
 
 		/* Open the CAT file (.acc) */
-		sprintf(shortName,CATALOG_NAME_FORMAT,indexOfCatalog);
+		sprintf(shortName,CATALOG_NAME_FORMAT,allAccFiles[indexOfCatalog].prefix,allAccFiles[indexOfCatalog].indexOfCatalog);
 		sprintf(fileName,"%s%s%s",pathToCatalog,shortName,DOT_CAT_EXTENSION);
 
 		inputStream = fopen(fileName,"rb");
@@ -152,15 +152,7 @@ int cmd_tcl_cs2mass(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 int processOneZone2MassCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const inputStream,const indexTable2Mass* const oneAccFile,
 		star2Mass* const arrayOfStars,const searchZone2Mass* const mySearchZone2Mass, const int indexOfCatalog, const int indexOfRA) {
 
-	char theId[17];
 	unsigned int indexOfStar;
-	int raHour,raMinute,raSeconds;
-	double raInDegDouble,raHourDouble,raMinuteDouble,raSecondsDouble;
-	int decDegree,decMinute,decSeconds;
-	double decInDegDouble,decMinuteDouble,decSecondsDouble;
-	double jMagnitude,hMagnitude,kMagnitude;
-	double jMagnitudeError,hMagnitudeError,kMagnitudeError;
-	double jd;
 	star2Mass theStar;
 	char tclString[STRING_COMMON_LENGTH];
 
@@ -189,34 +181,8 @@ int processOneZone2MassCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const inp
 			continue;
 		}
 
-		raInDegDouble      = (double)theStar.raInMicroDegree  / DEG2MICRODEG;
-		decInDegDouble     = (double)theStar.decInMicroDegree / DEG2MICRODEG;
-		jMagnitude         = (double)theStar.jMagInMilliMag / MAG2MILLIMAG;
-		hMagnitude         = (double)theStar.hMagInMilliMag / MAG2MILLIMAG;
-		kMagnitude         = (double)theStar.kMagInMilliMag / MAG2MILLIMAG;
-		jMagnitudeError    = (double)theStar.jErrorMagInCentiMag / MAG2CENTIMAG;
-		hMagnitudeError    = (double)theStar.hErrorMagInCentiMag / MAG2CENTIMAG;
-		kMagnitudeError    = (double)theStar.kErrorMagInCentiMag / MAG2CENTIMAG;
-		jd                 = (double)theStar.jd / 1.e4 + 2451.0e3;
+		printStar(&theStar,tclString);
 
-		raHourDouble       = raInDegDouble / HOUR2DEG;
-		raHour             = (int) raHourDouble;
-		raMinuteDouble     = (raHourDouble - raHour) * DEG2ARCMIN;
-		raMinute           = (int) raMinuteDouble;
-		raSecondsDouble    = (raMinuteDouble - raMinute) * DEG2ARCMIN;
-		raSeconds          = (int) (100. * raSecondsDouble);
-
-		decDegree          = (int) decInDegDouble;
-		decMinuteDouble    = (decInDegDouble - decDegree) * DEG2ARCMIN;
-		decMinute          = (int) decMinuteDouble;
-		decSecondsDouble   = (decMinuteDouble - decMinute) * DEG2ARCMIN;
-		decSeconds         = (int) (10. * decSecondsDouble);
-
-		sprintf(theId,OUTPUT_ID_FORMAT,raHour,raMinute,raSeconds,decDegree,decMinute,decSeconds);
-
-		sprintf(tclString,"{ { 2Mass { } {%s %.8f %.8f %.2f %.2f %.2f %.2f %.2f %.2f %.6f} } } ",
-				theId,raInDegDouble,decInDegDouble,jMagnitude,jMagnitudeError,hMagnitude,hMagnitudeError,
-				kMagnitude,kMagnitudeError,jd);
 		Tcl_DStringAppend(dsptr,tclString,-1);
 	}
 
@@ -229,15 +195,7 @@ int processOneZone2MassCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const inp
 int processOneZone2MassNotCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const inputStream,const indexTable2Mass* const oneAccFile,
 		star2Mass* const arrayOfStars,const searchZone2Mass* const mySearchZone2Mass, const int indexOfCatalog, const int indexOfRA) {
 
-	char theId[17];
 	unsigned int indexOfStar;
-	int raHour,raMinute,raSeconds;
-	double raInDegDouble,raHourDouble,raMinuteDouble,raSecondsDouble;
-	int decDegree,decMinute,decSeconds;
-	double decInDegDouble,decMinuteDouble,decSecondsDouble;
-	double jMagnitude,hMagnitude,kMagnitude;
-	double jMagnitudeError,hMagnitudeError,kMagnitudeError;
-	double jd;
 	star2Mass theStar;
 	char tclString[STRING_COMMON_LENGTH];
 
@@ -266,38 +224,67 @@ int processOneZone2MassNotCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const 
 			continue;
 		}
 
-		raInDegDouble      = (double)theStar.raInMicroDegree  / DEG2MICRODEG;
-		decInDegDouble     = (double)theStar.decInMicroDegree / DEG2MICRODEG;
-		jMagnitude         = (double)theStar.jMagInMilliMag / MAG2MILLIMAG;
-		hMagnitude         = (double)theStar.hMagInMilliMag / MAG2MILLIMAG;
-		kMagnitude         = (double)theStar.kMagInMilliMag / MAG2MILLIMAG;
-		jMagnitudeError    = (double)theStar.jErrorMagInCentiMag / MAG2CENTIMAG;
-		hMagnitudeError    = (double)theStar.hErrorMagInCentiMag / MAG2CENTIMAG;
-		kMagnitudeError    = (double)theStar.kErrorMagInCentiMag / MAG2CENTIMAG;
-		jd                 = (double)theStar.jd / 1.e4 + 2451.0e3;
+		printStar(&theStar,tclString);
 
-		raHourDouble       = raInDegDouble / HOUR2DEG;
-		raHour             = (int) raHourDouble;
-		raMinuteDouble     = (raHourDouble - raHour) * DEG2ARCMIN;
-		raMinute           = (int) raMinuteDouble;
-		raSecondsDouble    = (raMinuteDouble - raMinute) * DEG2ARCMIN;
-		raSeconds          = (int) (100. * raSecondsDouble);
-
-		decDegree          = (int) decInDegDouble;
-		decMinuteDouble    = (decInDegDouble - decDegree) * DEG2ARCMIN;
-		decMinute          = (int) decMinuteDouble;
-		decSecondsDouble   = (decMinuteDouble - decMinute) * DEG2ARCMIN;
-		decSeconds         = (int) (10. * decSecondsDouble);
-
-		sprintf(theId,OUTPUT_ID_FORMAT,raHour,raMinute,raSeconds,decDegree,decMinute,decSeconds);
-
-		sprintf(tclString,"{ { 2Mass { } {%s %.8f %.8f %.2f %.2f %.2f %.2f %.2f %.2f %.6f} } } ",
-				theId,raInDegDouble,decInDegDouble,jMagnitude,jMagnitudeError,hMagnitude,hMagnitudeError,
-				kMagnitude,kMagnitudeError,jd);
 		Tcl_DStringAppend(dsptr,tclString,-1);
 	}
 
 	return (0);
+}
+
+/**
+ * Print one star to append it in the output TCL string
+ */
+void printStar(const star2Mass* const theStar, char* const tclString) {
+
+	char sign;
+	char theId[17];
+	int raHour,raMinute,raSeconds;
+	double raInDegDouble,raHourDouble,raMinuteDouble,raSecondsDouble;
+	int decDegree,decMinute,decSeconds;
+	double decInDegDouble,absDecInDegDouble,decMinuteDouble,decSecondsDouble;
+	double jMagnitude,hMagnitude,kMagnitude;
+	double jMagnitudeError,hMagnitudeError,kMagnitudeError;
+	double jd;
+	double errorRa,errorDec;
+
+	raInDegDouble      = (double)theStar->raInMicroDegree  / DEG2MICRODEG;
+	decInDegDouble     = (double)theStar->decInMicroDegree / DEG2MICRODEG;
+	jMagnitude         = (double)theStar->jMagInMilliMag / MAG2MILLIMAG;
+	hMagnitude         = (double)theStar->hMagInMilliMag / MAG2MILLIMAG;
+	kMagnitude         = (double)theStar->kMagInMilliMag / MAG2MILLIMAG;
+	jMagnitudeError    = (double)theStar->jErrorMagInCentiMag / MAG2CENTIMAG;
+	hMagnitudeError    = (double)theStar->hErrorMagInCentiMag / MAG2CENTIMAG;
+	kMagnitudeError    = (double)theStar->kErrorMagInCentiMag / MAG2CENTIMAG;
+	jd                 = (double)theStar->jd / 1.e4 + 2451.0e3;
+
+	raHourDouble       = raInDegDouble / HOUR2DEG;
+	raHour             = (int) raHourDouble;
+	raMinuteDouble     = (raHourDouble - raHour) * DEG2ARCMIN;
+	raMinute           = (int) raMinuteDouble;
+	raSecondsDouble    = (raMinuteDouble - raMinute) * DEG2ARCMIN;
+	raSeconds          = (int) round(100. * raSecondsDouble);
+
+	absDecInDegDouble  = fabs(decInDegDouble);
+	decDegree          = (int) absDecInDegDouble;
+	decMinuteDouble    = (absDecInDegDouble - decDegree) * DEG2ARCMIN;
+	decMinute          = (int) decMinuteDouble;
+	decSecondsDouble   = (decMinuteDouble - decMinute) * DEG2ARCMIN;
+	decSeconds         = (int) round(10. * decSecondsDouble);
+
+	sign               = '+';
+	if(decInDegDouble  < 0.) {
+		sign           = '-';
+	}
+
+	errorDec           = (double)(theStar->errorOnCoordinates % 100) /100.;
+	errorRa            = ((double)theStar->errorOnCoordinates - errorDec) / 10000.;
+
+	sprintf(theId,OUTPUT_ID_FORMAT,raHour,raMinute,raSeconds,sign,decDegree,decMinute,decSeconds);
+
+	sprintf(tclString,"{ { 2Mass { } {%s %.8f %.8f %.6f %.6f %.2f %.2f %.2f %.2f %.2f %.2f %.6f} } } ",
+			theId,raInDegDouble,decInDegDouble,errorRa,errorDec,jMagnitude,jMagnitudeError,hMagnitude,hMagnitudeError,
+			kMagnitude,kMagnitudeError,jd);
 }
 
 /****************************************************************************/
@@ -330,16 +317,21 @@ const indexTable2Mass* readIndexFile2Mass(const char* const pathOfCatalog, const
 	char oneLine[STRING_COMMON_LENGTH];
 	int indexOfFile;
 	int indexOfLine;
-	int indexInFile;
-	int totalNumberOfStars;
-	int numberOfStarsInZone;
+	/* .acc are badly filled: when numberOfStarsInZone = 0, the fields indexInFile
+	 * and totalNumberOfStars do not exist, so sscanf does not change them
+	 * In this case indexInFile will be equal to 0 (0 is the value of numberOfStarsInZone)
+	 * THIS IS THE BEHAVIOUR UNDER LINUX : NOT SURE TO BE THE SAME UNDER OTHER OSs
+	 * So : we initialise totalNumberOfStars to 0 and indexInFile to -1 (indexInFile is not used hereafter)*/
+	int indexInFile         = -1;
+	int totalNumberOfStars  = 0;
+	int numberOfStarsInZone = 0;
 	int raZoneNumber;
 	int raZoneNumberPlusOne;
 	indexTable2Mass* indexTable;
 	FILE* inputStream;
 
 	/* Allocate memory */
-	indexTable    = (indexTable2Mass*)malloc(NUMBER_OF_CATALOG_FILES * sizeof(indexTable2Mass));
+	indexTable    = (indexTable2Mass*)malloc(NUMBER_OF_CATALOG_FILES_2MASS * sizeof(indexTable2Mass));
 	if(indexTable == NULL) {
 		sprintf(outputLogChar,"Error : indexTable out of memory\n");
 		return (NULL);
@@ -347,6 +339,16 @@ const indexTable2Mass* readIndexFile2Mass(const char* const pathOfCatalog, const
 
 	for(indexOfFile = mySearchZone2Mass->indexOfFirstDecZone;
 			indexOfFile <= mySearchZone2Mass->indexOfLastDecZone;indexOfFile++) {
+
+		if(indexOfFile         >= HALF_NUMBER_OF_CATALOG_FILES_2MASS) {
+			/* North hemisphere */
+			indexTable[indexOfFile].indexOfCatalog = indexOfFile - HALF_NUMBER_OF_CATALOG_FILES_2MASS;
+			indexTable[indexOfFile].prefix         = NORTH_HEMISPHERE_PREFIX;
+		} else {
+			/* South hemisphere */
+			indexTable[indexOfFile].indexOfCatalog = HALF_NUMBER_OF_CATALOG_FILES_2MASS_MINUS_ONE - indexOfFile;
+			indexTable[indexOfFile].prefix         = SOUTH_HEMISPHERE_PREFIX;
+		}
 
 		/* Allocate memory for internal tables */
 		indexTable[indexOfFile].idOfFirstStarInZone = (unsigned int*)malloc(ACC_FILE_NUMBER_OF_LINES* sizeof(unsigned int));
@@ -360,35 +362,36 @@ const indexTable2Mass* readIndexFile2Mass(const char* const pathOfCatalog, const
 			return (NULL);
 		}
 
-		/* The first and last accelerator files (corresponding to poles) are empty */
-		if(indexOfFile == 0) {
+		/* The first and last accelerator files are empty (m000TMASS.acc and p899TMASS.acc) */
+		if((indexTable[indexOfFile].prefix == SOUTH_HEMISPHERE_PREFIX) && (indexTable[indexOfFile].indexOfCatalog == 0)) {
 
 			for(indexOfLine = 0; indexOfLine < ACC_FILE_NUMBER_OF_LINES; indexOfLine++) {
 
 				indexTable[indexOfFile].idOfFirstStarInZone[indexOfLine] = 0;
-				indexTable[indexOfFile].numberOfStarsInZone[indexOfLine] = NUMBER_OF_STARS_IN_FIRST_ZONE;
+				indexTable[indexOfFile].numberOfStarsInZone[indexOfLine] = NUMBER_OF_STARS_IN_M000;
 			}
 
-			if(*maximumNumberOfStars  < NUMBER_OF_STARS_IN_FIRST_ZONE) {
-				*maximumNumberOfStars = NUMBER_OF_STARS_IN_FIRST_ZONE;
+			if(*maximumNumberOfStars  < NUMBER_OF_STARS_IN_M000) {
+				*maximumNumberOfStars = NUMBER_OF_STARS_IN_M000;
 			}
 
-		} else if (indexOfFile == NUMBER_OF_CATALOG_FILES - 1) {
+		} else if ((indexTable[indexOfFile].prefix == NORTH_HEMISPHERE_PREFIX) &&
+				(indexTable[indexOfFile].indexOfCatalog == HALF_NUMBER_OF_CATALOG_FILES_2MASS_MINUS_ONE)) {
 
 			for(indexOfLine = 0; indexOfLine < ACC_FILE_NUMBER_OF_LINES; indexOfLine++) {
 
 				indexTable[indexOfFile].idOfFirstStarInZone[indexOfLine] = 0;
-				indexTable[indexOfFile].numberOfStarsInZone[indexOfLine] = NUMBER_OF_STARS_IN_LAST_ZONE;
+				indexTable[indexOfFile].numberOfStarsInZone[indexOfLine] = NUMBER_OF_STARS_IN_P899;
 			}
 
-			if(*maximumNumberOfStars  < NUMBER_OF_STARS_IN_LAST_ZONE) {
-				*maximumNumberOfStars = NUMBER_OF_STARS_IN_LAST_ZONE;
+			if(*maximumNumberOfStars  < NUMBER_OF_STARS_IN_P899) {
+				*maximumNumberOfStars = NUMBER_OF_STARS_IN_P899;
 			}
 
 		} else {
 
 			/* Open the catalog ACC files */
-			sprintf(shortName,CATALOG_NAME_FORMAT,indexOfFile);
+			sprintf(shortName,CATALOG_NAME_FORMAT,indexTable[indexOfFile].prefix,indexTable[indexOfFile].indexOfCatalog);
 			sprintf(completeFileName,"%s%s%s",pathOfCatalog,shortName,DOT_ACC_EXTENSION);
 			inputStream = fopen(completeFileName,"rt");
 			if(inputStream == NULL) {
@@ -409,8 +412,17 @@ const indexTable2Mass* readIndexFile2Mass(const char* const pathOfCatalog, const
 						return (NULL);
 					}
 
-					indexTable[indexOfFile].idOfFirstStarInZone[indexOfLine] = indexInFile - 1;
-					indexTable[indexOfFile].numberOfStarsInZone[indexOfLine] = numberOfStarsInZone;
+					/* .acc are badly filled: when numberOfStarsInZone = 0, the fields indexInFile
+					 * and totalNumberOfStars do not exist, so sscanf does not change them
+					 * In this case indexInFile will be equal to 0 (0 is the value of numberOfStarsInZone) :
+					 * THIS IS THE BEHAVIOUR UNDER LINUX : NOT SURE TO BE THE SAME UNDER OTHER OSs*/
+					if(indexInFile == 0) {
+						indexTable[indexOfFile].idOfFirstStarInZone[indexOfLine] = totalNumberOfStars;
+						indexTable[indexOfFile].numberOfStarsInZone[indexOfLine] = 0;
+					} else {
+						indexTable[indexOfFile].idOfFirstStarInZone[indexOfLine] = totalNumberOfStars - numberOfStarsInZone;
+						indexTable[indexOfFile].numberOfStarsInZone[indexOfLine] = numberOfStarsInZone;
+					}
 
 					if(*maximumNumberOfStars  < numberOfStarsInZone) {
 						*maximumNumberOfStars = numberOfStarsInZone;
@@ -473,17 +485,17 @@ const searchZone2Mass findSearchZone2Mass(const double raInDeg,const double decI
 	} else {
 
 		radiusRa                                = radiusInDeg / cos(decInDeg * DEC2RAD);
-		tmpValue                                = DEG2MICRODEG * (raInDeg  - radiusRa);
+		tmpValue                                = raInDeg  - radiusRa;
 		ratio                                   = tmpValue / COMPLETE_RA_DEG;
 		ratio                                   = floor(ratio) * COMPLETE_RA_DEG;
 		tmpValue                               -= ratio;
-		mySearchZone2Mass.raStartInMicroDegree  = (int)tmpValue;
+		mySearchZone2Mass.raStartInMicroDegree  = (int)floor(DEG2MICRODEG * tmpValue);
 
-		tmpValue                                = DEG2MICRODEG * (raInDeg  + radiusRa);
+		tmpValue                                = raInDeg  + radiusRa;
 		ratio                                   = tmpValue / COMPLETE_RA_DEG;
 		ratio                                   = floor(ratio) * COMPLETE_RA_DEG;
 		tmpValue                               -= ratio;
-		mySearchZone2Mass.raEndInMicroDegree    = (int)tmpValue;
+		mySearchZone2Mass.raEndInMicroDegree    = (int)ceil(DEG2MICRODEG * tmpValue);
 
 		mySearchZone2Mass.isArroundZeroRa       = 0;
 
@@ -495,11 +507,11 @@ const searchZone2Mass findSearchZone2Mass(const double raInDeg,const double decI
 	mySearchZone2Mass.indexOfFirstDecZone = (int) ((mySearchZone2Mass.decStartInMicroDegree - decSouthPoleInMicroDegree) / catalogDistanceToPoleWidthInMicroDegree);
 	mySearchZone2Mass.indexOfLastDecZone  = (int) ((mySearchZone2Mass.decEndInMicroDegree   - decSouthPoleInMicroDegree) / catalogDistanceToPoleWidthInMicroDegree);
 
-	if(mySearchZone2Mass.indexOfFirstDecZone >= NUMBER_OF_CATALOG_FILES) {
-		mySearchZone2Mass.indexOfFirstDecZone = NUMBER_OF_CATALOG_FILES - 1;
+	if(mySearchZone2Mass.indexOfFirstDecZone >= NUMBER_OF_CATALOG_FILES_2MASS) {
+		mySearchZone2Mass.indexOfFirstDecZone = NUMBER_OF_CATALOG_FILES_2MASS - 1;
 	}
-	if(mySearchZone2Mass.indexOfLastDecZone  >= NUMBER_OF_CATALOG_FILES) {
-		mySearchZone2Mass.indexOfLastDecZone  = NUMBER_OF_CATALOG_FILES - 1;
+	if(mySearchZone2Mass.indexOfLastDecZone  >= NUMBER_OF_CATALOG_FILES_2MASS) {
+		mySearchZone2Mass.indexOfLastDecZone  = NUMBER_OF_CATALOG_FILES_2MASS - 1;
 	}
 
 	mySearchZone2Mass.indexOfFirstRightAscensionZone = (int)(mySearchZone2Mass.raStartInMicroDegree / accFileRaZoneWidthInMicroDegree);

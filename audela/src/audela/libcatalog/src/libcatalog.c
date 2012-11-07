@@ -31,7 +31,7 @@
    int __cdecl Catalog_Init(Tcl_Interp *interp)
 #endif
 #if defined(LIBRARY_SO)
-   int catalog_Init(Tcl_Interp *interp)
+   int Catalog_Init(Tcl_Interp *interp)
 #endif
 
 {

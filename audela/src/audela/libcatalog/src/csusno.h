@@ -11,7 +11,7 @@
 #include "useful.h"
 
 /* Number of ACC and CAT files*/
-#define NUMBER_OF_CATALOG_FILES 24
+#define NUMBER_OF_CATALOG_FILES_USNO            24
 /* Extensions and format */
 #define DOT_ACC_EXTENSION                       ".ACC"
 #define DOT_CAT_EXTENSION                       ".CAT"
