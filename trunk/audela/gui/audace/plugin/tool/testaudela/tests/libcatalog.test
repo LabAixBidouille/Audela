@@ -125,6 +125,78 @@ test libcatalog_csucac3_catalog_existe { trouve 15 etoiles } -constraints {
 
 
 #-------------------------------------------------------------------------------
+test libcatalog_csucac4_sansparam { csucac4 sans parametre } -constraints {
+   AUDACE
+} -setup {
+
+} -body {
+   set catchError [ catch {
+      #--- je recupere le message d'erreur "usage ..."
+      set result [csucac4]
+   } msg]
+   return $msg
+} -cleanup {
+
+} -result "usage : csucac4 pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMax(mag)? magnitudeMin(mag)?\n"
+
+
+#-------------------------------------------------------------------------------
+test libcatalog_csucac4_catalog_existe { trouve 16 etoiles } -constraints {
+   AUDACE
+} -setup {
+
+} -body {
+   set catchError [ catch {
+      set result [csucac4 $::audace(rep_userCatalog)/UCAC4 10 5 5]
+   } msg]
+
+   if { $catchError==0 }  {
+      return [ llength [ lindex $result 1 ] ]
+   } else {
+      return $msg
+   }
+} -cleanup {
+
+} -result "16"
+
+
+#-------------------------------------------------------------------------------
+test libcatalog_cs2mass_sansparam { cs2mass sans parametre } -constraints {
+   AUDACE
+} -setup {
+
+} -body {
+   set catchError [ catch {
+      #--- je recupere le message d'erreur "usage ..."
+      set result [cs2mass]
+   } msg]
+   return $msg
+} -cleanup {
+
+} -result "usage : cs2mass pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMax(mag)? magnitudeMin(mag)?\n"
+
+
+#-------------------------------------------------------------------------------
+test libcatalog_cs2mass_catalog_existe { trouve 52 etoiles } -constraints {
+   AUDACE
+} -setup {
+
+} -body {
+   set catchError [ catch {
+      set result [cs2mass $::audace(rep_userCatalog)/2MASS/2MASS 10 5 5]
+   } msg]
+
+   if { $catchError==0 }  {
+      return [ llength [ lindex $result 1 ] ]
+   } else {
+      return $msg
+   }
+} -cleanup {
+
+} -result "52"
+
+
+#-------------------------------------------------------------------------------
 test libcatalog_csusnoa2_sansparam { csusnoa2 sans parametre } -constraints {
    AUDACE
 } -setup {
