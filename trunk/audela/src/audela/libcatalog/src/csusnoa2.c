@@ -326,9 +326,9 @@ const indexTableUsno* readIndexFileUsno(const char* const pathOfCatalog,
 	int numberOfStars;
 	indexTableUsno* allAccFiles;
 
-	allAccFiles = (indexTableUsno*)malloc(NUMBER_OF_CATALOG_FILES* sizeof(indexTableUsno));
+	allAccFiles = (indexTableUsno*)malloc(NUMBER_OF_CATALOG_FILES_USNO * sizeof(indexTableUsno));
 	if(allAccFiles == NULL) {
-		sprintf(outputLogChar,"allAccFiles = %d (accFiles) out of memory\n",NUMBER_OF_CATALOG_FILES);
+		sprintf(outputLogChar,"allAccFiles = %d (accFiles) out of memory\n",NUMBER_OF_CATALOG_FILES_USNO);
 		return (NULL);
 	}
 
@@ -591,11 +591,11 @@ const searchZoneUsnoa2 findSearchZoneUsnoa2(const double raInDeg,const double de
 	mySearchZoneUsnoa2.indexOfFirstDistanceToPoleZone    = (int) (mySearchZoneUsnoa2.distanceToPoleStartInCas / (CATLOG_DISTANCE_TO_POLE_WIDTH_IN_DEGREE * DEG2CAS));
 	mySearchZoneUsnoa2.indexOfLastDistanceToPoleZone     = (int) (mySearchZoneUsnoa2.distanceToPoleEndInCas / (CATLOG_DISTANCE_TO_POLE_WIDTH_IN_DEGREE * DEG2CAS));
 
-	if(mySearchZoneUsnoa2.indexOfFirstDistanceToPoleZone >= NUMBER_OF_CATALOG_FILES) {
-		mySearchZoneUsnoa2.indexOfFirstDistanceToPoleZone = NUMBER_OF_CATALOG_FILES - 1;
+	if(mySearchZoneUsnoa2.indexOfFirstDistanceToPoleZone >= NUMBER_OF_CATALOG_FILES_USNO) {
+		mySearchZoneUsnoa2.indexOfFirstDistanceToPoleZone = NUMBER_OF_CATALOG_FILES_USNO - 1;
 	}
-	if(mySearchZoneUsnoa2.indexOfLastDistanceToPoleZone  >= NUMBER_OF_CATALOG_FILES) {
-		mySearchZoneUsnoa2.indexOfLastDistanceToPoleZone  = NUMBER_OF_CATALOG_FILES - 1;
+	if(mySearchZoneUsnoa2.indexOfLastDistanceToPoleZone  >= NUMBER_OF_CATALOG_FILES_USNO) {
+		mySearchZoneUsnoa2.indexOfLastDistanceToPoleZone  = NUMBER_OF_CATALOG_FILES_USNO - 1;
 	}
 
 	mySearchZoneUsnoa2.indexOfFirstRightAscensionZone    = (int) (mySearchZoneUsnoa2.raStartInCas / (ACC_FILE_RA_ZONE_WIDTH_IN_DEGREE * DEG2CAS));
