@@ -24,7 +24,7 @@
 /* pi */
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
-#endif//M_PI
+#endif /* M_PI */
 
 /* 1 mag = 10 deciimag */
 #define MAG2DECIMAG   10.
