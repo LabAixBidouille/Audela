@@ -48,6 +48,8 @@
 # source $audace(rep_install)/gui/audace/photcal.tcl ; photcal_calibrate comBV 1 10 15
 #
 # source $audace(rep_install)/gui/audace/photcal.tcl ; photcal_generate comBV 1 loneos C:/d/boninsegna/loneos_BV.phot 10 15
+#
+# source $audace(rep_install)/gui/audace/photcal.tcl ; photcal_merge C:/d/boninsegna/loneos_BV.phot C:/d/boninsegna/loneos_VR.phot
 
 # ----------------------------------------------------------------------------------------------
 # MODE CALIBRATION SEMI AUTOMATIQUE
@@ -2278,6 +2280,126 @@ proc photcal_generate { generic_file_common nb_file_common catalog_format file_l
       close $f
    }
 }
+
+# -------------------------------------------------------------------------------------------------
+# proc photcal_merge pour fondre deux catalogues au format Loneos
+#
+# Entrees :
+# * file_loneos1  : Fichier texte au format Loneos (en entree)
+# * file_loneos2  : Fichier texte au format Loneos (en entree)
+# * file_loneos12 : Fichier texte au format Loneos (en sortie)
+# Name                  RA  (J2000)  Dec     s    GSC       V     B-V    U-B    V-R    V-I    bibcode              remarks
+# NSV 5000           10 54 42.1  +63 02 40   h 4148-0380  12.83   0.70          0.36   0.78
+#  123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789
+#           1         2         3         4         5         6         7         8         9
+# -------------------------------------------------------------------------------------------------
+proc photcal_merge { file_loneos1 file_loneos2 file_loneos12 } {
+   global audace
+   # --- Lit le fichier loneos1
+   set f [open $file_loneos1 r]
+   set ligne1s [split [read $f] \n]
+   close $f
+   # --- Lit le fichier loneos2
+   set f [open $file_loneos2 r]
+   set ligne2s [split [read $f] \n]
+   close $f
+   # ---
+   foreach ligne1 $ligne1s {
+      set texte ""
+      set ligne $ligne1
+      if {[llength $ligne1]<8} {
+         continue
+      }
+      set id1 "[string range $ligne  0 17]"
+      set ra  "[string range $ligne 19 28] h"
+      set dec "[string range $ligne 31 39]"
+      set ra1 [mc_angle2deg $ra]
+      set dec1 [mc_angle2deg $dec]
+      if {($ra1==0)&&($dec1==0)} {
+         continue
+      }
+      set magv1 [expr [string range $ligne 56 60]]
+      set magbv1 [string trim [string range $ligne 62 67]]
+      set magub1 [string trim [string range $ligne 69 73]]
+      set magvr1 [string trim [string range $ligne 76 81]]
+      set magvi1 [string trim [string range $ligne 83 88]]
+      foreach ligne2 $ligne2s {
+         set ligne $ligne2
+         if {[llength $ligne]<8} {
+            continue
+         }
+         set ra  "[string range $ligne 19 28] h"
+         set dec "[string range $ligne 31 39]"
+         set ra2 [mc_angle2deg $ra]
+         set dec2 [mc_angle2deg $dec]
+         if {($ra2==0)&&($dec2==0)} {
+            continue
+         }
+         set magv2 [expr [string range $ligne 56 60]]
+         set magbv2 [string trim [string range $ligne 62 67]]
+         set magub2 [string trim [string range $ligne 69 73]]
+         set magvr2 [string trim [string range $ligne 76 81]]
+         set magvi2 [string trim [string range $ligne 83 88]]
+         set sepangle [lindex [mc_sepangle $ra1 $dec1 $ra2 $dec2] 0]
+         set sepsec [expr $sepangle*3600]
+         if {$sepsec<2} {
+            # --- etoile en commun
+            incr kstar
+            set idstar "$id1"
+            set idstar [string range $idstar 0 17]
+            append texte "$idstar "
+            set rahms [mc_angle2hms $ra1]
+            set rah [lindex $rahms 0]
+            set ram [lindex $rahms 1]
+            set ras [lindex $rahms 2]
+            set rahms "[format %02d $rah] [format %02d $ram] [format %04.1f $ras]"
+            append texte "$rahms  "
+            set decdms [mc_angle2dms $dec1 90]
+            set decd [lindex $decdms 0]
+            set decm [lindex $decdms 1]
+            set decs [lindex $decdms 2]
+            set decdms "[format %+03d $decd] [format %02d $decm] [format %02.0f $decs]"
+            append texte "$decdms "
+            append texte "              "
+            set magv [expr ($magv1+$magv2)/2.]
+            append texte "[format %6.2f $magv] "
+            if {$magbv1!=""} {
+               append texte "[format %6.2f $magbv1] "
+            } elseif {$magbv2!=""} {
+               append texte "[format %6.2f $magbv2] "
+            } else {            
+               append texte "       "
+            }
+            if {$magub1!=""} {
+               append texte "[format %6.2f $magub1] "
+            } elseif {$magub2!=""} {
+               append texte "[format %6.2f $magub2] "
+            } else {            
+               append texte "       "
+            }
+            if {$magvr1!=""} {
+               append texte "[format %6.2f $magvr1] "
+            } elseif {$magvr2!=""} {
+               append texte "[format %6.2f $magvr2] "
+            } else {            
+               append texte "       "
+            }
+            if {$magvi1!=""} {
+               append texte "[format %6.2f $magvi1] "
+            } elseif {$magvi2!=""} {
+               append texte "[format %6.2f $magvi2] "
+            } else {            
+               append texte "       "
+            }
+            append textes "${texte}\n"
+         }
+      }
+   }
+   set f [open $file_loneos12 w]
+   puts -nonewline $f $textes
+   close $f
+}
+
 # Name                  RA  (J2000)  Dec     s    GSC       V     B-V    U-B    V-R    V-I    bibcode              remarks
 # NSV 5000           10 54 42.1  +63 02 40   h 4148-0380  12.83   0.70          0.36   0.78
 #  123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789
