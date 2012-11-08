@@ -19,6 +19,7 @@ int cmd_tcl_cs2mass(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 	int maximumNumberOfStars = 0;
 	int indexOfRA;
 	int indexOfCatalog;
+	int isBadAccFile;
 	char shortName[1024];
 	char fileName[1024];
 	FILE* inputStream;
@@ -99,34 +100,65 @@ int cmd_tcl_cs2mass(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 			return (TCL_ERROR);
 		}
 
+		/* The first and the last accelerator files are empty (m000TMASS.acc and p899TMASS.acc) : process one RA box only
+		 * THIS ADDITIONAL CONDITION WILL BE REMOVED AFTER THE BAD ACC FILES WILL BE CORRECTED */
+		isBadAccFile = ((allAccFiles[indexOfCatalog].prefix == SOUTH_HEMISPHERE_PREFIX) &&
+				(allAccFiles[indexOfCatalog].indexOfCatalog == 0)) ||
+						((allAccFiles[indexOfCatalog].prefix == NORTH_HEMISPHERE_PREFIX) &&
+								(allAccFiles[indexOfCatalog].indexOfCatalog == HALF_NUMBER_OF_CATALOG_FILES_2MASS_MINUS_ONE));
+
 		if(mySearchZone2Mass.isArroundZeroRa) {
 
-			for(indexOfRA = mySearchZone2Mass.indexOfFirstRightAscensionZone; indexOfRA < ACC_FILE_NUMBER_OF_LINES; indexOfRA++) {
+			/* process one RA box only */
+			if(isBadAccFile) {
 
 				if(processOneZone2MassCentredOnZeroRA(&dsptr,inputStream,&(allAccFiles[indexOfCatalog]),
-						arrayOfStars,&mySearchZone2Mass,indexOfCatalog,indexOfRA)) {
+						arrayOfStars,&mySearchZone2Mass,indexOfCatalog,mySearchZone2Mass.indexOfFirstRightAscensionZone)) {
 					Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
 					return (TCL_ERROR);
 				}
-			}
 
-			for(indexOfRA = 0; indexOfRA <= mySearchZone2Mass.indexOfLastRightAscensionZone; indexOfRA++) {
+			} else {
 
-				if(processOneZone2MassCentredOnZeroRA(&dsptr,inputStream,&(allAccFiles[indexOfCatalog]),
-						arrayOfStars,&mySearchZone2Mass,indexOfCatalog,indexOfRA)) {
-					Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
-					return (TCL_ERROR);
+				for(indexOfRA = mySearchZone2Mass.indexOfFirstRightAscensionZone; indexOfRA < ACC_FILE_NUMBER_OF_LINES; indexOfRA++) {
+
+					if(processOneZone2MassCentredOnZeroRA(&dsptr,inputStream,&(allAccFiles[indexOfCatalog]),
+							arrayOfStars,&mySearchZone2Mass,indexOfCatalog,indexOfRA)) {
+						Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
+						return (TCL_ERROR);
+					}
+				}
+
+				for(indexOfRA = 0; indexOfRA <= mySearchZone2Mass.indexOfLastRightAscensionZone; indexOfRA++) {
+
+					if(processOneZone2MassCentredOnZeroRA(&dsptr,inputStream,&(allAccFiles[indexOfCatalog]),
+							arrayOfStars,&mySearchZone2Mass,indexOfCatalog,indexOfRA)) {
+						Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
+						return (TCL_ERROR);
+					}
 				}
 			}
 
 		} else {
 
-			for(indexOfRA = mySearchZone2Mass.indexOfFirstRightAscensionZone; indexOfRA <= mySearchZone2Mass.indexOfLastRightAscensionZone; indexOfRA++) {
+			/* process one RA box only */
+			if(isBadAccFile) {
 
 				if(processOneZone2MassNotCentredOnZeroRA(&dsptr,inputStream,&(allAccFiles[indexOfCatalog]),
-						arrayOfStars,&mySearchZone2Mass,indexOfCatalog,indexOfRA)) {
+						arrayOfStars,&mySearchZone2Mass,indexOfCatalog,mySearchZone2Mass.indexOfFirstRightAscensionZone)) {
 					Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
 					return (TCL_ERROR);
+				}
+
+			} else {
+
+				for(indexOfRA = mySearchZone2Mass.indexOfFirstRightAscensionZone; indexOfRA <= mySearchZone2Mass.indexOfLastRightAscensionZone; indexOfRA++) {
+
+					if(processOneZone2MassNotCentredOnZeroRA(&dsptr,inputStream,&(allAccFiles[indexOfCatalog]),
+							arrayOfStars,&mySearchZone2Mass,indexOfCatalog,indexOfRA)) {
+						Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
+						return (TCL_ERROR);
+					}
 				}
 			}
 		}
@@ -364,7 +396,7 @@ const indexTable2Mass* readIndexFile2Mass(const char* const pathOfCatalog, const
 			return (NULL);
 		}
 
-		/* The first and last accelerator files are empty (m000TMASS.acc and p899TMASS.acc) */
+		/* The first and the last accelerator files are empty (m000TMASS.acc and p899TMASS.acc) */
 		if((indexTable[indexOfFile].prefix == SOUTH_HEMISPHERE_PREFIX) && (indexTable[indexOfFile].indexOfCatalog == 0)) {
 
 			for(indexOfLine = 0; indexOfLine < ACC_FILE_NUMBER_OF_LINES; indexOfLine++) {

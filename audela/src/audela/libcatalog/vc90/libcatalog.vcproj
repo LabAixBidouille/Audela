@@ -236,6 +236,14 @@
 				>
 			</File>
 			<File
+                RelativePath="..\src\cs2mass.h"
+                >
+            </File>
+            <File
+                RelativePath="..\src\csusno.h"
+                >
+            </File>
+			<File
 				RelativePath="..\src\libcatalog.h"
 				>
 			</File>
