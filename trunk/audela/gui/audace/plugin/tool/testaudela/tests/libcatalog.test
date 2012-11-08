@@ -39,10 +39,10 @@ test libcatalog_cstycho2_catalog_existe { trouve 1 etoile } -constraints {
 
 } -body {
    set catchError [ catch {
-      set result [cstycho2 $::audace(rep_userCatalog)/TYCHO-2 10 5 5]
+      set result [cstycho2 [file join $::audace(rep_userCatalog) TYCHO-2] 10 5 5]
    } msg]
 
-   if { $catchError==0 }  {
+   if { $catchError==0 } {
       return [ llength [ lindex $result 1 ] ]
    } else {
       return $msg
@@ -75,10 +75,10 @@ test libcatalog_csucac2_catalog_existe { trouve 7 etoiles } -constraints {
 
 } -body {
    set catchError [ catch {
-      set result [csucac2 $::audace(rep_userCatalog)/UCAC2 10 5 5]
+      set result [csucac2 [file join $::audace(rep_userCatalog) UCAC2] 10 5 5]
    } msg]
 
-   if { $catchError==0 }  {
+   if { $catchError==0 } {
       return [ llength [ lindex $result 1 ] ]
    } else {
       return $msg
@@ -111,10 +111,10 @@ test libcatalog_csucac3_catalog_existe { trouve 15 etoiles } -constraints {
 
 } -body {
    set catchError [ catch {
-      set result [csucac3 $::audace(rep_userCatalog)/UCAC3 10 5 5]
+      set result [csucac3 [file join $::audace(rep_userCatalog) UCAC3] 10 5 5]
    } msg]
 
-   if { $catchError==0 }  {
+   if { $catchError==0 } {
       return [ llength [ lindex $result 1 ] ]
    } else {
       return $msg
@@ -147,10 +147,10 @@ test libcatalog_csucac4_catalog_existe { trouve 16 etoiles } -constraints {
 
 } -body {
    set catchError [ catch {
-      set result [csucac4 $::audace(rep_userCatalog)/UCAC4 10 5 5]
+      set result [csucac4 [file join $::audace(rep_userCatalog) UCAC4] 10 5 5]
    } msg]
 
-   if { $catchError==0 }  {
+   if { $catchError==0 } {
       return [ llength [ lindex $result 1 ] ]
    } else {
       return $msg
@@ -183,10 +183,10 @@ test libcatalog_cs2mass_catalog_existe { trouve 52 etoiles } -constraints {
 
 } -body {
    set catchError [ catch {
-      set result [cs2mass $::audace(rep_userCatalog)/2MASS/2MASS 10 5 5]
+      set result [cs2mass [file join $::audace(rep_userCatalog) 2MASS 2MASS] 10 5 5]
    } msg]
 
-   if { $catchError==0 }  {
+   if { $catchError==0 } {
       return [ llength [ lindex $result 1 ] ]
    } else {
       return $msg
@@ -219,10 +219,10 @@ test libcatalog_csusnoa2_catalog_existe { trouve 59 etoiles } -constraints {
 
 } -body {
    set catchError [ catch {
-      set result [csusnoa2 $::audace(rep_userCatalog)/USNOA2.0 10 5 5]
+      set result [csusnoa2 [file join $::audace(rep_userCatalog) USNOA2.0] 10 5 5]
    } msg]
 
-   if { $catchError==0 }  {
+   if { $catchError==0 } {
       return [ llength [ lindex $result 1 ] ]
    } else {
       return $msg
