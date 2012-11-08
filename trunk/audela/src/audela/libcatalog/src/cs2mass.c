@@ -295,16 +295,16 @@ void printStar(const star2Mass* const theStar, char* const tclString) {
 	raMinuteDouble     = (raHourDouble - raHour) * DEG2ARCMIN;
 	raMinute           = (int) raMinuteDouble;
 	raSecondsDouble    = (raMinuteDouble - raMinute) * DEG2ARCMIN;
-	/* round does not exist under windows, replace round(x) by floor(x + 0.5)*/
-	raSeconds          = (int) floor(100. * raSecondsDouble + 0.5);
+	/* 2Mass Ids in Aladin are coded using the floor function instead of round */
+	raSeconds          = (int) floor(100. * raSecondsDouble);
 
 	absDecInDegDouble  = fabs(decInDegDouble);
 	decDegree          = (int) absDecInDegDouble;
 	decMinuteDouble    = (absDecInDegDouble - decDegree) * DEG2ARCMIN;
 	decMinute          = (int) decMinuteDouble;
 	decSecondsDouble   = (decMinuteDouble - decMinute) * DEG2ARCMIN;
-	/* round does not exist under windows, replace round(x) by floor(x + 0.5)*/
-	decSeconds         = (int) floor(10. * decSecondsDouble + 0.5);
+	/* 2Mass Ids in Aladin are coded using the floor function instead of round */
+	decSeconds         = (int) floor(10. * decSecondsDouble);
 
 	sign               = '+';
 	if(decInDegDouble  < 0.) {
@@ -316,7 +316,7 @@ void printStar(const star2Mass* const theStar, char* const tclString) {
 
 	sprintf(theId,OUTPUT_ID_FORMAT,raHour,raMinute,raSeconds,sign,decDegree,decMinute,decSeconds);
 
-	sprintf(tclString,"{ { 2Mass { } {%s %.8f %.8f %.6f %.6f %.2f %.2f %.2f %.2f %.2f %.2f %.6f} } } ",
+	sprintf(tclString,"{ { 2Mass { } {%s %.6f %.6f %.6f %.6f %.3f %.3f %.3f %.3f %.3f %.3f %.6f} } } ",
 			theId,raInDegDouble,decInDegDouble,errorRa,errorDec,jMagnitude,jMagnitudeError,hMagnitude,hMagnitudeError,
 			kMagnitude,kMagnitudeError,jd);
 }
