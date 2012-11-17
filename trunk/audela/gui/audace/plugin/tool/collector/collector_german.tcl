@@ -1,626 +1,543 @@
 #
-# Fichier : collector_gui.tcl
+# Fichier : collector_german.tcl
 # Description :
 # Auteur : Raymond Zachantke
 # Mise à jour $Id$
 #
 
-   #--   Liste des proc de configuration de la fenetre de l'outil
-   # nom proc                             utilisee par
-   # ::collector::initCollector           createPluginInstance
-   # ::collector::createMyNoteBook        initCollector
-   # ::collector::configLigne             createMyNoteBook
-   # ::collector::configCmd
-   # ::collector::configButtons
-   # ::collector::closeMyNoteBook         Commande du bouton 'Fermer"
-   # ::collector::confToWidget            initCollector
-   # ::collector::configAddRemoveListener initCollector et closeMyNoteBook
-   # ::collector::configTraceSuivi        onChangeMount
-   # ::collector::configTraceRaDec        onChangeMount
-   # ::collector::configParkInit          onChangeMount et hideTel
-   # ::collector::configDirname           Commande du bouton '...'
-   # ::collector::hideTel                 onChangeMount
+   # nom proc                          utilisee par
+   # ::collector::refreshMyTel         computeCoordNow
+   # ::collector::rotateItem           refreshMyTel
+   # ::collector::rotateDec            refreshMyTel
+   # ::collector::makeSafeTel          refreshMyTel
+   # ::collector::shiftButee           binding
+   # ::collector::buildOngletGerman    createMyNoteBook
+   # ::collector::setColor             buildOngletPosTel
+   # ::collector::initMyTel            doUnPark
+   # ::collector::refreshMountSide     refreshMyTel
+   # ::collector::getGermanSide        doUnPark et doPark
 
-   proc initCollector { {visuNo 1} } {
+   #------------------------------------------------------------
+   #  refreshMyTel
+   #  Deplace la position du telescope sur le symbole d'une monture allemande
+   #------------------------------------------------------------
+   proc refreshMyTel { } {
       variable private
-      global audace cameras
 
-      #--   precaution
-      array unset cameras
-
-      #--   cree les images d'icones
-      foreach icon {baguette chaudron greenLed redLed} {
-         if {![winfo exists $audace(base).newCam]} {
-            createIcon $icon
-         }
+      set canv $private(canvas)
+      set tags [$canv gettags myTelAD]
+      if {[llength $tags] !=4} {
+         return
       }
 
-      confToWidget
+      set ha $private(haTel)
+      set elev $private(elevTel)
+      set dec [mc_angle2deg $private(decTel)]
 
-      #--  lance etc_tools
-      etc_init
+      #--   module AD
+      lassign $tags -> -> oldHa oldLhTel
 
-      #--   liste les cameras dans etc_tools
-      set private(etcCam) [lsort -dictionary [etc_set_camera]]
+      #--   par defaut, pas de changement
+      set newLhTel $oldLhTel
 
-      #--   ajoute les cameras utilisateurs
-      set l [llength $private(cam)]
-      if {$l > 0} {
-         for {set i 0} {$i < $l} {incr i} {
-            array set cameras [lindex $private(cam) $i]
-         }
+      #--   calcul la difference d'angle horaire
+      set deltaHa [mc_anglescomp $oldHa - $ha]
+
+      if {$deltaHa > 350} {
+         #--   franchissement de 360° -> 0°
+         set deltaHa [expr { $deltaHa - 360. }]
+      } elseif {$deltaHa < -350 } {
+         #--   franchissement 0°-> 360°
+         set deltaHa [expr { $deltaHa + 360. }]
       }
 
-      set private(actualListOfCam) [lsort -dictionary [array names cameras]]
+      if {[expr { abs($deltaHa) }] < 20} {
 
-      #--   liste equivalente a celle de etc_tools : naxis1 naxis2 photocell1 photocell2 C_th G N_ro eta Em
-      set private(paramsList) [list naxis1 naxis2 photocell1 photocell2 therm gain noise eta ampli]
+         #---  rotation de l'item autour du centre du canvas,
+         rotateItem $canv telescope 100 100 $deltaHa
 
-      #--   liste les couples de variables 'etc_tools' et 'collector''
-      set private(etc_variables) [list {aptdia D} {fond FonD} {foclen Foclen} {filter band} \
-         {psf Fwhm_psf_opt} {seeing seeing} {naxis1 naxis1} {naxis2 naxis2} \
-         {bin1 bin1} {bin2 bin2} {t t} {m m} {snr snr} \
-         {eta eta} {noise N_ro} {therm C_th} {gain G} {ampli Em} \
-         {photocell1 photocell1} {photocell2 photocell2}]
+         set newLhTel [expr { $oldLhTel - $deltaHa/15 } ]
+         if {$newLhTel < -12} {
+            set newLhTel [expr { $newLhTel + 12 }]
+         }
 
-      #--   liste les variables exclusivement label (resultat de calculs ou affichage simple)
-      #--   non modifiables par l'utilisateur
-      set private(labels) [list equinox true raTel decTel azTel elevTel haTel error \
-         telescop fov1 fov2 cdelt1 cdelt2 gps jd tsl moonphas moonalt moon_age \
-         fwhm secz airmass winddir windsp aptdia foclen fond resolution \
-         telname connexion suivi vra vdec vxPix vyPix observer sitename access]
+         #--   met a jour les tags
+         $canv itemconfigure myTelAD -tags [lreplace $tags 2 3 $ha $newLhTel]
 
-      #--   liste les variables 'entry' avec binding, modifiables par l'utilisateur
-      set private(entry) [list ra dec bin1 bin2 naxis1 naxis2 crota2 m snr t \
-         tu seeing tempair airpress psf photocell1 photocell2 eta gain noise therm ampli objname]
+      } else {
+         return
+      }
 
-      #--   liste les variables necessaires pour synthetiser une image
-      set private(syn_variables) [list snr m t aptdia foclen fond psf filter \
-         bin1 bin2 naxis1 naxis2 photocell1 photocell2 eta gain noise therm ampli]
+      #--   calcule l'angle polaire = distance avec le pole Nord
+      set thetaTel [expr { 90.0 - $dec }]
 
-      #--   liste les variables necessaires pour synthetiser une image, sans image dans la visu
-      set private(special_variables) [list ra dec gps t tu jd tsl telescop aptdia foclen fwhm \
-         bin1 bin2 naxis1 naxis2 cdelt1 cdelt2 crota2 filter detnam photocell1 photocell2 \
-         pixsize1 pixsize2 crval1 crval2 crpix1 crpix2 airpress tempair \
-         observer sitename imagetyp objname]
+      #--   calcule l'angle polaire de l'horizon
+      set decHrz [getHrzDec [lindex $private(gps) 3] $ha]
+      set thetaHrz [expr { 90 - $decHrz }]
 
-      #--   liste les variables necessaires pour activer le bouton 'image DSS'
-      set private(dss_variables) [list crval1 crval2 fov1 fov2 naxis1 naxis2 crota2]
+      #--   l'angle polaire est positif a l'Est, negatif a l'Ouest
+      if {$private(lhTel) > 0} {
+         set thetaTel [expr { -$thetaTel }]
+         set thetaHrz [expr { -$thetaHrz }]
+      }
 
-      #--   liste les boutons
-      set private(buttonList) [list cmd.syn cmd.special cmd.dss cmd.close cmd.hlp \
-       n.local.modifGps n.optic.modifOptic n.config.search n.kwds.modifObs \
-       n.kwds.editKwds n.kwds.writeKwds n.config.dispEtc n.config.simulimage ]
+      #--   coordonnnees de l'extremite mobile de myTelAD
+      lassign [$canv coords myTelAD] xc yc
 
-      set this $::audace(base).info
-      set private(This) $this
-      createMyNoteBook $visuNo
+      #--   angle complementaire a 180° de lhTel
+      set angleZ [expr { 180 - $newLhTel * 15 }]
+      set angleZ [expr { fmod($angleZ,180) }]
 
-      #--   initialise les listener permanents
-      configAddRemoveListener $visuNo add
+      rotateDec $canv myTelDEC [mc_angle2rad $angleZ] $dec
+
+      set private(lhTel) [format %0.2f $newLhTel]
+      set private(thetaTel) [format %0.2f $thetaTel]
+      set private(thetaHrz) [format %0.2f $thetaHrz]
+      set private(side) [refreshMountSide $private(product)]
+
+      makeSafeTel $newLhTel $private(buteeWest) $private(buteeEast) [expr { abs(90-$dec) }] [expr { abs($thetaHrz) }]
    }
 
    #------------------------------------------------------------
-   #  createMyNoteBook : creation de l'interface graphique
+   #  rotateDec
+   #
+   #  Parametres :
+   #       canv - Path name of the canvas
+   #       tagOrId - what to rotate
+   #       angleZ - radian
+   #       dec - degrees
    #------------------------------------------------------------
-   proc createMyNoteBook { visuNo } {
-      variable private
-      global audace caption conf color
+   proc rotateDec { canv tagOrId angleZ dec} {
 
-      set this $private(This)
+      set dec [mc_angle2rad $dec]
 
-      if {[winfo exists $this]} {
-         closeMyNoteBook $visuNo $this
+      lassign [$canv gettags $tagOrId] -> -> halfBase halfHeight
+      lassign [$canv coords $tagOrId] x0 y0 x1 y1 x2 y2
+
+      #--   centre de rotation
+      set xc [expr { ($x0 + ($x1+$x2)/2)/2. }]
+      set yc [expr { ($y0 + ($y1+$y2)/2)/2. }]
+
+      #---  distance au centre du triangle
+      set dX [expr { $halfHeight*cos($dec)*cos($angleZ) }]
+      set dY [expr { $halfHeight*cos($dec)*sin($angleZ) }]
+
+      #---  demi base du triangle
+      set deltaX [expr { $halfBase*sin($angleZ) }]
+      set deltaY [expr { $halfBase*cos($angleZ) }]
+
+      #---  coordonnees de la pointe du triangle
+      set x1 [expr { $xc + $dX }]
+      set y1 [expr { $yc + $dY }]
+
+      #---  coordonnees d'un point de la base
+      set x2 [expr { $xc - $dX - $deltaX }]
+      set y2 [expr { $yc - $dY + $deltaY }]
+
+      #---  coordonnees du second point de la base
+      set x3 [expr { $xc - $dX + $deltaX }]
+      set y3 [expr { $yc - $dY - $deltaY }]
+
+      $canv coord $tagOrId $x1 $y1 $x2 $y2 $x3 $y3
+   }
+
+   #----------------------------------------------------------------------
+   # rotateItem -- Rotates a canvas item any angle about an arbitrary point.
+   # Works by rotating the coordinates of the object. Thus it works with:
+   #  o polygon
+   #  o line
+   # It DOES NOT work correctly with:
+   #  o rectangle
+   #  o oval and arcs
+   #  o text
+   #
+   # Parameters:
+   #       canv - Path name of the canvas
+   #       tagOrId - what to rotate -- may be composite items
+   #       Ox, Oy - origin to rotate around
+   #       angle - degrees clockwise to rotate by
+   #
+   # Results:
+   #       Returns nothing
+   #
+   # Side effects:
+   #       Rotates a canvas item by ANGLE degrees clockwise
+   #
+   #  source : adapte de http://wiki.tcl.tk/8595 RotateItem
+   #----------------------------------------------------------------------
+   proc rotateItem { canv tagOrId Ox Oy angle} {
+
+      set angle [mc_angle2rad $angle] ;# Radians
+
+      foreach id [$canv find withtag $tagOrId] {     ;# Do each component separately
+        set xy {}
+        foreach {x y} [$canv coords $id] {
+            # rotates vector (Ox,Oy)->(x,y) by angle clockwise
+            set x [expr {$x - $Ox}]             ;# Shift to origin
+            set y [expr {$y - $Oy}]
+
+            set xx [expr {$x * cos($angle) - $y * sin($angle)}] ;# Rotate
+            set yy [expr {$x * sin($angle) + $y * cos($angle)}]
+
+            set xx [expr {$xx + $Ox}]           ;# Shift back
+            set yy [expr {$yy + $Oy}]
+            lappend xy $xx $yy
+        }
+        $canv coords $id $xy
       }
-
-      toplevel $this -class Toplevel
-      wm title $this "$caption(collector,title)"
-      wm geometry $this "$private(position)"
-      wm resizable $this 0 0
-      wm protocol $this WM_DELETE_WINDOW "::collector::closeMyNoteBook $visuNo $this"
-
-      ttk::style configure my.TEntry -foreground $audace(color,entryTextColor)
-      ttk::style configure default.TEntry -foreground red
-
-      pack [ttk::notebook $this.n]
-
-      #--   liste des variables de chaque onglet, affichees dans cet ordre
-      set targetChildren [list equinox ra dec separator1 true raTel decTel azTel elevTel haTel]
-      set dynamicChildren [list m error snr t prior]
-      set poseChildren [list bin1 bin2 cdelt1 cdelt2 naxis1 naxis2 fov1 fov2 crota2]
-      set localChildren [list gps modifGps tu jd tsl moonphas moonalt moon_age]
-      set atmChildren [list tempair airpress seeing fwhm secz airmass winddir windsp]
-      set opticChildren [list telescop modifOptic aptdia foclen fond resolution psf filter]
-      set camChildren [list detnam photocell1 photocell2 eta noise therm gain ampli]
-      set tlscpChildren [list telname suivi vra vdec vxPix vyPix separator1]
-      set kwdsChildren [list observer modifObs sitename imagetyp objname separator1 editKwds writeKwds]
-      set configChildren [list catname access search separator1 dispEtc simulimage]
-
-      #--   construit le notebook dans cet ordre
-      foreach topic [list target dynamic pose local atm optic cam tlscp german kwds config] {
-         set fr [frame $this.n.$topic]
-         #--   ajoute un onglet
-         $this.n add $fr -text "$caption(collector,$topic)"
-         if {$topic ne "german"} {
-            #--   ajoute les lignes dans l'onglet
-            set children [set ${topic}Children]
-            set len [llength $children]
-            for {set k 0} {$k < $len} {incr k} {
-               set child [lindex $children $k]
-               configLigne $topic $child $k
-            }
-            grid columnconfigure $fr {1} -pad 5 -weight 1
-         } else {
-            #--   construit l'onglet pour une monture allemande
-            buildOngletGerman $this.n.german $visuNo
-         }
-      }
-
-      buildPark "$this.n.tlscp"
-
-     #--   boutons de commande principaux
-      frame $this.cmd
-
-         foreach {but side} [list syn left dss left close right hlp right]  {
-            pack [ttk::button $this.cmd.$but -text "$caption(collector,$but)" -width 10] \
-               -side $side -padx 10 -pady 5 -ipady 5
-         }
-         ttk::button $this.cmd.special -image $private(baguette) -width 4 -compound image
-         pack $this.cmd.special -after $this.cmd.syn -side left -padx 10 -pady 5 -ipadx 4 -ipady 4
-
-         #-- specialisation des boutons
-         $this.cmd.syn configure -command "::collector::synthetiser $visuNo"
-         $this.cmd.special configure -command "::collector::createSpecial $visuNo $this.cmd.special"
-         $this.cmd.dss configure -command "::collector::requestSkyView \"[file join $::audace(rep_images) dss$::conf(extension,defaut)]\" "
-         $this.cmd.hlp configure -command "::audace::showHelpScript [file join $::audace(rep_plugin) tool collector] collector.htm"
-         $this.cmd.close configure -command "::collector::closeMyNoteBook $visuNo $this"
-
-      pack $this.cmd -in $this -side bottom -fill x
-
-      $this.cmd.special state disabled
-      $this.cmd.syn state disabled
-      $this.cmd.dss state disabled
-
-      #--   initialisation partielle
-      lassign [list "" 0] private(suivi) private(german)
-      $this.n.tlscp.suivi configure -image $private(redLed) \
-         -compound right -textvariable ""
-      set private(image) ""
-
-      $this.n.dynamic.prior current 0
-      $this.n.kwds.imagetyp current 3
-      set private(objname) "mySky"
-
-      onChangeImage $visuNo
-
-      #--- La fenetre est active
-      focus $this
-
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $this
    }
 
    #------------------------------------------------------------
-   #  configLigne : construit une ligne de la fenetre
-   #  Paremetres : nom topic et du child, n° de ligne (row)
-   #  Initialise les variables non initialisees à "-"
+   #  makeSafeTel
+   #  Arrete le telescope s'il atteint l'une des butees Est ou Ouest ou a l'Horizon
    #------------------------------------------------------------
-   proc configLigne { topic child row {visuNo 1} } {
-      variable private
+   proc makeSafeTel { lhTel buteeWest buteeEast thetaTel thetaHrz} {
       global audace caption
 
-      set onglet $private(This).n.$topic
-      set w $onglet.$child
+      if {$lhTel >= $buteeWest || $lhTel <= $buteeEast || $thetaTel > $thetaHrz \
+         && $audace(telescope,controle) eq "$caption(telescope,suivi_marche)"} {
 
-      #--   corrige row pour certaines lignes
-      if {$child in [list tu aptdia foclen sitename]} {incr row -1}
-
-      if {[regexp {(separator).} $child] == 1} {
-
-         grid [ttk::separator $w -orient horizontal] \
-            -row $row -column 0 -columnspan 3 -padx 10 -pady 5 -sticky news
-         return
-
-      } elseif {$child in [list modifGps modifOptic search modifObs modifSite editKwds writeKwds dispEtc simulimage]} {
-
-         ttk::button $w -text "$caption(collector,$child)"
-         switch -exact $child {
-            modifGps   {$w configure -command "::confPosObs::run $audace(base).confPosObs" -width 7 -padding {2 2}
-                        grid $w -row 0 -column 2
-                       }
-            modifOptic {$w configure -command "::confOptic::run $visuNo" -width 7 -padding {2 30}
-                        grid $w -row 0 -column 2 -rowspan 3
-                       }
-            search     {$w configure -command "::collector::configDirname $w" -width 4 -padding {2 2}
-                        grid $w -row 1 -column 2
-                       }
-            modifObs   {$w configure -command "::confPosObs::run $audace(base).confPosObs" -width 7 -padding {2 2}
-                        grid $w -row 0 -column 2 -rowspan 2
-                       }
-            editKwds   {$w configure -command "::collector::createKeywords ; ::collector::editKeywords"
-                        grid $w -row $row -column 1
-                       }
-            writeKwds  {$w configure -command "::collector::setKeywords"
-                        grid $w -row $row -column 1
-                       }
-            dispEtc    {$w configure -command "etc_disp"
-                        grid $w -row $row -column 1
-                       }
-            simulimage {$w configure -command "::audace::showHelpItem \"$::audace(rep_doc_html)/french/12tutoriel\" \"1030tutoriel_simulimage1.htm\""
-                        grid $w -row $row -column 1
-                       }
-         }
-         grid configure $w -padx 5 -pady 5 -sticky news
-         return
-
-      }
-
-      #--   nomme la ligne
-      label $onglet.lab_$child -text "$caption(collector,$child)" -justify left
-      grid $onglet.lab_$child -row $row -column 0 -sticky w -padx 10 -pady 3
-
-      if {$child in $private(labels)} {
-
-        label $w -textvariable ::collector::private($child)
-
-      } elseif {$child in $private(entry)} {
-
-         set width 7
-         if {$child in [list gps tu ]} {
-            set width 30
-         } elseif {$child in [list ra dec objname]} {
-            set width 15
-         }
-
-         ttk::entry $w -textvariable ::collector::private($child) \
-            -width $width -justify right
-         set private(prev,$child) ""
-
-         #--   configure la validation de la saisie
-         if {$child ni [list equinox gps ra dec tu objname]} {
-            bind $w <Leave> [list ::collector::testNumeric $child] ; # pattern de la variable , variables numeriques (dont etc_tools)
-          } else {
-            bind $w <Leave> [list ::collector::testPattern $child] ; # pattern de la variable
-         }
-
-      } elseif {$child in [list prior filter detnam imagetyp catname catname2]} {
-
-         #--   combobox
-         #--   liste et commande du binding
-         switch -exact $child {
-            prior    {  set values $caption(collector,prior_combo)
-                        set cmd "::collector::modifyPriority"
-                     }
-            filter   {  set values $caption(collector,band)
-                       set cmd "::collector::modifyBand"
-                     }
-            detnam   {  set values [linsert $private(actualListOfCam) end $caption(collector,newCam)]
-                        set cmd "::collector::modifyCamera"
-                     }
-            imagetyp {  set values $caption(collector,imagetypes)
-                        set cmd "return"
-                    }
-            catname  {  set values $caption(collector,catalog)
-                        set cmd "return"
-                     }
-         }
-
-         #--   largeur
-         set width [::tkutil::lgEntryComboBox $values]
-         if {$width < 4} {set width 4}
-
-         ttk::combobox $w -width $width -justify center -values $values \
-            -textvariable ::collector::private($child)
-         $w state !disabled
-
-         #--   binding
-         bind $w <<ComboboxSelected>> [list $cmd]
-
-         #--   positionnement initial
-         if {$child eq "catname"} {
-            $w set [lindex $values 0]
-         }
-      }
-
-      grid $w -row $row -column 1 -sticky e -padx 10
-
-      #--   initialise la variable
-      if {![info exists private($child)]} {set private($child) "-"}
-   }
-
-   #------------------------------------------------------------
-   #  configCmd
-   #  Configure chaque bouton {syn|dss|special} en fonction des infos disponibles
-   #------------------------------------------------------------
-   proc configCmd { } {
-      variable private
-
-      foreach but [list dss syn special] {
-
-         #--   empeche une erreur si la fenetre a ete fermee
-         if {![winfo exists $private(This).cmd.$but]} {return}
-
-         set state !disabled
-         if {$but ne "syn" || $private(image) ne ""} {
-            if {"-" in [::struct::list map $private(${but}_variables) getValue]} {
-               set state disabled
-            }
-         } else {
-            set state disabled
-         }
-         $private(This).cmd.$but state $state
-      }
-   }
-
-   #---------------------------------------------------------------------------
-   #  configButtons
-   #  Inhibe/Desinhibe tous les boutons
-   #---------------------------------------------------------------------------
-   proc configButtons { state } {
-      variable private
-
-      foreach b $private(buttonList) {
-         $private(This).$b state $state
-      }
-      if {$state eq "!disabled"} {
-         configCmd
+         #--   rem : la fonction verifie que le telescope a la capacite de controler le suivi
+         ::telescope::controleSuivi "$caption(telescope,suivi_marche)"
       }
    }
 
    #------------------------------------------------------------
-   #  closeMyNoteBook
-   #  Commande du bouton 'Fermer"
+   #  shiftButee
+   #  Déplace la butée sur le cercle
+   #  Binding associee aux deux butees
    #------------------------------------------------------------
-   proc closeMyNoteBook { visuNo this } {
+   proc shiftButee { visuNo w x y } {
       variable private
-      global audace conf
 
-      foreach icon {baguette chaudron greenLed redLed} {
-         if {[info exists $private($icon)]} {
-            image delete $private($icon)
+      lassign [$w itemcget [$w find withtag current] -tags]  -> TagOrId
+
+      set startOld [lindex [$w gettags West] 2]
+      set endOld [lindex [$w gettags East] 2 ]
+
+      set distanceX [expr { $x-100 }]
+      set distanceY [expr { $y-100 }] ; # toujours >= 0 car en dessous du centre
+
+      #--   identifie le centre de la butee
+      lassign [::polydraw::center $visuNo $w $TagOrId] x1 y1
+
+      #--   calcule l'angle reel en rad
+      set angleRad [expr { acos($distanceX/hypot($distanceX,$distanceY)) }]
+
+      #--   calcule la position sur le cercle
+      set rayon 60
+      set dx [expr { 100 + $rayon*cos($angleRad) - $x1 }]
+      set dy [expr { 100 + $rayon*sin($angleRad) - $y1 }]
+
+      #--   deplace la butee
+      $w move $TagOrId $dx $dy
+
+      #--   calcule l'angle retrograde, Est = 0°
+      set newAngle [expr { 360 - $angleRad * 180/(4*atan(1.)) } ]
+
+      #--   rafraichit la valeur de la butee
+      if {$TagOrId eq "West"} {
+         if {$newAngle <= 180 || $newAngle >= 270} {
+            #--   arrete si pas dans le quadrant (180°,270°) sens direct
+            return
          }
-      }
-
-      configTraceSuivi 0
-      configTraceRaDec 0
-      configAddRemoveListener $visuNo remove
-
-      #--   equivalent de widgetToConf
-      set conf(collector,access) $private(access)
-      set conf(collector,catname) $private(catname)
-      regsub {([0-9]+x[0-9]+)} [wm geometry $this] "" conf(collector,position)
-
-      set conf(collector,colors) [list $private(colFond) $private(colReticule) \
-         $private(colTel) $private(colButee) $private(colSector)]
-      set conf(collector,butees) [list $private(buteeWest) $private(buteeEast)]
-      setConfCam
-
-      #--   detruit la fenetre Ajouter/Supprimer
-      if {[winfo exists $audace(base).newCam]} {
-         destroy $audace(base).newCam
-      }
-
-      destroy $this
-   }
-
-   #---------------------------------------------------------------------------
-   #  confToWidget
-   #  Initalise les variables issues de conf
-   #---------------------------------------------------------------------------
-   proc confToWidget {} {
-      variable private
-      global audace conf color
-
-      if {![info exists conf(collector,colors)]} {
-         set conf(collector,colors) [list blue azure yellow red gray]
-      }
-      lassign $conf(collector,colors) private(colFond) private(colReticule) \
-         private(colTel) private(colButee) private(colSector)
-
-      if {![info exists conf(collector,butees)]} {
-         set conf(collector,butees) [list +6.10 -6.10]
-      }
-      lassign $conf(collector,butees) private(buteeWest) private(buteeEast)
-
-      #--   conf par defaut et confToWidget
-      set listConf [list catname access catname2 access2 cam position]
-      set listDefault [list "MICROCAT" "[file join $audace(rep_userCatalog) microcat]" \
-         "BOWELL" "[file join $audace(rep_userCatalog) bowell]" " " "+800+500"]
-      foreach topic $listConf value $listDefault {
-         if {![info exists conf(collector,$topic)]} {
-             set conf(collector,$topic) $value
+         set lh [expr { $newAngle/15 -6 }]
+         set start $newAngle
+         set extent [expr { $endOld - $newAngle }]
+      } elseif {$TagOrId eq "East"} {
+         if {$newAngle <= 270 || $newAngle >= 360} {
+            #--   arrete si pas dans le quadrant (270°,360°) sens direct
+            return
          }
-         set private($topic) $conf(collector,$topic)
+         set lh [expr { -30 + $newAngle/15 }]
+         set start $startOld
+         set extent [expr { $newAngle - $startOld }]
       }
 
-      #editCamerasArray
+      #--   met a jour les donnees
+      $w itemconfigure $TagOrId -tags [list butee $TagOrId $newAngle]
+      $w itemconfigure sector -start $start -extent $extent
+      set private(butee$TagOrId) [format "%02.2f" $lh]
    }
 
    #------------------------------------------------------------
-   #  configAddRemoveListener
-   #  Configure les listener
-   #  Paremetres : visuNo {add|remove}
+   #  buildOngletGerman
+   #  Cree l'onglet 'Monture Allemande'
    #------------------------------------------------------------
-   proc configAddRemoveListener { visuNo op } {
+   proc buildOngletGerman { w visuNo } {
+      variable private
+      global conf caption
 
-      set bufNo [visu$visuNo buf]
+      #::console::affiche_resultat "$private(colFond) $private(colReticule) \
+      #   $private(colTel) $private(colButee) $private(colSector)\n"
 
-      #---  trace les changements d'image
-      ::confVisu::${op}FileNameListener $visuNo "::collector::onChangeImage $visuNo"
-      #---  trace les changements de Cam
-      ::confVisu::${op}CameraListener $visuNo "::collector::onChangeCam $bufNo"
-      #---  trace les changements de configuration optique
-      ::confOptic::${op}OpticListener "::collector::onChangeOptic $bufNo"
-      #---  trace la connexion d'un telescope
-      ::confTel::${op}MountListener "::collector::onChangeMount $visuNo"
-      #---  trace les changements de Observateur et de la position de l'observateur
-      ::confPosObs::${op}PosObsListener "::collector::onChangeObserver $bufNo"
-      trace $op variable conf(posobs,observateur,gps) write "::collector::onChangeObserver $bufNo"
+      set private(hautInf) $conf(cata,haut_inf)
+      set private(hautSup) $conf(cata,haut_sup)
+
+      label $w.postel -text "$caption(collector,postel)"
+      grid $w.postel -row 0 -column 0 -columnspan 5 -sticky ew
+
+      set r 1
+      foreach z [list hautInf hautSup buteeWest buteeEast lhTel thetaTel thetaHrz] {
+         label $w.lab_$z -text "$caption(collector,$z)"
+         grid $w.lab_$z -row $r -column 0 -padx {5 0} -sticky w
+         label $w.$z -textvariable ::collector::private($z)
+         grid $w.$z -row $r -column 1 -padx {5 0} -sticky w
+         incr r
+      }
+      label $w.side -textvariable ::collector::private(side)
+      grid $w.side -row $r -column 0 -columnspan 2 -padx {5 0} -sticky w
+      incr row
+      grid columnconfigure $w {0 1} -pad 10
+
+      set canv $w.gr_polaire_color_invariant
+      set private(canvas) $canv
+
+      #---  cree le canvas
+      canvas $canv -width 200 -height 200 -borderwidth 2 -bg $private(colFond)
+      grid $canv -row 1 -column 2 -rowspan 9 -padx 10
+
+      #---  cree un cercle de centre {100,100}
+      set xc 100
+      set yc 100
+      set rayon 60 ;
+      $canv create oval [expr {$xc-$rayon}] [expr {$yc-$rayon}] [expr {$xc+$rayon}] [expr {$yc+$rayon}] \
+         -outline $private(colReticule) -width 2 -tags [list cercle]
+
+      #---   gradue en heures
+      for {set angle_deg 0} {$angle_deg < 360} {incr angle_deg 15} {
+         set angle_rad [mc_angle2rad $angle_deg]
+         set x1 [expr { $xc+65*cos($angle_rad) }]
+         set y1 [expr { $yc+65*sin($angle_rad) }]
+         set x2 [expr { $xc+55*cos($angle_rad) }]
+         set y2 [expr { $yc+55*sin($angle_rad) }]
+         $canv create line $x1 $y1 $x2 $y2 -tags [list reticule traits] \
+            -width 2 -fill $private(colReticule)
+      }
+
+      #---   gradue en chiffres
+      for {set angle_deg 255} {$angle_deg >= -75} {incr angle_deg "-15"} {
+         set angle_rad [mc_angle2rad $angle_deg]
+         set x [expr { $xc+50*cos($angle_rad) }]
+         set y [expr { $yc-50*sin($angle_rad) }]
+         set nom [expr { $angle_deg/15-6 }]
+         if {$angle_deg > 90} {
+            #--   ajoute le signe +
+            set nom +$nom
+         }
+         $canv create text $x $y -text "$nom" -tags [list reticule chiffres] \
+            -fill $private(colReticule) -font {Arial 7 bold}
+      }
+
+      #---   annote Ouest et Est et Meridien
+      $canv create text 10 100 -text "$caption(collector,west)" -tags [list reticule texte]\
+         -fill $private(colReticule) -font {Arial 8}
+      $canv create text 190 100 -text "$caption(collector,east)" -tags [list reticule texte] \
+         -fill $private(colReticule) -font {Arial 8}
+      $canv create line 100 0 100 200 -width 1 -dash {2 4} -tags [list reticule texte] \
+         -fill $private(colReticule)
+
+      #--   cree un ? pour marquer l'absence d'info
+      $canv create bitmap 100 80 -bitmap question -state normal \
+         -anchor center -foreground $private(colButee) \
+         -tags question
+
+      #--    cree les symboles du telescope en mode Zénith Ouest
+      #--   axe horaire
+      $canv create line 35 100 100 100 -fill "" -width 4 -smooth 1 \
+         -tags [list telescope myTelAD]
+      #--   symbole (triangle) du telescope
+      set xc
+      set yc 100
+      #--   demi base du triangle (pixels)
+      set halfbase 10
+      #--   demi hauteur du triangle (pixels)
+      set halfHeight 60
+      $canv create polygon 35 160 25 40 45 40 -fill "" -width 20 \
+         -tags [list telescope myTelDEC $halfbase $halfHeight]
+
+      showTelescope $canv 0 $private(colButee) $private(colFond)
+
+      #---   secteur interdit (angles comptes dans le sens retrograde)
+      set angleStart [expr { (6+$private(buteeWest))*15 }]
+      set angleEnd [expr { 450+$private(buteeEast)*15 }]
+
+      #--   calcule la longueur de l'arc
+      set extent [expr { $angleEnd - $angleStart }]
+      $canv create arc [expr {$xc-$rayon+1}] [expr {$yc-$rayon+1}] [expr {$xc+$rayon-1}] [expr {$yc+$rayon-1}] \
+         -style pieslice -width 1 -start $angleStart -extent $extent -fill $private(colSector) \
+         -tags [list sector]
+
+      #--   cree la butee Ouest
+      set angleW [mc_angle2rad $angleStart]
+      set x1 [expr { round($xc+$rayon*cos($angleW)) }]
+      set y1 [expr { round(200-$yc-$rayon*sin($angleW)) }]
+      $canv create oval [expr {$x1-5}] [expr {$y1-5}] [expr {$x1+5}] [expr {$y1+5}] \
+         -fill $private(colButee) -tags [list butee West $angleStart]
+
+      #--   cree la butee Est
+      set angleE [mc_angle2rad $angleEnd]
+      set x2 [expr { round($xc+$rayon*cos($angleE)) }]
+      set y2 [expr { round(200-$yc-$rayon*sin($angleE)) }]
+      $canv create oval [expr {$x2-5}] [expr {$y2-5}] [expr {$x2+5}] [expr {$y2+5}]  \
+         -fill $private(colButee) -tags [list butee East $angleEnd]
+
+      $canv bind butee <ButtonRelease-1> "::collector::shiftButee $visuNo %W %x %y"
+
+      #--   affiche la legende des couleurs
+      label $w.legende -text "$caption(collector,legende)"
+      grid $w.legende -row 1 -column 3 -columnspan 2 -padx {5 0} -sticky w
+      set row 2
+      set colorItem [list colFond fond colReticule reticule colTel telescope \
+         colButee butee colSector sector]
+      foreach {col item} $colorItem {
+         label $w.lab_$col -text "$caption(collector,$col)"
+         grid $w.lab_$col -row $row -column 3 -padx {5 0} -sticky w
+         button $w.but_${col}_color_invariant -relief raised -width 4 \
+            -bg $private($col) -activebackground $private($col) \
+            -command "::collector::setColor $w $item $col"
+         grid $w.but_${col}_color_invariant -row $row -column 4 -padx {5 0} -sticky w
+         incr row
+      }
    }
 
-   #---------------------------------------------------------------------------
-   #  configTraceSuivi
-   #  Configure la trace du controle du suivi en cas de connexion/deconnexion du telescope
-   #  Paremetre : suiviState {0|1}
-   #---------------------------------------------------------------------------
-   proc configTraceSuivi { suiviState } {
+   #------------------------------------------------------------
+   #  setColor
+   #  Selectionne et change la couleur a appliquer a un element
+   #  Parametres : parent du bouton, nom de l'item et de la variable de couleur
+   #  Commnade des boutons de selection des couleurs
+   #------------------------------------------------------------
+   proc setColor { parent item variable_color } {
       variable private
+      global caption
 
-      set trace 0
-      if {[trace info variable ::audace(telescope,controle)] ne ""} {
-         set trace 1
-      }
+      set w $private(canvas)
 
-      #--   configure la trace
-      if {$suiviState != 0 && $trace == 0} {
-         trace add variable ::audace(telescope,controle) write "::collector::onChangeSuivi"
-      } elseif {$suiviState == 0 && $trace == 1} {
-         trace remove variable ::audace(telescope,controle) write "::collector::onChangeSuivi"
-      }
+      set color [tk_chooseColor -initialcolor $private($variable_color) \
+         -parent $parent -title $caption(collector,$variable_color)]
 
-      #--   configure la ligne
-      set w $private(This).n.tlscp
+      if  {"$color" != ""} {
 
-      if {$suiviState == 1} {
-         grid $w.lab_suivi -row 1 -column 0 -sticky w -padx 10 -pady 3
-         grid $w.suivi -row 1 -column 1 -sticky e -padx 10
-      } else {
-         if {[winfo exists $w.lab_suivi]} {
-            grid forget $w.lab_suivi $w.suivi
+         set private($variable_color) "$color"
+         $parent.but_${variable_color}_color_invariant configure \
+            -bg $color -activebackground $color
+
+         if {$item in [list butee sector telescope]} {
+            $w itemconfigure $item -fill $color
+         } elseif {$item eq "fond" } {
+            $w configure -bg $color
+         } elseif {$item eq "reticule" } {
+            $w itemconfigure cercle -outline $color
+            $w itemconfigure reticule -fill $color
          }
       }
    }
 
-   #---------------------------------------------------------------------------
-   #  configTraceRaDec
-   #  Configure la trace en cas des coordonnees du telescope
-   #  Paremetre : hasCoordinates {0|1}
-   #---------------------------------------------------------------------------
-   proc configTraceRaDec { hasCoordinates } {
+   #------------------------------------------------------------
+   #  initMyTel
+   #  Initialise la position du telescope sur le symbole d'une monture allemande
+   #  Parametres : mode (index de la combobox du choix du mode d'initialisation)
+   #     et side (côte ou se trouve le tube E ou W)
+   #  Complete les tags avec l'angle horaire (hms) et la longitude horaire (en heures)
+   #------------------------------------------------------------
+   proc initMyTel { mode side } {
       variable private
+      global conf
 
-      set trace 0
-      if {[trace info variable ::audace(telescope,getra)] ne ""} {
-         set trace 1
-      }
+      set w $private(canvas)
+      set dec [mc_angle2deg $private(decTel)]
+      set ha $private(haTel)
 
-      #--   configure la trace
-      if {$hasCoordinates == 1 && $trace == 0} {
-         trace add variable ::audace(telescope,getra) write "::collector::refreshNotebook"
-      } elseif {$hasCoordinates == 0 && $trace == 1} {
-         trace remove variable ::audace(telescope,getra) write "::collector::refreshNotebook"
-      }
+      #--   repositionne le symbole en position Zénith Ouest
+      $w coord myTelAD 35 100 100 100
+      $w coord myTelDEC 35 160 25 40 45 40
 
-      #--   configure les lignes
-      set w $private(This).n.tlscp
+      #--   deltaRot = difference d'angle (retrograde) graphique de AD
+      #--   lhTel = difference d'angle (retrograde) graphique de AD
 
-      if {$hasCoordinates == 1} {
-         #--   affiche les lignes
-         set r 2
-         foreach v [list vra vdec vxPix vyPix] {
-            grid $w.lab_$v -row $r -column 0 -sticky w -padx 10 -pady 3
-            grid $w.$v -row $r -column 1 -sticky e -padx 10
-            incr r
+      if {$mode in [list 1 2 7 8]} {
+         set lhTel 0.00
+         set deltaRot 90
+      } elseif {$mode in [list 0 3 4 5 6]} {
+        if {$side eq "W" } {
+            set lhTel 6.00
+            set deltaRot 0
+         } elseif {$side eq "E"} {
+            set lhTel -6.00
+            set deltaRot 180
          }
       } else {
-         #--   supprime les lignes
-         if {[winfo exists ${w}.lab_vra]} {
-            grid forget $w.lab_vra $w.vra $w.lab_vdec $w.vdec $w.lab_vxPix $w.vxPix $w.lab_vyPix $w.vyPix
-         }
+         #--   mode Utilisateur
+         set lhTel [expr { [mc_angle2deg $ha] / 15 }]
+         set deltaRot [mc_anglescomp 24h00m00s - $ha]
+      }
+
+      showTelescope $w 1 $private(colTel) $private(colFond)
+
+      #--   tourne les deux a partir de la position Zénith Ouest
+      rotateItem $w telescope 100 100 $deltaRot
+      $w itemconfigure myTelAD -tags [list telescope myTelAD $ha $lhTel]
+   }
+
+   #------------------------------------------------------------
+   #  showTelescope
+   #  Gere l'alternance de l'affichage entre item(s) et bitmap
+   #  Parametres  : todo {1 = affiche | 0 = masque}
+   #                unmaskColor couleur pour demasquer (couleur du bitmap , couleur de remplissage pour -fill)
+   #                maskColor couleur pour masquer (couleur du fond pour un bitmap , "" pour -fill)
+   #------------------------------------------------------------
+   proc showTelescope { canv todo unmaskColor maskColor } {
+
+   #::console::affiche_resultat "showTelescope todo $todo unmaskColor $unmaskColor maskColor $maskColor\n"
+
+      if {$todo == 1} {
+         #--   masque le ? et demasque le telescope
+         $canv itemconfigure question -foreground $maskColor
+         $canv itemconfigure telescope -fill $unmaskColor
+      } else {
+         #--   demasque le ? et masque le telescope
+         $canv itemconfigure question -foreground $unmaskColor
+         $canv itemconfigure telescope -fill $maskColor
       }
    }
 
    #------------------------------------------------------------
-   #  configParkInit
-   #  Masque ou affiche les fonctions d'initialisation/garage
-   #  Parametres : { show = affiche | forget == masque }
+   #  refreshMountSide
+   #  Retourne : cote de la monture
+   #  Parametre : nom de la monture
    #------------------------------------------------------------
-   proc configParkInit { w state german } {
+   proc refreshMountSide { mount {telNo 1} } {
+      global caption
 
-      switch -exact $state {
-         "forget" {  grid forget $w.action1
-                     grid forget $w.coords
-                     grid forget $w.action3
+      switch -exact $mount {
+            temma {  set telSide [tel$telNo german]
+                     lassign $caption(collector,parkOptSide) ouest est
+                     set side [string map [list W $ouest E $est ] $telSide]
                   }
-         "show"   {  grid $w.action1 -row 8 -column 0 -columnspan 2 -sticky w -pady 3
-                     grid $w.coords -row 9 -column 0 -columnspan 2 -sticky w -pady 3
-                     grid $w.action3 -row 10 -column 0 -columnspan 2 -sticky w -pady 3
-                     #--   configure le choix du cote ou se trouve le tube pour les montures allemandes
-                     if {$german == 0} {
-                        pack forget $w.coords.parkside
-                     }
-                     cmdParkMode $w.coords
+            eqmod {  set telSide [tel$telNo orientation]
+                     set ouest $caption(eqmod,tube_ouest)
+                     set est $caption(eqmod,tube_est)
+                     set side [string map [list w $ouest e $est ] $telSide]
                   }
+            default { set side "?"}
       }
+
+      return $side
    }
 
-   #---------------------------------------------------------------------------
-   #  configDirname
-   #  Commande du bouton '...'
-   #---------------------------------------------------------------------------
-   proc configDirname { this } {
-      variable private
-      global audace caption conf
+   #------------------------------------------------------------
+   #  getGermanSide
+   #  Retourne le cote ou se trouve le tube, l'index de la combobox
+   #  et la position litterale pour un telescope Temma
+   #------------------------------------------------------------
+   proc getGermanSide { } {
+      global audace caption
 
-      set dirname [tk_chooseDirectory -title "$caption(collector,access)" \
-         -initialdir $audace(rep_userCatalog) -parent $this]
+      set telNo $audace(telNo)
+      set telSide [tel$telNo german]
+      set sideIndex [string map [list W 0 E 1] $telSide]
+      set side "[lindex $caption(collector,parkOptSide) $sideIndex]"
 
-      if { [string length $dirname] != 0 && [string index $dirname end] ne "/" } {
-         append dirname /
-      }
-
-
-      if {[lindex [split $this "."] end] eq "search"} {
-         if {$dirname ne ""} {
-            set private(access) "$dirname"
-         } else {
-            set private(access) "$conf(collector,access)"
-         }
-      } else {
-         if {$dirname ne ""} {
-            set private(access2) "$dirname"
-         } else {
-            set private(access2) "$conf(collector,access2)"
-         }
-      }
+      return [list $telSide $sideIndex $side]
    }
-
-   #---------------------------------------------------------------------------
-   #  hideTel
-   #  masque les onglets Monture et Allmande
-   #---------------------------------------------------------------------------
-   proc hideTel { notebook } {
-      variable private
-
-      $notebook hide $notebook.tlscp
-      $notebook hide $notebook.german
-
-      #--   supprime le suivi
-      configTraceSuivi 0
-
-      #--   supprime l'affichage du parquage
-      configParkInit $notebook.tlscp forget 0
-
-      #--   supprime l'affichage des vitesses
-      configTraceRaDec 0
-
-      #--   reinitialise les variables
-      set private(vra) [format %0.5f 0]
-      set private(vdec) [format %0.5f 0]
-      set private(vxPix) [format %0.1f 0]
-      set private(vyPix) [format %0.1f 0]
-
-      #--   si trace presente et telescope deconnecte
-      set bufNo 1
-      set visuNoTel [::confVisu::getToolVisuNo ::tlscp]
-      if {[trace info variable ::tlscp::private($visuNoTel,nomObjet)] ne ""} {
-         trace remove variable ::tlscp::private($visuNoTel,nomObjet) write "::collector::onChangeObjName $bufNo"
-      }
-   }
-
-   #--   proc associees a des fonctions ::struct::list
-   #--   retourne la liste des valeurs d'une liste de variables
-   proc getValue {var} {return $::collector::private($var)}
-   #--   extrait tous les elements d'index n dans une liste de listes
-   proc extractIndex {n list} {::lindex $list $n}
 
