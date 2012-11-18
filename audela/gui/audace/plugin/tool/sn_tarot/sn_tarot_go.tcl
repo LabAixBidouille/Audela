@@ -348,8 +348,9 @@ proc ::sn_tarot::listArchives { } {
 
    #--   liste le contenu du dossier archives ; masque l'exension .zip
    regsub -all ".zip" [ glob -nocomplain -type f -tails -dir $rep(archives) *.zip ] "" list_archives
-   #--   masque refgaltarot
+   #--   masque refgaltarot et dss
    regsub "refgaltarot" $list_archives "" list_archives
+   regsub "dss" $list_archives "" list_archives
 
    #--   trie les dates par ordre decroissant
    set rep(list_archives) [ lsort -decreasing $list_archives ]
@@ -399,9 +400,10 @@ proc ::sn_tarot::updateFiles { } {
 
    set dir "$panneau(init_dir)"
    set subdir [ file join $dir references ]
+   set dssdir [ file join $dir dss ]
    set list_of_data [ list folder folder "$dir" calern available "Tarot_Calern" \
       chili available "Tarot_Chili" ref ref refgaltarot.zip \
-      refunzip refunzip "$subdir" ]
+      refunzip refunzip "$subdir" dss dss dss.zip dssunzip dssunzip "$dssdir" ]
    foreach { child lab val } $list_of_data {
       checkbutton $fram.dat.$child -text [ format $caption(sn_tarot_go,$lab) $val ] \
          -indicatoron 1 -onvalue 1 -offvalue 0 -state disabled \
@@ -475,7 +477,11 @@ proc ::sn_tarot::sn_tarotStart { } {
    set nb [ llength [ glob -nocomplain -type f -tails -dir $panneau(sn_tarot,references) *$conf(extension,defaut) ] ]
    if { $nb == 0 } {
       #--   chemin de unzip.exe
-      set tarot_unzip [ file join $audace(rep_plugin) tool sn_tarot unzip.exe ]
+      if { $::tcl_platform(os) == "Linux" } {
+         set tarot_unzip unzip
+      } else {
+         set tarot_unzip [ file join $audace(rep_plugin) tool sn_tarot unzip.exe ]
+      }
       #--   dezippe refgaltarot.zip
       catch { exec $tarot_unzip -u -d $dir $file } ErrInfo
 
@@ -485,6 +491,32 @@ proc ::sn_tarot::sn_tarotStart { } {
       }
    }
    set panneau(sn_tarot,ini_refunzip) 1
+   update
+
+   #--   si necessaire, telecharge dss.zip dans archives
+   set file [ file join $rep(archives) dss.zip ]
+   if { ![ file exists $file ] } {
+      ::sn_tarot::downloadFile $panneau(sn_tarot,ohp,url) dss.zip $file
+   }
+   set panneau(sn_tarot,ini_ref) 1
+   update
+
+   #--   si necessaire, dezippe dss.zip
+   set panneau(sn_tarot,dss) [ file join $dir .. dss ]
+
+   set nb [ llength [ glob -nocomplain -type f -tails -dir $panneau(sn_tarot,dss) *$conf(extension,defaut) ] ]
+   if { $nb == 0 } {
+      #--   chemin de unzip.exe
+      if { $::tcl_platform(os) == "Linux" } {
+         set tarot_unzip unzip
+      } else {
+         set tarot_unzip [ file join $audace(rep_plugin) tool sn_tarot unzip.exe ]
+      }
+      #--   dezippe dss.zip
+      catch { exec $tarot_unzip -u -d $dir $file } ErrInfo
+
+   }
+   #set panneau(sn_tarot,ini_refunzip) 1
    update
 
    ::sn_tarot::changeUpdateState normal

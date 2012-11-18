@@ -408,7 +408,11 @@ proc ::sn_tarot::searchinArchives { name } {
    global audace rep
 
    #--   chemin de unzip.exe
-   set tarot_unzip [ file join $audace(rep_plugin) tool sn_tarot unzip.exe ]
+   if { $::tcl_platform(os) == "Linux" } {
+      set tarot_unzip unzip
+   } else {
+      set tarot_unzip [ file join $audace(rep_plugin) tool sn_tarot unzip.exe ]
+   }
 
    set name [ string toupper $name ].fit
    set fichiers ""
