@@ -123,11 +123,22 @@ proc ::sn_tarot::confTarotVisu { } {
       return
    }
 
+   toplevel $audace(base).snvisu -class Toplevel
+
+   if { $::tcl_platform(os) == "Linux" } {
+      wm minsize $audace(base).snvisu 800 600
+   } else {
+      wm minsize $audace(base).snvisu 660 548
+   }
    if { ![ info exists conf(sn_tarot,geometry) ] } {
-      set conf(sn_tarot,geometry) "660x548+150+70"
+      #--   chemin de unzip.exe
+      if { $::tcl_platform(os) == "Linux" } {
+         set conf(sn_tarot,geometry) "800x600+150+70"
+      } else {
+         set conf(sn_tarot,geometry) "660x548+150+70"
+      }
    }
 
-   toplevel $audace(base).snvisu -class Toplevel
    wm geometry $audace(base).snvisu $conf(sn_tarot,geometry)
    wm resizable $audace(base).snvisu 0 0
    wm title $audace(base).snvisu $caption(sn_tarot,main_title)
@@ -157,11 +168,17 @@ proc ::sn_tarot::confTarotVisu { } {
 
    #--- Create the canvas for the image 1 and 2 in the second frame
    #--- Cree le canevas pour l'image 1 et 2 dans le frame 2
+   lassign [split [lindex [split $conf(sn_tarot,geometry) +] 0] x]] dimx dimy
+   canvas $fr2.image0 -width 0 -height 0
+   set padxx 5
+   set padx [expr ($dimx/2-$gnaxis-2*$padxx)/2]
+   if {$padx<0} { set padx 0 }
+   pack $fr2.image0 -expand 0 -fill none -side left -anchor e -padx $padx
    foreach imgNo [ list 1 2 ] {
       set zone(image$imgNo) $fr2.image$imgNo
       canvas $zone(image$imgNo) -width $gnaxis -height $gnaxis
       $zone(image$imgNo) configure -cursor crosshair
-      pack $zone(image$imgNo) -expand 1 -fill x -side left -anchor e -padx 10
+      pack $zone(image$imgNo) -expand 0 -fill none -side left -anchor e -padx $padxx
    }
 
    #--- Scales are in the third frame
@@ -1548,7 +1565,11 @@ proc ::sn_tarot::unzipFile { fullfile_zip path } {
    }
 
    #--   chemin de unzip.exe
-   set tarot_unzip [ file join $audace(rep_plugin) tool sn_tarot unzip.exe ]
+   if { $::tcl_platform(os) == "Linux" } {
+      set tarot_unzip unzip
+   } else {
+      set tarot_unzip [ file join $audace(rep_plugin) tool sn_tarot unzip.exe ]
+   }
    #--   decompresse les images vers le dossier de destination
    exec $tarot_unzip -d $path $fullfile_zip
 
