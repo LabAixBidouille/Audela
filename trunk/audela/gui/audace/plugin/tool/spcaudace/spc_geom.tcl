@@ -609,6 +609,7 @@ proc spc_tiltauto { args } {
       set results [ spc_findtilt "$filename" ]
       set fileout [ spc_tilt2 "$filename" [ lindex $results 0 ] [ lindex $results 1 ] [ lindex $results 2 ] ]
       ::console::affiche_resultat "Spectre pivoté de [ lindex $results 0 ]° sauvé sous $fileout\n"
+      return "$fileout"
    } else {
        ::console::affiche_erreur "Usage: spc_tiltauto fichier\n\n"
    }
@@ -1633,7 +1634,7 @@ proc spc_slant2imgs { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 20-03-2007
-# Date modification : 20-03-2007
+# Date modification : 31-10-2012
 # Arguments : fichier .fit
 ####################################################################
 
@@ -1684,7 +1685,8 @@ proc spc_findtilt { args } {
           #-- Binning des colonnes à l'extrême gauche de l'image
           #buf$audace(bufNo) imaseries "binx x1=[expr $largeur+1] x2=[expr 2*$largeur] width=3"
           buf$audace(bufNo) imaseries "medianx x1=1 x2=[ expr round($naxis1_crop*0.05) ] width=3"
-          set y1 [ lindex [buf$audace(bufNo) centro [ list 1 1 3 $naxis2_crop ] ] 1 ]
+           set y1 [ lindex [buf$audace(bufNo) centro [ list 1 1 3 $naxis2_crop ] ] 1 ]
+          #set y1 [ lindex [buf$audace(bufNo) fitgauss [ list 1 1 3 $naxis2_crop ] ] 5 ]
           
           #-- Binning des colonnes à l'extrême droite de l'image
           buf$audace(bufNo) load "$audace(rep_images)/${spectre_name}_vcrop"
@@ -1692,6 +1694,7 @@ proc spc_findtilt { args } {
           buf$audace(bufNo) imaseries "medianx x1=[expr int($naxis1_crop*.95) ] x2=$naxis1_crop width=3"
           #set x2 [ expr int($naxis1-1.5*$largeur) ]
           set y2 [ lindex [buf$audace(bufNo) centro [ list 1 1 3 $naxis2_crop ] ] 1]
+          #set y2 [ lindex [buf$audace(bufNo) fitgauss [ list 1 1 3 $naxis2_crop ] ] 5 ]
           
           #-- Angles>0 penchés vers le haut à droite de l'image
           set facteur_correctif_du_au_crop 0.95
@@ -1708,53 +1711,147 @@ proc spc_findtilt { args } {
       #::console::affiche_resultat "Angle=$angle ; Xc=$xinf ; Yc=$yinf\n"
 
 
-      if { 1==0 } {
-       #--- Test la valeur de l'angle :
-       if { [expr abs($angle) ] < $spcaudace(tilt_limit) && abs($angle) != 0.0 } { 
-	   #-- Rotation d'angle "angle" et de centre=centre moyen de l'épaisseur du spectre :
-	   set yinf [ expr round(0.5*($y1+$y2)) ]
-           set xinf [ expr round($naxis1/2) ]
-       } else {
-	   #-- Détermination du centre lumineux des profils de plusieurs colonnes :
-           ::console::affiche_resultat "Angle ($angle °) trouvé par la méthode 1 trop grand : méthode 2...\n"
-	   set xpas [ expr int($naxis1/$spcaudace(nb_coupes)) ]
-	   ::console::affiche_resultat "Pas entre chaque point de détection : $xpas\n"
-	   set liste_x [ list ]
-	   set liste_y [ list ]
-	   for {set k $xpas} {$k <= $x_fin} {incr k} {
-	       # set fsortie [ file rootname [ spc_profilx "$filename" $k $spcaudace(largeur_binning) ] ]
-               buf$audace(bufNo) load "$audace(rep_images)/$filename"
-               set xdeb [ expr $k-$spcaudace(largeur_binning) ]
-               if { $xdeb<1 } { set xdeb 1 }
-               set xfin [ expr $k+$spcaudace(largeur_binning) ]
-               if { $xfin>$naxis1 } { set xfin $naxis1 }
-               buf$audace(bufNo) imaseries "BINX x1=$xdeb x2=$xfin width=1"
-	       lappend liste_x $k
-	       set y1 [ expr int($spcaudace(epaisseur_detect)*$naxis2) ]
-	       set y2 [ expr int((1-$spcaudace(epaisseur_detect))*$naxis2) ]
-	       set windowcoords [ list 1 $y1 1 $y2 ]
-	       # buf$audace(bufNo) load "$audace(rep_images)/$fsortie"
-               #- 2010-02-08 :
-	       lappend liste_y [ lindex [ buf$audace(bufNo) fitgauss $windowcoords ] 5 ]
-               #- 091214 :
-               #lappend liste_y [ lindex [ buf$audace(bufNo) centro $windowcoords ] 1 ]
-	       # file delete -force "$audace(rep_images)/$fsortie$conf(extension,defaut)"
-	       set k [ expr $k+$xpas-1 ]
+       #--- Traitement du résultat :
+       file delete -force "$audace(rep_images)/${spectre_name}_vcrop$conf(extension,defaut)"
+       set results [ list $angle $xinf $yinf $pente ]
+       ::console::affiche_resultat "Angle de rotation trouvé : ${angle}° autour de ($xinf,$yinf) de pente $pente.\n"
+       return $results
+   } else {
+       ::console::affiche_erreur "Usage: spc_findtilt fichier\n\n"
+   }
+}
+#***************************************************************************#
+
+
+####################################################################
+# Détermine l'angle et les corrdonnées d'inclinaison d'un spectre
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 31-10-2012
+# Date modification : 20-10-2012
+# Arguments : fichier .fit
+####################################################################
+
+proc spc_findgeomimgs { args } {
+   global audace caption spcaudace
+   global conf
+   set pi [ expr acos(-1.0) ]
+   #-- Angles>0 penchés vers le haut à droite de l'image
+
+   if {[llength $args] == 1} {
+      set nom_generique [ lindex $args 0 ]
+
+      set listefichiers [ glob -dir $audace(rep_images) -tails ${nom_generique}\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ]
+      foreach fichier $listefichiers {
+         #--- Determination des parametres de tilt :
+         set results [ spc_findtilt "$fichier" ]
+         set angle [ lindex $results 0 ]
+         set xrot [ lindex $results 1 ]
+         set yrot [ lindex $results 2 ]
+
+         #--- Determination des parametres de de binning (h, e) :
+         set results [ spc_detectasym "$fichier" ]
+         set ybin [ expr round([ lindex $results 0 ]) ]
+         # set epaisseur [ lindex $results 1 ]
+
+         #--- Ecrit les parametres dans le header :
+         buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+         buf$audace(bufNo) setkwd [ list "SPC_TILT" $angle float "Tilt angle" "degres" ]
+         buf$audace(bufNo) setkwd [ list "SPC_XROT" $xrot int "Tilt x center" "pixel" ]
+         buf$audace(bufNo) setkwd [ list "SPC_YROT" $yrot int "Tilt y center" "pixel" ]
+         buf$audace(bufNo) setkwd [ list "SPC_YBIN" $ybin int "Y heigh for binning" "pixel" ]
+         buf$audace(bufNo) bitpix short
+         buf$audace(bufNo) save "$audace(rep_images)/$fichier"
+      }
+   } else {
+       ::console::affiche_erreur "Usage: spc_findgeomimgs nom_generique_fichier\n\n"
+   }
+}
+#***************************************************************************#
+
+
+
+####################################################################
+# Détermine l'angle et les corrdonnées d'inclinaison d'un spectre
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 20-03-2007
+# Date modification : 20-10-2012
+# Arguments : fichier .fit
+####################################################################
+
+proc spc_findtilt_old2 { args } {
+   global audace caption spcaudace
+   global conf
+   set pi [ expr acos(-1.0) ]
+   #-- Angles>0 penchés vers le haut à droite de l'image
+
+   if {[llength $args] <= 1} {
+       if {[llength $args] == 1} {
+	   set spectre_name [ file tail [ file rootname [ lindex $args 0 ] ] ]
+       } elseif { [llength $args]==0 } {
+	   set spctrouve [ file rootname [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] ]
+	   if { [ file exists "$audace(rep_images)/$spctrouve$conf(extension,defaut)" ] == 1 } {
+	       set spectre_name $spctrouve
+	   } else {
+	       ::console::affiche_erreur "Usage: spc_findtilt fichier\n\n"
+	       return 0
 	   }
-
-	   #-- Equation de la doite a+b*x passant par le profil incliné :
-	   set coefs [ spc_ajustdeg1 $liste_x $liste_y 1. ]
-	   set a [ lindex [ lindex $coefs 0 ] 0 ]
-	   set b [ lindex [ lindex $coefs 0 ] 1 ]
-
-	   #-- Calcule l'angle d'inclinaison de la droite :
-	   set angle [ expr 180./$pi*atan(1.0*$b) ]
-	   #set angle [ expr 180./$pi*atan(1.0*$b) ]
-	   set pente $b
-	   set xinf [ expr round($naxis1/2) ]
-	   set yinf [ expr round($a+$b*$xinf) ]
+       } else {
+	   ::console::affiche_erreur "Usage: spc_findtilt fichier\n\n"
+	   return 0
        }
-    }
+
+       #--- Elimination des bords gauche et droit :
+       buf$audace(bufNo) load "$audace(rep_images)/$spectre_name"
+       set naxis2 [ lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1 ]
+       set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
+
+       set x1 [ expr round($spcaudace(pourcent_bordt)*$naxis1) ]
+       set x2 [ expr round($naxis1*(1-$spcaudace(pourcent_bordt))) ]
+       # set windowcoords [ list [ expr round($spcaudace(pourcent_bordt)*$naxis1) ] 1 [ expr round($naxis1*(1-$spcaudace(pourcent_bordt))) ] $naxis2 ]
+       # set windowcoords [ list [ expr round($spcaudace(pourcent_bordt)*$naxis1) ] $ydeb [ expr round($naxis1*(1-$spcaudace(pourcent_bordt))) ] $yfin ]
+      set windowcoords [ list [ expr round($spcaudace(pourcent_bordt)*$naxis1) ] [ expr round($naxis2*(1-$spcaudace(pourcent_bordt))) ] [ expr round($naxis1*(1-$spcaudace(pourcent_bordt))) ] [ expr round($spcaudace(pourcent_bordt)*$naxis2) ]  ]
+       buf$audace(bufNo) window $windowcoords
+       buf$audace(bufNo) save "$audace(rep_images)/${spectre_name}_vcrop"
+
+       #--- Extraction des mots clef :
+       #-- Il faut caonnaitre la valeur actuelle de NAXIS1 !
+       set naxis1_crop [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
+       set naxis2_crop [ lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1 ]
+       # ::console::affiche_resultat "$naxis1_crop ; $naxis2_crop\n"
+
+       #--- Calcul de l'angle avec les 2 méthodes et les compare :
+       if { $spcaudace(tilt_normal)=="o" } {
+          #-- Methode un peu fragile : trouve parfois un angle important (4 ou 15°) alors que ce n'est pas le cas.
+          #-- Binning des colonnes à l'extrême gauche de l'image
+          #buf$audace(bufNo) imaseries "binx x1=[expr $largeur+1] x2=[expr 2*$largeur] width=3"
+          buf$audace(bufNo) imaseries "medianx x1=1 x2=[ expr round($naxis1_crop*0.05) ] width=3"
+           set y1 [ lindex [buf$audace(bufNo) centro [ list 1 1 3 $naxis2_crop ] ] 1 ]
+          #set y1 [ lindex [buf$audace(bufNo) fitgauss [ list 1 1 3 $naxis2_crop ] ] 5 ]
+          
+          #-- Binning des colonnes à l'extrême droite de l'image
+          buf$audace(bufNo) load "$audace(rep_images)/${spectre_name}_vcrop"
+          #buf$audace(bufNo) imaseries "binx x1=[expr $naxis1-2*$largeur] x2=[expr $naxis1-$largeur] width=3"
+          buf$audace(bufNo) imaseries "medianx x1=[expr int($naxis1_crop*.95) ] x2=$naxis1_crop width=3"
+          #set x2 [ expr int($naxis1-1.5*$largeur) ]
+          set y2 [ lindex [buf$audace(bufNo) centro [ list 1 1 3 $naxis2_crop ] ] 1]
+          #set y2 [ lindex [buf$audace(bufNo) fitgauss [ list 1 1 3 $naxis2_crop ] ] 5 ]
+          
+          #-- Angles>0 penchés vers le haut à droite de l'image
+          set facteur_correctif_du_au_crop 0.95
+          set pente [ expr 1.0*($y2-$y1)/($x2-$x1) ]
+          set angle [ expr $facteur_correctif_du_au_crop*180./$pi*atan($pente) ]
+          #- Mise a 0 car methode peu précise : 2008-02-24
+          #set angle 0.0
+       } else {
+          #-- Oblige l'usage de la methode 2 : orientation necessaire pour spectres de snr intermediaire (mv5.5)
+          set angle $spcaudace(tilt_limit)
+       }
+      set xinf [ expr round($naxis1/2) ]
+      set yinf [ expr round($naxis2/2) ]
+      #::console::affiche_resultat "Angle=$angle ; Xc=$xinf ; Yc=$yinf\n"
+
 
        #--- Traitement du résultat :
        file delete -force "$audace(rep_images)/${spectre_name}_vcrop$conf(extension,defaut)"
@@ -1768,6 +1865,7 @@ proc spc_findtilt { args } {
 #***************************************************************************#
 
 
+
 ####################################################################
 # Détermine l'angle et les corrdonnées d'inclinaison d'un spectre
 #
@@ -1777,7 +1875,7 @@ proc spc_findtilt { args } {
 # Arguments : fichier .fit
 ####################################################################
 
-proc spc_findtilt_old { args } {
+proc spc_findtilt_old1 { args } {
    global audace caption spcaudace
    global conf
    set pi [ expr acos(-1.0) ]
@@ -1993,12 +2091,127 @@ proc spc_tilt3 { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 20-03-2007
-# Date modification : 21-03-2007
+# Date modification : 31-10-2012
 # Arguments : nom générique des spectres à traiter
 # Algo : fait la somme des spectres inclines, detecte l'angle, applique la rotation trouvée aux fichiers
 ####################################################################
 
 proc spc_tiltautoimgs { args } {
+
+    global audace spcaudace
+    global conf
+
+    if { [llength $args] <= 2 } {
+	if { [llength $args] == 1 } {
+	    set filename [ file rootname [ lindex $args 0 ] ]
+	    set reject "o"
+	} elseif { [llength $args] == 2 } {
+	    set filename [ file rootname [ lindex $args 0 ] ]
+	    set reject [ lindex $args 1 ]
+	} else {
+	    ::console::affiche_erreur "Usage: spc_tiltautoimgs nom_générique_spectre_2D ?flag_reject (o/n)?\n\n"
+	    return 0
+	}
+
+	#--- Applique le tilt au(x) spectre(s) incriminé(s)
+	#-- Cas d'un seul fichier :
+	if { [ file exists "$filename$conf(extension,defaut)" ] } {
+           buf$audace(bufNo) load "$audace(rep_images)/$filename"
+           set listemotsclef [ buf$audace(bufNo) getkwds ]
+           if { [ lsearch $listemotsclef "SPC_TILT" ]!=-1 && [ lsearch $listemotsclef "SPC_XROT" ]!=-1 && [ lsearch $listemotsclef "SPC_YROT" ]!=-1 } {
+              set angle [ lindex [ buf$audace(bufNo) getkwd "SPC_TILT" ] 1 ]
+              set xrot [ lindex [ buf$audace(bufNo) getkwd "SPC_XROT" ] 1 ]
+              set yrot [ lindex [ buf$audace(bufNo) getkwd "SPC_YROT" ] 1 ]
+           } else {
+              set results [ spc_findtilt "$filename" ]
+              set angle [ lindex $results 0 ]
+              set xrot [ lindex $results 1 ]
+              set yrot [ lindex $results 2 ]
+           }
+           if { [ expr abs($angle) ]>$spcaudace(tilt_limit) } {
+		::console::affiche_erreur "Attention : angle limite de tilt $spcaudace(tilt_limit) dépassé : mise à 0°\n"
+		file copy -force "$audace(rep_images)/$filename$conf(extension,defaut)" "$audace(rep_images)/${filename}_tilt$conf(extension,defaut)"
+		set spectre_tilte "${filename}_tilt"
+		return "$spectre_tilte"
+	    } else {
+		#set yrot [ lindex [ spc_detect $filename ] 0 ]
+		set spectre_tilte [ spc_tilt2 $filename $angle $xrot $yrot ]
+                # set spectre_tilte [ spc_tiltauto $filename ]
+		::console::affiche_resultat "Spectre corrigé sauvé sous $spectre_tilte\n"
+		return "$spectre_tilte"
+	    }
+	} else {
+	    #-- Cas de plusieurs fichiers :
+	    set liste_images [ lsort -dictionary [ glob -dir "$audace(rep_images)" -tails "${filename}\[0-9\]$conf(extension,defaut)" "${filename}\[0-9\]\[0-9\]$conf(extension,defaut)" "${filename}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut)" ] ]
+	    set nbsp [ llength $liste_images ]
+	    #--- Détermination de l'angle de tilt :
+	    ::console::affiche_resultat "Régistration verticale prélimiaire et somme de $nbsp spectres...\n"
+	    #set freg [ spc_register "$filename" ]
+	    #- 070908 : sadd -> smean :
+            #- 091214 : smean -> sadd :
+            #- 120930 : sadd -> ssk :
+	    #set fsomme [ spc_ssk "$freg" ]
+	    #delete2 $freg $nbsp
+            set fsomme [ spc_ssk "$filename" ]
+	    set results [ spc_findtilt "$fsomme" ]
+	    file delete -force "$audace(rep_images)/$fsomme$conf(extension,defaut)"
+	    set anglec [ lindex $results 0 ]
+	    set xrotc [ lindex $results 1 ]
+            set yrotc [ lindex $results 2 ]
+
+	    #--- Tilt de la série d'images :
+	    set i 1
+	    ::console::affiche_resultat "$nbsp spectres à pivoter...\n\n"
+	    foreach lefichier $liste_images {
+		set fichier [ file rootname $lefichier ]
+               buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+               set listemotsclef [ buf$audace(bufNo) getkwds ]
+               if { [ lsearch $listemotsclef "SPC_TILT" ]!=-1 && [ lsearch $listemotsclef "SPC_XROT" ]!=-1 && [ lsearch $listemotsclef "SPC_YROT" ]!=-1 } {
+                  set angle [ lindex [ buf$audace(bufNo) getkwd "SPC_TILT" ] 1 ]
+                  set xrot [ lindex [ buf$audace(bufNo) getkwd "SPC_XROT" ] 1 ]
+                  set yrot [ lindex [ buf$audace(bufNo) getkwd "SPC_YROT" ] 1 ]
+               } else {
+                  set angle $anglec 
+                  set xrot $xrotc
+                  set yrot $yrotc
+               }
+                if { [ expr abs($angle) ]>$spcaudace(tilt_limit) } {
+                   ::console::affiche_erreur "Attention : angle limite de tilt $spcaudace(tilt_limit) dépassé : mise à 0°\n"
+                   file copy -force "$audace(rep_images)/$fichier$conf(extension,defaut)" "$audace(rep_images)/${filename}-tilt-$i$conf(extension,defaut)"
+                } else {
+                   # set spectre_tilte [ spc_tiltauto $fichier ]
+                   set spectre_tilte [ spc_tilt2 $fichier $angle $xrot $yrot ]
+                   file rename -force "$audace(rep_images)/$spectre_tilte$conf(extension,defaut)" "$audace(rep_images)/${filename}-tilt-$i$conf(extension,defaut)"
+                   ::console::affiche_resultat "Spectre corrigé sauvé sous ${filename}-tilt-$i$conf(extension,defaut).\n\n"
+                }
+		incr i
+	    }
+
+	    #--- Messages d'information
+	    #::console::affiche_resultat "Spectre corrigés sauvés sous ${filename}tilt-\*$conf(extension,defaut).\n"
+	    return ${filename}-tilt-
+	}
+    } else {
+	::console::affiche_erreur "Usage: spc_tiltautoimgs nom_générique_spectre_2D ?flag_reject (o/n)?\n\n"
+    }
+}
+#********************************************************************************#
+
+
+
+
+
+####################################################################
+# Procédure de correction de l'inclinaison du spectre pour une série d'images
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 20-03-2007
+# Date modification : 21-03-2007
+# Arguments : nom générique des spectres à traiter
+# Algo : fait la somme des spectres inclines, detecte l'angle, applique la rotation trouvée aux fichiers
+####################################################################
+
+proc spc_tiltautoimgs_old1 { args } {
 
     global audace spcaudace
     global conf
@@ -2027,8 +2240,9 @@ proc spc_tiltautoimgs { args } {
 		set spectre_tilte "${filename}_tilt"
 		return "$spectre_tilte"
 	    } else {
-		set yrot [ lindex [ spc_detect $filename ] 0 ]
-		set spectre_tilte [ spc_tilt2 $filename $angle $xrot $yrot ]
+		#set yrot [ lindex [ spc_detect $filename ] 0 ]
+		#set spectre_tilte [ spc_tilt2 $filename $angle $xrot $yrot ]
+                set spectre_tilte [ spc_tiltauto $filename ]
 		::console::affiche_resultat "Spectre corrigé sauvé sous $spectre_tilte\n"
 		return "$spectre_tilte"
 	    }
@@ -2062,9 +2276,10 @@ proc spc_tiltautoimgs { args } {
 	    ::console::affiche_resultat "$nbsp spectres à pivoter...\n\n"
 	    foreach lefichier $liste_images {
 		set fichier [ file rootname $lefichier ]
-		# set yrot [ lindex [ spc_detect $fichier ] 0 ]
-		# set spectre_tilte [ spc_tilt2 $fichier $angle $xrot $yrot ]
-		set spectre_tilte [ spc_tilt3 $fichier $pente ]
+		## set yrot [ lindex [ spc_detect $fichier ] 0 ]
+		## set spectre_tilte [ spc_tilt2 $fichier $angle $xrot $yrot ]
+		# set spectre_tilte [ spc_tilt3 $fichier $pente ]
+                set spectre_tilte [ spc_tiltauto $filename ]
 		file rename -force "$audace(rep_images)/$spectre_tilte$conf(extension,defaut)" "$audace(rep_images)/${filename}tilt-$i$conf(extension,defaut)"
 		::console::affiche_resultat "Spectre corrigé sauvé sous ${filename}tilt-$i$conf(extension,defaut).\n\n"
 		incr i
@@ -2079,6 +2294,7 @@ proc spc_tiltautoimgs { args } {
     }
 }
 #********************************************************************************#
+
 
 
 ####################################################################

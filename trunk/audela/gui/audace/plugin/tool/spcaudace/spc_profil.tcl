@@ -588,6 +588,8 @@ proc spc_detectasym { args } {
     # set epaisseur_detect 0.05
     # set nb_coupes 10
     # set nb_coupes 5
+    #-- 20 % des bords ecartes :
+    set pourcent_bord [ expr $spcaudace(epaisseur_detect)*4 ]
 
 
     if { [ llength $args ] == 1 } {
@@ -595,32 +597,50 @@ proc spc_detectasym { args } {
 
        #--- Binning de toute l'image :
        buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
+       set listemotsclef [ buf$audace(bufNo) getkwds ]
        set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
        set xmid [ expr round($naxis1/2.) ]
        set naxis2 [ lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1 ]
-       set xfin [ expr (1-$spcaudace(epaisseur_detect))*$naxis1 ]
-       set xdeb [ expr int($naxis1/$spcaudace(nb_coupes)) ]
+       set xfin [ expr int((1-$pourcent_bord)*$naxis1) ]
+       #set xdeb [ expr int($naxis1/$spcaudace(nb_coupes)) ]
+       set xdeb [ expr int($pourcent_bord*$naxis1) ]
        #buf$audace(bufNo) imaseries "binx x1=$xdeb x2=$xfin height=1"
-       buf$audace(bufNo) imaseries "medianx x1=$xdeb x2=$xfin height=1"
+       buf$audace(bufNo) imaseries "medianx x1=$xdeb x2=$xfin width=1"
        buf$audace(bufNo) bitpix float
        buf$audace(bufNo) save "$audace(rep_images)/${filenamespc}_spcx"
-       set icont [ lindex [ buf$audace(bufNo) stat ] 4 ]
-       buf$audace(bufNo) bitpix short
+       #set icont [ lindex [ buf$audace(bufNo) stat ] 4 ]
+       #buf$audace(bufNo) bitpix short
 
-       #--- Détermination des paramètres du de l'épaisseur du spectre sur la coupe verticale
-       #set y1 [ expr int(.03*$naxis2) ]
-       #set y2 [ expr int(.97*$naxis2) ]
-       set y1 [ expr int($spcaudace(epaisseur_detect)*$naxis2) ]
-       set y2 [ expr int((1-$spcaudace(epaisseur_detect))*$naxis2) ]
-       set windowcoords [ list 1 $y1 1 $y2 ]
-       set gparams [ buf$audace(bufNo) fitgauss $windowcoords ]
-       set ycenter [ lindex $gparams 5 ]
-       #-- Choix : la largeur de la gaussienne est de 1.9*FWHM
-       set largeur [ expr $spcaudace(cafwhm_binning)*[ lindex $gparams 6 ] ]
-       
+       #--- Détermination des paramètres du de l'épaisseur du spectre sur la coupe verticale :
+       if { [ lsearch $listemotsclef "SPC_YBIN" ] !=-1 } {
+          set ycenter [ lindex [ buf$audace(bufNo) getkwd "SPC_YBIN" ] 1 ]
+          set yinf [ expr int($ycenter-5*$spcaudace(epaisseur_bin)/2.) ]
+          if { $yinf<1 } { set yinf 3 }
+          set ysup [ expr int($ycenter+5*$spcaudace(epaisseur_bin)/2.) ]
+          if { $ysup>$naxis2 } { set ysup [ expr $naxis2-3 ] }
+          set gparams [ buf$audace(bufNo) fitgauss [ list 1 $yinf 1 $ysup ] ]
+          set hauteur [ expr $spcaudace(cafwhm_binning)*[ lindex $gparams 6 ] ]
+       } else {
+          #set y1 [ expr int(.03*$naxis2) ]
+          #set y2 [ expr int(.97*$naxis2) ]
+          set y1 [ expr int($pourcent_bord*$naxis2) ]
+          set y2 [ expr int((1-$pourcent_bord)*$naxis2) ]
+          set windowcoords [ list 1 $y1 1 $y2 ]
+          set gparams [ buf$audace(bufNo) fitgauss $windowcoords ]
+          set ycenter [ lindex $gparams 5 ]
+          # set ycenter [ lindex [ buf$audace(bufNo) centro $windowcoords ] 1 ]
+          #-- Choix : la largeur de la gaussienne est de 1.9*FWHM
+          set hauteur [ expr $spcaudace(cafwhm_binning)*[ lindex $gparams 6 ] ]
+       }
+       buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
+       buf$audace(bufNo) setkwd [ list "SPC_HBIN" $hauteur float "Binning thickness" "pixel" ]
+       buf$audace(bufNo) bitpix short
+       buf$audace(bufNo) save "$audace(rep_images)/$filenamespc"
+
+
        #--- Traitement des resultats :
        file delete -force "$audace(rep_images)/${filenamespc}_spcx$conf(extension,defaut)"
-       return [ list $ycenter $largeur ]
+       return [ list $ycenter $hauteur ]
     } else {
        ::console::affiche_erreur "Usage: spc_detectasym spectre_2D_fits\n\n"
     }

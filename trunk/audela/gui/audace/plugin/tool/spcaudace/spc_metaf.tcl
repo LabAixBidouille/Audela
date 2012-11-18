@@ -1403,6 +1403,12 @@ proc spc_traite2srinstrum { args } {
           set nbimg_ini $nbimg
        }
 
+      #--- Detection du tilt sur les bruts :
+      if { $flag_nonstellaire==0 } {
+          spc_findgeomimgs "$img"
+      }
+
+
        #--- Prétraitement de $nbimg images :
        ::console::affiche_prompt "\n\n**** Prétraitement de $nbimg images ****\n\n"
        if { $flag_nonstellaire==1 } {
@@ -2203,6 +2209,11 @@ proc spc_traiteseries { args } {
        #set ejtilt "n"
        #set rmfpretrait "o"
 
+       #-- Pas de rmedges car les cosmics sont genants sur les poses unitaires :
+       set spcaudace(rm_edges) "n"
+       #-- Pas de calibration tellurique par defaut (cf dans spc_var) :
+       # set spcaudace(caloserie) "n"
+
        #--- Debut du pipeline stellaire :
        ::console::affiche_prompt "\n\n**** PIPELINE DE TRAITEMENT DE SÉRIE DE SPECTRES ****\n\n"
 
@@ -2247,6 +2258,12 @@ proc spc_traiteseries { args } {
           set nbimg_ini $nbimg
        }
 
+
+      #--- Detection du tilt sur les bruts :
+      if { $flag_nonstellaire==0 } {
+          spc_findgeomimgs "$brut"
+      }
+
        #--- Prétraitement de $nbimg images :
        ::console::affiche_prompt "\n\n**** Prétraitement de $nbimg images ****\n\n"
        if { $flag_nonstellaire==1 } {
@@ -2254,7 +2271,6 @@ proc spc_traiteseries { args } {
        } else {
 	   set fpretrait [ spc_pretrait "$brut" "$noir_master" "$flat" "$noirplu_master" "$offset" $rmfpretrait ]
        }
-
 
 
        #--- Correction du l'inclinaison (tilt) :
@@ -2350,7 +2366,7 @@ proc spc_traiteseries { args } {
          } else {
             set fflip "$spectre"
          }
-         
+
          #--- Soustraction du fond de ciel et binning :
          ::console::affiche_prompt "\n\n**** Extraction du profil de raies ****\n\n"
          if { $flag_nonstellaire==1 } {
@@ -2450,7 +2466,6 @@ proc spc_traiteseries { args } {
                file delete -force "$audace(rep_images)/$fcal$conf(extension,defaut)"
             }
          }
-         set spcaudace(rm_edges) "o"
 
 
          #--- Normalisation du profil de raies :
@@ -2507,7 +2522,7 @@ proc spc_traiteseries { args } {
          }
 
          #--- Calibration avec les raies telluriques :
-         if { $cal_eau=="o" } {
+         if { $cal_eau=="o" && $spcaudace(calo_serie)=="o" } {
             buf$audace(bufNo) load "$audace(rep_images)/$flinearcal"
             set listemotsclef [ buf$audace(bufNo) getkwds ]
             if { [ lsearch $listemotsclef "SPC_B" ] !=-1 } {
@@ -2579,6 +2594,7 @@ proc spc_traiteseries { args } {
 
 
       #--- Effacement des images prétraitées :
+      set spcaudace(rm_edges) "o"
       delete2 "$fpretrait" $nbspectres
       delete2 "$ftilt" $nbspectres
       delete2 "$fgeom" $nbspectres

@@ -12,8 +12,8 @@ global audela audace
 global spcaudace
 
 #--- Version d'SpcAudace :
-set spcaudace(num_version) "3.0"
-set spcaudace(version) "$spcaudace(num_version) - 23/10/2012"
+set spcaudace(num_version) "3.2"
+set spcaudace(version) "$spcaudace(num_version) - 18/11/2012"
 # ::audace::date_sys2ut ?Date?
 #set spcaudace(version) [ file mtime $spcaudace(repspc) ]
 set spcaudace(flag_verifversion) 0
@@ -29,7 +29,7 @@ set spcaudace(exttxt) ".txt"
 set spcaudace(extvspec) ".spc"
 
 #--- Répertoire d'SpcAudace :
-if { [regexp {1.3.0} $audela(version) match resu ] } {
+if { [regexp {1.3.2} $audela(version) match resu ] } {
    set spcaudace(rep_spc) [ file join $audace(rep_scripts) spcaudace ]
 } else {
    set spcaudace(rep_spc) [ file join $audace(rep_plugin) tool spcaudace ]
@@ -103,7 +103,8 @@ set spcaudace(sitearasbeam) "http://arasbeam.free.fr/"
 
 
 #--- Options prédéfinies dans les pipelines :
-set spcaudace(methsel) "moy"
+# set spcaudace(methsel) "moy"
+set spcaudace(methsel) "serre"
 set spcaudace(methreg) "spc"
 set spcaudace(methsky) "med"
 set spcaudace(methbin) "horne"
@@ -133,6 +134,10 @@ set spcaudace(nb_pics) 50
 set spcaudace(coef_snr) 5.
 
 #--- Valeur de paramètres des euristhiques algorithmiques :
+#-- Elimine les bords nuls des profils de raies :
+set spcaudace(rm_edges) "o"
+#-- Calibration avec les raies telluriques par defaut :
+set spcaudace(calo_serie) "n"
 #-- Taux adoucissement pour l'extraction de continuum ew via piecewiselinear :
 set spcaudace(taux_doucissage) 6.
 #-- Valeur de la fwhm des cosmics a detecter :
@@ -165,7 +170,7 @@ set spcaudace(dmax) 0.5
 #-- Bande spectrale considérée comme basse résolution 500 A :
 set spcaudace(bp_br) 500.
 #-- Hauteur max d'un spectre 2D pour ne considérer que du slant :
-set spcaudace(hmax) 300
+set spcaudace(hmax) 3.2
 #-- Pourcentage de l'intensité moyenne en deça de laquelle il y a mise a 0 (spc_pwl*) :
 set spcaudace(nulpcent) 0.6
 #-- Epaisseur de binning en cas de sélection manuelle de raie de calibration :
@@ -183,7 +188,7 @@ set spcaudace(cafwhm_binning) 1.9
 #- Pour spc_detectmoy :
 set spcaudace(cmfwhm_binning) 1.7
 #- Pour spc_detect :
-set spcaudace(clfwhm_binning) 3.0
+set spcaudace(clfwhm_binning) 3.2
 #-- Epaisseur de binning par défaut pour flats et détections géométriques :
 set spcaudace(largeur_binning) 7
 #-- Coefficient de rejection des cosmics lors du binning (0-100) :
@@ -197,8 +202,6 @@ set spcaudace(tilt_limit) 4.
 #set spcaudace(rapport_imoy) 0.97
 #-- Linéarisation automatique de la loi de calibration en longueur d'onde :
 set spcaudace(linear_cal) "o"
-#-- Elimination des bords "nuls" :
-set spcaudace(rm_edges) "o"
 #-- Largeur du filtrage SavGol pour la recherche des raies telluriques :
 set spcaudace(largeur_savgol) 28
 #-- Demi-largeur (anstroms) de plage de recherche des raies telluriques (spc_calibretelluric) :

@@ -204,7 +204,8 @@ proc spc_winini { } {
       .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_loadneon) -command "spc_loadneon" -underline 0
       .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_calibre2file_w) -command "spc_calibre" -underline 0 -accelerator "Ctrl-L"
       #.spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_calibre2file_w) -command "spc_calibre2file_w" -underline 0 -accelerator "Ctrl-L"
-      .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_calibre2loifile_w) -command "spc_calibre2loifile_w" -underline 0 -accelerator "Ctrl-M"
+      # .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_calibre2loifile_w) -command "spc_calibre2loifile_w" -underline 0 -accelerator "Ctrl-M"
+.spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_calibre2loifile_w) -command "spc_calibreloifile" -underline 0 -accelerator "Ctrl-M"
       .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_calibredecal) -command "spc_calibredecal" -underline 0
       .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_linearcal) -command "spc_linearcal" -underline 0
       .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_corrvhelio) -command "spc_corrvhelio" -underline 0
@@ -258,6 +259,9 @@ proc spc_winini { } {
       .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_pipelines_space)
       .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_sommeadd_w) -command "spc_sommeadd_w" -underline 0
       .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_sommekappa_w) -command "spc_sommekappa_w" -underline 0
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_cfwhmbinning_w) -command "spc_cafwhmbinning_w" -underline 0
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_hbinning_w) -command "spc_hbinning_w" -underline 0
+
 
       .spc configure -menu .spc.menuBar
       #-- Raccourcis calviers :
