@@ -2284,6 +2284,7 @@ proc spc_rms { args } {
       ### set mes_incertitude [ expr 1.0/($cdelt1*$cdelt1) ]
       
       set listelmesurees [ list ]
+      #set liste_ecart [ list ]
       #- Différence moyenne :
       set sum_diff 0.
       #- Différence moyenne au carré :
