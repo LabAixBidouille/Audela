@@ -435,161 +435,161 @@ proc ::sn_tarot::SNChecker { date ra dec {urlsource rochester_snlocations} } {
 
    set ra_cand [mc_angle2deg $ra ]
    set dec_cand [mc_angle2deg $dec 90 ]
-   
+
    if {$urlsource=="rochester_snlocations"} {
-	   set url http://www.rochesterastronomy.org/snimages/snlocations.html
-	   if { [catch { set tok [ ::http::geturl $url ] } ErrInfo ] } {
-	      return "No internet connection."
-	   }
-	
-	   upvar #0 $tok state
-	
-	  if { [ ::http::status $tok ] != "ok" } {
-	      return "Problem while reading the html code."
-	   }
-	
-	   #--   verifie le contenu
-	   set key [ string range [ ::http::data $tok ] 0 4 ]
-	
-	   if { $key == "<?xml" } {
-	      return "Problem while decoding the html code."
-	   }
-	
-	   set lignes [::http::data $tok ]
-	   ::http::cleanup $tok
-	
-	   set np 0
-	   set planets ""
-	   append planets "R.A.         Decl.        R.A.(hour) Decl.      Date           Type   Mag     Ref.\n"
-	   set lignes [regsub -all \" $lignes " "]
-	   set lignes [regsub -all \{ $lignes " "]
-	   set lignes [regsub -all \} $lignes " "]
-	   set lignes [regsub -all \< $lignes " "]
-	   set lignes [regsub -all \> $lignes " "]
-	   set lignes [regsub -all "target= _self" $lignes ""]
-	   set lignes [split $lignes \n]
-	   set n [llength $lignes]
-	   for {set k 0} {$k<$n} {incr k} {
-	      set ligne [lindex $lignes $k]
-	      #::console::affiche_resultat "A <$ligne>\n"
-	      if {$ligne==""} { continue }
-	      set key1 [lindex $ligne 0]
-	      if {($key1=="pre")} {
-	         set valid 0
-	         continue
-	      }
-	      if {($key1=="/pre")} {
-	         break
-	      }
+      set url http://www.rochesterastronomy.org/snimages/snlocations.html
+      if { [catch { set tok [ ::http::geturl $url ] } ErrInfo ] } {
+         return "No internet connection."
+      }
+
+      upvar #0 $tok state
+
+     if { [ ::http::status $tok ] != "ok" } {
+         return "Problem while reading the html code."
+      }
+
+      #--   verifie le contenu
+      set key [ string range [ ::http::data $tok ] 0 4 ]
+
+      if { $key == "<?xml" } {
+         return "Problem while decoding the html code."
+      }
+
+      set lignes [::http::data $tok ]
+      ::http::cleanup $tok
+
+      set np 0
+      set planets ""
+      append planets "R.A.         Decl.        R.A.(hour) Decl.      Date           Type   Mag     Ref.\n"
+      set lignes [regsub -all \" $lignes " "]
+      set lignes [regsub -all \{ $lignes " "]
+      set lignes [regsub -all \} $lignes " "]
+      set lignes [regsub -all \< $lignes " "]
+      set lignes [regsub -all \> $lignes " "]
+      set lignes [regsub -all "target= _self" $lignes ""]
+      set lignes [split $lignes \n]
+      set n [llength $lignes]
+      for {set k 0} {$k<$n} {incr k} {
+         set ligne [lindex $lignes $k]
+         #::console::affiche_resultat "A <$ligne>\n"
+         if {$ligne==""} { continue }
+         set key1 [lindex $ligne 0]
+         if {($key1=="pre")} {
+            set valid 0
+            continue
+         }
+         if {($key1=="/pre")} {
+            break
+         }
          #          1         2         3         4         5         6         7         8         9        10
          # 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789
          #23:46:09.37  +03:17:34.1  23.7692699 +03.292806 2012/01/05.10  Ia     18.3** <a href="../sn2012/index.html#ptf12b20" target="_self">PTF12jb</a>
-         #23:46:14.37  -28:05:50.6  23.7706585 -28.097389 2011/08/19.340 Ia     19.6** <a href="../sn2011/index.html#PTF11klo" target="_self">PTF11klo</a>	
+         #23:46:14.37  -28:05:50.6  23.7706585 -28.097389 2011/08/19.340 Ia     19.6** <a href="../sn2011/index.html#PTF11klo" target="_self">PTF11klo</a>
          # --- on enleve les balises <>
          set ra  [mc_angle2deg [string range $ligne  0   1]h[string range $ligne   3   4]m[string trim [string range $ligne   6  10]]s ]
          set dec [mc_angle2deg [string range $ligne 13  15]d[string range $ligne  17  18]m[string trim [string range $ligne  20  23]]s 90]
          set sep_arcmin [expr 60*[lindex [mc_sepangle $ra $dec $ra_cand $dec_cand] 0]]
          #::console::affiche_resultat "[lindex $ligne 0] sep_arcmin=$sep_arcmin    ($ra $dec $ra_cand $dec_cand)\n"
          if {$sep_arcmin<3} {
-	         set kk [string first "a href=" $ligne]
-	         #::console::affiche_resultat "A ligne=<$ligne>\n"
-	         #::console::affiche_resultat "kk=$kk\n"
-	         set ligne2 [string range $ligne 0 [expr $kk-1]]
-	         set ligne3 [string range $ligne [expr $kk+10] end-3]
-	         #::console::affiche_resultat "A ligne2=<$ligne2>\n"
-	         #::console::affiche_resultat "A ligne3=<$ligne3>\n"
-	         set ligne "${ligne2}http://www.rochesterastronomy.org${ligne3}"
+            set kk [string first "a href=" $ligne]
+            #::console::affiche_resultat "A ligne=<$ligne>\n"
+            #::console::affiche_resultat "kk=$kk\n"
+            set ligne2 [string range $ligne 0 [expr $kk-1]]
+            set ligne3 [string range $ligne [expr $kk+10] end-3]
+            #::console::affiche_resultat "A ligne2=<$ligne2>\n"
+            #::console::affiche_resultat "A ligne3=<$ligne3>\n"
+            set ligne "${ligne2}http://www.rochesterastronomy.org${ligne3}"
             append planets "$ligne\n"
             incr np
          }
-	   }
-	   if {$np==0} {
-	      set planets "No recent supernova found from Rochester snlocations."
-	   }
+      }
+      if {$np==0} {
+         set planets "No recent supernova found from Rochester snlocations."
+      }
    }
    if {$urlsource=="cbat_recent"} {
-	   set url http://www.cbat.eps.harvard.edu/lists/RecentSupernovae.html
-	   if { [catch { set tok [ ::http::geturl $url ] } ErrInfo ] } {
-	      return "No internet connection."
-	   }
-	
-	   upvar #0 $tok state
-	
-	  if { [ ::http::status $tok ] != "ok" } {
-	      return "Problem while reading the html code."
-	   }
-	
-	   #--   verifie le contenu
-	   set key [ string range [ ::http::data $tok ] 0 4 ]
-	
-	   if { $key == "<?xml" } {
-	      return "Problem while decoding the html code."
-	   }
-	
-	   set lignes [::http::data $tok ]
-	   ::http::cleanup $tok
-	
-	   set np 0
-	   set planets ""
-	   append planets "SN      Host Galaxy      Date         R.A.    Decl.    Offset   Mag.   Disc. Ref.            SN Position         Posn. Ref.       Type  SN      Discoverer(s)\n"
-	   set lignes [regsub -all \" $lignes " "]
-	   set lignes [regsub -all \{ $lignes " "]
-	   set lignes [regsub -all \} $lignes " "]
-	   set lignes [split $lignes \n]
-	   set n [llength $lignes]
-	   set valid 0
-	   for {set k 0} {$k<$n} {incr k} {
-	      set ligne [lindex $lignes $k]
-	      #::console::affiche_resultat "A <$ligne>\n"
-	      if {$ligne==""} { continue }
-	      set key1 [lindex $ligne 0]
-	      set key2 [lindex $ligne 1]
-	      if {($key1=="SN")&&($key2=="Host")} {
-	         set valid 1
-	         incr k 1
-	         continue
-	      }
-	      if {($key1=="</pre>")} {
-	         break
-	      }
-	      if {$valid>=1} {
-	         #          1         2         3         4         5         6         7         8         9        10
-	         # 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789
-	         #2011jx  Anon.            2011 12 29  10 29.1 +46 05
-	         #SN      Host Galaxy      Date         R.A.    Decl.    Offset   Mag.   Disc. Ref.            SN Position         Posn. Ref.       Type  SN      Discoverer(s)
-	         #2011iv  NGC 1404         2011 12 02  03 38.9 -35 36    7W   8N  12.8   CBET 2940       03 38 51.35 -35 35 32.0   CBET 2940        Ia    2011iv  Parker
-	
-	         # --- on enleve les balises <>
-	         set k2 [string first < $ligne]
-	         set reste [string range $ligne [expr $k2+1] end]
-	         set newligne ""
-	         for {set kk 0} {$kk<20} {incr kk } {
-	            set k1 [string first > $reste]
-	            set k2 [string first < $reste]
-	            if {$k2==-1} {
-	               set isole [string range $reste [expr $k1+1] end]
-	            } else {
-	               set isole [string range $reste [expr $k1+1] [expr $k2-1]]
-	            }
-	            append newligne "$isole"
-	            if {$k2==-1} { break }
-	            set reste [string range $reste [expr $k2+1] end]
-	         }
-	         set ligne $newligne
-	         set ra  [mc_angle2deg [string range $ligne 87  88]h[string range $ligne  90  91]m[string range $ligne  93  97]s ]
-	         set dec [mc_angle2deg [string range $ligne 99 101]d[string range $ligne 103 104]m[string range $ligne 106 109]s 90 ]
-	         set sep_arcmin [expr 60*[lindex [mc_sepangle $ra $dec $ra_cand $dec_cand] 0]]
-	         #::console::affiche_resultat "[lindex $ligne 0] sep_arcmin=$sep_arcmin    ($ra $dec $ra_cand $dec_cand)\n"
-	         if {$sep_arcmin<3} {
-	            append planets "$ligne\n"
-	            incr np
-	         }
-	         incr valid
-	      }
-	   }
-	   if {$np==0} {
-	      set planets "No recent supernova found from CBAT."
-	   }
+      set url http://www.cbat.eps.harvard.edu/lists/RecentSupernovae.html
+      if { [catch { set tok [ ::http::geturl $url ] } ErrInfo ] } {
+         return "No internet connection."
+      }
+
+      upvar #0 $tok state
+
+     if { [ ::http::status $tok ] != "ok" } {
+         return "Problem while reading the html code."
+      }
+
+      #--   verifie le contenu
+      set key [ string range [ ::http::data $tok ] 0 4 ]
+
+      if { $key == "<?xml" } {
+         return "Problem while decoding the html code."
+      }
+
+      set lignes [::http::data $tok ]
+      ::http::cleanup $tok
+
+      set np 0
+      set planets ""
+      append planets "SN      Host Galaxy      Date         R.A.    Decl.    Offset   Mag.   Disc. Ref.            SN Position         Posn. Ref.       Type  SN      Discoverer(s)\n"
+      set lignes [regsub -all \" $lignes " "]
+      set lignes [regsub -all \{ $lignes " "]
+      set lignes [regsub -all \} $lignes " "]
+      set lignes [split $lignes \n]
+      set n [llength $lignes]
+      set valid 0
+      for {set k 0} {$k<$n} {incr k} {
+         set ligne [lindex $lignes $k]
+         #::console::affiche_resultat "A <$ligne>\n"
+         if {$ligne==""} { continue }
+         set key1 [lindex $ligne 0]
+         set key2 [lindex $ligne 1]
+         if {($key1=="SN")&&($key2=="Host")} {
+            set valid 1
+            incr k 1
+            continue
+         }
+         if {($key1=="</pre>")} {
+            break
+         }
+         if {$valid>=1} {
+            #          1         2         3         4         5         6         7         8         9        10
+            # 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789
+            #2011jx  Anon.            2011 12 29  10 29.1 +46 05
+            #SN      Host Galaxy      Date         R.A.    Decl.    Offset   Mag.   Disc. Ref.            SN Position         Posn. Ref.       Type  SN      Discoverer(s)
+            #2011iv  NGC 1404         2011 12 02  03 38.9 -35 36    7W   8N  12.8   CBET 2940       03 38 51.35 -35 35 32.0   CBET 2940        Ia    2011iv  Parker
+
+            # --- on enleve les balises <>
+            set k2 [string first < $ligne]
+            set reste [string range $ligne [expr $k2+1] end]
+            set newligne ""
+            for {set kk 0} {$kk<20} {incr kk } {
+               set k1 [string first > $reste]
+               set k2 [string first < $reste]
+               if {$k2==-1} {
+                  set isole [string range $reste [expr $k1+1] end]
+               } else {
+                  set isole [string range $reste [expr $k1+1] [expr $k2-1]]
+               }
+               append newligne "$isole"
+               if {$k2==-1} { break }
+               set reste [string range $reste [expr $k2+1] end]
+            }
+            set ligne $newligne
+            set ra  [mc_angle2deg [string range $ligne 87  88]h[string range $ligne  90  91]m[string range $ligne  93  97]s ]
+            set dec [mc_angle2deg [string range $ligne 99 101]d[string range $ligne 103 104]m[string range $ligne 106 109]s 90 ]
+            set sep_arcmin [expr 60*[lindex [mc_sepangle $ra $dec $ra_cand $dec_cand] 0]]
+            #::console::affiche_resultat "[lindex $ligne 0] sep_arcmin=$sep_arcmin    ($ra $dec $ra_cand $dec_cand)\n"
+            if {$sep_arcmin<3} {
+               append planets "$ligne\n"
+               incr np
+            }
+            incr valid
+         }
+      }
+      if {$np==0} {
+         set planets "No recent supernova found from CBAT."
+      }
    }
    return $planets
 }
@@ -1004,12 +1004,12 @@ proc ::sn_tarot::subopt { file_image file_image_reference clear_stars {kappa 1.8
    set pathim $audace(rep_images)
    set res [file split ${file_image}]
    if {[llength $res]==1} {
-	   set fic1 "${pathim}/${file_image}"
+      set fic1 "${pathim}/${file_image}"
    } else {
-	   set fic1 "${file_image}"
+      set fic1 "${file_image}"
    }
    if {[string length [file extension $fic1]]==0} {
-	   append fic1 [buf$bufno extension]
+      append fic1 [buf$bufno extension]
    }
    loadima $fic1
    set exposure1 [lindex [buf$bufno getkwd EXPOSURE] 1]
@@ -1018,13 +1018,13 @@ proc ::sn_tarot::subopt { file_image file_image_reference clear_stars {kappa 1.8
    set naxis2 [lindex [buf$bufno getkwd NAXIS2] 1]
    set res [file split ${file_image_reference}]
    if {[llength $res]==1} {
-	   set fic2 "${pathim}/${file_image_reference}"
+      set fic2 "${pathim}/${file_image_reference}"
    } else {
-	   set fic2 "${file_image_reference}"
+      set fic2 "${file_image_reference}"
    }
    if {[string length [file extension $fic2]]==0} {
-	   append fic2 [buf$bufno extension]
-   }   
+      append fic2 [buf$bufno extension]
+   }
    loadima $fic2
    set exposure2 [lindex [buf$bufno getkwd EXPOSURE] 1]
    set dateobsjd2 [mc_date2jd [lindex [buf$bufno getkwd DATE-OBS] 1]]
@@ -1061,10 +1061,10 @@ proc ::sn_tarot::subopt { file_image file_image_reference clear_stars {kappa 1.8
    set kflux $k
    set k [lsearch $params FLUXERR_BEST]
    set kfluxerr $k
-	set k [lsearch $params FWHM_IMAGE]
-	set kfwhm $k
-	set k [lsearch $params BACKGROUND]
-	set kbackground $k
+   set k [lsearch $params FWHM_IMAGE]
+   set kfwhm $k
+   set k [lsearch $params BACKGROUND]
+   set kbackground $k
    #::console::affiche_resultat "indexes x=$kx y=$ky flux=$kflux fluxerr=$kfluxerr\n"
    # ---
    set vignetting 1
@@ -1100,17 +1100,17 @@ proc ::sn_tarot::subopt { file_image file_image_reference clear_stars {kappa 1.8
             continue
          }
       }
-	   set dx [expr $x-$naxis1/2.]
-	   set dy [expr $y-$naxis2/2.]
-	   set distc [expr sqrt($dx*$dx+$dy*$dy)]
+      set dx [expr $x-$naxis1/2.]
+      set dy [expr $y-$naxis2/2.]
+      set distc [expr sqrt($dx*$dx+$dy*$dy)]
       set radec [buf$bufno xy2radec [list $x $y]]
       set ra [lindex $radec 0]
       set dec [lindex $radec 1]
       set flux [expr [lindex $ligne $kflux]/1.]
       set fluxerr [expr [lindex $ligne $kfluxerr]/1.]
-	   set fwhm [lindex $ligne $kfwhm]
-	   set background [lindex $ligne $kbackground]   
-	   lappend stars [list $x $y $ra $dec $flux $fluxerr $fwhm $background $distc]
+      set fwhm [lindex $ligne $kfwhm]
+      set background [lindex $ligne $kbackground]
+      lappend stars [list $x $y $ra $dec $flux $fluxerr $fwhm $background $distc]
    }
    set star1s [lsort -increasing -real -index 3 $stars]
    #::console::affiche_resultat "[llength $star1s] stars found in the list 1\n"
@@ -1139,17 +1139,17 @@ proc ::sn_tarot::subopt { file_image file_image_reference clear_stars {kappa 1.8
             continue
          }
       }
-	   set dx [expr $x-$naxis1/2.]
-	   set dy [expr $y-$naxis2/2.]
-	   set distc [expr sqrt($dx*$dx+$dy*$dy)]
+      set dx [expr $x-$naxis1/2.]
+      set dy [expr $y-$naxis2/2.]
+      set distc [expr sqrt($dx*$dx+$dy*$dy)]
       set radec [buf$bufno xy2radec [list $x $y]]
       set ra [lindex $radec 0]
       set dec [lindex $radec 1]
       set flux [expr [lindex $ligne $kflux]/1.]
       set fluxerr [expr [lindex $ligne $kfluxerr]/1.]
-	   set fwhm [lindex $ligne $kfwhm]
-	   set background [lindex $ligne $kbackground]   
-	   lappend stars [list $x $y $ra $dec $flux $fluxerr $fwhm $background $distc]
+      set fwhm [lindex $ligne $kfwhm]
+      set background [lindex $ligne $kbackground]
+      lappend stars [list $x $y $ra $dec $flux $fluxerr $fwhm $background $distc]
    }
    set star2s [lsort -increasing -real -index 3 $stars]
    #::console::affiche_resultat "[llength $star2s] stars found in the list 2\n"
@@ -1187,9 +1187,9 @@ proc ::sn_tarot::subopt { file_image file_image_reference clear_stars {kappa 1.8
          set dec2 [lindex $star2 3]
          set flux2 [lindex $star2 4]
          set fluxerr2 [lindex $star2 5]
-	      set fwhm2 [lindex $star2 6]
-	      set background2 [lindex $star2 7]
-	      set distc2 [lindex $star2 8]
+         set fwhm2 [lindex $star2 6]
+         set background2 [lindex $star2 7]
+         set distc2 [lindex $star2 8]
          set ddec [expr ($dec2-$dec1)*3600.]
          if {$ddec<-$sepmax} {
             continue
@@ -1235,15 +1235,15 @@ proc ::sn_tarot::subopt { file_image file_image_reference clear_stars {kappa 1.8
    set stars [lrange [split $stars \n] 0 end-1]
    # --- Calcule le coefficient multiplicateur
    set mults ""
-	foreach star $stars {
-		set flux1 [lindex $star  6]
-		set flux2 [lindex $star 15]
-		set mult [expr $flux1/$flux2]
-		lappend mults $mult
-	}
-	set mults [lsort -real $mults]
-	set nm [llength $mults]
-	set mult [lindex $mults [expr int($nm/2)]]
+   foreach star $stars {
+      set flux1 [lindex $star  6]
+      set flux2 [lindex $star 15]
+      set mult [expr $flux1/$flux2]
+      lappend mults $mult
+   }
+   set mults [lsort -real $mults]
+   set nm [llength $mults]
+   set mult [lindex $mults [expr int($nm/2)]]
    #::console::affiche_resultat "mult=$mult ($mults)\n"
    # --- efface les etoiles de la premiere image
    loadima $fic2
@@ -1254,36 +1254,157 @@ proc ::sn_tarot::subopt { file_image file_image_reference clear_stars {kappa 1.8
    loadima $fic1
    sub mask2 0
    if {$clear_stars>=1} {
-		foreach star $stars {
-			set xc [lindex $star 4]
-			set yc [lindex $star 5]
-			set fwhm1 [lindex $star 8]
-			set background1 [lindex $star 9]
-			set distc1 [lindex $star 10]
-			set background2 [lindex $star 18]
-			if {($distc1<3)&&($clear_stars==1)} {
-				continue
-			} elseif {($distc1<3)&&($clear_stars==2)} {
-				set rayon 2
-			} else {
-				set rayon [expr ${kappa}*$fwhm1]
-			}
-			set rayon2 [expr $rayon*$rayon]
-			set x1 [expr int($xc-$rayon)] ; if {$x1<1} {set x1 1}
-			set x2 [expr int($xc+$rayon)] ; if {$x2>$naxis1} {set x2 $naxis1}
-			set y1 [expr int($yc-$rayon)] ; if {$y1<1} {set y1 1}
-			set y2 [expr int($yc+$rayon)] ; if {$y2>$naxis2} {set y2 $naxis2}
-			set val [expr $background1-$background2*$mult]
-			for {set x $x1} {$x<=$x2} {incr x} {
-				set dx [expr $x-$xc]
-				for {set y $y1} {$y<=$y2} {incr y} {
-					set dy [expr $y-$yc]
-					set dist2 [expr $dx*$dx+$dy*$dy]
-					if {$dist2>$rayon2} { continue }
-					buf$bufno setpix [list $x $y] $val
-				}
-			}
-		}   
-	}
-	return $stars
+      foreach star $stars {
+         set xc [lindex $star 4]
+         set yc [lindex $star 5]
+         set fwhm1 [lindex $star 8]
+         set background1 [lindex $star 9]
+         set distc1 [lindex $star 10]
+         set background2 [lindex $star 18]
+         if {($distc1<3)&&($clear_stars==1)} {
+            continue
+         } elseif {($distc1<3)&&($clear_stars==2)} {
+            set rayon 2
+         } else {
+            set rayon [expr ${kappa}*$fwhm1]
+         }
+         set rayon2 [expr $rayon*$rayon]
+         set x1 [expr int($xc-$rayon)] ; if {$x1<1} {set x1 1}
+         set x2 [expr int($xc+$rayon)] ; if {$x2>$naxis1} {set x2 $naxis1}
+         set y1 [expr int($yc-$rayon)] ; if {$y1<1} {set y1 1}
+         set y2 [expr int($yc+$rayon)] ; if {$y2>$naxis2} {set y2 $naxis2}
+         set val [expr $background1-$background2*$mult]
+         for {set x $x1} {$x<=$x2} {incr x} {
+            set dx [expr $x-$xc]
+            for {set y $y1} {$y<=$y2} {incr y} {
+               set dy [expr $y-$yc]
+               set dist2 [expr $dx*$dx+$dy*$dy]
+               if {$dist2>$rayon2} { continue }
+               buf$bufno setpix [list $x $y] $val
+            }
+         }
+      }
+   }
+   return $stars
+}
+
+# source $audace(rep_install)/gui/audace/plugin/tool/sn_tarot/sn_tarot_macros.tcl ; ::sn_tarot::snAnalyzeAll
+proc ::sn_tarot::snAnalyzeAll { } {
+   global audace snvisu snconfvisu num caption rep
+
+   set textes ""
+
+   # --- File readings
+   set ficlists ""
+   set objname0 ""
+   set objdates ""
+   foreach path0 {alert alert/old} {
+      set path "$rep(archives)/../${path0}"
+      set fichiers [lsort [glob -nocomplain ${path}/*.txt]]
+      foreach fichier $fichiers {
+        set fics [split [file tail $fichier] _]
+        set objname [lindex $fics 0]
+        set objdate [lindex $fics 3]
+        if {$objname!=$objname0} {
+          if {$objname0!=""} {
+            lappend ficlists $comment
+          }
+          set comment [list $objname $objdate $fichier]
+        } else {
+          lappend comment $fichier
+        }
+        set objname0 $objname
+      }
+   }
+
+   set name_note_comment ""
+   set nctotal 0
+   #
+   set ficlists [lsort -index 1 -decreasing $ficlists]
+   set objname0 ""
+   set comments "$caption(sn_tarot,result_analysis)\n\n"
+   foreach ficlist $ficlists {
+      set objname [lindex $ficlist 0]
+      set fichiers [lrange $ficlist 2 end]
+      append comments "---------------------------\n"
+      append comments "--- $objname ---\n"
+      foreach fichier $fichiers {
+         append comments "[file tail $fichier]\n"
+         #::console::affiche_resultat "fichier=[file normalize $fichier]\n"
+         set f [open $fichier r]
+         set lignes [split [read $f] \n]
+         close $f
+         set fics [split [file tail $fichier] _]
+         set objname [lindex $fics 0]
+         set objdate [lindex $fics 3]
+         if {$objname!=$objname0} {
+            set comment ""
+         }
+         set n [expr [llength $lignes]-1]
+         #::console::affiche_resultat "n=$n\n"
+         for {set k 0} {$k<$n} {incr k} {
+            set ligne [lindex $lignes $k]
+            set key [string range $ligne 0 36]
+            #::console::affiche_resultat "<$key>\n"
+            if {[string compare $key "Personal comment about this candidate"]==0} {
+               incr k
+               for {set kk $k} {$kk<$n} {incr kk} {
+                  set ligne [lindex $lignes $kk]
+                  set key [string range $ligne 0 4]
+                  if {$key=="-----"} {
+                     break
+                  } else {
+                     set note -1
+                     if {[string first /5 $ligne]==1} {
+                        set note [lindex [regsub /5 $ligne " "] 0]
+                     } else {
+                        if {[string first ( [string trim $ligne]]==0} {
+                           set note -2
+                        }
+                     }
+                     if {$ligne!=""} {
+                        incr nctotal
+                        if {($note==-1)||($note==0)} { set note 1 }
+                        incr nctotals($note) 
+                        append name_note_comment "$objname $note \"${ligne}\" \n"
+                        append comments "$ligne\n"
+                     }
+                  }
+               }
+            }
+         }
+      }
+      append comments "---------------------------\n\n"
+
+   }
+   ::console::affiche_resultat "\n$comments"
+
+   ::console::affiche_resultat "\n$name_note_comment\n"
+   #--   chemin de unzip.exe
+   if { $::tcl_platform(os) == "Linux" } {
+      set tarot_unzip unzip
+   } else {
+      set tarot_unzip [ file join $audace(rep_plugin) tool sn_tarot unzip.exe ]
+   }
+   foreach site {Calern Chili} {
+      set nftotal 0
+      foreach path0 {archives archives/old} {
+         set path "$rep(archives)/../${path0}"
+         set fichiers [lsort [glob -nocomplain ${path}/Tarot_${site}*.zip]]
+         foreach fichier $fichiers {
+            catch { exec $tarot_unzip -l $fichier } res
+            set nf [lindex [string range $res end-25 end] 0]
+            incr nftotal $nf
+         }
+      }
+      ::console::affiche_resultat "Total $site = $nftotal images\n"
+   }
+   
+   ::console::affiche_resultat "Total candidates = $nctotal candidates\n"
+   set names [lsort -real [array names nctotals]]
+   foreach name $names {
+      ::console::affiche_resultat "Total candidates $name = $nctotals($name) candidates [format %.1f [expr 100.*$nctotals($name)/$nctotal]]%\n"
+   }
+   
+
 }
