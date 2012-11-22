@@ -68,7 +68,7 @@
       set private(labels) [list equinox true raTel decTel azTel elevTel haTel error \
          telescop fov1 fov2 cdelt1 cdelt2 gps jd tsl moonphas moonalt moon_age \
          fwhm secz airmass winddir windsp aptdia foclen fond resolution \
-         telname connexion suivi vra vdec vxPix vyPix observer sitename access]
+         telname connexion suivi vra vdec vxPix vyPix observer sitename origin iau_code access]
 
       #--   liste les variables 'entry' avec binding, modifiables par l'utilisateur
       set private(entry) [list ra dec bin1 bin2 naxis1 naxis2 crota2 m snr t \
@@ -82,7 +82,7 @@
       set private(special_variables) [list ra dec gps t tu jd tsl telescop aptdia foclen fwhm \
          bin1 bin2 naxis1 naxis2 cdelt1 cdelt2 crota2 filter detnam photocell1 photocell2 \
          pixsize1 pixsize2 crval1 crval2 crpix1 crpix2 airpress tempair \
-         observer sitename imagetyp objname]
+         observer sitename origin iau_code imagetyp objname]
 
       #--   liste les variables necessaires pour activer le bouton 'image DSS'
       set private(dss_variables) [list crval1 crval2 fov1 fov2 naxis1 naxis2 crota2]
@@ -133,7 +133,7 @@
       set opticChildren [list telescop modifOptic aptdia foclen fond resolution psf filter]
       set camChildren [list detnam photocell1 photocell2 eta noise therm gain ampli]
       set tlscpChildren [list telname suivi vra vdec vxPix vyPix separator1]
-      set kwdsChildren [list observer modifObs sitename imagetyp objname separator1 editKwds writeKwds]
+      set kwdsChildren [list observer modifObs sitename origin iau_code imagetyp objname separator1 editKwds writeKwds]
       set configChildren [list catname access search separator1 dispEtc simulimage]
 
       #--   construit le notebook dans cet ordre
@@ -235,7 +235,7 @@
                         grid $w -row 1 -column 2
                        }
             modifObs   {$w configure -command "::confPosObs::run $audace(base).confPosObs" -width 7 -padding {2 2}
-                        grid $w -row 0 -column 2 -rowspan 2
+                        grid $w -row 0 -column 2 -rowspan 5
                        }
             editKwds   {$w configure -command "::collector::createKeywords ; ::collector::editKeywords"
                         grid $w -row $row -column 1
