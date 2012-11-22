@@ -152,7 +152,7 @@
       #--   raccourcis
       foreach var $private(special_variables) {
          set $var $private($var)
-         #::console::affiche_resultat "$var $private($var)\n"
+         #::console::affiche_resultat "$var \"$private($var)\"\n"
       }
 
       set airpress [expr { $airpress / 100. }]
@@ -185,7 +185,14 @@
          GEODSYS AIRPRESS TEMPAIR \
          TELESCOP DETNAM CONFNAME IMAGETYP OBJNAME SWCREATE]
 
-      set entities [list à a â a ç c é e è e ê e ë e î i ï i ô o ö o û u ü u ü u]
+      if {$origin ne ""} {
+         lappend list_of_kwd ORIGIN
+      }
+      if {$iau_code ne ""} {
+         lappend list_of_kwd IAU_CODE
+      }
+
+      set entities [list à a â a ç c é e è e ê e ë e î i ï i ô o ö o û u ü u ü u ' ""]
 
       foreach kwd $list_of_kwd {
          set val [set [string tolower ${kwd}]]
@@ -304,7 +311,7 @@
       catch {buf$bufNo delkwd CATASTAR}
       buf$bufNo save [ file join ${mypath} ${sky0}$ext ]
       createFileConfigSextractor
-      buf$bufNo save [ file join ${mypath} ${sky}$ext ]
+     buf$bufNo save [ file join ${mypath} ${sky}$ext ]
       sextractor [ file join $mypath $sky0$ext ] -c [ file join $mypath config.sex ]
       ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/c$sky$ext\" "
       ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" ASTROMETRY objefile=catalog.cat nullpixel=-10000 delta=5 epsilon=0.0002 file_ascii=ascii.txt"

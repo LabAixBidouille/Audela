@@ -431,6 +431,8 @@
         #--   a partir de la configuration d'Aud'ACE
          set private(observer) $conf(posobs,nom_observateur)
          set private(sitename) $conf(posobs,nom_observatoire)
+         set private(origin) $conf(posobs,nom_organisation)
+         set private(iau_code) $conf(posobs,station_uai)
          set private(gps) $conf(posobs,observateur,gps)
       }
    }
