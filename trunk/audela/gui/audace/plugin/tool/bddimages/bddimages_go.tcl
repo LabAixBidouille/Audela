@@ -395,7 +395,7 @@ proc ::bddimages::InstallMenuInterop { frame } {
 #    fname_out = nom complet du fichier de sortie /data/fi.fits
 #------------------------------------------------------------
 proc ::bddimages::gunzip { fname_in {fname_out ""} } {
-   ::console::affiche_resultat "::bddimages::gunzip <$fname_in> <$fname_out>\n"
+   #::console::affiche_resultat "::bddimages::gunzip <$fname_in> <$fname_out>\n"
    set ext [file extension $fname_in]
    if {$ext!=".gz"} {
       set fname_in ${fname_in}.gz
@@ -407,7 +407,6 @@ proc ::bddimages::gunzip { fname_in {fname_out ""} } {
    if {$fname_out==""} {
       set fname_out [file rootname $fname_in]
    }
-   ::console::affiche_resultat "::bddimages::gunzip BB <$fname_in> <$fname_out>\n"
    file delete -force -- $fname_out
    if { $::tcl_platform(os) == "Linux" } {
       set errnum [catch {
@@ -416,12 +415,9 @@ proc ::bddimages::gunzip { fname_in {fname_out ""} } {
    } else {
       set errnum [catch {
          if {$fname_in!="${fname_out}.gz"} {
-            ::console::affiche_resultat "::bddimages::gzip file copy -force -- $fname_in ${fname_out}.gz\n"
             file copy -force -- "$fname_in" "${fname_out}.gz"
-            ::console::affiche_resultat "gunzip ${fname_out}.gz\n"
             ::gunzip ${fname_out}.gz
          } else {
-            ::console::affiche_resultat "gunzip $fname_in\n"
             ::gunzip "$fname_in"
          }
       } msgzip ]
@@ -436,7 +432,7 @@ proc ::bddimages::gunzip { fname_in {fname_out ""} } {
 #    fname_out = nom complet du fichier de sortie /data/fi.fits.gz
 #------------------------------------------------------------
 proc ::bddimages::gzip { fname_in {fname_out ""} } {
-   ::console::affiche_resultat "::bddimages::gzip <$fname_in> <$fname_out>\n"
+   #::console::affiche_resultat "::bddimages::gzip <$fname_in> <$fname_out>\n"
    set ext [file extension $fname_in]
    if {$ext==".gz"} {
       set fname_in [file rootname $fname_in]
