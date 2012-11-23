@@ -95,15 +95,20 @@ namespace eval bddimages_config {
       }
 
       if {[info exists bddconf(dirfits)]} {
-         set  audace(rep_images)  $bddconf(dirtmp)
+         if {$bddconf(dirtmp)==""} { set bddconf(dirtmp) . }
+         file mkdir $bddconf(dirtmp)
+         set  audace(rep_images) $bddconf(dirtmp)
          ::console::affiche_resultat "audace(rep_images) -> $audace(rep_images)\n"
       }
       if {[info exists bddconf(dirtmp)]} {
+         if {$bddconf(dirtmp)==""} { set bddconf(dirtmp) . }
+         file mkdir $bddconf(dirtmp)
          set  audace(rep_travail)  $bddconf(dirtmp)
          cd $bddconf(dirtmp)
          ::console::affiche_resultat "audace(rep_travail) -> $audace(rep_travail)\n"
       }
       
+      catch {file mkdir $bddconf(dirinco)}
       ::bddimages_config::recup_position
       destroy $This
    }
@@ -166,19 +171,21 @@ namespace eval bddimages_config {
          ::console::affiche_resultat "Connexion reussie : $connectstatus\n"
       }
 
-
-
       if {[info exists bddconf(dirfits)]} {
-         set  audace(rep_images)  $bddconf(dirtmp)
+         if {$bddconf(dirtmp)==""} { set bddconf(dirtmp) . }
+         file mkdir $bddconf(dirtmp)
+         set  audace(rep_images) $bddconf(dirtmp)
          ::console::affiche_resultat "audace(rep_images) -> $audace(rep_images)\n"
       }
       if {[info exists bddconf(dirtmp)]} {
+         if {$bddconf(dirtmp)==""} { set bddconf(dirtmp) . }
+         file mkdir $bddconf(dirtmp)
          set  audace(rep_travail)  $bddconf(dirtmp)
          cd $bddconf(dirtmp)
          ::console::affiche_resultat "audace(rep_travail) -> $audace(rep_travail)\n"
       }
 
-
+      catch {file mkdir $bddconf(dirinco)}
       # Fin
       ::bddimages_config::recup_position
       destroy $This
