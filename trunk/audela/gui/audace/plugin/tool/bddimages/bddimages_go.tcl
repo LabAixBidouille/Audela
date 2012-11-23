@@ -388,6 +388,84 @@ proc ::bddimages::InstallMenuInterop { frame } {
    ::confVisu::addFileNameListener $visuNo "::vo_tools::ClearDisplay"
 }
 
+#------------------------------------------------------------
+# ::bddimages::gunzip
+#    Fonction gunzip compatible multi OS
+#    fname_in  = nom complet du fichier a degziper /data/fi.fits.gz
+#    fname_out = nom complet du fichier de sortie /data/fi.fits
+#------------------------------------------------------------
+proc ::bddimages::gunzip { fname_in {fname_out ""} } {
+   ::console::affiche_resultat "::bddimages::gunzip <$fname_in> <$fname_out>\n"
+   set ext [file extension $fname_in]
+   if {$ext!=".gz"} {
+      set fname_in ${fname_in}.gz
+   }
+   set ext [file extension $fname_out]
+   if {$ext==".gz"} {
+      set fname_out [file rootname $fname_out]
+   }
+   if {$fname_out==""} {
+      set fname_out [file rootname $fname_in]
+   }
+   ::console::affiche_resultat "::bddimages::gunzip BB <$fname_in> <$fname_out>\n"
+   file delete -force -- $fname_out
+   if { $::tcl_platform(os) == "Linux" } {
+      set errnum [catch {
+         exec gunzip -c $fname_in > $fname_out
+      } msgzip ]
+   } else {
+      set errnum [catch {
+         if {$fname_in!="${fname_out}.gz"} {
+            ::console::affiche_resultat "::bddimages::gzip file copy -force -- $fname_in ${fname_out}.gz\n"
+            file copy -force -- "$fname_in" "${fname_out}.gz"
+            ::console::affiche_resultat "gunzip ${fname_out}.gz\n"
+            ::gunzip ${fname_out}.gz
+         } else {
+            ::console::affiche_resultat "gunzip $fname_in\n"
+            ::gunzip "$fname_in"
+         }
+      } msgzip ]
+   }
+   return [list $errnum $msgzip]
+}
+
+#------------------------------------------------------------
+# ::bddimages::gzip
+#    Fonction gzip compatible multi OS
+#    fname_in  = nom complet du fichier a gziper /data/fi.fits
+#    fname_out = nom complet du fichier de sortie /data/fi.fits.gz
+#------------------------------------------------------------
+proc ::bddimages::gzip { fname_in {fname_out ""} } {
+   ::console::affiche_resultat "::bddimages::gzip <$fname_in> <$fname_out>\n"
+   set ext [file extension $fname_in]
+   if {$ext==".gz"} {
+      set fname_in [file rootname $fname_in]
+   }
+   set ext [file extension $fname_out]
+   if {$ext!=".gz"} {
+      set fname_out ${fname_out}.gz
+   }
+   if {$fname_out==""} {
+      set fname_out0 ${fname_in}.gz
+   } else {
+      set fname_out0 $fname_out
+   }
+   file delete -force -- $fname_out0
+   if { $::tcl_platform(os) == "Linux" } {
+      set errnum [catch {
+         exec gzip -c $fname_in > $fname_out
+      } msgzip ]
+   } else {
+      set errnum [catch {
+         if {$fname_out!="${fname_in}.gz"} {
+            file copy -force -- "$fname_in" "[file rootname $fname_out]"
+         }
+         ::gzip "[file rootname $fname_out]"
+      } msgzip ]
+   }
+   return [list $errnum $msgzip]
+}
+
 proc gren_info { msg } {
    ::console::affiche_resultat "$msg" 
 }

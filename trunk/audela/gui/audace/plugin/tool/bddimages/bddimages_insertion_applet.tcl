@@ -416,6 +416,8 @@ proc insertion_solo { nomfich } {
 
    set ligne [list $etat $nomfich $dateiso $site $sizefich $erreur $tabkey]
 
+   ::console::affiche_resultat "Insertion Solo : erreur=$erreur\n"
+   ::console::affiche_resultat "Insertion Solo : ligne=$ligne\n"
    if {$erreur == 0} {
       # Ici se fait l'Insertion de l image
       set liste     [bddimages_insertion_unfich $ligne]

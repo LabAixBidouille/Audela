@@ -29,7 +29,8 @@
          ::console::affiche_resultat "FILE= $fichier\n"
          set cmd "gunzip -cd $fichier > i.fits"
          ::console::affiche_resultat "CMD= $cmd\n"
-         set errnum [catch {exec gunzip -cd $fichier > i.fits} msg ]
+         lassign [::bddimages::gunzip $xml $tmpfile] errnum msgzip         
+         #set errnum [catch {exec gunzip -cd $fichier > i.fits} msg ]
          ::console::affiche_resultat "ERR= $errnum\n"
          ::console::affiche_resultat "MSG= $msg\n"
          set errnum [catch {exec gethead i.fits TELESCOP DATE-OBS TIME-OBS INSTRUME EXPTIME} msg ]

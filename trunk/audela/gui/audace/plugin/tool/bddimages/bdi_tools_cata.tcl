@@ -244,12 +244,13 @@ namespace eval tools_cata {
       set xml [string range $catafile 0 [expr [string last .gz $catafile] -1]]
       set tmpfile [file join $bddconf(dirtmp) [file tail $xml] ]
 
-      file delete -force -- $tmpfile
-      if { $::tcl_platform(os) == "Linux" } {
-         set errnum [catch {exec gunzip -c $xml > $tmpfile} msgzip ]
-      } else {
-         set errnum [catch {file copy "$xml" "${tmpfile}.gz" ; gunzip "$tmpfile"} msgzip ]
-      }
+      lassign [::bddimages::gunzip $xml $tmpfile] errnum msgzip
+      #file delete -force -- $tmpfile
+      #if { $::tcl_platform(os) == "Linux" } {
+      #   set errnum [catch {exec gunzip -c $xml > $tmpfile} msgzip ]
+      #} else {
+      #   set errnum [catch {file copy "$xml" "${tmpfile}.gz" ; gunzip "$tmpfile"} msgzip ]
+      #}
       if {$errnum} {
          file delete -force -- $tmpfile
          return -code 1 "Err extraction $xml $tmpfile"
@@ -828,7 +829,8 @@ close $fxml
 
              createdir_ifnot_exist $bddconf(dirtmp)
              buf$::audace(bufNo) save $filetmp
-             set errnum [catch {exec gzip -c $filetmp > $filefinal} msg ]
+            lassign [::bddimages::gzip $filetmp $filefinal] errnum msg
+            #set errnum [catch {exec gzip -c $filetmp > $filefinal} msg ]
 
 
              # efface l image dans la base et le disque

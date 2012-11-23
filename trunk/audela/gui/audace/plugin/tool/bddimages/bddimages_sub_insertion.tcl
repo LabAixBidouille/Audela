@@ -188,12 +188,13 @@ proc info_fichier { nomfich } {
       set tmpfile [ file join $bddconf(dirfits) tmpbddimage.fits ]
       set nomfichdata $tmpfile
 
-      file delete -force -- $tmpfile
-      if { $::tcl_platform(os) == "Linux" } {
-         set errnum [catch {exec gunzip -c $nomfich > $tmpfile} msgzip ]
-      } else {
-         set errnum [catch {file copy "$nomfich" "${tmpfile}.gz" ; gunzip "$tmpfile"} msgzip ]
-      }
+      lassign [::bddimages::gunzip $nomfich $tmpfile] errnum msgzip
+      #file delete -force -- $tmpfile
+      #if { $::tcl_platform(os) == "Linux" } {
+      #   set errnum [catch {exec gunzip -c $nomfich > $tmpfile} msgzip ]
+      #} else {
+      #   set errnum [catch {file copy "$nomfich" "${tmpfile}.gz" ; gunzip "$tmpfile"} msgzip ]
+      #}
       if {$errnum == 0} {
          set nomfichfits [string range $nomfich 0 [expr [string last .gz $nomfich] -1]]
       } else {
@@ -230,11 +231,12 @@ proc info_fichier { nomfich } {
    # --- zip/rezip le fichier
    if {$fileformat == "unzipped"} {
       set nomfich "$nomfichfits.gz"
-      if { $::tcl_platform(os) == "Linux" } {
-         set errnum [catch {exec gzip -c $nomfichdata > $nomfich} msg ]
-      } else {
-         set errnum [catch {gzip "$nomfichfits" } msgzip ]
-      }
+      lassign [::bddimages::gzip $nomfichdata $nomfich] errnum msg
+      #if { $::tcl_platform(os) == "Linux" } {
+      #   set errnum [catch {exec gzip -c $nomfichdata > $nomfich} msg ]
+      #} else {
+      #   set errnum [catch {gzip "$nomfichfits" } msgzip ]
+      #}
       if {$errnum != 0} {
          file delete -force -- $nomfich
          bddimages_sauve_fich "info_fichier: ERREUR 2 : Erreur lors de la recompression de l'image $nomfichfits  <err:$errnum> <msg:$msg>"
@@ -335,7 +337,8 @@ proc bddimages_insertion_unfich { ligne } {
       set errnum [catch {file rename $nomfich $nomfichdest} msg]
       set nomfich $nomfichdest
       bddimages_sauve_fich "bddimages_insertion_unfich: Compression GZIP de $nomfich"
-      gzip $nomfich
+      ::bddimages::gzip $nomfich      
+      #gzip $nomfich
       set nomfich "$nomfichdest.gz"
       set form2 "fits.gz"
    }
@@ -351,7 +354,8 @@ proc bddimages_insertion_unfich { ligne } {
 
    if {$form2=="fits"} {
       bddimages_sauve_fich "bddimages_insertion_unfich: Compression GZIP de $nomfich"
-      gzip $nomfich
+      ::bddimages::gzip $nomfich      
+      #gzip $nomfich
       set nomfich "$nomfich.gz"
       set form2 "fits.gz"
    }
@@ -389,7 +393,8 @@ proc bddimages_insertion_unfich { ligne } {
 
    if {$form2=="cata.txt"} {
       bddimages_sauve_fich "bddimages_insertion_unfich: Compression GZIP de $nomfich"
-      gzip $nomfich
+      ::bddimages::gzip $nomfich      
+      #gzip $nomfich
       set nomfich "$nomfich.gz"
       set form2 "cata.txt.gz"
       set typefich "cata"
@@ -405,7 +410,8 @@ proc bddimages_insertion_unfich { ligne } {
 
    if {$form2=="cata.xml"} {
       bddimages_sauve_fich "bddimages_insertion_unfich: Compression GZIP de $nomfich"
-      gzip $nomfich
+      ::bddimages::gzip $nomfich      
+      #gzip $nomfich
       set nomfich "$nomfich.gz"
       set form2 "cata.xml.gz"
       set typefich "cata"
