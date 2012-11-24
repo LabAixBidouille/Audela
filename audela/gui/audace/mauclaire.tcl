@@ -823,7 +823,7 @@ proc bm_datefrac { args } {
       set dfrac [ expr $d+$h/24.0+$mi/1440.0+$s/86400.0 ]
 
       #-- Ne tient compte que des 3 premieres decimales
-      set cdfrac [ expr round($dfrac*1000.)/1000. ]
+      set cdfrac [ format "%2.3f" [ expr round($dfrac*1000.)/1000. ] ]
 
       #--- Affichage du resultat :
       ::console::affiche_resultat "La fraction de date est : $cdfrac/$mo/$y\n"
