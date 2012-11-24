@@ -426,7 +426,7 @@ proc spc_anim { args } {
          set answer [ catch { exec $spcaudace(rep_spc)/plugins/imwin/convert.exe -delay $delay_images -loop 0 $audace(rep_images)/*.png $audace(rep_images)/${nom_astre}_anim.gif } ]
          ::console::affiche_resultat "$answer\n"
       } else {
-         ::console::affiche_erreur "Vous devez installer l'archive d'ImageMagick Mini et executer la commande DOS :\n $spcaudace(rep_spc)\plugins\imwin\convert.exe -delay $delay_images -loop 0 $audace(rep_images)/*.png $audace(rep_images)/${nom_astre}_anim.gif\n"
+         ::console::affiche_erreur "Vous devez installer l'archive d'ImageMagick Mini disponible sur le site d'Spcaudace et executer la commande DOS :\n $spcaudace(rep_spc)/plugins/imwin/convert.exe -delay $delay_images -loop 0 $audace(rep_images)/*.png $audace(rep_images)/${nom_astre}_anim.gif\n"
          return ""
       }
    }
