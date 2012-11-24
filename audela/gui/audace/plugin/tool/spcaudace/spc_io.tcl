@@ -3997,6 +3997,7 @@ proc spc_fit2colors { args } {
 ##########################################################
 # Effectue l'exportation au format PNG avec génération d'un titre du graphique
 # Attention : GUI présente !
+# Se sert indirectement de spc_autofit2png
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 05-03-2007
