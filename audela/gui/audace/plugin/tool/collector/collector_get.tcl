@@ -6,31 +6,31 @@
 #
 
    # nom proc                    onglet      utilisee par
-   # ::cllctr::getImgData        Cible       initTarget
-   # ::cllctr::getTelPosition    Local       initLocal
-   # ::cllctr::getDateExposure   Local       initLocal
-   # ::cllctr::getTPW            Atmosphere  initAtm
-   # ::cllctr::getKwdOptic       Optique     onChangeOptique
-   # ::cllctr::getCamName        Camera      onChangeCam
-   # ::cllctr::getObserv         Mots cles   onChangeObserver
-   # ::cllctr::getObject         Mots cles   onChangeObjName
+   # ::collector::getImgData        Cible       initTarget
+   # ::collector::getTelPosition    Local       initLocal
+   # ::collector::getDateExposure   Local       initLocal
+   # ::collector::getTPW            Atmosphere  initAtm
+   # ::collector::getKwdOptic       Optique     onChangeOptique
+   # ::collector::getCamName        Camera      onChangeCam
+   # ::collector::getObserv         Mots cles   onChangeObserver
+   # ::collector::getObject         Mots cles   onChangeObjName
 
-   # ::cllctr::getCoordJ2000     Cible       initTarget
-   # ::cllctr::getTrueCoordinates Cible      computeCoordNow
-   # ::cllctr::getCdeltFov       Vue         computeCdeltFov
-   # ::cllctr::getImgCenterRaDec Vue         getImgData
-   # ::cllctr::getMatchWCS       Vue         initPose
-   # ::cllctr::getDateTUJD       Local       initLocal
-   # ::cllctr::getTsl            Local       computeTslMoon
-   # ::cllctr::getMoonAge        Local       computeTslMoon
-   # ::cllctr::getSecz           Atmosphere  computeCoordApp
-   # ::cllctr::getFonDResolution Optique     computeOptic
-   # ::cllctr::getCamSpec        Camera      onChangeCam
-   # ::cllctr::getTelConnexion   Monture     onChangeTelescop
-   # ::cllctr::getSpeed          Monture     refreshSpeed
-   # ::cllctr::getCD                         getSpeed, getImgCenterRaDec et createKeywords
-   # ::cllctr::obsCoord2SiteCoord            magic
-   # ::cllctr::getHrzDec         Allemande   refreshMyTel
+   # ::collector::getCoordJ2000     Cible       initTarget
+   # ::collector::getTrueCoordinates Cible      computeCoordNow
+   # ::collector::getCdeltFov       Vue         computeCdeltFov
+   # ::collector::getImgCenterRaDec Vue         getImgData
+   # ::collector::getMatchWCS       Vue         initPose
+   # ::collector::getDateTUJD       Local       initLocal
+   # ::collector::getTsl            Local       computeTslMoon
+   # ::collector::getMoonAge        Local       computeTslMoon
+   # ::collector::getSecz           Atmosphere  computeCoordApp
+   # ::collector::getFonDResolution Optique     computeOptic
+   # ::collector::getCamSpec        Camera      onChangeCam
+   # ::collector::getTelConnexion   Monture     onChangeTelescop
+   # ::collector::getSpeed          Monture     refreshSpeed
+   # ::collector::getCD                         getSpeed, getImgCenterRaDec et createKeywords
+   # ::collector::obsCoord2SiteCoord            magic
+   # ::collector::getHrzDec         Allemande   refreshMyTel
 
    #--------------------- proc exploitant les mots cles -----------------------
 
