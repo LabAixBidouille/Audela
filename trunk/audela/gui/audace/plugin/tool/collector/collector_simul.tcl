@@ -230,6 +230,7 @@
       dict set dicokwd DATE-OBS  {DATE-OBS %s string {Start of exposure.FITS standard} {Iso 8601}}
       dict set dicokwd DEC       {DEC %s string {Expected DEC asked to telescope} {}}
       dict set dicokwd DETNAM    {DETNAM %s string {Camera used} {}}
+      dict set dicokwd EGAIN     {EGAIN %s float {electronic gain in} {e/ADU}}
       dict set dicokwd EQUINOX   {EQUINOX %s string {System of equatorial coordinates} {}}
       dict set dicokwd EXPOSURE  {EXPOSURE %s float {Total time of exposure} s}
       dict set dicokwd EXPTIME   {EXPTIME %s float {Exposure Time} s}
@@ -241,6 +242,7 @@
       dict set dicokwd IAU_CODE  {IAU_CODE %s string {IAU Code for the observatory} {}}
       dict set dicokwd IMAGETYP  {IMAGETYP %s string {Image Type} {}}
       dict set dicokwd INSTRUME  {INSTRUME %s string {Camera used} {}}
+      dict set dicokwd ISOSPEED  {ISOSPEED %s int {ISO camera setting} {iso}}
       dict set dicokwd MJD-OBS   {MJD-OBS %s double {Start of exposure} d}
       dict set dicokwd NAXIS1    {NAXIS1 %s int {Length of data axis 1} {}}
       dict set dicokwd NAXIS2    {NAXIS2 %s int {Length of data axis 2} {}}
@@ -253,6 +255,7 @@
       dict set dicokwd OBS-LONG  {OBS-LONG %s float {East-positive observatory longitude} deg}
       dict set dicokwd OBSERVER  {OBSERVER %s string {Observers Names} {}}
       dict set dicokwd ORIGIN    {ORIGIN %s string {Organization Name} {}}
+      dict set dicokwd PEDESTAL  {PEDESTAL %s int {add this value to each pixel value} {}}
       dict set dicokwd PIXSIZE1  {PIXSIZE1 %s double {Pixel Width (with binning)} um}
       dict set dicokwd PIXSIZE2  {PIXSIZE2 %s double {Pixel Height (with binning)} um}
       dict set dicokwd RA        {RA %s string {Expected RA asked to telescope} {}}
