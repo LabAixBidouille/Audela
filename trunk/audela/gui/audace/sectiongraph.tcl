@@ -34,7 +34,8 @@ proc ::sectiongraph::init { visuNo } {
    }
 
    #--- j'initalise les variables de travail
-   ::blt::vector create sectiongraphX$visuNo sectiongraphYR$visuNo sectiongraphYG$visuNo sectiongraphYB$visuNo
+   uplevel #0 blt::vector create sectiongraphX$visuNo sectiongraphYR$visuNo sectiongraphYG$visuNo sectiongraphYB$visuNo -watchunset 1
+   #::blt::vector create sectiongraphX$visuNo sectiongraphYR$visuNo sectiongraphYG$visuNo sectiongraphYB$visuNo
    ::polydraw::init $visuNo
    #--- j'interdis l'ajout d'item et de nodes avec la souris
    ::polydraw::setMouseAddItem $visuNo "0"
@@ -183,8 +184,61 @@ proc ::sectiongraph::refresh { visuNo itemNo args } {
       $private($visuNo,graph,horz) element configure color_invariant_lineB -hide no
       #--- je masque la courbe monochrome
       $private($visuNo,graph,horz) element configure lineMono -hide yes
-
    }
+
+   refreshValues $visuNo $nbcolor($visuNo)
+
+}
+
+#------------------------------------------------------------
+#  ::sectiongraph::refreshValues
+#     calcul de la moyenne, de la médiane et du sigma
+#  parametres : visuNo et nb de couleurs
+#  return : null
+#------------------------------------------------------------
+proc ::sectiongraph::refreshValues { visuNo nbColor } {
+   variable private
+   global caption
+
+   #--   raccourci
+   set wid $private($visuNo,This).frame3
+
+   if {$nbColor == 3} {
+      foreach c [list r g b] color [list R G B] {
+         lassign [getMeanMedianSigma sectiongraphY${color}$visuNo] mean median sigma
+         ${wid}.$c configure -text [format $caption(sectiongraph,values) $mean $median $sigma]
+         pack ${wid}.$c -anchor w -side top -padx 3 -pady 3
+      }
+      pack forget ${wid}.m
+   } else {
+      lassign [getMeanMedianSigma sectiongraphYR$visuNo] mean median sigma
+      ${wid}.m configure -text [format $caption(sectiongraph,values) $mean $median $sigma]
+      pack ${wid}.m -anchor w -side top -padx 3 -pady 3
+      pack forget ${wid}.r
+      pack forget ${wid}.g
+      pack forget ${wid}.b
+  }
+}
+
+
+#------------------------------------------------------------
+#  ::sectiongraph::getMeanMedianSigma
+#     calcul de la moyenne, de la médiane et du sigma
+#  parametre : nom du vecteur graphique a evaluer
+#  return : liste de la moyenne, de la médiane et du sigma
+#------------------------------------------------------------
+proc ::sectiongraph::getMeanMedianSigma { vector } {
+
+   blt::vector create tempor result -watchunset 1
+   $vector dup tempor
+   set moyenne [format "%.1f" $tempor(mean)]
+   result expr { median(tempor) }
+   set mediane [format "%.1f" $result(0)]
+   result expr { sdev(tempor) }
+   set sigma [format "%.1f" $result(0)]
+   blt::vector destroy tempor result
+
+   return [list $moyenne $mediane $sigma]
 }
 
 #------------------------------------------------------------
@@ -258,6 +312,19 @@ proc ::sectiongraph::createToplevel { visuNo } {
    $private($visuNo,graph,horz) element configure color_invariant_lineR -hide no
 
    pack $private($visuNo,graph,horz) -in $private($visuNo,This).frame1
+
+   #--   raccourci
+   set wid $private($visuNo,This).frame3
+   frame $wid -borderwidth 2 -relief raised
+      foreach f [list m r g b] color [list black red green blue] {
+         set pixels [list [lrepeat 10 $color]]
+         set photo [image create photo]
+         $photo put $pixels
+         button $wid.$f -compound left -image $photo -relief flat \
+            -text [format $caption(sectiongraph,values) - - -]
+         pack $wid.$f -anchor w -side top -padx 3 -pady 3
+      }
+   pack $private($visuNo,This).frame3 -after $private($visuNo,This).frame1 -fill both -expand 1
 
    #--- Creation d'une frame
    frame $private($visuNo,This).frame2 -borderwidth 2 -relief raised
