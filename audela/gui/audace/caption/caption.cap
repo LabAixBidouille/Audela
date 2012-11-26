@@ -78,6 +78,7 @@ set caption(plotxy,figure)                            "Figure"
 set caption(sectiongraph,title)                       "Graph of the section"
 set caption(sectiongraph,refreshAuto)                 "Auto Refresh After Image Change"
 set caption(sectiongraph,refreshManuel)               "Refresh Now"
+set caption(sectiongraph,values)                      " | Mean: %s | Median: %s | Standard Deviation: %s"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -149,6 +150,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sectiongraph,title)                    "Graphe de la coupe"
    set caption(sectiongraph,refreshAuto)              "Rafraîchissement automatique lors du changement de l'image"
    set caption(sectiongraph,refreshManuel)            "Rafraîchir maintenant"
+   set caption(sectiongraph,values)                   " | Moyenne : %s | Médiane : %s | Ecart-type : %s"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -220,6 +222,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sectiongraph,title)                    "Grafico della sezione"
    set caption(sectiongraph,refreshAuto)              "Aggiornamento automatico quando si cambia l'immagine"
    set caption(sectiongraph,refreshManuel)            "Aggiornamento immediato"
+   set caption(sectiongraph,values)                   " | Media: %s | Mediana: %s | Scarto tipico: %s"
+
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -291,6 +295,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sectiongraph,title)                    "Gráfica de la sección"
    set caption(sectiongraph,refreshAuto)              "Refresco automática cuando se cambia la imagen"
    set caption(sectiongraph,refreshManuel)            "Refrescar ahora"
+   set caption(sectiongraph,values)                   " | Media: %s | Mediana: %s | Desviación típica: %s"
+
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -362,6 +368,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sectiongraph,title)                    "Abschnitt Grafik"
    set caption(sectiongraph,refreshAuto)              "Automatische Auffrischung, wenn das Bild zu ändern"
    set caption(sectiongraph,refreshManuel)            "Jetzt auffrischen"
+   set caption(sectiongraph,values)                   " | Mittelwert: %s | Medianwert: %s | Typische Abweichung: %s"
+
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -433,6 +441,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sectiongraph,title)                    "Gráfico da secção"
    set caption(sectiongraph,refreshAuto)              "Actualização automática quando se muda a imagem"
    set caption(sectiongraph,refreshManuel)            "Actualizar agora"
+   set caption(sectiongraph,values)                   " | Média: %s | Mediana: %s | Desvio Padrão: %s"
+
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -504,6 +514,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sectiongraph,title)                    "Graf af udsnittet"
    set caption(sectiongraph,refreshAuto)              "Automatisk opdatere, når der skiftes billedet"
    set caption(sectiongraph,refreshManuel)            "Opdatér nu"
+   set caption(sectiongraph,values)                   " | Middelværdi: %s | Median: %s | Standardafvigelse: %s"
+
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -575,6 +587,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sectiongraph,title)                    "Graph of the section"
    set caption(sectiongraph,refreshAuto)              "Auto Refresh After Image Change"
    set caption(sectiongraph,refreshManuel)            "Refresh Now"
+   set caption(sectiongraph,values)                   " | Mean: %s | Median: %s | Standard Deviation: %s"
+
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -646,6 +660,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sectiongraph,title)                    "Graph of the section"
    set caption(sectiongraph,refreshAuto)              "Auto Refresh After Image Change"
    set caption(sectiongraph,refreshManuel)            "Refresh Now"
+   set caption(sectiongraph,values)                   " | Mean: %s | Median: %s | Standard Deviation: %s"
 
 }
 
