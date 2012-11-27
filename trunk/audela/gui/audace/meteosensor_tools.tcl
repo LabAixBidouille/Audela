@@ -1696,3 +1696,75 @@ proc simulationmeteo_read { } {
    return $textes
 }
 
+# ===========================================================================
+# If your AWS (Automatique Weather Station) is supported (@ http://wiki.sandaysoft.com/a/Supported_Devices)
+# Install the free software cumulus @ http://sandaysoft.com/products/cumulus
+# Configure cumulus to write realtime.txt file
+#
+# readCumulus
+# Return : list of some interesting values (with units)
+# Parameter : file (location of C:/.../Cumulus/realtime.txt)
+# ===========================================================================
+proc readCumulus { file } {
+
+   set msg [list answer example {27/11/12 10:47:27} {5.8 °C} {89 %} {4.1 °C} {1.0 m/s} {315 °} {99970.0 Pa}]
+   if {[catch {set fileID [open $file r]} ErrInfo]} {
+      ::console::affiche_erreur "$ErrInfo\n"
+      return $msg
+   }
+   gets $fileID realTimeData
+   close $fileID
+
+   #--   realTimeData example : 18/10/08 16:03:45 8.4 84 5.8 24.2 33.0 261 0.0 1.0 999.7 W 6 mph C mb mm 146.6 +0.1 85.2 588.4 11.6 20.3 57 3.6 -0.7 10.9 12:00 7.8 14:41 37.4 14:38 44.0 14:28 999.8 16:01 998.4 12:06 1.8.2 448 36.0 10.3 10.5 13 0.2 14 260 2.3 13 1 0 NNW 2040 ft 12.3 11.1 420.1 1
+   #  Field Example Description
+   #  1 18/10/08 date (always dd/mm/yy)
+   #  2 16:03:45 time(always hh:mm:ss)
+   #  3 8.4 outside temperature
+   #  4 84 relative humidity
+   #  5 5.8 dewpoint
+   #  6 24.2 wind speed (average)
+   #  7 33.0 latest wind speed reading
+   #  8 261 wind bearing (degrees)
+   #  9 0.0 current rain rate
+   #  10 1.0 rain today
+   #  11 999.7 barometer
+   #  12 W wind direction
+   #  13 6 wind speed (beaufort)
+   #  14 mph wind units
+   #  15 C temperature units
+   #  16 mb pressure units
+   #  17 mm rain units
+   #  18 146.6 wind run (today)
+   #  19 +0.1 pressure trend value
+   #  20 85.2 monthly rainfall
+   #  25 3.6 wind chill
+   #  26 -0.7 temperature trend value
+   #--   see Cumulus Help, realtime.txt section, for more
+
+   #--   extracting some interesting values
+   lassign $realTimeData date time outsidetemp outsidehumidity dewpoint -> \
+      windspeed windbearing -> -> pressure -> -> \
+      windUnits tempUnits pressureUnits
+
+   #--   values and units formating
+   if {$tempUnits eq "C"} {
+      set tempUnits "°C"
+   }
+   set windBearingUnits "°"
+   if {$pressureUnits eq "hPa"} {
+      set pressure [expr { $pressure*100 }] ; #-- Pa
+      set pressureUnits Pa
+   }
+
+   set msg {}
+   lappend msg [list $date $time]                     ; #--   Time Stamp
+   lappend msg [list $outsidetemp $tempUnits]         ; #--   Outside temmperature
+   lappend msg [list $outsidehumidity "%"]            ; #--   Outside Relative Humidity
+   lappend msg [list $dewpoint $tempUnits]            ; #--   DewPoint
+   lappend msg [list $windspeed $windUnits]           ; #--   Wind speed
+   lappend msg [list $windbearing $windBearingUnits]  ; #--   Wind bearing
+   lappend msg [list $pressure $pressureUnits]        ; #--   Atmospheric pressure
+
+   return $msg
+}
+
