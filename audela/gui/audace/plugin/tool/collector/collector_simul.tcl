@@ -185,13 +185,14 @@
          GEODSYS AIRPRESS TEMPAIR \
          TELESCOP DETNAM CONFNAME IMAGETYP OBJNAME SWCREATE]
 
-      if {$origin ne ""} {
-         lappend list_of_kwd ORIGIN
-      }
-      if {$iau_code ne ""} {
-         lappend list_of_kwd IAU_CODE
+      #--   complete la liste si valeur significative
+      foreach {var val}  [list temprose "-" hygro "-" winddir "-" windsp "-" origin "" iau_code ""] {
+         if {[set $var] ne "$val"} {
+            lappend list_of_kwd [string toupper $var]
+         }
       }
 
+      #--   liste les caracteres a substituer
       set entities [list à a â a ç c é e è e ê e ë e î i ï i ô o ö o û u ü u ü u ' ""]
 
       foreach kwd $list_of_kwd {
@@ -211,7 +212,7 @@
    #--------------------------------------------------------------------------
    proc formatKeyword { {kwd " "} } {
 
-      dict set dicokwd AIRPRESS  {AIRPRESS %s float {Atmospheric Pressure} hPa}
+      dict set dicokwd AIRPRESS  {AIRPRESS %s float {[hPa] Atmospheric Pressure} hPa}
       dict set dicokwd APTDIA    {APTDIA %s float Diameter m}
       dict set dicokwd BIN1      {BIN1 %s int {} {}}
       dict set dicokwd BIN2      {BIN2 %s int {} {}}
@@ -231,7 +232,7 @@
       dict set dicokwd DEC       {DEC %s string {Expected DEC asked to telescope} {}}
       dict set dicokwd DETNAM    {DETNAM %s string {Camera used} {}}
       dict set dicokwd EGAIN     {EGAIN %s float {electronic gain in} {e/ADU}}
-      dict set dicokwd EQUINOX   {EQUINOX %s string {System of equatorial coordinates} {}}
+      dict set dicokwd EQUINOX   {EQUINOX %s float {System of equatorial coordinates} {}}
       dict set dicokwd EXPOSURE  {EXPOSURE %s float {Total time of exposure} s}
       dict set dicokwd EXPTIME   {EXPTIME %s float {Exposure Time} s}
       dict set dicokwd FILTER    {FILTER %s string {C U B V R I J H K z} {}}
@@ -239,6 +240,7 @@
       dict set dicokwd FOCLEN    {FOCLEN %s double {Resulting Focal length} m}
       dict set dicokwd FWHM      {FWHM %s float {Full Width at Half Maximum} pixels}
       dict set dicokwd GEODSYS   {GEODSYS %s string {Geodetic datum for observatory position} {}}
+      dict set dicokwd HYGRO     {HYGRO %s int {Hydrometry} percent}
       dict set dicokwd IAU_CODE  {IAU_CODE %s string {IAU Code for the observatory} {}}
       dict set dicokwd IMAGETYP  {IMAGETYP %s string {Image Type} {}}
       dict set dicokwd INSTRUME  {INSTRUME %s string {Camera used} {}}
@@ -267,7 +269,10 @@
       dict set dicokwd SITELONG  {SITELONG %s string {East-positive observatory longitude} deg}
       dict set dicokwd SWCREATE  {SWCREATE %s string {Acquisition Software} {}}
       dict set dicokwd TELESCOP  {TELESCOP %s string {Telescope (name barlow reducer)} {}}
-      dict set dicokwd TEMPAIR   {TEMPAIR %s string {Air temperature} Celcius}
+      dict set dicokwd TEMPAIR   {TEMPAIR %s float {Air temperature} Celcius}
+      dict set dicokwd TEMPROSE  {TEMPROSE %s float {Dew temperature} Celcius}
+      dict set dicokwd WINDDIR   {WINDDIR %s float {Wind direction (0=S 90=W 180=N 270=E)} deg}
+      dict set dicokwd WINDSP    {WINDSP %s float {Windspeed} {m/s}}
 
       set kwd_list [dict keys $dicokwd]
       if {$kwd eq " "} {return $kwd_list}
@@ -314,7 +319,7 @@
       catch {buf$bufNo delkwd CATASTAR}
       buf$bufNo save [ file join ${mypath} ${sky0}$ext ]
       createFileConfigSextractor
-     buf$bufNo save [ file join ${mypath} ${sky}$ext ]
+      buf$bufNo save [ file join ${mypath} ${sky}$ext ]
       sextractor [ file join $mypath $sky0$ext ] -c [ file join $mypath config.sex ]
       ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/c$sky$ext\" "
       ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" ASTROMETRY objefile=catalog.cat nullpixel=-10000 delta=5 epsilon=0.0002 file_ascii=ascii.txt"
