@@ -290,6 +290,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "contrib_av4l", "contrib\av4
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libtelsimu", "libtel\libtelsimu\vc90\libtelsimu.vcproj", "{3ACAC348-D28D-4855-A842-8ECDB000BF2F}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libatik", "libcam\libatik\vc90\libatik.vcproj", "{627780D7-8F17-48D4-8781-500E4F36F59D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -664,6 +666,10 @@ Global
 		{3ACAC348-D28D-4855-A842-8ECDB000BF2F}.Debug|Win32.Build.0 = Debug|Win32
 		{3ACAC348-D28D-4855-A842-8ECDB000BF2F}.Release|Win32.ActiveCfg = Release|Win32
 		{3ACAC348-D28D-4855-A842-8ECDB000BF2F}.Release|Win32.Build.0 = Release|Win32
+		{627780D7-8F17-48D4-8781-500E4F36F59D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{627780D7-8F17-48D4-8781-500E4F36F59D}.Debug|Win32.Build.0 = Debug|Win32
+		{627780D7-8F17-48D4-8781-500E4F36F59D}.Release|Win32.ActiveCfg = Release|Win32
+		{627780D7-8F17-48D4-8781-500E4F36F59D}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
