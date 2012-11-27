@@ -17,6 +17,7 @@
    # ::collector::modifyPriority          combobox du choix de la priorite, modifyBand, modifyCamera, computeTslMoon, updateInfo et updateEtc
    # ::collector::refreshNotebook         configTraceRaDec
    # ::collector::refreshCoordsJ2000      initTarget, refreshNotebook, doUnPark et doPark
+   # ::collector::refreshCumulus          initAtm
    # ::collector::computeTelSpeed         refreshNotebook
 
    #---------------------------------------------------------------------------
@@ -28,7 +29,7 @@
       variable private
       global cameras
 
-      if {$child in [list aptdia fond]} {
+      if {$child in [list aptdia fond seeing]} {
          computeOptic
       } elseif {$child in [list tu gps]} {
          computeTslMoon
@@ -58,6 +59,10 @@
 
       lassign [getFonDResolution $private(aptdia) $private(foclen)] \
          private(fond) private(resolution)
+
+      set error 10
+      set ncfz [getNewCriticalFocusZone $private(fond) $private(aptdia) $private(seeing) $error]
+      set private(ncfz) [format %0.1f $ncfz]
    }
 
    #------------------------------------------------------------
@@ -265,6 +270,38 @@
       computeCenterPixVal
       computeTslMoon
    }
+
+   #------------------------------------------------------------
+   #  refreshCumulus : mise a jour de 'Météo'
+   #  Lit les donnees de realtime.txt
+   #  Note : la temperature et la pression sont des variables de hip2tel
+   #------------------------------------------------------------
+   proc refreshCumulus { } {
+      variable private
+
+      set result [readCumulus $private(cumulus)]
+
+      #--   isole l'heure de realtime en secondes
+      lassign [lindex $result 0] date time
+
+      #--   arrete l'ecart est superieur au temps de rafraichissement
+      if {[expr { [clock seconds]-[clock scan $time -timezone :localtime] }] > 30} {
+         onchangeCumulus stop
+         return
+      }
+
+      #--   analyse les valeurs
+      #--   elimine les unites
+      set entities [list "\{" "" "\}" "" "°C" "" "%" "" "°" "" "m/s" "" "Pa" ""]
+      set data [string map $entities [lrange $result 1 end]]
+
+      lassign $data private(tempair) private(hygro) private(temprose) private(windsp) winddir private(airpress)
+
+      #--   modifie la direction du vent
+      set private(winddir) [expr { int(fmod($winddir+180,360)) }]
+
+      after 1000 ::collector::refreshCumulus
+    }
 
    #------------------------------------------------------------
    #  computeTelSpeed
