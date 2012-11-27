@@ -66,9 +66,9 @@
       #--   liste les variables exclusivement label (resultat de calculs ou affichage simple)
       #--   non modifiables par l'utilisateur
       set private(labels) [list equinox true raTel decTel azTel elevTel haTel error \
-         telescop fov1 fov2 cdelt1 cdelt2 gps jd tsl moonphas moonalt moon_age \
-         fwhm secz airmass winddir windsp aptdia foclen fond resolution \
-         telname connexion suivi vra vdec vxPix vyPix observer sitename origin iau_code access]
+         telescop fov1 fov2 cdelt1 cdelt2 gps jd tsl moonphas moonalt moon_age ncfz \
+         temprose hygro winddir windsp fwhm secz airmass aptdia foclen fond resolution \
+         telname connexion suivi vra vdec vxPix vyPix observer sitename origin iau_code access cumulus]
 
       #--   liste les variables 'entry' avec binding, modifiables par l'utilisateur
       set private(entry) [list ra dec bin1 bin2 naxis1 naxis2 crota2 m snr t \
@@ -81,7 +81,7 @@
       #--   liste les variables necessaires pour synthetiser une image, sans image dans la visu
       set private(special_variables) [list ra dec gps t tu jd tsl telescop aptdia foclen fwhm \
          bin1 bin2 naxis1 naxis2 cdelt1 cdelt2 crota2 filter detnam photocell1 photocell2 \
-         pixsize1 pixsize2 crval1 crval2 crpix1 crpix2 airpress tempair \
+         pixsize1 pixsize2 crval1 crval2 crpix1 crpix2 airpress tempair temprose hygro winddir windsp \
          observer sitename origin iau_code imagetyp objname]
 
       #--   liste les variables necessaires pour activer le bouton 'image DSS'
@@ -90,7 +90,7 @@
       #--   liste les boutons
       set private(buttonList) [list cmd.syn cmd.special cmd.dss cmd.close cmd.hlp \
        n.local.modifGps n.optic.modifOptic n.config.search n.kwds.modifObs \
-       n.kwds.editKwds n.kwds.writeKwds n.config.dispEtc n.config.simulimage ]
+       n.kwds.editKwds n.kwds.writeKwds n.config.realtime n.config.dispEtc n.config.simulimage ]
 
       set this $::audace(base).info
       set private(This) $this
@@ -129,12 +129,12 @@
       set dynamicChildren [list m error snr t prior]
       set poseChildren [list bin1 bin2 cdelt1 cdelt2 naxis1 naxis2 fov1 fov2 crota2]
       set localChildren [list gps modifGps tu jd tsl moonphas moonalt moon_age]
-      set atmChildren [list tempair airpress seeing fwhm secz airmass winddir windsp]
-      set opticChildren [list telescop modifOptic aptdia foclen fond resolution psf filter]
+      set atmChildren [list tempair temprose hygro airpress winddir windsp seeing fwhm secz airmass]
+      set opticChildren [list telescop modifOptic aptdia foclen fond resolution ncfz psf filter]
       set camChildren [list detnam photocell1 photocell2 eta noise therm gain ampli]
       set tlscpChildren [list telname suivi vra vdec vxPix vyPix separator1]
       set kwdsChildren [list observer modifObs sitename origin iau_code imagetyp objname separator1 editKwds writeKwds]
-      set configChildren [list catname access search separator1 dispEtc simulimage]
+      set configChildren [list catname access search separator1 cumulus realtime separator2 dispEtc simulimage]
 
       #--   construit le notebook dans cet ordre
       foreach topic [list target dynamic pose local atm optic cam tlscp german kwds config] {
@@ -159,7 +159,7 @@
       buildPark "$this.n.tlscp"
 
      #--   boutons de commande principaux
-      frame $this.cmd
+     frame $this.cmd
 
          foreach {but side} [list syn left dss left close right hlp right]  {
             pack [ttk::button $this.cmd.$but -text "$caption(collector,$but)" -width 10] \
@@ -218,10 +218,10 @@
       if {[regexp {(separator).} $child] == 1} {
 
          grid [ttk::separator $w -orient horizontal] \
-            -row $row -column 0 -columnspan 3 -padx 10 -pady 5 -sticky news
+           -row $row -column 0 -columnspan 3 -padx 10 -pady 5 -sticky news
          return
 
-      } elseif {$child in [list modifGps modifOptic search modifObs modifSite editKwds writeKwds dispEtc simulimage]} {
+      } elseif {$child in [list modifGps modifOptic search realtime modifObs modifSite editKwds writeKwds dispEtc simulimage]} {
 
          ttk::button $w -text "$caption(collector,$child)"
          switch -exact $child {
@@ -233,6 +233,9 @@
                        }
             search     {$w configure -command "::collector::configDirname $w" -width 4 -padding {2 2}
                         grid $w -row 1 -column 2
+                       }
+            realtime   {$w configure -command "::collector::configDirname $w" -width 4 -padding {2 2}
+                        grid $w -row 4 -column 2
                        }
             modifObs   {$w configure -command "::confPosObs::run $audace(base).confPosObs" -width 7 -padding {2 2}
                         grid $w -row 0 -column 2 -rowspan 5
@@ -292,7 +295,7 @@
                         set cmd "::collector::modifyPriority"
                      }
             filter   {  set values $caption(collector,band)
-                       set cmd "::collector::modifyBand"
+                        set cmd "::collector::modifyBand"
                      }
             detnam   {  set values [linsert $private(actualListOfCam) end $caption(collector,newCam)]
                         set cmd "::collector::modifyCamera"
@@ -375,6 +378,10 @@
       variable private
       global audace conf
 
+      #--   arrete la mise a jour
+      #--   pas d'importance si pas active
+      after cancel ::collector::refreshCumulus
+
       foreach icon {baguette chaudron greenLed redLed} {
          if {[info exists $private($icon)]} {
             image delete $private($icon)
@@ -388,6 +395,9 @@
       #--   equivalent de widgetToConf
       set conf(collector,access) $private(access)
       set conf(collector,catname) $private(catname)
+      if {$private(cumulus) ne ""} {
+         set conf(collector,cumulus) $private(cumulus)
+      }
       regsub {([0-9]+x[0-9]+)} [wm geometry $this] "" conf(collector,position)
 
       set conf(collector,colors) [list $private(colFond) $private(colReticule) \
@@ -423,9 +433,8 @@
       lassign $conf(collector,butees) private(buteeWest) private(buteeEast)
 
       #--   conf par defaut et confToWidget
-      set listConf [list catname access catname2 access2 cam position]
-      set listDefault [list "MICROCAT" "[file join $audace(rep_userCatalog) microcat]" \
-         "BOWELL" "[file join $audace(rep_userCatalog) bowell]" " " "+800+500"]
+      set listConf [list catname access cumulus cam position]
+      set listDefault [list "MICROCAT" "[file join $audace(rep_userCatalog) microcat]" "" " " "+800+500"]
       foreach topic $listConf value $listDefault {
          if {![info exists conf(collector,$topic)]} {
              set conf(collector,$topic) $value
@@ -569,18 +578,16 @@
          append dirname /
       }
 
-
       if {[lindex [split $this "."] end] eq "search"} {
          if {$dirname ne ""} {
             set private(access) "$dirname"
          } else {
             set private(access) "$conf(collector,access)"
          }
-      } else {
-         if {$dirname ne ""} {
-            set private(access2) "$dirname"
-         } else {
-            set private(access2) "$conf(collector,access2)"
+      } elseif {[lindex [split $this "."] end] eq "realtime"} {
+         #--   verifie la presence de cumulus.exe
+         if {$dirname ne "" && [file exists [file join $dirname cumulus.exe]]} {
+            set private(cumulus) "[file join $dirname realtime.txt]"
          }
       }
    }
