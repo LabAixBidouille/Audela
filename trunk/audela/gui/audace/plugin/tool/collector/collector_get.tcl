@@ -31,6 +31,7 @@
    # ::collector::getCD                         getSpeed, getImgCenterRaDec et createKeywords
    # ::collector::obsCoord2SiteCoord            magic
    # ::collector::getHrzDec         Allemande   refreshMyTel
+   # ::collector::getNewCriticalFocusZone
 
    #--------------------- proc exploitant les mots cles -----------------------
 
@@ -219,10 +220,10 @@
       }
 
       set winddir [lindex [buf$bufNo getkwd WINDIR] 1]
-      if {$winddir eq ""} {set winddir 0}
+      if {$winddir eq ""} {set winddir -}
 
       set windsp [lindex [buf$bufNo getkwd WINDSP] 1]
-      if {$windsp eq ""} {set windsp 0}
+      if {$windsp eq ""} {set windsp -}
 
       return [list $tempair $airpress $winddir $windsp]
    }
@@ -728,5 +729,18 @@
       set decHrz [expr { atan($tanHrz) * 180/(4*atan(1.)) }]
 
       return $decHrz
+   }
+
+   #---------------------------------------------------------------------------
+   #  getNewCriticalFocusZone
+   #  Retourne la zone (um) de mise au point
+   #  Parametres : F/D , diametre (m), total seeing (arcsec) et error (%seeing)
+   #---------------------------------------------------------------------------
+   proc getNewCriticalFocusZone { fond aptdia seeing error } {
+
+      set constante 0.00225 ; # micrometers/arc second/millimeter
+      set ncfz [expr { $constante*$seeing*sqrt($error)*$fond*$fond*$aptdia*1000 } ] ;#-- microns
+
+      return $ncfz
    }
 
