@@ -12,6 +12,8 @@
    # ::collector::activeOnglet            configLed
    # ::collector::createIcon              initCollector
    # ::collector::avertiUser              testPattern, testNumeric et updateEtc
+   # ::collector::editPrivate             deboggage
+   # ::collector::editCamerasArray        deboggage
 
    #---------------------------------------------------------------------------
    #  testPattern
