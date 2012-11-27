@@ -17,6 +17,7 @@
    # ::collector::onChangeCam          configAddRemoveListener
    # ::collector::onChangeObserver     ::confPosObs::addPosObsListener et conf(posobs,observateur,gps)
    # ::collector::onChangeObjName      onChangeMount
+   # ::collector::onchangeCumulus      refreshCumulus
 
    #------------------------------------------------------------
    #  onChangeImage :
@@ -75,7 +76,7 @@
    }
 
    #------------------------------------------------------------
-   #  initLocal : mise a jour de 'Local'
+   #  initLocal : mise a jour de l'onglet Local
    #------------------------------------------------------------
    proc initLocal { bufNo } {
       variable private
@@ -104,7 +105,7 @@
    }
 
    #------------------------------------------------------------
-   #  initAtm : mise a jour de 'Atmosphere'
+   #  initAtm : mise a jour de Meteo
    #  Note : la temperature et la pression sont des variables de hip2tel
    #------------------------------------------------------------
    proc initAtm { bufNo } {
@@ -112,10 +113,19 @@
 
       lassign [getTPW $bufNo] private(tempair) private(airpress) \
          private(winddir) private(windsp)
+
+      onchangeCumulus
+
+      if {$private(cumulus) eq "" || [file exists $private(cumulus)] == 0} {
+      lassign [list - - - -] private(hygro) private(temprose) private(winddir) private(windsp)
+      #   return
+      #} else {
+      after 10000 ::collector::refreshCumulus
+      #}
    }
 
    #------------------------------------------------------------
-   #  initTarget  : mise a jour de 'Cible'
+   #  initTarget  : mise a jour de Cible
    #------------------------------------------------------------
    proc initTarget { bufNo } {
       variable private
@@ -152,7 +162,7 @@
    }
 
    #------------------------------------------------------------
-   #  initPose : mise a jour de 'Vue'
+   #  initPose : mise a jour de l'onglet Vue
    #------------------------------------------------------------
    proc initPose { bufNo } {
       variable private
@@ -214,8 +224,8 @@
     }
 
    #------------------------------------------------------------
-   #  onChangeOptic : mise a jour de 'Optique'
-   #  Met a jour l'onglet soit a partir des mots clés de l'image
+   #  onChangeOptic : mise a jour de l'onglet Optique
+   #  soit a partir des mots clés de l'image
    #  soit a partir de la configuration de l'optique du telescope
    #------------------------------------------------------------
    proc onChangeOptic { bufNo args } {
@@ -252,8 +262,7 @@
    }
 
    #------------------------------------------------------------
-   #  onChangeMount
-   #  Rafraichissement du temoin de connexion
+   #  onChangeMount : mise a jour de l'onglet Monture
    #------------------------------------------------------------
    proc onChangeMount { visuNo args } {
       variable private
@@ -311,7 +320,7 @@
    }
 
    #------------------------------------------------------------
-   #  onChangeSuivi : rafraichissement du temoin du suivi
+   #  onChangeSuivi : mise a jour du temoin du suivi
    #  Lancee par trace add variable "::audace(telescope,controle)"
    #  et onChangeMount
    #------------------------------------------------------------
@@ -411,8 +420,7 @@
    }
 
    #------------------------------------------------------------
-   #  onChangeObserver :
-   #  Met a jour le nom de l'observateur et de l'observatoire
+   #  onChangeObserver : mise a jour du nom de l'observateur, etc.
    #  Lancee aussi par ::confPosObs::addPosObsListener
    #------------------------------------------------------------
    proc onChangeObserver { bufNo args } {
@@ -438,8 +446,7 @@
    }
 
    #------------------------------------------------------------
-   #  onChangeObjName  : mise a jour du nom de l'objet
-   #  Met a jour le type d'image et le nom de l'objet
+   #  onChangeObjName  : mise a jour du type d'image et du nom de l'objet
    #  Lancee aussi par trace add variable ::tlscp::private($visuNoTel,nomObjet)
    #------------------------------------------------------------
    proc onChangeObjName { bufNo args } {
@@ -469,5 +476,24 @@
       }
 
       lassign $result private(imagetyp) private(objname)
+   }
+
+   #------------------------------------------------------------
+   #  onchangeCumulus  :
+   #  au demarrage, en cas d'absence ou de perte de liaison avec Cumulus
+   #------------------------------------------------------------
+   proc onchangeCumulus { {do ""} } {
+      variable private
+
+      if {$private(cumulus) eq "" || [file exists $private(cumulus)] == 0 || $do eq "stop"} {
+         lassign [list - - - -] private(hygro) private(temprose) private(winddir) private(windsp)
+         #--   arrete la mise a jour
+         #--   pas d'importance si pas active
+         after cancel ::collector::refreshCumulus
+         return
+      } else {
+         #--   demarre la mise a jour
+         refreshCumulus
+      }
    }
 
