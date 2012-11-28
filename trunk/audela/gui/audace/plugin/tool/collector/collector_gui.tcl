@@ -134,7 +134,11 @@
       set camChildren [list detnam photocell1 photocell2 eta noise therm gain ampli]
       set tlscpChildren [list telname suivi vra vdec vxPix vyPix separator1]
       set kwdsChildren [list observer modifObs sitename origin iau_code imagetyp objname separator1 editKwds writeKwds]
-      set configChildren [list catname access search separator1 cumulus realtime separator2 dispEtc simulimage]
+      if { $::tcl_platform(platform) == "windows" } {
+         set configChildren [list catname access search separator1 cumulus realtime separator2 dispEtc simulimage]
+      } else {
+         set configChildren [list catname access search separator1 dispEtc simulimage]
+      }
 
       #--   construit le notebook dans cet ordre
       foreach topic [list target dynamic pose local atm optic cam tlscp german kwds config] {
