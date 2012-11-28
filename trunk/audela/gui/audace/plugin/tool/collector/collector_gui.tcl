@@ -176,8 +176,11 @@
          $this.cmd.syn configure -command "::collector::synthetiser $visuNo"
          $this.cmd.special configure -command "::collector::createSpecial $visuNo $this.cmd.special"
          $this.cmd.dss configure -command "::collector::requestSkyView \"[file join $::audace(rep_images) dss$::conf(extension,defaut)]\" "
-         $this.cmd.hlp configure -command "::audace::showHelpScript [file join $::audace(rep_plugin) tool collector] collector.htm"
+         $this.cmd.hlp configure -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::collector::getPluginType ] ] [ ::collector::getPluginDirectory ] collector.htm"
          $this.cmd.close configure -command "::collector::closeMyNoteBook $visuNo $this"
+
+      ::console::affiche_resultat "[file join $::audace(rep_plugin) tool collector]\n"
+      ::console::affiche_resultat "[ ::audace::getPluginTypeDirectory [ ::collector::getPluginType ] ] [ ::collector::getPluginDirectory ]\n"
 
       pack $this.cmd -in $this -side bottom -fill x
 
