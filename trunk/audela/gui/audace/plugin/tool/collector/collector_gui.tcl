@@ -165,11 +165,11 @@
      #--   boutons de commande principaux
      frame $this.cmd
 
-         foreach {but side} [list syn left dss left close right hlp right]  {
+       foreach {but side} [list syn left dss left close right hlp right]  {
             pack [ttk::button $this.cmd.$but -text "$caption(collector,$but)" -width 10] \
                -side $side -padx 10 -pady 5 -ipady 5
-         }
-         ttk::button $this.cmd.special -image $private(baguette) -width 4 -compound image
+       }
+       ttk::button $this.cmd.special -image $private(baguette) -width 4 -compound image
          pack $this.cmd.special -after $this.cmd.syn -side left -padx 10 -pady 5 -ipadx 4 -ipady 4
 
          #-- specialisation des boutons
@@ -178,9 +178,6 @@
          $this.cmd.dss configure -command "::collector::requestSkyView \"[file join $::audace(rep_images) dss$::conf(extension,defaut)]\" "
          $this.cmd.hlp configure -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::collector::getPluginType ] ] [ ::collector::getPluginDirectory ] collector.htm"
          $this.cmd.close configure -command "::collector::closeMyNoteBook $visuNo $this"
-
-      ::console::affiche_resultat "[file join $::audace(rep_plugin) tool collector]\n"
-      ::console::affiche_resultat "[ ::audace::getPluginTypeDirectory [ ::collector::getPluginType ] ] [ ::collector::getPluginDirectory ]\n"
 
       pack $this.cmd -in $this -side bottom -fill x
 
