@@ -89,11 +89,14 @@
 
       } else {
 
-         #--   message si echec
-         avertiUser [format $caption(collector,invalid) $newValue "$caption(collector,$child)"]
-         #--   retablit l'ancienne valeur
-         set private($child) $private(prev,$child)
-
+         if {$child ne "isospeed" && newValue ne "-"} {
+            #--   message si echec
+            avertiUser [format $caption(collector,invalid) $newValue "$caption(collector,$child)"]
+            #--   retablit l'ancienne valeur
+            set private($child) $private(prev,$child)
+         } else {
+            set private(prev,$child) $newValue
+         }
       }
    }
 

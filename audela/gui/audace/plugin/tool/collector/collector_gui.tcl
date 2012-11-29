@@ -72,7 +72,7 @@
 
       #--   liste les variables 'entry' avec binding, modifiables par l'utilisateur
       set private(entry) [list ra dec bin1 bin2 naxis1 naxis2 crota2 m snr t \
-         tu seeing tempair airpress psf photocell1 photocell2 eta gain noise therm ampli objname]
+         tu seeing tempair airpress psf photocell1 photocell2 eta gain noise therm ampli isospeed objname]
 
       #--   liste les variables necessaires pour synthetiser une image
       set private(syn_variables) [list snr m t aptdia foclen fond psf filter \
@@ -80,7 +80,7 @@
 
       #--   liste les variables necessaires pour synthetiser une image, sans image dans la visu
       set private(special_variables) [list ra dec gps t tu jd tsl telescop aptdia foclen fwhm \
-         bin1 bin2 naxis1 naxis2 cdelt1 cdelt2 crota2 filter detnam photocell1 photocell2 \
+         bin1 bin2 naxis1 naxis2 cdelt1 cdelt2 crota2 filter detnam photocell1 photocell2 isospeed\
          pixsize1 pixsize2 crval1 crval2 crpix1 crpix2 airpress tempair temprose hygro winddir windsp \
          observer sitename origin iau_code imagetyp objname]
 
@@ -131,7 +131,7 @@
       set localChildren [list gps modifGps tu jd tsl moonphas moonalt moon_age]
       set atmChildren [list tempair temprose hygro airpress winddir windsp seeing fwhm secz airmass]
       set opticChildren [list telescop modifOptic aptdia foclen fond resolution ncfz psf filter]
-      set camChildren [list detnam photocell1 photocell2 eta noise therm gain ampli]
+      set camChildren [list detnam photocell1 photocell2 eta noise therm gain ampli isospeed]
       set tlscpChildren [list telname suivi vra vdec vxPix vyPix separator1]
       set kwdsChildren [list observer modifObs sitename origin iau_code imagetyp objname separator1 editKwds writeKwds]
       if { $::tcl_platform(platform) == "windows" } {

@@ -5,7 +5,7 @@
 
 
 <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" /><title>Collector</title></head><body>
-<p class="date">Date de mise &#224; jour : 28 novembre 2012</p>
+<p class="date">Date de mise &#224; jour : 29 novembre 2012</p>
 <h1>Collector</h1>
 <h2>1. Fonctions</h2>
 <p><b>Collector</b> collecte, calcule et met en forme des
@@ -187,7 +187,8 @@ Le nom s&#233;lectionn&#233; dans la liste est celui figurant
 dans l'en-t&#234;te FITS de l'image du buffer, d'une cam&#233;ra
 connect&#233;e {A|B|C}, celui s&#233;lectionn&#233; par
 l'utilisateur ou, par d&#233;faut, le premier de la liste.<br />
-Les autres valeurs des variables sont celles de etc_tools :</p>
+A lexception de la <b>Sensibilit&#233; ISO de l'APN</b> les
+autres valeurs des variables sont celles de etc_tools :</p>
 <ul>
 <li><b>Attention</b> : Le changement de cam&#233;ra provoque le
 changement de la taille de l'image (onglet Vue), celle-ci
@@ -202,6 +203,10 @@ ou [cam$camNo celldim] en m, mais affich&#233;s en microns.</li>
 <li>Gain : audace(etc,param,ccd,G).</li>
 <li>Amplification &#233;lectronique : audace(etc,param,ccd,Em) {
 0 | 1 }.</li>
+<li>Sensibilit&#233; ISO : si la cam&#233;ra n'est pas un APN,
+laisser la valeur par d&#233;faut "-" ; si c'est un APN, la
+valeur sp&#233;cifi&#233;e sera m&#233;moris&#233;e dans le mot
+cl&#233; ISOSPEED.</li>
 </ul>
 <table summary="">
 <tbody>
