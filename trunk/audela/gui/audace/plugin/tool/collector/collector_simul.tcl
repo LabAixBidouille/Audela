@@ -186,7 +186,8 @@
          TELESCOP DETNAM CONFNAME IMAGETYP OBJNAME SWCREATE]
 
       #--   complete la liste si valeur significative
-      foreach {var val}  [list temprose "-" hygro "-" winddir "-" windsp "-" origin "" iau_code ""] {
+      set optKwd [list temprose "-" hygro "-" winddir "-" windsp "-" isospeed "-" origin "" iau_code ""]
+      foreach {var val} $optKwd {
          if {[set $var] ne "$val"} {
             lappend list_of_kwd [string toupper $var]
          }

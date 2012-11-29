@@ -86,6 +86,7 @@ set caption(collector,noise)                 "Readout noise \[electron\]"
 set caption(collector,therm)                 "Thermic coef. \[electron/sec/pix\]"
 set caption(collector,gain)                  "CCD gain \[e/ADU\]"
 set caption(collector,ampli)                 "Electron multiply"
+set caption(collector,isospeed)              "# Sensibilité ISO de l'APN \[iso\]"
 set caption(collector,newCam)                "New camera"
 
 set caption(collector,tlscp)                 "Mount"
@@ -250,6 +251,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(collector,therm)              "Coefficient thermique \[electron/sec/pix\]"
    set caption(collector,gain)               "Gain \[electron/ADU\]"
    set caption(collector,ampli)              "Amplification électronique"
+   set caption(collector,isospeed)           "Sensibilité ISO de l'APN \[iso\]"
    set caption(collector,newCam)             "Nouvelle caméra"
 
    set caption(collector,tlscp)              "Monture"
