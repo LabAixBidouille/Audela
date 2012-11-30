@@ -5,7 +5,8 @@
 
 
 <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" /><title>Collector</title></head><body>
-<p class="date">Date de mise &#224; jour : 29 novembre 2012</p>
+<body>
+<p class="date">Date de mise &#224; jour : 30 novembre 2012</p>
 <h1>Collector</h1>
 <h2>1. Fonctions</h2>
 <p><b>Collector</b> collecte, calcule et met en forme des
@@ -144,6 +145,13 @@ $audace(etc,param,local,seeing).</li>
 <li>Vent, vitesse : En m/s, valeur par d&#233;faut 0 m/s.</li>
 </ul>
 </td>
+</tr>
+<tr>
+<td colspan="2">Note : Le point de ros&#233;e et
+l'hygrom&#233;trie sont &#224; leur valeur par d&#233;faut "-"
+sauf si une station m&#233;t&#233;o alimente les donn&#233;es. Si
+elles sont &#224; leur valeur par d&#233;faut elles
+n'apparaisssent pas dans les mot cl&#233;s.</td>
 </tr>
 </tbody>
 </table>
@@ -297,22 +305,34 @@ susceptibles d'&#234;tre d&#233;finis et int&#233;gr&#233;s dans
 l'en-t&#234;te d'une image.<br />
 Il permet &#233;galement de d&#233;finir le type d'image et le
 nom de l'objet vis&#233;.
-<p>Un bouton permet d'&#233;diter les mots cl&#233;s dans la
-Console et un second d'incorporer ces mots cl&#233;s dans
-l'en-t&#234;te de l'image pr&#233;sente dans le buffer. Ce
-dernier n'est actif que si l'image dans le buffer n'est ni une
-image de synth&#232;se ni une image DSS.<br />
-La fonction d'incorporation des mots cl&#233;s peut &#234;tre
+<p>Un bouton permet d'&#233;diter les mots cl&#233;s dans une
+fen&#234;tre s&#233;par&#233;e (CF ci-dessous) et un second
+d'incorporer ces mots cl&#233;s dans l'en-t&#234;te de l'image
+pr&#233;sente dans le buffer. Ce dernier n'est actif que si
+l'image dans le buffer n'est ni une image de synth&#232;se ni une
+image DSS.</p>
+<p>La fonction d'incorporation des mots cl&#233;s peut &#234;tre
 utile pour compl&#233;ter des mots cl&#233; manquants, pour
 &#233;liminer les accents et c&#233;dilles qui conduisent &#224;
 des erreurs, pour renseigner des images issues de cam&#233;ras ne
 figurant pas dans le menu. La liste des mots cl&#233;s ne
 recouvre pas totalement celle d&#233;finie dans la configuration
-des cam&#233;ras mais en apporte d'autres. Si <b>Collector</b>
-est ouvert, la fonction d'incorporation des mots cl&#233;s peut
-&#234;tre appel&#233;e dans un script par
+des cam&#233;ras mais en apporte d'autres.</p>
+<p>Si <b>Collector</b> est ouvert, la fonction d'incorporation
+des mots cl&#233;s peut &#234;tre appel&#233;e dans un script par
 <b>::collector::setKeywords $bufNo</b>.</p>
 </td>
+</tr>
+<tr>
+<td><img style="width: 408px; height: 149px;" alt="" src=
+"images/editkwd.gif" /></td>
+<td>La fen&#234;tre est enti&#232;rement reconfigurable.<br />
+<b>Note 1</b> : si la valeur d'un mot cl&#233; est ind&#233;finie
+(exemple Code IAU) ou &#224; sa valeur par d&#233;faut (exemple
+hygrom&#233;trie) ce mot cl&#233; n'est pas incorpor&#233; dans
+la liste.<br />
+<b>Note 2</b> : le changement d'une valeur ne peut se faire que
+dans l'ongler correspondant.</td>
 </tr>
 </tbody>
 </table>

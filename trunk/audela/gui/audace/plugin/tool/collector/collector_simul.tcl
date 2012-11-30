@@ -9,13 +9,14 @@
    # nom proc                       utilisee par
    # ::collector::synthetiser       Commande du bouton 'Synthetiser' et magic
    # ::collector::createSpecial     Commande du bouton 'Baguette magique'
-   # ::collector::editKeywords      Commande du bouton 'Editer les mots cles dans la console'
    # ::collector::createImg         synthetiser
    # ::collector::magic             createSpecial
    # ::collector::createKeywords    magic et setKeywords
    # ::collector::formatKeyword     createKeywords
    # ::collector::setKeywords       magic
    # ::collector::calibrationAstro  magic et updateDSSData
+   # ::collector::editKeywords      Commande du bouton 'Editer les mots cles dans la console'
+
 
    #---------------------------------------------------------------------------
    #  synthetiser
@@ -61,19 +62,6 @@
       $w configure -image $private(baguette)
       configButtons !disabled
       update
-   }
-
-   #--------------------------------------------------------------------------
-   #  editKeywords
-   #  Edite le contenu des mots cles dans la console
-   #  Commande du bouton 'Editer les mots cles dans la console'
-   #--------------------------------------------------------------------------
-   proc editKeywords {} {
-      variable myKeywords
-
-      foreach name [lsort -dictionary [array names myKeywords]] {
-         ::console::affiche_resultat "[lindex [array get myKeywords $name] 1]\n"
-      }
    }
 
    #---------------------------------------------------------------------------
@@ -348,4 +336,78 @@
          }
       }
    }
+
+   #--------------------------------------------------------------------------
+   #  editKeywords
+   #  Edite le contenu des mots cles dans la console
+   #  Commande du bouton 'Editer les mots cles'
+   #--------------------------------------------------------------------------
+   proc editKeywords {} {
+      variable myKeywords
+      variable private
+      global caption conf
+
+      if {![info exists conf(collector,kwdposition)]} {
+         set conf(collector,kwdposition) "400x115+100+100"
+      }
+
+      set This $private(This).kwd
+      toplevel $This
+      wm resizable $This 1 1
+      wm title $This "$caption(collector,kwds)"
+      wm minsize $This 400 115
+      wm transient $This $private(This)
+      wm geometry $This $conf(collector,kwdposition)
+      wm protocol $This WM_DELETE_WINDOW "::collector::close $This"
+
+      frame $This.usr -borderwidth 0 -relief raised
+      pack $This.usr -fill both -expand 1
+
+      set tbl $This.usr.choix
+      scrollbar $This.usr.vscroll -command "$tbl yview"
+      scrollbar $This.usr.hscroll -orient horizontal -command "$tbl xview"
+
+      #--- definit la structure et les caracteristiques de la tablelist des mots cles
+      ::tablelist::tablelist $tbl -borderwidth 2 \
+         -columns [list \
+            0 "$caption(collector,kwds)" left \
+            0 "$caption(collector,kwdvalue)" left \
+            0 "$caption(collector,kwdtype)" center \
+            0 "$caption(collector,kwdcmt)" left \
+            0 "$caption(collector,kwdunit)" center] \
+         -xscrollcommand [list $This.usr.hscroll set] \
+         -yscrollcommand [list $This.usr.vscroll set] \
+         -exportselection 0 -setfocus 1 \
+         -activestyle none -stretch {1}
+
+      #--   positionne et formate les widgets
+      grid $tbl -row 0 -column 0 -sticky news
+      #--   seule la liste occupe l'espace disponible
+      grid columnconfigure $This.usr 0 -weight 1
+      grid rowconfigure $This.usr 0 -weight 1
+      #--   contraint les dimensions
+      grid $This.usr.vscroll -row 0 -column 1 -sticky ns
+      grid columnconfigure $This.usr 1 -minsize 18
+      grid $This.usr.hscroll -row 1 -column 0 -sticky news
+      grid rowconfigure $This.usr 1 -minsize 18
+
+      #--   remplit la tablelist
+      foreach cible [lsort -dictionary [array names myKeywords]] {
+         $tbl insert end [lindex [array get myKeywords $cible] 1]
+      }
+
+      #--- Focus
+      focus $This
+
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $This
+   }
+
+   proc close { This } {
+      global conf
+
+      set conf(collector,kwdposition) [wm geometry $This]
+      destroy $This
+   }
+
 
