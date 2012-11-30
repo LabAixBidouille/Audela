@@ -581,5 +581,32 @@ fonction <b>Editer les mots cl&#233;s dans la Console</b> et si
 tout est conforme <b>Actualiser l'en-t&#234;te de l'image</b>.
 C'est bien pratique si les images sont acquises avec un APN ou
 une cam&#233;ra non reconnues par Aud'ACE.</p>
+<h2>15. Lecture de stations m&#233;t&#233;o</h2>
+<p>Le logiciel <a href=
+"http://sandaysoft.com/products/cumulus"><b>Cumulus</b></a>
+gratuit permet de lire les informations fournies par <a href=
+"http://wiki.sandaysoft.com/a/Supported_Devices">les stations
+suivantes</a> :</p>
+<ul>
+<li><b>Davis Range</b> : Vantage Pro, Vantage Pro 2, Vantage
+Vue</li>
+<li><b>Oregon Scientific</b> : WMR-928, WMR-918, WM-918, WMR-968,
+Equivalent rebadged Radio Shack stations (serial only), MR-88,
+WMR-100, WMRS200, WMR-200</li>
+<li><b>Fine Offset</b> (MyDEL, Nevada, Watson, Fine Offset etc) :
+W8681, WH1080, WH1080PC, WH1081, WH1090, WH1091, National
+Geographic 265NC, PCE-FWS 20, ELECSA 6975, ClimeMET CM2000,
+Maplin N96FY/N96GY, Ambient Weather WS-1080/WS-2080, WeatherEye
+WEA22, WH3080 and WH3081, aycar Digitech XC0348 (AU/NZ)</li>
+<li><b>La Crosse</b> : WS-2300 range (all model numbers of the
+form 23xx). Use of a USB/Serial adapter is not supported with
+these stations.</li>
+</ul>
+Il cr&#233;&#233; un fichier realtime.txt contenant les
+informations.<br />
+Collector d&#233;code ce fichier pour y pr&#233;lever la
+temp&#233;rature ext&#233;rieure, la pression atmosph&#233;rique
+relative, la temp&#233;rature de ros&#233;e et l'hygrom&#233;trie
+ext&#233;rieure gr&#226;ce &#224; la fonction <b>readCumulus</b>.
 </body>
 </html>
