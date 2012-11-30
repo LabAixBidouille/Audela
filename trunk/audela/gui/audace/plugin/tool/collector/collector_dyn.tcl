@@ -295,10 +295,12 @@
       set entities [list "\{" "" "\}" "" "°C" "" "%" "" "°" "" "m/s" "" "Pa" ""]
       set data [string map $entities [lrange $result 1 end]]
 
-      lassign $data private(tempair) private(hygro) private(temprose) private(windsp) winddir private(airpress)
+      lassign $data private(tempair) private(hygro) private(temprose) private(windsp) private(winddir) private(airpress)
 
+      #--   note ne pas oublier de regler le zero de la dierction du vent dans Cumulus
+      #     pour que le Sud corresponde a 0°
       #--   modifie la direction du vent
-      set private(winddir) [expr { int(fmod($winddir+180,360)) }]
+      #set private(winddir) [expr { int(fmod($winddir+180,360)) }]
 
       after 1000 ::collector::refreshCumulus
     }
