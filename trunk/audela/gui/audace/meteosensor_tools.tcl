@@ -1333,6 +1333,8 @@ proc boltwood_read { filename } {
 
 proc fetch3600_open { port } {
    global audace
+   package require twapi
+   set ext .exe
    if {($::tcl_platform(os) != "Linux")} {
       # --- We kill the instance of the software HeavyWeather if it exists
       set pids [twapi::get_process_ids]
@@ -1343,13 +1345,12 @@ proc fetch3600_open { port } {
          set k [lsearch -exact "${exe}" $name]
          if {$k>=0} {
             twapi::end_process $pid -force
-            gren_info "[mc_date2iso8601 now] $thisproc : Delete $exe (PID=$pid)"
+            gren_info "[mc_date2iso8601 now] : Delete $exe (PID=$pid)"
          }
       }
    }
    # === On rempli la liste ros(gardien,private,val_status)
    # --- meteo
-   set ext .exe
    if { $::tcl_platform(os) == "Linux" } {
       set ext ""
    }
@@ -1359,7 +1360,7 @@ proc fetch3600_open { port } {
    append textes "#\n"
    append textes "# Configuration files for open3600 weather station tools\n"
    append textes "#\n"
-   append textes "# Default locations in which the programs will search for this file: \n"
+   append textes "# Default locations in which the programs will search for this file:\n"
    append textes "# Programs search in this sequence:\n"
    append textes "#  1. Path to config file including filename given as parameter (not supported by all tools)\n"
    append textes "#  2. ./open3600.conf (current working directory)\n"
@@ -1373,20 +1374,20 @@ proc fetch3600_open { port } {
    append textes "# For Windows use COM1, COM2, COM2 etc\n"
    append textes "# For Linux use /dev/ttyS0, /dev/ttyS1 etc\n"
    append textes "\n"
-   append textes "SERIAL_DEVICE                 $port   # /dev/ttyS0, /dev/ttyS1, COM1, COM2 etc\n"
+   append textes "SERIAL_DEVICE                 $port        # /dev/ttyS0, /dev/ttyS1, COM1, COM2, etc\n"
    append textes "TIMEZONE                      1           # Hours Relative to UTC. East is positive, west is negative\n"
    append textes "\n"
    append textes "\n"
    append textes "# Units of measure (set them to your preference)\n"
    append textes "# The units of measure are ignored by wu3600 and cw3600 because both requires specific units\n"
    append textes "\n"
-   append textes "WIND_SPEED                    km/h         # select MPH (miles/hour), m/s, or km/h\n"
+   append textes "WIND_SPEED                    km/h        # select MPH (miles/hour), m/s or km/h\n"
    append textes "TEMPERATURE                   C           # Select C or F\n"
    append textes "RAIN                          mm          # Select mm or IN\n"
    append textes "PRESSURE                      hPa         # Select hPa, mb or INHG\n"
    append textes "\n"
    append textes "# Debug level\n"
-   append textes "LOG_LEVEL 1            # 0 - no debug output, 5 - most debug output\n"
+   append textes "LOG_LEVEL                     1           # 0 - no debug output, 5 - most debug output\n"
    append textes " \n"
    append textes "#### Citizens Weather variables (used only by cw3600)\n"
    append textes "# Format for latitude is\n"
@@ -1431,6 +1432,8 @@ proc fetch3600_open { port } {
 
 proc fetch3600_read { } {
    global audace
+   package require twapi
+   set ext .exe
    # --- We kill the current instance of the software fetch if needed
    if {($::tcl_platform(os) != "Linux")} {
       set pids [twapi::get_process_ids]
@@ -1441,14 +1444,17 @@ proc fetch3600_read { } {
          set k [lsearch -exact "${exe}" $name]
          if {$k>=0} {
             twapi::end_process $pid -force
-            gren_info "[mc_date2iso8601 now] $thisproc : Delete $exe (PID=$pid)"
+            gren_info "[mc_date2iso8601 now] : Delete $exe (PID=$pid)"
          }
       }
    }
    #
    set exe $audace(rep_install)/bin/fetch3600${ext}
    set err [catch {exec $exe} msg]
-   if {$msg=="Unable to open serial device"} {
+   set msg1 [lindex [split $msg "\n"] 1]
+###::console::disp "msg = |$msg1| \n"
+###::console::disp "err = |$err| \n"
+   if {$msg1=="Unable to open serial device"} {
       return ""
    }
    set keyword [lindex $msg 0]
