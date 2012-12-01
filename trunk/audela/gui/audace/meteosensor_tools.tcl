@@ -1360,7 +1360,7 @@ proc fetch3600_open { port } {
    append textes "#\n"
    append textes "# Configuration files for open3600 weather station tools\n"
    append textes "#\n"
-   append textes "# Default locations in which the programs will search for this file:\n"
+   append textes "# Default locations in which the programs will search for this file: \n"
    append textes "# Programs search in this sequence:\n"
    append textes "#  1. Path to config file including filename given as parameter (not supported by all tools)\n"
    append textes "#  2. ./open3600.conf (current working directory)\n"
