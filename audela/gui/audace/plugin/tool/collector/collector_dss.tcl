@@ -143,7 +143,7 @@
          set f [open $filename w]
          fconfigure $f -translation binary
          puts -nonewline $f [::http::data $tok]
-         close $f
+         chan close $f
       }
 
       ::http::cleanup $tok
@@ -158,15 +158,14 @@
       variable private
 
       set ext $::conf(extension,defaut)
-
       lassign $data crval1 crval2 naxis1 naxis2 crota2
 
       #--   Rem : respecter l'ordre
-      #--   actualise la taille des pixels (NAXIS réduit avec FOV constant)
-      set private(photocell1) [expr { $private(naxis1) * $private(photocell1) /$naxis1 }]
+      #--   actualise la taille des pixels (NAXIS réduit avec FOV (constant) de l'image
+      set private(photocell1) [expr { $private(photocell1) * $private(naxis1) / $naxis1 }]
       set private(pixsize1) $private(photocell1)
-      set private(photocell2) [expr { $private(naxis2) * $private(photocell2) /$naxis2 }]
-      set private(pixsize1) $private(photocell2)
+      set private(photocell2) [expr { $private(photocell2) * $private(naxis2) / $naxis2 }]
+      set private(pixsize2) $private(photocell2)
 
       #--   actualise l'affichage des naxis (susceptibles d'etre modifies)
       set private(naxis1) $naxis1
