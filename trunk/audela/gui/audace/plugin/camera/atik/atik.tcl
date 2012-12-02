@@ -83,7 +83,7 @@ proc ::atik::initPlugin { } {
 
    #--- Initialise les variables de la camera Atik
    if { ! [ info exists conf(atik,cool) ] }     { set conf(atik,cool)     "0" }
-   if { ! [ info exists conf(atik,foncobtu) ] } { set conf(atik,foncobtu) "2" }
+   if { ! [ info exists conf(atik,foncobtu) ] } { set conf(atik,foncobtu) "0" }
    if { ! [ info exists conf(atik,mirh) ] }     { set conf(atik,mirh)     "0" }
    if { ! [ info exists conf(atik,mirv) ] }     { set conf(atik,mirv)     "0" }
    if { ! [ info exists conf(atik,temp) ] }     { set conf(atik,temp)     "-10" }
