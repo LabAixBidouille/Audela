@@ -89,7 +89,7 @@
 
       } else {
 
-         if {$child ne "isospeed" && newValue ne "-"} {
+         if {$child ne "isospeed" && $newValue ne "-"} {
             #--   message si echec
             avertiUser [format $caption(collector,invalid) $newValue "$caption(collector,$child)"]
             #--   retablit l'ancienne valeur
