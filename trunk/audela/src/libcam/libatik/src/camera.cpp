@@ -113,6 +113,8 @@ ArtemisHandle hCam=NULL;
 int cam_init(struct camprop *cam, int argc, char **argv)
 {
 	ARTEMISPROPERTIES pProp;
+	char texte[1024];
+	int device;
 
 	// Load the Artemis DLL
 	// This must be done before calling any of the other Artemis API functions.
@@ -129,6 +131,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 	  sprintf(cam->msg, "No camera available");
 	  return -2;
 	}
+	device=0;
 
    // je recupere les parametres optionnels
    if (argc >= 5) {
@@ -139,6 +142,12 @@ int cam_init(struct camprop *cam, int argc, char **argv)
       }
    }
 
+	strcpy(CAM_INI[cam->index_cam].name,"");
+	if (!ArtemisDeviceName(device,texte)) {
+	  strcpy(texte,"Atik");
+	}
+	strncat(CAM_INI[cam->index_cam].name, texte,sizeof(CAM_INI[cam->index_cam].name) -1 );
+
    // Fills in pProp with camera properties
    if (ArtemisProperties(hCam,&pProp)==0) {
       // je recupere la largeur et la hauteur du CCD en pixels (en pixel sans binning)
@@ -147,17 +156,24 @@ int cam_init(struct camprop *cam, int argc, char **argv)
       // je recupere la taille des pixels (en micron converti en metre)
       cam->celldimx   = pProp.PixelMicronsX * 1e-6;
       cam->celldimy   = pProp.PixelMicronsY * 1e-6;      
-      // je recupere la description
-      strncpy(CAM_INI[cam->index_cam].name, 
-            pProp.Description,
-            sizeof(CAM_INI[cam->index_cam].name) -1 );      
+		// je recupere la description
+		strcat(CAM_INI[cam->index_cam].name," (");
+		strncat(CAM_INI[cam->index_cam].name,pProp.Description,sizeof(CAM_INI[cam->index_cam].name) -1 );
+		strcat(CAM_INI[cam->index_cam].name,")");
    }
+
+	if (!ArtemisDeviceSerial(device,texte)) {
+	  strcpy(texte,"0");
+	}
+	strncat(cam->serial_number,texte,sizeof(cam->serial_number) -1 );
+
+	int w,h;
+	ArtemisGetSubframe(hCam,&cam->x1,&cam->y1,&w,&h);
    cam->x1 = 0;
    cam->y1 = 0;
-   cam->x2 = cam->nb_photox - 1;
-   cam->y2 = cam->nb_photoy - 1;
-   cam->binx = 1;
-   cam->biny = 1;
+   cam->x2 = w - 1;
+   cam->y2 = h - 1;
+	ArtemisGetBin(hCam,&cam->binx,&cam->biny);
 
    cam_update_window(cam);	// met a jour x1,y1,x2,y2,h,w dans cam
    strcpy(cam->date_obs, "2000-01-01T12:00:00");
@@ -168,6 +184,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 
 int cam_close(struct camprop * cam)
 {
+	ArtemisDisconnect(hCam);
 	ArtemisUnLoadDLL();
    return 0;
 }
@@ -231,8 +248,23 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 	// Don't switch amplifier off for short exposures
 	ArtemisSetAmplifierSwitched(hCam, (1000*cam->exptime)>2.5f);
 
-	// Start the exposure
+	// window
+	int w = cam->x2 - cam->x1 +1;
+	int h = cam->y2 - cam->y1 +1;
+	ArtemisSubframe(hCam,cam->x1,cam->y1,w,h);
+
+	// binning
 	ArtemisBin(hCam,cam->binx,cam->biny);
+
+	// Enable/disable dark mode - ie the shutter is to be kept closed during exposures
+	bool bEnable = 0;
+	if (cam->shutterindex == 0) {
+		/* case : shutter always off (Darks) */
+		bEnable = 1;
+	}
+	ArtemisSetDarkMode(hCam,bEnable);
+
+	// Start the exposure
 	ArtemisStartExposure(hCam,cam->exptime);
 
 }
@@ -240,6 +272,7 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 void cam_stop_exp(struct camprop *cam)
 {
 	ArtemisAbortExposure(hCam);
+	//ArtemisStopExposure(hCam);
 	return;
 }
 
