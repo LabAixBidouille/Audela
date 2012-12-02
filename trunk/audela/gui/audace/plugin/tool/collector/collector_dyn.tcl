@@ -279,7 +279,12 @@
    proc refreshCumulus { } {
       variable private
 
-      set result [readCumulus $private(cumulus)]
+      set result [readCumulus]
+
+      if {$result eq "cumulus.exe not alive" || $result eq ""} {
+         onchangeCumulus stop
+         return
+      }
 
       #--   isole l'heure de realtime en secondes
       lassign [lindex $result 0] date time
@@ -297,10 +302,8 @@
 
       lassign $data private(tempair) private(hygro) private(temprose) private(windsp) private(winddir) private(airpress)
 
-      #--   note ne pas oublier de regler le zero de la dierction du vent dans Cumulus
+      #--   note : ne pas oublier de regler le zero de la direction du vent dans Cumulus
       #     pour que le Sud corresponde a 0°
-      #--   modifie la direction du vent
-      #set private(winddir) [expr { int(fmod($winddir+180,360)) }]
 
       after 1000 ::collector::refreshCumulus
     }
