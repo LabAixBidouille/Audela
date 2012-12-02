@@ -13,7 +13,6 @@ global caption langage
 
 set caption(atik,camera)                       "Atik"
 
-set caption(atik,obtu_ouvert)                  "Open"
 set caption(atik,obtu_ferme)                   "Closed"
 set caption(atik,obtu_synchro)                 "Synchro"
 
@@ -36,7 +35,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(atik,camera)                    "Atik"
 
-   set caption(atik,obtu_ouvert)               "Ouvert"
    set caption(atik,obtu_ferme)                "Fermé"
    set caption(atik,obtu_synchro)              "Synchro"
 
@@ -59,7 +57,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(atik,camera)                    "Atik"
 
-   set caption(atik,obtu_ouvert)               "Aperto"
    set caption(atik,obtu_ferme)                "Chiuso"
    set caption(atik,obtu_synchro)              "Sincronizza"
 
@@ -82,7 +79,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(atik,camera)                    "Atik"
 
-   set caption(atik,obtu_ouvert)               "Abierto"
    set caption(atik,obtu_ferme)                "Cerrado"
    set caption(atik,obtu_synchro)              "Sincro"
 
@@ -105,7 +101,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(atik,camera)                    "Atik"
 
-   set caption(atik,obtu_ouvert)               "Offen"
    set caption(atik,obtu_ferme)                "Geschlossen"
    set caption(atik,obtu_synchro)              "Synchro"
 
@@ -128,7 +123,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(atik,camera)                    "Atik"
 
-   set caption(atik,obtu_ouvert)               "Aberto"
    set caption(atik,obtu_ferme)                "Fechado"
    set caption(atik,obtu_synchro)              "Sincro"
 
@@ -151,7 +145,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(atik,camera)                    "Atik"
 
-   set caption(atik,obtu_ouvert)               "Open"
    set caption(atik,obtu_ferme)                "Closed"
    set caption(atik,obtu_synchro)              "Synchro"
 
@@ -174,7 +167,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(atik,camera)                    "Atik"
 
-   set caption(atik,obtu_ouvert)               "Open"
    set caption(atik,obtu_ferme)                "Closed"
    set caption(atik,obtu_synchro)              "Synchro"
 
@@ -197,7 +189,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(atik,camera)                    "Atik"
 
-   set caption(atik,obtu_ouvert)               "Open"
    set caption(atik,obtu_ferme)                "Closed"
    set caption(atik,obtu_synchro)              "Synchro"
 
