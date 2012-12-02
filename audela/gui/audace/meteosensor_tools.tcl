@@ -1709,12 +1709,35 @@ proc simulationmeteo_read { } {
 #
 # readCumulus
 # Return : list of some interesting values (with units)
-# Parameter : file (location of C:/.../Cumulus/realtime.txt)
+# Parameter : none
 # ===========================================================================
-proc readCumulus { file } {
+proc readCumulus { } {
+
+   package require twapi
+
+   #--   Cumulus works only on Windows platform
+   if {$::tcl_platform(os) == "Linux" || $::tcl_platform(os) == "Darwin"} {
+      return
+   }
+
+   set dir ""
+   foreach pid [twapi::get_process_ids] {
+      if {[twapi::process_exists $pid -name cumulus.exe] == 1} {
+         set dir [file dirname [twapi::get_process_path $pid]]
+         break
+      }
+   }
+
+   if {$dir ne ""} {
+      set fileName [file join $dir realtime.txt]
+   } else {
+      #--   cumulus.exe not alive
+      ::console::affiche_resultat "cumulus.exe not alive\n"
+      return ""
+   }
 
    set msg [list answer example {27/11/12 10:47:27} {5.8 °C} {89 %} {4.1 °C} {1.0 m/s} {315 °} {99970.0 Pa}]
-   if {[catch {set fileID [open $file r]} ErrInfo]} {
+   if {[catch {set fileID [open $fileName r]} ErrInfo]} {
       ::console::affiche_erreur "$ErrInfo\n"
       return $msg
    }
