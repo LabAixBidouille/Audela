@@ -86,7 +86,7 @@ proc ::atik::initPlugin { } {
    if { ! [ info exists conf(atik,foncobtu) ] } { set conf(atik,foncobtu) "2" }
    if { ! [ info exists conf(atik,mirh) ] }     { set conf(atik,mirh)     "0" }
    if { ! [ info exists conf(atik,mirv) ] }     { set conf(atik,mirv)     "0" }
-   if { ! [ info exists conf(atik,temp) ] }     { set conf(atik,temp)     "-50" }
+   if { ! [ info exists conf(atik,temp) ] }     { set conf(atik,temp)     "-10" }
 
    #--- Initialisation
    set private(A,camNo) "0"
@@ -105,7 +105,7 @@ proc ::atik::confToWidget { } {
 
    #--- Recupere la configuration de la camera Atik dans le tableau private(...)
    set private(cool)     $conf(atik,cool)
-   set private(foncobtu) [ lindex "$caption(atik,obtu_ouvert) $caption(atik,obtu_ferme) $caption(atik,obtu_synchro)" $conf(atik,foncobtu) ]
+   set private(foncobtu) [ lindex "$caption(atik,obtu_synchro) $caption(atik,obtu_ferme)" $conf(atik,foncobtu) ]
    set private(mirh)     $conf(atik,mirh)
    set private(mirv)     $conf(atik,mirv)
    set private(temp)     $conf(atik,temp)
@@ -121,7 +121,7 @@ proc ::atik::widgetToConf { camItem } {
 
    #--- Memorise la configuration de la camera Atik dans le tableau conf(atik,...)
    set conf(atik,cool)     $private(cool)
-   set conf(atik,foncobtu) [ lsearch "$caption(atik,obtu_ouvert) $caption(atik,obtu_ferme) $caption(atik,obtu_synchro)" "$private(foncobtu)" ]
+   set conf(atik,foncobtu) [ lsearch "$caption(atik,obtu_synchro) $caption(atik,obtu_ferme)" "$private(foncobtu)" ]
    set conf(atik,mirh)     $private(mirh)
    set conf(atik,mirv)     $private(mirv)
    set conf(atik,temp)     $private(temp)
@@ -208,7 +208,7 @@ proc ::atik::fillConfigPage { frm camItem } {
          label $frm.frame1.frame8.lab3 -text "$caption(atik,fonc_obtu)"
          pack $frm.frame1.frame8.lab3 -anchor nw -side left -padx 10 -pady 5
 
-         set list_combobox [ list $caption(atik,obtu_ouvert) $caption(atik,obtu_ferme) $caption(atik,obtu_synchro) ]
+         set list_combobox [ list $caption(atik,obtu_synchro) $caption(atik,obtu_ferme)  ]
          ComboBox $frm.frame1.frame8.foncobtu \
             -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
             -height [ llength $list_combobox ] \
@@ -256,7 +256,7 @@ proc ::atik::configureCamera { camItem bufNo } {
          error "" "" "CameraUnique"
       }
       #--- Je cree la camera
-      set camNo [ cam::create atik PCI -debug_directory $::audace(rep_log) ]
+      set camNo [ cam::create atik USB -debug_directory $::audace(rep_log) ]
       console::affiche_entete "$caption(atik,port_camera) $caption(atik,2points) [ cam$camNo port ]\n"
       console::affiche_saut "\n"
       #--- Je change de variable
@@ -264,13 +264,10 @@ proc ::atik::configureCamera { camItem bufNo } {
       #--- Je configure l'obturateur
       switch -exact -- $conf(atik,foncobtu) {
          0 {
-            cam$camNo shutter "opened"
+            cam$camNo shutter "synchro"
          }
          1 {
             cam$camNo shutter "closed"
-         }
-         2 {
-            cam$camNo shutter "synchro"
          }
       }
       #--- Je configure le refroidissement
@@ -382,21 +379,15 @@ proc ::atik::setShutter { camItem shutterState ShutterOptionList } {
    switch -exact -- $shutterState {
       0  {
          #--- j'envoie la commande a la camera
-         cam$camNo shutter "opened"
+         cam$camNo shutter "synchro"
          #--- je mets a jour le widget dans la fenetre de configuration si elle est ouverte
-         set private(foncobtu) $caption(atik,obtu_ouvert)
+         set private(foncobtu) $caption(atik,obtu_synchro)
       }
       1  {
          #--- j'envoie la commande a la camera
          cam$camNo shutter "closed"
          #--- je mets a jour le widget dans la fenetre de configuration si elle est ouverte
          set private(foncobtu) $caption(atik,obtu_ferme)
-      }
-      2  {
-         #--- j'envoie la commande a la camera
-         cam$camNo shutter "synchro"
-         #--- je mets a jour le widget dans la fenetre de configuration si elle est ouverte
-         set private(foncobtu) $caption(atik,obtu_synchro)
       }
    }
 }
@@ -461,7 +452,7 @@ proc ::atik::getPluginProperty { camItem propertyName } {
             return ""
          }
       }
-      shutterList      { return [ list $::caption(atik,obtu_ouvert) $::caption(atik,obtu_ferme) $::caption(atik,obtu_synchro) ] }
+      shutterList      { return [ list $::caption(atik,obtu_synchro) $::caption(atik,obtu_ferme) ] }
    }
 }
 
