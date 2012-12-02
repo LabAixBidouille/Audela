@@ -64,6 +64,7 @@ struct camprop {
     COMMON_CAMSTRUCT;
     /* Ajoutez ici les variables necessaires a votre camera (mode d'obturateur, etc). */
 	char serial_number[41];
+	int cooler_implemented;
 };
 
 #ifdef __cplusplus
