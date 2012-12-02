@@ -174,8 +174,36 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    cam->x2 = w - 1;
    cam->y2 = h - 1;
 	ArtemisGetBin(hCam,&cam->binx,&cam->biny);
-
    cam_update_window(cam);	// met a jour x1,y1,x2,y2,h,w dans cam
+
+	/////////////////////////////////////////////////
+	// Returns information on the Peltier cooler.
+	// flags: b0-4 capabilities
+	// b0 0 = no cooling 1=cooling
+	// b1 0= always on 1= controllable
+	// b2 0 = on/off control not available 1= on off cooling control
+	// b3 0= no selectable power levels 1= selectable power levels
+	// b4 0 = no temperature set point cooling 1= set point cooling
+	// b5-7 report what’s actually happening
+	// b5 0=normal control 1=warming up
+	// b6 0=cooling off 1=cooling on
+	// b7 0= no set point control 1=set point control
+	// level is the current cooler power level.
+	// minlvl is the minimum power level than can be set on order to prevent
+	// rapid warming.
+	// maxlvl is the maximum power level than can be set or returned, can be
+	// used to scale power to a percentage.
+	// setpoint is the current temperature setpoint, in degrees Celsius * 100
+	// Error code on error
+	int err,flags,level, minlvl, maxlvl,setpoint;
+	err=ArtemisCoolingInfo(hCam,&flags,&level,&minlvl,&maxlvl,&setpoint);
+	cam->check_temperature=0;
+	if (err==ARTEMIS_OK) {
+		cam->cooler_implemented=1;
+	} else {
+		cam->cooler_implemented=0;
+	}
+
    strcpy(cam->date_obs, "2000-01-01T12:00:00");
    strcpy(cam->date_end, cam->date_obs);
    cam->authorized = 1;
@@ -317,29 +345,39 @@ void cam_ampli_off(struct camprop *cam)
 
 void cam_measure_temperature(struct camprop *cam)
 {
-	int temperature;
-	ArtemisTemperatureSensorInfo(hCam,1,&temperature);
-	cam->temperature = (double)temperature/100.0;
+	if (cam->cooler_implemented==1) {
+		int temperature;
+		ArtemisTemperatureSensorInfo(hCam,1,&temperature);
+		cam->temperature = (double)temperature/100.0;
+	} else {
+		cam->temperature = 0;
+	}
 	return;
 }
 
 void cam_cooler_on(struct camprop *cam)
 {
-	int setpoint;
-	setpoint=(int)(cam->check_temperature*100);
-	ArtemisSetCooling(hCam,setpoint);
+	if (cam->cooler_implemented==1) {
+		int setpoint;
+		setpoint=(int)(cam->check_temperature*100);
+		ArtemisSetCooling(hCam,setpoint);
+	}
 }
 
 void cam_cooler_off(struct camprop *cam)
 {
-	ArtemisCoolerWarmUp(hCam);
+	if (cam->cooler_implemented==1) {
+		ArtemisCoolerWarmUp(hCam);
+	}
 }
 
 void cam_cooler_check(struct camprop *cam)
 {
-	int setpoint;
-	setpoint=(int)(cam->check_temperature*100);
-	ArtemisSetCooling(hCam,setpoint);
+	if (cam->cooler_implemented==1) {
+		int setpoint;
+		setpoint=(int)(cam->check_temperature*100);
+		ArtemisSetCooling(hCam,setpoint);
+	}
 }
 
 void cam_set_binning(int binx, int biny, struct camprop *cam)
