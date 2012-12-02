@@ -2,7 +2,7 @@
 # Fichier : atik.tcl
 # Description : Configuration de la camera Atik
 # Auteur : Robert DELMAS
-# Mise à jour $Id: atik.tcl 8159 2012-03-03 08:48:07Z robertdelmas  $
+# Mise à jour $Id$
 #
 
 namespace eval ::atik {
