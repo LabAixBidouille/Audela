@@ -80,7 +80,7 @@ namespace eval ::cgi_install {
 
       # --- Search for the httpd.conf file
       if { $::tcl_platform(os) == "Linux" } {
-         set fichiers [glob -nocomplain "/etc/apache2/default-server.conf"] 0]
+         set fichiers [glob -nocomplain "/etc/apache2/default-server.conf"]
       } else {
          set fichiers [glob -nocomplain "C:/Program Files/Apache Software Foundation/Apache2.2/conf/httpd.conf"]
       }
