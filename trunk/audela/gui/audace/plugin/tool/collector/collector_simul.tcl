@@ -217,7 +217,7 @@
       dict set dicokwd CRPIX2    {CRPIX2 %s float {Reference pixel for Naxis2} pixel}
       dict set dicokwd CRVAL1    {CRVAL1 %s double {Reference coordinate for Naxis1} deg}
       dict set dicokwd CRVAL2    {CRVAL2 %s double {Reference coordinate for Naxis2} deg}
-      dict set dicokwd DATE-OBS  {DATE-OBS %s string {Start of exposure.FITS standard} {Iso 8601}}
+      dict set dicokwd DATE-OBS  {DATE-OBS %s string {Start of exposure.FITS standard} {ISO 8601}}
       dict set dicokwd DEC       {DEC %s string {Expected DEC asked to telescope} {}}
       dict set dicokwd DETNAM    {DETNAM %s string {Camera used} {}}
       dict set dicokwd EGAIN     {EGAIN %s float {electronic gain in} {e/ADU}}
@@ -233,7 +233,7 @@
       dict set dicokwd IAU_CODE  {IAU_CODE %s string {IAU Code for the observatory} {}}
       dict set dicokwd IMAGETYP  {IMAGETYP %s string {Image Type} {}}
       dict set dicokwd INSTRUME  {INSTRUME %s string {Camera used} {}}
-      dict set dicokwd ISOSPEED  {ISOSPEED %s int {ISO camera setting} {iso}}
+      dict set dicokwd ISOSPEED  {ISOSPEED %s int {ISO camera setting} {ISO}}
       dict set dicokwd MJD-OBS   {MJD-OBS %s double {Start of exposure} d}
       dict set dicokwd NAXIS1    {NAXIS1 %s int {Length of data axis 1} {}}
       dict set dicokwd NAXIS2    {NAXIS2 %s int {Length of data axis 2} {}}
