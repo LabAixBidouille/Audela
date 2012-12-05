@@ -34,17 +34,17 @@ proc vo_aladin { args } {
    }
    set exec_aladin $conf(exec_aladin)
    set aladin_jar $conf(exec_aladin)
-   if {$exec_aladin==""} {
+   if {($exec_aladin=="")||([file exists $exec_aladin]==0)} {
       if { $::tcl_platform(os) == "Linux" } {
-         set exec_aladin ./$audace(rep_install)/bin/Aladin
-         set aladin_jar ./$audace(rep_install)/bin/Aladin.jar
+         set exec_aladin $audace(rep_install)/bin/Aladin
       } elseif { $::tcl_platform(os) == "Darwin" } {
-         set exec_aladin ./$audace(rep_install)/bin/Aladin
-         set aladin_jar ./$audace(rep_install)/bin/Aladin.jar
+         set exec_aladin $audace(rep_install)/bin/Aladin
       } else {
          set exec_aladin $audace(rep_install)/bin/Aladin.exe
-         set aladin_jar $audace(rep_install)/bin/Aladin.jar
       }
+   }
+   if {($aladin_jar=="")||([file exists $aladin_jar]==0)} {
+      set aladin_jar $audace(rep_install)/bin/Aladin.jar
    }
 
    if {$method=="load"} {
@@ -53,6 +53,7 @@ proc vo_aladin { args } {
          error "Usage: $method filename ?{catalogs}"
          return
       }
+
       #
       set texte "#AJS\n"
       append texte "#Aladin Java Script created by AudeLA\n"
@@ -102,9 +103,13 @@ proc vo_aladin { args } {
       puts -nonewline $f $texte
       close $f
       #
+      #console::affiche_resultat "exec_aladin=$exec_aladin\n"
+      #console::affiche_resultat "aladin_jar=$aladin_jar\n"
       if {[file exists $exec_aladin]==1} {
+         #console::affiche_resultat "open \"|\"$exec_aladin\" \"$fnameajs\" \" w+\n"
          open "|\"$exec_aladin\" \"$fnameajs\" " w+
       } elseif {[file exists $aladin_jar]==1} {
+         #console::affiche_resultat "open \"|\"$exec_java\" -jar \"$aladin_jar\" < \"$fnameajs\" \" w+\n"
          open "|\"$exec_java\" -jar \"$aladin_jar\" < \"$fnameajs\" " w+
       }
    } elseif {$method=="object"} {
@@ -1088,4 +1093,3 @@ proc vo_miriade_ephemcc { args } {
 
    }
 }
-
