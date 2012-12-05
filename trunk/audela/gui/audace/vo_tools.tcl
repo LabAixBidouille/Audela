@@ -14,17 +14,7 @@
 #
 # ------------------------------------------------------------------------------------
 
-# --- deplacer ces inits
-if { $::tcl_platform(os) == "Linux" } {
-   set audace(rep_java) "C:/j2sdk1.4.2_06/jre/bin"
-   set audace(rep_aladinjar) "c:/vo/votal/"
-} elseif { $::tcl_platform(os) == "Darwin" } {
-   set audace(rep_java) "C:/j2sdk1.4.2_06/jre/bin"
-   set audace(rep_aladinjar) "c:/vo/votal/"
-} else {
-   set audace(aladin) "C:/Program Files/Aladin"
-}
-
+# source $audace(rep_install)/gui/audace/vo_tools.tcl
 proc vo_aladin { args } {
    global audace
    global conf
@@ -36,6 +26,26 @@ proc vo_aladin { args } {
    }
 
    set method [lindex $args 0]
+
+   # --- Aladin
+   set exec_java $conf(exec_java)
+   if {$exec_java==""} {
+      set exec_java java
+   }
+   set exec_aladin $conf(exec_aladin)
+   set aladin_jar $conf(exec_aladin)
+   if {$exec_aladin==""} {
+      if { $::tcl_platform(os) == "Linux" } {
+         set exec_aladin ./$audace(rep_install)/bin/Aladin
+         set aladin_jar ./$audace(rep_install)/bin/Aladin.jar
+      } elseif { $::tcl_platform(os) == "Darwin" } {
+         set exec_aladin ./$audace(rep_install)/bin/Aladin
+         set aladin_jar ./$audace(rep_install)/bin/Aladin.jar
+      } else {
+         set exec_aladin $audace(rep_install)/bin/Aladin.exe
+         set aladin_jar $audace(rep_install)/bin/Aladin.jar
+      }
+   }
 
    if {$method=="load"} {
       # vo_aladin load j1 {USNO-B DSS2}
@@ -92,16 +102,10 @@ proc vo_aladin { args } {
       puts -nonewline $f $texte
       close $f
       #
-      if { $::tcl_platform(os) == "Linux" } {
-         open "|\"${audace(rep_java)}/java\" -jar \"${audace(rep_aladinjar)}/Aladin.jar\" < \"$fnameajs\" " w+
-      } elseif { $::tcl_platform(os) == "Darwin" } {
-         open "|\"${audace(rep_java)}/java\" -jar \"${audace(rep_aladinjar)}/Aladin.jar\" < \"$fnameajs\" " w+
-      } else {
-         if {[file exists "${audace(aladin)}/aladin.exe"]==1} {
-            open "|\"${audace(aladin)}/aladin.exe\" \"$fnameajs\" " w+
-         } else {
-            open "|\"aladin.exe\" \"$fnameajs\" " w+
-         }
+      if {[file exists $exec_aladin]==1} {
+         open "|\"$exec_aladin\" \"$fnameajs\" " w+
+      } elseif {[file exists $aladin_jar]==1} {
+         open "|\"$exec_java\" -jar \"$aladin_jar\" < \"$fnameajs\" " w+
       }
    } elseif {$method=="object"} {
       # vo_aladin object uranus {USNO-B DSS2}
@@ -141,12 +145,10 @@ proc vo_aladin { args } {
       puts -nonewline $f $texte
       close $f
       #
-      if { $::tcl_platform(os) == "Linux" } {
-         open "|\"${audace(rep_java)}/java\" -jar \"${audace(rep_aladinjar)}/Aladin.jar\" < \"$fnameajs\" " w+
-      } elseif { $::tcl_platform(os) == "Darwin" } {
-         open "|\"${audace(rep_java)}/java\" -jar \"${audace(rep_aladinjar)}/Aladin.jar\" < \"$fnameajs\" " w+
-      } else {
-         open "|\"${audace(aladin)}/aladin.exe\" \"$fnameajs\" " w+
+      if {[file exists $exec_aladin]==1} {
+         open "|\"$exec_aladin\" \"$fnameajs\" " w+
+      } elseif {[file exists $aladin_jar]==1} {
+         open "|\"$exec_java\" -jar \"$aladin_jar\" < \"$fnameajs\" " w+
       }
    } else {
       #--- Exemple : vo_aladin load m57 USNO-B1
