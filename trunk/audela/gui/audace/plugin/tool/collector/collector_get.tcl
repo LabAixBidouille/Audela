@@ -201,7 +201,7 @@
 
    #---------------------------------------------------------------------------
    #  getTPW
-   #  Retourne : temperature °C, pression Pa, direction et vitesse du vent
+   #  Retourne : temperature °C, pression Pa, direction, vitesse du vent et hydrometrie
    #---------------------------------------------------------------------------
    proc getTPW { bufNo } {
 
@@ -219,13 +219,20 @@
          }
       }
 
-      set winddir [lindex [buf$bufNo getkwd WINDIR] 1]
-      if {$winddir eq ""} {set winddir -}
+      set winddir [lindex [buf$bufNo getkwd WINDDIR] 1]
+      if {$winddir eq ""} {set winddir "-"}
 
       set windsp [lindex [buf$bufNo getkwd WINDSP] 1]
-      if {$windsp eq ""} {set windsp -}
+      if {$windsp eq ""} {set windsp "-"}
 
-      return [list $tempair $airpress $winddir $windsp]
+      set hygro [lindex [buf$bufNo getkwd HYGRO] 1]
+      if {$hygro eq ""} {
+         set hygro [lindex [buf$bufNo getkwd HYDRO] 1]
+      } else {
+         set hygro "-"
+      }
+
+      return [list $tempair $airpress $winddir $windsp $hygro]
    }
 
    #---------------------------------------------------------------------------
