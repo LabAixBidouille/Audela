@@ -380,7 +380,7 @@
       set symbols  { IH ID NP CH ME MA FO HF DAF TF }
       set nulCoeff [list 0 0 0 0 0 0 0 0 0 0]
 
-      set hipRecord    [list 1 0 [mc_angle2deg $ra_hms] [mc_angle2deg $dec_dms 90] J2000.0 0 0 0 0]
+      set hipRecord    [list 1 1 [mc_angle2deg $ra_hms] [mc_angle2deg $dec_dms 90] J2000.0 J2000.0 0 0 0]
       set result [mc_hip2tel $hipRecord $datetu $home $airpress $temperature $symbols $nulCoeff -model_only 1 -refraction 1]
 
       #--   pm prend les valeurs avec modele (identiques à 0 5)
@@ -552,20 +552,18 @@
    #---------------------------------------------------------------------------
    #  getSecz
    #  Retourne : secz et airmass
-   #  Parametre : hauteur
-   #  Derive de displaycoor.tcl/readSocketCoord et miscellaneous/airmass
+   #  Parametre : elevation du telescope (corrige de le refrecation, etc.)
    #---------------------------------------------------------------------------
-   proc getSecz { hauteur } {
+   proc getSecz { elev } {
 
-      lassign [list - -] secz airmass
-      set hauteur_deg [mc_angle2deg $hauteur]
-      if {$hauteur_deg > 0} {
+      lassign [list -1 -1] secz airmass
 
-         set z [expr {90.-$hauteur_deg}]
+      set elev_deg [mc_angle2deg $elev]
+
+      if {$elev_deg > 0} {
+         set z [expr {90.-$elev_deg}]
          set secz [expr {1./cos($z)}]
-         set hauteur_rad [expr $hauteur_deg*4*atan(1)/180.]
-         set airmass [expr 1./sin($hauteur_rad)]
-
+         set airmass [expr { $secz-0.0018167*$secz+0.02875*$secz*$secz+0.0008083*$secz*$secz*$secz }]
          set secz [format %0.3f $secz]
          set airmass [format %0.3f $airmass]
       }
