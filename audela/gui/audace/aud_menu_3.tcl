@@ -3773,10 +3773,8 @@ namespace eval ::ser2fits {
       #--   precaution
       array unset bd
 
-      #"Début" "Fin"
-
       #--   liste les rubriques a rechercher
-      set listParam [list "Telescope" "F/D" \
+      set listParam [list "Telescope" "Début" "Fin" "F/D" \
          "Modèle" "Taille" "Exposition" "Filtre" "Binning" "Image"]
 
       set fd [open $infoFile r]
@@ -3829,7 +3827,7 @@ namespace eval ::ser2fits {
             if {[regexp -all {[0-9]+} $imgNo]} {
                set dateSer [string range $title [expr { $index+2 }] end]
                set date_obs [formatDateObs $dateSer]
-               array set bd [list $imgNo [list "DATE-OBS" $date_obs string  "Start of exposure. FITS standard" "ISO 8601"]]
+               array set bd [list $imgNo [list DATE-OBS $date_obs string  "Start of exposure. FITS standard" "ISO 8601"]]
             }
          }
 
@@ -3844,9 +3842,9 @@ namespace eval ::ser2fits {
       array set bd [list BIN2 [list BIN2 $bin2 int {} {}]]
       array set bd [list YPIXSZ [list YPIXSZ $ypixsz double {Pixel Height (without binning)} um]]
 
-      #foreach kwd [lsort -ascii [array names bd]] {
-      #   ::console::affiche_resultat "[array get bd $kwd]\n"
-      #}
+      foreach kwd [lsort -ascii [array names bd]] {
+         ::console::affiche_resultat "[array get bd $kwd]\n"
+      }
    }
 
    #------------------------------------------------------------
