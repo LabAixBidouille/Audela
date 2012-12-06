@@ -2415,6 +2415,9 @@ namespace eval ::confVisu {
             }
          }
          set function [lindex [::prtr::PRETRAITEEFunctions 0] end]
+         Menu_Separator $visuNo "$caption(audace,menu,convertir)"
+         Menu_Command   $visuNo "$caption(audace,menu,convertir)" "$caption(audace,menu,ser2fits)..." \
+            "::ser2fits::buildGui $visuNo"
          Menu_Command   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,pretraitee)" "::prtr::run \"$function\" "
          #--- Affichage des plugins de type tool et de fonction images du menu deroulant Images
          ::confVisu::displayPlugins $visuNo images images
@@ -2858,7 +2861,11 @@ namespace eval ::confVisu {
          }
       }
       set function [lindex [::prtr::PRETRAITEEFunctions 0] end]
+      Menu_Separator $visuNo "$caption(audace,menu,convertir)"
+      Menu_Command   $visuNo "$caption(audace,menu,convertir)" "$caption(audace,menu,ser2fits)..." \
+         "::ser2fits::buildGui $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,pretraitee)" "::prtr::run \"$function\" "
+
       #--- Affichage des plugins de type tool et de fonction images du menu deroulant Images
       ::confVisu::displayPlugins $visuNo images images
       Menu_Cascade   $visuNo "$caption(audace,menu,images)" "$caption(audace,menu,center)"

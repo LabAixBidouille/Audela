@@ -3629,3 +3629,594 @@ namespace eval ::kernel {
 
 ######################## Fin du namespace kernel ##########################
 
+namespace eval ::ser2fits {
+
+   #source [ file join $::audace(rep_scripts) ser2fits.cap ]
+
+   #------------------------------------------------------------
+   #  go2Convert
+   #  Pilote la conversion
+   #  Parameter : nom court du fichier source .ser
+   #------------------------------------------------------------
+   proc go2Convert { file } {
+      variable private
+      variable bd
+      global audace conf
+
+      #--   raccourcis
+      set visuNo $audace(visuNo)
+      set bufNo [visu$visuNo buf]
+      set dir $audace(rep_images)
+      set ext $conf(extension,defaut)
+      set dirOut $private(dest)
+      set img $private(racine)
+      set start $private(start)
+      set end $private(end)
+
+      set private(src) [file join $dir $file]
+      set kwdFile [file join $dirOut kwdFile.txt]
+      set header [file join $dirOut header$ext]
+
+      visu$visuNo clear
+      lassign $private(current_hdu) naxis1 naxis2 bitpix
+
+      #--   etape 1 : cree une image grise contenant le header des images
+      if {$bitpix == 8} {
+         set format FORMAT_BYTE
+      } else {
+         set format FORMAT_SHORT
+      }
+      buf$bufNo setpixels CLASS_GRAY $naxis1 $naxis2 $format COMPRESS_NONE pixeldata 0 -keepkeywords 0
+      buf$bufNo save $header
+      buf$bufNo clear
+
+      #--   etape 2 : si le fichier d'info .ser.txt existe
+      set txtExist [file exists $private(src).txt]
+
+      #     integre les infos dans le header de l'image
+      if {$txtExist == 1} {
+
+         #--   extrait les mots cles et les dates du fichier .ser.txt
+         readSerInfoFile $private(src).txt
+
+         #--   cree le fichier des mots cles a incorporer dans le header
+         set nbKwd [buildKwdFile $kwdFile]
+
+         if {$nbKwd > 0} {
+            #--   complete les mots cles communs aux images et le contraint au bon bitpix
+            ttscript2 "IMA/SERIES \"$dirOut\" \"header\" . . $ext \"$dirOut\" \"header\" . $ext HEADERFITS \"file=$kwdFile\" bitpix=$bitpix"
+         }
+      }
+
+      #--   etape 3 : extrait les images FITS
+      for {set i $start} {$i <= $end} {incr i} {
+
+        #--   definit le nom de l'image
+         set fileName [file join $dirOut ${img}${i}$ext]
+
+         #--   duplique l'image grise
+         file copy -force $header $fileName
+
+         #--   calcule l'adresse de depart des donnees de l'image dans le fichier .ser
+         set startAdress [expr { 178 + ($i-1)*$private(imageSize) }]
+
+         #--   extrait l'image du fichier source
+         extractImg $fileName $startAdress $bitpix
+      }
+
+      #--   etape 4 : si le fichier d'info .ser.txt existe
+      #     incorpore la date de prise de vue dans chaque image
+      if {$txtExist == 1} {
+         for {set i $start} {$i <= $end} {incr i} {
+            #--   produit un petit fichier avec l'heure
+            lassign [lindex [array get bd $i] 1] kwd value type comment unit
+            set fileID [open $kwdFile w]
+            puts $fileID $kwd\n$value\n$type\n$comment\n$unit
+            chan close $fileID
+            #--   integre le mot cle
+            ttscript2 "IMA/SERIES \"$dirOut\" \"${img}${i}\" . . $ext \"$dirOut\" \"${img}${i}\" . $ext HEADERFITS \"file=$kwdFile\" "
+            file delete $kwdFile
+         }
+      }
+
+      #--   etape 5 : flip les images pour qsu'elles soient identiques au film
+      ttscript2 "IMA/SERIES \"$dirOut\" \"$img\" $start $end $ext \"$dirOut\" \"$img\" $start $ext INVERT FLIP"
+
+      #--   charge la derniere image
+      ::confVisu::autovisu $visuNo -no $fileName
+
+      #--   detruit les fichiers du header
+      file delete $header
+
+      array unset bd
+   }
+
+   #------------------------------------------------------------
+   #  extractImg
+   #  Ajoute les donnees de l'image au header
+   #  Parameter : chemin complet du fichier image .FITS,
+   #     de l'adresse de depart et du bitpix
+   #------------------------------------------------------------
+   proc extractImg { fitsFile startAdress bitpix } {
+      variable private
+
+      #--   longueur du HDU FITS
+      set hduLength 2880
+
+      set srcID [open $private(src) r]
+      fconfigure $srcID -translation binary
+      set destID [open $fitsFile r+]
+      fconfigure $destID -translation binary
+
+      seek $srcID $startAdress
+      seek $destID $hduLength
+
+      if {$bitpix == 8} {
+         puts -nonewline $destID [read $srcID $private(imageSize)]
+      }  elseif {$bitpix == 16} {
+         binary scan [read $srcID $private(imageSize)] s* out
+         puts -nonewline $destID [binary format S* $out]
+      }
+
+      chan close $srcID
+      chan close $destID
+   }
+
+   #------------------------------------------------------------
+   #  readSerInfoFile
+   #  Extrait les valeurs des mots cles du fichier .SER.TXT
+   #  Parameter : chemin complet du fichier .ser.txt d'info
+   #------------------------------------------------------------
+   proc readSerInfoFile { infoFile } {
+      variable bd
+
+      #--   precaution
+      array unset bd
+
+      #"Début" "Fin"
+
+      #--   liste les rubriques a rechercher
+      set listParam [list "Telescope" "F/D" \
+         "Modèle" "Taille" "Exposition" "Filtre" "Binning" "Image"]
+
+      set fd [open $infoFile r]
+
+      while {![eof $fd]} {
+
+         gets $fd title
+
+         #--   detecte un nom de rubrique
+         set endOfWord [expr { [string first " " $title]-1 }]
+         set rubrique [ string range $title 0 $endOfWord ]
+
+         if {$rubrique ni $listParam} {
+            continue
+         }
+
+         #--   isole le nom et la valeur
+         set index [string first ":" $title]
+         set value [string range $title [incr index 2] end]
+
+         if {[regexp -all {(Image)} $title] ==0} {
+
+            #--   extrait les mots cles
+            switch -exact $rubrique {
+               Telescope   {  set kwd TELESCOP ; set valeur [list TELESCOP $value string {Telescope (name barlow reducer)} {}]}
+               Diametre    {  set kwd APTDIA ; set diametre [expr { $value/1000. }]; set valeur [list APTDIA $diametre double Diameter m]}
+               Début       {  set kwd DATE-BEG ; set date_start [formatDateObs $value]
+                              set valeur [list DATE-BEG $date_start string  "Start of exposure. FITS standard" "ISO 8601"]
+                           }
+               Fin         {  set kwd DATE-END ; set date_end [formatDateObs $value]
+                              set valeur [list DATE-END $date_end string  "End of exposure. FITS standard" "ISO 8601"]
+                           }
+               F/D         {  set kwd FOND ; set fond $value ; set valeur $value}
+               Modèle      {  set kwd DETNAM ; set valeur [list DETNAM $value string {Camera used} {}]}
+               Taille      {  set kwd XPIXSZ ; set ypixsz $value ; set valeur [list XPIXSZ $value double {Pixel Width (without binning)} um]}
+               Exposition  {  set kwd EXPOSURE ; set valeur [list EXPOSURE [format %f [expr { $value/1000. }]] float {Total time of exposure} s]}
+               Filtre      {  if {$value ne "pas de filtre"} {set value C}
+                              set kwd FILTER ; set valeur [list FILTER $value string {C U B V R I J H K} {}]
+                           }
+               Binning     {  set kwd BIN1 ; set bin2 $value ; set valeur [list BIN1 $value int {} {}]}
+            }
+
+            #--   recupere le contenu dans un array
+            array set bd [list $kwd $valeur]
+
+         } else {
+
+            #--   formate la date de chaque image
+            regsub -all {[a-zA-Z:\s]} [string range $title 0 $index] "" imgNo
+            if {[regexp -all {[0-9]+} $imgNo]} {
+               set dateSer [string range $title [expr { $index+2 }] end]
+               set date_obs [formatDateObs $dateSer]
+               array set bd [list $imgNo [list "DATE-OBS" $date_obs string  "Start of exposure. FITS standard" "ISO 8601"]]
+            }
+         }
+
+      }
+
+      chan close $fd
+
+      #--   complete la bd
+      if {[info exist diamtre] == 1 && [info exists fond] == 1 && $diametre ne "" && $fond ne ""} {
+         array set bd [list FOCLEN [list FOCLEN [expr { $fond*$diametre }] float {Resulting Focal length} m]]
+      }
+      array set bd [list BIN2 [list BIN2 $bin2 int {} {}]]
+      array set bd [list YPIXSZ [list YPIXSZ $ypixsz double {Pixel Height (without binning)} um]]
+
+      #foreach kwd [lsort -ascii [array names bd]] {
+      #   ::console::affiche_resultat "[array get bd $kwd]\n"
+      #}
+   }
+
+   #------------------------------------------------------------
+   #  buildKwdFile
+   #  Prepare le fichier kwdFile des mots cles a incorporer avec libtt
+   #  Parameter : chemin complet du fichier .txt a integrer
+   #  Return : nombre de mots cles
+   #------------------------------------------------------------
+   proc buildKwdFile { kwdFile } {
+      variable bd
+
+      package require struct::set
+
+      #--   evalue l'intersection des deux listes pour filtrer les seuls mots cles existants
+      set kwdList [list APTDIA BIN1 BIN2 "DATE-BEG" "DATE-END" DETNAM EXPOSURE FILTER FOCLEN TELESCOP XPIXSZ YPIXSZ]
+      set bdList [array names bd]
+      #--   intersection entre les deux listes
+      set shortList [::struct::set intersect $kwdList $bdList]
+      set len [llength $shortList]
+
+      #--   s'il y a des mots cles a ecrire
+      if {$len > 0} {
+         set fileID [open $kwdFile w]
+         foreach kwd $shortList {
+            lassign [lindex [array get bd $kwd] 1] kwd value type comment unit
+            puts $fileID $kwd\n$value\n$type\n$comment\n$unit
+         }
+         chan close $fileID
+      }
+
+      return $len
+   }
+
+   #------------------------------------------------------------
+   #  formatDateObs
+   #  Formate la date
+   #  Parameter : date du fichier .ser.txt
+   #  Return : date au format ISO 8601
+   #------------------------------------------------------------
+   proc formatDateObs { date } {
+
+      lassign $date cal month day time year
+      set entities [list Jan 01 Feb 02 Mar 03 Apr 04 May 05 Jun 06 \
+         Jul 07 Aug 08 Sep 09 Oct 10 Nov 11 Dec 12]
+
+      #--   remplace le nom du mois par son numero
+      set month [string map -nocase $entities $month]
+
+      #--   cherche la position du dernier : dans time
+      set index [string last ":" $time]
+      set prev [expr { $index-1 }]
+      set next [expr { $index+1 }]
+
+      #--   remplace le : par un .
+      set time "[string range $time 0 $prev].[string range $time $next end]"
+      #--   format ISO 8601 avec des ms
+      set date_obs "${year}-${month}-${day}T${time}"
+
+      return ${date_obs}
+   }
+
+   #------------------------------------------------------------
+   #  exploreHDU
+   #  Explore le header de l'image
+   #  Parameter : chemin de la combobox
+   #  Commande associee a chaque rubrique du menuButton
+   #  D'apres SER_Doc_V2.pdf
+   #------------------------------------------------------------
+   proc exploreHDU { w } {
+      variable private
+      global audace caption
+
+      set file [file join $audace(rep_images) [$w get]]
+
+      set fileID [open $file r]
+      read $fileID 14 ; #--   GENICAP-RECORD
+      #--   scan 7 valeurs en integer32 (4 bytes)
+      #--   normalement LuID = 0 ColorID = 0 monochrome LittleIndian = 0 --> donnees BigIndian
+      foreach kwd [list LuID ColorID LittleIndian naxis1 naxis2 PixelDepth FrameCount] {
+         binary scan [read $fileID 4] i* $kwd
+      }
+      foreach kwd [list Observer Instrume Telescope] {
+         set $kwd [read $fileID 40]
+      }
+      foreach kwd [list DateTime DateTime_UTC] {
+         binary scan [read $fileID 8] i* $kwd
+      }
+      #foreach v [list LuID ColorID LittleIndian naxis1 naxis2 PixelDepth FrameCount Observer Instrume Telescope DateTime DateTime_UTC] {
+      #   ::console::affiche_resultat "$v [set $v]\n"
+      #}
+
+      #--   si la profondeur est de 12, il faut 2 bytes/pixel
+      if {$PixelDepth == 8} {
+         set BytePerPixel 1
+         set bitpix 8
+      } elseif {$PixelDepth == 12} {
+         set BytePerPixel 2
+         set bitpix "16"
+
+      }
+      #--   calcule le nb de bytes/image
+      set ImageSize [expr { $naxis1*$naxis2*$BytePerPixel }]
+      set actual [tell $fileID]
+      #--   calcule l'offset pour atteindre le trailer
+      set offset [expr { 178+$FrameCount*$ImageSize-$actual } ]
+      seek $fileID $offset
+
+      #--   scan la queue (non decodee actuellement)
+      binary scan [read -nonewline $fileID] R* TimeStamp
+
+      chan close $fileID
+
+      #--   met a jour les variables
+      set private(imageSize) $ImageSize
+      set private(frameCount) $FrameCount
+      set private(end) $FrameCount
+      set private(racine) [file rootname $private(choice)]
+      set private(current_hdu) [list $naxis1 $naxis2 $bitpix]
+   }
+
+   #------------------------------------------------------------
+   #  buildGui
+   #  Interface graphique
+   #------------------------------------------------------------
+   proc buildGui { visuNo } {
+      variable private
+      global audace conf caption color
+
+      set listeSer [glob -nocomplain -type f -tails -directory $audace(rep_images) *ser]
+
+      #--   arrete si la liste est vide
+      if {$listeSer eq ""} {return}
+
+      set this $audace(base).serfile
+      set dir $audace(rep_images)
+
+      if {[winfo exists $this]} {
+         destroy $this
+      }
+
+      #--- cree la fenetre
+      toplevel $this
+      wm resizable $this 0 0
+      wm title $this "$caption(audace,menu,ser2fits)"
+      wm geometry $this +800+500
+      wm protocol $this WM_DELETE_WINDOW "::ser2fits::cmdClose $this"
+
+      frame $this.fr1 -relief raised -borderwidth 1
+      pack $this.fr1 -side top -ipady 5 -fill both -expand yes
+
+      label $this.fr1.lab_convert -text "$caption(audace,menu,convertir)"
+      grid $this.fr1.lab_convert -row 0 -column 0 -sticky w
+
+      #--   cree la combobox des fichiers ser
+      set labelwidth [::tkutil::lgEntryComboBox $listeSer]
+      ComboBox $this.fr1.choice -textvariable ::ser2fits::private(choice) \
+         -relief sunken -height [llength  $listeSer] -width $labelwidth  \
+         -values $listeSer -editable 0 \
+         -modifycmd "::ser2fits::exploreHDU $this.fr1.choice"
+      grid $this.fr1.choice -row 0 -column 1 -columnspan 3 -sticky e
+
+      label $this.fr1.lab_start -text "$caption(ser2fits,start)"
+      grid $this.fr1.lab_start -row 1 -column 0 -sticky w
+
+      entry $this.fr1.start -textvariable ::ser2fits::private(start) \
+         -justify right -width 6
+      grid $this.fr1.start -row 1 -column 1 -sticky w
+
+      label $this.fr1.lab_end -text "$caption(ser2fits,end)"
+      grid $this.fr1.lab_end -row 1 -column 2 -sticky ew
+
+      entry $this.fr1.end -textvariable ::ser2fits::private(end) \
+           -justify right -width 6
+      grid $this.fr1.end -row 1 -column 3 -sticky e
+
+      label $this.fr1.lab_dest -text "$caption(ser2fits,dest)"
+      grid $this.fr1.lab_dest -row 2 -column 0 -sticky w
+
+      entry $this.fr1.dest -textvariable ::ser2fits::private(dest) \
+         -justify right -width $labelwidth -state disabled
+      grid $this.fr1.dest -row 2 -column 1 -columnspan 3 -sticky e
+      $this.fr1.dest xview end
+
+      #--   cree le bouton "..."
+      button $this.fr1.search -text "$caption(ser2fits,search)" \
+         -width 2 -command {::ser2fits::getDirName}
+      grid $this.fr1.search -row 2 -column 4 -padx 5 -pady 10 -sticky news
+
+      label $this.fr1.lab_racine -text "$caption(ser2fits,racine)"
+      grid $this.fr1.lab_racine -row 3 -column 0 -sticky w
+
+      entry $this.fr1.racine -textvariable ::ser2fits::private(racine) \
+         -justify right -width $labelwidth
+      grid $this.fr1.racine -row 3 -column 1 -columnspan 3 -sticky e
+
+      grid columnconfigure $this.fr1 0 -weight 20 -pad 5
+      grid rowconfigure $this.fr1 [list 0 1 2 3 4] -pad 10
+
+      #--   cree le widget d'info
+      label $this.labURL -text "$caption(ser2fits,en_cours)" -justify center \
+         -borderwidth 1 -relief raised -fg $color(blue)
+
+      frame $this.cmd -relief raised -borderwidth 1
+
+         set cmdList [list apply left close right hlp right]
+         if { $conf(ok+appliquer)=="1" } {
+            set cmdList [linsert $cmdList 0 ok left]
+         }
+         foreach {but side} $cmdList  {
+            pack [button $this.cmd.$but -text "$caption(ser2fits,$but)" -width 10] \
+            -side $side -padx 10 -pady 3 -ipady 3
+         }
+         #-- specialisation des boutons
+         if {[winfo exists $this.cmd.ok]} {
+            $this.cmd.ok configure -command "::ser2fits::cmdOk $this"
+         }
+         $this.cmd.apply configure -command "::ser2fits::cmdApply $this"
+         $this.cmd.hlp configure   -command "::audace::showHelpItem $::help(dir,images) 1180ser2fits.htm"
+         $this.cmd.close configure -command "::ser2fits::cmdClose $this"
+
+      pack $this.cmd -side bottom -fill both
+
+      #--   bindings
+      bind $this.fr1.start <Leave> {::ser2fits::testIndex start}
+      bind $this.fr1.end <Leave> {::ser2fits::testIndex end}
+      bind $this.fr1.racine <Leave> {::ser2fits::testRacine}
+
+      #--   initialisation des variables
+      set private(choice) [lindex $listeSer 0]
+      set private(dest) $audace(rep_images)
+      set private(racine) [file rootname $private(choice)]
+      set private(start) 1
+      set private(prev,start) 1
+      ::ser2fits::exploreHDU $this.fr1.choice
+      set private(end) $private(frameCount)
+      set private(prev,end) $private(end)
+
+      #--- La fenetre est active
+      focus $this
+
+      #--- mise a jour dynamique des couleurs
+      ::confColor::applyColor $this
+   }
+
+   #------------------------------------------------------------
+   #  cmdApply
+   #  Commande du bouton 'Appliquer'
+   #------------------------------------------------------------
+   proc cmdApply { this } {
+      variable private
+
+      configButtons $this disabled
+      go2Convert $private(choice)
+      configButtons $this normal
+   }
+
+   #------------------------------------------------------------
+   #  cmdOk
+   #  Parameter : chemin de la fenetre
+   #  Commande du bouton 'OK'
+   #------------------------------------------------------------
+   proc cmdOk { this } {
+
+      cmdApply $this
+      cmdClose $this
+   }
+
+   #------------------------------------------------------------
+   #  cmdClose
+   #  Commande du bouton 'Fermer'
+   #------------------------------------------------------------
+   proc cmdClose { this } {
+
+      destroy $this
+   }
+
+   #--------------------------------------------------------------------------
+   #  getDirName
+   #  Capture le nom d'un repertoire
+   #  Commande du bouton "..." de saisie du nom generique de sortie
+   #--------------------------------------------------------------------------
+   proc getDirName { } {
+      variable private
+      global audace caption
+
+      set initialDir $audace(rep_images)
+
+      set dirname [tk_chooseDirectory -title "$caption(ser2fits,dest)" \
+         -initialdir $initialDir]
+
+      if {$dirname eq "" || $dirname eq "$initialDir"} {
+         set dirname $initialDir
+      }
+
+      if {[string index $dirname end] ne "/"} {
+         append dirname "/"
+      }
+
+      set private(dest) $dirname
+   }
+
+   #---------------------------------------------------------------------------
+   #  configButtons
+   #  Inhibe/Desinhibe tous les boutons
+   #---------------------------------------------------------------------------
+   proc configButtons { this state } {
+
+      foreach w [list fr1.search cmd.ok cmd.apply cmd.hlp cmd.close] {
+         $this.$w configure -state $state
+      }
+      if {$state eq "normal"} {
+         pack forget $this.labURL
+      } else {
+         pack $this.labURL -ipady 5 -fill both
+      }
+
+      update
+   }
+
+   #---------------------------------------------------------------------------
+   #  testIndex
+   #  Valide les saisies numeriques
+   #  Parameter : nom de la variable modifiee
+   #---------------------------------------------------------------------------
+   proc testIndex { child } {
+      variable private
+      global caption
+
+      set newValue $private($child)
+      set ok 0
+
+      if {[TestReel $newValue] == 1 && $private(start) <= $private(end) && \
+         $newValue > 0 && $newValue <= $private(frameCount)} {
+
+         #--   remplace l'ancienne valeur par la nouvelle
+         set private(prev,$child) $newValue
+         set ok 1
+      }
+
+      #--   si echec, message et retablit l'ancienne valeur
+      if {$ok == 0} {
+
+         #--   message si echec
+         tk_messageBox -title "$caption(ser2fits,attention)" -icon error -type ok \
+            -message [format $caption(ser2fits,invalid) $newValue "$caption(ser2fits,$child)"]
+
+         set private($child) $private(prev,$child)
+      }
+   }
+
+   #---------------------------------------------------------------------------
+   #  testRacine
+   #  Valide le nom generique
+   #---------------------------------------------------------------------------
+   proc testRacine { } {
+      variable private
+      global caption
+
+      set racine $private(racine)
+
+      #--   nom generique correct ?
+      regexp -all {[\w_-]+} $racine match
+
+      #--   si echec, message et retablit la valeur par defaut
+      if {![info exists match] || $match ne "$racine"} {
+         tk_messageBox -title "$caption(ser2fits,attention)" -icon error -type ok \
+            -message [format $caption(ser2fits,invalid) $racine "$caption(ser2fits,racine)"]
+         set private(racine) [file rootname $private(choice)]
+      }
+   }
+
+}
+

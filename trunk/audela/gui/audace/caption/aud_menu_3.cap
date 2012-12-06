@@ -26,6 +26,7 @@ set caption(audace,menu,r+v+b2rvb)                      "Convert R+G+B ---> RGB"
 set caption(audace,menu,assigner_r)                     "Assign channel Red"
 set caption(audace,menu,assigner_g)                     "Assign channel Green"
 set caption(audace,menu,assigner_b)                     "Assign channel Blue"
+set caption(audace,menu,ser2fits)                       "Convert SER ---> FITS"
 
 set caption(audace,menu,pretraitee)                     "Process raw image(s)"
 
@@ -110,6 +111,19 @@ set caption(audace,menu,hough)                          "Hough Function"
 
 set caption(audace,menu,convoluer)                      "Convolute"
 set caption(audace,menu,convolution)                    "Convolution"
+
+set caption(ser2fits,start)                             "# Image (index initial) N°"
+set caption(ser2fits,end)                               "# Image (index final) N°"
+set caption(ser2fits,dest)                              "Output Folder Patch"
+set caption(ser2fits,racine)                            "Generic Output Name"
+set caption(ser2fits,search)                            "..."
+set caption(ser2fits,en_cours)                          "In Progress... Please Wait..."
+set caption(ser2fits,ok)                                "OK"
+set caption(ser2fits,apply)                             "Apply"
+set caption(ser2fits,hlp)                               "Help"
+set caption(ser2fits,close)                             "Close"
+set caption(ser2fits,attention)                         "Warning"
+set caption(ser2fits,invalid)                           "# %s n'est pas une entrée valide pour %s !"
 
 set caption(pretraitement,all)                          "Convert all files"
 set caption(pretraitement,renum)                        "Renumber output images"
@@ -218,6 +232,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,assigner_r)                  "Assigner le plan Rouge"
    set caption(audace,menu,assigner_g)                  "Assigner le plan Vert"
    set caption(audace,menu,assigner_b)                  "Assigner le plan Bleu"
+   set caption(audace,menu,ser2fits)                    "Convertir SER ---> FITS"
 
    set caption(audace,menu,pretraitee)                  "Prétraiter image(s) brute(s)"
 
@@ -302,6 +317,19 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,convoluer)                   "Convoluer"
    set caption(audace,menu,convolution)                 "Convolution"
+
+   set caption(ser2fits,start)                          "Image (index initial) N°"
+   set caption(ser2fits,end)                            "Image (index final) N°"
+   set caption(ser2fits,dest)                           "Chemin du dossier de sortie"
+   set caption(ser2fits,racine)                         "Nom générique de sortie"
+   set caption(ser2fits,search)                         "..."
+   set caption(ser2fits,en_cours)                       "En cours... Patientez..."
+   set caption(ser2fits,ok)                             "OK"
+   set caption(ser2fits,apply)                          "Appliquer"
+   set caption(ser2fits,hlp)                            "Aide"
+   set caption(ser2fits,close)                          "Fermer"
+   set caption(ser2fits,attention)                      "Attention"
+   set caption(ser2fits,invalid)                        "%s n'est pas une entrée valide pour %s !"
 
    set caption(pretraitement,all)                       "Convertir tous les fichiers"
    set caption(pretraitement,renum)                     "Renuméroter les images en sortie"
@@ -410,6 +438,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,assigner_r)                  "Assegnare il canale Rosso"
    set caption(audace,menu,assigner_g)                  "Assegnare il canale Verde"
    set caption(audace,menu,assigner_b)                  "Assegnare il canale Blu"
+   set caption(audace,menu,ser2fits)                    "Conversione SER ---> FITS"
 
    set caption(audace,menu,pretraitee)                  "Pretrattamento immagini raw"
 
@@ -494,6 +523,19 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,convoluer)                   "Fare convoluzione"
    set caption(audace,menu,convolution)                 "Convoluzione"
+
+   set caption(ser2fits,start)                          "# Image (index initial) N°"
+   set caption(ser2fits,end)                            "# Image (index final) N°"
+   set caption(ser2fits,dest)                           "# Chemin du dossier de sortie"
+   set caption(ser2fits,racine)                         "# Nom générique de sortie"
+   set caption(ser2fits,search)                         "..."
+   set caption(ser2fits,en_cours)                       "In corso... Attendere..."
+   set caption(ser2fits,ok)                             "OK"
+   set caption(ser2fits,apply)                          "Applicare"
+   set caption(ser2fits,hlp)                            "Aiuto"
+   set caption(ser2fits,close)                          "Chiudere"
+   set caption(ser2fits,attention)                      "Attenzione"
+   set caption(ser2fits,invalid)                        "# %s n'est pas une entrée valide pour %s !"
 
    set caption(pretraitement,all)                       "Converti tutti i file"
    set caption(pretraitement,renum)                     "Ri-numerazione file in uscita"
@@ -602,6 +644,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,assigner_r)                  "Asignar plano Rojo"
    set caption(audace,menu,assigner_g)                  "Asignar plano Verde"
    set caption(audace,menu,assigner_b)                  "Asignar plano Azul"
+   set caption(audace,menu,ser2fits)                    "Conversion SER ---> FITS"
 
    set caption(audace,menu,pretraitee)                  "Procesar imágen(es) cruda(s)"
 
@@ -686,6 +729,19 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,convoluer)                   "Convolucionar"
    set caption(audace,menu,convolution)                 "Convolución"
+
+   set caption(ser2fits,start)                          "# Image (index initial) N°"
+   set caption(ser2fits,end)                            "# Image (index final) N°"
+   set caption(ser2fits,dest)                           "Ruta del directorio de salida"
+   set caption(ser2fits,racine)                         "# Nom générique de sortie"
+   set caption(ser2fits,search)                         "..."
+   set caption(ser2fits,en_cours)                       "En curso... Espere..."
+   set caption(ser2fits,ok)                             "OK"
+   set caption(ser2fits,apply)                          "Aplicar"
+   set caption(ser2fits,hlp)                            "Ayuda"
+   set caption(ser2fits,close)                          "Cerrar"
+   set caption(ser2fits,attention)                      "Cuidado"
+   set caption(ser2fits,invalid)                        "# %s n'est pas une entrée valide pour %s !"
 
    set caption(pretraitement,all)                       "Convertir todos los ficheros"
    set caption(pretraitement,renum)                     "Renumerar imágenes de salida"
@@ -794,6 +850,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,assigner_r)                  "Roten Kanal zuweisen"
    set caption(audace,menu,assigner_g)                  "Grünen Kanal zuweisen"
    set caption(audace,menu,assigner_b)                  "Blauen Kanal zuweisen"
+   set caption(audace,menu,ser2fits)                    "SER -> FITS Umwandlung"
 
    set caption(audace,menu,pretraitee)                  "Rohbild(er) Bearbeitung"
 
@@ -878,6 +935,19 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,convoluer)                   "Konvolutieren"
    set caption(audace,menu,convolution)                 "Konvolution"
+
+   set caption(ser2fits,start)                          "# Image (index initial) N°"
+   set caption(ser2fits,end)                            "# Image (index final) N°"
+   set caption(ser2fits,dest)                           "Ausgabeordner Weg"
+   set caption(ser2fits,racine)                         "# Nom générique de sortie"
+   set caption(ser2fits,search)                         "..."
+   set caption(ser2fits,en_cours)                       "Laufend... Bitte warten..."
+   set caption(ser2fits,ok)                             "OK"
+   set caption(ser2fits,apply)                          "Anwenden"
+   set caption(ser2fits,hlp)                            "Hilfe"
+   set caption(ser2fits,close)                          "Schließen"
+   set caption(ser2fits,attention)                      "Achtung"
+   set caption(ser2fits,invalid)                        "# %s n'est pas une entrée valide pour %s !"
 
    set caption(pretraitement,all)                       "Alle Dateien konvertieren"
    set caption(pretraitement,renum)                     "Ausgabebilder wiedernummerieren"
@@ -986,6 +1056,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,assigner_r)                  "Atribuir canal Vermelho"
    set caption(audace,menu,assigner_g)                  "Atribuir canal Verde"
    set caption(audace,menu,assigner_b)                  "Atribuir canal Azul"
+   set caption(audace,menu,ser2fits)                    "Conversão SER ---> FITS"
 
    set caption(audace,menu,pretraitee)                  "Processar imagem(ns) bruta(s)"
 
@@ -1070,6 +1141,19 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,convoluer)                   "Convoluir"
    set caption(audace,menu,convolution)                 "Convolução"
+
+   set caption(ser2fits,start)                          "# Image (index initial) N°"
+   set caption(ser2fits,end)                            "# Image (index final) N°"
+   set caption(ser2fits,dest)                           "Ruta del directorio de salida"
+   set caption(ser2fits,racine)                         "# Nom générique de sortie"
+   set caption(ser2fits,search)                         "..."
+   set caption(ser2fits,en_cours)                       "Em curso... Por favor aguarde..."
+   set caption(ser2fits,ok)                             "OK"
+   set caption(ser2fits,apply)                          "Aplicar"
+   set caption(ser2fits,hlp)                            "Ajuda"
+   set caption(ser2fits,close)                          "Fechar"
+   set caption(ser2fits,attention)                      "Aviso"
+   set caption(ser2fits,invalid)                        "# %s n'est pas une entrée valide pour %s !"
 
    set caption(pretraitement,all)                       "Converter todos os ficheiros"
    set caption(pretraitement,renum)                     "Renumerar imagens de saída"
@@ -1178,6 +1262,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,assigner_r)                  "Peg på den røde kanal"
    set caption(audace,menu,assigner_g)                  "Peg på den grønne kanal"
    set caption(audace,menu,assigner_b)                  "Peg på den blå kanal"
+   set caption(audace,menu,ser2fits)                    "Konvertering: SER -> FITS"
 
    set caption(audace,menu,pretraitee)                  "Behandling af RAW billeder"
 
@@ -1262,6 +1347,19 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,convoluer)                   "Brug Convolution"
    set caption(audace,menu,convolution)                 "Convolution"
+
+   set caption(ser2fits,start)                          "# Image (index initial) N°"
+   set caption(ser2fits,end)                            "# Image (index final) N°"
+   set caption(ser2fits,dest)                           "Output Folder Patch"
+   set caption(ser2fits,racine)                         "# Generic Output Name"
+   set caption(ser2fits,search)                         "..."
+   set caption(ser2fits,en_cours)                       "In Progress... Please Wait..."
+   set caption(ser2fits,ok)                             "OK"
+   set caption(ser2fits,apply)                          "Anvend"
+   set caption(ser2fits,hlp)                            "Hjælp"
+   set caption(ser2fits,close)                          "Luk"
+   set caption(ser2fits,attention)                      "Advarsel"
+   set caption(ser2fits,invalid)                        "# %s n'est pas une entrée valide pour %s !"
 
    set caption(pretraitement,all)                       "Konverter alle filer"
    set caption(pretraitement,renum)                     "Giv output-billeder nyt nummer"
@@ -1370,6 +1468,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,assigner_r)                  "Assign channel Red"
    set caption(audace,menu,assigner_g)                  "Assign channel Green"
    set caption(audace,menu,assigner_b)                  "Assign channel Blue"
+   set caption(audace,menu,ser2fits)                    "Convert SER -> FITS"
 
    set caption(audace,menu,pretraitee)                  "Process raw image(s)"
 
@@ -1454,6 +1553,19 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,convoluer)                   "Convolute"
    set caption(audace,menu,convolution)                 "Convolution"
+
+   set caption(ser2fits,start)                          "# Image (index initial) N°"
+   set caption(ser2fits,end)                            "# Image (index final) N°"
+   set caption(ser2fits,dest)                           "Output Folder Patch"
+   set caption(ser2fits,racine)                         "Generic Output Name"
+   set caption(ser2fits,search)                         "..."
+   set caption(ser2fits,en_cours)                       "In Progress... Please Wait..."
+   set caption(ser2fits,ok)                             "OK"
+   set caption(ser2fits,apply)                          "Apply"
+   set caption(ser2fits,hlp)                            "Help"
+   set caption(ser2fits,close)                          "Close"
+   set caption(ser2fits,attention)                      "Warning"
+   set caption(ser2fits,invalid)                        "# %s n'est pas une entrée valide pour %s !"
 
    set caption(pretraitement,all)                       "Convert all files"
    set caption(pretraitement,renum)                     "Renumber output images"
@@ -1562,6 +1674,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,assigner_r)                  "Assign channel Red"
    set caption(audace,menu,assigner_g)                  "Assign channel Green"
    set caption(audace,menu,assigner_b)                  "Assign channel Blue"
+   set caption(audace,menu,ser2fits)                    "Convert SER -> FITS"
 
    set caption(audace,menu,pretraitee)                  "Process raw image(s)"
 
@@ -1646,6 +1759,19 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,convoluer)                   "Convolute"
    set caption(audace,menu,convolution)                 "Convolution"
+
+   set caption(ser2fits,start)                          "# Image (index initial) N°"
+   set caption(ser2fits,end)                            "# Image (index final) N°"
+   set caption(ser2fits,dest)                           "Output Folder Patch"
+   set caption(ser2fits,racine)                         "Generic Output Name"
+   set caption(ser2fits,search)                         "..."
+   set caption(ser2fits,en_cours)                       "In Progress... Please Wait..."
+   set caption(ser2fits,ok)                             "OK"
+   set caption(ser2fits,apply)                          "Apply"
+   set caption(ser2fits,hlp)                            "Help"
+   set caption(ser2fits,close)                          "Close"
+   set caption(ser2fits,attention)                      "Warning"
+   set caption(ser2fits,invalid)                        "# %s n'est pas une entrée valide pour %s !"
 
    set caption(pretraitement,all)                       "Convert all files"
    set caption(pretraitement,renum)                     "Renumber output images"
