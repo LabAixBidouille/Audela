@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+
+
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /><title>Conversion SER -&gt; FITS</title></head><body>
+<p class="date">Date de mise à jour : 06 décembre
+2012</p>
+<h1>Conversion et extraction du format SER vers FITS</h1>
+<h2>1. Analyse</h2>
+<p>AudeLA ne sait pas visualiser les images des films SER
+produits par certaines caméras (BASLER, iNova)
+utilisées en astronomie. Peu de logiciels savent
+décoder ce format.<br />
+Bien que limitées à 8 ou 12 bits, ces caméras sont
+intéressantes dans la mesure où elles disposent de
+réglages plus souples que les webcams, plus
+particulièrement en matière de rythme de prise de vue,
+de binning, d'AOI, etc.</p>
+<h2>2. Ce que fait cette fonction</h2>
+<p>Elle permet d'extraire une image, quelques images ou toutes
+les images en les convertissant au format FITS.<br />
+Les caméras BASLER d'Airylab produisent simultanément
+un fichier texte contenant bon nombre d'informations
+intéressantes (par exemple : nom du télescope,
+diamètre, taille des pixels, binning, temps d'exposition,
+heure de prise de vue, etc.).<br />
+Si ce fichier existe, la fonction en extrait les informations
+disponibles pour les transférer vers l'en-tête de
+l'image FITS.</p>
+<p>Le format FITS des images monochromes dépend de
+l'enregistrement SER : Les enregistrements effectués en 8
+bits sont convertis en images 8 bits (bitpix=8 ; FORMAT_BYTE),
+les autres en images 16 bits (bitpix=16 ; FORMAT_SHORT).</p>
+<h2>3. L'interface</h2>
+<table summary="">
+<tbody>
+<tr>
+<td><img style="width: 417px; height: 221px;" alt="" src="images/ser2fits.gif" /></td>
+<td style="padding-left: 1em;">Cette interface est structurée
+comme suit :
+<ul>
+<li>Un sélecteur de fichier SER contenu dans le
+répertoire images. L'éventuel fichier .ser.txt
+accompagnant le fichier .ser doit être dans le même
+répertoire.</li>
+<li>Un sélecteur de la première et de la dernière
+image à convertir. Lors de la sélection d'un fichier,
+la fenêtre de la dernière image indique le nombre
+d'images contenues dans le fichier SER.</li>
+<li>Un sélecteur de répertoire de destination : Un
+bouton annexe permet de le modifier (il doit exister).<br /></li>
+<li>La quatrième ligne permet de modifier le nom
+générique des images de sorties (par défaut celui
+du fichier SER). Les images produites ont un index identique au
+rang de l'image dans le fichier initial.</li>
+<li>3 ou 4 boutons pour les commandes habituelles.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</body></html>
