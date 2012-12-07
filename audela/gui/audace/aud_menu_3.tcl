@@ -3629,9 +3629,9 @@ namespace eval ::kernel {
 
 ######################## Fin du namespace kernel ##########################
 
-namespace eval ::ser2fits {
+# Auteur : Raymond ZACHANTKE
 
-   #source [ file join $::audace(rep_scripts) ser2fits.cap ]
+namespace eval ::ser2fits {
 
    #------------------------------------------------------------
    #  go2Convert
@@ -3842,9 +3842,9 @@ namespace eval ::ser2fits {
       array set bd [list BIN2 [list BIN2 $bin2 int {} {}]]
       array set bd [list YPIXSZ [list YPIXSZ $ypixsz double {Pixel Height (without binning)} um]]
 
-      foreach kwd [lsort -ascii [array names bd]] {
-         ::console::affiche_resultat "[array get bd $kwd]\n"
-      }
+      #foreach kwd [lsort -ascii [array names bd]] {
+      #   ::console::affiche_resultat "[array get bd $kwd]\n"
+      #}
    }
 
    #------------------------------------------------------------
@@ -4218,3 +4218,4 @@ namespace eval ::ser2fits {
 
 }
 
+######################## Fin du namespace ser2fits ##########################
