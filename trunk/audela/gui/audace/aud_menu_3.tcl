@@ -4280,3 +4280,4 @@ namespace eval ::ser2fits {
 }
 
 ######################## Fin du namespace ser2fits ##########################
+
