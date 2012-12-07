@@ -3658,7 +3658,7 @@ namespace eval ::ser2fits {
       set header [file join $dirOut header$ext]
 
       visu$visuNo clear
-      lassign $private(current_hdu) naxis1 naxis2 bitpix
+      lassign $private(current_hdu) private(naxis1) private(naxis2) bitpix
 
       #--   etape 1 : cree une image grise contenant le header des images
       if {$bitpix == 8} {
@@ -3666,7 +3666,7 @@ namespace eval ::ser2fits {
       } else {
          set format FORMAT_SHORT
       }
-      buf$bufNo setpixels CLASS_GRAY $naxis1 $naxis2 $format COMPRESS_NONE pixeldata 0 -keepkeywords 0
+      buf$bufNo setpixels CLASS_GRAY $private(naxis1) $private(naxis2) $format COMPRESS_NONE pixeldata 0 -keepkeywords 0
       buf$bufNo save $header
       buf$bufNo clear
 
@@ -3768,6 +3768,7 @@ namespace eval ::ser2fits {
    #  Parameter : chemin complet du fichier .ser.txt d'info
    #------------------------------------------------------------
    proc readSerInfoFile { infoFile } {
+      variable private
       variable bd
 
       #--   precaution
@@ -3855,17 +3856,18 @@ namespace eval ::ser2fits {
       }
       array set bd [list BIN2 [format [formatKeyword BIN2] $bin2]]
       array set bd [list YPIXSZ [format [formatKeyword YPIXSZ] $ypixsz]]
-      if {$bin1 != 1} {
-         set pixsize1 [expr { $bin1 * $xpixsz }]
-         array set bd [list PIXSIZE1 [format [formatKeyword PIXSIZE1] $pixsize1]]
-      }
-      if {$bin2 != 1} {
-         set pixsize2 [expr { $bin2 * $ypixsz }]
-         array set bd [list PIXSIZE2 [format [formatKeyword PIXSIZE2] $pixsize2]]
-      }
+      set pixsize1 [expr { $bin1 * $xpixsz }]
+      array set bd [list PIXSIZE1 [format [formatKeyword PIXSIZE1] $pixsize1]]
+      set pixsize2 [expr { $bin2 * $ypixsz }]
+      array set bd [list PIXSIZE2 [format [formatKeyword PIXSIZE2] $pixsize2]]
       if {[info exists objname] && $objname ne ""} {
          array set bd [list OBJNAME [format [formatKeyword OBJNAME] $objname]]
       }
+      lassign [getCdelt $private(naxis1) $private(naxis2) \
+         $pixsize1 $pixsize2 $foclen] cdeltx cdelty
+      array set bd [list CDELT1 [format [formatKeyword CDELT1] $cdeltx]]
+      array set bd [list CDELT2 [format [formatKeyword CDELT2] $cdelty]]
+
       array set bd [list SWCREATE [format [formatKeyword SWCREATE] AudeLA]]
 
       #foreach kwd [lsort -ascii [array names bd]] {
@@ -3885,8 +3887,9 @@ namespace eval ::ser2fits {
       package require struct::set
 
       #--   evalue l'intersection des deux listes pour filtrer les seuls mots cles existants
-      set kwdList [list APTDIA BIN1 BIN2 "DATE-BEG" "DATE-END" DETNAM EXPOSURE FILTER \
-         FOCLEN OBJECT OBJNAME PIXSIZE1 PIXSIZE2 SWCREATE TELESCOP XPIXSZ YPIXSZ]
+      set kwdList [list APTDIA BIN1 BIN2 CDELT1 CDELT2 "DATE-BEG" "DATE-END" \
+         DETNAM EXPOSURE FILTER FOCLEN OBJECT OBJNAME PIXSIZE1 PIXSIZE2 \
+         SWCREATE TELESCOP XPIXSZ YPIXSZ]
       set bdList [array names bd]
       #--   intersection entre les deux listes
       set shortList [::struct::set intersect $kwdList $bdList]
@@ -4251,6 +4254,8 @@ namespace eval ::ser2fits {
       dict set dicokwd APTDIA    {APTDIA %s float Diameter m}
       dict set dicokwd BIN1      {BIN1 %s int {} {}}
       dict set dicokwd BIN2      {BIN2 %s int {} {}}
+      dict set dicokwd CDELT1    {CDELT1 %s double {Scale along naxis1} deg/pixel}
+      dict set dicokwd CDELT2    {CDELT2 %s double {Scale along naxis2} deg/pixel}
       dict set dicokwd DATE-BEG  {DATE-BEG %s string  "Start of exposure.FITS standard" "ISO 8601"}
       dict set dicokwd DATE-END  {DATE-END %s string  "End of exposure.FITS standard" "ISO 8601"}
       dict set dicokwd DATE-OBS  {DATE-OBS %s string {Start of exposure.FITS standard} {ISO 8601}}
@@ -4274,6 +4279,31 @@ namespace eval ::ser2fits {
       if {$kwd ni "$kwd_list"} {return "keyword \"$kwd\" {not in dictionnary}"}
 
       return [dict get $dicokwd $kwd]
+   }
+
+   #---------------------------------------------------------------------------
+   #  getCdelt
+   #  Retourne les cdelt en arcsec/pixel
+   #  Parametres : dimension des pixels (avec bining) en um,
+   #     nombre de pixels dans l'image, longueur focale en m
+   #  Derive de surchaud.tcl/simulimage
+   #---------------------------------------------------------------------------
+   proc getCdelt { naxis1 naxis2 pixsize1 pixsize2 foclen } {
+
+      #--   test OR
+      if {"-" in [list $naxis1 $naxis2 $pixsize1 $pixsize2 $foclen]} {
+         return [lrepeat 4 -]
+      }
+
+      set factor [expr { 360. / (4*atan(1.)) }]
+
+      set tgx [expr { $pixsize1 * 1e-6 / $foclen / 2. }]
+      set tgy [expr { $pixsize2 * 1e-6 / $foclen / 2. }]
+
+      set cdeltx [expr { -atan ($tgx) * $factor * 3600. }]
+      set cdelty [expr { atan ($tgy) * $factor * 3600. }]
+
+      return [list $cdeltx $cdelty]
    }
 
 
