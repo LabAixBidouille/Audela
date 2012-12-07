@@ -201,13 +201,36 @@
 
    #---------------------------------------------------------------------------
    #  getTPW
-   #  Retourne : temperature °C, pression Pa, direction, vitesse du vent et hydrometrie
+   #  Retourne : temperature °C, temperature de rosee °C, hygrometrie %,
+   #     direction (degres) et vitesse du vent (m/s), pression atmosphrique Pa
    #---------------------------------------------------------------------------
    proc getTPW { bufNo } {
 
       set tempair [lindex [buf$bufNo getkwd TEMPAIR] 1]
       if {$tempair eq ""} {set tempair [expr {290-273.15}]}
       set tempair [format %0.2f $tempair]
+
+      set temprose [lindex [buf$bufNo getkwd TEMPROSE] 1]
+      if {$temprose eq ""} {set temprose "-"}
+
+      set hygro [lindex [buf$bufNo getkwd HYGRO] 1]
+      if {$hygro eq ""} {
+         set hydro [lindex [buf$bufNo getkwd HYDRO] 1]
+         if {$hygro ne ""} {
+            set hygro $hydro
+         } else {
+            set hygro "-"
+         }
+      }
+
+       set winddir [lindex [buf$bufNo getkwd WINDDIR] 1]
+      if {$winddir eq ""} {set winddir "-"}
+
+      set windsp [lindex [buf$bufNo getkwd WINDSP] 1]
+      if {$windsp eq ""} {set windsp "-"}
+
+      set windsp [lindex [buf$bufNo getkwd TEMPROSE] 1]
+      if {$windsp eq ""} {set windsp "-"}
 
       set airpress [lindex [buf$bufNo getkwd AIRPRESS] 1]
       if {$airpress eq ""} {
@@ -219,20 +242,7 @@
          }
       }
 
-      set winddir [lindex [buf$bufNo getkwd WINDDIR] 1]
-      if {$winddir eq ""} {set winddir "-"}
-
-      set windsp [lindex [buf$bufNo getkwd WINDSP] 1]
-      if {$windsp eq ""} {set windsp "-"}
-
-      set hygro [lindex [buf$bufNo getkwd HYGRO] 1]
-      if {$hygro eq ""} {
-         set hygro [lindex [buf$bufNo getkwd HYDRO] 1]
-      } else {
-         set hygro "-"
-      }
-
-      return [list $tempair $airpress $winddir $windsp $hygro]
+      return [list $tempair $temprose $hygro $windsp $winddir $airpress]
    }
 
    #---------------------------------------------------------------------------
