@@ -10,7 +10,7 @@
 #    initialise le namespace
 #============================================================
 namespace eval ::spytimer {
-   package provide spytimer 1.0
+   package provide spytimer 1.1
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]]  spytimer.cap ]
@@ -93,6 +93,10 @@ namespace eval ::spytimer {
 
       #--- Mise en place de l'interface graphique
       createPanel $in.spytimer $visuNo
+
+      if {[::confVisu::getToolVisuNo ::collector] eq ""} {
+         ::confVisu::selectTool $visuNo ::collector
+      }
    }
 
    #------------------------------------------------------------
@@ -578,18 +582,6 @@ namespace eval ::spytimer {
          return
       }
 
-      #--   teste les valeurs decimales
-      if {$child in [ list aptdia crota2 pixsize1 pixsize2 foclen xpixsz ypixsz ] } {
-         set value $private($visuNo,$child)
-         if { [ string is double -strict $value ] != 1 || $value < 0 } {
-            avertiUser $visuNo reel
-         } else {
-            set private($visuNo,$child) [format %.3f $value]
-            update
-         }
-         return
-      }
-
       #--   teste les valeurs entieres
       if { ![ TestEntier $private($visuNo,$child) ] } {
          avertiUser $visuNo $child
@@ -693,44 +685,6 @@ namespace eval ::spytimer {
       set bordure "10"
       set result_width "12"
 
-      frame $this.kwd -borderwidth 2 -relief groove
-         set l 0
-         label $this.kwd.label_kwd -text $caption(spytimer,en-tete_fits)
-         grid $this.kwd.label_kwd -row $l -column 0 -padx 10 -sticky w
-         button $this.kwd.but -borderwidth 2 -text $caption(spytimer,keywords) -width 15 \
-            -command "::keyword::run $visuNo ::conf(spytimer,visu$visuNo,keywordConfigName)"
-         grid $this.kwd.but -row $l -column 1
-         entry $this.kwd.name_kwd -width $result_width -state readonly -takefocus 0 \
-            -textvariable ::conf(spytimer,visu$visuNo,keywordConfigName)
-         grid $this.kwd.name_kwd -row $l -column 2 -padx $bordure -sticky e
-
-         #--   cree la ligne pour XPIXSZ, YPIXSZ, PIXSIZE1, PIXSIZE2, CROTA2, FOCLEN et APTDIA
-         incr l
-         foreach var { xpixsz ypixsz pixsize1 pixsize2 crota2 foclen aptdia } {
-            checkbutton  $this.kwd.opt_$var -text "$caption(spytimer,$var)" \
-               -indicatoron 1 -onvalue 1 -offvalue 0 \
-               -variable ::spytimer::private($visuNo,opt_$var) \
-               -command "::spytimer::configEntry $visuNo $this.kwd $var"
-            grid $this.kwd.opt_$var -row $l -column 0 -padx 10 -sticky w
-            label $this.kwd.label_$var -borderwidth 1 -relief sunken \
-               -justify center -text [ string toupper $var ]
-            grid $this.kwd.label_$var -row $l -column 1 -sticky ew
-            entry $this.kwd.$var -width 7 -borderwidth 1 -relief sunken \
-               -justify right -textvariable ::spytimer::private($visuNo,$var) \
-               -state disabled
-            grid $this.kwd.$var -row $l -column 2 -padx $bordure -sticky e
-            incr l
-         }
-         foreach var { pouvoir_separateur champ echantillonnage } {
-            label $this.kwd.label_$var -text $caption(spytimer,$var)
-            grid $this.kwd.label_$var -row $l -column 0 -columnspan 2 -padx 10 -sticky w
-            entry $this.kwd.$var -textvariable ::spytimer::private($visuNo,$var) \
-               -width $result_width -state readonly -takefocus 0 -justify center
-            grid $this.kwd.$var -row $l -column 2 -padx $bordure -sticky e
-            incr l
-         }
-      pack $this.kwd -anchor w -side top -fill x -expand 1
-
       #--   construction des combobox pour la com
       frame $this.com -borderwidth 2 -relief groove
          set l 0
@@ -768,23 +722,6 @@ namespace eval ::spytimer {
       pack $this.cmd -anchor w -side top -fill x -expand 1
    }
 
-   #------------------------------------------------------------
-   #  configEntry : inhibe/desinhibe les entree des mots cles
-   #  Parametres : N° de la visu, nom du parent et de la variable
-   #------------------------------------------------------------
-   proc configEntry { visuNo w v } {
-      variable private
-
-      if { $private($visuNo,opt_$v) == "0" } {
-         set $private($visuNo,$v) ""
-         $w.$v configure -state disabled
-         bind $w.$v <Leave> ""
-      } else {
-         $w.$v configure -state normal
-         bind $w.$v <Leave> [ list ::spytimer::test $visuNo $w $v ]
-      }
-   }
-
    #---------------------------------------------------------------------------
    #  configBit : configure l'entree de .bit en fonction du port
    #  Parametres : N° de la visu
@@ -796,76 +733,6 @@ namespace eval ::spytimer {
       set len [ llength $private($visuNo,bitLabels) ]
       $w configure -values "$private($visuNo,bitLabels)" -height $len
       $w setvalue @0
-   }
-
-   #---------------------------------------------------------------------------
-   #  addKeywords : ajoute les mots cles
-   #  Parametres : N° de la visu
-   #---------------------------------------------------------------------------
-   proc addKeywords { visuNo bufNo } {
-      variable private
-
-      #--   raccourcis
-      set aptdia $private($visuNo,aptdia)
-      set crota2 $private($visuNo,crota2)
-      set foclen $private($visuNo,foclen)
-      set xpixsz $private($visuNo,xpixsz)
-      set ypixsz $private($visuNo,ypixsz)
-      set pixsize1 $private($visuNo,pixsize1)
-      set pixsize2 $private($visuNo,pixsize2)
-      #--   calcule le pouvoir separateur
-      set private($visuNo,pouvoir_separateur) [ format %.3f [expr {0.120/$aptdia}]]
-
-      #--   calcule CRPIX1 et CRPIX2 par defaut
-      set naxis1 [ lindex [ buf$bufNo getkwd NAXIS1 ] 1 ]
-      set naxis2 [ lindex [ buf$bufNo getkwd NAXIS2 ] 1 ]
-
-      #--   valeur pas defaut
-      set crpix1 [ expr { $naxis1/2. } ]
-      set crpix2 [ expr { $naxis2/2. } ]
-
-      foreach keyword [ ::keyword::getKeywords $visuNo $::conf(spytimer,visu$visuNo,keywordConfigName) ] {
-         set key [lindex $keyword 0]
-         if { $key in [ list APTDIA CROTA2 CRPIX1 CRPIX2 FOCLEN PIXSIZE1 PIXSIZE2 XPIXSZ YPIXSZ ] && [ lindex $keyword 1 ] eq ""} {
-            set value [ set [ string tolower $key ] ]
-           #--   si une valeur a ete donnee
-            if { $value ne "" } {
-               #--   remplace la valeur vide par la valeur reelle
-               set keyword [ lreplace $keyword 1 1 $value ]
-            }
-         }
-         buf$bufNo setkwd $keyword
-      }
-
-      #--   calcule le champ et l'echantillonnage
-      if { $xpixsz ne "" && $ypixsz ne "" && $foclen ne "" } {
-         lassign [ ::spytimer::calculette $naxis1 $naxis2 $pixsize1 $pixsize2 $foclen] cdelt1 cdelt2 fov1 fov2
-         set private($visuNo,echantillonnage) "[ format %.2f $cdelt1 ] X [ format %.2f $cdelt2 ]"
-         set private($visuNo,champ) "[ format %.2f $fov1] X [ format %.2f $fov2]"
-         buf$bufNo setkwd [ list CDELT1 $cdelt1 double "\[arcsec/pix\] scale along naxis1" arcsec/pix ]
-         buf$bufNo setkwd [ list CDELT2 $cdelt2 double "\[arcsec/pix\] scale along naxis2" arcsec/pix ]
-         update
-      }
-   }
-
-   #---------------------------------------------------------------------------
-   #  calculette : calcule le champ et l'echantillonage du capteur
-   #  Parametres : liste de {naxis1 naxis} et de {pixsize1 pixsize2} foclen
-   #---------------------------------------------------------------------------
-   proc calculette { naxis1 naxis2 pixsize1 pixsize2 foclen } {
-
-       set coef [expr {90.*60./atan(1)}]
-       blt::vector create naxis angle cdelt fov -watchunset 1
-       naxis set [list $naxis1 $naxis2]
-       angle set [list $pixsize1 $pixsize2]
-       angle expr {angle*1e-6/$foclen/2.}
-       #--- Echantillonnage du CMOS en x et en y en arcsec/pix
-       cdelt expr {atan(angle)*$coef*60.}
-       #--- Champ en x et en y en arcmin
-       fov expr {atan(naxis*angle)*$coef}
-       set result "$cdelt(:) $fov(:)"
-       blt::vector destroy cdelt fov
-       return $result
    }
 
    #----------------- fonction de surveillance du repertoire ------------------
@@ -938,7 +805,7 @@ namespace eval ::spytimer {
 
          if { $private($visuNo,convert) == 1 } {
             #--- ajoute des mots cles
-            ::spytimer::addKeywords $visuNo $bufNo
+            ::collector::setKeywords $bufNo
             #--   sauve l'image avec l'extension par defaut
             set fileName [ file join $::audace(rep_images) $name$::conf(extension,defaut) ]
             buf$bufNo save $fileName
