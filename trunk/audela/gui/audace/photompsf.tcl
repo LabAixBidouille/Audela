@@ -5,17 +5,17 @@
 # Mise à jour $Id$
 #
 # --- Haut niveaux
-# source photompsf.tcl ; photompsf_onebox ; # pour une seule etoile
-# source photompsf.tcl ; photompsf_addbox ; # pour ajouter d'autres etoiles
-# source photompsf.tcl ; photompsf_fitboxbypsf ; # mesure
+# source $audace(rep_install)/gui/audace/photompsf.tcl ; photompsf_onebox ; # pour une seule etoile
+# source $audace(rep_install)/gui/audace/photompsf.tcl ; photompsf_addbox ; # pour ajouter d'autres etoiles
+# source $audace(rep_install)/gui/audace/photompsf.tcl ; photompsf_fitboxbypsf ; # mesure
 # --- Bas niveaux
-# source photompsf.tcl ; photompsf_getboxes m67v2 a
-# source photompsf.tcl ; photompsf_synthepsf
-# source photompsf.tcl ; photompsf_save
-# source photompsf.tcl ; photompsf_save
-# source photompsf.tcl ; photompsf_calib
-# source photompsf.tcl ; photompsf_fitbypsf 0 ; loadima residu
-# source photompsf.tcl ; photompsf_fitbypsf 08h32m58s57 +33d06m52s05 ; loadima residu
+# source $audace(rep_install)/gui/audace/photompsf.tcl ; photompsf_getboxes m67v2 a
+# source $audace(rep_install)/gui/audace/photompsf.tcl ; photompsf_synthepsf
+# source $audace(rep_install)/gui/audace/photompsf.tcl ; photompsf_save
+# source $audace(rep_install)/gui/audace/photompsf.tcl ; photompsf_save
+# source $audace(rep_install)/gui/audace/photompsf.tcl ; photompsf_calib
+# source $audace(rep_install)/gui/audace/photompsf.tcl ; photompsf_fitbypsf 0 ; loadima residu
+# source $audace(rep_install)/gui/audace/photompsf.tcl ; photompsf_fitbypsf 08h32m58s57 +33d06m52s05 ; loadima residu
 # photompsf(psffluxes)
 # photompsf(inputstars)
 # photompsf(multopt)
@@ -106,6 +106,7 @@ proc photompsf_fitboxbypsf { args } {
    set ra [lindex $res 0]
    set dec [lindex $res 1]
    set res [vo_neareststar $ra $dec]
+   set res [lindex $res 0]         
    set catalog $res
    set namecat [lindex $res 0]
    set racat [lindex $res 1]
@@ -495,6 +496,7 @@ proc photompsf_getboxes { img_filename {mode w} {interactive 1} } {
          set ra [lindex $res 0]
          set dec [lindex $res 1]
          set res [vo_neareststar $ra $dec]
+         set res [lindex $res 0]         
          set catalog $res
          photompsf_info "res=$res"
          set namecat [lindex $res 0]
