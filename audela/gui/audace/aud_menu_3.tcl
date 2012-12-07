@@ -3774,8 +3774,8 @@ namespace eval ::ser2fits {
       array unset bd
 
       #--   liste les rubriques a rechercher
-      set listParam [list "Telescope" "Début" "Fin" "F/D" \
-         "Modèle" "Taille" "Exposition" "Filtre" "Binning" "Image"]
+      set listParam [list "Diametre" "Telescope" "Début" "Fin" "F/D" "Modèle" \
+         "Taille" "Planete" "Exposition" "Filtre" "Binning" "Image"]
 
       set fd [open $infoFile r]
 
@@ -3799,26 +3799,37 @@ namespace eval ::ser2fits {
 
             #--   extrait les mots cles
             switch -exact $rubrique {
-               Telescope   {  set kwd TELESCOP ; set valeur [list TELESCOP $value string {Telescope (name barlow reducer)} {}]}
-               Diametre    {  set kwd APTDIA ; set diametre [expr { $value/1000. }]; set valeur [list APTDIA $diametre double Diameter m]}
-               Début       {  set kwd DATE-BEG ; set date_start [formatDateObs $value]
-                              set valeur [list DATE-BEG $date_start string  "Start of exposure. FITS standard" "ISO 8601"]
+               Telescope   {  set data [list TELESCOP [format [formatKeyword TELESCOP] $value]]}
+               Diametre    {  set diametre [expr { $value/1000. }]
+                              set data [list APTDIA [format [formatKeyword APTDIA] $diametre]]}
+               Début       {  set date_start [formatDateObs $value]
+                              set data [list DATE-BEG [format [formatKeyword DATE-BEG] $date_start]]
                            }
-               Fin         {  set kwd DATE-END ; set date_end [formatDateObs $value]
-                              set valeur [list DATE-END $date_end string  "End of exposure. FITS standard" "ISO 8601"]
+               Fin         {  set date_end [formatDateObs $value]
+                              set data [list DATE-END [format [formatKeyword "DATE-END"] $date_end]]
                            }
-               F/D         {  set kwd FOND ; set fond $value ; set valeur $value}
-               Modèle      {  set kwd DETNAM ; set valeur [list DETNAM $value string {Camera used} {}]}
-               Taille      {  set kwd XPIXSZ ; set ypixsz $value ; set valeur [list XPIXSZ $value double {Pixel Width (without binning)} um]}
-               Exposition  {  set kwd EXPOSURE ; set valeur [list EXPOSURE [format %f [expr { $value/1000. }]] float {Total time of exposure} s]}
+               F/D         {  set fond $value ; set data [list FOND $value]}
+               Modèle      {  set data [list DETNAM [format [formatKeyword DETNAM] $value]]}
+               Taille      {  set xpixsz $value ; set ypixsz $value
+                              set data [list XPIXSZ [format [formatKeyword XPIXSZ] $xpixsz]]
+                           }
+               Planete     {  if {$value ne ""} {
+                                 set data [list OBJECT [format [formatKeyword OBJECT] Planete]]
+                                 set objname $value
+                              }
+                           }
+               Exposition  {  set value [expr { $value/1000. }]
+                              set data [list EXPOSURE [format [formatKeyword EXPOSURE] $value]]}
                Filtre      {  if {$value ne "pas de filtre"} {set value C}
-                              set kwd FILTER ; set valeur [list FILTER $value string {C U B V R I J H K} {}]
+                              set data [list FILTER [format [formatKeyword FILTER] $value]]
                            }
-               Binning     {  set kwd BIN1 ; set bin2 $value ; set valeur [list BIN1 $value int {} {}]}
+               Binning     {  set bin1 $value ; set bin2 $value
+                              set data [list BIN1 [format [formatKeyword BIN1] $value]]
+                           }
             }
 
             #--   recupere le contenu dans un array
-            array set bd [list $kwd $valeur]
+            array set bd $data
 
          } else {
 
@@ -3827,7 +3838,7 @@ namespace eval ::ser2fits {
             if {[regexp -all {[0-9]+} $imgNo]} {
                set dateSer [string range $title [expr { $index+2 }] end]
                set date_obs [formatDateObs $dateSer]
-               array set bd [list $imgNo [list DATE-OBS $date_obs string  "Start of exposure. FITS standard" "ISO 8601"]]
+               array set bd [list $imgNo [format [formatKeyword DATE-OBS] $date_obs]]
             }
          }
 
@@ -3836,11 +3847,26 @@ namespace eval ::ser2fits {
       chan close $fd
 
       #--   complete la bd
-      if {[info exist diamtre] == 1 && [info exists fond] == 1 && $diametre ne "" && $fond ne ""} {
-         array set bd [list FOCLEN [list FOCLEN [expr { $fond*$diametre }] float {Resulting Focal length} m]]
+      if {[info exist diametre] == 1 && [info exists fond] == 1 && $diametre ne "" && $fond ne ""} {
+         set foclen [expr { $fond*$diametre }]
+         array set bd [list FOCLEN [format [formatKeyword FOCLEN] $foclen]]
+         #--   supprime ce mot cle
+         array unset bd FOND
       }
-      array set bd [list BIN2 [list BIN2 $bin2 int {} {}]]
-      array set bd [list YPIXSZ [list YPIXSZ $ypixsz double {Pixel Height (without binning)} um]]
+      array set bd [list BIN2 [format [formatKeyword BIN2] $bin2]]
+      array set bd [list YPIXSZ [format [formatKeyword YPIXSZ] $ypixsz]]
+      if {$bin1 != 1} {
+         set pixsize1 [expr { $bin1 * $xpixsz }]
+         array set bd [list PIXSIZE1 [format [formatKeyword PIXSIZE1] $pixsize1]]
+      }
+      if {$bin2 != 1} {
+         set pixsize1 [expr { $bin2 * $ypixsz }]
+         array set bd [list PIXSIZE2 [format [formatKeyword PIXSIZE2] $pixsize2]]
+      }
+      if {[info exists objname] && $objname ne ""} {
+         array set bd [list OBJNAME [format [formatKeyword OBJNAME] $objname]]
+      }
+      array set bd [list SWCREATE [format [formatKeyword SWCREATE] AudeLA]]
 
       #foreach kwd [lsort -ascii [array names bd]] {
       #   ::console::affiche_resultat "[array get bd $kwd]\n"
@@ -3859,7 +3885,8 @@ namespace eval ::ser2fits {
       package require struct::set
 
       #--   evalue l'intersection des deux listes pour filtrer les seuls mots cles existants
-      set kwdList [list APTDIA BIN1 BIN2 "DATE-BEG" "DATE-END" DETNAM EXPOSURE FILTER FOCLEN TELESCOP XPIXSZ YPIXSZ]
+      set kwdList [list APTDIA BIN1 BIN2 "DATE-BEG" "DATE-END" DETNAM EXPOSURE FILTER \
+         FOCLEN OBJECT OBJNAME PIXSIZE1 PIXSIZE2 SWCREATE TELESCOP XPIXSZ YPIXSZ]
       set bdList [array names bd]
       #--   intersection entre les deux listes
       set shortList [::struct::set intersect $kwdList $bdList]
@@ -4214,7 +4241,41 @@ namespace eval ::ser2fits {
             -message [format $caption(ser2fits,invalid) $racine "$caption(ser2fits,racine)"]
          set private(racine) [file rootname $private(choice)]
       }
+  }
+
+   #--------------------------------------------------------------------------
+   #  formatKeyword
+   #--------------------------------------------------------------------------
+   proc formatKeyword { {kwd " "} } {
+
+      dict set dicokwd APTDIA    {APTDIA %s float Diameter m}
+      dict set dicokwd BIN1      {BIN1 %s int {} {}}
+      dict set dicokwd BIN2      {BIN2 %s int {} {}}
+      dict set dicokwd DATE-BEG  {DATE-BEG %s string  "Start of exposure.FITS standard" "ISO 8601"}
+      dict set dicokwd DATE-END  {DATE-END %s string  "End of exposure.FITS standard" "ISO 8601"}
+      dict set dicokwd DATE-OBS  {DATE-OBS %s string {Start of exposure.FITS standard} {ISO 8601}}
+      dict set dicokwd DETNAM    {DETNAM %s string {Camera used} {}}
+      dict set dicokwd EQUINOX   {EQUINOX %s float {System of equatorial coordinates} {}}
+      dict set dicokwd EXPOSURE  {EXPOSURE %s float {Total time of exposure} s}
+      dict set dicokwd FILTER    {FILTER %s string {C U B V R I J H K} {}}
+      dict set dicokwd FOCLEN    {FOCLEN %s double {Resulting Focal length} m}
+      dict set dicokwd IMAGETYP  {IMAGETYP %s string {Image Type} {}}
+      dict set dicokwd OBJECT    {OBJECT %s string {Object observed} {}}
+      dict set dicokwd OBJNAME   {OBJNAME %s string {Object Name} {}}
+      dict set dicokwd PIXSIZE1  {PIXSIZE1 %s double {Pixel Width (with binning)} um}
+      dict set dicokwd PIXSIZE2  {PIXSIZE2 %s double {Pixel Height (with binning)} um}
+      dict set dicokwd SWCREATE  {SWCREATE %s string {Acquisition Software} {}}
+      dict set dicokwd TELESCOP  {TELESCOP %s string {Telescope (name barlow reducer)} {}}
+      dict set dicokwd XPIXSZ    {XPIXSZ %s double {Pixel Width (without binning)} um}
+      dict set dicokwd YPIXSZ    {YPIXSZ %s double {Pixel Height (without binning)} um}
+
+      set kwd_list [dict keys $dicokwd]
+      if {$kwd eq " "} {return $kwd_list}
+      if {$kwd ni "$kwd_list"} {return "keyword \"$kwd\" {not in dictionnary}"}
+
+      return [dict get $dicokwd $kwd]
    }
+
 
 }
 
