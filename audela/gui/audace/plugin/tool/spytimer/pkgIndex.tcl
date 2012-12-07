@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded spytimer 1.0 [ list source [ file join $dir spytimer.tcl ] ]
+package ifneeded spytimer 1.1 [ list source [ file join $dir spytimer.tcl ] ]
 
