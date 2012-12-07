@@ -3860,7 +3860,7 @@ namespace eval ::ser2fits {
          array set bd [list PIXSIZE1 [format [formatKeyword PIXSIZE1] $pixsize1]]
       }
       if {$bin2 != 1} {
-         set pixsize1 [expr { $bin2 * $ypixsz }]
+         set pixsize2 [expr { $bin2 * $ypixsz }]
          array set bd [list PIXSIZE2 [format [formatKeyword PIXSIZE2] $pixsize2]]
       }
       if {[info exists objname] && $objname ne ""} {
