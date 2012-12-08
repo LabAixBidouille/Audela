@@ -80,9 +80,9 @@
 
       #--   liste les variables necessaires pour synthetiser une image, sans image dans la visu
       set private(special_variables) [list ra dec gps t tu jd tsl telescop aptdia foclen fwhm \
-         bin1 bin2 naxis1 naxis2 cdelt1 cdelt2 crota2 filter detnam photocell1 photocell2 isospeed\
-         pixsize1 pixsize2 crval1 crval2 crpix1 crpix2 airpress tempair temprose hygro winddir windsp \
-         observer sitename origin iau_code imagetyp objname]
+         bin1 bin2 naxis1 naxis2 cdelt1 cdelt2 crota2 filter detnam photocell1 photocell2 \
+         pixsize1 pixsize2 crval1 crval2 crpix1 crpix2 tempair airpress \
+         observer sitename imagetyp objname]
 
       #--   liste les variables necessaires pour activer le bouton 'image DSS'
       set private(dss_variables) [list crval1 crval2 fov1 fov2 naxis1 naxis2 crota2]
