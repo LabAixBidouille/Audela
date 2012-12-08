@@ -4012,11 +4012,16 @@ namespace eval ::ser2fits {
          destroy $this
       }
 
+      if {![info exists conf(ser2fits,position)]} {
+         set conf(ser2fits,position) "+800+500"
+      }
+      set position $conf(ser2fits,position)
+
       #--- cree la fenetre
       toplevel $this
       wm resizable $this 0 0
       wm title $this "$caption(audace,menu,ser2fits)"
-      wm geometry $this +800+500
+      wm geometry $this $position
       wm protocol $this WM_DELETE_WINDOW "::ser2fits::cmdClose $this"
 
       frame $this.fr1 -relief raised -borderwidth 1
@@ -4144,6 +4149,10 @@ namespace eval ::ser2fits {
    #  Commande du bouton 'Fermer'
    #------------------------------------------------------------
    proc cmdClose { this } {
+      global conf
+
+      #--   equivalent de widgetToConf
+      regsub {([0-9]+x[0-9]+)} [wm geometry $this] "" conf(ser2fits,position)
 
       destroy $this
    }
