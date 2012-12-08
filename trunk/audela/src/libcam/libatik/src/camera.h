@@ -65,7 +65,21 @@ struct camprop {
     /* Ajoutez ici les variables necessaires a votre camera (mode d'obturateur, etc). */
 	char serial_number[41];
 	int cooler_implemented;
+	int b0_cooling;
+	int b1_controllable;
+	int b2_on_off_cooling_control;
+	int b3_selectable_power_levels;
+	int b4_set_point_cooling_available;
+	int b5_state_warming_up;
+	int b6_state_cooling_on;
+	int b7_state_set_point_control;
+	int cooler_power_level;
+	int minlvl;
+	int maxlvl;
+	float current_temperature_setpoint;
 };
+
+void atik_cooler_informations(struct camprop *cam);
 
 #ifdef __cplusplus
 }            /* End of extern "C" */

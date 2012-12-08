@@ -178,31 +178,8 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 
 	/////////////////////////////////////////////////
 	// Returns information on the Peltier cooler.
-	// flags: b0-4 capabilities
-	// b0 0 = no cooling 1=cooling
-	// b1 0= always on 1= controllable
-	// b2 0 = on/off control not available 1= on off cooling control
-	// b3 0= no selectable power levels 1= selectable power levels
-	// b4 0 = no temperature set point cooling 1= set point cooling
-	// b5-7 report what’s actually happening
-	// b5 0=normal control 1=warming up
-	// b6 0=cooling off 1=cooling on
-	// b7 0= no set point control 1=set point control
-	// level is the current cooler power level.
-	// minlvl is the minimum power level than can be set on order to prevent
-	// rapid warming.
-	// maxlvl is the maximum power level than can be set or returned, can be
-	// used to scale power to a percentage.
-	// setpoint is the current temperature setpoint, in degrees Celsius * 100
-	// Error code on error
-	int err,flags,level, minlvl, maxlvl,setpoint;
-	err=ArtemisCoolingInfo(hCam,&flags,&level,&minlvl,&maxlvl,&setpoint);
+	atik_cooler_informations(cam);
 	cam->check_temperature=0;
-	if (err==ARTEMIS_OK) {
-		cam->cooler_implemented=1;
-	} else {
-		cam->cooler_implemented=0;
-	}
 
    strcpy(cam->date_obs, "2000-01-01T12:00:00");
    strcpy(cam->date_end, cam->date_obs);
@@ -384,6 +361,48 @@ void cam_set_binning(int binx, int biny, struct camprop *cam)
 {
   cam->binx = binx;
   cam->biny = biny;
+}
+
+void atik_cooler_informations(struct camprop *cam)
+{
+	/////////////////////////////////////////////////
+	// Returns information on the Peltier cooler.
+	// flags: b0-4 capabilities
+	// b0 0 = no cooling 1=cooling
+	// b1 0= always on 1= controllable
+	// b2 0 = on/off control not available 1= on off cooling control
+	// b3 0= no selectable power levels 1= selectable power levels
+	// b4 0 = no temperature set point cooling 1= set point cooling
+	// b5-7 report what’s actually happening
+	// b5 0=normal control 1=warming up
+	// b6 0=cooling off 1=cooling on
+	// b7 0= no set point control 1=set point control
+	// level is the current cooler power level.
+	// minlvl is the minimum power level than can be set on order to prevent
+	// rapid warming.
+	// maxlvl is the maximum power level than can be set or returned, can be
+	// used to scale power to a percentage.
+	// setpoint is the current temperature setpoint, in degrees Celsius * 100
+	// Error code on error
+	int err,flags,level, minlvl, maxlvl,setpoint;
+	err=ArtemisCoolingInfo(hCam,&flags,&level,&minlvl,&maxlvl,&setpoint);
+	if (err==ARTEMIS_OK) {
+		cam->cooler_implemented=1;
+	} else {
+		cam->cooler_implemented=0;
+	}
+	cam->b0_cooling=(flags&0x01);
+	cam->b1_controllable=(flags&0x02)>>1;
+	cam->b2_on_off_cooling_control=(flags&0x04)>>2;
+	cam->b3_selectable_power_levels=(flags&0x08)>>3;
+	cam->b4_set_point_cooling_available=(flags&0x10)>>4;
+	cam->b5_state_warming_up=(flags&0x20)>>5;
+	cam->b6_state_cooling_on=(flags&0x40)>>6;
+	cam->b7_state_set_point_control=(flags&0x80)>>7;
+	cam->cooler_power_level=level;
+	cam->minlvl=minlvl;
+	cam->maxlvl=maxlvl;
+	cam->current_temperature_setpoint=(float)(setpoint/100.);
 }
 
 #ifdef __cplusplus
