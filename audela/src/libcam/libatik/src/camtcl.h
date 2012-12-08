@@ -24,12 +24,12 @@
 #define __CAMTCL_H__
 
 #define SPECIFIC_CMDLIST \
-    {"info1", (Tcl_CmdProc *) cmdAtikInfo1},\
+    {"coolerinformations", (Tcl_CmdProc *) cmdAtikCoolerInformations},\
     {"info2",    (Tcl_CmdProc *) cmdAtikInfo2},
 
  /* === Specific commands for that camera === */
 
-int cmdAtikInfo1(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+int cmdAtikCoolerInformations(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdAtikInfo2(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 
 

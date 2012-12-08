@@ -43,11 +43,58 @@
 extern struct camini CAM_INI[];
 
 
-int cmdAtikInfo1(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+int cmdAtikCoolerInformations(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
     struct camprop *cam;
-    cam = (struct camprop *) clientData;
-    return TCL_OK;
+	/////////////////////////////////////////////////
+	// Returns information on the Peltier cooler.
+	// flags: b0-4 capabilities
+	// b0 0 = no cooling 1=cooling
+	// b1 0= always on 1= controllable
+	// b2 0 = on/off control not available 1= on off cooling control
+	// b3 0= no selectable power levels 1= selectable power levels
+	// b4 0 = no temperature set point cooling 1= set point cooling
+	// b5-7 report what’s actually happening
+	// b5 0=normal control 1=warming up
+	// b6 0=cooling off 1=cooling on
+	// b7 0= no set point control 1=set point control
+	// level is the current cooler power level.
+	// minlvl is the minimum power level than can be set on order to prevent
+	// rapid warming.
+	// maxlvl is the maximum power level than can be set or returned, can be
+	// used to scale power to a percentage.
+	// setpoint is the current temperature setpoint, in degrees Celsius * 100
+	// Error code on error
+	char list[12048],elem[1024];
+	cam = (struct camprop *) clientData;
+	atik_cooler_informations(cam);
+	strcpy(list,"");
+	sprintf(elem,"{b0_cooling %d {0 = no cooling 1=cooling}} ",cam->b0_cooling);
+	strcat(list,elem);
+	sprintf(elem,"{b1_controllable %d {0= always on 1= controllable}} ",cam->b1_controllable);
+	strcat(list,elem);
+	sprintf(elem,"{b2_on_off_cooling_control %d {0 = on/off control not available 1= on off cooling control}} ",cam->b2_on_off_cooling_control);
+	strcat(list,elem);
+	sprintf(elem,"{b3_selectable_power_levels %d {0= no selectable power levels 1= selectable power levels}} ",cam->b3_selectable_power_levels);
+	strcat(list,elem);
+	sprintf(elem,"{b4_set_point_cooling_available %d {0 = no temperature set point cooling 1= set point cooling}} ",cam->b4_set_point_cooling_available);
+	strcat(list,elem);
+	sprintf(elem,"{b5_state_warming_up %d {0=normal control 1=warming up}} ",cam->b5_state_warming_up);
+	strcat(list,elem);
+	sprintf(elem,"{b6_state_cooling_on %d {0=cooling off 1=cooling on}} ",cam->b6_state_cooling_on);
+	strcat(list,elem);
+	sprintf(elem,"{b7_state_set_point_control %d {0= no set point control 1=set point control}} ",cam->b7_state_set_point_control);
+	strcat(list,elem);
+	sprintf(elem,"{level %d {relative to maxlvl}} ",cam->cooler_power_level);
+	strcat(list,elem);
+	sprintf(elem,"{minlvl %d {ADU}} ",cam->minlvl);
+	strcat(list,elem);
+	sprintf(elem,"{maxlvl %d {ADU}} ",cam->maxlvl);
+	strcat(list,elem);
+	sprintf(elem,"{current_temperature_setpoint %f {Degree Celcius}} ",cam->current_temperature_setpoint);
+	strcat(list,elem);
+	Tcl_SetResult(interp,list,TCL_VOLATILE);
+   return TCL_OK;
 }
 
 int cmdAtikInfo2(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
