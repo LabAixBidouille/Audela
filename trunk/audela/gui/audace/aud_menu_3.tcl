@@ -3837,9 +3837,8 @@ namespace eval ::ser2fits {
             regsub -all {[a-zA-Z:\s]} [string range $title 0 $index] "" imgNo
             #--   traite si necessaire
             if {$imgNo >= $private(start) && $imgNo <= $private(end)} {
-               lassign [formatDateObs $value] datejd datett
-               #array set bd [list $imgNo [format [formatKeyword DATE-OBS] $datett]]
-               array set bd [list $imgNo [format [formatKeyword MJD-OBS] $datejd]]
+               lassign [formatDateObs $value] datemjd
+               array set bd [list $imgNo [format [formatKeyword MJD-OBS] $datemjd]]
             }
          }
       }
@@ -3870,7 +3869,7 @@ namespace eval ::ser2fits {
       array set bd [list SWCREATE [format [formatKeyword SWCREATE] AudeLA]]
 
       #foreach kwd [lsort -ascii [array names bd]] {
-      #   ::console::affiche_resultat "[array get bd $kwd]\n"
+      #  ::console::affiche_resultat "[array get bd $kwd]\n"
       #}
    }
 
@@ -3911,7 +3910,7 @@ namespace eval ::ser2fits {
    #  formatDateObs
    #  Formate la date
    #  Parameter : date du fichier .ser.txt
-   #  Return : dateJD
+   #  Return : dateMJD et date ISO 8601
    #------------------------------------------------------------
    proc formatDateObs { date } {
 
@@ -3929,8 +3928,10 @@ namespace eval ::ser2fits {
       append s "." $ms
 
       set datejd [mc_date2jd [list $year $month $day $h $m $s]]
-      set datett [mc_date2iso8601 $datejd ]
-      return [list $datejd $datett]
+      set datemjd [expr {$datejd-2400000.5}]
+      set datett [mc_date2iso8601 $datemjd]
+
+      return [list $datemjd $datett]
    }
 
    #------------------------------------------------------------
@@ -4262,9 +4263,8 @@ namespace eval ::ser2fits {
       dict set dicokwd BIN2      {BIN2 %s int {} {}}
       dict set dicokwd CDELT1    {CDELT1 %s double {Scale along naxis1} deg/pixel}
       dict set dicokwd CDELT2    {CDELT2 %s double {Scale along naxis2} deg/pixel}
-      dict set dicokwd DATE-BEG  {DATE-BEG %s string  "Start of exposure.FITS standard" "ISO 8601"}
-      dict set dicokwd DATE-END  {DATE-END %s string  "End of exposure.FITS standard" "ISO 8601"}
-      dict set dicokwd DATE-OBS  {DATE-OBS %s string {Start of exposure.FITS standard} {ISO 8601}}
+      dict set dicokwd DATE-BEG  {DATE-BEG %s string {Start of exposure.FITS standard} {ISO 8601}}
+      dict set dicokwd DATE-END  {DATE-END %s string {End of exposure.FITS standard} {ISO 8601}}
       dict set dicokwd DETNAM    {DETNAM %s string {Camera used} {}}
       dict set dicokwd EQUINOX   {EQUINOX %s float {System of equatorial coordinates} {}}
       dict set dicokwd EXPOSURE  {EXPOSURE %s float {Total time of exposure} s}
