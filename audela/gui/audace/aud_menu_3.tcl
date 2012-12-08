@@ -3794,7 +3794,7 @@ namespace eval ::ser2fits {
 
          #--   isole le nom et la valeur
          set index [string first ":" $title]
-         set value [string range $title [incr index 2] end]
+         set value [string trimright [string range $title [incr index 2] end]]
 
          if {[regexp -all {(Image)} $title] ==0} {
 
@@ -3803,10 +3803,10 @@ namespace eval ::ser2fits {
                Telescope   {  set data [list TELESCOP [format [formatKeyword TELESCOP] $value]]}
                Diametre    {  set diametre [expr { $value/1000. }]
                               set data [list APTDIA [format [formatKeyword APTDIA] $diametre]]}
-               Début       {  set date_start [formatDateObs $value]
+               Début       {  lassign [formatDateObs $value] -> date_start
                               set data [list DATE-BEG [format [formatKeyword DATE-BEG] $date_start]]
                            }
-               Fin         {  set date_end [formatDateObs $value]
+               Fin         {  lassign [formatDateObs $value] -> date_end
                               set data [list DATE-END [format [formatKeyword "DATE-END"] $date_end]]
                            }
                F/D         {  set fond $value ; set data [list FOND $value]}
@@ -3833,16 +3833,15 @@ namespace eval ::ser2fits {
             array set bd $data
 
          } else {
-
-            #--   formate la date de chaque image
+            #--   identifie le N° de l'image
             regsub -all {[a-zA-Z:\s]} [string range $title 0 $index] "" imgNo
-            if {[regexp -all {[0-9]+} $imgNo]} {
-               set dateSer [string range $title [expr { $index+2 }] end]
-               set date_obs [formatDateObs $dateSer]
-               array set bd [list $imgNo [format [formatKeyword DATE-OBS] $date_obs]]
+            #--   traite si necessaire
+            if {$imgNo >= $private(start) && $imgNo <= $private(end)} {
+               lassign [formatDateObs $value] datejd datett
+               #array set bd [list $imgNo [format [formatKeyword DATE-OBS] $datett]]
+               array set bd [list $imgNo [format [formatKeyword MJD-OBS] $datejd]]
             }
          }
-
       }
 
       chan close $fd
@@ -3912,7 +3911,7 @@ namespace eval ::ser2fits {
    #  formatDateObs
    #  Formate la date
    #  Parameter : date du fichier .ser.txt
-   #  Return : date au format ISO 8601
+   #  Return : dateJD
    #------------------------------------------------------------
    proc formatDateObs { date } {
 
@@ -3923,17 +3922,15 @@ namespace eval ::ser2fits {
       #--   remplace le nom du mois par son numero
       set month [string map -nocase $entities $month]
 
-      #--   cherche la position du dernier : dans time
-      set index [string last ":" $time]
-      set prev [expr { $index-1 }]
-      set next [expr { $index+1 }]
+      lassign [split $time ":"] h m s ms
+      if {$ms eq ""} {
+         set ms "000"
+      }
+      append s "." $ms
 
-      #--   remplace le : par un .
-      set time "[string range $time 0 $prev].[string range $time $next end]"
-      #--   format ISO 8601 avec des ms
-      set date_obs "${year}-${month}-${day}T${time}"
-
-      return ${date_obs}
+      set datejd [mc_date2jd [list $year $month $day $h $m $s]]
+      set datett [mc_date2iso8601 $datejd ]
+      return [list $datejd $datett]
    }
 
    #------------------------------------------------------------
@@ -4265,6 +4262,7 @@ namespace eval ::ser2fits {
       dict set dicokwd FILTER    {FILTER %s string {C U B V R I J H K} {}}
       dict set dicokwd FOCLEN    {FOCLEN %s double {Resulting Focal length} m}
       dict set dicokwd IMAGETYP  {IMAGETYP %s string {Image Type} {}}
+      dict set dicokwd MJD-OBS   {MJD-OBS %s double {Start of exposure} d}
       dict set dicokwd OBJECT    {OBJECT %s string {Object observed} {}}
       dict set dicokwd OBJNAME   {OBJNAME %s string {Object Name} {}}
       dict set dicokwd PIXSIZE1  {PIXSIZE1 %s double {Pixel Width (with binning)} um}
@@ -4286,13 +4284,12 @@ namespace eval ::ser2fits {
    #  Retourne les cdelt en arcsec/pixel
    #  Parametres : dimension des pixels (avec bining) en um,
    #     nombre de pixels dans l'image, longueur focale en m
-   #  Derive de surchaud.tcl/simulimage
    #---------------------------------------------------------------------------
    proc getCdelt { naxis1 naxis2 pixsize1 pixsize2 foclen } {
 
       #--   test OR
       if {"-" in [list $naxis1 $naxis2 $pixsize1 $pixsize2 $foclen]} {
-         return [lrepeat 4 -]
+         return [lrepeat 2 -]
       }
 
       set factor [expr { 360. / (4*atan(1.)) }]
@@ -4305,7 +4302,6 @@ namespace eval ::ser2fits {
 
       return [list $cdeltx $cdelty]
    }
-
 
 }
 
