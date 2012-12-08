@@ -138,9 +138,14 @@
       variable myKeywords
 
       #--   raccourcis
-      foreach var $private(special_variables) {
+      foreach var [list ra dec gps t tu jd tsl telescop aptdia foclen fwhm \
+         bin1 bin2 naxis1 naxis2 cdelt1 cdelt2 crota2 filter \
+         detnam photocell1 photocell2 isospeed pixsize1 pixsize2 \
+         crval1 crval2 crpix1 crpix2 \
+         airpress tempair temprose hygro winddir windsp \
+         observer sitename origin iau_code imagetyp objname] {
          set $var $private($var)
-         #::console::affiche_resultat "$var \"$private($var)\"\n"
+         ::console::affiche_resultat "$var \"$private($var)\"\n"
       }
 
       set airpress [expr { $airpress / 100. }]
@@ -173,7 +178,7 @@
          GEODSYS AIRPRESS TEMPAIR \
          TELESCOP DETNAM CONFNAME IMAGETYP OBJNAME SWCREATE]
 
-      #--   complete la liste si valeur significative
+      #--   complete la liste des mots cles si leur valeur significative
       set optKwd [list temprose "-" hygro "-" winddir "-" windsp "-" isospeed "-" origin "" iau_code ""]
       foreach {var val} $optKwd {
          if {[set $var] ne "$val"} {
@@ -258,8 +263,8 @@
       dict set dicokwd SITELONG  {SITELONG %s string {East-positive observatory longitude} deg}
       dict set dicokwd SWCREATE  {SWCREATE %s string {Acquisition Software} {}}
       dict set dicokwd TELESCOP  {TELESCOP %s string {Telescope (name barlow reducer)} {}}
-      dict set dicokwd TEMPAIR   {TEMPAIR %s float {Air temperature} Celcius}
-      dict set dicokwd TEMPROSE  {TEMPROSE %s float {Dew temperature} Celcius}
+      dict set dicokwd TEMPAIR   {TEMPAIR %s float {Air temperature} Celsius}
+      dict set dicokwd TEMPROSE  {TEMPROSE %s float {Dew temperature} Celsius}
       dict set dicokwd WINDDIR   {WINDDIR %s float {Wind direction (0=S 90=W 180=N 270=E)} deg}
       dict set dicokwd WINDSP    {WINDSP %s float {Windspeed} {m/s}}
 
