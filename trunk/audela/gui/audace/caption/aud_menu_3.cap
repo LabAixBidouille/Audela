@@ -123,6 +123,7 @@ set caption(ser2fits,apply)                             "Apply"
 set caption(ser2fits,hlp)                               "Help"
 set caption(ser2fits,close)                             "Close"
 set caption(ser2fits,attention)                         "Warning"
+set caption(ser2fits,no_ser)                            "# Il n'y pas de fichier .SER dans ce répertoire."
 set caption(ser2fits,invalid)                           "# %s n'est pas une entrée valide pour %s !"
 
 set caption(pretraitement,all)                          "Convert all files"
@@ -329,6 +330,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ser2fits,hlp)                            "Aide"
    set caption(ser2fits,close)                          "Fermer"
    set caption(ser2fits,attention)                      "Attention"
+   set caption(ser2fits,no_ser)                         "Il n'y pas de fichier .SER dans ce répertoire."
    set caption(ser2fits,invalid)                        "%s n'est pas une entrée valide pour %s !"
 
    set caption(pretraitement,all)                       "Convertir tous les fichiers"
@@ -535,6 +537,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ser2fits,hlp)                            "Aiuto"
    set caption(ser2fits,close)                          "Chiudere"
    set caption(ser2fits,attention)                      "Attenzione"
+   set caption(ser2fits,no_ser)                         "# Il n'y pas de fichier .SER dans ce répertoire."
    set caption(ser2fits,invalid)                        "# %s n'est pas une entrée valide pour %s !"
 
    set caption(pretraitement,all)                       "Converti tutti i file"
@@ -741,6 +744,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ser2fits,hlp)                            "Ayuda"
    set caption(ser2fits,close)                          "Cerrar"
    set caption(ser2fits,attention)                      "Cuidado"
+   set caption(ser2fits,no_ser)                         "# Il n'y pas de fichier .SER dans ce répertoire."
    set caption(ser2fits,invalid)                        "# %s n'est pas une entrée valide pour %s !"
 
    set caption(pretraitement,all)                       "Convertir todos los ficheros"
@@ -947,6 +951,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ser2fits,hlp)                            "Hilfe"
    set caption(ser2fits,close)                          "Schließen"
    set caption(ser2fits,attention)                      "Achtung"
+   set caption(ser2fits,no_ser)                         "# Il n'y pas de fichier .SER dans ce répertoire."
    set caption(ser2fits,invalid)                        "# %s n'est pas une entrée valide pour %s !"
 
    set caption(pretraitement,all)                       "Alle Dateien konvertieren"
@@ -1153,6 +1158,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ser2fits,hlp)                            "Ajuda"
    set caption(ser2fits,close)                          "Fechar"
    set caption(ser2fits,attention)                      "Aviso"
+   set caption(ser2fits,no_ser)                         "# Il n'y pas de fichier .SER dans ce répertoire."
    set caption(ser2fits,invalid)                        "# %s n'est pas une entrée valide pour %s !"
 
    set caption(pretraitement,all)                       "Converter todos os ficheiros"
@@ -1359,6 +1365,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ser2fits,hlp)                            "Hjælp"
    set caption(ser2fits,close)                          "Luk"
    set caption(ser2fits,attention)                      "Advarsel"
+   set caption(ser2fits,no_ser)                         "# Il n'y pas de fichier .SER dans ce répertoire."
    set caption(ser2fits,invalid)                        "# %s n'est pas une entrée valide pour %s !"
 
    set caption(pretraitement,all)                       "Konverter alle filer"
@@ -1565,6 +1572,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ser2fits,hlp)                            "Help"
    set caption(ser2fits,close)                          "Close"
    set caption(ser2fits,attention)                      "Warning"
+   set caption(ser2fits,no_ser)                         "# Il n'y pas de fichier .SER dans ce répertoire."
    set caption(ser2fits,invalid)                        "# %s n'est pas une entrée valide pour %s !"
 
    set caption(pretraitement,all)                       "Convert all files"
@@ -1771,6 +1779,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ser2fits,hlp)                            "Help"
    set caption(ser2fits,close)                          "Close"
    set caption(ser2fits,attention)                      "Warning"
+   set caption(ser2fits,no_ser)                         "# Il n'y pas de fichier .SER dans ce répertoire."
    set caption(ser2fits,invalid)                        "# %s n'est pas une entrée valide pour %s !"
 
    set caption(pretraitement,all)                       "Convert all files"
