@@ -462,11 +462,11 @@ int tt_fct_ima_stack(void *arg1)
 
    // j'ajoute DATE-OBS la plus ancienne dans l'image finale
    tt_jd2dateobs(minDateObs,isoDateObs);
-   tt_imanewkey(&p_out,"DATE-OBS",isoDateObs,TSTRING,"Start of exposure. FITS standard","Iso 8601");
+   tt_imanewkey(&p_out,"DATE-OBS",isoDateObs,TSTRING,"Start of exposure. FITS standard","ISO 8601");
 
    // j'ajoute DATE-END la plus recente dans l'image finale
    tt_jd2dateobs(maxDateEnd,isoDateEnd);
-   tt_imanewkey(&p_out,"DATE-END",isoDateEnd,TSTRING,"End of exposure. FITS standard","Iso 8601");      
+   tt_imanewkey(&p_out,"DATE-END",isoDateEnd,TSTRING,"End of exposure. FITS standard","ISO 8601");      
    
    /* --- complete l'entete avec celle de la premiere image ---*/
    if ((msg=tt_imarefheader(&p_out,fullname0))!=0) {

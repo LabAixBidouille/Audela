@@ -236,7 +236,7 @@ int tt_fct_ima_series(void *arg1)
          pseries.jj_stack-=2400000.5;
          tt_imanewkey(pseries.p_out,"MJD-OBS",&(pseries.jj_stack),TDOUBLE,"Start of exposure","d");
          pseries.jj_stack+=2400000.5;
-         tt_imanewkey(pseries.p_out,"DATE-OBS",date_obs_stack,TSTRING,"Start of exposure. FITS standard","Iso 8601");
+         tt_imanewkey(pseries.p_out,"DATE-OBS",date_obs_stack,TSTRING,"Start of exposure. FITS standard","ISO 8601");
          tt_imanewkey(pseries.p_out,"EXPOSURE",&(pseries.exptime_stack),TDOUBLE,"Total time of exposure","s");
          
          /* --- complete l'entete avec celle de la premiere image ---*/

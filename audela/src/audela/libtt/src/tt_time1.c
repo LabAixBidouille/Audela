@@ -402,7 +402,7 @@ int tt_dateobs_release(TT_IMA *p,int numlist)
    /* --- on remplit la nouvelle liste ---*/
    if (numlist==0) {
       if (strcmp(new_date_obs0,"")!=0) {
-	 tt_imanewkey(p,"DATE-OBS",new_date_obs0,TSTRING,"Start of exposure. FITS standard","Iso 8601");
+	 tt_imanewkey(p,"DATE-OBS",new_date_obs0,TSTRING,"Start of exposure. FITS standard","ISO 8601");
 	 tt_dateobs2jd(new_date_obs0,&dummy);
 	 dummy-=2400000.5;
 	 tt_imanewkey(p,"MJD-OBS",&dummy,TDOUBLE,"Start of exposure. Modified JD","d");
@@ -412,7 +412,7 @@ int tt_dateobs_release(TT_IMA *p,int numlist)
       }
    } else if (numlist==1) {
       if (strcmp(new_date_obs1,"")!=0) {
-	 tt_imanewkey(p,"DATE-OBS",new_date_obs1,TSTRING,"Start of exposure. FITS standard","Iso 8601");
+	 tt_imanewkey(p,"DATE-OBS",new_date_obs1,TSTRING,"Start of exposure. FITS standard","ISO 8601");
 	 tt_dateobs2jd(new_date_obs1,&dummy);
 	 dummy-=2400000.5;
 	 tt_imanewkey(p,"MJD-OBS",&dummy,TDOUBLE,"Start of exposure. Modified JD","d");
@@ -422,12 +422,12 @@ int tt_dateobs_release(TT_IMA *p,int numlist)
       }
    } else if (numlist==2) {
       if (strcmp(new_date_obs0,"")!=0) {
-	 tt_imanewkey(p,"DATE-OBS",new_date_obs0,TSTRING,"Start of exposure. FITS standard","Iso 8601");
+	 tt_imanewkey(p,"DATE-OBS",new_date_obs0,TSTRING,"Start of exposure. FITS standard","ISO 8601");
 	 tt_dateobs2jd(new_date_obs0,&dummy);
 	 dummy-=2400000.5;
 	 tt_imanewkey(p,"MJD-OBS",&dummy,TDOUBLE,"Start of exposure. Modified JD","d");
       } else if (strcmp(new_date_obs1,"")!=0) {
-	 tt_imanewkey(p,"DATE-OBS",new_date_obs1,TSTRING,"Start of exposure. FITS standard","Iso 8601");
+	 tt_imanewkey(p,"DATE-OBS",new_date_obs1,TSTRING,"Start of exposure. FITS standard","ISO 8601");
 	 tt_dateobs2jd(new_date_obs1,&dummy);
 	 dummy-=2400000.5;
 	 tt_imanewkey(p,"MJD-OBS",&dummy,TDOUBLE,"Start of exposure. Modified JD","d");
@@ -439,12 +439,12 @@ int tt_dateobs_release(TT_IMA *p,int numlist)
       }
    } else if (numlist==3) {
       if (strcmp(new_date_obs1,"")!=0) {
-	 tt_imanewkey(p,"DATE-OBS",new_date_obs1,TSTRING,"Start of exposure. FITS standard","Iso 8601");
+	 tt_imanewkey(p,"DATE-OBS",new_date_obs1,TSTRING,"Start of exposure. FITS standard","ISO 8601");
 	 tt_dateobs2jd(new_date_obs1,&dummy);
 	 dummy-=2400000.5;
 	 tt_imanewkey(p,"MJD-OBS",&dummy,TDOUBLE,"Start of exposure. Modified JD","d");
       } else if (strcmp(new_date_obs0,"")!=0) {
-	 tt_imanewkey(p,"DATE-OBS",new_date_obs0,TSTRING,"Start of exposure. FITS standard","Iso 8601");
+	 tt_imanewkey(p,"DATE-OBS",new_date_obs0,TSTRING,"Start of exposure. FITS standard","ISO 8601");
 	 tt_dateobs2jd(new_date_obs0,&dummy);
 	 dummy-=2400000.5;
 	 tt_imanewkey(p,"MJD-OBS",&dummy,TDOUBLE,"Start of exposure. Modified JD","d");
