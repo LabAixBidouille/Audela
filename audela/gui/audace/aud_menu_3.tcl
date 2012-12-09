@@ -4004,7 +4004,11 @@ namespace eval ::ser2fits {
       set listeSer [glob -nocomplain -type f -tails -directory $audace(rep_images) *ser]
 
       #--   arrete si la liste est vide
-      if {$listeSer eq ""} {return}
+      if {$listeSer eq ""} {
+         tk_messageBox -title "$caption(ser2fits,attention)" -icon error -type ok \
+            -message "$caption(ser2fits,no_ser)"
+         return
+      }
 
       set this $audace(base).serfile
       set dir $audace(rep_images)
