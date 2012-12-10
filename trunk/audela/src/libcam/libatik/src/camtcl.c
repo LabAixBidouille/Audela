@@ -73,7 +73,7 @@ int cmdAtikCoolerInformations(ClientData clientData, Tcl_Interp * interp, int ar
 	strcat(list,elem);
 	sprintf(elem,"{b1_controllable %d {0= always on 1= controllable}} ",cam->b1_controllable);
 	strcat(list,elem);
-	sprintf(elem,"{b2_on_off_cooling_control %d {0 = on/off control not available 1= on off cooling control}} ",cam->b2_on_off_cooling_control);
+	sprintf(elem,"{b2_on_off_cooling_control %d {0 = on/off control not available 1= on/off cooling control}} ",cam->b2_on_off_cooling_control);
 	strcat(list,elem);
 	sprintf(elem,"{b3_selectable_power_levels %d {0= no selectable power levels 1= selectable power levels}} ",cam->b3_selectable_power_levels);
 	strcat(list,elem);
@@ -91,15 +91,39 @@ int cmdAtikCoolerInformations(ClientData clientData, Tcl_Interp * interp, int ar
 	strcat(list,elem);
 	sprintf(elem,"{maxlvl %d {ADU}} ",cam->maxlvl);
 	strcat(list,elem);
-	sprintf(elem,"{current_temperature_setpoint %f {Degree Celcius}} ",cam->current_temperature_setpoint);
+	sprintf(elem,"{current_temperature_setpoint %.2f {Degree Celcius}} ",cam->current_temperature_setpoint);
 	strcat(list,elem);
 	Tcl_SetResult(interp,list,TCL_VOLATILE);
    return TCL_OK;
 }
 
-int cmdAtikInfo2(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+/***********************************************************************/
+/*                                                                     */
+/* INPUTS                                                              */
+/* none                                                                */
+/*                                                                     */
+/* OUTPUT                                                              */
+/* float : check temperature (deg. Celcius)                            */
+/* float : CCD temperature (deg. Celcius)                              */
+/* float : ambient temperature (deg. Celcius)                          */
+/* int   : regulation, 1=on, 0=off                                     */
+/* int   : Peltier power, (0-255=0-100%)                               */
+/***********************************************************************/
+int cmdAtikInfotemp(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
-    struct camprop *cam;
-    cam = (struct camprop *) clientData;
-    return TCL_OK;
+	/*
+	// setpoint = température de consigne
+	// ccd = température du ccd
+	// ambient = température ambiante
+	// reg = régulation ?
+	// power = puissance du peltier (0-255=0-100%)
+	*/
+	struct camprop *cam;
+	double ambient=0;
+	char s[256];
+	cam = (struct camprop *) clientData;
+	atik_cooler_informations(cam);
+	sprintf(s, "%.2f %.2f %.2f %d %d", cam->current_temperature_setpoint,cam->temperature,ambient,cam->b2_on_off_cooling_control,cam->cooler_power_level);
+	Tcl_SetResult(interp, s, TCL_VOLATILE);
+	return TCL_OK;
 }
