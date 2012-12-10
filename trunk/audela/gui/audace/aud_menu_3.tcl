@@ -3676,6 +3676,22 @@ namespace eval ::ser2fits {
       array set bd [list SWCREATE [format [formatKeyword SWCREATE] $record]]
       array set bd [list SWMODIFY [format [formatKeyword SWMODIFY] AudeLA]]
 
+      #--   liste les caracteres a substituer
+      set entities [list à a â a ç c é e è e ê e ë e î i ï i ô o ö o û u ü u ü u ' ""]
+
+      if {[info exists private(Instrument)] == 1} {
+         set instrume [list [string map -nocase $entities $private(Instrument)]]
+         array set bd [list INSTRUME [format [formatKeyword INSTRUME] $instrume]]
+      }
+      if {[info exists private(Observeur)] == 1} {
+         set observer [list [string map -nocase $entities $private(Observeur)]]
+         array set bd [list OBSERVER [format [formatKeyword OBSERVER] $observer]]
+      }
+      if {[info exists private(Telescope)] == 1} {
+         set telescop [list [string map -nocase $entities $private(Telescope)]]
+         array set bd [list TELESCOP [format [formatKeyword TELESCOP] $telescop]]
+      }
+
       #--   etape 3 : si le fichier d'info .ser.txt existe
       set txtExist [file exists $private(src).txt]
       #--   extrait les mots cles et les dates du fichier .ser.txt vers l'array bd
@@ -3886,8 +3902,8 @@ namespace eval ::ser2fits {
       #--   evalue l'intersection entre la liste des noms contenus dans l'array
       #  et la liste theorique pour filtrer les seuls mots cles existants
       set kwdList [list APTDIA BIN1 BIN2 CDELT1 CDELT2 "DATE-BEG" "DATE-END" \
-         DETNAM EXPOSURE FILTER FOCLEN OBJECT OBJNAME PIXSIZE1 PIXSIZE2 \
-         SWCREATE SWMODIFY TELESCOP XPIXSZ YPIXSZ]
+         DETNAM EXPOSURE FILTER FOCLEN INSTRUME OBJECT OBJNAME OBSERVER \
+         PIXSIZE1 PIXSIZE2 SWCREATE SWMODIFY TELESCOP XPIXSZ YPIXSZ]
       set bdList [array names bd]
 
       #--   intersection entre les deux listes
@@ -3950,8 +3966,12 @@ namespace eval ::ser2fits {
       foreach kwd [list LuID ColorID LittleIndian naxis1 naxis2 PixelDepth FrameCount] {
          binary scan [read $fileID 4] i* $kwd
       }
-      foreach kwd [list Observer Instrume Telescope] {
+      foreach kwd [list Observeur Instrument Telescope] {
          set $kwd [read $fileID 40]
+         set value [string trimright [set $kwd]]
+         if {$value ne "$kwd"} {
+            set private($kwd) $value
+         }
       }
 
       #--   si la profondeur est de 12, il faut 2 bytes/pixel
@@ -4000,7 +4020,7 @@ namespace eval ::ser2fits {
 
       #--   debog
       #foreach v [list LuID ColorID LittleIndian naxis1 naxis2 PixelDepth \
-      #   FrameCount Observer Instrume Telescope] {
+      #   FrameCount Observeur Instrument Telescope] {
       #   ::console::affiche_resultat "$v [set $v]\n"
       #}
 
@@ -4288,9 +4308,11 @@ namespace eval ::ser2fits {
       dict set dicokwd FILTER    {FILTER %s string {C U B V R I J H K} {}}
       dict set dicokwd FOCLEN    {FOCLEN %s double {Resulting Focal length} m}
       dict set dicokwd IMAGETYP  {IMAGETYP %s string {Image Type} {}}
+      dict set dicokwd INSTRUME  {INSTRUME %s string {Camera used} {}}
       dict set dicokwd MJD-OBS   {MJD-OBS %s double {Start of exposure} d}
       dict set dicokwd OBJECT    {OBJECT %s string {Object observed} {}}
       dict set dicokwd OBJNAME   {OBJNAME %s string {Object Name} {}}
+      dict set dicokwd OBSERVER  {OBSERVER %s string {Observers Names} {}}
       dict set dicokwd PIXSIZE1  {PIXSIZE1 %s double {Pixel Width (with binning)} um}
       dict set dicokwd PIXSIZE2  {PIXSIZE2 %s double {Pixel Height (with binning)} um}
       dict set dicokwd SWCREATE  {SWCREATE %s string {Acquisition Software} {}}
