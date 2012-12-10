@@ -25,12 +25,12 @@
 
 #define SPECIFIC_CMDLIST \
     {"coolerinformations", (Tcl_CmdProc *) cmdAtikCoolerInformations},\
-    {"info2",    (Tcl_CmdProc *) cmdAtikInfo2},
+    {"infotemp", (Tcl_CmdProc *) cmdAtikInfotemp},
 
  /* === Specific commands for that camera === */
 
 int cmdAtikCoolerInformations(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
-int cmdAtikInfo2(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
+int cmdAtikInfotemp(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 
 
 #endif

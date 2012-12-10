@@ -385,6 +385,7 @@ void atik_cooler_informations(struct camprop *cam)
 	// setpoint is the current temperature setpoint, in degrees Celsius * 100
 	// Error code on error
 	int err,flags,level, minlvl, maxlvl,setpoint;
+	int temperature;
 	err=ArtemisCoolingInfo(hCam,&flags,&level,&minlvl,&maxlvl,&setpoint);
 	if (err==ARTEMIS_OK) {
 		cam->cooler_implemented=1;
@@ -403,6 +404,8 @@ void atik_cooler_informations(struct camprop *cam)
 	cam->minlvl=minlvl;
 	cam->maxlvl=maxlvl;
 	cam->current_temperature_setpoint=(float)(setpoint/100.);
+	ArtemisTemperatureSensorInfo(hCam,1,&temperature);
+	cam->temperature = (double)temperature/100.0;
 }
 
 #ifdef __cplusplus
