@@ -3652,13 +3652,14 @@ namespace eval ::ser2fits {
       set img $private(racine)
       set start $private(start)
       set end $private(end)
+      set bitpix $private(bitpix)
+      set record $private(record)
 
       set private(src) [file join $dir $file]
       set kwdFile [file join $dirOut kwdFile.txt]
       set header [file join $dirOut header$ext]
 
       visu$visuNo clear
-      lassign $private(current_hdu) private(naxis1) private(naxis2) bitpix
 
       #--   etape 1 : cree une image grise contenant le header des images
       if {$bitpix == 8} {
@@ -3670,25 +3671,25 @@ namespace eval ::ser2fits {
       buf$bufNo save $header
       buf$bufNo clear
 
-      #--   etape 2 : si le fichier d'info .ser.txt existe
+      #--   etape 2 : ammorce les infos du header
+      array unset bd
+      array set bd [list SWCREATE [format [formatKeyword SWCREATE] $record]]
+      array set bd [list SWMODIFY [format [formatKeyword SWMODIFY] AudeLA]]
+
+      #--   etape 3 : si le fichier d'info .ser.txt existe
       set txtExist [file exists $private(src).txt]
-
-      #     integre les infos dans le header de l'image
+      #--   extrait les mots cles et les dates du fichier .ser.txt vers l'array bd
       if {$txtExist == 1} {
-
-         #--   extrait les mots cles et les dates du fichier .ser.txt
          readSerInfoFile $private(src).txt
-
-         #--   cree le fichier des mots cles a incorporer dans le header
-         set nbKwd [buildKwdFile $kwdFile]
-
-         if {$nbKwd > 0} {
-            #--   complete les mots cles communs aux images et le contraint au bon bitpix
-            ttscript2 "IMA/SERIES \"$dirOut\" \"header\" . . $ext \"$dirOut\" \"header\" . $ext HEADERFITS \"file=$kwdFile\" bitpix=$bitpix"
-         }
       }
 
-      #--   etape 3 : extrait les images FITS
+      #--   a partir de l'array bd cree le fichier des mots cles a incorporer dans le header
+      buildKwdFile $kwdFile
+
+      #--   integre les mots cles communs aux images et le contraint au bon bitpix
+      ttscript2 "IMA/SERIES \"$dirOut\" \"header\" . . $ext \"$dirOut\" \"header\" . $ext HEADERFITS \"file=$kwdFile\" bitpix=$bitpix"
+
+      #--   etape 4 : extrait les images FITS
       for {set i $start} {$i <= $end} {incr i} {
 
         #--   definit le nom de l'image
@@ -3704,7 +3705,7 @@ namespace eval ::ser2fits {
          extractImg $fileName $startAdress $bitpix
       }
 
-      #--   etape 4 : si le fichier d'info .ser.txt existe
+      #--   etape 5 : si le fichier d'info .ser.txt existe
       #     incorpore la date de prise de vue dans chaque image
       if {$txtExist == 1} {
          for {set i $start} {$i <= $end} {incr i} {
@@ -3719,7 +3720,7 @@ namespace eval ::ser2fits {
          }
       }
 
-      #--   etape 5 : flip les images pour qsu'elles soient identiques au film
+      #--   etape 6 : flip les images pour qu'elles soient identiques au film
       ttscript2 "IMA/SERIES \"$dirOut\" \"$img\" $start $end $ext \"$dirOut\" \"$img\" $start $ext INVERT FLIP"
 
       #--   charge la derniere image
@@ -3755,7 +3756,11 @@ namespace eval ::ser2fits {
          puts -nonewline $destID [read $srcID $private(imageSize)]
       }  elseif {$bitpix == 16} {
          binary scan [read $srcID $private(imageSize)] s* out
-         puts -nonewline $destID [binary format S* $out]
+         if {$::tcl_platform(byteOrder) eq "littleEndian"} {
+            puts -nonewline $destID [binary format S* $out]
+         } else {
+            puts -nonewline $destID $out
+         }
       }
 
       chan close $srcID
@@ -3770,9 +3775,6 @@ namespace eval ::ser2fits {
    proc readSerInfoFile { infoFile } {
       variable private
       variable bd
-
-      #--   precaution
-      array unset bd
 
       #--   liste les rubriques a rechercher
       set listParam [list "Diametre" "Telescope" "Début" "Fin" "F/D" "Modèle" \
@@ -3866,8 +3868,6 @@ namespace eval ::ser2fits {
       array set bd [list CDELT1 [format [formatKeyword CDELT1] $cdeltx]]
       array set bd [list CDELT2 [format [formatKeyword CDELT2] $cdelty]]
 
-      array set bd [list SWCREATE [format [formatKeyword SWCREATE] AudeLA]]
-
       #foreach kwd [lsort -ascii [array names bd]] {
       #  ::console::affiche_resultat "[array get bd $kwd]\n"
       #}
@@ -3877,33 +3877,29 @@ namespace eval ::ser2fits {
    #  buildKwdFile
    #  Prepare le fichier kwdFile des mots cles a incorporer avec libtt
    #  Parameter : chemin complet du fichier .txt a integrer
-   #  Return : nombre de mots cles
    #------------------------------------------------------------
    proc buildKwdFile { kwdFile } {
       variable bd
 
       package require struct::set
 
-      #--   evalue l'intersection des deux listes pour filtrer les seuls mots cles existants
+      #--   evalue l'intersection entre la liste des noms contenus dans l'array
+      #  et la liste theorique pour filtrer les seuls mots cles existants
       set kwdList [list APTDIA BIN1 BIN2 CDELT1 CDELT2 "DATE-BEG" "DATE-END" \
          DETNAM EXPOSURE FILTER FOCLEN OBJECT OBJNAME PIXSIZE1 PIXSIZE2 \
-         SWCREATE TELESCOP XPIXSZ YPIXSZ]
+         SWCREATE SWMODIFY TELESCOP XPIXSZ YPIXSZ]
       set bdList [array names bd]
+
       #--   intersection entre les deux listes
       set shortList [::struct::set intersect $kwdList $bdList]
-      set len [llength $shortList]
 
-      #--   s'il y a des mots cles a ecrire
-      if {$len > 0} {
-         set fileID [open $kwdFile w]
-         foreach kwd $shortList {
-            lassign [lindex [array get bd $kwd] 1] kwd value type comment unit
-            puts $fileID $kwd\n$value\n$type\n$comment\n$unit
-         }
-         chan close $fileID
+      #--   il y a au moins un mot cle (SWCREATE) a ecrire
+      set fileID [open $kwdFile w]
+      foreach kwd $shortList {
+         lassign [lindex [array get bd $kwd] 1] kwd value type comment unit
+         puts $fileID $kwd\n$value\n$type\n$comment\n$unit
       }
-
-      return $len
+      chan close $fileID
    }
 
    #------------------------------------------------------------
@@ -3948,7 +3944,7 @@ namespace eval ::ser2fits {
       set file [file join $audace(rep_images) [$w get]]
 
       set fileID [open $file r]
-      read $fileID 14 ; #--   GENICAP-RECORD
+      set record [read $fileID 14] ; #--   GENICAP-RECORD
       #--   scan 7 valeurs en integer32 (4 bytes)
       #--   normalement LuID = 0 ColorID = 0 monochrome LittleIndian = 0 --> donnees BigIndian
       foreach kwd [list LuID ColorID LittleIndian naxis1 naxis2 PixelDepth FrameCount] {
@@ -3957,12 +3953,6 @@ namespace eval ::ser2fits {
       foreach kwd [list Observer Instrume Telescope] {
          set $kwd [read $fileID 40]
       }
-      foreach kwd [list DateTime DateTime_UTC] {
-         binary scan [read $fileID 8] i* $kwd
-      }
-      #foreach v [list LuID ColorID LittleIndian naxis1 naxis2 PixelDepth FrameCount Observer Instrume Telescope DateTime DateTime_UTC] {
-      #   ::console::affiche_resultat "$v [set $v]\n"
-      #}
 
       #--   si la profondeur est de 12, il faut 2 bytes/pixel
       if {$PixelDepth == 8} {
@@ -3975,22 +3965,45 @@ namespace eval ::ser2fits {
       }
       #--   calcule le nb de bytes/image
       set ImageSize [expr { $naxis1*$naxis2*$BytePerPixel }]
-      set actual [tell $fileID]
-      #--   calcule l'offset pour atteindre le trailer
-      set offset [expr { 178+$FrameCount*$ImageSize-$actual } ]
-      seek $fileID $offset
 
-      #--   scan la queue (non decodee actuellement)
-      binary scan [read -nonewline $fileID] R* TimeStamp
+      set actualPosition [tell $fileID]
+
+      #--   calcule l'offset pour atteindre la fin des images
+      set endOfImages [expr { 178+$FrameCount*$ImageSize } ]
+      #--   va a la fin des images
+      seek $fileID $endOfImages start
+
+      #--   va a la fin du fichier
+      seek $fileID 0 end
+      set endOfFile [tell $fileID]
+
+      #--   s'il y a un trailer
+      #if {$endOfFile > $endOfImages} {
+         #--   scan la queue (non decodee actuellement)
+      #   binary scan [read -nonewline $fileID] R* TimeStamp
+      #   ::console::affiche_resultat "$TimeStamp\n"
+      #}
 
       chan close $fileID
 
-      #--   met a jour les variables
-      set private(imageSize) $ImageSize
-      set private(frameCount) $FrameCount
-      set private(end) $FrameCount
+      #--   met a jour les variables dans la fenetre
       set private(racine) [file rootname $private(choice)]
-      set private(current_hdu) [list $naxis1 $naxis2 $bitpix]
+      set private(start) 1
+      set private(end) $FrameCount
+
+      set private(record) $record
+      set private(frameCount) $FrameCount
+      set private(imageSize) $ImageSize
+      set private(naxis1) $naxis1
+      set private(naxis2) $naxis2
+      set private(bitpix) $bitpix
+
+      #--   debog
+      #foreach v [list LuID ColorID LittleIndian naxis1 naxis2 PixelDepth \
+      #   FrameCount Observer Instrume Telescope] {
+      #   ::console::affiche_resultat "$v [set $v]\n"
+      #}
+
    }
 
    #------------------------------------------------------------
@@ -4217,8 +4230,8 @@ namespace eval ::ser2fits {
       set newValue $private($child)
       set ok 0
 
-      if {[TestReel $newValue] == 1 && $private(start) <= $private(end) && \
-         $newValue > 0 && $newValue <= $private(frameCount)} {
+      if {([TestReel $newValue] == 1) && ($private(start) <= $private(end)) && \
+         ($newValue > 0) && ($newValue <= $private(frameCount))} {
 
          #--   remplace l'ancienne valeur par la nouvelle
          set private(prev,$child) $newValue
@@ -4267,8 +4280,8 @@ namespace eval ::ser2fits {
       dict set dicokwd BIN2      {BIN2 %s int {} {}}
       dict set dicokwd CDELT1    {CDELT1 %s double {Scale along naxis1} deg/pixel}
       dict set dicokwd CDELT2    {CDELT2 %s double {Scale along naxis2} deg/pixel}
-      dict set dicokwd DATE-BEG  {DATE-BEG %s string {Start of exposure.FITS standard} {ISO 8601}}
-      dict set dicokwd DATE-END  {DATE-END %s string {End of exposure.FITS standard} {ISO 8601}}
+      dict set dicokwd DATE-BEG  {DATE-BEG %s string {Start of video.FITS standard} {ISO 8601}}
+      dict set dicokwd DATE-END  {DATE-END %s string {End of video.FITS standard} {ISO 8601}}
       dict set dicokwd DETNAM    {DETNAM %s string {Camera used} {}}
       dict set dicokwd EQUINOX   {EQUINOX %s float {System of equatorial coordinates} {}}
       dict set dicokwd EXPOSURE  {EXPOSURE %s float {Total time of exposure} s}
@@ -4281,6 +4294,7 @@ namespace eval ::ser2fits {
       dict set dicokwd PIXSIZE1  {PIXSIZE1 %s double {Pixel Width (with binning)} um}
       dict set dicokwd PIXSIZE2  {PIXSIZE2 %s double {Pixel Height (with binning)} um}
       dict set dicokwd SWCREATE  {SWCREATE %s string {Acquisition Software} {}}
+      dict set dicokwd SWMODIFY  {SWMODIFY %s string {Processing Software} {}}
       dict set dicokwd TELESCOP  {TELESCOP %s string {Telescope (name barlow reducer)} {}}
       dict set dicokwd XPIXSZ    {XPIXSZ %s double {Pixel Width (without binning)} um}
       dict set dicokwd YPIXSZ    {YPIXSZ %s double {Pixel Height (without binning)} um}
