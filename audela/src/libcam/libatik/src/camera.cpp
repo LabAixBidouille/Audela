@@ -114,7 +114,16 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 {
 	ARTEMISPROPERTIES pProp;
 	char texte[1024];
-	int device;
+	int device=-1;
+
+   // je recupere les parametres optionnels
+   if (argc >= 5) {
+      for (int kk = 3; kk < argc - 1; kk++) {
+         if (strcmp(argv[kk], "-device") == 0) {            
+            device = atoi(argv[kk + 1]);
+         }
+      }
+   }
 
 	// Load the Artemis DLL
 	// This must be done before calling any of the other Artemis API functions.
@@ -124,14 +133,16 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 	  return -1;
 	}
 
-	// Now connect to the first available camera
-	hCam=ArtemisConnect(-1);
+	// Now connect the device (=-1 for the first available camera)
+	hCam=ArtemisConnect(device);
 	if (hCam==NULL)
 	{
 	  sprintf(cam->msg, "No camera available");
 	  return -2;
 	}
-	device=0;
+	if (device==-1) {
+		device=0;
+	}
 
    // je recupere les parametres optionnels
    if (argc >= 5) {
