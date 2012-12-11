@@ -114,7 +114,7 @@ proc ::sn_tarot::listRequest { files_to_load } {
    set n 0
    set len [ llength $files_to_load ]
 
-   set url "http://skyview.gsfc.nasa.gov/cgi-bin/images?"
+   set url "http://skyview.gsfc.nasa.gov/cgi-bin/runquery.pl"
    set sentence  "Position=%s,%s&Size=%s,%s&Pixels=%s,%s&Rotation=%s&Survey=DSS&Scaling=Linear&Projection=Tan&Coordinates=J2000&Return=FITS"
    #  Size=size[,size] - The size[s] of the image in degrees.  If only one value is given the image is square.
    #  Pixels=n[,m] - The number of pixels in the image. If only one value is given the height and width are the same.

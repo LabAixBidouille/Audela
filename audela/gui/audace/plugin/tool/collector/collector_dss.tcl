@@ -32,7 +32,7 @@
       #--   efface l'image existante
       if {[buf[visu$visuNo buf] imageready]} {visu$visuNo clear}
 
-      set url "http://skyview.gsfc.nasa.gov/cgi-bin/images?"
+      set url "http://skyview.gsfc.nasa.gov/cgi-bin/runquery.pl"
       set sentence  "Position=%s,%s&Size=%s,%s&Pixels=%s,%s&Rotation=%s&Survey=DSS&Scaling=Linear&Projection=Tan&Coordinates=J2000&Return=FITS"
 
       #  Position=ra,dec en degres
