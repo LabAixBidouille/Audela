@@ -83,6 +83,7 @@ proc ros { args } {
       set params [lrange $args 2 end]
       set err [catch {source [file join $::audela_start_dir ros_root.tcl]}] ; if {$err==1} { source "$ros(root,ros)/ros_root.tcl" }
       set ros(falsenameofexecutable) majordome
+      source "$ros(root,ros)/src/common/macros.tcl"
       source "$ros(root,ros)/src/common/variables_globales.tcl"
       unset ros(falsenameofexecutable)
       set ros(req,telescope,tel,host) $ros(req,majordome,tel,host)
@@ -135,6 +136,7 @@ proc ros { args } {
       set params [lrange $args 2 end]
       set err [catch {source [file join $::audela_start_dir ros_root.tcl]}] ; if {$err==1} { source "$ros(root,ros)/ros_root.tcl" }
       set ros(falsenameofexecutable) majordome
+      source "$ros(root,ros)/src/common/macros.tcl"
       source "$ros(root,ros)/src/common/variables_globales.tcl"
       unset ros(falsenameofexecutable)
       set ros(req,camera,cam,host) $ros(req,majordome,cam,host)
@@ -184,6 +186,7 @@ proc ros { args } {
       set params [lrange $args 2 end]
       set err [catch {source [file join $::audela_start_dir ros_root.tcl]}]
       set ros(falsenameofexecutable) majordome
+      source "$ros(root,ros)/src/common/macros.tcl"
       source "$ros(root,ros)/src/common/variables_globales.tcl"
       unset ros(falsenameofexecutable)
       set host $ros(req,majordome,gar,host)
@@ -234,6 +237,7 @@ proc ros { args } {
       set params [lrange $args 2 end]
       set err [catch {source [file join $::audela_start_dir ros_root.tcl]}] ; if {$err==1} { source "$ros(root,ros)/ros_root.tcl" }
       set ros(falsenameofexecutable) majordome
+      source "$ros(root,ros)/src/common/macros.tcl"
       source "$ros(root,ros)/src/common/variables_globales.tcl"
       unset ros(falsenameofexecutable)
       set ros(req,majordome,maj,host) $ros(req,majordome,maj,host)
