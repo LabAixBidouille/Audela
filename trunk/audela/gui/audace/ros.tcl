@@ -23,7 +23,7 @@ proc ros { args } {
       source $audace(rep_install)/bin/ros_install.tcl
       ::ros_install::run
    } elseif {$action=="gardien"} {
-      # source ../gui/audace/ros.tcl
+      # source $audace(rep_install)/gui/audace/ros.tcl
       # ros gardien send SET init|roof_open|roof_close|flatfield_on|flatfield_off|dark_on|dark_off|native
       # case of native : ros gardien send SET native Power LCOUPOLE 1
       #set syntax "ros gardien send SET init|roof_open|roof_close|flatfield_on|flatfield_off|dark_on|dark_off|native ?params?"
@@ -31,6 +31,7 @@ proc ros { args } {
       set params [lrange $args 2 end]
       set err [catch {source [file join $::audela_start_dir ros_root.tcl]}]
       set ros(falsenameofexecutable) majordome
+      source "$ros(root,ros)/src/common/macros.tcl"
       source "$ros(root,ros)/src/common/variables_globales.tcl"
       unset ros(falsenameofexecutable)
       set ros(req,gardien,gar,host) $ros(req,majordome,gar,host)
