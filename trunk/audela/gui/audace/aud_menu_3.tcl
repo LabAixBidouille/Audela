@@ -3701,7 +3701,7 @@ namespace eval ::ser2fits {
 
       #--   etape 4 : si le fichier d'info .ser.txt existe
       #     incorpore la date de prise de vue dans chaque image
-      if {$txtExist == 1} {
+      if {$txtExist == 1 || [lindex [array get bd $start] 1] ne ""} {
          for {set i $start} {$i <= $end} {incr i} {
             #--   produit un petit fichier avec l'heure
             lassign [lindex [array get bd $i] 1] kwd value type comment unit
@@ -3799,10 +3799,10 @@ namespace eval ::ser2fits {
                Telescope   {  set data [list TELESCOP [format [formatKeyword TELESCOP] $value]]}
                Diametre    {  set diametre [expr { $value/1000. }]
                               set data [list APTDIA [format [formatKeyword APTDIA] $diametre]]}
-               Début       {  lassign [formatDateObs $value] -> date_start
+               Début       {  lassign [formatDateObs4GENICAP_RECORD $value] -> date_start
                               set data [list DATE-BEG [format [formatKeyword DATE-BEG] $date_start]]
                            }
-               Fin         {  lassign [formatDateObs $value] -> date_end
+               Fin         {  lassign [formatDateObs4GENICAP_RECORD $value] -> date_end
                               set data [list DATE-END [format [formatKeyword "DATE-END"] $date_end]]
                            }
                F/D         {  set fond $value ; set data [list FOND $value]}
@@ -3833,7 +3833,7 @@ namespace eval ::ser2fits {
             regsub -all {[a-zA-Z:\s]} [string range $title 0 $index] "" imgNo
             #--   traite si necessaire
             if {$imgNo >= $private(start) && $imgNo <= $private(end)} {
-               lassign [formatDateObs $value] datemjd
+               lassign [formatDateObs4GENICAP_RECORD $value] datemjd
                array set bd [list $imgNo [format [formatKeyword MJD-OBS] $datemjd]]
             }
          }
@@ -3896,34 +3896,6 @@ namespace eval ::ser2fits {
    }
 
    #------------------------------------------------------------
-   #  formatDateObs
-   #  Formate la date
-   #  Parameter : date du fichier .ser.txt
-   #  Return : dateMJD et date ISO 8601
-   #------------------------------------------------------------
-   proc formatDateObs { date } {
-
-      lassign $date cal month day time year
-      set entities [list Jan 01 Feb 02 Mar 03 Apr 04 May 05 Jun 06 \
-         Jul 07 Aug 08 Sep 09 Oct 10 Nov 11 Dec 12]
-
-      #--   remplace le nom du mois par son numero
-      set month [string map -nocase $entities $month]
-
-      lassign [split $time ":"] h m s ms
-      if {$ms eq ""} {
-         set ms "000"
-      }
-      append s "." $ms
-
-      set datejd [mc_date2jd [list $year $month $day $h $m $s]]
-      set datemjd [expr {$datejd-2400000.5}]
-      set datett [mc_date2iso8601 $datemjd]
-
-      return [list $datemjd $datett]
-   }
-
-   #------------------------------------------------------------
    #  exploreHeader
    #  Explore le header de l'image
    #  Parameter : chemin de la combobox
@@ -3935,11 +3907,22 @@ namespace eval ::ser2fits {
       variable bd
       global audace caption
 
+      array unset bd
+
       set entities [list à a â a ç c é e è e ê e ë e î i ï i ô o ö o û u ü u ü u ' "" Observeur "" Instrument "" Telescope ""]
       set file [file join $audace(rep_images) [$w get]]
 
       set fileID [open $file r]
-      set record [read $fileID 14] ; #--   GENICAP-RECORD - LUCAM-RECORDER - PlxCapture
+      fconfigure $fileID -translation binary
+
+      #--   va a la fin du fichier
+      seek $fileID 0 end
+      #--   recupere l'adresse
+      set endOfFile [tell $fileID]
+
+      #--   retourne au debut
+      seek $fileID 0 start
+      set record [string trimright [read $fileID 14]] ; #--   GENICAP-RECORD - LUCAM-RECORDER - PlxCapture
 
       #--   scan 7 valeurs en integer32 (4 bytes)
       #--   normalement LuID = 0 ColorID = 0 monochrome LittleEndian = 0 --> donnees BigEndian
@@ -3969,29 +3952,42 @@ namespace eval ::ser2fits {
       #--   calcule le nb de bytes/image
       set ImageSize [expr { $naxis1*$naxis2*$BytePerPixel }]
 
-      set actualPosition [tell $fileID]
+      #--   decode l'horodatage de la fin de prise de vues
+      #--   si horodatage == 0001:01::03T00:00::00.000
+      #--   il n'y a pas d'indication dans le header
+      switch -exact $record {
+         "PlxCapture"      {  lassign [formatDateTime4PlxCapture [read $fileID 8]] -> endDateTime
+                              array set bd [list DATE-END [format [formatKeyword DATE-END] $endDateTime]]
+                           }
+         "LUCAM-RECORDER"  {    }
+      }
 
       #--   calcule l'offset pour atteindre la fin des images
       set endOfImages [expr { 178+$FrameCount*$ImageSize } ]
-      #--   va a la fin des images
+
+      #--   va a la fin des images pour decoder l'horodatage
       seek $fileID $endOfImages start
-
-      #--   va a la fin du fichier
-      seek $fileID 0 end
-      set endOfFile [tell $fileID]
-
-      #--   s'il y a un trailer
-      #if {$endOfFile > $endOfImages} {
-         #seek $fileID $endOfImages start
-         #--   scan la queue (non decodee actuellement)
-         #binary scan [read -nonewline $fileID] R* TimeStamp
-         #::console::affiche_resultat "$TimeStamp\n"
-      #}
+      if {$endOfFile != $endOfImages} {
+         for {set imgNo 1} {$imgNo <= $FrameCount} {incr imgNo} {
+            seek $fileID [expr { $endOfImages+($imgNo-1)*8 }] start
+            switch -exact $record {
+               "PlxCapture"      {  #--   lit 8 bytes en LittleEndian
+                                    lassign [formatDateTime4PlxCapture [read $fileID 8]] datemjd datett
+                                    array set bd [list $imgNo [format [formatKeyword MJD-OBS] $datemjd]]
+                                    if {$imgNo == 1} { set dateStart $datett }
+                                 }
+               "LUCAM-RECORDER"  {    }
+            }
+         }
+      }
 
       chan close $fileID
 
+      if {$record eq "PlxCapture"} {
+         #--   assimile l'horodatage de debut a celle de la premiere image
+         array set bd [list DATE-BEG [format [formatKeyword DATE-BEG] $dateStart]]
+      }
       #--   preparation de l'array contenant les mots cles
-      array unset bd
       if {$Instrument ne "{}"} {
          array set bd [list INSTRUME [format [formatKeyword INSTRUME] $Instrument]]
       }
@@ -4014,6 +4010,60 @@ namespace eval ::ser2fits {
       set private(naxis1) $naxis1
       set private(naxis2) $naxis2
       set private(bitpix) $bitpix
+   }
+
+   #------------------------------------------------------------
+   #  formatDateTime4PlxCapture
+   #  Formate l'horodatage
+   #  Parameter : valeur (64 bits) lue dans le fichier ser
+   #              l'unite vaut 100 ns
+   #  Return : dateMJD et date ISO 8601
+   #------------------------------------------------------------
+   proc formatDateTime4PlxCapture { data } {
+
+      #--   100 nanosecondes en duree julienne !
+      set k [expr { 100/(86400*1E9) }]
+      #--   date de reference de l'horodatage des fichiers ser
+      set refJD [mc_date2jd 0001-01-03T00:00:00.000]
+
+      #--   scanne 64 bits (nombre de 100ns ecoules depuis la reference
+      binary scan $data w count100ns
+
+      #--   calcule le temps MJD et la date ISO8601
+      set datemjd [expr { $refJD+$count100ns*$k-2400000.5 }]
+      set datett [mc_date2iso8601 $datemjd]
+
+      return [list $datemjd $datett]
+   }
+
+   #------------------------------------------------------------
+   #  formatDateObs4GENICAP_RECORD
+   #  Formate l'horodatage
+   #  Parameter : date du fichier .ser.txt
+   #  Return : dateMJD et date ISO 8601
+   #------------------------------------------------------------
+   proc formatDateObs4GENICAP_RECORD { date } {
+
+      lassign $date cal month day time year
+      set entities [list Jan 01 Feb 02 Mar 03 Apr 04 May 05 Jun 06 \
+         Jul 07 Aug 08 Sep 09 Oct 10 Nov 11 Dec 12]
+
+      #--   remplace le nom du mois par son numero
+      set month [string map -nocase $entities $month]
+
+      lassign [split $time ":"] h m s ms
+      if {$ms eq ""} {
+         set ms "000"
+      }
+      append s "." $ms
+
+      set datejd [mc_date2jd [list $year $month $day $h $m $s]]
+
+      #--   calcule le temps MJD et la date ISO8601
+      set datemjd [expr {$datejd-2400000.5}]
+      set datett [mc_date2iso8601 $datemjd]
+
+      return [list $datemjd $datett]
    }
 
    #------------------------------------------------------------
@@ -4062,7 +4112,7 @@ namespace eval ::ser2fits {
       ComboBox $this.fr1.choice -textvariable ::ser2fits::private(choice) \
          -relief sunken -height [llength  $listeSer] -width $labelwidth  \
          -values $listeSer -editable 0 \
-         -modifycmd "::ser2fits::exploreHDU $this.fr1.choice"
+         -modifycmd "::ser2fits::exploreHeader $this.fr1.choice"
       grid $this.fr1.choice -row 0 -column 1 -columnspan 3 -sticky e
 
       label $this.fr1.lab_start -text "$caption(ser2fits,start)"
