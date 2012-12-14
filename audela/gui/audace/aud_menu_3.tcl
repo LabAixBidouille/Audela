@@ -3913,7 +3913,7 @@ namespace eval ::ser2fits {
       set file [file join $audace(rep_images) [$w get]]
 
       set fileID [open $file r]
-      fconfigure $fileID -translation binary
+      fconfigure $fileID -translation auto
 
       #--   va a la fin du fichier
       seek $fileID 0 end
@@ -3923,6 +3923,7 @@ namespace eval ::ser2fits {
       #--   retourne au debut
       seek $fileID 0 start
       set record [string trimright [read $fileID 14]] ; #--   GENICAP-RECORD - LUCAM-RECORDER - PlxCapture
+      set record [list [string map -nocase $entities $record]]
 
       #--   scan 7 valeurs en integer32 (4 bytes)
       #--   normalement LuID = 0 ColorID = 0 monochrome LittleEndian = 0 --> donnees BigEndian
@@ -3933,10 +3934,10 @@ namespace eval ::ser2fits {
       #--   scan 3 noms de 40 bytes
       foreach kwd [list Observeur Instrument Telescope] {
          set $kwd [read $fileID 40]
-         #--   ote les espaces superflus
-         set $kwd [string trimright [set $kwd]]
          #--   modifie les caracteres indesirables
-         set $kwd [list [string map -nocase $entities [set $kwd]]]
+         set $kwd [string map -nocase $entities [set $kwd]]
+         #--   ote les espaces superflus
+         set $kwd [list [string trimright [set $kwd]]]
          #--   rem : pour les mots sans interet la defintion est une liste vide
       }
 
@@ -3947,46 +3948,44 @@ namespace eval ::ser2fits {
       } elseif {$PixelDepth == 12} {
          set BytePerPixel 2
          set bitpix "16"
-
       }
+
       #--   calcule le nb de bytes/image
       set ImageSize [expr { $naxis1*$naxis2*$BytePerPixel }]
 
+      fconfigure $fileID -translation binary
+
       #--   decode l'horodatage de la fin de prise de vues
-      #--   si horodatage == 0001:01::03T00:00::00.000
-      #--   il n'y a pas d'indication dans le header
-      switch -exact $record {
-         "PlxCapture"      {  lassign [formatDateTime4PlxCapture [read $fileID 8]] -> endDateTime
-                              array set bd [list DATE-END [format [formatKeyword DATE-END] $endDateTime]]
-                           }
-         "LUCAM-RECORDER"  {    }
-      }
+      #--   si pas d'indication dans le header
+      #--   horodatage == 0001:01::03T00:00::00.000
+
+      lassign [formatDateTime [read $fileID 8]] -> endDateTime
+      array set bd [list DATE-END [format [formatKeyword DATE-END] $endDateTime]]
 
       #--   calcule l'offset pour atteindre la fin des images
       set endOfImages [expr { 178+$FrameCount*$ImageSize } ]
 
-      #--   va a la fin des images pour decoder l'horodatage
+      #--   va a la fin des images pour decoder l'horodatage de chacune
       seek $fileID $endOfImages start
       if {$endOfFile != $endOfImages} {
          for {set imgNo 1} {$imgNo <= $FrameCount} {incr imgNo} {
             seek $fileID [expr { $endOfImages+($imgNo-1)*8 }] start
-            switch -exact $record {
-               "PlxCapture"      {  #--   lit 8 bytes en LittleEndian
-                                    lassign [formatDateTime4PlxCapture [read $fileID 8]] datemjd datett
-                                    array set bd [list $imgNo [format [formatKeyword MJD-OBS] $datemjd]]
-                                    if {$imgNo == 1} { set dateStart $datett }
-                                 }
-               "LUCAM-RECORDER"  {    }
+            #--   lit 8 bytes en LittleEndian
+            lassign [formatDateTime [read $fileID 8]] datemjd
+            array set bd [list $imgNo [format [formatKeyword MJD-OBS] $datemjd]]
+            #--   memorise l'horodatage du debut
+            if {$imgNo == 1} {
+               set dateStart [expr { $datemjd - 1./86400 }]
+               set dateStart [mc_date2iso8601 $dateStart]
             }
          }
       }
 
       chan close $fileID
 
-      if {$record eq "PlxCapture"} {
-         #--   assimile l'horodatage de debut a celle de la premiere image
-         array set bd [list DATE-BEG [format [formatKeyword DATE-BEG] $dateStart]]
-      }
+      #--   assimile l'horodatage de debut a celle de la premiere image
+
+      array set bd [list DATE-BEG [format [formatKeyword DATE-BEG] $dateStart]]
       #--   preparation de l'array contenant les mots cles
       if {$Instrument ne "{}"} {
          array set bd [list INSTRUME [format [formatKeyword INSTRUME] $Instrument]]
@@ -4013,21 +4012,25 @@ namespace eval ::ser2fits {
    }
 
    #------------------------------------------------------------
-   #  formatDateTime4PlxCapture
+   #  formatDateTime
    #  Formate l'horodatage
-   #  Parameter : valeur (64 bits) lue dans le fichier ser
+   #  Parameter : 8 bytes (64 bits) lus dans le fichier ser ;
    #              l'unite vaut 100 ns
    #  Return : dateMJD et date ISO 8601
    #------------------------------------------------------------
-   proc formatDateTime4PlxCapture { data } {
+   proc formatDateTime { data } {
 
       #--   100 nanosecondes en duree julienne !
       set k [expr { 100/(86400*1E9) }]
+
       #--   date de reference de l'horodatage des fichiers ser
       set refJD [mc_date2jd 0001-01-03T00:00:00.000]
 
-      #--   scanne 64 bits (nombre de 100ns ecoules depuis la reference
+      #--   scanne 64 bits (nombre de 100ns ecoules depuis la reference)
       binary scan $data w count100ns
+
+      #--   filtre les 62 bits significatifs
+      set count100ns [expr { $count100ns & 0x3fffffffffffffff }]
 
       #--   calcule le temps MJD et la date ISO8601
       set datemjd [expr { $refJD+$count100ns*$k-2400000.5 }]
