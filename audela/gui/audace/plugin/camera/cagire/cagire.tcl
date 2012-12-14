@@ -415,7 +415,7 @@ proc ::cagire::checkConfigRefroidissement { } {
 # ::cagire::setTempCCD
 #    Procedure pour retourner la consigne de temperature du CCD
 #
-proc ::cagire::setTempCCD { } {
+proc ::cagire::setTempCCD { camItem } {
    global conf
 
    return "$conf(cagire,temp)"

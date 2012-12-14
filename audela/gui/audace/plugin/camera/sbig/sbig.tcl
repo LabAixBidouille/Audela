@@ -542,7 +542,7 @@ proc ::sbig::checkConfigRefroidissement { } {
 # ::sbig::setTempCCD
 #    Procedure pour retourner la consigne de temperature du CCD
 #
-proc ::sbig::setTempCCD { } {
+proc ::sbig::setTempCCD { camItem } {
    global conf
 
    return "$conf(sbig,temp)"

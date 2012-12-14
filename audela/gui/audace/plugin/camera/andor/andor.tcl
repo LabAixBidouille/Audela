@@ -425,7 +425,7 @@ proc ::andor::checkConfigRefroidissement { } {
 # ::andor::setTempCCD
 #    Procedure pour retourner la consigne de temperature du CCD
 #
-proc ::andor::setTempCCD { } {
+proc ::andor::setTempCCD { camItem } {
    global conf
 
    return "$conf(andor,temp)"

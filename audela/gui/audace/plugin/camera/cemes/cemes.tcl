@@ -361,7 +361,7 @@ proc ::cemes::checkConfigRefroidissement { } {
 # ::cemes::setTempCCD
 #    Procedure pour retourner la consigne de temperature du CCD
 #
-proc ::cemes::setTempCCD { } {
+proc ::cemes::setTempCCD { camItem } {
    global conf
 
    return "$conf(cemes,temp)"

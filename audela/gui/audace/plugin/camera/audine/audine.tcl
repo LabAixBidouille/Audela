@@ -632,7 +632,7 @@ proc ::audine::confAudineInactif { camItem } {
 # ::audine::setTempCCD
 #    Procedure pour retourner la consigne de temperature du CCD
 #
-proc ::audine::setTempCCD { } {
+proc ::audine::setTempCCD { camItem } {
    global conf
 
    if { ! [ info exists conf(alaudine_nt,temp_ccd_souhaite) ] } {

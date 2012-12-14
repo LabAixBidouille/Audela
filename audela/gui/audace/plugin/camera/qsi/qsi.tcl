@@ -498,7 +498,7 @@ proc ::qsi::setConfigTemperature { camItem } {
 # ::fingerlakes::setTempCCD
 #    Procedure pour retourner la consigne de temperature du CCD
 #
-proc ::qsi::setTempCCD { } {
+proc ::qsi::setTempCCD { camItem } {
 
    return $::conf(qsi,setTemperature)
 }
