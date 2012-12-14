@@ -3975,8 +3975,14 @@ namespace eval ::ser2fits {
             array set bd [list $imgNo [format [formatKeyword MJD-OBS] $datemjd]]
             #--   memorise l'horodatage du debut
             if {$imgNo == 1} {
-               set dateStart [expr { $datemjd - 1./86400 }]
+               set datefirst $datemjd
+               set dateStart [expr { $datefirst - 1./86400 }]
                set dateStart [mc_date2iso8601 $dateStart]
+            }
+            if {$imgNo == 2} {
+               #--   il faut au moins deux images pour calculer l'exposition
+               set exposure [format %0.6f [expr { ($datemjd-$datefirst)*86400 }]]
+               array set bd [list EXPOSURE [format [formatKeyword EXPOSURE] $exposure]]
             }
          }
       }
