@@ -123,13 +123,13 @@ proc ::ascomcam::confToWidget { } {
 
    #--- Recupere la configuration de la camera ASCOM dans le tableau private($camItem,...)
    foreach camItem { A B C } {
-      set private($camItem,modele)  $::conf(ascomcam,$camItem,modele)
-      set private($camItem,mirh)    $::conf(ascomcam,$camItem,mirh)
-      set private($camItem,mirv)    $::conf(ascomcam,$camItem,mirv)
-      set widget($camItem,foncobtu) [ lindex "$::caption(ascomcam,obtu_ouvert) $::caption(ascomcam,obtu_ferme) $::caption(ascomcam,obtu_synchro)" $::conf(ascomcam,$camItem,foncobtu) ]
-      set private($camItem,dimPixX) $::conf(ascomcam,$camItem,dimPixX)
-      set private($camItem,dimPixY) $::conf(ascomcam,$camItem,dimPixY)
-      set private($camItem,mode)    $::conf(ascomcam,$camItem,mode)
+      set private($camItem,modele)   $::conf(ascomcam,$camItem,modele)
+      set private($camItem,mirh)     $::conf(ascomcam,$camItem,mirh)
+      set private($camItem,mirv)     $::conf(ascomcam,$camItem,mirv)
+      set private($camItem,foncobtu) [ lindex "$::caption(ascomcam,obtu_ouvert) $::caption(ascomcam,obtu_ferme) $::caption(ascomcam,obtu_synchro)" $::conf(ascomcam,$camItem,foncobtu) ]
+      set private($camItem,dimPixX)  $::conf(ascomcam,$camItem,dimPixX)
+      set private($camItem,dimPixY)  $::conf(ascomcam,$camItem,dimPixY)
+      set private($camItem,mode)     $::conf(ascomcam,$camItem,mode)
    }
 }
 
@@ -141,12 +141,13 @@ proc ::ascomcam::widgetToConf { camItem } {
    variable private
 
    #--- Memorise la configuration de la camera ASCOM dans le tableau conf(ascomcam,...)
-   set ::conf(ascomcam,$camItem,modele)  $private($camItem,modele)
-   set ::conf(ascomcam,$camItem,mirh)    $private($camItem,mirh)
-   set ::conf(ascomcam,$camItem,mirv)    $private($camItem,mirv)
-   set ::conf(ascomcam,$camItem,dimPixX) $private($camItem,dimPixX)
-   set ::conf(ascomcam,$camItem,dimPixY) $private($camItem,dimPixY)
-   set ::conf(ascomcam,$camItem,mode)    $private($camItem,mode)
+   set ::conf(ascomcam,$camItem,modele)   $private($camItem,modele)
+   set ::conf(ascomcam,$camItem,mirh)     $private($camItem,mirh)
+   set ::conf(ascomcam,$camItem,mirv)     $private($camItem,mirv)
+   set ::conf(ascomcam,$camItem,foncobtu) [ lsearch "$::caption(ascomcam,obtu_ouvert) $::caption(ascomcam,obtu_ferme) $::caption(ascomcam,obtu_synchro)" "$private($camItem,foncobtu)" ]
+   set ::conf(ascomcam,$camItem,dimPixX)  $private($camItem,dimPixX)
+   set ::conf(ascomcam,$camItem,dimPixY)  $private($camItem,dimPixY)
+   set ::conf(ascomcam,$camItem,mode)     $private($camItem,mode)
 }
 
 #
@@ -561,13 +562,13 @@ proc ::ascomcam::setShutter { camItem shutterState ShutterOptionList } {
          #--- j'envoie la commande a la camera
          cam$private($camItem,camNo) shutter "closed"
          #--- je mets a jour le widget dans la fenetre de configuration si elle est ouverte
-         set widget($camItem,foncobtu) $::caption(ascomcam,obtu_ferme)
+         set private($camItem,foncobtu) $::caption(ascomcam,obtu_ferme)
       }
       2  {
          #--- j'envoie la commande a la camera
          cam$private($camItem,camNo) shutter "synchro"
          #--- je mets a jour le widget dans la fenetre de configuration si elle est ouverte
-         set widget($camItem,foncobtu) $::caption(ascomcam,obtu_synchro)
+         set private($camItem,foncobtu) $::caption(ascomcam,obtu_synchro)
       }
    }
 }

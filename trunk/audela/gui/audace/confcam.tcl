@@ -499,7 +499,7 @@ proc ::confCam::setTempCCD { camItem } {
    global conf
 
    if { [ ::confCam::getPluginProperty $camItem hasSetTemp ] == "1" } {
-      return [ format "%+4.1f" [ ::$conf(camera,$camItem,camName)::setTempCCD ] ]
+      return [ format "%+4.1f" [ ::$conf(camera,$camItem,camName)::setTempCCD $camItem ] ]
    } else {
       return ""
    }

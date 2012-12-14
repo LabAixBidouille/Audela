@@ -425,7 +425,7 @@ proc ::andorusb::checkConfigRefroidissement { } {
 # ::andorusb::setTempCCD
 #    Procedure pour retourner la consigne de temperature du CCD
 #
-proc ::andorusb::setTempCCD { } {
+proc ::andorusb::setTempCCD { camItem } {
    global conf
 
    return "$conf(andorusb,temp)"

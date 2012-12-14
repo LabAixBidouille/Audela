@@ -431,7 +431,7 @@ proc ::fingerlakes::checkConfigRefroidissement { } {
 # ::fingerlakes::setTempCCD
 #    Procedure pour retourner la consigne de temperature du CCD
 #
-proc ::fingerlakes::setTempCCD { } {
+proc ::fingerlakes::setTempCCD { camItem } {
    global conf
 
    return "$conf(fingerlakes,temp)"
