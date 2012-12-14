@@ -82,17 +82,23 @@ proc ::atik::initPlugin { } {
    global conf caption
 
    #--- Initialise les variables de la camera Atik
-   if { ! [ info exists conf(atik,cool) ] }     { set conf(atik,cool)     "0" }
-   if { ! [ info exists conf(atik,foncobtu) ] } { set conf(atik,foncobtu) "0" }
-   if { ! [ info exists conf(atik,mirh) ] }     { set conf(atik,mirh)     "0" }
-   if { ! [ info exists conf(atik,mirv) ] }     { set conf(atik,mirv)     "0" }
-   if { ! [ info exists conf(atik,temp) ] }     { set conf(atik,temp)     "-10" }
+   foreach camItem { A B C } {
+      if { ! [ info exists conf(atik,$camItem,device) ] }   { set conf(atik,$camItem,device)   "0" }
+      if { ! [ info exists conf(atik,$camItem,cool) ] }     { set conf(atik,$camItem,cool)     "0" }
+      if { ! [ info exists conf(atik,$camItem,foncobtu) ] } { set conf(atik,$camItem,foncobtu) "0" }
+      if { ! [ info exists conf(atik,$camItem,mirh) ] }     { set conf(atik,$camItem,mirh)     "0" }
+      if { ! [ info exists conf(atik,$camItem,mirv) ] }     { set conf(atik,$camItem,mirv)     "0" }
+      if { ! [ info exists conf(atik,$camItem,temp) ] }     { set conf(atik,$camItem,temp)     "-10" }
+
+      #--- Initialisation
+      set private($camItem,power)   "$caption(atik,puissance_peltier_--)"
+      set private($camItem,ccdTemp) "$caption(atik,temperature_CCD)"
+   }
 
    #--- Initialisation
    set private(A,camNo) "0"
    set private(B,camNo) "0"
    set private(C,camNo) "0"
-   set private(ccdTemp) "$caption(atik,temperature_CCD)"
 }
 
 #
@@ -104,11 +110,14 @@ proc ::atik::confToWidget { } {
    global caption conf
 
    #--- Recupere la configuration de la camera Atik dans le tableau private(...)
-   set private(cool)     $conf(atik,cool)
-   set private(foncobtu) [ lindex "$caption(atik,obtu_synchro) $caption(atik,obtu_ferme)" $conf(atik,foncobtu) ]
-   set private(mirh)     $conf(atik,mirh)
-   set private(mirv)     $conf(atik,mirv)
-   set private(temp)     $conf(atik,temp)
+   foreach camItem { A B C } {
+      set private($camItem,device)   $conf(atik,$camItem,device)
+      set private($camItem,cool)     $conf(atik,$camItem,cool)
+      set private($camItem,foncobtu) [ lindex "$caption(atik,obtu_synchro) $caption(atik,obtu_ferme)" $conf(atik,$camItem,foncobtu) ]
+      set private($camItem,mirh)     $conf(atik,$camItem,mirh)
+      set private($camItem,mirv)     $conf(atik,$camItem,mirv)
+      set private($camItem,temp)     $conf(atik,$camItem,temp)
+   }
 }
 
 #
@@ -120,11 +129,12 @@ proc ::atik::widgetToConf { camItem } {
    global caption conf
 
    #--- Memorise la configuration de la camera Atik dans le tableau conf(atik,...)
-   set conf(atik,cool)     $private(cool)
-   set conf(atik,foncobtu) [ lsearch "$caption(atik,obtu_synchro) $caption(atik,obtu_ferme)" "$private(foncobtu)" ]
-   set conf(atik,mirh)     $private(mirh)
-   set conf(atik,mirv)     $private(mirv)
-   set conf(atik,temp)     $private(temp)
+   set conf(atik,$camItem,device)   $private($camItem,device)
+   set conf(atik,$camItem,cool)     $private($camItem,cool)
+   set conf(atik,$camItem,foncobtu) [ lsearch "$caption(atik,obtu_synchro) $caption(atik,obtu_ferme)" "$private($camItem,foncobtu)" ]
+   set conf(atik,$camItem,mirh)     $private($camItem,mirh)
+   set conf(atik,$camItem,mirv)     $private($camItem,mirv)
+   set conf(atik,$camItem,temp)     $private($camItem,temp)
 }
 
 #
@@ -157,11 +167,11 @@ proc ::atik::fillConfigPage { frm camItem } {
 
             #--- Miroirs en x et en y
             checkbutton $frm.frame1.frame3.frame4.mirx -text "$caption(atik,miroir_x)" -highlightthickness 0 \
-               -variable ::atik::private(mirh)
+               -variable ::atik::private($camItem,mirh)
             pack $frm.frame1.frame3.frame4.mirx -anchor w -side top -padx 20 -pady 10
 
             checkbutton $frm.frame1.frame3.frame4.miry -text "$caption(atik,miroir_y)" -highlightthickness 0 \
-               -variable ::atik::private(mirv)
+               -variable ::atik::private($camItem,mirv)
             pack $frm.frame1.frame3.frame4.miry -anchor w -side top -padx 20 -pady 10
 
          pack $frm.frame1.frame3.frame4 -anchor n -side left -fill x -padx 20
@@ -174,10 +184,10 @@ proc ::atik::fillConfigPage { frm camItem } {
 
                #--- Definition du refroidissement
                checkbutton $frm.frame1.frame3.frame5.frame6.cool -text "$caption(atik,refroidissement)" \
-                  -highlightthickness 0 -variable ::atik::private(cool) -command "::atik::checkConfigRefroidissement"
+                  -highlightthickness 0 -variable ::atik::private($camItem,cool) -command "::atik::checkConfigRefroidissement $camItem"
                pack $frm.frame1.frame3.frame5.frame6.cool -anchor center -side left -padx 0 -pady 5
 
-               entry $frm.frame1.frame3.frame5.frame6.temp -textvariable ::atik::private(temp) -width 4 \
+               entry $frm.frame1.frame3.frame5.frame6.temp -textvariable ::atik::private($camItem,temp) -width 4 \
                   -justify center \
                   -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double -274 50 }
                pack $frm.frame1.frame3.frame5.frame6.temp -anchor center -side left -padx 5 -pady 5
@@ -188,18 +198,49 @@ proc ::atik::fillConfigPage { frm camItem } {
 
             pack $frm.frame1.frame3.frame5.frame6 -side top -fill x -padx 10
 
-            #--- Frame de la temperature du capteur CCD
+            #--- Frame de la puissance de refroidissement
             frame $frm.frame1.frame3.frame5.frame7 -borderwidth 0 -relief raised
 
-               #--- Definition de la temperature du capteur CCD
-               label $frm.frame1.frame3.frame5.frame7.ccdtemp -textvariable ::atik::private(ccdTemp)
-               pack $frm.frame1.frame3.frame5.frame7.ccdtemp -side left -fill x -padx 20 -pady 5
+               label $frm.frame1.frame3.frame5.frame7.power -textvariable ::atik::private($camItem,power)
+               pack $frm.frame1.frame3.frame5.frame7.power -side left -fill x -padx 20 -pady 5
 
             pack $frm.frame1.frame3.frame5.frame7 -side top -fill x -padx 30
+
+            #--- Frame de la temperature du capteur CCD
+            frame $frm.frame1.frame3.frame5.frame8 -borderwidth 0 -relief raised
+
+               #--- Definition de la temperature du capteur CCD
+               label $frm.frame1.frame3.frame5.frame8.ccdtemp -textvariable ::atik::private($camItem,ccdTemp)
+               pack $frm.frame1.frame3.frame5.frame8.ccdtemp -side left -fill x -padx 20 -pady 5
+
+            pack $frm.frame1.frame3.frame5.frame8 -side top -fill x -padx 30
 
          pack $frm.frame1.frame3.frame5 -side left -fill x -expand 0
 
       pack $frm.frame1.frame3 -side top -fill x -expand 0
+
+      #--- Frame du device
+      frame $frm.frame1.frame3.frame9 -borderwidth 0 -relief raised
+
+         #--- Definition du Device
+         label $frm.frame1.frame3.frame9.lab1 -text "$caption(atik,device)"
+         pack $frm.frame1.frame3.frame9.lab1 -anchor center -side left -padx 0 -pady 5
+
+         #--- Je constitue la liste des canaux USB
+         set list_combobox [ list 0 1 2 3 4 5 ]
+
+         #--- Choix du Device
+         ComboBox $frm.frame1.frame3.frame9.port \
+            -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
+            -height [ llength $list_combobox ] \
+            -relief sunken  \
+            -borderwidth 1  \
+            -textvariable ::atik::private($camItem,device) \
+            -editable 0     \
+            -values $list_combobox
+         pack $frm.frame1.frame3.frame9.port -anchor center -side left -padx 0 -pady 5
+
+      pack $frm.frame1.frame3.frame9 -anchor nw -side left -padx 20
 
       #--- Frame du mode de fonctionnement de l'obturateur
       frame $frm.frame1.frame8 -borderwidth 0 -relief raised
@@ -208,14 +249,14 @@ proc ::atik::fillConfigPage { frm camItem } {
          label $frm.frame1.frame8.lab3 -text "$caption(atik,fonc_obtu)"
          pack $frm.frame1.frame8.lab3 -anchor nw -side left -padx 10 -pady 5
 
-         set list_combobox [ list $caption(atik,obtu_synchro) $caption(atik,obtu_ferme)  ]
+         set list_combobox [ list $caption(atik,obtu_synchro) $caption(atik,obtu_ferme) ]
          ComboBox $frm.frame1.frame8.foncobtu \
             -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
             -height [ llength $list_combobox ] \
             -relief sunken      \
             -borderwidth 1      \
             -editable 0         \
-            -textvariable ::atik::private(foncobtu) \
+            -textvariable ::atik::private($camItem,foncobtu) \
             -values $list_combobox
          pack $frm.frame1.frame8.foncobtu -anchor nw -side left -padx 0 -pady 5
 
@@ -236,7 +277,7 @@ proc ::atik::fillConfigPage { frm camItem } {
    pack $frm.frame2 -side bottom -fill x -pady 2
 
    #--- Gestion des widgets actifs/inactifs
-   ::atik::checkConfigRefroidissement
+   ::atik::checkConfigRefroidissement $camItem
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm
@@ -256,13 +297,13 @@ proc ::atik::configureCamera { camItem bufNo } {
          error "" "" "CameraUnique"
       }
       #--- Je cree la camera
-      set camNo [ cam::create atik USB -debug_directory $::audace(rep_log) ]
+      set camNo [ cam::create atik USB -device $conf(atik,$camItem,device) -debug_directory $::audace(rep_log) ]
       console::affiche_entete "$caption(atik,port_camera) $caption(atik,2points) [ cam$camNo port ]\n"
       console::affiche_saut "\n"
       #--- Je change de variable
       set private($camItem,camNo) $camNo
       #--- Je configure l'obturateur
-      switch -exact -- $conf(atik,foncobtu) {
+      switch -exact -- $conf(atik,$camItem,foncobtu) {
          0 {
             cam$camNo shutter "synchro"
          }
@@ -271,18 +312,18 @@ proc ::atik::configureCamera { camItem bufNo } {
          }
       }
       #--- Je configure le refroidissement
-      if { $conf(atik,cool) == "1" } {
+      if { $conf(atik,$camItem,cool) == "1" } {
          cam$camNo cooler on
-         cam$camNo cooler check $conf(atik,temp)
+         cam$camNo cooler check $conf(atik,$camItem,temp)
       } else {
          cam$camNo cooler off
       }
       #--- J'associe le buffer de la visu
       cam$camNo buf $bufNo
       #--- Je configure l'oriention des miroirs par defaut
-      cam$camNo mirrorh $conf(atik,mirh)
-      cam$camNo mirrorv $conf(atik,mirv)
-      #--- Je mesure la temperature du capteur CCD
+      cam$camNo mirrorh $conf(atik,$camItem,mirh)
+      cam$camNo mirrorv $conf(atik,$camItem,mirv)
+      #--- Je mesure la temperature du capteur CCD et la puissance du Peltier
       if { [ info exists private(aftertemp) ] == "0" } {
          ::atik::dispTempAtik $camItem
       }
@@ -312,21 +353,30 @@ proc ::atik::stop { camItem } {
 
 #
 # ::atik::dispTempAtik
-#    Affiche la temperature du CCD
+#    Affiche la temperature du CCD et la puissance du Peltier
 #
 proc ::atik::dispTempAtik { camItem } {
    variable private
    global caption
 
-   if { [ catch { set temp_ccd [ cam$private($camItem,camNo) temperature ] } ] == "0" } {
-      set temp_ccd [ format "%+5.2f" $temp_ccd ]
-      set private(ccdTemp)   "$caption(atik,temperature_CCD) $temp_ccd $caption(atik,deg_c)"
+   if { [ catch { set tempstatus [ cam$private($camItem,camNo) infotemp ] } ] == "0" } {
+      set temp_check                [ format "%+5.1f" [ lindex $tempstatus 0 ] ]
+      set temp_ccd                  [ format "%+5.1f" [ lindex $tempstatus 1 ] ]
+      set temp_ambiant              [ format "%+5.1f" [ lindex $tempstatus 2 ] ]
+      set regulation                [ lindex $tempstatus 3 ]
+      set private($camItem,power)   "$caption(atik,puissance_peltier) [ format "%3.0f" [ expr 100.*[ lindex $tempstatus 4 ]/255. ] ] %"
+      set private($camItem,ccdTemp) "$caption(atik,temperature_CCD) $temp_ccd $caption(atik,deg_c)"
       set private(aftertemp) [ after 5000 ::atik::dispTempAtik $camItem ]
    } else {
-      set temp_ccd ""
-      set private(ccdTemp) "$caption(atik,temperature_CCD) $temp_ccd"
+      set temp_check                ""
+      set temp_ccd                  ""
+      set temp_ambiant              ""
+      set regulation                ""
+      set power                     "--"
+      set private($camItem,power)   "$caption(atik,puissance_peltier) $power"
+      set private($camItem,ccdTemp) "$caption(atik,temperature_CCD) $temp_ccd"
       if { [ info exists private(aftertemp) ] == "1" } {
-         unset private(aftertemp)
+        unset private(aftertemp)
       }
    }
 }
@@ -335,20 +385,22 @@ proc ::atik::dispTempAtik { camItem } {
 # ::atik::checkConfigRefroidissement
 #    Configure le widget de la consigne en temperature
 #
-proc ::atik::checkConfigRefroidissement { } {
+proc ::atik::checkConfigRefroidissement { camItem } {
    variable private
 
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
-         if { $::atik::private(cool) == "1" } {
+         if { $::atik::private($camItem,cool) == "1" } {
             pack $frm.frame1.frame3.frame5.frame6.temp -anchor center -side left -padx 5 -pady 5
             pack $frm.frame1.frame3.frame5.frame6.tempdeg -side left -fill x -padx 0 -pady 5
-            $frm.frame1.frame3.frame5.frame7.ccdtemp configure -state normal
+            $frm.frame1.frame3.frame5.frame7.power configure -state normal
+            $frm.frame1.frame3.frame5.frame8.ccdtemp configure -state normal
          } else {
             pack forget $frm.frame1.frame3.frame5.frame6.temp
             pack forget $frm.frame1.frame3.frame5.frame6.tempdeg
-            $frm.frame1.frame3.frame5.frame7.ccdtemp configure -state disabled
+            $frm.frame1.frame3.frame5.frame7.power configure -state disabled
+            $frm.frame1.frame3.frame5.frame8.ccdtemp configure -state disabled
          }
       }
    }
@@ -358,10 +410,10 @@ proc ::atik::checkConfigRefroidissement { } {
 # ::atik::setTempCCD
 #    Procedure pour retourner la consigne de temperature du CCD
 #
-proc ::atik::setTempCCD { } {
+proc ::atik::setTempCCD { camItem } {
    global conf
 
-   return "$conf(atik,temp)"
+   return "$conf(atik,$camItem,temp)"
 }
 
 #
@@ -372,7 +424,7 @@ proc ::atik::setShutter { camItem shutterState ShutterOptionList } {
    variable private
    global caption conf
 
-   set conf(atik,foncobtu) $shutterState
+   set conf(atik,$camItem,foncobtu) $shutterState
    set camNo $private($camItem,camNo)
 
    #--- Gestion du mode de fonctionnement
@@ -381,13 +433,13 @@ proc ::atik::setShutter { camItem shutterState ShutterOptionList } {
          #--- j'envoie la commande a la camera
          cam$camNo shutter "synchro"
          #--- je mets a jour le widget dans la fenetre de configuration si elle est ouverte
-         set private(foncobtu) $caption(atik,obtu_synchro)
+         set private($camItem,foncobtu) $caption(atik,obtu_synchro)
       }
       1  {
          #--- j'envoie la commande a la camera
          cam$camNo shutter "closed"
          #--- je mets a jour le widget dans la fenetre de configuration si elle est ouverte
-         set private(foncobtu) $caption(atik,obtu_ferme)
+         set private($camItem,foncobtu) $caption(atik,obtu_ferme)
       }
    }
 }
@@ -437,7 +489,7 @@ proc ::atik::getPluginProperty { camItem propertyName } {
       hasVideo         { return 0 }
       hasWindow        { return 1 }
       longExposure     { return 1 }
-      multiCamera      { return 0 }
+      multiCamera      { return 1 }
       name             {
          if { $private($camItem,camNo) != "0" } {
             return [ cam$private($camItem,camNo) name ]
