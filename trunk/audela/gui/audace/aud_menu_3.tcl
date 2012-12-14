@@ -3989,9 +3989,10 @@ namespace eval ::ser2fits {
 
       chan close $fileID
 
-      #--   assimile l'horodatage de debut a celle de la premiere image
-
-      array set bd [list DATE-BEG [format [formatKeyword DATE-BEG] $dateStart]]
+      if {[info exists dateStart]} {
+         #--   assimile l'horodatage de debut a celle de la premiere image
+         array set bd [list DATE-BEG [format [formatKeyword DATE-BEG] $dateStart]]
+      }
       #--   preparation de l'array contenant les mots cles
       if {$Instrument ne "{}"} {
          array set bd [list INSTRUME [format [formatKeyword INSTRUME] $Instrument]]
@@ -4040,7 +4041,11 @@ namespace eval ::ser2fits {
 
       #--   calcule le temps MJD et la date ISO8601
       set datemjd [expr { $refJD+$count100ns*$k-2400000.5 }]
-      set datett [mc_date2iso8601 $datemjd]
+      if {$datemjd != "-678575.0"} {
+         set datett [mc_date2iso8601 $datemjd]
+      } else {
+         set datett "0001-01-03T00:00:00.000"
+      }
 
       return [list $datemjd $datett]
    }
@@ -4079,11 +4084,14 @@ namespace eval ::ser2fits {
    #  buildGui
    #  Interface graphique
    #------------------------------------------------------------
-   proc buildGui { visuNo } {
+   proc buildGui { visuNo args } {
       variable private
       global audace conf caption color
 
-      set listeSer [glob -nocomplain -type f -tails -directory $audace(rep_images) *ser]
+      set listeSer {}
+      foreach extension { SER Ser ser } {
+         set listeSer [ concat $listeSer [glob -nocomplain -type f -tails -directory $audace(rep_images) *.$extension]]
+      }
 
       #--   arrete si la liste est vide
       if {$listeSer eq ""} {
@@ -4143,7 +4151,7 @@ namespace eval ::ser2fits {
 
       entry $this.fr1.dest -textvariable ::ser2fits::private(dest) \
          -justify right -width $labelwidth -state disabled
-      grid $this.fr1.dest -row 2 -column 1 -columnspan 3 -sticky e
+      grid $this.fr1.dest -row 2 -column 1 -columnspan 3 -sticky ew
       $this.fr1.dest xview end
 
       #--   cree le bouton "..."
@@ -4177,11 +4185,11 @@ namespace eval ::ser2fits {
          }
          #-- specialisation des boutons
          if {[winfo exists $this.cmd.ok]} {
-            $this.cmd.ok configure -command "::ser2fits::cmdOk $this"
+            $this.cmd.ok configure -command "::ser2fits::cmdOk $this $visuNo"
          }
          $this.cmd.apply configure -command "::ser2fits::cmdApply $this"
          $this.cmd.hlp configure   -command "::audace::showHelpItem $::help(dir,images) 1180ser2fits.htm"
-         $this.cmd.close configure -command "::ser2fits::cmdClose $this"
+         $this.cmd.close configure -command "::ser2fits::cmdClose $this $visuNo"
 
       pack $this.cmd -side bottom -fill both
 
@@ -4199,6 +4207,10 @@ namespace eval ::ser2fits {
       ::ser2fits::exploreHeader $this.fr1.choice
       set private(end) $private(frameCount)
       set private(prev,end) $private(end)
+
+      if {[trace info variable audace(rep_images)] eq ""} {
+         trace add variable audace(rep_images) write "::ser2fits::buildGui $visuNo"
+      }
 
       #--- La fenetre est active
       focus $this
@@ -4224,18 +4236,22 @@ namespace eval ::ser2fits {
    #  Parameter : chemin de la fenetre
    #  Commande du bouton 'OK'
    #------------------------------------------------------------
-   proc cmdOk { this } {
+   proc cmdOk { this visuNo } {
 
       cmdApply $this
-      cmdClose $this
+      cmdClose $this $visuNo
    }
 
    #------------------------------------------------------------
    #  cmdClose
    #  Commande du bouton 'Fermer'
    #------------------------------------------------------------
-   proc cmdClose { this } {
-      global conf
+   proc cmdClose { this visuNo } {
+      global audace conf
+
+      if {[trace info variable audace(rep_images)] ne ""} {
+         trace remove variable audace(rep_images) write "::ser2fits::buildGui $visuNo"
+      }
 
       #--   equivalent de widgetToConf
       regsub {([0-9]+x[0-9]+)} [wm geometry $this] "" conf(ser2fits,position)
