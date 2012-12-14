@@ -4116,7 +4116,7 @@ namespace eval ::ser2fits {
       wm resizable $this 0 0
       wm title $this "$caption(audace,menu,ser2fits)"
       wm geometry $this $conf(ser2fits,position)
-      wm protocol $this WM_DELETE_WINDOW "::ser2fits::cmdClose $this"
+      wm protocol $this WM_DELETE_WINDOW "::ser2fits::cmdClose $this $visuNo"
 
       frame $this.fr1 -relief raised -borderwidth 1
       pack $this.fr1 -side top -ipady 5 -fill both -expand yes
