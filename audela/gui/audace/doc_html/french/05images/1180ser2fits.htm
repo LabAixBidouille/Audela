@@ -5,19 +5,20 @@
 
 
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /><title>Conversion SER -&gt; FITS</title></head><body>
-<p class="date">Date de mise &#224; jour : 14 d&#233;cembre
+<p class="date">Date de mise &#224; jour : 15 d&#233;cembre
 2012</p>
-<h1>Conversion et extraction du format SER vers FITS</h1>
+<h1>Extraction et conversion du format SER vers FITS</h1>
 <h2>1. Analyse</h2>
 <p>AudeLA ne sait pas visualiser les images des vid&#233;os au
-format SER produites par certaines cam&#233;ras et logiciels
-associ&#233;s (GENICAP-RECORD, Plxcapture, LUCAM-RECORDER)
-utilis&#233;es en astronomie.<br />
+format SER produites par certaines cam&#233;ras (par exemple
+Basler, iNova, Lumenera) et logiciels associ&#233;s
+(GENICAP-RECORD, Plxcapture, LUCAM-RECORDER) utilis&#233;es en
+astronomie plan&#233;taire.<br />
 Bien que limit&#233;es &#224; 8 ou 12 bits, ces cam&#233;ras sont
 int&#233;ressantes dans la mesure o&#249; elles disposent de
 r&#233;glages plus souples que les webcams, plus
-particuli&#232;rement en mati&#232;re d'horodatage, de binning,
-d'AOI, etc.</p>
+particuli&#232;rement en mati&#232;re de temps d'exposition, de
+binning, d'AOI, d'horodatage, etc.</p>
 <p>Merci &#224; <b>Raoul Behrend</b> de l'Observatoire de
 Gen&#232;ve pour son aide pr&#233;cieuse.</p>
 <h2>2. Ce que fait cette fonction</h2>
@@ -55,7 +56,8 @@ les mots cl&#233;s que si l'information est disponible.</li>
 <li>Un horodatage tel que <b>0001:01:03T00:00:00.000</b> ne
 signifie pas que le propri&#233;taire de la cam&#233;ra a
 voyag&#233; dans le temps mais que l'incr&#233;ment par rapport
-au temps 0 de l'horodatage est nul.</li>
+au temps 0 (3 janvier de l'an 1 &#224; 00h00h00s) de l'horodatage
+est nul, en fait non sp&#233;cifi&#233;.</li>
 <li>Le temps d'exposition est approch&#233; par la
 diff&#233;rence entre deux horodatages, donc il faut au moins
 deux images.</li>
