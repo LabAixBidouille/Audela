@@ -292,10 +292,6 @@ proc ::atik::configureCamera { camItem bufNo } {
    global caption conf
 
    set catchResult [ catch {
-      #--- je verifie que la camera n'est deja utilisee
-      if { $private(A,camNo) != 0 || $private(B,camNo) != 0 || $private(C,camNo) != 0  } {
-         error "" "" "CameraUnique"
-      }
       #--- Je cree la camera
       set camNo [ cam::create atik USB -device $conf(atik,$camItem,device) -debug_directory $::audace(rep_log) ]
       console::affiche_entete "$caption(atik,port_camera) $caption(atik,2points) [ cam$camNo port ]\n"
