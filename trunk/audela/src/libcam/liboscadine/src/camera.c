@@ -17,7 +17,7 @@
 #include <libcam/util.h>
 
 #include "camera.h"
-#include "Oscadine_driver.h"
+#include "oscadine_driver.h"
 
 /*
  *  Definition of different cameras supported by this driver

@@ -10,5 +10,6 @@ OBJ += $(patsubst $(LIBCAMDIR)/%.c, %.o, $(filter $(LIBCAMDIR)/%.c, $(SRC)))
 
 include ../../../Makefile1
 
-CFLAGS += -Wextra
-LDFLAGS  += -L/home/damien/svn/audela/sources/audela/src/libcam/liboscadine/src/driver -lOscadineDriver
+CFLAGS += -Wextra -I $(EXTINC)
+CXXFLAGS += -I $(EXTINC)
+LDFLAGS  += -L$(EXTLIB) -lOscadineDriver
