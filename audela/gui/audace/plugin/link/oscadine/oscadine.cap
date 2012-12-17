@@ -1,0 +1,106 @@
+#
+# Fichier : oscadine.cap
+# Mise a jour $Id$
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(oscadine,titre)                        "Oscadine"
+set caption(oscadine,settingsTitle)                "Settings"
+set caption(oscadine,shutdownLed)                  "Shutdown Power Led"
+set caption(oscadine,hideOverscan)                 "Hide Overscan"
+set caption(oscadine,websiteLabel)                 "Reference Web Site:"
+set caption(oscadine,websiteURL)                   "http://www.oscadi.com"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(oscadine,titre)                     "Oscadine"
+   set caption(oscadine,settingsTitle)             "Paramètres"
+   set caption(oscadine,shutdownLed)               "Eteindre la led de fonctionnement"
+   set caption(oscadine,hideOverscan)              "Masquer l'overscan"
+   set caption(oscadine,websiteLabel)              "Site Web de référence :"
+   set caption(oscadine,websiteURL)                "http://www.oscadi.com"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(oscadine,titre)                     "Oscadine"
+   set caption(oscadine,settingsTitle)             "Parametri"
+   set caption(oscadine,shutdownLed)               "# Eteindre la led de fonctionnement"
+   set caption(oscadine,hideOverscan)              "# Masquer l'overscan"
+   set caption(oscadine,websiteLabel)              "Sito Web di riferimento:"
+   set caption(oscadine,websiteURL)                "http://www.oscadi.com"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(oscadine,titre)                     "Oscadine"
+   set caption(oscadine,settingsTitle)             "Parametros"
+   set caption(oscadine,shutdownLed)               "# Eteindre la led de fonctionnement"
+   set caption(oscadine,hideOverscan)              "# Masquer l'overscan"
+   set caption(oscadine,websiteLabel)              "Sitio Web de referencia:"
+   set caption(oscadine,websiteURL)                "http://www.oscadi.com"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(oscadine,titre)                     "Oscadine"
+   set caption(oscadine,settingsTitle)             "Parametern"
+   set caption(oscadine,shutdownLed)               "# Eteindre la led de fonctionnement"
+   set caption(oscadine,hideOverscan)              "# Masquer l'overscan"
+   set caption(oscadine,websiteLabel)              "Referenz Webseite:"
+   set caption(oscadine,websiteURL)                "http://www.oscadi.com"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(oscadine,titre)                     "Oscadine"
+   set caption(oscadine,settingsTitle)             "Parâmetros"
+   set caption(oscadine,shutdownLed)               "# Eteindre la led de fonctionnement"
+   set caption(oscadine,hideOverscan)              "# Masquer l'overscan"
+   set caption(oscadine,websiteLabel)              "Site Web de referência:"
+   set caption(oscadine,websiteURL)                "http://www.oscadi.com"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(oscadine,titre)                     "Oscadine"
+   set caption(oscadine,settingsTitle)             "Settings"
+   set caption(oscadine,shutdownLed)               "Shutdown Power Led"
+   set caption(oscadine,hideOverscan)              "Hide Overscan"
+   set caption(oscadine,websiteLabel)              "Reference Web Site:"
+   set caption(oscadine,websiteURL)                "http://www.oscadi.com"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(oscadine,titre)                     "Oscadine"
+   set caption(oscadine,settingsTitle)             "Settings"
+   set caption(oscadine,shutdownLed)               "Shutdown Power Led"
+   set caption(oscadine,hideOverscan)              "Hide Overscan"
+   set caption(oscadine,websiteLabel)              "Reference Web Site:"
+   set caption(oscadine,websiteURL)                "http://www.oscadi.com"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(oscadine,titre)                     "Oscadine"
+   set caption(oscadine,settingsTitle)             "Settings"
+   set caption(oscadine,shutdownLed)               "Shutdown Power Led"
+   set caption(oscadine,hideOverscan)              "Hide Overscan"
+   set caption(oscadine,websiteLabel)              "Reference Web Site:"
+   set caption(oscadine,websiteURL)                "http://www.oscadi.com"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
