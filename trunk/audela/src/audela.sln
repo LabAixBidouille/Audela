@@ -292,6 +292,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libtelsimu", "libtel\libtel
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libatik", "libcam\libatik\vc90\libatik.vcproj", "{627780D7-8F17-48D4-8781-500E4F36F59D}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_oscadine", "external\oscadine\vc90\external_oscadine.vcproj", "{B69AB115-89F5-4F66-93BE-6141A400BAE5}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "liboscadine", "libcam\liboscadine\vc90\liboscadine.vcproj", "{1FB15802-D2AA-4B0D-8D69-F50E8EC1C5E3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B69AB115-89F5-4F66-93BE-6141A400BAE5} = {B69AB115-89F5-4F66-93BE-6141A400BAE5}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -670,6 +677,14 @@ Global
 		{627780D7-8F17-48D4-8781-500E4F36F59D}.Debug|Win32.Build.0 = Debug|Win32
 		{627780D7-8F17-48D4-8781-500E4F36F59D}.Release|Win32.ActiveCfg = Release|Win32
 		{627780D7-8F17-48D4-8781-500E4F36F59D}.Release|Win32.Build.0 = Release|Win32
+		{B69AB115-89F5-4F66-93BE-6141A400BAE5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B69AB115-89F5-4F66-93BE-6141A400BAE5}.Debug|Win32.Build.0 = Debug|Win32
+		{B69AB115-89F5-4F66-93BE-6141A400BAE5}.Release|Win32.ActiveCfg = Release|Win32
+		{B69AB115-89F5-4F66-93BE-6141A400BAE5}.Release|Win32.Build.0 = Release|Win32
+		{1FB15802-D2AA-4B0D-8D69-F50E8EC1C5E3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1FB15802-D2AA-4B0D-8D69-F50E8EC1C5E3}.Debug|Win32.Build.0 = Debug|Win32
+		{1FB15802-D2AA-4B0D-8D69-F50E8EC1C5E3}.Release|Win32.ActiveCfg = Release|Win32
+		{1FB15802-D2AA-4B0D-8D69-F50E8EC1C5E3}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
