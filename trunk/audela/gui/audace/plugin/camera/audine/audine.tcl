@@ -159,7 +159,7 @@ proc ::audine::fillConfigPage { frm camItem } {
    }
 
    #--- Je constitue la liste des liaisons pour l'acquisition des images
-   set list_combobox [ ::confLink::getLinkLabels { "parallelport" "quickaudine" "ethernaude" "audinet" } ]
+   set list_combobox [ ::confLink::getLinkLabels { "parallelport" "quickaudine" "oscadine" "ethernaude" "audinet" } ]
 
    #--- Je verifie le contenu de la liste
    if { [ llength $list_combobox ] > 0 } {
@@ -202,7 +202,7 @@ proc ::audine::fillConfigPage { frm camItem } {
             button $frm.frame1.frame5.frame10.configure -text "$caption(audine,configurer)" -relief raised \
                -command {
                   ::confLink::run ::audine::private(port) \
-                     { "parallelport" "quickaudine" "ethernaude" "audinet" } \
+                     { "parallelport" "quickaudine" "oscadine" "ethernaude" "audinet" } \
                      "- $caption(audine,acquisition) - $caption(audine,camera)"
                }
             pack $frm.frame1.frame5.frame10.configure -side right -pady 10 -ipadx 10 -ipady 1 -expand true
@@ -429,6 +429,17 @@ proc ::audine::configureCamera { camItem bufNo } {
             cam$camNo delayshutter $conf(quickaudine,delayshutter)
             #--- Je configure la vitesse de lecture de chaque pixel
             cam$camNo speed $conf(quickaudine,canspeed)
+            #--- Je cree la liaison utilisee par la camera pour l'acquisition
+            set linkNo [ ::confLink::create $conf(audine,port) "cam$camNo" "acquisition" "" ]
+         }
+         oscadine {
+            #--- Je cree la camera
+            set camNo [ cam::create oscadine $conf(audine,port) \
+               -debug_directory $::audace(rep_log) \
+               -name Audine \
+               -ccd $ccd \
+               -ledsettings $conf(oscadine,ledsettings) \
+               -overscansettings $conf(oscadine,overscansettings) ]
             #--- Je cree la liaison utilisee par la camera pour l'acquisition
             set linkNo [ ::confLink::create $conf(audine,port) "cam$camNo" "acquisition" "" ]
          }
@@ -710,27 +721,30 @@ proc ::audine::getPluginProperty { camItem propertyName } {
          switch [ ::confLink::getLinkNamespace $::conf(audine,port) ] {
             "parallelport" { return [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
             "quickaudine"  { return [ list 1x1 2x2 3x3 4x4 ] }
-            "audinet"      { return [ list 1x1 2x2 3x3 4x4 ] }
+            "oscadine"     { return [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
             "ethernaude"   { return [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
+            "audinet"      { return [ list 1x1 2x2 3x3 4x4 ] }
          }
       }
       binningXListScan {
          switch [ ::confLink::getLinkNamespace $::conf(audine,port) ] {
             "parallelport" { return [ list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 ] }
             "quickaudine"  { return [ list "" ] }
-            "audinet"      { return [ list "" ] }
+            "oscadine"     { return [ list "" ] }
             "ethernaude"   { return [ list 1 2 ] }
+            "audinet"      { return [ list "" ] }
          }
       }
       binningYListScan {
          switch [ ::confLink::getLinkNamespace $::conf(audine,port) ] {
             "parallelport" { return [ list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 ] }
             "quickaudine"  { return [ list "" ] }
-            "audinet"      { return [ list "" ] }
+            "oscadine"     { return [ list "" ] }
             "ethernaude"   { return [ list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 \
                                            15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 \
                                            35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 \
                                            55 56 57 58 59 60 61 62 63 64 ] }
+            "audinet"      { return [ list "" ] }
          }
       }
       dynamic          { return [ list 32767 -32768 ] }
@@ -741,8 +755,9 @@ proc ::audine::getPluginProperty { camItem propertyName } {
          switch [ ::confLink::getLinkNamespace $::conf(audine,port) ] {
             "parallelport" { return 1 }
             "quickaudine"  { return 0 }
-            "audinet"      { return 0 }
+            "oscadine"     { return 0 }
             "ethernaude"   { return 1 }
+            "audinet"      { return 0 }
          }
       }
       hasShutter       { return 1 }
@@ -791,13 +806,17 @@ proc ::audine::getPluginProperty { camItem propertyName } {
                #--- F + S
                return [ list $::caption(audine,obtu_ferme) $::caption(audine,obtu_synchro) ]
             }
-            "audinet" {
+            "oscadine" {
                #--- O + F + S
                return [ list $::caption(audine,obtu_ouvert) $::caption(audine,obtu_ferme) $::caption(audine,obtu_synchro) ]
             }
             "ethernaude" {
                #--- F + S
                return [ list $::caption(audine,obtu_ferme) $::caption(audine,obtu_synchro) ]
+            }
+            "audinet" {
+               #--- O + F + S
+               return [ list $::caption(audine,obtu_ouvert) $::caption(audine,obtu_ferme) $::caption(audine,obtu_synchro) ]
             }
          }
       }
