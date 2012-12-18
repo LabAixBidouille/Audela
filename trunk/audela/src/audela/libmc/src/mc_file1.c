@@ -391,6 +391,10 @@ void mc_lec_obs_mpc(char *nom_fichier_in, struct observ *obs, int *nbobs)
       nn=0;
       do {
          if (fgets(ligne,120,fichier_station)!=NULL) {
+            col1=1;col2=4;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
+				if (strcmp(texte,"Code")==0) {
+					continue;
+				}
             nn++;
             col1=1;col2=3;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
             strcpy((stati+nn)->codmpc,texte);
@@ -475,7 +479,7 @@ void mc_lec_obs_mpc(char *nom_fichier_in, struct observ *obs, int *nbobs)
                   if ((check_station==PB)||(strcmp((obs+n)->codmpc,"   ")==0)) {
                      cod=PB;
                   } else {
-                     rewind(fichier_station);
+                     /*rewind(fichier_station);*/
                      cod=PB;
                      nn=0;
                      do {
