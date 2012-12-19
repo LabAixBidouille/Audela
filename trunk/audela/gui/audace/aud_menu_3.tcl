@@ -3735,8 +3735,8 @@ namespace eval ::ser2fits {
    proc extractImg { fitsFile startAdress bitpix } {
       variable private
 
-      #--   longueur du HDU FITS
-      set hduLength 2880
+      #--   longueur du header FITS
+      set headerLength 2880
 
       set srcID [open $private(src) r]
       fconfigure $srcID -translation binary
@@ -3744,7 +3744,7 @@ namespace eval ::ser2fits {
       fconfigure $destID -translation binary
 
       seek $srcID $startAdress
-      seek $destID $hduLength
+      seek $destID $headerLength
 
       if {$bitpix == 8} {
          puts -nonewline $destID [read $srcID $private(imageSize)]
@@ -4089,8 +4089,14 @@ namespace eval ::ser2fits {
       global audace conf caption color
 
       set listeSer {}
-      foreach extension { SER Ser ser } {
-         set listeSer [ concat $listeSer [glob -nocomplain -type f -tails -directory $audace(rep_images) *.$extension]]
+       if { $::tcl_platform(platform) == "windows" } {
+         #--- la recherche de l'extension est insensible aux minuscules/majuscules ... sous windows uniquement
+         set listeSer [glob -nocomplain -type f -tails -directory $audace(rep_images) *.ser]
+      } else {
+         #--- la recherche de l'extension est _sensible_ aux minuscules/majuscules dans tous les autres cas
+         foreach extension { SER ser Ser } {
+            set listeSer [ concat $listeSer [ glob -nocomplain -type f -directory $audace(rep_images) *.$extension ] ]
+         }
       }
 
       #--   arrete si la liste est vide
