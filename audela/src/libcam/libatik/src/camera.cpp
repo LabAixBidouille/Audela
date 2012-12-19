@@ -287,8 +287,12 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 
 void cam_stop_exp(struct camprop *cam)
 {
-	//ArtemisAbortExposure(hCam);
-	ArtemisStopExposure(hCam);
+	if (cam->mode_stop_acq==0) {
+		ArtemisStopExposure(hCam);
+	} else {
+		ArtemisAbortExposure(hCam);
+	}
+	cam->stop_detected=1;
 	return;
 }
 

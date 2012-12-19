@@ -79,6 +79,7 @@ struct cmditem {
    {"debug", (Tcl_CmdProc *)cmdCamDebug},\
    {"threadid", (Tcl_CmdProc *)cmdCamThreadId},\
    {"headerproc", (Tcl_CmdProc *)cmdCamHeaderProc},\
+   {"stopmode", (Tcl_CmdProc *)cmdCamStopMode},\
 
 
 

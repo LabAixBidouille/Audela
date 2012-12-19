@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="libaudela"
 	ProjectGUID="{5A1A1AAC-22A5-4E69-A441-0488B3F9DC4C}"
 	RootNamespace="libaudela"
