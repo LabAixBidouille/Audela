@@ -78,6 +78,7 @@ int cmdFwhm(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdBitpix(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdPhotom(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdBarycenter(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdAphot(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 int cmdTtMirrorX(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTtMirrorY(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
@@ -125,6 +126,7 @@ int cmdDMTestVariance(ClientData clientData, Tcl_Interp *interp, int argc, char 
 
 static struct cmditem cmdlist[] = {
    {(char*)"add", (Tcl_CmdProc *)cmdTtAdd},
+   {(char*)"aphot", (Tcl_CmdProc *)cmdAphot},
    {(char*)"autocuts", (Tcl_CmdProc *)cmdAutocuts},
    {(char*)"barycenter", (Tcl_CmdProc *)cmdBarycenter},
    {(char*)"binx", (Tcl_CmdProc *)cmdBinX},
@@ -2338,6 +2340,122 @@ int cmdAstroPhot(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
          }
       }
       Tcl_Free((char*)listArgv);
+   }
+   return retour;
+}
+
+//==============================================================================
+// buf$i aphot xc yc rmax step
+//   Fonction de calcul de photometrie d'ouvertures circulaires de 0 a rmax par pas de step pixels
+//
+int cmdAphot(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+	int retour=TCL_OK;
+	char s[128];
+
+	if((argc<6)) {
+      sprintf(s,"Usage: %s %s xc yc rmax_pixel step_pixel ",argv[0],argv[1]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      retour = TCL_ERROR;
+   } else {
+	   Tcl_DString dsptr;
+		Tcl_DStringInit(&dsptr);
+		double xc = atof(argv[2]);
+		double yc = atof(argv[3]);
+		double rmax = atof(argv[4]);
+		double step = atof(argv[5]);
+		double R;
+	   CBuffer *buffer;
+      buffer = (CBuffer*)clientData;
+      int naxis1 = buffer->GetWidth();
+      int naxis2 = buffer->GetHeight();
+		double totaladu0=0,totalsurface0=0;
+		// --- boucle sur les ouvertures
+		for (R=0 ; R<=rmax ; R+=step) {
+			int xmin=(int)(floor(xc-R));
+			int xmax=(int)(ceil(xc+R));
+			int ymin=(int)(floor(yc-R));
+			int ymax=(int)(ceil(yc+R));
+			int err=0;
+         if (xmin<1) { sprintf(s,"rmax too large or (xc,yc) outside the limits. xmin=%d < 1",xmin); err=1; }
+         if (xmax>naxis1) { sprintf(s,"rmax too large or (xc,yc) outside the limits. xmax=%d > %d",xmax,naxis1); err=1; }
+         if (ymin<1) { sprintf(s,"rmax too large or (xc,yc) outside the limits. ymin=%d < 1",ymin); err=1; }
+         if (ymax>naxis2) { sprintf(s,"rmax too large or (xc,yc) outside the limits. ymin=%d > %d",ymax,naxis2); err=1; }
+			if (err==1) {
+				Tcl_DStringAppend(&dsptr,s,-1);
+				retour=TCL_ERROR;
+				break;
+			}
+			double x1,x2,y1,y2;
+			double p11,p12,p21,p22,R2,frac;
+			double dx1,dx2,dy1,dy2;
+			R2=R*R;
+			double totaladu=0,totalsurface=0;
+			double courone0,integ=0;
+			for (int x=xmin ; x<=xmax ; x++) {
+				x1=x-0.5; dx1=x1-xc;
+				x2=x+0.5; dx2=x2-xc;
+				for (int y=ymin ; y<=ymax ; y++) {
+					y1=y-0.5; dy1=y1-yc;
+					y2=y+0.5; dy2=y2-yc;
+					p11=dx1*dx1+dy1*dy1;
+					p12=dx1*dx1+dy2*dy2;
+					p21=dx2*dx2+dy1*dy1;
+					p22=dx2*dx2+dy2*dy2;
+					sprintf(s,"%f : %f %f %f %f",R2,p11,p12,p21,p22);
+					if ((p11>R2)&&(p12>R2)&&(p21>R2)&&(p22>R2)) {
+						frac=0;
+					} else if ((p11<R2)&&(p12<R2)&&(p21<R2)&&(p22<R2)) {
+						frac=1;
+					} else {
+						double dxx,dyy,p;
+						double over = 1./100;
+						int inside=0, total=0;
+						if ((p11<R2)&&(p12<R2)&&(p21<R2)&&(p22<R2)) {
+							p=0;
+						}
+						for (double xx=x1 ; xx<=x2 ; xx+=over) {
+							dxx=xx-xc;
+							for (double yy=y1 ; yy<=y2 ; yy+=over) {
+								dyy=yy-yc;
+								p=dxx*dxx+dyy*dyy;
+								total++;
+								if (p<=R2) {
+									inside++;
+								}
+							}
+						}
+						frac=double(inside)/total;
+					}
+					if (frac>0) {
+                  int plane;
+						double flux;
+                  TYPE_PIXELS val1, val2, val3;
+                  buffer->GetPix(&plane, &val1, &val2, &val3, x-1, y-1);
+                  if ( plane == 1 ) {
+                     flux = (double)(val1);
+                  } else {
+                     flux = (double)((val1 + val2 + val3 ) /3);
+                  }
+						totaladu+=flux;
+						totalsurface+=frac;
+					}
+				}
+			}
+			// --- add result for that aperture
+			double courone=0;
+			if ((totalsurface-totalsurface0)>0) {
+				courone=(totaladu-totaladu0)/(totalsurface-totalsurface0);
+			}
+			integ=totaladu-courone*totalsurface;
+			sprintf(s,"{%f %f %f %f %f} ",R,totalsurface,totaladu,courone,integ);
+			Tcl_DStringAppend(&dsptr,s,-1);
+			totaladu0=totaladu;
+			totalsurface0=totalsurface;
+			courone0=courone;
+		}
+      Tcl_DStringResult(interp,&dsptr);
+      Tcl_DStringFree(&dsptr);
    }
    return retour;
 }

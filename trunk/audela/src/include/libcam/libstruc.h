@@ -113,6 +113,8 @@ struct Capabilities {
    struct Capabilities capabilities; \
    int  blockingAcquisition; \
    int  acquisitionInProgress; \
+	int mode_stop_acq; \
+	int stop_detected; \
    int darkBufNo; \
    char *darkFileName; \
    struct camprop *next

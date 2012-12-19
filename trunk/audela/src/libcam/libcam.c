@@ -151,6 +151,7 @@ static int cmdCamInterrupt(ClientData clientData, Tcl_Interp * interp, int argc,
 static int cmdCamClose(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 static int cmdCamDebug(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 static int cmdCamHeaderProc(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+static int cmdCamStopMode(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 
 static int cam_init_common(struct camprop *cam, int argc, char **argv);
 
@@ -1017,6 +1018,28 @@ static void AcqRead(ClientData clientData )
    interp = cam->interpCam;
    strcpy(errorMessage,"");
 
+	// cam->mode_stop_acq, 0=read after stop 1=let the previous image without reading (abort acquisition)
+	if ((cam->mode_stop_acq==1)&&(cam->stop_detected==1)) {
+		if (cam->timerExpiration != NULL) {
+			setCameraStatus(cam,interp,"stand");
+		}
+		cam->clockbegin = 0;
+
+		if (cam->timerExpiration != NULL) {
+			Tcl_DeleteTimerHandler(cam->timerExpiration->TimerToken);
+			free(cam->timerExpiration);
+			cam->timerExpiration = NULL;
+		}
+
+		if ( cam->blockingAcquisition == 1 ) {
+			// je prepare le message d'erreur qui sera retourne par cmdCamAcq
+			strcpy(cam->msg,errorMessage);
+		}
+		// je signale a cmdCamAcq que l'acquisition est terminée
+		cam->acquisitionInProgress = 0;
+		return;
+	}
+
    // Information par defaut concernant l'image
    // ATTENTION : la camera peut mettre a jour ces valeurs pendant l'execution de read_ccd()
    strcpy(cam->pixels_classe, "CLASS_GRAY");
@@ -1345,6 +1368,7 @@ static int cmdCamAcq(ClientData clientData, Tcl_Interp * interp, int argc, char 
          Tcl_Eval(interp, "clock seconds");
          cam->clockbegin = (unsigned long) atoi(interp->result);
 
+			cam->stop_detected=0;
          CAM_DRV.start_exp(cam, "amplioff");
 
          if(strcmp(cam->msg,"")!= 0 ) {
@@ -1983,6 +2007,24 @@ static int cmdCamMirrorV(ClientData clientData, Tcl_Interp * interp, int argc, c
    return result;
 }
 
+static int cmdCamStopMode(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+{
+   char ligne[256];
+   struct camprop *cam;
+   cam = (struct camprop *) clientData;
+   if ((argc >= 3)) {
+		cam->mode_stop_acq=atoi(argv[2]);
+		if (cam->mode_stop_acq<1) {
+			cam->mode_stop_acq=0;
+		} else {
+			cam->mode_stop_acq=1;
+		}
+	}
+   sprintf(ligne, "%d", cam->mode_stop_acq);
+   Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+   return TCL_OK;
+}
+
 static int cmdCamClose(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
    struct camprop *cam;
@@ -2070,6 +2112,8 @@ static int cam_init_common(struct camprop *cam, int argc, char **argv)
 
    /* --- Decode les options de cam::create en fonction de argv[>=3] --- */
    cam->index_cam = 0;
+	cam->mode_stop_acq=1; // 0=read after stop 1=let the previous image without reading
+	cam->stop_detected=0;
    strcpy(cam->portname,"unknown");
    strcpy(logFileName,"libcam.log");
    if (argc >= 5) {
