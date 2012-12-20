@@ -26,9 +26,9 @@
 #include <exception>
 #include <time.h>               /* time, ftime, strftime, localtime */
 #include <sys/timeb.h>          /* ftime, struct timebuffer */
+#include "ArtemisHSCAPI.h"      /* do not include this in camera.h */
 #include "camera.h"
 
-#include "ArtemisHSCAPI.h"      /* do not include this in camera.h */
 
 #ifdef __cplusplus
 extern "C" {
@@ -108,8 +108,6 @@ struct cam_drv_t CAM_DRV = {
 /* Il faut donc, au moins laisser ces fonctions vides.       */
 /* ========================================================= */
 
-ArtemisHandle hCam=NULL;
-
 int cam_init(struct camprop *cam, int argc, char **argv)
 {
 	ARTEMISPROPERTIES pProp;
@@ -124,6 +122,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
          }
       }
    }
+	cam->hCam=NULL;
 
 	// Load the Artemis DLL
 	// This must be done before calling any of the other Artemis API functions.
@@ -134,8 +133,8 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 	}
 
 	// Now connect the device (=-1 for the first available camera)
-	hCam=ArtemisConnect(device);
-	if (hCam==NULL)
+	cam->hCam=ArtemisConnect(device);
+	if (cam->hCam==NULL)
 	{
 	  sprintf(cam->msg, "No camera available");
 	  return -2;
@@ -160,7 +159,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 	strncat(CAM_INI[cam->index_cam].name, texte,sizeof(CAM_INI[cam->index_cam].name) -1 );
 
    // Fills in pProp with camera properties
-   if (ArtemisProperties(hCam,&pProp)==0) {
+   if (ArtemisProperties(cam->hCam,&pProp)==0) {
       // je recupere la largeur et la hauteur du CCD en pixels (en pixel sans binning)
       cam->nb_photox  = pProp.nPixelsX;
       cam->nb_photoy  = pProp.nPixelsY;
@@ -179,12 +178,12 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 	strncat(cam->serial_number,texte,sizeof(cam->serial_number) -1 );
 
 	int w,h;
-	ArtemisGetSubframe(hCam,&cam->x1,&cam->y1,&w,&h);
+	ArtemisGetSubframe(cam->hCam,&cam->x1,&cam->y1,&w,&h);
    cam->x1 = 0;
    cam->y1 = 0;
    cam->x2 = w - 1;
    cam->y2 = h - 1;
-	ArtemisGetBin(hCam,&cam->binx,&cam->biny);
+	ArtemisGetBin(cam->hCam,&cam->binx,&cam->biny);
    cam_update_window(cam);	// met a jour x1,y1,x2,y2,h,w dans cam
 
 	/////////////////////////////////////////////////
@@ -200,7 +199,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 
 int cam_close(struct camprop * cam)
 {
-	ArtemisDisconnect(hCam);
+	ArtemisDisconnect(cam->hCam);
 	ArtemisUnLoadDLL();
    return 0;
 }
@@ -262,15 +261,15 @@ void cam_update_window(struct camprop *cam)
 void cam_start_exp(struct camprop *cam, char *amplionoff)
 {
 	// Don't switch amplifier off for short exposures
-	ArtemisSetAmplifierSwitched(hCam, (1000*cam->exptime)>2.5f);
+	ArtemisSetAmplifierSwitched(cam->hCam, (1000*cam->exptime)>2.5f);
 
 	// window
 	int w = cam->x2 - cam->x1 +1;
 	int h = cam->y2 - cam->y1 +1;
-	ArtemisSubframe(hCam,cam->x1,cam->y1,w,h);
+	ArtemisSubframe(cam->hCam,cam->x1,cam->y1,w,h);
 
 	// binning
-	ArtemisBin(hCam,cam->binx,cam->biny);
+	ArtemisBin(cam->hCam,cam->binx,cam->biny);
 
 	// Enable/disable dark mode - ie the shutter is to be kept closed during exposures
 	bool bEnable = 0;
@@ -278,19 +277,19 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 		/* case : shutter always off (Darks) */
 		bEnable = 1;
 	}
-	ArtemisSetDarkMode(hCam,bEnable);
+	ArtemisSetDarkMode(cam->hCam,bEnable);
 
 	// Start the exposure
-	ArtemisStartExposure(hCam,cam->exptime);
+	ArtemisStartExposure(cam->hCam,cam->exptime);
 
 }
 
 void cam_stop_exp(struct camprop *cam)
 {
 	if (cam->mode_stop_acq==0) {
-		ArtemisStopExposure(hCam);
+		ArtemisStopExposure(cam->hCam);
 	} else {
-		ArtemisAbortExposure(hCam);
+		ArtemisAbortExposure(cam->hCam);
 	}
 	cam->stop_detected=1;
 	return;
@@ -300,16 +299,16 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
 {
 
 	// Wait until it's ready, 
-	while(!ArtemisImageReady(hCam))
+	while(!ArtemisImageReady(cam->hCam))
 	{
 		Sleep(100);
 	}
 
 	// Get dimensions of image
 	//int x,y,wid,hgt,binx,biny;
-	//ArtemisGetImageData(hCam, &x, &y, &wid, &hgt, &binx, &biny);
+	//ArtemisGetImageData(cam->hCam, &x, &y, &wid, &hgt, &binx, &biny);
 
-	unsigned short* pimg=(unsigned short*)ArtemisImageBuffer(hCam);
+	unsigned short* pimg=(unsigned short*)ArtemisImageBuffer(cam->hCam);
 
     // je copie l'image dans le buffer
     for( int y=0; y <cam->h; y++) {
@@ -339,7 +338,7 @@ void cam_measure_temperature(struct camprop *cam)
 {
 	if (cam->cooler_implemented==1) {
 		int temperature;
-		ArtemisTemperatureSensorInfo(hCam,1,&temperature);
+		ArtemisTemperatureSensorInfo(cam->hCam,1,&temperature);
 		cam->temperature = (double)temperature/100.0;
 	} else {
 		cam->temperature = 0;
@@ -352,14 +351,14 @@ void cam_cooler_on(struct camprop *cam)
 	if (cam->cooler_implemented==1) {
 		int setpoint;
 		setpoint=(int)(cam->check_temperature*100);
-		ArtemisSetCooling(hCam,setpoint);
+		ArtemisSetCooling(cam->hCam,setpoint);
 	}
 }
 
 void cam_cooler_off(struct camprop *cam)
 {
 	if (cam->cooler_implemented==1) {
-		ArtemisCoolerWarmUp(hCam);
+		ArtemisCoolerWarmUp(cam->hCam);
 	}
 }
 
@@ -368,7 +367,7 @@ void cam_cooler_check(struct camprop *cam)
 	if (cam->cooler_implemented==1) {
 		int setpoint;
 		setpoint=(int)(cam->check_temperature*100);
-		ArtemisSetCooling(hCam,setpoint);
+		ArtemisSetCooling(cam->hCam,setpoint);
 	}
 }
 
@@ -401,7 +400,7 @@ void atik_cooler_informations(struct camprop *cam)
 	// Error code on error
 	int err,flags,level, minlvl, maxlvl,setpoint;
 	int temperature;
-	err=ArtemisCoolingInfo(hCam,&flags,&level,&minlvl,&maxlvl,&setpoint);
+	err=ArtemisCoolingInfo(cam->hCam,&flags,&level,&minlvl,&maxlvl,&setpoint);
 	if (err==ARTEMIS_OK) {
 		cam->cooler_implemented=1;
 	} else {
@@ -419,7 +418,7 @@ void atik_cooler_informations(struct camprop *cam)
 	cam->minlvl=minlvl;
 	cam->maxlvl=maxlvl;
 	cam->current_temperature_setpoint=(float)(setpoint/100.);
-	ArtemisTemperatureSensorInfo(hCam,1,&temperature);
+	ArtemisTemperatureSensorInfo(cam->hCam,1,&temperature);
 	cam->temperature = (double)temperature/100.0;
 }
 

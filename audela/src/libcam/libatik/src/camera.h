@@ -46,6 +46,7 @@
 #include "libname.h"
 #include <libcam/libstruc.h>
 
+typedef void* ArtemisHandle;
 #define MAX_LOADSTRING 100
 #define ARTEMISDLLNAME "ArtemisHSC.dll"
 
@@ -77,6 +78,7 @@ struct camprop {
 	int minlvl;
 	int maxlvl;
 	float current_temperature_setpoint;
+	ArtemisHandle hCam;
 };
 
 void atik_cooler_informations(struct camprop *cam);
