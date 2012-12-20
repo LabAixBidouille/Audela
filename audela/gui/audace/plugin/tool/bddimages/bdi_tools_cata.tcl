@@ -296,19 +296,14 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
 
 
 
-proc ::tools_cata::get_cata_xml { catafile } {
+   proc ::tools_cata::get_cata_xml { catafile } {
 
-       global bddconf
+      global bddconf
 
-
-      
-    set fields ""
-
-         #gren_info "get_cata_xml = $catafile \n"
-         set fxml [open $catafile "r"]
-         set data [read $fxml]
-         close $fxml
-         #gren_info "data = $data \n"
+      set fields ""
+      set fxml [open $catafile "r"]
+      set data [read $fxml]
+      close $fxml
 
       set motif  "<vot:TABLE\\s+?name=\"(.+?)\"\\s+?nrows=(.+?)>(?:.*?)</vot:TABLE>"
       set res [regexp -all -inline -- $motif $data]
@@ -340,7 +335,6 @@ proc ::tools_cata::get_cata_xml { catafile } {
             }
          }
 
-
          incr cpt
       }
       
@@ -363,7 +357,7 @@ proc ::tools_cata::get_cata_xml { catafile } {
       
       return [list $fields $lso]
 
-}
+   }
 
 
 
@@ -372,18 +366,7 @@ proc ::tools_cata::get_cata_xml { catafile } {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-proc ::tools_cata::get_table { name table } {
+   proc ::tools_cata::get_table { name table } {
 
 
       set motif  "<vot:FIELD(?:.*?)name=\"(.+?)\"(?:.*?)</vot:FIELD>"
@@ -429,7 +412,7 @@ proc ::tools_cata::get_table { name table } {
       
       #gren_info "lls = $lls \n"
       return [list $listfield $lls]
-}
+   }
 
 
 
@@ -496,7 +479,7 @@ proc ::tools_cata::get_table { name table } {
          set listsources [ identification $listsources IMG $tycho2 TYCHO2 $::tools_cata::treshold_ident_pos_star $::tools_cata::treshold_ident_mag_star {} $log]
          set ::tools_cata::nb_tycho2 [::manage_source::get_nb_sources_by_cata $listsources TYCHO2]
       }
-      
+
       if {$::tools_cata::use_ucac2} {
          #gren_info "CMD: csucac2 $::tools_cata::catalog_ucac2 $ra $dec $radius\n"
          set ucac2 [csucac2 $::tools_cata::catalog_ucac2 $ra $dec $radius]
@@ -508,7 +491,7 @@ proc ::tools_cata::get_table { name table } {
          set listsources [ identification $listsources IMG $ucac2 UCAC2 $::tools_cata::treshold_ident_pos_star $::tools_cata::treshold_ident_mag_star {} $log]
          set ::tools_cata::nb_ucac2 [::manage_source::get_nb_sources_by_cata $listsources UCAC2]
       }
-      
+
       if {$::tools_cata::use_ucac3} {
          #gren_info "CMD: csucac3 $::tools_cata::catalog_ucac3 $ra $dec $radius\n"
          set ucac3 [csucac3 $::tools_cata::catalog_ucac3 $ra $dec $radius]
@@ -520,7 +503,7 @@ proc ::tools_cata::get_table { name table } {
          set listsources [ identification $listsources IMG $ucac3 UCAC3 $::tools_cata::treshold_ident_pos_star $::tools_cata::treshold_ident_mag_star {} $log]
          set ::tools_cata::nb_ucac3 [::manage_source::get_nb_sources_by_cata $listsources UCAC3]
       }
-      
+   
       if {$::tools_cata::use_skybot} {
          set dateobs     [lindex [::bddimages_liste::lget $tabkey DATE-OBS   ] 1]
          set exposure    [lindex [::bddimages_liste::lget $tabkey EXPOSURE   ] 1]
@@ -547,7 +530,7 @@ proc ::tools_cata::get_table { name table } {
          #after 1000
          #gren_info "nb_skybot ident = $::tools_cata::nb_skybot\n"
       }
-      
+
       gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $listsources]\n"
 
       # Creation de la VOTable en memoire
@@ -569,22 +552,19 @@ proc ::tools_cata::get_table { name table } {
          } else {
             set ::tools_cata::current_image [::bddimages_liste::lupdate $::tools_cata::current_image "cataexist" 1]
          }
-
-
       }
 
       set ::tools_cata::current_listsources $listsources
 
       return true
 
-::manage_source::imprim_3_sources $::tools_cata::current_listsources
-gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
-set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
-set votable [::votableUtil::list2votable $::tools_cata::current_listsources $tabkey]
-set fxml [open $cataxml "w"]
-puts $fxml $votable
-close $fxml
-
+#::manage_source::imprim_3_sources $::tools_cata::current_listsources
+#gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
+#set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
+#set votable [::votableUtil::list2votable $::tools_cata::current_listsources $tabkey]
+#set fxml [open $cataxml "w"]
+#puts $fxml $votable
+#close $fxml
 
    }
 

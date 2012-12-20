@@ -694,7 +694,6 @@ namespace eval gui_cata {
 
    proc ::gui_cata::get_cata { } {
 
-
          $::gui_cata::gui_create configure -state disabled
          $::gui_cata::gui_fermer configure -state disabled
 
@@ -716,7 +715,9 @@ namespace eval gui_cata {
                } else {
                   set ::gui_cata::color_cata $::gui_cata::color_button_good
                   $::gui_cata::gui_cata configure -bg $::gui_cata::color_cata
+
                   ::gui_cata::affiche_cata
+
                }
             } else {
                # TODO gerer l'erreur le wcs a echou?
@@ -755,43 +756,43 @@ namespace eval gui_cata {
 
    proc ::gui_cata::get_all_cata { } {
 
-         cleanmark
-         while {1==1} {
-            if { $::tools_cata::boucle == 0 } {
-               break
-            }
-            if {[::gui_cata::get_one_wcs] == true} {
-                
-               set ::gui_cata::color_wcs $::gui_cata::color_button_good
-               $::gui_cata::gui_wcs configure -bg $::gui_cata::color_wcs
-               if {[::tools_cata::get_cata] == false} {
-                  # TODO gerer l'erreur le  cata a echou?
-                  set ::gui_cata::color_cata $::gui_cata::color_button_bad
-                  $::gui_cata::gui_cata configure -bg $::gui_cata::color_cata
-                  set ::tools_cata::boucle 0
-                  ::gui_cata::affiche_current_image
-                  break
-               } else {
-                  # Ok ca se passe bien
-                  set ::gui_cata::color_cata $::gui_cata::color_button_good
-                  $::gui_cata::gui_cata configure -bg $::gui_cata::color_cata
-                  update
-                  
-                  cleanmark
-                  
-                  ::gui_cata::affiche_current_image
-                  ::gui_cata::affiche_cata
-               }
-            } else {
-               # TODO gerer l'erreur le wcs a echou?
-               set ::gui_cata::color_wcs $::gui_cata::color_button_bad
-               $::gui_cata::gui_wcs configure -bg $::gui_cata::color_wcs
-               cleanmark
-               break
-            }
-            if {$::tools_cata::id_current_image == $::tools_cata::nb_img_list} { break }
-            ::gui_cata::next
+      cleanmark
+      while {1==1} {
+         if { $::tools_cata::boucle == 0 } {
+            break
          }
+         if {[::gui_cata::get_one_wcs] == true} {
+             
+            set ::gui_cata::color_wcs $::gui_cata::color_button_good
+            $::gui_cata::gui_wcs configure -bg $::gui_cata::color_wcs
+            if {[::tools_cata::get_cata] == false} {
+               # TODO gerer l'erreur le  cata a echou?
+               set ::gui_cata::color_cata $::gui_cata::color_button_bad
+               $::gui_cata::gui_cata configure -bg $::gui_cata::color_cata
+               set ::tools_cata::boucle 0
+               ::gui_cata::affiche_current_image
+               break
+            } else {
+               # Ok ca se passe bien
+               set ::gui_cata::color_cata $::gui_cata::color_button_good
+               $::gui_cata::gui_cata configure -bg $::gui_cata::color_cata
+               update
+               
+               cleanmark
+               
+               ::gui_cata::affiche_current_image
+               ::gui_cata::affiche_cata
+            }
+         } else {
+            # TODO gerer l'erreur le wcs a echou?
+            set ::gui_cata::color_wcs $::gui_cata::color_button_bad
+            $::gui_cata::gui_wcs configure -bg $::gui_cata::color_wcs
+            cleanmark
+            break
+         }
+         if {$::tools_cata::id_current_image == $::tools_cata::nb_img_list} { break }
+         ::gui_cata::next
+      }
 
    }
 
@@ -815,16 +816,12 @@ namespace eval gui_cata {
       }
       
       set listsources [::tools_cata::get_cata_xml $catafile]
-      
       set listsources [::tools_sources::set_common_fields $listsources IMG    { ra dec 5.0 calib_mag calib_mag_ss1}]
-      #set listsources [::tools_sources::set_common_fields $listsources USNOA2 { ra dec poserr mag magerr }]
       set listsources [::tools_sources::set_common_fields $listsources USNOA2 { ra dec poserr mag magerr }]
       set listsources [::tools_sources::set_common_fields $listsources UCAC2  { ra_deg dec_deg e_pos_deg U2Rmag_mag 0.5 }]
-      #set listsources [::tools_sources::set_common_fields $listsources UCAC2  { ra_deg dec_deg 0 0 0}]
       set listsources [::tools_sources::set_common_fields $listsources UCAC3  { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
-      #set listsources [::tools_sources::set_common_fields $listsources TYCHO2 { RAdeg DEdeg 5 VT e_VT }]
+      set listsources [::tools_sources::set_common_fields $listsources TYCHO2 { RAdeg DEdeg 5 VT e_VT }]
       set listsources [::tools_sources::set_common_fields_skybot $listsources]
-      #set listsources [::tools_sources::set_common_fields $listsources TYCHO2 { RAdeg DEdeg 5 VT e_VT }]
       set ::tools_cata::current_listsources $listsources
 
    }
@@ -840,38 +837,40 @@ namespace eval gui_cata {
       cleanmark
       set err [catch {
 
-      set cataexist [::bddimages_liste::lexist $::tools_cata::current_image "cataexist"]
-      if {$cataexist==0} {return}
-
-      set cataexist [::bddimages_liste::lget $::tools_cata::current_image "cataexist"]
-      if {$cataexist!=1} {
-         return -code 0 "NOCATA"
-      }
-       
-      if {[::bddimages_liste::lget $::tools_cata::current_image "cataexist"]=="1"} {
-         ::gui_cata::load_cata
-      } else {
-         return -code 0 "NOCATA"
-      }
-
-      if { $::gui_cata::gui_img    } {
-         affich_rond $::tools_cata::current_listsources IMG $::gui_cata::color_img $::gui_cata::size_img 
-      }
-         
-      if { $::gui_cata::gui_usnoa2 } { affich_rond $::tools_cata::current_listsources USNOA2 $::gui_cata::color_usnoa2 $::gui_cata::size_usnoa2 }
-      if { $::gui_cata::gui_ucac2  } { affich_rond $::tools_cata::current_listsources UCAC2  $::gui_cata::color_ucac2  $::gui_cata::size_ucac2  }
-      if { $::gui_cata::gui_ucac3  } { affich_rond $::tools_cata::current_listsources UCAC3  $::gui_cata::color_ucac3  $::gui_cata::size_ucac3  }
-      if { $::gui_cata::gui_tycho2 } { affich_rond $::tools_cata::current_listsources TYCHO2 $::gui_cata::color_tycho2 $::gui_cata::size_tycho2 }
-      if { $::gui_cata::gui_nomad1 } { affich_rond $::tools_cata::current_listsources NOMAD1 $::gui_cata::color_nomad1 $::gui_cata::size_nomad1 }
-      if { $::gui_cata::gui_skybot } { affich_rond $::tools_cata::current_listsources SKYBOT $::gui_cata::color_skybot $::gui_cata::size_skybot }
+         set cataexist [::bddimages_liste::lexist $::tools_cata::current_image "cataexist"]
+         if {$cataexist==0} {return}
+   
+         set cataexist [::bddimages_liste::lget $::tools_cata::current_image "cataexist"]
+         if {$cataexist!=1} {
+            return -code 0 "NOCATA"
+         }
+          
+         if {[::bddimages_liste::lget $::tools_cata::current_image "cataexist"]=="1"} {
+            ::gui_cata::load_cata
+         } else {
+            return -code 0 "NOCATA"
+         }
+   
+         if {$::gui_cata::gui_img} {
+            affich_rond $::tools_cata::current_listsources IMG $::gui_cata::color_img $::gui_cata::size_img 
+         }
+            
+         if { $::gui_cata::gui_usnoa2 } { affich_rond $::tools_cata::current_listsources USNOA2 $::gui_cata::color_usnoa2 $::gui_cata::size_usnoa2 }
+         if { $::gui_cata::gui_ucac2  } { affich_rond $::tools_cata::current_listsources UCAC2  $::gui_cata::color_ucac2  $::gui_cata::size_ucac2  }
+         if { $::gui_cata::gui_ucac3  } { affich_rond $::tools_cata::current_listsources UCAC3  $::gui_cata::color_ucac3  $::gui_cata::size_ucac3  }
+         if { $::gui_cata::gui_tycho2 } { affich_rond $::tools_cata::current_listsources TYCHO2 $::gui_cata::color_tycho2 $::gui_cata::size_tycho2 }
+         if { $::gui_cata::gui_nomad1 } { affich_rond $::tools_cata::current_listsources NOMAD1 $::gui_cata::color_nomad1 $::gui_cata::size_nomad1 }
+         if { $::gui_cata::gui_skybot } { affich_rond $::tools_cata::current_listsources SKYBOT $::gui_cata::color_skybot $::gui_cata::size_skybot }
 
       } msg ]
-       if {$err} {
-          if {$msg=="NOCATA"} {return}
-          ::console::affiche_erreur "ERREUR affiche_cata : $msg\n" 
-          #set ::tools_cata::current_listsources [::tools_sources::set_common_fields_skybot $::tools_cata::current_listsources]
-          #::tools_sources::imprim_3_sources $::tools_cata::current_listsources SKYBOT
-       }
+
+      if {$err} {
+         if {$msg=="NOCATA"} {return}
+         ::console::affiche_erreur "ERREUR affiche_cata : $msg\n" 
+         #set ::tools_cata::current_listsources [::tools_sources::set_common_fields_skybot $::tools_cata::current_listsources]
+         #::tools_sources::imprim_3_sources $::tools_cata::current_listsources SKYBOT
+      }
+
    }
 
 

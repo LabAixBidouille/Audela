@@ -378,7 +378,7 @@ proc insertion_solo { nomfich } {
    if {[file exists $fichlock]==1} {
       ::console::affiche_resultat "Insertion Solo : BDI lock : inserez plus tard \n"
       return -code 1
-      }
+   }
 
    set result    [info_fichier $nomfich]
    set erreur    [lindex $result 0]
@@ -416,8 +416,8 @@ proc insertion_solo { nomfich } {
 
    set ligne [list $etat $nomfich $dateiso $site $sizefich $erreur $tabkey]
 
-   ::console::affiche_resultat "Insertion Solo : erreur=$erreur\n"
-   ::console::affiche_resultat "Insertion Solo : ligne=$ligne\n"
+#   ::console::affiche_resultat "Insertion Solo : erreur=$erreur\n"
+#   ::console::affiche_resultat "Insertion Solo : ligne=$ligne\n"
    if {$erreur == 0} {
       # Ici se fait l'Insertion de l image
       set liste     [bddimages_insertion_unfich $ligne]
