@@ -1275,6 +1275,12 @@ proc ::votable::getFieldFromKey_UCAC2 { key } {
    set field [list "$::votable::Field::ID UCAC2.${key}" "$::votable::Field::NAME $key"]
    # Autres infos 
    switch $key {
+      ID {
+         set description "UCAC2 identifier"
+         lappend field "$::votable::Field::UCD \"meta.id;meta.number\"" \
+                       "$::votable::Field::DATATYPE \"char\"" \
+                       "$::votable::Field::WIDTH \"10\""
+      }
       ra_deg -
       dec_deg {
          if {[string equal -nocase $key "ra"]} {
@@ -1449,6 +1455,12 @@ proc ::votable::getFieldFromKey_UCAC3 { key } {
    set field [list "$::votable::Field::ID UCAC3.${key}" "$::votable::Field::NAME $key"]
    # Autres infos 
    switch $key {
+      ID {
+         set description "UCAC3 identifier"
+         lappend field "$::votable::Field::UCD \"meta.id;meta.number\"" \
+                       "$::votable::Field::DATATYPE \"char\"" \
+                       "$::votable::Field::WIDTH \"12\""
+      }
       ra_deg -
       dec_deg {
          if {[string equal -nocase $key "ra"]} {
