@@ -223,7 +223,6 @@ namespace eval tools_sources {
    #
    proc ::tools_sources::set_common_fields { listsources catalog fieldlist } {
 
-
       set cst 0
       foreach f $fieldlist {
          if {[string is double -strict $f]} {
@@ -231,12 +230,11 @@ namespace eval tools_sources {
          }
       }
 
-
       set idlist ""
       set fields [lindex $listsources 0]
       set exist "no"
       foreach cata $fields {
-         if { [lindex $cata 0]==$catalog } {
+         if { [lindex $cata 0] == $catalog } {
             if {$exist=="yes"} {break}
             set exist "yes"
             set cols [lindex $cata 2]
@@ -250,7 +248,7 @@ namespace eval tools_sources {
                   set cpt 0
                   foreach col $cols {
                      if {$f==$col} {
-                         lappend idlist $cpt
+                        lappend idlist $cpt
                      }
                      incr cpt
                   }
@@ -263,7 +261,7 @@ namespace eval tools_sources {
       }
 
       #gren_info "idlist $catalog= $idlist \n"
-      if {[llength $idlist]!=5} {
+      if {[llength $idlist] != 5} {
           gren_info "erreur nom des champs ...\n"
           gren_info "IDLIST $idlist\n"
           gren_info "CATALOG $catalog\n"
@@ -275,10 +273,7 @@ namespace eval tools_sources {
           
           return $listsources
       }
-      
-      
-      
-      
+
       set sources [lindex $listsources 1]
       set ids 0
       foreach s $sources {
