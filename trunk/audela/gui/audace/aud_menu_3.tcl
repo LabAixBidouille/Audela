@@ -3663,8 +3663,8 @@ namespace eval ::ser2fits {
       #--   etape 1 : cree une image grise contenant le header des images
       if {$bitpix == 8} {
          set format FORMAT_BYTE
-      } else {
-         set format FORMAT_SHORT
+      } elseif {$bitpix eq "+16"} {
+         set format FORMAT_USHORT
       }
       buf$bufNo setpixels CLASS_GRAY $private(naxis1) $private(naxis2) $format COMPRESS_NONE pixeldata 0 -keepkeywords 0
       buf$bufNo save $header
@@ -3748,7 +3748,7 @@ namespace eval ::ser2fits {
 
       if {$bitpix == 8} {
          puts -nonewline $destID [read $srcID $private(imageSize)]
-      }  elseif {$bitpix == 16} {
+      }  elseif {$bitpix eq "+16"} {
          binary scan [read $srcID $private(imageSize)] s* out
          if {$::tcl_platform(byteOrder) eq "littleEndian"} {
             puts -nonewline $destID [binary format S* $out]
@@ -3800,7 +3800,7 @@ namespace eval ::ser2fits {
                Diametre    {  set diametre [expr { $value/1000. }]
                               set data [list APTDIA [format [formatKeyword APTDIA] $diametre]]}
                Début       {  lassign [formatDateObs4GENICAP_RECORD $value] -> date_start
-                              set data [list DATE-BEG [format [formatKeyword DATE-BEG] $date_start]]
+                              set data [list DATE-BEG [format [formatKeyword "DATE-BEG"] $date_start]]
                            }
                Fin         {  lassign [formatDateObs4GENICAP_RECORD $value] -> date_end
                               set data [list DATE-END [format [formatKeyword "DATE-END"] $date_end]]
@@ -3831,15 +3831,18 @@ namespace eval ::ser2fits {
          } else {
             #--   identifie le N° de l'image
             regsub -all {[a-zA-Z:\s]} [string range $title 0 $index] "" imgNo
-            #--   traite si necessaire
-            if {$imgNo >= $private(start) && $imgNo <= $private(end)} {
-               lassign [formatDateObs4GENICAP_RECORD $value] datemjd
-               array set bd [list $imgNo [format [formatKeyword MJD-OBS] $datemjd]]
-            }
+            lassign [formatDateObs4GENICAP_RECORD $value] datemjd
+            array set bd [list $imgNo [format [formatKeyword "MJD-OBS"] $datemjd]]
          }
       }
 
       chan close $fd
+
+      if {$imgNo > 1} {
+         set mediane [getTimeElapse $imgNo]
+         #--   donne le temps entre images
+         array set bd [list TELAPSE [format [formatKeyword "TELAPSE"] $mediane]]
+      }
 
       #--   complete la bd
       if {[info exist diametre] == 1 && [info exists fond] == 1 && $diametre ne "" && $fond ne ""} {
@@ -3881,7 +3884,7 @@ namespace eval ::ser2fits {
       #  et la liste theorique pour filtrer les seuls mots cles existants
       set kwdList [list APTDIA BIN1 BIN2 BZERO CDELT1 CDELT2 "DATE-BEG" "DATE-END" \
          DETNAM EXPOSURE FILTER FOCLEN INSTRUME OBJECT OBJNAME OBSERVER \
-         PIXSIZE1 PIXSIZE2 SWCREATE SWMODIFY TELESCOP XPIXSZ YPIXSZ]
+         PIXSIZE1 PIXSIZE2 SWCREATE SWMODIFY TELAPSE TELESCOP XPIXSZ YPIXSZ]
       set bdList [array names bd]
 
       #--   intersection entre les deux listes
@@ -3947,7 +3950,7 @@ namespace eval ::ser2fits {
          set bitpix 8
       } elseif {$PixelDepth == 12} {
          set BytePerPixel 2
-         set bitpix "16"
+         set bitpix "+16"
       }
 
       #--   calcule le nb de bytes/image
@@ -3960,7 +3963,7 @@ namespace eval ::ser2fits {
       #--   horodatage == 0001:01::03T00:00::00.000
 
       lassign [formatDateTime [read $fileID 8]] -> endDateTime
-      array set bd [list DATE-END [format [formatKeyword DATE-END] $endDateTime]]
+      array set bd [list DATE-END [format [formatKeyword "DATE-END"] $endDateTime]]
 
       #--   calcule l'offset pour atteindre la fin des images
       set endOfImages [expr { 178+$FrameCount*$ImageSize } ]
@@ -3972,26 +3975,26 @@ namespace eval ::ser2fits {
             seek $fileID [expr { $endOfImages+($imgNo-1)*8 }] start
             #--   lit 8 bytes en LittleEndian
             lassign [formatDateTime [read $fileID 8]] datemjd
-            array set bd [list $imgNo [format [formatKeyword MJD-OBS] $datemjd]]
+            array set bd [list $imgNo [format [formatKeyword "MJD-OBS"] $datemjd]]
             #--   memorise l'horodatage du debut
             if {$imgNo == 1} {
                set datefirst $datemjd
                set dateStart [expr { $datefirst - 1./86400 }]
                set dateStart [mc_date2iso8601 $dateStart]
             }
-            if {$imgNo == 2} {
-               #--   il faut au moins deux images pour calculer l'exposition
-               set exposure [format %0.6f [expr { ($datemjd-$datefirst)*86400 }]]
-               array set bd [list EXPOSURE [format [formatKeyword EXPOSURE] $exposure]]
-            }
          }
+         set mediane [getTimeElapse $FrameCount]
       }
 
       chan close $fileID
 
+      if {[info exists mediane]} {
+         #--   donne le temps entre images
+         array set bd [list TELAPSE [format [formatKeyword "TELAPSE"] $mediane]]
+      }
       if {[info exists dateStart]} {
          #--   assimile l'horodatage de debut a celle de la premiere image
-         array set bd [list DATE-BEG [format [formatKeyword DATE-BEG] $dateStart]]
+         array set bd [list DATE-BEG [format [formatKeyword "DATE-BEG"] $dateStart]]
       }
       #--   preparation de l'array contenant les mots cles
       if {$Instrument ne "{}"} {
@@ -4089,7 +4092,7 @@ namespace eval ::ser2fits {
       global audace conf caption color
 
       set listeSer {}
-       if { $::tcl_platform(platform) == "windows" } {
+      if { $::tcl_platform(platform) == "windows" } {
          #--- la recherche de l'extension est insensible aux minuscules/majuscules ... sous windows uniquement
          set listeSer [glob -nocomplain -type f -tails -directory $audace(rep_images) *.ser]
       } else {
@@ -4388,6 +4391,7 @@ namespace eval ::ser2fits {
       dict set dicokwd PIXSIZE2  {PIXSIZE2 %s double {Pixel Height (with binning)} um}
       dict set dicokwd SWCREATE  {SWCREATE %s string {Acquisition Software} {}}
       dict set dicokwd SWMODIFY  {SWMODIFY %s string {Processing Software} {}}
+      dict set dicokwd TELAPSE   {TELAPSE %s float {Elapsed time of observation} {s}}
       dict set dicokwd TELESCOP  {TELESCOP %s string {Telescope (name barlow reducer)} {}}
       dict set dicokwd XPIXSZ    {XPIXSZ %s double {Pixel Width (without binning)} um}
       dict set dicokwd YPIXSZ    {YPIXSZ %s double {Pixel Height (without binning)} um}
@@ -4421,6 +4425,41 @@ namespace eval ::ser2fits {
       set cdelty [expr { atan ($tgy) * $factor * 3600. }]
 
       return [list $cdeltx $cdelty]
+   }
+
+   #---------------------------------------------------------------------------
+   #  getTimeElapse
+   #  Retourne le temps median entre les images
+   #  Parametres : nombre total d'images dans le fichier
+   #---------------------------------------------------------------------------
+   proc getTimeElapse { frameCount } {
+      variable bd
+
+      blt::vector create Vmed result -watchunset 1
+      Vmed offset 1
+      result offset 1
+
+      #--   remplit le vecteur avec les valeurs
+      for { set i 1} {$i <= $frameCount} {incr i} {
+         Vmed append [lindex [lindex [array get bd $i] 1] 1]
+      }
+
+      #--   recopie du 1er au dernier
+      result set [Vmed range 2 end]
+
+      #--   efface le dernier
+      Vmed delete end
+
+      #--   fait la difference des mjd et transforme en secondes
+      result expr {(result-Vmed)*86400}
+
+      #--   obtient la mediane
+      result expr {median(result)}
+      set mediane $result(1)
+
+      blt::vector destroy Vmed result
+
+      return $mediane
    }
 
 }
