@@ -135,7 +135,7 @@
       set tlscpChildren [list telname suivi vra vdec vxPix vyPix separator1]
       set kwdsChildren [list observer modifObs sitename origin iau_code imagetyp objname separator1 editKwds writeKwds]
       if { $::tcl_platform(platform) == "windows" } {
-         set configChildren [list catname access search separator1 cumulus realtime separator2 dispEtc simulimage]
+         set configChildren [list catname access search separator1 meteo cumulus realtime separator2 dispEtc simulimage]
       } else {
          set configChildren [list catname access search separator1 dispEtc simulimage]
       }
@@ -195,6 +195,8 @@
       $this.n.kwds.imagetyp current 3
       set private(objname) "mySky"
 
+      set private(meteo) 0
+
       onChangeImage $visuNo
 
       #--- La fenetre est active
@@ -223,6 +225,15 @@
 
          grid [ttk::separator $w -orient horizontal] \
            -row $row -column 0 -columnspan 3 -padx 10 -pady 5 -sticky news
+         $w state !disabled
+         return
+
+      } elseif {$child eq "meteo"} {
+
+         ttk::checkbutton $onglet.$child -text "$caption(collector,$child)" \
+            -variable ::collector::private($child) -onvalue 1 -offvalue 0 \
+            -command "::collector::onchangeCumulus"
+         grid $onglet.$child -row $row -column 0 -columnspan 3 -sticky w -padx 10 -pady 3
          return
 
       } elseif {$child in [list modifGps modifOptic search realtime modifObs modifSite editKwds writeKwds dispEtc simulimage]} {
@@ -239,7 +250,7 @@
                         grid $w -row 1 -column 2
                        }
             realtime   {$w configure -command "::collector::configDirname $w" -width 4 -padding {2 2}
-                        grid $w -row 4 -column 2
+                        grid $w -row 5 -column 2
                        }
             modifObs   {$w configure -command "::confPosObs::run $audace(base).confPosObs" -width 7 -padding {2 2}
                         grid $w -row 0 -column 2 -rowspan 5

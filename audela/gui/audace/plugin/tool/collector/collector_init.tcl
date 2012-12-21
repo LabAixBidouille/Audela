@@ -111,17 +111,8 @@
    proc initAtm { bufNo } {
       variable private
 
-      lassign [getTPW $bufNo] private(tempair) private(airpress) \
-         private(winddir) private(windsp)
-
-      onchangeCumulus
-
-      if {$private(cumulus) eq "" || [file exists $private(cumulus)] == 0} {
-      lassign [list - - - -] private(hygro) private(temprose) private(winddir) private(windsp)
-      #   return
-      #} else {
-      after 10000 ::collector::refreshCumulus
-      #}
+      lassign [getTPW $bufNo] private(tempair) private(temprose) private(hygro) \
+         private(winddir) private(windsp) private(airpress)
    }
 
    #------------------------------------------------------------
@@ -271,6 +262,8 @@
       set notebook $private(This).n
 
       if {![::confTel::isReady]} {
+         #--   masque les onglets specifiques du telescope
+         #     qui arrete le rafraichissement de la meteo
          hideTel $notebook
          return
       }
@@ -281,6 +274,9 @@
       #--   affiche et selectionne l'onglet 'Telescope'
       $notebook add $notebook.tlscp
       $notebook select $notebook.tlscp
+
+      #--   active le rafraichissement de la meteo
+      onchangeCumulus
 
       lassign [getTelConnexion] private(product) private(telname) \
          hasCoordinates hasControlSuivi
@@ -480,20 +476,31 @@
 
    #------------------------------------------------------------
    #  onchangeCumulus  :
-   #  au demarrage, en cas d'absence ou de perte de liaison avec Cumulus
+   #  active la lecture des parametres meteo si le telescope est actif
+   #  et si les autres conditions ont reunies
+   #  sinon desactive
    #------------------------------------------------------------
-   proc onchangeCumulus { {do ""} } {
+   proc onchangeCumulus { } {
       variable private
 
-      if {$private(cumulus) eq "" || [file exists $private(cumulus)] == 0 || $do eq "stop"} {
-         lassign [list - - - -] private(hygro) private(temprose) private(winddir) private(windsp)
+      set notebook $private(This).n
+
+      if {[$notebook tab $notebook.tlscp -state] eq "hidden" || $private(meteo) == 0 \
+         && $private(cumulus) ne "" || [file exists $private(cumulus)] == 0} {
+
+         #--   tous les autres cas, initialisation par defaut
+         lassign [list 16.85 - - - - 101325] private(tempair) private(hygro) \
+            private(temprose) private(winddir) private(windsp)  private(airpress)
+
          #--   arrete la mise a jour
          #--   pas d'importance si pas active
          after cancel ::collector::refreshCumulus
-         return
+
       } else {
+
          #--   demarre la mise a jour
          refreshCumulus
+
       }
    }
 

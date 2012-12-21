@@ -569,7 +569,7 @@
    #---------------------------------------------------------------------------
    #  getSecz
    #  Retourne : secz et airmass
-   #  Parametre : elevation du telescope (corrige de le refrecation, etc.)
+   #  Parametre : elevation du telescope (corrige de le refraction, etc.)
    #---------------------------------------------------------------------------
    proc getSecz { elev } {
 
