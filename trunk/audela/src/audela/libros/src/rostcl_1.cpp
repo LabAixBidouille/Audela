@@ -590,13 +590,13 @@ ros_gps close symmetricom
 			i=devices_found-1;
    			dh = mbg_open_device( i );
     		if ( dh == MBG_INVALID_DEV_HANDLE ) {
-				printf(s,"Can't open GPS device %s",argv[2]);
+				printf(s,"Can't open GPS device %s CAP%d in",argv[2],i);
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
 				return TCL_ERROR;
 		    }
 			//print_dev_info( dh, &dev );
 			mbg_get_device_info( dh, &dev);
-    		sprintf(s,"Connection with %s is opened",argv[2]);
+    		sprintf(s,"Connection with %s is opened CAP%d in",argv[2],i);
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          return TCL_OK;
       }
