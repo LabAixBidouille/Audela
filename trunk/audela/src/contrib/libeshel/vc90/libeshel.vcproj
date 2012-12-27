@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="libeshel"
 	ProjectGUID="{C2A1CF0E-56F4-42D0-AFCD-E1951200EAE2}"
 	RootNamespace="libeshel14"
@@ -81,12 +81,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				AdditionalDependencies="libgsl.lib cfitsio.lib ccfits.lib tclstub85.lib ..\..\..\audela\libtt\vc90\Release\libtt.lib"
+				AdditionalDependencies="libgsl.lib cfitsio.lib ccfits.lib tclstub85.lib libtt.lib"
 				OutputFile="..\..\..\..\gui\audace\plugin\tool\eshel\libeshel.dll"
 				Version="2.2"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="..\..\..\external\lib;..\CCfits"
+				AdditionalLibraryDirectories="..\..\..\external\lib;..\CCfits; ..\..\..\audela\libtt\vc90\Release"
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames=""
 				ModuleDefinitionFile="..\src\libeshel_tcl.def"
@@ -185,12 +185,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="false"
-				AdditionalDependencies="libgsl.lib ccfits_debug.lib tclstub85.lib cfitsio.lib ..\..\..\audela\libtt\vc90\$(ConfigurationName)\libtt.lib"
+				AdditionalDependencies="libgsl.lib ccfits_debug.lib tclstub85.lib cfitsio.lib libtt.lib"
 				OutputFile="..\..\..\..\gui\audace\plugin\tool\eshel\libeshel.dll"
 				Version="2.2"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="..\..\..\external\lib;..\CCfits"
+				AdditionalLibraryDirectories="..\..\..\external\lib;..\CCfits; ..\..\..\audela\libtt\vc90\$(ConfigurationName)\"
 				IgnoreDefaultLibraryNames=""
 				ModuleDefinitionFile="..\src\libeshel_tcl.def"
 				GenerateDebugInformation="true"
