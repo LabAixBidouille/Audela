@@ -21,10 +21,10 @@ build:
 install: build
 	if not exist $(EXTERNAL_LIB)      mkdir $(EXTERNAL_LIB)
 	$(CP) $(SOURCE)\lib\QSICamera.dll   $(EXTERNAL_LIB)
-	regsvr32 /s $(EXTERNAL_LIB)\QSICamera.dll
+	rem regsvr32 /s $(EXTERNAL_LIB)\QSICamera.dll
 	
 clean:
-	-@regsvr32 /u /s $(EXTERNAL_LIB)\QSICamera.dll
+	rem -@regsvr32 /u /s $(EXTERNAL_LIB)\QSICamera.dll
 	$(RM) $(EXTERNAL_LIB)\QSICamera.dll
 
 
