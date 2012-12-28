@@ -16,4 +16,6 @@ mkdir ..\lib
 @echo --- Je copie le fichier QSICamera.dll
 copy %QSI%\lib\QSICamera.dll ..\lib
 @echo --- J'enregistre le fichier QSICamera.dll dans la base de registre
-regsvr32 ..\lib\QSICamera.dll
+set fullDir=%0
+set dirName=%fullDir:\install.bat=%
+regsvr32 %dirName%\qsi\lib\QSICamera.dll
