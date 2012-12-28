@@ -3860,8 +3860,7 @@ namespace eval ::ser2fits {
       if {[info exists objname] && $objname ne ""} {
          array set bd [list OBJNAME [format [formatKeyword OBJNAME] $objname]]
       }
-      lassign [getCdelt $private(naxis1) $private(naxis2) \
-         $pixsize1 $pixsize2 $foclen] cdeltx cdelty
+      lassign [getCdelt $private(naxis1) $private(naxis2) $pixsize1 $pixsize2 $foclen] cdeltx cdelty
       array set bd [list CDELT1 [format [formatKeyword CDELT1] $cdeltx]]
       array set bd [list CDELT2 [format [formatKeyword CDELT2] $cdelty]]
 
@@ -3923,25 +3922,33 @@ namespace eval ::ser2fits {
       #--   recupere l'adresse
       set endOfFile [tell $fileID]
 
-      #--   retourne au debut
+#--   essai
       seek $fileID 0 start
-      set record [string trimright [read $fileID 14]] ; #--   GENICAP-RECORD - LUCAM-RECORDER - PlxCapture
-      set record [list [string map -nocase $entities $record]]
 
-      #--   scan 7 valeurs en integer32 (4 bytes)
-      #--   normalement LuID = 0 ColorID = 0 monochrome LittleEndian = 0 --> donnees BigEndian
-      foreach kwd [list LuID ColorID LittleEndian naxis1 naxis2 PixelDepth FrameCount] {
-         binary scan [read $fileID 4] i* $kwd
-      }
+      #--   decode les champs du header
+      #     14 caracteres pour record (logiciel de capture) ; #--   GENICAP-RECORD - LUCAM-RECORDER - PlxCapture
+      #      1 entier de 32 bits pour LuID, non exploite
+      #      1 entier de 32 bits pour ColorID (=0 pour monochrome), non exploite
+      #      1 entier de 32 bits pour LittleEndian (0 -->donnees BigEndian)
+      #      1 entier de 32 bits pour naxis1
+      #      1 entier de 32 bits pour naxis2
+      #      1 entier de 32 bits pour PixelDepth (8 ou 12 --> codage sur 1 ou 2 octets)
+      #      1 entier de 32 bits pour FrameCount
+      #     40 caracteres pour Observeur
+      #     40 caracteres pour Instrument
+      #     40 caracteres pour Telescope
+      #      8 bytes pour DateTime
+      #      8 bytes pour DateTimeUTC
+      binary scan [read $fileID 162] a14iiiiiiia40a40a40 record LuID ColorID LittleEndian \
+         naxis1 naxis2 PixelDepth FrameCount Observeur Instrument Telescope
 
-      #--   scan 3 noms de 40 bytes
-      foreach kwd [list Observeur Instrument Telescope] {
-         set $kwd [read $fileID 40]
+      #--   traite les chaines de caracteres
+      foreach kwd [list record Observeur Instrument Telescope] {
          #--   modifie les caracteres indesirables
          set $kwd [string map -nocase $entities [set $kwd]]
          #--   ote les espaces superflus
-         set $kwd [list [string trimright [set $kwd]]]
-         #--   rem : pour les mots sans interet la defintion est une liste vide
+         set $kwd [list [string trim [set $kwd]]]
+         #--   rem : pour les mots sans interet la definition est une liste vide
       }
 
       #--   si la profondeur est de 12, il faut 2 bytes/pixel
@@ -3959,10 +3966,8 @@ namespace eval ::ser2fits {
       fconfigure $fileID -translation binary
 
       #--   decode l'horodatage de la fin de prise de vues
-      #--   si pas d'indication dans le header
-      #--   horodatage == 0001:01::03T00:00::00.000
-
-      lassign [formatDateTime [read $fileID 8]] -> endDateTime
+      binary scan [read $fileID 8] w count100ns
+      lassign [formatDateTime $count100ns] -> endDateTime
       array set bd [list DATE-END [format [formatKeyword "DATE-END"] $endDateTime]]
 
       #--   calcule l'offset pour atteindre la fin des images
@@ -3974,7 +3979,8 @@ namespace eval ::ser2fits {
          for {set imgNo 1} {$imgNo <= $FrameCount} {incr imgNo} {
             seek $fileID [expr { $endOfImages+($imgNo-1)*8 }] start
             #--   lit 8 bytes en LittleEndian
-            lassign [formatDateTime [read $fileID 8]] datemjd
+            binary scan [read $fileID 8] w count100ns
+            lassign [formatDateTime $count100ns] datemjd
             array set bd [list $imgNo [format [formatKeyword "MJD-OBS"] $datemjd]]
             #--   memorise l'horodatage du debut
             if {$imgNo == 1} {
@@ -3983,11 +3989,15 @@ namespace eval ::ser2fits {
                set dateStart [mc_date2iso8601 $dateStart]
             }
          }
-         set mediane [getTimeElapse $FrameCount]
+         #--   si plus d'une image
+         if {$FrameCount >1} {
+            set mediane [getTimeElapse $FrameCount]
+         }
       }
 
       chan close $fileID
 
+      #--   preparation de l'array contenant les mots cles
       if {[info exists mediane]} {
          #--   donne le temps entre images
          array set bd [list TELAPSE [format [formatKeyword "TELAPSE"] $mediane]]
@@ -3996,7 +4006,6 @@ namespace eval ::ser2fits {
          #--   assimile l'horodatage de debut a celle de la premiere image
          array set bd [list DATE-BEG [format [formatKeyword "DATE-BEG"] $dateStart]]
       }
-      #--   preparation de l'array contenant les mots cles
       if {$Instrument ne "{}"} {
          array set bd [list INSTRUME [format [formatKeyword INSTRUME] $Instrument]]
       }
@@ -4028,26 +4037,23 @@ namespace eval ::ser2fits {
    #              l'unite vaut 100 ns
    #  Return : dateMJD et date ISO 8601
    #------------------------------------------------------------
-   proc formatDateTime { data } {
+   proc formatDateTime { count100ns } {
+
+      #--   filtre les 62 bits significatifs
+      set count100ns [expr { $count100ns & 0x3fffffffffffffff }]
 
       #--   100 nanosecondes en duree julienne !
       set k [expr { 100/(86400*1E9) }]
 
-      #--   date de reference de l'horodatage des fichiers ser
-      set refJD [mc_date2jd 0001-01-03T00:00:00.000]
-
-      #--   scanne 64 bits (nombre de 100ns ecoules depuis la reference)
-      binary scan $data w count100ns
-
-      #--   filtre les 62 bits significatifs
-      set count100ns [expr { $count100ns & 0x3fffffffffffffff }]
+      #--   si pas d'indication dans le header
+      #--   horodatage == 0001:01::03T00:00::00.000 == date de reference de l'horodatage des fichiers ser
+      set datett "0001-01-03T00:00:00.000" ; # temps 0 par defaut
+      set refJD [mc_date2jd $datett]
 
       #--   calcule le temps MJD et la date ISO8601
       set datemjd [expr { $refJD+$count100ns*$k-2400000.5 }]
       if {$datemjd != "-678575.0"} {
          set datett [mc_date2iso8601 $datemjd]
-      } else {
-         set datett "0001-01-03T00:00:00.000"
       }
 
       return [list $datemjd $datett]
