@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="external_meinberg"
 	ProjectGUID="{43D31802-AFAF-4640-841F-2F3D159DF02C}"
 	RootNamespace="external_meinberg"
@@ -61,7 +61,7 @@
 	</References>
 	<Files>
 		<File
-			RelativePath="..\..\Makefile.vc"
+			RelativePath="..\Makefile.vc"
 			>
 		</File>
 	</Files>
