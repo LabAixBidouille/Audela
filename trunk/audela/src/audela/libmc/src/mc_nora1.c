@@ -85,6 +85,12 @@ void mc_norad_sgdp48(double jj,int sgp, struct elemorb *elem,double *xgeo,double
 	double ffxmdf,ffomgadf,ffxnode,ffem,ffxinc,ffxn,fftsince;
 	double ffe,ffxmam;
 	/*FILE *f;*/
+	/* --- inits ---*/
+	xdot=ydot=zdot=x=y=z=0;
+	x7thm1=aycof=xlcof=xnodcf=xnodcf=xnodot=omgdot=xmdot=0;
+	c4=x1mth2=sinio=c1=x3thm1=cosio=t5cof=t4cof=t3cof=0;
+	isimp=0;
+	d4=d3=d2=sinmo=delmo=xmcof=omgcof=eta=aodp=0;
 	/* --- constants inits --- */
 	e6a=1e-6;
 	pi=4*atan(1);

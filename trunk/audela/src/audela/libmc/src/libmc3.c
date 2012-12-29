@@ -136,7 +136,7 @@ set ys [lindex $res 1]
    Tcl_DString dsptr;
 	int xharise_limit=0,xhaset_limit=0,xazrise_limit=0,xazset_limit=0;
 	double harise_limit,haset_limit,azrise_limit,azset_limit;
-	int k,make_map=0;
+	int k;
 	mc_HORIZON_LIMITS limits;
 
    if(argc<4) {
@@ -188,7 +188,7 @@ mc_nearesthip 120.45 -60.23 $List_hip -max_nbstars 10
 	char **argvvv=NULL;
 	int argcc,argccc;
 	double *arr;
-	int *karr,code,ks;
+	int *karr,ks;
    Tcl_DString dsptr;
 
    if(argc<4) {
@@ -206,13 +206,13 @@ mc_nearesthip 120.45 -60.23 $List_hip -max_nbstars 10
 		cosd0=cos(dec0);
 		sind0=sin(dec0);
       /* --- decode le catalogue ---*/
-      code=Tcl_SplitList(interp,argv[3],&argcc,&argvv);
+      Tcl_SplitList(interp,argv[3],&argcc,&argvv);
 		nstars=argcc;
 		hips=(mc_cata_astrom*)calloc(nstars,sizeof(mc_cata_astrom));
 		arr=(double*)calloc(nstars,sizeof(double));
 		karr=(int*)calloc(nstars,sizeof(int));
 		for (ks=0;ks<nstars;ks++) {
-	      code=Tcl_SplitList(interp,argvv[ks],&argccc,&argvvv);
+	      Tcl_SplitList(interp,argvv[ks],&argccc,&argvvv);
 			if (argccc>=1) { hips[ks].id  = atoi(argvvv[0]); }
 			if (argccc>=2) { hips[ks].mag = atof(argvvv[1]); }
 			if (argccc>=3) { hips[ks].ra  = atof(argvvv[2]); }
@@ -303,7 +303,7 @@ mc_hip2tel [lindex $hip 0] now {GPS 5 E 43 1230} 101325 290
 	double *hazs=NULL,*helevs=NULL,*hdecs=NULL,*hha_rises=NULL,*hha_sets=NULL;
 	int hnaz,hndec,valid;
 	char **argvv=NULL,**argvvv=NULL;
-	int argcc,argccc,code;
+	int argcc,argccc;
 
    if(argc<6) {
       sprintf(s,"Usage: %s type_axis naxis1 naxis2 Date Home ?mini1 maxi1 mini2 maxi2?", argv[0]);
@@ -352,10 +352,10 @@ mc_hip2tel [lindex $hip 0] now {GPS 5 E 43 1230} 101325 290
 		hnaz=0;
 		hndec=0;
 		if (argc>10) {
-	      code=Tcl_SplitList(interp,argv[10],&argcc,&argvv);
+	      Tcl_SplitList(interp,argv[10],&argcc,&argvv);
 			if (argcc>=5) {
 				/* --- az --*/
-				code=Tcl_SplitList(interp,argvv[0],&argccc,&argvvv);
+				Tcl_SplitList(interp,argvv[0],&argccc,&argvvv);
 				hnaz=argccc;
 				hazs=(double*)calloc(hnaz,sizeof(double));
 				for (k=0;k<hnaz;k++) {
@@ -363,7 +363,7 @@ mc_hip2tel [lindex $hip 0] now {GPS 5 E 43 1230} 101325 290
 				}
 				if (argvvv!=NULL) { Tcl_Free((char *) argvvv); }
 				/* --- elev --*/
-				code=Tcl_SplitList(interp,argvv[1],&argccc,&argvvv);
+				Tcl_SplitList(interp,argvv[1],&argccc,&argvvv);
 				hnaz=argccc;
 				helevs=(double*)calloc(hnaz,sizeof(double));
 				for (k=0;k<hnaz;k++) {
@@ -371,7 +371,7 @@ mc_hip2tel [lindex $hip 0] now {GPS 5 E 43 1230} 101325 290
 				}
 				if (argvvv!=NULL) { Tcl_Free((char *) argvvv); }
 				/* --- dec --*/
-				code=Tcl_SplitList(interp,argvv[2],&argccc,&argvvv);
+				Tcl_SplitList(interp,argvv[2],&argccc,&argvvv);
 				hndec=argccc;
 				hdecs=(double*)calloc(hndec,sizeof(double));
 				for (k=0;k<hndec;k++) {
@@ -379,7 +379,7 @@ mc_hip2tel [lindex $hip 0] now {GPS 5 E 43 1230} 101325 290
 				}
 				if (argvvv!=NULL) { Tcl_Free((char *) argvvv); }
 				/* --- ha_set --*/
-				code=Tcl_SplitList(interp,argvv[3],&argccc,&argvvv);
+				Tcl_SplitList(interp,argvv[3],&argccc,&argvvv);
 				hndec=argccc;
 				hha_sets=(double*)calloc(hndec,sizeof(double));
 				for (k=0;k<hndec;k++) {
@@ -387,7 +387,7 @@ mc_hip2tel [lindex $hip 0] now {GPS 5 E 43 1230} 101325 290
 				}
 				if (argvvv!=NULL) { Tcl_Free((char *) argvvv); }
 				/* --- ha_rise --*/
-				code=Tcl_SplitList(interp,argvv[4],&argccc,&argvvv);
+				Tcl_SplitList(interp,argvv[4],&argccc,&argvvv);
 				hndec=argccc;
 				hha_rises=(double*)calloc(hndec,sizeof(double));
 				for (k=0;k<hndec;k++) {
@@ -501,7 +501,7 @@ List_ModelValues
    double ha,az,h,ddec=0.,dha=0.,refraction=0.;
    double dh=0.,daz=0.;
    double rat,dect,hat,ht,azt,dra=0;
-	double parallactic,parallactict;
+	double parallactic;
    int model_only = 0;     // 1=calculer impact modele seulement, 0=calculer impact modele et changement equinoxe
 	int type_list = 0;
    int refractionFlag = 1;  
@@ -691,7 +691,6 @@ List_ModelValues
 			hat=ha;
 			ht=h;
 			azt=az;
-			parallactict=parallactic;
 			/* --- Modele de pointage ---*/
 			if (nb_coef>0) {
 				nb_star=1;
@@ -863,7 +862,7 @@ List_ModelValues
 {
 	char s[1024];
 	double equinox=2451545.00000;
-	int code,argcc;
+	int argcc;
 	char **argvv=NULL;
 	double jd,longmpc;
 	mc_modpoi_matx *matx=NULL; /* 2*nb_star */
@@ -886,7 +885,7 @@ List_ModelValues
  	   return TCL_ERROR;
    } else {
       /* --- decode les coordonnees catalogue ---*/
-      code=Tcl_SplitList(interp,argv[1],&argcc,&argvv);
+      Tcl_SplitList(interp,argv[1],&argcc,&argvv);
 		if (argcc>1) {
 			/* --- decode l'angle RA ou HA ou AZ ---*/
 			mctcl_decode_angle(interp,argvv[0],&ra0);
@@ -926,7 +925,7 @@ List_ModelValues
 		/* --- decode le Modele de pointage ---*/
 		nb_coef=0;
 		if (argc>=9) {
-			code=Tcl_SplitList(interp,argv[7],&argcc,&argvv);
+			Tcl_SplitList(interp,argv[7],&argcc,&argvv);
 			if (argcc>0) {
 				nb_coef=argcc;
 				vecy=(mc_modpoi_vecy*)calloc(nb_coef,sizeof(mc_modpoi_vecy));
@@ -935,7 +934,7 @@ List_ModelValues
 					strcpy(vecy[k].type,argvv[k]);
 				}
 				if (argvv!=NULL) { Tcl_Free((char *) argvv); }
-				code=Tcl_SplitList(interp,argv[8],&argcc,&argvv);
+				Tcl_SplitList(interp,argv[8],&argcc,&argvv);
 				if (argcc!=nb_coef) {
 					// Traite l'erreur nb_symbol == nb_coef
 					return TCL_ERROR;
@@ -1060,7 +1059,7 @@ List_ModelSymbols
 */
 {
 	char s[1024];
-	int code,argcc,argccc;
+	int argcc,argccc;
 	char **argvv=NULL,**argvvv=NULL;
 	double longmpc;
 	mc_modpoi_matx *matx=NULL; /* 2*nb_star */
@@ -1086,7 +1085,7 @@ List_ModelSymbols
 		desc[2]=2; // daz ou dha
 		desc[3]=3; // delev ou ddec
 		if (argc>5) {
-			code=Tcl_SplitList(interp,argv[5],&argcc,&argvv);
+			Tcl_SplitList(interp,argv[5],&argcc,&argvv);
 			nb_desc=argcc;
 			if (nb_desc>=4) {
 				desc[0]=atoi(argvv[0]);
@@ -1101,7 +1100,7 @@ List_ModelSymbols
 		}
 		/* --- decode la liste des observations ---*/
 		nb_star=0;
-		code=Tcl_SplitList(interp,argv[1],&argcc,&argvv);
+		Tcl_SplitList(interp,argv[1],&argcc,&argvv);
 		nb_star=argcc;
 		pb=0;
 		if (nb_star>0) {
@@ -1110,7 +1109,7 @@ List_ModelSymbols
 			dcoord1s=(double*)calloc(nb_star,sizeof(double));
 			dcoord2s=(double*)calloc(nb_star,sizeof(double));
 			for (k=0;k<nb_star;k++) {
-				code=Tcl_SplitList(interp,argvv[k],&argccc,&argvvv);
+				Tcl_SplitList(interp,argvv[k],&argccc,&argvvv);
 				if (argccc<kmax) {
 					// traiter l'erreur
 					sprintf(s,"ListeObs {%s} contains less than %d elements",argvv[k],kmax);
@@ -1151,7 +1150,7 @@ List_ModelSymbols
 		latrad=latitude*(DR);
 		/* --- decode les termes du modele de pointage ---*/
 		nb_coef=0;
-		code=Tcl_SplitList(interp,argv[4],&argcc,&argvv);
+		Tcl_SplitList(interp,argv[4],&argcc,&argvv);
 		nb_coef=argcc;
 		if (nb_coef>0) {
 			vecy=(mc_modpoi_vecy*)calloc(nb_coef,sizeof(mc_modpoi_vecy));

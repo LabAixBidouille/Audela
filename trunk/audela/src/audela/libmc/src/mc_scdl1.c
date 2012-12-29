@@ -2327,7 +2327,7 @@ int mc_fill_luminance_ciel_bleus(double *luminance_ciel_bleus) {
 /*****************************************************************************/
 int mc_scheduler_objectlocal1(double longmpc, double rhocosphip, double rhosinphip, mc_OBJECTDESCR *objectdescr,int njd, mc_SUNMOON *sunmoon,mc_HORIZON_ALTAZ *horizon_altaz,mc_HORIZON_HADEC *horizon_hadecint,mc_OBJECTLOCAL **pobjectlocal,mc_OBJECTLOCALRANGES *objectlocalranges) {
 	double latitude,altitude;
-	int astrometric,njdm;
+	int njdm;
 	double *dummy1s=NULL,*dummy2s=NULL,*dummy3s=NULL,*dummy4s=NULL,*dummy5s=NULL,*dummy6s=NULL,*dummy7s=NULL,*dummy8s=NULL,*dummy9s=NULL;
 	double *dummy01s=NULL,*dummy02s=NULL;
 	int kjd,sousech,k,kr;
@@ -2344,7 +2344,6 @@ int mc_scheduler_objectlocal1(double longmpc, double rhocosphip, double rhosinph
 	// --- initialize
 	mc_rhophi2latalt(rhosinphip,rhocosphip,&latitude,&altitude);
 	latrad=latitude*(DR);
-	astrometric=0;
 
 	// --- prepare sur-ech vectors
 	if (pobjectlocal!=NULL) {
@@ -2589,7 +2588,7 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 	int *objectlinks=NULL,nu,npl0,mode_quota,err;
 	mc_USERS *users;
 	double angle,duration,d1,d2,d12,total_duration_sequenced,d12b,dd;
-	double jdobsmin,jdobsmax,total_duration_obs,jdseq_prev,jdseq_next;
+	double jdobsmin,jdobsmax,jdseq_prev,jdseq_next;
 	double jdobsminmin,jdobsmaxmax,total_duration_obsobs;
 	double ha1,ha2,dec1,dec2;
 	long clk_tck = CLOCKS_PER_SEC;
@@ -2779,7 +2778,6 @@ int mc_scheduler1(double jd_now, double longmpc, double rhocosphip, double rhosi
 		objectlinks[nobjloc]=ko;
 		nobjloc++;
 	}
-	total_duration_obs=(jdobsmax-jdobsmin);
 	total_duration_obsobs=(jdobsmaxmax-jdobsminmin);
 	total_duration_sequenced=0.;
 	if (fidlog!=NULL) {

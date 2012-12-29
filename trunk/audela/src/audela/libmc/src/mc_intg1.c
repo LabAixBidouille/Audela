@@ -59,7 +59,7 @@ void mc_integ1(double jjdeb, double jjfin, double jjpas, struct elemorb elem,dou
 /***************************************************************************/
 {
    double mass[NB_PLANETES+1],masse[NB_PLANETES+3];
-   int k,kk,planete,nbcorps,equadif,nbvect,plan_deb,plan_fin;
+   int k,kk,planete,nbcorps,nbvect,plan_deb,plan_fin;
    double *vect,eps,r,v,m;
    struct pqw elempq;
    char nom_fichier_out[]="" ;
@@ -67,7 +67,6 @@ void mc_integ1(double jjdeb, double jjfin, double jjpas, struct elemorb elem,dou
    plan_deb=VENUS;
    plan_fin=JUPITER;
    nbcorps=2+plan_fin-plan_deb+1;
-   equadif=1;
    nbvect=nbcorps*6;
    vect  = (double *)calloc(nbvect+1 ,sizeof(double));
 

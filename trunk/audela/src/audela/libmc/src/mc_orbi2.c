@@ -52,7 +52,7 @@ void mc_gem3b(struct observ *obs,double offc, double offl,struct elemorb *elem,d
    double w2,f,g,vx,vy,vz;
    double mu;
    struct observ *obs2;
-   double asd,dec,delta,rsol;
+   double asd,dec,delta;
    double rrp,xxp,yyp,zzp,mmm,v,jjda;
    struct pqw elempq;
    double jjj;
@@ -101,7 +101,6 @@ void mc_gem3b(struct observ *obs,double offc, double offl,struct elemorb *elem,d
    xxs-=paradx;
    yys-=parady;
    zzs-=paradz;
-   rsol=rs;
    /*--- planete ---*/
    mc_anomoy(*elem,jjj,&mmm);
    mc_anovrair(*elem,mmm,&v,&rrp);
@@ -250,11 +249,7 @@ void mc_mvc2b(struct observ *obs,struct elemorb *elem,double jj_equinoxe)
    double w2,vx2,vy2,vz2;
    double aaa,bbb,ccc,ddd,contrainte,contrainte0,drho2;
    double contrainte00 = 0;
-   double mu;
    double paradx,parady,paradz;
-   /*double v,rv,rr,ex,ey,ez;*/
-
-   mu=(K)*(K);
 
    /*--- coordonnees cartesiennes equatoriales unitaires ---*/
    for (k=1;k<=2;k++) {

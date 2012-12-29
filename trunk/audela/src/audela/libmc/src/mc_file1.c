@@ -256,7 +256,7 @@ void mc_bow_dec2(char *num_aster, char *nom_fichier_in,struct elemorb *elem,stru
 {
    FILE *fichier_in;
    char num1[20],num2[20],num0[50],ligne[300],texte[40];
-   int numero,provisoire,trouve,col1,col2;
+   int numero,trouve,col1,col2;
 
    /*--- decomposition du numero au format Bowell ---*/
    mc_strupr(num_aster,num_aster);
@@ -268,11 +268,9 @@ void mc_bow_dec2(char *num_aster, char *nom_fichier_in,struct elemorb *elem,stru
       strcpy(num2,"");
    }
    strcpy(num0,num1);
-   provisoire=0;
    if (strcmp(num2,"")!=0) {
       strcat(num0," ");
       strcat(num0,num2);
-      provisoire=1;
       numero=-1;
    } else {
       numero=atoi(num1);
@@ -311,7 +309,7 @@ void mc_bow_dec3(char *num_aster, char *nom_fichier_in,int *concordance,char *no
 {
    FILE *fichier_in;
    char num1[20],num2[20],num0[50],ligne[300];
-   int numero,provisoire,trouve;
+   int numero,trouve;
    struct asterident aster;
    struct elemorb elem;
 
@@ -325,11 +323,9 @@ void mc_bow_dec3(char *num_aster, char *nom_fichier_in,int *concordance,char *no
       strcpy(num2,"");
    }
    strcpy(num0,num1);
-   provisoire=0;
    if (strcmp(num2,"")!=0) {
       strcat(num0," ");
       strcat(num0,num2);
-      provisoire=1;
       numero=-1;
    } else {
       numero=atoi(num1);
@@ -367,7 +363,7 @@ void mc_lec_obs_mpc(char *nom_fichier_in, struct observ *obs, int *nbobs)
    FILE *fichier_in,*fichier_station;
    char ligne[120],texte[120],texte2[120],nom_fichier_station[120];
    double a,b,c;
-   int len,n,mpc_format,k,col1,col2,conv,check_station,cod;
+   int len,n,k,col1,col2,conv,check_station,cod;
    int nn,nbstati=0;
    struct observ *stati=NULL;
 
@@ -430,11 +426,9 @@ void mc_lec_obs_mpc(char *nom_fichier_in, struct observ *obs, int *nbobs)
             }
          }
          texte[k]='\0';
-         mpc_format=PB;
          if (strlen(texte)>=65) {
             col1= 15;col2= 65;strncpy(texte2,texte+col1-1,col2-col1+1);*(texte2+col2-col1+1)='\0';
             if (strcmp(texte2,"axxxx xx xx.xxxxx xx xx xx.xx axx xx xx.x          ")==0) {
-               mpc_format=OK;
                n++;
                if ((conv==OK)&&(n<=*nbobs)) {
                   memset(texte,' ',13);texte[13]='\0';

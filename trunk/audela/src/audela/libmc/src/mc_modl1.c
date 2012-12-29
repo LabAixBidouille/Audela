@@ -42,14 +42,15 @@
 double mc_modpoi_addobs_az(double az,double h,int nb_coef,mc_modpoi_vecy *vecy,mc_modpoi_matx *matx) {
 	int k,kk;
 	double daz;
-	double tane,cosa,sina,cose,sine,sece,cos2a,sin2a,cos3a,sin3a,cos4a,sin4a;
+	double tane,cosa,sina,sece,cos2a,sin2a,cos3a,sin3a,cos4a,sin4a;
+	// double sine,cose;
 	double cos5a,sin5a,cos6a,sin6a;
 	/* --- altaz corrections ---*/
 	tane=tan(h);
 	cosa=cos(az);
 	sina=sin(az);
-	cose=cos(h);
-	sine=sin(h);
+	//cose=cos(h);
+	//sine=sin(h);
 	sece=1./cos(h);
 	cos2a=cos(2.*az);
 	sin2a=sin(2.*az);
@@ -119,15 +120,16 @@ double mc_modpoi_addobs_az(double az,double h,int nb_coef,mc_modpoi_vecy *vecy,m
 double mc_modpoi_addobs_h(double az,double h,int nb_coef,mc_modpoi_vecy *vecy,mc_modpoi_matx *matx) {
 	int k,kk;
 	double dh;
-	double tane,cosa,sina,cose,sine,sece,cos2a,sin2a,cos3a,sin3a,cos4a,sin4a;
+	double cosa,sina,cose,sine,cos2a,sin2a,cos3a,sin3a,cos4a,sin4a;
+	//double tane,sece;
 	double cos5a,sin5a,cos6a,sin6a;
 	/* --- altaz corrections ---*/
-	tane=tan(h);
+	//tane=tan(h);
 	cosa=cos(az);
 	sina=sin(az);
 	cose=cos(h);
 	sine=sin(h);
-	sece=1./cos(h);
+	//sece=1./cos(h);
 	cos2a=cos(2.*az);
 	sin2a=sin(2.*az);
 	cos3a=cos(3.*az);
@@ -200,8 +202,8 @@ double mc_modpoi_addobs_ha(double ha,double dec,double latrad,int nb_coef,mc_mod
 	int k,kk;
 	double dha;
 	double tand,cosh,sinh,cosd,sind,cosl,sinl,secd;
-	double cos2h,cos3h,cos4h,cos2d,cos3d,cos4d;
-	double sin2h,sin3h,sin4h,sin2d,sin3d,sin4d;
+	double cos2h,cos3h,cos4h; //cos2d,cos3d,cos4d;
+	double sin2h,sin3h,sin4h; //sin2d,sin3d,sin4d;
 	/* --- equatorial corrections ---*/
 	tand=tan(dec);
 	cosh=cos(ha);
@@ -217,12 +219,14 @@ double mc_modpoi_addobs_ha(double ha,double dec,double latrad,int nb_coef,mc_mod
 	sin3h=sin(3.*ha);
 	cos4h=cos(4.*ha);
 	sin4h=sin(4.*ha);
+	/*
 	cos2d=cos(2.*dec);
 	sin2d=sin(2.*dec);
 	cos3d=cos(3.*dec);
 	sin3d=sin(3.*dec);
 	cos4d=cos(4.*dec);
 	sin4d=sin(4.*dec);
+	*/
 	kk=0;
 	for (k=0;k<nb_coef;k++) {
 		matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.;
@@ -285,24 +289,26 @@ double mc_modpoi_addobs_ha(double ha,double dec,double latrad,int nb_coef,mc_mod
 double mc_modpoi_addobs_dec(double ha,double dec,double latrad, int nb_coef,mc_modpoi_vecy *vecy,mc_modpoi_matx *matx) {
 	int k,kk;
 	double ddec;
-	double tand,cosh,sinh,cosd,sind,cosl,sinl,secd;
-	double cos2h,cos3h,cos4h,cos2d,cos3d,cos4d;
-	double sin2h,sin3h,sin4h,sin2d,sin3d,sin4d;
+	double cosh,sinh,cosd,sind,cosl,sinl; //tand,secd;
+	double /*cos2h,cos3h,cos4h,*/ cos2d,cos3d,cos4d;
+	double /*sin2h,sin3h,sin4h,*/ sin2d,sin3d,sin4d;
 	/* --- equatorial corrections ---*/
-	tand=tan(dec);
+	//tand=tan(dec);
 	cosh=cos(ha);
 	sinh=sin(ha);
 	cosd=cos(dec);
 	sind=sin(dec);
 	cosl=cos(latrad);
 	sinl=sin(latrad);
-	secd=1./cos(dec);
+	//secd=1./cos(dec);
+	/*
 	cos2h=cos(2.*ha);
 	sin2h=sin(2.*ha);
 	cos3h=cos(3.*ha);
 	sin3h=sin(3.*ha);
 	cos4h=cos(4.*ha);
 	sin4h=sin(4.*ha);
+	*/
 	cos2d=cos(2.*dec);
 	sin2d=sin(2.*dec);
 	cos3d=cos(3.*dec);
