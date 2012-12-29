@@ -570,7 +570,7 @@ char *mc_savefits(float *mat,int naxis1, int naxis2,char *filename,mc_wcs *wcs)
    float value0;
    char *cars0;
    int k,k0;
-   double dx,deg2rad;
+   double deg2rad;
    long one= 1;
    int big_endian;
    f=fopen(filename,"wb");
@@ -654,7 +654,7 @@ char *mc_savefits(float *mat,int naxis1, int naxis2,char *filename,mc_wcs *wcs)
       }
       fwrite(&value0,1,sizeof(float),f);
    }
-   dx=naxis1*naxis2/2880.;
+   //dx=naxis1*naxis2/2880.;
    //n=(int)(2880.*(dx-floor(dx)));
    value0=(float)0.;
    for (k=0;k<naxis1*naxis2;k++) {
@@ -1329,12 +1329,12 @@ void mc_simulc_sat_stl(mc_cdr cdr,struct_point *point1,struct_point *point2,stru
    double pixx[3],pixy[3],x,y,z,frac;
    double volume,volumetot,masstot,xg,yg,zg;
 
-   int level;
+   //int level;
    double l0,date0,period,lp,bp, ks, ksp;
    int frame_center; /* =0 sun =1 earth */
 
    date0=cdr.jd_phase0;
-   level=cdr.htmlevel;
+   //level=cdr.htmlevel;
    l0=cdr.lon_phase0;
    period=cdr.period;
    lp=cdr.lonpole;

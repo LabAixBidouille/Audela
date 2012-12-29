@@ -967,7 +967,7 @@ char *mc_saveintfits(int *mat,int naxis1, int naxis2,char *filename) {
    int value0;
    char *cars0;
    int k,k0;
-   double dx;
+   //double dx;
    long one= 1;
    int big_endian;
    f=fopen(filename,"wb");
@@ -1008,7 +1008,7 @@ char *mc_saveintfits(int *mat,int naxis1, int naxis2,char *filename) {
       }
       fwrite(&value0,1,sizeof(int),f);
    }
-   dx=naxis1*naxis2/2880.;
+   //dx=naxis1*naxis2/2880.;
    //n=(int)(2880.*(dx-floor(dx)));
    value0=(int)0.;
    for (k=0;k<naxis1*naxis2;k++) {
@@ -3740,7 +3740,7 @@ int Cmd_mctcl_radec2ecliptic(ClientData clientData, Tcl_Interp *interp, int argc
 /* Sorties :																                */
 /* ListLonLat en degres.                									          */
 /****************************************************************************/
-   double jjfrom=0.,jjto=0.,asd2=0.,dec2=0.,radeg,decdeg,lon,lat;
+   double jjfrom=0.,/*jjto=0.,*/asd2=0.,dec2=0.,radeg,decdeg,lon,lat;
    int result=TCL_ERROR;
    char s[100];
    char **argvv=NULL;
@@ -3754,7 +3754,7 @@ int Cmd_mctcl_radec2ecliptic(ClientData clientData, Tcl_Interp *interp, int argc
    } else {
       /* --- decode la date de l'equinoxe ---*/
       mctcl_decode_date(interp,argv[2],&jjfrom);
-      jjto=J2000;
+      //jjto=J2000;
       /*--- Calcul des coordonnees Ra,Dec */
       if (Tcl_SplitList(interp,argv[1],&argcc,&argvv)==TCL_OK) {
 		   if (argcc>=2) {
