@@ -1734,7 +1734,7 @@ namespace eval ::confVisu {
                tk_messageBox -message "$::errorInfo. See console" -icon error
                return
             }
-            #--- j'ajoute cette intance dans la liste
+            #--- j'ajoute cette instance dans la liste
             lappend private($visuNo,pluginInstanceList) $toolName
          } else {
             #--- rien a faire car il existe deja une instance du plugin dans cette visu
@@ -1886,13 +1886,15 @@ namespace eval ::confVisu {
       set visuNo ""
 
       foreach visu $visuList {
-         set toolList $::confVisu::private($visu,pluginInstanceList)
-         #--- si la liste des plugins de type tool dans la visu n'est pas vide
-         #--- cherche si le plugin est dans la liste
-          if {$toolList ne "" && [lsearch -exact $toolList "$toolName"] != -1} {
-            #--- l'outil existe dans la visu
-            set visuNo $visu
-            break
+         if {[info exists ::confVisu::private($visu,pluginInstanceList)]} {
+            set toolList $::confVisu::private($visu,pluginInstanceList)
+            #--- si la liste des plugins de type tool dans la visu n'est pas vide
+            #--- cherche si le plugin est dans la liste
+            if {$toolList ne "" && [lsearch -exact $toolList "$toolName"] != -1} {
+               #--- l'outil existe dans la visu
+               set visuNo $visu
+               break
+            }
          }
       }
       return $visuNo
