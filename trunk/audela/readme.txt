@@ -1,4 +1,4 @@
-AudeLA-2.0.0 (20101014)
+AudeLA-2.x.0
 
 
 1. Introduction
@@ -26,6 +26,7 @@ AudeLA est capable de piloter les caméras CCD suivantes :
 - AndorTech,
 - APN (Appareil Photo Numérique, CANON et NIKON),
 - Caméras compatibles ASCOM,
+- Atik,
 - Audine (Kaf séries 400, 401, 401E, 1600, 1602, 1602E et 3200E),
 - Cagire,
 - CB245,
@@ -61,6 +62,7 @@ AudeLA est capable de piloter les montures suivantes :
 - EQMOD,
 - Etel,
 - LX200 ou n'importe quelle monture répondant au protocole LX200,
+- MCMT II,
 - Ouranos (codeurs absolus),
 - T94 de Saint Caprais,
 - T193 de l'OHP,
@@ -71,6 +73,7 @@ AudeLA est capable de piloter les interfaces de communication suivantes :
 - EthernAude (interface Ethernet pour caméras CCD),
 - GPhoto2,
 - Manuel,
+- Oscadine,
 - Port parallèle,
 - Port série,
 - QuickAudine (interface USB pour caméras Audine),
@@ -83,6 +86,7 @@ AudeLA est capable de piloter les équipements suivants :
 - Focaliseur AudeCom,
 - Focaliseur JMI,
 - Focaliseur LX200,
+- Focaliseur T193,
 - Lhires 3,
 - Roue à filtres développée dans le cadre de l'Association Aude.
 
@@ -423,5 +427,5 @@ Les Auteurs.
 
 AudeLA, page d'accueil : http://www.audela.org
 
-Copyright (C)1999-2010, The AudeLA Core Team.
+Copyright (C)1999-2013, The AudeLA Core Team.
 
