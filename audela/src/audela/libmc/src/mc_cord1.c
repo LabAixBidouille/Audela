@@ -73,7 +73,7 @@ void mc_anovrair(struct elemorb elempla,double m,double *v,double *r)
 /* *r : rayon vecteur                                                      */
 /***************************************************************************/
 {
-   double e0,q,u,e,a,u0,vv,rr,cosv,sinv,s,w;
+   double q,u,e,a,u0,vv,rr,cosv,sinv,s,w;
    /* --- Decomposition de la structure des elements d'orbite --- */
    e=elempla.e;
    q=elempla.q;
@@ -81,33 +81,12 @@ void mc_anovrair(struct elemorb elempla,double m,double *v,double *r)
       a=q/(1-e);
       /* --- calcul de l'anomalie excentrique ---*/
       /* --- Equation de Kepler : 1ere methode --- */
-      e0=mc_asin(e);
       if (e<0.95) {u=m;}
       else {u=mc_sgn2(m)*sqrt(6*fabs(m));}
       do {
          u0=u;
          u=u0-(u0-e*sin(u0)-m)/(1-e*cos(u0));
       } while (fabs(u-u0)>1e-10);
-      /* --- Equation de Kepler : 3eme methode (Sinott) --- */
-      /*
-      e0=asin(e);
-      f=m/mc_sgn(m); // mettre d'abord m entre 0 et 2pi
-      m=fabs(m)/2/PI;
-      m=(m-floor(m))*2*PI*f;
-      if (m<0) {m=m+2*PI;}
-      f=1;
-      if (m>PI) {f=-1;}
-      if (m>PI) {m=2*PI-m;}
-      eo=PI/2;
-      d=PI/4;
-      j=1;
-      do {
-         m1=eo-e0*sin(eo);
-         eo=eo+d*fabs(m-m1)/(m-m1);
-         d=d/2;
-      } while (j<33);
-      u=eo*f;
-      */
       u=fmod(u,2*PI);
       /* --- calcul du rayon vecteur ---*/
       rr=a*(1-e*cos(u));
@@ -121,11 +100,6 @@ void mc_anovrair(struct elemorb elempla,double m,double *v,double *r)
       w=3.*m/2;
       u=2*sinh(1./3*log(w+sqrt(w*w+1)));
       s=u;
-      /*
-      u0=sqrt(w*w+1);
-      e0=1./3;
-      s=pow((w+u0),e0)-pow((u0-w),e0);
-      */
       /* --- calcul du rayon vecteur ---*/
       rr=q*(1+s*s);
       /* --- calcul de l'anomalie vraie ---*/
@@ -136,7 +110,6 @@ void mc_anovrair(struct elemorb elempla,double m,double *v,double *r)
    } else /* if (e>1) */ {
       a=q/(e-1);
       /* --- calcul de l'anomalie excentrique ---*/
-      e0=log(e+sqrt(e*e+1));
       u=m;
       do {
          u0=u;
@@ -433,7 +406,7 @@ void mc_xvx2elem(double x, double y, double z, double vx, double vy, double vz, 
 /***************************************************************************/
 {
    double mu=1;
-   double m,hx,hy,hz,ex,ey,ez,o,i,w,e,r,v,rv,a0,a,ecosu,esinu,jj_m0;
+   double m,hx,hy,hz,ex,ey,ez,o,i,w,e,r,v,rv,a0,a,ecosu,esinu;
    double parab=1e-4,jjaber=J2000;
    double q,tau,cosw,n,jj_q,h,u,zz,m0,cosi;
 
@@ -505,7 +478,6 @@ void mc_xvx2elem(double x, double y, double z, double vx, double vy, double vz, 
    }
    m0=0;
    m0=(m0+(jj-jj_q)*n*DR);
-   jj_m0=jj;
 
    /*--- mise en forme finale au format de la structure elemorb ---*/
    o=fmod(4*PI+o,2*PI);

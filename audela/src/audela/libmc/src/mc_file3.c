@@ -36,7 +36,7 @@ void mc_lec_mpc_noms(char *nom_fichier_in,char *nom_fichier_noms)
 {
    FILE *fichier_in,*fichier_out;
    char ligne[120],texte[120],texte2[120],designation[15];
-   int len,n,mpc_format,k,col1,col2,premier;
+   int len,n,k,col1,col2,premier;
    int nblignes,*checkligne,numligne;
 
    if (( fichier_in=fopen(nom_fichier_in,"r") ) == NULL) {
@@ -78,11 +78,9 @@ void mc_lec_mpc_noms(char *nom_fichier_in,char *nom_fichier_noms)
                   }
                }
                texte[k]='\0';
-               mpc_format=PB;
                if (strlen(texte)>=65) {
                   col1= 15;col2= 65;strncpy(texte2,texte+col1-1,col2-col1+1);*(texte2+col2-col1+1)='\0';
                   if (strcmp(texte2,"axxxx xx xx.xxxxx xx xx xx.xx axx xx xx.x          ")==0) {
-                     mpc_format=OK;
                      memset(texte,' ',13);texte[13]='\0';
                      col1= 1;col2=12;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
                      if (strcmp(designation,texte)==0) {

@@ -195,9 +195,8 @@ int Cmd_mctcl_date2iso8601(ClientData clientData, Tcl_Interp *interp, int argc, 
 /****************************************************************************/
    double d,jj=0.,jour=0.;
    double hh,mm,ss;
-   int result,y=0,m=0;
-   char s[100];
-
+   int result,y=0,m=0,k;
+   char s[100],sec[10];
 
    if(argc!=2) {
       sprintf(s,"Usage: %s Date", argv[0]);
@@ -207,15 +206,22 @@ int Cmd_mctcl_date2iso8601(ClientData clientData, Tcl_Interp *interp, int argc, 
 	  /* --- decode la date ---*/
       mctcl_decode_date(interp,argv[1],&jj);
       /*--- Calcul de la Date a partir du Jour Julien */
-      mc_jd_date(jj,&y,&m,&jour);
-      d=floor(jour);
-	   d=(jour-d)*24.;
-	   hh=floor(d);
-	   d=(d-hh)*60.;
-	   mm=floor(d);
-	   ss=(d-mm)*60.;
-		ss=(floor(ss*1e3))/1e3;
-      sprintf(s,"%04d-%02d-%02dT%02d:%02d:%06.3f",y,m,(int)floor(jour),(int)hh,(int)mm,ss);
+		for (k=0;k<=1;k++) {
+			mc_jd_date(jj,&y,&m,&jour);
+			d=floor(jour);
+			d=(jour-d)*24.;
+			hh=floor(d);
+			d=(d-hh)*60.;
+			mm=floor(d);
+			ss=(d-mm)*60.;
+			sprintf(sec,"%06.3f",ss);
+			if (strcmp(sec,"60.000")!=0) { 
+				break;
+			} else {
+				jj+=(0.0005/86400);
+			}
+		}
+      sprintf(s,"%04d-%02d-%02dT%02d:%02d:%s",y,m,(int)floor(jour),(int)hh,(int)mm,sec);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       result = TCL_OK;
    }
@@ -366,7 +372,7 @@ int Cmd_mctcl_date2lst(ClientData clientData, Tcl_Interp *interp, int argc, char
    double longi=0.,tsl=0.,rhocosphip,rhosinphip;
    int hhh=0,mmm=0;
    int result,do_nutation=1,type_format=0,ko;
-	double tai_utc=0.;
+	/*double tai_utc=0.;*/
 	double ut1_utc=0.;
    char s[256];
 

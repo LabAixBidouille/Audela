@@ -36,7 +36,6 @@ void mc_parallaxe_stellaire(double jj,double asd1,double dec1,double *asd2,doubl
 /***************************************************************************/
 {
    double llp[10],mmp[10],uup[10],ls,bs,rs,eps,dpsi,deps;
-   int planete;
    double secd,dasd,ddec;
    double plxrad;
 
@@ -44,7 +43,6 @@ void mc_parallaxe_stellaire(double jj,double asd1,double dec1,double *asd2,doubl
    mc_obliqmoy(jj,&eps);
 
    /* --- longitude vraie du soleil ---*/
-   planete=SOLEIL;
    mc_jd2lbr1a(jj,llp,mmp,uup);
    mc_jd2lbr1b(jj,SOLEIL,llp,mmp,uup,&ls,&bs,&rs);
    mc_nutation(jj,1,&dpsi,&deps);
@@ -76,7 +74,6 @@ void mc_aberration_annuelle(double jj,double asd1,double dec1,double *asd2,doubl
 /***************************************************************************/
 {
    double llp[10],mmp[10],uup[10],ls,bs,rs,eps,dpsi,deps;
-   int planete;
    double k=20.49552; /* constant of annual aberration */
    double c,cc,d,dd,secd,cp,dp,dasd,ddec;
 
@@ -84,7 +81,6 @@ void mc_aberration_annuelle(double jj,double asd1,double dec1,double *asd2,doubl
    mc_obliqmoy(jj,&eps);
 
    /* --- longitude vraie du soleil ---*/
-   planete=SOLEIL;
    mc_jd2lbr1a(jj,llp,mmp,uup);
    mc_jd2lbr1b(jj,SOLEIL,llp,mmp,uup,&ls,&bs,&rs);
    mc_nutation(jj,1,&dpsi,&deps);
@@ -123,7 +119,6 @@ void mc_aberration_eterms(double jj,double asd1,double dec1,double *asd2,double 
 /***************************************************************************/
 {
    double llp[10],mmp[10],uup[10],ls,bs,rs,eps,dpsi,deps;
-   int planete;
    double k=20.49552; /* constant of annual aberration */
    double c,cc,d,dd,secd,cp,dp,dasd,ddec;
    double t,e,w;
@@ -132,7 +127,6 @@ void mc_aberration_eterms(double jj,double asd1,double dec1,double *asd2,double 
    mc_obliqmoy(jj,&eps);
 
    /* --- longitude vraie du soleil ---*/
-   planete=SOLEIL;
    mc_jd2lbr1a(jj,llp,mmp,uup);
    mc_jd2lbr1b(jj,SOLEIL,llp,mmp,uup,&ls,&bs,&rs);
    mc_nutation(jj,1,&dpsi,&deps);
@@ -543,7 +537,7 @@ void mc_rhophi2latalt(double rhosinphip,double rhocosphip,double *latitude,doubl
 /***************************************************************************/
 {
    double aa,ff,bb,lat,alt,phip,rho,phi0,u0,rhosinphip0,rhocosphip0,rho0;
-   double sinu0,cosu0,sinphi0,cosphi0,phip0;
+   double sinu0,cosu0,sinphi0,cosphi0;
    //aa=6378140;
    aa=EARTH_SEMI_MAJOR_RADIUS;
    //ff=1./298.257;
@@ -566,7 +560,6 @@ void mc_rhophi2latalt(double rhosinphip,double rhocosphip,double *latitude,doubl
       rhosinphip0 = bb/aa*sinu0 + alt/aa*sinphi0 ;
       rhocosphip0 =       cosu0 + alt/aa*cosphi0 ;
       rho0=sqrt(rhosinphip0*rhosinphip0+rhocosphip0*rhocosphip0);
-      phip0=atan2(rhosinphip0,rhocosphip0);
       if ((rho-rho0)<0) {
          break;
       }

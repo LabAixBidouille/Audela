@@ -1211,7 +1211,7 @@ void mc_adshadow(double jj,double jjutc, double equinoxe, int astrometric, doubl
 	double rpoter,rc_eq,rc_po;
 	double k_gauss,n,a,alpha0,alphans,alphaew;
 	double y0,xc,x,y,z,sepang,posang;
-	double dz,pos,alphacosp;
+	double dz,alphacosp;
    jjd=jj;
 
    /*--- soleil geo ---*/

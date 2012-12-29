@@ -1834,7 +1834,7 @@ int Cmd_mctcl_readcat(ClientData clientData, Tcl_Interp *interp, int argc, char 
    char s[524],ss[524];
    int nboutputdatas,sortie;
    char **outputdatas=NULL/*, *pres=NULL,*car=NULL */;
-   int nbobjs,nbobjmax=1000,k,msg,result,code;
+   int nbobjs,nbobjmax=1000,k,msg,result;
    objetype *objs=NULL;
    char **dates=NULL;
    int nbdates=0;
@@ -1843,7 +1843,7 @@ int Cmd_mctcl_readcat(ClientData clientData, Tcl_Interp *interp, int argc, char 
    double longmpc,rhocosphip,rhosinphip,jj;
    double asd,dec,delta,mag,diamapp,elong,phase,r;
    double x,y;
-   int ko,kp,planetnum,stationfilefound,stationfound;
+   int ko,kp,planetnum;
    char objename[100],orbitformat[50],orbitstring[300],orbitfile[1024];
    struct asterident aster;
    struct elemorb elem;
@@ -1872,9 +1872,7 @@ int Cmd_mctcl_readcat(ClientData clientData, Tcl_Interp *interp, int argc, char 
 	  longmpc=0.;
 	  rhocosphip=0.;
 	  rhosinphip=0.;
-	  stationfilefound=YES;
-	  stationfound=YES;
- 	  code=Tcl_SplitList(interp,"NOW",&nbdates,&dates);
+ 	  Tcl_SplitList(interp,"NOW",&nbdates,&dates);
      for (ko=1;ko<argc-1;ko++) {
 	     strcpy(s,argv[ko]);
 		  mc_strupr(s,s);
@@ -1885,8 +1883,8 @@ int Cmd_mctcl_readcat(ClientData clientData, Tcl_Interp *interp, int argc, char 
         else if (strcmp(s,"-MAGB>")==0) { p.magbinf=atof(argv[ko+1]); }
         else if (strcmp(s,"-TOPO")==0) {
 			 mctcl_decode_topo(interp,argv[ko+1],&longmpc,&rhocosphip,&rhosinphip);
-			 if (longmpc==10.) { stationfilefound=NO; longmpc=0.; }
-			 if (longmpc==15.) { stationfound=NO; longmpc=0.; }
+			 if (longmpc==10.) { longmpc=0.; }
+			 if (longmpc==15.) { longmpc=0.; }
 		  } else if (strcmp(s,"-DATE")==0) {
           mctcl_decode_date(interp,argv[ko+1],&jj);
 			 jjutc=jj;
@@ -1924,7 +1922,7 @@ int Cmd_mctcl_readcat(ClientData clientData, Tcl_Interp *interp, int argc, char 
 	  }
 
      /* --- decode le {ListOutput} ---*/
-     code=Tcl_SplitList(interp,argv[3],&nboutputdatas,&outputdatas);
+     Tcl_SplitList(interp,argv[3],&nboutputdatas,&outputdatas);
 
      /* --- effectue les calculs ---*/
 
@@ -2186,12 +2184,11 @@ int Cmd_mctcl_tle2ephem2(ClientData clientData, Tcl_Interp *interp, int argc, ch
    double asd,dec,delta,mag,diamapp,elong,phase,rr,asd0,dec0;
    FILE *ftle;
    char **argvv=NULL;
-	int argcc,k,kmin=0,code;
+	int argcc,k,kmin=0;
 	double distmin=-1;
 	double sep,posangle,sunfraction;
    double equinoxe=J2000,jdtt;
 	int astrometric=1;
-	double reqter=6378.14*1e3;
 
    if(argc<4) {
       /*
@@ -2221,7 +2218,7 @@ int Cmd_mctcl_tle2ephem2(ClientData clientData, Tcl_Interp *interp, int argc, ch
 				if (strcmp(argv[k],"-name")==0) {
 		         strcpy(name,argv[k+1]);
 				} else if (strcmp(argv[k],"-coord")==0) {
-					code=Tcl_SplitList(interp,argv[k+1],&argcc,&argvv);
+					Tcl_SplitList(interp,argv[k+1],&argcc,&argvv);
 					if (argcc>=2) {
 						mctcl_decode_angle(interp,argvv[0],&asd0);
 						asd0*=(DR);
@@ -2375,12 +2372,11 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
    double asd,dec,delta,mag,diamapp,elong,phase,rr,asd0,dec0;
    FILE *ftle;
    char **argvv=NULL;
-	int argcc,k,kmin=0,code;
+	int argcc,k,kmin=0;
 	double distmin=-1;
 	double sep,posangle,sunfraction;
    double equinoxe=J2000,jdtt;
 	int astrometric=1;
-	double reqter=6378.14*1e3;
 	int sgp_method=4;
 	double zlong,zlat;
 	double azimuth, elevation, parallactic, hour_angle;
@@ -2417,7 +2413,7 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
 					if (sss[0]=='0') { sgp_method=0; }
 					if (sss[0]=='8') { sgp_method=8; }
 				} else if (strcmp(argv[k],"-coord")==0) {
-					code=Tcl_SplitList(interp,argv[k+1],&argcc,&argvv);
+					Tcl_SplitList(interp,argv[k+1],&argcc,&argvv);
 					if (argcc>=2) {
 						mctcl_decode_angle(interp,argvv[0],&asd0);
 						asd0*=(DR);
@@ -3054,7 +3050,7 @@ int Cmd_mctcl_simulc_sat_stl(ClientData clientData, Tcl_Interp *interp, int argc
    double asd,dec,delta,albedo;
    double mag,phase,elong,diamapp,r;
    double longmpc=0.,rhocosphip=0.,rhosinphip=0.;
-   int orbitfilefound=YES,orbitisgood=NO;
+   int orbitisgood=NO;
    struct asterident aster;
    struct elemorb elem;
    FILE *fichier_in=NULL;
@@ -3259,7 +3255,6 @@ int Cmd_mctcl_simulc_sat_stl(ClientData clientData, Tcl_Interp *interp, int argc
        /* --- ouverture du fichier de la base d'orbite ---*/
   		if ((strcmp(orbitformat,"BOWELLFILE")==0)||(strcmp(orbitformat,"MPCFILE")==0)) {
          if ((fichier_in=fopen(orbitfile,"rt") ) == NULL) {
-  	   	   orbitfilefound=NO;
 		      orbitisgood=NO;
             /* --- le fichier d'orbite n'est pas trouve : il faut sortir ---*/
             sprintf(s,"Error : Orbit file %s (type=%s) not found",orbitfile,orbitformat);
@@ -3565,7 +3560,7 @@ int Cmd_mctcl_simulc(ClientData clientData, Tcl_Interp *interp, int argc, char *
    double asd,dec,delta;
    double mag,phase,elong,diamapp,r;
    double longmpc=0.,rhocosphip=0.,rhosinphip=0.;
-   int orbitfilefound=YES,orbitisgood=NO;
+   int orbitisgood=NO;
    struct asterident aster;
    struct elemorb elem;
    FILE *fichier_in=NULL;
@@ -3702,7 +3697,6 @@ int Cmd_mctcl_simulc(ClientData clientData, Tcl_Interp *interp, int argc, char *
       /* --- ouverture du fichier de la base d'orbite ---*/
   		if ((strcmp(orbitformat,"BOWELLFILE")==0)||(strcmp(orbitformat,"MPCFILE")==0)) {
          if ((fichier_in=fopen(orbitfile,"rt") ) == NULL) {
-  	   	   orbitfilefound=NO;
 		      orbitisgood=NO;
             /* --- le fichier d'orbite n'est pas trouve : il faut sortir ---*/
             sprintf(s,"Error : Orbit file %s (type=%s) not found",orbitfile,orbitformat);
@@ -3987,7 +3981,7 @@ int Cmd_mctcl_simulcbin(ClientData clientData, Tcl_Interp *interp, int argc, cha
    double asd,dec,delta;
    double mag,phase,elong,diamapp,r;
    double longmpc=0.,rhocosphip=0.,rhosinphip=0.;
-   int orbitfilefound=YES,orbitisgood=NO;
+   int orbitisgood=NO;
    struct asterident aster;
    struct elemorb elem;
    FILE *fichier_in=NULL;
@@ -4210,7 +4204,6 @@ int Cmd_mctcl_simulcbin(ClientData clientData, Tcl_Interp *interp, int argc, cha
       /* --- ouverture du fichier de la base d'orbite ---*/
   		if ((strcmp(orbitformat,"BOWELLFILE")==0)||(strcmp(orbitformat,"MPCFILE")==0)) {
          if ((fichier_in=fopen(orbitfile,"rt") ) == NULL) {
-  	   	   orbitfilefound=NO;
 		      orbitisgood=NO;
             /* --- le fichier d'orbite n'est pas trouve : il faut sortir ---*/
             sprintf(s,"Error : Orbit file %s (type=%p) not found",orbitfile,orbitformat);
@@ -4415,7 +4408,7 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
    double asd,dec,delta;
    double mag,phase,elong,diamapp,r;
    double longmpc=0.,rhocosphip=0.,rhosinphip=0.;
-   int orbitfilefound=YES,orbitisgood=NO;
+   int orbitisgood=NO;
    struct asterident aster;
    struct elemorb elem;
    FILE *fichier_in=NULL;
@@ -4425,7 +4418,7 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
    Tcl_DString dsptr;
 
    double xearth,yearth,zearth,xaster,yaster,zaster;
-   double dl;
+   //double dl;
    int n,k;
    mc_cdrpos *cdrpos=NULL;
    mc_cdr cdr;
@@ -4494,8 +4487,8 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
          genefilename=NULL;
       }
       /* --- */
-      dl=0.5*sqrt(41253./(8*pow(4,cdr.htmlevel)));
-      dl=5.;
+      //dl=0.5*sqrt(41253./(8*pow(4,cdr.htmlevel)));
+      //dl=5.;
 	   longmpc=0.;
 	   rhocosphip=0.;
 	   rhosinphip=0.;
@@ -4670,7 +4663,6 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
       /* --- ouverture du fichier de la base d'orbite ---*/
   		if ((strcmp(orbitformat,"BOWELLFILE")==0)||(strcmp(orbitformat,"MPCFILE")==0)) {
          if ((fichier_in=fopen(orbitfile,"rt") ) == NULL) {
-  	   	   orbitfilefound=NO;
 		      orbitisgood=NO;
             /* --- le fichier d'orbite n'est pas trouve : il faut sortir ---*/
             sprintf(s,"Error : Orbit file %s (type=%p) not found",orbitfile,orbitformat);
@@ -4984,7 +4976,7 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
    char **argvv=NULL;
    int argcc,code,res;
    double jdk,tot,dif,offmag,stdmag;
-   double jd1,jd2,jdmed,djd;
+   double jd1,jdmed,djd;
    double stdmagmin,offmagmin=0.;
    int kjdmin=0;
    char mesures[]="mes";
@@ -5275,7 +5267,7 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
 	      /* === Calcule les njd(=100) dates qui encadrent le mieux l'observation ===*/
          jdmed=(cdrpos[0].jdtt+cdrpos[n-1].jdtt)/2;
          jd1=jdmed-cdr.period/2.;
-         jd2=jd1+cdr.period;
+         //jd2=jd1+cdr.period;
          djd=cdr.period*njd/(njd-1); /* pour obtenir la meme phase au debut et a la fin */
          /* --- calcule tous les parametres de l'asteroide pour les njd(=100) dates TT couvrant une periode complete  ---*/
          for (k=0;k<njd;k++) {
@@ -5475,15 +5467,15 @@ mc_lightmap 2005-09-23T00:00:44.280 0.6708 0.1333 J2000.0 "c:/d/gft/test.fit" 1 
    int naxis1,naxis2,methode,otherhome;
    double minobjelev,maxsunelev,minmoondist;
    int klon,klat;
-   double lon,lat,cosl,cosb,cosl0,cosb0,sinl,sinb,sinl0,sinb0;
-   double jd,ra,dec,equinox,cosr,sinr,cosd,sind;
+   double lon,lat,cosb,sinb;
+   double jd,ra,dec,equinox,cosr,cosd,sind;
    float *earthmap;
    double val;
-   double j,t,theta0,tsl,ha,cosh,sinh;
+   double j,t,theta0,tsl,ha,cosh;
    double hobj,hsun,hmoon,distmoon,posangle;
    double delta,mag,diamapp,elong,phase,r,diamapp_equ,diamapp_pol,long1,long2,long3,lati,posangle_sun,posangle_north,long1_sun,lati_sun;
-   double rasun,decsun,cosrsun,sinrsun,cosdsun,sindsun,coshsun,sinhsun;
-   double ramoon,decmoon,cosrmoon,sinrmoon,cosdmoon,sindmoon,coshmoon,sinhmoon;
+   double rasun,decsun,sinrsun,cosdsun,sindsun,coshsun;
+   double ramoon,decmoon,sinrmoon,cosdmoon,sindmoon,coshmoon;
    double hmax,lonzen=0,latzen=0;
    double hobsotherhome;
 	double equinoxe=J2000,jjutc;
@@ -5612,19 +5604,11 @@ mc_lightmap 2005-09-23T00:00:44.280 0.6708 0.1333 J2000.0 "c:/d/gft/test.fit" 1 
       minmoondist=(double)atof(argv[11])*(DR);
       /* --- decode le Home ---*/
       otherhome=0;
-      cosl0=1.;
-      sinl0=0.;
-      cosb0=1.;
-      sinb0=0.;
       if (argc>=13) {
          otherhome=1;
          mctcl_decode_topo(interp,argv[12],&longitude,&rhocosphip,&rhosinphip);
          mc_rhophi2latalt(rhosinphip,rhocosphip,&latitude,&altitude);
          latitude*=(DR);
-         cosl0=cos(longitude);
-         sinl0=sin(longitude);
-         cosb0=cos(latitude);
-         sinb0=sin(latitude);
       }
       /* === CALCULS ===*/
       earthmap=(float*)calloc(naxis1*naxis2,sizeof(float));
@@ -5647,17 +5631,14 @@ mc_lightmap 2005-09-23T00:00:44.280 0.6708 0.1333 J2000.0 "c:/d/gft/test.fit" 1 
          dec=decs[k];
          equinox=equinoxs[k];
          cosr=cos(ra);
-         sinr=sin(ra);
          cosd=cos(dec);
          sind=sin(dec);
 			longitude=0;rhocosphip=0;rhosinphip=0;
          mc_adsolap(jd,equinoxe,astrometric,longitude,rhocosphip,rhosinphip,&rasun, &decsun,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
-         cosrsun=cos(rasun);
          sinrsun=sin(rasun);
          cosdsun=cos(decsun);
          sindsun=sin(decsun);
          mc_adlunap(LUNE,jd,jjutc,equinoxe,astrometric,longitude,rhocosphip,rhosinphip,&ramoon,&decmoon,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
-         cosrmoon=cos(ramoon);
          sinrmoon=sin(ramoon);
          cosdmoon=cos(decmoon);
          sindmoon=sin(decmoon);
@@ -5677,17 +5658,14 @@ mc_lightmap 2005-09-23T00:00:44.280 0.6708 0.1333 J2000.0 "c:/d/gft/test.fit" 1 
             ha=tsl-ra;
             ha=fmod(4*PI+ha,2*PI);
             cosh=cos(ha);
-            sinh=sin(ha);
             /* --- calcul de l'angle horaire de sun ---*/
             ha=tsl-rasun;
             ha=fmod(4*PI+ha,2*PI);
             coshsun=cos(ha);
-            sinhsun=sin(ha);
             /* --- calcul de l'angle horaire de moon ---*/
             ha=tsl-ramoon;
             ha=fmod(4*PI+ha,2*PI);
             coshmoon=cos(ha);
-            sinhmoon=sin(ha);
             /* */
             lat=latitude;
             cosb=cos(lat);
@@ -5726,8 +5704,6 @@ mc_lightmap 2005-09-23T00:00:44.280 0.6708 0.1333 J2000.0 "c:/d/gft/test.fit" 1 
          latzen=0.;
          for (klon=0;klon<naxis1;klon++) {
             lon=(dlon*klon)*(DR);
-            cosl=cos(lon);
-            sinl=sin(lon);
             /* --- calcul du temps sideral local ---*/
             j=(jd-2451545.0);
             t=j/36525;
@@ -5739,17 +5715,14 @@ mc_lightmap 2005-09-23T00:00:44.280 0.6708 0.1333 J2000.0 "c:/d/gft/test.fit" 1 
             ha=tsl-ra;
             ha=fmod(4*PI+ha,2*PI);
             cosh=cos(ha);
-            sinh=sin(ha);
             /* --- calcul de l'angle horaire de sun ---*/
             ha=tsl-rasun;
             ha=fmod(4*PI+ha,2*PI);
             coshsun=cos(ha);
-            sinhsun=sin(ha);
             /* --- calcul de l'angle horaire de moon ---*/
             ha=tsl-ramoon;
             ha=fmod(4*PI+ha,2*PI);
             coshmoon=cos(ha);
-            sinhmoon=sin(ha);
             for (klat=0;klat<naxis2;klat++) {
                lat=(dlat*klat)*(DR)-(PI)/2;
                cosb=cos(lat);
@@ -5839,7 +5812,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 	FILE *f,*finp;
 	mc_modpoi_matx *matx=NULL; /* 2*nb_star */
 	mc_modpoi_vecy *vecy=NULL; /* nb_coef */
-	int nb_coef,nb_star,nstars,*kseps=NULL;
+	int nb_coef=0,nb_star,nstars,*kseps=NULL;
 	double tane,cosa,sina,cose,sine,sece,cos2a,sin2a,cos3a,sin3a,cos4a,sin4a,dh,daz;
 	double cos5a,sin5a,cos6a,sin6a;
 	double *seps=NULL,site=0,gise=0,sepmax;
@@ -5857,7 +5830,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 	double ttsec,jdtt;
 	int ttsecok=0;
 	double dpsi,deps,eps,tsl,tand,dasd,ddec;
-	double h0,az0,sunguard=10.;
+	double sunguard=10.;
 	int corrections;
 	double montee=-7,descente=7,largmontee=2.,largdescente=2.,amplitude=0.;
 
@@ -6625,10 +6598,6 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 					sscanf(s,"%lf %lf %lf %lf %s",&sod,&h,&az,&distance,commentaire);
 					az=(az-180.)*DR;
 					h*=(DR);
-					az0=fmod(az+2*PI,2*PI);
-					h0=h;
-					//jd=floor(jddeb-0.5)+sod/86400.;
-					//jd=floor(jddeb)+(sod-43200)/86400.;
 					jd=jdsod0+sod/86400.;
 					nlig++;
 					mc_ah2hd(az,h,latitude,&ha,&dec);
@@ -7145,10 +7114,10 @@ int Cmd_mctcl_cosmology_calculator(ClientData clientData, Tcl_Interp *interp, in
    Tcl_DString dsptr;
 	double H0t=71.,WMt=.27,WVt=.73,zt;
 	int i;
-	double wd_i,wd_n,wd_nda,wd_WR,wd_WK,wd_c,wd_Tyr,wd_DTT,wd_DTT_Gyr;
-	double wd_ltt,wd_age,wd_age_Gyr,wd_zage,wd_zage_Gyr,wd_DCMR;
-	double wd_DCMR_Mpc,wd_DCMR_Gyr,wd_DA,wd_DA_Mpc,wd_DA_Gyr,wd_kpc_DA;
-	double wd_DL,wd_DL_Mpc,wd_DL_Gyr,wd_V_Gpc,wd_a,wd_az;
+	double wd_n,wd_WR,wd_WK,wd_c,wd_Tyr,wd_DTT,wd_DTT_Gyr; // wd_i,wd_nda
+	double wd_age,wd_age_Gyr,wd_zage,wd_zage_Gyr,wd_DCMR; // wd_ltt
+	double wd_DCMR_Mpc,wd_DA,wd_DA_Mpc,wd_kpc_DA; // wd_DCMR_Gyr,wd_DA_Gyr
+	double wd_DL,wd_DL_Mpc,wd_V_Gpc,wd_a,wd_az; //wd_DL_Gyr,
 	double wd_H0,wd_WM,wd_WV,wd_z;
 	double wd_h;
 	double adot,wd_lpz,wd_dzage,wd_adot,ratio,x,y;
@@ -7166,30 +7135,30 @@ int Cmd_mctcl_cosmology_calculator(ClientData clientData, Tcl_Interp *interp, in
       if (argc>=5) { WVt=atof(argv[4]); }
 		/* ---- calculation ---*/
 		pi=PI;
-		wd_i=0;	//%% index
+		//wd_i=0;	//%% index
 		wd_n=1000;	//%% number of points in integrals
-		wd_nda = 1;	//%% number of digits in angular size distance
+		//wd_nda = 1;	//%% number of digits in angular size distance
 		wd_WR = 0;	//%% Omega(radiation)
 		wd_WK = 0;	//%% Omega curvaturve = 1-Omega(total)
 		wd_c = 299792.458; //%% velocity of light in km/sec
 		wd_Tyr = 977.8; //%% coefficent for converting 1/H into Gyr
 		wd_DTT = 0.5;	//%% time from z to now in units of 1/H0
 		wd_DTT_Gyr = 0.0;	//%% value of DTT in Gyr
-		wd_ltt = 0.66077; //%% light travel time in units of 1/H0
+		//wd_ltt = 0.66077; //%% light travel time in units of 1/H0
 		wd_age = 0.5;	//%% age of Universe in units of 1/H0
 		wd_age_Gyr = 0.0;	//%% value of age in Gyr
 		wd_zage = 0.5;	//%% age of Universe at redshift z in units of 1/H0
 		wd_zage_Gyr = 0.0;	//%% value of zage in Gyr
 		wd_DCMR = 0.0;	//%% comoving radial distance in units of c/H0
 		wd_DCMR_Mpc = 0.0;
-		wd_DCMR_Gyr = 0.0;
+		//wd_DCMR_Gyr = 0.0;
 		wd_DA = 0.0;	//%% angular size distance
 		wd_DA_Mpc = 0.0;
-		wd_DA_Gyr = 0.0;
+		//wd_DA_Gyr = 0.0;
 		wd_kpc_DA = 0.0;
 		wd_DL = 0.0;	//%% luminosity distance
 		wd_DL_Mpc = 0.0;
-		wd_DL_Gyr = 0.0;	//%% DL in units of billions of light years
+		//wd_DL_Gyr = 0.0;	//%% DL in units of billions of light years
 		wd_V_Gpc = 0.0;
 		wd_a = 1.0;	//%% 1/(1+z), the scale factor of the Universe
 		wd_az = 0.5;	//%% 1/(1+z(object))
@@ -7274,7 +7243,7 @@ int Cmd_mctcl_cosmology_calculator(ClientData clientData, Tcl_Interp *interp, in
 		wd_age = wd_DTT+wd_zage;
 		wd_age_Gyr = wd_age*(wd_Tyr/wd_H0);
 		wd_DTT_Gyr = (wd_Tyr/wd_H0)*wd_DTT;
-		wd_DCMR_Gyr = (wd_Tyr/wd_H0)*wd_DCMR;
+		//wd_DCMR_Gyr = (wd_Tyr/wd_H0)*wd_DCMR;
 		wd_DCMR_Mpc = (wd_c/wd_H0)*wd_DCMR;
 		//%% tangential comoving distance  
 		  ratio = 1.00;
@@ -7300,10 +7269,10 @@ int Cmd_mctcl_cosmology_calculator(ClientData clientData, Tcl_Interp *interp, in
 		wd_DA = wd_az*wright_DCMT;
 		wd_DA_Mpc = (wd_c/wd_H0)*wd_DA;
 		wd_kpc_DA = wd_DA_Mpc/206.264806;
-		wd_DA_Gyr = (wd_Tyr/wd_H0)*wd_DA;
+		//wd_DA_Gyr = (wd_Tyr/wd_H0)*wd_DA;
 		wd_DL = wd_DA/(wd_az*wd_az);
 		wd_DL_Mpc = (wd_c/wd_H0)*wd_DL;
-		wd_DL_Gyr = (wd_Tyr/wd_H0)*wd_DL;
+		//wd_DL_Gyr = (wd_Tyr/wd_H0)*wd_DL;
 
 		//%% comoving volume computation
 		  ratio = 1.00;

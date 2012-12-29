@@ -480,7 +480,7 @@ void mc_paradist_calc(struct observ *obs,int k1, int k2,double *parallaxe,double
 /***************************************************************************/
 {
    double pdtot,posangle,lat_lieu1,lat_lieu2,dist1,dist2;
-   double asd_lieu1,asd_lieu2,lon_lieu1,lon_lieu2,tsl1,tsl2,hor_lieu1,hor_lieu2;
+   double asd_lieu1,asd_lieu2,lon_lieu1,lon_lieu2,tsl1,tsl2;
    double dec_lieu1,dec_lieu2,x1,y1,z1,x2,y2,z2,alpha,beta,gamma,r,a,b,c;
    double delta_opt,ptot,x3,y3,z3,v1x,v1y,v1z,v2x,v2y,v2z,cospa,pa;
    int sortie;
@@ -499,11 +499,9 @@ void mc_paradist_calc(struct observ *obs,int k1, int k2,double *parallaxe,double
 
    /*--- coordonnees spheriques equatoriales geocentriques des sites ---*/
    mc_tsl(obs[k1].jjtd,lon_lieu1,&tsl1);
-   hor_lieu1=tsl1-obs[k1].asd;
    asd_lieu1=tsl1;
    dec_lieu1=lat_lieu1;
    mc_tsl(obs[k2].jjtd,lon_lieu2,&tsl2);
-   hor_lieu2=tsl2-obs[k2].asd;
    asd_lieu2=tsl2;
    dec_lieu2=lat_lieu2;
    /*
@@ -571,7 +569,7 @@ char *mc_savefits(float *mat,int naxis1, int naxis2,char *filename,mc_wcs *wcs)
    char line[1024],car;
    float value0;
    char *cars0;
-   int k,n,k0;
+   int k,k0;
    double dx,deg2rad;
    long one= 1;
    int big_endian;
@@ -657,7 +655,7 @@ char *mc_savefits(float *mat,int naxis1, int naxis2,char *filename,mc_wcs *wcs)
       fwrite(&value0,1,sizeof(float),f);
    }
    dx=naxis1*naxis2/2880.;
-   n=(int)(2880.*(dx-floor(dx)));
+   //n=(int)(2880.*(dx-floor(dx)));
    value0=(float)0.;
    for (k=0;k<naxis1*naxis2;k++) {
       if (big_endian==0) {
@@ -694,7 +692,7 @@ void mc_simulc(mc_cdr cdr,double *relief,double *albedo,mc_cdrpos *cdrpos,int n,
    double coslp,sinlp,coslpcosi,sinlpcosi,coslpsini,sinlpsini,sini,cosi;
    double r,rr,delta,delta2,dx,dy,dz;
    double nsx,nsy,nsz;  
-   double e0,pa,pr,i,cosths,costht,e,etotlamb,etotls,pe;
+   double e0,pr,i,cosths,costht,e,etotlamb,etotls,pe;
    double fourpi;
    double trtot=0.;
    double trtotmin,trtotmax;
@@ -1135,10 +1133,8 @@ void mc_simulc(mc_cdr cdr,double *relief,double *albedo,mc_cdrpos *cdrpos,int n,
          /* --- F8 : absorbed and reflected powers (W) ---*/
          cosths=(cdrpos[kt].xaster*nsx+cdrpos[kt].yaster*nsy+cdrpos[kt].zaster*nsz)/r;
          if (cosths<0) {
-            pa=-e0/rr*tr*cosths*(1.-htms[khtms].albedo);
             pr=-e0/rr*tr*cosths*htms[khtms].albedo;
          } else {
-            pa=0.;
             pr=0.;
          }
          /* --- F9 : eclairement recu sur terre ---*/
@@ -1302,8 +1298,7 @@ void mc_simulc_sat_stl(mc_cdr cdr,struct_point *point1,struct_point *point2,stru
 /***************************************************************************/
 /***************************************************************************/
 {
-   int nhtm,k,kt,nrug;
-   char *htm;
+   int k,kt,nrug;
    double l1,l2,l3;
    double cosb,sinb,coslcosb,sinlcosb;
    double dl;
@@ -1315,7 +1310,7 @@ void mc_simulc_sat_stl(mc_cdr cdr,struct_point *point1,struct_point *point2,stru
    double coslp,sinlp,coslpcosi,sinlpcosi,coslpsini,sinlpsini,sini,cosi;
    double r,rr,delta,delta2,dx,dy,dz;
    double nsx,nsy,nsz;  
-   double e0,pa,pr,i,cosths,costht,e,etotlamb,etotls,etotmin, etotphong, ephong, emin, pe,cosalpha;
+   double e0,pr,i,cosths,costht,e,etotlamb,etotls,etotmin, etotphong, ephong, emin, pe,cosalpha;
    double fourpi;
    double trtot=0.;
    double trtotmin,trtotmax;
@@ -1346,7 +1341,6 @@ void mc_simulc_sat_stl(mc_cdr cdr,struct_point *point1,struct_point *point2,stru
    bp=cdr.latpole;
    frame_center=cdr.frame_center;
 
-   htm=(char*)calloc(level+3,sizeof(char));
    l0=l0*(DR);
    lp=lp*(DR);
    bp=bp*(DR);
@@ -1364,10 +1358,6 @@ void mc_simulc_sat_stl(mc_cdr cdr,struct_point *point1,struct_point *point2,stru
    e0=1400.; /* W/m2 at 1 A.U. */
    fourpi=4.*(PI);
 
-
-
-   /* --- total number of triangles in each hemsiphere ---*/
-   nhtm=(int)(n_in)/2;
    /* --- total number of triangles ---*/
    nhtms=n_in;
    htms=(mc_htm*)calloc(nhtms,sizeof(mc_htm));
@@ -1677,10 +1667,8 @@ void mc_simulc_sat_stl(mc_cdr cdr,struct_point *point1,struct_point *point2,stru
          /* --- F8 : absorbed and reflected powers (W) ---*/
          cosths=(cdrpos[kt].xaster*nsx+cdrpos[kt].yaster*nsy+cdrpos[kt].zaster*nsz)/r;
          if (cosths<0) {
-            pa=-e0/rr*tr*cosths*(1.-albedo);
             pr=-e0/rr*tr*cosths*albedo;
          } else {
-            pa=0.;
             pr=0.;
          }
          /* --- F9 : eclairement recu sur terre ---*/
@@ -1883,7 +1871,7 @@ void mc_simulcbin(mc_cdr cdr,double *relief1,double *albedo1,double *relief2,dou
    double coslp,sinlp,coslpcosi,sinlpcosi,coslpsini,sinlpsini,sini,cosi;
    double r,rr,delta,delta2,dx,dy,dz;
    double nsx,nsy,nsz;
-   double e0,pa,pr,i,cosths,costht,e,etotlamb,etotls,pe;
+   double e0,pr,i,cosths,costht,e,etotlamb,etotls,pe;
    double fourpi;
    double trtot=0.;
    /*double trtotmin,trtotmax;*/
@@ -2769,10 +2757,8 @@ void mc_simulcbin(mc_cdr cdr,double *relief1,double *albedo1,double *relief2,dou
          /* --- F8 : absorbed and reflected powers (W) ---*/
          cosths=(cdrpos12[kt].xaster*nsx+cdrpos12[kt].yaster*nsy+cdrpos12[kt].zaster*nsz)/r;
          if (cosths<0) {
-            pa=-e0/rr*tr*cosths*(1.-htms[khtms].albedo);
             pr=-e0/rr*tr*cosths*htms[khtms].albedo;
          } else {
-            pa=0.;
             pr=0.;
          }
          /* --- infos for plots ---*/
@@ -3003,10 +2989,8 @@ void mc_simulcbin(mc_cdr cdr,double *relief1,double *albedo1,double *relief2,dou
          /* --- F8 : absorbed and reflected powers (W) ---*/
          cosths=(cdrpos12[kt].xaster*nsx+cdrpos12[kt].yaster*nsy+cdrpos12[kt].zaster*nsz)/r;
          if (cosths<0) {
-            pa=-e0/rr*tr*cosths*(1.-htms[khtms].albedo);
             pr=-e0/rr*tr*cosths*htms[khtms].albedo;
          } else {
-            pa=0.;
             pr=0.;
          }
          /* --- infos for plots ---*/

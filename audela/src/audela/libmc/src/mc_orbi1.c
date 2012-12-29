@@ -386,7 +386,6 @@ void mc_mvc2a(struct observ *obs,double delta,struct elemorb *elem,double jj_equ
    int k;
    double tau1,f1,g1,u2;
    double w2,vx2,vy2,vz2;
-   double mu;
    double paradx,parady,paradz;
    int centre; /* helio=SOLEIL  geo=TERRE */
    double kgrav;
@@ -398,7 +397,6 @@ void mc_mvc2a(struct observ *obs,double delta,struct elemorb *elem,double jj_equ
    } else {
       kgrav=(K);
    }
-   mu=(kgrav)*(kgrav);
 
    /*--- coordonnees cartesiennes equatoriales unitaires ---*/
    for (k=1;k<=2;k++) {
@@ -511,7 +509,6 @@ void mc_mvc3a(struct observ *obs,struct elemorb *elem,double jj_equinoxe)
    int k,compteur,compteurmax=500;
    double tau,tau1,tau3,c1,c3,f1,g1,f3,g3,u2;
    double w2,vx2,vy2,vz2,vz2a,vz2b,ww2;
-   double mu;
    double paradx,parady,paradz;
    int centre; /* helio=SOLEIL  geo=TERRE */
    double kgrav;
@@ -523,7 +520,6 @@ void mc_mvc3a(struct observ *obs,struct elemorb *elem,double jj_equinoxe)
    } else {
       kgrav=(K);
    }
-   mu=(kgrav)*(kgrav);
 
    /*--- coordonnees cartesiennes equatoriales unitaires ---*/
    for (k=1;k<=3;k++) {

@@ -79,7 +79,7 @@ int intersect_triangle(double orig[3], double dir[3],
 
 /****************************************************************************************/
 int mc_fitspline(int n1,int n2,double *x, double *y, double *dy, double s,int nn, double *xx, double *ff)
-/****************************************************************************************
+/****************************************************************************************/
 /* Fit by splines with smooth                                                           */
 /* Entrees :                                                                            */
 /*  x[1..n1..n2]                                                                        */
@@ -98,7 +98,7 @@ int mc_fitspline(int n1,int n2,double *x, double *y, double *dy, double s,int nn
 /****************************************************************************************/
 {
 	int i,m1,m2,n,ii;
-	double e,f,f2,g,h,p;
+	double e,f,f2,g=0,h,p;
 	double *r,*r1,*r2,*t,*t1,*u,*v;
 	double *a,*b,*c,*d;
 
@@ -222,7 +222,7 @@ int mc_fitspline(int n1,int n2,double *x, double *y, double *dy, double s,int nn
 
 /****************************************************************************************/
 int mc_interplin1(int n1,int n2,double *x, double *y, double *dy, double s,int nn, double *xx, double *ff)
-/****************************************************************************************
+/****************************************************************************************/
 /* Interpolation lineaire */
 /* Entrees :                                                                            */
 /*  x[1..n1..n2]                                                                        */
@@ -270,7 +270,7 @@ int mc_interplin1(int n1,int n2,double *x, double *y, double *dy, double s,int n
 
 /****************************************************************************************/
 int mc_interplin2(int n1,int n2,double *x, double *y, double *dy, double s,int nn, double *xx, double *ff)
-/****************************************************************************************
+/****************************************************************************************/
 /* Interpolation lineaire avec des vecteurs a pas constant                              */
 /* Entrees :                                                                            */
 /*  x[1..n1..n2]                                                                        */

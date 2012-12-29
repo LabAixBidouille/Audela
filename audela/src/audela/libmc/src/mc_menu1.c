@@ -358,7 +358,7 @@ void mc_paramjj(char *date,char *contrainte, double *jj)
 /***************************************************************************/
 {
    char ligne[80],texte[80];
-   int sortie=PB,col1,col2,a,m;
+   int col1,col2,a,m;
    double j,n;
    strcpy(ligne,date);
    if (strcmp(contrainte,"aaaammjj")==0) {
@@ -370,7 +370,6 @@ void mc_paramjj(char *date,char *contrainte, double *jj)
          col1= 7;col2= 8;strncpy(texte,ligne+col1-1,col2-col1+1);*(texte+col2-col1+1)='\0';
          j=(double) (atoi(texte));
          mc_date_jd(a,m,j,&n);
-         sortie=OK;
       } else {
          n=J2000;
       }

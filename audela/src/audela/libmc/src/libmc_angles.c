@@ -264,7 +264,7 @@ int Cmd_mctcl_home2geosys(ClientData clientData, Tcl_Interp *interp, int argc, c
    char s[100];
    double a_wgs84,f_wgs84,a_ed50,f_ed50,a1,f1,a2,f2,a,f,ee,b;
    double dX,dY,dZ,X1,Y1,Z1,X2,Y2,Z2;
-   double sinphi,cosphi,sinlon,coslon,h,W,N,rho,r,phi0,phi2,delta;
+   double sinphi,cosphi,sinlon,coslon,h,W,N,phi0,phi2,delta;
 
    if(argc<=3) {
       sprintf(s,"Usage: %s Home ED50|WGS84 WGS84|ED50 ?-height?", argv[0]);
@@ -346,8 +346,6 @@ int Cmd_mctcl_home2geosys(ClientData clientData, Tcl_Interp *interp, int argc, c
       h=altitude;
       W=sqrt(1-ee*sinphi*sinphi);
       N=a/W;
-      rho=a*(1-ee)/(W*W*W);
-      r=N*cosphi;
       X1=(N+h)*cosphi*coslon;
       Y1=(N+h)*cosphi*sinlon;
       Z1=(N*(1-ee)+h)*sinphi;
@@ -672,9 +670,9 @@ int mctcl_listfield2mc_astrom(Tcl_Interp *interp, char *listfield, mc_ASTROM *p)
    int inputdatatype,nbinputdatas;
    char **inputdatas=NULL,*pres=NULL;
    Tcl_DString res;
-   int code,k;
+   int k;
 
-	code=Tcl_SplitList(interp,listfield,&nbinputdatas,&inputdatas);
+	Tcl_SplitList(interp,listfield,&nbinputdatas,&inputdatas);
 	strcpy(s,inputdatas[0]);
 	mc_strupr(s,s);
 	if (strcmp(s,"BUFFER")==0) {
@@ -838,10 +836,10 @@ int mctcl_decode_sequences(Tcl_Interp *interp, char *argv[],int *nobjects, mc_OB
 	char **argvv=NULL;
 	char **argvvv=NULL;
 	char **argvvvv=NULL;
-	int argcc,argccc,argcccc,ko,kjd,nobjs,code,ka,kjdmax;
+	int argcc,argccc,argcccc,ko,kjd,nobjs,ka,kjdmax;
 	double val;
 	mc_OBJECTDESCR *objectdescr=NULL;
-   code=Tcl_SplitList(interp,argv[0],&argcc,&argvv);
+   Tcl_SplitList(interp,argv[0],&argcc,&argvv);
 	nobjs=argcc;
 	*nobjects=nobjs;
 	if (pobjectdescr!=NULL) {
@@ -889,14 +887,14 @@ int mctcl_decode_sequences(Tcl_Interp *interp, char *argv[],int *nobjects, mc_OB
 	}
 	// --- read values
 	for (ko=0;ko<nobjs;ko++) {
-	   code=Tcl_SplitList(interp,argvv[ko],&argccc,&argvvv);
+	   Tcl_SplitList(interp,argvv[ko],&argccc,&argvvv);
 		if (argccc<1) { 
 			if (argvvv!=NULL) { Tcl_Free((char *) argvvv); }
 			continue; 
 		}
 		kjdmax=-1;
 		for (ka=0;ka<argccc;ka++) {
-			code=Tcl_SplitList(interp,argvvv[ka],&argcccc,&argvvvv);
+			Tcl_SplitList(interp,argvvv[ka],&argcccc,&argvvvv);
 			if (argcccc<=1) { 
 				if (argvvvv!=NULL) { Tcl_Free((char *) argvvvv); }
 				continue; 
@@ -968,7 +966,7 @@ char *mc_saveintfits(int *mat,int naxis1, int naxis2,char *filename) {
    char line[1024],car;
    int value0;
    char *cars0;
-   int k,n,k0;
+   int k,k0;
    double dx;
    long one= 1;
    int big_endian;
@@ -1011,7 +1009,7 @@ char *mc_saveintfits(int *mat,int naxis1, int naxis2,char *filename) {
       fwrite(&value0,1,sizeof(int),f);
    }
    dx=naxis1*naxis2/2880.;
-   n=(int)(2880.*(dx-floor(dx)));
+   //n=(int)(2880.*(dx-floor(dx)));
    value0=(int)0.;
    for (k=0;k<naxis1*naxis2;k++) {
       if (big_endian==0) {
@@ -1042,27 +1040,26 @@ int mctcl_decode_horizon(Tcl_Interp *interp, char *argv_home,char *argv_type,cha
 	char **argvv=NULL;
 	char **argvvv=NULL;
 	int argcc,argccc;
-	int type=0,code,kc,kcc=0,ncoords;
+	int type=0,kc,kcc=0,ncoords;
    Tcl_DString dsptr;
 	double *coord1s=NULL,*coord2s=NULL,*coord3s=NULL;
 	int *kcoords=NULL,*kazs,naz,nhaz=360;
 	double *azs,*elevs,*dummys;
 	double *hazs,*helevs;
    double rhocosphip=0.,rhosinphip=0.,longmpc=0.;
-   double latitude,altitude,latrad,az,h,ha,dec,harise,haset,elev;
-	int nhdec=181,nelev=181;
+   double latitude,altitude,latrad,az,h,ha=0,dec,harise,haset,elev;
+	int nhdec=181/*,nelev=181*/;
 	double *hdecs,*hha_rises,*hha_sets;
-	double ha_set_lim,ha_rise_lim;
+	/*double ha_set_lim,ha_rise_lim;*/
 	mc_HORIZON_ALTAZ *horizon_altaz=NULL;
 	mc_HORIZON_HADEC *horizon_hadec=NULL;
 	int nh_altaz=361,nh_hadec=181,valid=0;
 	double azinf1,azsup1,azinf2,azsup2;
 	double coord1,coord2,coord3;
-	int hachanged=0;
 	int *map_hadec,*map_altaz,map_nha,map_ndec,map_naz,map_nelev,k1,k2,kk1,kk2;
 	double coslatitude,sinlatitude,cosha,sinha,val,sinaz,cosaz;
 	double *harise_limit=NULL,*haset_limit=NULL,*azrise_limit=NULL,*azset_limit=NULL;
-	double *elevinf_limit=NULL,*elevsup_limit=NULL,*decinf_limit=NULL,*decsup_limit=NULL;
+	double /**elevinf_limit=NULL,*elevsup_limit=NULL,*/*decinf_limit=NULL,*decsup_limit=NULL;
 
 	if (limits.ha_defined==2) {
 		harise_limit=&limits.ha_rise;
@@ -1077,8 +1074,8 @@ int mctcl_decode_horizon(Tcl_Interp *interp, char *argv_home,char *argv_type,cha
 		azset_limit=&limits.az_set;
 	}
 	if (limits.elev_defined==2) {
-		elevinf_limit=&limits.elev_inf;
-		elevsup_limit=&limits.elev_sup;
+		//elevinf_limit=&limits.elev_inf;
+		//elevsup_limit=&limits.elev_sup;
 	}
 	dh_samp=fabs(dh_samp);
 	if (dh_samp==0) {
@@ -1111,7 +1108,7 @@ int mctcl_decode_horizon(Tcl_Interp *interp, char *argv_home,char *argv_type,cha
 		type=1;
 	}
    /* --- decode les coordonnees ---*/
-   code=Tcl_SplitList(interp,argv_coords,&argcc,&argvv);
+   Tcl_SplitList(interp,argv_coords,&argcc,&argvv);
 	ncoords=argcc;
 	/* --- decode les limites az ---*/
 	if ((azrise_limit!=NULL)&&(azset_limit!=NULL)) {
@@ -1144,11 +1141,11 @@ int mctcl_decode_horizon(Tcl_Interp *interp, char *argv_home,char *argv_type,cha
 			*harise_limit=ha;
 		}
 		// angle mort = haset_limit<ha<harise_limit
-		ha_set_lim=*haset_limit;
-		ha_rise_lim=*harise_limit;
+		// ha_set_lim=*haset_limit;
+		// ha_rise_lim=*harise_limit;
 	} else {
-		ha_set_lim=180;
-		ha_rise_lim=180;
+		// ha_set_lim=180;
+		// ha_rise_lim=180;
 	}
    /* --- initialise les cartes ---*/
 	/*
@@ -1170,7 +1167,7 @@ int mctcl_decode_horizon(Tcl_Interp *interp, char *argv_home,char *argv_type,cha
 	coord3s=(double*)calloc(ncoords,sizeof(double));
 	kcc=0;
 	for (kc=0;kc<ncoords;kc++) {
-	   code=Tcl_SplitList(interp,argvv[kc],&argccc,&argvvv);
+	   Tcl_SplitList(interp,argvv[kc],&argccc,&argvvv);
 		if (argccc>=1) { mctcl_decode_angle(interp,argvvv[0],&coord1); }
 		if (argccc>=2) { mctcl_decode_angle(interp,argvvv[1],&coord2); }
 		if (argccc>=3) { mctcl_decode_angle(interp,argvvv[2],&coord3); }
@@ -2421,7 +2418,7 @@ int Cmd_mctcl_listradec(ClientData clientData, Tcl_Interp *interp, int argc, cha
    mc_ASTROM p;
    Tcl_DString dsptr;
    char s[524];
-   int result,retour,code;
+   int result,retour;
    double compix,ra,ra0,dec,dec0,x,x0,y,y0,shiftx,shifty,dx,dy;
    char **mosaics=NULL;
    int nbmosaics,method,nbfields=0,sens=1,k,jump=0;
@@ -2436,7 +2433,7 @@ int Cmd_mctcl_listradec(ClientData clientData, Tcl_Interp *interp, int argc, cha
       /* --- parametres du champ ---*/
       mctcl_listfield2mc_astrom(interp,argv[1],&p);
       /* --- definition de la mosaique ---*/
-      code=Tcl_SplitList(interp,argv[2],&nbmosaics,&mosaics);
+      Tcl_SplitList(interp,argv[2],&nbmosaics,&mosaics);
       strcpy(s,mosaics[0]);
       mc_strupr(s,s);
       method=LIBMC_MOSAIC_FREE;
@@ -3249,7 +3246,7 @@ int Cmd_mctcl_anglesep(ClientData clientData, Tcl_Interp *interp, int argc, char
 /****************************************************************************/
 {
    char s[524];
-   int result,argcc,code;
+   int result,argcc;
    char **argvv=NULL;
    double ra1=0.,dec1=0.,ra2=0.,dec2=0.,dist,posangle;
    char units[50];
@@ -3260,7 +3257,7 @@ int Cmd_mctcl_anglesep(ClientData clientData, Tcl_Interp *interp, int argc, char
       result = TCL_ERROR;
 	   return(result);
    } else {
-      code=Tcl_SplitList(interp,argv[1],&argcc,&argvv);
+      Tcl_SplitList(interp,argv[1],&argcc,&argvv);
       if (argcc>=1) {mctcl_decode_angle(interp,argvv[0],&ra1);}
       if (argcc>=2) {mctcl_decode_angle(interp,argvv[1],&dec1);}
       if (argcc>=3) {mctcl_decode_angle(interp,argvv[2],&ra2);}

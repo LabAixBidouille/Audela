@@ -131,10 +131,10 @@ void mc_jd2lbr1b(double jj, int planete, double *l, double *m, double *u, double
 /***************************************************************************/
 {
    double l0,b0,r0;
+   l0=0.;
+   b0=0.;
+   r0=0.;
    if ((planete==SOLEIL)||(planete==TERRE)) {
-      l0=0.;
-      b0=0.;
-      r0=0.;
       mc_jd2lbr_vsop87_ear(jj,&l0,&b0,&r0);
       if (planete==SOLEIL) {
          l0+=(PI);

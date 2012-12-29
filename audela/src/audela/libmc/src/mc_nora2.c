@@ -567,6 +567,9 @@ void mc_dpper(double *em,double *xinc,double *omgasm,double *xnodes,double *xll)
 	double dls;
 	double pl,xls;
 	double xnoh;
+	/* --- inits ---*/
+	pl=pinc=pe=shl=sghl=shs=sghs=0;
+	/* --- calculs ---*/
 	sinis = sin(*xinc);
 	cosis = cos(*xinc);
 	if (fabs(savtsn-t)<(30.)) {
