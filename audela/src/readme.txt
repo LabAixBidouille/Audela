@@ -1,4 +1,4 @@
-AudeLA-1.5.0 (20090118)
+AudeLA-2.x.0
 
 
 1. Sources
@@ -36,19 +36,38 @@ Autres:
  - Img 1.3 (http://prdownloads.sourceforge.net/tkimg/tkimg1.3.tar.gz?download)
  - Blt 2.4 (http://prdownloads.sourceforge.net/blt/BLT2.4z.tar.gz?download)
 
- 
+
 3. Compilation sous Windows
 ===========================
 
 3.1 Apercu general
 ------------------
 
-La compilation sous Windows s'effectue en deux temps. D'abord il faut compiler
-et installer tous les modules externes, depuis une ligne de commande (voir 
-paragraphe 3.2). Ensuite avec Visual C++, compiler tous les modules propres a AudeLA
-(voir paragraphe 3.3).
+La compilation sous Windows s'effectue en trois temps. D'abord il faut
+enregistrer la librairie "QSICamera.dll" (voir paragraphe 3.2), puis compiler
+et installer tous les modules externes, depuis une ligne de commande (voir
+paragraphe 3.3). Ensuite avec Visual C++, compiler tous les modules propres a AudeLA
+(voir paragraphe 3.4).
 
-3.2 Compilation des modules externes pour Windows
+3.2 Enregistrement de la librairie QSICamera.dll pour Windows
+-------------------------------------------------------------
+
+Il faut enregistrer la librairie "QSICamera.dll" uniquement avant
+la premiere compilation avec Visual C++, pour cela :
+
+Sous Windows XP :
+-----------------
+Vous devez double-cliquer sur le fichier "install.bat" qui se trouve dans "\src\external\qsi"
+et puis c'est tout.
+
+Sous Windows 7 :
+----------------
+Vous devez faire clic droit sur le nom du fichier "install.bat" qui se trouve dans "\src\external\qsi",
+puis faire "Executer en tant qu'administrateur", et enfin cliquer sur "Oui" de la fenetre
+"Controle de compte d'utilisateur" et puis c'est tout.
+Sous Windows 7, cette etape ne peut se faire que si on est "administrateur".
+
+3.3 Compilation des modules externes pour Windows
 -------------------------------------------------
 
 Effectuez les operations suivantes dans une console "Invite de commande",
@@ -64,7 +83,7 @@ Effectuez les operations suivantes dans une console "Invite de commande",
 
   - Repertoire src\external\etel,
     extraire lib.zip dans ce repertoire, et lancer install.bat
-    
+
   - Ouvrir et compiler avec visual c++, en mode release :
        src\external\fli\libfli\lib\windows\libfli.dsw
     Repertoire src\external\fli, lancer install.bat.
@@ -86,7 +105,7 @@ Effectuez les operations suivantes dans une console "Invite de commande",
 
   - Repertoire src\external\libusb
     (inclus dans la procedure ci-apres pour compiler AudeLA)
-    telecharger libusb-win32-filter-bin-0.1.10.1.exe depuis le site web de 
+    telecharger libusb-win32-filter-bin-0.1.10.1.exe depuis le site web de
     sourceforge puis lancer libusb-win32-filter-bin-0.1.10.1.exe
 
   - Repertoire src\external\libgphoto2
@@ -111,42 +130,42 @@ Effectuez les operations suivantes dans une console "Invite de commande",
   - Repertoire src\external\utils,
     lancer make.bat puis install.bat
 
-3.3 Compilation de AudeLA pour Windows
+3.4 Compilation de AudeLA pour Windows
 ----------------------------------------
 
-Ouvrir avec Visual C++ le fichier src/audela.dsw : Allez dans le menu Build, 
-puis Batch Build ; Selectionnez les differentes cibles que vous voulez 
-compiler, et effectuez la compilation. De preference compiler les cibles en 
+Ouvrir avec Visual C++ le fichier src/audela.dsw : Allez dans le menu Build,
+puis Batch Build ; Selectionnez les differentes cibles que vous voulez
+compiler, et effectuez la compilation. De preference compiler les cibles en
 mode release.
 
-3.4 Installation optionnelles
+3.5 Installation optionnelles
 -----------------------------
 
-3.4.1 Installation ftd2xx 
+3.5.1 Installation ftd2xx
 -------------------------
 
-   Ce driver est necessaire seulement pour les liaisons avec quickremote et 
+   Ce driver est necessaire seulement pour les liaisons avec quickremote et
    quickaudine.
 
    Telecharger D10620.zip
    URL:   http://www.ftdichip.com/Drivers/FT232-FT245/D2XX/Win/D10620.zip
    ou URL:   http://www.ftdichip.com/Drivers/D2XX/Win2000/D30104.zip
-   dezipper le fichier dans un repertoire temporaire 
-   brancher un quickremote, lorsque Windows demande ou est le repertoire du 
+   dezipper le fichier dans un repertoire temporaire
+   brancher un quickremote, lorsque Windows demande ou est le repertoire du
    driver, pointer le repertoire temporaire ou vient d'etre dezippe le fichier.
- 
-   Remarque : 
-   Les drivers pour les autres version d'OS sont aussi sur le site 
+
+   Remarque :
+   Les drivers pour les autres version d'OS sont aussi sur le site
    http://www.ftdichip.com.
 
-3.4.2 Installation libusb-win32 
+3.5.2 Installation libusb-win32
 -------------------------------
 
    Ce driver est necessaire seulement pour la liaison des appareils
    photo numerique USB (librairie libdigicam.dll et libgphoto2.dll).
-   
+
    Telecharger libusb-win32-filter-bin-0.1.10.1.exe disponible sur site
-   http://libusb-win32.sourceforge.net , 
+   http://libusb-win32.sourceforge.net ,
    puis installer libusb-win32 en executant ce fichier.
 
 4 Linux
@@ -162,7 +181,7 @@ mode release.
 	$ cd audela-1.5.0/src
 	$ ./configure
 
-	Par defaut, configure devrait detecter correctement les parametres de 
+	Par defaut, configure devrait detecter correctement les parametres de
 	configuration. Si tel n'etait pas le cas, ils peuvent etre passes en
 	ligne de commande via les options suivantes :
 	--with-tcl={path_to_tclConfig.sh}
@@ -173,12 +192,12 @@ mode release.
 		et tkConfig.sh sont generes lors de la compilation de TCL/TK et permettent
 		de retrouver ensuite les differentes options de compilation necessaires a
 		AudeLA. Les deux options servent a indiquer les repertoires ou trouver
-		chacun de ces deux fichiers. 
+		chacun de ces deux fichiers.
 		Utilisez la commande find / | grep "tclConfig" pour localiser les fichiers.
 	--with-gsl-exec-prefix={path}
 		La librairie GSL est recherchee a partir des emplacements standard.
 		Cette option permet de preciser le prefix d'installation de GSL le cas
-		echeant. Cette librairie n'est pas necessaire : Si elle est absente, 
+		echeant. Cette librairie n'est pas necessaire : Si elle est absente,
 		quelques modules de AudeLA ne seront volontairement pas compiles.
 		Cette option est equivalente a faire pointer la variable d'environnement
 		GSL-CONFIG vers l'executable gsl-config.
@@ -214,7 +233,7 @@ Vous pouvez tout compiler d'un coup :
 
 	!! Attention !! Sous certaines plateformes il y a un echec de compilation pour
 	la librairie FLI, et libfli. Cela est lie a l'USB, et n'a pas ete encore elucide.
-	Vous pouvez neanmoins supprimer ces modules dans le fichier Makefile.defs pour 
+	Vous pouvez neanmoins supprimer ces modules dans le fichier Makefile.defs pour
 	reprendre le cours normal de la compilation.
 
 4.2 Installation des drivers optionels
@@ -223,21 +242,21 @@ Vous pouvez tout compiler d'un coup :
 4.2.1 Configuration du peripherique optionnel FTDI
 -------------------------------------------------
 
-   Le peripherique optionnel FTDI (USB/Serial converter) est utilise seulement par les liaisons avec quickremote 
+   Le peripherique optionnel FTDI (USB/Serial converter) est utilise seulement par les liaisons avec quickremote
    et quickaudine.
 
    Le driver FTDI libftd2xx.so est livre avec AudeLA et il est installe automatiquement dans
    audela/bin quand on installe les modules externes (voir ci-dessus).
 
    Recommandations pour l'execution de AudeLA :
-      - demarrer AudeLA avec un compte ayant les droits d'acces sur 
+      - demarrer AudeLA avec un compte ayant les droits d'acces sur
         les ports USB (root par exemple)
 
-      - pour eviter les confits avec d'autres drivers FTDI, desactiver 
-        les hotplugs : 
-         # rmmod ftdi_sio 
+      - pour eviter les confits avec d'autres drivers FTDI, desactiver
+        les hotplugs :
+         # rmmod ftdi_sio
 
-   
+
 5 MAC OS-X
 ==========
 
@@ -246,7 +265,7 @@ X.3 (Darwin kernel 7.8.0, avec fink). TclTkAquaBi etait installe (voir www.tcl.t
 et la GSL compilee et installee suivant la procedure standard GNU.
 
 La ligne de commande pour le configure etait pour cette machine:
-./configure --with-tcl=/Library/Frameworks/Tcl.framework 
+./configure --with-tcl=/Library/Frameworks/Tcl.framework
             --with-tk=/Library/Frameworks/Tk.framework
             --with-gsl-prefix=/usr/local
 
@@ -258,7 +277,7 @@ make
 cd audela/libtt/macos
 make
 # A la compilation de libtt il peut y avoir le probleme suivant:
-# ld: table of contents for archive: ../../../external/lib/libjpeg.a is out of date; 
+# ld: table of contents for archive: ../../../external/lib/libjpeg.a is out of date;
 # rerun ranlib(1) (can't load from it)
 pushd ../../../external/lib ; ranlib libjpeg.a ; popd
 make
@@ -267,13 +286,13 @@ make libcam
 make libtel
 cd ..
 
-# A la fin de la compilation, dans le repertoire bin il faut renommer les fichier 
+# A la fin de la compilation, dans le repertoire bin il faut renommer les fichier
 # libaudela.so et libmc.so en libaudela.dylib et libmc.dylib.
 cd bin
 mv libaudela.so libaudela.dylib
 mv libmc.so libmc.dylib
 
-# Vous pouvez executer audela : 
+# Vous pouvez executer audela :
 ./audela
 
 Le support pour cette plateforme est tout recent, aussi nous sommes tres interesses
