@@ -71,7 +71,7 @@ void mc_norad_sgdp48(double jj,int sgp, struct elemorb *elem,double *xgeo,double
 	double sin2u,cos2u,rk,uk,xnodek,xinck,rdotk,rfdotk;
 	double sinuk,cosuk,sinik,cosik,sinnok,cosnok,xmx,xmy,ux,uy,uz;
 	double vx,vy,vz,x,y,z,xdot,ydot,zdot;
-	int i,ideep,isimp;
+	int i,isimp;
 	double d1,po,xlo,d1o,d2o,d3o,d4o,po2no,omgdt,c6,p;
 	double xnodes,omgas,xls,axnsl,aynsl,item3,eo1,tem5,sineo1,coseo1,tem2,el2,pl2,rvdot,su;
 	double sing,cosg;
@@ -87,7 +87,7 @@ void mc_norad_sgdp48(double jj,int sgp, struct elemorb *elem,double *xgeo,double
 	/*FILE *f;*/
 	/* --- inits ---*/
 	xdot=ydot=zdot=x=y=z=0;
-	x7thm1=aycof=xlcof=xnodcf=xnodcf=xnodot=omgdot=xmdot=0;
+	x7thm1=aycof=xlcof=xnodcf=xnodot=omgdot=xmdot=t2cof=0;
 	c4=x1mth2=sinio=c1=x3thm1=cosio=t5cof=t4cof=t3cof=0;
 	isimp=0;
 	d4=d3=d2=sinmo=delmo=xmcof=omgcof=eta=aodp=0;
@@ -144,7 +144,7 @@ void mc_norad_sgdp48(double jj,int sgp, struct elemorb *elem,double *xgeo,double
 	delo=temp/(ao*ao);
 	xnodp=xno/(1.+delo);
 	if ((twopi/xnodp/xmnpda)>=0.15625) {
-		ideep=1;
+		//ideep=1;
 		if (sgp==0) {
 			method=MC_NORAD_SGP;
 		} else if (sgp==8) {
@@ -153,7 +153,7 @@ void mc_norad_sgdp48(double jj,int sgp, struct elemorb *elem,double *xgeo,double
 			method=MC_NORAD_SDP4;
 		}
 	} else {
-		ideep=0;
+		//ideep=0;
 		if (sgp==0) {
 			method=MC_NORAD_SGP;
 		} else if (sgp==8) {

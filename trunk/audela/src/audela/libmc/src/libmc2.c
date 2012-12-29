@@ -4954,7 +4954,7 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
    double asd,dec,delta;
    double mag,phase,elong,diamapp,r;
    double longmpc=0.,rhocosphip=0.,rhosinphip=0.;
-   int orbitfilefound=YES,orbitisgood=NO;
+   int /*orbitfilefound=YES,*/orbitisgood=NO;
    struct asterident aster;
    struct elemorb elem;
    FILE *fichier_in=NULL;
@@ -4964,8 +4964,7 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
    Tcl_DString dsptr;
 
    double xearth,yearth,zearth,xaster,yaster,zaster;
-   double dl;
-   int n,k,nk,kseries,nseries,kjd,kjdd,kjds0,kjdbest;
+   int n,k,nk,kseries,kjd,kjdd,kjds0,kjdbest;
    mc_cdrpos *cdrpos=NULL;
    mc_cdr cdr;
    double *relief=NULL;
@@ -5045,7 +5044,6 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
             return TCL_ERROR;
          }
       }
-      nseries=n;
       /* --- decode le referentiel des dates ---*/
       cdr.frame_time=atoi(argv[3]);
       /* --- decode les parametres physiques ---*/
@@ -5091,8 +5089,6 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
       cdr.a=atof(argv[14]); /* demi-grand axe */
       cdr.density=1.; /* assumed but will be recomputed */
       /* --- */
-      dl=0.5*sqrt(41253./(8*pow(4,cdr.htmlevel)));
-      dl=5.;
 	   longmpc=0.;
 	   rhocosphip=0.;
 	   rhosinphip=0.;
@@ -5174,7 +5170,7 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
       /* --- ouverture du fichier de la base d'orbite ---*/
   		if ((strcmp(orbitformat,"BOWELLFILE")==0)||(strcmp(orbitformat,"MPCFILE")==0)) {
          if ((fichier_in=fopen(orbitfile,"rt") ) == NULL) {
-  	   	   orbitfilefound=NO;
+  	   	   //orbitfilefound=NO;
 		      orbitisgood=NO;
             /* --- le fichier d'orbite n'est pas trouve : il faut sortir ---*/
             sprintf(s,"Error : Orbit file %s (type=%s) not found",orbitfile,orbitformat);
@@ -5235,7 +5231,6 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
 	   /* === Grande boucle sur les series ===*/
       /* === */
       for (kseries=2;kseries<=2;kseries++) {
-      //for (kseries=1;kseries<=nseries;kseries++) {
          sprintf(s,"llength $%s(jd,%d)",mesures,kseries);
          res=Tcl_Eval(interp,s);
          n=(int)atoi(interp->result);
@@ -5468,14 +5463,14 @@ mc_lightmap 2005-09-23T00:00:44.280 0.6708 0.1333 J2000.0 "c:/d/gft/test.fit" 1 
    double minobjelev,maxsunelev,minmoondist;
    int klon,klat;
    double lon,lat,cosb,sinb;
-   double jd,ra,dec,equinox,cosr,cosd,sind;
+   double jd,ra,dec,cosd,sind;
    float *earthmap;
    double val;
    double j,t,theta0,tsl,ha,cosh;
    double hobj,hsun,hmoon,distmoon,posangle;
    double delta,mag,diamapp,elong,phase,r,diamapp_equ,diamapp_pol,long1,long2,long3,lati,posangle_sun,posangle_north,long1_sun,lati_sun;
-   double rasun,decsun,sinrsun,cosdsun,sindsun,coshsun;
-   double ramoon,decmoon,sinrmoon,cosdmoon,sindmoon,coshmoon;
+   double rasun,decsun,cosdsun,sindsun,coshsun;
+   double ramoon,decmoon,cosdmoon,sindmoon,coshmoon;
    double hmax,lonzen=0,latzen=0;
    double hobsotherhome;
 	double equinoxe=J2000,jjutc;
@@ -5629,17 +5624,17 @@ mc_lightmap 2005-09-23T00:00:44.280 0.6708 0.1333 J2000.0 "c:/d/gft/test.fit" 1 
 			jjutc=jd;
          ra=ras[k];
          dec=decs[k];
-         equinox=equinoxs[k];
-         cosr=cos(ra);
+         //equinox=equinoxs[k];
+         //cosr=cos(ra);
          cosd=cos(dec);
          sind=sin(dec);
 			longitude=0;rhocosphip=0;rhosinphip=0;
          mc_adsolap(jd,equinoxe,astrometric,longitude,rhocosphip,rhosinphip,&rasun, &decsun,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
-         sinrsun=sin(rasun);
+         //sinrsun=sin(rasun);
          cosdsun=cos(decsun);
          sindsun=sin(decsun);
          mc_adlunap(LUNE,jd,jjutc,equinoxe,astrometric,longitude,rhocosphip,rhosinphip,&ramoon,&decmoon,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
-         sinrmoon=sin(ramoon);
+         //sinrmoon=sin(ramoon);
          cosdmoon=cos(decmoon);
          sindmoon=sin(decmoon);
          /* --- distance é la moon ---*/
