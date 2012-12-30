@@ -3915,14 +3915,15 @@ namespace eval ::ser2fits {
       set file [file join $audace(rep_images) [$w get]]
 
       set fileID [open $file r]
-      fconfigure $fileID -translation auto
+      fconfigure $fileID -blocking 0 -buffering none -buffersize 1 \
+         -encoding utf-8 -eofchar {} -translation auto
 
       #--   va a la fin du fichier
       seek $fileID 0 end
+
       #--   recupere l'adresse
       set endOfFile [tell $fileID]
 
-#--   essai
       seek $fileID 0 start
 
       #--   decode les champs du header
@@ -3963,9 +3964,10 @@ namespace eval ::ser2fits {
       #--   calcule le nb de bytes/image
       set ImageSize [expr { $naxis1*$naxis2*$BytePerPixel }]
 
-      fconfigure $fileID -translation binary
+      #--   configure le channel
+      fconfigure $fileID -encoding binary
 
-      #--   decode l'horodatage de la fin de prise de vues
+      #--   decode l'horodatage (8 bytes) de la fin de prise de vues
       binary scan [read $fileID 8] w count100ns
       lassign [formatDateTime $count100ns] -> endDateTime
       array set bd [list DATE-END [format [formatKeyword "DATE-END"] $endDateTime]]
