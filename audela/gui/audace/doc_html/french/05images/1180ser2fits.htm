@@ -5,7 +5,7 @@
 
 
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /><title>Conversion SER -&gt; FITS</title></head><body>
-<p class="date">Date de mise &#224; jour : 15 d&#233;cembre
+<p class="date">Date de mise &#224; jour : 30 d&#233;cembre
 2012</p>
 <h1>Extraction et conversion du format SER vers FITS</h1>
 <h2>1. Analyse</h2>
@@ -94,5 +94,16 @@ rafa&#238;chissement de l'interface.</li>
 </tr>
 </tbody>
 </table>
+<h2>4. Temps d'extraction</h2>
+<p>Pour une image en 8 bits, le temps d'extraction des
+donn&#233;es d&#233;pend de la taille de l'image : environ 3 ms
+pour une image de 640 x 480 pixels et 7 ms pour une image de 1280
+x 960 pixels. En mode 12 bits, ce temps sera plus long du fait de
+la conversion du format littleEndian, sp&#233;cifique au format
+SER, en format bigEndian, sp&#233;cifique au format FITS : 95 ms
+pour pour une image de 640 x 480 pixels et 390 ms pour une image
+de 1280 x 960 pixels. A ce temps d'extraction, il convient de
+rajouter le d&#233;lai n&#233;cessaire aux op&#233;rations telles
+que l'&#233;criture des mots cl&#233;s.</p>
 </body>
 </html>
