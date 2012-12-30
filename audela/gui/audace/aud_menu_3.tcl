@@ -3735,6 +3735,8 @@ namespace eval ::ser2fits {
    proc extractImg { fitsFile startAdress bitpix } {
       variable private
 
+      set size $private(imageSize)
+
       #--   longueur du header FITS
       set headerLength 2880
 
@@ -3747,14 +3749,11 @@ namespace eval ::ser2fits {
       seek $destID $headerLength
 
       if {$bitpix == 8} {
-         puts -nonewline $destID [read $srcID $private(imageSize)]
+         fcopy $srcID $destID -size $size
       }  elseif {$bitpix eq "+16"} {
-         binary scan [read $srcID $private(imageSize)] s* out
-         if {$::tcl_platform(byteOrder) eq "littleEndian"} {
-            puts -nonewline $destID [binary format S* $out]
-         } else {
-            puts -nonewline $destID $out
-         }
+         #--   conversion en bigEndian
+         binary scan [read $srcID $size] s* out
+         puts -nonewline $destID [binary format S* $out]
       }
 
       chan close $srcID
