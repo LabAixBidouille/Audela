@@ -151,7 +151,11 @@ int CSerial::getAvailableLinks(unsigned long *pnumDevices, char **list) {
 
 #ifdef OS_LIN
   *list = (char *) malloc(1024 * +1);
+#if defined (PROCESSOR_INSTRUCTIONS_INTEL)
   sprintf( *list, "{ 0 \"/dev/parport0\" }");
+#else
+  sprintf( *list, "");
+#endif
   result = LINK_OK;
 #endif
   
@@ -166,7 +170,11 @@ int CSerial::getAvailableLinks(unsigned long *pnumDevices, char **list) {
 
 char * CSerial::getGenericName() {
 #ifdef OS_LIN
+#if defined (PROCESSOR_INSTRUCTIONS_INTEL)
    return "/dev/ttyS";
+#else
+   return "";
+#endif
 #else
    return "COM";
 #endif
@@ -400,7 +408,11 @@ int CSerial::closeLink()
 #endif
 
 #if defined(OS_LIN)
+#if defined (PROCESSOR_INSTRUCTIONS_ARM)
+   return LINK_OK;
+#else
    close(fileDescriptor);
+#endif
 #endif
 
 
