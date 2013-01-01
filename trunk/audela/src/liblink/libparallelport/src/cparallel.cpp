@@ -131,7 +131,11 @@ int CParallel::getAvailableLinks(unsigned long *pnumDevices, char **list) {
 
 #ifdef OS_LIN
   *list = (char *) malloc(1024 * +1);
+#if defined (PROCESSOR_INSTRUCTIONS_INTEL)
   sprintf( *list, "{ 0 \"/dev/parport0\" }");
+#else
+  sprintf( *list, "");
+#endif
   result = LINK_OK;
 #endif
   
@@ -146,7 +150,11 @@ int CParallel::getAvailableLinks(unsigned long *pnumDevices, char **list) {
 
 char * CParallel::getGenericName() {
 #ifdef OS_LIN
+#if defined (PROCESSOR_INSTRUCTIONS_INTEL)
    return "/dev/parport";
+#else
+   return "";
+#endif
 #else
    return "LPT";
 #endif
@@ -182,6 +190,10 @@ int CParallel::openLink(int argc, char **argv) {
 
 
 #if defined(OS_LIN)
+#if defined (PROCESSOR_INSTRUCTIONS_ARM)
+	result = LINK_OK;
+   return result;
+#endif
 #if defined(OS_LIN_USE_PARRALLEL_OLD_STYLE)
    address = 0x378;
 
@@ -243,6 +255,9 @@ int CParallel::closeLink()
 {
 
 #if defined(OS_LIN)
+#if defined (PROCESSOR_INSTRUCTIONS_ARM)
+   return LINK_OK;
+#endif
 #if defined(OS_LIN_USE_PARRALLEL_OLD_STYLE)
 #else 
    close(fileDescriptor);
@@ -272,6 +287,7 @@ int CParallel::setChar(char c)
    int result = LINK_OK;
    
 #if defined(OS_LIN)
+#if defined (PROCESSOR_INSTRUCTIONS_INTEL)
 #if defined(OS_LIN_USE_PARRALLEL_OLD_STYLE)
    parallel_bloquer();
    parallel_out(address, c);
@@ -286,7 +302,7 @@ int CParallel::setChar(char c)
    }
 #endif
 #endif
-
+#endif
 
 #if defined(OS_WIN)
 #if defined(OS_WIN_USE_PARRALLEL_OLD_STYLE)
@@ -337,9 +353,13 @@ int CParallel::getChar(char *c) {
    // not implemented
    return LINK_ERROR;
 #endif
-#elif defined(OS_LIN)
-   // Read a byte
-   *c = inb(this->address);
+#elif defined(OS_LIN) 
+#if defined (PROCESSOR_INSTRUCTIONS_INTEL)
+		// Read a byte
+		*c = inb(this->address);
+#else
+	*c=0;
+#endif
     return LINK_OK;
 #elif defined(OS_MACOS)
 	return LINK_ERROR;
