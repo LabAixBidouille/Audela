@@ -51,6 +51,7 @@
 
 
 /* Automatic detection */
+#define PROCESSOR_INSTRUCTIONS INTEL
 #if defined(_Windows)
    // Borland
    #define OS_WIN
@@ -72,6 +73,9 @@
    #undef OS_UNK
    #define OS_LINUX_GCC_SO
    #define LIBRARY_SO
+#if defined(__arm__)
+	#define PROCESSOR_INSTRUCTIONS ARM
+#endif
 #elif defined(__WIN32__)
    #define OS_WIN
    #define PF_PC
