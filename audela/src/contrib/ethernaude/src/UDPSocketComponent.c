@@ -75,7 +75,7 @@ double GetTimeStamp(void)
 {
 #if defined(LINUX) && !defined(OS_MAC)
    unsigned long long x;
-#if (PROCESSOR_INSTRUCTIONS==INTEL)
+#if defined(PROCESSOR_INSTRUCTIONS_INTEL)
    __asm__ volatile (".byte 0x0F, 0x31":"=A" (x));
 #else
 	x=0;
