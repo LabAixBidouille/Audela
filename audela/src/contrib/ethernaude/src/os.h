@@ -43,7 +43,6 @@
 #define WINDOWS
 #else
 #define LINUX
-#define OS_UNI
 #endif
 
 #endif				/* ifndef OS_H */
