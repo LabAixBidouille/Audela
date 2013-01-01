@@ -47,7 +47,7 @@
     /* Windows */
 #   include <windows.h>
 #endif
-#ifdef OS_UNI
+#ifdef OS_LIN
     /* Linux */
 #endif
 

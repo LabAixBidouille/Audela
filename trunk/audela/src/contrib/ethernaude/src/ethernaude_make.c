@@ -54,7 +54,7 @@ void ethernaude_main(TParamCCD * ParamCCDIn, TParamCCD * ParamCCDOut);
 __declspec(dllexport)
 void __stdcall ETHERNAUDE_MAIN(TParamCCD * ParamCCDIn, TParamCCD * ParamCCDOut);
 #endif
-#ifdef OS_UNI
+#ifdef OS_LIN
    /* Linux */
 extern void ETHERNAUDE_MAIN(TParamCCD * ParamCCDIn, TParamCCD * ParamCCDOut);
 #endif
@@ -64,7 +64,7 @@ extern void ETHERNAUDE_MAIN(TParamCCD * ParamCCDIn, TParamCCD * ParamCCDOut);
 __declspec(dllexport)
 void __stdcall ETHERNAUDE_MAIN(TParamCCD * ParamCCDIn, TParamCCD * ParamCCDOut)
 #endif
-#ifdef OS_UNI
+#ifdef OS_LIN
 extern void ETHERNAUDE_MAIN(TParamCCD * ParamCCDIn, TParamCCD * ParamCCDOut)
 #endif
 {
