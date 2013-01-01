@@ -75,7 +75,11 @@ double GetTimeStamp(void)
 {
 #if defined(LINUX) && !defined(OS_MAC)
    unsigned long long x;
+#if (PROCESSOR_INSTRUCTIONS==INTEL)
    __asm__ volatile (".byte 0x0F, 0x31":"=A" (x));
+#else
+	x=0;
+#endif
    return ((double) x / 897000000);
 #endif
 
