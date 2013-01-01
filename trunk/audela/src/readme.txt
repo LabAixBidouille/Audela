@@ -1,5 +1,9 @@
 AudeLA-2.x.0
 
+Une présentation graphique décrit pas à pas la façon
+de compiler AudeLA sous Windows et Linux dans le fichier:
+
+audela/src/tools/audela_svn_windows_linux_en.odp
 
 1. Sources
 ==========
@@ -26,8 +30,8 @@ de ce que l'on peut y trouver :
 =============
 
 AudeLA necessite les modules externes suivants pour fonctionner:
- - Tcl 8.4 (avec Debian, paquets tcl84 et tcl84-dev)
- - Tk 8.4 (avec Debian, paquets tk84 et tk84-dev)
+ - Tcl 8.5 (avec Debian, paquets tcl85 et tcl85-dev)
+ - Tk 8.5 (avec Debian, paquets tk85 et tk85-dev)
 
 Optionnel:
  - gsl (http://www.gnu.org/software/gsl)
@@ -69,6 +73,10 @@ Sous Windows 7, cette etape ne peut se faire que si on est "administrateur".
 
 3.3 Compilation des modules externes pour Windows
 -------------------------------------------------
+
+Avec Visual C++ 2008 aller directement à la section 3.4.
+
+Avec Visual C++ v6 seulement:
 
 Effectuez les operations suivantes dans une console "Invite de commande",
 
@@ -133,10 +141,18 @@ Effectuez les operations suivantes dans une console "Invite de commande",
 3.4 Compilation de AudeLA pour Windows
 ----------------------------------------
 
+Avec Visual C++ v6 seulement:
+
 Ouvrir avec Visual C++ le fichier src/audela.dsw : Allez dans le menu Build,
 puis Batch Build ; Selectionnez les differentes cibles que vous voulez
 compiler, et effectuez la compilation. De preference compiler les cibles en
 mode release.
+
+Avec Visual C++ 2008 seulement:
+
+Ouvrir avec Visual C++ le fichier src/audela.sln : Sélectionner le mode Release
+ou Debug (de préfé"rence compiler en mode Release).
+Allez dans le menu Générer, puis Générer la solution.
 
 3.5 Installation optionnelles
 -----------------------------
