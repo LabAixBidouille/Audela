@@ -62,12 +62,12 @@
 #endif /* 0 */
 
 /* Override of the local irq functions */
-#if (PROCESSOR_INSTRUCTIONS==ARM)
-	#define AUDELA_CLI() 
-	#define AUDELA_STI() 
-#else
+#if defined(PROCESSOR_INSTRUCTIONS_INTEL)
 	#define AUDELA_CLI() __asm__ __volatile__ ("cli": : :"memory")
 	#define AUDELA_STI() __asm__ __volatile__ ("sti": : :"memory")
+#else
+	#define AUDELA_CLI() 
+	#define AUDELA_STI() 
 #endif
 
 #endif /* OS_LIN */
