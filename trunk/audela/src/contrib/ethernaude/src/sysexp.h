@@ -1,38 +1,24 @@
-/*
-
-  sysexp.h
-
-  This file is part of the Ethernaude Driver.
-
-  Copyright (C)2000-2005, Michel MEUNIER <michel.meunier10@tiscali.fr>
-  All rights reserved.
-
-  Redistribution and use in source and binary forms, with or without
-  modification, are permitted provided that the following conditions
-  are met:
-
-        Redistributions of source code must retain the above copyright
-        notice, this list of conditions and the following disclaimer.
-
-        Redistributions in binary form must reproduce the above
-        copyright notice, this list of conditions and the following
-        disclaimer in the documentation and/or other materials
-        provided with the distribution.
-
-  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-  ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-  REGENTS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-  POSSIBILITY OF SUCH DAMAGE.
-
-*/
+/* sysexp.h
+ *
+ * This file is part of the AudeLA project : <http://software.audela.free.fr>
+ * Copyright (C) 1998-2004 The AudeLA Core Team
+ *
+ * Initial author : Alain KLOTZ <alain.klotz@free.fr>
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or (at
+ * your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
 
 #ifndef __SYSEXPH__
 #define __SYSEXPH__
@@ -40,38 +26,74 @@
 /* --- definition de l'operating systeme (OS) employe pour compiler    ---*/
 
 #define OS_UNK
-/*
-#define OS_UNI
-#undef OS_UNK
-#define OS_LIN
-*/
 
+/* Choose an Operating System among the followings : */
+//#define OS_WIN
+//#define OS_LIN
+//#define OS_UNX
+//#define OS_MAC
+
+/* Choose an platform among the following : */
+//#define PF_PC
+//#define PF_SUN
+
+/* Defines for libtt */
+//#define OS_WIN_BORLB_DLL
+//#define OS_WIN_BORL_DLL
+//#define OS_WIN_VCPP_DLL
+//#define OS_UNIX_CC
+//#define OS_UNIX_CC_HP_SL
+//#define OS_UNIX_CC_DECBAG_SO_VADCL
+//#define OS_LINUX_GCC_SO
+//#define OS_DOS_WATC
+//#define OS_DOS_WATC_LIB
+//#define OS_WIN_VCPP
+
+
+/* Automatic detection */
+#define PROCESSOR_INSTRUCTIONS INTEL
 #if defined(_Windows)
-   /* Borland */
-#define OS_WIN
-#undef OS_UNK
-#define OS_WIN_BORL_DLL
+   // Borland
+   #define OS_WIN
+   #define PF_PC
+   #undef OS_UNK
+   #define OS_WIN_BORL_DLL
+   #define LIBRARY_DLL
 #elif defined(_MSC_VER)
-   /* Visual C++ */
-#define OS_WIN
-#undef OS_UNK
-#define OS_WIN_VCPP_DLL
+   // Visual C++
+   #define OS_WIN
+   #define PF_PC
+   #undef OS_UNK
+   #define OS_WIN_VCPP_DLL
+   #define LIBRARY_DLL
 #elif defined(__linux__)
-   /* gcc Linux */
-#define OS_UNI
-#undef OS_UNK
-#define OS_LIN
-#elif defined(__MACH__) && defined(__APPLE__)
-   /* gcc Mac */
-#define OS_UNI
-#undef OS_UNK
-#define OS_LIN
-#define OS_MAC
+   // gcc Linux
+   #define OS_LIN
+   #define PF_PC
+   #undef OS_UNK
+   #define OS_LINUX_GCC_SO
+   #define LIBRARY_SO
+#if defined(__arm__)
+	#define PROCESSOR_INSTRUCTIONS ARM
+#endif
 #elif defined(__WIN32__)
-   /* Autres Windows */
-#define OS_WIN
-#undef OS_UNK
+   #define OS_WIN
+   #define PF_PC
+   #undef OS_UNK
+   #define LIBRARY_DLL
+#elif defined(__APPLE_CC__)
+   #define OS_MACOS
+   #define PF_MAC
+   #undef OS_UNK
+   #define OS_LINUX_GCC_SO // Pour compatibilite libtt <-> MacOsX
+   #define LIBRARY_SO
+#else
+   // Autres Windows
+   #define OS_LINUX_GCC_SO
+   #define LIBRARY_SO
 #endif
 
+// Que fait une SUN-SPARC ? : -Dsparc -Dsun -Dunix -D__svr4__ -D__SVR4
 
 #endif
+

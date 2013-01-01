@@ -37,7 +37,7 @@
 #ifndef OS_H
 #define OS_H
 
-#include "../include/sysexp.h"
+#include "sysexp.h"
 
 #if defined OS_WIN
 #define WINDOWS
