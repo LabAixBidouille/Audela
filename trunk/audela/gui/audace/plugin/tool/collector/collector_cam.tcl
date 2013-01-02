@@ -74,8 +74,8 @@
       variable private
       global caption cameras
 
-      set newCam [string trimright $private(newCam) " "]
-      set newCam [string trimleft $newCam " "]
+      set newCam [string trimright $private(newCam)]
+      set newCam [string trimleft $newCam]
 
       if {$newCam ne ""} {
 
