@@ -26,7 +26,7 @@
 # satel_scene ROS1 "jason 2" 2010-05-23T20:12:31 {GPS 4 E 56 345}
 #  En sortie : Texte en clair dans la console
 
-proc satel_nearest_radec { ra dec {date now} {home ""} } {
+proc satel_nearest_radec { ra dec {date now} {home ""} {radius_deg ""} } {
    set sepanglemin 360
    set satelnames [satel_names]
    set ra [mc_angle2deg $ra]
@@ -34,68 +34,143 @@ proc satel_nearest_radec { ra dec {date now} {home ""} } {
    set nsat [llength $satelnames]
    set k 0
    set ksat 0
-   foreach satelname $satelnames {
-      if {$k==10} {
-         if {[info exists resmin]==0} {
-            catch {::console::affiche_resultat "$ksat / $nsat\n"}
-         } else {
-            catch {::console::affiche_resultat "$ksat / $nsat sepmin=$sepanglemin [string trim [lindex [lindex $resmin 0] 0]]\n"}
+   set resfinal ""
+   if {$radius_deg==""} {
+      foreach satelname $satelnames {
+         if {$k==10} {
+            if {[info exists resmin]==0} {
+               catch {::console::affiche_resultat "$ksat / $nsat\n"}
+            } else {
+               catch {::console::affiche_resultat "$ksat / $nsat sepmin=$sepanglemin [string trim [lindex [lindex $resmin 0] 0]]\n"}
+            }
+            set k 0
          }
-         set k 0
+         incr k
+         incr ksat
+         set satname [lindex $satelname 0]
+         set ficname [lindex $satelname 1]
+         #::console::affiche_resultat "$ksat, satel_ephem \"$satname\" $date $home\n"
+         set err [catch {satel_ephem \"$satname\" $date $home} res]
+         #::console::affiche_resultat "$ksat, err=$err res=$res\n"
+         if {$err==1} {
+            continue
+         }
+         if {$res==""} {
+            continue
+         }
+         set res [lindex $res 0]
+         if {[info exists resmin]==0} {
+            set resmin $res
+         }
+         set err [catch {expr [lindex $res 1]} msg]
+         if {$err==1} {
+            continue
+         }
+         set name [string trim [lindex [lindex $res 0] 0]]
+         set rasat [lindex $res 1]
+         set decsat [lindex $res 2]
+         set ill [lindex $res 6]
+         set azim [lindex $res 8]
+         set gise [expr $azim+180]
+         if {$gise>360} {
+            set gise [expr $gise-360]
+         }
+         set elev [lindex $res 9]
+         set err [catch {mc_sepangle $ra $dec $rasat $decsat} resang]
+         if {$err==1} {
+            continue
+         }
+         set sepangle [lindex $resang 0]
+         #::console::affiche_resultat "       sepangle=$sepangle sepanglemin=$sepanglemin\n"
+         if {$sepangle<$sepanglemin} {
+            set resmin $res
+            set sepanglemin $sepangle
+         } 
       }
-      incr k
-      incr ksat
-      set satname [lindex $satelname 0]
-      set ficname [lindex $satelname 1]
-      #::console::affiche_resultat "$ksat, satel_ephem \"$satname\" $date $home\n"
-      set err [catch {satel_ephem \"$satname\" $date $home} res]
-      #::console::affiche_resultat "$ksat, err=$err res=$res\n"
-      if {$err==1} {
-         continue
-      }
-      if {$res==""} {
-         continue
-      }
-      set res [lindex $res 0]
-      if {[info exists resmin]==0} {
-         set resmin $res
-      }
-      if {[string compare [lindex $res 1] -nan]==0} {
-         continue
-      }
-      set name [string trim [lindex [lindex $res 0] 0]]
-      set rasat [lindex $res 1]
-      set decsat [lindex $res 2]
-      set ill [lindex $res 6]
-      set azim [lindex $res 8]
+      set name [string trim [lindex [lindex $resmin 0] 0]]
+      set rasat [mc_angle2hms [lindex $resmin 1] 360 zero 2 auto string]
+      set decsat [mc_angle2dms [lindex $resmin 2] 90 zero 1 + string]
+      set ill [lindex $resmin 6]
+      set azim [lindex $resmin 8]
       set gise [expr $azim+180]
       if {$gise>360} {
          set gise [expr $gise-360]
       }
-      set elev [lindex $res 9]
-      set err [catch {mc_sepangle $ra $dec $rasat $decsat} resang]
-      if {$err==1} {
-         continue
+      set elev [lindex $resmin 9]
+      set resfinal "$sepanglemin \"$name\" $ra $dec J2000.0 $ill [format %.5f $gise] [format %+.5f $elev]\n"
+   } else {
+      #set satelnames [lrange $satelnames 258 end]
+      #set satelnames [lrange $satelnames 0 2]
+      foreach satelname $satelnames {
+         if {$k==100} {
+            catch {::console::affiche_resultat "$ksat / $nsat\n"}
+            update
+            set k 0
+         }
+         incr k
+         incr ksat
+         set satname [lindex $satelname 0]
+         set ficname [lindex $satelname 1]
+         #::console::affiche_resultat "$ksat, satel_ephem \"$satname\" $date $home\n"
+         set err [catch {satel_ephem \"$satname\" $date $home} res]
+         #::console::affiche_resultat "$ksat, err=$err res=$res\n"
+         if {$err==1} {
+            continue
+         }
+         if {$res==""} {
+            continue
+         }
+         set res [lindex $res 0]
+         set err [catch {expr [lindex $res 1]} msg]
+         if {$err==1} {
+            continue
+         }
+         set name [string trim [lindex [lindex $res 0] 0]]
+         set id1 [string trim [lindex [lindex $res 0] 1]]
+         set id2 [string trim [lindex [lindex $res 0] 2]]
+         set rasat [lindex $res 1]
+         set decsat [lindex $res 2]
+         set ill [lindex $res 6]
+         set azim [lindex $res 8]
+         set gise [expr $azim+180]
+         if {$gise>360} {
+            set gise [expr $gise-360]
+         }
+         set elev [lindex $res 9]
+         set err [catch {mc_sepangle $ra $dec $rasat $decsat} resang]
+         if {$err==1} {
+            continue
+         }
+         set sepangle [lindex $resang 0]
+         #::console::affiche_resultat "       sepangle=$sepangle radius_deg=$radius_deg\n"
+         if {$sepangle<$radius_deg} {
+            set resmin $res
+            set name [string trim [lindex [lindex $resmin 0] 0]]
+            set rasat [mc_angle2hms [lindex $resmin 1] 360 zero 2 auto string]
+            set decsat [mc_angle2dms [lindex $resmin 2] 90 zero 1 + string]
+            set ill [lindex $resmin 6]
+            set azim [lindex $resmin 8]
+            set gise [expr $azim+180]
+            if {$gise>360} {
+               set gise [expr $gise-360]
+            }
+            set elev [lindex $resmin 9]
+            #::console::affiche_resultat "ksat=$ksat, err=$err res=$res\n"
+            set date2 [mc_datescomp $date + [expr 1./86400]]
+            set err [catch {satel_ephem \"$satname\" $date2 $home} res]
+            set res [lindex $res 0]
+            set rasat2 [mc_angle2hms [lindex $res 1] 360 zero 2 auto string]
+            set decsat2 [mc_angle2dms [lindex $res 2] 90 zero 1 + string]
+            set dresang [mc_anglesep [list $rasat2 $decsat2 $rasat $decsat]]
+            set dsepangle [lindex $dresang 0]
+            set dangle [lindex $dresang 1]
+            set res "$ksat $sepangle \"$name\" $id1 $id2 $rasat $decsat J2000.0 $ill [format %f $dsepangle] [format %.1f $dangle] [format %.5f $gise] [format %+.5f $elev]\n"
+            catch {::console::affiche_resultat "$ksat / $nsat $res"}
+            append resfinal $res
+         } 
       }
-      set sepangle [lindex $resang 0]
-      #::console::affiche_resultat "       sepangle=$sepangle sepanglemin=$sepanglemin\n"
-      if {$sepangle<$sepanglemin} {
-         set resmin $res
-         set sepanglemin $sepangle
-      } 
    }
-   set name [string trim [lindex [lindex $resmin 0] 0]]
-   set rasat [mc_angle2hms [lindex $resmin 1] 360 zero 2 auto string]
-   set decsat [mc_angle2dms [lindex $resmin 2] 90 zero 1 + string]
-   set ill [lindex $resmin 6]
-   set azim [lindex $resmin 8]
-   set gise [expr $azim+180]
-   if {$gise>360} {
-      set gise [expr $gise-360]
-   }
-   set elev [lindex $resmin 9]
-   set res "$sepanglemin \"$name\" $ra $dec J2000.0 $ill [format %.5f $gise] [format %+.5f $elev]\n"
-   return $res
+   return $resfinal
 }
 
 # source "$audace(rep_install)/gui/audace/satel.tcl" ; satel_transit ISS sun now 10
