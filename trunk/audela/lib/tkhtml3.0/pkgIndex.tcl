@@ -2,14 +2,17 @@
 
 proc load_tkhtml { dir } {
     if { $::tcl_platform(os) == "Linux" } {
-         # La librairie compilee libTkhtml3.0.so plante a l'execution !
-        #return [ load [ file join $dir libTkhtml3.0[info sharedlibextension] ] ]    
-        if { $::tcl_platform(pointerSize) == 4 } {
-            # Mode 32 bits
-            return [ load [ file join $dir Tkhtml3_32[info sharedlibextension] ] ]
-        } else {
-            # Mode 64 bits
-            return [ load [ file join $dir Tkhtml3_64[info sharedlibextension] ] ]
+        set fso [file join $dir libTkhtml3.0[info sharedlibextension]]
+        if {[file exists $tso]==1} {
+            return [ load $fso ]
+        } else {            
+           if { $::tcl_platform(pointerSize) == 4 } {
+               # Mode 32 bits
+               return [ load [ file join $dir Tkhtml3_32[info sharedlibextension] ] ]
+           } else {
+               # Mode 64 bits
+               return [ load [ file join $dir Tkhtml3_64[info sharedlibextension] ] ]
+           }
         }
     } else {
         return [ load [ file join $dir Tkhtml3[info sharedlibextension] ] ]
