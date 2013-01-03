@@ -5,20 +5,19 @@ include ../../Makefile.defs
 DIR = htmlwidget
 
 build:
-	@if test ! -e $(DIR)/Makefile || test ../../Makefile.defs -nt $(DIR)/Makefile; then \
+	@if test ! -f $(DIR)/Makefile || test ../../Makefile.defs -nt $(DIR)/Makefile; then \
 		cd $(DIR) && \
-		echo chmod +x configure ; \
-		./configure --enable-threads --with-tcl=$(AUD_TCL_BIN_DIR) --with-tk=$(AUD_TK_BIN_DIR) --with-blt=$(ROOT)/../lib ; \
-		 \
+			chmod +x configure ; ./configure --prefix=$(ROOT)/.. --exec-prefix=$(ROOT)/.. --with-tcl=$(AUD_TCL_BIN_DIR) --with-mysql-lib=$(AUD_TCL_BIN_DIR) ; make clean ; \
 	fi;
-	$(MAKE) -C $(DIR)
+	make -C $(DIR)
 
 install: build
-	$(MAKE) -C $(DIR) install
+	rm -rf $(ROOT)/../lib/tkhtml3.0
+	make -C $(DIR) install-lib-binaries
 
 clean:
-	$(MAKE) -C $(DIR) clean
+	make -C $(DIR) clean
 
-distclean: 
-	$(MAKE) -C $(DIR) distclean
-	$(RM) -r $(ROOT)/../lib/tkhtml3.0
+distclean: clean
+	rm -f *~ *.bak
+	make -C $(DIR) distclean
