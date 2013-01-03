@@ -1,0 +1,98 @@
+
+<style> 
+  h1,h2,h3 {
+    color:purple;
+  }
+</style> 
+
+<script> 
+  function build_toc (e) {
+  }
+ 
+  window.onload = build_toc
+</script>
+
+<h1>Hv3 User Manual</h1>
+
+<div id="toc">
+
+<h2>Overview</h2>
+
+<h2>Essential Information</h2>
+
+<h3>Using a Statefile</h3>
+
+<p>
+  Most popular browsers, including Internet Explorer and Firefox, store some
+  data in the file-system. By default, Hv3 does not do this. When a browser
+  window is closed, all data is discarded. This can be useful when using a
+  public computer, or if you wish, for reasons of your own, to cover your
+  tracks. However, it can also be inconveniant.
+</p>
+
+<p>
+  The alternative is to specify the "-statefile" option as part of the
+  command line used to start Hv3. The -statefile option is used to specify
+  a file on disk used to persistently store various elements of the browser
+  application state. Windows users may need to create a "batch file" to 
+  achieve this. For example, assuming that the Hv3 binary is named
+  "hv3-linux-nightly-07_0723" and you wish to use the file
+  "/home/dan/hv3_state.db" as the statefile, the full command line would be:
+
+<pre>
+  hv3-linux-nightly-07_0723 -statefile /home/dan/hv3_state.db
+</pre>
+
+<p>
+  If enabled, Hv3 stores the following data in the statefile:
+<ul>
+  <li> HTTP cookies.
+  <li> The list of visited URIs (used for auto-completion in the location 
+       bar and for coloring visited hyperlinks).
+  <li> The values of the settings configured in the "Options" pull-down menu,
+       except for the "Hide GUI" option.
+  <li> User bookmarks.
+</ul>
+
+<h3>Security Considerations</h3>
+
+<p>
+  Whatever anyone else says, at time of writing all major browsers 
+  have some big security issues, known and unknown. These are ours:
+
+<ol>
+<li>
+<p>
+  Hv3 unconditionally accepts all cookies, regardless of origin. In my
+  opinion this is not a problem, but some people think it is.
+</p>
+<li>
+<p>
+  If javascript is enabled (the Options-&gt;Enable&nbsp;ECMAScript option),
+  then Hv3 is vulnerable to cross-site scripting attacks. This means that
+  if you visit a malicious site with javascript enabled, that site will
+  be able to steal the contents of the cookies database and possibly 
+  access any web-accounts that use cookies to identify users.
+</p>
+<p>
+  Other browsers are also vulnerable to similar attacks. But it's much
+  easier for a malicious user to take advantage of Hv3.
+</p>
+<p>
+  Unless you understand all the issues involved, I strongly recommend
+  that you do not test out your online banking site with Hv3.
+</p>
+</ol>
+ 
+<h2>Feature Guide</h2>
+
+<h3>Browsing the Web</h3>
+
+<h3>Searching the Web</h3>
+
+<h3>Bookmarks</h3>
+
+<h3>Find in Page</h3>
+
+<h3>Configuring Hv3</h3>
+
