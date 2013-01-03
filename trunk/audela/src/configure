@@ -5397,7 +5397,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
-EXTERNAL="andor blt cfitsio fitstcl gzip jpeg6b libdcjpeg libdcraw libftd2xx libgphoto2 libusb porttalk sbig sextractor tcl"
+EXTERNAL="andor blt cfitsio fitstcl gzip jpeg6b libdcjpeg libdcraw libftd2xx libgphoto2 libusb porttalk sbig sextractor tcl tkhtml"
 if test -f /usr/bin/mysql_config ; then
     EXTERNAL="$EXTERNAL mysqltcl"
 fi
