@@ -12,7 +12,7 @@ build:
 	make -C $(DIR)
 
 install: build
-	cp $(DIR)/libTkhtml.*.so $(ROOT)/../lib/tkhtml3.0/
+	cp $(DIR)/libTkhtml*.so $(ROOT)/../lib/tkhtml3.0/
 
 clean:
 	make -C $(DIR) clean
