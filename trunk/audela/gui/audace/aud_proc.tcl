@@ -695,3 +695,25 @@ proc animate { filename nb {millisecondes 200} {nbtours 10} {liste_index ""} } {
    return $error
 }
 
+# --- ping qui fonctionne aussi sous linux non root
+proc audace_ping { ip } {
+   set res ""
+   if { $::tcl_platform(os) == "Windows NT" } {
+      set res [ping $ip]
+   } else {
+      set user [exec whoami]
+      if {$user=="root"} {
+         set res [ping $ip]
+      } else {
+         set err [ catch {exec ping $ip -c 1 -W 1} msg ]
+         if {$err==0} {
+            lappend res 1
+            lappend res "ping OK with $ip ()"
+         } else {
+            lappend res 0
+            lappend res "ping failed with $ip ()"
+         }         
+      }
+   }
+   return $res
+}
