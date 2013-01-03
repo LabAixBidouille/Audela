@@ -3,7 +3,7 @@
 proc load_tkhtml { dir } {
     if { $::tcl_platform(os) == "Linux" } {
         set fso [file join $dir libTkhtml3.0[info sharedlibextension]]
-        if {[file exists $tso]==1} {
+        if {[file exists $fso]==1} {
             return [ load $fso ]
         } else {            
            if { $::tcl_platform(pointerSize) == 4 } {
