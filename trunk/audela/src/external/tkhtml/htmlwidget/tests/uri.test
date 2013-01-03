@@ -1,0 +1,66 @@
+
+# This test script tests the ::tkhtml::uri objects.
+#
+
+proc sourcefile {file} {
+  set fname [file join [file dirname [info script]] $file] 
+  uplevel "#0" [list source $fname]
+}
+sourcefile common.tcl
+
+proc split_uri {uri} {
+  set ::o [::tkhtml::uri $uri]
+  set res [list \
+      [$::o scheme] [$::o authority] [$::o path] [$::o query] [$::o fragment]
+  ]
+  $::o destroy
+  set res
+}
+proc resolve_uri {base uri} {
+  set ::o [::tkhtml::uri $base]
+  set res [$::o resolve $uri]
+  $::o destroy
+  set res
+}
+
+tcltest::test uri-1 {} -body {
+  split_uri http://www.google.com
+} -result {http www.google.com {} {} {}}
+
+tcltest::test uri-2 {} -body {
+  split_uri http://www.cvstrac.org/cvstrac/
+} -result {http www.cvstrac.org /cvstrac/ {} {}}
+
+tcltest::test uri-3 {} -body {
+  split_uri http://tkhtml.tcl.tk/cvstrac/login?nxp=/cvstrac/timeline
+} -result {http tkhtml.tcl.tk /cvstrac/login nxp=/cvstrac/timeline {}}
+
+tcltest::test uri-4 {} -body {
+  split_uri file:///home/dan/work/tkhtml/docs/css2/cover.html#minitoc
+} -result {file {} /home/dan/work/tkhtml/docs/css2/cover.html {} minitoc}
+
+tcltest::test uri-5 {} -body {
+  split_uri /tkhtml/docs/css2/cover.html
+} -result {{} {} /tkhtml/docs/css2/cover.html {} {}}
+
+tcltest::test uri-6 {} -body {
+  resolve_uri http://tkhtml.tcl.tk/ index.html
+} -result {http://tkhtml.tcl.tk/index.html}
+
+tcltest::test uri-7 {} -body {
+  resolve_uri http://tkhtml.tcl.tk/css.html index.html
+} -result {http://tkhtml.tcl.tk/index.html}
+
+tcltest::test uri-8 {} -body {
+  resolve_uri http://tkhtml.tcl.tk/dir/ index.html
+} -result {http://tkhtml.tcl.tk/dir/index.html}
+
+tcltest::test uri-9 {} -body {
+  resolve_uri http://tkhtml.tcl.tk/dir/ ../index.html
+} -result {http://tkhtml.tcl.tk/index.html}
+
+tcltest::test uri-10 {} -body {
+  resolve_uri file:///home/dan/work/tkhtml/docs/css2/cover.html about.html
+} -result {file:///home/dan/work/tkhtml/docs/css2/about.html}
+
+finish_test
