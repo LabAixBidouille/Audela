@@ -1,4 +1,4 @@
-/* :set et ts=4 sw=4  */
+/* vim:set et ts=4 sw=4:  */
 
 /*
 Copyright or © or Copr. [name of the author when individual or of the
@@ -912,65 +912,50 @@ int video_open(struct video_context_s *vc, const char *path)
 
     if(1)
     {
-        struct v4l2_cropcap crop;
-        memset(&crop,0,sizeof(crop));
-        crop.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-        if( (rc = ioctl(vc->fd, VIDIOC_CROPCAP, &crop)) < 0 ) {
+        // Resets the cropping rectangle.
+
+        struct v4l2_cropcap cropcap;
+        struct v4l2_crop crop;
+        int rc;
+
+        memset(&cropcap,0,sizeof(cropcap));
+        cropcap.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+        if( (rc = ioctl(vc->fd, VIDIOC_CROPCAP, &cropcap)) < 0 ) {
             perror("VIDIOC_CROPCAP");
             xabort();
         }
 
         if(0) {
             printf("CROPCAP\n");
-            printf(" %d %d %d %d\n", crop.bounds.left, crop.bounds.top,
-                    crop.bounds.width, crop.bounds.height);
-            printf(" %d %d %d %d\n", crop.defrect.left, crop.defrect.top,
-                    crop.defrect.width, crop.defrect.height);
+            printf(" %d %d %d %d\n", cropcap.bounds.left, cropcap.bounds.top,
+                    cropcap.bounds.width, cropcap.bounds.height);
+            printf(" %d %d %d %d\n", cropcap.defrect.left, cropcap.defrect.top,
+                    cropcap.defrect.width, cropcap.defrect.height);
         }
 
-    }
-
-    if(1)
-    {
-        struct v4l2_cropcap cropcap;
-        struct v4l2_crop crop;
-
-        memset (&cropcap, 0, sizeof (cropcap));
-        cropcap.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-
-        if (-1 == ioctl (vc->fd, VIDIOC_CROPCAP, &cropcap)) {
-            perror ("VIDIOC_CROPCAP");
-            exit (EXIT_FAILURE);
-        }
 
         memset (&crop, 0, sizeof (crop));
         crop.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-        crop.c = cropcap.defrect;
 
-        /* Ignore if cropping is not supported (EINVAL). */
+        if (-1 == ioctl (vc->fd, VIDIOC_G_CROP, &crop)) {
+            if (errno == EINVAL) {
+                /* Ignore if cropping is not supported (EINVAL). */
+            } else {
+                /* Ignore for other errors.
+                 * For instance kernel 3.4 returns ENOTTY (25) with Terratec Grabby */
+                perror ("VIDIOC_G_CROP");
+            }
+        } else {
+            crop.c = cropcap.defrect;
 
-        if (-1 == ioctl (vc->fd, VIDIOC_S_CROP, &crop)
-                && errno != EINVAL) {
-            perror ("VIDIOC_S_CROP");
-            exit (EXIT_FAILURE);
+            if (-1 == ioctl (vc->fd, VIDIOC_S_CROP, &crop)
+                    && errno != EINVAL) {
+                perror ("VIDIOC_S_CROP");
+            }
         }
 
     }
 
-    if(0)
-    {
-        struct v4l2_crop crop;
-        crop.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-        crop.c.left = 0;
-        crop.c.top = 0;
-        crop.c.width = 640;
-        crop.c.height = 480;
-
-        if( (rc = ioctl(vc->fd, VIDIOC_S_CROP, &crop)) < 0 ) {
-            perror("VIDIOC_S_CROP");
-            xabort();
-        }
-    }
 
     strcpy(vc->path, path);
     
