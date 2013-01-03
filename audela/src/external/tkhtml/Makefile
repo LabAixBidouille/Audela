@@ -12,8 +12,7 @@ build:
 	make -C $(DIR)
 
 install: build
-	rm -rf $(ROOT)/../lib/tkhtml3.0
-	make -C $(DIR) install-lib-binaries
+	cp $(DIR)/libTkhtml.*.so $(ROOT)/../lib/tkhtml3.0/
 
 clean:
 	make -C $(DIR) clean
