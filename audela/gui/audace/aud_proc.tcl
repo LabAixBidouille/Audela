@@ -712,8 +712,9 @@ proc audace_ping { ip } {
          } else {
             lappend res 0
             lappend res "ping failed with $ip ()"
-         }         
+         }
       }
    }
    return $res
 }
+
