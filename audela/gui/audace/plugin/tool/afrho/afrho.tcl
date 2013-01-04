@@ -894,24 +894,38 @@ proc ::afrho::appliquer { } {
    }
    ::console::affiche_resultat_bis "$t\n"
 
-   set pathpwd [pwd]
+   set pathpwd $audace(rep_travail)
    set pathimg $audace(rep_images)
 
    set cometfilename [file rootname [lindex $afrho(params,1,FILEIN) 0]]
 
-   set f [open "${pathimg}/${cometfilename}.cfg" w]
+   set f [open [ file join ${pathimg} ${cometfilename}.cfg ] w]
    puts -nonewline $f $t
    close $f
-   file copy -force ${pathimg}/${cometfilename}.cfg ${pathpwd}/cal_afr.cfg
-   file copy -force ${pathimg}/[lindex $afrho(params,1,FILEIN) 0] ${pathpwd}/[lindex $afrho(params,1,FILEIN) 0]
 
-   set err [catch {exec cal_afr.exe} msgs]
-   ::console::affiche_resultat_bis "$msgs\n\n"
+   if { $pathpwd != $pathimg } {
+   #--- Cas ou les repertoires de travail et des images sont differents
 
-   file copy -force ${pathpwd}/[lindex $afrho(params,1,FILEOUT) 0] ${pathimg}/[lindex $afrho(params,1,FILEOUT) 0]
-   file copy -force ${pathpwd}/[lindex $afrho(params,4,RPFILE) 0] ${pathimg}/[lindex $afrho(params,4,RPFILE) 0]
+      file copy -force [ file join ${pathimg} ${cometfilename}.cfg ] [ file join ${pathpwd} cal_afr.cfg ]
+      file copy -force [ file join ${pathimg} [lindex $afrho(params,1,FILEIN) 0] ] [ file join ${pathpwd} [lindex $afrho(params,1,FILEIN) 0] ]
 
-   set fileout ${pathimg}/[lindex $afrho(params,4,RPFILE) 0]
+      set err [catch {exec cal_afr.exe} msgs]
+      ::console::affiche_resultat_bis "$msgs\n\n"
+
+      file copy -force [ file join ${pathpwd} [lindex $afrho(params,1,FILEOUT) 0] ] [ file join ${pathimg} [lindex $afrho(params,1,FILEOUT) 0] ]
+      file copy -force [ file join ${pathpwd} [lindex $afrho(params,4,RPFILE) 0] ] [ file join ${pathimg} [lindex $afrho(params,4,RPFILE) 0] ]
+
+   } elseif { $pathpwd == $pathimg } {
+   #--- Cas ou les repertoires de travail et des images sont identiques
+
+      file copy -force [ file join ${pathimg} ${cometfilename}.cfg ] [ file join ${pathimg} cal_afr.cfg ]
+
+      set err [catch {exec cal_afr.exe} msgs]
+      ::console::affiche_resultat_bis "$msgs\n\n"
+
+   }
+
+   set fileout [ file join ${pathimg} [lindex $afrho(params,4,RPFILE) 0] ]
    set f [open $fileout r]
    set lignes [split [read $f] \n]
    close $f
@@ -922,8 +936,10 @@ proc ::afrho::appliquer { } {
    if { [ file exists [ file join "$pathpwd" cal_afr.cfg ] ] } {
       file delete [ file join "$pathpwd" cal_afr.cfg ]
    }
-   if { [ file exists [ file join "$pathpwd" [lindex $afrho(params,1,FILEIN) 0] ] ] } {
-      file delete [ file join "$pathpwd" [lindex $afrho(params,1,FILEIN) 0] ]
+   if { $pathpwd != $pathimg } {
+      if { [ file exists [ file join "$pathpwd" [lindex $afrho(params,1,FILEIN) 0] ] ] } {
+         file delete [ file join "$pathpwd" [lindex $afrho(params,1,FILEIN) 0] ]
+      }
    }
    if { [ file exists [ file join "$pathpwd" [lindex $afrho(params,1,FILEOUT) 0] ] ] } {
       file delete [ file join "$pathpwd" [lindex $afrho(params,1,FILEOUT) 0] ]
